@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /gate.html
+Disallow: /giris.html
+Disallow: /profil.html
+Disallow: /ik.html
+
+Sitemap: https://hellotalent.ai/sitemap.xml
