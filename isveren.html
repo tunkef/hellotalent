@@ -4,10 +4,6 @@
 <meta charset="UTF-8">
 <script>if(sessionStorage.getItem("ht_gate")!=="ok"){window.location.replace("gate.html");}
 
-
-
-
-
 // ══════════════════════════════════
 // HELLOTALENT — SHARED JS (UNIFIED)
 // ══════════════════════════════════
@@ -46,37 +42,6 @@ function toggleMobileMenu() {
   ham.setAttribute('aria-expanded', String(!isOpen));
   document.body.style.overflow = isOpen ? '' : 'hidden';
 }
-
-// ── COOKIE CONSENT ──
-function acceptCookies() {
-  localStorage.setItem('ht_cookie_consent', 'accepted');
-  var bar = document.getElementById('cookie-bar');
-  if (bar) bar.style.display = 'none';
-  loadGA4();
-}
-function rejectCookies() {
-  localStorage.setItem('ht_cookie_consent', 'rejected');
-  var bar = document.getElementById('cookie-bar');
-  if (bar) bar.style.display = 'none';
-}
-function loadGA4() {
-  if (window._ga4loaded) return;
-  window._ga4loaded = true;
-  var s = document.createElement('script');
-  s.async = true; s.src = 'https://www.googletagmanager.com/gtag/js?id=G-54BCV5QYCZ';
-  document.head.appendChild(s);
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){ dataLayer.push(arguments); }
-  window.gtag = gtag; gtag('js', new Date()); gtag('config', 'G-54BCV5QYCZ');
-}
-(function initCookie() {
-  var consent = localStorage.getItem('ht_cookie_consent');
-  if (consent) {
-    var bar = document.getElementById('cookie-bar');
-    if (bar) bar.style.display = 'none';
-    if (consent === 'accepted') loadGA4();
-  }
-})();
 
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
@@ -271,16 +236,6 @@ footer{background:var(--navy);padding:40px 48px;}
 .social-link{width:34px;height:34px;border-radius:8px;background:rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.6);transition:all 0.2s;text-decoration:none;}
 .social-link:hover{background:rgba(255,255,255,0.16);color:white;}
 
-/* COOKIE */
-.cookie-banner{position:fixed;bottom:0;left:0;right:0;z-index:9999;background:white;border-top:1.5px solid var(--border);padding:16px 40px;display:flex;align-items:center;gap:20px;flex-wrap:wrap;box-shadow:0 -4px 24px rgba(0,0,0,0.08);animation:slideUp 0.35s ease;}
-.cookie-banner.hidden{display:none;}
-@keyframes slideUp{from{transform:translateY(100%);}to{transform:translateY(0);}}
-.cookie-text{flex:1;font-size:13px;color:var(--muted);line-height:1.6;}
-.cookie-text strong{color:var(--text);}
-.cookie-btns{display:flex;gap:8px;}
-.btn-cookie-accept{padding:9px 20px;background:var(--navy);border:none;border-radius:8px;color:white;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;}
-.btn-cookie-reject{padding:9px 16px;background:white;border:1.5px solid var(--border);border-radius:8px;color:var(--muted);font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;}
-
 /* RESPONSIVE */
 @media(max-width:1024px){
   .hero-title{font-size:42px;}
@@ -305,17 +260,15 @@ footer{background:var(--navy);padding:40px 48px;}
   .section-title{font-size:28px;}
   footer{padding:32px 24px;}
   .footer-top{flex-direction:column;}
-  .cookie-banner{padding:16px 20px;}
+  
 }
 @media(max-width:480px){
   .hero-title{font-size:34px;letter-spacing:-1.5px;}
   .f-row{grid-template-columns:1fr;}
 }
 
-
     
     
-
 
     /* ══════════ HEADER — UNIFIED ══════════ */
     .site-header {
@@ -516,31 +469,7 @@ footer{background:var(--navy);padding:40px 48px;}
     .footer-legal a { font-size: 12px; color: rgba(255,255,255,0.35); text-decoration: none; transition: color 0.2s; }
     .footer-legal a:hover { color: rgba(255,255,255,0.7); }
 
-    /* ══ COOKIE BAR ══ */
-    #cookie-bar {
-      position: fixed; bottom: 0; left: 0; right: 0; z-index: 9999;
-      background: var(--navy); color: white;
-      padding: 14px 32px; display: flex; align-items: center;
-      justify-content: space-between; gap: 20px; flex-wrap: wrap;
-      font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13px;
-      box-shadow: 0 -4px 24px rgba(0,0,0,0.15);
-    }
-    .cookie-text { flex: 1; min-width: 200px; color: rgba(255,255,255,0.85); }
-    .cookie-text strong { color: white; }
-    .cookie-btns { display: flex; gap: 10px; flex-shrink: 0; }
-    .cookie-btn-reject {
-      padding: 8px 18px; border-radius: 8px;
-      border: 1.5px solid rgba(255,255,255,0.3);
-      background: transparent; color: white; font-size: 13px; font-weight: 600;
-      cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; transition: border-color 0.2s;
-    }
-    .cookie-btn-reject:hover { border-color: rgba(255,255,255,0.7); }
-    .cookie-btn-accept {
-      padding: 8px 18px; border-radius: 8px; border: none;
-      background: var(--verm); color: white; font-size: 13px; font-weight: 700;
-      cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; transition: background 0.2s;
-    }
-    .cookie-btn-accept:hover { background: #a83d1e; }
+    
 
     /* ══ RESPONSIVE ══ */
     @media (max-width: 900px) {
@@ -553,7 +482,6 @@ footer{background:var(--navy);padding:40px 48px;}
       .site-footer { padding: 40px 20px 24px; }
       .footer-inner { grid-template-columns: 1fr; gap: 24px; }
       .footer-bottom { flex-direction: column; align-items: flex-start; gap: 8px; }
-      #cookie-bar { padding: 12px 16px; }
     }
 
     </style>
@@ -1033,16 +961,6 @@ footer{background:var(--navy);padding:40px 48px;}
   </div>
 </footer>
 
-<div class="cookie-banner" id="cookie-banner">
-  <div class="cookie-text">
-    <strong>Çerez Bildirimi</strong> — Deneyimi geliştirmek için çerezler kullanıyoruz. KVKK kapsamında tercih değiştirebilirsiniz.
-  </div>
-  <div class="cookie-btns">
-    <button class="btn-cookie-accept" onclick="acceptCookies()">Kabul Et</button>
-    <button class="btn-cookie-reject" onclick="rejectCookies()">Reddet</button>
-  </div>
-</div>
-
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 var _supa=null;
 function getSupa(){if(!_supa)_supa=supabase.createClient('https://cpwibefquojehjehtrog.supabase.co','sb_publishable_POUtNwJyjAAheukwYP5hmA_TKKjphwa');return _supa;}
@@ -1095,11 +1013,6 @@ async function submitDemo(e){
   }
 }
 
-function initCookieBanner(){
-  if(localStorage.getItem('ht_cookie_consent'))document.getElementById('cookie-banner').classList.add('hidden');
-}
-function acceptCookies(){localStorage.setItem('ht_cookie_consent','accepted');document.getElementById('cookie-banner').classList.add('hidden');loadGA4();}
-function rejectCookies(){localStorage.setItem('ht_cookie_consent','rejected');document.getElementById('cookie-banner').classList.add('hidden');}
 function loadGA4(){
   if(document.getElementById('ga4'))return;
   var s=document.createElement('script');s.id='ga4';s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=G-54BCV5QYCZ';document.head.appendChild(s);
@@ -1108,25 +1021,4 @@ function loadGA4(){
 
 document.addEventListener('DOM
 </div>
-<!-- ══ COOKIE BAR ══ -->
-<div id="cookie-bar" style="position:fixed;bottom:0;left:0;right:0;z-index:9999;background:#1E2D5E;color:white;padding:14px 32px;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;box-shadow:0 -4px 24px rgba(0,0,0,0.15);">
-  <span style="flex:1;min-width:200px;color:rgba(255,255,255,0.85);">🍪 <strong style="color:white;">Çerez Bildirimi</strong> — hellotalent.ai deneyimini geliştirmek için çerezler kullanıyoruz. KVKK kapsamında tercihlerinizi belirleyebilirsiniz.</span>
-  <div style="display:flex;gap:10px;flex-shrink:0;">
-    <button id="cookie-reject-btn" style="padding:8px 18px;border-radius:8px;border:1.5px solid rgba(255,255,255,0.3);background:transparent;color:white;font-size:13px;font-weight:600;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;">Reddet</button>
-    <button id="cookie-accept-btn" style="padding:8px 18px;border-radius:8px;border:none;background:#C94E28;color:white;font-size:13px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;">Kabul Et</button>
-  </div>
-</div>
-<script>
-(function(){
-  function hideCookieBar(){var b=document.getElementById('cookie-bar');if(b)b.style.display='none';}
-  if(localStorage.getItem('ht_cookie_consent')){hideCookieBar();}
-  function init(){
-    var a=document.getElementById('cookie-accept-btn');
-    var r=document.getElementById('cookie-reject-btn');
-    if(a)a.onclick=function(){localStorage.setItem('ht_cookie_consent','accepted');hideCookieBar();};
-    if(r)r.onclick=function(){localStorage.setItem('ht_cookie_consent','rejected');hideCookieBar();};
-    if(localStorage.getItem('ht_cookie_consent')){hideCookieBar();}
-  }
-  if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',init);}else{init();}
-})();
-</script>
+

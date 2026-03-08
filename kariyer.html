@@ -631,10 +631,8 @@
       .blog-grid { grid-template-columns: 1fr; }
     }
 
-
     
     
-
 
     /* ══════════ HEADER — UNIFIED ══════════ */
     .site-header {
@@ -835,31 +833,7 @@
     .footer-legal a { font-size: 12px; color: rgba(255,255,255,0.35); text-decoration: none; transition: color 0.2s; }
     .footer-legal a:hover { color: rgba(255,255,255,0.7); }
 
-    /* ══ COOKIE BAR ══ */
-    #cookie-bar {
-      position: fixed; bottom: 0; left: 0; right: 0; z-index: 9999;
-      background: var(--navy); color: white;
-      padding: 14px 32px; display: flex; align-items: center;
-      justify-content: space-between; gap: 20px; flex-wrap: wrap;
-      font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13px;
-      box-shadow: 0 -4px 24px rgba(0,0,0,0.15);
-    }
-    .cookie-text { flex: 1; min-width: 200px; color: rgba(255,255,255,0.85); }
-    .cookie-text strong { color: white; }
-    .cookie-btns { display: flex; gap: 10px; flex-shrink: 0; }
-    .cookie-btn-reject {
-      padding: 8px 18px; border-radius: 8px;
-      border: 1.5px solid rgba(255,255,255,0.3);
-      background: transparent; color: white; font-size: 13px; font-weight: 600;
-      cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; transition: border-color 0.2s;
-    }
-    .cookie-btn-reject:hover { border-color: rgba(255,255,255,0.7); }
-    .cookie-btn-accept {
-      padding: 8px 18px; border-radius: 8px; border: none;
-      background: var(--verm); color: white; font-size: 13px; font-weight: 700;
-      cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; transition: background 0.2s;
-    }
-    .cookie-btn-accept:hover { background: #a83d1e; }
+    
 
     /* ══ RESPONSIVE ══ */
     @media (max-width: 900px) {
@@ -872,7 +846,6 @@
       .site-footer { padding: 40px 20px 24px; }
       .footer-inner { grid-template-columns: 1fr; gap: 24px; }
       .footer-bottom { flex-direction: column; align-items: flex-start; gap: 8px; }
-      #cookie-bar { padding: 12px 16px; }
     }
 
     </style>
@@ -976,7 +949,6 @@
     </div>
   </div>
 </div>
-
 
 <div class="page-wrap">
 <div class="page-wrap">
@@ -1476,7 +1448,6 @@
 
   <!-- ══════════ FINAL CTA ══════════ -->
 
-
   <section class="final-cta-k">
     <div class="fck-inner">
       <p class="fck-tag">Harekete Geç</p>
@@ -1497,7 +1468,6 @@
       </div>
     </div>
   </section>
-
 
 </div><!-- /page-wrap -->
 
@@ -1602,12 +1572,6 @@
 <!-- ══════════ SUPABASE + JS ══════════ -->
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
 
-
-
-
-
-
-
 // ══════════════════════════════════
 // HELLOTALENT — SHARED JS (UNIFIED)
 // ══════════════════════════════════
@@ -1647,46 +1611,12 @@ function toggleMobileMenu() {
   document.body.style.overflow = isOpen ? '' : 'hidden';
 }
 
-// ── COOKIE CONSENT ──
-function acceptCookies() {
-  localStorage.setItem('ht_cookie_consent', 'accepted');
-  var bar = document.getElementById('cookie-bar');
-  if (bar) bar.style.display = 'none';
-  loadGA4();
-}
-function rejectCookies() {
-  localStorage.setItem('ht_cookie_consent', 'rejected');
-  var bar = document.getElementById('cookie-bar');
-  if (bar) bar.style.display = 'none';
-}
-function loadGA4() {
-  if (window._ga4loaded) return;
-  window._ga4loaded = true;
-  var s = document.createElement('script');
-  s.async = true; s.src = 'https://www.googletagmanager.com/gtag/js?id=G-54BCV5QYCZ';
-  document.head.appendChild(s);
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){ dataLayer.push(arguments); }
-  window.gtag = gtag; gtag('js', new Date()); gtag('config', 'G-54BCV5QYCZ');
-}
-(function initCookie() {
-  var consent = localStorage.getItem('ht_cookie_consent');
-  if (consent) {
-    var bar = document.getElementById('cookie-bar');
-    if (bar) bar.style.display = 'none';
-    if (consent === 'accepted') loadGA4();
-  }
-})();
-
 </script>
 <script>
 // ── SUPABASE ──
 const SUPABASE_URL = 'https://cpwibefquojehjehtrog.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_POUtNwJyjAAheukwYP5hmA_TKKjphwa';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-
-
 
 // ── LOGIN DROPDOWN ──
 function toggleLoginDropdown() {
@@ -1833,7 +1763,6 @@ async function handleLogin() {
   }
 }
 
-
 // ── POZİSYON TABS ──
 function switchPozTab(el, panel) {
   document.querySelectorAll('.poz-tab').forEach(function(t) { t.classList.remove('active'); });
@@ -1859,27 +1788,5 @@ function handleBlogSubscribe() {
 document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeAuthPopup(); });
 </script>
 
+</div>
 
-</div>
-<!-- ══ COOKIE BAR ══ -->
-<div id="cookie-bar" style="position:fixed;bottom:0;left:0;right:0;z-index:9999;background:#1E2D5E;color:white;padding:14px 32px;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;box-shadow:0 -4px 24px rgba(0,0,0,0.15);">
-  <span style="flex:1;min-width:200px;color:rgba(255,255,255,0.85);">🍪 <strong style="color:white;">Çerez Bildirimi</strong> — hellotalent.ai deneyimini geliştirmek için çerezler kullanıyoruz. KVKK kapsamında tercihlerinizi belirleyebilirsiniz.</span>
-  <div style="display:flex;gap:10px;flex-shrink:0;">
-    <button id="cookie-reject-btn" style="padding:8px 18px;border-radius:8px;border:1.5px solid rgba(255,255,255,0.3);background:transparent;color:white;font-size:13px;font-weight:600;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;">Reddet</button>
-    <button id="cookie-accept-btn" style="padding:8px 18px;border-radius:8px;border:none;background:#C94E28;color:white;font-size:13px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;">Kabul Et</button>
-  </div>
-</div>
-<script>
-(function(){
-  function hideCookieBar(){var b=document.getElementById('cookie-bar');if(b)b.style.display='none';}
-  if(localStorage.getItem('ht_cookie_consent')){hideCookieBar();}
-  function init(){
-    var a=document.getElementById('cookie-accept-btn');
-    var r=document.getElementById('cookie-reject-btn');
-    if(a)a.onclick=function(){localStorage.setItem('ht_cookie_consent','accepted');hideCookieBar();};
-    if(r)r.onclick=function(){localStorage.setItem('ht_cookie_consent','rejected');hideCookieBar();};
-    if(localStorage.getItem('ht_cookie_consent')){hideCookieBar();}
-  }
-  if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',init);}else{init();}
-})();
-</script>

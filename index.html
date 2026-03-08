@@ -4,9 +4,6 @@
 <meta charset="UTF-8">
 <script>if(sessionStorage.getItem("ht_gate")!=="ok"){window.location.replace("gate.html");}
 
-
-
-
 // ══════════════════════════════════
 // HELLOTALENT — SHARED JS (UNIFIED)
 // ══════════════════════════════════
@@ -45,37 +42,6 @@ function toggleMobileMenu() {
   ham.setAttribute('aria-expanded', String(!isOpen));
   document.body.style.overflow = isOpen ? '' : 'hidden';
 }
-
-// ── COOKIE CONSENT ──
-function acceptCookies() {
-  localStorage.setItem('ht_cookie_consent', 'accepted');
-  var bar = document.getElementById('cookie-bar');
-  if (bar) bar.style.display = 'none';
-  loadGA4();
-}
-function rejectCookies() {
-  localStorage.setItem('ht_cookie_consent', 'rejected');
-  var bar = document.getElementById('cookie-bar');
-  if (bar) bar.style.display = 'none';
-}
-function loadGA4() {
-  if (window._ga4loaded) return;
-  window._ga4loaded = true;
-  var s = document.createElement('script');
-  s.async = true; s.src = 'https://www.googletagmanager.com/gtag/js?id=G-54BCV5QYCZ';
-  document.head.appendChild(s);
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){ dataLayer.push(arguments); }
-  window.gtag = gtag; gtag('js', new Date()); gtag('config', 'G-54BCV5QYCZ');
-}
-(function initCookie() {
-  var consent = localStorage.getItem('ht_cookie_consent');
-  if (consent) {
-    var bar = document.getElementById('cookie-bar');
-    if (bar) bar.style.display = 'none';
-    if (consent === 'accepted') loadGA4();
-  }
-})();
 
 </script>
 <script>if(sessionStorage.getItem("ht_gate")!=="ok"){window.location.replace("gate.html");}</script>
@@ -217,7 +183,6 @@ html { scroll-behavior: smooth; overflow-x: hidden; }
 body { font-family: 'Plus Jakarta Sans', sans-serif; color: var(--text); background: #fff; overflow-x: hidden; }
 * { -webkit-tap-highlight-color: transparent; }
 
-
 /* ══════════ MAIN CONTAINER ══════════ */
 .main-wrap { padding-top: 64px; }
 
@@ -257,8 +222,6 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; color: var(--text); backgro
   border-radius: 30px; cursor: pointer; transition: all 0.2s;
 }
 .btn-secondary:hover { background: var(--navy); color: white; }
-
-
 
 /* ══════════ SECTION SHARED ══════════ */
 .section {
@@ -694,7 +657,6 @@ section#cv .pill {
 .hr-modal-divider span { font-size:11px;color:#9CA3AF;white-space:nowrap; }
 .hr-modal-giris { width:100%;padding:11px;border:1.5px solid #E5E3DF;border-radius:10px;background:white;color:#374151;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.2s; }
 .hr-modal-giris:hover { border-color:#1E2D5E;color:#1E2D5E; }
-
 
 /* ══════════ POPUP ══════════ */
 .popup-overlay {
@@ -1178,31 +1140,7 @@ section#cv > div:first-child { padding: 52px 20px; }
     .footer-legal a { font-size: 12px; color: rgba(255,255,255,0.35); text-decoration: none; transition: color 0.2s; }
     .footer-legal a:hover { color: rgba(255,255,255,0.7); }
 
-    /* ══ COOKIE BAR ══ */
-    #cookie-bar {
-      position: fixed; bottom: 0; left: 0; right: 0; z-index: 9999;
-      background: var(--navy); color: white;
-      padding: 14px 32px; display: flex; align-items: center;
-      justify-content: space-between; gap: 20px; flex-wrap: wrap;
-      font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13px;
-      box-shadow: 0 -4px 24px rgba(0,0,0,0.15);
-    }
-    .cookie-text { flex: 1; min-width: 200px; color: rgba(255,255,255,0.85); }
-    .cookie-text strong { color: white; }
-    .cookie-btns { display: flex; gap: 10px; flex-shrink: 0; }
-    .cookie-btn-reject {
-      padding: 8px 18px; border-radius: 8px;
-      border: 1.5px solid rgba(255,255,255,0.3);
-      background: transparent; color: white; font-size: 13px; font-weight: 600;
-      cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; transition: border-color 0.2s;
-    }
-    .cookie-btn-reject:hover { border-color: rgba(255,255,255,0.7); }
-    .cookie-btn-accept {
-      padding: 8px 18px; border-radius: 8px; border: none;
-      background: var(--verm); color: white; font-size: 13px; font-weight: 700;
-      cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; transition: background 0.2s;
-    }
-    .cookie-btn-accept:hover { background: #a83d1e; }
+    
 
     /* ══ RESPONSIVE ══ */
     @media (max-width: 900px) {
@@ -1215,7 +1153,6 @@ section#cv > div:first-child { padding: 52px 20px; }
       .site-footer { padding: 40px 20px 24px; }
       .footer-inner { grid-template-columns: 1fr; gap: 24px; }
       .footer-bottom { flex-direction: column; align-items: flex-start; gap: 8px; }
-      #cookie-bar { padding: 12px 16px; }
     }
 
     </style>
@@ -1901,7 +1838,6 @@ section#cv > div:first-child { padding: 52px 20px; }
               <p class="success-title" style="color:white;">✓ Talebiniz alındı!</p>
               <p class="success-sub" style="color:rgba(255,255,255,0.6);">En kısa sürede sizinle iletişime geçeceğiz.</p>
             </div>
-
 
             <div class="trust-pills">
               <span class="pill dark-pill">🔒 KVKK Uyumlu</span>
@@ -2609,7 +2545,6 @@ function submitLogin(e) {
   });
 }
 
-
 // ═══════════════════════════════
 // HR FORM SUBMIT
 // ═══════════════════════════════
@@ -2751,7 +2686,6 @@ document.addEventListener('DOMContentLoaded', function() {
       if (header) header.style.boxShadow = 'none';
     }
   });
-
 
   // ── EMAIL CF BYPASS ──
   (function() {
@@ -2926,27 +2860,5 @@ function toggleFaq(el){
 
 </script>
 
+</div>
 
-</div>
-<!-- ══ COOKIE BAR ══ -->
-<div id="cookie-bar" style="position:fixed;bottom:0;left:0;right:0;z-index:9999;background:#1E2D5E;color:white;padding:14px 32px;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;box-shadow:0 -4px 24px rgba(0,0,0,0.15);">
-  <span style="flex:1;min-width:200px;color:rgba(255,255,255,0.85);">🍪 <strong style="color:white;">Çerez Bildirimi</strong> — hellotalent.ai deneyimini geliştirmek için çerezler kullanıyoruz. KVKK kapsamında tercihlerinizi belirleyebilirsiniz.</span>
-  <div style="display:flex;gap:10px;flex-shrink:0;">
-    <button id="cookie-reject-btn" style="padding:8px 18px;border-radius:8px;border:1.5px solid rgba(255,255,255,0.3);background:transparent;color:white;font-size:13px;font-weight:600;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;">Reddet</button>
-    <button id="cookie-accept-btn" style="padding:8px 18px;border-radius:8px;border:none;background:#C94E28;color:white;font-size:13px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;">Kabul Et</button>
-  </div>
-</div>
-<script>
-(function(){
-  function hideCookieBar(){var b=document.getElementById('cookie-bar');if(b)b.style.display='none';}
-  if(localStorage.getItem('ht_cookie_consent')){hideCookieBar();}
-  function init(){
-    var a=document.getElementById('cookie-accept-btn');
-    var r=document.getElementById('cookie-reject-btn');
-    if(a)a.onclick=function(){localStorage.setItem('ht_cookie_consent','accepted');hideCookieBar();};
-    if(r)r.onclick=function(){localStorage.setItem('ht_cookie_consent','rejected');hideCookieBar();};
-    if(localStorage.getItem('ht_cookie_consent')){hideCookieBar();}
-  }
-  if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',init);}else{init();}
-})();
-</script>
