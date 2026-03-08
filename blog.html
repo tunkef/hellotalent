@@ -499,6 +499,33 @@
       text-decoration: none;
     }
     .auth-success-btn:hover { background: #a83d1e; }
+  
+/* ══ BLOG SAYFASI ══ */
+.blog-section { padding: 60px 48px; background: var(--gray); }
+.blog-inner { max-width: 1160px; margin: 0 auto; }
+
+.blog-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+@media (max-width: 900px) { .blog-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 600px) { .blog-section { padding: 40px 20px; } .blog-grid { grid-template-columns: 1fr; } }
+
+.blog-card { background: white; border: 1.5px solid var(--border); border-radius: 18px; padding: 28px; display: flex; flex-direction: column; gap: 10px; transition: all 0.22s; position: relative; overflow: hidden; }
+.blog-card:not(.coming):hover { transform: translateY(-3px); box-shadow: 0 10px 32px rgba(0,0,0,0.09); border-color: var(--navy); cursor: pointer; }
+.blog-card.coming { opacity: 0.7; }
+.blog-soon-badge { display: inline-block; font-size: 10px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; padding: 4px 12px; border-radius: 20px; background: #FFFBEB; color: #92400E; width: fit-content; margin-bottom: 4px; }
+.blog-cat { font-size: 11px; font-weight: 700; color: var(--verm); text-transform: uppercase; letter-spacing: 1px; }
+.blog-title { font-family: 'Bricolage Grotesque', sans-serif; font-size: 17px; font-weight: 700; color: var(--navy); line-height: 1.35; }
+.blog-desc { font-size: 13px; color: var(--muted); line-height: 1.55; flex: 1; }
+.blog-meta { font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 8px; margin-top: 4px; }
+
+.blog-subscribe { margin-top: 56px; background: var(--navy); border-radius: 24px; padding: 48px; text-align: center; }
+.blog-sub-text { font-family: 'Bricolage Grotesque', sans-serif; font-size: 26px; font-weight: 700; color: white; margin-bottom: 8px; }
+.blog-sub-note { font-size: 14px; color: rgba(255,255,255,0.6); margin-bottom: 24px; }
+.blog-sub-form { display: flex; gap: 10px; max-width: 440px; margin: 0 auto; }
+.blog-sub-input { flex: 1; padding: 12px 18px; border-radius: 30px; border: none; font-size: 14px; font-family: 'Plus Jakarta Sans', sans-serif; outline: none; }
+.blog-sub-btn { padding: 12px 24px; background: var(--verm); color: white; border: none; border-radius: 30px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; transition: background 0.2s; white-space: nowrap; }
+.blog-sub-btn:hover { background: #a83d1e; }
+@media (max-width: 600px) { .blog-sub-form { flex-direction: column; } }
+
   </style>
   <meta name="robots" content="index, follow">
   <meta name="author" content="hellotalent.ai">

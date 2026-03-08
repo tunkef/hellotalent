@@ -499,6 +499,33 @@
       text-decoration: none;
     }
     .auth-success-btn:hover { background: #a83d1e; }
+  
+/* ══ YETKİNLİK SAYFASI ══ */
+.yetkinlik-section { padding: 60px 48px; background: white; }
+.yetkinlik-inner { max-width: 1160px; margin: 0 auto; }
+
+.ladder-grid { display: flex; align-items: flex-start; gap: 0; overflow-x: auto; padding-bottom: 20px; justify-content: center; flex-wrap: wrap; gap: 0; }
+.ladder-step { background: white; border: 2px solid var(--border); border-radius: 20px; padding: 28px 24px; width: 220px; flex-shrink: 0; transition: all 0.22s; }
+.ladder-step:hover { border-color: var(--navy); box-shadow: 0 8px 28px rgba(0,0,0,0.09); transform: translateY(-3px); }
+.ladder-num { font-family: 'DM Mono', monospace; font-size: 28px; font-weight: 500; color: var(--border); margin-bottom: 10px; }
+.ladder-badge { display: inline-block; font-size: 11px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; padding: 4px 12px; border-radius: 20px; margin-bottom: 14px; }
+.entry-badge { background: #EEF0F7; color: var(--navy); }
+.mid-badge { background: #FEF3F0; color: var(--verm); }
+.senior-badge { background: #F3F0FF; color: #7C3AED; }
+.leader-badge { background: #FFFBEB; color: #92400E; }
+.ladder-roles { font-size: 12px; font-weight: 700; color: var(--muted); margin-bottom: 14px; line-height: 1.4; }
+.ladder-skills { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+.ladder-skills li { font-size: 13px; color: var(--text); padding-left: 18px; position: relative; line-height: 1.4; }
+.ladder-skills li::before { content: '✓'; position: absolute; left: 0; color: var(--verm); font-weight: 700; font-size: 12px; }
+.ladder-lock { border-top: 1px solid var(--border); padding-top: 16px; }
+.ladder-lock span { display: block; font-size: 12px; color: var(--muted); margin-bottom: 10px; }
+.ladder-lock button { width: 100%; padding: 9px; background: var(--navy); color: white; border: none; border-radius: 30px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; transition: background 0.2s; }
+.ladder-lock button:hover { background: #152249; }
+.ladder-arrow { font-size: 28px; color: var(--border); align-self: center; padding: 0 8px; flex-shrink: 0; }
+
+@media (max-width: 900px) { .ladder-grid { gap: 16px; } .ladder-step { width: 180px; } }
+@media (max-width: 600px) { .yetkinlik-section { padding: 40px 20px; } .ladder-grid { flex-direction: column; align-items: stretch; } .ladder-step { width: 100%; } .ladder-arrow { transform: rotate(90deg); text-align: center; } }
+
   </style>
   <meta name="robots" content="index, follow">
   <meta name="author" content="hellotalent.ai">

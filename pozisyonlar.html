@@ -499,6 +499,45 @@
       text-decoration: none;
     }
     .auth-success-btn:hover { background: #a83d1e; }
+  
+/* ══ POZİSYONLAR SAYFASI ══ */
+.poz-section { padding: 60px 48px; background: var(--gray); }
+.poz-inner { max-width: 1160px; margin: 0 auto; }
+.poz-header { text-align: center; margin-bottom: 40px; }
+.poz-tag { display: inline-block; font-size: 11px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: var(--verm); background: var(--verm-light); padding: 5px 14px; border-radius: 20px; margin-bottom: 14px; }
+.poz-title { font-family: 'Bricolage Grotesque', sans-serif; font-size: clamp(26px, 3vw, 38px); font-weight: 800; color: var(--navy); margin-bottom: 12px; }
+.poz-sub { font-size: 15px; color: var(--muted); max-width: 560px; margin: 0 auto; line-height: 1.6; }
+
+.poz-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 32px; justify-content: center; }
+.poz-tab { padding: 10px 20px; border-radius: 30px; border: 1.5px solid var(--border); background: white; font-size: 13px; font-weight: 600; color: var(--muted); cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.2s; }
+.poz-tab:hover { border-color: var(--navy); color: var(--navy); }
+.poz-tab.active { background: var(--navy); color: white; border-color: var(--navy); }
+
+.poz-panel { display: none; }
+.poz-panel.active { display: block; }
+
+.poz-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+@media (max-width: 900px) { .poz-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 600px) { .poz-section { padding: 40px 20px; } .poz-grid { grid-template-columns: 1fr; } .poz-tabs { gap: 6px; } }
+
+.poz-card { background: white; border: 1.5px solid var(--border); border-radius: 18px; padding: 24px; display: flex; flex-direction: column; gap: 10px; transition: all 0.22s; }
+.poz-card:hover { transform: translateY(-3px); box-shadow: 0 10px 32px rgba(0,0,0,0.09); border-color: var(--navy); }
+.poz-card-level { display: inline-block; font-size: 10px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; padding: 4px 10px; border-radius: 20px; width: fit-content; }
+.poz-card-level.entry { background: #EEF0F7; color: var(--navy); }
+.poz-card-level.mid { background: #FEF3F0; color: var(--verm); }
+.poz-card-level.senior { background: #F3F0FF; color: #7C3AED; }
+.poz-card-level.leader { background: #FFFBEB; color: #92400E; }
+.poz-card-title { font-family: 'Bricolage Grotesque', sans-serif; font-size: 17px; font-weight: 700; color: var(--navy); }
+.poz-card-desc { font-size: 13px; color: var(--muted); line-height: 1.55; flex: 1; }
+.poz-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
+.poz-tags span { font-size: 11px; font-weight: 600; background: var(--gray); color: var(--muted); padding: 3px 10px; border-radius: 20px; }
+.premium-locked { position: relative; }
+.poz-lock-overlay { position: absolute; inset: 0; background: rgba(255,255,255,0.85); backdrop-filter: blur(4px); border-radius: 18px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; padding: 20px; text-align: center; }
+.poz-lock-icon { font-size: 24px; }
+.poz-lock-text { font-size: 13px; color: var(--muted); font-weight: 600; }
+.poz-lock-btn { padding: 10px 22px; background: var(--navy); color: white; border: none; border-radius: 30px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; transition: background 0.2s; }
+.poz-lock-btn:hover { background: #152249; }
+
   </style>
   <meta name="robots" content="index, follow">
   <meta name="author" content="hellotalent.ai">
