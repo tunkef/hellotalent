@@ -543,6 +543,94 @@
       .hero-title-k { font-size: 32px; letter-spacing: -1.5px; }
       .kariyer-tab { font-size: 12px; padding: 7px 14px; }
     }
+    /* ══ POZİSYONLAR ══ */
+    .poz-section { padding: 88px 48px; background: #F8F9FC; }
+    .poz-inner { max-width: 1160px; margin: 0 auto; }
+    .poz-header { text-align: center; margin-bottom: 48px; }
+    .poz-tag { font-size: 11px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: var(--verm); background: rgba(201,78,40,0.08); padding: 6px 14px; border-radius: 20px; }
+    .poz-title { font-family: 'Bricolage Grotesque', sans-serif; font-size: clamp(28px,4vw,40px); font-weight: 800; color: var(--navy); margin: 16px 0 12px; }
+    .poz-sub { font-size: 16px; color: var(--muted); max-width: 560px; margin: 0 auto; }
+    .poz-tabs { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-bottom: 40px; }
+    .poz-tab { font-size: 13px; font-weight: 700; padding: 10px 20px; border-radius: 24px; border: 1.5px solid var(--border); background: white; color: var(--muted); cursor: pointer; transition: all 0.2s; font-family: 'Plus Jakarta Sans', sans-serif; }
+    .poz-tab:hover { border-color: var(--navy); color: var(--navy); }
+    .poz-tab.active { background: var(--navy); color: white; border-color: var(--navy); }
+    .poz-panel { display: none; }
+    .poz-panel.active { display: block; }
+    .poz-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
+    .poz-card { background: white; border-radius: 16px; padding: 24px; border: 1.5px solid var(--border); position: relative; transition: box-shadow 0.2s; }
+    .poz-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+    .poz-card-level { font-size: 10px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; padding: 4px 10px; border-radius: 10px; width: fit-content; margin-bottom: 12px; }
+    .entry { background: #DCFCE7; color: #15803D; }
+    .mid { background: #FEF9C3; color: #854D0E; }
+    .senior { background: #DBEAFE; color: #1D4ED8; }
+    .leader { background: #F3E8FF; color: #7E22CE; }
+    .poz-card-title { font-family: 'Bricolage Grotesque', sans-serif; font-size: 18px; font-weight: 800; color: var(--navy); margin-bottom: 10px; }
+    .poz-card-desc { font-size: 13px; color: var(--muted); line-height: 1.6; margin-bottom: 14px; }
+    .poz-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+    .poz-tags span { font-size: 11px; font-weight: 600; padding: 3px 10px; background: var(--gray); border-radius: 8px; color: var(--muted); }
+    .poz-card.premium-locked { overflow: hidden; }
+    .poz-lock-overlay { position: absolute; inset: 0; background: rgba(255,255,255,0.92); backdrop-filter: blur(3px); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; border-radius: 14px; padding: 20px; text-align: center; z-index: 2; }
+    .poz-lock-icon { font-size: 28px; }
+    .poz-lock-text { font-size: 13px; color: var(--muted); font-weight: 600; }
+    .poz-lock-btn { background: var(--verm); color: white; border: none; padding: 10px 20px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; transition: background 0.2s; }
+    .poz-lock-btn:hover { background: #a83d1e; }
+
+    /* ══ YETKİNLİK LADDER ══ */
+    .yetkinlik-section { padding: 88px 48px; background: white; }
+    .yetkinlik-inner { max-width: 1160px; margin: 0 auto; }
+    .ladder-grid { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr auto 1fr; gap: 0; align-items: start; margin-top: 8px; }
+    .ladder-step { background: var(--gray); border-radius: 16px; padding: 28px 24px; border: 1.5px solid var(--border); }
+    .ladder-arrow { display: flex; align-items: center; justify-content: center; font-size: 24px; color: var(--muted); padding: 0 12px; margin-top: 60px; }
+    .ladder-num { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--muted); margin-bottom: 8px; }
+    .ladder-badge { font-size: 11px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; padding: 5px 12px; border-radius: 12px; width: fit-content; margin-bottom: 14px; }
+    .entry-badge { background: #DCFCE7; color: #15803D; }
+    .mid-badge { background: #FEF9C3; color: #854D0E; }
+    .senior-badge { background: #DBEAFE; color: #1D4ED8; }
+    .leader-badge { background: #F3E8FF; color: #7E22CE; }
+    .ladder-roles { font-size: 12px; font-weight: 700; color: var(--navy); margin-bottom: 16px; line-height: 1.5; }
+    .ladder-skills { list-style: none; padding: 0; margin: 0 0 16px 0; display: flex; flex-direction: column; gap: 6px; }
+    .ladder-skills li { font-size: 12px; color: var(--muted); padding-left: 14px; position: relative; }
+    .ladder-skills li::before { content: '·'; position: absolute; left: 0; color: var(--verm); font-weight: 900; }
+    .ladder-lock { background: white; border-radius: 10px; padding: 12px; text-align: center; border: 1.5px dashed var(--border); }
+    .ladder-lock span { font-size: 11px; color: var(--muted); display: block; margin-bottom: 8px; }
+    .ladder-lock button { font-size: 11px; font-weight: 700; background: var(--navy); color: white; border: none; padding: 7px 14px; border-radius: 8px; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; transition: background 0.2s; }
+    .ladder-lock button:hover { background: #141e42; }
+
+    /* ══ BLOG ══ */
+    .blog-section { padding: 88px 48px; background: #F8F9FC; }
+    .blog-inner { max-width: 1160px; margin: 0 auto; }
+    .blog-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 24px; margin-bottom: 56px; }
+    .blog-card { background: white; border-radius: 16px; padding: 28px; border: 1.5px solid var(--border); position: relative; transition: box-shadow 0.2s; }
+    .blog-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.07); }
+    .blog-card.coming { opacity: 0.75; }
+    .blog-soon-badge { position: absolute; top: 20px; right: 20px; font-size: 10px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; background: var(--navy); color: white; padding: 4px 10px; border-radius: 8px; }
+    .blog-cat { font-size: 11px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; color: var(--verm); margin-bottom: 12px; }
+    .blog-title { font-family: 'Bricolage Grotesque', sans-serif; font-size: 17px; font-weight: 800; color: var(--navy); margin-bottom: 10px; line-height: 1.4; }
+    .blog-desc { font-size: 13px; color: var(--muted); line-height: 1.6; margin-bottom: 16px; }
+    .blog-meta { font-size: 12px; color: #9CA3AF; }
+    .blog-subscribe { text-align: center; background: white; border-radius: 20px; padding: 40px; border: 1.5px solid var(--border); }
+    .blog-sub-text { font-size: 15px; font-weight: 600; color: var(--navy); margin-bottom: 16px; }
+    .blog-sub-form { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+    .blog-sub-input { padding: 12px 18px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 14px; font-family: 'Plus Jakarta Sans', sans-serif; width: 280px; outline: none; transition: border-color 0.2s; }
+    .blog-sub-input:focus { border-color: var(--navy); }
+    .blog-sub-btn { background: var(--verm); color: white; border: none; padding: 12px 24px; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; transition: background 0.2s; }
+    .blog-sub-btn:hover { background: #a83d1e; }
+    .blog-sub-note { font-size: 13px; color: #16A34A; margin-top: 10px; min-height: 20px; }
+
+    /* ══ HERO SCROLL BUTTON ══ */
+    .hero-scroll-btn { display: flex; align-items: center; gap: 8px; margin: 24px auto 0; padding: 10px 22px; background: rgba(255,255,255,0.1); border: 1.5px solid rgba(255,255,255,0.2); border-radius: 24px; color: rgba(255,255,255,0.8); font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.2s; width: fit-content; }
+    .hero-scroll-btn:hover { background: rgba(255,255,255,0.2); color: white; }
+    .hero-scroll-btn svg { animation: bounce 1.5s infinite; }
+    @keyframes bounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(4px); } }
+
+    /* ══ RESPONSIVE ══ */
+    @media (max-width: 900px) {
+      .ladder-grid { grid-template-columns: 1fr; gap: 12px; }
+      .ladder-arrow { transform: rotate(90deg); margin: 0 auto; padding: 8px 0; }
+      .poz-section, .yetkinlik-section, .blog-section { padding: 56px 20px; }
+      .blog-grid { grid-template-columns: 1fr; }
+    }
+
   </style>
   <meta name="robots" content="index, follow">
   <meta name="author" content="hellotalent.ai">
@@ -644,6 +732,12 @@
             <button class="fck-btn-secondary" style="font-size:15px;padding:12px 24px;background:transparent;color:rgba(255,255,255,0.7);border-color:rgba(255,255,255,0.2);" onclick="document.getElementById('kariyer-kartlari').scrollIntoView({behavior:'smooth'})">
               Kariyer Rotalarını İncele
             </button>
+            <div style="text-align:center;">
+              <button class="hero-scroll-btn" onclick="document.getElementById('pozisyonlar').scrollIntoView({behavior:'smooth'})">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                Tüm Pozisyonları & Kariyer Rehberini Keşfet
+              </button>
+            </div>
           </div>
           <div style="display:flex;gap:16px;margin-top:24px;flex-wrap:wrap;">
             <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:rgba(255,255,255,0.45);font-weight:600;">
@@ -1112,6 +1206,306 @@
   </section>
 
   <!-- ══════════ FINAL CTA ══════════ -->
+
+<!-- ══════════ POZISYONLAR ══════════ -->
+<section class="poz-section" id="pozisyonlar">
+  <div class="poz-inner">
+    <div class="poz-header">
+      <span class="poz-tag">✦ Sektör Rehberi</span>
+      <h2 class="poz-title">Retail'deki Tüm Pozisyonlar</h2>
+      <p class="poz-sub">Türkiye'nin önde gelen retail markalarında hangi pozisyonlar var, hangi yetkinlikler bekleniyor?</p>
+    </div>
+
+    <!-- Segment Tabs -->
+    <div class="poz-tabs" id="poz-tabs">
+      <button class="poz-tab active" onclick="switchPozTab(this,'magaza')">🏪 Mağaza Operasyonu</button>
+      <button class="poz-tab" onclick="switchPozTab(this,'vm')">🎨 Visual Merchandising</button>
+      <button class="poz-tab" onclick="switchPozTab(this,'alan')">📍 Alan & Bölge</button>
+      <button class="poz-tab" onclick="switchPozTab(this,'merkez')">🏢 Merkez & Destek</button>
+    </div>
+
+    <!-- MAĞAZA OPERASYONu -->
+    <div class="poz-panel active" id="poz-magaza">
+      <div class="poz-grid">
+        <div class="poz-card">
+          <div class="poz-card-level entry">Giriş Seviyesi</div>
+          <h3 class="poz-card-title">Satış Danışmanı</h3>
+          <p class="poz-card-desc">Müşteri karşılama, ürün tanıtımı ve satış süreçlerini yönetir. Retail kariyerinin başlangıç noktası.</p>
+          <div class="poz-tags"><span>Fast Fashion</span><span>Premium</span><span>Lüks</span></div>
+        </div>
+        <div class="poz-card">
+          <div class="poz-card-level mid">Orta Seviye</div>
+          <h3 class="poz-card-title">Departman Sorumlusu</h3>
+          <p class="poz-card-desc">Belirli bir ürün kategorisini veya mağaza bölümünü yönetir. Küçük bir ekibin koordinasyonunu üstlenir.</p>
+          <div class="poz-tags"><span>Tüm Segmentler</span></div>
+        </div>
+        <div class="poz-card">
+          <div class="poz-card-level senior">Kıdemli</div>
+          <h3 class="poz-card-title">Assistant Store Manager</h3>
+          <p class="poz-card-desc">Mağaza müdürünün yokluğunda operasyonu üstlenir. Ekip yönetimi ve KPI takibinde aktif rol alır.</p>
+          <div class="poz-tags"><span>Premium</span><span>Lüks</span></div>
+        </div>
+        <!-- Premium locked cards -->
+        <div class="poz-card premium-locked">
+          <div class="poz-lock-overlay">
+            <div class="poz-lock-icon">🔒</div>
+            <p class="poz-lock-text">Store Manager, Mağaza Direktörü ve daha fazlası</p>
+            <button class="poz-lock-btn" onclick="openAuthPopup('Pozisyon Rehberi')">Tümünü Gör →</button>
+          </div>
+          <div class="poz-card-level leader" style="filter:blur(4px)">Liderlik</div>
+          <h3 class="poz-card-title" style="filter:blur(6px)">Store Manager</h3>
+          <p class="poz-card-desc" style="filter:blur(4px)">Mağazanın tüm operasyonundan sorumludur. Satış hedefleri, ekip yönetimi ve marka standardlarını denetler.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- VISUAL MERCHANDISING -->
+    <div class="poz-panel" id="poz-vm">
+      <div class="poz-grid">
+        <div class="poz-card">
+          <div class="poz-card-level entry">Giriş Seviyesi</div>
+          <h3 class="poz-card-title">VM Koordinatör</h3>
+          <p class="poz-card-desc">Vitrin ve raf düzenlemelerini uygular. Marka görsel standardlarını takip eder ve raporlar.</p>
+          <div class="poz-tags"><span>Fast Fashion</span><span>Ev & Yaşam</span></div>
+        </div>
+        <div class="poz-card">
+          <div class="poz-card-level mid">Orta Seviye</div>
+          <h3 class="poz-card-title">VM Uzmanı</h3>
+          <p class="poz-card-desc">Sezonluk konseptleri sahneler, ürün yerleşimlerini optimize eder. Kreatif yönlendirme ve uygulama bir arada.</p>
+          <div class="poz-tags"><span>Premium</span><span>Lüks</span></div>
+        </div>
+        <div class="poz-card">
+          <div class="poz-card-level senior">Kıdemli</div>
+          <h3 class="poz-card-title">VM Lead</h3>
+          <p class="poz-card-desc">Birden fazla mağazanın görsel standardını yönetir. Bölgesel VM ekibine mentorluk yapar.</p>
+          <div class="poz-tags"><span>Zincir Markalar</span></div>
+        </div>
+        <div class="poz-card premium-locked">
+          <div class="poz-lock-overlay">
+            <div class="poz-lock-icon">🔒</div>
+            <p class="poz-lock-text">VM Manager, VM Direktörü ve detaylı yetkinlik haritası</p>
+            <button class="poz-lock-btn" onclick="openAuthPopup('VM Kariyer Rehberi')">Tümünü Gör →</button>
+          </div>
+          <div class="poz-card-level leader" style="filter:blur(4px)">Liderlik</div>
+          <h3 class="poz-card-title" style="filter:blur(6px)">VM Manager</h3>
+          <p class="poz-card-desc" style="filter:blur(4px)">Ülke genelinde görsel kimliği yönetir. Global merkez ile koordineli çalışır.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ALAN & BÖLGE -->
+    <div class="poz-panel" id="poz-alan">
+      <div class="poz-grid">
+        <div class="poz-card">
+          <div class="poz-card-level mid">Orta Seviye</div>
+          <h3 class="poz-card-title">Area Manager</h3>
+          <p class="poz-card-desc">5-15 arası mağazanın operasyonunu ve Store Manager ekibini yönetir. Bölgesel satış hedeflerinden sorumludur.</p>
+          <div class="poz-tags"><span>Zincir Markalar</span><span>Fast Fashion</span></div>
+        </div>
+        <div class="poz-card">
+          <div class="poz-card-level senior">Kıdemli</div>
+          <h3 class="poz-card-title">Regional Manager</h3>
+          <p class="poz-card-desc">Birden fazla bölgeyi yönetir. Ülke genelinde satış stratejisi, ekip gelişimi ve P&L sorumluluğu taşır.</p>
+          <div class="poz-tags"><span>Premium</span><span>Lüks</span></div>
+        </div>
+        <div class="poz-card premium-locked">
+          <div class="poz-lock-overlay">
+            <div class="poz-lock-icon">🔒</div>
+            <p class="poz-lock-text">Country Manager, Retail Director ve detaylı gelişim yolu</p>
+            <button class="poz-lock-btn" onclick="openAuthPopup('Alan Yönetimi Rehberi')">Tümünü Gör →</button>
+          </div>
+          <div class="poz-card-level leader" style="filter:blur(4px)">Liderlik</div>
+          <h3 class="poz-card-title" style="filter:blur(6px)">Country Manager</h3>
+          <p class="poz-card-desc" style="filter:blur(4px)">Ülkenin tüm retail operasyonundan sorumludur.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- MERKEZ & DESTEK -->
+    <div class="poz-panel" id="poz-merkez">
+      <div class="poz-grid">
+        <div class="poz-card">
+          <div class="poz-card-level entry">Giriş Seviyesi</div>
+          <h3 class="poz-card-title">Buying Assistant</h3>
+          <p class="poz-card-desc">Satın alma süreçlerini destekler. Tedarikçi takibi, sipariş yönetimi ve ürün analizi yapar.</p>
+          <div class="poz-tags"><span>Merkez Ofis</span></div>
+        </div>
+        <div class="poz-card">
+          <div class="poz-card-level mid">Orta Seviye</div>
+          <h3 class="poz-card-title">Merchandising Planner</h3>
+          <p class="poz-card-desc">Ürün dağılımını ve stok planlamasını yönetir. Satış verilerini analiz ederek gelecek sezon stratejisine katkı sağlar.</p>
+          <div class="poz-tags"><span>Zincir Markalar</span></div>
+        </div>
+        <div class="poz-card">
+          <div class="poz-card-level mid">Orta Seviye</div>
+          <h3 class="poz-card-title">Retail Trainer</h3>
+          <p class="poz-card-desc">Satış ekiplerinin onboarding ve gelişim programlarını tasarlar, uygular. Ürün ve satış teknikleri eğitimleri verir.</p>
+          <div class="poz-tags"><span>Tüm Segmentler</span></div>
+        </div>
+        <div class="poz-card premium-locked">
+          <div class="poz-lock-overlay">
+            <div class="poz-lock-icon">🔒</div>
+            <p class="poz-lock-text">Buyer, HR BP, Retail Analyst ve tüm merkez pozisyonları</p>
+            <button class="poz-lock-btn" onclick="openAuthPopup('Merkez Pozisyonları')">Tümünü Gör →</button>
+          </div>
+          <div class="poz-card-level senior" style="filter:blur(4px)">Kıdemli</div>
+          <h3 class="poz-card-title" style="filter:blur(6px)">Senior Buyer</h3>
+          <p class="poz-card-desc" style="filter:blur(4px)">Kategori bazlı alım stratejisini yönetir.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ YETKİNLİK & KARİYER LADDER ══════════ -->
+<section class="yetkinlik-section" id="yetkinlik">
+  <div class="yetkinlik-inner">
+    <div class="poz-header">
+      <span class="poz-tag">✦ Kariyer Yolu</span>
+      <h2 class="poz-title">Yetkinlik Bazlı Gelişim</h2>
+      <p class="poz-sub">Retail'de nerede durduğunu anla, bir sonraki adım için ne gerektiğini gör.</p>
+    </div>
+
+    <div class="ladder-grid">
+      <div class="ladder-step">
+        <div class="ladder-num">01</div>
+        <div class="ladder-badge entry-badge">Başlangıç</div>
+        <div class="ladder-roles">Satış Danışmanı · VM Koordinatör · Buying Assistant</div>
+        <ul class="ladder-skills">
+          <li>Müşteri odaklı iletişim</li>
+          <li>Ürün bilgisi & kategori anlayışı</li>
+          <li>Temel KPI takibi</li>
+          <li>Ekip uyumu & marka kültürü</li>
+        </ul>
+        <div class="ladder-lock">
+          <span>Detaylı yetkinlik matrisi</span>
+          <button onclick="openAuthPopup('Yetkinlik Matrisi')">Üye Ol → Gör</button>
+        </div>
+      </div>
+
+      <div class="ladder-arrow">→</div>
+
+      <div class="ladder-step">
+        <div class="ladder-num">02</div>
+        <div class="ladder-badge mid-badge">Gelişim</div>
+        <div class="ladder-roles">Departman Sorumlusu · VM Uzmanı · Merchandising Planner</div>
+        <ul class="ladder-skills">
+          <li>Küçük ekip yönetimi</li>
+          <li>Satış analizi & raporlama</li>
+          <li>Stok & ürün yönetimi</li>
+          <li>Sezonluk planlama</li>
+        </ul>
+        <div class="ladder-lock">
+          <span>Detaylı yetkinlik matrisi</span>
+          <button onclick="openAuthPopup('Yetkinlik Matrisi')">Üye Ol → Gör</button>
+        </div>
+      </div>
+
+      <div class="ladder-arrow">→</div>
+
+      <div class="ladder-step">
+        <div class="ladder-num">03</div>
+        <div class="ladder-badge senior-badge">Uzman</div>
+        <div class="ladder-roles">Store Manager · VM Lead · Area Manager</div>
+        <ul class="ladder-skills">
+          <li>P&L yönetimi</li>
+          <li>Çoklu ekip koordinasyonu</li>
+          <li>İşe alım & gelişim</li>
+          <li>Marka standardları</li>
+        </ul>
+        <div class="ladder-lock">
+          <span>Detaylı yetkinlik matrisi</span>
+          <button onclick="openAuthPopup('Yetkinlik Matrisi')">Üye Ol → Gör</button>
+        </div>
+      </div>
+
+      <div class="ladder-arrow">→</div>
+
+      <div class="ladder-step">
+        <div class="ladder-num">04</div>
+        <div class="ladder-badge leader-badge">Liderlik</div>
+        <div class="ladder-roles">Regional Manager · Country Manager · Retail Director</div>
+        <ul class="ladder-skills">
+          <li>Ülke/bölge stratejisi</li>
+          <li>C-level raporlama</li>
+          <li>Organizasyonel gelişim</li>
+          <li>Büyüme & expansion</li>
+        </ul>
+        <div class="ladder-lock">
+          <span>Detaylı yetkinlik matrisi</span>
+          <button onclick="openAuthPopup('Yetkinlik Matrisi')">Üye Ol → Gör</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ BLOG ══════════ -->
+<section class="blog-section" id="blog">
+  <div class="blog-inner">
+    <div class="poz-header">
+      <span class="poz-tag">✦ Retail Insights</span>
+      <h2 class="poz-title">Retail Blog</h2>
+      <p class="poz-sub">Sektör rehberleri, kariyer tavsiyeleri ve Türkiye retail dünyasından içerikler.</p>
+    </div>
+
+    <div class="blog-grid">
+      <div class="blog-card coming">
+        <div class="blog-soon-badge">Yakında</div>
+        <div class="blog-cat">Kariyer Rehberi</div>
+        <h3 class="blog-title">Store Manager Nasıl Olunur? Adım Adım Yol Haritası</h3>
+        <p class="blog-desc">Satış danışmanlığından mağaza yönetimine giden yolda hangi yetkinlikler kritik?</p>
+        <div class="blog-meta"><span>8 dk okuma</span></div>
+      </div>
+      <div class="blog-card coming">
+        <div class="blog-soon-badge">Yakında</div>
+        <div class="blog-cat">Sektör Analizi</div>
+        <h3 class="blog-title">Türkiye'de Lüks Retail: Hangi Markalar Büyüyor?</h3>
+        <p class="blog-desc">2024-2025 verilerine göre lüks segment büyüme trendleri ve fırsatlar.</p>
+        <div class="blog-meta"><span>6 dk okuma</span></div>
+      </div>
+      <div class="blog-card coming">
+        <div class="blog-soon-badge">Yakında</div>
+        <div class="blog-cat">İşe Alım</div>
+        <h3 class="blog-title">Retail Mülakatında Sorular ve Örnek Yanıtlar</h3>
+        <p class="blog-desc">Area Manager pozisyonuna başvuranların en çok karşılaştığı mülakat soruları.</p>
+        <div class="blog-meta"><span>10 dk okuma</span></div>
+      </div>
+      <div class="blog-card coming">
+        <div class="blog-soon-badge">Yakında</div>
+        <div class="blog-cat">Yetkinlik</div>
+        <h3 class="blog-title">Visual Merchandiser'dan VM Manager'a: Geçiş Hikâyeleri</h3>
+        <p class="blog-desc">Gerçek kariyer geçişleri, zorluklar ve ipuçları.</p>
+        <div class="blog-meta"><span>7 dk okuma</span></div>
+      </div>
+      <div class="blog-card coming">
+        <div class="blog-soon-badge">Yakında</div>
+        <div class="blog-cat">Trendler</div>
+        <h3 class="blog-title">Retail'de Yapay Zeka: Mağaza Ekiplerini Nasıl Etkiliyor?</h3>
+        <p class="blog-desc">AI araçları retail operasyonuna girdi — hangi roller değişiyor, hangisi büyüyor?</p>
+        <div class="blog-meta"><span>9 dk okuma</span></div>
+      </div>
+      <div class="blog-card coming">
+        <div class="blog-soon-badge">Yakında</div>
+        <div class="blog-cat">Kariyer</div>
+        <h3 class="blog-title">Fast Fashion'dan Lüks Markaya Geçiş Mümkün mü?</h3>
+        <p class="blog-desc">Segment değişikliği yaşayan profesyonellerin deneyimleri ve dikkat edilmesi gerekenler.</p>
+        <div class="blog-meta"><span>8 dk okuma</span></div>
+      </div>
+    </div>
+
+    <div class="blog-subscribe">
+      <p class="blog-sub-text">İçerikler yayınlandığında haberdar ol.</p>
+      <div class="blog-sub-form">
+        <input type="email" class="blog-sub-input" placeholder="E-posta adresin">
+        <button class="blog-sub-btn" onclick="handleBlogSubscribe()">Beni Haberdar Et</button>
+      </div>
+      <p class="blog-sub-note" id="blog-sub-msg"></p>
+    </div>
+  </div>
+</section>
+
+
   <section class="final-cta-k">
     <div class="fck-inner">
       <p class="fck-tag">Harekete Geç</p>
@@ -1352,6 +1746,28 @@ async function handleLogin() {
   } catch(e) {
     errEl.textContent = 'Bir hata oluştu.'; errEl.style.display = 'block';
   }
+}
+
+
+// ── POZİSYON TABS ──
+function switchPozTab(el, panel) {
+  document.querySelectorAll('.poz-tab').forEach(function(t) { t.classList.remove('active'); });
+  document.querySelectorAll('.poz-panel').forEach(function(p) { p.classList.remove('active'); });
+  el.classList.add('active');
+  var target = document.getElementById('poz-' + panel);
+  if (target) target.classList.add('active');
+}
+
+// ── BLOG SUBSCRIBE ──
+function handleBlogSubscribe() {
+  var input = document.querySelector('.blog-sub-input');
+  var msg = document.getElementById('blog-sub-msg');
+  if (!input || !input.value.includes('@')) {
+    if (msg) { msg.style.color = '#EF4444'; msg.textContent = 'Geçerli bir e-posta adresi girin.'; }
+    return;
+  }
+  if (msg) { msg.style.color = '#16A34A'; msg.textContent = '✓ Haberdar edileceksiniz!'; }
+  input.value = '';
 }
 
 // ESC ile kapat
