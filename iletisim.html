@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>İletişim — hellotalent.ai</title>
+<meta name="description" content="hellotalent.ai ile iletişime geçin. Adres, e-posta ve sosyal medya kanallarımız.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/shared.css">
+<style>
+:root {
+  --verm: #C94E28;
+  --navy: #1E2D5E;
+  --navy-light: rgba(30,45,94,0.06);
+  --navy-mid: rgba(30,45,94,0.12);
+  --border: rgba(30,45,94,0.10);
+}
+
+.contact-hero {
+  background: var(--navy);
+  padding: 100px 48px 80px;
+  text-align: center;
+}
+.contact-hero-tag {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 2.5px;
+  color: rgba(255,255,255,0.45);
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+.contact-hero h1 {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-weight: 800;
+  font-size: clamp(32px, 5vw, 56px);
+  letter-spacing: -2px;
+  color: white;
+  margin-bottom: 16px;
+  line-height: 1.05;
+}
+.contact-hero h1 span { color: var(--verm); }
+.contact-hero p {
+  font-size: 17px;
+  color: rgba(255,255,255,0.55);
+  max-width: 480px;
+  margin: 0 auto;
+  line-height: 1.65;
+}
+
+/* --- CARDS --- */
+.contact-body {
+  background: #F7F6F3;
+  padding: 72px 48px;
+}
+.contact-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+  align-items: start;
+}
+
+.contact-card {
+  background: white;
+  border-radius: 20px;
+  padding: 40px;
+  border: 1px solid var(--border);
+}
+.contact-card-title {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: #999;
+  text-transform: uppercase;
+  margin-bottom: 28px;
+}
+
+/* Info items */
+.info-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+.info-item:last-child { margin-bottom: 0; }
+.info-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--navy-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.info-icon svg { width: 20px; height: 20px; }
+.info-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #aaa;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+}
+.info-value {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--navy);
+  line-height: 1.45;
+}
+.info-value a {
+  color: var(--navy);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.info-value a:hover { color: var(--verm); }
+
+/* Social */
+.social-row {
+  display: flex;
+  gap: 12px;
+  margin-top: 32px;
+  padding-top: 28px;
+  border-top: 1px solid var(--border);
+}
+.social-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: 30px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.2s;
+  border: 1.5px solid var(--border);
+  color: var(--navy);
+  background: white;
+}
+.social-btn:hover {
+  background: var(--navy);
+  color: white;
+  border-color: var(--navy);
+}
+.social-btn svg { width: 16px; height: 16px; }
+
+/* Map card */
+.map-card {
+  background: white;
+  border-radius: 20px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  grid-column: 1 / -1;
+}
+.map-card iframe {
+  width: 100%;
+  height: 380px;
+  border: none;
+  display: block;
+}
+.map-label {
+  padding: 20px 28px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-top: 1px solid var(--border);
+}
+.map-label-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--verm);
+}
+.map-label span {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--navy);
+}
+.map-label small {
+  font-size: 12px;
+  color: #aaa;
+  margin-left: 4px;
+}
+
+/* Navy CTA strip */
+.contact-cta {
+  background: var(--navy);
+  padding: 56px 48px;
+  text-align: center;
+}
+.contact-cta p {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-weight: 700;
+  font-size: 22px;
+  color: white;
+  margin-bottom: 20px;
+  letter-spacing: -0.5px;
+}
+.contact-cta a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--verm);
+  color: white;
+  text-decoration: none;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  padding: 13px 28px;
+  border-radius: 30px;
+  transition: opacity 0.2s;
+}
+.contact-cta a:hover { opacity: 0.88; }
+
+@media (max-width: 768px) {
+  .contact-hero { padding: 80px 24px 60px; }
+  .contact-body { padding: 48px 20px; }
+  .contact-inner { grid-template-columns: 1fr; }
+  .map-card { grid-column: 1; }
+  .map-card iframe { height: 280px; }
+}
+</style>
+</head>
+<body>
+<div id="ht-header"></div>
+
+<!-- HERO -->
+<section class="contact-hero">
+  <p class="contact-hero-tag">Bize Ulaşın</p>
+  <h1>Merhaba, <span>konuşalım.</span></h1>
+  <p>Sorularınız, iş birlikleri veya kariyer fırsatları için buradayız.</p>
+</section>
+
+<!-- BODY -->
+<section class="contact-body">
+  <div class="contact-inner">
+
+    <!-- İletişim Bilgileri -->
+    <div class="contact-card">
+      <p class="contact-card-title">İletişim Bilgileri</p>
+
+      <div class="info-item">
+        <div class="info-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#1E2D5E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>
+          </svg>
+        </div>
+        <div>
+          <p class="info-label">E-posta</p>
+          <p class="info-value"><a href="mailto:info@hellotalent.ai">info@hellotalent.ai</a></p>
+        </div>
+      </div>
+
+      <div class="info-item">
+        <div class="info-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#1E2D5E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+          </svg>
+        </div>
+        <div>
+          <p class="info-label">Adres</p>
+          <p class="info-value">Fahrettin Kerim Gökay Caddesi No:40<br>Zühtüpaşa Mahallesi, Kadıköy<br>İstanbul 34724</p>
+        </div>
+      </div>
+
+      <div class="info-item">
+        <div class="info-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#1E2D5E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+          </svg>
+        </div>
+        <div>
+          <p class="info-label">Yanıt Süresi</p>
+          <p class="info-value">Genellikle 1 iş günü içinde</p>
+        </div>
+      </div>
+
+      <!-- Social -->
+      <div class="social-row">
+        <a class="social-btn" href="https://www.instagram.com/hellotalent.ai?igsh=MTIwMXNnY3B4YnVncg%3D%3D&utm_source=qr" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/></svg>
+          Instagram
+        </a>
+        <a class="social-btn" href="https://www.linkedin.com/company/hello-talentai/" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+          LinkedIn
+        </a>
+      </div>
+    </div>
+
+    <!-- Mesaj formu benzeri card (statik, Formspree) -->
+    <div class="contact-card">
+      <p class="contact-card-title">Bize Yazın</p>
+      <form action="https://formspree.io/f/xkgjbeld" method="POST" style="display:flex;flex-direction:column;gap:16px;">
+        <div>
+          <label style="font-size:12px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:6px;">Adınız</label>
+          <input type="text" name="name" required placeholder="Adınız Soyadınız"
+            style="width:100%;padding:12px 16px;border:1.5px solid var(--border);border-radius:10px;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;color:var(--navy);outline:none;box-sizing:border-box;transition:border-color 0.2s;"
+            onfocus="this.style.borderColor='#1E2D5E'" onblur="this.style.borderColor='rgba(30,45,94,0.10)'">
+        </div>
+        <div>
+          <label style="font-size:12px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:6px;">E-posta</label>
+          <input type="email" name="email" required placeholder="ornek@email.com"
+            style="width:100%;padding:12px 16px;border:1.5px solid var(--border);border-radius:10px;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;color:var(--navy);outline:none;box-sizing:border-box;transition:border-color 0.2s;"
+            onfocus="this.style.borderColor='#1E2D5E'" onblur="this.style.borderColor='rgba(30,45,94,0.10)'">
+        </div>
+        <div>
+          <label style="font-size:12px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:6px;">Konu</label>
+          <select name="subject"
+            style="width:100%;padding:12px 16px;border:1.5px solid var(--border);border-radius:10px;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;color:var(--navy);outline:none;box-sizing:border-box;background:white;appearance:none;cursor:pointer;">
+            <option value="">Seçiniz…</option>
+            <option value="isbirligi">İş Birliği</option>
+            <option value="kariyer">Kariyer</option>
+            <option value="teknik">Teknik Destek</option>
+            <option value="diger">Diğer</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size:12px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:6px;">Mesajınız</label>
+          <textarea name="message" required rows="4" placeholder="Merhaba, …"
+            style="width:100%;padding:12px 16px;border:1.5px solid var(--border);border-radius:10px;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;color:var(--navy);outline:none;box-sizing:border-box;resize:vertical;transition:border-color 0.2s;"
+            onfocus="this.style.borderColor='#1E2D5E'" onblur="this.style.borderColor='rgba(30,45,94,0.10)'"></textarea>
+        </div>
+        <button type="submit"
+          style="display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--navy);color:white;border:none;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:700;padding:14px 28px;border-radius:30px;cursor:pointer;transition:opacity 0.2s;"
+          onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">
+          Gönder →
+        </button>
+      </form>
+    </div>
+
+    <!-- Harita — full width -->
+    <div class="map-card">
+      <iframe
+        src="https://www.openstreetmap.org/export/embed.html?bbox=29.019%2C40.978%2C29.034%2C40.986&layer=mapnik&marker=40.9818%2C29.0268"
+        loading="lazy"
+        title="hellotalent.ai — Kadıköy, İstanbul">
+      </iframe>
+      <div class="map-label">
+        <div class="map-label-dot"></div>
+        <span>hellotalent.ai</span>
+        <small>— Fahrettin Kerim Gökay Cad. No:40, Kadıköy / İstanbul</small>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="contact-cta">
+  <p>Hızlı bir soru için doğrudan yazabilirsiniz.</p>
+  <a href="mailto:info@hellotalent.ai">info@hellotalent.ai →</a>
+</section>
+
+<div id="ht-footer"></div>
+<script src="/shared.js"></script>
+</body>
+</html>
