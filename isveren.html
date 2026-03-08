@@ -235,6 +235,39 @@ footer{background:var(--navy);padding:40px 48px;}
   .hero-title{font-size:34px;letter-spacing:-1.5px;}
   .f-row{grid-template-columns:1fr;}
 }
+
+    /* ══ KARİYER DROPDOWN ══ */
+    .nav-dropdown { position: relative; }
+    .nav-dropdown-menu {
+      display: none;
+      position: absolute;
+      top: calc(100% + 12px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: white;
+      border: 1.5px solid var(--border);
+      border-radius: 16px;
+      padding: 8px;
+      min-width: 220px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.10);
+      z-index: 600;
+    }
+    .nav-dropdown:hover .nav-dropdown-menu,
+    .nav-dropdown-menu:hover { display: block; }
+    .nav-dd-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 14px; border-radius: 10px;
+      text-decoration: none; color: var(--text);
+      font-size: 13px; font-weight: 600;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      transition: background 0.15s;
+      white-space: nowrap;
+    }
+    .nav-dd-item:hover { background: var(--gray); }
+    .nav-dd-icon { font-size: 15px; width: 24px; text-align: center; }
+    .nav-dd-divider { height: 1px; background: var(--border); margin: 4px 8px; }
+    .nav-link.has-dropdown::after { content: ' ▾'; font-size: 10px; }
+
 </style>
   <meta name="robots" content="index, follow">
   <meta name="author" content="hellotalent.ai">
