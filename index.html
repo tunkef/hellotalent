@@ -2367,7 +2367,7 @@ section#cv > div:first-child { padding: 52px 20px; }
     <div>
       <div class="footer-col-title">Şirket</div>
       <a class="footer-link" href="index.html#about">Hakkımızda</a>
-      <a class="footer-link" href="mailto:hello@hellotalent.ai">İletişim</a>
+      <a class="footer-link" href="/cdn-cgi/l/email-protection#c4aca1a8a8ab84aca1a8a8abb0a5a8a1aab0eaa5ad">İletişim</a>
       <a class="footer-link" href="#">Gizlilik Politikası</a>
       <a class="footer-link" href="#">Kullanım Şartları</a>
     </div>
@@ -2419,7 +2419,7 @@ section#cv > div:first-child { padding: 52px 20px; }
   </div>
 </div>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 // ═══════════════════════════════
 // SUPABASE INIT
 // ═══════════════════════════════
@@ -2928,14 +2928,25 @@ function toggleFaq(el){
 
 
 </div>
-
 <!-- ══ COOKIE BAR ══ -->
-<div id="cookie-bar">
-  <span class="cookie-text">🍪 <strong>Çerez Bildirimi</strong> — hellotalent.ai deneyimini geliştirmek için çerezler kullanıyoruz. KVKK kapsamında tercihlerinizi belirleyebilirsiniz.</span>
-  <div class="cookie-btns">
-    <button class="cookie-btn-reject" onclick="rejectCookies()">Reddet</button>
-    <button class="cookie-btn-accept" onclick="acceptCookies()">Kabul Et</button>
+<div id="cookie-bar" style="position:fixed;bottom:0;left:0;right:0;z-index:9999;background:#1E2D5E;color:white;padding:14px 32px;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;box-shadow:0 -4px 24px rgba(0,0,0,0.15);">
+  <span style="flex:1;min-width:200px;color:rgba(255,255,255,0.85);">🍪 <strong style="color:white;">Çerez Bildirimi</strong> — hellotalent.ai deneyimini geliştirmek için çerezler kullanıyoruz. KVKK kapsamında tercihlerinizi belirleyebilirsiniz.</span>
+  <div style="display:flex;gap:10px;flex-shrink:0;">
+    <button id="cookie-reject-btn" style="padding:8px 18px;border-radius:8px;border:1.5px solid rgba(255,255,255,0.3);background:transparent;color:white;font-size:13px;font-weight:600;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;">Reddet</button>
+    <button id="cookie-accept-btn" style="padding:8px 18px;border-radius:8px;border:none;background:#C94E28;color:white;font-size:13px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;">Kabul Et</button>
   </div>
 </div>
-</body>
-</html>
+<script>
+(function(){
+  function hideCookieBar(){var b=document.getElementById('cookie-bar');if(b)b.style.display='none';}
+  if(localStorage.getItem('ht_cookie_consent')){hideCookieBar();}
+  function init(){
+    var a=document.getElementById('cookie-accept-btn');
+    var r=document.getElementById('cookie-reject-btn');
+    if(a)a.onclick=function(){localStorage.setItem('ht_cookie_consent','accepted');hideCookieBar();};
+    if(r)r.onclick=function(){localStorage.setItem('ht_cookie_consent','rejected');hideCookieBar();};
+    if(localStorage.getItem('ht_cookie_consent')){hideCookieBar();}
+  }
+  if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',init);}else{init();}
+})();
+</script>
