@@ -1,0 +1,1792 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>if(sessionStorage.getItem('ht_gate')!=='ok'){window.location.replace('gate.html');}</script>
+<title>İK Paneli — hellotalent.ai</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{overflow-x:hidden;}
+:root{
+  --navy:#1E2D5E;
+  --navy-dark:#162248;
+  --navy-mid:#253872;
+  --verm:#C94E28;
+  --verm-hover:#b84420;
+  --text:#0a0a0a;
+  --muted:#6B7280;
+  --border:#E5E3DF;
+  --bg:#F7F6F3;
+  --white:#fff;
+  --green:#10B981;
+  --yellow:#F59E0B;
+  --red:#EF4444;
+  --sidebar-w:240px;
+}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;}
+
+/* ── SIDEBAR ── */
+.sidebar{
+  width:var(--sidebar-w);
+  background:var(--navy);
+  min-height:100vh;
+  position:fixed;
+  top:0;left:0;bottom:0;
+  display:flex;flex-direction:column;
+  z-index:100;
+  overflow-y:auto;
+}
+.sidebar-logo{
+  padding:24px 20px 20px;
+  border-bottom:1px solid rgba(255,255,255,0.08);
+  flex-shrink:0;
+}
+.sidebar-logo-text{
+  font-family:'Bricolage Grotesque',sans-serif;
+  font-weight:800;font-size:18px;color:white;
+  letter-spacing:-0.5px;
+}
+.sidebar-logo-text span{color:var(--verm);}
+.sidebar-logo-sub{font-size:10px;color:rgba(255,255,255,0.35);font-family:'DM Mono',monospace;letter-spacing:1px;margin-top:2px;}
+.sidebar-nav{flex:1;padding:12px 10px;}
+.nav-section-label{
+  font-size:9px;font-weight:700;letter-spacing:1.5px;
+  text-transform:uppercase;color:rgba(255,255,255,0.3);
+  padding:12px 10px 6px;
+}
+.nav-item{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 12px;border-radius:9px;
+  cursor:pointer;transition:all 0.15s;
+  color:rgba(255,255,255,0.55);font-size:13px;font-weight:600;
+  position:relative;margin-bottom:2px;
+}
+.nav-item:hover{background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.85);}
+.nav-item.active{background:rgba(255,255,255,0.12);color:white;}
+.nav-item.active::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:60%;background:var(--verm);border-radius:0 3px 3px 0;}
+.nav-icon{width:16px;height:16px;flex-shrink:0;opacity:0.7;}
+.nav-item.active .nav-icon,.nav-item:hover .nav-icon{opacity:1;}
+.nav-badge{margin-left:auto;background:var(--verm);color:white;font-size:10px;font-weight:700;padding:2px 6px;border-radius:10px;}
+.sidebar-bottom{padding:12px 10px 20px;border-top:1px solid rgba(255,255,255,0.08);}
+.sidebar-user{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:9px;cursor:pointer;transition:background 0.15s;}
+.sidebar-user:hover{background:rgba(255,255,255,0.07);}
+.sidebar-avatar{width:32px;height:32px;border-radius:50%;background:var(--verm);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;color:white;flex-shrink:0;}
+.sidebar-user-info{flex:1;min-width:0;}
+.sidebar-user-name{font-size:12px;font-weight:700;color:white;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.sidebar-user-plan{font-size:10px;color:rgba(255,255,255,0.4);font-family:'DM Mono',monospace;}
+.sidebar-logout{width:100%;padding:8px 12px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:rgba(255,255,255,0.4);font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all 0.15s;text-align:left;margin-top:6px;display:flex;align-items:center;gap:8px;}
+.sidebar-logout:hover{background:rgba(239,68,68,0.15);border-color:rgba(239,68,68,0.3);color:#fca5a5;}
+
+/* ── MAIN ── */
+.main{margin-left:var(--sidebar-w);flex:1;min-height:100vh;display:flex;flex-direction:column;}
+
+/* ── TOPBAR ── */
+.topbar{
+  background:white;border-bottom:1px solid var(--border);
+  padding:0 28px;height:60px;
+  display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:50;
+}
+.topbar-left{display:flex;align-items:center;gap:8px;}
+.topbar-title{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:17px;color:var(--text);}
+.topbar-sub{font-size:12px;color:var(--muted);margin-left:4px;}
+.topbar-right{display:flex;align-items:center;gap:10px;}
+.topbar-btn{width:34px;height:34px;border-radius:8px;border:1px solid var(--border);background:white;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.15s;position:relative;}
+.topbar-btn:hover{background:var(--bg);border-color:#ccc;}
+.topbar-notif-dot{width:7px;height:7px;background:var(--verm);border-radius:50%;position:absolute;top:5px;right:5px;border:1.5px solid white;}
+.topbar-plan{display:flex;align-items:center;gap:6px;background:var(--bg);border:1px solid var(--border);padding:5px 12px;border-radius:20px;font-size:11px;font-weight:700;color:var(--muted);}
+.topbar-plan-dot{width:6px;height:6px;border-radius:50%;background:var(--green);}
+
+/* ── CONTENT ── */
+.content{flex:1;padding:24px 28px;}
+.panel{display:none;}
+.panel.active{display:block;}
+
+/* ── STAT CARDS ── */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;}
+.stat-card{background:white;border:1px solid var(--border);border-radius:12px;padding:18px 20px;}
+.stat-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.7px;color:var(--muted);margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+.stat-value{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:28px;color:var(--text);line-height:1;}
+.stat-change{font-size:11px;color:var(--green);margin-top:4px;font-weight:600;}
+.stat-change.down{color:var(--red);}
+
+/* ── SECTION HEADERS ── */
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.section-title{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:16px;}
+.btn-primary{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;background:var(--verm);border:none;border-radius:8px;color:white;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.2s;}
+.btn-primary:hover{background:var(--verm-hover);}
+.btn-secondary{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;background:white;border:1.5px solid var(--border);border-radius:8px;color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.15s;}
+.btn-secondary:hover{border-color:#aaa;background:var(--bg);}
+.btn-sm{padding:6px 12px;font-size:12px;border-radius:7px;}
+
+/* ── ADAY SEARCH ── */
+.search-layout{display:grid;grid-template-columns:260px 1fr;gap:20px;align-items:start;}
+.filter-panel{background:white;border:1px solid var(--border);border-radius:12px;padding:20px;position:sticky;top:80px;}
+.filter-title{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:14px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;}
+.filter-reset{font-size:11px;color:var(--verm);cursor:pointer;font-weight:600;}
+.filter-group{margin-bottom:18px;}
+.filter-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.7px;color:var(--muted);margin-bottom:8px;display:block;}
+.filter-chips{display:flex;flex-wrap:wrap;gap:6px;}
+.chip{padding:5px 11px;border-radius:20px;border:1.5px solid var(--border);font-size:12px;font-weight:600;cursor:pointer;transition:all 0.15s;color:var(--muted);background:white;white-space:nowrap;}
+.chip:hover{border-color:var(--navy);color:var(--navy);}
+.chip.selected{border-color:var(--navy);background:var(--navy);color:white;}
+.chip.selected-verm{border-color:var(--verm);background:var(--verm);color:white;}
+.filter-range{display:flex;align-items:center;gap:8px;font-size:12px;}
+.filter-input{width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:8px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;outline:none;transition:border-color 0.15s;}
+.filter-input:focus{border-color:var(--navy);}
+.filter-select{width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:8px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;outline:none;background:white;cursor:pointer;}
+
+/* ── CANDIDATE GRID ── */
+.candidates-area{display:flex;flex-direction:column;gap:14px;}
+.candidates-toolbar{display:flex;align-items:center;justify-content:space-between;background:white;border:1px solid var(--border);border-radius:10px;padding:12px 16px;}
+.candidates-count{font-size:13px;color:var(--muted);}
+.candidates-count strong{color:var(--text);}
+.candidates-sort{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);}
+.sort-select{border:1px solid var(--border);border-radius:6px;padding:4px 8px;font-size:12px;font-family:'Plus Jakarta Sans',sans-serif;outline:none;cursor:pointer;}
+.candidate-card{background:white;border:1px solid var(--border);border-radius:12px;padding:18px 20px;transition:all 0.15s;cursor:pointer;}
+.candidate-card:hover{border-color:#aaa;box-shadow:0 4px 16px rgba(0,0,0,0.06);}
+.cc-top{display:flex;align-items:flex-start;gap:14px;margin-bottom:12px;}
+.cc-avatar{width:44px;height:44px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-weight:800;color:white;font-size:15px;}
+.cc-avatar.blur{filter:blur(5px);user-select:none;}
+.cc-info{flex:1;min-width:0;}
+.cc-name{font-size:15px;font-weight:700;color:var(--text);margin-bottom:3px;}
+.cc-pos{font-size:12px;color:var(--muted);}
+.cc-tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px;}
+.cc-tag{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600;}
+.cc-tag.exp{background:#EEF2FF;color:#4F46E5;}
+.cc-tag.city{background:#F0FDF4;color:#16A34A;}
+.cc-tag.seg{background:#FFF7ED;color:#C2410C;}
+.cc-tag.avail{background:#F0F9FF;color:#0369A1;}
+.cc-contact{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;}
+.cc-contact-item{background:var(--bg);border-radius:7px;padding:7px 10px;}
+.cc-contact-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.7px;color:var(--muted);margin-bottom:2px;}
+.cc-contact-val{font-size:12px;font-weight:600;color:var(--text);font-family:'DM Mono',monospace;}
+.cc-contact-val.masked{color:var(--muted);}
+.cc-actions{display:flex;align-items:center;gap:8px;}
+.cc-fav-btn{width:32px;height:32px;border-radius:7px;border:1.5px solid var(--border);background:white;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.15s;flex-shrink:0;}
+.cc-fav-btn:hover{border-color:#f59e0b;color:#f59e0b;}
+.cc-fav-btn.active{border-color:#f59e0b;background:#FFF7ED;color:#f59e0b;}
+.cc-cv-btn{flex:1;padding:8px;border-radius:7px;border:1.5px solid var(--border);background:white;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;transition:all 0.15s;}
+.cc-cv-btn:hover:not(.locked){border-color:var(--navy);color:var(--navy);}
+.cc-cv-btn.locked{filter:blur(2.5px);pointer-events:none;color:var(--muted);}
+.lock-overlay{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted);flex-shrink:0;}
+.upgrade-banner{background:linear-gradient(135deg,var(--navy) 0%,#253872 100%);border-radius:12px;padding:18px 22px;display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:16px;}
+.upgrade-banner p{font-size:13px;color:rgba(255,255,255,0.7);margin-top:3px;}
+.upgrade-banner h4{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:15px;color:white;}
+.btn-upgrade{padding:9px 18px;background:var(--verm);border:none;border-radius:8px;color:white;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;transition:all 0.15s;flex-shrink:0;}
+.btn-upgrade:hover{background:var(--verm-hover);}
+
+/* ── POZİSYONLAR ── */
+.pozisyon-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px;}
+.poz-card{background:white;border:1px solid var(--border);border-radius:12px;padding:20px;}
+.poz-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;}
+.poz-title{font-size:15px;font-weight:700;color:var(--text);}
+.poz-status{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700;}
+.poz-status.active{background:#F0FDF4;color:#16A34A;}
+.poz-status.draft{background:#F3F4F6;color:#6B7280;}
+.poz-status.closed{background:#FEF2F2;color:#DC2626;}
+.poz-detail{font-size:12px;color:var(--muted);margin-bottom:12px;}
+.poz-chips{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:14px;}
+.poz-chip{padding:3px 9px;border-radius:20px;background:var(--bg);border:1px solid var(--border);font-size:11px;font-weight:600;color:var(--muted);}
+.poz-stats{display:flex;gap:16px;padding-top:12px;border-top:1px solid var(--border);}
+.poz-stat{text-align:center;}
+.poz-stat-val{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:18px;color:var(--text);}
+.poz-stat-label{font-size:10px;color:var(--muted);margin-top:1px;}
+.poz-actions{display:flex;gap:6px;margin-top:14px;}
+
+/* ── MODAL ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);backdrop-filter:blur(3px);z-index:1000;display:flex;align-items:center;justify-content:center;padding:16px;opacity:0;pointer-events:none;transition:opacity 0.2s;}
+.modal-overlay.show{opacity:1;pointer-events:all;}
+.modal{background:white;border-radius:16px;width:100%;max-width:520px;padding:28px;transform:translateY(16px);transition:transform 0.2s;max-height:90vh;overflow-y:auto;}
+.modal-overlay.show .modal{transform:translateY(0);}
+.modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
+.modal-title{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:17px;}
+.modal-close{width:28px;height:28px;border-radius:50%;border:none;background:var(--bg);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:14px;}
+.modal-close:hover{background:var(--border);}
+.form-field{margin-bottom:14px;}
+.form-label{display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;color:var(--muted);margin-bottom:5px;}
+.form-input{width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;outline:none;transition:border-color 0.15s;}
+.form-input:focus{border-color:var(--navy);}
+.form-textarea{min-height:80px;resize:vertical;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.form-select{width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;outline:none;background:white;cursor:pointer;}
+.form-footer{display:flex;gap:10px;justify-content:flex-end;margin-top:20px;padding-top:16px;border-top:1px solid var(--border);}
+
+/* ── ŞİRKET PROFİLİ ── */
+.profil-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+.profil-card{background:white;border:1px solid var(--border);border-radius:12px;padding:22px;}
+.profil-card-title{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:14px;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border);}
+
+/* ── FAVORİLER ── */
+.empty-state{text-align:center;padding:60px 20px;background:white;border-radius:12px;border:1px solid var(--border);}
+.empty-icon{font-size:40px;margin-bottom:12px;}
+.empty-title{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:18px;color:var(--text);margin-bottom:6px;}
+.empty-sub{font-size:13px;color:var(--muted);}
+
+/* ── AYARLAR ── */
+.settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+.plan-card{background:linear-gradient(135deg,var(--navy) 0%,#253872 100%);border-radius:12px;padding:24px;color:white;}
+.plan-label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:8px;}
+.plan-name{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:24px;margin-bottom:4px;}
+.plan-features{display:flex;flex-direction:column;gap:6px;margin:16px 0;}
+.plan-feature{display:flex;align-items:center;gap:8px;font-size:13px;color:rgba(255,255,255,0.7);}
+.plan-feature-icon{color:#4ade80;font-size:12px;}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--border);}
+.toggle-row:last-child{border-bottom:none;}
+.toggle-info h4{font-size:14px;font-weight:700;}
+.toggle-info p{font-size:12px;color:var(--muted);margin-top:2px;}
+.toggle{width:40px;height:22px;background:#ccc;border-radius:11px;position:relative;cursor:pointer;transition:background 0.2s;flex-shrink:0;border:none;}
+.toggle.on{background:var(--green);}
+.toggle::after{content:'';width:16px;height:16px;background:white;border-radius:50%;position:absolute;top:3px;left:3px;transition:left 0.2s;box-shadow:0 1px 3px rgba(0,0,0,0.2);}
+.toggle.on::after{left:21px;}
+
+/* ── RECENT AKTİVİTE ── */
+.activity-card{background:white;border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.activity-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.activity-item{display:flex;align-items:center;gap:12px;padding:12px 20px;border-bottom:1px solid var(--border);transition:background 0.15s;cursor:pointer;}
+.activity-item:last-child{border-bottom:none;}
+.activity-item:hover{background:var(--bg);}
+.activity-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.activity-dot.green{background:var(--green);}
+.activity-dot.blue{background:#3B82F6;}
+.activity-dot.orange{background:var(--verm);}
+.activity-text{flex:1;font-size:13px;color:var(--text);}
+.activity-text strong{font-weight:700;}
+.activity-time{font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;flex-shrink:0;}
+
+/* ── ADAY DETAY DRAWER ── */
+.drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:800;opacity:0;pointer-events:none;transition:opacity 0.25s;}
+.drawer-overlay.show{opacity:1;pointer-events:all;}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:440px;background:white;z-index:801;transform:translateX(100%);transition:transform 0.3s cubic-bezier(0.4,0,0.2,1);overflow-y:auto;box-shadow:-8px 0 40px rgba(0,0,0,0.12);}
+.drawer.show{transform:translateX(0);}
+.drawer-header{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:white;z-index:2;}
+.drawer-close{width:32px;height:32px;border-radius:50%;border:none;background:var(--bg);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:16px;}
+.drawer-body{padding:24px;}
+.drawer-avatar-row{display:flex;align-items:center;gap:16px;margin-bottom:20px;}
+.drawer-avatar{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:20px;color:white;flex-shrink:0;}
+.drawer-avatar.blur{filter:blur(6px);user-select:none;}
+.drawer-name{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:20px;}
+.drawer-pos{font-size:13px;color:var(--muted);margin-top:2px;}
+.drawer-section-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.7px;color:var(--muted);margin:16px 0 8px;}
+.drawer-info-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.drawer-info-item{background:var(--bg);border-radius:8px;padding:10px 12px;}
+.drawer-info-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.7px;color:var(--muted);margin-bottom:3px;}
+.drawer-info-val{font-size:13px;font-weight:600;color:var(--text);}
+.drawer-info-val.masked{color:var(--muted);font-family:'DM Mono',monospace;}
+.drawer-actions{display:flex;gap:8px;margin-top:20px;padding-top:16px;border-top:1px solid var(--border);}
+.premium-badge{display:inline-flex;align-items:center;gap:5px;background:#FFF7ED;border:1.5px solid #FED7AA;border-radius:20px;padding:4px 12px;font-size:11px;font-weight:700;color:#C2410C;margin-bottom:12px;}
+
+/* ── RESPONSIVE ── */
+@media(max-width:1100px){.stats-grid{grid-template-columns:repeat(2,1fr);}  .search-layout{grid-template-columns:1fr;} .filter-panel{position:static;} .profil-grid,.settings-grid{grid-template-columns:1fr;}}
+@media(max-width:768px){.sidebar{display:none;} .main{margin-left:0;} .content{padding:16px;}}
+
+
+/* ── MOBILE BOTTOM NAV ── */
+.bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--navy);z-index:500;padding:0 4px;padding-bottom:env(safe-area-inset-bottom,0);border-top:1px solid rgba(255,255,255,0.1);box-shadow:0 -4px 20px rgba(0,0,0,0.15);}
+.bottom-nav-inner{display:flex;height:60px;}
+.bn-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;color:rgba(255,255,255,0.4);transition:color 0.15s;position:relative;padding:0 2px;}
+.bn-item.active{color:white;}
+.bn-item.active::before{content:'';position:absolute;top:0;left:20%;right:20%;height:2px;background:var(--verm);border-radius:0 0 3px 3px;}
+.bn-item svg{width:20px;height:20px;}
+.bn-label{font-size:9px;font-weight:700;letter-spacing:0.3px;white-space:nowrap;}
+.bn-badge{position:absolute;top:6px;right:calc(50% - 14px);background:var(--verm);color:white;font-size:9px;font-weight:700;min-width:16px;height:16px;border-radius:8px;display:flex;align-items:center;justify-content:center;padding:0 3px;}
+
+/* ── MOBILE TOPBAR ── */
+.mobile-topbar{display:none;position:sticky;top:0;z-index:200;background:white;border-bottom:1px solid var(--border);padding:0 16px;height:56px;align-items:center;justify-content:space-between;}
+.mobile-topbar .mt-logo{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:16px;color:var(--navy);}
+.mobile-topbar .mt-logo span{color:var(--verm);}
+.mobile-topbar .mt-right{display:flex;align-items:center;gap:8px;}
+.mt-plan-badge{font-size:10px;font-weight:700;background:var(--bg);border:1.5px solid var(--border);color:var(--muted);padding:4px 10px;border-radius:20px;}
+.mt-upgrade-btn{background:var(--verm);border:none;border-radius:8px;color:white;font-size:11px;font-weight:700;padding:6px 10px;cursor:pointer;white-space:nowrap;}
+
+/* ── FILTER SHEET (mobile) ── */
+.filter-sheet-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:600;backdrop-filter:blur(2px);}
+.filter-sheet-overlay.show{display:flex;align-items:flex-end;}
+.filter-sheet{background:white;border-radius:20px 20px 0 0;width:100%;max-height:85vh;overflow-y:auto;padding:0 0 calc(env(safe-area-inset-bottom,0) + 16px) 0;}
+.filter-sheet-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:12px auto 0;}
+.filter-sheet-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border);position:sticky;top:0;background:white;z-index:2;}
+.filter-sheet-title{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:16px;}
+.filter-sheet-body{padding:16px 20px;}
+.btn-filter-mobile{display:none;align-items:center;gap:8px;background:white;border:1.5px solid var(--border);border-radius:10px;padding:9px 14px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:700;color:var(--text);cursor:pointer;transition:all 0.15s;}
+.btn-filter-mobile:hover{border-color:var(--navy);}
+.filter-active-count{background:var(--verm);color:white;font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;}
+
+/* ── RESPONSIVE MAJOR ── */
+@media(max-width:768px){
+  .sidebar{display:none;}
+  .main{margin-left:0;}
+  .content{padding:16px;padding-bottom:80px;}
+  .topbar{display:none;}
+  .bottom-nav{display:flex;}
+  .mobile-topbar{display:flex;}
+  .stats-grid{grid-template-columns:repeat(2,1fr);gap:10px;}
+  .search-layout{grid-template-columns:1fr;}
+  .filter-panel{display:none;}
+  .btn-filter-mobile{display:flex;}
+  .candidates-toolbar{flex-wrap:wrap;gap:8px;}
+  .two-col-dashboard{grid-template-columns:1fr;}
+  .profil-grid,.settings-grid{grid-template-columns:1fr;}
+  .drawer{width:100%;border-radius:20px 20px 0 0;top:auto;height:90vh;}
+  .drawer-overlay.show + .drawer{transform:translateY(0);}
+  .candidate-card{border-radius:12px;}
+  .cc-contact{grid-template-columns:1fr;}
+  .upgrade-banner{flex-direction:column;gap:12px;}
+  .upgrade-banner button{width:100%;justify-content:center;}
+  .stat-card{padding:14px;}
+}
+@media(min-width:769px){
+  .filter-sheet-overlay{display:none!important;}
+  .btn-filter-mobile{display:none!important;}
+}
+
+/* ── UTILS ── */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700;}
+.badge-green{background:#F0FDF4;color:#16A34A;}
+.badge-blue{background:#EFF6FF;color:#1D4ED8;}
+.badge-red{background:#FEF2F2;color:#DC2626;}
+.badge-gray{background:#F3F4F6;color:#6B7280;}
+.tag-row{display:flex;flex-wrap:wrap;gap:5px;margin:8px 0;}
+.two-col-dashboard{display:grid;grid-template-columns:1fr 360px;gap:20px;}
+@media(max-width:1100px){.two-col-dashboard{grid-template-columns:1fr;}}
+
+/* ── LOADING ── */
+#app-loading{position:fixed;inset:0;background:var(--navy);display:flex;align-items:center;justify-content:center;z-index:9999;transition:opacity 0.3s;}
+#app-loading.hide{opacity:0;pointer-events:none;}
+.loading-logo{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:26px;color:white;}
+.loading-logo span{color:var(--verm);}
+.loading-dots{display:flex;gap:6px;margin-top:16px;justify-content:center;}
+.loading-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.3);animation:ldot 1.2s infinite;}
+.loading-dot:nth-child(2){animation-delay:.2s;}
+.loading-dot:nth-child(3){animation-delay:.4s;}
+@keyframes ldot{0%,80%,100%{background:rgba(255,255,255,0.2);}40%{background:white;}}
+</style>
+</head>
+<body>
+
+
+<!-- MOBILE TOPBAR -->
+<div class="mobile-topbar">
+  <div class="mt-logo">hello<span>talent</span>.ai</div>
+  <div class="mt-right">
+    <div class="mt-plan-badge">Ücretsiz</div>
+    <button class="mt-upgrade-btn" onclick="showUpgradeModal()">⚡ Premium</button>
+  </div>
+</div>
+<!-- LOADING -->
+<div id="app-loading">
+  <div style="text-align:center;">
+    <div class="loading-logo">hello<span>talent</span>.ai</div>
+    <div style="font-size:12px;color:rgba(255,255,255,0.3);font-family:'DM Mono',monospace;letter-spacing:1px;margin-top:4px;">İK PANELİ</div>
+    <div class="loading-dots">
+      <div class="loading-dot"></div>
+      <div class="loading-dot"></div>
+      <div class="loading-dot"></div>
+    </div>
+  </div>
+</div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="sidebar-logo-text">hello<span>talent</span>.ai</div>
+    <div class="sidebar-logo-sub">İK PANELİ</div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Ana Menü</div>
+    <div class="nav-item active" data-panel="dashboard" onclick="switchPanel('dashboard',this)">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      Genel Bakış
+    </div>
+    <div class="nav-item" data-panel="search" onclick="switchPanel('search',this)">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      Aday Ara
+      <span class="nav-badge" id="nav-count">250+</span>
+    </div>
+    <div class="nav-item" data-panel="pozisyonlar" onclick="switchPanel('pozisyonlar',this)">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+      Açık Pozisyonlar
+      <span class="nav-badge" id="nav-poz-count">3</span>
+    </div>
+    <div class="nav-item" data-panel="favoriler" onclick="switchPanel('favoriler',this)">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      Favoriler
+      <span class="nav-badge" id="nav-fav-count" style="display:none">0</span>
+    </div>
+    <div class="nav-section-label">Hesap</div>
+    <div class="nav-item" data-panel="sirket" onclick="switchPanel('sirket',this)">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Şirket Profili
+    </div>
+    <div class="nav-item" data-panel="ayarlar" onclick="switchPanel('ayarlar',this)">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      Ayarlar
+    </div>
+  </nav>
+  <div class="sidebar-bottom">
+    <div class="sidebar-user">
+      <div class="sidebar-avatar" id="sidebar-avatar">T</div>
+      <div class="sidebar-user-info">
+        <div class="sidebar-user-name" id="sidebar-name">Yükleniyor...</div>
+        <div class="sidebar-user-plan">Ücretsiz Plan</div>
+      </div>
+    </div>
+    <button class="sidebar-logout" onclick="doLogout()">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      Çıkış Yap
+    </button>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <span class="topbar-title" id="topbar-title">Genel Bakış</span>
+    </div>
+    <div class="topbar-right">
+      <div class="topbar-plan">
+        <div class="topbar-plan-dot"></div>
+        Ücretsiz Plan
+      </div>
+      <button class="btn-primary btn-sm" onclick="showUpgradeModal()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        Premium'a Geç
+      </button>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <!-- ═══ DASHBOARD PANELİ ═══ -->
+    <div class="panel active" id="panel-dashboard">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--verm)" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            Toplam Aday
+          </div>
+          <div class="stat-value">2,847</div>
+          <div class="stat-change">↑ +124 bu ay</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2.5"><path d="M20 7H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/></svg>
+            Açık Pozisyon
+          </div>
+          <div class="stat-value" id="stat-poz">3</div>
+          <div class="stat-change">🟢 Aktif</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            Favoriler
+          </div>
+          <div class="stat-value" id="stat-fav">0</div>
+          <div class="stat-change">Kaydedilen adaylar</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            Profil Görünümü
+          </div>
+          <div class="stat-value">—</div>
+          <div class="stat-change" style="color:var(--muted)">Premium özellik</div>
+        </div>
+      </div>
+
+      <div class="two-col-dashboard">
+        <!-- Son aktivite -->
+        <div>
+          <div class="section-header">
+            <span class="section-title">Son Aktivite</span>
+          </div>
+          <div class="activity-card">
+            <div class="activity-header">
+              <span style="font-size:13px;font-weight:700;">Bugün</span>
+            </div>
+            <div class="activity-item">
+              <div class="activity-dot green"></div>
+              <div class="activity-text">Yeni aday havuza katıldı — <strong>Store Manager</strong> pozisyonu</div>
+              <div class="activity-time">2s önce</div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-dot blue"></div>
+              <div class="activity-text"><strong>Ahmet Y.</strong> favorilere eklendi</div>
+              <div class="activity-time">1s önce</div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-dot orange"></div>
+              <div class="activity-text">Hesabın başarıyla oluşturuldu</div>
+              <div class="activity-time">Bugün</div>
+            </div>
+            <div class="activity-item" style="cursor:default;">
+              <div class="activity-dot" style="background:var(--border);"></div>
+              <div class="activity-text" style="color:var(--muted);">Daha fazla aktivite için adayları inceleyin</div>
+              <div class="activity-time"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hızlı erişim -->
+        <div>
+          <div class="section-header">
+            <span class="section-title">Hızlı Erişim</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <div style="background:white;border:1px solid var(--border);border-radius:12px;padding:16px;cursor:pointer;transition:all 0.15s;" onclick="switchPanel('search', document.querySelector('[data-panel=search]'))" onmouseover="this.style.borderColor='#aaa'" onmouseout="this.style.borderColor='var(--border)'">
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div style="width:36px;height:36px;background:#EEF2FF;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;">🔍</div>
+                <div>
+                  <div style="font-size:13px;font-weight:700;">Aday Ara</div>
+                  <div style="font-size:11px;color:var(--muted);">2,847+ retail uzmanı</div>
+                </div>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2" style="margin-left:auto"><polyline points="9 18 15 12 9 6"/></svg>
+              </div>
+            </div>
+            <div style="background:white;border:1px solid var(--border);border-radius:12px;padding:16px;cursor:pointer;transition:all 0.15s;" onclick="openPozModal()" onmouseover="this.style.borderColor='#aaa'" onmouseout="this.style.borderColor='var(--border)'">
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div style="width:36px;height:36px;background:#FEF3C7;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;">➕</div>
+                <div>
+                  <div style="font-size:13px;font-weight:700;">Pozisyon Ekle</div>
+                  <div style="font-size:11px;color:var(--muted);">Açık ilan oluştur</div>
+                </div>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2" style="margin-left:auto"><polyline points="9 18 15 12 9 6"/></svg>
+              </div>
+            </div>
+            <div style="background:linear-gradient(135deg,var(--navy),#253872);border-radius:12px;padding:16px;cursor:pointer;" onclick="showUpgradeModal()">
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div style="width:36px;height:36px;background:rgba(255,255,255,0.1);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;">⚡</div>
+                <div>
+                  <div style="font-size:13px;font-weight:700;color:white;">Premium'a Geç</div>
+                  <div style="font-size:11px;color:rgba(255,255,255,0.5);">Tüm iletişim bilgileri + CV</div>
+                </div>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="2" style="margin-left:auto"><polyline points="9 18 15 12 9 6"/></svg>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ ADAY ARA PANELİ ═══ -->
+    <div class="panel" id="panel-search">
+      <div class="upgrade-banner">
+        <div>
+          <h4>🔒 İletişim bilgileri ve CV'ler Premium'da açılır</h4>
+          <p>Şu an sınırlı önizleme modundasın. Premium ile tüm adaylara doğrudan ulaş.</p>
+        </div>
+        <button class="btn-upgrade" onclick="showUpgradeModal()">Premium'a Geç →</button>
+      </div>
+
+      <div class="search-layout">
+        <!-- Filtre Paneli -->
+        <div class="filter-panel"><div id="filter-panel-inner">
+          <div class="filter-title">
+            Filtreler
+            <span class="filter-reset" onclick="resetFilters()">Temizle</span>
+          </div>
+
+          <div class="filter-group">
+            <span class="filter-label">Pozisyon</span>
+            <div class="filter-chips" id="filter-pozisyon">
+              <div class="chip" data-val="Store Manager" onclick="toggleChip(this,'pozisyon')">Store Manager</div>
+              <div class="chip" data-val="Sales Specialist" onclick="toggleChip(this,'pozisyon')">Sales Specialist</div>
+              <div class="chip" data-val="Departman Müdürü" onclick="toggleChip(this,'pozisyon')">Dept. Müdürü</div>
+              <div class="chip" data-val="Visual Merchandiser" onclick="toggleChip(this,'pozisyon')">Visual MD</div>
+              <div class="chip" data-val="Ops Lead" onclick="toggleChip(this,'pozisyon')">Ops Lead</div>
+              <div class="chip" data-val="Kasiyer" onclick="toggleChip(this,'pozisyon')">Kasiyer</div>
+              <div class="chip" data-val="Eğitim Uzmanı" onclick="toggleChip(this,'pozisyon')">Eğitim</div>
+            </div>
+          </div>
+
+          <div class="filter-group">
+            <span class="filter-label">Şehir</span>
+            <select class="filter-select" id="filter-sehir" onchange="applyFilters()">
+              <option value="">Tüm Şehirler</option>
+              <option>İstanbul</option>
+              <option>Ankara</option>
+              <option>İzmir</option>
+              <option>Bursa</option>
+              <option>Antalya</option>
+              <option>Gaziantep</option>
+              <option>Konya</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <span class="filter-label">Deneyim (Yıl)</span>
+            <div class="filter-range">
+              <input type="number" class="filter-input" id="filter-exp-min" placeholder="Min" min="0" max="30" style="width:70px;" onchange="applyFilters()">
+              <span style="color:var(--muted);">—</span>
+              <input type="number" class="filter-input" id="filter-exp-max" placeholder="Max" min="0" max="30" style="width:70px;" onchange="applyFilters()">
+            </div>
+          </div>
+
+          <div class="filter-group">
+            <span class="filter-label">Segment</span>
+            <div class="filter-chips" id="filter-segment">
+              <div class="chip" data-val="Lüks" onclick="toggleChip(this,'segment')">Lüks</div>
+              <div class="chip" data-val="Fast Fashion" onclick="toggleChip(this,'segment')">Fast Fashion</div>
+              <div class="chip" data-val="Teknoloji" onclick="toggleChip(this,'segment')">Teknoloji</div>
+              <div class="chip" data-val="Spor" onclick="toggleChip(this,'segment')">Spor</div>
+              <div class="chip" data-val="Ev & Yaşam" onclick="toggleChip(this,'segment')">Ev & Yaşam</div>
+            </div>
+          </div>
+
+          <div class="filter-group">
+            <span class="filter-label">Müsaitlik</span>
+            <div class="filter-chips" id="filter-musait">
+              <div class="chip" data-val="Hemen" onclick="toggleChip(this,'musait')">Hemen</div>
+              <div class="chip" data-val="1 ay" onclick="toggleChip(this,'musait')">1 ay</div>
+              <div class="chip" data-val="3 ay" onclick="toggleChip(this,'musait')">3 ay</div>
+            </div>
+          </div>
+
+          <div class="filter-group">
+            <span class="filter-label">Çalışma Şekli</span>
+            <div class="filter-chips" id="filter-calisma">
+              <div class="chip" data-val="Tam Zamanlı" onclick="toggleChip(this,'calisma')">Tam Zamanlı</div>
+              <div class="chip" data-val="Yarı Zamanlı" onclick="toggleChip(this,'calisma')">Yarı Zamanlı</div>
+              <div class="chip" data-val="Dönemsel" onclick="toggleChip(this,'calisma')">Dönemsel</div>
+              <div class="chip" data-val="Her İkisi" onclick="toggleChip(this,'calisma')">Fark Etmez</div>
+            </div>
+          </div>
+
+          <div class="filter-group">
+            <span class="filter-label">Eğitim Seviyesi</span>
+            <div class="filter-chips" id="filter-egitim">
+              <div class="chip" data-val="Lise" onclick="toggleChip(this,'egitim')">Lise</div>
+              <div class="chip" data-val="Ön Lisans (2 Yıllık)" onclick="toggleChip(this,'egitim')">Ön Lisans</div>
+              <div class="chip" data-val="Lisans (4 Yıllık)" onclick="toggleChip(this,'egitim')">Lisans</div>
+              <div class="chip" data-val="Yüksek Lisans" onclick="toggleChip(this,'egitim')">Y. Lisans</div>
+            </div>
+          </div>
+
+          <div class="filter-group">
+            <span class="filter-label">Dil Bilgisi</span>
+            <div class="filter-chips" id="filter-dil">
+              <div class="chip" data-val="İngilizce" onclick="toggleChip(this,'dil')">İngilizce</div>
+              <div class="chip" data-val="Almanca" onclick="toggleChip(this,'dil')">Almanca</div>
+              <div class="chip" data-val="Fransızca" onclick="toggleChip(this,'dil')">Fransızca</div>
+              <div class="chip" data-val="Rusça" onclick="toggleChip(this,'dil')">Rusça</div>
+              <div class="chip" data-val="Arapça" onclick="toggleChip(this,'dil')">Arapça</div>
+            </div>
+          </div>
+
+          <button class="btn-primary" style="width:100%;justify-content:center;margin-top:4px;" onclick="applyFilters()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            Ara
+          </button>
+        </div></div>
+
+        <!-- Sonuçlar -->
+        <div class="candidates-area">
+          <div class="candidates-toolbar">
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+              <span class="candidates-count"><strong id="result-count">12</strong> aday bulundu</span>
+              <button class="btn-filter-mobile" onclick="openFilterSheet()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+                Filtrele
+                <span class="filter-active-count" id="filter-active-count" style="display:none">0</span>
+              </button>
+            </div>
+            <div class="candidates-sort">
+              Sırala:
+              <select class="sort-select" onchange="applyFilters()">
+                <option>En Yeni</option>
+                <option>Deneyim (Artan)</option>
+                <option>Deneyim (Azalan)</option>
+              </select>
+            </div>
+          </div>
+          <!-- MOBILE FİLTRE SHEET -->
+          <div class="filter-sheet-overlay" id="filter-sheet-overlay" onclick="if(event.target===this)closeFilterSheet()">
+            <div class="filter-sheet" id="filter-sheet">
+              <div class="filter-sheet-handle"></div>
+              <div class="filter-sheet-header">
+                <span class="filter-sheet-title">Filtrele</span>
+                <div style="display:flex;gap:10px;align-items:center;">
+                  <span style="font-size:12px;color:var(--verm);font-weight:700;cursor:pointer;" onclick="resetFilters()">Temizle</span>
+                  <button onclick="closeFilterSheet()" style="background:var(--bg);border:none;border-radius:8px;padding:6px 12px;font-size:13px;font-weight:700;cursor:pointer;">Tamam</button>
+                </div>
+              </div>
+              <div class="filter-sheet-body" id="filter-sheet-body">
+                <!-- JS ile doldurulacak -->
+              </div>
+            </div>
+          </div>
+          <div id="candidate-list"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ POZİSYONLAR PANELİ ═══ -->
+    <div class="panel" id="panel-pozisyonlar">
+      <div class="section-header">
+        <div>
+          <div class="section-title">Açık Pozisyonlar</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:2px;">İlan oluştur, adayları eşleştir</div>
+        </div>
+        <button class="btn-primary" onclick="openPozModal()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Pozisyon Ekle
+        </button>
+      </div>
+      <div class="pozisyon-grid" id="poz-grid"></div>
+    </div>
+
+    <!-- ═══ FAVORİLER PANELİ ═══ -->
+    <div class="panel" id="panel-favoriler">
+      <div class="section-header">
+        <div class="section-title">Favoriler</div>
+      </div>
+      <div id="favori-list"></div>
+    </div>
+
+    <!-- ═══ ŞİRKET PROFİLİ PANELİ ═══ -->
+    <div class="panel" id="panel-sirket">
+      <div class="section-header" style="margin-bottom:20px;">
+        <div>
+          <div class="section-title">Şirket Profili</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:2px;">Adaylar şirket profilinizi görecek</div>
+        </div>
+        <button class="btn-primary" onclick="saveSirket()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+          Kaydet
+        </button>
+      </div>
+
+      <!-- Tamamlanma göstergesi -->
+      <div id="sirket-completion" style="background:linear-gradient(135deg,var(--navy),#253872);border-radius:12px;padding:16px 20px;margin-bottom:20px;display:flex;align-items:center;gap:14px;">
+        <div style="flex:1;">
+          <div style="font-size:12px;color:rgba(255,255,255,0.5);margin-bottom:4px;">Profil Tamamlanma</div>
+          <div style="background:rgba(255,255,255,0.15);border-radius:4px;height:6px;margin-bottom:6px;">
+            <div id="sirket-progress-bar" style="background:var(--verm);height:100%;border-radius:4px;width:20%;transition:width 0.4s;"></div>
+          </div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.4);">Profil ne kadar dolu olursa, adaylar o kadar güvende hisseder.</div>
+        </div>
+        <div id="sirket-progress-pct" style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px;color:white;">20%</div>
+      </div>
+
+      <div class="profil-grid">
+        <div class="profil-card">
+          <div class="profil-card-title">🏢 Temel Bilgiler</div>
+          <div class="form-field">
+            <label class="form-label">Şirket / Marka Adı <span style="color:var(--verm)">*</span></label>
+            <input class="form-input" id="sc-sirket" placeholder="Örn: Zara Türkiye, Apple Premium Reseller..." oninput="updateSirketCompletion()">
+          </div>
+          <div class="form-field">
+            <label class="form-label">Sektör</label>
+            <select class="form-select" id="sc-sektor" onchange="updateSirketCompletion()">
+              <option value="">Seç...</option>
+              <option>Retail / Mağazacılık</option>
+              <option>Lüks & Butik</option>
+              <option>Teknoloji Retail</option>
+              <option>Spor & Outdoor</option>
+              <option>Gıda & İçecek</option>
+              <option>Ev & Yaşam</option>
+              <option>Kozmetik & Güzellik</option>
+              <option>Mücevher & Saat</option>
+              <option>Çocuk & Oyuncak</option>
+              <option>Diğer</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label class="form-label">Şirket Büyüklüğü</label>
+            <select class="form-select" id="sc-buyukluk" onchange="updateSirketCompletion()">
+              <option value="">Seç...</option>
+              <option>1–10 çalışan</option>
+              <option>11–50 çalışan</option>
+              <option>51–200 çalışan</option>
+              <option>201–500 çalışan</option>
+              <option>500+ çalışan</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label class="form-label">Web Sitesi</label>
+            <input class="form-input" id="sc-web" placeholder="https://sirketiniz.com" oninput="updateSirketCompletion()">
+          </div>
+          <div class="form-field">
+            <label class="form-label">Mağaza Segmenti</label>
+            <select class="form-select" id="sc-segment" onchange="updateSirketCompletion()">
+              <option value="">Seç...</option>
+              <option>Lüks</option>
+              <option>Premium</option>
+              <option>Orta Segment</option>
+              <option>Fast Fashion</option>
+              <option>Spor</option>
+              <option>Teknoloji</option>
+              <option>Gıda & Market</option>
+              <option>Ev & Yaşam</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="profil-card">
+          <div class="profil-card-title">📞 İletişim & Konum</div>
+          <div class="form-field">
+            <label class="form-label">Yetkili Ad Soyad <span style="color:var(--verm)">*</span></label>
+            <input class="form-input" id="sc-yetkili" placeholder="İsim Soyisim" oninput="updateSirketCompletion()">
+          </div>
+          <div class="form-field">
+            <label class="form-label">İş E-postası</label>
+            <input class="form-input" id="sc-email" placeholder="ik@sirket.com" oninput="updateSirketCompletion()">
+          </div>
+          <div class="form-field">
+            <label class="form-label">Telefon</label>
+            <input class="form-input" id="sc-tel" placeholder="0212 XXX XX XX" oninput="updateSirketCompletion()">
+          </div>
+          <div class="form-field">
+            <label class="form-label">Merkez Şehir</label>
+            <select class="form-select" id="sc-sehir" onchange="updateSirketCompletion()">
+              <option value="">Seç...</option>
+              <option>İstanbul</option><option>Ankara</option><option>İzmir</option>
+              <option>Bursa</option><option>Antalya</option><option>Gaziantep</option>
+              <option>Konya</option><option>Mersin</option><option>Adana</option>
+              <option>Diğer</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label class="form-label">Mağaza Sayısı</label>
+            <select class="form-select" id="sc-magaza-sayisi" onchange="updateSirketCompletion()">
+              <option value="">Seç...</option>
+              <option>1 mağaza</option>
+              <option>2–5 mağaza</option>
+              <option>6–20 mağaza</option>
+              <option>21–50 mağaza</option>
+              <option>50+ mağaza</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="profil-card" style="grid-column:1/-1">
+          <div class="profil-card-title">✍️ Şirket Hakkında</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+            <div style="grid-column:1/-1;">
+              <div class="form-field">
+                <label class="form-label">Kısa Tanıtım <span style="color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0;">(adaylara görünür)</span></label>
+                <textarea class="form-input form-textarea" id="sc-aciklama" placeholder="Şirketinizi adaylara tanıtın — kültür, değerler, çalışma ortamı, yan haklar..." style="height:90px;" oninput="updateSirketCompletion()"></textarea>
+              </div>
+            </div>
+            <div class="form-field">
+              <label class="form-label">Çalışma Saatleri</label>
+              <select class="form-select" id="sc-saat">
+                <option value="">Seç...</option>
+                <option>Vardiyalı (09:00–18:00 / 14:00–23:00)</option>
+                <option>Standart (09:00–18:00)</option>
+                <option>Esnek</option>
+                <option>AVM Saatleri (10:00–22:00)</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label class="form-label">Sosyal Medya / LinkedIn</label>
+              <input class="form-input" id="sc-linkedin" placeholder="linkedin.com/company/...">
+            </div>
+          </div>
+          <div class="form-field" style="margin-top:4px;">
+            <label class="form-label">Aradığınız Genel Profil</label>
+            <textarea class="form-input form-textarea" id="sc-profil" placeholder="Genel olarak ne tür adaylar arıyorsunuz? Öncelikli özellikler, beklentiler..." style="height:70px;"></textarea>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:16px;text-align:right;">
+        <button class="btn-primary" onclick="saveSirket()" style="min-width:140px;">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg>
+          <span id="sirket-save-text">Profili Kaydet</span>
+        </button>
+      </div>
+      <div id="sirket-msg" style="display:none;margin-top:12px;padding:12px 16px;border-radius:10px;font-size:13px;font-weight:600;background:#F0FDF4;color:#16A34A;border:1px solid #BBF7D0;">✓ Şirket profili kaydedildi!</div>
+    </div>
+
+    <!-- ═══ AYARLAR PANELİ ═══ -->
+    <div class="panel" id="panel-ayarlar">
+      <div class="section-header">
+        <div class="section-title">Ayarlar</div>
+      </div>
+      <div class="settings-grid">
+        <div>
+          <!-- Plan kartı -->
+          <div class="plan-card" style="margin-bottom:16px;">
+            <div class="plan-label">Mevcut Plan</div>
+            <div class="plan-name">Ücretsiz</div>
+            <div class="plan-features">
+              <div class="plan-feature"><span class="plan-feature-icon">✓</span> Aday önizleme (sınırlı)</div>
+              <div class="plan-feature"><span class="plan-feature-icon">✓</span> 3 açık pozisyon</div>
+              <div class="plan-feature"><span class="plan-feature-icon">✓</span> Favori listesi</div>
+              <div class="plan-feature" style="color:rgba(255,255,255,0.3);">✗ Tam iletişim bilgileri</div>
+              <div class="plan-feature" style="color:rgba(255,255,255,0.3);">✗ CV indirme</div>
+              <div class="plan-feature" style="color:rgba(255,255,255,0.3);">✗ Sınırsız arama</div>
+            </div>
+            <button class="btn-upgrade" style="width:100%;justify-content:center;" onclick="showUpgradeModal()">
+              ⚡ Premium'a Yükselt
+            </button>
+          </div>
+
+          <!-- Hesap bilgileri -->
+          <div style="background:white;border:1px solid var(--border);border-radius:12px;padding:20px;">
+            <div class="profil-card-title">Hesap Bilgileri</div>
+            <div class="form-field">
+              <label class="form-label">E-posta</label>
+              <input class="form-input" id="ayar-email" readonly style="background:var(--bg);color:var(--muted);">
+            </div>
+            <div class="form-field">
+              <label class="form-label">Yeni Şifre</label>
+              <input class="form-input" type="password" id="ayar-sifre" placeholder="Değiştirmek için girin">
+            </div>
+            <button class="btn-secondary btn-sm" onclick="updatePassword()">Şifreyi Güncelle</button>
+            <div id="pw-msg" style="display:none;margin-top:8px;font-size:12px;color:var(--green);font-weight:600;"></div>
+          </div>
+        </div>
+
+        <div style="background:white;border:1px solid var(--border);border-radius:12px;padding:20px;">
+          <div class="profil-card-title">Bildirim Tercihleri</div>
+          <div class="toggle-row">
+            <div class="toggle-info">
+              <h4>Yeni Aday Bildirimi</h4>
+              <p>Havuza yeni retail uzmanı eklendiğinde</p>
+            </div>
+            <button class="toggle on" onclick="this.classList.toggle('on')"></button>
+          </div>
+          <div class="toggle-row">
+            <div class="toggle-info">
+              <h4>Haftalık Özet</h4>
+              <p>Aday havuzu aktivite raporu</p>
+            </div>
+            <button class="toggle on" onclick="this.classList.toggle('on')"></button>
+          </div>
+          <div class="toggle-row">
+            <div class="toggle-info">
+              <h4>hellohunter Teklifleri</h4>
+              <p>Pozisyona özel aday önerileri</p>
+            </div>
+            <button class="toggle" onclick="this.classList.toggle('on')"></button>
+          </div>
+          <div class="toggle-row">
+            <div class="toggle-info">
+              <h4>Ürün Güncellemeleri</h4>
+              <p>Yeni özellikler ve duyurular</p>
+            </div>
+            <button class="toggle on" onclick="this.classList.toggle('on')"></button>
+          </div>
+
+          <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border);">
+            <div class="profil-card-title" style="margin-bottom:12px;">Tehlikeli Bölge</div>
+            <button class="btn-secondary btn-sm" style="border-color:#fca5a5;color:#dc2626;" onclick="if(confirm('Hesabını silmek istediğine emin misin?'))alert('Bu işlem için destek ekibimizle iletişime geç.')">
+              Hesabı Sil
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<!-- ADAY DETAY DRAWER -->
+<div class="drawer-overlay" id="drawer-overlay" onclick="closeDrawer()"></div>
+<div class="drawer" id="candidate-drawer">
+  <div class="drawer-header">
+    <span style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:14px;">Aday Detayı</span>
+    <button class="drawer-close" onclick="closeDrawer()">✕</button>
+  </div>
+  <div class="drawer-body" id="drawer-body"></div>
+</div>
+
+<!-- POZİSYON MODAL -->
+<div class="modal-overlay" id="poz-modal-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Pozisyon Ekle</span>
+      <button class="modal-close" onclick="closePozModal()">✕</button>
+    </div>
+    <div class="form-row">
+      <div class="form-field">
+        <label class="form-label">Pozisyon Adı *</label>
+        <input class="form-input" id="poz-ad" placeholder="Örn: Store Manager">
+      </div>
+      <div class="form-field">
+        <label class="form-label">Şehir</label>
+        <select class="form-select" id="poz-sehir">
+          <option value="">Seç...</option>
+          <option>Türkiye Geneli</option>
+          <option>İstanbul (Tümü)</option>
+          <option>İstanbul – Avrupa Yakası</option>
+          <option>İstanbul – Anadolu Yakası</option>
+          <option>Ankara</option>
+          <option>İzmir</option>
+          <option>Bursa</option>
+          <option>Antalya</option>
+          <option>Gaziantep</option>
+          <option>Konya</option>
+          <option>Mersin</option>
+          <option>Adana</option>
+          <option>Kayseri</option>
+          <option>Eskişehir</option>
+          <option>Samsun</option>
+          <option>Trabzon</option>
+          <option>Denizli</option>
+          <option>Kocaeli / İzmit</option>
+          <option>Sakarya</option>
+          <option>Tekirdağ / Çerkezköy</option>
+          <option>Muğla / Bodrum / Marmaris</option>
+          <option>Balıkesir</option>
+          <option>Diyarbakır</option>
+          <option>Şanlıurfa</option>
+          <option>Hatay / İskenderun</option>
+          <option>Manisa</option>
+          <option>Malatya</option>
+          <option>Erzurum</option>
+          <option>Van</option>
+          <option>Diğer</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-field">
+        <label class="form-label">Deneyim (Yıl)</label>
+        <input class="form-input" id="poz-exp" placeholder="Örn: 3-5">
+      </div>
+      <div class="form-field">
+        <label class="form-label">Segment</label>
+        <select class="form-select" id="poz-seg">
+          <option>Lüks</option><option>Fast Fashion</option><option>Teknoloji</option>
+          <option>Spor</option><option>Ev & Yaşam</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-field">
+      <label class="form-label">Maaş Aralığı</label>
+      <input class="form-input" id="poz-maas" placeholder="Örn: 25.000 - 35.000 TL">
+    </div>
+    <div class="form-field">
+      <label class="form-label">Pozisyon Açıklaması</label>
+      <textarea class="form-input form-textarea" id="poz-aciklama" placeholder="Görev tanımı, beklentiler..."></textarea>
+    </div>
+    <div class="form-footer">
+      <button class="btn-secondary" onclick="closePozModal()">İptal</button>
+      <button class="btn-primary" onclick="savePozisyon()">Kaydet →</button>
+    </div>
+  </div>
+</div>
+
+<!-- UPGRADE MODAL -->
+
+    <!-- ═══ POZİSYON DETAY MODAL ═══ -->
+    <div class="modal-overlay" id="poz-detay-overlay">
+      <div class="modal" style="width:860px;max-width:96vw;max-height:90vh;display:flex;flex-direction:column;padding:0;overflow:hidden;">
+        <div class="modal-header" style="padding:20px 24px;flex-shrink:0;">
+          <div>
+            <h3 class="modal-title" id="poz-detay-baslik">Pozisyon Adayları</h3>
+            <div style="font-size:12px;color:var(--muted);margin-top:3px;" id="poz-detay-alt"></div>
+          </div>
+          <button class="modal-close" onclick="closePozDetay()">✕</button>
+        </div>
+        <div id="poz-detay-kriterler" style="padding:10px 24px;background:#EFF6FF;border-bottom:1px solid #BFDBFE;font-size:12px;color:#1D4ED8;flex-shrink:0;display:flex;align-items:center;gap:8px;">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <span id="poz-detay-kriter-text"></span>
+        </div>
+        <div style="overflow-y:auto;flex:1;padding:16px 24px;display:flex;flex-direction:column;gap:12px;" id="poz-detay-liste"></div>
+        <div style="padding:14px 24px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:var(--bg);">
+          <span style="font-size:12px;color:var(--muted);" id="poz-detay-count-text"></span>
+          <div style="display:flex;gap:8px;">
+            <button class="btn-secondary btn-sm" onclick="closePozDetay()">Kapat</button>
+            <button class="btn-primary btn-sm" onclick="switchPanel('search',document.querySelector('[data-panel=search]'));closePozDetay();">Tüm Adaylarda Ara →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+<div class="modal-overlay" id="upgrade-modal-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">⚡ Premium'a Geç</span>
+      <button class="modal-close" onclick="closeUpgradeModal()">✕</button>
+    </div>
+    <div style="text-align:center;padding:8px 0 20px;">
+      <div style="display:inline-flex;align-items:center;gap:6px;background:#FEF3C7;border:1.5px solid #FDE68A;border-radius:20px;padding:5px 14px;margin-bottom:16px;">
+        <span style="font-size:11px;font-weight:700;color:#92400E;">YAKINDA — Ön Kayıt Açık</span>
+      </div>
+      <p style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:20px;">Premium plan hazırlanıyor. Şu an teklif al formumuzu doldurarak öncelikli erişim listesine eklenebilirsin.</p>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px;">
+      <div style="display:flex;align-items:center;gap:10px;padding:12px;background:var(--bg);border-radius:9px;">
+        <span style="color:var(--green);font-size:16px;">✓</span>
+        <span style="font-size:13px;font-weight:600;">Tüm adayların tam iletişim bilgileri</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;padding:12px;background:var(--bg);border-radius:9px;">
+        <span style="color:var(--green);font-size:16px;">✓</span>
+        <span style="font-size:13px;font-weight:600;">CV indirme ve profil tam erişim</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;padding:12px;background:var(--bg);border-radius:9px;">
+        <span style="color:var(--green);font-size:16px;">✓</span>
+        <span style="font-size:13px;font-weight:600;">Sınırsız aday arama ve filtreleme</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;padding:12px;background:var(--bg);border-radius:9px;">
+        <span style="color:var(--green);font-size:16px;">✓</span>
+        <span style="font-size:13px;font-weight:600;">AI destekli aday eşleştirme</span>
+      </div>
+    </div>
+    <a href="index.html#hr" class="btn-primary" style="display:block;text-align:center;text-decoration:none;width:100%;justify-content:center;padding:13px;">
+      Öncelikli Erişim İçin Teklif Al →
+    </a>
+    <p style="text-align:center;font-size:11px;color:var(--muted);margin-top:10px;">Kredi kartı gerekmez · Sözleşme yok</p>
+  </div>
+</div>
+
+<script>
+// ── SUPABASE ──
+var _supa = null;
+function getSupa(){
+  if(!_supa) _supa = supabase.createClient(
+    'https://cpwibefquojehjehtrog.supabase.co',
+    'sb_publishable_POUtNwJyjAAheukwYP5hmA_TKKjphwa'
+  );
+  return _supa;
+}
+
+// ── STATE ──
+var currentUser = null;
+var hrProfile = {};
+var favorites = JSON.parse(localStorage.getItem('ht_ik_favs') || '[]');
+var pozisyonlar = JSON.parse(localStorage.getItem('ht_pozisyonlar') || '[]');
+var filterState = { pozisyon:[], segment:[], musait:[], calisma:[], egitim:[], dil:[] };
+
+// ── MOCK ADAYLAR ──
+var ADAYLAR = [
+  {id:1,ad:'Ahmet',soyad:'Yılmaz',initials:'AY',color:'#C94E28',pozisyon:'Store Manager',exp:8,sehir:'İstanbul',segment:'Fast Fashion',musait:'Hemen başlayabilirim',calisma:'Tam Zamanlı',egitim:'Lisans (4 Yıllık)',diller:['İngilizce','Almanca'],tel:'05** *** **37',email:'a*****@gmail.com',brand:'Massimo Dutti',maas:'30.000 TL'},
+  {id:2,ad:'Selin',soyad:'Bozkurt',initials:'SB',color:'#1E2D5E',pozisyon:'Sales Specialist',exp:5,sehir:'İstanbul',segment:'Lüks',musait:'1 ay',calisma:'Tam zamanlı',tel:'05** *** **14',email:'s*****@hotmail.com',brand:'Louis Vuitton',maas:'25.000 TL'},
+  {id:3,ad:'Ali',soyad:'Öztürk',initials:'AO',color:'#374151',pozisyon:'Ops Lead',exp:6,sehir:'Ankara',segment:'Teknoloji',musait:'Hemen',calisma:'Tam zamanlı',tel:'05** *** **21',email:'a***@icloud.com',brand:'Apple',maas:'35.000 TL'},
+  {id:4,ad:'Zeynep',soyad:'Demir',initials:'ZD',color:'#7C3AED',pozisyon:'Visual Merchandiser',exp:4,sehir:'İzmir',segment:'Fast Fashion',musait:'3 ay',calisma:'Tam zamanlı',tel:'05** *** **58',email:'z*****@gmail.com',brand:'Zara',maas:'20.000 TL'},
+  {id:5,ad:'Murat',soyad:'Kaya',initials:'MK',color:'#0891B2',pozisyon:'Departman Müdürü',exp:9,sehir:'İstanbul',segment:'Spor',musait:'1 ay',calisma:'Tam zamanlı',tel:'05** *** **73',email:'m***@gmail.com',brand:'Nike',maas:'40.000 TL'},
+  {id:6,ad:'Fatma',soyad:'Şahin',initials:'FŞ',color:'#059669',pozisyon:'Eğitim Uzmanı',exp:7,sehir:'Bursa',segment:'Lüks',musait:'Hemen',calisma:'Sözleşmeli',tel:'05** *** **92',email:'f*****@outlook.com',brand:'Chanel',maas:'28.000 TL'},
+  {id:7,ad:'Emre',soyad:'Çelik',initials:'EÇ',color:'#DC2626',pozisyon:'Store Manager',exp:11,sehir:'İstanbul',segment:'Fast Fashion',musait:'Hemen',calisma:'Tam zamanlı',tel:'05** *** **44',email:'e***@gmail.com',brand:'H&M',maas:'38.000 TL'},
+  {id:8,ad:'Ayşe',soyad:'Koç',initials:'AK',color:'#D97706',pozisyon:'Sales Specialist',exp:3,sehir:'Ankara',segment:'Ev & Yaşam',musait:'3 ay',calisma:'Yarı zamanlı',tel:'05** *** **61',email:'a*****@yahoo.com',brand:'IKEA',maas:'18.000 TL'},
+  {id:9,ad:'Berk',soyad:'Arslan',initials:'BA',color:'#4F46E5',pozisyon:'Ops Lead',exp:5,sehir:'İzmir',segment:'Teknoloji',musait:'1 ay',calisma:'Tam zamanlı',tel:'05** *** **83',email:'b***@gmail.com',brand:'Samsung',maas:'32.000 TL'},
+  {id:10,ad:'Cansu',soyad:'Erdem',initials:'CE',color:'#DB2777',pozisyon:'Visual Merchandiser',exp:6,sehir:'İstanbul',segment:'Lüks',musait:'Hemen',calisma:'Tam zamanlı',tel:'05** *** **17',email:'c*****@gmail.com',brand:'Gucci',maas:'30.000 TL'},
+  {id:11,ad:'Hakan',soyad:'Yıldız',initials:'HY',color:'#0D9488',pozisyon:'Store Manager',exp:14,sehir:'İstanbul',segment:'Spor',musait:'3 ay',calisma:'Tam zamanlı',tel:'05** *** **29',email:'h***@hotmail.com',brand:'Adidas',maas:'45.000 TL'},
+  {id:12,ad:'Elif',soyad:'Güneş',initials:'EG',color:'#7C2D12',pozisyon:'Departman Müdürü',exp:7,sehir:'Antalya',segment:'Fast Fashion',musait:'Hemen',calisma:'Tam zamanlı',tel:'05** *** **05',email:'e*****@gmail.com',brand:'Mango',maas:'26.000 TL'},
+];
+
+// ── MOCK POZİSYONLAR (default) ──
+var DEFAULT_POZLAR = [
+  {id:1,ad:'Store Manager',sehir:'İstanbul',exp:'5+ yıl',seg:'Fast Fashion',maas:'30.000-40.000 TL',aciklama:'İstanbul mağazamız için deneyimli Store Manager arıyoruz.',durum:'active',basvuru:8,gorunum:34},
+  {id:2,ad:'Sales Specialist',sehir:'Ankara',exp:'2-4 yıl',seg:'Lüks',maas:'20.000-28.000 TL',aciklama:'Lüks segment deneyimi olan satış uzmanı.',durum:'active',basvuru:5,gorunum:21},
+  {id:3,ad:'Visual Merchandiser',sehir:'İzmir',exp:'3+ yıl',seg:'Fast Fashion',maas:'18.000-24.000 TL',aciklama:'Yaratıcı ve trend takip eden görsel düzenleme uzmanı.',durum:'draft',basvuru:0,gorunum:0},
+];
+
+if(pozisyonlar.length === 0) {
+  pozisyonlar = DEFAULT_POZLAR;
+  localStorage.setItem('ht_pozisyonlar', JSON.stringify(pozisyonlar));
+}
+
+// ── AUTH GUARD ──
+async function initApp(){
+  const { data } = await getSupa().auth.getSession();
+  if(!data.session){
+    window.location.replace('giris.html?tab=ik');
+    return;
+  }
+  currentUser = data.session.user;
+
+  // Profil bilgilerini yükle
+  var meta = currentUser.user_metadata || {};
+  var displayName = meta.full_name || currentUser.email.split('@')[0];
+  var company = meta.company || '';
+
+  document.getElementById('sidebar-name').textContent = displayName;
+  document.getElementById('sidebar-avatar').textContent = displayName[0].toUpperCase();
+  document.getElementById('ayar-email').value = currentUser.email;
+
+  // Şirket profil alanlarını doldur
+  if(company) document.getElementById('sc-sirket').value = company;
+  document.getElementById('sc-email').value = currentUser.email;
+
+  // Supabase'den hr_profiles çek
+  try{
+    var {data:prof} = await getSupa().from('hr_profiles').select('*').eq('id',currentUser.id).single();
+    if(prof){
+      hrProfile = prof;
+      var fullName = ((prof.ad||'') + ' ' + (prof.soyad||'')).trim();
+      if(fullName){ document.getElementById('sidebar-name').textContent = fullName; document.getElementById('sidebar-avatar').textContent = fullName[0].toUpperCase(); }
+      var fields = {
+        'sc-sirket': prof.sirket,
+        'sc-yetkili': fullName,
+        'sc-email': prof.email,
+        'sc-sektor': prof.sektor,
+        'sc-buyukluk': prof.buyukluk,
+        'sc-web': prof.web_sitesi,
+        'sc-segment': prof.segment,
+        'sc-tel': prof.telefon,
+        'sc-sehir': prof.merkez_sehir,
+        'sc-magaza-sayisi': prof.magaza_sayisi,
+        'sc-aciklama': prof.aciklama,
+        'sc-profil': prof.aranan_profil,
+        'sc-saat': prof.calisma_saatleri,
+        'sc-linkedin': prof.linkedin
+      };
+      Object.keys(fields).forEach(function(id){
+        var el = document.getElementById(id);
+        if(el && fields[id]) el.value = fields[id];
+      });
+      updateSirketCompletion();
+    }
+  }catch(e){}
+
+  // Render
+  renderCandidates(ADAYLAR);
+  renderPozisyonlar();
+  renderFavoriler();
+  updateFavCount();
+
+  // URL hash varsa o panele git
+  var hash = window.location.hash.replace('#','');
+  if(hash && document.getElementById('panel-'+hash)){
+    switchPanel(hash, document.querySelector('[data-panel="'+hash+'"]'));
+  } else {
+    history.replaceState({panel:'dashboard'}, '', '#dashboard');
+  }
+
+  // Loading gizle
+  setTimeout(function(){
+    document.getElementById('app-loading').classList.add('hide');
+    updateSirketCompletion();
+  }, 600);
+}
+
+// ── NAVIGATION ──
+var PANEL_TITLES = {
+  dashboard:'Genel Bakış',
+  search:'Aday Ara',
+  pozisyonlar:'Açık Pozisyonlar',
+  favoriler:'Favoriler',
+  sirket:'Şirket Profili',
+  ayarlar:'Ayarlar'
+};
+function switchPanel(name, el){
+  document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('active');});
+  document.querySelectorAll('.nav-item').forEach(function(n){n.classList.remove('active');});
+  document.querySelectorAll('.bn-item').forEach(function(n){n.classList.remove('active');});
+  document.getElementById('panel-'+name).classList.add('active');
+  // sidebar nav
+  var sideEl = document.querySelector('.nav-item[data-panel="'+name+'"]');
+  if(sideEl) sideEl.classList.add('active');
+  // bottom nav
+  var bnEl = document.querySelector('.bn-item[data-panel="'+name+'"]');
+  if(bnEl) bnEl.classList.add('active');
+  // topbar
+  var tb = document.getElementById('topbar-title');
+  if(tb) tb.textContent = PANEL_TITLES[name] || name;
+  // history
+  var state = {panel: name};
+  if(history.state && history.state.panel !== name){
+    history.pushState(state, '', '#'+name);
+  } else if(!history.state) {
+    history.replaceState(state, '', '#'+name);
+  }
+  // mobile — scroll to top
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+// Browser geri/ileri tuşu
+window.addEventListener('popstate', function(e){
+  var name = (e.state && e.state.panel) || 'dashboard';
+  // switchPanel'ı history push olmadan çağır
+  document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('active');});
+  document.querySelectorAll('.nav-item').forEach(function(n){n.classList.remove('active');});
+  document.querySelectorAll('.bn-item').forEach(function(n){n.classList.remove('active');});
+  var panel = document.getElementById('panel-'+name);
+  if(panel) panel.classList.add('active');
+  var sideEl = document.querySelector('.nav-item[data-panel="'+name+'"]');
+  if(sideEl) sideEl.classList.add('active');
+  var bnEl = document.querySelector('.bn-item[data-panel="'+name+'"]');
+  if(bnEl) bnEl.classList.add('active');
+});
+
+
+// ── LOGOUT ──
+async function doLogout(){
+  await getSupa().auth.signOut();
+  window.location.replace('giris.html?tab=ik');
+}
+
+// ── CANDIDATE RENDER ──
+function renderCandidates(list){
+  var container = document.getElementById('candidate-list');
+  document.getElementById('result-count').textContent = list.length;
+  if(list.length === 0){
+    container.innerHTML = '<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-title">Sonuç bulunamadı</div><div class="empty-sub">Filtreleri değiştirip tekrar deneyin</div></div>';
+    return;
+  }
+  container.innerHTML = list.map(function(c){ return candidateCardHTML(c); }).join('');
+}
+
+function candidateCardHTML(c){
+  var isFav = favorites.indexOf(c.id) !== -1;
+  var favCls = isFav ? 'active' : '';
+  return '<div class="candidate-card" onclick="openDrawer('+c.id+')">'
+    +'<div class="cc-top">'
+    +'<div class="cc-avatar blur" style="background:'+c.color+'">'+c.initials+'</div>'
+    +'<div class="cc-info">'
+    +'<div class="cc-name">'+c.ad[0]+'. '+c.soyad+'</div>'
+    +'<div class="cc-pos">'+c.pozisyon+' · '+c.exp+' yıl deneyim</div>'
+    +'</div>'
+    +'<span style="font-size:11px;font-weight:700;color:var(--muted);background:var(--bg);padding:3px 9px;border-radius:20px;white-space:nowrap;flex-shrink:0;">'+c.brand+'</span>'
+    +'</div>'
+    +'<div class="cc-tags">'
+    +'<span class="cc-tag exp">'+c.exp+' yıl</span>'
+    +'<span class="cc-tag city">'+c.sehir+'</span>'
+    +'<span class="cc-tag seg">'+c.segment+'</span>'
+    +'<span class="cc-tag avail">'+c.musait+'</span>'
+    +'</div>'
+    +'<div class="cc-contact">'
+    +'<div class="cc-contact-item"><div class="cc-contact-label">Telefon</div><div class="cc-contact-val masked">'+c.tel+'</div></div>'
+    +'<div class="cc-contact-item"><div class="cc-contact-label">E-posta</div><div class="cc-contact-val masked">'+c.email+'</div></div>'
+    +'</div>'
+    +'<div class="cc-actions" onclick="event.stopPropagation()">'
+    +'<button class="cc-fav-btn '+favCls+'" onclick="toggleFav('+c.id+',this)" title="Favoriye ekle">★</button>'
+    +'<button class="cc-cv-btn locked" title="Premium gerekli">📄 CV Görüntüle</button>'
+    +'<span class="lock-overlay">🔒 Premium</span>'
+    +'</div>'
+    +'</div>';
+}
+
+// ── FAVORİ ──
+function toggleFav(id, btn){
+  var idx = favorites.indexOf(id);
+  if(idx === -1){ favorites.push(id); btn.classList.add('active'); }
+  else { favorites.splice(idx,1); btn.classList.remove('active'); }
+  localStorage.setItem('ht_ik_favs', JSON.stringify(favorites));
+  updateFavCount();
+  renderFavoriler();
+}
+
+function updateFavCount(){
+  var n = favorites.length;
+  document.getElementById('stat-fav').textContent = n;
+  ['nav-fav-count','bn-fav-count'].forEach(function(id){
+    var badge = document.getElementById(id);
+    if(!badge) return;
+    if(n>0){ badge.style.display=''; badge.textContent=n; }
+    else badge.style.display='none';
+  });
+}
+
+function renderFavoriler(){
+  var container = document.getElementById('favori-list');
+  var favAdaylar = ADAYLAR.filter(function(a){ return favorites.indexOf(a.id)!==-1; });
+  if(favAdaylar.length===0){
+    container.innerHTML='<div class="empty-state"><div class="empty-icon">⭐</div><div class="empty-title">Henüz favori yok</div><div class="empty-sub">Aday listesinden ★ ikonuna tıklayarak favorilere ekle</div></div>';
+    return;
+  }
+  container.innerHTML='<div style="display:flex;flex-direction:column;gap:14px;">'+favAdaylar.map(function(c){return candidateCardHTML(c);}).join('')+'</div>';
+}
+
+
+// ── FİLTRE SHEET (mobile) ──
+function openFilterSheet(){
+  // Sheet body'e filtre içeriğini kopyala (desktop filter-panel içeriği)
+  var panelContent = document.getElementById('filter-panel-inner');
+  var sheetBody = document.getElementById('filter-sheet-body');
+  if(panelContent && sheetBody) sheetBody.innerHTML = panelContent.innerHTML;
+  document.getElementById('filter-sheet-overlay').classList.add('show');
+  document.body.style.overflow='hidden';
+}
+function closeFilterSheet(){
+  document.getElementById('filter-sheet-overlay').classList.remove('show');
+  document.body.style.overflow='';
+}
+
+// ── FİLTRE ──
+function toggleChip(el, type){
+  el.classList.toggle('selected');
+  var val = el.getAttribute('data-val');
+  var arr = filterState[type];
+  var idx = arr.indexOf(val);
+  if(idx===-1) arr.push(val); else arr.splice(idx,1);
+  applyFilters();
+}
+
+function applyFilters(){
+  var sehir = document.getElementById('filter-sehir').value;
+  var expMin = parseInt(document.getElementById('filter-exp-min').value) || 0;
+  var expMax = parseInt(document.getElementById('filter-exp-max').value) || 99;
+
+  var result = ADAYLAR.filter(function(c){
+    if(filterState.pozisyon.length && filterState.pozisyon.indexOf(c.pozisyon)===-1) return false;
+    if(sehir && c.sehir !== sehir) return false;
+    if(c.exp < expMin || c.exp > expMax) return false;
+    if(filterState.segment.length && filterState.segment.indexOf(c.segment)===-1) return false;
+    if(filterState.musait.length && filterState.musait.indexOf(c.musait)===-1) return false;
+    if(filterState.calisma.length && filterState.calisma.indexOf(c.calisma)===-1) return false;
+    if(filterState.egitim.length && c.egitim && filterState.egitim.indexOf(c.egitim)===-1) return false;
+    if(filterState.dil.length){
+      var hasDil = filterState.dil.some(function(d){ return c.diller && c.diller.indexOf(d)!==-1; });
+      if(!hasDil) return false;
+    }
+    return true;
+  });
+  // aktif filtre sayısı güncelle
+  var activeCount = filterState.pozisyon.length + filterState.segment.length + filterState.musait.length + filterState.calisma.length + filterState.egitim.length + filterState.dil.length + (sehir?1:0);
+  var badge = document.getElementById('filter-active-count');
+  if(badge){ badge.textContent = activeCount; badge.style.display = activeCount>0?'':'none'; }
+  renderCandidates(result);
+}
+
+function resetFilters(){
+  filterState = {pozisyon:[],segment:[],musait:[],calisma:[],egitim:[],dil:[]};
+  var badge = document.getElementById('filter-active-count');
+  if(badge){ badge.textContent='0'; badge.style.display='none'; }
+  document.querySelectorAll('.chip.selected').forEach(function(c){c.classList.remove('selected');});
+  document.getElementById('filter-sehir').value='';
+  document.getElementById('filter-exp-min').value='';
+  document.getElementById('filter-exp-max').value='';
+  renderCandidates(ADAYLAR);
+}
+
+// ── DRAWER ──
+function openDrawer(id){
+  var c = ADAYLAR.find(function(a){return a.id===id;});
+  if(!c) return;
+  var isFav = favorites.indexOf(c.id)!==-1;
+  document.getElementById('drawer-body').innerHTML=
+    '<div class="drawer-avatar-row">'
+    +'<div class="drawer-avatar blur" style="background:'+c.color+'">'+c.initials+'</div>'
+    +'<div><div class="drawer-name">'+c.ad[0]+'. '+c.soyad+'</div><div class="drawer-pos">'+c.pozisyon+' · '+c.brand+'</div></div>'
+    +'</div>'
+    +'<div class="premium-badge">🔒 Tam erişim için Premium gerekli</div>'
+    +'<div class="drawer-section-title">Temel Bilgiler</div>'
+    +'<div class="drawer-info-grid">'
+    +'<div class="drawer-info-item"><div class="drawer-info-label">Şehir</div><div class="drawer-info-val">'+c.sehir+'</div></div>'
+    +'<div class="drawer-info-item"><div class="drawer-info-label">Deneyim</div><div class="drawer-info-val">'+c.exp+' yıl</div></div>'
+    +'<div class="drawer-info-item"><div class="drawer-info-label">Müsaitlik</div><div class="drawer-info-val">'+c.musait+'</div></div>'
+    +'<div class="drawer-info-item"><div class="drawer-info-label">Segment</div><div class="drawer-info-val">'+c.segment+'</div></div>'
+    +'<div class="drawer-info-item"><div class="drawer-info-label">Çalışma</div><div class="drawer-info-val">'+c.calisma+'</div></div>'
+    +'<div class="drawer-info-item"><div class="drawer-info-label">Maaş Beklenti</div><div class="drawer-info-val">'+c.maas+'</div></div>'
+    +'</div>'
+    +'<div class="drawer-section-title">İletişim</div>'
+    +'<div class="drawer-info-grid">'
+    +'<div class="drawer-info-item"><div class="drawer-info-label">Telefon</div><div class="drawer-info-val masked">'+c.tel+'</div></div>'
+    +'<div class="drawer-info-item"><div class="drawer-info-label">E-posta</div><div class="drawer-info-val masked">'+c.email+'</div></div>'
+    +'</div>'
+    +'<div class="drawer-actions">'
+    +'<button class="btn-secondary btn-sm '+(isFav?'':'')+ '" onclick="toggleFav('+c.id+',this)" style="'+(isFav?'border-color:#f59e0b;color:#d97706;':'')+'">'+(isFav?'★ Favoride':'☆ Favoriye Ekle')+'</button>'
+    +'<button class="btn-primary btn-sm" style="filter:blur(2px);pointer-events:none;">📄 CV İndir</button>'
+    +'<button class="btn-upgrade btn-sm" onclick="showUpgradeModal()">Premium →</button>'
+    +'</div>';
+
+  document.getElementById('drawer-overlay').classList.add('show');
+  document.getElementById('candidate-drawer').classList.add('show');
+  document.body.style.overflow='hidden';
+}
+
+function closeDrawer(){
+  document.getElementById('drawer-overlay').classList.remove('show');
+  document.getElementById('candidate-drawer').classList.remove('show');
+  document.body.style.overflow='';
+}
+
+// ── POZİSYON ──
+function openPozModal(){ document.getElementById('poz-modal-overlay').classList.add('show'); }
+function closePozModal(){ document.getElementById('poz-modal-overlay').classList.remove('show'); }
+
+function savePozisyon(){
+  var ad = document.getElementById('poz-ad').value.trim();
+  if(!ad){ alert('Pozisyon adı zorunludur.'); return; }
+  var yeni = {
+    id: Date.now(),
+    ad: ad,
+    sehir: document.getElementById('poz-sehir').value,
+    exp: document.getElementById('poz-exp').value || '—',
+    seg: document.getElementById('poz-seg').value,
+    maas: document.getElementById('poz-maas').value || '—',
+    aciklama: document.getElementById('poz-aciklama').value,
+    durum: 'active',
+    basvuru: 0,
+    gorunum: 0
+  };
+  pozisyonlar.unshift(yeni);
+  localStorage.setItem('ht_pozisyonlar', JSON.stringify(pozisyonlar));
+  renderPozisyonlar();
+  closePozModal();
+  // Formu temizle
+  ['poz-ad','poz-exp','poz-maas','poz-aciklama'].forEach(function(id){ document.getElementById(id).value=''; });
+  // Stat güncelle
+  var aktif = pozisyonlar.filter(function(p){return p.durum==='active';}).length;
+  document.getElementById('stat-poz').textContent = aktif;
+  ['nav-poz-count','bn-poz-count'].forEach(function(id){
+    var el=document.getElementById(id);
+    if(el){ el.textContent=aktif; el.style.display=aktif>0?'':'none'; }
+  });
+}
+
+function renderPozisyonlar(){
+  var aktif = pozisyonlar.filter(function(p){return p.durum==='active';}).length;
+  document.getElementById('stat-poz').textContent = aktif;
+  ['nav-poz-count','bn-poz-count'].forEach(function(id){
+    var el=document.getElementById(id);
+    if(el){ el.textContent=aktif; el.style.display=aktif>0?'':'none'; }
+  });
+
+  var container = document.getElementById('poz-grid');
+  if(pozisyonlar.length===0){
+    container.innerHTML='<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">📋</div><div class="empty-title">Henüz pozisyon yok</div><div class="empty-sub">İlk açık pozisyonunu oluştur</div></div>';
+    return;
+  }
+  container.innerHTML = pozisyonlar.map(function(p){ return pozCard(p); }).join('');
+}
+
+function pozCard(p){
+  var durumLabel = {active:'Aktif',draft:'Taslak',closed:'Kapalı'}[p.durum];
+  return '<div class="poz-card">'
+    +'<div class="poz-header">'
+    +'<div class="poz-title">'+p.ad+'</div>'
+    +'<span class="poz-status '+p.durum+'">'+durumLabel+'</span>'
+    +'</div>'
+    +'<div class="poz-detail">'+p.sehir+' · '+p.exp+' yıl deneyim</div>'
+    +'<div class="poz-chips">'
+    +'<span class="poz-chip">'+p.seg+'</span>'
+    +'<span class="poz-chip">'+p.maas+'</span>'
+    +'</div>'
+    +(p.aciklama ? '<div style="font-size:12px;color:var(--muted);line-height:1.5;margin-bottom:12px;">'+p.aciklama.substring(0,100)+(p.aciklama.length>100?'…':'')+'</div>' : '')
+    +'<div class="poz-stats">'
+    +'<div class="poz-stat"><div class="poz-stat-val">'+p.gorunum+'</div><div class="poz-stat-label">Görüntüleme</div></div>'
+    +'<div class="poz-stat"><div class="poz-stat-val">'+p.basvuru+'</div><div class="poz-stat-label">Eşleşme</div></div>'
+    +'</div>'
+    +'<div class="poz-actions">'
+    +'<button class="btn-primary btn-sm" onclick="openPozDetay('+p.id+',event)" style="gap:5px;">'
+    +'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>'
+    +'Adayları Gör</button>'
+    +(p.durum==='active'
+      ? '<button class="btn-secondary btn-sm" onclick="togglePozDurum('+p.id+')">Kapat</button>'
+      : '<button class="btn-primary btn-sm" onclick="togglePozDurum('+p.id+')">Aktifleştir</button>')
+    +'<button class="btn-secondary btn-sm" style="color:var(--red);border-color:#fca5a5;" onclick="deletePoz('+p.id+')">Sil</button>'
+    +'</div>'
+    +'</div>';
+}
+
+function togglePozDurum(id){
+  var p = pozisyonlar.find(function(x){return x.id===id;});
+  if(!p) return;
+  p.durum = p.durum==='active' ? 'closed' : 'active';
+  localStorage.setItem('ht_pozisyonlar', JSON.stringify(pozisyonlar));
+  renderPozisyonlar();
+}
+
+function deletePoz(id){
+  if(!confirm('Bu pozisyonu silmek istediğine emin misin?')) return;
+  pozisyonlar = pozisyonlar.filter(function(p){return p.id!==id;});
+  localStorage.setItem('ht_pozisyonlar', JSON.stringify(pozisyonlar));
+  renderPozisyonlar();
+}
+
+
+// ── POZİSYON DETAY ──
+function openPozDetay(id, e){
+  if(e) e.stopPropagation();
+  var p = pozisyonlar.find(function(x){return x.id===id;});
+  if(!p) return;
+  document.getElementById('poz-detay-baslik').textContent = p.ad + ' — Eşleşen Adaylar';
+  document.getElementById('poz-detay-alt').textContent = p.sehir + ' · ' + (p.exp||'—') + ' yıl deneyim · ' + (p.seg||'');
+  // Eşleşme kriterleri
+  document.getElementById('poz-detay-kriter-text').textContent = 
+    'Eşleşme kriterleri: Pozisyon = ' + p.ad + (p.sehir?' | Şehir = '+p.sehir:'') + (p.seg?' | Segment = '+p.seg:'');
+  // Eşleşen adayları bul
+  var matched = ADAYLAR.filter(function(c){
+    var pozMatch = !p.ad || c.pozisyon.toLowerCase().indexOf(p.ad.toLowerCase().split(' ')[0]) !== -1;
+    var sehirMatch = !p.sehir || p.sehir.indexOf('Geneli') !== -1 || c.sehir === p.sehir.split(' ')[0];
+    var segMatch = !p.seg || c.segment === p.seg;
+    return pozMatch || sehirMatch || segMatch;
+  });
+  document.getElementById('poz-detay-count-text').textContent = matched.length + ' eşleşen aday bulundu';
+  // Render
+  var liste = document.getElementById('poz-detay-liste');
+  if(matched.length === 0){
+    liste.innerHTML = '<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-title">Henüz eşleşme yok</div><div class="empty-sub">Bu pozisyon kriterlerine uyan aday bulunamadı. Kriterleri genişletmeyi deneyin.</div></div>';
+  } else {
+    liste.innerHTML = matched.map(function(c){
+      var isFav = favorites.indexOf(c.id) !== -1;
+      return '<div class="candidate-card" onclick="openDrawer('+c.id+')" style="cursor:pointer;">'
+        +'<div class="cc-top">'
+        +'<div class="cc-avatar blur" style="background:'+c.color+'">'+c.initials+'</div>'
+        +'<div class="cc-info">'
+        +'<div class="cc-name">'+c.ad[0]+'. '+c.soyad+'</div>'
+        +'<div class="cc-pos">'+c.pozisyon+' · '+c.exp+' yıl · '+c.sehir+'</div>'
+        +'</div>'
+        +'<div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">'
+        +'<span style="font-size:11px;font-weight:700;background:var(--bg);color:var(--muted);padding:3px 9px;border-radius:20px;">'+c.segment+'</span>'
+        +'<span class="badge badge-'+(c.musait==='Hemen'?'green':'blue')+'">'+c.musait+'</span>'
+        +'</div>'
+        +'</div>'
+        +'<div class="cc-actions" onclick="event.stopPropagation()">'
+        +'<button class="cc-fav-btn '+(isFav?'active':'')+'" onclick="toggleFav('+c.id+',this)" title="Favoriye ekle">★</button>'
+        +'<button class="btn-primary btn-sm" onclick="openDrawer('+c.id+');closePozDetay();" style="font-size:11px;padding:5px 12px;">Profili Gör →</button>'
+        +'</div>'
+        +'</div>';
+    }).join('');
+  }
+  document.getElementById('poz-detay-overlay').classList.add('show');
+  document.body.style.overflow='hidden';
+}
+
+function closePozDetay(){
+  document.getElementById('poz-detay-overlay').classList.remove('show');
+  document.body.style.overflow='';
+}
+
+// ── ŞİRKET PROFİL KAYDET ──
+async function saveSirket(){
+  var saveBtn = document.getElementById('sirket-save-text');
+  if(saveBtn) saveBtn.textContent = 'Kaydediliyor...';
+
+  var sirket = document.getElementById('sc-sirket').value.trim();
+  if(!sirket){
+    document.getElementById('sc-sirket').style.borderColor='#C94E28';
+    document.getElementById('sc-sirket').focus();
+    setTimeout(function(){ document.getElementById('sc-sirket').style.borderColor=''; },3000);
+    if(saveBtn) saveBtn.textContent = 'Profili Kaydet';
+    return;
+  }
+
+  // Yetkili adı ad + soyad olarak böl
+  var yetkili = document.getElementById('sc-yetkili').value.trim();
+  var parts = yetkili.split(' ');
+  var ad = parts[0] || '';
+  var soyad = parts.slice(1).join(' ') || '';
+
+  var payload = {
+    id: currentUser.id,
+    sirket: sirket,
+    ad: ad,
+    soyad: soyad,
+    email: document.getElementById('sc-email').value.trim(),
+    // Yeni alanlar
+    sektor: document.getElementById('sc-sektor').value,
+    buyukluk: document.getElementById('sc-buyukluk').value,
+    web_sitesi: document.getElementById('sc-web').value.trim(),
+    segment: document.getElementById('sc-segment').value,
+    telefon: document.getElementById('sc-tel').value.trim(),
+    merkez_sehir: document.getElementById('sc-sehir').value,
+    magaza_sayisi: document.getElementById('sc-magaza-sayisi').value,
+    aciklama: document.getElementById('sc-aciklama').value.trim(),
+    aranan_profil: document.getElementById('sc-profil').value.trim(),
+    calisma_saatleri: document.getElementById('sc-saat').value,
+    linkedin: document.getElementById('sc-linkedin').value.trim(),
+  };
+
+  try{
+    var {error} = await getSupa().from('hr_profiles').upsert(payload, {onConflict:'id'});
+    if(error){
+      console.error('hr_profiles upsert error:', error.message);
+      // Fallback — sadece core alanları kaydet (yeni kolonlar migration bekliyorsa)
+      var core = {id:payload.id, sirket:payload.sirket, ad:payload.ad, soyad:payload.soyad, email:payload.email};
+      var res2 = await getSupa().from('hr_profiles').upsert(core, {onConflict:'id'});
+      error = res2.error;
+      if(!error) console.log('Fallback save OK — yeni kolonlar SQL migration bekliyor');
+    }
+    if(saveBtn) saveBtn.textContent = 'Profili Kaydet';
+    if(error){ 
+      var msg = document.getElementById('sirket-msg');
+      msg.textContent = '✕ Hata: '+error.message; msg.style.background='#FEF2F2'; msg.style.color='#DC2626'; msg.style.borderColor='#FECACA';
+      msg.style.display='block'; setTimeout(function(){ msg.style.display='none'; msg.style.background='#F0FDF4'; msg.style.color='#16A34A'; msg.style.borderColor='#BBF7D0'; }, 4000);
+      return;
+    }
+    // Sidebar güncelle
+    document.getElementById('sidebar-name').textContent = yetkili || sirket;
+    document.getElementById('sidebar-avatar').textContent = (yetkili||sirket)[0].toUpperCase();
+    var msg = document.getElementById('sirket-msg');
+    msg.textContent='✓ Şirket profili kaydedildi!'; msg.style.background='#F0FDF4'; msg.style.color='#16A34A';
+    msg.style.display='block';
+    setTimeout(function(){ msg.style.display='none'; }, 3000);
+    updateSirketCompletion();
+  }catch(e){
+    if(saveBtn) saveBtn.textContent = 'Profili Kaydet';
+    console.error('saveSirket error:', e);
+  }
+}
+
+// ── ŞİRKET TAMAMLANMA ──
+function updateSirketCompletion(){
+  var fields = ['sc-sirket','sc-sektor','sc-buyukluk','sc-web','sc-yetkili','sc-sehir','sc-aciklama','sc-tel'];
+  var filled = fields.filter(function(id){ var el=document.getElementById(id); return el && el.value && el.value.trim()!==''; }).length;
+  var pct = Math.round((filled/fields.length)*100);
+  var bar = document.getElementById('sirket-progress-bar');
+  var pctEl = document.getElementById('sirket-progress-pct');
+  if(bar) bar.style.width = pct+'%';
+  if(pctEl) pctEl.textContent = pct+'%';
+}
+
+// ── ŞİFRE GÜNCELLE ──
+async function updatePassword(){
+  var sifre = document.getElementById('ayar-sifre').value;
+  if(!sifre || sifre.length < 8){ alert('Şifre en az 8 karakter olmalı.'); return; }
+  var {error} = await getSupa().auth.updateUser({password: sifre});
+  var msg = document.getElementById('pw-msg');
+  if(error){ msg.textContent='Hata: '+error.message; msg.style.color='var(--red)'; }
+  else { msg.textContent='✓ Şifre güncellendi.'; msg.style.color='var(--green)'; }
+  msg.style.display='block';
+  document.getElementById('ayar-sifre').value='';
+  setTimeout(function(){ msg.style.display='none'; }, 3000);
+}
+
+// ── UPGRADE MODAL ──
+function showUpgradeModal(){ document.getElementById('upgrade-modal-overlay').classList.add('show'); }
+function closeUpgradeModal(){ document.getElementById('upgrade-modal-overlay').classList.remove('show'); }
+
+// Overlay click to close
+['poz-modal-overlay','upgrade-modal-overlay','poz-detay-overlay'].forEach(function(id){
+  var el = document.getElementById(id);
+  if(el) el.addEventListener('click', function(e){
+    if(e.target === this) this.classList.remove('show');
+  });
+});
+
+// ESC key
+document.addEventListener('keydown', function(e){
+  if(e.key==='Escape'){
+    closeDrawer();
+    closePozModal();
+    closeUpgradeModal();
+  }
+});
+
+// ── INIT ──
+initApp();
+</script>
+
+<!-- BOTTOM NAV (mobile) -->
+<nav class="bottom-nav">
+  <div class="bottom-nav-inner">
+    <div class="bn-item active" data-panel="dashboard" onclick="switchPanel('dashboard',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      <span class="bn-label">Özet</span>
+    </div>
+    <div class="bn-item" data-panel="search" onclick="switchPanel('search',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <span class="bn-label">Aday Ara</span>
+      <span class="bn-badge" id="bn-count">250+</span>
+    </div>
+    <div class="bn-item" data-panel="pozisyonlar" onclick="switchPanel('pozisyonlar',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+      <span class="bn-label">Pozisyon</span>
+      <span class="bn-badge" id="bn-poz-count" style="display:none">0</span>
+    </div>
+    <div class="bn-item" data-panel="favoriler" onclick="switchPanel('favoriler',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      <span class="bn-label">Favoriler</span>
+      <span class="bn-badge" id="bn-fav-count" style="display:none">0</span>
+    </div>
+    <div class="bn-item" data-panel="sirket" onclick="switchPanel('sirket',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><circle cx="12" cy="13" r="2"/></svg>
+      <span class="bn-label">Şirket</span>
+    </div>
+  </div>
+</nav>
+</body>
+</html>

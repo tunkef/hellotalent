@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<script>if(sessionStorage.getItem("ht_gate")!=="ok"){window.location.replace("gate.html");}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="description" content="Türkiye'nin retail sektörüne özel talent marketplace'i. Global markalardan lokal butiklere — doğru yetenek, doğru marka ile burada buluşuyor.">
+<meta name="keywords" content="retail iş ilanları, mağaza yöneticisi iş ilanı, retail işe alım, İstanbul retail iş, lüks marka kariyer, store manager iş, hellotalent">
+<meta name="robots" content="index, follow">
+<meta name="author" content="hellotalent.ai">
+<link rel="canonical" href="https://hellotalent.ai/">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://hellotalent.ai/">
+<meta property="og:title" content="hellotalent.ai — Türkiye'nin Retail Talent Marketplace'i">
+<meta property="og:description" content="Global markalardan lokal butiklere — doğru yetenek, doğru marka ile hellotalent'te buluşuyor.">
+<meta property="og:image" content="https://hellotalent.ai/og-image.png">
+<meta property="og:locale" content="tr_TR">
+<meta property="og:site_name" content="hellotalent.ai">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="hellotalent.ai — Türkiye'nin Retail Talent Marketplace'i">
+<meta name="twitter:description" content="Retail'de doğru yetenek, doğru marka ile burada buluşuyor.">
+<meta name="twitter:image" content="https://hellotalent.ai/og-image.png">
+<title>hellotalent.ai — Türkiye'nin Retail Talent Marketplace'i</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --verm:#C94E28;--verm-light:#F5EDE9;
+  --navy:#1E2D5E;--navy-light:#EEF0F7;
+  --gray:#F7F6F4;--text:#111111;
+  --muted:#6B7280;--border:#E5E3DF;
+}
+html{scroll-behavior:smooth;overflow-x:hidden;}
+body{font-family:'Plus Jakarta Sans',sans-serif;color:var(--text);background:#fff;overflow-x:hidden;}
+*{-webkit-tap-highlight-color:transparent;}
+
+/* ── HEADER ── */
+.site-header{position:sticky;top:0;z-index:200;background:rgba(255,255,255,0.96);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 40px;height:64px;}
+.header-logo{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:20px;color:var(--navy);cursor:pointer;text-decoration:none;}
+.header-logo span{color:var(--verm);}
+.header-nav{display:flex;align-items:center;gap:2px;flex:1;justify-content:center;}
+.nav-link{background:none;border:none;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;padding:7px 12px;border-radius:7px;transition:color 0.15s,background 0.15s;text-decoration:none;display:inline-block;}
+.nav-link:hover{color:var(--text);background:#F3F4F6;}
+.nav-link.kariyer{color:var(--verm);}
+.nav-link.active{color:var(--text);}
+.header-actions{display:flex;align-items:center;gap:8px;position:relative;}
+.btn-nav-login{display:flex;align-items:center;gap:6px;padding:8px 16px;border:1.5px solid var(--border);border-radius:20px;background:white;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:700;color:var(--text);cursor:pointer;transition:all 0.15s;}
+.btn-nav-login:hover,.btn-nav-login.open{border-color:var(--navy);color:var(--navy);}
+.login-dropdown{position:absolute;top:calc(100% + 8px);right:0;width:320px;background:white;border:1.5px solid var(--border);border-radius:16px;padding:12px;box-shadow:0 8px 32px rgba(0,0,0,0.12);display:none;z-index:300;}
+.login-dropdown.open{display:block;animation:ddIn 0.15s ease;}
+@keyframes ddIn{from{opacity:0;transform:translateY(-6px);}to{opacity:1;transform:translateY(0);}}
+.ld-block{padding:12px;border-radius:10px;background:var(--gray);}
+.ld-block+.ld-block{margin-top:8px;}
+.ld-label{font-size:11px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:4px;}
+.ld-desc{font-size:12px;color:var(--muted);margin-bottom:10px;line-height:1.5;}
+.ld-btns{display:flex;gap:6px;}
+.ld-btn-outline{flex:1;padding:8px;border:1.5px solid var(--border);border-radius:8px;background:white;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all 0.15s;}
+.ld-btn-outline:hover{border-color:var(--navy);color:var(--navy);}
+.ld-btn-fill{flex:1;padding:8px;border:none;border-radius:8px;background:var(--verm);color:white;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;}
+.ld-btn-fill.navy{background:var(--navy);}
+.hamburger{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:8px;}
+.hamburger span{display:block;width:22px;height:2px;background:var(--text);border-radius:2px;}
+.mobile-menu{display:none;position:fixed;inset:0;top:64px;background:white;z-index:150;padding:20px 24px;overflow-y:auto;}
+.mobile-menu.open{display:block;}
+.mobile-nav-link{display:block;width:100%;text-align:left;padding:14px 0;font-size:15px;font-weight:600;color:var(--text);background:none;border:none;border-bottom:1px solid var(--border);cursor:pointer;text-decoration:none;font-family:'Plus Jakarta Sans',sans-serif;}
+.mobile-cta-row{display:flex;gap:8px;margin-top:8px;}
+.mobile-cta-row button{flex:1;padding:12px;border-radius:10px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;border:none;}
+
+/* ── HERO ── */
+.hero-outer{padding:88px 48px 60px;max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center;}
+.hero-tag{display:inline-flex;align-items:center;gap:8px;background:var(--verm-light);border:1.5px solid rgba(201,78,40,0.2);color:var(--verm);font-size:11px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;padding:6px 14px;border-radius:30px;margin-bottom:20px;}
+.hero-title{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:52px;letter-spacing:-2px;line-height:1.05;color:var(--text);margin-bottom:18px;}
+.hero-title span{color:var(--verm);}
+.hero-sub{font-size:17px;color:var(--muted);line-height:1.7;max-width:480px;margin-bottom:32px;}
+.hero-btns{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:24px;}
+.btn-primary{background:var(--verm);color:white;border:none;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:700;padding:14px 26px;border-radius:12px;cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;}
+.btn-primary:hover{background:#b84420;transform:translateY(-1px);box-shadow:0 4px 16px rgba(201,78,40,0.3);}
+.btn-secondary{background:white;color:var(--navy);border:2px solid var(--navy);font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:700;padding:12px 22px;border-radius:12px;cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;}
+.btn-secondary:hover{background:var(--navy-light);}
+.hero-trust{display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
+.trust-item{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);font-weight:600;}
+.trust-item .check{color:#16A34A;font-size:14px;}
+.trust-sep{width:1px;height:14px;background:var(--border);}
+
+/* Hero right — aday preview kartları */
+.hero-right{position:relative;}
+.hero-preview{display:flex;flex-direction:column;gap:12px;}
+.hp-card{background:white;border:1.5px solid var(--border);border-radius:14px;padding:16px;display:flex;align-items:center;gap:14px;box-shadow:0 2px 12px rgba(0,0,0,0.06);}
+.hp-avatar{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:13px;font-weight:400;color:white;flex-shrink:0;}
+.hp-name{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:14px;letter-spacing:-0.3px;margin-bottom:2px;}
+.hp-pos{font-size:12px;color:var(--muted);margin-bottom:8px;}
+.hp-tags{display:flex;gap:6px;flex-wrap:wrap;}
+.hp-tag{font-size:11px;background:var(--gray);border:1px solid var(--border);color:var(--muted);padding:3px 8px;border-radius:6px;font-weight:600;}
+.hp-badge{font-size:11px;background:#ECFDF5;color:#065F46;border:1px solid #A7F3D0;padding:3px 8px;border-radius:6px;font-weight:700;}
+.hp-blur-wrap{position:relative;border-radius:14px;overflow:hidden;}
+.blur-card{filter:blur(4px);pointer-events:none;}
+.hp-lock{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.6);backdrop-filter:blur(2px);}
+.hp-lock-badge{background:var(--navy);color:white;padding:10px 18px;border-radius:30px;font-size:12px;font-weight:700;display:flex;align-items:center;gap:8px;}
+
+/* ── STATS BAR ── */
+.stats-bar{background:var(--gray);border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
+.stats-bar-inner{max-width:1160px;margin:0 auto;padding:24px 48px;display:flex;align-items:center;justify-content:space-around;gap:32px;flex-wrap:wrap;}
+.sb-item{text-align:center;}
+.sb-num{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:30px;color:var(--navy);letter-spacing:-1px;line-height:1;}
+.sb-num span{font-size:20px;color:var(--verm);}
+.sb-label{font-size:11px;color:var(--muted);font-weight:600;margin-top:4px;letter-spacing:0.3px;}
+
+/* ── SECTION ORTAK ── */
+.section{padding:88px 48px;max-width:1160px;margin:0 auto;}
+.section-center{text-align:center;}
+.section-tag{display:inline-flex;align-items:center;gap:6px;background:var(--gray);border:1px solid var(--border);color:var(--muted);font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:5px 12px;border-radius:20px;margin-bottom:16px;}
+.section-title{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:38px;letter-spacing:-1px;line-height:1.1;margin-bottom:14px;}
+.section-sub{font-size:16px;color:var(--muted);line-height:1.7;max-width:560px;}
+.section-center .section-sub{margin:0 auto;}
+.divider{height:1px;background:var(--border);margin:0 48px;}
+
+/* ── FARK NE? KARŞILAŞTIRMA ── */
+.compare-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--border);border:1.5px solid var(--border);border-radius:20px;overflow:hidden;margin-top:48px;}
+.compare-col{background:white;padding:32px 28px;}
+.compare-col.featured{background:var(--navy);}
+.compare-col-header{margin-bottom:28px;}
+.compare-platform{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
+.compare-col.featured .compare-platform{color:rgba(255,255,255,0.5);}
+.compare-col-title{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px;letter-spacing:-0.5px;color:var(--text);}
+.compare-col.featured .compare-col-title{color:white;}
+.compare-featured-badge{display:inline-flex;align-items:center;gap:4px;background:var(--verm);color:white;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:4px 10px;border-radius:20px;margin-top:8px;}
+.compare-list{list-style:none;display:flex;flex-direction:column;gap:12px;}
+.compare-item{display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--muted);line-height:1.5;}
+.compare-col.featured .compare-item{color:rgba(255,255,255,0.75);}
+.compare-item .ci{width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;margin-top:1px;}
+.ci.yes{background:#ECFDF5;color:#065F46;}
+.compare-col.featured .ci.yes{background:rgba(255,255,255,0.15);color:#6EE7B7;}
+.ci.no{background:#FEF2F2;color:#991B1B;}
+.ci.mid{background:#FFFBEB;color:#92400E;}
+
+/* ── PLATFORM PREVIEW ── */
+.preview-wrap{margin-top:48px;}
+.preview-tabs{display:flex;gap:0;background:var(--gray);border:1.5px solid var(--border);border-radius:12px;padding:4px;width:fit-content;margin:0 auto 32px;}
+.preview-tab{padding:10px 24px;border-radius:9px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:700;color:var(--muted);background:none;border:none;cursor:pointer;transition:all 0.2s;}
+.preview-tab.active{background:white;color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,0.1);}
+.preview-panel{display:none;}
+.preview-panel.active{display:block;}
+.preview-mockup{background:var(--gray);border:1.5px solid var(--border);border-radius:20px;padding:32px;overflow:hidden;}
+/* Aday mock */
+.mock-aday{display:grid;grid-template-columns:220px 1fr;gap:20px;min-height:320px;}
+.mock-sidebar{background:var(--navy);border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:8px;}
+.mock-sidebar-item{padding:8px 12px;border-radius:8px;font-size:12px;font-weight:600;color:rgba(255,255,255,0.6);cursor:pointer;}
+.mock-sidebar-item.active{background:rgba(255,255,255,0.12);color:white;}
+.mock-main{display:flex;flex-direction:column;gap:16px;}
+.mock-header-row{display:flex;align-items:center;}
+.mock-greeting{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:18px;letter-spacing:-0.5px;}
+.mock-badge{background:var(--verm-light);color:var(--verm);font-size:10px;font-weight:700;padding:4px 10px;border-radius:20px;border:1px solid rgba(201,78,40,0.2);}
+.mock-cards{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+.mock-card{background:white;border:1.5px solid var(--border);border-radius:12px;padding:16px;}
+.mock-card-label{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+.mock-card-num{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:24px;letter-spacing:-1px;color:var(--navy);}
+.mock-career-bar{background:white;border:1.5px solid var(--border);border-radius:12px;padding:16px;display:flex;align-items:center;gap:16px;}
+.mock-career-progress{flex:1;height:6px;background:var(--gray);border-radius:3px;overflow:hidden;}
+.mock-career-fill{width:65%;height:100%;background:var(--verm);border-radius:3px;}
+/* İK mock */
+.mock-ik{display:flex;flex-direction:column;gap:16px;min-height:320px;}
+.mock-ik-header{display:flex;align-items:center;}
+.mock-ik-title{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:18px;letter-spacing:-0.5px;}
+.mock-search{background:white;border:1.5px solid var(--border);border-radius:10px;padding:10px 16px;display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);}
+.mock-candidate-list{display:flex;flex-direction:column;gap:10px;}
+.mock-cand{background:white;border:1.5px solid var(--border);border-radius:12px;padding:14px;display:flex;align-items:center;gap:12px;}
+.mock-cand-av{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:12px;color:white;flex-shrink:0;}
+.mock-cand-name{font-weight:700;font-size:13px;margin-bottom:2px;}
+.mock-cand-pos{font-size:11px;color:var(--muted);}
+.mock-cand-tags{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;}
+.mock-cand-tag{font-size:10px;background:var(--gray);border:1px solid var(--border);color:var(--muted);padding:2px 7px;border-radius:5px;font-weight:600;}
+.mock-cand-match{margin-left:auto;background:#ECFDF5;color:#065F46;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;white-space:nowrap;}
+
+/* ── SPLIT CTA ── */
+.split-cta-section{padding:80px 48px;background:var(--gray);border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
+.split-cta-inner{max-width:1160px;margin:0 auto;}
+.split-cta-label{text-align:center;margin-bottom:40px;}
+.split-cta-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;}
+.split-card{border-radius:24px;padding:48px 40px;display:flex;flex-direction:column;gap:20px;position:relative;overflow:hidden;transition:transform 0.2s;}
+.split-card:hover{transform:translateY(-3px);}
+.split-card.aday{background:var(--verm);color:white;}
+.split-card.isveren{background:var(--navy);color:white;}
+.split-card-eyebrow{font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;opacity:0.6;}
+.split-card-title{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:32px;letter-spacing:-1px;line-height:1.1;}
+.split-card-desc{font-size:15px;line-height:1.7;opacity:0.8;max-width:340px;}
+.split-card-features{list-style:none;display:flex;flex-direction:column;gap:8px;margin-top:4px;}
+.split-card-features li{display:flex;align-items:center;gap:8px;font-size:13px;opacity:0.85;font-weight:600;}
+.split-card-features li::before{content:"✓";font-size:14px;opacity:1;flex-shrink:0;}
+.split-card-cta{display:inline-flex;align-items:center;gap:8px;padding:14px 28px;border-radius:12px;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;text-decoration:none;transition:all 0.2s;margin-top:8px;width:fit-content;}
+.split-card.aday .split-card-cta{background:white;color:var(--verm);}
+.split-card.aday .split-card-cta:hover{background:#FFF0EB;}
+.split-card.isveren .split-card-cta{background:white;color:var(--navy);}
+.split-card.isveren .split-card-cta:hover{background:#EEF0F7;}
+.split-card-deco{position:absolute;right:-20px;top:-20px;width:160px;height:160px;border-radius:50%;opacity:0.08;background:white;}
+
+/* ── ABOUT ── */
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center;}
+.about-left{display:flex;flex-direction:column;gap:16px;}
+.about-left p{font-size:15px;color:var(--muted);line-height:1.8;}
+.about-stats{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:8px;}
+.about-stat{background:var(--gray);border:1px solid var(--border);border-radius:14px;padding:20px;}
+.about-stat-num{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:32px;letter-spacing:-1.5px;color:var(--navy);line-height:1;}
+.about-stat-num span{font-size:20px;color:var(--verm);}
+.about-stat-label{font-size:12px;color:var(--muted);font-weight:600;margin-top:4px;}
+.founder-card{background:var(--navy);border-radius:20px;padding:36px;color:white;}
+.founder-quote{font-size:17px;line-height:1.7;color:rgba(255,255,255,0.85);font-style:italic;margin-bottom:24px;}
+.founder-quote em{color:var(--verm);font-style:normal;}
+.founder-sig{display:flex;align-items:center;gap:14px;}
+.founder-avatar{width:44px;height:44px;background:var(--verm);border-radius:12px;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:14px;color:white;}
+.founder-name{font-weight:700;font-size:14px;color:white;}
+.founder-title{font-size:12px;color:rgba(255,255,255,0.5);margin-top:2px;}
+
+/* ── FOOTER ── */
+footer{background:var(--navy);padding:40px 48px;}
+.footer-top{display:flex;align-items:flex-start;gap:32px;flex-wrap:wrap;margin-bottom:32px;padding-bottom:32px;border-bottom:1px solid rgba(255,255,255,0.1);}
+.footer-brand-wrap{}
+.footer-brand{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:20px;color:white;margin-bottom:8px;}
+.footer-brand span{color:var(--verm);}
+.footer-tagline{font-size:12px;color:rgba(255,255,255,0.4);max-width:200px;line-height:1.5;}
+.footer-links{display:flex;gap:40px;flex-wrap:wrap;}
+.footer-link-group{}
+.footer-link-title{font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:12px;}
+.footer-link-list{display:flex;flex-direction:column;gap:8px;}
+.footer-link{font-size:13px;color:rgba(255,255,255,0.55);text-decoration:none;font-weight:500;transition:color 0.15s;}
+.footer-link:hover{color:white;}
+.footer-bottom{display:flex;align-items:center;flex-wrap:wrap;gap:16px;}
+.footer-copy{font-size:12px;color:rgba(255,255,255,0.3);}
+.footer-social{display:flex;gap:10px;}
+.social-link{width:34px;height:34px;border-radius:8px;background:rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.6);transition:all 0.2s;text-decoration:none;}
+.social-link:hover{background:rgba(255,255,255,0.16);color:white;}
+
+/* ── COOKIE ── */
+.cookie-banner{position:fixed;bottom:0;left:0;right:0;z-index:9999;background:white;border-top:1.5px solid var(--border);padding:16px 40px;display:flex;align-items:center;gap:20px;flex-wrap:wrap;box-shadow:0 -4px 24px rgba(0,0,0,0.08);}
+.cookie-banner.hidden{display:none;}
+@keyframes slideUp{from{transform:translateY(100%);}to{transform:translateY(0);}}
+.cookie-banner{animation:slideUp 0.35s ease;}
+.cookie-text{flex:1;font-size:13px;color:var(--muted);line-height:1.6;min-width:200px;}
+.cookie-text strong{color:var(--text);}
+.cookie-text a{color:var(--navy);}
+.cookie-btns{display:flex;gap:8px;flex-shrink:0;}
+.btn-cookie-accept{padding:9px 20px;background:var(--navy);border:none;border-radius:8px;color:white;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;}
+.btn-cookie-reject{padding:9px 16px;background:white;border:1.5px solid var(--border);border-radius:8px;color:var(--muted);font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;}
+.btn-cookie-reject:hover{border-color:var(--text);color:var(--text);}
+
+/* ── RESPONSIVE ── */
+@media(max-width:1024px){
+  .hero-title{font-size:42px;}
+  .compare-grid{grid-template-columns:1fr;}
+  .mock-aday{grid-template-columns:1fr;}
+  .mock-sidebar{display:none;}
+}
+@media(max-width:900px){
+  .site-header{padding:0 20px;}
+  .header-nav{display:none;}
+  .hamburger{display:flex;}
+  .hero-outer{grid-template-columns:1fr;gap:40px;padding:56px 24px 48px;text-align:center;}
+  .hero-btns{justify-content:center;}
+  .hero-trust{justify-content:center;}
+  .section{padding:56px 24px;}
+  .divider{margin:0 24px;}
+  .section-title{font-size:28px;}
+  .split-cta-section{padding:56px 24px;}
+  .split-cta-grid{grid-template-columns:1fr;}
+  .about-grid{grid-template-columns:1fr;gap:40px;}
+  footer{padding:32px 24px;}
+  .footer-top{flex-direction:column;gap:28px;}
+  .footer-links{gap:24px;}
+  .cookie-banner{padding:16px 20px;}
+  .stats-bar-inner{padding:20px 24px;gap:20px;}
+  .mock-cards{grid-template-columns:1fr 1fr;}
+  .split-card{padding:36px 28px;}
+  .split-card-title{font-size:26px;}
+}
+@media(max-width:480px){
+  .hero-title{font-size:34px;letter-spacing:-1.5px;}
+  .compare-grid{grid-template-columns:1fr;}
+  .mock-cards{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="site-header" id="site-header">
+  <a href="index.html" class="header-logo">hello<span>talent</span></a>
+  <nav class="header-nav">
+    <a class="nav-link" href="aday.html">Adaylar İçin</a>
+    <a class="nav-link" href="isveren.html">İşverenler İçin</a>
+    <a class="nav-link kariyer" href="kariyer.html">Kariyer Rotası ✦</a>
+    <a class="nav-link" href="#about">Hakkımızda</a>
+  </nav>
+  <div class="header-actions">
+    <button class="btn-nav-login" id="login-btn" onclick="toggleLoginDropdown()">
+      Giriş Yap
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </button>
+    <div class="login-dropdown" id="login-dropdown">
+      <div class="ld-block">
+        <div class="ld-label">Adaylar İçin</div>
+        <div class="ld-desc">Kariyer hedefini paylaş, doğru markalar seni bulsun.</div>
+        <div class="ld-btns">
+          <button class="ld-btn-outline" onclick="go('giris.html?tab=aday')">Giriş Yap</button>
+          <button class="ld-btn-fill" onclick="go('giris.html?tab=aday&mode=register')">Üye Ol</button>
+        </div>
+      </div>
+      <div class="ld-block">
+        <div class="ld-label">İşverenler İçin</div>
+        <div class="ld-desc">Retail aday havuzuna eriş, doğru profilleri bul.</div>
+        <div class="ld-btns">
+          <button class="ld-btn-outline" onclick="go('giris.html?tab=ik')">Giriş Yap</button>
+          <button class="ld-btn-fill navy" onclick="go('giris.html?tab=ik&mode=register')">Üye Ol</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <button class="hamburger" id="hamburger" onclick="toggleMobileMenu()">
+    <span></span><span></span><span></span>
+  </button>
+</header>
+
+<!-- MOBİL MENÜ -->
+<div class="mobile-menu" id="mobile-menu">
+  <a class="mobile-nav-link" href="aday.html">Adaylar İçin</a>
+  <a class="mobile-nav-link" href="isveren.html">İşverenler İçin</a>
+  <a class="mobile-nav-link" href="kariyer.html" style="color:var(--verm);">Kariyer Rotası ✦</a>
+  <a class="mobile-nav-link" href="#about">Hakkımızda</a>
+  <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border);">
+    <p style="font-size:10px;font-weight:800;letter-spacing:1.5px;color:#9CA3AF;text-transform:uppercase;margin-bottom:10px;">Aday Girişi</p>
+    <div class="mobile-cta-row" style="margin-bottom:12px;">
+      <button style="background:white;color:var(--navy);border:1.5px solid var(--navy);" onclick="go('giris.html?tab=aday')">Giriş</button>
+      <button style="background:var(--verm);color:white;" onclick="go('giris.html?tab=aday&mode=register')">Üye Ol</button>
+    </div>
+    <p style="font-size:10px;font-weight:800;letter-spacing:1.5px;color:#9CA3AF;text-transform:uppercase;margin-bottom:10px;">İşveren Girişi</p>
+    <div class="mobile-cta-row">
+      <button style="background:white;color:var(--navy);border:1.5px solid var(--navy);" onclick="go('giris.html?tab=ik')">Giriş</button>
+      <button style="background:var(--navy);color:white;" onclick="go('giris.html?tab=ik&mode=register')">Üye Ol</button>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<main>
+
+  <!-- HERO -->
+  <div class="hero-outer">
+    <section class="hero">
+      <div class="hero-tag">🇹🇷 Türkiye'nin İlk Retail Talent Marketplace'i</div>
+      <h1 class="hero-title">
+        Retail'de doğru yetenek,<br>
+        doğru marka ile<br>
+        <span>burada buluşuyor.</span>
+      </h1>
+      <p class="hero-sub">
+        Global markalardan lokal butiklere — Türkiye'nin retail dünyasına özel platformda profil oluştur, markalar seni bulsun.
+      </p>
+      <div class="hero-btns">
+        <a href="aday.html" class="btn-primary">
+          Profil Oluştur — Ücretsiz →
+        </a>
+        <a href="isveren.html" class="btn-secondary">
+          Aday Havuzunu Gör
+        </a>
+      </div>
+      <div class="hero-trust">
+        <div class="trust-item"><span class="check">✓</span> CV zorunlu değil</div>
+        <div class="trust-sep"></div>
+        <div class="trust-item"><span class="check">✓</span> Mevcut işverene görünmez</div>
+        <div class="trust-sep"></div>
+        <div class="trust-item"><span class="check">✓</span> Tamamen ücretsiz</div>
+      </div>
+    </section>
+
+    <!-- SAĞ: Aday kartları -->
+    <div class="hero-right">
+      <div class="hero-preview">
+        <div class="hp-card">
+          <div class="hp-avatar" style="background:#C94E28;">AY</div>
+          <div class="hp-info">
+            <div class="hp-name">A. Yılmaz</div>
+            <div class="hp-pos">Store Manager · Massimo Dutti</div>
+            <div class="hp-tags">
+              <span class="hp-tag">8 yıl</span>
+              <span class="hp-tag">İstanbul</span>
+              <span class="hp-tag">Lüks</span>
+              <span class="hp-badge">Hemen müsait</span>
+            </div>
+          </div>
+        </div>
+        <div class="hp-card">
+          <div class="hp-avatar" style="background:#1E2D5E;">SB</div>
+          <div class="hp-info">
+            <div class="hp-name">S. Bozkurt</div>
+            <div class="hp-pos">Sales Specialist · Louis Vuitton</div>
+            <div class="hp-tags">
+              <span class="hp-tag">5 yıl</span>
+              <span class="hp-tag">İstanbul</span>
+              <span class="hp-tag">Lüks</span>
+              <span class="hp-badge" style="background:#FEF3C7;color:#92400E;">1 ay içinde</span>
+            </div>
+          </div>
+        </div>
+        <div class="hp-blur-wrap">
+          <div class="hp-card blur-card">
+            <div class="hp-avatar" style="background:#374151;">EÇ</div>
+            <div class="hp-info">
+              <div class="hp-name">E. Çelik</div>
+              <div class="hp-pos">Visual Merchandiser · Zara</div>
+              <div class="hp-tags">
+                <span class="hp-tag">6 yıl</span>
+                <span class="hp-tag">Ankara</span>
+                <span class="hp-tag">Fast Fashion</span>
+              </div>
+            </div>
+          </div>
+          <div class="hp-lock">
+            <div class="hp-lock-badge">🔒 2.800+ aday profili mevcut</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STATS BAR -->
+  <div class="stats-bar">
+    <div class="stats-bar-inner">
+      <div class="sb-item">
+        <div class="sb-num">2.800<span>+</span></div>
+        <div class="sb-label">Kayıtlı Aday</div>
+      </div>
+      <div class="sb-item">
+        <div class="sb-num">50<span>+</span></div>
+        <div class="sb-label">Marka Partneri</div>
+      </div>
+      <div class="sb-item">
+        <div class="sb-num">12</div>
+        <div class="sb-label">Büyük Şehir</div>
+      </div>
+      <div class="sb-item">
+        <div class="sb-num">48<span>sa</span></div>
+        <div class="sb-label">Ort. Yanıt Süresi</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FARK NE? -->
+  <div class="section">
+    <div class="section-center">
+      <span class="section-tag">Neden hellotalent?</span>
+      <h2 class="section-title">Diğer platformlardan farkımız ne?</h2>
+      <p class="section-sub">Retail özelinde inşa edilmiş bir platform — genel amaçlı iş sitelerinden kökten farklı.</p>
+    </div>
+
+    <div class="compare-grid">
+      <!-- hellotalent -->
+      <div class="compare-col featured">
+        <div class="compare-col-header">
+          <div class="compare-platform">Platform</div>
+          <div class="compare-col-title">hellotalent</div>
+          <div class="compare-featured-badge">✦ Retail'e özel</div>
+        </div>
+        <ul class="compare-list">
+          <li class="compare-item">
+            <span class="ci yes">✓</span>
+            Retail sektörüne özel — her kategori, her segment
+          </li>
+          <li class="compare-item">
+            <span class="ci yes">✓</span>
+            Marka seni bulur, sen aramak zorunda kalmazsın
+          </li>
+          <li class="compare-item">
+            <span class="ci yes">✓</span>
+            Kariyer rotası planlama — hedefe göre eşleştirme
+          </li>
+          <li class="compare-item">
+            <span class="ci yes">✓</span>
+            Mevcut işvereninden gizli profil seçeneği
+          </li>
+          <li class="compare-item">
+            <span class="ci yes">✓</span>
+            Adaylar için tamamen ücretsiz
+          </li>
+          <li class="compare-item">
+            <span class="ci yes">✓</span>
+            Onaylı markalar — 3. taraf paylaşım yok
+          </li>
+        </ul>
+      </div>
+
+      <!-- LinkedIn -->
+      <div class="compare-col">
+        <div class="compare-col-header">
+          <div class="compare-platform">Platform</div>
+          <div class="compare-col-title">LinkedIn</div>
+        </div>
+        <ul class="compare-list">
+          <li class="compare-item">
+            <span class="ci no">✗</span>
+            Genel amaçlı — retail için özelleşme yok
+          </li>
+          <li class="compare-item">
+            <span class="ci no">✗</span>
+            Sen aktif aramalısın, rekabet yüksek
+          </li>
+          <li class="compare-item">
+            <span class="ci no">✗</span>
+            Kariyer rotası desteği bulunmuyor
+          </li>
+          <li class="compare-item">
+            <span class="ci no">✗</span>
+            Profil herkese açık, gizlilik sınırlı
+          </li>
+          <li class="compare-item">
+            <span class="ci mid">~</span>
+            Premium plan gerektirebilir
+          </li>
+          <li class="compare-item">
+            <span class="ci mid">~</span>
+            Veri paylaşımı geniş kapsamlı
+          </li>
+        </ul>
+      </div>
+
+      <!-- Kariyer Siteleri -->
+      <div class="compare-col">
+        <div class="compare-col-header">
+          <div class="compare-platform">Platform</div>
+          <div class="compare-col-title">Kariyer Siteleri</div>
+        </div>
+        <ul class="compare-list">
+          <li class="compare-item">
+            <span class="ci no">✗</span>
+            Tüm sektörler karışık — retail ilanı bulmak zor
+          </li>
+          <li class="compare-item">
+            <span class="ci no">✗</span>
+            İlan bazlı başvuru — pasif arama yok
+          </li>
+          <li class="compare-item">
+            <span class="ci no">✗</span>
+            Kariyer gelişim araçları yok
+          </li>
+          <li class="compare-item">
+            <span class="ci mid">~</span>
+            Profil gizliliği sınırlı
+          </li>
+          <li class="compare-item">
+            <span class="ci yes">✓</span>
+            Genellikle ücretsiz
+          </li>
+          <li class="compare-item">
+            <span class="ci no">✗</span>
+            Eşleştirme kalitesi düşük
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- PLATFORM PREVIEW -->
+  <div class="section section-center">
+    <span class="section-tag">Platform</span>
+    <h2 class="section-title">Platform nasıl görünüyor?</h2>
+    <p class="section-sub">Her iki taraf için de özel olarak tasarlandı.</p>
+
+    <div class="preview-wrap">
+      <div class="preview-tabs">
+        <button class="preview-tab active" onclick="switchPreview('aday')">👤 Aday Paneli</button>
+        <button class="preview-tab" onclick="switchPreview('ik')">🏢 İK Paneli</button>
+      </div>
+
+      <!-- Aday mock -->
+      <div class="preview-panel active" id="preview-aday">
+        <div class="preview-mockup">
+          <div class="mock-aday">
+            <div class="mock-sidebar">
+              <div class="mock-sidebar-item active">👤 Profilim</div>
+              <div class="mock-sidebar-item">🎯 Kariyer Rotam</div>
+              <div class="mock-sidebar-item">🤝 Eşleşmelerim</div>
+              <div class="mock-sidebar-item">📚 Rehber</div>
+            </div>
+            <div class="mock-main">
+              <div class="mock-header-row">
+                <div class="mock-greeting">Merhaba, Ahmet 👋</div>
+                <div class="mock-badge">● Aktif Aday</div>
+              </div>
+              <div class="mock-cards">
+                <div class="mock-card">
+                  <div class="mock-card-label">Görüntülenme</div>
+                  <div class="mock-card-num" style="color:var(--verm);">24</div>
+                  <div style="font-size:11px;color:var(--muted);margin-top:4px;">Bu hafta</div>
+                </div>
+                <div class="mock-card">
+                  <div class="mock-card-label">Aktif Gün</div>
+                  <div class="mock-card-num" style="color:var(--navy);">14</div>
+                  <div style="font-size:11px;color:var(--muted);margin-top:4px;">Platformda</div>
+                </div>
+                <div class="mock-card">
+                  <div class="mock-card-label">Eşleşme</div>
+                  <div class="mock-card-num" style="color:#059669;">3</div>
+                  <div style="font-size:11px;color:var(--muted);margin-top:4px;">Yeni teklif</div>
+                </div>
+              </div>
+              <div class="mock-career-bar">
+                <div style="font-size:12px;font-weight:700;color:var(--navy);min-width:100px;">🎯 Kariyer Rotası</div>
+                <div class="mock-career-progress">
+                  <div class="mock-career-fill"></div>
+                </div>
+                <div style="font-size:12px;font-weight:700;color:var(--verm);">%65</div>
+                <div style="font-size:11px;color:var(--muted);">tamamlandı</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- İK mock -->
+      <div class="preview-panel" id="preview-ik">
+        <div class="preview-mockup">
+          <div class="mock-ik">
+            <div class="mock-ik-header">
+              <div class="mock-ik-title">Aday Havuzu</div>
+              <div class="mock-search">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                Store Manager · İstanbul ara...
+              </div>
+            </div>
+            <div class="mock-candidate-list">
+              <div class="mock-cand">
+                <div class="mock-cand-av" style="background:#C94E28;">AY</div>
+                <div>
+                  <div class="mock-cand-name">A. Yılmaz</div>
+                  <div class="mock-cand-pos">Store Manager · 8 yıl deneyim</div>
+                  <div class="mock-cand-tags">
+                    <span class="mock-cand-tag">İstanbul</span>
+                    <span class="mock-cand-tag">Lüks</span>
+                    <span class="mock-cand-tag">Hemen müsait</span>
+                  </div>
+                </div>
+                <div class="mock-cand-match">%94 eşleşme</div>
+              </div>
+              <div class="mock-cand">
+                <div class="mock-cand-av" style="background:#1E2D5E;">SK</div>
+                <div>
+                  <div class="mock-cand-name">S. Kaya</div>
+                  <div class="mock-cand-pos">Area Manager · 11 yıl deneyim</div>
+                  <div class="mock-cand-tags">
+                    <span class="mock-cand-tag">İstanbul</span>
+                    <span class="mock-cand-tag">Fast Fashion</span>
+                    <span class="mock-cand-tag">1 ay içinde</span>
+                  </div>
+                </div>
+                <div class="mock-cand-match">%88 eşleşme</div>
+              </div>
+              <div class="mock-cand" style="position:relative;overflow:hidden;">
+                <div style="position:absolute;inset:0;background:linear-gradient(90deg,transparent 20%,rgba(255,255,255,0.95) 60%);display:flex;align-items:center;justify-content:flex-end;padding-right:20px;z-index:1;">
+                  <span style="background:var(--navy);color:white;font-size:11px;font-weight:700;padding:6px 14px;border-radius:20px;">🔒 Erişim için giriş yapın</span>
+                </div>
+                <div class="mock-cand-av" style="background:#374151;">EÇ</div>
+                <div>
+                  <div class="mock-cand-name">E. Çelik</div>
+                  <div class="mock-cand-pos">Visual Merchandiser · 6 yıl</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SPLIT CTA -->
+  <section class="split-cta-section">
+    <div class="split-cta-inner">
+      <div class="split-cta-label">
+        <span class="section-tag">Hadi Başlayalım</span>
+        <h2 class="section-title">Sen hangi taraftasın?</h2>
+      </div>
+      <div class="split-cta-grid">
+        <div class="split-card aday">
+          <div class="split-card-deco"></div>
+          <div class="split-card-eyebrow">Adaylar İçin</div>
+          <div class="split-card-title">Kariyer hedefini belirle,<br>markalar seni bulsun.</div>
+          <p class="split-card-desc">Profil oluştur, kariyer rotanı çiz. Sana uygun markalar seni bulur — CV göndermek zorunda kalmazsın.</p>
+          <ul class="split-card-features">
+            <li>Tamamen ücretsiz</li>
+            <li>Mevcut işverene görünmez</li>
+            <li>Kariyer rotası planlama</li>
+            <li>Sana özel eşleştirme</li>
+          </ul>
+          <a href="aday.html" class="split-card-cta">Profil Oluştur →</a>
+          <div style="font-size:11px;opacity:0.5;margin-top:-4px;">Adaylar için · Ücretsiz</div>
+        </div>
+        <div class="split-card isveren">
+          <div class="split-card-deco"></div>
+          <div class="split-card-eyebrow">İşverenler İçin</div>
+          <div class="split-card-title">Retail havuzuna eriş,<br>doğru adayı bul.</div>
+          <p class="split-card-desc">2.800+ onaylı retail profili arasından filtrele. Mağaza müdürünü, satış uzmanını, visual merchandiser'ını bul.</p>
+          <ul class="split-card-features">
+            <li>2.800+ aktif aday profili</li>
+            <li>Pozisyona göre eşleştirme</li>
+            <li>Ön eleme yapılmış adaylar</li>
+            <li>48 saatte geri dönüş</li>
+          </ul>
+          <a href="isveren.html" class="split-card-cta">Aday Havuzunu Gör →</a>
+          <div style="font-size:11px;opacity:0.5;margin-top:-4px;">İşverenler için · Demo talep et</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HAKKIMIZDA -->
+  <div class="section" id="about">
+    <div class="about-grid">
+      <div class="about-left">
+        <span class="section-tag">Hakkımızda</span>
+        <h2 class="section-title">Retail'de işe alımı yeniden tanımlıyoruz.</h2>
+        <p>Retail dünyasının genç yöneticileri, sektörün en büyük sorunlarından birini yakından gördü: <strong>doğru yetenek ile doğru marka bir türlü buluşamıyordu.</strong></p>
+        <p>İşe alım süreçleri yavaş, erişim sınırlı, eşleştirme köreydi. hellotalent.ai bu tabloya farklı bir yön vermek için kuruldu — <strong>veriye dayalı, AI destekli ve retail'e özgü</strong> bir talent marketplace olarak.</p>
+        <p>160+ başarılı yerleştirmenin deneyimiyle inşa edilen bu platform; mağaza çalışanlarını fırsatlarla, markaları ise aradıkları profillerle buluşturuyor.</p>
+        <div class="about-stats">
+          <div class="about-stat">
+            <div class="about-stat-num">10<span>+</span></div>
+            <div class="about-stat-label">Yıl Retail Deneyimi</div>
+          </div>
+          <div class="about-stat">
+            <div class="about-stat-num">160<span>+</span></div>
+            <div class="about-stat-label">Başarılı Yerleştirme</div>
+          </div>
+          <div class="about-stat">
+            <div class="about-stat-num">50<span>+</span></div>
+            <div class="about-stat-label">Marka Partneri</div>
+          </div>
+          <div class="about-stat">
+            <div class="about-stat-num">48<span>sa</span></div>
+            <div class="about-stat-label">Ortalama Yanıt Süresi</div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="founder-card">
+          <p class="founder-quote">
+            "Retail'de yetenek hiç bu kadar değerliyken, işe alım süreci hiç bu kadar kör olmamıştı. Biz bunu değiştirmeye karar verdik. <em>Teknoloji ve sektör deneyimini birleştirerek.</em>"
+          </p>
+          <div class="founder-sig">
+            <div class="founder-avatar">HT</div>
+            <div>
+              <p class="founder-name">hellotalent ekibi</p>
+              <p class="founder-title">İstanbul, 2024</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand-wrap">
+      <div class="footer-brand">hello<span>talent</span></div>
+      <div class="footer-tagline">Türkiye'nin retail talent marketplace'i.</div>
+    </div>
+    <div class="footer-links">
+      <div class="footer-link-group">
+        <div class="footer-link-title">Platform</div>
+        <div class="footer-link-list">
+          <a class="footer-link" href="aday.html">Adaylar İçin</a>
+          <a class="footer-link" href="isveren.html">İşverenler İçin</a>
+          <a class="footer-link" href="kariyer.html">Kariyer Rotası</a>
+        </div>
+      </div>
+      <div class="footer-link-group">
+        <div class="footer-link-title">Şirket</div>
+        <div class="footer-link-list">
+          <a class="footer-link" href="#about">Hakkımızda</a>
+          <a class="footer-link" href="/cdn-cgi/l/email-protection#9af3f4fcf5daf2fff6f6f5eefbf6fff4eeb4fbf3">İletişim</a>
+        </div>
+      </div>
+      <div class="footer-link-group">
+        <div class="footer-link-title">Hesap</div>
+        <div class="footer-link-list">
+          <a class="footer-link" href="giris.html?tab=aday">Aday Girişi</a>
+          <a class="footer-link" href="giris.html?tab=ik">İK Girişi</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="footer-copy">© 2026 hellotalent.ai — Retail Talent Marketplace</div>
+    <div class="footer-social">
+      <a class="social-link" href="https://www.instagram.com/hellotalent.ai" target="_blank" title="Instagram">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.5" fill="currentColor"/></svg>
+      </a>
+      <a class="social-link" href="https://www.linkedin.com/company/hello-talentai/" target="_blank" title="LinkedIn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+      </a>
+    </div>
+  </div>
+</footer>
+
+<!-- COOKIE -->
+<div class="cookie-banner" id="cookie-banner">
+  <div class="cookie-text">
+    <strong>Çerez Bildirimi</strong> — hellotalent.ai deneyimini geliştirmek için çerezler kullanıyoruz. KVKK kapsamında tercihlerinizi değiştirebilirsiniz.
+  </div>
+  <div class="cookie-btns">
+    <button class="btn-cookie-accept" onclick="acceptCookies()">Kabul Et</button>
+    <button class="btn-cookie-reject" onclick="rejectCookies()">Reddet</button>
+  </div>
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+var _supa=null;
+function getSupa(){if(!_supa)_supa=supabase.createClient('https://cpwibefquojehjehtrog.supabase.co','sb_publishable_POUtNwJyjAAheukwYP5hmA_TKKjphwa');return _supa;}
+function go(url){window.location.href=url;}
+
+function toggleLoginDropdown(){
+  var dd=document.getElementById('login-dropdown');
+  var btn=document.getElementById('login-btn');
+  dd.classList.toggle('open');
+  btn.classList.toggle('open');
+}
+document.addEventListener('click',function(e){
+  var btn=document.getElementById('login-btn');
+  var dd=document.getElementById('login-dropdown');
+  if(!btn||!dd)return;
+  if(!btn.contains(e.target)&&!dd.contains(e.target)){dd.classList.remove('open');btn.classList.remove('open');}
+});
+
+function toggleMobileMenu(){
+  document.getElementById('mobile-menu').classList.toggle('open');
+}
+
+function switchPreview(tab){
+  document.querySelectorAll('.preview-panel').forEach(function(p){p.classList.remove('active');});
+  document.querySelectorAll('.preview-tab').forEach(function(t){t.classList.remove('active');});
+  document.getElementById('preview-'+tab).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// COOKIE
+function initCookieBanner(){
+  var c=localStorage.getItem('ht_cookie_consent');
+  if(c){document.getElementById('cookie-banner').classList.add('hidden');}
+}
+function acceptCookies(){
+  localStorage.setItem('ht_cookie_consent','accepted');
+  document.getElementById('cookie-banner').classList.add('hidden');
+  loadGA4();
+}
+function rejectCookies(){
+  localStorage.setItem('ht_cookie_consent','rejected');
+  document.getElementById('cookie-banner').classList.add('hidden');
+}
+function loadGA4(){
+  if(document.getElementById('ga4'))return;
+  var s=document.createElement('script');s.id='ga4';s.async=true;
+  s.src='https://www.googletagmanager.com/gtag/js?id=G-54BCV5QYCZ';
+  document.head.appendChild(s);
+  window.dataLayer=window.dataLayer||[];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js',new Date());gtag('config','G-54BCV5QYCZ');
+}
+
+// Session + auth check
+document.addEventListener('DOMContentLoaded',function(){
+  initCookieBanner();
+  if(localStorage.getItem('ht_cookie_consent')==='accepted')loadGA4();
+  getSupa().auth.getSession().then(function(r){
+    var session=r.data&&r.data.session;
+    if(session){
+      var btn=document.getElementById('login-btn');
+      if(btn)btn.textContent='Panele Git';
+      btn&&btn.addEventListener('click',function(){
+        // role check
+        getSupa().from('candidates').select('id').eq('id',session.user.id).maybeSingle().then(function(cr){
+          if(cr.data)wi

@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<script>if(sessionStorage.getItem("ht_gate")!=="ok"){window.location.replace("gate.html");}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Giriş Yap — hellotalent.ai</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root {
+    --verm: #C94E28;
+    --verm-light: #F5EDE9;
+    --navy: #1E2D5E;
+    --navy-light: #EEF0F7;
+    --gray: #F7F6F4;
+    --text: #111111;
+    --muted: #6B7280;
+    --border: #E5E3DF;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background: var(--verm);
+    transition: none;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    padding: 20px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: white;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .logo {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 800;
+    font-size: 19px;
+    letter-spacing: -0.5px;
+    color: var(--navy);
+    text-decoration: none;
+  }
+
+  .logo span { color: var(--verm); }
+
+  .back-link {
+    font-size: 13px;
+    color: var(--muted);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: color 0.2s;
+  }
+
+  .back-link:hover { color: var(--navy); }
+
+  /* ── MAIN ── */
+  .main {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 16px;
+  }
+
+  .card {
+    background: white;
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    padding: 40px;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+  }
+
+  /* ── TAB TOGGLE ── */
+  .tab-toggle {
+    display: flex;
+    background: var(--gray);
+    border-radius: 10px;
+    padding: 4px;
+    margin-bottom: 32px;
+  }
+
+  .tab-btn {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    background: transparent;
+    border-radius: 7px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  .tab-btn.active-aday {
+    background: var(--verm);
+    color: white;
+    box-shadow: 0 2px 8px rgba(201,78,40,0.25);
+  }
+
+  .tab-btn.active-ik {
+    background: var(--navy);
+    color: white;
+    box-shadow: 0 2px 8px rgba(30,45,94,0.25);
+  }
+
+  /* ── FORM ── */
+  .card-title {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 800;
+    font-size: 22px;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+
+  .card-sub {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 28px;
+    line-height: 1.5;
+  }
+
+  .field {
+    margin-bottom: 16px;
+  }
+
+  .field label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .field input {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 14px;
+    color: var(--text);
+    background: white;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .field input:focus { border-color: var(--navy); }
+  .field input.aday:focus { border-color: var(--verm); }
+
+  .btn-submit {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 10px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: white;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .btn-aday { background: var(--verm); }
+  .btn-aday:hover { background: #b84420; transform: translateY(-1px); }
+  .btn-ik { background: var(--navy); }
+  .btn-ik:hover { background: #162249; transform: translateY(-1px); }
+
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 20px 0;
+    color: var(--muted);
+    font-size: 12px;
+  }
+  .divider::before, .divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .register-link {
+    text-align: center;
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  .register-link a {
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  .register-link a.aday-link { color: var(--verm); }
+  .register-link a.ik-link { color: var(--navy); }
+
+  .error-msg {
+    background: #FEF2F2;
+    border: 1px solid #FECACA;
+    color: #DC2626;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    margin-bottom: 16px;
+    display: none;
+  }
+
+  .loading-spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255,255,255,0.4);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── FOOTER ── */
+  .footer {
+    text-align: center;
+    padding: 20px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  /* Aday formu / IK formu toggle */
+  #form-ik { display: none; }
+
+  /* Form container sabit yükseklik için */
+  .form-wrapper {
+    position: relative;
+    min-height: 300px;
+  }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <a href="index.html" class="logo">hello<span>talent</span><span style="color:var(--navy);">.ai</span></a>
+  <a href="index.html" class="back-link">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+    Ana Sayfa
+  </a>
+</header>
+
+<main class="main">
+  <div class="card">
+
+    <!-- Tab Toggle -->
+    <div class="tab-toggle">
+      <button class="tab-btn active-aday" id="tab-aday" onclick="switchTab('aday')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        Aday Girişi
+      </button>
+      <button class="tab-btn" id="tab-ik" onclick="switchTab('ik')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+        İK Girişi
+      </button>
+    </div>
+
+    <!-- ADAY FORMU -->
+    <div class="form-wrapper">
+    <div id="form-aday">
+      <h2 class="card-title">Tekrar hoş geldin 👋</h2>
+      <p class="card-sub">Profilini güncellemek veya başvurularını takip etmek için giriş yap.</p>
+
+      <div class="error-msg" id="err-aday"></div>
+
+      <div class="field">
+        <label>E-posta</label>
+        <input type="email" id="aday-email" class="aday" placeholder="ornek@email.com" autocomplete="email">
+      </div>
+      <div class="field">
+        <label>Şifre</label>
+        <input type="password" id="aday-sifre" class="aday" placeholder="••••••••" autocomplete="current-password">
+      </div>
+
+      <button class="btn-submit btn-aday" onclick="loginAday()">
+        <span id="aday-btn-text">Giriş Yap →</span>
+      </button>
+
+      <div class="divider">veya</div>
+
+      <p class="register-link">
+        Henüz üye değil misin?
+        <a href="index.html#aday" class="aday-link">Hemen kayıt ol →</a>
+      </p>
+    </div>
+
+    <!-- IK FORMU -->
+    <div id="form-ik">
+      <h2 class="card-title">İK Paneline Giriş</h2>
+      <p class="card-sub">Aday havuzuna erişmek için İK hesabınla giriş yap.</p>
+
+      <div class="error-msg" id="err-ik"></div>
+
+      <div class="field">
+        <label>Kurumsal E-posta</label>
+        <input type="email" id="ik-email" placeholder="isim@sirket.com" autocomplete="email">
+      </div>
+      <div class="field">
+        <label>Şifre</label>
+        <input type="password" id="ik-sifre" placeholder="••••••••" autocomplete="current-password">
+      </div>
+
+      <button class="btn-submit btn-ik" onclick="loginIK()">
+        <span id="ik-btn-text">Giriş Yap →</span>
+      </button>
+
+      <div class="divider">veya</div>
+
+      <p class="register-link">
+        İK hesabı yok mu?
+        <a href="index.html#ik" class="ik-link">Talep gönder →</a>
+      </p>
+    </div>
+    </div><!-- /form-wrapper -->
+
+  </div>
+</main>
+
+<footer class="footer">
+  © 2025 hellotalent.ai · <a href="index.html" style="color:var(--muted);text-decoration:none;">Ana Sayfa</a>
+</footer>
+
+<script>
+// ── SUPABASE ──
+let _supa = null;
+function getSupa() {
+  if (!_supa) {
+    _supa = supabase.createClient(
+      'https://cpwibefquojehjehtrog.supabase.co',
+      'sb_publishable_POUtNwJyjAAheukwYP5hmA_TKKjphwa'
+    );
+  }
+  return _supa;
+}
+
+// ── OTURUM KONTROLÜ ──
+(async function() {
+  // URL parametresine göre tab'ı aç
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('tab') === 'ik') {
+    switchTab('ik');
+  }
+  const { data } = await getSupa().auth.getSession();
+  if (data.session) {
+    // Zaten giriş yapmış → profil sayfasına yönlendir
+    window.location.href = 'profil.html';
+  }
+})();
+
+// ── TAB SWITCH ──
+function switchTab(tab) {
+  const adayForm = document.getElementById('form-aday');
+  const ikForm = document.getElementById('form-ik');
+  const adayBtn = document.getElementById('tab-aday');
+  const ikBtn = document.getElementById('tab-ik');
+
+  if (tab === 'aday') {
+    adayForm.style.display = 'block';
+    ikForm.style.display = 'none';
+    adayBtn.className = 'tab-btn active-aday';
+    ikBtn.className = 'tab-btn';
+    document.body.style.background = 'var(--verm)';
+  } else {
+    adayForm.style.display = 'none';
+    ikForm.style.display = 'block';
+    adayBtn.className = 'tab-btn';
+    ikBtn.className = 'tab-btn active-ik';
+    document.body.style.background = 'var(--navy)';
+  }
+}
+
+// ── ADAY GİRİŞ ──
+async function loginAday() {
+  const email = document.getElementById('aday-email').value.trim();
+  const sifre = document.getElementById('aday-sifre').value;
+  const errEl = document.getElementById('err-aday');
+  const btnText = document.getElementById('aday-btn-text');
+
+  errEl.style.display = 'none';
+
+  if (!email || !sifre) {
+    errEl.textContent = 'E-posta ve şifre zorunludur.';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  btnText.innerHTML = '<div class="loading-spinner"></div>';
+
+  const { data, error } = await getSupa().auth.signInWithPassword({ email, password: sifre });
+
+  if (error) {
+    errEl.textContent = 'E-posta veya şifre hatalı. Lütfen tekrar dene.';
+    errEl.style.display = 'block';
+    btnText.textContent = 'Giriş Yap →';
+    return;
+  }
+
+  // Başarılı → profil sayfasına git
+  window.location.href = 'profil.html';
+}
+
+// ── IK GİRİŞ ──
+async function loginIK() {
+  const email = document.getElementById('ik-email').value.trim();
+  const sifre = document.getElementById('ik-sifre').value;
+  const errEl = document.getElementById('err-ik');
+  const btnText = document.getElementById('ik-btn-text');
+
+  errEl.style.display = 'none';
+
+  if (!email || !sifre) {
+    errEl.textContent = 'E-posta ve şifre zorunludur.';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  btnText.innerHTML = '<div class="loading-spinner"></div>';
+
+  const { data, error } = await getSupa().auth.signInWithPassword({ email, password: sifre });
+
+  if (error) {
+    var msg = 'E-posta veya şifre hatalı.';
+    if (error.message && error.message.toLowerCase().includes('email not confirmed')) {
+      msg = 'E-posta adresin henüz onaylanmamış. Lütfen gelen kutunu kontrol et.';
+    } else if (error.message && error.message.toLowerCase().includes('invalid')) {
+      msg = 'E-posta veya şifre hatalı. Lütfen kontrol et.';
+    }
+    errEl.textContent = msg;
+    errEl.style.display = 'block';
+    btnText.textContent = 'Giriş Yap →';
+    return;
+  }
+
+  // Başarılı → İK dashboarduna git
+  window.location.href = 'ik.html';
+}
+
+// Enter key desteği
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') {
+    const adayForm = document.getElementById('form-aday');
+    if (adayForm.style.display !== 'none') {
+      loginAday();
+    } else {
+      loginIK();
+    }
+  }
+});
+</script>
+</body>
+</html>
