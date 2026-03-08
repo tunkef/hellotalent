@@ -116,10 +116,10 @@
     .mobile-cta-row button { flex: 1; }
 
     /* ══ PAGE WRAP ══ */
-    .page-wrap { padding-top: 64px; }
+    .page-wrap { padding-top: 0; }
 
     /* ══ HERO ══ */
-    .kariyer-hero {
+    .kariyer-hero { padding-top: calc(64px + 80px) !important;
       background: linear-gradient(135deg, var(--navy) 0%, #162248 100%);
       padding: 72px 48px 64px;
       position: relative; overflow: hidden;
@@ -520,7 +520,7 @@
     @media (max-width: 900px) {
       .hero-grid { grid-template-columns: 1fr; gap: 32px; }
       .hero-right-k { display: none; }
-      .kariyer-hero { padding: 48px 24px 44px; }
+      .kariyer-hero { padding-top: calc(64px + 48px); padding-left: 24px; padding-right: 24px; padding-bottom: 44px; }
       .kariyer-tabs-section { padding: 32px 24px 16px; }
       .kariyer-cards-section { padding: 16px 24px 48px; }
       .kariyer-grid { grid-template-columns: 1fr; gap: 16px; }
@@ -1378,7 +1378,39 @@
 </div>
 
 <!-- ══════════ SUPABASE + JS ══════════ -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+// ── COOKIE CONSENT ──
+function acceptCookies() {
+  localStorage.setItem('ht_cookie_consent', 'accepted');
+  var bar = document.getElementById('cookie-bar');
+  if (bar) bar.style.display = 'none';
+  loadGA4();
+}
+function rejectCookies() {
+  localStorage.setItem('ht_cookie_consent', 'rejected');
+  var bar = document.getElementById('cookie-bar');
+  if (bar) bar.style.display = 'none';
+}
+function loadGA4() {
+  if (typeof gtag !== 'undefined') return;
+  var s = document.createElement('script');
+  s.async = true;
+  s.src = 'https://www.googletagmanager.com/gtag/js?id=G-54BCV5QYCZ';
+  document.head.appendChild(s);
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  window.gtag = gtag;
+  gtag('js', new Date());
+  gtag('config', 'G-54BCV5QYCZ');
+}
+// Sayfa yüklenince cookie durumunu kontrol et
+(function(){
+  var consent = localStorage.getItem('ht_cookie_consent');
+  var bar = document.getElementById('cookie-bar');
+  if (consent) { if (bar) bar.style.display = 'none'; if (consent === 'accepted') loadGA4(); }
+})();
+
+</script>
 <script>
 // ── SUPABASE ──
 const SUPABASE_URL = 'https://cpwibefquojehjehtrog.supabase.co';
