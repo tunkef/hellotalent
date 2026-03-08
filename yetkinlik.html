@@ -681,6 +681,22 @@
     .nav-dd-icon { width: 16px; height: 16px; flex-shrink: 0; opacity: 0.5; }
     .nav-dd-divider { height: 1px; background: var(--border); margin: 4px 6px; }
 
+    
+    /* ══ DROPDOWN TRIGGER FIX ══ */
+    .nav-dropdown-trigger {
+      font-size: 14px; font-weight: 600;
+      color: var(--muted, #6B7280);
+      background: none; border: none; padding: 0;
+      cursor: pointer; display: inline-flex; align-items: center; gap: 4px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      transition: color 0.2s; white-space: nowrap;
+    }
+    .nav-dropdown-trigger:hover { color: var(--text, #111827); }
+    .nav-dropdown:hover .nav-dropdown-trigger { color: var(--text, #111827); }
+    .nav-dropdown-trigger.kariyer { color: var(--verm, #C94E28); font-weight: 700; }
+    .dd-chevron { width: 12px; height: 12px; transition: transform 0.2s; margin-top: 1px; flex-shrink: 0; }
+    .nav-dropdown:hover .dd-chevron { transform: rotate(180deg); }
+
     </style>
   <meta name="robots" content="index, follow">
   <meta name="author" content="hellotalent.ai">
@@ -973,36 +989,7 @@
 
 <!-- ══════════ SUPABASE + JS ══════════ -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
-// ── COOKIE CONSENT ──
-function acceptCookies() {
-  localStorage.setItem('ht_cookie_consent', 'accepted');
-  var bar = document.getElementById('cookie-bar');
-  if (bar) bar.style.display = 'none';
-  loadGA4();
-}
-function rejectCookies() {
-  localStorage.setItem('ht_cookie_consent', 'rejected');
-  var bar = document.getElementById('cookie-bar');
-  if (bar) bar.style.display = 'none';
-}
-function loadGA4() {
-  if (typeof gtag !== 'undefined') return;
-  var s = document.createElement('script');
-  s.async = true;
-  s.src = 'https://www.googletagmanager.com/gtag/js?id=G-54BCV5QYCZ';
-  document.head.appendChild(s);
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  window.gtag = gtag;
-  gtag('js', new Date());
-  gtag('config', 'G-54BCV5QYCZ');
-}
-// Sayfa yüklenince cookie durumunu kontrol et
-(function(){
-  var consent = localStorage.getItem('ht_cookie_consent');
-  var bar = document.getElementById('cookie-bar');
-  if (consent) { if (bar) bar.style.display = 'none'; if (consent === 'accepted') loadGA4(); }
-})();
+
 
 </script>
 <script>
@@ -1181,6 +1168,36 @@ function handleBlogSubscribe() {
 // ESC ile kapat
 document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeAuthPopup(); });
 </script>
+
+
+<!-- ══════════ COOKIE BAR ══════════ -->
+<div id="cookie-bar" style="
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 9999;
+  background: var(--navy, #1E2D5E); color: white;
+  padding: 14px 32px; display: flex; align-items: center;
+  justify-content: space-between; gap: 20px; flex-wrap: wrap;
+  font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13px;
+  box-shadow: 0 -4px 24px rgba(0,0,0,0.15);
+">
+  <span style="flex:1; min-width:200px; color: rgba(255,255,255,0.85);">
+    🍪 <strong style="color:white;">Çerez Bildirimi</strong> — hellotalent.ai deneyimini geliştirmek için çerezler kullanıyoruz. 
+    <span style="opacity:0.7;">KVKK kapsamında tercihlerinizi belirleyebilirsiniz.</span>
+  </span>
+  <div style="display:flex; gap:10px; flex-shrink:0;">
+    <button onclick="rejectCookies()" style="
+      padding: 8px 18px; border-radius: 8px; border: 1.5px solid rgba(255,255,255,0.3);
+      background: transparent; color: white; font-size: 13px; font-weight: 600;
+      cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.2s;
+    " onmouseover="this.style.borderColor='rgba(255,255,255,0.7)'" 
+       onmouseout="this.style.borderColor='rgba(255,255,255,0.3)'">Reddet</button>
+    <button onclick="acceptCookies()" style="
+      padding: 8px 18px; border-radius: 8px; border: none;
+      background: #C94E28; color: white; font-size: 13px; font-weight: 700;
+      cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.2s;
+    " onmouseover="this.style.background='#a83d1e'"
+       onmouseout="this.style.background='#C94E28'">Kabul Et</button>
+  </div>
+</div>
 
 </body>
 </html>
