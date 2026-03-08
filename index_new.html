@@ -2,7 +2,26 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<script>if(sessionStorage.getItem("ht_gate")!=="ok"){window.location.replace("gate.html");}</script>
+<script>if(sessionStorage.getItem("ht_gate")!=="ok"){window.location.replace("gate.html");}
+// ── NAV DROPDOWN ──
+function toggleNavDD() {
+  var dd = document.getElementById('nav-kariyer-dd');
+  if (!dd) return;
+  var isOpen = dd.classList.contains('open');
+  dd.classList.toggle('open', !isOpen);
+  var btn = dd.querySelector('button');
+  if (btn) btn.setAttribute('aria-expanded', String(!isOpen));
+}
+document.addEventListener('click', function(e) {
+  var dd = document.getElementById('nav-kariyer-dd');
+  if (dd && !dd.contains(e.target)) {
+    dd.classList.remove('open');
+    var btn = dd.querySelector('button');
+    if (btn) btn.setAttribute('aria-expanded', 'false');
+  }
+});
+
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <meta name="description" content="Türkiye'nin retail sektörüne özel talent marketplace'i. Global markalardan lokal butiklere — doğru yetenek, doğru marka ile burada buluşuyor.">
 <meta name="keywords" content="retail iş ilanları, mağaza yöneticisi iş ilanı, retail işe alım, İstanbul retail iş, lüks marka kariyer, store manager iş, hellotalent">
@@ -69,7 +88,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;color:var(--text);background:#ff
 .mobile-cta-row button{flex:1;padding:12px;border-radius:10px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;border:none;}
 
 /* ── HERO ── */
-.hero-outer{padding:88px 48px 60px;max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center;}
+.hero-outer{padding:48px 48px 60px;max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center;}
 .hero-tag{display:inline-flex;align-items:center;gap:8px;background:var(--verm-light);border:1.5px solid rgba(201,78,40,0.2);color:var(--verm);font-size:11px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;padding:6px 14px;border-radius:30px;margin-bottom:20px;}
 .hero-title{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:52px;letter-spacing:-2px;line-height:1.05;color:var(--text);margin-bottom:18px;}
 .hero-title span{color:var(--verm);}
@@ -255,7 +274,7 @@ footer{background:var(--navy);padding:40px 48px;}
   .site-header{padding:0 20px;}
   .header-nav{display:none;}
   .hamburger{display:flex;}
-  .hero-outer{grid-template-columns:1fr;gap:40px;padding:56px 24px 48px;text-align:center;}
+  .hero-outer{grid-template-columns:1fr;gap:40px;padding:32px 24px 48px;text-align:center;}
   .hero-btns{justify-content:center;}
   .hero-trust{justify-content:center;}
   .section{padding:56px 24px;}
@@ -279,39 +298,73 @@ footer{background:var(--navy);padding:40px 48px;}
   .mock-cards{grid-template-columns:1fr;}
 }
 
+
     /* ══ KARİYER DROPDOWN ══ */
     .nav-dropdown { position: relative; }
     .nav-dropdown-menu {
       display: none;
       position: absolute;
-      top: calc(100% + 12px);
+      top: 100%;
       left: 50%;
       transform: translateX(-50%);
       background: white;
       border: 1.5px solid var(--border);
-      border-radius: 16px;
-      padding: 8px;
-      min-width: 220px;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.10);
+      border-radius: 14px;
+      padding: 6px;
+      min-width: 210px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.10);
       z-index: 600;
+      /* Bridge: fare gap'ini kapat */
+      padding-top: 12px;
+      margin-top: -4px;
     }
-    .nav-dropdown:hover .nav-dropdown-menu,
-    .nav-dropdown-menu:hover { display: block; }
+    /* Bridge pseudo element — gap sorununu çözer */
+    .nav-dropdown-menu::before {
+      content: '';
+      position: absolute;
+      top: -12px; left: 0; right: 0;
+      height: 12px;
+    }
+    .nav-dropdown.open .nav-dropdown-menu { display: block; }
     .nav-dd-item {
       display: flex; align-items: center; gap: 10px;
-      padding: 10px 14px; border-radius: 10px;
+      padding: 9px 12px; border-radius: 8px;
       text-decoration: none; color: var(--text);
       font-size: 13px; font-weight: 600;
       font-family: 'Plus Jakarta Sans', sans-serif;
       transition: background 0.15s;
       white-space: nowrap;
     }
-    .nav-dd-item:hover { background: var(--gray); }
-    .nav-dd-icon { font-size: 15px; width: 24px; text-align: center; }
-    .nav-dd-divider { height: 1px; background: var(--border); margin: 4px 8px; }
-    .nav-link.has-dropdown::after { content: ' ▾'; font-size: 10px; }
+    .nav-dd-item:hover, .nav-dd-item.active { background: #F3F4F6; color: var(--navy); }
+    .nav-dd-item.active { color: var(--verm); }
+    .nav-dd-icon { font-size: 14px; width: 20px; text-align: center; flex-shrink: 0; }
+    .nav-dd-divider { height: 1px; background: var(--border); margin: 4px 6px; }
+    .nav-link.has-dropdown { display: inline-flex; align-items: center; gap: 4px; }
+    .nav-link.has-dropdown .dd-arrow {
+      display: inline-block;
+      width: 14px; height: 14px;
+      transition: transform 0.2s;
+      flex-shrink: 0;
+    }
+    .nav-dropdown.open .dd-arrow { transform: rotate(180deg); }
 
-</style>
+    
+    /* nav dropdown button reset */
+    .nav-link.has-dropdown {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--muted);
+      padding: 0;
+      transition: color 0.2s;
+    }
+    .nav-link.has-dropdown:hover { color: var(--text); }
+    .nav-dropdown.open .nav-link.has-dropdown { color: var(--verm); }
+
+    </style>
 
   <script type="application/ld+json">
   {
