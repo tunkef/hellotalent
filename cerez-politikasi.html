@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Çerez Politikası — hellotalent.ai</title>
+<meta name="description" content="hellotalent.ai çerez (cookie) politikası ve tercih yönetimi.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/shared.css">
+<style>
+:root { --navy: #1E2D5E; --verm: #C94E28; --border: rgba(30,45,94,0.10); }
+
+.legal-hero {
+  background: var(--navy);
+  padding: 100px 48px 64px;
+  text-align: center;
+}
+.legal-hero-tag {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 2.5px;
+  color: rgba(255,255,255,0.4);
+  margin-bottom: 14px;
+}
+.legal-hero h1 {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-weight: 800;
+  font-size: clamp(26px, 4vw, 44px);
+  letter-spacing: -1.5px;
+  color: white;
+  margin-bottom: 12px;
+}
+.legal-hero p { font-size: 14px; color: rgba(255,255,255,0.4); }
+
+.legal-wrap {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 64px 48px 96px;
+}
+.legal-date {
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  color: #aaa;
+  margin-bottom: 40px;
+  padding-bottom: 32px;
+  border-bottom: 1px solid var(--border);
+}
+
+h2 {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-weight: 700;
+  font-size: 20px;
+  color: var(--navy);
+  margin: 44px 0 14px;
+  letter-spacing: -0.5px;
+}
+h2:first-of-type { margin-top: 0; }
+p, li {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 15px;
+  color: #444;
+  line-height: 1.75;
+  margin-bottom: 10px;
+}
+ul { padding-left: 20px; margin-bottom: 14px; }
+li { margin-bottom: 5px; }
+a { color: var(--navy); }
+
+/* Cookie cards */
+.cookie-grid {
+  display: grid;
+  gap: 14px;
+  margin: 20px 0 32px;
+}
+.cookie-card {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+}
+.cookie-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  background: rgba(30,45,94,0.03);
+  border-bottom: 1px solid var(--border);
+}
+.cookie-card-name {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--navy);
+}
+.cookie-badge {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+.badge-req { background: rgba(30,45,94,0.1); color: var(--navy); }
+.badge-opt { background: rgba(201,78,40,0.1); color: var(--verm); }
+.cookie-card-body {
+  padding: 16px 20px;
+}
+.cookie-card-body p { font-size: 14px; margin: 0 0 10px; }
+.cookie-card-body p:last-child { margin: 0; }
+.cookie-detail {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: #999;
+}
+
+/* Toggle UI */
+.pref-section {
+  background: rgba(30,45,94,0.04);
+  border-radius: 16px;
+  padding: 28px;
+  margin: 24px 0 32px;
+}
+.pref-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+}
+.pref-row:last-child { border-bottom: none; padding-bottom: 0; }
+.pref-row:first-child { padding-top: 0; }
+.pref-label strong {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--navy);
+  display: block;
+  margin-bottom: 3px;
+}
+.pref-label span {
+  font-size: 12px;
+  color: #888;
+}
+/* Toggle switch */
+.toggle {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  flex-shrink: 0;
+}
+.toggle input { opacity: 0; width: 0; height: 0; }
+.toggle-slider {
+  position: absolute;
+  inset: 0;
+  border-radius: 24px;
+  background: #ddd;
+  cursor: pointer;
+  transition: 0.3s;
+}
+.toggle-slider:before {
+  content: '';
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  left: 3px;
+  top: 3px;
+  border-radius: 50%;
+  background: white;
+  transition: 0.3s;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+.toggle input:checked + .toggle-slider { background: var(--navy); }
+.toggle input:checked + .toggle-slider:before { transform: translateX(20px); }
+.toggle input:disabled + .toggle-slider { cursor: not-allowed; opacity: 0.6; }
+
+.pref-save-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--navy);
+  color: white;
+  border: none;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 13px 28px;
+  border-radius: 30px;
+  cursor: pointer;
+  margin-top: 20px;
+  transition: opacity 0.2s;
+}
+.pref-save-btn:hover { opacity: 0.85; }
+
+.kvkk-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0 32px;
+  font-size: 14px;
+}
+.kvkk-table th {
+  background: var(--navy);
+  color: white;
+  padding: 12px 16px;
+  text-align: left;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 600;
+  font-size: 13px;
+}
+.kvkk-table th:first-child { border-radius: 8px 0 0 0; }
+.kvkk-table th:last-child { border-radius: 0 8px 0 0; }
+.kvkk-table td {
+  padding: 11px 16px;
+  border-bottom: 1px solid var(--border);
+  color: #444;
+  vertical-align: top;
+}
+.kvkk-table tr:last-child td { border-bottom: none; }
+.kvkk-table tr:nth-child(even) td { background: rgba(30,45,94,0.02); }
+
+@media (max-width: 640px) {
+  .legal-hero { padding: 80px 24px 48px; }
+  .legal-wrap { padding: 48px 24px 72px; }
+  .cookie-card-head { flex-direction: column; align-items: flex-start; gap: 8px; }
+}
+</style>
+</head>
+<body>
+<div id="ht-header"></div>
+
+<section class="legal-hero">
+  <p class="legal-hero-tag">Yasal</p>
+  <h1>Çerez Politikası</h1>
+  <p>hellotalent.ai — Çerezler nasıl kullanılır ve nasıl yönetilir?</p>
+</section>
+
+<div class="legal-wrap">
+  <p class="legal-date">Son güncelleme: Mart 2025 &nbsp;·&nbsp; Sürüm: 1.0</p>
+
+  <h2>1. Çerez Nedir?</h2>
+  <p>Çerezler (cookie), bir web sitesini ziyaret ettiğinizde tarayıcınız tarafından cihazınıza kaydedilen küçük metin dosyalarıdır. Çerezler, site tercihlerinizi hatırlamak, oturumunuzu yönetmek ve kullanım alışkanlıklarını analiz etmek gibi amaçlarla kullanılır.</p>
+  <p>hellotalent.ai, Türkiye'deki 6698 sayılı KVKK ve Elektronik Ticaretin Düzenlenmesi Hakkında Kanun çerçevesinde çerez kullanımını yönetmektedir.</p>
+
+  <h2>2. Kullandığımız Çerez Türleri</h2>
+
+  <div class="cookie-grid">
+    <div class="cookie-card">
+      <div class="cookie-card-head">
+        <span class="cookie-card-name">🔒 Zorunlu Çerezler</span>
+        <span class="cookie-badge badge-req">Her zaman aktif</span>
+      </div>
+      <div class="cookie-card-body">
+        <p>Platformun temel işlevleri için zorunludur. Oturum yönetimi, güvenlik doğrulaması ve sayfa gezintisi bu çerezler olmadan çalışmaz. Devre dışı bırakılamaz.</p>
+        <p class="cookie-detail">Örnekler: sb-auth-token (Supabase oturum), XSRF-TOKEN (güvenlik)</p>
+        <p class="cookie-detail">Saklama süresi: Oturum süresi veya max 1 yıl</p>
+      </div>
+    </div>
+
+    <div class="cookie-card">
+      <div class="cookie-card-head">
+        <span class="cookie-card-name">📊 Analitik Çerezler</span>
+        <span class="cookie-badge badge-opt">Opsiyonel</span>
+      </div>
+      <div class="cookie-card-body">
+        <p>Platformun nasıl kullanıldığını anlamamıza yardımcı olur. Hangi sayfaların ziyaret edildiği, ortalama oturum süresi ve trafik kaynakları gibi anonim veriler toplanır.</p>
+        <p class="cookie-detail">Sağlayıcı: Google Analytics 4 (GA4)</p>
+        <p class="cookie-detail">Çerezler: _ga, _ga_XXXXXXX, _gid</p>
+        <p class="cookie-detail">Saklama süresi: 2 yıla kadar</p>
+      </div>
+    </div>
+
+    <div class="cookie-card">
+      <div class="cookie-card-head">
+        <span class="cookie-card-name">⚙️ İşlevsellik Çerezleri</span>
+        <span class="cookie-badge badge-opt">Opsiyonel</span>
+      </div>
+      <div class="cookie-card-body">
+        <p>Tercihlerinizi (dil, sekme durumu, form alanları vb.) hatırlamak için kullanılır. Bu çerezler olmadan her ziyarette tercihlerinizi yeniden belirlemeniz gerekebilir.</p>
+        <p class="cookie-detail">Örnekler: ht_tab_pref, ht_form_state</p>
+        <p class="cookie-detail">Saklama süresi: 30 güne kadar</p>
+      </div>
+    </div>
+
+    <div class="cookie-card">
+      <div class="cookie-card-head">
+        <span class="cookie-card-name">🎯 Pazarlama Çerezleri</span>
+        <span class="cookie-badge badge-opt">Opsiyonel</span>
+      </div>
+      <div class="cookie-card-body">
+        <p>Şu an aktif olarak kullanılmamaktadır. İleride üçüncü taraf reklam ağları veya yeniden hedefleme araçları entegre edilirse bu bölüm güncellenecektir.</p>
+        <p class="cookie-detail">Mevcut durum: Devre dışı</p>
+      </div>
+    </div>
+  </div>
+
+  <h2>3. Detaylı Çerez Listesi</h2>
+  <table class="kvkk-table">
+    <thead>
+      <tr>
+        <th>Çerez Adı</th>
+        <th>Sağlayıcı</th>
+        <th>Amaç</th>
+        <th>Süre</th>
+        <th>Tür</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>sb-*-auth-token</code></td>
+        <td>Supabase</td>
+        <td>Kullanıcı oturum yönetimi</td>
+        <td>1 yıl</td>
+        <td>Zorunlu</td>
+      </tr>
+      <tr>
+        <td><code>_ga</code></td>
+        <td>Google Analytics</td>
+        <td>Kullanıcı oturumu tanımlama</td>
+        <td>2 yıl</td>
+        <td>Analitik</td>
+      </tr>
+      <tr>
+        <td><code>_ga_XXXXXXX</code></td>
+        <td>Google Analytics</td>
+        <td>GA4 oturum durumu</td>
+        <td>2 yıl</td>
+        <td>Analitik</td>
+      </tr>
+      <tr>
+        <td><code>_gid</code></td>
+        <td>Google Analytics</td>
+        <td>24 saatlik kullanıcı tanımlama</td>
+        <td>24 saat</td>
+        <td>Analitik</td>
+      </tr>
+      <tr>
+        <td><code>ht_cookie_consent</code></td>
+        <td>hellotalent.ai</td>
+        <td>Çerez tercih kaydı</td>
+        <td>1 yıl</td>
+        <td>Zorunlu</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>4. Çerez Tercihlerinizi Yönetin</h2>
+  <p>Zorunlu çerezler dışındaki tüm çerezleri aşağıdan yönetebilirsiniz:</p>
+
+  <div class="pref-section">
+    <div class="pref-row">
+      <div class="pref-label">
+        <strong>🔒 Zorunlu Çerezler</strong>
+        <span>Platformun çalışması için gereklidir, devre dışı bırakılamaz.</span>
+      </div>
+      <label class="toggle">
+        <input type="checkbox" checked disabled>
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+    <div class="pref-row">
+      <div class="pref-label">
+        <strong>📊 Analitik Çerezler</strong>
+        <span>Google Analytics ile anonim kullanım istatistikleri.</span>
+      </div>
+      <label class="toggle">
+        <input type="checkbox" id="toggle-analytics" checked>
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+    <div class="pref-row">
+      <div class="pref-label">
+        <strong>⚙️ İşlevsellik Çerezleri</strong>
+        <span>Tercihlerinizi ve form durumunuzu hatırlar.</span>
+      </div>
+      <label class="toggle">
+        <input type="checkbox" id="toggle-functional" checked>
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+    <button class="pref-save-btn" onclick="saveCookiePrefs()">Tercihleri Kaydet →</button>
+  </div>
+
+  <h2>5. Tarayıcı Üzerinden Çerez Yönetimi</h2>
+  <p>Tarayıcı ayarlarınızdan tüm çerezleri engelleyebilir veya silebilirsiniz. Ancak zorunlu çerezlerin devre dışı bırakılması platformun düzgün çalışmamasına yol açabilir.</p>
+  <ul>
+    <li><a href="https://support.google.com/chrome/answer/95647" target="_blank" rel="noopener">Google Chrome — Çerez Ayarları</a></li>
+    <li><a href="https://support.mozilla.org/tr/kb/cerezler" target="_blank" rel="noopener">Mozilla Firefox — Çerez Ayarları</a></li>
+    <li><a href="https://support.apple.com/tr-tr/guide/safari/sfri11471/mac" target="_blank" rel="noopener">Safari — Çerez Ayarları</a></li>
+    <li><a href="https://support.microsoft.com/tr-tr/windows/microsoft-edge-de-çerezleri-yönetme" target="_blank" rel="noopener">Microsoft Edge — Çerez Ayarları</a></li>
+  </ul>
+
+  <h2>6. Politika Güncellemeleri</h2>
+  <p>Bu politikayı teknoloji veya mevzuat değişikliklerine bağlı olarak güncelleyebiliriz. Güncel versiyona her zaman bu sayfadan ulaşabilirsiniz. Önemli değişiklikler site üzerinden duyurulacaktır.</p>
+
+  <h2>7. İletişim</h2>
+  <p>Çerez politikamız hakkında sorularınız için:<br>
+  <a href="mailto:info@hellotalent.ai">info@hellotalent.ai</a> &nbsp;·&nbsp;
+  <a href="/kvkk.html">KVKK Aydınlatma Metni</a> &nbsp;·&nbsp;
+  <a href="/gizlilik.html">Gizlilik Politikası</a></p>
+</div>
+
+<script>
+function saveCookiePrefs() {
+  const analytics = document.getElementById('toggle-analytics').checked;
+  const functional = document.getElementById('toggle-functional').checked;
+  const prefs = { analytics, functional, saved: true, date: new Date().toISOString() };
+  try {
+    sessionStorage.setItem('ht_cookie_prefs', JSON.stringify(prefs));
+  } catch(e) {}
+  const btn = document.querySelector('.pref-save-btn');
+  btn.textContent = '✓ Kaydedildi!';
+  btn.style.background = '#2a7a4a';
+  setTimeout(() => {
+    btn.textContent = 'Tercihleri Kaydet →';
+    btn.style.background = '';
+  }, 2000);
+}
+</script>
+
+<div id="ht-footer"></div>
+<script src="/shared.js"></script>
+</body>
+</html>
