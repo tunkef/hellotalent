@@ -5,6 +5,41 @@
 <script>if(sessionStorage.getItem("ht_gate")!=="ok"){window.location.replace("gate.html");}
 
 
+
+// ── ACTIVE NAV STATE ──
+(function setActiveNav() {
+  var path = window.location.pathname;
+  var links = document.querySelectorAll('.header-nav .nav-link, .header-nav .nav-dropdown-trigger');
+  links.forEach(function(el) { el.classList.remove('active'); });
+  
+  var map = {
+    '/aday':        'aday',
+    '/aday.html':   'aday',
+    '/isveren':     'isveren',
+    '/isveren.html':'isveren',
+    '/kariyer':     'kariyer',
+    '/kariyer.html':'kariyer',
+    '/pozisyonlar': 'kariyer',
+    '/pozisyonlar.html':'kariyer',
+    '/yetkinlik':   'kariyer',
+    '/yetkinlik.html':'kariyer',
+    '/blog':        'kariyer',
+    '/blog.html':   'kariyer',
+  };
+  
+  var active = map[path] || (path === '/' ? 'home' : null);
+  if (!active) return;
+  
+  document.querySelectorAll('.header-nav a, .header-nav .nav-dropdown-trigger').forEach(function(el) {
+    var href = el.getAttribute('href') || '';
+    var isKariyer = active === 'kariyer' && el.classList.contains('nav-dropdown-trigger');
+    var isAday    = active === 'aday'    && (href.includes('aday'));
+    var isIsveren = active === 'isveren' && (href.includes('isveren'));
+    if (isKariyer || isAday || isIsveren) {
+      el.classList.add('active');
+    }
+  });
+})();
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <meta name="description" content="hellotalent.ai — Retail kariyerinde bir sonraki adım burada. Profil oluştur, kariyer rotanı çiz, markalar seni bulsun. Tamamen ücretsiz.">
@@ -300,6 +335,24 @@ footer{background:var(--navy);padding:40px 48px;}
     .dd-chevron { width: 12px; height: 12px; transition: transform 0.2s; margin-top: 1px; flex-shrink: 0; }
     .nav-dropdown:hover .dd-chevron { transform: rotate(180deg); }
 
+    
+    /* ── NAV ALIGNMENT & ACTIVE FIX ── */
+    .header-nav {
+      display: flex !important;
+      align-items: center;
+      gap: 28px;
+      flex: 1;
+      justify-content: center;
+    }
+    .nav-link.active {
+      color: var(--navy, #1E2D5E) !important;
+      font-weight: 700 !important;
+    }
+    .nav-dropdown-trigger.active {
+      color: var(--verm, #C94E28) !important;
+      font-weight: 700 !important;
+    }
+
     </style>
   <meta name="robots" content="index, follow">
   <meta name="author" content="hellotalent.ai">
@@ -321,9 +374,9 @@ footer{background:var(--navy);padding:40px 48px;}
 <header class="site-header" id="site-header">
   <a href="index.html" class="header-logo">hello<span>talent</span></a>
   <nav class="header-nav">
-    <a class="nav-link active" href="aday.html">Adaylar İçin</a>
+    <a class="nav-link" href="aday.html">Adaylar İçin</a>
     <a class="nav-link" href="isveren.html">İşverenler İçin</a>
-    <a class="nav-link kariyer" href="kariyer.html">Kariyer Rotası ✦</a>
+    <a class="nav-link kariyer" href="kariyer.html">Kariyer Rotası</a>
     <a class="nav-link" href="index.html#about">Hakkımızda</a>
   </nav>
   <div class="header-actions">
@@ -358,7 +411,7 @@ footer{background:var(--navy);padding:40px 48px;}
 <div class="mobile-menu" id="mobile-menu">
   <a class="mobile-nav-link" href="aday.html" style="color:var(--verm);">Adaylar İçin</a>
   <a class="mobile-nav-link" href="isveren.html">İşverenler İçin</a>
-  <a class="mobile-nav-link" href="kariyer.html" style="color:var(--verm);">Kariyer Rotası ✦</a>
+  <a class="mobile-nav-link" href="kariyer.html" style="color:var(--verm);">Kariyer Rotası</a>
   <a class="mobile-nav-link" href="index.html#about">Hakkımızda</a>
   <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border);">
     <div class="mobile-cta-row">

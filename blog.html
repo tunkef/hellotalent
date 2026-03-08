@@ -697,6 +697,24 @@
     .dd-chevron { width: 12px; height: 12px; transition: transform 0.2s; margin-top: 1px; flex-shrink: 0; }
     .nav-dropdown:hover .dd-chevron { transform: rotate(180deg); }
 
+    
+    /* ── NAV ALIGNMENT & ACTIVE FIX ── */
+    .header-nav {
+      display: flex !important;
+      align-items: center;
+      gap: 28px;
+      flex: 1;
+      justify-content: center;
+    }
+    .nav-link.active {
+      color: var(--navy, #1E2D5E) !important;
+      font-weight: 700 !important;
+    }
+    .nav-dropdown-trigger.active {
+      color: var(--verm, #C94E28) !important;
+      font-weight: 700 !important;
+    }
+
     </style>
   <meta name="robots" content="index, follow">
   <meta name="author" content="hellotalent.ai">
@@ -900,27 +918,6 @@
     </div>
   </section>
 
-  <section class="final-cta-k">
-    <div class="fck-inner">
-      <p class="fck-tag">Harekete Geç</p>
-      <h2 class="fck-title">Hedefin ne olursa olsun,<br>doğru yer burası.</h2>
-      <p class="fck-sub">
-        Kariyer rotanı paylaş — seni arayan markalar hellotalent üzerinden ulaşsın.
-        Başvuru kalabalığı yok, bilinmezlik yok. Sadece doğru eşleşme.
-      </p>
-      <div class="fck-btns">
-        <button class="fck-btn-primary" onclick="openAuthPopup('Kariyer Hedef Paylaşımı')">Kariyer Hedefimi Paylaş →</button>
-        <button class="fck-btn-secondary" onclick="window.location.href='index.html#cv'">Profil Oluştur</button>
-      </div>
-      <div class="fck-trust">
-        <div class="fck-trust-item"><span style="color:#16A34A;">✓</span> İlanlar hiç kapanmaz</div>
-        <div class="fck-trust-item"><span style="color:#16A34A;">✓</span> Tamamen ücretsiz</div>
-        <div class="fck-trust-item"><span style="color:#16A34A;">✓</span> Mevcut işverene görünmez</div>
-        <div class="fck-trust-item"><span style="color:#16A34A;">✓</span> 48 saat içinde geri dönüş</div>
-      </div>
-    </div>
-  </section>
-
 
 </div><!-- /page-wrap -->
 
@@ -994,6 +991,75 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
 
 
+
+// ── COOKIE CONSENT ──
+function acceptCookies() {
+  localStorage.setItem('ht_cookie_consent', 'accepted');
+  var bar = document.getElementById('cookie-bar');
+  if (bar) { bar.style.display = 'none'; }
+  loadGA4();
+}
+function rejectCookies() {
+  localStorage.setItem('ht_cookie_consent', 'rejected');
+  var bar = document.getElementById('cookie-bar');
+  if (bar) { bar.style.display = 'none'; }
+}
+function loadGA4() {
+  if (window._ga4loaded) return;
+  window._ga4loaded = true;
+  var s = document.createElement('script');
+  s.async = true;
+  s.src = 'https://www.googletagmanager.com/gtag/js?id=G-54BCV5QYCZ';
+  document.head.appendChild(s);
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){ dataLayer.push(arguments); }
+  window.gtag = gtag;
+  gtag('js', new Date());
+  gtag('config', 'G-54BCV5QYCZ');
+}
+(function initCookieConsent() {
+  var consent = localStorage.getItem('ht_cookie_consent');
+  var bar = document.getElementById('cookie-bar');
+  if (consent) {
+    if (bar) bar.style.display = 'none';
+    if (consent === 'accepted') loadGA4();
+  }
+})();
+
+// ── ACTIVE NAV STATE ──
+(function setActiveNav() {
+  var path = window.location.pathname;
+  var links = document.querySelectorAll('.header-nav .nav-link, .header-nav .nav-dropdown-trigger');
+  links.forEach(function(el) { el.classList.remove('active'); });
+  
+  var map = {
+    '/aday':        'aday',
+    '/aday.html':   'aday',
+    '/isveren':     'isveren',
+    '/isveren.html':'isveren',
+    '/kariyer':     'kariyer',
+    '/kariyer.html':'kariyer',
+    '/pozisyonlar': 'kariyer',
+    '/pozisyonlar.html':'kariyer',
+    '/yetkinlik':   'kariyer',
+    '/yetkinlik.html':'kariyer',
+    '/blog':        'kariyer',
+    '/blog.html':   'kariyer',
+  };
+  
+  var active = map[path] || (path === '/' ? 'home' : null);
+  if (!active) return;
+  
+  document.querySelectorAll('.header-nav a, .header-nav .nav-dropdown-trigger').forEach(function(el) {
+    var href = el.getAttribute('href') || '';
+    var isKariyer = active === 'kariyer' && el.classList.contains('nav-dropdown-trigger');
+    var isAday    = active === 'aday'    && (href.includes('aday'));
+    var isIsveren = active === 'isveren' && (href.includes('isveren'));
+    if (isKariyer || isAday || isIsveren) {
+      el.classList.add('active');
+    }
+  });
+})();
 </script>
 <script>
 // ── SUPABASE ──
