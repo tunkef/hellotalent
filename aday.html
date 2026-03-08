@@ -6,40 +6,78 @@
 
 
 
-// ── ACTIVE NAV STATE ──
-(function setActiveNav() {
-  var path = window.location.pathname;
-  var links = document.querySelectorAll('.header-nav .nav-link, .header-nav .nav-dropdown-trigger');
-  links.forEach(function(el) { el.classList.remove('active'); });
-  
-  var map = {
-    '/aday':        'aday',
-    '/aday.html':   'aday',
-    '/isveren':     'isveren',
-    '/isveren.html':'isveren',
-    '/kariyer':     'kariyer',
-    '/kariyer.html':'kariyer',
-    '/pozisyonlar': 'kariyer',
-    '/pozisyonlar.html':'kariyer',
-    '/yetkinlik':   'kariyer',
-    '/yetkinlik.html':'kariyer',
-    '/blog':        'kariyer',
-    '/blog.html':   'kariyer',
-  };
-  
-  var active = map[path] || (path === '/' ? 'home' : null);
-  if (!active) return;
-  
-  document.querySelectorAll('.header-nav a, .header-nav .nav-dropdown-trigger').forEach(function(el) {
-    var href = el.getAttribute('href') || '';
-    var isKariyer = active === 'kariyer' && el.classList.contains('nav-dropdown-trigger');
-    var isAday    = active === 'aday'    && (href.includes('aday'));
-    var isIsveren = active === 'isveren' && (href.includes('isveren'));
-    if (isKariyer || isAday || isIsveren) {
-      el.classList.add('active');
+
+
+// ══════════════════════════════════
+// HELLOTALENT — SHARED JS (UNIFIED)
+// ══════════════════════════════════
+
+// ── UTILITY ──
+function go(url) { window.location.href = url; }
+
+// ── LOGIN DROPDOWN ──
+function toggleLoginDropdown() {
+  var dd = document.getElementById('login-dropdown');
+  var btn = document.getElementById('login-btn');
+  if (!dd) return;
+  var isOpen = dd.classList.contains('open');
+  dd.classList.toggle('open', !isOpen);
+  if (btn) btn.setAttribute('aria-expanded', String(!isOpen));
+}
+document.addEventListener('click', function(e) {
+  var dd = document.getElementById('login-dropdown');
+  var btn = document.getElementById('login-btn');
+  if (dd && dd.classList.contains('open')) {
+    if (!dd.contains(e.target) && e.target !== btn && !btn.contains(e.target)) {
+      dd.classList.remove('open');
+      if (btn) btn.setAttribute('aria-expanded', 'false');
     }
-  });
+  }
+});
+
+// ── MOBILE MENU ──
+function toggleMobileMenu() {
+  var menu = document.getElementById('mobile-menu');
+  var ham = document.getElementById('hamburger');
+  if (!menu) return;
+  var isOpen = menu.classList.contains('open');
+  menu.classList.toggle('open', !isOpen);
+  ham.classList.toggle('open', !isOpen);
+  ham.setAttribute('aria-expanded', String(!isOpen));
+  document.body.style.overflow = isOpen ? '' : 'hidden';
+}
+
+// ── COOKIE CONSENT ──
+function acceptCookies() {
+  localStorage.setItem('ht_cookie_consent', 'accepted');
+  var bar = document.getElementById('cookie-bar');
+  if (bar) bar.style.display = 'none';
+  loadGA4();
+}
+function rejectCookies() {
+  localStorage.setItem('ht_cookie_consent', 'rejected');
+  var bar = document.getElementById('cookie-bar');
+  if (bar) bar.style.display = 'none';
+}
+function loadGA4() {
+  if (window._ga4loaded) return;
+  window._ga4loaded = true;
+  var s = document.createElement('script');
+  s.async = true; s.src = 'https://www.googletagmanager.com/gtag/js?id=G-54BCV5QYCZ';
+  document.head.appendChild(s);
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){ dataLayer.push(arguments); }
+  window.gtag = gtag; gtag('js', new Date()); gtag('config', 'G-54BCV5QYCZ');
+}
+(function initCookie() {
+  var consent = localStorage.getItem('ht_cookie_consent');
+  if (consent) {
+    var bar = document.getElementById('cookie-bar');
+    if (bar) bar.style.display = 'none';
+    if (consent === 'accepted') loadGA4();
+  }
 })();
+
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <meta name="description" content="hellotalent.ai — Retail kariyerinde bir sonraki adım burada. Profil oluştur, kariyer rotanı çiz, markalar seni bulsun. Tamamen ücretsiz.">
@@ -271,40 +309,69 @@ footer{background:var(--navy);padding:40px 48px;}
 
 
     
-    /* ══ KARİYER DROPDOWN ══ */
-    .nav-dropdown { position: relative; display: inline-flex; align-items: center; }
-    .nav-dropdown-trigger {
-      display: inline-flex; align-items: center; gap: 4px;
+    
+
+
+    /* ══════════ HEADER — UNIFIED ══════════ */
+    .site-header {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 500;
+      height: 64px; background: rgba(255,255,255,0.97);
+      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center;
+      padding: 0 32px; gap: 0;
+    }
+    /* Logo */
+    .header-logo {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 20px; font-weight: 800; color: var(--navy);
+      text-decoration: none; letter-spacing: -0.5px;
+      flex-shrink: 0; cursor: pointer;
+    }
+    .header-logo span { color: var(--verm); }
+
+    /* Nav — centred between logo and actions */
+    .header-nav {
+      display: flex; align-items: center; gap: 4px;
+      flex: 1; justify-content: center;
+    }
+    .nav-link {
       font-size: 14px; font-weight: 600; color: var(--muted);
-      text-decoration: none; cursor: pointer;
-      transition: color 0.2s; white-space: nowrap;
+      text-decoration: none; background: none; border: none;
+      padding: 6px 10px; border-radius: 8px; cursor: pointer;
+      transition: color 0.2s, background 0.2s;
       font-family: 'Plus Jakarta Sans', sans-serif;
-      background: none; border: none; padding: 0;
+      white-space: nowrap; display: inline-flex; align-items: center;
     }
-    .nav-dropdown-trigger:hover { color: var(--text); }
-    .nav-dropdown-trigger.kariyer { color: var(--verm); font-weight: 700; }
-    .nav-dropdown-trigger .dd-chevron {
-      width: 12px; height: 12px; flex-shrink: 0;
-      transition: transform 0.2s; margin-top: 1px;
-    }
-    /* Bridge — fare geçişinde kapanmayı önler */
+    .nav-link:hover { color: var(--text); background: var(--gray); }
+    .nav-link.active { color: var(--navy); font-weight: 700; background: var(--gray); }
+
+    /* Kariyer dropdown */
+    .nav-dropdown { position: relative; display: inline-flex; align-items: center; }
     .nav-dropdown::after {
-      content: ''; position: absolute;
-      top: 100%; left: 0; right: 0;
-      height: 12px;
+      content: ''; position: absolute; top: 100%; left: 0; right: 0; height: 10px;
     }
+    .nav-dropdown-trigger {
+      font-size: 14px; font-weight: 600; color: var(--muted);
+      background: none; border: none; padding: 6px 10px; border-radius: 8px;
+      cursor: pointer; display: inline-flex; align-items: center; gap: 4px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      transition: color 0.2s, background 0.2s; white-space: nowrap;
+    }
+    .nav-dropdown-trigger:hover { color: var(--text); background: var(--gray); }
+    .nav-dropdown-trigger.active { color: var(--verm); font-weight: 700; background: #FEF3F0; }
+    .dd-chevron { width: 12px; height: 12px; transition: transform 0.2s; flex-shrink: 0; }
+    .nav-dropdown:hover .dd-chevron { transform: rotate(180deg); }
+    .nav-dropdown:hover .nav-dropdown-trigger { color: var(--text); background: var(--gray); }
+    .nav-dropdown-trigger.active { color: var(--verm) !important; background: #FEF3F0 !important; }
+
     .nav-dropdown-menu {
       display: none; position: absolute;
-      top: calc(100% + 10px); left: 50%;
-      transform: translateX(-50%);
+      top: calc(100% + 8px); left: 50%; transform: translateX(-50%);
       background: white; border: 1.5px solid var(--border);
-      border-radius: 12px; padding: 6px;
-      min-width: 200px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.10);
-      z-index: 600;
+      border-radius: 14px; padding: 6px; min-width: 210px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.10); z-index: 600;
     }
-    .nav-dropdown:hover .nav-dropdown-trigger { color: var(--navy); }
-    .nav-dropdown:hover .dd-chevron { transform: rotate(180deg); }
     .nav-dropdown:hover .nav-dropdown-menu { display: block; }
     .nav-dd-item {
       display: flex; align-items: center; gap: 8px;
@@ -319,38 +386,169 @@ footer{background:var(--navy);padding:40px 48px;}
     .nav-dd-icon { width: 16px; height: 16px; flex-shrink: 0; opacity: 0.5; }
     .nav-dd-divider { height: 1px; background: var(--border); margin: 4px 6px; }
 
-    
-    /* ══ DROPDOWN TRIGGER FIX ══ */
-    .nav-dropdown-trigger {
-      font-size: 14px; font-weight: 600;
-      color: var(--muted, #6B7280);
-      background: none; border: none; padding: 0;
-      cursor: pointer; display: inline-flex; align-items: center; gap: 4px;
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      transition: color 0.2s; white-space: nowrap;
+    /* Header actions */
+    .header-actions { position: relative; flex-shrink: 0; }
+    .btn-nav-login {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 8px 16px; border-radius: 20px;
+      border: 1.5px solid var(--border); background: white;
+      font-size: 13px; font-weight: 600; color: var(--text);
+      cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif;
+      transition: all 0.2s; white-space: nowrap;
     }
-    .nav-dropdown-trigger:hover { color: var(--text, #111827); }
-    .nav-dropdown:hover .nav-dropdown-trigger { color: var(--text, #111827); }
-    .nav-dropdown-trigger.kariyer { color: var(--verm, #C94E28); font-weight: 700; }
-    .dd-chevron { width: 12px; height: 12px; transition: transform 0.2s; margin-top: 1px; flex-shrink: 0; }
-    .nav-dropdown:hover .dd-chevron { transform: rotate(180deg); }
+    .btn-nav-login:hover { border-color: var(--navy); color: var(--navy); }
 
-    
-    /* ── NAV ALIGNMENT & ACTIVE FIX ── */
-    .header-nav {
-      display: flex !important;
-      align-items: center;
-      gap: 28px;
-      flex: 1;
-      justify-content: center;
+    /* Login dropdown */
+    .login-dropdown {
+      display: none; position: absolute; top: calc(100% + 10px); right: 0;
+      background: white; border: 1.5px solid var(--border); border-radius: 16px;
+      padding: 12px; width: 300px; box-shadow: 0 8px 32px rgba(0,0,0,0.12); z-index: 700;
     }
-    .nav-link.active {
-      color: var(--navy, #1E2D5E) !important;
-      font-weight: 700 !important;
+    .login-dropdown.open { display: block; }
+    .ld-block { padding: 12px; border-radius: 10px; background: var(--gray); margin-bottom: 8px; }
+    .ld-block:last-child { margin-bottom: 0; }
+    .ld-label { font-size: 12px; font-weight: 700; color: var(--navy); text-transform: uppercase; letter-spacing: 0.5px; }
+    .ld-desc { font-size: 12px; color: var(--muted); margin-top: 4px; line-height: 1.4; }
+    .ld-btns { display: flex; gap: 6px; margin-top: 10px; }
+    .ld-btn-outline, .ld-btn-fill {
+      flex: 1; padding: 8px; border-radius: 8px; font-size: 12px; font-weight: 600;
+      cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.2s;
     }
-    .nav-dropdown-trigger.active {
-      color: var(--verm, #C94E28) !important;
-      font-weight: 700 !important;
+    .ld-btn-outline { background: white; color: var(--navy); border: 1.5px solid var(--border); }
+    .ld-btn-outline:hover { border-color: var(--navy); }
+    .ld-btn-fill { background: var(--verm); color: white; border: none; }
+    .ld-btn-fill:hover { background: #a83d1e; }
+    .ld-btn-fill.navy { background: var(--navy); }
+    .ld-btn-fill.navy:hover { background: #152249; }
+
+    /* Hamburger */
+    .hamburger {
+      display: none; flex-direction: column; justify-content: center; gap: 5px;
+      width: 36px; height: 36px; background: none; border: none;
+      cursor: pointer; padding: 6px; border-radius: 8px; margin-left: 8px;
+    }
+    .hamburger:hover { background: var(--gray); }
+    .hamburger span {
+      display: block; width: 18px; height: 2px;
+      background: var(--text); border-radius: 2px; transition: all 0.25s;
+    }
+    .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+    .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    /* Mobile menu */
+    .mobile-menu {
+      display: none; position: fixed; top: 64px; left: 0; right: 0;
+      background: white; border-bottom: 1px solid var(--border);
+      padding: 12px 20px 20px; z-index: 490;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+      max-height: calc(100vh - 64px); overflow-y: auto;
+    }
+    .mobile-menu.open { display: block; }
+    .mobile-nav-link {
+      display: block; width: 100%; text-align: left;
+      padding: 12px 16px; border-radius: 10px; margin-bottom: 4px;
+      font-size: 14px; font-weight: 600; color: var(--text);
+      text-decoration: none; background: none; border: none;
+      cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif;
+      transition: background 0.15s; box-sizing: border-box;
+    }
+    .mobile-nav-link:hover { background: var(--gray); }
+    .mobile-nav-link.active { color: var(--verm); background: #FEF3F0; }
+    .mobile-nav-sub {
+      padding-left: 32px; font-size: 13px; color: var(--muted);
+    }
+    .mobile-nav-divider { height: 1px; background: var(--border); margin: 8px 0; }
+    .mobile-cta-row { display: flex; gap: 8px; margin-top: 12px; }
+    .mobile-cta-btn {
+      flex: 1; padding: 12px; border-radius: 10px; font-size: 13px; font-weight: 700;
+      cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; text-align: center;
+    }
+
+    /* ══════════ FOOTER — UNIFIED ══════════ */
+    .site-footer {
+      background: var(--navy); color: white;
+      padding: 56px 48px 32px;
+    }
+    .footer-inner {
+      max-width: 1160px; margin: 0 auto;
+      display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr;
+      gap: 48px;
+    }
+    .footer-brand-col {}
+    .footer-brand {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 22px; font-weight: 800; color: white; letter-spacing: -0.5px;
+    }
+    .footer-brand span { color: var(--verm); }
+    .footer-tagline { font-size: 13px; color: rgba(255,255,255,0.5); margin-top: 6px; line-height: 1.5; }
+    .footer-social { display: flex; gap: 10px; margin-top: 20px; }
+    .social-link {
+      width: 36px; height: 36px; border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.15); display: flex;
+      align-items: center; justify-content: center;
+      color: rgba(255,255,255,0.6); transition: all 0.2s; text-decoration: none;
+    }
+    .social-link:hover { border-color: rgba(255,255,255,0.5); color: white; background: rgba(255,255,255,0.08); }
+    .footer-col-title {
+      font-size: 11px; font-weight: 700; letter-spacing: 1.5px;
+      text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 16px;
+    }
+    .footer-link {
+      display: block; font-size: 13px; color: rgba(255,255,255,0.65);
+      text-decoration: none; margin-bottom: 10px; transition: color 0.2s;
+      font-weight: 500;
+    }
+    .footer-link:hover { color: white; }
+    .footer-bottom {
+      max-width: 1160px; margin: 40px auto 0;
+      padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.1);
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 16px; flex-wrap: wrap;
+    }
+    .footer-copyright { font-size: 12px; color: rgba(255,255,255,0.35); }
+    .footer-legal { display: flex; gap: 20px; }
+    .footer-legal a { font-size: 12px; color: rgba(255,255,255,0.35); text-decoration: none; transition: color 0.2s; }
+    .footer-legal a:hover { color: rgba(255,255,255,0.7); }
+
+    /* ══ COOKIE BAR ══ */
+    #cookie-bar {
+      position: fixed; bottom: 0; left: 0; right: 0; z-index: 9999;
+      background: var(--navy); color: white;
+      padding: 14px 32px; display: flex; align-items: center;
+      justify-content: space-between; gap: 20px; flex-wrap: wrap;
+      font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13px;
+      box-shadow: 0 -4px 24px rgba(0,0,0,0.15);
+    }
+    .cookie-text { flex: 1; min-width: 200px; color: rgba(255,255,255,0.85); }
+    .cookie-text strong { color: white; }
+    .cookie-btns { display: flex; gap: 10px; flex-shrink: 0; }
+    .cookie-btn-reject {
+      padding: 8px 18px; border-radius: 8px;
+      border: 1.5px solid rgba(255,255,255,0.3);
+      background: transparent; color: white; font-size: 13px; font-weight: 600;
+      cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; transition: border-color 0.2s;
+    }
+    .cookie-btn-reject:hover { border-color: rgba(255,255,255,0.7); }
+    .cookie-btn-accept {
+      padding: 8px 18px; border-radius: 8px; border: none;
+      background: var(--verm); color: white; font-size: 13px; font-weight: 700;
+      cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; transition: background 0.2s;
+    }
+    .cookie-btn-accept:hover { background: #a83d1e; }
+
+    /* ══ RESPONSIVE ══ */
+    @media (max-width: 900px) {
+      .header-nav { display: none; }
+      .hamburger { display: flex; }
+      .footer-inner { grid-template-columns: 1fr 1fr; gap: 32px; }
+    }
+    @media (max-width: 600px) {
+      .site-header { padding: 0 16px; }
+      .site-footer { padding: 40px 20px 24px; }
+      .footer-inner { grid-template-columns: 1fr; gap: 24px; }
+      .footer-bottom { flex-direction: column; align-items: flex-start; gap: 8px; }
+      #cookie-bar { padding: 12px 16px; }
     }
 
     </style>
@@ -372,15 +570,39 @@ footer{background:var(--navy);padding:40px 48px;}
 
 <!-- HEADER -->
 <header class="site-header" id="site-header">
-  <a href="index.html" class="header-logo">hello<span>talent</span></a>
+  <a class="header-logo" href="index.html">hello<span>talent</span></a>
   <nav class="header-nav">
-    <a class="nav-link" href="aday.html">Adaylar İçin</a>
+    <a class="nav-link active" href="aday.html">Adaylar İçin</a>
     <a class="nav-link" href="isveren.html">İşverenler İçin</a>
-    <a class="nav-link kariyer" href="kariyer.html">Kariyer Rotası</a>
+    <div class="nav-dropdown">
+      <span class="nav-dropdown-trigger">
+        Kariyer Rotası
+        <svg class="dd-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </span>
+      <div class="nav-dropdown-menu">
+        <a class="nav-dd-item" href="kariyer.html">
+          <svg class="nav-dd-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Kariyer Rotaları
+        </a>
+        <div class="nav-dd-divider"></div>
+        <a class="nav-dd-item" href="pozisyonlar.html">
+          <svg class="nav-dd-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+          Retail Pozisyonlar
+        </a>
+        <a class="nav-dd-item" href="yetkinlik.html">
+          <svg class="nav-dd-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          Yetkinlik Rehberi
+        </a>
+        <a class="nav-dd-item" href="blog.html">
+          <svg class="nav-dd-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>
+          Retail Blog
+        </a>
+      </div>
+    </div>
     <a class="nav-link" href="index.html#about">Hakkımızda</a>
   </nav>
   <div class="header-actions">
-    <button class="btn-nav-login" id="login-btn" onclick="toggleLoginDropdown()">
+    <button class="btn-nav-login" id="login-btn" onclick="toggleLoginDropdown()" aria-expanded="false" aria-haspopup="true">
       Giriş Yap
       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
     </button>
@@ -403,21 +625,25 @@ footer{background:var(--navy);padding:40px 48px;}
       </div>
     </div>
   </div>
-  <button class="hamburger" id="hamburger" onclick="toggleMobileMenu()">
+  <button class="hamburger" id="hamburger" onclick="toggleMobileMenu()" aria-label="Menü" aria-expanded="false">
     <span></span><span></span><span></span>
   </button>
 </header>
-
 <div class="mobile-menu" id="mobile-menu">
-  <a class="mobile-nav-link" href="aday.html" style="color:var(--verm);">Adaylar İçin</a>
-  <a class="mobile-nav-link" href="isveren.html">İşverenler İçin</a>
-  <a class="mobile-nav-link" href="kariyer.html" style="color:var(--verm);">Kariyer Rotası</a>
-  <a class="mobile-nav-link" href="index.html#about">Hakkımızda</a>
-  <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border);">
+    <a class="mobile-nav-link active" href="aday.html">Adaylar İçin</a>
+    <a class="mobile-nav-link" href="isveren.html">İşverenler İçin</a>
+    <a class="mobile-nav-link" href="kariyer.html">Kariyer Rotaları</a>
+    <a class="mobile-nav-link mobile-nav-sub" href="pozisyonlar.html">Retail Pozisyonlar</a>
+    <a class="mobile-nav-link mobile-nav-sub" href="yetkinlik.html">Yetkinlik Rehberi</a>
+    <a class="mobile-nav-link mobile-nav-sub" href="blog.html">Retail Blog</a>
+    <a class="mobile-nav-link" href="index.html#about">Hakkımızda</a>
+    <div class="mobile-nav-divider"></div>
     <div class="mobile-cta-row">
-      <button style="background:white;color:var(--navy);border:1.5px solid var(--navy);" onclick="go('giris.html?tab=aday')">Giriş</button>
-      <button style="background:var(--verm);color:white;" onclick="go('giris.html?tab=aday&mode=register')">Üye Ol</button>
+      <button class="mobile-cta-btn" style="background:white;color:var(--navy);border:1.5px solid var(--navy);" onclick="go('giris.html?tab=aday')">Aday Girişi</button>
+      <button class="mobile-cta-btn" style="background:var(--verm);color:white;border:none;" onclick="go('giris.html?tab=ik')">İK Girişi</button>
     </div>
+  </div>
+
   </div>
 </div>
 
@@ -679,39 +905,47 @@ footer{background:var(--navy);padding:40px 48px;}
 </div>
 
 <!-- FOOTER -->
-<footer>
-  <div class="footer-top">
-    <div>
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-brand-col">
       <div class="footer-brand">hello<span>talent</span></div>
-      <div class="footer-tagline">Türkiye'nin retail talent marketplace'i.</div>
+      <div class="footer-tagline">Türkiye'nin retail talent marketplace'i.<br>Doğru yetenek, doğru marka.</div>
+      <div class="footer-social">
+        <a class="social-link" href="https://www.instagram.com/hellotalent.ai?igsh=MTIwMXNnY3B4YnVncg%3D%3D&utm_source=qr" target="_blank" rel="noopener" title="Instagram">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.5" fill="currentColor"/></svg>
+        </a>
+        <a class="social-link" href="https://www.linkedin.com/company/hello-talentai/" target="_blank" rel="noopener" title="LinkedIn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+        </a>
+      </div>
     </div>
-    <div class="footer-links">
-      <div>
-        <div class="footer-link-title">Platform</div>
-        <div class="footer-link-list">
-          <a class="footer-link" href="aday.html">Adaylar İçin</a>
-          <a class="footer-link" href="isveren.html">İşverenler İçin</a>
-          <a class="footer-link" href="kariyer.html">Kariyer Rotası</a>
-        </div>
-      </div>
-      <div>
-        <div class="footer-link-title">Şirket</div>
-        <div class="footer-link-list">
-          <a class="footer-link" href="index.html#about">Hakkımızda</a>
-          <a class="footer-link" href="/cdn-cgi/l/email-protection#6f060109002f070a0303001b0e030a011b410e06">İletişim</a>
-        </div>
-      </div>
+    <div>
+      <div class="footer-col-title">Platform</div>
+      <a class="footer-link" href="aday.html">Adaylar İçin</a>
+      <a class="footer-link" href="isveren.html">İşverenler İçin</a>
+      <a class="footer-link" href="giris.html?tab=aday">Profil Oluştur</a>
+      <a class="footer-link" href="giris.html?tab=ik">İK Kaydı</a>
+    </div>
+    <div>
+      <div class="footer-col-title">Kariyer</div>
+      <a class="footer-link" href="kariyer.html">Kariyer Rotaları</a>
+      <a class="footer-link" href="pozisyonlar.html">Retail Pozisyonlar</a>
+      <a class="footer-link" href="yetkinlik.html">Yetkinlik Rehberi</a>
+      <a class="footer-link" href="blog.html">Retail Blog</a>
+    </div>
+    <div>
+      <div class="footer-col-title">Şirket</div>
+      <a class="footer-link" href="index.html#about">Hakkımızda</a>
+      <a class="footer-link" href="mailto:hello@hellotalent.ai">İletişim</a>
+      <a class="footer-link" href="#">Gizlilik Politikası</a>
+      <a class="footer-link" href="#">Kullanım Şartları</a>
     </div>
   </div>
   <div class="footer-bottom">
-    <div class="footer-copy">© 2026 hellotalent.ai</div>
-    <div class="footer-social">
-      <a class="social-link" href="https://www.instagram.com/hellotalent.ai" target="_blank">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.5" fill="currentColor"/></svg>
-      </a>
-      <a class="social-link" href="https://www.linkedin.com/company/hello-talentai/" target="_blank">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
-      </a>
+    <span class="footer-copyright">© 2025 hellotalent.ai — Tüm hakları saklıdır.</span>
+    <div class="footer-legal">
+      <a href="#">KVKK Aydınlatma</a>
+      <a href="#">Gizlilik</a>
     </div>
   </div>
 </footer>
@@ -817,29 +1051,12 @@ document.addEventListener('DOMContentLoaded',function(){
   });
   // URL'de ?tab=giris varsa giriş tabını aç
   if(window.location.search.includes('mode=register'))switchTab('kayi
-<!-- ══════════ COOKIE BAR ══════════ -->
-<div id="cookie-bar" style="
-  position: fixed; bottom: 0; left: 0; right: 0; z-index: 9999;
-  background: var(--navy, #1E2D5E); color: white;
-  padding: 14px 32px; display: flex; align-items: center;
-  justify-content: space-between; gap: 20px; flex-wrap: wrap;
-  font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13px;
-  box-shadow: 0 -4px 24px rgba(0,0,0,0.15);
-">
-  <span style="flex:1; min-width:200px; color: rgba(255,255,255,0.85);">
-    🍪 <strong style="color:white;">Çerez Bildirimi</strong> — hellotalent.ai deneyimini geliştirmek için çerezler kullanıyoruz. 
-    <span style="opacity:0.7;">KVKK kapsamında tercihlerinizi belirleyebilirsiniz.</span>
-  </span>
-  <div style="display:flex; gap:10px; flex-shrink:0;">
-    <button onclick="rejectCookies()" style="
-      padding: 8px 18px; border-radius: 8px; border: 1.5px solid rgba(255,255,255,0.3);
-      background: transparent; color: white; font-size: 13px; font-weight: 600;
-      cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif;
-    ">Reddet</button>
-    <button onclick="acceptCookies()" style="
-      padding: 8px 18px; border-radius: 8px; border: none;
-      background: #C94E28; color: white; font-size: 13px; font-weight: 700;
-      cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif;
-    ">Kabul Et</button>
+</div>
+<!-- ══ COOKIE BAR ══ -->
+<div id="cookie-bar">
+  <span class="cookie-text">🍪 <strong>Çerez Bildirimi</strong> — hellotalent.ai deneyimini geliştirmek için çerezler kullanıyoruz. KVKK kapsamında tercihlerinizi belirleyebilirsiniz.</span>
+  <div class="cookie-btns">
+    <button class="cookie-btn-reject" onclick="rejectCookies()">Reddet</button>
+    <button class="cookie-btn-accept" onclick="acceptCookies()">Kabul Et</button>
   </div>
 </div>
