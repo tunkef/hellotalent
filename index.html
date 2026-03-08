@@ -882,7 +882,184 @@ section#cv > div:first-child { padding: 52px 20px; }
   .seg-chip{font-size:12px;padding:8px 14px;}
   .hero-outer{padding:40px 20px 28px;}
 }
-  </style>
+  
+  /* ============================================================ */
+  /* QUIZ TEASER + MODAL */
+  /* ============================================================ */
+  .quiz-teaser-wrap { background: var(--navy); }
+  .quiz-teaser-inner {
+    max-width: 1160px; margin: 0 auto; padding: 36px 48px;
+    display: flex; align-items: center; justify-content: space-between; gap: 32px; flex-wrap: wrap;
+  }
+  .quiz-teaser-tag {
+    font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 2.5px;
+    color: rgba(255,255,255,0.4); text-transform: uppercase; display: block; margin-bottom: 8px;
+  }
+  .quiz-teaser-text {
+    font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800;
+    font-size: clamp(20px,2.5vw,28px); color: white; letter-spacing: -0.5px; line-height: 1.2;
+  }
+  .quiz-teaser-text strong { color: var(--verm); }
+  .quiz-teaser-sub { font-size: 13px; color: rgba(255,255,255,0.45); margin-top: 6px; line-height: 1.5; }
+  .quiz-teaser-btns { display: flex; gap: 12px; flex-shrink: 0; }
+  .quiz-teaser-btn {
+    display: flex; align-items: center; gap: 9px; padding: 13px 22px; border-radius: 30px;
+    font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 14px;
+    cursor: pointer; border: none; transition: all 0.22s;
+  }
+  .quiz-teaser-btn .qtb-emoji { font-size: 18px; }
+  .quiz-teaser-btn.talent { background: var(--verm); color: white; }
+  .quiz-teaser-btn.hunter { background: rgba(255,255,255,0.12); color: white; border: 1.5px solid rgba(255,255,255,0.2); }
+  .quiz-teaser-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.25); }
+
+  .quiz-modal-overlay {
+    position: fixed; inset: 0; background: rgba(10,18,40,0.75);
+    backdrop-filter: blur(6px); z-index: 9999; display: flex; align-items: center;
+    justify-content: center; padding: 24px; opacity: 0; pointer-events: none; transition: opacity 0.3s;
+  }
+  .quiz-modal-overlay.open { opacity: 1; pointer-events: all; }
+  .quiz-modal-box {
+    background: #F7F5F0; border-radius: 24px; width: 100%; max-width: 600px;
+    max-height: 90vh; overflow-y: auto; position: relative;
+    transform: scale(0.95) translateY(16px);
+    transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1); padding: 40px;
+  }
+  .quiz-modal-overlay.open .quiz-modal-box { transform: scale(1) translateY(0); }
+  .quiz-modal-close {
+    position: absolute; top: 16px; right: 20px; width: 32px; height: 32px;
+    border-radius: 50%; border: none; background: rgba(30,45,94,0.08); color: #666;
+    font-size: 20px; cursor: pointer; display: flex; align-items: center;
+    justify-content: center; transition: background 0.2s; line-height: 1;
+  }
+  .quiz-modal-close:hover { background: rgba(30,45,94,0.15); }
+
+  .qm-screen { display: none; animation: qmFadeUp 0.4s ease forwards; }
+  .qm-screen.active { display: block; }
+  @keyframes qmFadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+
+  .qm-loader-ring {
+    width: 52px; height: 52px; border: 3px solid rgba(30,45,94,0.12);
+    border-top-color: var(--verm); border-radius: 50%;
+    animation: qmSpin 0.9s linear infinite; margin: 60px auto 20px;
+  }
+  @keyframes qmSpin { to{transform:rotate(360deg)} }
+  .qm-loader-text {
+    font-family: 'DM Mono', monospace; font-size: 12px;
+    letter-spacing: 2px; color: #aaa; text-align: center;
+  }
+
+  .qm-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; }
+  .qm-role-badge {
+    display: inline-flex; align-items: center; gap: 7px; padding: 5px 13px;
+    border-radius: 20px; font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 1.5px;
+  }
+  .qm-role-badge.talent { background: rgba(201,78,40,0.1); color: var(--verm); }
+  .qm-role-badge.hunter { background: rgba(30,45,94,0.1); color: var(--navy); }
+  .qm-step-count { font-family: 'DM Mono', monospace; font-size: 12px; color: #aaa; }
+  .qm-progress {
+    height: 3px; background: rgba(30,45,94,0.1); border-radius: 3px; margin-bottom: 36px; overflow: hidden;
+  }
+  .qm-progress-fill { height: 100%; border-radius: 3px; transition: width 0.5s cubic-bezier(0.4,0,0.2,1); }
+  .talent-mode .qm-progress-fill { background: var(--verm); }
+  .hunter-mode .qm-progress-fill { background: var(--navy); }
+  .qm-q-tag {
+    font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 2px;
+    color: #aaa; margin-bottom: 10px; text-transform: uppercase;
+  }
+  .qm-q-text {
+    font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800;
+    font-size: clamp(20px,3vw,28px); color: var(--navy);
+    letter-spacing: -0.8px; line-height: 1.2; margin-bottom: 28px;
+  }
+  .qm-options { display: flex; flex-direction: column; gap: 10px; }
+  .qm-opt {
+    display: flex; align-items: flex-start; gap: 14px; padding: 16px 18px;
+    background: white; border: 2px solid rgba(30,45,94,0.10); border-radius: 14px;
+    cursor: pointer; transition: all 0.2s; text-align: left; width: 100%;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+  .qm-opt:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(30,45,94,0.10); }
+  .talent-mode .qm-opt:hover { border-color: var(--verm); }
+  .hunter-mode .qm-opt:hover { border-color: var(--navy); }
+  .talent-mode .qm-opt.selected { border-color: var(--verm); background: rgba(201,78,40,0.04); transform: translateY(-1px); }
+  .hunter-mode .qm-opt.selected { border-color: var(--navy); background: rgba(30,45,94,0.04); transform: translateY(-1px); }
+  .qm-opt-letter {
+    width: 30px; height: 30px; border-radius: 8px; display: flex; align-items: center;
+    justify-content: center; font-family: 'DM Mono', monospace; font-size: 11px;
+    background: rgba(30,45,94,0.06); color: #aaa; flex-shrink: 0; transition: all 0.2s;
+  }
+  .talent-mode .qm-opt:hover .qm-opt-letter,
+  .talent-mode .qm-opt.selected .qm-opt-letter { background: var(--verm); color: white; }
+  .hunter-mode .qm-opt:hover .qm-opt-letter,
+  .hunter-mode .qm-opt.selected .qm-opt-letter { background: var(--navy); color: white; }
+  .qm-opt-text { font-size: 14px; color: #3a3a4a; line-height: 1.5; padding-top: 4px; }
+
+  .qm-result-shell { text-align: center; }
+  .qm-result-card { border-radius: 20px; overflow: hidden; box-shadow: 0 16px 48px rgba(30,45,94,0.18); margin-bottom: 20px; }
+  .qm-card-top { padding: 36px 32px 28px; position: relative; overflow: hidden; }
+  .talent-mode .qm-card-top { background: var(--verm); }
+  .hunter-mode .qm-card-top { background: var(--navy); }
+  .qm-card-top::before {
+    content: ''; position: absolute; width: 260px; height: 260px; border-radius: 50%;
+    background: rgba(255,255,255,0.05); top: -80px; right: -60px; pointer-events: none;
+  }
+  .qm-result-emoji {
+    font-size: 44px; display: block; margin-bottom: 14px; position: relative; z-index: 1;
+    animation: qmFloat 3s ease-in-out infinite;
+  }
+  @keyframes qmFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
+  .qm-result-role-tag {
+    font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 2.5px;
+    color: rgba(255,255,255,0.4); text-transform: uppercase; margin-bottom: 14px; position: relative; z-index: 1;
+  }
+  .qm-result-title {
+    font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800;
+    font-size: clamp(22px,4vw,32px); color: white; letter-spacing: -1px;
+    line-height: 1.1; margin-bottom: 10px; position: relative; z-index: 1;
+  }
+  .qm-result-sub {
+    font-size: 13px; color: rgba(255,255,255,0.6); line-height: 1.6;
+    max-width: 340px; margin: 0 auto; position: relative; z-index: 1;
+  }
+  .qm-result-stats {
+    display: grid; grid-template-columns: repeat(3,1fr);
+    border-top: 1px solid rgba(255,255,255,0.12); margin-top: 24px; position: relative; z-index: 1;
+  }
+  .qm-stat { padding: 14px 8px; border-right: 1px solid rgba(255,255,255,0.12); }
+  .qm-stat:last-child { border-right: none; }
+  .qm-stat-val { font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: 20px; color: white; letter-spacing: -0.5px; }
+  .qm-stat-label { font-family: 'DM Mono', monospace; font-size: 8px; letter-spacing: 1px; color: rgba(255,255,255,0.4); text-transform: uppercase; margin-top: 2px; }
+  .qm-card-bottom { background: white; padding: 22px 28px; }
+  .qm-traits { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin-bottom: 16px; }
+  .qm-trait { display: inline-flex; align-items: center; gap: 4px; padding: 5px 11px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+  .talent-mode .qm-trait { background: rgba(201,78,40,0.08); color: var(--verm); }
+  .hunter-mode .qm-trait { background: rgba(30,45,94,0.07); color: var(--navy); }
+  .qm-card-brand { display: flex; align-items: center; justify-content: space-between; padding-top: 14px; border-top: 1px solid rgba(30,45,94,0.08); }
+  .qm-brand-name { font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: 14px; color: var(--navy); }
+  .qm-brand-name span { opacity: 0.3; }
+  .qm-card-date { font-family: 'DM Mono', monospace; font-size: 10px; color: #ccc; }
+  .qm-actions { display: flex; flex-direction: column; gap: 8px; }
+  .qm-btn {
+    display: flex; align-items: center; justify-content: center; gap: 7px; padding: 13px 20px;
+    border-radius: 30px; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 13px;
+    cursor: pointer; border: none; transition: all 0.2s; text-decoration: none; width: 100%;
+  }
+  .qm-btn.primary { color: white; }
+  .talent-mode .qm-btn.primary { background: var(--verm); }
+  .hunter-mode .qm-btn.primary { background: var(--navy); }
+  .qm-btn.primary:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(0,0,0,0.2); }
+  .qm-btn.secondary { background: white; color: var(--navy); border: 1.5px solid rgba(30,45,94,0.12); }
+  .qm-btn.secondary:hover { border-color: var(--navy); }
+  .qm-btn.ghost { background: transparent; color: #aaa; font-size: 12px; }
+  .qm-btn.ghost:hover { color: var(--navy); }
+  @media (max-width: 600px) {
+    .quiz-teaser-inner { padding: 28px 20px; flex-direction: column; }
+    .quiz-teaser-btns { width: 100%; }
+    .quiz-teaser-btn { flex: 1; justify-content: center; }
+    .quiz-modal-box { padding: 28px 20px; border-radius: 20px; }
+  }
+
+</style>
   <!-- Google Analytics GA4 -->
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -999,6 +1176,56 @@ section#cv > div:first-child { padding: 52px 20px; }
             </div>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ============================================================ -->
+  <!-- QUIZ TEASER BANNER -->
+  <!-- ============================================================ -->
+  <div class="quiz-teaser-wrap">
+    <div class="quiz-teaser-inner">
+      <div class="quiz-teaser-left">
+        <span class="quiz-teaser-tag">Retail Kimlik Testi</span>
+        <p class="quiz-teaser-text">Sen bir <strong>Talent</strong> misin, <strong>Hunter</strong> misin?</p>
+        <p class="quiz-teaser-sub">4 soruda retail kimligini kesf et &mdash; paylasabilir kart seni bekliyor.</p>
+      </div>
+      <div class="quiz-teaser-btns">
+        <button class="quiz-teaser-btn talent" onclick="openQuiz('talent')">
+          <span class="qtb-emoji">&#129420;</span>
+          <span>Hello Talent</span>
+        </button>
+        <button class="quiz-teaser-btn hunter" onclick="openQuiz('hunter')">
+          <span class="qtb-emoji">&#129409;</span>
+          <span>Hello Hunter</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUIZ MODAL -->
+  <div id="quiz-modal-overlay" class="quiz-modal-overlay" onclick="closeQuizModal(event)">
+    <div class="quiz-modal-box" id="quiz-modal-box">
+      <button class="quiz-modal-close" onclick="closeQuizModal(null,true)">&times;</button>
+      <div id="qm-screen-quiz" class="qm-screen active">
+        <div id="qm-quiz-shell">
+          <div class="qm-header">
+            <div class="qm-role-badge" id="qm-badge"></div>
+            <div class="qm-step-count" id="qm-step-count"></div>
+          </div>
+          <div class="qm-progress"><div class="qm-progress-fill" id="qm-progress-fill" style="width:0%"></div></div>
+          <div id="qm-q-tag" class="qm-q-tag"></div>
+          <div id="qm-q-text" class="qm-q-text"></div>
+          <div class="qm-options" id="qm-options"></div>
+        </div>
+      </div>
+      <div id="qm-screen-loading" class="qm-screen">
+        <div class="qm-loader-ring"></div>
+        <p class="qm-loader-text" id="qm-loader-text">Kimligin hesaplaniyor&hellip;</p>
+      </div>
+      <div id="qm-screen-result" class="qm-screen">
+        <div id="qm-result-shell" class="qm-result-shell"></div>
       </div>
     </div>
   </div>
@@ -2375,4 +2602,135 @@ function toggleFaq(el){
 </script>
 
 </div>
+  <script>
+  (function() {
+    var Q = {
+      talent: [
+        {tag:"Sahada Bir Gun",text:"Musteri tam kasaya geldi, sira uzuyor. Sen ne yaparsın?",opts:[{l:"A",t:"Zaten kasadayim, bekliyordum zaten.",s:3},{l:"B",t:"Kosarim, musteri bekletilmez.",s:2},{l:"C",t:"Bakislarimla 'gidiyorum' derim, bazen ise yariyor.",s:1}]},
+        {tag:"Vardiya Bitti mi?",text:"Saat tam cikis saati. Stokta yarim kalan is var. Ne yaparsın?",opts:[{l:"A",t:"Bitirim. Yarim is kafami kurcalar.",s:3},{l:"B",t:"Duruma gore. Mudur bakiyorsa bitirim.",s:2},{l:"C",t:"Yarinin calisani icin kucuk bir surpriz birakirim.",s:1}]},
+        {tag:"En Iyi An",text:"Hangi an seni gercekten sarj eder?",opts:[{l:"A",t:"Musteri 'seni tercih ediyorum' diyince.",s:3},{l:"B",t:"Aylik satis rakamini gorунce.",s:2},{l:"C",t:"Mola zilinin calmasi. Donust olmak gerekirse.",s:1}]},
+        {tag:"Teklif Var",text:"Rakip marka DM atti. 'Seninle tanismak isteriz' diyor.",opts:[{l:"A",t:"Okumadim bile. Su anki markamdan memnunum.",s:1},{l:"B",t:"Dinlerim. Zarar vermez.",s:2},{l:"C",t:"Hangi rakip? Onemli.",s:3}]}
+      ],
+      hunter: [
+        {tag:"CV Stack",text:"Onunde 40 ozgecmis var. Ilk hamlen ne?",opts:[{l:"A",t:"Fotograftan baslarim. Enerji belli oluyor.",s:2},{l:"B",t:"Deneyim suresini filtrelerim, gerisine bakаrim.",s:3},{l:"C",t:"Asistan alsak mi acaba diye dusunurum.",s:1}]},
+        {tag:"Mulakat",text:"Mukemmel CV ama mulakatta enerjisi yok. Kararin?",opts:[{l:"A",t:"Gec. CV yalan soыlemez.",s:1},{l:"B",t:"Bir sans daha veririm. Belki heyecanliydi.",s:2},{l:"C",t:"Reddederim. Sahada enerji sart.",s:3}]},
+        {tag:"Zaman Baskisi",text:"Pozisyon 3 haftadir acik, ust baski yapiyor. Ne yaparsın?",opts:[{l:"A",t:"Baskiya dayanırim. Yanlis kisiyle daha kotu.",s:3},{l:"B",t:"Kriterlerimi biraz esnеtirim.",s:2},{l:"C",t:"'Ise aldim' derim, 3 ay deneriz.",s:1}]},
+        {tag:"Sezgi mi, Sistem mi?",text:"Ekibindeki en iyi ise alimini dusun. Nasil buldun?",opts:[{l:"A",t:"Sezgimle. Ilk cumlesinde anladim.",s:1},{l:"B",t:"Referansla geldi, sistem dogruladi.",s:2},{l:"C",t:"Uzun surec. Birden fazla gorusme, vaka calismasi.",s:3}]}
+      ]
+    };
+    var R = {
+      talent:[
+        {min:10,e:"&#127775;",title:"Yildiz Olmay&#x131; Bekleyen",sub:"Satis rakamlari konusuyor, sen susmayi tercih ediyorsun. Dogru marka seni bulmadan once sen onu bul.",traits:["Sessiz Performans","Musteri Odakli","Potansiyel Bomba"],s1:{v:"Top 5%",l:"Potansiyel"},s2:{v:"&#128293;",l:"Enerji"},s3:{v:"Simdi",l:"Zaman"},cta:"Profilini Olustur &#8594;",href:"aday.html"},
+        {min:7, e:"&#129420;",title:"Sahaya H&#226;kim Biri",sub:"Musteri seni gorунce rahatlar, mudur seni gorунce sinirlanir. Bu kombinasyon nadirdir.",traits:["Saha Zek&#226;si","Guvenilir","Ekip Yapistirici"],s1:{v:"7/10",l:"Cikis Puani"},s2:{v:"Stabil",l:"Profil"},s3:{v:"Hazir",l:"Durum"},cta:"Firsatlari Gor &#8594;",href:"aday.html"},
+        {min:0, e:"&#128142;",title:"Gizli Elmas",sub:"Sahada gorunmuyorsun ama degerin yuksek. Kesfedilmeden durma.",traits:["Guvenli Liman","Sadik","Potansiyel Var"],s1:{v:"Dusuk",l:"Risk Alma"},s2:{v:"Yuksek",l:"Sadakat"},s3:{v:"Neden?",l:"Motivasyon"},cta:"Kesfedilmeye Basla &#8594;",href:"aday.html"}
+      ],
+      hunter:[
+        {min:10,e:"&#129409;",title:"Stratejik Avci",sub:"Sezgi degil, sistem. Baskiya dayanir, standartlarini korursun. Ekibindekiler sanсli.",traits:["Sistematik","Baskiya Dayanikli","Uzun Vadeli"],s1:{v:"A+",l:"Ise Alim Kalitesi"},s2:{v:"Sabirl&#x131;",l:"Yaklasim"},s3:{v:"Sifir",l:"Panik Karari"},cta:"Aday Havuzuna Eris &#8594;",href:"isveren.html"},
+        {min:7, e:"&#128301;",title:"Dengeli Dedektif",sub:"Ne tam sezgi, ne tam sistem. Her ikisini harmanliyorsun. Bu esneklik retail'de altin deger.",traits:["Adaptif","Deneyimli","Referans Dostu"],s1:{v:"Karma",l:"Yontem"},s2:{v:"Hizli",l:"Karar"},s3:{v:"Guclu",l:"Network"},cta:"Hellotalent'i Kesf et &#8594;",href:"isveren.html"},
+        {min:0, e:"&#9889;",title:"Sezgisel Avci",sub:"Ilk bakista anlarsin. Bazen yanilirsin, bazen dahisin. Ama asla sikilmazsin.",traits:["Hizli Karar","Yuksek Enerji","Risk Alan"],s1:{v:"Hizli",l:"Ise Alim"},s2:{v:"Sezgi",l:"Yontemi"},s3:{v:"Var",l:"Pismanlık"},cta:"AI Destekli Esleme &#8594;",href:"isveren.html"}
+      ]
+    };
+    var role=null,qi=0,scores=[],loopT=null;
+    window.openQuiz=function(r){
+      role=r;qi=0;scores=[];
+      var box=document.getElementById('quiz-modal-box');
+      box.className='quiz-modal-box '+r+'-mode';
+      var b=document.getElementById('qm-badge');
+      b.className='qm-role-badge '+r;
+      b.innerHTML=r==='talent'?'&#129420; Hello Talent':'&#129409; Hello Hunter';
+      renderQ();
+      show('qm-screen-quiz');
+      document.getElementById('quiz-modal-overlay').classList.add('open');
+      document.body.style.overflow='hidden';
+    };
+    window.closeQuizModal=function(e,f){
+      if(f||(e&&e.target===document.getElementById('quiz-modal-overlay'))){
+        document.getElementById('quiz-modal-overlay').classList.remove('open');
+        document.body.style.overflow='';
+        if(loopT){clearInterval(loopT);loopT=null;}
+      }
+    };
+    function show(id){
+      ['qm-screen-quiz','qm-screen-loading','qm-screen-result'].forEach(function(s){
+        var el=document.getElementById(s);el.classList.remove('active');
+        el.style.animation='none';el.offsetHeight;el.style.animation='';
+      });
+      document.getElementById(id).classList.add('active');
+    }
+    function renderQ(){
+      var qs=Q[role],q=qs[qi],tot=qs.length;
+      document.getElementById('qm-step-count').textContent=(qi+1)+' / '+tot;
+      document.getElementById('qm-progress-fill').style.width=(qi/tot*100)+'%';
+      document.getElementById('qm-q-tag').textContent=q.tag;
+      document.getElementById('qm-q-text').textContent=q.text;
+      var c=document.getElementById('qm-options');c.innerHTML='';
+      q.opts.forEach(function(o){
+        var b=document.createElement('button');b.className='qm-opt';
+        b.innerHTML='<div class="qm-opt-letter">'+o.l+'</div><div class="qm-opt-text">'+o.t+'</div>';
+        b.onclick=function(){pick(b,o.s);};c.appendChild(b);
+      });
+    }
+    function pick(btn,s){
+      document.querySelectorAll('.qm-opt').forEach(function(b){b.classList.remove('selected');});
+      btn.classList.add('selected');scores.push(s);
+      setTimeout(function(){
+        qi++;
+        if(qi<Q[role].length){
+          var sh=document.getElementById('qm-quiz-shell');
+          sh.style.opacity='0';sh.style.transform='translateX(-16px)';
+          setTimeout(function(){renderQ();sh.style.transition='all 0.3s';sh.style.opacity='1';sh.style.transform='translateX(0)';setTimeout(function(){sh.style.transition='';},300);},180);
+        } else { loading(); }
+      },300);
+    }
+    var ltxts=["Retail DNA'n analiz ediliyor...","Sektor arsivleri taraniyor...","Kimligin hesaplaniyor...","Neredeyse hazir..."];
+    function loading(){
+      show('qm-screen-loading');var i=0,el=document.getElementById('qm-loader-text');
+      loopT=setInterval(function(){i++;if(i<ltxts.length)el.textContent=ltxts[i];else{clearInterval(loopT);loopT=null;}},520);
+      setTimeout(result,2200);
+    }
+    function result(){
+      var tot=scores.reduce(function(a,b){return a+b;},0);
+      var rs=R[role],r=null;
+      for(var i=0;i<rs.length;i++){if(tot>=rs[i].min){r=rs[i];break;}}
+      if(!r)r=rs[rs.length-1];
+      var today=new Date().toLocaleDateString('tr-TR',{day:'numeric',month:'long',year:'numeric'});
+      var sh=document.getElementById('qm-result-shell');
+      sh.innerHTML='<div class="qm-result-card"><div class="qm-card-top">'
+        +'<p class="qm-result-role-tag">'+(role==='talent'?'hello talent &middot; retail kimlik kart&#x131;':'hello hunter &middot; avci profili')+'</p>'
+        +'<span class="qm-result-emoji">'+r.e+'</span>'
+        +'<h3 class="qm-result-title">'+r.title+'</h3>'
+        +'<p class="qm-result-sub">'+r.sub+'</p>'
+        +'<div class="qm-result-stats">'
+        +'<div class="qm-stat"><div class="qm-stat-val">'+r.s1.v+'</div><div class="qm-stat-label">'+r.s1.l+'</div></div>'
+        +'<div class="qm-stat"><div class="qm-stat-val">'+r.s2.v+'</div><div class="qm-stat-label">'+r.s2.l+'</div></div>'
+        +'<div class="qm-stat"><div class="qm-stat-val">'+r.s3.v+'</div><div class="qm-stat-label">'+r.s3.l+'</div></div>'
+        +'</div></div>'
+        +'<div class="qm-card-bottom">'
+        +'<div class="qm-traits">'+r.traits.map(function(t){return '<span class="qm-trait">&#9734; '+t+'</span>';}).join('')+'</div>'
+        +'<div class="qm-card-brand"><div class="qm-brand-name">hello<span>talent</span>.ai</div><div class="qm-card-date">'+today+'</div></div>'
+        +'</div></div>'
+        +'<div class="qm-actions">'
+        +'<a href="'+r.href+'" class="qm-btn primary">'+r.cta+'</a>'
+        +'<button class="qm-btn secondary" onclick="qmShare()">&#128228; Sonucunu Paylas</button>'
+        +'<button class="qm-btn ghost" onclick="openQuiz(\''+role+'\')">&#8592; Tekrar Oyna</button>'
+        +'</div>';
+      show('qm-screen-result');
+    }
+    window.qmShare=function(){
+      var tot=scores.reduce(function(a,b){return a+b;},0);
+      var rs=R[role],r=null;
+      for(var i=0;i<rs.length;i++){if(tot>=rs[i].min){r=rs[i];break;}}
+      if(!r)r=rs[rs.length-1];
+      var txt=role==='talent'
+        ?'hellotalent.ai\'da retail kimligimi kesfettim: "'+r.title+'" Senin kimligin ne? hellotalent.ai'
+        :'hellotalent.ai\'da avci profilimi ogrendim: "'+r.title+'" Sen hangisisin? hellotalent.ai';
+      if(navigator.share){navigator.share({title:'hellotalent.ai',text:txt});}
+      else{navigator.clipboard.writeText(txt).then(function(){
+        var b=document.querySelector('.qm-btn.secondary');
+        if(b){b.textContent='Kopyalandi!';setTimeout(function(){b.innerHTML='&#128228; Sonucunu Paylas';},2000);}
+      });}
+    };
+  })();
+  </script>
+
 <script src="/shared.js"></script>
