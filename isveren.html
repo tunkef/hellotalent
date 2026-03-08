@@ -3,23 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <script>if(sessionStorage.getItem("ht_gate")!=="ok"){window.location.replace("gate.html");}
-// ── NAV DROPDOWN ──
-function toggleNavDD() {
-  var dd = document.getElementById('nav-kariyer-dd');
-  if (!dd) return;
-  var isOpen = dd.classList.contains('open');
-  dd.classList.toggle('open', !isOpen);
-  var btn = dd.querySelector('button');
-  if (btn) btn.setAttribute('aria-expanded', String(!isOpen));
-}
-document.addEventListener('click', function(e) {
-  var dd = document.getElementById('nav-kariyer-dd');
-  if (dd && !dd.contains(e.target)) {
-    dd.classList.remove('open');
-    var btn = dd.querySelector('button');
-    if (btn) btn.setAttribute('aria-expanded', 'false');
-  }
-});
+
 
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
@@ -256,70 +240,54 @@ footer{background:var(--navy);padding:40px 48px;}
 }
 
 
+    
     /* ══ KARİYER DROPDOWN ══ */
-    .nav-dropdown { position: relative; }
-    .nav-dropdown-menu {
-      display: none;
-      position: absolute;
-      top: 100%;
-      left: 50%;
-      transform: translateX(-50%);
-      background: white;
-      border: 1.5px solid var(--border);
-      border-radius: 14px;
-      padding: 6px;
-      min-width: 210px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.10);
-      z-index: 600;
-      /* Bridge: fare gap'ini kapat */
-      padding-top: 12px;
-      margin-top: -4px;
+    .nav-dropdown { position: relative; display: inline-flex; align-items: center; }
+    .nav-dropdown-trigger {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: 14px; font-weight: 600; color: var(--muted);
+      text-decoration: none; cursor: pointer;
+      transition: color 0.2s; white-space: nowrap;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: none; border: none; padding: 0;
     }
-    /* Bridge pseudo element — gap sorununu çözer */
-    .nav-dropdown-menu::before {
-      content: '';
-      position: absolute;
-      top: -12px; left: 0; right: 0;
+    .nav-dropdown-trigger:hover { color: var(--text); }
+    .nav-dropdown-trigger.kariyer { color: var(--verm); font-weight: 700; }
+    .nav-dropdown-trigger .dd-chevron {
+      width: 12px; height: 12px; flex-shrink: 0;
+      transition: transform 0.2s; margin-top: 1px;
+    }
+    /* Bridge — fare geçişinde kapanmayı önler */
+    .nav-dropdown::after {
+      content: ''; position: absolute;
+      top: 100%; left: 0; right: 0;
       height: 12px;
     }
-    .nav-dropdown.open .nav-dropdown-menu { display: block; }
+    .nav-dropdown-menu {
+      display: none; position: absolute;
+      top: calc(100% + 10px); left: 50%;
+      transform: translateX(-50%);
+      background: white; border: 1.5px solid var(--border);
+      border-radius: 12px; padding: 6px;
+      min-width: 200px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.10);
+      z-index: 600;
+    }
+    .nav-dropdown:hover .nav-dropdown-trigger { color: var(--navy); }
+    .nav-dropdown:hover .dd-chevron { transform: rotate(180deg); }
+    .nav-dropdown:hover .nav-dropdown-menu { display: block; }
     .nav-dd-item {
-      display: flex; align-items: center; gap: 10px;
+      display: flex; align-items: center; gap: 8px;
       padding: 9px 12px; border-radius: 8px;
       text-decoration: none; color: var(--text);
       font-size: 13px; font-weight: 600;
       font-family: 'Plus Jakarta Sans', sans-serif;
-      transition: background 0.15s;
-      white-space: nowrap;
+      transition: background 0.15s; white-space: nowrap;
     }
-    .nav-dd-item:hover, .nav-dd-item.active { background: #F3F4F6; color: var(--navy); }
-    .nav-dd-item.active { color: var(--verm); }
-    .nav-dd-icon { font-size: 14px; width: 20px; text-align: center; flex-shrink: 0; }
+    .nav-dd-item:hover { background: var(--gray); color: var(--navy); }
+    .nav-dd-item.dd-active { color: var(--verm); }
+    .nav-dd-icon { width: 16px; height: 16px; flex-shrink: 0; opacity: 0.5; }
     .nav-dd-divider { height: 1px; background: var(--border); margin: 4px 6px; }
-    .nav-link.has-dropdown { display: inline-flex; align-items: center; gap: 4px; }
-    .nav-link.has-dropdown .dd-arrow {
-      display: inline-block;
-      width: 14px; height: 14px;
-      transition: transform 0.2s;
-      flex-shrink: 0;
-    }
-    .nav-dropdown.open .dd-arrow { transform: rotate(180deg); }
-
-    
-    /* nav dropdown button reset */
-    .nav-link.has-dropdown {
-      background: none;
-      border: none;
-      cursor: pointer;
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--muted);
-      padding: 0;
-      transition: color 0.2s;
-    }
-    .nav-link.has-dropdown:hover { color: var(--text); }
-    .nav-dropdown.open .nav-link.has-dropdown { color: var(--verm); }
 
     </style>
   <meta name="robots" content="index, follow">
