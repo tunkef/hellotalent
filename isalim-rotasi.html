@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>İşe Alım Rotası — hellotalent.ai</title>
+<meta name="description" content="Junior Recruiter'dan Talent Director'a — Retail İK kariyer haritası, beceri rehberi ve recruiter blogu.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/shared.css">
+<style>
+/* ══════════════════════════════════════════
+   VARIABLES & RESET
+══════════════════════════════════════════ */
+:root {
+  --navy: #1E2D5E; --navy2: #162147;
+  --verm: #C94E28; --verm-light: rgba(201,78,40,0.08);
+  --cream: #F7F5F0; --white: #fff;
+  --muted: #8896B3; --text: #1A1A2E;
+  --border: rgba(30,45,94,0.10);
+  --navy-light: rgba(30,45,94,0.06);
+}
+
+/* ══════════════════════════════════════════
+   HERO
+══════════════════════════════════════════ */
+.hunter-hero {
+  background: linear-gradient(135deg, var(--navy) 0%, #162248 100%);
+  padding: calc(64px + 72px) 48px 64px;
+  position: relative; overflow: hidden;
+}
+.hunter-hero::before {
+  content: ''; position: absolute; top: -60px; right: -60px;
+  width: 420px; height: 420px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(201,78,40,0.15) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hunter-hero::after {
+  content: ''; position: absolute; bottom: -80px; left: 8%;
+  width: 320px; height: 320px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,255,255,0.03) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero-inner { max-width: 1160px; margin: 0 auto; position: relative; z-index: 1; }
+.hero-grid { display: grid; grid-template-columns: 1fr 360px; gap: 64px; align-items: center; }
+
+.hero-tag-h {
+  display: inline-flex; align-items: center; gap: 7px;
+  background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.7);
+  font-family: 'DM Mono', monospace; font-size: 11px;
+  letter-spacing: 1.5px; padding: 6px 14px; border-radius: 20px; margin-bottom: 24px;
+  border: 1px solid rgba(255,255,255,0.15);
+}
+.hero-title-h {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-weight: 800; font-size: clamp(34px, 5vw, 64px);
+  letter-spacing: -2.5px; line-height: 1.0; color: white; margin-bottom: 20px;
+}
+.hero-title-h span { color: #F4A07A; }
+.hero-sub-h {
+  font-size: 17px; color: rgba(255,255,255,0.55);
+  line-height: 1.7; max-width: 560px; margin-bottom: 36px;
+}
+.hero-btns { display: flex; gap: 12px; flex-wrap: wrap; }
+.hero-btn-primary {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--verm); color: white; border: none;
+  font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700;
+  font-size: 14px; padding: 13px 26px; border-radius: 30px;
+  cursor: pointer; transition: all 0.2s;
+}
+.hero-btn-primary:hover { background: #a83d1e; transform: translateY(-1px); }
+.hero-btn-ghost {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.75);
+  border: 1.5px solid rgba(255,255,255,0.15);
+  font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700;
+  font-size: 14px; padding: 13px 26px; border-radius: 30px;
+  cursor: pointer; transition: all 0.2s;
+}
+.hero-btn-ghost:hover { background: rgba(255,255,255,0.14); }
+
+/* Hunter path card (sağ) */
+.hunter-path-card {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 20px; padding: 28px 24px;
+}
+.hpc-title {
+  font-size: 10px; font-weight: 700; letter-spacing: 2px;
+  color: rgba(255,255,255,0.3); text-transform: uppercase; margin-bottom: 20px;
+}
+.hpc-step { display: flex; align-items: center; gap: 14px; padding: 11px 0; border-bottom: 1px solid rgba(255,255,255,0.07); }
+.hpc-step:last-of-type { border-bottom: none; }
+.hpc-dot {
+  width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; font-size: 14px;
+}
+.hpc-dot.done { background: rgba(255,255,255,0.10); }
+.hpc-dot.active { background: var(--verm); box-shadow: 0 0 0 4px rgba(201,78,40,0.25); }
+.hpc-dot.next { background: rgba(255,255,255,0.05); border: 1.5px dashed rgba(255,255,255,0.18); }
+.hpc-role { font-size: 13px; font-weight: 700; color: white; margin-bottom: 2px; }
+.hpc-detail { font-size: 11px; color: rgba(255,255,255,0.38); }
+.hpc-arrow { color: rgba(255,255,255,0.18); font-size: 16px; margin: 3px 0 3px 50px; }
+.hpc-cta {
+  margin-top: 18px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.08);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.hpc-cta-text { font-size: 11px; color: rgba(255,255,255,0.38); line-height: 1.4; }
+.hpc-cta-btn {
+  background: var(--verm); color: white; border: none;
+  font-size: 12px; font-weight: 700; padding: 8px 16px; border-radius: 20px;
+  cursor: pointer; white-space: nowrap; font-family: 'Plus Jakarta Sans', sans-serif;
+  transition: background 0.2s; flex-shrink: 0;
+}
+.hpc-cta-btn:hover { background: #a83d1e; }
+
+/* ══════════════════════════════════════════
+   STATS BAR
+══════════════════════════════════════════ */
+.hunter-stats {
+  background: white; border-bottom: 1px solid var(--border);
+  padding: 20px 48px;
+}
+.hunter-stats-inner {
+  max-width: 1160px; margin: 0 auto;
+  display: flex; gap: 0; align-items: center;
+}
+.hs-item {
+  display: flex; align-items: center; gap: 16px;
+  flex: 1; padding: 8px 24px;
+  border-right: 1px solid var(--border);
+}
+.hs-item:first-child { padding-left: 0; }
+.hs-item:last-child { border-right: none; }
+.hs-num {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-weight: 800; font-size: 28px; color: var(--navy); letter-spacing: -1px;
+}
+.hs-num span { font-size: 18px; color: var(--verm); }
+.hs-label { font-size: 12px; color: var(--muted); line-height: 1.4; font-weight: 600; }
+
+/* ══════════════════════════════════════════
+   TIMELINE
+══════════════════════════════════════════ */
+.timeline-section {
+  padding: 80px 48px;
+  background: var(--cream);
+}
+.section-center { text-align: center; margin-bottom: 60px; }
+.section-tag-sm {
+  font-family: 'DM Mono', monospace; font-size: 11px;
+  letter-spacing: 2px; color: var(--muted); text-transform: uppercase;
+  display: block; margin-bottom: 12px;
+}
+.section-title-lg {
+  font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800;
+  font-size: clamp(28px, 4vw, 44px); letter-spacing: -1.5px;
+  color: var(--navy); line-height: 1.1; margin-bottom: 12px;
+}
+.section-sub-sm {
+  font-size: 16px; color: var(--muted); max-width: 520px;
+  margin: 0 auto; line-height: 1.65;
+}
+
+.timeline-wrap { max-width: 860px; margin: 0 auto; }
+
+.tl-item {
+  display: flex; gap: 28px; margin-bottom: 12px;
+  cursor: pointer;
+}
+.tl-left {
+  display: flex; flex-direction: column; align-items: center;
+  flex-shrink: 0; width: 56px;
+}
+.tl-dot {
+  width: 48px; height: 48px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; flex-shrink: 0; transition: all 0.25s;
+  border: 2px solid var(--border); background: white;
+}
+.tl-item.active .tl-dot {
+  background: var(--navy); border-color: var(--navy);
+  box-shadow: 0 0 0 5px rgba(30,45,94,0.12);
+}
+.tl-line {
+  width: 2px; flex: 1; background: var(--border);
+  min-height: 20px; margin: 4px 0;
+}
+.tl-item:last-child .tl-line { display: none; }
+
+.tl-card {
+  flex: 1; background: white; border-radius: 18px;
+  border: 1.5px solid var(--border); overflow: hidden;
+  transition: all 0.25s; margin-bottom: 8px;
+}
+.tl-item.active .tl-card {
+  border-color: var(--navy);
+  box-shadow: 0 8px 32px rgba(30,45,94,0.12);
+}
+.tl-card-head {
+  padding: 20px 24px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.tl-head-left {}
+.tl-level {
+  font-family: 'DM Mono', monospace; font-size: 10px;
+  letter-spacing: 2px; color: var(--muted); text-transform: uppercase; margin-bottom: 4px;
+}
+.tl-title {
+  font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700;
+  font-size: 18px; color: var(--navy); letter-spacing: -0.4px;
+}
+.tl-head-right { display: flex; align-items: center; gap: 12px; }
+.tl-years {
+  font-family: 'DM Mono', monospace; font-size: 11px;
+  color: var(--muted); white-space: nowrap;
+}
+.tl-chevron {
+  width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;
+  color: var(--muted); transition: transform 0.25s;
+}
+.tl-item.active .tl-chevron { transform: rotate(180deg); color: var(--navy); }
+
+.tl-card-body {
+  max-height: 0; overflow: hidden;
+  transition: max-height 0.4s cubic-bezier(0.4,0,0.2,1);
+}
+.tl-item.active .tl-card-body { max-height: 500px; }
+.tl-body-inner {
+  padding: 0 24px 24px;
+  border-top: 1px solid var(--border);
+  padding-top: 20px;
+}
+.tl-desc {
+  font-size: 14px; color: #555; line-height: 1.7;
+  margin-bottom: 18px;
+}
+.tl-skills-title {
+  font-size: 11px; font-weight: 700; letter-spacing: 1.5px;
+  color: var(--muted); text-transform: uppercase; margin-bottom: 10px;
+}
+.tl-skills { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 18px; }
+.tl-skill {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;
+  background: var(--navy-light); color: var(--navy);
+}
+.tl-metas { display: flex; gap: 20px; flex-wrap: wrap; }
+.tl-meta { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); font-weight: 600; }
+
+/* ══════════════════════════════════════════
+   SKILL KIT
+══════════════════════════════════════════ */
+.skillkit-section {
+  background: white; padding: 80px 48px;
+}
+.skillkit-grid {
+  max-width: 1160px; margin: 0 auto;
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+}
+.sk-card {
+  background: var(--cream); border-radius: 18px;
+  padding: 32px 28px; border: 1px solid var(--border);
+  transition: all 0.22s;
+}
+.sk-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 32px rgba(30,45,94,0.10);
+  border-color: var(--navy);
+}
+.sk-icon {
+  width: 48px; height: 48px; border-radius: 14px;
+  background: var(--navy); display: flex; align-items: center;
+  justify-content: center; font-size: 22px; margin-bottom: 20px;
+}
+.sk-title {
+  font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700;
+  font-size: 17px; color: var(--navy); letter-spacing: -0.4px; margin-bottom: 10px;
+}
+.sk-desc { font-size: 13px; color: #666; line-height: 1.65; margin-bottom: 16px; }
+.sk-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.sk-tag {
+  font-size: 11px; font-weight: 600; padding: 4px 10px;
+  border-radius: 14px; background: rgba(30,45,94,0.08); color: var(--navy);
+}
+
+/* ══════════════════════════════════════════
+   BLOG
+══════════════════════════════════════════ */
+.blog-section { background: var(--cream); padding: 80px 48px; }
+.blog-grid {
+  max-width: 1160px; margin: 0 auto;
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+}
+.bl-card {
+  background: white; border-radius: 18px; overflow: hidden;
+  border: 1px solid var(--border); transition: all 0.22s; cursor: pointer;
+}
+.bl-card:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(30,45,94,0.10); }
+.bl-top {
+  padding: 32px 28px 24px;
+}
+.bl-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 700;
+  letter-spacing: 1px; text-transform: uppercase; margin-bottom: 16px;
+}
+.bl-badge.pratik { background: var(--verm-light); color: var(--verm); }
+.bl-badge.strateji { background: rgba(30,45,94,0.08); color: var(--navy); }
+.bl-badge.psiko { background: rgba(124,58,237,0.08); color: #7C3AED; }
+.bl-title {
+  font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800;
+  font-size: 18px; color: var(--navy); letter-spacing: -0.5px;
+  line-height: 1.25; margin-bottom: 10px;
+}
+.bl-excerpt { font-size: 13px; color: var(--muted); line-height: 1.65; }
+.bl-bottom {
+  padding: 16px 28px; border-top: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.bl-meta { font-family: 'DM Mono', monospace; font-size: 10px; color: #bbb; letter-spacing: 1px; }
+.bl-read {
+  font-size: 12px; font-weight: 700; color: var(--navy);
+  display: flex; align-items: center; gap: 5px; transition: gap 0.2s;
+}
+.bl-card:hover .bl-read { gap: 8px; }
+
+/* ══════════════════════════════════════════
+   ARAÇ KUTUSU
+══════════════════════════════════════════ */
+.toolkit-section { background: white; padding: 80px 48px; }
+.toolkit-grid {
+  max-width: 1160px; margin: 0 auto;
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+}
+.tk-card {
+  border: 1.5px solid var(--border); border-radius: 18px; padding: 28px 24px;
+  display: flex; flex-direction: column; transition: all 0.22s;
+}
+.tk-card:hover { border-color: var(--navy); box-shadow: 0 8px 28px rgba(30,45,94,0.09); }
+.tk-emoji { font-size: 32px; margin-bottom: 14px; }
+.tk-title {
+  font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700;
+  font-size: 15px; color: var(--navy); letter-spacing: -0.3px; margin-bottom: 6px;
+}
+.tk-desc { font-size: 12px; color: var(--muted); line-height: 1.6; flex: 1; margin-bottom: 16px; }
+.tk-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: 700;
+  font-family: 'Plus Jakarta Sans', sans-serif; cursor: pointer; border: none;
+  background: var(--navy-light); color: var(--navy); transition: all 0.2s;
+  width: fit-content;
+}
+.tk-btn:hover { background: var(--navy); color: white; }
+
+/* ══════════════════════════════════════════
+   CTA STRIP
+══════════════════════════════════════════ */
+.hunter-cta {
+  background: var(--navy); padding: 72px 48px;
+  position: relative; overflow: hidden;
+}
+.hunter-cta::before {
+  content: ''; position: absolute; right: -100px; top: -100px;
+  width: 500px; height: 500px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(201,78,40,0.12) 0%, transparent 65%);
+  pointer-events: none;
+}
+.hunter-cta-inner {
+  max-width: 1160px; margin: 0 auto; position: relative; z-index: 1;
+  display: flex; align-items: center; justify-content: space-between; gap: 40px;
+}
+.hcta-tag {
+  font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 2.5px;
+  color: rgba(255,255,255,0.35); text-transform: uppercase; margin-bottom: 14px;
+}
+.hcta-title {
+  font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800;
+  font-size: clamp(24px, 3.5vw, 40px); color: white; letter-spacing: -1.5px;
+  line-height: 1.1; margin-bottom: 14px;
+}
+.hcta-title span { color: #F4A07A; }
+.hcta-sub { font-size: 15px; color: rgba(255,255,255,0.5); line-height: 1.6; max-width: 400px; }
+.hcta-btns { display: flex; flex-direction: column; gap: 10px; flex-shrink: 0; min-width: 200px; }
+.hcta-btn-main {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  background: var(--verm); color: white; border: none; padding: 15px 32px;
+  border-radius: 30px; font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700; font-size: 14px; cursor: pointer; transition: all 0.2s;
+}
+.hcta-btn-main:hover { background: #a83d1e; transform: translateY(-1px); }
+.hcta-btn-sec {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.7);
+  border: 1.5px solid rgba(255,255,255,0.15); padding: 13px 32px;
+  border-radius: 30px; font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700; font-size: 13px; cursor: pointer; transition: all 0.2s;
+  text-decoration: none;
+}
+.hcta-btn-sec:hover { background: rgba(255,255,255,0.14); }
+
+/* ══════════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════════ */
+@media (max-width: 1024px) {
+  .hero-grid { grid-template-columns: 1fr; }
+  .hunter-path-card { display: none; }
+  .skillkit-grid, .blog-grid, .toolkit-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 768px) {
+  .hunter-hero { padding: calc(64px + 60px) 24px 52px; }
+  .timeline-section, .skillkit-section, .blog-section, .toolkit-section, .hunter-cta { padding: 60px 24px; }
+  .hunter-stats { padding: 16px 24px; }
+  .hunter-stats-inner { flex-wrap: wrap; }
+  .hs-item { border-right: none; border-bottom: 1px solid var(--border); width: 50%; flex: none; }
+  .hs-item:nth-child(odd) { padding-left: 0; }
+  .skillkit-grid, .blog-grid, .toolkit-grid { grid-template-columns: 1fr; }
+  .hunter-cta-inner { flex-direction: column; }
+  .hcta-btns { width: 100%; }
+  .hcta-btn-main, .hcta-btn-sec { width: 100%; }
+}
+</style>
+</head>
+<body>
+<div id="ht-header"></div>
+
+<!-- ══════════ HERO ══════════ -->
+<section class="hunter-hero">
+  <div class="hero-inner">
+    <div class="hero-grid">
+      <div class="hero-left">
+        <div class="hero-tag-h">&#129409; İşe Alım Rotası</div>
+        <h1 class="hero-title-h">
+          Junior Recruiter'dan<br><span>Talent Director'a.</span>
+        </h1>
+        <p class="hero-sub-h">
+          Retail İK dünyasının kariyer haritası. Hangi seviyedesin, nereye gidebilirsin, ne öğrenmen gerekiyor — hepsini burada.
+        </p>
+        <div class="hero-btns">
+          <button class="hero-btn-primary" onclick="document.getElementById('timeline').scrollIntoView({behavior:'smooth'})">
+            Rotanı Gör &#8594;
+          </button>
+          <button class="hero-btn-ghost" onclick="document.getElementById('blog').scrollIntoView({behavior:'smooth'})">
+            Recruiter Blogu
+          </button>
+        </div>
+      </div>
+      <div class="hero-right">
+        <div class="hunter-path-card">
+          <div class="hpc-title">Kariyer Rotası</div>
+
+          <div class="hpc-step">
+            <div class="hpc-dot done">&#127891;</div>
+            <div><div class="hpc-role">Junior Recruiter</div><div class="hpc-detail">0–1 yıl · Sourcing & CV</div></div>
+          </div>
+          <div class="hpc-arrow">↓</div>
+          <div class="hpc-step">
+            <div class="hpc-dot done">&#128269;</div>
+            <div><div class="hpc-role">Recruiter</div><div class="hpc-detail">1–3 yıl · Full-cycle hiring</div></div>
+          </div>
+          <div class="hpc-arrow">↓</div>
+          <div class="hpc-step">
+            <div class="hpc-dot active">&#9889;</div>
+            <div><div class="hpc-role">Senior Recruiter</div><div class="hpc-detail">3–5 yıl · Strateji & marka</div></div>
+          </div>
+          <div class="hpc-arrow">↓</div>
+          <div class="hpc-step">
+            <div class="hpc-dot next">&#127775;</div>
+            <div><div class="hpc-role">TA Manager</div><div class="hpc-detail">5–8 yıl · Ekip & bütçe</div></div>
+          </div>
+          <div class="hpc-arrow">↓</div>
+          <div class="hpc-step">
+            <div class="hpc-dot next">&#128081;</div>
+            <div><div class="hpc-role">Talent Director</div><div class="hpc-detail">8+ yıl · C-suite strateji</div></div>
+          </div>
+
+          <div class="hpc-cta">
+            <div class="hpc-cta-text">Aday havuzuna<br>hemen eriş</div>
+            <button class="hpc-cta-btn" onclick="window.location.href='isveren.html'">Başla &#8594;</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ STATS ══════════ -->
+<div class="hunter-stats">
+  <div class="hunter-stats-inner">
+    <div class="hs-item">
+      <div class="hs-num">5<span>+</span></div>
+      <div class="hs-label">Kariyer<br>basamağı</div>
+    </div>
+    <div class="hs-item">
+      <div class="hs-num">2.800<span>+</span></div>
+      <div class="hs-label">Hazır<br>aday profili</div>
+    </div>
+    <div class="hs-item">
+      <div class="hs-num">48<span>sa</span></div>
+      <div class="hs-label">Ortalama<br>yanıt süresi</div>
+    </div>
+    <div class="hs-item">
+      <div class="hs-num">12<span>+</span></div>
+      <div class="hs-label">Recruiter<br>rehber içeriği</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ TİMLİNE ══════════ -->
+<section class="timeline-section" id="timeline">
+  <div class="section-center">
+    <span class="section-tag-sm">Kariyer Basamakları</span>
+    <h2 class="section-title-lg">Junior'dan Director'a<br><span style="color:var(--verm)">adım adım yol haritası.</span></h2>
+    <p class="section-sub-sm">Her seviyenin gereksinimleri, kazanılacak beceriler ve geçiş süreleri.</p>
+  </div>
+
+  <div class="timeline-wrap" id="tl-wrap">
+
+    <!-- Seviye 1 -->
+    <div class="tl-item active" onclick="toggleTl(this)">
+      <div class="tl-left">
+        <div class="tl-dot">&#127891;</div>
+        <div class="tl-line"></div>
+      </div>
+      <div class="tl-card">
+        <div class="tl-card-head">
+          <div class="tl-head-left">
+            <div class="tl-level">Seviye 1</div>
+            <div class="tl-title">Junior Recruiter</div>
+          </div>
+          <div class="tl-head-right">
+            <span class="tl-years">0 – 1 yıl</span>
+            <div class="tl-chevron">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+          </div>
+        </div>
+        <div class="tl-card-body">
+          <div class="tl-body-inner">
+            <p class="tl-desc">Kariyer yolculuğunun başlangıcı. CV okumayı, LinkedIn sourcing'i ve temel mülakat tekniklerini öğreniyorsun. Retail sektöründe bu dönemde en büyük kazanım sahayı tanımak — mağaza operasyonlarını anlayan recruiter nadirdir.</p>
+            <div class="tl-skills-title">Kazanılacak Beceriler</div>
+            <div class="tl-skills">
+              <span class="tl-skill">CV Tarama</span>
+              <span class="tl-skill">LinkedIn Sourcing</span>
+              <span class="tl-skill">Telefon Mülakatı</span>
+              <span class="tl-skill">ATS Kullanımı</span>
+              <span class="tl-skill">Sektör Terminolojisi</span>
+            </div>
+            <div class="tl-metas">
+              <div class="tl-meta">&#8987; Geçiş süresi: 12–18 ay</div>
+              <div class="tl-meta">&#128176; Maaş aralığı: 18–28K TL</div>
+              <div class="tl-meta">&#127919; Hedef: Full-cycle Recruiter</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Seviye 2 -->
+    <div class="tl-item" onclick="toggleTl(this)">
+      <div class="tl-left">
+        <div class="tl-dot">&#128269;</div>
+        <div class="tl-line"></div>
+      </div>
+      <div class="tl-card">
+        <div class="tl-card-head">
+          <div class="tl-head-left">
+            <div class="tl-level">Seviye 2</div>
+            <div class="tl-title">Recruiter</div>
+          </div>
+          <div class="tl-head-right">
+            <span class="tl-years">1 – 3 yıl</span>
+            <div class="tl-chevron">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+          </div>
+        </div>
+        <div class="tl-card-body">
+          <div class="tl-body-inner">
+            <p class="tl-desc">Full-cycle hiring artık senin sorumluluğun. İhtiyaç analizinden offer kabülüne kadar tüm süreci yönetiyorsun. Retail'de bu dönem özellikle kritik çünkü yüksek turnover'ı yönetmeyi öğreniyorsun — en değerli deneyimlerden biri.</p>
+            <div class="tl-skills-title">Kazanılacak Beceriler</div>
+            <div class="tl-skills">
+              <span class="tl-skill">Full-Cycle Hiring</span>
+              <span class="tl-skill">Yetkinlik Bazlı Mülakat</span>
+              <span class="tl-skill">Offer Yönetimi</span>
+              <span class="tl-skill">Turnover Analizi</span>
+              <span class="tl-skill">Hiring Manager İlişkisi</span>
+              <span class="tl-skill">KPI Takibi</span>
+            </div>
+            <div class="tl-metas">
+              <div class="tl-meta">&#8987; Geçiş süresi: 2–3 yıl</div>
+              <div class="tl-meta">&#128176; Maaş aralığı: 28–45K TL</div>
+              <div class="tl-meta">&#127919; Hedef: Senior Recruiter</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Seviye 3 -->
+    <div class="tl-item" onclick="toggleTl(this)">
+      <div class="tl-left">
+        <div class="tl-dot">&#9889;</div>
+        <div class="tl-line"></div>
+      </div>
+      <div class="tl-card">
+        <div class="tl-card-head">
+          <div class="tl-head-left">
+            <div class="tl-level">Seviye 3</div>
+            <div class="tl-title">Senior Recruiter</div>
+          </div>
+          <div class="tl-head-right">
+            <span class="tl-years">3 – 5 yıl</span>
+            <div class="tl-chevron">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+          </div>
+        </div>
+        <div class="tl-card-body">
+          <div class="tl-body-inner">
+            <p class="tl-desc">Sadece doldurma değil, strateji kuruyorsun. İşveren marka çalışması, data-driven hiring ve junior recruiter'lara mentorluk bu dönemin farkı. Retail odaklı talent pipeline kurmak seni rakiplerinizden bir adım öne çıkarır.</p>
+            <div class="tl-skills-title">Kazanılacak Beceriler</div>
+            <div class="tl-skills">
+              <span class="tl-skill">İşveren Markası</span>
+              <span class="tl-skill">Data-Driven Hiring</span>
+              <span class="tl-skill">Talent Pipeline</span>
+              <span class="tl-skill">Mentorluk</span>
+              <span class="tl-skill">Bütçe Yönetimi</span>
+              <span class="tl-skill">Executive Search</span>
+            </div>
+            <div class="tl-metas">
+              <div class="tl-meta">&#8987; Geçiş süresi: 2–4 yıl</div>
+              <div class="tl-meta">&#128176; Maaş aralığı: 45–75K TL</div>
+              <div class="tl-meta">&#127919; Hedef: TA Manager</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Seviye 4 -->
+    <div class="tl-item" onclick="toggleTl(this)">
+      <div class="tl-left">
+        <div class="tl-dot">&#127775;</div>
+        <div class="tl-line"></div>
+      </div>
+      <div class="tl-card">
+        <div class="tl-card-head">
+          <div class="tl-head-left">
+            <div class="tl-level">Seviye 4</div>
+            <div class="tl-title">Talent Acquisition Manager</div>
+          </div>
+          <div class="tl-head-right">
+            <span class="tl-years">5 – 8 yıl</span>
+            <div class="tl-chevron">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+          </div>
+        </div>
+        <div class="tl-card-body">
+          <div class="tl-body-inner">
+            <p class="tl-desc">İşe alım ekibini yönetiyorsun. Kurumsal TA stratejisi, sezonluk işe alım planlaması ve C-suite ile doğrudan çalışma bu seviyenin gerçeği. Retail'de 50+ mağaza ağı olan markalarda bu rol neredeyse bir iş kolu yöneticisi gibi çalışır.</p>
+            <div class="tl-skills-title">Kazanılacak Beceriler</div>
+            <div class="tl-skills">
+              <span class="tl-skill">Ekip Liderliği</span>
+              <span class="tl-skill">TA Stratejisi</span>
+              <span class="tl-skill">Sezonluk Planlama</span>
+              <span class="tl-skill">Vendor Yönetimi</span>
+              <span class="tl-skill">C-suite İletişimi</span>
+              <span class="tl-skill">Organizasyon Tasarımı</span>
+            </div>
+            <div class="tl-metas">
+              <div class="tl-meta">&#8987; Geçiş süresi: 3–5 yıl</div>
+              <div class="tl-meta">&#128176; Maaş aralığı: 75–130K TL</div>
+              <div class="tl-meta">&#127919; Hedef: Talent Director / CHRO</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Seviye 5 -->
+    <div class="tl-item" onclick="toggleTl(this)">
+      <div class="tl-left">
+        <div class="tl-dot">&#128081;</div>
+        <div class="tl-line"></div>
+      </div>
+      <div class="tl-card">
+        <div class="tl-card-head">
+          <div class="tl-head-left">
+            <div class="tl-level">Seviye 5</div>
+            <div class="tl-title">Talent Director / CHRO</div>
+          </div>
+          <div class="tl-head-right">
+            <span class="tl-years">8+ yıl</span>
+            <div class="tl-chevron">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+          </div>
+        </div>
+        <div class="tl-card-body">
+          <div class="tl-body-inner">
+            <p class="tl-desc">İnsan kaynakları artık bir stratejik iş ortağı. Şirketin büyüme planı ile talent stratejisi entegre çalışır. Retail'de bu seviyeye ulaşmak için sektör derinliği ve liderlik deneyimi şart — ama buraya gelen az kişi pişman olmuştur.</p>
+            <div class="tl-skills-title">Kazanılacak Beceriler</div>
+            <div class="tl-skills">
+              <span class="tl-skill">İnsan Sermayesi Stratejisi</span>
+              <span class="tl-skill">Board İletişimi</span>
+              <span class="tl-skill">M&amp;A Süreçleri</span>
+              <span class="tl-skill">Kurumsal Kültür</span>
+              <span class="tl-skill">Uluslararası Operasyon</span>
+            </div>
+            <div class="tl-metas">
+              <div class="tl-meta">&#128176; Maaş aralığı: 130K+ TL</div>
+              <div class="tl-meta">&#127919; Zirve — ve ötesi</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════ SKİLL KİT ══════════ -->
+<section class="skillkit-section">
+  <div style="max-width:1160px;margin:0 auto;">
+    <div class="section-center">
+      <span class="section-tag-sm">Retail'e Özel</span>
+      <h2 class="section-title-lg">Genel İK değil,<br><span style="color:var(--verm)">Retail İK.</span></h2>
+      <p class="section-sub-sm">Retail sektörünün recruiter'dan beklentileri farklıdır. İşte sektöre özgü 6 kritik yetkinlik.</p>
+    </div>
+    <div class="skillkit-grid">
+      <div class="sk-card">
+        <div class="sk-icon">&#128201;</div>
+        <div class="sk-title">Turnover Yönetimi</div>
+        <div class="sk-desc">Retail'de yıllık %40–60 turnover normal. Paniklemeden pipeline kurmak, çıkış mülakatlarını analiz etmek ve retention stratejisi geliştirmek temel yetkinlik.</div>
+        <div class="sk-tags"><span class="sk-tag">Pipeline</span><span class="sk-tag">Retention</span><span class="sk-tag">Analitik</span></div>
+      </div>
+      <div class="sk-card">
+        <div class="sk-icon">&#128106;</div>
+        <div class="sk-title">Saha Adayı Değerleme</div>
+        <div class="sk-desc">CV'si zayıf ama sahada mucize yaratan profilleri nasıl tanırsın? Davranışsal mülakat ve pratik değerleme teknikleri retail'de kritik fark yaratır.</div>
+        <div class="sk-tags"><span class="sk-tag">Davranışsal Mülakat</span><span class="sk-tag">Assessment</span></div>
+      </div>
+      <div class="sk-card">
+        <div class="sk-icon">&#128197;</div>
+        <div class="sk-title">Sezonluk İşe Alım</div>
+        <div class="sk-desc">Ekim'de başlar, Ocak'ta biter. Yaz sezonu için Mayıs'ta hazır olman gerekir. Sezonluk dalgaları yönetmek tüm sektörün en büyük pain point'i.</div>
+        <div class="sk-tags"><span class="sk-tag">Planlama</span><span class="sk-tag">Hız</span><span class="sk-tag">Ölçek</span></div>
+      </div>
+      <div class="sk-card">
+        <div class="sk-icon">&#127981;</div>
+        <div class="sk-title">Çok Lokasyon Yönetimi</div>
+        <div class="sk-desc">50 şehirde 200 mağaza. Her lokasyonun dinamiği farklı. Merkezi strateji ile lokal execution arasındaki dengeyi kurmak deneyim ister.</div>
+        <div class="sk-tags"><span class="sk-tag">Multi-site</span><span class="sk-tag">Koordinasyon</span></div>
+      </div>
+      <div class="sk-card">
+        <div class="sk-icon">&#129302;</div>
+        <div class="sk-title">AI Destekli Sourcing</div>
+        <div class="sk-desc">hellotalent gibi platformlar, LinkedIn ve ATS entegrasyonları ile zaman kazanmak artık zorunluluk. Tool'ları bilen recruiter iki katı verimli çalışır.</div>
+        <div class="sk-tags"><span class="sk-tag">hellotalent</span><span class="sk-tag">LinkedIn</span><span class="sk-tag">ATS</span></div>
+      </div>
+      <div class="sk-card">
+        <div class="sk-icon">&#127775;</div>
+        <div class="sk-title">İşveren Markası</div>
+        <div class="sk-desc">Neden bu marka için çalışılır? Retail'de çalışanların yüzde sekseni "rastgele" giriyor. Güçlü EVP oluşturmak pasif adayları aktif eder.</div>
+        <div class="sk-tags"><span class="sk-tag">EVP</span><span class="sk-tag">İçerik</span><span class="sk-tag">Marka</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ BLOG ══════════ -->
+<section class="blog-section" id="blog">
+  <div style="max-width:1160px;margin:0 auto;">
+    <div class="section-center">
+      <span class="section-tag-sm">Recruiter Blogu</span>
+      <h2 class="section-title-lg">Okuyun, <span style="color:var(--verm)">daha iyi avlanın.</span></h2>
+      <p class="section-sub-sm">Retail İK dünyasından pratik içerikler. Teori yok, saha notları var.</p>
+    </div>
+    <div class="blog-grid">
+      <div class="bl-card">
+        <div class="bl-top">
+          <div class="bl-badge pratik">Pratik</div>
+          <div class="bl-title">40 CV'yi 40 Dakikada Elerken Kaçırdığın Şey</div>
+          <div class="bl-excerpt">Hız için verimlilikten ödün vermek zorunda değilsin. CV taramasında gözden kaçan 5 sinyal ve bunları nasıl yakalamalısın.</div>
+        </div>
+        <div class="bl-bottom">
+          <div class="bl-meta">5 dk okuma</div>
+          <div class="bl-read">Oku <span>&#8594;</span></div>
+        </div>
+      </div>
+      <div class="bl-card">
+        <div class="bl-top">
+          <div class="bl-badge strateji">Strateji</div>
+          <div class="bl-title">Retail'de "Kültür Fit" Efsanesi ve Gerçeği</div>
+          <div class="bl-excerpt">"Kültüre uymadı" dediğimizde aslında ne söylüyoruz? Bias tuzaklarından kaçınmak ve gerçek değerlendirme kriterleri üzerine.</div>
+        </div>
+        <div class="bl-bottom">
+          <div class="bl-meta">7 dk okuma</div>
+          <div class="bl-read">Oku <span>&#8594;</span></div>
+        </div>
+      </div>
+      <div class="bl-card">
+        <div class="bl-top">
+          <div class="bl-badge psiko">Gelişim</div>
+          <div class="bl-title">Junior Recruiter'ların Yaptığı 5 Mülakat Hatası</div>
+          <div class="bl-excerpt">İlk 3 yılda hepimiz bu hataları yaptık. Ama bunları erkenden fark eden recruiter, sektörün en değerli profili haline geliyor.</div>
+        </div>
+        <div class="bl-bottom">
+          <div class="bl-meta">6 dk okuma</div>
+          <div class="bl-read">Oku <span>&#8594;</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ ARAÇ KUTUSU ══════════ -->
+<section class="toolkit-section">
+  <div style="max-width:1160px;margin:0 auto;">
+    <div class="section-center">
+      <span class="section-tag-sm">Hızlı Kaynaklar</span>
+      <h2 class="section-title-lg">Recruiter <span style="color:var(--verm)">araç kutusu.</span></h2>
+      <p class="section-sub-sm">Hemen kullanabileceğin şablonlar ve rehber dokümanlar.</p>
+    </div>
+    <div class="toolkit-grid">
+      <div class="tk-card">
+        <div class="tk-emoji">&#127358;</div>
+        <div class="tk-title">Retail Mülakat Soru Bankası</div>
+        <div class="tk-desc">Mağaza müdürü, satış danışmanı ve depo sorumlusu için ayrıştırılmış, davranışsal mülakat soruları.</div>
+        <button class="tk-btn" onclick="window.location.href='isveren.html'">İndir &#8594;</button>
+      </div>
+      <div class="tk-card">
+        <div class="tk-emoji">&#128203;</div>
+        <div class="tk-title">30-60-90 Gün Onboarding Planı</div>
+        <div class="tk-desc">Yeni işe alınanın ilk 3 ayını yapılandırmak için kullanıma hazır onboarding çerçevesi.</div>
+        <button class="tk-btn" onclick="window.location.href='isveren.html'">İndir &#8594;</button>
+      </div>
+      <div class="tk-card">
+        <div class="tk-emoji">&#128179;</div>
+        <div class="tk-title">Offer Letter Şablonu</div>
+        <div class="tk-desc">Retail sektörüne uygun, hukuki açıdan güvenli, adaya iyi hissettiren teklif mektubu taslağı.</div>
+        <button class="tk-btn" onclick="window.location.href='isveren.html'">İndir &#8594;</button>
+      </div>
+      <div class="tk-card">
+        <div class="tk-emoji">&#128200;</div>
+        <div class="tk-title">İşe Alım KPI Takip Tablosu</div>
+        <div class="tk-desc">Time-to-fill, cost-per-hire ve offer acceptance rate gibi metrikleri takip etmek için hazır tablo.</div>
+        <button class="tk-btn" onclick="window.location.href='isveren.html'">İndir &#8594;</button>
+      </div>
+      <div class="tk-card">
+        <div class="tk-emoji">&#128269;</div>
+        <div class="tk-title">Çıkış Mülakatı Rehberi</div>
+        <div class="tk-desc">Retail'de turnover'ı düşürmek için çıkış görüşmelerinden en iyi verinin nasıl çıkarılacağının rehberi.</div>
+        <button class="tk-btn" onclick="window.location.href='isveren.html'">İndir &#8594;</button>
+      </div>
+      <div class="tk-card">
+        <div class="tk-emoji">&#129302;</div>
+        <div class="tk-title">hellotalent Hızlı Başlangıç</div>
+        <div class="tk-desc">Platform üzerinden aday aramanın, filtrelemenin ve iletişime geçmenin adım adım kılavuzu.</div>
+        <button class="tk-btn" onclick="window.location.href='isveren.html'">Platforma Git &#8594;</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ CTA ══════════ -->
+<section class="hunter-cta">
+  <div class="hunter-cta-inner">
+    <div>
+      <div class="hcta-tag">Hemen Başla</div>
+      <h2 class="hcta-title">Aradığın profil<br><span>hellotalent'ta.</span></h2>
+      <p class="hcta-sub">2.800+ retail çalışanı profili, AI destekli eşleştirme ve 48 saat içinde yanıt. Sözleşme yok, risk yok.</p>
+    </div>
+    <div class="hcta-btns">
+      <button class="hcta-btn-main" onclick="window.location.href='isveren.html'">
+        &#129409; Aday Havuzuna Eriş
+      </button>
+      <a href="iletisim.html" class="hcta-btn-sec">
+        Bize Ulaşın &#8594;
+      </a>
+    </div>
+  </div>
+</section>
+
+<div id="ht-footer"></div>
+
+<script>
+function toggleTl(item) {
+  var isActive = item.classList.contains('active');
+  document.querySelectorAll('.tl-item').forEach(function(i){ i.classList.remove('active'); });
+  if (!isActive) item.classList.add('active');
+}
+</script>
+<script src="/shared.js"></script>
+</body>
+</html>
