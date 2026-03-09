@@ -209,9 +209,9 @@
   .profile-view-mode .poz-chip,.profile-view-mode .chip,.profile-view-mode .option-card,.profile-view-mode .check-item,.profile-view-mode .ws-opt,.profile-view-mode .ayrilma-pill,.profile-view-mode .loc-quick-chip,.profile-view-mode .loc-tag,.profile-view-mode .btn-add-sehir,.profile-view-mode .btn-add-dil{pointer-events:none;opacity:0.85;}
   .profile-view-mode .btn-save{display:none!important;}
   .profile-view-mode .cv-hero{pointer-events:none;opacity:0.85;}
-  .btn-edit-profile{display:none;width:100%;padding:12px;background:var(--navy);border:none;border-radius:10px;color:white;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all 0.2s;margin-bottom:16px;gap:8px;align-items:center;justify-content:center;}
+  .btn-edit-profile{display:flex;width:100%;padding:12px;background:var(--navy);border:none;border-radius:10px;color:white;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all 0.2s;margin-bottom:16px;gap:8px;align-items:center;justify-content:center;}
   .btn-edit-profile:hover{background:#162248;}
-  .profile-view-mode .btn-edit-profile{display:flex;}
+  .btn-edit-profile.editing{background:var(--muted);}
 
   /* CHİP */
   .chip-group{display:flex;flex-wrap:wrap;gap:8px;}
@@ -2363,12 +2363,15 @@ var isEditMode=false;
 function toggleEditMode(){
   isEditMode=!isEditMode;
   var panel=document.getElementById('main-dashboard');
+  var btn=document.getElementById('btn-edit-profile');
   var btnText=document.getElementById('edit-mode-text');
   if(isEditMode){
     panel.classList.remove('profile-view-mode');
+    btn.classList.add('editing');
     btnText.textContent='Düzenlemeyi Kapat';
   }else{
     panel.classList.add('profile-view-mode');
+    btn.classList.remove('editing');
     btnText.textContent='Profili Düzenle';
   }
 }
