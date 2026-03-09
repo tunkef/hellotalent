@@ -2232,7 +2232,7 @@ async function parseCV(file){
 }
 function applyParsedData(){
   const isim=document.getElementById('p-isim').value,telefon=document.getElementById('p-telefon').value,markalar=document.getElementById('p-markalar').value;
-  if(isim){document.getElementById('f-isim').value=isim;document.getElementById('user-name-header').textContent=isim;}
+  if(isim){document.getElementById('f-isim').value=isim;const nh=document.getElementById('sidebar-user-name');if(nh)nh.textContent=isim;}
   if(telefon)document.getElementById('f-telefon').value=telefon;
   if(markalar){const ym=markalar.split(',').map(m=>m.trim()).filter(Boolean);ym.forEach(m=>{if(!markaList.includes(m))markaList.push(m);});renderTags('marka-wrap','marka-input',markaList,false);}
   closeParse();
@@ -2403,36 +2403,21 @@ async function saveProfile(){
     tercih_markalar:tercihMarkaList.join(', '),
     calisma_tipi:calismaTipi,musaitlik:musaitlik,segmentler:segmentler.join(', '),
     tercih_sehirler:selectedSehirler.join(', '),tercih_ilceler:JSON.stringify(selectedIlceler),
-    engel_durumu:engelDurumu,is_active:document.getElementById('toggle-active').checked,is_approved:false,
-    // Eğitim — yeni kolonlar (Supabase migration gerektirir)
+    engel_durumu:engelDurumu,is_active:document.getElementById('toggle-active').checked,
     egitim_seviye:document.getElementById('f-egitim-seviye')?document.getElementById('f-egitim-seviye').value:'',
     mezun_yil:document.getElementById('f-mezun-yil')?document.getElementById('f-mezun-yil').value:'',
     okul:document.getElementById('f-okul')?document.getElementById('f-okul').value.trim():'',
     bolum:document.getElementById('f-bolum')?document.getElementById('f-bolum').value.trim():'',
   };
-  // Ana upsert — herhangi bir kolon hatası olursa core ile fallback
   let {error}=await getSupa().from('candidates').upsert(profileData,{onConflict:'user_id'});
   if(error){
-    console.error('Supabase upsert error:',error.message);
-    // Her türlü hata için: problematik yeni kolonları çıkar ve tekrar dene
-    const safeData={
-      user_id:profileData.user_id, full_name:profileData.full_name, email:profileData.email,
-      telefon:profileData.telefon, cinsiyet:profileData.cinsiyet, yas_araligi:profileData.yas_araligi,
-      pozisyon:profileData.pozisyon, deneyim_yil:profileData.deneyim_yil, markalar:profileData.markalar,
-      linkedin:profileData.linkedin, maas_beklenti:profileData.maas_beklenti, diller:profileData.diller,
-      tercih_markalar:profileData.tercih_markalar, calisma_tipi:profileData.calisma_tipi,
-      musaitlik:profileData.musaitlik, segmentler:profileData.segmentler,
-      tercih_sehirler:profileData.tercih_sehirler, tercih_ilceler:profileData.tercih_ilceler,
-      engel_durumu:profileData.engel_durumu, is_active:profileData.is_active
-    };
-    const res2=await getSupa().from('candidates').upsert(safeData,{onConflict:'user_id'});
-    error=res2.error;
-    if(!error) console.log('Fallback save OK — eğitim kolonları DB migration bekliyor');
+    console.error('Supabase upsert error:',error);
+    btnText.textContent='✕ Hata — tekrar dene';return;
   }
-  if(error){btnText.textContent='✕ Hata — tekrar dene';console.error('Final error:',error);return;}
   btnText.textContent='Profili Kaydet';successEl.style.display='flex';
   setTimeout(()=>{successEl.style.display='none';},3000);
-  if(profileData.full_name)document.getElementById('user-name-header').textContent=profileData.full_name;
+  const nameHeader=document.getElementById('sidebar-user-name');
+  if(profileData.full_name&&nameHeader)nameHeader.textContent=profileData.full_name;
   updateCompletion(profileData);
   syncDashboard(profileData);
 }
