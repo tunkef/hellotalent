@@ -495,54 +495,7 @@ section#cv .pill {
 }
 .success-sub { font-size: 13px; color: var(--muted); line-height: 1.6; }
 
-/* ══════════ HAKKIMIZDA ══════════ */
-#about { scroll-margin-top: 72px; }
-.about-grid {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center;
-}
-.about-left .section-title { text-align: left; margin-bottom: 16px; }
-.about-left .section-tag { display: block; }
-.about-left p { font-size: 16px; color: #374151; line-height: 1.8; margin-bottom: 18px; }
-.about-left p strong { color: #0a0a0a; font-weight: 700; }
 
-.about-stats {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 32px;
-}
-.about-stat {
-  background: var(--gray); border-radius: 16px; padding: 22px 20px;
-  border: 1px solid var(--border);
-}
-.about-stat-num {
-  font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800;
-  font-size: 32px; letter-spacing: -1px; color: var(--text); margin-bottom: 4px;
-}
-.about-stat-num span { color: var(--verm); }
-.about-stat-label { font-size: 12px; color: var(--muted); font-weight: 600; }
-
-.about-right {
-  background: linear-gradient(135deg, var(--verm-light) 0%, var(--navy-light) 100%);
-  border-radius: 24px; padding: 40px 36px;
-  border: 1px solid var(--border);
-}
-.founder-card {}
-.founder-quote {
-  font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600;
-  font-size: 20px; letter-spacing: -0.5px; line-height: 1.4;
-  color: var(--text); margin-bottom: 24px;
-}
-.founder-quote em { color: var(--verm); font-style: normal; }
-.founder-sig {
-  display: flex; align-items: center; gap: 14px;
-}
-.founder-avatar {
-  width: 48px; height: 48px; border-radius: 50%;
-  background: linear-gradient(135deg, var(--verm), #e06040);
-  display: flex; align-items: center; justify-content: center;
-  font-family: 'Bricolage Grotesque', sans-serif;
-  font-weight: 800; font-size: 17px; color: white;
-}
-.founder-name { font-weight: 700; font-size: 15px; color: var(--text); }
-.founder-title { font-size: 12px; color: var(--muted); }
 
 /* ── FREEMIUM ÖNIZLEME ── */
 .free-preview-header { margin-bottom: 16px; }
@@ -716,13 +669,7 @@ section#cv > div:first-child { padding: 52px 20px; }
   .trust-pills { gap: 6px; display: grid; grid-template-columns: repeat(3, 1fr); }
   .trust-pills .pill { text-align: center; justify-content: center; font-size: 10px; padding: 5px 6px; }
 
-  /* HAKKIMIZDA */
-  .about-grid { grid-template-columns: 1fr; gap: 32px; }
-  .about-stats { grid-template-columns: 1fr 1fr; gap: 10px; }
-  .about-stat { padding: 18px 14px; }
-  .about-stat-num { font-size: 26px; }
-  .about-right { padding: 28px 24px; border-radius: 18px; }
-  .founder-quote { font-size: 17px; }
+
 
   /* FINAL CTA */
   .final-cta-grid { grid-template-columns: 1fr !important; gap: 16px !important; }
@@ -742,10 +689,8 @@ section#cv > div:first-child { padding: 52px 20px; }
   .section-title { font-size: 23px; }
   .hero-sub { font-size: 14px; }
   .how-tab { font-size: 12px; padding: 8px 14px; }
-  .about-stats { grid-template-columns: 1fr 1fr; }
   .profile-name { font-size: 13px; }
   .profile-detail { font-size: 11px; }
-  .founder-quote { font-size: 15px; line-height: 1.5; }
   .final-cta-grid > div { padding: 28px 22px !important; }
 }
 
@@ -2012,58 +1957,6 @@ section#cv > div:first-child { padding: 52px 20px; }
   </div>
 
   <!-- HAKKIMIZDA -->
-  <section class="section" id="about">
-    <div class="about-grid">
-      <div class="about-left">
-        <span class="section-tag">Hakkımızda</span>
-        <h2 class="section-title">Retail'de işe alımı yeniden tanımlıyoruz.</h2>
-        <p>
-          Retail dünyasının genç yöneticileri, sektörün en büyük sorunlarından birini yakından gördü: <strong>doğru yetenek ile doğru marka bir türlü buluşamıyordu.</strong>
-        </p>
-        <p>
-          İşe alım süreçleri yavaş, erişim sınırlı, eşleştirme köreydi. hellotalent.ai bu tabloya farklı bir yön vermek için kuruldu — <strong>veriye dayalı, AI destekli ve retail'e özgü</strong> bir talent marketplace olarak.
-        </p>
-        <p>
-          160+ başarılı yerleştirmenin deneyimiyle inşa edilen bu platform; mağaza çalışanlarını fırsatlarla, markaları ise aradıkları profillerle buluşturuyor. <strong>Hızlı, güvenli ve tamamen sektöre odaklı.</strong>
-        </p>
-
-        <div class="about-stats">
-          <div class="about-stat">
-            <div class="about-stat-num">10<span>+</span></div>
-            <div class="about-stat-label">Yıl Retail Deneyimi</div>
-          </div>
-          <div class="about-stat">
-            <div class="about-stat-num">160<span>+</span></div>
-            <div class="about-stat-label">Başarılı Yerleştirme</div>
-          </div>
-          <div class="about-stat">
-            <div class="about-stat-num">50<span>+</span></div>
-            <div class="about-stat-label">Marka Partneri</div>
-          </div>
-          <div class="about-stat">
-            <div class="about-stat-num">48<span>sa</span></div>
-            <div class="about-stat-label">Ortalama Yanıt Süresi</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="about-right">
-        <div class="founder-card">
-          <p class="founder-quote">
-            "Retail'de yetenek hiç bu kadar değerliyken, işe alım süreci hiç bu kadar kör olmamıştı. Biz bunu değiştirmeye karar verdik. <em>Teknoloji ve sektör deneyimini birleştirerek.</em>"
-          </p>
-          <div class="founder-sig">
-            <div class="founder-avatar">HT</div>
-            <div>
-              <p class="founder-name">hellotalent ekibi</p>
-              <p class="founder-title">İstanbul, 2024</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
 </div><!-- /main-wrap -->
 
 <!-- FINAL CTA -->

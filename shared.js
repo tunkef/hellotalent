@@ -20,6 +20,7 @@
     '/pozisyonlar': 'kariyer', '/pozisyonlar.html': 'kariyer',
     '/yetkinlik': 'kariyer', '/yetkinlik.html': 'kariyer',
     '/blog': 'kariyer', '/blog.html': 'kariyer',
+    '/hakkimizda': 'about', '/hakkimizda.html': 'about',
   };
   if (pageMap[path]) PAGE = pageMap[path];
 
@@ -74,7 +75,7 @@
     ddItem('İşe Alım Rotaları', 'isalim-rotasi.html', 'isalim', '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>'),
     '    </div>',
     '  </div>',
-    navLink('Hakkımızda', 'index.html#about', 'about'),
+    navLink('Hakkımızda', 'hakkimizda.html', 'about'),
     '  </nav>',
     '  <div class="header-actions">',
     '    <button class="btn-nav-login" id="login-btn" onclick="HT.toggleLogin()" aria-expanded="false" aria-haspopup="true">',
@@ -126,7 +127,7 @@
     mobileLink('İşe Alım Rotaları', 'isalim-rotasi.html', 'isalim', 'mobile-nav-sub'),
     '  </div>',
     '  <div class="mobile-nav-divider"></div>',
-    mobileLink('Hakkımızda',      'index.html#about',   'about'),
+    mobileLink('Hakkımızda',      'hakkimizda.html',   'about'),
     '</div>',
   ].join('\n');
 
@@ -171,7 +172,7 @@
     '      <button class="footer-col-toggle" onclick="HT.toggleFooterCol(this)">Şirket <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></button>',
     '      <div class="footer-col-title">Şirket</div>',
     '      <div class="footer-col-links">',
-    '        <a class="footer-link" href="index.html#about">Hakkımızda</a>',
+    '        <a class="footer-link" href="hakkimizda.html">Hakkımızda</a>',
     '        <a class="footer-link" href="iletisim.html">İletişim</a>',
     '        <a class="footer-link" href="gizlilik.html">Gizlilik Politikası</a>',
     '        <a class="footer-link" href="kullanim-sartlari.html">Kullanım Şartları</a>',
