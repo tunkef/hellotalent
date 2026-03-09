@@ -154,8 +154,9 @@
   .contact-inner{grid-template-columns:1fr;}
 }
 @media(max-width:900px){
+  .page-wrap{padding-top:0 !important;}
+  .hero-outer{padding:calc(56px + 48px) 20px 40px;}
   .hero-inner{grid-template-columns:1fr;gap:32px;}
-  .hero-outer{padding:48px 20px 40px;}
   .hero-sub{font-size:15px;}
   .hero-btns{flex-direction:column;align-items:stretch;}
   .btn-hero-primary,.btn-hero-secondary{width:100%;justify-content:center;padding:14px 20px;font-size:15px;}
@@ -193,7 +194,7 @@
 }
 @media(max-width:480px){
   .hero-title{font-size:30px;letter-spacing:-1.5px;}
-  .hero-outer{padding:40px 16px 32px;}
+  .hero-outer{padding:calc(56px + 32px) 16px 32px;}
   .hero-tag{font-size:10px;padding:5px 10px;}
   .hero-stats{flex-direction:column;gap:12px;align-items:center;}
   .section{padding:40px 16px;}
