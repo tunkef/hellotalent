@@ -423,6 +423,107 @@
     .notif-popup-actions{flex-direction:column;}
     .pozisyon-grid .poz-chip{font-size:12px;padding:7px 11px;}
   }
+  /* ═══ FOCUS & DISABLED STATES ═══ */
+  .btn-save:focus-visible,.btn-primary:focus-visible,.nav-item:focus-visible,
+  .btn-icon:focus-visible,.poz-chip:focus-visible,.chip:focus-visible{
+    outline:3px solid rgba(201,78,40,0.4);outline-offset:2px;
+  }
+  .field input:focus-visible,.field select:focus-visible{
+    box-shadow:0 0 0 3px rgba(201,78,40,0.15);
+  }
+  .btn-save:disabled{opacity:0.6;cursor:not-allowed;pointer-events:none;}
+  .btn-save:active{transform:scale(0.98);}
+
+  /* ═══ DASHBOARD OVERVIEW PANEL ═══ */
+  .dash-welcome{margin-bottom:20px;}
+  .dash-welcome h2{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px;letter-spacing:-0.5px;margin-bottom:4px;}
+  .dash-welcome p{font-size:13px;color:var(--muted);line-height:1.5;}
+
+  /* Quick stats row */
+  .dash-stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;}
+  .dash-stat{background:white;border:1px solid var(--border);border-radius:14px;padding:18px 16px;text-align:center;transition:all 0.2s;}
+  .dash-stat:hover{border-color:var(--verm);box-shadow:0 4px 16px rgba(201,78,40,0.08);}
+  .dash-stat-num{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:24px;color:var(--navy);letter-spacing:-1px;line-height:1;}
+  .dash-stat-num span{font-size:14px;color:var(--verm);}
+  .dash-stat-label{font-size:11px;color:var(--muted);font-weight:600;margin-top:4px;}
+
+  /* Dashboard grid */
+  .dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;}
+  .dash-card{background:white;border:1px solid var(--border);border-radius:16px;padding:20px;transition:all 0.2s;position:relative;overflow:hidden;}
+  .dash-card:hover{border-color:var(--navy);box-shadow:0 4px 20px rgba(30,45,94,0.08);}
+  .dash-card-full{grid-column:1/-1;}
+  .dash-card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+  .dash-card-icon{width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+  .dash-card-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:3px;}
+  .dash-card-desc{font-size:12px;color:var(--muted);line-height:1.5;}
+  .dash-card-badge{font-size:10px;font-weight:800;letter-spacing:0.5px;padding:3px 9px;border-radius:10px;}
+  .dash-card-badge.green{background:rgba(5,150,105,0.1);color:#059669;}
+  .dash-card-badge.orange{background:rgba(245,158,11,0.1);color:#d97706;}
+  .dash-card-badge.premium{background:var(--verm-light);color:var(--verm);}
+
+  /* CV Score ring */
+  .dash-cv-score{display:flex;align-items:center;gap:20px;}
+  .dash-ring-wrap{position:relative;width:80px;height:80px;flex-shrink:0;}
+  .dash-ring-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px;color:var(--navy);}
+  .dash-ring-num span{font-size:11px;color:var(--muted);margin-top:3px;}
+  .dash-score-bars{flex:1;display:flex;flex-direction:column;gap:8px;}
+  .dash-bar-item{display:flex;align-items:center;gap:8px;}
+  .dash-bar-label{font-size:11px;color:var(--muted);width:70px;flex-shrink:0;}
+  .dash-bar-track{flex:1;height:5px;background:#f0f0f0;border-radius:3px;overflow:hidden;}
+  .dash-bar-fill{height:100%;border-radius:3px;}
+  .dash-bar-val{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);width:22px;text-align:right;}
+
+  /* View list */
+  .dash-view-item{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text);font-weight:500;padding:6px 0;}
+  .dash-view-item:not(:last-child){border-bottom:1px solid #f5f5f3;}
+  .dash-view-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+  .dash-view-name{flex:1;}
+  .dash-view-time{font-family:'DM Mono',monospace;font-size:10px;color:#bbb;}
+  .dash-view-blurred{opacity:0.4;filter:blur(3px);user-select:none;}
+  .dash-view-lock{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:var(--navy);margin-top:8px;padding-top:8px;border-top:1px solid #f0f0f0;cursor:pointer;}
+
+  /* Boost card */
+  .dash-boost{background:linear-gradient(135deg,#fff8f6 0%,white 100%);border-color:rgba(201,78,40,0.15);}
+  .dash-boost-bar{display:flex;align-items:center;gap:10px;margin-top:12px;}
+  .dash-av{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:white;border:2px solid white;margin-left:-5px;}
+  .dash-av:first-child{margin-left:0;}
+  .dash-av-more{width:26px;height:26px;border-radius:50%;background:#f0f0f0;font-size:9px;font-weight:700;color:#888;display:flex;align-items:center;justify-content:center;border:2px solid white;margin-left:-5px;}
+
+  /* Toggle */
+  .dash-toggle{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:#059669;}
+  .dash-toggle-track{width:36px;height:20px;border-radius:10px;background:#059669;position:relative;cursor:pointer;}
+  .dash-toggle-knob{width:16px;height:16px;border-radius:50%;background:white;position:absolute;top:2px;left:18px;box-shadow:0 1px 4px rgba(0,0,0,0.2);}
+
+  /* Notif items */
+  .dash-notif-item{font-size:12px;color:var(--text);font-weight:500;display:flex;align-items:center;gap:8px;padding:5px 0;}
+  .dash-notif-new{font-size:9px;font-weight:800;background:rgba(5,150,105,0.1);color:#059669;padding:2px 6px;border-radius:6px;margin-left:auto;}
+
+  /* NPS bar */
+  .dash-nps-bar{display:flex;height:6px;border-radius:3px;overflow:hidden;gap:2px;margin-top:10px;}
+  .dash-nps-seg{height:100%;border-radius:3px;}
+
+  /* Mini feature grid */
+  .dash-mini-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+  .dash-mini{background:white;border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center;transition:all 0.2s;cursor:default;}
+  .dash-mini:hover{border-color:var(--navy);box-shadow:0 2px 12px rgba(30,45,94,0.06);}
+  .dash-mini-icon{font-size:22px;margin-bottom:6px;}
+  .dash-mini-title{font-size:12px;font-weight:700;color:var(--navy);}
+  .dash-mini-sub{font-size:10px;color:var(--muted);margin-top:2px;}
+
+  /* Premium CTA */
+  .dash-premium-cta{background:linear-gradient(135deg,var(--navy) 0%,#2D4080 100%);border-radius:16px;padding:28px;text-align:center;position:relative;overflow:hidden;margin-bottom:20px;}
+  .dash-premium-cta::before{content:'✦';position:absolute;right:24px;top:50%;transform:translateY(-50%);font-size:80px;opacity:0.04;color:white;}
+  .dash-premium-cta h3{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:20px;color:white;margin-bottom:6px;}
+  .dash-premium-cta p{font-size:13px;color:rgba(255,255,255,0.55);margin-bottom:16px;}
+  .dash-premium-btn{display:inline-flex;align-items:center;gap:8px;background:var(--verm);color:white;border:none;padding:12px 28px;border-radius:30px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:14px;cursor:pointer;transition:all 0.2s;}
+  .dash-premium-btn:hover{background:#a83d1e;transform:translateY(-1px);}
+  .dash-premium-note{font-size:11px;color:rgba(255,255,255,0.35);margin-top:10px;}
+
+  @media(max-width:768px){
+    .dash-stats-row{grid-template-columns:1fr 1fr;}
+    .dash-grid{grid-template-columns:1fr;}
+    .dash-mini-grid{grid-template-columns:1fr 1fr;}
+  }
 </style>
 </head>
 <body>
@@ -469,7 +570,11 @@
   <!-- Navigasyon -->
   <nav class="sidebar-nav">
     <div class="sidebar-nav-label">Menü</div>
-    <button class="nav-item active" id="nav-profil" onclick="switchPanel('profil')">
+    <button class="nav-item active" id="nav-genel" onclick="switchPanel('genel')">
+      <span class="nav-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span>
+      Genel Bakış
+    </button>
+    <button class="nav-item" id="nav-profil" onclick="switchPanel('profil')">
       <span class="nav-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
       Profilim
     </button>
@@ -638,7 +743,11 @@
 
 <!-- BOTTOM NAV (mobile only) -->
 <nav class="bottom-nav" id="bottom-nav">
-  <button class="bn-item active" id="bn-profil" onclick="switchPanel('profil')">
+  <button class="bn-item active" id="bn-genel" onclick="switchPanel('genel')">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+    Dashboard
+  </button>
+  <button class="bn-item" id="bn-profil" onclick="switchPanel('profil')">
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
     Profil
   </button>
@@ -657,7 +766,227 @@
 </nav>
 
 <!-- MAIN -->
-<main class="main panel active" id="main-dashboard" data-panel="profil">
+
+<!-- ════ GENEL BAKIŞ PANELİ ════ -->
+<main class="main panel active" id="panel-genel" data-panel="genel">
+
+  <div class="dash-welcome">
+    <h2 id="dash-welcome-name">Hoş geldin!</h2>
+    <p>Profilinin durumu ve premium özelliklere genel bakış.</p>
+  </div>
+
+  <!-- Quick Stats -->
+  <div class="dash-stats-row">
+    <div class="dash-stat">
+      <div class="dash-stat-num" id="dash-completion">0<span>%</span></div>
+      <div class="dash-stat-label">Profil Tamamlanma</div>
+    </div>
+    <div class="dash-stat">
+      <div class="dash-stat-num">12</div>
+      <div class="dash-stat-label">Profil Görüntüleme</div>
+    </div>
+    <div class="dash-stat">
+      <div class="dash-stat-num">3</div>
+      <div class="dash-stat-label">Gün Aktif</div>
+    </div>
+    <div class="dash-stat">
+      <div class="dash-stat-num" style="color:var(--verm);">—</div>
+      <div class="dash-stat-label">Potansiyel Eşleşme</div>
+    </div>
+  </div>
+
+  <!-- Dashboard Grid -->
+  <div class="dash-grid">
+
+    <!-- CV Score Card -->
+    <div class="dash-card">
+      <div class="dash-card-top">
+        <div class="dash-card-icon" style="background:var(--verm-light);">📊</div>
+        <div class="dash-card-badge premium">✦ Premium</div>
+      </div>
+      <div class="dash-card-title">CV Puanın</div>
+      <div class="dash-cv-score">
+        <div class="dash-ring-wrap">
+          <svg viewBox="0 0 100 100" width="80" height="80">
+            <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(201,78,40,0.1)" stroke-width="8"/>
+            <circle cx="50" cy="50" r="40" fill="none" stroke="var(--verm)" stroke-width="8"
+              stroke-dasharray="251" stroke-dashoffset="65" stroke-linecap="round"
+              transform="rotate(-90 50 50)"/>
+          </svg>
+          <div class="dash-ring-num">74<span>/100</span></div>
+        </div>
+        <div class="dash-score-bars">
+          <div class="dash-bar-item">
+            <span class="dash-bar-label">Deneyim</span>
+            <div class="dash-bar-track"><div class="dash-bar-fill" style="width:88%;background:var(--verm)"></div></div>
+            <span class="dash-bar-val">88</span>
+          </div>
+          <div class="dash-bar-item">
+            <span class="dash-bar-label">Yetkinlik</span>
+            <div class="dash-bar-track"><div class="dash-bar-fill" style="width:72%;background:#f59e0b"></div></div>
+            <span class="dash-bar-val">72</span>
+          </div>
+          <div class="dash-bar-item">
+            <span class="dash-bar-label">Format</span>
+            <div class="dash-bar-track"><div class="dash-bar-fill" style="width:61%;background:#ef4444"></div></div>
+            <span class="dash-bar-val">61</span>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:12px;padding-top:10px;border-top:1px solid #f0f0f0;text-align:center;">
+        <span style="font-size:11px;font-weight:700;color:var(--navy);cursor:pointer;">🔒 Detaylı analiz — Premium ile</span>
+      </div>
+    </div>
+
+    <!-- Profil Görüntülenme -->
+    <div class="dash-card">
+      <div class="dash-card-top">
+        <div class="dash-card-icon" style="background:var(--navy-light);">👁</div>
+        <span style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:24px;color:var(--navy);">12</span>
+      </div>
+      <div class="dash-card-title">Bu hafta görüntülendi</div>
+      <div style="margin-top:10px;">
+        <div class="dash-view-item">
+          <div class="dash-view-dot" style="background:var(--verm);"></div>
+          <span class="dash-view-name">Zara Turkey — İK Müdürü</span>
+          <span class="dash-view-time">2sa</span>
+        </div>
+        <div class="dash-view-item">
+          <div class="dash-view-dot" style="background:var(--navy);"></div>
+          <span class="dash-view-name">Nike İstanbul — Recruiter</span>
+          <span class="dash-view-time">5sa</span>
+        </div>
+        <div class="dash-view-item dash-view-blurred">
+          <div class="dash-view-dot" style="background:#ddd;"></div>
+          <span class="dash-view-name">██████ — ███</span>
+          <span class="dash-view-time">1g</span>
+        </div>
+        <div class="dash-view-item dash-view-blurred">
+          <div class="dash-view-dot" style="background:#ddd;"></div>
+          <span class="dash-view-name">████ — ████</span>
+          <span class="dash-view-time">2g</span>
+        </div>
+      </div>
+      <div class="dash-view-lock">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        +10 daha — Premium ile gör
+      </div>
+    </div>
+
+    <!-- Öne Çıkan Aday (Boost) -->
+    <div class="dash-card dash-boost">
+      <div class="dash-card-top">
+        <div class="dash-card-icon" style="background:rgba(201,78,40,0.12);">⭐</div>
+        <div class="dash-card-badge green">Aktif</div>
+      </div>
+      <div class="dash-card-title">Öne Çıkan Aday</div>
+      <div class="dash-card-desc">Recruiter listesinde üstte görünüyorsun</div>
+      <div class="dash-boost-bar">
+        <div style="display:flex;">
+          <div class="dash-av" style="background:var(--verm);">T</div>
+          <div class="dash-av" style="background:var(--navy);">A</div>
+          <div class="dash-av" style="background:#059669;">M</div>
+          <div class="dash-av-more">+247</div>
+        </div>
+        <span style="font-size:12px;color:var(--muted);font-weight:600;">sıranın önünde</span>
+      </div>
+    </div>
+
+    <!-- Aktif Arama + Öncelikli İlan -->
+    <div class="dash-card">
+      <div class="dash-card-top">
+        <div class="dash-card-icon" style="background:rgba(5,150,105,0.1);">🟢</div>
+        <div class="dash-toggle">
+          <div class="dash-toggle-track"><div class="dash-toggle-knob"></div></div>
+          <span>Aktif</span>
+        </div>
+      </div>
+      <div class="dash-card-title">Aktif Arama Modu</div>
+      <div class="dash-card-desc" style="margin-bottom:14px;">Recruiter'larda turuncu badge ile öne çık</div>
+
+      <div style="padding-top:12px;border-top:1px solid #f0f0f0;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+          <div style="display:flex;align-items:center;gap:6px;">
+            <span style="font-size:14px;">🔔</span>
+            <span style="font-size:13px;font-weight:700;">Öncelikli İlanlar</span>
+          </div>
+          <div class="dash-card-badge orange">3 yeni</div>
+        </div>
+        <div class="dash-notif-item">Nike — Visual Merchandiser <span class="dash-notif-new">YENİ</span></div>
+        <div class="dash-notif-item">Zara — Store Supervisor <span class="dash-notif-new">YENİ</span></div>
+        <div class="dash-notif-item" style="opacity:0.5;">Mango — Satış Danışmanı</div>
+      </div>
+    </div>
+
+    <!-- Şirket NPS -->
+    <div class="dash-card">
+      <div class="dash-card-top">
+        <div class="dash-card-icon" style="background:var(--navy-light);">🏢</div>
+        <span style="font-family:'DM Mono',monospace;font-size:13px;color:var(--muted);">NPS <strong style="color:#059669;font-size:16px;">+42</strong></span>
+      </div>
+      <div class="dash-card-title">Şirket Değerlendirmesi</div>
+      <div class="dash-card-desc">Anonim çalışan geri bildirimi</div>
+      <div class="dash-nps-bar">
+        <div class="dash-nps-seg" style="width:55%;background:#059669;"></div>
+        <div class="dash-nps-seg" style="width:25%;background:#f59e0b;"></div>
+        <div class="dash-nps-seg" style="width:20%;background:#ef4444;"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-top:6px;font-size:10px;color:var(--muted);">
+        <span>Öneren %55</span><span>Nötr %25</span><span>Eleştiren %20</span>
+      </div>
+    </div>
+
+    <!-- Kariyer Hedefi Quick View -->
+    <div class="dash-card">
+      <div class="dash-card-top">
+        <div class="dash-card-icon" style="background:rgba(245,158,11,0.1);">🎯</div>
+        <div class="dash-card-badge premium">✦ Premium</div>
+      </div>
+      <div class="dash-card-title" id="dash-goal-title">Kariyer Hedefin</div>
+      <div class="dash-card-desc" id="dash-goal-sub">Kariyer panelinden hedef belirle</div>
+      <div style="margin-top:12px;">
+        <button onclick="switchPanel('kariyer')" style="background:none;border:1.5px solid var(--border);border-radius:8px;padding:8px 14px;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:600;color:var(--navy);cursor:pointer;transition:all 0.15s;" onmouseover="this.style.borderColor='var(--navy)'" onmouseout="this.style.borderColor='var(--border)'">Hedef Düzenle →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mini Feature Grid -->
+  <div class="dash-mini-grid" style="margin-bottom:20px;">
+    <div class="dash-mini">
+      <div class="dash-mini-icon">🤖</div>
+      <div class="dash-mini-title">AI CV</div>
+      <div class="dash-mini-sub">Ayda 3 hak</div>
+    </div>
+    <div class="dash-mini">
+      <div class="dash-mini-icon">📋</div>
+      <div class="dash-mini-title">Mülakat Kiti</div>
+      <div class="dash-mini-sub">Retail odaklı</div>
+    </div>
+    <div class="dash-mini">
+      <div class="dash-mini-icon">🎯</div>
+      <div class="dash-mini-title">Gap Analizi</div>
+      <div class="dash-mini-sub">Yetkinlik haritası</div>
+    </div>
+    <div class="dash-mini">
+      <div class="dash-mini-icon">🎁</div>
+      <div class="dash-mini-title">HT Perks</div>
+      <div class="dash-mini-sub" style="color:var(--verm);font-weight:700;">8 avantaj aktif</div>
+    </div>
+  </div>
+
+  <!-- Premium CTA -->
+  <div class="dash-premium-cta">
+    <h3>✦ Premium'a Geç</h3>
+    <p>Profilini öne çıkar, kimlerin seni gördüğünü takip et, öncelikli ilanlara eriş.</p>
+    <button class="dash-premium-btn" onclick="document.querySelector('#kayit')&&document.querySelector('#kayit').scrollIntoView({behavior:'smooth'})">
+      Premium'a Geç — Yakında
+    </button>
+    <div class="dash-premium-note">Kayıt ol, beta listesine gir</div>
+  </div>
+
+</main><!-- /panel-genel -->
+
+<main class="main panel" id="main-dashboard" data-panel="profil">
 
   <!-- Tamamlanma -->
   <div class="completion-card">
@@ -704,10 +1033,10 @@
       </div>
     </div>
     <div class="fields-grid">
-      <div class="field"><label>Ad Soyad</label><input type="text" id="f-isim" placeholder="Adın Soyadın"></div>
-      <div class="field"><label>Telefon</label><input type="tel" id="f-telefon" placeholder="05XX XXX XX XX"></div>
-      <div class="field"><label>E-posta</label><input type="email" id="f-email" disabled style="background:#F7F6F4;color:var(--muted);"></div>
-      <div class="field"><label>LinkedIn Profili</label><input type="url" id="f-linkedin" placeholder="linkedin.com/in/adsoyadın"></div>
+      <div class="field"><label>Ad Soyad</label><input type="text" id="f-isim" placeholder="Adın Soyadın" autocomplete="name"></div>
+      <div class="field"><label>Telefon</label><input type="tel" id="f-telefon" placeholder="05XX XXX XX XX" autocomplete="tel"></div>
+      <div class="field"><label>E-posta</label><input type="email" id="f-email" disabled style="background:#F7F6F4;color:var(--muted);" autocomplete="email"></div>
+      <div class="field"><label>LinkedIn Profili</label><input type="url" id="f-linkedin" placeholder="linkedin.com/in/adsoyadın" autocomplete="url"></div>
       <div class="field"><label>Cinsiyet</label>
         <select id="f-cinsiyet">
           <option value="">Seç...</option>
@@ -1381,6 +1710,7 @@ function switchPanel(name) {
   document.querySelectorAll('.panel').forEach(function(p){ p.classList.remove('active'); });
   // Hedef paneli aç
   var target = document.getElementById('panel-' + name) || document.getElementById('main-dashboard');
+  if (name === 'profil') target = document.getElementById('main-dashboard');
   if (target) target.classList.add('active');
   // Sidebar nav aktif yap
   document.querySelectorAll('.nav-item').forEach(function(n){ n.classList.remove('active'); });
@@ -1698,7 +2028,7 @@ async function loadProfile(){
   const{data}=await getSupa().from('candidates').select('*').eq('user_id',currentUser.id).single();
   document.getElementById('loading-screen').style.display='none';
   document.getElementById('app-body').style.display='block';
-  switchPanel('profil');
+  switchPanel('genel');
   const email=currentUser.email||'';
   const metaName=(currentUser.user_metadata?.full_name||currentUser.user_metadata?.name||'').trim();
   const fallbackName=metaName||email.split('@')[0];
@@ -1761,6 +2091,7 @@ async function loadProfile(){
     renderSelectedCities();
     updateCompletion(data);
     updateCompletionStepBadges(data);
+    syncDashboard(data);
   }else{
     const initials=fallbackName.substring(0,2).toUpperCase();
     setAvatarInitials(initials);
@@ -1934,6 +2265,30 @@ function updateCompletion(data){
   else{document.getElementById('completion-title').textContent='✓ Profil Tamamlandı!';document.getElementById('completion-desc').textContent='Harika! Profilin markalar tarafından görüntülenebilir.';}
 }
 
+// ── DASHBOARD SYNC ──
+function syncDashboard(data){
+  // Welcome name
+  var welcomeEl=document.getElementById('dash-welcome-name');
+  if(welcomeEl && data && data.full_name){welcomeEl.textContent='Hoş geldin, '+data.full_name.split(' ')[0]+'!';}
+  // Completion %
+  var pctEl=document.getElementById('dash-completion');
+  if(pctEl){
+    var filled=0,total=6;
+    if(data){
+      if(data.full_name)filled++;if(data.telefon)filled++;if(data.pozisyon)filled++;
+      if(data.deneyim_yil)filled++;if(data.cv_url)filled++;if(data.career_goal)filled++;
+    }
+    pctEl.innerHTML=Math.round(filled/total*100)+'<span>%</span>';
+  }
+  // Career goal
+  var goalTitle=document.getElementById('dash-goal-title');
+  var goalSub=document.getElementById('dash-goal-sub');
+  if(data && data.career_goal && goalTitle){
+    goalTitle.textContent=data.career_goal;
+    goalSub.textContent=(data.career_type==='yukari'?'↑ Yukarı Geçiş':data.career_type==='yatay'?'⇄ Yatay Geçiş':'◆ Liderlik Rotası');
+  }
+}
+
 // ── KAYDET ──
 async function saveProfile(){
   const btnText=document.getElementById('save-btn-text'),successEl=document.getElementById('save-success');
@@ -1993,6 +2348,7 @@ async function saveProfile(){
   setTimeout(()=>{successEl.style.display='none';},3000);
   if(profileData.full_name)document.getElementById('user-name-header').textContent=profileData.full_name;
   updateCompletion(profileData);
+  syncDashboard(profileData);
 }
 
 async function signOut(){await getSupa().auth.signOut();window.location.href='giris.html';}
