@@ -1370,23 +1370,6 @@
         <select id="f-deneyim" style="display:none;"><option value=""></option><option>0–1 yıl</option><option>1–3 yıl</option><option>3–5 yıl</option><option>5–10 yıl</option><option>10+ yıl</option></select>
       </div>
 
-      <div class="field field-full">
-        <label>Hedef Pozisyon <span style="color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0;">(birden fazla)</span></label>
-        <div class="pozisyon-grid" id="pozisyon-grid">
-          <div class="poz-chip" onclick="togglePozisyon(this)" data-val="Satış Danışmanı">Satış Danışmanı</div>
-          <div class="poz-chip" onclick="togglePozisyon(this)" data-val="Kıdemli Satış D.">Kıdemli Satış D.</div>
-          <div class="poz-chip" onclick="togglePozisyon(this)" data-val="Departman Müdürü">Departman Md.</div>
-          <div class="poz-chip" onclick="togglePozisyon(this)" data-val="Mağaza Müdürü">Mağaza Md.</div>
-          <div class="poz-chip" onclick="togglePozisyon(this)" data-val="Operasyon Müdürü">Operasyon Md.</div>
-          <div class="poz-chip" onclick="togglePozisyon(this)" data-val="Bölge Müdürü">Bölge Md.</div>
-          <div class="poz-chip" onclick="togglePozisyon(this)" data-val="Visual Merchandiser">VM</div>
-          <div class="poz-chip" onclick="togglePozisyon(this)" data-val="İnsan Kaynakları">İK</div>
-          <div class="poz-chip" onclick="togglePozisyon(this)" data-val="Eğitim Uzmanı">Eğitim</div>
-          <div class="poz-chip" onclick="togglePozisyon(this)" data-val="Müşteri Hizmetleri">Müşteri Hiz.</div>
-          <div class="poz-chip" onclick="togglePozisyon(this)" data-val="Depo / Lojistik">Depo / Lojistik</div>
-          <div class="poz-chip" onclick="togglePozisyon(this)" data-val="Diğer">Diğer</div>
-        </div>
-      </div>
       <div class="field">
         <label>Maaş Beklentisi (Net/Ay)</label>
         <select id="f-maas">
@@ -1462,6 +1445,24 @@
       Tercihlerim
     </div>
     <p class="section-hint">Bu bilgiler İK ekiplerine gösterilmez — sadece sana uygun eşleştirme için kullanılır.</p>
+
+    <div style="margin-bottom:20px;">
+      <label style="display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;color:var(--muted);margin-bottom:8px;">Hedef Pozisyon <span style="font-weight:400;font-size:10px;">(birden fazla)</span></label>
+      <div class="pozisyon-grid" id="pozisyon-grid">
+        <div class="poz-chip" onclick="togglePozisyon(this)" data-val="Satış Danışmanı">Satış Danışmanı</div>
+        <div class="poz-chip" onclick="togglePozisyon(this)" data-val="Kıdemli Satış D.">Kıdemli Satış D.</div>
+        <div class="poz-chip" onclick="togglePozisyon(this)" data-val="Departman Müdürü">Departman Md.</div>
+        <div class="poz-chip" onclick="togglePozisyon(this)" data-val="Mağaza Müdürü">Mağaza Md.</div>
+        <div class="poz-chip" onclick="togglePozisyon(this)" data-val="Operasyon Müdürü">Operasyon Md.</div>
+        <div class="poz-chip" onclick="togglePozisyon(this)" data-val="Bölge Müdürü">Bölge Md.</div>
+        <div class="poz-chip" onclick="togglePozisyon(this)" data-val="Visual Merchandiser">VM</div>
+        <div class="poz-chip" onclick="togglePozisyon(this)" data-val="İnsan Kaynakları">İK</div>
+        <div class="poz-chip" onclick="togglePozisyon(this)" data-val="Eğitim Uzmanı">Eğitim</div>
+        <div class="poz-chip" onclick="togglePozisyon(this)" data-val="Müşteri Hizmetleri">Müşteri Hiz.</div>
+        <div class="poz-chip" onclick="togglePozisyon(this)" data-val="Depo / Lojistik">Depo / Lojistik</div>
+        <div class="poz-chip" onclick="togglePozisyon(this)" data-val="Diğer">Diğer</div>
+      </div>
+    </div>
 
     <div style="margin-bottom:20px;">
       <label style="display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;color:var(--muted);margin-bottom:8px;">Ne Zaman Başlayabilirim</label>
