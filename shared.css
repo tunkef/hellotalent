@@ -258,8 +258,11 @@ body {
 @media (max-width: 900px) {
   .header-nav { display: none !important; }
   .hamburger { display: flex !important; }
-  .site-header { padding: 0 20px; justify-content: space-between; }
-  .header-logo { font-size: 18px; flex: 1; text-align: center; }
+  .site-header { padding: 0 16px; justify-content: space-between; position: relative; }
+  .header-logo { 
+    position: absolute; left: 50%; transform: translateX(-50%);
+    font-size: 18px; flex: none; text-align: center;
+  }
   .btn-nav-login { padding: 6px 12px; font-size: 12px; }
   .footer-inner { grid-template-columns: 1fr 1fr; gap: 28px; }
   .site-footer { padding: 40px 24px 28px; }
