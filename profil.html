@@ -457,16 +457,9 @@
   /* Dil dropdown — replace free text */
   .dil-row select.dil-select{flex:1;min-width:100px;}
 
-  /* ENGEL DETAILS */
-  .engel-details{border:1.5px solid var(--border);border-radius:10px;padding:10px 14px;background:var(--gray);max-width:420px;}
-  .engel-details summary{display:flex;align-items:center;justify-content:space-between;cursor:pointer;list-style:none;user-select:none;}
-  .engel-details summary::-webkit-details-marker{display:none;}
-  .engel-details[open] .engel-arrow{transform:rotate(180deg);}
-  .engel-arrow{transition:transform 0.2s;flex-shrink:0;}
   /* ASKERLIK */
-  .askerlik-wrap{display:none;max-width:420px;}
-  .askerlik-wrap.visible{display:block;}
-  .card-view-mode .askerlik-wrap .chip{pointer-events:none;opacity:0.85;}
+  .askerlik-wrap{display:none;}
+  .askerlik-wrap.visible{display:flex;}
 
   /* DİL SATIRI */
   .dil-row{display:flex;align-items:center;gap:8px;background:var(--gray);border:1.5px solid var(--border);border-radius:10px;padding:6px 10px;max-width:420px;}
@@ -1321,33 +1314,24 @@
         </select>
       </div>
 
-      <!-- ENGELLİLİK — minimal, collapsible -->
-      <div class="field field-full">
-        <details class="engel-details">
-          <summary>
-            <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;color:var(--muted);">Engel Durumu <span style="font-weight:400;font-size:10px;">(opsiyonel)</span></span>
-            <svg class="engel-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
-          </summary>
-          <div class="chip-group" id="engel-group" style="margin-top:10px;">
-            <div class="chip" onclick="selectSingleChip(this,'engel-group')" data-val="Engel Durumum Yok">Engel Durumum Yok</div>
-            <div class="chip" onclick="selectSingleChip(this,'engel-group')" data-val="Görme Engeli">Görme Engeli</div>
-            <div class="chip" onclick="selectSingleChip(this,'engel-group')" data-val="İşitme Engeli">İşitme Engeli</div>
-            <div class="chip" onclick="selectSingleChip(this,'engel-group')" data-val="Fiziksel Engel">Fiziksel Engel</div>
-            <div class="chip" onclick="selectSingleChip(this,'engel-group')" data-val="Belirtmek İstemiyorum">Belirtmek İstemiyorum</div>
-          </div>
-          <p class="tag-hint" style="margin-top:7px;">Bu bilgi gizlidir — yasal kotalar kapsamında kullanılır.</p>
-        </details>
+      <div class="field"><label>Engel Durumu</label>
+        <select id="f-engel">
+          <option value="">Seç...</option>
+          <option>Engel Durumum Yok</option>
+          <option>Görme Engeli</option>
+          <option>İşitme Engeli</option>
+          <option>Fiziksel Engel</option>
+          <option>Belirtmek İstemiyorum</option>
+        </select>
       </div>
-
-      <!-- ASKERLİK DURUMU — sadece erkekler -->
-      <div class="field field-full askerlik-wrap" id="askerlik-wrap">
-        <label>Askerlik Durumu</label>
-        <div class="chip-group" id="askerlik-group" style="max-width:420px;">
-          <div class="chip" onclick="selectSingleChip(this,'askerlik-group')" data-val="Yapıldı">Yapıldı</div>
-          <div class="chip" onclick="selectSingleChip(this,'askerlik-group')" data-val="Muaf">Muaf</div>
-          <div class="chip" onclick="selectSingleChip(this,'askerlik-group')" data-val="Tecilli">Tecilli</div>
-          <div class="chip" onclick="selectSingleChip(this,'askerlik-group')" data-val="Yapılmadı">Yapılmadı</div>
-        </div>
+      <div class="field askerlik-wrap" id="askerlik-wrap"><label>Askerlik Durumu</label>
+        <select id="f-askerlik">
+          <option value="">Seç...</option>
+          <option>Yapıldı</option>
+          <option>Muaf</option>
+          <option>Tecilli</option>
+          <option>Yapılmadı</option>
+        </select>
       </div>
     </div>
   </div>
@@ -2062,7 +2046,7 @@ function handleResize() {
 window.addEventListener('resize', handleResize);
 document.addEventListener('DOMContentLoaded', handleResize);
 let currentUser=null,markaList=[],tercihMarkaList=[],dilList=[],parsedData=null;
-let selectedPozisyonlar=[],selectedSehirler=[],selectedIlceler={},calismaTipi='',segmentler=[],engelDurumu='',musaitlik='';
+let selectedPozisyonlar=[],selectedSehirler=[],selectedIlceler={},calismaTipi='',segmentler=[],musaitlik='';
 
 // ── 81 İL VERİSİ ──
 const TUR_ILLER = {
@@ -2394,9 +2378,7 @@ function togglePozisyon(el){
 function selectSingleChip(el,groupId){
   document.querySelectorAll(`#${groupId} .chip`).forEach(c=>c.classList.remove('selected'));
   el.classList.add('selected');
-  if(groupId==='engel-group')engelDurumu=el.dataset.val;
   if(groupId==='musaitlik-group')musaitlik=el.dataset.val;
-  if(groupId==='askerlik-group')askerlikDurumu=el.dataset.val;
 }
 function toggleMultiChip(el){el.classList.toggle('selected');segmentler=Array.from(document.querySelectorAll('#segment-group .chip.selected')).map(c=>c.dataset.val);}
 function selectOptionCard(el,group){el.closest('.option-cards').querySelectorAll('.option-card').forEach(c=>c.classList.remove('selected'));el.classList.add('selected');calismaTipi=el.dataset.val;}
@@ -2848,11 +2830,11 @@ async function loadProfile(){
     if(data.calisma_durumu)calismaDurumu=data.calisma_durumu;
     if(data.ayrilma_nedeni)ayrilmaNedeni=data.ayrilma_nedeni;
     if(data.segmentler){segmentler=data.segmentler.split(',').map(s=>s.trim()).filter(Boolean);document.querySelectorAll('#segment-group .chip').forEach(c=>{if(segmentler.includes(c.dataset.val))c.classList.add('selected');});}
-    if(data.engel_durumu){engelDurumu=data.engel_durumu;document.querySelectorAll('#engel-group .chip').forEach(c=>{if(c.dataset.val===engelDurumu)c.classList.add('selected');});}
+    if(data.engel_durumu&&document.getElementById('f-engel'))document.getElementById('f-engel').value=data.engel_durumu;
     // Adres il/ilçe
     if(data.adres_il){document.getElementById('f-adres-il').value=data.adres_il;populateAdresIlce();if(data.adres_ilce)document.getElementById('f-adres-ilce').value=data.adres_ilce;}
     // Askerlik durumu
-    if(data.askerlik_durumu){askerlikDurumu=data.askerlik_durumu;document.querySelectorAll('#askerlik-group .chip').forEach(c=>{if(c.dataset.val===askerlikDurumu)c.classList.add('selected');});}
+    if(data.askerlik_durumu&&document.getElementById('f-askerlik'))document.getElementById('f-askerlik').value=data.askerlik_durumu;
     toggleAskerlik();
     // Şehir/ilçe
     if(data.tercih_sehirler){selectedSehirler=data.tercih_sehirler.split(',').map(s=>s.trim()).filter(Boolean);}
@@ -3118,13 +3100,12 @@ function populateAdresIlce(){
   });
 }
 // ── ASKERLİK TOGGLE ──
-var askerlikDurumu='';
 function toggleAskerlik(){
   var cinsiyet=document.getElementById('f-cinsiyet').value;
   var wrap=document.getElementById('askerlik-wrap');
   if(!wrap)return;
   if(cinsiyet==='Erkek'){wrap.classList.add('visible');}
-  else{wrap.classList.remove('visible');askerlikDurumu='';}
+  else{wrap.classList.remove('visible');var sel=document.getElementById('f-askerlik');if(sel)sel.value='';}
 }
 
 const YAYGIN_DILLER=['Türkçe','İngilizce','Almanca','Fransızca','İspanyolca','İtalyanca','Rusça','Arapça','Çince (Mandarin)','Japonca','Korece','Portekizce','Hollandaca','Lehçe','Farsça','Kürtçe'];
@@ -3457,7 +3438,7 @@ async function saveProfile(){
     ayrilma_nedeni:ayrilmaNedeni,
     deneyimler:JSON.stringify(deneyimler),
     tercih_sehirler:selectedSehirler.join(', '),tercih_ilceler:JSON.stringify(selectedIlceler),
-    engel_durumu:engelDurumu,is_active:document.getElementById('toggle-active').checked,
+    engel_durumu:document.getElementById('f-engel')?document.getElementById('f-engel').value:'',is_active:document.getElementById('toggle-active').checked,
     egitim_seviye:document.getElementById('f-egitim-seviye')?document.getElementById('f-egitim-seviye').value:'',
     mezun_yil:document.getElementById('f-mezun-yil')?document.getElementById('f-mezun-yil').value:'',
     okul:document.getElementById('f-okul')?document.getElementById('f-okul').value.trim():'',
@@ -3465,7 +3446,7 @@ async function saveProfile(){
     ekstra_egitimler:JSON.stringify(getEkstraEgitimlerJSON()),
     adres_il:document.getElementById('f-adres-il')?document.getElementById('f-adres-il').value:'',
     adres_ilce:document.getElementById('f-adres-ilce')?document.getElementById('f-adres-ilce').value:'',
-    askerlik_durumu:askerlikDurumu,
+    askerlik_durumu:document.getElementById('f-askerlik')?document.getElementById('f-askerlik').value:'',
   };
   let {error}=await getSupa().from('candidates').upsert(profileData,{onConflict:'user_id'});
   if(error){
