@@ -968,7 +968,7 @@ footer{background:var(--navy);padding:40px 48px;}
 <div id="ht-footer"></div>
 <script>
 var _supa=null;
-function getSupa(){if(!_supa)_supa=supabase.createClient('https://cpwibefquojehjehtrog.supabase.co','sb_publishable_POUtNwJyjAAheukwYP5hmA_TKKjphwa');return _supa;}
+function getSupa(){if(!_supa){if(typeof supabase==='undefined'){console.warn('Supabase CDN yüklenmedi');return null;}_supa=supabase.createClient('https://cpwibefquojehjehtrog.supabase.co','sb_publishable_POUtNwJyjAAheukwYP5hmA_TKKjphwa');return _supa;}
 
 function toggleLoginDropdown(){
   document.getElementById('login-dropdown').classList.toggle('open');
@@ -1042,5 +1042,5 @@ async function submitGiris(e){
   if(window.location.search.includes('mode=register'))switchTab('kayit');
 </script>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script src="/shared.js"></script>
