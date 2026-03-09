@@ -441,6 +441,43 @@
   .dash-welcome h2{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px;letter-spacing:-0.5px;margin-bottom:4px;}
   .dash-welcome p{font-size:13px;color:var(--muted);line-height:1.5;}
 
+  /* ═══ PROFILE SUMMARY CARD ═══ */
+  .profile-summary{background:white;border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:20px;display:none;}
+  .profile-summary.visible{display:block;}
+  .ps-top{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+  .ps-left{display:flex;align-items:center;gap:16px;flex:1;min-width:0;}
+  .ps-avatar{width:56px;height:56px;border-radius:50%;background:var(--navy);color:white;display:flex;align-items:center;justify-content:center;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:18px;flex-shrink:0;overflow:hidden;}
+  .ps-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
+  .ps-info{min-width:0;}
+  .ps-name{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:18px;color:var(--navy);letter-spacing:-0.3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .ps-role{font-size:12px;color:var(--muted);font-weight:600;margin-top:2px;}
+  .ps-badges{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;}
+  .ps-badge{font-size:10px;font-weight:700;padding:3px 10px;border-radius:10px;background:#f5f5f3;color:var(--muted);display:inline-flex;align-items:center;gap:4px;}
+  .ps-badge svg{width:10px;height:10px;}
+  .ps-badge.verm{background:var(--verm-light);color:var(--verm);}
+  .ps-actions{display:flex;gap:8px;flex-shrink:0;}
+  .ps-edit-btn{display:inline-flex;align-items:center;gap:6px;padding:10px 20px;border-radius:10px;border:none;background:var(--verm);color:white;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:13px;cursor:pointer;transition:all 0.15s;}
+  .ps-edit-btn:hover{background:#a83d1e;transform:translateY(-1px);}
+  .ps-edit-btn svg{width:14px;height:14px;}
+  .ps-logout-btn{display:inline-flex;align-items:center;gap:4px;padding:10px 14px;border-radius:10px;border:1px solid var(--border);background:white;color:var(--muted);font-family:'Plus Jakarta Sans',sans-serif;font-weight:600;font-size:12px;cursor:pointer;transition:all 0.15s;}
+  .ps-logout-btn:hover{border-color:var(--navy);color:var(--navy);}
+
+  /* Empty profile prompt */
+  .dash-empty-prompt{display:none;text-align:center;padding:40px 20px;}
+  .dash-empty-prompt.visible{display:block;}
+  .dash-empty-icon{font-size:48px;margin-bottom:16px;}
+  .dash-empty-title{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:20px;color:var(--navy);margin-bottom:8px;}
+  .dash-empty-desc{font-size:13px;color:var(--muted);margin-bottom:20px;line-height:1.6;}
+  .dash-empty-btn{display:inline-flex;align-items:center;gap:8px;padding:12px 28px;border-radius:30px;border:none;background:var(--verm);color:white;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:14px;cursor:pointer;transition:all 0.15s;}
+  .dash-empty-btn:hover{background:#a83d1e;transform:translateY(-1px);}
+
+  @media(max-width:768px){
+    .ps-top{flex-direction:column;align-items:stretch;}
+    .ps-actions{justify-content:stretch;}
+    .ps-edit-btn{flex:1;justify-content:center;}
+    .ps-logout-btn{flex:0;}
+  }
+
   /* Quick stats row */
   .dash-stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;}
   .dash-stat{background:white;border:1px solid var(--border);border-radius:14px;padding:18px 16px;text-align:center;transition:all 0.2s;}
@@ -777,6 +814,54 @@
     <p>Profilinin durumu ve premium özelliklere genel bakış.</p>
   </div>
 
+  <!-- Profile Summary Card (filled profile) -->
+  <div class="profile-summary" id="profile-summary">
+    <div class="ps-top">
+      <div class="ps-left">
+        <div class="ps-avatar" id="ps-avatar">?</div>
+        <div class="ps-info">
+          <div class="ps-name" id="ps-name">—</div>
+          <div class="ps-role" id="ps-role">Profil henüz tamamlanmadı</div>
+          <div class="ps-badges">
+            <span class="ps-badge" id="ps-city-badge" style="display:none;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              <span id="ps-city-text"></span>
+            </span>
+            <span class="ps-badge" id="ps-exp-badge" style="display:none;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+              <span id="ps-exp-text"></span>
+            </span>
+            <span class="ps-badge verm" id="ps-cv-badge" style="display:none;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              CV: <span id="ps-cv-text"></span>/100
+            </span>
+          </div>
+        </div>
+      </div>
+      <div class="ps-actions">
+        <button class="ps-edit-btn" onclick="switchPanel('profil')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          Profili Düzenle
+        </button>
+        <button class="ps-logout-btn" onclick="signOut()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Çıkış
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty Profile Prompt -->
+  <div class="dash-empty-prompt" id="dash-empty-prompt">
+    <div class="dash-empty-icon">👤</div>
+    <div class="dash-empty-title">Profilini Oluştur</div>
+    <div class="dash-empty-desc">Henüz profil bilgilerin eklenmemiş. Profilini tamamla, retail markaları seni bulsun!</div>
+    <button class="dash-empty-btn" onclick="switchPanel('profil')">Profili Düzenle →</button>
+  </div>
+
+  <!-- Dashboard Content (hidden when profile empty) -->
+  <div id="dash-content">
+
   <!-- Quick Stats -->
   <div class="dash-stats-row">
     <div class="dash-stat">
@@ -986,6 +1071,7 @@
     <div class="dash-premium-note">Kayıt ol, beta listesine gir</div>
   </div>
 
+  </div><!-- /dash-content -->
 </main><!-- /panel-genel -->
 
 <main class="main panel" id="main-dashboard" data-panel="profil">
@@ -2038,7 +2124,7 @@ async function loadProfile(){
   if(data){
     const name=data.full_name||metaName||fallbackName;
     const initials=name.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase()||email.substring(0,2).toUpperCase();
-    document.getElementById('user-name-header') && (document.getElementById('user-name-header').textContent=name);
+    const _nh=document.getElementById('sidebar-user-name');if(_nh)_nh.textContent=name;
       syncSidebarUser(name, currentUser.email, null);
     if(data.avatar_url)setAvatarImage(data.avatar_url);else setAvatarInitials(initials);
     document.getElementById('f-isim').value=data.full_name||'';
@@ -2098,10 +2184,13 @@ async function loadProfile(){
     const initials=fallbackName.substring(0,2).toUpperCase();
     setAvatarInitials(initials);
     document.getElementById('f-email').value=email;
-    document.getElementById('user-name-header') && (document.getElementById('user-name-header').textContent=fallbackName);
+    const _nh2=document.getElementById('sidebar-user-name');if(_nh2)_nh2.textContent=fallbackName;
     syncSidebarUser(fallbackName, currentUser.email, null);
     updateStatusUI(true);
     updateCompletion(null);
+    syncDashboard(null);
+    // Empty profile → show form directly
+    switchPanel('profil');
   }
 }
 
@@ -2333,6 +2422,67 @@ function updateCompletion(data){
 
 // ── DASHBOARD SYNC ──
 function syncDashboard(data){
+  var profileFilled = data && data.full_name;
+  var summaryEl = document.getElementById('profile-summary');
+  var emptyEl = document.getElementById('dash-empty-prompt');
+  var contentEl = document.getElementById('dash-content');
+
+  // Show/hide based on profile state
+  if(profileFilled){
+    if(summaryEl) summaryEl.classList.add('visible');
+    if(emptyEl) emptyEl.classList.remove('visible');
+    if(contentEl) contentEl.style.display='';
+  }else{
+    if(summaryEl) summaryEl.classList.remove('visible');
+    if(emptyEl) emptyEl.classList.add('visible');
+    if(contentEl) contentEl.style.display='none';
+  }
+
+  // Profile Summary Card
+  if(profileFilled && summaryEl){
+    var psName=document.getElementById('ps-name');
+    var psRole=document.getElementById('ps-role');
+    var psAvatar=document.getElementById('ps-avatar');
+    if(psName) psName.textContent=data.full_name;
+    // Role line: pozisyon or career_goal
+    if(psRole){
+      var roleParts=[];
+      if(data.pozisyon) roleParts.push(data.pozisyon.split(',')[0].trim());
+      if(data.career_goal && !roleParts.length) roleParts.push(data.career_goal);
+      psRole.textContent=roleParts.length?roleParts.join(' · '):'Profil bilgileri mevcut';
+    }
+    // Avatar — use safe DOM method
+    if(psAvatar){
+      if(data.avatar_url){
+        var img=document.createElement('img');
+        img.src=data.avatar_url;img.alt='avatar';
+        psAvatar.textContent='';psAvatar.appendChild(img);
+      }else{
+        var initials=data.full_name.split(' ').map(function(w){return w[0];}).join('').substring(0,2).toUpperCase();
+        psAvatar.textContent=initials;
+      }
+    }
+    // City badge
+    var cityBadge=document.getElementById('ps-city-badge');
+    var cityText=document.getElementById('ps-city-text');
+    if(cityBadge && cityText && data.tercih_sehirler){
+      var firstCity=data.tercih_sehirler.split(',')[0].trim();
+      if(firstCity){cityText.textContent=firstCity;cityBadge.style.display='';}
+    }
+    // Experience badge
+    var expBadge=document.getElementById('ps-exp-badge');
+    var expText=document.getElementById('ps-exp-text');
+    if(expBadge && expText && data.deneyim_yil){
+      expText.textContent=data.deneyim_yil+' yıl';expBadge.style.display='';
+    }
+    // CV score badge
+    var cvBadge=document.getElementById('ps-cv-badge');
+    var cvText=document.getElementById('ps-cv-text');
+    if(cvBadge && cvText && data.cv_score){
+      cvText.textContent=data.cv_score;cvBadge.style.display='';
+    }
+  }
+
   // Welcome name
   var welcomeEl=document.getElementById('dash-welcome-name');
   if(welcomeEl && data && data.full_name){welcomeEl.textContent='Hoş geldin, '+data.full_name.split(' ')[0]+'!';}
@@ -2344,27 +2494,27 @@ function syncDashboard(data){
       if(data.full_name)filled++;if(data.telefon)filled++;if(data.pozisyon)filled++;
       if(data.deneyim_yil)filled++;if(data.cv_url)filled++;if(data.career_goal)filled++;
     }
-    pctEl.innerHTML=Math.round(filled/total*100)+'<span>%</span>';
+    var pctVal=Math.round(filled/total*100);
+    pctEl.textContent='';pctEl.appendChild(document.createTextNode(pctVal));
+    var pctSpan=document.createElement('span');pctSpan.textContent='%';pctEl.appendChild(pctSpan);
   }
   // Career goal
   var goalTitle=document.getElementById('dash-goal-title');
   var goalSub=document.getElementById('dash-goal-sub');
   if(data && data.career_goal && goalTitle){
     goalTitle.textContent=data.career_goal;
-    goalSub.textContent=(data.career_type==='yukari'?'↑ Yukarı Geçiş':data.career_type==='yatay'?'⇄ Yatay Geçiş':'◆ Liderlik Rotası');
+    goalSub.textContent=(data.career_type==='yukari'?'\u2191 Yukar\u0131 Ge\u00e7i\u015f':data.career_type==='yatay'?'\u21c4 Yatay Ge\u00e7i\u015f':'\u25c6 Liderlik Rotas\u0131');
   }
-  // CV Score — gerçek veri
+  // CV Score
   var cvScoreEl=document.querySelector('.dash-ring-num');
   if(cvScoreEl && data && data.cv_score){
     var s=data.cv_score;
-    cvScoreEl.innerHTML=s+'<span>/100</span>';
-    // Ring animasyonu güncelle
+    cvScoreEl.textContent='';cvScoreEl.appendChild(document.createTextNode(s));
+    var scoreSpan=document.createElement('span');scoreSpan.textContent='/100';cvScoreEl.appendChild(scoreSpan);
     var ring=document.querySelector('.dash-ring-wrap circle:nth-child(2)');
     if(ring){var offset=251-Math.round(251*s/100);ring.setAttribute('stroke-dashoffset',offset);}
-    // Bar'ları güncelle (CV varsa)
     var bars=document.querySelectorAll('.dash-bar-fill');
     if(bars.length>=3&&data.cv_text){
-      // Basit dağılım: deneyim > yetkinlik > format
       var exp=Math.min(95,s+Math.round(Math.random()*15));
       var skill=Math.max(30,s-Math.round(Math.random()*10));
       var fmt=Math.max(20,s-Math.round(Math.random()*20));
