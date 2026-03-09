@@ -419,6 +419,20 @@
       .rehber-grid { grid-template-columns: 1fr !important; }
       .kariyer-tabs-section { padding: 32px 24px 20px !important; }
       .kariyer-cards-section { padding: 40px 24px !important; }
+      /* Filter bar */
+      .filter-bar { padding: 12px 20px !important; top: 56px !important; }
+      .filter-bar-inner { gap: 8px !important; }
+      .filter-select { font-size: 12px !important; padding: 7px 28px 7px 10px !important; }
+      .filter-label { font-size: 10px !important; }
+      /* Kariyer tabs */
+      .kariyer-tabs { gap: 6px !important; }
+      .kariyer-tab { font-size: 12px !important; padding: 8px 14px !important; }
+      /* Rehber 2-col grid */
+      .rehber-inner > div[style*="grid-template-columns: 1fr 280px"] { grid-template-columns: 1fr !important; }
+      /* Lateral banner */
+      .lateral-banner { grid-template-columns: 1fr !important; padding: 32px 24px !important; margin: 0 20px 32px !important; }
+      /* Hero padding */
+      .kariyer-hero { padding: calc(56px + 40px) 24px 48px !important; }
     }
     @media (max-width: 768px) {
       .hero-title-k { font-size: 32px !important; }
@@ -427,10 +441,17 @@
       .kariyer-tabs-section { padding: 28px 20px 16px !important; }
       .kariyer-cards-section { padding: 36px 20px !important; }
       .rehber-grid { gap: 14px !important; }
+      /* Filter: stack vertically */
+      .filter-bar-inner { flex-direction: column !important; align-items: flex-start !important; }
+      .filter-select { width: 100% !important; }
+      .filter-count { margin-left: 0 !important; }
+      /* Kariyer tabs wrap */
+      .kariyer-tabs { flex-wrap: wrap !important; }
     }
     @media (max-width: 480px) {
       .hero-title-k { font-size: 26px !important; }
       .kariyer-tabs-section, .kariyer-cards-section { padding-left: 16px !important; padding-right: 16px !important; }
+      .filter-bar { padding: 10px 16px !important; }
     }
   </style>
   <meta name="robots" content="index, follow">

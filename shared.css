@@ -191,6 +191,18 @@ body {
   padding-left: 32px; font-size: 13px; color: var(--muted);
 }
 .mobile-nav-divider { height: 1px; background: var(--border); margin: 8px 0; }
+.mobile-accordion-toggle {
+  display: flex; align-items: center; justify-content: space-between;
+  width: 100%; text-align: left; padding: 12px 16px; border-radius: 10px;
+  font-size: 14px; font-weight: 600; color: var(--text);
+  background: none; border: none; cursor: pointer;
+  font-family: 'Plus Jakarta Sans', sans-serif; transition: background 0.15s;
+}
+.mobile-accordion-toggle:hover { background: var(--gray); }
+.mobile-accordion-panel {
+  display: none; padding-left: 8px;
+}
+.mobile-accordion-panel.open { display: block; }
 .mobile-cta-row { display: flex; gap: 8px; margin-top: 12px; }
 .mobile-cta-btn {
   flex: 1; padding: 12px; border-radius: 10px;

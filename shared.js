@@ -90,7 +90,7 @@
     '    <div class="login-modal-title">Giriş Yap</div>',
     '    <div class="login-modal-sub">Devam etmek istediğin hesap türünü seç.</div>',
     '    <div class="login-modal-cards">',
-    '      <div class="login-modal-card" onclick="HT.go(\'aday.html#kayit\')">',
+    '      <div class="login-modal-card" onclick="HT.go(\'giris.html?tab=aday\')">',
     '        <div class="lmc-icon" style="background:var(--verm-light);color:var(--verm);">',
     '          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>',
     '        </div>',
@@ -109,21 +109,24 @@
     '    </div>',
     '  </div>',
     '</div>',
-    /* Mobile menu */
+    /* Mobile menu — accordion submenus, no CTA buttons */
     '<div class="mobile-menu" id="mobile-menu">',
     mobileLink('Adaylar İçin',    'aday.html',          'aday'),
     mobileLink('İşverenler İçin', 'isveren.html',       'isveren'),
-    mobileLink('Kariyer Rotaları','kariyer.html',        'kariyer'),
+    '  <div class="mobile-nav-divider"></div>',
+    '  <button class="mobile-nav-link mobile-accordion-toggle" onclick="HT.toggleAccordion(this)">Kariyer Rotası <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-left:auto;transition:transform 0.2s;"><polyline points="6 9 12 15 18 9"/></svg></button>',
+    '  <div class="mobile-accordion-panel">',
+    mobileLink('Kariyer Rotaları','kariyer.html',        'kariyer', 'mobile-nav-sub'),
     mobileLink('Retail Pozisyonlar','pozisyonlar.html',  null, 'mobile-nav-sub'),
     mobileLink('Yetkinlik Rehberi', 'yetkinlik.html',    null, 'mobile-nav-sub'),
     mobileLink('Retail Blog',       'blog.html',         null, 'mobile-nav-sub'),
-    mobileLink('İşe Alım Rotaları', 'isalim-rotasi.html', 'isalim'),
-    mobileLink('Hakkımızda',      'index.html#about',   'about'),
-    '  <div class="mobile-nav-divider"></div>',
-    '  <div class="mobile-cta-row">',
-    '    <button class="mobile-cta-btn" style="background:white;color:var(--navy);border:1.5px solid var(--navy);" onclick="HT.go(\'aday.html#kayit\')">Aday Girişi</button>',
-    '    <button class="mobile-cta-btn" style="background:var(--verm);color:white;" onclick="HT.go(\'giris.html?tab=ik\')">İK Girişi</button>',
     '  </div>',
+    '  <button class="mobile-nav-link mobile-accordion-toggle" onclick="HT.toggleAccordion(this)">İşe Alım Rotası <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-left:auto;transition:transform 0.2s;"><polyline points="6 9 12 15 18 9"/></svg></button>',
+    '  <div class="mobile-accordion-panel">',
+    mobileLink('İşe Alım Rotaları', 'isalim-rotasi.html', 'isalim', 'mobile-nav-sub'),
+    '  </div>',
+    '  <div class="mobile-nav-divider"></div>',
+    mobileLink('Hakkımızda',      'index.html#about',   'about'),
     '</div>',
   ].join('\n');
 
@@ -223,6 +226,14 @@
       var open = menu.classList.toggle('open');
       if (ham) { ham.classList.toggle('open', open); ham.setAttribute('aria-expanded', String(open)); }
       document.body.style.overflow = open ? 'hidden' : '';
+    },
+
+    toggleAccordion: function (btn) {
+      var panel = btn.nextElementSibling;
+      if (!panel) return;
+      var open = panel.classList.toggle('open');
+      var svg = btn.querySelector('svg');
+      if (svg) svg.style.transform = open ? 'rotate(180deg)' : '';
     },
   };
 
