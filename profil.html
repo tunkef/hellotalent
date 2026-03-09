@@ -396,11 +396,35 @@
   .dil-row-del{background:none;border:none;cursor:pointer;color:var(--muted);font-size:16px;line-height:1;padding:2px 4px;border-radius:4px;transition:color 0.15s;}
   .dil-row-del:hover{color:var(--red);}
 
-  /* ŞEHİR KAYDET BUTONU */
-  .sehir-card-save{margin-top:10px;width:100%;padding:9px;background:var(--navy);border:none;border-radius:9px;color:white;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.15s;}
-  .sehir-card-save:hover{background:var(--navy-dark,#162248);}
-  .sehir-card.collapsed .ilce-chips,.sehir-card.collapsed .sehir-card-save,.sehir-card.collapsed p{display:none;}
-  .sehir-card-header{cursor:pointer;}
+  /* POPÜLER ŞEHİR QUICK-PICK */
+  .loc-quick-picks{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;}
+  .loc-quick-chip{padding:7px 14px;border:1.5px solid var(--border);border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.15s;background:white;color:var(--text);display:inline-flex;align-items:center;gap:5px;}
+  .loc-quick-chip:hover{border-color:var(--navy);color:var(--navy);}
+  .loc-quick-chip.selected{background:var(--navy);border-color:var(--navy);color:white;}
+  .loc-quick-chip .qc-pin{width:12px;height:12px;opacity:0.5;}
+  .loc-quick-chip.selected .qc-pin{opacity:1;}
+
+  /* SEÇİLİ ŞEHİR TAG'LERİ (yeni kompakt tasarım) */
+  .loc-selected-wrap{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;}
+  .loc-tag{display:inline-flex;align-items:center;gap:6px;padding:6px 10px 6px 12px;background:var(--navy-light);border:1.5px solid #c8cedf;border-radius:20px;font-size:13px;font-weight:600;color:var(--navy);cursor:pointer;transition:all 0.15s;position:relative;}
+  .loc-tag:hover{border-color:var(--navy);}
+  .loc-tag.expanded{border-radius:12px;border-color:var(--navy);background:white;}
+  .loc-tag-ilce-count{font-size:10px;font-weight:700;background:var(--navy);color:white;padding:1px 6px;border-radius:10px;min-width:16px;text-align:center;}
+  .loc-tag-remove{width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:transparent;border:none;cursor:pointer;color:var(--muted);font-size:14px;line-height:1;transition:all 0.15s;padding:0;flex-shrink:0;}
+  .loc-tag-remove:hover{background:rgba(201,78,40,0.1);color:var(--verm);}
+
+  /* İLÇE INLINE PANEL */
+  .loc-ilce-panel{display:none;margin-top:8px;padding:12px;background:white;border:1.5px solid #c8cedf;border-radius:12px;}
+  .loc-ilce-panel.open{display:block;}
+  .loc-ilce-panel-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+  .loc-ilce-panel-title{font-size:12px;font-weight:700;color:var(--navy);display:flex;align-items:center;gap:5px;}
+  .loc-ilce-panel-hint{font-size:11px;color:var(--muted);}
+  .loc-ilce-chips{display:flex;flex-wrap:wrap;gap:5px;}
+
+  /* ŞEHİR KAYDET BUTONU (legacy - kept for backward compat) */
+  .sehir-card{background:var(--navy-light);border:1.5px solid #c8cedf;border-radius:12px;padding:14px 16px;margin-bottom:10px;}
+  .sehir-card.collapsed .ilce-chips,.sehir-card.collapsed p{display:none;}
+  .sehir-card-header{cursor:pointer;display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
   .sehir-card-expand{font-size:11px;color:var(--muted);margin-left:auto;margin-right:8px;font-weight:600;}
 
   /* MOBİL */
@@ -1372,11 +1396,17 @@
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
       Lokasyon Tercihleri
     </div>
-    <p class="section-hint">Tüm Türkiye'den şehir seçip, istersen ilçe bazında da daraltabilirsin. Ne kadar detay verirsen eşleşme o kadar isabetli olur.</p>
-    <div id="secili-sehirler-container"></div>
+    <p class="section-hint">Hangi şehirlerde çalışmak istiyorsun? İstersen ilçe bazında da daraltabilirsin.</p>
+
+    <label style="display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;color:var(--muted);margin-bottom:8px;">Popüler Şehirler</label>
+    <div class="loc-quick-picks" id="loc-quick-picks"></div>
+
+    <div id="secili-sehirler-container" class="loc-selected-wrap"></div>
+    <div id="secili-ilce-panels"></div>
+
     <button class="btn-add-sehir" onclick="openLokasyonModal()">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-      Şehir Ekle — 81 il
+      Tüm şehirler — 81 il
     </button>
   </div>
 
@@ -1997,71 +2027,208 @@ function updateStatusUI(isActive){
   if(h)h.textContent=isActive?'✅ Profilin aktif — markalar seni görebilir.':'⏸ Profilin pasif — markalar seni göremez.';
 }
 
+// ── POPÜLER ŞEHİRLER ──
+var POPULER_SEHIRLER=['İstanbul','Ankara','İzmir','Antalya','Bursa','Kocaeli','Adana','Gaziantep'];
+
+function renderQuickPicks(){
+  var wrap=document.getElementById('loc-quick-picks');
+  if(!wrap)return;
+  while(wrap.firstChild)wrap.removeChild(wrap.firstChild);
+  POPULER_SEHIRLER.forEach(function(sehir){
+    var chip=document.createElement('button');
+    chip.type='button';
+    chip.className='loc-quick-chip'+(selectedSehirler.includes(sehir)?' selected':'');
+    var pin=document.createElementNS('http://www.w3.org/2000/svg','svg');
+    pin.setAttribute('class','qc-pin');pin.setAttribute('width','12');pin.setAttribute('height','12');
+    pin.setAttribute('viewBox','0 0 24 24');pin.setAttribute('fill','none');
+    pin.setAttribute('stroke','currentColor');pin.setAttribute('stroke-width','2.5');
+    var path1=document.createElementNS('http://www.w3.org/2000/svg','path');
+    path1.setAttribute('d','M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z');
+    var circ=document.createElementNS('http://www.w3.org/2000/svg','circle');
+    circ.setAttribute('cx','12');circ.setAttribute('cy','10');circ.setAttribute('r','3');
+    pin.appendChild(path1);pin.appendChild(circ);
+    chip.appendChild(pin);
+    var txt=document.createTextNode(sehir);
+    chip.appendChild(txt);
+    chip.addEventListener('click',function(){toggleQuickCity(sehir);});
+    wrap.appendChild(chip);
+  });
+}
+
+function toggleQuickCity(sehir){
+  if(selectedSehirler.includes(sehir)){
+    selectedSehirler=selectedSehirler.filter(function(s){return s!==sehir;});
+    delete selectedIlceler[sehir];
+  }else{
+    selectedSehirler.push(sehir);
+  }
+  renderQuickPicks();
+  renderSelectedCities();
+}
+
 // ── LOKASYON MODAL ──
 function openLokasyonModal(){
   renderCityModal('');
   document.getElementById('lokasyon-modal-overlay').classList.add('show');
   document.body.style.overflow='hidden';
-  setTimeout(()=>document.getElementById('lm-search-input').focus(),100);
+  setTimeout(function(){var si=document.getElementById('lm-search-input');if(si)si.focus();},100);
 }
-function closeLokasyonModal(){document.getElementById('lokasyon-modal-overlay').classList.remove('show');document.body.style.overflow='';renderSelectedCities();}
+function closeLokasyonModal(){
+  document.getElementById('lokasyon-modal-overlay').classList.remove('show');
+  document.body.style.overflow='';
+  renderQuickPicks();
+  renderSelectedCities();
+}
 function filterCities(q){renderCityModal(q.toLowerCase());}
+
 function renderCityModal(q){
-  const body=document.getElementById('lm-body');
-  body.innerHTML='';
-  let total=0;
-  Object.entries(TUR_ILLER).forEach(([bolge,iller])=>{
-    const filtered=iller.filter(il=>!q||il.toLowerCase().includes(q));
+  var body=document.getElementById('lm-body');
+  while(body.firstChild)body.removeChild(body.firstChild);
+  var total=0;
+  Object.entries(TUR_ILLER).forEach(function(entry){
+    var bolge=entry[0],iller=entry[1];
+    var filtered=iller.filter(function(il){return !q||il.toLowerCase().includes(q);});
     if(!filtered.length)return;
-    const div=document.createElement('div');div.className='lm-region';
-    div.innerHTML=`<div class="lm-region-label">${bolge}</div><div class="lm-cities">${filtered.map(il=>`<div class="lm-city-chip${selectedSehirler.includes(il)?' selected':''}" onclick="toggleModalCity('${il}',this)">${il}</div>`).join('')}</div>`;
-    body.appendChild(div);
+    var region=document.createElement('div');region.className='lm-region';
+    var label=document.createElement('div');label.className='lm-region-label';label.textContent=bolge;
+    region.appendChild(label);
+    var cities=document.createElement('div');cities.className='lm-cities';
+    filtered.forEach(function(il){
+      var chip=document.createElement('div');
+      chip.className='lm-city-chip'+(selectedSehirler.includes(il)?' selected':'');
+      chip.textContent=il;
+      chip.addEventListener('click',function(){toggleModalCity(il,chip);});
+      cities.appendChild(chip);
+    });
+    region.appendChild(cities);
+    body.appendChild(region);
     total+=filtered.length;
   });
-  if(!total)body.innerHTML='<p style="color:var(--muted);font-size:14px;text-align:center;padding:20px 0;">Şehir bulunamadı.</p>';
+  if(!total){
+    var empty=document.createElement('p');
+    empty.style.cssText='color:var(--muted);font-size:14px;text-align:center;padding:20px 0;';
+    empty.textContent='Şehir bulunamadı.';
+    body.appendChild(empty);
+  }
   document.getElementById('lm-selected-count').textContent=selectedSehirler.length;
 }
+
 function toggleModalCity(sehir,el){
   el.classList.toggle('selected');
-  if(el.classList.contains('selected')){if(!selectedSehirler.includes(sehir))selectedSehirler.push(sehir);}
-  else{selectedSehirler=selectedSehirler.filter(s=>s!==sehir);delete selectedIlceler[sehir];}
+  if(el.classList.contains('selected')){
+    if(!selectedSehirler.includes(sehir))selectedSehirler.push(sehir);
+  }else{
+    selectedSehirler=selectedSehirler.filter(function(s){return s!==sehir;});
+    delete selectedIlceler[sehir];
+  }
   document.getElementById('lm-selected-count').textContent=selectedSehirler.length;
 }
+
+// ── SEÇİLİ ŞEHİRLER — Kompakt Tag Tasarımı ──
 function renderSelectedCities(){
-  const container=document.getElementById('secili-sehirler-container');
-  container.innerHTML='';
-  selectedSehirler.forEach(sehir=>{
-    const ilceler=ILCELER[sehir]||[];
-    const secilenIlceler=selectedIlceler[sehir]||[];
-    const ilceText=secilenIlceler.length?secilenIlceler.join(', '):'Tüm ilçeler';
-    const card=document.createElement('div');card.className='sehir-card';
-    const ilceHTML=ilceler.length?
-      `<p style="font-size:11px;color:var(--muted);margin-bottom:8px;">İlçe seç <span style="font-weight:400;">(opsiyonel)</span></p>
-      <div class="ilce-chips" id="ilce-${sehir.replace(/\s/g,'_')}">${ilceler.map(i=>`<div class="ilce-chip${(selectedIlceler[sehir]||[]).includes(i)?' selected':''}" onclick="toggleIlce('${sehir}','${i}',this)">${i}</div>`).join('')}</div>
-      <button class="sehir-card-save" onclick="saveSehirCard(this,'${sehir}')">✓ Kaydet</button>`:'';
-    card.innerHTML=`<div class="sehir-card-header" onclick="toggleSehirCard(this)">
-      <div class="sehir-card-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>${sehir}</div>
-      <span class="sehir-card-expand">${ilceText}</span>
-      <button class="sehir-card-remove" onclick="event.stopPropagation();removeSehir('${sehir}')">×</button>
-    </div>${ilceHTML}`;
-    container.appendChild(card);
-    if(ilceler.length && secilenIlceler.length===0) card.classList.add('collapsed');
+  var container=document.getElementById('secili-sehirler-container');
+  while(container.firstChild)container.removeChild(container.firstChild);
+  var panelsWrap=document.getElementById('secili-ilce-panels');
+  while(panelsWrap.firstChild)panelsWrap.removeChild(panelsWrap.firstChild);
+
+  selectedSehirler.forEach(function(sehir){
+    var ilceler=ILCELER[sehir]||[];
+    var secilen=selectedIlceler[sehir]||[];
+
+    // Tag
+    var tag=document.createElement('button');
+    tag.type='button';
+    tag.className='loc-tag';
+    tag.textContent=sehir;
+
+    // İlçe count badge
+    if(ilceler.length){
+      var badge=document.createElement('span');
+      badge.className='loc-tag-ilce-count';
+      badge.textContent=secilen.length?secilen.length:'*';
+      badge.title=secilen.length?secilen.join(', '):'Tüm ilçeler';
+      tag.appendChild(badge);
+    }
+
+    // Remove button
+    var removeBtn=document.createElement('button');
+    removeBtn.type='button';
+    removeBtn.className='loc-tag-remove';
+    removeBtn.textContent='\u00d7';
+    removeBtn.addEventListener('click',function(e){
+      e.stopPropagation();
+      removeSehir(sehir);
+    });
+    tag.appendChild(removeBtn);
+
+    // Click to expand ilçe panel
+    if(ilceler.length){
+      tag.addEventListener('click',function(e){
+        if(e.target.className==='loc-tag-remove')return;
+        var panelId='ilce-panel-'+sehir.replace(/\s/g,'_');
+        var panel=document.getElementById(panelId);
+        if(panel){
+          panel.classList.toggle('open');
+          tag.classList.toggle('expanded',panel.classList.contains('open'));
+        }
+      });
+    }
+
+    container.appendChild(tag);
+
+    // İlçe inline panel (hidden by default)
+    if(ilceler.length){
+      var panel=document.createElement('div');
+      panel.className='loc-ilce-panel';
+      panel.id='ilce-panel-'+sehir.replace(/\s/g,'_');
+
+      var header=document.createElement('div');header.className='loc-ilce-panel-header';
+      var title=document.createElement('div');title.className='loc-ilce-panel-title';
+      title.textContent=sehir+' \u2014 \u0130l\u00e7e Se\u00e7';
+      header.appendChild(title);
+      var hint=document.createElement('span');hint.className='loc-ilce-panel-hint';
+      hint.textContent=secilen.length?secilen.length+' ilçe seçili':'opsiyonel';
+      header.appendChild(hint);
+      panel.appendChild(header);
+
+      var chips=document.createElement('div');chips.className='loc-ilce-chips';
+      ilceler.forEach(function(ilce){
+        var c=document.createElement('div');
+        c.className='ilce-chip'+(secilen.includes(ilce)?' selected':'');
+        c.textContent=ilce;
+        c.addEventListener('click',function(){
+          c.classList.toggle('selected');
+          if(!selectedIlceler[sehir])selectedIlceler[sehir]=[];
+          if(c.classList.contains('selected')){
+            if(!selectedIlceler[sehir].includes(ilce))selectedIlceler[sehir].push(ilce);
+          }else{
+            selectedIlceler[sehir]=selectedIlceler[sehir].filter(function(i){return i!==ilce;});
+          }
+          // Update badge
+          var sel=selectedIlceler[sehir]||[];
+          var b=tag.querySelector('.loc-tag-ilce-count');
+          if(b){b.textContent=sel.length?sel.length:'*';b.title=sel.length?sel.join(', '):'Tüm ilçeler';}
+          hint.textContent=sel.length?sel.length+' ilçe seçili':'opsiyonel';
+        });
+        chips.appendChild(c);
+      });
+      panel.appendChild(chips);
+      panelsWrap.appendChild(panel);
+    }
   });
 }
-function toggleSehirCard(headerEl){headerEl.closest('.sehir-card').classList.toggle('collapsed');}
-function saveSehirCard(btn,sehir){
-  const card=btn.closest('.sehir-card');
-  const secilenIlceler=selectedIlceler[sehir]||[];
-  card.querySelector('.sehir-card-expand').textContent=secilenIlceler.length?secilenIlceler.join(', '):'Tüm ilçeler';
-  card.classList.add('collapsed');
+
+function removeSehir(sehir){
+  selectedSehirler=selectedSehirler.filter(function(s){return s!==sehir;});
+  delete selectedIlceler[sehir];
+  renderQuickPicks();
+  renderSelectedCities();
 }
-function removeSehir(sehir){selectedSehirler=selectedSehirler.filter(s=>s!==sehir);delete selectedIlceler[sehir];renderSelectedCities();}
-function toggleIlce(sehir,ilce,el){
-  el.classList.toggle('selected');
-  if(!selectedIlceler[sehir])selectedIlceler[sehir]=[];
-  if(el.classList.contains('selected')){if(!selectedIlceler[sehir].includes(ilce))selectedIlceler[sehir].push(ilce);}
-  else{selectedIlceler[sehir]=selectedIlceler[sehir].filter(i=>i!==ilce);}
-}
+
+// Legacy stubs for backward compat
+function toggleSehirCard(){}
+function saveSehirCard(){}
+function toggleIlce(){}
 
 // ── POZİSYON MULTI ──
 function togglePozisyon(el){
@@ -2207,6 +2374,7 @@ async function loadProfile(){
     // Şehir/ilçe
     if(data.tercih_sehirler){selectedSehirler=data.tercih_sehirler.split(',').map(s=>s.trim()).filter(Boolean);}
     if(data.tercih_ilceler){try{selectedIlceler=JSON.parse(data.tercih_ilceler);}catch(e){}}
+    renderQuickPicks();
     renderSelectedCities();
     updateCompletion(data);
     updateCompletionStepBadges(data);
@@ -2739,6 +2907,8 @@ document.addEventListener('DOMContentLoaded',function(){
   // Dil satırları dinamik olarak renderDilRows() ile yönetiliyor
   // Lokasyon modal — overlay kapat
   document.getElementById('lokasyon-modal-overlay').addEventListener('click',function(e){if(e.target===this)closeLokasyonModal();});
+  // Popüler şehir quick-picks ilk render
+  renderQuickPicks();
   // Bildirim popup — overlay kapat
   document.getElementById('notif-popup-overlay').addEventListener('click',function(e){if(e.target===this)closeNotifPopup();});
 });
