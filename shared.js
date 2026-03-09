@@ -51,6 +51,9 @@
 
   var HEADER_HTML = [
     '<header class="site-header" id="site-header">',
+    '  <button class="hamburger" id="hamburger" onclick="HT.toggleMenu()" aria-label="Menü" aria-expanded="false">',
+    '    <span></span><span></span><span></span>',
+    '  </button>',
     '  <a class="header-logo" href="index.html">hello<span>talent</span></a>',
     '  <nav class="header-nav">',
     navLink('Adaylar İçin', 'aday.html', 'aday'),
@@ -78,29 +81,34 @@
     '      Giriş Yap',
     '      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>',
     '    </button>',
-    '    <div class="login-dropdown" id="login-dropdown">',
-    '      <div class="ld-block">',
-    '        <div class="ld-label">Adaylar İçin</div>',
-    '        <div class="ld-desc">Kariyer hedefini paylaş, doğru markalar seni bulsun.</div>',
-    '        <div class="ld-btns">',
-    '          <button class="ld-btn-outline" onclick="HT.go(\'giris.html?tab=aday\')">Giriş Yap</button>',
-    '          <button class="ld-btn-fill" onclick="HT.go(\'giris.html?tab=aday&mode=register\')">Üye Ol</button>',
+    '  </div>',
+    '</header>',
+    /* Login Modal — centered overlay */
+    '<div class="login-modal-overlay" id="login-modal-overlay" onclick="if(event.target===this)HT.toggleLogin()">',
+    '  <div class="login-modal" id="login-modal">',
+    '    <button class="login-modal-close" onclick="HT.toggleLogin()">&times;</button>',
+    '    <div class="login-modal-title">Giriş Yap</div>',
+    '    <div class="login-modal-sub">Devam etmek istediğin hesap türünü seç.</div>',
+    '    <div class="login-modal-cards">',
+    '      <div class="login-modal-card" onclick="HT.go(\'aday.html#kayit\')">',
+    '        <div class="lmc-icon" style="background:var(--verm-light);color:var(--verm);">',
+    '          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>',
     '        </div>',
+    '        <div class="lmc-title">Aday Girişi</div>',
+    '        <div class="lmc-desc">Profil oluştur, kariyer hedefini paylaş</div>',
+    '        <div class="lmc-arrow">&rarr;</div>',
     '      </div>',
-    '      <div class="ld-block">',
-    '        <div class="ld-label">İşverenler İçin</div>',
-    '        <div class="ld-desc">Retail aday havuzuna eriş, doğru profilleri bul.</div>',
-    '        <div class="ld-btns">',
-    '          <button class="ld-btn-outline" onclick="HT.go(\'giris.html?tab=ik\')">Giriş Yap</button>',
-    '          <button class="ld-btn-fill navy" onclick="HT.go(\'giris.html?tab=ik&mode=register\')">Üye Ol</button>',
+    '      <div class="login-modal-card" onclick="HT.go(\'giris.html?tab=ik\')">',
+    '        <div class="lmc-icon" style="background:var(--navy-light);color:var(--navy);">',
+    '          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>',
     '        </div>',
+    '        <div class="lmc-title">İK / İşveren Girişi</div>',
+    '        <div class="lmc-desc">Aday havuzuna eriş, demo talep et</div>',
+    '        <div class="lmc-arrow">&rarr;</div>',
     '      </div>',
     '    </div>',
     '  </div>',
-    '  <button class="hamburger" id="hamburger" onclick="HT.toggleMenu()" aria-label="Menü" aria-expanded="false">',
-    '    <span></span><span></span><span></span>',
-    '  </button>',
-    '</header>',
+    '</div>',
     /* Mobile menu */
     '<div class="mobile-menu" id="mobile-menu">',
     mobileLink('Adaylar İçin',    'aday.html',          'aday'),
@@ -113,7 +121,7 @@
     mobileLink('Hakkımızda',      'index.html#about',   'about'),
     '  <div class="mobile-nav-divider"></div>',
     '  <div class="mobile-cta-row">',
-    '    <button class="mobile-cta-btn" style="background:white;color:var(--navy);border:1.5px solid var(--navy);" onclick="HT.go(\'giris.html?tab=aday\')">Aday Girişi</button>',
+    '    <button class="mobile-cta-btn" style="background:white;color:var(--navy);border:1.5px solid var(--navy);" onclick="HT.go(\'aday.html#kayit\')">Aday Girişi</button>',
     '    <button class="mobile-cta-btn" style="background:var(--verm);color:white;" onclick="HT.go(\'giris.html?tab=ik\')">İK Girişi</button>',
     '  </div>',
     '</div>',
@@ -180,14 +188,16 @@
 
   /* ── EVENT LISTENERS ── */
   function bindEvents() {
-    /* Login dropdown — dışarı tıklayınca kapat */
-    document.addEventListener('click', function (e) {
-      var dd = document.getElementById('login-dropdown');
-      var btn = document.getElementById('login-btn');
-      if (dd && dd.classList.contains('open')) {
-        if (!dd.contains(e.target) && btn && !btn.contains(e.target)) {
-          dd.classList.remove('open');
-          btn.setAttribute('aria-expanded', 'false');
+    /* ESC ile modal kapat */
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') {
+        var overlay = document.getElementById('login-modal-overlay');
+        if (overlay && overlay.classList.contains('open')) {
+          window.HT.toggleLogin();
+        }
+        var menu = document.getElementById('mobile-menu');
+        if (menu && menu.classList.contains('open')) {
+          window.HT.toggleMenu();
         }
       }
     });
@@ -198,11 +208,12 @@
     go: function (url) { window.location.href = url; },
 
     toggleLogin: function () {
-      var dd = document.getElementById('login-dropdown');
+      var overlay = document.getElementById('login-modal-overlay');
       var btn = document.getElementById('login-btn');
-      if (!dd) return;
-      var open = dd.classList.toggle('open');
+      if (!overlay) return;
+      var open = overlay.classList.toggle('open');
       if (btn) btn.setAttribute('aria-expanded', String(open));
+      document.body.style.overflow = open ? 'hidden' : '';
     },
 
     toggleMenu: function () {
