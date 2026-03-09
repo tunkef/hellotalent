@@ -309,7 +309,6 @@ body {
   .hero-inner { grid-template-columns: 1fr !important; gap: 32px !important; }
   .hero-title { font-size: 36px !important; }
   .hero-sub { font-size: 15px !important; }
-  .hero-outer { padding: 56px 24px 48px !important; }
   /* Section containers */
   .section { padding: 56px 24px !important; }
   .section-title { font-size: 28px !important; }
@@ -414,7 +413,6 @@ body {
   .footer-tagline { font-size: 12px; }
   .footer-copyright, .footer-legal a { font-size: 11px; }
   /* Hero tighter */
-  .hero-outer { padding: 40px 16px !important; }
   .hero-title { font-size: 28px !important; letter-spacing: -1px !important; }
   /* Sections tighter */
   .section { padding: 40px 16px !important; }
