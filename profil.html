@@ -175,11 +175,43 @@
   .tag-input-wrap.navy:focus-within{border-color:var(--navy);}
 
   /* POZİSYON MULTI-SELECT */
-  .pozisyon-grid{display:flex;flex-wrap:wrap;gap:8px;}
-  .poz-chip{display:inline-flex;align-items:center;gap:5px;padding:8px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.15s;background:white;color:var(--text);user-select:none;}
+  .pozisyon-grid{display:flex;flex-wrap:wrap;gap:6px;}
+  .poz-chip{display:inline-flex;align-items:center;gap:4px;padding:5px 11px;border:1.5px solid var(--border);border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;transition:all 0.15s;background:white;color:var(--text);user-select:none;}
   .poz-chip:hover{border-color:var(--verm);color:var(--verm);}
   .poz-chip.selected{background:var(--verm);border-color:var(--verm);color:white;}
   .poz-chip.selected::before{content:'✓ ';}
+
+  /* ÇALIŞMA DURUMU */
+  .work-status-toggle{display:flex;gap:8px;margin-bottom:16px;}
+  .ws-opt{flex:1;padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;text-align:center;cursor:pointer;font-size:13px;font-weight:600;color:var(--text);transition:all 0.15s;background:white;}
+  .ws-opt:hover{border-color:var(--navy);}
+  .ws-opt.active{border-color:var(--navy);background:var(--navy-light);color:var(--navy);}
+  .ws-conditional{display:none;animation:fadeIn 0.2s ease;}
+  .ws-conditional.visible{display:block;}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(-4px);}to{opacity:1;transform:translateY(0);}}
+  .ayrilma-pills{display:flex;flex-wrap:wrap;gap:6px;}
+  .ayrilma-pill{padding:6px 12px;border:1.5px solid var(--border);border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;transition:all 0.15s;background:white;color:var(--text);}
+  .ayrilma-pill:hover{border-color:var(--navy);}
+  .ayrilma-pill.selected{background:var(--navy);border-color:var(--navy);color:white;}
+
+  /* CHECKBOX ÇALIŞMA ŞEKLİ */
+  .check-list{display:flex;flex-wrap:wrap;gap:8px;}
+  .check-item{display:flex;align-items:center;gap:6px;padding:7px 14px;border:1.5px solid var(--border);border-radius:10px;cursor:pointer;transition:all 0.15s;background:white;font-size:13px;font-weight:600;color:var(--text);user-select:none;}
+  .check-item:hover{border-color:var(--navy);}
+  .check-item.checked{border-color:var(--navy);background:var(--navy-light);color:var(--navy);}
+  .check-item .ci-box{width:16px;height:16px;border:1.5px solid var(--border);border-radius:4px;display:flex;align-items:center;justify-content:center;transition:all 0.15s;flex-shrink:0;}
+  .check-item.checked .ci-box{background:var(--navy);border-color:var(--navy);}
+  .check-item.checked .ci-box::after{content:'✓';color:white;font-size:10px;font-weight:800;}
+
+  /* PROFİL VIEW/EDIT MODE */
+  .profile-view-mode .fields-grid input,.profile-view-mode .fields-grid select{pointer-events:none;background:var(--gray);opacity:0.9;}
+  .profile-view-mode .tag-input-wrap{pointer-events:none;opacity:0.9;}
+  .profile-view-mode .poz-chip,.profile-view-mode .chip,.profile-view-mode .option-card,.profile-view-mode .check-item,.profile-view-mode .ws-opt,.profile-view-mode .ayrilma-pill,.profile-view-mode .loc-quick-chip,.profile-view-mode .loc-tag,.profile-view-mode .btn-add-sehir,.profile-view-mode .btn-add-dil{pointer-events:none;opacity:0.85;}
+  .profile-view-mode .btn-save{display:none!important;}
+  .profile-view-mode .cv-hero{pointer-events:none;opacity:0.85;}
+  .btn-edit-profile{display:none;width:100%;padding:12px;background:var(--navy);border:none;border-radius:10px;color:white;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all 0.2s;margin-bottom:16px;gap:8px;align-items:center;justify-content:center;}
+  .btn-edit-profile:hover{background:#162248;}
+  .profile-view-mode .btn-edit-profile{display:flex;}
 
   /* CHİP */
   .chip-group{display:flex;flex-wrap:wrap;gap:8px;}
@@ -1125,6 +1157,11 @@
 
 <main class="main panel" id="main-dashboard" data-panel="profil">
 
+  <button class="btn-edit-profile" id="btn-edit-profile" onclick="toggleEditMode()">
+    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M11.5 1.5l3 3L5 14H2v-3L11.5 1.5z"/></svg>
+    <span id="edit-mode-text">Profili Düzenle</span>
+  </button>
+
   <!-- Tamamlanma -->
   <div class="completion-card">
     <div class="completion-circle">
@@ -1248,29 +1285,75 @@
       Kariyer Bilgileri
     </div>
     <div class="fields-grid">
-      <!-- Kariyer Rotası Banner (kariyer.html'den gelince gösterilir) -->
+      <!-- Kariyer Rotası Banner -->
       <div id="career-goal-banner" style="display:none;align-items:flex-start;gap:14px;background:linear-gradient(135deg,#1E2D5E,#162248);border-radius:14px;padding:18px 20px;margin-bottom:4px;">
         <span style="font-size:22px;flex-shrink:0;">🎯</span>
         <div>
           <p style="font-size:11px;font-weight:800;letter-spacing:1.5px;color:rgba(255,255,255,0.4);text-transform:uppercase;margin-bottom:4px;">Kariyer Rotası Hedefin</p>
           <p style="font-size:15px;font-weight:700;color:white;margin-bottom:4px;" class="cgb-goal">Store Manager</p>
-          <p style="font-size:12px;color:rgba(255,255,255,0.5);line-height:1.5;">Hedefin kaydedildi ✓ — Profili tamamla, CV'ni ekle. Seni arayan markalar 48 saat içinde ulaşsın.</p>
+          <p style="font-size:12px;color:rgba(255,255,255,0.5);line-height:1.5;">Hedefin kaydedildi ✓ — Profili tamamla, CV'ni ekle.</p>
+        </div>
+      </div>
+
+      <!-- ÇALIŞMA DURUMU -->
+      <div class="field field-full">
+        <label>Şu An Çalışıyor Musun?</label>
+        <div class="work-status-toggle" id="work-status-toggle">
+          <div class="ws-opt" data-val="Evet" onclick="setWorkStatus('Evet',this)">Evet, çalışıyorum</div>
+          <div class="ws-opt" data-val="Hayır" onclick="setWorkStatus('Hayır',this)">Hayır, çalışmıyorum</div>
+        </div>
+        <!-- Çalışıyorsa -->
+        <div class="ws-conditional" id="ws-calisiyor">
+          <div class="fields-grid" style="margin-top:0;">
+            <div class="field">
+              <label>Çalıştığın Şirket / Marka</label>
+              <input type="text" id="f-mevcut-sirket" placeholder="Örn: Zara, Nike, Apple...">
+            </div>
+            <div class="field">
+              <label>Mevcut Pozisyon</label>
+              <input type="text" id="f-mevcut-pozisyon" placeholder="Örn: Satış Danışmanı">
+            </div>
+          </div>
+        </div>
+        <!-- Çalışmıyorsa -->
+        <div class="ws-conditional" id="ws-calismiyorum">
+          <div class="fields-grid" style="margin-top:0;">
+            <div class="field">
+              <label>Son Çalıştığın Şirket / Marka</label>
+              <input type="text" id="f-son-sirket" placeholder="Örn: H&M, Boyner...">
+            </div>
+            <div class="field">
+              <label>Son Pozisyon</label>
+              <input type="text" id="f-son-pozisyon" placeholder="Örn: Mağaza Müdürü">
+            </div>
+          </div>
+          <div style="margin-top:12px;">
+            <label style="display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;color:var(--muted);margin-bottom:8px;">Ayrılma Nedeni</label>
+            <div class="ayrilma-pills" id="ayrilma-group">
+              <div class="ayrilma-pill" onclick="selectAyrilma(this)" data-val="İstifa">İstifa</div>
+              <div class="ayrilma-pill" onclick="selectAyrilma(this)" data-val="Kariyer Geçişi">Kariyer Geçişi</div>
+              <div class="ayrilma-pill" onclick="selectAyrilma(this)" data-val="İşten Çıkarılma">İşten Çıkarılma</div>
+              <div class="ayrilma-pill" onclick="selectAyrilma(this)" data-val="Karşılıklı Fesih">Karşılıklı Fesih</div>
+              <div class="ayrilma-pill" onclick="selectAyrilma(this)" data-val="Sözleşme Bitimi">Sözleşme Bitimi</div>
+              <div class="ayrilma-pill" onclick="selectAyrilma(this)" data-val="Belirtmek İstemiyorum">Belirtmek İstemiyorum</div>
+            </div>
+          </div>
         </div>
       </div>
 
       <div class="field field-full">
-        <label>Hedef Pozisyon <span style="color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0;">(birden fazla seçebilirsin)</span></label>
+        <label>Hedef Pozisyon <span style="color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0;">(birden fazla)</span></label>
         <div class="pozisyon-grid" id="pozisyon-grid">
           <div class="poz-chip" onclick="togglePozisyon(this)" data-val="Satış Danışmanı">Satış Danışmanı</div>
-          <div class="poz-chip" onclick="togglePozisyon(this)" data-val="Kıdemli Satış Danışmanı">Kıdemli Satış Danışmanı</div>
-          <div class="poz-chip" onclick="togglePozisyon(this)" data-val="Departman Müdürü">Departman Müdürü</div>
-          <div class="poz-chip" onclick="togglePozisyon(this)" data-val="Mağaza Müdürü">Mağaza Müdürü</div>
-          <div class="poz-chip" onclick="togglePozisyon(this)" data-val="Operasyon Müdürü">Operasyon Müdürü</div>
-          <div class="poz-chip" onclick="togglePozisyon(this)" data-val="Bölge Müdürü">Bölge Müdürü</div>
-          <div class="poz-chip" onclick="togglePozisyon(this)" data-val="Visual Merchandiser">Visual Merchandiser</div>
-          <div class="poz-chip" onclick="togglePozisyon(this)" data-val="İnsan Kaynakları">İnsan Kaynakları</div>
-          <div class="poz-chip" onclick="togglePozisyon(this)" data-val="Eğitim Uzmanı">Eğitim Uzmanı</div>
-          <div class="poz-chip" onclick="togglePozisyon(this)" data-val="Müşteri Hizmetleri">Müşteri Hizmetleri</div>
+          <div class="poz-chip" onclick="togglePozisyon(this)" data-val="Kıdemli Satış D.">Kıdemli Satış D.</div>
+          <div class="poz-chip" onclick="togglePozisyon(this)" data-val="Departman Müdürü">Departman Md.</div>
+          <div class="poz-chip" onclick="togglePozisyon(this)" data-val="Mağaza Müdürü">Mağaza Md.</div>
+          <div class="poz-chip" onclick="togglePozisyon(this)" data-val="Operasyon Müdürü">Operasyon Md.</div>
+          <div class="poz-chip" onclick="togglePozisyon(this)" data-val="Bölge Müdürü">Bölge Md.</div>
+          <div class="poz-chip" onclick="togglePozisyon(this)" data-val="Visual Merchandiser">VM</div>
+          <div class="poz-chip" onclick="togglePozisyon(this)" data-val="İnsan Kaynakları">İK</div>
+          <div class="poz-chip" onclick="togglePozisyon(this)" data-val="Eğitim Uzmanı">Eğitim</div>
+          <div class="poz-chip" onclick="togglePozisyon(this)" data-val="Müşteri Hizmetleri">Müşteri Hiz.</div>
           <div class="poz-chip" onclick="togglePozisyon(this)" data-val="Depo / Lojistik">Depo / Lojistik</div>
           <div class="poz-chip" onclick="togglePozisyon(this)" data-val="Diğer">Diğer</div>
         </div>
@@ -1297,15 +1380,6 @@
           <input type="text" id="marka-input" class="tag-input" placeholder="Marka yaz, Enter'a bas...">
         </div>
         <p class="tag-hint">Geçmişte veya hâlâ çalıştığın markalar</p>
-      </div>
-      <div class="field field-full">
-        <label>Ne Zaman Müsaitim</label>
-        <div class="chip-group" id="musaitlik-group">
-          <div class="chip" onclick="selectSingleChip(this,'musaitlik-group')" data-val="Hemen başlayabilirim">⚡ Hemen</div>
-          <div class="chip" onclick="selectSingleChip(this,'musaitlik-group')" data-val="1 ay içinde">📅 1 ay içinde</div>
-          <div class="chip" onclick="selectSingleChip(this,'musaitlik-group')" data-val="3 ay içinde">🗓 3 ay içinde</div>
-          <div class="chip" onclick="selectSingleChip(this,'musaitlik-group')" data-val="Sadece araştırıyorum">🔍 Sadece bakıyorum</div>
-        </div>
       </div>
     </div>
   </div>
@@ -1359,34 +1433,48 @@
       Tercihlerim
     </div>
     <p class="section-hint">Bu bilgiler İK ekiplerine gösterilmez — sadece sana uygun eşleştirme için kullanılır.</p>
+
+    <div style="margin-bottom:20px;">
+      <label style="display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;color:var(--muted);margin-bottom:8px;">Ne Zaman Başlayabilirim</label>
+      <div class="chip-group" id="musaitlik-group">
+        <div class="chip" onclick="selectSingleChip(this,'musaitlik-group')" data-val="Hemen başlayabilirim">Hemen</div>
+        <div class="chip" onclick="selectSingleChip(this,'musaitlik-group')" data-val="1 ay içinde">1 ay içinde</div>
+        <div class="chip" onclick="selectSingleChip(this,'musaitlik-group')" data-val="3 ay içinde">3 ay içinde</div>
+        <div class="chip" onclick="selectSingleChip(this,'musaitlik-group')" data-val="Sadece araştırıyorum">Sadece bakıyorum</div>
+      </div>
+    </div>
+
+    <div style="margin-bottom:20px;">
+      <label style="display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;color:var(--muted);margin-bottom:8px;">Çalışma Şekli <span style="font-weight:400;font-size:10px;">(birden fazla seçebilirsin)</span></label>
+      <div class="check-list" id="calisma-tipi-group">
+        <div class="check-item" onclick="toggleCheckItem(this)" data-val="Tam Zamanlı"><span class="ci-box"></span>Tam Zamanlı</div>
+        <div class="check-item" onclick="toggleCheckItem(this)" data-val="Yarı Zamanlı"><span class="ci-box"></span>Yarı Zamanlı</div>
+        <div class="check-item" onclick="toggleCheckItem(this)" data-val="Dönemsel"><span class="ci-box"></span>Dönemsel / Sezonluk</div>
+      </div>
+    </div>
+
+    <div style="margin-bottom:20px;">
+      <label style="display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;color:var(--muted);margin-bottom:8px;">Mağaza Segmenti <span style="font-weight:400;font-size:10px;">(birden fazla seçebilirsin)</span></label>
+      <div class="chip-group" id="segment-group">
+        <div class="chip" onclick="toggleMultiChip(this)" data-val="Lüks">Lüks</div>
+        <div class="chip" onclick="toggleMultiChip(this)" data-val="Premium">Premium</div>
+        <div class="chip" onclick="toggleMultiChip(this)" data-val="Orta Segment">Orta Segment</div>
+        <div class="chip" onclick="toggleMultiChip(this)" data-val="Fast Fashion">Fast Fashion</div>
+        <div class="chip" onclick="toggleMultiChip(this)" data-val="Spor">Spor</div>
+        <div class="chip" onclick="toggleMultiChip(this)" data-val="Teknoloji">Teknoloji</div>
+        <div class="chip" onclick="toggleMultiChip(this)" data-val="Kozmetik & Güzellik">Kozmetik</div>
+        <div class="chip" onclick="toggleMultiChip(this)" data-val="Otomotiv">Otomotiv</div>
+        <div class="chip" onclick="toggleMultiChip(this)" data-val="Gıda & Market">Gıda & Market</div>
+        <div class="chip" onclick="toggleMultiChip(this)" data-val="Ev & Yaşam">Ev & Yaşam</div>
+      </div>
+    </div>
+
     <div style="margin-bottom:20px;">
       <label style="display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;color:var(--muted);margin-bottom:8px;">İlgilendiğim Markalar</label>
       <div class="tag-input-wrap navy" id="tercih-marka-wrap" onclick="document.getElementById('tercih-marka-input').focus()">
-        <input type="text" id="tercih-marka-input" class="tag-input" placeholder="Çalışmak istediğin markaları ekle, Enter'a bas...">
+        <input type="text" id="tercih-marka-input" class="tag-input" placeholder="Çalışmak istediğin markaları ekle...">
       </div>
       <p class="tag-hint">Hayalindeki markalar — Chanel, Apple, Zara, Hermès...</p>
-    </div>
-    <div style="margin-bottom:20px;">
-      <label style="display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;color:var(--muted);margin-bottom:8px;">Çalışma Şekli</label>
-      <div class="option-cards">
-        <div class="option-card" onclick="selectOptionCard(this,'calisma-tipi')" data-val="Tam Zamanlı"><div class="oc-icon">🏢</div><div class="oc-label">Tam Zamanlı</div><div class="oc-sub">Full-time</div></div>
-        <div class="option-card" onclick="selectOptionCard(this,'calisma-tipi')" data-val="Yarı Zamanlı"><div class="oc-icon">⏰</div><div class="oc-label">Yarı Zamanlı</div><div class="oc-sub">Part-time</div></div>
-        <div class="option-card" onclick="selectOptionCard(this,'calisma-tipi')" data-val="Dönemsel"><div class="oc-icon">📅</div><div class="oc-label">Dönemsel</div><div class="oc-sub">Sezonluk / Proje</div></div>
-        <div class="option-card" onclick="selectOptionCard(this,'calisma-tipi')" data-val="Her İkisi"><div class="oc-icon">🔄</div><div class="oc-label">Her İkisi</div><div class="oc-sub">Fark etmez</div></div>
-      </div>
-    </div>
-    <div>
-      <label style="display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;color:var(--muted);margin-bottom:8px;">Mağaza Segmenti</label>
-      <div class="chip-group" id="segment-group">
-        <div class="chip" onclick="toggleMultiChip(this)" data-val="Lüks">💎 Lüks</div>
-        <div class="chip" onclick="toggleMultiChip(this)" data-val="Premium">✨ Premium</div>
-        <div class="chip" onclick="toggleMultiChip(this)" data-val="Orta Segment">🛍 Orta Segment</div>
-        <div class="chip" onclick="toggleMultiChip(this)" data-val="Fast Fashion">⚡ Fast Fashion</div>
-        <div class="chip" onclick="toggleMultiChip(this)" data-val="Spor">🏃 Spor</div>
-        <div class="chip" onclick="toggleMultiChip(this)" data-val="Teknoloji">💻 Teknoloji</div>
-        <div class="chip" onclick="toggleMultiChip(this)" data-val="Gıda & Market">🛒 Gıda & Market</div>
-        <div class="chip" onclick="toggleMultiChip(this)" data-val="Ev & Yaşam">🏠 Ev & Yaşam</div>
-      </div>
     </div>
   </div>
 
@@ -2028,7 +2116,7 @@ function updateStatusUI(isActive){
 }
 
 // ── POPÜLER ŞEHİRLER ──
-var POPULER_SEHIRLER=['İstanbul','Ankara','İzmir','Antalya','Bursa','Kocaeli','Adana','Gaziantep'];
+var POPULER_SEHIRLER=['İstanbul','Ankara','İzmir','Antalya','Bursa','Muğla','Kocaeli','Adana','Gaziantep'];
 
 function renderQuickPicks(){
   var wrap=document.getElementById('loc-quick-picks');
@@ -2248,6 +2336,43 @@ function selectSingleChip(el,groupId){
 function toggleMultiChip(el){el.classList.toggle('selected');segmentler=Array.from(document.querySelectorAll('#segment-group .chip.selected')).map(c=>c.dataset.val);}
 function selectOptionCard(el,group){el.closest('.option-cards').querySelectorAll('.option-card').forEach(c=>c.classList.remove('selected'));el.classList.add('selected');calismaTipi=el.dataset.val;}
 
+// ── WORK STATUS ──
+var calismaDurumu='',ayrilmaNedeni='';
+function setWorkStatus(val,el){
+  calismaDurumu=val;
+  document.querySelectorAll('#work-status-toggle .ws-opt').forEach(function(o){o.classList.remove('active');});
+  el.classList.add('active');
+  var calisiyor=document.getElementById('ws-calisiyor');
+  var calismiyorum=document.getElementById('ws-calismiyorum');
+  if(val==='Evet'){calisiyor.classList.add('visible');calismiyorum.classList.remove('visible');}
+  else{calisiyor.classList.remove('visible');calismiyorum.classList.add('visible');}
+}
+function selectAyrilma(el){
+  document.querySelectorAll('#ayrilma-group .ayrilma-pill').forEach(function(p){p.classList.remove('selected');});
+  el.classList.add('selected');
+  ayrilmaNedeni=el.dataset.val;
+}
+function toggleCheckItem(el){
+  el.classList.toggle('checked');
+  calismaTipiList=Array.from(document.querySelectorAll('#calisma-tipi-group .check-item.checked')).map(function(c){return c.dataset.val;});
+}
+var calismaTipiList=[];
+
+// ── PROFİL GÖRÜNTÜLEME / DÜZENLEME MODU ──
+var isEditMode=false;
+function toggleEditMode(){
+  isEditMode=!isEditMode;
+  var panel=document.getElementById('main-dashboard');
+  var btnText=document.getElementById('edit-mode-text');
+  if(isEditMode){
+    panel.classList.remove('profile-view-mode');
+    btnText.textContent='Düzenlemeyi Kapat';
+  }else{
+    panel.classList.add('profile-view-mode');
+    btnText.textContent='Profili Düzenle';
+  }
+}
+
 // ── BİLDİRİM SİSTEMİ ──
 const MOCK_NOTIFS=[
   {company:'Mango',color:'#E23545',emoji:'👀',action:'CV\'ni görüntüledi',detail:'İstanbul · Mağaza Müdürü',time:'2 saat önce',desc:'Mango İstanbul İK ekibi CV\'ni inceledi ve profilinle ilgilenebilir.',unread:true},
@@ -2368,7 +2493,19 @@ async function loadProfile(){
     }
     // Müsaitlik, segment, engel
     if(data.musaitlik){musaitlik=data.musaitlik;document.querySelectorAll('#musaitlik-group .chip').forEach(c=>{if(c.dataset.val===musaitlik)c.classList.add('selected');});}
-    if(data.calisma_tipi){calismaTipi=data.calisma_tipi;document.querySelectorAll('.option-card').forEach(c=>{if(c.dataset.val===calismaTipi)c.classList.add('selected');});}
+    if(data.calisma_tipi){
+      calismaTipi=data.calisma_tipi;
+      calismaTipiList=data.calisma_tipi.split(',').map(function(s){return s.trim();}).filter(Boolean);
+      document.querySelectorAll('#calisma-tipi-group .check-item').forEach(function(c){if(calismaTipiList.includes(c.dataset.val))c.classList.add('checked');});
+      document.querySelectorAll('.option-card').forEach(c=>{if(c.dataset.val===calismaTipi)c.classList.add('selected');});
+    }
+    if(data.calisma_durumu){
+      calismaDurumu=data.calisma_durumu;
+      document.querySelectorAll('#work-status-toggle .ws-opt').forEach(function(o){if(o.dataset.val===calismaDurumu)o.classList.add('active');});
+      if(calismaDurumu==='Evet'){document.getElementById('ws-calisiyor').classList.add('visible');if(data.mevcut_sirket)document.getElementById('f-mevcut-sirket').value=data.mevcut_sirket;if(data.mevcut_pozisyon)document.getElementById('f-mevcut-pozisyon').value=data.mevcut_pozisyon;}
+      else if(calismaDurumu==='Hayır'){document.getElementById('ws-calismiyorum').classList.add('visible');if(data.mevcut_sirket)document.getElementById('f-son-sirket').value=data.mevcut_sirket;if(data.mevcut_pozisyon)document.getElementById('f-son-pozisyon').value=data.mevcut_pozisyon;}
+    }
+    if(data.ayrilma_nedeni){ayrilmaNedeni=data.ayrilma_nedeni;document.querySelectorAll('#ayrilma-group .ayrilma-pill').forEach(function(p){if(p.dataset.val===ayrilmaNedeni)p.classList.add('selected');});}
     if(data.segmentler){segmentler=data.segmentler.split(',').map(s=>s.trim()).filter(Boolean);document.querySelectorAll('#segment-group .chip').forEach(c=>{if(segmentler.includes(c.dataset.val))c.classList.add('selected');});}
     if(data.engel_durumu){engelDurumu=data.engel_durumu;document.querySelectorAll('#engel-group .chip').forEach(c=>{if(c.dataset.val===engelDurumu)c.classList.add('selected');});}
     // Şehir/ilçe
@@ -2379,6 +2516,9 @@ async function loadProfile(){
     updateCompletion(data);
     updateCompletionStepBadges(data);
     syncDashboard(data);
+    // Profil yüklendiyse görüntüleme modunda başla
+    document.getElementById('main-dashboard').classList.add('profile-view-mode');
+    isEditMode=false;
   }else{
     const initials=fallbackName.substring(0,2).toUpperCase();
     setAvatarInitials(initials);
@@ -2828,7 +2968,11 @@ async function saveProfile(){
     linkedin:document.getElementById('f-linkedin').value.trim(),maas_beklenti:document.getElementById('f-maas').value,
     diller:JSON.stringify(getDillerJSON()),
     tercih_markalar:tercihMarkaList.join(', '),
-    calisma_tipi:calismaTipi,musaitlik:musaitlik,segmentler:segmentler.join(', '),
+    calisma_tipi:calismaTipiList.length?calismaTipiList.join(', '):calismaTipi,musaitlik:musaitlik,segmentler:segmentler.join(', '),
+    calisma_durumu:calismaDurumu,
+    mevcut_sirket:(calismaDurumu==='Evet'?(document.getElementById('f-mevcut-sirket').value.trim()):(document.getElementById('f-son-sirket').value.trim())),
+    mevcut_pozisyon:(calismaDurumu==='Evet'?(document.getElementById('f-mevcut-pozisyon').value.trim()):(document.getElementById('f-son-pozisyon').value.trim())),
+    ayrilma_nedeni:ayrilmaNedeni,
     tercih_sehirler:selectedSehirler.join(', '),tercih_ilceler:JSON.stringify(selectedIlceler),
     engel_durumu:engelDurumu,is_active:document.getElementById('toggle-active').checked,
     egitim_seviye:document.getElementById('f-egitim-seviye')?document.getElementById('f-egitim-seviye').value:'',
