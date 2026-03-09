@@ -295,7 +295,7 @@ body {
 @media (max-width: 900px) {
   .header-nav { display: none !important; }
   .hamburger { display: flex !important; }
-  .site-header { padding: 0 16px; justify-content: space-between; position: relative; }
+  .site-header { padding: 0 16px; justify-content: space-between; }
   .header-logo { 
     position: absolute; left: 50%; transform: translateX(-50%);
     font-size: 18px; flex: none; text-align: center;
