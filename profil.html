@@ -458,17 +458,21 @@
   .dil-row select.dil-select{flex:1;min-width:100px;}
 
   /* ENGEL DETAILS */
-  .engel-details{border:1.5px solid var(--border);border-radius:10px;padding:10px 14px;background:var(--gray);}
+  .engel-details{border:1.5px solid var(--border);border-radius:10px;padding:10px 14px;background:var(--gray);max-width:420px;}
   .engel-details summary{display:flex;align-items:center;justify-content:space-between;cursor:pointer;list-style:none;user-select:none;}
   .engel-details summary::-webkit-details-marker{display:none;}
   .engel-details[open] .engel-arrow{transform:rotate(180deg);}
   .engel-arrow{transition:transform 0.2s;flex-shrink:0;}
+  /* ASKERLIK */
+  .askerlik-wrap{display:none;max-width:420px;}
+  .askerlik-wrap.visible{display:block;}
+  .card-view-mode .askerlik-wrap .chip{pointer-events:none;opacity:0.85;}
 
   /* DİL SATIRI */
-  .dil-row{display:flex;align-items:center;gap:8px;background:var(--gray);border:1.5px solid var(--border);border-radius:10px;padding:8px 10px;}
-  .dil-row input{flex:1;border:none;background:transparent;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;color:var(--text);outline:none;}
+  .dil-row{display:flex;align-items:center;gap:8px;background:var(--gray);border:1.5px solid var(--border);border-radius:10px;padding:6px 10px;max-width:420px;}
+  .dil-row input{flex:1;border:none;background:transparent;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;color:var(--text);outline:none;min-width:0;padding:2px 4px;}
   .dil-row input::placeholder{color:var(--muted);}
-  .dil-row select{border:1px solid var(--border);border-radius:7px;padding:4px 8px;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;background:white;cursor:pointer;outline:none;color:var(--text);}
+  .dil-row select{border:1px solid var(--border);border-radius:7px;padding:3px 6px;font-family:'Plus Jakarta Sans',sans-serif;font-size:11px;background:white;cursor:pointer;outline:none;color:var(--text);flex-shrink:0;}
   .dil-row-del{background:none;border:none;cursor:pointer;color:var(--muted);font-size:16px;line-height:1;padding:2px 4px;border-radius:4px;transition:color 0.15s;}
   .dil-row-del:hover{color:var(--red);}
   .card-view-mode .dil-row-del{display:none;}
@@ -1295,7 +1299,7 @@
       <div class="field"><label>E-posta</label><input type="email" id="f-email" disabled style="background:#F7F6F4;color:var(--muted);" autocomplete="email"></div>
       <div class="field"><label>LinkedIn Profili</label><input type="url" id="f-linkedin" placeholder="linkedin.com/in/adsoyadın" autocomplete="url"></div>
       <div class="field"><label>Cinsiyet</label>
-        <select id="f-cinsiyet">
+        <select id="f-cinsiyet" onchange="toggleAskerlik()">
           <option value="">Seç...</option>
           <option>Kadın</option><option>Erkek</option><option>Belirtmek istemiyorum</option>
         </select>
@@ -1306,11 +1310,34 @@
           <option>18–24</option><option>25–30</option><option>31–35</option><option>36–40</option><option>40+</option>
         </select>
       </div>
+      <div class="field"><label>İl</label>
+        <select id="f-adres-il" onchange="populateAdresIlce()">
+          <option value="">Seç...</option>
+        </select>
+      </div>
+      <div class="field"><label>İlçe</label>
+        <select id="f-adres-ilce">
+          <option value="">Önce il seç...</option>
+        </select>
+      </div>
+
+      <!-- ASKERLİK DURUMU — sadece erkekler -->
+      <div class="field field-full askerlik-wrap" id="askerlik-wrap">
+        <label>Askerlik Durumu</label>
+        <div class="chip-group" id="askerlik-group" style="max-width:420px;">
+          <div class="chip" onclick="selectSingleChip(this,'askerlik-group')" data-val="Yapıldı">Yapıldı</div>
+          <div class="chip" onclick="selectSingleChip(this,'askerlik-group')" data-val="Muaf">Muaf</div>
+          <div class="chip" onclick="selectSingleChip(this,'askerlik-group')" data-val="Tecilli">Tecilli</div>
+          <div class="chip" onclick="selectSingleChip(this,'askerlik-group')" data-val="Yapılmadı">Yapılmadı</div>
+        </div>
+      </div>
+
+      <!-- DİL BİLGİSİ -->
       <div class="field field-full">
         <label>Dil Bilgisi</label>
-        <div id="dil-list-container" style="display:flex;flex-direction:column;gap:8px;margin-bottom:8px;"></div>
-        <button type="button" class="btn-add-dil" onclick="addDilRow()" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;background:white;border:1.5px dashed var(--border);border-radius:8px;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;transition:all 0.15s;" onmouseover="this.style.borderColor='var(--navy)';this.style.color='var(--navy)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        <div id="dil-list-container" style="display:flex;flex-direction:column;gap:6px;margin-bottom:6px;"></div>
+        <button type="button" class="btn-add-dil" onclick="addDilRow()" style="display:inline-flex;align-items:center;gap:6px;padding:5px 12px;background:white;border:1.5px dashed var(--border);border-radius:8px;font-family:'Plus Jakarta Sans',sans-serif;font-size:11px;font-weight:600;color:var(--muted);cursor:pointer;transition:all 0.15s;" onmouseover="this.style.borderColor='var(--navy)';this.style.color='var(--navy)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           Dil Ekle
         </button>
         <p class="tag-hint">Her dil için seviye belirle</p>
@@ -2370,6 +2397,7 @@ function selectSingleChip(el,groupId){
   el.classList.add('selected');
   if(groupId==='engel-group')engelDurumu=el.dataset.val;
   if(groupId==='musaitlik-group')musaitlik=el.dataset.val;
+  if(groupId==='askerlik-group')askerlikDurumu=el.dataset.val;
 }
 function toggleMultiChip(el){el.classList.toggle('selected');segmentler=Array.from(document.querySelectorAll('#segment-group .chip.selected')).map(c=>c.dataset.val);}
 function selectOptionCard(el,group){el.closest('.option-cards').querySelectorAll('.option-card').forEach(c=>c.classList.remove('selected'));el.classList.add('selected');calismaTipi=el.dataset.val;}
@@ -2822,6 +2850,11 @@ async function loadProfile(){
     if(data.ayrilma_nedeni)ayrilmaNedeni=data.ayrilma_nedeni;
     if(data.segmentler){segmentler=data.segmentler.split(',').map(s=>s.trim()).filter(Boolean);document.querySelectorAll('#segment-group .chip').forEach(c=>{if(segmentler.includes(c.dataset.val))c.classList.add('selected');});}
     if(data.engel_durumu){engelDurumu=data.engel_durumu;document.querySelectorAll('#engel-group .chip').forEach(c=>{if(c.dataset.val===engelDurumu)c.classList.add('selected');});}
+    // Adres il/ilçe
+    if(data.adres_il){document.getElementById('f-adres-il').value=data.adres_il;populateAdresIlce();if(data.adres_ilce)document.getElementById('f-adres-ilce').value=data.adres_ilce;}
+    // Askerlik durumu
+    if(data.askerlik_durumu){askerlikDurumu=data.askerlik_durumu;document.querySelectorAll('#askerlik-group .chip').forEach(c=>{if(c.dataset.val===askerlikDurumu)c.classList.add('selected');});}
+    toggleAskerlik();
     // Şehir/ilçe
     if(data.tercih_sehirler){selectedSehirler=data.tercih_sehirler.split(',').map(s=>s.trim()).filter(Boolean);}
     if(data.tercih_ilceler){try{selectedIlceler=JSON.parse(data.tercih_ilceler);}catch(e){}}
@@ -3058,6 +3091,43 @@ function applyParsedData(){
 
 // ── DİL SATIRI (yeni — seviyeli) ──
 const DIL_SEVIYELERI=['A1 - Başlangıç','A2 - Temel','B1 - Orta Altı','B2 - Orta','C1 - İleri','C2 - Üst İleri','Anadil'];
+// ── ADRES İL/İLÇE ──
+function populateAdresIl(){
+  var sel=document.getElementById('f-adres-il');if(!sel)return;
+  var allIller=[];
+  Object.values(TUR_ILLER).forEach(function(arr){arr.forEach(function(il){allIller.push(il);});});
+  allIller.sort(function(a,b){return a.localeCompare(b,'tr');});
+  allIller.forEach(function(il){
+    var opt=document.createElement('option');opt.value=il;opt.textContent=il;
+    sel.appendChild(opt);
+  });
+}
+function populateAdresIlce(){
+  var ilSel=document.getElementById('f-adres-il');
+  var ilceSel=document.getElementById('f-adres-ilce');
+  if(!ilSel||!ilceSel)return;
+  var il=ilSel.value;
+  while(ilceSel.firstChild)ilceSel.removeChild(ilceSel.firstChild);
+  if(!il){
+    var o=document.createElement('option');o.value='';o.textContent='Önce il seç...';ilceSel.appendChild(o);return;
+  }
+  var def=document.createElement('option');def.value='';def.textContent='İlçe seç...';ilceSel.appendChild(def);
+  var ilceler=ILCELER[il]||[];
+  ilceler.forEach(function(ilce){
+    var opt=document.createElement('option');opt.value=ilce;opt.textContent=ilce;
+    ilceSel.appendChild(opt);
+  });
+}
+// ── ASKERLİK TOGGLE ──
+var askerlikDurumu='';
+function toggleAskerlik(){
+  var cinsiyet=document.getElementById('f-cinsiyet').value;
+  var wrap=document.getElementById('askerlik-wrap');
+  if(!wrap)return;
+  if(cinsiyet==='Erkek'){wrap.classList.add('visible');}
+  else{wrap.classList.remove('visible');askerlikDurumu='';}
+}
+
 const YAYGIN_DILLER=['Türkçe','İngilizce','Almanca','Fransızca','İspanyolca','İtalyanca','Rusça','Arapça','Çince (Mandarin)','Japonca','Korece','Portekizce','Hollandaca','Lehçe','Farsça','Kürtçe'];
 var dilRows=[]; // [{dil:'İngilizce',seviye:'B2 - Orta'}]
 
@@ -3394,6 +3464,9 @@ async function saveProfile(){
     okul:document.getElementById('f-okul')?document.getElementById('f-okul').value.trim():'',
     bolum:document.getElementById('f-bolum')?document.getElementById('f-bolum').value.trim():'',
     ekstra_egitimler:JSON.stringify(getEkstraEgitimlerJSON()),
+    adres_il:document.getElementById('f-adres-il')?document.getElementById('f-adres-il').value:'',
+    adres_ilce:document.getElementById('f-adres-ilce')?document.getElementById('f-adres-ilce').value:'',
+    askerlik_durumu:askerlikDurumu,
   };
   let {error}=await getSupa().from('candidates').upsert(profileData,{onConflict:'user_id'});
   if(error){
@@ -3464,6 +3537,8 @@ document.addEventListener('DOMContentLoaded',function(){
   document.getElementById('lokasyon-modal-overlay').addEventListener('click',function(e){if(e.target===this)closeLokasyonModal();});
   // Popüler şehir quick-picks ilk render
   renderQuickPicks();
+  // Adres il dropdown doldur
+  populateAdresIl();
   // Bildirim popup — overlay kapat
   document.getElementById('notif-popup-overlay').addEventListener('click',function(e){if(e.target===this)closeNotifPopup();});
 });
