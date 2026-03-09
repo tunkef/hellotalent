@@ -650,7 +650,7 @@ section#cv .pill {
   /* HEADER — shared.css yönetir, sadece sayfa-spesifik override */
   .header-nav { display: none !important; }
   .hamburger { display: flex !important; }
-  .main-wrap { padding-top: 56px !important; }
+  .main-wrap { padding-top: 0 !important; }
 
   /* MOBİL MENÜ */
   .mobile-menu { padding: 12px 20px 20px; }
@@ -863,7 +863,7 @@ section#cv > div:first-child { padding: 52px 20px; }
 .faq-trust-badge{display:inline-flex;align-items:center;gap:6px;background:#F0FDF4;border:1.5px solid #BBF7D0;border-radius:30px;padding:7px 16px;font-size:12px;font-weight:700;color:#16A34A;}
 /* ── RESPONSIVE YENİ ── */
 @media(max-width:960px){
-  .hero-outer{grid-template-columns:1fr;gap:32px;padding:48px 24px 36px;text-align:center;}
+  .hero-outer{grid-template-columns:1fr;gap:32px;padding:calc(56px + 32px) 24px 36px;text-align:center;}
   .hero{text-align:center;}
   .hero-btns{justify-content:center;}
   .hero-sub{max-width:100%;margin-left:auto;margin-right:auto;}
@@ -878,7 +878,7 @@ section#cv > div:first-child { padding: 52px 20px; }
 @media(max-width:600px){
   .sb-num{font-size:20px;}
   .seg-chip{font-size:12px;padding:8px 14px;}
-  .hero-outer{padding:40px 20px 28px;}
+  .hero-outer{padding:calc(56px + 20px) 20px 28px;}
 }
   
   /* ============================================================ */
