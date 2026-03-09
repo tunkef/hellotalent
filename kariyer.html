@@ -447,6 +447,12 @@
       .filter-count { margin-left: 0 !important; }
       /* Kariyer tabs wrap */
       .kariyer-tabs { flex-wrap: wrap !important; }
+      /* Hero CTA stack */
+      .hero-cta-wrap { flex-direction: column !important; align-items: stretch !important; }
+      .hero-cta-wrap button { width: 100% !important; text-align: center !important; }
+      /* Trust items stack */
+      .hero-trust-row { flex-direction: column !important; gap: 6px !important; }
+      .hero-trust-row .trust-sep { display: none !important; }
     }
     @media (max-width: 480px) {
       .hero-title-k { font-size: 26px !important; }
@@ -488,29 +494,23 @@
             İlan yok. Başvuru kalabalığı yok. Sadece sen, kariyer hedefin ve seni arayan markalar.
             Profilini paylaş — sistem seni doğru İK ekibiyle eşleştirsin.
           </p>
-          <div style="display:flex;gap:12px;flex-wrap:wrap;">
+          <div class="hero-cta-wrap" style="display:flex;gap:12px;flex-wrap:wrap;">
             <button class="fck-btn-primary" style="font-size:15px;padding:14px 28px;" onclick="openAuthPopup('Kariyer Rotası Oluştur')">
               Kariyer Hedefimi Paylaş →
             </button>
             <button class="fck-btn-secondary" style="font-size:15px;padding:12px 24px;background:transparent;color:rgba(255,255,255,0.7);border-color:rgba(255,255,255,0.2);" onclick="document.getElementById('kariyer-kartlari').scrollIntoView({behavior:'smooth'})">
               Kariyer Rotalarını İncele
             </button>
-            <div style="text-align:center;">
-              <button class="hero-scroll-btn" onclick="document.getElementById('pozisyonlar').scrollIntoView({behavior:'smooth'})">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
-                Tüm Pozisyonları & Kariyer Rehberini Keşfet
-              </button>
-            </div>
           </div>
-          <div style="display:flex;gap:16px;margin-top:24px;flex-wrap:wrap;">
+          <div class="hero-trust-row" style="display:flex;gap:16px;margin-top:24px;flex-wrap:wrap;">
             <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:rgba(255,255,255,0.45);font-weight:600;">
               <span style="color:#4ADE80;">✓</span> İlanlar hiç kapanmaz
             </div>
-            <div style="width:1px;height:14px;background:rgba(255,255,255,0.1);"></div>
+            <div class="trust-sep" style="width:1px;height:14px;background:rgba(255,255,255,0.1);"></div>
             <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:rgba(255,255,255,0.45);font-weight:600;">
               <span style="color:#4ADE80;">✓</span> Mevcut işverene görünmez
             </div>
-            <div style="width:1px;height:14px;background:rgba(255,255,255,0.1);"></div>
+            <div class="trust-sep" style="width:1px;height:14px;background:rgba(255,255,255,0.1);"></div>
             <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:rgba(255,255,255,0.45);font-weight:600;">
               <span style="color:#4ADE80;">✓</span> Tamamen ücretsiz
             </div>
