@@ -1008,8 +1008,8 @@
       </div>
     </div>
     <div class="completion-status">
-      <div class="status-badge aktif" id="card-status-badge" onclick="openSidebar()" title="Durumu değiştir">
-        <span class="status-dot"></span><span id="card-status-text">Aktif</span>
+      <div class="status-badge aktif" id="comp-status-badge" onclick="openSidebar()" title="Durumu değiştir">
+        <span class="status-dot"></span><span id="comp-status-text">Aktif</span>
       </div>
     </div>
   </div>
@@ -1872,8 +1872,8 @@ function closeSidebar(){ closeMobileSidebar(); }
 // ── AKTİF/PASİF ──
 function toggleActiveStatus(cb){const a=cb.checked;updateStatusUI(a);if(currentUser)getSupa().from('candidates').upsert({user_id:currentUser.id,is_active:a},{onConflict:'user_id'});}
 function updateStatusUI(isActive){
-  ['header-status-badge','card-status-badge'].forEach(id=>{const el=document.getElementById(id);if(el){el.className='status-badge '+(isActive?'aktif':'pasif');}});
-  ['header-status-text','card-status-text'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=isActive?'Aktif':'Pasif';});
+  ['header-status-badge','card-status-badge','comp-status-badge'].forEach(id=>{const el=document.getElementById(id);if(el){el.className='status-badge '+(isActive?'aktif':'pasif');}});
+  ['header-status-text','card-status-text','comp-status-text'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=isActive?'Aktif':'Pasif';});
   const h=document.getElementById('status-hint-text');
   if(h)h.textContent=isActive?'✅ Profilin aktif — markalar seni görebilir.':'⏸ Profilin pasif — markalar seni göremez.';
 }
