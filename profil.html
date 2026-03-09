@@ -472,9 +472,9 @@
 
   /* EKSTRA EĞİTİM ROWS */
   .egitim-row{display:flex;align-items:center;gap:8px;background:var(--gray);border:1.5px solid var(--border);border-radius:10px;padding:8px 10px;}
-  .egitim-row input{flex:1;border:none;background:transparent;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;color:var(--text);outline:none;min-width:0;}
+  .egitim-row input{flex:1;border:none !important;background:transparent !important;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px !important;color:var(--text);outline:none;min-width:0;padding:4px 6px !important;border-radius:4px !important;}
   .egitim-row input::placeholder{color:var(--muted);}
-  .egitim-row select{border:1px solid var(--border);border-radius:7px;padding:4px 8px;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;background:white;cursor:pointer;outline:none;color:var(--text);}
+  .egitim-row select{border:1px solid var(--border) !important;border-radius:7px !important;padding:4px 8px !important;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px !important;background:white !important;cursor:pointer;outline:none;color:var(--text);width:auto !important;-webkit-appearance:menulist !important;flex-shrink:0;}
   .egitim-row-del{background:none;border:none;cursor:pointer;color:var(--muted);font-size:16px;line-height:1;padding:2px 4px;border-radius:4px;transition:color 0.15s;}
   .egitim-row-del:hover{color:var(--red);}
   .btn-add-egitim{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;background:white;border:1.5px dashed var(--border);border-radius:8px;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;transition:all 0.15s;}
