@@ -356,6 +356,31 @@
   .btn-parse-skip{padding:13px 20px;background:white;border:1.5px solid var(--border);border-radius:10px;color:var(--muted);font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;}
   .parse-error{background:#FEF2F2;border:1px solid #FECACA;color:#DC2626;padding:12px;border-radius:8px;font-size:13px;margin-bottom:16px;display:none;}
 
+  /* CV HERO — top of form */
+  .cv-hero{background:linear-gradient(135deg,#1E2D5E 0%,#2D4080 100%);border-radius:16px;padding:28px;margin-bottom:20px;position:relative;overflow:hidden;}
+  .cv-hero::before{content:'';position:absolute;right:-30px;top:-30px;width:160px;height:160px;border-radius:50%;background:rgba(201,78,40,0.12);}
+  .cv-hero-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.15);padding:4px 10px;border-radius:20px;font-size:10px;font-weight:800;letter-spacing:0.5px;color:rgba(255,255,255,0.7);margin-bottom:12px;}
+  .cv-hero h3{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:20px;color:white;margin-bottom:6px;position:relative;}
+  .cv-hero p{font-size:13px;color:rgba(255,255,255,0.55);line-height:1.6;margin-bottom:16px;position:relative;}
+  .cv-hero-zone{display:flex;align-items:center;gap:16px;background:rgba(255,255,255,0.08);border:2px dashed rgba(255,255,255,0.2);border-radius:12px;padding:16px 20px;cursor:pointer;transition:all 0.2s;position:relative;}
+  .cv-hero-zone:hover{background:rgba(255,255,255,0.12);border-color:rgba(255,255,255,0.35);}
+  .cv-hero-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;}
+  .cv-hero-icon{width:44px;height:44px;border-radius:12px;background:rgba(201,78,40,0.25);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .cv-hero-label{font-size:14px;font-weight:700;color:white;}
+  .cv-hero-sub{font-size:12px;color:rgba(255,255,255,0.45);margin-top:2px;}
+  .cv-hero-done{display:none;align-items:center;gap:10px;background:rgba(22,163,106,0.15);border:1.5px solid rgba(22,163,106,0.3);border-radius:10px;padding:10px 16px;margin-top:12px;position:relative;}
+  .cv-hero-done.visible{display:flex;}
+  .cv-hero-done-text{font-size:13px;font-weight:600;color:#4ade80;}
+  .cv-hero-done a{color:white;font-size:12px;font-weight:600;margin-left:auto;text-decoration:underline;text-underline-offset:2px;}
+
+  /* AI-filled field highlight */
+  .field.ai-filled input,.field.ai-filled select{border-color:rgba(201,78,40,0.3);background:rgba(201,78,40,0.03);}
+  .field.ai-filled::after{content:'AI';position:absolute;top:22px;right:8px;font-size:9px;font-weight:800;background:var(--verm-light);color:var(--verm);padding:2px 6px;border-radius:6px;letter-spacing:0.5px;}
+  .field{position:relative;}
+
+  /* Dil dropdown — replace free text */
+  .dil-row select.dil-select{flex:1;min-width:100px;}
+
   /* ENGEL DETAILS */
   .engel-details{border:1.5px solid var(--border);border-radius:10px;padding:10px 14px;background:var(--gray);}
   .engel-details summary{display:flex;align-items:center;justify-content:space-between;cursor:pointer;list-style:none;user-select:none;}
@@ -1102,6 +1127,31 @@
     </div>
   </div>
 
+  <!-- CV HERO — Smart Start -->
+  <div class="cv-hero" id="cv-hero-section">
+    <div class="cv-hero-badge">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      AI DESTEKLI
+    </div>
+    <h3>CV yükle, profili otomatik doldur</h3>
+    <p>PDF yükle — yapay zeka ismini, deneyimini, markalarını otomatik dolduracak. Sonra sadece eksikleri tamamla.</p>
+    <div class="cv-hero-zone" id="cv-hero-zone">
+      <input type="file" id="cv-file" accept=".pdf,.doc,.docx" onchange="handleCVUpload(this)">
+      <div class="cv-hero-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      </div>
+      <div>
+        <div class="cv-hero-label" id="cv-zone-text">CV Yükle</div>
+        <div class="cv-hero-sub">PDF veya DOCX — maks 5MB</div>
+      </div>
+    </div>
+    <div class="cv-hero-done" id="cv-exists">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+      <span class="cv-hero-done-text">CV yüklendi</span>
+      <a href="#" id="cv-link" target="_blank">Görüntüle</a>
+    </div>
+  </div>
+
   <!-- KİŞİSEL BİLGİLER -->
   <div class="section-card">
     <div class="section-title">
@@ -1166,47 +1216,6 @@
       </div>
     </div>
   </div>
-
-  <!-- EĞİTİM BİLGİLERİ -->
-  <div class="section-card">
-    <div class="section-title">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
-      Eğitim Bilgileri
-    </div>
-    <div class="fields-grid">
-      <div class="field">
-        <label>Eğitim Seviyesi</label>
-        <select id="f-egitim-seviye">
-          <option value="">Seç...</option>
-          <option>İlköğretim</option>
-          <option>Lise</option>
-          <option>Ön Lisans (2 Yıllık)</option>
-          <option>Lisans (4 Yıllık)</option>
-          <option>Yüksek Lisans</option>
-          <option>Doktora</option>
-        </select>
-      </div>
-      <div class="field">
-        <label>Mezuniyet Yılı</label>
-        <select id="f-mezun-yil">
-          <option value="">Seç...</option>
-          <option>Devam ediyor</option>
-          <option>2025</option><option>2024</option><option>2023</option><option>2022</option>
-          <option>2021</option><option>2020</option><option>2019</option><option>2018</option>
-          <option>2017</option><option>2016</option><option>2015</option>
-          <option>2014</option><option>2013</option><option>2012</option>
-          <option>2010 ve öncesi</option>
-        </select>
-      </div>
-      <div class="field">
-        <label>Okul / Üniversite</label>
-        <input type="text" id="f-okul" placeholder="Örn: Boğaziçi Üniversitesi">
-      </div>
-      <div class="field">
-        <label>Bölüm / Program</label>
-        <input type="text" id="f-bolum" placeholder="Örn: İşletme, Moda Tasarımı...">
-      </div>
-    </div>
 
   <!-- KARİYER BİLGİLERİ -->
   <div class="section-card">
@@ -1277,23 +1286,45 @@
     </div>
   </div>
 
-  <!-- CV -->
+  <!-- EĞİTİM BİLGİLERİ -->
   <div class="section-card">
     <div class="section-title">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-      CV
-      <span style="margin-left:auto;font-family:'DM Mono',monospace;font-size:10px;color:var(--verm);background:var(--verm-light);padding:3px 8px;border-radius:20px;">✦ AI Parse</span>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+      Eğitim Bilgileri
     </div>
-    <div class="cv-exists" id="cv-exists" style="display:none;">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-      <span>CV yüklendi ✓</span>
-      <a href="#" id="cv-link" target="_blank">Görüntüle →</a>
-    </div>
-    <div class="cv-zone" id="cv-zone">
-      <input type="file" id="cv-file" accept=".pdf,.doc,.docx" onchange="handleCVUpload(this)">
-      <div class="cv-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
-      <strong id="cv-zone-text">CV Yükle</strong>
-      <p>PDF önerilir · AI profil bilgilerini otomatik dolduracak</p>
+    <div class="fields-grid">
+      <div class="field">
+        <label>Eğitim Seviyesi</label>
+        <select id="f-egitim-seviye">
+          <option value="">Seç...</option>
+          <option>İlköğretim</option>
+          <option>Lise</option>
+          <option>Ön Lisans (2 Yıllık)</option>
+          <option>Lisans (4 Yıllık)</option>
+          <option>Yüksek Lisans</option>
+          <option>Doktora</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Mezuniyet Yılı</label>
+        <select id="f-mezun-yil">
+          <option value="">Seç...</option>
+          <option>Devam ediyor</option>
+          <option>2025</option><option>2024</option><option>2023</option><option>2022</option>
+          <option>2021</option><option>2020</option><option>2019</option><option>2018</option>
+          <option>2017</option><option>2016</option><option>2015</option>
+          <option>2014</option><option>2013</option><option>2012</option>
+          <option>2010 ve öncesi</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Okul / Üniversite</label>
+        <input type="text" id="f-okul" placeholder="Örn: Boğaziçi Üniversitesi">
+      </div>
+      <div class="field">
+        <label>Bölüm / Program</label>
+        <input type="text" id="f-bolum" placeholder="Örn: İşletme, Moda Tasarımı...">
+      </div>
     </div>
   </div>
 
@@ -2146,7 +2177,7 @@ async function loadProfile(){
     if(data.okul && document.getElementById('f-okul'))document.getElementById('f-okul').value=data.okul;
     if(data.bolum && document.getElementById('f-bolum'))document.getElementById('f-bolum').value=data.bolum;
     // CV
-    if(data.cv_url){document.getElementById('cv-exists').style.display='flex';document.getElementById('cv-link').href=data.cv_url;document.getElementById('cv-zone-text').textContent='CV Güncelle';}
+    if(data.cv_url){document.getElementById('cv-exists').classList.add('visible');document.getElementById('cv-link').href=data.cv_url;document.getElementById('cv-zone-text').textContent='CV Güncelle';}
     // Aktif/pasif
     const isActive=data.is_active!==false;
     document.getElementById('toggle-active').checked=isActive;
@@ -2227,7 +2258,7 @@ async function handleCVUpload(input){
   const{data:urlData}=getSupa().storage.from('cvs').getPublicUrl(path);
   const cvUrl=urlData.publicUrl;
   await getSupa().from('candidates').upsert({user_id:currentUser.id,cv_url:cvUrl},{onConflict:'user_id'});
-  document.getElementById('cv-exists').style.display='flex';document.getElementById('cv-link').href=cvUrl;document.getElementById('cv-zone-text').textContent='✓ Yüklendi';
+  document.getElementById('cv-exists').classList.add('visible');document.getElementById('cv-link').href=cvUrl;document.getElementById('cv-zone-text').textContent='✓ Yüklendi';
   if(isPDF){showParseModal();await parseCV(file);}
 }
 function showParseModal(){document.getElementById('parse-overlay').classList.add('show');document.getElementById('parse-loading-state').style.display='block';document.getElementById('parse-result-state').style.display='none';document.getElementById('parse-error-state').style.display='none';}
@@ -2320,15 +2351,60 @@ async function parseCV(file){
   }
 }
 function applyParsedData(){
-  const isim=document.getElementById('p-isim').value,telefon=document.getElementById('p-telefon').value,markalar=document.getElementById('p-markalar').value;
-  if(isim){document.getElementById('f-isim').value=isim;const nh=document.getElementById('sidebar-user-name');if(nh)nh.textContent=isim;}
-  if(telefon)document.getElementById('f-telefon').value=telefon;
-  if(markalar){const ym=markalar.split(',').map(m=>m.trim()).filter(Boolean);ym.forEach(m=>{if(!markaList.includes(m))markaList.push(m);});renderTags('marka-wrap','marka-input',markaList,false);}
+  // Clear previous AI highlights
+  document.querySelectorAll('.field.ai-filled').forEach(function(f){f.classList.remove('ai-filled');});
+  var filledCount=0;
+  function fillField(formId,parseId){
+    var pEl=document.getElementById(parseId);
+    var fEl=document.getElementById(formId);
+    if(!pEl||!fEl)return;
+    var val=pEl.value.trim();
+    if(!val)return;
+    fEl.value=val;
+    var fieldWrap=fEl.closest('.field');
+    if(fieldWrap)fieldWrap.classList.add('ai-filled');
+    filledCount++;
+  }
+  fillField('f-isim','p-isim');
+  fillField('f-telefon','p-telefon');
+  fillField('f-deneyim','p-deneyim');
+  // Name → sidebar
+  var isim=document.getElementById('p-isim').value.trim();
+  if(isim){var nh=document.getElementById('sidebar-user-name');if(nh)nh.textContent=isim;}
+  // Pozisyon from parse dropdown
+  var parsePoz=document.getElementById('p-pozisyon');
+  if(parsePoz && parsePoz.value){
+    var pozVal=parsePoz.value;
+    document.querySelectorAll('#pozisyon-grid .poz-chip').forEach(function(c){
+      if(c.dataset.val===pozVal && !c.classList.contains('selected')){
+        c.classList.add('selected');
+        if(!selectedPozisyonlar.includes(pozVal))selectedPozisyonlar.push(pozVal);
+      }
+    });
+  }
+  // Markalar
+  var markalar=document.getElementById('p-markalar').value;
+  if(markalar){
+    var ym=markalar.split(',').map(function(m){return m.trim();}).filter(Boolean);
+    ym.forEach(function(m){if(!markaList.includes(m))markaList.push(m);});
+    renderTags('marka-wrap','marka-input',markaList,false);
+  }
   closeParse();
+  // Scroll to first empty required field
+  setTimeout(function(){
+    var firstEmpty=document.getElementById('f-isim');
+    if(firstEmpty && !firstEmpty.value)firstEmpty.scrollIntoView({behavior:'smooth',block:'center'});
+    else{
+      // Scroll to career section if personal is filled
+      var kariyerSection=document.querySelector('#pozisyon-grid');
+      if(kariyerSection)kariyerSection.scrollIntoView({behavior:'smooth',block:'center'});
+    }
+  },300);
 }
 
 // ── DİL SATIRI (yeni — seviyeli) ──
 const DIL_SEVIYELERI=['A1 - Başlangıç','A2 - Temel','B1 - Orta Altı','B2 - Orta','C1 - İleri','C2 - Üst İleri','Anadil'];
+const YAYGIN_DILLER=['Türkçe','İngilizce','Almanca','Fransızca','İspanyolca','İtalyanca','Rusça','Arapça','Çince (Mandarin)','Japonca','Korece','Portekizce','Hollandaca','Lehçe','Farsça','Kürtçe'];
 var dilRows=[]; // [{dil:'İngilizce',seviye:'B2 - Orta'}]
 
 function addDilRow(dil='',seviye=''){
@@ -2342,16 +2418,49 @@ function removeDilRow(id){
 }
 function renderDilRows(){
   const container=document.getElementById('dil-list-container');
-  container.innerHTML='';
+  while(container.firstChild)container.removeChild(container.firstChild);
   dilRows.forEach(row=>{
     const div=document.createElement('div');div.className='dil-row';
-    div.innerHTML=`
-      <input type="text" placeholder="Dil adı (Türkçe, İngilizce...)" value="${row.dil}" onchange="updateDilRow(${row.id},'dil',this.value)" style="min-width:100px;">
-      <select onchange="updateDilRow(${row.id},'seviye',this.value)">
-        <option value="">Seviye seç</option>
-        ${DIL_SEVIYELERI.map(s=>`<option${row.seviye===s?' selected':''}>${s}</option>`).join('')}
-      </select>
-      <button class="dil-row-del" onclick="removeDilRow(${row.id})">×</button>`;
+    // Dil dropdown
+    const dilSelect=document.createElement('select');
+    dilSelect.className='dil-select';
+    dilSelect.onchange=function(){updateDilRow(row.id,'dil',this.value);};
+    var optEmpty=document.createElement('option');optEmpty.value='';optEmpty.textContent='Dil seç...';dilSelect.appendChild(optEmpty);
+    YAYGIN_DILLER.forEach(function(d){
+      var opt=document.createElement('option');opt.value=d;opt.textContent=d;
+      if(row.dil===d)opt.selected=true;
+      dilSelect.appendChild(opt);
+    });
+    // If current value not in list, add it as custom option
+    if(row.dil && !YAYGIN_DILLER.includes(row.dil)){
+      var customOpt=document.createElement('option');customOpt.value=row.dil;customOpt.textContent=row.dil;customOpt.selected=true;
+      dilSelect.appendChild(customOpt);
+    }
+    var optOther=document.createElement('option');optOther.value='__other__';optOther.textContent='Diğer...';dilSelect.appendChild(optOther);
+    dilSelect.addEventListener('change',function(){
+      if(this.value==='__other__'){
+        var custom=prompt('Dil adını yaz:');
+        if(custom && custom.trim()){
+          updateDilRow(row.id,'dil',custom.trim());
+          renderDilRows();
+        }else{this.value=row.dil||'';}
+      }
+    });
+    div.appendChild(dilSelect);
+    // Seviye dropdown
+    var sevSelect=document.createElement('select');
+    sevSelect.onchange=function(){updateDilRow(row.id,'seviye',this.value);};
+    var sevEmpty=document.createElement('option');sevEmpty.value='';sevEmpty.textContent='Seviye';sevSelect.appendChild(sevEmpty);
+    DIL_SEVIYELERI.forEach(function(s){
+      var opt=document.createElement('option');opt.value=s;opt.textContent=s;
+      if(row.seviye===s)opt.selected=true;
+      sevSelect.appendChild(opt);
+    });
+    div.appendChild(sevSelect);
+    // Delete button
+    var delBtn=document.createElement('button');delBtn.className='dil-row-del';delBtn.textContent='\u00d7';
+    delBtn.onclick=function(){removeDilRow(row.id);};
+    div.appendChild(delBtn);
     container.appendChild(div);
   });
 }
