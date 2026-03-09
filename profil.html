@@ -1321,28 +1321,6 @@
         </select>
       </div>
 
-      <!-- ASKERLİK DURUMU — sadece erkekler -->
-      <div class="field field-full askerlik-wrap" id="askerlik-wrap">
-        <label>Askerlik Durumu</label>
-        <div class="chip-group" id="askerlik-group" style="max-width:420px;">
-          <div class="chip" onclick="selectSingleChip(this,'askerlik-group')" data-val="Yapıldı">Yapıldı</div>
-          <div class="chip" onclick="selectSingleChip(this,'askerlik-group')" data-val="Muaf">Muaf</div>
-          <div class="chip" onclick="selectSingleChip(this,'askerlik-group')" data-val="Tecilli">Tecilli</div>
-          <div class="chip" onclick="selectSingleChip(this,'askerlik-group')" data-val="Yapılmadı">Yapılmadı</div>
-        </div>
-      </div>
-
-      <!-- DİL BİLGİSİ -->
-      <div class="field field-full">
-        <label>Dil Bilgisi</label>
-        <div id="dil-list-container" style="display:flex;flex-direction:column;gap:6px;margin-bottom:6px;"></div>
-        <button type="button" class="btn-add-dil" onclick="addDilRow()" style="display:inline-flex;align-items:center;gap:6px;padding:5px 12px;background:white;border:1.5px dashed var(--border);border-radius:8px;font-family:'Plus Jakarta Sans',sans-serif;font-size:11px;font-weight:600;color:var(--muted);cursor:pointer;transition:all 0.15s;" onmouseover="this.style.borderColor='var(--navy)';this.style.color='var(--navy)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">
-          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          Dil Ekle
-        </button>
-        <p class="tag-hint">Her dil için seviye belirle</p>
-      </div>
-
       <!-- ENGELLİLİK — minimal, collapsible -->
       <div class="field field-full">
         <details class="engel-details">
@@ -1359,6 +1337,17 @@
           </div>
           <p class="tag-hint" style="margin-top:7px;">Bu bilgi gizlidir — yasal kotalar kapsamında kullanılır.</p>
         </details>
+      </div>
+
+      <!-- ASKERLİK DURUMU — sadece erkekler -->
+      <div class="field field-full askerlik-wrap" id="askerlik-wrap">
+        <label>Askerlik Durumu</label>
+        <div class="chip-group" id="askerlik-group" style="max-width:420px;">
+          <div class="chip" onclick="selectSingleChip(this,'askerlik-group')" data-val="Yapıldı">Yapıldı</div>
+          <div class="chip" onclick="selectSingleChip(this,'askerlik-group')" data-val="Muaf">Muaf</div>
+          <div class="chip" onclick="selectSingleChip(this,'askerlik-group')" data-val="Tecilli">Tecilli</div>
+          <div class="chip" onclick="selectSingleChip(this,'askerlik-group')" data-val="Yapılmadı">Yapılmadı</div>
+        </div>
       </div>
     </div>
   </div>
@@ -1460,6 +1449,16 @@
         <label>Bölüm / Program</label>
         <input type="text" id="f-bolum" placeholder="Örn: İşletme, Moda Tasarımı...">
       </div>
+    </div>
+    <!-- DİL BİLGİSİ -->
+    <div class="field field-full" style="margin-top:12px;">
+      <label>Dil Bilgisi</label>
+      <div id="dil-list-container" style="display:flex;flex-direction:column;gap:6px;margin-bottom:6px;"></div>
+      <button type="button" class="btn-add-dil" onclick="addDilRow()" style="display:inline-flex;align-items:center;gap:6px;padding:5px 12px;background:white;border:1.5px dashed var(--border);border-radius:8px;font-family:'Plus Jakarta Sans',sans-serif;font-size:11px;font-weight:600;color:var(--muted);cursor:pointer;transition:all 0.15s;" onmouseover="this.style.borderColor='var(--navy)';this.style.color='var(--navy)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Dil Ekle
+      </button>
+      <p class="tag-hint">Her dil için seviye belirle</p>
     </div>
     <div class="field field-full" style="margin-top:12px;">
       <label>Ekstra Eğitimler / Sertifikalar</label>
