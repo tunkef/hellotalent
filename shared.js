@@ -256,7 +256,8 @@
     },
 
     toggleFooterCol: function (btn) {
-      var links = btn.nextElementSibling;
+      var parent = btn.parentElement;
+      var links = parent ? parent.querySelector('.footer-col-links') : null;
       if (!links) return;
       var open = links.classList.toggle('open');
       btn.classList.toggle('open', open);
