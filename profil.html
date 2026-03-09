@@ -194,6 +194,48 @@
   .ayrilma-pill:hover{border-color:var(--navy);}
   .ayrilma-pill.selected{background:var(--navy);border-color:var(--navy);color:white;}
 
+  /* DENEYİM KARTLARI (LinkedIn-style) */
+  .exp-section-label{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.6px;color:var(--muted);margin-bottom:10px;}
+  .exp-container{display:flex;flex-direction:column;gap:12px;}
+  .exp-card{background:white;border:1.5px solid var(--border);border-radius:12px;padding:16px;position:relative;transition:border-color 0.15s;}
+  .exp-card:hover{border-color:var(--navy);}
+  .exp-card-header{display:flex;gap:12px;align-items:flex-start;}
+  .exp-company-avatar{width:40px;height:40px;border-radius:10px;background:var(--navy);color:white;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:16px;flex-shrink:0;font-family:'Bricolage Grotesque',sans-serif;}
+  .exp-inputs{flex:1;display:flex;flex-direction:column;gap:6px;}
+  .exp-inputs input{width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:600;color:var(--text);transition:border-color 0.15s;background:white;}
+  .exp-inputs input:focus{outline:none;border-color:var(--navy);}
+  .exp-inputs input::placeholder{color:var(--muted);font-weight:500;}
+  .exp-inputs input.exp-sirket{font-size:14px;font-weight:700;}
+  .exp-dates{display:flex;align-items:center;gap:6px;margin-top:8px;flex-wrap:wrap;}
+  .exp-date-select{padding:6px 8px;border:1.5px solid var(--border);border-radius:8px;font-size:12px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:600;color:var(--text);background:white;cursor:pointer;appearance:auto;}
+  .exp-date-select:focus{outline:none;border-color:var(--navy);}
+  .exp-date-sep{color:var(--muted);font-weight:700;font-size:13px;margin:0 2px;}
+  .exp-toggle-row{display:flex;align-items:center;gap:8px;margin-top:8px;}
+  .exp-toggle-cb{width:16px;height:16px;accent-color:var(--navy);cursor:pointer;}
+  .exp-toggle-label{font-size:12px;font-weight:600;color:var(--text);cursor:pointer;user-select:none;}
+  .exp-end-dates{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+  .exp-end-dates.hidden{display:none;}
+  .exp-ayrilma{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
+  .exp-ayrilma.hidden{display:none;}
+  .exp-ayrilma .ayrilma-pill{padding:5px 10px;font-size:11px;}
+  .exp-duration{font-size:11px;color:var(--muted);font-weight:600;margin-top:6px;}
+  .exp-delete{position:absolute;top:12px;right:12px;width:28px;height:28px;border:none;background:transparent;cursor:pointer;border-radius:8px;display:flex;align-items:center;justify-content:center;transition:background 0.15s;color:var(--muted);}
+  .exp-delete:hover{background:#fee2e2;color:#C94E28;}
+  .exp-delete svg{pointer-events:none;}
+  .btn-add-exp{width:100%;padding:12px;border:2px dashed var(--border);border-radius:12px;background:transparent;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:700;color:var(--navy);display:flex;align-items:center;justify-content:center;gap:6px;transition:all 0.15s;margin-top:4px;}
+  .btn-add-exp:hover{border-color:var(--navy);background:var(--navy-light);}
+  .deneyim-auto-display{display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--gray);border-radius:10px;font-size:13px;font-weight:700;color:var(--navy);}
+  .deneyim-auto-display .da-icon{font-size:16px;}
+  .marka-auto-wrap{display:flex;flex-wrap:wrap;gap:6px;min-height:32px;}
+  .marka-auto-chip{padding:5px 10px;background:var(--gray);border-radius:8px;font-size:12px;font-weight:600;color:var(--text);}
+  .marka-auto-empty{font-size:12px;color:var(--muted);font-style:italic;}
+  .profile-view-mode .btn-add-exp{pointer-events:none;opacity:0.5;}
+  .profile-view-mode .exp-delete{display:none;}
+  .profile-view-mode .exp-inputs input{pointer-events:none;background:var(--gray);opacity:0.9;}
+  .profile-view-mode .exp-date-select{pointer-events:none;background:var(--gray);opacity:0.9;}
+  .profile-view-mode .exp-toggle-cb{pointer-events:none;}
+  .profile-view-mode .exp-ayrilma .ayrilma-pill{pointer-events:none;opacity:0.85;}
+
   /* CHECKBOX ÇALIŞMA ŞEKLİ */
   .check-list{display:flex;flex-wrap:wrap;gap:8px;}
   .check-item{display:flex;align-items:center;gap:6px;padding:7px 14px;border:1.5px solid var(--border);border-radius:10px;cursor:pointer;transition:all 0.15s;background:white;font-size:13px;font-weight:600;color:var(--text);user-select:none;}
@@ -206,7 +248,7 @@
   /* PROFİL VIEW/EDIT MODE */
   .profile-view-mode .fields-grid input,.profile-view-mode .fields-grid select{pointer-events:none;background:var(--gray);opacity:0.9;}
   .profile-view-mode .tag-input-wrap{pointer-events:none;opacity:0.9;}
-  .profile-view-mode .poz-chip,.profile-view-mode .chip,.profile-view-mode .option-card,.profile-view-mode .check-item,.profile-view-mode .ws-opt,.profile-view-mode .ayrilma-pill,.profile-view-mode .loc-quick-chip,.profile-view-mode .loc-tag,.profile-view-mode .btn-add-sehir,.profile-view-mode .btn-add-dil{pointer-events:none;opacity:0.85;}
+  .profile-view-mode .poz-chip,.profile-view-mode .chip,.profile-view-mode .option-card,.profile-view-mode .check-item,.profile-view-mode .loc-quick-chip,.profile-view-mode .loc-tag,.profile-view-mode .btn-add-sehir,.profile-view-mode .btn-add-dil{pointer-events:none;opacity:0.85;}
   .profile-view-mode .btn-save{display:none!important;}
   .profile-view-mode .cv-hero{pointer-events:none;opacity:0.85;}
   .btn-edit-profile{display:flex;width:100%;padding:12px;background:var(--navy);border:none;border-radius:10px;color:white;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all 0.2s;margin-bottom:16px;gap:8px;align-items:center;justify-content:center;}
@@ -1295,50 +1337,24 @@
         </div>
       </div>
 
-      <!-- ÇALIŞMA DURUMU -->
+      <!-- DENEYİMLER (LinkedIn-style) -->
       <div class="field field-full">
-        <label>Şu An Çalışıyor Musun?</label>
-        <div class="work-status-toggle" id="work-status-toggle">
-          <div class="ws-opt" data-val="Evet" onclick="setWorkStatus('Evet',this)">Evet, çalışıyorum</div>
-          <div class="ws-opt" data-val="Hayır" onclick="setWorkStatus('Hayır',this)">Hayır, çalışmıyorum</div>
+        <label>Deneyimler</label>
+        <div class="exp-container" id="deneyim-container"></div>
+        <button type="button" class="btn-add-exp" onclick="addExperience()">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="7" y1="1" x2="7" y2="13"/><line x1="1" y1="7" x2="13" y2="7"/></svg>
+          Deneyim Ekle
+        </button>
+      </div>
+
+      <!-- TOPLAM DENEYİM (otomatik hesaplanan) -->
+      <div class="field field-full">
+        <label>Toplam Deneyim</label>
+        <div class="deneyim-auto-display" id="deneyim-auto">
+          <span class="da-icon">📊</span>
+          <span id="deneyim-auto-text">Deneyim ekledikçe otomatik hesaplanır</span>
         </div>
-        <!-- Çalışıyorsa -->
-        <div class="ws-conditional" id="ws-calisiyor">
-          <div class="fields-grid" style="margin-top:0;">
-            <div class="field">
-              <label>Çalıştığın Şirket / Marka</label>
-              <input type="text" id="f-mevcut-sirket" placeholder="Örn: Zara, Nike, Apple...">
-            </div>
-            <div class="field">
-              <label>Mevcut Pozisyon</label>
-              <input type="text" id="f-mevcut-pozisyon" placeholder="Örn: Satış Danışmanı">
-            </div>
-          </div>
-        </div>
-        <!-- Çalışmıyorsa -->
-        <div class="ws-conditional" id="ws-calismiyorum">
-          <div class="fields-grid" style="margin-top:0;">
-            <div class="field">
-              <label>Son Çalıştığın Şirket / Marka</label>
-              <input type="text" id="f-son-sirket" placeholder="Örn: H&M, Boyner...">
-            </div>
-            <div class="field">
-              <label>Son Pozisyon</label>
-              <input type="text" id="f-son-pozisyon" placeholder="Örn: Mağaza Müdürü">
-            </div>
-          </div>
-          <div style="margin-top:12px;">
-            <label style="display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;color:var(--muted);margin-bottom:8px;">Ayrılma Nedeni</label>
-            <div class="ayrilma-pills" id="ayrilma-group">
-              <div class="ayrilma-pill" onclick="selectAyrilma(this)" data-val="İstifa">İstifa</div>
-              <div class="ayrilma-pill" onclick="selectAyrilma(this)" data-val="Kariyer Geçişi">Kariyer Geçişi</div>
-              <div class="ayrilma-pill" onclick="selectAyrilma(this)" data-val="İşten Çıkarılma">İşten Çıkarılma</div>
-              <div class="ayrilma-pill" onclick="selectAyrilma(this)" data-val="Karşılıklı Fesih">Karşılıklı Fesih</div>
-              <div class="ayrilma-pill" onclick="selectAyrilma(this)" data-val="Sözleşme Bitimi">Sözleşme Bitimi</div>
-              <div class="ayrilma-pill" onclick="selectAyrilma(this)" data-val="Belirtmek İstemiyorum">Belirtmek İstemiyorum</div>
-            </div>
-          </div>
-        </div>
+        <select id="f-deneyim" style="display:none;"><option value=""></option><option>0–1 yıl</option><option>1–3 yıl</option><option>3–5 yıl</option><option>5–10 yıl</option><option>10+ yıl</option></select>
       </div>
 
       <div class="field field-full">
@@ -1359,13 +1375,6 @@
         </div>
       </div>
       <div class="field">
-        <label>Toplam Deneyim</label>
-        <select id="f-deneyim">
-          <option value="">Seç...</option>
-          <option>0–1 yıl</option><option>1–3 yıl</option><option>3–5 yıl</option><option>5–10 yıl</option><option>10+ yıl</option>
-        </select>
-      </div>
-      <div class="field">
         <label>Maaş Beklentisi (Net/Ay)</label>
         <select id="f-maas">
           <option value="">Belirtmek istemiyorum</option>
@@ -1376,10 +1385,10 @@
       </div>
       <div class="field field-full">
         <label>Çalıştığın Markalar</label>
-        <div class="tag-input-wrap" id="marka-wrap" onclick="document.getElementById('marka-input').focus()">
-          <input type="text" id="marka-input" class="tag-input" placeholder="Marka yaz, Enter'a bas...">
+        <div class="marka-auto-wrap" id="marka-auto-wrap">
+          <span class="marka-auto-empty">Deneyim eklediğinizde markalar otomatik görünür</span>
         </div>
-        <p class="tag-hint">Geçmişte veya hâlâ çalıştığın markalar</p>
+        <p class="tag-hint">Deneyimlerden otomatik oluşturulur</p>
       </div>
     </div>
   </div>
@@ -2336,27 +2345,268 @@ function selectSingleChip(el,groupId){
 function toggleMultiChip(el){el.classList.toggle('selected');segmentler=Array.from(document.querySelectorAll('#segment-group .chip.selected')).map(c=>c.dataset.val);}
 function selectOptionCard(el,group){el.closest('.option-cards').querySelectorAll('.option-card').forEach(c=>c.classList.remove('selected'));el.classList.add('selected');calismaTipi=el.dataset.val;}
 
-// ── WORK STATUS ──
+// ── WORK STATUS (backward compat — derived from deneyimler) ──
 var calismaDurumu='',ayrilmaNedeni='';
-function setWorkStatus(val,el){
-  calismaDurumu=val;
-  document.querySelectorAll('#work-status-toggle .ws-opt').forEach(function(o){o.classList.remove('active');});
-  el.classList.add('active');
-  var calisiyor=document.getElementById('ws-calisiyor');
-  var calismiyorum=document.getElementById('ws-calismiyorum');
-  if(val==='Evet'){calisiyor.classList.add('visible');calismiyorum.classList.remove('visible');}
-  else{calisiyor.classList.remove('visible');calismiyorum.classList.add('visible');}
-}
-function selectAyrilma(el){
-  document.querySelectorAll('#ayrilma-group .ayrilma-pill').forEach(function(p){p.classList.remove('selected');});
-  el.classList.add('selected');
-  ayrilmaNedeni=el.dataset.val;
-}
 function toggleCheckItem(el){
   el.classList.toggle('checked');
   calismaTipiList=Array.from(document.querySelectorAll('#calisma-tipi-group .check-item.checked')).map(function(c){return c.dataset.val;});
 }
 var calismaTipiList=[];
+
+// ── DENEYİMLER (LinkedIn-style) ──
+var deneyimler=[];
+var autoToplamDeneyim='';
+var AY_ISIMLERI=['Oca','Şub','Mar','Nis','May','Haz','Tem','Ağu','Eyl','Eki','Kas','Ara'];
+var AYRILMA_NEDENLERI=['İstifa','Kariyer Geçişi','İşten Çıkarılma','Karşılıklı Fesih','Sözleşme Bitimi','Belirtmek İstemiyorum'];
+
+function addExperience(data){
+  var exp=data||{id:Date.now(),sirket:'',pozisyon:'',baslangic_ay:0,baslangic_yil:0,bitis_ay:0,bitis_yil:0,devam_ediyor:false,ayrilma_nedeni:''};
+  if(!exp.id)exp.id=Date.now()+Math.floor(Math.random()*1000);
+  deneyimler.push(exp);
+  renderExperiences();
+  calculateTotalExperience();
+  deriveMarkaList();
+}
+
+function removeExperience(id){
+  deneyimler=deneyimler.filter(function(d){return d.id!==id;});
+  renderExperiences();
+  calculateTotalExperience();
+  deriveMarkaList();
+}
+
+function syncExpFromDOM(id){
+  var card=document.getElementById('exp-card-'+id);
+  if(!card)return;
+  var exp=deneyimler.find(function(d){return d.id===id;});
+  if(!exp)return;
+  exp.sirket=card.querySelector('.exp-sirket').value.trim();
+  exp.pozisyon=card.querySelector('.exp-pozisyon').value.trim();
+  exp.baslangic_ay=parseInt(card.querySelector('.exp-b-ay').value)||0;
+  exp.baslangic_yil=parseInt(card.querySelector('.exp-b-yil').value)||0;
+  exp.devam_ediyor=card.querySelector('.exp-devam-cb').checked;
+  if(!exp.devam_ediyor){
+    exp.bitis_ay=parseInt(card.querySelector('.exp-e-ay').value)||0;
+    exp.bitis_yil=parseInt(card.querySelector('.exp-e-yil').value)||0;
+  }else{
+    exp.bitis_ay=0;exp.bitis_yil=0;
+  }
+  // ayrilma nedeni
+  var selectedPill=card.querySelector('.exp-ayrilma .ayrilma-pill.selected');
+  exp.ayrilma_nedeni=selectedPill?selectedPill.dataset.val:'';
+  // Update avatar
+  var av=card.querySelector('.exp-company-avatar');
+  if(av)av.textContent=exp.sirket?exp.sirket.charAt(0).toUpperCase():'?';
+  // Update duration
+  updateExpDuration(card,exp);
+  calculateTotalExperience();
+  deriveMarkaList();
+}
+
+function updateExpDuration(card,exp){
+  var dur=card.querySelector('.exp-duration');
+  if(!dur)return;
+  var text=calcDuration(exp);
+  dur.textContent=text||'';
+}
+
+function calcDuration(exp){
+  var sAy=exp.baslangic_ay,sYil=exp.baslangic_yil;
+  var eAy,eYil;
+  if(exp.devam_ediyor){var now=new Date();eAy=now.getMonth()+1;eYil=now.getFullYear();}
+  else{eAy=exp.bitis_ay;eYil=exp.bitis_yil;}
+  if(!sYil||!eYil)return '';
+  if(!sAy)sAy=1;if(!eAy)eAy=1;
+  var totalMonths=(eYil-sYil)*12+(eAy-sAy);
+  if(totalMonths<0)return '';
+  var yil=Math.floor(totalMonths/12);
+  var ay=totalMonths%12;
+  var parts=[];
+  if(yil>0)parts.push(yil+' yıl');
+  if(ay>0)parts.push(ay+' ay');
+  return parts.join(' ')||'0 ay';
+}
+
+function renderExperiences(){
+  var container=document.getElementById('deneyim-container');
+  if(!container)return;
+  while(container.firstChild)container.removeChild(container.firstChild);
+  deneyimler.forEach(function(exp){
+    var card=buildExpCard(exp);
+    container.appendChild(card);
+  });
+}
+
+function buildExpCard(exp){
+  var card=document.createElement('div');
+  card.className='exp-card';
+  card.id='exp-card-'+exp.id;
+
+  // Delete button
+  var del=document.createElement('button');
+  del.type='button';del.className='exp-delete';
+  var delSvg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  delSvg.setAttribute('width','14');delSvg.setAttribute('height','14');delSvg.setAttribute('viewBox','0 0 24 24');delSvg.setAttribute('fill','none');delSvg.setAttribute('stroke','currentColor');delSvg.setAttribute('stroke-width','2.5');
+  var p1=document.createElementNS('http://www.w3.org/2000/svg','line');
+  p1.setAttribute('x1','18');p1.setAttribute('y1','6');p1.setAttribute('x2','6');p1.setAttribute('y2','18');
+  var p2=document.createElementNS('http://www.w3.org/2000/svg','line');
+  p2.setAttribute('x1','6');p2.setAttribute('y1','6');p2.setAttribute('x2','18');p2.setAttribute('y2','18');
+  delSvg.appendChild(p1);delSvg.appendChild(p2);del.appendChild(delSvg);
+  del.addEventListener('click',function(){removeExperience(exp.id);});
+  card.appendChild(del);
+
+  // Header: avatar + inputs
+  var header=document.createElement('div');
+  header.className='exp-card-header';
+  var avatar=document.createElement('div');
+  avatar.className='exp-company-avatar';
+  avatar.textContent=exp.sirket?exp.sirket.charAt(0).toUpperCase():'?';
+  header.appendChild(avatar);
+
+  var inputs=document.createElement('div');
+  inputs.className='exp-inputs';
+  var sirketInput=document.createElement('input');
+  sirketInput.type='text';sirketInput.className='exp-sirket';sirketInput.placeholder='Şirket / Marka Adı';sirketInput.value=exp.sirket||'';
+  sirketInput.addEventListener('input',function(){syncExpFromDOM(exp.id);});
+  inputs.appendChild(sirketInput);
+  var pozInput=document.createElement('input');
+  pozInput.type='text';pozInput.className='exp-pozisyon';pozInput.placeholder='Pozisyon';pozInput.value=exp.pozisyon||'';
+  pozInput.addEventListener('input',function(){syncExpFromDOM(exp.id);});
+  inputs.appendChild(pozInput);
+  header.appendChild(inputs);
+  card.appendChild(header);
+
+  // Dates row
+  var datesRow=document.createElement('div');
+  datesRow.className='exp-dates';
+  // Start month
+  var bAy=document.createElement('select');bAy.className='exp-date-select exp-b-ay';
+  var optEmpty=document.createElement('option');optEmpty.value='0';optEmpty.textContent='Ay';bAy.appendChild(optEmpty);
+  for(var m=1;m<=12;m++){var o=document.createElement('option');o.value=String(m);o.textContent=AY_ISIMLERI[m-1];if(exp.baslangic_ay===m)o.selected=true;bAy.appendChild(o);}
+  bAy.addEventListener('change',function(){syncExpFromDOM(exp.id);});
+  datesRow.appendChild(bAy);
+  // Start year
+  var bYil=document.createElement('select');bYil.className='exp-date-select exp-b-yil';
+  var optY=document.createElement('option');optY.value='0';optY.textContent='Yıl';bYil.appendChild(optY);
+  var nowYear=new Date().getFullYear();
+  for(var y=nowYear;y>=1990;y--){var oy=document.createElement('option');oy.value=String(y);oy.textContent=String(y);if(exp.baslangic_yil===y)oy.selected=true;bYil.appendChild(oy);}
+  bYil.addEventListener('change',function(){syncExpFromDOM(exp.id);});
+  datesRow.appendChild(bYil);
+  // Separator
+  var sep=document.createElement('span');sep.className='exp-date-sep';sep.textContent='—';
+  datesRow.appendChild(sep);
+  // End dates wrapper
+  var endWrap=document.createElement('span');endWrap.className='exp-end-dates'+(exp.devam_ediyor?' hidden':'');
+  var eAy=document.createElement('select');eAy.className='exp-date-select exp-e-ay';
+  var optE=document.createElement('option');optE.value='0';optE.textContent='Ay';eAy.appendChild(optE);
+  for(var m2=1;m2<=12;m2++){var o2=document.createElement('option');o2.value=String(m2);o2.textContent=AY_ISIMLERI[m2-1];if(exp.bitis_ay===m2)o2.selected=true;eAy.appendChild(o2);}
+  eAy.addEventListener('change',function(){syncExpFromDOM(exp.id);});
+  endWrap.appendChild(eAy);
+  var eYil=document.createElement('select');eYil.className='exp-date-select exp-e-yil';
+  var optY2=document.createElement('option');optY2.value='0';optY2.textContent='Yıl';eYil.appendChild(optY2);
+  for(var y2=nowYear;y2>=1990;y2--){var oy2=document.createElement('option');oy2.value=String(y2);oy2.textContent=String(y2);if(exp.bitis_yil===y2)oy2.selected=true;eYil.appendChild(oy2);}
+  eYil.addEventListener('change',function(){syncExpFromDOM(exp.id);});
+  endWrap.appendChild(eYil);
+  datesRow.appendChild(endWrap);
+  // "Devam ediyor" label when toggled on
+  var devamLabel=document.createElement('span');devamLabel.className='exp-date-sep';devamLabel.style.fontWeight='600';devamLabel.style.color='var(--navy)';devamLabel.textContent='Devam Ediyor';devamLabel.style.display=exp.devam_ediyor?'inline':'none';devamLabel.className='exp-devam-label';
+  datesRow.appendChild(devamLabel);
+  card.appendChild(datesRow);
+
+  // Toggle: Şu an burada çalışıyorum
+  var toggleRow=document.createElement('div');toggleRow.className='exp-toggle-row';
+  var cb=document.createElement('input');cb.type='checkbox';cb.className='exp-toggle-cb exp-devam-cb';cb.checked=exp.devam_ediyor;
+  cb.addEventListener('change',function(){
+    var checked=cb.checked;
+    endWrap.className='exp-end-dates'+(checked?' hidden':'');
+    devamLabel.style.display=checked?'inline':'none';
+    ayrilmaWrap.className='exp-ayrilma'+(checked?' hidden':'');
+    syncExpFromDOM(exp.id);
+  });
+  toggleRow.appendChild(cb);
+  var toggleLabel=document.createElement('label');toggleLabel.className='exp-toggle-label';toggleLabel.textContent='Şu an burada çalışıyorum';
+  toggleLabel.addEventListener('click',function(){cb.checked=!cb.checked;cb.dispatchEvent(new Event('change'));});
+  toggleRow.appendChild(toggleLabel);
+  card.appendChild(toggleRow);
+
+  // Ayrılma nedeni pills (hidden if devam_ediyor)
+  var ayrilmaWrap=document.createElement('div');ayrilmaWrap.className='exp-ayrilma'+(exp.devam_ediyor?' hidden':'');
+  AYRILMA_NEDENLERI.forEach(function(neden){
+    var pill=document.createElement('div');
+    pill.className='ayrilma-pill'+(exp.ayrilma_nedeni===neden?' selected':'');
+    pill.dataset.val=neden;pill.textContent=neden;
+    pill.addEventListener('click',function(){
+      ayrilmaWrap.querySelectorAll('.ayrilma-pill').forEach(function(p){p.classList.remove('selected');});
+      pill.classList.add('selected');
+      syncExpFromDOM(exp.id);
+    });
+    ayrilmaWrap.appendChild(pill);
+  });
+  card.appendChild(ayrilmaWrap);
+
+  // Duration auto-display
+  var dur=document.createElement('div');dur.className='exp-duration';
+  var durText=calcDuration(exp);
+  dur.textContent=durText||'';
+  card.appendChild(dur);
+
+  return card;
+}
+
+function calculateTotalExperience(){
+  var totalMonths=0;
+  deneyimler.forEach(function(exp){
+    var sAy=exp.baslangic_ay||1,sYil=exp.baslangic_yil;
+    var eAy,eYil;
+    if(exp.devam_ediyor){var now=new Date();eAy=now.getMonth()+1;eYil=now.getFullYear();}
+    else{eAy=exp.bitis_ay||1;eYil=exp.bitis_yil;}
+    if(!sYil||!eYil)return;
+    var months=(eYil-sYil)*12+(eAy-sAy);
+    if(months>0)totalMonths+=months;
+  });
+  var yil=Math.floor(totalMonths/12);
+  var ay=totalMonths%12;
+  var parts=[];
+  if(yil>0)parts.push(yil+' yıl');
+  if(ay>0)parts.push(ay+' ay');
+  var text=parts.join(' ')||'';
+  var el=document.getElementById('deneyim-auto-text');
+  if(el){
+    if(deneyimler.length===0)el.textContent='Deneyim ekledikçe otomatik hesaplanır';
+    else if(text)el.textContent='Toplam: '+text;
+    else el.textContent='Tarihleri girin — otomatik hesaplanır';
+  }
+  // Map to old select value for backward compat
+  var hiddenSel=document.getElementById('f-deneyim');
+  if(hiddenSel){
+    if(yil>=10)autoToplamDeneyim='10+ yıl';
+    else if(yil>=5)autoToplamDeneyim='5–10 yıl';
+    else if(yil>=3)autoToplamDeneyim='3–5 yıl';
+    else if(yil>=1)autoToplamDeneyim='1–3 yıl';
+    else autoToplamDeneyim='0–1 yıl';
+    if(deneyimler.length>0)hiddenSel.value=autoToplamDeneyim;
+  }
+}
+
+function deriveMarkaList(){
+  markaList=[];
+  deneyimler.forEach(function(exp){
+    var s=exp.sirket?exp.sirket.trim():'';
+    if(s&&!markaList.includes(s))markaList.push(s);
+  });
+  var wrap=document.getElementById('marka-auto-wrap');
+  if(!wrap)return;
+  while(wrap.firstChild)wrap.removeChild(wrap.firstChild);
+  if(markaList.length===0){
+    var empty=document.createElement('span');empty.className='marka-auto-empty';empty.textContent='Deneyim eklediğinizde markalar otomatik görünür';
+    wrap.appendChild(empty);
+  }else{
+    markaList.forEach(function(m){
+      var chip=document.createElement('span');chip.className='marka-auto-chip';chip.textContent=m;
+      wrap.appendChild(chip);
+    });
+  }
+}
 
 // ── PROFİL GÖRÜNTÜLEME / DÜZENLEME MODU ──
 var isEditMode=false;
@@ -2461,8 +2711,7 @@ async function loadProfile(){
     document.getElementById('f-deneyim').value=data.deneyim_yil||'';
     if(document.getElementById('f-linkedin'))document.getElementById('f-linkedin').value=data.linkedin||'';
     if(document.getElementById('f-maas'))document.getElementById('f-maas').value=data.maas_beklenti||'';
-    // Markalar
-    if(data.markalar){markaList=data.markalar.split(',').map(m=>m.trim()).filter(Boolean);renderTags('marka-wrap','marka-input',markaList,false);}
+    // Markalar — deneyimlerden otomatik türetilir, fallback: eski data.markalar
     if(data.tercih_markalar){tercihMarkaList=data.tercih_markalar.split(',').map(m=>m.trim()).filter(Boolean);renderTags('tercih-marka-wrap','tercih-marka-input',tercihMarkaList,true);}
     // Dil — yeni JSON format veya eski string
     if(data.diller){loadDilRows(data.diller);}
@@ -2502,13 +2751,22 @@ async function loadProfile(){
       document.querySelectorAll('#calisma-tipi-group .check-item').forEach(function(c){if(calismaTipiList.includes(c.dataset.val))c.classList.add('checked');});
       document.querySelectorAll('.option-card').forEach(c=>{if(c.dataset.val===calismaTipi)c.classList.add('selected');});
     }
-    if(data.calisma_durumu){
-      calismaDurumu=data.calisma_durumu;
-      document.querySelectorAll('#work-status-toggle .ws-opt').forEach(function(o){if(o.dataset.val===calismaDurumu)o.classList.add('active');});
-      if(calismaDurumu==='Evet'){document.getElementById('ws-calisiyor').classList.add('visible');if(data.mevcut_sirket)document.getElementById('f-mevcut-sirket').value=data.mevcut_sirket;if(data.mevcut_pozisyon)document.getElementById('f-mevcut-pozisyon').value=data.mevcut_pozisyon;}
-      else if(calismaDurumu==='Hayır'){document.getElementById('ws-calismiyorum').classList.add('visible');if(data.mevcut_sirket)document.getElementById('f-son-sirket').value=data.mevcut_sirket;if(data.mevcut_pozisyon)document.getElementById('f-son-pozisyon').value=data.mevcut_pozisyon;}
+    // Deneyimler (LinkedIn-style)
+    if(data.deneyimler){
+      try{deneyimler=JSON.parse(data.deneyimler);}catch(e){deneyimler=[];}
+      renderExperiences();calculateTotalExperience();deriveMarkaList();
+    }else if(data.mevcut_sirket||data.mevcut_pozisyon){
+      // Backward compat: eski profilde deneyimler yok ama şirket/pozisyon var → 1 entry oluştur
+      var legacyExp={id:Date.now(),sirket:data.mevcut_sirket||'',pozisyon:data.mevcut_pozisyon||'',baslangic_ay:0,baslangic_yil:0,bitis_ay:0,bitis_yil:0,devam_ediyor:data.calisma_durumu==='Evet',ayrilma_nedeni:data.ayrilma_nedeni||''};
+      deneyimler=[legacyExp];
+      renderExperiences();calculateTotalExperience();deriveMarkaList();
+    }else if(data.markalar){
+      // No deneyimler and no sirket — use old markalar for brand chips
+      markaList=data.markalar.split(',').map(function(m){return m.trim();}).filter(Boolean);
+      deriveMarkaList();
     }
-    if(data.ayrilma_nedeni){ayrilmaNedeni=data.ayrilma_nedeni;document.querySelectorAll('#ayrilma-group .ayrilma-pill').forEach(function(p){if(p.dataset.val===ayrilmaNedeni)p.classList.add('selected');});}
+    if(data.calisma_durumu)calismaDurumu=data.calisma_durumu;
+    if(data.ayrilma_nedeni)ayrilmaNedeni=data.ayrilma_nedeni;
     if(data.segmentler){segmentler=data.segmentler.split(',').map(s=>s.trim()).filter(Boolean);document.querySelectorAll('#segment-group .chip').forEach(c=>{if(segmentler.includes(c.dataset.val))c.classList.add('selected');});}
     if(data.engel_durumu){engelDurumu=data.engel_durumu;document.querySelectorAll('#engel-group .chip').forEach(c=>{if(c.dataset.val===engelDurumu)c.classList.add('selected');});}
     // Şehir/ilçe
@@ -2635,8 +2893,31 @@ async function parseCV(file){
 
     score=Math.min(score,100);
 
+    // Deneyim tespiti — marka adı yakınında tarih aralıkları ara
+    var parsedExps=[];
+    var lines=fullText.split('\n');
+    foundBrands.forEach(function(brand){
+      // Find lines containing this brand
+      for(var li=0;li<lines.length;li++){
+        if(lines[li].toLowerCase().includes(brand.toLowerCase())){
+          // Look for year patterns nearby (same line or next 3 lines)
+          var searchBlock=lines.slice(li,Math.min(li+4,lines.length)).join(' ');
+          var yearPat=searchBlock.match(/(20\d{2})\s*[-–—]\s*(20\d{2}|[Hh]alen|[Dd]evam|[Gg]ünümüz|[Pp]resent)/);
+          var expObj={id:Date.now()+parsedExps.length*1000+Math.floor(Math.random()*100),sirket:brand,pozisyon:'',baslangic_ay:0,baslangic_yil:0,bitis_ay:0,bitis_yil:0,devam_ediyor:false,ayrilma_nedeni:''};
+          if(yearPat){
+            expObj.baslangic_yil=parseInt(yearPat[1]);
+            if(/halen|devam|günümüz|present/i.test(yearPat[2])){expObj.devam_ediyor=true;}
+            else{expObj.bitis_yil=parseInt(yearPat[2]);}
+          }
+          // Check for duplicate brand
+          if(!parsedExps.some(function(pe){return pe.sirket===brand;}))parsedExps.push(expObj);
+          break;
+        }
+      }
+    });
+
     // Parse modal doldur
-    parsedData={full_name:nameMatch?nameMatch[1]:'',telefon:phoneMatch?phoneMatch[0].replace(/\s/g,''):'',markalar:foundBrands.join(', '),score:score,scoring:scoring,cvText:fullText.substring(0,5000)};
+    parsedData={full_name:nameMatch?nameMatch[1]:'',telefon:phoneMatch?phoneMatch[0].replace(/\s/g,''):'',markalar:foundBrands.join(', '),parsedExps:parsedExps,score:score,scoring:scoring,cvText:fullText.substring(0,5000)};
     document.getElementById('p-isim').value=parsedData.full_name||'';
     document.getElementById('p-telefon').value=parsedData.telefon||'';
     document.getElementById('p-markalar').value=parsedData.markalar||'';
@@ -2693,12 +2974,22 @@ function applyParsedData(){
       }
     });
   }
-  // Markalar
-  var markalar=document.getElementById('p-markalar').value;
-  if(markalar){
-    var ym=markalar.split(',').map(function(m){return m.trim();}).filter(Boolean);
-    ym.forEach(function(m){if(!markaList.includes(m))markaList.push(m);});
-    renderTags('marka-wrap','marka-input',markaList,false);
+  // Deneyimler — CV'den tespit edilen deneyimleri ekle
+  if(parsedData.parsedExps&&parsedData.parsedExps.length>0){
+    parsedData.parsedExps.forEach(function(pe){
+      var exists=deneyimler.some(function(d){return d.sirket===pe.sirket;});
+      if(!exists)addExperience(pe);
+    });
+  }else{
+    // Fallback: markalardan deneyim oluştur
+    var markalar=document.getElementById('p-markalar').value;
+    if(markalar){
+      var ym=markalar.split(',').map(function(m){return m.trim();}).filter(Boolean);
+      ym.forEach(function(m){
+        var exists=deneyimler.some(function(d){return d.sirket===m;});
+        if(!exists)addExperience({id:Date.now()+Math.floor(Math.random()*10000),sirket:m,pozisyon:'',baslangic_ay:0,baslangic_yil:0,bitis_ay:0,bitis_yil:0,devam_ediyor:false,ayrilma_nedeni:''});
+      });
+    }
   }
   closeParse();
   // Scroll to first empty required field
@@ -2963,6 +3254,13 @@ async function saveProfile(){
     setTimeout(()=>{if(warn)warn.style.display='none';},4000);return;
   }
   btnText.textContent='Kaydediliyor...';
+  // Sync deneyimler from DOM before save
+  deneyimler.forEach(function(exp){syncExpFromDOM(exp.id);});
+  // Derive backward-compat fields from deneyimler
+  var aktifDeneyim=deneyimler.find(function(d){return d.devam_ediyor;});
+  var sonDeneyim=deneyimler.length?deneyimler[0]:null;
+  calismaDurumu=aktifDeneyim?'Evet':(deneyimler.length?'Hayır':'');
+  ayrilmaNedeni=(!aktifDeneyim&&sonDeneyim)?sonDeneyim.ayrilma_nedeni:'';
   const profileData={
     user_id:currentUser.id,full_name:document.getElementById('f-isim').value.trim(),email:currentUser.email,
     telefon:document.getElementById('f-telefon').value.trim(),cinsiyet:document.getElementById('f-cinsiyet').value,
@@ -2973,9 +3271,10 @@ async function saveProfile(){
     tercih_markalar:tercihMarkaList.join(', '),
     calisma_tipi:calismaTipiList.length?calismaTipiList.join(', '):calismaTipi,musaitlik:musaitlik,segmentler:segmentler.join(', '),
     calisma_durumu:calismaDurumu,
-    mevcut_sirket:(calismaDurumu==='Evet'?(document.getElementById('f-mevcut-sirket').value.trim()):(document.getElementById('f-son-sirket').value.trim())),
-    mevcut_pozisyon:(calismaDurumu==='Evet'?(document.getElementById('f-mevcut-pozisyon').value.trim()):(document.getElementById('f-son-pozisyon').value.trim())),
+    mevcut_sirket:aktifDeneyim?aktifDeneyim.sirket:(sonDeneyim?sonDeneyim.sirket:''),
+    mevcut_pozisyon:aktifDeneyim?aktifDeneyim.pozisyon:(sonDeneyim?sonDeneyim.pozisyon:''),
     ayrilma_nedeni:ayrilmaNedeni,
+    deneyimler:JSON.stringify(deneyimler),
     tercih_sehirler:selectedSehirler.join(', '),tercih_ilceler:JSON.stringify(selectedIlceler),
     engel_durumu:engelDurumu,is_active:document.getElementById('toggle-active').checked,
     egitim_seviye:document.getElementById('f-egitim-seviye')?document.getElementById('f-egitim-seviye').value:'',
@@ -3045,9 +3344,6 @@ document.addEventListener('DOMContentLoaded',function(){
     localStorage.removeItem('ht_career_goal_set');
   })();
 
-  // Marka
-  const mi=document.getElementById('marka-input');
-  if(mi)mi.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===','){e.preventDefault();const v=mi.value.trim().replace(/,$/,'');if(v&&!markaList.includes(v)){markaList.push(v);renderTags('marka-wrap','marka-input',markaList,false);}mi.value='';}});
   // Tercih marka
   const ti=document.getElementById('tercih-marka-input');
   if(ti)ti.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===','){e.preventDefault();const v=ti.value.trim().replace(/,$/,'');if(v&&!tercihMarkaList.includes(v)){tercihMarkaList.push(v);renderTags('tercih-marka-wrap','tercih-marka-input',tercihMarkaList,true);}ti.value='';}});
