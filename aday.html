@@ -95,6 +95,56 @@
 .feature-text p{font-size:14px;color:var(--muted);line-height:1.6;}
 .feature-tag{display:inline-flex;background:var(--verm-light);color:var(--verm);font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;margin-top:8px;}
 
+/* FREEMIUM HIGHLIGHT */
+.free-highlight{display:inline-flex;align-items:center;gap:5px;background:#ECFDF5;color:#065F46;font-size:10px;font-weight:800;padding:4px 10px;border-radius:20px;border:1px solid #BBF7D0;}
+
+/* ═══ PLAN COMPARISON ═══ */
+.compare-section{padding:88px 48px;background:linear-gradient(180deg,white 0%,var(--gray) 100%);}
+.compare-inner{max-width:1000px;margin:0 auto;}
+.compare-header{text-align:center;margin-bottom:48px;}
+.compare-header .section-title{margin-bottom:10px;}
+.compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;}
+.compare-card{border-radius:20px;padding:36px 32px;position:relative;overflow:hidden;}
+.compare-card.free{background:white;border:2px solid var(--border);}
+.compare-card.premium{background:linear-gradient(145deg,var(--navy) 0%,#1a2550 100%);border:2px solid rgba(201,78,40,0.3);}
+.compare-card.premium::before{content:'✦';position:absolute;right:-10px;top:-10px;font-size:120px;opacity:0.04;color:white;}
+.cc-badge{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;padding:5px 12px;border-radius:20px;margin-bottom:16px;}
+.compare-card.free .cc-badge{background:#ECFDF5;color:#065F46;border:1px solid #BBF7D0;}
+.compare-card.premium .cc-badge{background:rgba(201,78,40,0.2);color:#FCA5A5;border:1px solid rgba(201,78,40,0.3);}
+.cc-name{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:28px;letter-spacing:-1px;margin-bottom:4px;}
+.compare-card.free .cc-name{color:var(--text);}
+.compare-card.premium .cc-name{color:white;}
+.cc-price{font-family:'DM Mono',monospace;font-size:13px;margin-bottom:20px;}
+.compare-card.free .cc-price{color:var(--muted);}
+.compare-card.premium .cc-price{color:rgba(255,255,255,0.45);}
+.cc-divider{height:1px;margin-bottom:20px;}
+.compare-card.free .cc-divider{background:var(--border);}
+.compare-card.premium .cc-divider{background:rgba(255,255,255,0.1);}
+.cc-list{display:flex;flex-direction:column;gap:12px;margin-bottom:24px;}
+.cc-item{display:flex;align-items:flex-start;gap:10px;font-size:13px;line-height:1.5;font-weight:500;}
+.compare-card.free .cc-item{color:var(--text);}
+.compare-card.premium .cc-item{color:rgba(255,255,255,0.8);}
+.cc-check{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;margin-top:1px;}
+.compare-card.free .cc-check{background:#ECFDF5;color:#065F46;}
+.compare-card.premium .cc-check{background:rgba(201,78,40,0.2);color:#FCA5A5;}
+.cc-item-label{flex:1;}
+.cc-item-label strong{font-weight:700;}
+.cc-cta{display:block;width:100%;padding:14px;border-radius:12px;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:700;text-align:center;cursor:pointer;transition:all 0.2s;text-decoration:none;}
+.cc-cta.free{background:var(--verm);color:white;border:none;}
+.cc-cta.free:hover{background:#b84420;transform:translateY(-1px);}
+.cc-cta.premium{background:white;color:var(--navy);border:none;}
+.cc-cta.premium:hover{background:rgba(255,255,255,0.9);transform:translateY(-1px);}
+.cc-note{font-size:11px;text-align:center;margin-top:10px;}
+.compare-card.free .cc-note{color:var(--muted);}
+.compare-card.premium .cc-note{color:rgba(255,255,255,0.35);}
+/* Premium includes all free */
+.cc-includes{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:rgba(255,255,255,0.4);margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid rgba(255,255,255,0.08);}
+
+@media(max-width:768px){
+  .compare-grid{grid-template-columns:1fr;}
+  .compare-section{padding:56px 24px;}
+}
+
 /* KARİYER ROTA PROMO */
 .kariyer-promo{background:var(--navy);border-radius:24px;padding:48px;display:grid;grid-template-columns:1fr auto;gap:40px;align-items:center;margin-top:48px;overflow:hidden;position:relative;}
 .kariyer-promo::before{content:'';position:absolute;right:-40px;top:-40px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,0.04);}
@@ -580,53 +630,162 @@
   </div>
 </section>
 
-<!-- FEATURES -->
+<!-- ÜCRETSİZ PROFİL ÖZELLİKLERİ -->
 <div class="section">
-  <div>
-    <span class="section-tag">Neden hellotalent?</span>
-    <h2 class="section-title">Adaylar için her detay düşünüldü.</h2>
-    <p class="section-sub">Retail'e özgü özellikler — başka hiçbir platformda bulamazsın.</p>
+  <div style="text-align:center;margin-bottom:0;">
+    <span class="section-tag">✅ Ücretsiz Profil</span>
+    <h2 class="section-title">Kayıt ol, hemen kullanmaya başla.</h2>
+    <p class="section-sub" style="margin:0 auto;">Hiçbir şey ödemeden retail kariyerinde öne çık. Gizli ücret yok, komisyon yok.</p>
   </div>
   <div class="features-grid">
     <div class="feature-card">
-      <div class="feature-icon">🔒</div>
+      <div class="feature-icon">👤</div>
       <div class="feature-text">
-        <h4>Verilerin %100 Güvende</h4>
-        <p>CV ve profil bilgilerin yalnızca onaylı marka partnerleriyle paylaşılır. 3. taraflarla asla paylaşılmaz. Mevcut işverenden gizli kalma seçeneği sunulur.</p>
-        <span class="feature-tag">KVKK Uyumlu</span>
-      </div>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon">🎯</div>
-      <div class="feature-text">
-        <h4>Sana Özel Eşleştirme</h4>
-        <p>Profil deneyimine, hedeflerine ve tercih ettiğin segment'e göre en uygun markalarla eşleştirilirsin. Kör başvuru değil, akıllı eşleştirme.</p>
-        <span class="feature-tag">AI Destekli</span>
-      </div>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon">✅</div>
-      <div class="feature-text">
-        <h4>Tamamen Ücretsiz</h4>
-        <p>Aday olarak platform kullanımı her zaman ücretsizdir. Gizli ücret, aylık abonelik, komisyon yoktur. Sana bir şey ödemezsin.</p>
-        <span class="feature-tag">Her Zaman Ücretsiz</span>
+        <h4>Profil Oluştur & Markalarla Eşleş</h4>
+        <p>Deneyimini, hedeflerini ve tercih ettiğin segmenti paylaş. Sistem seni doğru markalarla eşleştirir — kör başvuru değil, akıllı eşleştirme.</p>
+        <span class="free-highlight">✓ Ücretsiz</span>
       </div>
     </div>
     <div class="feature-card">
       <div class="feature-icon">⭐</div>
       <div class="feature-text">
         <h4>Kariyer Rotası Planlama</h4>
-        <p>Sadece iş bulmak değil, nereye gitmek istediğini de biliyoruz. Kariyer rotası aracı hedef pozisyonuna giden yolu haritalandırır.</p>
-        <span class="feature-tag">Yeni Özellik</span>
+        <p>Satış Danışmanı'ndan Store Manager'a, lüks segmente geçişe — hedef pozisyonuna giden yolu haritalandır, yetkinlik boşluklarını gör.</p>
+        <span class="free-highlight">✓ Ücretsiz</span>
       </div>
     </div>
-    <div class="feature-card" style="border-color:var(--verm);background:linear-gradient(135deg,#fff8f6 0%,white 100%);">
-      <div class="feature-icon">👁️</div>
+    <div class="feature-card">
+      <div class="feature-icon">📄</div>
       <div class="feature-text">
-        <h4>Profilini Kim Gördü?</h4>
-        <p>Hangi recruiter'lar profilini inceledi? Aktif arama moduna geç, 24 saat önce ilanlara eriş. Premium üyeye özel avantajlar seni öne çıkarır.</p>
-        <span class="feature-tag" style="background:rgba(201,78,40,0.1);color:var(--verm);">Premium</span>
+        <h4>CV Yükle & AI ile Otomatik Doldur</h4>
+        <p>PDF yükle, yapay zeka bilgilerini çıkarsın. CV zorunlu değil — birkaç dakikada profil tamamla, markalar seni bulsun.</p>
+        <span class="free-highlight">✓ Ücretsiz</span>
       </div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🔒</div>
+      <div class="feature-text">
+        <h4>KVKK Güvenceli Gizlilik</h4>
+        <p>Bilgilerin yalnızca onaylı marka partnerleriyle paylaşılır. Mevcut işverenden gizli kal seçeneği. 3. taraflarla asla paylaşılmaz.</p>
+        <span class="free-highlight">✓ Ücretsiz</span>
+      </div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📚</div>
+      <div class="feature-text">
+        <h4>Kariyer Rehberi & Mülakat Soruları</h4>
+        <p>Store Manager nasıl olunur? Lüks segmente geçiş rehberi, retail mülakatlarında 20 soru — üyeye özel ücretsiz içerikler.</p>
+        <span class="free-highlight">✓ Ücretsiz</span>
+      </div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🔔</div>
+      <div class="feature-text">
+        <h4>Bildirimler & Durum Takibi</h4>
+        <p>Profilin görüntülendiğinde, bir marka ilgilendiğinde e-posta bildirimi al. Dashboard'dan kariyer sürecini takip et.</p>
+        <span class="free-highlight">✓ Ücretsiz</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- FREEMİUM vs PREMİUM KARŞILAŞTIRMA -->
+<div class="compare-section">
+  <div class="compare-inner">
+    <div class="compare-header">
+      <span class="section-tag">Planlar</span>
+      <h2 class="section-title">Ücretsiz başla, Premium ile öne çık.</h2>
+      <p class="section-sub" style="margin:0 auto;">Ücretsiz profil seni gösterir — Premium seni herkesten bir adım öne taşır.</p>
+    </div>
+
+    <div class="compare-grid">
+
+      <!-- ÜCRETSİZ -->
+      <div class="compare-card free">
+        <div class="cc-badge">✓ Aktif Plan</div>
+        <div class="cc-name">Ücretsiz</div>
+        <div class="cc-price">₺0 / sonsuza dek</div>
+        <div class="cc-divider"></div>
+        <div class="cc-list">
+          <div class="cc-item">
+            <div class="cc-check">✓</div>
+            <div class="cc-item-label"><strong>Profil oluşturma</strong> & marka eşleştirme</div>
+          </div>
+          <div class="cc-item">
+            <div class="cc-check">✓</div>
+            <div class="cc-item-label"><strong>Kariyer rotası</strong> planlama aracı</div>
+          </div>
+          <div class="cc-item">
+            <div class="cc-check">✓</div>
+            <div class="cc-item-label"><strong>CV yükleme</strong> & AI otomatik doldurma</div>
+          </div>
+          <div class="cc-item">
+            <div class="cc-check">✓</div>
+            <div class="cc-item-label"><strong>KVKK güvenceli</strong> gizlilik & görünmezlik</div>
+          </div>
+          <div class="cc-item">
+            <div class="cc-check">✓</div>
+            <div class="cc-item-label"><strong>Kariyer rehberi</strong> & mülakat içerikleri</div>
+          </div>
+          <div class="cc-item">
+            <div class="cc-check">✓</div>
+            <div class="cc-item-label"><strong>E-posta bildirimleri</strong> & durum takibi</div>
+          </div>
+        </div>
+        <a href="#kayit" class="cc-cta free">Profil Oluştur — Ücretsiz →</a>
+        <div class="cc-note">Kredi kartı gerekmez · 5 dakikada hazır</div>
+      </div>
+
+      <!-- PREMİUM -->
+      <div class="compare-card premium">
+        <div class="cc-badge">✦ Yakında</div>
+        <div class="cc-name">Premium</div>
+        <div class="cc-price">Fiyat yakında açıklanacak</div>
+        <div class="cc-divider"></div>
+        <div class="cc-includes">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          Ücretsiz plandaki her şey dahil
+        </div>
+        <div class="cc-list">
+          <div class="cc-item">
+            <div class="cc-check">✦</div>
+            <div class="cc-item-label"><strong>Öne çıkan aday</strong> — recruiter listesinde üstte görün</div>
+          </div>
+          <div class="cc-item">
+            <div class="cc-check">✦</div>
+            <div class="cc-item-label"><strong>Profilini kim gördü?</strong> — marka adı + recruiter bilgisi</div>
+          </div>
+          <div class="cc-item">
+            <div class="cc-check">✦</div>
+            <div class="cc-item-label"><strong>Aktif arama modu</strong> — turuncu badge ile dikkat çek</div>
+          </div>
+          <div class="cc-item">
+            <div class="cc-check">✦</div>
+            <div class="cc-item-label"><strong>Öncelikli ilanlar</strong> — 24 saat önce gör & başvur</div>
+          </div>
+          <div class="cc-item">
+            <div class="cc-check">✦</div>
+            <div class="cc-item-label"><strong>CV puanı & analiz</strong> — AI ile güçlü/zayıf yön raporu</div>
+          </div>
+          <div class="cc-item">
+            <div class="cc-check">✦</div>
+            <div class="cc-item-label"><strong>Şirket NPS skorları</strong> — anonim çalışan değerlendirmesi</div>
+          </div>
+          <div class="cc-item">
+            <div class="cc-check">✦</div>
+            <div class="cc-item-label"><strong>AI CV düzenleme</strong> — ayda 3 hak</div>
+          </div>
+          <div class="cc-item">
+            <div class="cc-check">✦</div>
+            <div class="cc-item-label"><strong>Mülakat kiti</strong> & <strong>HT Perks</strong> avantajları</div>
+          </div>
+        </div>
+        <button class="cc-cta premium" onclick="document.getElementById('kayit').scrollIntoView({behavior:'smooth'})">Kayıt Ol, Beta Listesine Gir</button>
+        <div class="cc-note">Önce ücretsiz kayıt ol · Premium açıldığında ilk sırada ol</div>
+      </div>
+
     </div>
   </div>
 </div>
