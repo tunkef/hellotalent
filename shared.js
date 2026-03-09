@@ -147,26 +147,35 @@
     '      </div>',
     '    </div>',
     '    <div>',
+    '      <button class="footer-col-toggle" onclick="HT.toggleFooterCol(this)">Platform <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></button>',
     '      <div class="footer-col-title">Platform</div>',
-    '      <a class="footer-link" href="aday.html">Adaylar İçin</a>',
-    '      <a class="footer-link" href="isveren.html">İşverenler İçin</a>',
-    '      <a class="footer-link" href="giris.html?tab=aday">Profil Oluştur</a>',
-    '      <a class="footer-link" href="giris.html?tab=ik">İK Kaydı</a>',
+    '      <div class="footer-col-links">',
+    '        <a class="footer-link" href="aday.html">Adaylar İçin</a>',
+    '        <a class="footer-link" href="isveren.html">İşverenler İçin</a>',
+    '        <a class="footer-link" href="giris.html?tab=aday">Profil Oluştur</a>',
+    '        <a class="footer-link" href="giris.html?tab=ik">İK Kaydı</a>',
+    '      </div>',
     '    </div>',
     '    <div>',
+    '      <button class="footer-col-toggle" onclick="HT.toggleFooterCol(this)">Rotalar <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></button>',
     '      <div class="footer-col-title">Rotalar</div>',
-    '      <a class="footer-link" href="kariyer.html">Kariyer Rotaları</a>',
-    '      <a class="footer-link" href="isalim-rotasi.html">İşe Alım Rotası</a>',
-    '      <a class="footer-link" href="pozisyonlar.html">Retail Pozisyonlar</a>',
-    '      <a class="footer-link" href="yetkinlik.html">Yetkinlik Rehberi</a>',
-    '      <a class="footer-link" href="blog.html">Retail Blog</a>',
+    '      <div class="footer-col-links">',
+    '        <a class="footer-link" href="kariyer.html">Kariyer Rotaları</a>',
+    '        <a class="footer-link" href="isalim-rotasi.html">İşe Alım Rotası</a>',
+    '        <a class="footer-link" href="pozisyonlar.html">Retail Pozisyonlar</a>',
+    '        <a class="footer-link" href="yetkinlik.html">Yetkinlik Rehberi</a>',
+    '        <a class="footer-link" href="blog.html">Retail Blog</a>',
+    '      </div>',
     '    </div>',
     '    <div class="footer-col">',
+    '      <button class="footer-col-toggle" onclick="HT.toggleFooterCol(this)">Şirket <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></button>',
     '      <div class="footer-col-title">Şirket</div>',
-    '      <a class="footer-link" href="index.html#about">Hakkımızda</a>',
-    '      <a class="footer-link" href="iletisim.html">İletişim</a>',
-    '      <a class="footer-link" href="gizlilik.html">Gizlilik Politikası</a>',
-    '      <a class="footer-link" href="kullanim-sartlari.html">Kullanım Şartları</a>',
+    '      <div class="footer-col-links">',
+    '        <a class="footer-link" href="index.html#about">Hakkımızda</a>',
+    '        <a class="footer-link" href="iletisim.html">İletişim</a>',
+    '        <a class="footer-link" href="gizlilik.html">Gizlilik Politikası</a>',
+    '        <a class="footer-link" href="kullanim-sartlari.html">Kullanım Şartları</a>',
+    '      </div>',
     '    </div>',
     '  </div>',
     '  <div class="footer-bottom">',
@@ -234,6 +243,23 @@
       var open = panel.classList.toggle('open');
       var svg = btn.querySelector('svg');
       if (svg) svg.style.transform = open ? 'rotate(180deg)' : '';
+    },
+
+    toggleShowMore: function (btn, gridId) {
+      var grid = document.getElementById(gridId);
+      if (!grid) return;
+      var expanded = grid.classList.toggle('expanded');
+      btn.classList.toggle('expanded', expanded);
+      btn.innerHTML = expanded
+        ? 'Daha Az Göster <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>'
+        : 'Daha Fazla Göster <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>';
+    },
+
+    toggleFooterCol: function (btn) {
+      var links = btn.nextElementSibling;
+      if (!links) return;
+      var open = links.classList.toggle('open');
+      btn.classList.toggle('open', open);
     },
   };
 
