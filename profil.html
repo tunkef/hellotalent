@@ -194,44 +194,44 @@
   .ayrilma-pill:hover{border-color:var(--navy);}
   .ayrilma-pill.selected{background:var(--navy);border-color:var(--navy);color:white;}
 
-  /* DENEYİM KARTLARI (LinkedIn-style) */
-  .exp-section-label{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.6px;color:var(--muted);margin-bottom:10px;}
-  .exp-container{display:flex;flex-direction:column;gap:12px;}
-  .exp-card{background:white;border:1.5px solid var(--border);border-radius:12px;padding:16px;position:relative;transition:border-color 0.15s;}
+  /* DENEYİM KARTLARI (Compact LinkedIn-style) */
+  .exp-container{display:flex;flex-direction:column;gap:8px;}
+  .exp-card{background:white;border:1px solid var(--border);border-radius:10px;padding:10px 12px;position:relative;transition:border-color 0.15s;}
   .exp-card:hover{border-color:var(--navy);}
-  .exp-card-header{display:flex;gap:12px;align-items:flex-start;}
-  .exp-company-avatar{width:40px;height:40px;border-radius:10px;background:var(--navy);color:white;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:16px;flex-shrink:0;font-family:'Bricolage Grotesque',sans-serif;}
-  .exp-inputs{flex:1;display:flex;flex-direction:column;gap:6px;}
-  .exp-inputs input{width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:600;color:var(--text);transition:border-color 0.15s;background:white;}
-  .exp-inputs input:focus{outline:none;border-color:var(--navy);}
+  .exp-card-header{display:flex;gap:10px;align-items:flex-start;}
+  .exp-company-avatar{width:32px;height:32px;border-radius:8px;background:var(--navy);color:white;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;flex-shrink:0;font-family:'Bricolage Grotesque',sans-serif;margin-top:2px;}
+  .exp-inputs{flex:1;display:flex;flex-direction:column;gap:2px;}
+  .exp-inputs input{width:100%;padding:3px 6px;border:none;border-bottom:1px solid var(--border);border-radius:0;font-size:12px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:600;color:var(--text);transition:border-color 0.15s;background:transparent;}
+  .exp-inputs input:focus{outline:none;border-bottom-color:var(--navy);}
   .exp-inputs input::placeholder{color:var(--muted);font-weight:500;}
-  .exp-inputs input.exp-sirket{font-size:14px;font-weight:700;}
-  .exp-dates{display:flex;align-items:center;gap:6px;margin-top:8px;flex-wrap:wrap;}
-  .exp-date-select{padding:6px 8px;border:1.5px solid var(--border);border-radius:8px;font-size:12px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:600;color:var(--text);background:white;cursor:pointer;appearance:auto;}
+  .exp-inputs input.exp-sirket{font-size:13px;font-weight:700;}
+  .exp-meta{display:flex;align-items:center;gap:6px;margin-top:6px;flex-wrap:wrap;}
+  .exp-dates{display:flex;align-items:center;gap:4px;flex-wrap:wrap;}
+  .exp-date-select{padding:3px 5px;border:1px solid var(--border);border-radius:6px;font-size:11px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:600;color:var(--text);background:white;cursor:pointer;appearance:auto;}
   .exp-date-select:focus{outline:none;border-color:var(--navy);}
-  .exp-date-sep{color:var(--muted);font-weight:700;font-size:13px;margin:0 2px;}
-  .exp-toggle-row{display:flex;align-items:center;gap:8px;margin-top:8px;}
-  .exp-toggle-cb{width:16px;height:16px;accent-color:var(--navy);cursor:pointer;}
-  .exp-toggle-label{font-size:12px;font-weight:600;color:var(--text);cursor:pointer;user-select:none;}
-  .exp-end-dates{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+  .exp-date-sep{color:var(--muted);font-weight:700;font-size:11px;margin:0 1px;}
+  .exp-toggle-row{display:flex;align-items:center;gap:6px;margin-top:4px;}
+  .exp-toggle-cb{width:14px;height:14px;accent-color:var(--navy);cursor:pointer;}
+  .exp-toggle-label{font-size:11px;font-weight:600;color:var(--muted);cursor:pointer;user-select:none;}
+  .exp-end-dates{display:flex;align-items:center;gap:4px;flex-wrap:wrap;}
   .exp-end-dates.hidden{display:none;}
-  .exp-ayrilma{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
+  .exp-ayrilma{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px;}
   .exp-ayrilma.hidden{display:none;}
-  .exp-ayrilma .ayrilma-pill{padding:5px 10px;font-size:11px;}
-  .exp-duration{font-size:11px;color:var(--muted);font-weight:600;margin-top:6px;}
-  .exp-delete{position:absolute;top:12px;right:12px;width:28px;height:28px;border:none;background:transparent;cursor:pointer;border-radius:8px;display:flex;align-items:center;justify-content:center;transition:background 0.15s;color:var(--muted);}
+  .exp-ayrilma .ayrilma-pill{padding:3px 8px;font-size:10px;}
+  .exp-duration{font-size:10px;color:var(--muted);font-weight:600;margin-top:2px;margin-left:42px;}
+  .exp-delete{position:absolute;top:8px;right:8px;width:24px;height:24px;border:none;background:transparent;cursor:pointer;border-radius:6px;display:flex;align-items:center;justify-content:center;transition:background 0.15s;color:var(--muted);}
   .exp-delete:hover{background:#fee2e2;color:#C94E28;}
   .exp-delete svg{pointer-events:none;}
-  .btn-add-exp{width:100%;padding:12px;border:2px dashed var(--border);border-radius:12px;background:transparent;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:700;color:var(--navy);display:flex;align-items:center;justify-content:center;gap:6px;transition:all 0.15s;margin-top:4px;}
-  .btn-add-exp:hover{border-color:var(--navy);background:var(--navy-light);}
-  .deneyim-auto-display{display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--gray);border-radius:10px;font-size:13px;font-weight:700;color:var(--navy);}
-  .deneyim-auto-display .da-icon{font-size:16px;}
-  .marka-auto-wrap{display:flex;flex-wrap:wrap;gap:6px;min-height:32px;}
-  .marka-auto-chip{padding:5px 10px;background:var(--gray);border-radius:8px;font-size:12px;font-weight:600;color:var(--text);}
-  .marka-auto-empty{font-size:12px;color:var(--muted);font-style:italic;}
-  .profile-view-mode .btn-add-exp{pointer-events:none;opacity:0.5;}
+  .btn-add-exp{width:100%;padding:8px;border:1.5px dashed var(--border);border-radius:8px;background:transparent;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:600;color:var(--muted);display:flex;align-items:center;justify-content:center;gap:5px;transition:all 0.15s;margin-top:2px;}
+  .btn-add-exp:hover{border-color:var(--navy);background:var(--navy-light);color:var(--navy);}
+  .deneyim-auto-display{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;background:var(--gray);border-radius:8px;font-size:12px;font-weight:700;color:var(--navy);}
+  .deneyim-auto-display .da-icon{font-size:13px;}
+  .marka-auto-wrap{display:flex;flex-wrap:wrap;gap:5px;min-height:28px;}
+  .marka-auto-chip{padding:3px 8px;background:var(--gray);border-radius:6px;font-size:11px;font-weight:600;color:var(--text);}
+  .marka-auto-empty{font-size:11px;color:var(--muted);font-style:italic;}
+  .profile-view-mode .btn-add-exp{pointer-events:none;opacity:0.4;}
   .profile-view-mode .exp-delete{display:none;}
-  .profile-view-mode .exp-inputs input{pointer-events:none;background:var(--gray);opacity:0.9;}
+  .profile-view-mode .exp-inputs input{pointer-events:none;border-bottom-color:transparent;opacity:0.9;}
   .profile-view-mode .exp-date-select{pointer-events:none;background:var(--gray);opacity:0.9;}
   .profile-view-mode .exp-toggle-cb{pointer-events:none;}
   .profile-view-mode .exp-ayrilma .ayrilma-pill{pointer-events:none;opacity:0.85;}
@@ -469,6 +469,20 @@
   .dil-row select{border:1px solid var(--border);border-radius:7px;padding:4px 8px;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;background:white;cursor:pointer;outline:none;color:var(--text);}
   .dil-row-del{background:none;border:none;cursor:pointer;color:var(--muted);font-size:16px;line-height:1;padding:2px 4px;border-radius:4px;transition:color 0.15s;}
   .dil-row-del:hover{color:var(--red);}
+
+  /* EKSTRA EĞİTİM ROWS */
+  .egitim-row{display:flex;align-items:center;gap:8px;background:var(--gray);border:1.5px solid var(--border);border-radius:10px;padding:8px 10px;}
+  .egitim-row input{flex:1;border:none;background:transparent;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;color:var(--text);outline:none;min-width:0;}
+  .egitim-row input::placeholder{color:var(--muted);}
+  .egitim-row select{border:1px solid var(--border);border-radius:7px;padding:4px 8px;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;background:white;cursor:pointer;outline:none;color:var(--text);}
+  .egitim-row-del{background:none;border:none;cursor:pointer;color:var(--muted);font-size:16px;line-height:1;padding:2px 4px;border-radius:4px;transition:color 0.15s;}
+  .egitim-row-del:hover{color:var(--red);}
+  .btn-add-egitim{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;background:white;border:1.5px dashed var(--border);border-radius:8px;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;transition:all 0.15s;}
+  .btn-add-egitim:hover{border-color:var(--navy);color:var(--navy);}
+  .profile-view-mode .btn-add-egitim{pointer-events:none;opacity:0.4;}
+  .profile-view-mode .egitim-row-del{display:none;}
+  .profile-view-mode .egitim-row input{pointer-events:none;}
+  .profile-view-mode .egitim-row select{pointer-events:none;background:var(--gray);}
 
   /* POPÜLER ŞEHİR QUICK-PICK */
   .loc-quick-picks{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;}
@@ -1351,7 +1365,6 @@
       <div class="field field-full">
         <label>Toplam Deneyim</label>
         <div class="deneyim-auto-display" id="deneyim-auto">
-          <span class="da-icon">📊</span>
           <span id="deneyim-auto-text">Deneyim ekledikçe otomatik hesaplanır</span>
         </div>
         <select id="f-deneyim" style="display:none;"><option value=""></option><option>0–1 yıl</option><option>1–3 yıl</option><option>3–5 yıl</option><option>5–10 yıl</option><option>10+ yıl</option></select>
@@ -1388,7 +1401,6 @@
         <div class="marka-auto-wrap" id="marka-auto-wrap">
           <span class="marka-auto-empty">Deneyim eklediğinizde markalar otomatik görünür</span>
         </div>
-        <p class="tag-hint">Deneyimlerden otomatik oluşturulur</p>
       </div>
     </div>
   </div>
@@ -1432,6 +1444,14 @@
         <label>Bölüm / Program</label>
         <input type="text" id="f-bolum" placeholder="Örn: İşletme, Moda Tasarımı...">
       </div>
+    </div>
+    <div class="field field-full" style="margin-top:12px;">
+      <label>Ekstra Eğitimler / Sertifikalar</label>
+      <div id="ekstra-egitim-container" style="display:flex;flex-direction:column;gap:8px;margin-bottom:8px;"></div>
+      <button type="button" class="btn-add-egitim" onclick="addEkstraEgitim()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Eğitim Ekle
+      </button>
     </div>
   </div>
 
@@ -2720,6 +2740,8 @@ async function loadProfile(){
     if(data.mezun_yil && document.getElementById('f-mezun-yil'))document.getElementById('f-mezun-yil').value=data.mezun_yil;
     if(data.okul && document.getElementById('f-okul'))document.getElementById('f-okul').value=data.okul;
     if(data.bolum && document.getElementById('f-bolum'))document.getElementById('f-bolum').value=data.bolum;
+    // Ekstra eğitimler
+    if(data.ekstra_egitimler)loadEkstraEgitimler(data.ekstra_egitimler);
     // CV
     if(data.cv_url){document.getElementById('cv-exists').classList.add('visible');document.getElementById('cv-link').href=data.cv_url;document.getElementById('cv-zone-text').textContent='CV Güncelle';}
     // Aktif/pasif
@@ -3081,6 +3103,66 @@ function loadDilRows(jsonStr){
     if(jsonStr){jsonStr.split(',').forEach(d=>{const t=d.trim();if(t)dilRows.push({dil:t,seviye:'',id:Date.now()+Math.random()});});renderDilRows();}
   }
 }
+
+// ── EKSTRA EĞİTİMLER ──
+var ekstraEgitimler=[];
+function addEkstraEgitim(egitim_adi,kurum,yil){
+  ekstraEgitimler.push({egitim_adi:egitim_adi||'',kurum:kurum||'',yil:yil||'',id:Date.now()+Math.random()});
+  renderEkstraEgitimler();
+}
+function removeEkstraEgitim(id){
+  ekstraEgitimler=ekstraEgitimler.filter(function(r){return r.id!==id;});
+  renderEkstraEgitimler();
+}
+function renderEkstraEgitimler(){
+  var container=document.getElementById('ekstra-egitim-container');
+  if(!container)return;
+  while(container.firstChild)container.removeChild(container.firstChild);
+  var nowYear=new Date().getFullYear();
+  ekstraEgitimler.forEach(function(row){
+    var div=document.createElement('div');div.className='egitim-row';
+    // Eğitim adı input
+    var nameInput=document.createElement('input');nameInput.type='text';nameInput.placeholder='Eğitim / Sertifika Adı';nameInput.value=row.egitim_adi||'';
+    nameInput.style.flex='2';
+    nameInput.addEventListener('input',function(){updateEkstraEgitim(row.id,'egitim_adi',this.value);});
+    div.appendChild(nameInput);
+    // Kurum input
+    var kurumInput=document.createElement('input');kurumInput.type='text';kurumInput.placeholder='Kurum';kurumInput.value=row.kurum||'';
+    kurumInput.style.flex='1';
+    kurumInput.addEventListener('input',function(){updateEkstraEgitim(row.id,'kurum',this.value);});
+    div.appendChild(kurumInput);
+    // Year select
+    var yilSelect=document.createElement('select');
+    var optEmpty=document.createElement('option');optEmpty.value='';optEmpty.textContent='Yıl';yilSelect.appendChild(optEmpty);
+    for(var y=nowYear;y>=1990;y--){
+      var opt=document.createElement('option');opt.value=String(y);opt.textContent=String(y);
+      if(String(row.yil)===String(y))opt.selected=true;
+      yilSelect.appendChild(opt);
+    }
+    yilSelect.addEventListener('change',function(){updateEkstraEgitim(row.id,'yil',this.value);});
+    div.appendChild(yilSelect);
+    // Delete button
+    var delBtn=document.createElement('button');delBtn.className='egitim-row-del';delBtn.textContent='\u00d7';
+    delBtn.addEventListener('click',function(){removeEkstraEgitim(row.id);});
+    div.appendChild(delBtn);
+    container.appendChild(div);
+  });
+}
+function updateEkstraEgitim(id,field,val){
+  var row=ekstraEgitimler.find(function(r){return r.id===id;});
+  if(row)row[field]=val;
+}
+function getEkstraEgitimlerJSON(){
+  return ekstraEgitimler.filter(function(r){return r.egitim_adi;}).map(function(r){return{egitim_adi:r.egitim_adi,kurum:r.kurum||'',yil:r.yil||''};});
+}
+function loadEkstraEgitimler(jsonStr){
+  try{
+    var arr=JSON.parse(jsonStr);
+    ekstraEgitimler=arr.map(function(r){return{egitim_adi:r.egitim_adi||'',kurum:r.kurum||'',yil:r.yil||'',id:Date.now()+Math.random()};});
+  }catch(e){ekstraEgitimler=[];}
+  renderEkstraEgitimler();
+}
+
 function renderTags(wrapId,inputId,list,isNavy){
   const wrap=document.getElementById(wrapId),input=document.getElementById(inputId);
   wrap.querySelectorAll('.tag').forEach(t=>t.remove());
@@ -3281,6 +3363,7 @@ async function saveProfile(){
     mezun_yil:document.getElementById('f-mezun-yil')?document.getElementById('f-mezun-yil').value:'',
     okul:document.getElementById('f-okul')?document.getElementById('f-okul').value.trim():'',
     bolum:document.getElementById('f-bolum')?document.getElementById('f-bolum').value.trim():'',
+    ekstra_egitimler:JSON.stringify(getEkstraEgitimlerJSON()),
   };
   let {error}=await getSupa().from('candidates').upsert(profileData,{onConflict:'user_id'});
   if(error){
