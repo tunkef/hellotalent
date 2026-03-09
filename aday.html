@@ -936,7 +936,7 @@ async function submitKayit(e){
     if(r.error)throw r.error;
     var uid=r.data.user?.id||r.data.session?.user?.id;
     if(uid){
-      await getSupa().from('candidates').upsert({id:uid,full_name:isim,email:email,phone:telefon||null},{onConflict:'id'});
+      await getSupa().from('candidates').upsert({user_id:uid,full_name:isim,email:email,telefon:telefon||null},{onConflict:'user_id'});
     }
     document.getElementById('auth-ui').style.display='none';
     document.getElementById('success-box').style.display='block';

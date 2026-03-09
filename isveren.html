@@ -601,11 +601,16 @@ async function submitDemo(e){
     document.getElementById('demo-form').style.display='none';
     document.getElementById('demo-success').style.display='block';
     // Supabase'e de kaydet
+    var nameParts=isim.split(' ');
+    var ad=nameParts[0]||'';
+    var soyad=nameParts.slice(1).join(' ')||'';
     getSupa().from('hr_profiles').upsert({
       email:email,
-      contact_name:isim,
-      company_name:sirket,
-      phone:telefon||null
+      ad:ad,
+      soyad:soyad,
+      sirket:sirket,
+      telefon:telefon||null,
+      plan:'free'
     },{onConflict:'email'}).then(function(){});
   }catch(ex){
     err.textContent='Bir hata oluştu. Lütfen tekrar deneyin.';err.style.display='block';

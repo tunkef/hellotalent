@@ -310,7 +310,7 @@
 
       <p class="register-link">
         Henüz üye değil misin?
-        <a href="index.html#aday" class="aday-link">Hemen kayıt ol →</a>
+        <a href="aday.html" class="aday-link">Hemen kayıt ol →</a>
       </p>
     </div>
 
@@ -338,7 +338,7 @@
 
       <p class="register-link">
         İK hesabı yok mu?
-        <a href="index.html#ik" class="ik-link">Talep gönder →</a>
+        <a href="isveren.html#iletisim" class="ik-link">Demo talep et →</a>
       </p>
     </div>
     </div><!-- /form-wrapper -->
@@ -461,8 +461,8 @@ async function loginIK() {
     return;
   }
 
-  // Başarılı → İK dashboarduna git
-  window.location.href = 'ik.html';
+  // Başarılı → İK sayfasına git (dashboard henüz yok, demo sayfasına yönlendir)
+  window.location.href = 'isveren.html';
 }
 
 // Enter key desteği

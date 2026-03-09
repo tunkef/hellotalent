@@ -1127,6 +1127,14 @@ async function handleRegister() {
   try {
     var { data, error } = await sb.auth.signUp({ email: email, password: pass, options: { data: { full_name: name, career_goal: currentCareerGoal } } });
     if (error) { errEl.textContent = error.message; errEl.style.display = 'block'; return; }
+    // DB'ye candidates row oluştur
+    var uid = data.user?.id;
+    if (uid) {
+      await sb.from('candidates').upsert({
+        user_id: uid, full_name: name, email: email,
+        career_goal: currentCareerGoal || null
+      }, { onConflict: 'user_id' });
+    }
     // Kariyer hedefini localStorage'a kaydet — profil.html pre-fill için
     localStorage.setItem('ht_career_goal', currentCareerGoal);
     localStorage.setItem('ht_career_goal_set', Date.now());
