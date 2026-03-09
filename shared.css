@@ -224,79 +224,139 @@ body {
 .page-wrap { padding-top: 64px; }
 
 /* ══════════════════════════════════════════════════
-   RESPONSIVE — MOBILE-FIRST CORRECTIONS
-   Breakpoints: 1024 → 900 → 768 → 600 → 480
-   Affects ALL pages via shared.css
+   RESPONSIVE — GLOBAL MOBILE RULES
+   Tüm sayfalarda geçerli. Sayfa-spesifik CSS'ler
+   ilgili .html dosyasında kalır.
    ══════════════════════════════════════════════════ */
 
-/* ── TABLET (≤1024px) ── */
 @media (max-width: 1024px) {
   .site-header { padding: 0 24px; }
 }
 
-/* ── TABLET/MOBILE TRANSITION (≤900px) ── */
 @media (max-width: 900px) {
-  /* Header: switch to hamburger */
   .header-nav { display: none; }
   .hamburger { display: flex; }
-  .site-header { padding: 0 20px; gap: 0; justify-content: space-between; }
+  .site-header { padding: 0 20px; justify-content: space-between; }
   .header-logo { font-size: 18px; }
   .btn-nav-login { padding: 6px 12px; font-size: 12px; }
-
-  /* Footer: 2-column */
   .footer-inner { grid-template-columns: 1fr 1fr; gap: 28px; }
   .site-footer { padding: 40px 24px 28px; }
   .footer-brand { font-size: 20px; }
   .footer-bottom { gap: 12px; }
+  /* Hero grids → single col */
+  .hero-inner { grid-template-columns: 1fr !important; gap: 32px !important; }
+  .hero-title { font-size: 36px !important; }
+  .hero-sub { font-size: 15px !important; }
+  .hero-outer { padding: 56px 24px 48px !important; }
+  /* Section containers */
+  .section { padding: 56px 24px !important; }
+  .section-title { font-size: 28px !important; }
+  .divider { margin: 0 24px !important; }
+  /* Grid collapses */
+  .steps-grid, .features-grid, .plans-grid, .compare-grid { grid-template-columns: 1fr !important; }
+  .step-arrow { display: none !important; }
+  .contact-inner { grid-template-columns: 1fr !important; gap: 32px !important; }
+  .f-row { grid-template-columns: 1fr !important; }
+  /* CTA buttons stack */
+  .hero-btns, .final-cta-btns { flex-direction: column !important; align-items: stretch !important; }
+  .hero-btns a, .hero-btns button, .final-cta-btns a { text-align: center !important; justify-content: center !important; }
+  /* Kariyer promo */
+  .kariyer-promo { grid-template-columns: 1fr !important; padding: 32px 24px !important; }
+  .kariyer-promo-mockup { display: none !important; }
+  /* Brands */
+  .brands-section { padding: 32px 24px !important; }
+  /* Dashboard teaser */
+  .dash-teaser { padding: 0 24px 56px !important; }
+  .dt-sidebar { display: none !important; }
+  .dt-body { grid-template-columns: 1fr !important; }
+  /* Blog/poz grids */
+  .blog-grid, .poz-grid { grid-template-columns: repeat(2, 1fr) !important; }
 }
 
-/* ── MOBILE (≤768px) ── */
 @media (max-width: 768px) {
-  .site-header {
-    padding: 0 16px;
-    height: 56px;
-  }
+  .site-header { padding: 0 16px; height: 56px; }
   .page-wrap { padding-top: 56px; }
-
-  /* Mobile menu adjustments for 56px header */
   .mobile-menu { top: 56px; max-height: calc(100vh - 56px); }
-
-  /* Login dropdown: full-width on mobile */
-  .login-dropdown {
-    position: fixed; top: 56px; left: 0; right: 0;
-    width: 100%; max-width: 100%; border-radius: 0 0 16px 16px;
-    padding: 16px; box-shadow: 0 12px 32px rgba(0,0,0,0.15);
-  }
-
-  /* Footer: single column */
+  .login-dropdown { position: fixed; top: 56px; left: 0; right: 0; width: 100%; max-width: 100%; border-radius: 0 0 16px 16px; padding: 16px; }
+  /* Footer single col */
   .site-footer { padding: 36px 20px 24px; }
   .footer-inner { grid-template-columns: 1fr; gap: 20px; }
-  .footer-col-title { margin-bottom: 10px; }
-  .footer-link { margin-bottom: 8px; }
-  .footer-bottom {
-    flex-direction: column; align-items: flex-start;
-    gap: 8px; margin-top: 28px; padding-top: 20px;
-  }
+  .footer-bottom { flex-direction: column; align-items: flex-start; gap: 8px; margin-top: 28px; padding-top: 20px; }
   .footer-legal { gap: 14px; flex-wrap: wrap; }
   .footer-social { margin-top: 14px; }
-
-  /* Touch targets: min 44px */
+  /* Touch targets */
   .mobile-nav-link { padding: 14px 16px; min-height: 44px; font-size: 15px; }
   .mobile-cta-btn { min-height: 48px; font-size: 14px; padding: 14px; }
   .social-link { width: 40px; height: 40px; }
+  /* Sections tighter */
+  .section { padding: 48px 20px !important; }
+  .section-sub { font-size: 14px !important; max-width: 100% !important; }
+  .divider { margin: 0 20px !important; }
+  /* iOS zoom prevention */
+  .f-input, .f-select, .f-textarea, input[type="text"], input[type="email"], input[type="tel"], input[type="password"], select, textarea { font-size: 16px !important; }
+  /* Buttons larger */
+  .btn-primary, .btn-secondary, .btn-hero-primary, .btn-hero-secondary, .btn-submit, .cc-cta, .plan-cta { min-height: 48px !important; font-size: 14px !important; }
+  /* Trust items */
+  .hero-trust { flex-direction: column !important; gap: 8px !important; }
+  .trust-sep { display: none !important; }
+  /* Steps */
+  .step-card { padding: 24px !important; }
+  .step-num { font-size: 36px !important; }
+  .step-title { font-size: 17px !important; }
+  /* Features */
+  .feature-card { padding: 20px !important; flex-direction: column !important; gap: 14px !important; }
+  /* Plans & compare */
+  .plan-card { padding: 24px !important; }
+  .compare-section { padding: 48px 20px !important; }
+  .compare-card { padding: 28px 24px !important; }
+  .cc-name { font-size: 24px !important; }
+  /* Final CTA */
+  .final-cta { padding: 48px 20px !important; }
+  .final-cta-title { font-size: 28px !important; }
+  /* Blog/poz/yetkinlik single col */
+  .blog-grid, .poz-grid { grid-template-columns: 1fr !important; }
+  .rehber-grid-panel, .ladder-grid { grid-template-columns: 1fr !important; }
+  /* Dashboard teaser widgets */
+  .dt-widgets { grid-template-columns: 1fr !important; }
+  /* Hero stats */
+  .hero-stats { gap: 20px !important; }
 }
 
-/* ── SMALL MOBILE (≤480px) ── */
 @media (max-width: 480px) {
   .site-header { padding: 0 12px; }
   .header-logo { font-size: 17px; }
   .btn-nav-login { padding: 5px 10px; font-size: 11px; gap: 4px; }
   .btn-nav-login svg { width: 10px; height: 10px; }
-
   .site-footer { padding: 32px 16px 20px; }
   .footer-brand { font-size: 18px; }
   .footer-tagline { font-size: 12px; }
-  .footer-copyright { font-size: 11px; }
-  .footer-legal a { font-size: 11px; }
+  .footer-copyright, .footer-legal a { font-size: 11px; }
+  /* Hero tighter */
+  .hero-outer { padding: 40px 16px !important; }
+  .hero-title { font-size: 28px !important; letter-spacing: -1px !important; }
+  /* Sections tighter */
+  .section { padding: 40px 16px !important; }
+  .section-title { font-size: 24px !important; }
+  /* Form card */
+  .form-card { padding: 24px 20px !important; }
+  /* Steps */
+  .step-card { padding: 20px !important; }
+  .step-num { font-size: 30px !important; }
+  /* Compare */
+  .compare-card { padding: 24px 18px !important; }
+  .cc-name { font-size: 22px !important; }
+  .cc-item { font-size: 12px !important; }
+  /* Final CTA */
+  .final-cta-title { font-size: 24px !important; }
+  /* Dashboard teaser */
+  .dash-teaser { padding: 0 16px 40px !important; }
+  .dash-teaser-title { font-size: 22px !important; }
+  .dt-stat-num { font-size: 16px !important; }
+  .dt-stat-label { font-size: 8px !important; }
+  /* Brands */
+  .brands-section { padding: 24px 16px !important; }
+  .brand-pill { font-size: 11px !important; padding: 6px 14px !important; }
+  /* Divider */
+  .divider { margin: 0 16px !important; }
 }
 

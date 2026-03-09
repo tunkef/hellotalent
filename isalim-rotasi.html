@@ -421,6 +421,24 @@
   .hcta-btns { width: 100%; }
   .hcta-btn-main, .hcta-btn-sec { width: 100%; }
 }
+
+    @media (max-width: 900px) {
+      .hero-grid { grid-template-columns: 1fr !important; gap: 32px !important; }
+      .hunter-hero { padding: calc(56px + 48px) 24px 48px !important; }
+      .role-grid, .blog-grid { grid-template-columns: 1fr !important; }
+      .steps-section, .blog-section { padding: 48px 24px !important; }
+    }
+    @media (max-width: 768px) {
+      .hero-title { font-size: 30px !important; }
+      .hero-sub { font-size: 15px !important; max-width: 100% !important; }
+      .role-grid, .blog-grid { gap: 14px !important; }
+    }
+    @media (max-width: 480px) {
+      .hunter-hero { padding: calc(56px + 32px) 16px 36px !important; }
+      .hero-title { font-size: 26px !important; }
+      .steps-section, .blog-section { padding: 40px 16px !important; }
+    }
+
 </style>
 </head>
 <body>
