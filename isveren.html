@@ -600,18 +600,8 @@ async function submitDemo(e){
     if(!r.ok)throw new Error('Gönderim başarısız');
     document.getElementById('demo-form').style.display='none';
     document.getElementById('demo-success').style.display='block';
-    // Supabase'e de kaydet
-    var nameParts=isim.split(' ');
-    var ad=nameParts[0]||'';
-    var soyad=nameParts.slice(1).join(' ')||'';
-    getSupa().from('hr_profiles').upsert({
-      email:email,
-      ad:ad,
-      soyad:soyad,
-      sirket:sirket,
-      telefon:telefon||null,
-      plan:'free'
-    },{onConflict:'email'}).then(function(){});
+    // Not: HR profil kaydı auth signup sırasında oluşturulur (giris.html)
+    // Demo form sadece lead capture — Formspree yeterli
   }catch(ex){
     err.textContent='Bir hata oluştu. Lütfen tekrar deneyin.';err.style.display='block';
     btn.textContent='Demo Talep Et →';btn.disabled=false;
