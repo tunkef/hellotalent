@@ -195,41 +195,46 @@
   .ayrilma-pill.selected{background:var(--navy);border-color:var(--navy);color:white;}
 
   /* DENEYİM KARTLARI (Compact LinkedIn-style) */
-  .exp-container{display:flex;flex-direction:column;gap:6px;}
-  .exp-card{background:var(--gray);border:1.5px solid var(--border);border-radius:10px;padding:10px 14px;position:relative;transition:border-color 0.15s;}
+  /* EXP CARDS — OpenResume inspired */
+  .exp-container{display:flex;flex-direction:column;gap:12px;}
+  .exp-card{position:relative;background:#fff;border:1px solid var(--border);border-radius:8px;padding:14px 16px;box-shadow:0 1px 2px rgba(0,0,0,0.04);transition:border-color 0.15s;}
   .exp-card:hover{border-color:var(--navy);}
-  .exp-row{display:flex;gap:8px;align-items:center;}
-  .exp-row input{flex:1;border:none;background:transparent;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:600;color:var(--text);outline:none;padding:2px 4px;min-width:0;}
-  .exp-row input::placeholder{color:var(--muted);font-weight:500;}
-  .exp-row input.exp-sirket{font-size:13px;font-weight:700;}
-  .exp-row-sep{color:var(--border);font-size:10px;}
-  .exp-dates{display:flex;align-items:center;gap:4px;margin-top:6px;flex-wrap:wrap;}
-  .exp-date-select{padding:3px 5px;border:1px solid var(--border);border-radius:6px;font-size:11px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:600;color:var(--text);background:white;cursor:pointer;appearance:auto;-webkit-appearance:menulist;}
-  .exp-date-select:focus{outline:none;border-color:var(--navy);}
-  .exp-date-sep{color:var(--muted);font-weight:700;font-size:11px;margin:0 1px;}
-  .exp-devam-label{font-weight:700;font-size:11px;color:var(--navy);}
-  .exp-toggle-row{display:flex;align-items:center;gap:6px;margin-top:4px;}
+  .exp-fields{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .exp-field{display:flex;flex-direction:column;gap:3px;}
+  .exp-field--full{grid-column:1/-1;}
+  .exp-field label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--muted);}
+  .exp-field input,.exp-field select{padding:6px 8px !important;border:1px solid var(--border) !important;border-radius:6px !important;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px !important;font-weight:600;color:var(--text);background:#fff !important;outline:none;width:100% !important;transition:border-color 0.15s;box-sizing:border-box;}
+  .exp-field input:focus,.exp-field select:focus{border-color:var(--navy) !important;}
+  .exp-field input::placeholder{color:var(--muted);font-weight:500;}
+  .exp-date-row{display:flex;gap:6px;}
+  .exp-date-row select{flex:1;padding:6px 8px !important;border:1px solid var(--border) !important;border-radius:6px !important;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px !important;font-weight:600;color:var(--text);background:#fff !important;cursor:pointer;outline:none;width:auto !important;}
+  .exp-date-row select:focus{border-color:var(--navy) !important;}
+  .exp-toggle-row{display:flex;align-items:center;gap:6px;grid-column:1/-1;}
   .exp-toggle-cb{width:14px;height:14px;accent-color:var(--navy);cursor:pointer;}
   .exp-toggle-label{font-size:11px;font-weight:600;color:var(--muted);cursor:pointer;user-select:none;}
-  .exp-end-dates{display:flex;align-items:center;gap:4px;}
-  .exp-end-dates.hidden{display:none;}
-  .exp-ayrilma{margin-top:6px;}
-  .exp-ayrilma.hidden{display:none;}
-  .exp-ayrilma select{border:1px solid var(--border);border-radius:6px;padding:3px 6px;font-family:'Plus Jakarta Sans',sans-serif;font-size:11px;font-weight:600;background:white;cursor:pointer;color:var(--text);}
-  .exp-duration{font-size:10px;color:var(--muted);font-weight:600;margin-top:4px;}
-  .exp-delete{position:absolute;top:8px;right:8px;width:22px;height:22px;border:none;background:transparent;cursor:pointer;border-radius:6px;display:flex;align-items:center;justify-content:center;transition:background 0.15s;color:var(--muted);}
+  .exp-end-field{display:flex;flex-direction:column;gap:3px;}
+  .exp-end-field.hidden{display:none;}
+  .exp-end-field label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--muted);}
+  .exp-ayrilma-field{display:flex;flex-direction:column;gap:3px;}
+  .exp-ayrilma-field.hidden{display:none;}
+  .exp-ayrilma-field label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--muted);}
+  .exp-ayrilma-field select{padding:6px 8px !important;border:1px solid var(--border) !important;border-radius:6px !important;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px !important;font-weight:600;color:var(--text);background:#fff !important;cursor:pointer;outline:none;width:100% !important;}
+  .exp-duration{font-size:10px;color:var(--navy);font-weight:700;background:var(--navy-light);padding:2px 8px;border-radius:4px;display:inline-block;margin-top:4px;grid-column:1/-1;}
+  .exp-duration:empty{display:none;}
+  .exp-delete{position:absolute;top:10px;right:10px;width:22px;height:22px;border:none;background:transparent;cursor:pointer;border-radius:6px;display:flex;align-items:center;justify-content:center;transition:all 0.15s;color:var(--muted);}
   .exp-delete:hover{background:#fee2e2;color:#C94E28;}
   .exp-delete svg{pointer-events:none;}
-  .btn-add-exp{width:100%;padding:8px;border:1.5px dashed var(--border);border-radius:8px;background:transparent;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:600;color:var(--muted);display:flex;align-items:center;justify-content:center;gap:5px;transition:all 0.15s;margin-top:2px;}
+  .btn-add-exp{width:100%;padding:10px;border:1.5px dashed var(--border);border-radius:8px;background:transparent;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:600;color:var(--muted);display:flex;align-items:center;justify-content:center;gap:5px;transition:all 0.15s;margin-top:4px;}
   .btn-add-exp:hover{border-color:var(--navy);background:var(--navy-light);color:var(--navy);}
   .deneyim-summary{display:flex;gap:12px;align-items:center;}
-  .deneyim-auto-display{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;background:var(--gray);border-radius:8px;font-size:12px;font-weight:700;color:var(--navy);}
+  .deneyim-auto-display{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;background:var(--navy-light);border-radius:6px;font-size:11px;font-weight:700;color:var(--navy);}
+  /* View mode locks */
   .card-view-mode .btn-add-exp{pointer-events:none;opacity:0.4;}
   .card-view-mode .exp-delete{display:none;}
-  .card-view-mode .exp-row input{pointer-events:none;opacity:0.9;}
-  .card-view-mode .exp-date-select{pointer-events:none;background:var(--gray);opacity:0.9;}
+  .card-view-mode .exp-field input,.card-view-mode .exp-field select{pointer-events:none;background:var(--gray) !important;opacity:0.9;}
+  .card-view-mode .exp-date-row select{pointer-events:none;background:var(--gray) !important;opacity:0.9;}
   .card-view-mode .exp-toggle-cb{pointer-events:none;}
-  .card-view-mode .exp-ayrilma select{pointer-events:none;background:var(--gray);opacity:0.9;}
+  .card-view-mode .exp-ayrilma-field select{pointer-events:none;background:var(--gray) !important;opacity:0.9;}
   /* Delete confirm overlay */
   .exp-confirm-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.35);display:flex;align-items:center;justify-content:center;z-index:9999;}
   .exp-confirm-box{background:white;border-radius:14px;padding:24px;max-width:340px;width:90%;text-align:center;box-shadow:0 8px 30px rgba(0,0,0,0.15);}
@@ -2493,99 +2498,93 @@ function buildExpCard(exp){
   var card=document.createElement('div');
   card.className='exp-card';
   card.id='exp-card-'+exp.id;
+  var nowYear=new Date().getFullYear();
 
   // Delete button
-  var del=document.createElement('button');
-  del.type='button';del.className='exp-delete';
-  var delSvg=document.createElementNS('http://www.w3.org/2000/svg','svg');
-  delSvg.setAttribute('width','13');delSvg.setAttribute('height','13');delSvg.setAttribute('viewBox','0 0 24 24');delSvg.setAttribute('fill','none');delSvg.setAttribute('stroke','currentColor');delSvg.setAttribute('stroke-width','2.5');
-  var p1=document.createElementNS('http://www.w3.org/2000/svg','line');
-  p1.setAttribute('x1','18');p1.setAttribute('y1','6');p1.setAttribute('x2','6');p1.setAttribute('y2','18');
-  var p2=document.createElementNS('http://www.w3.org/2000/svg','line');
-  p2.setAttribute('x1','6');p2.setAttribute('y1','6');p2.setAttribute('x2','18');p2.setAttribute('y2','18');
-  delSvg.appendChild(p1);delSvg.appendChild(p2);del.appendChild(delSvg);
+  var del=document.createElement('button');del.type='button';del.className='exp-delete';
+  var dSvg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  dSvg.setAttribute('width','13');dSvg.setAttribute('height','13');dSvg.setAttribute('viewBox','0 0 24 24');dSvg.setAttribute('fill','none');dSvg.setAttribute('stroke','currentColor');dSvg.setAttribute('stroke-width','2.5');
+  var l1=document.createElementNS('http://www.w3.org/2000/svg','line');l1.setAttribute('x1','18');l1.setAttribute('y1','6');l1.setAttribute('x2','6');l1.setAttribute('y2','18');
+  var l2=document.createElementNS('http://www.w3.org/2000/svg','line');l2.setAttribute('x1','6');l2.setAttribute('y1','6');l2.setAttribute('x2','18');l2.setAttribute('y2','18');
+  dSvg.appendChild(l1);dSvg.appendChild(l2);del.appendChild(dSvg);
   del.addEventListener('click',function(){confirmRemoveExperience(exp.id);});
   card.appendChild(del);
 
-  // Row 1: Şirket · Pozisyon
-  var row1=document.createElement('div');row1.className='exp-row';
-  var sirketInput=document.createElement('input');
-  sirketInput.type='text';sirketInput.className='exp-sirket';sirketInput.placeholder='Şirket / Marka';sirketInput.value=exp.sirket||'';
-  sirketInput.addEventListener('input',function(){syncExpFromDOM(exp.id);});
-  row1.appendChild(sirketInput);
-  var sep1=document.createElement('span');sep1.className='exp-row-sep';sep1.textContent='·';row1.appendChild(sep1);
-  var pozInput=document.createElement('input');
-  pozInput.type='text';pozInput.className='exp-pozisyon';pozInput.placeholder='Pozisyon';pozInput.value=exp.pozisyon||'';
-  pozInput.addEventListener('input',function(){syncExpFromDOM(exp.id);});
-  row1.appendChild(pozInput);
-  card.appendChild(row1);
+  // 2-column grid
+  var grid=document.createElement('div');grid.className='exp-fields';
 
-  // Dates row
-  var datesRow=document.createElement('div');datesRow.className='exp-dates';
-  var bAy=document.createElement('select');bAy.className='exp-date-select exp-b-ay';
-  var optEmpty=document.createElement('option');optEmpty.value='0';optEmpty.textContent='Ay';bAy.appendChild(optEmpty);
+  // Şirket (col 1)
+  var f1=document.createElement('div');f1.className='exp-field';
+  var lb1=document.createElement('label');lb1.textContent='Şirket';f1.appendChild(lb1);
+  var inp1=document.createElement('input');inp1.type='text';inp1.className='exp-sirket';inp1.placeholder='Marka / Şirket adı';inp1.value=exp.sirket||'';
+  inp1.addEventListener('input',function(){syncExpFromDOM(exp.id);});
+  f1.appendChild(inp1);grid.appendChild(f1);
+
+  // Pozisyon (col 2)
+  var f2=document.createElement('div');f2.className='exp-field';
+  var lb2=document.createElement('label');lb2.textContent='Pozisyon';f2.appendChild(lb2);
+  var inp2=document.createElement('input');inp2.type='text';inp2.className='exp-pozisyon';inp2.placeholder='Görev unvanı';inp2.value=exp.pozisyon||'';
+  inp2.addEventListener('input',function(){syncExpFromDOM(exp.id);});
+  f2.appendChild(inp2);grid.appendChild(f2);
+
+  // Başlangıç Tarihi (col 1)
+  var f3=document.createElement('div');f3.className='exp-field';
+  var lb3=document.createElement('label');lb3.textContent='Başlangıç';f3.appendChild(lb3);
+  var dr1=document.createElement('div');dr1.className='exp-date-row';
+  var bAy=document.createElement('select');bAy.className='exp-b-ay';
+  var o0=document.createElement('option');o0.value='0';o0.textContent='Ay';bAy.appendChild(o0);
   for(var m=1;m<=12;m++){var o=document.createElement('option');o.value=String(m);o.textContent=AY_ISIMLERI[m-1];if(exp.baslangic_ay===m)o.selected=true;bAy.appendChild(o);}
-  bAy.addEventListener('change',function(){syncExpFromDOM(exp.id);});
-  datesRow.appendChild(bAy);
-  var bYil=document.createElement('select');bYil.className='exp-date-select exp-b-yil';
-  var optY=document.createElement('option');optY.value='0';optY.textContent='Yıl';bYil.appendChild(optY);
-  var nowYear=new Date().getFullYear();
+  bAy.addEventListener('change',function(){syncExpFromDOM(exp.id);});dr1.appendChild(bAy);
+  var bYil=document.createElement('select');bYil.className='exp-b-yil';
+  var oy0=document.createElement('option');oy0.value='0';oy0.textContent='Yıl';bYil.appendChild(oy0);
   for(var y=nowYear;y>=1990;y--){var oy=document.createElement('option');oy.value=String(y);oy.textContent=String(y);if(exp.baslangic_yil===y)oy.selected=true;bYil.appendChild(oy);}
-  bYil.addEventListener('change',function(){syncExpFromDOM(exp.id);});
-  datesRow.appendChild(bYil);
-  var sep=document.createElement('span');sep.className='exp-date-sep';sep.textContent='—';datesRow.appendChild(sep);
-  // End dates
-  var endWrap=document.createElement('span');endWrap.className='exp-end-dates'+(exp.devam_ediyor?' hidden':'');
-  var eAy=document.createElement('select');eAy.className='exp-date-select exp-e-ay';
-  var optE=document.createElement('option');optE.value='0';optE.textContent='Ay';eAy.appendChild(optE);
-  for(var m2=1;m2<=12;m2++){var o2=document.createElement('option');o2.value=String(m2);o2.textContent=AY_ISIMLERI[m2-1];if(exp.bitis_ay===m2)o2.selected=true;eAy.appendChild(o2);}
-  eAy.addEventListener('change',function(){syncExpFromDOM(exp.id);});
-  endWrap.appendChild(eAy);
-  var eYil=document.createElement('select');eYil.className='exp-date-select exp-e-yil';
-  var optY2=document.createElement('option');optY2.value='0';optY2.textContent='Yıl';eYil.appendChild(optY2);
-  for(var y2=nowYear;y2>=1990;y2--){var oy2=document.createElement('option');oy2.value=String(y2);oy2.textContent=String(y2);if(exp.bitis_yil===y2)oy2.selected=true;eYil.appendChild(oy2);}
-  eYil.addEventListener('change',function(){syncExpFromDOM(exp.id);});
-  endWrap.appendChild(eYil);
-  datesRow.appendChild(endWrap);
-  var devamLabel=document.createElement('span');devamLabel.className='exp-devam-label';devamLabel.textContent='Devam Ediyor';devamLabel.style.display=exp.devam_ediyor?'inline':'none';
-  datesRow.appendChild(devamLabel);
-  // Duration inline
-  var dur=document.createElement('span');dur.className='exp-duration';dur.style.marginTop='0';dur.style.marginLeft='6px';
-  dur.textContent=calcDuration(exp)||'';
-  datesRow.appendChild(dur);
-  card.appendChild(datesRow);
+  bYil.addEventListener('change',function(){syncExpFromDOM(exp.id);});dr1.appendChild(bYil);
+  f3.appendChild(dr1);grid.appendChild(f3);
 
-  // Toggle: Devam ediyorum
+  // Bitiş Tarihi (col 2) — hidden when devam_ediyor
+  var f4=document.createElement('div');f4.className='exp-end-field'+(exp.devam_ediyor?' hidden':'');
+  var lb4=document.createElement('label');lb4.textContent='Bitiş';f4.appendChild(lb4);
+  var dr2=document.createElement('div');dr2.className='exp-date-row';
+  var eAy=document.createElement('select');eAy.className='exp-e-ay';
+  var oe0=document.createElement('option');oe0.value='0';oe0.textContent='Ay';eAy.appendChild(oe0);
+  for(var m2=1;m2<=12;m2++){var o2=document.createElement('option');o2.value=String(m2);o2.textContent=AY_ISIMLERI[m2-1];if(exp.bitis_ay===m2)o2.selected=true;eAy.appendChild(o2);}
+  eAy.addEventListener('change',function(){syncExpFromDOM(exp.id);});dr2.appendChild(eAy);
+  var eYil=document.createElement('select');eYil.className='exp-e-yil';
+  var oey0=document.createElement('option');oey0.value='0';oey0.textContent='Yıl';eYil.appendChild(oey0);
+  for(var y2=nowYear;y2>=1990;y2--){var oy2=document.createElement('option');oy2.value=String(y2);oy2.textContent=String(y2);if(exp.bitis_yil===y2)oy2.selected=true;eYil.appendChild(oy2);}
+  eYil.addEventListener('change',function(){syncExpFromDOM(exp.id);});dr2.appendChild(eYil);
+  f4.appendChild(dr2);grid.appendChild(f4);
+
+  // Devam ediyorum checkbox (full width row)
   var toggleRow=document.createElement('div');toggleRow.className='exp-toggle-row';
   var cb=document.createElement('input');cb.type='checkbox';cb.className='exp-toggle-cb exp-devam-cb';cb.checked=exp.devam_ediyor;
   cb.addEventListener('change',function(){
     var checked=cb.checked;
-    endWrap.className='exp-end-dates'+(checked?' hidden':'');
-    devamLabel.style.display=checked?'inline':'none';
-    ayrilmaWrap.className='exp-ayrilma'+(checked?' hidden':'');
+    f4.className='exp-end-field'+(checked?' hidden':'');
+    ayrilmaField.className='exp-ayrilma-field'+(checked?' hidden':'');
     syncExpFromDOM(exp.id);
   });
   toggleRow.appendChild(cb);
-  var toggleLabel=document.createElement('label');toggleLabel.className='exp-toggle-label';toggleLabel.textContent='Devam ediyorum';
-  toggleLabel.addEventListener('click',function(){cb.checked=!cb.checked;cb.dispatchEvent(new Event('change'));});
-  toggleRow.appendChild(toggleLabel);
-  card.appendChild(toggleRow);
+  var tLbl=document.createElement('label');tLbl.className='exp-toggle-label';tLbl.textContent='Devam ediyorum';
+  tLbl.addEventListener('click',function(){cb.checked=!cb.checked;cb.dispatchEvent(new Event('change'));});
+  toggleRow.appendChild(tLbl);
+  grid.appendChild(toggleRow);
 
-  // Ayrılma nedeni — select dropdown (hidden if devam_ediyor)
-  var ayrilmaWrap=document.createElement('div');ayrilmaWrap.className='exp-ayrilma'+(exp.devam_ediyor?' hidden':'');
-  var ayrilmaLabel=document.createElement('span');ayrilmaLabel.style.cssText='font-size:11px;font-weight:600;color:var(--muted);margin-right:6px;';ayrilmaLabel.textContent='Ayrılma Nedeni:';
-  ayrilmaWrap.appendChild(ayrilmaLabel);
-  var ayrilmaSel=document.createElement('select');ayrilmaSel.className='exp-ayrilma-select';
-  var defOpt=document.createElement('option');defOpt.value='';defOpt.textContent='Seç...';ayrilmaSel.appendChild(defOpt);
-  AYRILMA_NEDENLERI.forEach(function(neden){
-    var opt=document.createElement('option');opt.value=neden;opt.textContent=neden;
-    if(exp.ayrilma_nedeni===neden)opt.selected=true;
-    ayrilmaSel.appendChild(opt);
-  });
-  ayrilmaSel.addEventListener('change',function(){syncExpFromDOM(exp.id);});
-  ayrilmaWrap.appendChild(ayrilmaSel);
-  card.appendChild(ayrilmaWrap);
+  // Ayrılma nedeni (full width, hidden if devam_ediyor)
+  var ayrilmaField=document.createElement('div');ayrilmaField.className='exp-ayrilma-field'+(exp.devam_ediyor?' hidden':'');
+  var lbA=document.createElement('label');lbA.textContent='Ayrılma Nedeni';ayrilmaField.appendChild(lbA);
+  var aSel=document.createElement('select');aSel.className='exp-ayrilma-select';
+  var aOpt=document.createElement('option');aOpt.value='';aOpt.textContent='Seç...';aSel.appendChild(aOpt);
+  AYRILMA_NEDENLERI.forEach(function(n){var op=document.createElement('option');op.value=n;op.textContent=n;if(exp.ayrilma_nedeni===n)op.selected=true;aSel.appendChild(op);});
+  aSel.addEventListener('change',function(){syncExpFromDOM(exp.id);});
+  ayrilmaField.appendChild(aSel);grid.appendChild(ayrilmaField);
 
+  // Duration badge
+  var dur=document.createElement('div');dur.className='exp-duration';
+  dur.textContent=calcDuration(exp)||'';
+  grid.appendChild(dur);
+
+  card.appendChild(grid);
   return card;
 }
 
