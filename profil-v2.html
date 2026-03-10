@@ -4,12 +4,12 @@
 <meta charset="UTF-8">
 <script>if(sessionStorage.getItem("ht_gate")!=="ok"){window.location.replace("gate.html");}</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Profilim — hellotalent.ai</title>
+<title>Profilim v2 — hellotalent.ai</title>
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
 /* ═══════════════════════════════════════════════════
    PROFIL-V2 — COMPLETE CSS DESIGN SYSTEM
@@ -362,7 +362,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;color:var(--text);background:#ff
 /* ── PROFILE SUMMARY CARD ── */
 .profile-summary{
   background:white;border:1.5px solid var(--border);border-radius:var(--radius-lg);
-  padding:20px 24px;margin-bottom:20px;
+  padding:20px 24px;margin-bottom:20px;border-top:3px solid var(--navy);
 }
 .ps-top{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;}
 .ps-left{display:flex;align-items:center;gap:14px;}
@@ -373,7 +373,8 @@ body{font-family:'Plus Jakarta Sans',sans-serif;color:var(--text);background:#ff
 }
 .ps-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
 .ps-name{font-family:'Bricolage Grotesque',sans-serif;font-size:18px;font-weight:800;color:var(--navy);}
-.ps-role{font-size:13px;color:var(--muted);margin-top:2px;}
+.ps-role{font-size:13px;color:var(--text);font-weight:600;margin-top:2px;}
+.ps-company{font-size:12px;color:var(--muted);margin-top:1px;}
 .ps-badges{display:flex;gap:8px;margin-top:6px;flex-wrap:wrap;}
 .ps-badge{
   display:inline-flex;align-items:center;gap:4px;padding:3px 8px;
@@ -396,6 +397,206 @@ body{font-family:'Plus Jakarta Sans',sans-serif;color:var(--text);background:#ff
   font-family:'Bricolage Grotesque',sans-serif;font-size:20px;font-weight:800;color:var(--navy);
 }
 
+/* ── PROFILE SCORE CARD ── */
+.score-card{
+  margin-top:12px;padding:14px 16px;background:white;
+  border:1.5px solid var(--border);border-radius:var(--radius);text-align:center;
+}
+.score-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;}
+.score-value{
+  font-family:'Bricolage Grotesque',sans-serif;font-size:28px;font-weight:800;
+  color:var(--navy);margin:4px 0;
+}
+.score-value span{font-size:16px;font-weight:600;color:var(--muted);}
+.score-hint{
+  font-size:12px;color:var(--verm);margin-top:6px;
+  display:flex;align-items:center;justify-content:center;gap:4px;
+}
+.score-hint svg{width:14px;height:14px;flex-shrink:0;}
+
+/* ── PREMIUM TEASER ── */
+.premium-teaser{
+  margin-top:16px;padding:16px;background:var(--navy-light);
+  border:1.5px solid var(--border);border-radius:var(--radius);text-align:left;
+}
+.premium-teaser-badge{
+  display:inline-flex;align-items:center;gap:4px;padding:3px 8px;
+  background:var(--navy);color:white;border-radius:4px;
+  font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;
+  margin-bottom:10px;
+}
+.premium-teaser-title{
+  font-family:'Bricolage Grotesque',sans-serif;font-size:14px;
+  font-weight:700;color:var(--navy);margin-bottom:8px;
+}
+.premium-teaser-list{list-style:none;padding:0;margin:0 0 12px;}
+.premium-teaser-list li{
+  font-size:12px;color:var(--text);padding:3px 0;
+  display:flex;align-items:center;gap:6px;
+}
+.premium-teaser-list li::before{
+  content:'';width:5px;height:5px;border-radius:50%;
+  background:var(--verm);flex-shrink:0;
+}
+.premium-teaser-footer{font-size:11px;color:var(--muted);font-style:italic;}
+.modal-premium-line{
+  font-size:11px;color:var(--muted);font-style:italic;margin-top:16px;
+  padding-top:14px;border-top:1px solid var(--border);letter-spacing:0.01em;
+}
+
+/* ── PROFIL MERKEZI ── */
+
+/* Hero Profile Card */
+.hero-card{
+  background:white;border:1.5px solid var(--border);border-radius:var(--radius-lg);
+  border-top:3px solid var(--navy);padding:24px;margin-bottom:20px;
+  box-shadow:var(--shadow);
+}
+.hero-top{display:flex;align-items:flex-start;gap:16px;}
+.hero-avatar{
+  width:64px;height:64px;border-radius:50%;background:var(--navy);color:white;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;overflow:hidden;font-weight:700;font-size:22px;
+}
+#merkez-identity{display:flex;align-items:center;gap:14px;flex:1;}
+.hero-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
+.hero-avatar svg{width:28px;height:28px;}
+.hero-info{flex:1;min-width:0;}
+.hero-name{font-family:'Bricolage Grotesque',sans-serif;font-size:20px;font-weight:800;color:var(--navy);}
+.hero-role{font-size:13px;color:var(--text);font-weight:600;margin-top:2px;}
+.hero-company{font-size:12px;color:var(--muted);margin-top:1px;}
+.hero-badges{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:4px;padding:3px 8px;
+  background:var(--gray);border-radius:4px;font-size:11px;font-weight:600;color:var(--muted);
+}
+.hero-badge svg{width:12px;height:12px;}
+.hero-controls{display:flex;align-items:center;gap:12px;flex-shrink:0;}
+.hero-control-item{display:flex;align-items:center;gap:6px;}
+.hero-control-label{font-size:11px;font-weight:600;color:var(--text);}
+.hero-locked{
+  display:inline-flex;align-items:center;gap:3px;padding:2px 8px;
+  background:var(--navy-light);border-radius:4px;font-size:10px;font-weight:600;color:var(--navy);
+}
+.hero-locked svg{width:10px;height:10px;}
+.hero-premium-slot{
+  margin-top:16px;padding:10px 14px;background:var(--navy-light);
+  border-radius:var(--radius-sm);display:flex;align-items:center;gap:8px;
+}
+.hero-premium-slot svg{width:14px;height:14px;color:var(--navy);flex-shrink:0;}
+.hero-premium-slot span{font-size:11px;color:var(--navy);font-weight:500;}
+.hero-premium-slot .premium-teaser-badge{margin-bottom:0;font-size:9px;padding:2px 6px;}
+
+/* Quality Row */
+.quality-row{
+  display:flex;align-items:center;gap:24px;padding:20px;
+  background:var(--gray);border-radius:var(--radius-lg);margin-bottom:20px;
+  border-left:3px solid var(--navy);
+}
+.quality-left{display:flex;flex-direction:column;align-items:center;gap:4px;}
+.quality-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;font-weight:600;}
+.quality-right{flex:1;}
+.quality-score{
+  font-family:'Bricolage Grotesque',sans-serif;font-size:28px;font-weight:800;
+  color:var(--navy);margin-bottom:2px;
+}
+.quality-score span{font-size:16px;font-weight:600;color:var(--muted);}
+.quality-score-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;font-weight:600;margin-bottom:4px;}
+.quality-hint{
+  font-size:12px;color:var(--verm);margin-top:6px;
+  display:flex;align-items:center;gap:4px;
+}
+.quality-hint svg{width:14px;height:14px;flex-shrink:0;}
+
+/* CV Grid */
+.cv-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;}
+.cv-upload-card{
+  padding:20px;background:white;border:1.5px solid var(--border);
+  border-radius:var(--radius);
+}
+.cv-upload-title{
+  font-family:'Bricolage Grotesque',sans-serif;font-size:14px;font-weight:700;
+  color:var(--navy);margin-bottom:12px;display:flex;align-items:center;gap:6px;
+}
+.cv-upload-title svg{width:16px;height:16px;}
+.cv-upload-zone{
+  border:1.5px dashed var(--border);border-radius:var(--radius-sm);
+  padding:20px;text-align:center;margin-bottom:12px;
+  background:var(--gray);transition:border-color 0.2s;
+}
+.cv-upload-zone:hover{border-color:var(--navy);}
+.cv-upload-filetypes{display:flex;gap:4px;justify-content:center;margin-bottom:8px;}
+.cv-filetype{
+  padding:2px 6px;background:white;border:1px solid var(--border);
+  border-radius:3px;font-size:9px;font-weight:700;color:var(--muted);
+  text-transform:uppercase;letter-spacing:0.3px;
+}
+.cv-upload-hint{font-size:11px;color:var(--muted);margin-top:4px;}
+.cv-upload-divider{border-top:1px solid var(--border);margin:12px 0;padding-top:12px;}
+.cv-ai-card{
+  padding:20px;background:var(--navy-light);border:1.5px solid var(--navy);
+  border-radius:var(--radius);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;text-align:center;
+}
+.cv-ai-icon{margin-bottom:10px;color:var(--navy);}
+.cv-ai-title{
+  font-family:'Bricolage Grotesque',sans-serif;font-size:14px;font-weight:700;
+  color:var(--navy);margin-bottom:6px;display:flex;align-items:center;gap:6px;
+}
+.cv-ai-desc{font-size:12px;color:var(--muted);margin-bottom:10px;line-height:1.5;}
+.cv-ai-footer{font-size:11px;color:var(--muted);font-style:italic;margin-top:8px;}
+
+/* Section Cards (refined) */
+.merkez-sections-title{
+  font-family:'Bricolage Grotesque',sans-serif;font-size:16px;font-weight:700;
+  color:var(--navy);margin-bottom:12px;
+}
+.merkez-sections{display:flex;flex-direction:column;gap:10px;}
+.merkez-section-card{
+  padding:14px 16px;background:white;border:1.5px solid var(--border);
+  border-radius:var(--radius);border-left:3px solid var(--navy-light);
+  transition:border-left-color 0.2s;
+}
+.merkez-section-card:hover{border-left-color:var(--navy);}
+.merkez-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
+.merkez-card-title{font-family:'Bricolage Grotesque',sans-serif;font-size:13px;font-weight:700;color:var(--navy);}
+.merkez-card-summary{font-size:12px;color:var(--muted);line-height:1.5;}
+.merkez-card-empty{font-size:12px;color:var(--muted);font-style:italic;}
+.btn-edit{
+  padding:4px 12px;font-size:11px;font-weight:600;color:var(--verm);
+  background:var(--verm-light);border:none;border-radius:4px;cursor:pointer;font-family:inherit;
+  transition:all 0.15s;
+}
+.btn-edit:hover{background:var(--verm);color:white;}
+
+/* Footer Teaser */
+.footer-teaser{
+  margin-top:20px;padding:12px 16px;background:var(--navy-light);
+  border-radius:var(--radius-sm);display:flex;align-items:center;
+  justify-content:space-between;
+}
+.footer-teaser-text{font-size:12px;color:var(--navy);font-weight:500;}
+.footer-teaser svg{width:14px;height:14px;color:var(--navy);}
+
+/* Genel Bakış Future Cards */
+.dash-future-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:20px;}
+.dash-future-card{
+  padding:20px;background:white;border:1.5px solid var(--border);
+  border-radius:var(--radius);text-align:center;
+}
+.dash-future-icon{
+  width:44px;height:44px;border-radius:50%;background:var(--navy-light);color:var(--navy);
+  display:flex;align-items:center;justify-content:center;margin:0 auto 10px;
+}
+.dash-future-icon svg{width:20px;height:20px;}
+.dash-future-title{font-family:'Bricolage Grotesque',sans-serif;font-size:13px;font-weight:700;color:var(--navy);margin-bottom:4px;}
+.dash-future-desc{font-size:11px;color:var(--muted);line-height:1.4;margin-bottom:8px;}
+.dash-quality-row{
+  display:flex;align-items:center;gap:20px;padding:16px;
+  background:var(--gray);border-radius:var(--radius-lg);margin-bottom:0;
+  border-left:3px solid var(--navy);
+}
+
 /* ── MODALS ── */
 .modal-overlay{
   display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);
@@ -403,13 +604,20 @@ body{font-family:'Plus Jakarta Sans',sans-serif;color:var(--text);background:#ff
 }
 .modal-overlay.show{display:flex;}
 .modal{
-  background:white;border-radius:var(--radius-lg);padding:32px;
-  max-width:480px;width:90%;max-height:90vh;overflow-y:auto;
-  box-shadow:var(--shadow-lg);text-align:center;
+  background:white;border-radius:var(--radius-lg);padding:36px 32px 28px;
+  max-width:400px;width:90%;max-height:90vh;overflow-y:auto;
+  box-shadow:0 8px 32px rgba(0,0,0,0.12);text-align:center;
 }
-.modal-icon{font-size:48px;margin-bottom:12px;}
-.modal-title{font-family:'Bricolage Grotesque',sans-serif;font-size:20px;font-weight:800;margin-bottom:8px;}
-.modal-desc{font-size:14px;color:var(--muted);margin-bottom:20px;}
+.modal-icon{
+  width:40px;height:40px;border-radius:50%;background:var(--green-light);
+  color:var(--green);display:flex;align-items:center;justify-content:center;
+  margin:0 auto 16px;font-size:18px;line-height:1;
+}
+.modal-title{
+  font-family:'Bricolage Grotesque',sans-serif;font-size:18px;font-weight:800;
+  color:var(--navy);margin-bottom:6px;letter-spacing:-0.01em;
+}
+.modal-desc{font-size:13px;color:var(--muted);margin-bottom:24px;line-height:1.5;}
 
 /* ── LOCATION MODAL ── */
 .lok-modal-overlay{
@@ -537,6 +745,19 @@ body{font-family:'Plus Jakarta Sans',sans-serif;color:var(--text);background:#ff
   .ps-top{flex-direction:column;}
   .ps-actions{width:100%;}
   .ps-actions .btn{flex:1;}
+  /* Hero card mobile */
+  .hero-top{flex-direction:column;gap:12px;}
+  #merkez-identity{flex-direction:column;text-align:center;}
+  .hero-badges{justify-content:center;}
+  .hero-controls{justify-content:center;width:100%;}
+  /* Quality row mobile */
+  .quality-row{flex-direction:column;text-align:center;gap:12px;}
+  .quality-hint{justify-content:center;}
+  .dash-quality-row{flex-direction:column;text-align:center;gap:12px;}
+  /* CV grid mobile */
+  .cv-grid{grid-template-columns:1fr;}
+  /* Future cards mobile */
+  .dash-future-grid{grid-template-columns:1fr;}
 }
 @media(max-width:480px){
   .header{padding:0 12px;}
@@ -584,15 +805,11 @@ body{font-family:'Plus Jakarta Sans',sans-serif;color:var(--text);background:#ff
     <div class="sidebar-nav-label">Menu</div>
     <button class="nav-item active" id="nav-genel" data-panel="genel">
       <span class="nav-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span>
-      Genel Bakis
+      Genel Bakış
     </button>
-    <button class="nav-item" id="nav-profil" data-panel="profil">
-      <span class="nav-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
-      Profilim
-    </button>
-    <button class="nav-item" id="nav-cv" data-panel="cv">
-      <span class="nav-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></span>
-      CV
+    <button class="nav-item" id="nav-merkez" data-panel="merkez">
+      <span class="nav-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg></span>
+      Profil Merkezi
     </button>
     <button class="nav-item" id="nav-ayarlar" data-panel="ayarlar">
       <span class="nav-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span>
@@ -640,19 +857,24 @@ body{font-family:'Plus Jakarta Sans',sans-serif;color:var(--text);background:#ff
 <!-- SUCCESS MODAL -->
 <div class="modal-overlay" id="modal-success">
   <div class="modal">
-    <div class="modal-icon">&#10003;</div>
-    <div class="modal-title">Profilin Kaydedildi!</div>
-    <div class="modal-desc">Tebrikler! Profil bilgilerin basariyla kaydedildi. Artik markalar seni bulabilir.</div>
-    <button class="btn btn-primary btn-lg" id="btn-success-ok">Tamam</button>
+    <div class="modal-icon">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+    <div class="modal-title">Profilin güncellendi</div>
+    <div class="modal-desc">Değişikliklerin kaydedildi ve profiline yansıtıldı.</div>
+    <button class="btn btn-navy" id="btn-success-ok" style="width:100%;padding:11px 0;">Tamam</button>
+    <div class="modal-premium-line">Premium aday avantajları çok yakında.</div>
   </div>
 </div>
 
 <!-- ERROR MODAL -->
 <div class="modal-overlay" id="modal-error">
   <div class="modal">
-    <div class="modal-icon">&#9888;</div>
-    <div class="modal-title">Kaydetme Basarisiz</div>
-    <div class="modal-desc" id="error-desc">Bir hata olustu. Lutfen tekrar deneyin.</div>
+    <div class="modal-icon" style="background:var(--red-light);color:var(--red);">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    </div>
+    <div class="modal-title">Kaydetme Başarısız</div>
+    <div class="modal-desc" id="error-desc">Bir hata oluştu. Lütfen tekrar deneyin.</div>
     <div style="display:flex;gap:8px;justify-content:center;">
       <button class="btn btn-primary" id="btn-retry">Tekrar Dene</button>
       <button class="btn btn-secondary" id="btn-error-close">Kapat</button>
@@ -663,9 +885,11 @@ body{font-family:'Plus Jakarta Sans',sans-serif;color:var(--text);background:#ff
 <!-- DRAFT RESUME MODAL -->
 <div class="modal-overlay" id="modal-draft">
   <div class="modal">
-    <div class="modal-icon">&#128196;</div>
+    <div class="modal-icon" style="background:var(--navy-light);color:var(--navy);">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+    </div>
     <div class="modal-title">Taslak Bulundu</div>
-    <div class="modal-desc">Daha once basladigin bir taslak var. Kaldigin yerden devam etmek ister misin?</div>
+    <div class="modal-desc">Daha önce başladığın bir taslak var. Kaldığın yerden devam etmek ister misin?</div>
     <div style="display:flex;gap:8px;justify-content:center;">
       <button class="btn btn-primary" id="btn-draft-resume">Devam Et</button>
       <button class="btn btn-secondary" id="btn-draft-discard">Bastan Basla</button>
@@ -686,13 +910,9 @@ body{font-family:'Plus Jakarta Sans',sans-serif;color:var(--text);background:#ff
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
       Dashboard
     </button>
-    <button class="bn-item" data-panel="profil">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    <button class="bn-item" data-panel="merkez">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg>
       Profil
-    </button>
-    <button class="bn-item" data-panel="cv">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-      CV
     </button>
     <button class="bn-item" data-panel="ayarlar">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15"/></svg>
@@ -713,7 +933,8 @@ body{font-family:'Plus Jakarta Sans',sans-serif;color:var(--text);background:#ff
         <div class="ps-avatar" id="ps-avatar">?</div>
         <div>
           <div class="ps-name" id="ps-name">&mdash;</div>
-          <div class="ps-role" id="ps-role">Profil henuz tamamlanmadi</div>
+          <div class="ps-role" id="ps-role"></div>
+          <div class="ps-company" id="ps-company"></div>
           <div class="ps-badges">
             <span class="ps-badge" id="ps-city-badge" style="display:none;">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
@@ -739,19 +960,206 @@ body{font-family:'Plus Jakarta Sans',sans-serif;color:var(--text);background:#ff
     <button class="btn btn-primary" id="btn-start-wizard">Profili Duzenle</button>
   </div>
   <div id="dash-content" style="display:none;">
-    <div class="completion-card">
-      <div class="completion-circle-wrap">
-        <svg width="80" height="80" viewBox="0 0 80 80">
+    <div class="dash-quality-row">
+      <div class="completion-circle-wrap" style="flex-shrink:0;">
+        <svg width="64" height="64" viewBox="0 0 80 80">
           <circle class="completion-circle-bg" cx="40" cy="40" r="34"/>
           <circle class="completion-circle-fg" id="progress-circle" cx="40" cy="40" r="34"
             stroke-dasharray="213.63" stroke-dashoffset="213.63"/>
         </svg>
         <div class="completion-pct" id="completion-pct">0%</div>
       </div>
-      <div id="completion-title" style="font-weight:700;font-size:14px;">Profilini Tamamla</div>
-      <div id="completion-desc" style="font-size:12px;color:var(--muted);margin-top:4px;">Profil ne kadar dolu olursa, seni bulan marka sayisi o kadar artar.</div>
+      <div>
+        <div id="completion-title" style="font-weight:700;font-size:14px;">Profilini Tamamla</div>
+        <div id="completion-desc" style="font-size:12px;color:var(--muted);margin-top:4px;">Profil ne kadar dolu olursa, seni bulan marka sayısı o kadar artar.</div>
+      </div>
+    </div>
+    <button class="btn btn-secondary btn-sm" onclick="switchPanel('merkez')" style="margin-top:12px;width:100%;">Profil Merkezi'ne Git</button>
+
+    <!-- Future Module Placeholders -->
+    <div class="dash-future-grid">
+      <div class="dash-future-card">
+        <div class="dash-future-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        </div>
+        <div class="dash-future-title">Profil Görüntüleyenler</div>
+        <div class="dash-future-desc">Kim profilini inceledi?</div>
+        <span class="premium-teaser-badge" style="margin-bottom:0;">Yakında</span>
+      </div>
+      <div class="dash-future-card">
+        <div class="dash-future-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        </div>
+        <div class="dash-future-title">Kariyer İçgörüleri</div>
+        <div class="dash-future-desc">Sektör trendleri ve öneriler</div>
+        <span class="premium-teaser-badge" style="margin-bottom:0;">Yakında</span>
+      </div>
+      <div class="dash-future-card">
+        <div class="dash-future-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
+        </div>
+        <div class="dash-future-title">Avantajlar & Fırsatlar</div>
+        <div class="dash-future-desc">Özel fırsatlar ve indirimler</div>
+        <span class="premium-teaser-badge" style="margin-bottom:0;">Yakında</span>
+      </div>
     </div>
   </div>
+</main>
+
+<!-- ═══ PANEL: PROFIL MERKEZI ═══ -->
+<main class="panel" id="panel-merkez" data-panel="merkez">
+
+  <!-- 1: HERO PROFILE CARD -->
+  <div class="hero-card">
+    <div class="hero-top">
+      <div id="merkez-identity" style="display:none;">
+        <div class="hero-avatar" id="merkez-avatar">?</div>
+        <div class="hero-info">
+          <div class="hero-name" id="merkez-name">&mdash;</div>
+          <div class="hero-role" id="merkez-role"></div>
+          <div class="hero-company" id="merkez-company"></div>
+          <div class="hero-badges">
+            <span class="hero-badge" id="merkez-city-badge" style="display:none;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              <span id="merkez-city-text"></span>
+            </span>
+            <span class="hero-badge" id="merkez-exp-badge" style="display:none;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+              <span id="merkez-exp-text"></span>
+            </span>
+          </div>
+        </div>
+      </div>
+      <div class="hero-controls">
+        <div class="hero-control-item">
+          <span class="hero-control-label">Aktif</span>
+          <label class="toggle">
+            <input type="checkbox" id="merkez-toggle-active" checked>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="hero-control-item">
+          <span class="hero-control-label">Öne Çıkar</span>
+          <span class="hero-locked">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            Yakında
+          </span>
+        </div>
+      </div>
+    </div>
+    <div class="hero-premium-slot">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      <span>Profilini öne çıkar</span>
+      <span class="premium-teaser-badge" style="margin-bottom:0;font-size:9px;padding:2px 6px;">Yakında</span>
+    </div>
+  </div>
+
+  <!-- 2: QUALITY ROW -->
+  <div class="quality-row">
+    <div class="quality-left">
+      <div class="completion-circle-wrap">
+        <svg width="72" height="72" viewBox="0 0 80 80">
+          <circle class="completion-circle-bg" cx="40" cy="40" r="34"/>
+          <circle class="completion-circle-fg" id="merkez-progress-circle" cx="40" cy="40" r="34"
+            stroke-dasharray="213.63" stroke-dashoffset="213.63"/>
+        </svg>
+        <div class="completion-pct" id="merkez-completion-pct">0%</div>
+      </div>
+      <div class="quality-label">Tamamlanma</div>
+    </div>
+    <div class="quality-right">
+      <div class="quality-score-label">Profil Skoru</div>
+      <div class="quality-score" id="merkez-score-value">0<span>/100</span></div>
+      <div class="quality-hint" id="merkez-score-hint" style="display:none;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+        <span id="merkez-hint-text"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3: CV GRID -->
+  <div class="cv-grid">
+    <div class="cv-upload-card">
+      <div class="cv-upload-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        CV Yükle
+      </div>
+      <div class="cv-upload-zone">
+        <div class="cv-upload-filetypes">
+          <span class="cv-filetype">PDF</span>
+          <span class="cv-filetype">DOC</span>
+          <span class="cv-filetype">DOCX</span>
+        </div>
+        <button class="btn btn-secondary btn-sm" style="pointer-events:none;opacity:0.6;">Dosya Seç</button>
+        <div class="cv-upload-hint">Yakında aktif olacak</div>
+      </div>
+      <div class="cv-upload-divider">
+        <button class="btn btn-primary btn-sm" id="btn-generate-cv-merkez" style="width:100%;">CV Oluştur ve İndir</button>
+        <div style="font-size:11px;color:var(--muted);margin-top:6px;">Profil bilgilerinden otomatik PDF CV</div>
+      </div>
+    </div>
+    <div class="cv-ai-card">
+      <div class="cv-ai-icon">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      </div>
+      <div class="cv-ai-title">AI ile CV</div>
+      <span class="premium-teaser-badge">Yakında</span>
+      <div class="cv-ai-desc">AI destekli CV oluşturma ve iyileştirme</div>
+      <div class="cv-ai-footer">çok yakında burada.</div>
+    </div>
+  </div>
+
+  <!-- 4: SECTION MANAGEMENT -->
+  <div class="merkez-sections-title">Profil Bölümleri</div>
+  <div class="merkez-sections">
+    <div class="merkez-section-card">
+      <div class="merkez-card-header">
+        <div class="merkez-card-title">Kişisel Bilgiler</div>
+        <button class="btn-edit" onclick="editSection(1)">Düzenle</button>
+      </div>
+      <div class="merkez-card-summary" id="merkez-sum-1" style="display:none;"></div>
+      <div class="merkez-card-empty" id="merkez-sum-1-empty">Henüz eklenmedi</div>
+    </div>
+    <div class="merkez-section-card">
+      <div class="merkez-card-header">
+        <div class="merkez-card-title">Deneyim</div>
+        <button class="btn-edit" onclick="editSection(2)">Düzenle</button>
+      </div>
+      <div class="merkez-card-summary" id="merkez-sum-2" style="display:none;"></div>
+      <div class="merkez-card-empty" id="merkez-sum-2-empty">Henüz eklenmedi</div>
+    </div>
+    <div class="merkez-section-card">
+      <div class="merkez-card-header">
+        <div class="merkez-card-title">Eğitim & Dil</div>
+        <button class="btn-edit" onclick="editSection(3)">Düzenle</button>
+      </div>
+      <div class="merkez-card-summary" id="merkez-sum-3" style="display:none;"></div>
+      <div class="merkez-card-empty" id="merkez-sum-3-empty">Henüz eklenmedi</div>
+    </div>
+    <div class="merkez-section-card">
+      <div class="merkez-card-header">
+        <div class="merkez-card-title">Tercihler</div>
+        <button class="btn-edit" onclick="editSection(4)">Düzenle</button>
+      </div>
+      <div class="merkez-card-summary" id="merkez-sum-4" style="display:none;"></div>
+      <div class="merkez-card-empty" id="merkez-sum-4-empty">Henüz eklenmedi</div>
+    </div>
+    <div class="merkez-section-card">
+      <div class="merkez-card-header">
+        <div class="merkez-card-title">Lokasyon Tercihleri</div>
+        <button class="btn-edit" onclick="editSection(5)">Düzenle</button>
+      </div>
+      <div class="merkez-card-summary" id="merkez-sum-5" style="display:none;"></div>
+      <div class="merkez-card-empty" id="merkez-sum-5-empty">Henüz eklenmedi</div>
+    </div>
+  </div>
+
+  <!-- 5: FOOTER TEASER -->
+  <div class="footer-teaser">
+    <span class="footer-teaser-text">Premium aday avantajları çok yakında</span>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+  </div>
+
 </main>
 
 <!-- ═══ PANEL: PROFIL (WIZARD) ═══ -->
@@ -948,14 +1356,16 @@ body{font-family:'Plus Jakarta Sans',sans-serif;color:var(--text);background:#ff
     <div id="step4-content">
 
       <!-- TARGET ROLES -->
-      <div class="card-title" style="margin-bottom:12px;">Hedef Pozisyonlar</div>
+      <div class="card-title" style="margin-bottom:4px;">Hedef Pozisyonlar</div>
+      <p class="helper-text" style="font-size:13px;color:var(--muted);margin:0 0 12px 0;line-height:1.5;">Bu bilgiler seni dogru pozisyonlarla eslestirmemize yardimci olur. Birden fazla hedef rol ekleyebilirsin.</p>
       <div id="target-roles-container"></div>
       <button class="btn btn-secondary btn-sm" id="btn-add-role" type="button" style="margin-top:8px;">+ Rol Ekle</button>
 
       <hr class="section-divider">
 
       <!-- MUSAITLIK -->
-      <div class="card-title" style="margin-bottom:12px;">Musaitlik</div>
+      <div class="card-title" style="margin-bottom:4px;">Musaitlik</div>
+      <p class="helper-text" style="font-size:13px;color:var(--muted);margin:0 0 12px 0;">Yeni bir ise ne kadar surede baslayabilirsin?</p>
       <div class="chips-row" id="musaitlik-chips"></div>
 
       <hr class="section-divider">
@@ -997,14 +1407,10 @@ body{font-family:'Plus Jakarta Sans',sans-serif;color:var(--text);background:#ff
         <label for="f-career-goal">Kariyer Hedefi</label>
         <textarea id="f-career-goal" rows="3" placeholder="Kariyer hedefinizi kisaca yazin..." style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-family:inherit;font-size:14px;resize:vertical;"></textarea>
       </div>
-      <div class="field" style="max-width:300px;">
-        <label for="f-career-type">Kariyer Yonelimi</label>
-        <select id="f-career-type">
-          <option value="">Sec...</option>
-          <option value="yukari">Yukari (Terfi)</option>
-          <option value="yatay">Yatay (Farkli Alan)</option>
-          <option value="lider">Liderlik</option>
-        </select>
+      <div class="field">
+        <div class="card-title" style="margin-bottom:4px;">Kariyer Yonelimi</div>
+        <p class="helper-text" style="font-size:13px;color:var(--muted);margin:0 0 10px 0;">Birden fazla yonelim secebilirsin.</p>
+        <div id="career-type-checks" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
       </div>
 
     </div>
@@ -1041,17 +1447,6 @@ body{font-family:'Plus Jakarta Sans',sans-serif;color:var(--text);background:#ff
     <button class="btn btn-navy btn-lg" id="btn-wiz-complete" style="display:none;">Tamamla</button>
   </div>
 
-</main>
-
-<!-- ═══ PANEL: CV ═══ -->
-<main class="panel" id="panel-cv" data-panel="cv">
-  <div class="wiz-step-title">CV Olustur</div>
-  <div class="wiz-step-desc">Profil bilgilerinden otomatik CV olustur ve indir.</div>
-  <div class="card" style="text-align:center;padding:40px;">
-    <div style="font-size:48px;margin-bottom:12px;">&#128196;</div>
-    <p style="color:var(--muted);margin-bottom:16px;">Profil bilgilerinden HelloTalent markali PDF CV olusturulur.</p>
-    <button class="btn btn-primary btn-lg" id="btn-generate-cv">CV Olustur ve Indir</button>
-  </div>
 </main>
 
 <!-- ═══ PANEL: AYARLAR ═══ -->
@@ -1094,10 +1489,12 @@ body{font-family:'Plus Jakarta Sans',sans-serif;color:var(--text);background:#ff
    ═══════════════════════════════════════════════════════════════ */
 
 // ── SUPABASE CLIENT ──
-const SUPABASE_URL = 'https://cpwibefquojehjehtrog.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_POUtNwJyjAAheukwYP5hmA_TKKjphwa';
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-let currentUser = null;
+// Use var to avoid Safari SyntaxError: "Can't create duplicate variable that shadows a global property"
+// window.supabase is set by the CDN script; const/let would shadow it and crash in Safari.
+var SUPABASE_URL = 'https://cpwibefquojehjehtrog.supabase.co';
+var SUPABASE_KEY = 'sb_publishable_POUtNwJyjAAheukwYP5hmA_TKKjphwa';
+var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+var currentUser = null;
 
 // ── HELPER: Turkish lowercase ──
 function trLower(s) {
@@ -1107,11 +1504,100 @@ function trLower(s) {
     .replace(/\u011e/g,'\u011f').toLowerCase();
 }
 
+// ── NORMALIZATION UTILITIES ──
+// Display-only helpers. Never mutate DB payloads directly.
+
+// Trim + collapse repeated whitespace
+function normalizeText(s) {
+  if (!s) return '';
+  return s.trim().replace(/\s+/g, ' ');
+}
+
+// Turkish-aware title case for short structured inputs
+// Preserves known acronyms (LVMH, H&M, etc.)
+var PRESERVE_CASE = ['LVMH','H&M','COS','YSL','MNG','LC','VM','CEO','CFO','COO','HR','IT','AVM','TL'];
+function titleCaseTR(s) {
+  if (!s) return '';
+  var cleaned = normalizeText(s);
+  return cleaned.split(' ').map(function(word) {
+    var upper = word.toUpperCase();
+    // Preserve known acronyms
+    if (PRESERVE_CASE.indexOf(upper) !== -1) return upper;
+    // Preserve words with mixed internal structure like & or -
+    if (word.length <= 1) return word.toUpperCase();
+    // Turkish-aware first letter uppercase
+    var first = word.charAt(0);
+    // Turkish special: i -> İ, ı -> I
+    if (first === 'i') first = '\u0130';
+    else if (first === '\u0131') first = 'I';
+    else if (first === '\u00f6') first = '\u00d6';
+    else if (first === '\u00fc') first = '\u00dc';
+    else if (first === '\u015f') first = '\u015e';
+    else if (first === '\u00e7') first = '\u00c7';
+    else if (first === '\u011f') first = '\u011e';
+    else first = first.toUpperCase();
+    return first + trLower(word.substring(1));
+  }).join(' ');
+}
+
+// Clean display text: normalize + title case
+function normalizeForDisplay(s) {
+  return titleCaseTR(s);
+}
+
+// ── ROLE CANONICALIZATION ──
+// Maps lowercase/ascii variants to {display, canonical}
+// canonical = the recruiter-facing standard Turkish role name
+var ROLE_SYNONYMS = {
+  // Mağaza Müdürü
+  'store manager': {display: 'Store Manager', canonical: 'Ma\u011faza M\u00fcd\u00fcr\u00fc'},
+  'magaza muduru': {display: 'Ma\u011faza M\u00fcd\u00fcr\u00fc', canonical: 'Ma\u011faza M\u00fcd\u00fcr\u00fc'},
+  'ma\u011faza m\u00fcd\u00fcr\u00fc': {display: 'Ma\u011faza M\u00fcd\u00fcr\u00fc', canonical: 'Ma\u011faza M\u00fcd\u00fcr\u00fc'},
+  // Mağaza Müdür Yardımcısı
+  'assistant store manager': {display: 'Assistant Store Manager', canonical: 'Ma\u011faza M\u00fcd\u00fcr Yard\u0131mc\u0131s\u0131'},
+  'magaza mudur yardimcisi': {display: 'Ma\u011faza M\u00fcd\u00fcr Yard\u0131mc\u0131s\u0131', canonical: 'Ma\u011faza M\u00fcd\u00fcr Yard\u0131mc\u0131s\u0131'},
+  'ma\u011faza m\u00fcd\u00fcr yard\u0131mc\u0131s\u0131': {display: 'Ma\u011faza M\u00fcd\u00fcr Yard\u0131mc\u0131s\u0131', canonical: 'Ma\u011faza M\u00fcd\u00fcr Yard\u0131mc\u0131s\u0131'},
+  // Satış Danışmanı
+  'sales associate': {display: 'Sales Associate', canonical: 'Sat\u0131\u015f Dan\u0131\u015fman\u0131'},
+  'sales advisor': {display: 'Sales Advisor', canonical: 'Sat\u0131\u015f Dan\u0131\u015fman\u0131'},
+  'satis danismani': {display: 'Sat\u0131\u015f Dan\u0131\u015fman\u0131', canonical: 'Sat\u0131\u015f Dan\u0131\u015fman\u0131'},
+  'sat\u0131\u015f dan\u0131\u015fman\u0131': {display: 'Sat\u0131\u015f Dan\u0131\u015fman\u0131', canonical: 'Sat\u0131\u015f Dan\u0131\u015fman\u0131'},
+  // Bölge Müdürü
+  'area manager': {display: 'Area Manager', canonical: 'B\u00f6lge M\u00fcd\u00fcr\u00fc'},
+  'regional manager': {display: 'Regional Manager', canonical: 'B\u00f6lge M\u00fcd\u00fcr\u00fc'},
+  'bolge muduru': {display: 'B\u00f6lge M\u00fcd\u00fcr\u00fc', canonical: 'B\u00f6lge M\u00fcd\u00fcr\u00fc'},
+  'b\u00f6lge m\u00fcd\u00fcr\u00fc': {display: 'B\u00f6lge M\u00fcd\u00fcr\u00fc', canonical: 'B\u00f6lge M\u00fcd\u00fcr\u00fc'},
+  // Kasiyer
+  'cashier': {display: 'Cashier', canonical: 'Kasiyer'},
+  'kasiyer': {display: 'Kasiyer', canonical: 'Kasiyer'},
+  // Visual Merchandiser
+  'visual merchandiser': {display: 'Visual Merchandiser', canonical: 'Visual Merchandiser'},
+  'vm': {display: 'Visual Merchandiser', canonical: 'Visual Merchandiser'},
+  // Depocu / Stok
+  'stock associate': {display: 'Stock Associate', canonical: 'Depo Sorumlusu'},
+  'depo sorumlusu': {display: 'Depo Sorumlusu', canonical: 'Depo Sorumlusu'},
+  'depocu': {display: 'Depocu', canonical: 'Depo Sorumlusu'},
+  // Genel Müdür
+  'general manager': {display: 'General Manager', canonical: 'Genel M\u00fcd\u00fcr'},
+  'genel mudur': {display: 'Genel M\u00fcd\u00fcr', canonical: 'Genel M\u00fcd\u00fcr'},
+  'genel m\u00fcd\u00fcr': {display: 'Genel M\u00fcd\u00fcr', canonical: 'Genel M\u00fcd\u00fcr'}
+};
+
+// Lookup: returns {display, canonical} or null if no match
+function canonicalizeRole(raw) {
+  if (!raw) return null;
+  var key = trLower(normalizeText(raw));
+  return ROLE_SYNONYMS[key] || null;
+}
+
 // ── HELPER: get value ──
 function val(id) {
   var el = document.getElementById(id);
   if (!el) return '';
   return (el.tagName === 'SELECT') ? el.value : el.value.trim();
+}
+function nullIfEmpty(v) {
+  return (v === '' || v === undefined) ? null : v;
 }
 
 // ═══════════════════════════════════════════════════
@@ -1128,9 +1614,8 @@ const SEGMENTLER = ['L\u00fcks','Premium','Orta Segment','Fast Fashion','Spor','
 
 const ISTIHDAM_TIPLERI = ['Tam Zamanl\u0131','Yar\u0131 Zamanl\u0131','Sezonluk','Stajyer','S\u00f6zle\u015fmeli'];
 
-const KIDEM_SEVIYELERI = ['Stajyer','Giri\u015f Seviye','Orta Seviye','K\u0131demli','Y\u00f6netici','\u00dcst Y\u00f6netici'];
-
-const LOKASYON_TIPLERI = ['Ma\u011faza','Saha','Genel Merkez'];
+// KIDEM_SEVIYELERI removed (Decision 1 — derived later, not candidate-facing)
+// LOKASYON_TIPLERI removed (Decision 3 — implied by department)
 
 const TAKIM_BUYUKLUKLERI = ['Yok','1-5','6-15','16-30','30+'];
 
@@ -1140,7 +1625,16 @@ const ROL_AILELERI = ['Sat\u0131\u015f','Ma\u011faza Y\u00f6netimi','B\u00f6lge 
 
 const MUSAITLIK_SECENEKLERI = ['Hemen','2 Hafta \u0130\u00e7inde','1 Ay \u0130\u00e7inde','2+ Ay \u0130\u00e7inde'];
 
-const MAAS_ARALIKLARI = ['','15000-20000','20000-25000','25000-30000','30000-35000','35000-45000','45000-60000','60000-80000','80000+'];
+// Career type options in canonical order (for consistent DB storage)
+var CAREER_TYPE_OPTIONS = [
+  {value: 'yukari', label: 'Yukari (Terfi)'},
+  {value: 'yatay', label: 'Yatay (Farkli Alan)'},
+  {value: 'lider', label: 'Liderlik'}
+];
+var CAREER_TYPE_ORDER = ['yukari','yatay','lider'];
+var selectedCareerTypes = [];
+
+const MAAS_ARALIKLARI = ['','25000-30000','30000-35000','35000-45000','45000-60000','60000-80000','80000-100000','100000-150000','150000+'];
 
 const DIL_LISTESI = ['T\u00fcrk\u00e7e','\u0130ngilizce','Almanca','Frans\u0131zca','\u0130spanyolca','\u0130talyanca','Rus\u00e7a','Arap\u00e7a','\u00c7ince (Mandarin)','Japonca','Korece','Portekizce','Hollandaca','Leh\u00e7e','Ukraynaca','Fars\u00e7a','K\u00fcrt\u00e7e','Bulgar\u0131ca','Rumence','Macarca','\u00c7ek\u00e7e','\u0130sve\u00e7\u00e7e','Danca','Fince','Norve\u00e7\u00e7e','Yunanca','S\u0131rp\u00e7a','H\u0131rvat\u00e7a','Bo\u015fnak\u00e7a','G\u00fcrce','Arnavut\u00e7a','Di\u011fer'];
 
@@ -1341,8 +1835,10 @@ function validateKariyer() {
   var errors = [];
   cards.forEach(function(card, i) {
     var prefix = card.id + '-';
-    if (!val(prefix + 'sirket')) errors.push('Deneyim #' + (i + 1) + ': Sirket zorunludur');
-    if (!val(prefix + 'pozisyon')) errors.push('Deneyim #' + (i + 1) + ': Pozisyon zorunludur');
+    var num = i + 1;
+    if (!val(prefix + 'sirket')) errors.push('Deneyim #' + num + ': Sirket zorunludur');
+    if (!val(prefix + 'pozisyon')) errors.push('Deneyim #' + num + ': Pozisyon zorunludur');
+    if (!val(prefix + 'basyil')) errors.push('Deneyim #' + num + ': Baslangic yili zorunludur');
   });
   if (errors.length > 0) { showStepErrors(errors); return false; }
   return true;
@@ -1400,8 +1896,20 @@ function switchPanel(name) {
     btn.classList.remove('active');
     if (btn.dataset.panel === name) btn.classList.add('active');
   });
+  // Refresh Profil Merkezi cards when switching to it
+  if (name === 'merkez') { updateMerkezCards(); updateCompletionUI(); }
   // Close mobile sidebar
   closeMobileSidebar();
+}
+
+// ── EDIT SECTION (launch wizard from Profil Merkezi) ──
+var returnToPanel = null;
+
+function editSection(step) {
+  returnToPanel = 'merkez';
+  wizStep = step;
+  renderWizard();
+  switchPanel('profil');
 }
 
 // ═══════════════════════════════════════════════════
@@ -1543,7 +2051,14 @@ function applyDraft(draft) {
       });
     }
     setVal('f-career-goal', wp.career_goal);
-    setVal('f-career-type', wp.career_type);
+    // Career type multi-select restore
+    if (wp.career_type) {
+      var types = typeof wp.career_type === 'string' ? wp.career_type.split(',') : [];
+      selectedCareerTypes = types;
+      document.querySelectorAll('#career-type-checks input[type=checkbox]').forEach(function(cb) {
+        cb.checked = types.indexOf(cb.value) !== -1;
+      });
+    }
   }
   if (draft.brand_interests && draft.brand_interests.length > 0) {
     selectedBrandInterests = draft.brand_interests.slice();
@@ -1579,12 +2094,15 @@ function setVal(id, value) {
 // ═══════════════════════════════════════════════════
 
 (async function() {
+  console.log('[HT] Auth bootstrap: checking session...');
   var sessionRes = await supabase.auth.getSession();
   if (!sessionRes.data.session) {
+    console.warn('[HT] No session found — redirecting to giris.html');
     window.location.href = 'giris.html';
     return;
   }
   currentUser = sessionRes.data.session.user;
+  console.log('[HT] Session found for:', currentUser.email, '| id:', currentUser.id);
 
   // Set email in sidebar and settings
   var email = currentUser.email || '';
@@ -1612,6 +2130,7 @@ function setVal(id, value) {
 
   // Try loading profile data from DB
   var dbData = await loadProfileFromDB();
+  console.log('[HT] DB load result:', dbData ? 'DATA FOUND' : 'NULL (no data or error)');
   if (dbData) {
     applyDraft(dbData); // reuse applyDraft to populate all fields
     if (dbData.profile && dbData.profile.avatar_url) setAvatarImage(dbData.profile.avatar_url);
@@ -1627,9 +2146,12 @@ function setVal(id, value) {
     if (dbData.profile && dbData.profile.is_active !== undefined) {
       var ta = document.getElementById('toggle-active');
       if (ta) ta.checked = dbData.profile.is_active;
+      var mta = document.getElementById('merkez-toggle-active');
+      if (mta) mta.checked = dbData.profile.is_active;
       updateStatusUI(dbData.profile.is_active);
     }
     updateDashboardSummary(dbData.profile, dbData.experiences);
+    updateMerkezCards(); // Populate Profil Merkezi section cards
   } else {
     // No DB data — check for draft
     var draft = loadDraft();
@@ -1637,6 +2159,23 @@ function setVal(id, value) {
       document.getElementById('modal-draft').classList.add('show');
     }
     document.getElementById('dash-empty-prompt').style.display = 'block';
+  }
+
+  // ── Career goal override: query param > localStorage > draft/DB ──
+  // Other pages (kariyer.html, giris.html etc.) send ?career_goal= or set localStorage.ht_career_goal
+  var urlParams = new URLSearchParams(window.location.search);
+  var incomingGoal = urlParams.get('career_goal') || localStorage.getItem('ht_career_goal') || '';
+  localStorage.removeItem('ht_career_goal');
+  localStorage.removeItem('ht_career_goal_set');
+  if (incomingGoal) {
+    var cgField = document.getElementById('f-career-goal');
+    if (cgField) cgField.value = incomingGoal;
+    // Clean the URL without reload
+    if (urlParams.has('career_goal')) {
+      urlParams.delete('career_goal');
+      var cleanUrl = window.location.pathname + (urlParams.toString() ? '?' + urlParams.toString() : '');
+      window.history.replaceState({}, '', cleanUrl);
+    }
   }
 })();
 
@@ -1683,9 +2222,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Dashboard buttons
   var btnStart = document.getElementById('btn-start-wizard');
-  if (btnStart) btnStart.addEventListener('click', function() { switchPanel('profil'); });
+  if (btnStart) btnStart.addEventListener('click', function() { editSection(1); });
   var btnEdit = document.getElementById('btn-edit-profile');
-  if (btnEdit) btnEdit.addEventListener('click', function() { switchPanel('profil'); });
+  if (btnEdit) btnEdit.addEventListener('click', function() { editSection(1); });
 
   // Wizard complete button
   var btnComplete = document.getElementById('btn-wiz-complete');
@@ -1725,10 +2264,10 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
   // CV generation buttons
-  var btnGenCV = document.getElementById('btn-generate-cv');
-  if (btnGenCV) btnGenCV.addEventListener('click', generateCV);
   var btnGenCVDash = document.getElementById('btn-gen-cv');
   if (btnGenCVDash) btnGenCVDash.addEventListener('click', generateCV);
+  var btnGenCVMerkez = document.getElementById('btn-generate-cv-merkez');
+  if (btnGenCVMerkez) btnGenCVMerkez.addEventListener('click', generateCV);
 
   // Draft resume button
   var btnDraftResume = document.getElementById('btn-draft-resume');
@@ -1736,6 +2275,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var draft = loadDraft();
     if (draft) applyDraft(draft);
     document.getElementById('modal-draft').classList.remove('show');
+    returnToPanel = 'merkez';
     switchPanel('profil');
   });
 
@@ -1751,21 +2291,35 @@ document.addEventListener('DOMContentLoaded', function() {
     window.location.href = 'giris.html';
   });
 
-  // Active/passive toggle
+  // Active/passive toggle — sync sidebar + merkez toggles
   var toggleActive = document.getElementById('toggle-active');
-  if (toggleActive) toggleActive.addEventListener('change', function() {
-    var isActive = this.checked;
+  var merkezToggle = document.getElementById('merkez-toggle-active');
+
+  function handleActiveToggle(isActive, source) {
+    // Sync both toggles
+    if (toggleActive && source !== 'sidebar') toggleActive.checked = isActive;
+    if (merkezToggle && source !== 'merkez') merkezToggle.checked = isActive;
     updateStatusUI(isActive);
     if (currentUser) {
       supabase.from('candidates').upsert({user_id: currentUser.id, is_active: isActive}, {onConflict: 'user_id'});
     }
+  }
+
+  if (toggleActive) toggleActive.addEventListener('change', function() {
+    handleActiveToggle(this.checked, 'sidebar');
+  });
+  if (merkezToggle) merkezToggle.addEventListener('change', function() {
+    handleActiveToggle(this.checked, 'merkez');
   });
 
   // Modal close buttons
   var btnSuccessOk = document.getElementById('btn-success-ok');
   if (btnSuccessOk) btnSuccessOk.addEventListener('click', function() {
     document.getElementById('modal-success').classList.remove('show');
-    switchPanel('genel');
+    var dest = returnToPanel || 'genel';
+    returnToPanel = null;
+    switchPanel(dest);
+    // switchPanel('merkez') already calls updateMerkezCards() + updateCompletionUI() as siblings
   });
   var btnErrorClose = document.getElementById('btn-error-close');
   if (btnErrorClose) btnErrorClose.addEventListener('click', function() {
@@ -1960,6 +2514,8 @@ function addExperienceCard(data) {
   card.dataset.expId = expCounter;
 
   var d = data || {};
+  // Normalize: accept both DB dialect (sirket) and UI dialect (sirket_adi)
+  if (!d.sirket_adi && d.sirket) d.sirket_adi = d.sirket;
 
   // Header
   var header = document.createElement('div');
@@ -1978,41 +2534,51 @@ function addExperienceCard(data) {
   }
   card.appendChild(header);
 
-  // Row 1: Sirket + Marka
+  // Row 1: Sirket/Marka (merged smart field) + Pozisyon
   var row1 = document.createElement('div');
   row1.className = 'field-row';
-  row1.appendChild(makeField('text', 'Sirket *', cardId + '-sirket', 'Sirket adi', d.sirket_adi));
-  row1.appendChild(makeBrandField(cardId + '-marka', d.marka));
+  row1.appendChild(makeSmartBrandField(cardId + '-sirket', d));
+  row1.appendChild(makeField('text', 'Pozisyon *', cardId + '-pozisyon', 'Pozisyon', d.pozisyon));
   card.appendChild(row1);
 
-  // Row 2: Pozisyon + Departman
+  // Pozisyon display normalization on blur
+  var pozInput = document.getElementById(cardId + '-pozisyon');
+  if (pozInput) {
+    pozInput.addEventListener('blur', function() {
+      if (pozInput.value) pozInput.value = normalizeForDisplay(pozInput.value);
+    });
+  }
+
+  // Row 2: Departman + Istihdam Tipi
   var row2 = document.createElement('div');
   row2.className = 'field-row';
-  row2.appendChild(makeField('text', 'Pozisyon *', cardId + '-pozisyon', 'Pozisyon', d.pozisyon));
   row2.appendChild(makeSelectField('Departman', cardId + '-departman', DEPARTMANLAR, d.departman));
+  row2.appendChild(makeSelectField('Istihdam Tipi', cardId + '-istihdam', ISTIHDAM_TIPLERI, d.istihdam_tipi));
   card.appendChild(row2);
 
-  // Row 3: Segment + Istihdam Tipi
+  // Row 3: Segment + Sehir
   var row3 = document.createElement('div');
   row3.className = 'field-row';
   row3.appendChild(makeSelectField('Segment', cardId + '-segment', SEGMENTLER, d.segment));
-  row3.appendChild(makeSelectField('Istihdam Tipi', cardId + '-istihdam', ISTIHDAM_TIPLERI, d.istihdam_tipi));
+  row3.appendChild(makeSelectField('Sehir', cardId + '-sehir', flatAllCities(), d.sehir));
   card.appendChild(row3);
 
-  // Row 4: Kidem + Lokasyon Tipi
-  var row4 = document.createElement('div');
-  row4.className = 'field-row';
-  row4.appendChild(makeSelectField('Kidem Seviyesi', cardId + '-kidem', KIDEM_SEVIYELERI, d.kidem_seviyesi));
-  row4.appendChild(makeSelectField('Lokasyon Tipi', cardId + '-loktipi', LOKASYON_TIPLERI, d.lokasyon_tipi));
-  card.appendChild(row4);
+  // Row 4: Takim Buyuklugu (conditional — shown only for managerial departments)
+  var takimWrap = makeSelectField('Takim Buyuklugu', cardId + '-takim', TAKIM_BUYUKLUKLERI, d.takim_buyuklugu);
+  takimWrap.id = cardId + '-takim-wrap';
+  var deptShouldShowTakim = d.departman && ['Bölge Yönetimi','Genel Merkez'].indexOf(d.departman) !== -1;
+  takimWrap.style.display = deptShouldShowTakim ? '' : 'none';
+  card.appendChild(takimWrap);
 
-  // Row 5: Sehir + Takim Buyuklugu
-  var row5 = document.createElement('div');
-  row5.className = 'field-row';
-  var sehirField = makeSelectField('Sehir', cardId + '-sehir', flatAllCities(), d.sehir);
-  row5.appendChild(sehirField);
-  row5.appendChild(makeSelectField('Takim Buyuklugu', cardId + '-takim', TAKIM_BUYUKLUKLERI, d.takim_buyuklugu));
-  card.appendChild(row5);
+  // Wire departman → takim visibility toggle
+  var deptSelect = card.querySelector('#' + cardId + '-departman');
+  if (deptSelect) {
+    deptSelect.addEventListener('change', function() {
+      var show = ['Bölge Yönetimi','Genel Merkez'].indexOf(deptSelect.value) !== -1;
+      takimWrap.style.display = show ? '' : 'none';
+      if (!show) { var ts = document.getElementById(cardId + '-takim'); if (ts) ts.value = ''; }
+    });
+  }
 
   // Row 6: Baslangic Ay/Yil + Bitis Ay/Yil
   var row6 = document.createElement('div');
@@ -2059,20 +2625,7 @@ function addExperienceCard(data) {
     card.querySelectorAll('.bitis-field').forEach(function(f) { f.style.display = 'none'; });
   }
 
-  // Basari Ozeti (textarea)
-  var ozet = document.createElement('div');
-  ozet.className = 'field';
-  var ozetLabel = document.createElement('label');
-  ozetLabel.textContent = 'Basari Ozeti';
-  var ozetTA = document.createElement('textarea');
-  ozetTA.id = cardId + '-ozet';
-  ozetTA.placeholder = 'Onemli basarilarinizi kisaca yazin (opsiyonel)';
-  ozetTA.rows = 2;
-  ozetTA.style.cssText = 'width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-family:inherit;font-size:14px;resize:vertical;';
-  if (d.basari_ozeti) ozetTA.value = d.basari_ozeti;
-  ozet.appendChild(ozetLabel);
-  ozet.appendChild(ozetTA);
-  card.appendChild(ozet);
+  // Basari Ozeti removed from wizard (Decision 5 — future dashboard feature)
 
   // Separator
   var sep = document.createElement('hr');
@@ -2148,30 +2701,67 @@ function makeYearField(labelText, id, selectedVal) {
   return wrap;
 }
 
-function makeBrandField(id, value) {
+// Smart merged Sirket/Marka field (Decision 2)
+// Canonical brand display formatter — single source of truth for how brand + company appears.
+// Used by: autocomplete item label, autocomplete pick, restore from DB.
+function formatBrandDisplay(brandName, companyName) {
+  if (!brandName) return companyName || '';
+  if (companyName && companyName !== brandName) return brandName + ' (' + companyName + ')';
+  return brandName;
+}
+
+// Single visible input with brand autocomplete.
+// Stores selected brand data in hidden data attributes for split at save time.
+function makeSmartBrandField(id, data) {
   var wrap = document.createElement('div');
   wrap.className = 'field';
   wrap.style.position = 'relative';
   var lbl = document.createElement('label');
-  lbl.textContent = 'Marka';
+  lbl.textContent = 'Sirket / Marka *';
   var input = document.createElement('input');
   input.type = 'text';
   input.id = id;
-  input.placeholder = 'Marka ara...';
+  input.placeholder = 'Ornek: Zara, Sephora, Fendi...';
   input.autocomplete = 'off';
-  if (value) input.value = value;
+
+  // Restore display value using shared formatter
+  var restoreMarka = data.marka || '';
+  var restoreSirket = data.sirket_adi || data.sirket || '';
+  var displayVal = formatBrandDisplay(restoreMarka, restoreSirket) || restoreSirket;
+  if (displayVal) input.value = displayVal;
+
+  // Hidden data: the resolved sirket + marka values for DB
+  input.dataset.resolvedSirket = data.sirket_adi || data.sirket || '';
+  input.dataset.resolvedMarka = data.marka || '';
+  // Snapshot of the display string set by autocomplete pick (used for race-condition guard)
+  input.dataset.pickedDisplay = input.value || '';
+
   var sugBox = document.createElement('div');
   sugBox.className = 'autocomplete-list';
   sugBox.id = id + '-sug';
 
   input.addEventListener('input', function() {
-    showBrandSuggestions(input, sugBox);
+    // Only clear brand mapping if the text no longer matches the autocomplete pick
+    if (input.dataset.resolvedMarka && input.value === input.dataset.pickedDisplay) return;
+    input.dataset.resolvedSirket = input.value;
+    input.dataset.resolvedMarka = '';
+    input.dataset.pickedDisplay = '';
+    showSmartBrandSuggestions(input, sugBox);
   });
   input.addEventListener('focus', function() {
-    if (input.value.length >= 1) showBrandSuggestions(input, sugBox);
+    if (input.value.length >= 1) showSmartBrandSuggestions(input, sugBox);
   });
   document.addEventListener('click', function(e) {
     if (!wrap.contains(e.target)) sugBox.style.display = 'none';
+  });
+
+  // Display normalization on blur (freeform only — brand picks are already clean)
+  input.addEventListener('blur', function() {
+    if (!input.dataset.resolvedMarka && input.value) {
+      // Freeform: normalize display, keep resolvedSirket in sync
+      input.value = normalizeForDisplay(input.value);
+      input.dataset.resolvedSirket = input.value;
+    }
   });
 
   wrap.appendChild(lbl);
@@ -2180,7 +2770,7 @@ function makeBrandField(id, value) {
   return wrap;
 }
 
-function showBrandSuggestions(input, sugBox) {
+function showSmartBrandSuggestions(input, sugBox) {
   var q = trLower(input.value);
   if (q.length < 1) { sugBox.style.display = 'none'; return; }
   var matches = BRAND_DB.filter(function(b) {
@@ -2191,10 +2781,15 @@ function showBrandSuggestions(input, sugBox) {
   matches.forEach(function(b) {
     var item = document.createElement('div');
     item.className = 'autocomplete-item';
-    item.textContent = b.name + (b.parent ? ' (' + b.parent + ')' : '');
+    item.textContent = formatBrandDisplay(b.name, b.parent || '');
     item.addEventListener('mousedown', function(e) {
       e.preventDefault();
-      input.value = b.name;
+      // Smart split: brand name is marka, parent (or brand itself) is sirket
+      var pickText = formatBrandDisplay(b.name, b.parent || '');
+      input.value = pickText;
+      input.dataset.resolvedMarka = b.name;
+      input.dataset.resolvedSirket = b.parent || b.name;
+      input.dataset.pickedDisplay = pickText;
       sugBox.style.display = 'none';
     });
     sugBox.appendChild(item);
@@ -2218,24 +2813,33 @@ function collectExperiences() {
   var result = [];
   cards.forEach(function(card) {
     var prefix = card.id + '-';
+    // Smart brand field: read resolved split from dataset
+    var sirketInput = document.getElementById(prefix + 'sirket');
+    var resolvedSirket = sirketInput ? (sirketInput.dataset.resolvedSirket || sirketInput.value) : '';
+    var resolvedMarka = sirketInput ? (sirketInput.dataset.resolvedMarka || '') : '';
+    // Safety: normalize freeform company at collect-time (covers save-before-blur edge case)
+    if (!resolvedMarka && resolvedSirket) resolvedSirket = normalizeForDisplay(resolvedSirket);
+    // Safety: normalize pozisyon at collect-time
+    var rawPoz = val(prefix + 'pozisyon');
+    var normalizedPoz = rawPoz ? normalizeForDisplay(rawPoz) : '';
     result.push({
-      sirket: val(prefix + 'sirket'),
-      marka: val(prefix + 'marka'),
-      pozisyon: val(prefix + 'pozisyon'),
-      departman: val(prefix + 'departman'),
-      segment: val(prefix + 'segment'),
-      istihdam_tipi: val(prefix + 'istihdam'),
-      kidem_seviyesi: val(prefix + 'kidem'),
-      lokasyon_tipi: val(prefix + 'loktipi'),
-      sehir: val(prefix + 'sehir'),
-      takim_buyuklugu: val(prefix + 'takim'),
+      sirket: resolvedSirket,
+      marka: nullIfEmpty(resolvedMarka),
+      pozisyon: normalizedPoz,
+      departman: nullIfEmpty(val(prefix + 'departman')),
+      segment: nullIfEmpty(val(prefix + 'segment')),
+      istihdam_tipi: nullIfEmpty(val(prefix + 'istihdam')),
+      kidem_seviyesi: null,   // Decision 1: removed from UI, always null
+      lokasyon_tipi: null,    // Decision 3: removed from UI, always null
+      sehir: nullIfEmpty(val(prefix + 'sehir')),
+      takim_buyuklugu: nullIfEmpty(val(prefix + 'takim')),
       baslangic_ay: monthNameToIndex(val(prefix + 'basay')),
       baslangic_yil: val(prefix + 'basyil') ? parseInt(val(prefix + 'basyil')) : null,
       bitis_ay: monthNameToIndex(val(prefix + 'bitay')),
       bitis_yil: val(prefix + 'bityil') ? parseInt(val(prefix + 'bityil')) : null,
       devam_ediyor: document.getElementById(prefix + 'devam') ? document.getElementById(prefix + 'devam').checked : false,
-      ayrilma_nedeni: val(prefix + 'ayrilma'),
-      basari_ozeti: val(prefix + 'ozet')
+      ayrilma_nedeni: nullIfEmpty(val(prefix + 'ayrilma')),
+      basari_ozeti: null      // Decision 5: removed from wizard, always null
     });
   });
   return result;
@@ -2273,6 +2877,10 @@ function addEducationRow(data) {
   }
   eduCounter++;
   var d = data || {};
+  // Normalize: accept both DB dialect and UI dialect
+  if (!d.seviye && d.egitim_seviye) d.seviye = d.egitim_seviye;
+  if (!d.okul_adi && d.okul) d.okul_adi = d.okul;
+  if (!d.mezuniyet_yili && d.mezun_yil) d.mezuniyet_yili = String(d.mezun_yil);
   var rowId = 'edu-' + eduCounter;
 
   var row = document.createElement('div');
@@ -2440,7 +3048,7 @@ function collectEducation() {
   var result = [];
   rows.forEach(function(row) {
     var p = row.id + '-';
-    var item = { egitim_seviye: val(p + 'seviye'), okul: val(p + 'okul'), bolum: val(p + 'bolum'), mezun_yil: val(p + 'mezyil') ? parseInt(val(p + 'mezyil')) : null };
+    var item = { egitim_seviye: nullIfEmpty(val(p + 'seviye')), okul: nullIfEmpty(val(p + 'okul')), bolum: nullIfEmpty(val(p + 'bolum')), mezun_yil: val(p + 'mezyil') ? parseInt(val(p + 'mezyil')) : null };
     if (item.egitim_seviye || item.okul) result.push(item);
   });
   return result;
@@ -2451,7 +3059,7 @@ function collectLanguages() {
   var result = [];
   rows.forEach(function(row) {
     var p = row.id + '-';
-    var item = { dil: val(p + 'dil'), seviye: val(p + 'seviye') };
+    var item = { dil: nullIfEmpty(val(p + 'dil')), seviye: nullIfEmpty(val(p + 'seviye')) };
     if (item.dil) result.push(item);
   });
   return result;
@@ -2462,7 +3070,7 @@ function collectCertificates() {
   var result = [];
   rows.forEach(function(row) {
     var p = row.id + '-';
-    var item = { egitim_adi: val(p + 'adi'), kurum: val(p + 'kurum'), yil: val(p + 'yil') };
+    var item = { egitim_adi: nullIfEmpty(val(p + 'adi')), kurum: nullIfEmpty(val(p + 'kurum')), yil: val(p + 'yil') ? parseInt(val(p + 'yil')) : null };
     if (item.egitim_adi) result.push(item);
   });
   return result;
@@ -2568,6 +3176,28 @@ function initStep4() {
       if (e.target !== brandInput && e.target !== brandSug) brandSug.style.display = 'none';
     });
   }
+
+  // Career type multi-select checkboxes (Decision 8)
+  var ctypeContainer = document.getElementById('career-type-checks');
+  if (ctypeContainer) {
+    CAREER_TYPE_OPTIONS.forEach(function(opt) {
+      var lbl = document.createElement('label');
+      lbl.className = 'cb-wrap';
+      lbl.style.padding = '6px 0';
+      var cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.value = opt.value;
+      cb.addEventListener('change', function() {
+        if (cb.checked) { selectedCareerTypes.push(opt.value); }
+        else { selectedCareerTypes = selectedCareerTypes.filter(function(t) { return t !== opt.value; }); }
+      });
+      var span = document.createElement('span');
+      span.textContent = opt.label;
+      lbl.appendChild(cb);
+      lbl.appendChild(span);
+      ctypeContainer.appendChild(lbl);
+    });
+  }
 }
 
 function addTargetRoleRow(data) {
@@ -2654,20 +3284,24 @@ function collectTargetRoles() {
   var result = [];
   rows.forEach(function(row) {
     var p = row.id + '-';
-    var item = { rol_ailesi: val(p + 'ailesi'), rol_unvani: val(p + 'unvan') };
+    var item = { rol_ailesi: nullIfEmpty(val(p + 'ailesi')), rol_unvani: nullIfEmpty(val(p + 'unvan')) };
     if (item.rol_ailesi || item.rol_unvani) result.push(item);
   });
   return result;
 }
 
 function collectWorkPrefs() {
+  // Career type: canonical order sort (yukari < yatay < lider)
+  var sortedCareerTypes = selectedCareerTypes.slice().sort(function(a, b) {
+    return CAREER_TYPE_ORDER.indexOf(a) - CAREER_TYPE_ORDER.indexOf(b);
+  });
   return {
-    musaitlik: selectedMusaitlik,
+    musaitlik: nullIfEmpty(selectedMusaitlik),
     calisma_tipleri: selectedCalismaTipleri,
-    maas_beklenti: val('f-maas'),
+    maas_beklenti: nullIfEmpty(val('f-maas')),
     tercih_segmentler: selectedSegmentler,
-    career_goal: val('f-career-goal'),
-    career_type: val('f-career-type')
+    career_goal: nullIfEmpty(val('f-career-goal')),
+    career_type: sortedCareerTypes.length > 0 ? sortedCareerTypes.join(',') : null
   };
 }
 
@@ -2879,18 +3513,18 @@ async function saveProfileRPC() {
   var btnComplete = document.getElementById('btn-wiz-complete');
   if (btnComplete) { btnComplete.disabled = true; btnComplete.textContent = 'Kaydediliyor...'; }
 
-  // Assemble p_profile
+  // Assemble p_profile (nullIfEmpty on optional selects to avoid CHECK failures)
   var p_profile = {
     full_name: val('f-adsoyad'),
     email: currentUser ? currentUser.email : '',
-    telefon: val('f-telefon'),
-    cinsiyet: val('f-cinsiyet'),
-    dogum_yili: val('f-dogumyili'),
-    adres_il: val('f-adresil'),
-    adres_ilce: val('f-adresilce'),
-    linkedin: val('f-linkedin'),
-    engel_durumu: val('f-engel'),
-    askerlik_durumu: val('f-askerlik'),
+    telefon: nullIfEmpty(val('f-telefon')),
+    cinsiyet: nullIfEmpty(val('f-cinsiyet')),
+    dogum_yili: nullIfEmpty(val('f-dogumyili')),
+    adres_il: nullIfEmpty(val('f-adresil')),
+    adres_ilce: nullIfEmpty(val('f-adresilce')),
+    linkedin: nullIfEmpty(val('f-linkedin')),
+    engel_durumu: nullIfEmpty(val('f-engel')),
+    askerlik_durumu: nullIfEmpty(val('f-askerlik')),
     is_active: document.getElementById('toggle-active') ? document.getElementById('toggle-active').checked : true,
     ilk_deneyim: document.getElementById('cb-no-experience') ? document.getElementById('cb-no-experience').checked : false,
     profile_completed: true
@@ -2948,6 +3582,8 @@ async function saveProfileRPC() {
     if (nameEl && p_profile.full_name) nameEl.textContent = p_profile.full_name;
     // Update dashboard
     updateDashboardSummary(p_profile, p_experiences);
+    // Update Profil Merkezi cards (separate from completion — no side-effect coupling)
+    updateMerkezCards();
 
   } catch (err) {
     var errorDesc = document.getElementById('error-desc');
@@ -2973,14 +3609,151 @@ function updateDashboardSummary(profile, experiences) {
   if (dep) dep.style.display = 'none';
   var dc = document.getElementById('dash-content');
   if (dc) dc.style.display = '';
-  // Role from latest experience
+  // Role + Company stacked display (Decision: remove @ pattern)
+  var psRole = document.getElementById('ps-role');
+  var psCompany = document.getElementById('ps-company');
   if (experiences && experiences.length > 0) {
     var latest = experiences[0];
-    var psRole = document.getElementById('ps-role');
-    if (psRole) psRole.textContent = (latest.pozisyon || '') + (latest.sirket ? ' @ ' + latest.sirket : '');
+    var rawRole = latest.pozisyon || '';
+    var roleMatch = canonicalizeRole(rawRole);
+    if (psRole) psRole.textContent = roleMatch ? roleMatch.display : normalizeForDisplay(rawRole);
+    // Company display: prefer marka, show group in parens if both exist
+    var brandName = latest.marka || '';
+    var companyName = latest.sirket_adi || latest.sirket || '';
+    var companyDisplay = '';
+    if (brandName && companyName && brandName !== companyName) {
+      companyDisplay = normalizeForDisplay(brandName) + ' (' + normalizeForDisplay(companyName) + ')';
+    } else if (brandName) {
+      companyDisplay = normalizeForDisplay(brandName);
+    } else if (companyName) {
+      companyDisplay = normalizeForDisplay(companyName);
+    }
+    if (psCompany) psCompany.textContent = companyDisplay;
+  } else {
+    if (psRole) psRole.textContent = '';
+    if (psCompany) psCompany.textContent = '';
   }
   // Update completion
   updateCompletionUI();
+}
+
+// ═══════════════════════════════════════════════════
+// PROFIL MERKEZI CARD POPULATORS
+// ═══════════════════════════════════════════════════
+
+function merkezSetText(id, text) {
+  var sumEl = document.getElementById(id);
+  var emptyEl = document.getElementById(id + '-empty');
+  if (sumEl) { sumEl.textContent = text || ''; sumEl.style.display = text ? '' : 'none'; }
+  if (emptyEl) emptyEl.style.display = text ? 'none' : '';
+}
+
+function updateMerkezCards() {
+  // Card 1: Kişisel Bilgiler
+  var name = val('f-adsoyad');
+  var city = val('f-adresil');
+  var phone = val('f-telefon');
+  var parts1 = [name, city, phone].filter(Boolean);
+  merkezSetText('merkez-sum-1', parts1.length ? parts1.join(' \u00B7 ') : null);
+
+  // Card 2: Deneyim
+  var cbNoExp = document.getElementById('cb-no-experience');
+  var expCards = document.querySelectorAll('.exp-card');
+  if (cbNoExp && cbNoExp.checked) {
+    merkezSetText('merkez-sum-2', 'Deneyimsiz olarak i\u015Faretlendi');
+  } else if (expCards.length > 0) {
+    var firstId = expCards[0].id + '-';
+    var role = val(firstId + 'pozisyon');
+    var company = document.getElementById(firstId + 'sirket');
+    var compVal = company ? (company.dataset.resolvedMarka || company.value || '') : '';
+    var expLine = [role, compVal].filter(Boolean).join(' \u00B7 ');
+    if (expCards.length > 1) expLine += ' \u00B7 +' + (expCards.length - 1) + ' deneyim';
+    merkezSetText('merkez-sum-2', expLine || null);
+  } else {
+    merkezSetText('merkez-sum-2', null);
+  }
+
+  // Card 3: Eğitim & Dil
+  var eduCount = document.querySelectorAll('#edu-rows-container .dynamic-row').length;
+  var langCount = document.querySelectorAll('#lang-rows-container .dynamic-row').length;
+  var eduParts = [];
+  if (eduCount > 0) eduParts.push(eduCount + ' e\u011Fitim');
+  if (langCount > 0) eduParts.push(langCount + ' dil');
+  merkezSetText('merkez-sum-3', eduParts.length ? eduParts.join(' \u00B7 ') : null);
+
+  // Card 4: Tercihler
+  var prefParts = [];
+  if (selectedCalismaTipleri.length > 0) prefParts.push(selectedCalismaTipleri.join(', '));
+  if (selectedMusaitlik) prefParts.push(selectedMusaitlik);
+  if (val('f-maas')) prefParts.push('\u20BA' + val('f-maas'));
+  merkezSetText('merkez-sum-4', prefParts.length ? prefParts.join(' \u00B7 ') : null);
+
+  // Card 5: Lokasyon
+  var cityKeys = Object.keys(selectedLocations);
+  merkezSetText('merkez-sum-5', cityKeys.length ? cityKeys.join(', ') : null);
+
+  // Update identity card in merkez
+  updateMerkezIdentity();
+}
+
+function updateMerkezIdentity() {
+  // Name
+  var nameEl = document.getElementById('merkez-name');
+  if (nameEl) nameEl.textContent = val('f-adsoyad') || '\u2014';
+
+  // Avatar initials
+  var avatarEl = document.getElementById('merkez-avatar');
+  if (avatarEl) {
+    var fullName = val('f-adsoyad') || '';
+    var initials = fullName.split(/\s+/).map(function(w) { return w.charAt(0).toUpperCase(); }).join('').substring(0, 2);
+    avatarEl.textContent = initials || '?';
+  }
+
+  // Role + Company from latest experience
+  var roleEl = document.getElementById('merkez-role');
+  var companyEl = document.getElementById('merkez-company');
+  var expCards = document.querySelectorAll('.exp-card');
+  var cbNoExp = document.getElementById('cb-no-experience');
+
+  if (expCards.length > 0) {
+    var firstId = expCards[0].id + '-';
+    var rawRole = val(firstId + 'pozisyon');
+    var roleMatch = canonicalizeRole(rawRole);
+    if (roleEl) roleEl.textContent = roleMatch ? roleMatch.display : normalizeForDisplay(rawRole);
+
+    var comp = document.getElementById(firstId + 'sirket');
+    var brandName = comp ? (comp.dataset.resolvedMarka || '') : '';
+    var companyName = comp ? (comp.dataset.resolvedSirket || comp.value || '') : '';
+    var compDisplay = formatBrandDisplay(brandName, companyName) || normalizeForDisplay(companyName);
+    if (companyEl) companyEl.textContent = compDisplay;
+  } else if (cbNoExp && cbNoExp.checked) {
+    if (roleEl) roleEl.textContent = 'Deneyimsiz';
+    if (companyEl) companyEl.textContent = '';
+  } else {
+    if (roleEl) roleEl.textContent = '';
+    if (companyEl) companyEl.textContent = '';
+  }
+
+  // City badge
+  var cityBadge = document.getElementById('merkez-city-badge');
+  var cityText = document.getElementById('merkez-city-text');
+  var cityVal = val('f-adresil');
+  if (cityBadge) cityBadge.style.display = cityVal ? '' : 'none';
+  if (cityText) cityText.textContent = cityVal || '';
+
+  // Experience badge (years)
+  var expBadge = document.getElementById('merkez-exp-badge');
+  var expText = document.getElementById('merkez-exp-text');
+  if (expCards.length > 0) {
+    if (expBadge) expBadge.style.display = '';
+    if (expText) expText.textContent = expCards.length + ' deneyim';
+  } else {
+    if (expBadge) expBadge.style.display = 'none';
+  }
+
+  // Show identity card
+  var idCard = document.getElementById('merkez-identity');
+  if (idCard && val('f-adsoyad')) idCard.style.display = '';
 }
 
 // ═══════════════════════════════════════════════════
@@ -2988,13 +3761,24 @@ function updateDashboardSummary(profile, experiences) {
 // ═══════════════════════════════════════════════════
 
 async function loadProfileFromDB() {
-  if (!currentUser) return null;
+  if (!currentUser) { console.warn('[HT] loadProfileFromDB: no currentUser'); return null; }
+
+  // Ensure we have a fresh token before querying
+  var refreshRes = await supabase.auth.getSession();
+  if (!refreshRes.data.session) {
+    console.warn('[HT] loadProfileFromDB: session expired after refresh attempt');
+    return null;
+  }
 
   // Fetch candidate record
   var candRes = await supabase.from('candidates').select('*').eq('user_id', currentUser.id).single();
-  if (candRes.error || !candRes.data) return null;
+  if (candRes.error || !candRes.data) {
+    console.warn('[HT] loadProfileFromDB: candidates query failed', candRes.error);
+    return null;
+  }
   var cand = candRes.data;
   var cid = cand.id;
+  console.log('[HT] loadProfileFromDB: found candidate id=' + cid);
 
   // Parallel fetch all child tables
   var [expRes, eduRes, certRes, langRes, roleRes, wpRes, biRes, locRes] = await Promise.all([
@@ -3101,20 +3885,142 @@ function calculateCompletion() {
   return Math.round((score / total) * 100);
 }
 
+// ── PROFILE SCORE (0-100) — recruiter-side quality signal ──
+// Separate from completion %. Rewards structured, recruiter-useful data.
+function calculateProfileScore() {
+  var score = 0;
+
+  // ── A) Basic Profile — 15 points ──
+  if (val('f-adsoyad'))   score += 3;
+  if (val('f-telefon'))   score += 3;
+  if (val('f-adresil'))   score += 4;
+  if (val('f-dogumyili')) score += 2;
+  if (val('f-linkedin'))  score += 3;
+
+  // ── B) Experience — 35 points ──
+  var cbNoExp = document.getElementById('cb-no-experience');
+  var expCards = document.querySelectorAll('.exp-card');
+  if (cbNoExp && cbNoExp.checked) {
+    // No-experience path: fair flat award (max achievable ~85/100)
+    score += 20;
+  } else if (expCards.length > 0) {
+    var firstId = expCards[0].id + '-';
+    score += 10;                                    // at least one card
+    if (val(firstId + 'pozisyon')) score += 8;       // latest position
+    if (val(firstId + 'sirket'))   score += 8;       // latest company
+    if (val(firstId + 'basyil'))   score += 5;       // start date present
+    // Team size: only score if the field is visible (follows UI conditional logic)
+    var takimWrap = document.getElementById(expCards[0].id + '-takim-wrap');
+    var takimVisible = takimWrap && takimWrap.style.display !== 'none';
+    if (takimVisible && val(firstId + 'takim')) score += 4;
+  }
+
+  // ── C) Education & Language — 15 points ──
+  if (document.querySelectorAll('#edu-rows-container .dynamic-row').length > 0) score += 8;
+  if (document.querySelectorAll('#lang-rows-container .dynamic-row').length > 0) score += 7;
+
+  // ── D) Preferences — 20 points ──
+  if (selectedCalismaTipleri.length > 0)           score += 6;
+  if (selectedMusaitlik)                           score += 4;
+  if (Object.keys(selectedLocations).length > 0)   score += 5;
+  if (val('f-maas'))                               score += 5;
+
+  // ── E) Targeting / Intent — 15 points ──
+  if (document.querySelectorAll('#target-roles-container .dynamic-row').length > 0) score += 8;
+  if (selectedCareerTypes.length > 0)              score += 7;
+
+  return Math.min(score, 100);
+}
+
+function getProfileScoreHints() {
+  var hints = [];
+  var cbNoExp = document.getElementById('cb-no-experience');
+  var expCards = document.querySelectorAll('.exp-card');
+  var hasExp = (cbNoExp && cbNoExp.checked) || expCards.length > 0;
+
+  if (!hasExp)
+    hints.push('Deneyim bilgisi ekle veya deneyimsiz kutusunu isaretle');
+  if (document.querySelectorAll('#target-roles-container .dynamic-row').length === 0)
+    hints.push('Hedef pozisyon ekle — markalar seni daha kolay bulur');
+  if (selectedCareerTypes.length === 0)
+    hints.push('Kariyer yonelimi sec (yukari, yatay veya lider)');
+  if (!val('f-maas'))
+    hints.push('Maas beklentini belirt');
+  if (Object.keys(selectedLocations).length === 0)
+    hints.push('Tercih ettigin sehirleri sec');
+  if (!val('f-linkedin'))
+    hints.push('LinkedIn profilini ekle');
+  if (selectedCalismaTipleri.length === 0)
+    hints.push('Calisma tipini sec');
+
+  // No-exp specific: nudge toward education/language depth
+  if (cbNoExp && cbNoExp.checked) {
+    if (document.querySelectorAll('#edu-rows-container .dynamic-row').length === 0)
+      hints.push('Egitim bilgisi ekle — deneyim olmadan egitim cok onemli');
+    if (document.querySelectorAll('#lang-rows-container .dynamic-row').length === 0)
+      hints.push('Dil bilgisi ekle — rakiplerinden one gec');
+  }
+
+  return hints;
+}
+
+function updateScoreUI() {
+  var sc = calculateProfileScore();
+  var hints = getProfileScoreHints();
+
+  // Helper to update a score display target
+  function applyScore(valueId, hintWrapId, hintTextId) {
+    var valEl = document.getElementById(valueId);
+    if (valEl) {
+      valEl.textContent = '';
+      valEl.appendChild(document.createTextNode(sc));
+      var suffix = document.createElement('span');
+      suffix.textContent = '/100';
+      valEl.appendChild(suffix);
+    }
+    var hintWrap = document.getElementById(hintWrapId);
+    var hintText = document.getElementById(hintTextId);
+    if (hintWrap && hintText) {
+      if (hints.length > 0) {
+        hintWrap.style.display = '';
+        hintText.textContent = hints[0];
+      } else {
+        hintWrap.style.display = 'none';
+      }
+    }
+  }
+
+  // Update merkez panel score (primary location now)
+  applyScore('merkez-score-value', 'merkez-score-hint', 'merkez-hint-text');
+}
+
 function updateCompletionUI() {
   var pct = calculateCompletion();
+  var circumference = 213.63; // 2 * PI * 34
+  var offset = circumference - (pct / 100) * circumference;
+
+  // Update genel panel completion
   var pctEl = document.getElementById('completion-pct');
   if (pctEl) pctEl.textContent = pct + '%';
-  // Animate SVG circle
   var circle = document.getElementById('progress-circle');
   if (circle) {
-    var circumference = 213.63; // 2 * PI * 34
-    var offset = circumference - (pct / 100) * circumference;
     circle.style.strokeDashoffset = offset;
     circle.style.transition = 'stroke-dashoffset 0.8s ease';
   }
   var titleEl = document.getElementById('completion-title');
-  if (titleEl) titleEl.textContent = pct >= 100 ? 'Profil Tamamlandi!' : 'Profilini Tamamla';
+  if (titleEl) titleEl.textContent = pct >= 100 ? 'Profil Tamamlandı!' : 'Profilini Tamamla';
+
+  // Update merkez panel completion ring
+  var merkPct = document.getElementById('merkez-completion-pct');
+  if (merkPct) merkPct.textContent = pct + '%';
+  var merkCircle = document.getElementById('merkez-progress-circle');
+  if (merkCircle) {
+    merkCircle.style.strokeDashoffset = offset;
+    merkCircle.style.transition = 'stroke-dashoffset 0.8s ease';
+  }
+
+  // Update profile score alongside completion
+  updateScoreUI();
 }
 
 // ═══════════════════════════════════════════════════
@@ -3169,7 +4075,8 @@ function generateCV() {
     exps.forEach(function(e) {
       if (Y > 265) { doc.addPage(); Y = 20; }
       doc.setFont('helvetica', 'bold');
-      doc.text((e.sirket || '') + (e.pozisyon ? ' - ' + e.pozisyon : ''), M, Y);
+      var cvCompany = e.marka || e.sirket || '';
+      doc.text(cvCompany + (e.pozisyon ? ' - ' + e.pozisyon : ''), M, Y);
       var tarih = '';
       if (e.baslangic_yil) {
         tarih = (monthIndexToName(e.baslangic_ay) || '') + ' ' + e.baslangic_yil + ' - ';
