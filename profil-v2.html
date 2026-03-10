@@ -1134,7 +1134,7 @@ const LOKASYON_TIPLERI = ['Ma\u011faza','Saha','Genel Merkez'];
 
 const TAKIM_BUYUKLUKLERI = ['Yok','1-5','6-15','16-30','30+'];
 
-const AYRILMA_NEDENLERI = ['\u0130stifa','\u0130\u015ften \u00c7\u0131karma','Kar\u015f\u0131l\u0131kl\u0131 Anla\u015fma','S\u00f6zle\u015fme Sonu','Ta\u015f\u0131nma','Kariyer De\u011fi\u015fikli\u011fi','Di\u011fer'];
+const AYRILMA_NEDENLERI = ['Terfi','\u0130stifa','Kariyer Ge\u00e7i\u015fi','\u0130\u015ften \u00c7\u0131kar\u0131lma','Kar\u015f\u0131l\u0131kl\u0131 Fesih','S\u00f6zle\u015fme Bitimi','Belirtmek \u0130stemiyorum'];
 
 const ROL_AILELERI = ['Sat\u0131\u015f','Ma\u011faza Y\u00f6netimi','B\u00f6lge Y\u00f6netimi','Visual Merchandising','Operasyon','\u0130nsan Kaynaklar\u0131','Pazarlama / E-Ticaret'];
 
@@ -2203,13 +2203,23 @@ function showBrandSuggestions(input, sugBox) {
 }
 
 // Collect experience data from all cards
+function monthNameToIndex(name) {
+  var idx = AY_ISIMLERI.indexOf(name);
+  return idx >= 0 ? idx + 1 : null;
+}
+
+function monthIndexToName(idx) {
+  if (!idx || idx < 1 || idx > 12) return '';
+  return AY_ISIMLERI[idx - 1];
+}
+
 function collectExperiences() {
   var cards = document.querySelectorAll('.exp-card');
   var result = [];
   cards.forEach(function(card) {
     var prefix = card.id + '-';
     result.push({
-      sirket_adi: val(prefix + 'sirket'),
+      sirket: val(prefix + 'sirket'),
       marka: val(prefix + 'marka'),
       pozisyon: val(prefix + 'pozisyon'),
       departman: val(prefix + 'departman'),
@@ -2219,10 +2229,10 @@ function collectExperiences() {
       lokasyon_tipi: val(prefix + 'loktipi'),
       sehir: val(prefix + 'sehir'),
       takim_buyuklugu: val(prefix + 'takim'),
-      baslangic_ay: val(prefix + 'basay'),
-      baslangic_yil: val(prefix + 'basyil'),
-      bitis_ay: val(prefix + 'bitay'),
-      bitis_yil: val(prefix + 'bityil'),
+      baslangic_ay: monthNameToIndex(val(prefix + 'basay')),
+      baslangic_yil: val(prefix + 'basyil') ? parseInt(val(prefix + 'basyil')) : null,
+      bitis_ay: monthNameToIndex(val(prefix + 'bitay')),
+      bitis_yil: val(prefix + 'bityil') ? parseInt(val(prefix + 'bityil')) : null,
       devam_ediyor: document.getElementById(prefix + 'devam') ? document.getElementById(prefix + 'devam').checked : false,
       ayrilma_nedeni: val(prefix + 'ayrilma'),
       basari_ozeti: val(prefix + 'ozet')
@@ -2430,8 +2440,8 @@ function collectEducation() {
   var result = [];
   rows.forEach(function(row) {
     var p = row.id + '-';
-    var item = { seviye: val(p + 'seviye'), okul_adi: val(p + 'okul'), bolum: val(p + 'bolum'), mezuniyet_yili: val(p + 'mezyil') };
-    if (item.seviye || item.okul_adi) result.push(item);
+    var item = { egitim_seviye: val(p + 'seviye'), okul: val(p + 'okul'), bolum: val(p + 'bolum'), mezun_yil: val(p + 'mezyil') ? parseInt(val(p + 'mezyil')) : null };
+    if (item.egitim_seviye || item.okul) result.push(item);
   });
   return result;
 }
@@ -2904,7 +2914,7 @@ async function saveProfileRPC() {
     musaitlik: wp.musaitlik || null,
     calisma_tipleri: wp.calisma_tipleri || [],
     maas_beklenti: wp.maas_beklenti || null,
-    tercih_segmentler: wp.tercih_segmentler || [],
+    segmentler: wp.tercih_segmentler || [],
     career_goal: wp.career_goal || null,
     career_type: wp.career_type || null
   };
@@ -2967,7 +2977,7 @@ function updateDashboardSummary(profile, experiences) {
   if (experiences && experiences.length > 0) {
     var latest = experiences[0];
     var psRole = document.getElementById('ps-role');
-    if (psRole) psRole.textContent = (latest.pozisyon || '') + (latest.sirket_adi ? ' @ ' + latest.sirket_adi : '');
+    if (psRole) psRole.textContent = (latest.pozisyon || '') + (latest.sirket ? ' @ ' + latest.sirket : '');
   }
   // Update completion
   updateCompletionUI();
@@ -2995,7 +3005,7 @@ async function loadProfileFromDB() {
     supabase.from('candidate_target_roles').select('*').eq('candidate_id', cid).order('sort_order'),
     supabase.from('candidate_work_preferences').select('*').eq('candidate_id', cid).single(),
     supabase.from('candidate_brand_interests').select('*').eq('candidate_id', cid).order('sort_order'),
-    supabase.from('candidate_location_preferences').select('*, candidate_location_districts(*)').eq('candidate_id', cid)
+    supabase.from('candidate_location_preferences').select('*, candidate_location_pref_districts(*)').eq('candidate_id', cid)
   ]);
 
   return {
@@ -3015,18 +3025,20 @@ async function loadProfileFromDB() {
     no_experience: cand.ilk_deneyim || false,
     experiences: (expRes.data || []).map(function(e) {
       return {
-        sirket_adi: e.sirket_adi, marka: e.marka, pozisyon: e.pozisyon,
+        sirket_adi: e.sirket, marka: e.marka, pozisyon: e.pozisyon,
         departman: e.departman, segment: e.segment, istihdam_tipi: e.istihdam_tipi,
         kidem_seviyesi: e.kidem_seviyesi, lokasyon_tipi: e.lokasyon_tipi,
         sehir: e.sehir, takim_buyuklugu: e.takim_buyuklugu,
-        baslangic_ay: e.baslangic_ay, baslangic_yil: e.baslangic_yil,
-        bitis_ay: e.bitis_ay, bitis_yil: e.bitis_yil,
+        baslangic_ay: monthIndexToName(e.baslangic_ay),
+        baslangic_yil: e.baslangic_yil ? String(e.baslangic_yil) : '',
+        bitis_ay: monthIndexToName(e.bitis_ay),
+        bitis_yil: e.bitis_yil ? String(e.bitis_yil) : '',
         devam_ediyor: e.devam_ediyor, ayrilma_nedeni: e.ayrilma_nedeni,
         basari_ozeti: e.basari_ozeti
       };
     }),
     education: (eduRes.data || []).map(function(e) {
-      return { seviye: e.seviye, okul_adi: e.okul_adi, bolum: e.bolum, mezuniyet_yili: e.mezuniyet_yili };
+      return { seviye: e.egitim_seviye, okul_adi: e.okul, bolum: e.bolum, mezuniyet_yili: e.mezun_yil ? String(e.mezun_yil) : '' };
     }),
     languages: (langRes.data || []).map(function(l) {
       return { dil: l.dil, seviye: l.seviye };
@@ -3041,7 +3053,7 @@ async function loadProfileFromDB() {
       musaitlik: wpRes.data.musaitlik,
       calisma_tipleri: wpRes.data.calisma_tipleri || [],
       maas_beklenti: wpRes.data.maas_beklenti,
-      tercih_segmentler: wpRes.data.tercih_segmentler || [],
+      tercih_segmentler: wpRes.data.segmentler || [],
       career_goal: wpRes.data.career_goal,
       career_type: wpRes.data.career_type
     } : null,
@@ -3049,7 +3061,7 @@ async function loadProfileFromDB() {
     locations: (locRes.data || []).map(function(loc) {
       return {
         sehir: loc.sehir,
-        ilceler: (loc.candidate_location_districts || []).map(function(d) { return d.ilce; })
+        ilceler: (loc.candidate_location_pref_districts || []).map(function(d) { return d.ilce; })
       };
     })
   };
@@ -3157,11 +3169,11 @@ function generateCV() {
     exps.forEach(function(e) {
       if (Y > 265) { doc.addPage(); Y = 20; }
       doc.setFont('helvetica', 'bold');
-      doc.text((e.sirket_adi || '') + (e.pozisyon ? ' - ' + e.pozisyon : ''), M, Y);
+      doc.text((e.sirket || '') + (e.pozisyon ? ' - ' + e.pozisyon : ''), M, Y);
       var tarih = '';
       if (e.baslangic_yil) {
-        tarih = (e.baslangic_ay || '') + ' ' + e.baslangic_yil + ' - ';
-        tarih += e.devam_ediyor ? 'Devam Ediyor' : ((e.bitis_ay || '') + ' ' + (e.bitis_yil || ''));
+        tarih = (monthIndexToName(e.baslangic_ay) || '') + ' ' + e.baslangic_yil + ' - ';
+        tarih += e.devam_ediyor ? 'Devam Ediyor' : ((monthIndexToName(e.bitis_ay) || '') + ' ' + (e.bitis_yil || ''));
       }
       if (tarih) {
         doc.setFont('helvetica', 'normal');
@@ -3199,13 +3211,13 @@ function generateCV() {
     doc.setTextColor(0, 0, 0);
     edus.forEach(function(e) {
       doc.setFont('helvetica', 'bold');
-      doc.text((e.okul_adi || '') + (e.bolum ? ' - ' + e.bolum : ''), M, Y);
-      if (e.mezuniyet_yili) {
+      doc.text((e.okul || '') + (e.bolum ? ' - ' + e.bolum : ''), M, Y);
+      if (e.mezun_yil) {
         doc.setFont('helvetica', 'normal');
-        doc.text(e.mezuniyet_yili, M + cW, Y, { align: 'right' });
+        doc.text(String(e.mezun_yil), M + cW, Y, { align: 'right' });
       }
       Y += 5;
-      if (e.seviye) { doc.setFont('helvetica', 'normal'); doc.text(e.seviye, M, Y); Y += 4; }
+      if (e.egitim_seviye) { doc.setFont('helvetica', 'normal'); doc.text(e.egitim_seviye, M, Y); Y += 4; }
       Y += 2;
     });
     Y += 4;
