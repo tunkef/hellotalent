@@ -211,7 +211,7 @@
   .exp-date-row select:focus{border-color:var(--navy) !important;}
   label.exp-halen-row{grid-column:1/-1;display:flex;align-items:center;gap:6px;cursor:pointer;padding:0 2px;margin:0;font-size:12px;font-weight:500;text-transform:none;letter-spacing:0;color:var(--text);}
   .exp-halen-row input[type="checkbox"]{position:absolute;opacity:0;width:0;height:0;pointer-events:none;}
-  .exp-halen-row .cb-icon{width:18px;height:18px;border-radius:4px;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;background:#fff;}
+  .exp-halen-row .cb-icon{width:14px;height:14px;border-radius:3px;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;background:#fff;}
   .exp-halen-row .cb-icon svg{opacity:0;transition:opacity .15s;}
   .exp-halen-row input:checked~.cb-icon{background:var(--green);border-color:var(--green);}
   .exp-halen-row input:checked~.cb-icon svg{opacity:1;}
@@ -601,6 +601,10 @@
   }
   .btn-save:disabled{opacity:0.6;cursor:not-allowed;pointer-events:none;}
   .btn-save:active{transform:scale(0.98);}
+  /* Validasyon */
+  .field-error input,.field-error select,.exp-field.field-error input{border-color:#C94E28 !important;box-shadow:0 0 0 2px rgba(201,78,40,0.12) !important;}
+  .card-validation-msg{display:none;font-size:11px;font-weight:600;color:#C94E28;margin-top:6px;padding:6px 10px;background:#FEF2F2;border-radius:6px;align-items:center;gap:6px;}
+  .card-validation-msg.visible{display:flex;}
 
   /* ═══ DASHBOARD OVERVIEW PANEL ═══ */
   .dash-welcome{margin-bottom:20px;}
@@ -1294,7 +1298,7 @@
   </div>
 
   <!-- KİŞİSEL BİLGİLER -->
-  <div class="section-card">
+  <div class="section-card" data-card="kisisel">
     <div class="section-title">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
       Kişisel Bilgiler
@@ -1364,7 +1368,7 @@
   </div>
 
   <!-- KARİYER BİLGİLERİ -->
-  <div class="section-card">
+  <div class="section-card" data-card="kariyer">
     <div class="section-title">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
       Kariyer Bilgileri
@@ -1401,7 +1405,7 @@
   </div>
 
   <!-- EĞİTİM BİLGİLERİ -->
-  <div class="section-card">
+  <div class="section-card" data-card="egitim">
     <div class="section-title">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
       Eğitim Bilgileri
@@ -1463,7 +1467,7 @@
   </div>
 
   <!-- TERCİHLERİM -->
-  <div class="section-card">
+  <div class="section-card" data-card="tercihler">
     <div class="section-title">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
       Tercihlerim
@@ -1545,7 +1549,7 @@
   </div>
 
   <!-- LOKASYON TERCİHLERİ -->
-  <div class="section-card">
+  <div class="section-card" data-card="lokasyon">
     <div class="section-title">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
       Lokasyon Tercihleri
@@ -2804,7 +2808,7 @@ function buildExpCard(exp){
   var cb=document.createElement('input');cb.type='checkbox';cb.className='exp-devam-cb';cb.checked=exp.devam_ediyor;
   halenRow.appendChild(cb);
   var cbIcon=document.createElement('span');cbIcon.className='cb-icon';
-  cbIcon.innerHTML='<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6L5 8.5L9.5 3.5" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  cbIcon.innerHTML='<svg width="9" height="9" viewBox="0 0 12 12" fill="none"><path d="M2.5 6L5 8.5L9.5 3.5" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
   halenRow.appendChild(cbIcon);
   var hLbl=document.createElement('span');hLbl.className='cb-label';hLbl.textContent='Halen \u00e7al\u0131\u015f\u0131yorum';
   halenRow.appendChild(hLbl);
@@ -2925,8 +2929,74 @@ function toggleCardEdit(btn){
     if(saveBtn)saveBtn.classList.remove('visible');
   }
 }
+function validateCard(card){
+  if(!card)return{ok:true,missing:[]};
+  var cardType=card.getAttribute('data-card');
+  var missing=[];
+  // Önceki hata stillerini temizle
+  card.querySelectorAll('.field-error').forEach(function(f){f.classList.remove('field-error');});
+  function checkField(id,label){
+    var el=document.getElementById(id);
+    if(!el)return;
+    var val=(el.tagName==='SELECT')?el.value:el.value.trim();
+    if(!val){missing.push({el:el,label:label});}
+  }
+  if(cardType==='kisisel'){
+    checkField('f-isim','Ad Soyad');
+    checkField('f-telefon','Telefon');
+    checkField('f-cinsiyet','Cinsiyet');
+    checkField('f-yas','Ya\u015f Aral\u0131\u011f\u0131');
+    checkField('f-adres-il','\u0130l');
+  }else if(cardType==='kariyer'){
+    // Her deneyim kartında şirket + pozisyon zorunlu
+    var expCards=card.querySelectorAll('.exp-card');
+    expCards.forEach(function(ec){
+      var sirket=ec.querySelector('.exp-sirket');
+      var poz=ec.querySelector('.exp-pozisyon');
+      if(sirket&&!sirket.value.trim()){missing.push({el:sirket,label:'\u015eirket'});}
+      if(poz&&!poz.value.trim()){missing.push({el:poz,label:'Pozisyon'});}
+    });
+  }else if(cardType==='egitim'){
+    checkField('f-egitim-seviye','E\u011fitim Seviyesi');
+  }
+  // Eksik alanlara hata stili uygula
+  missing.forEach(function(m){
+    var field=m.el.closest('.field')||m.el.closest('.exp-field');
+    if(field)field.classList.add('field-error');
+    m.el.style.borderColor='#C94E28';
+  });
+  return{ok:missing.length===0,missing:missing};
+}
+function showCardValidationMsg(card,missing){
+  // Mevcut uyarıyı temizle
+  var existing=card.querySelector('.card-validation-msg');
+  if(existing)existing.remove();
+  if(!missing.length)return;
+  var msg=document.createElement('div');msg.className='card-validation-msg visible';
+  var labels=missing.map(function(m){return m.label;});
+  // Benzersiz label'lar
+  var unique=[];labels.forEach(function(l){if(unique.indexOf(l)===-1)unique.push(l);});
+  msg.innerHTML='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#C94E28" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> <span>'+unique.join(', ')+' alan\u0131 zorunludur</span>';
+  var title=card.querySelector('.section-title');
+  if(title)title.after(msg);
+  // İlk eksik alana scroll
+  missing[0].el.scrollIntoView({behavior:'smooth',block:'center'});
+  // 5 sn sonra temizle
+  setTimeout(function(){
+    msg.classList.remove('visible');
+    setTimeout(function(){msg.remove();},300);
+    card.querySelectorAll('.field-error').forEach(function(f){f.classList.remove('field-error');});
+    missing.forEach(function(m){m.el.style.borderColor='';});
+  },5000);
+}
 function saveCard(btn){
   var card=btn.closest('.section-card');
+  // Validasyon
+  var result=validateCard(card);
+  if(!result.ok){
+    showCardValidationMsg(card,result.missing);
+    return;
+  }
   saveProfile();
   if(card){
     card.classList.add('card-view-mode');
