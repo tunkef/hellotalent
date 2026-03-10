@@ -483,22 +483,23 @@
   .field{position:relative;}
 
   /* Dil dropdown — replace free text */
-  .dil-row select.dil-select{flex:1;min-width:100px;}
-
   /* ASKERLIK */
   .askerlik-wrap{display:none;}
   .askerlik-wrap.visible{display:block;}
 
-  /* DİL SATIRI */
-  .dil-row{display:flex;align-items:center;gap:8px;background:var(--gray);border:1.5px solid var(--border);border-radius:10px;padding:6px 10px;max-width:420px;}
-  .dil-row input{flex:1;border:none;background:transparent;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;color:var(--text);outline:none;min-width:0;padding:2px 4px;}
+  /* DİL SATIRI — egitim-row ile aynı tasarım */
+  .dil-row{display:flex;align-items:center;gap:8px;background:var(--gray);border:1.5px solid var(--border);border-radius:10px;padding:8px 10px;}
+  .dil-row input{flex:2;border:none !important;background:transparent !important;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px !important;color:var(--text);outline:none;min-width:0;padding:4px 6px !important;border-radius:4px !important;}
   .dil-row input::placeholder{color:var(--muted);}
-  .dil-row select{border:1px solid var(--border);border-radius:7px;padding:3px 6px;font-family:'Plus Jakarta Sans',sans-serif;font-size:11px;background:white;cursor:pointer;outline:none;color:var(--text);flex-shrink:0;}
+  .dil-row select{border:1px solid var(--border) !important;border-radius:7px !important;padding:4px 8px !important;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px !important;background:white !important;cursor:pointer;outline:none;color:var(--text);width:auto !important;-webkit-appearance:menulist !important;flex-shrink:0;}
   .dil-row-del{background:none;border:none;cursor:pointer;color:var(--muted);font-size:16px;line-height:1;padding:2px 4px;border-radius:4px;transition:color 0.15s;}
   .dil-row-del:hover{color:var(--red);}
+  .btn-add-dil{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;background:white;border:1.5px dashed var(--border);border-radius:8px;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;transition:all 0.15s;}
+  .btn-add-dil:hover{border-color:var(--navy);color:var(--navy);}
+  .card-view-mode .btn-add-dil{pointer-events:none;opacity:0.4;}
   .card-view-mode .dil-row-del{display:none;}
   .card-view-mode .dil-row input{pointer-events:none;}
-  .card-view-mode .dil-row select{pointer-events:none;background:var(--gray);}
+  .card-view-mode .dil-row select{pointer-events:none;background:var(--gray) !important;}
 
   /* EKSTRA EĞİTİM ROWS */
   .egitim-row{display:flex;align-items:center;gap:8px;background:var(--gray);border:1.5px solid var(--border);border-radius:10px;padding:8px 10px;}
@@ -1447,15 +1448,14 @@
         <input type="text" id="f-bolum" placeholder="Örn: İşletme, Moda Tasarımı...">
       </div>
     </div>
-    <!-- DİL BİLGİSİ -->
+    <!-- DİLLER -->
     <div class="field field-full" style="margin-top:12px;">
-      <label>Dil Bilgisi</label>
-      <div id="dil-list-container" style="display:flex;flex-direction:column;gap:6px;margin-bottom:6px;"></div>
-      <button type="button" class="btn-add-dil" onclick="addDilRow()" style="display:inline-flex;align-items:center;gap:6px;padding:5px 12px;background:white;border:1.5px dashed var(--border);border-radius:8px;font-family:'Plus Jakarta Sans',sans-serif;font-size:11px;font-weight:600;color:var(--muted);cursor:pointer;transition:all 0.15s;" onmouseover="this.style.borderColor='var(--navy)';this.style.color='var(--navy)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">
-        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      <label>Diller</label>
+      <div id="dil-list-container" style="display:flex;flex-direction:column;gap:8px;margin-bottom:8px;"></div>
+      <button type="button" class="btn-add-dil" onclick="addDilRow()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         Dil Ekle
       </button>
-      <p class="tag-hint">Her dil için seviye belirle</p>
     </div>
     <div class="field field-full" style="margin-top:12px;">
       <label>Ekstra Eğitimler / Sertifikalar</label>
@@ -3494,78 +3494,62 @@ function toggleAskerlik(){
 }
 
 const YAYGIN_DILLER=['Türkçe','İngilizce','Almanca','Fransızca','İspanyolca','İtalyanca','Rusça','Arapça','Çince (Mandarin)','Japonca','Korece','Portekizce','Hollandaca','Lehçe','Farsça','Kürtçe'];
-var dilRows=[]; // [{dil:'İngilizce',seviye:'B2 - Orta'}]
+var dilRows=[]; // [{dil:'İngilizce',seviye:'B2 - Orta',id:...}]
+var MAX_DIL=5;
 
-function addDilRow(dil='',seviye=''){
-  const row={dil,seviye,id:Date.now()};
-  dilRows.push(row);
+function addDilRow(dil,seviye){
+  if(dilRows.length>=MAX_DIL)return;
+  dilRows.push({dil:dil||'',seviye:seviye||'',id:Date.now()+Math.random()});
   renderDilRows();
 }
 function removeDilRow(id){
-  dilRows=dilRows.filter(r=>r.id!==id);
+  dilRows=dilRows.filter(function(r){return r.id!==id;});
   renderDilRows();
 }
 function renderDilRows(){
-  const container=document.getElementById('dil-list-container');
+  var container=document.getElementById('dil-list-container');
+  if(!container)return;
   while(container.firstChild)container.removeChild(container.firstChild);
-  dilRows.forEach(row=>{
-    const div=document.createElement('div');div.className='dil-row';
-    // Dil dropdown
-    const dilSelect=document.createElement('select');
-    dilSelect.className='dil-select';
-    dilSelect.onchange=function(){updateDilRow(row.id,'dil',this.value);};
-    var optEmpty=document.createElement('option');optEmpty.value='';optEmpty.textContent='Dil seç...';dilSelect.appendChild(optEmpty);
-    YAYGIN_DILLER.forEach(function(d){
-      var opt=document.createElement('option');opt.value=d;opt.textContent=d;
-      if(row.dil===d)opt.selected=true;
-      dilSelect.appendChild(opt);
-    });
-    // If current value not in list, add it as custom option
-    if(row.dil && !YAYGIN_DILLER.includes(row.dil)){
-      var customOpt=document.createElement('option');customOpt.value=row.dil;customOpt.textContent=row.dil;customOpt.selected=true;
-      dilSelect.appendChild(customOpt);
-    }
-    var optOther=document.createElement('option');optOther.value='__other__';optOther.textContent='Diğer...';dilSelect.appendChild(optOther);
-    dilSelect.addEventListener('change',function(){
-      if(this.value==='__other__'){
-        var custom=prompt('Dil adını yaz:');
-        if(custom && custom.trim()){
-          updateDilRow(row.id,'dil',custom.trim());
-          renderDilRows();
-        }else{this.value=row.dil||'';}
-      }
-    });
-    div.appendChild(dilSelect);
-    // Seviye dropdown
+  dilRows.forEach(function(row){
+    var div=document.createElement('div');div.className='dil-row';
+    // Dil adı — text input
+    var dilInput=document.createElement('input');dilInput.type='text';dilInput.placeholder='Dil ad\u0131 (Türkçe, İngilizce...)';dilInput.value=row.dil||'';
+    dilInput.style.flex='2';
+    dilInput.addEventListener('input',function(){updateDilRow(row.id,'dil',this.value);});
+    div.appendChild(dilInput);
+    // Seviye — select
     var sevSelect=document.createElement('select');
-    sevSelect.onchange=function(){updateDilRow(row.id,'seviye',this.value);};
     var sevEmpty=document.createElement('option');sevEmpty.value='';sevEmpty.textContent='Seviye';sevSelect.appendChild(sevEmpty);
     DIL_SEVIYELERI.forEach(function(s){
       var opt=document.createElement('option');opt.value=s;opt.textContent=s;
       if(row.seviye===s)opt.selected=true;
       sevSelect.appendChild(opt);
     });
+    sevSelect.addEventListener('change',function(){updateDilRow(row.id,'seviye',this.value);});
     div.appendChild(sevSelect);
-    // Delete button
+    // × butonu
     var delBtn=document.createElement('button');delBtn.className='dil-row-del';delBtn.textContent='\u00d7';
-    delBtn.onclick=function(){removeDilRow(row.id);};
+    delBtn.addEventListener('click',function(){removeDilRow(row.id);});
     div.appendChild(delBtn);
     container.appendChild(div);
   });
+  // Max 5 — buton gizle/göster
+  var addBtn=document.querySelector('.btn-add-dil');
+  if(addBtn)addBtn.style.display=dilRows.length>=MAX_DIL?'none':'inline-flex';
 }
 function updateDilRow(id,field,val){
-  const row=dilRows.find(r=>r.id===id);
+  var row=dilRows.find(function(r){return r.id===id;});
   if(row)row[field]=val;
 }
-function getDillerJSON(){return dilRows.filter(r=>r.dil).map(r=>({dil:r.dil,seviye:r.seviye||''}));}
+function getDillerJSON(){return dilRows.filter(function(r){return r.dil;}).map(function(r){return{dil:r.dil,seviye:r.seviye||''};});}
 function loadDilRows(jsonStr){
   try{
-    const arr=JSON.parse(jsonStr);
-    dilRows=arr.map(r=>({...r,id:Date.now()+Math.random()}));
+    var arr=JSON.parse(jsonStr);
+    dilRows=arr.map(function(r){return{dil:r.dil||'',seviye:r.seviye||'',id:Date.now()+Math.random()};});
     renderDilRows();
   }catch(e){
     // eski format: virgülle ayrılmış string
-    if(jsonStr){jsonStr.split(',').forEach(d=>{const t=d.trim();if(t)dilRows.push({dil:t,seviye:'',id:Date.now()+Math.random()});});renderDilRows();}
+    if(jsonStr){jsonStr.split(',').forEach(function(d){var t=d.trim();if(t)dilRows.push({dil:t,seviye:'',id:Date.now()+Math.random()});});renderDilRows();}
   }
 }
 
