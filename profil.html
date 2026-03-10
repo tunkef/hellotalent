@@ -1517,7 +1517,8 @@
     <div style="margin-bottom:20px;">
       <label style="display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;color:var(--muted);margin-bottom:8px;">Maaş Beklentisi (Net/Ay)</label>
       <select id="f-maas" style="width:100%;max-width:320px;padding:8px 10px;border:1.5px solid var(--border);border-radius:8px;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:600;color:var(--text);background:white;cursor:pointer;">
-        <option value="">Belirtmek istemiyorum</option>
+        <option value="">Seç...</option>
+        <option>Belirtmek istemiyorum</option>
         <option>20.000 ₺ altı</option><option>20.000 – 30.000 ₺</option>
         <option>30.000 – 45.000 ₺</option><option>45.000 – 60.000 ₺</option>
         <option>60.000 – 80.000 ₺</option><option>80.000 ₺ ve üzeri</option>
@@ -2979,7 +2980,24 @@ function validateCard(card){
     // Hedef pozisyon en az 1 seçili olmalı
     if(!selectedPozisyonlar||!selectedPozisyonlar.length){
       var pozGrid=document.getElementById('pozisyon-grid');
-      if(pozGrid)missing.push({el:pozGrid,label:'Hedef Pozisyon (en az 1)'});
+      if(pozGrid)missing.push({el:pozGrid,label:'Hedef Pozisyon'});
+    }
+    // Müsaitlik zorunlu
+    if(!musaitlik){
+      var musGrp=document.getElementById('musaitlik-group');
+      if(musGrp)missing.push({el:musGrp,label:'Ne Zaman Ba\u015flayabilirim'});
+    }
+    // Çalışma şekli en az 1
+    if(!calismaTipiList||!calismaTipiList.length){
+      var ctGrp=document.getElementById('calisma-tipi-group');
+      if(ctGrp)missing.push({el:ctGrp,label:'\u00c7al\u0131\u015fma \u015eekli'});
+    }
+    // Maaş beklentisi zorunlu
+    checkField('f-maas','Maa\u015f Beklentisi');
+    // Segment en az 1
+    if(!segmentler||!segmentler.length){
+      var segGrp=document.getElementById('segment-group');
+      if(segGrp)missing.push({el:segGrp,label:'Ma\u011faza Segmenti'});
     }
   }else if(cardType==='lokasyon'){
     // En az 1 şehir seçili olmalı
@@ -2992,8 +3010,9 @@ function validateCard(card){
   missing.forEach(function(m){
     var field=m.el.closest('.field')||m.el.closest('.exp-field')||m.el.closest('.exp-date-row');
     if(field){field.classList.add('field-error');}
-    // Chip container'lar (pozisyon-grid, loc-quick-picks) için outline
-    if(m.el.id==='pozisyon-grid'||m.el.id==='loc-quick-picks'){
+    // Chip container'lar için outline
+    var chipIds=['pozisyon-grid','loc-quick-picks','musaitlik-group','calisma-tipi-group','segment-group'];
+    if(chipIds.indexOf(m.el.id)!==-1){
       m.el.style.outline='2px solid #C94E28';m.el.style.outlineOffset='4px';m.el.style.borderRadius='8px';
     }else{
       m.el.style.borderColor='#C94E28';
@@ -3799,6 +3818,19 @@ async function saveProfile(){
   if(!selectedPozisyonlar||!selectedPozisyonlar.length){
     var pg=document.getElementById('pozisyon-grid');
     if(pg){valErrors.push({el:pg,label:'Hedef Pozisyon'});pg.style.outline='2px solid #C94E28';pg.style.outlineOffset='4px';}
+  }
+  if(!musaitlik){
+    var mg=document.getElementById('musaitlik-group');
+    if(mg){valErrors.push({el:mg,label:'M\u00fcsaitlik'});mg.style.outline='2px solid #C94E28';mg.style.outlineOffset='4px';}
+  }
+  if(!calismaTipiList||!calismaTipiList.length){
+    var cg=document.getElementById('calisma-tipi-group');
+    if(cg){valErrors.push({el:cg,label:'\u00c7al\u0131\u015fma \u015eekli'});cg.style.outline='2px solid #C94E28';cg.style.outlineOffset='4px';}
+  }
+  reqVal('f-maas','Maa\u015f Beklentisi');
+  if(!segmentler||!segmentler.length){
+    var sg=document.getElementById('segment-group');
+    if(sg){valErrors.push({el:sg,label:'Segment'});sg.style.outline='2px solid #C94E28';sg.style.outlineOffset='4px';}
   }
   // Lokasyon
   if(!selectedSehirler||!selectedSehirler.length){
