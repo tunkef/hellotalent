@@ -3767,19 +3767,63 @@ function syncDashboard(data){
 // ── KAYDET ──
 async function saveProfile(){
   const successEl=document.getElementById('save-success');
-  // Zorunlu alan kontrolü
-  const isim=document.getElementById('f-isim').value.trim();
-  const telefon=document.getElementById('f-telefon').value.trim();
-  if(!isim||!telefon){
-    let missingEl=document.getElementById('f-isim');
-    if(!isim){missingEl=document.getElementById('f-isim');missingEl.style.borderColor='#C94E28';}
-    else{missingEl=document.getElementById('f-telefon');missingEl.style.borderColor='#C94E28';}
-    missingEl.scrollIntoView({behavior:'smooth',block:'center'});
-    setTimeout(()=>{document.getElementById('f-isim').style.borderColor='';document.getElementById('f-telefon').style.borderColor='';},3000);
-    let warn=document.getElementById('cv-warn');
-    if(!warn){warn=document.createElement('p');warn.id='cv-warn';warn.style.cssText='color:#C94E28;font-size:13px;font-weight:600;margin-top:8px;text-align:center;';document.getElementById('save-success').after(warn);}
-    warn.textContent='⚠️ Ad Soyad ve Telefon zorunludur.';warn.style.display='block';
-    setTimeout(()=>{if(warn)warn.style.display='none';},4000);return;
+  // ── ZORUNLU ALAN KONTROLÜ (tüm kartlar) ──
+  var valErrors=[];
+  function reqVal(id,label){
+    var el=document.getElementById(id);if(!el)return;
+    var v=(el.tagName==='SELECT')?el.value:el.value.trim();
+    if(!v){valErrors.push({el:el,label:label});el.style.borderColor='#C94E28';}
+  }
+  // Kişisel
+  reqVal('f-isim','Ad Soyad');reqVal('f-telefon','Telefon');
+  reqVal('f-cinsiyet','Cinsiyet');reqVal('f-yas','Ya\u015f Aral\u0131\u011f\u0131');reqVal('f-adres-il','\u0130l');
+  // Eğitim
+  reqVal('f-egitim-seviye','E\u011fitim Seviyesi');reqVal('f-mezun-yil','Mezuniyet Y\u0131l\u0131');
+  reqVal('f-okul','Okul');reqVal('f-bolum','B\u00f6l\u00fcm');
+  // Kariyer — deneyim kartları
+  document.querySelectorAll('.exp-card').forEach(function(ec){
+    var s=ec.querySelector('.exp-sirket');var p=ec.querySelector('.exp-pozisyon');
+    if(s&&!s.value.trim()){valErrors.push({el:s,label:'\u015eirket'});s.style.borderColor='#C94E28';}
+    if(p&&!p.value.trim()){valErrors.push({el:p,label:'Pozisyon'});p.style.borderColor='#C94E28';}
+    var bAy=ec.querySelector('.exp-b-ay');var bYil=ec.querySelector('.exp-b-yil');
+    if(bAy&&bAy.value==='0'){valErrors.push({el:bAy,label:'Ba\u015flang\u0131\u00e7 Ay'});bAy.style.borderColor='#C94E28';}
+    if(bYil&&bYil.value==='0'){valErrors.push({el:bYil,label:'Ba\u015flang\u0131\u00e7 Y\u0131l'});bYil.style.borderColor='#C94E28';}
+    var cb=ec.querySelector('.exp-devam-cb');
+    if(cb&&!cb.checked){
+      var eAy=ec.querySelector('.exp-e-ay');var eYil=ec.querySelector('.exp-e-yil');
+      if(eAy&&eAy.value==='0'){valErrors.push({el:eAy,label:'Biti\u015f Ay'});eAy.style.borderColor='#C94E28';}
+      if(eYil&&eYil.value==='0'){valErrors.push({el:eYil,label:'Biti\u015f Y\u0131l'});eYil.style.borderColor='#C94E28';}
+    }
+  });
+  // Tercihler
+  if(!selectedPozisyonlar||!selectedPozisyonlar.length){
+    var pg=document.getElementById('pozisyon-grid');
+    if(pg){valErrors.push({el:pg,label:'Hedef Pozisyon'});pg.style.outline='2px solid #C94E28';pg.style.outlineOffset='4px';}
+  }
+  // Lokasyon
+  if(!selectedSehirler||!selectedSehirler.length){
+    var lp=document.getElementById('loc-quick-picks');
+    if(lp){valErrors.push({el:lp,label:'\u015eehir'});lp.style.outline='2px solid #C94E28';lp.style.outlineOffset='4px';}
+  }
+  if(valErrors.length){
+    // Benzersiz label'lar
+    var uLabels=[];valErrors.forEach(function(e){if(uLabels.indexOf(e.label)===-1)uLabels.push(e.label);});
+    // Uyarı göster
+    var warn=document.getElementById('cv-warn');
+    if(!warn){warn=document.createElement('p');warn.id='cv-warn';warn.style.cssText='color:#C94E28;font-size:13px;font-weight:600;margin-top:8px;text-align:center;';successEl.after(warn);}
+    warn.textContent='\u26a0\ufe0f Eksik alanlar: '+uLabels.join(', ');warn.style.display='block';
+    valErrors[0].el.scrollIntoView({behavior:'smooth',block:'center'});
+    // Hata parent'larına field-error ekle
+    valErrors.forEach(function(e){
+      var f=e.el.closest('.field')||e.el.closest('.exp-field')||e.el.closest('.exp-date-row');
+      if(f)f.classList.add('field-error');
+    });
+    setTimeout(function(){
+      if(warn)warn.style.display='none';
+      valErrors.forEach(function(e){e.el.style.borderColor='';e.el.style.outline='';e.el.style.outlineOffset='';});
+      document.querySelectorAll('.field-error').forEach(function(f){f.classList.remove('field-error');});
+    },5000);
+    return;
   }
   // Kaydetme başladı
   // Sync deneyimler from DOM before save
