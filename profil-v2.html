@@ -1,0 +1,1323 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<script>if(sessionStorage.getItem("ht_gate")!=="ok"){window.location.replace("gate.html");}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Profilim — hellotalent.ai</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"></script>
+<style>
+/* ═══════════════════════════════════════════════════
+   PROFIL-V2 — COMPLETE CSS DESIGN SYSTEM
+   Clean rewrite, zero dependency on profil.html
+   ═══════════════════════════════════════════════════ */
+
+/* ── DESIGN TOKENS ── */
+:root {
+  --verm:#C94E28;--verm-light:#F5EDE9;--verm-dark:#A33D1E;
+  --navy:#1E2D5E;--navy-light:#EEF0F7;
+  --gray:#F7F6F4;--text:#111111;
+  --muted:#6B7280;--border:#E5E3DF;
+  --green:#16a34a;--green-light:#F0FDF4;--green-border:#BBF7D0;
+  --red:#dc2626;--red-light:#FEF2F2;
+  --radius:10px;--radius-sm:7px;--radius-lg:14px;
+  --shadow:0 1px 3px rgba(0,0,0,0.06);
+  --shadow-lg:0 4px 24px rgba(0,0,0,0.08);
+  --sidebar-w:240px;
+  --header-h:60px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;overflow-x:hidden;}
+body{font-family:'Plus Jakarta Sans',sans-serif;color:var(--text);background:#fff;overflow-x:hidden;}
+
+/* ── HEADER ── */
+.header{
+  position:fixed;top:0;left:0;right:0;z-index:500;
+  height:var(--header-h);background:rgba(255,255,255,0.97);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;padding:0 20px;gap:12px;
+}
+.logo{
+  font-family:'Bricolage Grotesque',sans-serif;font-size:18px;font-weight:800;
+  color:var(--navy);text-decoration:none;letter-spacing:-0.5px;flex-shrink:0;
+}
+.logo span{color:var(--verm);}
+.header-right{margin-left:auto;display:flex;align-items:center;gap:10px;}
+.status-badge{
+  display:inline-flex;align-items:center;gap:5px;padding:4px 10px;
+  border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;
+}
+.status-badge.aktif{background:var(--green-light);color:var(--green);}
+.status-badge.pasif{background:#F3F4F6;color:var(--muted);}
+.status-dot{width:6px;height:6px;border-radius:50%;background:currentColor;}
+.avatar-wrap{position:relative;cursor:pointer;}
+.avatar{
+  width:34px;height:34px;border-radius:50%;background:var(--navy-light);
+  color:var(--navy);display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:700;overflow:hidden;
+}
+.avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
+.btn-icon{
+  width:34px;height:34px;border:1px solid var(--border);border-radius:var(--radius-sm);
+  background:white;cursor:pointer;display:none;align-items:center;justify-content:center;
+  color:var(--muted);
+}
+
+/* ── SIDEBAR ── */
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:599;}
+.sidebar{
+  position:fixed;top:var(--header-h);left:0;bottom:0;width:var(--sidebar-w);
+  background:white;border-right:1px solid var(--border);z-index:600;
+  display:flex;flex-direction:column;overflow-y:auto;
+}
+.sidebar-user{padding:20px 18px;border-bottom:1px solid var(--border);}
+.sidebar-user-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.sidebar-avatar{
+  width:38px;height:38px;border-radius:50%;background:var(--navy-light);color:var(--navy);
+  display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;
+  flex-shrink:0;overflow:hidden;
+}
+.sidebar-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
+.sidebar-user-info{min-width:0;}
+.sidebar-user-name{font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.sidebar-user-email{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.sidebar-nav{padding:8px 0;flex:1;}
+.sidebar-nav-label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;padding:8px 18px 4px;}
+.nav-item{
+  display:flex;align-items:center;gap:10px;width:100%;padding:10px 18px;
+  border:none;background:none;font-family:inherit;font-size:13px;font-weight:500;
+  color:var(--muted);cursor:pointer;text-align:left;transition:all 0.15s;
+}
+.nav-item:hover{background:var(--gray);color:var(--text);}
+.nav-item.active{background:var(--verm-light);color:var(--verm);font-weight:600;}
+.nav-icon{width:20px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.nav-soon{
+  margin-left:auto;font-size:9px;font-weight:700;color:var(--verm);
+  background:var(--verm-light);padding:2px 6px;border-radius:4px;
+}
+
+/* ── TOGGLE ── */
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:10px 18px;}
+.toggle-info h4{font-size:12px;font-weight:600;}
+.toggle-info p{font-size:11px;color:var(--muted);}
+.toggle{position:relative;width:36px;height:20px;flex-shrink:0;}
+.toggle input{opacity:0;width:0;height:0;}
+.toggle-slider{
+  position:absolute;inset:0;background:#ccc;border-radius:20px;cursor:pointer;transition:0.2s;
+}
+.toggle-slider::before{
+  content:'';position:absolute;left:2px;top:2px;width:16px;height:16px;
+  background:white;border-radius:50%;transition:0.2s;
+}
+.toggle input:checked+.toggle-slider{background:var(--green);}
+.toggle input:checked+.toggle-slider::before{transform:translateX(16px);}
+
+/* ── LOADING ── */
+.loading-screen{
+  position:fixed;top:var(--header-h);left:var(--sidebar-w);right:0;bottom:0;
+  display:flex;align-items:center;justify-content:center;background:white;z-index:100;
+}
+.spinner-big{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--verm);border-radius:50%;animation:spin 0.7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* ── APP BODY ── */
+.app-body{margin-left:var(--sidebar-w);padding-top:var(--header-h);}
+
+/* ── PANELS ── */
+.panel{display:none;min-height:calc(100vh - var(--header-h));padding:24px 32px 80px;}
+.panel.active{display:block;}
+
+/* ── BOTTOM NAV (mobile) ── */
+.bottom-nav{
+  display:none;position:fixed;bottom:0;left:0;right:0;z-index:500;
+  background:white;border-top:1px solid var(--border);
+  padding:6px 0 env(safe-area-inset-bottom,0);
+}
+.bottom-nav-inner{display:flex;justify-content:space-around;}
+.bn-item{
+  display:flex;flex-direction:column;align-items:center;gap:2px;
+  padding:6px 0;border:none;background:none;font-family:inherit;
+  font-size:10px;font-weight:500;color:var(--muted);cursor:pointer;flex:1;
+}
+.bn-item.active{color:var(--verm);}
+.bn-item svg{width:20px;height:20px;}
+
+/* ═══ WIZARD ═══ */
+
+/* ── Progress Bar ── */
+.wiz-progress{
+  display:flex;align-items:center;justify-content:center;
+  padding:24px 0 32px;gap:0;max-width:680px;margin:0 auto;
+}
+.wiz-progress-step{
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+  position:relative;flex:0 0 auto;cursor:pointer;
+}
+.wiz-progress-circle{
+  width:36px;height:36px;border-radius:50%;border:2px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:700;color:var(--muted);background:white;
+  transition:all 0.25s;position:relative;z-index:2;
+}
+.wiz-progress-step.active .wiz-progress-circle{
+  border-color:var(--verm);color:white;background:var(--verm);
+}
+.wiz-progress-step.done .wiz-progress-circle{
+  border-color:var(--green);color:white;background:var(--green);
+}
+.wiz-progress-label{
+  font-size:11px;font-weight:500;color:var(--muted);white-space:nowrap;
+  transition:color 0.2s;
+}
+.wiz-progress-step.active .wiz-progress-label{color:var(--verm);font-weight:600;}
+.wiz-progress-step.done .wiz-progress-label{color:var(--green);}
+.wiz-progress-line{
+  flex:1;height:2px;background:var(--border);min-width:24px;max-width:80px;
+  margin:0 -2px;position:relative;top:-12px;z-index:1;
+}
+.wiz-progress-line.done{background:var(--green);}
+
+/* ── Wizard Steps ── */
+.wiz-step{display:none;max-width:720px;margin:0 auto;animation:fadeIn 0.25s ease;}
+.wiz-step.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+
+.wiz-step-title{
+  font-family:'Bricolage Grotesque',sans-serif;font-size:22px;font-weight:800;
+  color:var(--navy);margin-bottom:6px;
+}
+.wiz-step-desc{font-size:14px;color:var(--muted);margin-bottom:24px;}
+
+/* ── Wizard Nav ── */
+.wiz-nav{
+  display:flex;justify-content:space-between;align-items:center;
+  max-width:720px;margin:32px auto 0;padding-top:24px;border-top:1px solid var(--border);
+}
+.wiz-nav-spacer{flex:1;}
+
+/* ── FORM FIELDS ── */
+.field{margin-bottom:16px;}
+.field label{display:block;font-size:12px;font-weight:600;color:var(--navy);margin-bottom:5px;}
+.field-hint{font-size:11px;color:var(--muted);margin-top:3px;}
+.field input,.field select,.field textarea{
+  width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--radius-sm);
+  font-family:inherit;font-size:14px;color:var(--text);background:white;
+  transition:border-color 0.2s;outline:none;
+}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--verm);}
+.field input:disabled{background:var(--gray);color:var(--muted);cursor:not-allowed;}
+.field textarea{resize:vertical;min-height:80px;}
+.field select{cursor:pointer;appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 12px center;padding-right:32px;
+}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.field-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+.field-error input,.field-error select,.field-error textarea{border-color:var(--verm) !important;}
+.field-error label{color:var(--verm) !important;}
+
+/* ── BUTTONS ── */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  padding:10px 20px;border-radius:var(--radius-sm);font-family:inherit;
+  font-size:13px;font-weight:600;cursor:pointer;transition:all 0.15s;border:none;
+}
+.btn-primary{background:var(--verm);color:white;}
+.btn-primary:hover{background:var(--verm-dark);}
+.btn-secondary{background:var(--gray);color:var(--text);border:1px solid var(--border);}
+.btn-secondary:hover{background:var(--border);}
+.btn-ghost{background:none;color:var(--muted);}
+.btn-ghost:hover{color:var(--text);background:var(--gray);}
+.btn-navy{background:var(--navy);color:white;}
+.btn-navy:hover{opacity:0.9;}
+.btn-danger{background:var(--red);color:white;}
+.btn-sm{padding:7px 14px;font-size:12px;}
+.btn-lg{padding:12px 28px;font-size:15px;}
+
+/* ── CARDS ── */
+.card{
+  background:white;border:1.5px solid var(--border);border-radius:var(--radius-lg);
+  padding:20px;margin-bottom:16px;
+}
+.card-title{
+  font-family:'Bricolage Grotesque',sans-serif;font-size:15px;font-weight:700;
+  color:var(--navy);margin-bottom:12px;display:flex;align-items:center;gap:8px;
+}
+
+/* ── EXPERIENCE CARDS ── */
+.exp-card{
+  background:var(--gray);border:1.5px solid var(--border);border-radius:var(--radius);
+  padding:16px;margin-bottom:12px;position:relative;
+}
+.exp-card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+.exp-card-title{font-size:14px;font-weight:700;color:var(--navy);}
+.exp-card-del{
+  width:28px;height:28px;border:1px solid var(--border);border-radius:var(--radius-sm);
+  background:white;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  color:var(--muted);font-size:16px;transition:all 0.15s;
+}
+.exp-card-del:hover{background:var(--red-light);color:var(--red);border-color:var(--red);}
+
+/* ── DYNAMIC ROWS (edu, lang, cert) ── */
+.dyn-row{
+  display:flex;align-items:center;gap:8px;padding:10px;
+  background:var(--gray);border:1px solid var(--border);border-radius:var(--radius-sm);
+  margin-bottom:8px;
+}
+.dyn-row select,.dyn-row input{
+  flex:1;padding:8px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);
+  font-family:inherit;font-size:13px;background:white;
+}
+.dyn-row select{padding-right:28px;}
+.dyn-row-del{
+  width:28px;height:28px;border:1px solid var(--border);border-radius:var(--radius-sm);
+  background:white;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  color:var(--muted);font-size:16px;flex-shrink:0;
+}
+.dyn-row-del:hover{background:var(--red-light);color:var(--red);border-color:var(--red);}
+.btn-add-row{
+  display:inline-flex;align-items:center;gap:5px;padding:8px 14px;
+  border:1.5px dashed var(--border);border-radius:var(--radius-sm);
+  background:none;font-family:inherit;font-size:12px;font-weight:600;
+  color:var(--muted);cursor:pointer;transition:all 0.15s;
+}
+.btn-add-row:hover{border-color:var(--verm);color:var(--verm);background:var(--verm-light);}
+
+/* ── CHIPS ── */
+.chip-group{display:flex;flex-wrap:wrap;gap:8px;}
+.chip{
+  padding:8px 16px;border:1.5px solid var(--border);border-radius:20px;
+  font-size:13px;font-weight:500;cursor:pointer;transition:all 0.15s;
+  background:white;color:var(--text);user-select:none;
+}
+.chip:hover{border-color:var(--verm);color:var(--verm);}
+.chip.selected{background:var(--verm);color:white;border-color:var(--verm);}
+
+/* ── CHECK ITEMS (multi-select) ── */
+.check-group{display:flex;flex-wrap:wrap;gap:8px;}
+.check-item{
+  padding:8px 16px;border:1.5px solid var(--border);border-radius:20px;
+  font-size:13px;font-weight:500;cursor:pointer;transition:all 0.15s;
+  background:white;color:var(--text);user-select:none;
+}
+.check-item:hover{border-color:var(--navy);color:var(--navy);}
+.check-item.checked{background:var(--navy);color:white;border-color:var(--navy);}
+
+/* ── TAGS ── */
+.tag-wrap{
+  display:flex;flex-wrap:wrap;gap:6px;padding:8px;min-height:42px;
+  border:1.5px solid var(--border);border-radius:var(--radius-sm);
+  background:white;align-items:center;
+}
+.tag{
+  display:inline-flex;align-items:center;gap:4px;padding:4px 10px;
+  background:var(--navy-light);color:var(--navy);border-radius:4px;
+  font-size:12px;font-weight:600;
+}
+.tag-del{
+  border:none;background:none;cursor:pointer;color:var(--navy);
+  font-size:14px;padding:0 2px;opacity:0.6;
+}
+.tag-del:hover{opacity:1;}
+.tag-input{
+  border:none!important;outline:none;font-family:inherit;font-size:13px;
+  flex:1;min-width:100px;padding:4px 0;
+}
+
+/* ── AUTOCOMPLETE ── */
+.ac-wrap{position:relative;width:100%;}
+.ac-list{
+  display:none;position:absolute;top:100%;left:0;right:0;z-index:50;
+  background:white;border:1.5px solid var(--border);border-radius:var(--radius-sm);
+  max-height:220px;overflow-y:auto;box-shadow:var(--shadow-lg);
+}
+.ac-list.show{display:block;}
+.ac-item{
+  padding:10px 12px;cursor:pointer;font-size:13px;display:flex;
+  align-items:center;justify-content:space-between;transition:background 0.1s;
+}
+.ac-item:hover{background:var(--gray);}
+.ac-item-sub{font-size:11px;color:var(--muted);}
+
+/* ── PROFILE SUMMARY CARD ── */
+.profile-summary{
+  background:white;border:1.5px solid var(--border);border-radius:var(--radius-lg);
+  padding:20px 24px;margin-bottom:20px;
+}
+.ps-top{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;}
+.ps-left{display:flex;align-items:center;gap:14px;}
+.ps-avatar{
+  width:56px;height:56px;border-radius:50%;background:var(--navy-light);
+  color:var(--navy);display:flex;align-items:center;justify-content:center;
+  font-size:18px;font-weight:700;flex-shrink:0;overflow:hidden;
+}
+.ps-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
+.ps-name{font-family:'Bricolage Grotesque',sans-serif;font-size:18px;font-weight:800;color:var(--navy);}
+.ps-role{font-size:13px;color:var(--muted);margin-top:2px;}
+.ps-badges{display:flex;gap:8px;margin-top:6px;flex-wrap:wrap;}
+.ps-badge{
+  display:inline-flex;align-items:center;gap:4px;padding:3px 8px;
+  background:var(--gray);border-radius:4px;font-size:11px;font-weight:600;color:var(--muted);
+}
+.ps-badge svg{width:12px;height:12px;}
+.ps-actions{display:flex;gap:8px;flex-shrink:0;}
+
+/* ── COMPLETION CIRCLE ── */
+.completion-card{
+  text-align:center;padding:20px;background:var(--gray);
+  border-radius:var(--radius-lg);margin-bottom:20px;
+}
+.completion-circle-wrap{position:relative;width:80px;height:80px;margin:0 auto 12px;}
+.completion-circle-wrap svg{transform:rotate(-90deg);}
+.completion-circle-bg{fill:none;stroke:var(--border);stroke-width:6;}
+.completion-circle-fg{fill:none;stroke:var(--verm);stroke-width:6;stroke-linecap:round;transition:stroke-dashoffset 0.5s;}
+.completion-pct{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-family:'Bricolage Grotesque',sans-serif;font-size:20px;font-weight:800;color:var(--navy);
+}
+
+/* ── MODALS ── */
+.modal-overlay{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);
+  z-index:900;align-items:center;justify-content:center;
+}
+.modal-overlay.show{display:flex;}
+.modal{
+  background:white;border-radius:var(--radius-lg);padding:32px;
+  max-width:480px;width:90%;max-height:90vh;overflow-y:auto;
+  box-shadow:var(--shadow-lg);text-align:center;
+}
+.modal-icon{font-size:48px;margin-bottom:12px;}
+.modal-title{font-family:'Bricolage Grotesque',sans-serif;font-size:20px;font-weight:800;margin-bottom:8px;}
+.modal-desc{font-size:14px;color:var(--muted);margin-bottom:20px;}
+
+/* ── LOCATION MODAL ── */
+.lok-modal-overlay{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);
+  z-index:800;align-items:center;justify-content:center;
+}
+.lok-modal-overlay.show{display:flex;}
+.lok-modal{
+  background:white;border-radius:var(--radius-lg);width:90%;max-width:600px;
+  max-height:85vh;display:flex;flex-direction:column;box-shadow:var(--shadow-lg);
+}
+.lok-header{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:20px 24px;border-bottom:1px solid var(--border);
+}
+.lok-header h3{font-family:'Bricolage Grotesque',sans-serif;font-size:16px;font-weight:800;}
+.lok-search{
+  padding:12px 24px;border-bottom:1px solid var(--border);
+}
+.lok-search input{
+  width:100%;padding:10px 12px;border:1.5px solid var(--border);
+  border-radius:var(--radius-sm);font-family:inherit;font-size:14px;
+}
+.lok-body{flex:1;overflow-y:auto;padding:16px 24px;}
+.lok-region{margin-bottom:16px;}
+.lok-region-title{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;}
+.lok-city-grid{display:flex;flex-wrap:wrap;gap:6px;}
+.lok-city{
+  padding:6px 12px;border:1.5px solid var(--border);border-radius:20px;
+  font-size:12px;font-weight:500;cursor:pointer;transition:all 0.15s;background:white;
+}
+.lok-city:hover{border-color:var(--verm);color:var(--verm);}
+.lok-city.selected{background:var(--verm);color:white;border-color:var(--verm);}
+.lok-footer{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:16px 24px;border-top:1px solid var(--border);
+}
+.lok-footer p{font-size:13px;color:var(--muted);}
+
+/* ── CITY CARDS (selected locations display) ── */
+.city-card{
+  background:var(--gray);border:1px solid var(--border);border-radius:var(--radius);
+  padding:12px 14px;margin-bottom:8px;
+}
+.city-card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.city-card-name{font-size:14px;font-weight:700;color:var(--navy);}
+.city-card-del{
+  border:none;background:none;cursor:pointer;color:var(--muted);font-size:18px;
+}
+.city-card-del:hover{color:var(--red);}
+.city-card-districts{display:flex;flex-wrap:wrap;gap:4px;}
+.district-chip{
+  padding:4px 10px;border:1px solid var(--border);border-radius:12px;
+  font-size:11px;cursor:pointer;background:white;transition:all 0.15s;
+}
+.district-chip:hover{border-color:var(--navy);}
+.district-chip.selected{background:var(--navy);color:white;border-color:var(--navy);}
+
+/* ── DASHBOARD ── */
+.dash-welcome{margin-bottom:20px;}
+.dash-welcome h2{font-family:'Bricolage Grotesque',sans-serif;font-size:22px;font-weight:800;color:var(--navy);}
+.dash-welcome p{font-size:14px;color:var(--muted);margin-top:4px;}
+.dash-empty-prompt{
+  text-align:center;padding:48px 24px;background:var(--gray);
+  border-radius:var(--radius-lg);border:1.5px dashed var(--border);
+}
+.dash-empty-prompt.visible{display:block;}
+.dash-empty-icon{font-size:40px;margin-bottom:12px;}
+.dash-empty-title{font-family:'Bricolage Grotesque',sans-serif;font-size:18px;font-weight:800;margin-bottom:6px;}
+.dash-empty-desc{font-size:14px;color:var(--muted);margin-bottom:16px;max-width:400px;margin-left:auto;margin-right:auto;}
+
+/* ── STEP ERRORS ── */
+.step-errors{
+  background:var(--red-light);border:1px solid #FECACA;border-radius:var(--radius-sm);
+  padding:12px 16px;margin-bottom:16px;
+}
+.step-errors-title{font-size:13px;font-weight:700;color:var(--red);margin-bottom:4px;}
+.step-errors-list{list-style:none;padding:0;}
+.step-errors-list li{font-size:12px;color:var(--red);padding:2px 0;}
+.step-errors-list li::before{content:'\2022 ';color:var(--red);}
+
+/* ── CHECKBOX CUSTOM ── */
+.cb-wrap{display:flex;align-items:center;gap:8px;cursor:pointer;padding:10px 0;}
+.cb-wrap input[type=checkbox]{
+  width:18px;height:18px;accent-color:var(--verm);cursor:pointer;
+}
+.cb-wrap span{font-size:14px;font-weight:500;}
+
+/* ── SECTION DIVIDER ── */
+.section-divider{
+  border:none;border-top:1px solid var(--border);margin:24px 0;
+}
+
+/* ── AVATAR UPLOAD ── */
+.avatar-upload{
+  display:flex;align-items:center;gap:16px;margin-bottom:20px;
+}
+.avatar-upload-circle{
+  width:72px;height:72px;border-radius:50%;background:var(--navy-light);
+  color:var(--navy);display:flex;align-items:center;justify-content:center;
+  font-size:24px;font-weight:700;overflow:hidden;flex-shrink:0;
+  border:2px dashed var(--border);cursor:pointer;transition:border-color 0.2s;
+}
+.avatar-upload-circle:hover{border-color:var(--verm);}
+.avatar-upload-circle img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
+
+/* ── RESPONSIVE ── */
+@media(max-width:768px){
+  .sidebar{transform:translateX(-100%);transition:transform 0.3s cubic-bezier(0.4,0,0.2,1);z-index:601;}
+  .sidebar.open{transform:translateX(0);}
+  .sidebar-overlay.show{display:block;}
+  .loading-screen{left:0;}
+  .app-body{margin-left:0;}
+  .panel{padding:16px 16px 100px;}
+  .btn-icon{display:flex;}
+  .bottom-nav{display:block;}
+  .bottom-nav-inner{display:flex;}
+  .wiz-progress{padding:16px 8px 24px;gap:0;}
+  .wiz-progress-label{font-size:9px;}
+  .wiz-progress-circle{width:30px;height:30px;font-size:11px;}
+  .wiz-step-title{font-size:18px;}
+  .field-row{grid-template-columns:1fr;}
+  .field-row-3{grid-template-columns:1fr;}
+  .exp-card{padding:12px;}
+  .ps-top{flex-direction:column;}
+  .ps-actions{width:100%;}
+  .ps-actions .btn{flex:1;}
+}
+@media(max-width:480px){
+  .header{padding:0 12px;}
+  .wiz-progress-line{min-width:12px;}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ HEADER ═══ -->
+<header class="header">
+  <a href="index.html" class="logo">hello<span>talent</span>.ai</a>
+  <div class="header-right">
+    <div class="status-badge aktif" id="header-status-badge" title="Profil durumu">
+      <span class="status-dot"></span><span id="header-status-text">Aktif</span>
+    </div>
+    <div class="avatar-wrap" id="header-avatar-wrap" title="Profil">
+      <div class="avatar" id="user-avatar-header">?</div>
+    </div>
+    <input type="file" id="avatar-file-hidden" accept="image/*" style="display:none">
+    <button class="btn-icon" id="mobile-sidebar-btn" title="Menu">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+  </div>
+</header>
+
+<!-- SIDEBAR OVERLAY (mobile) -->
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+<!-- LEFT SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-user">
+    <div class="sidebar-user-row">
+      <div class="sidebar-avatar" id="sidebar-avatar">?</div>
+      <div class="sidebar-user-info">
+        <div class="sidebar-user-name" id="sidebar-user-name">&mdash;</div>
+        <div class="sidebar-user-email" id="sidebar-email-text">&mdash;</div>
+      </div>
+    </div>
+    <div class="status-badge aktif" id="card-status-badge" style="width:fit-content;">
+      <span class="status-dot"></span><span id="card-status-text">Aktif</span>
+    </div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="sidebar-nav-label">Menu</div>
+    <button class="nav-item active" id="nav-genel" data-panel="genel">
+      <span class="nav-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span>
+      Genel Bakis
+    </button>
+    <button class="nav-item" id="nav-profil" data-panel="profil">
+      <span class="nav-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
+      Profilim
+    </button>
+    <button class="nav-item" id="nav-cv" data-panel="cv">
+      <span class="nav-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></span>
+      CV
+    </button>
+    <button class="nav-item" id="nav-ayarlar" data-panel="ayarlar">
+      <span class="nav-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span>
+      Ayarlar
+    </button>
+  </nav>
+  <div style="padding:10px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+    <div class="toggle-row">
+      <div class="toggle-info">
+        <h4>Beni Oner</h4>
+        <p>Markalar seni gorsun</p>
+      </div>
+      <label class="toggle">
+        <input type="checkbox" id="toggle-active" checked>
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+  </div>
+  <div style="margin-top:auto;border-top:1px solid var(--border);">
+    <button class="nav-item" id="btn-signout" style="color:var(--muted);">
+      <span class="nav-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></span>
+      Cikis Yap
+    </button>
+  </div>
+</aside>
+
+<!-- LOCATION MODAL -->
+<div class="lok-modal-overlay" id="lok-modal-overlay">
+  <div class="lok-modal">
+    <div class="lok-header">
+      <h3>Sehir Sec</h3>
+      <button class="btn-secondary btn-sm" id="btn-lok-close">Kapat</button>
+    </div>
+    <div class="lok-search">
+      <input type="text" id="lok-search-input" placeholder="Sehir ara...">
+    </div>
+    <div class="lok-body" id="lok-body"></div>
+    <div class="lok-footer">
+      <p><strong id="lok-selected-count">0</strong> sehir secili</p>
+      <button class="btn btn-primary" id="btn-lok-done">Tamam</button>
+    </div>
+  </div>
+</div>
+
+<!-- SUCCESS MODAL -->
+<div class="modal-overlay" id="modal-success">
+  <div class="modal">
+    <div class="modal-icon">&#10003;</div>
+    <div class="modal-title">Profilin Kaydedildi!</div>
+    <div class="modal-desc">Tebrikler! Profil bilgilerin basariyla kaydedildi. Artik markalar seni bulabilir.</div>
+    <button class="btn btn-primary btn-lg" id="btn-success-ok">Tamam</button>
+  </div>
+</div>
+
+<!-- ERROR MODAL -->
+<div class="modal-overlay" id="modal-error">
+  <div class="modal">
+    <div class="modal-icon">&#9888;</div>
+    <div class="modal-title">Kaydetme Basarisiz</div>
+    <div class="modal-desc" id="error-desc">Bir hata olustu. Lutfen tekrar deneyin.</div>
+    <div style="display:flex;gap:8px;justify-content:center;">
+      <button class="btn btn-primary" id="btn-retry">Tekrar Dene</button>
+      <button class="btn btn-secondary" id="btn-error-close">Kapat</button>
+    </div>
+  </div>
+</div>
+
+<!-- DRAFT RESUME MODAL -->
+<div class="modal-overlay" id="modal-draft">
+  <div class="modal">
+    <div class="modal-icon">&#128196;</div>
+    <div class="modal-title">Taslak Bulundu</div>
+    <div class="modal-desc">Daha once basladigin bir taslak var. Kaldigin yerden devam etmek ister misin?</div>
+    <div style="display:flex;gap:8px;justify-content:center;">
+      <button class="btn btn-primary" id="btn-draft-resume">Devam Et</button>
+      <button class="btn btn-secondary" id="btn-draft-discard">Bastan Basla</button>
+    </div>
+  </div>
+</div>
+
+<!-- LOADING -->
+<div class="loading-screen" id="loading-screen"><div class="spinner-big"></div></div>
+
+<!-- APP BODY -->
+<div class="app-body" id="app-body" style="display:none;">
+
+<!-- BOTTOM NAV (mobile) -->
+<nav class="bottom-nav" id="bottom-nav">
+  <div class="bottom-nav-inner">
+    <button class="bn-item active" data-panel="genel">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      Dashboard
+    </button>
+    <button class="bn-item" data-panel="profil">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      Profil
+    </button>
+    <button class="bn-item" data-panel="cv">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      CV
+    </button>
+    <button class="bn-item" data-panel="ayarlar">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15"/></svg>
+      Ayarlar
+    </button>
+  </div>
+</nav>
+
+<!-- ═══ PANEL: GENEL BAKIS ═══ -->
+<main class="panel active" id="panel-genel" data-panel="genel">
+  <div class="dash-welcome">
+    <h2 id="dash-welcome-name">Hos geldin!</h2>
+    <p>Profilinin durumu ve ozet bilgilerin.</p>
+  </div>
+  <div class="profile-summary" id="profile-summary" style="display:none;">
+    <div class="ps-top">
+      <div class="ps-left">
+        <div class="ps-avatar" id="ps-avatar">?</div>
+        <div>
+          <div class="ps-name" id="ps-name">&mdash;</div>
+          <div class="ps-role" id="ps-role">Profil henuz tamamlanmadi</div>
+          <div class="ps-badges">
+            <span class="ps-badge" id="ps-city-badge" style="display:none;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              <span id="ps-city-text"></span>
+            </span>
+            <span class="ps-badge" id="ps-exp-badge" style="display:none;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+              <span id="ps-exp-text"></span>
+            </span>
+          </div>
+        </div>
+      </div>
+      <div class="ps-actions">
+        <button class="btn btn-primary btn-sm" id="btn-edit-profile">Profili Duzenle</button>
+        <button class="btn btn-secondary btn-sm" id="btn-gen-cv">CV Indir</button>
+      </div>
+    </div>
+  </div>
+  <div class="dash-empty-prompt" id="dash-empty-prompt" style="display:none;">
+    <div class="dash-empty-icon">&#128100;</div>
+    <div class="dash-empty-title">Profilini Olustur</div>
+    <div class="dash-empty-desc">Henuz profil bilgilerin eklenmemis. Profilini tamamla, retail markalari seni bulsun!</div>
+    <button class="btn btn-primary" id="btn-start-wizard">Profili Duzenle</button>
+  </div>
+  <div id="dash-content" style="display:none;">
+    <div class="completion-card">
+      <div class="completion-circle-wrap">
+        <svg width="80" height="80" viewBox="0 0 80 80">
+          <circle class="completion-circle-bg" cx="40" cy="40" r="34"/>
+          <circle class="completion-circle-fg" id="progress-circle" cx="40" cy="40" r="34"
+            stroke-dasharray="213.63" stroke-dashoffset="213.63"/>
+        </svg>
+        <div class="completion-pct" id="completion-pct">0%</div>
+      </div>
+      <div id="completion-title" style="font-weight:700;font-size:14px;">Profilini Tamamla</div>
+      <div id="completion-desc" style="font-size:12px;color:var(--muted);margin-top:4px;">Profil ne kadar dolu olursa, seni bulan marka sayisi o kadar artar.</div>
+    </div>
+  </div>
+</main>
+
+<!-- ═══ PANEL: PROFIL (WIZARD) ═══ -->
+<main class="panel" id="panel-profil" data-panel="profil">
+
+  <!-- WIZARD PROGRESS BAR -->
+  <div class="wiz-progress" id="wiz-progress">
+    <div class="wiz-progress-step active" data-wstep="1">
+      <div class="wiz-progress-circle">1</div>
+      <div class="wiz-progress-label">Kisisel</div>
+    </div>
+    <div class="wiz-progress-line" data-wline="1"></div>
+    <div class="wiz-progress-step" data-wstep="2">
+      <div class="wiz-progress-circle">2</div>
+      <div class="wiz-progress-label">Kariyer</div>
+    </div>
+    <div class="wiz-progress-line" data-wline="2"></div>
+    <div class="wiz-progress-step" data-wstep="3">
+      <div class="wiz-progress-circle">3</div>
+      <div class="wiz-progress-label">Egitim</div>
+    </div>
+    <div class="wiz-progress-line" data-wline="3"></div>
+    <div class="wiz-progress-step" data-wstep="4">
+      <div class="wiz-progress-circle">4</div>
+      <div class="wiz-progress-label">Tercihler</div>
+    </div>
+    <div class="wiz-progress-line" data-wline="4"></div>
+    <div class="wiz-progress-step" data-wstep="5">
+      <div class="wiz-progress-circle">5</div>
+      <div class="wiz-progress-label">Lokasyon</div>
+    </div>
+  </div>
+
+  <!-- WIZARD STEP 1: Kisisel Bilgiler -->
+  <div class="wiz-step active" id="wiz-step-1" data-step="1">
+    <div class="wiz-step-title">Kisisel Bilgiler</div>
+    <div class="wiz-step-desc">Temel bilgilerini doldur. Bu bilgiler markalar tarafindan gorulebilir.</div>
+    <div id="step1-content"><!-- Filled by Task 5 --></div>
+  </div>
+
+  <!-- WIZARD STEP 2: Kariyer -->
+  <div class="wiz-step" id="wiz-step-2" data-step="2">
+    <div class="wiz-step-title">Kariyer / Deneyimler</div>
+    <div class="wiz-step-desc">Is deneyimlerini ekle. Her deneyim, seni dogru markalarla eslestirmemize yardimci olur.</div>
+    <div id="step2-content"><!-- Filled by Task 6 --></div>
+  </div>
+
+  <!-- WIZARD STEP 3: Egitim -->
+  <div class="wiz-step" id="wiz-step-3" data-step="3">
+    <div class="wiz-step-title">Egitim, Diller, Sertifikalar</div>
+    <div class="wiz-step-desc">Egitim gecmisini, bildigi dilleri ve sertifikalarini ekle.</div>
+    <div id="step3-content"><!-- Filled by Task 7 --></div>
+  </div>
+
+  <!-- WIZARD STEP 4: Tercihlerim -->
+  <div class="wiz-step" id="wiz-step-4" data-step="4">
+    <div class="wiz-step-title">Tercihlerim</div>
+    <div class="wiz-step-desc">Hedef pozisyonlarini, calisma tercihlerini ve ilgilendigin markalari belirt.</div>
+    <div id="step4-content"><!-- Filled by Task 8 --></div>
+  </div>
+
+  <!-- WIZARD STEP 5: Lokasyon -->
+  <div class="wiz-step" id="wiz-step-5" data-step="5">
+    <div class="wiz-step-title">Lokasyon Tercihleri</div>
+    <div class="wiz-step-desc">Calismak istedigin sehirleri ve ilceleri sec.</div>
+    <div id="step5-content"><!-- Filled by Task 9 --></div>
+  </div>
+
+  <!-- WIZARD NAV -->
+  <div class="wiz-nav" id="wiz-nav">
+    <button class="btn btn-secondary" id="btn-wiz-back" style="display:none;">Geri</button>
+    <div class="wiz-nav-spacer"></div>
+    <button class="btn btn-primary" id="btn-wiz-next">Ileri</button>
+    <button class="btn btn-navy btn-lg" id="btn-wiz-complete" style="display:none;">Tamamla</button>
+  </div>
+
+</main>
+
+<!-- ═══ PANEL: CV ═══ -->
+<main class="panel" id="panel-cv" data-panel="cv">
+  <div class="wiz-step-title">CV Olustur</div>
+  <div class="wiz-step-desc">Profil bilgilerinden otomatik CV olustur ve indir.</div>
+  <div class="card" style="text-align:center;padding:40px;">
+    <div style="font-size:48px;margin-bottom:12px;">&#128196;</div>
+    <p style="color:var(--muted);margin-bottom:16px;">Profil bilgilerinden HelloTalent markali PDF CV olusturulur.</p>
+    <button class="btn btn-primary btn-lg" id="btn-generate-cv">CV Olustur ve Indir</button>
+  </div>
+</main>
+
+<!-- ═══ PANEL: AYARLAR ═══ -->
+<main class="panel" id="panel-ayarlar" data-panel="ayarlar">
+  <div class="wiz-step-title">Hesap Ayarlari</div>
+  <div class="wiz-step-desc">Hesap bilgilerini yonet.</div>
+  <div class="card">
+    <div class="card-title">Hesap Bilgileri</div>
+    <div class="field">
+      <label>E-posta</label>
+      <input type="email" id="settings-email" disabled>
+    </div>
+  </div>
+  <div style="margin-top:24px;">
+    <button class="btn btn-secondary" id="btn-signout-settings">Cikis Yap</button>
+  </div>
+</main>
+
+</div><!-- /app-body -->
+
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   PROFIL-V2 — ALL JAVASCRIPT
+   Clean rewrite for normalized schema + RPC save
+   ═══════════════════════════════════════════════════════════════ */
+
+// ── SUPABASE CLIENT ──
+const SUPABASE_URL = 'https://cpwibefquojehjehtrog.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_POUtNwJyjAAheukwYP5hmA_TKKjphwa';
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+let currentUser = null;
+
+// ── HELPER: Turkish lowercase ──
+function trLower(s) {
+  return s.replace(/\u0130/g,'i').replace(/I/g,'\u0131')
+    .replace(/\u015e/g,'\u015f').replace(/\u00c7/g,'\u00e7')
+    .replace(/\u00d6/g,'\u00f6').replace(/\u00dc/g,'\u00fc')
+    .replace(/\u011e/g,'\u011f').toLowerCase();
+}
+
+// ── HELPER: get value ──
+function val(id) {
+  var el = document.getElementById(id);
+  if (!el) return '';
+  return (el.tagName === 'SELECT') ? el.value : el.value.trim();
+}
+
+// ═══════════════════════════════════════════════════
+// REFERENCE DATA
+// ═══════════════════════════════════════════════════
+
+const AY_ISIMLERI = ['Ocak','Subat','Mart','Nisan','Mayis','Haziran','Temmuz','Agustos','Eylul','Ekim','Kasim','Aralik'];
+
+const EGITIM_SEVIYELERI = ['\u0130lkokul','Ortaokul','Lise','\u00d6n Lisans','Lisans','Y\u00fcksek Lisans','Doktora'];
+
+const DEPARTMANLAR = ['Ma\u011faza','B\u00f6lge Y\u00f6netimi','Genel Merkez','Visual Merchandising','Operasyon','\u0130nsan Kaynaklar\u0131','E\u011fitim','Pazarlama','E-Ticaret','Di\u011fer'];
+
+const SEGMENTLER = ['L\u00fcks','Premium','Orta Segment','Fast Fashion','Spor','Teknoloji','Kozmetik','Otomotiv','G\u0131da / Market','Ev / Ya\u015fam','Di\u011fer'];
+
+const ISTIHDAM_TIPLERI = ['Tam Zamanl\u0131','Yar\u0131 Zamanl\u0131','Sezonluk','Stajyer','S\u00f6zle\u015fmeli'];
+
+const KIDEM_SEVIYELERI = ['Stajyer','Giri\u015f Seviye','Orta Seviye','K\u0131demli','Y\u00f6netici','\u00dcst Y\u00f6netici'];
+
+const LOKASYON_TIPLERI = ['Ma\u011faza','Saha','Genel Merkez'];
+
+const TAKIM_BUYUKLUKLERI = ['Yok','1-5','6-15','16-30','30+'];
+
+const AYRILMA_NEDENLERI = ['\u0130stifa','\u0130\u015ften \u00c7\u0131karma','Kar\u015f\u0131l\u0131kl\u0131 Anla\u015fma','S\u00f6zle\u015fme Sonu','Ta\u015f\u0131nma','Kariyer De\u011fi\u015fikli\u011fi','Di\u011fer'];
+
+const ROL_AILELERI = ['Sat\u0131\u015f','Ma\u011faza Y\u00f6netimi','B\u00f6lge Y\u00f6netimi','Visual Merchandising','Operasyon','\u0130nsan Kaynaklar\u0131','Pazarlama / E-Ticaret'];
+
+const MUSAITLIK_SECENEKLERI = ['Hemen','2 Hafta \u0130\u00e7inde','1 Ay \u0130\u00e7inde','2+ Ay \u0130\u00e7inde'];
+
+const MAAS_ARALIKLARI = ['','15000-20000','20000-25000','25000-30000','30000-35000','35000-45000','45000-60000','60000-80000','80000+'];
+
+const DIL_LISTESI = ['T\u00fcrk\u00e7e','\u0130ngilizce','Almanca','Frans\u0131zca','\u0130spanyolca','\u0130talyanca','Rus\u00e7a','Arap\u00e7a','\u00c7ince (Mandarin)','Japonca','Korece','Portekizce','Hollandaca','Leh\u00e7e','Ukraynaca','Fars\u00e7a','K\u00fcrt\u00e7e','Bulgar\u0131ca','Rumence','Macarca','\u00c7ek\u00e7e','\u0130sve\u00e7\u00e7e','Danca','Fince','Norve\u00e7\u00e7e','Yunanca','S\u0131rp\u00e7a','H\u0131rvat\u00e7a','Bo\u015fnak\u00e7a','G\u00fcrce','Arnavut\u00e7a','Di\u011fer'];
+
+const DIL_SEVIYELERI = ['A1 - Ba\u015flang\u0131\u00e7','A2 - Temel','B1 - Orta Alt\u0131','B2 - Orta','C1 - \u0130leri','C2 - \u00dcst \u0130leri','Anadil'];
+
+// ── 81 IL VERISI ──
+const TUR_ILLER = {
+  'Marmara': ['\u0130stanbul','Bursa','Kocaeli','Sakarya','Tekirda\u011f','Edirne','K\u0131rklareli','Bal\u0131kesir','\u00c7anakkale','Yalova','Bilecik'],
+  'Ege': ['\u0130zmir','Manisa','Ayd\u0131n','Denizli','Mu\u011fla','Afyonkarahisar','K\u00fctahya','U\u015fak'],
+  '\u0130\u00e7 Anadolu': ['Ankara','Konya','Eski\u015fehir','Kayseri','Sivas','Yozgat','K\u0131r\u0131kkale','Aksaray','Ni\u011fde','Nev\u015fehir','K\u0131r\u015fehir','Karaman','\u00c7ank\u0131r\u0131'],
+  'Karadeniz': ['Samsun','Trabzon','Ordu','Giresun','Rize','Artvin','Bolu','D\u00fczce','Zonguldak','Bart\u0131n','Karab\u00fck','Kastamonu','Sinop','Amasya','Tokat','G\u00fcm\u00fc\u015fhane','Bayburt'],
+  'Akdeniz': ['Antalya','Mersin','Adana','Hatay','Kahramanmara\u015f','Osmaniye','Isparta','Burdur'],
+  'Do\u011fu Anadolu': ['Erzurum','Malatya','Van','Elaz\u0131\u011f','Erzincan','A\u011fr\u0131','Kars','I\u011fd\u0131r','Ardahan','Mu\u015f','Bitlis','Hakkari','Bing\u00f6l','Tunceli'],
+  'G\u00fcneydo\u011fu Anadolu': ['Gaziantep','Diyarbak\u0131r','\u015eanl\u0131urfa','Mardin','Batman','Siirt','\u015e\u0131rnak','Ad\u0131yaman','Kilis']
+};
+
+const ILCELER = {
+  '\u0130stanbul':['Be\u015fikta\u015f','Beyo\u011flu','\u015ei\u015fli','Sar\u0131yer','Ka\u011f\u0131thane','Fatih','Ey\u00fcpsultan','Zeytinburnu','Bak\u0131rk\u00f6y','Bah\u00e7elievler','Ba\u011fc\u0131lar','G\u00fcng\u00f6ren','Esenler','Gaziosmanpa\u015fa','Sultangazi','Arnavutk\u00f6y','Ba\u015fak\u015fehir','Esenyurt','Avc\u0131lar','K\u00fc\u00e7\u00fck\u00e7ekmece','Bayrampa\u015fa','Kad\u0131k\u00f6y','Ata\u015fehir','\u00dcsk\u00fcdar','Maltepe','Kartal','Pendik','Tuzla','Sancaktepe','Sultanbeyli','\u00dcmraniye','\u00c7ekmeky','Beykoz','Adalar','Silivri','B\u00fcy\u00fck\u00e7ekmece','\u00c7atalca','\u015eile'],
+  'Ankara':['\u00c7ankaya','Ke\u00e7i\u00f6ren','Yenimahalle','Mamak','Etimesgut','Alt\u0131nda\u011f','Sincan','Pursaklar','G\u00f6lba\u015f\u0131','Polatl\u0131','Kazan'],
+  '\u0130zmir':['Konak','Kar\u015f\u0131yaka','Bornova','Bayrakl\u0131','Karaba\u011flar','Buca','\u00c7i\u011fli','Gaziemir','Bal\u00e7ova','Narl\u0131dere','G\u00fczelbah\u00e7e','Menemen','Alia\u011fa','Fo\u00e7a','Bergama','\u00d6demi\u015f','Tire','Torbal\u0131','Sel\u00e7uk'],
+  'Bursa':['Osmangazi','Nil\u00fcfer','Y\u0131ld\u0131r\u0131m','G\u00f6r\u00fckle','Mudanya','Gemlik','\u0130neg\u00f6l'],
+  'Antalya':['Muratpa\u015fa','Kepez','Konyaalt\u0131','Alanya','Manavgat','Serik'],
+  'Adana':['Seyhan','\u00c7ukurova','Y\u00fcre\u011fir','Sar\u0131\u00e7am','Ceyhan','Kozan'],
+  'Konya':['Sel\u00e7uklu','Karatay','Meram','Ere\u011fli','Ak\u015fehir'],
+  'Gaziantep':['\u015eahinbey','\u015eehitkamil','Nizip'],
+  'Mersin':['Yeni\u015fehir','Toroslar','Mezitli','Akdeniz','Tarsus','Erdemli'],
+  'Kayseri':['Kocasinan','Melikgazi','Talas'],
+  'Eski\u015fehir':['Tepeba\u015f\u0131','Odunpazar\u0131'],
+  'Kocaeli':['\u0130zmit','K\u00f6rfez','Gebze','Dar\u0131ca','\u00c7ay\u0131rova'],
+  'Sakarya':['Adapazar\u0131','Serdivan','Erenler'],
+  'Tekirda\u011f':['S\u00fcleymanpa\u015fa','\u00c7erkezk\u00f6y','\u00c7orlu','Kapakl\u0131'],
+  'Diyarbak\u0131r':['Ba\u011flar','Kayap\u0131nar','Sur','Yeni\u015fehir'],
+  'Hatay':['Antakya','\u0130skenderun','Defne'],
+  'Trabzon':['Ortahisar','Ak\u00e7aabat'],
+  'Samsun':['Atakum','Canik','\u0130lkad\u0131m'],
+  'Malatya':['Battalgazi','Ye\u015filyurt'],
+  '\u015eanl\u0131urfa':['Eyy\u00fcbiye','Haliliye','Karak\u00f6pr\u00fc'],
+  'Van':['\u0130pekyolu','Edremit','Tu\u015fba']
+};
+
+// ── BRAND DATABASE ──
+var BRAND_DB=[
+  {name:'Zara',parent:'\u0130nditex'},{name:'Massimo Dutti',parent:'\u0130nditex'},{name:'Bershka',parent:'\u0130nditex'},{name:'Pull & Bear',parent:'\u0130nditex'},{name:'Stradivarius',parent:'\u0130nditex'},{name:'Oysho',parent:'\u0130nditex'},{name:'Zara Home',parent:'\u0130nditex'},{name:'\u0130nditex',parent:''},
+  {name:'H&M',parent:'H&M Group'},{name:'COS',parent:'H&M Group'},{name:'& Other Stories',parent:'H&M Group'},{name:'Arket',parent:'H&M Group'},{name:'Monki',parent:'H&M Group'},
+  {name:'Louis Vuitton',parent:'LVMH'},{name:'Dior',parent:'LVMH'},{name:'Sephora',parent:'LVMH'},{name:'Fendi',parent:'LVMH'},{name:'Givenchy',parent:'LVMH'},{name:'Celine',parent:'LVMH'},{name:'Loewe',parent:'LVMH'},{name:'Marc Jacobs',parent:'LVMH'},{name:'Tiffany & Co.',parent:'LVMH'},
+  {name:'Gucci',parent:'Kering'},{name:'Saint Laurent',parent:'Kering'},{name:'Balenciaga',parent:'Kering'},{name:'Bottega Veneta',parent:'Kering'},{name:'Alexander McQueen',parent:'Kering'},
+  {name:'Gap',parent:'Fiba Retail'},{name:'Banana Republic',parent:'Fiba Retail'},{name:'Marks & Spencer',parent:'Fiba Retail'},{name:'Fiba Retail',parent:''},{name:'Eataly',parent:'Fiba Retail'},
+  {name:'Nike',parent:''},{name:'Adidas',parent:''},{name:'Puma',parent:''},{name:'New Balance',parent:''},{name:'Under Armour',parent:''},{name:'Reebok',parent:''},
+  {name:'Uniqlo',parent:'Fast Retailing'},{name:'GU',parent:'Fast Retailing'},
+  {name:'LC Waikiki',parent:'LC Waikiki'},{name:'DeFacto',parent:''},{name:'Koton',parent:''},{name:'Mavi',parent:''},{name:'Boyner',parent:'Boyner Group'},{name:'Vakko',parent:''},{name:'Beymen',parent:''},{name:'Ipekyol',parent:''},
+  {name:'Colin\'s',parent:''},{name:'Network',parent:''},{name:'Twist',parent:''},{name:'Machka',parent:''},{name:'Roman',parent:''},
+  {name:'Burberry',parent:''},{name:'Prada',parent:''},{name:'Miu Miu',parent:'Prada Group'},{name:'Versace',parent:'Capri Holdings'},{name:'Michael Kors',parent:'Capri Holdings'},{name:'Jimmy Choo',parent:'Capri Holdings'},
+  {name:'Chanel',parent:''},{name:'Hermes',parent:''},{name:'Cartier',parent:'Richemont'},{name:'Montblanc',parent:'Richemont'},
+  {name:'Apple',parent:''},{name:'Samsung',parent:''},{name:'MediaMarkt',parent:'Ceconomy'},{name:'Teknosa',parent:'Sabanc\u0131 Holding'},{name:'Vatan Bilgisayar',parent:''},
+  {name:'Migros',parent:''},{name:'CarrefourSA',parent:''},{name:'B\u0130M',parent:''},{name:'A101',parent:''},{name:'\u015eOK',parent:''},{name:'Gratis',parent:''},{name:'Watsons',parent:'AS Watson'},
+  {name:'MAC',parent:'Estee Lauder'},{name:'Estee Lauder',parent:''},{name:'L\'Oreal',parent:''},{name:'Yves Rocher',parent:''},{name:'The Body Shop',parent:''},
+  {name:'IKEA',parent:'Ingka Group'},{name:'Kocta\u015f',parent:''},{name:'English Home',parent:''},
+  {name:'Decathlon',parent:''},{name:'Levi\'s',parent:''},{name:'Tommy Hilfiger',parent:'PVH'},{name:'Calvin Klein',parent:'PVH'},{name:'Ralph Lauren',parent:''},{name:'Lacoste',parent:''},
+  {name:'Mango',parent:''},{name:'Superdry',parent:''},{name:'The North Face',parent:'VF Corp'},{name:'Timberland',parent:'VF Corp'},{name:'Vans',parent:'VF Corp'},
+  {name:'Starbucks',parent:''},{name:'Amazon',parent:''}
+];
+
+// ── UNIVERSITE DATABASE ──
+var UNIVERSITE_DB=[
+  {name:'\u0130stanbul \u00dcniversitesi',sub:'\u0130stanbul'},{name:'\u0130stanbul Teknik \u00dcniversitesi (\u0130T\u00dc)',sub:'\u0130stanbul'},
+  {name:'Marmara \u00dcniversitesi',sub:'\u0130stanbul'},{name:'Y\u0131ld\u0131z Teknik \u00dcniversitesi',sub:'\u0130stanbul'},
+  {name:'Galatasaray \u00dcniversitesi',sub:'\u0130stanbul'},{name:'Bo\u011fazi\u00e7i \u00dcniversitesi',sub:'\u0130stanbul'},
+  {name:'Hacettepe \u00dcniversitesi',sub:'Ankara'},{name:'Ankara \u00dcniversitesi',sub:'Ankara'},
+  {name:'Orta Do\u011fu Teknik \u00dcniversitesi (ODT\u00dc)',sub:'Ankara'},{name:'Gazi \u00dcniversitesi',sub:'Ankara'},
+  {name:'Ege \u00dcniversitesi',sub:'\u0130zmir'},{name:'Dokuz Eyl\u00fcl \u00dcniversitesi',sub:'\u0130zmir'},
+  {name:'Uluda\u011f \u00dcniversitesi',sub:'Bursa'},{name:'Anadolu \u00dcniversitesi',sub:'Eski\u015fehir'},
+  {name:'\u00c7ukurova \u00dcniversitesi',sub:'Adana'},{name:'Akdeniz \u00dcniversitesi',sub:'Antalya'},
+  {name:'Erciyes \u00dcniversitesi',sub:'Kayseri'},{name:'Sel\u00e7uk \u00dcniversitesi',sub:'Konya'},
+  {name:'Ko\u00e7 \u00dcniversitesi',sub:'\u0130stanbul'},{name:'Sabanc\u0131 \u00dcniversitesi',sub:'\u0130stanbul'},
+  {name:'Bah\u00e7e\u015fehir \u00dcniversitesi (BAU)',sub:'\u0130stanbul'},{name:'\u00d6zy\u011fin \u00dcniversitesi',sub:'\u0130stanbul'},
+  {name:'\u0130stanbul Bilgi \u00dcniversitesi',sub:'\u0130stanbul'},{name:'Kadir Has \u00dcniversitesi',sub:'\u0130stanbul'},
+  {name:'Yeditepe \u00dcniversitesi',sub:'\u0130stanbul'},{name:'Beykent \u00dcniversitesi',sub:'\u0130stanbul'},
+  {name:'Bilkent \u00dcniversitesi',sub:'Ankara'},{name:'TOBB ET\u00dc',sub:'Ankara'},
+  {name:'Ya\u015far \u00dcniversitesi',sub:'\u0130zmir'},{name:'\u0130zmir Ekonomi \u00dcniversitesi',sub:'\u0130zmir'},
+  {name:'Anadolu \u00dcniversitesi A\u00e7\u0131k\u00f6\u011fretim',sub:'Eski\u015fehir'},
+  {name:'Anadolu Lisesi',sub:'Lise'},{name:'Meslek Lisesi',sub:'Lise'},{name:'\u0130mam Hatip Lisesi',sub:'Lise'},
+  {name:'Fen Lisesi',sub:'Lise'},{name:'Sosyal Bilimler Lisesi',sub:'Lise'}
+];
+
+// ── BOLUM DATABASE ──
+var BOLUM_DB=[
+  '\u0130\u015fletme','\u0130ktisat','Ekonomi','Uluslararas\u0131 Ticaret','Uluslararas\u0131 \u0130li\u015fkiler',
+  'Maliye','Muhasebe ve Finansman','Bankaclk ve Finans','Lojistik Y\u00f6netimi',
+  '\u0130nsan Kaynaklar\u0131 Y\u00f6netimi','Pazarlama','Y\u00f6netim Bili\u015fim Sistemleri',
+  'End\u00fcstri M\u00fchendisli\u011fi','Bilgisayar M\u00fchendisli\u011fi','Elektrik-Elektronik M\u00fchendisli\u011fi',
+  'Makine M\u00fchendisli\u011fi','Tekstil M\u00fchendisli\u011fi','Yaz\u0131l\u0131m M\u00fchendisli\u011fi',
+  'Moda Tasar\u0131m\u0131','Moda ve Tekstil Tasar\u0131m\u0131','Grafik Tasar\u0131m',
+  '\u0130\u00e7 Mimarl\u0131k','Mimarl\u0131k','End\u00fcstriyel Tasar\u0131m','G\u00f6rsel \u0130leti\u015fim Tasar\u0131m\u0131',
+  'Hukuk','Psikoloji','Sosyoloji','\u0130leti\u015fim','Halkla \u0130li\u015fkiler ve Reklamc\u0131l\u0131k',
+  'Perakende Sat\u0131\u015f ve Ma\u011faza Y\u00f6netimi','D\u0131\u015f Ticaret','B\u00fcro Y\u00f6netimi',
+  'Bilgisayar Programc\u0131l\u0131\u011f\u0131','Muhasebe ve Vergi Uygulamalar\u0131',
+  'Turizm \u0130\u015fletmecili\u011fi','Gastronomi','Otelcilik'
+];
+
+// ═══════════════════════════════════════════════════
+// WIZARD STATE MACHINE
+// ═══════════════════════════════════════════════════
+
+let wizStep = 1;
+const TOTAL_STEPS = 5;
+
+function wizGoTo(step) {
+  if (step < 1 || step > TOTAL_STEPS) return;
+  // Validate current step before moving forward
+  if (step > wizStep && !validateStep(wizStep)) return;
+  // Save draft on forward move
+  if (step > wizStep) saveDraft();
+  wizStep = step;
+  renderWizard();
+}
+
+function wizNext() { if (wizStep < TOTAL_STEPS) wizGoTo(wizStep + 1); }
+function wizBack() { if (wizStep > 1) wizGoTo(wizStep - 1); }
+
+function renderWizard() {
+  // Update progress bar
+  for (var i = 1; i <= TOTAL_STEPS; i++) {
+    var stepEl = document.querySelector('.wiz-progress-step[data-wstep="' + i + '"]');
+    var lineEl = document.querySelector('.wiz-progress-line[data-wline="' + i + '"]');
+    if (stepEl) {
+      stepEl.classList.remove('active', 'done');
+      if (i === wizStep) stepEl.classList.add('active');
+      else if (i < wizStep) stepEl.classList.add('done');
+    }
+    if (lineEl) {
+      lineEl.classList.remove('done');
+      if (i < wizStep) lineEl.classList.add('done');
+    }
+  }
+  // Show/hide step containers
+  for (var j = 1; j <= TOTAL_STEPS; j++) {
+    var ws = document.getElementById('wiz-step-' + j);
+    if (ws) {
+      ws.classList.remove('active');
+      if (j === wizStep) ws.classList.add('active');
+    }
+  }
+  // Update nav buttons
+  var btnBack = document.getElementById('btn-wiz-back');
+  var btnNext = document.getElementById('btn-wiz-next');
+  var btnComplete = document.getElementById('btn-wiz-complete');
+  if (btnBack) btnBack.style.display = wizStep > 1 ? '' : 'none';
+  if (btnNext) btnNext.style.display = wizStep < TOTAL_STEPS ? '' : 'none';
+  if (btnComplete) btnComplete.style.display = wizStep === TOTAL_STEPS ? '' : 'none';
+  // Scroll to top of wizard
+  var wizPanel = document.getElementById('panel-profil');
+  if (wizPanel) wizPanel.scrollTop = 0;
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+// ── STEP VALIDATION (skeleton — filled per step) ──
+function validateStep(step) {
+  clearStepErrors();
+  switch(step) {
+    case 1: return validateKisisel();
+    case 2: return validateKariyer();
+    case 3: return validateEgitim();
+    case 4: return validateTercihler();
+    case 5: return validateLokasyon();
+    default: return true;
+  }
+}
+
+// Placeholder validators — will be implemented per step
+function validateKisisel() { return true; }
+function validateKariyer() { return true; }
+function validateEgitim() { return true; }
+function validateTercihler() { return true; }
+function validateLokasyon() { return true; }
+
+function showStepErrors(errors) {
+  clearStepErrors();
+  var activeStep = document.getElementById('wiz-step-' + wizStep);
+  if (!activeStep || errors.length === 0) return;
+  var wrap = document.createElement('div');
+  wrap.className = 'step-errors';
+  wrap.id = 'step-errors-box';
+  var title = document.createElement('div');
+  title.className = 'step-errors-title';
+  title.textContent = 'Eksik alanlar:';
+  wrap.appendChild(title);
+  var ul = document.createElement('ul');
+  ul.className = 'step-errors-list';
+  errors.forEach(function(msg) {
+    var li = document.createElement('li');
+    li.textContent = msg;
+    ul.appendChild(li);
+  });
+  wrap.appendChild(ul);
+  var content = activeStep.querySelector('[id^="step"]') || activeStep;
+  activeStep.insertBefore(wrap, content);
+}
+
+function clearStepErrors() {
+  var box = document.getElementById('step-errors-box');
+  if (box) box.remove();
+  document.querySelectorAll('.field-error').forEach(function(el) {
+    el.classList.remove('field-error');
+  });
+}
+
+// ═══════════════════════════════════════════════════
+// PANEL SWITCHING
+// ═══════════════════════════════════════════════════
+
+function switchPanel(name) {
+  document.querySelectorAll('.panel').forEach(function(p) { p.classList.remove('active'); });
+  var target = document.getElementById('panel-' + name);
+  if (target) target.classList.add('active');
+  // Update sidebar nav
+  document.querySelectorAll('.sidebar-nav .nav-item').forEach(function(btn) {
+    btn.classList.remove('active');
+    if (btn.dataset.panel === name) btn.classList.add('active');
+  });
+  // Update bottom nav
+  document.querySelectorAll('.bn-item').forEach(function(btn) {
+    btn.classList.remove('active');
+    if (btn.dataset.panel === name) btn.classList.add('active');
+  });
+  // Close mobile sidebar
+  closeMobileSidebar();
+}
+
+// ═══════════════════════════════════════════════════
+// MOBILE SIDEBAR
+// ═══════════════════════════════════════════════════
+
+function toggleMobileSidebar() {
+  var sidebar = document.getElementById('sidebar');
+  var overlay = document.getElementById('sidebar-overlay');
+  if (sidebar) sidebar.classList.toggle('open');
+  if (overlay) overlay.classList.toggle('show');
+}
+function closeMobileSidebar() {
+  var sidebar = document.getElementById('sidebar');
+  var overlay = document.getElementById('sidebar-overlay');
+  if (sidebar) sidebar.classList.remove('open');
+  if (overlay) overlay.classList.remove('show');
+}
+
+// ═══════════════════════════════════════════════════
+// LOCALSTORAGE DRAFT (skeleton — wired in Task 10)
+// ═══════════════════════════════════════════════════
+
+const DRAFT_KEY = 'ht_wizard_draft_v2';
+
+function saveDraft() {
+  // Will be implemented in Task 10
+}
+function loadDraft() {
+  var raw = localStorage.getItem(DRAFT_KEY);
+  if (!raw) return null;
+  try { return JSON.parse(raw); } catch(e) { return null; }
+}
+function clearDraft() {
+  localStorage.removeItem(DRAFT_KEY);
+}
+function applyDraft(draft) {
+  // Will be implemented in Task 10
+}
+
+// ═══════════════════════════════════════════════════
+// AUTH + BOOTSTRAP
+// ═══════════════════════════════════════════════════
+
+(async function() {
+  var sessionRes = await supabase.auth.getSession();
+  if (!sessionRes.data.session) {
+    window.location.href = 'giris.html';
+    return;
+  }
+  currentUser = sessionRes.data.session.user;
+
+  // Set email in sidebar and settings
+  var email = currentUser.email || '';
+  var emailEl = document.getElementById('sidebar-email-text');
+  if (emailEl) emailEl.textContent = email;
+  var settingsEmail = document.getElementById('settings-email');
+  if (settingsEmail) settingsEmail.value = email;
+
+  // Set name from metadata
+  var metaName = (currentUser.user_metadata && (currentUser.user_metadata.full_name || currentUser.user_metadata.name)) || '';
+  var fallbackName = metaName || email.split('@')[0];
+  var nameEl = document.getElementById('sidebar-user-name');
+  if (nameEl) nameEl.textContent = fallbackName;
+
+  // Set initials in avatars
+  var initials = fallbackName.split(' ').map(function(w) { return w[0]; }).join('').substring(0,2).toUpperCase() || '?';
+  document.querySelectorAll('#user-avatar-header, #sidebar-avatar, #ps-avatar').forEach(function(el) {
+    el.textContent = initials;
+  });
+
+  // Hide loading, show app
+  document.getElementById('loading-screen').style.display = 'none';
+  document.getElementById('app-body').style.display = 'block';
+
+  // For now, show empty dashboard prompt (data load will be added in Task 12)
+  document.getElementById('dash-empty-prompt').style.display = 'block';
+  document.getElementById('dash-welcome-name').textContent = 'Hos geldin, ' + fallbackName.split(' ')[0] + '!';
+})();
+
+// ═══════════════════════════════════════════════════
+// EVENT LISTENERS
+// ═══════════════════════════════════════════════════
+
+document.addEventListener('DOMContentLoaded', function() {
+  // Sidebar nav clicks
+  document.querySelectorAll('.sidebar-nav .nav-item').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var panel = this.dataset.panel;
+      if (panel) switchPanel(panel);
+    });
+  });
+
+  // Bottom nav clicks
+  document.querySelectorAll('.bn-item').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var panel = this.dataset.panel;
+      if (panel) switchPanel(panel);
+    });
+  });
+
+  // Mobile sidebar
+  var mobileBtn = document.getElementById('mobile-sidebar-btn');
+  if (mobileBtn) mobileBtn.addEventListener('click', toggleMobileSidebar);
+  var sidebarOverlay = document.getElementById('sidebar-overlay');
+  if (sidebarOverlay) sidebarOverlay.addEventListener('click', closeMobileSidebar);
+
+  // Wizard nav
+  var btnBack = document.getElementById('btn-wiz-back');
+  var btnNext = document.getElementById('btn-wiz-next');
+  if (btnBack) btnBack.addEventListener('click', wizBack);
+  if (btnNext) btnNext.addEventListener('click', wizNext);
+
+  // Progress bar step clicks
+  document.querySelectorAll('.wiz-progress-step').forEach(function(stepEl) {
+    stepEl.addEventListener('click', function() {
+      var target = parseInt(this.dataset.wstep);
+      if (target <= wizStep) wizGoTo(target);
+    });
+  });
+
+  // Dashboard buttons
+  var btnStart = document.getElementById('btn-start-wizard');
+  if (btnStart) btnStart.addEventListener('click', function() { switchPanel('profil'); });
+  var btnEdit = document.getElementById('btn-edit-profile');
+  if (btnEdit) btnEdit.addEventListener('click', function() { switchPanel('profil'); });
+
+  // Sign out
+  var btnSignout = document.getElementById('btn-signout');
+  if (btnSignout) btnSignout.addEventListener('click', async function() {
+    await supabase.auth.signOut();
+    window.location.href = 'giris.html';
+  });
+  var btnSignoutSettings = document.getElementById('btn-signout-settings');
+  if (btnSignoutSettings) btnSignoutSettings.addEventListener('click', async function() {
+    await supabase.auth.signOut();
+    window.location.href = 'giris.html';
+  });
+
+  // Active/passive toggle
+  var toggleActive = document.getElementById('toggle-active');
+  if (toggleActive) toggleActive.addEventListener('change', function() {
+    var isActive = this.checked;
+    updateStatusUI(isActive);
+    if (currentUser) {
+      supabase.from('candidates').upsert({user_id: currentUser.id, is_active: isActive}, {onConflict: 'user_id'});
+    }
+  });
+
+  // Modal close buttons
+  var btnSuccessOk = document.getElementById('btn-success-ok');
+  if (btnSuccessOk) btnSuccessOk.addEventListener('click', function() {
+    document.getElementById('modal-success').classList.remove('show');
+    switchPanel('genel');
+  });
+  var btnErrorClose = document.getElementById('btn-error-close');
+  if (btnErrorClose) btnErrorClose.addEventListener('click', function() {
+    document.getElementById('modal-error').classList.remove('show');
+  });
+  var btnDraftDiscard = document.getElementById('btn-draft-discard');
+  if (btnDraftDiscard) btnDraftDiscard.addEventListener('click', function() {
+    clearDraft();
+    document.getElementById('modal-draft').classList.remove('show');
+  });
+
+  // Location modal
+  var btnLokClose = document.getElementById('btn-lok-close');
+  if (btnLokClose) btnLokClose.addEventListener('click', function() {
+    document.getElementById('lok-modal-overlay').classList.remove('show');
+  });
+  var btnLokDone = document.getElementById('btn-lok-done');
+  if (btnLokDone) btnLokDone.addEventListener('click', function() {
+    document.getElementById('lok-modal-overlay').classList.remove('show');
+  });
+  var lokOverlay = document.getElementById('lok-modal-overlay');
+  if (lokOverlay) lokOverlay.addEventListener('click', function(e) {
+    if (e.target === this) this.classList.remove('show');
+  });
+});
+
+// ── STATUS UI ──
+function updateStatusUI(isActive) {
+  var badges = ['header-status-badge', 'card-status-badge'];
+  var texts = ['header-status-text', 'card-status-text'];
+  badges.forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) { el.className = 'status-badge ' + (isActive ? 'aktif' : 'pasif'); }
+  });
+  texts.forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) el.textContent = isActive ? 'Aktif' : 'Pasif';
+  });
+}
+
+</script>
+</body>
+</html>
