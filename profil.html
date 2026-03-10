@@ -735,6 +735,83 @@
     .dash-grid{grid-template-columns:1fr;}
     .dash-mini-grid{grid-template-columns:1fr 1fr;}
   }
+
+  /* ════ WIZARD ════ */
+  .wizard-intro{position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:500;display:flex;align-items:center;justify-content:center;padding:20px;}
+  .wizard-intro-card{background:white;border-radius:16px;padding:32px 28px;max-width:420px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.15);animation:wizFadeIn 0.4s ease;}
+  .wizard-intro-card h2{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:20px;margin-bottom:6px;color:var(--navy);}
+  .wizard-intro-card .wi-sub{font-size:12px;color:var(--muted);margin-bottom:16px;}
+  .wizard-intro-card p{font-size:14px;color:var(--text);line-height:1.7;margin-bottom:20px;text-align:left;}
+  .wizard-intro-card .wi-hl{font-weight:700;color:var(--navy);}
+  .wizard-intro-btn{background:var(--verm);color:white;border:none;padding:12px 32px;border-radius:10px;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:background 0.2s;width:100%;}
+  .wizard-intro-btn:hover{background:#b84420;}
+  @keyframes wizFadeIn{from{opacity:0;transform:scale(0.95);}to{opacity:1;transform:scale(1);}}
+
+  .wizard-progress{position:sticky;top:60px;z-index:200;background:white;border-bottom:1px solid var(--border);padding:16px 20px;display:flex;align-items:center;justify-content:center;gap:0;}
+  .wiz-step{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:default;}
+  .wiz-step-dot{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:13px;border:2px solid var(--border);color:var(--muted);background:white;transition:all 0.3s;flex-shrink:0;}
+  .wiz-step-label{font-size:10px;font-weight:600;color:var(--muted);text-align:center;white-space:nowrap;transition:color 0.3s;}
+  .wiz-step-line{width:32px;height:2px;background:var(--border);transition:background 0.3s;flex-shrink:0;margin:0 2px;align-self:flex-start;margin-top:15px;}
+  .wiz-step.completed .wiz-step-dot{background:var(--green);border-color:var(--green);color:white;cursor:pointer;}
+  .wiz-step.completed .wiz-step-label{color:var(--green);}
+  .wiz-step.active .wiz-step-dot{background:var(--navy);border-color:var(--navy);color:white;animation:wizPulse 2s ease-in-out infinite;}
+  .wiz-step.active .wiz-step-label{color:var(--navy);font-weight:700;}
+  .wiz-step.locked .wiz-step-dot{opacity:0.4;}
+  .wiz-step.locked .wiz-step-label{opacity:0.4;}
+  .wiz-line-done{background:var(--green);}
+  @keyframes wizPulse{0%,100%{box-shadow:0 0 0 0 rgba(30,45,94,0.3);}50%{box-shadow:0 0 0 8px rgba(30,45,94,0);}}
+
+  .wizard-nav{position:fixed;bottom:0;left:240px;right:0;z-index:200;background:white;border-top:1px solid var(--border);padding:12px 20px;padding-bottom:calc(12px + env(safe-area-inset-bottom,0px));display:flex;align-items:center;justify-content:space-between;max-width:calc(100% - 240px);}
+  .wiz-btn{padding:11px 24px;border-radius:10px;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;border:none;transition:all 0.2s;display:inline-flex;align-items:center;gap:6px;}
+  .wiz-btn-back{background:var(--gray);color:var(--text);}
+  .wiz-btn-back:hover{background:var(--border);}
+  .wiz-btn-next{background:var(--verm);color:white;}
+  .wiz-btn-next:hover{background:#b84420;}
+  .wiz-btn-save{background:var(--green);color:white;}
+  .wiz-btn-save:hover{background:#15803d;}
+
+  .wizard-active .section-card{display:none !important;}
+  .wizard-active .section-card.wiz-visible{display:block !important;animation:wizEnterRight 0.3s ease forwards;}
+  .wizard-active .section-card.wiz-slide-out-left{display:block !important;animation:wizSlideLeft 0.3s ease forwards;}
+  .wizard-active .section-card.wiz-slide-out-right{display:block !important;animation:wizSlideRight 0.3s ease forwards;}
+  .wizard-active .section-card.wiz-enter-left{display:block !important;animation:wizEnterLeft 0.3s ease forwards;}
+  @keyframes wizSlideLeft{from{transform:translateX(0);opacity:1;}to{transform:translateX(-60px);opacity:0;}}
+  @keyframes wizSlideRight{from{transform:translateX(0);opacity:1;}to{transform:translateX(60px);opacity:0;}}
+  @keyframes wizEnterLeft{from{transform:translateX(-60px);opacity:0;}to{transform:translateX(0);opacity:1;}}
+  @keyframes wizEnterRight{from{transform:translateX(60px);opacity:0;}to{transform:translateX(0);opacity:1;}}
+
+  .wizard-active .card-edit-btn,.wizard-active .card-save-btn{display:none !important;}
+  .wizard-active .completion-card{display:none !important;}
+  .wizard-active .cv-hero{display:none !important;}
+  .wizard-active .feature-card{display:none !important;}
+  .wizard-active .save-success{bottom:80px;}
+  .wizard-active .section-card .fields-grid input,.wizard-active .section-card .fields-grid select{pointer-events:auto !important;background:white !important;opacity:1 !important;}
+  .wizard-active .section-card .tag-input-wrap{pointer-events:auto !important;opacity:1 !important;}
+  .wizard-active .section-card .poz-chip,.wizard-active .section-card .chip,.wizard-active .section-card .option-card,.wizard-active .section-card .check-item,.wizard-active .section-card .loc-quick-chip,.wizard-active .section-card .loc-tag,.wizard-active .section-card .btn-add-sehir,.wizard-active .section-card .btn-add-dil,.wizard-active .section-card .btn-add-exp,.wizard-active .section-card .btn-add-egitim{pointer-events:auto !important;opacity:1 !important;}
+  .wizard-active #main-dashboard{padding-bottom:80px;}
+
+  .ilk-deneyim-card{background:var(--navy-light);border:1.5px solid rgba(30,45,94,0.2);border-radius:14px;padding:24px 20px;text-align:center;margin-bottom:12px;}
+  .ilk-deneyim-card h3{font-family:'Bricolage Grotesque',sans-serif;font-size:15px;font-weight:800;color:var(--navy);margin-bottom:6px;}
+  .ilk-deneyim-card p{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:16px;}
+  .ilk-deneyim-label{display:inline-flex;align-items:center;gap:10px;padding:11px 20px;background:white;border:1.5px solid var(--border);border-radius:10px;cursor:pointer;font-size:13px;font-weight:600;color:var(--text);transition:all 0.2s;user-select:none;}
+  .ilk-deneyim-label:hover{border-color:var(--navy);}
+  .ilk-deneyim-label input[type="checkbox"]{display:none;}
+  .ilk-deneyim-label .ide-check{width:18px;height:18px;border:2px solid var(--border);border-radius:5px;display:flex;align-items:center;justify-content:center;transition:all 0.2s;flex-shrink:0;}
+  .ilk-deneyim-label input:checked~.ide-check{background:var(--navy);border-color:var(--navy);}
+  .ilk-deneyim-label input:checked~.ide-text{color:var(--navy);}
+  .ilk-deneyim-or{display:flex;align-items:center;gap:12px;margin:16px 0 4px;color:var(--muted);font-size:12px;font-weight:600;}
+  .ilk-deneyim-or::before,.ilk-deneyim-or::after{content:'';flex:1;height:1px;background:var(--border);}
+
+  @media(max-width:768px){
+    .wiz-step-label{display:none;}
+    .wiz-step-dot{width:28px;height:28px;font-size:11px;}
+    .wiz-step-line{width:18px;margin-top:13px;}
+    .wizard-progress{padding:12px 16px;}
+    .wizard-nav{left:0;max-width:100%;padding:10px 16px;padding-bottom:calc(10px + env(safe-area-inset-bottom,0px));}
+    .wiz-btn{padding:10px 18px;font-size:13px;}
+    .wizard-intro-card{padding:24px 20px;margin:0 12px;}
+    .wizard-intro-card h2{font-size:18px;}
+  }
 </style>
 </head>
 <body>
@@ -1246,7 +1323,45 @@
   </div><!-- /dash-content -->
 </main><!-- /panel-genel -->
 
+<!-- WIZARD INTRO -->
+<div class="wizard-intro" id="wizard-intro" style="display:none;">
+  <div class="wizard-intro-card">
+    <h2>Profilini Eksiksiz Doldur</h2>
+    <p class="wi-sub">5 adımda tamamla, doğru fırsatlarla eşleş</p>
+    <p>Girdiğin bilgiler, <span class="wi-hl">işverenler tarafından sana en uygun pozisyonları bulmak için</span> kullanılacak.<br><br>Deneyimlerin, dil bilgin, maaş beklentin ve lokasyon tercihlerini eksiksiz doldurman, <span class="wi-hl">doğru fırsatlarla eşleşmeni</span> sağlar.<br><br>Bilgilerini istediğin zaman güncelleyebilirsin.</p>
+    <button class="wizard-intro-btn" onclick="dismissWizardIntro()">Başlayalım →</button>
+  </div>
+</div>
+
 <main class="main panel" id="main-dashboard" data-panel="profil">
+
+  <!-- WIZARD PROGRESS BAR -->
+  <div class="wizard-progress" id="wizard-progress" style="display:none;">
+    <div class="wiz-step" data-step="0" onclick="wizGoToStep(0)">
+      <div class="wiz-step-dot">1</div>
+      <div class="wiz-step-label">Kişisel</div>
+    </div>
+    <div class="wiz-step-line"></div>
+    <div class="wiz-step" data-step="1" onclick="wizGoToStep(1)">
+      <div class="wiz-step-dot">2</div>
+      <div class="wiz-step-label">Kariyer</div>
+    </div>
+    <div class="wiz-step-line"></div>
+    <div class="wiz-step" data-step="2" onclick="wizGoToStep(2)">
+      <div class="wiz-step-dot">3</div>
+      <div class="wiz-step-label">Eğitim</div>
+    </div>
+    <div class="wiz-step-line"></div>
+    <div class="wiz-step" data-step="3" onclick="wizGoToStep(3)">
+      <div class="wiz-step-dot">4</div>
+      <div class="wiz-step-label">Tercihler</div>
+    </div>
+    <div class="wiz-step-line"></div>
+    <div class="wiz-step" data-step="4" onclick="wizGoToStep(4)">
+      <div class="wiz-step-dot">5</div>
+      <div class="wiz-step-label">Lokasyon</div>
+    </div>
+  </div>
 
   <!-- Tamamlanma -->
   <div class="completion-card">
@@ -1386,6 +1501,18 @@
           <p style="font-size:15px;font-weight:700;color:white;margin-bottom:4px;" class="cgb-goal">Store Manager</p>
           <p style="font-size:12px;color:rgba(255,255,255,0.5);line-height:1.5;">Hedefin kaydedildi ✓ — Profili tamamla, CV'ni ekle.</p>
         </div>
+      </div>
+
+      <!-- İLK DENEYİM -->
+      <div class="ilk-deneyim-card" id="ilk-deneyim-card" style="display:none;grid-column:1/-1;">
+        <h3>İlk Adımını At!</h3>
+        <p>Henüz iş deneyimin yoksa endişelenme — herkesin bir ilk adımı vardır. Bu fırsatla kariyer yolculuğuna başla.</p>
+        <label class="ilk-deneyim-label">
+          <input type="checkbox" id="cb-ilk-deneyim" onchange="toggleIlkDeneyim(this)">
+          <span class="ide-check"></span>
+          <span class="ide-text">Henüz iş deneyimim yok, ilk adımımı atmak istiyorum</span>
+        </label>
+        <div class="ilk-deneyim-or">veya</div>
       </div>
 
       <!-- DENEYİMLER -->
@@ -1570,6 +1697,12 @@
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
       Tüm şehirler — 81 il
     </button>
+  </div>
+
+  <!-- WIZARD NAV -->
+  <div class="wizard-nav" id="wizard-nav" style="display:none;">
+    <button class="wiz-btn wiz-btn-back" id="wiz-btn-back" onclick="wizBack()">← Geri</button>
+    <button class="wiz-btn wiz-btn-next" id="wiz-btn-next" onclick="wizNext()">İleri →</button>
   </div>
 
   <!-- PREMIUM -->
@@ -2071,6 +2204,172 @@ window.addEventListener('resize', handleResize);
 document.addEventListener('DOMContentLoaded', handleResize);
 let currentUser=null,markaList=[],tercihMarkaList=[],dilList=[],parsedData=null;
 let selectedPozisyonlar=[],selectedSehirler=[],selectedIlceler={},calismaTipi='',segmentler=[],musaitlik='';
+
+// ── WIZARD STATE ──
+var WIZARD_STEPS=['kisisel','kariyer','egitim','tercihler','lokasyon'];
+var WIZARD_LABELS=['Kişisel','Kariyer','Eğitim','Tercihler','Lokasyon'];
+var wizCurrentStep=0;
+var wizMaxReached=0;
+var wizIsReturningUser=false;
+var ilkDeneyimChecked=false;
+
+function initWizard(isReturning){
+  wizIsReturningUser=isReturning;
+  var dashboard=document.getElementById('main-dashboard');
+  var progressBar=document.getElementById('wizard-progress');
+  var navBar=document.getElementById('wizard-nav');
+  if(!dashboard||!progressBar||!navBar)return;
+  dashboard.classList.add('wizard-active');
+  progressBar.style.display='flex';
+  navBar.style.display='flex';
+  // Always edit mode in wizard
+  dashboard.querySelectorAll('.section-card').forEach(function(c){c.classList.remove('card-view-mode');});
+  if(isReturning){
+    wizMaxReached=WIZARD_STEPS.length-1;
+    var savedStep=localStorage.getItem('ht_wizard_step');
+    wizCurrentStep=savedStep?parseInt(savedStep):0;
+    if(wizCurrentStep<0||wizCurrentStep>=WIZARD_STEPS.length)wizCurrentStep=0;
+  }else{
+    wizCurrentStep=0;wizMaxReached=0;
+    var intro=document.getElementById('wizard-intro');
+    if(intro)intro.style.display='flex';
+  }
+  updateIlkDeneyimVisibility();
+  wizRenderStep(false);
+}
+function dismissWizardIntro(){
+  var intro=document.getElementById('wizard-intro');
+  if(intro){intro.style.opacity='0';intro.style.transition='opacity 0.3s';setTimeout(function(){intro.style.display='none';},300);}
+  // Switch to profil panel if not already there
+  switchPanel('profil');
+}
+function wizRenderStep(animate,direction){
+  var cards=document.querySelectorAll('#main-dashboard .section-card[data-card]');
+  var progressSteps=document.querySelectorAll('.wiz-step');
+  // Progress bar
+  progressSteps.forEach(function(ps,i){
+    ps.classList.remove('completed','active','locked');
+    var dot=ps.querySelector('.wiz-step-dot');
+    if(i<wizCurrentStep||(wizIsReturningUser&&i!==wizCurrentStep&&i<=wizMaxReached)){
+      ps.classList.add('completed');
+      dot.textContent='\u2713';
+    }else if(i===wizCurrentStep){
+      ps.classList.add('active');
+      dot.textContent=''+(i+1);
+    }else if(i<=wizMaxReached){
+      ps.classList.add('completed');
+      dot.textContent='\u2713';
+    }else{
+      ps.classList.add('locked');
+      dot.textContent=''+(i+1);
+    }
+  });
+  // Lines
+  var lines=document.querySelectorAll('#wizard-progress .wiz-step-line');
+  lines.forEach(function(line,i){
+    if(i<wizCurrentStep||(wizIsReturningUser&&i<wizMaxReached)){line.classList.add('wiz-line-done');}
+    else{line.classList.remove('wiz-line-done');}
+  });
+  // Cards
+  var targetCard=WIZARD_STEPS[wizCurrentStep];
+  cards.forEach(function(card){
+    var cardType=card.getAttribute('data-card');
+    card.classList.remove('wiz-visible','wiz-slide-out-left','wiz-slide-out-right','wiz-enter-left');
+    if(cardType===targetCard){
+      if(animate){
+        card.classList.add('wiz-visible');
+        if(direction==='next'){card.style.animation='wizEnterRight 0.3s ease forwards';}
+        else{card.classList.add('wiz-enter-left');card.classList.add('wiz-visible');}
+        setTimeout(function(){card.style.animation='';card.classList.remove('wiz-enter-left');},350);
+      }else{
+        card.classList.add('wiz-visible');
+      }
+    }
+  });
+  // Nav
+  var backBtn=document.getElementById('wiz-btn-back');
+  var nextBtn=document.getElementById('wiz-btn-next');
+  if(backBtn)backBtn.style.visibility=wizCurrentStep===0?'hidden':'visible';
+  if(nextBtn){
+    if(wizCurrentStep===WIZARD_STEPS.length-1){
+      nextBtn.textContent='Kaydet \u2713';
+      nextBtn.className='wiz-btn wiz-btn-save';
+      nextBtn.onclick=function(){wizSave();};
+    }else{
+      nextBtn.textContent='\u0130leri \u2192';
+      nextBtn.className='wiz-btn wiz-btn-next';
+      nextBtn.onclick=function(){wizNext();};
+    }
+  }
+  window.scrollTo({top:0,behavior:'smooth'});
+  localStorage.setItem('ht_wizard_step',''+wizCurrentStep);
+}
+function wizNext(){
+  var currentCardType=WIZARD_STEPS[wizCurrentStep];
+  var currentCard=document.querySelector('.section-card[data-card="'+currentCardType+'"]');
+  // Kariyer: ilk deneyim or at least 1 exp
+  if(currentCardType==='kariyer'){
+    if(!ilkDeneyimChecked&&deneyimler.length===0){
+      showCardValidationMsg(currentCard,[{el:document.getElementById('ilk-deneyim-card')||currentCard,label:'En az bir deneyim ekleyin veya ilk deneyim kutusunu i\u015faretleyin'}]);
+      return;
+    }
+  }
+  var result=validateCard(currentCard);
+  if(!result.ok){showCardValidationMsg(currentCard,result.missing);return;}
+  if(wizCurrentStep<WIZARD_STEPS.length-1){
+    var oldCard=currentCard;
+    if(oldCard){oldCard.classList.add('wiz-slide-out-left');setTimeout(function(){oldCard.classList.remove('wiz-visible','wiz-slide-out-left');},300);}
+    wizCurrentStep++;
+    if(wizCurrentStep>wizMaxReached)wizMaxReached=wizCurrentStep;
+    setTimeout(function(){wizRenderStep(true,'next');},100);
+  }
+}
+function wizBack(){
+  if(wizCurrentStep>0){
+    var oldCard=document.querySelector('.section-card[data-card="'+WIZARD_STEPS[wizCurrentStep]+'"]');
+    if(oldCard){oldCard.classList.add('wiz-slide-out-right');setTimeout(function(){oldCard.classList.remove('wiz-visible','wiz-slide-out-right');},300);}
+    wizCurrentStep--;
+    setTimeout(function(){wizRenderStep(true,'back');},100);
+  }
+}
+function wizGoToStep(idx){
+  if(idx>wizMaxReached&&!wizIsReturningUser)return;
+  if(idx===wizCurrentStep)return;
+  var dir=idx>wizCurrentStep?'next':'back';
+  var oldCard=document.querySelector('.section-card[data-card="'+WIZARD_STEPS[wizCurrentStep]+'"]');
+  if(oldCard){oldCard.classList.add(dir==='next'?'wiz-slide-out-left':'wiz-slide-out-right');setTimeout(function(){oldCard.classList.remove('wiz-visible','wiz-slide-out-left','wiz-slide-out-right');},300);}
+  wizCurrentStep=idx;
+  setTimeout(function(){wizRenderStep(true,dir);},100);
+}
+async function wizSave(){
+  var ok=await saveProfile();
+  if(ok){
+    wizIsReturningUser=true;
+    wizMaxReached=WIZARD_STEPS.length-1;
+    wizRenderStep(false);
+    localStorage.removeItem('ht_wizard_step');
+  }
+}
+function toggleIlkDeneyim(cb){
+  ilkDeneyimChecked=cb.checked;
+  var expField=document.querySelector('.section-card[data-card="kariyer"] .field.field-full');
+  var addBtn=document.getElementById('btn-add-exp');
+  if(cb.checked){
+    if(expField)expField.style.display='none';
+    deneyimler=[];
+    var ec=document.getElementById('deneyim-container');
+    if(ec)ec.textContent='';
+  }else{
+    if(expField)expField.style.display='';
+    if(addBtn)addBtn.style.display='';
+  }
+}
+function updateIlkDeneyimVisibility(){
+  var card=document.getElementById('ilk-deneyim-card');
+  if(!card)return;
+  if(deneyimler.length===0){card.style.display='block';}
+  else{card.style.display='none';ilkDeneyimChecked=false;var cb=document.getElementById('cb-ilk-deneyim');if(cb)cb.checked=false;}
+}
 
 // ── 81 İL VERİSİ ──
 const TUR_ILLER = {
@@ -2645,12 +2944,21 @@ var AYRILMA_NEDENLERI=['Terfi','İstifa','Kariyer Geçişi','İşten Çıkarılm
 
 function addExperience(data){
   if(!data&&deneyimler.length>=15)return;
+  // Uncheck ilk deneyim when adding experience
+  if(ilkDeneyimChecked){
+    ilkDeneyimChecked=false;
+    var cbIlk=document.getElementById('cb-ilk-deneyim');
+    if(cbIlk)cbIlk.checked=false;
+    var expField=document.querySelector('.section-card[data-card="kariyer"] .field.field-full');
+    if(expField)expField.style.display='';
+  }
   var exp=data||{id:Date.now(),sirket:'',pozisyon:'',baslangic_ay:0,baslangic_yil:0,bitis_ay:0,bitis_yil:0,devam_ediyor:false,ayrilma_nedeni:''};
   if(!exp.id)exp.id=Date.now()+Math.floor(Math.random()*1000);
   deneyimler.push(exp);
   renderExperiences();
   calculateTotalExperience();
   updateAddExpBtn();
+  updateIlkDeneyimVisibility();
 }
 
 function updateAddExpBtn(){
@@ -3059,6 +3367,8 @@ function saveCard(btn){
   }
 }
 function setAllCardsViewMode(){
+  // Skip in wizard mode — wizard is always edit mode
+  if(document.getElementById('main-dashboard').classList.contains('wizard-active'))return;
   var cards=document.querySelectorAll('#main-dashboard .section-card');
   cards.forEach(function(c){
     if(c.querySelector('.card-edit-btn')){
@@ -3231,6 +3541,13 @@ async function loadProfile(){
     syncDashboard(data);
     // Profil yüklendiyse tüm kartları görüntüleme modunda başlat
     setAllCardsViewMode();
+    // ── WIZARD: returning user ──
+    if(data.ilk_deneyim){
+      ilkDeneyimChecked=true;
+      var cbIlk=document.getElementById('cb-ilk-deneyim');
+      if(cbIlk){cbIlk.checked=true;toggleIlkDeneyim(cbIlk);}
+    }
+    initWizard(true);
   }else{
     const initials=fallbackName.substring(0,2).toUpperCase();
     setAvatarInitials(initials);
@@ -3240,8 +3557,9 @@ async function loadProfile(){
     updateStatusUI(true);
     updateCompletion(null);
     syncDashboard(null);
-    // Empty profile → show form directly
+    // ── WIZARD: new user ──
     switchPanel('profil');
+    initWizard(false);
   }
 }
 
@@ -3783,21 +4101,27 @@ async function saveProfile(){
   // Eğitim
   reqVal('f-egitim-seviye','E\u011fitim Seviyesi');reqVal('f-mezun-yil','Mezuniyet Y\u0131l\u0131');
   reqVal('f-okul','Okul');reqVal('f-bolum','B\u00f6l\u00fcm');
-  // Kariyer — deneyim kartları
-  document.querySelectorAll('.exp-card').forEach(function(ec){
-    var s=ec.querySelector('.exp-sirket');var p=ec.querySelector('.exp-pozisyon');
-    if(s&&!s.value.trim()){valErrors.push({el:s,label:'\u015eirket'});s.style.borderColor='#C94E28';}
-    if(p&&!p.value.trim()){valErrors.push({el:p,label:'Pozisyon'});p.style.borderColor='#C94E28';}
-    var bAy=ec.querySelector('.exp-b-ay');var bYil=ec.querySelector('.exp-b-yil');
-    if(bAy&&bAy.value==='0'){valErrors.push({el:bAy,label:'Ba\u015flang\u0131\u00e7 Ay'});bAy.style.borderColor='#C94E28';}
-    if(bYil&&bYil.value==='0'){valErrors.push({el:bYil,label:'Ba\u015flang\u0131\u00e7 Y\u0131l'});bYil.style.borderColor='#C94E28';}
-    var cb=ec.querySelector('.exp-devam-cb');
-    if(cb&&!cb.checked){
-      var eAy=ec.querySelector('.exp-e-ay');var eYil=ec.querySelector('.exp-e-yil');
-      if(eAy&&eAy.value==='0'){valErrors.push({el:eAy,label:'Biti\u015f Ay'});eAy.style.borderColor='#C94E28';}
-      if(eYil&&eYil.value==='0'){valErrors.push({el:eYil,label:'Biti\u015f Y\u0131l'});eYil.style.borderColor='#C94E28';}
+  // Kariyer — deneyim kartları (ilk deneyim seçili değilse zorunlu)
+  if(!ilkDeneyimChecked){
+    if(deneyimler.length===0){
+      var kc=document.querySelector('.section-card[data-card="kariyer"]');
+      if(kc){valErrors.push({el:kc,label:'En az bir deneyim veya ilk deneyim se\u00e7imi'});}
     }
-  });
+    document.querySelectorAll('.exp-card').forEach(function(ec){
+      var s=ec.querySelector('.exp-sirket');var p=ec.querySelector('.exp-pozisyon');
+      if(s&&!s.value.trim()){valErrors.push({el:s,label:'\u015eirket'});s.style.borderColor='#C94E28';}
+      if(p&&!p.value.trim()){valErrors.push({el:p,label:'Pozisyon'});p.style.borderColor='#C94E28';}
+      var bAy=ec.querySelector('.exp-b-ay');var bYil=ec.querySelector('.exp-b-yil');
+      if(bAy&&bAy.value==='0'){valErrors.push({el:bAy,label:'Ba\u015flang\u0131\u00e7 Ay'});bAy.style.borderColor='#C94E28';}
+      if(bYil&&bYil.value==='0'){valErrors.push({el:bYil,label:'Ba\u015flang\u0131\u00e7 Y\u0131l'});bYil.style.borderColor='#C94E28';}
+      var cb=ec.querySelector('.exp-devam-cb');
+      if(cb&&!cb.checked){
+        var eAy=ec.querySelector('.exp-e-ay');var eYil=ec.querySelector('.exp-e-yil');
+        if(eAy&&eAy.value==='0'){valErrors.push({el:eAy,label:'Biti\u015f Ay'});eAy.style.borderColor='#C94E28';}
+        if(eYil&&eYil.value==='0'){valErrors.push({el:eYil,label:'Biti\u015f Y\u0131l'});eYil.style.borderColor='#C94E28';}
+      }
+    });
+  }
   // Tercihler
   if(!selectedPozisyonlar||!selectedPozisyonlar.length){
     var pg=document.getElementById('pozisyon-grid');
@@ -3839,7 +4163,7 @@ async function saveProfile(){
       valErrors.forEach(function(e){e.el.style.borderColor='';e.el.style.outline='';e.el.style.outlineOffset='';});
       document.querySelectorAll('.field-error').forEach(function(f){f.classList.remove('field-error');});
     },5000);
-    return;
+    return false;
   }
   // Kaydetme başladı
   // Sync deneyimler from DOM before save
@@ -3874,10 +4198,11 @@ async function saveProfile(){
     adres_il:document.getElementById('f-adres-il')?document.getElementById('f-adres-il').value:'',
     adres_ilce:document.getElementById('f-adres-ilce')?document.getElementById('f-adres-ilce').value:'',
     askerlik_durumu:document.getElementById('f-askerlik')?document.getElementById('f-askerlik').value:'',
+    ilk_deneyim:ilkDeneyimChecked,
   };
   let {error}=await getSupa().from('candidates').upsert(profileData,{onConflict:'user_id'});
   if(error){
-    console.error('Supabase upsert error:',error);return;
+    console.error('Supabase upsert error:',error);return false;
   }
   successEl.style.display='flex';
   setTimeout(()=>{successEl.style.display='none';},3000);
@@ -3885,6 +4210,7 @@ async function saveProfile(){
   if(profileData.full_name&&nameHeader)nameHeader.textContent=profileData.full_name;
   updateCompletion(profileData);
   syncDashboard(profileData);
+  return true;
 }
 
 async function signOut(){await getSupa().auth.signOut();window.location.href='giris.html';}
