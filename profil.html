@@ -209,11 +209,13 @@
   .exp-date-row{display:flex;gap:6px;}
   .exp-date-row select{flex:1;padding:6px 8px !important;border:1px solid var(--border) !important;border-radius:6px !important;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px !important;font-weight:600;color:var(--text);background:#fff !important;cursor:pointer;outline:none;width:auto !important;}
   .exp-date-row select:focus{border-color:var(--navy) !important;}
-  .exp-halen-row{grid-column:1/-1;display:flex;align-items:center;gap:5px;cursor:pointer;padding:0 2px;}
-  .exp-halen-row input[type="checkbox"]{-webkit-appearance:none;appearance:none;width:16px;height:16px;border:1.5px solid var(--border);border-radius:3px;background:#fff;cursor:pointer;margin:0;flex-shrink:0;position:relative;transition:all .15s;}
-  .exp-halen-row input[type="checkbox"]:checked{background:var(--green);border-color:var(--green);}
-  .exp-halen-row input[type="checkbox"]:checked::after{content:'';position:absolute;left:4.5px;top:1px;width:5px;height:9px;border:solid #fff;border-width:0 2.5px 2.5px 0;transform:rotate(45deg);}
-  .exp-halen-row label{font-size:12px;font-weight:500;color:var(--text);cursor:pointer;user-select:none;text-transform:none !important;letter-spacing:0 !important;}
+  .exp-halen-row{grid-column:1/-1;display:flex;align-items:center;gap:6px;cursor:pointer;padding:0 2px;}
+  .exp-halen-row input[type="checkbox"]{position:absolute;opacity:0;width:0;height:0;pointer-events:none;}
+  .exp-halen-row .cb-icon{width:18px;height:18px;border-radius:4px;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;background:#fff;}
+  .exp-halen-row .cb-icon svg{opacity:0;transition:opacity .15s;}
+  .exp-halen-row input:checked~.cb-icon{background:var(--green);border-color:var(--green);}
+  .exp-halen-row input:checked~.cb-icon svg{opacity:1;}
+  .exp-halen-row .cb-label{font-size:12px;font-weight:500;color:var(--text);user-select:none;text-transform:none !important;letter-spacing:0 !important;}
   .exp-date-row select:disabled{background:var(--gray) !important;color:var(--muted) !important;cursor:default;opacity:0.5;}
   .exp-ayrilma-field{display:flex;flex-direction:column;gap:3px;}
   .exp-ayrilma-field.hidden{display:none;}
@@ -2797,11 +2799,14 @@ function buildExpCard(exp){
   inp2.addEventListener('input',function(){syncExpFromDOM(exp.id);});
   f2.appendChild(inp2);grid.appendChild(f2);
 
-  // Halen çalışıyorum row (full width, between pozisyon and dates)
-  var halenRow=document.createElement('div');halenRow.className='exp-halen-row';
-  var cb=document.createElement('input');cb.type='checkbox';cb.className='exp-devam-cb';cb.id='halen-'+exp.id;cb.checked=exp.devam_ediyor;
+  // Halen çalışıyorum row — label wraps everything for click
+  var halenRow=document.createElement('label');halenRow.className='exp-halen-row';
+  var cb=document.createElement('input');cb.type='checkbox';cb.className='exp-devam-cb';cb.checked=exp.devam_ediyor;
   halenRow.appendChild(cb);
-  var hLbl=document.createElement('label');hLbl.setAttribute('for','halen-'+exp.id);hLbl.textContent='Halen \u00e7al\u0131\u015f\u0131yorum';
+  var cbIcon=document.createElement('span');cbIcon.className='cb-icon';
+  cbIcon.innerHTML='<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6L5 8.5L9.5 3.5" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  halenRow.appendChild(cbIcon);
+  var hLbl=document.createElement('span');hLbl.className='cb-label';hLbl.textContent='Halen \u00e7al\u0131\u015f\u0131yorum';
   halenRow.appendChild(hLbl);
   grid.appendChild(halenRow);
 
