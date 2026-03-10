@@ -331,18 +331,33 @@ body{font-family:'Plus Jakarta Sans',sans-serif;color:var(--text);background:#ff
 
 /* ── AUTOCOMPLETE ── */
 .ac-wrap{position:relative;width:100%;}
-.ac-list{
+.ac-list,.autocomplete-list{
   display:none;position:absolute;top:100%;left:0;right:0;z-index:50;
   background:white;border:1.5px solid var(--border);border-radius:var(--radius-sm);
   max-height:220px;overflow-y:auto;box-shadow:var(--shadow-lg);
 }
 .ac-list.show{display:block;}
-.ac-item{
+.ac-item,.autocomplete-item{
   padding:10px 12px;cursor:pointer;font-size:13px;display:flex;
   align-items:center;justify-content:space-between;transition:background 0.1s;
 }
-.ac-item:hover{background:var(--gray);}
+.ac-item:hover,.autocomplete-item:hover{background:var(--gray);}
 .ac-item-sub{font-size:11px;color:var(--muted);}
+
+/* ── DYNAMIC ROWS (JS uses .dynamic-row) ── */
+.dynamic-row{
+  padding:10px;background:var(--gray);border:1px solid var(--border);
+  border-radius:var(--radius-sm);margin-bottom:8px;position:relative;
+}
+
+/* ── CHIPS ROW ── */
+.chips-row{display:flex;flex-wrap:wrap;gap:8px;}
+
+/* ── FIELD REQUIRED MARKER ── */
+.field-req{color:var(--red);font-weight:700;}
+
+/* ── FIELD ERROR ── */
+.field-error{border-color:var(--red)!important;}
 
 /* ── PROFILE SUMMARY CARD ── */
 .profile-summary{
@@ -1050,7 +1065,22 @@ body{font-family:'Plus Jakarta Sans',sans-serif;color:var(--text);background:#ff
       <input type="email" id="settings-email" disabled>
     </div>
   </div>
-  <div style="margin-top:24px;">
+
+  <div class="card" style="margin-top:16px;">
+    <div class="card-title">Sifre Degistir</div>
+    <div class="field">
+      <label for="settings-new-pw">Yeni Sifre</label>
+      <input type="password" id="settings-new-pw" placeholder="En az 6 karakter">
+    </div>
+    <div class="field">
+      <label for="settings-confirm-pw">Yeni Sifre (Tekrar)</label>
+      <input type="password" id="settings-confirm-pw" placeholder="Sifreyi tekrarlayin">
+    </div>
+    <button class="btn btn-primary btn-sm" id="btn-change-pw">Sifreyi Guncelle</button>
+    <div id="pw-msg" style="font-size:12px;margin-top:8px;display:none;"></div>
+  </div>
+
+  <div style="margin-top:24px;display:flex;gap:12px;">
     <button class="btn btn-secondary" id="btn-signout-settings">Cikis Yap</button>
   </div>
 </main>
@@ -1667,6 +1697,38 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('modal-error').classList.remove('show');
     saveProfileRPC();
   });
+
+  // Password change
+  var btnChangePw = document.getElementById('btn-change-pw');
+  if (btnChangePw) btnChangePw.addEventListener('click', async function() {
+    var newPw = val('settings-new-pw');
+    var confirmPw = val('settings-confirm-pw');
+    var pwMsg = document.getElementById('pw-msg');
+    if (!newPw || newPw.length < 6) {
+      if (pwMsg) { pwMsg.textContent = 'Sifre en az 6 karakter olmali.'; pwMsg.style.color = 'var(--red)'; pwMsg.style.display = 'block'; }
+      return;
+    }
+    if (newPw !== confirmPw) {
+      if (pwMsg) { pwMsg.textContent = 'Sifreler eslesmedi.'; pwMsg.style.color = 'var(--red)'; pwMsg.style.display = 'block'; }
+      return;
+    }
+    btnChangePw.disabled = true;
+    var res = await supabase.auth.updateUser({ password: newPw });
+    if (res.error) {
+      if (pwMsg) { pwMsg.textContent = res.error.message; pwMsg.style.color = 'var(--red)'; pwMsg.style.display = 'block'; }
+    } else {
+      if (pwMsg) { pwMsg.textContent = 'Sifre basariyla guncellendi!'; pwMsg.style.color = 'var(--green)'; pwMsg.style.display = 'block'; }
+      document.getElementById('settings-new-pw').value = '';
+      document.getElementById('settings-confirm-pw').value = '';
+    }
+    btnChangePw.disabled = false;
+  });
+
+  // CV generation buttons
+  var btnGenCV = document.getElementById('btn-generate-cv');
+  if (btnGenCV) btnGenCV.addEventListener('click', generateCV);
+  var btnGenCVDash = document.getElementById('btn-gen-cv');
+  if (btnGenCVDash) btnGenCVDash.addEventListener('click', generateCV);
 
   // Draft resume button
   var btnDraftResume = document.getElementById('btn-draft-resume');
@@ -2907,6 +2969,8 @@ function updateDashboardSummary(profile, experiences) {
     var psRole = document.getElementById('ps-role');
     if (psRole) psRole.textContent = (latest.pozisyon || '') + (latest.sirket_adi ? ' @ ' + latest.sirket_adi : '');
   }
+  // Update completion
+  updateCompletionUI();
 }
 
 // ═══════════════════════════════════════════════════
@@ -2989,6 +3053,235 @@ async function loadProfileFromDB() {
       };
     })
   };
+}
+
+// ═══════════════════════════════════════════════════
+// TASK 13: DASHBOARD + PROFILE COMPLETION
+// ═══════════════════════════════════════════════════
+
+function calculateCompletion() {
+  var score = 0, total = 0;
+  // Profile fields (40 points)
+  total += 10; if (val('f-adsoyad')) score += 10;
+  total += 5; if (val('f-telefon')) score += 5;
+  total += 5; if (val('f-cinsiyet')) score += 5;
+  total += 5; if (val('f-dogumyili')) score += 5;
+  total += 10; if (val('f-adresil')) score += 10;
+  total += 5; if (val('f-linkedin')) score += 5;
+  // Experiences (20 points)
+  total += 20;
+  var cbNoExp = document.getElementById('cb-no-experience');
+  if (cbNoExp && cbNoExp.checked) { score += 20; }
+  else if (document.querySelectorAll('.exp-card').length > 0 && val(document.querySelector('.exp-card').id + '-sirket')) { score += 20; }
+  // Education (10 points)
+  total += 10;
+  if (document.querySelectorAll('#edu-rows-container .dynamic-row').length > 0) score += 10;
+  // Languages (10 points)
+  total += 10;
+  if (document.querySelectorAll('#lang-rows-container .dynamic-row').length > 0) score += 10;
+  // Preferences (10 points)
+  total += 10;
+  if (selectedMusaitlik || selectedCalismaTipleri.length > 0) score += 10;
+  // Locations (10 points)
+  total += 10;
+  if (Object.keys(selectedLocations).length > 0) score += 10;
+
+  return Math.round((score / total) * 100);
+}
+
+function updateCompletionUI() {
+  var pct = calculateCompletion();
+  var pctEl = document.getElementById('completion-pct');
+  if (pctEl) pctEl.textContent = pct + '%';
+  // Animate SVG circle
+  var circle = document.getElementById('progress-circle');
+  if (circle) {
+    var circumference = 213.63; // 2 * PI * 34
+    var offset = circumference - (pct / 100) * circumference;
+    circle.style.strokeDashoffset = offset;
+    circle.style.transition = 'stroke-dashoffset 0.8s ease';
+  }
+  var titleEl = document.getElementById('completion-title');
+  if (titleEl) titleEl.textContent = pct >= 100 ? 'Profil Tamamlandi!' : 'Profilini Tamamla';
+}
+
+// ═══════════════════════════════════════════════════
+// TASK 14: CV GENERATION (jsPDF)
+// ═══════════════════════════════════════════════════
+
+function generateCV() {
+  var jsPDF = window.jspdf.jsPDF;
+  var doc = new jsPDF({ unit: 'mm', format: 'a4' });
+  var W = 210, M = 18, cW = W - 2 * M, Y = 0;
+
+  // Header — navy bar
+  doc.setFillColor(30, 45, 94);
+  doc.rect(0, 0, W, 42, 'F');
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(20);
+  doc.setFont('helvetica', 'bold');
+  var isim = val('f-adsoyad') || 'Ad Soyad';
+  doc.text(isim, M, 20);
+
+  // Contact info
+  doc.setFontSize(11);
+  doc.setFont('helvetica', 'normal');
+  var tel = val('f-telefon');
+  var email = currentUser ? currentUser.email : '';
+  var linkedin = val('f-linkedin');
+  var contact = [];
+  if (tel) contact.push(tel);
+  if (email) contact.push(email);
+  if (contact.length) doc.text(contact.join(' | '), M, 28);
+
+  var city = val('f-adresil');
+  if (city) doc.text(city, M, 35);
+
+  Y = 50;
+  doc.setTextColor(0, 0, 0);
+
+  // Experiences
+  var exps = collectExperiences();
+  if (exps.length > 0) {
+    doc.setFontSize(13);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(30, 45, 94);
+    doc.text('Deneyimler', M, Y);
+    Y += 2;
+    doc.setDrawColor(30, 45, 94);
+    doc.setLineWidth(0.5);
+    doc.line(M, Y, M + cW, Y);
+    Y += 6;
+    doc.setFontSize(10);
+    doc.setTextColor(0, 0, 0);
+    exps.forEach(function(e) {
+      if (Y > 265) { doc.addPage(); Y = 20; }
+      doc.setFont('helvetica', 'bold');
+      doc.text((e.sirket_adi || '') + (e.pozisyon ? ' - ' + e.pozisyon : ''), M, Y);
+      var tarih = '';
+      if (e.baslangic_yil) {
+        tarih = (e.baslangic_ay || '') + ' ' + e.baslangic_yil + ' - ';
+        tarih += e.devam_ediyor ? 'Devam Ediyor' : ((e.bitis_ay || '') + ' ' + (e.bitis_yil || ''));
+      }
+      if (tarih) {
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(120, 120, 120);
+        doc.text(tarih, M + cW, Y, { align: 'right' });
+        doc.setTextColor(0, 0, 0);
+      }
+      Y += 5;
+      if (e.departman || e.segment) {
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(9);
+        doc.text([e.departman, e.segment].filter(Boolean).join(' | '), M, Y);
+        Y += 4;
+        doc.setFontSize(10);
+      }
+      Y += 3;
+    });
+    Y += 4;
+  }
+
+  // Education
+  var edus = collectEducation();
+  if (edus.length > 0) {
+    if (Y > 265) { doc.addPage(); Y = 20; }
+    doc.setFontSize(13);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(30, 45, 94);
+    doc.text('Egitim', M, Y);
+    Y += 2;
+    doc.setDrawColor(30, 45, 94);
+    doc.setLineWidth(0.5);
+    doc.line(M, Y, M + cW, Y);
+    Y += 6;
+    doc.setFontSize(10);
+    doc.setTextColor(0, 0, 0);
+    edus.forEach(function(e) {
+      doc.setFont('helvetica', 'bold');
+      doc.text((e.okul_adi || '') + (e.bolum ? ' - ' + e.bolum : ''), M, Y);
+      if (e.mezuniyet_yili) {
+        doc.setFont('helvetica', 'normal');
+        doc.text(e.mezuniyet_yili, M + cW, Y, { align: 'right' });
+      }
+      Y += 5;
+      if (e.seviye) { doc.setFont('helvetica', 'normal'); doc.text(e.seviye, M, Y); Y += 4; }
+      Y += 2;
+    });
+    Y += 4;
+  }
+
+  // Languages
+  var langs = collectLanguages();
+  if (langs.length > 0) {
+    if (Y > 265) { doc.addPage(); Y = 20; }
+    doc.setFontSize(13);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(30, 45, 94);
+    doc.text('Diller', M, Y);
+    Y += 2;
+    doc.setDrawColor(30, 45, 94);
+    doc.setLineWidth(0.5);
+    doc.line(M, Y, M + cW, Y);
+    Y += 6;
+    doc.setFontSize(10);
+    doc.setTextColor(0, 0, 0);
+    doc.setFont('helvetica', 'normal');
+    langs.forEach(function(l) {
+      if (l.dil) { doc.text(l.dil + (l.seviye ? ' (' + l.seviye + ')' : ''), M, Y); Y += 5; }
+    });
+    Y += 4;
+  }
+
+  // Certificates
+  var certs = collectCertificates();
+  if (certs.length > 0) {
+    if (Y > 265) { doc.addPage(); Y = 20; }
+    doc.setFontSize(13);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(30, 45, 94);
+    doc.text('Sertifikalar', M, Y);
+    Y += 2;
+    doc.setDrawColor(30, 45, 94);
+    doc.setLineWidth(0.5);
+    doc.line(M, Y, M + cW, Y);
+    Y += 6;
+    doc.setFontSize(10);
+    doc.setTextColor(0, 0, 0);
+    doc.setFont('helvetica', 'normal');
+    certs.forEach(function(c) {
+      doc.text((c.egitim_adi || '') + (c.kurum ? ' - ' + c.kurum : ''), M, Y);
+      if (c.yil) doc.text(c.yil, M + cW, Y, { align: 'right' });
+      Y += 5;
+    });
+    Y += 4;
+  }
+
+  // Brand interests
+  if (selectedBrandInterests.length > 0) {
+    if (Y > 265) { doc.addPage(); Y = 20; }
+    doc.setFontSize(13);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(30, 45, 94);
+    doc.text('Ilgili Markalar', M, Y);
+    Y += 2;
+    doc.setDrawColor(30, 45, 94);
+    doc.setLineWidth(0.5);
+    doc.line(M, Y, M + cW, Y);
+    Y += 6;
+    doc.setFontSize(10);
+    doc.setTextColor(0, 0, 0);
+    doc.setFont('helvetica', 'normal');
+    doc.text(selectedBrandInterests.join(', '), M, Y, { maxWidth: cW });
+    Y += 10;
+  }
+
+  // Footer — hellotalent branding
+  doc.setFontSize(8);
+  doc.setTextColor(150, 150, 150);
+  doc.text('hellotalent.ai', W / 2, 290, { align: 'center' });
+
+  doc.save((isim || 'CV').replace(/\s+/g, '_') + '_HelloTalent.pdf');
 }
 
 function setAvatarImage(url) {
