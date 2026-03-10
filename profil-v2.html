@@ -1398,7 +1398,31 @@ function closeMobileSidebar() {
 const DRAFT_KEY = 'ht_wizard_draft_v2';
 
 function saveDraft() {
-  // Will be implemented in Task 10
+  var draft = {
+    step: wizStep,
+    timestamp: new Date().toISOString(),
+    profile: {
+      full_name: val('f-adsoyad'),
+      telefon: val('f-telefon'),
+      linkedin: val('f-linkedin'),
+      cinsiyet: val('f-cinsiyet'),
+      dogum_yili: val('f-dogumyili'),
+      adres_il: val('f-adresil'),
+      adres_ilce: val('f-adresilce'),
+      engel_durumu: val('f-engel'),
+      askerlik_durumu: val('f-askerlik')
+    },
+    no_experience: document.getElementById('cb-no-experience') ? document.getElementById('cb-no-experience').checked : false,
+    experiences: collectExperiences(),
+    education: collectEducation(),
+    languages: collectLanguages(),
+    certificates: collectCertificates(),
+    target_roles: collectTargetRoles(),
+    work_prefs: collectWorkPrefs(),
+    brand_interests: selectedBrandInterests.slice(),
+    locations: collectLocations()
+  };
+  localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
 }
 function loadDraft() {
   var raw = localStorage.getItem(DRAFT_KEY);
@@ -1409,7 +1433,115 @@ function clearDraft() {
   localStorage.removeItem(DRAFT_KEY);
 }
 function applyDraft(draft) {
-  // Will be implemented in Task 10
+  if (!draft) return;
+  // Step 1: Profile fields
+  if (draft.profile) {
+    setVal('f-adsoyad', draft.profile.full_name);
+    setVal('f-telefon', draft.profile.telefon);
+    setVal('f-linkedin', draft.profile.linkedin);
+    setVal('f-cinsiyet', draft.profile.cinsiyet);
+    setVal('f-dogumyili', draft.profile.dogum_yili);
+    setVal('f-adresil', draft.profile.adres_il);
+    // Trigger il→ilce population
+    if (draft.profile.adres_il) populateIlceSelect('f-adresilce', draft.profile.adres_il);
+    setTimeout(function() { setVal('f-adresilce', draft.profile.adres_ilce); }, 50);
+    setVal('f-engel', draft.profile.engel_durumu);
+    setVal('f-askerlik', draft.profile.askerlik_durumu);
+    // Show askerlik if cinsiyet=Erkek
+    if (draft.profile.cinsiyet === 'Erkek') {
+      var fa = document.getElementById('field-askerlik');
+      if (fa) fa.style.display = '';
+    }
+  }
+
+  // Step 2: Experiences
+  if (draft.no_experience) {
+    var cbNoExp = document.getElementById('cb-no-experience');
+    if (cbNoExp) { cbNoExp.checked = true; cbNoExp.dispatchEvent(new Event('change')); }
+  }
+  if (draft.experiences && draft.experiences.length > 0) {
+    // Remove default card
+    var container = document.getElementById('exp-cards-container');
+    if (container) container.textContent = '';
+    expCounter = 0;
+    draft.experiences.forEach(function(exp) { addExperienceCard(exp); });
+  }
+
+  // Step 3: Education
+  if (draft.education && draft.education.length > 0) {
+    var eduContainer = document.getElementById('edu-rows-container');
+    if (eduContainer) eduContainer.textContent = '';
+    eduCounter = 0;
+    draft.education.forEach(function(edu) { addEducationRow(edu); });
+  }
+  if (draft.languages && draft.languages.length > 0) {
+    var langContainer = document.getElementById('lang-rows-container');
+    if (langContainer) langContainer.textContent = '';
+    langCounter = 0;
+    draft.languages.forEach(function(lang) { addLanguageRow(lang); });
+  }
+  if (draft.certificates && draft.certificates.length > 0) {
+    draft.certificates.forEach(function(cert) { addCertificateRow(cert); });
+  }
+
+  // Step 4: Preferences
+  if (draft.target_roles && draft.target_roles.length > 0) {
+    var roleContainer = document.getElementById('target-roles-container');
+    if (roleContainer) roleContainer.textContent = '';
+    roleCounter = 0;
+    draft.target_roles.forEach(function(r) { addTargetRoleRow(r); });
+  }
+  if (draft.work_prefs) {
+    var wp = draft.work_prefs;
+    if (wp.musaitlik) {
+      selectedMusaitlik = wp.musaitlik;
+      document.querySelectorAll('#musaitlik-chips .chip').forEach(function(c) {
+        c.classList.toggle('selected', c.textContent === wp.musaitlik);
+      });
+    }
+    if (wp.calisma_tipleri && wp.calisma_tipleri.length > 0) {
+      selectedCalismaTipleri = wp.calisma_tipleri.slice();
+      document.querySelectorAll('#calisma-tipleri-checks input[type=checkbox]').forEach(function(cb) {
+        cb.checked = wp.calisma_tipleri.indexOf(cb.value) !== -1;
+      });
+    }
+    setVal('f-maas', wp.maas_beklenti);
+    if (wp.tercih_segmentler && wp.tercih_segmentler.length > 0) {
+      selectedSegmentler = wp.tercih_segmentler.slice();
+      document.querySelectorAll('#segment-chips .chip').forEach(function(c) {
+        c.classList.toggle('selected', wp.tercih_segmentler.indexOf(c.textContent) !== -1);
+      });
+    }
+    setVal('f-career-goal', wp.career_goal);
+    setVal('f-career-type', wp.career_type);
+  }
+  if (draft.brand_interests && draft.brand_interests.length > 0) {
+    selectedBrandInterests = draft.brand_interests.slice();
+    renderBrandInterestChips();
+  }
+
+  // Step 5: Locations
+  if (draft.locations && draft.locations.length > 0) {
+    selectedLocations = {};
+    draft.locations.forEach(function(loc) {
+      selectedLocations[loc.sehir] = loc.ilceler || [];
+    });
+    renderSelectedCities();
+    updateCityChipStates();
+  }
+
+  // Navigate to saved step
+  if (draft.step && draft.step > 1) {
+    wizStep = draft.step;
+    renderWizard();
+  }
+}
+
+function setVal(id, value) {
+  if (!value) return;
+  var el = document.getElementById(id);
+  if (!el) return;
+  el.value = value;
 }
 
 // ═══════════════════════════════════════════════════
@@ -1446,10 +1578,36 @@ function applyDraft(draft) {
   // Hide loading, show app
   document.getElementById('loading-screen').style.display = 'none';
   document.getElementById('app-body').style.display = 'block';
-
-  // For now, show empty dashboard prompt (data load will be added in Task 12)
-  document.getElementById('dash-empty-prompt').style.display = 'block';
   document.getElementById('dash-welcome-name').textContent = 'Hos geldin, ' + fallbackName.split(' ')[0] + '!';
+
+  // Try loading profile data from DB
+  var dbData = await loadProfileFromDB();
+  if (dbData) {
+    applyDraft(dbData); // reuse applyDraft to populate all fields
+    if (dbData.profile && dbData.profile.avatar_url) setAvatarImage(dbData.profile.avatar_url);
+    if (dbData.profile && dbData.profile.full_name) {
+      var n = dbData.profile.full_name;
+      document.getElementById('sidebar-user-name').textContent = n;
+      document.getElementById('dash-welcome-name').textContent = 'Hos geldin, ' + n.split(' ')[0] + '!';
+      var ini = n.split(' ').map(function(w) { return w[0]; }).join('').substring(0,2).toUpperCase();
+      document.querySelectorAll('#user-avatar-header, #sidebar-avatar, #ps-avatar').forEach(function(el) {
+        if (!el.querySelector('img')) el.textContent = ini;
+      });
+    }
+    if (dbData.profile && dbData.profile.is_active !== undefined) {
+      var ta = document.getElementById('toggle-active');
+      if (ta) ta.checked = dbData.profile.is_active;
+      updateStatusUI(dbData.profile.is_active);
+    }
+    updateDashboardSummary(dbData.profile, dbData.experiences);
+  } else {
+    // No DB data — check for draft
+    var draft = loadDraft();
+    if (draft) {
+      document.getElementById('modal-draft').classList.add('show');
+    }
+    document.getElementById('dash-empty-prompt').style.display = 'block';
+  }
 })();
 
 // ═══════════════════════════════════════════════════
@@ -1498,6 +1656,26 @@ document.addEventListener('DOMContentLoaded', function() {
   if (btnStart) btnStart.addEventListener('click', function() { switchPanel('profil'); });
   var btnEdit = document.getElementById('btn-edit-profile');
   if (btnEdit) btnEdit.addEventListener('click', function() { switchPanel('profil'); });
+
+  // Wizard complete button
+  var btnComplete = document.getElementById('btn-wiz-complete');
+  if (btnComplete) btnComplete.addEventListener('click', function() { saveProfileRPC(); });
+
+  // Retry button
+  var btnRetry = document.getElementById('btn-retry');
+  if (btnRetry) btnRetry.addEventListener('click', function() {
+    document.getElementById('modal-error').classList.remove('show');
+    saveProfileRPC();
+  });
+
+  // Draft resume button
+  var btnDraftResume = document.getElementById('btn-draft-resume');
+  if (btnDraftResume) btnDraftResume.addEventListener('click', function() {
+    var draft = loadDraft();
+    if (draft) applyDraft(draft);
+    document.getElementById('modal-draft').classList.remove('show');
+    switchPanel('profil');
+  });
 
   // Sign out
   var btnSignout = document.getElementById('btn-signout');
@@ -2619,6 +2797,198 @@ function collectLocations() {
     });
   });
   return result;
+}
+
+// ═══════════════════════════════════════════════════
+// TASK 11: FINAL SAVE VIA RPC
+// ═══════════════════════════════════════════════════
+
+async function saveProfileRPC() {
+  var btnComplete = document.getElementById('btn-wiz-complete');
+  if (btnComplete) { btnComplete.disabled = true; btnComplete.textContent = 'Kaydediliyor...'; }
+
+  // Assemble p_profile
+  var p_profile = {
+    full_name: val('f-adsoyad'),
+    email: currentUser ? currentUser.email : '',
+    telefon: val('f-telefon'),
+    cinsiyet: val('f-cinsiyet'),
+    dogum_yili: val('f-dogumyili'),
+    adres_il: val('f-adresil'),
+    adres_ilce: val('f-adresilce'),
+    linkedin: val('f-linkedin'),
+    engel_durumu: val('f-engel'),
+    askerlik_durumu: val('f-askerlik'),
+    is_active: document.getElementById('toggle-active') ? document.getElementById('toggle-active').checked : true,
+    ilk_deneyim: document.getElementById('cb-no-experience') ? document.getElementById('cb-no-experience').checked : false,
+    profile_completed: true
+  };
+
+  // Assemble experiences
+  var cbNoExp = document.getElementById('cb-no-experience');
+  var p_experiences = (cbNoExp && cbNoExp.checked) ? [] : collectExperiences();
+
+  // Assemble education, languages, certificates
+  var p_education = collectEducation();
+  var p_certificates = collectCertificates();
+  var p_languages = collectLanguages();
+
+  // Assemble target roles
+  var p_target_roles = collectTargetRoles();
+
+  // Assemble work preferences
+  var wp = collectWorkPrefs();
+  var p_work_prefs = {
+    musaitlik: wp.musaitlik || null,
+    calisma_tipleri: wp.calisma_tipleri || [],
+    maas_beklenti: wp.maas_beklenti || null,
+    tercih_segmentler: wp.tercih_segmentler || [],
+    career_goal: wp.career_goal || null,
+    career_type: wp.career_type || null
+  };
+
+  // Assemble brand interests
+  var p_brand_interests = selectedBrandInterests.map(function(name) { return { marka: name }; });
+
+  // Assemble locations
+  var p_locations = collectLocations();
+
+  try {
+    var result = await supabase.rpc('save_candidate_profile', {
+      p_profile: p_profile,
+      p_experiences: p_experiences,
+      p_education: p_education,
+      p_certificates: p_certificates,
+      p_languages: p_languages,
+      p_target_roles: p_target_roles,
+      p_work_prefs: p_work_prefs,
+      p_brand_interests: p_brand_interests,
+      p_locations: p_locations
+    });
+
+    if (result.error) throw result.error;
+
+    // Success
+    clearDraft();
+    document.getElementById('modal-success').classList.add('show');
+    // Update sidebar name
+    var nameEl = document.getElementById('sidebar-user-name');
+    if (nameEl && p_profile.full_name) nameEl.textContent = p_profile.full_name;
+    // Update dashboard
+    updateDashboardSummary(p_profile, p_experiences);
+
+  } catch (err) {
+    var errorDesc = document.getElementById('error-desc');
+    if (errorDesc) errorDesc.textContent = err.message || 'Bilinmeyen bir hata olustu.';
+    document.getElementById('modal-error').classList.add('show');
+  } finally {
+    if (btnComplete) { btnComplete.disabled = false; btnComplete.textContent = 'Tamamla'; }
+  }
+}
+
+function updateDashboardSummary(profile, experiences) {
+  var psName = document.getElementById('ps-name');
+  if (psName) psName.textContent = profile.full_name || '';
+  var psCityBadge = document.getElementById('ps-city-badge');
+  var psCityText = document.getElementById('ps-city-text');
+  if (psCityBadge && profile.adres_il) {
+    psCityBadge.style.display = '';
+    if (psCityText) psCityText.textContent = profile.adres_il;
+  }
+  var ps = document.getElementById('profile-summary');
+  if (ps) ps.style.display = '';
+  var dep = document.getElementById('dash-empty-prompt');
+  if (dep) dep.style.display = 'none';
+  var dc = document.getElementById('dash-content');
+  if (dc) dc.style.display = '';
+  // Role from latest experience
+  if (experiences && experiences.length > 0) {
+    var latest = experiences[0];
+    var psRole = document.getElementById('ps-role');
+    if (psRole) psRole.textContent = (latest.pozisyon || '') + (latest.sirket_adi ? ' @ ' + latest.sirket_adi : '');
+  }
+}
+
+// ═══════════════════════════════════════════════════
+// TASK 12: DATA LOAD FROM NORMALIZED TABLES
+// ═══════════════════════════════════════════════════
+
+async function loadProfileFromDB() {
+  if (!currentUser) return null;
+
+  // Fetch candidate record
+  var candRes = await supabase.from('candidates').select('*').eq('user_id', currentUser.id).single();
+  if (candRes.error || !candRes.data) return null;
+  var cand = candRes.data;
+  var cid = cand.id;
+
+  // Parallel fetch all child tables
+  var [expRes, eduRes, certRes, langRes, roleRes, wpRes, biRes, locRes] = await Promise.all([
+    supabase.from('candidate_experiences').select('*').eq('candidate_id', cid).order('sort_order'),
+    supabase.from('candidate_education').select('*').eq('candidate_id', cid).order('sort_order'),
+    supabase.from('candidate_certificates').select('*').eq('candidate_id', cid).order('sort_order'),
+    supabase.from('candidate_languages').select('*').eq('candidate_id', cid).order('sort_order'),
+    supabase.from('candidate_target_roles').select('*').eq('candidate_id', cid).order('sort_order'),
+    supabase.from('candidate_work_preferences').select('*').eq('candidate_id', cid).single(),
+    supabase.from('candidate_brand_interests').select('*').eq('candidate_id', cid).order('sort_order'),
+    supabase.from('candidate_location_preferences').select('*, candidate_location_districts(*)').eq('candidate_id', cid)
+  ]);
+
+  return {
+    profile: {
+      full_name: cand.full_name,
+      telefon: cand.telefon,
+      linkedin: cand.linkedin,
+      cinsiyet: cand.cinsiyet,
+      dogum_yili: cand.dogum_yili,
+      adres_il: cand.adres_il,
+      adres_ilce: cand.adres_ilce,
+      engel_durumu: cand.engel_durumu,
+      askerlik_durumu: cand.askerlik_durumu,
+      avatar_url: cand.avatar_url,
+      is_active: cand.is_active
+    },
+    no_experience: cand.ilk_deneyim || false,
+    experiences: (expRes.data || []).map(function(e) {
+      return {
+        sirket_adi: e.sirket_adi, marka: e.marka, pozisyon: e.pozisyon,
+        departman: e.departman, segment: e.segment, istihdam_tipi: e.istihdam_tipi,
+        kidem_seviyesi: e.kidem_seviyesi, lokasyon_tipi: e.lokasyon_tipi,
+        sehir: e.sehir, takim_buyuklugu: e.takim_buyuklugu,
+        baslangic_ay: e.baslangic_ay, baslangic_yil: e.baslangic_yil,
+        bitis_ay: e.bitis_ay, bitis_yil: e.bitis_yil,
+        devam_ediyor: e.devam_ediyor, ayrilma_nedeni: e.ayrilma_nedeni,
+        basari_ozeti: e.basari_ozeti
+      };
+    }),
+    education: (eduRes.data || []).map(function(e) {
+      return { seviye: e.seviye, okul_adi: e.okul_adi, bolum: e.bolum, mezuniyet_yili: e.mezuniyet_yili };
+    }),
+    languages: (langRes.data || []).map(function(l) {
+      return { dil: l.dil, seviye: l.seviye };
+    }),
+    certificates: (certRes.data || []).map(function(c) {
+      return { egitim_adi: c.egitim_adi, kurum: c.kurum, yil: c.yil };
+    }),
+    target_roles: (roleRes.data || []).map(function(r) {
+      return { rol_ailesi: r.rol_ailesi, rol_unvani: r.rol_unvani };
+    }),
+    work_prefs: wpRes.data ? {
+      musaitlik: wpRes.data.musaitlik,
+      calisma_tipleri: wpRes.data.calisma_tipleri || [],
+      maas_beklenti: wpRes.data.maas_beklenti,
+      tercih_segmentler: wpRes.data.tercih_segmentler || [],
+      career_goal: wpRes.data.career_goal,
+      career_type: wpRes.data.career_type
+    } : null,
+    brand_interests: (biRes.data || []).map(function(b) { return b.marka; }),
+    locations: (locRes.data || []).map(function(loc) {
+      return {
+        sehir: loc.sehir,
+        ilceler: (loc.candidate_location_districts || []).map(function(d) { return d.ilce; })
+      };
+    })
+  };
 }
 
 function setAvatarImage(url) {
