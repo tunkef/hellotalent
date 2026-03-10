@@ -236,6 +236,7 @@
   .card-view-mode .exp-field input,.card-view-mode .exp-field select{pointer-events:none;background:var(--gray) !important;opacity:0.9;}
   .card-view-mode .exp-date-row select{pointer-events:none;background:var(--gray) !important;opacity:0.9;}
   .card-view-mode .exp-halen-row{pointer-events:none;}
+  .card-view-mode .exp-halen-row input[type="checkbox"]{opacity:0 !important;width:0 !important;height:0 !important;position:absolute !important;}
   .card-view-mode .exp-ayrilma-field select{pointer-events:none;background:var(--gray) !important;opacity:0.9;}
   /* Brand autocomplete */
   .brand-ac-wrap{position:relative;}
@@ -602,7 +603,7 @@
   .btn-save:disabled{opacity:0.6;cursor:not-allowed;pointer-events:none;}
   .btn-save:active{transform:scale(0.98);}
   /* Validasyon */
-  .field-error input,.field-error select,.exp-field.field-error input{border-color:#C94E28 !important;box-shadow:0 0 0 2px rgba(201,78,40,0.12) !important;}
+  .field-error input,.field-error select,.exp-field.field-error input,.exp-date-row.field-error select{border-color:#C94E28 !important;box-shadow:0 0 0 2px rgba(201,78,40,0.12) !important;}
   .card-validation-msg{display:none;font-size:11px;font-weight:600;color:#C94E28;margin-top:6px;padding:6px 10px;background:#FEF2F2;border-radius:6px;align-items:center;gap:6px;}
   .card-validation-msg.visible{display:flex;}
 
@@ -2948,20 +2949,33 @@ function validateCard(card){
     checkField('f-yas','Ya\u015f Aral\u0131\u011f\u0131');
     checkField('f-adres-il','\u0130l');
   }else if(cardType==='kariyer'){
-    // Her deneyim kartında şirket + pozisyon zorunlu
+    // Her deneyim kartında şirket + pozisyon + tarih zorunlu
     var expCards=card.querySelectorAll('.exp-card');
     expCards.forEach(function(ec){
       var sirket=ec.querySelector('.exp-sirket');
       var poz=ec.querySelector('.exp-pozisyon');
       if(sirket&&!sirket.value.trim()){missing.push({el:sirket,label:'\u015eirket'});}
       if(poz&&!poz.value.trim()){missing.push({el:poz,label:'Pozisyon'});}
+      // Başlangıç tarihi zorunlu
+      var bAy=ec.querySelector('.exp-b-ay');
+      var bYil=ec.querySelector('.exp-b-yil');
+      if(bAy&&bAy.value==='0'){missing.push({el:bAy,label:'Ba\u015flang\u0131\u00e7 Ay'});}
+      if(bYil&&bYil.value==='0'){missing.push({el:bYil,label:'Ba\u015flang\u0131\u00e7 Y\u0131l'});}
+      // Halen çalışmıyorsa bitiş tarihi zorunlu
+      var devamCb=ec.querySelector('.exp-devam-cb');
+      if(devamCb&&!devamCb.checked){
+        var eAy=ec.querySelector('.exp-e-ay');
+        var eYil=ec.querySelector('.exp-e-yil');
+        if(eAy&&eAy.value==='0'){missing.push({el:eAy,label:'Biti\u015f Ay'});}
+        if(eYil&&eYil.value==='0'){missing.push({el:eYil,label:'Biti\u015f Y\u0131l'});}
+      }
     });
   }else if(cardType==='egitim'){
     checkField('f-egitim-seviye','E\u011fitim Seviyesi');
   }
   // Eksik alanlara hata stili uygula
   missing.forEach(function(m){
-    var field=m.el.closest('.field')||m.el.closest('.exp-field');
+    var field=m.el.closest('.field')||m.el.closest('.exp-field')||m.el.closest('.exp-date-row');
     if(field)field.classList.add('field-error');
     m.el.style.borderColor='#C94E28';
   });
