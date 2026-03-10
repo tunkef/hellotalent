@@ -209,10 +209,12 @@
   .exp-date-row{display:flex;gap:6px;}
   .exp-date-row select{flex:1;padding:6px 8px !important;border:1px solid var(--border) !important;border-radius:6px !important;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px !important;font-weight:600;color:var(--text);background:#fff !important;cursor:pointer;outline:none;width:auto !important;}
   .exp-date-row select:focus{border-color:var(--navy) !important;}
-  .exp-end-header{display:flex;align-items:center;gap:6px;}
+  .exp-field label,.exp-end-header{min-height:16px;display:flex;align-items:center;}
+  .exp-end-header{gap:6px;}
   .exp-halen-wrap{display:inline-flex;align-items:center;gap:3px;margin-left:auto;}
-  .exp-halen-cb{width:12px;height:12px;accent-color:var(--navy);cursor:pointer;margin:0;}
-  .exp-halen-label{font-size:10px;font-weight:600;color:var(--navy);cursor:pointer;user-select:none;}
+  .exp-halen-cb{width:14px;height:14px;accent-color:var(--green);cursor:pointer;margin:0;}
+  .exp-halen-cb:checked{accent-color:var(--green);}
+  .exp-halen-label{font-size:10px;font-weight:600;color:var(--green);cursor:pointer;user-select:none;}
   .exp-end-field{display:flex;flex-direction:column;gap:3px;}
   .exp-end-field label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--muted);}
   .exp-date-row select:disabled{background:var(--gray) !important;color:var(--muted) !important;cursor:default;opacity:0.5;}
@@ -236,6 +238,13 @@
   .card-view-mode .exp-date-row select{pointer-events:none;background:var(--gray) !important;opacity:0.9;}
   .card-view-mode .exp-halen-cb{pointer-events:none;}
   .card-view-mode .exp-ayrilma-field select{pointer-events:none;background:var(--gray) !important;opacity:0.9;}
+  /* Brand autocomplete */
+  .brand-ac-wrap{position:relative;}
+  .brand-ac-list{position:absolute;top:100%;left:0;right:0;background:white;border:1px solid var(--border);border-radius:6px;max-height:180px;overflow-y:auto;z-index:50;box-shadow:0 4px 12px rgba(0,0,0,0.1);display:none;}
+  .brand-ac-list.show{display:block;}
+  .brand-ac-item{padding:7px 10px;cursor:pointer;font-size:12px;font-weight:600;color:var(--text);display:flex;align-items:center;gap:6px;transition:background 0.1s;}
+  .brand-ac-item:hover,.brand-ac-item.active{background:var(--navy-light);}
+  .brand-ac-parent{font-size:10px;color:var(--muted);font-weight:500;}
   /* Company grouping */
   .exp-group{margin-bottom:4px;}
   .exp-group-header{display:flex;align-items:center;gap:8px;padding:8px 14px;background:var(--navy-light);border:1px solid var(--border);border-bottom:none;border-radius:8px 8px 0 0;}
@@ -2401,11 +2410,101 @@ function toggleCheckItem(el){
 }
 var calismaTipiList=[];
 
+// ── AUTO-CAPITALIZE + SPELLCHECK ──
+function autoCapitalize(val){
+  if(!val)return val;
+  // Capitalize first letter of each word
+  return val.replace(/(?:^|\s)\S/g,function(c){return c.toUpperCase();});
+}
+function initAutoCapInputs(){
+  var inputs=document.querySelectorAll('.profil-main input[type="text"]');
+  inputs.forEach(function(inp){
+    inp.setAttribute('spellcheck','true');
+    inp.setAttribute('autocapitalize','words');
+    inp.addEventListener('blur',function(){
+      var v=inp.value.trim();
+      if(v&&v!==autoCapitalize(v)){inp.value=autoCapitalize(v);inp.dispatchEvent(new Event('input',{bubbles:true}));}
+    });
+  });
+}
+
+// ── GLOBAL RETAIL BRAND DATABASE ──
+var BRAND_DB=[
+  // İnditex Group
+  {name:'Zara',parent:'İnditex'},{name:'Massimo Dutti',parent:'İnditex'},{name:'Bershka',parent:'İnditex'},{name:'Pull & Bear',parent:'İnditex'},{name:'Stradivarius',parent:'İnditex'},{name:'Oysho',parent:'İnditex'},{name:'Zara Home',parent:'İnditex'},{name:'İnditex',parent:''},
+  // H&M Group
+  {name:'H&M',parent:'H&M Group'},{name:'COS',parent:'H&M Group'},{name:'& Other Stories',parent:'H&M Group'},{name:'Arket',parent:'H&M Group'},{name:'Monki',parent:'H&M Group'},{name:'Weekday',parent:'H&M Group'},{name:'H&M Home',parent:'H&M Group'},
+  // LVMH
+  {name:'Louis Vuitton',parent:'LVMH'},{name:'Dior',parent:'LVMH'},{name:'Sephora',parent:'LVMH'},{name:'Fendi',parent:'LVMH'},{name:'Givenchy',parent:'LVMH'},{name:'Celine',parent:'LVMH'},{name:'Loewe',parent:'LVMH'},{name:'Marc Jacobs',parent:'LVMH'},{name:'Tiffany & Co.',parent:'LVMH'},
+  // Kering
+  {name:'Gucci',parent:'Kering'},{name:'Saint Laurent',parent:'Kering'},{name:'Balenciaga',parent:'Kering'},{name:'Bottega Veneta',parent:'Kering'},{name:'Alexander McQueen',parent:'Kering'},
+  // Gap Inc / Fiba
+  {name:'Gap',parent:'Fiba Retail'},{name:'Banana Republic',parent:'Fiba Retail'},{name:'Old Navy',parent:'Gap Inc.'},{name:'Marks & Spencer',parent:'Fiba Retail'},{name:'GAP',parent:'Fiba Retail'},
+  // Fiba Retail Turkey
+  {name:'Fiba Retail',parent:''},{name:'Eataly',parent:'Fiba Retail'},
+  // Nike / Adidas / Puma
+  {name:'Nike',parent:''},{name:'Adidas',parent:''},{name:'Puma',parent:''},{name:'New Balance',parent:''},{name:'Under Armour',parent:''},{name:'Reebok',parent:''},
+  // Fast Retailing
+  {name:'Uniqlo',parent:'Fast Retailing'},{name:'GU',parent:'Fast Retailing'},
+  // Turkish Retail
+  {name:'LC Waikiki',parent:'LC Waikiki'},{name:'DeFacto',parent:''},{name:'Koton',parent:''},{name:'Mavi',parent:''},{name:'Boyner',parent:'Boyner Group'},{name:'Vakko',parent:''},{name:'Beymen',parent:''},{name:'Ipekyol',parent:''},
+  {name:'Colin\'s',parent:''},{name:'Network',parent:''},{name:'Twist',parent:''},{name:'Machka',parent:''},{name:'Roman',parent:''},
+  // Luxury
+  {name:'Burberry',parent:''},{name:'Prada',parent:''},{name:'Miu Miu',parent:'Prada Group'},{name:'Versace',parent:'Capri Holdings'},{name:'Michael Kors',parent:'Capri Holdings'},{name:'Jimmy Choo',parent:'Capri Holdings'},
+  {name:'Chanel',parent:''},{name:'Hermes',parent:''},{name:'Cartier',parent:'Richemont'},{name:'Montblanc',parent:'Richemont'},
+  // Electronics / Home
+  {name:'Apple',parent:''},{name:'Samsung',parent:''},{name:'MediaMarkt',parent:'Ceconomy'},{name:'Teknosa',parent:'Sabancı Holding'},{name:'Vatan Bilgisayar',parent:''},
+  // FMCG / Supermarket
+  {name:'Migros',parent:''},{name:'CarrefourSA',parent:''},{name:'BİM',parent:''},{name:'A101',parent:''},{name:'ŞOK',parent:''},{name:'Gratis',parent:''},{name:'Watsons',parent:'AS Watson'},
+  // Cosmetics
+  {name:'MAC',parent:'Estee Lauder'},{name:'Estee Lauder',parent:''},{name:'L\'Oreal',parent:''},{name:'Yves Rocher',parent:''},{name:'The Body Shop',parent:''},
+  // Home / Furniture
+  {name:'IKEA',parent:'Ingka Group'},{name:'Koçtaş',parent:''},{name:'English Home',parent:''},
+  // Other global
+  {name:'Decathlon',parent:''},{name:'Levi\'s',parent:''},{name:'Tommy Hilfiger',parent:'PVH'},{name:'Calvin Klein',parent:'PVH'},{name:'Ralph Lauren',parent:''},{name:'Lacoste',parent:''},
+  {name:'Mango',parent:''},{name:'Superdry',parent:''},{name:'The North Face',parent:'VF Corp'},{name:'Timberland',parent:'VF Corp'},{name:'Vans',parent:'VF Corp'},
+  {name:'Starbucks',parent:''},{name:'Amazon',parent:''}
+];
+
+function showBrandSuggestions(inp,expId){
+  var val=(inp.value||'').trim().toLowerCase();
+  // Remove existing dropdown
+  var existing=inp.parentElement.querySelector('.brand-ac-list');
+  if(existing)existing.remove();
+  if(val.length<1)return;
+  var matches=BRAND_DB.filter(function(b){return b.name.toLowerCase().indexOf(val)!==-1;}).slice(0,8);
+  if(matches.length===0)return;
+  var list=document.createElement('div');list.className='brand-ac-list show';
+  matches.forEach(function(b){
+    var item=document.createElement('div');item.className='brand-ac-item';
+    var nameSpan=document.createElement('span');nameSpan.textContent=b.name;item.appendChild(nameSpan);
+    if(b.parent){var pSpan=document.createElement('span');pSpan.className='brand-ac-parent';pSpan.textContent=b.parent;item.appendChild(pSpan);}
+    item.addEventListener('mousedown',function(e){
+      e.preventDefault();
+      inp.value=b.name;
+      list.remove();
+      syncExpFromDOM(expId);
+    });
+    list.appendChild(item);
+  });
+  // Wrap input in relative container if not already
+  if(!inp.parentElement.classList.contains('brand-ac-wrap')){
+    var wrapper=document.createElement('div');wrapper.className='brand-ac-wrap';wrapper.style.cssText='position:relative;width:100%;';
+    inp.parentElement.insertBefore(wrapper,inp);wrapper.appendChild(inp);
+  }
+  inp.parentElement.appendChild(list);
+  // Close on blur
+  inp.addEventListener('blur',function closeBrand(){
+    setTimeout(function(){var l=inp.parentElement.querySelector('.brand-ac-list');if(l)l.remove();},200);
+    inp.removeEventListener('blur',closeBrand);
+  });
+}
+
 // ── DENEYİMLER (LinkedIn-style) ──
 var deneyimler=[];
 var autoToplamDeneyim='';
 var AY_ISIMLERI=['Oca','Şub','Mar','Nis','May','Haz','Tem','Ağu','Eyl','Eki','Kas','Ara'];
-var AYRILMA_NEDENLERI=['İstifa','Kariyer Geçişi','İşten Çıkarılma','Karşılıklı Fesih','Sözleşme Bitimi','Belirtmek İstemiyorum'];
+var AYRILMA_NEDENLERI=['Terfi','İstifa','Kariyer Geçişi','İşten Çıkarılma','Karşılıklı Fesih','Sözleşme Bitimi','Belirtmek İstemiyorum'];
 
 function addExperience(data){
   if(!data&&deneyimler.length>=15)return;
@@ -2497,6 +2596,8 @@ function renderExperiences(){
   var container=document.getElementById('deneyim-container');
   if(!container)return;
   while(container.firstChild)container.removeChild(container.firstChild);
+  // Sort newest first (chronological desc)
+  deneyimler.sort(function(a,b){return(b.baslangic_yil||0)-(a.baslangic_yil||0)||(b.baslangic_ay||0)-(a.baslangic_ay||0);});
   // Group by company name (case-insensitive)
   var groups=[],gMap={};
   deneyimler.forEach(function(exp){
@@ -2553,13 +2654,17 @@ function buildExpCard(exp){
   var f1=document.createElement('div');f1.className='exp-field';
   var lb1=document.createElement('label');lb1.textContent='Şirket';f1.appendChild(lb1);
   var inp1=document.createElement('input');inp1.type='text';inp1.className='exp-sirket';inp1.placeholder='Marka / Şirket adı';inp1.value=exp.sirket||'';
-  inp1.addEventListener('input',function(){syncExpFromDOM(exp.id);});
+  inp1.setAttribute('spellcheck','true');inp1.setAttribute('autocapitalize','words');inp1.setAttribute('autocomplete','off');
+  inp1.addEventListener('blur',function(){var v=inp1.value.trim();if(v&&v!==autoCapitalize(v)){inp1.value=autoCapitalize(v);}syncExpFromDOM(exp.id);});
+  inp1.addEventListener('input',function(){syncExpFromDOM(exp.id);showBrandSuggestions(inp1,exp.id);});
   f1.appendChild(inp1);grid.appendChild(f1);
 
   // Pozisyon (col 2)
   var f2=document.createElement('div');f2.className='exp-field';
   var lb2=document.createElement('label');lb2.textContent='Pozisyon';f2.appendChild(lb2);
   var inp2=document.createElement('input');inp2.type='text';inp2.className='exp-pozisyon';inp2.placeholder='Görev unvanı';inp2.value=exp.pozisyon||'';
+  inp2.setAttribute('spellcheck','true');inp2.setAttribute('autocapitalize','words');
+  inp2.addEventListener('blur',function(){var v=inp2.value.trim();if(v&&v!==autoCapitalize(v)){inp2.value=autoCapitalize(v);}syncExpFromDOM(exp.id);});
   inp2.addEventListener('input',function(){syncExpFromDOM(exp.id);});
   f2.appendChild(inp2);grid.appendChild(f2);
 
@@ -2766,6 +2871,7 @@ function closeNotifPopup(){document.getElementById('notif-popup-overlay').classL
   if(!data.session){window.location.href='giris.html';return;}
   currentUser=data.session.user;
   await loadProfile();
+  initAutoCapInputs();
   renderNotifs(); // Gerçek uygulamada DB'den gelecek
 })();
 
