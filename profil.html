@@ -1423,7 +1423,7 @@
         <select id="f-mezun-yil">
           <option value="">Seç...</option>
           <option>Devam ediyor</option>
-          <option>2025</option><option>2024</option><option>2023</option><option>2022</option>
+          <option>2026</option><option>2025</option><option>2024</option><option>2023</option><option>2022</option>
           <option>2021</option><option>2020</option><option>2019</option><option>2018</option>
           <option>2017</option><option>2016</option><option>2015</option>
           <option>2014</option><option>2013</option><option>2012</option>
@@ -2496,6 +2496,137 @@ function showBrandSuggestions(inp,expId){
   });
 }
 
+// ── GENERIC AUTOCOMPLETE ──
+function showAutoSuggest(inp,db,onSelect){
+  var val=(inp.value||'').trim().toLowerCase();
+  var existing=inp.parentElement.querySelector('.brand-ac-list');
+  if(existing)existing.remove();
+  if(val.length<1)return;
+  var matches=db.filter(function(item){
+    var name=typeof item==='string'?item:item.name;
+    return name.toLowerCase().indexOf(val)!==-1;
+  }).slice(0,8);
+  if(matches.length===0)return;
+  var list=document.createElement('div');list.className='brand-ac-list show';
+  matches.forEach(function(item){
+    var name=typeof item==='string'?item:item.name;
+    var sub=typeof item==='string'?'':(item.sub||'');
+    var el=document.createElement('div');el.className='brand-ac-item';
+    var nameSpan=document.createElement('span');nameSpan.textContent=name;el.appendChild(nameSpan);
+    if(sub){var subSpan=document.createElement('span');subSpan.className='brand-ac-parent';subSpan.textContent=sub;el.appendChild(subSpan);}
+    el.addEventListener('mousedown',function(e){
+      e.preventDefault();inp.value=name;list.remove();
+      if(onSelect)onSelect(name);
+    });
+    list.appendChild(el);
+  });
+  if(!inp.parentElement.classList.contains('brand-ac-wrap')){
+    var wrapper=document.createElement('div');wrapper.className='brand-ac-wrap';wrapper.style.cssText='position:relative;width:100%;';
+    inp.parentElement.insertBefore(wrapper,inp);wrapper.appendChild(inp);
+  }
+  inp.parentElement.appendChild(list);
+  inp.addEventListener('blur',function closeAC(){
+    setTimeout(function(){var l=inp.parentElement.querySelector('.brand-ac-list');if(l)l.remove();},200);
+    inp.removeEventListener('blur',closeAC);
+  });
+}
+
+// ── ÜNİVERSİTE VERİTABANI ──
+var UNIVERSITE_DB=[
+  // Devlet — İstanbul
+  {name:'İstanbul Üniversitesi',sub:'İstanbul'},{name:'İstanbul Teknik Üniversitesi (İTÜ)',sub:'İstanbul'},
+  {name:'Marmara Üniversitesi',sub:'İstanbul'},{name:'Yıldız Teknik Üniversitesi',sub:'İstanbul'},
+  {name:'Mimar Sinan Güzel Sanatlar Üniversitesi',sub:'İstanbul'},{name:'Galatasaray Üniversitesi',sub:'İstanbul'},
+  {name:'İstanbul Medeniyet Üniversitesi',sub:'İstanbul'},{name:'İstanbul Üniversitesi-Cerrahpaşa',sub:'İstanbul'},
+  // Devlet — Ankara
+  {name:'Hacettepe Üniversitesi',sub:'Ankara'},{name:'Ankara Üniversitesi',sub:'Ankara'},
+  {name:'Orta Doğu Teknik Üniversitesi (ODTÜ)',sub:'Ankara'},{name:'Gazi Üniversitesi',sub:'Ankara'},
+  // Devlet — İzmir
+  {name:'Ege Üniversitesi',sub:'İzmir'},{name:'Dokuz Eylül Üniversitesi',sub:'İzmir'},
+  {name:'İzmir Yüksek Teknoloji Enstitüsü',sub:'İzmir'},
+  // Devlet — Diğer
+  {name:'Boğaziçi Üniversitesi',sub:'İstanbul'},{name:'Uludağ Üniversitesi',sub:'Bursa'},
+  {name:'Anadolu Üniversitesi',sub:'Eskişehir'},{name:'Eskişehir Osmangazi Üniversitesi',sub:'Eskişehir'},
+  {name:'Çukurova Üniversitesi',sub:'Adana'},{name:'Akdeniz Üniversitesi',sub:'Antalya'},
+  {name:'Mersin Üniversitesi',sub:'Mersin'},{name:'Erciyes Üniversitesi',sub:'Kayseri'},
+  {name:'Selçuk Üniversitesi',sub:'Konya'},{name:'Atatürk Üniversitesi',sub:'Erzurum'},
+  {name:'Karadeniz Teknik Üniversitesi',sub:'Trabzon'},{name:'Trakya Üniversitesi',sub:'Edirne'},
+  {name:'Sakarya Üniversitesi',sub:'Sakarya'},{name:'Kocaeli Üniversitesi',sub:'Kocaeli'},
+  {name:'Süleyman Demirel Üniversitesi',sub:'Isparta'},{name:'Pamukkale Üniversitesi',sub:'Denizli'},
+  {name:'Fırat Üniversitesi',sub:'Elazığ'},{name:'İnönü Üniversitesi',sub:'Malatya'},
+  {name:'Gaziantep Üniversitesi',sub:'Gaziantep'},{name:'Ondokuz Mayıs Üniversitesi',sub:'Samsun'},
+  // Vakıf — İstanbul
+  {name:'Koç Üniversitesi',sub:'İstanbul'},{name:'Sabancı Üniversitesi',sub:'İstanbul'},
+  {name:'Bahçeşehir Üniversitesi (BAU)',sub:'İstanbul'},{name:'Özyeğin Üniversitesi',sub:'İstanbul'},
+  {name:'İstanbul Bilgi Üniversitesi',sub:'İstanbul'},{name:'Kadir Has Üniversitesi',sub:'İstanbul'},
+  {name:'Yeditepe Üniversitesi',sub:'İstanbul'},{name:'Doğuş Üniversitesi',sub:'İstanbul'},
+  {name:'İstanbul Kültür Üniversitesi',sub:'İstanbul'},{name:'Maltepe Üniversitesi',sub:'İstanbul'},
+  {name:'Beykent Üniversitesi',sub:'İstanbul'},{name:'İstanbul Ticaret Üniversitesi',sub:'İstanbul'},
+  {name:'İstanbul Aydın Üniversitesi',sub:'İstanbul'},{name:'Nişantaşı Üniversitesi',sub:'İstanbul'},
+  {name:'İstanbul Gelişim Üniversitesi',sub:'İstanbul'},{name:'Altınbaş Üniversitesi',sub:'İstanbul'},
+  {name:'Medipol Üniversitesi',sub:'İstanbul'},{name:'Üsküdar Üniversitesi',sub:'İstanbul'},
+  {name:'Fenerbahçe Üniversitesi',sub:'İstanbul'},{name:'Piri Reis Üniversitesi',sub:'İstanbul'},
+  {name:'İstanbul 29 Mayıs Üniversitesi',sub:'İstanbul'},
+  // Vakıf — Ankara
+  {name:'Bilkent Üniversitesi',sub:'Ankara'},{name:'TOBB ETÜ',sub:'Ankara'},
+  {name:'Başkent Üniversitesi',sub:'Ankara'},{name:'Çankaya Üniversitesi',sub:'Ankara'},
+  {name:'Atılım Üniversitesi',sub:'Ankara'},{name:'TED Üniversitesi',sub:'Ankara'},
+  // Vakıf — Diğer
+  {name:'Yaşar Üniversitesi',sub:'İzmir'},{name:'İzmir Ekonomi Üniversitesi',sub:'İzmir'},
+  // MYO / Açıköğretim
+  {name:'Anadolu Üniversitesi Açıköğretim',sub:'Eskişehir'},{name:'İstanbul Üniversitesi Açıköğretim',sub:'İstanbul'},
+  // Lise
+  {name:'Anadolu Lisesi',sub:'Lise'},{name:'Meslek Lisesi',sub:'Lise'},{name:'İmam Hatip Lisesi',sub:'Lise'},
+  {name:'Fen Lisesi',sub:'Lise'},{name:'Sosyal Bilimler Lisesi',sub:'Lise'},{name:'Güzel Sanatlar Lisesi',sub:'Lise'}
+];
+
+// ── BÖLÜM VERİTABANI ──
+var BOLUM_DB=[
+  // İşletme / Ekonomi
+  'İşletme','İktisat','Ekonomi','Uluslararası Ticaret','Uluslararası İlişkiler',
+  'Maliye','Muhasebe ve Finansman','Bankacılık ve Finans','Lojistik Yönetimi',
+  'İnsan Kaynakları Yönetimi','Pazarlama','Yönetim Bilişim Sistemleri',
+  // Mühendislik
+  'Endüstri Mühendisliği','Bilgisayar Mühendisliği','Elektrik-Elektronik Mühendisliği',
+  'Makine Mühendisliği','İnşaat Mühendisliği','Tekstil Mühendisliği','Gıda Mühendisliği',
+  'Yazılım Mühendisliği','Kimya Mühendisliği','Çevre Mühendisliği',
+  // Moda / Tasarım / Sanat
+  'Moda Tasarımı','Moda ve Tekstil Tasarımı','Tekstil Tasarımı','Grafik Tasarım',
+  'İç Mimarlık','Mimarlık','Güzel Sanatlar','Endüstriyel Tasarım','Görsel İletişim Tasarımı',
+  // Sosyal / Hukuk
+  'Hukuk','Psikoloji','Sosyoloji','İletişim','Halkla İlişkiler ve Reklamcılık',
+  'Gazetecilik','Radyo TV Sinema','Siyaset Bilimi','Kamu Yönetimi','Felsefe','Tarih',
+  // Eğitim
+  'İngilizce Öğretmenliği','Türkçe Öğretmenliği','Okul Öncesi Öğretmenliği',
+  'Sınıf Öğretmenliği','Rehberlik ve Psikolojik Danışmanlık',
+  // Sağlık
+  'Hemşirelik','Eczacılık','Fizyoterapi','Beslenme ve Diyetetik','Diş Hekimliği',
+  // Fen
+  'Matematik','Fizik','Kimya','Biyoloji','İstatistik',
+  // Turizm / Hizmet
+  'Turizm İşletmeciliği','Gastronomi','Otelcilik','Turizm Rehberliği',
+  // MYO Programları
+  'Perakende Satış ve Mağaza Yönetimi','Dış Ticaret','Büro Yönetimi',
+  'Bankacılık ve Sigortacılık','Bilgisayar Programcılığı','Grafik Tasarım (MYO)',
+  'Muhasebe ve Vergi Uygulamaları','İnsan Kaynakları (MYO)','Pazarlama (MYO)',
+  'Lojistik (MYO)','Moda Tasarımı (MYO)','Turizm ve Otel İşletmeciliği (MYO)',
+  'Halkla İlişkiler (MYO)','Çocuk Gelişimi (MYO)','Adalet (MYO)'
+];
+
+// ── EĞİTİM AUTOCOMPLETE INIT ──
+function initEgitimAutoComplete(){
+  var okulInp=document.getElementById('f-okul');
+  var bolumInp=document.getElementById('f-bolum');
+  if(okulInp){
+    okulInp.setAttribute('autocomplete','off');
+    okulInp.addEventListener('input',function(){showAutoSuggest(okulInp,UNIVERSITE_DB);});
+  }
+  if(bolumInp){
+    bolumInp.setAttribute('autocomplete','off');
+    bolumInp.addEventListener('input',function(){showAutoSuggest(bolumInp,BOLUM_DB);});
+  }
+}
+
 // ── DENEYİMLER (LinkedIn-style) ──
 var deneyimler=[];
 var autoToplamDeneyim='';
@@ -2867,6 +2998,7 @@ function closeNotifPopup(){document.getElementById('notif-popup-overlay').classL
   currentUser=data.session.user;
   await loadProfile();
   initAutoCapInputs();
+  initEgitimAutoComplete();
   renderNotifs(); // Gerçek uygulamada DB'den gelecek
 })();
 
