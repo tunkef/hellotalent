@@ -209,17 +209,10 @@
   .exp-date-row{display:flex;gap:6px;}
   .exp-date-row select{flex:1;padding:6px 8px !important;border:1px solid var(--border) !important;border-radius:6px !important;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px !important;font-weight:600;color:var(--text);background:#fff !important;cursor:pointer;outline:none;width:auto !important;}
   .exp-date-row select:focus{border-color:var(--navy) !important;}
-  .exp-field label,.exp-end-header{min-height:16px;display:flex;align-items:center;}
-  .exp-end-header{gap:0;}
-  .exp-halen-wrap{display:inline-flex;align-items:center;gap:3px;margin-left:6px;padding:1px 6px 1px 4px;border-radius:10px;cursor:pointer;transition:all 0.15s;border:1px solid transparent;}
-  .exp-halen-wrap.active{background:var(--green-light);border-color:var(--green-border);}
-  .exp-halen-cb{width:11px;height:11px;-webkit-appearance:none;appearance:none;border:1.5px solid var(--border);border-radius:3px;cursor:pointer;margin:0;position:relative;transition:all 0.15s;background:white;flex-shrink:0;}
-  .exp-halen-cb:checked{background:var(--green);border-color:var(--green);}
-  .exp-halen-cb:checked::after{content:'\2713';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:7px;color:white;font-weight:800;line-height:1;}
-  .exp-halen-label{font-size:9px;font-weight:600;color:var(--muted);cursor:pointer;user-select:none;white-space:nowrap;transition:color 0.15s;text-transform:none !important;letter-spacing:0 !important;}
-  .exp-halen-wrap.active .exp-halen-label{color:var(--green);}
-  .exp-end-field{display:flex;flex-direction:column;gap:3px;}
-  .exp-end-field label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--muted);}
+  .exp-halen-row{grid-column:1/-1;display:flex;align-items:center;gap:5px;cursor:pointer;padding:0 2px;}
+  .exp-halen-row input[type="checkbox"]{width:13px;height:13px;accent-color:var(--green);cursor:pointer;margin:0;flex-shrink:0;}
+  .exp-halen-row label{font-size:12px;font-weight:500;color:var(--muted);cursor:pointer;user-select:none;text-transform:none !important;letter-spacing:0 !important;transition:color 0.15s;}
+  .exp-halen-row input:checked+label{color:var(--green);font-weight:600;}
   .exp-date-row select:disabled{background:var(--gray) !important;color:var(--muted) !important;cursor:default;opacity:0.5;}
   .exp-ayrilma-field{display:flex;flex-direction:column;gap:3px;}
   .exp-ayrilma-field.hidden{display:none;}
@@ -239,7 +232,7 @@
   .card-view-mode .exp-delete{display:none;}
   .card-view-mode .exp-field input,.card-view-mode .exp-field select{pointer-events:none;background:var(--gray) !important;opacity:0.9;}
   .card-view-mode .exp-date-row select{pointer-events:none;background:var(--gray) !important;opacity:0.9;}
-  .card-view-mode .exp-halen-cb{pointer-events:none;}
+  .card-view-mode .exp-halen-row{pointer-events:none;opacity:0.85;}
   .card-view-mode .exp-ayrilma-field select{pointer-events:none;background:var(--gray) !important;opacity:0.9;}
   /* Brand autocomplete */
   .brand-ac-wrap{position:relative;}
@@ -2671,39 +2664,38 @@ function buildExpCard(exp){
   inp2.addEventListener('input',function(){syncExpFromDOM(exp.id);});
   f2.appendChild(inp2);grid.appendChild(f2);
 
+  // Halen çalışıyorum row (full width, between pozisyon and dates)
+  var halenRow=document.createElement('div');halenRow.className='exp-halen-row';
+  var cb=document.createElement('input');cb.type='checkbox';cb.className='exp-devam-cb';cb.id='halen-'+exp.id;cb.checked=exp.devam_ediyor;
+  halenRow.appendChild(cb);
+  var hLbl=document.createElement('label');hLbl.setAttribute('for','halen-'+exp.id);hLbl.textContent='Halen \u00e7al\u0131\u015f\u0131yorum';
+  halenRow.appendChild(hLbl);
+  grid.appendChild(halenRow);
+
   // Başlangıç Tarihi (col 1)
   var f3=document.createElement('div');f3.className='exp-field';
-  var lb3=document.createElement('label');lb3.textContent='Başlangıç';f3.appendChild(lb3);
+  var lb3=document.createElement('label');lb3.textContent='Ba\u015flang\u0131\u00e7';f3.appendChild(lb3);
   var dr1=document.createElement('div');dr1.className='exp-date-row';
   var bAy=document.createElement('select');bAy.className='exp-b-ay';
   var o0=document.createElement('option');o0.value='0';o0.textContent='Ay';bAy.appendChild(o0);
   for(var m=1;m<=12;m++){var o=document.createElement('option');o.value=String(m);o.textContent=AY_ISIMLERI[m-1];if(exp.baslangic_ay===m)o.selected=true;bAy.appendChild(o);}
   bAy.addEventListener('change',function(){syncExpFromDOM(exp.id);});dr1.appendChild(bAy);
   var bYil=document.createElement('select');bYil.className='exp-b-yil';
-  var oy0=document.createElement('option');oy0.value='0';oy0.textContent='Yıl';bYil.appendChild(oy0);
+  var oy0=document.createElement('option');oy0.value='0';oy0.textContent='Y\u0131l';bYil.appendChild(oy0);
   for(var y=nowYear;y>=1990;y--){var oy=document.createElement('option');oy.value=String(y);oy.textContent=String(y);if(exp.baslangic_yil===y)oy.selected=true;bYil.appendChild(oy);}
   bYil.addEventListener('change',function(){syncExpFromDOM(exp.id);});dr1.appendChild(bYil);
   f3.appendChild(dr1);grid.appendChild(f3);
 
-  // Bitiş Tarihi (col 2) — with inline "Halen" checkbox
-  var f4=document.createElement('div');f4.className='exp-end-field';
-  var endHeader=document.createElement('div');endHeader.className='exp-end-header';
-  var lb4=document.createElement('label');lb4.textContent='Bitiş';endHeader.appendChild(lb4);
-  var halenWrap=document.createElement('span');halenWrap.className='exp-halen-wrap'+(exp.devam_ediyor?' active':'');
-  var cb=document.createElement('input');cb.type='checkbox';cb.className='exp-halen-cb exp-devam-cb';cb.checked=exp.devam_ediyor;
-  halenWrap.appendChild(cb);
-  var hLbl=document.createElement('label');hLbl.className='exp-halen-label';hLbl.textContent='halen \u00e7al\u0131\u015f\u0131yorum';
-  hLbl.addEventListener('click',function(){cb.checked=!cb.checked;cb.dispatchEvent(new Event('change'));});
-  halenWrap.appendChild(hLbl);
-  endHeader.appendChild(halenWrap);
-  f4.appendChild(endHeader);
+  // Bitiş Tarihi (col 2) — clean, same structure as Başlangıç
+  var f4=document.createElement('div');f4.className='exp-field';
+  var lb4=document.createElement('label');lb4.textContent='Biti\u015f';f4.appendChild(lb4);
   var dr2=document.createElement('div');dr2.className='exp-date-row';
   var eAy=document.createElement('select');eAy.className='exp-e-ay';if(exp.devam_ediyor)eAy.disabled=true;
   var oe0=document.createElement('option');oe0.value='0';oe0.textContent='Ay';eAy.appendChild(oe0);
   for(var m2=1;m2<=12;m2++){var o2=document.createElement('option');o2.value=String(m2);o2.textContent=AY_ISIMLERI[m2-1];if(exp.bitis_ay===m2)o2.selected=true;eAy.appendChild(o2);}
   eAy.addEventListener('change',function(){syncExpFromDOM(exp.id);});dr2.appendChild(eAy);
   var eYil=document.createElement('select');eYil.className='exp-e-yil';if(exp.devam_ediyor)eYil.disabled=true;
-  var oey0=document.createElement('option');oey0.value='0';oey0.textContent='Yıl';eYil.appendChild(oey0);
+  var oey0=document.createElement('option');oey0.value='0';oey0.textContent='Y\u0131l';eYil.appendChild(oey0);
   for(var y2=nowYear;y2>=1990;y2--){var oy2=document.createElement('option');oy2.value=String(y2);oy2.textContent=String(y2);if(exp.bitis_yil===y2)oy2.selected=true;eYil.appendChild(oy2);}
   eYil.addEventListener('change',function(){syncExpFromDOM(exp.id);});dr2.appendChild(eYil);
   f4.appendChild(dr2);grid.appendChild(f4);
@@ -2711,7 +2703,6 @@ function buildExpCard(exp){
   cb.addEventListener('change',function(){
     var checked=cb.checked;
     eAy.disabled=checked;eYil.disabled=checked;
-    halenWrap.className='exp-halen-wrap'+(checked?' active':'');
     ayrilmaField.className='exp-ayrilma-field'+(checked?' hidden':'');
     syncExpFromDOM(exp.id);
   });
