@@ -2463,12 +2463,12 @@ var BRAND_DB=[
 ];
 
 function showBrandSuggestions(inp,expId){
-  var val=(inp.value||'').trim().toLowerCase();
+  var val=trLower((inp.value||'').trim());
   // Remove existing dropdown
   var existing=inp.parentElement.querySelector('.brand-ac-list');
   if(existing)existing.remove();
   if(val.length<1)return;
-  var matches=BRAND_DB.filter(function(b){return b.name.toLowerCase().indexOf(val)!==-1;}).slice(0,8);
+  var matches=BRAND_DB.filter(function(b){return trLower(b.name).indexOf(val)!==-1;}).slice(0,8);
   if(matches.length===0)return;
   var list=document.createElement('div');list.className='brand-ac-list show';
   matches.forEach(function(b){
@@ -2497,14 +2497,15 @@ function showBrandSuggestions(inp,expId){
 }
 
 // ── GENERIC AUTOCOMPLETE ──
+function trLower(s){return s.replace(/İ/g,'i').replace(/I/g,'\u0131').replace(/Ş/g,'\u015f').replace(/Ç/g,'\u00e7').replace(/Ö/g,'\u00f6').replace(/Ü/g,'\u00fc').replace(/Ğ/g,'\u011f').toLowerCase();}
 function showAutoSuggest(inp,db,onSelect){
-  var val=(inp.value||'').trim().toLowerCase();
+  var val=trLower((inp.value||'').trim());
   var existing=inp.parentElement.querySelector('.brand-ac-list');
   if(existing)existing.remove();
   if(val.length<1)return;
   var matches=db.filter(function(item){
     var name=typeof item==='string'?item:item.name;
-    return name.toLowerCase().indexOf(val)!==-1;
+    return trLower(name).indexOf(val)!==-1;
   }).slice(0,8);
   if(matches.length===0)return;
   var list=document.createElement('div');list.className='brand-ac-list show';
