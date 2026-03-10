@@ -774,35 +774,248 @@ body{font-family:'Plus Jakarta Sans',sans-serif;color:var(--text);background:#ff
   <div class="wiz-step active" id="wiz-step-1" data-step="1">
     <div class="wiz-step-title">Kisisel Bilgiler</div>
     <div class="wiz-step-desc">Temel bilgilerini doldur. Bu bilgiler markalar tarafindan gorulebilir.</div>
-    <div id="step1-content"><!-- Filled by Task 5 --></div>
+    <div id="step1-content">
+
+      <!-- AVATAR UPLOAD -->
+      <div class="avatar-upload">
+        <div class="avatar-upload-circle" id="avatar-upload-circle" title="Fotograf yukle">
+          <span id="avatar-upload-initials">?</span>
+        </div>
+        <div>
+          <div style="font-weight:600;font-size:14px;margin-bottom:4px;">Profil Fotografi</div>
+          <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">JPG veya PNG, max 2MB</div>
+          <label class="btn btn-secondary btn-sm" style="cursor:pointer;position:relative;overflow:hidden;">
+            <span id="avatar-btn-text">Fotograf Yukle</span>
+            <input type="file" accept="image/*" id="avatar-file-input" style="position:absolute;inset:0;opacity:0;cursor:pointer;">
+          </label>
+        </div>
+      </div>
+
+      <!-- AD SOYAD + TELEFON -->
+      <div class="field-row">
+        <div class="field">
+          <label for="f-adsoyad">Ad Soyad <span class="field-req">*</span></label>
+          <input type="text" id="f-adsoyad" placeholder="Ornek: Ayse Yilmaz" maxlength="100">
+        </div>
+        <div class="field">
+          <label for="f-telefon">Telefon <span class="field-req">*</span></label>
+          <input type="tel" id="f-telefon" placeholder="0555 123 4567" maxlength="20">
+        </div>
+      </div>
+
+      <!-- E-POSTA + LINKEDIN -->
+      <div class="field-row">
+        <div class="field">
+          <label for="f-email">E-posta</label>
+          <input type="email" id="f-email" disabled>
+        </div>
+        <div class="field">
+          <label for="f-linkedin">LinkedIn</label>
+          <input type="url" id="f-linkedin" placeholder="https://linkedin.com/in/...">
+        </div>
+      </div>
+
+      <!-- CINSIYET + DOGUM YILI -->
+      <div class="field-row">
+        <div class="field">
+          <label for="f-cinsiyet">Cinsiyet</label>
+          <select id="f-cinsiyet">
+            <option value="">Sec...</option>
+            <option value="Kadin">Kadin</option>
+            <option value="Erkek">Erkek</option>
+            <option value="Belirtmek istemiyorum">Belirtmek istemiyorum</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="f-dogumyili">Dogum Yili</label>
+          <select id="f-dogumyili">
+            <option value="">Sec...</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- ADRES IL + ILCE -->
+      <div class="field-row">
+        <div class="field">
+          <label for="f-adresil">Adres / Il <span class="field-req">*</span></label>
+          <select id="f-adresil">
+            <option value="">Il sec...</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="f-adresilce">Ilce</label>
+          <select id="f-adresilce">
+            <option value="">Once il secin</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- ENGEL DURUMU -->
+      <div class="field-row">
+        <div class="field">
+          <label for="f-engel">Engel Durumu</label>
+          <select id="f-engel">
+            <option value="">Sec...</option>
+            <option value="Yok">Yok</option>
+            <option value="Var">Var</option>
+            <option value="Belirtmek istemiyorum">Belirtmek istemiyorum</option>
+          </select>
+        </div>
+        <div class="field" id="field-askerlik" style="display:none;">
+          <label for="f-askerlik">Askerlik Durumu</label>
+          <select id="f-askerlik">
+            <option value="">Sec...</option>
+            <option value="Yapildi">Yapildi</option>
+            <option value="Muaf">Muaf</option>
+            <option value="Tecilli">Tecilli</option>
+            <option value="Yapilmadi">Yapilmadi</option>
+          </select>
+        </div>
+      </div>
+
+    </div>
   </div>
 
   <!-- WIZARD STEP 2: Kariyer -->
   <div class="wiz-step" id="wiz-step-2" data-step="2">
     <div class="wiz-step-title">Kariyer / Deneyimler</div>
     <div class="wiz-step-desc">Is deneyimlerini ekle. Her deneyim, seni dogru markalarla eslestirmemize yardimci olur.</div>
-    <div id="step2-content"><!-- Filled by Task 6 --></div>
+    <div id="step2-content">
+
+      <!-- NO EXPERIENCE TOGGLE -->
+      <label class="cb-wrap">
+        <input type="checkbox" id="cb-no-experience">
+        <span>Henuz is deneyimim yok</span>
+      </label>
+
+      <div id="experience-section">
+        <div id="exp-cards-container"></div>
+        <button class="btn btn-secondary" id="btn-add-exp" type="button" style="margin-top:12px;">+ Deneyim Ekle</button>
+      </div>
+
+    </div>
   </div>
 
   <!-- WIZARD STEP 3: Egitim -->
   <div class="wiz-step" id="wiz-step-3" data-step="3">
     <div class="wiz-step-title">Egitim, Diller, Sertifikalar</div>
     <div class="wiz-step-desc">Egitim gecmisini, bildigi dilleri ve sertifikalarini ekle.</div>
-    <div id="step3-content"><!-- Filled by Task 7 --></div>
+    <div id="step3-content">
+
+      <!-- EGITIM SECTION -->
+      <div class="card-title" style="margin-bottom:12px;">Egitim</div>
+      <div id="edu-rows-container"></div>
+      <button class="btn btn-secondary btn-sm" id="btn-add-edu" type="button" style="margin-top:8px;">+ Egitim Ekle</button>
+      <div id="edu-limit-msg" style="display:none;font-size:12px;color:var(--muted);margin-top:8px;">En fazla 3 egitim eklenebilir.</div>
+
+      <hr class="section-divider">
+
+      <!-- DILLER SECTION -->
+      <div class="card-title" style="margin-bottom:12px;">Diller</div>
+      <div id="lang-rows-container"></div>
+      <button class="btn btn-secondary btn-sm" id="btn-add-lang" type="button" style="margin-top:8px;">+ Dil Ekle</button>
+      <div id="lang-limit-msg" style="display:none;font-size:12px;color:var(--muted);margin-top:8px;">En fazla 5 dil eklenebilir.</div>
+
+      <hr class="section-divider">
+
+      <!-- SERTIFIKALAR SECTION -->
+      <div class="card-title" style="margin-bottom:12px;">Sertifikalar / Egitimler</div>
+      <div id="cert-rows-container"></div>
+      <button class="btn btn-secondary btn-sm" id="btn-add-cert" type="button" style="margin-top:8px;">+ Sertifika Ekle</button>
+
+    </div>
   </div>
 
   <!-- WIZARD STEP 4: Tercihlerim -->
   <div class="wiz-step" id="wiz-step-4" data-step="4">
     <div class="wiz-step-title">Tercihlerim</div>
     <div class="wiz-step-desc">Hedef pozisyonlarini, calisma tercihlerini ve ilgilendigin markalari belirt.</div>
-    <div id="step4-content"><!-- Filled by Task 8 --></div>
+    <div id="step4-content">
+
+      <!-- TARGET ROLES -->
+      <div class="card-title" style="margin-bottom:12px;">Hedef Pozisyonlar</div>
+      <div id="target-roles-container"></div>
+      <button class="btn btn-secondary btn-sm" id="btn-add-role" type="button" style="margin-top:8px;">+ Rol Ekle</button>
+
+      <hr class="section-divider">
+
+      <!-- MUSAITLIK -->
+      <div class="card-title" style="margin-bottom:12px;">Musaitlik</div>
+      <div class="chips-row" id="musaitlik-chips"></div>
+
+      <hr class="section-divider">
+
+      <!-- CALISMA TIPLERI -->
+      <div class="card-title" style="margin-bottom:12px;">Calisma Tipleri</div>
+      <div id="calisma-tipleri-checks" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
+
+      <hr class="section-divider">
+
+      <!-- MAAS BEKLENTI -->
+      <div class="field" style="max-width:300px;">
+        <label for="f-maas">Maas Beklentisi (TL/ay)</label>
+        <select id="f-maas">
+          <option value="">Sec...</option>
+        </select>
+      </div>
+
+      <hr class="section-divider">
+
+      <!-- SEGMENT TERCIHLERI -->
+      <div class="card-title" style="margin-bottom:12px;">Segment Tercihleri</div>
+      <div class="chips-row" id="segment-chips"></div>
+
+      <hr class="section-divider">
+
+      <!-- MARKA ILGI ALANLARI -->
+      <div class="card-title" style="margin-bottom:12px;">Ilgilendigin Markalar</div>
+      <div class="field" style="position:relative;">
+        <input type="text" id="f-brand-interest" placeholder="Marka ara ve ekle..." autocomplete="off">
+        <div class="autocomplete-list" id="brand-interest-sug"></div>
+      </div>
+      <div class="chips-row" id="brand-interest-chips" style="margin-top:8px;"></div>
+
+      <hr class="section-divider">
+
+      <!-- KARIYER HEDEFI -->
+      <div class="field">
+        <label for="f-career-goal">Kariyer Hedefi</label>
+        <textarea id="f-career-goal" rows="3" placeholder="Kariyer hedefinizi kisaca yazin..." style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-family:inherit;font-size:14px;resize:vertical;"></textarea>
+      </div>
+      <div class="field" style="max-width:300px;">
+        <label for="f-career-type">Kariyer Yonelimi</label>
+        <select id="f-career-type">
+          <option value="">Sec...</option>
+          <option value="yukari">Yukari (Terfi)</option>
+          <option value="yatay">Yatay (Farkli Alan)</option>
+          <option value="lider">Liderlik</option>
+        </select>
+      </div>
+
+    </div>
   </div>
 
   <!-- WIZARD STEP 5: Lokasyon -->
   <div class="wiz-step" id="wiz-step-5" data-step="5">
     <div class="wiz-step-title">Lokasyon Tercihleri</div>
     <div class="wiz-step-desc">Calismak istedigin sehirleri ve ilceleri sec.</div>
-    <div id="step5-content"><!-- Filled by Task 9 --></div>
+    <div id="step5-content">
+
+      <!-- POPULAR CITIES -->
+      <div class="card-title" style="margin-bottom:12px;">Populer Sehirler</div>
+      <div class="chips-row" id="popular-city-chips"></div>
+
+      <button class="btn btn-secondary btn-sm" id="btn-all-cities" type="button" style="margin-top:12px;">Tum Sehirleri Gor</button>
+
+      <hr class="section-divider">
+
+      <!-- SELECTED CITIES + DISTRICTS -->
+      <div class="card-title" style="margin-bottom:12px;">Secilen Sehirler</div>
+      <div id="selected-cities-container">
+        <p style="font-size:13px;color:var(--muted);" id="no-city-msg">Henuz sehir secilmedi. Yukaridaki sehirlerden secim yapin.</p>
+      </div>
+
+    </div>
   </div>
 
   <!-- WIZARD NAV -->
@@ -1066,12 +1279,47 @@ function validateStep(step) {
   }
 }
 
-// Placeholder validators — will be implemented per step
-function validateKisisel() { return true; }
-function validateKariyer() { return true; }
-function validateEgitim() { return true; }
-function validateTercihler() { return true; }
-function validateLokasyon() { return true; }
+// ── STEP 1: KISISEL BILGILER VALIDATION ──
+function validateKisisel() {
+  var errors = [];
+  if (!val('f-adsoyad')) errors.push('Ad Soyad zorunludur');
+  if (!val('f-telefon')) errors.push('Telefon zorunludur');
+  if (!val('f-adresil')) errors.push('Adres / Il zorunludur');
+  if (errors.length > 0) {
+    showStepErrors(errors);
+    // Mark error fields
+    if (!val('f-adsoyad')) markFieldError('f-adsoyad');
+    if (!val('f-telefon')) markFieldError('f-telefon');
+    if (!val('f-adresil')) markFieldError('f-adresil');
+    return false;
+  }
+  return true;
+}
+
+function markFieldError(id) {
+  var el = document.getElementById(id);
+  if (el) el.classList.add('field-error');
+}
+function validateKariyer() {
+  var cbNoExp = document.getElementById('cb-no-experience');
+  if (cbNoExp && cbNoExp.checked) return true;
+  var cards = document.querySelectorAll('.exp-card');
+  if (cards.length === 0) {
+    showStepErrors(['En az bir deneyim ekleyin veya "Henuz is deneyimim yok" secin']);
+    return false;
+  }
+  var errors = [];
+  cards.forEach(function(card, i) {
+    var prefix = card.id + '-';
+    if (!val(prefix + 'sirket')) errors.push('Deneyim #' + (i + 1) + ': Sirket zorunludur');
+    if (!val(prefix + 'pozisyon')) errors.push('Deneyim #' + (i + 1) + ': Pozisyon zorunludur');
+  });
+  if (errors.length > 0) { showStepErrors(errors); return false; }
+  return true;
+}
+function validateEgitim() { return true; } // Egitim is optional, no required fields
+function validateTercihler() { return true; } // Preferences are optional
+function validateLokasyon() { return true; } // Location is optional for the last step
 
 function showStepErrors(errors) {
   clearStepErrors();
@@ -1289,6 +1537,13 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('modal-draft').classList.remove('show');
   });
 
+  // ══ STEP INITS ══
+  initStep1();
+  initStep2();
+  initStep3();
+  initStep4();
+  initStep5();
+
   // Location modal
   var btnLokClose = document.getElementById('btn-lok-close');
   if (btnLokClose) btnLokClose.addEventListener('click', function() {
@@ -1297,6 +1552,7 @@ document.addEventListener('DOMContentLoaded', function() {
   var btnLokDone = document.getElementById('btn-lok-done');
   if (btnLokDone) btnLokDone.addEventListener('click', function() {
     document.getElementById('lok-modal-overlay').classList.remove('show');
+    renderSelectedCities();
   });
   var lokOverlay = document.getElementById('lok-modal-overlay');
   if (lokOverlay) lokOverlay.addEventListener('click', function(e) {
@@ -1315,6 +1571,1070 @@ function updateStatusUI(isActive) {
   texts.forEach(function(id) {
     var el = document.getElementById(id);
     if (el) el.textContent = isActive ? 'Aktif' : 'Pasif';
+  });
+}
+
+// ═══════════════════════════════════════════════════
+// STEP 1: KISISEL BILGILER — INIT + HANDLERS
+// ═══════════════════════════════════════════════════
+
+// Flatten TUR_ILLER regions into sorted city array
+function flatAllCities() {
+  var cities = [];
+  Object.keys(TUR_ILLER).forEach(function(region) {
+    TUR_ILLER[region].forEach(function(city) { cities.push(city); });
+  });
+  return cities.sort(function(a, b) { return trLower(a).localeCompare(trLower(b), 'tr'); });
+}
+
+function initStep1() {
+  // Populate Dogum Yili (1960 — current year - 14)
+  var dySelect = document.getElementById('f-dogumyili');
+  if (dySelect) {
+    var currentYear = new Date().getFullYear();
+    for (var y = currentYear - 14; y >= 1960; y--) {
+      var opt = document.createElement('option');
+      opt.value = String(y);
+      opt.textContent = String(y);
+      dySelect.appendChild(opt);
+    }
+  }
+
+  // Populate Adres Il
+  var ilSelect = document.getElementById('f-adresil');
+  if (ilSelect) {
+    flatAllCities().forEach(function(city) {
+      var opt = document.createElement('option');
+      opt.value = city;
+      opt.textContent = city;
+      ilSelect.appendChild(opt);
+    });
+    // Il change → populate Ilce
+    ilSelect.addEventListener('change', function() {
+      populateIlceSelect('f-adresilce', this.value);
+    });
+  }
+
+  // Cinsiyet change → show/hide Askerlik
+  var cinsiyetSelect = document.getElementById('f-cinsiyet');
+  if (cinsiyetSelect) {
+    cinsiyetSelect.addEventListener('change', function() {
+      var fieldAskerlik = document.getElementById('field-askerlik');
+      if (fieldAskerlik) {
+        fieldAskerlik.style.display = this.value === 'Erkek' ? '' : 'none';
+      }
+    });
+  }
+
+  // Set email field from current user
+  if (currentUser) {
+    var emailField = document.getElementById('f-email');
+    if (emailField) emailField.value = currentUser.email || '';
+  }
+
+  // Avatar upload
+  var avatarInput = document.getElementById('avatar-file-input');
+  if (avatarInput) {
+    avatarInput.addEventListener('change', function() { handleAvatarUpload(this); });
+  }
+  var avatarCircle = document.getElementById('avatar-upload-circle');
+  if (avatarCircle) {
+    avatarCircle.addEventListener('click', function() {
+      var input = document.getElementById('avatar-file-input');
+      if (input) input.click();
+    });
+  }
+}
+
+function populateIlceSelect(selectId, cityName) {
+  var sel = document.getElementById(selectId);
+  if (!sel) return;
+  // Clear existing options
+  while (sel.options.length > 1) sel.remove(1);
+  var districts = ILCELER[cityName];
+  if (!districts || districts.length === 0) {
+    sel.options[0].textContent = 'Ilce yok';
+    return;
+  }
+  sel.options[0].textContent = 'Ilce sec...';
+  districts.forEach(function(d) {
+    var opt = document.createElement('option');
+    opt.value = d;
+    opt.textContent = d;
+    sel.appendChild(opt);
+  });
+}
+
+async function handleAvatarUpload(input) {
+  var file = input.files[0];
+  if (!file) return;
+  if (file.size > 2 * 1024 * 1024) { alert('Dosya 2MB\'dan buyuk olamaz.'); return; }
+  var btnText = document.getElementById('avatar-btn-text');
+  if (btnText) btnText.textContent = 'Yukleniyor...';
+  var ext = file.name.split('.').pop();
+  var path = 'avatars/' + currentUser.id + '.' + ext;
+  var res = await supabase.storage.from('cvs').upload(path, file, { upsert: true });
+  if (res.error) {
+    if (btnText) btnText.textContent = 'Hata!';
+    return;
+  }
+  var urlRes = supabase.storage.from('cvs').getPublicUrl(path);
+  var avatarUrl = urlRes.data.publicUrl + '?t=' + Date.now();
+  // Update DB
+  await supabase.from('candidates').upsert({ user_id: currentUser.id, avatar_url: avatarUrl }, { onConflict: 'user_id' });
+  // Update all avatar elements
+  setAvatarImage(avatarUrl);
+  if (btnText) btnText.textContent = 'Guncellendi!';
+  setTimeout(function() { if (btnText) btnText.textContent = 'Fotograf Yukle'; }, 2000);
+}
+
+// ═══════════════════════════════════════════════════
+// STEP 2: KARIYER / DENEYIMLER
+// ═══════════════════════════════════════════════════
+
+var expCounter = 0;
+var experiences = []; // in-memory array of experience data
+
+function initStep2() {
+  var btnAdd = document.getElementById('btn-add-exp');
+  if (btnAdd) btnAdd.addEventListener('click', function() { addExperienceCard(); });
+
+  var cbNoExp = document.getElementById('cb-no-experience');
+  if (cbNoExp) {
+    cbNoExp.addEventListener('change', function() {
+      var section = document.getElementById('experience-section');
+      if (section) section.style.display = this.checked ? 'none' : '';
+    });
+  }
+
+  // Add first card by default
+  addExperienceCard();
+}
+
+function addExperienceCard(data) {
+  expCounter++;
+  var cardId = 'exp-card-' + expCounter;
+  var card = document.createElement('div');
+  card.className = 'exp-card';
+  card.id = cardId;
+  card.dataset.expId = expCounter;
+
+  var d = data || {};
+
+  // Header
+  var header = document.createElement('div');
+  header.className = 'exp-card-header';
+  var headerTitle = document.createElement('div');
+  headerTitle.className = 'exp-card-title';
+  headerTitle.textContent = 'Deneyim #' + expCounter;
+  header.appendChild(headerTitle);
+  if (expCounter > 1 || document.querySelectorAll('.exp-card').length > 0) {
+    var delBtn = document.createElement('button');
+    delBtn.className = 'exp-card-del';
+    delBtn.type = 'button';
+    delBtn.textContent = '\u00D7';
+    delBtn.addEventListener('click', function() { card.remove(); });
+    header.appendChild(delBtn);
+  }
+  card.appendChild(header);
+
+  // Row 1: Sirket + Marka
+  var row1 = document.createElement('div');
+  row1.className = 'field-row';
+  row1.appendChild(makeField('text', 'Sirket *', cardId + '-sirket', 'Sirket adi', d.sirket_adi));
+  row1.appendChild(makeBrandField(cardId + '-marka', d.marka));
+  card.appendChild(row1);
+
+  // Row 2: Pozisyon + Departman
+  var row2 = document.createElement('div');
+  row2.className = 'field-row';
+  row2.appendChild(makeField('text', 'Pozisyon *', cardId + '-pozisyon', 'Pozisyon', d.pozisyon));
+  row2.appendChild(makeSelectField('Departman', cardId + '-departman', DEPARTMANLAR, d.departman));
+  card.appendChild(row2);
+
+  // Row 3: Segment + Istihdam Tipi
+  var row3 = document.createElement('div');
+  row3.className = 'field-row';
+  row3.appendChild(makeSelectField('Segment', cardId + '-segment', SEGMENTLER, d.segment));
+  row3.appendChild(makeSelectField('Istihdam Tipi', cardId + '-istihdam', ISTIHDAM_TIPLERI, d.istihdam_tipi));
+  card.appendChild(row3);
+
+  // Row 4: Kidem + Lokasyon Tipi
+  var row4 = document.createElement('div');
+  row4.className = 'field-row';
+  row4.appendChild(makeSelectField('Kidem Seviyesi', cardId + '-kidem', KIDEM_SEVIYELERI, d.kidem_seviyesi));
+  row4.appendChild(makeSelectField('Lokasyon Tipi', cardId + '-loktipi', LOKASYON_TIPLERI, d.lokasyon_tipi));
+  card.appendChild(row4);
+
+  // Row 5: Sehir + Takim Buyuklugu
+  var row5 = document.createElement('div');
+  row5.className = 'field-row';
+  var sehirField = makeSelectField('Sehir', cardId + '-sehir', flatAllCities(), d.sehir);
+  row5.appendChild(sehirField);
+  row5.appendChild(makeSelectField('Takim Buyuklugu', cardId + '-takim', TAKIM_BUYUKLUKLERI, d.takim_buyuklugu));
+  card.appendChild(row5);
+
+  // Row 6: Baslangic Ay/Yil + Bitis Ay/Yil
+  var row6 = document.createElement('div');
+  row6.className = 'field-row';
+  row6.style.gridTemplateColumns = '1fr 1fr 1fr 1fr';
+  row6.appendChild(makeSelectField('Baslangic Ay', cardId + '-basay', AY_ISIMLERI, d.baslangic_ay));
+  row6.appendChild(makeYearField('Baslangic Yil', cardId + '-basyil', d.baslangic_yil));
+  var bitAyField = makeSelectField('Bitis Ay', cardId + '-bitay', AY_ISIMLERI, d.bitis_ay);
+  bitAyField.classList.add('bitis-field');
+  row6.appendChild(bitAyField);
+  var bitYilField = makeYearField('Bitis Yil', cardId + '-bityil', d.bitis_yil);
+  bitYilField.classList.add('bitis-field');
+  row6.appendChild(bitYilField);
+  card.appendChild(row6);
+
+  // Checkbox: Halen burada calisiyorum
+  var cbWrap = document.createElement('label');
+  cbWrap.className = 'cb-wrap';
+  var cb = document.createElement('input');
+  cb.type = 'checkbox';
+  cb.id = cardId + '-devam';
+  if (d.devam_ediyor) cb.checked = true;
+  var cbLabel = document.createElement('span');
+  cbLabel.textContent = 'Halen burada calisiyorum';
+  cbWrap.appendChild(cb);
+  cbWrap.appendChild(cbLabel);
+  card.appendChild(cbWrap);
+
+  // Ayrilma Nedeni (hidden when devam_ediyor)
+  var ayrilmaField = makeSelectField('Ayrilma Nedeni', cardId + '-ayrilma', AYRILMA_NEDENLERI, d.ayrilma_nedeni);
+  ayrilmaField.classList.add('ayrilma-field');
+  if (d.devam_ediyor) ayrilmaField.style.display = 'none';
+  card.appendChild(ayrilmaField);
+
+  // Toggle bitis fields and ayrilma based on checkbox
+  cb.addEventListener('change', function() {
+    var bitisFields = card.querySelectorAll('.bitis-field');
+    var ayrilma = card.querySelector('.ayrilma-field');
+    bitisFields.forEach(function(f) { f.style.display = cb.checked ? 'none' : ''; });
+    if (ayrilma) ayrilma.style.display = cb.checked ? 'none' : '';
+  });
+  // Trigger initial state
+  if (d.devam_ediyor) {
+    card.querySelectorAll('.bitis-field').forEach(function(f) { f.style.display = 'none'; });
+  }
+
+  // Basari Ozeti (textarea)
+  var ozet = document.createElement('div');
+  ozet.className = 'field';
+  var ozetLabel = document.createElement('label');
+  ozetLabel.textContent = 'Basari Ozeti';
+  var ozetTA = document.createElement('textarea');
+  ozetTA.id = cardId + '-ozet';
+  ozetTA.placeholder = 'Onemli basarilarinizi kisaca yazin (opsiyonel)';
+  ozetTA.rows = 2;
+  ozetTA.style.cssText = 'width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-family:inherit;font-size:14px;resize:vertical;';
+  if (d.basari_ozeti) ozetTA.value = d.basari_ozeti;
+  ozet.appendChild(ozetLabel);
+  ozet.appendChild(ozetTA);
+  card.appendChild(ozet);
+
+  // Separator
+  var sep = document.createElement('hr');
+  sep.className = 'section-divider';
+  sep.style.margin = '12px 0 0';
+  card.appendChild(sep);
+
+  var container = document.getElementById('exp-cards-container');
+  if (container) container.appendChild(card);
+}
+
+// ── FIELD FACTORY HELPERS ──
+
+function makeField(type, labelText, id, placeholder, value) {
+  var wrap = document.createElement('div');
+  wrap.className = 'field';
+  var lbl = document.createElement('label');
+  lbl.textContent = labelText;
+  var input = document.createElement('input');
+  input.type = type;
+  input.id = id;
+  if (placeholder) input.placeholder = placeholder;
+  if (value) input.value = value;
+  wrap.appendChild(lbl);
+  wrap.appendChild(input);
+  return wrap;
+}
+
+function makeSelectField(labelText, id, options, selectedVal) {
+  var wrap = document.createElement('div');
+  wrap.className = 'field';
+  var lbl = document.createElement('label');
+  lbl.textContent = labelText;
+  var sel = document.createElement('select');
+  sel.id = id;
+  var defOpt = document.createElement('option');
+  defOpt.value = '';
+  defOpt.textContent = 'Sec...';
+  sel.appendChild(defOpt);
+  options.forEach(function(opt) {
+    var o = document.createElement('option');
+    o.value = opt;
+    o.textContent = opt;
+    if (selectedVal && opt === selectedVal) o.selected = true;
+    sel.appendChild(o);
+  });
+  wrap.appendChild(lbl);
+  wrap.appendChild(sel);
+  return wrap;
+}
+
+function makeYearField(labelText, id, selectedVal) {
+  var wrap = document.createElement('div');
+  wrap.className = 'field';
+  var lbl = document.createElement('label');
+  lbl.textContent = labelText;
+  var sel = document.createElement('select');
+  sel.id = id;
+  var defOpt = document.createElement('option');
+  defOpt.value = '';
+  defOpt.textContent = 'Yil';
+  sel.appendChild(defOpt);
+  var cy = new Date().getFullYear();
+  for (var y = cy; y >= 1990; y--) {
+    var o = document.createElement('option');
+    o.value = String(y);
+    o.textContent = String(y);
+    if (selectedVal && String(y) === String(selectedVal)) o.selected = true;
+    sel.appendChild(o);
+  }
+  wrap.appendChild(lbl);
+  wrap.appendChild(sel);
+  return wrap;
+}
+
+function makeBrandField(id, value) {
+  var wrap = document.createElement('div');
+  wrap.className = 'field';
+  wrap.style.position = 'relative';
+  var lbl = document.createElement('label');
+  lbl.textContent = 'Marka';
+  var input = document.createElement('input');
+  input.type = 'text';
+  input.id = id;
+  input.placeholder = 'Marka ara...';
+  input.autocomplete = 'off';
+  if (value) input.value = value;
+  var sugBox = document.createElement('div');
+  sugBox.className = 'autocomplete-list';
+  sugBox.id = id + '-sug';
+
+  input.addEventListener('input', function() {
+    showBrandSuggestions(input, sugBox);
+  });
+  input.addEventListener('focus', function() {
+    if (input.value.length >= 1) showBrandSuggestions(input, sugBox);
+  });
+  document.addEventListener('click', function(e) {
+    if (!wrap.contains(e.target)) sugBox.style.display = 'none';
+  });
+
+  wrap.appendChild(lbl);
+  wrap.appendChild(input);
+  wrap.appendChild(sugBox);
+  return wrap;
+}
+
+function showBrandSuggestions(input, sugBox) {
+  var q = trLower(input.value);
+  if (q.length < 1) { sugBox.style.display = 'none'; return; }
+  var matches = BRAND_DB.filter(function(b) {
+    return trLower(b.name).indexOf(q) !== -1 || (b.parent && trLower(b.parent).indexOf(q) !== -1);
+  }).slice(0, 8);
+  if (matches.length === 0) { sugBox.style.display = 'none'; return; }
+  sugBox.textContent = '';
+  matches.forEach(function(b) {
+    var item = document.createElement('div');
+    item.className = 'autocomplete-item';
+    item.textContent = b.name + (b.parent ? ' (' + b.parent + ')' : '');
+    item.addEventListener('mousedown', function(e) {
+      e.preventDefault();
+      input.value = b.name;
+      sugBox.style.display = 'none';
+    });
+    sugBox.appendChild(item);
+  });
+  sugBox.style.display = 'block';
+}
+
+// Collect experience data from all cards
+function collectExperiences() {
+  var cards = document.querySelectorAll('.exp-card');
+  var result = [];
+  cards.forEach(function(card) {
+    var prefix = card.id + '-';
+    result.push({
+      sirket_adi: val(prefix + 'sirket'),
+      marka: val(prefix + 'marka'),
+      pozisyon: val(prefix + 'pozisyon'),
+      departman: val(prefix + 'departman'),
+      segment: val(prefix + 'segment'),
+      istihdam_tipi: val(prefix + 'istihdam'),
+      kidem_seviyesi: val(prefix + 'kidem'),
+      lokasyon_tipi: val(prefix + 'loktipi'),
+      sehir: val(prefix + 'sehir'),
+      takim_buyuklugu: val(prefix + 'takim'),
+      baslangic_ay: val(prefix + 'basay'),
+      baslangic_yil: val(prefix + 'basyil'),
+      bitis_ay: val(prefix + 'bitay'),
+      bitis_yil: val(prefix + 'bityil'),
+      devam_ediyor: document.getElementById(prefix + 'devam') ? document.getElementById(prefix + 'devam').checked : false,
+      ayrilma_nedeni: val(prefix + 'ayrilma'),
+      basari_ozeti: val(prefix + 'ozet')
+    });
+  });
+  return result;
+}
+
+// ═══════════════════════════════════════════════════
+// STEP 3: EGITIM + DILLER + SERTIFIKALAR
+// ═══════════════════════════════════════════════════
+
+var eduCounter = 0;
+var langCounter = 0;
+var certCounter = 0;
+
+function initStep3() {
+  var btnAddEdu = document.getElementById('btn-add-edu');
+  if (btnAddEdu) btnAddEdu.addEventListener('click', function() { addEducationRow(); });
+
+  var btnAddLang = document.getElementById('btn-add-lang');
+  if (btnAddLang) btnAddLang.addEventListener('click', function() { addLanguageRow(); });
+
+  var btnAddCert = document.getElementById('btn-add-cert');
+  if (btnAddCert) btnAddCert.addEventListener('click', function() { addCertificateRow(); });
+
+  // Add one default row for each
+  addEducationRow();
+  addLanguageRow();
+}
+
+function addEducationRow(data) {
+  var container = document.getElementById('edu-rows-container');
+  if (!container) return;
+  if (container.children.length >= 3) {
+    document.getElementById('edu-limit-msg').style.display = 'block';
+    return;
+  }
+  eduCounter++;
+  var d = data || {};
+  var rowId = 'edu-' + eduCounter;
+
+  var row = document.createElement('div');
+  row.className = 'dynamic-row';
+  row.id = rowId;
+
+  var fields = document.createElement('div');
+  fields.className = 'field-row';
+  fields.style.gridTemplateColumns = '1fr 1fr 1fr 1fr';
+
+  fields.appendChild(makeSelectField('Seviye', rowId + '-seviye', EGITIM_SEVIYELERI, d.seviye));
+  fields.appendChild(makeAutoField('Okul', rowId + '-okul', UNIVERSITE_DB.map(function(u) { return u.name; }), d.okul_adi));
+  fields.appendChild(makeAutoField('Bolum', rowId + '-bolum', BOLUM_DB, d.bolum));
+  fields.appendChild(makeYearField('Mezun Yil', rowId + '-mezyil', d.mezuniyet_yili));
+
+  row.appendChild(fields);
+
+  // Delete button
+  var delBtn = document.createElement('button');
+  delBtn.className = 'btn-del-row';
+  delBtn.type = 'button';
+  delBtn.textContent = '\u00D7';
+  delBtn.title = 'Kaldir';
+  delBtn.style.cssText = 'position:absolute;top:4px;right:4px;border:none;background:none;cursor:pointer;color:var(--muted);font-size:18px;';
+  delBtn.addEventListener('click', function() {
+    row.remove();
+    document.getElementById('edu-limit-msg').style.display = container.children.length >= 3 ? 'block' : 'none';
+  });
+  row.style.position = 'relative';
+  row.appendChild(delBtn);
+
+  container.appendChild(row);
+  document.getElementById('edu-limit-msg').style.display = container.children.length >= 3 ? 'block' : 'none';
+}
+
+function addLanguageRow(data) {
+  var container = document.getElementById('lang-rows-container');
+  if (!container) return;
+  if (container.children.length >= 5) {
+    document.getElementById('lang-limit-msg').style.display = 'block';
+    return;
+  }
+  langCounter++;
+  var d = data || {};
+  var rowId = 'lang-' + langCounter;
+
+  var row = document.createElement('div');
+  row.className = 'dynamic-row';
+  row.id = rowId;
+
+  var fields = document.createElement('div');
+  fields.className = 'field-row';
+  fields.appendChild(makeSelectField('Dil', rowId + '-dil', DIL_LISTESI, d.dil));
+  fields.appendChild(makeSelectField('Seviye', rowId + '-seviye', DIL_SEVIYELERI, d.seviye));
+  row.appendChild(fields);
+
+  // Delete button
+  var delBtn = document.createElement('button');
+  delBtn.className = 'btn-del-row';
+  delBtn.type = 'button';
+  delBtn.textContent = '\u00D7';
+  delBtn.title = 'Kaldir';
+  delBtn.style.cssText = 'position:absolute;top:4px;right:4px;border:none;background:none;cursor:pointer;color:var(--muted);font-size:18px;';
+  delBtn.addEventListener('click', function() {
+    row.remove();
+    document.getElementById('lang-limit-msg').style.display = container.children.length >= 5 ? 'block' : 'none';
+  });
+  row.style.position = 'relative';
+  row.appendChild(delBtn);
+
+  container.appendChild(row);
+  document.getElementById('lang-limit-msg').style.display = container.children.length >= 5 ? 'block' : 'none';
+}
+
+function addCertificateRow(data) {
+  var container = document.getElementById('cert-rows-container');
+  if (!container) return;
+  certCounter++;
+  var d = data || {};
+  var rowId = 'cert-' + certCounter;
+
+  var row = document.createElement('div');
+  row.className = 'dynamic-row';
+  row.id = rowId;
+
+  var fields = document.createElement('div');
+  fields.className = 'field-row';
+  fields.style.gridTemplateColumns = '1fr 1fr 1fr';
+  fields.appendChild(makeField('text', 'Egitim / Sertifika Adi', rowId + '-adi', 'Ornek: Excel Ileri Seviye', d.egitim_adi));
+  fields.appendChild(makeField('text', 'Kurum', rowId + '-kurum', 'Veren kurum', d.kurum));
+  fields.appendChild(makeYearField('Yil', rowId + '-yil', d.yil));
+  row.appendChild(fields);
+
+  var delBtn = document.createElement('button');
+  delBtn.className = 'btn-del-row';
+  delBtn.type = 'button';
+  delBtn.textContent = '\u00D7';
+  delBtn.title = 'Kaldir';
+  delBtn.style.cssText = 'position:absolute;top:4px;right:4px;border:none;background:none;cursor:pointer;color:var(--muted);font-size:18px;';
+  delBtn.addEventListener('click', function() { row.remove(); });
+  row.style.position = 'relative';
+  row.appendChild(delBtn);
+
+  container.appendChild(row);
+}
+
+// Autocomplete field for okul/bolum
+function makeAutoField(labelText, id, dataList, value) {
+  var wrap = document.createElement('div');
+  wrap.className = 'field';
+  wrap.style.position = 'relative';
+  var lbl = document.createElement('label');
+  lbl.textContent = labelText;
+  var input = document.createElement('input');
+  input.type = 'text';
+  input.id = id;
+  input.placeholder = labelText + ' ara...';
+  input.autocomplete = 'off';
+  if (value) input.value = value;
+  var sugBox = document.createElement('div');
+  sugBox.className = 'autocomplete-list';
+  sugBox.id = id + '-sug';
+
+  input.addEventListener('input', function() {
+    showAutoSuggestions(input, sugBox, dataList);
+  });
+  input.addEventListener('focus', function() {
+    if (input.value.length >= 1) showAutoSuggestions(input, sugBox, dataList);
+  });
+  document.addEventListener('click', function(e) {
+    if (!wrap.contains(e.target)) sugBox.style.display = 'none';
+  });
+
+  wrap.appendChild(lbl);
+  wrap.appendChild(input);
+  wrap.appendChild(sugBox);
+  return wrap;
+}
+
+function showAutoSuggestions(input, sugBox, dataList) {
+  var q = trLower(input.value);
+  if (q.length < 1) { sugBox.style.display = 'none'; return; }
+  var matches = dataList.filter(function(item) {
+    return trLower(item).indexOf(q) !== -1;
+  }).slice(0, 8);
+  if (matches.length === 0) { sugBox.style.display = 'none'; return; }
+  sugBox.textContent = '';
+  matches.forEach(function(m) {
+    var item = document.createElement('div');
+    item.className = 'autocomplete-item';
+    item.textContent = m;
+    item.addEventListener('mousedown', function(e) {
+      e.preventDefault();
+      input.value = m;
+      sugBox.style.display = 'none';
+    });
+    sugBox.appendChild(item);
+  });
+  sugBox.style.display = 'block';
+}
+
+// Collect education data
+function collectEducation() {
+  var rows = document.querySelectorAll('#edu-rows-container .dynamic-row');
+  var result = [];
+  rows.forEach(function(row) {
+    var p = row.id + '-';
+    var item = { seviye: val(p + 'seviye'), okul_adi: val(p + 'okul'), bolum: val(p + 'bolum'), mezuniyet_yili: val(p + 'mezyil') };
+    if (item.seviye || item.okul_adi) result.push(item);
+  });
+  return result;
+}
+
+function collectLanguages() {
+  var rows = document.querySelectorAll('#lang-rows-container .dynamic-row');
+  var result = [];
+  rows.forEach(function(row) {
+    var p = row.id + '-';
+    var item = { dil: val(p + 'dil'), seviye: val(p + 'seviye') };
+    if (item.dil) result.push(item);
+  });
+  return result;
+}
+
+function collectCertificates() {
+  var rows = document.querySelectorAll('#cert-rows-container .dynamic-row');
+  var result = [];
+  rows.forEach(function(row) {
+    var p = row.id + '-';
+    var item = { egitim_adi: val(p + 'adi'), kurum: val(p + 'kurum'), yil: val(p + 'yil') };
+    if (item.egitim_adi) result.push(item);
+  });
+  return result;
+}
+
+// ═══════════════════════════════════════════════════
+// STEP 4: TERCIHLERIM
+// ═══════════════════════════════════════════════════
+
+var roleCounter = 0;
+var selectedMusaitlik = '';
+var selectedCalismaTipleri = [];
+var selectedSegmentler = [];
+var selectedBrandInterests = [];
+
+function initStep4() {
+  var btnAddRole = document.getElementById('btn-add-role');
+  if (btnAddRole) btnAddRole.addEventListener('click', function() { addTargetRoleRow(); });
+  addTargetRoleRow(); // default first row
+
+  // Musaitlik chips
+  var musaitlikContainer = document.getElementById('musaitlik-chips');
+  if (musaitlikContainer) {
+    MUSAITLIK_SECENEKLERI.forEach(function(m) {
+      var chip = document.createElement('button');
+      chip.className = 'chip';
+      chip.type = 'button';
+      chip.textContent = m;
+      chip.addEventListener('click', function() {
+        musaitlikContainer.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('selected'); });
+        chip.classList.add('selected');
+        selectedMusaitlik = m;
+      });
+      musaitlikContainer.appendChild(chip);
+    });
+  }
+
+  // Calisma Tipleri checkboxes
+  var ctContainer = document.getElementById('calisma-tipleri-checks');
+  if (ctContainer) {
+    ISTIHDAM_TIPLERI.forEach(function(tip) {
+      var lbl = document.createElement('label');
+      lbl.className = 'cb-wrap';
+      lbl.style.padding = '6px 0';
+      var cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.value = tip;
+      cb.addEventListener('change', function() {
+        if (cb.checked) { selectedCalismaTipleri.push(tip); }
+        else { selectedCalismaTipleri = selectedCalismaTipleri.filter(function(t) { return t !== tip; }); }
+      });
+      var span = document.createElement('span');
+      span.textContent = tip;
+      lbl.appendChild(cb);
+      lbl.appendChild(span);
+      ctContainer.appendChild(lbl);
+    });
+  }
+
+  // Maas select
+  var maasSelect = document.getElementById('f-maas');
+  if (maasSelect) {
+    MAAS_ARALIKLARI.forEach(function(m) {
+      if (!m) return;
+      var opt = document.createElement('option');
+      opt.value = m;
+      opt.textContent = m + ' TL';
+      maasSelect.appendChild(opt);
+    });
+  }
+
+  // Segment chips
+  var segContainer = document.getElementById('segment-chips');
+  if (segContainer) {
+    SEGMENTLER.forEach(function(s) {
+      var chip = document.createElement('button');
+      chip.className = 'chip';
+      chip.type = 'button';
+      chip.textContent = s;
+      chip.addEventListener('click', function() {
+        chip.classList.toggle('selected');
+        if (chip.classList.contains('selected')) {
+          selectedSegmentler.push(s);
+        } else {
+          selectedSegmentler = selectedSegmentler.filter(function(x) { return x !== s; });
+        }
+      });
+      segContainer.appendChild(chip);
+    });
+  }
+
+  // Brand interest autocomplete
+  var brandInput = document.getElementById('f-brand-interest');
+  var brandSug = document.getElementById('brand-interest-sug');
+  if (brandInput && brandSug) {
+    brandInput.addEventListener('input', function() {
+      showBrandInterestSuggestions(brandInput, brandSug);
+    });
+    brandInput.addEventListener('focus', function() {
+      if (brandInput.value.length >= 1) showBrandInterestSuggestions(brandInput, brandSug);
+    });
+    document.addEventListener('click', function(e) {
+      if (e.target !== brandInput && e.target !== brandSug) brandSug.style.display = 'none';
+    });
+  }
+}
+
+function addTargetRoleRow(data) {
+  var container = document.getElementById('target-roles-container');
+  if (!container) return;
+  roleCounter++;
+  var d = data || {};
+  var rowId = 'role-' + roleCounter;
+
+  var row = document.createElement('div');
+  row.className = 'dynamic-row';
+  row.id = rowId;
+  row.style.position = 'relative';
+
+  var fields = document.createElement('div');
+  fields.className = 'field-row';
+  fields.appendChild(makeSelectField('Rol Ailesi', rowId + '-ailesi', ROL_AILELERI, d.rol_ailesi));
+  fields.appendChild(makeField('text', 'Rol Unvani', rowId + '-unvan', 'Ornek: Magaza Muduru', d.rol_unvani));
+  row.appendChild(fields);
+
+  var delBtn = document.createElement('button');
+  delBtn.type = 'button';
+  delBtn.textContent = '\u00D7';
+  delBtn.style.cssText = 'position:absolute;top:4px;right:4px;border:none;background:none;cursor:pointer;color:var(--muted);font-size:18px;';
+  delBtn.addEventListener('click', function() { row.remove(); });
+  row.appendChild(delBtn);
+
+  container.appendChild(row);
+}
+
+function showBrandInterestSuggestions(input, sugBox) {
+  var q = trLower(input.value);
+  if (q.length < 1) { sugBox.style.display = 'none'; return; }
+  var matches = BRAND_DB.filter(function(b) {
+    return (trLower(b.name).indexOf(q) !== -1 || (b.parent && trLower(b.parent).indexOf(q) !== -1))
+      && selectedBrandInterests.indexOf(b.name) === -1;
+  }).slice(0, 8);
+  if (matches.length === 0) { sugBox.style.display = 'none'; return; }
+  sugBox.textContent = '';
+  matches.forEach(function(b) {
+    var item = document.createElement('div');
+    item.className = 'autocomplete-item';
+    item.textContent = b.name + (b.parent ? ' (' + b.parent + ')' : '');
+    item.addEventListener('mousedown', function(e) {
+      e.preventDefault();
+      addBrandInterestChip(b.name);
+      input.value = '';
+      sugBox.style.display = 'none';
+    });
+    sugBox.appendChild(item);
+  });
+  sugBox.style.display = 'block';
+}
+
+function addBrandInterestChip(name) {
+  if (selectedBrandInterests.indexOf(name) !== -1) return;
+  selectedBrandInterests.push(name);
+  renderBrandInterestChips();
+}
+
+function renderBrandInterestChips() {
+  var container = document.getElementById('brand-interest-chips');
+  if (!container) return;
+  container.textContent = '';
+  selectedBrandInterests.forEach(function(name) {
+    var tag = document.createElement('span');
+    tag.className = 'tag';
+    tag.textContent = name;
+    var del = document.createElement('button');
+    del.type = 'button';
+    del.textContent = '\u00D7';
+    del.style.cssText = 'border:none;background:none;cursor:pointer;margin-left:6px;font-size:14px;color:inherit;';
+    del.addEventListener('click', function() {
+      selectedBrandInterests = selectedBrandInterests.filter(function(n) { return n !== name; });
+      renderBrandInterestChips();
+    });
+    tag.appendChild(del);
+    container.appendChild(tag);
+  });
+}
+
+function collectTargetRoles() {
+  var rows = document.querySelectorAll('#target-roles-container .dynamic-row');
+  var result = [];
+  rows.forEach(function(row) {
+    var p = row.id + '-';
+    var item = { rol_ailesi: val(p + 'ailesi'), rol_unvani: val(p + 'unvan') };
+    if (item.rol_ailesi || item.rol_unvani) result.push(item);
+  });
+  return result;
+}
+
+function collectWorkPrefs() {
+  return {
+    musaitlik: selectedMusaitlik,
+    calisma_tipleri: selectedCalismaTipleri,
+    maas_beklenti: val('f-maas'),
+    tercih_segmentler: selectedSegmentler,
+    career_goal: val('f-career-goal'),
+    career_type: val('f-career-type')
+  };
+}
+
+// ═══════════════════════════════════════════════════
+// STEP 5: LOKASYON TERCIHLERI
+// ═══════════════════════════════════════════════════
+
+var POPULAR_CITIES = ['\u0130stanbul', 'Ankara', '\u0130zmir', 'Bursa', 'Antalya', 'Adana', 'Konya', 'Gaziantep', 'Mersin', 'Kayseri'];
+var selectedLocations = {}; // { cityName: [district1, district2, ...] }
+
+function initStep5() {
+  // Render popular city chips
+  var popContainer = document.getElementById('popular-city-chips');
+  if (popContainer) {
+    POPULAR_CITIES.forEach(function(city) {
+      var chip = document.createElement('button');
+      chip.className = 'chip';
+      chip.type = 'button';
+      chip.textContent = city;
+      chip.addEventListener('click', function() {
+        toggleCitySelection(city);
+        updateCityChipStates();
+      });
+      popContainer.appendChild(chip);
+    });
+  }
+
+  // All cities button → open location modal
+  var btnAllCities = document.getElementById('btn-all-cities');
+  if (btnAllCities) btnAllCities.addEventListener('click', function() { openLocationModal(); });
+}
+
+function toggleCitySelection(city) {
+  if (selectedLocations[city]) {
+    delete selectedLocations[city];
+  } else {
+    selectedLocations[city] = [];
+  }
+  renderSelectedCities();
+}
+
+function updateCityChipStates() {
+  // Update popular chips
+  var popChips = document.querySelectorAll('#popular-city-chips .chip');
+  popChips.forEach(function(chip) {
+    if (selectedLocations[chip.textContent]) {
+      chip.classList.add('selected');
+    } else {
+      chip.classList.remove('selected');
+    }
+  });
+  // Update modal chips
+  var lokChips = document.querySelectorAll('#lok-body .lok-city');
+  lokChips.forEach(function(chip) {
+    if (selectedLocations[chip.textContent]) {
+      chip.classList.add('selected');
+    } else {
+      chip.classList.remove('selected');
+    }
+  });
+  var countEl = document.getElementById('lok-selected-count');
+  if (countEl) countEl.textContent = Object.keys(selectedLocations).length;
+}
+
+function renderSelectedCities() {
+  var container = document.getElementById('selected-cities-container');
+  if (!container) return;
+  container.textContent = '';
+
+  var cities = Object.keys(selectedLocations);
+  if (cities.length === 0) {
+    var msg = document.createElement('p');
+    msg.id = 'no-city-msg';
+    msg.style.cssText = 'font-size:13px;color:var(--muted);';
+    msg.textContent = 'Henuz sehir secilmedi. Yukaridaki sehirlerden secim yapin.';
+    container.appendChild(msg);
+    return;
+  }
+
+  cities.sort(function(a, b) { return trLower(a).localeCompare(trLower(b), 'tr'); });
+
+  cities.forEach(function(city) {
+    var card = document.createElement('div');
+    card.className = 'city-card';
+
+    var header = document.createElement('div');
+    header.className = 'city-card-header';
+    var name = document.createElement('div');
+    name.className = 'city-card-name';
+    name.textContent = city;
+    var del = document.createElement('button');
+    del.className = 'city-card-del';
+    del.type = 'button';
+    del.textContent = '\u00D7';
+    del.addEventListener('click', function() {
+      delete selectedLocations[city];
+      renderSelectedCities();
+      updateCityChipStates();
+    });
+    header.appendChild(name);
+    header.appendChild(del);
+    card.appendChild(header);
+
+    // Districts
+    var districts = ILCELER[city];
+    if (districts && districts.length > 0) {
+      var distContainer = document.createElement('div');
+      distContainer.className = 'city-card-districts';
+      districts.forEach(function(d) {
+        var dChip = document.createElement('button');
+        dChip.className = 'district-chip';
+        dChip.type = 'button';
+        dChip.textContent = d;
+        if (selectedLocations[city] && selectedLocations[city].indexOf(d) !== -1) {
+          dChip.classList.add('selected');
+        }
+        dChip.addEventListener('click', function() {
+          dChip.classList.toggle('selected');
+          if (!selectedLocations[city]) selectedLocations[city] = [];
+          if (dChip.classList.contains('selected')) {
+            selectedLocations[city].push(d);
+          } else {
+            selectedLocations[city] = selectedLocations[city].filter(function(x) { return x !== d; });
+          }
+        });
+        distContainer.appendChild(dChip);
+      });
+      card.appendChild(distContainer);
+    } else {
+      var noDistrict = document.createElement('p');
+      noDistrict.style.cssText = 'font-size:12px;color:var(--muted);';
+      noDistrict.textContent = 'Bu il icin ilce secimi mevcut degil.';
+      card.appendChild(noDistrict);
+    }
+
+    container.appendChild(card);
+  });
+
+  updateCityChipStates();
+}
+
+function openLocationModal() {
+  var lokBody = document.getElementById('lok-body');
+  if (!lokBody) return;
+  lokBody.textContent = '';
+
+  Object.keys(TUR_ILLER).forEach(function(region) {
+    var regionDiv = document.createElement('div');
+    regionDiv.className = 'lok-region';
+    var title = document.createElement('div');
+    title.className = 'lok-region-title';
+    title.textContent = region;
+    regionDiv.appendChild(title);
+
+    var grid = document.createElement('div');
+    grid.className = 'lok-city-grid';
+    TUR_ILLER[region].forEach(function(city) {
+      var chip = document.createElement('button');
+      chip.className = 'lok-city';
+      chip.type = 'button';
+      chip.textContent = city;
+      if (selectedLocations[city]) chip.classList.add('selected');
+      chip.addEventListener('click', function() {
+        toggleCitySelection(city);
+        chip.classList.toggle('selected');
+        updateCityChipStates();
+      });
+      grid.appendChild(chip);
+    });
+    regionDiv.appendChild(grid);
+    lokBody.appendChild(regionDiv);
+  });
+
+  // Search filter
+  var searchInput = document.getElementById('lok-search-input');
+  if (searchInput) {
+    searchInput.value = '';
+    searchInput.addEventListener('input', function() {
+      var q = trLower(searchInput.value);
+      lokBody.querySelectorAll('.lok-city').forEach(function(chip) {
+        chip.style.display = trLower(chip.textContent).indexOf(q) !== -1 ? '' : 'none';
+      });
+    });
+  }
+
+  updateCityChipStates();
+  document.getElementById('lok-modal-overlay').classList.add('show');
+}
+
+// Location modal done button — just close and render
+// (already wired in event listeners section)
+
+function collectLocations() {
+  var result = [];
+  Object.keys(selectedLocations).forEach(function(city) {
+    result.push({
+      sehir: city,
+      ilceler: selectedLocations[city] || []
+    });
+  });
+  return result;
+}
+
+function setAvatarImage(url) {
+  var targets = ['user-avatar-header', 'sidebar-avatar', 'ps-avatar', 'avatar-upload-circle'];
+  targets.forEach(function(id) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    // Check if img already exists
+    var img = el.querySelector('img');
+    if (!img) {
+      img = document.createElement('img');
+      el.textContent = '';
+      el.appendChild(img);
+    }
+    img.src = url;
+    img.alt = 'Avatar';
   });
 }
 
