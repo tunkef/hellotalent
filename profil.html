@@ -2972,12 +2972,32 @@ function validateCard(card){
     });
   }else if(cardType==='egitim'){
     checkField('f-egitim-seviye','E\u011fitim Seviyesi');
+    checkField('f-mezun-yil','Mezuniyet Y\u0131l\u0131');
+    checkField('f-okul','Okul / \u00dcniversite');
+    checkField('f-bolum','B\u00f6l\u00fcm / Program');
+  }else if(cardType==='tercihler'){
+    // Hedef pozisyon en az 1 seçili olmalı
+    if(!selectedPozisyonlar||!selectedPozisyonlar.length){
+      var pozGrid=document.getElementById('pozisyon-grid');
+      if(pozGrid)missing.push({el:pozGrid,label:'Hedef Pozisyon (en az 1)'});
+    }
+  }else if(cardType==='lokasyon'){
+    // En az 1 şehir seçili olmalı
+    if(!selectedSehirler||!selectedSehirler.length){
+      var locPicks=document.getElementById('loc-quick-picks');
+      if(locPicks)missing.push({el:locPicks,label:'\u015eehir (en az 1)'});
+    }
   }
   // Eksik alanlara hata stili uygula
   missing.forEach(function(m){
     var field=m.el.closest('.field')||m.el.closest('.exp-field')||m.el.closest('.exp-date-row');
-    if(field)field.classList.add('field-error');
-    m.el.style.borderColor='#C94E28';
+    if(field){field.classList.add('field-error');}
+    // Chip container'lar (pozisyon-grid, loc-quick-picks) için outline
+    if(m.el.id==='pozisyon-grid'||m.el.id==='loc-quick-picks'){
+      m.el.style.outline='2px solid #C94E28';m.el.style.outlineOffset='4px';m.el.style.borderRadius='8px';
+    }else{
+      m.el.style.borderColor='#C94E28';
+    }
   });
   return{ok:missing.length===0,missing:missing};
 }
@@ -3000,7 +3020,7 @@ function showCardValidationMsg(card,missing){
     msg.classList.remove('visible');
     setTimeout(function(){msg.remove();},300);
     card.querySelectorAll('.field-error').forEach(function(f){f.classList.remove('field-error');});
-    missing.forEach(function(m){m.el.style.borderColor='';});
+    missing.forEach(function(m){m.el.style.borderColor='';m.el.style.outline='';m.el.style.outlineOffset='';});
   },5000);
 }
 function saveCard(btn){
