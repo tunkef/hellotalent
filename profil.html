@@ -210,11 +210,14 @@
   .exp-date-row select{flex:1;padding:6px 8px !important;border:1px solid var(--border) !important;border-radius:6px !important;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px !important;font-weight:600;color:var(--text);background:#fff !important;cursor:pointer;outline:none;width:auto !important;}
   .exp-date-row select:focus{border-color:var(--navy) !important;}
   .exp-field label,.exp-end-header{min-height:16px;display:flex;align-items:center;}
-  .exp-end-header{gap:6px;}
-  .exp-halen-wrap{display:inline-flex;align-items:center;gap:3px;margin-left:auto;}
-  .exp-halen-cb{width:14px;height:14px;accent-color:var(--green);cursor:pointer;margin:0;}
-  .exp-halen-cb:checked{accent-color:var(--green);}
-  .exp-halen-label{font-size:10px;font-weight:600;color:var(--green);cursor:pointer;user-select:none;}
+  .exp-end-header{gap:0;}
+  .exp-halen-wrap{display:inline-flex;align-items:center;gap:3px;margin-left:6px;padding:1px 6px 1px 4px;border-radius:10px;cursor:pointer;transition:all 0.15s;border:1px solid transparent;}
+  .exp-halen-wrap.active{background:var(--green-light);border-color:var(--green-border);}
+  .exp-halen-cb{width:11px;height:11px;-webkit-appearance:none;appearance:none;border:1.5px solid var(--border);border-radius:3px;cursor:pointer;margin:0;position:relative;transition:all 0.15s;background:white;flex-shrink:0;}
+  .exp-halen-cb:checked{background:var(--green);border-color:var(--green);}
+  .exp-halen-cb:checked::after{content:'\2713';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:7px;color:white;font-weight:800;line-height:1;}
+  .exp-halen-label{font-size:9px;font-weight:600;color:var(--muted);cursor:pointer;user-select:none;white-space:nowrap;transition:color 0.15s;}
+  .exp-halen-wrap.active .exp-halen-label{color:var(--green);}
   .exp-end-field{display:flex;flex-direction:column;gap:3px;}
   .exp-end-field label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--muted);}
   .exp-date-row select:disabled{background:var(--gray) !important;color:var(--muted) !important;cursor:default;opacity:0.5;}
@@ -2686,10 +2689,10 @@ function buildExpCard(exp){
   var f4=document.createElement('div');f4.className='exp-end-field';
   var endHeader=document.createElement('div');endHeader.className='exp-end-header';
   var lb4=document.createElement('label');lb4.textContent='Bitiş';endHeader.appendChild(lb4);
-  var halenWrap=document.createElement('span');halenWrap.className='exp-halen-wrap';
+  var halenWrap=document.createElement('span');halenWrap.className='exp-halen-wrap'+(exp.devam_ediyor?' active':'');
   var cb=document.createElement('input');cb.type='checkbox';cb.className='exp-halen-cb exp-devam-cb';cb.checked=exp.devam_ediyor;
   halenWrap.appendChild(cb);
-  var hLbl=document.createElement('label');hLbl.className='exp-halen-label';hLbl.textContent='Halen';
+  var hLbl=document.createElement('label');hLbl.className='exp-halen-label';hLbl.textContent='halen \u00e7al\u0131\u015f\u0131yorum';
   hLbl.addEventListener('click',function(){cb.checked=!cb.checked;cb.dispatchEvent(new Event('change'));});
   halenWrap.appendChild(hLbl);
   endHeader.appendChild(halenWrap);
@@ -2708,6 +2711,7 @@ function buildExpCard(exp){
   cb.addEventListener('change',function(){
     var checked=cb.checked;
     eAy.disabled=checked;eYil.disabled=checked;
+    halenWrap.className='exp-halen-wrap'+(checked?' active':'');
     ayrilmaField.className='exp-ayrilma-field'+(checked?' hidden':'');
     syncExpFromDOM(exp.id);
   });
