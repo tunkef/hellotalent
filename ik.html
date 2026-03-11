@@ -1193,6 +1193,10 @@ async function initApp(){
     window.location.replace('giris.html?tab=ik');
     return;
   }
+  if(data.session.user.user_metadata?.role !== 'employer'){
+    window.location.replace('profil.html');
+    return;
+  }
   currentUser = data.session.user;
 
   // Profil bilgilerini yükle
