@@ -123,9 +123,26 @@ Quick go/no-go check after deployment:
 
 ---
 
+## 7. Sentry Integration Verification
+
+**Goal**: Verify Sentry captures errors from the candidate dashboard.
+
+| # | Step | Expected |
+|---|------|----------|
+| 1 | Open `profil.html`, check browser console | No Sentry init errors |
+| 2 | Open DevTools Network tab, filter for `sentry` | Sentry SDK loads from CDN |
+| 3 | Trigger a deliberate error (e.g. disconnect network, then try CV upload) | Error toast appears AND event visible in Sentry dashboard |
+| 4 | Check Sentry dashboard → Issues | Event has `flow` tag (e.g. `cv-upload`, `wizard-save`) |
+| 5 | Check Sentry event user context | Shows user ID (no email/PII) |
+
+**Pass criteria**: Errors reach Sentry with correct flow tags. No PII leaked.
+
+---
+
 ## Notes
 
 - All storage operations target the `cvs` bucket
 - Avatar path: `avatars/{user_id}.{ext}`
 - CV path: `cv/{user_id}/cv.{ext}`
 - The `cvs` bucket is currently PUBLIC (see `docs/architecture/hellotalent-profile-system.md` section 9)
+- Sentry DSN must be configured before error monitoring works (see `docs/architecture/hellotalent-profile-system.md`)

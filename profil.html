@@ -10,6 +10,32 @@
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<!-- Sentry: minimal error monitoring -->
+<script src="https://browser.sentry-cdn.com/8.48.0/bundle.min.js" crossorigin="anonymous"></script>
+<script>
+if (window.Sentry) {
+  Sentry.init({
+    dsn: '__SENTRY_DSN__', // TODO: replace with your actual Sentry DSN
+    environment: location.hostname === 'localhost' ? 'development' : 'production',
+    sampleRate: 1.0,
+    // No performance/session replay — keep it lightweight
+    tracesSampleRate: 0,
+    replaysSessionSampleRate: 0,
+    replaysOnErrorSampleRate: 0,
+    // Only capture errors from our own page
+    allowUrls: [location.origin],
+    beforeSend: function(event) {
+      // Strip Supabase key from any breadcrumb/request data
+      var str = JSON.stringify(event);
+      if (str.indexOf('sb_publishable_') > -1) {
+        str = str.replace(/sb_publishable_[A-Za-z0-9_-]+/g, '[REDACTED]');
+        event = JSON.parse(str);
+      }
+      return event;
+    }
+  });
+}
+</script>
 <style>
 /* ═══════════════════════════════════════════════════
    PROFIL — COMPLETE CSS DESIGN SYSTEM
@@ -2170,12 +2196,16 @@ function reapplyDynamicFields() {
   console.time('[HT] total-load');
   var sessionRes = await supabase.auth.getSession();
   if (!sessionRes.data.session) {
+    if (window.Sentry) Sentry.addBreadcrumb({ category: 'auth', message: 'No session — redirecting to login', level: 'warning' });
     console.warn('[HT] No session found — redirecting to giris.html');
     window.location.href = 'giris.html';
     return;
   }
   currentUser = sessionRes.data.session.user;
   console.log('[HT] Session found for:', currentUser.email, '| id:', currentUser.id);
+
+  // Sentry: set user context (id only — no PII)
+  if (window.Sentry) Sentry.setUser({ id: currentUser.id });
 
   // Set email in sidebar and settings
   var email = currentUser.email || '';
@@ -2644,6 +2674,7 @@ async function handleAvatarUpload(input) {
     if (btnText) btnText.textContent = 'Guncellendi!';
     setTimeout(function() { if (btnText) btnText.textContent = 'Fotograf Yukle'; }, 2000);
   } catch (err) {
+    if (window.Sentry) Sentry.captureException(err, { tags: { flow: 'avatar-upload' } });
     console.error('[HT] Avatar upload error:', err);
     if (btnText) btnText.textContent = 'Hata!';
     setTimeout(function() { if (btnText) btnText.textContent = 'Fotograf Yukle'; }, 2000);
@@ -3761,6 +3792,7 @@ async function saveProfileRPC() {
     updateMerkezCards();
 
   } catch (err) {
+    if (window.Sentry) Sentry.captureException(err, { tags: { flow: 'wizard-save' } });
     var errorDesc = document.getElementById('error-desc');
     if (errorDesc) errorDesc.textContent = err.message || 'Bilinmeyen bir hata olustu.';
     document.getElementById('modal-error').classList.add('show');
@@ -3954,6 +3986,10 @@ async function loadProfileFromDB() {
   // Fetch candidate record
   var candRes = await supabase.from('candidates').select('*').eq('user_id', currentUser.id).single();
   if (candRes.error || !candRes.data) {
+    if (window.Sentry && candRes.error) Sentry.captureMessage('Profile restore: candidates query failed', {
+      level: 'error', tags: { flow: 'profile-restore' },
+      extra: { code: candRes.error.code, message: candRes.error.message }
+    });
     console.warn('[HT] loadProfileFromDB: candidates query failed', candRes.error);
     return null;
   }
@@ -3987,6 +4023,10 @@ async function loadProfileFromDB() {
   _childResults.forEach(function(pair) {
     var key = pair[0], r = pair[1];
     if (r.error) {
+      if (window.Sentry) Sentry.captureMessage('Profile restore: ' + key + ' query failed', {
+        level: 'error', tags: { flow: 'profile-restore', table: key },
+        extra: { code: r.error.code, hint: r.error.hint, status: r.status }
+      });
       console.error('[HT] ' + key + ' query FAILED →', r.error.message,
         '| code:', r.error.code, '| hint:', r.error.hint || '-',
         '| status:', r.status, '| details:', r.error.details || '-');
@@ -4348,6 +4388,7 @@ async function uploadCV(file) {
     showCVUploaded(file.name, new Date());
     showToast('CV yüklendi ✓', 'success');
   } catch (err) {
+    if (window.Sentry) Sentry.captureException(err, { tags: { flow: 'cv-upload' } });
     console.error('[HT] CV upload error:', err);
     showToast('Yükleme hatası: ' + (err.message || 'Bilinmeyen hata'), 'error');
   }
@@ -4375,6 +4416,7 @@ async function deleteCV() {
     showCVEmpty();
     showToast('CV silindi', 'success');
   } catch (err) {
+    if (window.Sentry) Sentry.captureException(err, { tags: { flow: 'cv-delete' } });
     console.error('[HT] CV delete error:', err);
     showToast('Silme hatası', 'error');
   }
