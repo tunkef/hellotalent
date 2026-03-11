@@ -4721,13 +4721,6 @@ async function loadSirketlerPanel() {
     var cr = await supabase.from('candidates').select('id').eq('user_id', currentUser.id).single();
     if (cr.data) _ht_candidate_id = cr.data.id;
   }
-
-  // Fetch brands (with nested company) and follows
-  var brandsRes = await supabase.from('brands').select('id, brand_name, slug, logo_url, company_id, companies(id, company_name, slug, logo_url)');
-  var followsRes = _ht_candidate_id
-    ? await supabase.from('candidate_company_follows').select('company_id').eq('candidate_id', _ht_candidate_id)
-    : { data: [] };
-
   if (brandsRes.error) {
     console.warn('[HT] loadSirketlerPanel: brands query failed', brandsRes.error);
     document.getElementById('sirket-list').innerHTML = '<div style="text-align:center;padding:32px 0;color:var(--muted);font-size:13px;">Veriler yuklenemedi.</div>';
