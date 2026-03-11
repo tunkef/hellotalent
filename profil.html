@@ -423,15 +423,15 @@ body{font-family:'Plus Jakarta Sans',sans-serif;color:var(--text);background:#ff
 
 /* Hero Terminal */
 .m-hero{
-  background:var(--navy-deep);border-radius:var(--radius-lg);padding:18px 20px;
+  background:var(--navy-deep);border-radius:var(--radius-lg);padding:22px 20px;
   margin-bottom:16px;color:white;
 }
-.m-hero-top{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
-.m-avatar{width:48px;height:48px;border-radius:50%;overflow:hidden;flex-shrink:0;background:linear-gradient(135deg,rgba(201,78,40,0.3),rgba(30,45,94,0.4));border:2px solid rgba(255,255,255,0.2);color:white;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;}
+.m-hero-top{display:flex;align-items:center;gap:14px;}
+.m-avatar{width:52px;height:52px;border-radius:50%;overflow:hidden;flex-shrink:0;background:linear-gradient(135deg,rgba(201,78,40,0.3),rgba(30,45,94,0.4));border:2px solid rgba(255,255,255,0.2);color:white;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:17px;}
 .m-avatar img{width:100%;height:100%;object-fit:cover;}
 #merkez-identity{display:flex;align-items:center;gap:12px;flex:1;}
 .m-info{flex:1;min-width:0;}
-.m-name{font-family:'Bricolage Grotesque',sans-serif;font-size:16px;font-weight:800;color:white;line-height:1.2;}
+.m-name{font-family:'Bricolage Grotesque',sans-serif;font-size:18px;font-weight:800;color:white;line-height:1.2;letter-spacing:-0.01em;}
 .m-role{font-size:12px;color:rgba(255,255,255,0.7);margin-top:1px;}
 .m-role-sep{margin:0 3px;opacity:0.4;}
 .m-meta{font-size:11px;color:rgba(255,255,255,0.5);margin-top:2px;display:flex;align-items:center;gap:3px;}
@@ -2165,6 +2165,11 @@ function setVal(id, value) {
     // Load CV state if exists
     if (dbData.profile.cv_url && dbData.profile.cv_filename) {
       showCVUploaded(dbData.profile.cv_filename, new Date(dbData.profile.cv_uploaded_at || Date.now()));
+      // Reconstruct storage path from URL for cleanup tracking
+      try {
+        var urlParts = dbData.profile.cv_url.split('/cv-uploads/');
+        if (urlParts.length > 1) currentCVStoragePath = urlParts[urlParts.length - 1];
+      } catch (e) {}
     }
     updateDashboardSummary(dbData.profile, dbData.experiences);
     updateMerkezCards(); // Populate Profil Merkezi section cards
@@ -3608,6 +3613,7 @@ async function saveProfileRPC() {
 
     // Success
     clearDraft();
+    wizardDirty = false; // Reset dirty state so success modal → switchPanel won't trigger guard
     document.getElementById('modal-success').classList.add('show');
     // Update sidebar name
     var nameEl = document.getElementById('sidebar-user-name');
@@ -4128,6 +4134,9 @@ function initCVUpload() {
   if (deleteBtn) deleteBtn.addEventListener('click', function(e) { e.preventDefault(); deleteCV(); });
 }
 
+// Track current CV storage path for cleanup on replace/delete
+var currentCVStoragePath = null;
+
 async function uploadCV(file) {
   if (file.size > 5 * 1024 * 1024) { showToast('Dosya 5MB\'dan büyük olamaz', 'error'); return; }
   var allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
@@ -4145,17 +4154,30 @@ async function uploadCV(file) {
   if (selectBtn) { selectBtn.textContent = 'Yükleniyor...'; selectBtn.disabled = true; }
 
   try {
-    var filePath = 'cv-uploads/' + userId + '/' + Date.now() + '_' + file.name;
+    // Delete old storage file if replacing
+    if (currentCVStoragePath) {
+      await supabase.storage.from('cv-uploads').remove([currentCVStoragePath]).catch(function() {});
+    }
+
+    // Upload new file (path relative to bucket, no redundant prefix)
+    var filePath = userId + '/' + Date.now() + '_' + file.name;
     var uploadRes = await supabase.storage.from('cv-uploads').upload(filePath, file, { upsert: true });
     if (uploadRes.error) throw uploadRes.error;
 
     var urlData = supabase.storage.from('cv-uploads').getPublicUrl(filePath);
     var cvUrl = urlData.data.publicUrl;
 
-    await supabase.from('candidates').update({
+    // Update DB and check for errors
+    var dbRes = await supabase.from('candidates').update({
       cv_url: cvUrl, cv_filename: file.name, cv_uploaded_at: new Date().toISOString()
     }).eq('user_id', userId);
+    if (dbRes.error) {
+      // Rollback: remove uploaded file since DB failed
+      await supabase.storage.from('cv-uploads').remove([filePath]).catch(function() {});
+      throw dbRes.error;
+    }
 
+    currentCVStoragePath = filePath;
     showCVUploaded(file.name, new Date());
     showToast('CV yüklendi ✓', 'success');
   } catch (err) {
@@ -4163,16 +4185,27 @@ async function uploadCV(file) {
     showToast('Yükleme hatası: ' + (err.message || 'Bilinmeyen hata'), 'error');
   }
 
+  // Reset file input so re-selecting same file triggers change event
+  var fileInput = document.getElementById('cv-file-input');
+  if (fileInput) fileInput.value = '';
   if (selectBtn) { selectBtn.textContent = 'Dosya Seç'; selectBtn.disabled = false; }
 }
 
 async function deleteCV() {
   if (!currentUser) return;
   try {
-    await supabase.from('candidates').update({ cv_url: null, cv_filename: null, cv_uploaded_at: null }).eq('user_id', currentUser.id);
+    // Remove storage file first (best-effort)
+    if (currentCVStoragePath) {
+      await supabase.storage.from('cv-uploads').remove([currentCVStoragePath]).catch(function() {});
+      currentCVStoragePath = null;
+    }
+    // Clear DB columns
+    var dbRes = await supabase.from('candidates').update({ cv_url: null, cv_filename: null, cv_uploaded_at: null }).eq('user_id', currentUser.id);
+    if (dbRes.error) throw dbRes.error;
     showCVEmpty();
     showToast('CV silindi', 'success');
   } catch (err) {
+    console.error('[HT] CV delete error:', err);
     showToast('Silme hatası', 'error');
   }
 }
