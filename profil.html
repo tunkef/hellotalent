@@ -2235,7 +2235,7 @@ function reapplyDynamicFields() {
       showCVUploaded(dbData.profile.cv_filename, new Date(dbData.profile.cv_uploaded_at || Date.now()));
       // Reconstruct storage path from URL for cleanup tracking
       try {
-        var urlParts = dbData.profile.cv_url.split('/cv-uploads/');
+        var urlParts = dbData.profile.cv_url.split('/cvs/');
         if (urlParts.length > 1) currentCVStoragePath = urlParts[urlParts.length - 1];
       } catch (e) {}
     }
@@ -4309,15 +4309,15 @@ async function uploadCV(file) {
   try {
     // Delete old storage file if replacing
     if (currentCVStoragePath) {
-      await supabase.storage.from('cv-uploads').remove([currentCVStoragePath]).catch(function() {});
+      await supabase.storage.from('cvs').remove([currentCVStoragePath]).catch(function() {});
     }
 
     // Upload new file (path relative to bucket, no redundant prefix)
     var filePath = userId + '/' + Date.now() + '_' + file.name;
-    var uploadRes = await supabase.storage.from('cv-uploads').upload(filePath, file, { upsert: true });
+    var uploadRes = await supabase.storage.from('cvs').upload(filePath, file, { upsert: true });
     if (uploadRes.error) throw uploadRes.error;
 
-    var urlData = supabase.storage.from('cv-uploads').getPublicUrl(filePath);
+    var urlData = supabase.storage.from('cvs').getPublicUrl(filePath);
     var cvUrl = urlData.data.publicUrl;
 
     // Update DB and check for errors
@@ -4326,7 +4326,7 @@ async function uploadCV(file) {
     }).eq('user_id', userId);
     if (dbRes.error) {
       // Rollback: remove uploaded file since DB failed
-      await supabase.storage.from('cv-uploads').remove([filePath]).catch(function() {});
+      await supabase.storage.from('cvs').remove([filePath]).catch(function() {});
       throw dbRes.error;
     }
 
@@ -4349,7 +4349,7 @@ async function deleteCV() {
   try {
     // Remove storage file first (best-effort)
     if (currentCVStoragePath) {
-      await supabase.storage.from('cv-uploads').remove([currentCVStoragePath]).catch(function() {});
+      await supabase.storage.from('cvs').remove([currentCVStoragePath]).catch(function() {});
       currentCVStoragePath = null;
     }
     // Clear DB columns
