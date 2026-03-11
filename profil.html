@@ -2622,21 +2622,32 @@ async function handleAvatarUpload(input) {
   if (file.size > 2 * 1024 * 1024) { alert('Dosya 2MB\'dan buyuk olamaz.'); return; }
   var btnText = document.getElementById('avatar-btn-text');
   if (btnText) btnText.textContent = 'Yukleniyor...';
-  var ext = file.name.split('.').pop();
+  var ext = file.name.split('.').pop().toLowerCase();
   var path = 'avatars/' + currentUser.id + '.' + ext;
-  var res = await supabase.storage.from('cvs').upload(path, file, { upsert: true });
-  if (res.error) {
+
+  try {
+    // Remove any existing avatar files for this user (handles extension change: .jpg→.png)
+    var listRes = await supabase.storage.from('cvs').list('avatars', { search: currentUser.id });
+    if (listRes.data && listRes.data.length > 0) {
+      var oldPaths = listRes.data.map(function(f) { return 'avatars/' + f.name; });
+      await supabase.storage.from('cvs').remove(oldPaths).catch(function() {});
+    }
+
+    // Upload to stable path (one avatar per user)
+    var res = await supabase.storage.from('cvs').upload(path, file, { upsert: true });
+    if (res.error) throw res.error;
+
+    var urlRes = supabase.storage.from('cvs').getPublicUrl(path);
+    var avatarUrl = urlRes.data.publicUrl + '?t=' + Date.now();
+    await supabase.from('candidates').upsert({ user_id: currentUser.id, avatar_url: avatarUrl }, { onConflict: 'user_id' });
+    setAvatarImage(avatarUrl);
+    if (btnText) btnText.textContent = 'Guncellendi!';
+    setTimeout(function() { if (btnText) btnText.textContent = 'Fotograf Yukle'; }, 2000);
+  } catch (err) {
+    console.error('[HT] Avatar upload error:', err);
     if (btnText) btnText.textContent = 'Hata!';
-    return;
+    setTimeout(function() { if (btnText) btnText.textContent = 'Fotograf Yukle'; }, 2000);
   }
-  var urlRes = supabase.storage.from('cvs').getPublicUrl(path);
-  var avatarUrl = urlRes.data.publicUrl + '?t=' + Date.now();
-  // Update DB
-  await supabase.from('candidates').upsert({ user_id: currentUser.id, avatar_url: avatarUrl }, { onConflict: 'user_id' });
-  // Update all avatar elements
-  setAvatarImage(avatarUrl);
-  if (btnText) btnText.textContent = 'Guncellendi!';
-  setTimeout(function() { if (btnText) btnText.textContent = 'Fotograf Yukle'; }, 2000);
 }
 
 // ═══════════════════════════════════════════════════
@@ -4307,13 +4318,15 @@ async function uploadCV(file) {
   if (selectBtn) { selectBtn.textContent = 'Yükleniyor...'; selectBtn.disabled = true; }
 
   try {
-    // Delete old storage file if replacing
-    if (currentCVStoragePath) {
-      await supabase.storage.from('cv-uploads').remove([currentCVStoragePath]).catch(function() {});
+    // Remove ALL existing CV files for this user (clean slate, no orphans)
+    var listRes = await supabase.storage.from('cv-uploads').list(userId);
+    if (listRes.data && listRes.data.length > 0) {
+      var oldPaths = listRes.data.map(function(f) { return userId + '/' + f.name; });
+      await supabase.storage.from('cv-uploads').remove(oldPaths).catch(function() {});
     }
 
-    // Upload new file (path relative to bucket, no redundant prefix)
-    var filePath = userId + '/' + Date.now() + '_' + file.name;
+    // Upload to stable path: {user_id}/cv.{ext} (one CV per user)
+    var filePath = userId + '/cv.' + ext;
     var uploadRes = await supabase.storage.from('cv-uploads').upload(filePath, file, { upsert: true });
     if (uploadRes.error) throw uploadRes.error;
 
@@ -4347,11 +4360,13 @@ async function uploadCV(file) {
 async function deleteCV() {
   if (!currentUser) return;
   try {
-    // Remove storage file first (best-effort)
-    if (currentCVStoragePath) {
-      await supabase.storage.from('cv-uploads').remove([currentCVStoragePath]).catch(function() {});
-      currentCVStoragePath = null;
+    // Remove ALL CV files for this user (catches orphans from old timestamped paths too)
+    var listRes = await supabase.storage.from('cv-uploads').list(currentUser.id);
+    if (listRes.data && listRes.data.length > 0) {
+      var oldPaths = listRes.data.map(function(f) { return currentUser.id + '/' + f.name; });
+      await supabase.storage.from('cv-uploads').remove(oldPaths).catch(function() {});
     }
+    currentCVStoragePath = null;
     // Clear DB columns
     var dbRes = await supabase.from('candidates').update({ cv_url: null, cv_filename: null, cv_uploaded_at: null }).eq('user_id', currentUser.id);
     if (dbRes.error) throw dbRes.error;
