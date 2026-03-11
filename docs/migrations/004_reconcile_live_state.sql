@@ -24,35 +24,61 @@
 
 
 -- ── 1. CANDIDATES TABLE — ensure cv/avatar columns exist ─────
--- These columns were added manually or via migration 003.
+-- avatar_url was added manually in production (no prior migration).
+-- cv_url, cv_filename, cv_uploaded_at were added in migration 003.
+-- updated_at was added in migration 001.
 -- Re-declaring with IF NOT EXISTS catches partially applied envs.
+-- Types and defaults below match the live production schema exactly.
 
-ALTER TABLE candidates ADD COLUMN IF NOT EXISTS avatar_url text;
-ALTER TABLE candidates ADD COLUMN IF NOT EXISTS cv_url text;
-ALTER TABLE candidates ADD COLUMN IF NOT EXISTS cv_filename text;
-ALTER TABLE candidates ADD COLUMN IF NOT EXISTS cv_uploaded_at timestamptz;
-
--- updated_at was introduced in migration 001. Re-declare for safety.
-ALTER TABLE candidates ADD COLUMN IF NOT EXISTS updated_at timestamptz DEFAULT now();
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS avatar_url text;          -- nullable, no default (set on upload)
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS cv_url text;              -- nullable, no default (set on upload)
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS cv_filename text;         -- nullable, no default (set on upload)
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS cv_uploaded_at timestamptz; -- nullable, no default (set on upload)
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS updated_at timestamptz DEFAULT now(); -- from migration 001
 
 
 -- ── 2. UNIQUE CONSTRAINT on candidates.user_id ──────────────
 -- The application relies on ON CONFLICT 'user_id' for upserts
--- (avatar upload, is_active toggle, profile save).
--- This constraint must exist for those upserts to work.
--- Guard: only add if not already present.
+-- (avatar upload, is_active toggle, profile save via RPC).
+-- Postgres requires a unique constraint OR unique index for ON CONFLICT.
+-- Guard: skip if any of the following already provides uniqueness:
+--   (a) a UNIQUE constraint on user_id (pg_constraint, contype = 'u')
+--   (b) a PRIMARY KEY that is user_id   (pg_constraint, contype = 'p')
+--   (c) a UNIQUE INDEX on user_id       (pg_index where indisunique)
 
 DO $$
+DECLARE
+  v_has_uniqueness boolean;
 BEGIN
-  IF NOT EXISTS (
-    SELECT 1 FROM pg_constraint
-    WHERE conrelid = 'candidates'::regclass
-      AND contype = 'u'
-      AND conname = 'candidates_user_id_key'
-  ) THEN
-    -- Check there are no duplicates before adding the constraint.
-    -- If duplicates exist, this block will raise and the migration
-    -- must be resolved manually before proceeding.
+  -- Check pg_constraint for UNIQUE or PK constraint on user_id
+  SELECT EXISTS (
+    SELECT 1
+    FROM pg_constraint c
+    JOIN pg_attribute a ON a.attrelid = c.conrelid
+                       AND a.attnum = ANY(c.conkey)
+    WHERE c.conrelid = 'candidates'::regclass
+      AND c.contype IN ('u', 'p')
+      AND a.attname = 'user_id'
+      AND array_length(c.conkey, 1) = 1   -- single-column only
+  ) INTO v_has_uniqueness;
+
+  -- Also check for a standalone unique index (not backing a constraint)
+  IF NOT v_has_uniqueness THEN
+    SELECT EXISTS (
+      SELECT 1
+      FROM pg_index i
+      JOIN pg_attribute a ON a.attrelid = i.indrelid
+                         AND a.attnum = i.indkey[0]
+      WHERE i.indrelid = 'candidates'::regclass
+        AND i.indisunique = true
+        AND a.attname = 'user_id'
+        AND i.indnkeyatts = 1             -- single-column only
+    ) INTO v_has_uniqueness;
+  END IF;
+
+  IF NOT v_has_uniqueness THEN
+    -- Verify no duplicates before adding the constraint.
+    -- If duplicates exist, raise — manual resolution required.
     IF (SELECT count(*) - count(DISTINCT user_id) FROM candidates) > 0 THEN
       RAISE EXCEPTION
         'Cannot add UNIQUE on candidates.user_id: duplicate values exist. '
@@ -60,6 +86,9 @@ BEGIN
     END IF;
 
     ALTER TABLE candidates ADD CONSTRAINT candidates_user_id_key UNIQUE (user_id);
+    RAISE NOTICE 'Added UNIQUE constraint candidates_user_id_key on candidates.user_id';
+  ELSE
+    RAISE NOTICE 'Uniqueness on candidates.user_id already exists — skipping.';
   END IF;
 END
 $$;
