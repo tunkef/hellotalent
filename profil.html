@@ -2167,6 +2167,7 @@ function reapplyDynamicFields() {
 
 (async function() {
   console.log('[HT] Auth bootstrap: checking session...');
+  console.time('[HT] total-load');
   var sessionRes = await supabase.auth.getSession();
   if (!sessionRes.data.session) {
     console.warn('[HT] No session found — redirecting to giris.html');
@@ -2201,11 +2202,17 @@ function reapplyDynamicFields() {
   document.getElementById('dash-welcome-name').textContent = 'Hos geldin, ' + fallbackName.split(' ')[0] + '!';
 
   // Try loading profile data from DB
+  console.log('[HT] >>> loadProfileFromDB starting...');
   var dbData = await loadProfileFromDB();
   _loadedDBData = dbData; // Store for post-init re-apply
-  console.log('[HT] DB load result:', dbData ? 'DATA FOUND' : 'NULL (no data or error)');
+  console.log('[HT] >>> loadProfileFromDB done. Result:', dbData ? 'DATA FOUND' : 'NULL');
   if (dbData) {
+    console.log('[HT] >>> applyDraft starting. exp-cards-container children BEFORE:',
+      (document.getElementById('exp-cards-container') || {}).children
+        ? document.getElementById('exp-cards-container').children.length : 'N/A');
     applyDraft(dbData); // reuse applyDraft to populate all fields
+    console.log('[HT] >>> applyDraft done. exp-cards-container children AFTER:',
+      document.getElementById('exp-cards-container').children.length);
     if (dbData.profile && dbData.profile.avatar_url) setAvatarImage(dbData.profile.avatar_url);
     if (dbData.profile && dbData.profile.full_name) {
       var n = dbData.profile.full_name;
@@ -2234,6 +2241,30 @@ function reapplyDynamicFields() {
     }
     updateDashboardSummary(dbData.profile, dbData.experiences);
     updateMerkezCards(); // Populate Profil Merkezi section cards
+    // ── Final DOM state snapshot ──
+    setTimeout(function() {
+      var ec = document.getElementById('exp-cards-container');
+      var lc = document.getElementById('lang-rows-container');
+      console.log('[HT] === FINAL DOM STATE (500ms) ===');
+      console.log('[HT] exp-cards:', ec ? ec.children.length : 0, 'cards');
+      if (ec) {
+        Array.prototype.forEach.call(ec.children, function(card, i) {
+          var sirketEl = card.querySelector('input[id$="-sirket"]');
+          var pozEl = card.querySelector('input[id$="-pozisyon"]');
+          console.log('[HT]   card', i, ': sirket=' + (sirketEl ? JSON.stringify(sirketEl.value) : 'N/A') +
+            ', pozisyon=' + (pozEl ? JSON.stringify(pozEl.value) : 'N/A'));
+        });
+      }
+      console.log('[HT] lang-rows:', lc ? lc.children.length : 0, 'rows');
+      if (lc) {
+        Array.prototype.forEach.call(lc.children, function(row, i) {
+          var dilEl = row.querySelector('select[id$="-dil"]');
+          var sevEl = row.querySelector('select[id$="-seviye"]');
+          console.log('[HT]   lang', i, ': dil=' + (dilEl ? JSON.stringify(dilEl.value) : 'N/A') +
+            ', seviye=' + (sevEl ? JSON.stringify(sevEl.value) : 'N/A'));
+        });
+      }
+    }, 500);
   } else {
     // No DB data — check for draft
     var draft = loadDraft();
@@ -2430,15 +2461,22 @@ document.addEventListener('DOMContentLoaded', function() {
   initCVUpload();
 
   // ══ STEP INITS ══
+  console.log('[HT] >>> DOMContentLoaded: running initStep1-5...');
   initStep1();
   initStep2();
+  console.log('[HT] >>> after initStep2: exp-cards-container children=',
+    (document.getElementById('exp-cards-container') || {children:[]}).children.length,
+    '| lang-rows-container children=',
+    (document.getElementById('lang-rows-container') || {children:[]}).children.length);
   initStep3();
   initStep4();
   initStep5();
 
   // Re-apply DB values to selects/chips that were just created by initStep1/4/5.
   // Covers the race where applyDraft ran before these options/chips existed.
+  console.log('[HT] >>> reapplyDynamicFields: _loadedDBData is', _loadedDBData ? 'SET' : 'NULL');
   reapplyDynamicFields();
+  console.timeEnd('[HT] total-load');
 
   // Location modal
   var btnLokClose = document.getElementById('btn-lok-close');
