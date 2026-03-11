@@ -36,6 +36,27 @@ if (window.Sentry) {
   });
 }
 </script>
+<!-- PostHog: lightweight product analytics -->
+<script>
+!function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.async=!0,p.src=s.api_host+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="init identify capture register register_once unregister opt_out_capturing has_opted_out_capturing opt_in_capturing reset isFeatureEnabled onFeatureFlags getFeatureFlag getFeatureFlagPayload reloadFeatureFlags group updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures getActiveMatchingSurveys getSurveys onSessionId".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
+posthog.init('__POSTHOG_KEY__', {
+  api_host: '__POSTHOG_HOST__',
+  autocapture: false,
+  capture_pageview: false,
+  capture_pageleave: false,
+  disable_session_recording: true,
+  persistence: 'localStorage',
+  loaded: function(ph) {
+    if (location.hostname === 'localhost') ph.opt_out_capturing();
+  }
+});
+// ── Lightweight track helper (safe no-op if PostHog unavailable) ──
+function ht_track(event, props) {
+  if (window.posthog && typeof posthog.capture === 'function') {
+    posthog.capture(event, props || {});
+  }
+}
+</script>
 <style>
 /* ═══════════════════════════════════════════════════
    PROFIL — COMPLETE CSS DESIGN SYSTEM
@@ -1758,6 +1779,7 @@ function wizGoTo(step) {
   if (step > wizStep) saveDraft();
   wizStep = step;
   renderWizard();
+  ht_track('wizard_step_reached', { step: step });
 }
 
 function wizNext() { if (wizStep < TOTAL_STEPS) wizGoTo(wizStep + 1); }
@@ -1933,7 +1955,7 @@ function _doSwitchPanel(name) {
     if (btn.dataset.panel === name) btn.classList.add('active');
   });
   // Refresh Profil Merkezi cards when switching to it
-  if (name === 'merkez') { updateMerkezCards(); updateCompletionUI(); }
+  if (name === 'merkez') { updateMerkezCards(); updateCompletionUI(); ht_track('merkez_viewed'); }
   // Close mobile sidebar
   closeMobileSidebar();
 }
@@ -1947,6 +1969,7 @@ function editSection(step) {
   wizStep = step;
   renderWizard();
   _doSwitchPanel('profil');
+  ht_track('wizard_started', { entry_step: step });
   // Attach dirty listeners after a tick (so DOM is ready)
   setTimeout(attachWizardDirtyListeners, 100);
 }
@@ -2206,6 +2229,8 @@ function reapplyDynamicFields() {
 
   // Sentry: set user context (id only — no PII)
   if (window.Sentry) Sentry.setUser({ id: currentUser.id });
+  // PostHog: identify by internal user ID only — no PII
+  if (window.posthog && typeof posthog.identify === 'function') posthog.identify(currentUser.id);
 
   // Set email in sidebar and settings
   var email = currentUser.email || '';
@@ -2344,6 +2369,9 @@ function reapplyDynamicFields() {
 // ═══════════════════════════════════════════════════
 
 document.addEventListener('DOMContentLoaded', function() {
+  // PostHog: profile page viewed
+  ht_track('profile_page_viewed');
+
   // Sidebar nav clicks
   document.querySelectorAll('.sidebar-nav .nav-item').forEach(function(btn) {
     btn.addEventListener('click', function() {
@@ -2671,6 +2699,7 @@ async function handleAvatarUpload(input) {
     var avatarUrl = urlRes.data.publicUrl + '?t=' + Date.now();
     await supabase.from('candidates').upsert({ user_id: currentUser.id, avatar_url: avatarUrl }, { onConflict: 'user_id' });
     setAvatarImage(avatarUrl);
+    ht_track('avatar_upload_success');
     if (btnText) btnText.textContent = 'Guncellendi!';
     setTimeout(function() { if (btnText) btnText.textContent = 'Fotograf Yukle'; }, 2000);
   } catch (err) {
@@ -3782,6 +3811,7 @@ async function saveProfileRPC() {
     // Success
     clearDraft();
     wizardDirty = false; // Reset dirty state so success modal → switchPanel won't trigger guard
+    ht_track('profile_save_success');
     document.getElementById('modal-success').classList.add('show');
     // Update sidebar name
     var nameEl = document.getElementById('sidebar-user-name');
@@ -4386,6 +4416,7 @@ async function uploadCV(file) {
 
     currentCVStoragePath = filePath;
     showCVUploaded(file.name, new Date());
+    ht_track('cv_upload_success', { file_type: ext });
     showToast('CV yüklendi ✓', 'success');
   } catch (err) {
     if (window.Sentry) Sentry.captureException(err, { tags: { flow: 'cv-upload' } });
@@ -4414,6 +4445,7 @@ async function deleteCV() {
     var dbRes = await supabase.from('candidates').update({ cv_url: null, cv_filename: null, cv_uploaded_at: null }).eq('user_id', currentUser.id);
     if (dbRes.error) throw dbRes.error;
     showCVEmpty();
+    ht_track('cv_deleted');
     showToast('CV silindi', 'success');
   } catch (err) {
     if (window.Sentry) Sentry.captureException(err, { tags: { flow: 'cv-delete' } });
