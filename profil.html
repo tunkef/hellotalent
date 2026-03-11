@@ -1477,6 +1477,7 @@ var SUPABASE_URL = 'https://cpwibefquojehjehtrog.supabase.co';
 var SUPABASE_KEY = 'sb_publishable_POUtNwJyjAAheukwYP5hmA_TKKjphwa';
 var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 var currentUser = null;
+var _loadedDBData = null; // Stores loaded DB data for post-init re-apply
 
 // ── HELPER: Turkish lowercase ──
 function trLower(s) {
@@ -2031,6 +2032,8 @@ function applyDraft(draft) {
     draft.languages.forEach(function(lang) { addLanguageRow(lang); });
   }
   if (draft.certificates && draft.certificates.length > 0) {
+    var certContainer = document.getElementById('cert-rows-container');
+    if (certContainer) { certContainer.textContent = ''; certCounter = 0; }
     draft.certificates.forEach(function(cert) { addCertificateRow(cert); });
   }
 
@@ -2095,10 +2098,62 @@ function applyDraft(draft) {
 }
 
 function setVal(id, value) {
-  if (!value) return;
+  if (value == null) return;
   var el = document.getElementById(id);
   if (!el) return;
   el.value = value;
+}
+
+// Re-apply dynamically-populated selects and chips after initStep1/4/5 have created them.
+// Covers the race where applyDraft ran before DOMContentLoaded (options didn't exist yet).
+// Safe to call when no DB data was loaded (_loadedDBData is null) — returns immediately.
+function reapplyDynamicFields() {
+  var db = _loadedDBData;
+  if (!db) return;
+
+  // Step 1 selects (options created by initStep1)
+  if (db.profile) {
+    setVal('f-dogumyili', db.profile.dogum_yili);
+    setVal('f-adresil', db.profile.adres_il);
+    if (db.profile.adres_il) {
+      populateIlceSelect('f-adresilce', db.profile.adres_il);
+      setVal('f-adresilce', db.profile.adres_ilce);
+    }
+  }
+
+  // Step 4 selects + chips (options/chips created by initStep4)
+  if (db.work_prefs) {
+    var wp = db.work_prefs;
+    setVal('f-maas', wp.maas_beklenti);
+    // Musaitlik chips
+    if (wp.musaitlik) {
+      document.querySelectorAll('#musaitlik-chips .chip').forEach(function(c) {
+        c.classList.toggle('selected', c.textContent === wp.musaitlik);
+      });
+    }
+    // Calisma tipleri checkboxes
+    if (wp.calisma_tipleri && wp.calisma_tipleri.length > 0) {
+      document.querySelectorAll('#calisma-tipleri-checks input[type=checkbox]').forEach(function(cb) {
+        cb.checked = wp.calisma_tipleri.indexOf(cb.value) !== -1;
+      });
+    }
+    // Segment chips
+    if (wp.tercih_segmentler && wp.tercih_segmentler.length > 0) {
+      document.querySelectorAll('#segment-chips .chip').forEach(function(c) {
+        c.classList.toggle('selected', wp.tercih_segmentler.indexOf(c.textContent) !== -1);
+      });
+    }
+    // Career type checkboxes
+    if (wp.career_type) {
+      var types = typeof wp.career_type === 'string' ? wp.career_type.split(',') : [];
+      document.querySelectorAll('#career-type-checks input[type=checkbox]').forEach(function(cb) {
+        cb.checked = types.indexOf(cb.value) !== -1;
+      });
+    }
+  }
+
+  // Step 5 city chip visual state (chips created by initStep5)
+  updateCityChipStates();
 }
 
 // ═══════════════════════════════════════════════════
@@ -2142,6 +2197,7 @@ function setVal(id, value) {
 
   // Try loading profile data from DB
   var dbData = await loadProfileFromDB();
+  _loadedDBData = dbData; // Store for post-init re-apply
   console.log('[HT] DB load result:', dbData ? 'DATA FOUND' : 'NULL (no data or error)');
   if (dbData) {
     applyDraft(dbData); // reuse applyDraft to populate all fields
@@ -2374,6 +2430,10 @@ document.addEventListener('DOMContentLoaded', function() {
   initStep3();
   initStep4();
   initStep5();
+
+  // Re-apply DB values to selects/chips that were just created by initStep1/4/5.
+  // Covers the race where applyDraft ran before these options/chips existed.
+  reapplyDynamicFields();
 
   // Location modal
   var btnLokClose = document.getElementById('btn-lok-close');
@@ -2686,7 +2746,7 @@ function makeField(type, labelText, id, placeholder, value) {
   input.type = type;
   input.id = id;
   if (placeholder) input.placeholder = placeholder;
-  if (value) input.value = value;
+  if (value != null) input.value = value;
   wrap.appendChild(lbl);
   wrap.appendChild(input);
   return wrap;
@@ -3039,7 +3099,7 @@ function makeAutoField(labelText, id, dataList, value) {
   input.id = id;
   input.placeholder = labelText + ' ara...';
   input.autocomplete = 'off';
-  if (value) input.value = value;
+  if (value != null) input.value = value;
   var sugBox = document.createElement('div');
   sugBox.className = 'autocomplete-list';
   sugBox.id = id + '-sug';
