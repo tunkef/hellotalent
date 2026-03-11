@@ -3907,12 +3907,31 @@ async function loadProfileFromDB() {
     supabase.from('candidate_location_preferences').select('*, candidate_location_pref_districts(*)').eq('candidate_id', cid)
   ]);
 
-  // ── Diagnostic: log child-table query errors so silent failures become visible ──
-  var _childResults = {experiences: expRes, education: eduRes, certificates: certRes, languages: langRes, target_roles: roleRes, work_prefs: wpRes, brand_interests: biRes, locations: locRes};
-  Object.keys(_childResults).forEach(function(key) {
-    var r = _childResults[key];
-    if (r.error) console.error('[HT] loadProfileFromDB: ' + key + ' query FAILED →', r.error.message, '| code:', r.error.code, '| details:', r.error.details);
-    else console.log('[HT] loadProfileFromDB: ' + key + ' → ' + (Array.isArray(r.data) ? r.data.length + ' rows' : (r.data ? '1 record' : 'null')));
+  // ── Diagnostic: log every child-table result so silent failures become visible ──
+  var _childResults = [
+    ['experiences',     expRes],
+    ['education',       eduRes],
+    ['certificates',    certRes],
+    ['languages',       langRes],
+    ['target_roles',    roleRes],
+    ['work_prefs',      wpRes],
+    ['brand_interests', biRes],
+    ['locations',       locRes]
+  ];
+  _childResults.forEach(function(pair) {
+    var key = pair[0], r = pair[1];
+    if (r.error) {
+      console.error('[HT] ' + key + ' query FAILED →', r.error.message,
+        '| code:', r.error.code, '| hint:', r.error.hint || '-',
+        '| status:', r.status, '| details:', r.error.details || '-');
+    } else if (Array.isArray(r.data)) {
+      console.log('[HT] ' + key + ' → ' + r.data.length + ' rows');
+    } else if (r.data) {
+      console.log('[HT] ' + key + ' → 1 record');
+    } else {
+      // .single() returns data:null + no error when 0 rows (PGRST116)
+      console.warn('[HT] ' + key + ' → null (no rows or unexpected shape)');
+    }
   });
 
   return {
