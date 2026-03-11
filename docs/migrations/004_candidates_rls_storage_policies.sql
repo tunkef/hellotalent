@@ -156,13 +156,6 @@ CREATE POLICY "cvs_bucket_delete"
 -- NOTES
 -- ═══════════════════════════════════════════════════════════
 --
--- Public URL access:
---   If the 'cvs' bucket is set to "public" in Supabase dashboard,
---   getPublicUrl() links are served without auth headers.
---   The SELECT policy above governs the .list() and .download() API calls,
---   NOT direct public URL access. This is expected behavior:
---   avatar URLs are embedded in the page, CV URLs are shared with recruiters.
---
 -- list() operation for avatars:
 --   profil.html calls: supabase.storage.from('cvs').list('avatars', { search: uid })
 --   The SELECT policy allows this because the returned rows are filtered by RLS.
@@ -172,3 +165,72 @@ CREATE POLICY "cvs_bucket_delete"
 --   When recruiter pages need to read candidate CVs/avatars, add a separate
 --   SELECT policy for a 'recruiter' role or use service_role on the backend.
 --   Do NOT widen these policies — add new ones scoped to recruiter needs.
+
+
+-- ═══════════════════════════════════════════════════════════
+-- SECURITY DESIGN NOTE: PUBLIC CV URLs ARE A TEMPORARY COMPROMISE
+-- ═══════════════════════════════════════════════════════════
+--
+-- CURRENT REALITY (as of migration 004):
+--
+--   The 'cvs' bucket is set to PUBLIC in the Supabase dashboard.
+--   Both avatars and CVs use getPublicUrl(), meaning anyone with the URL
+--   can download the file without authentication.
+--
+--   - Avatars: PUBLIC is acceptable. Avatar images are displayed on the
+--     candidate's profile page and visible to recruiters. Public access
+--     is the intended behavior. URLs are not sensitive.
+--
+--   - CVs: PUBLIC is NOT the desired long-term model. CV documents contain
+--     personal data (work history, contact info, sometimes ID numbers).
+--     A public URL means anyone who guesses or intercepts the URL can
+--     download the CV — no auth check, no audit trail.
+--
+--   The RLS policies above protect the Supabase API (upload, list, delete,
+--   overwrite) — a user cannot modify another user's files. But the PUBLIC
+--   bucket setting bypasses RLS for direct URL reads. This is the gap.
+--
+-- WHY THIS IS ACCEPTABLE FOR NOW:
+--
+--   - CV URLs contain a UUID path segment (cv/{uuid}/cv.pdf), making them
+--     unguessable in practice (128-bit random ID)
+--   - The current user base is small (early MVP)
+--   - Splitting buckets or switching to signed URLs requires code changes
+--     in both the candidate upload flow and the recruiter read flow
+--   - Prioritizing this over UI/UX polish would delay the product
+--
+-- RECOMMENDED FUTURE DIRECTION (migration 005 or later):
+--
+--   Option A — Split buckets (RECOMMENDED):
+--     1. Create a new bucket 'avatars' → set to PUBLIC
+--     2. Change avatar code: from('avatars') instead of from('cvs')
+--     3. Set 'cvs' bucket to PRIVATE in dashboard
+--     4. Change CV read code: use createSignedUrl() instead of getPublicUrl()
+--        - signedUrl gives a time-limited link (e.g. 1 hour)
+--        - recruiter pages would request a fresh signed URL on each view
+--     5. Add storage policies to the new 'avatars' bucket
+--     Pros: clean separation, avatars stay fast/public, CVs fully private
+--     Cons: requires code changes in profil.html + recruiter pages
+--
+--   Option B — Keep one bucket, switch CV access to signed URLs:
+--     1. Keep 'cvs' bucket PUBLIC (for avatars)
+--     2. Stop storing getPublicUrl() for CVs in candidates.cv_url
+--     3. Instead store only the storage path (cv/{uid}/cv.pdf)
+--     4. Generate signed URLs on demand when displaying CV links
+--     Pros: no bucket changes needed
+--     Cons: bucket stays public so avatar URLs still work, but CV URLs
+--            are no longer permanent (signed URLs expire)
+--
+--   Option A is cleaner. Option B is a smaller code change.
+--
+-- WHAT TO DO NOW:
+--   - Apply this migration as-is (low risk, immediate security improvement)
+--   - Do NOT change the bucket visibility yet
+--   - Do NOT change getPublicUrl() calls yet
+--   - Treat public CV URLs as a known, documented, accepted temporary state
+--
+-- WHAT TO DO BEFORE RECRUITER LAUNCH:
+--   - Implement Option A (split buckets) or Option B (signed URLs)
+--   - This MUST happen before recruiter-facing CV access goes live,
+--     because recruiters viewing CVs = more URL exposure = higher risk
+--
