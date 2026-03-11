@@ -1985,6 +1985,11 @@ function clearDraft() {
 }
 function applyDraft(draft) {
   if (!draft) return;
+  console.log('[HT] applyDraft: experiences=' + (draft.experiences ? draft.experiences.length : 0) +
+    ', education=' + (draft.education ? draft.education.length : 0) +
+    ', languages=' + (draft.languages ? draft.languages.length : 0) +
+    ', certificates=' + (draft.certificates ? draft.certificates.length : 0) +
+    ', target_roles=' + (draft.target_roles ? draft.target_roles.length : 0));
   // Step 1: Profile fields
   if (draft.profile) {
     setVal('f-adsoyad', draft.profile.full_name);
@@ -2612,6 +2617,7 @@ function addExperienceCard(data) {
   card.dataset.expId = expCounter;
 
   var d = data || {};
+  console.log('[HT] addExperienceCard: data=' + (data ? JSON.stringify({sirket: d.sirket || d.sirket_adi, pozisyon: d.pozisyon, departman: d.departman}) : 'EMPTY'));
   // Normalize: accept both DB dialect (sirket) and UI dialect (sirket_adi)
   if (!d.sirket_adi && d.sirket) d.sirket_adi = d.sirket;
 
@@ -3900,6 +3906,14 @@ async function loadProfileFromDB() {
     supabase.from('candidate_brand_interests').select('*').eq('candidate_id', cid),
     supabase.from('candidate_location_preferences').select('*, candidate_location_pref_districts(*)').eq('candidate_id', cid)
   ]);
+
+  // ── Diagnostic: log child-table query errors so silent failures become visible ──
+  var _childResults = {experiences: expRes, education: eduRes, certificates: certRes, languages: langRes, target_roles: roleRes, work_prefs: wpRes, brand_interests: biRes, locations: locRes};
+  Object.keys(_childResults).forEach(function(key) {
+    var r = _childResults[key];
+    if (r.error) console.error('[HT] loadProfileFromDB: ' + key + ' query FAILED →', r.error.message, '| code:', r.error.code, '| details:', r.error.details);
+    else console.log('[HT] loadProfileFromDB: ' + key + ' → ' + (Array.isArray(r.data) ? r.data.length + ' rows' : (r.data ? '1 record' : 'null')));
+  });
 
   return {
     profile: {
