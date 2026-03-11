@@ -4724,7 +4724,6 @@ async function loadSirketlerPanel() {
 
   // Parallel fetch: brands with nested company + follows
   var promises = [
-    supabase.from('brands').select('id, brand_name, slug, logo_url, company_id, companies(id, company_name, slug, industry, segment, logo_url)').eq('is_active', true)
   ];
   if (_ht_candidate_id) {
     promises.push(supabase.from('candidate_company_follows').select('company_id').eq('candidate_id', _ht_candidate_id));
@@ -4787,10 +4786,6 @@ function renderSirketList(query) {
     var sub = '';
     if (co.company_name && co.company_name !== b.brand_name) {
       sub = co.company_name;
-    } else if (co.industry) {
-      sub = co.industry;
-    } else if (co.segment) {
-      sub = co.segment;
     }
 
     var btnAttr = _ht_candidate_id ? 'onclick="toggleSirketFollow(' + b.company_id + ',this)" style="cursor:pointer;' : 'style="cursor:default;';
