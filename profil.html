@@ -1507,6 +1507,20 @@ var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 var currentUser = null;
 var _loadedDBData = null; // Stores loaded DB data for post-init re-apply
 
+// ── STORAGE CONSTANTS ──
+// Single source of truth for Supabase Storage bucket / path conventions.
+var STORAGE = {
+  BUCKET: 'cvs',
+  AVATAR_PREFIX: 'avatars/',
+  avatarPath: function(uid, ext) { return 'avatars/' + uid + '.' + ext; },
+  cvPath: function(uid, filename) { return uid + '/' + Date.now() + '_' + filename; },
+  extractStoragePath: function(publicUrl) {
+    var marker = '/' + STORAGE.BUCKET + '/';
+    var idx = publicUrl.lastIndexOf(marker);
+    return idx !== -1 ? publicUrl.substring(idx + marker.length) : null;
+  }
+};
+
 // ── HELPER: Turkish lowercase ──
 function trLower(s) {
   return s.replace(/\u0130/g,'i').replace(/I/g,'\u0131')
@@ -2269,8 +2283,7 @@ function reapplyDynamicFields() {
       showCVUploaded(dbData.profile.cv_filename, new Date(dbData.profile.cv_uploaded_at || Date.now()));
       // Reconstruct storage path from URL for cleanup tracking
       try {
-        var urlParts = dbData.profile.cv_url.split('/cvs/');
-        if (urlParts.length > 1) currentCVStoragePath = urlParts[urlParts.length - 1];
+        currentCVStoragePath = STORAGE.extractStoragePath(dbData.profile.cv_url);
       } catch (e) {}
     }
     updateDashboardSummary(dbData.profile, dbData.experiences);
@@ -2660,24 +2673,24 @@ async function handleAvatarUpload(input) {
   var btnText = document.getElementById('avatar-btn-text');
   if (btnText) btnText.textContent = 'Yukleniyor...';
   var ext = file.name.split('.').pop();
-  var path = 'avatars/' + currentUser.id + '.' + ext;
+  var path = STORAGE.avatarPath(currentUser.id, ext);
 
   try {
     // Remove any existing avatar files for this user (handles extension change: .jpg→.png)
-    var listRes = await supabase.storage.from('cvs').list('avatars', { search: currentUser.id });
+    var listRes = await supabase.storage.from(STORAGE.BUCKET).list(STORAGE.AVATAR_PREFIX.replace(/\/$/, ''), { search: currentUser.id });
     if (listRes.data && listRes.data.length > 0) {
-      var oldPaths = listRes.data.map(function(f) { return 'avatars/' + f.name; });
-      await supabase.storage.from('cvs').remove(oldPaths).catch(function() {});
+      var oldPaths = listRes.data.map(function(f) { return STORAGE.AVATAR_PREFIX + f.name; });
+      await supabase.storage.from(STORAGE.BUCKET).remove(oldPaths).catch(function() {});
     }
 
     // Upload to stable path (one avatar per user)
-    var res = await supabase.storage.from('cvs').upload(path, file, { upsert: true });
+    var res = await supabase.storage.from(STORAGE.BUCKET).upload(path, file, { upsert: true });
     if (res.error) throw res.error;
 
-    var urlRes = supabase.storage.from('cvs').getPublicUrl(path);
-    var avatarUrl = urlRes.data.publicUrl + '?t=' + Date.now();
-    await supabase.from('candidates').upsert({ user_id: currentUser.id, avatar_url: avatarUrl }, { onConflict: 'user_id' });
-    setAvatarImage(avatarUrl);
+    var urlRes = supabase.storage.from(STORAGE.BUCKET).getPublicUrl(path);
+    var cleanUrl = urlRes.data.publicUrl;
+    await supabase.from('candidates').upsert({ user_id: currentUser.id, avatar_url: cleanUrl }, { onConflict: 'user_id' });
+    setAvatarImage(cleanUrl + '?t=' + Date.now());
     ht_track('avatar_upload_success');
     if (btnText) btnText.textContent = 'Guncellendi!';
     setTimeout(function() { if (btnText) btnText.textContent = 'Fotograf Yukle'; }, 2000);
@@ -4369,15 +4382,15 @@ async function uploadCV(file) {
   try {
     // Delete old storage file if replacing
     if (currentCVStoragePath) {
-      await supabase.storage.from('cvs').remove([currentCVStoragePath]).catch(function() {});
+      await supabase.storage.from(STORAGE.BUCKET).remove([currentCVStoragePath]).catch(function() {});
     }
 
     // Upload new file (path relative to bucket, no redundant prefix)
-    var filePath = userId + '/' + Date.now() + '_' + file.name;
-    var uploadRes = await supabase.storage.from('cvs').upload(filePath, file, { upsert: true });
+    var filePath = STORAGE.cvPath(userId, file.name);
+    var uploadRes = await supabase.storage.from(STORAGE.BUCKET).upload(filePath, file, { upsert: true });
     if (uploadRes.error) throw uploadRes.error;
 
-    var urlData = supabase.storage.from('cvs').getPublicUrl(filePath);
+    var urlData = supabase.storage.from(STORAGE.BUCKET).getPublicUrl(filePath);
     var cvUrl = urlData.data.publicUrl;
 
     // Update DB and check for errors
@@ -4386,7 +4399,7 @@ async function uploadCV(file) {
     }).eq('user_id', userId);
     if (dbRes.error) {
       // Rollback: remove uploaded file since DB failed
-      await supabase.storage.from('cvs').remove([filePath]).catch(function() {});
+      await supabase.storage.from(STORAGE.BUCKET).remove([filePath]).catch(function() {});
       throw dbRes.error;
     }
 
@@ -4411,7 +4424,7 @@ async function deleteCV() {
   try {
     // Remove storage file first (best-effort)
     if (currentCVStoragePath) {
-      await supabase.storage.from('cvs').remove([currentCVStoragePath]).catch(function() {});
+      await supabase.storage.from(STORAGE.BUCKET).remove([currentCVStoragePath]).catch(function() {});
       currentCVStoragePath = null;
     }
     // Clear DB columns
@@ -4628,6 +4641,9 @@ function generateCV() {
 }
 
 function setAvatarImage(url) {
+  // Strip any existing cache-bust, then add a fresh one for display
+  var cleanUrl = url.replace(/[?&]t=\d+/, '');
+  var displayUrl = cleanUrl + (cleanUrl.indexOf('?') === -1 ? '?' : '&') + 't=' + Date.now();
   var targets = ['user-avatar-header', 'sidebar-avatar', 'ps-avatar', 'merkez-avatar', 'avatar-upload-circle'];
   targets.forEach(function(id) {
     var el = document.getElementById(id);
@@ -4639,7 +4655,7 @@ function setAvatarImage(url) {
       el.textContent = '';
       el.appendChild(img);
     }
-    img.src = url;
+    img.src = displayUrl;
     img.alt = 'Avatar';
   });
 }
