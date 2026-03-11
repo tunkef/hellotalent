@@ -372,8 +372,9 @@ function getSupa() {
   }
   const { data } = await getSupa().auth.getSession();
   if (data.session) {
-    // Zaten giriş yapmış → profil sayfasına yönlendir
-    window.location.href = 'profil.html';
+    // Zaten giriş yapmış → role'e göre yönlendir
+    var role = data.session.user.user_metadata?.role;
+    window.location.href = role === 'employer' ? 'ik.html' : 'profil.html';
   }
 })();
 
