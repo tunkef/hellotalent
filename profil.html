@@ -3895,9 +3895,9 @@ async function loadProfileFromDB() {
     supabase.from('candidate_education').select('*').eq('candidate_id', cid).order('sira'),
     supabase.from('candidate_certificates').select('*').eq('candidate_id', cid).order('sira'),
     supabase.from('candidate_languages').select('*').eq('candidate_id', cid).order('sira'),
-    supabase.from('candidate_target_roles').select('*').eq('candidate_id', cid).order('created_at'),
+    supabase.from('candidate_target_roles').select('*').eq('candidate_id', cid),
     supabase.from('candidate_work_preferences').select('*').eq('candidate_id', cid).single(),
-    supabase.from('candidate_brand_interests').select('*').eq('candidate_id', cid).order('created_at'),
+    supabase.from('candidate_brand_interests').select('*').eq('candidate_id', cid),
     supabase.from('candidate_location_preferences').select('*, candidate_location_pref_districts(*)').eq('candidate_id', cid)
   ]);
 
