@@ -2246,7 +2246,9 @@ function reapplyDynamicFields() {
       var ec = document.getElementById('exp-cards-container');
       var lc = document.getElementById('lang-rows-container');
       var edc = document.getElementById('edu-rows-container');
-      console.log('[HT] === FINAL DOM STATE (500ms) ===');
+      var activePanel = document.querySelector('.panel.active');
+      console.log('[HT] === FINAL DOM STATE (500ms) === wizStep=' + wizStep +
+        ' panel=' + (activePanel ? activePanel.id : 'none'));
       console.log('[HT] exp-cards:', ec ? ec.children.length : 0);
       if (ec && ec.children.length) {
         var c = ec.children[0];
