@@ -4724,7 +4724,7 @@ async function loadSirketlerPanel() {
 
   // Parallel fetch: brands with nested company + follows
   var promises = [
-    supabase.from('brands').select('id, brand_name, slug, logo_url, company_id, companies(id, company_name, slug, logo_url)').eq('is_active', true)
+    supabase.from('brands').select('id, brand_name, slug, logo_url, company_id, companies(id, company_name, slug, logo_url)')
   ];
   if (_ht_candidate_id) {
     promises.push(supabase.from('candidate_company_follows').select('company_id').eq('candidate_id', _ht_candidate_id));
