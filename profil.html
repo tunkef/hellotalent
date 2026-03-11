@@ -2245,24 +2245,39 @@ function reapplyDynamicFields() {
     setTimeout(function() {
       var ec = document.getElementById('exp-cards-container');
       var lc = document.getElementById('lang-rows-container');
+      var edc = document.getElementById('edu-rows-container');
       console.log('[HT] === FINAL DOM STATE (500ms) ===');
-      console.log('[HT] exp-cards:', ec ? ec.children.length : 0, 'cards');
-      if (ec) {
-        Array.prototype.forEach.call(ec.children, function(card, i) {
-          var sirketEl = card.querySelector('input[id$="-sirket"]');
-          var pozEl = card.querySelector('input[id$="-pozisyon"]');
-          console.log('[HT]   card', i, ': sirket=' + (sirketEl ? JSON.stringify(sirketEl.value) : 'N/A') +
-            ', pozisyon=' + (pozEl ? JSON.stringify(pozEl.value) : 'N/A'));
-        });
+      console.log('[HT] exp-cards:', ec ? ec.children.length : 0);
+      if (ec && ec.children.length) {
+        var c = ec.children[0];
+        var s = c.querySelector('input[id$="-sirket"]');
+        var p = c.querySelector('input[id$="-pozisyon"]');
+        var dep = c.querySelector('select[id$="-departman"]');
+        var seg = c.querySelector('select[id$="-segment"]');
+        var ist = c.querySelector('select[id$="-istihdam"]');
+        var bay = c.querySelector('select[id$="-basay"]');
+        console.log('[HT]   exp[0] sirket=' + (s ? JSON.stringify(s.value) : '-') +
+          ' pozisyon=' + (p ? JSON.stringify(p.value) : '-') +
+          ' departman=' + (dep ? JSON.stringify(dep.value) : '-') +
+          ' segment=' + (seg ? JSON.stringify(seg.value) : '-') +
+          ' istihdam=' + (ist ? JSON.stringify(ist.value) : '-') +
+          ' basAy=' + (bay ? JSON.stringify(bay.value) : '-'));
       }
-      console.log('[HT] lang-rows:', lc ? lc.children.length : 0, 'rows');
-      if (lc) {
-        Array.prototype.forEach.call(lc.children, function(row, i) {
-          var dilEl = row.querySelector('select[id$="-dil"]');
-          var sevEl = row.querySelector('select[id$="-seviye"]');
-          console.log('[HT]   lang', i, ': dil=' + (dilEl ? JSON.stringify(dilEl.value) : 'N/A') +
-            ', seviye=' + (sevEl ? JSON.stringify(sevEl.value) : 'N/A'));
-        });
+      console.log('[HT] lang-rows:', lc ? lc.children.length : 0);
+      if (lc && lc.children.length) {
+        var lr = lc.children[0];
+        var dil = lr.querySelector('select[id$="-dil"]');
+        var sev = lr.querySelector('select[id$="-seviye"]');
+        console.log('[HT]   lang[0] dil=' + (dil ? JSON.stringify(dil.value) : '-') +
+          ' seviye=' + (sev ? JSON.stringify(sev.value) : '-'));
+      }
+      console.log('[HT] edu-rows:', edc ? edc.children.length : 0);
+      if (edc && edc.children.length) {
+        var er = edc.children[0];
+        var sev2 = er.querySelector('select[id$="-seviye"]');
+        var okul = er.querySelector('input[id$="-okul"]');
+        console.log('[HT]   edu[0] seviye=' + (sev2 ? JSON.stringify(sev2.value) : '-') +
+          ' okul=' + (okul ? JSON.stringify(okul.value) : '-'));
       }
     }, 500);
   } else {
