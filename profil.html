@@ -4791,6 +4791,8 @@ function renderSirketList(query) {
       sub = co.sector;
     }
 
+    var btnAttr = _ht_candidate_id ? 'onclick="toggleSirketFollow(' + b.company_id + ',this)" style="cursor:pointer;' : 'style="cursor:default;';
+
     html += '<div class="sirket-row" data-company-id="' + b.company_id + '" data-brand-id="' + b.id + '" style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);">' +
       '<div style="width:36px;height:36px;border-radius:8px;background:' + color + ';color:white;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;flex-shrink:0;">' + initial + '</div>' +
       '<div style="flex:1;min-width:0;">' +
@@ -4799,8 +4801,8 @@ function renderSirketList(query) {
       '</div>' +
       '<div style="flex-shrink:0;">' +
         (isFollowed
-          ? '<span style="font-size:12px;color:var(--verm);font-weight:600;padding:4px 10px;background:var(--verm-light);border-radius:6px;">Takipte</span>'
-          : '<span class="sirket-follow-btn" style="font-size:12px;color:var(--muted);padding:4px 10px;border:1px solid var(--border);border-radius:6px;cursor:default;">Takip Et</span>') +
+          ? '<span class="sirket-follow-btn" ' + btnAttr + 'font-size:12px;color:var(--verm);font-weight:600;padding:4px 10px;background:var(--verm-light);border-radius:6px;">Takipte</span>'
+          : '<span class="sirket-follow-btn" ' + btnAttr + 'font-size:12px;color:var(--muted);padding:4px 10px;border:1px solid var(--border);border-radius:6px;">Takip Et</span>') +
       '</div>' +
     '</div>';
   }
@@ -4853,6 +4855,66 @@ function renderSirketFollowChips() {
       badge.style.display = 'none';
     }
   }
+}
+
+var _ht_follow_busy = false; // Prevents double-click during async toggle
+
+async function toggleSirketFollow(companyId, btnEl) {
+  if (_ht_follow_busy || !_ht_candidate_id) return;
+  _ht_follow_busy = true;
+
+  var wasFollowed = _ht_follows.has(companyId);
+
+  // Optimistic update
+  if (wasFollowed) {
+    _ht_follows.delete(companyId);
+  } else {
+    _ht_follows.add(companyId);
+  }
+  var searchVal = document.getElementById('sirket-search').value;
+  renderSirketList(searchVal);
+  renderSirketFollowChips();
+
+  // Persist to DB
+  var res;
+  if (wasFollowed) {
+    res = await supabase.from('candidate_company_follows')
+      .delete().eq('candidate_id', _ht_candidate_id).eq('company_id', companyId);
+  } else {
+    res = await supabase.from('candidate_company_follows')
+      .insert({ candidate_id: _ht_candidate_id, company_id: companyId });
+  }
+
+  if (res.error) {
+    console.warn('[HT] toggleSirketFollow: failed', res.error);
+    // Revert optimistic update
+    if (wasFollowed) {
+      _ht_follows.add(companyId);
+    } else {
+      _ht_follows.delete(companyId);
+    }
+    renderSirketList(searchVal);
+    renderSirketFollowChips();
+    // Show brief error toast
+    _showSirketToast('Bir hata olustu. Tekrar deneyin.');
+  }
+
+  _ht_follow_busy = false;
+}
+
+function _showSirketToast(msg) {
+  var existing = document.getElementById('sirket-toast');
+  if (existing) existing.remove();
+  var toast = document.createElement('div');
+  toast.id = 'sirket-toast';
+  toast.textContent = msg;
+  toast.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a1a2e;color:white;padding:10px 20px;border-radius:8px;font-size:13px;z-index:9999;opacity:0;transition:opacity 0.3s;';
+  document.body.appendChild(toast);
+  requestAnimationFrame(function() { toast.style.opacity = '1'; });
+  setTimeout(function() {
+    toast.style.opacity = '0';
+    setTimeout(function() { toast.remove(); }, 300);
+  }, 2500);
 }
 
 function _escHtml(s) {
