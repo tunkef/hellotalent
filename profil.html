@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <script>if(sessionStorage.getItem("ht_gate")!=="ok"){window.location.replace("gate.html");}</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Profilim v2 — hellotalent.ai</title>
+<title>Profilim — hellotalent.ai</title>
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
@@ -19,14 +19,16 @@
 /* ── DESIGN TOKENS ── */
 :root {
   --verm:#C94E28;--verm-light:#F5EDE9;--verm-dark:#A33D1E;
-  --navy:#1E2D5E;--navy-light:#EEF0F7;
+  --navy:#1E2D5E;--navy-light:#EEF0F7;--navy-deep:#141f3d;
   --gray:#F7F6F4;--text:#111111;
   --muted:#6B7280;--border:#E5E3DF;
   --green:#16a34a;--green-light:#F0FDF4;--green-border:#BBF7D0;
   --red:#dc2626;--red-light:#FEF2F2;
   --radius:10px;--radius-sm:7px;--radius-lg:14px;
   --shadow:0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md:0 2px 8px rgba(0,0,0,0.07);
   --shadow-lg:0 4px 24px rgba(0,0,0,0.08);
+  --mono:'DM Mono',monospace;
   --sidebar-w:240px;
   --header-h:60px;
 }
@@ -359,243 +361,159 @@ body{font-family:'Plus Jakarta Sans',sans-serif;color:var(--text);background:#ff
 /* ── FIELD ERROR ── */
 .field-error{border-color:var(--red)!important;}
 
-/* ── PROFILE SUMMARY CARD ── */
-.profile-summary{
-  background:white;border:1.5px solid var(--border);border-radius:var(--radius-lg);
-  padding:20px 24px;margin-bottom:20px;border-top:3px solid var(--navy);
-}
-.ps-top{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;}
-.ps-left{display:flex;align-items:center;gap:14px;}
-.ps-avatar{
-  width:56px;height:56px;border-radius:50%;background:var(--navy-light);
-  color:var(--navy);display:flex;align-items:center;justify-content:center;
-  font-size:18px;font-weight:700;flex-shrink:0;overflow:hidden;
-}
-.ps-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
-.ps-name{font-family:'Bricolage Grotesque',sans-serif;font-size:18px;font-weight:800;color:var(--navy);}
-.ps-role{font-size:13px;color:var(--text);font-weight:600;margin-top:2px;}
-.ps-company{font-size:12px;color:var(--muted);margin-top:1px;}
-.ps-badges{display:flex;gap:8px;margin-top:6px;flex-wrap:wrap;}
-.ps-badge{
-  display:inline-flex;align-items:center;gap:4px;padding:3px 8px;
-  background:var(--gray);border-radius:4px;font-size:11px;font-weight:600;color:var(--muted);
-}
-.ps-badge svg{width:12px;height:12px;}
-.ps-actions{display:flex;gap:8px;flex-shrink:0;}
-
-/* ── COMPLETION CIRCLE ── */
-.completion-card{
-  text-align:center;padding:20px;background:var(--gray);
-  border-radius:var(--radius-lg);margin-bottom:20px;
-}
-.completion-circle-wrap{position:relative;width:80px;height:80px;margin:0 auto 12px;}
-.completion-circle-wrap svg{transform:rotate(-90deg);}
-.completion-circle-bg{fill:none;stroke:var(--border);stroke-width:6;}
-.completion-circle-fg{fill:none;stroke:var(--verm);stroke-width:6;stroke-linecap:round;transition:stroke-dashoffset 0.5s;}
-.completion-pct{
-  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-  font-family:'Bricolage Grotesque',sans-serif;font-size:20px;font-weight:800;color:var(--navy);
-}
-
-/* ── PROFILE SCORE CARD ── */
-.score-card{
-  margin-top:12px;padding:14px 16px;background:white;
-  border:1.5px solid var(--border);border-radius:var(--radius);text-align:center;
-}
-.score-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;}
-.score-value{
-  font-family:'Bricolage Grotesque',sans-serif;font-size:28px;font-weight:800;
-  color:var(--navy);margin:4px 0;
-}
-.score-value span{font-size:16px;font-weight:600;color:var(--muted);}
-.score-hint{
-  font-size:12px;color:var(--verm);margin-top:6px;
-  display:flex;align-items:center;justify-content:center;gap:4px;
-}
-.score-hint svg{width:14px;height:14px;flex-shrink:0;}
-
-/* ── PREMIUM TEASER ── */
-.premium-teaser{
-  margin-top:16px;padding:16px;background:var(--navy-light);
-  border:1.5px solid var(--border);border-radius:var(--radius);text-align:left;
-}
-.premium-teaser-badge{
-  display:inline-flex;align-items:center;gap:4px;padding:3px 8px;
-  background:var(--navy);color:white;border-radius:4px;
-  font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;
-  margin-bottom:10px;
-}
-.premium-teaser-title{
-  font-family:'Bricolage Grotesque',sans-serif;font-size:14px;
-  font-weight:700;color:var(--navy);margin-bottom:8px;
-}
-.premium-teaser-list{list-style:none;padding:0;margin:0 0 12px;}
-.premium-teaser-list li{
-  font-size:12px;color:var(--text);padding:3px 0;
-  display:flex;align-items:center;gap:6px;
-}
-.premium-teaser-list li::before{
-  content:'';width:5px;height:5px;border-radius:50%;
-  background:var(--verm);flex-shrink:0;
-}
-.premium-teaser-footer{font-size:11px;color:var(--muted);font-style:italic;}
+/* ── MODAL PREMIUM LINE (kept for success modal) ── */
 .modal-premium-line{
   font-size:11px;color:var(--muted);font-style:italic;margin-top:16px;
   padding-top:14px;border-top:1px solid var(--border);letter-spacing:0.01em;
 }
 
-/* ── PROFIL MERKEZI ── */
+/* ══════════════════════════════════════════════
+   GENEL BAKIŞ — v3
+   ══════════════════════════════════════════════ */
 
-/* Hero Profile Card */
-.hero-card{
-  background:white;border:1.5px solid var(--border);border-radius:var(--radius-lg);
-  border-top:3px solid var(--navy);padding:24px;margin-bottom:20px;
+/* Profile Hero */
+.g-hero{
+  background:white;border-radius:var(--radius-lg);padding:18px 20px;
+  margin-bottom:14px;box-shadow:var(--shadow-md);
+}
+.g-hero-top{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+.g-avatar{width:48px;height:48px;border-radius:50%;overflow:hidden;flex-shrink:0;background:var(--navy);color:white;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;}
+.g-avatar img{width:100%;height:100%;object-fit:cover;}
+.g-info{flex:1;min-width:0;}
+.g-name{font-family:'Bricolage Grotesque',sans-serif;font-size:16px;font-weight:800;color:var(--navy);line-height:1.2;}
+.g-meta{font-size:11px;color:var(--muted);margin-top:2px;display:flex;align-items:center;gap:3px;}
+.g-meta svg{width:10px;height:10px;opacity:0.5;}
+.g-hero-badges{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;}
+.badge-active{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;background:var(--green-light);border:1px solid var(--green-border);border-radius:4px;font-size:10px;font-weight:600;color:var(--green);}
+.badge-active .dot{width:6px;height:6px;border-radius:50%;background:var(--green);}
+.badge-locked{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;background:var(--gray);border:1px solid var(--border);border-radius:4px;font-size:10px;font-weight:600;color:var(--muted);}
+.badge-locked svg{width:10px;height:10px;}
+.g-hero-row{display:flex;align-items:center;justify-content:space-between;gap:8px;padding-top:10px;border-top:1px solid var(--border);}
+.g-completion{display:flex;align-items:center;gap:8px;}
+.g-completion-bar{width:100px;height:6px;background:var(--border);border-radius:3px;overflow:hidden;}
+.g-completion-fill{height:100%;background:var(--verm);border-radius:3px;transition:width 0.5s;}
+.g-completion-text{font-family:var(--mono);font-size:11px;font-weight:400;color:var(--muted);}
+
+/* Dashboard Cards Grid */
+.dash-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+.dash-card{
+  background:white;border-radius:var(--radius);padding:16px;
+  box-shadow:var(--shadow);border:1px solid rgba(0,0,0,0.03);
+  cursor:default;transition:all 0.2s;position:relative;overflow:hidden;
+}
+.dash-card.active{cursor:pointer;}
+.dash-card.active:hover{box-shadow:var(--shadow-md);transform:translateY(-2px);}
+.dash-card.locked{opacity:0.7;}
+.dash-card-icon{
+  width:32px;height:32px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;margin-bottom:10px;
+}
+.dash-card-icon svg{width:16px;height:16px;}
+.dash-card-icon.navy{background:var(--navy-light);color:var(--navy);}
+.dash-card-icon.verm{background:var(--verm-light);color:var(--verm);}
+.dash-card-icon.green{background:var(--green-light);color:var(--green);}
+.dash-card-title{font-family:'Bricolage Grotesque',sans-serif;font-size:12px;font-weight:700;color:var(--navy);margin-bottom:2px;}
+.dash-card-desc{font-size:10px;color:var(--muted);line-height:1.3;}
+.dash-card-badge{position:absolute;top:10px;right:10px;}
+.badge-soon{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;background:var(--navy);color:white;border-radius:4px;font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;}
+
+/* ══════════════════════════════════════════════
+   PROFIL MERKEZI — v3 TERMINAL MODERN
+   ══════════════════════════════════════════════ */
+
+/* Hero Terminal */
+.m-hero{
+  background:var(--navy-deep);border-radius:var(--radius-lg);padding:18px 20px;
+  margin-bottom:12px;color:white;
+}
+.m-hero-top{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+.m-avatar{width:48px;height:48px;border-radius:50%;overflow:hidden;flex-shrink:0;background:rgba(255,255,255,0.15);color:white;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;}
+.m-avatar img{width:100%;height:100%;object-fit:cover;}
+#merkez-identity{display:flex;align-items:center;gap:12px;flex:1;}
+.m-info{flex:1;min-width:0;}
+.m-name{font-family:'Bricolage Grotesque',sans-serif;font-size:16px;font-weight:800;color:white;line-height:1.2;}
+.m-meta{font-size:11px;color:rgba(255,255,255,0.5);margin-top:2px;display:flex;align-items:center;gap:3px;}
+.m-meta svg{width:10px;height:10px;opacity:0.5;}
+.m-controls{display:flex;gap:8px;align-items:center;}
+.m-toggle-row{display:flex;align-items:center;gap:6px;padding:4px 10px;background:rgba(255,255,255,0.08);border-radius:6px;}
+.m-toggle-label{font-size:10px;font-weight:600;color:rgba(255,255,255,0.7);}
+.m-btn-locked{
+  display:inline-flex;align-items:center;gap:4px;padding:5px 12px;
+  background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);
+  border-radius:6px;font-size:10px;font-weight:600;color:rgba(255,255,255,0.35);
+  cursor:not-allowed;
+}
+.m-btn-locked svg{width:10px;height:10px;}
+.m-premium-hint{font-size:8px;color:rgba(255,255,255,0.25);margin-top:2px;text-align:center;}
+
+/* Stats Terminal */
+.m-stats{
+  display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;
+}
+.m-stat{
+  background:white;border-radius:var(--radius);padding:14px 16px;
   box-shadow:var(--shadow);
 }
-.hero-top{display:flex;align-items:flex-start;gap:16px;}
-.hero-avatar{
-  width:64px;height:64px;border-radius:50%;background:var(--navy);color:white;
-  display:flex;align-items:center;justify-content:center;
-  flex-shrink:0;overflow:hidden;font-weight:700;font-size:22px;
-}
-#merkez-identity{display:flex;align-items:center;gap:14px;flex:1;}
-.hero-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
-.hero-avatar svg{width:28px;height:28px;}
-.hero-info{flex:1;min-width:0;}
-.hero-name{font-family:'Bricolage Grotesque',sans-serif;font-size:20px;font-weight:800;color:var(--navy);}
-.hero-role{font-size:13px;color:var(--text);font-weight:600;margin-top:2px;}
-.hero-company{font-size:12px;color:var(--muted);margin-top:1px;}
-.hero-badges{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;}
-.hero-badge{
-  display:inline-flex;align-items:center;gap:4px;padding:3px 8px;
-  background:var(--gray);border-radius:4px;font-size:11px;font-weight:600;color:var(--muted);
-}
-.hero-badge svg{width:12px;height:12px;}
-.hero-controls{display:flex;align-items:center;gap:12px;flex-shrink:0;}
-.hero-control-item{display:flex;align-items:center;gap:6px;}
-.hero-control-label{font-size:11px;font-weight:600;color:var(--text);}
-.hero-locked{
-  display:inline-flex;align-items:center;gap:3px;padding:2px 8px;
-  background:var(--navy-light);border-radius:4px;font-size:10px;font-weight:600;color:var(--navy);
-}
-.hero-locked svg{width:10px;height:10px;}
-.hero-premium-slot{
-  margin-top:16px;padding:10px 14px;background:var(--navy-light);
-  border-radius:var(--radius-sm);display:flex;align-items:center;gap:8px;
-}
-.hero-premium-slot svg{width:14px;height:14px;color:var(--navy);flex-shrink:0;}
-.hero-premium-slot span{font-size:11px;color:var(--navy);font-weight:500;}
-.hero-premium-slot .premium-teaser-badge{margin-bottom:0;font-size:9px;padding:2px 6px;}
+.m-stat-label{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;font-weight:600;margin-bottom:6px;}
+.m-stat-value{font-family:var(--mono);font-size:28px;font-weight:400;color:var(--navy);line-height:1;}
+.m-stat-value span{font-size:14px;color:var(--muted);}
+.m-stat-bar{margin-top:8px;}
+.m-progress{width:100%;height:4px;background:var(--border);border-radius:2px;overflow:hidden;}
+.m-progress-fill{height:100%;border-radius:2px;transition:width 0.5s;}
+.m-progress-fill.verm{background:var(--verm);}
+.m-progress-fill.green{background:var(--green);}
+.m-stat-sub{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:4px;}
 
-/* Quality Row */
-.quality-row{
-  display:flex;align-items:center;gap:24px;padding:20px;
-  background:var(--gray);border-radius:var(--radius-lg);margin-bottom:20px;
-  border-left:3px solid var(--navy);
+/* CV Section */
+.m-cv{
+  display:grid;grid-template-columns:1fr auto;gap:10px;margin-bottom:12px;
+  align-items:stretch;
 }
-.quality-left{display:flex;flex-direction:column;align-items:center;gap:4px;}
-.quality-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;font-weight:600;}
-.quality-right{flex:1;}
-.quality-score{
-  font-family:'Bricolage Grotesque',sans-serif;font-size:28px;font-weight:800;
-  color:var(--navy);margin-bottom:2px;
+.m-cv-upload{
+  background:white;border-radius:var(--radius);padding:14px 16px;
+  box-shadow:var(--shadow);
 }
-.quality-score span{font-size:16px;font-weight:600;color:var(--muted);}
-.quality-score-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;font-weight:600;margin-bottom:4px;}
-.quality-hint{
-  font-size:12px;color:var(--verm);margin-top:6px;
-  display:flex;align-items:center;gap:4px;
-}
-.quality-hint svg{width:14px;height:14px;flex-shrink:0;}
-
-/* CV Grid */
-.cv-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;}
-.cv-upload-card{
-  padding:20px;background:white;border:1.5px solid var(--border);
-  border-radius:var(--radius);
-}
-.cv-upload-title{
-  font-family:'Bricolage Grotesque',sans-serif;font-size:14px;font-weight:700;
-  color:var(--navy);margin-bottom:12px;display:flex;align-items:center;gap:6px;
-}
-.cv-upload-title svg{width:16px;height:16px;}
-.cv-upload-zone{
+.m-cv-upload-title{font-family:'Bricolage Grotesque',sans-serif;font-size:12px;font-weight:700;color:var(--navy);margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+.m-cv-upload-title svg{width:14px;height:14px;}
+.m-cv-drop{
   border:1.5px dashed var(--border);border-radius:var(--radius-sm);
-  padding:20px;text-align:center;margin-bottom:12px;
-  background:var(--gray);transition:border-color 0.2s;
+  padding:14px;text-align:center;background:var(--gray);
+  transition:border-color 0.2s;
 }
-.cv-upload-zone:hover{border-color:var(--navy);}
-.cv-upload-filetypes{display:flex;gap:4px;justify-content:center;margin-bottom:8px;}
-.cv-filetype{
-  padding:2px 6px;background:white;border:1px solid var(--border);
-  border-radius:3px;font-size:9px;font-weight:700;color:var(--muted);
-  text-transform:uppercase;letter-spacing:0.3px;
+.m-cv-drop:hover{border-color:var(--navy);}
+.m-cv-types{display:flex;gap:4px;justify-content:center;margin-bottom:6px;}
+.m-cv-ft{padding:1px 5px;background:white;border:1px solid var(--border);border-radius:3px;font-size:8px;font-weight:700;color:var(--muted);text-transform:uppercase;}
+.m-cv-hint{font-size:10px;color:var(--muted);margin-top:4px;}
+.m-cv-ai{
+  background:linear-gradient(135deg,var(--navy-deep) 0%,#2a3f7a 100%);
+  border-radius:var(--radius);padding:16px;color:white;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;min-width:140px;
 }
-.cv-upload-hint{font-size:11px;color:var(--muted);margin-top:4px;}
-.cv-upload-divider{border-top:1px solid var(--border);margin:12px 0;padding-top:12px;}
-.cv-ai-card{
-  padding:20px;background:var(--navy-light);border:1.5px solid var(--navy);
-  border-radius:var(--radius);display:flex;flex-direction:column;
-  align-items:center;justify-content:center;text-align:center;
-}
-.cv-ai-icon{margin-bottom:10px;color:var(--navy);}
-.cv-ai-title{
-  font-family:'Bricolage Grotesque',sans-serif;font-size:14px;font-weight:700;
-  color:var(--navy);margin-bottom:6px;display:flex;align-items:center;gap:6px;
-}
-.cv-ai-desc{font-size:12px;color:var(--muted);margin-bottom:10px;line-height:1.5;}
-.cv-ai-footer{font-size:11px;color:var(--muted);font-style:italic;margin-top:8px;}
+.m-cv-ai svg{width:20px;height:20px;opacity:0.5;margin-bottom:6px;}
+.m-cv-ai-title{font-size:11px;font-weight:700;margin-bottom:4px;}
+.m-cv-ai-desc{font-size:9px;opacity:0.5;line-height:1.3;}
 
-/* Section Cards (refined) */
-.merkez-sections-title{
-  font-family:'Bricolage Grotesque',sans-serif;font-size:16px;font-weight:700;
-  color:var(--navy);margin-bottom:12px;
+/* Section List */
+.m-sections-header{font-family:'Bricolage Grotesque',sans-serif;font-size:13px;font-weight:700;color:var(--navy);margin-bottom:8px;}
+.m-section{
+  background:white;border-radius:var(--radius);padding:12px 14px;
+  margin-bottom:6px;box-shadow:var(--shadow);
+  display:flex;align-items:center;justify-content:space-between;
+  transition:all 0.15s;cursor:pointer;
 }
-.merkez-sections{display:flex;flex-direction:column;gap:10px;}
-.merkez-section-card{
-  padding:14px 16px;background:white;border:1.5px solid var(--border);
-  border-radius:var(--radius);border-left:3px solid var(--navy-light);
-  transition:border-left-color 0.2s;
-}
-.merkez-section-card:hover{border-left-color:var(--navy);}
-.merkez-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
-.merkez-card-title{font-family:'Bricolage Grotesque',sans-serif;font-size:13px;font-weight:700;color:var(--navy);}
-.merkez-card-summary{font-size:12px;color:var(--muted);line-height:1.5;}
-.merkez-card-empty{font-size:12px;color:var(--muted);font-style:italic;}
-.btn-edit{
-  padding:4px 12px;font-size:11px;font-weight:600;color:var(--verm);
-  background:var(--verm-light);border:none;border-radius:4px;cursor:pointer;font-family:inherit;
-  transition:all 0.15s;
-}
+.m-section:hover{box-shadow:var(--shadow-md);transform:translateY(-1px);}
+.m-section-left{}
+.m-section-title{font-size:12px;font-weight:700;color:var(--navy);margin-bottom:1px;}
+.m-section-summary{font-family:var(--mono);font-size:10px;color:var(--muted);}
+.m-section-empty{font-size:10px;color:var(--border);font-style:italic;}
+.btn-edit{padding:4px 12px;font-size:9px;font-weight:700;color:var(--verm);background:var(--verm-light);border:none;border-radius:5px;cursor:pointer;font-family:inherit;transition:all 0.15s;text-transform:uppercase;letter-spacing:0.3px;}
 .btn-edit:hover{background:var(--verm);color:white;}
 
-/* Footer Teaser */
-.footer-teaser{
-  margin-top:20px;padding:12px 16px;background:var(--navy-light);
-  border-radius:var(--radius-sm);display:flex;align-items:center;
-  justify-content:space-between;
-}
-.footer-teaser-text{font-size:12px;color:var(--navy);font-weight:500;}
-.footer-teaser svg{width:14px;height:14px;color:var(--navy);}
-
-/* Genel Bakış Future Cards */
-.dash-future-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:20px;}
-.dash-future-card{
-  padding:20px;background:white;border:1.5px solid var(--border);
-  border-radius:var(--radius);text-align:center;
-}
-.dash-future-icon{
-  width:44px;height:44px;border-radius:50%;background:var(--navy-light);color:var(--navy);
-  display:flex;align-items:center;justify-content:center;margin:0 auto 10px;
-}
-.dash-future-icon svg{width:20px;height:20px;}
-.dash-future-title{font-family:'Bricolage Grotesque',sans-serif;font-size:13px;font-weight:700;color:var(--navy);margin-bottom:4px;}
-.dash-future-desc{font-size:11px;color:var(--muted);line-height:1.4;margin-bottom:8px;}
-.dash-quality-row{
-  display:flex;align-items:center;gap:20px;padding:16px;
-  background:var(--gray);border-radius:var(--radius-lg);margin-bottom:0;
-  border-left:3px solid var(--navy);
-}
+/* Footer */
+.m-footer{margin-top:6px;padding:8px 14px;background:var(--navy-light);border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:space-between;}
+.m-footer-text{font-size:10px;color:var(--navy);font-weight:500;}
+.m-footer svg{width:12px;height:12px;color:var(--navy);opacity:0.4;}
 
 /* ── MODALS ── */
 .modal-overlay{
@@ -742,26 +660,21 @@ body{font-family:'Plus Jakarta Sans',sans-serif;color:var(--text);background:#ff
   .field-row{grid-template-columns:1fr;}
   .field-row-3{grid-template-columns:1fr;}
   .exp-card{padding:12px;}
-  .ps-top{flex-direction:column;}
-  .ps-actions{width:100%;}
-  .ps-actions .btn{flex:1;}
-  /* Hero card mobile */
-  .hero-top{flex-direction:column;gap:12px;}
+  /* v3 Genel Bakış mobile */
+  .g-hero-top{flex-direction:column;align-items:flex-start;gap:8px;}
+  .g-hero-row{flex-direction:column;align-items:flex-start;gap:8px;}
+  .dash-grid{grid-template-columns:1fr 1fr;}
+  /* v3 Profil Merkezi mobile */
+  .m-hero-top{flex-direction:column;align-items:flex-start;}
   #merkez-identity{flex-direction:column;text-align:center;}
-  .hero-badges{justify-content:center;}
-  .hero-controls{justify-content:center;width:100%;}
-  /* Quality row mobile */
-  .quality-row{flex-direction:column;text-align:center;gap:12px;}
-  .quality-hint{justify-content:center;}
-  .dash-quality-row{flex-direction:column;text-align:center;gap:12px;}
-  /* CV grid mobile */
-  .cv-grid{grid-template-columns:1fr;}
-  /* Future cards mobile */
-  .dash-future-grid{grid-template-columns:1fr;}
+  .m-controls{width:100%;justify-content:flex-start;flex-wrap:wrap;}
+  .m-stats{grid-template-columns:1fr;}
+  .m-cv{grid-template-columns:1fr;}
 }
 @media(max-width:480px){
   .header{padding:0 12px;}
   .wiz-progress-line{min-width:12px;}
+  .dash-grid{grid-template-columns:1fr;}
 }
 </style>
 </head>
@@ -927,236 +840,245 @@ body{font-family:'Plus Jakarta Sans',sans-serif;color:var(--text);background:#ff
     <h2 id="dash-welcome-name">Hos geldin!</h2>
     <p>Profilinin durumu ve ozet bilgilerin.</p>
   </div>
-  <div class="profile-summary" id="profile-summary" style="display:none;">
-    <div class="ps-top">
-      <div class="ps-left">
-        <div class="ps-avatar" id="ps-avatar">?</div>
-        <div>
-          <div class="ps-name" id="ps-name">&mdash;</div>
-          <div class="ps-role" id="ps-role"></div>
-          <div class="ps-company" id="ps-company"></div>
-          <div class="ps-badges">
-            <span class="ps-badge" id="ps-city-badge" style="display:none;">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-              <span id="ps-city-text"></span>
-            </span>
-            <span class="ps-badge" id="ps-exp-badge" style="display:none;">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
-              <span id="ps-exp-text"></span>
-            </span>
-          </div>
+
+  <!-- PROFILE HERO (replaces old profile-summary) -->
+  <div class="g-hero" id="profile-summary" style="display:none;">
+    <div class="g-hero-top">
+      <div class="g-avatar" id="ps-avatar">?</div>
+      <div class="g-info">
+        <div class="g-name" id="ps-name">&mdash;</div>
+        <div class="g-meta">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <span id="ps-city-text"></span>
         </div>
       </div>
-      <div class="ps-actions">
-        <button class="btn btn-primary btn-sm" id="btn-edit-profile">Profili Duzenle</button>
-        <button class="btn btn-secondary btn-sm" id="btn-gen-cv">CV Indir</button>
+      <button class="btn btn-primary" id="btn-edit-profile" style="font-size:11px;padding:7px 14px;">Profili Düzenle</button>
+    </div>
+    <div class="g-hero-badges">
+      <span class="badge-active"><span class="dot"></span> Aktif İş Arıyorum</span>
+      <span class="badge-locked">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        Beni Öne Çıkar
+      </span>
+    </div>
+    <div class="g-hero-row">
+      <div class="g-completion">
+        <div class="g-completion-bar"><div class="g-completion-fill" id="g-completion-fill" style="width:0%;"></div></div>
+        <span class="g-completion-text" id="completion-pct">0% tamamlandı</span>
       </div>
     </div>
   </div>
+
+  <!-- EMPTY PROMPT (first-time users) -->
   <div class="dash-empty-prompt" id="dash-empty-prompt" style="display:none;">
     <div class="dash-empty-icon">&#128100;</div>
     <div class="dash-empty-title">Profilini Olustur</div>
     <div class="dash-empty-desc">Henuz profil bilgilerin eklenmemis. Profilini tamamla, retail markalari seni bulsun!</div>
     <button class="btn btn-primary" id="btn-start-wizard">Profili Duzenle</button>
   </div>
-  <div id="dash-content" style="display:none;">
-    <div class="dash-quality-row">
-      <div class="completion-circle-wrap" style="flex-shrink:0;">
-        <svg width="64" height="64" viewBox="0 0 80 80">
-          <circle class="completion-circle-bg" cx="40" cy="40" r="34"/>
-          <circle class="completion-circle-fg" id="progress-circle" cx="40" cy="40" r="34"
-            stroke-dasharray="213.63" stroke-dashoffset="213.63"/>
-        </svg>
-        <div class="completion-pct" id="completion-pct">0%</div>
-      </div>
-      <div>
-        <div id="completion-title" style="font-weight:700;font-size:14px;">Profilini Tamamla</div>
-        <div id="completion-desc" style="font-size:12px;color:var(--muted);margin-top:4px;">Profil ne kadar dolu olursa, seni bulan marka sayısı o kadar artar.</div>
-      </div>
-    </div>
-    <button class="btn btn-secondary btn-sm" onclick="switchPanel('merkez')" style="margin-top:12px;width:100%;">Profil Merkezi'ne Git</button>
 
-    <!-- Future Module Placeholders -->
-    <div class="dash-future-grid">
-      <div class="dash-future-card">
-        <div class="dash-future-icon">
+  <!-- DASHBOARD CARDS (7-card grid) -->
+  <div id="dash-content" style="display:none;">
+    <div class="dash-grid">
+
+      <div class="dash-card active" onclick="switchPanel('merkez')" style="border:1.5px solid var(--navy);">
+        <div class="dash-card-icon navy">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg>
+        </div>
+        <div class="dash-card-title">Profil Merkezi</div>
+        <div class="dash-card-desc">Profilini yönet ve düzenle</div>
+      </div>
+
+      <div class="dash-card locked">
+        <div class="dash-card-icon navy">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
         </div>
-        <div class="dash-future-title">Profil Görüntüleyenler</div>
-        <div class="dash-future-desc">Kim profilini inceledi?</div>
-        <span class="premium-teaser-badge" style="margin-bottom:0;">Yakında</span>
+        <div class="dash-card-title">Görüntüleyenler</div>
+        <div class="dash-card-desc">Hangi şirketler seni inceledi?</div>
+        <div class="dash-card-badge"><span class="badge-soon">Yakında</span></div>
       </div>
-      <div class="dash-future-card">
-        <div class="dash-future-icon">
+
+      <div class="dash-card locked">
+        <div class="dash-card-icon verm">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+        </div>
+        <div class="dash-card-title">Kariyer Rotam</div>
+        <div class="dash-card-desc">Kariyer yolunu planla</div>
+        <div class="dash-card-badge"><span class="badge-soon">Yakında</span></div>
+      </div>
+
+      <div class="dash-card locked">
+        <div class="dash-card-icon navy">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
         </div>
-        <div class="dash-future-title">Kariyer İçgörüleri</div>
-        <div class="dash-future-desc">Sektör trendleri ve öneriler</div>
-        <span class="premium-teaser-badge" style="margin-bottom:0;">Yakında</span>
+        <div class="dash-card-title">Kariyer İçgörüleri</div>
+        <div class="dash-card-desc">Sektör trendleri ve öneriler</div>
+        <div class="dash-card-badge"><span class="badge-soon">Yakında</span></div>
       </div>
-      <div class="dash-future-card">
-        <div class="dash-future-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
+
+      <div class="dash-card locked">
+        <div class="dash-card-icon green">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/></svg>
         </div>
-        <div class="dash-future-title">Avantajlar & Fırsatlar</div>
-        <div class="dash-future-desc">Özel fırsatlar ve indirimler</div>
-        <span class="premium-teaser-badge" style="margin-bottom:0;">Yakında</span>
+        <div class="dash-card-title">Fırsatlar</div>
+        <div class="dash-card-desc">Özel fırsatlar ve indirimler</div>
+        <div class="dash-card-badge"><span class="badge-soon">Yakında</span></div>
       </div>
+
+      <div class="dash-card locked">
+        <div class="dash-card-icon navy">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        </div>
+        <div class="dash-card-title">Şirketler</div>
+        <div class="dash-card-desc">Şirketleri keşfet ve takip et</div>
+        <div class="dash-card-badge"><span class="badge-soon">Yakında</span></div>
+      </div>
+
+      <div class="dash-card locked" style="background:var(--navy-deep);border-color:transparent;">
+        <div class="dash-card-icon" style="background:rgba(255,255,255,0.1);color:white;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </div>
+        <div class="dash-card-title" style="color:white;">Premium Yan Haklar</div>
+        <div class="dash-card-desc" style="color:rgba(255,255,255,0.5);">Özel avantajlar ve ayrıcalıklar</div>
+        <div class="dash-card-badge"><span class="badge-soon">Yakında</span></div>
+      </div>
+
     </div>
   </div>
 </main>
 
-<!-- ═══ PANEL: PROFIL MERKEZI ═══ -->
+<!-- ═══ PANEL: PROFIL MERKEZI — v3 TERMINAL MODERN ═══ -->
 <main class="panel" id="panel-merkez" data-panel="merkez">
 
-  <!-- 1: HERO PROFILE CARD -->
-  <div class="hero-card">
-    <div class="hero-top">
+  <!-- 1: HERO (dark terminal) -->
+  <div class="m-hero">
+    <div class="m-hero-top">
       <div id="merkez-identity" style="display:none;">
-        <div class="hero-avatar" id="merkez-avatar">?</div>
-        <div class="hero-info">
-          <div class="hero-name" id="merkez-name">&mdash;</div>
-          <div class="hero-role" id="merkez-role"></div>
-          <div class="hero-company" id="merkez-company"></div>
-          <div class="hero-badges">
-            <span class="hero-badge" id="merkez-city-badge" style="display:none;">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-              <span id="merkez-city-text"></span>
-            </span>
-            <span class="hero-badge" id="merkez-exp-badge" style="display:none;">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
-              <span id="merkez-exp-text"></span>
-            </span>
+        <div class="m-avatar" id="merkez-avatar">?</div>
+        <div class="m-info">
+          <div class="m-name" id="merkez-name">&mdash;</div>
+          <div class="m-meta">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <span id="merkez-city-text"></span>
+            <span id="merkez-exp-badge" style="display:none;"> · <span id="merkez-exp-text"></span></span>
           </div>
         </div>
       </div>
-      <div class="hero-controls">
-        <div class="hero-control-item">
-          <span class="hero-control-label">Aktif</span>
+      <div class="m-controls">
+        <div class="m-toggle-row">
+          <span class="m-toggle-label">Aktif İş Arıyorum</span>
           <label class="toggle">
             <input type="checkbox" id="merkez-toggle-active" checked>
             <span class="toggle-slider"></span>
           </label>
         </div>
-        <div class="hero-control-item">
-          <span class="hero-control-label">Öne Çıkar</span>
-          <span class="hero-locked">
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-            Yakında
-          </span>
+        <div>
+          <div class="m-btn-locked">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            Beni Öne Çıkar
+          </div>
+          <div class="m-premium-hint">Premium ile gelecek</div>
         </div>
       </div>
     </div>
-    <div class="hero-premium-slot">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-      <span>Profilini öne çıkar</span>
-      <span class="premium-teaser-badge" style="margin-bottom:0;font-size:9px;padding:2px 6px;">Yakında</span>
+  </div>
+
+  <!-- 2: STATS (terminal monospace) -->
+  <div class="m-stats">
+    <div class="m-stat">
+      <div class="m-stat-label">Tamamlanma</div>
+      <div class="m-stat-value" id="merkez-completion-pct">0<span>%</span></div>
+      <div class="m-stat-bar">
+        <div class="m-progress"><div class="m-progress-fill green" id="merkez-completion-bar" style="width:0%;"></div></div>
+      </div>
+      <div class="m-stat-sub" id="merkez-completion-sub">tamamlanması gereken alanlar var</div>
+    </div>
+    <div class="m-stat">
+      <div class="m-stat-label">Profil Skoru</div>
+      <div class="m-stat-value" id="merkez-score-value">0<span>/100</span></div>
+      <div class="m-stat-bar">
+        <div class="m-progress"><div class="m-progress-fill verm" id="merkez-score-bar" style="width:0%;"></div></div>
+      </div>
+      <div class="m-stat-sub" id="merkez-score-hint" style="display:none;"><span id="merkez-hint-text"></span></div>
     </div>
   </div>
 
-  <!-- 2: QUALITY ROW -->
-  <div class="quality-row">
-    <div class="quality-left">
-      <div class="completion-circle-wrap">
-        <svg width="72" height="72" viewBox="0 0 80 80">
-          <circle class="completion-circle-bg" cx="40" cy="40" r="34"/>
-          <circle class="completion-circle-fg" id="merkez-progress-circle" cx="40" cy="40" r="34"
-            stroke-dasharray="213.63" stroke-dashoffset="213.63"/>
-        </svg>
-        <div class="completion-pct" id="merkez-completion-pct">0%</div>
-      </div>
-      <div class="quality-label">Tamamlanma</div>
-    </div>
-    <div class="quality-right">
-      <div class="quality-score-label">Profil Skoru</div>
-      <div class="quality-score" id="merkez-score-value">0<span>/100</span></div>
-      <div class="quality-hint" id="merkez-score-hint" style="display:none;">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-        <span id="merkez-hint-text"></span>
-      </div>
-    </div>
-  </div>
-
-  <!-- 3: CV GRID -->
-  <div class="cv-grid">
-    <div class="cv-upload-card">
-      <div class="cv-upload-title">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+  <!-- 3: CV -->
+  <div class="m-cv">
+    <div class="m-cv-upload">
+      <div class="m-cv-upload-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
         CV Yükle
       </div>
-      <div class="cv-upload-zone">
-        <div class="cv-upload-filetypes">
-          <span class="cv-filetype">PDF</span>
-          <span class="cv-filetype">DOC</span>
-          <span class="cv-filetype">DOCX</span>
+      <div class="m-cv-drop">
+        <div class="m-cv-types">
+          <span class="m-cv-ft">PDF</span>
+          <span class="m-cv-ft">DOC</span>
+          <span class="m-cv-ft">DOCX</span>
         </div>
-        <button class="btn btn-secondary btn-sm" style="pointer-events:none;opacity:0.6;">Dosya Seç</button>
-        <div class="cv-upload-hint">Yakında aktif olacak</div>
-      </div>
-      <div class="cv-upload-divider">
-        <button class="btn btn-primary btn-sm" id="btn-generate-cv-merkez" style="width:100%;">CV Oluştur ve İndir</button>
-        <div style="font-size:11px;color:var(--muted);margin-top:6px;">Profil bilgilerinden otomatik PDF CV</div>
+        <button class="btn btn-secondary" style="font-size:10px;padding:5px 14px;pointer-events:none;opacity:0.6;">Dosya Seç</button>
+        <div class="m-cv-hint">yakında aktif olacak</div>
       </div>
     </div>
-    <div class="cv-ai-card">
-      <div class="cv-ai-icon">
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-      </div>
-      <div class="cv-ai-title">AI ile CV</div>
-      <span class="premium-teaser-badge">Yakında</span>
-      <div class="cv-ai-desc">AI destekli CV oluşturma ve iyileştirme</div>
-      <div class="cv-ai-footer">çok yakında burada.</div>
+    <div class="m-cv-ai">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      <div class="m-cv-ai-title">AI ile CV Revize</div>
+      <span class="badge-soon" style="font-size:7px;margin-bottom:4px;">Premium</span>
+      <div class="m-cv-ai-desc">CV'ni yükle, AI ile<br>optimize et</div>
     </div>
   </div>
 
-  <!-- 4: SECTION MANAGEMENT -->
-  <div class="merkez-sections-title">Profil Bölümleri</div>
-  <div class="merkez-sections">
-    <div class="merkez-section-card">
-      <div class="merkez-card-header">
-        <div class="merkez-card-title">Kişisel Bilgiler</div>
-        <button class="btn-edit" onclick="editSection(1)">Düzenle</button>
-      </div>
-      <div class="merkez-card-summary" id="merkez-sum-1" style="display:none;"></div>
-      <div class="merkez-card-empty" id="merkez-sum-1-empty">Henüz eklenmedi</div>
+  <!-- 4: SECTIONS -->
+  <div class="m-sections-header">Profil Bölümleri</div>
+
+  <div class="m-section" onclick="editSection(1)">
+    <div class="m-section-left">
+      <div class="m-section-title">Kişisel Bilgiler</div>
+      <div class="m-section-summary" id="merkez-sum-1" style="display:none;"></div>
+      <div class="m-section-empty" id="merkez-sum-1-empty">Henüz eklenmedi</div>
     </div>
-    <div class="merkez-section-card">
-      <div class="merkez-card-header">
-        <div class="merkez-card-title">Deneyim</div>
-        <button class="btn-edit" onclick="editSection(2)">Düzenle</button>
-      </div>
-      <div class="merkez-card-summary" id="merkez-sum-2" style="display:none;"></div>
-      <div class="merkez-card-empty" id="merkez-sum-2-empty">Henüz eklenmedi</div>
-    </div>
-    <div class="merkez-section-card">
-      <div class="merkez-card-header">
-        <div class="merkez-card-title">Eğitim & Dil</div>
-        <button class="btn-edit" onclick="editSection(3)">Düzenle</button>
-      </div>
-      <div class="merkez-card-summary" id="merkez-sum-3" style="display:none;"></div>
-      <div class="merkez-card-empty" id="merkez-sum-3-empty">Henüz eklenmedi</div>
-    </div>
-    <div class="merkez-section-card">
-      <div class="merkez-card-header">
-        <div class="merkez-card-title">Tercihler</div>
-        <button class="btn-edit" onclick="editSection(4)">Düzenle</button>
-      </div>
-      <div class="merkez-card-summary" id="merkez-sum-4" style="display:none;"></div>
-      <div class="merkez-card-empty" id="merkez-sum-4-empty">Henüz eklenmedi</div>
-    </div>
-    <div class="merkez-section-card">
-      <div class="merkez-card-header">
-        <div class="merkez-card-title">Lokasyon Tercihleri</div>
-        <button class="btn-edit" onclick="editSection(5)">Düzenle</button>
-      </div>
-      <div class="merkez-card-summary" id="merkez-sum-5" style="display:none;"></div>
-      <div class="merkez-card-empty" id="merkez-sum-5-empty">Henüz eklenmedi</div>
-    </div>
+    <button class="btn-edit" onclick="editSection(1);event.stopPropagation();">Düzenle</button>
   </div>
 
-  <!-- 5: FOOTER TEASER -->
-  <div class="footer-teaser">
-    <span class="footer-teaser-text">Premium aday avantajları çok yakında</span>
+  <div class="m-section" onclick="editSection(2)">
+    <div class="m-section-left">
+      <div class="m-section-title">Deneyim</div>
+      <div class="m-section-summary" id="merkez-sum-2" style="display:none;"></div>
+      <div class="m-section-empty" id="merkez-sum-2-empty">Henüz eklenmedi</div>
+    </div>
+    <button class="btn-edit" onclick="editSection(2);event.stopPropagation();">Düzenle</button>
+  </div>
+
+  <div class="m-section" onclick="editSection(3)">
+    <div class="m-section-left">
+      <div class="m-section-title">Eğitim & Dil</div>
+      <div class="m-section-summary" id="merkez-sum-3" style="display:none;"></div>
+      <div class="m-section-empty" id="merkez-sum-3-empty">Henüz eklenmedi</div>
+    </div>
+    <button class="btn-edit" onclick="editSection(3);event.stopPropagation();">Düzenle</button>
+  </div>
+
+  <div class="m-section" onclick="editSection(4)">
+    <div class="m-section-left">
+      <div class="m-section-title">Tercihler</div>
+      <div class="m-section-summary" id="merkez-sum-4" style="display:none;"></div>
+      <div class="m-section-empty" id="merkez-sum-4-empty">Henüz eklenmedi</div>
+    </div>
+    <button class="btn-edit" onclick="editSection(4);event.stopPropagation();">Düzenle</button>
+  </div>
+
+  <div class="m-section" onclick="editSection(5)">
+    <div class="m-section-left">
+      <div class="m-section-title">Lokasyon Tercihleri</div>
+      <div class="m-section-summary" id="merkez-sum-5" style="display:none;"></div>
+      <div class="m-section-empty" id="merkez-sum-5-empty">Henüz eklenmedi</div>
+    </div>
+    <button class="btn-edit" onclick="editSection(5);event.stopPropagation();">Düzenle</button>
+  </div>
+
+  <!-- 5: FOOTER -->
+  <div class="m-footer">
+    <span class="m-footer-text">Premium aday avantajları çok yakında</span>
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
   </div>
 
@@ -3597,12 +3519,8 @@ async function saveProfileRPC() {
 function updateDashboardSummary(profile, experiences) {
   var psName = document.getElementById('ps-name');
   if (psName) psName.textContent = profile.full_name || '';
-  var psCityBadge = document.getElementById('ps-city-badge');
   var psCityText = document.getElementById('ps-city-text');
-  if (psCityBadge && profile.adres_il) {
-    psCityBadge.style.display = '';
-    if (psCityText) psCityText.textContent = profile.adres_il;
-  }
+  if (psCityText) psCityText.textContent = profile.adres_il || '';
   var ps = document.getElementById('profile-summary');
   if (ps) ps.style.display = '';
   var dep = document.getElementById('dash-empty-prompt');
@@ -3992,32 +3910,34 @@ function updateScoreUI() {
 
   // Update merkez panel score (primary location now)
   applyScore('merkez-score-value', 'merkez-score-hint', 'merkez-hint-text');
+
+  // Update merkez score progress bar
+  var scoreBar = document.getElementById('merkez-score-bar');
+  if (scoreBar) scoreBar.style.width = sc + '%';
 }
 
 function updateCompletionUI() {
   var pct = calculateCompletion();
-  var circumference = 213.63; // 2 * PI * 34
-  var offset = circumference - (pct / 100) * circumference;
 
-  // Update genel panel completion
-  var pctEl = document.getElementById('completion-pct');
-  if (pctEl) pctEl.textContent = pct + '%';
-  var circle = document.getElementById('progress-circle');
-  if (circle) {
-    circle.style.strokeDashoffset = offset;
-    circle.style.transition = 'stroke-dashoffset 0.8s ease';
-  }
-  var titleEl = document.getElementById('completion-title');
-  if (titleEl) titleEl.textContent = pct >= 100 ? 'Profil Tamamlandı!' : 'Profilini Tamamla';
+  // Genel panel: progress bar + text
+  var gFill = document.getElementById('g-completion-fill');
+  if (gFill) gFill.style.width = pct + '%';
+  var gPctText = document.getElementById('completion-pct');
+  if (gPctText) gPctText.textContent = pct + '% tamamlandı';
 
-  // Update merkez panel completion ring
-  var merkPct = document.getElementById('merkez-completion-pct');
-  if (merkPct) merkPct.textContent = pct + '%';
-  var merkCircle = document.getElementById('merkez-progress-circle');
-  if (merkCircle) {
-    merkCircle.style.strokeDashoffset = offset;
-    merkCircle.style.transition = 'stroke-dashoffset 0.8s ease';
+  // Merkez panel: stat card with monospace number + progress bar
+  var mPct = document.getElementById('merkez-completion-pct');
+  if (mPct) {
+    mPct.textContent = '';
+    mPct.appendChild(document.createTextNode(pct));
+    var suffix = document.createElement('span');
+    suffix.textContent = '%';
+    mPct.appendChild(suffix);
   }
+  var mBar = document.getElementById('merkez-completion-bar');
+  if (mBar) mBar.style.width = pct + '%';
+  var mSub = document.getElementById('merkez-completion-sub');
+  if (mSub) mSub.textContent = pct >= 100 ? 'profil tamamlandı ✓' : 'tamamlanması gereken alanlar var';
 
   // Update profile score alongside completion
   updateScoreUI();
@@ -4204,7 +4124,7 @@ function generateCV() {
 }
 
 function setAvatarImage(url) {
-  var targets = ['user-avatar-header', 'sidebar-avatar', 'ps-avatar', 'avatar-upload-circle'];
+  var targets = ['user-avatar-header', 'sidebar-avatar', 'ps-avatar', 'merkez-avatar', 'avatar-upload-circle'];
   targets.forEach(function(id) {
     var el = document.getElementById(id);
     if (!el) return;
