@@ -372,8 +372,9 @@ function getSupa() {
   }
   const { data } = await getSupa().auth.getSession();
   if (data.session) {
-    // Zaten giriş yapmış → profil sayfasına yönlendir
-    window.location.href = 'profil.html';
+    // Zaten giriş yapmış → role'e göre yönlendir
+    var role = data.session.user.user_metadata?.role;
+    window.location.href = role === 'employer' ? 'ik.html' : 'profil.html';
   }
 })();
 
@@ -461,8 +462,8 @@ async function loginIK() {
     return;
   }
 
-  // Başarılı → İK sayfasına git (dashboard henüz yok, demo sayfasına yönlendir)
-  window.location.href = 'isveren.html';
+  // Başarılı → İK dashboard'a git
+  window.location.href = 'ik.html';
 }
 
 // Enter key desteği
