@@ -4722,17 +4722,11 @@ async function loadSirketlerPanel() {
     if (cr.data) _ht_candidate_id = cr.data.id;
   }
 
-  // Parallel fetch: brands with nested company + follows
-  var promises = [
-    supabase.from('brands').select('id, brand_name, slug, logo_url, company_id, companies(id, company_name, slug, logo_url)')
-  ];
-  if (_ht_candidate_id) {
-    promises.push(supabase.from('candidate_company_follows').select('company_id').eq('candidate_id', _ht_candidate_id));
-  }
-  var results = await Promise.all(promises);
-
-  var brandsRes = results[0];
-  var followsRes = results[1] || { data: [] };
+  // Fetch brands (with nested company) and follows
+  var brandsRes = await supabase.from('brands').select('id, brand_name, slug, logo_url, company_id, companies(id, company_name, slug, logo_url)');
+  var followsRes = _ht_candidate_id
+    ? await supabase.from('candidate_company_follows').select('company_id').eq('candidate_id', _ht_candidate_id)
+    : { data: [] };
 
   if (brandsRes.error) {
     console.warn('[HT] loadSirketlerPanel: brands query failed', brandsRes.error);
