@@ -2538,8 +2538,9 @@ function initStep2() {
     });
   }
 
-  // Add first card by default
-  addExperienceCard();
+  // Add first card by default — skip if applyDraft already restored data
+  var expContainer = document.getElementById('exp-cards-container');
+  if (!expContainer || expContainer.children.length === 0) addExperienceCard();
 }
 
 function addExperienceCard(data) {
@@ -2900,9 +2901,11 @@ function initStep3() {
   var btnAddCert = document.getElementById('btn-add-cert');
   if (btnAddCert) btnAddCert.addEventListener('click', function() { addCertificateRow(); });
 
-  // Add one default row for each
-  addEducationRow();
-  addLanguageRow();
+  // Add one default row for each — skip if applyDraft already restored data
+  var eduC = document.getElementById('edu-rows-container');
+  if (!eduC || eduC.children.length === 0) addEducationRow();
+  var langC = document.getElementById('lang-rows-container');
+  if (!langC || langC.children.length === 0) addLanguageRow();
 }
 
 function addEducationRow(data) {
@@ -3126,7 +3129,9 @@ var selectedBrandInterests = [];
 function initStep4() {
   var btnAddRole = document.getElementById('btn-add-role');
   if (btnAddRole) btnAddRole.addEventListener('click', function() { addTargetRoleRow(); });
-  addTargetRoleRow(); // default first row
+  // Default first row — skip if applyDraft already restored data
+  var roleC = document.getElementById('target-roles-container');
+  if (!roleC || roleC.children.length === 0) addTargetRoleRow();
 
   // Musaitlik chips
   var musaitlikContainer = document.getElementById('musaitlik-chips');
