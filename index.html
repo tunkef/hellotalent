@@ -2250,8 +2250,9 @@ document.addEventListener('DOMContentLoaded', function() {
   // Supabase oturum kontrolü
   getSupa().auth.getSession().then(function(res) {
     if (res.data && res.data.session && res.data.session.user) {
-      // Giriş yapılmış → profil sayfasına yönlendir, eski panel gösterme
-      window.location.href = 'profil.html';
+      // Giriş yapılmış → role'e göre yönlendir (giris.html ile uyumlu)
+      var role = res.data.session.user.user_metadata?.role;
+      window.location.href = role === 'employer' ? 'ik.html' : 'profil.html';
     }
   });
 
