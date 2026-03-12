@@ -597,6 +597,21 @@ section#cv .pill {
 .share-btn.linkedin  { background: #0077B5; }
 .share-btn.link      { background: #f0f0f0; color: #333; }
 
+/* Session redirect interstitial (index: existing-session UX) */
+.session-redirect-msg {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(30,45,94,0.92);
+  color: #fff;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+}
+
 /* ══════════ MOBILE ══════════ */
 @media (max-width: 768px) {
 
@@ -1013,6 +1028,8 @@ section#cv > div:first-child { padding: 52px 20px; }
 
 </head>
 <body>
+
+<div id="session-redirect-msg" class="session-redirect-msg" style="display:none;" aria-live="polite"></div>
 
 <!-- ══════════ HEADER ══════════ -->
 <div id="ht-header"></div>
@@ -2250,9 +2267,17 @@ document.addEventListener('DOMContentLoaded', function() {
   // Supabase oturum kontrolü
   getSupa().auth.getSession().then(function(res) {
     if (res.data && res.data.session && res.data.session.user) {
-      // Giriş yapılmış → role'e göre yönlendir (giris.html ile uyumlu)
       var role = res.data.session.user.user_metadata?.role;
-      window.location.href = role === 'employer' ? 'ik.html' : 'profil.html';
+      var msgEl = document.getElementById('session-redirect-msg');
+      if (msgEl) {
+        msgEl.textContent = role === 'employer'
+          ? 'Oturumun bulundu. İK paneline yönlendiriliyorsun...'
+          : 'Oturumun bulundu. Profiline yönlendiriliyorsun...';
+        msgEl.style.display = 'flex';
+      }
+      setTimeout(function() {
+        window.location.href = role === 'employer' ? 'ik.html' : 'profil.html';
+      }, 500);
     }
   });
 
