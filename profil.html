@@ -75,6 +75,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;color:var(--text);background:#ff
 .logo{
   font-family:'Bricolage Grotesque',sans-serif;font-size:18px;font-weight:800;
   color:var(--navy);text-decoration:none;letter-spacing:-0.5px;flex-shrink:0;
+  background:none;border:none;padding:0;cursor:pointer;
 }
 .logo span{color:var(--verm);}
 .header-right{margin-left:auto;display:flex;align-items:center;gap:10px;}
@@ -741,7 +742,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;color:var(--text);background:#ff
 
 <!-- ═══ HEADER ═══ -->
 <header class="header">
-  <a href="index.html" class="logo">hello<span>talent</span>.ai</a>
+  <button type="button" class="logo" onclick="switchPanel('genel'); return false;">hello<span>talent</span>.ai</button>
   <div class="header-right">
     <div class="status-badge aktif" id="header-status-badge" title="Profil durumu">
       <span class="status-dot"></span><span id="header-status-text">Aktif</span>
