@@ -544,7 +544,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;color:var(--text);background:#ff
 .m-section[data-step="3"]{border-left:3px solid var(--green);}
 .m-section[data-step="4"]{border-left:3px solid #8B5CF6;}
 .m-section[data-step="5"]{border-left:3px solid #F59E0B;}
-.m-section-left{}
+.m-section-left{flex:1;min-width:0;}
 .m-section-title{font-size:12px;font-weight:700;color:var(--navy);margin-bottom:1px;}
 .m-section-summary{font-family:var(--mono);font-size:10px;color:var(--muted);}
 .m-section-empty{font-size:10px;color:var(--border);font-style:italic;}
@@ -1538,6 +1538,14 @@ var SUPABASE_URL = 'https://cpwibefquojehjehtrog.supabase.co';
 var SUPABASE_KEY = 'sb_publishable_POUtNwJyjAAheukwYP5hmA_TKKjphwa';
 var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 var currentUser = null;
+function syncAccountEmail() {
+  if (!currentUser) return;
+  var email = currentUser.email || '';
+  var f = document.getElementById('f-email');
+  if (f) f.value = email;
+  var s = document.getElementById('settings-email');
+  if (s) s.value = email;
+}
 var _loadedDBData = null; // Stores loaded DB data for post-init re-apply
 
 // ── STORAGE CONSTANTS ──
@@ -2264,8 +2272,7 @@ function reapplyDynamicFields() {
   var email = currentUser.email || '';
   var emailEl = document.getElementById('sidebar-email-text');
   if (emailEl) emailEl.textContent = email;
-  var settingsEmail = document.getElementById('settings-email');
-  if (settingsEmail) settingsEmail.value = email;
+  syncAccountEmail();
 
   // Set name from metadata
   var metaName = (currentUser.user_metadata && (currentUser.user_metadata.full_name || currentUser.user_metadata.name)) || '';
@@ -2323,6 +2330,7 @@ function reapplyDynamicFields() {
     }
     updateDashboardSummary(dbData.profile, dbData.experiences);
     updateMerkezCards(); // Populate Profil Merkezi section cards
+    syncAccountEmail();
     // ── Final DOM state snapshot ──
     setTimeout(function() {
       var ec = document.getElementById('exp-cards-container');
@@ -2662,11 +2670,7 @@ function initStep1() {
     });
   }
 
-  // Set email field from current user
-  if (currentUser) {
-    var emailField = document.getElementById('f-email');
-    if (emailField) emailField.value = currentUser.email || '';
-  }
+  syncAccountEmail();
 
   // Avatar upload
   var avatarInput = document.getElementById('avatar-file-input');
