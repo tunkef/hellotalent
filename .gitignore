@@ -1,2 +1,7 @@
 .claude/
 .DS_Store
+EXECUTION_POLICY.md
+docs/plans/
+ref_components/
+ref_guidelines/
+ref_styles/
