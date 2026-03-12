@@ -1499,9 +1499,19 @@ body{font-family:'Plus Jakarta Sans',sans-serif;color:var(--text);background:#ff
   <div class="card">
     <div class="card-title">Hesap Bilgileri</div>
     <div class="field">
-      <label>E-posta</label>
+      <label for="settings-email">E-posta</label>
       <input type="email" id="settings-email" disabled>
     </div>
+    <div class="field">
+      <label for="settings-adsoyad">Ad Soyad</label>
+      <input type="text" id="settings-adsoyad" placeholder="Adiniz soyadiniz" maxlength="100">
+    </div>
+    <div class="field">
+      <label for="settings-telefon">Telefon</label>
+      <input type="tel" id="settings-telefon" placeholder="0555 123 4567" maxlength="20">
+    </div>
+    <button class="btn btn-primary btn-sm" id="btn-settings-account-save">Kaydet</button>
+    <div id="settings-account-msg" style="font-size:12px;margin-top:8px;display:none;"></div>
   </div>
 
   <div class="card" style="margin-top:16px;">
@@ -1516,6 +1526,11 @@ body{font-family:'Plus Jakarta Sans',sans-serif;color:var(--text);background:#ff
     </div>
     <button class="btn btn-primary btn-sm" id="btn-change-pw">Sifreyi Guncelle</button>
     <div id="pw-msg" style="font-size:12px;margin-top:8px;display:none;"></div>
+  </div>
+
+  <div class="card" style="margin-top:16px;">
+    <div class="card-title">Uyelik</div>
+    <div class="wiz-step-desc" style="margin-top:4px;">Premium avantajlari cok yakinda.</div>
   </div>
 
   <div style="margin-top:24px;display:flex;gap:12px;">
@@ -1994,6 +2009,12 @@ function _doSwitchPanel(name) {
   if (name === 'merkez') { updateMerkezCards(); updateCompletionUI(); ht_track('merkez_viewed'); }
   // Lazy-load Şirketler data on first visit
   if (name === 'sirketler') { loadSirketlerPanel(); }
+  // Populate Settings from Profile when opening Ayarlar
+  if (name === 'ayarlar') {
+    setVal('settings-adsoyad', val('f-adsoyad'));
+    setVal('settings-telefon', val('f-telefon'));
+    syncAccountEmail();
+  }
   // Close mobile sidebar
   closeMobileSidebar();
 }
@@ -2194,6 +2215,18 @@ function setVal(id, value) {
   var el = document.getElementById(id);
   if (!el) return;
   el.value = value;
+}
+
+function refreshAfterSettingsSave(savedFullName, savedTelefon) {
+  setVal('f-adsoyad', savedFullName);
+  setVal('f-telefon', savedTelefon);
+  var sidebar = document.getElementById('sidebar-user-name');
+  if (sidebar) sidebar.textContent = savedFullName || '\u2014';
+  if (_loadedDBData && _loadedDBData.profile) {
+    _loadedDBData.profile.full_name = savedFullName;
+    _loadedDBData.profile.telefon = savedTelefon;
+  }
+  updateMerkezCards();
 }
 
 // Re-apply dynamically-populated selects and chips after initStep1/4/5 have created them.
@@ -2484,6 +2517,32 @@ document.addEventListener('DOMContentLoaded', function() {
       document.getElementById('settings-confirm-pw').value = '';
     }
     btnChangePw.disabled = false;
+  });
+
+  // Hesap Bilgileri save (Settings)
+  var btnSettingsAccountSave = document.getElementById('btn-settings-account-save');
+  if (btnSettingsAccountSave) btnSettingsAccountSave.addEventListener('click', async function() {
+    var fullName = (document.getElementById('settings-adsoyad') && document.getElementById('settings-adsoyad').value) || '';
+    var phone = (document.getElementById('settings-telefon') && document.getElementById('settings-telefon').value) || '';
+    fullName = fullName.trim();
+    var msgEl = document.getElementById('settings-account-msg');
+    if (!fullName) {
+      if (msgEl) { msgEl.textContent = 'Ad Soyad zorunludur.'; msgEl.style.color = 'var(--red)'; msgEl.style.display = 'block'; }
+      return;
+    }
+    if (!currentUser) { if (msgEl) { msgEl.textContent = 'Oturum bulunamadi.'; msgEl.style.color = 'var(--red)'; msgEl.style.display = 'block'; } return; }
+    btnSettingsAccountSave.disabled = true;
+    var res = await supabase.from('candidates').update({
+      full_name: fullName,
+      telefon: phone || null
+    }).eq('user_id', currentUser.id);
+    if (res.error) {
+      if (msgEl) { msgEl.textContent = res.error.message || 'Kayit guncellenemedi.'; msgEl.style.color = 'var(--red)'; msgEl.style.display = 'block'; }
+    } else {
+      if (msgEl) { msgEl.textContent = 'Hesap bilgileri guncellendi.'; msgEl.style.color = 'var(--green)'; msgEl.style.display = 'block'; }
+      refreshAfterSettingsSave(fullName, phone);
+    }
+    btnSettingsAccountSave.disabled = false;
   });
 
   // CV generation buttons
