@@ -59,6 +59,17 @@ if (window.Sentry) {
   --mono:'DM Mono',monospace;
   --sidebar-w:240px;
   --header-h:60px;
+  --input-background:#f3f3f5;
+  --switch-background:#cbced4;
+  --font-weight-normal:400;
+  --font-weight-medium:500;
+  --sidebar:#ffffff;
+  --sidebar-border:var(--border);
+  --sidebar-accent:var(--gray);
+  --sidebar-accent-foreground:var(--text);
+  --sidebar-primary:var(--verm);
+  --sidebar-primary-foreground:#ffffff;
+  --ring:rgba(0,0,0,0.1);
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html{scroll-behavior:smooth;overflow-x:hidden;}
@@ -75,8 +86,9 @@ body{font-family:'Plus Jakarta Sans',sans-serif;color:var(--text);background:#ff
 .logo{
   font-family:'Bricolage Grotesque',sans-serif;font-size:18px;font-weight:800;
   color:var(--navy);text-decoration:none;letter-spacing:-0.5px;flex-shrink:0;
-  background:none;border:none;padding:0;cursor:pointer;
+  background:none;border:none;padding:0;cursor:pointer;outline:none;
 }
+.logo:focus-visible{box-shadow:0 0 0 2px var(--ring);}
 .logo span{color:var(--verm);}
 .header-right{margin-left:auto;display:flex;align-items:center;gap:10px;}
 .status-badge{
@@ -85,6 +97,15 @@ body{font-family:'Plus Jakarta Sans',sans-serif;color:var(--text);background:#ff
 }
 .status-badge.aktif{background:var(--green-light);color:var(--green);}
 .status-badge.pasif{background:#F3F4F6;color:var(--muted);}
+.visibility-pill{
+  display:inline-block;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:600;
+}
+.visibility-pill--aktif{background:var(--green-light);color:var(--green);}
+.visibility-pill--pasif{background:#F3F4F6;color:var(--muted);}
+.visibility-pill--gizli{background:#FEF3C7;color:#B45309;}
+.visibility-pill--tumur{background:var(--green-light);color:var(--green);}
+.visibility-pill--warning{background:#FEE2E2;color:#B91C1C;}
+.visibility-pill--none{background:transparent;color:var(--muted);}
 .status-dot{width:6px;height:6px;border-radius:50%;background:currentColor;}
 .avatar-wrap{position:relative;cursor:pointer;}
 .avatar{
@@ -96,17 +117,18 @@ body{font-family:'Plus Jakarta Sans',sans-serif;color:var(--text);background:#ff
 .btn-icon{
   width:34px;height:34px;border:1px solid var(--border);border-radius:var(--radius-sm);
   background:white;cursor:pointer;display:none;align-items:center;justify-content:center;
-  color:var(--muted);
+  color:var(--muted);outline:none;
 }
+.btn-icon:focus-visible{box-shadow:0 0 0 2px var(--ring);}
 
 /* ── SIDEBAR ── */
 .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:599;}
 .sidebar{
   position:fixed;top:var(--header-h);left:0;bottom:0;width:var(--sidebar-w);
-  background:white;border-right:1px solid var(--border);z-index:600;
+  background:var(--sidebar);border-right:1px solid var(--sidebar-border);z-index:600;
   display:flex;flex-direction:column;overflow-y:auto;
 }
-.sidebar-user{padding:20px 18px;border-bottom:1px solid var(--border);}
+.sidebar-user{padding:20px 18px;border-bottom:1px solid var(--sidebar-border);}
 .sidebar-user-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
 .sidebar-avatar{
   width:38px;height:38px;border-radius:50%;background:var(--navy-light);color:var(--navy);
@@ -118,14 +140,16 @@ body{font-family:'Plus Jakarta Sans',sans-serif;color:var(--text);background:#ff
 .sidebar-user-name{font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .sidebar-user-email{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .sidebar-nav{padding:8px 0;flex:1;}
-.sidebar-nav-label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;padding:8px 18px 4px;}
+.sidebar-nav-label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;padding:8px 12px 4px;}
 .nav-item{
-  display:flex;align-items:center;gap:10px;width:100%;padding:10px 18px;
-  border:none;background:none;font-family:inherit;font-size:13px;font-weight:500;
+  display:flex;align-items:center;gap:12px;width:100%;padding:10px 12px;
+  border:none;background:none;font-family:inherit;font-size:13px;font-weight:var(--font-weight-medium);
   color:var(--muted);cursor:pointer;text-align:left;transition:all 0.15s;
+  border-radius:var(--radius);outline:none;
 }
-.nav-item:hover{background:var(--gray);color:var(--text);}
-.nav-item.active{background:var(--verm-light);color:var(--verm);font-weight:600;}
+.nav-item:hover{background:var(--sidebar-accent);color:var(--sidebar-accent-foreground);}
+.nav-item.active{background:var(--verm-light);color:var(--verm-dark);font-weight:600;}
+.nav-item:focus-visible{box-shadow:0 0 0 2px var(--ring);}
 .nav-icon{width:20px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .nav-soon{
   margin-left:auto;font-size:9px;font-weight:700;color:var(--verm);
@@ -139,7 +163,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;color:var(--text);background:#ff
 .toggle{position:relative;width:36px;height:20px;flex-shrink:0;}
 .toggle input{opacity:0;width:0;height:0;}
 .toggle-slider{
-  position:absolute;inset:0;background:#ccc;border-radius:20px;cursor:pointer;transition:0.2s;
+  position:absolute;inset:0;background:var(--switch-background);border-radius:20px;cursor:pointer;transition:0.2s;
 }
 .toggle-slider::before{
   content:'';position:absolute;left:2px;top:2px;width:16px;height:16px;
@@ -202,7 +226,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;color:var(--text);background:#ff
   border-color:var(--green);color:white;background:var(--green);
 }
 .wiz-progress-label{
-  font-size:11px;font-weight:500;color:var(--muted);white-space:nowrap;
+  font-size:11px;font-weight:var(--font-weight-medium);color:var(--muted);white-space:nowrap;
   transition:color 0.2s;
 }
 .wiz-progress-step.active .wiz-progress-label{color:var(--verm);font-weight:600;}
@@ -233,14 +257,15 @@ body{font-family:'Plus Jakarta Sans',sans-serif;color:var(--text);background:#ff
 
 /* ── FORM FIELDS ── */
 .field{margin-bottom:16px;}
-.field label{display:block;font-size:12px;font-weight:600;color:var(--navy);margin-bottom:5px;}
+.field label{display:block;font-size:12px;font-weight:var(--font-weight-medium);color:var(--navy);margin-bottom:5px;}
 .field-hint{font-size:11px;color:var(--muted);margin-top:3px;}
 .field input,.field select,.field textarea{
-  width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--radius-sm);
-  font-family:inherit;font-size:14px;color:var(--text);background:white;
-  transition:border-color 0.2s;outline:none;
+  width:100%;padding:10px 12px;min-height:36px;border:1px solid var(--border);border-radius:var(--radius);
+  font-family:inherit;font-size:14px;font-weight:var(--font-weight-normal);color:var(--text);
+  background:var(--input-background);transition:border-color 0.2s,box-shadow 0.15s;outline:none;
 }
 .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--verm);}
+.field input:focus-visible,.field select:focus-visible,.field textarea:focus-visible{box-shadow:0 0 0 2px var(--ring);}
 .field input:disabled{background:var(--gray);color:var(--muted);cursor:not-allowed;}
 .field textarea{resize:vertical;min-height:80px;}
 .field select{cursor:pointer;appearance:none;
@@ -256,8 +281,10 @@ body{font-family:'Plus Jakarta Sans',sans-serif;color:var(--text);background:#ff
 .btn{
   display:inline-flex;align-items:center;justify-content:center;gap:6px;
   padding:10px 20px;border-radius:var(--radius-sm);font-family:inherit;
-  font-size:13px;font-weight:600;cursor:pointer;transition:all 0.15s;border:none;
+  font-size:13px;font-weight:var(--font-weight-medium);cursor:pointer;transition:all 0.15s;border:none;
+  outline:none;
 }
+.btn:focus-visible{box-shadow:0 0 0 2px var(--ring);}
 .btn-primary{background:var(--verm);color:white;}
 .btn-primary:hover{background:var(--verm-dark);}
 .btn-secondary{background:var(--gray);color:var(--text);border:1px solid var(--border);}
@@ -272,8 +299,8 @@ body{font-family:'Plus Jakarta Sans',sans-serif;color:var(--text);background:#ff
 
 /* ── CARDS ── */
 .card{
-  background:white;border:1.5px solid var(--border);border-radius:var(--radius-lg);
-  padding:20px;margin-bottom:16px;
+  background:white;border:1px solid var(--border);border-radius:var(--radius-lg);
+  padding:24px;margin-bottom:16px;
 }
 .card-title{
   font-family:'Bricolage Grotesque',sans-serif;font-size:15px;font-weight:700;
@@ -402,8 +429,8 @@ body{font-family:'Plus Jakarta Sans',sans-serif;color:var(--text);background:#ff
 
 /* Profile Hero */
 .g-hero{
-  background:white;border-radius:var(--radius-lg);padding:18px 20px;
-  margin-bottom:14px;box-shadow:var(--shadow-md);
+  background:white;border:1px solid var(--border);border-radius:var(--radius-lg);
+  padding:20px 24px;margin-bottom:14px;box-shadow:var(--shadow-md);
 }
 .g-hero-top{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
 .g-avatar{width:48px;height:48px;border-radius:50%;overflow:hidden;flex-shrink:0;background:var(--navy);color:white;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;}
@@ -426,8 +453,8 @@ body{font-family:'Plus Jakarta Sans',sans-serif;color:var(--text);background:#ff
 /* Dashboard Cards Grid */
 .dash-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
 .dash-card{
-  background:white;border-radius:var(--radius);padding:16px;
-  box-shadow:var(--shadow);border:1px solid rgba(0,0,0,0.03);
+  background:white;border-radius:var(--radius-lg);border:1px solid var(--border);
+  padding:18px;box-shadow:var(--shadow);
   cursor:default;transition:all 0.2s;position:relative;overflow:hidden;
 }
 .dash-card.active{cursor:pointer;}
@@ -483,8 +510,8 @@ body{font-family:'Plus Jakarta Sans',sans-serif;color:var(--text);background:#ff
   display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;
 }
 .m-stat{
-  background:white;border-radius:var(--radius);padding:14px 16px;
-  box-shadow:var(--shadow);border-left:3px solid var(--border);
+  background:white;border:1px solid var(--border);border-radius:var(--radius-lg);
+  padding:16px 18px;box-shadow:var(--shadow);border-left:3px solid var(--border);
 }
 .m-stat.green-accent{border-left-color:var(--green);}
 .m-stat.verm-accent{border-left-color:var(--verm);}
@@ -506,8 +533,8 @@ body{font-family:'Plus Jakarta Sans',sans-serif;color:var(--text);background:#ff
   align-items:stretch;
 }
 .m-cv-upload{
-  background:white;border-radius:var(--radius);padding:14px 16px;
-  box-shadow:var(--shadow);
+  background:white;border:1px solid var(--border);border-radius:var(--radius-lg);
+  padding:16px 18px;box-shadow:var(--shadow);
 }
 .m-cv-upload-title{font-family:'Bricolage Grotesque',sans-serif;font-size:12px;font-weight:700;color:var(--navy);margin-bottom:10px;display:flex;align-items:center;gap:6px;}
 .m-cv-upload-title svg{width:14px;height:14px;}
@@ -533,8 +560,8 @@ body{font-family:'Plus Jakarta Sans',sans-serif;color:var(--text);background:#ff
 /* Section List */
 .m-sections-header{font-family:'Bricolage Grotesque',sans-serif;font-size:13px;font-weight:700;color:var(--navy);margin-bottom:8px;margin-top:12px;}
 .m-section{
-  background:white;border-radius:var(--radius);padding:12px 14px;
-  margin-bottom:6px;box-shadow:var(--shadow);
+  background:white;border:1px solid var(--border);border-radius:var(--radius-lg);
+  padding:14px 16px;margin-bottom:6px;box-shadow:var(--shadow);
   display:flex;align-items:center;justify-content:space-between;
   transition:all 0.15s;cursor:pointer;
 }
@@ -615,9 +642,11 @@ body{font-family:'Plus Jakarta Sans',sans-serif;color:var(--text);background:#ff
   padding:12px 24px;border-bottom:1px solid var(--border);
 }
 .lok-search input{
-  width:100%;padding:10px 12px;border:1.5px solid var(--border);
-  border-radius:var(--radius-sm);font-family:inherit;font-size:14px;
+  width:100%;padding:10px 12px;min-height:36px;border:1px solid var(--border);
+  border-radius:var(--radius);font-family:inherit;font-size:14px;
+  background:var(--input-background);outline:none;
 }
+.lok-search input:focus-visible{box-shadow:0 0 0 2px var(--ring);}
 .lok-body{flex:1;overflow-y:auto;padding:16px 24px;}
 .lok-region{margin-bottom:16px;}
 .lok-region-title{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;}
@@ -744,9 +773,6 @@ body{font-family:'Plus Jakarta Sans',sans-serif;color:var(--text);background:#ff
 <header class="header">
   <button type="button" class="logo" onclick="switchPanel('genel'); return false;">hello<span>talent</span>.ai</button>
   <div class="header-right">
-    <div class="status-badge aktif" id="header-status-badge" title="Profil durumu">
-      <span class="status-dot"></span><span id="header-status-text">Aktif</span>
-    </div>
     <div class="avatar-wrap" id="header-avatar-wrap" title="Profil">
       <div class="avatar" id="user-avatar-header">?</div>
     </div>
@@ -771,7 +797,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;color:var(--text);background:#ff
       </div>
     </div>
     <div class="status-badge aktif" id="card-status-badge" style="width:fit-content;">
-      <span class="status-dot"></span><span id="card-status-text">Aktif</span>
+      <span class="status-dot"></span><span id="card-status-text">Beni öner</span>
     </div>
   </div>
   <nav class="sidebar-nav">
@@ -796,11 +822,11 @@ body{font-family:'Plus Jakarta Sans',sans-serif;color:var(--text);background:#ff
   <div style="padding:10px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
     <div class="toggle-row">
       <div class="toggle-info">
-        <h4>Beni Oner</h4>
-        <p>Markalar seni gorsun</p>
+        <h4>Beni öne çıkar</h4>
+        <p>Yakında Premium ile</p>
       </div>
-      <label class="toggle">
-        <input type="checkbox" id="toggle-active" checked>
+      <label class="toggle" style="pointer-events:none;opacity:0.7;">
+        <input type="checkbox" id="toggle-active" disabled>
         <span class="toggle-slider"></span>
       </label>
     </div>
@@ -936,7 +962,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;color:var(--text);background:#ff
       <button class="btn btn-primary" id="btn-edit-profile" style="font-size:11px;padding:7px 14px;">Profili Düzenle</button>
     </div>
     <div class="g-hero-badges">
-      <span class="badge-active"><span class="dot"></span> Aktif İş Arıyorum</span>
+      <span class="badge-active" id="genel-active-indicator"><span class="dot" id="genel-active-dot"></span> <span id="genel-active-text">Beni öner</span></span>
       <span class="badge-locked">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
         Beni Öne Çıkar
@@ -946,6 +972,11 @@ body{font-family:'Plus Jakarta Sans',sans-serif;color:var(--text);background:#ff
       <div class="g-completion">
         <div class="g-completion-bar"><div class="g-completion-fill" id="g-completion-fill" style="width:0%;"></div></div>
         <span class="g-completion-text" id="completion-pct">0% tamamlandı</span>
+      </div>
+    </div>
+    <div class="g-hero-row" id="visibility-summary-genel" style="border-top:1px solid var(--border);padding-top:10px;margin-top:8px;">
+      <div style="font-size:12px;color:var(--muted);">
+        <div>Mevcut işveren: <span id="vis-hide-state" class="visibility-pill">—</span></div>
       </div>
     </div>
   </div>
@@ -1033,34 +1064,44 @@ body{font-family:'Plus Jakarta Sans',sans-serif;color:var(--text);background:#ff
 
   <!-- 1: HERO (dark terminal) -->
   <div class="m-hero">
-    <div class="m-hero-top">
-      <div id="merkez-identity" style="display:none;">
-        <div class="m-avatar" id="merkez-avatar">?</div>
-        <div class="m-info">
-          <div class="m-name" id="merkez-name">&mdash;</div>
-          <div class="m-role" id="merkez-role-line" style="display:none;"><span id="merkez-role"></span><span class="m-role-sep">·</span><span id="merkez-company"></span></div>
-          <div class="m-meta">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-            <span id="merkez-city-text"></span>
-            <span id="merkez-exp-badge" style="display:none;"> · <span id="merkez-exp-text"></span></span>
+      <div class="m-hero-top">
+        <div id="merkez-identity">
+          <div class="m-avatar" id="merkez-avatar">?</div>
+          <div class="m-info">
+            <div class="m-name" id="merkez-name">&mdash;</div>
+            <div class="m-role" id="merkez-role-line" style="display:none;"><span id="merkez-role"></span><span class="m-role-sep">·</span><span id="merkez-company"></span></div>
+            <div class="m-meta">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              <span id="merkez-city-text"></span>
+              <span id="merkez-exp-badge" style="display:none;"> · <span id="merkez-exp-text"></span></span>
+            </div>
+          </div>
+        </div>
+        <div class="m-controls">
+          <div class="m-toggle-row">
+            <span class="m-toggle-label">Beni öner</span>
+            <label class="toggle">
+              <input type="checkbox" id="merkez-toggle-active" checked>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="m-toggle-row">
+            <span class="m-toggle-label">Beni Öne Çıkar</span>
+            <div class="m-btn-locked">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              Beni Öne Çıkar
+              <span class="m-tooltip">Yakında Premium ile</span>
+            </div>
+          </div>
+          <div class="m-toggle-row">
+            <span class="m-toggle-label">Mevcut işveren seni görmesin</span>
+            <label class="toggle">
+              <input type="checkbox" id="merkez-hide-from-current-employer">
+              <span class="toggle-slider"></span>
+            </label>
           </div>
         </div>
       </div>
-      <div class="m-controls">
-        <div class="m-toggle-row">
-          <span class="m-toggle-label">Aktif İş Arıyorum</span>
-          <label class="toggle">
-            <input type="checkbox" id="merkez-toggle-active" checked>
-            <span class="toggle-slider"></span>
-          </label>
-        </div>
-        <div class="m-btn-locked">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-          Beni Öne Çıkar
-          <span class="m-tooltip">Yakında Premium ile</span>
-        </div>
-      </div>
-    </div>
   </div>
 
   <!-- 2: STATS (terminal monospace) -->
@@ -1531,6 +1572,32 @@ body{font-family:'Plus Jakarta Sans',sans-serif;color:var(--text);background:#ff
   <div class="card" style="margin-top:16px;">
     <div class="card-title">Uyelik</div>
     <div class="wiz-step-desc" style="margin-top:4px;">Premium avantajlari cok yakinda.</div>
+  </div>
+
+  <div class="card" style="margin-top:16px;">
+    <div class="card-title">Gizlilik ve Görünürlük</div>
+    <div class="field" style="display:flex;align-items:center;gap:12px;margin-top:8px;">
+      <label class="toggle">
+        <input type="checkbox" id="settings-visibility-active" checked>
+        <span class="toggle-slider"></span>
+      </label>
+      <label for="settings-visibility-active" style="margin:0;cursor:pointer;font-weight:500;">Profilimi işverenlere göster</label>
+    </div>
+    <div class="field" style="margin-top:12px;">
+      <div class="wiz-step-desc" style="margin:0;font-size:12px;">
+        Şu anki işvereniniz: <span id="settings-current-employer-name">—</span>
+      </div>
+    </div>
+    <div class="field" style="display:flex;align-items:center;gap:12px;margin-top:8px;">
+      <label class="toggle">
+        <input type="checkbox" id="settings-hide-from-current-employer">
+        <span class="toggle-slider"></span>
+      </label>
+      <label for="settings-hide-from-current-employer" style="margin:0;cursor:pointer;font-weight:500;">Mevcut işveren seni görmesin</label>
+    </div>
+    <div id="settings-hide-hint" style="display:none;font-size:11px;color:var(--muted);margin-top:4px;">
+      Bu ayarı kullanmak için Deneyimler alanında mevcut işvereninizi belirtin.
+    </div>
   </div>
 
   <div style="margin-top:24px;display:flex;gap:12px;">
@@ -2006,7 +2073,15 @@ function _doSwitchPanel(name) {
     if (btn.dataset.panel === name) btn.classList.add('active');
   });
   // Refresh Profil Merkezi cards when switching to it
-  if (name === 'merkez') { updateMerkezCards(); updateCompletionUI(); ht_track('merkez_viewed'); }
+  if (name === 'merkez') {
+    updateMerkezCards();
+    updateCompletionUI();
+    var isActive = _loadedDBData && _loadedDBData.profile && _loadedDBData.profile.is_active !== false;
+    updateStatusUI(isActive);
+    var mta = document.getElementById('merkez-toggle-active');
+    if (mta) mta.checked = isActive;
+    ht_track('merkez_viewed');
+  }
   // Lazy-load Şirketler data on first visit
   if (name === 'sirketler') { loadSirketlerPanel(); }
   // Populate Settings from Profile when opening Ayarlar
@@ -2014,6 +2089,20 @@ function _doSwitchPanel(name) {
     setVal('settings-adsoyad', val('f-adsoyad'));
     setVal('settings-telefon', val('f-telefon'));
     syncAccountEmail();
+    var visToggle = document.getElementById('settings-visibility-active');
+    if (visToggle) {
+      visToggle.checked = _loadedDBData && _loadedDBData.profile && _loadedDBData.profile.is_active !== false;
+    }
+    var empName = document.getElementById('settings-current-employer-name');
+    var hideToggle = document.getElementById('settings-hide-from-current-employer');
+    var hideHint = document.getElementById('settings-hide-hint');
+    var currentEmp = getCurrentEmployerDisplayFromExperiences(_loadedDBData ? _loadedDBData.experiences : null);
+    if (empName) empName.textContent = currentEmp || 'Şu anki işveren yok';
+    if (hideToggle) {
+      hideToggle.checked = _loadedDBData && _loadedDBData.profile && _loadedDBData.profile.hide_from_current_employer === true;
+      hideToggle.disabled = !currentEmp;
+    }
+    if (hideHint) hideHint.style.display = currentEmp ? 'none' : 'block';
   }
   // Close mobile sidebar
   closeMobileSidebar();
@@ -2229,6 +2318,66 @@ function refreshAfterSettingsSave(savedFullName, savedTelefon) {
   updateMerkezCards();
 }
 
+function refreshAfterVisibilitySave(isActive) {
+  var mta = document.getElementById('merkez-toggle-active');
+  if (mta) mta.checked = isActive;
+  updateStatusUI(isActive);
+  if (_loadedDBData && _loadedDBData.profile) _loadedDBData.profile.is_active = isActive;
+  refreshVisibilitySummary();
+}
+
+function getCurrentEmployerDisplayFromExperiences(experiences) {
+  if (!experiences || !experiences.length) return '';
+  var i, e, name;
+  for (i = 0; i < experiences.length; i++) {
+    e = experiences[i];
+    if (e && e.devam_ediyor === true) {
+      name = (e.marka || e.sirket_adi || e.sirket || '').toString().trim();
+      return name || '';
+    }
+  }
+  return '';
+}
+
+function refreshVisibilitySummary() {
+  var profile = _loadedDBData && _loadedDBData.profile ? _loadedDBData.profile : null;
+  var experiences = _loadedDBData && _loadedDBData.experiences ? _loadedDBData.experiences : null;
+  var currentEmp = getCurrentEmployerDisplayFromExperiences(experiences);
+  var isActive = profile && profile.is_active !== false;
+
+  var statusText = isActive ? 'Aktif' : 'Pasif';
+  var statusPillClass = 'visibility-pill visibility-pill--' + (isActive ? 'aktif' : 'pasif');
+  var empText = currentEmp || 'Şu anki işveren yok';
+
+  var hideFrom = profile && profile.hide_from_current_employer === true;
+
+  var hideStateText, hidePillClass;
+  if (!currentEmp) {
+    hideStateText = '—';
+    hidePillClass = 'visibility-pill visibility-pill--none';
+  } else if (hideFrom) {
+    hideStateText = 'Seni görmez';
+    hidePillClass = 'visibility-pill visibility-pill--tumur';
+  } else {
+    hideStateText = 'Seni görür';
+    hidePillClass = 'visibility-pill visibility-pill--warning';
+  }
+
+  var s1 = document.getElementById('vis-status-text');
+  var s2 = document.getElementById('vis-current-employer');
+  var s3 = document.getElementById('vis-hide-state');
+  if (s1) { s1.textContent = statusText; s1.className = statusPillClass; }
+  if (s2) s2.textContent = empText;
+  if (s3) { s3.textContent = hideStateText; s3.className = hidePillClass; }
+
+  var m1 = document.getElementById('vis-status-text-merkez');
+  var m2 = document.getElementById('vis-current-employer-merkez');
+  var m3 = document.getElementById('vis-hide-state-merkez');
+  if (m1) { m1.textContent = statusText; m1.className = statusPillClass; }
+  if (m2) m2.textContent = empText;
+  if (m3) { m3.textContent = hideStateText; m3.className = hidePillClass; }
+}
+
 // Re-apply dynamically-populated selects and chips after initStep1/4/5 have created them.
 // Covers the race where applyDraft ran before DOMContentLoaded (options didn't exist yet).
 // Safe to call when no DB data was loaded (_loadedDBData is null) — returns immediately.
@@ -2347,8 +2496,6 @@ function reapplyDynamicFields() {
       });
     }
     if (dbData.profile && dbData.profile.is_active !== undefined) {
-      var ta = document.getElementById('toggle-active');
-      if (ta) ta.checked = dbData.profile.is_active;
       var mta = document.getElementById('merkez-toggle-active');
       if (mta) mta.checked = dbData.profile.is_active;
       updateStatusUI(dbData.profile.is_active);
@@ -2519,6 +2666,49 @@ document.addEventListener('DOMContentLoaded', function() {
     btnChangePw.disabled = false;
   });
 
+  // Gizlilik: visibility toggle (Settings) — read/write candidates.is_active
+  var settingsVisibilityToggle = document.getElementById('settings-visibility-active');
+  if (settingsVisibilityToggle) settingsVisibilityToggle.addEventListener('change', async function() {
+    var isActive = this.checked;
+    if (!currentUser) return;
+    var res = await supabase.from('candidates').update({ is_active: isActive }).eq('user_id', currentUser.id);
+    if (res.error) {
+      this.checked = !isActive;
+      return;
+    }
+    refreshAfterVisibilitySave(isActive);
+  });
+
+  // Gizlilik: hide from current employer — read/write candidates.hide_from_current_employer
+  var settingsHideFromEmployer = document.getElementById('settings-hide-from-current-employer');
+  if (settingsHideFromEmployer) settingsHideFromEmployer.addEventListener('change', async function() {
+    if (this.disabled || !currentUser) return;
+    var val = this.checked;
+    var res = await supabase.from('candidates').update({ hide_from_current_employer: val }).eq('user_id', currentUser.id);
+    if (res.error) {
+      this.checked = !val;
+      return;
+    }
+    if (_loadedDBData && _loadedDBData.profile) _loadedDBData.profile.hide_from_current_employer = val;
+    var merkezHide = document.getElementById('merkez-hide-from-current-employer');
+    if (merkezHide) merkezHide.checked = val;
+    refreshVisibilitySummary();
+  });
+  var merkezHideFromEmployer = document.getElementById('merkez-hide-from-current-employer');
+  if (merkezHideFromEmployer) merkezHideFromEmployer.addEventListener('change', async function() {
+    if (this.disabled || !currentUser) return;
+    var val = this.checked;
+    var res = await supabase.from('candidates').update({ hide_from_current_employer: val }).eq('user_id', currentUser.id);
+    if (res.error) {
+      this.checked = !val;
+      return;
+    }
+    if (_loadedDBData && _loadedDBData.profile) _loadedDBData.profile.hide_from_current_employer = val;
+    var settingsHide = document.getElementById('settings-hide-from-current-employer');
+    if (settingsHide) settingsHide.checked = val;
+    refreshVisibilitySummary();
+  });
+
   // Hesap Bilgileri save (Settings)
   var btnSettingsAccountSave = document.getElementById('btn-settings-account-save');
   if (btnSettingsAccountSave) btnSettingsAccountSave.addEventListener('click', async function() {
@@ -2573,23 +2763,27 @@ document.addEventListener('DOMContentLoaded', function() {
     window.location.href = 'giris.html';
   });
 
-  // Active/passive toggle — sync sidebar + merkez toggles
-  var toggleActive = document.getElementById('toggle-active');
+  // Recommendation (is_active): Merkez toggle only — sidebar upper area is display-only, lower sidebar is premium placeholder
   var merkezToggle = document.getElementById('merkez-toggle-active');
 
   function handleActiveToggle(isActive, source) {
-    // Sync both toggles
-    if (toggleActive && source !== 'sidebar') toggleActive.checked = isActive;
     if (merkezToggle && source !== 'merkez') merkezToggle.checked = isActive;
     updateStatusUI(isActive);
+
+    if (_loadedDBData && _loadedDBData.profile) {
+      _loadedDBData.profile.is_active = isActive;
+    }
+
+    refreshVisibilitySummary();
+
     if (currentUser) {
-      supabase.from('candidates').upsert({user_id: currentUser.id, is_active: isActive}, {onConflict: 'user_id'});
+      supabase.from('candidates').upsert(
+        { user_id: currentUser.id, is_active: isActive },
+        { onConflict: 'user_id' }
+      );
     }
   }
 
-  if (toggleActive) toggleActive.addEventListener('change', function() {
-    handleActiveToggle(this.checked, 'sidebar');
-  });
   if (merkezToggle) merkezToggle.addEventListener('change', function() {
     handleActiveToggle(this.checked, 'merkez');
   });
@@ -2665,16 +2859,35 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // ── STATUS UI ──
 function updateStatusUI(isActive) {
-  var badges = ['header-status-badge', 'card-status-badge'];
-  var texts = ['header-status-text', 'card-status-text'];
+  var badges = ['card-status-badge'];
+  var texts = ['card-status-text'];
   badges.forEach(function(id) {
     var el = document.getElementById(id);
     if (el) { el.className = 'status-badge ' + (isActive ? 'aktif' : 'pasif'); }
   });
   texts.forEach(function(id) {
     var el = document.getElementById(id);
-    if (el) el.textContent = isActive ? 'Aktif' : 'Pasif';
+    if (el) el.textContent = isActive ? 'Beni öner' : 'Beni önerme';
   });
+
+  var genelIndicator = document.getElementById('genel-active-indicator');
+  var genelText = document.getElementById('genel-active-text');
+  var genelDot = document.getElementById('genel-active-dot');
+  if (genelIndicator && genelText && genelDot) {
+    if (isActive) {
+      genelIndicator.style.background = 'var(--green-light)';
+      genelIndicator.style.borderColor = 'var(--green-border)';
+      genelIndicator.style.color = 'var(--green)';
+      genelDot.style.backgroundColor = 'var(--green)';
+      genelText.textContent = 'Beni öner';
+    } else {
+      genelIndicator.style.background = '#F3F4F6';
+      genelIndicator.style.borderColor = 'var(--border)';
+      genelIndicator.style.color = 'var(--muted)';
+      genelDot.style.backgroundColor = 'var(--muted)';
+      genelText.textContent = 'Beni önerme';
+    }
+  }
 }
 
 // ═══════════════════════════════════════════════════
@@ -3849,7 +4062,11 @@ async function saveProfileRPC() {
     linkedin: nullIfEmpty(val('f-linkedin')),
     engel_durumu: nullIfEmpty(val('f-engel')),
     askerlik_durumu: nullIfEmpty(val('f-askerlik')),
-    is_active: document.getElementById('toggle-active') ? document.getElementById('toggle-active').checked : true,
+    is_active: document.getElementById('merkez-toggle-active')
+      ? document.getElementById('merkez-toggle-active').checked
+      : (_loadedDBData && _loadedDBData.profile && typeof _loadedDBData.profile.is_active === 'boolean'
+          ? _loadedDBData.profile.is_active
+          : true),
     ilk_deneyim: document.getElementById('cb-no-experience') ? document.getElementById('cb-no-experience').checked : false,
     profile_completed: true
   };
@@ -3903,6 +4120,13 @@ async function saveProfileRPC() {
     wizardDirty = false; // Reset dirty state so success modal → switchPanel won't trigger guard
     ht_track('profile_save_success');
     document.getElementById('modal-success').classList.add('show');
+    if (_loadedDBData) {
+      _loadedDBData.experiences = p_experiences;
+      if (_loadedDBData.profile) _loadedDBData.profile.is_active = p_profile.is_active;
+    }
+    updateStatusUI(p_profile.is_active);
+    var mta = document.getElementById('merkez-toggle-active');
+    if (mta) mta.checked = p_profile.is_active;
     // Update sidebar name
     var nameEl = document.getElementById('sidebar-user-name');
     if (nameEl && p_profile.full_name) nameEl.textContent = p_profile.full_name;
@@ -3958,6 +4182,7 @@ function updateDashboardSummary(profile, experiences) {
   }
   // Update completion
   updateCompletionUI();
+  refreshVisibilitySummary();
 }
 
 // ═══════════════════════════════════════════════════
@@ -4024,9 +4249,9 @@ function updateMerkezIdentity() {
   var nameEl = document.getElementById('merkez-name');
   if (nameEl) nameEl.textContent = val('f-adsoyad') || '\u2014';
 
-  // Avatar initials
+  // Avatar initials (fallback only when no image is present)
   var avatarEl = document.getElementById('merkez-avatar');
-  if (avatarEl) {
+  if (avatarEl && !avatarEl.querySelector('img')) {
     var fullName = val('f-adsoyad') || '';
     var initials = fullName.split(/\s+/).map(function(w) { return w.charAt(0).toUpperCase(); }).join('').substring(0, 2);
     avatarEl.textContent = initials || '?';
@@ -4175,7 +4400,9 @@ async function loadProfileFromDB() {
       is_active: cand.is_active,
       cv_url: cand.cv_url || null,
       cv_filename: cand.cv_filename || null,
-      cv_uploaded_at: cand.cv_uploaded_at || null
+      cv_uploaded_at: cand.cv_uploaded_at || null,
+      son_sirket: cand.son_sirket || null,
+      hide_from_current_employer: cand.hide_from_current_employer === true
     },
     no_experience: cand.ilk_deneyim || false,
     experiences: (expRes.data || []).map(function(e) {
