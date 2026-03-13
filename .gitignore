@@ -5,3 +5,4 @@ docs/plans/
 ref_components/
 ref_guidelines/
 ref_styles/
+.claude/settings.local.json
