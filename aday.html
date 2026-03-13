@@ -91,7 +91,7 @@
 .feature-card{border:1.5px solid var(--border);border-radius:18px;padding:28px;display:flex;gap:20px;align-items:flex-start;transition:border-color 0.2s,box-shadow 0.2s;}
 .feature-card:hover{border-color:var(--verm);box-shadow:0 4px 20px rgba(201,78,40,0.08);}
 .feature-icon{width:48px;height:48px;border-radius:14px;background:var(--verm-light);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
-.feature-text h4{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:17px;letter-spacing:-0.3px;margin-bottom:6px;}
+.feature-text h3{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:17px;letter-spacing:-0.3px;margin-bottom:6px;}
 .feature-text p{font-size:14px;color:var(--muted);line-height:1.6;}
 .feature-tag{display:inline-flex;background:var(--verm-light);color:var(--verm);font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;margin-top:8px;}
 
@@ -148,7 +148,6 @@
 /* KARİYER ROTA PROMO */
 .kariyer-promo{background:var(--navy);border-radius:24px;padding:48px;display:grid;grid-template-columns:1fr auto;gap:40px;align-items:center;margin-top:48px;overflow:hidden;position:relative;}
 .kariyer-promo::before{content:'';position:absolute;right:-40px;top:-40px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,0.04);}
-.kariyer-promo-left{}
 .kariyer-promo-eyebrow{font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:12px;}
 .kariyer-promo-title{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:28px;letter-spacing:-1px;color:white;margin-bottom:12px;line-height:1.2;}
 .kariyer-promo-desc{font-size:15px;color:rgba(255,255,255,0.7);line-height:1.7;max-width:460px;margin-bottom:24px;}
@@ -175,8 +174,8 @@
 /* BRANDS MARQUEE */
 .brands-section{padding:48px 48px;border-top:1px solid var(--border);border-bottom:1px solid var(--border);overflow:hidden;}
 .brands-title{text-align:center;font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:28px;}
-.brands-track-wrap{overflow:hidden;-webkit-mask:linear-gradient(90deg,transparent 0%,black 8%,black 92%,transparent 100%);mask:linear-gradient(90deg,transparent 0%,black 8%,black 92%,transparent 100%);}
-.brands-track{display:flex;gap:32px;animation:scroll 20s linear infinite;width:max-content;}
+  .brands-track-wrap{overflow:hidden;-webkit-mask:linear-gradient(90deg,transparent 0%,black 8%,black 92%,transparent 100%);mask:linear-gradient(90deg,transparent 0%,black 8%,black 92%,transparent 100%);}
+.brands-track{display:flex;gap:32px;animation:scroll 20s linear infinite;width:max-content;will-change:transform;}
 @keyframes scroll{from{transform:translateX(0);}to{transform:translateX(-50%)}}
 .brand-pill{background:var(--gray);border:1.5px solid var(--border);border-radius:30px;padding:8px 20px;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:13px;color:var(--muted);white-space:nowrap;letter-spacing:-0.3px;}
 
@@ -248,7 +247,7 @@
   .step-title{font-size:18px;}
   .step-desc{font-size:13px;}
   .feature-card{padding:22px 18px;flex-direction:column;gap:14px;}
-  .feature-text h4{font-size:16px;}
+  .feature-text h3{font-size:16px;}
   .feature-text p{font-size:13px;}
   .kariyer-promo{padding:32px 24px;border-radius:18px;margin-top:32px;}
   .kariyer-promo-title{font-size:22px;}
@@ -356,7 +355,7 @@
   .dt-stat-num{font-size:16px;}
   .dt-url{display:none;}
 }
-
+    #kayit { scroll-margin-top: 80px; }
     </style>
   <meta name="robots" content="index, follow">
   <meta name="author" content="hellotalent.ai">
@@ -419,10 +418,10 @@
 
           <!-- Kayıt formu -->
           <form id="form-kayit" onsubmit="submitKayit(event)">
-            <input class="f-input" type="text" id="reg-isim" placeholder="Adınız Soyadınız" required autocomplete="name">
-            <input class="f-input" type="email" id="reg-email" placeholder="E-posta Adresiniz" required autocomplete="email">
-            <input class="f-input" type="password" id="reg-sifre" placeholder="Şifre (min. 6 karakter)" required minlength="6" autocomplete="new-password">
-            <input class="f-input" type="tel" id="reg-telefon" placeholder="Cep Numarası" autocomplete="tel">
+            <input class="f-input" type="text" id="reg-isim" placeholder="Adınız Soyadınız" required autocomplete="name" aria-label="Adınız Soyadınız">
+            <input class="f-input" type="email" id="reg-email" placeholder="E-posta Adresiniz" required autocomplete="email" aria-label="E-posta Adresiniz">
+            <input class="f-input" type="password" id="reg-sifre" placeholder="Şifre (min. 6 karakter)" required minlength="6" autocomplete="new-password" aria-label="Şifre">
+            <input class="f-input" type="tel" id="reg-telefon" placeholder="05XX XXX XXXX" pattern="0[0-9]{10}" autocomplete="tel" aria-label="Cep Numarası">
             <div class="kvkk-row">
               <input type="checkbox" id="kvkk-c" required>
               <label class="kvkk-text" for="kvkk-c">
@@ -435,8 +434,8 @@
 
           <!-- Giriş formu -->
           <form id="form-giris" onsubmit="submitGiris(event)" style="display:none;">
-            <input class="f-input" type="email" id="giris-email" placeholder="E-posta Adresiniz" required autocomplete="email">
-            <input class="f-input" type="password" id="giris-sifre" placeholder="Şifreniz" required autocomplete="current-password">
+            <input class="f-input" type="email" id="giris-email" placeholder="E-posta Adresiniz" required autocomplete="email" aria-label="E-posta Adresiniz">
+            <input class="f-input" type="password" id="giris-sifre" placeholder="Şifreniz" required autocomplete="current-password" aria-label="Şifreniz">
             <button type="submit" class="btn-submit navy" id="giris-btn">Giriş Yap →</button>
             <p class="auth-error" id="giris-error"></p>
           </form>
@@ -504,10 +503,10 @@
     <p class="section-sub" style="margin:0 auto;">Hiçbir şey ödemeden retail kariyerinde öne çık. Gizli ücret yok, komisyon yok.</p>
   </div>
   <div class="features-grid">
-    <div class="feature-card">
+      <div class="feature-card">
       <div class="feature-icon">👤</div>
       <div class="feature-text">
-        <h4>Profil Oluştur & Markalarla Eşleş</h4>
+        <h3>Profil Oluştur & Markalarla Eşleş</h3>
         <p>Deneyimini, hedeflerini ve tercih ettiğin segmenti paylaş. Sistem seni doğru markalarla eşleştirir — kör başvuru değil, akıllı eşleştirme.</p>
         <span class="free-highlight">✓ Ücretsiz</span>
       </div>
@@ -515,7 +514,7 @@
     <div class="feature-card">
       <div class="feature-icon">⭐</div>
       <div class="feature-text">
-        <h4>Kariyer Rotası Planlama</h4>
+        <h3>Kariyer Rotası Planlama</h3>
         <p>Satış Danışmanı'ndan Store Manager'a, lüks segmente geçişe — hedef pozisyonuna giden yolu haritalandır, yetkinlik boşluklarını gör.</p>
         <span class="free-highlight">✓ Ücretsiz</span>
       </div>
@@ -523,7 +522,7 @@
     <div class="feature-card">
       <div class="feature-icon">📄</div>
       <div class="feature-text">
-        <h4>CV Yükle & AI ile Otomatik Doldur</h4>
+        <h3>CV Yükle & AI ile Otomatik Doldur</h3>
         <p>PDF yükle, yapay zeka bilgilerini çıkarsın. CV zorunlu değil — birkaç dakikada profil tamamla, markalar seni bulsun.</p>
         <span class="free-highlight">✓ Ücretsiz</span>
       </div>
@@ -531,7 +530,7 @@
     <div class="feature-card">
       <div class="feature-icon">🔒</div>
       <div class="feature-text">
-        <h4>KVKK Güvenceli Gizlilik</h4>
+        <h3>KVKK Güvenceli Gizlilik</h3>
         <p>Bilgilerin yalnızca onaylı marka partnerleriyle paylaşılır. Mevcut işverenden gizli kal seçeneği. 3. taraflarla asla paylaşılmaz.</p>
         <span class="free-highlight">✓ Ücretsiz</span>
       </div>
@@ -539,7 +538,7 @@
     <div class="feature-card">
       <div class="feature-icon">📚</div>
       <div class="feature-text">
-        <h4>Kariyer Rehberi & Mülakat Soruları</h4>
+        <h3>Kariyer Rehberi & Mülakat Soruları</h3>
         <p>Store Manager nasıl olunur? Lüks segmente geçiş rehberi, retail mülakatlarında 20 soru — üyeye özel ücretsiz içerikler.</p>
         <span class="free-highlight">✓ Ücretsiz</span>
       </div>
@@ -547,7 +546,7 @@
     <div class="feature-card">
       <div class="feature-icon">🔔</div>
       <div class="feature-text">
-        <h4>Bildirimler & Durum Takibi</h4>
+        <h3>Bildirimler & Durum Takibi</h3>
         <p>Profilin görüntülendiğinde, bir marka ilgilendiğinde e-posta bildirimi al. Dashboard'dan kariyer sürecini takip et.</p>
         <span class="free-highlight">✓ Ücretsiz</span>
       </div>
@@ -648,7 +647,7 @@
             <div class="cc-item-label"><strong>Mülakat kiti</strong> & <strong>HT Perks</strong> avantajları</div>
           </div>
         </div>
-        <button class="cc-cta premium" onclick="document.getElementById('kayit').scrollIntoView({behavior:'smooth'})">Kayıt Ol, Beta Listesine Gir</button>
+        <a href="#kayit" class="cc-cta premium">Kayıt Ol, Beta Listesine Gir</a>
         <div class="cc-note">Önce ücretsiz kayıt ol · Premium açıldığında ilk sırada ol</div>
       </div>
 
@@ -927,6 +926,9 @@ async function submitKayit(e){
   var btn=document.getElementById('kayit-btn');
   btn.textContent='Kaydediliyor...';btn.disabled=true;
   var err=document.getElementById('kayit-error');err.style.display='none';
+  var kvkk=document.getElementById('kvkk-c');
+  if(!kvkk.checked){kvkk.setCustomValidity('KVKK onayı zorunludur.');kvkk.reportValidity();btn.textContent='Kayıt Ol →';btn.disabled=false;return;}
+  kvkk.setCustomValidity('');
   var isim=document.getElementById('reg-isim').value.trim();
   var email=document.getElementById('reg-email').value.trim();
   var sifre=document.getElementById('reg-sifre').value;
@@ -941,7 +943,7 @@ async function submitKayit(e){
     document.getElementById('auth-ui').style.display='none';
     document.getElementById('success-box').style.display='block';
   }catch(ex){
-    err.textContent=ex.message||'Bir hata oluştu.';err.style.display='block';
+    var msg=ex.message||'';if(msg.includes('already registered'))msg='Bu e-posta adresi zaten kayıtlı.';else if(msg.includes('valid email'))msg='Geçerli bir e-posta adresi giriniz.';else if(msg.includes('at least'))msg='Şifre en az 6 karakter olmalıdır.';else msg=msg||'Bir hata oluştu. Lütfen tekrar deneyiniz.';err.textContent=msg;err.style.display='block';
     btn.textContent='Kayıt Ol →';btn.disabled=false;
   }
 }
@@ -963,7 +965,7 @@ async function submitGiris(e){
   }
 }
   // Zaten giriş yapmışsa profil'e yönlendir
-  getSupa().auth.getSession().then(function(r){
+  var s=getSupa();if(s)s.auth.getSession().then(function(r){
     if(r.data&&r.data.session){
       document.getElementById('auth-ui').style.display='none';
       var sb=document.getElementById('success-box');
@@ -974,6 +976,7 @@ async function submitGiris(e){
   });
   // URL'de ?tab=giris varsa giriş tabını aç
   if(window.location.search.includes('mode=register'))switchTab('kayit');
+  if(window.location.search.includes('tab=giris'))switchTab('giris');
 </script>
 <script src="/shared.js?v=20260309b"></script>
 </body>
