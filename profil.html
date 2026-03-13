@@ -1656,19 +1656,19 @@ html[data-theme="dark"] .lok-modal #btn-lok-close:hover{
         </div>
         <div class="m-controls">
           <div class="m-toggle-row">
-            <span class="m-toggle-label">Beni öner</span>
+            <span class="m-toggle-label">Profilimi işverenlere göster</span>
             <label class="toggle">
               <input type="checkbox" id="merkez-toggle-active" checked>
               <span class="toggle-slider"></span>
             </label>
           </div>
           <div class="m-toggle-row">
-            <span class="m-toggle-label">Beni Öne Çıkar</span>
-            <div class="m-btn-locked">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-              Beni Öne Çıkar
-              <span class="m-tooltip">Yakında Premium ile</span>
-            </div>
+            <span class="m-toggle-label">Profilimi öne çıkar</span>
+            <label class="toggle" style="pointer-events:none;opacity:0.5;">
+              <input type="checkbox" id="merkez-toggle-premium" disabled>
+              <span class="toggle-slider"></span>
+            </label>
+            <span style="font-size:10px;color:var(--text-muted);margin-left:4px;">Yakında Premium ile</span>
           </div>
           <div class="m-toggle-row" id="merkez-hide-row">
             <span class="m-toggle-label">Mevcut işveren seni görmesin</span>
@@ -2149,8 +2149,8 @@ html[data-theme="dark"] .lok-modal #btn-lok-close:hover{
   </div>
 
   <div class="card" style="margin-top:16px;">
-    <div class="card-title">Uyelik</div>
-    <div class="wiz-step-desc" style="margin-top:4px;">Premium avantajlari cok yakinda.</div>
+    <div class="card-title">Premium Ayarları</div>
+    <div class="wiz-step-desc" style="margin-top:4px;">Premium avantajları çok yakında. Öne çıkan aday, detaylı analiz ve daha fazlası için takipte kal.</div>
   </div>
 
   <div class="card" style="margin-top:16px;">
