@@ -423,28 +423,33 @@ body{
 .btn-sm{padding:7px 14px;font-size:12px;}
 .btn-lg{padding:12px 28px;font-size:15px;}
 
-/* Wizard: unified action buttons (Deneyim Ekle, Eğitim Ekle, Rol Ekle, Tüm şehirleri gör) */
+/* Wizard: unified action buttons — all use dashed border style */
 #panel-profil #btn-add-exp,
 #panel-profil #btn-add-edu,
 #panel-profil #btn-add-role,
+#panel-profil #btn-add-lang,
+#panel-profil #btn-add-cert,
 #panel-profil #btn-all-cities{
+  display:inline-flex;align-items:center;gap:5px;
   border-radius:var(--radius);
   padding:9px 18px;
   font-size:13px;
   font-weight:600;
-  border:1.5px solid var(--accent);
-  background:var(--accent-soft);
-  color:var(--accent);
-  transition:all 0.2s;
+  border:1.5px dashed var(--border-strong);
+  background:transparent;
+  color:var(--text-muted);
+  cursor:pointer;
+  transition:all 0.15s;
 }
 #panel-profil #btn-add-exp:hover,
 #panel-profil #btn-add-edu:hover,
 #panel-profil #btn-add-role:hover,
+#panel-profil #btn-add-lang:hover,
+#panel-profil #btn-add-cert:hover,
 #panel-profil #btn-all-cities:hover{
-  background:var(--accent);
-  color:#fff;
   border-color:var(--accent);
-  box-shadow:0 0 0 3px rgba(201,78,40,0.2);
+  color:var(--accent);
+  background:rgba(201,78,40,0.06);
 }
 
 /* ── CARDS ── */
@@ -564,6 +569,7 @@ body{
 
 /* ── FIELD REQUIRED MARKER ── */
 .field-req{color:var(--red);font-weight:700;}
+html[data-theme="dark"] .field-req{color:#F87171;}
 
 /* ── FIELD ERROR ── */
 .field-error{border-color:var(--red)!important;}
@@ -1078,19 +1084,6 @@ html[data-theme="dark"] #wiz-step-3 .dyn-row input:focus{
   box-shadow:0 0 0 2px var(--ring),0 0 0 4px rgba(201,78,40,0.2);
 }
 html[data-theme="dark"] #wiz-step-3 .dyn-row{margin-bottom:6px;}
-html[data-theme="dark"] #wiz-step-3 #btn-add-lang,
-html[data-theme="dark"] #wiz-step-3 #btn-add-cert{
-  background:transparent;
-  color:#D1D5DB;
-  border:1.5px dashed var(--border-strong);
-}
-html[data-theme="dark"] #wiz-step-3 #btn-add-lang:hover,
-html[data-theme="dark"] #wiz-step-3 #btn-add-cert:hover{
-  border-color:var(--accent);
-  color:var(--accent);
-  background:rgba(201,78,40,0.08);
-}
-
 /* Tercihler (step 4): chips, Rol Ekle, brand field, autocomplete */
 html[data-theme="dark"] #wiz-step-4 .chip,
 html[data-theme="dark"] #wiz-step-4 .check-item{
@@ -1400,7 +1393,7 @@ html[data-theme="dark"] .lok-modal #btn-lok-close:hover{
   <div style="margin-top:auto;border-top:1px solid var(--border-subtle);">
     <button class="nav-item" id="btn-signout" style="color:var(--text-muted);">
       <span class="nav-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></span>
-      Cikis Yap
+      Çıkış Yap
     </button>
   </div>
 </aside>
@@ -1409,11 +1402,11 @@ html[data-theme="dark"] .lok-modal #btn-lok-close:hover{
 <div class="lok-modal-overlay" id="lok-modal-overlay">
   <div class="lok-modal">
     <div class="lok-header">
-      <h3>Sehir Sec</h3>
+      <h3>Şehir Seç</h3>
       <button class="btn-secondary btn-sm" id="btn-lok-close">Kapat</button>
     </div>
     <div class="lok-search">
-      <input type="text" id="lok-search-input" placeholder="Sehir ara...">
+      <input type="text" id="lok-search-input" placeholder="Şehir ara...">
     </div>
     <div class="lok-body" id="lok-body"></div>
     <div class="lok-footer">
@@ -1562,7 +1555,7 @@ html[data-theme="dark"] .lok-modal #btn-lok-close:hover{
   <div class="dash-empty-prompt" id="dash-empty-prompt" style="display:none;">
     <div class="dash-empty-icon">&#128100;</div>
     <div class="dash-empty-title">Profilini Olustur</div>
-    <div class="dash-empty-desc">Henuz profil bilgilerin eklenmemis. Profilini tamamla, retail markalari seni bulsun!</div>
+    <div class="dash-empty-desc">Henüz profil bilgilerin eklenmemiş. Profilini tamamla, retail markaları seni bulsun!</div>
     <button class="btn btn-primary" id="btn-start-wizard">Profili Duzenle</button>
   </div>
 
@@ -1804,7 +1797,7 @@ html[data-theme="dark"] .lok-modal #btn-lok-close:hover{
     <div class="wiz-progress-meta" id="wiz-progress-meta" aria-hidden="true">Adım <span id="wiz-current-step">1</span> / 5</div>
     <div class="wiz-progress-step active" data-wstep="1">
       <div class="wiz-progress-circle"><span class="wiz-circle-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span></div>
-      <div class="wiz-progress-label">Kisisel</div>
+      <div class="wiz-progress-label">Kişisel</div>
     </div>
     <div class="wiz-progress-line" data-wline="1"></div>
     <div class="wiz-progress-step" data-wstep="2">
@@ -1814,7 +1807,7 @@ html[data-theme="dark"] .lok-modal #btn-lok-close:hover{
     <div class="wiz-progress-line" data-wline="2"></div>
     <div class="wiz-progress-step" data-wstep="3">
       <div class="wiz-progress-circle"><span class="wiz-circle-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg></span></div>
-      <div class="wiz-progress-label">Egitim</div>
+      <div class="wiz-progress-label">Eğitim</div>
     </div>
     <div class="wiz-progress-line" data-wline="3"></div>
     <div class="wiz-progress-step" data-wstep="4">
@@ -1828,22 +1821,22 @@ html[data-theme="dark"] .lok-modal #btn-lok-close:hover{
     </div>
   </div>
 
-  <!-- WIZARD STEP 1: Kisisel Bilgiler -->
+  <!-- WIZARD STEP 1: Kişisel Bilgiler -->
   <div class="wiz-step active" id="wiz-step-1" data-step="1">
-    <div class="wiz-step-title">Kisisel Bilgiler</div>
-    <div class="wiz-step-desc">Temel bilgilerini doldur. Bu bilgiler markalar tarafindan gorulebilir.</div>
+    <div class="wiz-step-title">Kişisel Bilgiler</div>
+    <div class="wiz-step-desc">Temel bilgilerini doldur. Bu bilgiler markalar tarafından görülebilir.</div>
     <div id="step1-content">
 
       <!-- AVATAR UPLOAD -->
       <div class="avatar-upload">
-        <div class="avatar-upload-circle" id="avatar-upload-circle" title="Fotograf yukle">
+        <div class="avatar-upload-circle" id="avatar-upload-circle" title="Fotoğraf yükle">
           <span id="avatar-upload-initials">?</span>
         </div>
         <div>
-          <div style="font-weight:600;font-size:14px;margin-bottom:4px;">Profil Fotografi</div>
-          <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">JPG veya PNG, max 2MB</div>
+          <div style="font-weight:600;font-size:14px;margin-bottom:4px;">Profil Fotoğrafı</div>
+          <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">JPG veya PNG, maks. 2MB</div>
           <label class="btn btn-secondary btn-sm" style="cursor:pointer;position:relative;overflow:hidden;">
-            <span id="avatar-btn-text">Fotograf Yukle</span>
+            <span id="avatar-btn-text">Fotoğraf Yükle</span>
             <input type="file" accept="image/*" id="avatar-file-input" style="position:absolute;inset:0;opacity:0;cursor:pointer;">
           </label>
         </div>
@@ -1853,7 +1846,7 @@ html[data-theme="dark"] .lok-modal #btn-lok-close:hover{
       <div class="field-row">
         <div class="field">
           <label for="f-adsoyad">Ad Soyad <span class="field-req">*</span></label>
-          <input type="text" id="f-adsoyad" placeholder="Ornek: Ayse Yilmaz" maxlength="100">
+          <input type="text" id="f-adsoyad" placeholder="Örnek: Ayşe Yılmaz" maxlength="100">
         </div>
         <div class="field">
           <label for="f-telefon">Telefon <span class="field-req">*</span></label>
@@ -1885,7 +1878,7 @@ html[data-theme="dark"] .lok-modal #btn-lok-close:hover{
           </select>
         </div>
         <div class="field">
-          <label for="f-dogumyili">Dogum Yili</label>
+          <label for="f-dogumyili">Doğum Yılı</label>
           <select id="f-dogumyili">
             <option value="">Sec...</option>
           </select>
@@ -1895,13 +1888,13 @@ html[data-theme="dark"] .lok-modal #btn-lok-close:hover{
       <!-- ADRES IL + ILCE -->
       <div class="field-row">
         <div class="field">
-          <label for="f-adresil">Adres / Il <span class="field-req">*</span></label>
+          <label for="f-adresil">Adres / İl <span class="field-req">*</span></label>
           <select id="f-adresil">
             <option value="">Il sec...</option>
           </select>
         </div>
         <div class="field">
-          <label for="f-adresilce">Ilce</label>
+          <label for="f-adresilce">İlçe</label>
           <select id="f-adresilce">
             <option value="">Once il secin</option>
           </select>
@@ -1937,13 +1930,13 @@ html[data-theme="dark"] .lok-modal #btn-lok-close:hover{
   <!-- WIZARD STEP 2: Kariyer -->
   <div class="wiz-step" id="wiz-step-2" data-step="2">
     <div class="wiz-step-title">Kariyer / Deneyimler</div>
-    <div class="wiz-step-desc">Is deneyimlerini ekle. Her deneyim, seni dogru markalarla eslestirmemize yardimci olur.</div>
+    <div class="wiz-step-desc">İş deneyimlerini ekle. Her deneyim, seni doğru markalarla eşleştirmemize yardımcı olur.</div>
     <div id="step2-content">
 
       <!-- NO EXPERIENCE TOGGLE -->
       <label class="cb-wrap">
         <input type="checkbox" id="cb-no-experience">
-        <span>Henuz is deneyimim yok</span>
+        <span>Henüz iş deneyimim yok</span>
       </label>
 
       <div id="experience-section">
@@ -1954,16 +1947,16 @@ html[data-theme="dark"] .lok-modal #btn-lok-close:hover{
     </div>
   </div>
 
-  <!-- WIZARD STEP 3: Egitim -->
+  <!-- WIZARD STEP 3: Eğitim -->
   <div class="wiz-step" id="wiz-step-3" data-step="3">
-    <div class="wiz-step-title">Egitim, Diller, Sertifikalar</div>
-    <div class="wiz-step-desc">Egitim gecmisini, bildigi dilleri ve sertifikalarini ekle.</div>
+    <div class="wiz-step-title">Eğitim, Diller, Sertifikalar</div>
+    <div class="wiz-step-desc">Eğitim geçmişini, bildiği dilleri ve sertifikalarını ekle.</div>
     <div id="step3-content">
 
       <!-- EGITIM SECTION -->
-      <div class="card-title" style="margin-bottom:12px;">Egitim</div>
+      <div class="card-title" style="margin-bottom:12px;">Eğitim</div>
       <div id="edu-rows-container"></div>
-      <button class="btn btn-secondary btn-sm" id="btn-add-edu" type="button" style="margin-top:8px;">+ Egitim Ekle</button>
+      <button class="btn btn-secondary btn-sm" id="btn-add-edu" type="button" style="margin-top:8px;">+ Eğitim Ekle</button>
       <div id="edu-limit-msg" style="display:none;font-size:12px;color:var(--muted);margin-top:8px;">En fazla 3 egitim eklenebilir.</div>
 
       <hr class="section-divider">
@@ -1977,7 +1970,7 @@ html[data-theme="dark"] .lok-modal #btn-lok-close:hover{
       <hr class="section-divider">
 
       <!-- SERTIFIKALAR SECTION -->
-      <div class="card-title" style="margin-bottom:12px;">Sertifikalar / Egitimler</div>
+      <div class="card-title" style="margin-bottom:12px;">Sertifikalar / Eğitimler</div>
       <div id="cert-rows-container"></div>
       <button class="btn btn-secondary btn-sm" id="btn-add-cert" type="button" style="margin-top:8px;">+ Sertifika Ekle</button>
 
@@ -1987,11 +1980,11 @@ html[data-theme="dark"] .lok-modal #btn-lok-close:hover{
   <!-- WIZARD STEP 4: Tercihlerim -->
   <div class="wiz-step" id="wiz-step-4" data-step="4">
     <div class="wiz-step-title">Tercihlerim</div>
-    <div class="wiz-step-desc">Hedef pozisyonlarini, calisma tercihlerini ve ilgilendigin markalari belirt.</div>
+    <div class="wiz-step-desc">Hedef pozisyonlarını, çalışma tercihlerini ve ilgilendiğin markaları belirt.</div>
     <div id="step4-content">
 
       <!-- TARGET ROLES -->
-      <div class="card-title" style="margin-bottom:4px;">Hedef Pozisyonlar</div>
+      <div class="card-title" style="margin-bottom:4px;">Hedef Pozisyonlar <span class="field-req">*</span></div>
       <p class="helper-text" style="font-size:13px;color:var(--muted);margin:0 0 12px 0;line-height:1.5;">Bu bilgiler seni dogru pozisyonlarla eslestirmemize yardimci olur. Birden fazla hedef rol ekleyebilirsin.</p>
       <div id="target-roles-container"></div>
       <button class="btn btn-secondary btn-sm" id="btn-add-role" type="button" style="margin-top:8px;">+ Rol Ekle</button>
@@ -2000,20 +1993,20 @@ html[data-theme="dark"] .lok-modal #btn-lok-close:hover{
 
       <!-- MUSAITLIK -->
       <div class="card-title" style="margin-bottom:4px;">Musaitlik</div>
-      <p class="helper-text" style="font-size:13px;color:var(--muted);margin:0 0 12px 0;">Yeni bir ise ne kadar surede baslayabilirsin?</p>
+      <p class="helper-text" style="font-size:13px;color:var(--muted);margin:0 0 12px 0;">Yeni bir işe ne kadar sürede başlayabilirsin?</p>
       <div class="chips-row" id="musaitlik-chips"></div>
 
       <hr class="section-divider">
 
       <!-- CALISMA TIPLERI -->
-      <div class="card-title" style="margin-bottom:12px;">Calisma Tipleri</div>
+      <div class="card-title" style="margin-bottom:12px;">Çalışma Tipleri</div>
       <div id="calisma-tipleri-checks" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
 
       <hr class="section-divider">
 
       <!-- MAAS BEKLENTI -->
       <div class="field" style="max-width:300px;">
-        <label for="f-maas">Maas Beklentisi (TL/ay)</label>
+        <label for="f-maas">Maaş Beklentisi (TL/ay)</label>
         <select id="f-maas">
           <option value="">Sec...</option>
         </select>
@@ -2040,11 +2033,11 @@ html[data-theme="dark"] .lok-modal #btn-lok-close:hover{
       <!-- KARIYER HEDEFI -->
       <div class="field">
         <label for="f-career-goal">Kariyer Hedefi</label>
-        <textarea id="f-career-goal" rows="3" placeholder="Kariyer hedefinizi kisaca yazin..."></textarea>
+        <textarea id="f-career-goal" rows="3" placeholder="Kariyer hedefinizi kısaca yazın..."></textarea>
       </div>
       <div class="field">
-        <div class="card-title" style="margin-bottom:4px;">Kariyer Yonelimi</div>
-        <p class="helper-text" style="font-size:13px;color:var(--muted);margin:0 0 10px 0;">Birden fazla yonelim secebilirsin.</p>
+        <div class="card-title" style="margin-bottom:4px;">Kariyer Yönelimi</div>
+        <p class="helper-text" style="font-size:13px;color:var(--muted);margin:0 0 10px 0;">Birden fazla yönelim seçebilirsin.</p>
         <div id="career-type-checks" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
       </div>
 
@@ -2054,21 +2047,21 @@ html[data-theme="dark"] .lok-modal #btn-lok-close:hover{
   <!-- WIZARD STEP 5: Lokasyon -->
   <div class="wiz-step" id="wiz-step-5" data-step="5">
     <div class="wiz-step-title">Lokasyon Tercihleri</div>
-    <div class="wiz-step-desc">Calismak istedigin sehirleri ve ilceleri sec.</div>
+    <div class="wiz-step-desc">Çalışmak istediğin şehirleri ve ilçeleri seç.</div>
     <div id="step5-content">
 
       <!-- POPULAR CITIES -->
-      <div class="card-title" style="margin-bottom:12px;">Populer Sehirler</div>
+      <div class="card-title" style="margin-bottom:12px;">Popüler Şehirler</div>
       <div class="chips-row" id="popular-city-chips"></div>
 
-      <button class="btn btn-secondary btn-sm" id="btn-all-cities" type="button" style="margin-top:12px;">Tum Sehirleri Gor</button>
+      <button class="btn btn-secondary btn-sm" id="btn-all-cities" type="button" style="margin-top:12px;">Tüm Şehirleri Gör</button>
 
       <hr class="section-divider">
 
       <!-- SELECTED CITIES + DISTRICTS -->
-      <div class="card-title" style="margin-bottom:12px;">Secilen Sehirler</div>
+      <div class="card-title" style="margin-bottom:12px;">Seçilen Şehirler</div>
       <div id="selected-cities-container">
-        <p style="font-size:13px;color:var(--muted);" id="no-city-msg">Henuz sehir secilmedi. Yukaridaki sehirlerden secim yapin.</p>
+        <p style="font-size:13px;color:var(--muted);" id="no-city-msg">Henüz şehir seçilmedi. Yukarıdaki şehirlerden seçim yapın.</p>
       </div>
 
     </div>
@@ -2078,7 +2071,7 @@ html[data-theme="dark"] .lok-modal #btn-lok-close:hover{
   <div class="wiz-nav" id="wiz-nav">
     <button class="btn btn-secondary" id="btn-wiz-back" style="display:none;">Geri</button>
     <div class="wiz-nav-spacer"></div>
-    <button class="btn btn-primary" id="btn-wiz-next">Ileri</button>
+    <button class="btn btn-primary" id="btn-wiz-next">İleri</button>
     <button class="btn btn-navy btn-lg" id="btn-wiz-complete" style="display:none;">Tamamla</button>
   </div>
 
@@ -2201,7 +2194,7 @@ html[data-theme="dark"] .lok-modal #btn-lok-close:hover{
   </div>
 
   <div style="margin-top:24px;display:flex;gap:12px;">
-    <button class="btn btn-secondary" id="btn-signout-settings">Cikis Yap</button>
+    <button class="btn btn-secondary" id="btn-signout-settings">Çıkış Yap</button>
   </div>
 </main>
 
@@ -2611,7 +2604,7 @@ function validateKisisel() {
   var errors = [];
   if (!val('f-adsoyad')) errors.push('Ad Soyad zorunludur');
   if (!val('f-telefon')) errors.push('Telefon zorunludur');
-  if (!val('f-adresil')) errors.push('Adres / Il zorunludur');
+  if (!val('f-adresil')) errors.push('Adres / İl zorunludur');
   if (errors.length > 0) {
     showStepErrors(errors);
     // Mark error fields
@@ -2632,16 +2625,16 @@ function validateKariyer() {
   if (cbNoExp && cbNoExp.checked) return true;
   var cards = document.querySelectorAll('.exp-card');
   if (cards.length === 0) {
-    showStepErrors(['En az bir deneyim ekleyin veya "Henuz is deneyimim yok" secin']);
+    showStepErrors(['En az bir deneyim ekleyin veya "Henüz iş deneyimim yok" seçin']);
     return false;
   }
   var errors = [];
   cards.forEach(function(card, i) {
     var prefix = card.id + '-';
     var num = i + 1;
-    if (!val(prefix + 'sirket')) errors.push('Deneyim #' + num + ': Sirket zorunludur');
+    if (!val(prefix + 'sirket')) errors.push('Deneyim #' + num + ': Şirket zorunludur');
     if (!val(prefix + 'pozisyon')) errors.push('Deneyim #' + num + ': Pozisyon zorunludur');
-    if (!val(prefix + 'basyil')) errors.push('Deneyim #' + num + ': Baslangic yili zorunludur');
+    if (!val(prefix + 'basyil')) errors.push('Deneyim #' + num + ': Başlangıç yılı zorunludur');
   });
   if (errors.length > 0) { showStepErrors(errors); return false; }
   return true;
@@ -3746,21 +3739,26 @@ function addExperienceCard(data) {
   headerTitle.className = 'exp-card-title';
   headerTitle.textContent = 'Deneyim #' + expCounter;
   header.appendChild(headerTitle);
-  if (expCounter > 1 || document.querySelectorAll('.exp-card').length > 0) {
-    var delBtn = document.createElement('button');
-    delBtn.className = 'exp-card-del';
-    delBtn.type = 'button';
-    delBtn.textContent = '\u00D7';
-    delBtn.addEventListener('click', function() { card.remove(); });
-    header.appendChild(delBtn);
-  }
+  var delBtn = document.createElement('button');
+  delBtn.className = 'exp-card-del';
+  delBtn.type = 'button';
+  delBtn.textContent = '\u00D7';
+  delBtn.addEventListener('click', function() {
+    card.remove();
+    var remaining = document.querySelectorAll('.exp-card');
+    remaining.forEach(function(c, idx) {
+      var btn = c.querySelector('.exp-card-del');
+      if (btn) btn.style.display = (remaining.length <= 1) ? 'none' : '';
+    });
+  });
+  header.appendChild(delBtn);
   card.appendChild(header);
 
   // Row 1: Sirket/Marka (merged smart field) + Pozisyon
   var row1 = document.createElement('div');
   row1.className = 'field-row';
-  row1.appendChild(makeSmartBrandField(cardId + '-sirket', d));
-  row1.appendChild(makeField('text', 'Pozisyon *', cardId + '-pozisyon', 'Pozisyon', d.pozisyon));
+  row1.appendChild(makeSmartBrandField(cardId + '-sirket', d, 'Şirket adı', true));
+  row1.appendChild(makeField('text', 'Pozisyon <span class="field-req">*</span>', cardId + '-pozisyon', 'Pozisyon / Ünvan', d.pozisyon));
   card.appendChild(row1);
 
   // Pozisyon display normalization on blur
@@ -3771,22 +3769,22 @@ function addExperienceCard(data) {
     });
   }
 
-  // Row 2: Departman + Istihdam Tipi
+  // Row 2: Departman + İstihdam Tipi
   var row2 = document.createElement('div');
   row2.className = 'field-row';
-  row2.appendChild(makeSelectField('Departman', cardId + '-departman', DEPARTMANLAR, d.departman));
-  row2.appendChild(makeSelectField('Istihdam Tipi', cardId + '-istihdam', ISTIHDAM_TIPLERI, d.istihdam_tipi));
+  row2.appendChild(makeSelectField('Departman', cardId + '-departman', DEPARTMANLAR, d.departman, 'Departman seçiniz...'));
+  row2.appendChild(makeSelectField('İstihdam Tipi', cardId + '-istihdam', ISTIHDAM_TIPLERI, d.istihdam_tipi, 'İstihdam tipi seçiniz...'));
   card.appendChild(row2);
 
-  // Row 3: Segment + Sehir
+  // Row 3: Segment + Şehir
   var row3 = document.createElement('div');
   row3.className = 'field-row';
-  row3.appendChild(makeSelectField('Segment', cardId + '-segment', SEGMENTLER, d.segment));
-  row3.appendChild(makeSelectField('Sehir', cardId + '-sehir', flatAllCities(), d.sehir));
+  row3.appendChild(makeSelectField('Segment', cardId + '-segment', SEGMENTLER, d.segment, 'Segment seçiniz...'));
+  row3.appendChild(makeSelectField('Şehir', cardId + '-sehir', flatAllCities(), d.sehir, 'Şehir seçiniz...'));
   card.appendChild(row3);
 
-  // Row 4: Takim Buyuklugu (conditional — shown only for managerial departments)
-  var takimWrap = makeSelectField('Takim Buyuklugu', cardId + '-takim', TAKIM_BUYUKLUKLERI, d.takim_buyuklugu);
+  // Row 4: Takım Büyüklüğü (conditional — shown only for managerial departments)
+  var takimWrap = makeSelectField('Takım Büyüklüğü', cardId + '-takim', TAKIM_BUYUKLUKLERI, d.takim_buyuklugu, 'Takım büyüklüğü seçiniz...');
   takimWrap.id = cardId + '-takim-wrap';
   var deptShouldShowTakim = d.departman && ['Bölge Yönetimi','Genel Merkez'].indexOf(d.departman) !== -1;
   takimWrap.style.display = deptShouldShowTakim ? '' : 'none';
@@ -3802,21 +3800,21 @@ function addExperienceCard(data) {
     });
   }
 
-  // Row 6: Baslangic Ay/Yil + Bitis Ay/Yil
+  // Row 6: Başlangıç Ay/Yıl + Bitiş Ay/Yıl
   var row6 = document.createElement('div');
   row6.className = 'field-row';
   row6.style.gridTemplateColumns = '1fr 1fr 1fr 1fr';
-  row6.appendChild(makeSelectField('Baslangic Ay', cardId + '-basay', AY_ISIMLERI, d.baslangic_ay));
-  row6.appendChild(makeYearField('Baslangic Yil', cardId + '-basyil', d.baslangic_yil));
-  var bitAyField = makeSelectField('Bitis Ay', cardId + '-bitay', AY_ISIMLERI, d.bitis_ay);
+  row6.appendChild(makeSelectField('Başlangıç Ay', cardId + '-basay', AY_ISIMLERI, d.baslangic_ay, 'Ay'));
+  row6.appendChild(makeYearField('Başlangıç Yılı <span class=\"field-req\">*</span>', cardId + '-basyil', d.baslangic_yil));
+  var bitAyField = makeSelectField('Bitiş Ay', cardId + '-bitay', AY_ISIMLERI, d.bitis_ay, 'Ay');
   bitAyField.classList.add('bitis-field');
   row6.appendChild(bitAyField);
-  var bitYilField = makeYearField('Bitis Yil', cardId + '-bityil', d.bitis_yil);
+  var bitYilField = makeYearField('Bitiş Yıl', cardId + '-bityil', d.bitis_yil);
   bitYilField.classList.add('bitis-field');
   row6.appendChild(bitYilField);
   card.appendChild(row6);
 
-  // Checkbox: Halen burada calisiyorum
+  // Checkbox: Halen burada çalışıyorum
   var cbWrap = document.createElement('label');
   cbWrap.className = 'cb-wrap';
   var cb = document.createElement('input');
@@ -3824,13 +3822,23 @@ function addExperienceCard(data) {
   cb.id = cardId + '-devam';
   if (d.devam_ediyor) cb.checked = true;
   var cbLabel = document.createElement('span');
-  cbLabel.textContent = 'Halen burada calisiyorum';
+  cbLabel.textContent = 'Halen burada çalışıyorum';
   cbWrap.appendChild(cb);
   cbWrap.appendChild(cbLabel);
   card.appendChild(cbWrap);
 
-  // Ayrilma Nedeni (hidden when devam_ediyor)
-  var ayrilmaField = makeSelectField('Ayrilma Nedeni', cardId + '-ayrilma', AYRILMA_NEDENLERI, d.ayrilma_nedeni);
+  // Devam ediyor badge
+  var devamBadge = document.createElement('span');
+  devamBadge.className = 'exp-devam-badge';
+  devamBadge.textContent = 'Devam ediyor';
+  devamBadge.style.display = d.devam_ediyor ? 'inline-block' : 'none';
+  devamBadge.style.fontSize = '11px';
+  devamBadge.style.fontWeight = '600';
+  devamBadge.style.color = 'var(--green)';
+  row6.appendChild(devamBadge);
+
+  // Ayrılma Nedeni (hidden when devam_ediyor)
+  var ayrilmaField = makeSelectField('Ayrılma Nedeni', cardId + '-ayrilma', AYRILMA_NEDENLERI, d.ayrilma_nedeni);
   ayrilmaField.classList.add('ayrilma-field');
   if (d.devam_ediyor) ayrilmaField.style.display = 'none';
   card.appendChild(ayrilmaField);
@@ -3839,12 +3847,29 @@ function addExperienceCard(data) {
   cb.addEventListener('change', function() {
     var bitisFields = card.querySelectorAll('.bitis-field');
     var ayrilma = card.querySelector('.ayrilma-field');
-    bitisFields.forEach(function(f) { f.style.display = cb.checked ? 'none' : ''; });
+    bitisFields.forEach(function(f) {
+      var sel = f.querySelector('select');
+      if (cb.checked) {
+        f.style.display = 'none';
+        if (sel) { sel.value = ''; sel.disabled = true; }
+      } else {
+        f.style.display = '';
+        if (sel) sel.disabled = false;
+      }
+    });
     if (ayrilma) ayrilma.style.display = cb.checked ? 'none' : '';
+    // Badge + card border
+    devamBadge.style.display = cb.checked ? 'inline-block' : 'none';
+    card.style.borderLeft = cb.checked ? '3px solid var(--accent)' : '1.5px solid var(--border-subtle)';
   });
   // Trigger initial state
   if (d.devam_ediyor) {
-    card.querySelectorAll('.bitis-field').forEach(function(f) { f.style.display = 'none'; });
+    card.querySelectorAll('.bitis-field').forEach(function(f) {
+      f.style.display = 'none';
+      var sel = f.querySelector('select');
+      if (sel) { sel.value = ''; sel.disabled = true; }
+    });
+    card.style.borderLeft = '3px solid var(--accent)';
   }
 
   // Basari Ozeti removed from wizard (Decision 5 — future dashboard feature)
@@ -3865,7 +3890,7 @@ function makeField(type, labelText, id, placeholder, value) {
   var wrap = document.createElement('div');
   wrap.className = 'field';
   var lbl = document.createElement('label');
-  lbl.textContent = labelText;
+  lbl.innerHTML = labelText;
   var input = document.createElement('input');
   input.type = type;
   input.id = id;
@@ -3876,16 +3901,16 @@ function makeField(type, labelText, id, placeholder, value) {
   return wrap;
 }
 
-function makeSelectField(labelText, id, options, selectedVal) {
+function makeSelectField(labelText, id, options, selectedVal, placeholderText) {
   var wrap = document.createElement('div');
   wrap.className = 'field';
   var lbl = document.createElement('label');
-  lbl.textContent = labelText;
+  lbl.innerHTML = labelText;
   var sel = document.createElement('select');
   sel.id = id;
   var defOpt = document.createElement('option');
   defOpt.value = '';
-  defOpt.textContent = 'Sec...';
+  defOpt.textContent = placeholderText || 'Seç...';
   sel.appendChild(defOpt);
   options.forEach(function(opt) {
     var o = document.createElement('option');
@@ -3903,12 +3928,12 @@ function makeYearField(labelText, id, selectedVal) {
   var wrap = document.createElement('div');
   wrap.className = 'field';
   var lbl = document.createElement('label');
-  lbl.textContent = labelText;
+  lbl.innerHTML = labelText;
   var sel = document.createElement('select');
   sel.id = id;
   var defOpt = document.createElement('option');
   defOpt.value = '';
-  defOpt.textContent = 'Yil';
+  defOpt.textContent = 'Yıl';
   sel.appendChild(defOpt);
   var cy = new Date().getFullYear();
   for (var y = cy; y >= 1990; y--) {
@@ -3934,16 +3959,16 @@ function formatBrandDisplay(brandName, companyName) {
 
 // Single visible input with brand autocomplete.
 // Stores selected brand data in hidden data attributes for split at save time.
-function makeSmartBrandField(id, data) {
+function makeSmartBrandField(id, data, required) {
   var wrap = document.createElement('div');
   wrap.className = 'field';
   wrap.style.position = 'relative';
   var lbl = document.createElement('label');
-  lbl.textContent = 'Sirket / Marka *';
+  lbl.innerHTML = required ? 'Şirket / Marka <span class="field-req">*</span>' : 'Şirket / Marka';
   var input = document.createElement('input');
   input.type = 'text';
   input.id = id;
-  input.placeholder = 'Ornek: Zara, Sephora, Fendi...';
+  input.placeholder = 'Örnek: Zara, Sephora, Fendi...';
   input.autocomplete = 'off';
 
   // Restore display value using shared formatter
@@ -4193,7 +4218,7 @@ function addCertificateRow(data) {
   var fields = document.createElement('div');
   fields.className = 'field-row';
   fields.style.gridTemplateColumns = '1fr 1fr 1fr';
-  fields.appendChild(makeField('text', 'Egitim / Sertifika Adi', rowId + '-adi', 'Ornek: Excel Ileri Seviye', d.egitim_adi));
+  fields.appendChild(makeField('text', 'Eğitim / Sertifika Adı', rowId + '-adi', 'Örnek: Excel İleri Seviye', d.egitim_adi));
   fields.appendChild(makeField('text', 'Kurum', rowId + '-kurum', 'Veren kurum', d.kurum));
   fields.appendChild(makeYearField('Yil', rowId + '-yil', d.yil));
   row.appendChild(fields);
@@ -4602,7 +4627,7 @@ function renderSelectedCities() {
     var msg = document.createElement('p');
     msg.id = 'no-city-msg';
     msg.style.cssText = 'font-size:13px;color:var(--muted);';
-    msg.textContent = 'Henuz sehir secilmedi. Yukaridaki sehirlerden secim yapin.';
+    msg.textContent = 'Henüz şehir seçilmedi. Yukarıdaki şehirlerden seçim yapın.';
     container.appendChild(msg);
     return;
   }
@@ -5759,7 +5784,7 @@ function renderSirketList(query) {
 
   if (filtered.length === 0) {
     container.innerHTML = '<div style="text-align:center;padding:32px 0;color:var(--muted);font-size:13px;">' +
-      (q ? 'Sonuc bulunamadi.' : 'Henuz sirket verisi yok.') + '</div>';
+      (q ? 'Sonuç bulunamadı.' : 'Henüz şirket verisi yok.') + '</div>';
     return;
   }
 
