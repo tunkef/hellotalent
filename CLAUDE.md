@@ -46,8 +46,8 @@
 
 ## Current State
 - See docs/handoff.md for full project state
-- P2 #9 Settings MVP: COMPLETE
-- Next: P2 #10 (İK email sync) → P3 (Employer onboarding)
+- P2 COMPLETE (all tasks #7-#10 done)
+- Next: P3 (Employer Onboarding & Team System)
 
 ## Context7
 Always use context7 when working with Supabase API, CSS, or any library docs.

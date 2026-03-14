@@ -231,8 +231,10 @@ if(sessionStorage.getItem('ht_gate')!=='ok'){window.location.replace('gate.html'
 
 ## 6. Kalan Backlog
 
-### P2 #10 — Email Auth Sync (İK tarafı) 🔄 (SIRADA)
-- ik.html'de employer email sync (hr_profiles.email ↔ auth email)
+### P2 #10 — Email Auth Sync (İK tarafı) ✅
+- Login-time auto-sync: hr_profiles.email !== currentUser.email → auto-update
+- Ayarlar'da "Değiştir" butonu + email change flow (supabase.auth.updateUser)
+- Re-verification flow: profil.html ile aynı pattern, ID'ler -ik suffix ile ayrılmış
 
 ### P2 #9 — Settings MVP Turuncu Özellikler (Opsiyonel)
 | # | Özellik | Açıklama |
@@ -389,6 +391,8 @@ feat: email auth sync + email change flow in Ayarlar (P2 #8)
 feat: P2 #9 Settings MVP — bildirim tercihleri, engelli şirketler, hesap dondur/sil, CV görünürlük copy (4 features)
 fix: P2 #9 closure — hide blocking UI, add employer enforcement, add deletion banner
 chore: clean code audit — remove 24 debug logs, fix Sentry TODO, remove fallback save, deduplicate 320 lines CSS, improve config traceability
+chore: add CLAUDE.md + project rules (supabase, code-quality, deploy, turkish-ui, architecture)
+feat: P2 #10 — İK email sync (auto-sync + email change UI)
 ```
 
 ---
@@ -397,7 +401,7 @@ chore: clean code audit — remove 24 debug logs, fix Sentry TODO, remove fallba
 
 Yeni bir chat açtığında şunu söyle:
 
-> "hellotalent.ai projesi üzerinde çalışıyoruz. Lütfen docs/handoff.md dosyasını oku ve kaldığımız yerden devam edelim. Sıradaki task: P2 #10 Email Auth Sync (İK tarafı)."
+> "hellotalent.ai projesi üzerinde çalışıyoruz. Lütfen docs/handoff.md dosyasını oku ve kaldığımız yerden devam edelim. Sıradaki: P3 — Employer Onboarding & Team System."
 
 Ya da Claude Code'da:
 ```bash
