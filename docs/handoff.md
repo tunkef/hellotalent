@@ -261,6 +261,35 @@ if(sessionStorage.getItem('ht_gate')!=='ok'){window.location.replace('gate.html'
 - Claude Code: 58 plugins active, Bun installed, CLAUDE.md + 5 rules files committed
 - New page: sifre-yenile.html (password reset landing)
 
+### P2 — Markalar Panel (Şirketler → Markalar Pivot) ✅ (15 Mart 2026)
+
+**Karar:** Aday-facing UI tamamen brand-centric (marka odaklı). Company data arka planda kalır, adaya yansımaz.
+
+**DB Değişiklikleri:**
+-  tablosuna 8 yeni column: instagram_url, store_count_tr, store_cities (text[]), hq_city, segment, benefits_platform_url, employee_count_tr, is_featured (boolean)
+-  → nullable yapıldı (standalone marka desteği)
+- 3 yeni marka INSERT: Hugo Boss (id=99), Alo Yoga (id=100), lululemon (id=101)
+- 31 marka enriched: website, instagram, segment, store count, cities, employee count, description
+- Hermès → orijinal isimle rename edildi
+-  tablosu + RLS (aday own + employer read by company_id)
+- Eski  → deprecated (5 test kaydı, migrate edilmedi)
+
+**Segment taxonomy:** luxury, premium, mid, mass, sportswear, beauty, tech
+
+**UI (profil.html → Markalar paneli):**
+- Card grid layout (3 col desktop, 2 tablet, 1 mobile)
+- Kart: logo (clearbit) + marka adı + website link + instagram handle + follow btn + İncele btn
+- İncele → Modal popup: Genel Bilgiler + TR Operasyonları + description + website btn + social + follow
+- Search: client-side filter on brand_name
+- Follow chips: takip edilen markalar chip olarak gösterilir
+- Logo: clearbit.com/{domain} fallback → color initial
+
+**Kaldırılanlar:** linkedin_url, glassdoor_url, kariyer URL (karttan), liste görünümü
+**Gizli tutulacaklar:** is_featured (aday görmez, ileride monetization), company ilişkisi (aday görmez)
+
+**31 Enriched Marka Listesi:**
+Louis Vuitton, Gucci, Prada, Hermès, Dior, Chanel, Beymen, Vakko, Massimo Dutti, Hugo Boss, Ralph Lauren, Lacoste, Alo Yoga, Adidas, Nike, Apple, Zara, H&M, Mango, LC Waikiki, Boyner, Teknosa, Sephora, MAC, lululemon, Pull & Bear, Bershka, Zara Home, Stradivarius, Cartier, Samsung
+
 ### P3 — Employer Onboarding & Team System (Yeni — Bu session'da tasarlandı)
 **Tek marka / Çoklu marka flow:**
 1. Employer kayıt → domain-uyumlu email doğrulama
