@@ -2180,6 +2180,17 @@ var _AVATAR_COLORS = ['#E74C3C','#3498DB','#2ECC71','#F39C12','#9B59B6','#1ABC9C
 function _avatarColor(n) { return _AVATAR_COLORS[(n||'?').charCodeAt(0) % _AVATAR_COLORS.length]; }
 
 var _SEGMENT_TR = { luxury:'LUXURY', premium:'PREMIUM', mid:'MID', mass:'MASS', sportswear:'SPORTSWEAR', beauty:'BEAUTY', tech:'TECH' };
+var _SEGMENTS = [
+  { key: null, label: 'TÜMÜ' },
+  { key: 'luxury', label: 'LUXURY' },
+  { key: 'premium', label: 'PREMIUM' },
+  { key: 'mid', label: 'MID' },
+  { key: 'mass', label: 'MASS' },
+  { key: 'sportswear', label: 'SPORTSWEAR' },
+  { key: 'beauty', label: 'BEAUTY' },
+  { key: 'tech', label: 'TECH' }
+];
+var _ht_active_segment = null;
 
 function _brandLogoUrl(b) {
   if (b.logo_url) return b.logo_url;
@@ -2263,6 +2274,8 @@ async function loadSirketlerPanel() {
   });
 
   _ht_visible_count = 12;
+  renderSegmentPills();
+  renderBrandFeatured();
   renderBrandGrid('');
   updateBrandFollowCounter();
 
@@ -2270,10 +2283,11 @@ async function loadSirketlerPanel() {
   si.addEventListener('input', function() {
     var val = si.value.trim();
     if (!val) _ht_visible_count = 12;
+    renderBrandFeatured();
     renderBrandGrid(si.value);
   });
 
-  var counterBtn = document.getElementById('brand-follow-counter');
+  var counterBtn = document.getElementById('brand-follow-counter-btn');
   if (counterBtn) counterBtn.addEventListener('click', openBrandFollowsPopup);
   var popupClose = document.getElementById('brand-follows-popup-close');
   if (popupClose) popupClose.addEventListener('click', closeBrandFollowsPopup);
@@ -2284,7 +2298,70 @@ async function loadSirketlerPanel() {
 var _ht_page_size = 12;
 var _ht_visible_count = 12;
 
-// ── Card Grid (paginated when no search; all when search) ──
+// ── Segment pills ──
+function renderSegmentPills() {
+  var container = document.getElementById('segment-pills');
+  if (!container) return;
+  var html = '';
+  for (var i = 0; i < _SEGMENTS.length; i++) {
+    var s = _SEGMENTS[i];
+    var isActive = _ht_active_segment === s.key;
+    html += '<div class="seg-pill' + (isActive ? ' active' : '') + '" data-segment="' + (s.key === null ? '' : _escHtml(s.key)) + '">' + _escHtml(s.label) + '</div>';
+  }
+  container.innerHTML = html;
+  container.querySelectorAll('.seg-pill').forEach(function(pill) {
+    pill.addEventListener('click', function() {
+      var seg = pill.getAttribute('data-segment') || null;
+      _ht_active_segment = seg;
+      if (!seg) _ht_visible_count = 12;
+      renderSegmentPills();
+      renderBrandFeatured();
+      renderBrandGrid(document.getElementById('brand-search').value);
+    });
+  });
+}
+
+// ── Featured editorial grid ──
+function renderBrandFeatured() {
+  var section = document.getElementById('brand-featured-section');
+  var grid = document.getElementById('brand-featured-grid');
+  if (!section || !grid) return;
+  var searchEl = document.getElementById('brand-search');
+  var query = searchEl ? searchEl.value.trim() : '';
+  if (query || _ht_active_segment) {
+    section.style.display = 'none';
+    return;
+  }
+  var featured = _ht_brands.filter(function(b) { return b.is_featured; }).slice(0, 3);
+  if (featured.length === 0) {
+    section.style.display = 'none';
+    return;
+  }
+  section.style.display = '';
+  var html = '';
+  for (var i = 0; i < featured.length; i++) {
+    var b = featured[i];
+    var isF = _ht_follows.has(b.id);
+    var meta = '';
+    if (b.store_count_tr != null && b.store_count_tr !== '') meta += b.store_count_tr + ' mağaza';
+    if (b.store_cities && b.store_cities.length > 0) meta += (meta ? ' · ' : '') + b.store_cities.slice(0, 3).join(', ');
+    if (!meta) meta = '—';
+    var segLabel = _SEGMENT_TR[b.segment] || b.segment || '';
+    html += '<div class="featured-card" onclick="openBrandModal(' + b.id + ')" style="animation-delay:' + (i * 0.06) + 's">' +
+      '<div class="featured-card-top">' +
+        '<div class="featured-logo">' + _brandLogoHtml(b, 48) + '</div>' +
+        '<span class="featured-seg">' + _escHtml(segLabel) + '</span>' +
+      '</div>' +
+      '<div class="featured-card-bottom">' +
+        '<div><div class="featured-name">' + _escHtml(b.brand_name) + '</div><div class="featured-meta">' + _escHtml(meta) + '</div></div>' +
+        '<button type="button" class="featured-follow' + (isF ? ' following' : '') + '" data-brand-id="' + b.id + '" onclick="toggleBrandFollow(' + b.id + ',event)">' + (isF ? 'Takipte ✓' : 'Takip Et') + '</button>' +
+      '</div>' +
+    '</div>';
+  }
+  grid.innerHTML = html;
+}
+
+// ── Card Grid (segment + search filter; exclude featured when showing featured section; paginate only in default view) ──
 function renderBrandGrid(query) {
   var container = document.getElementById('brand-grid');
   if (!_ht_brands) { container.innerHTML = ''; return; }
@@ -2293,13 +2370,20 @@ function renderBrandGrid(query) {
   var list = q
     ? _ht_brands.filter(function(b) { return trLower(b.brand_name).indexOf(q) !== -1; })
     : _ht_brands;
+  if (_ht_active_segment) {
+    list = list.filter(function(b) { return b.segment === _ht_active_segment; });
+  }
+  var showFeatured = !q && !_ht_active_segment;
+  if (showFeatured) {
+    list = list.filter(function(b) { return !b.is_featured; });
+  }
 
   if (list.length === 0) {
-    container.innerHTML = '<div class="brand-loading">' + (q ? 'Sonuç bulunamadı.' : 'Henüz marka verisi yok.') + '</div>';
+    container.innerHTML = '<div class="brand-loading">' + (q || _ht_active_segment ? 'Sonuç bulunamadı.' : 'Henüz marka verisi yok.') + '</div>';
     return;
   }
 
-  var usePagination = !q;
+  var usePagination = showFeatured;
   var visible = usePagination ? Math.min(_ht_visible_count, list.length) : list.length;
   var showLoadMore = usePagination && list.length > _ht_visible_count && visible < list.length;
   var remaining = list.length - visible;
@@ -2308,8 +2392,7 @@ function renderBrandGrid(query) {
   for (var i = 0; i < visible; i++) {
     var b = list[i];
     var isF = _ht_follows.has(b.id);
-
-    html += '<div class="brand-card" onclick="openBrandModal(' + b.id + ')">' +
+    html += '<div class="brand-card" onclick="openBrandModal(' + b.id + ')" style="animation-delay:' + (i * 0.02) + 's">' +
       '<div class="brand-card-logo-wrap">' + _brandLogoHtml(b, 56) + '</div>' +
       '<div class="brand-card-name">' + _escHtml(b.brand_name) + '</div>' +
       '<div class="brand-card-segment">' + _segmentTag(b.segment) + '</div>' +
@@ -2476,11 +2559,17 @@ function _updateAllFollowBtns(brandId) {
     mBtn.textContent = isF ? '✓ Takiptesin' : 'Takip Et';
     if (isF) mBtn.classList.add('following'); else mBtn.classList.remove('following');
   }
+  // Featured card follow button
+  var fBtn = document.querySelector('.featured-follow[data-brand-id="' + brandId + '"]');
+  if (fBtn) {
+    fBtn.textContent = isF ? 'Takipte ✓' : 'Takip Et';
+    if (isF) fBtn.classList.add('following'); else fBtn.classList.remove('following');
+  }
 }
 
 // ── Follow counter button ──
 function updateBrandFollowCounter() {
-  var btn = document.getElementById('brand-follow-counter');
+  var btn = document.getElementById('brand-follow-counter-btn');
   var numEl = document.getElementById('brand-follow-count-num');
   var n = _ht_follows ? _ht_follows.size : 0;
   if (numEl) numEl.textContent = n;

@@ -1285,26 +1285,77 @@ html[data-theme="dark"] .lok-modal #btn-lok-close:hover{
 .lok-modal #btn-lok-done{border-radius:var(--radius-sm);}
 
 /* ═══════════════════════════════════════════════════════════
-   MARKALAR PANEL — Card grid + Modal v3
+   MARKALAR PANEL — Editorial (featured + segment pills + grid)
    ═══════════════════════════════════════════════════════════ */
 
-/* Header row: search + follow counter */
-.brand-header-row{display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap;}
-.brand-search-wrap{position:relative;flex:1;min-width:0;}
-.brand-search-wrap input{width:100%;padding:10px 12px 10px 38px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:14px;background:var(--bg);color:var(--text);transition:border-color .2s;}
-.brand-search-wrap input:focus{border-color:var(--verm);outline:none;box-shadow:0 0 0 3px rgba(201,78,40,0.08);}
-.brand-search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);pointer-events:none;opacity:0.35;}
+/* Page header: title + follow counter */
+.markalar-page-header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:28px;flex-wrap:wrap;gap:12px;}
+.markalar-page-header .wiz-step-desc{margin-top:4px;}
 
-/* Follow counter button (right-aligned) */
-.brand-follow-counter{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border:1.5px solid var(--border);border-radius:8px;background:#fff;font-size:13px;font-weight:600;color:var(--text);cursor:pointer;transition:all .2s;font-family:'Plus Jakarta Sans',sans-serif;}
+/* Follow counter button */
+.brand-follow-counter{display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border:1.5px solid var(--border);border-radius:10px;background:#fff;font-size:13px;font-weight:600;color:var(--text);cursor:pointer;transition:all .2s;font-family:'Plus Jakarta Sans',sans-serif;}
 .brand-follow-counter:hover{border-color:var(--verm);color:var(--verm);}
-.brand-follow-counter .count{background:var(--verm);color:#fff;font-size:11px;padding:2px 7px;border-radius:10px;font-weight:700;}
+.brand-follow-counter .count{background:var(--verm);color:#fff;font-size:11px;padding:2px 8px;border-radius:10px;font-weight:700;}
 .brand-follow-counter svg{flex-shrink:0;}
 
-/* Card grid: 4 cols >900px, 3 cols 600–900px, 2 cols <600px; compact card width */
-.brand-grid{display:grid;grid-template-columns:repeat(4,minmax(180px,220px));gap:14px;justify-content:start;align-items:stretch;}
-@media(max-width:900px){.brand-grid{grid-template-columns:repeat(3,minmax(160px,1fr));}}
-@media(max-width:600px){.brand-grid{grid-template-columns:repeat(2,1fr);gap:12px;}}
+/* Search + Segment Pills bar */
+.search-filter-bar{display:flex;gap:12px;align-items:center;margin-bottom:24px;flex-wrap:wrap;}
+.brand-search-wrap{position:relative;flex:1;min-width:0;}
+.brand-search-wrap input{width:100%;padding:11px 14px 11px 40px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:14px;font-family:var(--font-body,'Plus Jakarta Sans',sans-serif);background:#fff;color:var(--text);transition:border-color .2s;}
+.brand-search-wrap input:focus{outline:none;border-color:var(--verm);box-shadow:0 0 0 3px rgba(201,78,40,0.06);}
+.brand-search-icon{position:absolute;left:13px;top:50%;transform:translateY(-50%);opacity:0.3;pointer-events:none;}
+
+/* Segment filter pills */
+.segment-pills{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none;padding:2px 0;flex-shrink:0;}
+.segment-pills::-webkit-scrollbar{display:none;}
+.seg-pill{padding:7px 14px;border-radius:20px;font-size:11px;font-weight:600;font-family:var(--font-mono,'DM Mono',monospace);letter-spacing:0.5px;white-space:nowrap;cursor:pointer;transition:all .15s;border:1.5px solid var(--border);background:#fff;color:var(--muted);}
+.seg-pill:hover{border-color:var(--navy);color:var(--navy);}
+.seg-pill.active{background:var(--navy);border-color:var(--navy);color:#fff;}
+
+/* Section label */
+.section-label{font-family:var(--font-mono,'DM Mono',monospace);font-size:11px;font-weight:500;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:14px;}
+
+/* Featured editorial section */
+.featured-section{margin-bottom:32px;}
+.featured-grid{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:200px 200px;gap:12px;}
+.featured-card{background:#fff;border-radius:16px;border:1.5px solid var(--border);padding:24px;display:flex;flex-direction:column;justify-content:space-between;cursor:pointer;transition:all .25s;position:relative;overflow:hidden;}
+.featured-card:hover{border-color:var(--navy);box-shadow:0 8px 32px rgba(30,45,94,0.08);transform:translateY(-2px);}
+.featured-card:first-child{grid-row:1/3;}
+.featured-card-top{display:flex;align-items:flex-start;justify-content:space-between;}
+.featured-logo{width:48px;height:48px;border-radius:12px;background:var(--bg,#F7F6F4);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;}
+.featured-logo .brand-logo-wrap{width:48px;height:48px;border-radius:12px;}
+.featured-logo img{width:100%;height:100%;object-fit:contain;padding:4px;}
+.featured-logo .brand-initial{font-weight:700;font-size:18px;color:#fff;width:100%;height:100%;display:flex;align-items:center;justify-content:center;}
+.featured-seg{font-family:var(--font-mono,'DM Mono',monospace);font-size:10px;font-weight:500;letter-spacing:0.5px;color:var(--muted);padding:4px 10px;border-radius:6px;background:var(--bg,#F7F6F4);}
+.featured-card-bottom{display:flex;align-items:flex-end;justify-content:space-between;}
+.featured-name{font-family:'Bricolage Grotesque',sans-serif;font-size:22px;font-weight:700;letter-spacing:-0.3px;}
+.featured-card:first-child .featured-name{font-size:32px;}
+.featured-meta{font-size:12px;color:var(--muted);margin-top:4px;}
+.featured-follow{padding:8px 18px;border-radius:8px;font-size:12px;font-weight:600;border:1.5px solid var(--verm);color:var(--verm);background:transparent;cursor:pointer;transition:all .15s;font-family:'Plus Jakarta Sans',sans-serif;}
+.featured-follow:hover{background:var(--verm);color:#fff;}
+.featured-follow.following{border-color:var(--border);color:var(--muted);background:var(--bg,#F7F6F4);}
+
+/* All brands section */
+.all-brands-section{margin-top:8px;}
+
+/* Card + featured animations */
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+.brand-card,.featured-card{animation:fadeUp .4s ease both;}
+
+/* Responsive: featured + search bar */
+@media(max-width:900px){.featured-grid{grid-template-rows:180px 180px;}}
+@media(max-width:600px){
+  .featured-grid{grid-template-columns:1fr;grid-template-rows:auto;}
+  .featured-card:first-child{grid-row:auto;}
+  .search-filter-bar{flex-direction:column;}
+  .segment-pills{gap:4px;}
+  .markalar-page-header{flex-direction:column;align-items:flex-start;}
+}
+
+/* Card grid: 4 cols >900px, 3 cols 600–900px, 2 cols <600px */
+.brand-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;align-items:stretch;}
+@media(max-width:900px){.brand-grid{grid-template-columns:repeat(3,1fr);}}
+@media(max-width:600px){.brand-grid{grid-template-columns:repeat(2,1fr);}}
 
 /* Card — vertical, compact; whole card clickable */
 .brand-card{background:#fff;border:1.5px solid var(--border);border-radius:12px;padding:14px;display:flex;flex-direction:column;align-items:center;gap:8px;transition:border-color .2s,box-shadow .2s;min-height:0;cursor:pointer;}

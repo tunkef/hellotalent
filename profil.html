@@ -797,27 +797,41 @@ if (window.Sentry) {
 
 </main>
 
-<!-- ═══ PANEL: MARKALAR (Card grid + Modal v3) ═══ -->
+<!-- ═══ PANEL: MARKALAR (Editorial: featured + segment pills + grid) ═══ -->
 <main class="panel" id="panel-sirketler" data-panel="sirketler">
-  <div class="wiz-step-title">Markalar</div>
-  <div class="wiz-step-desc">Türkiye'deki markaları keşfet, takip et.</div>
-
-  <!-- Search + Follow counter -->
-  <div class="brand-header-row">
-    <div class="brand-search-wrap">
-      <svg class="brand-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      <input type="text" id="brand-search" placeholder="Marka ara..." autocomplete="off">
+  <div class="page-header markalar-page-header">
+    <div>
+      <div class="wiz-step-title">Markalar</div>
+      <div class="wiz-step-desc">Türkiye'deki markaları keşfet, takip et.</div>
     </div>
-    <button type="button" class="brand-follow-counter" id="brand-follow-counter" style="display:none;" aria-label="Takip ettiklerin">
+    <button type="button" class="brand-follow-counter" id="brand-follow-counter-btn" style="display:none;" aria-label="Takip ettiklerin">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-      <span>Takip Ettiklerin</span>
+      Takip Ettiklerin
       <span class="count" id="brand-follow-count-num">0</span>
     </button>
   </div>
 
-  <!-- Brand card grid -->
-  <div id="brand-grid" class="brand-grid">
-    <div class="brand-loading">Yükleniyor...</div>
+  <!-- Search + Segment Pills -->
+  <div class="search-filter-bar">
+    <div class="brand-search-wrap">
+      <svg class="brand-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" id="brand-search" placeholder="Marka ara..." autocomplete="off">
+    </div>
+    <div class="segment-pills" id="segment-pills"></div>
+  </div>
+
+  <!-- Featured Editorial Grid -->
+  <div id="brand-featured-section" class="featured-section">
+    <div class="section-label">öne çıkanlar</div>
+    <div id="brand-featured-grid" class="featured-grid"></div>
+  </div>
+
+  <!-- All Brands -->
+  <div class="all-brands-section">
+    <div class="section-label">tüm markalar</div>
+    <div id="brand-grid" class="brand-grid">
+      <div class="brand-loading">Yükleniyor...</div>
+    </div>
   </div>
 </main>
 
