@@ -236,14 +236,30 @@ if(sessionStorage.getItem('ht_gate')!=='ok'){window.location.replace('gate.html'
 - Ayarlar'da "Değiştir" butonu + email change flow (supabase.auth.updateUser)
 - Re-verification flow: profil.html ile aynı pattern, ID'ler -ik suffix ile ayrılmış
 
-### P2 #9 — Settings MVP Turuncu Özellikler (Opsiyonel)
-| # | Özellik | Açıklama |
-|---|---------|----------|
-| 5 | Aktif arama modu | "Aktif iş arıyorum" sinyali |
-| 6 | İletişim tercihleri | Hangi kanallardan ulaşılabilir |
-| 7 | Verilerimi indir | KVKK md.11 — JSON/PDF export |
-| 8 | İki faktörlü doğrulama | TOTP veya SMS 2FA |
-| 9 | Oturum yönetimi | Aktif cihazlar listesi |
+### P2 #9 Turuncu Features (Batch 2) ✅
+- Aktif arama modu (toggle + employer badge + filtre)
+- İletişim tercihleri (email/phone/whatsapp toggles)
+- Verilerimi indir (KVKK md.11 JSON export)
+- Google OAuth login (aday only, LinkedIn pending approval)
+- Oturum yönetimi (session info + global signout)
+- Password strength validation (8 zayıf / 10 orta / 12+ güçlü)
+- Şifremi unuttum flow + sifre-yenile.html sayfası
+- Login rate limit (5 deneme → 120s cooldown)
+- Branded email templates (confirm, change email, reset password)
+- Supabase automatic account linking enabled
+- Google ile Kayıt Ol butonları (giris.html, index.html, aday.html)
+
+### Refactoring ✅
+- profil.html split → 6 files (profil.css, profil-core.js, profil-data.js, profil-ui.js, profil-settings.js)
+- 6549 → 1981 lines (70% reduction)
+- Gizlilik card reorder + hesap yönetimi wizard modal
+
+### Infrastructure
+- Google Cloud "hellotalent", OAuth client configured
+- Supabase: Google provider enabled, automatic account linking on
+- LinkedIn OAuth: approval pending
+- Claude Code: 58 plugins active, Bun installed, CLAUDE.md + 5 rules files committed
+- New page: sifre-yenile.html (password reset landing)
 
 ### P3 — Employer Onboarding & Team System (Yeni — Bu session'da tasarlandı)
 **Tek marka / Çoklu marka flow:**
