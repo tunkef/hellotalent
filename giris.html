@@ -312,6 +312,10 @@
           <span id="aday-btn-text">Giriş Yap →</span>
         </button>
 
+        <div style="text-align:center;margin-top:8px;">
+          <a href="#" id="btn-forgot-password-aday" style="font-size:12px;color:var(--verm);text-decoration:none;">Şifremi Unuttum</a>
+        </div>
+
         <div style="display:flex;align-items:center;gap:12px;margin:16px 0;">
           <div style="flex:1;height:1px;background:var(--border);"></div>
           <span style="font-size:12px;color:var(--muted);">veya</span>
@@ -394,6 +398,10 @@
           <span id="ik-btn-text">Giriş Yap →</span>
         </button>
 
+        <div style="text-align:center;margin-top:8px;">
+          <a href="#" id="btn-forgot-password-ik" style="font-size:12px;color:var(--verm);text-decoration:none;">Şifremi Unuttum</a>
+        </div>
+
         <div class="divider">veya</div>
 
         <p class="register-link">
@@ -452,6 +460,19 @@
   © 2025 hellotalent.ai · <a href="index.html" style="color:var(--muted);text-decoration:none;">Ana Sayfa</a>
 </footer>
 
+<div id="forgot-password-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);backdrop-filter:blur(3px);z-index:1000;align-items:center;justify-content:center;padding:16px;">
+  <div style="background:white;border-radius:16px;max-width:400px;width:100%;padding:24px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+      <h3 style="font-family:'Bricolage Grotesque',sans-serif;font-size:18px;font-weight:700;margin:0;color:var(--navy);">Şifremi Unuttum</h3>
+      <button id="btn-close-forgot" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted);">✕</button>
+    </div>
+    <p style="font-size:13px;color:var(--muted);line-height:1.5;margin-bottom:16px;">E-posta adresinizi girin. Şifre sıfırlama bağlantısı göndereceğiz.</p>
+    <input type="email" id="forgot-email" class="form-input" placeholder="E-posta adresiniz" style="width:100%;margin-bottom:12px;padding:12px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;">
+    <button type="button" id="btn-send-reset" class="btn btn-primary" style="width:100%;padding:12px;border:none;border-radius:10px;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:600;background:var(--verm);color:white;cursor:pointer;">Sıfırlama Bağlantısı Gönder</button>
+    <div id="forgot-msg" style="font-size:12px;margin-top:8px;display:none;text-align:center;"></div>
+  </div>
+</div>
+
 <script>
 // ── SUPABASE ──
 let _supa = null;
@@ -465,6 +486,35 @@ function getSupa() {
     );
   }
   return _supa;
+}
+
+// ── LOGIN RATE LIMIT ──
+var _loginAttempts = { aday: 0, ik: 0 };
+var _loginCooldown = { aday: null, ik: null };
+
+function checkLoginCooldown(type, btn) {
+  if (_loginAttempts[type] >= 5) {
+    if (_loginCooldown[type]) return true;
+    var remaining = 120;
+    btn.disabled = true;
+    btn.textContent = 'Çok fazla deneme. ' + remaining + 's bekleyin';
+    btn.style.opacity = '0.6';
+    _loginCooldown[type] = setInterval(function () {
+      remaining--;
+      if (remaining <= 0) {
+        clearInterval(_loginCooldown[type]);
+        _loginCooldown[type] = null;
+        _loginAttempts[type] = 0;
+        btn.disabled = false;
+        btn.textContent = 'Giriş Yap →';
+        btn.style.opacity = '1';
+      } else {
+        btn.textContent = 'Çok fazla deneme. ' + remaining + 's bekleyin';
+      }
+    }, 1000);
+    return true;
+  }
+  return false;
 }
 
 // ── OTURUM KONTROLÜ ──
@@ -510,6 +560,7 @@ async function loginAday() {
   const sifre = document.getElementById('aday-sifre').value;
   const errEl = document.getElementById('err-aday');
   const btnText = document.getElementById('aday-btn-text');
+  var loginBtn = btnText.closest('button');
 
   errEl.style.display = 'none';
 
@@ -519,16 +570,22 @@ async function loginAday() {
     return;
   }
 
+  if (checkLoginCooldown('aday', loginBtn)) return;
+
   btnText.innerHTML = '<div class="loading-spinner"></div>';
 
   const { data, error } = await getSupa().auth.signInWithPassword({ email, password: sifre });
 
   if (error) {
+    _loginAttempts.aday++;
+    if (checkLoginCooldown('aday', loginBtn)) return;
     errEl.textContent = 'E-posta veya şifre hatalı. Lütfen tekrar dene.';
     errEl.style.display = 'block';
     btnText.textContent = 'Giriş Yap →';
     return;
   }
+
+  _loginAttempts.aday = 0;
 
   // Role check: employer accounts cannot login from candidate tab
   var userRole = data.user?.user_metadata?.role;
@@ -548,6 +605,7 @@ async function loginIK() {
   const sifre = document.getElementById('ik-sifre').value;
   const errEl = document.getElementById('err-ik');
   const btnText = document.getElementById('ik-btn-text');
+  var loginBtn = btnText.closest('button');
 
   errEl.style.display = 'none';
 
@@ -557,11 +615,15 @@ async function loginIK() {
     return;
   }
 
+  if (checkLoginCooldown('ik', loginBtn)) return;
+
   btnText.innerHTML = '<div class="loading-spinner"></div>';
 
   const { data, error } = await getSupa().auth.signInWithPassword({ email, password: sifre });
 
   if (error) {
+    _loginAttempts.ik++;
+    if (checkLoginCooldown('ik', loginBtn)) return;
     var msg = 'E-posta veya şifre hatalı.';
     if (error.message && error.message.toLowerCase().includes('email not confirmed')) {
       msg = 'E-posta adresin henüz onaylanmamış. Lütfen gelen kutunu kontrol et.';
@@ -573,6 +635,8 @@ async function loginIK() {
     btnText.textContent = 'Giriş Yap →';
     return;
   }
+
+  _loginAttempts.ik = 0;
 
   // Role check: candidate accounts cannot login from employer tab
   var userRole = data.user?.user_metadata?.role;
@@ -597,6 +661,60 @@ document.addEventListener('keydown', function(e) {
     }
   }
 });
+
+// ── FORGOT PASSWORD ──
+(function(){
+  var overlay = document.getElementById('forgot-password-overlay');
+  var btnClose = document.getElementById('btn-close-forgot');
+  var btnSend = document.getElementById('btn-send-reset');
+
+  function openForgot() {
+    if(overlay) overlay.style.display = 'flex';
+    var msg = document.getElementById('forgot-msg');
+    if(msg) msg.style.display = 'none';
+    var input = document.getElementById('forgot-email');
+    if(input) { input.value = ''; input.focus(); }
+  }
+
+  var btnAday = document.getElementById('btn-forgot-password-aday');
+  if(btnAday) btnAday.addEventListener('click', function(e){ e.preventDefault(); openForgot(); });
+
+  var btnIK = document.getElementById('btn-forgot-password-ik');
+  if(btnIK) btnIK.addEventListener('click', function(e){ e.preventDefault(); openForgot(); });
+
+  if(btnClose) btnClose.addEventListener('click', function(){ if(overlay) overlay.style.display = 'none'; });
+  if(overlay) overlay.addEventListener('click', function(e){ if(e.target === overlay) overlay.style.display = 'none'; });
+
+  if(btnSend) btnSend.addEventListener('click', async function(){
+    var email = (document.getElementById('forgot-email').value || '').trim();
+    var msg = document.getElementById('forgot-msg');
+
+    if(!email || !email.includes('@')) {
+      if(msg) { msg.textContent = 'Geçerli bir e-posta adresi girin.'; msg.style.color = 'var(--red, #DC2626)'; msg.style.display = 'block'; }
+      return;
+    }
+
+    btnSend.disabled = true;
+    btnSend.textContent = 'Gönderiliyor...';
+
+    var sb = typeof getSupa === 'function' ? getSupa() : (typeof _supa !== 'undefined' ? _supa : null);
+    if(!sb) { alert('Bağlantı hatası'); btnSend.disabled = false; btnSend.textContent = 'Sıfırlama Bağlantısı Gönder'; return; }
+
+    var { error } = await sb.auth.resetPasswordForEmail(email, {
+      redirectTo: window.location.origin + '/sifre-yenile.html'
+    });
+
+    if(error) {
+      if(msg) { msg.textContent = error.message; msg.style.color = 'var(--red, #DC2626)'; msg.style.display = 'block'; }
+    } else {
+      if(msg) { msg.textContent = 'Şifre sıfırlama bağlantısı gönderildi! E-posta gelen kutunuzu kontrol edin.'; msg.style.color = 'var(--green, #16A34A)'; msg.style.display = 'block'; }
+      document.getElementById('forgot-email').value = '';
+    }
+
+    btnSend.disabled = false;
+    btnSend.textContent = 'Sıfırlama Bağlantısı Gönder';
+  });
+})();
 
 // ── SOCIAL LOGIN (Aday only) ──
 (function(){

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Şifre Yenile — hellotalent.ai</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  :root { --verm:#C94E28; --navy:#1E2D5E; --bg:#F7F6F4; --border:#E2E8F0; --muted:#64748B; --green:#16A34A; --red:#DC2626; }
+  body { font-family:'Plus Jakarta Sans',sans-serif; background:var(--bg); min-height:100vh; display:flex; align-items:center; justify-content:center; padding:16px; }
+  .card { background:white; border-radius:16px; padding:32px; max-width:400px; width:100%; box-shadow:0 4px 24px rgba(0,0,0,0.08); }
+  .logo { font-family:'Bricolage Grotesque',sans-serif; font-size:24px; font-weight:800; color:var(--navy); text-align:center; margin-bottom:24px; }
+  .logo span { color:var(--verm); }
+  .form-input { width:100%; padding:12px 14px; border:1.5px solid var(--border); border-radius:10px; font-family:inherit; font-size:13px; outline:none; transition:border-color 0.2s; }
+  .form-input:focus { border-color:var(--verm); }
+  .form-label { display:block; font-size:12px; font-weight:600; color:var(--navy); margin-bottom:6px; }
+  .btn { width:100%; padding:14px; background:var(--verm); color:#fff; border:none; border-radius:10px; font-family:inherit; font-size:14px; font-weight:700; cursor:pointer; transition:background 0.2s; }
+  .btn:hover { background:#B8421F; }
+  .btn:disabled { opacity:0.6; cursor:not-allowed; }
+  .rule-check { font-size:11px; color:var(--muted); }
+  .rule-check.pass { color:var(--green); }
+  .strength-bar { flex:1; height:3px; border-radius:2px; background:var(--border); transition:all 0.3s; }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div class="logo">hello<span>talent</span>.ai</div>
+  <h2 style="font-size:18px;font-weight:700;color:var(--navy);text-align:center;margin-bottom:8px;">Yeni Şifre Belirleyin</h2>
+  <p style="font-size:13px;color:var(--muted);text-align:center;margin-bottom:24px;line-height:1.5;">Güvenliğiniz için güçlü bir şifre seçin.</p>
+
+  <div style="margin-bottom:16px;">
+    <label class="form-label">Yeni Şifre</label>
+    <input type="password" id="new-password" class="form-input" placeholder="Yeni şifrenizi girin">
+    <div class="password-strength" style="margin-top:6px;">
+      <div style="display:flex;gap:4px;margin-bottom:4px;">
+        <div class="strength-bar"></div>
+        <div class="strength-bar"></div>
+        <div class="strength-bar"></div>
+      </div>
+      <div class="strength-label" style="font-size:11px;color:var(--muted);transition:all 0.3s;"></div>
+      <div style="font-size:11px;margin-top:4px;line-height:1.6;">
+        <div class="rule-check" data-rule="length">○ En az 8 karakter</div>
+        <div class="rule-check" data-rule="upper">○ Büyük harf (A-Z)</div>
+        <div class="rule-check" data-rule="lower">○ Küçük harf (a-z)</div>
+        <div class="rule-check" data-rule="number">○ Rakam (0-9)</div>
+        <div class="rule-check" data-rule="special">○ Özel karakter (!@#$%._-)</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-bottom:20px;">
+    <label class="form-label">Şifre Tekrar</label>
+    <input type="password" id="confirm-password" class="form-input" placeholder="Şifrenizi tekrar girin">
+  </div>
+
+  <button type="button" id="btn-reset-password" class="btn">Şifremi Güncelle</button>
+  <div id="reset-msg" style="font-size:12px;margin-top:12px;display:none;text-align:center;"></div>
+</div>
+
+<script>
+var SUPABASE_URL = 'https://cpwibefquojehjehtrog.supabase.co';
+var SUPABASE_KEY = 'sb_publishable_POUtNwJyjAAheukwYP5hmA_TKKjphwa';
+var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// Password strength indicator
+(function(){
+  var input = document.getElementById('new-password');
+  if(!input) return;
+  var container = input.parentElement.querySelector('.password-strength');
+  if(!container) return;
+
+  input.addEventListener('input', function(){
+    var bars = container.querySelectorAll('.strength-bar');
+    var label = container.querySelector('.strength-label');
+    var rules = container.querySelectorAll('.rule-check');
+    var val = input.value;
+
+    var checks = {
+      length: val.length >= 8,
+      upper: /[A-Z]/.test(val),
+      lower: /[a-z]/.test(val),
+      number: /[0-9]/.test(val),
+      special: /[!@#$%^&*._\-+]/.test(val)
+    };
+
+    rules.forEach(function(el){
+      var rule = el.getAttribute('data-rule');
+      if(checks[rule]) { el.classList.add('pass'); el.textContent = '✓ ' + el.textContent.substring(2); }
+      else { el.classList.remove('pass'); var t = el.textContent; if(t.charAt(0)==='✓') el.textContent = '○' + t.substring(1); }
+    });
+
+    var allPass = checks.length && checks.upper && checks.lower && checks.number && checks.special;
+    var strength = 0;
+    if(allPass) { if(val.length >= 12) strength = 3; else if(val.length >= 10) strength = 2; else strength = 1; }
+
+    var colors = ['var(--border)', '#DC2626', '#F59E0B', '#16A34A'];
+    var labels = ['', 'Zayıf', 'Orta', 'Güçlü'];
+    bars.forEach(function(bar,i){ bar.style.background = (i < strength) ? colors[strength] : 'var(--border)'; });
+    if(label) { label.textContent = val.length > 0 ? labels[strength] : ''; label.style.color = colors[strength] || 'var(--muted)'; }
+  });
+})();
+
+// Reset password handler
+(function(){
+  var btn = document.getElementById('btn-reset-password');
+  if(!btn) return;
+
+  btn.addEventListener('click', async function(){
+    var msg = document.getElementById('reset-msg');
+    var pw = (document.getElementById('new-password').value || '');
+    var pw2 = (document.getElementById('confirm-password').value || '');
+
+    msg.style.display = 'none';
+
+    if(pw.length < 8 || !/[A-Z]/.test(pw) || !/[a-z]/.test(pw) || !/[0-9]/.test(pw) || !/[!@#$%^&*._\-+]/.test(pw)) {
+      msg.textContent = 'Şifreniz en az 8 karakter olmalı ve büyük harf, küçük harf, rakam ve özel karakter içermelidir.';
+      msg.style.color = 'var(--red)'; msg.style.display = 'block'; return;
+    }
+
+    if(pw !== pw2) {
+      msg.textContent = 'Şifreler eşleşmiyor.'; msg.style.color = 'var(--red)'; msg.style.display = 'block'; return;
+    }
+
+    btn.disabled = true; btn.textContent = 'Güncelleniyor...';
+
+    var { error } = await supabase.auth.updateUser({ password: pw });
+
+    if(error) {
+      msg.textContent = 'Hata: ' + error.message; msg.style.color = 'var(--red)'; msg.style.display = 'block';
+    } else {
+      msg.textContent = 'Şifreniz başarıyla güncellendi! Yönlendiriliyorsunuz...'; msg.style.color = 'var(--green)'; msg.style.display = 'block';
+      setTimeout(function(){ window.location.href = 'giris.html'; }, 2000);
+    }
+
+    btn.disabled = false; btn.textContent = 'Şifremi Güncelle';
+  });
+})();
+</script>
+</body>
+</html>
