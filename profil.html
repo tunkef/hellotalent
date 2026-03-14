@@ -797,22 +797,15 @@ if (window.Sentry) {
 
 </main>
 
-<!-- ═══ PANEL: SIRKETLER (Brand-centric v2) ═══ -->
+<!-- ═══ PANEL: MARKALAR (Card grid + Modal v3) ═══ -->
 <main class="panel" id="panel-sirketler" data-panel="sirketler">
   <div class="wiz-step-title">Markalar</div>
-  <div class="wiz-step-desc">Türkiye'deki markaları keşfet, takip et ve kariyer fırsatlarını yakala.</div>
+  <div class="wiz-step-desc">Türkiye'deki markaları keşfet, takip et.</div>
 
   <!-- Search -->
   <div class="brand-search-wrap">
     <svg class="brand-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
     <input type="text" id="brand-search" placeholder="Marka ara..." autocomplete="off">
-  </div>
-
-  <!-- Featured brands (4 cards) -->
-  <div id="brand-featured-section">
-    <div id="brand-featured-grid" class="brand-featured-grid">
-      <!-- JS fills -->
-    </div>
   </div>
 
   <!-- Follow chips -->
@@ -821,14 +814,18 @@ if (window.Sentry) {
     <div id="brand-follows-chips" class="brand-follows-chips"></div>
   </div>
 
-  <!-- All brands list -->
-  <div class="card">
-    <div class="card-title" style="margin-bottom:12px;">Tüm Markalar</div>
-    <div id="brand-list">
-      <div class="brand-loading">Yükleniyor...</div>
-    </div>
+  <!-- Brand card grid -->
+  <div id="brand-grid" class="brand-grid">
+    <div class="brand-loading">Yükleniyor...</div>
   </div>
 </main>
+
+<!-- Brand detail modal (outside panel, fixed overlay) -->
+<div class="brand-modal-overlay" id="brand-modal-overlay" style="display:none;">
+  <div class="brand-modal" id="brand-modal">
+    <!-- JS fills -->
+  </div>
+</div>
 
 <!-- ═══ PANEL: AYARLAR ═══ -->
 <main class="panel" id="panel-ayarlar" data-panel="ayarlar">
