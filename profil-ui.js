@@ -2335,7 +2335,10 @@ function renderBrandGrid(query) {
   }
 
   if (showLoadMore) {
-    html += '<button type="button" class="brand-load-more" id="brand-load-more">Daha Fazla Göster (' + remaining + ' marka daha)</button>';
+    html += '<button type="button" class="brand-load-more" id="brand-load-more">' +
+      '<span class="plus-icon">+</span>' +
+      '<span class="load-more-text">Daha fazla göster (' + remaining + ')</span>' +
+    '</button>';
   }
 
   container.innerHTML = html;

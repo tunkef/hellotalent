@@ -1397,9 +1397,13 @@ html[data-theme="dark"] .lok-modal #btn-lok-close:hover{
 .brand-modal-close-btn{padding:12px 20px;border-radius:10px;border:1.5px solid var(--border);background:var(--gray,#f3f2ef);font-size:13px;font-weight:600;color:var(--text);cursor:pointer;transition:background .2s;}
 .brand-modal-close-btn:hover{background:var(--border);}
 
-/* Load more button */
-.brand-load-more{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;margin-top:14px;border:1.5px dashed var(--border);border-radius:12px;background:transparent;color:var(--muted);font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;grid-column:1/-1;font-family:'Plus Jakarta Sans',sans-serif;}
-.brand-load-more:hover{border-color:var(--verm);color:var(--verm);background:rgba(201,78,40,0.03);}
+/* Load more — minimal divider style */
+.brand-load-more{grid-column:1/-1;display:flex;flex-direction:column;align-items:center;gap:6px;padding:8px 0;cursor:pointer;position:relative;background:none;border:none;margin-top:8px;}
+.brand-load-more::before{content:'';position:absolute;top:14px;left:0;right:0;height:1px;background:var(--border);}
+.brand-load-more .plus-icon{width:28px;height:28px;border-radius:50%;border:1.5px solid var(--border);background:var(--card-bg,#fff);display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--muted);z-index:1;transition:all .2s;}
+.brand-load-more:hover .plus-icon{border-color:var(--verm);color:var(--verm);}
+.brand-load-more .load-more-text{font-size:11px;color:var(--muted);transition:color .2s;}
+.brand-load-more:hover .load-more-text{color:var(--verm);}
 
 /* Follow list popup */
 .brand-follows-popup-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:8990;display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(3px);}
