@@ -1,11 +1,12 @@
-.claude/
+.claude/*
+!.claude/rules/
+!.claude/skills/
 .DS_Store
 EXECUTION_POLICY.md
 docs/plans/
 ref_components/
 ref_guidelines/
 ref_styles/
-.claude/settings.local.json
 node_modules/
 test-results/
 playwright-report/
