@@ -2169,55 +2169,52 @@ function setAvatarImage(url) {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// MARKALAR PANEL — Brand-centric v2 (featured + expand + follow)
+// MARKALAR PANEL — Card grid + Modal v3
 // ═══════════════════════════════════════════════════════════════
 
-var _ht_brands = null;          // Array of enriched brand objects
-var _ht_follows = new Set();    // Set of followed brand_id values
+var _ht_brands = null;
+var _ht_follows = new Set();
 var _ht_sirketler_loaded = false;
 var _ht_candidate_id = null;
-var _ht_expanded_brand = null;  // Currently expanded brand_id
 
-// Letter-avatar color palette (deterministic)
 var _AVATAR_COLORS = ['#E74C3C','#3498DB','#2ECC71','#F39C12','#9B59B6','#1ABC9C','#E67E22','#34495E','#16A085','#C0392B'];
-function _avatarColor(name) {
-  return _AVATAR_COLORS[(name || '?').charCodeAt(0) % _AVATAR_COLORS.length];
-}
+function _avatarColor(n) { return _AVATAR_COLORS[(n||'?').charCodeAt(0) % _AVATAR_COLORS.length]; }
 
-// Logo URL: try clearbit from website domain, fallback to initial
+var _SEGMENT_TR = { luxury:'Lüks', premium:'Premium', mid:'Moda', mass:'Yaygın', sportswear:'Spor', beauty:'Güzellik', tech:'Teknoloji' };
+
 function _brandLogoUrl(b) {
   if (b.logo_url) return b.logo_url;
   if (b.website_url) {
-    try {
-      var domain = new URL(b.website_url).hostname.replace('www.', '');
-      return 'https://logo.clearbit.com/' + domain;
-    } catch(e) {}
+    try { return 'https://logo.clearbit.com/' + new URL(b.website_url).hostname.replace('www.',''); } catch(e) {}
   }
   return null;
 }
 
-function _brandLogoHtml(b, size) {
+function _brandLogoHtml(b, sz) {
+  sz = sz || 48;
   var url = _brandLogoUrl(b);
-  var sz = size || 48;
+  var initial = _escHtml((b.brand_name||'?').charAt(0).toUpperCase());
+  var fallback = '<span class="brand-initial" style="background:' + _avatarColor(b.brand_name) + '">' + initial + '</span>';
   if (url) {
     return '<div class="brand-logo-wrap" style="width:'+sz+'px;height:'+sz+'px;">' +
-      '<img src="' + _escHtml(url) + '" alt="' + _escHtml(b.brand_name) + '" onerror="this.parentElement.innerHTML=\'<span class=brand-initial style=background:' + _avatarColor(b.brand_name) + '>' + _escHtml((b.brand_name||'?').charAt(0).toUpperCase()) + '</span>\'">' +
-    '</div>';
+      '<img src="'+_escHtml(url)+'" alt="'+_escHtml(b.brand_name)+'" onerror="this.outerHTML=\''+fallback.replace(/'/g,"\\'")+'\'"></div>';
   }
-  return '<div class="brand-logo-wrap" style="width:'+sz+'px;height:'+sz+'px;">' +
-    '<span class="brand-initial" style="background:' + _avatarColor(b.brand_name) + ';">' + _escHtml((b.brand_name||'?').charAt(0).toUpperCase()) + '</span></div>';
+  return '<div class="brand-logo-wrap" style="width:'+sz+'px;height:'+sz+'px;">'+fallback+'</div>';
 }
-
-// Segment label map (Turkish)
-var _SEGMENT_LABELS = {
-  luxury: 'Lüks', premium: 'Premium', mid: 'Moda', mass: 'Yaygın',
-  sportswear: 'Spor', beauty: 'Güzellik', tech: 'Teknoloji'
-};
 
 function _segmentTag(seg) {
   if (!seg) return '';
-  var label = _SEGMENT_LABELS[seg] || seg;
-  return '<span class="brand-segment ' + _escHtml(seg) + '">' + _escHtml(label) + '</span>';
+  return '<span class="brand-segment '+_escHtml(seg)+'">'+_escHtml(_SEGMENT_TR[seg]||seg)+'</span>';
+}
+
+function _shortDomain(url) {
+  if (!url) return '';
+  try { return new URL(url).hostname.replace('www.',''); } catch(e) { return url; }
+}
+
+function _igHandle(url) {
+  if (!url) return '';
+  try { var p = new URL(url).pathname.replace(/\//g,''); return '@' + p; } catch(e) { return url; }
 }
 
 // ── Load panel ──
@@ -2225,27 +2222,22 @@ async function loadSirketlerPanel() {
   if (_ht_sirketler_loaded) return;
   _ht_sirketler_loaded = true;
 
-  // Get candidate ID
   if (!_ht_candidate_id && currentUser) {
     var cr = await supabase.from('candidates').select('id').eq('user_id', currentUser.id).maybeSingle();
     if (cr.data) _ht_candidate_id = cr.data.id;
   }
 
-  // Fetch enriched brands only (website_url not null = enriched)
   var brandsRes = await supabase.from('brands')
-    .select('id, brand_name, slug, logo_url, website_url, career_url, instagram_url, short_description, segment, store_count_tr, store_cities, hq_city, employee_count_tr, is_featured, company_id')
-    .not('website_url', 'is', null)
-    .eq('is_active', true)
-    .order('brand_name');
+    .select('id,brand_name,slug,logo_url,website_url,instagram_url,short_description,segment,store_count_tr,store_cities,hq_city,employee_count_tr,is_featured,company_id')
+    .not('website_url','is',null).eq('is_active',true).order('brand_name');
 
-  // Fetch follows (brand-based)
   var followsRes = _ht_candidate_id
     ? await supabase.from('candidate_brand_follows').select('brand_id').eq('candidate_id', _ht_candidate_id)
     : { data: [] };
 
   if (brandsRes.error) {
-    console.error('[HT] loadBrandsPanel: query failed', brandsRes.error);
-    document.getElementById('brand-list').innerHTML = '<div class="brand-loading">Veriler yüklenemedi. Lütfen sayfayı yenileyin.</div>';
+    console.error('[HT] loadBrandsPanel failed', brandsRes.error);
+    document.getElementById('brand-grid').innerHTML = '<div class="brand-loading">Veriler yüklenemedi.</div>';
     _ht_sirketler_loaded = false;
     return;
   }
@@ -2253,180 +2245,152 @@ async function loadSirketlerPanel() {
   _ht_brands = brandsRes.data || [];
   _ht_follows = new Set((followsRes.data || []).map(function(f) { return f.brand_id; }));
 
-  renderBrandFeatured();
-  renderBrandList('');
+  renderBrandGrid('');
   renderBrandFollowChips();
 
-  // Wire search
-  var searchInput = document.getElementById('brand-search');
-  searchInput.addEventListener('input', function() {
-    renderBrandList(searchInput.value);
-    // Hide featured when searching
-    var featSection = document.getElementById('brand-featured-section');
-    featSection.style.display = searchInput.value.trim() ? 'none' : '';
-  });
+  var si = document.getElementById('brand-search');
+  si.addEventListener('input', function() { renderBrandGrid(si.value); });
 }
 
-// ── Featured cards ──
-function renderBrandFeatured() {
-  var grid = document.getElementById('brand-featured-grid');
-  var featured = _ht_brands.filter(function(b) { return b.is_featured; }).slice(0, 4);
-  if (featured.length === 0) {
-    document.getElementById('brand-featured-section').style.display = 'none';
-    return;
-  }
-  var html = '';
-  for (var i = 0; i < featured.length; i++) {
-    var b = featured[i];
-    var isFollowed = _ht_follows.has(b.id);
-    html += '<div class="brand-card featured" onclick="toggleBrandExpand(' + b.id + ',event)">' +
-      _brandLogoHtml(b, 56) +
-      '<div style="font-weight:700;font-size:14px;margin-bottom:4px;">' + _escHtml(b.brand_name) + '</div>' +
-      _segmentTag(b.segment) +
-      '<div style="margin-top:10px;">' +
-        '<button class="brand-follow-btn' + (isFollowed ? ' following' : '') + '" data-brand-id="' + b.id + '" onclick="toggleBrandFollow(' + b.id + ',event)">' +
-          (isFollowed ? 'Takipte' : 'Takip Et') +
-        '</button>' +
-      '</div>' +
-    '</div>';
-  }
-  grid.innerHTML = html;
-}
-
-// ── Brand list ──
-function renderBrandList(query) {
-  var container = document.getElementById('brand-list');
+// ── Card Grid ──
+function renderBrandGrid(query) {
+  var container = document.getElementById('brand-grid');
   if (!_ht_brands) { container.innerHTML = ''; return; }
 
   var q = trLower(query.trim());
-  var filtered = q ? _ht_brands.filter(function(b) {
-    return trLower(b.brand_name).indexOf(q) !== -1;
-  }) : _ht_brands;
+  var list = q
+    ? _ht_brands.filter(function(b) { return trLower(b.brand_name).indexOf(q) !== -1; })
+    : _ht_brands;
 
-  // Exclude featured from main list when not searching
-  if (!q) {
-    filtered = filtered.filter(function(b) { return !b.is_featured; });
-  }
-
-  if (filtered.length === 0) {
+  if (list.length === 0) {
     container.innerHTML = '<div class="brand-loading">' + (q ? 'Sonuç bulunamadı.' : 'Henüz marka verisi yok.') + '</div>';
     return;
   }
 
   var html = '';
-  for (var i = 0; i < filtered.length; i++) {
-    var b = filtered[i];
-    var isFollowed = _ht_follows.has(b.id);
-    var isExpanded = _ht_expanded_brand === b.id;
+  for (var i = 0; i < list.length; i++) {
+    var b = list[i];
+    var isF = _ht_follows.has(b.id);
 
-    html += '<div class="brand-row" data-brand-id="' + b.id + '" onclick="toggleBrandExpand(' + b.id + ',event)">' +
-      _brandLogoHtml(b, 42) +
-      '<div class="brand-row-info">' +
-        '<div class="brand-row-name">' + _escHtml(b.brand_name) + '</div>' +
-        '<div class="brand-row-sub">' + _segmentTag(b.segment) +
-          (b.store_count_tr ? ' · ' + b.store_count_tr + ' mağaza' : '') +
-        '</div>' +
+    html += '<div class="brand-card">' +
+      // Header: logo + follow btn
+      '<div class="brand-card-header">' +
+        _brandLogoHtml(b, 48) +
+        '<button class="brand-follow-btn' + (isF ? ' following' : '') + '" data-brand-id="' + b.id + '" onclick="toggleBrandFollow(' + b.id + ',event)">' +
+          (isF ? 'Takipte' : 'Takip Et') +
+        '</button>' +
       '</div>' +
-      '<button class="brand-follow-btn' + (isFollowed ? ' following' : '') + '" data-brand-id="' + b.id + '" onclick="toggleBrandFollow(' + b.id + ',event)">' +
-        (isFollowed ? 'Takipte' : 'Takip Et') +
-      '</button>' +
-    '</div>' +
-    '<div class="brand-expand' + (isExpanded ? ' open' : '') + '" id="brand-expand-' + b.id + '">' +
-      (isExpanded ? _buildExpandContent(b) : '') +
+      // Name + segment
+      '<div class="brand-card-name">' + _escHtml(b.brand_name) + '</div>' +
+      // Links
+      '<div class="brand-card-links">';
+
+    if (b.website_url) {
+      html += '<a class="brand-card-link" href="' + _escHtml(b.website_url) + '" target="_blank" rel="noopener" onclick="event.stopPropagation()">' +
+        '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>' +
+        _escHtml(_shortDomain(b.website_url)) + '</a>';
+    }
+    if (b.instagram_url) {
+      html += '<a class="brand-card-link" href="' + _escHtml(b.instagram_url) + '" target="_blank" rel="noopener" onclick="event.stopPropagation()">' +
+        '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>' +
+        _escHtml(_igHandle(b.instagram_url)) + '</a>';
+    }
+
+    html += '</div>' +
+      // Footer: incele btn
+      '<div class="brand-card-footer">' +
+        '<button class="brand-incele-btn" onclick="openBrandModal(' + b.id + ')">İncele</button>' +
+      '</div>' +
     '</div>';
   }
   container.innerHTML = html;
 }
 
-// ── Expand/collapse detail ──
-function toggleBrandExpand(brandId, event) {
-  // Don't expand if clicking follow button
-  if (event && event.target.closest && event.target.closest('.brand-follow-btn')) return;
+// ── Modal ──
+function openBrandModal(brandId) {
+  var b = _ht_brands.find(function(x) { return x.id === brandId; });
+  if (!b) return;
 
-  var wasOpen = _ht_expanded_brand === brandId;
+  var isF = _ht_follows.has(b.id);
+  var segLabel = _SEGMENT_TR[b.segment] || b.segment || '—';
 
-  // Close previous
-  if (_ht_expanded_brand) {
-    var prev = document.getElementById('brand-expand-' + _ht_expanded_brand);
-    if (prev) { prev.classList.remove('open'); prev.innerHTML = ''; }
-  }
-
-  if (wasOpen) {
-    _ht_expanded_brand = null;
-    return;
-  }
-
-  _ht_expanded_brand = brandId;
-  var el = document.getElementById('brand-expand-' + brandId);
-  if (!el) return;
-
-  var brand = _ht_brands.find(function(b) { return b.id === brandId; });
-  if (!brand) return;
-
-  el.innerHTML = _buildExpandContent(brand);
-  // Force reflow then open
-  el.offsetHeight;
-  el.classList.add('open');
-}
-
-function _buildExpandContent(b) {
-  var html = '<div class="brand-expand-inner">';
-
-  // Website
-  if (b.website_url) {
-    html += '<div class="brand-detail-item">' +
-      '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>' +
-      '<a href="' + _escHtml(b.website_url) + '" target="_blank" rel="noopener">Website</a></div>';
-  }
-
-  // Instagram
-  if (b.instagram_url) {
-    html += '<div class="brand-detail-item">' +
-      '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>' +
-      '<a href="' + _escHtml(b.instagram_url) + '" target="_blank" rel="noopener">Instagram</a></div>';
-  }
-
-  // Career page
-  if (b.career_url) {
-    html += '<div class="brand-detail-item">' +
-      '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>' +
-      '<a href="' + _escHtml(b.career_url) + '" target="_blank" rel="noopener">Kariyer Sayfası</a></div>';
-  }
-
-  // Store count + cities
-  if (b.store_count_tr) {
-    var cityText = b.store_count_tr + ' mağaza';
-    if (b.store_cities && b.store_cities.length > 0) {
-      cityText += ' · ' + b.store_cities.slice(0, 5).join(', ');
-      if (b.store_cities.length > 5) cityText += ' +' + (b.store_cities.length - 5);
-    }
-    html += '<div class="brand-detail-item">' +
-      '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>' +
-      '<span>' + _escHtml(cityText) + '</span></div>';
-  }
-
-  // Employee count
-  if (b.employee_count_tr) {
-    html += '<div class="brand-detail-item">' +
-      '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>' +
-      '<span>~' + b.employee_count_tr.toLocaleString('tr-TR') + ' çalışan (TR)</span></div>';
-  }
-
-  // HQ
-  if (b.hq_city) {
-    html += '<div class="brand-detail-item">' +
-      '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>' +
-      '<span>Merkez: ' + _escHtml(b.hq_city) + '</span></div>';
-  }
+  var html = '' +
+    // Head
+    '<div class="brand-modal-head">' +
+      _brandLogoHtml(b, 52) +
+      '<div class="brand-modal-head-info">' +
+        '<div class="brand-modal-head-name">' + _escHtml(b.brand_name) + '</div>' +
+        _segmentTag(b.segment) +
+      '</div>' +
+      '<button class="brand-modal-close" onclick="closeBrandModal()">Kapat</button>' +
+    '</div>' +
+    '<div class="brand-modal-body">' +
+      // Two-column info
+      '<div class="brand-modal-grid">' +
+        // Left: Genel Bilgiler
+        '<div class="brand-modal-section">' +
+          '<div class="brand-modal-section-title">Genel Bilgiler</div>' +
+          '<div class="brand-modal-row"><span class="brand-modal-row-label">Sektör</span><span class="brand-modal-row-value">' + _escHtml(segLabel) + '</span></div>' +
+          (b.employee_count_tr ? '<div class="brand-modal-row"><span class="brand-modal-row-label">Çalışan Sayısı</span><span class="brand-modal-row-value">~' + b.employee_count_tr.toLocaleString('tr-TR') + '</span></div>' : '') +
+          (b.hq_city ? '<div class="brand-modal-row"><span class="brand-modal-row-label">Merkez</span><span class="brand-modal-row-value">' + _escHtml(b.hq_city) + '</span></div>' : '') +
+        '</div>' +
+        // Right: TR Operasyonları
+        '<div class="brand-modal-section">' +
+          '<div class="brand-modal-section-title">Türkiye Operasyonları</div>' +
+          (b.store_count_tr ? '<div class="brand-modal-row"><span class="brand-modal-row-label">Mağaza Sayısı</span><span class="brand-modal-row-value">' + b.store_count_tr + '</span></div>' : '') +
+          (b.store_cities && b.store_cities.length > 0
+            ? '<div class="brand-modal-row" style="flex-direction:column;align-items:flex-start;gap:2px;"><span class="brand-modal-row-label">Şehirler</span><span class="brand-modal-row-value" style="text-align:left;">' + _escHtml(b.store_cities.join(', ')) + '</span></div>'
+            : '') +
+        '</div>' +
+      '</div>';
 
   // Description
   if (b.short_description) {
-    html += '<div class="brand-detail-desc">' + _escHtml(b.short_description) + '</div>';
+    html += '<div class="brand-modal-desc">' + _escHtml(b.short_description) + '</div>';
   }
 
-  html += '</div>';
-  return html;
+  // Actions: website + social
+  html += '<div class="brand-modal-actions">';
+  if (b.website_url) {
+    html += '<a class="brand-modal-website-btn" href="' + _escHtml(b.website_url) + '" target="_blank" rel="noopener">' +
+      '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>' +
+      'Web Sitesini Ziyaret Et</a>';
+  }
+  html += '<div class="brand-modal-social">';
+  if (b.instagram_url) {
+    html += '<a href="' + _escHtml(b.instagram_url) + '" target="_blank" rel="noopener" title="Instagram">' +
+      '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg></a>';
+  }
+  html += '</div></div>';
+
+  // Bottom: follow + close
+  html += '<div class="brand-modal-bottom">' +
+    '<button class="brand-modal-follow-btn' + (isF ? ' following' : '') + '" data-brand-id="' + b.id + '" onclick="toggleBrandFollow(' + b.id + ',event)">' +
+      (isF ? '✓ Takiptesin' : 'Takip Et') +
+    '</button>' +
+    '<button class="brand-modal-close-btn" onclick="closeBrandModal()">Kapat</button>' +
+  '</div>';
+
+  html += '</div>'; // modal-body
+
+  document.getElementById('brand-modal').innerHTML = html;
+  document.getElementById('brand-modal-overlay').style.display = 'flex';
+  document.body.style.overflow = 'hidden';
 }
+
+function closeBrandModal() {
+  document.getElementById('brand-modal-overlay').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+// Close on overlay click
+document.addEventListener('click', function(e) {
+  if (e.target.id === 'brand-modal-overlay') closeBrandModal();
+});
+// Close on ESC
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeBrandModal();
+});
 
 // ── Follow / Unfollow ──
 var _ht_follow_busy = false;
@@ -2437,13 +2401,12 @@ async function toggleBrandFollow(brandId, event) {
   _ht_follow_busy = true;
 
   var wasFollowed = _ht_follows.has(brandId);
-
-  // Optimistic UI
   if (wasFollowed) { _ht_follows.delete(brandId); } else { _ht_follows.add(brandId); }
-  _updateFollowButtons(brandId);
+
+  // Update all buttons for this brand (grid + modal)
+  _updateAllFollowBtns(brandId);
   renderBrandFollowChips();
 
-  // Persist
   var res;
   if (wasFollowed) {
     res = await supabase.from('candidate_brand_follows')
@@ -2455,23 +2418,27 @@ async function toggleBrandFollow(brandId, event) {
 
   if (res.error) {
     console.error('[HT] toggleBrandFollow failed', res.error);
-    // Revert
     if (wasFollowed) { _ht_follows.add(brandId); } else { _ht_follows.delete(brandId); }
-    _updateFollowButtons(brandId);
+    _updateAllFollowBtns(brandId);
     renderBrandFollowChips();
     _showBrandToast('Bir hata oluştu. Tekrar deneyin.');
   }
-
   _ht_follow_busy = false;
 }
 
-function _updateFollowButtons(brandId) {
-  var isFollowed = _ht_follows.has(brandId);
-  var buttons = document.querySelectorAll('.brand-follow-btn[data-brand-id="' + brandId + '"]');
-  for (var i = 0; i < buttons.length; i++) {
-    var btn = buttons[i];
-    btn.textContent = isFollowed ? 'Takipte' : 'Takip Et';
-    if (isFollowed) { btn.classList.add('following'); } else { btn.classList.remove('following'); }
+function _updateAllFollowBtns(brandId) {
+  var isF = _ht_follows.has(brandId);
+  // Card buttons
+  var btns = document.querySelectorAll('.brand-follow-btn[data-brand-id="' + brandId + '"]');
+  for (var i = 0; i < btns.length; i++) {
+    btns[i].textContent = isF ? 'Takipte' : 'Takip Et';
+    if (isF) btns[i].classList.add('following'); else btns[i].classList.remove('following');
+  }
+  // Modal follow button
+  var mBtn = document.querySelector('.brand-modal-follow-btn[data-brand-id="' + brandId + '"]');
+  if (mBtn) {
+    mBtn.textContent = isF ? '✓ Takiptesin' : 'Takip Et';
+    if (isF) mBtn.classList.add('following'); else mBtn.classList.remove('following');
   }
 }
 
@@ -2481,10 +2448,7 @@ function renderBrandFollowChips() {
   var chips = document.getElementById('brand-follows-chips');
   var countEl = document.getElementById('brand-follows-count');
 
-  if (!_ht_brands || _ht_follows.size === 0) {
-    card.style.display = 'none';
-    return;
-  }
+  if (!_ht_brands || _ht_follows.size === 0) { card.style.display = 'none'; return; }
 
   var followed = _ht_brands.filter(function(b) { return _ht_follows.has(b.id); });
   countEl.textContent = '(' + followed.length + ')';
@@ -2493,38 +2457,32 @@ function renderBrandFollowChips() {
   for (var i = 0; i < followed.length; i++) {
     var b = followed[i];
     var logoUrl = _brandLogoUrl(b);
-    var chipLogo = logoUrl
-      ? '<img src="' + _escHtml(logoUrl) + '" alt="" onerror="this.style.display=\'none\'">'
-      : '';
-    html += '<div class="brand-follow-chip">' + chipLogo + _escHtml(b.brand_name) + '</div>';
+    html += '<div class="brand-follow-chip">' +
+      (logoUrl ? '<img src="'+_escHtml(logoUrl)+'" alt="" onerror="this.style.display=\'none\'">' : '') +
+      _escHtml(b.brand_name) + '</div>';
   }
   chips.innerHTML = html;
   card.style.display = '';
 
-  // Update dashboard badge
   var badge = document.getElementById('sirket-follow-count');
   if (badge) {
     var span = badge.querySelector('.badge-count');
-    if (followed.length > 0) {
-      span.textContent = followed.length + ' takip';
-      badge.style.display = '';
-    } else {
-      badge.style.display = 'none';
-    }
+    if (followed.length > 0) { span.textContent = followed.length + ' takip'; badge.style.display = ''; }
+    else { badge.style.display = 'none'; }
   }
 }
 
 // ── Toast ──
 function _showBrandToast(msg) {
-  var existing = document.getElementById('brand-toast');
-  if (existing) existing.remove();
-  var toast = document.createElement('div');
-  toast.id = 'brand-toast';
-  toast.textContent = msg;
-  toast.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a1a2e;color:white;padding:10px 20px;border-radius:8px;font-size:13px;z-index:9999;opacity:0;transition:opacity 0.3s;';
-  document.body.appendChild(toast);
-  requestAnimationFrame(function() { toast.style.opacity = '1'; });
-  setTimeout(function() { toast.style.opacity = '0'; setTimeout(function() { toast.remove(); }, 300); }, 2500);
+  var ex = document.getElementById('brand-toast');
+  if (ex) ex.remove();
+  var t = document.createElement('div');
+  t.id = 'brand-toast';
+  t.textContent = msg;
+  t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a1a2e;color:white;padding:10px 20px;border-radius:8px;font-size:13px;z-index:9999;opacity:0;transition:opacity .3s;';
+  document.body.appendChild(t);
+  requestAnimationFrame(function() { t.style.opacity = '1'; });
+  setTimeout(function() { t.style.opacity = '0'; setTimeout(function() { t.remove(); }, 300); }, 2500);
 }
 
 function _escHtml(s) {
