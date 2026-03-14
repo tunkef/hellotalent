@@ -1283,3 +1283,73 @@ html[data-theme="dark"] .lok-modal #btn-lok-close:hover{
   box-shadow:0 0 0 3px rgba(201,78,40,0.25);
 }
 .lok-modal #btn-lok-done{border-radius:var(--radius-sm);}
+
+/* ═══════════════════════════════════════════════════════════
+   MARKALAR PANEL — Brand cards, search, follow, expand
+   ═══════════════════════════════════════════════════════════ */
+
+/* Search */
+.brand-search-wrap{position:relative;margin-bottom:16px;}
+.brand-search-wrap input{width:100%;padding:10px 12px 10px 38px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:14px;background:var(--bg);color:var(--text);transition:border-color .2s;}
+.brand-search-wrap input:focus{border-color:var(--verm);outline:none;box-shadow:0 0 0 3px rgba(201,78,40,0.08);}
+.brand-search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);pointer-events:none;opacity:0.35;}
+
+/* Featured grid */
+.brand-featured-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;}
+@media(max-width:600px){.brand-featured-grid{grid-template-columns:repeat(2,1fr);}}
+
+/* Brand card (shared between featured + list) */
+.brand-card{background:var(--card-bg,#fff);border:1.5px solid var(--border);border-radius:var(--radius);padding:16px;cursor:pointer;transition:border-color .2s,box-shadow .2s;}
+.brand-card:hover{border-color:var(--navy);box-shadow:0 2px 12px rgba(30,45,94,0.08);}
+.brand-card.featured{text-align:center;padding:20px 12px;}
+.brand-card.featured .brand-logo-wrap{margin:0 auto 10px;}
+
+/* Logo */
+.brand-logo-wrap{width:48px;height:48px;border-radius:12px;overflow:hidden;flex-shrink:0;background:var(--gray,#f3f2ef);display:flex;align-items:center;justify-content:center;}
+.brand-logo-wrap img{width:100%;height:100%;object-fit:contain;padding:4px;}
+.brand-logo-wrap .brand-initial{font-weight:700;font-size:18px;color:#fff;}
+.brand-card.featured .brand-logo-wrap{width:56px;height:56px;border-radius:14px;}
+
+/* Segment tag */
+.brand-segment{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:4px;text-transform:uppercase;letter-spacing:0.3px;font-family:var(--font-mono,'DM Mono',monospace);}
+.brand-segment.luxury{background:#1E2D5E;color:#fff;}
+.brand-segment.premium{background:#C94E28;color:#fff;}
+.brand-segment.mid{background:#3B82F6;color:#fff;}
+.brand-segment.mass{background:#10B981;color:#fff;}
+.brand-segment.sportswear{background:#F59E0B;color:#fff;}
+.brand-segment.beauty{background:#EC4899;color:#fff;}
+.brand-segment.tech{background:#6366F1;color:#fff;}
+
+/* Follow button */
+.brand-follow-btn{font-size:12px;font-weight:600;padding:5px 14px;border-radius:6px;border:1.5px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:all .2s;white-space:nowrap;}
+.brand-follow-btn:hover{border-color:var(--verm);color:var(--verm);}
+.brand-follow-btn.following{background:rgba(201,78,40,0.08);border-color:var(--verm);color:var(--verm);}
+
+/* List row */
+.brand-row{display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid var(--border-subtle,rgba(0,0,0,0.06));transition:background .15s;}
+.brand-row:last-child{border-bottom:none;}
+.brand-row:hover{background:rgba(0,0,0,0.015);border-radius:var(--radius-sm);}
+.brand-row-info{flex:1;min-width:0;}
+.brand-row-name{font-weight:600;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.brand-row-sub{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px;}
+
+/* Expand panel */
+.brand-expand{max-height:0;overflow:hidden;transition:max-height .35s ease,padding .35s ease;padding:0 0;}
+.brand-expand.open{max-height:500px;padding:14px 0 4px;}
+.brand-expand-inner{display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:13px;}
+@media(max-width:500px){.brand-expand-inner{grid-template-columns:1fr;}}
+.brand-detail-item{display:flex;align-items:center;gap:8px;color:var(--text);}
+.brand-detail-item svg{flex-shrink:0;opacity:0.5;}
+.brand-detail-item a{color:var(--verm);text-decoration:none;font-weight:500;}
+.brand-detail-item a:hover{text-decoration:underline;}
+.brand-detail-desc{grid-column:1/-1;color:var(--muted);font-size:12px;line-height:1.5;padding-top:4px;border-top:1px solid var(--border-subtle,rgba(0,0,0,0.06));}
+
+/* Follow chips */
+.brand-follows-card{margin-bottom:16px;}
+.brand-follows-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
+.brand-follow-chip{display:flex;align-items:center;gap:6px;padding:5px 12px;background:var(--gray,#f3f2ef);border-radius:8px;font-size:13px;font-weight:500;}
+.brand-follow-chip img{width:20px;height:20px;border-radius:5px;object-fit:contain;background:#fff;}
+.brand-follows-count-badge{opacity:0.5;font-weight:400;}
+
+/* Loading / empty */
+.brand-loading{text-align:center;padding:32px 0;color:var(--muted);font-size:13px;}
