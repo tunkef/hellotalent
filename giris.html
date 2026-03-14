@@ -427,7 +427,15 @@ async function loginAday() {
     return;
   }
 
-  // Başarılı → profil sayfasına git
+  // Role check: employer accounts cannot login from candidate tab
+  var userRole = data.user?.user_metadata?.role;
+  if (userRole === 'employer') {
+    await getSupa().auth.signOut();
+    errEl.textContent = 'Bu hesap bir işveren hesabıdır. Lütfen İK Girişi sekmesini kullanın.';
+    errEl.style.display = 'block';
+    btnText.textContent = 'Giriş Yap →';
+    return;
+  }
   window.location.href = 'profil.html';
 }
 
@@ -463,7 +471,15 @@ async function loginIK() {
     return;
   }
 
-  // Başarılı → İK dashboard'a git
+  // Role check: candidate accounts cannot login from employer tab
+  var userRole = data.user?.user_metadata?.role;
+  if (userRole !== 'employer') {
+    await getSupa().auth.signOut();
+    errEl.textContent = 'Bu hesap bir aday hesabıdır. İşveren girişi için şirket e-posta adresinizi kullanın.';
+    errEl.style.display = 'block';
+    btnText.textContent = 'Giriş Yap →';
+    return;
+  }
   window.location.href = 'ik.html';
 }
 

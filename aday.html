@@ -958,6 +958,15 @@ async function submitGiris(e){
   try{
     var r=await getSupa().auth.signInWithPassword({email:email,password:sifre});
     if(r.error)throw r.error;
+    // Role check: employer accounts cannot login from candidate form
+    var userRole=r.data.user?.user_metadata?.role;
+    if(userRole==='employer'){
+      await getSupa().auth.signOut();
+      err.textContent='Bu hesap bir işveren hesabıdır. Lütfen İK Girişi sayfasını kullanın.';
+      err.style.display='block';
+      btn.textContent='Giriş Yap →';btn.disabled=false;
+      return;
+    }
     window.location.href='profil.html';
   }catch(ex){
     err.textContent='E-posta veya şifre hatalı.';err.style.display='block';
