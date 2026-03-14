@@ -3101,6 +3101,11 @@ function reapplyDynamicFields() {
     return;
   }
   currentUser = sessionRes.data.session.user;
+  // Role guard: employer should not access candidate dashboard
+  if (currentUser.user_metadata && currentUser.user_metadata.role === 'employer') {
+    window.location.href = 'ik.html';
+    return;
+  }
   console.log('[HT] Session found for:', currentUser.email, '| id:', currentUser.id);
 
   // Sentry: set user context (id only — no PII)
