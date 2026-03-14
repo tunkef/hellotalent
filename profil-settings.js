@@ -604,4 +604,57 @@ document.addEventListener('DOMContentLoaded', function() {
     window.location.href = 'giris.html';
   });
 
+  // ── SESSION MANAGEMENT ──
+  (function(){
+    var deviceInfo = document.getElementById('session-device-info');
+    var loginTime = document.getElementById('session-login-time');
+
+    if(deviceInfo) {
+      var ua = navigator.userAgent;
+      var browser = 'Bilinmeyen Tarayıcı';
+      if(ua.indexOf('Chrome') > -1 && ua.indexOf('Edg') === -1) browser = 'Chrome';
+      else if(ua.indexOf('Safari') > -1 && ua.indexOf('Chrome') === -1) browser = 'Safari';
+      else if(ua.indexOf('Firefox') > -1) browser = 'Firefox';
+      else if(ua.indexOf('Edg') > -1) browser = 'Edge';
+
+      var os = 'Bilinmeyen İşletim Sistemi';
+      if(ua.indexOf('Mac') > -1) os = 'macOS';
+      else if(ua.indexOf('Windows') > -1) os = 'Windows';
+      else if(ua.indexOf('Linux') > -1) os = 'Linux';
+      else if(ua.indexOf('iPhone') > -1 || ua.indexOf('iPad') > -1) os = 'iOS';
+      else if(ua.indexOf('Android') > -1) os = 'Android';
+
+      deviceInfo.textContent = browser + ' — ' + os;
+    }
+
+    if(loginTime && typeof supabase !== 'undefined') {
+      supabase.auth.getSession().then(function(res) {
+        if(res.data && res.data.session) {
+          var created = new Date(res.data.session.created_at || res.data.session.expires_at);
+          if(!isNaN(created.getTime())) {
+            var options = { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' };
+            loginTime.textContent = 'Giriş: ' + created.toLocaleDateString('tr-TR', options);
+          }
+        }
+      });
+    }
+
+    var btnSignoutAll = document.getElementById('btn-signout-all');
+    if(btnSignoutAll) btnSignoutAll.addEventListener('click', async function(){
+      var msg = document.getElementById('signout-all-msg');
+      if(!confirm('Tüm cihazlardaki oturumlarınız kapatılacak. Emin misiniz?')) return;
+      btnSignoutAll.disabled = true;
+      btnSignoutAll.textContent = 'Çıkış yapılıyor...';
+      try {
+        var _res = await supabase.auth.signOut({ scope: 'global' });
+        if(_res.error) throw _res.error;
+        window.location.href = 'giris.html';
+      } catch(err) {
+        if(msg) { msg.style.color = 'var(--red)'; msg.textContent = 'Hata: ' + err.message; msg.style.display = 'block'; }
+        btnSignoutAll.disabled = false;
+        btnSignoutAll.textContent = 'Tüm Cihazlardan Çıkış Yap';
+      }
+    });
+  })();
+
 });
