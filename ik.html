@@ -595,6 +595,13 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
           </div>
 
           <div class="filter-group">
+            <span class="filter-label">Aktif Arayanlar</span>
+            <div class="filter-chips">
+              <div class="chip" id="filter-chip-aktif-arayanlar" onclick="toggleAktifArayanlar(this)">Aktif İş Arıyor</div>
+            </div>
+          </div>
+
+          <div class="filter-group">
             <span class="filter-label">Pozisyon</span>
             <div class="filter-chips" id="filter-pozisyon">
               <div class="chip" data-val="Store Manager" onclick="toggleChip(this,'pozisyon')">Store Manager</div>
@@ -1168,7 +1175,7 @@ var currentUser = null;
 var hrProfile = {};
 var favorites = JSON.parse(localStorage.getItem('ht_ik_favs') || '[]');
 var pozisyonlar = JSON.parse(localStorage.getItem('ht_pozisyonlar') || '[]');
-var filterState = { pozisyon:[], segment:[], musait:[], calisma:[], egitim:[], dil:[] };
+var filterState = { pozisyon:[], segment:[], musait:[], calisma:[], egitim:[], dil:[], aktifArayanlar: false };
 
 // ── ADAYLAR (live from Supabase) ──
 var ADAYLAR = []; // Will be populated from Supabase
@@ -1207,7 +1214,7 @@ async function loadLiveCandidates(){
   try {
     var sb = getSupa();
     if(!sb){ throw new Error('Supabase bağlantısı yok'); }
-    var { data: rows, error: err } = await sb.from('candidates').select('id, full_name, adres_il, avatar_url, telefon, email, is_active, profile_completed, hide_from_current_employer').eq('is_active', true).eq('profile_completed', true);
+    var { data: rows, error: err } = await sb.from('candidates').select('id, full_name, adres_il, avatar_url, telefon, email, is_active, profile_completed, hide_from_current_employer, is_actively_looking').eq('is_active', true).eq('profile_completed', true);
     if(err) throw err;
     if(!rows || rows.length === 0){ ADAYLAR = []; renderCandidates(ADAYLAR); return; }
     // ── Blocked companies filter ──
@@ -1274,7 +1281,8 @@ async function loadLiveCandidates(){
         tel: maskPhone(c.telefon),
         email: maskEmail(c.email),
         brand: (exp0 && (exp0.marka || exp0.sirket)) ? (exp0.marka || exp0.sirket) : '',
-        maas: (workPrefs && workPrefs.maas_beklenti) ? workPrefs.maas_beklenti + ' TL' : ''
+        maas: (workPrefs && workPrefs.maas_beklenti) ? workPrefs.maas_beklenti + ' TL' : '',
+        aktifAriyor: c.is_actively_looking === true
       };
     });
     renderCandidates(ADAYLAR);
@@ -1459,7 +1467,7 @@ function candidateCardHTML(c){
     +'<div class="cc-top">'
     +'<div class="cc-avatar blur" style="background:'+c.color+'">'+c.initials+'</div>'
     +'<div class="cc-info">'
-    +'<div class="cc-name">'+c.ad[0]+'. '+c.soyad+'</div>'
+    +'<div class="cc-name">'+c.ad[0]+'. '+c.soyad+(c.aktifAriyor ? '<span style="display:inline-block;background:#DCFCE7;color:#16A34A;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;margin-left:6px;">Aktif Arıyor</span>' : '')+'</div>'
     +'<div class="cc-pos">'+c.pozisyon+' · '+c.exp+' yıl deneyim</div>'
     +'</div>'
     +'<span style="font-size:11px;font-weight:700;color:var(--muted);background:var(--bg);padding:3px 9px;border-radius:20px;white-space:nowrap;flex-shrink:0;">'+c.brand+'</span>'
@@ -1529,6 +1537,11 @@ function closeFilterSheet(){
 }
 
 // ── FİLTRE ──
+function toggleAktifArayanlar(el){
+  filterState.aktifArayanlar = !filterState.aktifArayanlar;
+  if(el) el.classList.toggle('selected', filterState.aktifArayanlar);
+  applyFilters();
+}
 function toggleChip(el, type){
   el.classList.toggle('selected');
   var val = el.getAttribute('data-val');
@@ -1544,6 +1557,7 @@ function applyFilters(){
   var expMax = parseInt(document.getElementById('filter-exp-max').value) || 99;
 
   var result = ADAYLAR.filter(function(c){
+    if(filterState.aktifArayanlar && !c.aktifAriyor) return false;
     if(filterState.pozisyon.length && filterState.pozisyon.indexOf(c.pozisyon)===-1) return false;
     if(sehir && c.sehir !== sehir) return false;
     if(c.exp < expMin || c.exp > expMax) return false;
@@ -1558,17 +1572,19 @@ function applyFilters(){
     return true;
   });
   // aktif filtre sayısı güncelle
-  var activeCount = filterState.pozisyon.length + filterState.segment.length + filterState.musait.length + filterState.calisma.length + filterState.egitim.length + filterState.dil.length + (sehir?1:0);
+  var activeCount = (filterState.aktifArayanlar ? 1 : 0) + filterState.pozisyon.length + filterState.segment.length + filterState.musait.length + filterState.calisma.length + filterState.egitim.length + filterState.dil.length + (sehir?1:0);
   var badge = document.getElementById('filter-active-count');
   if(badge){ badge.textContent = activeCount; badge.style.display = activeCount>0?'':'none'; }
   renderCandidates(result);
 }
 
 function resetFilters(){
-  filterState = {pozisyon:[],segment:[],musait:[],calisma:[],egitim:[],dil:[]};
+  filterState = {pozisyon:[],segment:[],musait:[],calisma:[],egitim:[],dil:[],aktifArayanlar:false};
   var badge = document.getElementById('filter-active-count');
   if(badge){ badge.textContent='0'; badge.style.display='none'; }
   document.querySelectorAll('.chip.selected').forEach(function(c){c.classList.remove('selected');});
+  var chipAl = document.getElementById('filter-chip-aktif-arayanlar');
+  if(chipAl) chipAl.classList.remove('selected');
   document.getElementById('filter-sehir').value='';
   document.getElementById('filter-exp-min').value='';
   document.getElementById('filter-exp-max').value='';

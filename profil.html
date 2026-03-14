@@ -2190,6 +2190,17 @@ html[data-theme="dark"] .lok-modal #btn-lok-close:hover{
     <p style="font-size:12px;color:var(--muted);margin-top:8px;line-height:1.5;">
       Bu ayar açıkken profiliniz ve yüklediğiniz CV, doğrulanmış işverenler tarafından görüntülenebilir. Kapatıldığında hem profiliniz hem CV'niz tamamen gizlenir.
     </p>
+    <div class="field" style="display:flex;align-items:center;gap:12px;margin-top:16px;padding-top:16px;border-top:1px solid var(--border);">
+      <label class="toggle">
+        <input type="checkbox" id="settings-actively-looking">
+        <span class="toggle-slider"></span>
+      </label>
+      <div>
+        <label for="settings-actively-looking" style="margin:0;cursor:pointer;font-weight:500;">Aktif İş Arıyorum</label>
+        <p style="font-size:11px;color:var(--muted);margin:2px 0 0;">Bu ayar açıkken profilinizde "Aktif Arıyor" rozeti görünür ve işverenler sizi öncelikli olarak görür.</p>
+      </div>
+    </div>
+    <div id="actively-looking-msg" style="font-size:12px;margin-top:8px;display:none;"></div>
   </div>
 
   <div class="card" style="margin-top:16px;" id="settings-notifications-card">
@@ -2244,6 +2255,47 @@ html[data-theme="dark"] .lok-modal #btn-lok-close:hover{
     <div id="notifications-msg" style="font-size:12px;margin-top:8px;display:none;"></div>
   </div>
 
+  <div class="card" style="margin-top:16px;" id="settings-contact-prefs-card">
+    <div class="card-title">İletişim Tercihleri</div>
+    <div class="wiz-step-desc" style="margin-top:4px;">İşverenler size hangi kanallardan ulaşabilsin?</div>
+
+    <div class="field" style="display:flex;align-items:center;gap:12px;margin-top:12px;">
+      <label class="toggle">
+        <input type="checkbox" id="settings-contact-email" checked>
+        <span class="toggle-slider"></span>
+      </label>
+      <div>
+        <label for="settings-contact-email" style="margin:0;cursor:pointer;font-weight:500;">E-posta</label>
+        <p style="font-size:11px;color:var(--muted);margin:2px 0 0;">İşverenler e-posta adresiniz üzerinden iletişime geçebilir.</p>
+      </div>
+    </div>
+
+    <div class="field" style="display:flex;align-items:center;gap:12px;margin-top:12px;">
+      <label class="toggle">
+        <input type="checkbox" id="settings-contact-phone">
+        <span class="toggle-slider"></span>
+      </label>
+      <div>
+        <label for="settings-contact-phone" style="margin:0;cursor:pointer;font-weight:500;">Telefon</label>
+        <p style="font-size:11px;color:var(--muted);margin:2px 0 0;">İşverenler telefon numaranız üzerinden arayabilir.</p>
+      </div>
+    </div>
+
+    <div class="field" style="display:flex;align-items:center;gap:12px;margin-top:12px;">
+      <label class="toggle">
+        <input type="checkbox" id="settings-contact-whatsapp">
+        <span class="toggle-slider"></span>
+      </label>
+      <div>
+        <label for="settings-contact-whatsapp" style="margin:0;cursor:pointer;font-weight:500;">WhatsApp</label>
+        <p style="font-size:11px;color:var(--muted);margin:2px 0 0;">İşverenler WhatsApp üzerinden mesaj gönderebilir.</p>
+      </div>
+    </div>
+
+    <button class="btn btn-primary btn-sm" id="btn-save-contact-prefs" style="margin-top:16px;">İletişim Tercihlerini Kaydet</button>
+    <div id="contact-prefs-msg" style="font-size:12px;margin-top:8px;display:none;"></div>
+  </div>
+
   <div class="card" style="margin-top:16px;display:none;" id="settings-blocked-companies-card">
     <div class="card-title">Engellenen Şirketler</div>
     <div class="wiz-step-desc" style="margin-top:4px;">Profilinizi görmesini istemediğiniz şirketleri ekleyin. Bu şirketlerin İK ekipleri sizi aday havuzunda göremez.</div>
@@ -2284,6 +2336,16 @@ html[data-theme="dark"] .lok-modal #btn-lok-close:hover{
     <div class="card-title">Hesap Yönetimi</div>
 
     <div id="account-status-banner" style="display:none;padding:12px;border-radius:8px;margin-bottom:12px;font-size:13px;"></div>
+
+    <div class="field" style="margin-top:8px;padding-bottom:16px;border-bottom:1px solid var(--border);">
+      <button class="btn btn-secondary btn-sm" id="btn-download-data" style="width:100%;">
+        Verilerimi İndir (KVKK md.11)
+      </button>
+      <p style="font-size:11px;color:var(--muted);margin-top:4px;line-height:1.4;">
+        Tüm kişisel verilerinizi JSON formatında indirin. Bu dosya profil bilgilerinizi, deneyimlerinizi, eğitim bilgilerinizi ve tercihlerinizi içerir.
+      </p>
+      <div id="download-data-msg" style="font-size:12px;margin-top:8px;display:none;"></div>
+    </div>
 
     <div class="field" style="margin-top:8px;">
       <button class="btn btn-secondary btn-sm" id="btn-freeze-account" style="width:100%;">
@@ -2884,6 +2946,14 @@ function _doSwitchPanel(name) {
     if (ne && _loadedDBData && _loadedDBData.profile) ne.checked = _loadedDBData.profile.notify_email_messages !== false;
     var nj = document.getElementById('settings-notify-email-jobs');
     if (nj && _loadedDBData && _loadedDBData.profile) nj.checked = _loadedDBData.profile.notify_email_jobs !== false;
+    var ce = document.getElementById('settings-contact-email');
+    if(ce && _loadedDBData && _loadedDBData.profile) ce.checked = _loadedDBData.profile.contact_pref_email !== false;
+    var cp = document.getElementById('settings-contact-phone');
+    if(cp && _loadedDBData && _loadedDBData.profile) cp.checked = _loadedDBData.profile.contact_pref_phone === true;
+    var cw = document.getElementById('settings-contact-whatsapp');
+    if(cw && _loadedDBData && _loadedDBData.profile) cw.checked = _loadedDBData.profile.contact_pref_whatsapp === true;
+    var al = document.getElementById('settings-actively-looking');
+    if(al && _loadedDBData && _loadedDBData.profile) al.checked = _loadedDBData.profile.is_actively_looking === true;
     if (window._htLoadBlockedCompanies) window._htLoadBlockedCompanies();
   }
   // Close mobile sidebar
@@ -3636,6 +3706,121 @@ document.addEventListener('DOMContentLoaded', function() {
       } finally {
         btn.disabled = false;
         btn.textContent = 'Bildirim Tercihlerini Kaydet';
+      }
+    });
+  })();
+
+  // ── CONTACT PREFERENCES SAVE ──
+  (function(){
+    var btn = document.getElementById('btn-save-contact-prefs');
+    if(!btn) return;
+    btn.addEventListener('click', async function(){
+      var msg = document.getElementById('contact-prefs-msg');
+      msg.style.display='none';
+      btn.disabled = true;
+      btn.textContent = 'Kaydediliyor...';
+      try {
+        var { error } = await supabase
+          .from('candidates')
+          .update({
+            contact_pref_email: document.getElementById('settings-contact-email').checked,
+            contact_pref_phone: document.getElementById('settings-contact-phone').checked,
+            contact_pref_whatsapp: document.getElementById('settings-contact-whatsapp').checked
+          })
+          .eq('user_id', currentUser.id);
+        if(error) throw error;
+        msg.style.color='var(--green)'; msg.textContent='İletişim tercihleri kaydedildi.'; msg.style.display='block';
+      } catch(e) {
+        msg.style.color='var(--red)'; msg.textContent='Hata: ' + e.message; msg.style.display='block';
+      } finally {
+        btn.disabled = false; btn.textContent = 'İletişim Tercihlerini Kaydet';
+      }
+    });
+  })();
+
+  // ── ACTIVELY LOOKING TOGGLE ──
+  (function(){
+    var toggle = document.getElementById('settings-actively-looking');
+    if(!toggle) return;
+    toggle.addEventListener('change', async function(){
+      var msg = document.getElementById('actively-looking-msg');
+      msg.style.display='none';
+      try {
+        var { error } = await supabase
+          .from('candidates')
+          .update({ is_actively_looking: toggle.checked })
+          .eq('user_id', currentUser.id);
+        if(error) throw error;
+        if(_loadedDBData && _loadedDBData.profile) _loadedDBData.profile.is_actively_looking = toggle.checked;
+        msg.style.color='var(--green)';
+        msg.textContent = toggle.checked ? 'Aktif arama modu açıldı.' : 'Aktif arama modu kapatıldı.';
+        msg.style.display='block';
+        setTimeout(function(){ msg.style.display='none'; }, 3000);
+      } catch(e) {
+        msg.style.color='var(--red)'; msg.textContent='Hata: ' + e.message; msg.style.display='block';
+        toggle.checked = !toggle.checked;
+      }
+    });
+  })();
+
+  // ── DOWNLOAD MY DATA (KVKK md.11) ──
+  (function(){
+    var btn = document.getElementById('btn-download-data');
+    if(!btn) return;
+    btn.addEventListener('click', async function(){
+      var msg = document.getElementById('download-data-msg');
+      msg.style.display='none';
+      btn.disabled = true;
+      btn.textContent = 'Veriler hazırlanıyor...';
+      try {
+        if(!currentUser) throw new Error('Oturum bulunamadı');
+        var cid = _loadedDBData && _loadedDBData.profile ? _loadedDBData.profile.id : null;
+        if(!cid) throw new Error('Profil bulunamadı');
+
+        var [profile, experiences, education, languages, certificates, targetRoles, workPrefs, locationPrefs, brandInterests, blockedCompanies] = await Promise.all([
+          supabase.from('candidates').select('*').eq('id', cid).maybeSingle(),
+          supabase.from('candidate_experiences').select('*').eq('candidate_id', cid),
+          supabase.from('candidate_education').select('*').eq('candidate_id', cid),
+          supabase.from('candidate_languages').select('*').eq('candidate_id', cid),
+          supabase.from('candidate_certificates').select('*').eq('candidate_id', cid),
+          supabase.from('candidate_target_roles').select('*').eq('candidate_id', cid),
+          supabase.from('candidate_work_preferences').select('*').eq('candidate_id', cid),
+          supabase.from('candidate_location_preferences').select('*').eq('candidate_id', cid),
+          supabase.from('candidate_brand_interests').select('*').eq('candidate_id', cid),
+          supabase.from('candidate_blocked_companies').select('*, companies(company_name)').eq('candidate_id', cid)
+        ]);
+
+        var exportData = {
+          export_date: new Date().toISOString(),
+          export_version: '1.0',
+          user_email: currentUser.email,
+          profile: profile.data,
+          experiences: experiences.data || [],
+          education: education.data || [],
+          languages: languages.data || [],
+          certificates: certificates.data || [],
+          target_roles: targetRoles.data || [],
+          work_preferences: workPrefs.data || [],
+          location_preferences: locationPrefs.data || [],
+          brand_interests: brandInterests.data || [],
+          blocked_companies: blockedCompanies.data || []
+        };
+
+        var blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = 'hellotalent-verilerim-' + new Date().toISOString().slice(0,10) + '.json';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        msg.style.color='var(--green)'; msg.textContent='Verileriniz indirildi.'; msg.style.display='block';
+      } catch(e) {
+        msg.style.color='var(--red)'; msg.textContent='Hata: ' + e.message; msg.style.display='block';
+      } finally {
+        btn.disabled = false; btn.textContent = 'Verilerimi İndir (KVKK md.11)';
       }
     });
   })();
