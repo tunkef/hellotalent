@@ -1144,7 +1144,8 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
 // ── SUPABASE ──
 var _supa = null;
 function getSupa(){
-  // Supabase config — must match shared.js HT_SUPA_URL / HT_SUPA_KEY
+  // Supabase config — single source: shared.js
+  // If URL/KEY change, update shared.js AND these 3 files: profil.html, ik.html, giris.html
   var HT_SUPA_URL = 'https://cpwibefquojehjehtrog.supabase.co';
   var HT_SUPA_KEY = 'sb_publishable_POUtNwJyjAAheukwYP5hmA_TKKjphwa';
   if(!_supa) _supa = supabase.createClient(HT_SUPA_URL, HT_SUPA_KEY);
@@ -1792,11 +1793,6 @@ async function saveSirket(){
     var {error} = await getSupa().from('hr_profiles').upsert(payload, {onConflict:'id'});
     if(error){
       console.error('hr_profiles upsert error:', error.message);
-      // Fallback — sadece core alanları kaydet (yeni kolonlar migration bekliyorsa)
-      var core = {id:payload.id, sirket:payload.sirket, ad:payload.ad, soyad:payload.soyad, email:payload.email};
-      var res2 = await getSupa().from('hr_profiles').upsert(core, {onConflict:'id'});
-      error = res2.error;
-      if(!error) console.log('Fallback save OK — yeni kolonlar SQL migration bekliyor');
     }
     if(saveBtn) saveBtn.textContent = 'Profili Kaydet';
     if(error){ 

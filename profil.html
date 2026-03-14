@@ -15,7 +15,7 @@
 <script>
 if (window.Sentry) {
   Sentry.init({
-    dsn: 'https://b328344c354760e181837cc370ba338e@o4511026567118848.ingest.de.sentry.io/4511026577342544', // TODO: replace with your actual Sentry DSN
+    dsn: 'https://b328344c354760e181837cc370ba338e@o4511026567118848.ingest.de.sentry.io/4511026577342544',
     environment: location.hostname === 'localhost' ? 'development' : 'production',
     sampleRate: 1.0,
     // No performance/session replay — keep it lightweight
@@ -2320,7 +2320,9 @@ html[data-theme="dark"] .lok-modal #btn-lok-close:hover{
 // ── SUPABASE CLIENT ──
 // Use var to avoid Safari SyntaxError: "Can't create duplicate variable that shadows a global property"
 // window.supabase is set by the CDN script; const/let would shadow it and crash in Safari.
-// Supabase config — must match shared.js HT_SUPA_URL / HT_SUPA_KEY
+// Supabase config — single source: shared.js HT_SUPA_URL / HT_SUPA_KEY
+// These pages create their own client because they need auth before shared.js header injection.
+// If URL/KEY change, update shared.js AND these 3 files: profil.html, ik.html, giris.html
 var SUPABASE_URL = 'https://cpwibefquojehjehtrog.supabase.co';
 var SUPABASE_KEY = 'sb_publishable_POUtNwJyjAAheukwYP5hmA_TKKjphwa';
 var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -2962,11 +2964,6 @@ function clearDraft() {
 }
 function applyDraft(draft) {
   if (!draft) return;
-  console.log('[HT] applyDraft: experiences=' + (draft.experiences ? draft.experiences.length : 0) +
-    ', education=' + (draft.education ? draft.education.length : 0) +
-    ', languages=' + (draft.languages ? draft.languages.length : 0) +
-    ', certificates=' + (draft.certificates ? draft.certificates.length : 0) +
-    ', target_roles=' + (draft.target_roles ? draft.target_roles.length : 0));
   // Step 1: Profile fields
   if (draft.profile) {
     setVal('f-adsoyad', draft.profile.full_name);
@@ -3207,7 +3204,6 @@ function reapplyDynamicFields() {
 // ═══════════════════════════════════════════════════
 
 (async function() {
-  console.log('[HT] Auth bootstrap: checking session...');
   console.time('[HT] total-load');
   var sessionRes = await supabase.auth.getSession();
   if (!sessionRes.data.session) {
@@ -3222,8 +3218,6 @@ function reapplyDynamicFields() {
     window.location.href = 'ik.html';
     return;
   }
-  console.log('[HT] Session found for:', currentUser.email, '| id:', currentUser.id);
-
   // Sentry: set user context (id only — no PII)
   if (window.Sentry) Sentry.setUser({ id: currentUser.id });
 
@@ -3251,17 +3245,10 @@ function reapplyDynamicFields() {
   document.getElementById('dash-welcome-name').textContent = 'Hos geldin, ' + fallbackName.split(' ')[0] + '!';
 
   // Try loading profile data from DB
-  console.log('[HT] >>> loadProfileFromDB starting...');
   var dbData = await loadProfileFromDB();
   _loadedDBData = dbData; // Store for post-init re-apply
-  console.log('[HT] >>> loadProfileFromDB done. Result:', dbData ? 'DATA FOUND' : 'NULL');
   if (dbData) {
-    console.log('[HT] >>> applyDraft starting. exp-cards-container children BEFORE:',
-      (document.getElementById('exp-cards-container') || {}).children
-        ? document.getElementById('exp-cards-container').children.length : 'N/A');
     applyDraft(dbData); // reuse applyDraft to populate all fields
-    console.log('[HT] >>> applyDraft done. exp-cards-container children AFTER:',
-      document.getElementById('exp-cards-container').children.length);
     if (dbData.profile && dbData.profile.avatar_url) setAvatarImage(dbData.profile.avatar_url);
     if (dbData.profile && dbData.profile.full_name) {
       var n = dbData.profile.full_name;
@@ -3293,7 +3280,6 @@ function reapplyDynamicFields() {
       var dbEmail = _loadedDBData.profile.email || '';
       if (dbEmail && dbEmail !== currentUser.email) {
         await supabase.from('candidates').update({ email: currentUser.email }).eq('user_id', currentUser.id);
-        console.log('[HT] Email auto-synced: ' + dbEmail + ' → ' + currentUser.email);
       }
     }
     // ── Final DOM state snapshot ──
@@ -3302,9 +3288,6 @@ function reapplyDynamicFields() {
       var lc = document.getElementById('lang-rows-container');
       var edc = document.getElementById('edu-rows-container');
       var activePanel = document.querySelector('.panel.active');
-      console.log('[HT] === FINAL DOM STATE (500ms) === wizStep=' + wizStep +
-        ' panel=' + (activePanel ? activePanel.id : 'none'));
-      console.log('[HT] exp-cards:', ec ? ec.children.length : 0);
       if (ec && ec.children.length) {
         var c = ec.children[0];
         var s = c.querySelector('input[id$="-sirket"]');
@@ -3313,28 +3296,16 @@ function reapplyDynamicFields() {
         var seg = c.querySelector('select[id$="-segment"]');
         var ist = c.querySelector('select[id$="-istihdam"]');
         var bay = c.querySelector('select[id$="-basay"]');
-        console.log('[HT]   exp[0] sirket=' + (s ? JSON.stringify(s.value) : '-') +
-          ' pozisyon=' + (p ? JSON.stringify(p.value) : '-') +
-          ' departman=' + (dep ? JSON.stringify(dep.value) : '-') +
-          ' segment=' + (seg ? JSON.stringify(seg.value) : '-') +
-          ' istihdam=' + (ist ? JSON.stringify(ist.value) : '-') +
-          ' basAy=' + (bay ? JSON.stringify(bay.value) : '-'));
       }
-      console.log('[HT] lang-rows:', lc ? lc.children.length : 0);
       if (lc && lc.children.length) {
         var lr = lc.children[0];
         var dil = lr.querySelector('select[id$="-dil"]');
         var sev = lr.querySelector('select[id$="-seviye"]');
-        console.log('[HT]   lang[0] dil=' + (dil ? JSON.stringify(dil.value) : '-') +
-          ' seviye=' + (sev ? JSON.stringify(sev.value) : '-'));
       }
-      console.log('[HT] edu-rows:', edc ? edc.children.length : 0);
       if (edc && edc.children.length) {
         var er = edc.children[0];
         var sev2 = er.querySelector('select[id$="-seviye"]');
         var okul = er.querySelector('input[id$="-okul"]');
-        console.log('[HT]   edu[0] seviye=' + (sev2 ? JSON.stringify(sev2.value) : '-') +
-          ' okul=' + (okul ? JSON.stringify(okul.value) : '-'));
       }
     }, 500);
   } else {
@@ -3960,20 +3931,14 @@ document.addEventListener('DOMContentLoaded', function() {
   initCVUpload();
 
   // ══ STEP INITS ══
-  console.log('[HT] >>> DOMContentLoaded: running initStep1-5...');
   initStep1();
   initStep2();
-  console.log('[HT] >>> after initStep2: exp-cards-container children=',
-    (document.getElementById('exp-cards-container') || {children:[]}).children.length,
-    '| lang-rows-container children=',
-    (document.getElementById('lang-rows-container') || {children:[]}).children.length);
   initStep3();
   initStep4();
   initStep5();
 
   // Re-apply DB values to selects/chips that were just created by initStep1/4/5.
   // Covers the race where applyDraft ran before these options/chips existed.
-  console.log('[HT] >>> reapplyDynamicFields: _loadedDBData is', _loadedDBData ? 'SET' : 'NULL');
   reapplyDynamicFields();
   console.timeEnd('[HT] total-load');
 
@@ -4182,7 +4147,6 @@ function addExperienceCard(data) {
   card.dataset.expId = expCounter;
 
   var d = data || {};
-  console.log('[HT] addExperienceCard: data=' + (data ? JSON.stringify({sirket: d.sirket || d.sirket_adi, pozisyon: d.pozisyon, departman: d.departman}) : 'EMPTY'));
   // Normalize: accept both DB dialect (sirket) and UI dialect (sirket_adi)
   if (!d.sirket_adi && d.sirket) d.sirket_adi = d.sirket;
 
@@ -5522,7 +5486,6 @@ async function loadProfileFromDB() {
   }
   var cand = candRes.data;
   var cid = cand.id;
-  console.log('[HT] loadProfileFromDB: found candidate id=' + cid);
 
   // Parallel fetch all child tables
   var [expRes, eduRes, certRes, langRes, roleRes, wpRes, biRes, locRes] = await Promise.all([
@@ -5558,9 +5521,7 @@ async function loadProfileFromDB() {
         '| code:', r.error.code, '| hint:', r.error.hint || '-',
         '| status:', r.status, '| details:', r.error.details || '-');
     } else if (Array.isArray(r.data)) {
-      console.log('[HT] ' + key + ' → ' + r.data.length + ' rows');
     } else if (r.data) {
-      console.log('[HT] ' + key + ' → 1 record');
     } else {
       // .single() returns data:null + no error when 0 rows (PGRST116)
       console.warn('[HT] ' + key + ' → null (no rows or unexpected shape)');
@@ -6187,7 +6148,6 @@ function _avatarColor(name) {
 async function loadSirketlerPanel() {
   if (_ht_sirketler_loaded) return;
   _ht_sirketler_loaded = true;
-  console.log('[HT] loadSirketlerPanel: fetching brands + follows...');
 
   // Get candidate ID (needed for follows query)
   if (!_ht_candidate_id && currentUser) {
@@ -6212,8 +6172,6 @@ async function loadSirketlerPanel() {
     return trLower(a.brand_name).localeCompare(trLower(b.brand_name), 'tr');
   });
   _ht_follows = new Set((followsRes.data || []).map(function(f) { return f.company_id; }));
-
-  console.log('[HT] loadSirketlerPanel: ' + _ht_brands.length + ' brands, ' + _ht_follows.size + ' follows');
 
   renderSirketList('');
   renderSirketFollowChips();

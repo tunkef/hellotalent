@@ -355,7 +355,8 @@
 let _supa = null;
 function getSupa() {
   if (!_supa) {
-    // Supabase config — must match shared.js HT_SUPA_URL / HT_SUPA_KEY
+    // Supabase config — single source: shared.js
+    // If URL/KEY change, update shared.js AND these 3 files: profil.html, ik.html, giris.html
     _supa = supabase.createClient(
       'https://cpwibefquojehjehtrog.supabase.co',
       'sb_publishable_POUtNwJyjAAheukwYP5hmA_TKKjphwa'
