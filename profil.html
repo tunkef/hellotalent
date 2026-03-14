@@ -2209,6 +2209,7 @@ html[data-theme="dark"] .lok-modal #btn-lok-close:hover{
 // ── SUPABASE CLIENT ──
 // Use var to avoid Safari SyntaxError: "Can't create duplicate variable that shadows a global property"
 // window.supabase is set by the CDN script; const/let would shadow it and crash in Safari.
+// Supabase config — must match shared.js HT_SUPA_URL / HT_SUPA_KEY
 var SUPABASE_URL = 'https://cpwibefquojehjehtrog.supabase.co';
 var SUPABASE_KEY = 'sb_publishable_POUtNwJyjAAheukwYP5hmA_TKKjphwa';
 var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);

@@ -1144,10 +1144,10 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
 // ── SUPABASE ──
 var _supa = null;
 function getSupa(){
-  if(!_supa) _supa = supabase.createClient(
-    'https://cpwibefquojehjehtrog.supabase.co',
-    'sb_publishable_POUtNwJyjAAheukwYP5hmA_TKKjphwa'
-  );
+  // Supabase config — must match shared.js HT_SUPA_URL / HT_SUPA_KEY
+  var HT_SUPA_URL = 'https://cpwibefquojehjehtrog.supabase.co';
+  var HT_SUPA_KEY = 'sb_publishable_POUtNwJyjAAheukwYP5hmA_TKKjphwa';
+  if(!_supa) _supa = supabase.createClient(HT_SUPA_URL, HT_SUPA_KEY);
   return _supa;
 }
 

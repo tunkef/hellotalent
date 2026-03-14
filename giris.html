@@ -355,6 +355,7 @@
 let _supa = null;
 function getSupa() {
   if (!_supa) {
+    // Supabase config — must match shared.js HT_SUPA_URL / HT_SUPA_KEY
     _supa = supabase.createClient(
       'https://cpwibefquojehjehtrog.supabase.co',
       'sb_publishable_POUtNwJyjAAheukwYP5hmA_TKKjphwa'
