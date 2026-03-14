@@ -1198,6 +1198,24 @@ async function loadLiveCandidates(){
     var { data: rows, error: err } = await sb.from('candidates').select('id, full_name, adres_il, avatar_url, telefon, email, is_active, profile_completed, hide_from_current_employer').eq('is_active', true).eq('profile_completed', true);
     if(err) throw err;
     if(!rows || rows.length === 0){ ADAYLAR = []; renderCandidates(ADAYLAR); return; }
+    // ── Blocked companies filter ──
+    // If employer has a company_id, filter out candidates who blocked that company
+    if(hrProfile && hrProfile.company_id) {
+      try {
+        var { data: blockedRows } = await sb
+          .from('candidate_blocked_companies')
+          .select('candidate_id')
+          .eq('company_id', hrProfile.company_id);
+        if(blockedRows && blockedRows.length > 0) {
+          var blockedSet = {};
+          blockedRows.forEach(function(b){ blockedSet[b.candidate_id] = true; });
+          rows = rows.filter(function(r){ return !blockedSet[r.id]; });
+          if(rows.length === 0){ ADAYLAR = []; renderCandidates(ADAYLAR); return; }
+        }
+      } catch(blockErr) {
+        console.warn('Blocked companies check failed, continuing without filter:', blockErr.message);
+      }
+    }
     var cids = rows.map(function(r){ return r.id; });
     var [expRes, workRes, eduRes, langRes] = await Promise.all([
       sb.from('candidate_experiences').select('*').in('candidate_id', cids).order('sira', { ascending: true }),

@@ -1482,6 +1482,12 @@ html[data-theme="dark"] .lok-modal #btn-lok-close:hover{
 <!-- APP BODY -->
 <div class="app-body" id="app-body" style="display:none;">
 
+  <div id="deletion-warning-banner" style="display:none;background:#FEE2E2;color:#991B1B;padding:12px 16px;font-size:13px;line-height:1.5;border-bottom:2px solid #DC2626;position:sticky;top:0;z-index:100;">
+    <strong>Hesabınız silinmek üzere.</strong>
+    <span id="deletion-days-left"></span> gün içinde tüm verileriniz kalıcı olarak silinecek.
+    <button id="btn-cancel-deletion-banner" type="button" style="background:none;border:none;color:#DC2626;cursor:pointer;font-weight:700;text-decoration:underline;margin-left:4px;">Vazgeç — Hesabımı Geri Al</button>
+  </div>
+
 <!-- BOTTOM NAV (mobile) -->
 <nav class="bottom-nav" id="bottom-nav">
   <div class="bottom-nav-inner">
@@ -2238,7 +2244,7 @@ html[data-theme="dark"] .lok-modal #btn-lok-close:hover{
     <div id="notifications-msg" style="font-size:12px;margin-top:8px;display:none;"></div>
   </div>
 
-  <div class="card" style="margin-top:16px;" id="settings-blocked-companies-card">
+  <div class="card" style="margin-top:16px;display:none;" id="settings-blocked-companies-card">
     <div class="card-title">Engellenen Şirketler</div>
     <div class="wiz-step-desc" style="margin-top:4px;">Profilinizi görmesini istemediğiniz şirketleri ekleyin. Bu şirketlerin İK ekipleri sizi aday havuzunda göremez.</div>
 
@@ -3358,6 +3364,48 @@ function reapplyDynamicFields() {
   }
 })();
 
+// ── DELETION WARNING BANNER ──
+(function(){
+  var checkInterval = setInterval(function(){
+    if (!_loadedDBData || !_loadedDBData.profile) return;
+    clearInterval(checkInterval);
+
+    var profile = _loadedDBData.profile;
+    if (profile.account_status !== 'pending_deletion') return;
+
+    var banner = document.getElementById('deletion-warning-banner');
+    if (!banner) return;
+
+    var requestedAt = profile.deletion_requested_at ? new Date(profile.deletion_requested_at) : new Date();
+    var deadlineMs = requestedAt.getTime() + (30 * 24 * 60 * 60 * 1000);
+    var daysLeft = Math.max(0, Math.ceil((deadlineMs - Date.now()) / (24 * 60 * 60 * 1000)));
+
+    var daysEl = document.getElementById('deletion-days-left');
+    if (daysEl) daysEl.textContent = daysLeft;
+    banner.style.display = 'block';
+
+    var cancelBtn = document.getElementById('btn-cancel-deletion-banner');
+    if (cancelBtn) {
+      cancelBtn.addEventListener('click', async function(){
+        if (!confirm('Hesap silme işlemini iptal etmek istiyor musunuz? Hesabınız tekrar aktif olacak.')) return;
+        try {
+          var res = await supabase
+            .from('candidates')
+            .update({ account_status: 'active' })
+            .eq('user_id', currentUser.id);
+          if (res.error) throw res.error;
+          profile.account_status = 'active';
+          banner.style.display = 'none';
+          alert('Hesabınız tekrar aktif edildi!');
+          if (window._htShowAccountBanner) window._htShowAccountBanner('active');
+        } catch (e) {
+          alert('Hata: ' + (e.message || ''));
+        }
+      });
+    }
+  }, 500);
+})();
+
 // ═══════════════════════════════════════════════════
 // EVENT LISTENERS
 // ═══════════════════════════════════════════════════
@@ -3814,6 +3862,7 @@ document.addEventListener('DOMContentLoaded', function() {
       changeStatus('pending_deletion');
     });
 
+    window._htShowAccountBanner = showBanner;
     var statusCheck = setInterval(function(){
       if (_loadedDBData && _loadedDBData.profile) {
         clearInterval(statusCheck);
