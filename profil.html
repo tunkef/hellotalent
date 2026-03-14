@@ -2113,7 +2113,18 @@ html[data-theme="dark"] .lok-modal #btn-lok-close:hover{
     <div class="card-title">Hesap Bilgileri</div>
     <div class="field">
       <label for="settings-email">E-posta</label>
-      <input type="email" id="settings-email" disabled>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <input type="email" id="settings-email" disabled style="flex:1;">
+        <button type="button" class="btn btn-secondary btn-sm" id="btn-show-email-change">Değiştir</button>
+      </div>
+    </div>
+    <div id="email-change-section" style="display:none;margin-top:8px;">
+      <div class="field">
+        <label for="settings-new-email">Yeni E-posta</label>
+        <input type="email" id="settings-new-email" placeholder="Yeni e-posta adresi">
+      </div>
+      <button type="button" class="btn btn-primary btn-sm" id="btn-change-email">Doğrulama Gönder</button>
+      <div id="email-change-msg" style="font-size:12px;margin-top:8px;display:none;"></div>
     </div>
     <div class="field">
       <label for="settings-adsoyad">Ad Soyad</label>
@@ -2153,7 +2164,7 @@ html[data-theme="dark"] .lok-modal #btn-lok-close:hover{
         <input type="checkbox" id="settings-visibility-active" checked>
         <span class="toggle-slider"></span>
       </label>
-      <label for="settings-visibility-active" style="margin:0;cursor:pointer;font-weight:500;">Profilimi işverenlere göster</label>
+      <label for="settings-visibility-active" style="margin:0;cursor:pointer;font-weight:500;">Profilimi ve CV'mi işverenlere göster</label>
     </div>
     <div class="field" style="margin-top:12px;">
       <div class="wiz-step-desc" style="margin:0;font-size:12px;">
@@ -2170,6 +2181,76 @@ html[data-theme="dark"] .lok-modal #btn-lok-close:hover{
     <div id="settings-hide-hint" style="display:none;font-size:11px;color:var(--muted);margin-top:4px;">
       Bu ayarı kullanmak için Deneyimler alanında mevcut işvereninizi belirtin.
     </div>
+    <p style="font-size:12px;color:var(--muted);margin-top:8px;line-height:1.5;">
+      Bu ayar açıkken profiliniz ve yüklediğiniz CV, doğrulanmış işverenler tarafından görüntülenebilir. Kapatıldığında hem profiliniz hem CV'niz tamamen gizlenir.
+    </p>
+  </div>
+
+  <div class="card" style="margin-top:16px;" id="settings-notifications-card">
+    <div class="card-title">Bildirim Tercihleri</div>
+    <div class="wiz-step-desc" style="margin-top:4px;">Hangi bildirimleri almak istediğinizi seçin.</div>
+
+    <div class="field" style="display:flex;align-items:center;gap:12px;margin-top:12px;">
+      <label class="toggle">
+        <input type="checkbox" id="settings-notify-email-messages" checked>
+        <span class="toggle-slider"></span>
+      </label>
+      <div>
+        <label for="settings-notify-email-messages" style="margin:0;cursor:pointer;font-weight:500;">İşveren Mesajları</label>
+        <p style="font-size:11px;color:var(--muted);margin:2px 0 0;">İşverenlerden gelen mesajlar için e-posta bildirimi alın.</p>
+      </div>
+    </div>
+
+    <div class="field" style="display:flex;align-items:center;gap:12px;margin-top:12px;">
+      <label class="toggle">
+        <input type="checkbox" id="settings-notify-email-jobs" checked>
+        <span class="toggle-slider"></span>
+      </label>
+      <div>
+        <label for="settings-notify-email-jobs" style="margin:0;cursor:pointer;font-weight:500;">Yeni İş İlanları</label>
+        <p style="font-size:11px;color:var(--muted);margin:2px 0 0;">Profilinize uygun yeni ilanlar yayınlandığında bildirim alın.</p>
+      </div>
+    </div>
+
+    <div class="field" style="display:flex;align-items:center;gap:12px;margin-top:12px;opacity:0.5;pointer-events:none;">
+      <label class="toggle">
+        <input type="checkbox" id="settings-notify-sms" disabled>
+        <span class="toggle-slider"></span>
+      </label>
+      <div>
+        <label style="margin:0;font-weight:500;">SMS Bildirimleri <span style="font-size:10px;background:var(--verm);color:#fff;padding:2px 6px;border-radius:4px;margin-left:6px;">Yakında</span></label>
+        <p style="font-size:11px;color:var(--muted);margin:2px 0 0;">Kritik güncellemeler için SMS bildirimi.</p>
+      </div>
+    </div>
+
+    <div class="field" style="display:flex;align-items:center;gap:12px;margin-top:12px;opacity:0.5;pointer-events:none;">
+      <label class="toggle">
+        <input type="checkbox" id="settings-notify-push" disabled>
+        <span class="toggle-slider"></span>
+      </label>
+      <div>
+        <label style="margin:0;font-weight:500;">Push Bildirimleri <span style="font-size:10px;background:var(--verm);color:#fff;padding:2px 6px;border-radius:4px;margin-left:6px;">Yakında</span></label>
+        <p style="font-size:11px;color:var(--muted);margin:2px 0 0;">Anlık bildirimler doğrudan tarayıcınıza.</p>
+      </div>
+    </div>
+
+    <button class="btn btn-primary btn-sm" id="btn-save-notifications" style="margin-top:16px;">Bildirim Tercihlerini Kaydet</button>
+    <div id="notifications-msg" style="font-size:12px;margin-top:8px;display:none;"></div>
+  </div>
+
+  <div class="card" style="margin-top:16px;" id="settings-blocked-companies-card">
+    <div class="card-title">Engellenen Şirketler</div>
+    <div class="wiz-step-desc" style="margin-top:4px;">Profilinizi görmesini istemediğiniz şirketleri ekleyin. Bu şirketlerin İK ekipleri sizi aday havuzunda göremez.</div>
+
+    <div class="field" style="margin-top:12px;position:relative;">
+      <label for="blocked-company-search" style="font-weight:500;">Şirket Ara ve Ekle</label>
+      <input type="text" id="blocked-company-search" placeholder="Şirket adı yazın..." autocomplete="off" style="margin-top:4px;">
+      <div id="blocked-company-dropdown" style="display:none;position:absolute;top:100%;left:0;right:0;background:#fff;border:1px solid var(--border);border-radius:8px;max-height:160px;overflow-y:auto;z-index:10;box-shadow:0 4px 12px rgba(0,0,0,0.1);"></div>
+    </div>
+
+    <div id="blocked-companies-list" style="margin-top:12px;display:flex;flex-direction:column;gap:8px;"></div>
+    <div id="blocked-companies-empty" style="font-size:12px;color:var(--muted);margin-top:8px;">Henüz engellenen şirket yok.</div>
+    <div id="blocked-msg" style="font-size:12px;margin-top:8px;display:none;"></div>
   </div>
 
   <div class="card" style="margin-top:16px;" id="settings-theme-card">
@@ -2190,6 +2271,30 @@ html[data-theme="dark"] .lok-modal #btn-lok-close:hover{
           <span class="settings-radio-label">Koyu mod</span>
         </label>
       </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:16px;border:1px solid var(--border);" id="settings-account-management-card">
+    <div class="card-title">Hesap Yönetimi</div>
+
+    <div id="account-status-banner" style="display:none;padding:12px;border-radius:8px;margin-bottom:12px;font-size:13px;"></div>
+
+    <div class="field" style="margin-top:8px;">
+      <button class="btn btn-secondary btn-sm" id="btn-freeze-account" style="width:100%;">
+        Hesabımı Dondur
+      </button>
+      <p style="font-size:11px;color:var(--muted);margin-top:4px;line-height:1.4;">
+        Hesabınızı dondurduğunuzda profiliniz işverenlere görünmez olur. İstediğiniz zaman tekrar aktif edebilirsiniz.
+      </p>
+    </div>
+
+    <div class="field" style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border);">
+      <button class="btn btn-sm" id="btn-delete-account" style="width:100%;background:#DC2626;color:#fff;border:none;">
+        Hesabımı Sil
+      </button>
+      <p style="font-size:11px;color:var(--muted);margin-top:4px;line-height:1.4;">
+        Hesabınız 30 gün boyunca askıya alınır, bu süre içinde vazgeçebilirsiniz. 30 gün sonra tüm verileriniz kalıcı olarak silinir (KVKK md.11).
+      </p>
     </div>
   </div>
 
@@ -2767,6 +2872,11 @@ function _doSwitchPanel(name) {
         hideHint.style.display = currentEmp ? 'none' : 'block';
       }
     }
+    var ne = document.getElementById('settings-notify-email-messages');
+    if (ne && _loadedDBData && _loadedDBData.profile) ne.checked = _loadedDBData.profile.notify_email_messages !== false;
+    var nj = document.getElementById('settings-notify-email-jobs');
+    if (nj && _loadedDBData && _loadedDBData.profile) nj.checked = _loadedDBData.profile.notify_email_jobs !== false;
+    if (window._htLoadBlockedCompanies) window._htLoadBlockedCompanies();
   }
   // Close mobile sidebar
   closeMobileSidebar();
@@ -3172,6 +3282,14 @@ function reapplyDynamicFields() {
     updateDashboardSummary(dbData.profile, dbData.experiences);
     updateMerkezCards(); // Populate Profil Merkezi section cards
     syncAccountEmail();
+    // Auto-sync auth email → candidates.email if they differ
+    if (_loadedDBData && _loadedDBData.profile && currentUser.email) {
+      var dbEmail = _loadedDBData.profile.email || '';
+      if (dbEmail && dbEmail !== currentUser.email) {
+        await supabase.from('candidates').update({ email: currentUser.email }).eq('user_id', currentUser.id);
+        console.log('[HT] Email auto-synced: ' + dbEmail + ' → ' + currentUser.email);
+      }
+    }
     // ── Final DOM state snapshot ──
     setTimeout(function() {
       var ec = document.getElementById('exp-cards-container');
@@ -3422,6 +3540,287 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     btnSettingsAccountSave.disabled = false;
   });
+
+  // Email change: show/hide section
+  var btnShowEmailChange = document.getElementById('btn-show-email-change');
+  if (btnShowEmailChange) btnShowEmailChange.addEventListener('click', function() {
+    var section = document.getElementById('email-change-section');
+    if (section) section.style.display = section.style.display === 'none' ? '' : 'none';
+  });
+
+  // Email change: submit
+  var btnChangeEmail = document.getElementById('btn-change-email');
+  if (btnChangeEmail) btnChangeEmail.addEventListener('click', async function() {
+    var newEmail = (document.getElementById('settings-new-email').value || '').trim();
+    var msgEl = document.getElementById('email-change-msg');
+
+    if (!newEmail || !newEmail.includes('@')) {
+      if (msgEl) { msgEl.textContent = 'Geçerli bir e-posta adresi girin.'; msgEl.style.color = 'var(--red)'; msgEl.style.display = 'block'; }
+      return;
+    }
+
+    if (newEmail === currentUser.email) {
+      if (msgEl) { msgEl.textContent = 'Bu zaten mevcut e-posta adresiniz.'; msgEl.style.color = 'var(--red)'; msgEl.style.display = 'block'; }
+      return;
+    }
+
+    btnChangeEmail.disabled = true;
+    btnChangeEmail.textContent = 'Gönderiliyor...';
+
+    var res = await supabase.auth.updateUser({ email: newEmail });
+
+    if (res.error) {
+      if (msgEl) {
+        msgEl.textContent = res.error.message || 'E-posta güncellenemedi.';
+        msgEl.style.color = 'var(--red)';
+        msgEl.style.display = 'block';
+      }
+    } else {
+      if (msgEl) {
+        msgEl.textContent = 'Doğrulama e-postası gönderildi! Lütfen yeni adresinizin gelen kutusunu kontrol edin. Doğrulama sonrası e-posta otomatik güncellenecek.';
+        msgEl.style.color = 'var(--green)';
+        msgEl.style.display = 'block';
+      }
+      document.getElementById('settings-new-email').value = '';
+      document.getElementById('email-change-section').style.display = 'none';
+    }
+
+    btnChangeEmail.disabled = false;
+    btnChangeEmail.textContent = 'Doğrulama Gönder';
+  });
+
+  // ── NOTIFICATION PREFERENCES SAVE ──
+  (function(){
+    var btn = document.getElementById('btn-save-notifications');
+    if (!btn) return;
+    btn.addEventListener('click', async function(){
+      var msg = document.getElementById('notifications-msg');
+      msg.style.display = 'none';
+      btn.disabled = true;
+      btn.textContent = 'Kaydediliyor...';
+      try {
+        var res = await supabase
+          .from('candidates')
+          .update({
+            notify_email_messages: document.getElementById('settings-notify-email-messages').checked,
+            notify_email_jobs: document.getElementById('settings-notify-email-jobs').checked
+          })
+          .eq('user_id', currentUser.id);
+        if (res.error) throw res.error;
+        msg.style.color = 'var(--green)';
+        msg.textContent = 'Bildirim tercihleri kaydedildi.';
+        msg.style.display = 'block';
+      } catch (e) {
+        msg.style.color = 'var(--red)';
+        msg.textContent = 'Hata: ' + (e.message || 'Kaydedilemedi.');
+        msg.style.display = 'block';
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Bildirim Tercihlerini Kaydet';
+      }
+    });
+  })();
+
+  // ── BLOCKED COMPANIES MANAGEMENT ──
+  (function(){
+    var searchInput = document.getElementById('blocked-company-search');
+    var dropdown = document.getElementById('blocked-company-dropdown');
+    var listDiv = document.getElementById('blocked-companies-list');
+    var emptyDiv = document.getElementById('blocked-companies-empty');
+    var msgDiv = document.getElementById('blocked-msg');
+    if (!searchInput) return;
+
+    var blockedIds = new Set();
+    var debounceTimer = null;
+
+    async function loadBlocked(){
+      if (!currentUser) return;
+      try {
+        var cid = _loadedDBData && _loadedDBData.profile ? _loadedDBData.profile.id : null;
+        if (!cid) return;
+        var res = await supabase
+          .from('candidate_blocked_companies')
+          .select('id, company_id, companies(company_name)')
+          .eq('candidate_id', cid);
+        if (res.error) throw res.error;
+        var data = res.data;
+        blockedIds.clear();
+        listDiv.innerHTML = '';
+        if (data && data.length > 0) {
+          emptyDiv.style.display = 'none';
+          data.forEach(function(row){
+            blockedIds.add(row.company_id);
+            addBlockedChip(row.id, row.company_id, row.companies ? row.companies.company_name : 'Bilinmeyen');
+          });
+        } else {
+          emptyDiv.style.display = 'block';
+        }
+      } catch (e) { console.error('loadBlocked error:', e); }
+    }
+
+    function addBlockedChip(rowId, companyId, companyName){
+      var chip = document.createElement('div');
+      chip.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:var(--gray);border:1px solid var(--border);border-radius:8px;font-size:13px;';
+      chip.innerHTML = '<span>' + companyName + '</span>';
+      var removeBtn = document.createElement('button');
+      removeBtn.textContent = 'Kaldır';
+      removeBtn.style.cssText = 'background:none;border:none;color:var(--verm);cursor:pointer;font-size:12px;font-weight:600;';
+      removeBtn.addEventListener('click', async function(){
+        removeBtn.disabled = true;
+        removeBtn.textContent = '...';
+        try {
+          var delRes = await supabase
+            .from('candidate_blocked_companies')
+            .delete()
+            .eq('id', rowId);
+          if (delRes.error) throw delRes.error;
+          blockedIds.delete(companyId);
+          chip.remove();
+          if (listDiv.children.length === 0) emptyDiv.style.display = 'block';
+        } catch (e) {
+          removeBtn.disabled = false;
+          removeBtn.textContent = 'Kaldır';
+          msgDiv.style.color = 'var(--red)';
+          msgDiv.textContent = 'Hata: ' + (e.message || '');
+          msgDiv.style.display = 'block';
+        }
+      });
+      chip.appendChild(removeBtn);
+      listDiv.appendChild(chip);
+    }
+
+    searchInput.addEventListener('input', function(){
+      clearTimeout(debounceTimer);
+      var q = searchInput.value.trim();
+      if (q.length < 2) { dropdown.style.display = 'none'; return; }
+      debounceTimer = setTimeout(async function(){
+        try {
+          var res = await supabase
+            .from('companies')
+            .select('id, company_name')
+            .ilike('company_name', '%' + q + '%')
+            .eq('is_active', true)
+            .limit(10);
+          if (res.error) throw res.error;
+          var data = res.data;
+          dropdown.innerHTML = '';
+          if (!data || data.length === 0) {
+            dropdown.innerHTML = '<div style="padding:10px;font-size:12px;color:var(--muted);">Sonuç bulunamadı</div>';
+            dropdown.style.display = 'block';
+            return;
+          }
+          data.forEach(function(c){
+            var item = document.createElement('div');
+            item.style.cssText = 'padding:10px 12px;cursor:pointer;font-size:13px;border-bottom:1px solid var(--border);';
+            item.textContent = c.company_name;
+            if (blockedIds.has(c.id)) {
+              item.style.opacity = '0.4';
+              item.style.cursor = 'default';
+              item.textContent += ' (engellendi)';
+            } else {
+              item.addEventListener('click', async function(){
+                dropdown.style.display = 'none';
+                searchInput.value = '';
+                try {
+                  var cid = _loadedDBData && _loadedDBData.profile ? _loadedDBData.profile.id : null;
+                  if (!cid) return;
+                  var insRes = await supabase
+                    .from('candidate_blocked_companies')
+                    .insert({ candidate_id: cid, company_id: c.id })
+                    .select('id')
+                    .single();
+                  if (insRes.error) throw insRes.error;
+                  var inserted = insRes.data;
+                  blockedIds.add(c.id);
+                  addBlockedChip(inserted.id, c.id, c.company_name);
+                  emptyDiv.style.display = 'none';
+                } catch (e) {
+                  msgDiv.style.color = 'var(--red)';
+                  msgDiv.textContent = 'Hata: ' + (e.message || '');
+                  msgDiv.style.display = 'block';
+                }
+              });
+              item.addEventListener('mouseenter', function(){ item.style.background = 'var(--gray)'; });
+              item.addEventListener('mouseleave', function(){ item.style.background = 'transparent'; });
+            }
+            dropdown.appendChild(item);
+          });
+          dropdown.style.display = 'block';
+        } catch (e) { console.error('blocked company search error:', e); }
+      }, 300);
+    });
+
+    document.addEventListener('click', function(e){
+      if (dropdown && searchInput && !dropdown.contains(e.target) && e.target !== searchInput) dropdown.style.display = 'none';
+    });
+
+    window._htLoadBlockedCompanies = loadBlocked;
+  })();
+
+  // ── ACCOUNT MANAGEMENT (Freeze / Delete) ──
+  (function(){
+    var freezeBtn = document.getElementById('btn-freeze-account');
+    var deleteBtn = document.getElementById('btn-delete-account');
+    var banner = document.getElementById('account-status-banner');
+    if (!freezeBtn || !deleteBtn) return;
+
+    function showBanner(status){
+      if (status === 'frozen') {
+        banner.style.display = 'block';
+        banner.style.background = '#FEF3C7';
+        banner.style.color = '#92400E';
+        banner.innerHTML = '<strong>Hesabınız dondurulmuş.</strong> Profiliniz işverenlere görünmüyor. <button id="btn-unfreeze" style="background:none;border:none;color:var(--verm);cursor:pointer;font-weight:600;text-decoration:underline;margin-left:4px;">Tekrar Aktif Et</button>';
+        freezeBtn.style.display = 'none';
+        document.getElementById('btn-unfreeze').addEventListener('click', function(){ changeStatus('active'); });
+      } else if (status === 'pending_deletion') {
+        banner.style.display = 'block';
+        banner.style.background = '#FEE2E2';
+        banner.style.color = '#991B1B';
+        banner.innerHTML = '<strong>Hesabınız silinmek üzere.</strong> 30 gün içinde vazgeçebilirsiniz. <button id="btn-cancel-deletion" style="background:none;border:none;color:var(--verm);cursor:pointer;font-weight:600;text-decoration:underline;margin-left:4px;">Vazgeç</button>';
+        freezeBtn.style.display = 'none';
+        deleteBtn.style.display = 'none';
+        document.getElementById('btn-cancel-deletion').addEventListener('click', function(){ changeStatus('active'); });
+      } else {
+        banner.style.display = 'none';
+        freezeBtn.style.display = 'block';
+        freezeBtn.textContent = 'Hesabımı Dondur';
+        deleteBtn.style.display = 'block';
+      }
+    }
+
+    async function changeStatus(newStatus){
+      if (!currentUser) return;
+      try {
+        var res = await supabase
+          .from('candidates')
+          .update({ account_status: newStatus })
+          .eq('user_id', currentUser.id);
+        if (res.error) throw res.error;
+        if (_loadedDBData && _loadedDBData.profile) _loadedDBData.profile.account_status = newStatus;
+        showBanner(newStatus);
+        if (typeof refreshVisibilitySummary === 'function') refreshVisibilitySummary();
+      } catch (e) {
+        alert('Hata: ' + (e.message || ''));
+      }
+    }
+
+    freezeBtn.addEventListener('click', function(){
+      if (!confirm('Hesabınızı dondurmak istediğinize emin misiniz? Profiliniz işverenlere görünmez olacak.')) return;
+      changeStatus('frozen');
+    });
+
+    deleteBtn.addEventListener('click', function(){
+      if (!confirm('DİKKAT: Hesabınız 30 gün sonra kalıcı olarak silinecektir. Bu süre içinde giriş yaparak vazgeçebilirsiniz.\n\nDevam etmek istiyor musunuz?')) return;
+      changeStatus('pending_deletion');
+    });
+
+    var statusCheck = setInterval(function(){
+      if (_loadedDBData && _loadedDBData.profile) {
+        clearInterval(statusCheck);
+        showBanner(_loadedDBData.profile.account_status || 'active');
+      }
+    }, 500);
+  })();
 
   // CV generation buttons
   var btnGenCVDash = document.getElementById('btn-gen-cv');
