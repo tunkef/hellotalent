@@ -637,7 +637,7 @@
 <!-- ══════════ SUPABASE + JS ══════════ -->
 <script>
 // ── SUPABASE ──
-const sb = HT.getSupa();
+const sb = (window.HT && HT.getSupa) ? HT.getSupa() : (typeof supabase !== 'undefined' ? supabase.createClient('https://cpwibefquojehjehtrog.supabase.co','sb_publishable_POUtNwJyjAAheukwYP5hmA_TKKjphwa') : null);
 
 // ── KARİYER TABS ──
 var tabDescriptions = {
