@@ -258,6 +258,10 @@
     position: relative;
     min-height: 300px;
   }
+
+  .rule-check { color: var(--muted); }
+  .rule-check.pass { color: #16A34A; }
+  .rule-check.pass::first-letter { content: ''; }
 </style>
 </head>
 <body>
@@ -288,70 +292,156 @@
     <!-- ADAY FORMU -->
     <div class="form-wrapper">
     <div id="form-aday">
-      <h2 class="card-title">Tekrar hoş geldin 👋</h2>
-      <p class="card-sub">Profilini güncellemek veya başvurularını takip etmek için giriş yap.</p>
+      <!-- Aday Giriş (login) -->
+      <div id="aday-login-box">
+        <h2 class="card-title">Tekrar hoş geldin 👋</h2>
+        <p class="card-sub">Profilini güncellemek veya başvurularını takip etmek için giriş yap.</p>
 
-      <div class="error-msg" id="err-aday"></div>
+        <div class="error-msg" id="err-aday"></div>
 
-      <div class="field">
-        <label>E-posta</label>
-        <input type="email" id="aday-email" class="aday" placeholder="ornek@email.com" autocomplete="email">
+        <div class="field">
+          <label>E-posta</label>
+          <input type="email" id="aday-email" class="aday" placeholder="ornek@email.com" autocomplete="email">
+        </div>
+        <div class="field">
+          <label>Şifre</label>
+          <input type="password" id="aday-sifre" class="aday" placeholder="••••••••" autocomplete="current-password">
+        </div>
+
+        <button class="btn-submit btn-aday" onclick="loginAday()">
+          <span id="aday-btn-text">Giriş Yap →</span>
+        </button>
+
+        <div style="display:flex;align-items:center;gap:12px;margin:16px 0;">
+          <div style="flex:1;height:1px;background:var(--border);"></div>
+          <span style="font-size:12px;color:var(--muted);">veya</span>
+          <div style="flex:1;height:1px;background:var(--border);"></div>
+        </div>
+        <button type="button" id="btn-google-login" style="width:100%;padding:12px;border:1.5px solid var(--border);border-radius:10px;background:white;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:all 0.2s;margin-bottom:8px;">
+          <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z"/><path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.997 8.997 0 000 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"/></svg>
+          Google ile Giriş Yap
+        </button>
+        <button type="button" id="btn-linkedin-login" disabled style="width:100%;padding:12px;border:1.5px solid var(--border);border-radius:10px;background:white;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:600;cursor:not-allowed;display:flex;align-items:center;justify-content:center;gap:10px;opacity:0.5;margin-bottom:8px;">
+          <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#0A66C2" d="M15.335 0H2.665A2.665 2.665 0 000 2.665v12.67A2.665 2.665 0 002.665 18h12.67A2.665 2.665 0 0018 15.335V2.665A2.665 2.665 0 0015.335 0zM5.339 15.337H2.67V6.747h2.67v8.59zM4.005 5.61a1.548 1.548 0 110-3.096 1.548 1.548 0 010 3.096zm11.332 9.727h-2.67v-4.177c0-.996-.018-2.278-1.388-2.278-1.39 0-1.601 1.086-1.601 2.207v4.248h-2.67V6.747h2.564v1.174h.035c.357-.675 1.227-1.387 2.526-1.387 2.703 0 3.203 1.779 3.203 4.092v4.711z"/></svg>
+          LinkedIn ile Giriş Yap <span style="font-size:10px;background:var(--verm);color:#fff;padding:2px 6px;border-radius:4px;margin-left:4px;">Yakında</span>
+        </button>
+
+        <p class="register-link">
+          Henüz üye değil misin?
+          <a href="#" class="aday-link" id="link-aday-show-register">Hemen kayıt ol →</a>
+        </p>
       </div>
-      <div class="field">
-        <label>Şifre</label>
-        <input type="password" id="aday-sifre" class="aday" placeholder="••••••••" autocomplete="current-password">
+
+      <!-- Aday Kayıt (register) - strength indicator only here -->
+      <div id="aday-register-box" style="display:none;">
+        <h2 class="card-title">Kayıt Ol</h2>
+        <p class="card-sub">Ücretsiz aday hesabı oluştur.</p>
+
+        <div class="error-msg" id="err-aday-register"></div>
+
+        <div class="field">
+          <label>E-posta</label>
+          <input type="email" id="aday-kayit-email" class="aday" placeholder="ornek@email.com" autocomplete="email">
+        </div>
+        <div class="field">
+          <label>Şifre</label>
+          <input type="password" id="aday-kayit-sifre" class="aday" placeholder="••••••••" autocomplete="new-password">
+          <div class="password-strength" style="margin-top:6px;">
+            <div style="display:flex;gap:4px;margin-bottom:4px;">
+              <div class="strength-bar" style="flex:1;height:3px;border-radius:2px;background:var(--border);transition:all 0.3s;"></div>
+              <div class="strength-bar" style="flex:1;height:3px;border-radius:2px;background:var(--border);transition:all 0.3s;"></div>
+              <div class="strength-bar" style="flex:1;height:3px;border-radius:2px;background:var(--border);transition:all 0.3s;"></div>
+            </div>
+            <div class="strength-label" style="font-size:11px;color:var(--muted);transition:all 0.3s;"></div>
+            <div class="strength-rules" style="font-size:11px;margin-top:4px;line-height:1.6;">
+              <div class="rule-check" data-rule="length">○ En az 8 karakter</div>
+              <div class="rule-check" data-rule="upper">○ Büyük harf (A-Z)</div>
+              <div class="rule-check" data-rule="lower">○ Küçük harf (a-z)</div>
+              <div class="rule-check" data-rule="number">○ Rakam (0-9)</div>
+              <div class="rule-check" data-rule="special">○ Özel karakter (!@#$%._-)</div>
+            </div>
+          </div>
+        </div>
+
+        <button class="btn-submit btn-aday" type="button" id="btn-aday-kayit">Kayıt Ol →</button>
+
+        <p class="register-link" style="margin-top:16px;">
+          Zaten üye misin?
+          <a href="#" class="aday-link" id="link-aday-show-login">Giriş yap →</a>
+        </p>
       </div>
-
-      <button class="btn-submit btn-aday" onclick="loginAday()">
-        <span id="aday-btn-text">Giriş Yap →</span>
-      </button>
-
-      <div style="display:flex;align-items:center;gap:12px;margin:16px 0;">
-        <div style="flex:1;height:1px;background:var(--border);"></div>
-        <span style="font-size:12px;color:var(--muted);">veya</span>
-        <div style="flex:1;height:1px;background:var(--border);"></div>
-      </div>
-      <button type="button" id="btn-google-login" style="width:100%;padding:12px;border:1.5px solid var(--border);border-radius:10px;background:white;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:all 0.2s;margin-bottom:8px;">
-        <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z"/><path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.997 8.997 0 000 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"/></svg>
-        Google ile Giriş Yap
-      </button>
-      <button type="button" id="btn-linkedin-login" disabled style="width:100%;padding:12px;border:1.5px solid var(--border);border-radius:10px;background:white;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:600;cursor:not-allowed;display:flex;align-items:center;justify-content:center;gap:10px;opacity:0.5;margin-bottom:8px;">
-        <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#0A66C2" d="M15.335 0H2.665A2.665 2.665 0 000 2.665v12.67A2.665 2.665 0 002.665 18h12.67A2.665 2.665 0 0018 15.335V2.665A2.665 2.665 0 0015.335 0zM5.339 15.337H2.67V6.747h2.67v8.59zM4.005 5.61a1.548 1.548 0 110-3.096 1.548 1.548 0 010 3.096zm11.332 9.727h-2.67v-4.177c0-.996-.018-2.278-1.388-2.278-1.39 0-1.601 1.086-1.601 2.207v4.248h-2.67V6.747h2.564v1.174h.035c.357-.675 1.227-1.387 2.526-1.387 2.703 0 3.203 1.779 3.203 4.092v4.711z"/></svg>
-        LinkedIn ile Giriş Yap <span style="font-size:10px;background:var(--verm);color:#fff;padding:2px 6px;border-radius:4px;margin-left:4px;">Yakında</span>
-      </button>
-
-      <p class="register-link">
-        Henüz üye değil misin?
-        <a href="aday.html" class="aday-link">Hemen kayıt ol →</a>
-      </p>
     </div>
 
     <!-- IK FORMU -->
     <div id="form-ik">
-      <h2 class="card-title">İK Paneline Giriş</h2>
-      <p class="card-sub">Aday havuzuna erişmek için İK hesabınla giriş yap.</p>
+      <!-- İK Giriş (login) -->
+      <div id="ik-login-box">
+        <h2 class="card-title">İK Paneline Giriş</h2>
+        <p class="card-sub">Aday havuzuna erişmek için İK hesabınla giriş yap.</p>
 
-      <div class="error-msg" id="err-ik"></div>
+        <div class="error-msg" id="err-ik"></div>
 
-      <div class="field">
-        <label>Kurumsal E-posta</label>
-        <input type="email" id="ik-email" placeholder="isim@sirket.com" autocomplete="email">
+        <div class="field">
+          <label>Kurumsal E-posta</label>
+          <input type="email" id="ik-email" placeholder="isim@sirket.com" autocomplete="email">
+        </div>
+        <div class="field">
+          <label>Şifre</label>
+          <input type="password" id="ik-sifre" placeholder="••••••••" autocomplete="current-password">
+        </div>
+
+        <button class="btn-submit btn-ik" onclick="loginIK()">
+          <span id="ik-btn-text">Giriş Yap →</span>
+        </button>
+
+        <div class="divider">veya</div>
+
+        <p class="register-link">
+          İK hesabı yok mu?
+          <a href="#" class="ik-link" id="link-ik-show-register">Kayıt ol</a>
+          <span style="color:var(--muted);"> · </span>
+          <a href="isveren.html#iletisim" class="ik-link">Demo talep et →</a>
+        </p>
       </div>
-      <div class="field">
-        <label>Şifre</label>
-        <input type="password" id="ik-sifre" placeholder="••••••••" autocomplete="current-password">
+
+      <!-- İK Kayıt (register) - strength indicator only here -->
+      <div id="ik-register-box" style="display:none;">
+        <h2 class="card-title">İK Hesabı Oluştur</h2>
+        <p class="card-sub">Kurumsal e-posta ile İK hesabı oluştur.</p>
+
+        <div class="error-msg" id="err-ik-register"></div>
+
+        <div class="field">
+          <label>Kurumsal E-posta</label>
+          <input type="email" id="ik-kayit-email" placeholder="isim@sirket.com" autocomplete="email">
+        </div>
+        <div class="field">
+          <label>Şifre</label>
+          <input type="password" id="ik-kayit-sifre" placeholder="••••••••" autocomplete="new-password">
+          <div class="password-strength" style="margin-top:6px;">
+            <div style="display:flex;gap:4px;margin-bottom:4px;">
+              <div class="strength-bar" style="flex:1;height:3px;border-radius:2px;background:var(--border);transition:all 0.3s;"></div>
+              <div class="strength-bar" style="flex:1;height:3px;border-radius:2px;background:var(--border);transition:all 0.3s;"></div>
+              <div class="strength-bar" style="flex:1;height:3px;border-radius:2px;background:var(--border);transition:all 0.3s;"></div>
+            </div>
+            <div class="strength-label" style="font-size:11px;color:var(--muted);transition:all 0.3s;"></div>
+            <div class="strength-rules" style="font-size:11px;margin-top:4px;line-height:1.6;">
+              <div class="rule-check" data-rule="length">○ En az 8 karakter</div>
+              <div class="rule-check" data-rule="upper">○ Büyük harf (A-Z)</div>
+              <div class="rule-check" data-rule="lower">○ Küçük harf (a-z)</div>
+              <div class="rule-check" data-rule="number">○ Rakam (0-9)</div>
+              <div class="rule-check" data-rule="special">○ Özel karakter (!@#$%._-)</div>
+            </div>
+          </div>
+        </div>
+
+        <button class="btn-submit btn-ik" type="button" id="btn-ik-kayit">Kayıt Ol →</button>
+
+        <p class="register-link" style="margin-top:16px;">
+          Zaten İK hesabınız var mı?
+          <a href="#" class="ik-link" id="link-ik-show-login">Giriş yap →</a>
+        </p>
       </div>
-
-      <button class="btn-submit btn-ik" onclick="loginIK()">
-        <span id="ik-btn-text">Giriş Yap →</span>
-      </button>
-
-      <div class="divider">veya</div>
-
-      <p class="register-link">
-        İK hesabı yok mu?
-        <a href="isveren.html#iletisim" class="ik-link">Demo talep et →</a>
-      </p>
     </div>
     </div><!-- /form-wrapper -->
 
@@ -521,6 +611,175 @@ document.addEventListener('keydown', function(e) {
       options: { redirectTo: window.location.origin + '/profil.html' }
     });
     if(error) { alert('Google giriş hatası: ' + error.message); btnGoogle.disabled = false; }
+  });
+})();
+
+// ── LOGIN / REGISTER TOGGLE ──
+(function(){
+  var linkAdayReg = document.getElementById('link-aday-show-register');
+  var linkAdayLogin = document.getElementById('link-aday-show-login');
+  var adayLoginBox = document.getElementById('aday-login-box');
+  var adayRegisterBox = document.getElementById('aday-register-box');
+  if(linkAdayReg && linkAdayLogin) {
+    linkAdayReg.addEventListener('click', function(e){ e.preventDefault(); adayLoginBox.style.display = 'none'; adayRegisterBox.style.display = 'block'; });
+    linkAdayLogin.addEventListener('click', function(e){ e.preventDefault(); adayRegisterBox.style.display = 'none'; adayLoginBox.style.display = 'block'; });
+  }
+  var linkIkReg = document.getElementById('link-ik-show-register');
+  var linkIkLogin = document.getElementById('link-ik-show-login');
+  var ikLoginBox = document.getElementById('ik-login-box');
+  var ikRegisterBox = document.getElementById('ik-register-box');
+  if(linkIkReg && linkIkLogin) {
+    linkIkReg.addEventListener('click', function(e){ e.preventDefault(); ikLoginBox.style.display = 'none'; ikRegisterBox.style.display = 'block'; });
+    linkIkLogin.addEventListener('click', function(e){ e.preventDefault(); ikRegisterBox.style.display = 'none'; ikLoginBox.style.display = 'block'; });
+  }
+})();
+
+// ── PASSWORD STRENGTH VALIDATION ──
+(function(){
+  function validatePassword(input) {
+    var container = input.parentElement.querySelector('.password-strength') || (input.closest('.field') && input.closest('.field').querySelector('.password-strength'));
+    if(!container) return false;
+
+    var bars = container.querySelectorAll('.strength-bar');
+    var label = container.querySelector('.strength-label');
+    var rules = container.querySelectorAll('.rule-check');
+    var val = input.value;
+
+    var checks = {
+      length: val.length >= 8,
+      upper: /[A-Z]/.test(val),
+      lower: /[a-z]/.test(val),
+      number: /[0-9]/.test(val),
+      special: /[!@#$%^&*._\-+]/.test(val)
+    };
+
+    rules.forEach(function(el) {
+      var rule = el.getAttribute('data-rule');
+      if(checks[rule]) {
+        el.classList.add('pass');
+        var text = el.textContent;
+        if(text.charAt(0) !== '✓') el.textContent = '✓ ' + text.substring(2);
+      } else {
+        el.classList.remove('pass');
+        var text = el.textContent;
+        if(text.charAt(0) === '✓') el.textContent = '○ ' + text.substring(2);
+      }
+    });
+
+    var allRulesPass = checks.length && checks.upper && checks.lower && checks.number && checks.special;
+
+    var strength = 0;
+    if(allRulesPass) {
+      if(val.length >= 12) strength = 3;
+      else if(val.length >= 10) strength = 2;
+      else strength = 1;
+    }
+
+    var colors = ['var(--border)', '#DC2626', '#F59E0B', '#16A34A'];
+    var labels = ['', 'Zayıf', 'Orta', 'Güçlü'];
+    var labelColors = ['', '#DC2626', '#F59E0B', '#16A34A'];
+
+    bars.forEach(function(bar, i) {
+      bar.style.background = (i < strength) ? colors[strength] : 'var(--border)';
+    });
+
+    if(label) {
+      label.textContent = val.length > 0 ? labels[strength] : '';
+      label.style.color = labelColors[strength] || 'var(--muted)';
+    }
+
+    return strength > 0;
+  }
+
+  document.querySelectorAll('input[type="password"]').forEach(function(input) {
+    var parent = input.closest('.field');
+    if(!parent) return;
+    var strengthEl = parent.querySelector('.password-strength');
+    if(!strengthEl) return;
+    input.addEventListener('input', function(){ validatePassword(input); });
+  });
+
+  window._htPasswordValid = function(inputId) {
+    var input = document.getElementById(inputId);
+    if(!input) return false;
+    var val = input.value;
+    if(val.length < 8) return false;
+    if(!/[A-Z]/.test(val)) return false;
+    if(!/[a-z]/.test(val)) return false;
+    if(!/[0-9]/.test(val)) return false;
+    if(!/[!@#$%^&*._\-+]/.test(val)) return false;
+    return true;
+  };
+})();
+
+// ── ADAY KAYIT (register) ──
+(function(){
+  var btn = document.getElementById('btn-aday-kayit');
+  if(!btn) return;
+  btn.addEventListener('click', async function() {
+    var errEl = document.getElementById('err-aday-register');
+    errEl.style.display = 'none';
+    if(!window._htPasswordValid('aday-kayit-sifre')) {
+      errEl.textContent = 'Şifreniz en az 8 karakter olmalı ve büyük harf, küçük harf, rakam ve özel karakter içermelidir.';
+      errEl.style.display = 'block';
+      return;
+    }
+    var email = document.getElementById('aday-kayit-email').value.trim();
+    var sifre = document.getElementById('aday-kayit-sifre').value;
+    if(!email) { errEl.textContent = 'E-posta zorunludur.'; errEl.style.display = 'block'; return; }
+    btn.disabled = true;
+    btn.textContent = 'Kaydediliyor...';
+    try {
+      var r = await getSupa().auth.signUp({ email: email, password: sifre });
+      if(r.error) throw r.error;
+      window.location.href = 'profil.html';
+    } catch(ex) {
+      var msg = ex.message || '';
+      if(msg.includes('already registered')) msg = 'Bu e-posta adresi zaten kayıtlı.';
+      else if(msg.includes('valid email')) msg = 'Geçerli bir e-posta adresi giriniz.';
+      else if(msg.includes('at least')) msg = 'Şifre gereksinimleri karşılanmadı.';
+      errEl.textContent = msg || 'Bir hata oluştu. Lütfen tekrar deneyiniz.';
+      errEl.style.display = 'block';
+    }
+    btn.disabled = false;
+    btn.textContent = 'Kayıt Ol →';
+  });
+})();
+
+// ── İK KAYIT (register) ──
+(function(){
+  var btn = document.getElementById('btn-ik-kayit');
+  if(!btn) return;
+  btn.addEventListener('click', async function() {
+    var errEl = document.getElementById('err-ik-register');
+    errEl.style.display = 'none';
+    if(!window._htPasswordValid('ik-kayit-sifre')) {
+      errEl.textContent = 'Şifreniz en az 8 karakter olmalı ve büyük harf, küçük harf, rakam ve özel karakter içermelidir.';
+      errEl.style.display = 'block';
+      return;
+    }
+    var email = document.getElementById('ik-kayit-email').value.trim();
+    var sifre = document.getElementById('ik-kayit-sifre').value;
+    if(!email) { errEl.textContent = 'E-posta zorunludur.'; errEl.style.display = 'block'; return; }
+    btn.disabled = true;
+    btn.textContent = 'Kaydediliyor...';
+    try {
+      var r = await getSupa().auth.signUp({
+        email: email,
+        password: sifre,
+        options: { data: { role: 'employer' } }
+      });
+      if(r.error) throw r.error;
+      window.location.href = 'ik.html';
+    } catch(ex) {
+      var msg = ex.message || '';
+      if(msg.includes('already registered')) msg = 'Bu e-posta adresi zaten kayıtlı.';
+      else if(msg.includes('valid email')) msg = 'Geçerli bir e-posta adresi giriniz.';
+      errEl.textContent = msg || 'Bir hata oluştu. Lütfen tekrar deneyiniz.';
+      errEl.style.display = 'block';
+    }
+    btn.disabled = false;
+    btn.textContent = 'Kayıt Ol →';
   });
 })();
 </script>
