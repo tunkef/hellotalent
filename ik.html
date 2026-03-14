@@ -935,7 +935,18 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
             <div class="profil-card-title">Hesap Bilgileri</div>
             <div class="form-field">
               <label class="form-label">E-posta</label>
-              <input class="form-input" id="ayar-email" readonly style="background:var(--bg);color:var(--muted);">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <input class="form-input" id="ayar-email" readonly style="flex:1;background:var(--bg);color:var(--muted);">
+                <button class="btn-secondary btn-sm" type="button" id="btn-show-email-change-ik">Değiştir</button>
+              </div>
+            </div>
+            <div id="email-change-section-ik" style="display:none;margin-top:8px;">
+              <div class="form-field">
+                <label class="form-label">Yeni E-posta</label>
+                <input class="form-input" type="email" id="ik-new-email" placeholder="Yeni e-posta adresi">
+              </div>
+              <button class="btn-secondary btn-sm" type="button" id="btn-change-email-ik">Doğrulama Gönder</button>
+              <div id="ik-email-change-msg" style="font-size:12px;margin-top:8px;display:none;"></div>
             </div>
             <div class="form-field">
               <label class="form-label">Yeni Şifre</label>
@@ -1322,6 +1333,11 @@ async function initApp(){
     var {data:prof} = await getSupa().from('hr_profiles').select('*').eq('id',currentUser.id).single();
     if(prof){
       hrProfile = prof;
+      // Auto-sync auth email → hr_profiles.email if they differ
+      if(prof.email && currentUser.email && prof.email !== currentUser.email){
+        await getSupa().from('hr_profiles').update({ email: currentUser.email }).eq('id', currentUser.id);
+        hrProfile.email = currentUser.email;
+      }
       var fullName = ((prof.ad||'') + ' ' + (prof.soyad||'')).trim();
       if(fullName){ document.getElementById('sidebar-name').textContent = fullName; document.getElementById('sidebar-avatar').textContent = fullName[0].toUpperCase(); }
       var fields = {
@@ -1838,6 +1854,46 @@ async function updatePassword(){
   document.getElementById('ayar-sifre').value='';
   setTimeout(function(){ msg.style.display='none'; }, 3000);
 }
+
+// ── EMAIL CHANGE (İK) ──
+(function(){
+  var btnShow = document.getElementById('btn-show-email-change-ik');
+  if(btnShow) btnShow.addEventListener('click', function(){
+    var section = document.getElementById('email-change-section-ik');
+    if(section) section.style.display = section.style.display === 'none' ? '' : 'none';
+  });
+
+  var btnChange = document.getElementById('btn-change-email-ik');
+  if(btnChange) btnChange.addEventListener('click', async function(){
+    var newEmail = (document.getElementById('ik-new-email').value || '').trim();
+    var msgEl = document.getElementById('ik-email-change-msg');
+
+    if(!newEmail || !newEmail.includes('@')){
+      if(msgEl){ msgEl.textContent = 'Geçerli bir e-posta adresi girin.'; msgEl.style.color = 'var(--red)'; msgEl.style.display = 'block'; }
+      return;
+    }
+    if(newEmail === currentUser.email){
+      if(msgEl){ msgEl.textContent = 'Bu zaten mevcut e-posta adresiniz.'; msgEl.style.color = 'var(--red)'; msgEl.style.display = 'block'; }
+      return;
+    }
+
+    btnChange.disabled = true;
+    btnChange.textContent = 'Gönderiliyor...';
+
+    var res = await getSupa().auth.updateUser({ email: newEmail });
+
+    if(res.error){
+      if(msgEl){ msgEl.textContent = res.error.message || 'E-posta güncellenemedi.'; msgEl.style.color = 'var(--red)'; msgEl.style.display = 'block'; }
+    } else {
+      if(msgEl){ msgEl.textContent = 'Doğrulama e-postası gönderildi! Lütfen yeni adresinizin gelen kutusunu kontrol edin. Doğrulama sonrası e-posta otomatik güncellenecek.'; msgEl.style.color = 'var(--green)'; msgEl.style.display = 'block'; }
+      document.getElementById('ik-new-email').value = '';
+      document.getElementById('email-change-section-ik').style.display = 'none';
+    }
+
+    btnChange.disabled = false;
+    btnChange.textContent = 'Doğrulama Gönder';
+  });
+})();
 
 // ── UPGRADE MODAL ──
 function showUpgradeModal(){ document.getElementById('upgrade-modal-overlay').classList.add('show'); }
