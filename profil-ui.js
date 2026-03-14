@@ -2192,6 +2192,45 @@ var _SEGMENTS = [
 ];
 var _ht_active_segment = null;
 
+var _BRAND_COLORS = {
+  'Louis Vuitton': { bg: '#F5EDE0', accent: '#6B4C2A' },
+  'Gucci': { bg: '#E8F0E8', accent: '#00613C' },
+  'Dior': { bg: '#F0EDE8', accent: '#1A1A1A' },
+  'Prada': { bg: '#F0F0F0', accent: '#1A1A1A' },
+  'Hermès': { bg: '#FFF0E0', accent: '#E35205' },
+  'Chanel': { bg: '#F5F5F5', accent: '#1A1A1A' },
+  'Cartier': { bg: '#FDF0E8', accent: '#A8182D' },
+  'Beymen': { bg: '#F5F0EB', accent: '#8B7355' },
+  'Vakko': { bg: '#F0EDE8', accent: '#2C2C2C' },
+  'Massimo Dutti': { bg: '#F2EDE6', accent: '#4A3728' },
+  'Hugo Boss': { bg: '#F0F0F0', accent: '#1A1A1A' },
+  'Ralph Lauren': { bg: '#E8EDF5', accent: '#1B3D6D' },
+  'Lacoste': { bg: '#E8F5E8', accent: '#004D2C' },
+  'Alo Yoga': { bg: '#F5F0E8', accent: '#C4A265' },
+  'lululemon': { bg: '#FAEBEB', accent: '#D31334' },
+  'Nike': { bg: '#F0F0F0', accent: '#111111' },
+  'Adidas': { bg: '#F0F0F0', accent: '#1A1A1A' },
+  'Zara': { bg: '#F5F5F5', accent: '#1A1A1A' },
+  'H&M': { bg: '#FFE8E8', accent: '#E50010' },
+  'Mango': { bg: '#F5F0E8', accent: '#C8A96E' },
+  'Boyner': { bg: '#E8F0F5', accent: '#005B96' },
+  'Pull & Bear': { bg: '#F0F5E8', accent: '#4A6741' },
+  'Bershka': { bg: '#F5F5F5', accent: '#1A1A1A' },
+  'Stradivarius': { bg: '#F5EDE8', accent: '#8B6F47' },
+  'Zara Home': { bg: '#F5F2ED', accent: '#6B5B4E' },
+  'LC Waikiki': { bg: '#FFF0E8', accent: '#E74C3C' },
+  'Koton': { bg: '#F0EDE8', accent: '#4A3728' },
+  'Sephora': { bg: '#F0F0F0', accent: '#1A1A1A' },
+  'MAC': { bg: '#F0F0F0', accent: '#1A1A1A' },
+  'Apple': { bg: '#F5F5F7', accent: '#333333' },
+  'Samsung': { bg: '#E8F0FF', accent: '#1428A0' },
+  'Teknosa': { bg: '#FAEBEB', accent: '#E30613' }
+};
+
+function _brandColors(brandName) {
+  return _BRAND_COLORS[brandName] || { bg: '#F7F6F4', accent: '#6B7280' };
+}
+
 function _brandLogoUrl(b) {
   if (b.logo_url) return b.logo_url;
   if (b.website_url) {
@@ -2342,19 +2381,27 @@ function renderBrandFeatured() {
   for (var i = 0; i < featured.length; i++) {
     var b = featured[i];
     var isF = _ht_follows.has(b.id);
+    var colors = _brandColors(b.brand_name);
     var meta = '';
     if (b.store_count_tr != null && b.store_count_tr !== '') meta += b.store_count_tr + ' mağaza';
     if (b.store_cities && b.store_cities.length > 0) meta += (meta ? ' · ' : '') + b.store_cities.slice(0, 3).join(', ');
     if (!meta) meta = '—';
     var segLabel = _SEGMENT_TR[b.segment] || b.segment || '';
-    html += '<div class="featured-card" onclick="openBrandModal(' + b.id + ')" style="animation-delay:' + (i * 0.06) + 's">' +
+    var isHero = i === 0;
+    var bgStyle = isHero
+      ? 'background:linear-gradient(135deg,' + colors.bg + ' 0%,#FFFFFF 70%);border-color:' + colors.bg + ';'
+      : 'background:linear-gradient(180deg,' + colors.bg + ' 0%,#FFFFFF 50%);border-color:' + colors.bg + ';';
+    var hoverEnter = 'this.style.borderColor=\'' + colors.accent + '\';this.style.boxShadow=\'0 8px 32px ' + colors.accent + '15\'';
+    var hoverLeave = 'this.style.borderColor=\'' + colors.bg + '\';this.style.boxShadow=\'none\'';
+    html += '<div class="featured-card" onclick="openBrandModal(' + b.id + ')" style="' + bgStyle + 'animation-delay:' + (i * 0.06) + 's" onmouseenter="' + hoverEnter + '" onmouseleave="' + hoverLeave + '">' +
       '<div class="featured-card-top">' +
         '<div class="featured-logo">' + _brandLogoHtml(b, 48) + '</div>' +
-        '<span class="featured-seg">' + _escHtml(segLabel) + '</span>' +
+        '<span class="featured-seg brand-seg-tag" style="background:' + colors.accent + ';color:#fff">' + _escHtml(segLabel) + '</span>' +
       '</div>' +
       '<div class="featured-card-bottom">' +
         '<div><div class="featured-name">' + _escHtml(b.brand_name) + '</div><div class="featured-meta">' + _escHtml(meta) + '</div></div>' +
         '<button type="button" class="featured-follow' + (isF ? ' following' : '') + '" data-brand-id="' + b.id + '" onclick="toggleBrandFollow(' + b.id + ',event)">' + (isF ? 'Takipte ✓' : 'Takip Et') + '</button>' +
+        '<span class="brand-card-hint">İncele →</span>' +
       '</div>' +
     '</div>';
   }
@@ -2392,10 +2439,15 @@ function renderBrandGrid(query) {
   for (var i = 0; i < visible; i++) {
     var b = list[i];
     var isF = _ht_follows.has(b.id);
-    html += '<div class="brand-card" onclick="openBrandModal(' + b.id + ')" style="animation-delay:' + (i * 0.02) + 's">' +
+    var colors = _brandColors(b.brand_name);
+    var segLabel = _SEGMENT_TR[b.segment] || b.segment || '';
+    var cardStyle = 'background:linear-gradient(180deg,' + colors.bg + ' 0%,#FFFFFF 45%);border-color:' + colors.bg + ';animation-delay:' + (i * 0.02) + 's';
+    var hoverEnter = 'this.style.borderColor=\'' + colors.accent + '\'';
+    var hoverLeave = 'this.style.borderColor=\'' + colors.bg + '\'';
+    html += '<div class="brand-card" onclick="openBrandModal(' + b.id + ')" style="' + cardStyle + '" data-accent="' + _escHtml(colors.accent) + '" onmouseenter="' + hoverEnter + '" onmouseleave="' + hoverLeave + '">' +
       '<div class="brand-card-logo-wrap">' + _brandLogoHtml(b, 56) + '</div>' +
       '<div class="brand-card-name">' + _escHtml(b.brand_name) + '</div>' +
-      '<div class="brand-card-segment">' + _segmentTag(b.segment) + '</div>' +
+      '<div class="brand-card-segment">' + (segLabel ? '<span class="brand-seg-tag" style="background:' + colors.accent + ';color:#fff">' + _escHtml(segLabel) + '</span>' : '') + '</div>' +
       '<div class="brand-card-bottom">' +
         '<button type="button" class="brand-follow-btn' + (isF ? ' following' : '') + '" data-brand-id="' + b.id + '" onclick="toggleBrandFollow(' + b.id + ',event)">' +
           (isF ? 'Takipte ✓' : 'Takip Et') +
@@ -2403,7 +2455,7 @@ function renderBrandGrid(query) {
     if (b.store_count_tr != null && b.store_count_tr !== '') {
       html += '<div class="brand-card-stores">' + _escHtml(String(b.store_count_tr)) + ' mağaza</div>';
     }
-    html += '</div></div>';
+    html += '<span class="brand-card-hint">İncele →</span></div></div>';
   }
 
   if (showLoadMore) {

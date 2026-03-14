@@ -1289,8 +1289,10 @@ html[data-theme="dark"] .lok-modal #btn-lok-close:hover{
    ═══════════════════════════════════════════════════════════ */
 
 /* Page header: title + follow counter */
-.markalar-page-header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:28px;flex-wrap:wrap;gap:12px;}
+.markalar-page-header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:28px;flex-wrap:wrap;gap:12px;flex-shrink:0;}
+.markalar-page-header .wiz-step-title{display:block;visibility:visible;}
 .markalar-page-header .wiz-step-desc{margin-top:4px;}
+#panel-sirketler .markalar-page-header{margin-top:0;}
 
 /* Follow counter button */
 .brand-follow-counter{display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border:1.5px solid var(--border);border-radius:10px;background:#fff;font-size:13px;font-weight:600;color:var(--text);cursor:pointer;transition:all .2s;font-family:'Plus Jakarta Sans',sans-serif;}
@@ -1319,7 +1321,7 @@ html[data-theme="dark"] .lok-modal #btn-lok-close:hover{
 .featured-section{margin-bottom:32px;}
 .featured-grid{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:200px 200px;gap:12px;}
 .featured-card{background:#fff;border-radius:16px;border:1.5px solid var(--border);padding:24px;display:flex;flex-direction:column;justify-content:space-between;cursor:pointer;transition:all .25s;position:relative;overflow:hidden;}
-.featured-card:hover{border-color:var(--navy);box-shadow:0 8px 32px rgba(30,45,94,0.08);transform:translateY(-2px);}
+.featured-card:hover{transform:translateY(-2px);}
 .featured-card:first-child{grid-row:1/3;}
 .featured-card-top{display:flex;align-items:flex-start;justify-content:space-between;}
 .featured-logo{width:48px;height:48px;border-radius:12px;background:var(--bg,#F7F6F4);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;}
@@ -1331,7 +1333,7 @@ html[data-theme="dark"] .lok-modal #btn-lok-close:hover{
 .featured-name{font-family:'Bricolage Grotesque',sans-serif;font-size:22px;font-weight:700;letter-spacing:-0.3px;}
 .featured-card:first-child .featured-name{font-size:32px;}
 .featured-meta{font-size:12px;color:var(--muted);margin-top:4px;}
-.featured-follow{padding:8px 18px;border-radius:8px;font-size:12px;font-weight:600;border:1.5px solid var(--verm);color:var(--verm);background:transparent;cursor:pointer;transition:all .15s;font-family:'Plus Jakarta Sans',sans-serif;}
+.featured-follow{border-radius:8px;font-size:12px;font-weight:600;border:1.5px solid var(--verm);color:var(--verm);background:transparent;cursor:pointer;transition:all .15s;font-family:'Plus Jakarta Sans',sans-serif;}
 .featured-follow:hover{background:var(--verm);color:#fff;}
 .featured-follow.following{border-color:var(--border);color:var(--muted);background:var(--bg,#F7F6F4);}
 
@@ -1357,9 +1359,9 @@ html[data-theme="dark"] .lok-modal #btn-lok-close:hover{
 @media(max-width:900px){.brand-grid{grid-template-columns:repeat(3,1fr);}}
 @media(max-width:600px){.brand-grid{grid-template-columns:repeat(2,1fr);}}
 
-/* Card — vertical, compact; whole card clickable */
-.brand-card{background:#fff;border:1.5px solid var(--border);border-radius:12px;padding:14px;display:flex;flex-direction:column;align-items:center;gap:8px;transition:border-color .2s,box-shadow .2s;min-height:0;cursor:pointer;}
-.brand-card:hover{border-color:var(--navy);box-shadow:0 4px 20px rgba(30,45,94,0.08);}
+/* Card — vertical, compact; whole card clickable; border/hover accent via JS */
+.brand-card{background:#fff;border:1.5px solid var(--border);border-radius:12px;padding:14px;display:flex;flex-direction:column;align-items:center;gap:8px;transition:border-color .2s,box-shadow .2s,transform .2s;min-height:0;cursor:pointer;}
+.brand-card:hover{box-shadow:0 4px 24px rgba(0,0,0,0.06);transform:translateY(-2px);}
 
 /* Logo: 56px rounded square */
 .brand-card-logo-wrap{display:flex;justify-content:center;flex-shrink:0;}
@@ -1379,14 +1381,24 @@ html[data-theme="dark"] .lok-modal #btn-lok-close:hover{
 /* Bottom block — pushed to card bottom for equal row height */
 .brand-card-bottom{width:100%;margin-top:auto;display:flex;flex-direction:column;gap:6px;flex-shrink:0;}
 
-/* Follow button — CTA when not following, muted when following */
-.brand-follow-btn{width:100%;padding:7px 0;border-radius:8px;border:1.5px solid var(--verm);background:transparent;color:var(--verm);font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;font-family:'Plus Jakarta Sans',sans-serif;}
+/* Follow button — compact, centered */
+.brand-follow-btn,.featured-follow{width:auto;min-width:100px;padding:7px 20px;align-self:center;}
+.brand-follow-btn{border-radius:8px;border:1.5px solid var(--verm);background:transparent;color:var(--verm);font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;font-family:'Plus Jakarta Sans',sans-serif;}
 .brand-follow-btn:hover{background:var(--verm);color:#fff;}
 .brand-follow-btn.following{border:1.5px solid var(--border);color:var(--muted);background:var(--gray,#f3f2ef);}
 .brand-follow-btn.following:hover{border-color:#e74c3c;color:#e74c3c;background:rgba(231,76,60,0.05);}
 
 /* Store count — subtle, centered */
 .brand-card-stores{font-size:11px;color:var(--muted);width:100%;text-align:center;flex-shrink:0;}
+
+/* Segment tag (dynamic accent from JS) */
+.brand-seg-tag{display:inline-block;font-size:9px;font-weight:500;letter-spacing:0.8px;padding:3px 8px;border-radius:4px;font-family:var(--font-mono,'DM Mono',monospace);}
+
+/* Clickability hint — muted, vermillion on card hover */
+.brand-card-hint{font-size:11px;color:var(--muted);transition:color .15s;align-self:flex-end;flex-shrink:0;}
+.brand-card:hover .brand-card-hint{color:var(--verm);}
+.featured-card:hover .brand-card-hint{color:var(--verm);}
+.featured-card-bottom .brand-card-hint{width:100%;text-align:right;margin-top:6px;}
 
 /* Segment pill (English labels) */
 .brand-segment{display:inline-block;font-size:10px;font-weight:600;padding:2px 7px;border-radius:4px;letter-spacing:0.3px;font-family:var(--font-mono,'DM Mono',monospace);}
