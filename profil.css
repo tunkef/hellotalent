@@ -1288,48 +1288,55 @@ html[data-theme="dark"] .lok-modal #btn-lok-close:hover{
    MARKALAR PANEL — Card grid + Modal v3
    ═══════════════════════════════════════════════════════════ */
 
-/* Search */
-.brand-search-wrap{position:relative;margin-bottom:16px;}
+/* Header row: search + follow counter */
+.brand-header-row{display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap;}
+.brand-search-wrap{position:relative;flex:1;min-width:0;}
 .brand-search-wrap input{width:100%;padding:10px 12px 10px 38px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:14px;background:var(--bg);color:var(--text);transition:border-color .2s;}
 .brand-search-wrap input:focus{border-color:var(--verm);outline:none;box-shadow:0 0 0 3px rgba(201,78,40,0.08);}
 .brand-search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);pointer-events:none;opacity:0.35;}
 
-/* Card grid */
-.brand-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
-@media(max-width:700px){.brand-grid{grid-template-columns:repeat(2,1fr);gap:10px;}}
-@media(max-width:420px){.brand-grid{grid-template-columns:1fr;}}
+/* Follow counter button (right-aligned) */
+.brand-follow-counter{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border:1.5px solid var(--border);border-radius:8px;background:#fff;font-size:13px;font-weight:600;color:var(--text);cursor:pointer;transition:all .2s;font-family:'Plus Jakarta Sans',sans-serif;}
+.brand-follow-counter:hover{border-color:var(--verm);color:var(--verm);}
+.brand-follow-counter .count{background:var(--verm);color:#fff;font-size:11px;padding:2px 7px;border-radius:10px;font-weight:700;}
+.brand-follow-counter svg{flex-shrink:0;}
 
-/* Individual card */
-.brand-card{background:var(--card-bg,#fff);border:1.5px solid var(--border);border-radius:var(--radius);padding:16px;display:flex;flex-direction:column;gap:10px;transition:border-color .2s,box-shadow .2s;}
-.brand-card:hover{border-color:var(--navy);box-shadow:0 2px 16px rgba(30,45,94,0.07);}
+/* Card grid: 3 cols desktop (>700px), 2 tablet (420–700px), 1 mobile (<420px) */
+.brand-grid{display:grid;grid-template-columns:repeat(3,1fr);grid-auto-rows:1fr;gap:14px;align-items:stretch;}
+@media(max-width:700px){.brand-grid{grid-template-columns:repeat(2,1fr);gap:12px;}}
+@media(max-width:420px){.brand-grid{grid-template-columns:1fr;gap:10px;}}
 
-/* Card header: logo left, follow right */
-.brand-card-header{display:flex;align-items:flex-start;justify-content:space-between;}
+/* Individual card — white, subtle border, equal height in row */
+.brand-card{background:#fff;border:1.5px solid var(--border);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:10px;transition:border-color .2s,box-shadow .2s;min-height:0;}
+.brand-card:hover{border-color:var(--navy);box-shadow:0 4px 20px rgba(30,45,94,0.08);}
 
-/* Logo */
-.brand-logo-wrap{width:48px;height:48px;border-radius:12px;overflow:hidden;flex-shrink:0;background:var(--gray,#f3f2ef);display:flex;align-items:center;justify-content:center;}
+/* Card header: logo top-left, follow top-right */
+.brand-card-header{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;flex-shrink:0;}
+
+/* Logo 48px rounded */
+.brand-logo-wrap{width:48px;height:48px;border-radius:10px;overflow:hidden;flex-shrink:0;background:var(--gray,#f3f2ef);display:flex;align-items:center;justify-content:center;}
 .brand-logo-wrap img{width:100%;height:100%;object-fit:contain;padding:4px;}
 .brand-logo-wrap .brand-initial{font-weight:700;font-size:18px;color:#fff;width:100%;height:100%;display:flex;align-items:center;justify-content:center;}
 
-/* Brand name */
-.brand-card-name{font-weight:700;font-size:15px;color:var(--text);line-height:1.3;}
+/* Brand name (bold) */
+.brand-card-name{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:15px;color:var(--text);line-height:1.3;flex-shrink:0;}
 
-/* Card links */
-.brand-card-links{display:flex;flex-direction:column;gap:5px;}
+/* Card links: domain + Instagram */
+.brand-card-links{display:flex;flex-direction:column;gap:5px;flex-shrink:0;}
 .brand-card-link{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);text-decoration:none;transition:color .15s;}
 .brand-card-link:hover{color:var(--verm);}
 .brand-card-link svg{flex-shrink:0;opacity:0.5;}
 
-/* Card footer */
-.brand-card-footer{display:flex;align-items:center;justify-content:flex-end;margin-top:auto;padding-top:4px;}
+/* Card footer: İncele bottom-right */
+.brand-card-footer{display:flex;align-items:center;justify-content:flex-end;margin-top:auto;padding-top:8px;flex-shrink:0;}
 
-/* Follow button */
-.brand-follow-btn{font-size:11px;font-weight:600;padding:4px 10px;border-radius:6px;border:1.5px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:all .15s;white-space:nowrap;line-height:1.3;}
+/* Follow button (Takip Et / Takipte) */
+.brand-follow-btn{font-size:11px;font-weight:600;padding:5px 10px;border-radius:6px;border:1.5px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:all .15s;white-space:nowrap;line-height:1.3;}
 .brand-follow-btn:hover{border-color:var(--verm);color:var(--verm);}
 .brand-follow-btn.following{background:rgba(201,78,40,0.08);border-color:var(--verm);color:var(--verm);}
 
-/* İncele button */
-.brand-incele-btn{font-size:12px;font-weight:600;padding:5px 14px;border-radius:6px;border:1.5px solid var(--verm);background:transparent;color:var(--verm);cursor:pointer;transition:all .15s;}
+/* İncele button — vermillion outline, hover fill */
+.brand-incele-btn{font-size:12px;font-weight:600;padding:6px 14px;border-radius:8px;border:1.5px solid var(--verm);background:transparent;color:var(--verm);cursor:pointer;transition:all .2s;}
 .brand-incele-btn:hover{background:var(--verm);color:#fff;}
 
 /* Segment tag */
@@ -1342,58 +1349,74 @@ html[data-theme="dark"] .lok-modal #btn-lok-close:hover{
 .brand-segment.beauty{background:#EC4899;color:#fff;}
 .brand-segment.tech{background:#6366F1;color:#fff;}
 
-/* ── Modal ── */
-.brand-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:9000;display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(3px);animation:brandFadeIn .2s ease;}
+/* ── Modal: overlay + dialog ── */
+.brand-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9000;display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(3px);animation:brandFadeIn .2s ease;}
 @keyframes brandFadeIn{from{opacity:0}to{opacity:1}}
 
-.brand-modal{background:var(--card-bg,#fff);border-radius:16px;width:100%;max-width:520px;max-height:85vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.2);animation:brandSlideUp .25s ease;}
+.brand-modal{background:#fff;border-radius:16px;width:100%;max-width:480px;max-height:90vh;overflow-y:auto;box-shadow:0 24px 48px rgba(0,0,0,0.18);animation:brandSlideUp .25s ease;}
 @keyframes brandSlideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
 
-.brand-modal-head{display:flex;align-items:center;gap:14px;padding:20px 20px 0;position:relative;}
-.brand-modal-head .brand-logo-wrap{width:52px;height:52px;border-radius:14px;}
-.brand-modal-head-info{flex:1;}
-.brand-modal-head-name{font-weight:700;font-size:18px;color:var(--text);}
-.brand-modal-close{position:absolute;top:16px;right:16px;background:var(--gray,#f3f2ef);border:none;border-radius:8px;padding:6px 14px;font-size:13px;font-weight:600;color:var(--text);cursor:pointer;transition:background .15s;}
-.brand-modal-close:hover{background:var(--border);}
+/* Modal header: logo + brand name + Kapat top-right */
+.brand-modal-head{display:flex;align-items:center;gap:14px;padding:20px 20px 16px;position:relative;}
+.brand-modal-head .brand-logo-wrap{width:52px;height:52px;border-radius:10px;}
+.brand-modal-head-info{flex:1;min-width:0;}
+.brand-modal-head-name{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:18px;color:var(--text);}
+.brand-modal-close{position:absolute;top:16px;right:16px;background:var(--gray,#f3f2ef);border:none;border-radius:8px;padding:8px 14px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;transition:background .15s,color .15s;}
+.brand-modal-close:hover{background:var(--border);color:var(--text);}
 
-.brand-modal-body{padding:16px 20px 20px;}
+.brand-modal-body{padding:0 20px 20px;}
 
-/* Two-column info grid */
-.brand-modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
-@media(max-width:500px){.brand-modal-grid{grid-template-columns:1fr;}}
+/* Two-column: Genel Bilgiler | Türkiye Operasyonları */
+.brand-modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px;}
+@media(max-width:420px){.brand-modal-grid{grid-template-columns:1fr;}}
 
-.brand-modal-section{padding:14px;background:var(--bg,#F7F6F4);border-radius:var(--radius-sm);font-size:13px;}
-.brand-modal-section-title{font-weight:700;font-size:14px;margin-bottom:8px;color:var(--text);}
-.brand-modal-row{display:flex;justify-content:space-between;padding:3px 0;color:var(--text);}
-.brand-modal-row-label{color:var(--muted);font-size:12px;}
-.brand-modal-row-value{font-weight:600;text-align:right;font-size:12px;}
+.brand-modal-section{padding:14px;background:var(--bg,#F7F6F4);border-radius:10px;font-size:13px;}
+.brand-modal-section-title{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:13px;margin-bottom:8px;color:var(--text);}
+.brand-modal-row{display:flex;justify-content:space-between;align-items:flex-start;padding:4px 0;gap:8px;}
+.brand-modal-row-label{color:var(--muted);font-size:12px;flex-shrink:0;}
+.brand-modal-row-value{font-weight:600;text-align:right;font-size:12px;font-family:var(--font-mono,'DM Mono',monospace);}
 
-/* Description */
-.brand-modal-desc{font-size:13px;line-height:1.6;color:var(--muted);margin-bottom:16px;padding:12px 14px;background:var(--bg,#F7F6F4);border-radius:var(--radius-sm);}
+/* Description — subtle background box */
+.brand-modal-desc{font-size:13px;line-height:1.6;color:var(--muted);margin-bottom:16px;padding:14px;background:var(--bg,#F7F6F4);border-radius:10px;border:1px solid var(--border);}
 
-/* Modal actions row */
+/* Modal actions: Web Sitesini Ziyaret Et (vermillion) + Instagram icon */
 .brand-modal-actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
-.brand-modal-website-btn{display:inline-flex;align-items:center;gap:6px;padding:10px 18px;background:var(--verm);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;transition:background .15s;}
-.brand-modal-website-btn:hover{background:var(--verm-dark,#a8401f);}
+.brand-modal-website-btn{display:inline-flex;align-items:center;gap:6px;padding:10px 18px;background:var(--verm);color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;transition:background .2s;}
+.brand-modal-website-btn:hover{background:#b84420;}
 .brand-modal-website-btn svg{flex-shrink:0;}
 
 .brand-modal-social{display:flex;gap:8px;align-items:center;margin-left:auto;}
-.brand-modal-social a{display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:8px;background:var(--bg,#F7F6F4);color:var(--text);transition:background .15s,color .15s;text-decoration:none;}
+.brand-modal-social a{display:flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:10px;background:var(--bg,#F7F6F4);color:var(--text);transition:background .2s,color .2s;text-decoration:none;}
 .brand-modal-social a:hover{background:var(--verm);color:#fff;}
 
-.brand-modal-bottom{display:flex;gap:10px;margin-top:14px;justify-content:space-between;align-items:center;}
-.brand-modal-follow-btn{flex:1;padding:10px;border-radius:8px;border:1.5px solid var(--border);background:transparent;font-size:13px;font-weight:600;color:var(--text);cursor:pointer;transition:all .15s;}
+/* Bottom: Takip Et (full width left) + Kapat (right) */
+.brand-modal-bottom{display:flex;gap:10px;margin-top:16px;align-items:center;}
+.brand-modal-follow-btn{flex:1;padding:12px;border-radius:10px;border:1.5px solid var(--border);background:transparent;font-size:13px;font-weight:600;color:var(--text);cursor:pointer;transition:all .2s;}
 .brand-modal-follow-btn:hover{border-color:var(--verm);color:var(--verm);}
 .brand-modal-follow-btn.following{background:rgba(201,78,40,0.08);border-color:var(--verm);color:var(--verm);}
-.brand-modal-close-btn{flex:1;padding:10px;border-radius:8px;border:1.5px solid var(--border);background:var(--gray,#f3f2ef);font-size:13px;font-weight:600;color:var(--text);cursor:pointer;transition:background .15s;}
+.brand-modal-close-btn{padding:12px 20px;border-radius:10px;border:1.5px solid var(--border);background:var(--gray,#f3f2ef);font-size:13px;font-weight:600;color:var(--text);cursor:pointer;transition:background .2s;}
 .brand-modal-close-btn:hover{background:var(--border);}
 
-/* Follow chips */
-.brand-follows-card{margin-bottom:16px;}
-.brand-follows-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
-.brand-follow-chip{display:flex;align-items:center;gap:6px;padding:5px 12px;background:var(--gray,#f3f2ef);border-radius:8px;font-size:13px;font-weight:500;}
-.brand-follow-chip img{width:20px;height:20px;border-radius:5px;object-fit:contain;background:#fff;}
-.brand-follows-count-badge{opacity:0.5;font-weight:400;}
+/* Load more button */
+.brand-load-more{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;margin-top:14px;border:1.5px dashed var(--border);border-radius:12px;background:transparent;color:var(--muted);font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;grid-column:1/-1;font-family:'Plus Jakarta Sans',sans-serif;}
+.brand-load-more:hover{border-color:var(--verm);color:var(--verm);background:rgba(201,78,40,0.03);}
+
+/* Follow list popup */
+.brand-follows-popup-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:8990;display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(3px);}
+.brand-follows-popup{background:#fff;border-radius:16px;width:100%;max-width:400px;max-height:80vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 24px 48px rgba(0,0,0,0.18);}
+.brand-follows-popup-head{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border);}
+.brand-follows-popup-title{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:18px;color:var(--text);margin:0;}
+.brand-follows-popup-close{padding:8px 14px;border:1.5px solid var(--border);border-radius:8px;background:var(--gray,#f3f2ef);font-size:13px;font-weight:600;color:var(--text);cursor:pointer;transition:background .2s;}
+.brand-follows-popup-close:hover{background:var(--border);}
+.brand-follows-popup-list{overflow-y:auto;padding:12px;}
+.brand-follows-popup-item{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;transition:background .15s;}
+.brand-follows-popup-item:hover{background:var(--bg,#F7F6F4);}
+.brand-follows-popup-item-logo{flex-shrink:0;}
+.brand-follows-popup-item-logo .brand-logo-wrap{width:32px;height:32px;border-radius:8px;}
+.brand-follows-popup-item-name{flex:1;font-size:14px;font-weight:600;color:var(--text);min-width:0;}
+.brand-follows-popup-unfollow{flex-shrink:0;padding:6px 12px;border:1.5px solid var(--border);border-radius:8px;background:transparent;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;transition:all .15s;}
+.brand-follows-popup-unfollow:hover{border-color:var(--verm);color:var(--verm);}
+.brand-follows-popup-empty{padding:24px;text-align:center;color:var(--muted);font-size:13px;margin:0;}
 
 /* Loading / empty */
 .brand-loading{text-align:center;padding:40px 0;color:var(--muted);font-size:13px;grid-column:1/-1;}

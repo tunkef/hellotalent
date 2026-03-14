@@ -8,6 +8,10 @@ var SUPABASE_URL = 'https://cpwibefquojehjehtrog.supabase.co';
 var SUPABASE_KEY = 'sb_publishable_POUtNwJyjAAheukwYP5hmA_TKKjphwa';
 var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 var currentUser = null;
+
+// Single auth boot: one getSession() for the whole page to avoid Sentry AbortError (racing getSession calls).
+window._htAuthSessionPromise = supabase.auth.getSession();
+function getProfilAuthSession() { return window._htAuthSessionPromise; }
 function syncAccountEmail() {
   if (!currentUser) return;
   var email = currentUser.email || '';

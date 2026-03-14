@@ -802,16 +802,17 @@ if (window.Sentry) {
   <div class="wiz-step-title">Markalar</div>
   <div class="wiz-step-desc">Türkiye'deki markaları keşfet, takip et.</div>
 
-  <!-- Search -->
-  <div class="brand-search-wrap">
-    <svg class="brand-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-    <input type="text" id="brand-search" placeholder="Marka ara..." autocomplete="off">
-  </div>
-
-  <!-- Follow chips -->
-  <div class="card brand-follows-card" id="brand-follows-card" style="display:none;">
-    <div class="card-title">Takip Ettiklerin <span id="brand-follows-count" class="brand-follows-count-badge"></span></div>
-    <div id="brand-follows-chips" class="brand-follows-chips"></div>
+  <!-- Search + Follow counter -->
+  <div class="brand-header-row">
+    <div class="brand-search-wrap">
+      <svg class="brand-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" id="brand-search" placeholder="Marka ara..." autocomplete="off">
+    </div>
+    <button type="button" class="brand-follow-counter" id="brand-follow-counter" style="display:none;" aria-label="Takip ettiklerin">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      <span>Takip Ettiklerin</span>
+      <span class="count" id="brand-follow-count-num">0</span>
+    </button>
   </div>
 
   <!-- Brand card grid -->
@@ -820,10 +821,21 @@ if (window.Sentry) {
   </div>
 </main>
 
+<!-- Follow list popup -->
+<div class="brand-follows-popup-overlay" id="brand-follows-popup-overlay" style="display:none;" role="dialog" aria-modal="true" aria-label="Takip ettiklerin">
+  <div class="brand-follows-popup" id="brand-follows-popup">
+    <div class="brand-follows-popup-head">
+      <h3 class="brand-follows-popup-title">Takip Ettiklerin</h3>
+      <button type="button" class="brand-follows-popup-close" id="brand-follows-popup-close">Kapat</button>
+    </div>
+    <div id="brand-follows-popup-list" class="brand-follows-popup-list"></div>
+  </div>
+</div>
+
 <!-- Brand detail modal (outside panel, fixed overlay) -->
-<div class="brand-modal-overlay" id="brand-modal-overlay" style="display:none;">
+<div class="brand-modal-overlay" id="brand-modal-overlay" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="brand-modal-title">
   <div class="brand-modal" id="brand-modal">
-    <!-- JS fills -->
+    <!-- JS fills header, body, bottom -->
   </div>
 </div>
 
@@ -1689,7 +1701,7 @@ function reapplyDynamicFields() {
 
 (async function() {
   console.time('[HT] total-load');
-  var sessionRes = await supabase.auth.getSession();
+  var sessionRes = await getProfilAuthSession();
   if (!sessionRes.data.session) {
     if (window.Sentry) Sentry.addBreadcrumb({ category: 'auth', message: 'No session — redirecting to login', level: 'warning' });
     console.warn('[HT] No session found — redirecting to giris.html');

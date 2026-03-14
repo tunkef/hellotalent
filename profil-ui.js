@@ -1507,10 +1507,9 @@ function updateMerkezIdentity() {
 async function loadProfileFromDB() {
   if (!currentUser) { console.warn('[HT] loadProfileFromDB: no currentUser'); return null; }
 
-  // Ensure we have a fresh token before querying
-  var refreshRes = await supabase.auth.getSession();
-  if (!refreshRes.data.session) {
-    console.warn('[HT] loadProfileFromDB: session expired after refresh attempt');
+  var sessionRes = await (window._htAuthSessionPromise || supabase.auth.getSession());
+  if (!sessionRes.data.session) {
+    console.warn('[HT] loadProfileFromDB: no session');
     return null;
   }
 
@@ -2190,16 +2189,23 @@ function _brandLogoUrl(b) {
   return null;
 }
 
+// Single logo fallback: replace img with initial (avoids img + initial both visible).
+window._htBrandLogoError = function(imgEl) {
+  var initial = (imgEl.getAttribute('data-initial') || '?').replace(/</g,'').replace(/>/g,'');
+  var color = imgEl.getAttribute('data-color') || '#6B7280';
+  imgEl.outerHTML = '<span class="brand-initial" style="background:'+color+';width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px;color:#fff;">'+initial+'</span>';
+};
+
 function _brandLogoHtml(b, sz) {
   sz = sz || 48;
   var url = _brandLogoUrl(b);
   var initial = _escHtml((b.brand_name||'?').charAt(0).toUpperCase());
-  var fallback = '<span class="brand-initial" style="background:' + _avatarColor(b.brand_name) + '">' + initial + '</span>';
+  var color = _avatarColor(b.brand_name);
   if (url) {
     return '<div class="brand-logo-wrap" style="width:'+sz+'px;height:'+sz+'px;">' +
-      '<img src="'+_escHtml(url)+'" alt="'+_escHtml(b.brand_name)+'" onerror="this.outerHTML=\''+fallback.replace(/'/g,"\\'")+'\'"></div>';
+      '<img src="'+_escHtml(url)+'" alt="'+_escHtml(b.brand_name)+'" data-initial="'+initial+'" data-color="'+_escHtml(color)+'" onerror="window._htBrandLogoError(this)"></div>';
   }
-  return '<div class="brand-logo-wrap" style="width:'+sz+'px;height:'+sz+'px;">'+fallback+'</div>';
+  return '<div class="brand-logo-wrap" style="width:'+sz+'px;height:'+sz+'px;"><span class="brand-initial" style="background:'+color+'">'+initial+'</span></div>';
 }
 
 function _segmentTag(seg) {
@@ -2245,19 +2251,42 @@ async function loadSirketlerPanel() {
   _ht_brands = brandsRes.data || [];
   _ht_follows = new Set((followsRes.data || []).map(function(f) { return f.brand_id; }));
 
+  // Featured first, then alphabetical (no UI label for featured)
+  _ht_brands.sort(function(a, b) {
+    var af = !!a.is_featured; var bf = !!b.is_featured;
+    if (af && !bf) return -1;
+    if (!af && bf) return 1;
+    return (a.brand_name || '').localeCompare(b.brand_name || '', 'tr');
+  });
+
+  _ht_visible_count = 9;
   renderBrandGrid('');
-  renderBrandFollowChips();
+  updateBrandFollowCounter();
 
   var si = document.getElementById('brand-search');
-  si.addEventListener('input', function() { renderBrandGrid(si.value); });
+  si.addEventListener('input', function() {
+    var val = si.value.trim();
+    if (!val) _ht_visible_count = 9;
+    renderBrandGrid(si.value);
+  });
+
+  var counterBtn = document.getElementById('brand-follow-counter');
+  if (counterBtn) counterBtn.addEventListener('click', openBrandFollowsPopup);
+  var popupClose = document.getElementById('brand-follows-popup-close');
+  if (popupClose) popupClose.addEventListener('click', closeBrandFollowsPopup);
+  var popupOverlay = document.getElementById('brand-follows-popup-overlay');
+  if (popupOverlay) popupOverlay.addEventListener('click', function(e) { if (e.target === popupOverlay) closeBrandFollowsPopup(); });
 }
 
-// ── Card Grid ──
+var _ht_page_size = 9;
+var _ht_visible_count = 9;
+
+// ── Card Grid (paginated when no search; all when search) ──
 function renderBrandGrid(query) {
   var container = document.getElementById('brand-grid');
   if (!_ht_brands) { container.innerHTML = ''; return; }
 
-  var q = trLower(query.trim());
+  var q = trLower((query || '').trim());
   var list = q
     ? _ht_brands.filter(function(b) { return trLower(b.brand_name).indexOf(q) !== -1; })
     : _ht_brands;
@@ -2267,22 +2296,24 @@ function renderBrandGrid(query) {
     return;
   }
 
+  var usePagination = !q;
+  var visible = usePagination ? Math.min(_ht_visible_count, list.length) : list.length;
+  var showLoadMore = usePagination && list.length > _ht_visible_count && visible < list.length;
+  var remaining = list.length - visible;
+
   var html = '';
-  for (var i = 0; i < list.length; i++) {
+  for (var i = 0; i < visible; i++) {
     var b = list[i];
     var isF = _ht_follows.has(b.id);
 
     html += '<div class="brand-card">' +
-      // Header: logo + follow btn
       '<div class="brand-card-header">' +
         _brandLogoHtml(b, 48) +
         '<button class="brand-follow-btn' + (isF ? ' following' : '') + '" data-brand-id="' + b.id + '" onclick="toggleBrandFollow(' + b.id + ',event)">' +
           (isF ? 'Takipte' : 'Takip Et') +
         '</button>' +
       '</div>' +
-      // Name + segment
       '<div class="brand-card-name">' + _escHtml(b.brand_name) + '</div>' +
-      // Links
       '<div class="brand-card-links">';
 
     if (b.website_url) {
@@ -2297,13 +2328,23 @@ function renderBrandGrid(query) {
     }
 
     html += '</div>' +
-      // Footer: incele btn
       '<div class="brand-card-footer">' +
         '<button class="brand-incele-btn" onclick="openBrandModal(' + b.id + ')">İncele</button>' +
       '</div>' +
     '</div>';
   }
+
+  if (showLoadMore) {
+    html += '<button type="button" class="brand-load-more" id="brand-load-more">Daha Fazla Göster (' + remaining + ' marka daha)</button>';
+  }
+
   container.innerHTML = html;
+
+  var loadMoreBtn = document.getElementById('brand-load-more');
+  if (loadMoreBtn) loadMoreBtn.addEventListener('click', function() {
+    _ht_visible_count += _ht_page_size;
+    renderBrandGrid(document.getElementById('brand-search').value);
+  });
 }
 
 // ── Modal ──
@@ -2315,14 +2356,14 @@ function openBrandModal(brandId) {
   var segLabel = _SEGMENT_TR[b.segment] || b.segment || '—';
 
   var html = '' +
-    // Head
+    // Head: logo + brand name + Kapat top-right
     '<div class="brand-modal-head">' +
       _brandLogoHtml(b, 52) +
       '<div class="brand-modal-head-info">' +
-        '<div class="brand-modal-head-name">' + _escHtml(b.brand_name) + '</div>' +
+        '<div id="brand-modal-title" class="brand-modal-head-name">' + _escHtml(b.brand_name) + '</div>' +
         _segmentTag(b.segment) +
       '</div>' +
-      '<button class="brand-modal-close" onclick="closeBrandModal()">Kapat</button>' +
+      '<button type="button" class="brand-modal-close" onclick="closeBrandModal()">Kapat</button>' +
     '</div>' +
     '<div class="brand-modal-body">' +
       // Two-column info
@@ -2389,7 +2430,9 @@ document.addEventListener('click', function(e) {
 });
 // Close on ESC
 document.addEventListener('keydown', function(e) {
-  if (e.key === 'Escape') closeBrandModal();
+  if (e.key !== 'Escape') return;
+  var ov = document.getElementById('brand-modal-overlay');
+  if (ov && ov.style.display === 'flex') closeBrandModal();
 });
 
 // ── Follow / Unfollow ──
@@ -2403,9 +2446,9 @@ async function toggleBrandFollow(brandId, event) {
   var wasFollowed = _ht_follows.has(brandId);
   if (wasFollowed) { _ht_follows.delete(brandId); } else { _ht_follows.add(brandId); }
 
-  // Update all buttons for this brand (grid + modal)
   _updateAllFollowBtns(brandId);
-  renderBrandFollowChips();
+  updateBrandFollowCounter();
+  refreshBrandFollowsPopupList();
 
   var res;
   if (wasFollowed) {
@@ -2420,7 +2463,8 @@ async function toggleBrandFollow(brandId, event) {
     console.error('[HT] toggleBrandFollow failed', res.error);
     if (wasFollowed) { _ht_follows.add(brandId); } else { _ht_follows.delete(brandId); }
     _updateAllFollowBtns(brandId);
-    renderBrandFollowChips();
+    updateBrandFollowCounter();
+    refreshBrandFollowsPopupList();
     _showBrandToast('Bir hata oluştu. Tekrar deneyin.');
   }
   _ht_follow_busy = false;
@@ -2442,34 +2486,59 @@ function _updateAllFollowBtns(brandId) {
   }
 }
 
-// ── Follow chips ──
-function renderBrandFollowChips() {
-  var card = document.getElementById('brand-follows-card');
-  var chips = document.getElementById('brand-follows-chips');
-  var countEl = document.getElementById('brand-follows-count');
-
-  if (!_ht_brands || _ht_follows.size === 0) { card.style.display = 'none'; return; }
-
-  var followed = _ht_brands.filter(function(b) { return _ht_follows.has(b.id); });
-  countEl.textContent = '(' + followed.length + ')';
-
-  var html = '';
-  for (var i = 0; i < followed.length; i++) {
-    var b = followed[i];
-    var logoUrl = _brandLogoUrl(b);
-    html += '<div class="brand-follow-chip">' +
-      (logoUrl ? '<img src="'+_escHtml(logoUrl)+'" alt="" onerror="this.style.display=\'none\'">' : '') +
-      _escHtml(b.brand_name) + '</div>';
+// ── Follow counter button ──
+function updateBrandFollowCounter() {
+  var btn = document.getElementById('brand-follow-counter');
+  var numEl = document.getElementById('brand-follow-count-num');
+  var n = _ht_follows ? _ht_follows.size : 0;
+  if (numEl) numEl.textContent = n;
+  if (btn) {
+    btn.style.display = n > 0 ? 'inline-flex' : 'none';
+    btn.style.opacity = '1';
   }
-  chips.innerHTML = html;
-  card.style.display = '';
-
   var badge = document.getElementById('sirket-follow-count');
   if (badge) {
     var span = badge.querySelector('.badge-count');
-    if (followed.length > 0) { span.textContent = followed.length + ' takip'; badge.style.display = ''; }
-    else { badge.style.display = 'none'; }
+    if (span) span.textContent = n > 0 ? n + ' takip' : '';
+    badge.style.display = n > 0 ? '' : 'none';
   }
+}
+
+// ── Follow list popup ──
+function openBrandFollowsPopup() {
+  if (_ht_follows.size === 0) return;
+  var overlay = document.getElementById('brand-follows-popup-overlay');
+  if (overlay) overlay.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+  refreshBrandFollowsPopupList();
+  document.addEventListener('keydown', _htBrandFollowsPopupEsc);
+}
+
+function closeBrandFollowsPopup() {
+  var overlay = document.getElementById('brand-follows-popup-overlay');
+  if (overlay) overlay.style.display = 'none';
+  document.body.style.overflow = '';
+  document.removeEventListener('keydown', _htBrandFollowsPopupEsc);
+}
+
+function _htBrandFollowsPopupEsc(e) {
+  if (e.key === 'Escape') closeBrandFollowsPopup();
+}
+
+function refreshBrandFollowsPopupList() {
+  var listEl = document.getElementById('brand-follows-popup-list');
+  if (!listEl) return;
+  var followed = _ht_brands ? _ht_brands.filter(function(b) { return _ht_follows.has(b.id); }) : [];
+  var html = '';
+  for (var i = 0; i < followed.length; i++) {
+    var b = followed[i];
+    html += '<div class="brand-follows-popup-item">' +
+      '<div class="brand-follows-popup-item-logo">' + _brandLogoHtml(b, 32) + '</div>' +
+      '<span class="brand-follows-popup-item-name">' + _escHtml(b.brand_name) + '</span>' +
+      '<button type="button" class="brand-follows-popup-unfollow" onclick="toggleBrandFollow(' + b.id + ',event)">Takibi Bırak</button>' +
+    '</div>';
+  }
+  listEl.innerHTML = html || '<p class="brand-follows-popup-empty">Henüz takip ettiğin marka yok.</p>';
 }
 
 // ── Toast ──

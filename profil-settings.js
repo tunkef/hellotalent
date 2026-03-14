@@ -628,7 +628,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     if(loginTime && typeof supabase !== 'undefined') {
-      supabase.auth.getSession().then(function(res) {
+      var authPromise = window._htAuthSessionPromise || supabase.auth.getSession();
+      authPromise.then(function(res) {
         if(res.data && res.data.session) {
           var created = new Date(res.data.session.created_at || res.data.session.expires_at);
           if(!isNaN(created.getTime())) {
