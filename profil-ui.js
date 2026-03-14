@@ -2179,7 +2179,7 @@ var _ht_candidate_id = null;
 var _AVATAR_COLORS = ['#E74C3C','#3498DB','#2ECC71','#F39C12','#9B59B6','#1ABC9C','#E67E22','#34495E','#16A085','#C0392B'];
 function _avatarColor(n) { return _AVATAR_COLORS[(n||'?').charCodeAt(0) % _AVATAR_COLORS.length]; }
 
-var _SEGMENT_TR = { luxury:'Lüks', premium:'Premium', mid:'Moda', mass:'Yaygın', sportswear:'Spor', beauty:'Güzellik', tech:'Teknoloji' };
+var _SEGMENT_TR = { luxury:'LUXURY', premium:'PREMIUM', mid:'MID', mass:'MASS', sportswear:'SPORTSWEAR', beauty:'BEAUTY', tech:'TECH' };
 
 function _brandLogoUrl(b) {
   if (b.logo_url) return b.logo_url;
@@ -2309,30 +2309,18 @@ function renderBrandGrid(query) {
     var b = list[i];
     var isF = _ht_follows.has(b.id);
 
-    html += '<div class="brand-card">' +
+    html += '<div class="brand-card" onclick="openBrandModal(' + b.id + ')">' +
       '<div class="brand-card-logo-wrap">' + _brandLogoHtml(b, 56) + '</div>' +
       '<div class="brand-card-name">' + _escHtml(b.brand_name) + '</div>' +
-      '<div class="brand-card-segment-wrap">' + _segmentTag(b.segment) + '</div>' +
-      '<button class="brand-follow-btn' + (isF ? ' following' : '') + '" data-brand-id="' + b.id + '" onclick="toggleBrandFollow(' + b.id + ',event)">' +
-        (isF ? 'Takipte ✓' : 'Takip Et') +
-      '</button>' +
-      '<div class="brand-card-sep"></div>' +
-      '<div class="brand-card-links">';
-    if (b.website_url) {
-      html += '<a class="brand-card-link" href="' + _escHtml(b.website_url) + '" target="_blank" rel="noopener" onclick="event.stopPropagation()">' +
-        '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>' +
-        _escHtml(_shortDomain(b.website_url)) + '</a>';
-    }
-    if (b.instagram_url) {
-      html += '<a class="brand-card-link" href="' + _escHtml(b.instagram_url) + '" target="_blank" rel="noopener" onclick="event.stopPropagation()">' +
-        '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>' +
-        _escHtml(_igHandle(b.instagram_url)) + '</a>';
-    }
-    html += '</div>';
+      '<div class="brand-card-segment">' + _segmentTag(b.segment) + '</div>' +
+      '<div class="brand-card-bottom">' +
+        '<button type="button" class="brand-follow-btn' + (isF ? ' following' : '') + '" data-brand-id="' + b.id + '" onclick="toggleBrandFollow(' + b.id + ',event)">' +
+          (isF ? 'Takipte ✓' : 'Takip Et') +
+        '</button>';
     if (b.store_count_tr != null && b.store_count_tr !== '') {
-      html += '<div class="brand-card-store">' + _escHtml(String(b.store_count_tr)) + ' mağaza · TR</div>';
+      html += '<div class="brand-card-stores">' + _escHtml(String(b.store_count_tr)) + ' mağaza</div>';
     }
-    html += '<button type="button" class="brand-incele-btn" onclick="openBrandModal(' + b.id + ')">İncele</button></div>';
+    html += '</div></div>';
   }
 
   if (showLoadMore) {
