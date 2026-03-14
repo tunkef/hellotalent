@@ -564,7 +564,7 @@
 <div id="ht-footer"></div>
 <script>
 var _supa=null;
-function getSupa(){if(!_supa)_supa=supabase.createClient('https://cpwibefquojehjehtrog.supabase.co','sb_publishable_POUtNwJyjAAheukwYP5hmA_TKKjphwa');return _supa;}
+function getSupa(){ return window.HT ? HT.getSupa() : null; }
 
 function toggleLoginDropdown(){
   document.getElementById('login-dropdown').classList.toggle('open');

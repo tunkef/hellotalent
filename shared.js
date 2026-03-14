@@ -9,6 +9,10 @@
 (function () {
   'use strict';
 
+  /* ── SUPABASE CONFIG (single source of truth) ── */
+  var HT_SUPA_URL = 'https://cpwibefquojehjehtrog.supabase.co';
+  var HT_SUPA_KEY = 'sb_publishable_POUtNwJyjAAheukwYP5hmA_TKKjphwa';
+
   /* ── ACTIVE PAGE DETECTION ── */
   var path = window.location.pathname.replace(/\/$/, '') || '/';
   var PAGE = 'home';
@@ -219,6 +223,15 @@
   /* ── PUBLIC API ── */
   window.HT = {
     go: function (url) { window.location.href = url; },
+    SUPA_URL: HT_SUPA_URL,
+    SUPA_KEY: HT_SUPA_KEY,
+    getSupa: function () {
+      if (!window._htSupa) {
+        if (typeof supabase === 'undefined') { console.warn('Supabase CDN not loaded'); return null; }
+        window._htSupa = supabase.createClient(HT_SUPA_URL, HT_SUPA_KEY);
+      }
+      return window._htSupa;
+    },
 
     toggleLogin: function () {
       var overlay = document.getElementById('login-modal-overlay');

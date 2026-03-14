@@ -2025,10 +2025,7 @@ section#cv > div:first-child { padding: 52px 20px; }
 var _supa = null;
 function getSupa() {
   if (!_supa) {
-    _supa = supabase.createClient(
-      'https://cpwibefquojehjehtrog.supabase.co',
-      'sb_publishable_POUtNwJyjAAheukwYP5hmA_TKKjphwa'
-    );
+    _supa = supabase.createClient(HT.SUPA_URL, HT.SUPA_KEY);
   }
   return _supa;
 }
