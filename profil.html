@@ -2172,25 +2172,7 @@ html[data-theme="dark"] .lok-modal #btn-lok-close:hover{
       </label>
       <label for="settings-visibility-active" style="margin:0;cursor:pointer;font-weight:500;">Profilimi ve CV'mi işverenlere göster</label>
     </div>
-    <div class="field" style="margin-top:12px;">
-      <div class="wiz-step-desc" style="margin:0;font-size:12px;">
-        Şu anki işvereniniz: <span id="settings-current-employer-name">—</span>
-      </div>
-    </div>
-    <div class="field" style="display:flex;align-items:center;gap:12px;margin-top:8px;">
-      <label class="toggle">
-        <input type="checkbox" id="settings-hide-from-current-employer">
-        <span class="toggle-slider"></span>
-      </label>
-      <label for="settings-hide-from-current-employer" style="margin:0;cursor:pointer;font-weight:500;">Mevcut işveren seni görmesin</label>
-    </div>
-    <div id="settings-hide-hint" style="display:none;font-size:11px;color:var(--muted);margin-top:4px;">
-      Bu ayarı kullanmak için Deneyimler alanında mevcut işvereninizi belirtin.
-    </div>
-    <p style="font-size:12px;color:var(--muted);margin-top:8px;line-height:1.5;">
-      Bu ayar açıkken profiliniz ve yüklediğiniz CV, doğrulanmış işverenler tarafından görüntülenebilir. Kapatıldığında hem profiliniz hem CV'niz tamamen gizlenir.
-    </p>
-    <div class="field" style="display:flex;align-items:center;gap:12px;margin-top:16px;padding-top:16px;border-top:1px solid var(--border);">
+    <div class="field" style="display:flex;align-items:center;gap:12px;margin-top:12px;">
       <label class="toggle">
         <input type="checkbox" id="settings-actively-looking">
         <span class="toggle-slider"></span>
@@ -2201,6 +2183,17 @@ html[data-theme="dark"] .lok-modal #btn-lok-close:hover{
       </div>
     </div>
     <div id="actively-looking-msg" style="font-size:12px;margin-top:8px;display:none;"></div>
+    <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border);"></div>
+    <div class="field" style="display:flex;align-items:center;gap:12px;margin-top:8px;">
+      <label class="toggle">
+        <input type="checkbox" id="settings-hide-from-current-employer">
+        <span class="toggle-slider"></span>
+      </label>
+      <label for="settings-hide-from-current-employer" style="margin:0;cursor:pointer;font-weight:500;">Mevcut işveren seni görmesin</label>
+    </div>
+    <div id="settings-hide-hint" style="display:none;font-size:11px;color:var(--muted);margin-top:4px;">
+      Bu ayarı kullanmak için Deneyimler alanında mevcut işvereninizi belirtin.
+    </div>
   </div>
 
   <div class="card" style="margin-top:16px;" id="settings-notifications-card">
@@ -2332,37 +2325,45 @@ html[data-theme="dark"] .lok-modal #btn-lok-close:hover{
     </div>
   </div>
 
-  <div class="card" style="margin-top:16px;border:1px solid var(--border);" id="settings-account-management-card">
+  <div class="card" style="margin-top:16px;" id="settings-account-management-card">
     <div class="card-title">Hesap Yönetimi</div>
-
     <div id="account-status-banner" style="display:none;padding:12px;border-radius:8px;margin-bottom:12px;font-size:13px;"></div>
+    <p style="font-size:13px;color:var(--muted);line-height:1.5;">Hesabınızı dondurmak, silmek veya verilerinizi indirmek için hesap yönetimi sihirbazını kullanın.</p>
+    <button class="btn btn-secondary btn-sm" id="btn-open-account-wizard" style="margin-top:12px;width:100%;">Hesap Yönetimini Aç</button>
+  </div>
 
-    <div class="field" style="margin-top:8px;padding-bottom:16px;border-bottom:1px solid var(--border);">
-      <button class="btn btn-secondary btn-sm" id="btn-download-data" style="width:100%;">
-        Verilerimi İndir (KVKK md.11)
-      </button>
-      <p style="font-size:11px;color:var(--muted);margin-top:4px;line-height:1.4;">
-        Tüm kişisel verilerinizi JSON formatında indirin. Bu dosya profil bilgilerinizi, deneyimlerinizi, eğitim bilgilerinizi ve tercihlerinizi içerir.
-      </p>
-      <div id="download-data-msg" style="font-size:12px;margin-top:8px;display:none;"></div>
-    </div>
+  <div id="account-wizard-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);backdrop-filter:blur(3px);z-index:1000;align-items:center;justify-content:center;padding:16px;">
+    <div style="background:white;border-radius:16px;max-width:480px;width:100%;max-height:90vh;overflow-y:auto;padding:24px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+        <h3 style="font-family:'Bricolage Grotesque',sans-serif;font-size:18px;font-weight:700;margin:0;">Hesap Yönetimi</h3>
+        <button id="btn-close-account-wizard" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted);">✕</button>
+      </div>
 
-    <div class="field" style="margin-top:8px;">
-      <button class="btn btn-secondary btn-sm" id="btn-freeze-account" style="width:100%;">
-        Hesabımı Dondur
-      </button>
-      <p style="font-size:11px;color:var(--muted);margin-top:4px;line-height:1.4;">
-        Hesabınızı dondurduğunuzda profiliniz işverenlere görünmez olur. İstediğiniz zaman tekrar aktif edebilirsiniz.
-      </p>
-    </div>
+      <div id="account-wizard-step-1">
+        <p style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:20px;">
+          Aşağıdaki seçeneklerden birini kullanarak hesabınızı yönetebilirsiniz. Lütfen dikkatli olun — bazı işlemler geri alınamaz.
+        </p>
 
-    <div class="field" style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border);">
-      <button class="btn btn-sm" id="btn-delete-account" style="width:100%;background:#DC2626;color:#fff;border:none;">
-        Hesabımı Sil
-      </button>
-      <p style="font-size:11px;color:var(--muted);margin-top:4px;line-height:1.4;">
-        Hesabınız 30 gün boyunca askıya alınır, bu süre içinde vazgeçebilirsiniz. 30 gün sonra tüm verileriniz kalıcı olarak silinir (KVKK md.11).
-      </p>
+        <div id="wizard-download-section" style="padding:16px;border:1px solid var(--border);border-radius:12px;margin-bottom:12px;">
+          <div style="font-weight:600;font-size:14px;margin-bottom:4px;">📥 Verilerimi İndir</div>
+          <p style="font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.5;">KVKK md.11 kapsamında tüm kişisel verilerinizi JSON formatında indirebilirsiniz.</p>
+          <button class="btn btn-secondary btn-sm" id="btn-download-data" style="width:100%;">Verilerimi İndir</button>
+          <div id="download-data-msg" style="font-size:12px;margin-top:8px;display:none;"></div>
+        </div>
+
+        <div style="padding:16px;border:1px solid var(--border);border-radius:12px;margin-bottom:12px;">
+          <div style="font-weight:600;font-size:14px;margin-bottom:4px;">⏸️ Hesabımı Dondur</div>
+          <p style="font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.5;">Hesabınızı geçici olarak dondurabilirsiniz. Bu süre zarfında profiliniz işverenlere görünmez olur ancak verileriniz korunur. İstediğiniz zaman tekrar aktif edebilirsiniz.</p>
+          <button class="btn btn-secondary btn-sm" id="btn-freeze-account" style="width:100%;color:#92400E;border-color:#FCD34D;">Hesabımı Dondur</button>
+        </div>
+
+        <div style="padding:16px;border:1px solid #FEE2E2;border-radius:12px;background:#FFF5F5;">
+          <div style="font-weight:600;font-size:14px;margin-bottom:4px;color:#991B1B;">🗑️ Hesabımı Kalıcı Olarak Sil</div>
+          <p style="font-size:12px;color:#991B1B;margin-bottom:4px;line-height:1.5;">Bu işlem geri alınamaz. Hesabınız 30 gün boyunca askıya alınır, bu süre içinde vazgeçebilirsiniz.</p>
+          <p style="font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.5;">30 gün sonra tüm verileriniz — profiliniz, deneyimleriniz, belgeleriniz ve tercihleriniz — kalıcı olarak silinir (KVKK md.11). Bu işlemi onaylamadan önce verilerinizi indirmenizi şiddetle tavsiye ederiz.</p>
+          <button class="btn btn-sm" id="btn-delete-account" style="width:100%;background:#DC2626;color:#fff;border:none;">Hesabımı Sil</button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -3967,6 +3968,17 @@ document.addEventListener('DOMContentLoaded', function() {
     var deleteBtn = document.getElementById('btn-delete-account');
     var banner = document.getElementById('account-status-banner');
     if (!freezeBtn || !deleteBtn) return;
+
+    // Open/close wizard
+    var wizOverlay = document.getElementById('account-wizard-overlay');
+    var btnOpen = document.getElementById('btn-open-account-wizard');
+    var btnClose = document.getElementById('btn-close-account-wizard');
+    if (btnOpen) btnOpen.addEventListener('click', function(){
+      if (wizOverlay) wizOverlay.style.display = 'flex';
+    });
+    if (btnClose) btnClose.addEventListener('click', function(){
+      if (wizOverlay) wizOverlay.style.display = 'none';
+    });
 
     function showBanner(status){
       if (status === 'frozen') {
