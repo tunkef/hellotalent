@@ -2184,7 +2184,10 @@ var _SEGMENT_TR = { luxury:'Lüks', premium:'Premium', mid:'Moda', mass:'Yaygın
 function _brandLogoUrl(b) {
   if (b.logo_url) return b.logo_url;
   if (b.website_url) {
-    try { return 'https://logo.clearbit.com/' + new URL(b.website_url).hostname.replace('www.',''); } catch(e) {}
+    try {
+      var domain = new URL(b.website_url).hostname.replace('www.', '');
+      return 'https://www.google.com/s2/favicons?domain=' + domain + '&sz=128';
+    } catch(e) {}
   }
   return null;
 }
@@ -2259,14 +2262,14 @@ async function loadSirketlerPanel() {
     return (a.brand_name || '').localeCompare(b.brand_name || '', 'tr');
   });
 
-  _ht_visible_count = 9;
+  _ht_visible_count = 12;
   renderBrandGrid('');
   updateBrandFollowCounter();
 
   var si = document.getElementById('brand-search');
   si.addEventListener('input', function() {
     var val = si.value.trim();
-    if (!val) _ht_visible_count = 9;
+    if (!val) _ht_visible_count = 12;
     renderBrandGrid(si.value);
   });
 
@@ -2278,8 +2281,8 @@ async function loadSirketlerPanel() {
   if (popupOverlay) popupOverlay.addEventListener('click', function(e) { if (e.target === popupOverlay) closeBrandFollowsPopup(); });
 }
 
-var _ht_page_size = 9;
-var _ht_visible_count = 9;
+var _ht_page_size = 12;
+var _ht_visible_count = 12;
 
 // ── Card Grid (paginated when no search; all when search) ──
 function renderBrandGrid(query) {
@@ -2307,31 +2310,29 @@ function renderBrandGrid(query) {
     var isF = _ht_follows.has(b.id);
 
     html += '<div class="brand-card">' +
-      '<div class="brand-card-header">' +
-        _brandLogoHtml(b, 48) +
-        '<button class="brand-follow-btn' + (isF ? ' following' : '') + '" data-brand-id="' + b.id + '" onclick="toggleBrandFollow(' + b.id + ',event)">' +
-          (isF ? 'Takipte' : 'Takip Et') +
-        '</button>' +
-      '</div>' +
+      '<div class="brand-card-logo-wrap">' + _brandLogoHtml(b, 56) + '</div>' +
       '<div class="brand-card-name">' + _escHtml(b.brand_name) + '</div>' +
+      '<div class="brand-card-segment-wrap">' + _segmentTag(b.segment) + '</div>' +
+      '<button class="brand-follow-btn' + (isF ? ' following' : '') + '" data-brand-id="' + b.id + '" onclick="toggleBrandFollow(' + b.id + ',event)">' +
+        (isF ? 'Takipte ✓' : 'Takip Et') +
+      '</button>' +
+      '<div class="brand-card-sep"></div>' +
       '<div class="brand-card-links">';
-
     if (b.website_url) {
       html += '<a class="brand-card-link" href="' + _escHtml(b.website_url) + '" target="_blank" rel="noopener" onclick="event.stopPropagation()">' +
-        '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>' +
+        '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>' +
         _escHtml(_shortDomain(b.website_url)) + '</a>';
     }
     if (b.instagram_url) {
       html += '<a class="brand-card-link" href="' + _escHtml(b.instagram_url) + '" target="_blank" rel="noopener" onclick="event.stopPropagation()">' +
-        '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>' +
+        '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>' +
         _escHtml(_igHandle(b.instagram_url)) + '</a>';
     }
-
-    html += '</div>' +
-      '<div class="brand-card-footer">' +
-        '<button class="brand-incele-btn" onclick="openBrandModal(' + b.id + ')">İncele</button>' +
-      '</div>' +
-    '</div>';
+    html += '</div>';
+    if (b.store_count_tr != null && b.store_count_tr !== '') {
+      html += '<div class="brand-card-store">' + _escHtml(String(b.store_count_tr)) + ' mağaza · TR</div>';
+    }
+    html += '<button type="button" class="brand-incele-btn" onclick="openBrandModal(' + b.id + ')">İncele</button></div>';
   }
 
   if (showLoadMore) {
@@ -2478,7 +2479,7 @@ function _updateAllFollowBtns(brandId) {
   // Card buttons
   var btns = document.querySelectorAll('.brand-follow-btn[data-brand-id="' + brandId + '"]');
   for (var i = 0; i < btns.length; i++) {
-    btns[i].textContent = isF ? 'Takipte' : 'Takip Et';
+    btns[i].textContent = isF ? 'Takipte ✓' : 'Takip Et';
     if (isF) btns[i].classList.add('following'); else btns[i].classList.remove('following');
   }
   // Modal follow button
