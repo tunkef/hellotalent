@@ -1158,21 +1158,100 @@ var favorites = JSON.parse(localStorage.getItem('ht_ik_favs') || '[]');
 var pozisyonlar = JSON.parse(localStorage.getItem('ht_pozisyonlar') || '[]');
 var filterState = { pozisyon:[], segment:[], musait:[], calisma:[], egitim:[], dil:[] };
 
-// ── MOCK ADAYLAR ──
-var ADAYLAR = [
-  {id:1,ad:'Ahmet',soyad:'Yılmaz',initials:'AY',color:'#C94E28',pozisyon:'Store Manager',exp:8,sehir:'İstanbul',segment:'Fast Fashion',musait:'Hemen başlayabilirim',calisma:'Tam Zamanlı',egitim:'Lisans (4 Yıllık)',diller:['İngilizce','Almanca'],tel:'05** *** **37',email:'a*****@gmail.com',brand:'Massimo Dutti',maas:'30.000 TL'},
-  {id:2,ad:'Selin',soyad:'Bozkurt',initials:'SB',color:'#1E2D5E',pozisyon:'Sales Specialist',exp:5,sehir:'İstanbul',segment:'Lüks',musait:'1 ay',calisma:'Tam zamanlı',tel:'05** *** **14',email:'s*****@hotmail.com',brand:'Louis Vuitton',maas:'25.000 TL'},
-  {id:3,ad:'Ali',soyad:'Öztürk',initials:'AO',color:'#374151',pozisyon:'Ops Lead',exp:6,sehir:'Ankara',segment:'Teknoloji',musait:'Hemen',calisma:'Tam zamanlı',tel:'05** *** **21',email:'a***@icloud.com',brand:'Apple',maas:'35.000 TL'},
-  {id:4,ad:'Zeynep',soyad:'Demir',initials:'ZD',color:'#7C3AED',pozisyon:'Visual Merchandiser',exp:4,sehir:'İzmir',segment:'Fast Fashion',musait:'3 ay',calisma:'Tam zamanlı',tel:'05** *** **58',email:'z*****@gmail.com',brand:'Zara',maas:'20.000 TL'},
-  {id:5,ad:'Murat',soyad:'Kaya',initials:'MK',color:'#0891B2',pozisyon:'Departman Müdürü',exp:9,sehir:'İstanbul',segment:'Spor',musait:'1 ay',calisma:'Tam zamanlı',tel:'05** *** **73',email:'m***@gmail.com',brand:'Nike',maas:'40.000 TL'},
-  {id:6,ad:'Fatma',soyad:'Şahin',initials:'FŞ',color:'#059669',pozisyon:'Eğitim Uzmanı',exp:7,sehir:'Bursa',segment:'Lüks',musait:'Hemen',calisma:'Sözleşmeli',tel:'05** *** **92',email:'f*****@outlook.com',brand:'Chanel',maas:'28.000 TL'},
-  {id:7,ad:'Emre',soyad:'Çelik',initials:'EÇ',color:'#DC2626',pozisyon:'Store Manager',exp:11,sehir:'İstanbul',segment:'Fast Fashion',musait:'Hemen',calisma:'Tam zamanlı',tel:'05** *** **44',email:'e***@gmail.com',brand:'H&M',maas:'38.000 TL'},
-  {id:8,ad:'Ayşe',soyad:'Koç',initials:'AK',color:'#D97706',pozisyon:'Sales Specialist',exp:3,sehir:'Ankara',segment:'Ev & Yaşam',musait:'3 ay',calisma:'Yarı zamanlı',tel:'05** *** **61',email:'a*****@yahoo.com',brand:'IKEA',maas:'18.000 TL'},
-  {id:9,ad:'Berk',soyad:'Arslan',initials:'BA',color:'#4F46E5',pozisyon:'Ops Lead',exp:5,sehir:'İzmir',segment:'Teknoloji',musait:'1 ay',calisma:'Tam zamanlı',tel:'05** *** **83',email:'b***@gmail.com',brand:'Samsung',maas:'32.000 TL'},
-  {id:10,ad:'Cansu',soyad:'Erdem',initials:'CE',color:'#DB2777',pozisyon:'Visual Merchandiser',exp:6,sehir:'İstanbul',segment:'Lüks',musait:'Hemen',calisma:'Tam zamanlı',tel:'05** *** **17',email:'c*****@gmail.com',brand:'Gucci',maas:'30.000 TL'},
-  {id:11,ad:'Hakan',soyad:'Yıldız',initials:'HY',color:'#0D9488',pozisyon:'Store Manager',exp:14,sehir:'İstanbul',segment:'Spor',musait:'3 ay',calisma:'Tam zamanlı',tel:'05** *** **29',email:'h***@hotmail.com',brand:'Adidas',maas:'45.000 TL'},
-  {id:12,ad:'Elif',soyad:'Güneş',initials:'EG',color:'#7C2D12',pozisyon:'Departman Müdürü',exp:7,sehir:'Antalya',segment:'Fast Fashion',musait:'Hemen',calisma:'Tam zamanlı',tel:'05** *** **05',email:'e*****@gmail.com',brand:'Mango',maas:'26.000 TL'},
-];
+// ── ADAYLAR (live from Supabase) ──
+var ADAYLAR = []; // Will be populated from Supabase
+
+var AVATAR_COLORS = ['#E74C3C','#3498DB','#2ECC71','#F39C12','#9B59B6','#1ABC9C','#E67E22','#34495E','#16A085','#C0392B'];
+function avatarColorFromName(fullName){
+  if(!fullName) return AVATAR_COLORS[0];
+  var h = 0;
+  for(var i = 0; i < fullName.length; i++) h += fullName.charCodeAt(i);
+  return AVATAR_COLORS[Math.abs(h) % AVATAR_COLORS.length];
+}
+function maskPhone(tel){
+  if(!tel || tel.length < 4) return '05** *** ****';
+  return '05** *** **' + tel.slice(-2);
+}
+function maskEmail(email){
+  if(!email || !email.includes('@')) return '***@***.com';
+  var parts = email.split('@');
+  return (parts[0][0] || '') + '*****@' + (parts[1] || '');
+}
+function calcTotalExp(experiences){
+  var now = new Date().getFullYear();
+  var total = 0;
+  (experiences || []).forEach(function(e){
+    var start = e.baslangic_yil;
+    if(!start) return;
+    var end = e.devam_ediyor ? now : (e.bitis_yil || now);
+    total += Math.max(0, end - start);
+  });
+  return total;
+}
+
+async function loadLiveCandidates(){
+  var container = document.getElementById('candidate-list');
+  container.innerHTML = '<div style="text-align:center;padding:40px 0;color:var(--muted);font-size:13px;"><div class="spinner" style="margin:0 auto 12px;width:24px;height:24px;border:2px solid var(--muted);border-radius:50%;"></div>Adaylar yükleniyor...</div>';
+  try {
+    var sb = getSupa();
+    if(!sb){ throw new Error('Supabase bağlantısı yok'); }
+    var { data: rows, error: err } = await sb.from('candidates').select('id, full_name, adres_il, avatar_url, telefon, email, is_active, profile_completed, hide_from_current_employer').eq('is_active', true).eq('profile_completed', true);
+    if(err) throw err;
+    if(!rows || rows.length === 0){ ADAYLAR = []; renderCandidates(ADAYLAR); return; }
+    var cids = rows.map(function(r){ return r.id; });
+    var [expRes, workRes, eduRes, langRes] = await Promise.all([
+      sb.from('candidate_experiences').select('*').in('candidate_id', cids).order('sira', { ascending: true }),
+      sb.from('candidate_work_preferences').select('*').in('candidate_id', cids),
+      sb.from('candidate_education').select('*').in('candidate_id', cids).order('sira', { ascending: true }),
+      sb.from('candidate_languages').select('*').in('candidate_id', cids)
+    ]);
+    var expByCid = {};
+    (expRes.data || []).forEach(function(e){ if(!expByCid[e.candidate_id]) expByCid[e.candidate_id] = []; expByCid[e.candidate_id].push(e); });
+    var workByCid = {};
+    (workRes.data || []).forEach(function(w){ workByCid[w.candidate_id] = w; });
+    var eduByCid = {};
+    (eduRes.data || []).forEach(function(e){ if(!eduByCid[e.candidate_id]) eduByCid[e.candidate_id] = []; eduByCid[e.candidate_id].push(e); });
+    var langByCid = {};
+    (langRes.data || []).forEach(function(l){ if(!langByCid[l.candidate_id]) langByCid[l.candidate_id] = []; langByCid[l.candidate_id].push(l); });
+    ADAYLAR = rows.map(function(c){
+      var fullName = (c.full_name || '').trim() || '?';
+      var parts = fullName.split(/\s+/).filter(Boolean);
+      var ad = parts[0] || '?';
+      var soyad = parts.slice(1).join(' ') || '';
+      var initials = (ad[0] || '').toUpperCase() + (soyad ? (soyad[0] || '').toUpperCase() : (ad[1] || ad[0] || '?').toUpperCase());
+      if(!initials) initials = '?';
+      var exp = expByCid[c.id] || [];
+      var workPrefs = workByCid[c.id];
+      var edu = eduByCid[c.id] || [];
+      var languages = langByCid[c.id] || [];
+      var exp0 = exp[0];
+      var edu0 = edu[0];
+      var calismaArr = workPrefs && workPrefs.calisma_tipleri ? (Array.isArray(workPrefs.calisma_tipleri) ? workPrefs.calisma_tipleri : []) : [];
+      return {
+        id: c.id,
+        ad: ad,
+        soyad: soyad,
+        initials: initials,
+        color: avatarColorFromName(fullName),
+        pozisyon: (exp0 && exp0.pozisyon) ? exp0.pozisyon : '',
+        exp: calcTotalExp(exp),
+        sehir: (c.adres_il || '').trim() || '',
+        segment: (exp0 && exp0.segment) ? exp0.segment : '',
+        musait: (workPrefs && workPrefs.musaitlik) ? workPrefs.musaitlik : '',
+        calisma: (calismaArr[0] != null) ? String(calismaArr[0]) : '',
+        egitim: (edu0 && edu0.egitim_seviye) ? edu0.egitim_seviye : '',
+        diller: languages.map(function(l){ return l.dil || ''; }).filter(Boolean),
+        tel: maskPhone(c.telefon),
+        email: maskEmail(c.email),
+        brand: (exp0 && (exp0.marka || exp0.sirket)) ? (exp0.marka || exp0.sirket) : '',
+        maas: (workPrefs && workPrefs.maas_beklenti) ? workPrefs.maas_beklenti + ' TL' : ''
+      };
+    });
+    renderCandidates(ADAYLAR);
+  } catch(e) {
+    container.innerHTML = '<div class="empty-state"><div class="empty-icon">⚠️</div><div class="empty-title">Adaylar yüklenemedi</div><div class="empty-sub">' + (e.message || 'Bir hata oluştu.') + '</div></div>';
+  }
+}
 
 // ── MOCK POZİSYONLAR (default) ──
 var DEFAULT_POZLAR = [
@@ -1198,6 +1277,13 @@ async function initApp(){
     return;
   }
   currentUser = data.session.user;
+
+  // Eski mock favorileri temizle (id 1-12 artık DB id)
+  var oldFavs = JSON.parse(localStorage.getItem('ht_ik_favs') || '[]');
+  if(oldFavs.length > 0 && oldFavs[0] <= 12){
+    localStorage.removeItem('ht_ik_favs');
+  }
+  favorites = JSON.parse(localStorage.getItem('ht_ik_favs') || '[]');
 
   // Profil bilgilerini yükle
   var meta = currentUser.user_metadata || {};
@@ -1244,7 +1330,7 @@ async function initApp(){
   }catch(e){}
 
   // Render
-  renderCandidates(ADAYLAR);
+  await loadLiveCandidates();
   renderPozisyonlar();
   renderFavoriler();
   updateFavCount();
