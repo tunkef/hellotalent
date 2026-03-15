@@ -2510,10 +2510,25 @@ function updateBrandFollowCounter() {
   }
   var badge = document.getElementById('sirket-follow-count');
   if (badge) {
-    var span = badge.querySelector('.badge-count');
-    if (span) span.textContent = n > 0 ? n + ' takip' : '';
+    var countText = badge.querySelector('.badge-count-text');
+    if (countText) countText.textContent = n > 0 ? n + ' takip' : '';
     badge.style.display = n > 0 ? '' : 'none';
   }
+  updateMarkalaBgDots();
+}
+
+function updateMarkalaBgDots() {
+  var container = document.querySelector('.bg-markalar');
+  if (!container) return;
+  var ids = Array.from(_ht_follows || []).slice(0, 4);
+  var brands = _ht_brands ? ids.map(function(id) { return _ht_brands.find(function(b) { return b.id === id; }); }).filter(Boolean) : [];
+  if (brands.length === 0) {
+    brands = _ht_brands ? _ht_brands.filter(function(b) { return b.is_featured; }).slice(0, 4) : [];
+  }
+  container.innerHTML = brands.map(function(b) {
+    var url = _brandLogoUrl(b);
+    return '<div class="brand-dot"><img src="' + _escHtml(url || '') + '" alt=""></div>';
+  }).join('');
 }
 
 // ── Follow list popup ──
