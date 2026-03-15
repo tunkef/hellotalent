@@ -73,29 +73,22 @@ document.addEventListener('DOMContentLoaded', function() {
     btnChangePw.disabled = false;
   });
 
-  // Theme settings (Ayarlar > Görünüm)
-  var themeSystem = document.getElementById('settings-theme-system');
-  var themeLight = document.getElementById('settings-theme-light');
-  var themeDark = document.getElementById('settings-theme-dark');
-  var storedTheme;
-  try {
-    storedTheme = localStorage.getItem(THEME_STORAGE_KEY) || 'system';
-  } catch (e) {
-    storedTheme = 'system';
-  }
-  if (themeSystem && themeLight && themeDark) {
-    if (storedTheme === 'light') themeLight.checked = true;
-    else if (storedTheme === 'dark') themeDark.checked = true;
-    else themeSystem.checked = true;
-
-    var onThemeChange = function(e) {
-      if (!e.target || !e.target.value) return;
-      setThemePreference(e.target.value);
-    };
-    themeSystem.addEventListener('change', onThemeChange);
-    themeLight.addEventListener('change', onThemeChange);
-    themeDark.addEventListener('change', onThemeChange);
-  }
+  // Theme toggle (sidebar + Ayarlar Görünüm) — sun/moon buttons
+  window.syncThemeToggleButtons = function() {
+    var theme = document.documentElement.getAttribute('data-theme') || 'light';
+    document.querySelectorAll('.theme-toggle-btn').forEach(function(btn) {
+      if (theme === 'dark') btn.classList.add('dark');
+      else btn.classList.remove('dark');
+    });
+  };
+  document.querySelectorAll('.theme-toggle-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var current = document.documentElement.getAttribute('data-theme') || 'light';
+      var next = current === 'dark' ? 'light' : 'dark';
+      setThemePreference(next);
+      window.syncThemeToggleButtons();
+    });
+  });
 
   // Gizlilik: visibility toggle (Settings) — read/write candidates.is_active
   var settingsVisibilityToggle = document.getElementById('settings-visibility-active');
