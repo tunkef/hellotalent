@@ -244,7 +244,7 @@ function addExperienceCard(data) {
   // Row 4: Takım Büyüklüğü (conditional — shown only for managerial departments)
   var takimWrap = makeSelectField('Takım Büyüklüğü', cardId + '-takim', TAKIM_BUYUKLUKLERI, d.takim_buyuklugu, 'Takım büyüklüğü seçiniz...');
   takimWrap.id = cardId + '-takim-wrap';
-  var deptShouldShowTakim = d.departman && ['Bölge Yönetimi','Genel Merkez'].indexOf(d.departman) !== -1;
+  var deptShouldShowTakim = d.departman && ['Mağaza','Bölge Yönetimi','Genel Merkez'].indexOf(d.departman) !== -1;
   takimWrap.style.display = deptShouldShowTakim ? '' : 'none';
   card.appendChild(takimWrap);
 
@@ -252,7 +252,7 @@ function addExperienceCard(data) {
   var deptSelect = card.querySelector('#' + cardId + '-departman');
   if (deptSelect) {
     deptSelect.addEventListener('change', function() {
-      var show = ['Bölge Yönetimi','Genel Merkez'].indexOf(deptSelect.value) !== -1;
+      var show = ['Mağaza','Bölge Yönetimi','Genel Merkez'].indexOf(deptSelect.value) !== -1;
       takimWrap.style.display = show ? '' : 'none';
       if (!show) { var ts = document.getElementById(cardId + '-takim'); if (ts) ts.value = ''; }
     });
@@ -1706,10 +1706,14 @@ function calculateProfileScore() {
     if (val(firstId + 'pozisyon')) score += 8;       // latest position
     if (val(firstId + 'sirket'))   score += 8;       // latest company
     if (val(firstId + 'basyil'))   score += 5;       // start date present
-    // Team size: only score if the field is visible (follows UI conditional logic)
+    // Team size: score if visible and filled; if field hidden for this department, no penalty
     var takimWrap = document.getElementById(expCards[0].id + '-takim-wrap');
     var takimVisible = takimWrap && takimWrap.style.display !== 'none';
-    if (takimVisible && val(firstId + 'takim')) score += 4;
+    if (takimVisible) {
+      if (val(firstId + 'takim')) score += 4;
+    } else {
+      score += 4; // Field not relevant for this department — no penalty
+    }
   }
 
   // ── C) Education & Language — 15 points ──
@@ -1787,25 +1791,17 @@ function updateScoreUI() {
     }
   }
 
-  // Update prominent hints (up to 2, with active style)
+  // Update prominent hints as vermillion chips (up to 3)
   var hintsContainer = document.getElementById('merkez-score-hints-active');
   if (hintsContainer) {
     while (hintsContainer.firstChild) hintsContainer.removeChild(hintsContainer.firstChild);
-    var maxHints = Math.min(hints.length, 2);
+    var maxHints = Math.min(hints.length, 3);
     for (var i = 0; i < maxHints; i++) {
-      var hintDiv = document.createElement('div');
-      hintDiv.className = 'mk-stat-hint-active';
-      var arrowSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-      arrowSvg.setAttribute('viewBox', '0 0 24 24');
-      arrowSvg.setAttribute('fill', 'none');
-      arrowSvg.setAttribute('stroke', 'currentColor');
-      arrowSvg.setAttribute('stroke-width', '2');
-      var polyline = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
-      polyline.setAttribute('points', '9 18 15 12 9 6');
-      arrowSvg.appendChild(polyline);
-      hintDiv.appendChild(arrowSvg);
-      hintDiv.appendChild(document.createTextNode(hints[i]));
-      hintsContainer.appendChild(hintDiv);
+      var chip = document.createElement('div');
+      chip.className = 'mk-score-hint-chip';
+      chip.innerHTML = '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>';
+      chip.appendChild(document.createTextNode(hints[i]));
+      hintsContainer.appendChild(chip);
     }
   }
 

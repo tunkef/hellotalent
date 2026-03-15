@@ -878,6 +878,22 @@ html[data-theme="dark"] .field-req{color:#F87171;}
   color: var(--text-muted);
   margin-top: 8px;
 }
+.mk-score-hint-chip {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--verm);
+  padding: 4px 8px;
+  background: rgba(201,78,40,0.06);
+  border-radius: 6px;
+  margin-top: 4px;
+}
+.mk-score-hint-chip svg {
+  flex-shrink: 0;
+  color: var(--verm);
+}
 #merkez-score-hints-active .mk-stat-hint-active {
   background: var(--verm-light); padding: 5px 8px; border-radius: var(--radius-sm);
   font-family: var(--mono); font-size: 10px; color: var(--verm); font-weight: 600;
