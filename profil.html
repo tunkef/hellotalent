@@ -1614,8 +1614,8 @@ function applyDraft(draft) {
     }
     if (wp.calisma_tipleri && wp.calisma_tipleri.length > 0) {
       selectedCalismaTipleri = wp.calisma_tipleri.slice();
-      document.querySelectorAll('#calisma-tipleri-checks input[type=checkbox]').forEach(function(cb) {
-        cb.checked = wp.calisma_tipleri.indexOf(cb.value) !== -1;
+      document.querySelectorAll('#calisma-tipleri-checks .check-item').forEach(function(btn) {
+        btn.classList.toggle('checked', wp.calisma_tipleri.indexOf(btn.textContent) !== -1);
       });
     }
     setVal('f-maas', wp.maas_beklenti);
@@ -1629,9 +1629,9 @@ function applyDraft(draft) {
     // Career type multi-select restore
     if (wp.career_type) {
       var types = typeof wp.career_type === 'string' ? wp.career_type.split(',') : [];
-      selectedCareerTypes = types;
-      document.querySelectorAll('#career-type-checks input[type=checkbox]').forEach(function(cb) {
-        cb.checked = types.indexOf(cb.value) !== -1;
+      selectedCareerTypes = types.slice();
+      document.querySelectorAll('#career-type-checks .check-item').forEach(function(btn) {
+        btn.classList.toggle('checked', types.indexOf(btn.dataset.value) !== -1);
       });
     }
   }
@@ -1763,10 +1763,11 @@ function reapplyDynamicFields() {
         c.classList.toggle('selected', c.textContent === wp.musaitlik);
       });
     }
-    // Calisma tipleri checkboxes
+    // Calisma tipleri check-item buttons
     if (wp.calisma_tipleri && wp.calisma_tipleri.length > 0) {
-      document.querySelectorAll('#calisma-tipleri-checks input[type=checkbox]').forEach(function(cb) {
-        cb.checked = wp.calisma_tipleri.indexOf(cb.value) !== -1;
+      selectedCalismaTipleri = wp.calisma_tipleri.slice();
+      document.querySelectorAll('#calisma-tipleri-checks .check-item').forEach(function(btn) {
+        btn.classList.toggle('checked', wp.calisma_tipleri.indexOf(btn.textContent) !== -1);
       });
     }
     // Segment chips
@@ -1775,11 +1776,12 @@ function reapplyDynamicFields() {
         c.classList.toggle('selected', wp.tercih_segmentler.indexOf(c.textContent) !== -1);
       });
     }
-    // Career type checkboxes
+    // Career type check-item buttons
     if (wp.career_type) {
       var types = typeof wp.career_type === 'string' ? wp.career_type.split(',') : [];
-      document.querySelectorAll('#career-type-checks input[type=checkbox]').forEach(function(cb) {
-        cb.checked = types.indexOf(cb.value) !== -1;
+      selectedCareerTypes = types.slice();
+      document.querySelectorAll('#career-type-checks .check-item').forEach(function(btn) {
+        btn.classList.toggle('checked', types.indexOf(btn.dataset.value) !== -1);
       });
     }
   }

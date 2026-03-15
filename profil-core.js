@@ -206,6 +206,8 @@ const SEGMENTLER = ['L\u00fcks','Premium','Orta Segment','Fast Fashion','Spor','
 
 const ISTIHDAM_TIPLERI = ['Tam Zamanl\u0131','Yar\u0131 Zamanl\u0131','Sezonluk','Stajyer','S\u00f6zle\u015fmeli'];
 
+const CALISMA_TIPLERI = ['Tam Zamanl\u0131','Yar\u0131 Zamanl\u0131','Sezonluk','S\u00f6zle\u015fmeli'];
+
 // KIDEM_SEVIYELERI removed (Decision 1 — derived later, not candidate-facing)
 // LOKASYON_TIPLERI removed (Decision 3 — implied by department)
 

@@ -814,28 +814,24 @@ function initStep4() {
     });
   }
 
-  // Calisma Tipleri checkboxes
+  // Calisma Tipleri — check-item buttons (multi-select, no Stajyer)
   var ctContainer = document.getElementById('calisma-tipleri-checks');
   if (ctContainer) {
-    ISTIHDAM_TIPLERI.forEach(function(tip) {
-      var lbl = document.createElement('label');
-      lbl.className = 'cb-wrap';
-      lbl.style.padding = '6px 0';
-      var cb = document.createElement('input');
-      cb.type = 'checkbox';
-      cb.value = tip;
-      cb.addEventListener('change', function() {
-        if (cb.checked) { selectedCalismaTipleri.push(tip); }
-        else { selectedCalismaTipleri = selectedCalismaTipleri.filter(function(t) { return t !== tip; }); }
+    CALISMA_TIPLERI.forEach(function(tip) {
+      var btn = document.createElement('button');
+      btn.className = 'check-item';
+      btn.type = 'button';
+      btn.textContent = tip;
+      if (selectedCalismaTipleri.indexOf(tip) !== -1) btn.classList.add('checked');
+      btn.addEventListener('click', function() {
+        btn.classList.toggle('checked');
+        if (btn.classList.contains('checked')) {
+          selectedCalismaTipleri.push(tip);
+        } else {
+          selectedCalismaTipleri = selectedCalismaTipleri.filter(function(t) { return t !== tip; });
+        }
       });
-      var checkmark = document.createElement('span');
-      checkmark.className = 'cb-check';
-      lbl.appendChild(cb);
-      lbl.appendChild(checkmark);
-      var span = document.createElement('span');
-      span.textContent = tip;
-      lbl.appendChild(span);
-      ctContainer.appendChild(lbl);
+      ctContainer.appendChild(btn);
     });
   }
 
@@ -886,28 +882,25 @@ function initStep4() {
     });
   }
 
-  // Career type multi-select checkboxes (Decision 8)
+  // Career type — check-item buttons (multi-select, Decision 8)
   var ctypeContainer = document.getElementById('career-type-checks');
   if (ctypeContainer) {
     CAREER_TYPE_OPTIONS.forEach(function(opt) {
-      var lbl = document.createElement('label');
-      lbl.className = 'cb-wrap';
-      lbl.style.padding = '6px 0';
-      var cb = document.createElement('input');
-      cb.type = 'checkbox';
-      cb.value = opt.value;
-      cb.addEventListener('change', function() {
-        if (cb.checked) { selectedCareerTypes.push(opt.value); }
-        else { selectedCareerTypes = selectedCareerTypes.filter(function(t) { return t !== opt.value; }); }
+      var btn = document.createElement('button');
+      btn.className = 'check-item';
+      btn.type = 'button';
+      btn.textContent = opt.label;
+      btn.dataset.value = opt.value;
+      if (selectedCareerTypes.indexOf(opt.value) !== -1) btn.classList.add('checked');
+      btn.addEventListener('click', function() {
+        btn.classList.toggle('checked');
+        if (btn.classList.contains('checked')) {
+          selectedCareerTypes.push(opt.value);
+        } else {
+          selectedCareerTypes = selectedCareerTypes.filter(function(t) { return t !== opt.value; });
+        }
       });
-      var checkmark = document.createElement('span');
-      checkmark.className = 'cb-check';
-      lbl.appendChild(cb);
-      lbl.appendChild(checkmark);
-      var span = document.createElement('span');
-      span.textContent = opt.label;
-      lbl.appendChild(span);
-      ctypeContainer.appendChild(lbl);
+      ctypeContainer.appendChild(btn);
     });
   }
 }
