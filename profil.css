@@ -1836,31 +1836,23 @@ html[data-theme="dark"] .field-req{color:#F87171;}
   width: 64px;
   height: 64px;
   margin: 0 auto 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 .modal-check-svg {
   width: 64px;
   height: 64px;
 }
+.modal-check-bg {
+  opacity: 0.3;
+}
 .modal-check-circle {
-  stroke-width: 2;
-  stroke: var(--green, #16a34a);
   stroke-dasharray: 166;
   stroke-dashoffset: 166;
-  stroke-miterlimit: 10;
-  fill: none;
   animation: modalCircle 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
 }
 .modal-check-tick {
-  stroke-width: 3;
-  stroke: var(--green, #16a34a);
-  stroke-linecap: round;
-  stroke-linejoin: round;
   stroke-dasharray: 48;
   stroke-dashoffset: 48;
-  animation: modalTick 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.4s forwards;
+  animation: modalTick 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.5s forwards;
 }
 @keyframes modalCircle {
   to { stroke-dashoffset: 0; }

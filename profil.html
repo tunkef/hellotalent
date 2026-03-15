@@ -147,8 +147,9 @@ if (window.Sentry) {
   <div class="modal">
     <div class="modal-icon modal-icon-success">
       <svg class="modal-check-svg" viewBox="0 0 52 52">
-        <circle class="modal-check-circle" cx="26" cy="26" r="24"/>
-        <path class="modal-check-tick" d="M14 27l10 10 18-22"/>
+        <circle class="modal-check-bg" cx="26" cy="26" r="24" fill="none" stroke="#16a34a" stroke-width="2"/>
+        <circle class="modal-check-circle" cx="26" cy="26" r="24" fill="none" stroke="#16a34a" stroke-width="2"/>
+        <polyline class="modal-check-tick" points="14,27 22,35 38,17" fill="none" stroke="#16a34a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
     </div>
     <div class="modal-title">Profilin güncellendi</div>
