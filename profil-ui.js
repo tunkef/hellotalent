@@ -2605,7 +2605,7 @@ function _escHtml(s) {
 }
 
 // ═══════════════════════════════════════════════════
-// PROFILE PREVIEW
+// PROFILE PREVIEW — Right Drawer
 // ═══════════════════════════════════════════════════
 
 function openProfilePreview() {
@@ -2618,15 +2618,17 @@ function openProfilePreview() {
   var certs = db.certificates || [];
   var wp = db.work_prefs;
   var locs = db.locations || [];
+  var bi = db.brand_interests || [];
 
   var html = '';
+
+  // ── HERO CARD ──
   var initials = (p.full_name || '').split(/\s+/).map(function(w) { return w.charAt(0); }).join('').substring(0, 2).toUpperCase() || '?';
-  var avatarHtml = p.avatar_url
+  var avatarInner = p.avatar_url
     ? '<img src="' + _escHtml(p.avatar_url) + '" alt="">'
     : initials;
 
-  var currentRole = '';
-  var currentCompany = '';
+  var currentRole = '', currentCompany = '';
   if (exps.length > 0) {
     var latest = exps[0];
     currentRole = latest.pozisyon || '';
@@ -2646,10 +2648,10 @@ function openProfilePreview() {
 
   var isActive = p.is_active;
 
-  html += '<div class="pp-hero">';
-  html += '<div class="pp-avatar">' + avatarHtml + '</div>';
-  html += '<div>';
-  html += '<div class="pp-name">' + _escHtml(p.full_name || '') + '</div>';
+  html += '<div class="pp-hero-card">';
+  html += '<div class="pp-avatar">' + avatarInner + '</div>';
+  html += '<div style="flex:1;min-width:0;">';
+  html += '<div class="pp-name">' + _escHtml(p.full_name || '—') + '</div>';
   if (currentRole) {
     html += '<div class="pp-role"><strong>' + _escHtml(currentRole) + '</strong>';
     if (currentCompany) html += ' · ' + _escHtml(currentCompany);
@@ -2661,17 +2663,20 @@ function openProfilePreview() {
     html += _escHtml(p.adres_il);
   }
   if (totalYears > 0) {
-    html += (p.adres_il ? '<span style="opacity:0.3;margin:0 4px;">·</span>' : '');
+    html += (p.adres_il ? '<span style="opacity:0.3;margin:0 3px;">·</span>' : '');
     html += totalYears + ' yıl deneyim';
   }
   html += '<span class="pp-status-badge ' + (isActive ? 'active' : 'passive') + '">';
   html += '<span class="dot"></span>' + (isActive ? 'Aktif aday' : 'Pasif') + '</span>';
-  html += '</div>';
-  html += '</div></div>';
+  html += '</div></div></div>';
 
+  // ── ROW 1: Deneyim + Eğitim & Dil ──
+  html += '<div class="pp-bento">';
+
+  // Left: Deneyim
+  html += '<div class="pp-card accent-verm">';
+  html += '<div class="pp-card-title">Deneyim</div>';
   if (exps.length > 0) {
-    html += '<div class="pp-section">';
-    html += '<div class="pp-section-title">Deneyim</div>';
     exps.forEach(function(e) {
       var role = e.pozisyon || '';
       var brand = e.marka || '';
@@ -2680,125 +2685,137 @@ function openProfilePreview() {
       var period = '';
       if (e.baslangic_yil) {
         period = (e.baslangic_ay ? e.baslangic_ay + ' ' : '') + e.baslangic_yil;
-        if (e.devam_ediyor) {
-          period += ' — Devam ediyor';
-        } else if (e.bitis_yil) {
-          period += ' — ' + (e.bitis_ay ? e.bitis_ay + ' ' : '') + e.bitis_yil;
-        }
+        if (e.devam_ediyor) { period += ' — Devam'; }
+        else if (e.bitis_yil) { period += ' — ' + (e.bitis_ay ? e.bitis_ay + ' ' : '') + e.bitis_yil; }
       }
-      var dotClass = e.devam_ediyor ? 'active' : 'past';
-      html += '<div class="pp-item">';
-      html += '<div class="pp-item-dot ' + dotClass + '"></div>';
-      html += '<div class="pp-item-info">';
-      html += '<div class="pp-item-main">' + _escHtml(role) + '</div>';
-      html += '<div class="pp-item-sub"><strong style="color:var(--text-secondary);font-weight:600;">' + _escHtml(display) + '</strong>';
-      if (e.departman) html += ' · ' + _escHtml(e.departman);
-      if (e.istihdam_tipi) html += ' · ' + _escHtml(e.istihdam_tipi);
+      html += '<div class="pp-exp">';
+      html += '<div class="pp-exp-dot ' + (e.devam_ediyor ? 'active' : 'past') + '"></div>';
+      html += '<div class="pp-exp-info">';
+      html += '<div class="pp-exp-role">' + _escHtml(role) + '</div>';
+      html += '<div class="pp-exp-company"><strong>' + _escHtml(display) + '</strong></div>';
+      var details = [];
+      if (e.departman) details.push(e.departman);
+      if (e.istihdam_tipi) details.push(e.istihdam_tipi);
+      if (e.kidem_seviyesi) details.push(e.kidem_seviyesi);
+      if (details.length > 0) {
+        html += '<div class="pp-exp-detail">' + _escHtml(details.join(' · ')) + '</div>';
+      }
       html += '</div>';
-      html += '</div>';
-      if (period) html += '<div class="pp-item-period">' + _escHtml(period) + '</div>';
+      if (period) html += '<div class="pp-exp-period">' + _escHtml(period) + '</div>';
       html += '</div>';
     });
-    html += '</div>';
   } else if (db.no_experience) {
-    html += '<div class="pp-section">';
-    html += '<div class="pp-section-title">Deneyim</div>';
     html += '<div class="pp-empty">İlk iş deneyimini arıyor</div>';
-    html += '</div>';
+  } else {
+    html += '<div class="pp-empty">Henüz eklenmedi</div>';
   }
+  html += '</div>';
 
-  if (edus.length > 0 || langs.length > 0 || certs.length > 0) {
-    html += '<div class="pp-section">';
-    html += '<div class="pp-section-title">Eğitim & Dil</div>';
+  // Right: Eğitim & Dil
+  html += '<div class="pp-card accent-green">';
+  html += '<div class="pp-card-title">Eğitim & Dil</div>';
+  if (edus.length > 0) {
     edus.forEach(function(e) {
-      html += '<div class="pp-item">';
-      html += '<div class="pp-item-dot past"></div>';
-      html += '<div class="pp-item-info">';
-      html += '<div class="pp-item-main">' + _escHtml(e.okul_adi || '') + '</div>';
-      html += '<div class="pp-item-sub">';
-      if (e.seviye) html += _escHtml(e.seviye);
-      if (e.bolum) html += ' · ' + _escHtml(e.bolum);
+      html += '<div class="pp-edu">';
+      html += '<div class="pp-edu-row"><div>';
+      html += '<div class="pp-edu-name">' + _escHtml(e.okul_adi || '') + '</div>';
+      var sub = [];
+      if (e.seviye) sub.push(e.seviye);
+      if (e.bolum) sub.push(e.bolum);
+      if (sub.length > 0) html += '<div class="pp-edu-sub">' + _escHtml(sub.join(' · ')) + '</div>';
       html += '</div>';
-      html += '</div>';
-      if (e.mezuniyet_yili) html += '<div class="pp-item-period">' + _escHtml(e.mezuniyet_yili) + '</div>';
-      html += '</div>';
-    });
-    if (langs.length > 0) {
-      html += '<div style="margin-top:8px;">';
-      html += '<div class="pp-tags">';
-      langs.forEach(function(l) {
-        html += '<span class="pp-tag">' + _escHtml(l.dil || '') + (l.seviye ? ' · ' + _escHtml(l.seviye) : '') + '</span>';
-      });
+      if (e.mezuniyet_yili) html += '<div class="pp-edu-year">' + _escHtml(e.mezuniyet_yili) + '</div>';
       html += '</div></div>';
-    }
-    if (certs.length > 0) {
-      certs.forEach(function(c) {
-        html += '<div class="pp-item">';
-        html += '<div class="pp-item-dot past"></div>';
-        html += '<div class="pp-item-info">';
-        html += '<div class="pp-item-main">' + _escHtml(c.egitim_adi || '') + '</div>';
-        if (c.kurum) html += '<div class="pp-item-sub">' + _escHtml(c.kurum) + '</div>';
-        html += '</div>';
-        if (c.yil) html += '<div class="pp-item-period">' + _escHtml(String(c.yil)) + '</div>';
-        html += '</div>';
-      });
-    }
+    });
+  }
+  if (certs.length > 0) {
+    certs.forEach(function(c) {
+      html += '<div class="pp-edu" style="margin-top:6px;">';
+      html += '<div class="pp-edu-row"><div>';
+      html += '<div class="pp-edu-name" style="font-size:12px;">' + _escHtml(c.egitim_adi || '') + '</div>';
+      if (c.kurum) html += '<div class="pp-edu-sub">' + _escHtml(c.kurum) + '</div>';
+      html += '</div>';
+      if (c.yil) html += '<div class="pp-edu-year">' + _escHtml(c.yil) + '</div>';
+      html += '</div></div>';
+    });
+  }
+  if (langs.length > 0) {
+    html += '<div class="pp-tags" style="margin-top:8px;">';
+    langs.forEach(function(l) {
+      html += '<span class="pp-tag">' + _escHtml(l.dil || '') + (l.seviye ? ' · ' + _escHtml(l.seviye) : '') + '</span>';
+    });
     html += '</div>';
   }
+  if (edus.length === 0 && langs.length === 0 && certs.length === 0) {
+    html += '<div class="pp-empty">Henüz eklenmedi</div>';
+  }
+  html += '</div>';
+  html += '</div>';
 
-  if (wp || locs.length > 0) {
-    html += '<div class="pp-section">';
-    html += '<div class="pp-section-title">Tercihler & Lokasyon</div>';
-    var prefTags = [];
+  // ── ROW 2: Tercihler & Lokasyon (full width) ──
+  if (wp || locs.length > 0 || bi.length > 0) {
+    html += '<div class="pp-bento">';
+    html += '<div class="pp-card span-2 accent-navy">';
+    html += '<div class="pp-card-title">Tercihler & Lokasyon</div>';
+    var tags = [];
     if (wp) {
       if (wp.calisma_tipleri && wp.calisma_tipleri.length > 0) {
-        wp.calisma_tipleri.forEach(function(t) { prefTags.push(t); });
+        wp.calisma_tipleri.forEach(function(t) { tags.push(t); });
       }
-      if (wp.musaitlik) prefTags.push(wp.musaitlik);
+      if (wp.musaitlik) tags.push(wp.musaitlik);
       if (wp.tercih_segmentler && wp.tercih_segmentler.length > 0) {
-        wp.tercih_segmentler.forEach(function(s) { prefTags.push(s); });
+        wp.tercih_segmentler.forEach(function(s) { tags.push(s); });
       }
+      if (wp.career_type) tags.push(wp.career_type);
     }
     locs.forEach(function(loc) {
-      if (loc.sehir) prefTags.push('📍 ' + loc.sehir);
+      if (loc.sehir) tags.push('📍 ' + loc.sehir);
     });
-    if (prefTags.length > 0) {
+    if (bi.length > 0) {
+      bi.slice(0, 5).forEach(function(b) { tags.push('♡ ' + b); });
+    }
+    if (tags.length > 0) {
       html += '<div class="pp-tags">';
-      prefTags.forEach(function(t) {
+      tags.forEach(function(t) {
         html += '<span class="pp-tag">' + _escHtml(t) + '</span>';
       });
       html += '</div>';
     }
-    html += '</div>';
+    if (wp && wp.career_goal) {
+      html += '<div style="font-size:11px;color:var(--text-muted);margin-top:8px;font-style:italic;">"' + _escHtml(wp.career_goal) + '"</div>';
+    }
+    html += '</div></div>';
   }
 
+  // ── ROW 3: CV + İletişim ──
+  html += '<div class="pp-bento">';
+
+  html += '<div class="pp-card accent-muted">';
+  html += '<div class="pp-card-title">CV</div>';
   if (p.cv_url && p.cv_filename) {
-    html += '<div class="pp-section">';
-    html += '<div class="pp-section-title">CV</div>';
     html += '<div class="pp-cv-row">';
     html += '<div class="pp-cv-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>';
-    html += '<a class="pp-cv-name pp-cv-link" href="' + _escHtml(p.cv_url) + '" target="_blank" rel="noopener" onclick="event.stopPropagation()">' + _escHtml(p.cv_filename) + '</a>';
+    html += '<a class="pp-cv-link" href="' + _escHtml(p.cv_url) + '" target="_blank" onclick="event.stopPropagation()">' + _escHtml(p.cv_filename) + '</a>';
     if (p.cv_uploaded_at) {
-      var d = new Date(p.cv_uploaded_at);
-      html += '<div class="pp-cv-date">' + d.toLocaleDateString('tr-TR') + '</div>';
+      html += '<div class="pp-cv-date">' + new Date(p.cv_uploaded_at).toLocaleDateString('tr-TR') + '</div>';
     }
     html += '</div>';
-    html += '</div>';
+  } else {
+    html += '<div class="pp-empty">CV yüklenmemiş</div>';
   }
+  html += '</div>';
 
-  html += '<div class="pp-section">';
-  html += '<div class="pp-section-title">İletişim</div>';
+  html += '<div class="pp-card pp-contact-card">';
+  html += '<div class="pp-card-title">İletişim</div>';
   var email = (typeof currentUser !== 'undefined' && currentUser && currentUser.email) ? currentUser.email : '';
   var maskedEmail = '';
   if (email) {
     var parts = email.split('@');
-    if (parts.length === 2) {
-      maskedEmail = parts[0].charAt(0) + '****@' + parts[1];
-    }
+    if (parts.length === 2) maskedEmail = parts[0].charAt(0) + '****@' + parts[1];
   }
   html += '<div class="pp-contact-row">';
   html += '<div class="pp-contact-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>';
-  html += '<div class="pp-contact-text">' + _escHtml(maskedEmail || '\u2014') + '</div>';
+  html += '<div class="pp-contact-text">' + _escHtml(maskedEmail || '—') + '</div>';
   html += '<span class="pp-contact-lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Gizli</span>';
   html += '</div>';
   var phone = p.telefon || '';
@@ -2808,43 +2825,41 @@ function openProfilePreview() {
   }
   html += '<div class="pp-contact-row">';
   html += '<div class="pp-contact-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.81.36 1.6.69 2.36a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.76.33 1.55.56 2.36.69A2 2 0 0 1 22 16.92z"/></svg></div>';
-  html += '<div class="pp-contact-text">' + _escHtml(maskedPhone || '\u2014') + '</div>';
+  html += '<div class="pp-contact-text">' + _escHtml(maskedPhone || '—') + '</div>';
   html += '<span class="pp-contact-lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Gizli</span>';
   html += '</div>';
-  html += '<div style="font-size:10px;color:var(--text-muted);text-align:center;margin-top:10px;padding-top:8px;border-top:1px solid var(--border, #e8e6e3);">İletişim bilgileri işveren tarafından görüntülenebilir</div>';
+  html += '<div class="pp-contact-hint">İletişim bilgileri işveren tarafından görüntülenebilir</div>';
   html += '</div>';
 
-  var lastUpdated = (p.updated_at) ? new Date(p.updated_at).toLocaleDateString('tr-TR') : new Date().toLocaleDateString('tr-TR');
-  html += '<div class="pp-last-updated">';
-  html += '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>';
-  html += 'Son güncelleme: ' + _escHtml(lastUpdated);
   html += '</div>';
 
-  var contentEl = document.getElementById('pp-content');
-  var overlayEl = document.getElementById('pp-overlay');
-  if (contentEl) contentEl.innerHTML = html;
-  if (overlayEl) {
-    overlayEl.style.display = 'flex';
-    document.body.style.overflow = 'hidden';
-  }
+  // ── FOOTER ──
+  var lastUpdated = p.updated_at ? new Date(p.updated_at).toLocaleDateString('tr-TR') : new Date().toLocaleDateString('tr-TR');
+  html += '<div class="pp-footer">';
+  html += '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>';
+  html += 'Son güncelleme: ' + lastUpdated;
+  html += '</div>';
+
+  document.getElementById('pp-content').innerHTML = html;
+  document.getElementById('pp-overlay').classList.add('open');
+  document.getElementById('pp-drawer').classList.add('open');
+  document.body.style.overflow = 'hidden';
 }
 
 function closeProfilePreview() {
-  var overlayEl = document.getElementById('pp-overlay');
-  if (overlayEl) overlayEl.style.display = 'none';
+  document.getElementById('pp-overlay').classList.remove('open');
+  document.getElementById('pp-drawer').classList.remove('open');
   document.body.style.overflow = '';
 }
 
-(function() {
-  document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') {
-      var overlay = document.getElementById('pp-overlay');
-      if (overlay && overlay.style.display === 'flex') {
-        closeProfilePreview();
-      }
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    var drawer = document.getElementById('pp-drawer');
+    if (drawer && drawer.classList.contains('open')) {
+      closeProfilePreview();
     }
-  });
-})();
+  }
+});
 
 // ── Toggle Grid Logic: "Beni Öner" (merkez-toggle-visibility) syncs with sidebar + Ayarlar; only this controls is_active ──
 (function() {
