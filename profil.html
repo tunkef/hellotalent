@@ -585,7 +585,7 @@ if (window.Sentry) {
 
   <!-- WIZARD PROGRESS BAR -->
   <div class="wiz-progress" id="wiz-progress" style="position:relative;">
-    <div class="wiz-progress-meta" id="wiz-progress-meta" aria-hidden="true">Adım <span id="wiz-current-step">1</span> / 6</div>
+    <div class="wiz-progress-meta" id="wiz-progress-meta" aria-hidden="true" style="display:none;">Adım <span id="wiz-current-step">1</span> / 6</div>
     <div class="wiz-progress-step active" data-wstep="1">
       <div class="wiz-progress-circle"><span class="wiz-circle-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span></div>
       <div class="wiz-progress-label">Kişisel</div>
@@ -1321,6 +1321,8 @@ function renderWizard() {
   var wizPanel = document.getElementById('panel-profil');
   if (wizPanel) wizPanel.scrollTop = 0;
   window.scrollTo({top: 0, behavior: 'smooth'});
+  // Refresh Step 6 employer state when entering that step
+  if (wizStep === 6) updateStep6HideState();
 }
 
 // ── STEP VALIDATION (skeleton — filled per step) ──

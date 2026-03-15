@@ -1039,13 +1039,34 @@ function initStep5() {
   if (btnAllCities) btnAllCities.addEventListener('click', function() { openLocationModal(); });
 }
 
-function initStep6() {
-  var wizVis = document.getElementById('wiz-toggle-visibility');
-  var wizActive = document.getElementById('wiz-toggle-active');
+function updateStep6HideState() {
   var wizHide = document.getElementById('wiz-toggle-hide');
   var hideCard = document.getElementById('wiz-setting-hide');
   var hideHint = document.getElementById('wiz-hide-disabled-hint');
   var hideDesc = document.getElementById('wiz-hide-desc');
+
+  var hasCurrent = false;
+  var cbNoExp = document.getElementById('cb-no-experience');
+  if (!cbNoExp || !cbNoExp.checked) {
+    var expCards = document.querySelectorAll('.exp-card');
+    for (var i = 0; i < expCards.length; i++) {
+      var devamCb = expCards[i].querySelector('[id$="-devam"]');
+      if (devamCb && devamCb.checked) { hasCurrent = true; break; }
+    }
+  }
+
+  if (hideCard) hideCard.classList.toggle('disabled-card', !hasCurrent);
+  if (wizHide) wizHide.disabled = !hasCurrent;
+  if (hideHint) hideHint.style.display = hasCurrent ? 'none' : '';
+  if (hideDesc) hideDesc.textContent = hasCurrent
+    ? 'Mevcut işvereninin profilini görmesini engeller.'
+    : 'Şu an aktif bir işveren kaydın bulunmuyor.';
+}
+
+function initStep6() {
+  var wizVis = document.getElementById('wiz-toggle-visibility');
+  var wizActive = document.getElementById('wiz-toggle-active');
+  var wizHide = document.getElementById('wiz-toggle-hide');
 
   var merkezVis = document.getElementById('merkez-toggle-visibility');
   var merkezActive = document.getElementById('merkez-toggle-active');
@@ -1054,28 +1075,6 @@ function initStep6() {
   if (wizVis && merkezVis) wizVis.checked = merkezVis.checked;
   if (wizActive && merkezActive) wizActive.checked = merkezActive.checked;
   if (wizHide && merkezHide) wizHide.checked = merkezHide.checked;
-
-  function hasCurrentEmployer() {
-    var cbNoExp = document.getElementById('cb-no-experience');
-    if (cbNoExp && cbNoExp.checked) return false;
-    var expCards = document.querySelectorAll('.exp-card');
-    for (var i = 0; i < expCards.length; i++) {
-      var devamCb = expCards[i].querySelector('[id$="-devam"]');
-      if (devamCb && devamCb.checked) return true;
-    }
-    return false;
-  }
-
-  function updateHideState() {
-    var hasCurrent = hasCurrentEmployer();
-    if (hideCard) hideCard.classList.toggle('disabled-card', !hasCurrent);
-    if (wizHide) wizHide.disabled = !hasCurrent;
-    if (hideHint) hideHint.style.display = hasCurrent ? 'none' : '';
-    if (hideDesc) hideDesc.textContent = hasCurrent
-      ? 'Mevcut işvereninin profilini görmesini engeller.'
-      : 'Şu an aktif bir işveren kaydın bulunmuyor.';
-  }
-  updateHideState();
 
   if (wizVis) wizVis.addEventListener('change', function() {
     if (merkezVis) { merkezVis.checked = wizVis.checked; merkezVis.dispatchEvent(new Event('change')); }
