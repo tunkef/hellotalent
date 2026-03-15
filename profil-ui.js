@@ -1039,6 +1039,55 @@ function initStep5() {
   if (btnAllCities) btnAllCities.addEventListener('click', function() { openLocationModal(); });
 }
 
+function initStep6() {
+  var wizVis = document.getElementById('wiz-toggle-visibility');
+  var wizActive = document.getElementById('wiz-toggle-active');
+  var wizHide = document.getElementById('wiz-toggle-hide');
+  var hideCard = document.getElementById('wiz-setting-hide');
+  var hideHint = document.getElementById('wiz-hide-disabled-hint');
+  var hideDesc = document.getElementById('wiz-hide-desc');
+
+  var merkezVis = document.getElementById('merkez-toggle-visibility');
+  var merkezActive = document.getElementById('merkez-toggle-active');
+  var merkezHide = document.getElementById('merkez-hide-from-current-employer');
+
+  if (wizVis && merkezVis) wizVis.checked = merkezVis.checked;
+  if (wizActive && merkezActive) wizActive.checked = merkezActive.checked;
+  if (wizHide && merkezHide) wizHide.checked = merkezHide.checked;
+
+  function hasCurrentEmployer() {
+    var cbNoExp = document.getElementById('cb-no-experience');
+    if (cbNoExp && cbNoExp.checked) return false;
+    var expCards = document.querySelectorAll('.exp-card');
+    for (var i = 0; i < expCards.length; i++) {
+      var devamCb = expCards[i].querySelector('[id$="-devam"]');
+      if (devamCb && devamCb.checked) return true;
+    }
+    return false;
+  }
+
+  function updateHideState() {
+    var hasCurrent = hasCurrentEmployer();
+    if (hideCard) hideCard.classList.toggle('disabled-card', !hasCurrent);
+    if (wizHide) wizHide.disabled = !hasCurrent;
+    if (hideHint) hideHint.style.display = hasCurrent ? 'none' : '';
+    if (hideDesc) hideDesc.textContent = hasCurrent
+      ? 'Mevcut işvereninin profilini görmesini engeller.'
+      : 'Şu an aktif bir işveren kaydın bulunmuyor.';
+  }
+  updateHideState();
+
+  if (wizVis) wizVis.addEventListener('change', function() {
+    if (merkezVis) { merkezVis.checked = wizVis.checked; merkezVis.dispatchEvent(new Event('change')); }
+  });
+  if (wizActive) wizActive.addEventListener('change', function() {
+    if (merkezActive) { merkezActive.checked = wizActive.checked; merkezActive.dispatchEvent(new Event('change')); }
+  });
+  if (wizHide) wizHide.addEventListener('change', function() {
+    if (merkezHide) { merkezHide.checked = wizHide.checked; merkezHide.dispatchEvent(new Event('change')); }
+  });
+}
+
 function toggleCitySelection(city) {
   if (selectedLocations[city]) {
     delete selectedLocations[city];

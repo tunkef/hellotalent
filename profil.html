@@ -145,8 +145,11 @@ if (window.Sentry) {
 <!-- SUCCESS MODAL -->
 <div class="modal-overlay" id="modal-success">
   <div class="modal">
-    <div class="modal-icon">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+    <div class="modal-icon modal-icon-success">
+      <svg class="modal-check-svg" viewBox="0 0 52 52">
+        <circle class="modal-check-circle" cx="26" cy="26" r="24"/>
+        <path class="modal-check-tick" d="M14 27l10 10 18-22"/>
+      </svg>
     </div>
     <div class="modal-title">Profilin güncellendi</div>
     <div class="modal-desc">Değişikliklerin kaydedildi ve profiline yansıtıldı.</div>
@@ -582,7 +585,7 @@ if (window.Sentry) {
 
   <!-- WIZARD PROGRESS BAR -->
   <div class="wiz-progress" id="wiz-progress" style="position:relative;">
-    <div class="wiz-progress-meta" id="wiz-progress-meta" aria-hidden="true">Adım <span id="wiz-current-step">1</span> / 5</div>
+    <div class="wiz-progress-meta" id="wiz-progress-meta" aria-hidden="true">Adım <span id="wiz-current-step">1</span> / 6</div>
     <div class="wiz-progress-step active" data-wstep="1">
       <div class="wiz-progress-circle"><span class="wiz-circle-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span></div>
       <div class="wiz-progress-label">Kişisel</div>
@@ -606,6 +609,11 @@ if (window.Sentry) {
     <div class="wiz-progress-step" data-wstep="5">
       <div class="wiz-progress-circle"><span class="wiz-circle-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></span></div>
       <div class="wiz-progress-label">Lokasyon</div>
+    </div>
+    <div class="wiz-progress-line" data-wline="5"></div>
+    <div class="wiz-progress-step" data-wstep="6">
+      <div class="wiz-progress-circle"><span class="wiz-circle-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span></div>
+      <div class="wiz-progress-label">Ayarlar</div>
     </div>
   </div>
 
@@ -851,6 +859,58 @@ if (window.Sentry) {
       <div class="card-title" style="margin-bottom:12px;">Seçilen Şehirler</div>
       <div id="selected-cities-container">
         <p style="font-size:13px;color:var(--muted);" id="no-city-msg">Henüz şehir seçilmedi. Yukarıdaki şehirlerden seçim yapın.</p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- WIZARD STEP 6: Profil Ayarları -->
+  <div class="wiz-step" id="wiz-step-6" data-step="6">
+    <div class="wiz-step-title">Profil Ayarları</div>
+    <div class="wiz-step-desc">Profilin işverenler tarafından nasıl görünsün?</div>
+    <div class="wiz-settings-grid">
+
+      <div class="wiz-setting-card">
+        <div class="wiz-setting-head">
+          <div class="wiz-setting-info">
+            <div class="wiz-setting-title">Beni Öner</div>
+            <div class="wiz-setting-desc" id="wiz-vis-desc">Profilini ve CV'ni işverenlerle paylaş. Kapatırsan hiçbir işveren profilini göremez.</div>
+          </div>
+          <label class="toggle"><input type="checkbox" id="wiz-toggle-visibility" checked><span class="toggle-slider"></span></label>
+        </div>
+      </div>
+
+      <div class="wiz-setting-card">
+        <div class="wiz-setting-head">
+          <div class="wiz-setting-info">
+            <div class="wiz-setting-title">Aktif İş Arama</div>
+            <div class="wiz-setting-desc">Profilinde "Aktif iş arıyor" rozeti görünür. Kapalı olsa bile profilin işverenlere gösterilir — headhunter'lar sana ulaşabilir.</div>
+          </div>
+          <label class="toggle"><input type="checkbox" id="wiz-toggle-active" checked><span class="toggle-slider"></span></label>
+        </div>
+      </div>
+
+      <div class="wiz-setting-card" id="wiz-setting-hide">
+        <div class="wiz-setting-head">
+          <div class="wiz-setting-info">
+            <div class="wiz-setting-title">İşverenim Görmesin</div>
+            <div class="wiz-setting-desc" id="wiz-hide-desc">Mevcut işvereninin profilini görmesini engeller.</div>
+          </div>
+          <label class="toggle"><input type="checkbox" id="wiz-toggle-hide"><span class="toggle-slider"></span></label>
+        </div>
+        <div class="wiz-setting-disabled-hint" id="wiz-hide-disabled-hint" style="display:none;">Şu an aktif bir işverende çalışmıyorsun. Yeni bir deneyim ekleyip "Halen burada çalışıyorum" seçersen bu ayar aktif olur.</div>
+      </div>
+
+      <div class="wiz-setting-card wiz-setting-premium disabled-card">
+        <div class="wiz-setting-head">
+          <div class="wiz-setting-info">
+            <span class="wiz-premium-badge">PREMIUM</span>
+            <div class="wiz-setting-title">Beni Öne Çıkar</div>
+            <div class="wiz-setting-desc">Profilini listelerin başına taşı ve daha fazla işveren tarafından görün.</div>
+          </div>
+          <label class="toggle"><input type="checkbox" disabled><span class="toggle-slider"></span></label>
+        </div>
+        <div class="wiz-premium-soon">Yakında</div>
       </div>
 
     </div>
@@ -1209,7 +1269,7 @@ if (window.Sentry) {
 // ═══════════════════════════════════════════════════
 
 let wizStep = 1;
-const TOTAL_STEPS = 5;
+const TOTAL_STEPS = 6;
 
 function wizGoTo(step) {
   if (step < 1 || step > TOTAL_STEPS) return;
@@ -1266,6 +1326,7 @@ function renderWizard() {
 // ── STEP VALIDATION (skeleton — filled per step) ──
 function validateStep(step) {
   clearStepErrors();
+  if (step === 6) return true;
   switch(step) {
     case 1: return validateKisisel();
     case 2: return validateKariyer();
@@ -2088,6 +2149,7 @@ document.addEventListener('DOMContentLoaded', function() {
   initStep3();
   initStep4();
   initStep5();
+  initStep6();
 
   // Re-apply DB values to selects/chips that were just created by initStep1/4/5.
   // Covers the race where applyDraft ran before these options/chips existed.

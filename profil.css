@@ -1831,11 +1831,44 @@ html[data-theme="dark"] .field-req{color:#F87171;}
   padding:40px 32px 32px;
   box-shadow:0 8px 32px rgba(0,0,0,0.12),0 0 0 1px var(--border-subtle),0 0 48px rgba(22,163,74,0.12);
 }
-#modal-success .modal-icon{
-  width:52px;height:52px;margin:0 auto 20px;font-size:24px;
-  background:var(--success-soft);color:var(--success);
-  box-shadow:0 0 0 6px var(--success-soft);
+/* ── Success Modal: Animated Checkmark ── */
+.modal-icon-success {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
+.modal-check-svg {
+  width: 64px;
+  height: 64px;
+}
+.modal-check-circle {
+  stroke-width: 2;
+  stroke: var(--green, #16a34a);
+  stroke-dasharray: 166;
+  stroke-dashoffset: 166;
+  stroke-miterlimit: 10;
+  fill: none;
+  animation: modalCircle 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+}
+.modal-check-tick {
+  stroke-width: 3;
+  stroke: var(--green, #16a34a);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 48;
+  stroke-dashoffset: 48;
+  animation: modalTick 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.4s forwards;
+}
+@keyframes modalCircle {
+  to { stroke-dashoffset: 0; }
+}
+@keyframes modalTick {
+  to { stroke-dashoffset: 0; }
+}
+
 #modal-success .modal-title{font-size:20px;margin-bottom:8px;}
 #modal-success .modal-desc{margin-bottom:28px;font-size:14px;line-height:1.55;}
 #modal-success .btn{margin-top:4px;}
@@ -2032,6 +2065,90 @@ html[data-theme="dark"] .field-req{color:#F87171;}
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
+}
+
+/* ── Wizard Step 6: Settings Grid ── */
+.wiz-settings-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 720px;
+  margin: 0 auto;
+}
+.wiz-setting-card {
+  background: var(--bg-surface, #fff);
+  border-radius: 14px;
+  box-shadow: 0 0 0 1px rgba(0,0,0,.03), 0 2px 4px rgba(0,0,0,.05), 0 8px 16px rgba(0,0,0,.04);
+  padding: 18px 20px;
+  transition: all 0.2s;
+}
+.wiz-setting-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+.wiz-setting-info {
+  flex: 1;
+  min-width: 0;
+}
+.wiz-setting-title {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+.wiz-setting-desc {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+.wiz-setting-disabled-hint {
+  font-size: 11px;
+  color: var(--muted);
+  background: var(--bg-elevated);
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-top: 12px;
+  line-height: 1.5;
+  font-style: italic;
+}
+.wiz-setting-premium {
+  background: linear-gradient(135deg, #131f3e 0%, #1a2d50 100%) !important;
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.05), 0 4px 16px rgba(0,0,0,0.12) !important;
+}
+.wiz-setting-premium .toggle-slider {
+  background: rgba(255,255,255,0.12) !important;
+}
+.wiz-setting-premium .toggle-slider::before {
+  background: rgba(255,255,255,0.3) !important;
+}
+.wiz-premium-badge {
+  font-family: 'DM Mono', monospace;
+  font-size: 8px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  background: rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.4);
+  padding: 2px 8px;
+  border-radius: 3px;
+  display: inline-block;
+  margin-bottom: 6px;
+}
+.wiz-premium-soon {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  color: rgba(255,255,255,0.2);
+  text-align: center;
+  margin-top: 8px;
+}
+.wiz-setting-card.disabled-card {
+  opacity: 0.5;
+}
+.wiz-setting-card.disabled-card .toggle-slider {
+  cursor: not-allowed;
 }
 
 /* ── SECTION DIVIDER ── */
