@@ -608,9 +608,12 @@ body{
 
 /* ── DYNAMIC ROWS (JS uses .dynamic-row) ── */
 .dynamic-row{
-  padding:12px 0;background:transparent;border:none;
-  border-bottom:1px solid var(--border-subtle);
-  margin-bottom:0;position:relative;
+  padding: 12px 44px 12px 0;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--border-subtle);
+  margin-bottom: 0;
+  position: relative;
 }
 
 /* ── CHIPS ROW ── */
@@ -2023,18 +2026,49 @@ html[data-theme="dark"] .field-req{color:#F87171;}
   font-weight: 500;
   color: var(--text-primary);
 }
-#calisma-tipleri-checks .cb-wrap,
-#career-type-checks .cb-wrap {
-  padding: 8px 16px;
-  gap: 10px;
-  background: var(--bg-elevated, #F7F6F4);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius, 10px);
-  min-width: 120px;
-}
-#calisma-tipleri-checks,
-#career-type-checks {
+/* ── Çalışma Tipleri: pill checkboxes ── */
+#calisma-tipleri-checks {
+  display: flex;
+  flex-wrap: wrap;
   gap: 10px !important;
+}
+#calisma-tipleri-checks .cb-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: 1.5px solid var(--border-subtle);
+  background: var(--bg-elevated);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+#calisma-tipleri-checks .cb-wrap:hover {
+  border-color: var(--green);
+  background: var(--green-light);
+}
+#calisma-tipleri-checks .cb-wrap:has(input:checked) {
+  border-color: var(--green);
+  background: var(--green-light);
+}
+#calisma-tipleri-checks .cb-check {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  background: #d1d5db;
+}
+#calisma-tipleri-checks input:checked ~ .cb-check {
+  background: var(--green);
+}
+#calisma-tipleri-checks .cb-check::after {
+  left: 6px;
+  top: 3px;
+  width: 4px;
+  height: 9px;
+}
+#calisma-tipleri-checks .cb-wrap span:last-child {
+  font-size: 13px;
+  font-weight: 500;
 }
 
 /* ── SECTION DIVIDER ── */
@@ -2205,64 +2239,62 @@ html[data-theme="dark"] #wiz-step-4 #brand-interest-chips .tag button:hover{
   color:#fff;
   opacity:1;
 }
-/* Kariyer Yönelimi: no visible checkmark — selection by surface/border/text only (chip pattern) */
-#wiz-step-4 #career-type-checks .cb-wrap{
-  position:relative;
-  display:inline-flex;
-  align-items:center;
-  gap:0;
-  padding:8px 16px !important;
-  margin:0 8px 8px 0;
-  border-radius:999px;
-  border:1.5px solid var(--border-subtle);
-  background:var(--bg-elevated);
-  color:var(--text-primary);
-  font-size:13px;
-  font-weight:500;
-  cursor:pointer;
-  transition:all 0.2s;
+/* ── Kariyer Yönelimi: pill checkboxes (same pattern as Çalışma Tipleri) ── */
+#career-type-checks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px !important;
 }
-#wiz-step-4 #career-type-checks .cb-wrap:hover{
-  border-color:var(--accent);
-  background:var(--accent-soft);
-  color:var(--accent);
+#wiz-step-4 #career-type-checks .cb-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px !important;
+  margin: 0;
+  border-radius: 999px;
+  border: 1.5px solid var(--border-subtle);
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
 }
-#wiz-step-4 #career-type-checks .cb-wrap:has(input:checked){
-  background:var(--accent-soft);
-  border-color:var(--accent);
-  color:var(--accent);
+#wiz-step-4 #career-type-checks .cb-wrap:hover {
+  border-color: var(--green);
+  background: var(--green-light);
 }
-#wiz-step-4 #career-type-checks .cb-wrap input[type=checkbox]{
-  position:absolute;
-  opacity:0;
-  width:100%;
-  height:100%;
-  left:0;
-  top:0;
-  margin:0;
-  cursor:pointer;
-  z-index:1;
+#wiz-step-4 #career-type-checks .cb-wrap:has(input:checked) {
+  background: var(--green-light);
+  border-color: var(--green);
+  color: var(--text-primary);
 }
-#wiz-step-4 #career-type-checks .cb-wrap span{
-  font-size:13px;
-  font-weight:500;
-  pointer-events:none;
+#wiz-step-4 #career-type-checks .cb-wrap input[type=checkbox] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
 }
-/* Dark: Kariyer Yönelimi pill contrast */
-html[data-theme="dark"] #wiz-step-4 #career-type-checks .cb-wrap{
-  background:var(--bg-elevated);
-  border-color:var(--border-strong);
-  color:#E5E7EB;
+#wiz-step-4 #career-type-checks .cb-check {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  background: #d1d5db;
 }
-html[data-theme="dark"] #wiz-step-4 #career-type-checks .cb-wrap:hover{
-  background:rgba(201,78,40,0.08);
-  border-color:var(--accent);
-  color:var(--accent);
+#wiz-step-4 #career-type-checks input:checked ~ .cb-check {
+  background: var(--green);
 }
-html[data-theme="dark"] #wiz-step-4 #career-type-checks .cb-wrap:has(input:checked){
-  background:var(--accent-soft);
-  border-color:var(--accent);
-  color:#fff;
+#wiz-step-4 #career-type-checks .cb-check::after {
+  left: 6px;
+  top: 3px;
+  width: 4px;
+  height: 9px;
+}
+#wiz-step-4 #career-type-checks .cb-wrap span:last-child {
+  font-size: 13px;
+  font-weight: 500;
+  pointer-events: none;
 }
 
 /* Lokasyon (step 5): selected cities container, chips, button */
