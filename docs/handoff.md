@@ -1,5 +1,5 @@
 # hellotalent.ai — Technical Handoff Document
-> Son güncelleme: 15 Mart 2026 (gece session dahil)
+> Son güncelleme: 16 Mart 2026
 > Bu doküman, projenin mevcut durumunu, tamamlanan işleri ve kalan backlog'u kapsar.
 > Yeni bir chat/session başlatırken bu dosyayı referans olarak kullanın.
 
@@ -15,6 +15,7 @@ Adaylar (candidates) ve İK/işverenler (employers) arasında köprü kurar.
 |--------|-----------|
 | Frontend | Static HTML/CSS/JS (vanilla, no framework) |
 | Hosting | GitHub Pages (custom domain: hellotalent.ai) |
+| CDN/DNS | Cloudflare (free tier — nameservers aktif, propagation bekliyor) |
 | Backend | Supabase (PostgreSQL + Auth + Storage + RLS) |
 | Repo | github.com/tunkef/hellotalent (private) |
 | Test | Playwright (68 smoke tests) |
@@ -29,23 +30,38 @@ Adaylar (candidates) ve İK/işverenler (employers) arasında köprü kurar.
 | Supabase URL | https://cpwibefquojehjehtrog.supabase.co |
 | Supabase anon key | [SUPABASE_ANON_KEY — see Supabase dashboard] |
 | Supabase service_role | [SUPABASE_SERVICE_ROLE — see memory or Supabase dashboard] |
+| Cloudflare nameservers | sky.ns.cloudflare.com, tanner.ns.cloudflare.com |
+| LinkedIn OAuth Client ID | 77iw3k42yfhcj9 |
+| LinkedIn OAuth Secret | [see memory — WPL_AP1...] |
 
 ### Brand & Design System
 ```css
 /* Colors */
 --verm: #C94E28;    /* Vermillion — primary action */
+--verm-dark: #b84420; /* Vermillion hover (standardized) */
 --navy: #1E2D5E;    /* Navy — employer/authority */
+--navy-deep: #162247; /* Navy gradient endpoint */
 --bg: #F7F6F4;      /* Page background */
 --text: #111111;    /* Primary text */
 --muted: #6B7280;   /* Secondary text */
 --border: #E5E3DF;  /* Borders */
+
+/* Navy Gradient (3-stop — single source of truth for all premium/dark cards) */
+linear-gradient(135deg, #2A3F7A 0%, #1E2D5E 50%, #162247 100%)
+
+/* Sidebar gradient direction */
+linear-gradient(to bottom right, #2A3F7A 0%, #1E2D5E 40%, #162247 100%)
+
+/* Standardized grey palette */
+#374151 (dark text), #4B5563 (secondary), #6B7280 (muted),
+#9CA3AF (light muted), #D1D5DB (placeholder), #E5E7EB (disabled)
 
 /* Fonts */
 Bricolage Grotesque  → headings
 Plus Jakarta Sans    → body text
 DM Mono              → data/numbers
 ```
-**Yasaklar:** Inter, Roboto, purple gradients, "röportaj" (her zaman "mülakat" veya "iş görüşmesi")
+**Yasaklar:** Inter, Roboto, purple gradients (#8B5CF6 kaldırıldı), "röportaj" (her zaman "mülakat" veya "iş görüşmesi"), random greys (#aaa, #ccc etc. → design system greys)
 
 ---
 
@@ -57,7 +73,7 @@ DM Mono              → data/numbers
 | index.html | Landing page (homepage) | ~2800 | Evet (shared.js/css) |
 | giris.html | Login (aday + İK tab) | ~400 | Hayır (kendi layout) |
 | gate.html | Beta gate (sessionStorage setter) | ~100 | Hayır |
-| profil.html | Aday profil dashboard | ~5900+ | Hayır (kendi layout) |
+| profil.html | Aday profil dashboard | ~2200 | Hayır (kendi layout) |
 | aday.html | Aday premium dashboard | ~3000+ | Evet |
 | ik.html | İK/employer panel | ~1800 | Hayır (kendi layout) |
 | isveren.html | İşveren landing page | ~800 | Evet |
@@ -78,12 +94,23 @@ gizlilik.html, kvkk.html, kullanim-sartlari.html, cerez-politikasi.html
 | shared.js | Header/footer injection + HT_SUPA_URL, HT_SUPA_KEY, HT.getSupa() |
 | shared.css | Global styles, header/footer CSS |
 
+### Profil Dashboard Files
+| Dosya | İçerik |
+|-------|--------|
+| profil.html | ~2200 lines — tüm paneller, bento grid, loading screen, toggle grid, preview modal |
+| profil-core.js | Supabase client, shared auth promise, theme, normalization, reference data |
+| profil-data.js | Data loading/saving utilities |
+| profil-ui.js | ~3100+ lines — flip cards, brand colors, merkez cards, preview modal, toggle logic, retry logic |
+| profil-settings.js | Settings panel, deletion banner |
+| profil.css | ~2700 lines — all profil dashboard styles |
+
 ### Config & Test
 | Dosya/Klasör | İçerik |
 |-------------|--------|
 | playwright.config.js | Test config (mobile 390×844 + desktop 1440×900) |
 | tests/hellotalent.smoke.spec.js | 68 smoke tests |
 | docs/schema-drift-report.md | DB schema audit raporu |
+| docs/handoff.md | Bu dosya |
 | .claude/skills/hellotalent-dev/ | Custom Claude skill (SKILL.md + references/) |
 
 ---
@@ -94,12 +121,22 @@ gizlilik.html, kvkk.html, kullanim-sartlari.html, cerez-politikasi.html
 ```
 giris.html → Aday tab → signInWithPassword → profil.html
            → İK tab   → signInWithPassword → ik.html
+           → Google ile Giriş Yap → signInWithOAuth('google') → profil.html
+           → LinkedIn ile Giriş Yap → signInWithOAuth('linkedin_oidc') → profil.html
 ```
+
+### OAuth Providers
+| Provider | Status | Supabase Provider Name |
+|----------|--------|----------------------|
+| Google | ✅ Live | `google` |
+| LinkedIn | ✅ Live (16 Mart 2026) | `linkedin_oidc` (NOT `linkedin`) |
+| Apple | ❌ Deferred (requires $99 Apple Developer Program) | `apple` |
 
 ### Gate System
 - `gate.html` → `sessionStorage.setItem('ht_gate', 'ok')`
 - Tüm content pages (kariyer, pozisyonlar, blog, yetkinlik, hakkimizda, iletisim, isalim-rotasi) gate check yapar
 - Legal pages (gizlilik, kvkk, kullanim-sartlari, cerez-politikasi) → gate YOK
+- **NOT:** Gate client-side only — DevTools ile bypass edilebilir. Gerçek güvenlik Supabase Auth + RLS'te. Launch'ta Cloudflare Access ile server-side koruma eklenecek.
 
 ### Role-Based Routing
 - `user_metadata.role === 'employer'` → ik.html
@@ -121,7 +158,7 @@ if(sessionStorage.getItem('ht_gate')!=='ok'){window.location.replace('gate.html'
 
 ## 4. Supabase Schema
 
-### Tablolar (15 tablo, tümü live ✅)
+### Tablolar (16 tablo, tümü live ✅)
 | Tablo | Açıklama | RLS |
 |-------|----------|-----|
 | candidates | Ana aday profili | own + employer_read |
@@ -134,7 +171,8 @@ if(sessionStorage.getItem('ht_gate')!=='ok'){window.location.replace('gate.html'
 | candidate_location_preferences | Lokasyon tercihleri | own + employer_read |
 | candidate_location_pref_districts | İlçe tercihleri | own + employer_read |
 | candidate_brand_interests | Marka ilgileri | own + employer_read |
-| candidate_company_follows | Takip edilen şirketler | own only |
+| candidate_brand_follows | Marka takipleri (yeni, brand-centric) | own + employer_read by company_id |
+| candidate_company_follows | Eski şirket takipleri (deprecated) | own only |
 | candidate_blocked_companies | Engellenen şirketler (P2 #9) | own only |
 | hr_profiles | İK/employer profili | own only |
 | companies | Şirket verileri | public read |
@@ -171,7 +209,7 @@ if(sessionStorage.getItem('ht_gate')!=='ok'){window.location.replace('gate.html'
 
 ---
 
-## 5. Tamamlanan İşler (P0 + P1 + P2 kısmi)
+## 5. Tamamlanan İşler (P0 + P1 + P2)
 
 ### P0 — UX Audit & Fixes ✅
 - aday.html UX audit (11 fix)
@@ -211,257 +249,142 @@ if(sessionStorage.getItem('ht_gate')!=='ok'){window.location.replace('gate.html'
 
 ### P2 #9 — Settings MVP Expansion ✅
 - **DB Migration:** account_status enum + frozen_at + deletion_requested_at + 4 notify columns + cv_visibility kararı (UI-only) + candidate_blocked_companies tablosu + RLS + trigger + indexes
-- **Feature 1 — Hesap dondur/sil:** UI card + frozen/pending_deletion banner + KVKK 30-gün grace period + trigger (frozen→is_active=false, active dönüşünde dokunma)
-- **Feature 2 — Bildirim tercihleri:** 4 toggle (2 aktif: email messages/jobs, 2 disabled+Yakında: SMS/push) + save/load logic
-- **Feature 3 — CV görünürlük:** is_active toggle label güncellemesi ("Profilimi ve CV'mi işverenlere göster") + açıklama paragrafı, ayrı DB column yok
-- **Feature 4 — Engelli şirketler:** Tam CRUD UI (search + dropdown + chip + kaldır) + JS IIFE AMA display:none (şirketler sisteme katıldıkça aktifleşecek, 30+ şirket threshold)
-- **Employer enforcement:** ik.html loadLiveCandidates'e blocked check eklendi (hrProfile.company_id varsa filtrele)
-- **Schema prep:** hr_profiles.company_id + employer_role, brands.tr_operator_company_id
+- **Feature 1 — Hesap dondur/sil:** UI card + frozen/pending_deletion banner + KVKK 30-gün grace period + trigger
+- **Feature 2 — Bildirim tercihleri:** 4 toggle (2 aktif: email messages/jobs, 2 disabled+Yakında: SMS/push)
+- **Feature 3 — CV görünürlük:** is_active toggle label güncellemesi
+- **Feature 4 — Engelli şirketler:** Tam CRUD UI (display:none, 30+ şirket threshold)
+- **Employer enforcement:** ik.html loadLiveCandidates'e blocked check eklendi
 - **pending_deletion login banner:** sticky red banner + gün hesabı + "Vazgeç" butonu
 
-### Clean Code Audit ✅
-- 24 debug console.log kaldırıldı (profil.html), console.error/warn korundu
-- Sentry DSN TODO comment kaldırıldı
-- ik.html fallback save pattern kaldırıldı (tüm column'lar artık live)
-- 320 satır duplicate CSS → shared.css'e taşındı (blog, kariyer, pozisyonlar, yetkinlik)
-- Supabase config traceability: 3 dosyada "single source: shared.js" comment eklendi
-- Net etki: -1192 satır (%12 codebase küçülme)
-
----
-
-## 6. Kalan Backlog
+### P2 #9 Turuncu Features (Batch 2) ✅
+- Aktif arama modu, İletişim tercihleri, Verilerimi indir (KVKK JSON export)
+- Google OAuth login, Oturum yönetimi, Password strength validation
+- Şifremi unuttum flow + sifre-yenile.html, Login rate limit (5→120s)
+- Branded email templates, Supabase automatic account linking
+- Google ile Kayıt Ol butonları (giris.html, index.html, aday.html)
 
 ### P2 #10 — Email Auth Sync (İK tarafı) ✅
-- Login-time auto-sync: hr_profiles.email !== currentUser.email → auto-update
-- Ayarlar'da "Değiştir" butonu + email change flow (supabase.auth.updateUser)
-- Re-verification flow: profil.html ile aynı pattern, ID'ler -ik suffix ile ayrılmış
 
-### P2 #9 Turuncu Features (Batch 2) ✅
-- Aktif arama modu (toggle + employer badge + filtre)
-- İletişim tercihleri (email/phone/whatsapp toggles)
-- Verilerimi indir (KVKK md.11 JSON export)
-- Google OAuth login (aday only, LinkedIn pending approval)
-- Oturum yönetimi (session info + global signout)
-- Password strength validation (8 zayıf / 10 orta / 12+ güçlü)
-- Şifremi unuttum flow + sifre-yenile.html sayfası
-- Login rate limit (5 deneme → 120s cooldown)
-- Branded email templates (confirm, change email, reset password)
-- Supabase automatic account linking enabled
-- Google ile Kayıt Ol butonları (giris.html, index.html, aday.html)
+### P2 — Markalar Panel (Şirketler → Markalar Pivot) ✅
+- brands tablosuna 8 yeni column, 31 marka enriched, 3 yeni marka
+- 3D flip card design (perspective 1200px, hover/tap flip)
+- Brand colors map (_BRAND_COLORS), segment taxonomy (LUXURY/PREMIUM/MODA/SPORT/BEAUTY/TECH)
+- 31 logo Supabase Storage'a upload, checkerboard cleaning
+- candidate_brand_follows tablosu + RLS
+- Search, segment pills, follow counter+popup, lazy load (12+12)
+
+### P2 — Profil Merkezi Redesign ✅
+- Dark terminal → modern card-based layout
+- Identity card, stats row, profil bölümleri (5 renkli icon kart)
+- CV upload (yan yana), premium CTA (shimmer), branded loading transition
+- Profil önizleme modal (işveren görünümü), toggle grid (4-column bento)
 
 ### Refactoring ✅
 - profil.html split → 6 files (profil.css, profil-core.js, profil-data.js, profil-ui.js, profil-settings.js)
 - 6549 → 1981 lines (70% reduction)
-- Gizlilik card reorder + hesap yönetimi wizard modal
 
-### Infrastructure
-- Google Cloud "hellotalent", OAuth client configured
-- Supabase: Google provider enabled, automatic account linking on
-- LinkedIn OAuth: approval pending
-- Claude Code: 58 plugins active, Bun installed, CLAUDE.md + 5 rules files committed
-- New page: sifre-yenile.html (password reset landing)
+### Clean Code Audit ✅
+- 24 debug console.log kaldırıldı, 320 satır duplicate CSS → shared.css
+- Net etki: -1192 satır (%12 codebase küçülme)
 
-### P2 — Markalar Panel (Şirketler → Markalar Pivot) ✅ (15-16 Mart 2026)
+---
 
-**Karar:** Aday-facing UI tamamen brand-centric. Company data arka planda kalır, adaya yansımaz.
+## 6. Session 16 Mart 2026 — Yapılan İşler
 
-**DB Değişiklikleri:**
-- `brands` tablosuna 8 yeni column: instagram_url, store_count_tr, store_cities (text[]), hq_city, segment, benefits_platform_url, employee_count_tr, is_featured (boolean)
-- `brands.company_id` → nullable yapıldı (standalone marka desteği)
-- `brands.logo_url` → 31 marka için Supabase Storage URL'leri eklendi
-- 3 yeni marka INSERT: Hugo Boss (id=99), Alo Yoga (id=100), lululemon (id=101)
-- 31 marka enriched: website, instagram, segment, store count, cities, employee count, description
-- Hermès → orijinal isimle rename edildi
-- LC Waikiki segment: mass → mid (MASS kategorisi kaldırıldı)
-- `candidate_brand_follows` tablosu + RLS (aday own + employer read by company_id)
-- Eski `candidate_company_follows` → deprecated (5 test kaydı, migrate edilmedi)
+### Sidebar & Header Modernization
+**Animated Logout Button ✅ (pushed)**
+- Flat text button → expanding red circle (36px → 110px on hover)
+- `.btn-logout-anim` class, "Çıkış" text reveal on hover
+- Commit: `feat: animated expanding-circle logout button in sidebar`
 
-**Segment taxonomy (mix dil):** LUXURY, PREMIUM, MODA (mid), SPORT (sportswear), BEAUTY, TECH
-- MASS kaldırıldı (LC Waikiki → MODA'ya taşındı)
+**Navy Dark Sidebar ✅ (pushed)**
+- White sidebar → brand navy (#1E2D5E) background
+- White text/icons, rgba-based transparency
+- Active state: vermillion left border (3px #C94E28)
+- MENU label: DM Mono, uppercase, letter-spacing
+- Commit: `feat: navy dark sidebar with gradient premium card`
 
-**Logo Infrastructure:**
-- 31 marka logosu PNG olarak Supabase Storage'a upload: `cvs/brand-logos/{slug}.png`
-- 11 logoda baked-in checkerboard pattern temizlendi (PIL ile pixel-level cleaning)
-- `brands.logo_url` güncellendi, `_brandLogoUrl()` DB logo_url'i öncelikli kullanır
-- Google Favicon fallback hâlâ mevcut, initial letter son fallback
+### Brand Color Audit & Standardization
 
-**UI — 3D Flip Card Design (profil.html + profil-ui.js + profil.css):**
+**Vermillion hover standardized → `#b84420`**
+- 5 farklı hover tonu (#a83d1e, #a83b1e, #A83D1F, #e06040, #A33D1E) → tek `#b84420`
+- Dosyalar: shared.css, index.html, blog.html, hakkimizda.html, isalim-rotasi.html, aday.html, profil.css
 
-*Ön yüz (default):*
-- Logo (64px, rounded-square 14px, white bg, shadow)
-- Marka adı (Bricolage Grotesque, 17px, bold)
-- Segment pill (DM Mono, marka accent renginde)
-- Mağaza sayısı (DM Mono, muted)
-- "detaylar →" hint (hover'da görünür)
-- Background: `radial-gradient(ellipse at 50% -20%, brand_color → white)` — marka kimliğini yansıtır
-- Takip Et butonu YOK (flip ile erişilir)
+**Random greys standardized → design system palette**
+- #333→#374151, #555→#4B5563, #666→#6B7280, #888→#6B7280, #999→#9CA3AF, #aaa→#9CA3AF, #bbb→#D1D5DB, #ccc→#D1D5DB, #ddd→#E5E7EB
+- Dosyalar: index.html, iletisim.html, isalim-rotasi.html, ik.html, aday.html, profil.css
 
-*Arka yüz (hover/tap ile 3D flip):*
-- Header: logo (40px) + marka adı + segment pill + mini "Takip Et" butonu (sağ üst)
-- Info rows: mağaza sayısı + şehirler, çalışan sayısı, merkez şehir
-- Description: marka açıklaması (12px, opacity 0.85)
-- Link bar: Website + Instagram (kartın altında, border-top ile ayrılmış)
-- Background: `linear-gradient(160deg, brand_accent → darker → darkest)` — markanın kendi renginde
+**Navy gradient standardized → 3-stop pattern**
+- 6+ farklı gradient combination → tek pattern: `#2A3F7A → #1E2D5E → #162247`
+- `--navy-deep` CSS variable: #141f3d → #162247
+- Applied to: sidebar premium card, toggle premium card, premium CTA, AI CV card, AI card, contact card, bento premium card, wizard premium setting
+- Purple icon (#8B5CF6) → navy icon (var(--navy))
+- Dark mode gradient: `#1A2B54 → #0F1729 → #0A1020`
 
-*Teknik:*
-- `perspective: 1200px` + `transform: rotateY(180deg)` + `backface-visibility: hidden`
-- Desktop: `@media (hover: hover)` → hover ile flip
-- Mobile: `onclick` → `.flipped` class toggle
-- Z-index fix: `.flip-card { z-index: 1 }` → `:hover { z-index: 10 }` (hover leak prevention)
-- Grid: 3 sütun desktop (>750px), 2 tablet, 1 mobil
-- Kart yüksekliği: 260px fixed
-- fadeUp stagger animation (0.03s delay per card)
+### PENDING Cursor Prompts (sırayla yapıştırılacak)
+- [ ] Theme toggle visibility (gold sun icon on navy sidebar) + shared.css vermillion hover
+- [ ] Brand color audit Batch 2 (index, blog, hakkimizda, iletisim, isalim-rotasi)
+- [ ] Brand color audit Batch 3 (ik, aday, profil.css)
+- [ ] Navy gradient standardization (profil.css — 12 steps)
+- [ ] Sentry retry logic (profil-ui.js — retry failed child queries with session refresh)
+- [ ] Wizard "İlçe Seç" rename + district card frame kaldır
+- [ ] Cache-busting JS imports (profil.html — ?v=20260316)
+- [ ] Navy header with search/notif/breadcrumb + sidebar fold effect (BIG — approved mockup)
+- [ ] cursor-preview-polish.md — Banner shadow, company bold, son güncelleme, CV link
+- [ ] cursor-toggle-polish.md — Bento gaps, navy premium, alignment, "Beni Öner" naming + sync
 
-**Brand Colors — 31 marka için `_BRAND_COLORS` map:**
-Her marka: `frontBg` (radial gradient), `backBg` (linear gradient), `accent` (hex)
-Louis Vuitton (#6B4C2A), Gucci (#00613C), Prada (#1A1A1A), Hermès (#E35205), Dior (#1A1A1A), Chanel (#1A1A1A), Cartier (#A8182D), Beymen (#8B7355), Vakko (#2C2C2C), Massimo Dutti (#4A3728), Hugo Boss (#1A1A1A), Ralph Lauren (#1B3D6D), Lacoste (#004D2C), Alo Yoga (#C4A265), lululemon (#D31334), Nike (#111111), Adidas (#1A1A1A), Zara (#1A1A1A), H&M (#E50010), Mango (#C8A96E), Boyner (#005B96), Pull & Bear (#4A6741), Bershka (#1A1A1A), Stradivarius (#8B6F47), Zara Home (#6B5B4E), LC Waikiki (#E74C3C), Sephora (#1A1A1A), MAC (#1A1A1A), Apple (#333333), Samsung (#1428A0), Teknosa (#E30613)
+### LinkedIn OAuth ✅ (pushed)
+- Supabase'de LinkedIn (OIDC) provider aktif edildi
+- Client ID: 77iw3k42yfhcj9
+- Callback URL: https://cpwibefquojehjehtrog.supabase.co/auth/v1/callback (LinkedIn'de tanımlı)
+- giris.html: disabled button → active, handler eklendi (`signInWithOAuth({ provider: 'linkedin_oidc' })`)
+- "Yakında" badge kaldırıldı
+- Apple Sign In deferred — $99 Apple Developer Program gerekli, MVP sonrasına
+- Commit: `feat: activate LinkedIn OAuth login (OIDC provider)` (dbbdbd4)
 
-**Segment pill renkleri:** luxury=#1E2D5E, premium=#C94E28, mid=#3B82F6, sportswear=#F59E0B, beauty=#EC4899, tech=#6366F1
+### Cloudflare DNS Setup ✅ (propagation bekliyor)
+- Cloudflare free hesap oluşturuldu
+- hellotalent.ai domain eklendi, DNS kayıtları import edildi
+- AI training bots: "Block on all pages" seçildi
+- GoDaddy nameservers değiştirildi: sky.ns.cloudflare.com + tanner.ns.cloudflare.com
+- Propagation: 15 dakika - 24 saat arası
+- **Cloudflare Access henüz kurulmadı** — propagation sonrası yapılacak
 
-**Kaldırılanlar (bu session'da):**
-- Modal popup sistemi (openBrandModal, closeBrandModal, tüm modal CSS/HTML)
-- Featured editorial grid (öne çıkanlar section)
-- Flat kart tasarımı + İncele butonu
-- MASS segment pill'i
-- linkedin_url, glassdoor_url, kariyer URL
-- Liste görünümü, inline follow chips
+### Sentry Error Analysis
+- 15 Mart 21:24-21:49 UTC arası 8 error — hepsi deploy race condition
+- 6/8 child table query fail: auth token expiry mid-flight (Promise.all sırasında)
+- initStep6 + getProfilAuthSession: cached HTML vs new JS mismatch
+- Fix: retry-with-session-refresh logic + cache-busting version queries (prompt verildi)
 
-**Korunanlar:** Search, segment pills, follow counter+popup, lazy load (12+12), follow state sync
+---
 
-**Sentry Fix:** `AbortError: Lock broken by another request with the 'steal' option` — tek shared auth promise pattern. profil-core.js'de `_htAuthSessionPromise` oluşturulur, tüm dosyalar bu promise'ı paylaşır.
+## 7. Kalan Backlog
 
-**Gizli tutulacaklar:** is_featured (aday görmez, ileride monetization), company ilişkisi (aday görmez)
+### Onaylanan Header Mockup (implement edilecek — prompt hazır)
+- Navy header: gradient #2A3F7A→#1E2D5E→#162247
+- Search bar (⌘K), notification bell (vermillion dot), breadcrumb, avatar
+- Sidebar gradient: to bottom right (açık sol üst → koyu sağ alt)
+- Paper fold effect: sidebar sağ kenarında 8px shadow + 1px highlight
+- Logo: beyaz, `.ai` kısmı rgba(255,255,255,0.5)
+- L-shaped navy frame, content area beyaz #F7F6F4
 
-**Kalan TODO:**
-- [ ] Mobil test (390×844) — flip kartlar touch'da test edilmeli
-- [ ] Dark mode uyumu
-- [ ] Yeni marka eklendiğinde logo upload + color map güncelleme süreci dokümante et
+### Cloudflare Access (propagation sonrası)
+- Email/OTP ile server-side password protection
+- Gate.html'deki JS check'leri kaldırılabilir (artık gereksiz)
 
-### P2 — Profil Merkezi Complete Redesign (15 Mart 2026) ✅
-
-**Identity Card:** Korundu — avatar + isim + role/company + şehir/deneyim + "Profilimi Önizle" butonu (particle confetti animation, vermillion).
-
-**Premium CTA:** Identity card altında, dark navy gradient + shimmer animation, "Premium Aday Avantajları" banner.
-
-**Bento Section Cards (4 kart, 4-column grid):**
-- Genel Bakış design language ile tutarlı — aynı shadow, border-radius (18px), hover davranışı
-- Kart 1: Kişisel Bilgiler (isim + şehir/doğum yılı/cinsiyet meta + Telefon/LinkedIn badge)
-- Kart 2: Deneyim (son pozisyon + şirket + tarih + "+N daha")
-- Kart 3: Eğitim & Dil (okul adı + bölüm, dil pill'leri with level, sertifika sayısı)
-- Kart 4: Tercihler & Lokasyon (çalışma tipi + müsaitlik + hedef pozisyon + şehir pill'leri)
-- Her kartta: sol üst ✓ badge (complete) veya ring gauge (incomplete, accent renkli)
-- Her kartta: sağ üst animated edit button (pencil rotate + underline on hover)
-- Rich data preview — emoji yok, gerçek veri, `.data-line`, `.data-sub`, `.data-pill`, `.data-ok` classes
-- Accent bar yok (kaldırıldı), soft 3-layer shadow (Genel Bakış ile aynı)
-- `_countFilledRows()` helper — boş default row'ları saymaz
-- Sertifika ring'i etkilemez (opsiyonel)
-- Responsive: 2-col @1200px, 1-col @768px. Text truncation with ellipsis.
-
-**Profil Durumu (Controls Card — bento grid row 2, left):**
-- Beyaz/light bg, standard toggle'lar (görünür, dark bg sorunu yok)
-- Status header: yeşil dot + "Profilin aktif" / "Profilin gizli"
-- 3 toggle dikey stack: Beni Öner, Aktif İş Arama, İşverenim Görmesin
-- "Beni Öner" OFF → dot gri, text muted, "İşverenim Görmesin" disabled
-- Toggle ID'leri korundu: `merkez-toggle-visibility`, `merkez-toggle-active`, `merkez-hide-from-current-employer`
-
-**Premium Öne Çıkar Card (bento grid row 2, right):**
-- Dark navy bg, "PREMIUM" badge, "Beni Öne Çıkar" title, disabled toggle, "Yakında"
-- Ayrı kart — toggle'lar ile karışmıyor
-
-**CV + AI CV (bento grid row 2, 3. ve 4. kart):**
-- CV kartı: "CV Görüntüle" (tıklanabilir, yeni tab) + tarih + Değiştir/Sil butonları
-- AI CV kartı: dark navy, "AI ile CV Optimize", "Yakında" disabled button
-- Dosya adı yerine "CV Görüntüle" label'ı
-
-**Profil Önizleme Drawer:**
-- Beyaz background, accent bar'lar kaldırıldı
-- Soft 3-layer shadow (dashboard ile tutarlı)
-- Particle confetti button (vermillion) — "Profilimi Önizle"
-- CV, İletişim (maskelenmiş), Son güncelleme tarihi
-
-**Wizard — 6 Adımlı Sistem:**
-- Step 1-5: mevcut (Kişisel, Kariyer, Eğitim, Tercihler, Lokasyon)
-- Step 6 (YENİ): "Profil Ayarları" — toggle onboarding
-  - Beni Öner, Aktif İş Arama, İşverenim Görmesin (devam_ediyor kontrolü), Premium teaser
-  - Toggle'lar merkez toggle'ları ile bidirectional sync (dispatchEvent)
-  - `updateStep6HideState()` her Step 6 ziyaretinde çalışır
-  - "İşverenim Görmesin" — employer yoksa disabled + açıklayıcı hint
-- `TOTAL_STEPS = 6`, adım sayacı gizli (sadece progress bar ikonları)
-- "Kaydet ve Çık" butonu — her step'te görünür, green outline, sağ tarafta gap ile
-- "Tamamla" butonu sadece Step 6'da
-- Animated success modal — SVG circle draw + polyline tick animation
-
-**Wizard Polish:**
-- Input tutarlılığı: tüm step'lerde aynı border, bg, border-radius, focus state
-- Exp-card ve dynamic-row: frame/bg kaldırıldı → transparent + border-bottom divider
-- Dynamic row `padding-right: 44px` — trash buton çakışması önlendi
-- Animated trash delete butonları (SVG icon, hover red + rotate, 5 lokasyon)
-- Custom green checkbox (`.cb-check` + `.cbPop` animation) — "Henüz deneyimim yok", "Halen burada çalışıyorum"
-- Çalışma Tipleri: `CALISMA_TIPLERI` ayrı array (Stajyer çıkarıldı), `.check-item` toggle chip pattern
-- Kariyer Yönelimi: aynı `.check-item` pattern, green when selected
-- `ISTIHDAM_TIPLERI` değişmedi — experience card dropdown'ında hâlâ Stajyer var
-
-**Sidebar:**
-- "Beni Öner" toggle gizlendi (display:none, JS sync korundu)
-- "Beni öne çıkar" → dark navy premium card wrapper, PREMIUM badge
-- "Çıkış Yap" + sun/moon theme toggle yan yana (sidebar-bottom-row)
-- Theme toggle disabled, "Yakında" title, sun icon amber, slow spin on hover
-
-**Ayarlar:**
-- Görünüm/Tema: 3 radio button → tek settings-theme-card ("Koyu mod desteği yakında")
-- Sun/moon theme toggle (larger 48px, disabled)
-- "Aktif Arama" → "Aktif İş Arama" renaming
-
-**UX Kararları:**
-- "Aktif İş Arama" sadece rozet — kapatmak profili gizlemez
-- Sisteme giren herkes önerilir, sadece "Beni Öner" kapalıysa önerilmez
-- "Beni Öner" = sidebar toggle = ayarlar toggle = wizard step 6 = aynı DB field (is_active)
-- Sertifika opsiyonel — ring gauge'ı etkilemez
-- Stajyer sadece deneyim dropdown'ında, çalışma tercihi'nde DEĞİL
-
-**Dosya Yapısı (güncel):**
-- profil.html (~2300+ lines) — tüm paneller, bento grid, wizard 6 step, loading screen, preview drawer
-- profil-core.js (233 lines) — Supabase client, shared auth promise, constant arrays
-- profil-ui.js (~3100+ lines) — bento cards, brand colors, merkez cards, preview drawer, toggle logic, wizard step 6
-- profil.css (~2300+ lines) — bento grid, mk-card, mk-controls, mk-premium, wizard settings, theme toggle
-- profil-data.js (94 lines) — data arrays
-- profil-settings.js (661 lines) — settings, deletion banner
-
-**Kaldırılanlar (bu session'da):**
-- Stats row (Tamamlanma % + Profil Skoru /100) — section ring'lere dağıtıldı
-- Eski mk-section küçük kartlar → 4 büyük bento kart
-- Accent bar'lar (renkli sol çizgiler) — tüm kartlardan kaldırıldı
-- Hover slide-up + CTA reveal → edit button + static kart
-- Neumorphic deneme → revert edildi (Genel Bakış design language'a geri dönüldü)
-- Emoji'ler card preview'dan kaldırıldı
-- Ayarlar'daki tema radio butonları → theme toggle card
-
-
-### P3 — Employer Onboarding & Team System (Yeni — Bu session'da tasarlandı)
+### P3 — Employer Onboarding & Team System
 **Tek marka / Çoklu marka flow:**
 1. Employer kayıt → domain-uyumlu email doğrulama
 2. "Tek marka mı, çoklu marka mı yönetiyorsunuz?" sorusu
 3. Tek marka → şirket/marka profili + İK kullanıcı ataması
 4. Çoklu marka → holding profili + marka profilleri + İK ekipleri ataması
 5. Marka claim conflict resolution (admin approval)
-6. Headhunter role (Peoplein gibi şirketler — kendi müşterisine satmak için aday arar)
-
-**Schema hazır (P2 #9'da eklendi):**
-- hr_profiles.company_id (nullable — claim sonrası dolar)
-- hr_profiles.employer_role ('admin' | 'recruiter' | 'viewer')
-- brands.tr_operator_company_id (TR distribütör mapping)
+6. Headhunter role (Peoplein gibi şirketler)
 
 **Schema P3'te eklenecek:**
 - company_teams (team_name, brand_id FK)
 - company_invitations (email, role, team_id, status)
 - hr_profiles.team_id
-
-**Önemli kararlar:**
-- Blocking company bazlı (brand bazlı değil — MVP'de yeterli)
-- Blocking UI gizli kalacak — 30+ şirket sisteme katıldıktan sonra aktif
-- tr_operator_company_id: employer onboarding'de şirket kendisi dolduracak (crowdsourced)
-- Scraper ile şirket data enrichment (website → marka/mağaza bilgisi)
-- Boyner Group vs Beymen: DB'de ayrı company (doğru), İK ekipleri ayrı
 
 ### P3+ — Diğer Büyük Özellikler
 | # | Özellik | Durum |
@@ -480,15 +403,20 @@ MVP öncesi roadmap'e alındı:
 1. Aday şirketi follow eder
 2. İşveren follow'u görür (ama profili tam açamaz)
 3. Eşleşen pozisyon olduğunda "seni takip ediyor" gösterimi
-4. İşveren DM ile pozisyon teklifi gönderir (hazır template'ler: "İlgilenir misiniz?", "İlk görüşmeye davetlisiniz" vs.)
+4. İşveren DM ile pozisyon teklifi gönderir (hazır template'ler)
 5. Aday tarafında DM inbox
 6. DM aldığında email bildirimi
 
 DB gereksinimleri: messages, message_templates, notifications tabloları + real-time subscription + email notification worker
 
+### Markalar TODO
+- [ ] Mobil test (390×844) — flip kartlar touch'da test edilmeli
+- [ ] Dark mode uyumu
+- [ ] Yeni marka eklendiğinde logo upload + color map güncelleme süreci dokümante et
+
 ---
 
-## 7. Data Strategy Özeti
+## 8. Data Strategy Özeti
 
 ### Matching Model
 ```
@@ -500,7 +428,7 @@ Detay: .claude/skills/hellotalent-dev/references/data-strategy.md
 
 ---
 
-## 8. Test Suite
+## 9. Test Suite
 
 ### Çalıştırma
 ```bash
@@ -520,7 +448,7 @@ npx playwright test --reporter=list
 
 ---
 
-## 9. Deployment & Workflow
+## 10. Deployment & Workflow
 
 ### Deploy
 ```bash
@@ -528,9 +456,18 @@ git add [dosya] && git commit -m "mesaj" && git push origin main
 ```
 Propagation: ~40 saniye → hard refresh (Cmd+Shift+R)
 
+### Cache Busting
+profil.html JS imports: `?v=YYYYMMDD` query string. Her deploy'da bump et:
+```html
+<script src="profil-core.js?v=20260316"></script>
+<script src="profil-data.js?v=20260316"></script>
+<script src="profil-ui.js?v=20260316"></script>
+<script src="profil-settings.js?v=20260316"></script>
+```
+
 ### Cursor Workflow
 - Tüm Cursor prompt'ları **İngilizce**
-- Her prompt sonunda: "After completing: 1. Short summary 2. Only [file] modified"
+- Her prompt sonunda: "After completing: 1. Short summary 2. Only [file] modified 3. Run: git add ... && git commit ... && git push origin main"
 - Cursor bitince: `git diff --stat` → review → commit
 
 ### Terminal Komutları
@@ -553,7 +490,7 @@ git diff dosya.html | head -100
 
 ---
 
-## 10. Önemli Kurallar & Öğrenimler
+## 11. Önemli Kurallar & Öğrenimler
 
 1. **Türkiye yüksek enflasyon** → statik maaş benchmark feature'ları güvenilmez → silindi
 2. **"Mülakat" veya "iş görüşmesi"** kullan, asla "röportaj" değil
@@ -561,71 +498,61 @@ git diff dosya.html | head -100
 4. **GENERATED ALWAYS** identity columns sessizce upsert'i reddeder → her zaman identity column type'ı kontrol et
 5. **Homepage dosyası** her zaman index.html — asla index_new.html
 6. **Dosyalar session'lar arası persist etmez** → re-upload gerekli
-7. **profil.html 6300+ satır** → section-by-section edit only
+7. **profil.html** → section-by-section edit only (6 dosyaya split edildi)
 8. **Step-by-step with verification** → onay almadan sonraki adıma geçme
 9. **console.log kullanma** — production'da debug log yasak, sadece console.error/warn
 10. **Engelli şirketler UI gizli** — display:none, 30+ şirket sisteme katıldıktan sonra aktif
+11. **Vermillion hover** her yerde `#b84420` — başka varyant kullanma
+12. **Navy gradient** 3-stop: `#2A3F7A → #1E2D5E → #162247` — başka combination kullanma
+13. **LinkedIn OAuth** provider adı `linkedin_oidc` — `linkedin` deprecated
+14. **Netlify kullanma** — limit doldu, Cloudflare free tier unlimited
+15. **Cache busting** — profil.html JS imports'a `?v=YYYYMMDD` ekle, her deploy'da bump et
 
 ---
 
-## 11. Git Commit Geçmişi (14-15 Mart 2026)
+## 12. Git Commit Geçmişi (14-16 Mart 2026)
 
 ```
 refactor: centralize Supabase config in shared.js - Phase 1 (7 pages)
-fix: HT not defined fallback
-refactor: Supabase config traceability - Phase 2
-fix: standardize auth guards - employer role redirect + gate check
-fix: cross-role login prevention
-fix: work_prefs .single() → .maybeSingle() (Sentry fix)
-docs: schema drift report + 3 live DB fixes
+fix: HT not defined fallback for pages where inline script runs before shared.js
+refactor: Supabase config traceability - Phase 2 (giris, ik, profil)
+fix: standardize auth guards - employer role redirect + gate check on content pages
+fix: cross-role login prevention - employer/candidate tab validation
+fix: work_prefs query .single() → .maybeSingle() for new users (Sentry fix)
+docs: schema drift report + 3 live DB fixes applied
 feat: replace mock ADAYLAR with live Supabase data (P2 #7)
-feat: email auth sync + email change flow (P2 #8)
-feat: P2 #9 Settings MVP (4 features)
-fix: P2 #9 closure
-chore: clean code audit (-1192 satır)
+feat: email auth sync + email change flow in Ayarlar (P2 #8)
+feat: P2 #9 Settings MVP — bildirim tercihleri, engelli şirketler, hesap dondur/sil, CV görünürlük copy
+fix: P2 #9 closure — hide blocking UI, add employer enforcement, add deletion banner
+chore: clean code audit — remove 24 debug logs, fix Sentry TODO, remove fallback save, deduplicate 320 lines CSS
 chore: add CLAUDE.md + project rules
 feat: P2 #10 — İK email sync
-feat: profil merkezi card redesign + preview modal + toggle grid
-
---- 15 Mart Gece Session (~20 commit, Profil Merkezi Complete Overhaul) ---
-feat: bento section cards — ring gauges, preview data, save-exit button
-fix: void syntax error, phantom row count, cert ring optional
-feat: UX overhaul — conditional rings, rich previews, merged lokasyon
-feat: genel bakış design language redesign
-feat: compact 4-col grid, animated edit btn, toggle strip + premium card
-fix: checkmark bottom-right, accent bars removed, 4-col bottom row
-fix: wizard nav gap, animated trash delete, input consistency, typography
-fix: CV label, toggle vertical stack, responsive wrap
-fix: card frames removed, custom green checkboxes
-fix: exp-card red border, trash alignment, checkbox pills
-fix: preview drawer polish, toggle rename, particle button
-fix: Stajyer removed from Çalışma Tipleri → check-item toggle chips
-feat: wizard step 6 — profil ayarları toggle onboarding
-fix: step 6 employer detection, hide step counter
-fix: success modal animated checkmark
-fix: sidebar beni-öner hidden, premium frame for öne çıkar
-feat: sun/moon theme toggle (disabled — yakında)
+feat: profil merkezi modern card redesign
+fix: premium CTA top + CV section compact redesign
+feat: profile preview modal + 1deneyim spacing fix
+feat: horizontal toggle grid — 4 columns, cookie-consent style
+feat: animated expanding-circle logout button in sidebar
+feat: navy dark sidebar with gradient premium card
+feat: activate LinkedIn OAuth login (OIDC provider) (dbbdbd4)
 ```
 
 ---
 
-## 12. Yeni Session Başlatma Rehberi
+## 13. Yeni Session Başlatma Rehberi
 
 Yeni bir chat açtığında şunu söyle:
 
-> "hellotalent.ai projesi üzerinde çalışıyoruz. Lütfen docs/handoff.md dosyasını oku ve kaldığımız yerden devam edelim."
+> "`docs/handoff.md` oku dersen her şey orada."
 
 Ya da Claude Code'da:
 ```bash
 cat docs/handoff.md
 ```
 
-### Sıradaki Öncelikler
-1. **Dark mode implementation** — theme toggle hazır (disabled), CSS dark theme variables + sayfa bazlı dark uyumluluk
-2. **Mobil test** (390×844) — tüm yeni bento kartlar, toggle'lar, wizard step 6 mobilde test
-3. **Profil önizleme drawer** — daha zengin içerik (alan mevcut), dark mode uyumu
-4. **P3 — Employer Onboarding** — tek/çoklu marka flow, domain doğrulama, İK ekip sistemi
-5. **P3 — İşveren-Aday İletişim Sistemi** — DM + follow + templates
+### Sıradaki İşler (öncelik sırasıyla)
+1. **Cloudflare Access setup** (propagation tamamlandığında)
+2. **Pending Cursor prompts** (10 adet — sırayla yapıştırılacak)
+3. **P3 — Employer Onboarding & Team System**
 
 ### Önceki Transkriptler
 Tam konuşma geçmişi:
@@ -633,4 +560,4 @@ Tam konuşma geçmişi:
 - /mnt/transcripts/2026-03-14-13-09-47-hellotalent-dev-session-p2-start.txt
 - /mnt/transcripts/2026-03-15-09-40-04-hellotalent-markalar-panel.txt
 - /mnt/transcripts/2026-03-15-11-50-02-hellotalent-markalar-dashboard-gelistirme.txt
-- 2026-03-15 gece session: Profil Merkezi complete overhaul (~20 commit)
+- (16 Mart session — sidebar navy, brand color audit, LinkedIn OAuth, Cloudflare DNS)
