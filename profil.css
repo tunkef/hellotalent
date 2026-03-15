@@ -469,8 +469,9 @@ body{
 
 /* ── EXPERIENCE CARDS ── */
 .exp-card{
-  background:var(--bg-elevated,#F7F6F4);border:1px solid var(--border-subtle,#E5E3DF);border-radius:var(--radius,10px);
-  padding:16px;margin-bottom:12px;position:relative;
+  background:transparent;border:none;border-radius:0;
+  padding:16px 0;margin-bottom:12px;position:relative;
+  border-bottom:1px solid var(--border-subtle);
 }
 .exp-card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
 .exp-card-title{font-size:14px;font-weight:700;color:var(--text-secondary);}
@@ -488,7 +489,7 @@ body{
   align-items: center;
   justify-content: center;
   padding: 0;
-  color: var(--red);
+  color: var(--red, #dc2626);
   transition: all 0.3s;
   flex-shrink: 0;
 }
@@ -496,6 +497,10 @@ body{
   position: absolute;
   top: 6px;
   right: 6px;
+}
+.dynamic-row .btn-del-row {
+  top: 12px;
+  right: 0;
 }
 .exp-card-del svg,
 .btn-del-row svg {
@@ -505,8 +510,8 @@ body{
 }
 .exp-card-del:hover,
 .btn-del-row:hover {
-  background: var(--red);
-  border-color: var(--red);
+  background: var(--red, #dc2626);
+  border-color: var(--red, #dc2626);
   color: #fff;
 }
 .exp-card-del:hover svg,
@@ -601,12 +606,9 @@ body{
 
 /* ── DYNAMIC ROWS (JS uses .dynamic-row) ── */
 .dynamic-row{
-  padding:12px;
-  background:var(--bg-elevated,#F7F6F4);
-  border:1px solid var(--border-subtle,#E5E3DF);
-  border-radius:var(--radius,10px);
-  margin-bottom:8px;
-  position:relative;
+  padding:12px 0;background:transparent;border:none;
+  border-bottom:1px solid var(--border-subtle);
+  margin-bottom:0;position:relative;
 }
 
 /* ── CHIPS ROW ── */
@@ -1938,12 +1940,59 @@ html[data-theme="dark"] .field-req{color:#F87171;}
 .step-errors-list li{font-size:12px;color:var(--red);padding:2px 0;}
 .step-errors-list li::before{content:'\2022 ';color:var(--red);}
 
-/* ── CHECKBOX CUSTOM ── */
-.cb-wrap{display:flex;align-items:center;gap:8px;cursor:pointer;padding:10px 0;}
-.cb-wrap input[type=checkbox]{
-  width:18px;height:18px;accent-color:var(--verm);cursor:pointer;
+/* ── Custom Checkbox ── */
+.cb-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  padding: 6px 0;
+  user-select: none;
 }
-.cb-wrap span{font-size:14px;font-weight:500;}
+.cb-wrap input[type=checkbox] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.cb-check {
+  position: relative;
+  width: 22px;
+  height: 22px;
+  background: #ccc;
+  border-radius: 6px;
+  transition: all 0.3s;
+  flex-shrink: 0;
+}
+.cb-wrap input:checked ~ .cb-check {
+  background: var(--green, #16a34a);
+  animation: cbPop 0.4s;
+}
+.cb-check::after {
+  content: "";
+  position: absolute;
+  display: none;
+  left: 8px;
+  top: 4px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 2.5px 2.5px 0;
+  transform: rotate(45deg);
+}
+.cb-wrap input:checked ~ .cb-check::after {
+  display: block;
+}
+@keyframes cbPop {
+  0% { transform: scale(1); }
+  50% { transform: scale(0.85); }
+  100% { transform: scale(1); }
+}
+.cb-wrap span:last-child {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
 
 /* ── SECTION DIVIDER ── */
 .section-divider{
@@ -2018,9 +2067,9 @@ html[data-theme="dark"] #panel-profil .dyn-row{
 }
 /* Wizard outer row/card surfaces (Eğitim, Diller, Sertifikalar, Hedef Pozisyonlar) — match Kariyer step */
 html[data-theme="dark"] #panel-profil .dynamic-row{
-  background:var(--bg-elevated);
+  background:transparent;
   border-color:var(--border-subtle);
-  box-shadow:0 0 0 1px rgba(255,255,255,0.04);
+  box-shadow:none;
 }
 
 /* ═══ Dark mode polish: Eğitim, Tercihler, Lokasyon only (steps 3–5) ═══ */

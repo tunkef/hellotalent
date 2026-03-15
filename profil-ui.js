@@ -825,9 +825,12 @@ function initStep4() {
         if (cb.checked) { selectedCalismaTipleri.push(tip); }
         else { selectedCalismaTipleri = selectedCalismaTipleri.filter(function(t) { return t !== tip; }); }
       });
+      var checkmark = document.createElement('span');
+      checkmark.className = 'cb-check';
+      lbl.appendChild(cb);
+      lbl.appendChild(checkmark);
       var span = document.createElement('span');
       span.textContent = tip;
-      lbl.appendChild(cb);
       lbl.appendChild(span);
       ctContainer.appendChild(lbl);
     });
@@ -894,9 +897,12 @@ function initStep4() {
         if (cb.checked) { selectedCareerTypes.push(opt.value); }
         else { selectedCareerTypes = selectedCareerTypes.filter(function(t) { return t !== opt.value; }); }
       });
+      var checkmark = document.createElement('span');
+      checkmark.className = 'cb-check';
+      lbl.appendChild(cb);
+      lbl.appendChild(checkmark);
       var span = document.createElement('span');
       span.textContent = opt.label;
-      lbl.appendChild(cb);
       lbl.appendChild(span);
       ctypeContainer.appendChild(lbl);
     });
