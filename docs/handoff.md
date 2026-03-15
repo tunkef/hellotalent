@@ -1,5 +1,5 @@
 # hellotalent.ai — Technical Handoff Document
-> Son güncelleme: 14 Mart 2026
+> Son güncelleme: 15 Mart 2026
 > Bu doküman, projenin mevcut durumunu, tamamlanan işleri ve kalan backlog'u kapsar.
 > Yeni bir chat/session başlatırken bu dosyayı referans olarak kullanın.
 
@@ -337,6 +337,94 @@ Louis Vuitton (#6B4C2A), Gucci (#00613C), Prada (#1A1A1A), Hermès (#E35205), Di
 - [ ] Dark mode uyumu
 - [ ] Yeni marka eklendiğinde logo upload + color map güncelleme süreci dokümante et
 
+### P2 — Profil Merkezi Redesign (15 Mart 2026) ✅
+
+**Profil Merkezi: Dark Terminal → Modern Card-Based Layout**
+
+Identity Card:
+- Dark `.m-hero` → temiz beyaz kart (avatar + isim + role/company + şehir/deneyim)
+- Toggle'lar identity card'dan kaldırıldı → ayrı toggle grid'e taşındı
+- "Profilimi Önizle" butonu eklendi (identity card sağında)
+- Tüm JS ID'leri korundu (merkez-identity, merkez-avatar, merkez-name, vb.)
+
+Stats Row:
+- İki yan yana kart: Tamamlanma (%) + Profil Skoru (/100)
+- Sol accent bar (green/vermillion), DM Mono büyük rakamlar
+- Hint sistemi (score hints active)
+
+Profil Bölümleri:
+- Border-left satırlar → 5 renkli icon kartı (navy/verm/green/purple/amber)
+- Status dot (yeşil=tamam, gri=eksik) + hover arrow animasyonu
+- `updateSectionStatuses()` fonksiyonu eklendi
+
+CV Upload (Yan Yana):
+- Sol: drag-drop upload kartı (compact, horizontal layout)
+- Sağ: "AI ile CV Optimize" dark kart (btn-generate-cv-merkez, disabled)
+- Eşit yükseklik, min-height: 80px
+
+Premium CTA:
+- En alta → en üste taşındı (identity card'ın hemen altı)
+- Subtle shimmer animasyonu (4s loop)
+- "Premium Aday Avantajları — Öne çıkar, AI CV, kariyer koçluğu"
+
+Branded Loading Transition:
+- profil.html: hellotalent.ai logo + 5-dot wave animation + tagline
+- Minimum 4 saniye, app body arka planda yüklenir
+
+Gate/Login Akışı Fix:
+- index.html session auto-redirect kaldırıldı
+- Gate → index → "Giriş Yap" → profil.html → 4sn loading → dashboard
+
+**Profil Önizleme Modal (Profilimi Önizle):**
+- Full-screen modal: "İşverenlerin gördüğü profil görünümü" navy banner
+- Hero: avatar + isim + role + şehir + deneyim yılı + "Aktif aday" badge
+- Deneyim timeline (yeşil dot=devam, gri=geçmiş)
+- Eğitim & Dil + Sertifikalar
+- Tercihler & Lokasyon (tag pill'ler)
+- CV: tıklanabilir dosya adı (target=_blank)
+- İletişim: maskelenmiş email (k****@gmail.com) + telefon (536 *** ** 57) + 🔒 Gizli badge
+- Son güncelleme tarihi (candidates.updated_at)
+- ESC ile kapatma, overlay click, body scroll lock
+- Maaş beklentisi GÖSTERİLMEZ (privacy)
+- Veri kaynağı: `_loadedDBData` (ek API call yok)
+
+**Toggle Grid (Cookie-Consent Style):**
+- Identity card'daki 3 vertical toggle → 4-column horizontal bento grid
+- Her toggle ayrı kart (gap: 10px, bento style)
+- Cell 1: "Beni Öne Çıkar" — navy dark bg, PREMIUM badge sol üst, disabled
+- Cell 2: "Aktif İş Arıyorum" — bağımsız badge toggle, DB yazmaz (ileride candidates.actively_looking)
+- Cell 3: "Beni Öner" — candidates.is_active'e yazılır, sidebar + ayarlar ile sync
+- Cell 4: "İşverenim Görmesin" — Cell 3 kapalıyken fade out (opacity 0.35)
+- "Beni Öner" kapalıyken kırmızı hint: "Profilin ve CV'n işverenlerle paylaşılmaz"
+- Responsive: 2×2 grid mobilde
+
+**UX Kararları:**
+- "Aktif İş Arıyorum" sadece rozet — kapatmak profili gizlemez
+- Sisteme giren herkes önerilir, sadece "Beni Öner" kapalıysa önerilmez
+- "Beni Öner" = sidebar toggle = ayarlar toggle = aynı DB field (is_active)
+- Toggle isimleri tüm yerlerde tutarlı: "Beni Öner"
+
+**Dosya Yapısı (güncel):**
+- profil.html (~2100+ lines) — tüm paneller, bento grid, loading screen, toggle grid, preview modal
+- profil-core.js — Supabase client, shared auth promise
+- profil-ui.js (~2400+ lines) — flip cards, brand colors, merkez cards, preview modal, toggle logic
+- profil.css — flip card, bento grid, loading screen, toggle grid, preview modal styles
+- profil-settings.js — settings, deletion banner
+
+**Git Commits (15 Mart 2026):**
+```
+feat: profil merkezi modern card redesign — identity, stats, sections, CV side-by-side (65b4c9c)
+fix: premium CTA top + CV section compact redesign (22b5928)
+feat: profile preview modal + 1deneyim spacing fix
+feat: horizontal toggle grid — cookie-consent style, 4 columns
+fix: toggle grid polish — bento gaps, navy premium, alignment, independent toggle logic
+```
+
+**PENDING Cursor Prompts (sırayla yapıştırılacak):**
+- [ ] cursor-preview-polish.md — Banner shadow, company bold, son güncelleme, CV link
+- [ ] cursor-toggle-polish.md — Bento gaps, navy premium, alignment, "Beni Öner" naming + sync
+
+
 ### P3 — Employer Onboarding & Team System (Yeni — Bu session'da tasarlandı)
 **Tek marka / Çoklu marka flow:**
 1. Employer kayıt → domain-uyumlu email doğrulama
@@ -485,6 +573,10 @@ fix: P2 #9 closure — hide blocking UI, add employer enforcement, add deletion 
 chore: clean code audit — remove 24 debug logs, fix Sentry TODO, remove fallback save, deduplicate 320 lines CSS, improve config traceability
 chore: add CLAUDE.md + project rules (supabase, code-quality, deploy, turkish-ui, architecture)
 feat: P2 #10 — İK email sync (auto-sync + email change UI)
+feat: profil merkezi modern card redesign (65b4c9c)
+fix: premium CTA top + CV section compact redesign (22b5928)
+feat: profile preview modal + 1deneyim spacing fix
+feat: horizontal toggle grid — 4 columns, cookie-consent style
 ```
 
 ---
@@ -493,7 +585,7 @@ feat: P2 #10 — İK email sync (auto-sync + email change UI)
 
 Yeni bir chat açtığında şunu söyle:
 
-> "hellotalent.ai projesi üzerinde çalışıyoruz. Lütfen docs/handoff.md dosyasını oku ve kaldığımız yerden devam edelim. Sıradaki: P3 — Employer Onboarding & Team System."
+> "hellotalent.ai projesi üzerinde çalışıyoruz. Lütfen docs/handoff.md dosyasını oku ve kaldığımız yerden devam edelim. Sıradaki: Profil Merkezi polish (pending Cursor prompts) veya P3 — Employer Onboarding."
 
 Ya da Claude Code'da:
 ```bash
@@ -504,3 +596,5 @@ cat docs/handoff.md
 Tam konuşma geçmişi:
 - /mnt/transcripts/2026-03-14-09-52-17-hellotalent-dev-session-p1-complete.txt
 - /mnt/transcripts/2026-03-14-13-09-47-hellotalent-dev-session-p2-start.txt
+- /mnt/transcripts/2026-03-15-09-40-04-hellotalent-markalar-panel.txt
+- /mnt/transcripts/2026-03-15-11-50-02-hellotalent-markalar-dashboard-gelistirme.txt
