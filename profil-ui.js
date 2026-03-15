@@ -1425,9 +1425,10 @@ function updateMerkezCards() {
   }
 
   // ── Card 3: Eğitim & Dil ──
-  var eduCount = document.querySelectorAll('#edu-rows-container .dynamic-row').length;
-  var langCount = document.querySelectorAll('#lang-rows-container .dynamic-row').length;
-  var certCount = document.querySelectorAll('#cert-rows-container .dynamic-row').length;
+  // Count only rows with actual data (ignore empty default rows from initStep3)
+  var eduCount = _countFilledRows('#edu-rows-container', ['seviye', 'okul']);
+  var langCount = _countFilledRows('#lang-rows-container', ['dil']);
+  var certCount = _countFilledRows('#cert-rows-container', ['adi']);
   var p3 = document.getElementById('mk-preview-3');
   var e3 = document.getElementById('mk-empty-3');
   var pills3 = [];
@@ -1443,8 +1444,9 @@ function updateMerkezCards() {
     if (p3) p3.style.display = 'none';
     if (e3) e3.style.display = 'block';
   }
-  var filled3 = [eduCount > 0, langCount > 0, certCount > 0].filter(Boolean).length;
-  updateBentoRing(3, Math.round((filled3 / 3) * 100));
+  // Ring: eğitim (50%) + dil (50%) — sertifika opsiyonel, ring'i etkilemez
+  var filled3 = [eduCount > 0, langCount > 0].filter(Boolean).length;
+  updateBentoRing(3, Math.round((filled3 / 2) * 100));
 
   // ── Card 4: Tercihler ──
   var hasCalisma = typeof selectedCalismaTipleri !== 'undefined' && selectedCalismaTipleri.length > 0;
@@ -1503,6 +1505,19 @@ function updateBentoRing(step, pct) {
   var offset = circumference - (circumference * Math.min(pct, 100) / 100);
   if (fill) fill.style.strokeDashoffset = offset;
   if (label) label.textContent = pct + '%';
+}
+
+function _countFilledRows(containerSelector, fieldSuffixes) {
+  var rows = document.querySelectorAll(containerSelector + ' .dynamic-row');
+  var count = 0;
+  rows.forEach(function(row) {
+    var filled = fieldSuffixes.some(function(suffix) {
+      var input = row.querySelector('[id$="-' + suffix + '"]');
+      return input && input.value && input.value.trim() !== '';
+    });
+    if (filled) count++;
+  });
+  return count;
 }
 
 function updateMerkezIdentity() {
