@@ -884,8 +884,36 @@ html[data-theme="dark"] .field-req{color:#F87171;}
 /* Preview content area */
 .mk-bento-preview { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
 .mk-bento-preview .bento-name {
-  font-size: 14px; font-weight: 700; color: var(--text-secondary);
-  margin-bottom: 4px;
+  font-size: 14px; font-weight: 700;
+  color: var(--text-secondary);
+  margin-bottom: 2px;
+}
+.mk-bento-preview .bento-meta {
+  font-size: 12px; color: var(--text-muted);
+  margin-bottom: 6px;
+}
+.mk-bento-preview .bento-badges {
+  display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px;
+}
+.mk-bento-preview .bento-badge-ok {
+  font-size: 10px; font-weight: 600;
+  color: var(--green);
+  background: var(--green-light);
+  padding: 2px 8px; border-radius: 4px;
+  letter-spacing: 0.2px;
+}
+.mk-bento-preview .bento-edu-line {
+  font-size: 13px; font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 2px;
+}
+.mk-bento-preview .bento-lang-row {
+  display: flex; flex-wrap: wrap; gap: 4px;
+  margin-top: 6px;
+}
+.mk-bento-preview .bento-cert-note {
+  font-size: 10px; color: var(--text-muted);
+  margin-top: 4px; opacity: 0.7;
 }
 .mk-bento-preview .bento-pill {
   display: inline-block;
@@ -947,43 +975,64 @@ html[data-theme="dark"] .field-req{color:#F87171;}
   font-size: 9px; font-weight: 700;
   color: var(--text-muted);
 }
+.mk-bento-ring .ring-done {
+  display: flex; align-items: center; justify-content: center;
+  width: 28px; height: 28px;
+  background: var(--green);
+  color: #fff;
+  border-radius: 50%;
+  font-size: 13px; font-weight: 700;
+  position: absolute; top: 0; right: 0;
+}
 
-/* Edit button */
+/* Edit button: always show subtle, full opacity on hover */
 .mk-bento-edit {
   position: absolute; top: 14px; right: 56px;
   width: 28px; height: 28px;
   border: none; background: transparent;
   border-radius: 6px; cursor: pointer;
   display: flex; align-items: center; justify-content: center;
-  color: var(--text-muted); opacity: 0;
+  color: var(--text-muted); opacity: 0.3;
   transition: opacity 0.15s, background 0.15s;
 }
 .mk-bento-card:hover .mk-bento-edit { opacity: 1; }
 .mk-bento-edit:hover { background: rgba(0,0,0,0.04); }
 .mk-bento-edit svg { width: 14px; height: 14px; }
 
-/* Wizard save-exit button */
+/* Card hover: subtle lift + right arrow hint */
+.mk-bento-card::after {
+  content: 'Düzenle \u2192';
+  position: absolute;
+  bottom: 12px; right: 16px;
+  font-size: 10px; font-weight: 600;
+  color: var(--text-muted);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.mk-bento-card:hover::after { opacity: 0.5; }
+
+/* Wizard save-exit button (outline, secondary) */
 .btn-save-exit {
   display: inline-flex; align-items: center; gap: 6px;
-  padding: 8px 16px;
-  background: var(--green);
-  border: 1px solid var(--green);
+  padding: 8px 14px;
+  background: transparent;
+  border: 1.5px solid var(--green);
   border-radius: 8px;
-  font-size: 12px; font-weight: 600;
-  color: #fff;
+  font-size: 11px; font-weight: 600;
+  color: var(--green);
   cursor: pointer;
   transition: all 0.15s;
 }
 .btn-save-exit:hover {
-  background: #15803d;
-  border-color: #15803d;
+  background: var(--green-light);
 }
 
 /* Responsive */
 @media (max-width: 768px) {
   .mk-bento-grid { grid-template-columns: 1fr; }
   .mk-bento-card.span-2 { grid-column: 1; }
-  .mk-bento-edit { opacity: 0.6; }
+  .mk-bento-edit { opacity: 0.4; }
+  .mk-bento-card::after { display: none; }
 }
 
 /* ── Premium CTA (top) + shimmer ── */

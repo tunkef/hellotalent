@@ -1376,14 +1376,18 @@ function updateMerkezCards() {
   var filledCount1 = [name, phone, gender, birthYear, city, linkedin].filter(Boolean).length;
 
   if (filledCount1 > 0 && p1) {
-    var parts1 = [];
-    if (name) parts1.push('<div class="bento-name">' + _escHtml(name) + '</div>');
-    var pills1 = [];
-    if (city) pills1.push('\uD83D\uDCCD ' + city);
-    if (phone) pills1.push('\uD83D\uDCF1 Telefon \u2713');
-    if (linkedin) pills1.push('\uD83D\uDD17 LinkedIn \u2713');
-    if (pills1.length) parts1.push(pills1.map(function(t) { return '<span class="bento-pill">' + _escHtml(String(t)) + '</span>'; }).join(''));
-    p1.innerHTML = parts1.join('');
+    var html1 = '';
+    if (name) html1 += '<div class="bento-name">' + _escHtml(name) + '</div>';
+    var meta1 = [];
+    if (city) meta1.push(city);
+    if (birthYear) meta1.push(birthYear + ' do\u011Fumlu');
+    if (gender) meta1.push(gender);
+    if (meta1.length > 0) html1 += '<div class="bento-meta">' + _escHtml(meta1.join(' \u00B7 ')) + '</div>';
+    var badges1 = [];
+    if (phone) badges1.push('Telefon');
+    if (linkedin) badges1.push('LinkedIn');
+    if (badges1.length > 0) html1 += '<div class="bento-badges">' + badges1.map(function(b) { return '<span class="bento-badge-ok">' + _escHtml(b) + '</span>'; }).join('') + '</div>';
+    p1.innerHTML = html1;
     p1.style.display = '';
     if (e1) e1.style.display = 'none';
   } else {
@@ -1425,43 +1429,84 @@ function updateMerkezCards() {
   }
 
   // ── Card 3: Eğitim & Dil ──
-  // Count only rows with actual data (ignore empty default rows from initStep3)
   var eduCount = _countFilledRows('#edu-rows-container', ['seviye', 'okul']);
   var langCount = _countFilledRows('#lang-rows-container', ['dil']);
   var certCount = _countFilledRows('#cert-rows-container', ['adi']);
   var p3 = document.getElementById('mk-preview-3');
   var e3 = document.getElementById('mk-empty-3');
-  var pills3 = [];
-  if (eduCount > 0) pills3.push(eduCount + ' e\u011Fitim');
-  if (langCount > 0) pills3.push(langCount + ' dil');
-  if (certCount > 0) pills3.push(certCount + ' sertifika');
 
-  if (pills3.length > 0 && p3) {
-    p3.innerHTML = pills3.map(function(t) { return '<span class="bento-pill">' + _escHtml(t) + '</span>'; }).join('');
+  if ((eduCount > 0 || langCount > 0 || certCount > 0) && p3) {
+    var html3 = '';
+    var eduRows = document.querySelectorAll('#edu-rows-container .dynamic-row');
+    var firstEduFilled = null;
+    for (var i = 0; i < eduRows.length; i++) {
+      var r = eduRows[i];
+      var ok = r.querySelector('[id$="-okul"]');
+      var sev = r.querySelector('[id$="-seviye"]');
+      if ((ok && ok.value && ok.value.trim()) || (sev && sev.value && sev.value.trim())) {
+        firstEduFilled = r;
+        break;
+      }
+    }
+    if (firstEduFilled && eduCount > 0) {
+      var eduSchool = firstEduFilled.querySelector('[id$="-okul"]');
+      var eduBolum = firstEduFilled.querySelector('[id$="-bolum"]');
+      var eduSeviye = firstEduFilled.querySelector('[id$="-seviye"]');
+      var schoolName = eduSchool ? eduSchool.value.trim() : '';
+      var bolumName = eduBolum ? eduBolum.value.trim() : '';
+      var seviyeName = eduSeviye ? eduSeviye.value : '';
+      if (schoolName) {
+        html3 += '<div class="bento-edu-line">' + _escHtml(schoolName);
+        if (bolumName) html3 += ' \u00B7 ' + _escHtml(bolumName);
+        html3 += '</div>';
+      }
+      if (eduCount > 1) html3 += '<div class="bento-cert-note">+' + (eduCount - 1) + ' e\u011Fitim daha</div>';
+    }
+    var langRows = document.querySelectorAll('#lang-rows-container .dynamic-row');
+    var langPills = [];
+    langRows.forEach(function(row) {
+      var dilInput = row.querySelector('[id$="-dil"]');
+      var sevInput = row.querySelector('[id$="-seviye"]');
+      if (dilInput && dilInput.value && dilInput.value.trim()) {
+        var langText = dilInput.value.trim();
+        if (sevInput && sevInput.value) langText += ' (' + sevInput.value + ')';
+        langPills.push(langText);
+      }
+    });
+    if (langPills.length > 0) {
+      html3 += '<div class="bento-lang-row">' + langPills.map(function(l) { return '<span class="bento-pill">' + _escHtml(l) + '</span>'; }).join('') + '</div>';
+    }
+    if (certCount > 0) html3 += '<div class="bento-cert-note">' + certCount + ' sertifika</div>';
+    p3.innerHTML = html3;
     p3.style.display = '';
     if (e3) e3.style.display = 'none';
   } else {
     if (p3) p3.style.display = 'none';
     if (e3) e3.style.display = 'block';
   }
-  // Ring: eğitim (50%) + dil (50%) — sertifika opsiyonel, ring'i etkilemez
   var filled3 = [eduCount > 0, langCount > 0].filter(Boolean).length;
   updateBentoRing(3, Math.round((filled3 / 2) * 100));
 
-  // ── Card 4: Tercihler ──
+  // ── Card 4: Tercihler & Lokasyon ──
   var hasCalisma = typeof selectedCalismaTipleri !== 'undefined' && selectedCalismaTipleri.length > 0;
   var hasMusaitlik = typeof selectedMusaitlik !== 'undefined' && !!selectedMusaitlik;
   var hasMaas = !!val('f-maas');
   var hasTarget = document.querySelectorAll('#target-roles-container .dynamic-row').length > 0;
   var hasCareer = typeof selectedCareerTypes !== 'undefined' && selectedCareerTypes.length > 0;
+  var cityKeys = typeof selectedLocations !== 'undefined' ? Object.keys(selectedLocations) : [];
 
   var p4 = document.getElementById('mk-preview-4');
   var e4 = document.getElementById('mk-empty-4');
   var pills4 = [];
   if (hasCalisma) selectedCalismaTipleri.forEach(function(t) { pills4.push(t); });
   if (hasMusaitlik) pills4.push(selectedMusaitlik);
-  if (hasTarget) pills4.push('\uD83C\uDFAF Hedef pozisyon \u2713');
-  if (hasCareer) pills4.push('\uD83D\uDCC8 Kariyer y\u00F6nelimi \u2713');
+  if (hasTarget) pills4.push('Hedef pozisyon');
+  if (hasCareer) pills4.push('Kariyer y\u00F6nelimi');
+  if (cityKeys.length > 0) {
+    var showCities = cityKeys.slice(0, 4);
+    showCities.forEach(function(c) { pills4.push(c); });
+    if (cityKeys.length > 4) pills4.push('+' + (cityKeys.length - 4) + ' \u015Fehir daha');
+  }
 
   if (pills4.length > 0 && p4) {
     p4.innerHTML = pills4.map(function(t) { return '<span class="bento-pill">' + _escHtml(String(t)) + '</span>'; }).join('');
@@ -1471,26 +1516,9 @@ function updateMerkezCards() {
     if (p4) p4.style.display = 'none';
     if (e4) e4.style.display = 'block';
   }
-  var filled4 = [hasCalisma, hasMusaitlik, hasMaas, hasTarget, hasCareer].filter(Boolean).length;
-  updateBentoRing(4, Math.round((filled4 / 5) * 100));
-
-  // ── Card 5: Lokasyon ──
-  var cityKeys = typeof selectedLocations !== 'undefined' ? Object.keys(selectedLocations) : [];
-  var p5 = document.getElementById('mk-preview-5');
-  var e5 = document.getElementById('mk-empty-5');
-
-  if (cityKeys.length > 0 && p5) {
-    var showCities = cityKeys.slice(0, 6);
-    var html5 = showCities.map(function(c) { return '<span class="bento-pill">\uD83D\uDCCD ' + _escHtml(c) + '</span>'; }).join('');
-    if (cityKeys.length > 6) html5 += '<span class="bento-pill">+' + (cityKeys.length - 6) + ' daha</span>';
-    p5.innerHTML = html5;
-    p5.style.display = '';
-    if (e5) e5.style.display = 'none';
-  } else {
-    if (p5) p5.style.display = 'none';
-    if (e5) e5.style.display = 'block';
-  }
-  updateBentoRing(5, cityKeys.length > 0 ? 100 : 0);
+  var hasLocations = cityKeys.length > 0;
+  var filled4 = [hasCalisma, hasMusaitlik, hasMaas, hasTarget, hasCareer, hasLocations].filter(Boolean).length;
+  updateBentoRing(4, Math.round((filled4 / 6) * 100));
 
   // Update identity card
   updateMerkezIdentity();
@@ -1499,9 +1527,21 @@ function updateMerkezCards() {
 function updateBentoRing(step, pct) {
   var ring = document.getElementById('mk-ring-' + step);
   if (!ring) return;
+  var circumference = 2 * Math.PI * 15.5; // ~97.39
+
+  if (pct >= 100) {
+    ring.innerHTML = '<span class="ring-done">\u2713</span>';
+    return;
+  }
+
   var fill = ring.querySelector('.ring-fill');
   var label = ring.querySelector('.ring-pct');
-  var circumference = 2 * Math.PI * 15.5; // ~97.39
+  if (!ring.querySelector('svg')) {
+    var strokeColor = step === 1 ? 'var(--navy)' : step === 2 ? 'var(--verm)' : step === 3 ? 'var(--green)' : '#8B5CF6';
+    ring.innerHTML = '<svg viewBox="0 0 36 36"><circle class="ring-track" cx="18" cy="18" r="15.5"/><circle class="ring-fill" cx="18" cy="18" r="15.5" stroke="' + strokeColor + '"/></svg><span class="ring-pct">0%</span>';
+    fill = ring.querySelector('.ring-fill');
+    label = ring.querySelector('.ring-pct');
+  }
   var offset = circumference - (circumference * Math.min(pct, 100) / 100);
   if (fill) fill.style.strokeDashoffset = offset;
   if (label) label.textContent = pct + '%';
