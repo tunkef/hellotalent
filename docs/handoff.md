@@ -261,48 +261,81 @@ if(sessionStorage.getItem('ht_gate')!=='ok'){window.location.replace('gate.html'
 - Claude Code: 58 plugins active, Bun installed, CLAUDE.md + 5 rules files committed
 - New page: sifre-yenile.html (password reset landing)
 
-### P2 — Markalar Panel (Şirketler → Markalar Pivot) (15 Mart 2026)
+### P2 — Markalar Panel (Şirketler → Markalar Pivot) ✅ (15-16 Mart 2026)
 
 **Karar:** Aday-facing UI tamamen brand-centric. Company data arka planda kalır, adaya yansımaz.
 
 **DB Değişiklikleri:**
 - `brands` tablosuna 8 yeni column: instagram_url, store_count_tr, store_cities (text[]), hq_city, segment, benefits_platform_url, employee_count_tr, is_featured (boolean)
 - `brands.company_id` → nullable yapıldı (standalone marka desteği)
+- `brands.logo_url` → 31 marka için Supabase Storage URL'leri eklendi
 - 3 yeni marka INSERT: Hugo Boss (id=99), Alo Yoga (id=100), lululemon (id=101)
 - 31 marka enriched: website, instagram, segment, store count, cities, employee count, description
 - Hermès → orijinal isimle rename edildi
+- LC Waikiki segment: mass → mid (MASS kategorisi kaldırıldı)
 - `candidate_brand_follows` tablosu + RLS (aday own + employer read by company_id)
 - Eski `candidate_company_follows` → deprecated (5 test kaydı, migrate edilmedi)
 
-**Segment taxonomy:** luxury, premium, mid, mass, sportswear, beauty, tech
+**Segment taxonomy (mix dil):** LUXURY, PREMIUM, MODA (mid), SPORT (sportswear), BEAUTY, TECH
+- MASS kaldırıldı (LC Waikiki → MODA'ya taşındı)
 
-**UI (profil.html → Markalar paneli) — Editorial Redesign:**
-- **Header:** Markalar başlık + "Takip Ettiklerin (N)" counter butonu → popup listesi
-- **Search + Segment Filter Pills:** Marka ara + yatay pill'ler (TÜMÜ, LUXURY, PREMIUM, MID, MASS, SPORTSWEAR, BEAUTY, TECH)
-- **Featured Editorial Grid:** Asimetrik magazine-style layout — sol hero kart (2 satır), sağda 2 küçük kart. `is_featured=true` markalar. İleride monetization alanı.
-- **Tüm Markalar Grid:** 4 sütun desktop, 3 tablet, 2 mobil. Lazy load 12+12.
-- **Kart:** Logo (Google Favicon 128px, rounded-square 12px) + marka adı + segment tag (İngilizce) + follow btn + mağaza sayısı + "İncele →" hint
-- **Kart tıklama:** Tüm kart tıklanabilir → Modal popup açılır (Genel Bilgiler + TR Operasyonları + description + website btn + Instagram + follow)
-- **Follow button:** Instagram pattern — "Takip Et" = vermillion CTA, "Takipte ✓" = gri/muted (sessiz)
-- **Dynamic Brand Colors:** 31 marka için hardcoded color map (bg gradient + accent hover border). Her kart subtle gradient ile marka kimliğini yansıtır.
-- **Animations:** fadeUp stagger animation (0.02s delay per card)
-- **Segment pills:** Click → grid filtre (search + segment birlikte çalışır). Aktif pill: navy, inaktif: outline.
-- **Logo:** Google Favicon API (`google.com/s2/favicons?domain=xxx&sz=128`). Clearbit deprecated. Fallback: colored initial. TODO: Manuel SVG/PNG logo upload (Supabase Storage).
+**Logo Infrastructure:**
+- 31 marka logosu PNG olarak Supabase Storage'a upload: `cvs/brand-logos/{slug}.png`
+- 11 logoda baked-in checkerboard pattern temizlendi (PIL ile pixel-level cleaning)
+- `brands.logo_url` güncellendi, `_brandLogoUrl()` DB logo_url'i öncelikli kullanır
+- Google Favicon fallback hâlâ mevcut, initial letter son fallback
+
+**UI — 3D Flip Card Design (profil.html + profil-ui.js + profil.css):**
+
+*Ön yüz (default):*
+- Logo (64px, rounded-square 14px, white bg, shadow)
+- Marka adı (Bricolage Grotesque, 17px, bold)
+- Segment pill (DM Mono, marka accent renginde)
+- Mağaza sayısı (DM Mono, muted)
+- "detaylar →" hint (hover'da görünür)
+- Background: `radial-gradient(ellipse at 50% -20%, brand_color → white)` — marka kimliğini yansıtır
+- Takip Et butonu YOK (flip ile erişilir)
+
+*Arka yüz (hover/tap ile 3D flip):*
+- Header: logo (40px) + marka adı + segment pill + mini "Takip Et" butonu (sağ üst)
+- Info rows: mağaza sayısı + şehirler, çalışan sayısı, merkez şehir
+- Description: marka açıklaması (12px, opacity 0.85)
+- Link bar: Website + Instagram (kartın altında, border-top ile ayrılmış)
+- Background: `linear-gradient(160deg, brand_accent → darker → darkest)` — markanın kendi renginde
+
+*Teknik:*
+- `perspective: 1200px` + `transform: rotateY(180deg)` + `backface-visibility: hidden`
+- Desktop: `@media (hover: hover)` → hover ile flip
+- Mobile: `onclick` → `.flipped` class toggle
+- Z-index fix: `.flip-card { z-index: 1 }` → `:hover { z-index: 10 }` (hover leak prevention)
+- Grid: 3 sütun desktop (>750px), 2 tablet, 1 mobil
+- Kart yüksekliği: 260px fixed
+- fadeUp stagger animation (0.03s delay per card)
+
+**Brand Colors — 31 marka için `_BRAND_COLORS` map:**
+Her marka: `frontBg` (radial gradient), `backBg` (linear gradient), `accent` (hex)
+Louis Vuitton (#6B4C2A), Gucci (#00613C), Prada (#1A1A1A), Hermès (#E35205), Dior (#1A1A1A), Chanel (#1A1A1A), Cartier (#A8182D), Beymen (#8B7355), Vakko (#2C2C2C), Massimo Dutti (#4A3728), Hugo Boss (#1A1A1A), Ralph Lauren (#1B3D6D), Lacoste (#004D2C), Alo Yoga (#C4A265), lululemon (#D31334), Nike (#111111), Adidas (#1A1A1A), Zara (#1A1A1A), H&M (#E50010), Mango (#C8A96E), Boyner (#005B96), Pull & Bear (#4A6741), Bershka (#1A1A1A), Stradivarius (#8B6F47), Zara Home (#6B5B4E), LC Waikiki (#E74C3C), Sephora (#1A1A1A), MAC (#1A1A1A), Apple (#333333), Samsung (#1428A0), Teknosa (#E30613)
+
+**Segment pill renkleri:** luxury=#1E2D5E, premium=#C94E28, mid=#3B82F6, sportswear=#F59E0B, beauty=#EC4899, tech=#6366F1
+
+**Kaldırılanlar (bu session'da):**
+- Modal popup sistemi (openBrandModal, closeBrandModal, tüm modal CSS/HTML)
+- Featured editorial grid (öne çıkanlar section)
+- Flat kart tasarımı + İncele butonu
+- MASS segment pill'i
+- linkedin_url, glassdoor_url, kariyer URL
+- Liste görünümü, inline follow chips
+
+**Korunanlar:** Search, segment pills, follow counter+popup, lazy load (12+12), follow state sync
 
 **Sentry Fix:** `AbortError: Lock broken by another request with the 'steal' option` — tek shared auth promise pattern. profil-core.js'de `_htAuthSessionPromise` oluşturulur, tüm dosyalar bu promise'ı paylaşır.
 
-**Kaldırılanlar:** linkedin_url, glassdoor_url, kariyer URL, website/instagram linkleri karttan (modal'da var), liste görünümü, inline follow chips
 **Gizli tutulacaklar:** is_featured (aday görmez, ileride monetization), company ilişkisi (aday görmez)
 
-**31 Enriched Marka + Brand Colors:**
-Louis Vuitton (#6B4C2A), Gucci (#00613C), Prada (#1A1A1A), Hermès (#E35205), Dior (#1A1A1A), Chanel (#1A1A1A), Beymen (#8B7355), Vakko (#2C2C2C), Massimo Dutti (#4A3728), Hugo Boss (#1A1A1A), Ralph Lauren (#1B3D6D), Lacoste (#004D2C), Alo Yoga (#C4A265), Adidas (#1A1A1A), Nike (#111111), Apple (#333333), Zara (#1A1A1A), H&M (#E50010), Mango (#C8A96E), LC Waikiki (#E74C3C), Boyner (#005B96), Teknosa (#E30613), Sephora (#1A1A1A), MAC (#1A1A1A), lululemon (#D31334), Pull & Bear (#4A6741), Bershka (#1A1A1A), Zara Home (#6B5B4E), Stradivarius (#8B6F47), Cartier (#A8182D), Samsung (#1428A0)
-
-**Kalan TODO (Markalar Visual Polish):**
-- [ ] Logo kalitesi: 31 marka için SVG/PNG logoları Supabase Storage'a upload + brands.logo_url güncelle
-- [ ] Featured section boyutu: hero kart çok büyük ve boş duruyor, küçült veya content ekle
-- [ ] Brand gradient'leri daha cesur yap — şu an çok subtle, neredeyse görünmüyor
-- [ ] Mobil test (390×844)
+**Kalan TODO:**
+- [ ] Mobil test (390×844) — flip kartlar touch'da test edilmeli
 - [ ] Dark mode uyumu
+- [ ] Yeni marka eklendiğinde logo upload + color map güncelleme süreci dokümante et
 
 ### P3 — Employer Onboarding & Team System (Yeni — Bu session'da tasarlandı)
 **Tek marka / Çoklu marka flow:**
