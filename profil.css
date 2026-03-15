@@ -210,6 +210,45 @@ body{
   cursor:not-allowed;
   opacity:0.6;
 }
+
+/* ── Sidebar Premium Card ── */
+.sidebar-premium-card {
+  margin: 0 12px 12px;
+  padding: 14px 16px;
+  background: linear-gradient(135deg, #131f3e 0%, #1a2d50 100%);
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+.sidebar-premium-card h4 {
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  margin: 0 0 2px;
+}
+.sidebar-premium-card p {
+  color: rgba(255,255,255,0.35);
+  font-size: 10px;
+  margin: 0;
+}
+.sidebar-premium-card .toggle-slider {
+  background: rgba(255,255,255,0.12) !important;
+}
+.sidebar-premium-card .toggle-slider::before {
+  background: rgba(255,255,255,0.3) !important;
+}
+.sidebar-premium-badge {
+  font-family: 'DM Mono', monospace;
+  font-size: 7px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  background: rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.4);
+  padding: 2px 6px;
+  border-radius: 3px;
+  display: inline-block;
+  margin-bottom: 6px;
+}
 .toggle input:checked:disabled+.toggle-slider{
   background:var(--border);
 }

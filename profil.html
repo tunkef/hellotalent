@@ -92,7 +92,7 @@ if (window.Sentry) {
       Ayarlar
     </button>
   </nav>
-  <div style="padding:10px 0;border-top:1px solid var(--border-subtle);">
+  <div style="padding:10px 0;border-top:1px solid var(--border-subtle);display:none;">
     <div class="toggle-row">
       <div class="toggle-info">
         <h4>Beni Öner</h4>
@@ -104,11 +104,12 @@ if (window.Sentry) {
       </label>
     </div>
   </div>
-  <div style="padding:10px 0;border-bottom:1px solid var(--border-subtle);">
+  <div class="sidebar-premium-card">
+    <span class="sidebar-premium-badge">PREMIUM</span>
     <div class="toggle-row">
       <div class="toggle-info">
         <h4>Beni öne çıkar</h4>
-        <p style="color:var(--text-muted);">Yakında Premium ile</p>
+        <p>Yakında Premium ile</p>
       </div>
       <label class="toggle" style="pointer-events:none;opacity:0.5;">
         <input type="checkbox" id="toggle-active" disabled>
