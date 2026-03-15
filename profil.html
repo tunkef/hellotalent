@@ -44,10 +44,24 @@ if (window.Sentry) {
 
 <!-- ═══ HEADER ═══ -->
 <header class="header">
-  <button type="button" class="logo" onclick="switchPanel('genel'); return false;">hello<span>talent</span>.ai</button>
+  <a href="index.html" class="logo">hello<span>talent</span><span class="logo-dot">.ai</span></a>
+  <div class="header-breadcrumb">
+    <span class="breadcrumb-parent">Aday Paneli</span>
+    <span class="breadcrumb-sep">›</span>
+    <span class="breadcrumb-current" id="breadcrumb-current">Genel Bakış</span>
+  </div>
   <div class="header-right">
-    <div class="avatar-wrap" id="header-avatar-wrap" title="Profil">
-      <div class="avatar" id="user-avatar-header">?</div>
+    <div class="header-search" id="header-search">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <span class="header-search-text">Ara...</span>
+      <kbd class="header-search-kbd">⌘K</kbd>
+    </div>
+    <div class="header-notif" id="header-notif">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      <span class="header-notif-dot"></span>
+    </div>
+    <div class="header-avatar" id="header-avatar-wrap" title="Profil">
+      <div id="user-avatar-header">?</div>
     </div>
     <input type="file" id="avatar-file-hidden" accept="image/*" style="display:none">
     <button class="btn-icon" id="mobile-sidebar-btn" title="Menu">
@@ -1447,6 +1461,11 @@ function _doSwitchPanel(name) {
   document.querySelectorAll('.panel').forEach(function(p) { p.classList.remove('active'); });
   var target = document.getElementById('panel-' + name);
   if (target) target.classList.add('active');
+  var bc = document.getElementById('breadcrumb-current');
+  if (bc) {
+    var labels = { genel: 'Genel Bakış', merkez: 'Profil Merkezi', sirketler: 'Markalar', ayarlar: 'Ayarlar', profil: 'Profil' };
+    bc.textContent = labels[name] || name;
+  }
   // Update sidebar nav
   document.querySelectorAll('.sidebar-nav .nav-item').forEach(function(btn) {
     btn.classList.remove('active');
