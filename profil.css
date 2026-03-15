@@ -2145,8 +2145,8 @@ html[data-theme="dark"] .field-req{color:#F87171;}
 
 /* ── CITY CARDS (selected locations display) ── */
 .city-card{
-  background:var(--gray);border:1px solid var(--border);border-radius:var(--radius);
-  padding:12px 14px;margin-bottom:8px;
+  background:none;border:none;border-radius:0;
+  padding:8px 0;margin-bottom:8px;border-bottom:1px solid var(--border);
 }
 .city-card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
 .city-card-name{font-size:14px;font-weight:700;color:var(--navy);}
@@ -2555,9 +2555,7 @@ html[data-theme="dark"] #wiz-step-5 #no-city-msg{
   color:#D1D5DB !important;
 }
 html[data-theme="dark"] #wiz-step-5 .city-card{
-  background:var(--bg-surface);
-  border-color:var(--border-subtle);
-  box-shadow:0 0 0 1px rgba(255,255,255,0.04);
+  border-bottom-color:var(--border-subtle);
 }
 html[data-theme="dark"] #wiz-step-5 .city-card-name{
   color:#E5E7EB;
