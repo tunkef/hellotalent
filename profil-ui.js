@@ -1297,9 +1297,8 @@ async function saveProfileRPC() {
       if (_loadedDBData.profile) _loadedDBData.profile.is_active = p_profile.is_active;
     }
     updateStatusUI(p_profile.is_active);
-    var vis = document.getElementById('merkez-toggle-visibility');
-    if (vis) vis.checked = p_profile.is_active;
-    if (typeof updateMerkezVisState === 'function') updateMerkezVisState();
+    if (typeof syncBeniOner === 'function') syncBeniOner(p_profile.is_active, 'ayarlar');
+    else if (typeof updateMerkezVisState === 'function') updateMerkezVisState();
     // Update sidebar name
     var nameEl = document.getElementById('sidebar-user-name');
     if (nameEl && p_profile.full_name) nameEl.textContent = p_profile.full_name;
@@ -2847,18 +2846,21 @@ function closeProfilePreview() {
   });
 })();
 
-// ── Toggle Grid Logic ──
+// ── Toggle Grid Logic: "Beni Öner" (merkez-toggle-visibility) syncs with sidebar + Ayarlar; only this controls is_active ──
 (function() {
   var visToggle = document.getElementById('merkez-toggle-visibility');
   var visHint = document.getElementById('mk-tg-visibility-hint');
   var hideCell = document.getElementById('merkez-hide-row');
+  var gridId = 'merkez-toggle-visibility';
+  var sidebarId = 'sidebar-toggle-benioner';
+  var ayarlarId = 'settings-visibility-active';
 
   function updateVisState() {
     if (!visToggle) return;
     var isOn = visToggle.checked;
 
     if (visHint) {
-      visHint.textContent = isOn ? '' : 'İşverenler profilini ve CV\'ni göremez';
+      visHint.textContent = isOn ? '' : 'Profilin ve CV\'n işverenlerle paylaşılmaz';
       visHint.style.display = isOn ? 'none' : '';
     }
 
@@ -2866,26 +2868,56 @@ function closeProfilePreview() {
       hideCell.style.opacity = isOn ? '1' : '0.35';
       hideCell.style.pointerEvents = isOn ? 'auto' : 'none';
     }
+
+    var sidebarDesc = document.getElementById('sidebar-benioner-desc');
+    if (sidebarDesc) {
+      sidebarDesc.textContent = isOn ? 'Profilin ve CV\'n işverenlerle paylaşılır' : 'Profilin ve CV\'n işverenlerle paylaşılmaz';
+      sidebarDesc.style.color = isOn ? 'var(--text-muted)' : '#ef4444';
+    }
+
+    var settingsHint = document.getElementById('settings-benioner-hint');
+    if (settingsHint) {
+      settingsHint.textContent = isOn ? 'Profilin ve CV\'n işverenlerle paylaşılır' : 'Profilin ve CV\'n işverenlerle paylaşılmaz';
+      settingsHint.style.color = isOn ? '#059669' : '#ef4444';
+    }
+  }
+
+  function syncBeniOner(newValue, source) {
+    var grid = document.getElementById(gridId);
+    var sidebar = document.getElementById(sidebarId);
+    var ayarlar = document.getElementById(ayarlarId);
+    if (source !== 'grid' && grid) grid.checked = newValue;
+    if (source !== 'sidebar' && sidebar) sidebar.checked = newValue;
+    if (source !== 'ayarlar' && ayarlar) ayarlar.checked = newValue;
+    updateVisState();
+    if (typeof updateStatusUI === 'function') updateStatusUI(newValue);
+    if (typeof _loadedDBData !== 'undefined' && _loadedDBData && _loadedDBData.profile) _loadedDBData.profile.is_active = newValue;
+    if (typeof refreshVisibilitySummary === 'function') refreshVisibilitySummary();
+    if ((source === 'grid' || source === 'sidebar') && typeof supabase !== 'undefined' && typeof currentUser !== 'undefined' && currentUser) {
+      supabase.from('candidates')
+        .update({ is_active: newValue })
+        .eq('user_id', currentUser.id)
+        .then(function(res) {
+          if (res.error) console.error('[HT] beni-oner save failed', res.error);
+        });
+    }
   }
 
   if (visToggle) {
     visToggle.addEventListener('change', function() {
-      updateVisState();
-      if (typeof updateStatusUI === 'function') updateStatusUI(visToggle.checked);
-      if (typeof _loadedDBData !== 'undefined' && _loadedDBData && _loadedDBData.profile) _loadedDBData.profile.is_active = visToggle.checked;
-      if (typeof refreshVisibilitySummary === 'function') refreshVisibilitySummary();
-      if (typeof supabase !== 'undefined' && typeof currentUser !== 'undefined' && currentUser) {
-        supabase.from('candidates')
-          .update({ is_active: visToggle.checked })
-          .eq('user_id', currentUser.id)
-          .then(function(res) {
-            if (res.error) console.error('[HT] visibility toggle save failed', res.error);
-          });
-      }
+      syncBeniOner(visToggle.checked, 'grid');
     });
     updateVisState();
   }
 
+  var sidebarToggle = document.getElementById(sidebarId);
+  if (sidebarToggle) {
+    sidebarToggle.addEventListener('change', function() {
+      syncBeniOner(sidebarToggle.checked, 'sidebar');
+    });
+  }
+
   window.updateMerkezVisState = updateVisState;
+  window.syncBeniOner = syncBeniOner;
 })();
 

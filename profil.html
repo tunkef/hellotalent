@@ -92,7 +92,19 @@ if (window.Sentry) {
       Ayarlar
     </button>
   </nav>
-  <div style="padding:10px 0;border-top:1px solid var(--border-subtle);border-bottom:1px solid var(--border-subtle);">
+  <div style="padding:10px 0;border-top:1px solid var(--border-subtle);">
+    <div class="toggle-row">
+      <div class="toggle-info">
+        <h4>Beni Öner</h4>
+        <p id="sidebar-benioner-desc" style="color:var(--text-muted);font-size:11px;">Profilin ve CV'n işverenlerle paylaşılır</p>
+      </div>
+      <label class="toggle">
+        <input type="checkbox" id="sidebar-toggle-benioner" checked>
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+  </div>
+  <div style="padding:10px 0;border-bottom:1px solid var(--border-subtle);">
     <div class="toggle-row">
       <div class="toggle-info">
         <h4>Beni öne çıkar</h4>
@@ -434,7 +446,7 @@ if (window.Sentry) {
       <label class="toggle"><input type="checkbox" id="merkez-toggle-active" checked><span class="toggle-slider"></span></label>
     </div>
     <div class="mk-tg-cell">
-      <span class="mk-tg-label">Profilimi Göster</span>
+      <span class="mk-tg-label">Beni Öner</span>
       <label class="toggle"><input type="checkbox" id="merkez-toggle-visibility" checked><span class="toggle-slider"></span></label>
       <span class="mk-tg-hint" id="mk-tg-visibility-hint"></span>
     </div>
@@ -946,8 +958,9 @@ if (window.Sentry) {
         <input type="checkbox" id="settings-visibility-active" checked>
         <span class="toggle-slider"></span>
       </label>
-      <label for="settings-visibility-active" style="margin:0;cursor:pointer;font-weight:500;">Profilimi ve CV'mi işverenlere göster</label>
+      <label for="settings-visibility-active" style="margin:0;cursor:pointer;font-weight:500;">Beni Öner</label>
     </div>
+    <p id="settings-benioner-hint" style="font-size:11px;margin:4px 0 0 0;">Profilin ve CV'n işverenlerle paylaşılır</p>
     <div class="field" style="display:flex;align-items:center;gap:12px;margin-top:12px;">
       <label class="toggle">
         <input type="checkbox" id="settings-actively-looking">
@@ -1396,6 +1409,11 @@ function _doSwitchPanel(name) {
     if (visToggle) {
       visToggle.checked = _loadedDBData && _loadedDBData.profile && _loadedDBData.profile.is_active !== false;
     }
+    var beniOnerHint = document.getElementById('settings-benioner-hint');
+    if (beniOnerHint && visToggle) {
+      beniOnerHint.textContent = visToggle.checked ? 'Profilin ve CV\'n işverenlerle paylaşılır' : 'Profilin ve CV\'n işverenlerle paylaşılmaz';
+      beniOnerHint.style.color = visToggle.checked ? '#059669' : '#ef4444';
+    }
     var empName = document.getElementById('settings-current-employer-name');
     var hideToggle = document.getElementById('settings-hide-from-current-employer');
     var hideHint = document.getElementById('settings-hide-hint');
@@ -1642,10 +1660,17 @@ function refreshAfterSettingsSave(savedFullName, savedTelefon) {
 function refreshAfterVisibilitySave(isActive) {
   var vis = document.getElementById('merkez-toggle-visibility');
   if (vis) vis.checked = isActive;
+  var sidebarToggle = document.getElementById('sidebar-toggle-benioner');
+  if (sidebarToggle) sidebarToggle.checked = isActive;
   updateStatusUI(isActive);
   if (_loadedDBData && _loadedDBData.profile) _loadedDBData.profile.is_active = isActive;
   refreshVisibilitySummary();
   if (typeof updateMerkezVisState === 'function') updateMerkezVisState();
+  var hint = document.getElementById('settings-benioner-hint');
+  if (hint) {
+    hint.textContent = isActive ? 'Profilin ve CV\'n işverenlerle paylaşılır' : 'Profilin ve CV\'n işverenlerle paylaşılmaz';
+    hint.style.color = isActive ? '#059669' : '#ef4444';
+  }
 }
 
 function getCurrentEmployerDisplayFromExperiences(experiences) {
@@ -1813,9 +1838,12 @@ function reapplyDynamicFields() {
       });
     }
     if (dbData.profile && dbData.profile.is_active !== undefined) {
+      var isActive = dbData.profile.is_active;
       var vis = document.getElementById('merkez-toggle-visibility');
-      if (vis) vis.checked = dbData.profile.is_active;
-      updateStatusUI(dbData.profile.is_active);
+      if (vis) vis.checked = isActive;
+      var sidebarBeni = document.getElementById('sidebar-toggle-benioner');
+      if (sidebarBeni) sidebarBeni.checked = isActive;
+      updateStatusUI(isActive);
       if (typeof updateMerkezVisState === 'function') updateMerkezVisState();
     }
     // Load CV state if exists
@@ -1977,30 +2005,7 @@ document.addEventListener('DOMContentLoaded', function() {
     window.location.href = 'giris.html';
   });
 
-  // Recommendation (is_active): Merkez toggle only — sidebar upper area is display-only, lower sidebar is premium placeholder
-  var merkezToggle = document.getElementById('merkez-toggle-active');
-
-  function handleActiveToggle(isActive, source) {
-    if (merkezToggle && source !== 'merkez') merkezToggle.checked = isActive;
-    updateStatusUI(isActive);
-
-    if (_loadedDBData && _loadedDBData.profile) {
-      _loadedDBData.profile.is_active = isActive;
-    }
-
-    refreshVisibilitySummary();
-
-    if (currentUser) {
-      supabase.from('candidates').upsert(
-        { user_id: currentUser.id, is_active: isActive },
-        { onConflict: 'user_id' }
-      );
-    }
-  }
-
-  if (merkezToggle) merkezToggle.addEventListener('change', function() {
-    handleActiveToggle(this.checked, 'merkez');
-  });
+  // "Aktif İş Arıyorum" (merkez-toggle-active) is UI-only — no DB write. Only "Beni Öner" (merkez-toggle-visibility) writes is_active; sync is in profil-ui.js.
 
   // Modal close buttons
   var btnSuccessOk = document.getElementById('btn-success-ok');
