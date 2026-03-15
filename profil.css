@@ -499,8 +499,10 @@ body{
   right: 6px;
 }
 .dynamic-row .btn-del-row {
-  top: 12px;
+  position: absolute;
+  top: 50%;
   right: 0;
+  transform: translateY(-50%);
 }
 .exp-card-del svg,
 .btn-del-row svg {
@@ -1976,6 +1978,19 @@ html[data-theme="dark"] .field-req{color:#F87171;}
   font-size: 14px;
   font-weight: 500;
   color: var(--text-primary);
+}
+#calisma-tipleri-checks .cb-wrap,
+#career-type-checks .cb-wrap {
+  padding: 8px 16px;
+  gap: 10px;
+  background: var(--bg-elevated, #F7F6F4);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius, 10px);
+  min-width: 120px;
+}
+#calisma-tipleri-checks,
+#career-type-checks {
+  gap: 10px !important;
 }
 
 /* ── SECTION DIVIDER ── */

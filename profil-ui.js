@@ -318,7 +318,7 @@ function addExperienceCard(data) {
     if (ayrilma) ayrilma.style.display = cb.checked ? 'none' : '';
     // Badge + card border
     devamBadge.style.display = cb.checked ? 'inline-block' : 'none';
-    card.style.borderLeft = cb.checked ? '3px solid var(--accent)' : '1.5px solid var(--border-subtle)';
+    // Border removed — devam badge is sufficient indicator
   });
   // Trigger initial state
   if (d.devam_ediyor) {
@@ -327,7 +327,7 @@ function addExperienceCard(data) {
       var sel = f.querySelector('select');
       if (sel) { sel.value = ''; sel.disabled = true; }
     });
-    card.style.borderLeft = '3px solid var(--accent)';
+    // Border removed
   }
 
   // Basari Ozeti removed from wizard (Decision 5 — future dashboard feature)
