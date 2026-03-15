@@ -6,7 +6,7 @@ function playTypingGreeting(name) {
   var el = document.getElementById('typing-text');
   var cursor = document.querySelector('.typing-cursor');
   if (!el) return;
-  var fullText = 'Merhaba, ' + (name || '') + '! 👋';
+  var fullText = 'Merhaba ' + (name ? name.charAt(0).toUpperCase() + name.slice(1) : '') + '! 👋';
   var i = 0;
   var speed = 50;
   function type() {
