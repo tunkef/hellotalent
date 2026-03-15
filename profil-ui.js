@@ -1804,7 +1804,7 @@ function updateCompletionUI() {
   var gFill = document.getElementById('g-completion-fill');
   if (gFill) gFill.style.width = pct + '%';
   var gPctText = document.getElementById('completion-pct');
-  if (gPctText) gPctText.textContent = pct + '% tamamlandı';
+  if (gPctText) gPctText.textContent = pct + '%';
 
   // Merkez panel: stat card with monospace number + progress bar
   var mPct = document.getElementById('merkez-completion-pct');
