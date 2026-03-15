@@ -2192,42 +2192,50 @@ var _SEGMENTS = [
 var _ht_active_segment = null;
 
 var _BRAND_COLORS = {
-  'Louis Vuitton': { bg: '#F5EDE0', accent: '#6B4C2A' },
-  'Gucci': { bg: '#E8F0E8', accent: '#00613C' },
-  'Dior': { bg: '#F0EDE8', accent: '#1A1A1A' },
-  'Prada': { bg: '#F0F0F0', accent: '#1A1A1A' },
-  'Hermès': { bg: '#FFF0E0', accent: '#E35205' },
-  'Chanel': { bg: '#F5F5F5', accent: '#1A1A1A' },
-  'Cartier': { bg: '#FDF0E8', accent: '#A8182D' },
-  'Beymen': { bg: '#F5F0EB', accent: '#8B7355' },
-  'Vakko': { bg: '#F0EDE8', accent: '#2C2C2C' },
-  'Massimo Dutti': { bg: '#F2EDE6', accent: '#4A3728' },
-  'Hugo Boss': { bg: '#F0F0F0', accent: '#1A1A1A' },
-  'Ralph Lauren': { bg: '#E8EDF5', accent: '#1B3D6D' },
-  'Lacoste': { bg: '#E8F5E8', accent: '#004D2C' },
-  'Alo Yoga': { bg: '#F5F0E8', accent: '#C4A265' },
-  'lululemon': { bg: '#FAEBEB', accent: '#D31334' },
-  'Nike': { bg: '#F0F0F0', accent: '#111111' },
-  'Adidas': { bg: '#F0F0F0', accent: '#1A1A1A' },
-  'Zara': { bg: '#F5F5F5', accent: '#1A1A1A' },
-  'H&M': { bg: '#FFE8E8', accent: '#E50010' },
-  'Mango': { bg: '#F5F0E8', accent: '#C8A96E' },
-  'Boyner': { bg: '#E8F0F5', accent: '#005B96' },
-  'Pull & Bear': { bg: '#F0F5E8', accent: '#4A6741' },
-  'Bershka': { bg: '#F5F5F5', accent: '#1A1A1A' },
-  'Stradivarius': { bg: '#F5EDE8', accent: '#8B6F47' },
-  'Zara Home': { bg: '#F5F2ED', accent: '#6B5B4E' },
-  'LC Waikiki': { bg: '#FFF0E8', accent: '#E74C3C' },
-  'Koton': { bg: '#F0EDE8', accent: '#4A3728' },
-  'Sephora': { bg: '#F0F0F0', accent: '#1A1A1A' },
-  'MAC': { bg: '#F0F0F0', accent: '#1A1A1A' },
-  'Apple': { bg: '#F5F5F7', accent: '#333333' },
-  'Samsung': { bg: '#E8F0FF', accent: '#1428A0' },
-  'Teknosa': { bg: '#FAEBEB', accent: '#E30613' }
+  'Louis Vuitton': { frontBg: 'radial-gradient(ellipse at 50% 0%, #f0e6d6 0%, #f5efe5 40%, #fff 75%)', backBg: 'linear-gradient(160deg, #7d5c35 0%, #614626 40%, #44301a 100%)', accent: '#6B4C2A' },
+  'Gucci': { frontBg: 'radial-gradient(ellipse at 50% 0%, #dceedd 0%, #f0f7f0 40%, #fff 75%)', backBg: 'linear-gradient(160deg, #00714a 0%, #005c3a 40%, #003d26 100%)', accent: '#00613C' },
+  'Prada': { frontBg: 'radial-gradient(ellipse at 50% 0%, #e8e8e8 0%, #f2f2f2 40%, #fff 75%)', backBg: 'linear-gradient(160deg, #2a2a2a 0%, #1a1a1a 40%, #0d0d0d 100%)', accent: '#1A1A1A' },
+  'Hermès': { frontBg: 'radial-gradient(ellipse at 50% 0%, #fce0c8 0%, #fef0e2 40%, #fff 75%)', backBg: 'linear-gradient(160deg, #e86218 0%, #c44e0e 40%, #9a3d0a 100%)', accent: '#E35205' },
+  'Dior': { frontBg: 'radial-gradient(ellipse at 50% 0%, #e8e8e8 0%, #f2f2f2 40%, #fff 75%)', backBg: 'linear-gradient(160deg, #2a2a2a 0%, #1a1a1a 40%, #0d0d0d 100%)', accent: '#1A1A1A' },
+  'Chanel': { frontBg: 'radial-gradient(ellipse at 50% 0%, #eaeaea 0%, #f3f3f3 40%, #fff 75%)', backBg: 'linear-gradient(160deg, #2a2a2a 0%, #1a1a1a 40%, #0d0d0d 100%)', accent: '#1A1A1A' },
+  'Cartier': { frontBg: 'radial-gradient(ellipse at 50% 0%, #f8ddd4 0%, #fceee8 40%, #fff 75%)', backBg: 'linear-gradient(160deg, #b82030 0%, #961a28 40%, #70131e 100%)', accent: '#A8182D' },
+  'Beymen': { frontBg: 'radial-gradient(ellipse at 50% 0%, #e8ddd0 0%, #f2ece3 40%, #fff 75%)', backBg: 'linear-gradient(160deg, #9e8465 0%, #7d6748 40%, #5c4a33 100%)', accent: '#8B7355' },
+  'Vakko': { frontBg: 'radial-gradient(ellipse at 50% 0%, #e5e5e5 0%, #f0f0f0 40%, #fff 75%)', backBg: 'linear-gradient(160deg, #3a3a3a 0%, #2a2a2a 40%, #1a1a1a 100%)', accent: '#2C2C2C' },
+  'Massimo Dutti': { frontBg: 'radial-gradient(ellipse at 50% 0%, #ece4d8 0%, #f4efe7 40%, #fff 75%)', backBg: 'linear-gradient(160deg, #5e4430 0%, #4a3524 40%, #36271a 100%)', accent: '#4A3728' },
+  'Hugo Boss': { frontBg: 'radial-gradient(ellipse at 50% 0%, #e8e8e8 0%, #f2f2f2 40%, #fff 75%)', backBg: 'linear-gradient(160deg, #2a2a2a 0%, #1a1a1a 40%, #0d0d0d 100%)', accent: '#1A1A1A' },
+  'Ralph Lauren': { frontBg: 'radial-gradient(ellipse at 50% 0%, #d8e0f0 0%, #e8edf5 40%, #fff 75%)', backBg: 'linear-gradient(160deg, #264d82 0%, #1d3d68 40%, #142c4d 100%)', accent: '#1B3D6D' },
+  'Lacoste': { frontBg: 'radial-gradient(ellipse at 50% 0%, #d4edda 0%, #e8f5eb 40%, #fff 75%)', backBg: 'linear-gradient(160deg, #006838 0%, #005228 40%, #003d1e 100%)', accent: '#004D2C' },
+  'Alo Yoga': { frontBg: 'radial-gradient(ellipse at 50% 0%, #f0e6d0 0%, #f6efe2 40%, #fff 75%)', backBg: 'linear-gradient(160deg, #d4b070 0%, #b89555 40%, #96793e 100%)', accent: '#C4A265' },
+  'lululemon': { frontBg: 'radial-gradient(ellipse at 50% 0%, #fcd8d8 0%, #feecec 40%, #fff 75%)', backBg: 'linear-gradient(160deg, #e01a3e 0%, #be1534 40%, #961028 100%)', accent: '#D31334' },
+  'Nike': { frontBg: 'radial-gradient(ellipse at 50% 0%, #e8e8e8 0%, #f2f2f2 40%, #fff 75%)', backBg: 'linear-gradient(160deg, #2a2a2a 0%, #1a1a1a 40%, #0d0d0d 100%)', accent: '#111111' },
+  'Adidas': { frontBg: 'radial-gradient(ellipse at 50% 0%, #e8e8e8 0%, #f2f2f2 40%, #fff 75%)', backBg: 'linear-gradient(160deg, #2a2a2a 0%, #1a1a1a 40%, #0d0d0d 100%)', accent: '#1A1A1A' },
+  'Zara': { frontBg: 'radial-gradient(ellipse at 50% 0%, #eaeaea 0%, #f3f3f3 40%, #fff 75%)', backBg: 'linear-gradient(160deg, #2a2a2a 0%, #1a1a1a 40%, #0d0d0d 100%)', accent: '#1A1A1A' },
+  'H&M': { frontBg: 'radial-gradient(ellipse at 50% 0%, #ffd6d6 0%, #ffecec 40%, #fff 75%)', backBg: 'linear-gradient(160deg, #e52020 0%, #c41515 40%, #9a0e0e 100%)', accent: '#E50010' },
+  'Mango': { frontBg: 'radial-gradient(ellipse at 50% 0%, #f0e6d0 0%, #f6efe2 40%, #fff 75%)', backBg: 'linear-gradient(160deg, #d4b078 0%, #b8955d 40%, #967944 100%)', accent: '#C8A96E' },
+  'Boyner': { frontBg: 'radial-gradient(ellipse at 50% 0%, #d4e4f0 0%, #e6eff7 40%, #fff 75%)', backBg: 'linear-gradient(160deg, #0070b0 0%, #005a8e 40%, #00446b 100%)', accent: '#005B96' },
+  'Pull & Bear': { frontBg: 'radial-gradient(ellipse at 50% 0%, #dde8d8 0%, #ecf2e8 40%, #fff 75%)', backBg: 'linear-gradient(160deg, #587e4e 0%, #46643d 40%, #354c2e 100%)', accent: '#4A6741' },
+  'Bershka': { frontBg: 'radial-gradient(ellipse at 50% 0%, #eaeaea 0%, #f3f3f3 40%, #fff 75%)', backBg: 'linear-gradient(160deg, #2a2a2a 0%, #1a1a1a 40%, #0d0d0d 100%)', accent: '#1A1A1A' },
+  'Stradivarius': { frontBg: 'radial-gradient(ellipse at 50% 0%, #ede4d8 0%, #f4efe7 40%, #fff 75%)', backBg: 'linear-gradient(160deg, #9e7d55 0%, #7d6342 40%, #5e4a30 100%)', accent: '#8B6F47' },
+  'Zara Home': { frontBg: 'radial-gradient(ellipse at 50% 0%, #eae5de 0%, #f2eeea 40%, #fff 75%)', backBg: 'linear-gradient(160deg, #7e6e5e 0%, #645648 40%, #4c4035 100%)', accent: '#6B5B4E' },
+  'LC Waikiki': { frontBg: 'radial-gradient(ellipse at 50% 0%, #fcd8d8 0%, #feecec 40%, #fff 75%)', backBg: 'linear-gradient(160deg, #f05545 0%, #d44535 40%, #aa3628 100%)', accent: '#E74C3C' },
+  'Sephora': { frontBg: 'radial-gradient(ellipse at 50% 0%, #eaeaea 0%, #f3f3f3 40%, #fff 75%)', backBg: 'linear-gradient(160deg, #2a2a2a 0%, #1a1a1a 40%, #0d0d0d 100%)', accent: '#1A1A1A' },
+  'MAC': { frontBg: 'radial-gradient(ellipse at 50% 0%, #eaeaea 0%, #f3f3f3 40%, #fff 75%)', backBg: 'linear-gradient(160deg, #2a2a2a 0%, #1a1a1a 40%, #0d0d0d 100%)', accent: '#1A1A1A' },
+  'Apple': { frontBg: 'radial-gradient(ellipse at 50% 0%, #ebebed 0%, #f3f3f5 40%, #fff 75%)', backBg: 'linear-gradient(160deg, #444 0%, #333 40%, #1a1a1a 100%)', accent: '#333333' },
+  'Samsung': { frontBg: 'radial-gradient(ellipse at 50% 0%, #d8e0f8 0%, #e8edfb 40%, #fff 75%)', backBg: 'linear-gradient(160deg, #1e38b8 0%, #162c96 40%, #0f2070 100%)', accent: '#1428A0' },
+  'Teknosa': { frontBg: 'radial-gradient(ellipse at 50% 0%, #fcd8d8 0%, #feecec 40%, #fff 75%)', backBg: 'linear-gradient(160deg, #f01820 0%, #cc1018 40%, #a00c12 100%)', accent: '#E30613' }
 };
 
 function _brandColors(brandName) {
-  return _BRAND_COLORS[brandName] || { bg: '#F7F6F4', accent: '#6B7280' };
+  return _BRAND_COLORS[brandName] || {
+    frontBg: 'radial-gradient(ellipse at 50% 0%, #eee 0%, #f5f5f5 40%, #fff 75%)',
+    backBg: 'linear-gradient(160deg, #555 0%, #444 40%, #333 100%)',
+    accent: '#6B7280'
+  };
+}
+
+function _segmentAccentColor(seg) {
+  var map = { luxury: '#1E2D5E', premium: '#C94E28', mid: '#3B82F6', sportswear: '#F59E0B', beauty: '#EC4899', tech: '#6366F1' };
+  return map[seg] || '#6B7280';
 }
 
 function _brandLogoUrl(b) {
@@ -2313,7 +2321,6 @@ async function loadSirketlerPanel() {
 
   _ht_visible_count = 12;
   renderSegmentPills();
-  renderBrandFeatured();
   renderBrandGrid('');
   updateBrandFollowCounter();
 
@@ -2321,7 +2328,6 @@ async function loadSirketlerPanel() {
   si.addEventListener('input', function() {
     var val = si.value.trim();
     if (!val) _ht_visible_count = 12;
-    renderBrandFeatured();
     renderBrandGrid(si.value);
   });
 
@@ -2353,61 +2359,12 @@ function renderSegmentPills() {
       _ht_active_segment = seg;
       if (!seg) _ht_visible_count = 12;
       renderSegmentPills();
-      renderBrandFeatured();
       renderBrandGrid(document.getElementById('brand-search').value);
     });
   });
 }
 
-// ── Featured editorial grid ──
-function renderBrandFeatured() {
-  var section = document.getElementById('brand-featured-section');
-  var grid = document.getElementById('brand-featured-grid');
-  if (!section || !grid) return;
-  var searchEl = document.getElementById('brand-search');
-  var query = searchEl ? searchEl.value.trim() : '';
-  if (query || _ht_active_segment) {
-    section.style.display = 'none';
-    return;
-  }
-  var featured = _ht_brands.filter(function(b) { return b.is_featured; }).slice(0, 3);
-  if (featured.length === 0) {
-    section.style.display = 'none';
-    return;
-  }
-  section.style.display = '';
-  var html = '';
-  for (var i = 0; i < featured.length; i++) {
-    var b = featured[i];
-    var isF = _ht_follows.has(b.id);
-    var colors = _brandColors(b.brand_name);
-    var meta = '';
-    if (b.store_count_tr != null && b.store_count_tr !== '') meta += b.store_count_tr + ' mağaza';
-    if (b.store_cities && b.store_cities.length > 0) meta += (meta ? ' · ' : '') + b.store_cities.slice(0, 3).join(', ');
-    if (!meta) meta = '—';
-    var segLabel = _SEGMENT_TR[b.segment] || b.segment || '';
-    var isHero = i === 0;
-    var bgStyle = isHero
-      ? 'background:linear-gradient(135deg,' + colors.bg + ' 0%,#FFFFFF 70%);border-color:' + colors.bg + ';'
-      : 'background:linear-gradient(180deg,' + colors.bg + ' 0%,#FFFFFF 50%);border-color:' + colors.bg + ';';
-    var hoverEnter = 'this.style.borderColor=\'' + colors.accent + '\';this.style.boxShadow=\'0 8px 32px ' + colors.accent + '15\'';
-    var hoverLeave = 'this.style.borderColor=\'' + colors.bg + '\';this.style.boxShadow=\'none\'';
-    html += '<div class="featured-card" onclick="openBrandModal(' + b.id + ')" style="' + bgStyle + 'animation-delay:' + (i * 0.06) + 's" onmouseenter="' + hoverEnter + '" onmouseleave="' + hoverLeave + '">' +
-      '<div class="featured-card-top">' +
-        '<div class="featured-logo">' + _brandLogoHtml(b, 48) + '</div>' +
-        '<span class="featured-seg brand-seg-tag" style="background:' + colors.accent + ';color:#fff">' + _escHtml(segLabel) + '</span>' +
-      '</div>' +
-      '<div class="featured-card-bottom">' +
-        '<div><div class="featured-name">' + _escHtml(b.brand_name) + '</div><div class="featured-meta">' + _escHtml(meta) + '</div></div>' +
-        '<button type="button" class="featured-follow' + (isF ? ' following' : '') + '" data-brand-id="' + b.id + '" onclick="toggleBrandFollow(' + b.id + ',event)">' + (isF ? 'Takipte ✓' : 'Takip Et') + '</button>' +
-        '<span class="brand-card-hint">İncele →</span>' +
-      '</div>' +
-    '</div>';
-  }
-  grid.innerHTML = html;
-}
-
-// ── Card Grid (segment + search filter; exclude featured when showing featured section; paginate only in default view) ──
+// ── Flip card grid ──
 function renderBrandGrid(query) {
   var container = document.getElementById('brand-grid');
   if (!_ht_brands) { container.innerHTML = ''; return; }
@@ -2419,17 +2376,13 @@ function renderBrandGrid(query) {
   if (_ht_active_segment) {
     list = list.filter(function(b) { return b.segment === _ht_active_segment; });
   }
-  var showFeatured = !q && !_ht_active_segment;
-  if (showFeatured) {
-    list = list.filter(function(b) { return !b.is_featured; });
-  }
 
   if (list.length === 0) {
     container.innerHTML = '<div class="brand-loading">' + (q || _ht_active_segment ? 'Sonuç bulunamadı.' : 'Henüz marka verisi yok.') + '</div>';
     return;
   }
 
-  var usePagination = showFeatured;
+  var usePagination = !q && !_ht_active_segment;
   var visible = usePagination ? Math.min(_ht_visible_count, list.length) : list.length;
   var showLoadMore = usePagination && list.length > _ht_visible_count && visible < list.length;
   var remaining = list.length - visible;
@@ -2439,22 +2392,48 @@ function renderBrandGrid(query) {
     var b = list[i];
     var isF = _ht_follows.has(b.id);
     var colors = _brandColors(b.brand_name);
-    var segLabel = _SEGMENT_TR[b.segment] || b.segment || '';
-    var cardStyle = 'background:linear-gradient(180deg,' + colors.bg + ' 0%,#FFFFFF 45%);border-color:' + colors.bg + ';animation-delay:' + (i * 0.02) + 's';
-    var hoverEnter = 'this.style.borderColor=\'' + colors.accent + '\'';
-    var hoverLeave = 'this.style.borderColor=\'' + colors.bg + '\'';
-    html += '<div class="brand-card" onclick="openBrandModal(' + b.id + ')" style="' + cardStyle + '" data-accent="' + _escHtml(colors.accent) + '" onmouseenter="' + hoverEnter + '" onmouseleave="' + hoverLeave + '">' +
-      '<div class="brand-card-logo-wrap">' + _brandLogoHtml(b, 56) + '</div>' +
-      '<div class="brand-card-name">' + _escHtml(b.brand_name) + '</div>' +
-      '<div class="brand-card-segment">' + (segLabel ? '<span class="brand-seg-tag" style="background:' + colors.accent + ';color:#fff">' + _escHtml(segLabel) + '</span>' : '') + '</div>' +
-      '<div class="brand-card-bottom">' +
-        '<button type="button" class="brand-follow-btn' + (isF ? ' following' : '') + '" data-brand-id="' + b.id + '" onclick="toggleBrandFollow(' + b.id + ',event)">' +
-          (isF ? 'Takipte ✓' : 'Takip Et') +
-        '</button>';
-    if (b.store_count_tr != null && b.store_count_tr !== '') {
-      html += '<div class="brand-card-stores">' + _escHtml(String(b.store_count_tr)) + ' mağaza</div>';
+    var segLabel = (_SEGMENT_TR[b.segment] || (b.segment || '')).toUpperCase();
+    var segColor = _segmentAccentColor(b.segment);
+    var storeText = b.store_count_tr != null && b.store_count_tr !== '' ? b.store_count_tr + ' mağaza' : '';
+    var cityText = '';
+    if (b.store_cities && b.store_cities.length > 0) {
+      cityText = b.store_cities.slice(0, 3).join(', ');
+      if (b.store_cities.length > 3) cityText += '...';
     }
-    html += '<span class="brand-card-hint">İncele →</span></div></div>';
+    var logoFront = _brandLogoHtml(b, 76);
+    var logoBack = _brandLogoHtml(b, 40);
+
+    html += '<div class="flip-card" onclick="this.classList.toggle(\'flipped\')" style="animation-delay:' + (i * 0.03) + 's">' +
+      '<div class="flip-card-inner">' +
+        '<div class="flip-front" style="background:' + colors.frontBg + '">' +
+          '<div class="front-logo">' + logoFront + '</div>' +
+          '<div class="front-name">' + _escHtml(b.brand_name) + '</div>' +
+          (segLabel ? '<div class="front-segment" style="background:' + segColor + '">' + _escHtml(segLabel) + '</div>' : '') +
+          (storeText ? '<div class="front-stores">' + _escHtml(storeText) + '</div>' : '') +
+          '<span class="flip-hint">detaylar →</span>' +
+        '</div>' +
+        '<div class="flip-back" style="background:' + colors.backBg + '">' +
+          '<div class="back-header">' +
+            '<div class="back-logo">' + logoBack + '</div>' +
+            '<div class="back-title-area">' +
+              '<div class="back-brand-name">' + _escHtml(b.brand_name) + '</div>' +
+              (segLabel ? '<div class="back-segment-pill">' + _escHtml(segLabel) + '</div>' : '') +
+            '</div>' +
+            '<button type="button" class="back-follow-mini' + (isF ? ' following' : '') + '" data-brand-id="' + b.id + '" onclick="event.stopPropagation(); toggleBrandFollow(' + b.id + ',event)">' + (isF ? 'Takipte ✓' : 'Takip Et') + '</button>' +
+          '</div>' +
+          '<div class="back-info">' +
+            (storeText ? '<div class="back-info-row"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>' + _escHtml(storeText) + (cityText ? ' · ' + _escHtml(cityText) : '') + '</div>' : '') +
+            (b.employee_count_tr ? '<div class="back-info-row"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>~' + b.employee_count_tr.toLocaleString('tr-TR') + ' çalışan</div>' : '') +
+            (b.hq_city ? '<div class="back-info-row"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Merkez: ' + _escHtml(b.hq_city) + '</div>' : '') +
+          '</div>' +
+          (b.short_description ? '<div class="back-desc">' + _escHtml(b.short_description) + '</div>' : '') +
+          '<div class="back-links">' +
+            (b.website_url ? '<a class="back-link" href="' + _escHtml(b.website_url) + '" target="_blank" rel="noopener" onclick="event.stopPropagation()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10"/></svg>Website</a>' : '') +
+            (b.instagram_url ? '<a class="back-link" href="' + _escHtml(b.instagram_url) + '" target="_blank" rel="noopener" onclick="event.stopPropagation()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/></svg>Instagram</a>' : '') +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
   }
 
   if (showLoadMore) {
@@ -2472,94 +2451,6 @@ function renderBrandGrid(query) {
     renderBrandGrid(document.getElementById('brand-search').value);
   });
 }
-
-// ── Modal ──
-function openBrandModal(brandId) {
-  var b = _ht_brands.find(function(x) { return x.id === brandId; });
-  if (!b) return;
-
-  var isF = _ht_follows.has(b.id);
-  var segLabel = _SEGMENT_TR[b.segment] || b.segment || '—';
-
-  var html = '' +
-    // Head: logo + brand name + Kapat top-right
-    '<div class="brand-modal-head">' +
-      _brandLogoHtml(b, 52) +
-      '<div class="brand-modal-head-info">' +
-        '<div id="brand-modal-title" class="brand-modal-head-name">' + _escHtml(b.brand_name) + '</div>' +
-        _segmentTag(b.segment) +
-      '</div>' +
-      '<button type="button" class="brand-modal-close" onclick="closeBrandModal()">Kapat</button>' +
-    '</div>' +
-    '<div class="brand-modal-body">' +
-      // Two-column info
-      '<div class="brand-modal-grid">' +
-        // Left: Genel Bilgiler
-        '<div class="brand-modal-section">' +
-          '<div class="brand-modal-section-title">Genel Bilgiler</div>' +
-          '<div class="brand-modal-row"><span class="brand-modal-row-label">Sektör</span><span class="brand-modal-row-value">' + _escHtml(segLabel) + '</span></div>' +
-          (b.employee_count_tr ? '<div class="brand-modal-row"><span class="brand-modal-row-label">Çalışan Sayısı</span><span class="brand-modal-row-value">~' + b.employee_count_tr.toLocaleString('tr-TR') + '</span></div>' : '') +
-          (b.hq_city ? '<div class="brand-modal-row"><span class="brand-modal-row-label">Merkez</span><span class="brand-modal-row-value">' + _escHtml(b.hq_city) + '</span></div>' : '') +
-        '</div>' +
-        // Right: TR Operasyonları
-        '<div class="brand-modal-section">' +
-          '<div class="brand-modal-section-title">Türkiye Operasyonları</div>' +
-          (b.store_count_tr ? '<div class="brand-modal-row"><span class="brand-modal-row-label">Mağaza Sayısı</span><span class="brand-modal-row-value">' + b.store_count_tr + '</span></div>' : '') +
-          (b.store_cities && b.store_cities.length > 0
-            ? '<div class="brand-modal-row" style="flex-direction:column;align-items:flex-start;gap:2px;"><span class="brand-modal-row-label">Şehirler</span><span class="brand-modal-row-value" style="text-align:left;">' + _escHtml(b.store_cities.join(', ')) + '</span></div>'
-            : '') +
-        '</div>' +
-      '</div>';
-
-  // Description
-  if (b.short_description) {
-    html += '<div class="brand-modal-desc">' + _escHtml(b.short_description) + '</div>';
-  }
-
-  // Actions: website + social
-  html += '<div class="brand-modal-actions">';
-  if (b.website_url) {
-    html += '<a class="brand-modal-website-btn" href="' + _escHtml(b.website_url) + '" target="_blank" rel="noopener">' +
-      '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>' +
-      'Web Sitesini Ziyaret Et</a>';
-  }
-  html += '<div class="brand-modal-social">';
-  if (b.instagram_url) {
-    html += '<a href="' + _escHtml(b.instagram_url) + '" target="_blank" rel="noopener" title="Instagram">' +
-      '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg></a>';
-  }
-  html += '</div></div>';
-
-  // Bottom: follow + close
-  html += '<div class="brand-modal-bottom">' +
-    '<button class="brand-modal-follow-btn' + (isF ? ' following' : '') + '" data-brand-id="' + b.id + '" onclick="toggleBrandFollow(' + b.id + ',event)">' +
-      (isF ? '✓ Takiptesin' : 'Takip Et') +
-    '</button>' +
-    '<button class="brand-modal-close-btn" onclick="closeBrandModal()">Kapat</button>' +
-  '</div>';
-
-  html += '</div>'; // modal-body
-
-  document.getElementById('brand-modal').innerHTML = html;
-  document.getElementById('brand-modal-overlay').style.display = 'flex';
-  document.body.style.overflow = 'hidden';
-}
-
-function closeBrandModal() {
-  document.getElementById('brand-modal-overlay').style.display = 'none';
-  document.body.style.overflow = '';
-}
-
-// Close on overlay click
-document.addEventListener('click', function(e) {
-  if (e.target.id === 'brand-modal-overlay') closeBrandModal();
-});
-// Close on ESC
-document.addEventListener('keydown', function(e) {
-  if (e.key !== 'Escape') return;
-  var ov = document.getElementById('brand-modal-overlay');
-  if (ov && ov.style.display === 'flex') closeBrandModal();
-});
 
 // ── Follow / Unfollow ──
 var _ht_follow_busy = false;
@@ -2599,22 +2490,11 @@ async function toggleBrandFollow(brandId, event) {
 function _updateAllFollowBtns(brandId) {
   var isF = _ht_follows.has(brandId);
   // Card buttons
-  var btns = document.querySelectorAll('.brand-follow-btn[data-brand-id="' + brandId + '"]');
-  for (var i = 0; i < btns.length; i++) {
-    btns[i].textContent = isF ? 'Takipte ✓' : 'Takip Et';
-    if (isF) btns[i].classList.add('following'); else btns[i].classList.remove('following');
-  }
-  // Modal follow button
-  var mBtn = document.querySelector('.brand-modal-follow-btn[data-brand-id="' + brandId + '"]');
-  if (mBtn) {
-    mBtn.textContent = isF ? '✓ Takiptesin' : 'Takip Et';
-    if (isF) mBtn.classList.add('following'); else mBtn.classList.remove('following');
-  }
-  // Featured card follow button
-  var fBtn = document.querySelector('.featured-follow[data-brand-id="' + brandId + '"]');
-  if (fBtn) {
-    fBtn.textContent = isF ? 'Takipte ✓' : 'Takip Et';
-    if (isF) fBtn.classList.add('following'); else fBtn.classList.remove('following');
+  // Flip card back follow button
+  var backBtns = document.querySelectorAll('.back-follow-mini[data-brand-id="' + brandId + '"]');
+  for (var j = 0; j < backBtns.length; j++) {
+    backBtns[j].textContent = isF ? 'Takipte ✓' : 'Takip Et';
+    if (isF) backBtns[j].classList.add('following'); else backBtns[j].classList.remove('following');
   }
 }
 

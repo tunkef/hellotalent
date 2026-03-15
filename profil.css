@@ -1317,146 +1317,65 @@ html[data-theme="dark"] .lok-modal #btn-lok-close:hover{
 /* Section label */
 .section-label{font-family:var(--font-mono,'DM Mono',monospace);font-size:11px;font-weight:500;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:14px;}
 
-/* Featured editorial section */
-.featured-section{margin-bottom:32px;}
-.featured-grid{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:200px 200px;gap:12px;}
-.featured-card{background:#fff;border-radius:16px;border:1.5px solid var(--border);padding:24px;display:flex;flex-direction:column;justify-content:space-between;cursor:pointer;transition:all .25s;position:relative;overflow:hidden;}
-.featured-card:hover{transform:translateY(-2px);}
-.featured-card:first-child{grid-row:1/3;}
-.featured-card-top{display:flex;align-items:flex-start;justify-content:space-between;}
-.featured-logo{width:48px;height:48px;border-radius:12px;background:#FFFFFF;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;}
-.featured-logo .brand-logo-wrap{width:48px;height:48px;border-radius:12px;}
-.featured-logo img{width:100%;height:100%;object-fit:contain;padding:6px;background:#FFFFFF;border-radius:inherit;}
-.featured-logo .brand-initial{font-weight:700;font-size:18px;color:#fff;width:100%;height:100%;display:flex;align-items:center;justify-content:center;}
-.featured-seg{font-family:var(--font-mono,'DM Mono',monospace);font-size:10px;font-weight:500;letter-spacing:0.5px;color:var(--muted);padding:4px 10px;border-radius:6px;background:var(--bg,#F7F6F4);}
-.featured-card-bottom{display:flex;align-items:flex-end;justify-content:space-between;}
-.featured-name{font-family:'Bricolage Grotesque',sans-serif;font-size:22px;font-weight:700;letter-spacing:-0.3px;}
-.featured-card:first-child .featured-name{font-size:32px;}
-.featured-meta{font-size:12px;color:var(--muted);margin-top:4px;}
-.featured-follow{border-radius:8px;font-size:12px;font-weight:600;border:1.5px solid var(--verm);color:var(--verm);background:transparent;cursor:pointer;transition:all .15s;font-family:'Plus Jakarta Sans',sans-serif;}
-.featured-follow:hover{background:var(--verm);color:#fff;}
-.featured-follow.following{border-color:var(--border);color:var(--muted);background:var(--bg,#F7F6F4);}
-
-/* All brands section */
+/* All brands section — flip card grid */
 .all-brands-section{margin-top:8px;}
+.brand-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;}
+@media(max-width:750px){.brand-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:480px){.brand-grid{grid-template-columns:1fr;}}
 
-/* Card + featured animations */
-@keyframes fadeUp{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
-.brand-card,.featured-card{animation:fadeUp .4s ease both;}
+/* Flip card — z-index prevents hover leak */
+.flip-card{position:relative;z-index:1;perspective:1200px;height:310px;cursor:pointer;}
+.flip-card:hover{z-index:10;}
+.flip-card-inner{position:relative;width:100%;height:100%;transition:transform .55s cubic-bezier(0.4,0,0.15,1);transform-style:preserve-3d;}
+@media(hover:hover){.flip-card:hover .flip-card-inner{transform:rotateY(180deg);}}
+.flip-card.flipped .flip-card-inner{transform:rotateY(180deg);}
 
-/* Responsive: featured + search bar */
-@media(max-width:900px){.featured-grid{grid-template-rows:180px 180px;}}
-@media(max-width:600px){
-  .featured-grid{grid-template-columns:1fr;grid-template-rows:auto;}
-  .featured-card:first-child{grid-row:auto;}
-  .search-filter-bar{flex-direction:column;}
-  .segment-pills{gap:4px;}
-  .markalar-page-header{flex-direction:column;align-items:flex-start;}
-}
+.flip-front,.flip-back{position:absolute;width:100%;height:100%;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:18px;overflow:hidden;}
+.flip-front{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:28px 20px 22px;border:1.5px solid var(--border);transition:border-color .3s;}
+.flip-card:hover .flip-front{border-color:transparent;}
 
-/* Card grid: 4 cols >900px, 3 cols 600–900px, 2 cols <600px */
-.brand-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;align-items:stretch;}
-@media(max-width:900px){.brand-grid{grid-template-columns:repeat(3,1fr);}}
-@media(max-width:600px){.brand-grid{grid-template-columns:repeat(2,1fr);}}
+.front-logo{width:76px;height:76px;border-radius:16px;background:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.08);margin-bottom:6px;}
+.front-logo .brand-logo-wrap{width:76px!important;height:76px!important;border-radius:16px;}
+.front-logo img{width:100%;height:100%;object-fit:contain;padding:8px;background:#fff;border-radius:inherit;}
+.front-logo .brand-initial{font-weight:700;font-size:22px;color:#fff;width:100%;height:100%;display:flex;align-items:center;justify-content:center;}
+.front-name{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:17px;text-align:center;letter-spacing:-0.3px;}
+.front-segment{font-family:var(--font-mono,'DM Mono',monospace);font-size:9px;font-weight:500;letter-spacing:1px;padding:3px 10px;border-radius:4px;color:#fff;}
+.front-stores{font-size:12px;color:var(--muted);font-family:var(--font-mono,'DM Mono',monospace);margin-top:4px;}
+.flip-hint{position:absolute;bottom:10px;font-size:10px;color:var(--muted);opacity:0;transition:opacity .25s;font-family:var(--font-mono,'DM Mono',monospace);letter-spacing:.5px;}
+.flip-card:hover .flip-hint{opacity:.7;}
 
-/* Card — vertical, compact; whole card clickable; border/hover accent via JS */
-.brand-card{background:#fff;border:1.5px solid var(--border);border-radius:12px;padding:14px;display:flex;flex-direction:column;align-items:center;gap:8px;transition:border-color .2s,box-shadow .2s,transform .2s;min-height:0;cursor:pointer;}
-.brand-card:hover{box-shadow:0 4px 24px rgba(0,0,0,0.06);transform:translateY(-2px);}
+.flip-back{transform:rotateY(180deg);display:flex;flex-direction:column;color:#fff;}
+.flip-back::before{content:'';position:absolute;inset:0;border-radius:18px;padding:2px;background:linear-gradient(135deg,rgba(255,255,255,0.3),rgba(255,255,255,0.05));-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;}
+.back-header{display:flex;align-items:center;gap:12px;padding:18px 18px 0;}
+.back-logo{width:40px;height:40px;border-radius:10px;background:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;}
+.back-logo .brand-logo-wrap{width:40px!important;height:40px!important;border-radius:10px;}
+.back-logo img{width:100%;height:100%;object-fit:contain;padding:4px;background:#fff;}
+.back-logo .brand-initial{font-weight:700;font-size:14px;color:#fff;}
+.back-title-area{flex:1;min-width:0;}
+.back-brand-name{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:18px;letter-spacing:-0.3px;}
+.back-segment-pill{font-family:var(--font-mono,'DM Mono',monospace);font-size:8px;font-weight:500;letter-spacing:.5px;padding:2px 7px;border-radius:3px;background:rgba(255,255,255,0.2);width:fit-content;margin-top:3px;}
+.back-follow-mini{padding:5px 12px;border-radius:6px;border:1.5px solid rgba(255,255,255,0.4);background:rgba(255,255,255,0.1);color:#fff;font-size:11px;font-weight:600;font-family:var(--font-body,'Plus Jakarta Sans',sans-serif);cursor:pointer;transition:all .15s;white-space:nowrap;backdrop-filter:blur(4px);flex-shrink:0;}
+.back-follow-mini:hover{background:rgba(255,255,255,0.25);border-color:rgba(255,255,255,0.6);}
+.back-follow-mini.following{background:rgba(255,255,255,0.2);border-color:rgba(255,255,255,0.5);}
+.back-info{padding:14px 18px 0;display:flex;flex-direction:column;gap:7px;flex:1;}
+.back-info-row{display:flex;align-items:center;gap:8px;font-size:13px;opacity:.9;}
+.back-info-row svg{flex-shrink:0;opacity:.7;}
+.back-desc{font-size:11px;line-height:1.55;opacity:.7;padding:10px 18px;margin-top:auto;}
+.back-links{display:flex;gap:0;border-top:1px solid rgba(255,255,255,0.12);}
+.back-link{flex:1;display:flex;align-items:center;justify-content:center;gap:5px;padding:11px 8px;font-size:11px;font-weight:500;color:rgba(255,255,255,0.8);text-decoration:none;transition:all .15s;border-right:1px solid rgba(255,255,255,0.08);}
+.back-link:last-child{border-right:none;}
+.back-link:hover{background:rgba(255,255,255,0.1);color:#fff;}
+.back-link svg{flex-shrink:0;opacity:.7;}
 
-/* Logo: 56px rounded square; white bg, contain fit, no crop */
-.brand-logo,.brand-card-logo-wrap,.featured-logo,.brand-logo-wrap{background:#FFFFFF;}
-.brand-card-logo-wrap{display:flex;justify-content:center;flex-shrink:0;overflow:hidden;}
-.brand-card-logo-wrap .brand-logo-wrap{border-radius:12px;overflow:hidden;}
-.brand-logo-wrap{width:48px;height:48px;border-radius:10px;overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
-.brand-logo img,.brand-card-logo-wrap img,.featured-logo img,.brand-logo-wrap img{width:100%;height:100%;object-fit:contain;padding:6px;background:#FFFFFF;border-radius:inherit;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+.flip-card{animation:fadeUp .45s ease both;}
+
+@media(max-width:600px){.search-filter-bar{flex-direction:column;}.segment-pills{gap:4px;}.markalar-page-header{flex-direction:column;align-items:flex-start;}}
+
+/* Logo wrap (popup list still uses .brand-logo-wrap) */
+.brand-logo-wrap{width:48px;height:48px;border-radius:10px;overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:#fff;}
+.brand-logo-wrap img{width:100%;height:100%;object-fit:contain;padding:6px;background:#fff;border-radius:inherit;}
 .brand-logo-wrap .brand-initial{font-weight:700;font-size:18px;color:#fff;width:100%;height:100%;display:flex;align-items:center;justify-content:center;}
-
-/* Brand name — centered, bold, 15px */
-.brand-card-name{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:15px;color:var(--text);line-height:1.3;text-align:center;width:100%;}
-
-/* Segment tag — centered; labels already uppercase */
-.brand-card-segment{display:flex;justify-content:center;flex-shrink:0;min-height:0;}
-.brand-card-segment:empty{display:none;}
-
-/* Bottom block — pushed to card bottom for equal row height */
-.brand-card-bottom{width:100%;margin-top:auto;display:flex;flex-direction:column;gap:6px;flex-shrink:0;}
-
-/* Follow button — compact, centered */
-.brand-follow-btn,.featured-follow{width:auto;min-width:100px;padding:7px 20px;align-self:center;}
-.brand-follow-btn{border-radius:8px;border:1.5px solid var(--verm);background:transparent;color:var(--verm);font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;font-family:'Plus Jakarta Sans',sans-serif;}
-.brand-follow-btn:hover{background:var(--verm);color:#fff;}
-.brand-follow-btn.following{border:1.5px solid var(--border);color:var(--muted);background:var(--gray,#f3f2ef);}
-.brand-follow-btn.following:hover{border-color:#e74c3c;color:#e74c3c;background:rgba(231,76,60,0.05);}
-
-/* Store count — subtle, centered */
-.brand-card-stores{font-size:11px;color:var(--muted);width:100%;text-align:center;flex-shrink:0;}
-
-/* Segment tag (dynamic accent from JS) */
-.brand-seg-tag{display:inline-block;font-size:9px;font-weight:500;letter-spacing:0.8px;padding:3px 8px;border-radius:4px;font-family:var(--font-mono,'DM Mono',monospace);}
-
-/* Clickability hint — muted, vermillion on card hover */
-.brand-card-hint{font-size:11px;color:var(--muted);transition:color .15s;align-self:flex-end;flex-shrink:0;}
-.brand-card:hover .brand-card-hint{color:var(--verm);}
-.featured-card:hover .brand-card-hint{color:var(--verm);}
-.featured-card-bottom .brand-card-hint{width:100%;text-align:right;margin-top:6px;}
-
-/* Segment pill (English labels) */
-.brand-segment{display:inline-block;font-size:10px;font-weight:600;padding:2px 7px;border-radius:4px;letter-spacing:0.3px;font-family:var(--font-mono,'DM Mono',monospace);}
-.brand-segment.luxury{background:#1E2D5E;color:#fff;}
-.brand-segment.premium{background:#C94E28;color:#fff;}
-.brand-segment.mid{background:#3B82F6;color:#fff;}
-.brand-segment.mass{background:#10B981;color:#fff;}
-.brand-segment.sportswear{background:#F59E0B;color:#fff;}
-.brand-segment.beauty{background:#EC4899;color:#fff;}
-.brand-segment.tech{background:#6366F1;color:#fff;}
-
-/* ── Modal: overlay + dialog ── */
-.brand-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9000;display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(3px);animation:brandFadeIn .2s ease;}
-@keyframes brandFadeIn{from{opacity:0}to{opacity:1}}
-
-.brand-modal{background:#fff;border-radius:16px;width:100%;max-width:480px;max-height:90vh;overflow-y:auto;box-shadow:0 24px 48px rgba(0,0,0,0.18);animation:brandSlideUp .25s ease;}
-@keyframes brandSlideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
-
-/* Modal header: logo + brand name + Kapat top-right */
-.brand-modal-head{display:flex;align-items:center;gap:14px;padding:20px 20px 16px;position:relative;}
-.brand-modal-head .brand-logo-wrap{width:52px;height:52px;border-radius:10px;}
-.brand-modal-head-info{flex:1;min-width:0;}
-.brand-modal-head-name{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:18px;color:var(--text);}
-.brand-modal-close{position:absolute;top:16px;right:16px;background:var(--gray,#f3f2ef);border:none;border-radius:8px;padding:8px 14px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;transition:background .15s,color .15s;}
-.brand-modal-close:hover{background:var(--border);color:var(--text);}
-
-.brand-modal-body{padding:0 20px 20px;}
-
-/* Two-column: Genel Bilgiler | Türkiye Operasyonları */
-.brand-modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px;}
-@media(max-width:420px){.brand-modal-grid{grid-template-columns:1fr;}}
-
-.brand-modal-section{padding:14px;background:var(--bg,#F7F6F4);border-radius:10px;font-size:13px;}
-.brand-modal-section-title{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:13px;margin-bottom:8px;color:var(--text);}
-.brand-modal-row{display:flex;justify-content:space-between;align-items:flex-start;padding:4px 0;gap:8px;}
-.brand-modal-row-label{color:var(--muted);font-size:12px;flex-shrink:0;}
-.brand-modal-row-value{font-weight:600;text-align:right;font-size:12px;font-family:var(--font-mono,'DM Mono',monospace);}
-
-/* Description — subtle background box */
-.brand-modal-desc{font-size:13px;line-height:1.6;color:var(--muted);margin-bottom:16px;padding:14px;background:var(--bg,#F7F6F4);border-radius:10px;border:1px solid var(--border);}
-
-/* Modal actions: Web Sitesini Ziyaret Et (vermillion) + Instagram icon */
-.brand-modal-actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
-.brand-modal-website-btn{display:inline-flex;align-items:center;gap:6px;padding:10px 18px;background:var(--verm);color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;transition:background .2s;}
-.brand-modal-website-btn:hover{background:#b84420;}
-.brand-modal-website-btn svg{flex-shrink:0;}
-
-.brand-modal-social{display:flex;gap:8px;align-items:center;margin-left:auto;}
-.brand-modal-social a{display:flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:10px;background:var(--bg,#F7F6F4);color:var(--text);transition:background .2s,color .2s;text-decoration:none;}
-.brand-modal-social a:hover{background:var(--verm);color:#fff;}
-
-/* Bottom: Takip Et (full width left) + Kapat (right) */
-.brand-modal-bottom{display:flex;gap:10px;margin-top:16px;align-items:center;}
-.brand-modal-follow-btn{flex:1;padding:12px;border-radius:10px;border:1.5px solid var(--border);background:transparent;font-size:13px;font-weight:600;color:var(--text);cursor:pointer;transition:all .2s;}
-.brand-modal-follow-btn:hover{border-color:var(--verm);color:var(--verm);}
-.brand-modal-follow-btn.following{background:rgba(201,78,40,0.08);border-color:var(--verm);color:var(--verm);}
-.brand-modal-close-btn{padding:12px 20px;border-radius:10px;border:1.5px solid var(--border);background:var(--gray,#f3f2ef);font-size:13px;font-weight:600;color:var(--text);cursor:pointer;transition:background .2s;}
-.brand-modal-close-btn:hover{background:var(--border);}
 
 /* Load more — minimal divider style */
 .brand-load-more{grid-column:1/-1;display:flex;flex-direction:column;align-items:center;gap:6px;padding:8px 0;cursor:pointer;position:relative;background:none;border:none;margin-top:8px;}
