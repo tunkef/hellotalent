@@ -448,7 +448,6 @@ if (window.Sentry) {
     <div class="mk-tg-cell">
       <span class="mk-tg-label">Beni Öner</span>
       <label class="toggle"><input type="checkbox" id="merkez-toggle-visibility" checked><span class="toggle-slider"></span></label>
-      <span class="mk-tg-hint" id="mk-tg-visibility-hint"></span>
     </div>
     <div class="mk-tg-cell" id="merkez-hide-row">
       <span class="mk-tg-label">İşverenim Görmesin</span>
@@ -2083,6 +2082,13 @@ document.addEventListener('DOMContentLoaded', function() {
     </button>
   </div>
   <div class="pp-body" id="pp-content"></div>
+</div>
+
+<div class="tg-toast" id="tg-toast">
+  <span class="tg-toast-text" id="tg-toast-text"></span>
+  <button class="tg-toast-close" onclick="closeTgToast()">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+  </button>
 </div>
 
 </body>

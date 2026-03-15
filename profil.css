@@ -795,17 +795,6 @@ html[data-theme="dark"] .field-req{color:#F87171;}
   background: rgba(30,45,94,0.08);
   color: var(--navy);
 }
-.mk-tg-hint {
-  font-size: 9px;
-  color: #ef4444;
-  line-height: 1.2;
-  max-width: 140px;
-  position: absolute;
-  bottom: 5px;
-  left: 50%;
-  transform: translateX(-50%);
-  text-align: center;
-}
 .mk-tg-cell.mk-tg-premium {
   background: linear-gradient(135deg, var(--navy-deep, #131f3e) 0%, #1e3050 100%);
   box-shadow: 0 0 0 1px rgba(255,255,255,.05);
@@ -1419,6 +1408,94 @@ html[data-theme="dark"] .field-req{color:#F87171;}
   .pp-bento { grid-template-columns: 1fr; }
   .pp-hero-card { flex-direction: column; text-align: center; }
   .pp-meta { justify-content: center; }
+}
+
+/* ── Toggle Toast ── */
+.tg-toast {
+  position: fixed;
+  z-index: 8000;
+  background: var(--navy-deep, #131f3e);
+  color: rgba(255,255,255,0.9);
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 500;
+  font-family: var(--font-body, 'Plus Jakarta Sans', sans-serif);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 320px;
+  opacity: 0;
+  transform: translateY(6px);
+  pointer-events: none;
+  transition: opacity 0.2s, transform 0.2s;
+}
+.tg-toast.visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+.tg-toast-close {
+  background: rgba(255,255,255,0.1);
+  border: none;
+  color: rgba(255,255,255,0.5);
+  cursor: pointer;
+  width: 22px; height: 22px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.15s;
+}
+.tg-toast-close:hover {
+  background: rgba(255,255,255,0.2);
+  color: #fff;
+}
+
+/* ── Toggle Toast ── */
+.tg-toast {
+  position: fixed;
+  z-index: 8000;
+  background: var(--navy-deep, #131f3e);
+  color: rgba(255,255,255,0.9);
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 500;
+  font-family: var(--font-body, 'Plus Jakarta Sans', sans-serif);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 320px;
+  opacity: 0;
+  transform: translateY(6px);
+  pointer-events: none;
+  transition: opacity 0.2s, transform 0.2s;
+}
+.tg-toast.visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+.tg-toast-close {
+  background: rgba(255,255,255,0.1);
+  border: none;
+  color: rgba(255,255,255,0.5);
+  cursor: pointer;
+  width: 22px; height: 22px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.15s;
+}
+.tg-toast-close:hover {
+  background: rgba(255,255,255,0.2);
+  color: #fff;
 }
 
 /* Wizard Exit Confirm Modal */

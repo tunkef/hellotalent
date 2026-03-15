@@ -2620,13 +2620,18 @@ function openProfilePreview() {
   var locs = db.locations || [];
   var bi = db.brand_interests || [];
 
+  var beniOnerOn = document.getElementById('merkez-toggle-visibility');
+  var showPersonalInfo = beniOnerOn ? beniOnerOn.checked : true;
+  var aktifToggle = document.getElementById('merkez-toggle-active');
+  var showAktifBadge = aktifToggle ? aktifToggle.checked : false;
+
   var html = '';
 
   // ── HERO CARD ──
   var initials = (p.full_name || '').split(/\s+/).map(function(w) { return w.charAt(0); }).join('').substring(0, 2).toUpperCase() || '?';
-  var avatarInner = p.avatar_url
+  var avatarInner = showPersonalInfo && p.avatar_url
     ? '<img src="' + _escHtml(p.avatar_url) + '" alt="">'
-    : initials;
+    : (showPersonalInfo ? initials : '?');
 
   var currentRole = '', currentCompany = '';
   if (exps.length > 0) {
@@ -2640,34 +2645,35 @@ function openProfilePreview() {
   }
 
   var totalYears = 0;
-  exps.forEach(function(e) {
-    var startY = parseInt(e.baslangic_yil, 10) || 0;
-    var endY = e.devam_ediyor ? new Date().getFullYear() : (parseInt(e.bitis_yil, 10) || startY);
-    totalYears += Math.max(0, endY - startY);
-  });
-
-  var isActive = p.is_active;
+  if (showPersonalInfo) {
+    exps.forEach(function(e) {
+      var startY = parseInt(e.baslangic_yil, 10) || 0;
+      var endY = e.devam_ediyor ? new Date().getFullYear() : (parseInt(e.bitis_yil, 10) || startY);
+      totalYears += Math.max(0, endY - startY);
+    });
+  }
 
   html += '<div class="pp-hero-card">';
   html += '<div class="pp-avatar">' + avatarInner + '</div>';
   html += '<div style="flex:1;min-width:0;">';
-  html += '<div class="pp-name">' + _escHtml(p.full_name || '—') + '</div>';
+  html += '<div class="pp-name">' + _escHtml(showPersonalInfo ? (p.full_name || '—') : '●●●●● ●●●●●●') + '</div>';
   if (currentRole) {
     html += '<div class="pp-role"><strong>' + _escHtml(currentRole) + '</strong>';
-    if (currentCompany) html += ' · ' + _escHtml(currentCompany);
+    if (currentCompany) html += ' · ' + _escHtml(showPersonalInfo ? currentCompany : '●●●●●');
     html += '</div>';
   }
   html += '<div class="pp-meta">';
-  if (p.adres_il) {
+  if (showPersonalInfo && p.adres_il) {
     html += '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>';
     html += _escHtml(p.adres_il);
   }
-  if (totalYears > 0) {
+  if (showPersonalInfo && totalYears > 0) {
     html += (p.adres_il ? '<span style="opacity:0.3;margin:0 3px;">·</span>' : '');
     html += totalYears + ' yıl deneyim';
   }
-  html += '<span class="pp-status-badge ' + (isActive ? 'active' : 'passive') + '">';
-  html += '<span class="dot"></span>' + (isActive ? 'Aktif aday' : 'Pasif') + '</span>';
+  if (showAktifBadge) {
+    html += '<span class="pp-status-badge active"><span class="dot"></span>Aktif iş arıyor</span>';
+  }
   html += '</div></div></div>';
 
   // ── ROW 1: Deneyim + Eğitim & Dil ──
@@ -2681,7 +2687,8 @@ function openProfilePreview() {
       var role = e.pozisyon || '';
       var brand = e.marka || '';
       var company = e.sirket_adi || '';
-      var display = brand && company && brand !== company ? brand + ' (' + company + ')' : brand || company;
+      var displayRaw = brand && company && brand !== company ? brand + ' (' + company + ')' : brand || company;
+      var display = showPersonalInfo ? displayRaw : '●●●●●';
       var period = '';
       if (e.baslangic_yil) {
         period = (e.baslangic_ay ? e.baslangic_ay + ' ' : '') + e.baslangic_yil;
@@ -2718,7 +2725,7 @@ function openProfilePreview() {
     edus.forEach(function(e) {
       html += '<div class="pp-edu">';
       html += '<div class="pp-edu-row"><div>';
-      html += '<div class="pp-edu-name">' + _escHtml(e.okul_adi || '') + '</div>';
+      html += '<div class="pp-edu-name">' + _escHtml(showPersonalInfo ? (e.okul_adi || '') : '●●●●●') + '</div>';
       var sub = [];
       if (e.seviye) sub.push(e.seviye);
       if (e.bolum) sub.push(e.bolum);
@@ -2732,7 +2739,7 @@ function openProfilePreview() {
     certs.forEach(function(c) {
       html += '<div class="pp-edu" style="margin-top:6px;">';
       html += '<div class="pp-edu-row"><div>';
-      html += '<div class="pp-edu-name" style="font-size:12px;">' + _escHtml(c.egitim_adi || '') + '</div>';
+      html += '<div class="pp-edu-name" style="font-size:12px;">' + _escHtml(showPersonalInfo ? (c.egitim_adi || '') : '●●●●●') + '</div>';
       if (c.kurum) html += '<div class="pp-edu-sub">' + _escHtml(c.kurum) + '</div>';
       html += '</div>';
       if (c.yil) html += '<div class="pp-edu-year">' + _escHtml(c.yil) + '</div>';
@@ -2792,7 +2799,9 @@ function openProfilePreview() {
 
   html += '<div class="pp-card accent-muted">';
   html += '<div class="pp-card-title">CV</div>';
-  if (p.cv_url && p.cv_filename) {
+  if (!showPersonalInfo) {
+    html += '<div class="pp-empty">CV gizli</div>';
+  } else if (p.cv_url && p.cv_filename) {
     html += '<div class="pp-cv-row">';
     html += '<div class="pp-cv-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>';
     html += '<a class="pp-cv-link" href="' + _escHtml(p.cv_url) + '" target="_blank" onclick="event.stopPropagation()">' + _escHtml(p.cv_filename) + '</a>';
@@ -2861,10 +2870,48 @@ document.addEventListener('keydown', function(e) {
   }
 });
 
+// ── Toggle Toast ──
+var _tgToastTimer = null;
+
+function showTgToast(message, anchorEl) {
+  var toast = document.getElementById('tg-toast');
+  var text = document.getElementById('tg-toast-text');
+  if (!toast || !text) return;
+
+  text.textContent = message;
+
+  if (anchorEl) {
+    var rect = anchorEl.getBoundingClientRect();
+    toast.style.top = (rect.bottom + 8) + 'px';
+    toast.style.left = Math.max(12, Math.min(rect.left, window.innerWidth - 340)) + 'px';
+    toast.style.right = 'auto';
+    toast.style.bottom = 'auto';
+    toast.style.transform = '';
+  } else {
+    toast.style.bottom = '24px';
+    toast.style.left = '50%';
+    toast.style.right = 'auto';
+    toast.style.top = 'auto';
+    toast.style.transform = 'translateX(-50%) translateY(0)';
+  }
+
+  toast.classList.add('visible');
+
+  if (_tgToastTimer) clearTimeout(_tgToastTimer);
+  _tgToastTimer = setTimeout(function() {
+    closeTgToast();
+  }, 5000);
+}
+
+function closeTgToast() {
+  var toast = document.getElementById('tg-toast');
+  if (toast) toast.classList.remove('visible');
+  if (_tgToastTimer) { clearTimeout(_tgToastTimer); _tgToastTimer = null; }
+}
+
 // ── Toggle Grid Logic: "Beni Öner" (merkez-toggle-visibility) syncs with sidebar + Ayarlar; only this controls is_active ──
 (function() {
   var visToggle = document.getElementById('merkez-toggle-visibility');
-  var visHint = document.getElementById('mk-tg-visibility-hint');
   var hideCell = document.getElementById('merkez-hide-row');
   var gridId = 'merkez-toggle-visibility';
   var sidebarId = 'sidebar-toggle-benioner';
@@ -2873,11 +2920,6 @@ document.addEventListener('keydown', function(e) {
   function updateVisState() {
     if (!visToggle) return;
     var isOn = visToggle.checked;
-
-    if (visHint) {
-      visHint.textContent = isOn ? '' : 'Profilin ve CV\'n işverenlerle paylaşılmaz';
-      visHint.style.display = isOn ? 'none' : '';
-    }
 
     if (hideCell) {
       hideCell.style.opacity = isOn ? '1' : '0.35';
@@ -2920,6 +2962,12 @@ document.addEventListener('keydown', function(e) {
 
   if (visToggle) {
     visToggle.addEventListener('change', function() {
+      var cell = visToggle.closest('.mk-tg-cell');
+      if (visToggle.checked) {
+        showTgToast('Profilin ve kişisel bilgilerin işverenlerle paylaşılacak.', cell);
+      } else {
+        showTgToast('Profilin gizlendi. İşverenler kişisel bilgilerini ve CV\'ni göremez.', cell);
+      }
       syncBeniOner(visToggle.checked, 'grid');
     });
     updateVisState();
@@ -2929,6 +2977,30 @@ document.addEventListener('keydown', function(e) {
   if (sidebarToggle) {
     sidebarToggle.addEventListener('change', function() {
       syncBeniOner(sidebarToggle.checked, 'sidebar');
+    });
+  }
+
+  var aktifToggle = document.getElementById('merkez-toggle-active');
+  if (aktifToggle) {
+    aktifToggle.addEventListener('change', function() {
+      var cell = this.closest('.mk-tg-cell');
+      if (this.checked) {
+        showTgToast('İşverenler profilinde "Aktif iş arıyor" rozeti görecek.', cell);
+      } else {
+        showTgToast('Rozet kaldırıldı. Profilin hâlâ görünür, sadece aktif arama rozeti gizli.', cell);
+      }
+    });
+  }
+
+  var hideToggle = document.getElementById('merkez-hide-from-current-employer');
+  if (hideToggle) {
+    hideToggle.addEventListener('change', function() {
+      var cell = this.closest('.mk-tg-cell');
+      if (this.checked) {
+        showTgToast('Mevcut işverenin profilini göremeyecek.', cell);
+      } else {
+        showTgToast('Mevcut işverenin de dahil tüm işverenler profilini görebilir.', cell);
+      }
     });
   }
 
