@@ -1715,45 +1715,67 @@ async function loadProfileFromDB() {
   var cid = cand.id;
 
   // Parallel fetch all child tables
-  var [expRes, eduRes, certRes, langRes, roleRes, wpRes, biRes, locRes] = await Promise.all([
-    supabase.from('candidate_experiences').select('*').eq('candidate_id', cid).order('sira'),
-    supabase.from('candidate_education').select('*').eq('candidate_id', cid).order('sira'),
-    supabase.from('candidate_certificates').select('*').eq('candidate_id', cid).order('sira'),
-    supabase.from('candidate_languages').select('*').eq('candidate_id', cid).order('sira'),
-    supabase.from('candidate_target_roles').select('*').eq('candidate_id', cid),
-    supabase.from('candidate_work_preferences').select('*').eq('candidate_id', cid).maybeSingle(),
-    supabase.from('candidate_brand_interests').select('*').eq('candidate_id', cid),
-    supabase.from('candidate_location_preferences').select('*, candidate_location_pref_districts(*)').eq('candidate_id', cid)
-  ]);
-
-  // ── Diagnostic: log every child-table result so silent failures become visible ──
-  var _childResults = [
-    ['experiences',     expRes],
-    ['education',       eduRes],
-    ['certificates',    certRes],
-    ['languages',       langRes],
-    ['target_roles',    roleRes],
-    ['work_prefs',      wpRes],
-    ['brand_interests', biRes],
-    ['locations',       locRes]
+  var _queryDefs = [
+    { key: 'experiences',     fn: function() { return supabase.from('candidate_experiences').select('*').eq('candidate_id', cid).order('sira'); } },
+    { key: 'education',       fn: function() { return supabase.from('candidate_education').select('*').eq('candidate_id', cid).order('sira'); } },
+    { key: 'certificates',    fn: function() { return supabase.from('candidate_certificates').select('*').eq('candidate_id', cid).order('sira'); } },
+    { key: 'languages',       fn: function() { return supabase.from('candidate_languages').select('*').eq('candidate_id', cid).order('sira'); } },
+    { key: 'target_roles',    fn: function() { return supabase.from('candidate_target_roles').select('*').eq('candidate_id', cid); } },
+    { key: 'work_prefs',      fn: function() { return supabase.from('candidate_work_preferences').select('*').eq('candidate_id', cid).maybeSingle(); } },
+    { key: 'brand_interests', fn: function() { return supabase.from('candidate_brand_interests').select('*').eq('candidate_id', cid); } },
+    { key: 'locations',       fn: function() { return supabase.from('candidate_location_preferences').select('*, candidate_location_pref_districts(*)').eq('candidate_id', cid); } }
   ];
-  _childResults.forEach(function(pair) {
-    var key = pair[0], r = pair[1];
-    if (r.error) {
-      if (window.Sentry) Sentry.captureMessage('Profile restore: ' + key + ' query failed', {
-        level: 'error', tags: { flow: 'profile-restore', table: key },
-        extra: { code: r.error.code, hint: r.error.hint, status: r.status }
-      });
-      console.error('[HT] ' + key + ' query FAILED →', r.error.message,
-        '| code:', r.error.code, '| hint:', r.error.hint || '-',
-        '| status:', r.status, '| details:', r.error.details || '-');
-    } else if (Array.isArray(r.data)) {
-    } else if (r.data) {
-    } else {
-      // .single() returns data:null + no error when 0 rows (PGRST116)
-      console.warn('[HT] ' + key + ' → null (no rows or unexpected shape)');
+
+  // First attempt — all queries in parallel
+  var _results = {};
+  var _firstPass = await Promise.all(_queryDefs.map(function(q) { return q.fn(); }));
+  _queryDefs.forEach(function(q, i) { _results[q.key] = _firstPass[i]; });
+
+  // Check for failures
+  var _failedKeys = Object.keys(_results).filter(function(k) { return _results[k].error; });
+
+  // Retry once with fresh session if any failed
+  if (_failedKeys.length > 0) {
+    console.warn('[HT] Child query failures detected (' + _failedKeys.join(', ') + '), refreshing session and retrying...');
+    try {
+      var refreshRes = await supabase.auth.refreshSession();
+      if (refreshRes.data.session) {
+        // Retry only failed queries
+        var _retryDefs = _queryDefs.filter(function(q) { return _failedKeys.indexOf(q.key) !== -1; });
+        var _retryPass = await Promise.all(_retryDefs.map(function(q) { return q.fn(); }));
+        _retryDefs.forEach(function(q, i) { _results[q.key] = _retryPass[i]; });
+      }
+    } catch (e) {
+      console.error('[HT] Session refresh failed during retry:', e.message);
     }
-  });
+  }
+
+  // Final diagnostic — report any remaining failures as a single Sentry event
+  var _stillFailed = Object.keys(_results).filter(function(k) { return _results[k].error; });
+  if (_stillFailed.length > 0) {
+    if (window.Sentry) Sentry.captureMessage('Profile restore: child queries failed after retry', {
+      level: 'error',
+      tags: { flow: 'profile-restore', retry: 'true' },
+      extra: {
+        failed_tables: _stillFailed,
+        errors: _stillFailed.reduce(function(acc, k) {
+          acc[k] = { code: _results[k].error.code, hint: _results[k].error.hint, status: _results[k].status };
+          return acc;
+        }, {})
+      }
+    });
+    console.error('[HT] Profile restore — still failing after retry:', _stillFailed.join(', '));
+  }
+
+  // Unpack results (using the same variable names the rest of the function expects)
+  var expRes = _results.experiences;
+  var eduRes = _results.education;
+  var certRes = _results.certificates;
+  var langRes = _results.languages;
+  var roleRes = _results.target_roles;
+  var wpRes = _results.work_prefs;
+  var biRes = _results.brand_interests;
+  var locRes = _results.locations;
 
   return {
     profile: {
