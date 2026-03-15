@@ -2602,3 +2602,239 @@ function _escHtml(s) {
   return d.innerHTML;
 }
 
+// ═══════════════════════════════════════════════════
+// PROFILE PREVIEW
+// ═══════════════════════════════════════════════════
+
+function openProfilePreview() {
+  var db = _loadedDBData;
+  if (!db || !db.profile) return;
+  var p = db.profile;
+  var exps = db.experiences || [];
+  var edus = db.education || [];
+  var langs = db.languages || [];
+  var certs = db.certificates || [];
+  var wp = db.work_prefs;
+  var locs = db.locations || [];
+
+  var html = '';
+  var initials = (p.full_name || '').split(/\s+/).map(function(w) { return w.charAt(0); }).join('').substring(0, 2).toUpperCase() || '?';
+  var avatarHtml = p.avatar_url
+    ? '<img src="' + _escHtml(p.avatar_url) + '" alt="">'
+    : initials;
+
+  var currentRole = '';
+  var currentCompany = '';
+  if (exps.length > 0) {
+    var latest = exps[0];
+    currentRole = latest.pozisyon || '';
+    var brand = latest.marka || '';
+    var company = latest.sirket_adi || '';
+    currentCompany = brand && company && brand !== company
+      ? brand + ' (' + company + ')'
+      : brand || company;
+  }
+
+  var totalYears = 0;
+  exps.forEach(function(e) {
+    var startY = parseInt(e.baslangic_yil, 10) || 0;
+    var endY = e.devam_ediyor ? new Date().getFullYear() : (parseInt(e.bitis_yil, 10) || startY);
+    totalYears += Math.max(0, endY - startY);
+  });
+
+  var isActive = p.is_active;
+
+  html += '<div class="pp-hero">';
+  html += '<div class="pp-avatar">' + avatarHtml + '</div>';
+  html += '<div>';
+  html += '<div class="pp-name">' + _escHtml(p.full_name || '') + '</div>';
+  if (currentRole) {
+    html += '<div class="pp-role"><strong>' + _escHtml(currentRole) + '</strong>';
+    if (currentCompany) html += ' · ' + _escHtml(currentCompany);
+    html += '</div>';
+  }
+  html += '<div class="pp-meta">';
+  if (p.adres_il) {
+    html += '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>';
+    html += _escHtml(p.adres_il);
+  }
+  if (totalYears > 0) {
+    html += (p.adres_il ? '<span style="opacity:0.3;margin:0 4px;">·</span>' : '');
+    html += totalYears + ' yıl deneyim';
+  }
+  html += '<span class="pp-status-badge ' + (isActive ? 'active' : 'passive') + '">';
+  html += '<span class="dot"></span>' + (isActive ? 'Aktif aday' : 'Pasif') + '</span>';
+  html += '</div>';
+  html += '</div></div>';
+
+  if (exps.length > 0) {
+    html += '<div class="pp-section">';
+    html += '<div class="pp-section-title">Deneyim</div>';
+    exps.forEach(function(e) {
+      var role = e.pozisyon || '';
+      var brand = e.marka || '';
+      var company = e.sirket_adi || '';
+      var display = brand && company && brand !== company ? brand + ' (' + company + ')' : brand || company;
+      var period = '';
+      if (e.baslangic_yil) {
+        period = (e.baslangic_ay ? e.baslangic_ay + ' ' : '') + e.baslangic_yil;
+        if (e.devam_ediyor) {
+          period += ' — Devam ediyor';
+        } else if (e.bitis_yil) {
+          period += ' — ' + (e.bitis_ay ? e.bitis_ay + ' ' : '') + e.bitis_yil;
+        }
+      }
+      var dotClass = e.devam_ediyor ? 'active' : 'past';
+      html += '<div class="pp-item">';
+      html += '<div class="pp-item-dot ' + dotClass + '"></div>';
+      html += '<div class="pp-item-info">';
+      html += '<div class="pp-item-main">' + _escHtml(role) + '</div>';
+      html += '<div class="pp-item-sub">' + _escHtml(display);
+      if (e.departman) html += ' · ' + _escHtml(e.departman);
+      if (e.istihdam_tipi) html += ' · ' + _escHtml(e.istihdam_tipi);
+      html += '</div>';
+      html += '</div>';
+      if (period) html += '<div class="pp-item-period">' + _escHtml(period) + '</div>';
+      html += '</div>';
+    });
+    html += '</div>';
+  } else if (db.no_experience) {
+    html += '<div class="pp-section">';
+    html += '<div class="pp-section-title">Deneyim</div>';
+    html += '<div class="pp-empty">İlk iş deneyimini arıyor</div>';
+    html += '</div>';
+  }
+
+  if (edus.length > 0 || langs.length > 0 || certs.length > 0) {
+    html += '<div class="pp-section">';
+    html += '<div class="pp-section-title">Eğitim & Dil</div>';
+    edus.forEach(function(e) {
+      html += '<div class="pp-item">';
+      html += '<div class="pp-item-dot past"></div>';
+      html += '<div class="pp-item-info">';
+      html += '<div class="pp-item-main">' + _escHtml(e.okul_adi || '') + '</div>';
+      html += '<div class="pp-item-sub">';
+      if (e.seviye) html += _escHtml(e.seviye);
+      if (e.bolum) html += ' · ' + _escHtml(e.bolum);
+      html += '</div>';
+      html += '</div>';
+      if (e.mezuniyet_yili) html += '<div class="pp-item-period">' + _escHtml(e.mezuniyet_yili) + '</div>';
+      html += '</div>';
+    });
+    if (langs.length > 0) {
+      html += '<div style="margin-top:8px;">';
+      html += '<div class="pp-tags">';
+      langs.forEach(function(l) {
+        html += '<span class="pp-tag">' + _escHtml(l.dil || '') + (l.seviye ? ' · ' + _escHtml(l.seviye) : '') + '</span>';
+      });
+      html += '</div></div>';
+    }
+    if (certs.length > 0) {
+      certs.forEach(function(c) {
+        html += '<div class="pp-item">';
+        html += '<div class="pp-item-dot past"></div>';
+        html += '<div class="pp-item-info">';
+        html += '<div class="pp-item-main">' + _escHtml(c.egitim_adi || '') + '</div>';
+        if (c.kurum) html += '<div class="pp-item-sub">' + _escHtml(c.kurum) + '</div>';
+        html += '</div>';
+        if (c.yil) html += '<div class="pp-item-period">' + _escHtml(String(c.yil)) + '</div>';
+        html += '</div>';
+      });
+    }
+    html += '</div>';
+  }
+
+  if (wp || locs.length > 0) {
+    html += '<div class="pp-section">';
+    html += '<div class="pp-section-title">Tercihler & Lokasyon</div>';
+    var prefTags = [];
+    if (wp) {
+      if (wp.calisma_tipleri && wp.calisma_tipleri.length > 0) {
+        wp.calisma_tipleri.forEach(function(t) { prefTags.push(t); });
+      }
+      if (wp.musaitlik) prefTags.push(wp.musaitlik);
+      if (wp.tercih_segmentler && wp.tercih_segmentler.length > 0) {
+        wp.tercih_segmentler.forEach(function(s) { prefTags.push(s); });
+      }
+    }
+    locs.forEach(function(loc) {
+      if (loc.sehir) prefTags.push('📍 ' + loc.sehir);
+    });
+    if (prefTags.length > 0) {
+      html += '<div class="pp-tags">';
+      prefTags.forEach(function(t) {
+        html += '<span class="pp-tag">' + _escHtml(t) + '</span>';
+      });
+      html += '</div>';
+    }
+    html += '</div>';
+  }
+
+  if (p.cv_url && p.cv_filename) {
+    html += '<div class="pp-section">';
+    html += '<div class="pp-section-title">CV</div>';
+    html += '<div class="pp-cv-row">';
+    html += '<div class="pp-cv-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>';
+    html += '<div class="pp-cv-name">' + _escHtml(p.cv_filename) + '</div>';
+    if (p.cv_uploaded_at) {
+      var d = new Date(p.cv_uploaded_at);
+      html += '<div class="pp-cv-date">' + d.toLocaleDateString('tr-TR') + '</div>';
+    }
+    html += '</div>';
+    html += '</div>';
+  }
+
+  html += '<div class="pp-section">';
+  html += '<div class="pp-section-title">İletişim</div>';
+  var email = (typeof currentUser !== 'undefined' && currentUser && currentUser.email) ? currentUser.email : '';
+  var maskedEmail = '';
+  if (email) {
+    var parts = email.split('@');
+    if (parts.length === 2) {
+      maskedEmail = parts[0].charAt(0) + '****@' + parts[1];
+    }
+  }
+  html += '<div class="pp-contact-row">';
+  html += '<div class="pp-contact-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>';
+  html += '<div class="pp-contact-text">' + _escHtml(maskedEmail || '\u2014') + '</div>';
+  html += '<span class="pp-contact-lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Gizli</span>';
+  html += '</div>';
+  var phone = p.telefon || '';
+  var maskedPhone = '';
+  if (phone && phone.length >= 6) {
+    maskedPhone = phone.substring(0, 3) + ' *** ** ' + phone.substring(phone.length - 2);
+  }
+  html += '<div class="pp-contact-row">';
+  html += '<div class="pp-contact-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.81.36 1.6.69 2.36a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.76.33 1.55.56 2.36.69A2 2 0 0 1 22 16.92z"/></svg></div>';
+  html += '<div class="pp-contact-text">' + _escHtml(maskedPhone || '\u2014') + '</div>';
+  html += '<span class="pp-contact-lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Gizli</span>';
+  html += '</div>';
+  html += '<div style="font-size:10px;color:var(--text-muted);text-align:center;margin-top:10px;padding-top:8px;border-top:1px solid var(--border, #e8e6e3);">İletişim bilgileri işveren tarafından görüntülenebilir</div>';
+  html += '</div>';
+
+  var contentEl = document.getElementById('pp-content');
+  var overlayEl = document.getElementById('pp-overlay');
+  if (contentEl) contentEl.innerHTML = html;
+  if (overlayEl) {
+    overlayEl.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  }
+}
+
+function closeProfilePreview() {
+  var overlayEl = document.getElementById('pp-overlay');
+  if (overlayEl) overlayEl.style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+(function() {
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      var overlay = document.getElementById('pp-overlay');
+      if (overlay && overlay.style.display === 'flex') {
+        closeProfilePreview();
+      }
+    }
+  });
+})();
+
