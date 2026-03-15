@@ -281,7 +281,10 @@ function addExperienceCard(data) {
   if (d.devam_ediyor) cb.checked = true;
   var cbLabel = document.createElement('span');
   cbLabel.textContent = 'Halen burada çalışıyorum';
+  var checkmark = document.createElement('span');
+  checkmark.className = 'cb-check';
   cbWrap.appendChild(cb);
+  cbWrap.appendChild(checkmark);
   cbWrap.appendChild(cbLabel);
   card.appendChild(cbWrap);
 
