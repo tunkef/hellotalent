@@ -417,100 +417,118 @@ if (window.Sentry) {
     <svg class="mk-footer-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
   </div>
 
-  <!-- 3: Bento Section Cards -->
+  <!-- 3: Bento Section Cards (Genel Bakış design language) -->
   <div class="mk-bento-grid" id="mk-bento-grid">
 
-    <div class="mk-bento-card navy" data-step="1" onclick="editSection(1)">
-      <div class="mk-bento-ring" id="mk-ring-1">
-        <svg viewBox="0 0 36 36"><circle class="ring-track" cx="18" cy="18" r="15.5"/><circle class="ring-fill" cx="18" cy="18" r="15.5" stroke="var(--navy)"/></svg>
-        <span class="ring-pct">0%</span>
+    <div class="mk-card navy" data-step="1" onclick="editSection(1)">
+      <div class="mk-card-content">
+        <div class="mk-card-head">
+          <div class="mk-card-icon navy">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </div>
+          <div class="mk-card-status" id="mk-ring-1">
+            <svg viewBox="0 0 28 28"><circle class="ring-track" cx="14" cy="14" r="12"/><circle class="ring-fill" cx="14" cy="14" r="12" stroke="var(--navy)"/></svg>
+            <span class="ring-pct">0%</span>
+          </div>
+        </div>
+        <div class="mk-card-title">Kişisel Bilgiler</div>
+        <div class="mk-card-data" id="mk-preview-1"></div>
+        <div class="mk-card-empty" id="mk-empty-1">Henüz eklenmedi</div>
       </div>
-      <button class="mk-bento-edit" type="button" onclick="event.stopPropagation();editSection(1)" title="Düzenle">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-      </button>
-      <div class="mk-bento-icon navy">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <div class="mk-card-cta">
+        <a href="#" onclick="editSection(1); return false;">Düzenle <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></a>
       </div>
-      <div class="mk-bento-title">Kişisel Bilgiler</div>
-      <div class="mk-bento-preview" id="mk-preview-1"></div>
-      <div class="mk-bento-empty" id="mk-empty-1">Henüz eklenmedi<br><span class="mk-bento-cta">Eklemek için tıkla →</span></div>
     </div>
 
-    <div class="mk-bento-card verm" data-step="2" onclick="editSection(2)">
-      <div class="mk-bento-ring" id="mk-ring-2">
-        <svg viewBox="0 0 36 36"><circle class="ring-track" cx="18" cy="18" r="15.5"/><circle class="ring-fill" cx="18" cy="18" r="15.5" stroke="var(--verm)"/></svg>
-        <span class="ring-pct">0%</span>
+    <div class="mk-card verm" data-step="2" onclick="editSection(2)">
+      <div class="mk-card-content">
+        <div class="mk-card-head">
+          <div class="mk-card-icon verm">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a4 4 0 0 0-8 0v2"/></svg>
+          </div>
+          <div class="mk-card-status" id="mk-ring-2">
+            <svg viewBox="0 0 28 28"><circle class="ring-track" cx="14" cy="14" r="12"/><circle class="ring-fill" cx="14" cy="14" r="12" stroke="var(--verm)"/></svg>
+            <span class="ring-pct">0%</span>
+          </div>
+        </div>
+        <div class="mk-card-title">Deneyim</div>
+        <div class="mk-card-data" id="mk-preview-2"></div>
+        <div class="mk-card-empty" id="mk-empty-2">Henüz eklenmedi</div>
       </div>
-      <button class="mk-bento-edit" type="button" onclick="event.stopPropagation();editSection(2)" title="Düzenle">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-      </button>
-      <div class="mk-bento-icon verm">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a4 4 0 0 0-8 0v2"/></svg>
+      <div class="mk-card-cta">
+        <a href="#" onclick="editSection(2); return false;">Düzenle <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></a>
       </div>
-      <div class="mk-bento-title">Deneyim</div>
-      <div class="mk-bento-preview" id="mk-preview-2"></div>
-      <div class="mk-bento-empty" id="mk-empty-2">Henüz eklenmedi<br><span class="mk-bento-cta">Eklemek için tıkla →</span></div>
     </div>
 
-    <div class="mk-bento-card green" data-step="3" onclick="editSection(3)">
-      <div class="mk-bento-ring" id="mk-ring-3">
-        <svg viewBox="0 0 36 36"><circle class="ring-track" cx="18" cy="18" r="15.5"/><circle class="ring-fill" cx="18" cy="18" r="15.5" stroke="var(--green)"/></svg>
-        <span class="ring-pct">0%</span>
+    <div class="mk-card green" data-step="3" onclick="editSection(3)">
+      <div class="mk-card-content">
+        <div class="mk-card-head">
+          <div class="mk-card-icon green">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 1.66 2.69 3 6 3s6-1.34 6-3v-5" opacity="0.4"/></svg>
+          </div>
+          <div class="mk-card-status" id="mk-ring-3">
+            <svg viewBox="0 0 28 28"><circle class="ring-track" cx="14" cy="14" r="12"/><circle class="ring-fill" cx="14" cy="14" r="12" stroke="var(--green)"/></svg>
+            <span class="ring-pct">0%</span>
+          </div>
+        </div>
+        <div class="mk-card-title">Eğitim & Dil</div>
+        <div class="mk-card-data" id="mk-preview-3"></div>
+        <div class="mk-card-empty" id="mk-empty-3">Henüz eklenmedi</div>
       </div>
-      <button class="mk-bento-edit" type="button" onclick="event.stopPropagation();editSection(3)" title="Düzenle">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-      </button>
-      <div class="mk-bento-icon green">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 1.66 2.69 3 6 3s6-1.34 6-3v-5" opacity="0.4"/></svg>
+      <div class="mk-card-cta">
+        <a href="#" onclick="editSection(3); return false;">Düzenle <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></a>
       </div>
-      <div class="mk-bento-title">Eğitim & Dil</div>
-      <div class="mk-bento-preview" id="mk-preview-3"></div>
-      <div class="mk-bento-empty" id="mk-empty-3">Henüz eklenmedi<br><span class="mk-bento-cta">Eklemek için tıkla →</span></div>
     </div>
 
-    <div class="mk-bento-card purple" data-step="4" onclick="editSection(4)">
-      <div class="mk-bento-ring" id="mk-ring-4">
-        <svg viewBox="0 0 36 36"><circle class="ring-track" cx="18" cy="18" r="15.5"/><circle class="ring-fill" cx="18" cy="18" r="15.5" stroke="#8B5CF6"/></svg>
-        <span class="ring-pct">0%</span>
+    <div class="mk-card purple" data-step="4" onclick="editSection(4)">
+      <div class="mk-card-content">
+        <div class="mk-card-head">
+          <div class="mk-card-icon purple">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          </div>
+          <div class="mk-card-status" id="mk-ring-4">
+            <svg viewBox="0 0 28 28"><circle class="ring-track" cx="14" cy="14" r="12"/><circle class="ring-fill" cx="14" cy="14" r="12" stroke="#8B5CF6"/></svg>
+            <span class="ring-pct">0%</span>
+          </div>
+        </div>
+        <div class="mk-card-title">Tercihler & Lokasyon</div>
+        <div class="mk-card-data" id="mk-preview-4"></div>
+        <div class="mk-card-empty" id="mk-empty-4">Henüz eklenmedi</div>
       </div>
-      <button class="mk-bento-edit" type="button" onclick="event.stopPropagation();editSection(4)" title="Düzenle">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-      </button>
-      <div class="mk-bento-icon purple">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      <div class="mk-card-cta">
+        <a href="#" onclick="editSection(4); return false;">Düzenle <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></a>
       </div>
-      <div class="mk-bento-title">Tercihler & Lokasyon</div>
-      <div class="mk-bento-preview" id="mk-preview-4"></div>
-      <div class="mk-bento-empty" id="mk-empty-4">Henüz eklenmedi<br><span class="mk-bento-cta">Eklemek için tıkla →</span></div>
     </div>
 
     <!-- Profil Durumu (status card, full-width) -->
-    <div class="mk-bento-card mk-status-card span-2">
-      <div class="mk-status-header">
-        <span class="mk-status-dot" id="mk-status-dot"></span>
-        <span class="mk-status-text" id="mk-status-text">Profilin aktif — işverenler profilini görüntüleyebilir</span>
+    <div class="mk-card mk-status-card span-2">
+      <div class="mk-status-row">
+        <div class="mk-status-indicator">
+          <span class="mk-status-dot" id="mk-status-dot"></span>
+          <span class="mk-status-text" id="mk-status-text">Profilin aktif — işverenler seni görebilir</span>
+        </div>
       </div>
-      <div class="mk-status-toggles">
+      <div class="mk-status-controls">
         <div class="mk-status-cell">
-          <div class="mk-status-label">BENİ ÖNER</div>
-          <label class="toggle"><input type="checkbox" id="merkez-toggle-visibility" checked><span class="toggle-slider"></span></label>
-          <div class="mk-status-hint">Profilini işverenlere aç</div>
+          <div class="mk-status-label">Beni Öner</div>
+          <label class="toggle toggle-dark"><input type="checkbox" id="merkez-toggle-visibility" checked><span class="toggle-slider"></span></label>
+          <div class="mk-status-hint">İşverenlere açık</div>
         </div>
         <div class="mk-status-cell">
-          <div class="mk-status-label">AKTİF ARAMA</div>
-          <label class="toggle"><input type="checkbox" id="merkez-toggle-active" checked><span class="toggle-slider"></span></label>
+          <div class="mk-status-label">Aktif Arama</div>
+          <label class="toggle toggle-dark"><input type="checkbox" id="merkez-toggle-active" checked><span class="toggle-slider"></span></label>
           <div class="mk-status-hint">Rozet olarak görünür</div>
         </div>
         <div class="mk-status-cell" id="merkez-hide-row">
-          <div class="mk-status-label">İŞVERENİM GÖRMESİN</div>
-          <label class="toggle"><input type="checkbox" id="merkez-hide-from-current-employer"><span class="toggle-slider"></span></label>
+          <div class="mk-status-label">İşverenim Görmesin</div>
+          <label class="toggle toggle-dark"><input type="checkbox" id="merkez-hide-from-current-employer"><span class="toggle-slider"></span></label>
           <div class="mk-status-hint">Mevcut işvereninden gizle</div>
         </div>
       </div>
-      <div class="mk-status-premium">
-        <span class="mk-status-premium-pill">PREMIUM</span>
-        <span class="mk-status-premium-text">Öne Çıkar ile profilini listelerin başına taşı</span>
-        <span class="mk-status-premium-link">Yakında →</span>
+      <div class="mk-status-footer">
+        <span class="mk-status-premium-tag">PREMIUM</span>
+        <span class="mk-status-premium-copy">Öne Çıkar ile profilini listelerin başına taşı</span>
+        <span class="mk-status-premium-soon">Yakında →</span>
       </div>
     </div>
 

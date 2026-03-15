@@ -1377,16 +1377,16 @@ function updateMerkezCards() {
 
   if (filledCount1 > 0 && p1) {
     var html1 = '';
-    if (name) html1 += '<div class="bento-name">' + _escHtml(name) + '</div>';
+    if (name) html1 += '<div class="data-line">' + _escHtml(name) + '</div>';
     var meta1 = [];
     if (city) meta1.push(city);
     if (birthYear) meta1.push(birthYear + ' do\u011Fumlu');
     if (gender) meta1.push(gender);
-    if (meta1.length > 0) html1 += '<div class="bento-meta">' + _escHtml(meta1.join(' \u00B7 ')) + '</div>';
+    if (meta1.length > 0) html1 += '<div class="data-sub">' + _escHtml(meta1.join(' \u00B7 ')) + '</div>';
     var badges1 = [];
     if (phone) badges1.push('Telefon');
     if (linkedin) badges1.push('LinkedIn');
-    if (badges1.length > 0) html1 += '<div class="bento-badges">' + badges1.map(function(b) { return '<span class="bento-badge-ok">' + _escHtml(b) + '</span>'; }).join('') + '</div>';
+    if (badges1.length > 0) html1 += '<div>' + badges1.map(function(b) { return '<span class="data-ok">' + _escHtml(b) + '</span>'; }).join('') + '</div>';
     p1.innerHTML = html1;
     p1.style.display = '';
     if (e1) e1.style.display = 'none';
@@ -1415,10 +1415,10 @@ function updateMerkezCards() {
     var compVal = company ? (company.dataset.resolvedMarka || company.value || '') : '';
     var startY = val(firstId + 'basyil');
     var html2 = '';
-    if (role) html2 += '<div class="bento-role">' + _escHtml(role) + '</div>';
-    if (compVal) html2 += '<div class="bento-company">' + _escHtml(compVal) + '</div>';
-    if (startY) html2 += '<div class="bento-period">' + _escHtml(startY) + ' \u2014 Devam</div>';
-    if (expCards.length > 1) html2 += '<div class="bento-more">+' + (expCards.length - 1) + ' deneyim daha</div>';
+    if (role) html2 += '<div class="data-line">' + _escHtml(role) + '</div>';
+    if (compVal) html2 += '<div class="data-sub">' + _escHtml(compVal) + '</div>';
+    if (startY) html2 += '<div class="data-sub" style="font-family:\'DM Mono\',monospace;font-size:10px;">' + _escHtml(startY) + ' \u2014 Devam</div>';
+    if (expCards.length > 1) html2 += '<div class="data-sub" style="opacity:0.6">+' + (expCards.length - 1) + ' deneyim daha</div>';
     if (p2) { p2.innerHTML = html2; p2.style.display = ''; }
     if (e2) e2.style.display = 'none';
     updateBentoRing(2, 100);
@@ -1456,11 +1456,11 @@ function updateMerkezCards() {
       var bolumName = eduBolum ? eduBolum.value.trim() : '';
       var seviyeName = eduSeviye ? eduSeviye.value : '';
       if (schoolName) {
-        html3 += '<div class="bento-edu-line">' + _escHtml(schoolName);
+        html3 += '<div class="data-line">' + _escHtml(schoolName);
         if (bolumName) html3 += ' \u00B7 ' + _escHtml(bolumName);
         html3 += '</div>';
       }
-      if (eduCount > 1) html3 += '<div class="bento-cert-note">+' + (eduCount - 1) + ' e\u011Fitim daha</div>';
+      if (eduCount > 1) html3 += '<div class="data-sub">+' + (eduCount - 1) + ' e\u011Fitim daha</div>';
     }
     var langRows = document.querySelectorAll('#lang-rows-container .dynamic-row');
     var langPills = [];
@@ -1474,9 +1474,9 @@ function updateMerkezCards() {
       }
     });
     if (langPills.length > 0) {
-      html3 += '<div class="bento-lang-row">' + langPills.map(function(l) { return '<span class="bento-pill">' + _escHtml(l) + '</span>'; }).join('') + '</div>';
+      html3 += '<div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px">' + langPills.map(function(l) { return '<span class="data-pill">' + _escHtml(l) + '</span>'; }).join('') + '</div>';
     }
-    if (certCount > 0) html3 += '<div class="bento-cert-note">' + certCount + ' sertifika</div>';
+    if (certCount > 0) html3 += '<div class="data-sub">' + certCount + ' sertifika</div>';
     p3.innerHTML = html3;
     p3.style.display = '';
     if (e3) e3.style.display = 'none';
@@ -1509,7 +1509,7 @@ function updateMerkezCards() {
   }
 
   if (pills4.length > 0 && p4) {
-    p4.innerHTML = pills4.map(function(t) { return '<span class="bento-pill">' + _escHtml(String(t)) + '</span>'; }).join('');
+    p4.innerHTML = pills4.map(function(t) { return '<span class="data-pill">' + _escHtml(String(t)) + '</span>'; }).join('');
     p4.style.display = '';
     if (e4) e4.style.display = 'none';
   } else {
@@ -1527,7 +1527,7 @@ function updateMerkezCards() {
 function updateBentoRing(step, pct) {
   var ring = document.getElementById('mk-ring-' + step);
   if (!ring) return;
-  var circumference = 2 * Math.PI * 15.5; // ~97.39
+  var circumference = 2 * Math.PI * 12; // ~75.4 for r=12 (28px viewBox)
 
   if (pct >= 100) {
     ring.innerHTML = '<span class="ring-done">\u2713</span>';
@@ -1537,8 +1537,14 @@ function updateBentoRing(step, pct) {
   var fill = ring.querySelector('.ring-fill');
   var label = ring.querySelector('.ring-pct');
   if (!ring.querySelector('svg')) {
-    var strokeColor = step === 1 ? 'var(--navy)' : step === 2 ? 'var(--verm)' : step === 3 ? 'var(--green)' : '#8B5CF6';
-    ring.innerHTML = '<svg viewBox="0 0 36 36"><circle class="ring-track" cx="18" cy="18" r="15.5"/><circle class="ring-fill" cx="18" cy="18" r="15.5" stroke="' + strokeColor + '"/></svg><span class="ring-pct">0%</span>';
+    var card = ring.closest('.mk-card');
+    var strokeColor = 'var(--navy)';
+    if (card) {
+      if (card.classList.contains('verm')) strokeColor = 'var(--verm)';
+      else if (card.classList.contains('green')) strokeColor = 'var(--green)';
+      else if (card.classList.contains('purple')) strokeColor = '#8B5CF6';
+    }
+    ring.innerHTML = '<svg viewBox="0 0 28 28"><circle class="ring-track" cx="14" cy="14" r="12"/><circle class="ring-fill" cx="14" cy="14" r="12" stroke="' + strokeColor + '"/></svg><span class="ring-pct">0%</span>';
     fill = ring.querySelector('.ring-fill');
     label = ring.querySelector('.ring-pct');
   }
@@ -2999,13 +3005,13 @@ function closeTgToast() {
     var dot = document.getElementById('mk-status-dot');
     var text = document.getElementById('mk-status-text');
     if (dot) {
-      dot.classList.toggle('inactive', !isOn);
+      dot.classList.toggle('off', !isOn);
     }
     if (text) {
       text.textContent = isOn
-        ? 'Profilin aktif — işverenler profilini görüntüleyebilir'
+        ? 'Profilin aktif — işverenler seni görebilir'
         : 'Profilin gizli — işverenlerle paylaşılmıyor';
-      text.classList.toggle('inactive', !isOn);
+      text.classList.toggle('off', !isOn);
     }
     if (hideCell) {
       hideCell.classList.toggle('disabled', !isOn);
