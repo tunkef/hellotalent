@@ -347,9 +347,41 @@ body{
   margin:20px 0 16px;
 }
 
+/* ── Wizard input consistency ── */
+#panel-profil .field input,
+#panel-profil .field select,
+#panel-profil .field textarea,
+#panel-profil .dynamic-row input,
+#panel-profil .dynamic-row select,
+#panel-profil .exp-card input,
+#panel-profil .exp-card select {
+  width: 100%;
+  padding: 10px 12px;
+  min-height: 36px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius, 10px);
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--text-primary);
+  background: var(--input-bg, #f3f3f5);
+  transition: border-color 0.2s, box-shadow 0.15s;
+  outline: none;
+  -webkit-appearance: none;
+}
+#panel-profil .field input:focus,
+#panel-profil .field select:focus,
+#panel-profil .field textarea:focus,
+#panel-profil .dynamic-row input:focus,
+#panel-profil .dynamic-row select:focus,
+#panel-profil .exp-card input:focus,
+#panel-profil .exp-card select:focus {
+  border-color: var(--accent, #C94E28);
+  box-shadow: 0 0 0 2px rgba(201, 78, 40, 0.1);
+}
+
 /* ── Wizard Nav ── */
 .wiz-nav{
-  display:flex;justify-content:space-between;align-items:center;
+  display:flex;align-items:center;gap:12px;
   max-width:720px;margin:32px auto 0;padding-top:24px;border-top:1px solid var(--border-subtle);
 }
 .wiz-nav-spacer{flex:1;}
@@ -437,17 +469,54 @@ body{
 
 /* ── EXPERIENCE CARDS ── */
 .exp-card{
-  background:var(--bg-elevated);border:1.5px solid var(--border-subtle);border-radius:var(--radius);
+  background:var(--bg-elevated,#F7F6F4);border:1px solid var(--border-subtle,#E5E3DF);border-radius:var(--radius,10px);
   padding:16px;margin-bottom:12px;position:relative;
 }
 .exp-card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
 .exp-card-title{font-size:14px;font-weight:700;color:var(--text-secondary);}
-.exp-card-del{
-  width:28px;height:28px;border:1px solid var(--border-subtle);border-radius:var(--radius-sm);
-  background:var(--bg-surface);cursor:pointer;display:flex;align-items:center;justify-content:center;
-  color:var(--text-muted);font-size:16px;transition:all 0.15s;
+
+/* ── Animated Delete Button (shared) ── */
+.exp-card-del,
+.btn-del-row {
+  width: 30px;
+  height: 30px;
+  border-radius: 10px;
+  background: rgba(220, 38, 38, 0.06);
+  border: 1.5px solid rgba(220, 38, 38, 0.12);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  color: var(--red);
+  transition: all 0.3s;
+  flex-shrink: 0;
 }
-.exp-card-del:hover{background:var(--red-light);color:var(--red);border-color:var(--red);}
+.btn-del-row {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+}
+.exp-card-del svg,
+.btn-del-row svg {
+  width: 14px;
+  height: 14px;
+  transition: transform 0.3s;
+}
+.exp-card-del:hover,
+.btn-del-row:hover {
+  background: var(--red);
+  border-color: var(--red);
+  color: #fff;
+}
+.exp-card-del:hover svg,
+.btn-del-row:hover svg {
+  transform: rotate(-10deg);
+}
+.exp-card-del:active,
+.btn-del-row:active {
+  transform: scale(0.9);
+}
 
 /* ── DYNAMIC ROWS (edu, lang, cert) ── */
 .dyn-row{
@@ -532,8 +601,12 @@ body{
 
 /* ── DYNAMIC ROWS (JS uses .dynamic-row) ── */
 .dynamic-row{
-  padding:10px;background:var(--gray);border:1px solid var(--border);
-  border-radius:var(--radius-sm);margin-bottom:8px;position:relative;
+  padding:12px;
+  background:var(--bg-elevated,#F7F6F4);
+  border:1px solid var(--border-subtle,#E5E3DF);
+  border-radius:var(--radius,10px);
+  margin-bottom:8px;
+  position:relative;
 }
 
 /* ── CHIPS ROW ── */
@@ -903,7 +976,7 @@ html[data-theme="dark"] .field-req{color:#F87171;}
   position: absolute; inset: 0;
   display: flex; align-items: center; justify-content: center;
   font-family: 'DM Mono', monospace;
-  font-size: 7px; font-weight: 700;
+  font-size: 8px; font-weight: 700;
   color: var(--muted, #6B7280);
 }
 
@@ -928,13 +1001,13 @@ html[data-theme="dark"] .field-req{color:#F87171;}
 }
 .mk-card-data .data-pill {
   display: inline-block;
-  padding: 2px 6px; border-radius: 5px;
-  font-size: 9px; font-weight: 500;
+  padding: 3px 8px; border-radius: 5px;
+  font-size: 11px; font-weight: 500;
   background: rgba(0,0,0,0.04); color: var(--text-secondary);
   margin: 2px 2px 2px 0;
 }
 .mk-card-data .data-ok {
-  font-size: 10px; font-weight: 600;
+  font-size: 11px; font-weight: 600;
   color: var(--green);
   background: var(--green-light, #F0FDF4);
   padding: 2px 8px; border-radius: 4px;

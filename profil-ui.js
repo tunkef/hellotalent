@@ -200,7 +200,7 @@ function addExperienceCard(data) {
   var delBtn = document.createElement('button');
   delBtn.className = 'exp-card-del';
   delBtn.type = 'button';
-  delBtn.textContent = '\u00D7';
+  delBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>';
   delBtn.addEventListener('click', function() {
     card.remove();
     var remaining = document.querySelectorAll('.exp-card');
@@ -609,9 +609,7 @@ function addEducationRow(data) {
   var delBtn = document.createElement('button');
   delBtn.className = 'btn-del-row';
   delBtn.type = 'button';
-  delBtn.textContent = '\u00D7';
-  delBtn.title = 'Kaldir';
-  delBtn.style.cssText = 'position:absolute;top:4px;right:4px;border:none;background:none;cursor:pointer;color:var(--muted);font-size:18px;';
+  delBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>';
   delBtn.addEventListener('click', function() {
     row.remove();
     document.getElementById('edu-limit-msg').style.display = container.children.length >= 3 ? 'block' : 'none';
@@ -648,9 +646,7 @@ function addLanguageRow(data) {
   var delBtn = document.createElement('button');
   delBtn.className = 'btn-del-row';
   delBtn.type = 'button';
-  delBtn.textContent = '\u00D7';
-  delBtn.title = 'Kaldir';
-  delBtn.style.cssText = 'position:absolute;top:4px;right:4px;border:none;background:none;cursor:pointer;color:var(--muted);font-size:18px;';
+  delBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>';
   delBtn.addEventListener('click', function() {
     row.remove();
     document.getElementById('lang-limit-msg').style.display = container.children.length >= 5 ? 'block' : 'none';
@@ -684,9 +680,7 @@ function addCertificateRow(data) {
   var delBtn = document.createElement('button');
   delBtn.className = 'btn-del-row';
   delBtn.type = 'button';
-  delBtn.textContent = '\u00D7';
-  delBtn.title = 'Kaldir';
-  delBtn.style.cssText = 'position:absolute;top:4px;right:4px;border:none;background:none;cursor:pointer;color:var(--muted);font-size:18px;';
+  delBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>';
   delBtn.addEventListener('click', function() { row.remove(); });
   row.style.position = 'relative';
   row.appendChild(delBtn);
@@ -928,9 +922,9 @@ function addTargetRoleRow(data) {
   row.appendChild(fields);
 
   var delBtn = document.createElement('button');
+  delBtn.className = 'btn-del-row';
   delBtn.type = 'button';
-  delBtn.textContent = '\u00D7';
-  delBtn.style.cssText = 'position:absolute;top:4px;right:4px;border:none;background:none;cursor:pointer;color:var(--muted);font-size:18px;';
+  delBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>';
   delBtn.addEventListener('click', function() { row.remove(); });
   row.appendChild(delBtn);
 
