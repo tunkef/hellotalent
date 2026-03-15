@@ -404,6 +404,20 @@ if (window.Sentry) {
     </div>
   </div>
 
+  <!-- Premium CTA (top) -->
+  <div class="mk-footer">
+    <div class="mk-footer-left">
+      <div class="mk-footer-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      </div>
+      <div>
+        <div class="mk-footer-text">Premium Aday Avantajları</div>
+        <div class="mk-footer-sub">Öne çıkar, AI CV, kariyer koçluğu</div>
+      </div>
+    </div>
+    <svg class="mk-footer-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+  </div>
+
   <!-- 2: Stats Row -->
   <div class="mk-stats">
     <div class="mk-stat green">
@@ -489,60 +503,46 @@ if (window.Sentry) {
     <svg class="mk-section-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
   </div>
 
-  <!-- 4: CV Upload + Premium (side by side) -->
+  <!-- 4: CV + AI (compact row) -->
   <div class="mk-cv-row">
-    <div class="mk-cv-upload" id="cv-upload-area">
-      <div class="mk-cv-drop" id="cv-drop-zone">
+    <div class="mk-cv-card" id="cv-upload-area">
+      <div class="mk-cv-upload-state" id="cv-drop-zone">
         <input type="file" id="cv-file-input" accept=".pdf,.doc,.docx" style="display:none;">
-        <div class="mk-cv-drop-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        <div class="mk-cv-icon-wrap upload">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
         </div>
-        <div class="mk-cv-drop-title">CV'nizi yükleyin</div>
-        <div class="mk-cv-drop-sub">Sürükleyin veya tıklayın</div>
-        <div class="mk-cv-types">
-          <span class="mk-cv-ft">PDF</span>
-          <span class="mk-cv-ft">DOC</span>
-          <span class="mk-cv-ft">DOCX</span>
+        <div class="mk-cv-text">
+          <div class="mk-cv-title">CV Yükle</div>
+          <div class="mk-cv-sub">PDF, DOC veya DOCX · Maks 5 MB</div>
         </div>
-        <button type="button" class="mk-cv-select-btn" id="btn-cv-select">Dosya Seç</button>
-        <div class="mk-cv-hint">Maks 5 MB</div>
+        <button type="button" class="mk-cv-action-btn" id="btn-cv-select">Dosya Seç</button>
       </div>
-      <div class="mk-cv-uploaded" id="cv-uploaded-state" style="display:none;">
-        <span class="mk-cv-uploaded-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-        </span>
-        <div class="mk-cv-uploaded-info">
-          <div class="mk-cv-uploaded-name" id="cv-uploaded-name"></div>
-          <div class="mk-cv-uploaded-date" id="cv-uploaded-date"></div>
+      <div class="mk-cv-uploaded-state" id="cv-uploaded-state" style="display:none;">
+        <div class="mk-cv-icon-wrap done">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
         </div>
-        <div class="mk-cv-uploaded-actions">
-          <button type="button" class="mk-cv-btn mk-cv-btn-change" id="btn-cv-reupload">DEĞİŞTİR</button>
-          <button type="button" class="mk-cv-btn mk-cv-btn-delete" id="btn-cv-delete">SİL</button>
+        <div class="mk-cv-text">
+          <div class="mk-cv-title" id="cv-uploaded-name"></div>
+          <div class="mk-cv-sub" id="cv-uploaded-date"></div>
+        </div>
+        <div class="mk-cv-actions">
+          <button type="button" class="mk-cv-btn change" id="btn-cv-reupload">Değiştir</button>
+          <button type="button" class="mk-cv-btn delete" id="btn-cv-delete">Sil</button>
         </div>
       </div>
     </div>
-    <div class="mk-cv-premium-card">
-      <div class="mk-cv-premium-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-      </div>
-      <div class="mk-cv-premium-title">AI ile CV Optimize</div>
-      <div class="mk-cv-premium-desc">Yapay zeka CV'nizi analiz edip güçlendirsin</div>
-      <button type="button" class="mk-cv-premium-btn" id="btn-generate-cv-merkez" disabled>YAKINDA</button>
-    </div>
-  </div>
-
-  <!-- 5: Footer -->
-  <div class="mk-footer">
-    <div class="mk-footer-left">
-      <div class="mk-footer-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-      </div>
-      <div>
-        <div class="mk-footer-text">Premium Aday Avantajları</div>
-        <div class="mk-footer-sub">Öne çıkar, AI CV, kariyer koçluğu</div>
+    <div class="mk-ai-card">
+      <div class="mk-ai-inner">
+        <div class="mk-cv-icon-wrap ai">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </div>
+        <div class="mk-cv-text">
+          <div class="mk-ai-title">AI ile CV Optimize</div>
+          <div class="mk-ai-sub">CV'ni analiz edip güçlendirelim</div>
+        </div>
+        <button type="button" class="mk-ai-btn" id="btn-generate-cv-merkez" disabled>Yakında</button>
       </div>
     </div>
-    <svg class="mk-footer-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
   </div>
 
 </main>
