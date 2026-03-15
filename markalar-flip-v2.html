@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>hellotalent — Flip Card v2</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --verm: #C94E28;
+  --navy: #1E2D5E;
+  --bg: #F7F6F4;
+  --card: #FFFFFF;
+  --text: #111111;
+  --muted: #8C8C8C;
+  --border: #E8E6E3;
+  --radius: 18px;
+  --font-head: 'Bricolage Grotesque', serif;
+  --font-body: 'Plus Jakarta Sans', sans-serif;
+  --font-mono: 'DM Mono', monospace;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  padding: 32px 20px;
+}
+
+.container { max-width: 900px; margin: 0 auto; }
+
+h1 { font-family: var(--font-head); font-size: 28px; font-weight: 800; margin-bottom: 6px; }
+.subtitle { color: var(--muted); font-size: 14px; margin-bottom: 28px; }
+
+/* ── Grid — 3 columns ── */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+@media (max-width: 750px) { .card-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 480px) { .card-grid { grid-template-columns: 1fr; max-width: 320px; margin: 0 auto; } }
+
+/* ── Flip Card ── */
+.flip-card {
+  perspective: 1200px;
+  height: 310px;
+  cursor: pointer;
+}
+.flip-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.55s cubic-bezier(0.4, 0, 0.15, 1);
+  transform-style: preserve-3d;
+}
+@media (hover: hover) {
+  .flip-card:hover .flip-card-inner { transform: rotateY(180deg); }
+}
+.flip-card.flipped .flip-card-inner { transform: rotateY(180deg); }
+
+.flip-front, .flip-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+/* ════════════════════════════════════════
+   FRONT — Logo-centric, clean, brand tint
+   ════════════════════════════════════════ */
+.flip-front {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 28px 20px 22px;
+  border: 1.5px solid var(--border);
+  transition: border-color 0.3s;
+  position: relative;
+}
+.flip-card:hover .flip-front { border-color: transparent; }
+
+/* Logo — bigger, clean shadow */
+.front-logo {
+  width: 76px;
+  height: 76px;
+  border-radius: 16px;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  margin-bottom: 6px;
+}
+.front-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 8px;
+  background: #fff;
+}
+
+.front-name {
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: 17px;
+  text-align: center;
+  letter-spacing: -0.3px;
+}
+
+.front-segment {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  padding: 3px 10px;
+  border-radius: 4px;
+  color: #fff;
+}
+
+.front-stores {
+  font-size: 12px;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  margin-top: 4px;
+}
+
+/* Subtle flip hint */
+.flip-hint {
+  position: absolute;
+  bottom: 10px;
+  font-size: 10px;
+  color: var(--muted);
+  opacity: 0;
+  transition: opacity 0.25s;
+  font-family: var(--font-mono);
+  letter-spacing: 0.5px;
+}
+.flip-card:hover .flip-hint { opacity: 0.7; }
+
+/* ════════════════════════════════════════
+   BACK — Brand-colored, organized info
+   ════════════════════════════════════════ */
+.flip-back {
+  transform: rotateY(180deg);
+  display: flex;
+  flex-direction: column;
+  color: #fff;
+  position: relative;
+}
+
+/* Glowing accent border */
+.flip-back::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius);
+  padding: 2px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.3), rgba(255,255,255,0.05));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* Header: logo + name + follow */
+.back-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 18px 0;
+}
+.back-logo {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.back-logo img { width: 100%; height: 100%; object-fit: contain; padding: 4px; background: #fff; }
+
+.back-title-area { flex: 1; }
+.back-brand-name {
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: 18px;
+  letter-spacing: -0.3px;
+}
+.back-segment-pill {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  padding: 2px 7px;
+  border-radius: 3px;
+  background: rgba(255,255,255,0.2);
+  width: fit-content;
+  margin-top: 3px;
+}
+
+/* Mini follow button — top right */
+.back-follow-mini {
+  padding: 5px 12px;
+  border-radius: 6px;
+  border: 1.5px solid rgba(255,255,255,0.4);
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+  backdrop-filter: blur(4px);
+  flex-shrink: 0;
+}
+.back-follow-mini:hover {
+  background: rgba(255,255,255,0.25);
+  border-color: rgba(255,255,255,0.6);
+}
+.back-follow-mini.following {
+  background: rgba(255,255,255,0.2);
+  border-color: rgba(255,255,255,0.5);
+}
+
+/* Info section */
+.back-info {
+  padding: 14px 18px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  flex: 1;
+}
+.back-info-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  opacity: 0.9;
+}
+.back-info-row svg { flex-shrink: 0; opacity: 0.7; }
+
+/* Description */
+.back-desc {
+  font-size: 11px;
+  line-height: 1.55;
+  opacity: 0.7;
+  padding: 10px 18px;
+  margin-top: auto;
+}
+
+/* Links bar at bottom — separated */
+.back-links {
+  display: flex;
+  gap: 0;
+  border-top: 1px solid rgba(255,255,255,0.12);
+  margin-top: 0;
+}
+.back-link {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 11px 8px;
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.8);
+  text-decoration: none;
+  transition: all 0.15s;
+  border-right: 1px solid rgba(255,255,255,0.08);
+}
+.back-link:last-child { border-right: none; }
+.back-link:hover {
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+}
+.back-link svg { flex-shrink: 0; opacity: 0.7; }
+
+/* ── Stagger ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.flip-card { animation: fadeUp 0.45s ease both; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Markalar</h1>
+  <p class="subtitle">Kartın üzerine gel veya dokun — markanın dünyasını keşfet.</p>
+
+  <div class="card-grid">
+
+    <!-- ═══ GUCCI ═══ -->
+    <div class="flip-card" onclick="this.classList.toggle('flipped')" style="animation-delay:0s">
+      <div class="flip-card-inner">
+        <div class="flip-front" style="background: radial-gradient(ellipse at 50% 0%, #dceedd 0%, #f0f7f0 40%, #ffffff 75%);">
+          <div class="front-logo"><img src="https://cpwibefquojehjehtrog.supabase.co/storage/v1/object/public/cvs/brand-logos/gucci.png" alt="Gucci"></div>
+          <div class="front-name">Gucci</div>
+          <div class="front-segment" style="background:#1E2D5E;">LUXURY</div>
+          <div class="front-stores">7 mağaza</div>
+          <span class="flip-hint">detaylar →</span>
+        </div>
+        <div class="flip-back" style="background: linear-gradient(160deg, #00714a 0%, #005c3a 40%, #003d26 100%);">
+          <div class="back-header">
+            <div class="back-logo"><img src="https://cpwibefquojehjehtrog.supabase.co/storage/v1/object/public/cvs/brand-logos/gucci.png"></div>
+            <div class="back-title-area">
+              <div class="back-brand-name">Gucci</div>
+              <div class="back-segment-pill">LUXURY</div>
+            </div>
+            <button class="back-follow-mini following" onclick="event.stopPropagation(); toggleFollow(this)">Takipte ✓</button>
+          </div>
+          <div class="back-info">
+            <div class="back-info-row">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              7 mağaza · İstanbul
+            </div>
+            <div class="back-info-row">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+              ~200 çalışan
+            </div>
+            <div class="back-info-row">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+              Merkez: İstanbul
+            </div>
+          </div>
+          <div class="back-desc">İtalyan lüks moda ve deri eşya markası. 1921'den beri ikonik tasarımlar.</div>
+          <div class="back-links">
+            <a class="back-link" href="https://gucci.com" target="_blank" onclick="event.stopPropagation()">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10"/></svg>
+              Website
+            </a>
+            <a class="back-link" href="https://instagram.com/gucci" target="_blank" onclick="event.stopPropagation()">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/></svg>
+              Instagram
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ LOUIS VUITTON ═══ -->
+    <div class="flip-card" onclick="this.classList.toggle('flipped')" style="animation-delay:0.04s">
+      <div class="flip-card-inner">
+        <div class="flip-front" style="background: radial-gradient(ellipse at 50% 0%, #f0e6d6 0%, #f5efe5 40%, #ffffff 75%);">
+          <div class="front-logo"><img src="https://cpwibefquojehjehtrog.supabase.co/storage/v1/object/public/cvs/brand-logos/louis-vuitton.png" alt="LV"></div>
+          <div class="front-name">Louis Vuitton</div>
+          <div class="front-segment" style="background:#1E2D5E;">LUXURY</div>
+          <div class="front-stores">8 mağaza</div>
+          <span class="flip-hint">detaylar →</span>
+        </div>
+        <div class="flip-back" style="background: linear-gradient(160deg, #7d5c35 0%, #614626 40%, #44301a 100%);">
+          <div class="back-header">
+            <div class="back-logo"><img src="https://cpwibefquojehjehtrog.supabase.co/storage/v1/object/public/cvs/brand-logos/louis-vuitton.png"></div>
+            <div class="back-title-area">
+              <div class="back-brand-name">Louis Vuitton</div>
+              <div class="back-segment-pill">LUXURY</div>
+            </div>
+            <button class="back-follow-mini" onclick="event.stopPropagation(); toggleFollow(this)">Takip Et</button>
+          </div>
+          <div class="back-info">
+            <div class="back-info-row">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              8 mağaza · İstanbul, İzmir, Bodrum
+            </div>
+            <div class="back-info-row">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+              ~250 çalışan
+            </div>
+            <div class="back-info-row">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+              Merkez: İstanbul
+            </div>
+          </div>
+          <div class="back-desc">Dünyanın en değerli lüks moda evi. Deri eşya, hazır giyim ve aksesuar.</div>
+          <div class="back-links">
+            <a class="back-link" href="https://louisvuitton.com" target="_blank" onclick="event.stopPropagation()">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10"/></svg>
+              Website
+            </a>
+            <a class="back-link" href="https://instagram.com/louisvuitton" target="_blank" onclick="event.stopPropagation()">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/></svg>
+              Instagram
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ HERMÈS ═══ -->
+    <div class="flip-card" onclick="this.classList.toggle('flipped')" style="animation-delay:0.08s">
+      <div class="flip-card-inner">
+        <div class="flip-front" style="background: radial-gradient(ellipse at 50% 0%, #fce0c8 0%, #fef0e2 40%, #ffffff 75%);">
+          <div class="front-logo"><img src="https://cpwibefquojehjehtrog.supabase.co/storage/v1/object/public/cvs/brand-logos/hermes.png" alt="Hermès"></div>
+          <div class="front-name">Hermès</div>
+          <div class="front-segment" style="background:#1E2D5E;">LUXURY</div>
+          <div class="front-stores">3 mağaza</div>
+          <span class="flip-hint">detaylar →</span>
+        </div>
+        <div class="flip-back" style="background: linear-gradient(160deg, #e86218 0%, #c44e0e 40%, #9a3d0a 100%);">
+          <div class="back-header">
+            <div class="back-logo"><img src="https://cpwibefquojehjehtrog.supabase.co/storage/v1/object/public/cvs/brand-logos/hermes.png"></div>
+            <div class="back-title-area">
+              <div class="back-brand-name">Hermès</div>
+              <div class="back-segment-pill">LUXURY</div>
+            </div>
+            <button class="back-follow-mini" onclick="event.stopPropagation(); toggleFollow(this)">Takip Et</button>
+          </div>
+          <div class="back-info">
+            <div class="back-info-row">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              3 mağaza · İstanbul, Bodrum
+            </div>
+            <div class="back-info-row">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+              ~70 çalışan
+            </div>
+            <div class="back-info-row">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+              Merkez: İstanbul
+            </div>
+          </div>
+          <div class="back-desc">Fransız lüks zanaatkârlık markası. Deri eşya, ipek eşarp ve parfüm.</div>
+          <div class="back-links">
+            <a class="back-link" href="https://hermes.com" target="_blank" onclick="event.stopPropagation()">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10"/></svg>
+              Website
+            </a>
+            <a class="back-link" href="https://instagram.com/hermes" target="_blank" onclick="event.stopPropagation()">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/></svg>
+              Instagram
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ NIKE ═══ -->
+    <div class="flip-card" onclick="this.classList.toggle('flipped')" style="animation-delay:0.12s">
+      <div class="flip-card-inner">
+        <div class="flip-front" style="background: radial-gradient(ellipse at 50% 0%, #e8e8e8 0%, #f2f2f2 40%, #ffffff 75%);">
+          <div class="front-logo"><img src="https://cpwibefquojehjehtrog.supabase.co/storage/v1/object/public/cvs/brand-logos/nike.png" alt="Nike"></div>
+          <div class="front-name">Nike</div>
+          <div class="front-segment" style="background:#F59E0B;">SPORT</div>
+          <div class="front-stores">60 mağaza</div>
+          <span class="flip-hint">detaylar →</span>
+        </div>
+        <div class="flip-back" style="background: linear-gradient(160deg, #2a2a2a 0%, #1a1a1a 40%, #0d0d0d 100%);">
+          <div class="back-header">
+            <div class="back-logo"><img src="https://cpwibefquojehjehtrog.supabase.co/storage/v1/object/public/cvs/brand-logos/nike.png"></div>
+            <div class="back-title-area">
+              <div class="back-brand-name">Nike</div>
+              <div class="back-segment-pill">SPORT</div>
+            </div>
+            <button class="back-follow-mini" onclick="event.stopPropagation(); toggleFollow(this)">Takip Et</button>
+          </div>
+          <div class="back-info">
+            <div class="back-info-row">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              60 mağaza · İstanbul, Ankara, İzmir...
+            </div>
+            <div class="back-info-row">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+              ~1.500 çalışan
+            </div>
+            <div class="back-info-row">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+              Merkez: İstanbul
+            </div>
+          </div>
+          <div class="back-desc">Dünyanın en büyük spor markası. Ayakkabı, giyim ve ekipman.</div>
+          <div class="back-links">
+            <a class="back-link" href="https://nike.com/tr" target="_blank" onclick="event.stopPropagation()">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10"/></svg>
+              Website
+            </a>
+            <a class="back-link" href="https://instagram.com/nike" target="_blank" onclick="event.stopPropagation()">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/></svg>
+              Instagram
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ H&M ═══ -->
+    <div class="flip-card" onclick="this.classList.toggle('flipped')" style="animation-delay:0.16s">
+      <div class="flip-card-inner">
+        <div class="flip-front" style="background: radial-gradient(ellipse at 50% 0%, #ffd6d6 0%, #ffecec 40%, #ffffff 75%);">
+          <div class="front-logo"><img src="https://cpwibefquojehjehtrog.supabase.co/storage/v1/object/public/cvs/brand-logos/hm.png" alt="H&M"></div>
+          <div class="front-name">H&M</div>
+          <div class="front-segment" style="background:#3B82F6;">MODA</div>
+          <div class="front-stores">45 mağaza</div>
+          <span class="flip-hint">detaylar →</span>
+        </div>
+        <div class="flip-back" style="background: linear-gradient(160deg, #e52020 0%, #c41515 40%, #9a0e0e 100%);">
+          <div class="back-header">
+            <div class="back-logo"><img src="https://cpwibefquojehjehtrog.supabase.co/storage/v1/object/public/cvs/brand-logos/hm.png"></div>
+            <div class="back-title-area">
+              <div class="back-brand-name">H&M</div>
+              <div class="back-segment-pill">MODA</div>
+            </div>
+            <button class="back-follow-mini" onclick="event.stopPropagation(); toggleFollow(this)">Takip Et</button>
+          </div>
+          <div class="back-info">
+            <div class="back-info-row">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              45 mağaza · İstanbul, Ankara, İzmir...
+            </div>
+            <div class="back-info-row">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+              ~2.500 çalışan
+            </div>
+            <div class="back-info-row">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+              Merkez: İstanbul
+            </div>
+          </div>
+          <div class="back-desc">İsveçli global fast-fashion markası. Uygun fiyatlı moda herkes için.</div>
+          <div class="back-links">
+            <a class="back-link" href="https://hm.com/tr" target="_blank" onclick="event.stopPropagation()">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10"/></svg>
+              Website
+            </a>
+            <a class="back-link" href="https://instagram.com/hm" target="_blank" onclick="event.stopPropagation()">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/></svg>
+              Instagram
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ BEYMEN ═══ -->
+    <div class="flip-card" onclick="this.classList.toggle('flipped')" style="animation-delay:0.20s">
+      <div class="flip-card-inner">
+        <div class="flip-front" style="background: radial-gradient(ellipse at 50% 0%, #e8ddd0 0%, #f2ece3 40%, #ffffff 75%);">
+          <div class="front-logo"><img src="https://cpwibefquojehjehtrog.supabase.co/storage/v1/object/public/cvs/brand-logos/beymen.png" alt="Beymen"></div>
+          <div class="front-name">Beymen</div>
+          <div class="front-segment" style="background:#C94E28;">PREMIUM</div>
+          <div class="front-stores">18 mağaza</div>
+          <span class="flip-hint">detaylar →</span>
+        </div>
+        <div class="flip-back" style="background: linear-gradient(160deg, #9e8465 0%, #7d6748 40%, #5c4a33 100%);">
+          <div class="back-header">
+            <div class="back-logo"><img src="https://cpwibefquojehjehtrog.supabase.co/storage/v1/object/public/cvs/brand-logos/beymen.png"></div>
+            <div class="back-title-area">
+              <div class="back-brand-name">Beymen</div>
+              <div class="back-segment-pill">PREMIUM</div>
+            </div>
+            <button class="back-follow-mini following" onclick="event.stopPropagation(); toggleFollow(this)">Takipte ✓</button>
+          </div>
+          <div class="back-info">
+            <div class="back-info-row">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              18 mağaza · İstanbul, Ankara, İzmir, Antalya, Bodrum
+            </div>
+            <div class="back-info-row">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+              ~2.500 çalışan
+            </div>
+            <div class="back-info-row">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+              Merkez: İstanbul
+            </div>
+          </div>
+          <div class="back-desc">Türkiye'nin premium multi-brand mağazası. Lüks moda ve yaşam tarzı.</div>
+          <div class="back-links">
+            <a class="back-link" href="https://beymen.com" target="_blank" onclick="event.stopPropagation()">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10"/></svg>
+              Website
+            </a>
+            <a class="back-link" href="https://instagram.com/beymen" target="_blank" onclick="event.stopPropagation()">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/></svg>
+              Instagram
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+function toggleFollow(btn) {
+  event.stopPropagation();
+  if (btn.classList.contains('following')) {
+    btn.classList.remove('following');
+    btn.textContent = 'Takip Et';
+  } else {
+    btn.classList.add('following');
+    btn.textContent = 'Takipte ✓';
+  }
+}
+</script>
+
+</body>
+</html>

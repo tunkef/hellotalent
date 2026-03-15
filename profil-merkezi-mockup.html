@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>hellotalent — Profil Merkezi Mockup</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --verm: #C94E28;
+  --verm-light: rgba(201,78,40,0.08);
+  --navy: #1E2D5E;
+  --navy-light: rgba(30,45,94,0.08);
+  --navy-deep: #131f3e;
+  --green: #16a34a;
+  --green-light: rgba(22,163,74,0.08);
+  --purple: #8B5CF6;
+  --purple-light: rgba(139,92,246,0.08);
+  --amber: #F59E0B;
+  --amber-light: rgba(245,158,11,0.08);
+  --bg: #F7F6F4;
+  --card: #FFFFFF;
+  --text: #111111;
+  --text-secondary: #1a1a1a;
+  --muted: #8C8C8C;
+  --border: #E8E6E3;
+  --radius: 16px;
+  --shadow: 0 0 0 1px rgba(0,0,0,.03), 0 2px 4px rgba(0,0,0,.05), 0 12px 24px rgba(0,0,0,.05);
+  --font-head: 'Bricolage Grotesque', serif;
+  --font-body: 'Plus Jakarta Sans', sans-serif;
+  --font-mono: 'DM Mono', monospace;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  padding: 32px 20px;
+}
+
+.container { max-width: 720px; margin: 0 auto; }
+
+/* ════════════════════════════════════════
+   1. IDENTITY CARD
+   ════════════════════════════════════════ */
+.id-card {
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 22px 24px;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.id-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(201,78,40,0.15), rgba(30,45,94,0.2));
+  color: var(--navy);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: 20px;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+.id-info { flex: 1; min-width: 0; }
+.id-name {
+  font-family: var(--font-head);
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.3px;
+}
+.id-role {
+  font-size: 13px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+.id-role strong { color: var(--text-secondary); font-weight: 600; }
+.id-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+  font-size: 11px;
+  color: var(--muted);
+}
+.id-meta svg { width: 11px; height: 11px; opacity: 0.5; }
+.id-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.id-toggle-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.id-toggle-label {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--muted);
+  text-align: right;
+  min-width: 120px;
+}
+.mini-toggle {
+  position: relative;
+  width: 32px;
+  height: 18px;
+  flex-shrink: 0;
+}
+.mini-toggle input { opacity: 0; width: 0; height: 0; position: absolute; }
+.mini-toggle-slider {
+  position: absolute;
+  inset: 0;
+  background: var(--border);
+  border-radius: 9px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.mini-toggle-slider::before {
+  content: '';
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  background: #fff;
+  border-radius: 50%;
+  left: 2px;
+  top: 2px;
+  transition: transform 0.2s;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+}
+.mini-toggle input:checked + .mini-toggle-slider { background: var(--green); }
+.mini-toggle input:checked + .mini-toggle-slider::before { transform: translateX(14px); }
+
+/* ════════════════════════════════════════
+   2. STATS ROW
+   ════════════════════════════════════════ */
+.stats-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+.stat-card {
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+.stat-card::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+}
+.stat-card.green::before { background: var(--green); }
+.stat-card.verm::before { background: var(--verm); }
+
+.stat-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+.stat-value {
+  font-family: var(--font-mono);
+  font-size: 32px;
+  font-weight: 400;
+  color: var(--text);
+  line-height: 1;
+}
+.stat-value span { font-size: 16px; color: var(--muted); }
+.stat-bar {
+  margin-top: 12px;
+  height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.stat-fill { height: 100%; border-radius: 2px; transition: width 0.6s ease; }
+.stat-fill.green { background: var(--green); }
+.stat-fill.verm { background: var(--verm); }
+.stat-hint {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 8px;
+}
+
+/* ════════════════════════════════════════
+   3. SECTIONS
+   ════════════════════════════════════════ */
+.sections-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+
+.section-card {
+  background: var(--card);
+  border-radius: 12px;
+  box-shadow: 0 0 0 1px rgba(0,0,0,.03), 0 1px 3px rgba(0,0,0,.04);
+  padding: 14px 16px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+}
+.section-card:hover {
+  box-shadow: var(--shadow);
+  transform: translateY(-1px);
+}
+
+.section-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.section-icon svg { width: 18px; height: 18px; }
+.section-icon.navy { background: var(--navy-light); color: var(--navy); }
+.section-icon.verm { background: var(--verm-light); color: var(--verm); }
+.section-icon.green { background: var(--green-light); color: var(--green); }
+.section-icon.purple { background: var(--purple-light); color: var(--purple); }
+.section-icon.amber { background: var(--amber-light); color: var(--amber); }
+
+.section-info { flex: 1; min-width: 0; }
+.section-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  margin-bottom: 1px;
+}
+.section-summary {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.section-empty {
+  font-size: 11px;
+  color: #c4c4c4;
+  font-style: italic;
+}
+.section-arrow {
+  flex-shrink: 0;
+  color: var(--border);
+  transition: color 0.2s, transform 0.2s;
+}
+.section-card:hover .section-arrow {
+  color: var(--verm);
+  transform: translateX(3px);
+}
+
+.section-status {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+.section-status.done { background: var(--green); }
+.section-status.empty { background: var(--border); }
+
+/* ════════════════════════════════════════
+   4. CV UPLOAD
+   ════════════════════════════════════════ */
+.cv-card {
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  margin-top: 14px;
+  overflow: hidden;
+}
+.cv-drop {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  border: 2px dashed var(--border);
+  border-radius: 12px;
+  margin: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.cv-drop:hover {
+  border-color: var(--verm);
+  background: var(--verm-light);
+}
+.cv-drop-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: var(--navy-light);
+  color: var(--navy);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.cv-drop-icon svg { width: 20px; height: 20px; }
+.cv-drop-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+.cv-drop-sub {
+  font-size: 11px;
+  color: var(--muted);
+}
+.cv-types {
+  display: flex;
+  gap: 4px;
+}
+.cv-type {
+  padding: 2px 8px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 600;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--muted);
+}
+
+.cv-premium-hint {
+  padding: 10px 18px;
+  background: linear-gradient(90deg, var(--navy-light) 0%, rgba(201,78,40,0.04) 100%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: var(--muted);
+  font-weight: 500;
+}
+.cv-premium-hint svg { width: 14px; height: 14px; color: var(--verm); flex-shrink: 0; }
+
+/* ════════════════════════════════════════
+   5. FOOTER
+   ════════════════════════════════════════ */
+.merkez-footer {
+  margin-top: 14px;
+  padding: 14px 18px;
+  background: linear-gradient(135deg, var(--navy-deep) 0%, #1a2748 100%);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.merkez-footer:hover { transform: translateY(-1px); box-shadow: 0 4px 20px rgba(30,45,94,0.2); }
+.merkez-footer-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.merkez-footer-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255,255,255,0.6);
+}
+.merkez-footer-icon svg { width: 16px; height: 16px; }
+.merkez-footer-text {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.8);
+}
+.merkez-footer-sub {
+  font-size: 10px;
+  color: rgba(255,255,255,0.4);
+  margin-top: 1px;
+}
+.merkez-footer-arrow {
+  color: rgba(255,255,255,0.3);
+  transition: transform 0.2s;
+}
+.merkez-footer:hover .merkez-footer-arrow { transform: translateX(3px); color: rgba(255,255,255,0.6); }
+
+/* ── Stagger ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.id-card { animation: fadeUp 0.4s ease both; animation-delay: 0s; }
+.stats-row { animation: fadeUp 0.4s ease both; animation-delay: 0.05s; }
+.section-card:nth-child(2) { animation: fadeUp 0.35s ease both; animation-delay: 0.10s; }
+.section-card:nth-child(3) { animation: fadeUp 0.35s ease both; animation-delay: 0.14s; }
+.section-card:nth-child(4) { animation: fadeUp 0.35s ease both; animation-delay: 0.18s; }
+.section-card:nth-child(5) { animation: fadeUp 0.35s ease both; animation-delay: 0.22s; }
+.section-card:nth-child(6) { animation: fadeUp 0.35s ease both; animation-delay: 0.26s; }
+.cv-card { animation: fadeUp 0.4s ease both; animation-delay: 0.30s; }
+.merkez-footer { animation: fadeUp 0.4s ease both; animation-delay: 0.35s; }
+
+/* ── Responsive ── */
+@media (max-width: 600px) {
+  .id-card { flex-direction: column; align-items: flex-start; gap: 12px; }
+  .id-controls { width: 100%; }
+  .id-toggle-label { text-align: left; min-width: auto; }
+  .stats-row { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- 1. IDENTITY -->
+  <div class="id-card">
+    <div class="id-avatar">TK</div>
+    <div class="id-info">
+      <div class="id-name">Tuna Kefeli</div>
+      <div class="id-role"><strong>Store Manager</strong> · Beymen</div>
+      <div class="id-meta">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        İstanbul · 5 yıl deneyim
+      </div>
+    </div>
+    <div class="id-controls">
+      <div class="id-toggle-row">
+        <span class="id-toggle-label">İşverenlere göster</span>
+        <label class="mini-toggle"><input type="checkbox" checked><span class="mini-toggle-slider"></span></label>
+      </div>
+      <div class="id-toggle-row">
+        <span class="id-toggle-label">İşverenim görmesin</span>
+        <label class="mini-toggle"><input type="checkbox"><span class="mini-toggle-slider"></span></label>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. STATS -->
+  <div class="stats-row">
+    <div class="stat-card green">
+      <div class="stat-label">Tamamlanma</div>
+      <div class="stat-value">72<span>%</span></div>
+      <div class="stat-bar"><div class="stat-fill green" style="width:72%"></div></div>
+      <div class="stat-hint">3 alan tamamlanmamış</div>
+    </div>
+    <div class="stat-card verm">
+      <div class="stat-label">Profil Skoru</div>
+      <div class="stat-value">64<span>/100</span></div>
+      <div class="stat-bar"><div class="stat-fill verm" style="width:64%"></div></div>
+      <div class="stat-hint">CV yükle → +15 puan</div>
+    </div>
+  </div>
+
+  <!-- 3. SECTIONS -->
+  <div class="sections-label">profil bölümleri</div>
+
+  <div class="section-card">
+    <div class="section-status done"></div>
+    <div class="section-icon navy">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    </div>
+    <div class="section-info">
+      <div class="section-title">Kişisel Bilgiler</div>
+      <div class="section-summary">Tuna Kefeli · İstanbul · 0532 *** **</div>
+    </div>
+    <svg class="section-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+  </div>
+
+  <div class="section-card">
+    <div class="section-status done"></div>
+    <div class="section-icon verm">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a4 4 0 0 0-8 0v2"/></svg>
+    </div>
+    <div class="section-info">
+      <div class="section-title">Deneyim</div>
+      <div class="section-summary">Store Manager · Beymen · +2 deneyim</div>
+    </div>
+    <svg class="section-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+  </div>
+
+  <div class="section-card">
+    <div class="section-status done"></div>
+    <div class="section-icon green">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 1.66 2.69 3 6 3s6-1.34 6-3v-5" opacity="0.4"/></svg>
+    </div>
+    <div class="section-info">
+      <div class="section-title">Eğitim & Dil</div>
+      <div class="section-summary">1 eğitim · 2 dil</div>
+    </div>
+    <svg class="section-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+  </div>
+
+  <div class="section-card">
+    <div class="section-status empty"></div>
+    <div class="section-icon purple">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    </div>
+    <div class="section-info">
+      <div class="section-title">Tercihler</div>
+      <div class="section-empty">Henüz eklenmedi</div>
+    </div>
+    <svg class="section-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+  </div>
+
+  <div class="section-card">
+    <div class="section-status done"></div>
+    <div class="section-icon amber">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/><circle cx="12" cy="10" r="1" fill="currentColor" opacity="0.3"/></svg>
+    </div>
+    <div class="section-info">
+      <div class="section-title">Lokasyon Tercihleri</div>
+      <div class="section-summary">İstanbul, İzmir, Antalya</div>
+    </div>
+    <svg class="section-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+  </div>
+
+  <!-- 4. CV -->
+  <div class="cv-card">
+    <div class="cv-drop">
+      <div class="cv-drop-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      </div>
+      <div class="cv-drop-title">CV'nizi yükleyin</div>
+      <div class="cv-drop-sub">Sürükleyin veya tıklayarak dosya seçin</div>
+      <div class="cv-types">
+        <span class="cv-type">PDF</span>
+        <span class="cv-type">DOC</span>
+        <span class="cv-type">DOCX</span>
+      </div>
+    </div>
+    <div class="cv-premium-hint">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      AI ile CV'nizi Optimize Edin — Yakında Premium ile
+    </div>
+  </div>
+
+  <!-- 5. FOOTER -->
+  <div class="merkez-footer">
+    <div class="merkez-footer-left">
+      <div class="merkez-footer-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      </div>
+      <div>
+        <div class="merkez-footer-text">Premium Aday Avantajları</div>
+        <div class="merkez-footer-sub">Öne çıkar, AI CV, kariyer koçluğu</div>
+      </div>
+    </div>
+    <svg class="merkez-footer-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+  </div>
+
+</div>
+
+</body>
+</html>

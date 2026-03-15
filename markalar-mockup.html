@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>hellotalent — Markalar (Mockup)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --verm: #C94E28;
+  --verm-light: rgba(201,78,40,0.06);
+  --navy: #1E2D5E;
+  --bg: #F7F6F4;
+  --card: #FFFFFF;
+  --text: #111111;
+  --muted: #8C8C8C;
+  --border: #E8E6E3;
+  --radius: 16px;
+  --radius-sm: 10px;
+  --font-head: 'Bricolage Grotesque', serif;
+  --font-body: 'Plus Jakarta Sans', sans-serif;
+  --font-mono: 'DM Mono', monospace;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+}
+
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 32px 20px;
+}
+
+/* ── Header ── */
+.page-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 28px;
+}
+.page-title {
+  font-family: var(--font-head);
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.5px;
+}
+.page-subtitle {
+  font-size: 14px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+.follow-counter {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.2s;
+  background: var(--card);
+}
+.follow-counter:hover { border-color: var(--verm); color: var(--verm); }
+.follow-counter .count {
+  background: var(--verm);
+  color: #fff;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-weight: 700;
+}
+
+/* ── Search + Filter Bar ── */
+.search-filter-bar {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 24px;
+}
+.search-wrap {
+  position: relative;
+  flex: 1;
+}
+.search-wrap input {
+  width: 100%;
+  padding: 11px 14px 11px 40px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-family: var(--font-body);
+  background: var(--card);
+  color: var(--text);
+  transition: border-color 0.2s;
+}
+.search-wrap input:focus {
+  outline: none;
+  border-color: var(--verm);
+  box-shadow: 0 0 0 3px rgba(201,78,40,0.06);
+}
+.search-wrap svg {
+  position: absolute;
+  left: 13px;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+/* ── Segment Filter Pills ── */
+.segment-pills {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding: 2px 0;
+  flex-shrink: 0;
+}
+.segment-pills::-webkit-scrollbar { display: none; }
+.seg-pill {
+  padding: 7px 14px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  font-family: var(--font-mono);
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.15s;
+  border: 1.5px solid var(--border);
+  background: var(--card);
+  color: var(--muted);
+}
+.seg-pill:hover { border-color: var(--navy); color: var(--navy); }
+.seg-pill.active { background: var(--navy); border-color: var(--navy); color: #fff; }
+
+/* ── Featured Hero Section ── */
+.featured-section {
+  margin-bottom: 32px;
+}
+.section-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--muted);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+
+.featured-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 200px 200px;
+  gap: 12px;
+}
+.featured-card {
+  background: var(--card);
+  border-radius: var(--radius);
+  border: 1.5px solid var(--border);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: all 0.25s;
+  position: relative;
+  overflow: hidden;
+}
+.featured-card:hover {
+  border-color: var(--navy);
+  box-shadow: 0 8px 32px rgba(30,45,94,0.08);
+  transform: translateY(-2px);
+}
+.featured-card:first-child {
+  grid-row: 1 / 3;
+  /* Hero card — spans 2 rows */
+}
+
+.featured-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+.featured-logo {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.featured-logo img { width: 100%; height: 100%; object-fit: contain; padding: 4px; }
+
+.featured-seg {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  color: var(--muted);
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: var(--bg);
+}
+
+.featured-card-bottom {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+.featured-name {
+  font-family: var(--font-head);
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+}
+.featured-card:first-child .featured-name { font-size: 32px; }
+.featured-meta {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+.featured-follow {
+  padding: 8px 18px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  border: 1.5px solid var(--verm);
+  color: var(--verm);
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.featured-follow:hover { background: var(--verm); color: #fff; }
+.featured-follow.following {
+  border-color: var(--border);
+  color: var(--muted);
+  background: var(--bg);
+}
+
+/* ── All Brands Grid ── */
+.all-brands-section {
+  margin-top: 8px;
+}
+
+.brand-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.brand-card {
+  background: var(--card);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  gap: 2px;
+}
+.brand-card:hover {
+  border-color: var(--navy);
+  box-shadow: 0 4px 20px rgba(30,45,94,0.06);
+  transform: translateY(-1px);
+}
+
+.brand-logo {
+  width: 52px;
+  height: 52px;
+  border-radius: 12px;
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+.brand-logo img { width: 100%; height: 100%; object-fit: contain; padding: 3px; }
+.brand-logo .initial {
+  font-family: var(--font-head);
+  font-size: 20px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.brand-name {
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: -0.2px;
+  margin-bottom: 4px;
+}
+
+.brand-seg-tag {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.8px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  margin-bottom: 12px;
+}
+.brand-seg-tag.luxury { background: var(--navy); color: #fff; }
+.brand-seg-tag.premium { background: var(--verm); color: #fff; }
+.brand-seg-tag.mid { background: #3B82F6; color: #fff; }
+.brand-seg-tag.mass { background: #10B981; color: #fff; }
+.brand-seg-tag.sportswear { background: #F59E0B; color: #fff; }
+.brand-seg-tag.beauty { background: #EC4899; color: #fff; }
+.brand-seg-tag.tech { background: #6366F1; color: #fff; }
+
+/* ── Follow Button (Instagram style) ── */
+.brand-card-bottom {
+  width: 100%;
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.follow-btn {
+  width: 100%;
+  padding: 8px 0;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition: all 0.15s;
+  border: 1.5px solid var(--verm);
+  color: var(--verm);
+  background: transparent;
+}
+.follow-btn:hover { background: var(--verm); color: #fff; }
+.follow-btn.following {
+  border-color: var(--border);
+  color: var(--muted);
+  background: var(--bg);
+}
+.follow-btn.following:hover {
+  border-color: #e74c3c;
+  color: #e74c3c;
+  background: rgba(231,76,60,0.04);
+}
+
+.brand-stores {
+  font-size: 11px;
+  color: var(--muted);
+  font-family: var(--font-mono);
+}
+
+/* ── Load More Divider ── */
+.load-more {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 0;
+  cursor: pointer;
+  position: relative;
+  background: none;
+  border: none;
+  margin-top: 4px;
+}
+.load-more::before {
+  content: '';
+  position: absolute;
+  top: 17px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--border);
+}
+.load-more .plus {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border);
+  background: var(--card);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  color: var(--muted);
+  z-index: 1;
+  transition: all 0.2s;
+}
+.load-more:hover .plus { border-color: var(--verm); color: var(--verm); }
+.load-more .lm-text {
+  font-size: 11px;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  transition: color 0.2s;
+}
+.load-more:hover .lm-text { color: var(--verm); }
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+  .featured-grid { grid-template-columns: 1fr 1fr; grid-template-rows: 180px 180px; }
+  .brand-grid { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 600px) {
+  .featured-grid { grid-template-columns: 1fr; grid-template-rows: auto; }
+  .featured-card:first-child { grid-row: auto; }
+  .brand-grid { grid-template-columns: repeat(2, 1fr); }
+  .segment-pills { gap: 4px; }
+  .search-filter-bar { flex-direction: column; }
+  .page-header { flex-direction: column; align-items: flex-start; gap: 12px; }
+}
+
+/* ── Animations ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.brand-card, .featured-card {
+  animation: fadeUp 0.4s ease both;
+}
+.brand-card:nth-child(1) { animation-delay: 0.02s; }
+.brand-card:nth-child(2) { animation-delay: 0.04s; }
+.brand-card:nth-child(3) { animation-delay: 0.06s; }
+.brand-card:nth-child(4) { animation-delay: 0.08s; }
+.brand-card:nth-child(5) { animation-delay: 0.10s; }
+.brand-card:nth-child(6) { animation-delay: 0.12s; }
+.brand-card:nth-child(7) { animation-delay: 0.14s; }
+.brand-card:nth-child(8) { animation-delay: 0.16s; }
+
+.featured-card:nth-child(1) { animation-delay: 0s; }
+.featured-card:nth-child(2) { animation-delay: 0.06s; }
+.featured-card:nth-child(3) { animation-delay: 0.12s; }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div>
+      <div class="page-title">Markalar</div>
+      <div class="page-subtitle">Türkiye'deki markaları keşfet, takip et.</div>
+    </div>
+    <div class="follow-counter">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      Takip Ettiklerin
+      <span class="count">4</span>
+    </div>
+  </div>
+
+  <!-- Search + Segment Pills -->
+  <div class="search-filter-bar">
+    <div class="search-wrap">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" placeholder="Marka ara...">
+    </div>
+    <div class="segment-pills">
+      <div class="seg-pill active">TÜMÜ</div>
+      <div class="seg-pill">LUXURY</div>
+      <div class="seg-pill">PREMIUM</div>
+      <div class="seg-pill">MID</div>
+      <div class="seg-pill">SPORTSWEAR</div>
+      <div class="seg-pill">BEAUTY</div>
+      <div class="seg-pill">TECH</div>
+    </div>
+  </div>
+
+  <!-- Featured Section (Öne Çıkanlar — hidden label, editorial layout) -->
+  <div class="featured-section">
+    <div class="section-label">öne çıkanlar</div>
+    <div class="featured-grid">
+      <!-- Hero card (2 rows) -->
+      <div class="featured-card" style="background: linear-gradient(135deg, #f8f5f0 0%, #ede8df 100%);">
+        <div class="featured-card-top">
+          <div class="featured-logo">
+            <img src="https://www.google.com/s2/favicons?domain=louisvuitton.com&sz=128" alt="LV">
+          </div>
+          <span class="featured-seg">LUXURY</span>
+        </div>
+        <div class="featured-card-bottom">
+          <div>
+            <div class="featured-name">Louis Vuitton</div>
+            <div class="featured-meta">8 mağaza · İstanbul, İzmir, Bodrum</div>
+          </div>
+          <button class="featured-follow">Takip Et</button>
+        </div>
+      </div>
+      <!-- Card 2 -->
+      <div class="featured-card">
+        <div class="featured-card-top">
+          <div class="featured-logo">
+            <img src="https://www.google.com/s2/favicons?domain=gucci.com&sz=128" alt="Gucci">
+          </div>
+          <span class="featured-seg">LUXURY</span>
+        </div>
+        <div class="featured-card-bottom">
+          <div>
+            <div class="featured-name">Gucci</div>
+            <div class="featured-meta">7 mağaza</div>
+          </div>
+          <button class="featured-follow following">Takipte ✓</button>
+        </div>
+      </div>
+      <!-- Card 3 -->
+      <div class="featured-card">
+        <div class="featured-card-top">
+          <div class="featured-logo">
+            <img src="https://www.google.com/s2/favicons?domain=beymen.com&sz=128" alt="Beymen">
+          </div>
+          <span class="featured-seg">PREMIUM</span>
+        </div>
+        <div class="featured-card-bottom">
+          <div>
+            <div class="featured-name">Beymen</div>
+            <div class="featured-meta">18 mağaza</div>
+          </div>
+          <button class="featured-follow following">Takipte ✓</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- All Brands -->
+  <div class="all-brands-section">
+    <div class="section-label">tüm markalar</div>
+    <div class="brand-grid">
+
+      <div class="brand-card">
+        <div class="brand-logo"><img src="https://www.google.com/s2/favicons?domain=adidas.com.tr&sz=128" alt=""></div>
+        <div class="brand-name">Adidas</div>
+        <div class="brand-seg-tag sportswear">SPORTSWEAR</div>
+        <div class="brand-card-bottom">
+          <button class="follow-btn following">Takipte ✓</button>
+          <span class="brand-stores">80 mağaza</span>
+        </div>
+      </div>
+
+      <div class="brand-card">
+        <div class="brand-logo"><img src="https://www.google.com/s2/favicons?domain=aloyoga.com&sz=128" alt=""></div>
+        <div class="brand-name">Alo Yoga</div>
+        <div class="brand-seg-tag premium">PREMIUM</div>
+        <div class="brand-card-bottom">
+          <button class="follow-btn">Takip Et</button>
+          <span class="brand-stores">1 mağaza</span>
+        </div>
+      </div>
+
+      <div class="brand-card">
+        <div class="brand-logo"><img src="https://www.google.com/s2/favicons?domain=apple.com&sz=128" alt=""></div>
+        <div class="brand-name">Apple</div>
+        <div class="brand-seg-tag tech">TECH</div>
+        <div class="brand-card-bottom">
+          <button class="follow-btn">Takip Et</button>
+          <span class="brand-stores">3 mağaza</span>
+        </div>
+      </div>
+
+      <div class="brand-card">
+        <div class="brand-logo"><img src="https://www.google.com/s2/favicons?domain=bershka.com&sz=128" alt=""></div>
+        <div class="brand-name">Bershka</div>
+        <div class="brand-seg-tag mid">MID</div>
+        <div class="brand-card-bottom">
+          <button class="follow-btn">Takip Et</button>
+          <span class="brand-stores">30 mağaza</span>
+        </div>
+      </div>
+
+      <div class="brand-card">
+        <div class="brand-logo"><img src="https://www.google.com/s2/favicons?domain=cartier.com&sz=128" alt=""></div>
+        <div class="brand-name">Cartier</div>
+        <div class="brand-seg-tag luxury">LUXURY</div>
+        <div class="brand-card-bottom">
+          <button class="follow-btn">Takip Et</button>
+          <span class="brand-stores">3 mağaza</span>
+        </div>
+      </div>
+
+      <div class="brand-card">
+        <div class="brand-logo"><img src="https://www.google.com/s2/favicons?domain=chanel.com&sz=128" alt=""></div>
+        <div class="brand-name">Chanel</div>
+        <div class="brand-seg-tag luxury">LUXURY</div>
+        <div class="brand-card-bottom">
+          <button class="follow-btn">Takip Et</button>
+          <span class="brand-stores">4 mağaza</span>
+        </div>
+      </div>
+
+      <div class="brand-card">
+        <div class="brand-logo"><img src="https://www.google.com/s2/favicons?domain=dior.com&sz=128" alt=""></div>
+        <div class="brand-name">Dior</div>
+        <div class="brand-seg-tag luxury">LUXURY</div>
+        <div class="brand-card-bottom">
+          <button class="follow-btn following">Takipte ✓</button>
+          <span class="brand-stores">5 mağaza</span>
+        </div>
+      </div>
+
+      <div class="brand-card">
+        <div class="brand-logo"><img src="https://www.google.com/s2/favicons?domain=hm.com&sz=128" alt=""></div>
+        <div class="brand-name">H&M</div>
+        <div class="brand-seg-tag mid">MID</div>
+        <div class="brand-card-bottom">
+          <button class="follow-btn">Takip Et</button>
+          <span class="brand-stores">45 mağaza</span>
+        </div>
+      </div>
+
+      <!-- Load more -->
+      <button class="load-more">
+        <span class="plus">+</span>
+        <span class="lm-text">Daha fazla göster (19)</span>
+      </button>
+
+    </div>
+  </div>
+
+</div>
+
+<script>
+// Segment pill toggle
+document.querySelectorAll('.seg-pill').forEach(pill => {
+  pill.addEventListener('click', () => {
+    document.querySelectorAll('.seg-pill').forEach(p => p.classList.remove('active'));
+    pill.classList.add('active');
+  });
+});
+
+// Follow toggle
+document.querySelectorAll('.follow-btn, .featured-follow').forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (btn.classList.contains('following')) {
+      btn.classList.remove('following');
+      btn.textContent = 'Takip Et';
+    } else {
+      btn.classList.add('following');
+      btn.textContent = 'Takipte ✓';
+    }
+  });
+});
+</script>
+
+</body>
+</html>

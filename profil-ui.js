@@ -1525,33 +1525,26 @@ function updateMerkezCards() {
 }
 
 function updateBentoRing(step, pct) {
-  var ring = document.getElementById('mk-ring-' + step);
-  if (!ring) return;
-  var circumference = 2 * Math.PI * 12; // ~75.4 for r=12 (28px viewBox)
+  var container = document.getElementById('mk-ring-' + step);
+  if (!container) return;
 
   if (pct >= 100) {
-    ring.innerHTML = '<span class="ring-done">\u2713</span>';
+    container.textContent = '';
+    var done = document.createElement('span');
+    done.className = 'ring-done';
+    done.textContent = '\u2713';
+    container.appendChild(done);
     return;
   }
 
-  var fill = ring.querySelector('.ring-fill');
-  var label = ring.querySelector('.ring-pct');
-  if (!ring.querySelector('svg')) {
-    var card = ring.closest('.mk-card');
-    var strokeColor = 'var(--navy)';
-    if (card) {
-      if (card.classList.contains('verm')) strokeColor = 'var(--verm)';
-      else if (card.classList.contains('green')) strokeColor = 'var(--green)';
-      else if (card.classList.contains('purple')) strokeColor = '#8B5CF6';
-    }
-    ring.innerHTML = '<svg viewBox="0 0 28 28"><circle class="ring-track" cx="14" cy="14" r="12"/><circle class="ring-fill" cx="14" cy="14" r="12" stroke="' + strokeColor + '"/></svg><span class="ring-pct">0%</span>';
-    fill = ring.querySelector('.ring-fill');
-    label = ring.querySelector('.ring-pct');
-  }
+  var fill = container.querySelector('.ring-fill');
+  var label = container.querySelector('.ring-pct');
+  var circumference = 2 * Math.PI * 10;
   var offset = circumference - (circumference * Math.min(pct, 100) / 100);
   if (fill) fill.style.strokeDashoffset = offset;
   if (label) label.textContent = pct + '%';
 }
+
 
 function _countFilledRows(containerSelector, fieldSuffixes) {
   var rows = document.querySelectorAll(containerSelector + ' .dynamic-row');
@@ -3004,19 +2997,13 @@ function closeTgToast() {
 
     var dot = document.getElementById('mk-status-dot');
     var text = document.getElementById('mk-status-text');
-    if (dot) {
-      dot.classList.toggle('off', !isOn);
-    }
+    if (dot) dot.classList.toggle('off', !isOn);
     if (text) {
-      text.textContent = isOn
-        ? 'Profilin aktif — işverenler seni görebilir'
-        : 'Profilin gizli — işverenlerle paylaşılmıyor';
+      text.textContent = isOn ? 'Profilin aktif' : 'Profilin gizli';
       text.classList.toggle('off', !isOn);
     }
     if (hideCell) {
       hideCell.classList.toggle('disabled', !isOn);
-      hideCell.style.opacity = isOn ? '' : '0.3';
-      hideCell.style.pointerEvents = isOn ? '' : 'none';
     }
 
     var sidebarDesc = document.getElementById('sidebar-benioner-desc');
@@ -3055,7 +3042,7 @@ function closeTgToast() {
 
   if (visToggle) {
     visToggle.addEventListener('change', function() {
-      var cell = visToggle.closest('.mk-status-cell');
+      var cell = visToggle.closest('.mk-controls-item');
       if (visToggle.checked) {
         showTgToast('Profilin ve kişisel bilgilerin işverenlerle paylaşılacak.', cell);
       } else {
@@ -3076,7 +3063,7 @@ function closeTgToast() {
   var aktifToggle = document.getElementById('merkez-toggle-active');
   if (aktifToggle) {
     aktifToggle.addEventListener('change', function() {
-      var cell = this.closest('.mk-status-cell');
+      var cell = this.closest('.mk-controls-item');
       if (this.checked) {
         showTgToast('İşverenler profilinde "Aktif iş arıyor" rozeti görecek.', cell);
       } else {
@@ -3088,7 +3075,7 @@ function closeTgToast() {
   var hideToggle = document.getElementById('merkez-hide-from-current-employer');
   if (hideToggle) {
     hideToggle.addEventListener('change', function() {
-      var cell = this.closest('.mk-status-cell');
+      var cell = this.closest('.mk-controls-item');
       if (this.checked) {
         showTgToast('Mevcut işverenin profilini göremeyecek.', cell);
       } else {

@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>hellotalent — Dashboard Bento Mockup</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --verm: #C94E28;
+  --verm-light: rgba(201,78,40,0.08);
+  --navy: #1E2D5E;
+  --navy-light: rgba(30,45,94,0.08);
+  --navy-deep: #131f3e;
+  --green: #16a34a;
+  --green-light: rgba(22,163,74,0.08);
+  --bg: #F7F6F4;
+  --card: #FFFFFF;
+  --text: #111111;
+  --text-secondary: #1a1a1a;
+  --muted: #8C8C8C;
+  --border: #E8E6E3;
+  --radius: 18px;
+  --shadow: 0 0 0 1px rgba(0,0,0,0.03), 0 2px 4px rgba(0,0,0,0.05), 0 12px 24px rgba(0,0,0,0.05);
+  --font-head: 'Bricolage Grotesque', serif;
+  --font-body: 'Plus Jakarta Sans', sans-serif;
+  --font-mono: 'DM Mono', monospace;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  padding: 32px 20px;
+}
+
+.container { max-width: 820px; margin: 0 auto; }
+
+/* ── Profile Hero ── */
+.profile-hero {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 22px 24px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.hero-avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+.hero-info { flex: 1; min-width: 0; }
+.hero-name {
+  font-family: var(--font-head);
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--text);
+}
+.hero-meta {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 2px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.hero-meta .sep { opacity: 0.3; }
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 600;
+  font-family: var(--font-mono);
+}
+.hero-badge.active { background: rgba(22,163,74,0.1); color: var(--green); border: 1px solid rgba(22,163,74,0.2); }
+.hero-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); }
+
+.hero-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+.hero-completion {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.hero-completion-bar {
+  width: 80px;
+  height: 5px;
+  background: var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.hero-completion-fill { height: 100%; background: var(--verm); border-radius: 3px; width: 72%; }
+.hero-completion-text { font-family: var(--font-mono); font-size: 10px; color: var(--muted); }
+.hero-edit-btn {
+  padding: 6px 14px;
+  border-radius: 8px;
+  border: 1.5px solid var(--border);
+  background: transparent;
+  color: var(--text);
+  font-size: 11px;
+  font-weight: 600;
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.hero-edit-btn:hover { border-color: var(--navy); color: var(--navy); }
+
+/* ── Bento Grid ── */
+.bento-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-auto-rows: 200px;
+  gap: 14px;
+}
+
+/* ── Bento Card ── */
+.bento-card {
+  position: relative;
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  background: var(--card);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: default;
+}
+.bento-card.active { cursor: pointer; }
+.bento-card.active:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.03), 0 8px 32px rgba(0,0,0,0.1);
+}
+
+/* Span variations */
+.bento-card.col-2 { grid-column: span 2; }
+.bento-card.row-2 { grid-row: span 2; }
+
+/* Background decorative layer */
+.bento-bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+}
+
+/* Card content */
+.bento-content {
+  position: relative;
+  z-index: 2;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.bento-card.active:hover .bento-content {
+  transform: translateY(-28px);
+}
+
+.bento-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+  transition: transform 0.3s;
+}
+.bento-card.active:hover .bento-icon { transform: scale(0.85); }
+.bento-icon svg { width: 20px; height: 20px; }
+.bento-icon.navy { background: var(--navy-light); color: var(--navy); }
+.bento-icon.verm { background: var(--verm-light); color: var(--verm); }
+.bento-icon.green { background: var(--green-light); color: var(--green); }
+.bento-icon.white { background: rgba(255,255,255,0.15); color: #fff; }
+
+.bento-title {
+  font-family: var(--font-head);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  letter-spacing: -0.2px;
+}
+.bento-desc {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+/* CTA — hidden, slides up on hover */
+.bento-cta {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 16px 20px;
+  z-index: 3;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+}
+.bento-card.active:hover .bento-cta {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+.bento-cta a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--navy);
+  text-decoration: none;
+  transition: gap 0.2s;
+}
+.bento-cta a:hover { gap: 10px; }
+.bento-cta a svg { width: 14px; height: 14px; }
+
+/* Hover overlay */
+.bento-card.active::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: transparent;
+  transition: background 0.3s;
+  z-index: 1;
+  pointer-events: none;
+}
+.bento-card.active:hover::after {
+  background: rgba(0,0,0,0.02);
+}
+
+/* Locked state */
+.bento-card.locked { opacity: 0.65; }
+.bento-card.locked .bento-desc { color: #bbb; }
+
+/* Badge */
+.badge-soon {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  background: var(--border);
+  color: var(--muted);
+  z-index: 5;
+}
+
+.badge-count {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 600;
+  background: var(--navy);
+  color: #fff;
+  z-index: 5;
+}
+
+/* ── Dark premium card override ── */
+.bento-card.premium {
+  background: var(--navy-deep);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+.bento-card.premium .bento-title { color: #fff; }
+.bento-card.premium .bento-desc { color: rgba(255,255,255,0.45); }
+.bento-card.premium .badge-soon { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.5); }
+
+/* ══════════════════════════════════════
+   DECORATIVE BACKGROUNDS PER CARD
+   ══════════════════════════════════════ */
+
+/* Profil Merkezi — abstract profile rings */
+.bg-profil {
+  position: absolute;
+  right: -20px;
+  top: -30px;
+  width: 200px;
+  height: 200px;
+  opacity: 0.06;
+}
+.bg-profil .ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 2px solid var(--navy);
+}
+.bg-profil .ring:nth-child(1) { width: 180px; height: 180px; top: 10px; left: 10px; }
+.bg-profil .ring:nth-child(2) { width: 130px; height: 130px; top: 35px; left: 35px; }
+.bg-profil .ring:nth-child(3) { width: 80px; height: 80px; top: 60px; left: 60px; }
+
+/* Markalar — floating brand dots */
+.bg-markalar {
+  position: absolute;
+  inset: 0;
+}
+.bg-markalar .brand-dot {
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  opacity: 0.35;
+}
+.bg-markalar .brand-dot img { width: 100%; height: 100%; object-fit: contain; padding: 4px; }
+.bg-markalar .brand-dot:nth-child(1) { top: 15px; right: 20px; transform: rotate(-5deg); opacity: 0.4; }
+.bg-markalar .brand-dot:nth-child(2) { top: 10px; right: 65px; transform: rotate(3deg); opacity: 0.3; }
+.bg-markalar .brand-dot:nth-child(3) { top: 50px; right: 40px; transform: rotate(-8deg); opacity: 0.25; }
+.bg-markalar .brand-dot:nth-child(4) { top: 45px; right: 90px; transform: rotate(6deg); opacity: 0.2; }
+
+/* Görüntüleyenler — eye ripple */
+.bg-eye {
+  position: absolute;
+  right: 20px;
+  top: 20px;
+  width: 80px;
+  height: 80px;
+  opacity: 0.05;
+}
+.bg-eye .eye-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 1.5px solid var(--navy);
+  inset: 0;
+  animation: eyePulse 3s ease-in-out infinite;
+}
+.bg-eye .eye-ring:nth-child(2) { inset: -10px; animation-delay: 0.5s; }
+.bg-eye .eye-ring:nth-child(3) { inset: -20px; animation-delay: 1s; }
+@keyframes eyePulse {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.05); }
+}
+
+/* Kariyer Rotam — path dots */
+.bg-path {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  opacity: 0.08;
+}
+.bg-path .path-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--verm);
+}
+.bg-path .path-line {
+  width: 2px;
+  height: 20px;
+  background: var(--verm);
+  margin-left: 3px;
+}
+
+/* Kariyer İçgörüleri — mini bar chart */
+.bg-chart {
+  position: absolute;
+  right: 20px;
+  bottom: 60px;
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  opacity: 0.07;
+}
+.bg-chart .bar {
+  width: 8px;
+  border-radius: 2px;
+  background: var(--navy);
+}
+
+/* Fırsatlar — gift sparkle */
+.bg-gift {
+  position: absolute;
+  right: 25px;
+  top: 25px;
+  width: 40px;
+  height: 40px;
+  opacity: 0.06;
+}
+.bg-gift .sparkle {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--green);
+}
+
+/* Premium — gradient glow */
+.bg-premium {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 80% 20%, rgba(201, 78, 40, 0.12) 0%, transparent 50%),
+              radial-gradient(ellipse at 20% 80%, rgba(30, 45, 94, 0.15) 0%, transparent 50%);
+}
+.bg-premium .star {
+  position: absolute;
+  color: rgba(255,255,255,0.08);
+}
+
+/* ── Stagger ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.bento-card { animation: fadeUp 0.45s ease both; }
+.bento-card:nth-child(1) { animation-delay: 0s; }
+.bento-card:nth-child(2) { animation-delay: 0.04s; }
+.bento-card:nth-child(3) { animation-delay: 0.08s; }
+.bento-card:nth-child(4) { animation-delay: 0.12s; }
+.bento-card:nth-child(5) { animation-delay: 0.16s; }
+.bento-card:nth-child(6) { animation-delay: 0.20s; }
+.bento-card:nth-child(7) { animation-delay: 0.24s; }
+
+/* ── Responsive ── */
+@media (max-width: 750px) {
+  .bento-grid { grid-template-columns: repeat(2, 1fr); grid-auto-rows: 180px; }
+  .bento-card.col-2 { grid-column: span 2; }
+  .profile-hero { flex-direction: column; align-items: flex-start; gap: 12px; }
+  .hero-right { flex-direction: row; align-items: center; width: 100%; }
+}
+@media (max-width: 480px) {
+  .bento-grid { grid-template-columns: 1fr; grid-auto-rows: 160px; }
+  .bento-card.col-2 { grid-column: span 1; }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- ── Profile Hero ── -->
+  <div class="profile-hero">
+    <div class="hero-avatar">TK</div>
+    <div class="hero-info">
+      <div class="hero-name">Tuna Kefeli</div>
+      <div class="hero-meta">
+        <span>İzmir</span>
+        <span class="sep">·</span>
+        <span>Retail Management</span>
+        <span class="sep">·</span>
+        <span class="hero-badge active"><span class="dot"></span> Aktif</span>
+      </div>
+    </div>
+    <div class="hero-right">
+      <div class="hero-completion">
+        <div class="hero-completion-bar"><div class="hero-completion-fill"></div></div>
+        <span class="hero-completion-text">72%</span>
+      </div>
+      <button class="hero-edit-btn">Profili Düzenle</button>
+    </div>
+  </div>
+
+  <!-- ── Bento Grid ── -->
+  <div class="bento-grid">
+
+    <!-- 1. Profil Merkezi — spans 2 cols -->
+    <div class="bento-card active col-2" onclick="alert('→ Profil Merkezi')">
+      <div class="bento-bg">
+        <div class="bg-profil">
+          <div class="ring"></div>
+          <div class="ring"></div>
+          <div class="ring"></div>
+        </div>
+      </div>
+      <div class="bento-content">
+        <div class="bento-icon navy">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg>
+        </div>
+        <div class="bento-title">Profil Merkezi</div>
+        <div class="bento-desc">Kişisel bilgiler, deneyim, eğitim ve tercihlerini yönet</div>
+      </div>
+      <div class="bento-cta">
+        <a href="#">
+          Profili Düzenle
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+    </div>
+
+    <!-- 2. Markalar — spans 1 col -->
+    <div class="bento-card active" onclick="alert('→ Markalar')">
+      <div class="bento-bg">
+        <div class="bg-markalar">
+          <div class="brand-dot"><img src="https://cpwibefquojehjehtrog.supabase.co/storage/v1/object/public/cvs/brand-logos/gucci.png" alt=""></div>
+          <div class="brand-dot"><img src="https://cpwibefquojehjehtrog.supabase.co/storage/v1/object/public/cvs/brand-logos/nike.png" alt=""></div>
+          <div class="brand-dot"><img src="https://cpwibefquojehjehtrog.supabase.co/storage/v1/object/public/cvs/brand-logos/zara.png" alt=""></div>
+          <div class="brand-dot"><img src="https://cpwibefquojehjehtrog.supabase.co/storage/v1/object/public/cvs/brand-logos/dior.png" alt=""></div>
+        </div>
+      </div>
+      <span class="badge-count">4 takip</span>
+      <div class="bento-content">
+        <div class="bento-icon navy">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        </div>
+        <div class="bento-title">Markalar</div>
+        <div class="bento-desc">Keşfet ve takip et</div>
+      </div>
+      <div class="bento-cta">
+        <a href="#">
+          Markaları Gör
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+    </div>
+
+    <!-- 3. Görüntüleyenler — locked -->
+    <div class="bento-card locked">
+      <div class="bento-bg">
+        <div class="bg-eye">
+          <div class="eye-ring"></div>
+          <div class="eye-ring"></div>
+          <div class="eye-ring"></div>
+        </div>
+      </div>
+      <span class="badge-soon">YAKINDA</span>
+      <div class="bento-content">
+        <div class="bento-icon navy">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        </div>
+        <div class="bento-title">Görüntüleyenler</div>
+        <div class="bento-desc">Hangi şirketler profilini inceledi?</div>
+      </div>
+    </div>
+
+    <!-- 4. Kariyer Rotam — locked -->
+    <div class="bento-card locked">
+      <div class="bento-bg">
+        <div class="bg-path">
+          <div class="path-dot"></div>
+          <div class="path-line"></div>
+          <div class="path-dot"></div>
+          <div class="path-line"></div>
+          <div class="path-dot"></div>
+          <div class="path-line"></div>
+          <div class="path-dot" style="width:12px;height:12px;"></div>
+        </div>
+      </div>
+      <span class="badge-soon">YAKINDA</span>
+      <div class="bento-content">
+        <div class="bento-icon verm">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+        </div>
+        <div class="bento-title">Kariyer Rotam</div>
+        <div class="bento-desc">Kariyer yolunu planla ve takip et</div>
+      </div>
+    </div>
+
+    <!-- 5. Kariyer İçgörüleri — locked -->
+    <div class="bento-card locked">
+      <div class="bento-bg">
+        <div class="bg-chart">
+          <div class="bar" style="height:20px;"></div>
+          <div class="bar" style="height:35px;"></div>
+          <div class="bar" style="height:25px;"></div>
+          <div class="bar" style="height:45px;"></div>
+          <div class="bar" style="height:30px;"></div>
+          <div class="bar" style="height:50px;"></div>
+          <div class="bar" style="height:40px;"></div>
+        </div>
+      </div>
+      <span class="badge-soon">YAKINDA</span>
+      <div class="bento-content">
+        <div class="bento-icon navy">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        </div>
+        <div class="bento-title">Kariyer İçgörüleri</div>
+        <div class="bento-desc">Sektör trendleri ve kişisel öneriler</div>
+      </div>
+    </div>
+
+    <!-- 6. Fırsatlar — locked -->
+    <div class="bento-card locked">
+      <span class="badge-soon">YAKINDA</span>
+      <div class="bento-content">
+        <div class="bento-icon green">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5" rx="1"/><line x1="12" y1="22" x2="12" y2="7"/></svg>
+        </div>
+        <div class="bento-title">Fırsatlar</div>
+        <div class="bento-desc">Özel fırsatlar ve indirimler</div>
+      </div>
+    </div>
+
+    <!-- 7. Premium — dark card, spans 2 cols -->
+    <div class="bento-card locked premium col-2">
+      <div class="bento-bg">
+        <div class="bg-premium">
+          <svg class="star" style="top:20px;right:60px;" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg class="star" style="top:45px;right:30px;" width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg class="star" style="top:15px;right:110px;" width="8" height="8" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </div>
+      </div>
+      <span class="badge-soon">YAKINDA</span>
+      <div class="bento-content">
+        <div class="bento-icon white">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </div>
+        <div class="bento-title">Premium Yan Haklar</div>
+        <div class="bento-desc">Özel avantajlar ve ayrıcalıklar</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>
