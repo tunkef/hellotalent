@@ -1037,6 +1037,7 @@ html[data-theme="dark"] .field-req{color:#F87171;}
 .mk-controls-card {
   cursor: default;
   padding: 0 !important;
+  min-width: 200px;
 }
 .mk-controls-card::before { display: none; }
 .mk-controls-card:hover {
@@ -1073,31 +1074,24 @@ html[data-theme="dark"] .field-req{color:#F87171;}
 }
 
 .mk-controls-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
+  flex-direction: column;
 }
 .mk-controls-item {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 14px;
+  padding: 10px 16px;
 }
-.mk-controls-item:nth-child(1) {
-  border-bottom: 1px solid rgba(0,0,0,0.05);
-  border-right: 1px solid rgba(0,0,0,0.05);
-}
-.mk-controls-item:nth-child(2) {
-  border-bottom: 1px solid rgba(0,0,0,0.05);
-}
-.mk-controls-item:nth-child(3) {
-  border-right: 1px solid rgba(0,0,0,0.05);
+.mk-controls-item + .mk-controls-item {
+  border-top: 1px solid rgba(0,0,0,0.05);
 }
 .mk-controls-item.disabled {
   opacity: 0.3;
   pointer-events: none;
 }
 .mk-controls-label {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
   color: var(--text-secondary);
   white-space: nowrap;
@@ -1176,16 +1170,6 @@ html[data-theme="dark"] .field-req{color:#F87171;}
 @media (max-width: 768px) {
   .mk-card.span-2 { grid-column: 1; }
   .mk-edit-btn { opacity: 0.5; }
-  .mk-controls-row { grid-template-columns: 1fr; }
-  .mk-controls-item:nth-child(1),
-  .mk-controls-item:nth-child(2),
-  .mk-controls-item:nth-child(3) {
-    border-right: none;
-    border-bottom: 1px solid rgba(0,0,0,0.05);
-  }
-  .mk-controls-item:last-child {
-    border-bottom: none;
-  }
 }
 
 .mk-card { animation: bentoFadeUp 0.45s ease both; }
