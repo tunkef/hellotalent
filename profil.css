@@ -269,8 +269,8 @@ body{
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  border: 1.5px solid var(--border-subtle);
-  background: var(--bg-surface, #fff);
+  border: 1.5px solid rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.08);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -298,9 +298,10 @@ body{
   color: #F59E0B;
   opacity: 1;
   transform: rotate(0deg) scale(1);
+  filter: drop-shadow(0 0 3px rgba(245, 158, 11, 0.4));
 }
 .theme-toggle-btn .moon {
-  color: var(--navy);
+  color: rgba(255,255,255,0.8);
   opacity: 0;
   transform: rotate(90deg) scale(0.5);
 }

@@ -527,7 +527,7 @@ body {
   cursor: pointer; white-space: nowrap; font-family: 'Plus Jakarta Sans', sans-serif;
   transition: background 0.2s; flex-shrink: 0;
 }
-.cp-cta-btn:hover { background: #a83d1e; }
+.cp-cta-btn:hover { background: #b84420; }
 
 /* ══ FİLTRE BAR ══ */
 .filter-bar {
@@ -638,7 +638,7 @@ body {
 }
 .kc-btn:hover { background: var(--verm); }
 .kc-btn.verm { background: var(--verm); }
-.kc-btn.verm:hover { background: #a83d1e; }
+.kc-btn.verm:hover { background: #b84420; }
 
 /* ══ YATAY GEÇİŞ BANNER ══ */
 .lateral-banner {
@@ -675,7 +675,7 @@ body {
   border-radius: 30px; cursor: pointer; margin-top: 8px;
   font-family: 'Plus Jakarta Sans', sans-serif; transition: background 0.2s;
 }
-.lb-btn:hover { background: #a83d1e; }
+.lb-btn:hover { background: #b84420; }
 
 /* ══ KARİYER REHBERİ ══ */
 .rehber-section {
@@ -734,7 +734,7 @@ body {
   font-size: 15px; font-weight: 700; padding: 15px 32px; border-radius: 30px;
   cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.2s;
 }
-.fck-btn-primary:hover { background: #a83d1e; transform: translateY(-1px); }
+.fck-btn-primary:hover { background: #b84420; transform: translateY(-1px); }
 .fck-btn-secondary {
   background: white; color: var(--navy); border: 2px solid var(--navy);
   font-size: 15px; font-weight: 700; padding: 13px 28px; border-radius: 30px;
@@ -809,7 +809,7 @@ body {
   font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.15s;
 }
 .auth-btn.primary { background: var(--verm); color: white; margin-bottom: 8px; }
-.auth-btn.primary:hover { background: #a83d1e; }
+.auth-btn.primary:hover { background: #b84420; }
 .auth-btn.outline { background: white; color: var(--navy); border: 1.5px solid var(--navy); }
 .auth-btn.outline:hover { background: var(--navy); color: white; }
 .auth-success { display: none; text-align: center; padding: 12px 0; }
@@ -823,5 +823,5 @@ body {
   cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; transition: background 0.2s;
   text-decoration: none;
 }
-.auth-success-btn:hover { background: #a83d1e; }
+.auth-success-btn:hover { background: #b84420; }
 
