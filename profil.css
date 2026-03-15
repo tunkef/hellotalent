@@ -543,11 +543,6 @@ html[data-theme="dark"] .field-req{color:#F87171;}
    GENEL BAKIŞ — v3
    ══════════════════════════════════════════════ */
 
-/* Typing greeting (one-time) */
-.typing-greeting{font-family:'Bricolage Grotesque',sans-serif;font-size:22px;font-weight:800;color:var(--text-secondary,#1a1a1a);margin-bottom:14px;min-height:32px;}
-.typing-cursor{display:inline-block;color:var(--verm);font-weight:400;animation:cursorBlink 0.6s step-end infinite;margin-left:1px;}
-@keyframes cursorBlink{0%,100%{opacity:1;}50%{opacity:0;}}
-
 /* Compact profile hero */
 .g-hero{
   background:var(--bg-elevated,#fff);

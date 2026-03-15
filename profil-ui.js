@@ -1,29 +1,3 @@
-// ── TYPING GREETING (one-time) ──
-var _typingPlayed = false;
-function playTypingGreeting(name) {
-  if (_typingPlayed) return;
-  _typingPlayed = true;
-  var el = document.getElementById('typing-text');
-  var cursor = document.querySelector('.typing-cursor');
-  if (!el) return;
-  var fullText = 'Merhaba ' + (name ? name.charAt(0).toUpperCase() + name.slice(1) : '') + '! 👋';
-  var i = 0;
-  var speed = 50;
-  function type() {
-    if (i < fullText.length) {
-      el.textContent = fullText.substring(0, i + 1);
-      i++;
-      setTimeout(type, speed);
-    } else {
-      setTimeout(function() {
-        if (cursor) cursor.style.transition = 'opacity 0.5s';
-        if (cursor) cursor.style.opacity = '0';
-      }, 1500);
-    }
-  }
-  type();
-}
-
 // ── STATUS UI ──
 function updateStatusUI(isActive) {
   var badges = ['card-status-badge'];
