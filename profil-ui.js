@@ -1218,7 +1218,7 @@ function collectLocations() {
 // TASK 11: FINAL SAVE VIA RPC
 // ═══════════════════════════════════════════════════
 
-async function saveProfileRPC() {
+async function saveProfileRPC(onComplete) {
   var btnComplete = document.getElementById('btn-wiz-complete');
   if (btnComplete) { btnComplete.disabled = true; btnComplete.textContent = 'Kaydediliyor...'; }
 
@@ -1307,6 +1307,7 @@ async function saveProfileRPC() {
     // Update Profil Merkezi cards (separate from completion — no side-effect coupling)
     updateMerkezCards();
 
+    if (typeof onComplete === 'function') onComplete();
   } catch (err) {
     if (window.Sentry) Sentry.captureException(err, { tags: { flow: 'wizard-save' } });
     var errorDesc = document.getElementById('error-desc');
@@ -1361,74 +1362,147 @@ function updateDashboardSummary(profile, experiences) {
 // PROFIL MERKEZI CARD POPULATORS
 // ═══════════════════════════════════════════════════
 
-function merkezSetText(id, text) {
-  var sumEl = document.getElementById(id);
-  var emptyEl = document.getElementById(id + '-empty');
-  if (sumEl) { sumEl.textContent = text || ''; sumEl.style.display = text ? '' : 'none'; }
-  if (emptyEl) emptyEl.style.display = text ? 'none' : '';
-}
-
 function updateMerkezCards() {
-  // Card 1: Kişisel Bilgiler
+  // ── Card 1: Kişisel Bilgiler ──
   var name = val('f-adsoyad');
   var city = val('f-adresil');
   var phone = val('f-telefon');
-  var parts1 = [name, city, phone].filter(Boolean);
-  merkezSetText('merkez-sum-1', parts1.length ? parts1.join(' \u00B7 ') : null);
+  var linkedin = val('f-linkedin');
+  var gender = val('f-cinsiyet');
+  var birthYear = val('f-dogumyili');
 
-  // Card 2: Deneyim
+  var p1 = document.getElementById('mk-preview-1');
+  var e1 = document.getElementById('mk-empty-1');
+  var filledCount1 = [name, phone, gender, birthYear, city, linkedin].filter(Boolean).length;
+
+  if (filledCount1 > 0 && p1) {
+    var parts1 = [];
+    if (name) parts1.push('<div class="bento-name">' + _escHtml(name) + '</div>');
+    var pills1 = [];
+    if (city) pills1.push('\uD83D\uDCCD ' + city);
+    if (phone) pills1.push('\uD83D\uDCF1 Telefon \u2713');
+    if (linkedin) pills1.push('\uD83D\uDD17 LinkedIn \u2713');
+    if (pills1.length) parts1.push(pills1.map(function(t) { return '<span class="bento-pill">' + _escHtml(String(t)) + '</span>'; }).join(''));
+    p1.innerHTML = parts1.join('');
+    p1.style.display = '';
+    if (e1) e1.style.display = 'none';
+  } else {
+    if (p1) p1.style.display = 'none';
+    if (e1) e1.style.display = 'block';
+  }
+  var pct1 = Math.round((filledCount1 / 6) * 100);
+  pct1 = Math.round(pct1 / 10) * 10;
+  updateBentoRing(1, pct1);
+
+  // ── Card 2: Deneyim ──
   var cbNoExp = document.getElementById('cb-no-experience');
   var expCards = document.querySelectorAll('.exp-card');
+  var p2 = document.getElementById('mk-preview-2');
+  var e2 = document.getElementById('mk-empty-2');
+
   if (cbNoExp && cbNoExp.checked) {
-    merkezSetText('merkez-sum-2', 'Deneyimsiz olarak i\u015Faretlendi');
+    if (p2) { p2.innerHTML = '<span style="font-style:italic;color:#c4c4c4;">\u0130lk i\u015F deneyimini ar\u0131yor</span>'; p2.style.display = ''; }
+    if (e2) e2.style.display = 'none';
+    updateBentoRing(2, 100);
   } else if (expCards.length > 0) {
     var firstId = expCards[0].id + '-';
     var role = val(firstId + 'pozisyon');
     var company = document.getElementById(firstId + 'sirket');
     var compVal = company ? (company.dataset.resolvedMarka || company.value || '') : '';
-    var expLine = [role, compVal].filter(Boolean).join(' \u00B7 ');
-    if (expCards.length > 1) expLine += ' \u00B7 +' + (expCards.length - 1) + ' deneyim';
-    merkezSetText('merkez-sum-2', expLine || null);
+    var startY = val(firstId + 'basyil');
+    var html2 = '';
+    if (role) html2 += '<div class="bento-role">' + _escHtml(role) + '</div>';
+    if (compVal) html2 += '<div class="bento-company">' + _escHtml(compVal) + '</div>';
+    if (startY) html2 += '<div class="bento-period">' + _escHtml(startY) + ' \u2014 Devam</div>';
+    if (expCards.length > 1) html2 += '<div class="bento-more">+' + (expCards.length - 1) + ' deneyim daha</div>';
+    if (p2) { p2.innerHTML = html2; p2.style.display = ''; }
+    if (e2) e2.style.display = 'none';
+    updateBentoRing(2, 100);
   } else {
-    merkezSetText('merkez-sum-2', null);
+    if (p2) p2.style.display = 'none';
+    if (e2) e2.style.display = 'block';
+    updateBentoRing(2, 0);
   }
 
-  // Card 3: Eğitim & Dil
+  // ── Card 3: Eğitim & Dil ──
   var eduCount = document.querySelectorAll('#edu-rows-container .dynamic-row').length;
   var langCount = document.querySelectorAll('#lang-rows-container .dynamic-row').length;
-  var eduParts = [];
-  if (eduCount > 0) eduParts.push(eduCount + ' e\u011Fitim');
-  if (langCount > 0) eduParts.push(langCount + ' dil');
-  merkezSetText('merkez-sum-3', eduParts.length ? eduParts.join(' \u00B7 ') : null);
+  var certCount = document.querySelectorAll('#cert-rows-container .dynamic-row').length;
+  var p3 = document.getElementById('mk-preview-3');
+  var e3 = document.getElementById('mk-empty-3');
+  var pills3 = [];
+  if (eduCount > 0) pills3.push(eduCount + ' e\u011Fitim');
+  if (langCount > 0) pills3.push(langCount + ' dil');
+  if (certCount > 0) pills3.push(certCount + ' sertifika');
 
-  // Card 4: Tercihler
-  var prefParts = [];
-  if (selectedCalismaTipleri.length > 0) prefParts.push(selectedCalismaTipleri.join(', '));
-  if (selectedMusaitlik) prefParts.push(selectedMusaitlik);
-  if (val('f-maas')) prefParts.push('\u20BA' + val('f-maas'));
-  merkezSetText('merkez-sum-4', prefParts.length ? prefParts.join(' \u00B7 ') : null);
+  if (pills3.length > 0 && p3) {
+    p3.innerHTML = pills3.map(function(t) { return '<span class="bento-pill">' + _escHtml(t) + '</span>'; }).join('');
+    p3.style.display = '';
+    if (e3) e3.style.display = 'none';
+  } else {
+    if (p3) p3.style.display = 'none';
+    if (e3) e3.style.display = 'block';
+  }
+  var filled3 = [eduCount > 0, langCount > 0, certCount > 0].filter(Boolean).length;
+  updateBentoRing(3, Math.round((filled3 / 3) * 100));
 
-  // Card 5: Lokasyon
-  var cityKeys = Object.keys(selectedLocations);
-  merkezSetText('merkez-sum-5', cityKeys.length ? cityKeys.join(', ') : null);
+  // ── Card 4: Tercihler ──
+  var hasCalisma = typeof selectedCalismaTipleri !== 'undefined' && selectedCalismaTipleri.length > 0;
+  var hasMusaitlik = typeof selectedMusaitlik !== 'undefined' && !!selectedMusaitlik;
+  var hasMaas = !!val('f-maas');
+  var hasTarget = document.querySelectorAll('#target-roles-container .dynamic-row').length > 0;
+  var hasCareer = typeof selectedCareerTypes !== 'undefined' && selectedCareerTypes.length > 0;
 
-  // Update identity card in merkez
+  var p4 = document.getElementById('mk-preview-4');
+  var e4 = document.getElementById('mk-empty-4');
+  var pills4 = [];
+  if (hasCalisma) selectedCalismaTipleri.forEach(function(t) { pills4.push(t); });
+  if (hasMusaitlik) pills4.push(selectedMusaitlik);
+  if (hasTarget) pills4.push('\uD83C\uDFAF Hedef pozisyon \u2713');
+  if (hasCareer) pills4.push('\uD83D\uDCC8 Kariyer y\u00F6nelimi \u2713');
+
+  if (pills4.length > 0 && p4) {
+    p4.innerHTML = pills4.map(function(t) { return '<span class="bento-pill">' + _escHtml(String(t)) + '</span>'; }).join('');
+    p4.style.display = '';
+    if (e4) e4.style.display = 'none';
+  } else {
+    if (p4) p4.style.display = 'none';
+    if (e4) e4.style.display = 'block';
+  }
+  var filled4 = [hasCalisma, hasMusaitlik, hasMaas, hasTarget, hasCareer].filter(Boolean).length;
+  updateBentoRing(4, Math.round((filled4 / 5) * 100));
+
+  // ── Card 5: Lokasyon ──
+  var cityKeys = typeof selectedLocations !== 'undefined' ? Object.keys(selectedLocations) : [];
+  var p5 = document.getElementById('mk-preview-5');
+  var e5 = document.getElementById('mk-empty-5');
+
+  if (cityKeys.length > 0 && p5) {
+    var showCities = cityKeys.slice(0, 6);
+    var html5 = showCities.map(function(c) { return '<span class="bento-pill">\uD83D\uDCCD ' + _escHtml(c) + '</span>'; }).join('');
+    if (cityKeys.length > 6) html5 += '<span class="bento-pill">+' + (cityKeys.length - 6) + ' daha</span>';
+    p5.innerHTML = html5;
+    p5.style.display = '';
+    if (e5) e5.style.display = 'none';
+  } else {
+    if (p5) p5.style.display = 'none';
+    if (e5) e5.style.display = 'block';
+  }
+  updateBentoRing(5, cityKeys.length > 0 ? 100 : 0);
+
+  // Update identity card
   updateMerkezIdentity();
-  updateSectionStatuses();
 }
 
-function updateSectionStatuses() {
-  for (var i = 1; i <= 5; i++) {
-    var statusEl = document.getElementById('mk-status-' + i);
-    var summaryEl = document.getElementById('merkez-sum-' + i);
-    if (statusEl) {
-      if (summaryEl && summaryEl.style.display !== 'none' && summaryEl.textContent.trim()) {
-        statusEl.classList.add('done');
-      } else {
-        statusEl.classList.remove('done');
-      }
-    }
-  }
+function updateBentoRing(step, pct) {
+  var ring = document.getElementById('mk-ring-' + step);
+  if (!ring) return;
+  var fill = ring.querySelector('.ring-fill');
+  var label = ring.querySelector('.ring-pct');
+  var circumference = 2 * Math.PI * 15.5; // ~97.39
+  var offset = circumference - (circumference * Math.min(pct, 100) / 100);
+  if (fill) fill.style.strokeDashoffset = offset;
+  if (label) label.textContent = pct + '%';
 }
 
 function updateMerkezIdentity() {
@@ -1768,46 +1842,10 @@ function getProfileScoreHints() {
 function updateScoreUI() {
   var sc = calculateProfileScore();
   var hints = getProfileScoreHints();
-
-  // Update score value display
-  var valEl = document.getElementById('merkez-score-value');
-  if (valEl) {
-    valEl.textContent = '';
-    valEl.appendChild(document.createTextNode(sc));
-    var suffix = document.createElement('span');
-    suffix.textContent = sc >= 100 ? ' Mükemmel!' : '/100';
-    valEl.appendChild(suffix);
-  }
-
-  // Update legacy hint (small text)
-  var hintWrap = document.getElementById('merkez-score-hint');
-  var hintText = document.getElementById('merkez-hint-text');
-  if (hintWrap && hintText) {
-    if (hints.length > 0) {
-      hintWrap.style.display = '';
-      hintText.textContent = hints[0];
-    } else {
-      hintWrap.style.display = 'none';
-    }
-  }
-
-  // Update prominent hints as vermillion chips (up to 3)
-  var hintsContainer = document.getElementById('merkez-score-hints-active');
-  if (hintsContainer) {
-    while (hintsContainer.firstChild) hintsContainer.removeChild(hintsContainer.firstChild);
-    var maxHints = Math.min(hints.length, 3);
-    for (var i = 0; i < maxHints; i++) {
-      var chip = document.createElement('div');
-      chip.className = 'mk-score-hint-chip';
-      chip.innerHTML = '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>';
-      chip.appendChild(document.createTextNode(hints[i]));
-      hintsContainer.appendChild(chip);
-    }
-  }
-
-  // Update merkez score progress bar
-  var scoreBar = document.getElementById('merkez-score-bar');
-  if (scoreBar) scoreBar.style.width = sc + '%';
+  // Merkez stat cards removed; score/completion now shown per-section in bento rings.
+  // calculateProfileScore/getProfileScoreHints kept for potential future use (e.g. genel panel).
+  (void)(sc);
+  (void)(hints);
 }
 
 function updateCompletionUI() {
@@ -1819,21 +1857,7 @@ function updateCompletionUI() {
   var gPctText = document.getElementById('completion-pct');
   if (gPctText) gPctText.textContent = pct + '%';
 
-  // Merkez panel: stat card with monospace number + progress bar
-  var mPct = document.getElementById('merkez-completion-pct');
-  if (mPct) {
-    mPct.textContent = '';
-    mPct.appendChild(document.createTextNode(pct));
-    var suffix = document.createElement('span');
-    suffix.textContent = '%';
-    mPct.appendChild(suffix);
-  }
-  var mBar = document.getElementById('merkez-completion-bar');
-  if (mBar) mBar.style.width = pct + '%';
-  var mSub = document.getElementById('merkez-completion-sub');
-  if (mSub) mSub.textContent = pct >= 100 ? 'tüm alanlar dolduruldu ✓' : 'tamamlanması gereken alanlar var';
-
-  // Update profile score alongside completion
+  // Merkez completion/score now shown per-section in bento rings (no separate stat row).
   updateScoreUI();
 }
 
