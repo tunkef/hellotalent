@@ -6,7 +6,7 @@
 /* ── DESIGN TOKENS ── */
 :root {
   /* Brand / base palette */
-  --verm:#C94E28;--verm-light:#F5EDE9;--verm-dark:#A33D1E;
+  --verm:#C94E28;--verm-light:#F5EDE9;--verm-dark:#b84420;
   --navy:#1E2D5E;--navy-light:#EEF0F7;--navy-deep:#141f3d;
   --gray:#F7F6F4;--text:#111111;
   --muted:#6B7280;--border:#E5E3DF;
@@ -889,7 +889,7 @@ html[data-theme="dark"] .field-req{color:#F87171;}
 .g-meta-sep{opacity:0.3;}
 .g-hero-right{display:flex;align-items:center;gap:12px;flex-shrink:0;}
 .g-completion{display:flex;align-items:center;gap:6px;}
-.g-completion-bar{width:60px;height:4px;background:var(--border-strong,#ddd);border-radius:2px;overflow:hidden;}
+.g-completion-bar{width:60px;height:4px;background:var(--border-strong,#E5E7EB);border-radius:2px;overflow:hidden;}
 .g-completion-fill{height:100%;background:var(--verm);border-radius:2px;transition:width 0.5s;}
 .g-completion-text{font-family:var(--mono,'DM Mono',monospace);font-size:10px;color:var(--text-muted);}
 .badge-active{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;background:var(--success-soft);border:1px solid var(--green-border);border-radius:4px;font-size:10px;font-weight:600;color:var(--success);}
@@ -2249,7 +2249,7 @@ html[data-theme="dark"] .field-req{color:#F87171;}
   position: relative;
   width: 22px;
   height: 22px;
-  background: #ccc;
+  background: #D1D5DB;
   border-radius: 6px;
   transition: all 0.3s;
   flex-shrink: 0;
