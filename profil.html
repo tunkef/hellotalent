@@ -468,7 +468,7 @@ if (window.Sentry) {
       <div class="mk-bento-empty" id="mk-empty-3">Henüz eklenmedi<br><span class="mk-bento-cta">Eklemek için tıkla →</span></div>
     </div>
 
-    <div class="mk-bento-card purple span-2" data-step="4" onclick="editSection(4)">
+    <div class="mk-bento-card purple" data-step="4" onclick="editSection(4)">
       <div class="mk-bento-ring" id="mk-ring-4">
         <svg viewBox="0 0 36 36"><circle class="ring-track" cx="18" cy="18" r="15.5"/><circle class="ring-fill" cx="18" cy="18" r="15.5" stroke="#8B5CF6"/></svg>
         <span class="ring-pct">0%</span>
@@ -482,6 +482,36 @@ if (window.Sentry) {
       <div class="mk-bento-title">Tercihler & Lokasyon</div>
       <div class="mk-bento-preview" id="mk-preview-4"></div>
       <div class="mk-bento-empty" id="mk-empty-4">Henüz eklenmedi<br><span class="mk-bento-cta">Eklemek için tıkla →</span></div>
+    </div>
+
+    <!-- Profil Durumu (status card, full-width) -->
+    <div class="mk-bento-card mk-status-card span-2">
+      <div class="mk-status-header">
+        <span class="mk-status-dot" id="mk-status-dot"></span>
+        <span class="mk-status-text" id="mk-status-text">Profilin aktif — işverenler profilini görüntüleyebilir</span>
+      </div>
+      <div class="mk-status-toggles">
+        <div class="mk-status-cell">
+          <div class="mk-status-label">BENİ ÖNER</div>
+          <label class="toggle"><input type="checkbox" id="merkez-toggle-visibility" checked><span class="toggle-slider"></span></label>
+          <div class="mk-status-hint">Profilini işverenlere aç</div>
+        </div>
+        <div class="mk-status-cell">
+          <div class="mk-status-label">AKTİF ARAMA</div>
+          <label class="toggle"><input type="checkbox" id="merkez-toggle-active" checked><span class="toggle-slider"></span></label>
+          <div class="mk-status-hint">Rozet olarak görünür</div>
+        </div>
+        <div class="mk-status-cell" id="merkez-hide-row">
+          <div class="mk-status-label">İŞVERENİM GÖRMESİN</div>
+          <label class="toggle"><input type="checkbox" id="merkez-hide-from-current-employer"><span class="toggle-slider"></span></label>
+          <div class="mk-status-hint">Mevcut işvereninden gizle</div>
+        </div>
+      </div>
+      <div class="mk-status-premium">
+        <span class="mk-status-premium-pill">PREMIUM</span>
+        <span class="mk-status-premium-text">Öne Çıkar ile profilini listelerin başına taşı</span>
+        <span class="mk-status-premium-link">Yakında →</span>
+      </div>
     </div>
 
   </div>
@@ -525,27 +555,6 @@ if (window.Sentry) {
         </div>
         <button type="button" class="mk-ai-btn" id="btn-generate-cv-merkez" disabled>Yakında</button>
       </div>
-    </div>
-  </div>
-
-  <!-- Toggle Grid (below CV) -->
-  <div class="mk-toggle-grid">
-    <div class="mk-tg-cell mk-tg-premium">
-      <span class="mk-tg-label">Beni Öne Çıkar</span>
-      <label class="toggle"><input type="checkbox" id="merkez-toggle-premium" disabled><span class="toggle-slider"></span></label>
-      <span class="mk-tg-badge">Premium</span>
-    </div>
-    <div class="mk-tg-cell">
-      <span class="mk-tg-label">Aktif İş Arıyorum</span>
-      <label class="toggle"><input type="checkbox" id="merkez-toggle-active" checked><span class="toggle-slider"></span></label>
-    </div>
-    <div class="mk-tg-cell">
-      <span class="mk-tg-label">Beni Öner</span>
-      <label class="toggle"><input type="checkbox" id="merkez-toggle-visibility" checked><span class="toggle-slider"></span></label>
-    </div>
-    <div class="mk-tg-cell" id="merkez-hide-row">
-      <span class="mk-tg-label">İşverenim Görmesin</span>
-      <label class="toggle"><input type="checkbox" id="merkez-hide-from-current-employer"><span class="toggle-slider"></span></label>
     </div>
   </div>
 

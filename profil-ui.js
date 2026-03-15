@@ -2996,9 +2996,21 @@ function closeTgToast() {
     if (!visToggle) return;
     var isOn = visToggle.checked;
 
+    var dot = document.getElementById('mk-status-dot');
+    var text = document.getElementById('mk-status-text');
+    if (dot) {
+      dot.classList.toggle('inactive', !isOn);
+    }
+    if (text) {
+      text.textContent = isOn
+        ? 'Profilin aktif — işverenler profilini görüntüleyebilir'
+        : 'Profilin gizli — işverenlerle paylaşılmıyor';
+      text.classList.toggle('inactive', !isOn);
+    }
     if (hideCell) {
-      hideCell.style.opacity = isOn ? '1' : '0.35';
-      hideCell.style.pointerEvents = isOn ? 'auto' : 'none';
+      hideCell.classList.toggle('disabled', !isOn);
+      hideCell.style.opacity = isOn ? '' : '0.3';
+      hideCell.style.pointerEvents = isOn ? '' : 'none';
     }
 
     var sidebarDesc = document.getElementById('sidebar-benioner-desc');
@@ -3037,7 +3049,7 @@ function closeTgToast() {
 
   if (visToggle) {
     visToggle.addEventListener('change', function() {
-      var cell = visToggle.closest('.mk-tg-cell');
+      var cell = visToggle.closest('.mk-status-cell');
       if (visToggle.checked) {
         showTgToast('Profilin ve kişisel bilgilerin işverenlerle paylaşılacak.', cell);
       } else {
@@ -3058,7 +3070,7 @@ function closeTgToast() {
   var aktifToggle = document.getElementById('merkez-toggle-active');
   if (aktifToggle) {
     aktifToggle.addEventListener('change', function() {
-      var cell = this.closest('.mk-tg-cell');
+      var cell = this.closest('.mk-status-cell');
       if (this.checked) {
         showTgToast('İşverenler profilinde "Aktif iş arıyor" rozeti görecek.', cell);
       } else {
@@ -3070,7 +3082,7 @@ function closeTgToast() {
   var hideToggle = document.getElementById('merkez-hide-from-current-employer');
   if (hideToggle) {
     hideToggle.addEventListener('change', function() {
-      var cell = this.closest('.mk-tg-cell');
+      var cell = this.closest('.mk-status-cell');
       if (this.checked) {
         showTgToast('Mevcut işverenin profilini göremeyecek.', cell);
       } else {
