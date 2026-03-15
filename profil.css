@@ -249,6 +249,108 @@ body{
   display: inline-block;
   margin-bottom: 6px;
 }
+
+/* ── Animated Theme Toggle ── */
+.theme-toggle-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border-subtle);
+  background: var(--bg-surface, #fff);
+  cursor: not-allowed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s ease;
+  opacity: 0.5;
+  flex-shrink: 0;
+}
+.theme-toggle-btn .theme-icon {
+  width: 18px;
+  height: 18px;
+  position: absolute;
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.theme-toggle-btn .theme-icon svg {
+  width: 100%;
+  height: 100%;
+}
+.theme-toggle-btn .sun {
+  color: #F59E0B;
+  opacity: 1;
+  transform: rotate(0deg) scale(1);
+}
+.theme-toggle-btn .moon {
+  color: var(--navy);
+  opacity: 0;
+  transform: rotate(90deg) scale(0.5);
+}
+.theme-toggle-btn.dark .sun {
+  opacity: 0;
+  transform: rotate(-90deg) scale(0.5);
+}
+.theme-toggle-btn.dark .moon {
+  opacity: 1;
+  transform: rotate(0deg) scale(1);
+}
+@keyframes sunSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.theme-toggle-btn:hover .sun {
+  animation: sunSpin 4s linear infinite;
+}
+.theme-toggle-btn.theme-toggle-lg {
+  width: 48px;
+  height: 48px;
+}
+.theme-toggle-btn.theme-toggle-lg .theme-icon {
+  width: 22px;
+  height: 22px;
+}
+.theme-toggle-badge {
+  display: none;
+}
+.settings-theme-card .theme-toggle-badge.settings-theme-soon {
+  display: inline-block;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+.settings-theme-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  background: var(--bg-surface, #fff);
+  border-radius: 14px;
+  box-shadow: 0 0 0 1px rgba(0,0,0,.03), 0 2px 4px rgba(0,0,0,.05);
+}
+.settings-theme-card .settings-theme-title {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  margin-bottom: 2px;
+}
+.settings-theme-card .settings-theme-desc {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.sidebar-bottom-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-top: 1px solid var(--border-subtle);
+}
+.sidebar-bottom-row .sidebar-logout {
+  border: none;
+  padding: 0;
+  margin: 0;
+  background: none;
+}
 .toggle input:checked:disabled+.toggle-slider{
   background:var(--border);
 }
