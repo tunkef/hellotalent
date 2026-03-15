@@ -366,162 +366,183 @@ if (window.Sentry) {
   </div>
 </main>
 
-<!-- ═══ PANEL: PROFIL MERKEZI — v3 TERMINAL MODERN ═══ -->
+<!-- ═══ PANEL: PROFIL MERKEZI — card-based bento design ═══ -->
 <main class="panel" id="panel-merkez" data-panel="merkez">
 
-  <!-- 1: HERO (dark terminal) -->
-  <div class="m-hero">
-      <div class="m-hero-top">
-        <div id="merkez-identity">
-          <div class="m-avatar" id="merkez-avatar">?</div>
-          <div class="m-info">
-            <div class="m-name" id="merkez-name">&mdash;</div>
-            <div class="m-role" id="merkez-role-line" style="display:none;"><span id="merkez-role"></span><span class="m-role-sep">·</span><span id="merkez-company"></span></div>
-            <div class="m-meta">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-              <span id="merkez-city-text"></span>
-              <span id="merkez-exp-badge" style="display:none;"> · <span id="merkez-exp-text"></span></span>
-            </div>
-          </div>
-        </div>
-        <div class="m-controls">
-          <div class="m-toggle-row">
-            <span class="m-toggle-label">Profilimi işverenlere göster</span>
-            <label class="toggle">
-              <input type="checkbox" id="merkez-toggle-active" checked>
-              <span class="toggle-slider"></span>
-            </label>
-          </div>
-          <div class="m-toggle-row">
-            <span class="m-toggle-label">Profilimi öne çıkar</span>
-            <label class="toggle" style="pointer-events:none;opacity:0.5;">
-              <input type="checkbox" id="merkez-toggle-premium" disabled>
-              <span class="toggle-slider"></span>
-            </label>
-            <span style="font-size:10px;color:var(--text-muted);margin-left:4px;">Yakında Premium ile</span>
-          </div>
-          <div class="m-toggle-row" id="merkez-hide-row">
-            <span class="m-toggle-label">Mevcut işveren seni görmesin</span>
-            <label class="toggle">
-              <input type="checkbox" id="merkez-hide-from-current-employer">
-              <span class="toggle-slider"></span>
-            </label>
-          </div>
-        </div>
+  <!-- 1: Identity Card -->
+  <div class="mk-identity" id="merkez-identity">
+    <div class="mk-avatar" id="merkez-avatar">?</div>
+    <div class="mk-info">
+      <div class="mk-name" id="merkez-name">—</div>
+      <div class="mk-role" id="merkez-role-line" style="display:none;">
+        <strong id="merkez-role"></strong>
+        <span class="m-role-sep">·</span>
+        <span id="merkez-company"></span>
       </div>
+      <div class="mk-meta" id="merkez-city-badge">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        <span id="merkez-city-text"></span>
+        <span id="merkez-exp-badge" style="display:none;"> · <span id="merkez-exp-text"></span></span>
+      </div>
+    </div>
+    <div class="mk-controls">
+      <div class="mk-toggle-row">
+        <span class="mk-toggle-label">İşverenlere göster</span>
+        <label class="toggle"><input type="checkbox" id="merkez-toggle-active" checked><span class="toggle-slider"></span></label>
+      </div>
+      <div class="mk-toggle-row" id="merkez-hide-row">
+        <span class="mk-toggle-label">İşverenim görmesin</span>
+        <label class="toggle"><input type="checkbox" id="merkez-hide-from-current-employer"><span class="toggle-slider"></span></label>
+      </div>
+      <div class="mk-toggle-row">
+        <span class="mk-toggle-label">Profilimi öne çıkar</span>
+        <label class="toggle" style="pointer-events:none;opacity:0.5;">
+          <input type="checkbox" id="merkez-toggle-premium" disabled><span class="toggle-slider"></span>
+        </label>
+        <span style="font-size:9px;color:var(--text-muted);margin-left:2px;">Yakında</span>
+      </div>
+    </div>
   </div>
 
-  <!-- 2: STATS (terminal monospace) -->
-  <div class="m-stats">
-    <div class="m-stat green-accent">
-      <div class="m-stat-label">Tamamlanma</div>
-      <div class="m-stat-value" id="merkez-completion-pct">0<span>%</span></div>
-      <div class="m-stat-bar">
-        <div class="m-progress"><div class="m-progress-fill green" id="merkez-completion-bar" style="width:0%;"></div></div>
-      </div>
-      <div class="m-stat-sub" id="merkez-completion-sub">tamamlanması gereken alanlar var</div>
+  <!-- 2: Stats Row -->
+  <div class="mk-stats">
+    <div class="mk-stat green">
+      <div class="mk-stat-label">Tamamlanma</div>
+      <div class="mk-stat-value" id="merkez-completion-pct">0<span>%</span></div>
+      <div class="mk-stat-bar"><div class="mk-stat-fill green" id="merkez-completion-bar" style="width:0%;"></div></div>
+      <div class="mk-stat-hint" id="merkez-completion-sub">tamamlanması gereken alanlar var</div>
     </div>
-    <div class="m-stat verm-accent">
-      <div class="m-stat-label">Profil Skoru</div>
-      <div class="m-stat-value" id="merkez-score-value">0<span>/100</span></div>
-      <div class="m-stat-bar">
-        <div class="m-progress"><div class="m-progress-fill verm" id="merkez-score-bar" style="width:0%;"></div></div>
-      </div>
-      <div class="m-stat-sub" id="merkez-score-hint" style="display:none;"><span id="merkez-hint-text"></span></div>
+    <div class="mk-stat verm">
+      <div class="mk-stat-label">Profil Skoru</div>
+      <div class="mk-stat-value" id="merkez-score-value">0<span>/100</span></div>
+      <div class="mk-stat-bar"><div class="mk-stat-fill verm" id="merkez-score-bar" style="width:0%;"></div></div>
+      <div class="mk-stat-hint" id="merkez-score-hint" style="display:none;"><span id="merkez-hint-text"></span></div>
       <div id="merkez-score-hints-active"></div>
     </div>
   </div>
 
-  <!-- 3: SECTIONS -->
-  <div class="m-sections-header">Profil Bölümleri</div>
+  <!-- 3: Profile Sections -->
+  <div class="mk-sections-label">profil bölümleri</div>
 
-  <div class="m-section" data-step="1" onclick="editSection(1)">
-    <div class="m-section-left">
-      <div class="m-section-title">Kişisel Bilgiler</div>
-      <div class="m-section-summary" id="merkez-sum-1" style="display:none;"></div>
-      <div class="m-section-empty" id="merkez-sum-1-empty">Henüz eklenmedi</div>
+  <div class="mk-section" data-step="1" onclick="editSection(1)">
+    <div class="mk-section-status" id="mk-status-1"></div>
+    <div class="mk-section-icon navy">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
     </div>
-    <button class="btn-edit" onclick="editSection(1);event.stopPropagation();">Düzenle</button>
+    <div class="mk-section-info">
+      <div class="mk-section-title">Kişisel Bilgiler</div>
+      <div class="mk-section-summary" id="merkez-sum-1" style="display:none;"></div>
+      <div class="mk-section-empty" id="merkez-sum-1-empty">Henüz eklenmedi</div>
+    </div>
+    <svg class="mk-section-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
   </div>
 
-  <div class="m-section" data-step="2" onclick="editSection(2)">
-    <div class="m-section-left">
-      <div class="m-section-title">Deneyim</div>
-      <div class="m-section-summary" id="merkez-sum-2" style="display:none;"></div>
-      <div class="m-section-empty" id="merkez-sum-2-empty">Henüz eklenmedi</div>
+  <div class="mk-section" data-step="2" onclick="editSection(2)">
+    <div class="mk-section-status" id="mk-status-2"></div>
+    <div class="mk-section-icon verm">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a4 4 0 0 0-8 0v2"/></svg>
     </div>
-    <button class="btn-edit" onclick="editSection(2);event.stopPropagation();">Düzenle</button>
+    <div class="mk-section-info">
+      <div class="mk-section-title">Deneyim</div>
+      <div class="mk-section-summary" id="merkez-sum-2" style="display:none;"></div>
+      <div class="mk-section-empty" id="merkez-sum-2-empty">Henüz eklenmedi</div>
+    </div>
+    <svg class="mk-section-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
   </div>
 
-  <div class="m-section" data-step="3" onclick="editSection(3)">
-    <div class="m-section-left">
-      <div class="m-section-title">Eğitim & Dil</div>
-      <div class="m-section-summary" id="merkez-sum-3" style="display:none;"></div>
-      <div class="m-section-empty" id="merkez-sum-3-empty">Henüz eklenmedi</div>
+  <div class="mk-section" data-step="3" onclick="editSection(3)">
+    <div class="mk-section-status" id="mk-status-3"></div>
+    <div class="mk-section-icon green">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 1.66 2.69 3 6 3s6-1.34 6-3v-5" opacity="0.4"/></svg>
     </div>
-    <button class="btn-edit" onclick="editSection(3);event.stopPropagation();">Düzenle</button>
+    <div class="mk-section-info">
+      <div class="mk-section-title">Eğitim & Dil</div>
+      <div class="mk-section-summary" id="merkez-sum-3" style="display:none;"></div>
+      <div class="mk-section-empty" id="merkez-sum-3-empty">Henüz eklenmedi</div>
+    </div>
+    <svg class="mk-section-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
   </div>
 
-  <div class="m-section" data-step="4" onclick="editSection(4)">
-    <div class="m-section-left">
-      <div class="m-section-title">Tercihler</div>
-      <div class="m-section-summary" id="merkez-sum-4" style="display:none;"></div>
-      <div class="m-section-empty" id="merkez-sum-4-empty">Henüz eklenmedi</div>
+  <div class="mk-section" data-step="4" onclick="editSection(4)">
+    <div class="mk-section-status" id="mk-status-4"></div>
+    <div class="mk-section-icon purple">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
     </div>
-    <button class="btn-edit" onclick="editSection(4);event.stopPropagation();">Düzenle</button>
+    <div class="mk-section-info">
+      <div class="mk-section-title">Tercihler</div>
+      <div class="mk-section-summary" id="merkez-sum-4" style="display:none;"></div>
+      <div class="mk-section-empty" id="merkez-sum-4-empty">Henüz eklenmedi</div>
+    </div>
+    <svg class="mk-section-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
   </div>
 
-  <div class="m-section" data-step="5" onclick="editSection(5)">
-    <div class="m-section-left">
-      <div class="m-section-title">Lokasyon Tercihleri</div>
-      <div class="m-section-summary" id="merkez-sum-5" style="display:none;"></div>
-      <div class="m-section-empty" id="merkez-sum-5-empty">Henüz eklenmedi</div>
+  <div class="mk-section" data-step="5" onclick="editSection(5)">
+    <div class="mk-section-status" id="mk-status-5"></div>
+    <div class="mk-section-icon amber">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/><circle cx="12" cy="10" r="1" fill="currentColor" opacity="0.3"/></svg>
     </div>
-    <button class="btn-edit" onclick="editSection(5);event.stopPropagation();">Düzenle</button>
+    <div class="mk-section-info">
+      <div class="mk-section-title">Lokasyon Tercihleri</div>
+      <div class="mk-section-summary" id="merkez-sum-5" style="display:none;"></div>
+      <div class="mk-section-empty" id="merkez-sum-5-empty">Henüz eklenmedi</div>
+    </div>
+    <svg class="mk-section-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
   </div>
 
-  <!-- 4: CV UPLOAD (compact, premium) -->
-  <div class="m-cv">
-    <div class="m-cv-upload" id="cv-upload-area">
-      <div class="m-cv-drop" id="cv-drop-zone">
+  <!-- 4: CV Upload + Premium (side by side) -->
+  <div class="mk-cv-row">
+    <div class="mk-cv-upload" id="cv-upload-area">
+      <div class="mk-cv-drop" id="cv-drop-zone">
         <input type="file" id="cv-file-input" accept=".pdf,.doc,.docx" style="display:none;">
-        <div class="m-cv-drop-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        <div class="mk-cv-drop-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
         </div>
-        <div class="m-cv-drop-main">CV'nizi buraya sürükleyin veya tıklayın</div>
-        <div class="m-cv-drop-sub">Yükleyin, profil skorunuz artsın ve işverenler sizi görsün</div>
-        <div class="m-cv-types">
-          <span class="m-cv-ft">PDF</span>
-          <span class="m-cv-ft">DOC</span>
-          <span class="m-cv-ft">DOCX</span>
+        <div class="mk-cv-drop-title">CV'nizi yükleyin</div>
+        <div class="mk-cv-drop-sub">Sürükleyin veya tıklayın</div>
+        <div class="mk-cv-types">
+          <span class="mk-cv-ft">PDF</span>
+          <span class="mk-cv-ft">DOC</span>
+          <span class="mk-cv-ft">DOCX</span>
         </div>
-        <button type="button" class="m-cv-select-btn" id="btn-cv-select">Dosya Seç</button>
-        <div class="m-cv-hint">Maks 5 MB</div>
+        <button type="button" class="mk-cv-select-btn" id="btn-cv-select">Dosya Seç</button>
+        <div class="mk-cv-hint">Maks 5 MB</div>
       </div>
-      <div class="m-cv-uploaded" id="cv-uploaded-state" style="display:none;">
-        <span class="m-cv-uploaded-icon" aria-hidden="true">
+      <div class="mk-cv-uploaded" id="cv-uploaded-state" style="display:none;">
+        <span class="mk-cv-uploaded-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
         </span>
-        <div class="m-cv-uploaded-info">
-          <div class="m-cv-uploaded-name" id="cv-uploaded-name"></div>
-          <div class="m-cv-uploaded-date" id="cv-uploaded-date"></div>
+        <div class="mk-cv-uploaded-info">
+          <div class="mk-cv-uploaded-name" id="cv-uploaded-name"></div>
+          <div class="mk-cv-uploaded-date" id="cv-uploaded-date"></div>
         </div>
-        <div class="m-cv-uploaded-actions">
-          <button type="button" class="m-cv-btn m-cv-btn-change" id="btn-cv-reupload">DEĞİŞTİR</button>
-          <button type="button" class="m-cv-btn m-cv-btn-delete" id="btn-cv-delete">SİL</button>
+        <div class="mk-cv-uploaded-actions">
+          <button type="button" class="mk-cv-btn mk-cv-btn-change" id="btn-cv-reupload">DEĞİŞTİR</button>
+          <button type="button" class="mk-cv-btn mk-cv-btn-delete" id="btn-cv-delete">SİL</button>
         </div>
       </div>
-      <div class="m-cv-premium">
-        <svg class="m-cv-premium-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-        <span class="m-cv-premium-text">AI ile CV'nizi Optimize Edin (Premium)</span>
+    </div>
+    <div class="mk-cv-premium-card">
+      <div class="mk-cv-premium-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
       </div>
+      <div class="mk-cv-premium-title">AI ile CV Optimize</div>
+      <div class="mk-cv-premium-desc">Yapay zeka CV'nizi analiz edip güçlendirsin</div>
+      <button type="button" class="mk-cv-premium-btn" id="btn-generate-cv-merkez" disabled>YAKINDA</button>
     </div>
   </div>
 
-  <!-- 5: FOOTER -->
-  <div class="m-footer">
-    <span class="m-footer-text">Premium aday avantajları çok yakında</span>
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+  <!-- 5: Footer -->
+  <div class="mk-footer">
+    <div class="mk-footer-left">
+      <div class="mk-footer-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      </div>
+      <div>
+        <div class="mk-footer-text">Premium Aday Avantajları</div>
+        <div class="mk-footer-sub">Öne çıkar, AI CV, kariyer koçluğu</div>
+      </div>
+    </div>
+    <svg class="mk-footer-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
   </div>
 
 </main>

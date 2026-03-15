@@ -1414,6 +1414,21 @@ function updateMerkezCards() {
 
   // Update identity card in merkez
   updateMerkezIdentity();
+  updateSectionStatuses();
+}
+
+function updateSectionStatuses() {
+  for (var i = 1; i <= 5; i++) {
+    var statusEl = document.getElementById('mk-status-' + i);
+    var summaryEl = document.getElementById('merkez-sum-' + i);
+    if (statusEl) {
+      if (summaryEl && summaryEl.style.display !== 'none' && summaryEl.textContent.trim()) {
+        statusEl.classList.add('done');
+      } else {
+        statusEl.classList.remove('done');
+      }
+    }
+  }
 }
 
 function updateMerkezIdentity() {
@@ -1777,7 +1792,7 @@ function updateScoreUI() {
     var maxHints = Math.min(hints.length, 2);
     for (var i = 0; i < maxHints; i++) {
       var hintDiv = document.createElement('div');
-      hintDiv.className = 'm-stat-hint-active';
+      hintDiv.className = 'mk-stat-hint-active';
       var arrowSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
       arrowSvg.setAttribute('viewBox', '0 0 24 24');
       arrowSvg.setAttribute('fill', 'none');
