@@ -1,5 +1,5 @@
 # hellotalent.ai — Technical Handoff Document
-> Son güncelleme: 15 Mart 2026
+> Son güncelleme: 15 Mart 2026 (gece session dahil)
 > Bu doküman, projenin mevcut durumunu, tamamlanan işleri ve kalan backlog'u kapsar.
 > Yeni bir chat/session başlatırken bu dosyayı referans olarak kullanın.
 
@@ -337,92 +337,104 @@ Louis Vuitton (#6B4C2A), Gucci (#00613C), Prada (#1A1A1A), Hermès (#E35205), Di
 - [ ] Dark mode uyumu
 - [ ] Yeni marka eklendiğinde logo upload + color map güncelleme süreci dokümante et
 
-### P2 — Profil Merkezi Redesign (15 Mart 2026) ✅
+### P2 — Profil Merkezi Complete Redesign (15 Mart 2026) ✅
 
-**Profil Merkezi: Dark Terminal → Modern Card-Based Layout**
+**Identity Card:** Korundu — avatar + isim + role/company + şehir/deneyim + "Profilimi Önizle" butonu (particle confetti animation, vermillion).
 
-Identity Card:
-- Dark `.m-hero` → temiz beyaz kart (avatar + isim + role/company + şehir/deneyim)
-- Toggle'lar identity card'dan kaldırıldı → ayrı toggle grid'e taşındı
-- "Profilimi Önizle" butonu eklendi (identity card sağında)
-- Tüm JS ID'leri korundu (merkez-identity, merkez-avatar, merkez-name, vb.)
+**Premium CTA:** Identity card altında, dark navy gradient + shimmer animation, "Premium Aday Avantajları" banner.
 
-Stats Row:
-- İki yan yana kart: Tamamlanma (%) + Profil Skoru (/100)
-- Sol accent bar (green/vermillion), DM Mono büyük rakamlar
-- Hint sistemi (score hints active)
+**Bento Section Cards (4 kart, 4-column grid):**
+- Genel Bakış design language ile tutarlı — aynı shadow, border-radius (18px), hover davranışı
+- Kart 1: Kişisel Bilgiler (isim + şehir/doğum yılı/cinsiyet meta + Telefon/LinkedIn badge)
+- Kart 2: Deneyim (son pozisyon + şirket + tarih + "+N daha")
+- Kart 3: Eğitim & Dil (okul adı + bölüm, dil pill'leri with level, sertifika sayısı)
+- Kart 4: Tercihler & Lokasyon (çalışma tipi + müsaitlik + hedef pozisyon + şehir pill'leri)
+- Her kartta: sol üst ✓ badge (complete) veya ring gauge (incomplete, accent renkli)
+- Her kartta: sağ üst animated edit button (pencil rotate + underline on hover)
+- Rich data preview — emoji yok, gerçek veri, `.data-line`, `.data-sub`, `.data-pill`, `.data-ok` classes
+- Accent bar yok (kaldırıldı), soft 3-layer shadow (Genel Bakış ile aynı)
+- `_countFilledRows()` helper — boş default row'ları saymaz
+- Sertifika ring'i etkilemez (opsiyonel)
+- Responsive: 2-col @1200px, 1-col @768px. Text truncation with ellipsis.
 
-Profil Bölümleri:
-- Border-left satırlar → 5 renkli icon kartı (navy/verm/green/purple/amber)
-- Status dot (yeşil=tamam, gri=eksik) + hover arrow animasyonu
-- `updateSectionStatuses()` fonksiyonu eklendi
+**Profil Durumu (Controls Card — bento grid row 2, left):**
+- Beyaz/light bg, standard toggle'lar (görünür, dark bg sorunu yok)
+- Status header: yeşil dot + "Profilin aktif" / "Profilin gizli"
+- 3 toggle dikey stack: Beni Öner, Aktif İş Arama, İşverenim Görmesin
+- "Beni Öner" OFF → dot gri, text muted, "İşverenim Görmesin" disabled
+- Toggle ID'leri korundu: `merkez-toggle-visibility`, `merkez-toggle-active`, `merkez-hide-from-current-employer`
 
-CV Upload (Yan Yana):
-- Sol: drag-drop upload kartı (compact, horizontal layout)
-- Sağ: "AI ile CV Optimize" dark kart (btn-generate-cv-merkez, disabled)
-- Eşit yükseklik, min-height: 80px
+**Premium Öne Çıkar Card (bento grid row 2, right):**
+- Dark navy bg, "PREMIUM" badge, "Beni Öne Çıkar" title, disabled toggle, "Yakında"
+- Ayrı kart — toggle'lar ile karışmıyor
 
-Premium CTA:
-- En alta → en üste taşındı (identity card'ın hemen altı)
-- Subtle shimmer animasyonu (4s loop)
-- "Premium Aday Avantajları — Öne çıkar, AI CV, kariyer koçluğu"
+**CV + AI CV (bento grid row 2, 3. ve 4. kart):**
+- CV kartı: "CV Görüntüle" (tıklanabilir, yeni tab) + tarih + Değiştir/Sil butonları
+- AI CV kartı: dark navy, "AI ile CV Optimize", "Yakında" disabled button
+- Dosya adı yerine "CV Görüntüle" label'ı
 
-Branded Loading Transition:
-- profil.html: hellotalent.ai logo + 5-dot wave animation + tagline
-- Minimum 4 saniye, app body arka planda yüklenir
+**Profil Önizleme Drawer:**
+- Beyaz background, accent bar'lar kaldırıldı
+- Soft 3-layer shadow (dashboard ile tutarlı)
+- Particle confetti button (vermillion) — "Profilimi Önizle"
+- CV, İletişim (maskelenmiş), Son güncelleme tarihi
 
-Gate/Login Akışı Fix:
-- index.html session auto-redirect kaldırıldı
-- Gate → index → "Giriş Yap" → profil.html → 4sn loading → dashboard
+**Wizard — 6 Adımlı Sistem:**
+- Step 1-5: mevcut (Kişisel, Kariyer, Eğitim, Tercihler, Lokasyon)
+- Step 6 (YENİ): "Profil Ayarları" — toggle onboarding
+  - Beni Öner, Aktif İş Arama, İşverenim Görmesin (devam_ediyor kontrolü), Premium teaser
+  - Toggle'lar merkez toggle'ları ile bidirectional sync (dispatchEvent)
+  - `updateStep6HideState()` her Step 6 ziyaretinde çalışır
+  - "İşverenim Görmesin" — employer yoksa disabled + açıklayıcı hint
+- `TOTAL_STEPS = 6`, adım sayacı gizli (sadece progress bar ikonları)
+- "Kaydet ve Çık" butonu — her step'te görünür, green outline, sağ tarafta gap ile
+- "Tamamla" butonu sadece Step 6'da
+- Animated success modal — SVG circle draw + polyline tick animation
 
-**Profil Önizleme Modal (Profilimi Önizle):**
-- Full-screen modal: "İşverenlerin gördüğü profil görünümü" navy banner
-- Hero: avatar + isim + role + şehir + deneyim yılı + "Aktif aday" badge
-- Deneyim timeline (yeşil dot=devam, gri=geçmiş)
-- Eğitim & Dil + Sertifikalar
-- Tercihler & Lokasyon (tag pill'ler)
-- CV: tıklanabilir dosya adı (target=_blank)
-- İletişim: maskelenmiş email (k****@gmail.com) + telefon (536 *** ** 57) + 🔒 Gizli badge
-- Son güncelleme tarihi (candidates.updated_at)
-- ESC ile kapatma, overlay click, body scroll lock
-- Maaş beklentisi GÖSTERİLMEZ (privacy)
-- Veri kaynağı: `_loadedDBData` (ek API call yok)
+**Wizard Polish:**
+- Input tutarlılığı: tüm step'lerde aynı border, bg, border-radius, focus state
+- Exp-card ve dynamic-row: frame/bg kaldırıldı → transparent + border-bottom divider
+- Dynamic row `padding-right: 44px` — trash buton çakışması önlendi
+- Animated trash delete butonları (SVG icon, hover red + rotate, 5 lokasyon)
+- Custom green checkbox (`.cb-check` + `.cbPop` animation) — "Henüz deneyimim yok", "Halen burada çalışıyorum"
+- Çalışma Tipleri: `CALISMA_TIPLERI` ayrı array (Stajyer çıkarıldı), `.check-item` toggle chip pattern
+- Kariyer Yönelimi: aynı `.check-item` pattern, green when selected
+- `ISTIHDAM_TIPLERI` değişmedi — experience card dropdown'ında hâlâ Stajyer var
 
-**Toggle Grid (Cookie-Consent Style):**
-- Identity card'daki 3 vertical toggle → 4-column horizontal bento grid
-- Her toggle ayrı kart (gap: 10px, bento style)
-- Cell 1: "Beni Öne Çıkar" — navy dark bg, PREMIUM badge sol üst, disabled
-- Cell 2: "Aktif İş Arıyorum" — bağımsız badge toggle, DB yazmaz (ileride candidates.actively_looking)
-- Cell 3: "Beni Öner" — candidates.is_active'e yazılır, sidebar + ayarlar ile sync
-- Cell 4: "İşverenim Görmesin" — Cell 3 kapalıyken fade out (opacity 0.35)
-- "Beni Öner" kapalıyken kırmızı hint: "Profilin ve CV'n işverenlerle paylaşılmaz"
-- Responsive: 2×2 grid mobilde
+**Sidebar:**
+- "Beni Öner" toggle gizlendi (display:none, JS sync korundu)
+- "Beni öne çıkar" → dark navy premium card wrapper, PREMIUM badge
+- "Çıkış Yap" + sun/moon theme toggle yan yana (sidebar-bottom-row)
+- Theme toggle disabled, "Yakında" title, sun icon amber, slow spin on hover
+
+**Ayarlar:**
+- Görünüm/Tema: 3 radio button → tek settings-theme-card ("Koyu mod desteği yakında")
+- Sun/moon theme toggle (larger 48px, disabled)
+- "Aktif Arama" → "Aktif İş Arama" renaming
 
 **UX Kararları:**
-- "Aktif İş Arıyorum" sadece rozet — kapatmak profili gizlemez
+- "Aktif İş Arama" sadece rozet — kapatmak profili gizlemez
 - Sisteme giren herkes önerilir, sadece "Beni Öner" kapalıysa önerilmez
-- "Beni Öner" = sidebar toggle = ayarlar toggle = aynı DB field (is_active)
-- Toggle isimleri tüm yerlerde tutarlı: "Beni Öner"
+- "Beni Öner" = sidebar toggle = ayarlar toggle = wizard step 6 = aynı DB field (is_active)
+- Sertifika opsiyonel — ring gauge'ı etkilemez
+- Stajyer sadece deneyim dropdown'ında, çalışma tercihi'nde DEĞİL
 
 **Dosya Yapısı (güncel):**
-- profil.html (~2100+ lines) — tüm paneller, bento grid, loading screen, toggle grid, preview modal
-- profil-core.js — Supabase client, shared auth promise
-- profil-ui.js (~2400+ lines) — flip cards, brand colors, merkez cards, preview modal, toggle logic
-- profil.css — flip card, bento grid, loading screen, toggle grid, preview modal styles
-- profil-settings.js — settings, deletion banner
+- profil.html (~2300+ lines) — tüm paneller, bento grid, wizard 6 step, loading screen, preview drawer
+- profil-core.js (233 lines) — Supabase client, shared auth promise, constant arrays
+- profil-ui.js (~3100+ lines) — bento cards, brand colors, merkez cards, preview drawer, toggle logic, wizard step 6
+- profil.css (~2300+ lines) — bento grid, mk-card, mk-controls, mk-premium, wizard settings, theme toggle
+- profil-data.js (94 lines) — data arrays
+- profil-settings.js (661 lines) — settings, deletion banner
 
-**Git Commits (15 Mart 2026):**
-```
-feat: profil merkezi modern card redesign — identity, stats, sections, CV side-by-side (65b4c9c)
-fix: premium CTA top + CV section compact redesign (22b5928)
-feat: profile preview modal + 1deneyim spacing fix
-feat: horizontal toggle grid — cookie-consent style, 4 columns
-fix: toggle grid polish — bento gaps, navy premium, alignment, independent toggle logic
-```
-
-**PENDING Cursor Prompts (sırayla yapıştırılacak):**
-- [ ] cursor-preview-polish.md — Banner shadow, company bold, son güncelleme, CV link
-- [ ] cursor-toggle-polish.md — Bento gaps, navy premium, alignment, "Beni Öner" naming + sync
+**Kaldırılanlar (bu session'da):**
+- Stats row (Tamamlanma % + Profil Skoru /100) — section ring'lere dağıtıldı
+- Eski mk-section küçük kartlar → 4 büyük bento kart
+- Accent bar'lar (renkli sol çizgiler) — tüm kartlardan kaldırıldı
+- Hover slide-up + CTA reveal → edit button + static kart
+- Neumorphic deneme → revert edildi (Genel Bakış design language'a geri dönüldü)
+- Emoji'ler card preview'dan kaldırıldı
+- Ayarlar'daki tema radio butonları → theme toggle card
 
 
 ### P3 — Employer Onboarding & Team System (Yeni — Bu session'da tasarlandı)
@@ -556,27 +568,43 @@ git diff dosya.html | head -100
 
 ---
 
-## 11. Git Commit Geçmişi (14 Mart 2026)
+## 11. Git Commit Geçmişi (14-15 Mart 2026)
 
 ```
 refactor: centralize Supabase config in shared.js - Phase 1 (7 pages)
-fix: HT not defined fallback for pages where inline script runs before shared.js
-refactor: Supabase config traceability - Phase 2 (giris, ik, profil)
-fix: standardize auth guards - employer role redirect + gate check on content pages
-fix: cross-role login prevention - employer/candidate tab validation
-fix: work_prefs query .single() → .maybeSingle() for new users (Sentry fix)
-docs: schema drift report + 3 live DB fixes applied
+fix: HT not defined fallback
+refactor: Supabase config traceability - Phase 2
+fix: standardize auth guards - employer role redirect + gate check
+fix: cross-role login prevention
+fix: work_prefs .single() → .maybeSingle() (Sentry fix)
+docs: schema drift report + 3 live DB fixes
 feat: replace mock ADAYLAR with live Supabase data (P2 #7)
-feat: email auth sync + email change flow in Ayarlar (P2 #8)
-feat: P2 #9 Settings MVP — bildirim tercihleri, engelli şirketler, hesap dondur/sil, CV görünürlük copy (4 features)
-fix: P2 #9 closure — hide blocking UI, add employer enforcement, add deletion banner
-chore: clean code audit — remove 24 debug logs, fix Sentry TODO, remove fallback save, deduplicate 320 lines CSS, improve config traceability
-chore: add CLAUDE.md + project rules (supabase, code-quality, deploy, turkish-ui, architecture)
-feat: P2 #10 — İK email sync (auto-sync + email change UI)
-feat: profil merkezi modern card redesign (65b4c9c)
-fix: premium CTA top + CV section compact redesign (22b5928)
-feat: profile preview modal + 1deneyim spacing fix
-feat: horizontal toggle grid — 4 columns, cookie-consent style
+feat: email auth sync + email change flow (P2 #8)
+feat: P2 #9 Settings MVP (4 features)
+fix: P2 #9 closure
+chore: clean code audit (-1192 satır)
+chore: add CLAUDE.md + project rules
+feat: P2 #10 — İK email sync
+feat: profil merkezi card redesign + preview modal + toggle grid
+
+--- 15 Mart Gece Session (~20 commit, Profil Merkezi Complete Overhaul) ---
+feat: bento section cards — ring gauges, preview data, save-exit button
+fix: void syntax error, phantom row count, cert ring optional
+feat: UX overhaul — conditional rings, rich previews, merged lokasyon
+feat: genel bakış design language redesign
+feat: compact 4-col grid, animated edit btn, toggle strip + premium card
+fix: checkmark bottom-right, accent bars removed, 4-col bottom row
+fix: wizard nav gap, animated trash delete, input consistency, typography
+fix: CV label, toggle vertical stack, responsive wrap
+fix: card frames removed, custom green checkboxes
+fix: exp-card red border, trash alignment, checkbox pills
+fix: preview drawer polish, toggle rename, particle button
+fix: Stajyer removed from Çalışma Tipleri → check-item toggle chips
+feat: wizard step 6 — profil ayarları toggle onboarding
+fix: step 6 employer detection, hide step counter
+fix: success modal animated checkmark
+fix: sidebar beni-öner hidden, premium frame for öne çıkar
+feat: sun/moon theme toggle (disabled — yakında)
 ```
 
 ---
@@ -585,12 +613,19 @@ feat: horizontal toggle grid — 4 columns, cookie-consent style
 
 Yeni bir chat açtığında şunu söyle:
 
-> "hellotalent.ai projesi üzerinde çalışıyoruz. Lütfen docs/handoff.md dosyasını oku ve kaldığımız yerden devam edelim. Sıradaki: Profil Merkezi polish (pending Cursor prompts) veya P3 — Employer Onboarding."
+> "hellotalent.ai projesi üzerinde çalışıyoruz. Lütfen docs/handoff.md dosyasını oku ve kaldığımız yerden devam edelim."
 
 Ya da Claude Code'da:
 ```bash
 cat docs/handoff.md
 ```
+
+### Sıradaki Öncelikler
+1. **Dark mode implementation** — theme toggle hazır (disabled), CSS dark theme variables + sayfa bazlı dark uyumluluk
+2. **Mobil test** (390×844) — tüm yeni bento kartlar, toggle'lar, wizard step 6 mobilde test
+3. **Profil önizleme drawer** — daha zengin içerik (alan mevcut), dark mode uyumu
+4. **P3 — Employer Onboarding** — tek/çoklu marka flow, domain doğrulama, İK ekip sistemi
+5. **P3 — İşveren-Aday İletişim Sistemi** — DM + follow + templates
 
 ### Önceki Transkriptler
 Tam konuşma geçmişi:
@@ -598,3 +633,4 @@ Tam konuşma geçmişi:
 - /mnt/transcripts/2026-03-14-13-09-47-hellotalent-dev-session-p2-start.txt
 - /mnt/transcripts/2026-03-15-09-40-04-hellotalent-markalar-panel.txt
 - /mnt/transcripts/2026-03-15-11-50-02-hellotalent-markalar-dashboard-gelistirme.txt
+- 2026-03-15 gece session: Profil Merkezi complete overhaul (~20 commit)
