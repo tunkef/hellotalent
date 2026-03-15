@@ -1599,7 +1599,8 @@ async function loadProfileFromDB() {
       cv_filename: cand.cv_filename || null,
       cv_uploaded_at: cand.cv_uploaded_at || null,
       son_sirket: cand.son_sirket || null,
-      hide_from_current_employer: cand.hide_from_current_employer === true
+      hide_from_current_employer: cand.hide_from_current_employer === true,
+      updated_at: cand.updated_at || null
     },
     no_experience: cand.ilk_deneyim || false,
     experiences: (expRes.data || []).map(function(e) {
@@ -2689,7 +2690,7 @@ function openProfilePreview() {
       html += '<div class="pp-item-dot ' + dotClass + '"></div>';
       html += '<div class="pp-item-info">';
       html += '<div class="pp-item-main">' + _escHtml(role) + '</div>';
-      html += '<div class="pp-item-sub">' + _escHtml(display);
+      html += '<div class="pp-item-sub"><strong style="color:var(--text-secondary);font-weight:600;">' + _escHtml(display) + '</strong>';
       if (e.departman) html += ' · ' + _escHtml(e.departman);
       if (e.istihdam_tipi) html += ' · ' + _escHtml(e.istihdam_tipi);
       html += '</div>';
@@ -2775,7 +2776,7 @@ function openProfilePreview() {
     html += '<div class="pp-section-title">CV</div>';
     html += '<div class="pp-cv-row">';
     html += '<div class="pp-cv-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>';
-    html += '<div class="pp-cv-name">' + _escHtml(p.cv_filename) + '</div>';
+    html += '<a class="pp-cv-name pp-cv-link" href="' + _escHtml(p.cv_url) + '" target="_blank" rel="noopener" onclick="event.stopPropagation()">' + _escHtml(p.cv_filename) + '</a>';
     if (p.cv_uploaded_at) {
       var d = new Date(p.cv_uploaded_at);
       html += '<div class="pp-cv-date">' + d.toLocaleDateString('tr-TR') + '</div>';
@@ -2810,6 +2811,12 @@ function openProfilePreview() {
   html += '<span class="pp-contact-lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Gizli</span>';
   html += '</div>';
   html += '<div style="font-size:10px;color:var(--text-muted);text-align:center;margin-top:10px;padding-top:8px;border-top:1px solid var(--border, #e8e6e3);">İletişim bilgileri işveren tarafından görüntülenebilir</div>';
+  html += '</div>';
+
+  var lastUpdated = (p.updated_at) ? new Date(p.updated_at).toLocaleDateString('tr-TR') : new Date().toLocaleDateString('tr-TR');
+  html += '<div class="pp-last-updated">';
+  html += '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>';
+  html += 'Son güncelleme: ' + _escHtml(lastUpdated);
   html += '</div>';
 
   var contentEl = document.getElementById('pp-content');
