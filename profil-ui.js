@@ -1234,8 +1234,8 @@ async function saveProfileRPC() {
     linkedin: nullIfEmpty(val('f-linkedin')),
     engel_durumu: nullIfEmpty(val('f-engel')),
     askerlik_durumu: nullIfEmpty(val('f-askerlik')),
-    is_active: document.getElementById('merkez-toggle-active')
-      ? document.getElementById('merkez-toggle-active').checked
+    is_active: document.getElementById('merkez-toggle-visibility')
+      ? document.getElementById('merkez-toggle-visibility').checked
       : (_loadedDBData && _loadedDBData.profile && typeof _loadedDBData.profile.is_active === 'boolean'
           ? _loadedDBData.profile.is_active
           : true),
@@ -1297,11 +1297,9 @@ async function saveProfileRPC() {
       if (_loadedDBData.profile) _loadedDBData.profile.is_active = p_profile.is_active;
     }
     updateStatusUI(p_profile.is_active);
-    var mta = document.getElementById('merkez-toggle-active');
-    if (mta) mta.checked = p_profile.is_active;
     var vis = document.getElementById('merkez-toggle-visibility');
     if (vis) vis.checked = p_profile.is_active;
-    if (typeof updateHideRowVisibility === 'function') updateHideRowVisibility();
+    if (typeof updateMerkezVisState === 'function') updateMerkezVisState();
     // Update sidebar name
     var nameEl = document.getElementById('sidebar-user-name');
     if (nameEl && p_profile.full_name) nameEl.textContent = p_profile.full_name;
@@ -1516,7 +1514,7 @@ function updateMerkezIdentity() {
   // Show identity card
   var idCard = document.getElementById('merkez-identity');
   if (idCard && val('f-adsoyad')) idCard.style.display = '';
-  if (typeof updateHideRowVisibility === 'function') updateHideRowVisibility();
+  if (typeof updateMerkezVisState === 'function') updateMerkezVisState();
 }
 
 // ═══════════════════════════════════════════════════
@@ -2849,51 +2847,45 @@ function closeProfilePreview() {
   });
 })();
 
-// ── Toggle Grid: visibility sync + hide row dim ──
-function updateHideRowVisibility() {
-  var hideRow = document.getElementById('merkez-hide-row');
-  var visToggle = document.getElementById('merkez-toggle-visibility');
-  if (hideRow && visToggle) {
-    hideRow.style.opacity = visToggle.checked ? '1' : '0.35';
-    hideRow.style.pointerEvents = visToggle.checked ? 'auto' : 'none';
-  }
-}
-
-(function initToggleGrid() {
+// ── Toggle Grid Logic ──
+(function() {
   var visToggle = document.getElementById('merkez-toggle-visibility');
   var visHint = document.getElementById('mk-tg-visibility-hint');
-  var activeToggle = document.getElementById('merkez-toggle-active');
+  var hideCell = document.getElementById('merkez-hide-row');
 
-  function updateVisHint() {
-    if (!visHint) return;
-    if (visToggle && !visToggle.checked) {
-      visHint.textContent = 'İşverenler profilini ve CV\'ni göremez';
-      visHint.style.color = '#ef4444';
-    } else {
-      visHint.textContent = '';
+  function updateVisState() {
+    if (!visToggle) return;
+    var isOn = visToggle.checked;
+
+    if (visHint) {
+      visHint.textContent = isOn ? '' : 'İşverenler profilini ve CV\'ni göremez';
+      visHint.style.display = isOn ? 'none' : '';
+    }
+
+    if (hideCell) {
+      hideCell.style.opacity = isOn ? '1' : '0.35';
+      hideCell.style.pointerEvents = isOn ? 'auto' : 'none';
     }
   }
 
-  if (visToggle && visHint) {
+  if (visToggle) {
     visToggle.addEventListener('change', function() {
-      if (activeToggle) {
-        activeToggle.checked = visToggle.checked;
-        activeToggle.dispatchEvent(new Event('change'));
+      updateVisState();
+      if (typeof updateStatusUI === 'function') updateStatusUI(visToggle.checked);
+      if (typeof _loadedDBData !== 'undefined' && _loadedDBData && _loadedDBData.profile) _loadedDBData.profile.is_active = visToggle.checked;
+      if (typeof refreshVisibilitySummary === 'function') refreshVisibilitySummary();
+      if (typeof supabase !== 'undefined' && typeof currentUser !== 'undefined' && currentUser) {
+        supabase.from('candidates')
+          .update({ is_active: visToggle.checked })
+          .eq('user_id', currentUser.id)
+          .then(function(res) {
+            if (res.error) console.error('[HT] visibility toggle save failed', res.error);
+          });
       }
-      updateVisHint();
-      updateHideRowVisibility();
     });
+    updateVisState();
   }
 
-  if (activeToggle && visToggle) {
-    activeToggle.addEventListener('change', function() {
-      visToggle.checked = activeToggle.checked;
-      updateVisHint();
-      updateHideRowVisibility();
-    });
-  }
-
-  updateVisHint();
-  updateHideRowVisibility();
+  window.updateMerkezVisState = updateVisState;
 })();
 

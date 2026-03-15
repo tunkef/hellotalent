@@ -424,7 +424,7 @@ if (window.Sentry) {
 
   <!-- Toggle Grid -->
   <div class="mk-toggle-grid">
-    <div class="mk-tg-cell">
+    <div class="mk-tg-cell mk-tg-premium">
       <span class="mk-tg-label">Beni Öne Çıkar</span>
       <label class="toggle"><input type="checkbox" id="merkez-toggle-premium" disabled><span class="toggle-slider"></span></label>
       <span class="mk-tg-badge">Premium</span>
@@ -1640,11 +1640,12 @@ function refreshAfterSettingsSave(savedFullName, savedTelefon) {
 }
 
 function refreshAfterVisibilitySave(isActive) {
-  var mta = document.getElementById('merkez-toggle-active');
-  if (mta) mta.checked = isActive;
+  var vis = document.getElementById('merkez-toggle-visibility');
+  if (vis) vis.checked = isActive;
   updateStatusUI(isActive);
   if (_loadedDBData && _loadedDBData.profile) _loadedDBData.profile.is_active = isActive;
   refreshVisibilitySummary();
+  if (typeof updateMerkezVisState === 'function') updateMerkezVisState();
 }
 
 function getCurrentEmployerDisplayFromExperiences(experiences) {
@@ -1812,12 +1813,10 @@ function reapplyDynamicFields() {
       });
     }
     if (dbData.profile && dbData.profile.is_active !== undefined) {
-      var mta = document.getElementById('merkez-toggle-active');
-      if (mta) mta.checked = dbData.profile.is_active;
       var vis = document.getElementById('merkez-toggle-visibility');
       if (vis) vis.checked = dbData.profile.is_active;
       updateStatusUI(dbData.profile.is_active);
-      if (typeof updateHideRowVisibility === 'function') updateHideRowVisibility();
+      if (typeof updateMerkezVisState === 'function') updateMerkezVisState();
     }
     // Load CV state if exists
     if (dbData.profile.cv_url && dbData.profile.cv_filename) {
