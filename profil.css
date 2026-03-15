@@ -1360,8 +1360,8 @@ html[data-theme="dark"] .lok-modal #btn-lok-close:hover{
 .back-info{padding:8px 16px 0;display:flex;flex-direction:column;gap:6px;flex:0 0 auto;}
 .back-info-row{display:flex;align-items:center;gap:8px;font-size:12px;line-height:1.4;}
 .back-info-row svg{flex-shrink:0;opacity:.7;}
-.back-desc{font-size:12px;line-height:1.5;opacity:.85;margin-top:auto;padding:10px 16px;margin-bottom:0;}
-.back-links{display:flex;gap:0;border-top:1px solid rgba(255,255,255,0.12);margin-top:0;}
+.back-desc{font-size:12px;line-height:1.5;opacity:.85;margin-top:12px;padding:10px 16px;margin-bottom:0;}
+.back-links{display:flex;gap:0;border-top:1px solid rgba(255,255,255,0.12);margin-top:auto;}
 .back-link{flex:1;display:flex;align-items:center;justify-content:center;gap:5px;padding:12px 8px;font-size:12px;font-weight:500;color:rgba(255,255,255,0.8);text-decoration:none;transition:all .15s;border-right:1px solid rgba(255,255,255,0.08);}
 .back-link:last-child{border-right:none;}
 .back-link:hover{background:rgba(255,255,255,0.1);color:#fff;}
