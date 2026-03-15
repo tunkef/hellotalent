@@ -731,24 +731,6 @@ html[data-theme="dark"] .field-req{color:#F87171;}
   color: var(--text-muted);
 }
 .mk-meta svg { width: 11px; height: 11px; opacity: 0.5; }
-.mk-controls {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  flex-shrink: 0;
-}
-.mk-toggle-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.mk-toggle-label {
-  font-size: 10px;
-  font-weight: 500;
-  color: var(--text-muted);
-  text-align: right;
-  min-width: 120px;
-}
 .mk-preview-btn {
   display: inline-flex;
   align-items: center;
@@ -767,6 +749,56 @@ html[data-theme="dark"] .field-req{color:#F87171;}
 }
 .mk-preview-btn:hover { background: var(--navy); color: #fff; }
 .mk-preview-btn svg { flex-shrink: 0; }
+
+/* ── Toggle Grid ── */
+.mk-toggle-grid {
+  background: var(--bg-surface, #fff);
+  border-radius: 16px;
+  box-shadow: 0 0 0 1px rgba(0,0,0,.03), 0 2px 4px rgba(0,0,0,.05), 0 12px 24px rgba(0,0,0,.05);
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  margin-bottom: 14px;
+  overflow: hidden;
+}
+.mk-tg-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 16px 12px;
+  position: relative;
+  text-align: center;
+}
+.mk-tg-cell + .mk-tg-cell {
+  border-left: 1px solid var(--border, #e8e6e3);
+}
+.mk-tg-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary, #1a1a1a);
+  line-height: 1.3;
+}
+.mk-tg-badge {
+  font-family: var(--mono, 'DM Mono', monospace);
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(30,45,94,0.08);
+  color: var(--navy);
+}
+.mk-tg-hint {
+  font-size: 9px;
+  color: var(--text-muted, #8c8c8c);
+  line-height: 1.2;
+  max-width: 100px;
+}
+.mk-tg-cell:first-child {
+  opacity: 0.6;
+}
 
 .mk-stats {
   display: grid;
@@ -1085,13 +1117,14 @@ html[data-theme="dark"] .field-req{color:#F87171;}
 .mk-identity { animation: mkFadeUp 0.4s ease both; animation-delay: 0s; }
 .mk-footer { animation: mkFadeUp 0.4s ease both; animation-delay: 0.05s; }
 .mk-stats { animation: mkFadeUp 0.4s ease both; animation-delay: 0.10s; }
-.mk-sections-label { animation: mkFadeUp 0.35s ease both; animation-delay: 0.14s; }
-#panel-merkez .mk-section:nth-of-type(1) { animation: mkFadeUp 0.35s ease both; animation-delay: 0.18s; }
-#panel-merkez .mk-section:nth-of-type(2) { animation: mkFadeUp 0.35s ease both; animation-delay: 0.22s; }
-#panel-merkez .mk-section:nth-of-type(3) { animation: mkFadeUp 0.35s ease both; animation-delay: 0.26s; }
-#panel-merkez .mk-section:nth-of-type(4) { animation: mkFadeUp 0.35s ease both; animation-delay: 0.30s; }
-#panel-merkez .mk-section:nth-of-type(5) { animation: mkFadeUp 0.35s ease both; animation-delay: 0.34s; }
-.mk-cv-row { animation: mkFadeUp 0.4s ease both; animation-delay: 0.38s; }
+.mk-toggle-grid { animation: mkFadeUp 0.4s ease both; animation-delay: 0.15s; }
+.mk-sections-label { animation: mkFadeUp 0.35s ease both; animation-delay: 0.19s; }
+#panel-merkez .mk-section:nth-of-type(1) { animation: mkFadeUp 0.35s ease both; animation-delay: 0.23s; }
+#panel-merkez .mk-section:nth-of-type(2) { animation: mkFadeUp 0.35s ease both; animation-delay: 0.27s; }
+#panel-merkez .mk-section:nth-of-type(3) { animation: mkFadeUp 0.35s ease both; animation-delay: 0.31s; }
+#panel-merkez .mk-section:nth-of-type(4) { animation: mkFadeUp 0.35s ease both; animation-delay: 0.35s; }
+#panel-merkez .mk-section:nth-of-type(5) { animation: mkFadeUp 0.35s ease both; animation-delay: 0.39s; }
+.mk-cv-row { animation: mkFadeUp 0.4s ease both; animation-delay: 0.43s; }
 
 /* ── Profile Preview Modal ── */
 .pp-overlay {
@@ -1614,9 +1647,10 @@ html[data-theme="dark"] .field-req{color:#F87171;}
   /* Profil Merkezi mobile */
   .mk-cv-row{grid-template-columns:1fr;}
   .mk-identity{flex-direction:column;align-items:flex-start;gap:12px;}
-  .mk-controls{width:100%;}
-  .mk-toggle-label{text-align:left;min-width:auto;}
   .mk-stats{grid-template-columns:1fr;}
+  .mk-toggle-grid{grid-template-columns:repeat(2,1fr);}
+  .mk-tg-cell:nth-child(3){border-left:none;}
+  .mk-tg-cell:nth-child(n+3){border-top:1px solid var(--border,#e8e6e3);}
 }
 @media(max-width:480px){
   .header{padding:0 12px;}

@@ -385,27 +385,10 @@ if (window.Sentry) {
         <span id="merkez-exp-badge" style="display:none;"><span style="margin:0 4px;opacity:0.4;">·</span><span id="merkez-exp-text"></span></span>
       </div>
     </div>
-    <div class="mk-controls">
-      <div class="mk-toggle-row">
-        <span class="mk-toggle-label">İşverenlere göster</span>
-        <label class="toggle"><input type="checkbox" id="merkez-toggle-active" checked><span class="toggle-slider"></span></label>
-      </div>
-      <div class="mk-toggle-row" id="merkez-hide-row">
-        <span class="mk-toggle-label">İşverenim görmesin</span>
-        <label class="toggle"><input type="checkbox" id="merkez-hide-from-current-employer"><span class="toggle-slider"></span></label>
-      </div>
-      <div class="mk-toggle-row">
-        <span class="mk-toggle-label">Profilimi öne çıkar</span>
-        <label class="toggle" style="pointer-events:none;opacity:0.5;">
-          <input type="checkbox" id="merkez-toggle-premium" disabled><span class="toggle-slider"></span>
-        </label>
-        <span style="font-size:9px;color:var(--text-muted);margin-left:2px;">Yakında</span>
-      </div>
-      <button class="mk-preview-btn" id="btn-preview-profile" type="button" onclick="openProfilePreview()" style="display:none;">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-        Profilimi Önizle
-      </button>
-    </div>
+    <button class="mk-preview-btn" id="btn-preview-profile" type="button" onclick="openProfilePreview()" style="display:none;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+      Profilimi Önizle
+    </button>
   </div>
 
   <!-- Premium CTA (top) -->
@@ -436,6 +419,28 @@ if (window.Sentry) {
       <div class="mk-stat-bar"><div class="mk-stat-fill verm" id="merkez-score-bar" style="width:0%;"></div></div>
       <div class="mk-stat-hint" id="merkez-score-hint" style="display:none;"><span id="merkez-hint-text"></span></div>
       <div id="merkez-score-hints-active"></div>
+    </div>
+  </div>
+
+  <!-- Toggle Grid -->
+  <div class="mk-toggle-grid">
+    <div class="mk-tg-cell">
+      <span class="mk-tg-label">Beni Öne Çıkar</span>
+      <label class="toggle"><input type="checkbox" id="merkez-toggle-premium" disabled><span class="toggle-slider"></span></label>
+      <span class="mk-tg-badge">Premium</span>
+    </div>
+    <div class="mk-tg-cell">
+      <span class="mk-tg-label">Aktif İş Arıyorum</span>
+      <label class="toggle"><input type="checkbox" id="merkez-toggle-active" checked><span class="toggle-slider"></span></label>
+    </div>
+    <div class="mk-tg-cell">
+      <span class="mk-tg-label">Profilimi Göster</span>
+      <label class="toggle"><input type="checkbox" id="merkez-toggle-visibility" checked><span class="toggle-slider"></span></label>
+      <span class="mk-tg-hint" id="mk-tg-visibility-hint"></span>
+    </div>
+    <div class="mk-tg-cell" id="merkez-hide-row">
+      <span class="mk-tg-label">İşverenim Görmesin</span>
+      <label class="toggle"><input type="checkbox" id="merkez-hide-from-current-employer"><span class="toggle-slider"></span></label>
     </div>
   </div>
 
@@ -1809,7 +1814,10 @@ function reapplyDynamicFields() {
     if (dbData.profile && dbData.profile.is_active !== undefined) {
       var mta = document.getElementById('merkez-toggle-active');
       if (mta) mta.checked = dbData.profile.is_active;
+      var vis = document.getElementById('merkez-toggle-visibility');
+      if (vis) vis.checked = dbData.profile.is_active;
       updateStatusUI(dbData.profile.is_active);
+      if (typeof updateHideRowVisibility === 'function') updateHideRowVisibility();
     }
     // Load CV state if exists
     if (dbData.profile.cv_url && dbData.profile.cv_filename) {

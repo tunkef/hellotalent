@@ -1299,6 +1299,9 @@ async function saveProfileRPC() {
     updateStatusUI(p_profile.is_active);
     var mta = document.getElementById('merkez-toggle-active');
     if (mta) mta.checked = p_profile.is_active;
+    var vis = document.getElementById('merkez-toggle-visibility');
+    if (vis) vis.checked = p_profile.is_active;
+    if (typeof updateHideRowVisibility === 'function') updateHideRowVisibility();
     // Update sidebar name
     var nameEl = document.getElementById('sidebar-user-name');
     if (nameEl && p_profile.full_name) nameEl.textContent = p_profile.full_name;
@@ -1513,6 +1516,7 @@ function updateMerkezIdentity() {
   // Show identity card
   var idCard = document.getElementById('merkez-identity');
   if (idCard && val('f-adsoyad')) idCard.style.display = '';
+  if (typeof updateHideRowVisibility === 'function') updateHideRowVisibility();
 }
 
 // ═══════════════════════════════════════════════════
@@ -2843,5 +2847,53 @@ function closeProfilePreview() {
       }
     }
   });
+})();
+
+// ── Toggle Grid: visibility sync + hide row dim ──
+function updateHideRowVisibility() {
+  var hideRow = document.getElementById('merkez-hide-row');
+  var visToggle = document.getElementById('merkez-toggle-visibility');
+  if (hideRow && visToggle) {
+    hideRow.style.opacity = visToggle.checked ? '1' : '0.35';
+    hideRow.style.pointerEvents = visToggle.checked ? 'auto' : 'none';
+  }
+}
+
+(function initToggleGrid() {
+  var visToggle = document.getElementById('merkez-toggle-visibility');
+  var visHint = document.getElementById('mk-tg-visibility-hint');
+  var activeToggle = document.getElementById('merkez-toggle-active');
+
+  function updateVisHint() {
+    if (!visHint) return;
+    if (visToggle && !visToggle.checked) {
+      visHint.textContent = 'İşverenler profilini ve CV\'ni göremez';
+      visHint.style.color = '#ef4444';
+    } else {
+      visHint.textContent = '';
+    }
+  }
+
+  if (visToggle && visHint) {
+    visToggle.addEventListener('change', function() {
+      if (activeToggle) {
+        activeToggle.checked = visToggle.checked;
+        activeToggle.dispatchEvent(new Event('change'));
+      }
+      updateVisHint();
+      updateHideRowVisibility();
+    });
+  }
+
+  if (activeToggle && visToggle) {
+    activeToggle.addEventListener('change', function() {
+      visToggle.checked = activeToggle.checked;
+      updateVisHint();
+      updateHideRowVisibility();
+    });
+  }
+
+  updateVisHint();
+  updateHideRowVisibility();
 })();
 
