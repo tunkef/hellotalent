@@ -1324,18 +1324,18 @@ html[data-theme="dark"] .lok-modal #btn-lok-close:hover{
 @media(max-width:480px){.brand-grid{grid-template-columns:1fr;}}
 
 /* Flip card — z-index prevents hover leak */
-.flip-card{position:relative;z-index:1;perspective:1200px;height:310px;cursor:pointer;}
+.flip-card{position:relative;z-index:1;perspective:1200px;height:260px;cursor:pointer;}
 .flip-card:hover{z-index:10;}
 .flip-card-inner{position:relative;width:100%;height:100%;transition:transform .55s cubic-bezier(0.4,0,0.15,1);transform-style:preserve-3d;}
 @media(hover:hover){.flip-card:hover .flip-card-inner{transform:rotateY(180deg);}}
 .flip-card.flipped .flip-card-inner{transform:rotateY(180deg);}
 
 .flip-front,.flip-back{position:absolute;width:100%;height:100%;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:18px;overflow:hidden;}
-.flip-front{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:28px 20px 22px;border:1.5px solid var(--border);transition:border-color .3s;}
+.flip-front{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:20px 16px 16px;border:1.5px solid var(--border);transition:border-color .3s;}
 .flip-card:hover .flip-front{border-color:transparent;}
 
-.front-logo{width:76px;height:76px;border-radius:16px;background:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.08);margin-bottom:6px;}
-.front-logo .brand-logo-wrap{width:76px!important;height:76px!important;border-radius:16px;}
+.front-logo{width:64px;height:64px;border-radius:14px;background:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.08);margin-bottom:6px;}
+.front-logo .brand-logo-wrap{width:64px!important;height:64px!important;border-radius:14px;}
 .front-logo img{width:100%;height:100%;object-fit:contain;padding:8px;background:#fff;border-radius:inherit;}
 .front-logo .brand-initial{font-weight:700;font-size:22px;color:#fff;width:100%;height:100%;display:flex;align-items:center;justify-content:center;}
 .front-name{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:17px;text-align:center;letter-spacing:-0.3px;}
@@ -1360,8 +1360,8 @@ html[data-theme="dark"] .lok-modal #btn-lok-close:hover{
 .back-info{padding:14px 18px 0;display:flex;flex-direction:column;gap:7px;flex:1;}
 .back-info-row{display:flex;align-items:center;gap:8px;font-size:13px;opacity:.9;}
 .back-info-row svg{flex-shrink:0;opacity:.7;}
-.back-desc{font-size:11px;line-height:1.55;opacity:.7;padding:10px 18px;margin-top:auto;}
-.back-links{display:flex;gap:0;border-top:1px solid rgba(255,255,255,0.12);}
+.back-desc{font-size:11px;line-height:1.55;opacity:.7;margin-top:auto;padding:8px 18px;margin-bottom:0;}
+.back-links{display:flex;gap:0;border-top:1px solid rgba(255,255,255,0.12);margin-top:0;}
 .back-link{flex:1;display:flex;align-items:center;justify-content:center;gap:5px;padding:11px 8px;font-size:11px;font-weight:500;color:rgba(255,255,255,0.8);text-decoration:none;transition:all .15s;border-right:1px solid rgba(255,255,255,0.08);}
 .back-link:last-child{border-right:none;}
 .back-link:hover{background:rgba(255,255,255,0.1);color:#fff;}
