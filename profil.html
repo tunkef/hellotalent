@@ -222,6 +222,9 @@ if (window.Sentry) {
 
 <!-- ═══ PANEL: GENEL BAKIS ═══ -->
 <main class="panel active" id="panel-genel" data-panel="genel">
+  <div class="typing-greeting" id="typing-greeting">
+    <span id="typing-text"></span><span class="typing-cursor">|</span>
+  </div>
   <!-- Compact profile hero -->
   <div class="g-hero" id="profile-summary" style="display:none;">
     <div class="g-hero-inner">
@@ -1748,6 +1751,7 @@ function reapplyDynamicFields() {
   // Hide loading, show app
   document.getElementById('loading-screen').style.display = 'none';
   document.getElementById('app-body').style.display = 'block';
+  playTypingGreeting(fallbackName.split(' ')[0]);
   // Try loading profile data from DB
   var dbData = await loadProfileFromDB();
   _loadedDBData = dbData; // Store for post-init re-apply
@@ -1761,6 +1765,7 @@ function reapplyDynamicFields() {
       document.querySelectorAll('#user-avatar-header, #sidebar-avatar, #ps-avatar').forEach(function(el) {
         if (!el.querySelector('img')) el.textContent = ini;
       });
+      playTypingGreeting(n.split(' ')[0]);
     }
     if (dbData.profile && dbData.profile.is_active !== undefined) {
       var mta = document.getElementById('merkez-toggle-active');
