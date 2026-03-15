@@ -2179,14 +2179,13 @@ var _ht_candidate_id = null;
 var _AVATAR_COLORS = ['#E74C3C','#3498DB','#2ECC71','#F39C12','#9B59B6','#1ABC9C','#E67E22','#34495E','#16A085','#C0392B'];
 function _avatarColor(n) { return _AVATAR_COLORS[(n||'?').charCodeAt(0) % _AVATAR_COLORS.length]; }
 
-var _SEGMENT_TR = { luxury:'LUXURY', premium:'PREMIUM', mid:'MID', mass:'MASS', sportswear:'SPORTSWEAR', beauty:'BEAUTY', tech:'TECH' };
+var _SEGMENT_TR = { luxury: 'LUXURY', premium: 'PREMIUM', mid: 'MODA', sportswear: 'SPORT', beauty: 'BEAUTY', tech: 'TECH' };
 var _SEGMENTS = [
   { key: null, label: 'TÜMÜ' },
   { key: 'luxury', label: 'LUXURY' },
   { key: 'premium', label: 'PREMIUM' },
-  { key: 'mid', label: 'MID' },
-  { key: 'mass', label: 'MASS' },
-  { key: 'sportswear', label: 'SPORTSWEAR' },
+  { key: 'mid', label: 'MODA' },
+  { key: 'sportswear', label: 'SPORT' },
   { key: 'beauty', label: 'BEAUTY' },
   { key: 'tech', label: 'TECH' }
 ];
