@@ -1324,9 +1324,9 @@ html[data-theme="dark"] .lok-modal #btn-lok-close:hover{
 .featured-card:hover{transform:translateY(-2px);}
 .featured-card:first-child{grid-row:1/3;}
 .featured-card-top{display:flex;align-items:flex-start;justify-content:space-between;}
-.featured-logo{width:48px;height:48px;border-radius:12px;background:var(--bg,#F7F6F4);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;}
+.featured-logo{width:48px;height:48px;border-radius:12px;background:#FFFFFF;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;}
 .featured-logo .brand-logo-wrap{width:48px;height:48px;border-radius:12px;}
-.featured-logo img{width:100%;height:100%;object-fit:contain;padding:4px;}
+.featured-logo img{width:100%;height:100%;object-fit:contain;padding:6px;}
 .featured-logo .brand-initial{font-weight:700;font-size:18px;color:#fff;width:100%;height:100%;display:flex;align-items:center;justify-content:center;}
 .featured-seg{font-family:var(--font-mono,'DM Mono',monospace);font-size:10px;font-weight:500;letter-spacing:0.5px;color:var(--muted);padding:4px 10px;border-radius:6px;background:var(--bg,#F7F6F4);}
 .featured-card-bottom{display:flex;align-items:flex-end;justify-content:space-between;}
@@ -1363,12 +1363,12 @@ html[data-theme="dark"] .lok-modal #btn-lok-close:hover{
 .brand-card{background:#fff;border:1.5px solid var(--border);border-radius:12px;padding:14px;display:flex;flex-direction:column;align-items:center;gap:8px;transition:border-color .2s,box-shadow .2s,transform .2s;min-height:0;cursor:pointer;}
 .brand-card:hover{box-shadow:0 4px 24px rgba(0,0,0,0.06);transform:translateY(-2px);}
 
-/* Logo: 56px rounded square */
-.brand-card-logo-wrap{display:flex;justify-content:center;flex-shrink:0;}
+/* Logo: 56px rounded square; white bg, contain fit, no crop */
+.brand-logo,.brand-card-logo-wrap,.featured-logo,.brand-logo-wrap{background:#FFFFFF;}
+.brand-card-logo-wrap{display:flex;justify-content:center;flex-shrink:0;overflow:hidden;}
 .brand-card-logo-wrap .brand-logo-wrap{border-radius:12px;overflow:hidden;}
-.brand-logo-wrap{width:48px;height:48px;border-radius:10px;overflow:hidden;flex-shrink:0;background:var(--gray,#f3f2ef);display:flex;align-items:center;justify-content:center;}
-.brand-logo-wrap img{width:100%;height:100%;object-fit:contain;padding:4px;}
-.brand-card-logo-wrap .brand-logo-wrap img{object-fit:cover;padding:0;}
+.brand-logo-wrap{width:48px;height:48px;border-radius:10px;overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+.brand-logo img,.brand-card-logo-wrap img,.featured-logo img,.brand-logo-wrap img{width:100%;height:100%;object-fit:contain;padding:6px;}
 .brand-logo-wrap .brand-initial{font-weight:700;font-size:18px;color:#fff;width:100%;height:100%;display:flex;align-items:center;justify-content:center;}
 
 /* Brand name — centered, bold, 15px */
