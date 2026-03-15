@@ -1844,8 +1844,8 @@ function updateScoreUI() {
   var hints = getProfileScoreHints();
   // Merkez stat cards removed; score/completion now shown per-section in bento rings.
   // calculateProfileScore/getProfileScoreHints kept for potential future use (e.g. genel panel).
-  (void)(sc);
-  (void)(hints);
+  void sc;
+  void hints;
 }
 
 function updateCompletionUI() {
