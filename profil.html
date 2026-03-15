@@ -549,7 +549,7 @@ if (window.Sentry) {
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
         </div>
         <div class="mk-cv-text">
-          <div class="mk-cv-title" id="cv-uploaded-name"></div>
+          <div class="mk-cv-title" id="cv-uploaded-name">CV Görüntüle</div>
           <div class="mk-cv-sub" id="cv-uploaded-date"></div>
         </div>
         <div class="mk-cv-actions">
@@ -1556,6 +1556,11 @@ function applyDraft(draft) {
     if (draft.profile.cinsiyet === 'Erkek') {
       var fa = document.getElementById('field-askerlik');
       if (fa) fa.style.display = '';
+    }
+    if (draft.profile.cv_url) {
+      if (typeof showCVUploaded === 'function') showCVUploaded(draft.profile.cv_url, draft.profile.cv_uploaded_at ? new Date(draft.profile.cv_uploaded_at) : new Date());
+    } else {
+      if (typeof showCVEmpty === 'function') showCVEmpty();
     }
   }
 

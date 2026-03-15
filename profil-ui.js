@@ -1996,7 +1996,7 @@ async function uploadCV(file) {
     }
 
     currentCVStoragePath = filePath;
-    showCVUploaded(file.name, new Date());
+    showCVUploaded(cvUrl, new Date());
     ht_track('cv_upload_success', { file_type: ext });
     showToast('CV yüklendi ✓', 'success');
   } catch (err) {
@@ -2032,7 +2032,7 @@ async function deleteCV() {
   }
 }
 
-function showCVUploaded(name, date) {
+function showCVUploaded(cvUrl, date) {
   var dropZone = document.getElementById('cv-drop-zone');
   var uploaded = document.getElementById('cv-uploaded-state');
   if (dropZone) dropZone.style.display = 'none';
@@ -2040,8 +2040,20 @@ function showCVUploaded(name, date) {
     uploaded.style.display = 'flex';
     var nameEl = document.getElementById('cv-uploaded-name');
     var dateEl = document.getElementById('cv-uploaded-date');
-    if (nameEl) nameEl.textContent = name;
-    if (dateEl) dateEl.textContent = date.toLocaleDateString('tr-TR');
+    if (nameEl) {
+      nameEl.textContent = 'CV Görüntüle';
+      nameEl.style.cursor = '';
+      nameEl.style.color = '';
+      nameEl.style.textDecoration = '';
+      nameEl.onclick = null;
+      if (cvUrl) {
+        nameEl.style.cursor = 'pointer';
+        nameEl.style.color = 'var(--verm)';
+        nameEl.style.textDecoration = 'underline';
+        nameEl.onclick = function() { window.open(cvUrl, '_blank'); };
+      }
+    }
+    if (dateEl) dateEl.textContent = date ? date.toLocaleDateString('tr-TR') : '';
   }
 }
 
