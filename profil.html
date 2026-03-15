@@ -1757,7 +1757,7 @@ function reapplyDynamicFields() {
   // Show app body (behind loading screen); loading screen fades after min 2.5s
   document.getElementById('app-body').style.display = 'block';
   var elapsed = Date.now() - _loadStart;
-  var remaining = Math.max(0, 2500 - elapsed);
+  var remaining = Math.max(0, 4000 - elapsed);
   setTimeout(function() {
     var ls = document.getElementById('loading-screen');
     if (ls) {
