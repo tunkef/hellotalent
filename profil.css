@@ -775,17 +775,6 @@ html[data-theme="dark"] .field-req{color:#F87171;}
 }
 .mk-card.span-2 { grid-column: span 2; }
 
-.mk-card::before {
-  content: '';
-  position: absolute;
-  left: 0; top: 0; bottom: 0;
-  width: 4px;
-}
-.mk-card.navy::before { background: var(--navy); }
-.mk-card.verm::before { background: var(--verm); }
-.mk-card.green::before { background: var(--green); }
-.mk-card.purple::before { background: #8B5CF6; }
-
 .mk-card-content {
   flex: 1;
   padding: 12px 14px 10px 18px;
@@ -882,8 +871,10 @@ html[data-theme="dark"] .field-req{color:#F87171;}
 
 .mk-card-status {
   position: absolute;
-  top: 12px;
-  left: 12px;
+  bottom: 10px;
+  right: 10px;
+  top: auto;
+  left: auto;
   width: 24px; height: 24px;
   z-index: 5;
 }
@@ -1149,13 +1140,49 @@ html[data-theme="dark"] .field-req{color:#F87171;}
 .mk-footer-arrow { color: rgba(255,255,255,0.3); transition: transform 0.2s; }
 .mk-footer:hover .mk-footer-arrow { transform: translateX(3px); color: rgba(255,255,255,0.6); }
 
-/* ── CV Row: 2 equal columns ── */
-.mk-cv-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 14px;
-  margin-bottom: 14px;
+/* ── CV / AI grid cards (inside bento) ── */
+.mk-cv-grid-card {
+  padding: 16px !important;
+  cursor: default;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
+.mk-cv-grid-card::before { display: none; }
+.mk-cv-grid-card:hover {
+  box-shadow: 0 0 0 1px rgba(0,0,0,.03), 0 2px 4px rgba(0,0,0,.05), 0 12px 24px rgba(0,0,0,.05);
+}
+
+.mk-ai-grid-card {
+  background: linear-gradient(135deg, var(--navy-deep, #131f3e) 0%, #1a2748 100%) !important;
+  padding: 16px !important;
+  cursor: default;
+  display: flex;
+  align-items: center;
+}
+.mk-ai-grid-card::before { display: none; }
+.mk-ai-grid-card:hover {
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.05), 0 4px 16px rgba(0,0,0,0.12);
+}
+
+.mk-cv-grid-card .mk-cv-upload-state,
+.mk-cv-grid-card .mk-cv-uploaded-state {
+  flex-direction: column;
+  text-align: center;
+  gap: 8px;
+  padding: 8px;
+}
+.mk-cv-grid-card .mk-cv-actions {
+  justify-content: center;
+}
+
+.mk-ai-grid-card .mk-ai-inner {
+  flex-direction: column;
+  text-align: center;
+  gap: 8px;
+  width: 100%;
+}
+
 .mk-cv-card, .mk-ai-card {
   border-radius: 14px;
   overflow: hidden;
@@ -1289,7 +1316,6 @@ html[data-theme="dark"] .field-req{color:#F87171;}
 .mk-identity { animation: mkFadeUp 0.4s ease both; animation-delay: 0s; }
 .mk-footer { animation: mkFadeUp 0.4s ease both; animation-delay: 0.05s; }
 .mk-bento-grid { animation: mkFadeUp 0.4s ease both; animation-delay: 0.10s; }
-.mk-cv-row { animation: mkFadeUp 0.4s ease both; animation-delay: 0.43s; }
 
 /* ═══════════════════════════════════════════
    PROFILE PREVIEW DRAWER
@@ -1867,7 +1893,6 @@ html[data-theme="dark"] .field-req{color:#F87171;}
   .bento-grid{grid-template-columns:repeat(2,1fr);grid-auto-rows:180px;}
   .bento-card.col-2{grid-column:span 2;}
   /* Profil Merkezi mobile */
-  .mk-cv-row{grid-template-columns:1fr;}
   .mk-identity{flex-direction:column;align-items:flex-start;gap:12px;}
 }
 @media(max-width:480px){

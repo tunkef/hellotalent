@@ -501,7 +501,7 @@ if (window.Sentry) {
     </div>
 
     <!-- Profil Durumu (controls card, light bg) -->
-    <div class="mk-card mk-controls-card span-2">
+    <div class="mk-card mk-controls-card">
       <div class="mk-controls-header">
         <span class="mk-controls-dot" id="mk-status-dot"></span>
         <span class="mk-controls-text" id="mk-status-text">Profilin aktif</span>
@@ -523,7 +523,7 @@ if (window.Sentry) {
     </div>
 
     <!-- Premium Öne Çıkar (dark navy) -->
-    <div class="mk-card mk-premium-toggle-card span-2">
+    <div class="mk-card mk-premium-toggle-card">
       <span class="mk-premium-badge">PREMIUM</span>
       <span class="mk-premium-title">Beni Öne Çıkar</span>
       <span class="mk-premium-desc">Profilini listelerin başına taşı</span>
@@ -531,11 +531,8 @@ if (window.Sentry) {
       <span class="mk-premium-soon">Yakında</span>
     </div>
 
-  </div>
-
-  <!-- 4: CV + AI (compact row) -->
-  <div class="mk-cv-row">
-    <div class="mk-cv-card" id="cv-upload-area">
+    <!-- CV (grid card) -->
+    <div class="mk-card mk-cv-grid-card" id="cv-upload-area">
       <div class="mk-cv-upload-state" id="cv-drop-zone">
         <input type="file" id="cv-file-input" accept=".pdf,.doc,.docx" style="display:none;">
         <div class="mk-cv-icon-wrap upload">
@@ -561,7 +558,9 @@ if (window.Sentry) {
         </div>
       </div>
     </div>
-    <div class="mk-ai-card">
+
+    <!-- AI CV (grid card) -->
+    <div class="mk-card mk-ai-grid-card">
       <div class="mk-ai-inner">
         <div class="mk-cv-icon-wrap ai">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
@@ -573,6 +572,7 @@ if (window.Sentry) {
         <button type="button" class="mk-ai-btn" id="btn-generate-cv-merkez" disabled>Yakında</button>
       </div>
     </div>
+
   </div>
 
 </main>
