@@ -1349,7 +1349,15 @@ async function deletePositionFromDB(id){
 
 async function loadLiveCandidates(){
   var container = document.getElementById('candidate-list');
-  container.innerHTML = '<div style="text-align:center;padding:40px 0;color:var(--muted);font-size:13px;"><div class="spinner" style="margin:0 auto 12px;width:24px;height:24px;border:2px solid var(--muted);border-radius:50%;"></div>Adaylar yükleniyor...</div>';
+  while(container.firstChild) container.removeChild(container.firstChild);
+  var loadingDiv = document.createElement('div');
+  loadingDiv.style.cssText = 'text-align:center;padding:40px 0;color:var(--muted);font-size:13px;';
+  var spinnerDiv = document.createElement('div');
+  spinnerDiv.className = 'spinner';
+  spinnerDiv.style.cssText = 'margin:0 auto 12px;width:24px;height:24px;border:2px solid var(--muted);border-radius:50%;';
+  loadingDiv.appendChild(spinnerDiv);
+  loadingDiv.appendChild(document.createTextNode('Adaylar yükleniyor...'));
+  container.appendChild(loadingDiv);
   try {
     var sb = getSupa();
     if(!sb){ throw new Error('Supabase bağlantısı yok'); }
@@ -1685,11 +1693,30 @@ async function doLogout(){
 function renderCandidates(list){
   var container = document.getElementById('candidate-list');
   document.getElementById('result-count').textContent = list.length;
+  while(container.firstChild) container.removeChild(container.firstChild);
   if(list.length === 0){
-    container.innerHTML = '<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-title">Sonuç bulunamadı</div><div class="empty-sub">Filtreleri değiştirip tekrar deneyin</div></div>';
+    var emptyDiv = document.createElement('div');
+    emptyDiv.className = 'empty-state';
+    var eIcon = document.createElement('div');
+    eIcon.className = 'empty-icon';
+    eIcon.textContent = '🔍';
+    emptyDiv.appendChild(eIcon);
+    var eTitle = document.createElement('div');
+    eTitle.className = 'empty-title';
+    eTitle.textContent = 'Sonuç bulunamadı';
+    emptyDiv.appendChild(eTitle);
+    var eSub = document.createElement('div');
+    eSub.className = 'empty-sub';
+    eSub.textContent = 'Filtreleri değiştirip tekrar deneyin';
+    emptyDiv.appendChild(eSub);
+    container.appendChild(emptyDiv);
     return;
   }
-  container.innerHTML = list.map(function(c){ return candidateCardHTML(c); }).join('');
+  list.forEach(function(c){
+    var cardDiv = document.createElement('div');
+    cardDiv.innerHTML = candidateCardHTML(c);
+    while(cardDiv.firstChild) container.appendChild(cardDiv.firstChild);
+  });
 }
 
 function candidateCardHTML(c){
@@ -1900,31 +1927,90 @@ function openDrawer(id){
   var c = ADAYLAR.find(function(a){return a.id===id;});
   if(!c) return;
   var isFav = favorites.indexOf(c.id)!==-1;
-  document.getElementById('drawer-body').innerHTML=
-    '<div class="drawer-avatar-row">'
-    +'<div class="drawer-avatar blur" style="background:'+c.color+'">'+c.initials+'</div>'
-    +'<div><div class="drawer-name">'+c.ad[0]+'. '+c.soyad+'</div><div class="drawer-pos">'+c.pozisyon+' · '+c.brand+'</div></div>'
-    +'</div>'
-    +'<div class="premium-badge">🔒 Tam erişim için Premium gerekli</div>'
-    +'<div class="drawer-section-title">Temel Bilgiler</div>'
-    +'<div class="drawer-info-grid">'
-    +'<div class="drawer-info-item"><div class="drawer-info-label">Şehir</div><div class="drawer-info-val">'+c.sehir+'</div></div>'
-    +'<div class="drawer-info-item"><div class="drawer-info-label">Deneyim</div><div class="drawer-info-val">'+c.exp+' yıl</div></div>'
-    +'<div class="drawer-info-item"><div class="drawer-info-label">Müsaitlik</div><div class="drawer-info-val">'+c.musait+'</div></div>'
-    +'<div class="drawer-info-item"><div class="drawer-info-label">Segment</div><div class="drawer-info-val">'+c.segment+'</div></div>'
-    +'<div class="drawer-info-item"><div class="drawer-info-label">Çalışma</div><div class="drawer-info-val">'+c.calisma+'</div></div>'
-    +'<div class="drawer-info-item"><div class="drawer-info-label">Maaş Beklenti</div><div class="drawer-info-val">'+c.maas+'</div></div>'
-    +'</div>'
-    +'<div class="drawer-section-title">İletişim</div>'
-    +'<div class="drawer-info-grid">'
-    +'<div class="drawer-info-item"><div class="drawer-info-label">Telefon</div><div class="drawer-info-val masked">'+c.tel+'</div></div>'
-    +'<div class="drawer-info-item"><div class="drawer-info-label">E-posta</div><div class="drawer-info-val masked">'+c.email+'</div></div>'
-    +'</div>'
-    +'<div class="drawer-actions">'
-    +'<button class="btn-secondary btn-sm '+(isFav?'':'')+ '" onclick="toggleFav('+c.id+',this)" style="'+(isFav?'border-color:#f59e0b;color:#d97706;':'')+'">'+(isFav?'★ Favoride':'☆ Favoriye Ekle')+'</button>'
-    +'<button class="btn-primary btn-sm" style="filter:blur(2px);pointer-events:none;">📄 CV İndir</button>'
-    +'<button class="btn-upgrade btn-sm" onclick="showUpgradeModal()">Premium →</button>'
-    +'</div>';
+  var db = document.getElementById('drawer-body');
+  while(db.firstChild) db.removeChild(db.firstChild);
+
+  // Avatar row
+  var avatarRow = document.createElement('div');
+  avatarRow.className = 'drawer-avatar-row';
+  var avatarCircle = document.createElement('div');
+  avatarCircle.className = 'drawer-avatar blur';
+  avatarCircle.style.background = c.color;
+  avatarCircle.textContent = c.initials;
+  avatarRow.appendChild(avatarCircle);
+  var nameWrap = document.createElement('div');
+  var nameDiv = document.createElement('div');
+  nameDiv.className = 'drawer-name';
+  nameDiv.textContent = c.ad[0] + '. ' + c.soyad;
+  nameWrap.appendChild(nameDiv);
+  var posDiv = document.createElement('div');
+  posDiv.className = 'drawer-pos';
+  posDiv.textContent = c.pozisyon + ' · ' + c.brand;
+  nameWrap.appendChild(posDiv);
+  avatarRow.appendChild(nameWrap);
+  db.appendChild(avatarRow);
+
+  // Premium badge
+  var premBadge = document.createElement('div');
+  premBadge.className = 'premium-badge';
+  premBadge.textContent = '🔒 Tam erişim için Premium gerekli';
+  db.appendChild(premBadge);
+
+  // Info grid helper
+  function makeInfoGrid(title, items){
+    var secTitle = document.createElement('div');
+    secTitle.className = 'drawer-section-title';
+    secTitle.textContent = title;
+    db.appendChild(secTitle);
+    var grid = document.createElement('div');
+    grid.className = 'drawer-info-grid';
+    items.forEach(function(item){
+      var row = document.createElement('div');
+      row.className = 'drawer-info-item';
+      var lbl = document.createElement('div');
+      lbl.className = 'drawer-info-label';
+      lbl.textContent = item.label;
+      row.appendChild(lbl);
+      var val = document.createElement('div');
+      val.className = 'drawer-info-val' + (item.masked ? ' masked' : '');
+      val.textContent = item.value;
+      row.appendChild(val);
+      grid.appendChild(row);
+    });
+    db.appendChild(grid);
+  }
+
+  makeInfoGrid('Temel Bilgiler', [
+    {label:'Şehir', value:c.sehir}, {label:'Deneyim', value:c.exp+' yıl'},
+    {label:'Müsaitlik', value:c.musait}, {label:'Segment', value:c.segment},
+    {label:'Çalışma', value:c.calisma}, {label:'Maaş Beklenti', value:c.maas}
+  ]);
+
+  makeInfoGrid('İletişim', [
+    {label:'Telefon', value:c.tel, masked:true},
+    {label:'E-posta', value:c.email, masked:true}
+  ]);
+
+  // Actions
+  var actions = document.createElement('div');
+  actions.className = 'drawer-actions';
+  var btnFavD = document.createElement('button');
+  btnFavD.className = 'btn-secondary btn-sm';
+  if(isFav) btnFavD.style.cssText = 'border-color:#f59e0b;color:#d97706;';
+  btnFavD.textContent = isFav ? '★ Favoride' : '☆ Favoriye Ekle';
+  btnFavD.onclick = function(){ toggleFav(c.id, btnFavD); btnFavD.textContent = favorites.indexOf(c.id)!==-1 ? '★ Favoride' : '☆ Favoriye Ekle'; btnFavD.style.cssText = favorites.indexOf(c.id)!==-1 ? 'border-color:#f59e0b;color:#d97706;' : ''; };
+  actions.appendChild(btnFavD);
+  var btnCV = document.createElement('button');
+  btnCV.className = 'btn-primary btn-sm';
+  btnCV.style.cssText = 'filter:blur(2px);pointer-events:none;';
+  btnCV.textContent = '📄 CV İndir';
+  actions.appendChild(btnCV);
+  var btnUpg = document.createElement('button');
+  btnUpg.className = 'btn-upgrade btn-sm';
+  btnUpg.textContent = 'Premium →';
+  btnUpg.onclick = function(){ showUpgradeModal(); };
+  actions.appendChild(btnUpg);
+  db.appendChild(actions);
 
   document.getElementById('drawer-overlay').classList.add('show');
   document.getElementById('candidate-drawer').classList.add('show');
