@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Panel — hellotalent.ai</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{overflow-x:hidden;}
+:root{
+  --navy:#1E2D5E;
+  --navy-dark:#162248;
+  --navy-mid:#253872;
+  --verm:#C94E28;
+  --verm-hover:#b84420;
+  --text:#0a0a0a;
+  --muted:#6B7280;
+  --border:#E5E3DF;
+  --bg:#F7F6F3;
+  --white:#fff;
+  --green:#10B981;
+  --yellow:#F59E0B;
+  --red:#EF4444;
+  --sidebar-w:240px;
+}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+
+/* ── LOGIN SCREEN ── */
+.login-screen{
+  display:flex;align-items:center;justify-content:center;
+  min-height:100vh;background:var(--navy);
+}
+.login-card{
+  background:var(--white);border-radius:16px;
+  padding:40px 36px;width:100%;max-width:380px;
+  box-shadow:0 20px 60px rgba(0,0,0,0.3);
+}
+.login-logo{
+  font-family:'Bricolage Grotesque',sans-serif;
+  font-weight:800;font-size:22px;color:var(--navy);
+  text-align:center;margin-bottom:4px;letter-spacing:-0.5px;
+}
+.login-logo span{color:var(--verm);}
+.login-sub{
+  text-align:center;font-size:11px;color:var(--muted);
+  font-family:'DM Mono',monospace;letter-spacing:1px;
+  margin-bottom:28px;
+}
+.login-card label{
+  display:block;font-size:12px;font-weight:600;
+  color:var(--text);margin-bottom:5px;margin-top:16px;
+}
+.login-card input[type="email"],
+.login-card input[type="password"]{
+  width:100%;padding:10px 12px;border:1.5px solid var(--border);
+  border-radius:8px;font-size:14px;font-family:inherit;
+  transition:border-color 0.15s;
+}
+.login-card input:focus{outline:none;border-color:var(--navy);}
+.login-btn{
+  width:100%;padding:12px;margin-top:24px;
+  background:var(--navy);color:white;border:none;
+  border-radius:10px;font-size:14px;font-weight:700;
+  font-family:inherit;cursor:pointer;transition:background 0.15s;
+}
+.login-btn:hover{background:var(--navy-dark);}
+.login-btn:disabled{opacity:0.5;cursor:not-allowed;}
+.login-error{
+  margin-top:12px;padding:10px 12px;background:#FEF2F2;
+  color:var(--red);font-size:12px;border-radius:8px;
+  display:none;
+}
+
+/* ── ADMIN SHELL ── */
+.admin-shell{display:none;min-height:100vh;}
+.admin-shell.active{display:flex;}
+
+/* ── SIDEBAR ── */
+.sidebar{
+  width:var(--sidebar-w);background:var(--navy);
+  min-height:100vh;position:fixed;
+  top:0;left:0;bottom:0;
+  display:flex;flex-direction:column;z-index:100;
+}
+.sidebar-logo{
+  padding:24px 20px 20px;
+  border-bottom:1px solid rgba(255,255,255,0.08);flex-shrink:0;
+}
+.sidebar-logo-text{
+  font-family:'Bricolage Grotesque',sans-serif;
+  font-weight:800;font-size:18px;color:white;letter-spacing:-0.5px;
+}
+.sidebar-logo-text span{color:var(--verm);}
+.sidebar-logo-sub{
+  font-size:10px;color:rgba(255,255,255,0.35);
+  font-family:'DM Mono',monospace;letter-spacing:1px;margin-top:2px;
+}
+.sidebar-nav{flex:1;padding:12px 10px;}
+.nav-section-label{
+  font-size:9px;font-weight:700;letter-spacing:1.5px;
+  text-transform:uppercase;color:rgba(255,255,255,0.3);
+  padding:12px 10px 6px;
+}
+.nav-item{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 12px;border-radius:9px;
+  cursor:pointer;transition:all 0.15s;
+  color:rgba(255,255,255,0.55);font-size:13px;font-weight:600;
+  position:relative;margin-bottom:2px;
+}
+.nav-item:hover{background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.85);}
+.nav-item.active{background:rgba(255,255,255,0.12);color:white;}
+.nav-item.active::before{
+  content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);
+  width:3px;height:60%;background:var(--verm);border-radius:0 3px 3px 0;
+}
+.nav-icon{width:16px;height:16px;flex-shrink:0;opacity:0.7;}
+.nav-item.active .nav-icon,.nav-item:hover .nav-icon{opacity:1;}
+.nav-badge{
+  margin-left:auto;background:var(--verm);color:white;
+  font-size:10px;font-weight:700;padding:2px 6px;border-radius:10px;
+}
+.sidebar-bottom{padding:12px 10px 20px;border-top:1px solid rgba(255,255,255,0.08);}
+.sidebar-user{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 12px;border-radius:9px;cursor:pointer;transition:background 0.15s;
+}
+.sidebar-user:hover{background:rgba(255,255,255,0.07);}
+.sidebar-avatar{
+  width:32px;height:32px;border-radius:50%;background:var(--verm);
+  display:flex;align-items:center;justify-content:center;
+  font-weight:800;font-size:12px;color:white;flex-shrink:0;
+}
+.sidebar-user-info{flex:1;min-width:0;}
+.sidebar-user-name{
+  font-size:12px;font-weight:700;color:white;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.sidebar-user-role{font-size:10px;color:rgba(255,255,255,0.4);font-family:'DM Mono',monospace;}
+
+/* ── MAIN CONTENT ── */
+.main-content{
+  margin-left:var(--sidebar-w);flex:1;padding:28px 32px;
+  min-height:100vh;
+}
+.panel{display:none;}
+.panel.active{display:block;}
+.panel-header{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:24px;
+}
+.panel-header h2{
+  font-family:'Bricolage Grotesque',sans-serif;
+  font-size:22px;font-weight:800;letter-spacing:-0.5px;
+}
+
+/* ── CAMPAIGN TABLE ── */
+.admin-table{width:100%;border-collapse:collapse;background:var(--white);border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.06);}
+.admin-table th{
+  text-align:left;padding:12px 16px;font-size:11px;
+  font-weight:700;text-transform:uppercase;letter-spacing:0.5px;
+  color:var(--muted);background:#FAFAF8;border-bottom:1px solid var(--border);
+}
+.admin-table td{
+  padding:12px 16px;font-size:13px;border-bottom:1px solid var(--border);
+  vertical-align:middle;
+}
+.admin-table tr:last-child td{border-bottom:none;}
+.admin-table tr:hover td{background:#FAFAF8;}
+
+/* ── STATUS PILLS ── */
+.status-pill{
+  display:inline-block;padding:3px 10px;border-radius:20px;
+  font-size:11px;font-weight:700;
+}
+.status-pill.pending{background:#FEF3C7;color:#92400E;}
+.status-pill.approved{background:#D1FAE5;color:#065F46;}
+.status-pill.active{background:#DBEAFE;color:#1E40AF;}
+.status-pill.rejected{background:#FEE2E2;color:#991B1B;}
+.status-pill.revision{background:#FED7AA;color:#9A3412;}
+.status-pill.draft{background:#F3F4F6;color:#6B7280;}
+.status-pill.ended{background:#E5E7EB;color:#4B5563;}
+.status-pill.archived{background:#F3F4F6;color:#9CA3AF;}
+.status-pill.paused{background:#FCE7F3;color:#9D174D;}
+
+/* ── BUTTONS ── */
+.btn{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:7px 14px;border-radius:8px;font-size:12px;
+  font-weight:600;font-family:inherit;cursor:pointer;
+  border:1.5px solid var(--border);background:var(--white);
+  color:var(--text);transition:all 0.15s;
+}
+.btn:hover{border-color:var(--navy);color:var(--navy);}
+.btn-primary{background:var(--verm);color:white;border-color:var(--verm);}
+.btn-primary:hover{background:var(--verm-hover);border-color:var(--verm-hover);}
+.btn-approve{background:var(--green);color:white;border-color:var(--green);}
+.btn-reject{background:var(--red);color:white;border-color:var(--red);}
+.btn-sm{padding:5px 10px;font-size:11px;}
+
+/* ── STATS CARDS ── */
+.stats-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:16px;margin-bottom:28px;
+}
+.stat-card{
+  background:var(--white);border-radius:12px;padding:20px;
+  box-shadow:0 1px 3px rgba(0,0,0,0.06);
+}
+.stat-card-label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;}
+.stat-card-value{font-family:'DM Mono',monospace;font-size:28px;font-weight:500;margin-top:6px;color:var(--text);}
+
+/* ── EMPTY STATE ── */
+.empty-state{
+  text-align:center;padding:60px 20px;color:var(--muted);
+}
+.empty-state-icon{font-size:48px;margin-bottom:12px;opacity:0.3;}
+.empty-state-text{font-size:14px;}
+
+/* ── UNAUTHORIZED ── */
+.unauthorized{
+  display:none;flex-direction:column;align-items:center;
+  justify-content:center;min-height:100vh;text-align:center;
+  background:var(--bg);padding:40px;
+}
+.unauthorized.active{display:flex;}
+.unauthorized h2{font-family:'Bricolage Grotesque',sans-serif;font-size:24px;color:var(--red);margin-bottom:8px;}
+.unauthorized p{color:var(--muted);margin-bottom:20px;}
+
+/* ── RESPONSIVE ── */
+@media(max-width:768px){
+  .sidebar{display:none;}
+  .main-content{margin-left:0;padding:20px 16px;}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ LOGIN SCREEN ═══ -->
+<div class="login-screen" id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">hello<span>talent</span></div>
+    <div class="login-sub">ADMIN PANEL</div>
+    <form id="login-form">
+      <label for="login-email">E-posta</label>
+      <input type="email" id="login-email" placeholder="admin@hellotalent.ai" required>
+      <label for="login-password">Parola</label>
+      <input type="password" id="login-password" placeholder="Parolanız" required>
+      <button type="submit" class="login-btn" id="login-btn">Giriş Yap</button>
+    </form>
+    <div class="login-error" id="login-error"></div>
+  </div>
+</div>
+
+<!-- ═══ UNAUTHORIZED SCREEN ═══ -->
+<div class="unauthorized" id="unauthorized-screen">
+  <h2>Yetkisiz Erişim</h2>
+  <p>Bu hesap admin paneline erişim yetkisine sahip değil.</p>
+  <button class="btn" id="btn-signout-unauth" onclick="window._htAdminSignOut()">Çıkış Yap</button>
+</div>
+
+<!-- ═══ ADMIN SHELL ═══ -->
+<div class="admin-shell" id="admin-shell">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-text">hello<span>talent</span></div>
+      <div class="sidebar-logo-sub">ADMIN PANEL</div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Moderasyon</div>
+
+      <div class="nav-item active" data-panel="review" onclick="switchPanel('review',this)">
+        <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg></span>
+        Kampanya Incele
+        <span class="nav-badge" id="badge-pending" style="display:none;">0</span>
+      </div>
+
+      <div class="nav-item" data-panel="campaigns" onclick="switchPanel('campaigns',this)">
+        <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg></span>
+        Tüm Kampanyalar
+      </div>
+
+      <div class="nav-section-label">Sistem</div>
+
+      <div class="nav-item" data-panel="settings" onclick="switchPanel('settings',this)">
+        <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg></span>
+        Ayarlar
+      </div>
+    </nav>
+
+    <div class="sidebar-bottom">
+      <div class="sidebar-user" onclick="window._htAdminSignOut()">
+        <div class="sidebar-avatar" id="admin-avatar">A</div>
+        <div class="sidebar-user-info">
+          <div class="sidebar-user-name" id="admin-name">Admin</div>
+          <div class="sidebar-user-role" id="admin-role">superadmin</div>
+        </div>
+        <span class="nav-icon" style="opacity:0.4;margin-left:auto;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+        </span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+
+    <!-- ═══ PANEL: KAMPANYA INCELE ═══ -->
+    <div class="panel active" id="panel-review">
+      <div class="panel-header">
+        <h2>Kampanya Incele</h2>
+      </div>
+
+      <div class="stats-grid" id="review-stats">
+        <div class="stat-card">
+          <div class="stat-card-label">Bekleyen</div>
+          <div class="stat-card-value" id="stat-pending">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-label">Aktif</div>
+          <div class="stat-card-value" id="stat-active">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-label">Toplam</div>
+          <div class="stat-card-value" id="stat-total">0</div>
+        </div>
+      </div>
+
+      <div id="pending-campaigns-list">
+        <div class="empty-state">
+          <div class="empty-state-icon">📋</div>
+          <div class="empty-state-text">Incelenecek kampanya yok</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ PANEL: TÜM KAMPANYALAR ═══ -->
+    <div class="panel" id="panel-campaigns">
+      <div class="panel-header">
+        <h2>Tüm Kampanyalar</h2>
+      </div>
+      <div id="all-campaigns-list">
+        <div class="empty-state">
+          <div class="empty-state-icon">📊</div>
+          <div class="empty-state-text">Henüz kampanya oluşturulmamış</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ PANEL: AYARLAR ═══ -->
+    <div class="panel" id="panel-settings">
+      <div class="panel-header">
+        <h2>Ayarlar</h2>
+      </div>
+      <div class="empty-state">
+        <div class="empty-state-icon">⚙️</div>
+        <div class="empty-state-text">Admin ayarları (Phase 7'de aktif olacak)</div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+(function(){
+  'use strict';
+
+  /* ── SUPABASE INIT ── */
+  var HT_SUPA_URL = 'https://cpwibefquojehjehtrog.supabase.co';
+  var HT_SUPA_KEY = 'sb_publishable_POUtNwJyjAAheukwYP5hmA_TKKjphwa';
+  var _supa = supabase.createClient(HT_SUPA_URL, HT_SUPA_KEY);
+
+  var _adminUser = null;
+
+  /* ── DOM REFS ── */
+  var loginScreen = document.getElementById('login-screen');
+  var unauthScreen = document.getElementById('unauthorized-screen');
+  var adminShell = document.getElementById('admin-shell');
+  var loginForm = document.getElementById('login-form');
+  var loginError = document.getElementById('login-error');
+  var loginBtn = document.getElementById('login-btn');
+
+  /* ── SCREEN SWITCHING ── */
+  function showScreen(screen) {
+    loginScreen.style.display = 'none';
+    unauthScreen.className = 'unauthorized';
+    adminShell.className = 'admin-shell';
+
+    if (screen === 'login') loginScreen.style.display = 'flex';
+    else if (screen === 'unauthorized') unauthScreen.className = 'unauthorized active';
+    else if (screen === 'admin') adminShell.className = 'admin-shell active';
+  }
+
+  /* ── ADMIN CHECK ── */
+  async function checkAdminAccess(userId) {
+    try {
+      var res = await _supa.from('admin_users').select('id, role, display_name').eq('id', userId).maybeSingle();
+      if (res.error) { console.error('Admin check error:', res.error); return null; }
+      return res.data;
+    } catch(e) {
+      console.error('Admin check exception:', e);
+      return null;
+    }
+  }
+
+  /* ── SESSION INIT ── */
+  async function initSession() {
+    var sessionRes = await _supa.auth.getSession();
+    var session = sessionRes.data?.session;
+
+    if (!session) {
+      showScreen('login');
+      return;
+    }
+
+    var admin = await checkAdminAccess(session.user.id);
+    if (!admin) {
+      showScreen('unauthorized');
+      return;
+    }
+
+    _adminUser = admin;
+    showAdminDashboard(session.user, admin);
+  }
+
+  /* ── LOGIN ── */
+  loginForm.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    loginError.style.display = 'none';
+    loginBtn.disabled = true;
+    loginBtn.textContent = 'Giriş yapılıyor...';
+
+    try {
+      var email = document.getElementById('login-email').value.trim();
+      var password = document.getElementById('login-password').value;
+
+      var res = await _supa.auth.signInWithPassword({ email: email, password: password });
+      if (res.error) {
+        showLoginError('Giriş başarısız: ' + res.error.message);
+        return;
+      }
+
+      var admin = await checkAdminAccess(res.data.user.id);
+      if (!admin) {
+        showScreen('unauthorized');
+        return;
+      }
+
+      _adminUser = admin;
+      showAdminDashboard(res.data.user, admin);
+    } catch(e) {
+      showLoginError('Hata: ' + e.message);
+    } finally {
+      loginBtn.disabled = false;
+      loginBtn.textContent = 'Giriş Yap';
+    }
+  });
+
+  function showLoginError(msg) {
+    loginError.textContent = msg;
+    loginError.style.display = 'block';
+  }
+
+  /* ── SIGN OUT ── */
+  window._htAdminSignOut = async function() {
+    await _supa.auth.signOut();
+    _adminUser = null;
+    showScreen('login');
+  };
+
+  /* ── SHOW ADMIN DASHBOARD ── */
+  function showAdminDashboard(user, admin) {
+    showScreen('admin');
+
+    // Update sidebar user info
+    var nameEl = document.getElementById('admin-name');
+    var roleEl = document.getElementById('admin-role');
+    var avatarEl = document.getElementById('admin-avatar');
+
+    nameEl.textContent = admin.display_name || user.email;
+    roleEl.textContent = admin.role;
+    avatarEl.textContent = (admin.display_name || user.email || 'A').charAt(0).toUpperCase();
+
+    // Load dashboard data
+    loadDashboardStats();
+    loadPendingCampaigns();
+  }
+
+  /* ── PANEL SWITCHING ── */
+  window.switchPanel = function(name, el) {
+    // Deactivate all panels
+    var panels = document.querySelectorAll('.panel');
+    for (var i = 0; i < panels.length; i++) panels[i].classList.remove('active');
+
+    // Deactivate all nav items
+    var navItems = document.querySelectorAll('.nav-item');
+    for (var j = 0; j < navItems.length; j++) navItems[j].classList.remove('active');
+
+    // Activate target
+    var panel = document.getElementById('panel-' + name);
+    if (panel) panel.classList.add('active');
+    if (el) el.classList.add('active');
+
+    // Load data for panel
+    if (name === 'review') loadPendingCampaigns();
+    if (name === 'campaigns') loadAllCampaigns();
+  };
+
+  /* ── HTML ESCAPE ── */
+  function escHtml(str) {
+    if (!str) return '';
+    var div = document.createElement('div');
+    div.appendChild(document.createTextNode(str));
+    return div.textContent;
+  }
+
+  /* ── SAFE DOM TABLE BUILDER ── */
+  function buildCampaignTable(campaigns, showActions) {
+    var typeMap = { offer: 'Teklif', employer_branding: 'Marka', hiring_boost: 'İşe Alım' };
+    var statusMap = {
+      draft: ['Taslak', 'draft'], pending_review: ['Beklemede', 'pending'],
+      approved: ['Onaylı', 'approved'], active: ['Aktif', 'active'],
+      rejected: ['Reddedildi', 'rejected'], revision_needed: ['Düzenleme', 'revision'],
+      ended: ['Sona Erdi', 'ended'], archived: ['Arşiv', 'archived'],
+      paused: ['Duraklatıldı', 'paused']
+    };
+
+    var table = document.createElement('table');
+    table.className = 'admin-table';
+
+    // Header
+    var thead = document.createElement('thead');
+    var headerRow = document.createElement('tr');
+    var headers = ['Kampanya', 'Tür', 'Durum', 'Tarih'];
+    if (showActions) headers.push('İşlem');
+    for (var h = 0; h < headers.length; h++) {
+      var th = document.createElement('th');
+      th.textContent = headers[h];
+      headerRow.appendChild(th);
+    }
+    thead.appendChild(headerRow);
+    table.appendChild(thead);
+
+    // Body
+    var tbody = document.createElement('tbody');
+    for (var i = 0; i < campaigns.length; i++) {
+      var c = campaigns[i];
+      var tr = document.createElement('tr');
+
+      // Campaign name cell
+      var tdName = document.createElement('td');
+      var strong = document.createElement('strong');
+      strong.textContent = c.title || '(Başlıksız)';
+      tdName.appendChild(strong);
+      var br = document.createElement('br');
+      tdName.appendChild(br);
+      var idSpan = document.createElement('span');
+      idSpan.style.cssText = 'font-size:11px;color:var(--muted);';
+      idSpan.textContent = 'ID: ' + c.id;
+      tdName.appendChild(idSpan);
+      tr.appendChild(tdName);
+
+      // Type cell
+      var tdType = document.createElement('td');
+      tdType.textContent = typeMap[c.campaign_type] || c.campaign_type;
+      tr.appendChild(tdType);
+
+      // Status cell
+      var tdStatus = document.createElement('td');
+      var pill = document.createElement('span');
+      var statusInfo = statusMap[c.status] || [c.status, 'draft'];
+      pill.className = 'status-pill ' + statusInfo[1];
+      pill.textContent = statusInfo[0];
+      tdStatus.appendChild(pill);
+      tr.appendChild(tdStatus);
+
+      // Date cell
+      var tdDate = document.createElement('td');
+      tdDate.style.cssText = 'font-size:12px;color:var(--muted);';
+      var dateVal = c.submitted_at || c.created_at;
+      tdDate.textContent = dateVal ? new Date(dateVal).toLocaleDateString('tr-TR') : '-';
+      tr.appendChild(tdDate);
+
+      // Actions cell
+      if (showActions) {
+        var tdActions = document.createElement('td');
+
+        var btnApprove = document.createElement('button');
+        btnApprove.className = 'btn btn-approve btn-sm';
+        btnApprove.textContent = 'Onayla';
+        btnApprove.dataset.id = c.id;
+        btnApprove.addEventListener('click', (function(id){ return function(){ window._htReviewCampaign(id, 'approve'); }; })(c.id));
+        tdActions.appendChild(btnApprove);
+
+        tdActions.appendChild(document.createTextNode(' '));
+
+        var btnReject = document.createElement('button');
+        btnReject.className = 'btn btn-reject btn-sm';
+        btnReject.textContent = 'Reddet';
+        btnReject.dataset.id = c.id;
+        btnReject.addEventListener('click', (function(id){ return function(){ window._htReviewCampaign(id, 'reject'); }; })(c.id));
+        tdActions.appendChild(btnReject);
+
+        tdActions.appendChild(document.createTextNode(' '));
+
+        var btnRevision = document.createElement('button');
+        btnRevision.className = 'btn btn-sm';
+        btnRevision.textContent = 'Düzenleme İste';
+        btnRevision.dataset.id = c.id;
+        btnRevision.addEventListener('click', (function(id){ return function(){ window._htReviewCampaign(id, 'revision_needed'); }; })(c.id));
+        tdActions.appendChild(btnRevision);
+
+        tr.appendChild(tdActions);
+      }
+
+      tbody.appendChild(tr);
+    }
+    table.appendChild(tbody);
+    return table;
+  }
+
+  /* ── EMPTY STATE BUILDER ── */
+  function buildEmptyState(icon, text) {
+    var div = document.createElement('div');
+    div.className = 'empty-state';
+    var iconDiv = document.createElement('div');
+    iconDiv.className = 'empty-state-icon';
+    iconDiv.textContent = icon;
+    div.appendChild(iconDiv);
+    var textDiv = document.createElement('div');
+    textDiv.className = 'empty-state-text';
+    textDiv.textContent = text;
+    div.appendChild(textDiv);
+    return div;
+  }
+
+  /* ── DASHBOARD STATS ── */
+  async function loadDashboardStats() {
+    try {
+      var pending = await _supa.from('campaigns').select('id', { count: 'exact', head: true }).eq('status', 'pending_review');
+      var active = await _supa.from('campaigns').select('id', { count: 'exact', head: true }).eq('status', 'active');
+      var total = await _supa.from('campaigns').select('id', { count: 'exact', head: true });
+
+      document.getElementById('stat-pending').textContent = pending.count || 0;
+      document.getElementById('stat-active').textContent = active.count || 0;
+      document.getElementById('stat-total').textContent = total.count || 0;
+
+      // Update badge
+      var badge = document.getElementById('badge-pending');
+      if (pending.count > 0) {
+        badge.textContent = pending.count;
+        badge.style.display = 'inline';
+      } else {
+        badge.style.display = 'none';
+      }
+    } catch(e) {
+      console.error('Stats load error:', e);
+    }
+  }
+
+  /* ── PENDING CAMPAIGNS ── */
+  async function loadPendingCampaigns() {
+    try {
+      var res = await _supa.from('campaigns')
+        .select('id, title, campaign_type, status, company_id, brand_id, created_by, created_at, submitted_at, payment_status, start_date, end_date')
+        .eq('status', 'pending_review')
+        .order('submitted_at', { ascending: true });
+
+      var container = document.getElementById('pending-campaigns-list');
+      if (res.error) { console.error('Load pending error:', res.error); return; }
+
+      // Clear container safely
+      while (container.firstChild) container.removeChild(container.firstChild);
+
+      if (!res.data || res.data.length === 0) {
+        container.appendChild(buildEmptyState('✅', 'Incelenecek kampanya yok'));
+        return;
+      }
+
+      container.appendChild(buildCampaignTable(res.data, true));
+    } catch(e) {
+      console.error('Load pending exception:', e);
+    }
+  }
+
+  /* ── ALL CAMPAIGNS ── */
+  async function loadAllCampaigns() {
+    try {
+      var res = await _supa.from('campaigns')
+        .select('id, title, campaign_type, status, company_id, brand_id, created_by, created_at, submitted_at, payment_status, start_date, end_date, impression_count, click_count')
+        .order('created_at', { ascending: false });
+
+      var container = document.getElementById('all-campaigns-list');
+      if (res.error) { console.error('Load all error:', res.error); return; }
+
+      // Clear container safely
+      while (container.firstChild) container.removeChild(container.firstChild);
+
+      if (!res.data || res.data.length === 0) {
+        container.appendChild(buildEmptyState('📊', 'Henüz kampanya oluşturulmamış'));
+        return;
+      }
+
+      container.appendChild(buildCampaignTable(res.data, false));
+    } catch(e) {
+      console.error('Load all exception:', e);
+    }
+  }
+
+  /* ── REVIEW ACTION ── */
+  window._htReviewCampaign = async function(campaignId, action) {
+    if (!_adminUser) return;
+
+    var statusMap = { approve: 'approved', reject: 'rejected', revision_needed: 'revision_needed' };
+    var newStatus = statusMap[action];
+    if (!newStatus) return;
+
+    var note = '';
+    if (action === 'reject' || action === 'revision_needed') {
+      note = prompt(action === 'reject' ? 'Reddetme sebebi:' : 'Düzenleme notu:');
+      if (note === null) return; // cancelled
+    }
+
+    try {
+      // Insert review record
+      var reviewRes = await _supa.from('campaign_reviews').insert({
+        campaign_id: campaignId,
+        reviewer_id: _adminUser.id,
+        action: action,
+        note: note || null
+      });
+
+      if (reviewRes.error) { console.error('Review insert error:', reviewRes.error); alert('Hata: ' + reviewRes.error.message); return; }
+
+      // Update campaign status
+      var updateData = { status: newStatus };
+      if (action === 'approve') updateData.approved_at = new Date().toISOString();
+
+      var updateRes = await _supa.from('campaigns').update(updateData).eq('id', campaignId);
+      if (updateRes.error) { console.error('Campaign update error:', updateRes.error); alert('Hata: ' + updateRes.error.message); return; }
+
+      // Reload
+      loadDashboardStats();
+      loadPendingCampaigns();
+    } catch(e) {
+      console.error('Review action exception:', e);
+      alert('Hata: ' + e.message);
+    }
+  };
+
+  /* ── INIT ── */
+  initSession();
+
+})();
+</script>
+
+</body>
+</html>
