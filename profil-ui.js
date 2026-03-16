@@ -121,9 +121,15 @@ function populateIlceSelect(selectId, cityName) {
 async function handleAvatarUpload(input) {
   var file = input.files[0];
   if (!file) return;
-  if (file.size > 2 * 1024 * 1024) { alert('Dosya 2MB\'dan buyuk olamaz.'); return; }
+  if (file.size > 2 * 1024 * 1024) {
+    var errDesc = document.getElementById('error-desc');
+    if (errDesc) errDesc.textContent = 'Dosya 2MB\u2019dan b\u00FCy\u00FCk olamaz.';
+    var errModal = document.getElementById('modal-error');
+    if (errModal) errModal.classList.add('show');
+    return;
+  }
   var btnText = document.getElementById('avatar-btn-text');
-  if (btnText) btnText.textContent = 'Yukleniyor...';
+  if (btnText) btnText.textContent = 'Y\u00FCkleniyor...';
   var ext = file.name.split('.').pop();
   var path = STORAGE.avatarPath(currentUser.id, ext);
 
@@ -1283,8 +1289,7 @@ async function saveProfileRPC(onComplete) {
       : (_loadedDBData && _loadedDBData.profile && typeof _loadedDBData.profile.is_active === 'boolean'
           ? _loadedDBData.profile.is_active
           : true),
-    ilk_deneyim: document.getElementById('cb-no-experience') ? document.getElementById('cb-no-experience').checked : false,
-    profile_completed: true
+    ilk_deneyim: document.getElementById('cb-no-experience') ? document.getElementById('cb-no-experience').checked : false
   };
 
   // Assemble experiences
@@ -1702,7 +1707,7 @@ async function loadProfileFromDB() {
   }
 
   // Fetch candidate record
-  var candRes = await supabase.from('candidates').select('*').eq('user_id', currentUser.id).single();
+  var candRes = await supabase.from('candidates').select('*').eq('user_id', currentUser.id).maybeSingle();
   if (candRes.error || !candRes.data) {
     if (window.Sentry && candRes.error) Sentry.captureMessage('Profile restore: candidates query failed', {
       level: 'error', tags: { flow: 'profile-restore' },
@@ -1847,33 +1852,37 @@ async function loadProfileFromDB() {
 // ═══════════════════════════════════════════════════
 
 function calculateCompletion() {
-  var score = 0, total = 0;
-  // Profile fields (40 points)
-  total += 10; if (val('f-adsoyad')) score += 10;
-  total += 5; if (val('f-telefon')) score += 5;
-  total += 5; if (val('f-cinsiyet')) score += 5;
-  total += 5; if (val('f-dogumyili')) score += 5;
-  total += 10; if (val('f-adresil')) score += 10;
-  total += 5; if (val('f-linkedin')) score += 5;
-  // Experiences (20 points)
-  total += 20;
+  // Mirrors backend compute_candidate_profile_completion() exactly.
+  // Weights must stay in sync with migration 039.
+  var score = 0;
+
+  // Identity (20 points)
+  if (val('f-adsoyad')) score += 10;       // full_name
+  if (val('f-telefon')) score += 5;        // telefon
+  if (val('f-adresil')) score += 5;        // adres_il
+
+  // Contact (5 points)
+  if (val('f-linkedin')) score += 5;       // linkedin
+
+  // Experiences (25 points)
   var cbNoExp = document.getElementById('cb-no-experience');
-  if (cbNoExp && cbNoExp.checked) { score += 20; }
-  else if (document.querySelectorAll('.exp-card').length > 0 && val(document.querySelector('.exp-card').id + '-sirket')) { score += 20; }
-  // Education (10 points)
-  total += 10;
-  if (document.querySelectorAll('#edu-rows-container .dynamic-row').length > 0) score += 10;
+  if (cbNoExp && cbNoExp.checked) { score += 25; }
+  else if (document.querySelectorAll('.exp-card').length > 0 && val(document.querySelector('.exp-card').id + '-sirket')) { score += 25; }
+
+  // Education (15 points)
+  if (document.querySelectorAll('#edu-rows-container .dynamic-row').length > 0) score += 15;
+
   // Languages (10 points)
-  total += 10;
   if (document.querySelectorAll('#lang-rows-container .dynamic-row').length > 0) score += 10;
-  // Preferences (10 points)
-  total += 10;
-  if (selectedMusaitlik || selectedCalismaTipleri.length > 0) score += 10;
+
+  // Work preferences (15 points)
+  if (selectedMusaitlik || selectedCalismaTipleri.length > 0) score += 15;
+
   // Locations (10 points)
-  total += 10;
   if (Object.keys(selectedLocations).length > 0) score += 10;
 
-  return Math.round((score / total) * 100);
+  // Cap at 100
+  return Math.min(score, 100);
 }
 
 // ── PROFILE SCORE (0-100) — recruiter-side quality signal ──

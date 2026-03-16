@@ -185,6 +185,17 @@ if (window.Sentry) {
   </div>
 </aside>
 
+<!-- COMMAND PALETTE (Cmd+K) -->
+<div class="modal-overlay" id="modal-cmdk" style="z-index:1100;background:rgba(0,0,0,0.5);display:none;align-items:flex-start;padding-top:18vh;">
+  <div style="background:white;border-radius:14px;width:100%;max-width:440px;box-shadow:0 20px 60px rgba(0,0,0,0.2);overflow:hidden;margin:0 16px;">
+    <div style="padding:12px 16px;border-bottom:1px solid var(--border);">
+      <input type="text" id="cmdk-input" placeholder="Panel veya sayfa ara..." autocomplete="off"
+        style="width:100%;border:none;outline:none;font-size:15px;font-family:inherit;color:var(--text);background:transparent;">
+    </div>
+    <div id="cmdk-results" style="max-height:280px;overflow-y:auto;padding:6px;"></div>
+  </div>
+</div>
+
 <!-- LOCATION MODAL -->
 <div class="lok-modal-overlay" id="lok-modal-overlay">
   <div class="lok-modal">
@@ -197,7 +208,7 @@ if (window.Sentry) {
     </div>
     <div class="lok-body" id="lok-body"></div>
     <div class="lok-footer">
-      <p><strong id="lok-selected-count">0</strong> sehir secili</p>
+      <p><strong id="lok-selected-count">0</strong> şehir seçili</p>
       <button class="btn btn-primary" id="btn-lok-done">Kaydet</button>
     </div>
   </div>
@@ -343,9 +354,9 @@ if (window.Sentry) {
   <!-- EMPTY PROMPT (first-time users) -->
   <div class="dash-empty-prompt" id="dash-empty-prompt" style="display:none;">
     <div class="dash-empty-icon">&#128100;</div>
-    <div class="dash-empty-title">Profilini Olustur</div>
+    <div class="dash-empty-title">Profilini Oluştur</div>
     <div class="dash-empty-desc">Henüz profil bilgilerin eklenmemiş. Profilini tamamla, retail markaları seni bulsun!</div>
-    <button class="btn btn-primary" id="btn-start-wizard">Profili Duzenle</button>
+    <button class="btn btn-primary" id="btn-start-wizard">Profili Düzenle</button>
   </div>
 
   <!-- DASHBOARD CARDS (bento grid) -->
@@ -1107,8 +1118,8 @@ if (window.Sentry) {
 
 <!-- ═══ PANEL: AYARLAR ═══ -->
 <main class="panel" id="panel-ayarlar" data-panel="ayarlar">
-  <div class="wiz-step-title">Hesap Ayarlari</div>
-  <div class="wiz-step-desc">Hesap bilgilerini yonet.</div>
+  <div class="wiz-step-title">Hesap Ayarları</div>
+  <div class="wiz-step-desc">Hesap bilgilerini yönet.</div>
   <div class="card">
     <div class="card-title">Hesap Bilgileri</div>
     <div class="field">
@@ -1139,7 +1150,7 @@ if (window.Sentry) {
   </div>
 
   <div class="card" style="margin-top:16px;">
-    <div class="card-title">Sifre Degistir</div>
+    <div class="card-title">Şifre Değiştir</div>
     <div class="field">
       <label for="settings-new-pw">Yeni Sifre</label>
       <input type="password" id="settings-new-pw" placeholder="En az 6 karakter">
@@ -1148,7 +1159,7 @@ if (window.Sentry) {
       <label for="settings-confirm-pw">Yeni Sifre (Tekrar)</label>
       <input type="password" id="settings-confirm-pw" placeholder="Sifreyi tekrarlayin">
     </div>
-    <button class="btn btn-primary btn-sm" id="btn-change-pw">Sifreyi Guncelle</button>
+    <button class="btn btn-primary btn-sm" id="btn-change-pw">Şifreyi Güncelle</button>
     <div id="pw-msg" style="font-size:12px;margin-top:8px;display:none;"></div>
   </div>
 
@@ -2031,17 +2042,9 @@ function reapplyDynamicFields() {
     el.textContent = initials;
   });
 
-  // Show app body (behind loading screen); loading screen fades after min 2.5s
+  // Show app body behind loading screen
   document.getElementById('app-body').style.display = 'block';
-  var elapsed = Date.now() - _loadStart;
-  var remaining = Math.max(0, 4000 - elapsed);
-  setTimeout(function() {
-    var ls = document.getElementById('loading-screen');
-    if (ls) {
-      ls.classList.add('fade-out');
-      setTimeout(function() { ls.style.display = 'none'; }, 500);
-    }
-  }, remaining);
+
   // Try loading profile data from DB
   var dbData = await loadProfileFromDB();
   _loadedDBData = dbData; // Store for post-init re-apply
@@ -2120,6 +2123,13 @@ function reapplyDynamicFields() {
     document.getElementById('dash-empty-prompt').style.display = 'block';
   }
 
+  // ── Dismiss loading screen now that data is ready ──
+  var _ls = document.getElementById('loading-screen');
+  if (_ls) {
+    _ls.classList.add('fade-out');
+    setTimeout(function() { _ls.style.display = 'none'; }, 500);
+  }
+
   // ── Career goal override: query param > localStorage > draft/DB ──
   // Other pages (kariyer.html, giris.html etc.) send ?career_goal= or set localStorage.ht_career_goal
   var urlParams = new URLSearchParams(window.location.search);
@@ -2156,6 +2166,97 @@ document.addEventListener('DOMContentLoaded', function() {
       var panel = this.dataset.panel;
       if (panel) switchPanel(panel);
     });
+  });
+
+  // ── Command Palette (Cmd+K / Ctrl+K) ──
+  var cmdkItems = [
+    { label: 'Genel Bak\u0131\u015F', panel: 'genel', icon: '\uD83D\uDCCA' },
+    { label: 'Profil Merkezi', panel: 'merkez', icon: '\uD83D\uDCCB' },
+    { label: 'Markalar', panel: 'sirketler', icon: '\uD83C\uDFE2' },
+    { label: '\u00D6zel Teklifler', panel: 'teklifler', icon: '\uD83C\uDF81' },
+    { label: 'Mesajlar', panel: 'inbox', icon: '\u2709\uFE0F' },
+    { label: 'Bildirimler', panel: 'bildirimler', icon: '\uD83D\uDD14' },
+    { label: 'Ayarlar', panel: 'ayarlar', icon: '\u2699\uFE0F' },
+    { label: 'Profil D\u00FCzenle', panel: 'profil', icon: '\u270F\uFE0F' }
+  ];
+  var cmdkOverlay = document.getElementById('modal-cmdk');
+  var cmdkInput = document.getElementById('cmdk-input');
+  var cmdkResults = document.getElementById('cmdk-results');
+
+  function openCmdk() {
+    if (!cmdkOverlay) return;
+    cmdkOverlay.style.display = 'flex';
+    cmdkInput.value = '';
+    renderCmdkResults('');
+    setTimeout(function() { cmdkInput.focus(); }, 50);
+  }
+  function closeCmdk() {
+    if (cmdkOverlay) cmdkOverlay.style.display = 'none';
+  }
+  function renderCmdkResults(query) {
+    while (cmdkResults.firstChild) cmdkResults.removeChild(cmdkResults.firstChild);
+    var q = query.toLowerCase().replace(/\u0131/g, 'i').replace(/\u00fc/g, 'u').replace(/\u00f6/g, 'o').replace(/\u015f/g, 's').replace(/\u00e7/g, 'c').replace(/\u011f/g, 'g');
+    var filtered = cmdkItems.filter(function(item) {
+      var normalized = item.label.toLowerCase().replace(/\u0131/g, 'i').replace(/\u00fc/g, 'u').replace(/\u00f6/g, 'o').replace(/\u015f/g, 's').replace(/\u00e7/g, 'c').replace(/\u011f/g, 'g');
+      return !q || normalized.indexOf(q) > -1;
+    });
+    filtered.forEach(function(item) {
+      var row = document.createElement('div');
+      row.style.cssText = 'display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;cursor:pointer;transition:background .15s;';
+      row.addEventListener('mouseenter', function() { this.style.background = 'var(--bg-elevated, #F3F4F6)'; });
+      row.addEventListener('mouseleave', function() { this.style.background = 'transparent'; });
+      var iconEl = document.createElement('span');
+      iconEl.style.cssText = 'font-size:18px;flex-shrink:0;width:28px;text-align:center;';
+      iconEl.textContent = item.icon;
+      var labelEl = document.createElement('span');
+      labelEl.style.cssText = 'font-size:14px;font-weight:500;color:var(--text);';
+      labelEl.textContent = item.label;
+      row.appendChild(iconEl);
+      row.appendChild(labelEl);
+      row.addEventListener('click', function() {
+        closeCmdk();
+        switchPanel(item.panel);
+      });
+      cmdkResults.appendChild(row);
+    });
+    if (filtered.length === 0) {
+      var empty = document.createElement('div');
+      empty.style.cssText = 'padding:20px;text-align:center;color:var(--text-muted);font-size:13px;';
+      empty.textContent = 'Sonu\u00E7 bulunamad\u0131';
+      cmdkResults.appendChild(empty);
+    }
+  }
+
+  if (cmdkInput) {
+    cmdkInput.addEventListener('input', function() { renderCmdkResults(this.value); });
+    cmdkInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') closeCmdk();
+      if (e.key === 'Enter') {
+        var first = cmdkResults.querySelector('div[style]');
+        if (first) first.click();
+      }
+    });
+  }
+  if (cmdkOverlay) {
+    cmdkOverlay.addEventListener('click', function(e) {
+      if (e.target === cmdkOverlay) closeCmdk();
+    });
+  }
+
+  // Header search click
+  var headerSearch = document.getElementById('header-search');
+  if (headerSearch) {
+    headerSearch.style.cursor = 'pointer';
+    headerSearch.addEventListener('click', openCmdk);
+  }
+
+  // Keyboard shortcut: Cmd+K / Ctrl+K
+  document.addEventListener('keydown', function(e) {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+      e.preventDefault();
+      if (cmdkOverlay && cmdkOverlay.style.display === 'flex') closeCmdk();
+      else openCmdk();
+    }
   });
 
   // Bottom nav clicks

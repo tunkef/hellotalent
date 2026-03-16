@@ -466,7 +466,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     .from('candidate_blocked_companies')
                     .insert({ candidate_id: cid, company_id: c.id })
                     .select('id')
-                    .single();
+                    .maybeSingle();
                   if (insRes.error) throw insRes.error;
                   var inserted = insRes.data;
                   blockedIds.add(c.id);
