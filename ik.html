@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<script>if(sessionStorage.getItem('ht_gate')!=='ok'){window.location.replace('gate.html');}</script>
 <title>İK Paneli — hellotalent.ai</title>
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -460,6 +459,10 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
     <div class="nav-item" data-panel="sirket" onclick="switchPanel('sirket',this)">
       <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
       Şirket Profili
+    </div>
+    <div class="nav-item" data-panel="ekip" onclick="switchPanel('ekip',this)">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Ekip
     </div>
     <div class="nav-item" data-panel="ayarlar" onclick="switchPanel('ayarlar',this)">
       <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
@@ -1028,6 +1031,55 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
     </div>
 
     <!-- ═══ AYARLAR PANELİ ═══ -->
+    <!-- ══ PANEL: EKİP ══ -->
+    <div class="panel" id="panel-ekip">
+      <div class="section-header">
+        <div class="section-title">Ekip Yönetimi</div>
+      </div>
+
+      <!-- Plan & Seat Özet -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;" id="ekip-stats">
+        <div style="background:white;border:1px solid var(--border);border-radius:12px;padding:16px;">
+          <div style="font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Mevcut Plan</div>
+          <div style="font-size:22px;font-weight:800;color:var(--navy);margin-top:4px;" id="ekip-plan-name">—</div>
+        </div>
+        <div style="background:white;border:1px solid var(--border);border-radius:12px;padding:16px;">
+          <div style="font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Kullanıcılar</div>
+          <div style="font-size:22px;font-weight:800;color:var(--navy);margin-top:4px;"><span id="ekip-seat-used">0</span> / <span id="ekip-seat-limit">1</span></div>
+        </div>
+      </div>
+
+      <!-- Davet Formu (admin only) -->
+      <div id="ekip-invite-section" style="background:white;border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:20px;">
+        <div style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:15px;margin-bottom:12px;">Yeni Üye Davet Et</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <input class="form-input" type="email" id="ekip-invite-email" placeholder="E-posta adresi" style="flex:1;min-width:200px;">
+          <select class="form-input" id="ekip-invite-role" style="width:140px;">
+            <option value="recruiter">Recruiter</option>
+            <option value="viewer">Viewer</option>
+            <option value="admin">Admin</option>
+          </select>
+          <button class="btn-primary btn-sm" type="button" id="btn-ekip-invite" onclick="sendTeamInvite()">Davet Gönder</button>
+        </div>
+        <div id="ekip-invite-msg" style="display:none;font-size:12px;margin-top:8px;font-weight:600;"></div>
+        <div id="ekip-limit-warning" style="display:none;font-size:12px;margin-top:8px;color:var(--verm);font-weight:600;">
+          Kullanıcı limitine ulaşıldı. <a href="#" onclick="showUpgradeModal();return false;" style="color:var(--navy);text-decoration:underline;">Planınızı yükseltin</a>
+        </div>
+      </div>
+
+      <!-- Üye Listesi -->
+      <div style="background:white;border:1px solid var(--border);border-radius:12px;padding:20px;">
+        <div style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:15px;margin-bottom:12px;">Ekip Üyeleri</div>
+        <div id="ekip-members-list" style="font-size:13px;color:var(--muted);">Yükleniyor...</div>
+      </div>
+
+      <!-- Bekleyen Davetler -->
+      <div id="ekip-pending-section" style="background:white;border:1px solid var(--border);border-radius:12px;padding:20px;margin-top:12px;display:none;">
+        <div style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:15px;margin-bottom:12px;">Bekleyen Davetler</div>
+        <div id="ekip-pending-list"></div>
+      </div>
+    </div>
+
     <div class="panel" id="panel-ayarlar">
       <div class="section-header">
         <div class="section-title">Ayarlar</div>
@@ -2170,6 +2222,7 @@ var PANEL_TITLES = {
   sirket:'Şirket Profili',
   takipciler:'Takipçiler',
   kampanyalar:'Kampanyalar',
+  ekip:'Ekip Yönetimi',
   ayarlar:'Ayarlar'
 };
 // ── ONBOARDING BANNER ──
@@ -2234,6 +2287,7 @@ function switchPanel(name, el){
   }
   // lazy-load panel data
   if(name === 'takipciler') loadFollowers();
+  if(name === 'ekip') loadTeamPanel();
   // mobile — scroll to top
   window.scrollTo({top:0, behavior:'smooth'});
 }
@@ -3700,6 +3754,222 @@ document.addEventListener('keydown', function(e){
   }
 });
 
+// ── EKİP YÖNETİMİ ──
+var _teamLoaded = false;
+var _teamData = null;
+
+async function loadTeamPanel(){
+  try {
+    var planEl = document.getElementById('ekip-plan-name');
+    var usedEl = document.getElementById('ekip-seat-used');
+    var limitEl = document.getElementById('ekip-seat-limit');
+    var listEl = document.getElementById('ekip-members-list');
+    var inviteSection = document.getElementById('ekip-invite-section');
+    var limitWarning = document.getElementById('ekip-limit-warning');
+    var inviteMsg = document.getElementById('ekip-invite-msg');
+
+    if(inviteMsg) { inviteMsg.style.display = 'none'; }
+
+    var res = await supabase.rpc('get_employer_team_info');
+    if(res.error){
+      if(listEl) listEl.textContent = 'Ekip bilgisi yüklenemedi.';
+      console.error('[HT] get_employer_team_info error:', res.error.message);
+      return;
+    }
+
+    var d = res.data;
+    if(!d || !d.success){
+      if(listEl) listEl.textContent = d && d.error ? d.error : 'Şirket kaydı bulunamadı.';
+      return;
+    }
+
+    _teamData = d;
+    _teamLoaded = true;
+
+    // Plan adını Türkçe göster
+    var planNames = { free:'Ücretsiz', premium:'Premium', pro:'Pro', enterprise:'Enterprise' };
+    if(planEl) planEl.textContent = planNames[d.plan] || d.plan;
+    if(usedEl) usedEl.textContent = d.seat_used;
+    if(limitEl) limitEl.textContent = d.plan === 'enterprise' ? '∞' : d.seat_limit;
+
+    // Admin değilse davet formunu gizle
+    var isAdmin = hrProfile && hrProfile.employer_role === 'admin';
+    if(inviteSection) inviteSection.style.display = isAdmin ? '' : 'none';
+
+    // Seat limit uyarısı
+    if(limitWarning) limitWarning.style.display = (d.seats_available <= 0 && d.plan !== 'enterprise') ? '' : 'none';
+
+    // Üye listesi
+    renderTeamMembers(d.members || []);
+
+    // Bekleyen davetleri yükle
+    loadPendingInvites(d.company_id);
+  } catch(e) {
+    console.error('[HT] loadTeamPanel error:', e.message);
+  }
+}
+
+function renderTeamMembers(members){
+  var listEl = document.getElementById('ekip-members-list');
+  if(!listEl) return;
+
+  if(!members || members.length === 0){
+    listEl.textContent = 'Henüz ekip üyesi yok.';
+    return;
+  }
+
+  listEl.textContent = '';
+  var table = document.createElement('div');
+  table.style.cssText = 'display:flex;flex-direction:column;gap:8px;';
+
+  members.forEach(function(m){
+    var row = document.createElement('div');
+    row.style.cssText = 'display:flex;align-items:center;gap:12px;padding:10px 12px;background:var(--bg);border-radius:8px;';
+
+    var avatar = document.createElement('div');
+    avatar.style.cssText = 'width:36px;height:36px;border-radius:50%;background:var(--navy);color:white;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;';
+    var initials = (m.display_name || m.email || '?').split(/\s+/).map(function(w){ return w.charAt(0); }).join('').substring(0,2).toUpperCase();
+    avatar.textContent = initials;
+
+    var info = document.createElement('div');
+    info.style.cssText = 'flex:1;min-width:0;';
+    var nameDiv = document.createElement('div');
+    nameDiv.style.cssText = 'font-weight:600;font-size:13px;color:var(--navy);';
+    nameDiv.textContent = m.display_name || m.email;
+    var emailDiv = document.createElement('div');
+    emailDiv.style.cssText = 'font-size:11px;color:var(--muted);';
+    emailDiv.textContent = m.email;
+
+    info.appendChild(nameDiv);
+    info.appendChild(emailDiv);
+
+    var roleBadge = document.createElement('span');
+    var roleColors = { admin:'#C94E28', recruiter:'#1E2D5E', viewer:'#6B7280' };
+    var roleLabels = { admin:'Admin', recruiter:'Recruiter', viewer:'Viewer' };
+    roleBadge.style.cssText = 'padding:3px 10px;border-radius:6px;font-size:10px;font-weight:700;font-family:"DM Mono",monospace;text-transform:uppercase;letter-spacing:0.5px;color:white;background:' + (roleColors[m.employer_role] || '#6B7280') + ';';
+    roleBadge.textContent = roleLabels[m.employer_role] || m.employer_role || 'Üye';
+
+    row.appendChild(avatar);
+    row.appendChild(info);
+    row.appendChild(roleBadge);
+    table.appendChild(row);
+  });
+
+  listEl.appendChild(table);
+}
+
+async function loadPendingInvites(companyId){
+  try {
+    var section = document.getElementById('ekip-pending-section');
+    var listEl = document.getElementById('ekip-pending-list');
+    if(!section || !listEl) return;
+
+    var res = await supabase
+      .from('company_invitations')
+      .select('id, email, invited_role, status, created_at')
+      .eq('company_id', companyId)
+      .eq('status', 'pending')
+      .order('created_at', { ascending: false });
+
+    if(res.error || !res.data || res.data.length === 0){
+      section.style.display = 'none';
+      return;
+    }
+
+    section.style.display = '';
+    listEl.textContent = '';
+
+    res.data.forEach(function(inv){
+      var row = document.createElement('div');
+      row.style.cssText = 'display:flex;align-items:center;gap:12px;padding:8px 12px;background:var(--bg);border-radius:8px;margin-bottom:6px;';
+
+      var emailSpan = document.createElement('div');
+      emailSpan.style.cssText = 'flex:1;font-size:13px;';
+      emailSpan.textContent = inv.email;
+
+      var roleSpan = document.createElement('span');
+      roleSpan.style.cssText = 'font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;';
+      roleSpan.textContent = inv.invited_role;
+
+      var dateSpan = document.createElement('span');
+      dateSpan.style.cssText = 'font-size:10px;color:var(--muted);';
+      dateSpan.textContent = new Date(inv.created_at).toLocaleDateString('tr-TR');
+
+      row.appendChild(emailSpan);
+      row.appendChild(roleSpan);
+      row.appendChild(dateSpan);
+      listEl.appendChild(row);
+    });
+  } catch(e) {
+    console.error('[HT] loadPendingInvites error:', e.message);
+  }
+}
+
+async function sendTeamInvite(){
+  var emailInput = document.getElementById('ekip-invite-email');
+  var roleSelect = document.getElementById('ekip-invite-role');
+  var msgEl = document.getElementById('ekip-invite-msg');
+  var btn = document.getElementById('btn-ekip-invite');
+
+  var email = (emailInput ? emailInput.value : '').trim();
+  var role = roleSelect ? roleSelect.value : 'recruiter';
+
+  if(!email || !email.includes('@')){
+    if(msgEl){
+      msgEl.textContent = 'Geçerli bir e-posta adresi girin.';
+      msgEl.style.color = 'var(--verm)';
+      msgEl.style.display = '';
+    }
+    return;
+  }
+
+  if(btn) btn.disabled = true;
+  if(msgEl) msgEl.style.display = 'none';
+
+  try {
+    var res = await supabase.rpc('invite_team_member', { p_email: email, p_role: role });
+
+    if(res.error){
+      if(msgEl){
+        msgEl.textContent = res.error.message || 'Davet gönderilemedi.';
+        msgEl.style.color = 'var(--verm)';
+        msgEl.style.display = '';
+      }
+      return;
+    }
+
+    var d = res.data;
+    if(!d || !d.success){
+      if(msgEl){
+        msgEl.textContent = d && d.error ? d.error : 'Davet gönderilemedi.';
+        msgEl.style.color = 'var(--verm)';
+        msgEl.style.display = '';
+      }
+      return;
+    }
+
+    // Başarılı
+    if(msgEl){
+      msgEl.textContent = d.email + ' adresine davet gönderildi!';
+      msgEl.style.color = 'var(--green)';
+      msgEl.style.display = '';
+    }
+    if(emailInput) emailInput.value = '';
+
+    // Paneli yenile
+    setTimeout(function(){ loadTeamPanel(); }, 500);
+  } catch(e) {
+    if(msgEl){
+      msgEl.textContent = 'Bir hata oluştu: ' + e.message;
+      msgEl.style.color = 'var(--verm)';
+      msgEl.style.display = '';
+    }
+    console.error('[HT] sendTeamInvite error:', e.message);
+  } finally {
+    if(btn) btn.disabled = false;
+  }
+}
+
 // ── INIT ──
 initApp();
 </script>
@@ -3731,6 +4001,6 @@ initApp();
     </div>
   </div>
 </nav>
-<script src="ik-kampanya.js?v=1"></script>
+<script src="ik-kampanya.js?v=20260316"></script>
 </body>
 </html>

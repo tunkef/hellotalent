@@ -322,16 +322,16 @@ if(sessionStorage.getItem('ht_gate')!=='ok'){window.location.replace('gate.html'
 - Dark mode gradient: `#1A2B54 → #0F1729 → #0A1020`
 
 ### PENDING Cursor Prompts (sırayla yapıştırılacak)
-- [ ] Theme toggle visibility (gold sun icon on navy sidebar) + shared.css vermillion hover
+- [x] Theme toggle visibility (gold sun icon on navy sidebar) + vermillion hover ✅
 - [ ] Brand color audit Batch 2 (index, blog, hakkimizda, iletisim, isalim-rotasi)
 - [ ] Brand color audit Batch 3 (ik, aday, profil.css)
 - [ ] Navy gradient standardization (profil.css — 12 steps)
-- [ ] Sentry retry logic (profil-ui.js — retry failed child queries with session refresh)
-- [ ] Wizard "İlçe Seç" rename + district card frame kaldır
-- [ ] Cache-busting JS imports (profil.html — ?v=20260316)
+- [x] Sentry retry logic (profil-ui.js — retry failed child queries with session refresh) ✅ zaten mevcut
+- [x] Wizard "İlçe Seç" → "Seçili Lokasyonlar" rename + district card frame kaldırıldı ✅
+- [x] Cache-busting JS imports (profil.html, ik.html — ?v=20260316) ✅
 - [ ] Navy header with search/notif/breadcrumb + sidebar fold effect (BIG — approved mockup)
-- [ ] cursor-preview-polish.md — Banner shadow, company bold, son güncelleme, CV link
-- [ ] cursor-toggle-polish.md — Bento gaps, navy premium, alignment, "Beni Öner" naming + sync
+- [x] Preview polish — Banner shadow, company bold, son güncelleme, CV link ✅ zaten mevcut
+- [x] Toggle polish — Bento gaps, navy premium, alignment, "Beni Öner" naming + sync ✅ zaten mevcut
 
 ### LinkedIn OAuth ✅ (pushed)
 - Supabase'de LinkedIn (OIDC) provider aktif edildi
@@ -375,46 +375,63 @@ if(sessionStorage.getItem('ht_gate')!=='ok'){window.location.replace('gate.html'
 - Logo: beyaz, `.ai` kısmı rgba(255,255,255,0.5)
 - L-shaped navy frame, content area beyaz #F7F6F4
 
-### Cloudflare Access (propagation sonrası)
+### Cloudflare Access ✅ (aktif)
+- hellotalent.ai — Self-Hosted application, 1 policy assigned
 - Email/OTP ile server-side password protection
-- Gate.html'deki JS check'leri kaldırılabilir (artık gereksiz)
+- Gate.html JS check'leri kaldırıldı (13 dosya) — Cloudflare Access yeterli
 
-### P3 — Employer Onboarding & Team System
-**Tek marka / Çoklu marka flow:**
-1. Employer kayıt → domain-uyumlu email doğrulama
-2. "Tek marka mı, çoklu marka mı yönetiyorsunuz?" sorusu
-3. Tek marka → şirket/marka profili + İK kullanıcı ataması
-4. Çoklu marka → holding profili + marka profilleri + İK ekipleri ataması
-5. Marka claim conflict resolution (admin approval)
-6. Headhunter role (Peoplein gibi şirketler)
+### P3 — Employer Onboarding & Team System ✅ TAMAMLANDI
+**Yapılanlar:**
+1. ✅ Employer kayıt → domain-uyumlu email doğrulama (migration 028)
+2. ✅ Tek marka / çoklu marka onboarding flow (ik.html)
+3. ✅ Şirket/marka profili + İK kullanıcı ataması
+4. ✅ Holding profili + marka profilleri + İK ekipleri ataması
+5. ✅ company_teams + company_invitations tabloları (migration 029)
+6. ✅ hr_profiles.team_id + employer_role (admin/recruiter/viewer)
+7. ✅ Follower system + activity feed (P3-B)
+8. ✅ Messaging system + templates (P3-D)
+9. ✅ Premium subscription gating (P3-E)
+10. ✅ Profile completion scoring + visibility (P3-H)
 
-**Schema P3'te eklenecek:**
-- company_teams (team_name, brand_id FK)
-- company_invitations (email, role, team_id, status)
-- hr_profiles.team_id
+**Kalan:** Headhunter role (Peoplein gibi şirketler) — MVP sonrasına ertelendi
 
-### P3+ — Diğer Büyük Özellikler
+### P3 — Tamamlanan Özellikler (16 Mart 2026)
+| # | Özellik | Durum | Commit |
+|---|---------|-------|--------|
+| P3-A | Employer onboarding (role, domain, tek/çoklu marka, teams) | ✅ Done | `a553d98` |
+| P3-B | Follower system + activity feed + company locations | ✅ Done | `1d119fe` + `6277c83` |
+| P3-C | Company details sync + career URL + locations CRUD | ✅ Done | `3af0d97` |
+| P3-D | Employer→candidate messaging (templates, inbox, DM) | ✅ Done | `c185a68` |
+| P3-D+ | Candidate→Employer visibility enforcement (6 gap fixed) | ✅ Done | `e999b42` |
+| P3-E | Premium subscriptions + SMS phone verification (schema + gating) | ✅ Done | `2a27a72` + `316c883` |
+| P3-H | Profile completion scoring + ≥45% visibility threshold | ✅ Done | `39ffcad` + `9ce0498` |
+
+### P3 — Dış Servis Entegrasyonu Bekleyenler
+| # | Özellik | Durum | Bağımlılık |
+|---|---------|-------|-----------|
+| P3-E+ | iyzico/Stripe ödeme entegrasyonu | 🔲 Schema hazır, provider yok | Merchant hesap + API key |
+| P3-E+ | Twilio SMS gönderimi | 🔲 Schema hazır, provider yok | Twilio hesap + Edge Function |
+| P3-E+ | Email notification worker (DM → email) | 🔲 Planlandı | Supabase Edge Function |
+| P3-E+ | KVKK 30-gün purge cron | 🔲 Planlandı | Supabase cron / Edge Function |
+
+### P4 — Sonraki Büyük Özellikler
 | # | Özellik | Durum |
 |---|---------|-------|
-| P3 | Companies Phase B (detail, locations, career links) | Planned |
-| P3 | Candidate→Employer visibility enforcement | Planned |
-| P3 | Premium/paid logic (payment integration) | Planned |
-| P3 | İşveren-Aday iletişim sistemi (DM + follow + templates) | Planned |
-| P3 | SMS telefon doğrulama (Twilio / Supabase Phone Auth) | Planned |
 | P4 | Public pages content review | Planned |
-| P4 | Dark mode expansion | Planned |
-| P4 | Performance optimization | Planned |
+| P4 | Dark mode expansion (sadece profil.css'te, diğer sayfalara yayılacak) | Planned |
+| P4 | Performance optimization (Lighthouse, lazy-load, minification) | Planned |
 
-### İşveren-Aday İletişim Sistemi (Detay)
-MVP öncesi roadmap'e alındı:
-1. Aday şirketi follow eder
-2. İşveren follow'u görür (ama profili tam açamaz)
-3. Eşleşen pozisyon olduğunda "seni takip ediyor" gösterimi
-4. İşveren DM ile pozisyon teklifi gönderir (hazır template'ler)
-5. Aday tarafında DM inbox
-6. DM aldığında email bildirimi
-
-DB gereksinimleri: messages, message_templates, notifications tabloları + real-time subscription + email notification worker
+### Migration Deploy Durumu
+| Migration | İçerik | Supabase Deploy |
+|-----------|--------|----------------|
+| 030 | sync_company_details + career_page_url | ✅ Deployed |
+| 031 | employer_messages + message_templates + RLS + seed | ✅ Deployed |
+| 032 | visibility enforcement (enhanced send_employer_message) | ✅ Deployed |
+| 033 | subscriptions + employer_daily_usage + plan helpers | ✅ Deployed |
+| 034 | SMS phone verification (OTP flow) | ✅ Deployed |
+| 035 | profile_completion_pct + employer RLS update | ✅ Deployed |
+| 036 | profile completion sync triggers + admin hardening | ✅ Deployed |
+| 037 | seat limits + plan update (free/premium/pro/enterprise) | ✅ Deployed |
 
 ### Markalar TODO
 - [ ] Mobil test (390×844) — flip kartlar touch'da test edilmeli
@@ -544,9 +561,14 @@ cat docs/handoff.md
 ```
 
 ### Sıradaki İşler (öncelik sırasıyla)
-1. **Cloudflare Access setup** (propagation tamamlandığında)
-2. **Pending Cursor prompts** (10 adet — sırayla yapıştırılacak)
-3. **P3 — Employer Onboarding & Team System**
+1. ~~**Migration deploy** (032-036)~~ ✅ Deployed
+2. ~~**Pending Cursor prompts**~~ ✅ 6/10 tamamlandı (theme toggle, sentry retry, ilçe rename, cache-bust, preview polish, toggle polish)
+3. ~~**Cloudflare Access setup**~~ ✅ Zaten kurulmuş (hellotalent.ai, self-hosted, 1 policy)
+4. ~~**Gate.html kaldırma**~~ ✅ 13 dosyadan gate check script kaldırıldı (Cloudflare Access yeterli)
+5. ~~**Migration 037: Seat limits + plan update**~~ ✅ Deployed (free=1, premium=3, pro=5, enterprise=50)
+6. ~~**Ekip Yönetimi UI (ik.html)**~~ ✅ Panel eklendi (üye listesi, davet formu, seat limiti)
+7. **Kalan Cursor prompts:** Navy header (BIG), brand color audit Batch 2-3, navy gradient standardization
+8. **P4 — Public pages content review + dark mode + performance**
 
 ### Önceki Transkriptler
 Tam konuşma geçmişi:

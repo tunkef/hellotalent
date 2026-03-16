@@ -1186,7 +1186,7 @@ function renderSelectedCities() {
     } else {
       var noDistrict = document.createElement('p');
       noDistrict.style.cssText = 'font-size:12px;color:var(--muted);';
-      noDistrict.textContent = 'Bu il icin ilce secimi mevcut degil.';
+      noDistrict.textContent = 'Bu il için ilçe seçimi mevcut değil.';
       card.appendChild(noDistrict);
     }
 

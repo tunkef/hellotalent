@@ -319,6 +319,10 @@ body{
   transition: all 0.4s ease;
   flex-shrink: 0;
 }
+.theme-toggle-btn:hover {
+  border-color: var(--verm);
+  background: rgba(201,78,40,0.12);
+}
 .theme-toggle-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
@@ -412,9 +416,9 @@ body{
   pointer-events:none;z-index:4;
   background:linear-gradient(to bottom, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.08) 100%);
 }
-.sidebar .theme-toggle-btn .sun,
-.sidebar .theme-toggle-btn .moon { color: rgba(255,255,255,0.5); }
-.sidebar .theme-toggle-btn:hover .sun,
+.sidebar .theme-toggle-btn .sun { color: #F59E0B; filter: drop-shadow(0 0 4px rgba(245,158,11,0.5)); }
+.sidebar .theme-toggle-btn .moon { color: rgba(255,255,255,0.7); }
+.sidebar .theme-toggle-btn:hover .sun { color: #FBBF24; filter: drop-shadow(0 0 6px rgba(245,158,11,0.7)); }
 .sidebar .theme-toggle-btn:hover .moon { color: #FFFFFF; }
 
 /* Dark mode: deeper header + sidebar */
@@ -2201,7 +2205,7 @@ html[data-theme="dark"] .field-req{color:#F87171;}
 /* ── CITY CARDS (selected locations display) ── */
 .city-card{
   background:none;border:none;border-radius:0;
-  padding:8px 0;margin-bottom:8px;border-bottom:1px solid var(--border);
+  padding:8px 0;margin-bottom:8px;
 }
 .city-card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
 .city-card-name{font-size:14px;font-weight:700;color:var(--navy);}
@@ -2608,9 +2612,6 @@ html[data-theme="dark"] #wiz-step-5 #selected-cities-container{
 }
 html[data-theme="dark"] #wiz-step-5 #no-city-msg{
   color:#D1D5DB !important;
-}
-html[data-theme="dark"] #wiz-step-5 .city-card{
-  border-bottom-color:var(--border-subtle);
 }
 html[data-theme="dark"] #wiz-step-5 .city-card-name{
   color:#E5E7EB;
