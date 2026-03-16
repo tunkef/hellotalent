@@ -120,3 +120,89 @@ test.describe('P3 visibility & analytics regression', () => {
     expect(adminCandidatesJs).toContain("Önerilebilir ama Tamamlanmamış");
   });
 });
+
+// ═══════════════════════════════════════════════════════════════
+// Sprint 4: Copy quality, typography & accessibility regression
+// ═══════════════════════════════════════════════════════════════
+test.describe('Sprint 4 — copy quality & accessibility', () => {
+  let profilHtml;
+  let profilCss;
+  let profilUiJs;
+  let profilSettingsJs;
+
+  test.beforeAll(() => {
+    profilHtml = readFromRepo('profil.html');
+    profilCss = readFromRepo('profil.css');
+    profilUiJs = readFromRepo('profil-ui.js');
+    profilSettingsJs = readFromRepo('profil-settings.js');
+  });
+
+  test('no ASCII-only Turkish text in user-facing strings', () => {
+    // These broken forms must never appear in HTML labels/text
+    expect(profilHtml).not.toContain('Sec...');
+    expect(profilHtml).not.toContain('Bastan Basla');
+    expect(profilHtml).not.toContain('>Musaitlik<');
+    expect(profilHtml).not.toContain('>Ilgilendigin');
+    expect(profilHtml).not.toContain('Il sec...');
+    expect(profilHtml).not.toContain('Once il secin');
+    expect(profilHtml).not.toContain('>Yeni Sifre<');
+    expect(profilHtml).not.toContain('Sifreyi tekrarlayin');
+    // JS files
+    expect(profilUiJs).not.toContain("'Ilce sec...'");
+    expect(profilUiJs).not.toContain("'Guncellendi!'");
+    expect(profilSettingsJs).not.toContain('Sifre en az');
+    expect(profilSettingsJs).not.toContain('Sifreler eslesmedi');
+    expect(profilSettingsJs).not.toContain('basariyla guncellendi');
+    expect(profilSettingsJs).not.toContain('Oturum bulunamadi');
+    expect(profilSettingsJs).not.toContain('Kayit guncellenemedi');
+  });
+
+  test('no English UI labels (Dashboard, Menu, retail)', () => {
+    // Bottom nav and sidebar should use Turkish
+    expect(profilHtml).not.toMatch(/>\s*Dashboard\s*</);
+    expect(profilHtml).not.toMatch(/>\s*Menu\s*</);
+    expect(profilHtml).not.toContain('retail markaları');
+  });
+
+  test('no duplicate class attributes in HTML', () => {
+    // Duplicate class= on same element is invalid HTML
+    var lines = profilHtml.split('\\n');
+    var duplicateClassPattern = /class="[^"]*"[^>]*class="/;
+    var violations = [];
+    profilHtml.split('\\n').forEach(function(line, i) {
+      if (duplicateClassPattern.test(line)) violations.push(i + 1);
+    });
+    expect(violations).toEqual([]);
+  });
+
+  test('no inline onclick handlers', () => {
+    expect(profilHtml).not.toMatch(/onclick="/);
+  });
+
+  test('command palette modal has role=dialog', () => {
+    expect(profilHtml).toMatch(/id="modal-cmdk"[^>]*role="dialog"/);
+  });
+
+  test('header icons are semantic buttons', () => {
+    expect(profilHtml).toMatch(/<button[^>]*class="header-msg"/);
+    expect(profilHtml).toMatch(/<button[^>]*class="header-notif"/);
+  });
+
+  test('mk-cards are semantic buttons with data-step', () => {
+    var mkButtons = profilHtml.match(/<button[^>]*class="mk-card[^"]*"[^>]*data-step="/g) || [];
+    expect(mkButtons.length).toBe(4);
+    // No inline onclick on mk-cards
+    var mkOnclick = profilHtml.match(/mk-card[^>]*onclick=/g) || [];
+    expect(mkOnclick.length).toBe(0);
+  });
+
+  test('CSS has no font-size below 10px', () => {
+    var subTenMatches = profilCss.match(/font-size:\s*[0-9]px/g) || [];
+    expect(subTenMatches).toEqual([]);
+  });
+
+  test('lab section separates locked cards from main grid', () => {
+    expect(profilHtml).toContain('class="lab-section"');
+    expect(profilHtml).toContain('class="bento-grid lab-grid"');
+  });
+});

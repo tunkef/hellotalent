@@ -109,7 +109,7 @@ function populateIlceSelect(selectId, cityName) {
     sel.options[0].textContent = 'Ilce yok';
     return;
   }
-  sel.options[0].textContent = 'Ilce sec...';
+  sel.options[0].textContent = 'İlçe seç...';
   districts.forEach(function(d) {
     var opt = document.createElement('option');
     opt.value = d;
@@ -150,8 +150,8 @@ async function handleAvatarUpload(input) {
     await supabase.from('candidates').upsert({ user_id: currentUser.id, avatar_url: cleanUrl }, { onConflict: 'user_id' });
     setAvatarImage(cleanUrl + '?t=' + Date.now());
     ht_track('avatar_upload_success');
-    if (btnText) btnText.textContent = 'Guncellendi!';
-    setTimeout(function() { if (btnText) btnText.textContent = 'Fotograf Yukle'; }, 2000);
+    if (btnText) btnText.textContent = 'Güncellendi!';
+    setTimeout(function() { if (btnText) btnText.textContent = 'Fotoğraf Yükle'; }, 2000);
   } catch (err) {
     if (window.Sentry) Sentry.captureException(err, { tags: { flow: 'avatar-upload' } });
     console.error('[HT] Avatar upload error:', err);

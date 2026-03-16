@@ -56,10 +56,10 @@ if (window.Sentry) {
       <kbd class="header-search-kbd">⌘K</kbd>
     </div>
     <div class="header-btn-wrap" id="header-msg-wrap">
-      <div class="header-msg" id="header-msg" title="Mesajlar">
+      <button type="button" class="header-msg" id="header-msg" aria-label="Mesajlar">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
         <span class="header-msg-dot" id="header-msg-dot" style="display:none;"></span>
-      </div>
+      </button>
       <!-- Mesaj Popup -->
       <div class="header-popup" id="popup-messages" style="display:none;">
         <div class="header-popup-head">
@@ -72,10 +72,10 @@ if (window.Sentry) {
       </div>
     </div>
     <div class="header-btn-wrap" id="header-notif-wrap">
-      <div class="header-notif" id="header-notif" title="Bildirimler">
+      <button type="button" class="header-notif" id="header-notif" aria-label="Bildirimler">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
         <span class="header-notif-dot" id="header-notif-dot" style="display:none;"></span>
-      </div>
+      </button>
       <!-- Bildirim Popup -->
       <div class="header-popup" id="popup-notifications" style="display:none;">
         <div class="header-popup-head">
@@ -115,7 +115,7 @@ if (window.Sentry) {
     </div>
   </div>
   <nav class="sidebar-nav">
-    <div class="sidebar-nav-label">Menu</div>
+    <div class="sidebar-nav-label">Menü</div>
     <button class="nav-item active" id="nav-genel" data-panel="genel">
       <span class="nav-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span>
       Genel Bakış
@@ -152,7 +152,7 @@ if (window.Sentry) {
     <div class="toggle-row">
       <div class="toggle-info">
         <h4>Beni Öner</h4>
-        <p id="sidebar-benioner-desc" style="color:var(--text-muted);font-size:11px;">Profilin ve CV'n işverenlerle paylaşılır</p>
+        <p id="sidebar-benioner-desc" class="hint-text">Profilin ve CV'n işverenlerle paylaşılır</p>
       </div>
       <label class="toggle">
         <input type="checkbox" id="sidebar-toggle-benioner" checked>
@@ -186,7 +186,7 @@ if (window.Sentry) {
 </aside>
 
 <!-- COMMAND PALETTE (Cmd+K) -->
-<div class="modal-overlay" id="modal-cmdk" style="z-index:1100;background:rgba(0,0,0,0.5);display:none;align-items:flex-start;padding-top:18vh;">
+<div class="modal-overlay" id="modal-cmdk" role="dialog" aria-modal="true" aria-label="Komut paleti" style="z-index:1100;background:rgba(0,0,0,0.5);display:none;align-items:flex-start;padding-top:18vh;">
   <div style="background:white;border-radius:14px;width:100%;max-width:440px;box-shadow:0 20px 60px rgba(0,0,0,0.2);overflow:hidden;margin:0 16px;">
     <div style="padding:12px 16px;border-bottom:1px solid var(--border);">
       <input type="text" id="cmdk-input" placeholder="Panel veya sayfa ara..." autocomplete="off"
@@ -273,7 +273,7 @@ if (window.Sentry) {
     <div class="modal-desc">Daha önce başladığın bir taslak var. Kaldığın yerden devam etmek ister misin?</div>
     <div style="display:flex;gap:8px;justify-content:center;">
       <button class="btn btn-primary" id="btn-draft-resume">Devam Et</button>
-      <button class="btn btn-secondary" id="btn-draft-discard">Bastan Basla</button>
+      <button class="btn btn-secondary" id="btn-draft-discard">Baştan Başla</button>
     </div>
   </div>
 </div>
@@ -303,7 +303,7 @@ if (window.Sentry) {
   <div class="bottom-nav-inner">
     <button class="bn-item active" data-panel="genel">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-      Dashboard
+      Genel
     </button>
     <button class="bn-item" data-panel="teklifler">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12v10H4V12"/><rect x="2" y="7" width="20" height="5" rx="1"/><path d="M12 22V7"/></svg>
@@ -355,7 +355,7 @@ if (window.Sentry) {
   <div class="dash-empty-prompt" id="dash-empty-prompt" style="display:none;">
     <div class="dash-empty-icon">&#128100;</div>
     <div class="dash-empty-title">Profilini Oluştur</div>
-    <div class="dash-empty-desc">Henüz profil bilgilerin eklenmemiş. Profilini tamamla, retail markaları seni bulsun!</div>
+    <div class="dash-empty-desc">Henüz profil bilgilerin eklenmemiş. Profilini tamamla, perakende markaları seni bulsun!</div>
     <button class="btn btn-primary" id="btn-start-wizard">Profili Düzenle</button>
   </div>
 
@@ -489,7 +489,7 @@ if (window.Sentry) {
         <span id="merkez-exp-badge" style="display:none;"><span style="margin:0 4px;opacity:0.4;">·</span><span id="merkez-exp-text"></span></span>
       </div>
     </div>
-    <button class="mk-preview-btn mk-preview-particle" id="btn-preview-profile" type="button" onclick="openProfilePreview()" style="display:none;">
+    <button class="mk-preview-btn mk-preview-particle" id="btn-preview-profile" type="button" style="display:none;">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
       Profilimi Önizle
     </button>
@@ -512,14 +512,14 @@ if (window.Sentry) {
   <!-- 3: Bento Section Cards (Genel Bakış design language) -->
   <div class="mk-bento-grid" id="mk-bento-grid">
 
-    <div class="mk-card navy" data-step="1" onclick="editSection(1)">
+    <button type="button" class="mk-card navy" data-step="1" aria-label="Kişisel Bilgiler düzenle">
       <div class="mk-card-status" id="mk-ring-1">
         <svg viewBox="0 0 24 24"><circle class="ring-track" cx="12" cy="12" r="10"/><circle class="ring-fill" cx="12" cy="12" r="10" stroke="var(--navy)"/></svg>
         <span class="ring-pct">0%</span>
       </div>
-      <button class="mk-edit-btn" onclick="event.stopPropagation(); editSection(1);" aria-label="Düzenle">
+      <span class="mk-edit-btn" aria-hidden="true">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
-      </button>
+      </span>
       <div class="mk-card-content">
         <div class="mk-card-head">
           <div class="mk-card-icon navy">
@@ -530,16 +530,16 @@ if (window.Sentry) {
         <div class="mk-card-data" id="mk-preview-1"></div>
         <div class="mk-card-empty" id="mk-empty-1">Henüz eklenmedi</div>
       </div>
-    </div>
+    </button>
 
-    <div class="mk-card verm" data-step="2" onclick="editSection(2)">
+    <button type="button" class="mk-card verm" data-step="2" aria-label="Deneyim düzenle">
       <div class="mk-card-status" id="mk-ring-2">
         <svg viewBox="0 0 24 24"><circle class="ring-track" cx="12" cy="12" r="10"/><circle class="ring-fill" cx="12" cy="12" r="10" stroke="var(--verm)"/></svg>
         <span class="ring-pct">0%</span>
       </div>
-      <button class="mk-edit-btn" onclick="event.stopPropagation(); editSection(2);" aria-label="Düzenle">
+      <span class="mk-edit-btn" aria-hidden="true">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
-      </button>
+      </span>
       <div class="mk-card-content">
         <div class="mk-card-head">
           <div class="mk-card-icon verm">
@@ -550,16 +550,16 @@ if (window.Sentry) {
         <div class="mk-card-data" id="mk-preview-2"></div>
         <div class="mk-card-empty" id="mk-empty-2">Henüz eklenmedi</div>
       </div>
-    </div>
+    </button>
 
-    <div class="mk-card green" data-step="3" onclick="editSection(3)">
+    <button type="button" class="mk-card green" data-step="3" aria-label="Eğitim ve Dil düzenle">
       <div class="mk-card-status" id="mk-ring-3">
         <svg viewBox="0 0 24 24"><circle class="ring-track" cx="12" cy="12" r="10"/><circle class="ring-fill" cx="12" cy="12" r="10" stroke="var(--green)"/></svg>
         <span class="ring-pct">0%</span>
       </div>
-      <button class="mk-edit-btn" onclick="event.stopPropagation(); editSection(3);" aria-label="Düzenle">
+      <span class="mk-edit-btn" aria-hidden="true">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
-      </button>
+      </span>
       <div class="mk-card-content">
         <div class="mk-card-head">
           <div class="mk-card-icon green">
@@ -570,16 +570,16 @@ if (window.Sentry) {
         <div class="mk-card-data" id="mk-preview-3"></div>
         <div class="mk-card-empty" id="mk-empty-3">Henüz eklenmedi</div>
       </div>
-    </div>
+    </button>
 
-    <div class="mk-card purple" data-step="4" onclick="editSection(4)">
+    <button type="button" class="mk-card purple" data-step="4" aria-label="Tercihler düzenle">
       <div class="mk-card-status" id="mk-ring-4">
         <svg viewBox="0 0 24 24"><circle class="ring-track" cx="12" cy="12" r="10"/><circle class="ring-fill" cx="12" cy="12" r="10" stroke="#1E2D5E"/></svg>
         <span class="ring-pct">0%</span>
       </div>
-      <button class="mk-edit-btn" onclick="event.stopPropagation(); editSection(4);" aria-label="Düzenle">
+      <span class="mk-edit-btn" aria-hidden="true">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
-      </button>
+      </span>
       <div class="mk-card-content">
         <div class="mk-card-head">
           <div class="mk-card-icon purple">
@@ -590,7 +590,7 @@ if (window.Sentry) {
         <div class="mk-card-data" id="mk-preview-4"></div>
         <div class="mk-card-empty" id="mk-empty-4">Henüz eklenmedi</div>
       </div>
-    </div>
+    </button>
 
     <!-- Profil Durumu (controls card, light bg) -->
     <div class="mk-card mk-controls-card">
@@ -756,8 +756,8 @@ if (window.Sentry) {
         <div class="field">
           <label for="f-cinsiyet">Cinsiyet</label>
           <select id="f-cinsiyet">
-            <option value="">Sec...</option>
-            <option value="Kadin">Kadin</option>
+            <option value="">Seç...</option>
+            <option value="Kadın">Kadın</option>
             <option value="Erkek">Erkek</option>
             <option value="Belirtmek istemiyorum">Belirtmek istemiyorum</option>
           </select>
@@ -765,7 +765,7 @@ if (window.Sentry) {
         <div class="field">
           <label for="f-dogumyili">Doğum Yılı</label>
           <select id="f-dogumyili">
-            <option value="">Sec...</option>
+            <option value="">Seç...</option>
           </select>
         </div>
       </div>
@@ -775,13 +775,13 @@ if (window.Sentry) {
         <div class="field">
           <label for="f-adresil">Adres / İl <span class="field-req">*</span></label>
           <select id="f-adresil">
-            <option value="">Il sec...</option>
+            <option value="">İl seç...</option>
           </select>
         </div>
         <div class="field">
           <label for="f-adresilce">İlçe</label>
           <select id="f-adresilce">
-            <option value="">Once il secin</option>
+            <option value="">Önce il seçin</option>
           </select>
         </div>
       </div>
@@ -791,7 +791,7 @@ if (window.Sentry) {
         <div class="field">
           <label for="f-engel">Engel Durumu</label>
           <select id="f-engel">
-            <option value="">Sec...</option>
+            <option value="">Seç...</option>
             <option value="Yok">Yok</option>
             <option value="Var">Var</option>
             <option value="Belirtmek istemiyorum">Belirtmek istemiyorum</option>
@@ -800,7 +800,7 @@ if (window.Sentry) {
         <div class="field" id="field-askerlik" style="display:none;">
           <label for="f-askerlik">Askerlik Durumu</label>
           <select id="f-askerlik">
-            <option value="">Sec...</option>
+            <option value="">Seç...</option>
             <option value="Yapildi">Yapildi</option>
             <option value="Muaf">Muaf</option>
             <option value="Tecilli">Tecilli</option>
@@ -842,15 +842,15 @@ if (window.Sentry) {
       <!-- EGITIM SECTION -->
       <div class="card-title mb-12">Eğitim</div>
       <div id="edu-rows-container"></div>
-      <button class="btn btn-secondary btn-sm" id="btn-add-edu" type="button" class="mt-8">+ Eğitim Ekle</button>
-      <div id="edu-limit-msg" style="display:none;font-size:12px;color:var(--muted);margin-top:8px;">En fazla 3 egitim eklenebilir.</div>
+      <button class="btn btn-secondary btn-sm mt-8" id="btn-add-edu" type="button">+ Eğitim Ekle</button>
+      <div id="edu-limit-msg" style="display:none;font-size:12px;color:var(--muted);margin-top:8px;">En fazla 3 eğitim eklenebilir.</div>
 
       <hr class="section-divider">
 
       <!-- DILLER SECTION -->
       <div class="card-title mb-12">Diller</div>
       <div id="lang-rows-container"></div>
-      <button class="btn btn-secondary btn-sm" id="btn-add-lang" type="button" class="mt-8">+ Dil Ekle</button>
+      <button class="btn btn-secondary btn-sm mt-8" id="btn-add-lang" type="button">+ Dil Ekle</button>
       <div id="lang-limit-msg" style="display:none;font-size:12px;color:var(--muted);margin-top:8px;">En fazla 5 dil eklenebilir.</div>
 
       <hr class="section-divider">
@@ -858,7 +858,7 @@ if (window.Sentry) {
       <!-- SERTIFIKALAR SECTION -->
       <div class="card-title mb-12">Sertifikalar / Eğitimler</div>
       <div id="cert-rows-container"></div>
-      <button class="btn btn-secondary btn-sm" id="btn-add-cert" type="button" class="mt-8">+ Sertifika Ekle</button>
+      <button class="btn btn-secondary btn-sm mt-8" id="btn-add-cert" type="button">+ Sertifika Ekle</button>
 
     </div>
   </div>
@@ -871,14 +871,14 @@ if (window.Sentry) {
 
       <!-- TARGET ROLES -->
       <div class="card-title mb-4">Hedef Pozisyonlar <span class="field-req">*</span></div>
-      <p class="helper-text" style="font-size:13px;color:var(--muted);margin:0 0 12px 0;line-height:1.5;">Bu bilgiler seni dogru pozisyonlarla eslestirmemize yardimci olur. Birden fazla hedef rol ekleyebilirsin.</p>
+      <p class="helper-text" style="font-size:13px;color:var(--muted);margin:0 0 12px 0;line-height:1.5;">Bu bilgiler seni doğru pozisyonlarla eşleştirmemize yardımcı olur. Birden fazla hedef rol ekleyebilirsin.</p>
       <div id="target-roles-container"></div>
-      <button class="btn btn-secondary btn-sm" id="btn-add-role" type="button" class="mt-8">+ Rol Ekle</button>
+      <button class="btn btn-secondary btn-sm mt-8" id="btn-add-role" type="button">+ Rol Ekle</button>
 
       <hr class="section-divider">
 
       <!-- MUSAITLIK -->
-      <div class="card-title mb-4">Musaitlik</div>
+      <div class="card-title mb-4">Müsaitlik</div>
       <p class="helper-text" style="font-size:13px;color:var(--muted);margin:0 0 12px 0;">Yeni bir işe ne kadar sürede başlayabilirsin?</p>
       <div class="chips-row" id="musaitlik-chips"></div>
 
@@ -894,7 +894,7 @@ if (window.Sentry) {
       <div class="field" style="max-width:300px;">
         <label for="f-maas">Maaş Beklentisi (TL/ay)</label>
         <select id="f-maas">
-          <option value="">Sec...</option>
+          <option value="">Seç...</option>
         </select>
       </div>
 
@@ -907,7 +907,7 @@ if (window.Sentry) {
       <hr class="section-divider">
 
       <!-- MARKA ILGI ALANLARI -->
-      <div class="card-title mb-12">Ilgilendigin Markalar</div>
+      <div class="card-title mb-12">İlgilendiğin Markalar</div>
       <div class="field" style="position:relative;">
         <input type="text" id="f-brand-interest" placeholder="Marka ara ve ekle..." autocomplete="off">
         <div class="autocomplete-list" id="brand-interest-sug"></div>
@@ -919,7 +919,7 @@ if (window.Sentry) {
       <!-- KARIYER HEDEFI -->
       <div class="field">
         <label for="f-career-goal">Kariyer Hedefi</label>
-        <textarea id="f-career-goal" rows="3" placeholder="Kariyer hedefinizi kısaca yazın..."></textarea>
+        <textarea id="f-career-goal" rows="3" placeholder="Kariyer hedefini kısaca yaz..."></textarea>
       </div>
       <div class="field">
         <div class="card-title mb-4">Kariyer Yönelimi</div>
@@ -1164,12 +1164,12 @@ if (window.Sentry) {
   <div class="card mt-16">
     <div class="card-title">Şifre Değiştir</div>
     <div class="field">
-      <label for="settings-new-pw">Yeni Sifre</label>
+      <label for="settings-new-pw">Yeni Şifre</label>
       <input type="password" id="settings-new-pw" placeholder="En az 6 karakter">
     </div>
     <div class="field">
-      <label for="settings-confirm-pw">Yeni Sifre (Tekrar)</label>
-      <input type="password" id="settings-confirm-pw" placeholder="Sifreyi tekrarlayin">
+      <label for="settings-confirm-pw">Yeni Şifre (Tekrar)</label>
+      <input type="password" id="settings-confirm-pw" placeholder="Şifreyi tekrarlayın">
     </div>
     <button class="btn btn-primary btn-sm" id="btn-change-pw">Şifreyi Güncelle</button>
     <div id="pw-msg" class="field-msg"></div>
@@ -1197,7 +1197,7 @@ if (window.Sentry) {
       </label>
       <div>
         <label for="settings-actively-looking" class="link-action">Aktif İş Arıyorum</label>
-        <p class="hint-text">Bu ayar açıkken profilinizde "Aktif Arıyor" rozeti görünür ve işverenler sizi öncelikli olarak görür.</p>
+        <p class="hint-text">Bu ayar açıkken profilinde "Aktif Arıyor" rozeti görünür ve işverenler seni öncelikli olarak görür.</p>
       </div>
     </div>
     <div id="actively-looking-msg" class="field-msg"></div>
@@ -1210,13 +1210,13 @@ if (window.Sentry) {
       <label for="settings-hide-from-current-employer" class="link-action">Mevcut işveren seni görmesin</label>
     </div>
     <div id="settings-hide-hint" style="display:none;font-size:11px;color:var(--muted);margin-top:4px;">
-      Bu ayarı kullanmak için Deneyimler alanında mevcut işvereninizi belirtin.
+      Bu ayarı kullanmak için Deneyimler alanında mevcut işverenini belirt.
     </div>
   </div>
 
   <div class="card mt-16" id="settings-notifications-card">
     <div class="card-title">Bildirim Tercihleri</div>
-    <div class="wiz-step-desc mt-4">Hangi bildirimleri almak istediğinizi seçin.</div>
+    <div class="wiz-step-desc mt-4">Hangi bildirimleri almak istediğini seç.</div>
 
     <div class="field flex-row-12">
       <label class="toggle">
@@ -1225,7 +1225,7 @@ if (window.Sentry) {
       </label>
       <div>
         <label for="settings-notify-email-messages" class="link-action">İşveren Mesajları</label>
-        <p class="hint-text">İşverenlerden gelen mesajlar için e-posta bildirimi alın.</p>
+        <p class="hint-text">İşverenlerden gelen mesajlar için e-posta bildirimi al.</p>
       </div>
     </div>
 
@@ -1236,7 +1236,7 @@ if (window.Sentry) {
       </label>
       <div>
         <label for="settings-notify-email-jobs" class="link-action">Yeni İş İlanları</label>
-        <p class="hint-text">Profilinize uygun yeni ilanlar yayınlandığında bildirim alın.</p>
+        <p class="hint-text">Profinine uygun yeni ilanlar yayınlandığında bildirim al.</p>
       </div>
     </div>
 
@@ -1258,17 +1258,17 @@ if (window.Sentry) {
       </label>
       <div>
         <label class="link-action">Push Bildirimleri <span class="mini-badge">Yakında</span></label>
-        <p class="hint-text">Anlık bildirimler doğrudan tarayıcınıza.</p>
+        <p class="hint-text">Anlık bildirimler doğrudan tarayıcına.</p>
       </div>
     </div>
 
-    <button class="btn btn-primary btn-sm" id="btn-save-notifications" class="mt-16">Bildirim Tercihlerini Kaydet</button>
+    <button class="btn btn-primary btn-sm mt-16" id="btn-save-notifications">Bildirim Tercihlerini Kaydet</button>
     <div id="notifications-msg" class="field-msg"></div>
   </div>
 
   <div class="card mt-16" id="settings-contact-prefs-card">
     <div class="card-title">İletişim Tercihleri</div>
-    <div class="wiz-step-desc mt-4">İşverenler size hangi kanallardan ulaşabilsin?</div>
+    <div class="wiz-step-desc mt-4">İşverenler sana hangi kanallardan ulaşabilsin?</div>
 
     <div class="field flex-row-12">
       <label class="toggle">
@@ -1277,7 +1277,7 @@ if (window.Sentry) {
       </label>
       <div>
         <label for="settings-contact-email" class="link-action">E-posta</label>
-        <p class="hint-text">İşverenler e-posta adresiniz üzerinden iletişime geçebilir.</p>
+        <p class="hint-text">İşverenler e-posta adresin üzerinden iletişime geçebilir.</p>
       </div>
     </div>
 
@@ -1288,7 +1288,7 @@ if (window.Sentry) {
       </label>
       <div>
         <label for="settings-contact-phone" class="link-action">Telefon</label>
-        <p class="hint-text">İşverenler telefon numaranız üzerinden arayabilir.</p>
+        <p class="hint-text">İşverenler telefon numaran üzerinden arayabilir.</p>
       </div>
     </div>
 
@@ -1303,7 +1303,7 @@ if (window.Sentry) {
       </div>
     </div>
 
-    <button class="btn btn-primary btn-sm" id="btn-save-contact-prefs" class="mt-16">İletişim Tercihlerini Kaydet</button>
+    <button class="btn btn-primary btn-sm mt-16" id="btn-save-contact-prefs">İletişim Tercihlerini Kaydet</button>
     <div id="contact-prefs-msg" class="field-msg"></div>
   </div>
 
@@ -1338,13 +1338,13 @@ if (window.Sentry) {
   <div class="card mt-16" id="settings-account-management-card">
     <div class="card-title">Hesap Yönetimi</div>
     <div id="account-status-banner" style="display:none;padding:12px;border-radius:8px;margin-bottom:12px;font-size:13px;"></div>
-    <p style="font-size:13px;color:var(--muted);line-height:1.5;">Hesabınızı dondurmak, silmek veya verilerinizi indirmek için hesap yönetimi sihirbazını kullanın.</p>
+    <p style="font-size:13px;color:var(--muted);line-height:1.5;">Hesabını dondurmak, silmek veya verilerini indirmek için hesap yönetimi sihirbazını kullan.</p>
     <button class="btn btn-secondary btn-sm" id="btn-open-account-wizard" style="margin-top:12px;width:100%;">Hesap Yönetimini Aç</button>
   </div>
 
   <div class="card mt-16" id="settings-session-management-card">
     <div class="card-title">Oturum Yönetimi</div>
-    <p style="font-size:13px;color:var(--muted);line-height:1.5;margin-top:4px;">Mevcut oturumunuz ve diğer cihazlarınızdaki oturumları buradan yönetebilirsiniz.</p>
+    <p style="font-size:13px;color:var(--muted);line-height:1.5;margin-top:4px;">Mevcut oturumun ve diğer cihazlarındaki oturumları buradan yönetebilirsin.</p>
 
     <div style="margin-top:12px;padding:12px;border:1px solid var(--border);border-radius:10px;background:var(--bg);">
       <div style="font-weight:600;font-size:13px;margin-bottom:4px;">Mevcut Oturum</div>
@@ -1355,7 +1355,7 @@ if (window.Sentry) {
     <button class="btn btn-secondary btn-sm" id="btn-signout-all" style="margin-top:12px;width:100%;color:#92400E;border-color:#FCD34D;">
       Tüm Cihazlardan Çıkış Yap
     </button>
-    <p style="font-size:11px;color:var(--muted);margin-top:4px;line-height:1.4;">Bu işlem tüm cihazlardaki oturumlarınızı sonlandırır. Tekrar giriş yapmanız gerekecektir.</p>
+    <p style="font-size:11px;color:var(--muted);margin-top:4px;line-height:1.4;">Bu işlem tüm cihazlarındaki oturumlarını sonlandırır. Tekrar giriş yapman gerekecek.</p>
     <div id="signout-all-msg" class="field-msg"></div>
   </div>
 
@@ -1368,26 +1368,26 @@ if (window.Sentry) {
 
       <div id="account-wizard-step-1">
         <p style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:20px;">
-          Aşağıdaki seçeneklerden birini kullanarak hesabınızı yönetebilirsiniz. Lütfen dikkatli olun — bazı işlemler geri alınamaz.
+          Aşağıdaki seçeneklerden birini kullanarak hesabını yönetebilirsin. Lütfen dikkatli ol — bazı işlemler geri alınamaz.
         </p>
 
         <div id="wizard-download-section" style="padding:16px;border:1px solid var(--border);border-radius:12px;margin-bottom:12px;">
           <div class="item-label">📥 Verilerimi İndir</div>
-          <p class="section-desc">KVKK md.11 kapsamında tüm kişisel verilerinizi JSON formatında indirebilirsiniz.</p>
+          <p class="section-desc">KVKK md.11 kapsamında tüm kişisel verilerini JSON formatında indirebilirsin.</p>
           <button class="btn btn-secondary btn-sm" id="btn-download-data" style="width:100%;">Verilerimi İndir</button>
           <div id="download-data-msg" class="field-msg"></div>
         </div>
 
         <div style="padding:16px;border:1px solid var(--border);border-radius:12px;margin-bottom:12px;">
           <div class="item-label">⏸️ Hesabımı Dondur</div>
-          <p class="section-desc">Hesabınızı geçici olarak dondurabilirsiniz. Bu süre zarfında profiliniz işverenlere görünmez olur ancak verileriniz korunur. İstediğiniz zaman tekrar aktif edebilirsiniz.</p>
+          <p class="section-desc">Hesabını geçici olarak dondurabilirsin. Bu süre zarfında profilin işverenlere görünmez olur ancak verilerin korunur. İstediğin zaman tekrar aktif edebilirsin.</p>
           <button class="btn btn-secondary btn-sm" id="btn-freeze-account" style="width:100%;color:#92400E;border-color:#FCD34D;">Hesabımı Dondur</button>
         </div>
 
         <div style="padding:16px;border:1px solid #FEE2E2;border-radius:12px;background:#FFF5F5;">
           <div style="font-weight:600;font-size:14px;margin-bottom:4px;color:#991B1B;">🗑️ Hesabımı Kalıcı Olarak Sil</div>
-          <p style="font-size:12px;color:#991B1B;margin-bottom:4px;line-height:1.5;">Bu işlem geri alınamaz. Hesabınız 30 gün boyunca askıya alınır, bu süre içinde vazgeçebilirsiniz.</p>
-          <p class="section-desc">30 gün sonra tüm verileriniz — profiliniz, deneyimleriniz, belgeleriniz ve tercihleriniz — kalıcı olarak silinir (KVKK md.11). Bu işlemi onaylamadan önce verilerinizi indirmenizi şiddetle tavsiye ederiz.</p>
+          <p style="font-size:12px;color:#991B1B;margin-bottom:4px;line-height:1.5;">Bu işlem geri alınamaz. Hesabın 30 gün boyunca askıya alınır, bu süre içinde vazgeçebilirsin.</p>
+          <p class="section-desc">30 gün sonra tüm verilerin — profilin, deneyimlerin, belgelerin ve tercihlerin — kalıcı olarak silinir (KVKK md.11). Bu işlemi onaylamadan önce verilerini indirmeni şiddetle tavsiye ederiz.</p>
           <button class="btn btn-sm" id="btn-delete-account" style="width:100%;background:#DC2626;color:#fff;border:none;">Hesabımı Sil</button>
         </div>
       </div>
@@ -1830,7 +1830,7 @@ function applyDraft(draft) {
   if (draft.work_prefs) {
     var wp = draft.work_prefs;
     if (wp.musaitlik) {
-      selectedMusaitlik = wp.musaitlik;
+      selectedMüsaitlik = wp.musaitlik;
       document.querySelectorAll('#musaitlik-chips .chip').forEach(function(c) {
         c.classList.toggle('selected', c.textContent === wp.musaitlik);
       });
@@ -1980,7 +1980,7 @@ function reapplyDynamicFields() {
   if (db.work_prefs) {
     var wp = db.work_prefs;
     setVal('f-maas', wp.maas_beklenti);
-    // Musaitlik chips
+    // Müsaitlik chips
     if (wp.musaitlik) {
       document.querySelectorAll('#musaitlik-chips .chip').forEach(function(c) {
         c.classList.toggle('selected', c.textContent === wp.musaitlik);
@@ -2187,6 +2187,24 @@ document.addEventListener('DOMContentLoaded', function() {
       if (panel) switchPanel(panel);
     });
   });
+
+  // mk-card clicks (semantic buttons with data-step)
+  document.querySelectorAll('.mk-card[data-step]').forEach(function(card) {
+    card.addEventListener('click', function() {
+      var step = parseInt(this.dataset.step);
+      if (step && typeof editSection === 'function') editSection(step);
+    });
+  });
+
+  // Profile preview & toast (onclick removal)
+  var ppOverlay = document.getElementById('pp-overlay');
+  var ppClose = document.getElementById('btn-close-preview');
+  var ppOpen = document.getElementById('btn-preview-profile');
+  if (ppOverlay) ppOverlay.addEventListener('click', function() { if (typeof closeProfilePreview === 'function') closeProfilePreview(); });
+  if (ppClose) ppClose.addEventListener('click', function() { if (typeof closeProfilePreview === 'function') closeProfilePreview(); });
+  if (ppOpen) ppOpen.addEventListener('click', function() { if (typeof openProfilePreview === 'function') openProfilePreview(); });
+  var toastClose = document.getElementById('btn-close-toast');
+  if (toastClose) toastClose.addEventListener('click', function() { if (typeof closeTgToast === 'function') closeTgToast(); });
 
   // ── Command Palette (Cmd+K / Ctrl+K) ──
   var cmdkItems = [
@@ -2444,12 +2462,12 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 <!-- PROFILE PREVIEW DRAWER -->
-<div class="pp-overlay" id="pp-overlay" onclick="closeProfilePreview()"></div>
+<div class="pp-overlay" id="pp-overlay"></div>
 <div class="pp-drawer" id="pp-drawer">
   <div class="pp-header">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
     <span class="pp-header-text">İşverenlerin gördüğü profil</span>
-    <button class="pp-header-close" onclick="closeProfilePreview()">
+    <button class="pp-header-close" id="btn-close-preview">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
     </button>
   </div>
@@ -2458,7 +2476,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <div class="tg-toast" id="tg-toast">
   <span class="tg-toast-text" id="tg-toast-text"></span>
-  <button class="tg-toast-close" onclick="closeTgToast()">
+  <button class="tg-toast-close" id="btn-close-toast">
     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
   </button>
 </div>

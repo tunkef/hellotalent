@@ -54,11 +54,11 @@ document.addEventListener('DOMContentLoaded', function() {
     var confirmPw = val('settings-confirm-pw');
     var pwMsg = document.getElementById('pw-msg');
     if (!newPw || newPw.length < 6) {
-      if (pwMsg) { pwMsg.textContent = 'Sifre en az 6 karakter olmali.'; pwMsg.style.color = 'var(--red)'; pwMsg.style.display = 'block'; }
+      if (pwMsg) { pwMsg.textContent = 'Şifre en az 6 karakter olmalı.'; pwMsg.style.color = 'var(--red)'; pwMsg.style.display = 'block'; }
       return;
     }
     if (newPw !== confirmPw) {
-      if (pwMsg) { pwMsg.textContent = 'Sifreler eslesmedi.'; pwMsg.style.color = 'var(--red)'; pwMsg.style.display = 'block'; }
+      if (pwMsg) { pwMsg.textContent = 'Şifreler eşleşmedi.'; pwMsg.style.color = 'var(--red)'; pwMsg.style.display = 'block'; }
       return;
     }
     btnChangePw.disabled = true;
@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (res.error) {
       if (pwMsg) { pwMsg.textContent = res.error.message; pwMsg.style.color = 'var(--red)'; pwMsg.style.display = 'block'; }
     } else {
-      if (pwMsg) { pwMsg.textContent = 'Sifre basariyla guncellendi!'; pwMsg.style.color = 'var(--green)'; pwMsg.style.display = 'block'; }
+      if (pwMsg) { pwMsg.textContent = 'Şifre başarıyla güncellendi!'; pwMsg.style.color = 'var(--green)'; pwMsg.style.display = 'block'; }
       document.getElementById('settings-new-pw').value = '';
       document.getElementById('settings-confirm-pw').value = '';
     }
@@ -144,16 +144,16 @@ document.addEventListener('DOMContentLoaded', function() {
       if (msgEl) { msgEl.textContent = 'Ad Soyad zorunludur.'; msgEl.style.color = 'var(--red)'; msgEl.style.display = 'block'; }
       return;
     }
-    if (!currentUser) { if (msgEl) { msgEl.textContent = 'Oturum bulunamadi.'; msgEl.style.color = 'var(--red)'; msgEl.style.display = 'block'; } return; }
+    if (!currentUser) { if (msgEl) { msgEl.textContent = 'Oturum bulunamadı.'; msgEl.style.color = 'var(--red)'; msgEl.style.display = 'block'; } return; }
     btnSettingsAccountSave.disabled = true;
     var res = await supabase.from('candidates').update({
       full_name: fullName,
       telefon: phone || null
     }).eq('user_id', currentUser.id);
     if (res.error) {
-      if (msgEl) { msgEl.textContent = res.error.message || 'Kayit guncellenemedi.'; msgEl.style.color = 'var(--red)'; msgEl.style.display = 'block'; }
+      if (msgEl) { msgEl.textContent = res.error.message || 'Kayıt güncellenemedi.'; msgEl.style.color = 'var(--red)'; msgEl.style.display = 'block'; }
     } else {
-      if (msgEl) { msgEl.textContent = 'Hesap bilgileri guncellendi.'; msgEl.style.color = 'var(--green)'; msgEl.style.display = 'block'; }
+      if (msgEl) { msgEl.textContent = 'Hesap bilgileri güncellendi.'; msgEl.style.color = 'var(--green)'; msgEl.style.display = 'block'; }
       refreshAfterSettingsSave(fullName, phone);
     }
     btnSettingsAccountSave.disabled = false;

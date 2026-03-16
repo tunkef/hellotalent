@@ -130,7 +130,7 @@ select:focus-visible{
 /* ── UTILITY CLASSES (inline-style reduction) ── */
 .mt-4{margin-top:4px;}.mt-8{margin-top:8px;}.mt-12{margin-top:12px;}.mt-16{margin-top:16px;}
 .mb-4{margin-bottom:4px;}.mb-12{margin-bottom:12px;}
-.hint-text{font-size:11px;color:var(--text-muted);margin:2px 0 0;}
+.hint-text{font-size:12px;color:var(--text-muted);margin:2px 0 0;}
 .field-msg{font-size:12px;margin-top:8px;display:none;}
 .link-action{margin:0;cursor:pointer;font-weight:500;}
 .flex-row-12{display:flex;align-items:center;gap:12px;margin-top:12px;}
@@ -183,6 +183,7 @@ select:focus-visible{
   display:flex;align-items:center;justify-content:center;
   border-radius:8px;background:rgba(255,255,255,0.06);
   color:rgba(255,255,255,0.6);transition:all 0.2s;
+  border:none;padding:0;font:inherit;-webkit-appearance:none;appearance:none;
 }
 .header-notif:hover{background:rgba(255,255,255,0.12);color:rgba(255,255,255,0.85);}
 .header-notif-dot{
@@ -195,6 +196,7 @@ select:focus-visible{
   display:flex;align-items:center;justify-content:center;
   border-radius:8px;background:rgba(255,255,255,0.06);
   color:rgba(255,255,255,0.6);transition:all 0.2s;
+  border:none;padding:0;font:inherit;-webkit-appearance:none;appearance:none;
 }
 .header-msg:hover{background:rgba(255,255,255,0.12);color:rgba(255,255,255,0.85);}
 .header-msg-dot{
@@ -363,7 +365,7 @@ html[data-theme="dark"] .header-msg-dot{border-color:var(--bg-elevated,#1F2937);
 .nav-item:focus-visible{box-shadow:0 0 0 2px rgba(255,255,255,0.3);}
 .nav-icon{width:20px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .nav-icon svg{stroke:currentColor;fill:currentColor;}
-.nav-soon{margin-left:auto;font-size:9px;font-weight:700;background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.4);padding:2px 6px;border-radius:4px;}
+.nav-soon{margin-left:auto;font-size:10px;font-weight:700;background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.4);padding:2px 6px;border-radius:4px;}
 /* Sidebar toggle section (Beni öner — hidden) */
 .sidebar .toggle-info h4{color:rgba(255,255,255,0.8);}
 .sidebar .toggle-info p{color:rgba(255,255,255,0.7);}
@@ -421,7 +423,7 @@ html[data-theme="dark"] .header-msg-dot{border-color:var(--bg-elevated,#1F2937);
 }
 .sidebar-premium-badge {
   font-family: 'DM Mono', monospace;
-  font-size: 7px;
+  font-size: 10px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 1.2px;
@@ -1150,7 +1152,7 @@ html[data-theme="dark"] .field-req{color:#F87171;}
   position:absolute;top:14px;right:14px;
   padding:3px 8px;border-radius:6px;
   font-family:var(--mono,'DM Mono',monospace);
-  font-size:9px;font-weight:500;letter-spacing:0.5px;
+  font-size:10px;font-weight:500;letter-spacing:0.5px;
   background:var(--border,#e8e6e3);color:var(--text-muted,#8c8c8c);
   z-index:5;
 }
@@ -1158,7 +1160,7 @@ html[data-theme="dark"] .field-req{color:#F87171;}
   position:absolute;top:14px;right:14px;
   padding:3px 8px;border-radius:6px;
   font-family:var(--mono,'DM Mono',monospace);
-  font-size:9px;font-weight:600;
+  font-size:10px;font-weight:600;
   background:var(--navy);color:#fff;
   z-index:5;
 }
@@ -1339,6 +1341,9 @@ html[data-theme="dark"] .field-req{color:#F87171;}
   display: flex;
   flex-direction: column;
   transition: box-shadow 0.25s ease;
+  /* Button reset */
+  border:none;padding:0;font:inherit;color:inherit;text-align:left;
+  -webkit-appearance:none;appearance:none;width:100%;
 }
 .mk-card:hover {
   box-shadow: 0 0 0 1px rgba(0,0,0,.05), 0 4px 8px rgba(0,0,0,.06), 0 16px 32px rgba(0,0,0,.07);
@@ -1473,7 +1478,7 @@ html[data-theme="dark"] .field-req{color:#F87171;}
   position: absolute; inset: 0;
   display: flex; align-items: center; justify-content: center;
   font-family: 'DM Mono', monospace;
-  font-size: 8px; font-weight: 700;
+  font-size: 10px; font-weight: 700;
   color: var(--muted, #6B7280);
 }
 
@@ -1610,7 +1615,7 @@ html[data-theme="dark"] .field-req{color:#F87171;}
 }
 .mk-premium-toggle-card .mk-premium-badge {
   font-family: 'DM Mono', monospace;
-  font-size: 8px; font-weight: 600;
+  font-size: 10px; font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 1.5px;
   background: rgba(255,255,255,0.08);
@@ -1629,7 +1634,7 @@ html[data-theme="dark"] .field-req{color:#F87171;}
 }
 .mk-premium-toggle-card .mk-premium-soon {
   font-family: 'DM Mono', monospace;
-  font-size: 8px;
+  font-size: 10px;
   color: rgba(255,255,255,0.2);
 }
 .mk-premium-toggle-card .toggle-slider {
@@ -1994,7 +1999,7 @@ html[data-theme="dark"] .field-req{color:#F87171;}
 .pp-status-badge {
   display: inline-flex; align-items: center; gap: 4px;
   padding: 3px 8px; border-radius: 6px;
-  font-size: 9px; font-weight: 600;
+  font-size: 10px; font-weight: 600;
   font-family: 'DM Mono', monospace;
 }
 .pp-status-badge.active { background: rgba(22,163,74,0.1); color: #16a34a; }
@@ -2024,7 +2029,7 @@ html[data-theme="dark"] .field-req{color:#F87171;}
 
 .pp-card-title {
   font-family: 'DM Mono', monospace;
-  font-size: 8px; font-weight: 500;
+  font-size: 10px; font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 1.2px;
   color: var(--text-muted, #8c8c8c);
@@ -2044,7 +2049,7 @@ html[data-theme="dark"] .field-req{color:#F87171;}
 .pp-exp-detail { font-size: 10px; color: var(--text-muted); margin-top: 2px; opacity: 0.7; }
 .pp-exp-period {
   font-family: 'DM Mono', monospace;
-  font-size: 9px; color: var(--text-muted);
+  font-size: 10px; color: var(--text-muted);
   flex-shrink: 0; text-align: right; white-space: nowrap;
 }
 
@@ -2076,7 +2081,7 @@ html[data-theme="dark"] .field-req{color:#F87171;}
   text-decoration: none; transition: color 0.15s;
 }
 .pp-cv-link:hover { color: var(--verm); text-decoration: underline; }
-.pp-cv-date { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--text-muted); flex-shrink: 0; }
+.pp-cv-date { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--text-muted); flex-shrink: 0; }
 
 /* ── Contact card (dark navy) ── */
 .pp-contact-card {
@@ -2099,7 +2104,7 @@ html[data-theme="dark"] .field-req{color:#F87171;}
   letter-spacing: 0.3px;
 }
 .pp-contact-lock {
-  font-size: 8px; font-weight: 600;
+  font-size: 10px; font-weight: 600;
   color: rgba(255,255,255,0.35);
   background: rgba(255,255,255,0.08);
   padding: 3px 7px; border-radius: 4px;
@@ -2107,7 +2112,7 @@ html[data-theme="dark"] .field-req{color:#F87171;}
 }
 .pp-contact-lock svg { width: 9px; height: 9px; }
 .pp-contact-hint {
-  font-size: 9px; color: rgba(255,255,255,0.25);
+  font-size: 10px; color: rgba(255,255,255,0.25);
   text-align: center; margin-top: 8px;
 }
 
@@ -2115,7 +2120,7 @@ html[data-theme="dark"] .field-req{color:#F87171;}
 .pp-footer {
   display: flex; align-items: center; justify-content: center; gap: 6px;
   font-family: 'DM Mono', monospace;
-  font-size: 9px; color: var(--text-muted);
+  font-size: 10px; color: var(--text-muted);
   padding: 12px 0 4px;
 }
 .pp-footer svg { width: 10px; height: 10px; opacity: 0.4; }
@@ -2551,7 +2556,7 @@ html[data-theme="dark"] .field-req{color:#F87171;}
 }
 .wiz-premium-badge {
   font-family: 'DM Mono', monospace;
-  font-size: 8px;
+  font-size: 10px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 1.5px;
@@ -2564,7 +2569,7 @@ html[data-theme="dark"] .field-req{color:#F87171;}
 }
 .wiz-premium-soon {
   font-family: 'DM Mono', monospace;
-  font-size: 9px;
+  font-size: 10px;
   color: rgba(255,255,255,0.2);
   text-align: center;
   margin-top: 8px;
@@ -2914,7 +2919,7 @@ html[data-theme="dark"] .lok-modal #btn-lok-close:hover{
 .front-logo img{width:100%;height:100%;object-fit:contain;padding:8px;background:#fff;border-radius:inherit;}
 .front-logo .brand-initial{font-weight:700;font-size:22px;color:#fff;width:100%;height:100%;display:flex;align-items:center;justify-content:center;}
 .front-name{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:17px;text-align:center;letter-spacing:-0.3px;}
-.front-segment{font-family:var(--font-mono,'DM Mono',monospace);font-size:9px;font-weight:500;letter-spacing:1px;padding:3px 10px;border-radius:4px;color:#fff;}
+.front-segment{font-family:var(--font-mono,'DM Mono',monospace);font-size:10px;font-weight:500;letter-spacing:1px;padding:3px 10px;border-radius:4px;color:#fff;}
 .front-stores{font-size:12px;color:var(--muted);font-family:var(--font-mono,'DM Mono',monospace);margin-top:4px;}
 .flip-hint{position:absolute;bottom:10px;font-size:10px;color:var(--muted);opacity:0;transition:opacity .25s;font-family:var(--font-mono,'DM Mono',monospace);letter-spacing:.5px;}
 .flip-card:hover .flip-hint{opacity:.7;}
@@ -2928,7 +2933,7 @@ html[data-theme="dark"] .lok-modal #btn-lok-close:hover{
 .back-logo .brand-initial{font-weight:700;font-size:14px;color:#fff;}
 .back-title-area{flex:1;min-width:0;}
 .back-brand-name{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:16px;line-height:1.2;letter-spacing:-0.3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.back-segment-pill{font-family:var(--font-mono,'DM Mono',monospace);font-size:8px;font-weight:500;letter-spacing:.5px;padding:2px 7px;border-radius:3px;background:rgba(255,255,255,0.2);width:fit-content;margin-top:3px;}
+.back-segment-pill{font-family:var(--font-mono,'DM Mono',monospace);font-size:10px;font-weight:500;letter-spacing:.5px;padding:2px 7px;border-radius:3px;background:rgba(255,255,255,0.2);width:fit-content;margin-top:3px;}
 .back-follow-mini{padding:5px 12px;border-radius:6px;border:1.5px solid rgba(255,255,255,0.4);background:rgba(255,255,255,0.1);color:#fff;font-size:11px;font-weight:600;font-family:var(--font-body,'Plus Jakarta Sans',sans-serif);cursor:pointer;transition:all .15s;white-space:nowrap;backdrop-filter:blur(4px);flex-shrink:0;align-self:center;}
 .back-follow-mini:hover{background:rgba(255,255,255,0.25);border-color:rgba(255,255,255,0.6);}
 .back-follow-mini.following{background:rgba(255,255,255,0.2);border-color:rgba(255,255,255,0.5);}
