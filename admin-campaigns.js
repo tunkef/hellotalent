@@ -111,6 +111,25 @@
     return table;
   }
 
+  /* ── LOAD REVIEW PANEL STATS ── */
+  async function loadReviewStats() {
+    try {
+      var supa = window._htAdminSupa;
+      var pending = await supa.from('campaigns').select('id', { count: 'exact', head: true }).eq('status', 'pending_review');
+      var active = await supa.from('campaigns').select('id', { count: 'exact', head: true }).eq('status', 'active');
+      var total = await supa.from('campaigns').select('id', { count: 'exact', head: true });
+
+      var el = document.getElementById('stat-pending');
+      if (el) el.textContent = pending.count || 0;
+      el = document.getElementById('stat-active');
+      if (el) el.textContent = active.count || 0;
+      el = document.getElementById('stat-total');
+      if (el) el.textContent = total.count || 0;
+    } catch(e) {
+      console.error('Review stats error:', e);
+    }
+  }
+
   /* ── LOAD PENDING CAMPAIGNS ── */
   async function loadPendingCampaigns() {
     try {
@@ -127,10 +146,12 @@
 
       if (!res.data || res.data.length === 0) {
         container.appendChild(buildEmptyState('✅', 'İncelenecek kampanya yok'));
-        return;
+      } else {
+        container.appendChild(buildCampaignTable(res.data, true));
       }
 
-      container.appendChild(buildCampaignTable(res.data, true));
+      // Update review panel stats
+      loadReviewStats();
     } catch(e) {
       console.error('Load pending exception:', e);
     }
