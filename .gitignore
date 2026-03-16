@@ -10,3 +10,4 @@ ref_styles/
 node_modules/
 test-results/
 playwright-report/
+firebase-debug.log

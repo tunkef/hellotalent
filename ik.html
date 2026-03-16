@@ -480,8 +480,8 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--verm)" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
             Toplam Aday
           </div>
-          <div class="stat-value">2,847</div>
-          <div class="stat-change">↑ +124 bu ay</div>
+          <div class="stat-value" id="stat-aday">—</div>
+          <div class="stat-change" id="stat-aday-change" style="display:none;"></div>
         </div>
         <div class="stat-card">
           <div class="stat-label">
@@ -515,29 +515,11 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
           <div class="section-header">
             <span class="section-title">Son Aktivite</span>
           </div>
-          <div class="activity-card">
-            <div class="activity-header">
-              <span style="font-size:13px;font-weight:700;">Bugün</span>
-            </div>
-            <div class="activity-item">
-              <div class="activity-dot green"></div>
-              <div class="activity-text">Yeni aday havuza katıldı — <strong>Store Manager</strong> pozisyonu</div>
-              <div class="activity-time">2s önce</div>
-            </div>
-            <div class="activity-item">
-              <div class="activity-dot blue"></div>
-              <div class="activity-text"><strong>Ahmet Y.</strong> favorilere eklendi</div>
-              <div class="activity-time">1s önce</div>
-            </div>
-            <div class="activity-item">
-              <div class="activity-dot orange"></div>
-              <div class="activity-text">Hesabın başarıyla oluşturuldu</div>
-              <div class="activity-time">Bugün</div>
-            </div>
-            <div class="activity-item" style="cursor:default;">
-              <div class="activity-dot" style="background:var(--border);"></div>
-              <div class="activity-text" style="color:var(--muted);">Daha fazla aktivite için adayları inceleyin</div>
-              <div class="activity-time"></div>
+          <div class="activity-card" id="activity-feed">
+            <div style="text-align:center;padding:24px 16px;color:var(--muted);">
+              <div style="font-size:24px;margin-bottom:8px;">📋</div>
+              <div style="font-size:12px;">Henüz aktivite yok</div>
+              <div style="font-size:11px;margin-top:4px;">Aday arayın veya pozisyon ekleyin</div>
             </div>
           </div>
         </div>
@@ -553,7 +535,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
                 <div style="width:36px;height:36px;background:#EEF2FF;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;">🔍</div>
                 <div>
                   <div style="font-size:13px;font-weight:700;">Aday Ara</div>
-                  <div style="font-size:11px;color:var(--muted);">2,847+ retail uzmanı</div>
+                  <div style="font-size:11px;color:var(--muted);" id="quick-aday-label">Retail uzmanı havuzu</div>
                 </div>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2" style="margin-left:auto"><polyline points="9 18 15 12 9 6"/></svg>
               </div>
@@ -1198,6 +1180,11 @@ var currentUser = null;
 var hrProfile = {};
 var favorites = JSON.parse(localStorage.getItem('ht_ik_favs') || '[]');
 var pozisyonlar = JSON.parse(localStorage.getItem('ht_pozisyonlar') || '[]');
+// Eski mock pozisyonları temizle (id 1-3 hardcoded idi)
+if(pozisyonlar.length > 0 && pozisyonlar[0].id <= 3 && pozisyonlar[0].ad === 'Store Manager'){
+  pozisyonlar = [];
+  localStorage.removeItem('ht_pozisyonlar');
+}
 var filterState = { pozisyon:[], segment:[], musait:[], calisma:[], egitim:[], dil:[], aktifArayanlar: false };
 
 // ── ADAYLAR (live from Supabase) ──
@@ -1229,6 +1216,33 @@ function calcTotalExp(experiences){
     total += Math.max(0, end - start);
   });
   return total;
+}
+
+// ── DASHBOARD GERÇEK VERİ ──
+async function loadDashboardStats(){
+  try {
+    var supa = getSupa();
+    var results = await Promise.all([
+      supa.from('candidates').select('id', { count: 'exact', head: true }).eq('is_active', true).eq('profile_completed', true),
+      supa.from('candidates').select('id', { count: 'exact', head: true }).eq('is_active', true).eq('profile_completed', true).gte('created_at', new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString())
+    ]);
+    var totalAday = results[0].count || 0;
+    var buAyAday = results[1].count || 0;
+    var el = document.getElementById('stat-aday');
+    if(el) el.textContent = totalAday.toLocaleString('tr-TR');
+    var changeEl = document.getElementById('stat-aday-change');
+    if(changeEl && buAyAday > 0){
+      changeEl.textContent = '↑ +' + buAyAday + ' bu ay';
+      changeEl.style.display = '';
+    }
+    var quickLabel = document.getElementById('quick-aday-label');
+    if(quickLabel) quickLabel.textContent = totalAday.toLocaleString('tr-TR') + '+ retail uzmanı';
+    // Pozisyon sayısını güncelle
+    var pozEl = document.getElementById('stat-poz');
+    if(pozEl) pozEl.textContent = pozisyonlar.length;
+  } catch(e) {
+    console.error('Dashboard stats yüklenemedi:', e.message);
+  }
 }
 
 async function loadLiveCandidates(){
@@ -1314,17 +1328,9 @@ async function loadLiveCandidates(){
   }
 }
 
-// ── MOCK POZİSYONLAR (default) ──
-var DEFAULT_POZLAR = [
-  {id:1,ad:'Store Manager',sehir:'İstanbul',exp:'5+ yıl',seg:'Fast Fashion',maas:'30.000-40.000 TL',aciklama:'İstanbul mağazamız için deneyimli Store Manager arıyoruz.',durum:'active',basvuru:8,gorunum:34},
-  {id:2,ad:'Sales Specialist',sehir:'Ankara',exp:'2-4 yıl',seg:'Lüks',maas:'20.000-28.000 TL',aciklama:'Lüks segment deneyimi olan satış uzmanı.',durum:'active',basvuru:5,gorunum:21},
-  {id:3,ad:'Visual Merchandiser',sehir:'İzmir',exp:'3+ yıl',seg:'Fast Fashion',maas:'18.000-24.000 TL',aciklama:'Yaratıcı ve trend takip eden görsel düzenleme uzmanı.',durum:'draft',basvuru:0,gorunum:0},
-];
-
-if(pozisyonlar.length === 0) {
-  pozisyonlar = DEFAULT_POZLAR;
-  localStorage.setItem('ht_pozisyonlar', JSON.stringify(pozisyonlar));
-}
+// ── POZİSYONLAR ──
+// Mock pozisyonlar kaldırıldı — gerçek veri kullanılıyor
+// Pozisyon yoksa empty state gösterilir
 
 // ── AUTH GUARD ──
 async function initApp(){
@@ -1339,11 +1345,6 @@ async function initApp(){
   }
   currentUser = data.session.user;
 
-  // Eski mock favorileri temizle (id 1-12 artık DB id)
-  var oldFavs = JSON.parse(localStorage.getItem('ht_ik_favs') || '[]');
-  if(oldFavs.length > 0 && oldFavs[0] <= 12){
-    localStorage.removeItem('ht_ik_favs');
-  }
   favorites = JSON.parse(localStorage.getItem('ht_ik_favs') || '[]');
 
   // Profil bilgilerini yükle
@@ -1420,6 +1421,7 @@ async function initApp(){
   renderPozisyonlar();
   renderFavoriler();
   updateFavCount();
+  loadDashboardStats();
 
   // Loading gizle
   setTimeout(function(){
