@@ -143,7 +143,8 @@
       var withCampaigns = Object.keys(uniqueEmployers).length;
 
       // Premium: count from subscriptions table (active pro/enterprise)
-      var premiumCount = queries[9].count || 0;
+      // Safe: if subscriptions table doesn't exist yet, .count is null → 0
+      var premiumCount = (queries[9] && queries[9].count) || 0;
       var freemiumCount = total - premiumCount;
 
       var recentData = queries[4].data || [];

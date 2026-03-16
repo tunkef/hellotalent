@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS subscriptions (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
   user_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   user_type text NOT NULL CHECK (user_type IN ('candidate', 'employer')),
-  plan text NOT NULL CHECK (plan IN ('demo', 'pro', 'enterprise')),
+  plan text NOT NULL CHECK (plan IN ('pro', 'enterprise')),
   status text NOT NULL DEFAULT 'active'
     CHECK (status IN ('active', 'trial', 'expired', 'cancelled')),
   auto_renew boolean NOT NULL DEFAULT true,
@@ -165,6 +165,9 @@ DECLARE
   v_plan text;
   v_usage record;
 BEGIN
+  -- Only employers have usage limits
+  IF NOT is_employer() THEN RETURN true; END IF;
+
   v_plan := get_employer_plan();
 
   -- Pro and Enterprise have no limits
@@ -199,6 +202,8 @@ SECURITY DEFINER
 SET search_path = public
 AS $$
 BEGIN
+  IF NOT is_employer() THEN RETURN; END IF;
+
   INSERT INTO employer_daily_usage (user_id, usage_date, candidate_views, messages_sent)
   VALUES (
     auth.uid(),

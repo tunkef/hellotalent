@@ -2071,14 +2071,14 @@ async function initApp(){
       hrProfile = prof;
       // Load employer plan (fire-and-forget, defaults to demo)
       getSupa().rpc('get_employer_plan').then(function(planRes){
-        if(planRes.data) _employerPlan = planRes.data;
+        if(planRes.data && !planRes.error) _employerPlan = planRes.data;
         var planEl = document.getElementById('sidebar-plan');
         if(planEl){
           var planLabels = { 'demo': 'Ücretsiz Plan', 'pro': '⭐ Pro Plan', 'enterprise': '🏢 Enterprise' };
           planEl.textContent = planLabels[_employerPlan] || 'Ücretsiz Plan';
           if(_employerPlan !== 'demo') planEl.style.color = 'var(--verm)';
         }
-      });
+      }).catch(function(){ /* RPC not deployed yet — stay on demo */ });
       // Auto-sync auth email → hr_profiles.email if they differ
       if(prof.email && currentUser.email && prof.email !== currentUser.email){
         await getSupa().from('hr_profiles').update({ email: currentUser.email }).eq('id', currentUser.id);
@@ -2483,15 +2483,16 @@ function resetFilters(){
 }
 
 // ── DRAWER ──
-function openDrawer(id){
+async function openDrawer(id){
   var c = ADAYLAR.find(function(a){return a.id===id;});
   if(!c) return;
 
-  // Usage tracking: increment candidate_view for demo users
+  // Usage gating: demo users have 5 views/day limit
   if(_employerPlan === 'demo'){
-    getSupa().rpc('check_employer_usage_limit', { p_action: 'candidate_view' }).then(function(res){
-      if(res.data === false){
-        // Show upgrade prompt
+    try {
+      var limitRes = await getSupa().rpc('check_employer_usage_limit', { p_action: 'candidate_view' });
+      if(limitRes.data === false){
+        // Show upgrade prompt instead of drawer content
         var db = document.getElementById('drawer-body');
         while(db.firstChild) db.removeChild(db.firstChild);
         var limitDiv = document.createElement('div');
@@ -2518,9 +2519,12 @@ function openDrawer(id){
         document.getElementById('drawer').classList.add('open');
         return;
       }
-      // Increment usage counter
+      // Increment usage counter (fire-and-forget)
       getSupa().rpc('increment_employer_usage', { p_action: 'candidate_view' }).then(function(){});
-    });
+    } catch(usageErr){
+      // If usage check fails, allow access gracefully
+      console.warn('Usage limit check failed:', usageErr.message);
+    }
   }
 
   var isFav = favorites.indexOf(c.id)!==-1;
@@ -2632,12 +2636,36 @@ var _mesajCandidateId = null;
 var _mesajTemplates = [];
 
 async function openMesajModal(candidateId, candidateName){
+  // Demo users cannot send messages — show upgrade prompt instead
+  if(_employerPlan === 'demo'){
+    var msgModal = document.getElementById('mesaj-modal-overlay');
+    _mesajCandidateId = null;
+    document.getElementById('mesaj-recipient').textContent = '';
+    document.getElementById('mesaj-konu').value = '';
+    document.getElementById('mesaj-body').value = '';
+    var msgEl = document.getElementById('mesaj-msg');
+    msgEl.textContent = '🔒 Mesaj göndermek için Pro plana geçmeniz gerekiyor. info@hellotalent.ai adresinden bize ulaşın.';
+    msgEl.style.cssText = 'display:block;background:#FEF3C7;color:#92400E;border:1px solid #FDE68A;margin-top:10px;padding:14px;border-radius:8px;font-size:13px;font-weight:600;line-height:1.5;';
+    document.getElementById('mesaj-template').style.display = 'none';
+    document.getElementById('mesaj-pozisyon').style.display = 'none';
+    document.getElementById('mesaj-konu').disabled = true;
+    document.getElementById('mesaj-body').disabled = true;
+    document.getElementById('mesaj-send-text').textContent = 'Pro Gerekli';
+    msgModal.classList.add('show');
+    return;
+  }
+
   _mesajCandidateId = candidateId;
   document.getElementById('mesaj-recipient').textContent = 'Alıcı: ' + candidateName;
   document.getElementById('mesaj-konu').value = '';
   document.getElementById('mesaj-body').value = '';
   document.getElementById('mesaj-msg').style.display = 'none';
   document.getElementById('mesaj-send-text').textContent = 'Gönder';
+  // Reset any disabled state from demo mode
+  document.getElementById('mesaj-template').style.display = '';
+  document.getElementById('mesaj-pozisyon').style.display = '';
+  document.getElementById('mesaj-konu').disabled = false;
+  document.getElementById('mesaj-body').disabled = false;
 
   // Load templates
   var tplSelect = document.getElementById('mesaj-template');
@@ -2664,7 +2692,7 @@ async function openMesajModal(candidateId, candidateName){
       var {data: pozData} = await getSupa().from('positions')
         .select('id, title')
         .eq('company_id', hrProfile.company_id)
-        .eq('status', 'active');
+        .eq('durum', 'active');
       (pozData || []).forEach(function(p){
         var opt = document.createElement('option');
         opt.value = p.id;
