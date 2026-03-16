@@ -1660,14 +1660,65 @@ async function loadFollowers(){
     // Fetch candidate details
     var candidateIds = uniqueFollows.map(function(f){ return f.candidate_id; });
     var candRes = await supa.from('candidates')
-      .select('id, full_name, pozisyon, deneyim_yil, tercih_sehirler, avatar_url')
+      .select('id, full_name, pozisyon, deneyim_yil, tercih_sehirler, avatar_url, hide_from_current_employer')
       .in('id', candidateIds)
       .eq('is_active', true)
       .eq('profile_completed', true);
 
     var candidates = candRes.data || [];
+
+    // ── Visibility filter: blocked companies ──
+    if(hrProfile.company_id && candidates.length > 0) {
+      try {
+        var fCids = candidates.map(function(c){ return c.id; });
+        var blockedRes = await supa.from('candidate_blocked_companies')
+          .select('candidate_id')
+          .eq('company_id', hrProfile.company_id)
+          .in('candidate_id', fCids);
+        if(blockedRes.data && blockedRes.data.length > 0) {
+          var blockedSet = {};
+          blockedRes.data.forEach(function(b){ blockedSet[b.candidate_id] = true; });
+          candidates = candidates.filter(function(c){ return !blockedSet[c.id]; });
+        }
+      } catch(bErr){ console.warn('Followers blocked check failed:', bErr.message); }
+    }
+
+    // ── Visibility filter: hide_from_current_employer ──
+    var hideCandidates = candidates.filter(function(c){ return c.hide_from_current_employer === true; });
+    if(hideCandidates.length > 0 && hrProfile.company_id) {
+      try {
+        var brandNamesForHide = await supa.from('brands').select('name').eq('company_id', hrProfile.company_id);
+        var compForHide = await supa.from('companies').select('company_name').eq('id', hrProfile.company_id).maybeSingle();
+        var employerNames = {};
+        (brandNamesForHide.data || []).forEach(function(b){ if(b.name) employerNames[b.name.trim().toLowerCase()] = true; });
+        if(compForHide.data && compForHide.data.company_name) employerNames[compForHide.data.company_name.trim().toLowerCase()] = true;
+
+        if(Object.keys(employerNames).length > 0) {
+          var hCids = hideCandidates.map(function(c){ return c.id; });
+          var hideExpRes = await supa.from('candidate_experiences')
+            .select('candidate_id, sirket, marka, devam_ediyor')
+            .in('candidate_id', hCids)
+            .eq('devam_ediyor', true);
+          if(hideExpRes.data && hideExpRes.data.length > 0) {
+            var hideSet = {};
+            hideExpRes.data.forEach(function(exp){
+              [exp.sirket, exp.marka].filter(Boolean).forEach(function(n){
+                if(employerNames[n.trim().toLowerCase()]) hideSet[exp.candidate_id] = true;
+              });
+            });
+            if(Object.keys(hideSet).length > 0) {
+              candidates = candidates.filter(function(c){ return !hideSet[c.id]; });
+            }
+          }
+        }
+      } catch(hErr){ console.warn('Followers hide check failed:', hErr.message); }
+    }
+
     var candMap = {};
     candidates.forEach(function(c){ candMap[c.id] = c; });
+
+    // Filter uniqueFollows to only visible candidates
+    uniqueFollows = uniqueFollows.filter(function(f){ return !!candMap[f.candidate_id]; });
 
     // Also get brand names for display
     var brandNameRes = await supa.from('brands').select('id, name').in('id', brandIds);
@@ -1864,13 +1915,21 @@ async function loadLiveCandidates(){
       }
     }
     // ── hide_from_current_employer filter ──
-    // Candidates who enabled this setting should not be visible to their current employer
+    // Uses company_id-based brand/company name matching (not fragile string compare)
     var hideRows = rows.filter(function(r){ return r.hide_from_current_employer === true; });
-    if(hideRows.length > 0 && hrProfile && hrProfile.sirket) {
-      var employerName = hrProfile.sirket.trim().toLowerCase();
-      if(employerName) {
-        var hideCids = hideRows.map(function(r){ return r.id; });
-        try {
+    if(hideRows.length > 0 && hrProfile && hrProfile.company_id) {
+      try {
+        // Get all brand names + company name for employer's company
+        var [hideCompBrands, hideCompName] = await Promise.all([
+          sb.from('brands').select('name').eq('company_id', hrProfile.company_id),
+          sb.from('companies').select('company_name').eq('id', hrProfile.company_id).maybeSingle()
+        ]);
+        var employerNames = {};
+        (hideCompBrands.data || []).forEach(function(b){ if(b.name) employerNames[b.name.trim().toLowerCase()] = true; });
+        if(hideCompName.data && hideCompName.data.company_name) employerNames[hideCompName.data.company_name.trim().toLowerCase()] = true;
+
+        if(Object.keys(employerNames).length > 0) {
+          var hideCids = hideRows.map(function(r){ return r.id; });
           var { data: currentExps } = await sb
             .from('candidate_experiences')
             .select('candidate_id, sirket, marka, devam_ediyor')
@@ -1879,19 +1938,18 @@ async function loadLiveCandidates(){
           if(currentExps && currentExps.length > 0) {
             var hideSet = {};
             currentExps.forEach(function(exp){
-              var expCompany = ((exp.sirket || exp.marka) || '').trim().toLowerCase();
-              if(expCompany && expCompany === employerName) {
-                hideSet[exp.candidate_id] = true;
-              }
+              [exp.sirket, exp.marka].filter(Boolean).forEach(function(n){
+                if(employerNames[n.trim().toLowerCase()]) hideSet[exp.candidate_id] = true;
+              });
             });
             if(Object.keys(hideSet).length > 0) {
               rows = rows.filter(function(r){ return !hideSet[r.id]; });
               if(rows.length === 0){ ADAYLAR = []; renderCandidates(ADAYLAR); return; }
             }
           }
-        } catch(hideErr) {
-          console.warn('hide_from_current_employer check failed:', hideErr.message);
         }
+      } catch(hideErr) {
+        console.warn('hide_from_current_employer check failed:', hideErr.message);
       }
     }
 
