@@ -1374,6 +1374,38 @@ async function loadLiveCandidates(){
         console.warn('Blocked companies check failed, continuing without filter:', blockErr.message);
       }
     }
+    // ── hide_from_current_employer filter ──
+    // Candidates who enabled this setting should not be visible to their current employer
+    var hideRows = rows.filter(function(r){ return r.hide_from_current_employer === true; });
+    if(hideRows.length > 0 && hrProfile && hrProfile.sirket) {
+      var employerName = hrProfile.sirket.trim().toLowerCase();
+      if(employerName) {
+        var hideCids = hideRows.map(function(r){ return r.id; });
+        try {
+          var { data: currentExps } = await sb
+            .from('candidate_experiences')
+            .select('candidate_id, sirket, marka, devam_ediyor')
+            .in('candidate_id', hideCids)
+            .eq('devam_ediyor', true);
+          if(currentExps && currentExps.length > 0) {
+            var hideSet = {};
+            currentExps.forEach(function(exp){
+              var expCompany = ((exp.sirket || exp.marka) || '').trim().toLowerCase();
+              if(expCompany && expCompany === employerName) {
+                hideSet[exp.candidate_id] = true;
+              }
+            });
+            if(Object.keys(hideSet).length > 0) {
+              rows = rows.filter(function(r){ return !hideSet[r.id]; });
+              if(rows.length === 0){ ADAYLAR = []; renderCandidates(ADAYLAR); return; }
+            }
+          }
+        } catch(hideErr) {
+          console.warn('hide_from_current_employer check failed:', hideErr.message);
+        }
+      }
+    }
+
     var cids = rows.map(function(r){ return r.id; });
     var [expRes, workRes, eduRes, langRes] = await Promise.all([
       sb.from('candidate_experiences').select('*').in('candidate_id', cids).order('sira', { ascending: true }),
