@@ -1178,12 +1178,7 @@ function getSupa(){
 var currentUser = null;
 var hrProfile = {};
 var favorites = JSON.parse(localStorage.getItem('ht_ik_favs') || '[]');
-var pozisyonlar = JSON.parse(localStorage.getItem('ht_pozisyonlar') || '[]');
-// Eski mock pozisyonları temizle (id 1-3 hardcoded idi)
-if(pozisyonlar.length > 0 && pozisyonlar[0].id <= 3 && pozisyonlar[0].ad === 'Store Manager'){
-  pozisyonlar = [];
-  localStorage.removeItem('ht_pozisyonlar');
-}
+var pozisyonlar = []; // Loaded from Supabase positions table
 var filterState = { pozisyon:[], segment:[], musait:[], calisma:[], egitim:[], dil:[], aktifArayanlar: false };
 
 // ── ADAYLAR (live from Supabase) ──
@@ -1241,6 +1236,76 @@ async function loadDashboardStats(){
     if(pozEl) pozEl.textContent = pozisyonlar.length;
   } catch(e) {
     console.error('Dashboard stats yüklenemedi:', e.message);
+  }
+}
+
+// ── POZİSYONLAR (Supabase CRUD) ──
+async function loadPositionsFromDB(){
+  try {
+    var {data, error} = await getSupa()
+      .from('positions')
+      .select('*')
+      .eq('hr_profile_id', currentUser.id)
+      .order('created_at', {ascending: false})
+      .limit(100);
+    if(error) throw error;
+    pozisyonlar = data || [];
+    renderPozisyonlar();
+    loadDashboardStats();
+  } catch(e) {
+    console.error('Pozisyonlar yüklenemedi:', e.message);
+  }
+}
+
+async function savePositionToDB(poz){
+  try {
+    var payload = {
+      hr_profile_id: currentUser.id,
+      company_id: hrProfile.company_id || null,
+      ad: poz.ad,
+      sehir: poz.sehir || null,
+      exp: poz.exp || null,
+      seg: poz.seg || null,
+      maas: poz.maas || null,
+      aciklama: poz.aciklama || null,
+      durum: poz.durum || 'active'
+    };
+    var {data, error} = await getSupa()
+      .from('positions')
+      .insert(payload)
+      .select()
+      .maybeSingle();
+    if(error) throw error;
+    return data;
+  } catch(e) {
+    console.error('Pozisyon kaydedilemedi:', e.message);
+    return null;
+  }
+}
+
+async function updatePositionInDB(id, updates){
+  try {
+    var {error} = await getSupa()
+      .from('positions')
+      .update(updates)
+      .eq('id', id)
+      .eq('hr_profile_id', currentUser.id);
+    if(error) throw error;
+  } catch(e) {
+    console.error('Pozisyon güncellenemedi:', e.message);
+  }
+}
+
+async function deletePositionFromDB(id){
+  try {
+    var {error} = await getSupa()
+      .from('positions')
+      .delete()
+      .eq('id', id)
+      .eq('hr_profile_id', currentUser.id);
+    if(error) throw error;
+  } catch(e) {
+    console.error('Pozisyon silinemedi:', e.message);
   }
 }
 
@@ -1417,10 +1482,9 @@ async function initApp(){
 
   // Render
   await loadLiveCandidates();
-  renderPozisyonlar();
+  await loadPositionsFromDB();
   renderFavoriler();
   updateFavCount();
-  loadDashboardStats();
 
   // Loading gizle
   setTimeout(function(){
@@ -1713,34 +1777,25 @@ function closeDrawer(){
 function openPozModal(){ document.getElementById('poz-modal-overlay').classList.add('show'); }
 function closePozModal(){ document.getElementById('poz-modal-overlay').classList.remove('show'); }
 
-function savePozisyon(){
+async function savePozisyon(){
   var ad = document.getElementById('poz-ad').value.trim();
   if(!ad){ alert('Pozisyon adı zorunludur.'); return; }
-  var yeni = {
-    id: Date.now(),
+  var poz = {
     ad: ad,
     sehir: document.getElementById('poz-sehir').value,
     exp: document.getElementById('poz-exp').value || '—',
     seg: document.getElementById('poz-seg').value,
     maas: document.getElementById('poz-maas').value || '—',
     aciklama: document.getElementById('poz-aciklama').value,
-    durum: 'active',
-    basvuru: 0,
-    gorunum: 0
+    durum: 'active'
   };
-  pozisyonlar.unshift(yeni);
-  localStorage.setItem('ht_pozisyonlar', JSON.stringify(pozisyonlar));
+  var saved = await savePositionToDB(poz);
+  if(!saved){ alert('Pozisyon kaydedilemedi. Tekrar deneyin.'); return; }
+  pozisyonlar.unshift(saved);
   renderPozisyonlar();
+  loadDashboardStats();
   closePozModal();
-  // Formu temizle
   ['poz-ad','poz-exp','poz-maas','poz-aciklama'].forEach(function(id){ document.getElementById(id).value=''; });
-  // Stat güncelle
-  var aktif = pozisyonlar.filter(function(p){return p.durum==='active';}).length;
-  document.getElementById('stat-poz').textContent = aktif;
-  ['nav-poz-count','bn-poz-count'].forEach(function(id){
-    var el=document.getElementById(id);
-    if(el){ el.textContent=aktif; el.style.display=aktif>0?'':'none'; }
-  });
 }
 
 function renderPozisyonlar(){
@@ -1788,19 +1843,22 @@ function pozCard(p){
     +'</div>';
 }
 
-function togglePozDurum(id){
+async function togglePozDurum(id){
   var p = pozisyonlar.find(function(x){return x.id===id;});
   if(!p) return;
-  p.durum = p.durum==='active' ? 'closed' : 'active';
-  localStorage.setItem('ht_pozisyonlar', JSON.stringify(pozisyonlar));
+  var yeniDurum = p.durum==='active' ? 'closed' : 'active';
+  await updatePositionInDB(id, {durum: yeniDurum});
+  p.durum = yeniDurum;
   renderPozisyonlar();
+  loadDashboardStats();
 }
 
-function deletePoz(id){
+async function deletePoz(id){
   if(!confirm('Bu pozisyonu silmek istediğine emin misin?')) return;
+  await deletePositionFromDB(id);
   pozisyonlar = pozisyonlar.filter(function(p){return p.id!==id;});
-  localStorage.setItem('ht_pozisyonlar', JSON.stringify(pozisyonlar));
   renderPozisyonlar();
+  loadDashboardStats();
 }
 
 
