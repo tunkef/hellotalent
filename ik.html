@@ -1131,6 +1131,44 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
   <div class="drawer-body" id="drawer-body"></div>
 </div>
 
+<!-- MESAJ GÖNDER MODAL -->
+<div class="modal-overlay" id="mesaj-modal-overlay">
+  <div class="modal" style="max-width:520px;">
+    <div class="modal-header">
+      <span class="modal-title">✉️ Mesaj Gönder</span>
+      <button class="modal-close" onclick="closeMesajModal()">✕</button>
+    </div>
+    <div id="mesaj-recipient" style="font-size:13px;color:var(--muted);margin-bottom:12px;"></div>
+    <div class="form-field" style="margin-bottom:10px;">
+      <label class="form-label">Şablon</label>
+      <select class="form-select" id="mesaj-template" onchange="applyMesajTemplate()">
+        <option value="">Serbest mesaj yaz...</option>
+      </select>
+    </div>
+    <div class="form-field" style="margin-bottom:10px;">
+      <label class="form-label">İlgili Pozisyon (opsiyonel)</label>
+      <select class="form-select" id="mesaj-pozisyon" onchange="applyMesajTemplate()">
+        <option value="">Pozisyon seçin...</option>
+      </select>
+    </div>
+    <div class="form-field" style="margin-bottom:10px;">
+      <label class="form-label">Konu *</label>
+      <input class="form-input" id="mesaj-konu" placeholder="Mesaj konusu">
+    </div>
+    <div class="form-field" style="margin-bottom:12px;">
+      <label class="form-label">Mesaj *</label>
+      <textarea class="form-input form-textarea" id="mesaj-body" placeholder="Mesajınızı yazın..." style="height:140px;"></textarea>
+    </div>
+    <div style="display:flex;justify-content:flex-end;gap:8px;">
+      <button class="btn-secondary btn-sm" onclick="closeMesajModal()">Vazgeç</button>
+      <button class="btn-primary btn-sm" id="btn-mesaj-gonder" onclick="sendMesaj()">
+        <span id="mesaj-send-text">Gönder</span>
+      </button>
+    </div>
+    <div id="mesaj-msg" style="display:none;margin-top:10px;padding:10px 14px;border-radius:8px;font-size:13px;font-weight:600;"></div>
+  </div>
+</div>
+
 <!-- POZİSYON MODAL -->
 <div class="modal-overlay" id="poz-modal-overlay">
   <div class="modal">
@@ -2453,6 +2491,11 @@ function openDrawer(id){
   btnFavD.textContent = isFav ? '★ Favoride' : '☆ Favoriye Ekle';
   btnFavD.onclick = function(){ toggleFav(c.id, btnFavD); btnFavD.textContent = favorites.indexOf(c.id)!==-1 ? '★ Favoride' : '☆ Favoriye Ekle'; btnFavD.style.cssText = favorites.indexOf(c.id)!==-1 ? 'border-color:#f59e0b;color:#d97706;' : ''; };
   actions.appendChild(btnFavD);
+  var btnMsg = document.createElement('button');
+  btnMsg.className = 'btn-primary btn-sm';
+  btnMsg.textContent = '✉️ Mesaj Gönder';
+  btnMsg.onclick = function(){ openMesajModal(c.id, c.ad[0] + '. ' + c.soyad); };
+  actions.appendChild(btnMsg);
   var btnCV = document.createElement('button');
   btnCV.className = 'btn-primary btn-sm';
   btnCV.style.cssText = 'filter:blur(2px);pointer-events:none;';
@@ -2474,6 +2517,123 @@ function closeDrawer(){
   document.getElementById('drawer-overlay').classList.remove('show');
   document.getElementById('candidate-drawer').classList.remove('show');
   document.body.style.overflow='';
+}
+
+// ── MESAJ GÖNDER ──
+var _mesajCandidateId = null;
+var _mesajTemplates = [];
+
+async function openMesajModal(candidateId, candidateName){
+  _mesajCandidateId = candidateId;
+  document.getElementById('mesaj-recipient').textContent = 'Alıcı: ' + candidateName;
+  document.getElementById('mesaj-konu').value = '';
+  document.getElementById('mesaj-body').value = '';
+  document.getElementById('mesaj-msg').style.display = 'none';
+  document.getElementById('mesaj-send-text').textContent = 'Gönder';
+
+  // Load templates
+  var tplSelect = document.getElementById('mesaj-template');
+  tplSelect.innerHTML = '<option value="">Serbest mesaj yaz...</option>';
+  try{
+    var {data} = await getSupa().from('message_templates')
+      .select('id, template_name, subject_template, body_template')
+      .or('is_system.eq.true,company_id.eq.' + (hrProfile ? hrProfile.company_id : 0))
+      .order('is_system', {ascending: false});
+    _mesajTemplates = data || [];
+    _mesajTemplates.forEach(function(t){
+      var opt = document.createElement('option');
+      opt.value = t.id;
+      opt.textContent = t.template_name;
+      tplSelect.appendChild(opt);
+    });
+  }catch(e){}
+
+  // Load positions for dropdown
+  var pozSelect = document.getElementById('mesaj-pozisyon');
+  pozSelect.innerHTML = '<option value="">Pozisyon seçin...</option>';
+  if(hrProfile && hrProfile.company_id){
+    try{
+      var {data: pozData} = await getSupa().from('positions')
+        .select('id, title')
+        .eq('company_id', hrProfile.company_id)
+        .eq('status', 'active');
+      (pozData || []).forEach(function(p){
+        var opt = document.createElement('option');
+        opt.value = p.id;
+        opt.textContent = p.title;
+        pozSelect.appendChild(opt);
+      });
+    }catch(e){}
+  }
+
+  document.getElementById('mesaj-modal-overlay').classList.add('show');
+}
+
+function closeMesajModal(){
+  document.getElementById('mesaj-modal-overlay').classList.remove('show');
+  _mesajCandidateId = null;
+}
+
+function applyMesajTemplate(){
+  var tplId = document.getElementById('mesaj-template').value;
+  if(!tplId) return;
+  var tpl = _mesajTemplates.find(function(t){ return t.id == tplId; });
+  if(!tpl) return;
+
+  var sirketAdi = (hrProfile && hrProfile.sirket) ? hrProfile.sirket : 'Şirketimiz';
+  var pozSelect = document.getElementById('mesaj-pozisyon');
+  var pozAdi = pozSelect.options[pozSelect.selectedIndex] && pozSelect.selectedIndex > 0
+    ? pozSelect.options[pozSelect.selectedIndex].textContent
+    : 'ilgili pozisyon';
+
+  var subject = tpl.subject_template.replace(/\{\{sirket\}\}/g, sirketAdi).replace(/\{\{pozisyon\}\}/g, pozAdi);
+  var body = tpl.body_template.replace(/\{\{sirket\}\}/g, sirketAdi).replace(/\{\{pozisyon\}\}/g, pozAdi);
+
+  document.getElementById('mesaj-konu').value = subject;
+  document.getElementById('mesaj-body').value = body;
+}
+
+async function sendMesaj(){
+  var konu = document.getElementById('mesaj-konu').value.trim();
+  var body = document.getElementById('mesaj-body').value.trim();
+  var msgEl = document.getElementById('mesaj-msg');
+
+  if(!konu || !body){
+    msgEl.textContent = 'Konu ve mesaj alanları zorunludur.';
+    msgEl.style.cssText = 'display:block;background:#FEF2F2;color:#DC2626;border:1px solid #FECACA;margin-top:10px;padding:10px 14px;border-radius:8px;font-size:13px;font-weight:600;';
+    setTimeout(function(){ msgEl.style.display = 'none'; }, 3000);
+    return;
+  }
+
+  document.getElementById('mesaj-send-text').textContent = 'Gönderiliyor...';
+
+  var pozId = document.getElementById('mesaj-pozisyon').value || null;
+  var tplId = document.getElementById('mesaj-template').value || null;
+
+  try{
+    var {data, error} = await getSupa().rpc('send_employer_message', {
+      p_candidate_id: _mesajCandidateId,
+      p_subject: konu,
+      p_body: body,
+      p_position_id: pozId ? parseInt(pozId) : null,
+      p_template_id: tplId ? parseInt(tplId) : null
+    });
+    if(error){
+      console.error('sendMesaj error:', error.message);
+      msgEl.textContent = 'Hata: ' + error.message;
+      msgEl.style.cssText = 'display:block;background:#FEF2F2;color:#DC2626;border:1px solid #FECACA;margin-top:10px;padding:10px 14px;border-radius:8px;font-size:13px;font-weight:600;';
+      document.getElementById('mesaj-send-text').textContent = 'Gönder';
+      setTimeout(function(){ msgEl.style.display = 'none'; }, 4000);
+      return;
+    }
+    msgEl.textContent = '✓ Mesaj başarıyla gönderildi!';
+    msgEl.style.cssText = 'display:block;background:#F0FDF4;color:#16A34A;border:1px solid #BBF7D0;margin-top:10px;padding:10px 14px;border-radius:8px;font-size:13px;font-weight:600;';
+    document.getElementById('mesaj-send-text').textContent = 'Gönder';
+    setTimeout(function(){ closeMesajModal(); }, 1500);
+  }catch(e){
+    console.error('sendMesaj exception:', e);
+    document.getElementById('mesaj-send-text').textContent = 'Gönder';
+  }
 }
 
 // ── POZİSYON LIFECYCLE ──

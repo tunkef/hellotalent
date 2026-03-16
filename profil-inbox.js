@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════════════════════════
    HELLOTALENT — PROFİL INBOX JS
-   Unified inbox: kampanya bildirimleri, sistem mesajları, işveren DM
+   Unified inbox: employer DM messages (+ future: kampanya, sistem)
    Depends on: profil-core.js (supabase), profil-ui.js (_ht_candidate_id)
    ═══════════════════════════════════════════════════════════════ */
 (function(){
@@ -12,17 +12,16 @@
 
   /* ── MESSAGE TYPE CONFIG ── */
   var TYPE_MAP = {
-    campaign:    { label: 'Kampanya',          icon: '🎁', color: '#059669', bg: '#ECFDF5' },
-    system:      { label: 'Bildirim',          icon: '🔔', color: '#1E2D5E', bg: '#EEF2FF' },
-    employer_dm: { label: 'İşveren Mesajı',    icon: '💼', color: '#C94E28', bg: '#FEF7F5' }
+    employer_dm: { label: 'İşveren Mesajı', icon: '💼', color: '#C94E28', bg: '#FEF7F5' },
+    system:      { label: 'Bildirim',       icon: '🔔', color: '#1E2D5E', bg: '#EEF2FF' },
+    campaign:    { label: 'Kampanya',       icon: '🎁', color: '#059669', bg: '#ECFDF5' }
   };
 
   /* ── FILTER OPTIONS ── */
   var FILTERS = [
     { key: 'all',         label: 'Tümü' },
-    { key: 'campaign',    label: 'Kampanyalar' },
-    { key: 'system',      label: 'Bildirimler' },
-    { key: 'employer_dm', label: 'İşveren Mesajları' }
+    { key: 'employer_dm', label: 'İşveren Mesajları' },
+    { key: 'unread',      label: 'Okunmamış' }
   ];
 
   /* ═══════════════════════════════════════════════════════════════
@@ -70,18 +69,32 @@
     }
 
     try {
-      var query = supa.from('inbox_messages')
-        .select('*, companies(company_name, logo_url), brands(name, logo_url)')
+      // Query employer_messages sent to this candidate
+      var res = await supa.from('employer_messages')
+        .select('id, subject, body, status, created_at, read_at, company_id, position_id, companies(company_name, logo_url), positions(title)')
         .order('created_at', { ascending: false })
         .limit(50);
 
-      var res = await query;
       if (res.error) {
         console.error('Inbox load error:', res.error.message);
         return;
       }
 
-      allMessages = res.data || [];
+      // Map to unified format
+      allMessages = (res.data || []).map(function(m) {
+        return {
+          id: m.id,
+          message_type: 'employer_dm',
+          title: m.subject,
+          body: m.body,
+          status: m.status,
+          created_at: m.created_at,
+          read_at: m.read_at,
+          company_name: m.companies ? m.companies.company_name : null,
+          company_logo: m.companies ? m.companies.logo_url : null,
+          position_title: m.positions ? m.positions.title : null
+        };
+      });
       loaded = true;
 
       if (filter) currentFilter = filter;
@@ -108,7 +121,6 @@
 
       btn.addEventListener('click', function() {
         currentFilter = f.key;
-        // Update tab styles
         var tabs = container.querySelectorAll('button');
         for (var i = 0; i < tabs.length; i++) {
           var isActive = tabs[i].dataset.filter === currentFilter;
@@ -131,7 +143,9 @@
     if (!listEl) return;
 
     var filtered = allMessages;
-    if (currentFilter !== 'all') {
+    if (currentFilter === 'unread') {
+      filtered = allMessages.filter(function(m) { return m.status !== 'read'; });
+    } else if (currentFilter !== 'all') {
       filtered = allMessages.filter(function(m) { return m.message_type === currentFilter; });
     }
 
@@ -153,7 +167,7 @@
      ═══════════════════════════════════════════════════════════════ */
   function buildMessageCard(msg) {
     var isUnread = msg.status !== 'read';
-    var typeInfo = TYPE_MAP[msg.message_type] || TYPE_MAP.system;
+    var typeInfo = TYPE_MAP[msg.message_type] || TYPE_MAP.employer_dm;
 
     var card = document.createElement('div');
     card.style.cssText = 'padding:14px 16px;border-radius:10px;border:1px solid var(--border);background:white;cursor:pointer;transition:all .2s;position:relative;' +
@@ -163,17 +177,13 @@
     var header = document.createElement('div');
     header.style.cssText = 'display:flex;align-items:center;gap:8px;margin-bottom:6px;';
 
-    // Brand/company logo or type icon
+    // Company logo or type icon
     var logoEl = document.createElement('div');
     logoEl.style.cssText = 'width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;background:' + typeInfo.bg + ';';
 
-    var logoUrl = null;
-    if (msg.brands && msg.brands.logo_url) logoUrl = msg.brands.logo_url;
-    else if (msg.companies && msg.companies.logo_url) logoUrl = msg.companies.logo_url;
-
-    if (logoUrl) {
+    if (msg.company_logo) {
       var img = document.createElement('img');
-      img.src = logoUrl;
+      img.src = msg.company_logo;
       img.alt = '';
       img.style.cssText = 'width:100%;height:100%;object-fit:cover;border-radius:8px;';
       logoEl.textContent = '';
@@ -183,25 +193,27 @@
     }
     header.appendChild(logoEl);
 
-    // Sender name
+    // Sender info
     var senderEl = document.createElement('div');
     senderEl.style.cssText = 'flex:1;min-width:0;';
 
     var senderName = document.createElement('div');
     senderName.style.cssText = 'font-size:12px;color:var(--text-muted);font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;';
-    var sName = '';
-    if (msg.companies && msg.companies.company_name) sName = msg.companies.company_name;
-    else if (msg.brands && msg.brands.name) sName = msg.brands.name;
-    else if (msg.message_type === 'system') sName = 'HelloTalent';
-    else sName = 'Bilinmeyen';
-    senderName.textContent = sName;
+    senderName.textContent = msg.company_name || 'İşveren';
     senderEl.appendChild(senderName);
 
-    // Type badge
-    var typeBadge = document.createElement('span');
-    typeBadge.style.cssText = 'font-size:10px;padding:1px 6px;border-radius:8px;font-weight:600;background:' + typeInfo.bg + ';color:' + typeInfo.color + ';';
-    typeBadge.textContent = typeInfo.label;
-    senderEl.appendChild(typeBadge);
+    // Position badge (if linked to a position)
+    if (msg.position_title) {
+      var posBadge = document.createElement('span');
+      posBadge.style.cssText = 'font-size:10px;padding:1px 6px;border-radius:8px;font-weight:600;background:#EEF2FF;color:#1E2D5E;';
+      posBadge.textContent = msg.position_title;
+      senderEl.appendChild(posBadge);
+    } else {
+      var typeBadge = document.createElement('span');
+      typeBadge.style.cssText = 'font-size:10px;padding:1px 6px;border-radius:8px;font-weight:600;background:' + typeInfo.bg + ';color:' + typeInfo.color + ';';
+      typeBadge.textContent = typeInfo.label;
+      senderEl.appendChild(typeBadge);
+    }
 
     header.appendChild(senderEl);
 
@@ -220,7 +232,7 @@
 
     card.appendChild(header);
 
-    // Title
+    // Subject
     var titleEl = document.createElement('div');
     titleEl.style.cssText = 'font-size:14px;margin-bottom:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;' +
       (isUnread ? 'font-weight:700;color:var(--text);' : 'font-weight:500;color:var(--text);');
@@ -233,45 +245,12 @@
     bodyEl.textContent = msg.body;
     card.appendChild(bodyEl);
 
-    // CTA button (if exists)
-    if (msg.cta_label && msg.cta_url) {
-      var ctaRow = document.createElement('div');
-      ctaRow.style.cssText = 'margin-top:10px;';
-
-      var ctaBtn = document.createElement('a');
-      ctaBtn.href = msg.cta_url;
-      ctaBtn.target = '_blank';
-      ctaBtn.rel = 'noopener';
-      ctaBtn.style.cssText = 'display:inline-block;padding:6px 16px;border-radius:8px;font-size:12px;font-weight:600;text-decoration:none;background:' + typeInfo.color + ';color:white;transition:opacity .2s;';
-      ctaBtn.textContent = msg.cta_label;
-      ctaBtn.addEventListener('mouseenter', function() { this.style.opacity = '0.85'; });
-      ctaBtn.addEventListener('mouseleave', function() { this.style.opacity = '1'; });
-      ctaBtn.addEventListener('click', function(e) { e.stopPropagation(); });
-
-      ctaRow.appendChild(ctaBtn);
-      card.appendChild(ctaRow);
-    }
-
-    // Cover image (if exists)
-    if (msg.cover_image_url) {
-      var imgWrap = document.createElement('div');
-      imgWrap.style.cssText = 'margin-top:10px;border-radius:8px;overflow:hidden;aspect-ratio:16/9;background:#f0f0f0;';
-
-      var coverImg = document.createElement('img');
-      coverImg.src = msg.cover_image_url;
-      coverImg.alt = '';
-      coverImg.loading = 'lazy';
-      coverImg.style.cssText = 'width:100%;height:100%;object-fit:cover;';
-      imgWrap.appendChild(coverImg);
-      card.appendChild(imgWrap);
-    }
-
-    // Click handler — mark as read + expand
+    // Click handler — expand message + mark as read
     card.addEventListener('click', function() {
+      expandMessage(msg, card);
       if (isUnread) {
         markAsRead(msg.id);
         msg.status = 'read';
-        // Re-render to update visual state
         renderMessages();
         updateUnreadBadges();
       }
@@ -285,18 +264,79 @@
   }
 
   /* ═══════════════════════════════════════════════════════════════
-     MARK AS READ
+     EXPAND MESSAGE (full body view)
+     ═══════════════════════════════════════════════════════════════ */
+  function expandMessage(msg, cardEl) {
+    // Check if already expanded
+    var existing = document.getElementById('inbox-expanded');
+    if (existing) existing.remove();
+
+    var overlay = document.createElement('div');
+    overlay.id = 'inbox-expanded';
+    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:900;display:flex;align-items:center;justify-content:center;padding:16px;';
+
+    var modal = document.createElement('div');
+    modal.style.cssText = 'background:white;border-radius:14px;max-width:520px;width:100%;max-height:80vh;overflow-y:auto;padding:24px;box-shadow:0 20px 60px rgba(0,0,0,0.15);';
+
+    // Header
+    var mHeader = document.createElement('div');
+    mHeader.style.cssText = 'display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;';
+
+    var mFrom = document.createElement('div');
+    var mCompany = document.createElement('div');
+    mCompany.style.cssText = 'font-size:14px;font-weight:700;color:var(--text);';
+    mCompany.textContent = msg.company_name || 'İşveren';
+    mFrom.appendChild(mCompany);
+    if (msg.position_title) {
+      var mPos = document.createElement('div');
+      mPos.style.cssText = 'font-size:12px;color:var(--text-muted);margin-top:2px;';
+      mPos.textContent = 'Pozisyon: ' + msg.position_title;
+      mFrom.appendChild(mPos);
+    }
+    var mTime = document.createElement('div');
+    mTime.style.cssText = 'font-size:11px;color:var(--text-muted);';
+    mTime.textContent = timeAgo(msg.created_at);
+    mFrom.appendChild(mTime);
+    mHeader.appendChild(mFrom);
+
+    var closeBtn = document.createElement('button');
+    closeBtn.style.cssText = 'background:none;border:none;font-size:20px;cursor:pointer;color:var(--text-muted);padding:0;line-height:1;';
+    closeBtn.textContent = '✕';
+    closeBtn.onclick = function() { overlay.remove(); };
+    mHeader.appendChild(closeBtn);
+    modal.appendChild(mHeader);
+
+    // Subject
+    var mSubject = document.createElement('div');
+    mSubject.style.cssText = 'font-size:16px;font-weight:700;color:var(--text);margin-bottom:12px;line-height:1.3;';
+    mSubject.textContent = msg.title;
+    modal.appendChild(mSubject);
+
+    // Body
+    var mBody = document.createElement('div');
+    mBody.style.cssText = 'font-size:14px;color:var(--text);line-height:1.7;white-space:pre-wrap;';
+    mBody.textContent = msg.body;
+    modal.appendChild(mBody);
+
+    overlay.appendChild(modal);
+    overlay.addEventListener('click', function(e) {
+      if (e.target === overlay) overlay.remove();
+    });
+    document.body.appendChild(overlay);
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+     MARK AS READ (via RPC)
      ═══════════════════════════════════════════════════════════════ */
   async function markAsRead(messageId) {
     var supa = window._htSupa || (typeof supabase !== 'undefined' ? supabase : null);
     if (!supa) return;
 
     try {
-      await supa.from('inbox_messages')
-        .update({ status: 'read', read_at: new Date().toISOString() })
-        .eq('id', messageId);
+      var res = await supa.rpc('mark_message_read', { p_message_id: messageId });
+      if (res.error) console.error('Mark as read error:', res.error.message);
     } catch (err) {
-      console.error('Mark as read error:', err);
+      console.error('Mark as read exception:', err);
     }
   }
 
@@ -352,9 +392,9 @@
 
     try {
       var res = await supa
-        .from('inbox_messages')
+        .from('employer_messages')
         .select('id', { count: 'exact', head: true })
-        .neq('status', 'read');
+        .eq('status', 'sent');
 
       var count = res.count || 0;
 
