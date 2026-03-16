@@ -118,7 +118,12 @@
         // Row 2: Campaign activity — get employers with active-ish campaigns
         supa.from('campaigns').select('created_by').in('status', ['active', 'approved', 'pending_review']).limit(1000),
         // Recent registrations (last 10)
-        supa.from('hr_profiles').select('id, full_name, email, company_id, created_at, companies(company_name)').order('created_at', { ascending: false }).limit(10)
+        supa.from('hr_profiles').select('id, full_name, email, company_id, created_at, companies(company_name)').order('created_at', { ascending: false }).limit(10),
+        // Row 3: Positions
+        supa.from('positions').select('id', { count: 'exact', head: true }),
+        supa.from('positions').select('id', { count: 'exact', head: true }).eq('durum', 'active'),
+        supa.from('positions').select('id', { count: 'exact', head: true }).eq('durum', 'draft'),
+        supa.from('positions').select('id', { count: 'exact', head: true }).eq('durum', 'closed')
       ]);
 
       var total = queries[0].count || 0;
@@ -141,6 +146,12 @@
 
       var recentData = queries[4].data || [];
 
+      // Positions data
+      var totalPoz = queries[5].count || 0;
+      var activePoz = queries[6].count || 0;
+      var draftPoz = queries[7].count || 0;
+      var closedPoz = queries[8].count || 0;
+
       // Clear container
       while (container.firstChild) container.removeChild(container.firstChild);
 
@@ -158,6 +169,15 @@
         buildStatCard('Aktif Kampanyası Var', withCampaigns, '📢'),
         buildStatCard('Premium', premiumCount, '⭐', 'Sprint B\'de aktif olacak'),
         buildStatCard('Freemium', freemiumCount)
+      ]));
+
+      // Row 3: Positions
+      container.appendChild(buildSectionLabel('Pozisyon İlanları'));
+      container.appendChild(buildRow([
+        buildStatCard('Toplam Pozisyon', totalPoz, '📋'),
+        buildStatCard('Aktif İlan', activePoz, '🟢'),
+        buildStatCard('Taslak', draftPoz, '📝'),
+        buildStatCard('Kapalı', closedPoz, '🔒')
       ]));
 
       // Recent Registrations Table
