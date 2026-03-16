@@ -820,11 +820,31 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
         <div id="sirket-progress-pct" style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px;color:white;">20%</div>
       </div>
 
+      <!-- ── Şirket Tipi Seçimi ── -->
+      <div id="sirket-type-card" style="background:white;border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin-bottom:20px;">
+        <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:12px;">🏷️ Şirket Yapısı</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+          <div id="type-tek" class="sirket-type-option" onclick="selectCompanyType('tek_marka')" style="border:2px solid var(--verm);background:#FEF7F5;border-radius:10px;padding:14px;cursor:pointer;transition:all 0.15s;text-align:center;">
+            <div style="font-size:24px;margin-bottom:6px;">🏪</div>
+            <div style="font-size:13px;font-weight:700;color:var(--text);">Tek Marka</div>
+            <div style="font-size:11px;color:var(--muted);margin-top:3px;">Bir marka veya şirket yönetiyorsunuz</div>
+          </div>
+          <div id="type-coklu" class="sirket-type-option" onclick="selectCompanyType('coklu_marka')" style="border:2px solid var(--border);background:white;border-radius:10px;padding:14px;cursor:pointer;transition:all 0.15s;text-align:center;">
+            <div style="font-size:24px;margin-bottom:6px;">🏢</div>
+            <div style="font-size:13px;font-weight:700;color:var(--text);">Çoklu Marka / Holding</div>
+            <div style="font-size:11px;color:var(--muted);margin-top:3px;">Birden fazla marka/şirket yönetiyorsunuz</div>
+          </div>
+        </div>
+        <div id="type-coklu-info" style="display:none;margin-top:12px;padding:10px 14px;border-radius:8px;background:#EEF2FF;border:1px solid #C7D2FE;font-size:12px;color:#3730A3;">
+          ℹ️ Çoklu marka yapısında holding/grup adını girin, marka portföyünü daha sonra ekleyebilirsiniz.
+        </div>
+      </div>
+
       <div class="profil-grid">
         <div class="profil-card">
           <div class="profil-card-title">🏢 Temel Bilgiler</div>
           <div class="form-field">
-            <label class="form-label">Şirket / Marka Adı <span style="color:var(--verm)">*</span></label>
+            <label class="form-label" id="sc-sirket-label">Şirket / Marka Adı <span style="color:var(--verm)">*</span></label>
             <input class="form-input" id="sc-sirket" placeholder="Örn: Zara Türkiye, Apple Premium Reseller..." oninput="updateSirketCompletion()">
           </div>
           <div class="form-field">
@@ -1939,6 +1959,11 @@ async function initApp(){
         var el = document.getElementById(id);
         if(el && fields[id]) el.value = fields[id];
       });
+      // Restore company type selection
+      if(prof.company_type) {
+        selectedCompanyType = prof.company_type;
+        selectCompanyType(prof.company_type);
+      }
       updateSirketCompletion();
     }
   }catch(e){}
@@ -2939,6 +2964,7 @@ async function saveSirket(){
     aranan_profil: document.getElementById('sc-profil').value.trim(),
     calisma_saatleri: document.getElementById('sc-saat').value,
     linkedin: document.getElementById('sc-linkedin').value.trim(),
+    company_type: selectedCompanyType,
   };
 
   try{
@@ -2998,6 +3024,36 @@ async function saveSirket(){
   }catch(e){
     if(saveBtn) saveBtn.textContent = 'Profili Kaydet';
     console.error('saveSirket error:', e);
+  }
+}
+
+// ── ŞİRKET TİPİ SEÇİMİ ──
+var selectedCompanyType = 'tek_marka';
+
+function selectCompanyType(type){
+  selectedCompanyType = type;
+  var tekEl = document.getElementById('type-tek');
+  var cokluEl = document.getElementById('type-coklu');
+  var cokluInfo = document.getElementById('type-coklu-info');
+  var sirketLabel = document.getElementById('sc-sirket-label');
+  var sirketInput = document.getElementById('sc-sirket');
+
+  if(type === 'tek_marka'){
+    tekEl.style.border = '2px solid var(--verm)';
+    tekEl.style.background = '#FEF7F5';
+    cokluEl.style.border = '2px solid var(--border)';
+    cokluEl.style.background = 'white';
+    cokluInfo.style.display = 'none';
+    if(sirketLabel) sirketLabel.innerHTML = 'Şirket / Marka Adı <span style="color:var(--verm)">*</span>';
+    if(sirketInput) sirketInput.placeholder = 'Örn: Zara Türkiye, Apple Premium Reseller...';
+  } else {
+    cokluEl.style.border = '2px solid var(--verm)';
+    cokluEl.style.background = '#FEF7F5';
+    tekEl.style.border = '2px solid var(--border)';
+    tekEl.style.background = 'white';
+    cokluInfo.style.display = 'block';
+    if(sirketLabel) sirketLabel.innerHTML = 'Holding / Grup Adı <span style="color:var(--verm)">*</span>';
+    if(sirketInput) sirketInput.placeholder = 'Örn: İnditex, LVMH, Fiba Holding...';
   }
 }
 

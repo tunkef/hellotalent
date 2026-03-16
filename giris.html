@@ -420,8 +420,20 @@
         <div class="error-msg" id="err-ik-register"></div>
 
         <div class="field">
-          <label>Kurumsal E-posta</label>
+          <label>Şirket Adı <span style="color:var(--verm);">*</span></label>
+          <input type="text" id="ik-kayit-sirket" placeholder="Örn: Zara Türkiye, Boyner Grup..." autocomplete="organization">
+        </div>
+        <div class="field">
+          <label>Şirket Web Sitesi</label>
+          <input type="url" id="ik-kayit-web" placeholder="https://sirketiniz.com" autocomplete="url">
+          <div id="ik-domain-hint" style="display:none;font-size:11px;margin-top:4px;padding:6px 10px;border-radius:6px;"></div>
+        </div>
+        <div class="field">
+          <label>Kurumsal E-posta <span style="color:var(--verm);">*</span></label>
           <input type="email" id="ik-kayit-email" placeholder="isim@sirket.com" autocomplete="email">
+          <div id="ik-email-domain-warning" style="display:none;font-size:11px;margin-top:4px;padding:6px 10px;border-radius:6px;background:#FEF3C7;color:#92400E;border:1px solid #FDE68A;">
+            ⚠️ Kişisel e-posta adresi tespit edildi. Kurumsal e-posta kullanmanızı öneriyoruz.
+          </div>
         </div>
         <div class="field">
           <label>Şifre</label>
@@ -878,6 +890,61 @@ document.addEventListener('keydown', function(e) {
   });
 })();
 
+// ── İK KAYIT: DOMAIN CHECK (real-time) ──
+(function(){
+  var FREE_DOMAINS = ['gmail.com','googlemail.com','hotmail.com','hotmail.co.uk','hotmail.fr','hotmail.de','hotmail.it','outlook.com','outlook.co.uk','live.com','live.co.uk','yahoo.com','yahoo.co.uk','yahoo.fr','yahoo.de','yahoo.com.tr','ymail.com','icloud.com','me.com','mac.com','aol.com','protonmail.com','proton.me','mail.com','email.com','zoho.com','yandex.com','yandex.ru','mail.ru','gmx.com','gmx.de','web.de','tutanota.com','tuta.io'];
+
+  var emailInput = document.getElementById('ik-kayit-email');
+  var webInput = document.getElementById('ik-kayit-web');
+  var domainWarning = document.getElementById('ik-email-domain-warning');
+  var domainHint = document.getElementById('ik-domain-hint');
+
+  function checkEmailDomain(){
+    if(!emailInput || !domainWarning) return;
+    var email = emailInput.value.trim();
+    if(!email || email.indexOf('@') === -1) { domainWarning.style.display = 'none'; return; }
+    var domain = email.split('@')[1].toLowerCase();
+    if(FREE_DOMAINS.indexOf(domain) !== -1){
+      domainWarning.style.display = 'block';
+    } else {
+      domainWarning.style.display = 'none';
+    }
+    checkDomainMatch();
+  }
+
+  function checkDomainMatch(){
+    if(!domainHint || !emailInput || !webInput) return;
+    var email = emailInput.value.trim();
+    var web = webInput.value.trim();
+    if(!email || !web || email.indexOf('@') === -1) { domainHint.style.display = 'none'; return; }
+    var emailDomain = email.split('@')[1].toLowerCase();
+    // Check if free email
+    if(FREE_DOMAINS.indexOf(emailDomain) !== -1) { domainHint.style.display = 'none'; return; }
+    // Strip protocol and www from website
+    var webDomain = web.toLowerCase().replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0];
+    if(!webDomain) { domainHint.style.display = 'none'; return; }
+    // Match check
+    var match = (emailDomain === webDomain) || emailDomain.endsWith('.' + webDomain) || webDomain.endsWith('.' + emailDomain);
+    if(match){
+      domainHint.textContent = '✓ E-posta domaini şirket web sitesiyle eşleşiyor';
+      domainHint.style.background = '#F0FDF4';
+      domainHint.style.color = '#16A34A';
+      domainHint.style.borderColor = '#BBF7D0';
+      domainHint.style.border = '1px solid #BBF7D0';
+    } else {
+      domainHint.textContent = '⚠ E-posta domaini şirket web sitesiyle eşleşmiyor';
+      domainHint.style.background = '#FEF3C7';
+      domainHint.style.color = '#92400E';
+      domainHint.style.borderColor = '#FDE68A';
+      domainHint.style.border = '1px solid #FDE68A';
+    }
+    domainHint.style.display = 'block';
+  }
+
+  if(emailInput) emailInput.addEventListener('input', checkEmailDomain);
+  if(webInput) webInput.addEventListener('input', checkDomainMatch);
+})();
+
 // ── İK KAYIT (register) ──
 (function(){
   var btn = document.getElementById('btn-ik-kayit');
@@ -885,6 +952,16 @@ document.addEventListener('keydown', function(e) {
   btn.addEventListener('click', async function() {
     var errEl = document.getElementById('err-ik-register');
     errEl.style.display = 'none';
+
+    // Validate company name (required)
+    var sirket = document.getElementById('ik-kayit-sirket').value.trim();
+    if(!sirket) {
+      errEl.textContent = 'Şirket adı zorunludur.';
+      errEl.style.display = 'block';
+      document.getElementById('ik-kayit-sirket').focus();
+      return;
+    }
+
     if(!window._htPasswordValid('ik-kayit-sifre')) {
       errEl.textContent = 'Şifreniz en az 8 karakter olmalı ve büyük harf, küçük harf, rakam ve özel karakter içermelidir.';
       errEl.style.display = 'block';
@@ -892,6 +969,7 @@ document.addEventListener('keydown', function(e) {
     }
     var email = document.getElementById('ik-kayit-email').value.trim();
     var sifre = document.getElementById('ik-kayit-sifre').value;
+    var webSitesi = document.getElementById('ik-kayit-web').value.trim() || null;
     if(!email) { errEl.textContent = 'E-posta zorunludur.'; errEl.style.display = 'block'; return; }
     btn.disabled = true;
     btn.textContent = 'Kaydediliyor...';
@@ -902,6 +980,19 @@ document.addEventListener('keydown', function(e) {
         options: { data: { role: 'employer' } }
       });
       if(r.error) throw r.error;
+
+      // Call register_employer RPC to create hr_profiles row with domain check
+      try {
+        await getSupa().rpc('register_employer', {
+          p_email: email,
+          p_sirket: sirket,
+          p_website: webSitesi
+        });
+      } catch(rpcErr) {
+        console.warn('register_employer RPC error:', rpcErr.message);
+        // Non-blocking: hr_profiles will be created on first ik.html visit if this fails
+      }
+
       window.location.href = 'ik.html';
     } catch(ex) {
       var msg = ex.message || '';
