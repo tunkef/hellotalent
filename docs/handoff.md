@@ -180,10 +180,10 @@ if(sessionStorage.getItem('ht_gate')!=='ok'){window.location.replace('gate.html'
 
 ### RLS Policy Yapısı
 **Candidate-own policies:** `candidate_id = get_my_candidate_id()` veya `user_id = auth.uid()`
-**Employer-read policies (P2 #7'de eklendi):**
+**Employer-read policies (P2 #7 + P3 hardening):**
 - `is_employer()` helper function → `EXISTS (SELECT 1 FROM hr_profiles WHERE id = auth.uid())`
-- Koşul: `is_active = true AND profile_completed = true`
-- Child tablolar: parent candidate active check
+- Koşul: `is_active = true AND (profile_completed = true OR profile_completion_pct >= 45)` (035/036)
+- Child tablolar: parent candidate aynı visibility koşulu ile
 
 ### Önemli Fonksiyonlar
 | Fonksiyon | Açıklama |
@@ -356,6 +356,13 @@ if(sessionStorage.getItem('ht_gate')!=='ok'){window.location.replace('gate.html'
 - initStep6 + getProfilAuthSession: cached HTML vs new JS mismatch
 - Fix: retry-with-session-refresh logic + cache-busting version queries (prompt verildi)
 
+### P3 Hardening — Profil tamamlama ve görünürlük (16 Mart 2026)
+- **profile_completion_pct modeli (035):** `candidates.profile_completion_pct` 0–100; ilk backfill 035’te. Employer görünürlük: `profile_completed = true OR profile_completion_pct >= 45`.
+- **Sürekli sync + recursion-safe tetikleyiciler (036):** `compute_candidate_profile_completion`, `refresh_candidate_profile_completion`; candidates + work_preferences, experiences, education, languages, location_preferences üzerinde tetikleyiciler. `pg_trigger_depth() > 1` ile döngü önlendi. Lokasyon puanı artık `candidate_location_preferences` tablosuna göre (tercih_sehirler kaldırıldı). One-shot global re-sync: tüm adaylar için 036 mantığıyla bir kez yeniden hesaplama.
+- **IK görünürlük kuralı tek tip:** `is_active = true AND (profile_completed = true OR profile_completion_pct >= 45)` — dashboard istatistikleri, canlı aday listesi ve takipçiler panelinde aynı kural.
+- **Admin aday paneli:** Tamamlananlar / yarım kalanlar ayrımı; önerilebilir (≥%45), önerilebilir ama tamamlanmamış metrikleri. Admin read policy’ler 036’da idempotent yeniden uygulanıyor.
+- **Regresyon:** `npm run test:p3` — kart XSS, lokasyon mesajları, ≥45 eşiği, 036 re-sync ve admin policy kontrolleri.
+
 ---
 
 ## 7. Kalan Backlog
@@ -514,26 +521,13 @@ git diff dosya.html | head -100
 
 ```
 refactor: centralize Supabase config in shared.js - Phase 1 (7 pages)
-fix: HT not defined fallback for pages where inline script runs before shared.js
-refactor: Supabase config traceability - Phase 2 (giris, ik, profil)
-fix: standardize auth guards - employer role redirect + gate check on content pages
-fix: cross-role login prevention - employer/candidate tab validation
-fix: work_prefs query .single() → .maybeSingle() for new users (Sentry fix)
-docs: schema drift report + 3 live DB fixes applied
-feat: replace mock ADAYLAR with live Supabase data (P2 #7)
-feat: email auth sync + email change flow in Ayarlar (P2 #8)
-feat: P2 #9 Settings MVP — bildirim tercihleri, engelli şirketler, hesap dondur/sil, CV görünürlük copy
-fix: P2 #9 closure — hide blocking UI, add employer enforcement, add deletion banner
-chore: clean code audit — remove 24 debug logs, fix Sentry TODO, remove fallback save, deduplicate 320 lines CSS
-chore: add CLAUDE.md + project rules
-feat: P2 #10 — İK email sync
-feat: profil merkezi modern card redesign
-fix: premium CTA top + CV section compact redesign
-feat: profile preview modal + 1deneyim spacing fix
-feat: horizontal toggle grid — 4 columns, cookie-consent style
-feat: animated expanding-circle logout button in sidebar
-feat: navy dark sidebar with gradient premium card
+...
 feat: activate LinkedIn OAuth login (OIDC provider) (dbbdbd4)
+feat: split admin candidate monitoring and enable IK recommendation threshold at 45% (39ffcad)
+fix: sync profile completion score and enforce >=45 visibility consistently (adb0bd3)
+fix: harden profile completion sync trigger and normalize location scoring (9ce0498)
+fix: backfill profile completion with normalized sync and finalize hardening docs (78febb4)
+fix: finalize profile completion hardening and update handoff
 ```
 
 ---
