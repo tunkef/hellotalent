@@ -108,6 +108,42 @@ body{
   overflow-x:hidden;
 }
 
+/* ── FOCUS VISIBLE — global accessibility ring ── */
+:focus-visible{
+  outline:2px solid var(--accent);
+  outline-offset:2px;
+  border-radius:var(--radius-sm);
+}
+/* Dark header/sidebar elements get a lighter ring */
+.header :focus-visible,
+.sidebar :focus-visible{
+  outline-color:rgba(255,255,255,0.5);
+}
+/* Inputs already have their own focus styles — suppress double ring */
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible{
+  outline:none;
+  box-shadow:0 0 0 2px var(--accent);
+}
+
+/* ── UTILITY CLASSES (inline-style reduction) ── */
+.mt-4{margin-top:4px;}.mt-8{margin-top:8px;}.mt-12{margin-top:12px;}.mt-16{margin-top:16px;}
+.mb-4{margin-bottom:4px;}.mb-12{margin-bottom:12px;}
+.hint-text{font-size:11px;color:var(--text-muted);margin:2px 0 0;}
+.field-msg{font-size:12px;margin-top:8px;display:none;}
+.link-action{margin:0;cursor:pointer;font-weight:500;}
+.flex-row-12{display:flex;align-items:center;gap:12px;margin-top:12px;}
+.empty-state{display:none;text-align:center;padding:60px 20px;}
+.empty-icon{font-size:48px;margin-bottom:12px;opacity:0.3;}
+.badge-verm{display:none;font-size:12px;font-weight:600;background:var(--verm);color:white;padding:2px 10px;border-radius:12px;font-family:var(--mono);}
+.section-desc{font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.5;}
+.section-label{font-size:15px;font-weight:600;color:var(--text);margin-bottom:6px;}
+.item-label{font-weight:600;font-size:14px;margin-bottom:4px;}
+.sub-text{font-size:13px;color:var(--text-muted);}
+.tag-row{display:flex;gap:6px;margin:16px 0;flex-wrap:wrap;}
+.mini-badge{font-size:10px;background:var(--verm);color:#fff;padding:2px 6px;border-radius:4px;margin-left:6px;}
+
 /* ── HEADER ── */
 .header{
   position:fixed;top:0;left:0;right:0;z-index:500;
@@ -1057,6 +1093,9 @@ html[data-theme="dark"] .field-req{color:#F87171;}
   display:flex;flex-direction:column;justify-content:flex-end;
   transition:all 0.3s cubic-bezier(0.4,0,0.2,1);
   cursor:default;
+  /* Button reset for semantic <button> bento cards */
+  border:none;padding:0;font:inherit;color:inherit;text-align:left;width:100%;
+  -webkit-appearance:none;appearance:none;
 }
 .bento-card.active{cursor:pointer;}
 .bento-card.active:hover{
@@ -1144,6 +1183,14 @@ html[data-theme="dark"] .field-req{color:#F87171;}
 .bento-card:nth-child(5){animation-delay:0.16s;}
 .bento-card:nth-child(6){animation-delay:0.2s;}
 .bento-card:nth-child(7){animation-delay:0.24s;}
+
+/* ── Laboratuvar section ── */
+.lab-section{margin-top:32px;}
+.lab-header{display:flex;align-items:center;gap:8px;margin-bottom:14px;padding-left:2px;}
+.lab-icon{font-size:18px;}
+.lab-title{font-family:'Bricolage Grotesque',sans-serif;font-size:15px;font-weight:700;color:var(--text-primary);}
+.lab-desc{font-size:12px;color:var(--text-muted);margin-left:4px;}
+.lab-grid .bento-card.locked{opacity:0.5;}
 
 /* ══════════════════════════════════════════════
    PROFIL MERKEZI — card-based bento design

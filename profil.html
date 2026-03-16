@@ -215,7 +215,7 @@ if (window.Sentry) {
 </div>
 
 <!-- SUCCESS MODAL -->
-<div class="modal-overlay" id="modal-success">
+<div class="modal-overlay" id="modal-success" role="dialog" aria-modal="true" aria-label="Başarılı">
   <div class="modal">
     <div class="modal-icon modal-icon-success">
       <svg class="modal-check-svg" viewBox="0 0 52 52">
@@ -232,7 +232,7 @@ if (window.Sentry) {
 </div>
 
 <!-- ERROR MODAL -->
-<div class="modal-overlay" id="modal-error">
+<div class="modal-overlay" id="modal-error" role="dialog" aria-modal="true" aria-label="Hata">
   <div class="modal">
     <div class="modal-icon" style="background:var(--red-light);color:var(--red);">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
@@ -247,7 +247,7 @@ if (window.Sentry) {
 </div>
 
 <!-- WIZARD EXIT CONFIRM MODAL -->
-<div class="modal-overlay" id="modal-wizard-exit">
+<div class="modal-overlay" id="modal-wizard-exit" role="dialog" aria-modal="true" aria-label="Çıkış onayı">
   <div class="modal">
     <div class="modal-icon" style="background:var(--verm-light);color:var(--verm);">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
@@ -264,7 +264,7 @@ if (window.Sentry) {
 </div>
 
 <!-- DRAFT RESUME MODAL -->
-<div class="modal-overlay" id="modal-draft">
+<div class="modal-overlay" id="modal-draft" role="dialog" aria-modal="true" aria-label="Taslak devam">
   <div class="modal">
     <div class="modal-icon" style="background:var(--navy-light);color:var(--navy);">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
@@ -364,7 +364,7 @@ if (window.Sentry) {
     <div class="bento-grid">
 
       <!-- 1. Profil Merkezi — 2 col -->
-      <div class="bento-card active col-2" onclick="switchPanel('merkez')">
+      <button type="button" class="bento-card active col-2" data-panel="merkez" aria-label="Profil Merkezi paneline git">
         <div class="bento-bg"></div>
         <div class="bento-content">
           <div class="bento-icon navy">
@@ -374,12 +374,12 @@ if (window.Sentry) {
           <div class="bento-desc">Kişisel bilgiler, deneyim, eğitim ve tercihlerini yönet</div>
         </div>
         <div class="bento-cta">
-          <a href="javascript:void(0)" onclick="event.stopPropagation(); switchPanel('merkez')">Profili Düzenle<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+          <span>Profili Düzenle<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
         </div>
-      </div>
+      </button>
 
       <!-- 2. Markalar — 1 col -->
-      <div class="bento-card active" onclick="switchPanel('sirketler')">
+      <button type="button" class="bento-card active" data-panel="sirketler" aria-label="Markalar paneline git">
         <div class="bento-bg"><div class="bg-markalar"></div></div>
         <span class="badge-count" id="sirket-follow-count" style="display:none;"><span class="badge-count-text"></span></span>
         <div class="bento-content">
@@ -390,48 +390,12 @@ if (window.Sentry) {
           <div class="bento-desc">Keşfet ve takip et</div>
         </div>
         <div class="bento-cta">
-          <a href="javascript:void(0)" onclick="event.stopPropagation(); switchPanel('sirketler')">Markaları Gör<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+          <span>Markaları Gör<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
         </div>
-      </div>
+      </button>
 
-      <!-- 3. Görüntüleyenler — locked -->
-      <div class="bento-card locked">
-        <span class="bento-badge-soon">YAKINDA</span>
-        <div class="bento-content">
-          <div class="bento-icon navy">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="1" fill="currentColor" opacity="0.3"/></svg>
-          </div>
-          <div class="bento-title">Görüntüleyenler</div>
-          <div class="bento-desc">Hangi şirketler profilini inceledi?</div>
-        </div>
-      </div>
-
-      <!-- 4. Kariyer Rotam — locked -->
-      <div class="bento-card locked">
-        <span class="bento-badge-soon">YAKINDA</span>
-        <div class="bento-content">
-          <div class="bento-icon verm">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/><circle cx="12" cy="12" r="2" fill="currentColor" opacity="0.25"/></svg>
-          </div>
-          <div class="bento-title">Kariyer Rotam</div>
-          <div class="bento-desc">Kariyer yolunu planla ve takip et</div>
-        </div>
-      </div>
-
-      <!-- 5. Kariyer İçgörüleri — locked -->
-      <div class="bento-card locked">
-        <span class="bento-badge-soon">YAKINDA</span>
-        <div class="bento-content">
-          <div class="bento-icon navy">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><rect x="6" y="11" width="3" height="8" rx="1" fill="currentColor" opacity="0.15"/><rect x="10.5" y="7" width="3" height="12" rx="1" fill="currentColor" opacity="0.1"/><rect x="15" y="3" width="3" height="16" rx="1" fill="currentColor" opacity="0.2"/><line x1="6" y1="11" x2="6" y2="19"/><line x1="9" y1="11" x2="9" y2="19"/><line x1="10.5" y1="7" x2="10.5" y2="19"/><line x1="13.5" y1="7" x2="13.5" y2="19"/><line x1="15" y1="3" x2="15" y2="19"/><line x1="18" y1="3" x2="18" y2="19"/></svg>
-          </div>
-          <div class="bento-title">Kariyer İçgörüleri</div>
-          <div class="bento-desc">Sektör trendleri ve kişisel öneriler</div>
-        </div>
-      </div>
-
-      <!-- 6. Özel Teklifler — active -->
-      <div class="bento-card" id="bento-teklifler" onclick="switchPanel('teklifler')" style="cursor:pointer;">
+      <!-- 3. Özel Teklifler — active -->
+      <button type="button" class="bento-card" id="bento-teklifler" data-panel="teklifler" aria-label="Özel Teklifler paneline git">
         <div class="bento-content">
           <div class="bento-icon green">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12v10H4V12"/><rect x="2" y="7" width="20" height="5" rx="1"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z" fill="currentColor" opacity="0.15"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
@@ -439,21 +403,69 @@ if (window.Sentry) {
           <div class="bento-title">Özel Teklifler</div>
           <div class="bento-desc" id="bento-teklifler-count">Kampanyalar ve fırsatlar</div>
         </div>
-      </div>
+      </button>
 
-      <!-- 7. Premium Yan Haklar — 2 col, dark -->
-      <div class="bento-card locked premium col-2">
-        <div class="bento-bg"><div class="bg-premium"><svg class="star" style="top:20px;right:60px;" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="star" style="top:45px;right:30px;" width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div></div>
-        <span class="bento-badge-soon">YAKINDA</span>
-        <div class="bento-content">
-          <div class="bento-icon white">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="currentColor" opacity="0.15"/><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+    </div>
+
+    <!-- ── LABORATUVAR — upcoming features ── -->
+    <div class="lab-section">
+      <div class="lab-header">
+        <span class="lab-icon">🧪</span>
+        <span class="lab-title">Laboratuvar</span>
+        <span class="lab-desc">Üzerinde çalıştığımız özellikler</span>
+      </div>
+      <div class="bento-grid lab-grid">
+
+        <!-- L1. Görüntüleyenler -->
+        <div class="bento-card locked">
+          <span class="bento-badge-soon">YAKINDA</span>
+          <div class="bento-content">
+            <div class="bento-icon navy">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="1" fill="currentColor" opacity="0.3"/></svg>
+            </div>
+            <div class="bento-title">Görüntüleyenler</div>
+            <div class="bento-desc">Hangi şirketler profilini inceledi?</div>
           </div>
-          <div class="bento-title">Premium Yan Haklar</div>
-          <div class="bento-desc">Özel avantajlar ve ayrıcalıklar</div>
         </div>
-      </div>
 
+        <!-- L2. Kariyer Rotam -->
+        <div class="bento-card locked">
+          <span class="bento-badge-soon">YAKINDA</span>
+          <div class="bento-content">
+            <div class="bento-icon verm">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/><circle cx="12" cy="12" r="2" fill="currentColor" opacity="0.25"/></svg>
+            </div>
+            <div class="bento-title">Kariyer Rotam</div>
+            <div class="bento-desc">Kariyer yolunu planla ve takip et</div>
+          </div>
+        </div>
+
+        <!-- L3. Kariyer İçgörüleri -->
+        <div class="bento-card locked">
+          <span class="bento-badge-soon">YAKINDA</span>
+          <div class="bento-content">
+            <div class="bento-icon navy">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><rect x="6" y="11" width="3" height="8" rx="1" fill="currentColor" opacity="0.15"/><rect x="10.5" y="7" width="3" height="12" rx="1" fill="currentColor" opacity="0.1"/><rect x="15" y="3" width="3" height="16" rx="1" fill="currentColor" opacity="0.2"/><line x1="6" y1="11" x2="6" y2="19"/><line x1="9" y1="11" x2="9" y2="19"/><line x1="10.5" y1="7" x2="10.5" y2="19"/><line x1="13.5" y1="7" x2="13.5" y2="19"/><line x1="15" y1="3" x2="15" y2="19"/><line x1="18" y1="3" x2="18" y2="19"/></svg>
+            </div>
+            <div class="bento-title">Kariyer İçgörüleri</div>
+            <div class="bento-desc">Sektör trendleri ve kişisel öneriler</div>
+          </div>
+        </div>
+
+        <!-- L4. Premium Yan Haklar — 2 col, dark -->
+        <div class="bento-card locked premium col-2">
+          <div class="bento-bg"><div class="bg-premium"><svg class="star" style="top:20px;right:60px;" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="star" style="top:45px;right:30px;" width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div></div>
+          <span class="bento-badge-soon">YAKINDA</span>
+          <div class="bento-content">
+            <div class="bento-icon white">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="currentColor" opacity="0.15"/><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            </div>
+            <div class="bento-title">Premium Yan Haklar</div>
+            <div class="bento-desc">Özel avantajlar ve ayrıcalıklar</div>
+          </div>
+        </div>
+
+      </div>
     </div>
   </div>
 </main>
@@ -706,7 +718,7 @@ if (window.Sentry) {
           <span id="avatar-upload-initials">?</span>
         </div>
         <div>
-          <div style="font-weight:600;font-size:14px;margin-bottom:4px;">Profil Fotoğrafı</div>
+          <div class="item-label">Profil Fotoğrafı</div>
           <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">JPG veya PNG, maks. 2MB</div>
           <label class="btn btn-secondary btn-sm" style="cursor:pointer;position:relative;overflow:hidden;">
             <span id="avatar-btn-text">Fotoğraf Yükle</span>
@@ -828,25 +840,25 @@ if (window.Sentry) {
     <div id="step3-content">
 
       <!-- EGITIM SECTION -->
-      <div class="card-title" style="margin-bottom:12px;">Eğitim</div>
+      <div class="card-title mb-12">Eğitim</div>
       <div id="edu-rows-container"></div>
-      <button class="btn btn-secondary btn-sm" id="btn-add-edu" type="button" style="margin-top:8px;">+ Eğitim Ekle</button>
+      <button class="btn btn-secondary btn-sm" id="btn-add-edu" type="button" class="mt-8">+ Eğitim Ekle</button>
       <div id="edu-limit-msg" style="display:none;font-size:12px;color:var(--muted);margin-top:8px;">En fazla 3 egitim eklenebilir.</div>
 
       <hr class="section-divider">
 
       <!-- DILLER SECTION -->
-      <div class="card-title" style="margin-bottom:12px;">Diller</div>
+      <div class="card-title mb-12">Diller</div>
       <div id="lang-rows-container"></div>
-      <button class="btn btn-secondary btn-sm" id="btn-add-lang" type="button" style="margin-top:8px;">+ Dil Ekle</button>
+      <button class="btn btn-secondary btn-sm" id="btn-add-lang" type="button" class="mt-8">+ Dil Ekle</button>
       <div id="lang-limit-msg" style="display:none;font-size:12px;color:var(--muted);margin-top:8px;">En fazla 5 dil eklenebilir.</div>
 
       <hr class="section-divider">
 
       <!-- SERTIFIKALAR SECTION -->
-      <div class="card-title" style="margin-bottom:12px;">Sertifikalar / Eğitimler</div>
+      <div class="card-title mb-12">Sertifikalar / Eğitimler</div>
       <div id="cert-rows-container"></div>
-      <button class="btn btn-secondary btn-sm" id="btn-add-cert" type="button" style="margin-top:8px;">+ Sertifika Ekle</button>
+      <button class="btn btn-secondary btn-sm" id="btn-add-cert" type="button" class="mt-8">+ Sertifika Ekle</button>
 
     </div>
   </div>
@@ -858,22 +870,22 @@ if (window.Sentry) {
     <div id="step4-content">
 
       <!-- TARGET ROLES -->
-      <div class="card-title" style="margin-bottom:4px;">Hedef Pozisyonlar <span class="field-req">*</span></div>
+      <div class="card-title mb-4">Hedef Pozisyonlar <span class="field-req">*</span></div>
       <p class="helper-text" style="font-size:13px;color:var(--muted);margin:0 0 12px 0;line-height:1.5;">Bu bilgiler seni dogru pozisyonlarla eslestirmemize yardimci olur. Birden fazla hedef rol ekleyebilirsin.</p>
       <div id="target-roles-container"></div>
-      <button class="btn btn-secondary btn-sm" id="btn-add-role" type="button" style="margin-top:8px;">+ Rol Ekle</button>
+      <button class="btn btn-secondary btn-sm" id="btn-add-role" type="button" class="mt-8">+ Rol Ekle</button>
 
       <hr class="section-divider">
 
       <!-- MUSAITLIK -->
-      <div class="card-title" style="margin-bottom:4px;">Musaitlik</div>
+      <div class="card-title mb-4">Musaitlik</div>
       <p class="helper-text" style="font-size:13px;color:var(--muted);margin:0 0 12px 0;">Yeni bir işe ne kadar sürede başlayabilirsin?</p>
       <div class="chips-row" id="musaitlik-chips"></div>
 
       <hr class="section-divider">
 
       <!-- CALISMA TIPLERI -->
-      <div class="card-title" style="margin-bottom:12px;">Çalışma Tipleri</div>
+      <div class="card-title mb-12">Çalışma Tipleri</div>
       <div id="calisma-tipleri-checks" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
 
       <hr class="section-divider">
@@ -889,18 +901,18 @@ if (window.Sentry) {
       <hr class="section-divider">
 
       <!-- SEGMENT TERCIHLERI -->
-      <div class="card-title" style="margin-bottom:12px;">Segment Tercihleri</div>
+      <div class="card-title mb-12">Segment Tercihleri</div>
       <div class="chips-row" id="segment-chips"></div>
 
       <hr class="section-divider">
 
       <!-- MARKA ILGI ALANLARI -->
-      <div class="card-title" style="margin-bottom:12px;">Ilgilendigin Markalar</div>
+      <div class="card-title mb-12">Ilgilendigin Markalar</div>
       <div class="field" style="position:relative;">
         <input type="text" id="f-brand-interest" placeholder="Marka ara ve ekle..." autocomplete="off">
         <div class="autocomplete-list" id="brand-interest-sug"></div>
       </div>
-      <div class="chips-row" id="brand-interest-chips" style="margin-top:8px;"></div>
+      <div class="chips-row mt-8" id="brand-interest-chips"></div>
 
       <hr class="section-divider">
 
@@ -910,7 +922,7 @@ if (window.Sentry) {
         <textarea id="f-career-goal" rows="3" placeholder="Kariyer hedefinizi kısaca yazın..."></textarea>
       </div>
       <div class="field">
-        <div class="card-title" style="margin-bottom:4px;">Kariyer Yönelimi</div>
+        <div class="card-title mb-4">Kariyer Yönelimi</div>
         <p class="helper-text" style="font-size:13px;color:var(--muted);margin:0 0 10px 0;">Birden fazla yönelim seçebilirsin.</p>
         <div id="career-type-checks" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
       </div>
@@ -925,7 +937,7 @@ if (window.Sentry) {
     <div id="step5-content">
 
       <!-- POPULAR CITIES -->
-      <div class="card-title" style="margin-bottom:12px;">Popüler Şehirler</div>
+      <div class="card-title mb-12">Popüler Şehirler</div>
       <div class="chips-row" id="popular-city-chips"></div>
 
       <button class="btn btn-secondary btn-sm" id="btn-all-cities" type="button" style="margin-top:12px;">Tüm Şehirleri Gör</button>
@@ -933,7 +945,7 @@ if (window.Sentry) {
       <hr class="section-divider">
 
       <!-- SELECTED CITIES + DISTRICTS -->
-      <div class="card-title" style="margin-bottom:12px;">Seçili Lokasyonlar</div>
+      <div class="card-title mb-12">Seçili Lokasyonlar</div>
       <div id="selected-cities-container">
         <p style="font-size:13px;color:var(--muted);" id="no-city-msg">Henüz şehir seçilmedi. Yukarıdaki şehirlerden seçim yapın.</p>
       </div>
@@ -1054,21 +1066,21 @@ if (window.Sentry) {
 <main class="panel" id="panel-teklifler" data-panel="teklifler">
   <div class="wiz-step-title" style="display:flex;align-items:center;gap:10px;">
     Özel Teklifler
-    <span id="teklifler-count-badge" style="display:none;font-size:12px;font-weight:600;background:var(--verm);color:white;padding:2px 10px;border-radius:12px;font-family:'DM Mono',monospace;"></span>
+    <span id="teklifler-count-badge" class="badge-verm"></span>
   </div>
   <div class="wiz-step-desc">Markalardan sana özel kampanyalar, fırsatlar ve teklifler</div>
 
   <!-- Filter bar -->
-  <div id="teklifler-filters" style="display:flex;gap:6px;margin:16px 0;flex-wrap:wrap;"></div>
+  <div id="teklifler-filters" class="tag-row"></div>
 
   <!-- Campaign grid -->
   <div id="teklifler-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;"></div>
 
   <!-- Empty state -->
-  <div id="teklifler-empty" style="display:none;text-align:center;padding:60px 20px;">
-    <div style="font-size:48px;margin-bottom:12px;opacity:0.3;">🎁</div>
-    <div style="font-size:15px;font-weight:600;color:var(--text);margin-bottom:6px;">Henüz aktif teklif yok</div>
-    <div style="font-size:13px;color:var(--text-muted);">Markalar yeni kampanyalar oluşturduğunda burada görünecek</div>
+  <div id="teklifler-empty" class="empty-state">
+    <div class="empty-icon">🎁</div>
+    <div class="section-label">Henüz aktif teklif yok</div>
+    <div class="sub-text">Markalar yeni kampanyalar oluşturduğunda burada görünecek</div>
   </div>
 </main>
 
@@ -1076,21 +1088,21 @@ if (window.Sentry) {
 <main class="panel" id="panel-inbox" data-panel="inbox">
   <div class="wiz-step-title" style="display:flex;align-items:center;gap:10px;">
     Mesajlar
-    <span id="inbox-unread-badge" style="display:none;font-size:12px;font-weight:600;background:var(--verm);color:white;padding:2px 10px;border-radius:12px;font-family:'DM Mono',monospace;"></span>
+    <span id="inbox-unread-badge" class="badge-verm"></span>
   </div>
   <div class="wiz-step-desc">Kampanya bildirimleri, sistem mesajları ve işveren iletişimleri</div>
 
   <!-- Filter tabs -->
-  <div id="inbox-tabs" style="display:flex;gap:6px;margin:16px 0;flex-wrap:wrap;"></div>
+  <div id="inbox-tabs" class="tag-row"></div>
 
   <!-- Message list -->
   <div id="inbox-list" style="display:flex;flex-direction:column;gap:8px;"></div>
 
   <!-- Empty state -->
-  <div id="inbox-empty" style="display:none;text-align:center;padding:60px 20px;">
-    <div style="font-size:48px;margin-bottom:12px;opacity:0.3;">✉️</div>
-    <div style="font-size:15px;font-weight:600;color:var(--text);margin-bottom:6px;">Henüz mesajın yok</div>
-    <div style="font-size:13px;color:var(--text-muted);">Kampanya bildirimleri ve işveren mesajları burada görünecek</div>
+  <div id="inbox-empty" class="empty-state">
+    <div class="empty-icon">✉️</div>
+    <div class="section-label">Henüz mesajın yok</div>
+    <div class="sub-text">Kampanya bildirimleri ve işveren mesajları burada görünecek</div>
   </div>
 </main>
 
@@ -1098,21 +1110,21 @@ if (window.Sentry) {
 <main class="panel" id="panel-bildirimler" data-panel="bildirimler">
   <div class="wiz-step-title" style="display:flex;align-items:center;gap:10px;">
     Bildirimler
-    <span id="notif-unread-badge" style="display:none;font-size:12px;font-weight:600;background:var(--verm);color:white;padding:2px 10px;border-radius:12px;font-family:'DM Mono',monospace;"></span>
+    <span id="notif-unread-badge" class="badge-verm"></span>
   </div>
   <div class="wiz-step-desc">Sistem bildirimleri, mesaj uyarıları ve güncellemeler</div>
 
   <!-- Notification filter tabs -->
-  <div id="notif-tabs" style="display:flex;gap:6px;margin:16px 0;flex-wrap:wrap;"></div>
+  <div id="notif-tabs" class="tag-row"></div>
 
   <!-- Notification list -->
   <div id="notif-list" style="display:flex;flex-direction:column;gap:8px;"></div>
 
   <!-- Empty state -->
-  <div id="notif-empty" style="display:none;text-align:center;padding:60px 20px;">
-    <div style="font-size:48px;margin-bottom:12px;opacity:0.3;">🔔</div>
-    <div style="font-size:15px;font-weight:600;color:var(--text);margin-bottom:6px;">Henüz bildirim yok</div>
-    <div style="font-size:13px;color:var(--text-muted);">Yeni mesajlar ve güncellemeler burada görünecek</div>
+  <div id="notif-empty" class="empty-state">
+    <div class="empty-icon">🔔</div>
+    <div class="section-label">Henüz bildirim yok</div>
+    <div class="sub-text">Yeni mesajlar ve güncellemeler burada görünecek</div>
   </div>
 </main>
 
@@ -1135,7 +1147,7 @@ if (window.Sentry) {
         <input type="email" id="settings-new-email" placeholder="Yeni e-posta adresi">
       </div>
       <button type="button" class="btn btn-primary btn-sm" id="btn-change-email">Doğrulama Gönder</button>
-      <div id="email-change-msg" style="font-size:12px;margin-top:8px;display:none;"></div>
+      <div id="email-change-msg" class="field-msg"></div>
     </div>
     <div class="field">
       <label for="settings-adsoyad">Ad Soyad</label>
@@ -1146,10 +1158,10 @@ if (window.Sentry) {
       <input type="tel" id="settings-telefon" placeholder="0555 123 4567" maxlength="20">
     </div>
     <button class="btn btn-primary btn-sm" id="btn-settings-account-save">Kaydet</button>
-    <div id="settings-account-msg" style="font-size:12px;margin-top:8px;display:none;"></div>
+    <div id="settings-account-msg" class="field-msg"></div>
   </div>
 
-  <div class="card" style="margin-top:16px;">
+  <div class="card mt-16">
     <div class="card-title">Şifre Değiştir</div>
     <div class="field">
       <label for="settings-new-pw">Yeni Sifre</label>
@@ -1160,71 +1172,71 @@ if (window.Sentry) {
       <input type="password" id="settings-confirm-pw" placeholder="Sifreyi tekrarlayin">
     </div>
     <button class="btn btn-primary btn-sm" id="btn-change-pw">Şifreyi Güncelle</button>
-    <div id="pw-msg" style="font-size:12px;margin-top:8px;display:none;"></div>
+    <div id="pw-msg" class="field-msg"></div>
   </div>
 
-  <div class="card" style="margin-top:16px;">
+  <div class="card mt-16">
     <div class="card-title">Premium Ayarları</div>
-    <div class="wiz-step-desc" style="margin-top:4px;">Premium avantajları çok yakında. Öne çıkan aday, detaylı analiz ve daha fazlası için takipte kal.</div>
+    <div class="wiz-step-desc mt-4">Premium avantajları çok yakında. Öne çıkan aday, detaylı analiz ve daha fazlası için takipte kal.</div>
   </div>
 
-  <div class="card" style="margin-top:16px;">
+  <div class="card mt-16">
     <div class="card-title">Gizlilik ve Görünürlük</div>
     <div class="field" style="display:flex;align-items:center;gap:12px;margin-top:8px;">
       <label class="toggle">
         <input type="checkbox" id="settings-visibility-active" checked>
         <span class="toggle-slider"></span>
       </label>
-      <label for="settings-visibility-active" style="margin:0;cursor:pointer;font-weight:500;">Beni Öner</label>
+      <label for="settings-visibility-active" class="link-action">Beni Öner</label>
     </div>
     <p id="settings-benioner-hint" style="font-size:11px;margin:4px 0 0 0;">Profilin ve CV'n işverenlerle paylaşılır</p>
-    <div class="field" style="display:flex;align-items:center;gap:12px;margin-top:12px;">
+    <div class="field flex-row-12">
       <label class="toggle">
         <input type="checkbox" id="settings-actively-looking">
         <span class="toggle-slider"></span>
       </label>
       <div>
-        <label for="settings-actively-looking" style="margin:0;cursor:pointer;font-weight:500;">Aktif İş Arıyorum</label>
-        <p style="font-size:11px;color:var(--muted);margin:2px 0 0;">Bu ayar açıkken profilinizde "Aktif Arıyor" rozeti görünür ve işverenler sizi öncelikli olarak görür.</p>
+        <label for="settings-actively-looking" class="link-action">Aktif İş Arıyorum</label>
+        <p class="hint-text">Bu ayar açıkken profilinizde "Aktif Arıyor" rozeti görünür ve işverenler sizi öncelikli olarak görür.</p>
       </div>
     </div>
-    <div id="actively-looking-msg" style="font-size:12px;margin-top:8px;display:none;"></div>
+    <div id="actively-looking-msg" class="field-msg"></div>
     <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border);"></div>
     <div class="field" style="display:flex;align-items:center;gap:12px;margin-top:8px;">
       <label class="toggle">
         <input type="checkbox" id="settings-hide-from-current-employer">
         <span class="toggle-slider"></span>
       </label>
-      <label for="settings-hide-from-current-employer" style="margin:0;cursor:pointer;font-weight:500;">Mevcut işveren seni görmesin</label>
+      <label for="settings-hide-from-current-employer" class="link-action">Mevcut işveren seni görmesin</label>
     </div>
     <div id="settings-hide-hint" style="display:none;font-size:11px;color:var(--muted);margin-top:4px;">
       Bu ayarı kullanmak için Deneyimler alanında mevcut işvereninizi belirtin.
     </div>
   </div>
 
-  <div class="card" style="margin-top:16px;" id="settings-notifications-card">
+  <div class="card mt-16" id="settings-notifications-card">
     <div class="card-title">Bildirim Tercihleri</div>
-    <div class="wiz-step-desc" style="margin-top:4px;">Hangi bildirimleri almak istediğinizi seçin.</div>
+    <div class="wiz-step-desc mt-4">Hangi bildirimleri almak istediğinizi seçin.</div>
 
-    <div class="field" style="display:flex;align-items:center;gap:12px;margin-top:12px;">
+    <div class="field flex-row-12">
       <label class="toggle">
         <input type="checkbox" id="settings-notify-email-messages" checked>
         <span class="toggle-slider"></span>
       </label>
       <div>
-        <label for="settings-notify-email-messages" style="margin:0;cursor:pointer;font-weight:500;">İşveren Mesajları</label>
-        <p style="font-size:11px;color:var(--muted);margin:2px 0 0;">İşverenlerden gelen mesajlar için e-posta bildirimi alın.</p>
+        <label for="settings-notify-email-messages" class="link-action">İşveren Mesajları</label>
+        <p class="hint-text">İşverenlerden gelen mesajlar için e-posta bildirimi alın.</p>
       </div>
     </div>
 
-    <div class="field" style="display:flex;align-items:center;gap:12px;margin-top:12px;">
+    <div class="field flex-row-12">
       <label class="toggle">
         <input type="checkbox" id="settings-notify-email-jobs" checked>
         <span class="toggle-slider"></span>
       </label>
       <div>
-        <label for="settings-notify-email-jobs" style="margin:0;cursor:pointer;font-weight:500;">Yeni İş İlanları</label>
-        <p style="font-size:11px;color:var(--muted);margin:2px 0 0;">Profilinize uygun yeni ilanlar yayınlandığında bildirim alın.</p>
+        <label for="settings-notify-email-jobs" class="link-action">Yeni İş İlanları</label>
+        <p class="hint-text">Profilinize uygun yeni ilanlar yayınlandığında bildirim alın.</p>
       </div>
     </div>
 
@@ -1234,8 +1246,8 @@ if (window.Sentry) {
         <span class="toggle-slider"></span>
       </label>
       <div>
-        <label style="margin:0;font-weight:500;">SMS Bildirimleri <span style="font-size:10px;background:var(--verm);color:#fff;padding:2px 6px;border-radius:4px;margin-left:6px;">Yakında</span></label>
-        <p style="font-size:11px;color:var(--muted);margin:2px 0 0;">Kritik güncellemeler için SMS bildirimi.</p>
+        <label class="link-action">SMS Bildirimleri <span class="mini-badge">Yakında</span></label>
+        <p class="hint-text">Kritik güncellemeler için SMS bildirimi.</p>
       </div>
     </div>
 
@@ -1245,72 +1257,72 @@ if (window.Sentry) {
         <span class="toggle-slider"></span>
       </label>
       <div>
-        <label style="margin:0;font-weight:500;">Push Bildirimleri <span style="font-size:10px;background:var(--verm);color:#fff;padding:2px 6px;border-radius:4px;margin-left:6px;">Yakında</span></label>
-        <p style="font-size:11px;color:var(--muted);margin:2px 0 0;">Anlık bildirimler doğrudan tarayıcınıza.</p>
+        <label class="link-action">Push Bildirimleri <span class="mini-badge">Yakında</span></label>
+        <p class="hint-text">Anlık bildirimler doğrudan tarayıcınıza.</p>
       </div>
     </div>
 
-    <button class="btn btn-primary btn-sm" id="btn-save-notifications" style="margin-top:16px;">Bildirim Tercihlerini Kaydet</button>
-    <div id="notifications-msg" style="font-size:12px;margin-top:8px;display:none;"></div>
+    <button class="btn btn-primary btn-sm" id="btn-save-notifications" class="mt-16">Bildirim Tercihlerini Kaydet</button>
+    <div id="notifications-msg" class="field-msg"></div>
   </div>
 
-  <div class="card" style="margin-top:16px;" id="settings-contact-prefs-card">
+  <div class="card mt-16" id="settings-contact-prefs-card">
     <div class="card-title">İletişim Tercihleri</div>
-    <div class="wiz-step-desc" style="margin-top:4px;">İşverenler size hangi kanallardan ulaşabilsin?</div>
+    <div class="wiz-step-desc mt-4">İşverenler size hangi kanallardan ulaşabilsin?</div>
 
-    <div class="field" style="display:flex;align-items:center;gap:12px;margin-top:12px;">
+    <div class="field flex-row-12">
       <label class="toggle">
         <input type="checkbox" id="settings-contact-email" checked>
         <span class="toggle-slider"></span>
       </label>
       <div>
-        <label for="settings-contact-email" style="margin:0;cursor:pointer;font-weight:500;">E-posta</label>
-        <p style="font-size:11px;color:var(--muted);margin:2px 0 0;">İşverenler e-posta adresiniz üzerinden iletişime geçebilir.</p>
+        <label for="settings-contact-email" class="link-action">E-posta</label>
+        <p class="hint-text">İşverenler e-posta adresiniz üzerinden iletişime geçebilir.</p>
       </div>
     </div>
 
-    <div class="field" style="display:flex;align-items:center;gap:12px;margin-top:12px;">
+    <div class="field flex-row-12">
       <label class="toggle">
         <input type="checkbox" id="settings-contact-phone">
         <span class="toggle-slider"></span>
       </label>
       <div>
-        <label for="settings-contact-phone" style="margin:0;cursor:pointer;font-weight:500;">Telefon</label>
-        <p style="font-size:11px;color:var(--muted);margin:2px 0 0;">İşverenler telefon numaranız üzerinden arayabilir.</p>
+        <label for="settings-contact-phone" class="link-action">Telefon</label>
+        <p class="hint-text">İşverenler telefon numaranız üzerinden arayabilir.</p>
       </div>
     </div>
 
-    <div class="field" style="display:flex;align-items:center;gap:12px;margin-top:12px;">
+    <div class="field flex-row-12">
       <label class="toggle">
         <input type="checkbox" id="settings-contact-whatsapp">
         <span class="toggle-slider"></span>
       </label>
       <div>
-        <label for="settings-contact-whatsapp" style="margin:0;cursor:pointer;font-weight:500;">WhatsApp</label>
-        <p style="font-size:11px;color:var(--muted);margin:2px 0 0;">İşverenler WhatsApp üzerinden mesaj gönderebilir.</p>
+        <label for="settings-contact-whatsapp" class="link-action">WhatsApp</label>
+        <p class="hint-text">İşverenler WhatsApp üzerinden mesaj gönderebilir.</p>
       </div>
     </div>
 
-    <button class="btn btn-primary btn-sm" id="btn-save-contact-prefs" style="margin-top:16px;">İletişim Tercihlerini Kaydet</button>
-    <div id="contact-prefs-msg" style="font-size:12px;margin-top:8px;display:none;"></div>
+    <button class="btn btn-primary btn-sm" id="btn-save-contact-prefs" class="mt-16">İletişim Tercihlerini Kaydet</button>
+    <div id="contact-prefs-msg" class="field-msg"></div>
   </div>
 
   <div class="card" style="margin-top:16px;display:none;" id="settings-blocked-companies-card">
     <div class="card-title">Engellenen Şirketler</div>
-    <div class="wiz-step-desc" style="margin-top:4px;">Profilinizi görmesini istemediğiniz şirketleri ekleyin. Bu şirketlerin İK ekipleri sizi aday havuzunda göremez.</div>
+    <div class="wiz-step-desc mt-4">Profilinizi görmesini istemediğiniz şirketleri ekleyin. Bu şirketlerin İK ekipleri sizi aday havuzunda göremez.</div>
 
     <div class="field" style="margin-top:12px;position:relative;">
       <label for="blocked-company-search" style="font-weight:500;">Şirket Ara ve Ekle</label>
-      <input type="text" id="blocked-company-search" placeholder="Şirket adı yazın..." autocomplete="off" style="margin-top:4px;">
+      <input type="text" id="blocked-company-search" placeholder="Şirket adı yazın..." autocomplete="off" class="mt-4">
       <div id="blocked-company-dropdown" style="display:none;position:absolute;top:100%;left:0;right:0;background:#fff;border:1px solid var(--border);border-radius:8px;max-height:160px;overflow-y:auto;z-index:10;box-shadow:0 4px 12px rgba(0,0,0,0.1);"></div>
     </div>
 
     <div id="blocked-companies-list" style="margin-top:12px;display:flex;flex-direction:column;gap:8px;"></div>
     <div id="blocked-companies-empty" style="font-size:12px;color:var(--muted);margin-top:8px;">Henüz engellenen şirket yok.</div>
-    <div id="blocked-msg" style="font-size:12px;margin-top:8px;display:none;"></div>
+    <div id="blocked-msg" class="field-msg"></div>
   </div>
 
-  <div class="card settings-theme-card" style="margin-top:16px;" id="settings-theme-card">
+  <div class="card settings-theme-card mt-16" id="settings-theme-card">
     <div>
       <div class="settings-theme-title">Görünüm</div>
       <div class="settings-theme-desc">Açık ve koyu mod</div>
@@ -1323,14 +1335,14 @@ if (window.Sentry) {
     </div>
   </div>
 
-  <div class="card" style="margin-top:16px;" id="settings-account-management-card">
+  <div class="card mt-16" id="settings-account-management-card">
     <div class="card-title">Hesap Yönetimi</div>
     <div id="account-status-banner" style="display:none;padding:12px;border-radius:8px;margin-bottom:12px;font-size:13px;"></div>
     <p style="font-size:13px;color:var(--muted);line-height:1.5;">Hesabınızı dondurmak, silmek veya verilerinizi indirmek için hesap yönetimi sihirbazını kullanın.</p>
     <button class="btn btn-secondary btn-sm" id="btn-open-account-wizard" style="margin-top:12px;width:100%;">Hesap Yönetimini Aç</button>
   </div>
 
-  <div class="card" style="margin-top:16px;" id="settings-session-management-card">
+  <div class="card mt-16" id="settings-session-management-card">
     <div class="card-title">Oturum Yönetimi</div>
     <p style="font-size:13px;color:var(--muted);line-height:1.5;margin-top:4px;">Mevcut oturumunuz ve diğer cihazlarınızdaki oturumları buradan yönetebilirsiniz.</p>
 
@@ -1344,7 +1356,7 @@ if (window.Sentry) {
       Tüm Cihazlardan Çıkış Yap
     </button>
     <p style="font-size:11px;color:var(--muted);margin-top:4px;line-height:1.4;">Bu işlem tüm cihazlardaki oturumlarınızı sonlandırır. Tekrar giriş yapmanız gerekecektir.</p>
-    <div id="signout-all-msg" style="font-size:12px;margin-top:8px;display:none;"></div>
+    <div id="signout-all-msg" class="field-msg"></div>
   </div>
 
   <div id="account-wizard-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);backdrop-filter:blur(3px);z-index:1000;align-items:center;justify-content:center;padding:16px;">
@@ -1360,22 +1372,22 @@ if (window.Sentry) {
         </p>
 
         <div id="wizard-download-section" style="padding:16px;border:1px solid var(--border);border-radius:12px;margin-bottom:12px;">
-          <div style="font-weight:600;font-size:14px;margin-bottom:4px;">📥 Verilerimi İndir</div>
-          <p style="font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.5;">KVKK md.11 kapsamında tüm kişisel verilerinizi JSON formatında indirebilirsiniz.</p>
+          <div class="item-label">📥 Verilerimi İndir</div>
+          <p class="section-desc">KVKK md.11 kapsamında tüm kişisel verilerinizi JSON formatında indirebilirsiniz.</p>
           <button class="btn btn-secondary btn-sm" id="btn-download-data" style="width:100%;">Verilerimi İndir</button>
-          <div id="download-data-msg" style="font-size:12px;margin-top:8px;display:none;"></div>
+          <div id="download-data-msg" class="field-msg"></div>
         </div>
 
         <div style="padding:16px;border:1px solid var(--border);border-radius:12px;margin-bottom:12px;">
-          <div style="font-weight:600;font-size:14px;margin-bottom:4px;">⏸️ Hesabımı Dondur</div>
-          <p style="font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.5;">Hesabınızı geçici olarak dondurabilirsiniz. Bu süre zarfında profiliniz işverenlere görünmez olur ancak verileriniz korunur. İstediğiniz zaman tekrar aktif edebilirsiniz.</p>
+          <div class="item-label">⏸️ Hesabımı Dondur</div>
+          <p class="section-desc">Hesabınızı geçici olarak dondurabilirsiniz. Bu süre zarfında profiliniz işverenlere görünmez olur ancak verileriniz korunur. İstediğiniz zaman tekrar aktif edebilirsiniz.</p>
           <button class="btn btn-secondary btn-sm" id="btn-freeze-account" style="width:100%;color:#92400E;border-color:#FCD34D;">Hesabımı Dondur</button>
         </div>
 
         <div style="padding:16px;border:1px solid #FEE2E2;border-radius:12px;background:#FFF5F5;">
           <div style="font-weight:600;font-size:14px;margin-bottom:4px;color:#991B1B;">🗑️ Hesabımı Kalıcı Olarak Sil</div>
           <p style="font-size:12px;color:#991B1B;margin-bottom:4px;line-height:1.5;">Bu işlem geri alınamaz. Hesabınız 30 gün boyunca askıya alınır, bu süre içinde vazgeçebilirsiniz.</p>
-          <p style="font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.5;">30 gün sonra tüm verileriniz — profiliniz, deneyimleriniz, belgeleriniz ve tercihleriniz — kalıcı olarak silinir (KVKK md.11). Bu işlemi onaylamadan önce verilerinizi indirmenizi şiddetle tavsiye ederiz.</p>
+          <p class="section-desc">30 gün sonra tüm verileriniz — profiliniz, deneyimleriniz, belgeleriniz ve tercihleriniz — kalıcı olarak silinir (KVKK md.11). Bu işlemi onaylamadan önce verilerinizi indirmenizi şiddetle tavsiye ederiz.</p>
           <button class="btn btn-sm" id="btn-delete-account" style="width:100%;background:#DC2626;color:#fff;border:none;">Hesabımı Sil</button>
         </div>
       </div>
@@ -2168,6 +2180,14 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 
+  // Bento card clicks (semantic buttons with data-panel)
+  document.querySelectorAll('.bento-card[data-panel]').forEach(function(card) {
+    card.addEventListener('click', function() {
+      var panel = this.dataset.panel;
+      if (panel) switchPanel(panel);
+    });
+  });
+
   // ── Command Palette (Cmd+K / Ctrl+K) ──
   var cmdkItems = [
     { label: 'Genel Bak\u0131\u015F', panel: 'genel', icon: '\uD83D\uDCCA' },
@@ -2256,6 +2276,14 @@ document.addEventListener('DOMContentLoaded', function() {
       e.preventDefault();
       if (cmdkOverlay && cmdkOverlay.style.display === 'flex') closeCmdk();
       else openCmdk();
+    }
+    // ESC closes any open modal
+    if (e.key === 'Escape') {
+      var openModals = document.querySelectorAll('.modal-overlay.show, .lok-modal-overlay.show');
+      for (var i = 0; i < openModals.length; i++) {
+        openModals[i].classList.remove('show');
+      }
+      closeCmdk();
     }
   });
 
