@@ -1329,12 +1329,16 @@ html[data-theme="dark"] .field-req{color:#F87171;}
   margin-bottom: 12px;
 }
 
-/* ══ MK CARD — Profile Center card (corner-edit style) ══ */
+/* ══ MK CARD — Profile Center card (muted warm gradient) ══ */
 .mk-card {
   min-width: 0;
-  background: linear-gradient(145deg, #D4592F 0%, #C94E28 40%, #B8431F 100%);
+  background: linear-gradient(155deg,
+    #9E4A2A 0%,
+    #8B3F24 45%,
+    #7A3620 100%);
+  border: 1px solid rgba(201,78,40,0.2);
   border-radius: 24px;
-  box-shadow: 0 2px 8px rgba(201,78,40,0.12), 0 8px 24px rgba(201,78,40,0.08);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 6px 20px rgba(0,0,0,0.04);
   position: relative;
   overflow: hidden;
   cursor: pointer;
@@ -1342,12 +1346,16 @@ html[data-theme="dark"] .field-req{color:#F87171;}
   flex-direction: column;
   transition: all 0.35s cubic-bezier(0.4,0,0.2,1);
   /* Button reset */
-  border:none;padding:0;font:inherit;color:#fff;text-align:left;
+  border-style:solid;padding:0;font:inherit;color:#fff;text-align:left;
   -webkit-appearance:none;appearance:none;width:100%;
 }
 .mk-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(201,78,40,0.18), 0 16px 40px rgba(201,78,40,0.12);
+  background: linear-gradient(155deg,
+    #A8512E 0%,
+    #954528 45%,
+    #833C22 100%);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1), 0 12px 32px rgba(0,0,0,0.06);
 }
 .mk-card.span-2 { grid-column: span 2; }
 
@@ -1367,81 +1375,47 @@ html[data-theme="dark"] .field-req{color:#F87171;}
   margin-bottom: 12px;
 }
 
-/* ══ MK EDIT BUTTON — corner circle (always visible) ══ */
+/* ══ MK EDIT BUTTON — clean floating circle ══ */
 .mk-edit-btn {
   position: absolute;
-  top: 0;
-  right: 0;
-  width: auto;
-  height: auto;
-  border-radius: 0 0 0 20px;
+  top: 12px;
+  right: 12px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
   border: none;
-  background-color: var(--bg-surface, #fff);
+  background: rgba(255,255,255,0.18);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0 0 8px 8px;
+  padding: 0;
   cursor: pointer;
-  overflow: visible;
+  overflow: hidden;
   transition: all 0.3s;
   z-index: 5;
   opacity: 1;
 }
+.mk-edit-btn::before,
+.mk-edit-btn::after { display: none; }
 .mk-card:hover .mk-edit-btn {
-  opacity: 1;
-}
-/* Corner cutout illusion */
-.mk-edit-btn::before {
-  content: "";
-  position: absolute;
-  width: 16px;
-  height: 16px;
-  bottom: 0;
-  left: -16px;
-  background: transparent;
-  border-radius: 0 0 12px 0;
-  box-shadow: 6px 6px 0 var(--bg-surface, #fff);
-  z-index: 1;
-}
-.mk-edit-btn::after {
-  content: "";
-  position: absolute;
-  width: 16px;
-  height: 16px;
-  top: 0;
-  right: 0;
-  left: auto;
-  bottom: -16px;
-  background: transparent;
-  border-radius: 0 12px 0 0;
-  box-shadow: 6px -6px 0 var(--bg-surface, #fff);
-  z-index: 1;
-  transform: none;
+  background: rgba(255,255,255,0.3);
 }
 .mk-edit-btn-circle {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: var(--bg-surface, #fff);
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.04);
-  transition: all 0.35s ease;
-  position: relative;
-  z-index: 2;
-}
-.mk-card:hover .mk-edit-btn-circle {
-  background: var(--verm, #C94E28);
-  box-shadow: 0 2px 8px rgba(201,78,40,0.3);
+  width: 100%;
+  height: 100%;
 }
 .mk-edit-btn svg {
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   z-index: 3;
   transition: all 0.3s;
   transform-origin: bottom;
-  stroke: var(--text-muted, #6B7280);
+  stroke: rgba(255,255,255,0.8);
 }
 .mk-card:hover .mk-edit-btn svg {
   stroke: #fff;
