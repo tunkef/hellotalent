@@ -955,6 +955,10 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
               <label class="form-label">Sosyal Medya / LinkedIn</label>
               <input class="form-input" id="sc-linkedin" placeholder="linkedin.com/company/...">
             </div>
+            <div class="form-field">
+              <label class="form-label">Kariyer Sayfası URL</label>
+              <input class="form-input" id="sc-kariyer-url" placeholder="https://kariyer.sirketiniz.com" oninput="updateSirketCompletion()">
+            </div>
           </div>
           <div class="form-field" style="margin-top:4px;">
             <label class="form-label">Aradığınız Genel Profil</label>
@@ -962,6 +966,42 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
           </div>
         </div>
       </div>
+
+      <!-- ── LOKASYONLAR (company_locations CRUD) ── -->
+      <div class="profil-card" style="margin-top:16px;display:none;" id="lokasyon-card">
+        <div class="profil-card-title">📍 Mağaza / Ofis Lokasyonları</div>
+        <div id="lokasyon-list" style="margin-bottom:12px;"></div>
+        <div id="lokasyon-empty" style="display:none;text-align:center;padding:16px;color:var(--muted);font-size:13px;">Henüz lokasyon eklenmedi</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;">
+          <div style="flex:1;min-width:140px;">
+            <label class="form-label" style="font-size:11px;">Şehir</label>
+            <select class="form-select" id="lok-sehir" style="font-size:13px;">
+              <option value="">Seç...</option>
+              <option>İstanbul</option><option>Ankara</option><option>İzmir</option>
+              <option>Bursa</option><option>Antalya</option><option>Gaziantep</option>
+              <option>Konya</option><option>Mersin</option><option>Adana</option>
+              <option>Kayseri</option><option>Eskişehir</option><option>Trabzon</option>
+              <option>Samsun</option><option>Denizli</option><option>Diyarbakır</option>
+              <option>Diğer</option>
+            </select>
+          </div>
+          <div style="flex:1;min-width:120px;">
+            <label class="form-label" style="font-size:11px;">Tür</label>
+            <select class="form-select" id="lok-tipi" style="font-size:13px;">
+              <option value="store">Mağaza</option>
+              <option value="office">Ofis</option>
+              <option value="headquarters">Genel Merkez</option>
+              <option value="warehouse">Depo</option>
+            </select>
+          </div>
+          <div style="flex:1.5;min-width:160px;">
+            <label class="form-label" style="font-size:11px;">Adres (opsiyonel)</label>
+            <input class="form-input" id="lok-adres" placeholder="Cadde, mahalle..." style="font-size:13px;">
+          </div>
+          <button class="btn-primary" onclick="addLokasyon()" style="height:38px;min-width:90px;font-size:13px;">+ Ekle</button>
+        </div>
+      </div>
+
       <div style="margin-top:16px;text-align:right;">
         <button class="btn-primary" onclick="saveSirket()" style="min-width:140px;">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg>
@@ -1953,7 +1993,8 @@ async function initApp(){
         'sc-aciklama': prof.aciklama,
         'sc-profil': prof.aranan_profil,
         'sc-saat': prof.calisma_saatleri,
-        'sc-linkedin': prof.linkedin
+        'sc-linkedin': prof.linkedin,
+        'sc-kariyer-url': prof.career_page_url
       };
       Object.keys(fields).forEach(function(id){
         var el = document.getElementById(id);
@@ -1965,6 +2006,7 @@ async function initApp(){
         selectCompanyType(prof.company_type);
       }
       updateSirketCompletion();
+      loadLokasyonlar();
     }
   }catch(e){}
 
@@ -2964,6 +3006,7 @@ async function saveSirket(){
     aranan_profil: document.getElementById('sc-profil').value.trim(),
     calisma_saatleri: document.getElementById('sc-saat').value,
     linkedin: document.getElementById('sc-linkedin').value.trim(),
+    career_page_url: document.getElementById('sc-kariyer-url').value.trim(),
     company_type: selectedCompanyType,
   };
 
@@ -3003,10 +3046,18 @@ async function saveSirket(){
           if(noCoEl) noCoEl.style.display = 'none';
           var newCampBtn = document.getElementById('btn-new-campaign');
           if(newCampBtn) newCampBtn.style.display = '';
+          // Show locations card now that company exists
+          loadLokasyonlar();
         }
       }catch(linkErr){
         console.error('Company linkage exception:', linkErr);
       }
+    }
+
+    // ── Sync company details (fire-and-forget) ──
+    // Pushes hr_profiles fields → companies table for candidate-facing data
+    if(hrProfile && hrProfile.company_id){
+      try{ getSupa().rpc('sync_company_details').then(function(res){ if(res.error) console.error('sync_company_details:', res.error.message); }); }catch(syncErr){}
     }
 
     // ── Update hrProfile and clear onboarding gate ──
@@ -3066,6 +3117,105 @@ function updateSirketCompletion(){
   var pctEl = document.getElementById('sirket-progress-pct');
   if(bar) bar.style.width = pct+'%';
   if(pctEl) pctEl.textContent = pct+'%';
+}
+
+// ── LOKASYON CRUD ──
+var _lokasyonlar = [];
+
+var KONUM_TIPI_LABEL = {
+  'store': 'Mağaza',
+  'office': 'Ofis',
+  'headquarters': 'Genel Merkez',
+  'warehouse': 'Depo'
+};
+
+async function loadLokasyonlar(){
+  if(!hrProfile || !hrProfile.company_id) return;
+  var card = document.getElementById('lokasyon-card');
+  if(card) card.style.display = '';
+  var {data, error} = await getSupa().from('company_locations')
+    .select('id, sehir, konum_tipi, adres')
+    .eq('company_id', hrProfile.company_id)
+    .order('created_at', {ascending: true});
+  if(error){ console.error('loadLokasyonlar:', error.message); return; }
+  _lokasyonlar = data || [];
+  renderLokasyonlar();
+}
+
+function renderLokasyonlar(){
+  var container = document.getElementById('lokasyon-list');
+  var emptyEl = document.getElementById('lokasyon-empty');
+  if(!container) return;
+  container.innerHTML = '';
+  if(_lokasyonlar.length === 0){
+    if(emptyEl) emptyEl.style.display = 'block';
+    return;
+  }
+  if(emptyEl) emptyEl.style.display = 'none';
+  _lokasyonlar.forEach(function(lok){
+    var row = document.createElement('div');
+    row.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:#F8F8F6;border-radius:8px;margin-bottom:6px;font-size:13px;';
+    var info = document.createElement('div');
+    info.style.cssText = 'display:flex;align-items:center;gap:8px;';
+    var badge = document.createElement('span');
+    badge.style.cssText = 'background:var(--navy);color:white;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;';
+    badge.textContent = KONUM_TIPI_LABEL[lok.konum_tipi] || lok.konum_tipi;
+    var text = document.createElement('span');
+    text.textContent = lok.sehir + (lok.adres ? ' — ' + lok.adres : '');
+    info.appendChild(badge);
+    info.appendChild(text);
+    var delBtn = document.createElement('button');
+    delBtn.style.cssText = 'background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:2px 6px;';
+    delBtn.textContent = '✕';
+    delBtn.title = 'Sil';
+    delBtn.setAttribute('data-lok-id', lok.id);
+    delBtn.onclick = function(){ removeLokasyon(lok.id); };
+    row.appendChild(info);
+    row.appendChild(delBtn);
+    container.appendChild(row);
+  });
+}
+
+async function addLokasyon(){
+  var sehir = document.getElementById('lok-sehir').value;
+  var tipi = document.getElementById('lok-tipi').value;
+  var adres = document.getElementById('lok-adres').value.trim();
+  if(!sehir){
+    document.getElementById('lok-sehir').style.borderColor = 'var(--verm)';
+    setTimeout(function(){ document.getElementById('lok-sehir').style.borderColor = ''; }, 2000);
+    return;
+  }
+  if(!hrProfile || !hrProfile.company_id){
+    console.error('addLokasyon: company_id yok');
+    return;
+  }
+  var payload = {
+    company_id: hrProfile.company_id,
+    sehir: sehir,
+    konum_tipi: tipi,
+    adres: adres || null
+  };
+  var {data, error} = await getSupa().from('company_locations').insert(payload).select('id, sehir, konum_tipi, adres').maybeSingle();
+  if(error){
+    console.error('addLokasyon error:', error.message);
+    return;
+  }
+  if(data) _lokasyonlar.push(data);
+  renderLokasyonlar();
+  // Clear inputs
+  document.getElementById('lok-sehir').value = '';
+  document.getElementById('lok-tipi').value = 'store';
+  document.getElementById('lok-adres').value = '';
+}
+
+async function removeLokasyon(id){
+  var {error} = await getSupa().from('company_locations').delete().eq('id', id);
+  if(error){
+    console.error('removeLokasyon error:', error.message);
+    return;
+  }
+  _lokasyonlar = _lokasyonlar.filter(function(l){ return l.id !== id; });
+  renderLokasyonlar();
 }
 
 // ── ŞİFRE GÜNCELLE ──
