@@ -47,8 +47,11 @@ function resolveSystemTheme() {
 }
 
 function applyResolvedTheme(effectiveTheme) {
+  var isDark = effectiveTheme === 'dark';
   var htmlEl = document.documentElement;
-  htmlEl.setAttribute('data-theme', effectiveTheme === 'dark' ? 'dark' : 'light');
+  htmlEl.setAttribute('data-theme', isDark ? 'dark' : 'light');
+  var metaTC = document.getElementById('meta-theme-color');
+  if (metaTC) metaTC.setAttribute('content', isDark ? '#050712' : '#ffffff');
 }
 
 function applyThemeFromPreference(pref) {
