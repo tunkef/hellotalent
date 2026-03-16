@@ -1215,7 +1215,7 @@ function getSupa(){
 // ── STATE ──
 var currentUser = null;
 var hrProfile = {};
-var favorites = JSON.parse(localStorage.getItem('ht_ik_favs') || '[]');
+var favorites = []; // Loaded from Supabase employer_favorites table
 var pozisyonlar = []; // Loaded from Supabase positions table
 var filterState = { pozisyon:[], segment:[], musait:[], calisma:[], egitim:[], dil:[], aktifArayanlar: false };
 
@@ -1468,7 +1468,8 @@ async function initApp(){
   }
   currentUser = data.session.user;
 
-  favorites = JSON.parse(localStorage.getItem('ht_ik_favs') || '[]');
+  // Favorileri Supabase'den yükle
+  await loadFavoritesFromDB();
 
   // Profil bilgilerini yükle
   var meta = currentUser.user_metadata || {};
@@ -1690,34 +1691,106 @@ function candidateCardHTML(c){
 }
 
 // ── FAVORİ ──
+// ── LOAD FAVORITES FROM DB ──
+async function loadFavoritesFromDB(){
+  try {
+    var sb = getSupa();
+    if(!sb || !currentUser) return;
+    var res = await sb.from('employer_favorites')
+      .select('candidate_id')
+      .eq('hr_profile_id', currentUser.id);
+    if(res.error) throw res.error;
+    favorites = (res.data || []).map(function(r){ return r.candidate_id; });
+
+    // Migrate localStorage favorites if any exist
+    var localFavs = [];
+    try { localFavs = JSON.parse(localStorage.getItem('ht_ik_favs') || '[]'); } catch(e){}
+    if(localFavs.length > 0) {
+      var toMigrate = localFavs.filter(function(id){ return favorites.indexOf(id) === -1; });
+      if(toMigrate.length > 0) {
+        var rows = toMigrate.map(function(cid){ return { hr_profile_id: currentUser.id, candidate_id: cid }; });
+        await sb.from('employer_favorites').upsert(rows, { onConflict: 'hr_profile_id,candidate_id', ignoreDuplicates: true });
+        toMigrate.forEach(function(id){ if(favorites.indexOf(id) === -1) favorites.push(id); });
+      }
+      localStorage.removeItem('ht_ik_favs'); // Clean up after migration
+    }
+  } catch(e) {
+    console.warn('Favoriler yüklenemedi, localStorage fallback:', e.message);
+    try { favorites = JSON.parse(localStorage.getItem('ht_ik_favs') || '[]'); } catch(e2){ favorites = []; }
+  }
+}
+
+// ── TOGGLE FAVORITE (DB-backed) ──
 function toggleFav(id, btn){
   var idx = favorites.indexOf(id);
-  if(idx === -1){ favorites.push(id); btn.classList.add('active'); }
-  else { favorites.splice(idx,1); btn.classList.remove('active'); }
-  localStorage.setItem('ht_ik_favs', JSON.stringify(favorites));
+  if(idx === -1){
+    favorites.push(id);
+    if(btn) btn.classList.add('active');
+  } else {
+    favorites.splice(idx, 1);
+    if(btn) btn.classList.remove('active');
+  }
   updateFavCount();
   renderFavoriler();
+
+  // Sync to DB async (fire-and-forget, unique index prevents duplicates)
+  var sb = getSupa();
+  if(sb && currentUser) {
+    var op;
+    if(idx === -1) {
+      op = sb.from('employer_favorites').insert({ hr_profile_id: currentUser.id, candidate_id: id });
+    } else {
+      op = sb.from('employer_favorites').delete().eq('hr_profile_id', currentUser.id).eq('candidate_id', id);
+    }
+    op.then(function(res){
+      if(res.error) console.warn('Favori senkron hatası:', res.error.message);
+    });
+  }
 }
 
 function updateFavCount(){
   var n = favorites.length;
-  document.getElementById('stat-fav').textContent = n;
-  ['nav-fav-count','bn-fav-count'].forEach(function(id){
-    var badge = document.getElementById(id);
+  var statEl = document.getElementById('stat-fav');
+  if(statEl) statEl.textContent = n;
+  ['nav-fav-count','bn-fav-count'].forEach(function(elId){
+    var badge = document.getElementById(elId);
     if(!badge) return;
-    if(n>0){ badge.style.display=''; badge.textContent=n; }
-    else badge.style.display='none';
+    if(n > 0){ badge.style.display = ''; badge.textContent = n; }
+    else badge.style.display = 'none';
   });
 }
 
 function renderFavoriler(){
   var container = document.getElementById('favori-list');
-  var favAdaylar = ADAYLAR.filter(function(a){ return favorites.indexOf(a.id)!==-1; });
-  if(favAdaylar.length===0){
-    container.innerHTML='<div class="empty-state"><div class="empty-icon">⭐</div><div class="empty-title">Henüz favori yok</div><div class="empty-sub">Aday listesinden ★ ikonuna tıklayarak favorilere ekle</div></div>';
+  if(!container) return;
+  var favAdaylar = ADAYLAR.filter(function(a){ return favorites.indexOf(a.id) !== -1; });
+  while(container.firstChild) container.removeChild(container.firstChild);
+  if(favAdaylar.length === 0){
+    var emptyState = document.createElement('div');
+    emptyState.className = 'empty-state';
+    var emptyIcon = document.createElement('div');
+    emptyIcon.className = 'empty-icon';
+    emptyIcon.textContent = '⭐';
+    emptyState.appendChild(emptyIcon);
+    var emptyTitle = document.createElement('div');
+    emptyTitle.className = 'empty-title';
+    emptyTitle.textContent = 'Henüz favori yok';
+    emptyState.appendChild(emptyTitle);
+    var emptySub = document.createElement('div');
+    emptySub.className = 'empty-sub';
+    emptySub.textContent = 'Aday listesinden ★ ikonuna tıklayarak favorilere ekle';
+    emptyState.appendChild(emptySub);
+    container.appendChild(emptyState);
     return;
   }
-  container.innerHTML='<div style="display:flex;flex-direction:column;gap:14px;">'+favAdaylar.map(function(c){return candidateCardHTML(c);}).join('')+'</div>';
+  var wrapper = document.createElement('div');
+  wrapper.style.cssText = 'display:flex;flex-direction:column;gap:14px;';
+  favAdaylar.forEach(function(c){
+    var cardDiv = document.createElement('div');
+    cardDiv.innerHTML = candidateCardHTML(c);
+    while(cardDiv.firstChild) wrapper.appendChild(cardDiv.firstChild);
+  });
+  container.appendChild(wrapper);
 }
 
 
