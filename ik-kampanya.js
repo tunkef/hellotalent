@@ -333,7 +333,27 @@
 
     if (currentStep < TOTAL_STEPS) {
       var nextBtn = createBtn('Devam', 'primary');
-      nextBtn.addEventListener('click', function(){ if(validateStep(currentStep)){ currentStep++; renderWizard(); } });
+      nextBtn.addEventListener('click', async function(){
+        if (!validateStep(currentStep)) return;
+        /* Auto-create draft on Step 1→2 transition for image upload path */
+        if (currentStep === 1 && !currentCampaignId) {
+          try {
+            var s = getSupa();
+            if (!s) { alert('Supabase bağlantısı yok'); return; }
+            var sessRes = await s.auth.getSession();
+            var uid = sessRes.data && sessRes.data.session ? sessRes.data.session.user.id : null;
+            if (!uid) { alert('Oturum bulunamadı'); return; }
+            var ins = await s.from('campaigns')
+              .insert({ company_id: hrProfile.company_id, created_by: uid, campaign_type: wizardData.campaign_type, status: 'draft' })
+              .select('id')
+              .maybeSingle();
+            if (ins.error) { console.error('Auto-draft error:', ins.error); alert('Taslak oluşturulamadı: ' + ins.error.message); return; }
+            currentCampaignId = ins.data.id;
+          } catch(e) { console.error('Auto-draft exception:', e); alert('Hata: ' + e.message); return; }
+        }
+        currentStep++;
+        renderWizard();
+      });
       rightBtns.appendChild(nextBtn);
     }
     if (currentStep === TOTAL_STEPS) {
@@ -426,6 +446,9 @@
     if (wizardData.campaign_type === 'offer') {
       container.appendChild(makeField('text', 'promo_code', 'Promosyon Kodu', 50, 'Opsiyonel — HELLOTALENT20', wizardData.promo_code || ''));
     }
+
+    /* ── COVER IMAGE UPLOAD ZONE ── */
+    container.appendChild(buildImageUploadZone());
   }
 
   /* ── STEP 3: HEDEF KİTLE ── */
@@ -584,10 +607,23 @@
     h.textContent = 'Önizleme ve Gönder';
     container.appendChild(h);
 
+    /* Cover image preview at top */
+    if (wizardData.cover_image_url) {
+      var imgPreview = document.createElement('div');
+      imgPreview.style.cssText = 'margin-bottom:20px;border-radius:10px;overflow:hidden;border:1.5px solid var(--border);';
+      var prevImg = document.createElement('img');
+      prevImg.src = wizardData.cover_image_url;
+      prevImg.alt = 'Kapak görseli';
+      prevImg.style.cssText = 'display:block;width:100%;max-height:280px;object-fit:cover;';
+      imgPreview.appendChild(prevImg);
+      container.appendChild(imgPreview);
+    }
+
     var rows = [
       ['Tür', TYPE_MAP[wizardData.campaign_type] || '-'],
       ['Başlık', wizardData.title || '-'],
       ['Kısa Açıklama', wizardData.short_desc || '-'],
+      ['Kapak Görseli', wizardData.cover_image_url ? '✓ Yüklendi' : '✗ Yüklenmedi'],
       ['Buton', (wizardData.cta_label || 'Detayları Gör') + ' → ' + (wizardData.cta_url || '-')],
       ['Dağıtım', DIST_MAP[wizardData.distribution_mode] ? DIST_MAP[wizardData.distribution_mode].label : '-'],
       ['Erişim', ACCESS_MAP[wizardData.access_mode] ? ACCESS_MAP[wizardData.access_mode].label : '-'],
@@ -619,6 +655,296 @@
       table.appendChild(val);
     }
     container.appendChild(table);
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+     IMAGE UPLOAD
+     ═══════════════════════════════════════════════════════════════ */
+  var ALLOWED_IMG_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+  var MAX_IMG_SIZE = 2 * 1024 * 1024; // 2MB
+  var uploadingImage = false;
+
+  function buildImageUploadZone() {
+    var wrap = document.createElement('div');
+    wrap.style.marginTop = '20px';
+
+    var lbl = document.createElement('label');
+    lbl.style.cssText = 'display:block;font-size:12px;font-weight:600;margin-bottom:5px;';
+    lbl.textContent = 'Kapak Görseli *';
+    wrap.appendChild(lbl);
+
+    var hint = document.createElement('div');
+    hint.style.cssText = 'font-size:11px;color:var(--muted);margin-bottom:8px;';
+    hint.textContent = 'JPG, PNG veya WebP · Maks 2MB · Önerilen boyut: 1200×628px';
+    wrap.appendChild(hint);
+
+    /* If already uploaded, show preview */
+    if (wizardData.cover_image_url) {
+      var previewWrap = document.createElement('div');
+      previewWrap.style.cssText = 'position:relative;display:inline-block;border-radius:10px;overflow:hidden;border:1.5px solid var(--border);';
+
+      var img = document.createElement('img');
+      img.src = wizardData.cover_image_url;
+      img.style.cssText = 'display:block;max-width:100%;max-height:240px;border-radius:10px;object-fit:cover;';
+      img.alt = 'Kapak görseli';
+      previewWrap.appendChild(img);
+
+      /* Dimension info if available */
+      if (wizardData._coverImgW && wizardData._coverImgH) {
+        var dimBadge = document.createElement('div');
+        dimBadge.style.cssText = 'position:absolute;bottom:8px;left:8px;background:rgba(0,0,0,0.6);color:white;font-size:10px;padding:2px 8px;border-radius:4px;font-family:"DM Mono",monospace;';
+        dimBadge.textContent = wizardData._coverImgW + '×' + wizardData._coverImgH;
+        previewWrap.appendChild(dimBadge);
+      }
+
+      wrap.appendChild(previewWrap);
+
+      /* Change / remove buttons */
+      var btnRow = document.createElement('div');
+      btnRow.style.cssText = 'display:flex;gap:8px;margin-top:8px;';
+
+      var changeBtn = document.createElement('button');
+      changeBtn.type = 'button';
+      changeBtn.style.cssText = 'padding:6px 14px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:var(--white);color:var(--text);font-family:inherit;';
+      changeBtn.textContent = 'Değiştir';
+      changeBtn.addEventListener('click', function() { triggerFileInput(); });
+      btnRow.appendChild(changeBtn);
+
+      var removeBtn = document.createElement('button');
+      removeBtn.type = 'button';
+      removeBtn.style.cssText = 'padding:6px 14px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid var(--red,#DC2626);background:var(--white);color:var(--red,#DC2626);font-family:inherit;';
+      removeBtn.textContent = 'Kaldır';
+      removeBtn.addEventListener('click', function() {
+        wizardData.cover_image_url = null;
+        wizardData._coverImgW = null;
+        wizardData._coverImgH = null;
+        renderWizard();
+      });
+      btnRow.appendChild(removeBtn);
+
+      wrap.appendChild(btnRow);
+      return wrap;
+    }
+
+    /* Drop zone */
+    var zone = document.createElement('div');
+    zone.id = 'cover-drop-zone';
+    zone.style.cssText = 'border:2px dashed var(--border);border-radius:12px;padding:40px 20px;text-align:center;cursor:pointer;transition:all 0.15s;background:var(--bg);';
+
+    var icon = document.createElement('div');
+    icon.style.cssText = 'font-size:36px;margin-bottom:8px;opacity:0.4;';
+    icon.textContent = '🖼️';
+    zone.appendChild(icon);
+
+    var mainText = document.createElement('div');
+    mainText.style.cssText = 'font-size:14px;font-weight:600;margin-bottom:4px;';
+    mainText.textContent = 'Görseli buraya sürükleyin';
+    zone.appendChild(mainText);
+
+    var subText = document.createElement('div');
+    subText.style.cssText = 'font-size:12px;color:var(--muted);';
+    subText.textContent = 'veya tıklayarak seçin';
+    zone.appendChild(subText);
+
+    /* Upload progress (hidden by default) */
+    var progressBar = document.createElement('div');
+    progressBar.id = 'cover-upload-progress';
+    progressBar.style.cssText = 'display:none;margin-top:12px;height:4px;border-radius:2px;background:var(--border);overflow:hidden;';
+    var progressFill = document.createElement('div');
+    progressFill.style.cssText = 'height:100%;background:var(--verm);width:0%;transition:width 0.3s;border-radius:2px;';
+    progressBar.appendChild(progressFill);
+    zone.appendChild(progressBar);
+
+    /* Upload status text */
+    var statusText = document.createElement('div');
+    statusText.id = 'cover-upload-status';
+    statusText.style.cssText = 'display:none;font-size:12px;margin-top:8px;color:var(--muted);';
+    zone.appendChild(statusText);
+
+    /* Drag events */
+    zone.addEventListener('dragover', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      zone.style.borderColor = 'var(--verm)';
+      zone.style.background = '#FEF7F5';
+    });
+    zone.addEventListener('dragleave', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      zone.style.borderColor = 'var(--border)';
+      zone.style.background = 'var(--bg)';
+    });
+    zone.addEventListener('drop', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      zone.style.borderColor = 'var(--border)';
+      zone.style.background = 'var(--bg)';
+      if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+        handleImageFile(e.dataTransfer.files[0]);
+      }
+    });
+    zone.addEventListener('click', function() { triggerFileInput(); });
+
+    wrap.appendChild(zone);
+    return wrap;
+  }
+
+  /* Hidden file input — shared */
+  var _fileInput = null;
+  function triggerFileInput() {
+    if (!_fileInput) {
+      _fileInput = document.createElement('input');
+      _fileInput.type = 'file';
+      _fileInput.accept = 'image/jpeg,image/png,image/webp';
+      _fileInput.style.display = 'none';
+      document.body.appendChild(_fileInput);
+      _fileInput.addEventListener('change', function() {
+        if (this.files && this.files.length > 0) handleImageFile(this.files[0]);
+        this.value = ''; // allow re-select same file
+      });
+    }
+    _fileInput.click();
+  }
+
+  /* Validate + upload image file */
+  async function handleImageFile(file) {
+    if (uploadingImage) return;
+
+    /* Type check */
+    if (ALLOWED_IMG_TYPES.indexOf(file.type) === -1) {
+      alert('Geçersiz dosya türü. Sadece JPG, PNG veya WebP yükleyebilirsiniz.');
+      return;
+    }
+
+    /* Size check */
+    if (file.size > MAX_IMG_SIZE) {
+      alert('Dosya çok büyük. Maksimum 2MB yükleyebilirsiniz. (' + (file.size / (1024*1024)).toFixed(1) + 'MB)');
+      return;
+    }
+
+    /* Dimension check via Image object */
+    try {
+      var dims = await getImageDimensions(file);
+      if (dims.w < 600 || dims.h < 314) {
+        alert('Görsel çok küçük. Minimum boyut: 600×314px. Yüklediğiniz: ' + dims.w + '×' + dims.h + 'px');
+        return;
+      }
+      if (dims.w !== 1200 || dims.h !== 628) {
+        /* Not blocking, just warn if ratio is very off */
+        var ratio = dims.w / dims.h;
+        if (ratio < 1.5 || ratio > 2.3) {
+          if (!confirm('Önerilen oran 1200×628 (≈1.91). Yüklediğiniz: ' + dims.w + '×' + dims.h + ' (oran: ' + ratio.toFixed(2) + '). Devam etmek istiyor musunuz?')) return;
+        }
+      }
+      wizardData._coverImgW = dims.w;
+      wizardData._coverImgH = dims.h;
+    } catch(e) {
+      console.error('Dimension check failed:', e);
+      /* Continue anyway — dimension check is advisory */
+    }
+
+    /* Need campaign_id for storage path */
+    if (!currentCampaignId) {
+      alert('Kampanya taslağı henüz oluşturulmadı. Lütfen sayfayı yenileyip tekrar deneyin.');
+      return;
+    }
+
+    uploadingImage = true;
+    showUploadProgress(true, 'Yükleniyor...');
+
+    try {
+      var s = getSupa();
+      if (!s) { alert('Supabase bağlantısı yok'); uploadingImage = false; showUploadProgress(false); return; }
+
+      var ext = file.name.split('.').pop().toLowerCase();
+      if (['jpg','jpeg'].indexOf(ext) > -1) ext = 'jpg';
+      var storagePath = hrProfile.company_id + '/' + currentCampaignId + '/' + Date.now() + '_cover.' + ext;
+
+      showUploadProgress(true, 'Yükleniyor...', 30);
+
+      /* Upload to Supabase Storage */
+      var upRes = await s.storage.from('campaign-assets').upload(storagePath, file, {
+        cacheControl: '3600',
+        upsert: true,
+        contentType: file.type
+      });
+
+      if (upRes.error) {
+        alert('Yükleme hatası: ' + upRes.error.message);
+        uploadingImage = false;
+        showUploadProgress(false);
+        return;
+      }
+
+      showUploadProgress(true, 'İşleniyor...', 70);
+
+      /* Get public URL */
+      var urlRes = s.storage.from('campaign-assets').getPublicUrl(storagePath);
+      var publicUrl = urlRes.data ? urlRes.data.publicUrl : null;
+
+      if (!publicUrl) {
+        alert('Görsel URL\'si alınamadı');
+        uploadingImage = false;
+        showUploadProgress(false);
+        return;
+      }
+
+      showUploadProgress(true, 'Kaydediliyor...', 90);
+
+      /* Update campaign row with cover_image_url */
+      var updRes = await s.from('campaigns')
+        .update({ cover_image_url: publicUrl })
+        .eq('id', currentCampaignId);
+
+      if (updRes.error) {
+        console.error('Cover image DB update error:', updRes.error);
+        /* Non-blocking — URL is still valid, save in wizardData */
+      }
+
+      wizardData.cover_image_url = publicUrl;
+      showUploadProgress(true, 'Tamamlandı!', 100);
+
+      /* Re-render after brief delay to show completion */
+      setTimeout(function() {
+        uploadingImage = false;
+        renderWizard();
+      }, 500);
+
+    } catch(e) {
+      console.error('Image upload exception:', e);
+      alert('Yükleme hatası: ' + e.message);
+      uploadingImage = false;
+      showUploadProgress(false);
+    }
+  }
+
+  function getImageDimensions(file) {
+    return new Promise(function(resolve, reject) {
+      var url = URL.createObjectURL(file);
+      var img = new Image();
+      img.onload = function() {
+        URL.revokeObjectURL(url);
+        resolve({ w: img.naturalWidth, h: img.naturalHeight });
+      };
+      img.onerror = function() {
+        URL.revokeObjectURL(url);
+        reject(new Error('Image load failed'));
+      };
+      img.src = url;
+    });
+  }
+
+  function showUploadProgress(show, text, pct) {
+    var bar = document.getElementById('cover-upload-progress');
+    var status = document.getElementById('cover-upload-status');
+    if (bar) {
+      bar.style.display = show ? 'block' : 'none';
+      if (bar.firstChild && typeof pct === 'number') bar.firstChild.style.width = pct + '%';
+    }
+    if (status) {
+      status.style.display = show && text ? 'block' : 'none';
+      if (text) status.textContent = text;
+    }
   }
 
   /* ── FIELD HELPERS ── */
@@ -765,6 +1091,7 @@
       target_seniority: (wizardData.target_seniority && wizardData.target_seniority.length > 0) ? wizardData.target_seniority : null,
       start_date: wizardData.start_date ? new Date(wizardData.start_date).toISOString() : null,
       end_date: wizardData.end_date ? new Date(wizardData.end_date).toISOString() : null,
+      cover_image_url: wizardData.cover_image_url || null,
       package: wizardData.package,
       delivery_channels: wizardData.delivery_channels || ['feed'],
       status: targetStatus
@@ -811,6 +1138,7 @@
         cta_label: c.cta_label,
         cta_url: c.cta_url,
         promo_code: c.promo_code,
+        cover_image_url: c.cover_image_url || null,
         distribution_mode: c.distribution_mode,
         access_mode: c.access_mode,
         target_segments: c.target_segments,
