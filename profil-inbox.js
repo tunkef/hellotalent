@@ -414,6 +414,244 @@
     }
   }
 
+  /* ═══════════════════════════════════════════════════════════════
+     HEADER POPUP: Message preview (top 5)
+     ═══════════════════════════════════════════════════════════════ */
+  window._htLoadMsgPreview = async function() {
+    var listEl = document.getElementById('popup-msg-list');
+    if (!listEl) return;
+
+    var supa = window._htSupa || (typeof supabase !== 'undefined' ? supabase : null);
+    if (!supa) {
+      listEl.textContent = '';
+      var noSupa = document.createElement('div');
+      noSupa.className = 'header-popup-empty';
+      noSupa.textContent = 'Bağlantı hatası.';
+      listEl.appendChild(noSupa);
+      return;
+    }
+
+    try {
+      var res = await supa.from('employer_messages')
+        .select('id, subject, body, status, created_at, companies(company_name)')
+        .order('created_at', { ascending: false })
+        .limit(5);
+
+      listEl.textContent = '';
+
+      if (res.error || !res.data || res.data.length === 0) {
+        var empty = document.createElement('div');
+        empty.className = 'header-popup-empty';
+        empty.textContent = 'Henüz mesaj yok.';
+        listEl.appendChild(empty);
+        return;
+      }
+
+      res.data.forEach(function(m) {
+        var isUnread = m.status !== 'read';
+        var item = document.createElement('div');
+        item.className = 'header-popup-item' + (isUnread ? ' unread' : '');
+
+        var icon = document.createElement('div');
+        icon.className = 'header-popup-icon';
+        icon.style.background = '#FEF7F5';
+        icon.textContent = '\uD83D\uDCBC';
+
+        var info = document.createElement('div');
+        info.className = 'header-popup-info';
+
+        var sender = document.createElement('div');
+        sender.className = 'header-popup-sender';
+        sender.textContent = (m.companies ? m.companies.company_name : m.subject) || 'İşveren';
+
+        var preview = document.createElement('div');
+        preview.className = 'header-popup-preview';
+        preview.textContent = m.body ? m.body.substring(0, 60) : m.subject || '';
+
+        info.appendChild(sender);
+        info.appendChild(preview);
+
+        var right = document.createElement('div');
+        right.style.cssText = 'display:flex;flex-direction:column;align-items:flex-end;gap:4px;';
+
+        var time = document.createElement('div');
+        time.className = 'header-popup-time';
+        time.textContent = timeAgo(m.created_at);
+        right.appendChild(time);
+
+        if (isUnread) {
+          var dot = document.createElement('div');
+          dot.className = 'header-popup-unread-dot';
+          right.appendChild(dot);
+        }
+
+        item.appendChild(icon);
+        item.appendChild(info);
+        item.appendChild(right);
+
+        item.addEventListener('click', function() {
+          closeAllPopups();
+          if (typeof switchPanel === 'function') switchPanel('inbox');
+        });
+
+        listEl.appendChild(item);
+      });
+    } catch (err) {
+      console.error('[HT] Msg preview error:', err);
+      listEl.textContent = '';
+      var errDiv = document.createElement('div');
+      errDiv.className = 'header-popup-empty';
+      errDiv.textContent = 'Mesajlar yüklenemedi.';
+      listEl.appendChild(errDiv);
+    }
+  };
+
+  /* ═══════════════════════════════════════════════════════════════
+     HEADER POPUP: Notification preview
+     ═══════════════════════════════════════════════════════════════ */
+  window._htLoadNotifPreview = async function() {
+    var listEl = document.getElementById('popup-notif-list');
+    if (!listEl) return;
+
+    var supa = window._htSupa || (typeof supabase !== 'undefined' ? supabase : null);
+    if (!supa) return;
+
+    try {
+      var res = await supa.from('employer_messages')
+        .select('id, subject, status, created_at, companies(company_name)')
+        .order('created_at', { ascending: false })
+        .limit(5);
+
+      listEl.textContent = '';
+
+      if (res.error || !res.data || res.data.length === 0) {
+        var empty = document.createElement('div');
+        empty.className = 'header-popup-empty';
+        empty.textContent = 'Henüz bildirim yok.';
+        listEl.appendChild(empty);
+        return;
+      }
+
+      res.data.forEach(function(m) {
+        var isUnread = m.status !== 'read';
+        var item = document.createElement('div');
+        item.className = 'header-popup-item' + (isUnread ? ' unread' : '');
+
+        var icon = document.createElement('div');
+        icon.className = 'header-popup-icon';
+        icon.style.background = '#EEF2FF';
+        icon.textContent = m.companies ? '\uD83D\uDCBC' : '\uD83D\uDD14';
+
+        var info = document.createElement('div');
+        info.className = 'header-popup-info';
+
+        var sender = document.createElement('div');
+        sender.className = 'header-popup-sender';
+        sender.textContent = 'Yeni mesaj';
+
+        var preview = document.createElement('div');
+        preview.className = 'header-popup-preview';
+        preview.textContent = (m.companies ? m.companies.company_name + ' \u2014 ' : '') + (m.subject || '');
+
+        info.appendChild(sender);
+        info.appendChild(preview);
+
+        var time = document.createElement('div');
+        time.className = 'header-popup-time';
+        time.textContent = timeAgo(m.created_at);
+
+        item.appendChild(icon);
+        item.appendChild(info);
+        item.appendChild(time);
+
+        item.addEventListener('click', function() {
+          closeAllPopups();
+          if (typeof switchPanel === 'function') switchPanel('inbox');
+        });
+
+        listEl.appendChild(item);
+      });
+    } catch (err) {
+      console.error('[HT] Notif preview error:', err);
+    }
+  };
+
+  /* ═══════════════════════════════════════════════════════════════
+     HEADER POPUP: Toggle + close logic
+     ═══════════════════════════════════════════════════════════════ */
+  function closeAllPopups() {
+    var popups = document.querySelectorAll('.header-popup');
+    for (var i = 0; i < popups.length; i++) {
+      popups[i].style.display = 'none';
+    }
+  }
+  window._htCloseAllPopups = closeAllPopups;
+
+  function togglePopup(popupId, loadFn) {
+    var popup = document.getElementById(popupId);
+    if (!popup) return;
+
+    var isOpen = popup.style.display !== 'none';
+    closeAllPopups();
+
+    if (!isOpen) {
+      popup.style.display = '';
+      if (loadFn) loadFn();
+    }
+  }
+
+  // Wire up click handlers after DOM ready
+  document.addEventListener('DOMContentLoaded', function() {
+    var msgBtn = document.getElementById('header-msg');
+    if (msgBtn) {
+      msgBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        togglePopup('popup-messages', window._htLoadMsgPreview);
+      });
+    }
+
+    var notifBtn = document.getElementById('header-notif');
+    if (notifBtn) {
+      notifBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        togglePopup('popup-notifications', window._htLoadNotifPreview);
+      });
+    }
+
+    var seeAllMsg = document.getElementById('popup-msg-see-all');
+    if (seeAllMsg) {
+      seeAllMsg.addEventListener('click', function(e) {
+        e.preventDefault();
+        closeAllPopups();
+        if (typeof switchPanel === 'function') switchPanel('inbox');
+      });
+    }
+
+    var seeAllNotif = document.getElementById('popup-notif-see-all');
+    if (seeAllNotif) {
+      seeAllNotif.addEventListener('click', function(e) {
+        e.preventDefault();
+        closeAllPopups();
+        if (typeof switchPanel === 'function') switchPanel('inbox');
+      });
+    }
+
+    // Close on outside click
+    document.addEventListener('click', function(e) {
+      var isInsidePopup = e.target.closest('.header-popup') || e.target.closest('.header-msg') || e.target.closest('.header-notif');
+      if (!isInsidePopup) closeAllPopups();
+    });
+
+    // Update header msg dot from preload
+    setTimeout(function() {
+      var dot = document.getElementById('header-msg-dot');
+      var sidebarBadge = document.getElementById('badge-inbox-unread');
+      if (dot && sidebarBadge && sidebarBadge.style.display !== 'none') {
+        dot.style.display = '';
+      }
+    }, 3000);
+  });
+
   /* ── INIT: Preload unread count after page settles ── */
   document.addEventListener('DOMContentLoaded', function() {
     setTimeout(preloadUnreadCount, 2500);
