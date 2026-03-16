@@ -1672,7 +1672,7 @@ async function loadFollowers(){
       .select('id, full_name, pozisyon, deneyim_yil, tercih_sehirler, avatar_url, hide_from_current_employer')
       .in('id', candidateIds)
       .eq('is_active', true)
-      .eq('profile_completed', true);
+      .or('profile_completed.eq.true,profile_completion_pct.gte.45');
 
     var candidates = candRes.data || [];
 

@@ -10,11 +10,19 @@ test.describe('P3 regression guards', () => {
   let ikHtml;
   let profilInboxJs;
   let adminEmployersJs;
+  let adminCandidatesJs;
+  let mig035;
+  let mig036;
+  let mig023;
 
   test.beforeAll(() => {
     ikHtml = readFromRepo('ik.html');
     profilInboxJs = readFromRepo('profil-inbox.js');
     adminEmployersJs = readFromRepo('admin-employers.js');
+    adminCandidatesJs = readFromRepo('admin-candidates.js');
+    mig035 = readFromRepo('docs/migrations/035_profile_completion_threshold.sql');
+    mig036 = readFromRepo('docs/migrations/036_profile_completion_sync.sql');
+    mig023 = readFromRepo('docs/migrations/023_admin_read_policies.sql');
   });
 
   test('candidate cards use DOM builder without unsafe template path', () => {
@@ -54,6 +62,27 @@ test.describe('P3 regression guards', () => {
 
   test('admin employers premium count remains null-safe', () => {
     expect(adminEmployersJs).toContain("var premiumCount = (queries[9] && queries[9].count) || 0;");
+  });
+
+  test('followers and live candidates use >=45 threshold instead of hard profile_completed filter', () => {
+    expect(ikHtml).not.toContain(".eq('profile_completed', true);");
+    expect(ikHtml.indexOf('profile_completion_pct.gte.45') !== -1).toBe(true);
+  });
+
+  test('profile completion migrations define threshold + sync function and triggers', () => {
+    expect(mig035).toContain('profile_completion_pct int NOT NULL DEFAULT 0');
+    expect(mig035).toContain('candidates_profile_completion_pct_check');
+    expect(mig036).toContain('compute_candidate_profile_completion');
+    expect(mig036).toContain('refresh_candidate_profile_completion');
+    expect(mig036).toContain('TRIGGER trg_candidates_profile_completion');
+  });
+
+  test('admin read policies are enforced idempotently for analytics', () => {
+    expect(mig023).toContain('CREATE POLICY hr_admin_read ON hr_profiles');
+    expect(mig023).toContain('CREATE POLICY candidates_admin_read ON candidates');
+    expect(mig023).toContain('CREATE POLICY companies_admin_read ON companies');
+    expect(mig036).toContain('DROP POLICY IF EXISTS hr_admin_read ON hr_profiles');
+    expect(mig036).toContain('DROP POLICY IF EXISTS candidates_admin_read ON candidates');
   });
 });
 
