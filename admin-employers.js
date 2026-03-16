@@ -123,7 +123,9 @@
         supa.from('positions').select('id', { count: 'exact', head: true }),
         supa.from('positions').select('id', { count: 'exact', head: true }).eq('durum', 'active'),
         supa.from('positions').select('id', { count: 'exact', head: true }).eq('durum', 'draft'),
-        supa.from('positions').select('id', { count: 'exact', head: true }).eq('durum', 'closed')
+        supa.from('positions').select('id', { count: 'exact', head: true }).eq('durum', 'closed'),
+        // Premium count: active employer subscriptions (pro + enterprise)
+        supa.from('subscriptions').select('id', { count: 'exact', head: true }).eq('user_type', 'employer').in('status', ['active', 'trial']).in('plan', ['pro', 'enterprise'])
       ]);
 
       var total = queries[0].count || 0;
@@ -140,9 +142,9 @@
       }
       var withCampaigns = Object.keys(uniqueEmployers).length;
 
-      // Premium: 0 until subscriptions table exists (Sprint B)
-      var premiumCount = 0;
-      var freemiumCount = total;
+      // Premium: count from subscriptions table (active pro/enterprise)
+      var premiumCount = queries[9].count || 0;
+      var freemiumCount = total - premiumCount;
 
       var recentData = queries[4].data || [];
 
@@ -167,7 +169,7 @@
       container.appendChild(buildSectionLabel('Aktivite'));
       container.appendChild(buildRow([
         buildStatCard('Aktif Kampanyası Var', withCampaigns, '📢'),
-        buildStatCard('Premium', premiumCount, '⭐', 'Sprint B\'de aktif olacak'),
+        buildStatCard('Premium', premiumCount, '⭐'),
         buildStatCard('Freemium', freemiumCount)
       ]));
 

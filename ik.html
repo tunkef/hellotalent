@@ -471,7 +471,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
       <div class="sidebar-avatar" id="sidebar-avatar">T</div>
       <div class="sidebar-user-info">
         <div class="sidebar-user-name" id="sidebar-name">Yükleniyor...</div>
-        <div class="sidebar-user-plan">Ücretsiz Plan</div>
+        <div class="sidebar-user-plan" id="sidebar-plan">Ücretsiz Plan</div>
       </div>
     </div>
     <button class="sidebar-logout" onclick="doLogout()">
@@ -1327,6 +1327,7 @@ function getSupa(){
 // ── STATE ──
 var currentUser = null;
 var hrProfile = {};
+var _employerPlan = 'demo'; // Loaded from get_employer_plan() RPC
 var favorites = []; // Loaded from Supabase employer_favorites table
 var pozisyonlar = []; // Loaded from Supabase positions table
 var filterState = { pozisyon:[], segment:[], musait:[], calisma:[], egitim:[], dil:[], aktifArayanlar: false };
@@ -2068,6 +2069,16 @@ async function initApp(){
     var {data:prof} = await getSupa().from('hr_profiles').select('*').eq('id',currentUser.id).maybeSingle();
     if(prof){
       hrProfile = prof;
+      // Load employer plan (fire-and-forget, defaults to demo)
+      getSupa().rpc('get_employer_plan').then(function(planRes){
+        if(planRes.data) _employerPlan = planRes.data;
+        var planEl = document.getElementById('sidebar-plan');
+        if(planEl){
+          var planLabels = { 'demo': 'Ücretsiz Plan', 'pro': '⭐ Pro Plan', 'enterprise': '🏢 Enterprise' };
+          planEl.textContent = planLabels[_employerPlan] || 'Ücretsiz Plan';
+          if(_employerPlan !== 'demo') planEl.style.color = 'var(--verm)';
+        }
+      });
       // Auto-sync auth email → hr_profiles.email if they differ
       if(prof.email && currentUser.email && prof.email !== currentUser.email){
         await getSupa().from('hr_profiles').update({ email: currentUser.email }).eq('id', currentUser.id);
@@ -2475,6 +2486,43 @@ function resetFilters(){
 function openDrawer(id){
   var c = ADAYLAR.find(function(a){return a.id===id;});
   if(!c) return;
+
+  // Usage tracking: increment candidate_view for demo users
+  if(_employerPlan === 'demo'){
+    getSupa().rpc('check_employer_usage_limit', { p_action: 'candidate_view' }).then(function(res){
+      if(res.data === false){
+        // Show upgrade prompt
+        var db = document.getElementById('drawer-body');
+        while(db.firstChild) db.removeChild(db.firstChild);
+        var limitDiv = document.createElement('div');
+        limitDiv.style.cssText = 'text-align:center;padding:48px 24px;';
+        var lockIcon = document.createElement('div');
+        lockIcon.style.cssText = 'font-size:48px;margin-bottom:16px;';
+        lockIcon.textContent = '🔒';
+        limitDiv.appendChild(lockIcon);
+        var limitTitle = document.createElement('div');
+        limitTitle.style.cssText = 'font-size:18px;font-weight:700;color:var(--text);margin-bottom:8px;';
+        limitTitle.textContent = 'Günlük görüntüleme limitinize ulaştınız';
+        limitDiv.appendChild(limitTitle);
+        var limitDesc = document.createElement('div');
+        limitDesc.style.cssText = 'font-size:13px;color:var(--muted);margin-bottom:20px;line-height:1.5;';
+        limitDesc.textContent = 'Demo hesapla günde 5 aday profili görüntüleyebilirsiniz. Pro planla sınırsız erişim kazanın.';
+        limitDiv.appendChild(limitDesc);
+        var upgradeBtn = document.createElement('a');
+        upgradeBtn.href = 'mailto:info@hellotalent.ai?subject=Pro%20Plan%20Talebi';
+        upgradeBtn.className = 'btn-primary';
+        upgradeBtn.style.cssText = 'display:inline-block;padding:10px 24px;text-decoration:none;';
+        upgradeBtn.textContent = 'Pro Plana Geç →';
+        limitDiv.appendChild(upgradeBtn);
+        db.appendChild(limitDiv);
+        document.getElementById('drawer').classList.add('open');
+        return;
+      }
+      // Increment usage counter
+      getSupa().rpc('increment_employer_usage', { p_action: 'candidate_view' }).then(function(){});
+    });
+  }
+
   var isFav = favorites.indexOf(c.id)!==-1;
   var db = document.getElementById('drawer-body');
   while(db.firstChild) db.removeChild(db.firstChild);
@@ -2499,11 +2547,13 @@ function openDrawer(id){
   avatarRow.appendChild(nameWrap);
   db.appendChild(avatarRow);
 
-  // Premium badge
-  var premBadge = document.createElement('div');
-  premBadge.className = 'premium-badge';
-  premBadge.textContent = '🔒 Tam erişim için Premium gerekli';
-  db.appendChild(premBadge);
+  // Premium badge (only show for demo users)
+  if(_employerPlan === 'demo'){
+    var premBadge = document.createElement('div');
+    premBadge.className = 'premium-badge';
+    premBadge.textContent = '🔒 Tam erişim için Pro plana geçin';
+    db.appendChild(premBadge);
+  }
 
   // Info grid helper
   function makeInfoGrid(title, items){
@@ -2655,6 +2705,13 @@ async function sendMesaj(){
   var konu = document.getElementById('mesaj-konu').value.trim();
   var body = document.getElementById('mesaj-body').value.trim();
   var msgEl = document.getElementById('mesaj-msg');
+
+  // Demo users cannot send messages
+  if(_employerPlan === 'demo'){
+    msgEl.textContent = '🔒 Mesaj göndermek için Pro plana geçmeniz gerekiyor.';
+    msgEl.style.cssText = 'display:block;background:#FEF3C7;color:#92400E;border:1px solid #FDE68A;margin-top:10px;padding:10px 14px;border-radius:8px;font-size:13px;font-weight:600;';
+    return;
+  }
 
   if(!konu || !body){
     msgEl.textContent = 'Konu ve mesaj alanları zorunludur.';
