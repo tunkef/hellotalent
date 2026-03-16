@@ -972,6 +972,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
         <div class="profil-card-title">📍 Mağaza / Ofis Lokasyonları</div>
         <div id="lokasyon-list" style="margin-bottom:12px;"></div>
         <div id="lokasyon-empty" style="display:none;text-align:center;padding:16px;color:var(--muted);font-size:13px;">Henüz lokasyon eklenmedi</div>
+        <div id="lokasyon-msg" role="status" aria-live="polite" style="display:none;margin-top:8px;padding:10px 14px;border-radius:8px;font-size:13px;font-weight:600;"></div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;">
           <div style="flex:1;min-width:140px;">
             <label class="form-label" style="font-size:11px;">Şehir</label>
@@ -2273,40 +2274,109 @@ function renderCandidates(list){
     return;
   }
   list.forEach(function(c){
-    var cardDiv = document.createElement('div');
-    cardDiv.innerHTML = candidateCardHTML(c);
-    while(cardDiv.firstChild) container.appendChild(cardDiv.firstChild);
+    container.appendChild(buildCandidateCard(c));
   });
 }
 
-function candidateCardHTML(c){
+/** Builds one candidate card DOM node; all user/DB data via textContent/setAttribute (no innerHTML). */
+function buildCandidateCard(c){
   var isFav = favorites.indexOf(c.id) !== -1;
-  var favCls = isFav ? 'active' : '';
-  return '<div class="candidate-card" onclick="openDrawer('+c.id+')">'
-    +'<div class="cc-top">'
-    +'<div class="cc-avatar blur" style="background:'+c.color+'">'+c.initials+'</div>'
-    +'<div class="cc-info">'
-    +'<div class="cc-name">'+c.ad[0]+'. '+c.soyad+(c.aktifAriyor ? '<span style="display:inline-block;background:#DCFCE7;color:#16A34A;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;margin-left:6px;">Aktif Arıyor</span>' : '')+'</div>'
-    +'<div class="cc-pos">'+c.pozisyon+' · '+c.exp+' yıl deneyim</div>'
-    +'</div>'
-    +'<span style="font-size:11px;font-weight:700;color:var(--muted);background:var(--bg);padding:3px 9px;border-radius:20px;white-space:nowrap;flex-shrink:0;">'+c.brand+'</span>'
-    +'</div>'
-    +'<div class="cc-tags">'
-    +'<span class="cc-tag exp">'+c.exp+' yıl</span>'
-    +'<span class="cc-tag city">'+c.sehir+'</span>'
-    +'<span class="cc-tag seg">'+c.segment+'</span>'
-    +'<span class="cc-tag avail">'+c.musait+'</span>'
-    +'</div>'
-    +'<div class="cc-contact">'
-    +'<div class="cc-contact-item"><div class="cc-contact-label">Telefon</div><div class="cc-contact-val masked">'+c.tel+'</div></div>'
-    +'<div class="cc-contact-item"><div class="cc-contact-label">E-posta</div><div class="cc-contact-val masked">'+c.email+'</div></div>'
-    +'</div>'
-    +'<div class="cc-actions" onclick="event.stopPropagation()">'
-    +'<button class="cc-fav-btn '+favCls+'" onclick="toggleFav('+c.id+',this)" title="Favoriye ekle">★</button>'
-    +'<button class="cc-cv-btn locked" title="Premium gerekli">📄 CV Görüntüle</button>'
-    +'<span class="lock-overlay">🔒 Premium</span>'
-    +'</div>'
-    +'</div>';
+  var card = document.createElement('div');
+  card.className = 'candidate-card';
+  card.onclick = function(){ openDrawer(c.id); };
+
+  var top = document.createElement('div');
+  top.className = 'cc-top';
+
+  var avatar = document.createElement('div');
+  avatar.className = 'cc-avatar blur';
+  avatar.style.background = c.color || '';
+  avatar.textContent = c.initials || '';
+
+  var info = document.createElement('div');
+  info.className = 'cc-info';
+  var nameDiv = document.createElement('div');
+  nameDiv.className = 'cc-name';
+  nameDiv.textContent = (c.ad && c.ad[0] ? c.ad[0] + '. ' : '') + (c.soyad || '');
+  if(c.aktifAriyor){
+    var badge = document.createElement('span');
+    badge.setAttribute('style', 'display:inline-block;background:#DCFCE7;color:#16A34A;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;margin-left:6px;');
+    badge.textContent = 'Aktif Arıyor';
+    nameDiv.appendChild(badge);
+  }
+  var posDiv = document.createElement('div');
+  posDiv.className = 'cc-pos';
+  posDiv.textContent = (c.pozisyon || '') + ' · ' + (c.exp || '') + ' yıl deneyim';
+
+  info.appendChild(nameDiv);
+  info.appendChild(posDiv);
+  top.appendChild(avatar);
+  top.appendChild(info);
+
+  var brandSpan = document.createElement('span');
+  brandSpan.setAttribute('style', 'font-size:11px;font-weight:700;color:var(--muted);background:var(--bg);padding:3px 9px;border-radius:20px;white-space:nowrap;flex-shrink:0;');
+  brandSpan.textContent = c.brand || '';
+  top.appendChild(brandSpan);
+  card.appendChild(top);
+
+  var tags = document.createElement('div');
+  tags.className = 'cc-tags';
+  ['exp','city','seg','avail'].forEach(function(cls){
+    var t = document.createElement('span');
+    t.className = 'cc-tag ' + cls;
+    var val = cls === 'exp' ? (c.exp || '') + ' yıl' : cls === 'city' ? (c.sehir || '') : cls === 'seg' ? (c.segment || '') : (c.musait || '');
+    t.textContent = val;
+    tags.appendChild(t);
+  });
+  card.appendChild(tags);
+
+  var contact = document.createElement('div');
+  contact.className = 'cc-contact';
+  var row1 = document.createElement('div');
+  row1.className = 'cc-contact-item';
+  var l1 = document.createElement('div');
+  l1.className = 'cc-contact-label';
+  l1.textContent = 'Telefon';
+  var v1 = document.createElement('div');
+  v1.className = 'cc-contact-val masked';
+  v1.textContent = c.tel || '';
+  row1.appendChild(l1);
+  row1.appendChild(v1);
+  var row2 = document.createElement('div');
+  row2.className = 'cc-contact-item';
+  var l2 = document.createElement('div');
+  l2.className = 'cc-contact-label';
+  l2.textContent = 'E-posta';
+  var v2 = document.createElement('div');
+  v2.className = 'cc-contact-val masked';
+  v2.textContent = c.email || '';
+  row2.appendChild(l2);
+  row2.appendChild(v2);
+  contact.appendChild(row1);
+  contact.appendChild(row2);
+  card.appendChild(contact);
+
+  var actions = document.createElement('div');
+  actions.className = 'cc-actions';
+  actions.onclick = function(e){ e.stopPropagation(); };
+  var favBtn = document.createElement('button');
+  favBtn.className = 'cc-fav-btn' + (isFav ? ' active' : '');
+  favBtn.title = 'Favoriye ekle';
+  favBtn.textContent = '★';
+  favBtn.onclick = function(e){ e.stopPropagation(); toggleFav(c.id, favBtn); };
+  var cvBtn = document.createElement('button');
+  cvBtn.className = 'cc-cv-btn locked';
+  cvBtn.title = 'Premium gerekli';
+  cvBtn.textContent = '📄 CV Görüntüle';
+  var lockOverlay = document.createElement('span');
+  lockOverlay.className = 'lock-overlay';
+  lockOverlay.textContent = '🔒 Premium';
+  actions.appendChild(favBtn);
+  actions.appendChild(cvBtn);
+  actions.appendChild(lockOverlay);
+  card.appendChild(actions);
+
+  return card;
 }
 
 // ── FAVORİ ──
@@ -2405,9 +2475,7 @@ function renderFavoriler(){
   var wrapper = document.createElement('div');
   wrapper.style.cssText = 'display:flex;flex-direction:column;gap:14px;';
   favAdaylar.forEach(function(c){
-    var cardDiv = document.createElement('div');
-    cardDiv.innerHTML = candidateCardHTML(c);
-    while(cardDiv.firstChild) wrapper.appendChild(cardDiv.firstChild);
+    wrapper.appendChild(buildCandidateCard(c));
   });
   container.appendChild(wrapper);
 }
@@ -3432,6 +3500,30 @@ var KONUM_TIPI_LABEL = {
   'warehouse': 'Depo'
 };
 
+var _lokasyonMsgTimeout = null;
+function showLokasyonMessage(text, type){
+  var el = document.getElementById('lokasyon-msg');
+  if(!el) return;
+  if(_lokasyonMsgTimeout) clearTimeout(_lokasyonMsgTimeout);
+  el.textContent = text;
+  el.style.display = '';
+  if(type === 'error'){
+    el.style.background = '#FEF2F2';
+    el.style.color = '#DC2626';
+    el.style.border = '1px solid #FECACA';
+  } else {
+    el.style.background = '#F0FDF4';
+    el.style.color = '#16A34A';
+    el.style.border = '1px solid #BBF7D0';
+  }
+  _lokasyonMsgTimeout = setTimeout(clearLokasyonMessage, 5000);
+}
+function clearLokasyonMessage(){
+  var el = document.getElementById('lokasyon-msg');
+  if(el){ el.style.display = 'none'; el.textContent = ''; }
+  _lokasyonMsgTimeout = null;
+}
+
 async function loadLokasyonlar(){
   if(!hrProfile || !hrProfile.company_id) return;
   var card = document.getElementById('lokasyon-card');
@@ -3490,6 +3582,7 @@ async function addLokasyon(){
   }
   if(!hrProfile || !hrProfile.company_id){
     console.error('addLokasyon: company_id yok');
+    showLokasyonMessage('Şirket bilgisi bulunamadı. Önce şirket profilinizi kaydedin.', 'error');
     return;
   }
   var payload = {
@@ -3501,11 +3594,12 @@ async function addLokasyon(){
   var {data, error} = await getSupa().from('company_locations').insert(payload).select('id, sehir, konum_tipi, adres').maybeSingle();
   if(error){
     console.error('addLokasyon error:', error.message);
+    showLokasyonMessage('Lokasyon eklenirken bir hata oluştu. Lütfen tekrar deneyin.', 'error');
     return;
   }
   if(data) _lokasyonlar.push(data);
   renderLokasyonlar();
-  // Clear inputs
+  showLokasyonMessage('Lokasyon eklendi.', 'success');
   document.getElementById('lok-sehir').value = '';
   document.getElementById('lok-tipi').value = 'store';
   document.getElementById('lok-adres').value = '';
@@ -3515,6 +3609,7 @@ async function removeLokasyon(id){
   var {error} = await getSupa().from('company_locations').delete().eq('id', id);
   if(error){
     console.error('removeLokasyon error:', error.message);
+    showLokasyonMessage('Lokasyon silinirken bir hata oluştu. Lütfen tekrar deneyin.', 'error');
     return;
   }
   _lokasyonlar = _lokasyonlar.filter(function(l){ return l.id !== id; });
