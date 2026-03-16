@@ -8,11 +8,11 @@
 
 -- 1) Scoring function (pure, re-usable)
 --    Computes a 0..100 score from basic fields + child tables.
+--    Location points come from normalized candidate_location_preferences, not legacy tercih_sehirler.
 CREATE OR REPLACE FUNCTION compute_candidate_profile_completion(
   p_candidate_id bigint,
   p_full_name text,
-  p_adres_il text,
-  p_tercih_sehirler text[]
+  p_adres_il text
 )
 RETURNS int
 LANGUAGE plpgsql
@@ -62,8 +62,11 @@ BEGIN
     score := score + 10;
   END IF;
 
-  -- Location preferences (candidate side)
-  IF p_tercih_sehirler IS NOT NULL AND array_length(p_tercih_sehirler, 1) > 0 THEN
+  -- Location preferences: normalized table only (not legacy candidates.tercih_sehirler)
+  IF EXISTS (
+    SELECT 1 FROM candidate_location_preferences lp
+    WHERE lp.candidate_id = p_candidate_id
+  ) THEN
     score := score + 10;
   END IF;
 
@@ -78,7 +81,7 @@ END;
 $$;
 
 
--- 2) Helper: refresh profile_completion_pct for a given candidate id
+-- 2) Helper: refresh profile_completion_pct for a given candidate id (single write point)
 CREATE OR REPLACE FUNCTION refresh_candidate_profile_completion(p_candidate_id bigint)
 RETURNS void
 LANGUAGE plpgsql
@@ -88,11 +91,10 @@ AS $$
 DECLARE
   v_full_name text;
   v_adres_il text;
-  v_tercih_sehirler text[];
   v_score int;
 BEGIN
-  SELECT full_name, adres_il, tercih_sehirler
-    INTO v_full_name, v_adres_il, v_tercih_sehirler
+  SELECT full_name, adres_il
+    INTO v_full_name, v_adres_il
   FROM candidates
   WHERE id = p_candidate_id;
 
@@ -100,7 +102,7 @@ BEGIN
     RETURN;
   END IF;
 
-  v_score := compute_candidate_profile_completion(p_candidate_id, v_full_name, v_adres_il, v_tercih_sehirler);
+  v_score := compute_candidate_profile_completion(p_candidate_id, v_full_name, v_adres_il);
 
   UPDATE candidates
   SET profile_completion_pct = v_score
@@ -110,6 +112,8 @@ $$;
 
 
 -- 3) Trigger: keep score in sync when candidates change (basic fields)
+--    Anti-recursion: refresh_candidate_profile_completion() updates candidates and would
+--    re-fire this trigger; pg_trigger_depth() > 1 means we are inside that nested call.
 DROP TRIGGER IF EXISTS trg_candidates_profile_completion ON candidates;
 DROP FUNCTION IF EXISTS trg_candidates_profile_completion_fn() CASCADE;
 
@@ -127,17 +131,12 @@ BEGIN
     RETURN NEW;
   END IF;
 
-  -- Recompute using NEW values for basics when available
-  PERFORM compute_candidate_profile_completion(
-    v_id,
-    COALESCE(NEW.full_name, OLD.full_name),
-    COALESCE(NEW.adres_il, OLD.adres_il),
-    COALESCE(NEW.tercih_sehirler, OLD.tercih_sehirler)
-  );
+  -- Skip when this trigger was fired by our own UPDATE (avoids infinite loop)
+  IF pg_trigger_depth() > 1 THEN
+    RETURN NEW;
+  END IF;
 
-  -- We call the central refresh helper to store the result and keep logic in one place.
   PERFORM refresh_candidate_profile_completion(v_id);
-
   RETURN NEW;
 END;
 $$;

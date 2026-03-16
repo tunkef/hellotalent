@@ -77,6 +77,13 @@ test.describe('P3 regression guards', () => {
     expect(mig036).toContain('TRIGGER trg_candidates_profile_completion');
   });
 
+  test('036 candidates trigger is recursion-safe and score uses normalized location', () => {
+    expect(mig036).toContain('pg_trigger_depth');
+    expect(mig036).toContain('candidate_location_preferences');
+    expect(mig036.indexOf('candidate_location_preferences') < mig036.indexOf('RETURN score')).toBe(true);
+    expect(mig036).not.toContain('p_tercih_sehirler');
+  });
+
   test('admin read policies are enforced idempotently for analytics', () => {
     expect(mig023).toContain('CREATE POLICY hr_admin_read ON hr_profiles');
     expect(mig023).toContain('CREATE POLICY candidates_admin_read ON candidates');
