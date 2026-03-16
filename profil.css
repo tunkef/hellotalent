@@ -1331,11 +1331,8 @@ html[data-theme="dark"] .field-req{color:#F87171;}
 /* ══ MK CARD — Profile Center card (muted warm gradient) ══ */
 .mk-card {
   min-width: 0;
-  background: linear-gradient(155deg,
-    #9E4A2A 0%,
-    #8B3F24 45%,
-    #7A3620 100%);
-  border: 1px solid rgba(201,78,40,0.2);
+  background: rgba(201,78,40,0.5);
+  border: 1px solid rgba(201,78,40,0.15);
   border-radius: 24px;
   box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 6px 20px rgba(0,0,0,0.04);
   position: relative;
@@ -1350,10 +1347,7 @@ html[data-theme="dark"] .field-req{color:#F87171;}
 }
 .mk-card:hover {
   transform: translateY(-2px);
-  background: linear-gradient(155deg,
-    #A8512E 0%,
-    #954528 45%,
-    #833C22 100%);
+  background: rgba(201,78,40,0.58);
   box-shadow: 0 4px 16px rgba(0,0,0,0.1), 0 12px 32px rgba(0,0,0,0.06);
 }
 .mk-card.span-2 { grid-column: span 2; }
@@ -1500,15 +1494,14 @@ html[data-theme="dark"] .field-req{color:#F87171;}
 .mk-card-data .data-pill {
   display: inline-block;
   padding: 4px 10px; border-radius: 8px;
-  font-size: 12px; font-weight: 500;
-  background: rgba(255,255,255,0.15); color: #fff;
+  font-size: 12px; font-weight: 600;
+  background: #C94E28; color: #fff;
   margin: 3px 3px 3px 0;
-  backdrop-filter: blur(4px);
 }
 .mk-card-data .data-ok {
   font-size: 12px; font-weight: 600;
   color: #fff;
-  background: rgba(255,255,255,0.2);
+  background: #C94E28;
   padding: 3px 10px; border-radius: 6px;
   display: inline-block;
   margin: 3px 3px 3px 0;
