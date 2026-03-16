@@ -1369,8 +1369,15 @@ async function loadDashboardStats(){
   try {
     var supa = getSupa();
     var queries = [
-      supa.from('candidates').select('id', { count: 'exact', head: true }).eq('is_active', true).eq('profile_completed', true),
-      supa.from('candidates').select('id', { count: 'exact', head: true }).eq('is_active', true).eq('profile_completed', true).gte('created_at', new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString())
+      supa.from('candidates')
+        .select('id', { count: 'exact', head: true })
+        .eq('is_active', true)
+        .or('profile_completed.eq.true,profile_completion_pct.gte.45'),
+      supa.from('candidates')
+        .select('id', { count: 'exact', head: true })
+        .eq('is_active', true)
+        .or('profile_completed.eq.true,profile_completion_pct.gte.45')
+        .gte('created_at', new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString())
     ];
     var results = await Promise.all(queries);
     var totalAday = results[0].count || 0;
@@ -1895,7 +1902,10 @@ async function loadLiveCandidates(){
   try {
     var sb = getSupa();
     if(!sb){ throw new Error('Supabase bağlantısı yok'); }
-    var { data: rows, error: err } = await sb.from('candidates').select('id, full_name, adres_il, avatar_url, telefon, email, is_active, profile_completed, hide_from_current_employer, is_actively_looking, updated_at').eq('is_active', true).eq('profile_completed', true);
+    var { data: rows, error: err } = await sb.from('candidates')
+      .select('id, full_name, adres_il, avatar_url, telefon, email, is_active, profile_completed, hide_from_current_employer, is_actively_looking, updated_at')
+      .eq('is_active', true)
+      .or('profile_completed.eq.true,profile_completion_pct.gte.45');
     if(err) throw err;
     if(!rows || rows.length === 0){ ADAYLAR = []; renderCandidates(ADAYLAR); return; }
     // ── Blocked companies filter ──

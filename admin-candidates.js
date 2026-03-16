@@ -56,59 +56,77 @@
       var supa = window._htAdminSupa;
 
       // Run all COUNT queries in parallel
+      var now = new Date();
+      var sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+      var monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
       var queries = await Promise.all([
-        // Row 1
+        // Genel toplam
         supa.from('candidates').select('id', { count: 'exact', head: true }),
+        // Tamamlanmış profiller
         supa.from('candidates').select('id', { count: 'exact', head: true }).eq('profile_completed', true),
+        // Önerilebilir (tamamlanmış veya %45+)
+        supa.from('candidates').select('id', { count: 'exact', head: true }).or('profile_completed.eq.true,profile_completion_pct.gte.45'),
+        // Önerilebilir ama profile_completed=false
+        supa.from('candidates').select('id', { count: 'exact', head: true }).eq('profile_completed', false).gte('profile_completion_pct', 45),
+        // Aktif adaylar
         supa.from('candidates').select('id', { count: 'exact', head: true }).eq('is_active', true),
-        // Row 2
-        supa.from('candidates').select('id', { count: 'exact', head: true }).eq('is_active', false).eq('profile_completed', true),
+        // Gizli ve premium
         supa.from('candidates').select('id', { count: 'exact', head: true }).eq('hide_from_current_employer', true),
         supa.from('candidates').select('id', { count: 'exact', head: true }).eq('is_premium', true),
-        // Row 3
+        // Hesap durumu + son 7 gün
         supa.from('candidates').select('id', { count: 'exact', head: true }).eq('account_status', 'frozen'),
         supa.from('candidates').select('id', { count: 'exact', head: true }).eq('account_status', 'pending_deletion'),
-        supa.from('candidates').select('id', { count: 'exact', head: true }).gte('created_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString())
+        supa.from('candidates').select('id', { count: 'exact', head: true }).gte('created_at', sevenDaysAgo.toISOString()),
+        // Bu ay önerilebilir kayıtlar
+        supa.from('candidates').select('id', { count: 'exact', head: true })
+          .or('profile_completed.eq.true,profile_completion_pct.gte.45')
+          .gte('created_at', monthStart.toISOString())
       ]);
 
       var total = queries[0].count || 0;
       var profilTam = queries[1].count || 0;
-      var aktif = queries[2].count || 0;
-      var pasif = queries[3].count || 0;
-      var gizli = queries[4].count || 0;
-      var premium = queries[5].count || 0;
-      var frozen = queries[6].count || 0;
-      var pendingDel = queries[7].count || 0;
-      var son7gun = queries[8].count || 0;
+      var onerilebilir = queries[2].count || 0;
+      var onerilebilirYarim = queries[3].count || 0;
+      var aktif = queries[4].count || 0;
+      var gizli = queries[5].count || 0;
+      var premium = queries[6].count || 0;
+      var frozen = queries[7].count || 0;
+      var pendingDel = queries[8].count || 0;
+      var son7gun = queries[9].count || 0;
+      var buAyOnerilebilir = queries[10].count || 0;
 
-      var profilYuzde = total > 0 ? Math.round((profilTam / total) * 100) : 0;
+      var tamamOran = total > 0 ? Math.round((profilTam / total) * 100) : 0;
+      var onerilebilirOran = total > 0 ? Math.round((onerilebilir / total) * 100) : 0;
+      var yarim = total - profilTam;
 
       // Clear container
       while (container.firstChild) container.removeChild(container.firstChild);
 
-      // Row 1: Headline
-      container.appendChild(buildSectionLabel('Genel Bakış'));
+      // Bölüm A: Profili Tamamlananlar
+      container.appendChild(buildSectionLabel('Profili Tamamlananlar'));
       container.appendChild(buildRow([
-        buildStatCard('Toplam Kayıtlı', total),
-        buildStatCard('Profil Tamamlamış', profilTam, null, '%' + profilYuzde + ' tamamlama oranı'),
-        buildStatCard('Aktif İş Arıyor', aktif)
-      ]));
-
-      // Row 2: Status Breakdown
-      container.appendChild(buildSectionLabel('Durum Dağılımı'));
-      container.appendChild(buildRow([
-        buildStatCard('Beni Öner', aktif, '✅'),
-        buildStatCard('Beni Önerme', pasif, '❌'),
-        buildStatCard('İşverenden Gizli', gizli, '🙈'),
-        buildStatCard('Premium', premium, '⭐')
-      ]));
-
-      // Row 3: Lifecycle
-      container.appendChild(buildSectionLabel('Yaşam Döngüsü'));
-      container.appendChild(buildRow([
-        buildStatCard('Dondurulmuş', frozen, '🧊'),
-        buildStatCard('Silme Bekleyen', pendingDel, '🗑️'),
+        buildStatCard('Toplam Aday', total),
+        buildStatCard('Profil Tamamlamış', profilTam, '✅', '%' + tamamOran + ' tamamlama oranı'),
+        buildStatCard('Aktif İş Arıyor', aktif, '🧭'),
         buildStatCard('Son 7 Gün Kayıt', son7gun, '📈')
+      ]));
+
+      // Bölüm B: Profili Yarım Kalanlar
+      container.appendChild(buildSectionLabel('Profili Yarım Kalanlar'));
+      container.appendChild(buildRow([
+        buildStatCard('Yarım Kalan Profil', yarim, '🧩'),
+        buildStatCard('Önerilebilir (≥%45)', onerilebilir, '⭐', '%' + onerilebilirOran + ' öneri eşiğini geçen'),
+        buildStatCard('Önerilebilir ama Tamamlanmamış', onerilebilirYarim, '✨'),
+        buildStatCard('Bu Ay Önerilebilir Kayıt', buAyOnerilebilir, '📅')
+      ]));
+
+      // Bölüm C: Gizlilik ve Hesap Durumu
+      container.appendChild(buildSectionLabel('Gizlilik ve Hesap Durumu'));
+      container.appendChild(buildRow([
+        buildStatCard('İşverenden Gizli', gizli, '🙈'),
+        buildStatCard('Premium', premium, '⭐'),
+        buildStatCard('Dondurulmuş', frozen, '🧊'),
+        buildStatCard('Silme Bekleyen', pendingDel, '🗑️')
       ]));
 
       loaded = true;
