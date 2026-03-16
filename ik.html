@@ -1094,7 +1094,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
     </div>
     <div class="form-footer">
       <button class="btn-secondary" onclick="closePozModal()">İptal</button>
-      <button class="btn-primary" onclick="savePozisyon()">Kaydet →</button>
+      <button class="btn-primary" id="btn-poz-save" onclick="savePozisyon()">Kaydet →</button>
     </div>
   </div>
 </div>
@@ -1777,25 +1777,35 @@ function closeDrawer(){
 function openPozModal(){ document.getElementById('poz-modal-overlay').classList.add('show'); }
 function closePozModal(){ document.getElementById('poz-modal-overlay').classList.remove('show'); }
 
+var _pozSaving = false;
 async function savePozisyon(){
+  if(_pozSaving) return;
   var ad = document.getElementById('poz-ad').value.trim();
   if(!ad){ alert('Pozisyon adı zorunludur.'); return; }
-  var poz = {
-    ad: ad,
-    sehir: document.getElementById('poz-sehir').value,
-    exp: document.getElementById('poz-exp').value || '—',
-    seg: document.getElementById('poz-seg').value,
-    maas: document.getElementById('poz-maas').value || '—',
-    aciklama: document.getElementById('poz-aciklama').value,
-    durum: 'active'
-  };
-  var saved = await savePositionToDB(poz);
-  if(!saved){ alert('Pozisyon kaydedilemedi. Tekrar deneyin.'); return; }
-  pozisyonlar.unshift(saved);
-  renderPozisyonlar();
-  loadDashboardStats();
-  closePozModal();
-  ['poz-ad','poz-exp','poz-maas','poz-aciklama'].forEach(function(id){ document.getElementById(id).value=''; });
+  var btn = document.getElementById('btn-poz-save');
+  _pozSaving = true;
+  if(btn){ btn.disabled = true; btn.textContent = 'Kaydediliyor...'; }
+  try {
+    var poz = {
+      ad: ad,
+      sehir: document.getElementById('poz-sehir').value,
+      exp: document.getElementById('poz-exp').value || '—',
+      seg: document.getElementById('poz-seg').value,
+      maas: document.getElementById('poz-maas').value || '—',
+      aciklama: document.getElementById('poz-aciklama').value,
+      durum: 'active'
+    };
+    var saved = await savePositionToDB(poz);
+    if(!saved){ alert('Pozisyon kaydedilemedi. Tekrar deneyin.'); return; }
+    pozisyonlar.unshift(saved);
+    renderPozisyonlar();
+    loadDashboardStats();
+    closePozModal();
+    ['poz-ad','poz-exp','poz-maas','poz-aciklama'].forEach(function(id){ document.getElementById(id).value=''; });
+  } finally {
+    _pozSaving = false;
+    if(btn){ btn.disabled = false; btn.textContent = 'Kaydet →'; }
+  }
 }
 
 function renderPozisyonlar(){
@@ -2084,7 +2094,7 @@ function showUpgradeModal(){ document.getElementById('upgrade-modal-overlay').cl
 function closeUpgradeModal(){ document.getElementById('upgrade-modal-overlay').classList.remove('show'); }
 
 // Overlay click to close
-['poz-modal-overlay','upgrade-modal-overlay','poz-detay-overlay'].forEach(function(id){
+['upgrade-modal-overlay','poz-detay-overlay'].forEach(function(id){
   var el = document.getElementById(id);
   if(el) el.addEventListener('click', function(e){
     if(e.target === this) this.classList.remove('show');
