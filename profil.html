@@ -106,6 +106,11 @@ if (window.Sentry) {
       Özel Teklifler
       <span class="nav-badge" id="badge-teklifler" style="display:none;">0</span>
     </button>
+    <button class="nav-item" id="nav-inbox" data-panel="inbox">
+      <span class="nav-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></span>
+      Mesajlar
+      <span class="nav-badge" id="badge-inbox-unread" style="display:none;">0</span>
+    </button>
     <button class="nav-item" id="nav-ayarlar" data-panel="ayarlar">
       <span class="nav-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span>
       Ayarlar
@@ -257,17 +262,18 @@ if (window.Sentry) {
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
       Dashboard
     </button>
-    <button class="bn-item" data-panel="merkez">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg>
-      Profil
-    </button>
     <button class="bn-item" data-panel="teklifler">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12v10H4V12"/><rect x="2" y="7" width="20" height="5" rx="1"/><path d="M12 22V7"/></svg>
       Teklifler
     </button>
-    <button class="bn-item" data-panel="ayarlar">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15"/></svg>
-      Ayarlar
+    <button class="bn-item" data-panel="inbox">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+      Mesajlar
+      <span id="badge-inbox-bn" style="display:none;position:absolute;top:2px;right:calc(50% - 18px);font-size:9px;background:var(--verm);color:white;border-radius:50%;width:16px;height:16px;align-items:center;justify-content:center;font-weight:700;">0</span>
+    </button>
+    <button class="bn-item" data-panel="merkez">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg>
+      Profil
     </button>
   </div>
 </nav>
@@ -1023,6 +1029,28 @@ if (window.Sentry) {
   </div>
 </main>
 
+<!-- ═══ PANEL: MESAJLAR (Unified Inbox) ═══ -->
+<main class="panel" id="panel-inbox" data-panel="inbox">
+  <div class="wiz-step-title" style="display:flex;align-items:center;gap:10px;">
+    Mesajlar
+    <span id="inbox-unread-badge" style="display:none;font-size:12px;font-weight:600;background:var(--verm);color:white;padding:2px 10px;border-radius:12px;font-family:'DM Mono',monospace;"></span>
+  </div>
+  <div class="wiz-step-desc">Kampanya bildirimleri, sistem mesajları ve işveren iletişimleri</div>
+
+  <!-- Filter tabs -->
+  <div id="inbox-tabs" style="display:flex;gap:6px;margin:16px 0;flex-wrap:wrap;"></div>
+
+  <!-- Message list -->
+  <div id="inbox-list" style="display:flex;flex-direction:column;gap:8px;"></div>
+
+  <!-- Empty state -->
+  <div id="inbox-empty" style="display:none;text-align:center;padding:60px 20px;">
+    <div style="font-size:48px;margin-bottom:12px;opacity:0.3;">✉️</div>
+    <div style="font-size:15px;font-weight:600;color:var(--text);margin-bottom:6px;">Henüz mesajın yok</div>
+    <div style="font-size:13px;color:var(--text-muted);">Kampanya bildirimleri ve işveren mesajları burada görünecek</div>
+  </div>
+</main>
+
 <!-- ═══ PANEL: AYARLAR ═══ -->
 <main class="panel" id="panel-ayarlar" data-panel="ayarlar">
   <div class="wiz-step-title">Hesap Ayarlari</div>
@@ -1301,6 +1329,7 @@ if (window.Sentry) {
 <script src="profil-ui.js?v=20260316"></script>
 <script src="profil-settings.js?v=20260316"></script>
 <script src="profil-teklifler.js?v=1"></script>
+<script src="profil-inbox.js?v=1"></script>
 
 <script>
 /* ═══════════════════════════════════════════════════════════════
@@ -1494,7 +1523,7 @@ function _doSwitchPanel(name) {
   if (target) target.classList.add('active');
   var bc = document.getElementById('breadcrumb-current');
   if (bc) {
-    var labels = { genel: 'Genel Bakış', merkez: 'Profil Merkezi', sirketler: 'Markalar', teklifler: 'Özel Teklifler', ayarlar: 'Ayarlar', profil: 'Profil' };
+    var labels = { genel: 'Genel Bakış', merkez: 'Profil Merkezi', sirketler: 'Markalar', teklifler: 'Özel Teklifler', inbox: 'Mesajlar', ayarlar: 'Ayarlar', profil: 'Profil' };
     bc.textContent = labels[name] || name;
   }
   // Update sidebar nav
@@ -1527,6 +1556,8 @@ function _doSwitchPanel(name) {
   if (name === 'sirketler') { loadSirketlerPanel(); }
   // Lazy-load Teklifler data on first visit
   if (name === 'teklifler') { window._htLoadTeklifler && window._htLoadTeklifler(); }
+  // Lazy-load Inbox messages on first visit
+  if (name === 'inbox') { window._htLoadInbox && window._htLoadInbox(); }
   // Populate Settings from Profile when opening Ayarlar
   if (name === 'ayarlar') {
     setVal('settings-adsoyad', val('f-adsoyad'));
