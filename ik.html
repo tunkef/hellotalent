@@ -515,7 +515,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2.5"><path d="M20 7H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/></svg>
             Açık Pozisyon
           </div>
-          <div class="stat-value" id="stat-poz">3</div>
+          <div class="stat-value" id="stat-poz">—</div>
           <div class="stat-change">🟢 Aktif</div>
         </div>
         <div class="stat-card">
@@ -528,11 +528,11 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
         </div>
         <div class="stat-card">
           <div class="stat-label">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-            Profil Görünümü
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><polyline points="17 11 19 13 23 9"/></svg>
+            Takipçiler
           </div>
-          <div class="stat-value">—</div>
-          <div class="stat-change" style="color:var(--muted)">Premium özellik</div>
+          <div class="stat-value" id="stat-followers">—</div>
+          <div class="stat-change" id="stat-followers-change" style="display:none;color:var(--muted)"></div>
         </div>
       </div>
 
@@ -1254,12 +1254,20 @@ function calcTotalExp(experiences){
 async function loadDashboardStats(){
   try {
     var supa = getSupa();
-    var results = await Promise.all([
+    var queries = [
       supa.from('candidates').select('id', { count: 'exact', head: true }).eq('is_active', true).eq('profile_completed', true),
       supa.from('candidates').select('id', { count: 'exact', head: true }).eq('is_active', true).eq('profile_completed', true).gte('created_at', new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString())
-    ]);
+    ];
+    // Follower count (if employer has company_id)
+    if(hrProfile && hrProfile.company_id) {
+      queries.push(
+        supa.from('candidate_company_follows').select('id', { count: 'exact', head: true }).eq('company_id', hrProfile.company_id)
+      );
+    }
+    var results = await Promise.all(queries);
     var totalAday = results[0].count || 0;
     var buAyAday = results[1].count || 0;
+    var followerCount = results[2] ? (results[2].count || 0) : 0;
     var el = document.getElementById('stat-aday');
     if(el) el.textContent = totalAday.toLocaleString('tr-TR');
     var changeEl = document.getElementById('stat-aday-change');
@@ -1272,9 +1280,139 @@ async function loadDashboardStats(){
     // Pozisyon sayısını güncelle
     var pozEl = document.getElementById('stat-poz');
     if(pozEl) pozEl.textContent = pozisyonlar.length;
+    // Takipçi sayısını güncelle
+    var followerEl = document.getElementById('stat-followers');
+    if(followerEl) followerEl.textContent = followerCount;
+    var followerChange = document.getElementById('stat-followers-change');
+    if(followerChange) {
+      if(followerCount > 0) {
+        followerChange.textContent = 'Şirketinizi takip eden adaylar';
+        followerChange.style.display = '';
+      } else {
+        followerChange.textContent = 'Henüz takipçi yok';
+        followerChange.style.display = '';
+      }
+    }
+    // ── Activity feed ──
+    loadActivityFeed();
   } catch(e) {
     console.error('Dashboard stats yüklenemedi:', e.message);
   }
+}
+
+async function loadActivityFeed(){
+  var feed = document.getElementById('activity-feed');
+  if(!feed) return;
+  try {
+    var supa = getSupa();
+    var activities = [];
+
+    // Employer's own recent positions (last 5)
+    if(pozisyonlar.length > 0) {
+      var recent = pozisyonlar.slice(0, 5);
+      recent.forEach(function(p){
+        var action = p.durum === 'active' ? 'Pozisyon yayınlandı' : (p.durum === 'draft' ? 'Taslak oluşturuldu' : (p.durum === 'closed' ? 'Pozisyon kapatıldı' : 'Pozisyon güncellendi'));
+        var icon = p.durum === 'active' ? '🟢' : (p.durum === 'draft' ? '📝' : (p.durum === 'closed' ? '🔒' : '📋'));
+        activities.push({
+          icon: icon,
+          text: action,
+          detail: p.ad || '',
+          time: p.updated_at || p.created_at
+        });
+      });
+    }
+
+    // New candidates this week (count only, for privacy)
+    var weekAgo = new Date();
+    weekAgo.setDate(weekAgo.getDate() - 7);
+    var newCandRes = await supa.from('candidates')
+      .select('id', { count: 'exact', head: true })
+      .eq('is_active', true)
+      .eq('profile_completed', true)
+      .gte('created_at', weekAgo.toISOString());
+    var newThisWeek = newCandRes.count || 0;
+    if(newThisWeek > 0) {
+      activities.unshift({
+        icon: '👤',
+        text: newThisWeek + ' yeni aday kaydoldu',
+        detail: 'Bu hafta',
+        time: new Date().toISOString()
+      });
+    }
+
+    // Favorites count
+    if(favorites.length > 0) {
+      activities.push({
+        icon: '⭐',
+        text: favorites.length + ' aday favorilerde',
+        detail: 'Takip ediliyor',
+        time: null
+      });
+    }
+
+    // Render
+    while(feed.firstChild) feed.removeChild(feed.firstChild);
+    if(activities.length === 0) {
+      var emptyDiv = document.createElement('div');
+      emptyDiv.style.cssText = 'text-align:center;padding:24px 16px;color:var(--muted);';
+      var emptyIcon = document.createElement('div');
+      emptyIcon.style.cssText = 'font-size:24px;margin-bottom:8px;';
+      emptyIcon.textContent = '📋';
+      emptyDiv.appendChild(emptyIcon);
+      var emptyText = document.createElement('div');
+      emptyText.style.cssText = 'font-size:12px;';
+      emptyText.textContent = 'Henüz aktivite yok';
+      emptyDiv.appendChild(emptyText);
+      var emptySub = document.createElement('div');
+      emptySub.style.cssText = 'font-size:11px;margin-top:4px;';
+      emptySub.textContent = 'Aday arayın veya pozisyon ekleyin';
+      emptyDiv.appendChild(emptySub);
+      feed.appendChild(emptyDiv);
+      return;
+    }
+
+    activities.slice(0, 8).forEach(function(a){
+      var row = document.createElement('div');
+      row.style.cssText = 'display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--border);';
+      var iconSpan = document.createElement('span');
+      iconSpan.style.cssText = 'font-size:16px;flex-shrink:0;';
+      iconSpan.textContent = a.icon;
+      row.appendChild(iconSpan);
+      var textWrap = document.createElement('div');
+      textWrap.style.cssText = 'flex:1;min-width:0;';
+      var mainText = document.createElement('div');
+      mainText.style.cssText = 'font-size:12px;font-weight:600;color:var(--text);';
+      mainText.textContent = a.text;
+      textWrap.appendChild(mainText);
+      if(a.detail) {
+        var detailText = document.createElement('div');
+        detailText.style.cssText = 'font-size:11px;color:var(--muted);margin-top:1px;';
+        detailText.textContent = a.detail;
+        textWrap.appendChild(detailText);
+      }
+      row.appendChild(textWrap);
+      if(a.time) {
+        var timeSpan = document.createElement('span');
+        timeSpan.style.cssText = 'font-size:10px;color:var(--muted);flex-shrink:0;font-family:"DM Mono",monospace;';
+        timeSpan.textContent = timeAgo(a.time);
+        row.appendChild(timeSpan);
+      }
+      feed.appendChild(row);
+    });
+  } catch(e) {
+    console.warn('Activity feed yüklenemedi:', e.message);
+  }
+}
+
+function timeAgo(dateStr){
+  var now = new Date();
+  var then = new Date(dateStr);
+  var diff = Math.floor((now - then) / 1000);
+  if(diff < 60) return 'şimdi';
+  if(diff < 3600) return Math.floor(diff / 60) + 'dk';
+  if(diff < 86400) return Math.floor(diff / 3600) + 'sa';
+  if(diff < 604800) return Math.floor(diff / 86400) + 'g';
+  return then.toLocaleDateString('tr-TR');
 }
 
 // ── POZİSYONLAR (Supabase CRUD) ──
