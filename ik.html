@@ -1431,7 +1431,22 @@ async function loadLiveCandidates(){
     });
     renderCandidates(ADAYLAR);
   } catch(e) {
-    container.innerHTML = '<div class="empty-state"><div class="empty-icon">⚠️</div><div class="empty-title">Adaylar yüklenemedi</div><div class="empty-sub">' + (e.message || 'Bir hata oluştu.') + '</div></div>';
+    while(container.firstChild) container.removeChild(container.firstChild);
+    var errState = document.createElement('div');
+    errState.className = 'empty-state';
+    var errIcon = document.createElement('div');
+    errIcon.className = 'empty-icon';
+    errIcon.textContent = '⚠️';
+    errState.appendChild(errIcon);
+    var errTitle = document.createElement('div');
+    errTitle.className = 'empty-title';
+    errTitle.textContent = 'Adaylar yüklenemedi';
+    errState.appendChild(errTitle);
+    var errSub = document.createElement('div');
+    errSub.className = 'empty-sub';
+    errSub.textContent = e.message || 'Bir hata oluştu.';
+    errState.appendChild(errSub);
+    container.appendChild(errState);
   }
 }
 
