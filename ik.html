@@ -810,6 +810,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
               <option>Kozmetik & Güzellik</option>
               <option>Mücevher & Saat</option>
               <option>Çocuk & Oyuncak</option>
+              <option>İşe Alım & Danışmanlık</option>
               <option>Diğer</option>
             </select>
           </div>
@@ -1360,7 +1361,7 @@ async function initApp(){
 
   // Supabase'den hr_profiles çek
   try{
-    var {data:prof} = await getSupa().from('hr_profiles').select('*').eq('id',currentUser.id).single();
+    var {data:prof} = await getSupa().from('hr_profiles').select('*').eq('id',currentUser.id).maybeSingle();
     if(prof){
       hrProfile = prof;
       // Auto-sync auth email → hr_profiles.email if they differ
@@ -1394,19 +1395,31 @@ async function initApp(){
     }
   }catch(e){}
 
+  // ── ONBOARDING GATE: Şirket profili zorunlu ──
+  var needsOnboarding = !hrProfile || !hrProfile.sirket || hrProfile.sirket.trim() === '';
+
+  if(needsOnboarding){
+    // Force to company profile panel
+    switchPanel('sirket', document.querySelector('[data-panel="sirket"]'));
+    history.replaceState({panel:'sirket'}, '', '#sirket');
+    // Show onboarding banner
+    showOnboardingBanner(true);
+  } else {
+    showOnboardingBanner(false);
+    // URL hash varsa o panele git
+    var hash = window.location.hash.replace('#','');
+    if(hash && document.getElementById('panel-'+hash)){
+      switchPanel(hash, document.querySelector('[data-panel="'+hash+'"]'));
+    } else {
+      history.replaceState({panel:'dashboard'}, '', '#dashboard');
+    }
+  }
+
   // Render
   await loadLiveCandidates();
   renderPozisyonlar();
   renderFavoriler();
   updateFavCount();
-
-  // URL hash varsa o panele git
-  var hash = window.location.hash.replace('#','');
-  if(hash && document.getElementById('panel-'+hash)){
-    switchPanel(hash, document.querySelector('[data-panel="'+hash+'"]'));
-  } else {
-    history.replaceState({panel:'dashboard'}, '', '#dashboard');
-  }
 
   // Loading gizle
   setTimeout(function(){
@@ -1425,7 +1438,46 @@ var PANEL_TITLES = {
   kampanyalar:'Kampanyalar',
   ayarlar:'Ayarlar'
 };
+// ── ONBOARDING BANNER ──
+function showOnboardingBanner(show){
+  var existing = document.getElementById('onboarding-banner');
+  if(!show){
+    if(existing) existing.style.display = 'none';
+    return;
+  }
+  if(!existing){
+    existing = document.createElement('div');
+    existing.id = 'onboarding-banner';
+    existing.style.cssText = 'background:linear-gradient(135deg,#1E2D5E 0%,#2a3f7e 100%);color:white;padding:18px 24px;border-radius:12px;margin-bottom:20px;display:flex;align-items:center;gap:14px;';
+    var icon = document.createElement('div');
+    icon.style.cssText = 'font-size:28px;flex-shrink:0;';
+    icon.textContent = '👋';
+    existing.appendChild(icon);
+    var textDiv = document.createElement('div');
+    textDiv.style.flex = '1';
+    var title = document.createElement('div');
+    title.style.cssText = 'font-weight:700;font-size:15px;margin-bottom:2px;';
+    title.textContent = 'Hoş geldiniz! Önce şirket profilinizi tamamlayın';
+    textDiv.appendChild(title);
+    var sub = document.createElement('div');
+    sub.style.cssText = 'font-size:12px;opacity:0.85;';
+    sub.textContent = 'Aday arama, kampanyalar ve diğer özellikleri kullanabilmek için şirket bilgilerinizi kaydetmeniz gerekiyor.';
+    textDiv.appendChild(sub);
+    existing.appendChild(textDiv);
+    var sirketPanel = document.getElementById('panel-sirket');
+    if(sirketPanel) sirketPanel.insertBefore(existing, sirketPanel.firstChild.nextSibling);
+  }
+  existing.style.display = 'flex';
+}
+
 function switchPanel(name, el){
+  // ── Onboarding guard: block navigation if company not set ──
+  var needsOnboarding = !hrProfile || !hrProfile.sirket || hrProfile.sirket.trim() === '';
+  if(needsOnboarding && name !== 'sirket' && name !== 'ayarlar'){
+    alert('Lütfen önce şirket profilinizi tamamlayın.');
+    switchPanel('sirket', document.querySelector('[data-panel="sirket"]'));
+    return;
+  }
   document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('active');});
   document.querySelectorAll('.nav-item').forEach(function(n){n.classList.remove('active');});
   document.querySelectorAll('.bn-item').forEach(function(n){n.classList.remove('active');});
@@ -1859,6 +1911,40 @@ async function saveSirket(){
     // Sidebar güncelle
     document.getElementById('sidebar-name').textContent = yetkili || sirket;
     document.getElementById('sidebar-avatar').textContent = (yetkili||sirket)[0].toUpperCase();
+
+    // ── Company linkage: auto-create/find company and link to hr_profiles ──
+    if(!hrProfile || !hrProfile.company_id){
+      try{
+        var linkRes = await getSupa().rpc('link_employer_to_company', {
+          p_company_name: sirket,
+          p_website_url: document.getElementById('sc-web').value.trim() || null,
+          p_sektor: document.getElementById('sc-sektor').value || null,
+          p_segment: document.getElementById('sc-segment').value || null
+        });
+        if(linkRes.error){
+          console.error('Company linkage error:', linkRes.error.message);
+        } else if(linkRes.data){
+          hrProfile = hrProfile || {};
+          hrProfile.company_id = linkRes.data;
+          hrProfile.sirket = sirket;
+          // Update campaign panel badge if visible
+          var noCoEl = document.getElementById('kampanya-no-company');
+          if(noCoEl) noCoEl.style.display = 'none';
+          var newCampBtn = document.getElementById('btn-new-campaign');
+          if(newCampBtn) newCampBtn.style.display = '';
+        }
+      }catch(linkErr){
+        console.error('Company linkage exception:', linkErr);
+      }
+    }
+
+    // ── Update hrProfile and clear onboarding gate ──
+    hrProfile = hrProfile || {};
+    hrProfile.sirket = sirket;
+    hrProfile.ad = ad;
+    hrProfile.soyad = soyad;
+    showOnboardingBanner(false);
+
     var msg = document.getElementById('sirket-msg');
     msg.textContent='✓ Şirket profili kaydedildi!'; msg.style.background='#F0FDF4'; msg.style.color='#16A34A';
     msg.style.display='block';
