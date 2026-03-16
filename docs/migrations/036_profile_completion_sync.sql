@@ -219,3 +219,17 @@ DROP POLICY IF EXISTS companies_admin_read ON companies;
 CREATE POLICY companies_admin_read ON companies
   FOR SELECT USING (is_admin());
 
+
+-- 6) One-shot full re-sync: recompute profile_completion_pct for all existing candidates
+--    so values from 035 (tercih_sehirler-based) are aligned with the normalized scoring model.
+--    Idempotent and safe to run multiple times.
+DO $$
+DECLARE
+  r RECORD;
+BEGIN
+  FOR r IN SELECT id FROM candidates LOOP
+    PERFORM refresh_candidate_profile_completion(r.id);
+  END LOOP;
+END;
+$$;
+

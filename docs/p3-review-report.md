@@ -124,4 +124,4 @@ Kapsam: `ik.html`, `profil-inbox.js`, `admin-employers.js` + ilgili P3 davranı�
 
 - **Recursion-safe trigger:** `trg_candidates_profile_completion_fn` artık `pg_trigger_depth() > 1` ile korunuyor; `refresh_candidate_profile_completion()` içindeki UPDATE aynı tetikleyiciyi tekrar ateşlese bile yeniden hesaplama atlanıyor, döngü oluşmuyor.
 - **Normalized location scoring:** Tamamlama puanındaki lokasyon (+10) artık `candidates.tercih_sehirler` yerine `candidate_location_preferences` tablosuna göre hesaplanıyor; `compute_candidate_profile_completion` imzasından `p_tercih_sehirler` kaldırıldı.
-- Tarih: **2026-03-16**, commit: **&lt;HARDENING_COMMIT&gt;** (bu patch’in commit hash’i ile güncellenebilir).
+- Tarih: **2026-03-16**, commit: **9ce0498**.

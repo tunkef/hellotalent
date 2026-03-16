@@ -84,6 +84,11 @@ test.describe('P3 regression guards', () => {
     expect(mig036).not.toContain('p_tercih_sehirler');
   });
 
+  test('036 includes one-shot full re-sync for existing candidates', () => {
+    expect(mig036).toContain('FOR r IN SELECT id FROM candidates LOOP');
+    expect(mig036).toContain('refresh_candidate_profile_completion(r.id)');
+  });
+
   test('admin read policies are enforced idempotently for analytics', () => {
     expect(mig023).toContain('CREATE POLICY hr_admin_read ON hr_profiles');
     expect(mig023).toContain('CREATE POLICY candidates_admin_read ON candidates');
