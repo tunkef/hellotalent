@@ -1441,7 +1441,8 @@ async function loadLiveCandidates(){
 
 // ── AUTH GUARD ──
 async function initApp(){
-  const { data } = await getSupa().auth.getSession();
+  var sessionRes = await getSupa().auth.getSession();
+  var data = sessionRes.data;
   if(!data.session){
     window.location.replace('giris.html?tab=ik');
     return;
