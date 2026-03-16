@@ -364,6 +364,12 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
 .loading-dot:nth-child(2){animation-delay:.2s;}
 .loading-dot:nth-child(3){animation-delay:.4s;}
 @keyframes ldot{0%,80%,100%{background:rgba(255,255,255,0.2);}40%{background:white;}}
+.poz-tab-bar{display:flex;gap:4px;margin-bottom:16px;border-bottom:1px solid var(--border);padding-bottom:0;}
+.poz-tab{padding:8px 16px;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;transition:all 0.15s;white-space:nowrap;}
+.poz-tab:hover{color:var(--text);}
+.poz-tab.active{color:var(--verm);border-bottom-color:var(--verm);}
+.poz-tab .tab-count{display:inline-block;background:var(--bg);border-radius:10px;padding:1px 7px;font-size:10px;margin-left:5px;font-weight:700;}
+.poz-tab.active .tab-count{background:rgba(201,78,40,0.1);color:var(--verm);}
 </style>
 </head>
 <body>
@@ -727,13 +733,20 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
     <div class="panel" id="panel-pozisyonlar">
       <div class="section-header">
         <div>
-          <div class="section-title">Açık Pozisyonlar</div>
-          <div style="font-size:12px;color:var(--muted);margin-top:2px;">İlan oluştur, adayları eşleştir</div>
+          <div class="section-title">Pozisyon Yönetimi</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:2px;">İlan oluştur, yönet, adayları eşleştir</div>
         </div>
         <button class="btn-primary" onclick="openPozModal()">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           Pozisyon Ekle
         </button>
+      </div>
+      <div class="poz-tab-bar" id="poz-tab-bar">
+        <button class="poz-tab active" data-poz-tab="active" onclick="switchPozTab('active')">Aktif <span class="tab-count" id="ptc-active">0</span></button>
+        <button class="poz-tab" data-poz-tab="draft" onclick="switchPozTab('draft')">Taslak <span class="tab-count" id="ptc-draft">0</span></button>
+        <button class="poz-tab" data-poz-tab="closed" onclick="switchPozTab('closed')">Kapalı <span class="tab-count" id="ptc-closed">0</span></button>
+        <button class="poz-tab" data-poz-tab="archived" onclick="switchPozTab('archived')">Arşiv <span class="tab-count" id="ptc-archived">0</span></button>
+        <button class="poz-tab" data-poz-tab="template" onclick="switchPozTab('template')">Kayıtlı <span class="tab-count" id="ptc-template">0</span></button>
       </div>
       <div class="pozisyon-grid" id="poz-grid"></div>
     </div>
@@ -1092,9 +1105,10 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
       <label class="form-label">Pozisyon Açıklaması</label>
       <textarea class="form-input form-textarea" id="poz-aciklama" placeholder="Görev tanımı, beklentiler..."></textarea>
     </div>
-    <div class="form-footer">
+    <div class="form-footer" style="display:flex;gap:8px;">
       <button class="btn-secondary" onclick="closePozModal()">İptal</button>
-      <button class="btn-primary" id="btn-poz-save" onclick="savePozisyon()">Kaydet →</button>
+      <button class="btn-secondary" id="btn-poz-draft" onclick="savePozisyon('draft')" style="margin-left:auto;">Taslak Kaydet</button>
+      <button class="btn-primary" id="btn-poz-save" onclick="savePozisyon('active')">Yayınla →</button>
     </div>
   </div>
 </div>
@@ -1773,18 +1787,52 @@ function closeDrawer(){
   document.body.style.overflow='';
 }
 
-// ── POZİSYON ──
+// ── POZİSYON LIFECYCLE ──
+var _activePozTab = 'active';
+
 function openPozModal(){ document.getElementById('poz-modal-overlay').classList.add('show'); }
 function closePozModal(){ document.getElementById('poz-modal-overlay').classList.remove('show'); }
 
+function switchPozTab(tab){
+  _activePozTab = tab;
+  var tabs = document.querySelectorAll('.poz-tab');
+  for(var i=0; i<tabs.length; i++){
+    tabs[i].classList.toggle('active', tabs[i].getAttribute('data-poz-tab') === tab);
+  }
+  renderPozisyonlar();
+}
+
+function updatePozTabCounts(){
+  var counts = {active:0, draft:0, closed:0, archived:0, template:0};
+  for(var i=0; i<pozisyonlar.length; i++){
+    var p = pozisyonlar[i];
+    if(p.is_template) counts.template++;
+    if(counts[p.durum] !== undefined) counts[p.durum]++;
+  }
+  ['active','draft','closed','archived','template'].forEach(function(k){
+    var el = document.getElementById('ptc-'+k);
+    if(el) el.textContent = counts[k];
+  });
+  document.getElementById('stat-poz').textContent = counts.active;
+  ['nav-poz-count','bn-poz-count'].forEach(function(id){
+    var el=document.getElementById(id);
+    if(el){ el.textContent=counts.active; el.style.display=counts.active>0?'':'none'; }
+  });
+}
+
 var _pozSaving = false;
-async function savePozisyon(){
+async function savePozisyon(durum){
   if(_pozSaving) return;
   var ad = document.getElementById('poz-ad').value.trim();
   if(!ad){ alert('Pozisyon adı zorunludur.'); return; }
-  var btn = document.getElementById('btn-poz-save');
+  var btnSave = document.getElementById('btn-poz-save');
+  var btnDraft = document.getElementById('btn-poz-draft');
   _pozSaving = true;
-  if(btn){ btn.disabled = true; btn.textContent = 'Kaydediliyor...'; }
+  if(btnSave) btnSave.disabled = true;
+  if(btnDraft) btnDraft.disabled = true;
+  var activeBtn = durum === 'draft' ? btnDraft : btnSave;
+  var origText = activeBtn ? activeBtn.textContent : '';
+  if(activeBtn) activeBtn.textContent = 'Kaydediliyor...';
   try {
     var poz = {
       ad: ad,
@@ -1793,78 +1841,205 @@ async function savePozisyon(){
       seg: document.getElementById('poz-seg').value,
       maas: document.getElementById('poz-maas').value || '—',
       aciklama: document.getElementById('poz-aciklama').value,
-      durum: 'active'
+      durum: durum || 'active'
     };
     var saved = await savePositionToDB(poz);
     if(!saved){ alert('Pozisyon kaydedilemedi. Tekrar deneyin.'); return; }
     pozisyonlar.unshift(saved);
-    renderPozisyonlar();
+    switchPozTab(durum || 'active');
     loadDashboardStats();
     closePozModal();
-    ['poz-ad','poz-exp','poz-maas','poz-aciklama'].forEach(function(id){ document.getElementById(id).value=''; });
+    ['poz-ad','poz-exp','poz-maas','poz-aciklama'].forEach(function(fid){ document.getElementById(fid).value=''; });
   } finally {
     _pozSaving = false;
-    if(btn){ btn.disabled = false; btn.textContent = 'Kaydet →'; }
+    if(btnSave){ btnSave.disabled = false; btnSave.textContent = 'Yayınla →'; }
+    if(btnDraft){ btnDraft.disabled = false; btnDraft.textContent = 'Taslak Kaydet'; }
   }
 }
 
 function renderPozisyonlar(){
-  var aktif = pozisyonlar.filter(function(p){return p.durum==='active';}).length;
-  document.getElementById('stat-poz').textContent = aktif;
-  ['nav-poz-count','bn-poz-count'].forEach(function(id){
-    var el=document.getElementById(id);
-    if(el){ el.textContent=aktif; el.style.display=aktif>0?'':'none'; }
-  });
-
+  updatePozTabCounts();
   var container = document.getElementById('poz-grid');
-  if(pozisyonlar.length===0){
-    container.innerHTML='<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">📋</div><div class="empty-title">Henüz pozisyon yok</div><div class="empty-sub">İlk açık pozisyonunu oluştur</div></div>';
+  var tab = _activePozTab;
+  var filtered;
+  if(tab === 'template'){
+    filtered = pozisyonlar.filter(function(p){ return p.is_template; });
+  } else {
+    filtered = pozisyonlar.filter(function(p){ return p.durum === tab; });
+  }
+  if(filtered.length === 0){
+    var msgs = {
+      active: {i:'📋', t:'Aktif pozisyon yok', s:'Yeni pozisyon ekleyin veya taslaktan yayınlayın'},
+      draft: {i:'📝', t:'Taslak yok', s:'Pozisyon eklerken "Taslak Kaydet" ile kaydedebilirsiniz'},
+      closed: {i:'🔒', t:'Kapalı pozisyon yok', s:'Aktif pozisyonları kapatınca burada görünür'},
+      archived: {i:'🗄️', t:'Arşiv boş', s:'90 gün kapalı kalan pozisyonlar otomatik arşivlenir'},
+      template: {i:'⭐', t:'Kayıtlı şablon yok', s:'Sık kullandığınız pozisyonları şablon olarak kaydedin'}
+    };
+    var m = msgs[tab] || msgs.active;
+    container.textContent = '';
+    var empty = document.createElement('div');
+    empty.className = 'empty-state';
+    empty.style.gridColumn = '1/-1';
+    var icon = document.createElement('div'); icon.className = 'empty-icon'; icon.textContent = m.i;
+    var title = document.createElement('div'); title.className = 'empty-title'; title.textContent = m.t;
+    var sub = document.createElement('div'); sub.className = 'empty-sub'; sub.textContent = m.s;
+    empty.appendChild(icon); empty.appendChild(title); empty.appendChild(sub);
+    container.appendChild(empty);
     return;
   }
-  container.innerHTML = pozisyonlar.map(function(p){ return pozCard(p); }).join('');
+  container.textContent = '';
+  filtered.forEach(function(p){
+    container.appendChild(buildPozCard(p));
+  });
 }
 
-function pozCard(p){
-  var durumLabel = {active:'Aktif',draft:'Taslak',closed:'Kapalı'}[p.durum];
-  return '<div class="poz-card">'
-    +'<div class="poz-header">'
-    +'<div class="poz-title">'+p.ad+'</div>'
-    +'<span class="poz-status '+p.durum+'">'+durumLabel+'</span>'
-    +'</div>'
-    +'<div class="poz-detail">'+p.sehir+' · '+p.exp+' yıl deneyim</div>'
-    +'<div class="poz-chips">'
-    +'<span class="poz-chip">'+p.seg+'</span>'
-    +'<span class="poz-chip">'+p.maas+'</span>'
-    +'</div>'
-    +(p.aciklama ? '<div style="font-size:12px;color:var(--muted);line-height:1.5;margin-bottom:12px;">'+p.aciklama.substring(0,100)+(p.aciklama.length>100?'…':'')+'</div>' : '')
-    +'<div class="poz-stats">'
-    +'<div class="poz-stat"><div class="poz-stat-val">'+p.gorunum+'</div><div class="poz-stat-label">Görüntüleme</div></div>'
-    +'<div class="poz-stat"><div class="poz-stat-val">'+p.basvuru+'</div><div class="poz-stat-label">Eşleşme</div></div>'
-    +'</div>'
-    +'<div class="poz-actions">'
-    +'<button class="btn-primary btn-sm" onclick="openPozDetay('+p.id+',event)" style="gap:5px;">'
-    +'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>'
-    +'Adayları Gör</button>'
-    +(p.durum==='active'
-      ? '<button class="btn-secondary btn-sm" onclick="togglePozDurum('+p.id+')">Kapat</button>'
-      : '<button class="btn-primary btn-sm" onclick="togglePozDurum('+p.id+')">Aktifleştir</button>')
-    +'<button class="btn-secondary btn-sm" style="color:var(--red);border-color:#fca5a5;" onclick="deletePoz('+p.id+')">Sil</button>'
-    +'</div>'
-    +'</div>';
+function buildPozCard(p){
+  var durumLabels = {active:'Aktif',draft:'Taslak',closed:'Kapalı',archived:'Arşiv'};
+  var card = document.createElement('div');
+  card.className = 'poz-card';
+
+  // Header
+  var header = document.createElement('div'); header.className = 'poz-header';
+  var titleEl = document.createElement('div'); titleEl.className = 'poz-title';
+  titleEl.textContent = p.ad + (p.is_template && _activePozTab!=='template' ? ' ⭐' : '');
+  var badge = document.createElement('span'); badge.className = 'poz-status ' + p.durum;
+  badge.textContent = durumLabels[p.durum] || p.durum;
+  header.appendChild(titleEl); header.appendChild(badge);
+
+  // Detail
+  var detail = document.createElement('div'); detail.className = 'poz-detail';
+  detail.textContent = (p.sehir||'—') + ' · ' + (p.exp||'—') + ' yıl deneyim';
+
+  // Chips
+  var chips = document.createElement('div'); chips.className = 'poz-chips';
+  var chip1 = document.createElement('span'); chip1.className = 'poz-chip'; chip1.textContent = p.seg||'—';
+  var chip2 = document.createElement('span'); chip2.className = 'poz-chip'; chip2.textContent = p.maas||'—';
+  chips.appendChild(chip1); chips.appendChild(chip2);
+
+  card.appendChild(header);
+  card.appendChild(detail);
+  card.appendChild(chips);
+
+  // Description
+  if(p.aciklama){
+    var desc = document.createElement('div');
+    desc.style.cssText = 'font-size:12px;color:var(--muted);line-height:1.5;margin-bottom:12px;';
+    desc.textContent = p.aciklama.length > 100 ? p.aciklama.substring(0,100) + '…' : p.aciklama;
+    card.appendChild(desc);
+  }
+
+  // Stats
+  var stats = document.createElement('div'); stats.className = 'poz-stats';
+  var s1 = document.createElement('div'); s1.className = 'poz-stat';
+  var s1v = document.createElement('div'); s1v.className = 'poz-stat-val'; s1v.textContent = p.gorunum||0;
+  var s1l = document.createElement('div'); s1l.className = 'poz-stat-label'; s1l.textContent = 'Görüntüleme';
+  s1.appendChild(s1v); s1.appendChild(s1l);
+  var s2 = document.createElement('div'); s2.className = 'poz-stat';
+  var s2v = document.createElement('div'); s2v.className = 'poz-stat-val'; s2v.textContent = p.basvuru||0;
+  var s2l = document.createElement('div'); s2l.className = 'poz-stat-label'; s2l.textContent = 'Eşleşme';
+  s2.appendChild(s2v); s2.appendChild(s2l);
+  stats.appendChild(s1); stats.appendChild(s2);
+  card.appendChild(stats);
+
+  // Actions (tab-dependent)
+  var actions = document.createElement('div'); actions.className = 'poz-actions';
+
+  if(_activePozTab === 'template'){
+    var btnCreate = document.createElement('button');
+    btnCreate.className = 'btn-primary btn-sm'; btnCreate.textContent = 'Şablondan Oluştur';
+    btnCreate.onclick = function(){ createFromTemplate(p.id); };
+    var btnRemove = document.createElement('button');
+    btnRemove.className = 'btn-secondary btn-sm';
+    btnRemove.style.cssText = 'color:var(--red);border-color:#fca5a5;';
+    btnRemove.textContent = 'Kaldır';
+    btnRemove.onclick = function(){ pozAction(p.id, 'untemplate'); };
+    actions.appendChild(btnCreate); actions.appendChild(btnRemove);
+  } else if(p.durum === 'active'){
+    var btnView = document.createElement('button');
+    btnView.className = 'btn-primary btn-sm'; btnView.style.gap = '5px';
+    btnView.textContent = 'Adayları Gör';
+    btnView.onclick = function(e){ openPozDetay(p.id, e); };
+    var btnClose = document.createElement('button');
+    btnClose.className = 'btn-secondary btn-sm'; btnClose.textContent = 'Kapat';
+    btnClose.onclick = function(){ pozAction(p.id, 'close'); };
+    var btnTpl = document.createElement('button');
+    btnTpl.className = 'btn-secondary btn-sm'; btnTpl.textContent = '⭐';
+    if(p.is_template) btnTpl.style.color = 'var(--verm)';
+    btnTpl.onclick = function(){ pozAction(p.id, 'template'); };
+    actions.appendChild(btnView); actions.appendChild(btnClose); actions.appendChild(btnTpl);
+  } else if(p.durum === 'draft'){
+    var btnPub = document.createElement('button');
+    btnPub.className = 'btn-primary btn-sm'; btnPub.textContent = 'Yayınla';
+    btnPub.onclick = function(){ pozAction(p.id, 'publish'); };
+    var btnDel = document.createElement('button');
+    btnDel.className = 'btn-secondary btn-sm';
+    btnDel.style.cssText = 'color:var(--red);border-color:#fca5a5;';
+    btnDel.textContent = 'Sil';
+    btnDel.onclick = function(){ deletePoz(p.id); };
+    actions.appendChild(btnPub); actions.appendChild(btnDel);
+  } else if(p.durum === 'closed'){
+    var btnReopen = document.createElement('button');
+    btnReopen.className = 'btn-primary btn-sm'; btnReopen.textContent = 'Tekrar Aç';
+    btnReopen.onclick = function(){ pozAction(p.id, 'reopen'); };
+    var btnArch = document.createElement('button');
+    btnArch.className = 'btn-secondary btn-sm'; btnArch.textContent = 'Arşivle';
+    btnArch.onclick = function(){ pozAction(p.id, 'archive'); };
+    actions.appendChild(btnReopen); actions.appendChild(btnArch);
+  } else if(p.durum === 'archived'){
+    var btnReopen2 = document.createElement('button');
+    btnReopen2.className = 'btn-primary btn-sm'; btnReopen2.textContent = 'Tekrar Aç';
+    btnReopen2.onclick = function(){ pozAction(p.id, 'reopen'); };
+    actions.appendChild(btnReopen2);
+  }
+
+  card.appendChild(actions);
+  return card;
 }
 
-async function togglePozDurum(id){
+async function pozAction(id, action){
   var p = pozisyonlar.find(function(x){return x.id===id;});
   if(!p) return;
-  var yeniDurum = p.durum==='active' ? 'closed' : 'active';
-  await updatePositionInDB(id, {durum: yeniDurum});
-  p.durum = yeniDurum;
+  var updates = {};
+  if(action === 'close'){
+    updates = {durum: 'closed', closed_at: new Date().toISOString()};
+    p.durum = 'closed'; p.closed_at = updates.closed_at;
+  } else if(action === 'publish'){
+    updates = {durum: 'active', closed_at: null};
+    p.durum = 'active'; p.closed_at = null;
+  } else if(action === 'reopen'){
+    updates = {durum: 'active', closed_at: null};
+    p.durum = 'active'; p.closed_at = null;
+  } else if(action === 'archive'){
+    updates = {durum: 'archived'};
+    p.durum = 'archived';
+  } else if(action === 'template'){
+    updates = {is_template: !p.is_template};
+    p.is_template = !p.is_template;
+  } else if(action === 'untemplate'){
+    updates = {is_template: false};
+    p.is_template = false;
+  }
+  await updatePositionInDB(id, updates);
   renderPozisyonlar();
   loadDashboardStats();
 }
 
+async function createFromTemplate(id){
+  var p = pozisyonlar.find(function(x){return x.id===id;});
+  if(!p) return;
+  var poz = {
+    ad: p.ad, sehir: p.sehir, exp: p.exp, seg: p.seg,
+    maas: p.maas, aciklama: p.aciklama, durum: 'draft'
+  };
+  var saved = await savePositionToDB(poz);
+  if(!saved){ alert('Şablondan oluşturulamadı.'); return; }
+  pozisyonlar.unshift(saved);
+  switchPozTab('draft');
+  loadDashboardStats();
+}
+
 async function deletePoz(id){
-  if(!confirm('Bu pozisyonu silmek istediğine emin misin?')) return;
+  if(!confirm('Bu taslağı silmek istediğine emin misin?')) return;
   await deletePositionFromDB(id);
   pozisyonlar = pozisyonlar.filter(function(p){return p.id!==id;});
   renderPozisyonlar();
