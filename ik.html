@@ -444,6 +444,11 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
       Favoriler
       <span class="nav-badge" id="nav-fav-count" style="display:none">0</span>
     </div>
+    <div class="nav-item" data-panel="takipciler" onclick="switchPanel('takipciler',this)">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><polyline points="17 11 19 13 23 9"/></svg>
+      Takipçiler
+      <span class="nav-badge" id="nav-follower-count" style="display:none">0</span>
+    </div>
     <div class="nav-section-label">Kampanya</div>
     <div class="nav-item" data-panel="kampanyalar" onclick="switchPanel('kampanyalar',this)">
       <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
@@ -779,6 +784,15 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
         <div class="section-title">Favoriler</div>
       </div>
       <div id="favori-list"></div>
+    </div>
+
+    <!-- ═══ TAKİPÇİLER PANELİ ═══ -->
+    <div class="panel" id="panel-takipciler">
+      <div class="section-header">
+        <div class="section-title">Takipçiler</div>
+        <div style="font-size:12px;color:var(--muted);" id="follower-panel-count"></div>
+      </div>
+      <div id="follower-list"></div>
     </div>
 
     <!-- ═══ ŞİRKET PROFİLİ PANELİ ═══ -->
@@ -1258,16 +1272,24 @@ async function loadDashboardStats(){
       supa.from('candidates').select('id', { count: 'exact', head: true }).eq('is_active', true).eq('profile_completed', true),
       supa.from('candidates').select('id', { count: 'exact', head: true }).eq('is_active', true).eq('profile_completed', true).gte('created_at', new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString())
     ];
-    // Follower count (if employer has company_id)
-    if(hrProfile && hrProfile.company_id) {
-      queries.push(
-        supa.from('candidate_company_follows').select('id', { count: 'exact', head: true }).eq('company_id', hrProfile.company_id)
-      );
-    }
     var results = await Promise.all(queries);
     var totalAday = results[0].count || 0;
     var buAyAday = results[1].count || 0;
-    var followerCount = results[2] ? (results[2].count || 0) : 0;
+
+    // Follower count: candidates who follow any brand belonging to this company
+    var followerCount = 0;
+    if(hrProfile && hrProfile.company_id) {
+      try {
+        var brandRes = await supa.from('brands').select('id').eq('company_id', hrProfile.company_id);
+        var brandIds = (brandRes.data || []).map(function(b){ return b.id; });
+        if(brandIds.length > 0) {
+          var followRes = await supa.from('candidate_brand_follows').select('candidate_id', { count: 'exact', head: true }).in('brand_id', brandIds);
+          followerCount = followRes.count || 0;
+        }
+      } catch(fErr) {
+        console.warn('Takipçi sayısı alınamadı:', fErr.message);
+      }
+    }
     var el = document.getElementById('stat-aday');
     if(el) el.textContent = totalAday.toLocaleString('tr-TR');
     var changeEl = document.getElementById('stat-aday-change');
@@ -1292,6 +1314,12 @@ async function loadDashboardStats(){
         followerChange.textContent = 'Henüz takipçi yok';
         followerChange.style.display = '';
       }
+    }
+    // Update nav badge
+    var navFollowerBadge = document.getElementById('nav-follower-count');
+    if(navFollowerBadge) {
+      navFollowerBadge.textContent = followerCount;
+      navFollowerBadge.style.display = followerCount > 0 ? '' : 'none';
     }
     // ── Activity feed ──
     loadActivityFeed();
@@ -1348,6 +1376,33 @@ async function loadActivityFeed(){
         detail: 'Takip ediliyor',
         time: null
       });
+    }
+
+    // Recent followers (last 7 days)
+    if(hrProfile && hrProfile.company_id) {
+      try {
+        var brandRes2 = await supa.from('brands').select('id').eq('company_id', hrProfile.company_id);
+        var bIds = (brandRes2.data || []).map(function(b){ return b.id; });
+        if(bIds.length > 0) {
+          var recentFollows = await supa.from('candidate_brand_follows')
+            .select('candidate_id, created_at', { count: 'exact', head: false })
+            .in('brand_id', bIds)
+            .gte('created_at', weekAgo.toISOString())
+            .order('created_at', { ascending: false })
+            .limit(5);
+          var recentCount = (recentFollows.data || []).length;
+          if(recentCount > 0) {
+            activities.unshift({
+              icon: '💜',
+              text: recentCount + ' yeni takipçi',
+              detail: 'Bu hafta markalarınızı takip etti',
+              time: (recentFollows.data[0] || {}).created_at || null
+            });
+          }
+        }
+      } catch(fErr2) {
+        console.warn('Takipçi aktivite yüklenemedi:', fErr2.message);
+      }
     }
 
     // Render
@@ -1413,6 +1468,196 @@ function timeAgo(dateStr){
   if(diff < 86400) return Math.floor(diff / 3600) + 'sa';
   if(diff < 604800) return Math.floor(diff / 86400) + 'g';
   return then.toLocaleDateString('tr-TR');
+}
+
+// ── TAKİPÇİLER PANELİ ──
+var _followersLoaded = false;
+async function loadFollowers(){
+  var list = document.getElementById('follower-list');
+  var countEl = document.getElementById('follower-panel-count');
+  if(!list) return;
+  if(_followersLoaded) return;
+
+  // Loading state
+  var spinner = document.createElement('div');
+  spinner.style.cssText = 'text-align:center;padding:40px 20px;color:var(--muted);font-size:13px;';
+  spinner.textContent = 'Takipçiler yükleniyor...';
+  list.innerHTML = '';
+  list.appendChild(spinner);
+
+  try {
+    var supa = getSupa();
+    if(!hrProfile || !hrProfile.company_id) {
+      list.innerHTML = '';
+      var noComp = document.createElement('div');
+      noComp.style.cssText = 'text-align:center;padding:40px 20px;color:var(--muted);';
+      var noIcon = document.createElement('div');
+      noIcon.style.cssText = 'font-size:48px;margin-bottom:12px;opacity:0.3;';
+      noIcon.textContent = '🏢';
+      noComp.appendChild(noIcon);
+      var noText = document.createElement('div');
+      noText.style.cssText = 'font-size:14px;';
+      noText.textContent = 'Takipçileri görmek için önce şirketinizi tanımlayın.';
+      noComp.appendChild(noText);
+      list.appendChild(noComp);
+      return;
+    }
+
+    // Get brand IDs for this company
+    var brandRes = await supa.from('brands').select('id').eq('company_id', hrProfile.company_id);
+    var brandIds = (brandRes.data || []).map(function(b){ return b.id; });
+
+    if(brandIds.length === 0) {
+      list.innerHTML = '';
+      var noBrand = document.createElement('div');
+      noBrand.style.cssText = 'text-align:center;padding:40px 20px;color:var(--muted);';
+      var nbIcon = document.createElement('div');
+      nbIcon.style.cssText = 'font-size:48px;margin-bottom:12px;opacity:0.3;';
+      nbIcon.textContent = '🏷️';
+      noBrand.appendChild(nbIcon);
+      var nbText = document.createElement('div');
+      nbText.style.cssText = 'font-size:14px;';
+      nbText.textContent = 'Şirketinize bağlı marka bulunamadı.';
+      noBrand.appendChild(nbText);
+      list.appendChild(noBrand);
+      return;
+    }
+
+    // Get follower candidate IDs (distinct)
+    var followRes = await supa.from('candidate_brand_follows')
+      .select('candidate_id, brand_id, created_at')
+      .in('brand_id', brandIds)
+      .order('created_at', { ascending: false })
+      .limit(100);
+
+    var follows = followRes.data || [];
+    if(follows.length === 0) {
+      list.innerHTML = '';
+      var emptyDiv = document.createElement('div');
+      emptyDiv.style.cssText = 'text-align:center;padding:40px 20px;color:var(--muted);';
+      var emptyIcon = document.createElement('div');
+      emptyIcon.style.cssText = 'font-size:48px;margin-bottom:12px;opacity:0.3;';
+      emptyIcon.textContent = '👥';
+      emptyDiv.appendChild(emptyIcon);
+      var emptyText = document.createElement('div');
+      emptyText.style.cssText = 'font-size:14px;';
+      emptyText.textContent = 'Henüz markalarınızı takip eden aday yok.';
+      emptyDiv.appendChild(emptyText);
+      list.appendChild(emptyDiv);
+      if(countEl) countEl.textContent = '0 takipçi';
+      _followersLoaded = true;
+      return;
+    }
+
+    // Deduplicate by candidate_id (keep earliest follow)
+    var seen = {};
+    var uniqueFollows = [];
+    follows.forEach(function(f){
+      if(!seen[f.candidate_id]) {
+        seen[f.candidate_id] = true;
+        uniqueFollows.push(f);
+      }
+    });
+
+    // Fetch candidate details
+    var candidateIds = uniqueFollows.map(function(f){ return f.candidate_id; });
+    var candRes = await supa.from('candidates')
+      .select('id, full_name, pozisyon, deneyim_yil, tercih_sehirler, avatar_url')
+      .in('id', candidateIds)
+      .eq('is_active', true)
+      .eq('profile_completed', true);
+
+    var candidates = candRes.data || [];
+    var candMap = {};
+    candidates.forEach(function(c){ candMap[c.id] = c; });
+
+    // Also get brand names for display
+    var brandNameRes = await supa.from('brands').select('id, name').in('id', brandIds);
+    var brandNameMap = {};
+    (brandNameRes.data || []).forEach(function(b){ brandNameMap[b.id] = b.name; });
+
+    list.innerHTML = '';
+    if(countEl) countEl.textContent = uniqueFollows.length + ' takipçi';
+
+    uniqueFollows.forEach(function(f){
+      var cand = candMap[f.candidate_id];
+      if(!cand) return; // candidate not active/completed
+
+      var card = document.createElement('div');
+      card.style.cssText = 'display:flex;align-items:center;gap:14px;padding:14px 16px;border-bottom:1px solid var(--border);transition:background 0.15s;cursor:pointer;';
+      card.onmouseover = function(){ card.style.background = '#f9f9f7'; };
+      card.onmouseout = function(){ card.style.background = ''; };
+
+      // Avatar
+      var avatar = document.createElement('div');
+      avatar.style.cssText = 'width:44px;height:44px;border-radius:50%;background:var(--navy);color:white;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;flex-shrink:0;overflow:hidden;';
+      if(cand.avatar_url) {
+        var img = document.createElement('img');
+        img.src = cand.avatar_url;
+        img.alt = '';
+        img.style.cssText = 'width:100%;height:100%;object-fit:cover;';
+        avatar.appendChild(img);
+      } else {
+        var initials = (cand.full_name || '?').split(' ').map(function(w){ return w.charAt(0); }).join('').substring(0, 2).toUpperCase();
+        avatar.textContent = initials;
+      }
+      card.appendChild(avatar);
+
+      // Info
+      var info = document.createElement('div');
+      info.style.cssText = 'flex:1;min-width:0;';
+      var nameEl = document.createElement('div');
+      nameEl.style.cssText = 'font-weight:600;font-size:14px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;';
+      nameEl.textContent = cand.full_name || 'İsimsiz Aday';
+      info.appendChild(nameEl);
+
+      var detailEl = document.createElement('div');
+      detailEl.style.cssText = 'font-size:12px;color:var(--muted);margin-top:2px;';
+      var detailParts = [];
+      if(cand.pozisyon) detailParts.push(cand.pozisyon);
+      if(cand.deneyim_yil) detailParts.push(cand.deneyim_yil + ' yıl');
+      if(cand.tercih_sehirler) {
+        try {
+          var sehirler = typeof cand.tercih_sehirler === 'string' ? JSON.parse(cand.tercih_sehirler) : cand.tercih_sehirler;
+          if(Array.isArray(sehirler) && sehirler.length > 0) detailParts.push(sehirler[0]);
+        } catch(e){}
+      }
+      detailEl.textContent = detailParts.join(' · ') || 'Bilgi yok';
+      info.appendChild(detailEl);
+
+      // Brand followed
+      var brandName = brandNameMap[f.brand_id];
+      if(brandName) {
+        var brandTag = document.createElement('div');
+        brandTag.style.cssText = 'font-size:11px;color:var(--verm);margin-top:3px;';
+        brandTag.textContent = '♥ ' + brandName + ' takipçisi';
+        info.appendChild(brandTag);
+      }
+      card.appendChild(info);
+
+      // Follow time
+      var timeEl = document.createElement('span');
+      timeEl.style.cssText = 'font-size:10px;color:var(--muted);flex-shrink:0;font-family:"DM Mono",monospace;';
+      timeEl.textContent = timeAgo(f.created_at);
+      card.appendChild(timeEl);
+
+      // Click to open drawer
+      card.onclick = function(){
+        if(typeof openDrawer === 'function') openDrawer(cand.id);
+      };
+
+      list.appendChild(card);
+    });
+
+    _followersLoaded = true;
+  } catch(e) {
+    console.error('Takipçiler yüklenemedi:', e.message);
+    list.innerHTML = '';
+    var errDiv = document.createElement('div');
+    errDiv.style.cssText = 'text-align:center;padding:40px 20px;color:var(--verm);font-size:13px;';
+    errDiv.textContent = 'Takipçiler yüklenirken hata oluştu.';
+    list.appendChild(errDiv);
+  }
 }
 
 // ── POZİSYONLAR (Supabase CRUD) ──
@@ -1738,6 +1983,7 @@ var PANEL_TITLES = {
   pozisyonlar:'Açık Pozisyonlar',
   favoriler:'Favoriler',
   sirket:'Şirket Profili',
+  takipciler:'Takipçiler',
   kampanyalar:'Kampanyalar',
   ayarlar:'Ayarlar'
 };
@@ -1801,6 +2047,8 @@ function switchPanel(name, el){
   } else if(!history.state) {
     history.replaceState(state, '', '#'+name);
   }
+  // lazy-load panel data
+  if(name === 'takipciler') loadFollowers();
   // mobile — scroll to top
   window.scrollTo({top:0, behavior:'smooth'});
 }
