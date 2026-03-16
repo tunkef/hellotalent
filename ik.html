@@ -370,6 +370,28 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
 .poz-tab.active{color:var(--verm);border-bottom-color:var(--verm);}
 .poz-tab .tab-count{display:inline-block;background:var(--bg);border-radius:10px;padding:1px 7px;font-size:10px;margin-left:5px;font-weight:700;}
 .poz-tab.active .tab-count{background:rgba(201,78,40,0.1);color:var(--verm);}
+.acc-item{border:1px solid var(--border);border-radius:10px;overflow:hidden;background:white;transition:box-shadow 0.15s;}
+.acc-item.open{box-shadow:0 2px 8px rgba(0,0,0,0.08);}
+.acc-header{display:flex;align-items:center;gap:12px;padding:12px 16px;cursor:pointer;transition:background 0.1s;}
+.acc-header:hover{background:var(--bg);}
+.acc-avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:white;flex-shrink:0;}
+.acc-info{flex:1;min-width:0;}
+.acc-name{font-size:13px;font-weight:700;display:flex;align-items:center;gap:6px;}
+.acc-sub{font-size:11px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.acc-badges{display:flex;gap:4px;flex-shrink:0;flex-wrap:wrap;}
+.acc-badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;}
+.acc-badge-green{background:#DCFCE7;color:#16A34A;}
+.acc-badge-blue{background:#DBEAFE;color:#2563EB;}
+.acc-badge-muted{background:var(--bg);color:var(--muted);}
+.acc-body{display:none;padding:0 16px 16px;border-top:1px solid var(--border);}
+.acc-item.open .acc-body{display:block;}
+.acc-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;}
+.acc-field{font-size:11px;}
+.acc-field-label{color:var(--muted);font-weight:600;margin-bottom:2px;}
+.acc-field-val{color:var(--text);font-weight:500;}
+.acc-section{font-size:11px;font-weight:700;color:var(--navy);margin-top:14px;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px;}
+.acc-exp-item{font-size:11px;padding:6px 0;border-bottom:1px solid #f3f4f6;}
+.acc-exp-item:last-child{border-bottom:none;}
 </style>
 </head>
 <body>
@@ -1039,7 +1061,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
 <div class="modal-overlay" id="poz-modal-overlay">
   <div class="modal">
     <div class="modal-header">
-      <span class="modal-title">Pozisyon Ekle</span>
+      <span class="modal-title" id="poz-modal-title">Pozisyon Ekle</span>
       <button class="modal-close" onclick="closePozModal()">✕</button>
     </div>
     <div class="form-row">
@@ -1105,9 +1127,11 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
       <label class="form-label">Pozisyon Açıklaması</label>
       <textarea class="form-input form-textarea" id="poz-aciklama" placeholder="Görev tanımı, beklentiler..."></textarea>
     </div>
-    <div class="form-footer" style="display:flex;gap:8px;">
+    <div class="form-footer" style="display:flex;gap:8px;flex-wrap:wrap;">
       <button class="btn-secondary" onclick="closePozModal()">İptal</button>
-      <button class="btn-secondary" id="btn-poz-draft" onclick="savePozisyon('draft')" style="margin-left:auto;">Taslak Kaydet</button>
+      <button class="btn-secondary" id="btn-poz-close-action" onclick="editPozClose()" style="color:var(--red);border-color:#fca5a5;display:none;">Pozisyonu Kapat</button>
+      <div style="flex:1;"></div>
+      <button class="btn-secondary" id="btn-poz-draft" onclick="savePozisyon('draft')">Taslak Kaydet</button>
       <button class="btn-primary" id="btn-poz-save" onclick="savePozisyon('active')">Yayınla →</button>
     </div>
   </div>
@@ -1329,7 +1353,7 @@ async function loadLiveCandidates(){
   try {
     var sb = getSupa();
     if(!sb){ throw new Error('Supabase bağlantısı yok'); }
-    var { data: rows, error: err } = await sb.from('candidates').select('id, full_name, adres_il, avatar_url, telefon, email, is_active, profile_completed, hide_from_current_employer, is_actively_looking').eq('is_active', true).eq('profile_completed', true);
+    var { data: rows, error: err } = await sb.from('candidates').select('id, full_name, adres_il, avatar_url, telefon, email, is_active, profile_completed, hide_from_current_employer, is_actively_looking, updated_at').eq('is_active', true).eq('profile_completed', true);
     if(err) throw err;
     if(!rows || rows.length === 0){ ADAYLAR = []; renderCandidates(ADAYLAR); return; }
     // ── Blocked companies filter ──
@@ -1397,7 +1421,12 @@ async function loadLiveCandidates(){
         email: maskEmail(c.email),
         brand: (exp0 && (exp0.marka || exp0.sirket)) ? (exp0.marka || exp0.sirket) : '',
         maas: (workPrefs && workPrefs.maas_beklenti) ? workPrefs.maas_beklenti + ' TL' : '',
-        aktifAriyor: c.is_actively_looking === true
+        aktifAriyor: c.is_actively_looking === true,
+        updated_at: c.updated_at || null,
+        experiences: exp,
+        education: edu,
+        languages: languages,
+        devamEdiyor: (exp0 && exp0.devam_ediyor) ? true : false
       };
     });
     renderCandidates(ADAYLAR);
@@ -1789,9 +1818,59 @@ function closeDrawer(){
 
 // ── POZİSYON LIFECYCLE ──
 var _activePozTab = 'active';
+var _editingPozId = null;
 
-function openPozModal(){ document.getElementById('poz-modal-overlay').classList.add('show'); }
-function closePozModal(){ document.getElementById('poz-modal-overlay').classList.remove('show'); }
+function openPozModal(){
+  _editingPozId = null;
+  document.getElementById('poz-modal-title').textContent = 'Pozisyon Ekle';
+  document.getElementById('btn-poz-close-action').style.display = 'none';
+  document.getElementById('btn-poz-draft').style.display = '';
+  document.getElementById('btn-poz-save').textContent = 'Yayınla →';
+  ['poz-ad','poz-exp','poz-maas','poz-aciklama'].forEach(function(fid){ document.getElementById(fid).value=''; });
+  var selects = ['poz-sehir','poz-seg'];
+  selects.forEach(function(fid){ document.getElementById(fid).selectedIndex = 0; });
+  document.getElementById('poz-modal-overlay').classList.add('show');
+}
+
+function openPozForEdit(id){
+  var p = pozisyonlar.find(function(x){return x.id===id;});
+  if(!p) return;
+  _editingPozId = id;
+  document.getElementById('poz-modal-title').textContent = 'Pozisyon Düzenle';
+  document.getElementById('btn-poz-close-action').style.display = (p.durum==='active') ? '' : 'none';
+  document.getElementById('btn-poz-draft').style.display = 'none';
+  document.getElementById('btn-poz-save').textContent = 'Kaydet →';
+  document.getElementById('poz-ad').value = p.ad || '';
+  document.getElementById('poz-exp').value = (p.exp === '—' ? '' : p.exp) || '';
+  document.getElementById('poz-maas').value = (p.maas === '—' ? '' : p.maas) || '';
+  document.getElementById('poz-aciklama').value = p.aciklama || '';
+  // Set selects
+  var sehirSel = document.getElementById('poz-sehir');
+  for(var i=0; i<sehirSel.options.length; i++){
+    if(sehirSel.options[i].value === p.sehir || sehirSel.options[i].text === p.sehir){
+      sehirSel.selectedIndex = i; break;
+    }
+  }
+  var segSel = document.getElementById('poz-seg');
+  for(var j=0; j<segSel.options.length; j++){
+    if(segSel.options[j].value === p.seg || segSel.options[j].text === p.seg){
+      segSel.selectedIndex = j; break;
+    }
+  }
+  document.getElementById('poz-modal-overlay').classList.add('show');
+}
+
+async function editPozClose(){
+  if(!_editingPozId) return;
+  if(!confirm('Bu pozisyonu kapatmak istediğine emin misin?')) return;
+  await pozAction(_editingPozId, 'close');
+  closePozModal();
+}
+
+function closePozModal(){
+  _editingPozId = null;
+  document.getElementById('poz-modal-overlay').classList.remove('show');
+}
 
 function switchPozTab(tab){
   _activePozTab = tab;
@@ -1834,25 +1913,32 @@ async function savePozisyon(durum){
   var origText = activeBtn ? activeBtn.textContent : '';
   if(activeBtn) activeBtn.textContent = 'Kaydediliyor...';
   try {
-    var poz = {
+    var pozData = {
       ad: ad,
       sehir: document.getElementById('poz-sehir').value,
       exp: document.getElementById('poz-exp').value || '—',
       seg: document.getElementById('poz-seg').value,
       maas: document.getElementById('poz-maas').value || '—',
-      aciklama: document.getElementById('poz-aciklama').value,
-      durum: durum || 'active'
+      aciklama: document.getElementById('poz-aciklama').value
     };
-    var saved = await savePositionToDB(poz);
-    if(!saved){ alert('Pozisyon kaydedilemedi. Tekrar deneyin.'); return; }
-    pozisyonlar.unshift(saved);
-    switchPozTab(durum || 'active');
+    if(_editingPozId){
+      // Düzenleme modu — mevcut pozisyonu güncelle
+      await updatePositionInDB(_editingPozId, pozData);
+      var existing = pozisyonlar.find(function(x){return x.id===_editingPozId;});
+      if(existing){ for(var k in pozData){ existing[k] = pozData[k]; } }
+    } else {
+      // Yeni oluşturma modu
+      pozData.durum = durum || 'active';
+      var saved = await savePositionToDB(pozData);
+      if(!saved){ alert('Pozisyon kaydedilemedi. Tekrar deneyin.'); return; }
+      pozisyonlar.unshift(saved);
+    }
+    renderPozisyonlar();
     loadDashboardStats();
     closePozModal();
-    ['poz-ad','poz-exp','poz-maas','poz-aciklama'].forEach(function(fid){ document.getElementById(fid).value=''; });
   } finally {
     _pozSaving = false;
-    if(btnSave){ btnSave.disabled = false; btnSave.textContent = 'Yayınla →'; }
+    if(btnSave){ btnSave.disabled = false; btnSave.textContent = _editingPozId ? 'Kaydet →' : 'Yayınla →'; }
     if(btnDraft){ btnDraft.disabled = false; btnDraft.textContent = 'Taslak Kaydet'; }
   }
 }
@@ -1959,14 +2045,14 @@ function buildPozCard(p){
     btnView.className = 'btn-primary btn-sm'; btnView.style.gap = '5px';
     btnView.textContent = 'Adayları Gör';
     btnView.onclick = function(e){ openPozDetay(p.id, e); };
-    var btnClose = document.createElement('button');
-    btnClose.className = 'btn-secondary btn-sm'; btnClose.textContent = 'Kapat';
-    btnClose.onclick = function(){ pozAction(p.id, 'close'); };
+    var btnEdit = document.createElement('button');
+    btnEdit.className = 'btn-secondary btn-sm'; btnEdit.textContent = 'Düzenle';
+    btnEdit.onclick = function(){ openPozForEdit(p.id); };
     var btnTpl = document.createElement('button');
     btnTpl.className = 'btn-secondary btn-sm'; btnTpl.textContent = '⭐';
     if(p.is_template) btnTpl.style.color = 'var(--verm)';
     btnTpl.onclick = function(){ pozAction(p.id, 'template'); };
-    actions.appendChild(btnView); actions.appendChild(btnClose); actions.appendChild(btnTpl);
+    actions.appendChild(btnView); actions.appendChild(btnEdit); actions.appendChild(btnTpl);
   } else if(p.durum === 'draft'){
     var btnPub = document.createElement('button');
     btnPub.className = 'btn-primary btn-sm'; btnPub.textContent = 'Yayınla';
@@ -1979,8 +2065,8 @@ function buildPozCard(p){
     actions.appendChild(btnPub); actions.appendChild(btnDel);
   } else if(p.durum === 'closed'){
     var btnReopen = document.createElement('button');
-    btnReopen.className = 'btn-primary btn-sm'; btnReopen.textContent = 'Tekrar Aç';
-    btnReopen.onclick = function(){ pozAction(p.id, 'reopen'); };
+    btnReopen.className = 'btn-primary btn-sm'; btnReopen.textContent = 'Düzenle & Aç';
+    btnReopen.onclick = function(){ openPozForEdit(p.id); };
     var btnArch = document.createElement('button');
     btnArch.className = 'btn-secondary btn-sm'; btnArch.textContent = 'Arşivle';
     btnArch.onclick = function(){ pozAction(p.id, 'archive'); };
@@ -2053,10 +2139,9 @@ function openPozDetay(id, e){
   var p = pozisyonlar.find(function(x){return x.id===id;});
   if(!p) return;
   document.getElementById('poz-detay-baslik').textContent = p.ad + ' — Eşleşen Adaylar';
-  document.getElementById('poz-detay-alt').textContent = p.sehir + ' · ' + (p.exp||'—') + ' yıl deneyim · ' + (p.seg||'');
-  // Eşleşme kriterleri
-  document.getElementById('poz-detay-kriter-text').textContent = 
-    'Eşleşme kriterleri: Pozisyon = ' + p.ad + (p.sehir?' | Şehir = '+p.sehir:'') + (p.seg?' | Segment = '+p.seg:'');
+  document.getElementById('poz-detay-alt').textContent = (p.sehir||'—') + ' · ' + (p.exp||'—') + ' yıl deneyim · ' + (p.seg||'');
+  document.getElementById('poz-detay-kriter-text').textContent =
+    'Eşleşme: ' + p.ad + (p.sehir?' | '+p.sehir:'') + (p.seg?' | '+p.seg:'');
   // Eşleşen adayları bul
   var matched = ADAYLAR.filter(function(c){
     var pozMatch = !p.ad || c.pozisyon.toLowerCase().indexOf(p.ad.toLowerCase().split(' ')[0]) !== -1;
@@ -2064,35 +2149,158 @@ function openPozDetay(id, e){
     var segMatch = !p.seg || c.segment === p.seg;
     return pozMatch || sehirMatch || segMatch;
   });
-  document.getElementById('poz-detay-count-text').textContent = matched.length + ' eşleşen aday bulundu';
-  // Render
+  document.getElementById('poz-detay-count-text').textContent = matched.length + ' eşleşen aday';
+  // Render akordiyon
   var liste = document.getElementById('poz-detay-liste');
+  liste.textContent = '';
   if(matched.length === 0){
-    liste.innerHTML = '<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-title">Henüz eşleşme yok</div><div class="empty-sub">Bu pozisyon kriterlerine uyan aday bulunamadı. Kriterleri genişletmeyi deneyin.</div></div>';
+    var empty = document.createElement('div'); empty.className = 'empty-state';
+    var eIcon = document.createElement('div'); eIcon.className = 'empty-icon'; eIcon.textContent = '🔍';
+    var eTitle = document.createElement('div'); eTitle.className = 'empty-title'; eTitle.textContent = 'Henüz eşleşme yok';
+    var eSub = document.createElement('div'); eSub.className = 'empty-sub'; eSub.textContent = 'Bu pozisyon kriterlerine uyan aday bulunamadı.';
+    empty.appendChild(eIcon); empty.appendChild(eTitle); empty.appendChild(eSub);
+    liste.appendChild(empty);
   } else {
-    liste.innerHTML = matched.map(function(c){
-      var isFav = favorites.indexOf(c.id) !== -1;
-      return '<div class="candidate-card" onclick="openDrawer('+c.id+')" style="cursor:pointer;">'
-        +'<div class="cc-top">'
-        +'<div class="cc-avatar blur" style="background:'+c.color+'">'+c.initials+'</div>'
-        +'<div class="cc-info">'
-        +'<div class="cc-name">'+c.ad[0]+'. '+c.soyad+'</div>'
-        +'<div class="cc-pos">'+c.pozisyon+' · '+c.exp+' yıl · '+c.sehir+'</div>'
-        +'</div>'
-        +'<div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">'
-        +'<span style="font-size:11px;font-weight:700;background:var(--bg);color:var(--muted);padding:3px 9px;border-radius:20px;">'+c.segment+'</span>'
-        +'<span class="badge badge-'+(c.musait==='Hemen'?'green':'blue')+'">'+c.musait+'</span>'
-        +'</div>'
-        +'</div>'
-        +'<div class="cc-actions" onclick="event.stopPropagation()">'
-        +'<button class="cc-fav-btn '+(isFav?'active':'')+'" onclick="toggleFav('+c.id+',this)" title="Favoriye ekle">★</button>'
-        +'<button class="btn-primary btn-sm" onclick="openDrawer('+c.id+');closePozDetay();" style="font-size:11px;padding:5px 12px;">Profili Gör →</button>'
-        +'</div>'
-        +'</div>';
-    }).join('');
+    matched.forEach(function(c){
+      liste.appendChild(buildAccordionItem(c));
+    });
   }
   document.getElementById('poz-detay-overlay').classList.add('show');
   document.body.style.overflow='hidden';
+}
+
+function buildAccordionItem(c){
+  var item = document.createElement('div'); item.className = 'acc-item';
+  // Header
+  var header = document.createElement('div'); header.className = 'acc-header';
+  var avatar = document.createElement('div'); avatar.className = 'acc-avatar';
+  avatar.style.background = c.color; avatar.textContent = c.initials;
+  var info = document.createElement('div'); info.className = 'acc-info';
+  var name = document.createElement('div'); name.className = 'acc-name';
+  name.textContent = c.ad[0] + '. ' + c.soyad;
+  var sub = document.createElement('div'); sub.className = 'acc-sub';
+  var statusIcon = c.devamEdiyor ? '🟢' : '⚪';
+  var statusText = c.devamEdiyor ? 'Çalışıyor' : 'Çalışmıyor';
+  sub.textContent = statusIcon + ' ' + statusText + ' · ' + (c.pozisyon || 'Pozisyon belirtilmemiş') + ' · ' + c.exp + ' yıl';
+  info.appendChild(name); info.appendChild(sub);
+  var badges = document.createElement('div'); badges.className = 'acc-badges';
+  if(c.aktifAriyor){
+    var bActive = document.createElement('span'); bActive.className = 'acc-badge acc-badge-green';
+    bActive.textContent = 'Aktif Arıyor'; badges.appendChild(bActive);
+  }
+  if(c.musait){
+    var bMusait = document.createElement('span'); bMusait.className = 'acc-badge acc-badge-blue';
+    bMusait.textContent = c.musait; badges.appendChild(bMusait);
+  }
+  // Updated at badge
+  if(c.updated_at){
+    var d = new Date(c.updated_at);
+    var now = new Date();
+    var diffDays = Math.floor((now - d) / (1000*60*60*24));
+    var timeText = diffDays === 0 ? 'Bugün' : diffDays === 1 ? 'Dün' : diffDays + ' gün önce';
+    var bUpdated = document.createElement('span'); bUpdated.className = 'acc-badge acc-badge-muted';
+    bUpdated.textContent = '🔄 ' + timeText; badges.appendChild(bUpdated);
+  }
+  header.appendChild(avatar); header.appendChild(info); header.appendChild(badges);
+  // Body (initially hidden)
+  var body = document.createElement('div'); body.className = 'acc-body';
+  // Temel bilgiler grid
+  var sec1 = document.createElement('div'); sec1.className = 'acc-section'; sec1.textContent = 'Temel Bilgiler';
+  body.appendChild(sec1);
+  var grid = document.createElement('div'); grid.className = 'acc-grid';
+  var fields = [
+    ['Şehir', c.sehir || '—'],
+    ['Deneyim', c.exp + ' yıl'],
+    ['Segment', c.segment || '—'],
+    ['Çalışma Tipi', c.calisma || '—'],
+    ['Eğitim', c.egitim || '—'],
+    ['Maaş Beklenti', c.maas || '—'],
+    ['Müsaitlik', c.musait || '—'],
+    ['Marka', c.brand || '—']
+  ];
+  fields.forEach(function(f){
+    var field = document.createElement('div'); field.className = 'acc-field';
+    var label = document.createElement('div'); label.className = 'acc-field-label'; label.textContent = f[0];
+    var val = document.createElement('div'); val.className = 'acc-field-val'; val.textContent = f[1];
+    field.appendChild(label); field.appendChild(val); grid.appendChild(field);
+  });
+  body.appendChild(grid);
+  // Diller
+  if(c.diller && c.diller.length > 0){
+    var secLang = document.createElement('div'); secLang.className = 'acc-section'; secLang.textContent = 'Diller';
+    body.appendChild(secLang);
+    var langDiv = document.createElement('div'); langDiv.style.cssText = 'display:flex;gap:4px;flex-wrap:wrap;';
+    c.diller.forEach(function(d){
+      var chip = document.createElement('span'); chip.className = 'acc-badge acc-badge-muted'; chip.textContent = d;
+      langDiv.appendChild(chip);
+    });
+    body.appendChild(langDiv);
+  }
+  // Deneyimler
+  if(c.experiences && c.experiences.length > 0){
+    var secExp = document.createElement('div'); secExp.className = 'acc-section'; secExp.textContent = 'Deneyim Geçmişi';
+    body.appendChild(secExp);
+    c.experiences.forEach(function(exp){
+      var expItem = document.createElement('div'); expItem.className = 'acc-exp-item';
+      var expTitle = (exp.pozisyon || '?') + ' — ' + (exp.marka || exp.sirket || '?');
+      var expYears = (exp.baslangic_yil || '?') + ' – ' + (exp.devam_ediyor ? 'Devam' : (exp.bitis_yil || '?'));
+      expItem.textContent = expTitle + ' (' + expYears + ')';
+      body.appendChild(expItem);
+    });
+  }
+  // Eğitim
+  if(c.education && c.education.length > 0){
+    var secEdu = document.createElement('div'); secEdu.className = 'acc-section'; secEdu.textContent = 'Eğitim';
+    body.appendChild(secEdu);
+    c.education.forEach(function(edu){
+      var eduItem = document.createElement('div'); eduItem.className = 'acc-exp-item';
+      eduItem.textContent = (edu.egitim_seviye || '?') + ' — ' + (edu.okul || '?') + (edu.bolum ? ' / ' + edu.bolum : '');
+      body.appendChild(eduItem);
+    });
+  }
+  // İletişim (masked) + CV
+  var secContact = document.createElement('div'); secContact.className = 'acc-section'; secContact.textContent = 'İletişim';
+  body.appendChild(secContact);
+  var contactGrid = document.createElement('div'); contactGrid.className = 'acc-grid';
+  [['Telefon', c.tel], ['E-posta', c.email]].forEach(function(f){
+    var field = document.createElement('div'); field.className = 'acc-field';
+    var label = document.createElement('div'); label.className = 'acc-field-label'; label.textContent = f[0];
+    var val = document.createElement('div'); val.className = 'acc-field-val masked'; val.textContent = f[1];
+    field.appendChild(label); field.appendChild(val); contactGrid.appendChild(field);
+  });
+  body.appendChild(contactGrid);
+  // Action buttons
+  var actionRow = document.createElement('div'); actionRow.style.cssText = 'display:flex;gap:8px;margin-top:14px;';
+  var isFav = favorites.indexOf(c.id) !== -1;
+  var btnFav = document.createElement('button');
+  btnFav.className = 'btn-secondary btn-sm';
+  btnFav.style.cssText = isFav ? 'border-color:#f59e0b;color:#d97706;' : '';
+  btnFav.textContent = isFav ? '★ Favoride' : '☆ Favoriye Ekle';
+  btnFav.onclick = function(){ toggleFav(c.id, btnFav); btnFav.textContent = favorites.indexOf(c.id)!==-1 ? '★ Favoride' : '☆ Favoriye Ekle'; btnFav.style.cssText = favorites.indexOf(c.id)!==-1 ? 'border-color:#f59e0b;color:#d97706;' : ''; };
+  var btnCv = document.createElement('button');
+  btnCv.className = 'btn-primary btn-sm';
+  btnCv.style.cssText = 'filter:blur(2px);pointer-events:none;';
+  btnCv.textContent = '📄 CV İndir';
+  var btnPrem = document.createElement('button');
+  btnPrem.className = 'btn-secondary btn-sm';
+  btnPrem.style.cssText = 'background:var(--navy);color:white;border-color:var(--navy);';
+  btnPrem.textContent = '🔒 Premium';
+  btnPrem.onclick = function(){ showUpgradeModal(); };
+  actionRow.appendChild(btnFav); actionRow.appendChild(btnCv); actionRow.appendChild(btnPrem);
+  body.appendChild(actionRow);
+
+  item.appendChild(header);
+  item.appendChild(body);
+  // Toggle accordion
+  header.addEventListener('click', function(){
+    var wasOpen = item.classList.contains('open');
+    // Close all
+    var allItems = item.parentNode.querySelectorAll('.acc-item');
+    for(var i=0; i<allItems.length; i++) allItems[i].classList.remove('open');
+    // Open this one if it was closed
+    if(!wasOpen) item.classList.add('open');
+  });
+  return item;
 }
 
 function closePozDetay(){
