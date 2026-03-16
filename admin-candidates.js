@@ -49,8 +49,6 @@
 
   /* ── LOAD CANDIDATES DATA ── */
   window._htAdminLoadCandidates = async function() {
-    if (loaded) return;
-
     var container = document.getElementById('candidates-content');
     if (!container) return;
 

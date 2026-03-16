@@ -521,22 +521,28 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
 
   /* ── SESSION INIT ── */
   async function initSession() {
-    var sessionRes = await _supa.auth.getSession();
-    var session = sessionRes.data?.session;
+    try {
+      var sessionRes = await _supa.auth.getSession();
+      var session = sessionRes.data?.session;
 
-    if (!session) {
+      if (!session) {
+        showScreen('login');
+        return;
+      }
+
+      var admin = await checkAdminAccess(session.user.id);
+      if (!admin) {
+        showScreen('unauthorized');
+        return;
+      }
+
+      window._htAdminUser = admin;
+      showAdminDashboard(session.user, admin);
+    } catch(e) {
+      console.error('Session init error:', e);
       showScreen('login');
-      return;
+      showLoginError('Sunucuya bağlanılamadı. Lütfen tekrar deneyin.');
     }
-
-    var admin = await checkAdminAccess(session.user.id);
-    if (!admin) {
-      showScreen('unauthorized');
-      return;
-    }
-
-    window._htAdminUser = admin;
-    showAdminDashboard(session.user, admin);
   }
 
   /* ── LOGIN ── */

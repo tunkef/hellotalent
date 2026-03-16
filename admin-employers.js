@@ -103,8 +103,6 @@
 
   /* ── LOAD EMPLOYERS DATA ── */
   window._htAdminLoadEmployers = async function() {
-    if (loaded) return;
-
     var container = document.getElementById('employers-content');
     if (!container) return;
 
@@ -118,7 +116,7 @@
         supa.from('hr_profiles').select('id', { count: 'exact', head: true }).not('company_id', 'is', null),
         supa.from('hr_profiles').select('id', { count: 'exact', head: true }).is('company_id', null),
         // Row 2: Campaign activity — get employers with active-ish campaigns
-        supa.from('campaigns').select('created_by').in('status', ['active', 'approved', 'pending_review']),
+        supa.from('campaigns').select('created_by').in('status', ['active', 'approved', 'pending_review']).limit(1000),
         // Recent registrations (last 10)
         supa.from('hr_profiles').select('id, full_name, email, company_id, created_at, companies(company_name)').order('created_at', { ascending: false }).limit(10)
       ]);
