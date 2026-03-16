@@ -21,7 +21,8 @@
   var FILTERS = [
     { key: 'all',         label: 'Tümü' },
     { key: 'employer_dm', label: 'İşveren Mesajları' },
-    { key: 'unread',      label: 'Okunmamış' }
+    { key: 'unread',      label: 'Okunmamış' },
+    { key: 'deleted',     label: 'Silinenler' }
   ];
 
   /* ═══════════════════════════════════════════════════════════════
@@ -114,18 +115,23 @@
       btn.type = 'button';
       btn.textContent = f.label;
       btn.dataset.filter = f.key;
+      var isDeletedTab = f.key === 'deleted';
+      var isActiveTab = f.key === currentFilter;
+      var activeBg = isDeletedTab ? '#DC2626' : 'var(--navy)';
       btn.style.cssText = 'padding:6px 14px;border-radius:20px;border:1px solid var(--border);background:' +
-        (f.key === currentFilter ? 'var(--navy)' : 'white') + ';color:' +
-        (f.key === currentFilter ? 'white' : 'var(--text)') +
-        ';font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;transition:all .2s;';
+        (isActiveTab ? activeBg : 'white') + ';color:' +
+        (isActiveTab ? 'white' : (isDeletedTab ? '#DC2626' : 'var(--text)')) +
+        ';font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;transition:all .2s;' +
+        (isDeletedTab ? 'margin-left:auto;' : '');
 
       btn.addEventListener('click', function() {
         currentFilter = f.key;
         var tabs = container.querySelectorAll('button');
         for (var i = 0; i < tabs.length; i++) {
           var isActive = tabs[i].dataset.filter === currentFilter;
-          tabs[i].style.background = isActive ? 'var(--navy)' : 'white';
-          tabs[i].style.color = isActive ? 'white' : 'var(--text)';
+          var isDel = tabs[i].dataset.filter === 'deleted';
+          tabs[i].style.background = isActive ? (isDel ? '#DC2626' : 'var(--navy)') : 'white';
+          tabs[i].style.color = isActive ? 'white' : (isDel ? '#DC2626' : 'var(--text)');
         }
         renderMessages();
       });
@@ -142,17 +148,39 @@
     var emptyEl = document.getElementById('inbox-empty');
     if (!listEl) return;
 
-    var filtered = allMessages;
-    if (currentFilter === 'unread') {
-      filtered = allMessages.filter(function(m) { return m.status !== 'read'; });
-    } else if (currentFilter !== 'all') {
-      filtered = allMessages.filter(function(m) { return m.message_type === currentFilter; });
+    var filtered;
+    if (currentFilter === 'deleted') {
+      // Silinenler: sadece status=deleted olanlar
+      filtered = allMessages.filter(function(m) { return m.status === 'deleted'; });
+    } else if (currentFilter === 'unread') {
+      filtered = allMessages.filter(function(m) { return m.status !== 'read' && m.status !== 'deleted'; });
+    } else if (currentFilter === 'all') {
+      // Tümü: deleted hariç
+      filtered = allMessages.filter(function(m) { return m.status !== 'deleted'; });
+    } else {
+      // Tip filtresi (employer_dm vb.): deleted hariç
+      filtered = allMessages.filter(function(m) { return m.message_type === currentFilter && m.status !== 'deleted'; });
     }
 
     while (listEl.firstChild) listEl.removeChild(listEl.firstChild);
 
     if (filtered.length === 0) {
-      if (emptyEl) emptyEl.style.display = '';
+      if (emptyEl) {
+        // Dynamic empty state text based on active filter
+        var emptyIcon = emptyEl.querySelector('div:first-child');
+        var emptyTitle = emptyEl.querySelector('div:nth-child(2)');
+        var emptyDesc = emptyEl.querySelector('div:nth-child(3)');
+        if (currentFilter === 'deleted') {
+          if (emptyIcon) emptyIcon.textContent = '\uD83D\uDDD1\uFE0F';
+          if (emptyTitle) emptyTitle.textContent = 'Silinen mesaj yok';
+          if (emptyDesc) emptyDesc.textContent = 'Sildi\u011Finiz mesajlar burada g\u00F6r\u00FCnecek';
+        } else {
+          if (emptyIcon) emptyIcon.textContent = '\u2709\uFE0F';
+          if (emptyTitle) emptyTitle.textContent = 'Hen\u00FCz mesaj\u0131n yok';
+          if (emptyDesc) emptyDesc.textContent = 'Kampanya bildirimleri ve i\u015Fveren mesajlar\u0131 burada g\u00F6r\u00FCnecek';
+        }
+        emptyEl.style.display = '';
+      }
       return;
     }
     if (emptyEl) emptyEl.style.display = 'none';
@@ -245,8 +273,42 @@
     bodyEl.textContent = msg.body;
     card.appendChild(bodyEl);
 
+    // Action row: delete or restore button
+    var isDeleted = msg.status === 'deleted';
+    var actionRow = document.createElement('div');
+    actionRow.style.cssText = 'display:flex;justify-content:flex-end;margin-top:8px;gap:8px;';
+
+    if (isDeleted) {
+      // Restore button for deleted messages
+      var restoreBtn = document.createElement('button');
+      restoreBtn.type = 'button';
+      restoreBtn.textContent = 'Geri Al';
+      restoreBtn.style.cssText = 'padding:4px 12px;border-radius:8px;border:1px solid var(--border);background:white;color:var(--navy);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s;';
+      restoreBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        restoreMessage(msg.id);
+      });
+      actionRow.appendChild(restoreBtn);
+    } else {
+      // Delete button for active messages
+      var deleteBtn = document.createElement('button');
+      deleteBtn.type = 'button';
+      deleteBtn.title = 'Sil';
+      deleteBtn.style.cssText = 'padding:4px 8px;border-radius:8px;border:1px solid transparent;background:transparent;color:var(--text-muted);font-size:14px;cursor:pointer;transition:all .2s;line-height:1;';
+      deleteBtn.textContent = '\uD83D\uDDD1\uFE0F';
+      deleteBtn.addEventListener('mouseenter', function() { this.style.color = '#DC2626'; this.style.background = 'rgba(220,38,38,0.08)'; });
+      deleteBtn.addEventListener('mouseleave', function() { this.style.color = 'var(--text-muted)'; this.style.background = 'transparent'; });
+      deleteBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        softDeleteMessage(msg.id);
+      });
+      actionRow.appendChild(deleteBtn);
+    }
+    card.appendChild(actionRow);
+
     // Click handler — expand message + mark as read
     card.addEventListener('click', function() {
+      if (isDeleted) return; // Don't expand deleted messages
       expandMessage(msg, card);
       if (isUnread) {
         markAsRead(msg.id);
@@ -341,12 +403,75 @@
   }
 
   /* ═══════════════════════════════════════════════════════════════
+     SOFT DELETE / RESTORE MESSAGE
+     ═══════════════════════════════════════════════════════════════ */
+  async function softDeleteMessage(messageId) {
+    var supa = window._htSupa || (typeof supabase !== 'undefined' ? supabase : null);
+    if (!supa) return;
+
+    try {
+      var res = await supa
+        .from('employer_messages')
+        .update({ status: 'deleted' })
+        .eq('id', messageId);
+
+      if (res.error) {
+        console.error('Soft delete error:', res.error.message);
+        return;
+      }
+
+      // Update local state
+      for (var i = 0; i < allMessages.length; i++) {
+        if (allMessages[i].id === messageId) {
+          allMessages[i].status = 'deleted';
+          break;
+        }
+      }
+      renderMessages();
+      updateUnreadBadges();
+      preloadUnreadCount();
+    } catch (err) {
+      console.error('Soft delete exception:', err);
+    }
+  }
+
+  async function restoreMessage(messageId) {
+    var supa = window._htSupa || (typeof supabase !== 'undefined' ? supabase : null);
+    if (!supa) return;
+
+    try {
+      var res = await supa
+        .from('employer_messages')
+        .update({ status: 'read' })
+        .eq('id', messageId);
+
+      if (res.error) {
+        console.error('Restore error:', res.error.message);
+        return;
+      }
+
+      // Update local state
+      for (var i = 0; i < allMessages.length; i++) {
+        if (allMessages[i].id === messageId) {
+          allMessages[i].status = 'read';
+          break;
+        }
+      }
+      renderMessages();
+      updateUnreadBadges();
+      preloadUnreadCount();
+    } catch (err) {
+      console.error('Restore exception:', err);
+    }
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
      UNREAD BADGE MANAGEMENT
      ═══════════════════════════════════════════════════════════════ */
   function updateUnreadBadges() {
     var unreadCount = 0;
     for (var i = 0; i < allMessages.length; i++) {
-      if (allMessages[i].status !== 'read') unreadCount++;
+      if (allMessages[i].status !== 'read' && allMessages[i].status !== 'deleted') unreadCount++;
     }
 
     // Sidebar badge
@@ -399,15 +524,41 @@
       var count = res.count || 0;
 
       var sidebarBadge = document.getElementById('badge-inbox-unread');
-      if (sidebarBadge && count > 0) {
-        sidebarBadge.textContent = count > 99 ? '99+' : count;
-        sidebarBadge.style.display = '';
+      if (sidebarBadge) {
+        if (count > 0) {
+          sidebarBadge.textContent = count > 99 ? '99+' : count;
+          sidebarBadge.style.display = '';
+        } else {
+          sidebarBadge.style.display = 'none';
+        }
       }
 
       var bnBadge = document.getElementById('badge-inbox-bn');
-      if (bnBadge && count > 0) {
-        bnBadge.textContent = count > 9 ? '9+' : count;
-        bnBadge.style.display = 'flex';
+      if (bnBadge) {
+        if (count > 0) {
+          bnBadge.textContent = count > 9 ? '9+' : count;
+          bnBadge.style.display = 'flex';
+        } else {
+          bnBadge.style.display = 'none';
+        }
+      }
+
+      // Header icon dots — data-driven (show only when unread > 0)
+      var msgDot = document.getElementById('header-msg-dot');
+      if (msgDot) msgDot.style.display = count > 0 ? '' : 'none';
+
+      var notifDot = document.getElementById('header-notif-dot');
+      if (notifDot) notifDot.style.display = count > 0 ? '' : 'none';
+
+      // Bildirimler sidebar badge
+      var notifBadge = document.getElementById('badge-bildirimler');
+      if (notifBadge) {
+        if (count > 0) {
+          notifBadge.textContent = count > 99 ? '99+' : count;
+          notifBadge.style.display = '';
+        } else {
+          notifBadge.style.display = 'none';
+        }
       }
     } catch (err) {
       console.error('Inbox preload error:', err);
@@ -566,7 +717,7 @@
 
         item.addEventListener('click', function() {
           closeAllPopups();
-          if (typeof switchPanel === 'function') switchPanel('inbox');
+          if (typeof switchPanel === 'function') switchPanel('bildirimler');
         });
 
         listEl.appendChild(item);
@@ -632,7 +783,7 @@
       seeAllNotif.addEventListener('click', function(e) {
         e.preventDefault();
         closeAllPopups();
-        if (typeof switchPanel === 'function') switchPanel('inbox');
+        if (typeof switchPanel === 'function') switchPanel('bildirimler');
       });
     }
 
@@ -642,19 +793,277 @@
       if (!isInsidePopup) closeAllPopups();
     });
 
-    // Update header msg dot from preload
-    setTimeout(function() {
-      var dot = document.getElementById('header-msg-dot');
-      var sidebarBadge = document.getElementById('badge-inbox-unread');
-      if (dot && sidebarBadge && sidebarBadge.style.display !== 'none') {
-        dot.style.display = '';
-      }
-    }, 3000);
   });
 
   /* ── INIT: Preload unread count after page settles ── */
   document.addEventListener('DOMContentLoaded', function() {
     setTimeout(preloadUnreadCount, 2500);
+  });
+
+  /* ═══════════════════════════════════════════════════════════════
+     BILDIRIMLER PANEL (full notification center)
+     ═══════════════════════════════════════════════════════════════ */
+  var notifLoaded = false;
+  var allNotifs = [];
+  var notifFilter = 'all';
+
+  var NOTIF_FILTERS = [
+    { key: 'all',    label: 'T\u00FCm\u00FC' },
+    { key: 'unread', label: 'Okunmam\u0131\u015F' },
+    { key: 'mesaj',  label: 'Mesajlar' },
+    { key: 'sistem', label: 'Sistem' }
+  ];
+
+  window._htLoadBildirimler = async function(filter) {
+    var supa = window._htSupa || (typeof supabase !== 'undefined' ? supabase : null);
+    var listEl = document.getElementById('notif-list');
+    var emptyEl = document.getElementById('notif-empty');
+    var tabsEl = document.getElementById('notif-tabs');
+    if (!listEl || !supa) return;
+
+    // Render filter tabs once
+    if (tabsEl && !tabsEl.hasChildNodes()) {
+      renderNotifTabs(tabsEl);
+    }
+
+    // Loading state on first load
+    if (!notifLoaded) {
+      while (listEl.firstChild) listEl.removeChild(listEl.firstChild);
+      var loadDiv = document.createElement('div');
+      loadDiv.style.cssText = 'text-align:center;padding:40px;color:var(--text-muted);font-size:13px;';
+      loadDiv.textContent = 'Bildirimler y\u00FCkleniyor...';
+      listEl.appendChild(loadDiv);
+    }
+
+    try {
+      // Fetch employer messages as notifications
+      var res = await supa.from('employer_messages')
+        .select('id, subject, body, status, created_at, read_at, company_id, companies(company_name, logo_url)')
+        .neq('status', 'deleted')
+        .order('created_at', { ascending: false })
+        .limit(100);
+
+      if (res.error) {
+        console.error('Bildirimler load error:', res.error.message);
+        return;
+      }
+
+      allNotifs = (res.data || []).map(function(m) {
+        return {
+          id: m.id,
+          notif_type: 'mesaj',
+          title: m.companies ? m.companies.company_name + ' mesaj g\u00F6nderdi' : 'Yeni mesaj',
+          body: m.subject || m.body || '',
+          status: m.status,
+          created_at: m.created_at,
+          read_at: m.read_at,
+          company_name: m.companies ? m.companies.company_name : null,
+          company_logo: m.companies ? m.companies.logo_url : null
+        };
+      });
+      notifLoaded = true;
+
+      if (filter) notifFilter = filter;
+      renderNotifs();
+      updateNotifPanelBadge();
+    } catch (err) {
+      console.error('Bildirimler load exception:', err);
+    }
+  };
+
+  function renderNotifTabs(container) {
+    NOTIF_FILTERS.forEach(function(f) {
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.textContent = f.label;
+      btn.dataset.filter = f.key;
+      var isActive = f.key === notifFilter;
+      btn.style.cssText = 'padding:6px 14px;border-radius:20px;border:1px solid var(--border);background:' +
+        (isActive ? 'var(--navy)' : 'white') + ';color:' +
+        (isActive ? 'white' : 'var(--text)') +
+        ';font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;transition:all .2s;';
+
+      btn.addEventListener('click', function() {
+        notifFilter = f.key;
+        var tabs = container.querySelectorAll('button');
+        for (var i = 0; i < tabs.length; i++) {
+          var active = tabs[i].dataset.filter === notifFilter;
+          tabs[i].style.background = active ? 'var(--navy)' : 'white';
+          tabs[i].style.color = active ? 'white' : 'var(--text)';
+        }
+        renderNotifs();
+      });
+
+      container.appendChild(btn);
+    });
+  }
+
+  function renderNotifs() {
+    var listEl = document.getElementById('notif-list');
+    var emptyEl = document.getElementById('notif-empty');
+    if (!listEl) return;
+
+    var filtered;
+    if (notifFilter === 'unread') {
+      filtered = allNotifs.filter(function(n) { return n.status !== 'read'; });
+    } else if (notifFilter === 'mesaj') {
+      filtered = allNotifs.filter(function(n) { return n.notif_type === 'mesaj'; });
+    } else if (notifFilter === 'sistem') {
+      filtered = allNotifs.filter(function(n) { return n.notif_type === 'sistem'; });
+    } else {
+      filtered = allNotifs;
+    }
+
+    while (listEl.firstChild) listEl.removeChild(listEl.firstChild);
+
+    if (filtered.length === 0) {
+      if (emptyEl) emptyEl.style.display = '';
+      return;
+    }
+    if (emptyEl) emptyEl.style.display = 'none';
+
+    filtered.forEach(function(notif) {
+      listEl.appendChild(buildNotifCard(notif));
+    });
+  }
+
+  function buildNotifCard(notif) {
+    var isUnread = notif.status !== 'read';
+
+    var card = document.createElement('div');
+    card.style.cssText = 'padding:14px 16px;border-radius:10px;border:1px solid var(--border);background:white;cursor:pointer;transition:all .2s;position:relative;' +
+      (isUnread ? 'border-left:3px solid var(--verm);background:#FFFBFA;' : '');
+
+    // Top row: icon + content + time
+    var row = document.createElement('div');
+    row.style.cssText = 'display:flex;align-items:flex-start;gap:10px;';
+
+    // Icon
+    var iconEl = document.createElement('div');
+    iconEl.style.cssText = 'width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;';
+
+    if (notif.company_logo) {
+      iconEl.style.background = '#F7F6F4';
+      var img = document.createElement('img');
+      img.src = notif.company_logo;
+      img.alt = '';
+      img.style.cssText = 'width:100%;height:100%;object-fit:cover;border-radius:10px;';
+      iconEl.appendChild(img);
+    } else if (notif.notif_type === 'mesaj') {
+      iconEl.style.background = '#FEF7F5';
+      iconEl.textContent = '\uD83D\uDCBC';
+    } else {
+      iconEl.style.background = '#EEF2FF';
+      iconEl.textContent = '\uD83D\uDD14';
+    }
+    row.appendChild(iconEl);
+
+    // Content
+    var content = document.createElement('div');
+    content.style.cssText = 'flex:1;min-width:0;';
+
+    var titleEl = document.createElement('div');
+    titleEl.style.cssText = 'font-size:14px;margin-bottom:3px;line-height:1.3;' +
+      (isUnread ? 'font-weight:700;color:var(--text);' : 'font-weight:500;color:var(--text);');
+    titleEl.textContent = notif.title;
+    content.appendChild(titleEl);
+
+    var bodyEl = document.createElement('div');
+    bodyEl.style.cssText = 'font-size:13px;color:var(--text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1.4;';
+    bodyEl.textContent = notif.body;
+    content.appendChild(bodyEl);
+
+    var timeEl = document.createElement('div');
+    timeEl.style.cssText = 'font-size:11px;color:var(--text-muted);margin-top:4px;';
+    timeEl.textContent = timeAgo(notif.created_at);
+    content.appendChild(timeEl);
+
+    row.appendChild(content);
+
+    // Unread dot
+    if (isUnread) {
+      var dot = document.createElement('div');
+      dot.style.cssText = 'width:8px;height:8px;border-radius:50%;background:var(--verm);flex-shrink:0;margin-top:6px;';
+      row.appendChild(dot);
+    }
+
+    card.appendChild(row);
+
+    // Click: navigate to inbox and mark read
+    card.addEventListener('click', function() {
+      if (notif.notif_type === 'mesaj' && isUnread) {
+        markAsRead(notif.id);
+        notif.status = 'read';
+        renderNotifs();
+        updateNotifPanelBadge();
+        preloadUnreadCount();
+      }
+      // Navigate to inbox to see full message
+      if (typeof switchPanel === 'function') switchPanel('inbox');
+    });
+
+    // Hover
+    card.addEventListener('mouseenter', function() { this.style.boxShadow = '0 2px 8px rgba(0,0,0,0.06)'; });
+    card.addEventListener('mouseleave', function() { this.style.boxShadow = 'none'; });
+
+    return card;
+  }
+
+  function updateNotifPanelBadge() {
+    var unread = 0;
+    for (var i = 0; i < allNotifs.length; i++) {
+      if (allNotifs[i].status !== 'read') unread++;
+    }
+    var badge = document.getElementById('notif-unread-badge');
+    if (badge) {
+      if (unread > 0) {
+        badge.textContent = unread + ' okunmam\u0131\u015F';
+        badge.style.display = '';
+      } else {
+        badge.style.display = 'none';
+      }
+    }
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+     REALTIME: Subscribe to new messages for live badge updates
+     ═══════════════════════════════════════════════════════════════ */
+  function setupRealtimeInbox() {
+    var supa = window._htSupa || (typeof supabase !== 'undefined' ? supabase : null);
+    if (!supa || !supa.channel) return;
+
+    supa.channel('inbox-live')
+      .on('postgres_changes', {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'employer_messages'
+      }, function() {
+        // New message arrived — refresh badges
+        preloadUnreadCount();
+        // If inbox panel is visible, reload messages
+        var inboxPanel = document.getElementById('panel-inbox');
+        if (inboxPanel && inboxPanel.classList.contains('active')) {
+          window._htLoadInbox(currentFilter);
+        }
+        // If bildirimler panel is visible, reload
+        var notifPanel = document.getElementById('panel-bildirimler');
+        if (notifPanel && notifPanel.classList.contains('active') && window._htLoadBildirimler) {
+          window._htLoadBildirimler();
+        }
+      })
+      .on('postgres_changes', {
+        event: 'UPDATE',
+        schema: 'public',
+        table: 'employer_messages'
+      }, function() {
+        // Message status changed (read, deleted) — refresh badges
+        preloadUnreadCount();
+      })
+      .subscribe();
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(setupRealtimeInbox, 3000);
   });
 
 })();
