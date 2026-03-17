@@ -220,14 +220,14 @@ function addExperienceCard(data) {
   header.appendChild(delBtn);
   card.appendChild(header);
 
-  // Row 1: Şirket (left) + Pozisyon (right) — single balanced two-column row
+  // Row 1: Şirket (left) + Sektör (right). Row 2 will be Rol Ailesi + Pozisyon (filled below).
   var row1 = document.createElement('div');
   row1.className = 'field-row';
 
   var brandField = makeSmartBrandField(cardId + '-sirket', d, 'Şirket adı', true);
   row1.appendChild(brandField);
 
-  // Right column: Pozisyon (cascade select + custom input; one visible at a time)
+  // Pozisyon column (cascade select + custom input; one visible at a time) — appended to row2 below
   var pozCol = document.createElement('div');
   pozCol.className = 'exp-poz-col';
 
@@ -242,10 +242,9 @@ function addExperienceCard(data) {
 
   pozCol.appendChild(unvanWrap);
   pozCol.appendChild(unvanCustomWrap);
-  row1.appendChild(pozCol);
-  card.appendChild(row1);
+  // row1 and rowRole filled after sektor/rol ailesi built so order is: Row1 = Şirket | Sektör, Row2 = Rol Ailesi | Pozisyon
 
-  // Row 3: Rol Ailesi → Sektör (cascading; rol ailesi still depends on sektör selection)
+  // Row 2: Rol Ailesi → Sektör (cascading; rol ailesi still depends on sektör selection)
   var rowRole = document.createElement('div');
   rowRole.className = 'field-row';
 
@@ -421,8 +420,10 @@ function addExperienceCard(data) {
 
   suppressSuggest = false;
 
+  row1.appendChild(sektorWrap);
+  card.appendChild(row1);
   rowRole.appendChild(rolAilesiWrap);
-  rowRole.appendChild(sektorWrap);
+  rowRole.appendChild(pozCol);
   card.appendChild(rowRole);
 
   // Row 4: Segment + İstihdam Tipi
@@ -451,23 +452,26 @@ function addExperienceCard(data) {
   startRow.appendChild(makeYearField('Başlangıç Yıl <span class=\"field-req\">*</span>', cardId + '-basyil', d.baslangic_yil));
   dateBlock.appendChild(startRow);
 
-  // Checkbox: Halen burada çalışıyorum (between start and end)
-  var cbWrap = document.createElement('label');
+  // Checkbox: Halen burada çalışıyorum — only the control toggles, not the row
+  var cbWrap = document.createElement('div');
   cbWrap.className = 'cb-wrap';
   var cb = document.createElement('input');
   cb.type = 'checkbox';
   cb.id = cardId + '-devam';
   if (d.devam_ediyor) cb.checked = true;
   var cbLabel = document.createElement('span');
+  cbLabel.className = 'cb-label';
   cbLabel.textContent = 'Halen burada çalışıyorum';
   var checkmark = document.createElement('span');
   checkmark.className = 'cb-check';
-  cbWrap.appendChild(cb);
-  cbWrap.appendChild(checkmark);
-  cbWrap.appendChild(cbLabel);
-  dateBlock.appendChild(cbWrap);
+  var controlLabel = document.createElement('label');
+  controlLabel.className = 'cb-control-label';
+  controlLabel.htmlFor = cb.id;
+  controlLabel.appendChild(cb);
+  controlLabel.appendChild(checkmark);
+  controlLabel.appendChild(cbLabel);
+  cbWrap.appendChild(controlLabel);
 
-  // Devam ediyor badge
   var devamBadge = document.createElement('span');
   devamBadge.className = 'exp-devam-badge';
   devamBadge.textContent = 'Devam ediyor';
@@ -476,6 +480,7 @@ function addExperienceCard(data) {
   devamBadge.style.fontWeight = '600';
   devamBadge.style.color = 'var(--green)';
   cbWrap.appendChild(devamBadge);
+  dateBlock.appendChild(cbWrap);
 
   var endRow = document.createElement('div');
   endRow.className = 'field-row exp-date-row exp-date-row-end';
