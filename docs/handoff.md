@@ -1,5 +1,5 @@
 # hellotalent.ai — Technical Handoff Document
-> Son güncelleme: 17 Mart 2026
+> Son güncelleme: 17 Mart 2026 (Session 2 — Header Modernization)
 > Bu doküman, projenin mevcut durumunu, tamamlanan işleri ve kalan backlog'u kapsar.
 > Yeni bir chat/session başlatırken bu dosyayı referans olarak kullanın.
 
@@ -365,9 +365,11 @@ if(sessionStorage.getItem('ht_gate')!=='ok'){window.location.replace('gate.html'
 - [x] Sentry retry logic (profil-ui.js — retry failed child queries with session refresh) ✅ zaten mevcut
 - [x] Wizard "İlçe Seç" → "Seçili Lokasyonlar" rename + district card frame kaldırıldı ✅
 - [x] Cache-busting JS imports (profil.html, ik.html — ?v=20260316) ✅
-- [ ] Navy header with search/notif/breadcrumb + sidebar fold effect (BIG — approved mockup)
+- [x] Navy header → Glassmorphic Float header ✅ (bfdfdd2..f6c4fc6)
 - [x] Preview polish — Banner shadow, company bold, son güncelleme, CV link ✅ zaten mevcut
 - [x] Toggle polish — Bento gaps, navy premium, alignment, "Beni Öner" naming + sync ✅ zaten mevcut
+- [ ] Avatar dropdown: `avd-avatar-img` target'ı profil-ui.js setAvatarImage()'e eklenmeli
+- [ ] profil-inbox.js: avatar dropdown popup entegrasyonu doğrulanmalı
 
 ### LinkedIn OAuth ✅ (pushed)
 - Supabase'de LinkedIn (OIDC) provider aktif edildi
@@ -401,15 +403,55 @@ if(sessionStorage.getItem('ht_gate')!=='ok'){window.location.replace('gate.html'
 
 ---
 
+## 6b. Session 17 Mart 2026 — Header Modernization
+
+### Glassmorphic Float Header ✅ (pushed — bfdfdd2)
+- Navy sidebar kaldırıldı → LinkedIn-style floating glassmorphic header
+- `backdrop-filter:blur(16px)`, `rgba(255,255,255,0.72)`, `border-radius:14px`
+- 5 nav items: Genel, Profil, Markalar, Teklifler, Ayarlar (SVG icons + labels)
+- Three-way nav sync: header-nav + sidebar-nav + bottom-nav via `switchPanel()`
+- Content area: `margin-left:0`, `max-width:1200px;margin:0 auto`
+- Mobile 768px: header flat, `.header-nav{display:none}`, bottom-nav shown
+
+### Search Bar → Nav Icon ✅ (pushed — ef8c2f6)
+- Search bar moved from header-right to header-nav as icon before Ayarlar
+- Old search CSS neutralized, `id="header-search"` preserved for Cmd+K
+
+### Markalar Icon Fix ✅ (pushed — 721bee8)
+- Header nav had house icon, bento card had handbag → both now handbag SVG
+
+### Avatar Dropdown ✅ (pushed — c46bbcf)
+- Click avatar → dropdown panel with: user info, Premium button, dark mode toggle, logout
+- Avatar button: 38px, no border, hover scale+ring effect
+- Theme toggle: MutationObserver sync with existing theme system
+- Logout: `supabase.auth.signOut()` + redirect to giris.html
+- Integrates with `_htCloseAllPopups` for mutual exclusion with msg/notif popups
+
+### Hero Cards Flat Vermillion ✅ (pushed — 95c7a24, 7b590ec, f6c4fc6)
+- Gradient removed → flat `#C94E28` background
+- Shadow changed to neutral (no vermillion glow) to prevent gradient illusion
+
+### Logo Text ✅ (pushed — 3130c9f)
+- "hellotalent.ai" → "hellotalent"
+- hello=#C94E28 (vermillion), talent=#1E2D5E (navy)
+
+### Known Remaining Items
+- `avd-avatar-img` not yet added to `setAvatarImage()` targets in profil-ui.js
+- Avatar dropdown popup integration with profil-inbox.js needs verification
+
+---
+
 ## 7. Kalan Backlog
 
-### Onaylanan Header Mockup (implement edilecek — prompt hazır)
-- Navy header: gradient #2A3F7A→#1E2D5E→#162247
-- Search bar (⌘K), notification bell (vermillion dot), breadcrumb, avatar
-- Sidebar gradient: to bottom right (açık sol üst → koyu sağ alt)
-- Paper fold effect: sidebar sağ kenarında 8px shadow + 1px highlight
-- Logo: beyaz, `.ai` kısmı rgba(255,255,255,0.5)
-- L-shaped navy frame, content area beyaz #F7F6F4
+### ~~Onaylanan Header Mockup~~ ✅ TAMAMLANDI (Glassmorphic Float)
+- Sidebar kaldırıldı → LinkedIn-style glassmorphic float header
+- `backdrop-filter:blur(16px)`, `rgba(255,255,255,0.72)`, `border-radius:14px`, floating `top:8px`
+- 5 nav item (Genel, Profil, Markalar, Teklifler, Ayarlar) + search icon
+- SVG icons on top, 11px labels below, vermillion underline active indicator
+- Avatar dropdown: premium button, dark mode toggle, logout
+- Logo: "hellotalent" (no .ai), hello=#C94E28, talent=#1E2D5E
+- Hero cards: flat #C94E28 (no gradient), neutral shadow
+- Mobile: header flat, bottom-nav shown, sidebar available via hamburger
 
 ### Cloudflare Access ✅ (aktif)
 - hellotalent.ai — Self-Hosted application, 1 policy assigned
@@ -592,6 +634,14 @@ chore: genel bakış hero kartı profil merkezi ile eşitlendi (907c326)
 fix: kurumsal turuncu %50 opacity, solid pill'ler (1333fc7)
 fix: harden profil dark mode system and eliminate dark theme leakage (33c93d3)
 style: add gradient effect and matched shadow to mk-cards (20a3d08)
+feat: LinkedIn-style glassmorphic float header, sidebar removed (bfdfdd2)
+style: move search bar to nav icon, place before Ayarlar (ef8c2f6)
+fix: match Markalar header icon with bento card (721bee8)
+feat: avatar dropdown panel with premium, theme toggle, logout (c46bbcf)
+style: vermillion gradient hero cards for Genel and Profil Merkezi (95c7a24)
+style: flat #C94E28 vermillion on hero cards, no gradient (7b590ec)
+style: logo text changed from hellotalent.ai to hellotalent (3130c9f)
+style: neutral shadow on hero cards, remove vermillion glow (f6c4fc6)
 ```
 
 ---
@@ -612,9 +662,11 @@ cat docs/handoff.md
 2. ~~**Sprint 3-4**~~ ✅ Accessibility, card redesign, dark mode hardening
 3. ~~**Profil Merkezi mk-card redesign**~~ ✅ Gradient + shadow + tokenized
 4. ~~**Dark mode foundations (profil.css)**~~ ✅ 7-phase systematic hardening, 24 tests passing
-5. **Dark mode remaining:** profil-settings.js alert→modal (7 instances), ik.html/giris.html/gate.html dark mode
-6. **Kalan Cursor prompts:** Navy header (BIG), brand color audit Batch 2-3, navy gradient standardization
-7. **P4 — Public pages content review + dark mode expansion + performance**
+5. ~~**Header modernization**~~ ✅ Glassmorphic float header + avatar dropdown
+6. **Minor fix:** `avd-avatar-img` → setAvatarImage() targets (profil-ui.js line ~2332)
+7. **Brand color audit:** Batch 2 (index, blog, hakkimizda) + Batch 3 (ik, aday, profil.css)
+8. **Dark mode remaining:** profil-settings.js alert→modal (7 instances), ik.html/giris.html/gate.html
+9. **P4 — Public pages content review + dark mode expansion + performance**
 
 ### Önceki Transkriptler
 Tam konuşma geçmişi:
