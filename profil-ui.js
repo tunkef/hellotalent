@@ -734,6 +734,10 @@ function collectExperiences() {
     }
     if (resolvedPozisyon) resolvedPozisyon = normalizeForDisplay(resolvedPozisyon);
 
+    // Skip incomplete cards: DB requires baslangic_yil NOT NULL
+    var basyil = val(prefix + 'basyil') ? parseInt(val(prefix + 'basyil')) : null;
+    if (!basyil) return;
+
     result.push({
       sirket: resolvedSirket,
       marka: nullIfEmpty(resolvedMarka),
@@ -748,7 +752,7 @@ function collectExperiences() {
       sehir: nullIfEmpty(val(prefix + 'sehir')),
       takim_buyuklugu: nullIfEmpty(val(prefix + 'takim')),
       baslangic_ay: monthNameToIndex(val(prefix + 'basay')),
-      baslangic_yil: val(prefix + 'basyil') ? parseInt(val(prefix + 'basyil')) : null,
+      baslangic_yil: basyil,
       bitis_ay: monthNameToIndex(val(prefix + 'bitay')),
       bitis_yil: val(prefix + 'bityil') ? parseInt(val(prefix + 'bityil')) : null,
       devam_ediyor: document.getElementById(prefix + 'devam') ? document.getElementById(prefix + 'devam').checked : false,
