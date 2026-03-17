@@ -490,14 +490,15 @@ if (window.Sentry) {
       <div class="bento-grid lab-grid">
 
         <!-- L1. Görüntüleyenler -->
-        <div class="bento-card locked">
-          <span class="bento-badge-soon">YAKINDA</span>
+        <div class="bento-card" id="lab-viewers-card">
           <div class="bento-content">
             <div class="bento-icon navy">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="1" fill="currentColor" opacity="0.3"/></svg>
             </div>
             <div class="bento-title">Görüntüleyenler</div>
-            <div class="bento-desc">Hangi şirketler profilini inceledi?</div>
+            <div id="lab-viewers-body">
+              <div class="bento-desc" style="color:var(--muted);font-size:12px;">Yükleniyor…</div>
+            </div>
           </div>
         </div>
 
@@ -2233,6 +2234,13 @@ function reapplyDynamicFields() {
     setTimeout(function() { _ls.style.display = 'none'; }, 500);
   }
 
+  // ── Load Görüntüleyenler lab card (fire-and-forget) ──
+  if (_loadedDBData && _loadedDBData.profile && _loadedDBData.profile.id) {
+    (function(cid) {
+      loadViewersCard(cid);
+    })(_loadedDBData.profile.id);
+  }
+
   // ── Career goal override: query param > localStorage > draft/DB ──
   // Other pages (kariyer.html, giris.html etc.) send ?career_goal= or set localStorage.ht_career_goal
   var urlParams = new URLSearchParams(window.location.search);
@@ -2249,6 +2257,184 @@ function reapplyDynamicFields() {
       window.history.replaceState({}, '', cleanUrl);
     }
   }
+})();
+
+// ═══════════════════════════════════════════════════
+// GÖRÜNTÜLEYENLER LAB CARD
+// ═══════════════════════════════════════════════════
+(function() {
+  var _viewersLoaded = false;
+
+  function _relativeTimeTR(dateStr) {
+    if (!dateStr) return '';
+    var now = new Date();
+    var d = new Date(dateStr);
+    var diffMs = now - d;
+    var diffMin = Math.floor(diffMs / 60000);
+    if (diffMin < 1) return 'az önce';
+    if (diffMin < 60) return diffMin + ' dk önce';
+    var diffH = Math.floor(diffMin / 60);
+    if (diffH < 24) return diffH + ' saat önce';
+    var diffD = Math.floor(diffH / 24);
+    if (diffD === 1) return 'dün';
+    if (diffD < 7) return diffD + ' gün önce';
+    var diffW = Math.floor(diffD / 7);
+    if (diffW < 5) return diffW + ' hafta önce';
+    var diffM = Math.floor(diffD / 30);
+    if (diffM < 12) return diffM + ' ay önce';
+    return Math.floor(diffM / 12) + ' yıl önce';
+  }
+
+  function _makeEl(tag, styles, text) {
+    var el = document.createElement(tag);
+    if (styles) el.style.cssText = styles;
+    if (text) el.textContent = text;
+    return el;
+  }
+
+  window.loadViewersCard = async function(candidateId) {
+    if (_viewersLoaded || !candidateId) return;
+    _viewersLoaded = true;
+
+    var body = document.getElementById('lab-viewers-body');
+    if (!body) return;
+
+    // Show skeleton
+    while (body.firstChild) body.removeChild(body.firstChild);
+    var skelWrap = _makeEl('div', 'display:flex;flex-direction:column;gap:6px;');
+    ['60%','80%','50%'].forEach(function(w) {
+      skelWrap.appendChild(_makeEl('div', 'height:14px;width:' + w + ';background:var(--border);border-radius:6px;animation:pulse 1.5s infinite;'));
+    });
+    body.appendChild(skelWrap);
+
+    try {
+      var statsP = supabase.from('candidate_view_stats').select('*').eq('candidate_id', candidateId).maybeSingle();
+      var eventsP = supabase.from('profile_view_events').select('viewed_at, position_ad_snapshot, position_seg_snapshot, company_id, companies(ad, segment)').eq('candidate_id', candidateId).order('viewed_at', { ascending: false }).limit(5);
+
+      var results = await Promise.all([statsP, eventsP]);
+      var stats = results[0].data;
+      var events = (results[1].data || []);
+
+      while (body.firstChild) body.removeChild(body.firstChild);
+
+      // Empty state
+      if (!stats || stats.total_views === 0) {
+        body.appendChild(_makeEl('div', 'color:var(--muted);font-size:12px;line-height:1.5;', 'Henüz kimse profilini incelemedi \u2014 profili güçlendir!'));
+        return;
+      }
+
+      // Check premium status (placeholder — all users are freemium for now)
+      var isPremium = false;
+
+      // Total views — always visible
+      body.appendChild(_makeEl('div', 'font-size:28px;font-weight:800;color:var(--text);font-family:\'DM Mono\',monospace;line-height:1;', String(stats.total_views)));
+      body.appendChild(_makeEl('div', 'font-size:12px;color:var(--muted);margin-bottom:8px;', 'toplam görüntülenme'));
+
+      if (isPremium) {
+        // ── PREMIUM VIEW ──
+        if (stats.unique_positions > 0) {
+          var posMap = {};
+          events.forEach(function(ev) {
+            if (ev.position_ad_snapshot) {
+              posMap[ev.position_ad_snapshot] = (posMap[ev.position_ad_snapshot] || 0) + 1;
+            }
+          });
+          Object.keys(posMap).forEach(function(pName) {
+            var row = _makeEl('div', 'font-size:12px;color:var(--text);margin-bottom:4px;');
+            row.textContent = pName + ' aramasında ' + posMap[pName] + ' kez incelendi';
+            body.appendChild(row);
+          });
+        }
+
+        // Company breakdown
+        var compMap = {};
+        events.forEach(function(ev) {
+          if (ev.companies && ev.companies.ad) {
+            var key = ev.companies.ad;
+            if (!compMap[key]) compMap[key] = { count: 0, segment: ev.companies.segment || ev.position_seg_snapshot || '' };
+            compMap[key].count++;
+          }
+        });
+        var compKeys = Object.keys(compMap);
+        if (compKeys.length > 0) {
+          var compWrap = _makeEl('div', 'margin-top:6px;display:flex;flex-direction:column;gap:3px;');
+          compKeys.forEach(function(name) {
+            var c = compMap[name];
+            var row = _makeEl('div', 'font-size:12px;color:var(--text);');
+            row.textContent = name + (c.segment ? ' · ' + c.segment : '') + ' · ' + c.count + ' kez';
+            compWrap.appendChild(row);
+          });
+          body.appendChild(compWrap);
+        }
+
+        // Last viewed
+        if (stats.last_viewed_at) {
+          body.appendChild(_makeEl('div', 'font-size:11px;color:var(--muted);margin-top:8px;', 'Son görüntülenme: ' + _relativeTimeTR(stats.last_viewed_at)));
+        }
+
+      } else {
+        // ── FREEMIUM VIEW ──
+        if (stats.unique_positions > 0) {
+          body.appendChild(_makeEl('div', 'font-size:12px;color:var(--text);margin-bottom:6px;', stats.unique_positions + ' farklı rol için incelendi'));
+        }
+
+        if (stats.unique_companies > 0) {
+          body.appendChild(_makeEl('div', 'font-size:12px;color:var(--text);margin-bottom:6px;', stats.unique_companies + ' farklı şirket profilini inceledi'));
+        }
+
+        // Blurred company rows (teaser)
+        var teaserCount = Math.min(events.length, 3);
+        if (teaserCount > 0) {
+          var teaserWrap = _makeEl('div', 'margin-top:4px;display:flex;flex-direction:column;gap:4px;');
+          for (var i = 0; i < teaserCount; i++) {
+            var seg = events[i].position_seg_snapshot || (events[i].companies && events[i].companies.segment) || '';
+            var tRow = _makeEl('div', 'font-size:12px;display:flex;align-items:center;gap:6px;');
+            var blur = _makeEl('span', 'filter:blur(5px);user-select:none;color:var(--text);', '\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588');
+            tRow.appendChild(blur);
+            if (seg) {
+              var segSpan = _makeEl('span', 'color:var(--muted);font-size:11px;', '· ' + seg);
+              tRow.appendChild(segSpan);
+            }
+            var lockSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            lockSvg.setAttribute('width', '12');
+            lockSvg.setAttribute('height', '12');
+            lockSvg.setAttribute('viewBox', '0 0 24 24');
+            lockSvg.setAttribute('fill', 'none');
+            lockSvg.setAttribute('stroke', 'var(--muted)');
+            lockSvg.setAttribute('stroke-width', '2');
+            lockSvg.setAttribute('stroke-linecap', 'round');
+            lockSvg.setAttribute('stroke-linejoin', 'round');
+            var rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+            rect.setAttribute('x', '3'); rect.setAttribute('y', '11'); rect.setAttribute('width', '18'); rect.setAttribute('height', '11'); rect.setAttribute('rx', '2'); rect.setAttribute('ry', '2');
+            var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            path.setAttribute('d', 'M7 11V7a5 5 0 0 1 10 0v4');
+            lockSvg.appendChild(rect);
+            lockSvg.appendChild(path);
+            tRow.appendChild(lockSvg);
+            teaserWrap.appendChild(tRow);
+          }
+          body.appendChild(teaserWrap);
+        }
+
+        // Last viewed (visible in freemium)
+        if (stats.last_viewed_at) {
+          body.appendChild(_makeEl('div', 'font-size:11px;color:var(--muted);margin-top:6px;', 'Son: ' + _relativeTimeTR(stats.last_viewed_at)));
+        }
+
+        // Premium CTA
+        var cta = _makeEl('div', 'margin-top:10px;padding:8px 10px;background:var(--navy);border-radius:8px;cursor:pointer;');
+        cta.addEventListener('click', function() { switchPanel('ayarlar'); });
+        var ctaText = _makeEl('div', 'font-size:11px;color:#fff;line-height:1.4;', 'Hangi şirketlerin incelediğini görmek için Premium\'a geç \u2192');
+        cta.appendChild(ctaText);
+        body.appendChild(cta);
+      }
+
+    } catch (err) {
+      console.warn('[HT] Görüntüleyenler load failed:', err.message);
+      while (body.firstChild) body.removeChild(body.firstChild);
+      body.appendChild(_makeEl('div', 'color:var(--muted);font-size:12px;', 'Veriler yüklenemedi.'));
+    }
+  };
 })();
 
 // ═══════════════════════════════════════════════════

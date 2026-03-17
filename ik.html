@@ -1384,6 +1384,7 @@ var _employerPlan = 'demo'; // Loaded from get_employer_plan() RPC
 var favorites = []; // Loaded from Supabase employer_favorites table
 var pozisyonlar = []; // Loaded from Supabase positions table
 var filterState = { pozisyon:[], segment:[], musait:[], calisma:[], egitim:[], dil:[], aktifArayanlar: false };
+var _viewedCandidateIds = new Set(); // Track viewed candidates this session to avoid duplicate events
 
 // ── ADAYLAR (live from Supabase) ──
 var ADAYLAR = []; // Will be populated from Supabase
@@ -2657,6 +2658,25 @@ async function openDrawer(id){
       // If usage check fails, allow access gracefully
       console.warn('Usage limit check failed:', usageErr.message);
     }
+  }
+
+  // Fire-and-forget: log profile view event (once per candidate per session)
+  if (!_viewedCandidateIds.has(c.id)) {
+    _viewedCandidateIds.add(c.id);
+    (async function() {
+      try {
+        await getSupa().from('profile_view_events').insert({
+          candidate_id: c.id,
+          hr_profile_id: currentUser.id,
+          company_id: hrProfile.company_id || null,
+          position_id: null,
+          position_ad_snapshot: null,
+          position_seg_snapshot: null
+        });
+      } catch (e) {
+        console.warn('[HT] profile view event failed:', e.message);
+      }
+    })();
   }
 
   var isFav = favorites.indexOf(c.id)!==-1;
