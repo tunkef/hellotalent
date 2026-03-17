@@ -211,6 +211,7 @@ function addExperienceCard(data) {
   delBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>';
   delBtn.addEventListener('click', function() {
     card.remove();
+    if (typeof markWizardDirty === 'function') markWizardDirty();
     var remaining = document.querySelectorAll('.exp-card');
     remaining.forEach(function(c, idx) {
       var btn = c.querySelector('.exp-card-del');
@@ -825,6 +826,7 @@ function addEducationRow(data) {
   delBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>';
   delBtn.addEventListener('click', function() {
     row.remove();
+    if (typeof markWizardDirty === 'function') markWizardDirty();
     document.getElementById('edu-limit-msg').style.display = container.children.length >= 3 ? 'block' : 'none';
   });
   row.style.position = 'relative';
@@ -862,6 +864,7 @@ function addLanguageRow(data) {
   delBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>';
   delBtn.addEventListener('click', function() {
     row.remove();
+    if (typeof markWizardDirty === 'function') markWizardDirty();
     document.getElementById('lang-limit-msg').style.display = container.children.length >= 5 ? 'block' : 'none';
   });
   row.style.position = 'relative';
@@ -894,7 +897,7 @@ function addCertificateRow(data) {
   delBtn.className = 'btn-del-row';
   delBtn.type = 'button';
   delBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>';
-  delBtn.addEventListener('click', function() { row.remove(); });
+  delBtn.addEventListener('click', function() { row.remove(); if (typeof markWizardDirty === 'function') markWizardDirty(); });
   row.style.position = 'relative';
   row.appendChild(delBtn);
 
@@ -1137,7 +1140,7 @@ function addTargetRoleRow(data) {
   delBtn.className = 'btn-del-row';
   delBtn.type = 'button';
   delBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>';
-  delBtn.addEventListener('click', function() { row.remove(); });
+  delBtn.addEventListener('click', function() { row.remove(); if (typeof markWizardDirty === 'function') markWizardDirty(); });
   row.appendChild(delBtn);
 
   container.appendChild(row);

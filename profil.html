@@ -2992,6 +2992,7 @@ document.addEventListener('DOMContentLoaded', function() {
   if (btnWizardLeave) btnWizardLeave.addEventListener('click', function() {
     document.getElementById('modal-wizard-exit').classList.remove('show');
     wizardDirty = false;
+    clearDraft();
     if (pendingPanelSwitch) { _doSwitchPanel(pendingPanelSwitch); pendingPanelSwitch = null; }
   });
 
