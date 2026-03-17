@@ -1492,7 +1492,6 @@ if (window.Sentry) {
 </main>
 
 <div class="panel" id="panel-kimbakti">
-  <div class="section-header"><div class="section-title">Kim Baktı</div></div>
 
   <!-- Hero stat card -->
   <div class="card" id="kb-hero" style="margin-bottom:16px;position:relative;overflow:hidden;">
@@ -2389,13 +2388,10 @@ function reapplyDynamicFields() {
   function _updateLabSummary(labBody, stats) {
     if (!labBody) return;
     while (labBody.firstChild) labBody.removeChild(labBody.firstChild);
-    if (!stats || stats.total_views === 0) {
-      labBody.appendChild(_makeEl('div', 'font-size:12px;color:var(--muted);', 'Henüz görüntüleme yok'));
-      return;
-    }
-    labBody.appendChild(_makeEl('div', 'font-size:24px;font-weight:800;color:var(--text);font-family:\'DM Mono\',monospace;line-height:1;', String(stats.total_views)));
+    var total = (stats && stats.total_views) ? stats.total_views : 0;
+    labBody.appendChild(_makeEl('div', 'font-size:24px;font-weight:800;color:var(--text);font-family:\'DM Mono\',monospace;line-height:1;', String(total)));
     labBody.appendChild(_makeEl('div', 'font-size:11px;color:var(--muted);margin-top:2px;', 'görüntülenme'));
-    if (stats.last_viewed_at) {
+    if (stats && stats.last_viewed_at) {
       labBody.appendChild(_makeEl('div', 'font-size:11px;color:var(--muted);margin-top:4px;', 'Son: ' + _relativeTimeTR(stats.last_viewed_at)));
     }
     var link = _makeEl('div', 'font-size:11px;color:var(--verm);margin-top:6px;cursor:pointer;font-weight:600;', 'Detayları gör →');
@@ -2414,16 +2410,11 @@ function reapplyDynamicFields() {
     var convCard = document.getElementById('kb-conversion');
 
     if (skeleton) skeleton.style.display = 'none';
-
-    // Empty state
-    if (!stats || stats.total_views === 0) {
-      if (empty) empty.style.display = 'block';
-      if (hero) hero.style.display = 'none';
-      return;
-    }
-
     if (empty) empty.style.display = 'none';
     if (hero) hero.style.display = 'block';
+
+    // Normalize stats for 0-view case
+    if (!stats) stats = { total_views: 0, unique_positions: 0, unique_companies: 0, last_viewed_at: null };
 
     // Hero total
     var totalEl = document.getElementById('kb-total');
@@ -2436,9 +2427,9 @@ function reapplyDynamicFields() {
       lastEl.style.display = 'block';
     }
 
-    // Mini bar chart — group events by day (last 7 days)
+    // Mini bar chart — always render (shows empty bars if no events)
     var chartEl = document.getElementById('kb-chart');
-    if (chartEl && events.length > 0) {
+    if (chartEl) {
       var dayBuckets = {};
       var now = new Date();
       for (var d = 6; d >= 0; d--) {
@@ -2475,37 +2466,44 @@ function reapplyDynamicFields() {
       if (s) segMap[s] = (segMap[s] || 0) + 1;
     });
     var segKeys = Object.keys(segMap);
-    if (segKeys.length > 0 && segCard) {
+    if (segCard) {
       segCard.style.display = 'block';
       var segBars = document.getElementById('kb-seg-bars');
       if (segBars) {
         while (segBars.firstChild) segBars.removeChild(segBars.firstChild);
-        var segTotal = events.length;
-        var segColors = { 'Lüks': 'var(--navy)', 'Premium': 'var(--verm)', 'Fast Fashion': '#2D8C5A', 'Spor': '#3B82F6' };
-        segKeys.sort(function(a, b) { return segMap[b] - segMap[a]; });
-        segKeys.forEach(function(name) {
-          var pct = Math.round((segMap[name] / segTotal) * 100);
-          var row = _makeEl('div', '');
-          var top = _makeEl('div', 'display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;');
-          top.appendChild(_makeEl('span', 'font-size:12px;font-weight:600;color:var(--text);', name));
-          top.appendChild(_makeEl('span', 'font-size:12px;color:var(--muted);font-family:\'DM Mono\',monospace;', pct + '%'));
-          var track = _makeEl('div', 'height:6px;background:var(--border);border-radius:3px;overflow:hidden;');
-          var fill = _makeEl('div', 'height:100%;width:' + pct + '%;background:' + (segColors[name] || 'var(--navy)') + ';border-radius:3px;transition:width 0.5s ease;');
-          track.appendChild(fill);
-          row.appendChild(top);
-          row.appendChild(track);
-          segBars.appendChild(row);
-        });
+        if (segKeys.length === 0) {
+          segBars.appendChild(_makeEl('div', 'font-size:12px;color:var(--muted);padding:8px 0;', 'Görüntülenme oldukça segment dağılımı burada görünecek.'));
+        } else {
+          var segTotal = events.length;
+          var segColors = { 'Lüks': 'var(--navy)', 'Premium': 'var(--verm)', 'Fast Fashion': '#2D8C5A', 'Spor': '#3B82F6' };
+          segKeys.sort(function(a, b) { return segMap[b] - segMap[a]; });
+          segKeys.forEach(function(name) {
+            var pct = Math.round((segMap[name] / segTotal) * 100);
+            var row = _makeEl('div', '');
+            var top = _makeEl('div', 'display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;');
+            top.appendChild(_makeEl('span', 'font-size:12px;font-weight:600;color:var(--text);', name));
+            top.appendChild(_makeEl('span', 'font-size:12px;color:var(--muted);font-family:\'DM Mono\',monospace;', pct + '%'));
+            var track = _makeEl('div', 'height:6px;background:var(--border);border-radius:3px;overflow:hidden;');
+            var fill = _makeEl('div', 'height:100%;width:' + pct + '%;background:' + (segColors[name] || 'var(--navy)') + ';border-radius:3px;transition:width 0.5s ease;');
+            track.appendChild(fill);
+            row.appendChild(top);
+            row.appendChild(track);
+            segBars.appendChild(row);
+          });
+        }
       }
     }
 
-    // Viewer list
-    if (viewersCard && events.length > 0) {
+    // Viewer list — always show
+    if (viewersCard) {
       viewersCard.style.display = 'block';
       var listEl = document.getElementById('kb-viewer-list');
       var lockEl = document.getElementById('kb-viewers-lock');
       if (listEl) {
         while (listEl.firstChild) listEl.removeChild(listEl.firstChild);
+        if (events.length === 0) {
+          listEl.appendChild(_makeEl('div', 'font-size:12px;color:var(--muted);padding:12px 0;', 'Profilini inceleyenler burada listelenecek.'));
+        }
         events.forEach(function(ev, idx) {
           var row = _makeEl('div', 'display:flex;align-items:center;gap:10px;padding:10px 0;' + (idx < events.length - 1 ? 'border-bottom:1px solid var(--border);' : ''));
 
