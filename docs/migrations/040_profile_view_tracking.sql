@@ -24,7 +24,11 @@ CREATE INDEX IF NOT EXISTS idx_pve_hr_candidate ON public.profile_view_events(hr
 
 -- ═══════════════════════════════════════════════════
 -- 2. candidate_view_stats — aggregated stats per candidate
+--    NOTE: A VIEW with this name may already exist from a previous session.
+--    We drop it first, then create as a TABLE (views can't have RLS or triggers).
 -- ═══════════════════════════════════════════════════
+DROP VIEW IF EXISTS public.candidate_view_stats;
+
 CREATE TABLE IF NOT EXISTS public.candidate_view_stats (
   candidate_id    bigint PRIMARY KEY REFERENCES public.candidates(id) ON DELETE CASCADE,
   total_views     integer DEFAULT 0 NOT NULL,
