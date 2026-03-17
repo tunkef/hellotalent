@@ -218,7 +218,184 @@ const TAKIM_BUYUKLUKLERI = ['Yok','1-5','6-15','16-30','30+'];
 
 const AYRILMA_NEDENLERI = ['Terfi','\u0130stifa','Kariyer Ge\u00e7i\u015fi','\u0130\u015ften \u00c7\u0131kar\u0131lma','Kar\u015f\u0131l\u0131kl\u0131 Fesih','S\u00f6zle\u015fme Bitimi','Belirtmek \u0130stemiyorum'];
 
-const ROL_AILELERI = ['Sat\u0131\u015f','Ma\u011faza Y\u00f6netimi','B\u00f6lge Y\u00f6netimi','Visual Merchandising','Operasyon','\u0130nsan Kaynaklar\u0131','Pazarlama / E-Ticaret'];
+const ROL_AILELERI = Object.keys(SEKTOR_ROL_MAP['Ma\u011fazac\u0131l\u0131k / Perakende']);
+
+const SEKTOR_ROL_MAP = {
+  'Ma\u011fazac\u0131l\u0131k / Perakende': {
+    'Ma\u011faza Y\u00f6netimi': [
+      'Ma\u011faza M\u00fcd\u00fcr\u00fc',
+      'Ma\u011faza M\u00fcd\u00fcr Yard\u0131mc\u0131s\u0131',
+      'Kat M\u00fcd\u00fcr\u00fc',
+      'Store Leader (flagship ma\u011fazalar i\u00e7in)'
+    ],
+    'Sat\u0131\u015f & M\u00fc\u015fteri Deneyimi': [
+      'Sat\u0131\u015f Dan\u0131\u015fman\u0131',
+      'K\u0131demli Sat\u0131\u015f Dan\u0131\u015fman\u0131',
+      'Sat\u0131\u015f Uzman\u0131',
+      '\u00dcr\u00fcn Uzman\u0131',
+      'Omni-Channel Sat\u0131\u015f Uzman\u0131'
+    ],
+    'B\u00f6lge & \u00c7ok Ma\u011faza Y\u00f6netimi': [
+      'B\u00f6lge M\u00fcd\u00fcr\u00fc',
+      'B\u00f6lge Operasyon M\u00fcd\u00fcr\u00fc',
+      'B\u00f6lge G\u00f6rsel M\u00fcd\u00fcr\u00fc',
+      'B\u00f6lge Sat\u0131\u015f M\u00fcd\u00fcr\u00fc',
+      'B\u00f6lge Direkt\u00f6r\u00fc',
+      '\u00dclke M\u00fcd\u00fcr\u00fc'
+    ],
+    'Visual Merchandising': [
+      'G\u00f6rsel Sat\u0131\u015f Uzman\u0131 / Visual Merchandiser',
+      'VM Koordinat\u00f6r\u00fc',
+      'VM M\u00fcd\u00fcr\u00fc',
+      'Display Uzman\u0131'
+    ],
+    'Ma\u011faza Operasyonu': [
+      'Kasiyer',
+      'Kasa Sorumlusu',
+      'Stok Sorumlusu',
+      'Envanter Uzman\u0131',
+      'Operasyon M\u00fcd\u00fcr\u00fc'
+    ],
+    'E\u011fitim & Geli\u015fim': [
+      'E\u011fitim M\u00fcd\u00fcr\u00fc',
+      '\u00dclke E\u011fitim M\u00fcd\u00fcr\u00fc',
+      'E\u011fitim Uzman\u0131',
+      'Ma\u011faza Ko\u00e7u',
+      'Onboarding Uzman\u0131'
+    ],
+    '\u0130nsan Kaynaklar\u0131': [
+      '\u0130K M\u00fcd\u00fcr\u00fc',
+      '\u0130K \u0130\u015f Orta\u011f\u0131',
+      '\u0130\u015fe Al\u0131m Uzman\u0131',
+      '\u0130K Asistan\u0131'
+    ],
+    'Pazarlama & E-Ticaret': [
+      'Pazarlama M\u00fcd\u00fcr\u00fc',
+      'E-Ticaret M\u00fcd\u00fcr\u00fc',
+      'Sosyal Medya Uzman\u0131',
+      'Dijital Pazarlama Uzman\u0131'
+    ],
+    'M\u00fc\u015fteri Hizmetleri': [
+      'M\u00fc\u015fteri Hizmetleri Uzman\u0131',
+      'M\u00fc\u015fteri Deneyimi M\u00fcd\u00fcr\u00fc',
+      'CRM Uzman\u0131'
+    ],
+    'Tedarik Zinciri & Lojistik': [
+      'Al\u0131c\u0131 / Merchant',
+      'Planlama Analisti',
+      'Sat\u0131n Alma Uzman\u0131',
+      'Lojistik Koordinat\u00f6r\u00fc'
+    ]
+  },
+  'Konaklama & Turizm': {
+    '\u00d6n B\u00fcro': [
+      'Resepsiyonist',
+      '\u00d6n B\u00fcro \u015eefi',
+      'Concierge',
+      'Rezervasyon Uzman\u0131',
+      'Guest Relations Uzman\u0131'
+    ],
+    'Yiyecek & \u0130\u00e7ecek': [
+      'Garson',
+      'Kafe/Bar Sorumlusu',
+      'F&B M\u00fcd\u00fcr\u00fc',
+      'Banket Koordinat\u00f6r\u00fc'
+    ],
+    'Kat Hizmetleri': [
+      'Kat Hizmetleri G\u00f6revlisi',
+      'Kat Hizmetleri Amiri',
+      'Housekeeping M\u00fcd\u00fcr\u00fc'
+    ],
+    'Sat\u0131\u015f & Pazarlama': [
+      'Sat\u0131\u015f M\u00fcd\u00fcr\u00fc',
+      'Revenue Manager',
+      'Pazarlama Uzman\u0131'
+    ],
+    'Otel Y\u00f6netimi': [
+      'Otel M\u00fcd\u00fcr\u00fc',
+      'Genel M\u00fcd\u00fcr Yard\u0131mc\u0131s\u0131',
+      'Operations Manager'
+    ]
+  },
+  'Sa\u011fl\u0131k': {
+    'Hasta Hizmetleri': [
+      'Hasta Kabul G\u00f6revlisi',
+      'Hasta Deneyimi Uzman\u0131',
+      '\u00c7a\u011fr\u0131 Merkezi Sa\u011fl\u0131k Dan\u0131\u015fman\u0131'
+    ],
+    'Medikal Sat\u0131\u015f & Pazarlama': [
+      'Medikal Sat\u0131\u015f Temsilcisi',
+      '\u00dcr\u00fcn M\u00fcd\u00fcr\u00fc (Medikal)',
+      'Marka M\u00fcd\u00fcr\u00fc (Medikal)'
+    ],
+    'Eczane': [
+      'Eczac\u0131',
+      'Eczane Teknisyeni',
+      'Eczane Sat\u0131\u015f Dan\u0131\u015fman\u0131'
+    ],
+    'Klinik & Hastane Y\u00f6netimi': [
+      'Klinik M\u00fcd\u00fcr\u00fc',
+      'Poliklinik Sorumlusu',
+      'Sa\u011fl\u0131k Operasyon M\u00fcd\u00fcr\u00fc'
+    ]
+  },
+  'Finans & Bankac\u0131l\u0131k': {
+    'M\u00fc\u015fteri \u0130li\u015fkileri': [
+      'M\u00fc\u015fteri Temsilcisi',
+      '\u015eube Y\u00f6neticisi',
+      'Bireysel Bankac\u0131l\u0131k Uzman\u0131',
+      'Kurumsal Bankac\u0131l\u0131k Uzman\u0131'
+    ],
+    'Sat\u0131\u015f': [
+      'Sat\u0131\u015f Uzman\u0131 (Bankac\u0131l\u0131k)',
+      'Finansal Dan\u0131\u015fman',
+      'Sigorta Sat\u0131\u015f Uzman\u0131'
+    ],
+    'Operasyon': [
+      'Veznedar / Teller',
+      'Back Office Uzman\u0131',
+      'Operasyon M\u00fcd\u00fcr\u00fc'
+    ]
+  },
+  'Havac\u0131l\u0131k': {
+    'Kabin Hizmetleri': [
+      'Kabin Memuru',
+      'K\u0131demli Kabin Memuru',
+      'Kabin Amiri / Purser'
+    ],
+    'Yer Hizmetleri': [
+      'Check-in G\u00f6revlisi',
+      'Kargo G\u00f6revlisi',
+      'Yolcu Hizmetleri Uzman\u0131',
+      'Lounge Sorumlusu'
+    ],
+    'Operasyon': [
+      'U\u00e7u\u015f Operasyon Uzman\u0131',
+      'U\u00e7u\u015f Planlama Uzman\u0131'
+    ]
+  },
+  'G\u0131da & \u0130\u00e7ecek': {
+    'Servis': [
+      'Garson',
+      'Barista',
+      'Kafe Sorumlusu',
+      'Restoran M\u00fcd\u00fcr\u00fc'
+    ],
+    'Mutfak': [
+      'A\u015f\u00e7\u0131',
+      'Pastane Uzman\u0131',
+      'Mutfak \u015eefi'
+    ],
+    'Zincir & Franchise Y\u00f6netimi': [
+      'B\u00f6lge M\u00fcd\u00fcr\u00fc (F&B)',
+      'Franchise Koordinat\u00f6r\u00fc',
+      'Operasyon M\u00fcd\u00fcr\u00fc (F&B)'
+    ]
+  },
+  'Di\u011fer': {
+    'Di\u011fer': []
+  }
+};
 
 const MUSAITLIK_SECENEKLERI = ['Hemen','2 Hafta \u0130\u00e7inde','1 Ay \u0130\u00e7inde','2+ Ay \u0130\u00e7inde'];
 
