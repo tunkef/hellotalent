@@ -3,90 +3,74 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Yetkinliklerim — Mockup v3</title>
+<title>Yetkinliklerim — Mockup v4</title>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{--verm:#C94E28;--navy:#1E2D5E;--bg:#F7F6F4;--border:#E5E3DF;--muted:#6B7280;--text:#111111}
-body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);min-height:100vh;padding:24px 16px}
+body{font-family:"Plus Jakarta Sans",sans-serif;background:var(--bg);min-height:100vh;padding:24px 16px}
 .wrap{max-width:900px;margin:0 auto}
-
-/* HEADER */
 .yk-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:10px}
-.yk-title{font-family:'Bricolage Grotesque',sans-serif;font-size:22px;font-weight:700;color:var(--navy)}
+.yk-title{font-family:"Bricolage Grotesque",sans-serif;font-size:22px;font-weight:700;color:var(--navy)}
 .yk-sub{font-size:13px;color:var(--muted);margin-top:3px}
 .yk-tier-toggle{display:flex;align-items:center;gap:6px;background:#fff;border:1px solid var(--border);border-radius:20px;padding:3px 6px}
-.yk-tier-btn{padding:5px 14px;border-radius:16px;border:none;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:500;transition:all .2s}
+.yk-tier-btn{padding:5px 14px;border-radius:16px;border:none;cursor:pointer;font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;font-weight:500;transition:all .2s}
 .yk-tier-btn.active{background:var(--navy);color:#fff}
 .yk-tier-btn:not(.active){background:transparent;color:var(--muted)}
-
-/* SEARCH */
 .search-section{background:#fff;border:1.5px solid var(--border);border-radius:16px;padding:20px;margin-bottom:24px}
 .search-top{display:flex;align-items:center;gap:8px;margin-bottom:12px}
-.search-title{font-family:'Bricolage Grotesque',sans-serif;font-size:15px;font-weight:600;color:var(--navy)}
+.search-title{font-family:"Bricolage Grotesque",sans-serif;font-size:15px;font-weight:600;color:var(--navy)}
 .search-badge{background:#EEF2FF;color:var(--navy);font-size:10px;font-weight:700;padding:3px 8px;border-radius:8px;letter-spacing:.3px}
 .search-bar{display:flex;gap:8px}
-.search-input{flex:1;height:40px;border:1.5px solid var(--border);border-radius:10px;padding:0 14px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;color:var(--text);outline:none;transition:border-color .2s;background:#fff}
+.search-input{flex:1;height:40px;border:1.5px solid var(--border);border-radius:10px;padding:0 14px;font-family:"Plus Jakarta Sans",sans-serif;font-size:13px;color:var(--text);outline:none;transition:border-color .2s;background:#fff}
 .search-input:focus{border-color:var(--navy)}
 .search-input::placeholder{color:#9CA3AF}
-.search-btn{height:40px;padding:0 18px;background:var(--navy);color:#fff;border:none;border-radius:10px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:opacity .2s;display:flex;align-items:center;gap:6px;white-space:nowrap}
-.search-btn:hover{opacity:.9}
+.search-btn{height:40px;padding:0 18px;background:var(--navy);color:#fff;border:none;border-radius:10px;font-family:"Plus Jakarta Sans",sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;white-space:nowrap}
 .search-hints{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
 .hint-chip{padding:4px 10px;background:var(--bg);border:1px solid var(--border);border-radius:12px;font-size:11px;color:var(--muted);cursor:pointer;transition:all .15s}
 .hint-chip:hover{border-color:var(--verm);color:var(--verm);background:#FEF3F0}
 .search-result{margin-top:14px;padding:14px;background:var(--bg);border-radius:10px;display:none}
 .search-result.show{display:block}
-.sr-role{font-family:'Bricolage Grotesque',sans-serif;font-size:14px;font-weight:600;color:var(--navy);margin-bottom:10px}
+.sr-role{font-family:"Bricolage Grotesque",sans-serif;font-size:14px;font-weight:600;color:var(--navy);margin-bottom:10px}
 .sr-comps{display:flex;flex-wrap:wrap;gap:6px}
 .sr-comp{display:flex;align-items:center;gap:5px;padding:5px 10px;border-radius:10px;font-size:11px;font-weight:600}
 .sr-comp.core{background:#FEF3F0;color:var(--verm);border:1px solid #F9C3B3}
 .sr-comp.important{background:#EEF2FF;color:var(--navy);border:1px solid #C7D2FE}
 .sr-comp.nice{background:#F3F4F6;color:var(--muted);border:1px solid var(--border)}
-.sr-empty{font-size:13px;color:var(--muted);text-align:center;padding:10px 0}
-
-/* FREEMIUM HERO */
 .freemium-hero{background:linear-gradient(135deg,#2A3F7A 0%,var(--navy) 50%,#162247 100%);border-radius:16px;padding:24px;margin-bottom:20px;position:relative;overflow:hidden}
 .fh-deco{position:absolute;top:-30px;right:-30px;width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,.04);pointer-events:none}
 .fh-deco2{position:absolute;bottom:-40px;right:60px;width:100px;height:100px;border-radius:50%;background:rgba(201,78,40,.12);pointer-events:none}
 .fh-tag{display:inline-flex;align-items:center;gap:5px;background:rgba(201,78,40,.2);border:1px solid rgba(201,78,40,.4);border-radius:12px;padding:4px 10px;font-size:11px;font-weight:600;color:#FCA47A;margin-bottom:12px}
-.fh-role{font-family:'Bricolage Grotesque',sans-serif;font-size:20px;font-weight:700;color:#fff;margin-bottom:6px;line-height:1.3}
+.fh-role{font-family:"Bricolage Grotesque",sans-serif;font-size:20px;font-weight:700;color:#fff;margin-bottom:6px;line-height:1.3}
 .fh-msg{font-size:13px;color:rgba(255,255,255,.65);line-height:1.6;max-width:480px;margin-bottom:18px}
 .fh-msg strong{color:rgba(255,255,255,.9)}
 .fh-actions{display:flex;gap:10px;flex-wrap:wrap}
-.fh-btn-primary{padding:9px 20px;background:var(--verm);color:#fff;border:none;border-radius:10px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:opacity .2s}
-.fh-btn-primary:hover{opacity:.9}
-.fh-btn-secondary{padding:9px 20px;background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.2);border-radius:10px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:background .2s}
-.fh-btn-secondary:hover{background:rgba(255,255,255,.15)}
+.fh-btn-primary{padding:9px 20px;background:var(--verm);color:#fff;border:none;border-radius:10px;font-family:"Plus Jakarta Sans",sans-serif;font-size:13px;font-weight:600;cursor:pointer}
+.fh-btn-secondary{padding:9px 20px;background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.2);border-radius:10px;font-family:"Plus Jakarta Sans",sans-serif;font-size:13px;cursor:pointer}
 .fh-stats{display:flex;gap:20px;margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,.1)}
-.fh-stat-num{font-family:'DM Mono',monospace;font-size:18px;font-weight:500;color:#fff}
+.fh-stat-num{font-family:"DM Mono",monospace;font-size:18px;font-weight:500;color:#fff}
 .fh-stat-label{font-size:11px;color:rgba(255,255,255,.5);margin-top:1px}
-
-/* PREMIUM SUMMARY */
 .summary-card{background:var(--navy);border-radius:16px;padding:20px 24px;color:#fff;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:20px}
 .summary-stats{display:flex;gap:24px}
 .stat-item{text-align:center}
-.stat-num{font-family:'DM Mono',monospace;font-size:24px;font-weight:500}
+.stat-num{font-family:"DM Mono",monospace;font-size:24px;font-weight:500}
 .stat-label{font-size:11px;opacity:.6;margin-top:2px}
 .stat-strong .stat-num{color:#4ADE80}
 .stat-growing .stat-num{color:#FCD34D}
 .progress-track{height:5px;background:rgba(255,255,255,.2);border-radius:3px;overflow:hidden;width:220px;margin-top:10px}
 .progress-fill{height:100%;background:#fff;border-radius:3px;transition:width .4s ease}
-
-/* ROLE SELECTOR */
 .section-label{font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.8px;text-transform:uppercase;margin-bottom:10px}
 .role-bar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px}
 .role-pill{padding:7px 16px;border-radius:20px;border:1.5px solid var(--border);background:#fff;font-size:12px;font-weight:500;cursor:pointer;transition:all .2s;color:var(--text)}
 .role-pill.active{border-color:var(--verm);background:#FEF3F0;color:var(--verm)}
-.role-pill:hover:not(.active){border-color:#C4B5B0}
-
-/* CARDS */
+.unlock-progress{background:#fff;border:1.5px solid var(--border);border-radius:14px;padding:14px 18px;margin-bottom:16px;display:flex;align-items:center;gap:14px}
+.up-track{flex:1;height:8px;background:var(--bg);border-radius:4px;overflow:hidden}
+.up-fill{height:100%;background:linear-gradient(90deg,var(--verm),#E8693E);border-radius:4px;transition:width .5s ease}
 .comp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(268px,1fr));gap:12px;margin-bottom:20px}
 .comp-card{background:#fff;border:1.5px solid var(--border);border-radius:14px;padding:16px;transition:all .2s;position:relative;overflow:hidden;cursor:pointer}
 .comp-card:hover{border-color:#C4B5B0;transform:translateY(-1px);box-shadow:0 4px 16px rgba(0,0,0,.06)}
 .comp-card.rated-strong{border-color:#15803D;background:#F0FDF4}
 .comp-card.rated-growing{border-color:#B45309;background:#FFFBEB}
-.comp-card.unlocked-glow{animation:unlockPulse .5s ease-out}
-@keyframes unlockPulse{0%{box-shadow:0 0 0 0 rgba(201,78,40,.3)}100%{box-shadow:0 0 0 8px rgba(201,78,40,0)}}
 .lock-overlay{position:absolute;inset:0;background:rgba(247,246,244,.88);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;border-radius:12px;backdrop-filter:blur(3px)}
 .lock-icon{width:32px;height:32px;background:var(--navy);border-radius:50%;display:flex;align-items:center;justify-content:center}
 .lock-label{font-size:11px;font-weight:600;color:var(--navy);text-align:center;line-height:1.4}
@@ -94,8 +78,8 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);min-height:
 .comp-top-left{display:flex;align-items:flex-start;gap:10px}
 .comp-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .comp-icon svg{width:18px;height:18px}
-.comp-name{font-family:'Bricolage Grotesque',sans-serif;font-size:14px;font-weight:600;color:var(--navy);line-height:1.3}
-.comp-kf{font-size:10px;color:var(--muted);font-family:'DM Mono',monospace;margin-top:2px}
+.comp-name{font-family:"Bricolage Grotesque",sans-serif;font-size:14px;font-weight:600;color:var(--navy);line-height:1.3}
+.comp-kf{font-size:10px;color:var(--muted);font-family:"DM Mono",monospace;margin-top:2px}
 .info-btn{width:24px;height:24px;border-radius:50%;border:1.5px solid var(--border);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;color:var(--muted)}
 .info-btn:hover{border-color:var(--navy);color:var(--navy);background:#EEF2FF}
 .comp-desc{font-size:12px;color:var(--muted);line-height:1.5;margin-bottom:12px}
@@ -103,65 +87,53 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);min-height:
 .comp-weight.core{background:#FEF3F0;color:var(--verm)}
 .comp-weight.important{background:#EEF2FF;color:var(--navy)}
 .comp-weight.nice{background:#F3F4F6;color:var(--muted)}
-
-/* 2-BUTTON RATING */
 .rating-btns{display:flex;gap:6px}
-.rating-btn{flex:1;padding:8px 4px;border-radius:9px;border:1.5px solid var(--border);background:#fff;font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;font-family:'Plus Jakarta Sans',sans-serif;color:var(--muted);display:flex;align-items:center;justify-content:center;gap:5px}
-.rating-btn:hover{border-color:#C4B5B0}
+.rating-btn{flex:1;padding:8px 4px;border-radius:9px;border:1.5px solid var(--border);background:#fff;font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;font-family:"Plus Jakarta Sans",sans-serif;color:var(--muted);display:flex;align-items:center;justify-content:center;gap:5px}
 .rating-btn.strong.active{background:#DCFCE7;border-color:#15803D;color:#15803D}
 .rating-btn.growing.active{background:#FEF3C7;border-color:#B45309;color:#B45309}
 .rating-badge{display:none}
-.comp-card.rated-strong .rating-badge.strong-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;color:#15803D;background:#DCFCE7;border-radius:8px;padding:2px 8px;margin-bottom:8px}
-.comp-card.rated-growing .rating-badge.growing-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;color:#B45309;background:#FEF3C7;border-radius:8px;padding:2px 8px;margin-bottom:8px}
-
-/* PROGRESS UNLOCK */
-.unlock-progress{background:#fff;border:1.5px solid var(--border);border-radius:14px;padding:14px 18px;margin-bottom:16px;display:flex;align-items:center;gap:14px}
-.up-track{flex:1;height:8px;background:var(--bg);border-radius:4px;overflow:hidden}
-.up-fill{height:100%;background:linear-gradient(90deg,var(--verm),#E8693E);border-radius:4px;transition:width .5s ease}
-.up-label{font-size:12px;color:var(--muted);white-space:nowrap}
-.up-count{font-family:'DM Mono',monospace;font-size:13px;font-weight:500;color:var(--navy)}
-
-/* RIGHT DRAWER */
+.comp-card.rated-strong .rating-badge.strong-badge,.comp-card.rated-growing .rating-badge.growing-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;border-radius:8px;padding:2px 8px;margin-bottom:8px}
+.comp-card.rated-strong .rating-badge.strong-badge{color:#15803D;background:#DCFCE7}
+.comp-card.rated-growing .rating-badge.growing-badge{color:#B45309;background:#FEF3C7}
 .drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:900;opacity:0;pointer-events:none;transition:opacity .25s;backdrop-filter:blur(2px)}
 .drawer-overlay.open{opacity:1;pointer-events:all}
-.drawer{position:fixed;top:0;right:0;bottom:0;width:420px;max-width:95vw;background:#fff;z-index:901;transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);overflow-y:auto;box-shadow:-8px 0 40px rgba(0,0,0,.12)}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:460px;max-width:95vw;background:#fff;z-index:901;transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);overflow-y:auto;box-shadow:-8px 0 40px rgba(0,0,0,.12)}
 .drawer.open{transform:translateX(0)}
 .drawer-header{padding:20px 24px 16px;border-bottom:1px solid var(--border);position:sticky;top:0;background:#fff;z-index:2;display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
-.drawer-header-left{flex:1}
-.drawer-comp-name{font-family:'Bricolage Grotesque',sans-serif;font-size:18px;font-weight:700;color:var(--navy);line-height:1.2}
-.drawer-comp-kf{font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;margin-top:3px}
-.drawer-close{width:32px;height:32px;border-radius:50%;border:1.5px solid var(--border);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;font-size:16px;color:var(--muted)}
-.drawer-close:hover{background:var(--bg);color:var(--text)}
+.drawer-comp-name{font-family:"Bricolage Grotesque",sans-serif;font-size:18px;font-weight:700;color:var(--navy);line-height:1.2}
+.drawer-comp-kf{font-size:11px;color:var(--muted);font-family:"DM Mono",monospace;margin-top:3px}
+.drawer-close{width:32px;height:32px;border-radius:50%;border:1.5px solid var(--border);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px;color:var(--muted)}
+.drawer-close:hover{background:var(--bg)}
 .drawer-body{padding:20px 24px}
-.drawer-section{margin-bottom:24px}
-.drawer-section-title{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.8px;text-transform:uppercase;margin-bottom:10px}
-.drawer-definition{font-size:14px;color:var(--text);line-height:1.7;padding:14px;background:#F8F7F5;border-radius:10px;border-left:3px solid var(--verm)}
-.anchor-list{display:flex;flex-direction:column;gap:8px}
-.anchor-item{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border-radius:10px;font-size:13px;line-height:1.5}
+.drawer-section{margin-bottom:22px}
+.drawer-section-title{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.8px;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.drawer-definition{font-size:13px;color:var(--text);line-height:1.8;padding:14px 16px;background:#F8F7F5;border-radius:10px;border-left:3px solid var(--verm)}
+.drawer-why{font-size:13px;color:#4B5563;line-height:1.8;margin-top:10px}
+.anchor-list{display:flex;flex-direction:column;gap:7px}
+.anchor-item{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border-radius:10px;font-size:13px;line-height:1.6}
 .anchor-item.strong-anchor{background:#F0FDF4;color:#14532D}
 .anchor-item.growing-anchor{background:#FFFBEB;color:#78350F}
-.anchor-dot-strong{width:8px;height:8px;border-radius:50%;background:#15803D;flex-shrink:0;margin-top:5px}
-.anchor-dot-growing{width:8px;height:8px;border-radius:50%;background:#B45309;flex-shrink:0;margin-top:5px;border:2px solid #B45309;background:transparent}
+.anchor-item.overused-anchor{background:#FFF1F2;color:#881337}
+.anchor-dot-strong{width:8px;height:8px;border-radius:50%;background:#15803D;flex-shrink:0;margin-top:6px}
+.anchor-dot-growing{width:8px;height:8px;border-radius:50%;border:2px solid #B45309;flex-shrink:0;margin-top:6px}
+.anchor-dot-overused{width:8px;height:8px;border-radius:50%;background:#E11D48;flex-shrink:0;margin-top:6px}
 .drawer-divider{height:1px;background:var(--border);margin:20px 0}
-.drawer-rating-section{background:var(--bg);border-radius:12px;padding:16px}
-.drawer-rating-title{font-size:13px;font-weight:600;color:var(--navy);margin-bottom:4px}
-.drawer-rating-sub{font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.5}
-.drawer-rating-btns{display:flex;gap:8px}
-.drawer-rating-btn{flex:1;padding:11px 8px;border-radius:10px;border:1.5px solid var(--border);background:#fff;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;font-family:'Plus Jakarta Sans',sans-serif;color:var(--muted);text-align:center}
-.drawer-rating-btn:hover{border-color:#C4B5B0}
+.drawer-rating-section{background:#F8F7F5;border-radius:12px;padding:16px}
+.drawer-rating-title{font-size:14px;font-weight:600;color:var(--navy);margin-bottom:4px}
+.drawer-rating-sub{font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.6}
+.drawer-rating-btns{display:flex;gap:8px;margin-bottom:12px}
+.drawer-rating-btn{flex:1;padding:12px 8px;border-radius:10px;border:1.5px solid var(--border);background:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:"Plus Jakarta Sans",sans-serif;color:var(--muted);text-align:center;transition:all .15s}
 .drawer-rating-btn.strong.active{background:#DCFCE7;border-color:#15803D;color:#15803D}
 .drawer-rating-btn.growing.active{background:#FEF3C7;border-color:#B45309;color:#B45309}
-.drawer-cta{margin-top:16px;padding:12px 16px;background:var(--navy);border-radius:10px;color:#fff;font-size:12px;line-height:1.5;cursor:pointer;border:none;width:100%;text-align:left;font-family:'Plus Jakarta Sans',sans-serif}
-.drawer-cta span{display:block;font-weight:600;font-size:13px;margin-bottom:2px}
-.drawer-cta-sub{opacity:.65;font-size:12px}
-.drawer-lock-notice{background:#FEF3F0;border:1px solid #F9C3B3;border-radius:10px;padding:14px;text-align:center}
-.drawer-lock-notice-title{font-size:13px;font-weight:600;color:var(--verm);margin-bottom:4px}
-.drawer-lock-notice-sub{font-size:12px;color:#9A3C1E;line-height:1.5}
-.drawer-lock-btn{margin-top:10px;width:100%;padding:9px;background:var(--verm);color:#fff;border:none;border-radius:8px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer}
-
-/* BOTTOM CARDS */
-.upgrade-cta{background:var(--verm);border:none;border-radius:10px;padding:10px 20px;color:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:opacity .2s;white-space:nowrap}
-.upgrade-cta:hover{opacity:.9}
+.drawer-interview{margin-top:12px;padding:14px;background:var(--navy);border-radius:10px;cursor:pointer;border:none;width:100%;text-align:left;font-family:"Plus Jakarta Sans",sans-serif}
+.drawer-interview-title{font-size:12px;font-weight:700;color:rgba(255,255,255,.6);letter-spacing:.5px;text-transform:uppercase;margin-bottom:4px}
+.drawer-interview-q{font-size:13px;color:#fff;line-height:1.5}
+.drawer-retail{padding:14px;background:#EEF2FF;border-radius:10px;border-left:3px solid var(--navy)}
+.drawer-retail-title{font-size:11px;font-weight:700;color:var(--navy);letter-spacing:.5px;text-transform:uppercase;margin-bottom:6px}
+.drawer-retail-text{font-size:13px;color:#1E3A8A;line-height:1.6}
+.drawer-lock-notice{background:#FEF3F0;border:1px solid #F9C3B3;border-radius:10px;padding:16px;text-align:center}
+.drawer-lock-btn{margin-top:10px;width:100%;padding:10px;background:var(--verm);color:#fff;border:none;border-radius:8px;font-family:"Plus Jakarta Sans",sans-serif;font-size:13px;font-weight:600;cursor:pointer}
+.upgrade-cta{background:var(--verm);border:none;border-radius:10px;padding:10px 20px;color:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:"Plus Jakarta Sans",sans-serif;white-space:nowrap}
 .next-card{background:#fff;border:1.5px solid var(--navy);border-radius:14px;padding:18px 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
 .premium-badge{background:var(--navy);color:#fff;font-size:10px;font-weight:700;padding:3px 10px;border-radius:10px;letter-spacing:.5px;display:inline-block;margin-bottom:6px}
 .dashed-card{background:#fff;border:1.5px dashed #C4B5B0;border-radius:14px;padding:18px 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
@@ -172,7 +144,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);min-height:
   <div class="yk-header">
     <div>
       <div class="yk-title">Yetkinliklerim</div>
-      <div class="yk-sub">Retail pozisyonlarına özel yetkinlik haritası</div>
+      <div class="yk-sub">Retail pozisyonlarına özel yetkinlik haritası — Mockup v4</div>
     </div>
     <div class="yk-tier-toggle">
       <span style="font-size:11px;color:var(--muted);padding:0 4px">Görünüm:</span>
@@ -180,7 +152,6 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);min-height:
       <button class="yk-tier-btn" onclick="setTier('premium',this)">Premium</button>
     </div>
   </div>
-
   <div class="search-section">
     <div class="search-top">
       <div class="search-title">Pozisyon Ara</div>
@@ -203,35 +174,31 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);min-height:
     </div>
     <div class="search-result" id="searchResult"></div>
   </div>
-
   <div id="summaryWrap"></div>
   <div id="roleSelectorWrap"></div>
   <div id="progressWrap"></div>
-  <div class="section-label">Yetkinlik kartları — <span style="font-weight:400;text-transform:none;font-size:11px;color:var(--muted)">detay için kartlara tıkla</span></div>
+  <div class="section-label">Yetkinlik kartları — <span style="font-weight:400;text-transform:none;font-size:11px;color:var(--muted)">detay ve değerlendirme için kartlara tıkla</span></div>
   <div class="comp-grid" id="compGrid"></div>
   <div id="bottomCard"></div>
 </div>
-
-<!-- RIGHT DRAWER -->
 <div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
 <div class="drawer" id="drawer">
   <div class="drawer-header">
-    <div class="drawer-header-left">
-      <div class="drawer-comp-name" id="drawerName">—</div>
-      <div class="drawer-comp-kf" id="drawerKf">—</div>
+    <div>
+      <div class="drawer-comp-name" id="drawerName"></div>
+      <div class="drawer-comp-kf" id="drawerKf"></div>
     </div>
     <button class="drawer-close" onclick="closeDrawer()">✕</button>
   </div>
   <div class="drawer-body" id="drawerBody"></div>
 </div>
-
 <script>
 const ROLES={
   'Kasiyer':{level:'Giriş',comps:[
-    {code:'cf',name:'Müşteri Odaklılık',kf:'Customer Focus',desc:'Her müşteriyle güler yüzlü ve çözüm odaklı etkileşim.',weight:'core',icon:'eye'},
-    {code:'it',name:'Güven Oluşturma',kf:'Instills Trust',desc:'Kasa işlemlerinde dürüstlük ile güven inşa eder.',weight:'core',icon:'shield'},
-    {code:'ea',name:'Sorumluluk Alma',kf:'Ensures Accountability',desc:'Hata takibi ve sonuçların sahiplenilmesi.',weight:'core',icon:'check'},
-    {code:'ce',name:'Etkili İletişim',kf:'Communicates Effectively',desc:'Ürün, kampanya ve kasa süreçleri hakkında net bilgi verir.',weight:'important',icon:'msg'},
+    {code:'cf',name:'Müşteri Odaklılık',kf:'Customer Focus',desc:'Her müşteriyle güler yüzlü ve çözüm odaklı etkileşim kurar.',weight:'core',icon:'eye'},
+    {code:'it',name:'Güven Oluşturma',kf:'Instills Trust',desc:'Kasa işlemlerinde dürüstlük ve tutarlılık ile güven inşa eder.',weight:'core',icon:'shield'},
+    {code:'ea',name:'Sorumluluk Alma',kf:'Ensures Accountability',desc:'İşlem hatalarını takip eder, sonuçlarının sorumluluğunu üstlenir.',weight:'core',icon:'check'},
+    {code:'ce',name:'Etkili İletişim',kf:'Communicates Effectively',desc:'Müşteriye ürün, kampanya ve kasa süreçleri hakkında net bilgi verir.',weight:'important',icon:'msg'},
     {code:'br',name:'Dayanıklılık',kf:'Being Resilient',desc:'Yoğun saatlerde stres altında sakin ve odaklı kalır.',weight:'important',icon:'bolt'},
   ]},
   'Satış Danışmanı':{level:'Giriş',comps:[
@@ -241,6 +208,23 @@ const ROLES={
     {code:'co',name:'Takım Çalışması',kf:'Collaborates',desc:'Mağaza ekibiyle ortak hedefler için iş birliği yapar.',weight:'important',icon:'team'},
     {code:'ao',name:'Aksiyona Yönelim',kf:'Action Oriented',desc:'Fırsatları hızla değerlendirir, harekete geçer.',weight:'important',icon:'bolt'},
   ]},
+  'Kıdemli Satış Dan.':{level:'Giriş-Orta',comps:[
+    {code:'cf',name:'Müşteri Odaklılık',kf:'Customer Focus',desc:'Müşteri ihtiyaçlarını önceler, uzun vadeli ilişki kurar.',weight:'core',icon:'eye'},
+    {code:'ce',name:'Etkili İletişim',kf:'Communicates Effectively',desc:'Açık ve ikna edici biçimde bilgi iletir.',weight:'core',icon:'msg'},
+    {code:'it',name:'Güven Oluşturma',kf:'Instills Trust',desc:'Tutarlı davranışlarla müşteri güveni inşa eder.',weight:'core',icon:'shield'},
+    {code:'co',name:'Takım Çalışması',kf:'Collaborates',desc:'Yeni çalışanlara rehberlik eder, ekibi destekler.',weight:'important',icon:'team'},
+    {code:'is',name:'İlişki Yönetimi',kf:'Interpersonal Savvy',desc:'Farklı kişilerle kolayca bağ kurar.',weight:'important',icon:'heart'},
+    {code:'nl',name:'Hızlı Öğrenme',kf:'Nimble Learning',desc:'Yeni ürün ve kampanyaları hızla öğrenir.',weight:'nice',icon:'bolt'},
+  ]},
+  'Kat Müdürü':{level:'Giriş-Orta',comps:[
+    {code:'cf',name:'Müşteri Odaklılık',kf:'Customer Focus',desc:'Sahada müşteri deneyimini yönetir.',weight:'core',icon:'eye'},
+    {code:'dw',name:'Ekip Yönlendirme',kf:'Directs Work',desc:'Görevleri delege eder, engelleri kaldırır.',weight:'core',icon:'arrow'},
+    {code:'mc',name:'Çatışma Yönetimi',kf:'Manages Conflict',desc:'Ekip içi anlaşmazlıkları sakin ve adil şekilde çözer.',weight:'core',icon:'shield'},
+    {code:'ea',name:'Sorumluluk Alma',kf:'Ensures Accountability',desc:'Ekip için net sorumluluk tanımlar.',weight:'core',icon:'check'},
+    {code:'ao',name:'Aksiyona Yönelim',kf:'Action Oriented',desc:'Hızlı kararlar alır, harekete geçer.',weight:'important',icon:'bolt'},
+    {code:'co',name:'Takım Çalışması',kf:'Collaborates',desc:'Departmanlar arası iş birliğini sağlar.',weight:'important',icon:'team'},
+    {code:'ce',name:'Etkili İletişim',kf:'Communicates Effectively',desc:'Ekiple ve müşteriyle açık iletişim kurar.',weight:'important',icon:'msg'},
+  ]},
   'Mağaza Müdürü':{level:'Üst',comps:[
     {code:'ea',name:'Sorumluluk Alma',kf:'Ensures Accountability',desc:'Kendisi ve ekibi için net sorumluluk tanımlar.',weight:'core',icon:'check'},
     {code:'dr',name:'Sonuç Odaklılık',kf:'Drives Results',desc:'Zorlu koşullarda dahi tutarlı sonuçlar üretir.',weight:'core',icon:'bolt'},
@@ -249,7 +233,7 @@ const ROLES={
     {code:'cf',name:'Müşteri Odaklılık',kf:'Customer Focus',desc:'Mağaza operasyonunu müşteri etrafında şekillendirir.',weight:'core',icon:'eye'},
     {code:'dt',name:'Yetenek Geliştirme',kf:'Develops Talent',desc:'Ekip üyelerinin potansiyelini açığa çıkarır.',weight:'important',icon:'star'},
     {code:'co',name:'Takım Çalışması',kf:'Collaborates',desc:'Departmanlar arası iş birliğini sağlar.',weight:'important',icon:'team'},
-    {code:'fa',name:'Finansal Okuryazarlık',kf:'Financial Acumen',desc:'Mağaza P&L\'ini yönetir, kârlılığı artırır.',weight:'important',icon:'chart'},
+    {code:'fa',name:'Finansal Okuryazarlık',kf:'Financial Acumen',desc:'Mağaza P&L'ini yönetir, kârlılığı artırır.',weight:'important',icon:'chart'},
     {code:'de',name:'Motivasyon & Bağlılık',kf:'Drives Engagement',desc:'Yüksek performans için ilham veren ortam yaratır.',weight:'nice',icon:'heart'},
   ]},
   'Bölge Müdürü':{level:'Üst',comps:[
@@ -262,255 +246,298 @@ const ROLES={
     {code:'pa',name:'Planlama & Önc.',kf:'Plans and Aligns',desc:'Bölge hedeflerini kaynakla uyumlu planlar.',weight:'important',icon:'arrow'},
     {code:'de',name:'Motivasyon & Bağlılık',kf:'Drives Engagement',desc:'Mağaza ekiplerinin bağlılığını yüksek tutar.',weight:'important',icon:'heart'},
     {code:'co',name:'Takım Çalışması',kf:'Collaborates',desc:'Mağaza müdürleri arası iş birliğini teşvik eder.',weight:'important',icon:'team'},
-    {code:'fa',name:'Finansal Okuryazarlık',kf:'Financial Acumen',desc:'Bölge P&L\'ini yönetir.',weight:'nice',icon:'chart'},
+    {code:'fa',name:'Finansal Okuryazarlık',kf:'Financial Acumen',desc:'Bölge P&L'ini yönetir.',weight:'nice',icon:'chart'},
   ]},
 };
 
-// Behavioral anchors — her yetkinlik için
 const ANCHORS={
   cf:{
-    def:'Müşteri ihtiyaçlarını, isteklerini ve beklentilerini öncelikli olarak karşılamak; müşteri odaklı çözümler geliştirmek.',
-    strong:['Müşteri şikayetini fırsata çevirir; çözümle birlikte pozitif bir deneyim yaratır','Müşteriyle konuşmadan ihtiyacını sezebilir, doğru ürünü doğru anda önerir','Müşteriyi bir kez değil, her ziyarette hatırlar ve kişiselleştirir'],
-    growing:['Müşteriyle iletişim kurar ama çözüm önerisi üretmekte zorlanır','Ürün bilgisi yeterli ama bunu müşterinin ihtiyacıyla buluşturamıyor','Şikayetlerde savunmaya geçer, durumu yönetmekte güçlük çeker'],
-    interview:'Bu yetkinliği mülakatta nasıl anlatırsın? "Zorlu bir müşteri durumuyla nasıl başa çıktığını" anlatan gerçek bir örnek hazırla.'
+    def:"Güçlü müşteri ilişkileri kurmak, müşteri ihtiyaçlarını —dile getirilmeden önce— sezebilmek ve müşteri odaklı çözümler üretmek.",
+    why:"Herhangi bir işletmede en önemli varlık müşteridir; sektörden bağımsız olarak her eylemin merkezinde bir müşteri vardır. Müşteri olmadan işletme de olmaz. Kazanan kurumlar daima müşteri odaklıdır: strateji, süreç ve kararlar müşteri perspektifinden tasarlanır. Müşteriye odaklanmak, yeniliği tetikler; geri bildirim dinleme alışkanlığı yaratır; sizi rakiplerin önünde tutar. Retail&#39;de ise bu yetkinlik hayatta kalma meselesidir — mağazaya giren müşteri aynı ürünü telefonuyla da alabilir. Sizi tercih ettiren tek şey deneyimdir.",
+    skilled:["Müşteri ihtiyaçlarını dinleyerek anlar ve bunlara karşılık veren çözümler geliştirir","Müşteriye yarar sağlayan fırsatları erkenden fark eder ve harekete geçer","Müşteri beklentilerini karşılayan — hatta aşan — hizmet sunar","Müşteri ile uzun soluklu ve güvene dayalı ilişkiler kurar ve bu ilişkileri besler","Şikayetleri bir sorun değil, iyileştirme fırsatı olarak değerlendirir"],
+    lessskilled:["Müşteri beklentilerinin farkında değildir; ihtiyaçları anlamadan hareket eder","İşleri operasyonel açıdan yönetir; müşteri perspektifini ikinci plana atar","Önemli müşterilerle etkili bağ kuramaz, ilişki yüzeysel kalır","Müşteri şikayeti karşısında savunmaya geçer, sorunu sahip değil","Kendi rahatını müşterinin rahatlığından önce düşünür"],
+    highlyskilled:["Müşterinin henüz farkında olmadığı ihtiyaçlarını öngörür ve bunlara hazırlıklı olur","Müşteriden öğrendiklerini yeni ürün ve hizmet geliştirmeye dönüştürür","Kilit müşterilerle stratejik ortaklık düzeyinde ilişkiler kurar; sadece satıcı değil, çözüm ortağı olur"],
+    overused:["Müşteri beklentilerini karşılamak için kurumun kural ve prosedürlerini serbestçe askıya alır","Müşteriye kurumun tutamayacağı sözler verir; kısa vade kazanmak için uzun vadeyi riske atar","Müşteri ilişkisine o kadar odaklanır ki diğer kritik iş konularını göz ardı eder"],
+    retail:"Bir Lüks segment mağaza müdürü, düzenli müşterilerinin isimlerini, tercihlerini ve özel günlerini kayıt altında tutar. Yeni koleksiyon geldiğinde sistem üzerinden kişiye özel mesaj gönderir. Bu müşteriler için 'bekleme listesi' oluşturur. Sonuç: ortalama sepet değeri diğer müşterilere kıyasla 3 kat daha yüksek.",
+    interview:"Bir müşteriyle yaşadığın zorlu bir durumu anlat. Ne oldu, nasıl yaklaştın ve sonuç ne oldu? STAR formatında (Durum – Görev – Eylem – Sonuç) hazırla."
   },
   ce:{
-    def:'Fikirlerini ve bilgileri açık, net ve etkili biçimde hem sözlü hem yazılı olarak aktarmak; aktif dinlemek.',
-    strong:['Karmaşık bilgiyi basit ve anlaşılır hale getirir','Dinleyicisinin bilgi düzeyine göre dilini ayarlar','Zor haberi bile karşı tarafı savunmaya sokmadan iletir'],
-    growing:['Bilgiyi bilir ama aktarırken detaylara takılır, mesajı kaybeder','Dinliyor gibi görünür ama cevap verirken konuyu kaçırır','Yazılı iletişimde net değil, yanlış anlamalara neden olur'],
-    interview:'"Karmaşık bir bilgiyi ekibine ya da müşterine nasıl aktardığını" gösteren somut bir örnek hazırla.'
+    def:"Fikirleri, bilgileri ve bakış açılarını her türlü ortamda açık, net ve etkili biçimde iletmek; sadece konuşmak değil, gerçekten dinlemek.",
+    why:"Retail&#39;de iletişim her şeydir. Müşteriye yanlış ürünü satmak, ekibe belirsiz görev vermek, üst yönetimle eksik bilgi paylaşmak — hepsinin kökünde iletişim zafiyeti yatar. Etkili iletişim kuranlar; müşteriyi doğru yönlendirir, ekibi motive eder ve sorunları büyümeden çözer. Dinlemek kadar net konuşmak, sormak kadar anlamak bu yetkinliğin özüdür. İnsanlar ne söylediğinizi değil, nasıl hissettirdiklerinizi hatırlar.",
+    skilled:["Fikirlerini dinleyici kitlesine göre uyarlar; yöneticiye farklı, müşteriye farklı konuşur","Zor haberleri bile karşı tarafı savunmaya sokmadan, yapıcı biçimde iletir","Konuştuğu kadar — hatta daha fazla — dinler; cevap vermeden önce anladığından emin olur","Yazılı iletişimde (mesaj, e-posta, rapor) net, kısa ve eyleme yönelik ifade kullanır","Toplantılarda konuşma sırası gelmeden bile pozisyonunu açıkça ortaya koyabilir"],
+    lessskilled:["Bilgisi vardır ama aktarırken detaylara boğulur; asıl mesajı kaybeder","Aktif dinlemiyor gibi görünür; cevap verirken soruyu kaçırır","Yazılı iletişimde belirsiz ifadeler kullanır, yanlış anlamalara zemin hazırlar","Zor konuşmalardan kaçınır; doğrudan söylemesi gerekeni ima yoluyla geçiştirmeye çalışır","Aynı mesajı farklı kişilere tutarsız biçimde iletir"],
+    highlyskilled:["Karmaşık, teknik bilgiyi farklı kitleler için sade ve akılda kalıcı hale getirir","Bir odadaki sessiz dinamikleri okuyabilir; söylenmeyeni de duyabilir","İletişim tarzını esnek biçimde adapte eder — acil durumda net ve hızlı, koçluk anında sabırlı ve sorgulatıcı"],
+    overused:["Çok fazla açıklar; kısa tutulabilecek konuşmaları uzatır, dinleyiciyi yorar","Mesajı o kadar dikkatli çerçeveler ki net karar verilemiyor; belirsizlik artar","Sözelleştirme ihtiyacı o kadar güçlüdür ki bazen hızlı hareket etmek yerine açıklama yapmayı seçer"],
+    retail:"Bir Satış Danışmanı müşteriyle konuşurken ürün özelliklerini değil, müşterinin hayatında ne işe yarayacağını anlatır. 'Bu ceket su geçirmez' yerine 'Sabah yürüyüşlerinizde yağmura yakalanmak istemiyorsanız bu tam size göre' der. Sonuç: müşteri satın alma kararını kendisi verir.",
+    interview:"Karmaşık bir bilgiyi çok farklı bir kitleye (teknik olmayan biri, farklı kültürden biri veya çok meşgul biri) anlatmak zorunda kaldığın bir durumu anlat."
   },
   it:{
-    def:'Tutarlı, dürüst ve şeffaf davranışlarla güven inşa etmek; söz verdiğini yerine getirmek.',
-    strong:['Söylediğini yapar, yapmayacağı sözü vermez','Hata yaptığında ilk kabul eden odur; başkasını suçlamaz','Mağaza kasası, ürün bilgisi, stok — her süreçte tutarlı davranır'],
-    growing:['İyi niyetle hareket eder ama takip etmediği taahhütler güveni zedeler','Zorlu durumlarda farklı kişilere farklı şeyler söyler','Kurumun çıkarı ile müşterinin çıkarı çatışınca ne yapacağını bilemez'],
-    interview:'"Güven sarsıcı bir durumda nasıl davrandığını" gösteren gerçek bir örnek hazırla.'
+    def:"Söz, davranış ve niyetin tutarlılığıyla güven inşa etmek; söylediklerinin arkasında durmak ve etik değerlerden taviz vermemek.",
+    why:"Güven, inşa edilmesi yıllar alan ama saniyeler içinde yıkılabilen bir sermayedir. Retail&#39;de güven çift yönlüdür: müşteri güveni ve ekip güveni. Müşteri güveni olmadan satış, ekip güveni olmadan liderlik mümkün değildir. Güveni yüksek çalışanların yönettiği mağazalarda hem müşteri memnuniyeti hem çalışan bağlılığı daha yüksektir. Tutarsızlık — küçük de olsa — güveni erozyon gibi aşındırır.",
+    skilled:["Söz verdiğinde yerine getirir; taahhütlerini takip eder ve bunu başkalarından da bekler","Hatalı olduğunu anladığında açıkça kabul eder; başkasını suçlamaya gerek duymaz","Gözetlenip gözetlenmediğinden bağımsız olarak aynı değerlerle hareket eder","Hassas bilgileri gizli tutar; dedikodu ve kulaktan dolma bilgilere dayanan kararlar almaz","Çatışma durumunda tarafsız kalır; kendi çıkarını değil doğruyu önceliklendirir"],
+    lessskilled:["İyi niyetlidir ama takip etmediği taahhütler birikerek güveni zedeler","Zorlu durumlarda farklı kişilere farklı şeyler söyler; tutarsızlık çevresinde fark edilir","Kurum çıkarı ile kişisel çıkarı çatıştığında ne yapacağı belirsiz kalır","Hata olduğunda sahiplenmek yerine süreci ya da sistemi sorumlu tutar","Başkalarının bilgilerini gerekenden fazla paylaşır; sır tutamaz"],
+    highlyskilled:["Zor gerçekleri zamanında ve doğrudan söyler; sulandırmaz, rafa kaldırmaz","Kendisi için avantajsız olduğu durumlarda bile doğru kararı savunabilir","Kurumun değerlerine aykırı gördüğü bir baskıya, hiyerarşik baskı altında bile açıkça itiraz edebilir"],
+    overused:["Dürüstlük adına diplomasizi göz ardı eder; gereksiz yere sert ve kırıcı olabilir","Her şeyin şeffaf paylaşılması gerektiğine o kadar inanır ki stratejik bilgileri de yanlış kişilerle paylaşır","Başkalarının tutarsız davrandığı anlarda toleranssız ve yargılayıcı bir tutum sergiler"],
+    retail:"Bir mağaza müdürü, stok sisteminde kayıt dışı ürün sayımı fark ettiğinde bunu üst yönetime bildirmek yerine 'kendi içinde halledebilirim' diyebilirdi. Güvenilirliği nedeniyle doğrudan raporladı ve süreç iyileştirildi. Altı ay sonra bölge müdürü pozisyonuna önerildi.",
+    interview:"Doğruyu söylemenin sana bir maliyeti olduğu — kariyer, ilişki ya da kısa vadeli çıkar açısından — bir durum anlat. Ne yaptın?"
   },
   co:{
-    def:'Ortak hedeflere ulaşmak için başkalarıyla iş birliği yapmak; ekip başarısını kişisel çıkarın önünde tutmak.',
-    strong:['Kendisi kazanmak yerine ekibin kazanmasını tercih eder','Farklı departmanlardaki kişilerle gönüllü köprüler kurar','Başarıyı paylaşır, övgüyü ekiple böler'],
-    growing:['Kendi işini iyi yapar ama başkasına yardım etmeyi "fazladan iş" olarak görür','Grup çalışmasında pasif kalır, katkısını net ortaya koyamaz','Takım kararına katılmasa da farklı görüşünü açıkça söylemez'],
-    interview:'"Ekip çalışmasında öne çıktığın ya da zor bir ekip sürecini nasıl yönettiğini" anlat.'
+    def:"Ortak hedeflere ulaşmak için başkalarıyla iş birliği yapmak, ortaklıklar kurmak ve ekip başarısını kişisel kazanımın önünde tutmak.",
+    why:"Mağaza bir ekip sporudur. Tek başına 'yıldız' olan birinin yarattığı değer, iyi çalışan bir ekibin değerinin çok gerisinde kalır. Retail&#39;de vardiyalar değişir, departmanlar birbirini etkiler, stoktan satışa her halka birbirine bağlıdır. İş birliği yapan ekipler hem müşteri memnuniyetinde hem verimlilikte daha yüksek sonuçlar üretir. Ayrıca iş birliği; sessiz kalan ekip üyelerinin güçlü fikirlerini ortaya çıkarır ve kör noktaları ortadan kaldırır.",
+    skilled:["Ortak hedefler için başkalarıyla aktif biçimde iş birliği arar; beklenmeden önerir","Başarıyı ekiple paylaşır; övgüyü tek başına almak yerine dağıtır","Farklı departmanlarla ilişkileri proaktif biçimde geliştirir; sadece ihtiyaç anında aramaz","Kendi bakış açısını paylaşırken başkalarının perspektifine de gerçekten alan açar","Grup kararını destekler; hemfikir olmasa bile taahhüdünü yerine getirir"],
+    lessskilled:["Kendi işini iyi yapar ama başkasına yardım etmeyi 'fazladan iş' olarak görür","Grup çalışmasında pasif kalır; katkısını net ortaya koymaz","Ekip kararına katılmasa bile farklı görüşünü açıkça ifade etmez — sonra sessiz sedasız muhalefet eder","Bilgi paylaşımında cimridir; bilgiyi güç olarak kullanır","Başarıdan pay almak ister ama sorumluluktan kaçınır"],
+    highlyskilled:["Farklı birimleri bir araya getiren köprü kurucu olarak görünür; doğal koordinatör rolü üstlenir","Çatışma noktalarında dahi ortak zemin bulabilir ve grubu ileriye taşır","Kendi departmanının çıkarı aleyhine olsa bile bütünün iyiliği için kararlar alabilir"],
+    overused:["Herkesin görüşünü almak adına karar süreçlerini gereksiz yere uzatır","Konsensüs olmadan harekete geçemez; bağımsız kararlar vermekten kaçınır","İş birliği ortamını korumak adına gerekli çatışmadan kaçınır; sorunlar birikerek büyür"],
+    retail:"Satış ekibi ile operasyon ekibi arasındaki klasik 'vitrin düzeni' gerginliğini düşün. Satış 'müşteri görmeli' der, operasyon 'stok yetersiz' der. İyi bir iş birliği kurucusu her iki tarafın önceliklerini masaya taşır ve her iki sorunu da çözen bir düzenleme önerir.",
+    interview:"Farklı öncelikleri olan ekiplerle çalışmak zorunda kaldığın ve ortak bir çözüm bulmak için çaba harcadığın bir durumu anlat."
   },
   ao:{
-    def:'Yeni fırsatları ve zorlu durumları enerji ve istekle ele almak; gereksiz beklemeksizin harekete geçmek.',
-    strong:['Fırsatı gördüğünde izin beklemez, inisiyatif alır','Mükemmel plan yerine iyi-yeterli plan ile hızlı hareket eder','Engelle karşılaştığında çözüm yolu arar, engeli şikayet etmez'],
-    growing:['Harekete geçmeden önce çok fazla onay bekler','Her adımı planlamadan yapamaz; belirsizlikte felç olur','Zor konulardan kaçınır, birisi zorlamadan adım atmaz'],
-    interview:'"Hızlı karar almak zorunda kaldığın bir durumu" anlat.'
+    def:"Yeni fırsatları ve zorlu durumları yüksek enerji ve istekle ele almak; gereksiz beklemeksizin, aşırı plan yapmaksızın harekete geçmek.",
+    why:"Retail&#39;de fırsatlar anlık gelir ve geçer. Rakip mağaza indirime girdi, popüler ürün stoktan bitti, müşteri şikayeti büyümeden önce müdahale şansı var — bunların hepsi hızlı aksiyon gerektirir. Aksiyona yönelim; sadece hız değil, 'harekete geçme cesareti'dir. Aşırı analiz, aşırı toplantı, aşırı onay mekanizmaları — hepsi bu yetkinliğin eksikliğinin belirtisidir. '80% çözüm şimdi, 100% çözüm sonra' prensibi aksiyona yönelimin özüdür.",
+    skilled:["Fırsatı gördüğünde beklemeden harekete geçer; izin için sonsuza kadar beklemez","Zorlu durumları enerji düşürücü değil, kışkırtıcı olarak değerlendirir","Mükemmel plan yerine iyi ve hızlı planla aksiyon alır","Başarısızlık ihtimali onu felç etmez; dener, öğrenir, düzeltir","Ekibindeki insanları da harekete geçmeye teşvik eder"],
+    lessskilled:["Harekete geçmeden önce çok fazla onay ve veri bekler","Belirsizlik onu rahatsız eder; netlik olmadan aksiyon almakta zorlanır","Zor konulardan ve kararlardan uzak durur; biri zorlamadan adım atmaz","Aşırı planlama eğilimindedir; planlama yapma sürecinde vakit tüketir","Her şeyi çok detaylı düşünür; analiz felci yaşar"],
+    highlyskilled:["Beklenmeden inisiyatif alır ve başkalarını da bu yönde motive eder","Zorlukla karşılaştığında çevresine enerji ve kararlılık yayar","Engelleri kaldırmak için gerekirse üst yönetime itiraz eder; 'bu yapılamaz' demek yerine yol bulur"],
+    overused:["O kadar hızlı hareket eder ki önemli analizleri atlar; hatalı kararlar alır","Dikkatli planlama gereken durumlarda da düşünmeden harekete geçer","Ekibini de kendi hızına zorlar; yetişemeyen insanları geride bırakır"],
+    retail:"Bir Pazar günü öğleden sonra, kasa kuyruğu uzadı ve müşteriler şikayete başladı. Satış danışmanı müdürü aramak yerine ikinci kasayı kendisi açtı, kasiyerlik eğitimini hatırladı ve kuyruğu 10 dakikada eritti. Müdürü döndüğünde durumu çoktan çözmüştü.",
+    interview:"Beklemeye vaktin olmadığı ve hızlı karar almak zorunda kaldığın bir durumu anlat. Ne yaptın ve nasıl sonuçlandı?"
   },
   ea:{
-    def:'Kendisi ve başkaları için net taahhütler oluşturmak ve bu taahhütlere bağlı kalmak.',
-    strong:['Ekibindeki herkesin ne yapacağını ve ne zaman teslim edeceğini bilir','Hata olduğunda "biz yaptık" değil "ben atladım" der','Süreçlere geri bildirim döngüleri ekler, sonuçları takip eder'],
-    growing:['İşi delege eder ama takip etmez, son gün sürprizle karşılaşır','Sorun olduğunda "sistem öyle" ya da "o yapmadı" der','Ekip üyelerine net beklenti iletmez, her şey varsayım üzerine yürür'],
-    interview:'"Sorumluluğunu aldığın ve zorlu koşullarda taahhüdünü yerine getirdiğin" bir örnek anlat.'
+    def:"Kendisi ve başkaları için net taahhütler oluşturmak, bu taahhütlerin yerine getirilmesini takip etmek ve sonuçların sorumluluğunu üstlenmek.",
+    why:"Sorumluluk kültürü olmayan organizasyonlarda herkes birbirini bekler, hatalar tekrarlanır ve performans düşer. Sorumluluk almak; yalnızca kendi işini yapmak değil, ekibin de sorumluluğunu aktif biçimde takip etmektir. Bu yetkinlik, iş dünyasında en çok 'değeri bilinmeden eksikliği hissedilen' yetkinliktir. Birisi sorumluluk aldığında ekip rahatlar, süreçler güvenilir hale gelir ve güven inşa edilir.",
+    skilled:["Net taahhütler verir ve bu taahhütlerin takibini yapar","Ekibindeki herkesin kendi rolünün farkında olmasını sağlar; kim, ne, ne zamana kadar sorularını netleştirir","Hata yaptığında başkasını ya da koşulları suçlamak yerine kendi payını açıkça kabul eder","Süreçlere geri bildirim döngüleri ekler; sonuçları izler ve geride kalan noktaları saptar","Hesap verebilirliği bir ceza aracı değil, güven ve netlik aracı olarak kullanır"],
+    lessskilled:["İşi delege eder ama takip etmez; son dakika sürprizleriyle karşılaşır","Sorun çıktığında 'sistem öyle' ya da 'o yapmadı' açıklamasına sığınır","Ekip üyelerine net beklenti iletmez; her şey varsayım üzerine yürür","Kendi sorumluluğunun sınırını dar tutarak çok şeyi 'başkasının işi' kategorisine sokar","Performans sorunlarını geç fark eder ya da görmezden gelir"],
+    highlyskilled:["Hesap verebilirliği kurum kültürünün parçası haline getirir; davranışlarıyla model olur","Ekibindeki sorumluluk boşluklarını proaktif olarak tespit eder ve doldurur","Kamuoyu önünde bile hataları açıkça kabul etmekten çekinmez; bu sayede ekibinde güven kazanır"],
+    overused:["Sorumluluğu o kadar sıkı tutar ki başkalarının inisiyatif almasına yer kalmaz","Kontrolü bırakmakta zorlanır; mikro yönetim eğilimi gelişir","Hesap verebilirliği bir kural değil, ceza mekanizması olarak işletir; ekipte korku kültürü oluşur"],
+    retail:"Stok sayımında 12 ürün eksik çıktı. Kamera görüntüsü yoktu. Ekip müdürü 'kayıp' olarak kapatmak yerine süreci baştan inceledi, teslimatta ayrıntıların gözden kaçtığını buldu ve tedarikçiyle yazışmaları takip ederek 9 ürünü geri aldı. Kalan 3 için ise tedarikçiden tazminat talep etti.",
+    interview:"Gerçekleşmesinden korktuğun bir durum gerçekleşti ve sen o durumun bir parçasıydın. Nasıl ele aldın?"
   },
   dr:{
-    def:'Zorlu koşullarda bile tutarlı sonuçlar üretmek; yüksek performans standartlarını sürdürmek.',
-    strong:['Zorlu hedefleri kendine zorbalık değil, kışkırtma olarak görür','Mağazanın rakamlarını her zaman bilir; güncel ve net','Ekibi hedefin gerisinde kalınca durumu analiz eder, suçlama değil çözüm üretir'],
-    growing:['Verilen hedefi takip eder ama proaktif olarak aşmak için çaba göstermez','Performans düşünce "piyasa kötü" açıklamasına sığınır','Kısa vadeli sonuçla uzun vadeli ekip sağlığını dengeleyemez'],
-    interview:'"Zor bir dönemde hedefi nasıl tutturduğunu" anlatan somut bir örnek hazırla.'
+    def:"Zorlu koşullar altında bile tutarlı ve yüksek kaliteli sonuçlar üretmek; hedeflere ulaşmak için ısrarlı ve kararlı olmak.",
+    why:"Sonuç üretmek; retail&#39;in nefesidir. Mağaza, sezon, bölge ya da şirket düzeyinde — her performans döngüsünün sonunda sayılar konuşur. Ama sonuç odaklılık yalnızca rakamları tutturmak değildir; bu yetkinlik 'nasıl' sorusunu da kapsar. Kısa vadeli baskı altında uzun vadeli değerleri feda ederek sayı tutturan kişi bu yetkinliğe sahip değildir. Gerçek sonuç odaklılık, doğru yoldan giderek hedefe ulaşmaktır.",
+    skilled:["Kendi performansı için yüksek standart belirler ve bu standardın altında kalmakla uzlaşmaz","Zorlu koşullar — düşük sezon, stok sorunu, personel yokluğu — altında bile hedeflere ulaşmanın yolunu bulur","Sonuçlara ilerlemeyi düzenli olarak ölçer; sorun var mı erken fark eder","Rakamların ne zaman döneceğini, neden düştüğünü bilir; veriyle güçlü ilişkisi vardır","Ekibini hedefin etrafında motive eder; pes etmek değil çözüm üretmek yönünde yönlendirir"],
+    lessskilled:["Verilen hedefi tutturmaya çalışır ama proaktif olarak aşmak için çaba göstermez","Performans düştüğünde 'piyasa kötü', 'sezon zor' açıklamalarına sığınır","Hedeften ne kadar uzak olduğunu takip etmez; sürprizlerle karşılaşır","Kısa vadeli rahatlamak için uzun vadeli öneme sahip adımları erteleyebilir","Zor dönemlerde motivasyonu ve enerjisi düşer; ekibi de bundan olumsuz etkilenir"],
+    highlyskilled:["Başkalarının imkansız dediği hedeflere ulaşmanın yaratıcı yollarını bulur","Kısa vadeli baskı altında bile uzun vadeli kurumsal değerleri korur","Sonuç üretmeyi takım ve sistem geliştirme yatırımıyla birleştirir; hem bugünü hem yarını kazanır"],
+    overused:["Sonuç takıntısı insani değerleri geri plana atar; ekip yıpranır","Kısa vadeli rakam uğruna etik ya da sürdürülebilirlik konularında taviz verebilir","Sadece sonucu ödüllendirir; süreci ve davranışı görmezden gelir — bu yanlış davranışları da ödüllendirmek anlamına gelebilir"],
+    retail:"Bir mağaza müdürü, yıl sonunda hedefin %15 gerisindeydi. Ekibi suçlamak yerine önce veriyi inceledi: hangi ürün kategorisi, hangi saat dilimi, hangi müşteri profili geri düşüyordu? Çapraz satış fırsatlarını yeniden eğitti, vitrin yerleşimini değiştirdi ve son 3 ayda farkı kapattı.",
+    interview:"Hedefin gerisinde kaldığını fark ettiğin ve bunu tersine çevirmek için aktif adım attığın bir dönemi anlat."
   },
   dw:{
-    def:'Ekibe net yön vermek, görevleri delege etmek ve önündeki engelleri kaldırmak.',
-    strong:['Her ekip üyesi gün başında ne yapması gerektiğini bilir','Delege ettiği işi mikroyönetmez ama ortada bırakmaz','Süreçteki engeli görmeden önce ekibi vurmuyor; önceden sezinler'],
-    growing:['Delege eder ama "nasıl yapacağını" anlatmaz, yanlış beklenti oluşur','Her şeyi kendisi yapmak ister; ekibin gelişimine yer bırakmaz','Ekibe yön verirken zaman zaman çelişkili mesajlar gönderir'],
-    interview:'"Ekibine görev dağıtırken karşılaştığın bir zorluğu ve nasıl çözdüğünü" anlat.'
+    def:"Ekibe net yön vermek, görevleri etkin biçimde dağıtmak, önündeki engelleri proaktif olarak kaldırmak ve iş sonuçlarına odaklanmayı sağlamak.",
+    why:"Yönlendirme olmadan ekip yüzmez — sadece su yerinde sayar. Retail&#39;de her vardiya, her gün, her sezon net görev dağılımı gerektirir. Yönlendirme yapan lider; ekibinin güçlü yanlarını bilir, doğru işi doğru kişiye verir ve sonucun önündeki engelleri kaldırır. Mikro yönetim ile yönlendirme arasındaki fark şudur: mikro yönetim 'nasıl yapacağını' söyler, yönlendirme 'ne yapılması gerektiğini' netleştirir ve kişiyi serbest bırakır.",
+    skilled:["Her ekip üyesi gün başında ne yapması gerektiğini bilir; belirsizlik yoktur","Görev dağılımını kişinin güçlü yanına göre yapar; herkese aynı işi vermez","Delege ettiği işi takip eder ama kişinin üstüne yapışmaz; güvenerek bırakır","Süreçteki engeli ekibin önüne çıkmadan görür ve kaldırır","Priorties değiştiğinde ekibi hızla günceller; herkes aynı bilgiye sahiptir"],
+    lessskilled:["Görev verir ama 'nasıl yapacağını' açıklamaz; yanlış beklentiler oluşur","Her şeyi kendisi yapmak ister; delege etmekte güçlük çeker","Ekibine çelişkili mesajlar gönderir; 'önce şu, hayır önce bu' kargaşası yaşanır","Sorunları reaktif ele alır; engel çıkana kadar fark etmez","Performans sorununun arkasındaki nedeni bulmak yerine kişiyi değiştirmeyi tercih eder"],
+    highlyskilled:["Ekibinin kapasitesini sürekli büyütür; her delege an aynı zamanda bir gelişim fırsatıdır","Organizasyonun önündeki sistemik engelleri tespit eder ve üst yönetimle çalışarak kaldırır","Herkesin güçlü yanını en üst düzeyde kullanacak görev dağılımı yapar; ekip toplam kapasitesinin üzerinde performans gösterir"],
+    overused:["Yönlendirmeyi o kadar titiz yapar ki ekip bağımsız düşünemez hale gelir","Her adımı onaylatmak zorunda olan bir kültür oluşturur","Çok fazla kontrol noktası koyar; süreçler yavaşlar, esneklik azalır"],
+    retail:"Cumartesi sabahı 4 çalışan hastalandı. Kat müdürü paniklemek yerine 10 dakika içinde gün planını yeniden yapılandırdı: öncelikli bölgeleri belirledi, çapraz görev yaptı, kasayı güçlendirdi. Gün boyunca hiçbir bölge boş kalmadı.",
+    interview:"Ekibini zor koşullarda yönlendirmek zorunda kaldığın — kaynak eksikliği, zaman baskısı ya da belirsizlik — bir durumu anlat."
   },
   bt:{
-    def:'Güçlü, çeşitli yetkinliklere sahip ve uyumlu ekipler kurmak ve yönetmek.',
-    strong:['Ekibindeki boşlukları görür ve doldurmak için proaktif davranır','Farklı güçlü yönlere sahip insanları bir arada çalıştırabilir','Ekip üyeleri kariyer hedeflerini onunla konuşmaktan çekinmez'],
-    growing:['Kendine benzeyen insanları tercih eder; çeşitlilik yaratmakta zorlanır','Takım performansı yerine bireysel performansı ölçmekle meşgul','Ekip üyeleri arasındaki çatışmayı fark etmez ya da görmezden gelir'],
-    interview:'"Kurduğun ya da geliştirdiğin bir ekibi ve süreci" anlat.'
+    def:"Kolektif başarı için güçlü, birbirini tamamlayan ve uyumlu ekipler kurmak; çeşitliliği güç olarak kullanmak.",
+    why:"Tek başına dahiler ekipleri yener. En iyi mağazalar, tek tek yıldızların toplamından değil; iyi kurulmuş ekiplerin sinerjisinden güçlenir. Ekip kurma yetkinliği; sadece 'doğru insanı işe almak' değil, bu insanların bir bütün oluşturmasını sağlamak, çatışmaları yapıcı yönetmek ve ekibin zamanla güçlenmesini sağlamaktır. Zayıf ekipler en iyi sistemi bile işlevsiz kılar; güçlü ekipler yetersiz kaynakla bile kazanır.",
+    skilled:["Ekibindeki boşlukları — beceri, bakış açısı, kişilik — görerek doldurur","Farklı güçlü yönlere sahip insanların bir arada çalışmasını sağlar","Ekip içi güveni ve psikolojik güvenliği aktif biçimde besler; insanlar fikir söylemekten çekinmez","Ekip dinamiklerindeki kırılmaları erken fark eder ve müdahale eder","Ekip üyeleri kariyer hedeflerini liderle açıkça paylaşabilir"],
+    lessskilled:["Kendine benzeyen insanları tercih eder; çeşitliliği tehdit olarak algılar","Ekip performansını bireysel performansın toplamı olarak görür; sinerji oluşturmaz","Ekip içi çatışmayı fark etmez ya da görmezden gelir; sorun büyür","İşe alımda acele eder; 'biri gelsin de iş yapılsın' yaklaşımı ekip kalitesini düşürür","Zayıf ekip üyesiyle hesaplaşmaktan kaçınır; yüksek performans gösterenleri yorar"],
+    highlyskilled:["Ekibi sadece mevcut ihtiyaçlar için değil, gelecekteki büyüme için de kurar","Çeşitli bakış açılarının olduğu ekiplerde çatışmayı bastırmak yerine yaratıcı gerilimd olarak kullanır","Ekip kimliği ve ortak amacı güçlü biçimde netleştirir; ekip 'biz' duygusunu içselleştirir"],
+    overused:["Ekip uyumunu o kadar önceliklendirir ki zorlu kararları alamaz; ekip bir baloncuğa dönüşür","Ekip dışından gelen fikirlere ve insanlara kapıyı kapatır","Consensus aramak adına yavaş hareket eder; hız ve çeviklik kaybolur"],
+    retail:"Yeni açılan bir flagship mağazanın müdürü, ekibini oluştururken kasıtlı çeşitlilik sağladı: deneyimli bir satışçı, sosyal medya güçlü bir Z kuşağı danışman, operasyon odaklı bir kat sorumlusu ve müşteri hizmetleri geçmişinden gelen bir kasiyer. İlk 3 ayda mağaza bölgenin en yüksek NPS skorunu elde etti.",
+    interview:"Sıfırdan ya da mevcut zorluklarla kurduğun bir ekibi ve bu süreçte attığın adımları anlat."
   },
   dt:{
-    def:'Başkalarının gelişimini desteklemek, koçluk yapmak ve potansiyellerini ortaya çıkarmak.',
-    strong:['Ekibindeki her kişinin bir sonraki adımını düşünür','Gelişim konuşması yapar — sadece performans değerlendirme değil','Hata yaparken "bunu ben çözmeliyim" yerine "nasıl öğrenebilir" diye bakar'],
-    growing:['Ekibine iş yaptırır ama geliştirmek için zaman ayırmaz','Eğitimi "HR\'ın işi" olarak görür','Potansiyeli yüksek çalışanla ayrı konuşma yapmaz'],
-    interview:'"Ekibinden birini geliştirdiğin somut bir süreci" anlat.'
+    def:"Başkalarının gelişimini desteklemek, güçlü yönlerini ve gelişim alanlarını net biçimde görmek, koçluk ve mentorlukla potansiyellerini açığa çıkarmak.",
+    why:"En iyi liderler; kendi başarılarından değil, yetiştirdikleri kişilerin başarısından gurur duyanlardır. Retail&#39;de yetenek gelişimi iki boyutludur: hem mevcut performansı artırmak hem bir sonraki nesil liderleri hazırlamak. Yetenek geliştirecek lider hem kurumun sürdürülebilirliğini sağlar hem de çalışan bağlılığını artırır — çünkü insanlar büyüdüklerini hissettikleri yerlerde kalırlar.",
+    skilled:["Her ekip üyesinin güçlü yanlarını ve geliştirme alanlarını net biçimde tanımlar","Gelişim konuşması yapar — yalnızca performans değerlendirmesi değil, kariyer diyaloğu","Hata yapıldığında 'bunu ben çözmeliyim' yerine 'bu kişi buradan ne öğrenebilir?' diye düşünür","Kişiye uygun öğrenme fırsatları bulur ve erişimini kolaylaştırır","Başarıları fark eder ve takdir eder; sadece büyük başarılar için değil, ilerleme için de"],
+    lessskilled:["Ekibine iş yaptırır ama geliştirmek için zaman ayırmaz","Eğitimi 'HR'ın işi' olarak kategorize eder; sahaya taşımaz","Gelişim sohbeti yapmaz; insanlar ne zaman terfi edeceğini bilmez","Güçlü çalışanı yetiştirince onu kaybedeceğinden korkar; gelişimi bilinçli ya da bilinçsiz engeller","Potansiyeli yüksek çalışanla bireysel konuşma yapmaz; onu kalabalık içinde kaybeder"],
+    highlyskilled:["Ekibindeki her kişinin 2-3 yıl sonra hangi rolde olabileceğini düşünür ve buna göre gelişim planlar","Başkalarını geliştirmek için kendi zamanını ve kaynaklarını feda eder","Yetenek yetiştirme reputasyonu sayesinde en iyi adaylar onunla çalışmak ister"],
+    overused:["Gelişim adına insanları hazır olmadıkları sorumluluklar için zorlar; başarısızlık riski artar","Kendi yönetim tarzını herkese dayatır; kişiye özgü koçluğu ihmal eder","Koçluk ve geri bildirime o kadar odaklanır ki performans konuşmalarından kaçınır"],
+    retail:"Bir mağaza müdürü, mağazasındaki en iyi satışçının aslında mağazayı büyütmek için değil, mağaza müdürü olmak için çalıştığını gördü. Onu bir mağaza operasyon projesine dahil etti, bölge toplantılarına götürdü ve 18 ay sonra kendi mağazasına önerdi. O çalışan bugün kendi bölgesini yönetiyor.",
+    interview:"Ekibindeki birinin potansiyelini fark edip gelişimine aktif yatırım yaptığın ve bunu somut bir ilerlemeyle sonuçlandırdığın bir süreci anlat."
   },
   fa:{
-    def:'Finansal göstergeleri anlayıp yorumlamak ve iş kararlarına yansıtmak.',
-    strong:['Mağazanın P&L\'ini ezberden bilir; gelir, gider, kâr marjı','Promosyon kararını rakamla destekler, sezgiyle değil','Stok devir hızı, kayıp oranı gibi KPI\'ları düzenli takip eder'],
-    growing:['Satış rakamını bilir ama gider ve kâr marjına hakim değil','Finansal kararları "yönetim belirler" olarak görür, kendi payını görmez','Bütçe konuşmalarında rahat değil; rakamlardan kaçınır'],
-    interview:'"Finansal bir göstergeyi takip edip buna göre harekete geçtiğin" bir örneği anlat.'
-  },
-  sm:{
-    def:'Geleceği öngörmek, uzun vadeli düşünmek ve bunu operasyonel kararlara yansıtmak.',
-    strong:['Rakip mağazaların hareketini takip eder, kendi stratejisine katar','Kısa vadeli baskı altında uzun vadeli önemi olan kararlardan vazgeçmez','Bölge trendlerini okur ve erken pozisyon alır'],
-    growing:['Operasyonel detaylara odaklanır; büyük resmi kaçırır','Strateji konuşmalarında fikir söylemekte zorlanır','Değişen koşullara tepkisel davranır; öngörü değil','Bir adım önü düşünmez'],
-    interview:'"Uzun vadeli düşünerek aldığın ve kısa vadede fedakarlık gerektiren" bir karar anlat.'
+    def:"Temel finansal göstergeleri anlayıp yorumlamak ve bu anlayışı daha iyi iş kararları almak için etkin biçimde kullanmak.",
+    why:"Retail&#39;de finansal okuryazarlık olmadan mağaza yönetmek; gösterge paneline bakmadan araba sürmek gibidir. Ciro tek başına anlamsızdır — brüt kâr marjı, stok devir hızı, kayıp oranı, işletme gideri/ciro dengesi: bunlar bir arada okunduğunda gerçek resim görülür. Finansal yetkinliği güçlü mağaza müdürleri; indirimi ne zaman yapacaklarını, hangi ürüne stok yatıracaklarını ve hangi gideri kesmek gerektiğini veriye dayanarak kararlaştırır.",
+    skilled:["Mağazanın P&L yapısını anlayarak yorumlar; gelir, maliyet ve kâr arasındaki ilişkiyi görür","Finansal verileri operasyonel kararlarla ilişkilendirir; sayıları hayata geçirir","Bütçe oluştururken gerçekçi ve mantıklı varsayımlar kullanır","Finansal performansı düzenli izler; sapmaları erken fark eder","Promosyon ve indirim kararlarında kâr etkisini hesaba katar"],
+    lessskilled:["Satış rakamını bilir ama brüt kâr marjı ve gider yapısına hakim değildir","Finansal kararları 'yönetim belirler' olarak görür; kendi payını ve etkisini anlamaz","Bütçe konuşmalarında rahat değildir; rakamlardan kaçınır","Finansal sonuçları geç okur; müdahale fırsatını kaçırır","Promosyonun kârlılığa etkisini hesaplamaz; hacim kazanmak için marjı feda eder"],
+    highlyskilled:["Finansal sonuçları operasyonel süreçlerle bağlantılı analiz eder; nedensellik ilişkisi kurar","Stok, kayıp, verimlilik, personel gideri dengesini bir bütün olarak yönetir","Üst yönetime finansal performansı sadece raporlamakla kalmaz; strateji önerileri sunar"],
+    overused:["Finansal metriğe o kadar odaklanır ki insan ve müşteri boyutunu kaybeder","Her kararı ROI hesabına bağlar; hızlı kararlar gecikmeler","Kısa vadeli kârlılık uğruna uzun vadeli yatırım ve ilişkileri feda eder"],
+    retail:"Bir mağaza müdürü, cirolarının arttığını ama kâr marjının düştüğünü fark etti. Veriyi incelediğinde düşük marjlı ürünlerin kampanyalarla öne çıktığını gördü. Kampanya karmasını yeniden düzenleyerek aynı ciroda %4 daha yüksek brüt kâr elde etti.",
+    interview:"Bir finansal göstergeyi analiz edip bu analizden yola çıkarak operasyonel bir karar aldığın ve sonucunu takip ettiğin bir süreci anlat."
   },
   de:{
-    def:'Ekibin motivasyonunu yüksek tutmak, bağlılık yaratan bir ortam oluşturmak.',
-    strong:['Ekibinin ne için çalıştığını bilir; anlam ve motivasyon birleştirir','Başarıları kutlar — hem büyük hem küçük','Zor dönemde bile ekibi umutlu tutabilir'],
-    growing:['Ekip bağlılığını "HR anketi" ile ölçer, gerçek sinyalleri kaçırır','Kendi motivasyonu yüksekken ekibininkini fark etmez','Takdir etmek için büyük başarı bekler'],
-    interview:'"Ekip motivasyonunun düştüğünü fark edip müdahale ettiğin" bir durumu anlat.'
+    def:"Çalışanların en iyi performansı sergileyebilecekleri, anlamlı hissedebilecekleri ve işlerine bağlılıklarını koruyabilecekleri bir ortam ve iklim yaratmak.",
+    why:"Bağlılığı yüksek ekipler; müşteri memnuniyetinde daha başarılı, işten ayrılmada daha düşük ve verimlilikte daha yüksek sonuçlar üretir. Retail araştırmaları gösteriyor: müşteriye gülümseyen çalışan, kendisi de işinden anlam bulan çalışandır. Bağlılık yönetilmezse silinir. Lider bağlılık yaratmak için ne konuştuğunu değil, ne yaptığını, ne kadar görünür olduğunu ve ekibine ne kadar önem verdiğini düşünmelidir.",
+    skilled:["Ekibinin neye önem verdiğini, neyi anlamlı bulduğunu bilir; motivasyon kaynaklarını tanır","Başarıları görünür kılar; hem büyük başarıları hem de küçük ilerlemeyi kutlar","Zorlu dönemlerde de ekibi umutlu ve odaklı tutar; panik değil çözüm yayar","Ekibin sesini duyar; öneri ve endişelere gerçek ilgi gösterir","İnsanlara anlamlı iş verir; yetenekleriyle örtüşmeyen monoton işlere sıkıştırmaz"],
+    lessskilled:["Ekip bağlılığını 'HR anketi' ile ölçer; gerçek sinyalleri kaçırır","Kendi motivasyonu yüksekken ekibininkinin düştüğünü fark etmez","Takdir için büyük başarı bekler; küçük ilerlemeleri görmezden gelir","İnsanları ne ödüllendirdiğini bilmez; genel övgü kullanır","İşten ayrılmalar olduğunda şaşırır; öncesinde sinyalleri kaçırmıştı"],
+    highlyskilled:["Bağlılık iklimiyle tanınır; insanlar onun ekibinde olmak ister","Birey bazında farklılaşan motivasyon stratejileri kullanır; herkese aynı yaklaşımı dayatmaz","İnsan bağlılığını iş sonuçlarıyla ilişkilendirir; bağlılığa yatırım yapar çünkü sonuç getirir"],
+    overused:["Bağlılık ve mutluluğa o kadar odaklanır ki zor geri bildirimlerden ve hesap sorma anlarından kaçınır","Takımı mutlu tutmak adına düşük performansı tolere eder; yüksek performans gösterenleri hayal kırıklığına uğratır","Çalışan memnuniyetini tek ölçüt olarak görür; müşteri ve iş sonuçlarını ikinci plana atar"],
+    retail:"Yıl sonuna yakın, satış baskısı dorukta, ekip yorgundu. Mağaza müdürü haftalık toplantıya satış hedefiyle başlamak yerine 'geçen hafta özellikle başarılı bulduğunuz anı paylaşın' diye başladı. 15 dakika içinde enerji değişti. O hafta ekibin satış performansı önceki haftanın %12 üzerinde çıktı.",
+    interview:"Ekibin motivasyonunun belirgin biçimde düştüğünü fark ettiğin ve bunu tersine çevirmek için aldığın somut adımları anlat."
+  },
+  sm:{
+    def:"Gelecek fırsatları ve tehditleri öngörmek, büyük resmi görmek ve bu bakış açısını günlük kararlara yansıtmak.",
+    why:"Operasyonel başarı sizi bugün ayakta tutar; stratejik bakış sizi yarın rekabetçi kılar. Retail hızla değişiyor: e-ticaret, tüketici davranışları, tedarik zinciri kırılganlıkları, segmentasyon değişimleri. Bunları erken gören liderler önce hareket eder; geç görenler ise rakiplerine yetişmeye çalışır. Stratejik bakış, büyük planlar yapmak değildir; bugünün kararlarını gelecek perspektifinden vermektir.",
+    skilled:["Kısa vadeli baskı altında uzun vadeli öneme sahip kararlardan vazgeçmez","Sektördeki trendleri ve rakip hareketlerini izleyerek kendi stratejisine entegre eder","Bugünkü operasyonel zorluğun arkasında daha büyük bir yapısal sorunu görebilir","Fırsatları tehditlerden önce fark eder ve erken pozisyon alır","Kararlarını açıklarken daha geniş organizasyonel hedeflere referans verir"],
+    lessskilled:["Operasyonel detaylara odaklanır; büyük resmi kaçırır","Strateji konuşmalarında fikir söylemekte zorlanır; taktik düzeyde kalır","Değişen koşullara tepkisel davranır; öngörü değil yanıt verir","Bir adım önünü düşünmez; bugünün sorunuyla meşgulken yarının fırsatı geçip gider","Sektör haberlerini takip etmez; piyasa bilgisi sınırlıdır"],
+    highlyskilled:["Organizasyonun görmediği fırsatları görür ve inandırıcı biçimde sunar","Uzun vadeli bakış açısını günlük kararlarına ve ekibinin önceliklerine yansıtır","Pazar değişimlerine karşı organizasyonu önceden hazırlar; kriz değil geçiş yaşanır"],
+    overused:["Stratejik fikirlere o kadar odaklanır ki günlük operasyonel ihtiyaçları ihmal eder","Büyük resmi görür ama detayları sağlama almaz; uygulama aşamasında plan çöker","Sürekli değişen strateji ekibi yorar ve odak kaybına yol açar"],
+    retail:"Bir bölge müdürü, 2 yıl önce müşterilerin iade oranının yavaşça arttığını fark etti. Operasyon bir 'stok sorunu' olarak kategorize etti. Bölge müdürü ise bunun 'müşteri beklentisi ve ürün kalitesi' sinyali olduğunu gördü, merkezi uyardı. 18 ay sonra sektörde iade krizi yaşandı; o mağazalar zaten önlem almıştı.",
+    interview:"Uzun vadeli düşünerek aldığın ve kısa vadede fedakarlık gerektiren — zaman, kaynak ya da rahatlık — bir kararı anlat."
   },
   pa:{
-    def:'İşi organize etmek, önceliklendirmek ve hedeflerle uyumlu planlar yapmak.',
-    strong:['Haftalık planını pazartesi sabahı değil, cuma öğleden sonra hazırlar','Önceliklerin çatıştığı anlarda hızlı ve net karar verir','Tüm ekibin planlarını bütüncül görebilir'],
-    growing:['Plan yapar ama değişime adapte olmakta zorlanır; plan kutsal olur','Önceliklendirme yapmak yerine her şeyi eşit önemde ele alır','Son dakika krizleri sık yaşar; önden göremez'],
-    interview:'"Karmaşık bir süreci planladığın ve yönettiğin" somut bir örnek anlat.'
+    def:"İşi organize etmek, doğru öncelikleri belirlemek ve hedeflerle kaynak arasında uyum sağlayan gerçekçi planlar oluşturmak.",
+    why:"Retail&#39;de her şey aynı anda önemli görünür; sezon hazırlığı, personel planlaması, envanter, kampanya yürütme, müşteri şikayetleri... Planlama ve önceliklendirme yapamayan lider her şeyi eşit önemde ele alır ve hiçbirini iyi yapamaz. İyi planlama; hem bugünün işini doğru yapmanızı hem de yarını güvence altına almanızı sağlar. Aynı zamanda ekibinizin rahat çalışmasının temelidir — belirsiz öncelikler insanları yorar.",
+    skilled:["Haftalık ve aylık planını önceden yapar; son dakika krizleri azalır","Önceliklerin çatıştığı anlarda hızlı ve net karar verir; ne yapılmayacağını da söyler","Tüm ekibin planlarını bütüncül görebilir; çakışmaları ve boşlukları önceden fark eder","Kaynakları — insan, zaman, bütçe — önceliklere göre dağıtır","Plan değiştiğinde ekibi hızla günceller; herkes aynı bilgiye sahip olur"],
+    lessskilled:["Plan yapar ama değişime adapte olmakta zorlanır; plan kutsal hale gelir","Önceliklendirme yapmak yerine her şeyi eşit önemde ele alır","Son dakika krizleri sık yaşanır; önceden görülmesi gereken sorunlar sürpriz olarak çıkar","Kaynak dağılımı rastgele gerçekleşir; kritik işler için yeterli kapasite kalmaz","Planı var ama ekiple paylaşmaz; herkes kendi varsayımıyla hareket eder"],
+    highlyskilled:["Belirsiz ortamlarda bile hızla netlik yaratır ve ekibini yönlendirir","Uzun vadeli planlamayı kısa vadeli operasyonla entegre eder","Karmaşık projeleri yönetilebilir parçalara böler ve her adımı takip eder"],
+    overused:["Planlamaya o kadar zaman harcar ki uygulama için vakit kalmaz","Değişen koşullara rağmen planı değiştirmeyi 'başarısızlık' olarak görür","Çok ayrıntılı plan yapar; ekip planı değil, kendini yönetmeye başlar"],
+    retail:"Yılbaşı sezonunda bir mağaza müdürü tüm ekibinin vardiya planını, vitrin takvimini, stok teslim tarihlerini ve kampanya başlangıcını tek bir yönetim tablosunda birleştirdi. Sezon boyunca operasyonel sürpriz yaşanmadı; hedef %7 üzerinde tamamlandı.",
+    interview:"Karmaşık ve çok bileşenli bir süreci planladığın, önceliklendirdiğin ve yönettiğin bir deneyimi anlat."
   },
-  co2:{
-    def:'Ortak hedeflere ulaşmak için başkalarıyla iş birliği yapmak.',
-    strong:['Başka departmanlarla proaktif iletişim kurar','Kaynak paylaşımında cömert davranır','Başarıyı ekiple paylaşır'],
-    growing:['Kendi işine odaklanır, başkasına yardım etmek "fazladan iş"','Ortak projelerde sessiz kalır, katkısını net ortaya koyamaz'],
-    interview:'"Farklı ekiplerle iş birliği yaptığın zorlu bir süreci" anlat.'
+  mc:{
+    def:"Çatışma durumlarını kaçınmak yerine yüzleşerek ve yapıcı biçimde çözmek; anlaşmazlıkları fırsata çevirmek.",
+    why:"Çatışma kaçınılmazdır — insanların farklı bakış açıları, çıkarlar ve öncelikler vardır. Çatışmayı bastıran ekip; sessiz uyuma kavuşur ama yaratıcılığını, dürüstlüğünü ve öğrenme kapasitesini kaybeder. Çatışmayı ustaca yöneten lider ise anlaşmazlıkları bilgi ve büyüme kaynağına dönüştürür. Retail&#39;de müşteri, ekip ve üst yönetim arasında çok katmanlı çatışma durumları sürekli ortaya çıkar.",
+    skilled:["Çatışmayı kaçınılacak bir şey değil, yönetilmesi gereken doğal bir süreç olarak görür","Anlaşmazlıkların arkasındaki gerçek ihtiyacı ve kaygıyı anlamaya çalışır","Tarafları dinler, ortak zemin arar ve her iki tarafın da kabul edebileceği çözümler geliştirir","Duygusal yoğunlukta sakin kalır; kişisel saldırılara karşı savunmaya geçmez","Çatışmayı çözdükten sonra ilişkiyi besler; kalıcı kırgınlık bırakmaz"],
+    lessskilled:["Çatışmadan kaçınır; sorun büyüyene kadar müdahale etmez","Taraflardan birinin yanında yer alır; tarafsızlığını yitirir","Yüzeysel uzlaşı sağlar ama altta yatan sorunu çözmez; çatışma tekrarlanır","Duygusal anlarda kontrolünü kaybeder; çatışmayı şiddetlendirir","Çözüm baskısı altında en kolay kısa yolu seçer; uzun vadede işe yaramaz"],
+    highlyskilled:["Çatışma büyümeden önce gerilim sinyallerini fark eder ve erken müdahale eder","Farklı taraflar arasında güven inşa eder; her taraf kendini duyulmuş hisseder","Çatışmayı organizasyonel öğrenme için kullanır; köken analizi yapar, sistemi iyileştirir"],
+    overused:["Her anlaşmazlığı çözmeye çalışır; bazen ekip kendi çatışmalarını çözmeli","Çatışma yönetimine o kadar odaklanır ki performans ve hesap verebilirlik konuşmalarından kaçınır","Tarafları o kadar çok 'anlar' ki net karar almayı erteler"],
+    retail:"Kat müdürü ile kasiyerler arasında 'kimin kasada kalacağı' konusunda kronik bir gerginlik vardı. Mağaza müdürü her iki tarafı ayrı ayrı dinledi, sorunu anladı: rotasyon adaleti sorunu. Yazılı bir rotasyon sistemi kurdu. Şikayet durdu.",
+    interview:"Ekip içinde ya da departmanlar arası gergin bir çatışma durumunu nasıl ele aldığını anlat."
+  },
+  is:{
+    def:"Farklı kişilerle — her kültürden, her seviyeden, her kişilik yapısından — kolayca bağ kurabilmek ve ilişkileri ustaca yönetmek.",
+    why:"Retail&#39;de insan ilişkisi her şeyin temelidir: müşteriyle, iş arkadaşıyla, tedarikçiyle, üst yönetimle. İlişki kuramayan kişi satış yapamaz, iş birliği kuramaz, geribildirim alamaz. Kişilerarası yetkinlik; karizmayla ilgili değil — empatiyle, merakla ve uyum sağlamakla ilgilidir. Farklı insanlarla farklı 'dil' konuşabilmektir.",
+    skilled:["Yeni insanlarla çok az zorlukla bağ kurar; sohbet başlatmak için ortam beklemez","Farklı kişilik, kültür ve görüş sahipleriyle etkin biçimde çalışabilir","Sosyal sinyalleri okur; ortamdaki dinamiği hızlı kavrar","Kendini tanıttığında karşısındaki kişiyi rahatlatır; güven veren bir ilk izlenim bırakır","Kendi kişisel tarzını korurken farklı insanlara adapte olabilir"],
+    lessskilled:["Kendine benzeyen insanlarla rahat, farklı olanlara karşı mesafeli davranır","Sosyal ortamlarda gergin ya da tepkisiz görünür; bağ kurmakta zorlanır","İlişkileri işlevsel tutar; derinleşmesine ya da kişisel boyuta taşımasına izin vermez","Karşısındaki kişiyi 'okuyamaz'; yanlış zamanda yanlış konuşma yapar","Üst ya da alt hiyerarşi ile ilişkiyi doğal biçimde kurmakta güçlük çeker"],
+    highlyskilled:["İlişki kurmayı profesyonel bir ağ değil, gerçek bir bağ olarak görür ve bu samimiyetle hissettirilebilir","Çok çeşitli insanlarla kısa sürede derin iletişim kurabilir","Organizasyon içinde geniş ve güçlü bir ilişki ağına sahiptir; ihtiyaç anında bu ağı etkin kullanır"],
+    overused:["İlişki odağı o kadar güçlüdür ki zor gerçekleri söylemekten kaçınır; çatışmadan uzak durur","Sosyal etkileşimlere çok zaman harcar; üretkenlik düşer","Herkesle iyi ilişki içinde görünmek adına net pozisyon almaktan kaçınır"],
+    retail:"Yeni bir müşterinin mağazaya girdiğini gözlemleyen kıdemli bir satış danışmanı, onu ürünle değil bir soruyla karşıladı: 'Bugün özel bir şey mi arıyorsunuz?' 3 dakika sonra müşteri kendi başına bir şey araması gerekmediğini, aslında hediye almak istediğini anlattı. Satış güven ilişkisi üzerine kurulmuştu.",
+    interview:"Çok farklı bir arka plandan ya da kişilik tipinden biriyle başarılı bir ilişki kurduğun bir durumu anlat. Ne yaptın?"
+  },
+  nl:{
+    def:"Yeni ve farklı durumlardan hızla öğrenmek, deneyimleri kısa sürede içselleştirmek ve öğrenilenleri farklı bağlamlara aktarabilmek.",
+    why:"Retail&#39;de bilgi hızla eskir: yeni koleksiyon, yeni sistem, yeni kampanya, yeni müşteri tipi. Hızlı öğrenen çalışan her yeni duruma adapte olur; öğrenme direnci olan ise her değişimde mücadele eder. Bu yetkinlik sadece 'zeki olmak' değil — aktif merak sahibi olmak, hatadan öğrenmek ve öğrendiklerini hızla uygulamaya almaktır.",
+    skilled:["Yeni bilgiyi hızla kavrar ve hemen uygulamaya çalışır","Hatalardan öğrenir; aynı hatayı iki kez yapmaz","Daha önce karşılaşmadığı durumlarla başa çıkmak için mevcut bilgisini yaratıcı biçimde kullanır","Öğrenmeye açık bir tutum sergiler; bilmediğini kabul etmekten çekinmez","Yeni fikir ve yaklaşımlara merakla yaklaşır; hemen reddetmez"],
+    lessskilled:["Yeni konuları öğrenmekte yavaştır; tekrar ve pratik gereksinimi yüksektir","Hatayı tekrarlamaya eğilimlidir; geri bildirimden öğrenme güçtür","Belirsiz ya da yeni durumlarla karşılaştığında donup kalır","Öğrenmeyi okuma ve eğitimle sınırlar; deneyimden öğrenme zayıftır","'Ben böyle bildim' tutumunu sürdürür; değişime direnç gösterir"],
+    highlyskilled:["Öğrendiklerini farklı bağlamlarda yaratıcı biçimde uygular; transfer kapasitesi yüksektir","Kendi öğrenme sürecinin farkındadır; neyi, nasıl öğrendiğini bilir","Başkalarını da öğrenmeye teşvik eder; çevresinde bir öğrenme kültürü yaratır"],
+    overused:["Sürekli öğrenme modunda olduğundan karar almayı erteler; 'daha fazla bilgiye ihtiyacım var' tuzağına düşer","Her yeni fikre o kadar açıktır ki mevcut stratejiden sapma riski oluşur","Öğrenmeye harcadığı zaman üretkenliği sekteye uğratabilir"],
+    retail:"Yeni POS sistemi devreye girdiğinde ekibin yarısı 'ben eski sistemi tercih ederim' dedi. Kıdemli satış danışmanı 2 gün içinde sistemi öğrendi, basit bir el kitabı hazırladı ve ekibine anlattı. Ertesi hafta herkes yeni sistemi kullanıyordu.",
+    interview:"Tamamen yeni bir konuyu ya da sistemi kısa sürede öğrenmek zorunda kaldığın ve bunu başarıyla uyguladığın bir durumu anlat."
   },
   br:{
-    def:'Zorluklar, baskı ve geri bildirimler karşısında ayakta kalmak ve hızla toparlanmak.',
-    strong:['Yoğun sezonlarda enerji ve kalitesini düşürmez','Olumsuz geri bildirimden kişisel saldırı değil bilgi çıkarır','Başarısızlıktan sonra analiz yapar, suçlamaz'],
-    growing:['Yoğun dönemlerde motivasyonu gözle görülür düşer','Eleştiriyi kişisel alır; savunmaya geçer','Bir başarısızlığın etkisinden çıkmak için fazla zaman geçirir'],
-    interview:'"Gerçekten zor bir dönemi nasıl atlattığını" anlatan bir örnek hazırla.'
+    def:"Zorluklar, hayal kırıklıkları, başarısızlıklar ve sürekli değişim karşısında ayakta kalmak, toparlanmak ve ilerlemeye devam etmek.",
+    why:"Retail&#39;de her gün beklenmedik bir şey olur: müşteri şikayeti, stok krizi, personel yokluğu, satış baskısı. Dayanıklı olmayan kişi her sarsıntıdan sonra daha uzun süre toparlanır; bu da çevresini de olumsuz etkiler. Dayanıklılık; kırılmamak değil, kırıldıktan sonra hızla geri dönmektir. Aynı zamanda başkalarına ilham veren bir özelliktir — sakin kalan lider ekibini stabilize eder.",
+    skilled:["Zorlu anlarda sakin ve odaklı kalmayı başarır; paniği yaymaz","Başarısızlıktan sonra analiz yapar, suçlama yerine öğrenmeye yönelir","Olumsuz geri bildirimi kişisel saldırı olarak algılamaz; bilgi kaynağı olarak kullanır","Stres altında performansı düşmez; aksine net düşünme kapasitesi devrede kalır","Zorlu dönemleri 'bir gün biter' perspektifiyle geçici olarak görebilir"],
+    lessskilled:["Yoğun dönemlerde motivasyonu ve enerjisi belirgin biçimde düşer","Eleştiriyi kişisel alır; savunmaya geçer ya da içine kapanır","Bir başarısızlığın etkisinden çıkmak için fazla zaman harcar","Stres altında hata oranı artar; duygusal tepkiler kararlarını etkiler","Sürekli baskı altında 'neden ben?' söylemine kayabilir"],
+    highlyskilled:["Kriz anında bile çevresine güven ve sakinlik yayar; doğal dengeleyici rolü üstlenir","En zor dönemlerde bile anlam ve odak bulabilir; misyon bilincini kaybetmez","Kendi dayanıklılık mekanizmalarını bilir ve bunları bilinçli kullanır"],
+    overused:["Dayanıklılığını o kadar ön plana çıkarır ki zor gerçekleri kabul etmekte gecikmesi","Zorlu durumları 'normal' sayarak müdahale gereken yerlerde hareketsiz kalır","Başkalarının dayanıklı olmasını bekler; ekibindeki yorgunluk ve tükenme sinyallerini görmez"],
+    retail:"Kara Cuma günü, sistemin kasada çökmesi üzerine müşteri kuyruğu kapıdan taşıyordu. Kasiyer sakin kaldı, müşterilere durumu açıkladı, manuel işlemi etkinleştirdi ve üst yönetimi bilgilendirdi. Kriz 40 dakika sürdü; tek bir müşteri mağazayı şikayetle terk etmedi.",
+    interview:"Gerçekten zor bir dönemden geçtiğin ve buna rağmen performansını ve odağını koruduğun bir süreci anlat."
   },
 };
 
-const SEARCH_ALIASES={'kasiyer':'Kasiyer','cashier':'Kasiyer','satış danışmanı':'Satış Danışmanı','satiş danışmanı':'Satış Danışmanı','sales associate':'Satış Danışmanı','satış':'Satış Danışmanı','mağaza müdürü':'Mağaza Müdürü','store manager':'Mağaza Müdürü','bölge müdürü':'Bölge Müdürü','area manager':'Bölge Müdürü','bölge':'Bölge Müdürü'};
-const MOTIVATIONAL_MSG={'Giriş':{emoji:'🌱',title:'Rolünde en iyisi ol',msg:'Her büyük kariyer bir yerden başlar. <strong>Sahada yarattığın fark</strong> hem müşteri deneyimini hem kendi geleceğini şekillendirir.'},'Üst':{emoji:'🚀',title:'Vizyonunu sahaya yansıt',msg:'Bu seviyede liderler <strong>strateji ile operasyonu bir arada yürütür.</strong> Kurumuna kattığın değer hem sayılar hem de insan gelişimiyle ölçülür.'}};
-const ICONS={eye:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>',msg:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>',shield:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',team:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>',bolt:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>',check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>',arrow:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>',star:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>',chart:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>',heart:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>',lock:'<svg viewBox="0 0 24 24" fill="white"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4" fill="none" stroke="white" stroke-width="2"/></svg>',info:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="8"/><line x1="12" y1="12" x2="12" y2="16"/></svg>'};
-const ICON_COLOR={core:'#C94E28',important:'#1E2D5E',nice:'#6B7280'};
-const ICON_BG={core:'#FEF3F0',important:'#EEF2FF',nice:'#F3F4F6'};
-const WT={core:'Temel yetkinlik',important:'Önemli yetkinlik',nice:'Faydalı yetkinlik'};
-
-let role='Satış Danışmanı',tier='freemium',ratings={};
+const SEARCH_ALIASES={"kasiyer":"Kasiyer","cashier":"Kasiyer","satiş danışmanı":"Satış Danışmanı","satış danışmanı":"Satış Danışmanı","sales associate":"Satış Danışmanı","satış":"Satış Danışmanı","kıdemli":"Kıdemli Satış Dan.","senior sales":"Kıdemli Satış Dan.","kat müdürü":"Kat Müdürü","floor lead":"Kat Müdürü","shift manager":"Kat Müdürü","mağaza müdürü":"Mağaza Müdürü","store manager":"Mağaza Müdürü","bölge müdürü":"Bölge Müdürü","area manager":"Bölge Müdürü","bölge":"Bölge Müdürü"};
+const MOTIVATIONAL_MSG={"Giriş":{emoji:"🌱",title:"Rolünde en iyisi ol",msg:"Her büyük kariyer bir yerden başlar. <strong>Sahada yarattığın fark</strong> hem müşteri deneyimini hem kendi geleceğini şekillendirir."},"Giriş-Orta":{emoji:"⚡",title:"Bir sonraki seviyeye hazırlan",msg:"Temel yetkinliklerini güçlendirdin. Şimdi sıra <strong>fark yaratmaya</strong> — ekibine rehberlik et, müşterilere değer kat."},"Üst":{emoji:"🚀",title:"Vizyonunu sahaya yansıt",msg:"Bu seviyede liderler <strong>strateji ile operasyonu bir arada yürütür.</strong> Kurumuna kattığın değer hem sayılar hem insan gelişimiyle ölçülür."}};
+const ICONS={eye:"<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/></svg>",msg:"<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z\"/></svg>",shield:"<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z\"/></svg>",team:"<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2\"/><circle cx=\"9\" cy=\"7\" r=\"4\"/><path d=\"M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75\"/></svg>",bolt:"<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><polygon points=\"13 2 3 14 12 14 11 22 21 10 12 10 13 2\"/></svg>",check:"<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><polyline points=\"9 11 12 14 22 4\"/><path d=\"M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11\"/></svg>",arrow:"<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><line x1=\"5\" y1=\"12\" x2=\"19\" y2=\"12\"/><polyline points=\"12 5 19 12 12 19\"/></svg>",star:"<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><polygon points=\"12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2\"/></svg>",chart:"<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><line x1=\"18\" y1=\"20\" x2=\"18\" y2=\"10\"/><line x1=\"12\" y1=\"20\" x2=\"12\" y2=\"4\"/><line x1=\"6\" y1=\"20\" x2=\"6\" y2=\"14\"/></svg>",heart:"<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z\"/></svg>",lock:"<svg viewBox=\"0 0 24 24\" fill=\"white\"><rect x=\"3\" y=\"11\" width=\"18\" height=\"11\" rx=\"2\"/><path d=\"M7 11V7a5 5 0 0 1 10 0v4\" fill=\"none\" stroke=\"white\" stroke-width=\"2\"/></svg>",info:"<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><circle cx=\"12\" cy=\"12\" r=\"10\"/><line x1=\"12\" y1=\"8\" x2=\"12.01\" y2=\"8\" stroke-width=\"3\"/><line x1=\"12\" y1=\"12\" x2=\"12\" y2=\"16\"/></svg>"};
+const ICON_COLOR={core:"#C94E28",important:"#1E2D5E",nice:"#6B7280"};
+const ICON_BG={core:"#FEF3F0",important:"#EEF2FF",nice:"#F3F4F6"};
+const WT={core:"Temel yetkinlik",important:"Önemli yetkinlik",nice:"Faydalı yetkinlik"};
+let role="Satış Danışmanı",tier="freemium",ratings={},openedCards={};
 const FREE_LIMIT=2;
-let openedCards={};
-
-function setTier(t,btn){tier=t;document.querySelectorAll('.yk-tier-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');render();}
+function setTier(t,btn){tier=t;document.querySelectorAll(".yk-tier-btn").forEach(b=>b.classList.remove("active"));btn.classList.add("active");render();}
 function setRole(r){role=r;render();}
-function gr(code){return ratings[role+'_'+code]||null;}
-function rateCard(code,rating,e){if(e)e.stopPropagation();if(tier==='freemium')return;const k=role+'_'+code;ratings[k]=ratings[k]===rating?null:rating;render();}
-function rateDrawer(code,rating){const k=role+'_'+code;ratings[k]=ratings[k]===rating?null:rating;render();openDrawer(code);}
-
+function gr(code){return ratings[role+"_"+code]||null;}
+function rateCard(code,rating,e){if(e)e.stopPropagation();if(tier==="freemium")return;const k=role+"_"+code;ratings[k]=ratings[k]===rating?null:rating;render();}
+function rateDrawer(code,rating){const k=role+"_"+code;ratings[k]=ratings[k]===rating?null:rating;render();openDrawer(code);}
 function openDrawer(code){
   const comps=ROLES[role].comps;
-  const c=comps.find(x=>x.code===code);
-  if(!c)return;
+  const c=comps.find(x=>x.code===code);if(!c)return;
   const a=ANCHORS[code];
-  const isPrem=tier==='premium';
-  const isLocked=!isPrem&&comps.findIndex(x=>x.code===code)>=FREE_LIMIT;
+  const isPrem=tier==="premium";
+  const idx=comps.findIndex(x=>x.code===code);
+  const isLocked=!isPrem&&idx>=FREE_LIMIT;
   const r=gr(code);
-
-  // Mark as opened (unlock animation)
-  if(!openedCards[role+'_'+code]){openedCards[role+'_'+code]=true;}
-
-  document.getElementById('drawerName').textContent=c.name;
-  document.getElementById('drawerKf').textContent=c.kf+' · '+WT[c.weight];
-
-  let body='';
-  if(a){
-    body+=`<div class="drawer-section"><div class="drawer-section-title">Tanım</div><div class="drawer-definition">${a.def}</div></div>`;
-    if(!isLocked){
-      body+=`<div class="drawer-section"><div class="drawer-section-title">✅ Güçlüysen şunu yapıyorsun</div><div class="anchor-list">`;
-      a.strong.forEach(s=>{body+=`<div class="anchor-item strong-anchor"><div class="anchor-dot-strong"></div><span>${s}</span></div>`;});
-      body+=`</div></div>`;
-      body+=`<div class="drawer-section"><div class="drawer-section-title">↑ Gelişim aşamasındaysan</div><div class="anchor-list">`;
-      a.growing.forEach(g=>{body+=`<div class="anchor-item growing-anchor"><div class="anchor-dot-growing"></div><span>${g}</span></div>`;});
-      body+=`</div></div>`;
-      body+=`<div class="drawer-divider"></div>`;
-      body+=`<div class="drawer-rating-section"><div class="drawer-rating-title">Kendinle dürüst ol 🎯</div><div class="drawer-rating-sub">Yukarıdaki davranışları okuduktan sonra — hangi grubu daha çok tanımlıyor?</div><div class="drawer-rating-btns"><button class="drawer-rating-btn strong${r==='strong'?' active':''}" onclick="rateDrawer('${code}','strong')">✅ Beni güçlü tarif ediyor</button><button class="drawer-rating-btn growing${r==='growing'?' active':''}" onclick="rateDrawer('${code}','growing')">↑ Hâlâ gelişiyorum</button></div></div>`;
-      if(a.interview){
-        body+=`<button class="drawer-cta" onclick="alert('İş Görüşmeleri paneline yönlendiriliyorsun...')"><span>📋 Mülakatta nasıl anlatırsın?</span><span class="drawer-cta-sub">${a.interview}</span></button>`;
-      }
-    } else {
-      body+=`<div class="drawer-lock-notice"><div class="drawer-lock-notice-title">Bu içerik Premium'a özel</div><div class="drawer-lock-notice-sub">Behavioral anchor'ları görmek, kendini değerlendirmek ve mülakat hazırlığı yapmak için Premium'a geç.</div><button class="drawer-lock-btn" onclick="setTier('premium',document.querySelectorAll('.yk-tier-btn')[1]);closeDrawer()">Premium'a Geç →</button></div>`;
-    }
-  } else {
-    body+='<p style="font-size:13px;color:var(--muted)">Bu yetkinlik için içerik hazırlanıyor.</p>';
+  openedCards[role+"_"+code]=true;
+  document.getElementById("drawerName").textContent=c.name;
+  document.getElementById("drawerKf").textContent=c.kf+" · "+WT[c.weight];
+  let body="";
+  if(a&&!isLocked){
+    body+=`<div class="drawer-section"><div class="drawer-section-title">📌 Tanım</div><div class="drawer-definition">${a.def}</div><div class="drawer-why">${a.why}</div></div>`;
+    body+=`<div class="drawer-section"><div class="drawer-section-title">✅ Yetkin olanlar şunu yapar</div><div class="anchor-list">${a.skilled.map(s=>`<div class="anchor-item strong-anchor"><div class="anchor-dot-strong"></div><span>${s}</span></div>`).join("")}</div></div>`;
+    body+=`<div class="drawer-section"><div class="drawer-section-title">⬆ Henüz gelişim aşamasındakiler</div><div class="anchor-list">${a.lessskilled.map(g=>`<div class="anchor-item growing-anchor"><div class="anchor-dot-growing"></div><span>${g}</span></div>`).join("")}</div></div>`;
+    body+=`<div class="drawer-section"><div class="drawer-section-title">🌟 Çok yetenekliler</div><div class="anchor-list">${a.highlyskilled.map(h=>`<div class="anchor-item strong-anchor"><div class="anchor-dot-strong" style="background:#0F766E"></div><span>${h}</span></div>`).join("")}</div></div>`;
+    body+=`<div class="drawer-section"><div class="drawer-section-title">⚠ Aşırı kullanımda dikkat</div><div class="anchor-list">${a.overused.map(o=>`<div class="anchor-item overused-anchor"><div class="anchor-dot-overused"></div><span>${o}</span></div>`).join("")}</div></div>`;
+    body+=`<div class="drawer-section"><div class="drawer-retail-title">🏪 RETAIL&#39;DE NASIL GÖRÜNÜR</div><div class="drawer-retail"><div class="drawer-retail-text">${a.retail}</div></div></div>`;
+    body+=`<div class="drawer-divider"></div>`;
+    body+=`<div class="drawer-rating-section"><div class="drawer-rating-title">Kendinle dürüst ol 🎯</div><div class="drawer-rating-sub">Yukarıdaki davranış tanımlarını okudun. Hangisi seni daha çok tarif ediyor? Skor vermiyoruz — bu bir öz farkındalık egzersizi.</div><div class="drawer-rating-btns"><button class="drawer-rating-btn strong${r==="strong"?" active":""}" onclick="rateDrawer('${code}','strong')">✅ Beni güçlü tarif ediyor</button><button class="drawer-rating-btn growing${r==="growing"?" active":""}" onclick="rateDrawer('${code}','growing')">↑ Hâlâ gelişiyorum</button></div>`;
+    if(a.interview){body+=`<div class="drawer-interview"><div class="drawer-interview-title">📋 Mülakatta nasıl anlatırsın?</div><div class="drawer-interview-q">${a.interview}</div></div>`;}
+    body+=`</div>`;
+  } else if(isLocked){
+    body=`<div class="drawer-lock-notice"><div style="font-size:24px;margin-bottom:8px">🔒</div><div style="font-size:14px;font-weight:600;color:var(--verm);margin-bottom:6px">Premium içerik</div><div style="font-size:13px;color:#9A3C1E;line-height:1.6">Yetkinlik tanımını, davranışsal göstergeleri, retail örneklerini ve mülakat hazırlık sorularını görmek için Premium üyeliğe geç.</div><button class="drawer-lock-btn" onclick="setTier('premium',document.querySelectorAll('.yk-tier-btn')[1]);closeDrawer()">Premium'a Geç →</button></div>`;
   }
-  document.getElementById('drawerBody').innerHTML=body;
-  document.getElementById('drawer').classList.add('open');
-  document.getElementById('drawerOverlay').classList.add('open');
-  document.body.style.overflow='hidden';
+  document.getElementById("drawerBody").innerHTML=body;
+  document.getElementById("drawer").classList.add("open");
+  document.getElementById("drawerOverlay").classList.add("open");
+  document.body.style.overflow="hidden";
 }
-
-function closeDrawer(){
-  document.getElementById('drawer').classList.remove('open');
-  document.getElementById('drawerOverlay').classList.remove('open');
-  document.body.style.overflow='';
-  render();
-}
-
-function quickSearch(q){document.getElementById('searchInput').value=q;doSearch();}
-function onSearchInput(v){if(!v.trim())document.getElementById('searchResult').classList.remove('show');}
+function closeDrawer(){document.getElementById("drawer").classList.remove("open");document.getElementById("drawerOverlay").classList.remove("open");document.body.style.overflow="";render();}
+function quickSearch(q){document.getElementById("searchInput").value=q;doSearch();}
+function onSearchInput(v){if(!v.trim())document.getElementById("searchResult").classList.remove("show");}
 function doSearch(){
-  const q=document.getElementById('searchInput').value.trim().toLowerCase();
-  const el=document.getElementById('searchResult');
-  if(!q){el.classList.remove('show');return;}
+  const q=document.getElementById("searchInput").value.trim().toLowerCase();
+  const el=document.getElementById("searchResult");
+  if(!q){el.classList.remove("show");return;}
   let found=SEARCH_ALIASES[q];
-  if(!found){for(const[k,v]of Object.entries(SEARCH_ALIASES)){if(k.includes(q)||q.includes(k)){found=v;break;}}}
-  if(!found){for(const r of Object.keys(ROLES)){if(r.toLowerCase().includes(q)){found=r;break;}}}
+  if(!found)for(const[k,v]of Object.entries(SEARCH_ALIASES)){if(k.includes(q)||q.includes(k)){found=v;break;}}
+  if(!found)for(const r of Object.keys(ROLES)){if(r.toLowerCase().includes(q)){found=r;break;}}
   if(found&&ROLES[found]){
     const comps=ROLES[found].comps;
-    el.innerHTML=`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px"><div class="sr-role">${found} <span style="font-size:11px;font-weight:400;color:var(--muted)">${ROLES[found].level} seviye · ${comps.length} yetkinlik</span></div><button onclick="setRole('${found}');document.getElementById('searchResult').classList.remove('show');window.scrollTo({top:300,behavior:'smooth'})" style="font-size:12px;font-weight:600;color:var(--verm);background:none;border:none;cursor:pointer;padding:4px 0">Bu role geç →</button></div><div class="sr-comps">${comps.map(c=>`<span class="sr-comp ${c.weight}"><span style="margin-right:2px">${c.weight==='core'?'◆':'◇'}</span>${c.name}</span>`).join('')}</div>`;
-    el.classList.add('show');
-  } else {
-    el.innerHTML=`<div class="sr-empty">Sonuç bulunamadı — "${document.getElementById('searchInput').value}" için eşleşme yok.</div>`;
-    el.classList.add('show');
-  }
+    el.innerHTML=`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px"><div class="sr-role">${found} <span style="font-size:11px;font-weight:400;color:var(--muted)">${ROLES[found].level} seviye · ${comps.length} yetkinlik</span></div><button onclick="setRole('${found}');document.getElementById('searchResult').classList.remove('show');window.scrollTo({top:300,behavior:'smooth'})" style="font-size:12px;font-weight:600;color:var(--verm);background:none;border:none;cursor:pointer;padding:4px 0">Bu role geç →</button></div><div class="sr-comps">${comps.map(c=>`<span class="sr-comp ${c.weight}"><span style="margin-right:2px">${c.weight==="core"?"◆":"◇"}</span>${c.name}</span>`).join("")}</div>`;
+    el.classList.add("show");
+  }else{el.innerHTML=`<div style="font-size:13px;color:var(--muted);text-align:center;padding:10px 0">Sonuç bulunamadı.</div>`;el.classList.add("show");}
 }
-
 function render(){
   const comps=ROLES[role].comps;
   const level=ROLES[role].level;
   const total=comps.length;
-  const read=comps.filter(c=>openedCards[role+'_'+c.code]).length;
-  const strong=comps.filter(c=>gr(c.code)==='strong').length;
-  const growing=comps.filter(c=>gr(c.code)==='growing').length;
+  const read=comps.filter(c=>openedCards[role+"_"+c.code]).length;
+  const strong=comps.filter(c=>gr(c.code)==="strong").length;
+  const growing=comps.filter(c=>gr(c.code)==="growing").length;
   const rated=strong+growing;
   const pct=Math.round(rated/total*100);
   const readPct=Math.round(read/total*100);
-  const isPrem=tier==='premium';
-  const mot=MOTIVATIONAL_MSG[level]||MOTIVATIONAL_MSG['Giriş'];
-
+  const isPrem=tier==="premium";
+  const mot=MOTIVATIONAL_MSG[level]||MOTIVATIONAL_MSG["Giriş"];
   if(isPrem){
-    document.getElementById('summaryWrap').innerHTML=`<div class="summary-card"><div><div style="font-size:12px;opacity:.6;margin-bottom:4px">Değerlendirme ilerlemesi — ${role}</div><div style="font-size:14px;font-weight:600">${rated} / ${total} yetkinlik değerlendirildi</div><div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div></div><div class="summary-stats"><div class="stat-item stat-strong"><div class="stat-num">${strong}</div><div class="stat-label">Güçlü</div></div><div class="stat-item stat-growing"><div class="stat-num">${growing}</div><div class="stat-label">Gelişiyor</div></div></div></div>`;
-    document.getElementById('roleSelectorWrap').innerHTML=`<div class="section-label">Rol seç</div><div class="role-bar">${Object.keys(ROLES).map(r=>`<button class="role-pill${r===role?' active':''}" onclick="setRole('${r}')">${r}</button>`).join('')}</div>`;
-    document.getElementById('progressWrap').innerHTML=read<total?`<div class="unlock-progress"><div class="up-track"><div class="up-fill" style="width:${readPct}%"></div></div><span class="up-label">Okunan: </span><span class="up-count">${read}/${total}</span><span class="up-label" style="margin-left:4px">karta tıkla, detayları oku</span></div>`:'';
-  } else {
-    document.getElementById('summaryWrap').innerHTML=`<div class="freemium-hero"><div class="fh-deco"></div><div class="fh-deco2"></div><div class="fh-tag">${mot.emoji} ${level} Seviye</div><div class="fh-role">${mot.title}</div><div class="fh-msg">${mot.msg}</div><div class="fh-actions"><button class="fh-btn-primary" onclick="setTier('premium',document.querySelectorAll('.yk-tier-btn')[1])">Tümünü Değerlendir →</button><button class="fh-btn-secondary" onclick="alert('Nasıl çalışır sayfası açılacak')">Nasıl çalışır?</button></div><div class="fh-stats"><div class="fh-stat"><div class="fh-stat-num">${total}</div><div class="fh-stat-label">yetkinlik</div></div><div class="fh-stat"><div class="fh-stat-num">${comps.filter(c=>c.weight==='core').length}</div><div class="fh-stat-label">temel</div></div><div class="fh-stat"><div class="fh-stat-num">2</div><div class="fh-stat-label">ücretsiz önizleme</div></div></div></div>`;
-    document.getElementById('roleSelectorWrap').innerHTML='';
-    document.getElementById('progressWrap').innerHTML='';
+    document.getElementById("summaryWrap").innerHTML=`<div class="summary-card"><div><div style="font-size:12px;opacity:.6;margin-bottom:4px">Değerlendirme ilerlemesi — ${role}</div><div style="font-size:14px;font-weight:600">${rated} / ${total} yetkinlik değerlendirildi</div><div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div></div><div class="summary-stats"><div class="stat-item stat-strong"><div class="stat-num">${strong}</div><div class="stat-label">Güçlü</div></div><div class="stat-item stat-growing"><div class="stat-num">${growing}</div><div class="stat-label">Gelişiyor</div></div></div></div>`;
+    document.getElementById("roleSelectorWrap").innerHTML=`<div class="section-label">Rol seç</div><div class="role-bar">${Object.keys(ROLES).map(r=>`<button class="role-pill${r===role?" active":""}" onclick="setRole('${r}')">${r}</button>`).join("")}</div>`;
+    document.getElementById("progressWrap").innerHTML=read<total?`<div class="unlock-progress"><div class="up-track"><div class="up-fill" style="width:${readPct}%"></div></div><span style="font-size:12px;color:var(--muted)">Okunan:</span><span style="font-family:'DM Mono',monospace;font-size:13px;font-weight:500;color:var(--navy)">${read}/${total}</span><span style="font-size:12px;color:var(--muted);margin-left:4px">— kartlara tıklayarak öğren</span></div>`:"";
+  }else{
+    document.getElementById("summaryWrap").innerHTML=`<div class="freemium-hero"><div class="fh-deco"></div><div class="fh-deco2"></div><div class="fh-tag">${mot.emoji} ${level} Seviye</div><div class="fh-role">${mot.title}</div><div class="fh-msg">${mot.msg}</div><div class="fh-actions"><button class="fh-btn-primary" onclick="setTier('premium',document.querySelectorAll('.yk-tier-btn')[1])">Tümünü Değerlendir →</button><button class="fh-btn-secondary">Nasıl çalışır?</button></div><div class="fh-stats"><div class="fh-stat"><div class="fh-stat-num">${total}</div><div class="fh-stat-label">yetkinlik</div></div><div class="fh-stat"><div class="fh-stat-num">${comps.filter(c=>c.weight==="core").length}</div><div class="fh-stat-label">temel</div></div><div class="fh-stat"><div class="fh-stat-num">2</div><div class="fh-stat-label">ücretsiz önizleme</div></div></div></div>`;
+    document.getElementById("roleSelectorWrap").innerHTML="";
+    document.getElementById("progressWrap").innerHTML="";
   }
-
-  let grid='';
+  let grid="";
   comps.forEach((c,i)=>{
     const locked=!isPrem&&i>=FREE_LIMIT;
     const r=gr(c.code);
-    let cls='comp-card';
-    if(r==='strong')cls+=' rated-strong';
-    else if(r==='growing')cls+=' rated-growing';
+    let cls="comp-card";
+    if(r==="strong")cls+=" rated-strong";
+    else if(r==="growing")cls+=" rated-growing";
     grid+=`<div class="${cls}" onclick="${locked?`setTier('premium',document.querySelectorAll('.yk-tier-btn')[1])`:`openDrawer('${c.code}')`}">
-      <div class="comp-top">
-        <div class="comp-top-left">
-          <div class="comp-icon" style="background:${ICON_BG[c.weight]};color:${ICON_COLOR[c.weight]}">${ICONS[c.icon]||ICONS.bolt}</div>
-          <div><div class="comp-name">${c.name}</div><div class="comp-kf">${c.kf}</div></div>
-        </div>
-        <button class="info-btn" onclick="event.stopPropagation();${locked?`setTier('premium',document.querySelectorAll('.yk-tier-btn')[1])`:`openDrawer('${c.code}')`}">${ICONS.info}</button>
-      </div>
-      ${r==='strong'?'<div class="rating-badge strong-badge">✅ Güçlü</div>':''}
-      ${r==='growing'?'<div class="rating-badge growing-badge">↑ Gelişiyor</div>':''}
+      <div class="comp-top"><div class="comp-top-left"><div class="comp-icon" style="background:${ICON_BG[c.weight]};color:${ICON_COLOR[c.weight]}">${ICONS[c.icon]||ICONS.bolt}</div><div><div class="comp-name">${c.name}</div><div class="comp-kf">${c.kf}</div></div></div><button class="info-btn" onclick="event.stopPropagation();${locked?`setTier('premium',document.querySelectorAll('.yk-tier-btn')[1])`:`openDrawer('${c.code}')`}">${ICONS.info}</button></div>
+      ${r==="strong"?'<div class="rating-badge strong-badge">✅ Güçlü</div>':r==="growing"?'<div class="rating-badge growing-badge">↑ Gelişiyor</div>':""}
       <span class="comp-weight ${c.weight}">${WT[c.weight]}</span>
       <div class="comp-desc">${c.desc}</div>
-      <div class="rating-btns" onclick="event.stopPropagation()">
-        <button class="rating-btn strong${r==='strong'?' active':''}" onclick="rateCard('${c.code}','strong',event)">${r==='strong'?'✅ Güçlü':'✅ Güçlüyüm'}</button>
-        <button class="rating-btn growing${r==='growing'?' active':''}" onclick="rateCard('${c.code}','growing',event)">${r==='growing'?'↑ Gelişiyor':'↑ Gelişiyorum'}</button>
-      </div>
-      ${locked?`<div class="lock-overlay"><div class="lock-icon">${ICONS.lock}</div><div class="lock-label">Detay için<br>Premium</div></div>`:''}
+      <div class="rating-btns" onclick="event.stopPropagation()"><button class="rating-btn strong${r==="strong"?" active":""}" onclick="rateCard('${c.code}','strong',event)">✅ Güçlüyüm</button><button class="rating-btn growing${r==="growing"?" active":""}" onclick="rateCard('${c.code}','growing',event)">↑ Gelişiyorum</button></div>
+      ${locked?`<div class="lock-overlay"><div class="lock-icon">${ICONS.lock}</div><div class="lock-label">Detay için<br>Premium</div></div>`:""}
     </div>`;
   });
-  document.getElementById('compGrid').innerHTML=grid;
-
-  let bottom='';
-  if(!isPrem){
-    bottom=`<div class="dashed-card"><div><span class="premium-badge">PREMIUM</span><div style="font-size:13px;color:var(--muted);margin-top:4px"><strong style="color:var(--navy)">Tüm yetkinlikleri gör, behavioral anchor'ları oku</strong> ve mülakat hazırlığına başla.</div></div><button class="upgrade-cta" onclick="setTier('premium',document.querySelectorAll('.yk-tier-btn')[1])">Başla →</button></div>`;
-  } else if(rated>0){
-    bottom=`<div class="next-card"><div><span class="premium-badge">SONRAKI ADIM</span><div style="font-size:13px;color:var(--muted);margin-top:4px"><strong style="color:var(--navy)">İş Görüşmeleri paneline git</strong> — ${role} için mülakat sorularına ve hazırlık rehberine eriş.</div></div><button class="upgrade-cta" style="background:var(--navy)">Mülakata Hazırlan →</button></div>`;
-  }
-  document.getElementById('bottomCard').innerHTML=bottom;
+  document.getElementById("compGrid").innerHTML=grid;
+  let bottom="";
+  if(!isPrem){bottom=`<div class="dashed-card"><div><span class="premium-badge">PREMIUM</span><div style="font-size:13px;color:var(--muted);margin-top:4px"><strong style="color:var(--navy)">Tüm yetkinlikleri gör, davranışsal göstergeleri oku</strong> ve mülakat hazırlığına başla.</div></div><button class="upgrade-cta" onclick="setTier('premium',document.querySelectorAll('.yk-tier-btn')[1])">Başla →</button></div>`;}
+  else if(rated>0){bottom=`<div class="next-card"><div><span class="premium-badge">SONRAKI ADIM</span><div style="font-size:13px;color:var(--muted);margin-top:4px"><strong style="color:var(--navy)">İş Görüşmeleri paneline git</strong> — ${role} için mülakat sorularına ve hazırlık rehberine eriş.</div></div><button class="upgrade-cta" style="background:var(--navy)">Mülakata Hazırlan →</button></div>`;}
+  document.getElementById("bottomCard").innerHTML=bottom;
 }
 render();
+
 </script>
 </body>
 </html>
