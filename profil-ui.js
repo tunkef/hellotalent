@@ -1784,6 +1784,7 @@ async function loadProfileFromDB() {
 
   return {
     profile: {
+      id: cand.id,
       full_name: cand.full_name,
       telefon: cand.telefon,
       linkedin: cand.linkedin,
@@ -3174,4 +3175,5 @@ function closeTgToast() {
   window.updateMerkezVisState = updateVisState;
   window.syncBeniOner = syncBeniOner;
 })();
+
 
