@@ -175,19 +175,9 @@ select:focus-visible{
 .breadcrumb-sep{font-size:10px;color:var(--border);}
 .breadcrumb-current{font-size:12px;color:var(--text);font-weight:600;}
 .header-right{margin-left:auto;display:flex;align-items:center;gap:14px;}
-.header-search{
-  display:flex;align-items:center;gap:6px;
-  background:rgba(0,0,0,0.04);border:1px solid rgba(0,0,0,0.06);
-  border-radius:8px;padding:6px 12px;min-width:180px;cursor:pointer;
-  color:var(--muted);transition:all 0.2s;
-}
-.header-search:hover{background:rgba(0,0,0,0.06);border-color:rgba(0,0,0,0.1);}
-.header-search-text{font-size:12px;color:var(--muted);}
-.header-search-kbd{
-  font-size:10px;color:rgba(0,0,0,0.25);margin-left:auto;
-  border:1px solid rgba(0,0,0,0.08);border-radius:4px;padding:1px 5px;
-  font-family:'DM Mono',monospace;
-}
+/* Search is now a nav icon (.hn-search-item) — old bar styles neutralized */
+.header-search-text{display:none;}
+.header-search-kbd{display:none;}
 .header-notif{
   position:relative;cursor:pointer;width:32px;height:32px;
   display:flex;align-items:center;justify-content:center;
@@ -604,12 +594,6 @@ html[data-theme="dark"] .header{
 html[data-theme="dark"] .logo{color:var(--verm);}
 html[data-theme="dark"] .logo span{color:#E5E7EB;}
 html[data-theme="dark"] .logo .logo-dot{color:#6B7280;}
-html[data-theme="dark"] .header-search{
-  background:rgba(255,255,255,0.06);border-color:rgba(255,255,255,0.08);color:rgba(255,255,255,0.4);
-}
-html[data-theme="dark"] .header-search:hover{background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.12);}
-html[data-theme="dark"] .header-search-text{color:rgba(255,255,255,0.35);}
-html[data-theme="dark"] .header-search-kbd{color:rgba(255,255,255,0.2);border-color:rgba(255,255,255,0.1);}
 html[data-theme="dark"] .header-notif,
 html[data-theme="dark"] .header-msg{
   background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.5);
