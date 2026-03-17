@@ -2665,7 +2665,7 @@ async function openDrawer(id){
     _viewedCandidateIds.add(c.id);
     (async function() {
       try {
-        await getSupa().from('profile_view_events').insert({
+        var viewResult = await getSupa().from('profile_view_events').insert({
           candidate_id: c.id,
           hr_profile_id: currentUser.id,
           company_id: hrProfile.company_id || null,
@@ -2673,6 +2673,7 @@ async function openDrawer(id){
           position_ad_snapshot: null,
           position_seg_snapshot: null
         });
+        if (viewResult.error) console.warn('[HT] profile view event insert error:', viewResult.error.message);
       } catch (e) {
         console.warn('[HT] profile view event failed:', e.message);
       }
