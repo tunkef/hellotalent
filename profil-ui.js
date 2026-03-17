@@ -195,6 +195,8 @@ function addExperienceCard(data) {
   var d = data || {};
   // Normalize: accept both DB dialect (sirket) and UI dialect (sirket_adi)
   if (!d.sirket_adi && d.sirket) d.sirket_adi = d.sirket;
+  // Normalize: rol_unvani fallback from pozisyon for backward compat
+  if (!d.rol_unvani && d.pozisyon) d.rol_unvani = d.pozisyon;
 
   // Header
   var header = document.createElement('div');
@@ -218,14 +220,13 @@ function addExperienceCard(data) {
   header.appendChild(delBtn);
   card.appendChild(header);
 
-  // Row 1: Sirket/Marka (merged smart field) + Pozisyon
+  // Row 1: Şirket / Marka (full width)
   var row1 = document.createElement('div');
   row1.className = 'field-row';
   row1.appendChild(makeSmartBrandField(cardId + '-sirket', d, 'Şirket adı', true));
-  row1.appendChild(makeField('text', 'Pozisyon <span class="field-req">*</span>', cardId + '-pozisyon', 'Pozisyon / Ünvan', d.pozisyon));
   card.appendChild(row1);
 
-   // Row 1.5: Sektör → Rol Ailesi → Unvan (cascading)
+  // Row 2: Sektör → Rol Ailesi (cascading)
   var rowRole = document.createElement('div');
   rowRole.className = 'field-row';
 
@@ -239,13 +240,13 @@ function addExperienceCard(data) {
   var rolAilesiSelect = rolAilesiWrap.querySelector('select');
   rolAilesiSelect.disabled = true;
 
-  // Unvan select (depends on rol ailesi)
-  var unvanWrap = makeSelectField('Unvan', cardId + '-unvan-sec', [], null, 'Önce rol ailesi seçin');
+  // Pozisyon select (depends on rol ailesi)
+  var unvanWrap = makeSelectField('Pozisyon <span class="field-req">*</span>', cardId + '-unvan-sec', [], null, 'Önce rol ailesi seçin');
   var unvanSelect = unvanWrap.querySelector('select');
   unvanSelect.disabled = true;
 
-  // Custom unvan input (hidden by default, shown when "+ Kendi unvanını yaz" selected)
-  var unvanCustomWrap = makeField('text', 'Unvanınızı yazın <span class="field-req">*</span>', cardId + '-unvan-custom', 'Örnek: Mağaza Müdürü', d.rol_unvani);
+  // Custom pozisyon input (hidden by default, shown when "+ Kendi pozisyonunu yaz" selected)
+  var unvanCustomWrap = makeField('text', 'Pozisyon yazın <span class="field-req">*</span>', cardId + '-unvan-custom', 'Örnek: Mağaza Müdürü', d.rol_unvani);
   unvanCustomWrap.style.display = 'none';
 
   function clearSelectOptions(sel, placeholderText) {
@@ -293,7 +294,7 @@ function addExperienceCard(data) {
     // "+ Kendi unvanını yaz" option
     var customOpt = document.createElement('option');
     customOpt.value = '__custom__';
-    customOpt.textContent = '+ Kendi unvanını yaz';
+    customOpt.textContent = '+ Kendi pozisyonunu yaz';
     if (selectedUnvan && !hasMatchInList) {
       customOpt.selected = true;
       // Show custom field with restored value
@@ -356,48 +357,30 @@ function addExperienceCard(data) {
 
   rowRole.appendChild(sektorWrap);
   rowRole.appendChild(rolAilesiWrap);
-  rowRole.appendChild(unvanWrap);
-  rowRole.appendChild(unvanCustomWrap);
   card.appendChild(rowRole);
 
-  // Pozisyon display normalization on blur
-  var pozInput = document.getElementById(cardId + '-pozisyon');
-  if (pozInput) {
-    pozInput.addEventListener('blur', function() {
-      if (pozInput.value) pozInput.value = normalizeForDisplay(pozInput.value);
-    });
-  }
+  // Row 3: Pozisyon (cascade select + custom input, full width)
+  var rowPoz = document.createElement('div');
+  rowPoz.className = 'field-row';
+  rowPoz.appendChild(unvanWrap);
+  rowPoz.appendChild(unvanCustomWrap);
+  card.appendChild(rowPoz);
 
-  // Row 2: Departman + İstihdam Tipi
-  var row2 = document.createElement('div');
-  row2.className = 'field-row';
-  row2.appendChild(makeSelectField('Departman', cardId + '-departman', DEPARTMANLAR, d.departman, 'Departman seçiniz...'));
-  row2.appendChild(makeSelectField('İstihdam Tipi', cardId + '-istihdam', ISTIHDAM_TIPLERI, d.istihdam_tipi, 'İstihdam tipi seçiniz...'));
-  card.appendChild(row2);
+  // Row 4: Segment + İstihdam Tipi
+  var row4 = document.createElement('div');
+  row4.className = 'field-row';
+  row4.appendChild(makeSelectField('Segment', cardId + '-segment', SEGMENTLER, d.segment, 'Segment seçiniz...'));
+  row4.appendChild(makeSelectField('İstihdam Tipi', cardId + '-istihdam', ISTIHDAM_TIPLERI, d.istihdam_tipi, 'İstihdam tipi seçiniz...'));
+  card.appendChild(row4);
 
-  // Row 3: Segment + Şehir
-  var row3 = document.createElement('div');
-  row3.className = 'field-row';
-  row3.appendChild(makeSelectField('Segment', cardId + '-segment', SEGMENTLER, d.segment, 'Segment seçiniz...'));
-  row3.appendChild(makeSelectField('Şehir', cardId + '-sehir', flatAllCities(), d.sehir, 'Şehir seçiniz...'));
-  card.appendChild(row3);
-
-  // Row 4: Takım Büyüklüğü (conditional — shown only for managerial departments)
+  // Row 5: Şehir + Takım Büyüklüğü (always visible)
+  var row5 = document.createElement('div');
+  row5.className = 'field-row';
+  row5.appendChild(makeSelectField('Şehir', cardId + '-sehir', flatAllCities(), d.sehir, 'Şehir seçiniz...'));
   var takimWrap = makeSelectField('Takım Büyüklüğü', cardId + '-takim', TAKIM_BUYUKLUKLERI, d.takim_buyuklugu, 'Takım büyüklüğü seçiniz...');
   takimWrap.id = cardId + '-takim-wrap';
-  var deptShouldShowTakim = d.departman && ['Mağaza','Bölge Yönetimi','Genel Merkez'].indexOf(d.departman) !== -1;
-  takimWrap.style.display = deptShouldShowTakim ? '' : 'none';
-  card.appendChild(takimWrap);
-
-  // Wire departman → takim visibility toggle
-  var deptSelect = card.querySelector('#' + cardId + '-departman');
-  if (deptSelect) {
-    deptSelect.addEventListener('change', function() {
-      var show = ['Mağaza','Bölge Yönetimi','Genel Merkez'].indexOf(deptSelect.value) !== -1;
-      takimWrap.style.display = show ? '' : 'none';
-      if (!show) { var ts = document.getElementById(cardId + '-takim'); if (ts) ts.value = ''; }
-    });
-  }
+  row5.appendChild(takimWrap);
+  card.appendChild(row5);
 
   // Row 6: Başlangıç Ay/Yıl + Bitiş Ay/Yıl
   var row6 = document.createElement('div');
@@ -668,27 +651,24 @@ function collectExperiences() {
     var resolvedMarka = sirketInput ? (sirketInput.dataset.resolvedMarka || '') : '';
     // Safety: normalize freeform company at collect-time (covers save-before-blur edge case)
     if (!resolvedMarka && resolvedSirket) resolvedSirket = normalizeForDisplay(resolvedSirket);
-    // Safety: normalize pozisyon at collect-time
-    var rawPoz = val(prefix + 'pozisyon');
-    var normalizedPoz = rawPoz ? normalizeForDisplay(rawPoz) : '';
-    // Unvan resolution: dropdown wins unless custom sentinel selected
+    // Pozisyon resolution: cascade dropdown wins unless custom sentinel selected
     var unvanSelectVal = nullIfEmpty(val(prefix + 'unvan-sec'));
     var unvanCustomVal = nullIfEmpty(val(prefix + 'unvan-custom'));
-    var resolvedUnvan = null;
+    var resolvedPozisyon = null;
     if (unvanSelectVal === '__custom__') {
-      resolvedUnvan = unvanCustomVal;
+      resolvedPozisyon = unvanCustomVal;
     } else {
-      resolvedUnvan = unvanSelectVal || unvanCustomVal || null;
+      resolvedPozisyon = unvanSelectVal || unvanCustomVal || null;
     }
+    if (resolvedPozisyon) resolvedPozisyon = normalizeForDisplay(resolvedPozisyon);
 
     result.push({
       sirket: resolvedSirket,
       marka: nullIfEmpty(resolvedMarka),
-      pozisyon: normalizedPoz,
+      pozisyon: resolvedPozisyon,
       sektor: nullIfEmpty(val(prefix + 'sektor')),
       rol_ailesi: nullIfEmpty(val(prefix + 'ailesi')),
-      rol_unvani: resolvedUnvan,
-      departman: nullIfEmpty(val(prefix + 'departman')),
+      rol_unvani: resolvedPozisyon,
       segment: nullIfEmpty(val(prefix + 'segment')),
       istihdam_tipi: nullIfEmpty(val(prefix + 'istihdam')),
       kidem_seviyesi: null,   // Decision 1: removed from UI, always null
@@ -1958,7 +1938,7 @@ async function loadProfileFromDB() {
         sektor: e.sektor || null,
         rol_ailesi: e.rol_ailesi || null,
         rol_unvani: e.rol_unvani || null,
-        departman: e.departman, segment: e.segment, istihdam_tipi: e.istihdam_tipi,
+        segment: e.segment, istihdam_tipi: e.istihdam_tipi,
         kidem_seviyesi: e.kidem_seviyesi, lokasyon_tipi: e.lokasyon_tipi,
         sehir: e.sehir, takim_buyuklugu: e.takim_buyuklugu,
         baslangic_ay: monthIndexToName(e.baslangic_ay),
@@ -2363,10 +2343,10 @@ function generateCV() {
         doc.setTextColor(0, 0, 0);
       }
       Y += 5;
-      if (e.departman || e.segment) {
+      if (e.rol_ailesi || e.segment) {
         doc.setFont('helvetica', 'normal');
         doc.setFontSize(9);
-        doc.text([e.departman, e.segment].filter(Boolean).join(' | '), M, Y);
+        doc.text([e.rol_ailesi, e.segment].filter(Boolean).join(' | '), M, Y);
         Y += 4;
         doc.setFontSize(10);
       }
@@ -3014,7 +2994,7 @@ function openProfilePreview() {
       html += '<div class="pp-exp-role">' + _escHtml(role) + '</div>';
       html += '<div class="pp-exp-company"><strong>' + _escHtml(display) + '</strong></div>';
       var details = [];
-      if (e.departman) details.push(e.departman);
+      if (e.rol_ailesi) details.push(e.rol_ailesi);
       if (e.istihdam_tipi) details.push(e.istihdam_tipi);
       if (e.kidem_seviyesi) details.push(e.kidem_seviyesi);
       if (details.length > 0) {
