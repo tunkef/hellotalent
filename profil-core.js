@@ -218,8 +218,6 @@ const TAKIM_BUYUKLUKLERI = ['Yok','1-5','6-15','16-30','30+'];
 
 const AYRILMA_NEDENLERI = ['Terfi','\u0130stifa','Kariyer Ge\u00e7i\u015fi','\u0130\u015ften \u00c7\u0131kar\u0131lma','Kar\u015f\u0131l\u0131kl\u0131 Fesih','S\u00f6zle\u015fme Bitimi','Belirtmek \u0130stemiyorum'];
 
-const ROL_AILELERI = Object.keys(SEKTOR_ROL_MAP['Ma\u011fazac\u0131l\u0131k / Perakende']);
-
 const SEKTOR_ROL_MAP = {
   'Ma\u011fazac\u0131l\u0131k / Perakende': {
     'Ma\u011faza Y\u00f6netimi': [
@@ -396,6 +394,8 @@ const SEKTOR_ROL_MAP = {
     'Di\u011fer': []
   }
 };
+
+const ROL_AILELERI = Object.keys(SEKTOR_ROL_MAP['Ma\u011fazac\u0131l\u0131k / Perakende']);
 
 const MUSAITLIK_SECENEKLERI = ['Hemen','2 Hafta \u0130\u00e7inde','1 Ay \u0130\u00e7inde','2+ Ay \u0130\u00e7inde'];
 
