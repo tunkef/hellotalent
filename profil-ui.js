@@ -2977,29 +2977,44 @@ function openProfilePreview() {
   html += '</div>';
 
   html += '<div class="pp-card pp-contact-card">';
-  html += '<div class="pp-card-title">İletişim</div>';
+  html += '<div class="pp-card-title">İLETİŞİM</div>';
   var email = (typeof currentUser !== 'undefined' && currentUser && currentUser.email) ? currentUser.email : '';
-  var maskedEmail = '';
-  if (email) {
-    var parts = email.split('@');
-    if (parts.length === 2) maskedEmail = parts[0].charAt(0) + '****@' + parts[1];
-  }
-  html += '<div class="pp-contact-row">';
-  html += '<div class="pp-contact-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>';
-  html += '<div class="pp-contact-text">' + _escHtml(maskedEmail || '—') + '</div>';
-  html += '<span class="pp-contact-lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Gizli</span>';
-  html += '</div>';
   var phone = p.telefon || '';
-  var maskedPhone = '';
-  if (phone && phone.length >= 6) {
-    maskedPhone = phone.substring(0, 3) + ' *** ** ' + phone.substring(phone.length - 2);
+
+  if (showPersonalInfo) {
+    // Beni Öner ON — show real contact info (as employer would see)
+    html += '<div class="pp-contact-row">';
+    html += '<div class="pp-contact-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>';
+    html += '<div class="pp-contact-text">' + _escHtml(email || '—') + '</div>';
+    html += '</div>';
+    html += '<div class="pp-contact-row">';
+    html += '<div class="pp-contact-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.81.36 1.6.69 2.36a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.76.33 1.55.56 2.36.69A2 2 0 0 1 22 16.92z"/></svg></div>';
+    html += '<div class="pp-contact-text">' + _escHtml(phone || '—') + '</div>';
+    html += '</div>';
+    html += '<div class="pp-contact-hint" style="color:var(--verm);">İşverenler iletişim bilgilerini görebilir</div>';
+  } else {
+    // Beni Öner OFF — masked contact
+    var maskedEmail = '';
+    if (email) {
+      var parts = email.split('@');
+      if (parts.length === 2) maskedEmail = parts[0].charAt(0) + '****@' + parts[1];
+    }
+    html += '<div class="pp-contact-row">';
+    html += '<div class="pp-contact-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>';
+    html += '<div class="pp-contact-text">' + _escHtml(maskedEmail || '—') + '</div>';
+    html += '<span class="pp-contact-lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Gizli</span>';
+    html += '</div>';
+    var maskedPhone = '';
+    if (phone && phone.length >= 6) {
+      maskedPhone = phone.substring(0, 3) + ' *** ** ' + phone.substring(phone.length - 2);
+    }
+    html += '<div class="pp-contact-row">';
+    html += '<div class="pp-contact-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.81.36 1.6.69 2.36a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.76.33 1.55.56 2.36.69A2 2 0 0 1 22 16.92z"/></svg></div>';
+    html += '<div class="pp-contact-text">' + _escHtml(maskedPhone || '—') + '</div>';
+    html += '<span class="pp-contact-lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Gizli</span>';
+    html += '</div>';
+    html += '<div class="pp-contact-hint">Beni Öner açıkken işverenler bilgilerini görebilir</div>';
   }
-  html += '<div class="pp-contact-row">';
-  html += '<div class="pp-contact-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.81.36 1.6.69 2.36a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.76.33 1.55.56 2.36.69A2 2 0 0 1 22 16.92z"/></svg></div>';
-  html += '<div class="pp-contact-text">' + _escHtml(maskedPhone || '—') + '</div>';
-  html += '<span class="pp-contact-lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Gizli</span>';
-  html += '</div>';
-  html += '<div class="pp-contact-hint">İletişim bilgileri işveren tarafından görüntülenebilir</div>';
   html += '</div>';
 
   html += '</div>';

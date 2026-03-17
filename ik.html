@@ -2061,8 +2061,10 @@ async function loadLiveCandidates(){
         calisma: (calismaArr[0] != null) ? String(calismaArr[0]) : '',
         egitim: (edu0 && edu0.egitim_seviye) ? edu0.egitim_seviye : '',
         diller: languages.map(function(l){ return l.dil || ''; }).filter(Boolean),
-        tel: maskPhone(c.telefon),
-        email: maskEmail(c.email),
+        tel: c.telefon || '',
+        telMasked: maskPhone(c.telefon),
+        email: c.email || '',
+        emailMasked: maskEmail(c.email),
         brand: (exp0 && (exp0.marka || exp0.sirket)) ? (exp0.marka || exp0.sirket) : '',
         maas: (workPrefs && workPrefs.maas_beklenti) ? workPrefs.maas_beklenti + ' TL' : '',
         aktifAriyor: c.is_actively_looking === true,
@@ -2404,7 +2406,7 @@ function buildCandidateCard(c){
   l1.textContent = 'Telefon';
   var v1 = document.createElement('div');
   v1.className = 'cc-contact-val masked';
-  v1.textContent = c.tel || '';
+  v1.textContent = c.telMasked || '';
   row1.appendChild(l1);
   row1.appendChild(v1);
   var row2 = document.createElement('div');
@@ -2414,7 +2416,7 @@ function buildCandidateCard(c){
   l2.textContent = 'E-posta';
   var v2 = document.createElement('div');
   v2.className = 'cc-contact-val masked';
-  v2.textContent = c.email || '';
+  v2.textContent = c.emailMasked || '';
   row2.appendChild(l2);
   row2.appendChild(v2);
   contact.appendChild(row1);
@@ -2743,8 +2745,8 @@ async function openDrawer(id){
   ]);
 
   makeInfoGrid('İletişim', [
-    {label:'Telefon', value:c.tel, masked:true},
-    {label:'E-posta', value:c.email, masked:true}
+    {label:'Telefon', value:c.tel},
+    {label:'E-posta', value:c.email}
   ]);
 
   // Actions
@@ -3381,7 +3383,7 @@ function buildAccordionItem(c){
   [['Telefon', c.tel], ['E-posta', c.email]].forEach(function(f){
     var field = document.createElement('div'); field.className = 'acc-field';
     var label = document.createElement('div'); label.className = 'acc-field-label'; label.textContent = f[0];
-    var val = document.createElement('div'); val.className = 'acc-field-val masked'; val.textContent = f[1];
+    var val = document.createElement('div'); val.className = 'acc-field-val'; val.textContent = f[1];
     field.appendChild(label); field.appendChild(val); contactGrid.appendChild(field);
   });
   body.appendChild(contactGrid);
