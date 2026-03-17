@@ -1,5 +1,5 @@
 # hellotalent.ai — Technical Handoff Document
-> Son güncelleme: 16 Mart 2026
+> Son güncelleme: 17 Mart 2026
 > Bu doküman, projenin mevcut durumunu, tamamlanan işleri ve kalan backlog'u kapsar.
 > Yeni bir chat/session başlatırken bu dosyayı referans olarak kullanın.
 
@@ -97,18 +97,19 @@ gizlilik.html, kvkk.html, kullanim-sartlari.html, cerez-politikasi.html
 ### Profil Dashboard Files
 | Dosya | İçerik |
 |-------|--------|
-| profil.html | ~2200 lines — tüm paneller, bento grid, loading screen, toggle grid, preview modal |
-| profil-core.js | Supabase client, shared auth promise, theme, normalization, reference data |
+| profil.html | ~5900+ lines — tüm paneller, bento grid, loading screen, toggle grid, preview modal |
+| profil-core.js | Supabase client, shared auth promise, theme (pre-paint bootstrap + meta-theme-color sync), normalization, reference data |
 | profil-data.js | Data loading/saving utilities |
 | profil-ui.js | ~3100+ lines — flip cards, brand colors, merkez cards, preview modal, toggle logic, retry logic |
 | profil-settings.js | Settings panel, deletion banner |
-| profil.css | ~2700 lines — all profil dashboard styles |
+| profil.css | ~3000+ lines — all profil dashboard styles (dark mode tokens, semantic variables) |
 
 ### Config & Test
 | Dosya/Klasör | İçerik |
 |-------------|--------|
 | playwright.config.js | Test config (mobile 390×844 + desktop 1440×900) |
 | tests/hellotalent.smoke.spec.js | 68 smoke tests |
+| tests/dark-mode.spec.js | 12 dark mode regression tests (pre-paint, tokens, contrast) |
 | docs/schema-drift-report.md | DB schema audit raporu |
 | docs/handoff.md | Bu dosya |
 | .claude/skills/hellotalent-dev/ | Custom Claude skill (SKILL.md + references/) |
@@ -287,6 +288,41 @@ if(sessionStorage.getItem('ht_gate')!=='ok'){window.location.replace('gate.html'
 - 24 debug console.log kaldırıldı, 320 satır duplicate CSS → shared.css
 - Net etki: -1192 satır (%12 codebase küçülme)
 
+### Sprint 3 — Accessibility, Structure & Copy Quality ✅
+- Inline onclick handlers → event delegation (profil.html — no more onclick attributes)
+- Bento CTA `<a>` tags → `<span>` tags (non-navigating elements)
+- Section label CSS utility renamed to `.empty-title` to avoid conflicts
+- Profile completion scoring alignment + UX polish
+- Copy quality audit + typography improvements (Sprint 4 commit)
+
+### Sprint 3-4 — Profil Merkezi Card Redesign ✅
+- **mk-card redesign**: Dark terminal → vermillion gradient cards with corner edit buttons
+- **mk-edit-btn**: Clean floating circle (frosted glass, no corner cutout)
+- **White artifact fix**: Removed `::before`/`::after` box-shadow cutout pattern that created visible white shapes
+- **Card color precision**: `rgba(201,78,40,0.5)` background, solid `#C94E28` data pills with white text
+- **Gradient upgrade**: Flat rgba → `linear-gradient(135deg, ...)` diagonal gradient for modern depth
+- **Shadow matching**: Three-layer box-shadow system matching mk-identity and other bento cards
+- **Genel Bakış hero**: Aligned to match Profil Merkezi hero card (border-radius 24px, padding, avatar 56px, name 20px/800)
+- **Bento CTA arrow fix**: `.bento-cta a` → `.bento-cta span` (Sprint 3 changed `<a>` to `<span>` but CSS selectors weren't updated)
+- **Logo fix**: `<a href="index.html">` → `<button id="btn-logo-home">` navigating to dashboard panel via event delegation; logo text fully white
+
+### Dark Mode Hardening (profil.css + profil.html) ✅
+**7-phase systematic implementation:**
+1. **Pre-paint bootstrap**: Inline `<script>` in `<head>` before CSS loads — reads localStorage, sets `data-theme` and `meta-theme-color` to prevent FOIT
+2. **Meta theme-color**: `<meta name="theme-color" content="#ffffff" id="meta-theme-color">` + JS sync in `applyResolvedTheme()`
+3. **CSS color-scheme**: `:root { color-scheme: light; }` + `html[data-theme="dark"] { color-scheme: dark; }` for native scrollbars/form elements
+4. **Token discipline**: 51 primitive→semantic token replacements (`--text` → `--text-primary`, `--muted` → `--text-muted`, `--border` → `--border-subtle`)
+5. **Panel dark gap closing**: Tokenized 15+ hardcoded `#fff`/`white` backgrounds → `var(--bg-surface, #fff)` across header-popup, preview drawer, command palette, account wizard, brand search, segment pills, brand follows popup, blocked company dropdown
+6. **Dark contrast improvement**: `--navy:#7B93C4`, `--navy-light:rgba(123,147,196,0.12)`, `--muted:#9CA3AF` in dark theme block
+7. **Playwright regression tests**: `tests/dark-mode.spec.js` — 12 assertions × 2 viewports = 24 tests, all passing
+   - Pre-paint bootstrap exists, meta-theme-color, color-scheme, token definitions, tokenized backgrounds, no primitive tokens in color declarations, contrast overrides, danger tokens
+
+**Dark mode status**: Foundations solid for profil.html. Remaining: profil-settings.js native alert→modal conversion (7 instances), ik.html/giris.html/gate.html dark mode (separate sprint).
+
+### Header & Inbox System ✅
+- Header message & notification popup dropdowns
+- Inbox trash tab, realtime notification dots, bildirimler panel
+
 ---
 
 ## 6. Session 16 Mart 2026 — Yapılan İşler
@@ -418,7 +454,7 @@ if(sessionStorage.getItem('ht_gate')!=='ok'){window.location.replace('gate.html'
 | # | Özellik | Durum |
 |---|---------|-------|
 | P4 | Public pages content review | Planned |
-| P4 | Dark mode expansion (sadece profil.css'te, diğer sayfalara yayılacak) | Planned |
+| P4 | Dark mode expansion — profil.css foundations done (7-phase hardening, 24 tests), remaining: settings alerts→modals, ik/giris/gate pages | In Progress |
 | P4 | Performance optimization (Lighthouse, lazy-load, minification) | Planned |
 
 ### Migration Deploy Durumu
@@ -460,10 +496,11 @@ cd /Users/peopleintk/Downloads/Hellotalent
 npx playwright test --reporter=list
 ```
 
-### Sonuç: 64/68 passing
-**Bilinen false negatives (4):**
+### Sonuç: 64/68 smoke + 24/24 dark mode passing
+**Smoke tests — bilinen false negatives (4):**
 - Brand fonts (2): Google Fonts CDN timing sorunu
 - Gate sessionStorage (2): Redirect timing sorunu
+**Dark mode tests:** 12 assertions × 2 viewports = 24/24 passing
 
 ### Config
 - baseURL: https://hellotalent.ai
@@ -534,17 +571,27 @@ git diff dosya.html | head -100
 
 ---
 
-## 12. Git Commit Geçmişi (14-16 Mart 2026)
+## 12. Git Commit Geçmişi (14-17 Mart 2026)
 
 ```
 refactor: centralize Supabase config in shared.js - Phase 1 (7 pages)
 ...
 feat: activate LinkedIn OAuth login (OIDC provider) (dbbdbd4)
 feat: split admin candidate monitoring and enable IK recommendation threshold at 45% (39ffcad)
-fix: sync profile completion score and enforce >=45 visibility consistently (adb0bd3)
 fix: harden profile completion sync trigger and normalize location scoring (9ce0498)
-fix: backfill profile completion with normalized sync and finalize hardening docs (78febb4)
-fix: finalize profile completion hardening and update handoff
+fix: finalize profile completion hardening and update handoff (87bd4e5)
+feat: team management panel, gate removal, UI polish, migration 037 (03669f3)
+feat: header message & notification popup dropdowns (7d3d321)
+feat: inbox trash tab, realtime notification dots, bildirimler panel (a479509)
+fix: align completion scoring, remove forced profile_completed, UX polish (1cef197)
+chore: accessibility & structural cleanup Sprint 3 (1a0a429)
+feat: Sprint 4 — copy quality, typography & accessibility (d15dfb6)
+feat: profil merkezi kartları yeniden tasarlandı — vermillion gradient (138d2fa)
+fix: beyaz artifact kaldırıldı, muted warm gradient (660076a)
+chore: genel bakış hero kartı profil merkezi ile eşitlendi (907c326)
+fix: kurumsal turuncu %50 opacity, solid pill'ler (1333fc7)
+fix: harden profil dark mode system and eliminate dark theme leakage (33c93d3)
+style: add gradient effect and matched shadow to mk-cards (20a3d08)
 ```
 
 ---
@@ -561,14 +608,13 @@ cat docs/handoff.md
 ```
 
 ### Sıradaki İşler (öncelik sırasıyla)
-1. ~~**Migration deploy** (032-036)~~ ✅ Deployed
-2. ~~**Pending Cursor prompts**~~ ✅ 6/10 tamamlandı (theme toggle, sentry retry, ilçe rename, cache-bust, preview polish, toggle polish)
-3. ~~**Cloudflare Access setup**~~ ✅ Zaten kurulmuş (hellotalent.ai, self-hosted, 1 policy)
-4. ~~**Gate.html kaldırma**~~ ✅ 13 dosyadan gate check script kaldırıldı (Cloudflare Access yeterli)
-5. ~~**Migration 037: Seat limits + plan update**~~ ✅ Deployed (free=1, premium=3, pro=5, enterprise=50)
-6. ~~**Ekip Yönetimi UI (ik.html)**~~ ✅ Panel eklendi (üye listesi, davet formu, seat limiti)
-7. **Kalan Cursor prompts:** Navy header (BIG), brand color audit Batch 2-3, navy gradient standardization
-8. **P4 — Public pages content review + dark mode + performance**
+1. ~~**Migration deploy** (032-037)~~ ✅ All deployed
+2. ~~**Sprint 3-4**~~ ✅ Accessibility, card redesign, dark mode hardening
+3. ~~**Profil Merkezi mk-card redesign**~~ ✅ Gradient + shadow + tokenized
+4. ~~**Dark mode foundations (profil.css)**~~ ✅ 7-phase systematic hardening, 24 tests passing
+5. **Dark mode remaining:** profil-settings.js alert→modal (7 instances), ik.html/giris.html/gate.html dark mode
+6. **Kalan Cursor prompts:** Navy header (BIG), brand color audit Batch 2-3, navy gradient standardization
+7. **P4 — Public pages content review + dark mode expansion + performance**
 
 ### Önceki Transkriptler
 Tam konuşma geçmişi:
