@@ -127,8 +127,41 @@ if (window.Sentry) {
         </div>
       </div>
     </div>
-    <div class="header-avatar" id="header-avatar-wrap" title="Profil">
-      <div id="user-avatar-header">?</div>
+    <div class="header-btn-wrap" id="header-avatar-wrap-outer">
+      <button type="button" class="header-avatar-btn" id="header-avatar-wrap" title="Profil">
+        <div id="user-avatar-header">?</div>
+      </button>
+      <!-- Avatar Dropdown Panel -->
+      <div class="avatar-dropdown" id="avatar-dropdown" style="display:none;">
+        <div class="avd-user">
+          <div class="avd-avatar" id="avd-avatar-img">?</div>
+          <div class="avd-info">
+            <div class="avd-name" id="avd-user-name">&mdash;</div>
+            <div class="avd-email" id="avd-user-email">&mdash;</div>
+          </div>
+        </div>
+        <div class="avd-divider"></div>
+        <button type="button" class="avd-item avd-premium" id="avd-premium-btn">
+          <svg class="avd-item-icon avd-premium-icon" height="16" viewBox="0 0 576 512"><path d="M309 106c11.4-7 19-19.7 19-34c0-22.1-17.9-40-40-40s-40 17.9-40 40c0 14.4 7.6 27 19 34L209.7 220.6c-9.1 18.2-32.7 23.4-48.6 10.7L72 160c5-6.7 8-15 8-24c0-22.1-17.9-40-40-40S0 113.9 0 136s17.9 40 40 40c.2 0 .5 0 .7 0L86.4 427.4c5.5 30.4 32 52.6 63 52.6H426.6c30.9 0 57.4-22.1 63-52.6L535.3 176c.2 0 .5 0 .7 0c22.1 0 40-17.9 40-40s-17.9-40-40-40s-40 17.9-40 40c0 9 3 17.3 8 24l-89.1 71.3c-15.9 12.7-39.5 7.5-48.6-10.7L309 106z" fill="currentColor"/></svg>
+          <span>Premium Özellikleri</span>
+        </button>
+        <div class="avd-divider"></div>
+        <div class="avd-theme-row">
+          <span class="avd-theme-label">Görünüm</span>
+          <label class="avd-theme-toggle">
+            <input type="checkbox" id="avd-theme-checkbox">
+            <span class="avd-theme-slider">
+              <span class="avd-sun"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg></span>
+              <span class="avd-moon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></span>
+            </span>
+          </label>
+        </div>
+        <div class="avd-divider"></div>
+        <button type="button" class="avd-item avd-logout" id="avd-logout-btn">
+          <svg class="avd-item-icon" width="16" height="16" viewBox="0 0 512 512"><path d="M377.9 105.9L500.7 228.7c7.2 7.2 11.3 17.1 11.3 27.3s-4.1 20.1-11.3 27.3L377.9 406.1c-6.4 6.4-15 9.9-24 9.9c-18.7 0-33.9-15.2-33.9-33.9l0-62.1-128 0c-17.7 0-32-14.3-32-32l0-64c0-17.7 14.3-32 32-32l128 0 0-62.1c0-18.7 15.2-33.9 33.9-33.9c9 0 17.6 3.6 24 9.9zM160 96L96 96c-17.7 0-32 14.3-32 32l0 256c0 17.7 14.3 32 32 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-64 0c-53 0-96-43-96-96L0 128C0 75 43 32 96 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32z" fill="currentColor"/></svg>
+          <span>Güvenli Çıkış</span>
+        </button>
+      </div>
     </div>
     <input type="file" id="avatar-file-hidden" accept="image/*" style="display:none">
     <button class="btn-icon" id="mobile-sidebar-btn" title="Menu">
@@ -2107,6 +2140,11 @@ function reapplyDynamicFields() {
     el.textContent = initials;
   });
 
+  // Populate avatar dropdown
+  if (window._htPopulateAvatarDropdown) {
+    window._htPopulateAvatarDropdown(fallbackName, email, null);
+  }
+
   // Show app body behind loading screen
   document.getElementById('app-body').style.display = 'block';
 
@@ -2377,6 +2415,87 @@ document.addEventListener('DOMContentLoaded', function() {
       if (panel) switchPanel(panel);
     });
   });
+
+  // ── Avatar dropdown ──
+  (function() {
+    var avatarBtn = document.getElementById('header-avatar-wrap');
+    var dropdown = document.getElementById('avatar-dropdown');
+    if (!avatarBtn || !dropdown) return;
+
+    avatarBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      var isOpen = dropdown.style.display !== 'none';
+      // Close other popups
+      if (window._htCloseAllPopups) window._htCloseAllPopups();
+      dropdown.style.display = isOpen ? 'none' : '';
+    });
+
+    // Close on outside click
+    document.addEventListener('click', function(e) {
+      if (!dropdown.contains(e.target) && e.target !== avatarBtn && !avatarBtn.contains(e.target)) {
+        dropdown.style.display = 'none';
+      }
+    });
+
+    // Close dropdown when other popups open
+    var origClose = window._htCloseAllPopups;
+    window._htCloseAllPopups = function() {
+      if (origClose) origClose();
+      dropdown.style.display = 'none';
+    };
+
+    // Populate user info when profile loads
+    window._htPopulateAvatarDropdown = function(name, email, avatarUrl) {
+      var avdName = document.getElementById('avd-user-name');
+      var avdEmail = document.getElementById('avd-user-email');
+      var avdAvatar = document.getElementById('avd-avatar-img');
+      if (avdName && name) avdName.textContent = name;
+      if (avdEmail && email) avdEmail.textContent = email;
+      if (avdAvatar && avatarUrl) {
+        avdAvatar.textContent = '';
+        var img = document.createElement('img');
+        img.src = avatarUrl;
+        img.alt = name || '';
+        avdAvatar.appendChild(img);
+      }
+    };
+
+    // Theme toggle
+    var themeCheckbox = document.getElementById('avd-theme-checkbox');
+    if (themeCheckbox) {
+      var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      themeCheckbox.checked = isDark;
+      themeCheckbox.addEventListener('change', function() {
+        var newTheme = this.checked ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-theme', newTheme);
+        try { localStorage.setItem('ht-theme', newTheme); } catch(e) {}
+        if (window.syncThemeToggleButtons) window.syncThemeToggleButtons();
+      });
+      // Sync when theme changes externally
+      var observer = new MutationObserver(function() {
+        themeCheckbox.checked = document.documentElement.getAttribute('data-theme') === 'dark';
+      });
+      observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    }
+
+    // Premium button
+    var premBtn = document.getElementById('avd-premium-btn');
+    if (premBtn) premBtn.addEventListener('click', function() {
+      dropdown.style.display = 'none';
+      // Could open premium modal or scroll to premium section
+    });
+
+    // Logout button
+    var logoutBtn = document.getElementById('avd-logout-btn');
+    if (logoutBtn) logoutBtn.addEventListener('click', function() {
+      dropdown.style.display = 'none';
+      if (typeof supabase !== 'undefined') {
+        supabase.auth.signOut().then(function() {
+          window.location.href = 'giris.html';
+        });
+      }
+    });
+  })();
 
   // Mobile sidebar
   var mobileBtn = document.getElementById('mobile-sidebar-btn');

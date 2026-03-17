@@ -2329,7 +2329,7 @@ function setAvatarImage(url) {
   // Strip any existing cache-bust, then add a fresh one for display
   var cleanUrl = url.replace(/[?&]t=\d+/, '');
   var displayUrl = cleanUrl + (cleanUrl.indexOf('?') === -1 ? '?' : '&') + 't=' + Date.now();
-  var targets = ['user-avatar-header', 'sidebar-avatar', 'ps-avatar', 'merkez-avatar', 'avatar-upload-circle'];
+  var targets = ['user-avatar-header', 'sidebar-avatar', 'ps-avatar', 'merkez-avatar', 'avatar-upload-circle', 'avd-avatar-img'];
   targets.forEach(function(id) {
     var el = document.getElementById(id);
     if (!el) return;
