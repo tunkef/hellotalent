@@ -426,22 +426,6 @@ function addExperienceCard(data) {
   rowRole.appendChild(pozCol);
   card.appendChild(rowRole);
 
-  // Row 4: Segment + İstihdam Tipi
-  var row4 = document.createElement('div');
-  row4.className = 'field-row';
-  row4.appendChild(makeSelectField('Segment', cardId + '-segment', SEGMENTLER, d.segment, 'Segment seçiniz...'));
-  row4.appendChild(makeSelectField('İstihdam Tipi', cardId + '-istihdam', ISTIHDAM_TIPLERI, d.istihdam_tipi, 'İstihdam tipi seçiniz...'));
-  card.appendChild(row4);
-
-  // Row 5: Şehir + Takım Büyüklüğü (always visible)
-  var row5 = document.createElement('div');
-  row5.className = 'field-row';
-  row5.appendChild(makeSelectField('Şehir', cardId + '-sehir', flatAllCities(), d.sehir, 'Şehir seçiniz...'));
-  var takimWrap = makeSelectField('Takım Büyüklüğü', cardId + '-takim', TAKIM_BUYUKLUKLERI, d.takim_buyuklugu, 'Takım büyüklüğü seçiniz...');
-  takimWrap.id = cardId + '-takim-wrap';
-  row5.appendChild(takimWrap);
-  card.appendChild(row5);
-
   // Dates block: Start → (devam) → End
   var dateBlock = document.createElement('div');
   dateBlock.className = 'exp-date-block';
@@ -499,6 +483,22 @@ function addExperienceCard(data) {
   ayrilmaField.classList.add('ayrilma-field');
   if (d.devam_ediyor) ayrilmaField.style.display = 'none';
   card.appendChild(ayrilmaField);
+
+  // Row: İstihdam Tipi + Şehir (work details)
+  var rowWork = document.createElement('div');
+  rowWork.className = 'field-row';
+  rowWork.appendChild(makeSelectField('İstihdam Tipi', cardId + '-istihdam', ISTIHDAM_TIPLERI, d.istihdam_tipi, 'İstihdam tipi seçiniz...'));
+  rowWork.appendChild(makeSelectField('Şehir', cardId + '-sehir', flatAllCities(), d.sehir, 'Şehir seçiniz...'));
+  card.appendChild(rowWork);
+
+  // Row: Segment + Takım Büyüklüğü (additional details)
+  var rowDetail = document.createElement('div');
+  rowDetail.className = 'field-row';
+  rowDetail.appendChild(makeSelectField('Segment', cardId + '-segment', SEGMENTLER, d.segment, 'Segment seçiniz...'));
+  var takimWrap = makeSelectField('Takım Büyüklüğü', cardId + '-takim', TAKIM_BUYUKLUKLERI, d.takim_buyuklugu, 'Takım büyüklüğü seçiniz...');
+  takimWrap.id = cardId + '-takim-wrap';
+  rowDetail.appendChild(takimWrap);
+  card.appendChild(rowDetail);
 
   // Toggle bitis fields and ayrilma based on checkbox
   cb.addEventListener('change', function() {
@@ -1196,7 +1196,8 @@ function collectTargetRoles() {
   rows.forEach(function(row) {
     var p = row.id + '-';
     var item = { rol_ailesi: nullIfEmpty(val(p + 'ailesi')), rol_unvani: nullIfEmpty(val(p + 'unvan')) };
-    if (item.rol_ailesi || item.rol_unvani) result.push(item);
+    // DB requires both NOT NULL; only send complete rows to avoid constraint violation
+    if (item.rol_ailesi && item.rol_unvani) result.push(item);
   });
   return result;
 }
@@ -1534,7 +1535,14 @@ async function saveProfileRPC(onComplete) {
       p_locations: p_locations
     });
 
-    if (result.error) throw result.error;
+    if (result.error) {
+      var e = result.error;
+      var err = new Error(e.message || 'Profil kaydedilemedi.');
+      err.code = e.code;
+      err.details = e.details;
+      err.hint = e.hint;
+      throw err;
+    }
 
     // Success
     clearDraft();

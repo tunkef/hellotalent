@@ -961,6 +961,19 @@ if (window.Sentry) {
     <div class="wiz-step-desc">Hedef pozisyonlarını, çalışma tercihlerini ve ilgilendiğin markaları belirt.</div>
     <div id="step4-content">
 
+      <!-- KARIYER HEDEFI -->
+      <div class="field">
+        <label for="f-career-goal">Kariyer Hedefi</label>
+        <textarea id="f-career-goal" rows="3" placeholder="Kariyer hedefini kısaca yaz..."></textarea>
+      </div>
+      <div class="field">
+        <div class="card-title mb-4">Kariyer Yönelimi</div>
+        <p class="helper-text" style="font-size:13px;color:var(--muted);margin:0 0 10px 0;">Birden fazla yönelim seçebilirsin.</p>
+        <div id="career-type-checks" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
+      </div>
+
+      <hr class="section-divider">
+
       <!-- TARGET ROLES -->
       <div class="card-title mb-4">Hedef Pozisyonlar <span class="field-req">*</span></div>
       <p class="helper-text" style="font-size:13px;color:var(--muted);margin:0 0 12px 0;line-height:1.5;">Bu bilgiler seni doğru pozisyonlarla eşleştirmemize yardımcı olur. Birden fazla hedef rol ekleyebilirsin.</p>
@@ -969,16 +982,16 @@ if (window.Sentry) {
 
       <hr class="section-divider">
 
+      <!-- CALISMA TIPLERI -->
+      <div class="card-title mb-12">Çalışma Tipleri</div>
+      <div id="calisma-tipleri-checks" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
+
+      <hr class="section-divider">
+
       <!-- MUSAITLIK -->
       <div class="card-title mb-4">Müsaitlik</div>
       <p class="helper-text" style="font-size:13px;color:var(--muted);margin:0 0 12px 0;">Yeni bir işe ne kadar sürede başlayabilirsin?</p>
       <div class="chips-row" id="musaitlik-chips"></div>
-
-      <hr class="section-divider">
-
-      <!-- CALISMA TIPLERI -->
-      <div class="card-title mb-12">Çalışma Tipleri</div>
-      <div id="calisma-tipleri-checks" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
 
       <hr class="section-divider">
 
@@ -1005,19 +1018,6 @@ if (window.Sentry) {
         <div class="autocomplete-list" id="brand-interest-sug"></div>
       </div>
       <div class="chips-row mt-8" id="brand-interest-chips"></div>
-
-      <hr class="section-divider">
-
-      <!-- KARIYER HEDEFI -->
-      <div class="field">
-        <label for="f-career-goal">Kariyer Hedefi</label>
-        <textarea id="f-career-goal" rows="3" placeholder="Kariyer hedefini kısaca yaz..."></textarea>
-      </div>
-      <div class="field">
-        <div class="card-title mb-4">Kariyer Yönelimi</div>
-        <p class="helper-text" style="font-size:13px;color:var(--muted);margin:0 0 10px 0;">Birden fazla yönelim seçebilirsin.</p>
-        <div id="career-type-checks" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
-      </div>
 
     </div>
   </div>
