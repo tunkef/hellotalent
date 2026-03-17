@@ -83,7 +83,7 @@ if (window.Sentry) {
       <span class="hn-badge" id="badge-teklifler-hn" style="display:none;">0</span>
       <span class="hn-bar"></span>
     </button>
-    <button class="hn-item" data-panel="genel" id="hn-izleyenler" onclick="document.getElementById('lab-viewers-card')?.scrollIntoView({behavior:'smooth',block:'center'})">
+    <button class="hn-item" data-panel="kimbakti" id="hn-kimbakti">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
       <span class="hn-label">Kim Baktı</span>
       <span class="hn-bar"></span>
@@ -488,13 +488,13 @@ if (window.Sentry) {
         </div>
       </button>
 
-      <!-- Görüntüleyenler -->
-      <div class="bento-card" id="lab-viewers-card">
+      <!-- Kim Baktı -->
+      <div class="bento-card" id="lab-viewers-card" style="cursor:pointer;" onclick="if(window.switchPanel) switchPanel('kimbakti');">
         <div class="bento-content">
           <div class="bento-icon navy">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="1" fill="currentColor" opacity="0.3"/></svg>
           </div>
-          <div class="bento-title">Görüntüleyenler</div>
+          <div class="bento-title">Kim Baktı</div>
           <div id="lab-viewers-body">
             <div class="bento-desc" style="color:var(--muted);font-size:12px;">Yükleniyor…</div>
           </div>
@@ -1491,6 +1491,19 @@ if (window.Sentry) {
   </div>
 </main>
 
+<div class="panel" id="panel-kimbakti">
+  <div class="section-header"><div class="section-title">Kim Baktı</div></div>
+  <div class="card" style="margin-bottom:16px;">
+    <div class="card-title" style="display:flex;align-items:center;gap:8px;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+      Profil Görüntülenmeleri
+    </div>
+    <div id="kimbakti-body">
+      <div style="color:var(--muted);font-size:13px;">Yükleniyor…</div>
+    </div>
+  </div>
+</div>
+
 <div class="panel" id="panel-mulakat" style="display:none;">
   <div class="section-header"><div class="section-title">İş Görüşmeleri</div></div>
   <div style="padding:40px 0;text-align:center;color:var(--muted);font-size:14px;">Yakında — Mülakat süreçlerin burada görünecek.</div>
@@ -2312,11 +2325,30 @@ function reapplyDynamicFields() {
     return el;
   }
 
+  // Update the lab bento card with a compact summary
+  function _updateLabSummary(labBody, stats) {
+    if (!labBody) return;
+    while (labBody.firstChild) labBody.removeChild(labBody.firstChild);
+    if (!stats || stats.total_views === 0) {
+      labBody.appendChild(_makeEl('div', 'font-size:12px;color:var(--muted);', 'Henüz görüntüleme yok'));
+      return;
+    }
+    labBody.appendChild(_makeEl('div', 'font-size:24px;font-weight:800;color:var(--text);font-family:\'DM Mono\',monospace;line-height:1;', String(stats.total_views)));
+    labBody.appendChild(_makeEl('div', 'font-size:11px;color:var(--muted);margin-top:2px;', 'görüntülenme'));
+    if (stats.last_viewed_at) {
+      labBody.appendChild(_makeEl('div', 'font-size:11px;color:var(--muted);margin-top:4px;', 'Son: ' + _relativeTimeTR(stats.last_viewed_at)));
+    }
+    var link = _makeEl('div', 'font-size:11px;color:var(--verm);margin-top:6px;cursor:pointer;font-weight:600;', 'Detayları gör →');
+    link.addEventListener('click', function(e) { e.stopPropagation(); if (window.switchPanel) switchPanel('kimbakti'); });
+    labBody.appendChild(link);
+  }
+
   window.loadViewersCard = async function(candidateId) {
     if (_viewersLoaded || !candidateId) return;
     _viewersLoaded = true;
 
-    var body = document.getElementById('lab-viewers-body');
+    var body = document.getElementById('kimbakti-body') || document.getElementById('lab-viewers-body');
+    var labBody = document.getElementById('lab-viewers-body');
     if (!body) return;
 
     // ── Dev preview override via URL param ──
@@ -2406,6 +2438,7 @@ function reapplyDynamicFields() {
         cta.appendChild(_makeEl('div', 'font-size:11px;color:#fff;line-height:1.4;', 'Hangi şirketlerin incelediğini görmek için Premium\'a geç \u2192'));
         body.appendChild(cta);
       }
+      _updateLabSummary(labBody, stats);
       return;
     }
 
@@ -2430,6 +2463,7 @@ function reapplyDynamicFields() {
       // Empty state
       if (!stats || stats.total_views === 0) {
         body.appendChild(_makeEl('div', 'color:var(--muted);font-size:12px;line-height:1.5;', 'Henüz kimse profilini incelemedi \u2014 profili güçlendir!'));
+        _updateLabSummary(labBody, stats);
         return;
       }
 
@@ -2538,6 +2572,9 @@ function reapplyDynamicFields() {
         cta.appendChild(ctaText);
         body.appendChild(cta);
       }
+
+      // Update lab card with compact summary
+      _updateLabSummary(labBody, stats);
 
     } catch (err) {
       console.warn('[HT] Görüntüleyenler load failed:', err.message);
