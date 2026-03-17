@@ -1493,13 +1493,73 @@ if (window.Sentry) {
 
 <div class="panel" id="panel-kimbakti">
   <div class="section-header"><div class="section-title">Kim Baktı</div></div>
-  <div class="card" style="margin-bottom:16px;">
-    <div class="card-title" style="display:flex;align-items:center;gap:8px;">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-      Profil Görüntülenmeleri
+
+  <!-- Hero stat card -->
+  <div class="card" id="kb-hero" style="margin-bottom:16px;position:relative;overflow:hidden;">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;">
+      <div>
+        <div id="kb-total" style="font-size:48px;font-weight:800;color:var(--text);font-family:'DM Mono',monospace;line-height:1;">—</div>
+        <div style="font-size:13px;color:var(--muted);margin-top:4px;">Profil görüntülenme</div>
+        <div id="kb-trend" style="font-size:12px;margin-top:6px;display:none;"></div>
+      </div>
+      <!-- Mini bar chart (last 7 days) -->
+      <div id="kb-chart" style="display:flex;align-items:flex-end;gap:3px;height:56px;min-width:120px;"></div>
     </div>
-    <div id="kimbakti-body">
-      <div style="color:var(--muted);font-size:13px;">Yükleniyor…</div>
+    <div id="kb-last-viewed" style="font-size:11px;color:var(--muted);margin-top:12px;display:none;"></div>
+  </div>
+
+  <!-- Segment breakdown -->
+  <div class="card" id="kb-segments" style="margin-bottom:16px;display:none;">
+    <div class="card-title">Segment Dağılımı</div>
+    <div id="kb-seg-bars" style="display:flex;flex-direction:column;gap:10px;margin-top:8px;"></div>
+  </div>
+
+  <!-- Company / viewer list -->
+  <div class="card" id="kb-viewers" style="margin-bottom:16px;display:none;">
+    <div class="card-title" style="display:flex;align-items:center;justify-content:space-between;">
+      <span>Kimler İnceledi</span>
+      <span id="kb-viewers-lock" style="display:none;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      </span>
+    </div>
+    <div id="kb-viewer-list" style="display:flex;flex-direction:column;gap:0;margin-top:8px;"></div>
+  </div>
+
+  <!-- Premium CTA (freemium only) -->
+  <div class="card" id="kb-premium-cta" style="display:none;background:var(--navy);border:none;">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+      <div>
+        <div style="font-size:14px;font-weight:700;color:#fff;">Tam listeyi aç</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.7);margin-top:2px;">Hangi şirketlerin profilini incelediğini, pozisyon detaylarını ve trendleri gör.</div>
+      </div>
+    </div>
+    <button type="button" onclick="if(window.switchPanel) switchPanel('ayarlar');" style="margin-top:12px;width:100%;padding:10px;background:var(--verm);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;">Premium'a Geç</button>
+  </div>
+
+  <!-- Conversion stat (premium only) -->
+  <div class="card" id="kb-conversion" style="display:none;margin-bottom:16px;">
+    <div class="card-title">Dönüşüm</div>
+    <div id="kb-conversion-body" style="margin-top:8px;"></div>
+  </div>
+
+  <!-- Empty state -->
+  <div id="kb-empty" style="display:none;text-align:center;padding:60px 20px;">
+    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--border)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:16px;"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+    <div style="font-size:15px;font-weight:600;color:var(--text);margin-bottom:6px;">Henüz görüntüleme yok</div>
+    <div style="font-size:13px;color:var(--muted);line-height:1.5;max-width:320px;margin:0 auto;">Profilini tamamla ve aktif ol — işverenler seni bulsun.</div>
+  </div>
+
+  <!-- Loading skeleton -->
+  <div id="kb-skeleton" style="display:flex;flex-direction:column;gap:12px;">
+    <div class="card" style="padding:24px;">
+      <div style="height:48px;width:80px;background:var(--border);border-radius:8px;animation:pulse 1.5s infinite;"></div>
+      <div style="height:14px;width:160px;background:var(--border);border-radius:6px;margin-top:8px;animation:pulse 1.5s infinite;"></div>
+    </div>
+    <div class="card" style="padding:24px;">
+      <div style="height:14px;width:120px;background:var(--border);border-radius:6px;animation:pulse 1.5s infinite;"></div>
+      <div style="height:24px;width:100%;background:var(--border);border-radius:6px;margin-top:12px;animation:pulse 1.5s infinite;"></div>
+      <div style="height:24px;width:75%;background:var(--border);border-radius:6px;margin-top:8px;animation:pulse 1.5s infinite;"></div>
     </div>
   </div>
 </div>
@@ -2293,7 +2353,7 @@ function reapplyDynamicFields() {
 })();
 
 // ═══════════════════════════════════════════════════
-// GÖRÜNTÜLEYENLER LAB CARD
+// KİM BAKTI — Panel + Lab Card
 // ═══════════════════════════════════════════════════
 (function() {
   var _viewersLoaded = false;
@@ -2343,243 +2403,241 @@ function reapplyDynamicFields() {
     labBody.appendChild(link);
   }
 
+  // ── Render the rich Kim Baktı panel ──
+  function _renderPanel(stats, events, isPremium) {
+    var skeleton = document.getElementById('kb-skeleton');
+    var empty = document.getElementById('kb-empty');
+    var hero = document.getElementById('kb-hero');
+    var segCard = document.getElementById('kb-segments');
+    var viewersCard = document.getElementById('kb-viewers');
+    var ctaCard = document.getElementById('kb-premium-cta');
+    var convCard = document.getElementById('kb-conversion');
+
+    if (skeleton) skeleton.style.display = 'none';
+
+    // Empty state
+    if (!stats || stats.total_views === 0) {
+      if (empty) empty.style.display = 'block';
+      if (hero) hero.style.display = 'none';
+      return;
+    }
+
+    if (empty) empty.style.display = 'none';
+    if (hero) hero.style.display = 'block';
+
+    // Hero total
+    var totalEl = document.getElementById('kb-total');
+    if (totalEl) totalEl.textContent = String(stats.total_views);
+
+    // Last viewed
+    var lastEl = document.getElementById('kb-last-viewed');
+    if (lastEl && stats.last_viewed_at) {
+      lastEl.textContent = 'Son görüntülenme: ' + _relativeTimeTR(stats.last_viewed_at);
+      lastEl.style.display = 'block';
+    }
+
+    // Mini bar chart — group events by day (last 7 days)
+    var chartEl = document.getElementById('kb-chart');
+    if (chartEl && events.length > 0) {
+      var dayBuckets = {};
+      var now = new Date();
+      for (var d = 6; d >= 0; d--) {
+        var dt = new Date(now);
+        dt.setDate(dt.getDate() - d);
+        dayBuckets[dt.toISOString().slice(0, 10)] = 0;
+      }
+      events.forEach(function(ev) {
+        if (ev.viewed_at) {
+          var key = new Date(ev.viewed_at).toISOString().slice(0, 10);
+          if (dayBuckets.hasOwnProperty(key)) dayBuckets[key]++;
+        }
+      });
+      var vals = Object.values(dayBuckets);
+      var maxVal = Math.max.apply(null, vals) || 1;
+      var dayNames = ['Pz', 'Pt', 'Sa', 'Ça', 'Pe', 'Cu', 'Ct'];
+      while (chartEl.firstChild) chartEl.removeChild(chartEl.firstChild);
+      Object.keys(dayBuckets).forEach(function(key) {
+        var v = dayBuckets[key];
+        var h = Math.max(4, Math.round((v / maxVal) * 48));
+        var col = _makeEl('div', 'display:flex;flex-direction:column;align-items:center;gap:2px;');
+        var bar = _makeEl('div', 'width:14px;height:' + h + 'px;background:var(--verm);border-radius:3px;opacity:' + (v > 0 ? '1' : '0.2') + ';transition:height 0.3s ease;');
+        var label = _makeEl('div', 'font-size:9px;color:var(--muted);', dayNames[new Date(key).getDay()]);
+        col.appendChild(bar);
+        col.appendChild(label);
+        chartEl.appendChild(col);
+      });
+    }
+
+    // Segment breakdown
+    var segMap = {};
+    events.forEach(function(ev) {
+      var s = ev.position_seg_snapshot || (ev.companies && ev.companies.segment) || '';
+      if (s) segMap[s] = (segMap[s] || 0) + 1;
+    });
+    var segKeys = Object.keys(segMap);
+    if (segKeys.length > 0 && segCard) {
+      segCard.style.display = 'block';
+      var segBars = document.getElementById('kb-seg-bars');
+      if (segBars) {
+        while (segBars.firstChild) segBars.removeChild(segBars.firstChild);
+        var segTotal = events.length;
+        var segColors = { 'Lüks': 'var(--navy)', 'Premium': 'var(--verm)', 'Fast Fashion': '#2D8C5A', 'Spor': '#3B82F6' };
+        segKeys.sort(function(a, b) { return segMap[b] - segMap[a]; });
+        segKeys.forEach(function(name) {
+          var pct = Math.round((segMap[name] / segTotal) * 100);
+          var row = _makeEl('div', '');
+          var top = _makeEl('div', 'display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;');
+          top.appendChild(_makeEl('span', 'font-size:12px;font-weight:600;color:var(--text);', name));
+          top.appendChild(_makeEl('span', 'font-size:12px;color:var(--muted);font-family:\'DM Mono\',monospace;', pct + '%'));
+          var track = _makeEl('div', 'height:6px;background:var(--border);border-radius:3px;overflow:hidden;');
+          var fill = _makeEl('div', 'height:100%;width:' + pct + '%;background:' + (segColors[name] || 'var(--navy)') + ';border-radius:3px;transition:width 0.5s ease;');
+          track.appendChild(fill);
+          row.appendChild(top);
+          row.appendChild(track);
+          segBars.appendChild(row);
+        });
+      }
+    }
+
+    // Viewer list
+    if (viewersCard && events.length > 0) {
+      viewersCard.style.display = 'block';
+      var listEl = document.getElementById('kb-viewer-list');
+      var lockEl = document.getElementById('kb-viewers-lock');
+      if (listEl) {
+        while (listEl.firstChild) listEl.removeChild(listEl.firstChild);
+        events.forEach(function(ev, idx) {
+          var row = _makeEl('div', 'display:flex;align-items:center;gap:10px;padding:10px 0;' + (idx < events.length - 1 ? 'border-bottom:1px solid var(--border);' : ''));
+
+          // Avatar placeholder
+          var avatar = _makeEl('div', 'width:36px;height:36px;border-radius:50%;background:var(--navy-light,#EEF0F7);display:flex;align-items:center;justify-content:center;flex-shrink:0;');
+          var avatarIcon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+          avatarIcon.setAttribute('width', '16'); avatarIcon.setAttribute('height', '16'); avatarIcon.setAttribute('viewBox', '0 0 24 24');
+          avatarIcon.setAttribute('fill', 'none'); avatarIcon.setAttribute('stroke', 'var(--navy)'); avatarIcon.setAttribute('stroke-width', '2');
+          var aPath1 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+          aPath1.setAttribute('d', 'M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2');
+          var aCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+          aCircle.setAttribute('cx', '12'); aCircle.setAttribute('cy', '7'); aCircle.setAttribute('r', '4');
+          avatarIcon.appendChild(aPath1); avatarIcon.appendChild(aCircle);
+          avatar.appendChild(avatarIcon);
+
+          if (isPremium) {
+            // Show company name + details
+            var info = _makeEl('div', 'flex:1;min-width:0;');
+            var compName = (ev.companies && ev.companies.ad) ? ev.companies.ad : 'Bilinmeyen Şirket';
+            info.appendChild(_makeEl('div', 'font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;', compName));
+            var detail = ev.position_ad_snapshot || '';
+            var segLabel = ev.position_seg_snapshot || (ev.companies && ev.companies.segment) || '';
+            var sub = (detail ? detail : '') + (detail && segLabel ? ' · ' : '') + segLabel;
+            if (sub) info.appendChild(_makeEl('div', 'font-size:11px;color:var(--muted);margin-top:1px;', sub));
+            if (ev.viewed_at) info.appendChild(_makeEl('div', 'font-size:10px;color:var(--muted);margin-top:2px;', _relativeTimeTR(ev.viewed_at)));
+            row.appendChild(avatar);
+            row.appendChild(info);
+          } else {
+            // Blurred — freemium teaser
+            avatar.style.filter = 'blur(4px)';
+            avatar.style.opacity = '0.6';
+            var info = _makeEl('div', 'flex:1;min-width:0;');
+            var blurName = _makeEl('div', 'font-size:13px;font-weight:600;color:var(--text);filter:blur(5px);user-select:none;', '\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588');
+            info.appendChild(blurName);
+            var segLabel = ev.position_seg_snapshot || (ev.companies && ev.companies.segment) || '';
+            if (segLabel) info.appendChild(_makeEl('div', 'font-size:11px;color:var(--muted);margin-top:2px;', segLabel));
+            if (ev.viewed_at) info.appendChild(_makeEl('div', 'font-size:10px;color:var(--muted);margin-top:2px;', _relativeTimeTR(ev.viewed_at)));
+            row.appendChild(avatar);
+            row.appendChild(info);
+            // Lock icon
+            var lock = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            lock.setAttribute('width', '14'); lock.setAttribute('height', '14'); lock.setAttribute('viewBox', '0 0 24 24');
+            lock.setAttribute('fill', 'none'); lock.setAttribute('stroke', 'var(--muted)'); lock.setAttribute('stroke-width', '2');
+            lock.setAttribute('stroke-linecap', 'round'); lock.setAttribute('stroke-linejoin', 'round');
+            lock.style.cssText = 'flex-shrink:0;';
+            var lr = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+            lr.setAttribute('x', '3'); lr.setAttribute('y', '11'); lr.setAttribute('width', '18'); lr.setAttribute('height', '11'); lr.setAttribute('rx', '2'); lr.setAttribute('ry', '2');
+            var lp = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            lp.setAttribute('d', 'M7 11V7a5 5 0 0 1 10 0v4');
+            lock.appendChild(lr); lock.appendChild(lp);
+            row.appendChild(lock);
+          }
+          listEl.appendChild(row);
+        });
+        if (!isPremium && lockEl) lockEl.style.display = 'inline';
+      }
+    }
+
+    // Premium CTA (freemium only)
+    if (ctaCard) ctaCard.style.display = isPremium ? 'none' : 'block';
+
+    // Conversion stat (premium only)
+    if (isPremium && convCard) {
+      convCard.style.display = 'block';
+      var convBody = document.getElementById('kb-conversion-body');
+      if (convBody) {
+        while (convBody.firstChild) convBody.removeChild(convBody.firstChild);
+        // Placeholder — will be real data when messaging analytics exist
+        convBody.appendChild(_makeEl('div', 'font-size:13px;color:var(--text);', 'Profilini görenlerin mesaj gönderme oranı'));
+        convBody.appendChild(_makeEl('div', 'font-size:32px;font-weight:800;color:var(--verm);font-family:\'DM Mono\',monospace;margin-top:4px;', '—'));
+        convBody.appendChild(_makeEl('div', 'font-size:11px;color:var(--muted);margin-top:4px;', 'Mesajlaşma verileri toplandıkça burada görünecek.'));
+      }
+    }
+  }
+
   window.loadViewersCard = async function(candidateId) {
     if (_viewersLoaded || !candidateId) return;
     _viewersLoaded = true;
 
-    var body = document.getElementById('kimbakti-body') || document.getElementById('lab-viewers-body');
     var labBody = document.getElementById('lab-viewers-body');
-    if (!body) return;
 
     // ── Dev preview override via URL param ──
     var _previewMode = new URLSearchParams(window.location.search).get('preview_viewers');
     if (_previewMode === 'freemium' || _previewMode === 'premium') {
-      while (body.firstChild) body.removeChild(body.firstChild);
       var now = new Date();
       var stats, events, isPremium;
       if (_previewMode === 'freemium') {
         stats = { total_views: 7, unique_positions: 3, unique_companies: 4, last_viewed_at: new Date(now - 2 * 86400000).toISOString() };
         events = [
-          { position_ad_snapshot: null, position_seg_snapshot: 'Lüks', companies: null },
-          { position_ad_snapshot: null, position_seg_snapshot: 'Premium', companies: null },
-          { position_ad_snapshot: null, position_seg_snapshot: 'Fast Fashion', companies: null }
+          { viewed_at: new Date(now - 2 * 86400000).toISOString(), position_ad_snapshot: null, position_seg_snapshot: 'Lüks', companies: null },
+          { viewed_at: new Date(now - 3 * 86400000).toISOString(), position_ad_snapshot: null, position_seg_snapshot: 'Premium', companies: null },
+          { viewed_at: new Date(now - 5 * 86400000).toISOString(), position_ad_snapshot: null, position_seg_snapshot: 'Fast Fashion', companies: null }
         ];
         isPremium = false;
       } else {
         stats = { total_views: 12, unique_positions: 3, unique_companies: 3, last_viewed_at: new Date(now - 86400000).toISOString() };
         events = [
-          { position_ad_snapshot: 'Store Manager', position_seg_snapshot: 'Lüks', companies: { ad: 'Zara', segment: 'Fast Fashion' } },
-          { position_ad_snapshot: 'Sales Specialist', position_seg_snapshot: 'Premium', companies: { ad: 'Vakko', segment: 'Lüks' } },
-          { position_ad_snapshot: 'Store Manager', position_seg_snapshot: 'Lüks', companies: { ad: 'Zara', segment: 'Fast Fashion' } }
+          { viewed_at: new Date(now - 86400000).toISOString(), position_ad_snapshot: 'Store Manager', position_seg_snapshot: 'Lüks', companies: { ad: 'Zara', segment: 'Fast Fashion' } },
+          { viewed_at: new Date(now - 2 * 86400000).toISOString(), position_ad_snapshot: 'Sales Specialist', position_seg_snapshot: 'Premium', companies: { ad: 'Vakko', segment: 'Lüks' } },
+          { viewed_at: new Date(now - 3 * 86400000).toISOString(), position_ad_snapshot: 'Store Manager', position_seg_snapshot: 'Lüks', companies: { ad: 'Zara', segment: 'Fast Fashion' } }
         ];
         isPremium = true;
       }
-      // Fall through to shared rendering below (duplicated inline to use same code path)
-      body.appendChild(_makeEl('div', 'font-size:28px;font-weight:800;color:var(--text);font-family:\'DM Mono\',monospace;line-height:1;', String(stats.total_views)));
-      body.appendChild(_makeEl('div', 'font-size:12px;color:var(--muted);margin-bottom:8px;', 'toplam görüntülenme'));
-
-      if (isPremium) {
-        if (stats.unique_positions > 0) {
-          var posMap = {};
-          events.forEach(function(ev) { if (ev.position_ad_snapshot) posMap[ev.position_ad_snapshot] = (posMap[ev.position_ad_snapshot] || 0) + 1; });
-          Object.keys(posMap).forEach(function(pName) {
-            body.appendChild(_makeEl('div', 'font-size:12px;color:var(--text);margin-bottom:4px;', pName + ' aramasında ' + posMap[pName] + ' kez incelendi'));
-          });
-        }
-        var compMap = {};
-        events.forEach(function(ev) {
-          if (ev.companies && ev.companies.ad) {
-            var key = ev.companies.ad;
-            if (!compMap[key]) compMap[key] = { count: 0, segment: ev.companies.segment || ev.position_seg_snapshot || '' };
-            compMap[key].count++;
-          }
-        });
-        var compKeys = Object.keys(compMap);
-        if (compKeys.length > 0) {
-          var compWrap = _makeEl('div', 'margin-top:6px;display:flex;flex-direction:column;gap:3px;');
-          compKeys.forEach(function(name) {
-            var c = compMap[name];
-            compWrap.appendChild(_makeEl('div', 'font-size:12px;color:var(--text);', name + (c.segment ? ' · ' + c.segment : '') + ' · ' + c.count + ' kez'));
-          });
-          body.appendChild(compWrap);
-        }
-        // Mock conversion rate
-        body.appendChild(_makeEl('div', 'font-size:12px;color:var(--verm);font-weight:600;margin-top:8px;', 'Görenlerin %30\'u mesaj attı'));
-        if (stats.last_viewed_at) {
-          body.appendChild(_makeEl('div', 'font-size:11px;color:var(--muted);margin-top:8px;', 'Son görüntülenme: ' + _relativeTimeTR(stats.last_viewed_at)));
-        }
-      } else {
-        if (stats.unique_positions > 0) body.appendChild(_makeEl('div', 'font-size:12px;color:var(--text);margin-bottom:6px;', stats.unique_positions + ' farklı rol için incelendi'));
-        if (stats.unique_companies > 0) body.appendChild(_makeEl('div', 'font-size:12px;color:var(--text);margin-bottom:6px;', stats.unique_companies + ' farklı şirket profilini inceledi'));
-        var teaserCount = Math.min(events.length, 3);
-        if (teaserCount > 0) {
-          var teaserWrap = _makeEl('div', 'margin-top:4px;display:flex;flex-direction:column;gap:4px;');
-          for (var i = 0; i < teaserCount; i++) {
-            var seg = events[i].position_seg_snapshot || (events[i].companies && events[i].companies.segment) || '';
-            var tRow = _makeEl('div', 'font-size:12px;display:flex;align-items:center;gap:6px;');
-            tRow.appendChild(_makeEl('span', 'filter:blur(5px);user-select:none;color:var(--text);', '\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588'));
-            if (seg) tRow.appendChild(_makeEl('span', 'color:var(--muted);font-size:11px;', '· ' + seg));
-            var lockSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-            lockSvg.setAttribute('width', '12'); lockSvg.setAttribute('height', '12'); lockSvg.setAttribute('viewBox', '0 0 24 24');
-            lockSvg.setAttribute('fill', 'none'); lockSvg.setAttribute('stroke', 'var(--muted)'); lockSvg.setAttribute('stroke-width', '2');
-            lockSvg.setAttribute('stroke-linecap', 'round'); lockSvg.setAttribute('stroke-linejoin', 'round');
-            var rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-            rect.setAttribute('x', '3'); rect.setAttribute('y', '11'); rect.setAttribute('width', '18'); rect.setAttribute('height', '11'); rect.setAttribute('rx', '2'); rect.setAttribute('ry', '2');
-            var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-            path.setAttribute('d', 'M7 11V7a5 5 0 0 1 10 0v4');
-            lockSvg.appendChild(rect); lockSvg.appendChild(path); tRow.appendChild(lockSvg);
-            teaserWrap.appendChild(tRow);
-          }
-          body.appendChild(teaserWrap);
-        }
-        if (stats.last_viewed_at) body.appendChild(_makeEl('div', 'font-size:11px;color:var(--muted);margin-top:6px;', 'Son: ' + _relativeTimeTR(stats.last_viewed_at)));
-        var cta = _makeEl('div', 'margin-top:10px;padding:8px 10px;background:var(--navy);border-radius:8px;cursor:pointer;');
-        cta.addEventListener('click', function() { switchPanel('ayarlar'); });
-        cta.appendChild(_makeEl('div', 'font-size:11px;color:#fff;line-height:1.4;', 'Hangi şirketlerin incelediğini görmek için Premium\'a geç \u2192'));
-        body.appendChild(cta);
-      }
+      _renderPanel(stats, events, isPremium);
       _updateLabSummary(labBody, stats);
       return;
     }
 
-    // Show skeleton
-    while (body.firstChild) body.removeChild(body.firstChild);
-    var skelWrap = _makeEl('div', 'display:flex;flex-direction:column;gap:6px;');
-    ['60%','80%','50%'].forEach(function(w) {
-      skelWrap.appendChild(_makeEl('div', 'height:14px;width:' + w + ';background:var(--border);border-radius:6px;animation:pulse 1.5s infinite;'));
-    });
-    body.appendChild(skelWrap);
-
+    // Skeleton is already in HTML, just fetch data
     try {
       var statsP = supabase.from('candidate_view_stats').select('*').eq('candidate_id', candidateId).maybeSingle();
-      var eventsP = supabase.from('profile_view_events').select('viewed_at, position_ad_snapshot, position_seg_snapshot, company_id, companies(ad, segment)').eq('candidate_id', candidateId).order('viewed_at', { ascending: false }).limit(5);
+      var eventsP = supabase.from('profile_view_events').select('viewed_at, position_ad_snapshot, position_seg_snapshot, company_id, companies(ad, segment)').eq('candidate_id', candidateId).order('viewed_at', { ascending: false }).limit(20);
 
       var results = await Promise.all([statsP, eventsP]);
       var stats = results[0].data;
       var events = (results[1].data || []);
 
-      while (body.firstChild) body.removeChild(body.firstChild);
-
-      // Empty state
-      if (!stats || stats.total_views === 0) {
-        body.appendChild(_makeEl('div', 'color:var(--muted);font-size:12px;line-height:1.5;', 'Henüz kimse profilini incelemedi \u2014 profili güçlendir!'));
-        _updateLabSummary(labBody, stats);
-        return;
-      }
-
       // Check premium status (placeholder — all users are freemium for now)
       var isPremium = false;
 
-      // Total views — always visible
-      body.appendChild(_makeEl('div', 'font-size:28px;font-weight:800;color:var(--text);font-family:\'DM Mono\',monospace;line-height:1;', String(stats.total_views)));
-      body.appendChild(_makeEl('div', 'font-size:12px;color:var(--muted);margin-bottom:8px;', 'toplam görüntülenme'));
-
-      if (isPremium) {
-        // ── PREMIUM VIEW ──
-        if (stats.unique_positions > 0) {
-          var posMap = {};
-          events.forEach(function(ev) {
-            if (ev.position_ad_snapshot) {
-              posMap[ev.position_ad_snapshot] = (posMap[ev.position_ad_snapshot] || 0) + 1;
-            }
-          });
-          Object.keys(posMap).forEach(function(pName) {
-            var row = _makeEl('div', 'font-size:12px;color:var(--text);margin-bottom:4px;');
-            row.textContent = pName + ' aramasında ' + posMap[pName] + ' kez incelendi';
-            body.appendChild(row);
-          });
-        }
-
-        // Company breakdown
-        var compMap = {};
-        events.forEach(function(ev) {
-          if (ev.companies && ev.companies.ad) {
-            var key = ev.companies.ad;
-            if (!compMap[key]) compMap[key] = { count: 0, segment: ev.companies.segment || ev.position_seg_snapshot || '' };
-            compMap[key].count++;
-          }
-        });
-        var compKeys = Object.keys(compMap);
-        if (compKeys.length > 0) {
-          var compWrap = _makeEl('div', 'margin-top:6px;display:flex;flex-direction:column;gap:3px;');
-          compKeys.forEach(function(name) {
-            var c = compMap[name];
-            var row = _makeEl('div', 'font-size:12px;color:var(--text);');
-            row.textContent = name + (c.segment ? ' · ' + c.segment : '') + ' · ' + c.count + ' kez';
-            compWrap.appendChild(row);
-          });
-          body.appendChild(compWrap);
-        }
-
-        // Last viewed
-        if (stats.last_viewed_at) {
-          body.appendChild(_makeEl('div', 'font-size:11px;color:var(--muted);margin-top:8px;', 'Son görüntülenme: ' + _relativeTimeTR(stats.last_viewed_at)));
-        }
-
-      } else {
-        // ── FREEMIUM VIEW ──
-        if (stats.unique_positions > 0) {
-          body.appendChild(_makeEl('div', 'font-size:12px;color:var(--text);margin-bottom:6px;', stats.unique_positions + ' farklı rol için incelendi'));
-        }
-
-        if (stats.unique_companies > 0) {
-          body.appendChild(_makeEl('div', 'font-size:12px;color:var(--text);margin-bottom:6px;', stats.unique_companies + ' farklı şirket profilini inceledi'));
-        }
-
-        // Blurred company rows (teaser)
-        var teaserCount = Math.min(events.length, 3);
-        if (teaserCount > 0) {
-          var teaserWrap = _makeEl('div', 'margin-top:4px;display:flex;flex-direction:column;gap:4px;');
-          for (var i = 0; i < teaserCount; i++) {
-            var seg = events[i].position_seg_snapshot || (events[i].companies && events[i].companies.segment) || '';
-            var tRow = _makeEl('div', 'font-size:12px;display:flex;align-items:center;gap:6px;');
-            var blur = _makeEl('span', 'filter:blur(5px);user-select:none;color:var(--text);', '\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588');
-            tRow.appendChild(blur);
-            if (seg) {
-              var segSpan = _makeEl('span', 'color:var(--muted);font-size:11px;', '· ' + seg);
-              tRow.appendChild(segSpan);
-            }
-            var lockSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-            lockSvg.setAttribute('width', '12');
-            lockSvg.setAttribute('height', '12');
-            lockSvg.setAttribute('viewBox', '0 0 24 24');
-            lockSvg.setAttribute('fill', 'none');
-            lockSvg.setAttribute('stroke', 'var(--muted)');
-            lockSvg.setAttribute('stroke-width', '2');
-            lockSvg.setAttribute('stroke-linecap', 'round');
-            lockSvg.setAttribute('stroke-linejoin', 'round');
-            var rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-            rect.setAttribute('x', '3'); rect.setAttribute('y', '11'); rect.setAttribute('width', '18'); rect.setAttribute('height', '11'); rect.setAttribute('rx', '2'); rect.setAttribute('ry', '2');
-            var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-            path.setAttribute('d', 'M7 11V7a5 5 0 0 1 10 0v4');
-            lockSvg.appendChild(rect);
-            lockSvg.appendChild(path);
-            tRow.appendChild(lockSvg);
-            teaserWrap.appendChild(tRow);
-          }
-          body.appendChild(teaserWrap);
-        }
-
-        // Last viewed (visible in freemium)
-        if (stats.last_viewed_at) {
-          body.appendChild(_makeEl('div', 'font-size:11px;color:var(--muted);margin-top:6px;', 'Son: ' + _relativeTimeTR(stats.last_viewed_at)));
-        }
-
-        // Premium CTA
-        var cta = _makeEl('div', 'margin-top:10px;padding:8px 10px;background:var(--navy);border-radius:8px;cursor:pointer;');
-        cta.addEventListener('click', function() { switchPanel('ayarlar'); });
-        var ctaText = _makeEl('div', 'font-size:11px;color:#fff;line-height:1.4;', 'Hangi şirketlerin incelediğini görmek için Premium\'a geç \u2192');
-        cta.appendChild(ctaText);
-        body.appendChild(cta);
-      }
-
-      // Update lab card with compact summary
+      _renderPanel(stats, events, isPremium);
       _updateLabSummary(labBody, stats);
 
     } catch (err) {
-      console.warn('[HT] Görüntüleyenler load failed:', err.message);
-      while (body.firstChild) body.removeChild(body.firstChild);
-      body.appendChild(_makeEl('div', 'color:var(--muted);font-size:12px;', 'Veriler yüklenemedi.'));
+      console.warn('[HT] Kim Baktı load failed:', err.message);
+      var skeleton = document.getElementById('kb-skeleton');
+      if (skeleton) skeleton.style.display = 'none';
+      var empty = document.getElementById('kb-empty');
+      if (empty) {
+        empty.style.display = 'block';
+        empty.querySelector('div:last-child').textContent = 'Veriler yüklenemedi.';
+      }
     }
   };
 })();
