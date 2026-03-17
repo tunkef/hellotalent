@@ -1437,13 +1437,8 @@ html[data-theme="dark"] .field-req{color:#F87171;}
 .bento-card:nth-child(6){animation-delay:0.2s;}
 .bento-card:nth-child(7){animation-delay:0.24s;}
 
-/* ── Laboratuvar section ── */
-.lab-section{margin-top:32px;}
-.lab-header{display:flex;align-items:center;gap:8px;margin-bottom:14px;padding-left:2px;}
-.lab-icon{font-size:18px;}
-.lab-title{font-family:'Bricolage Grotesque',sans-serif;font-size:15px;font-weight:700;color:var(--text-primary);}
-.lab-desc{font-size:12px;color:var(--text-muted);margin-left:4px;}
-.lab-grid .bento-card.locked{opacity:0.5;}
+/* ── Locked (upcoming) cards ── */
+.bento-card.locked{opacity:0.5;}
 
 /* ══════════════════════════════════════════════
    PROFIL MERKEZI — card-based bento design
