@@ -1,7 +1,55 @@
 # hellotalent.ai — Technical Handoff Document
-> Son güncelleme: 17 Mart 2026 (Session 2 — Header Modernization)
+> Son güncelleme: 18 Mart 2026 (Session 3 — Yetkinlik İçerik Sprint)
 > Bu doküman, projenin mevcut durumunu, tamamlanan işleri ve kalan backlog'u kapsar.
 > Yeni bir chat/session başlatırken bu dosyayı referans olarak kullanın.
+
+
+---
+
+## 📋 Session 3 Özeti — 18 Mart 2026
+
+### Tamamlanan İşler
+
+**1. Migration 041 — save_candidate_profile target_roles null safety**
+- `candidate_target_roles` INSERT'e WHERE filtresi eklendi: `rol_ailesi` ve `rol_unvani` NULL veya boş olduğunda INSERT atlanıyor
+- "Henüz iş deneyimim yok" seçeneği artık hata vermiyor
+- Supabase SQL Editor'a direkt uygulandı ✅
+
+**2. Yetkinlik Listesi Finalizasyonu**
+- Tier A (19) + Tier B (7) + Tier C (3) = **29 yetkinlik** onaylandı
+- Tier C: Cesaret + Karmaşıklık Yönetimi → Bölge Müdürü ve üzeri
+- Tier C: Uyum Sağlama → Giriş / Orta / Orta-Üst
+- KF FYI_ENGLISH.pdf'den 29 yetkinliğin tamamı extract edildi (130,000 char)
+
+**3. KF Kalitesinde Türkçe İçerik Üretimi — 29 Yetkinlik**
+Her yetkinlik için tam yapı yazıldı:
+- Tanım (1 cümle)
+- Neden kritik (retail bağlamlı, derin paragraf)  
+- Yetkin (4-5 davranış maddesi)
+- Az Yetkin (4-5 davranış maddesi)
+- Çok Yetenekli (3 madde)
+- Aşırı Kullanım (2-3 uyarı)
+- Retail örneği (sahadan somut senaryo)
+- Mülakat hazırlık sorusu
+
+Toplam: ~25,000 Türkçe kelime, Google'da bulunamayacak kalitede orijinal içerik.
+
+**4. mockups/yetkinlikler.html v5 — Canlıya Alındı**
+- 29 yetkinlik ANCHORS objesi HTML'e entegre edildi
+- 80K → 130K byte (içerik ağırlığı)
+- Syntax bug fix: `P&L'ini` apostrofu JavaScript string'i kırıyordu → düzeltildi
+- Cloudflare cache purge yapıldı (Custom Purge → URL)
+- **Canlı ve çalışıyor:** https://hellotalent.ai/mockups/yetkinlikler.html
+
+### Sonraki Adımlar (Yarın)
+- [ ] `profil-core.js` → `RETAIL_COMPETENCY_MAP` constant (29 yetkinlik + rol eşleşmeleri)
+- [ ] Migration 042 → `competency_definitions`, `role_competency_map`, `candidate_competencies` tabloları
+- [ ] `profil.html` → `panel-yetkinlik` panel implementasyonu (mockup'tan gerçeğe)
+- [ ] Freemium gate → `subscription_plan` check
+- [ ] Pending Cursor prompts: header+sidebar mockup implementasyonu, preview drawer, Sentry race condition fix
+
+---
+
 
 ---
 
