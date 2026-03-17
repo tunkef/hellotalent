@@ -1116,14 +1116,8 @@ html[data-theme="dark"] .bento-card.premium {
 /* Date block within experience card — aligned with field rows */
 .exp-date-block{
   margin-top:14px;
-  padding:14px;
-  border:1px solid var(--border-subtle);
-  border-radius:14px;
-  background:rgba(30,45,94,0.03);
 }
-html[data-theme="dark"] .exp-date-block{
-  background:rgba(247,246,244,0.04);
-}
+html[data-theme="dark"] .exp-date-block{}
 .exp-date-block .exp-date-row{margin:0;}
 .exp-date-row + .cb-wrap{margin-top:10px;}
 .cb-wrap + .exp-date-row{margin-top:10px;}
