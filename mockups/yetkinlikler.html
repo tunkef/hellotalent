@@ -3,13 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Yetkinliklerim — Mockup</title>
+<title>Yetkinliklerim — Mockup v3</title>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{--verm:#C94E28;--navy:#1E2D5E;--bg:#F7F6F4;--border:#E5E3DF;--muted:#6B7280;--text:#111111}
 body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);min-height:100vh;padding:24px 16px}
 .wrap{max-width:900px;margin:0 auto}
+
+/* HEADER */
 .yk-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:10px}
 .yk-title{font-family:'Bricolage Grotesque',sans-serif;font-size:22px;font-weight:700;color:var(--navy)}
 .yk-sub{font-size:13px;color:var(--muted);margin-top:3px}
@@ -18,7 +20,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);min-height:
 .yk-tier-btn.active{background:var(--navy);color:#fff}
 .yk-tier-btn:not(.active){background:transparent;color:var(--muted)}
 
-/* SEARCH AREA */
+/* SEARCH */
 .search-section{background:#fff;border:1.5px solid var(--border);border-radius:16px;padding:20px;margin-bottom:24px}
 .search-top{display:flex;align-items:center;gap:8px;margin-bottom:12px}
 .search-title{font-family:'Bricolage Grotesque',sans-serif;font-size:15px;font-weight:600;color:var(--navy)}
@@ -56,7 +58,6 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);min-height:
 .fh-btn-secondary{padding:9px 20px;background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.2);border-radius:10px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:background .2s}
 .fh-btn-secondary:hover{background:rgba(255,255,255,.15)}
 .fh-stats{display:flex;gap:20px;margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,.1)}
-.fh-stat{text-align:left}
 .fh-stat-num{font-family:'DM Mono',monospace;font-size:18px;font-weight:500;color:#fff}
 .fh-stat-label{font-size:11px;color:rgba(255,255,255,.5);margin-top:1px}
 
@@ -68,7 +69,6 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);min-height:
 .stat-label{font-size:11px;opacity:.6;margin-top:2px}
 .stat-strong .stat-num{color:#4ADE80}
 .stat-growing .stat-num{color:#FCD34D}
-.stat-unknown .stat-num{color:#94A3B8}
 .progress-track{height:5px;background:rgba(255,255,255,.2);border-radius:3px;overflow:hidden;width:220px;margin-top:10px}
 .progress-fill{height:100%;background:#fff;border-radius:3px;transition:width .4s ease}
 
@@ -81,30 +81,85 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);min-height:
 
 /* CARDS */
 .comp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(268px,1fr));gap:12px;margin-bottom:20px}
-.comp-card{background:#fff;border:1.5px solid var(--border);border-radius:14px;padding:16px;transition:border-color .2s;position:relative;overflow:hidden}
-.comp-card:hover{border-color:#C4B5B0}
+.comp-card{background:#fff;border:1.5px solid var(--border);border-radius:14px;padding:16px;transition:all .2s;position:relative;overflow:hidden;cursor:pointer}
+.comp-card:hover{border-color:#C4B5B0;transform:translateY(-1px);box-shadow:0 4px 16px rgba(0,0,0,.06)}
 .comp-card.rated-strong{border-color:#15803D;background:#F0FDF4}
 .comp-card.rated-growing{border-color:#B45309;background:#FFFBEB}
-.comp-card.rated-unknown{border-color:#6B7280;background:#F9FAFB}
+.comp-card.unlocked-glow{animation:unlockPulse .5s ease-out}
+@keyframes unlockPulse{0%{box-shadow:0 0 0 0 rgba(201,78,40,.3)}100%{box-shadow:0 0 0 8px rgba(201,78,40,0)}}
 .lock-overlay{position:absolute;inset:0;background:rgba(247,246,244,.88);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;border-radius:12px;backdrop-filter:blur(3px)}
 .lock-icon{width:32px;height:32px;background:var(--navy);border-radius:50%;display:flex;align-items:center;justify-content:center}
 .lock-label{font-size:11px;font-weight:600;color:var(--navy);text-align:center;line-height:1.4}
-.comp-top{display:flex;align-items:flex-start;gap:10px;margin-bottom:10px}
+.comp-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px}
+.comp-top-left{display:flex;align-items:flex-start;gap:10px}
 .comp-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .comp-icon svg{width:18px;height:18px}
 .comp-name{font-family:'Bricolage Grotesque',sans-serif;font-size:14px;font-weight:600;color:var(--navy);line-height:1.3}
 .comp-kf{font-size:10px;color:var(--muted);font-family:'DM Mono',monospace;margin-top:2px}
+.info-btn{width:24px;height:24px;border-radius:50%;border:1.5px solid var(--border);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;color:var(--muted)}
+.info-btn:hover{border-color:var(--navy);color:var(--navy);background:#EEF2FF}
 .comp-desc{font-size:12px;color:var(--muted);line-height:1.5;margin-bottom:12px}
 .comp-weight{display:inline-block;font-size:10px;font-weight:600;padding:2px 9px;border-radius:10px;margin-bottom:10px}
 .comp-weight.core{background:#FEF3F0;color:var(--verm)}
 .comp-weight.important{background:#EEF2FF;color:var(--navy)}
 .comp-weight.nice{background:#F3F4F6;color:var(--muted)}
+
+/* 2-BUTTON RATING */
 .rating-btns{display:flex;gap:6px}
-.rating-btn{flex:1;padding:7px 4px;border-radius:8px;border:1.5px solid var(--border);background:#fff;font-size:11px;font-weight:600;cursor:pointer;transition:all .15s;font-family:'Plus Jakarta Sans',sans-serif;color:var(--muted)}
+.rating-btn{flex:1;padding:8px 4px;border-radius:9px;border:1.5px solid var(--border);background:#fff;font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;font-family:'Plus Jakarta Sans',sans-serif;color:var(--muted);display:flex;align-items:center;justify-content:center;gap:5px}
 .rating-btn:hover{border-color:#C4B5B0}
 .rating-btn.strong.active{background:#DCFCE7;border-color:#15803D;color:#15803D}
 .rating-btn.growing.active{background:#FEF3C7;border-color:#B45309;color:#B45309}
-.rating-btn.unknown.active{background:#F1F5F9;border-color:#475569;color:#475569}
+.rating-badge{display:none}
+.comp-card.rated-strong .rating-badge.strong-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;color:#15803D;background:#DCFCE7;border-radius:8px;padding:2px 8px;margin-bottom:8px}
+.comp-card.rated-growing .rating-badge.growing-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;color:#B45309;background:#FEF3C7;border-radius:8px;padding:2px 8px;margin-bottom:8px}
+
+/* PROGRESS UNLOCK */
+.unlock-progress{background:#fff;border:1.5px solid var(--border);border-radius:14px;padding:14px 18px;margin-bottom:16px;display:flex;align-items:center;gap:14px}
+.up-track{flex:1;height:8px;background:var(--bg);border-radius:4px;overflow:hidden}
+.up-fill{height:100%;background:linear-gradient(90deg,var(--verm),#E8693E);border-radius:4px;transition:width .5s ease}
+.up-label{font-size:12px;color:var(--muted);white-space:nowrap}
+.up-count{font-family:'DM Mono',monospace;font-size:13px;font-weight:500;color:var(--navy)}
+
+/* RIGHT DRAWER */
+.drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:900;opacity:0;pointer-events:none;transition:opacity .25s;backdrop-filter:blur(2px)}
+.drawer-overlay.open{opacity:1;pointer-events:all}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:420px;max-width:95vw;background:#fff;z-index:901;transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);overflow-y:auto;box-shadow:-8px 0 40px rgba(0,0,0,.12)}
+.drawer.open{transform:translateX(0)}
+.drawer-header{padding:20px 24px 16px;border-bottom:1px solid var(--border);position:sticky;top:0;background:#fff;z-index:2;display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.drawer-header-left{flex:1}
+.drawer-comp-name{font-family:'Bricolage Grotesque',sans-serif;font-size:18px;font-weight:700;color:var(--navy);line-height:1.2}
+.drawer-comp-kf{font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;margin-top:3px}
+.drawer-close{width:32px;height:32px;border-radius:50%;border:1.5px solid var(--border);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;font-size:16px;color:var(--muted)}
+.drawer-close:hover{background:var(--bg);color:var(--text)}
+.drawer-body{padding:20px 24px}
+.drawer-section{margin-bottom:24px}
+.drawer-section-title{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.8px;text-transform:uppercase;margin-bottom:10px}
+.drawer-definition{font-size:14px;color:var(--text);line-height:1.7;padding:14px;background:#F8F7F5;border-radius:10px;border-left:3px solid var(--verm)}
+.anchor-list{display:flex;flex-direction:column;gap:8px}
+.anchor-item{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border-radius:10px;font-size:13px;line-height:1.5}
+.anchor-item.strong-anchor{background:#F0FDF4;color:#14532D}
+.anchor-item.growing-anchor{background:#FFFBEB;color:#78350F}
+.anchor-dot-strong{width:8px;height:8px;border-radius:50%;background:#15803D;flex-shrink:0;margin-top:5px}
+.anchor-dot-growing{width:8px;height:8px;border-radius:50%;background:#B45309;flex-shrink:0;margin-top:5px;border:2px solid #B45309;background:transparent}
+.drawer-divider{height:1px;background:var(--border);margin:20px 0}
+.drawer-rating-section{background:var(--bg);border-radius:12px;padding:16px}
+.drawer-rating-title{font-size:13px;font-weight:600;color:var(--navy);margin-bottom:4px}
+.drawer-rating-sub{font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.5}
+.drawer-rating-btns{display:flex;gap:8px}
+.drawer-rating-btn{flex:1;padding:11px 8px;border-radius:10px;border:1.5px solid var(--border);background:#fff;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;font-family:'Plus Jakarta Sans',sans-serif;color:var(--muted);text-align:center}
+.drawer-rating-btn:hover{border-color:#C4B5B0}
+.drawer-rating-btn.strong.active{background:#DCFCE7;border-color:#15803D;color:#15803D}
+.drawer-rating-btn.growing.active{background:#FEF3C7;border-color:#B45309;color:#B45309}
+.drawer-cta{margin-top:16px;padding:12px 16px;background:var(--navy);border-radius:10px;color:#fff;font-size:12px;line-height:1.5;cursor:pointer;border:none;width:100%;text-align:left;font-family:'Plus Jakarta Sans',sans-serif}
+.drawer-cta span{display:block;font-weight:600;font-size:13px;margin-bottom:2px}
+.drawer-cta-sub{opacity:.65;font-size:12px}
+.drawer-lock-notice{background:#FEF3F0;border:1px solid #F9C3B3;border-radius:10px;padding:14px;text-align:center}
+.drawer-lock-notice-title{font-size:13px;font-weight:600;color:var(--verm);margin-bottom:4px}
+.drawer-lock-notice-sub{font-size:12px;color:#9A3C1E;line-height:1.5}
+.drawer-lock-btn{margin-top:10px;width:100%;padding:9px;background:var(--verm);color:#fff;border:none;border-radius:8px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer}
+
+/* BOTTOM CARDS */
 .upgrade-cta{background:var(--verm);border:none;border-radius:10px;padding:10px 20px;color:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:opacity .2s;white-space:nowrap}
 .upgrade-cta:hover{opacity:.9}
 .next-card{background:#fff;border:1.5px solid var(--navy);border-radius:14px;padding:18px 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
@@ -126,14 +181,13 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);min-height:
     </div>
   </div>
 
-  <!-- SEARCH SECTION -->
   <div class="search-section">
     <div class="search-top">
       <div class="search-title">Pozisyon Ara</div>
-      <span class="search-badge">RETAIL YETKİNLİK REHBER</span>
+      <span class="search-badge">RETAİL YETKİNLİK REHBERİ</span>
     </div>
     <div class="search-bar">
-      <input class="search-input" id="searchInput" placeholder="Pozisyon ara... örn: Satış Danışmanı, Mağaza Müdürü, VM" oninput="onSearchInput(this.value)" onkeydown="if(event.key==='Enter')doSearch()">
+      <input class="search-input" id="searchInput" placeholder="Pozisyon ara... Satış Danışmanı, Mağaza Müdürü, VM..." oninput="onSearchInput(this.value)" onkeydown="if(event.key==='Enter')doSearch()">
       <button class="search-btn" onclick="doSearch()">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
         Ara
@@ -146,27 +200,38 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);min-height:
       <span class="hint-chip" onclick="quickSearch('Mağaza Müdürü')">Mağaza Müdürü</span>
       <span class="hint-chip" onclick="quickSearch('Bölge Müdürü')">Bölge Müdürü</span>
       <span class="hint-chip" onclick="quickSearch('Visual Merchandiser')">Visual Merchandiser</span>
-      <span class="hint-chip" onclick="quickSearch('Eğitim Uzmanı')">Eğitim Uzmanı</span>
     </div>
     <div class="search-result" id="searchResult"></div>
   </div>
 
   <div id="summaryWrap"></div>
-
   <div id="roleSelectorWrap"></div>
-
-  <div class="section-label" id="gridLabel">Yetkinlik değerlendirmesi</div>
+  <div id="progressWrap"></div>
+  <div class="section-label">Yetkinlik kartları — <span style="font-weight:400;text-transform:none;font-size:11px;color:var(--muted)">detay için kartlara tıkla</span></div>
   <div class="comp-grid" id="compGrid"></div>
   <div id="bottomCard"></div>
+</div>
+
+<!-- RIGHT DRAWER -->
+<div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
+<div class="drawer" id="drawer">
+  <div class="drawer-header">
+    <div class="drawer-header-left">
+      <div class="drawer-comp-name" id="drawerName">—</div>
+      <div class="drawer-comp-kf" id="drawerKf">—</div>
+    </div>
+    <button class="drawer-close" onclick="closeDrawer()">✕</button>
+  </div>
+  <div class="drawer-body" id="drawerBody"></div>
 </div>
 
 <script>
 const ROLES={
   'Kasiyer':{level:'Giriş',comps:[
-    {code:'cf',name:'Müşteri Odaklılık',kf:'Customer Focus',desc:'Her müşteriyle ilgili, güler yüzlü ve çözüm odaklı etkileşim kurar.',weight:'core',icon:'eye'},
-    {code:'it',name:'Güven Oluşturma',kf:'Instills Trust',desc:'Kasa işlemlerinde dürüstlük ve tutarlılık ile güven inşa eder.',weight:'core',icon:'shield'},
-    {code:'ea',name:'Sorumluluk Alma',kf:'Ensures Accountability',desc:'İşlem hatalarını takip eder, sonuçlarının sorumluluğunu üstlenir.',weight:'core',icon:'check'},
-    {code:'ce',name:'Etkili İletişim',kf:'Communicates Effectively',desc:'Müşteriye ürün, kampanya ve kasa süreçleri hakkında net bilgi verir.',weight:'important',icon:'msg'},
+    {code:'cf',name:'Müşteri Odaklılık',kf:'Customer Focus',desc:'Her müşteriyle güler yüzlü ve çözüm odaklı etkileşim.',weight:'core',icon:'eye'},
+    {code:'it',name:'Güven Oluşturma',kf:'Instills Trust',desc:'Kasa işlemlerinde dürüstlük ile güven inşa eder.',weight:'core',icon:'shield'},
+    {code:'ea',name:'Sorumluluk Alma',kf:'Ensures Accountability',desc:'Hata takibi ve sonuçların sahiplenilmesi.',weight:'core',icon:'check'},
+    {code:'ce',name:'Etkili İletişim',kf:'Communicates Effectively',desc:'Ürün, kampanya ve kasa süreçleri hakkında net bilgi verir.',weight:'important',icon:'msg'},
     {code:'br',name:'Dayanıklılık',kf:'Being Resilient',desc:'Yoğun saatlerde stres altında sakin ve odaklı kalır.',weight:'important',icon:'bolt'},
   ]},
   'Satış Danışmanı':{level:'Giriş',comps:[
@@ -175,33 +240,6 @@ const ROLES={
     {code:'it',name:'Güven Oluşturma',kf:'Instills Trust',desc:'Tutarlı davranışlarla müşteri güveni inşa eder.',weight:'core',icon:'shield'},
     {code:'co',name:'Takım Çalışması',kf:'Collaborates',desc:'Mağaza ekibiyle ortak hedefler için iş birliği yapar.',weight:'important',icon:'team'},
     {code:'ao',name:'Aksiyona Yönelim',kf:'Action Oriented',desc:'Fırsatları hızla değerlendirir, harekete geçer.',weight:'important',icon:'bolt'},
-  ]},
-  'Kıdemli Satış Danışmanı':{level:'Giriş-Orta',comps:[
-    {code:'cf',name:'Müşteri Odaklılık',kf:'Customer Focus',desc:'Müşteri ihtiyaçlarını önceler, uzun vadeli ilişki kurar.',weight:'core',icon:'eye'},
-    {code:'ce',name:'Etkili İletişim',kf:'Communicates Effectively',desc:'Açık ve ikna edici biçimde bilgi iletir.',weight:'core',icon:'msg'},
-    {code:'it',name:'Güven Oluşturma',kf:'Instills Trust',desc:'Tutarlı davranışlarla müşteri güveni inşa eder.',weight:'core',icon:'shield'},
-    {code:'co',name:'Takım Çalışması',kf:'Collaborates',desc:'Yeni çalışanlara rehberlik eder, ekibi destekler.',weight:'important',icon:'team'},
-    {code:'is',name:'İlişki Yönetimi',kf:'Interpersonal Savvy',desc:'Farklı kişilerle kolayca ilişki kurar.',weight:'important',icon:'heart'},
-    {code:'nl',name:'Hızlı Öğrenme',kf:'Nimble Learning',desc:'Yeni ürün ve kampanyaları hızla öğrenir.',weight:'nice',icon:'bolt'},
-  ]},
-  'Kat Müdürü':{level:'Giriş-Orta',comps:[
-    {code:'cf',name:'Müşteri Odaklılık',kf:'Customer Focus',desc:'Sahada müşteri deneyimini yönetir.',weight:'core',icon:'eye'},
-    {code:'dw',name:'Ekip Yönlendirme',kf:'Directs Work',desc:'Görevleri delege eder, engelleri kaldırır.',weight:'core',icon:'arrow'},
-    {code:'mc',name:'Çatışma Yönetimi',kf:'Manages Conflict',desc:'Ekip içi anlaşmazlıkları sakin ve adil şekilde çözer.',weight:'core',icon:'shield'},
-    {code:'ea',name:'Sorumluluk Alma',kf:'Ensures Accountability',desc:'Ekip için net sorumluluk tanımlar.',weight:'core',icon:'check'},
-    {code:'ao',name:'Aksiyona Yönelim',kf:'Action Oriented',desc:'Hızlı kararlar alır, harekete geçer.',weight:'important',icon:'bolt'},
-    {code:'co',name:'Takım Çalışması',kf:'Collaborates',desc:'Departmanlar arası iş birliğini sağlar.',weight:'important',icon:'team'},
-    {code:'ce',name:'Etkili İletişim',kf:'Communicates Effectively',desc:'Ekiple ve müşteriyle açık iletişim kurar.',weight:'important',icon:'msg'},
-  ]},
-  'Mağaza Müdür Yrd.':{level:'Orta',comps:[
-    {code:'ea',name:'Sorumluluk Alma',kf:'Ensures Accountability',desc:'Müdür yokluğunda tüm sorumluluğu üstlenir.',weight:'core',icon:'check'},
-    {code:'de',name:'Motivasyon & Bağlılık',kf:'Drives Engagement',desc:'Ekip bağlılığını ve performansını artırır.',weight:'core',icon:'heart'},
-    {code:'pa',name:'Planlama & Önceliklendirme',kf:'Plans and Aligns',desc:'Mağaza hedeflerini operasyonla uyumlu planlar.',weight:'core',icon:'chart'},
-    {code:'cf',name:'Müşteri Odaklılık',kf:'Customer Focus',desc:'Müşteri deneyimini her kararın merkezine koyar.',weight:'core',icon:'eye'},
-    {code:'dw',name:'Ekip Yönlendirme',kf:'Directs Work',desc:'Günlük operasyonu yönetir, ekibi koordine eder.',weight:'core',icon:'arrow'},
-    {code:'mc',name:'Çatışma Yönetimi',kf:'Manages Conflict',desc:'Ekip içi gerilimleri yönetir.',weight:'important',icon:'shield'},
-    {code:'co',name:'Takım Çalışması',kf:'Collaborates',desc:'Mağaza içi iş birliğini koordine eder.',weight:'important',icon:'team'},
-    {code:'dr',name:'Sonuç Odaklılık',kf:'Drives Results',desc:'Satış hedeflerine ulaşmak için ekibi motive eder.',weight:'important',icon:'bolt'},
   ]},
   'Mağaza Müdürü':{level:'Üst',comps:[
     {code:'ea',name:'Sorumluluk Alma',kf:'Ensures Accountability',desc:'Kendisi ve ekibi için net sorumluluk tanımlar.',weight:'core',icon:'check'},
@@ -214,21 +252,6 @@ const ROLES={
     {code:'fa',name:'Finansal Okuryazarlık',kf:'Financial Acumen',desc:'Mağaza P&L\'ini yönetir, kârlılığı artırır.',weight:'important',icon:'chart'},
     {code:'de',name:'Motivasyon & Bağlılık',kf:'Drives Engagement',desc:'Yüksek performans için ilham veren ortam yaratır.',weight:'nice',icon:'heart'},
   ]},
-  'Visual Merchandiser':{level:'Giriş-Orta',comps:[
-    {code:'ci',name:'Yenilik & Yaratıcılık',kf:'Cultivates Innovation',desc:'Özgün sergileme konseptleri geliştirir.',weight:'core',icon:'star'},
-    {code:'pa',name:'Planlama & Önceliklendirme',kf:'Plans and Aligns',desc:'Vitrin ve alan değişikliklerini planlı yürütür.',weight:'core',icon:'chart'},
-    {code:'cf',name:'Müşteri Odaklılık',kf:'Customer Focus',desc:'Müşteri yolculuğunu görsel deneyimle destekler.',weight:'core',icon:'eye'},
-    {code:'sa',name:'Uyum Sağlama',kf:'Situational Adaptability',desc:'Koleksiyon ve sezon değişimlerine hızla adapte olur.',weight:'important',icon:'bolt'},
-    {code:'ao',name:'Aksiyona Yönelim',kf:'Action Oriented',desc:'Yeni konseptleri hızla hayata geçirir.',weight:'important',icon:'arrow'},
-  ]},
-  'Eğitim Uzmanı':{level:'Orta',comps:[
-    {code:'dt',name:'Yetenek Geliştirme',kf:'Develops Talent',desc:'Ekip üyelerinin bilgi ve becerilerini geliştirmelerine rehberlik eder.',weight:'core',icon:'star'},
-    {code:'ce',name:'Etkili İletişim',kf:'Communicates Effectively',desc:'Eğitim içeriklerini açık ve ilgi çekici biçimde aktarır.',weight:'core',icon:'msg'},
-    {code:'nl',name:'Hızlı Öğrenme',kf:'Nimble Learning',desc:'Güncel retail trendleri ve ürünleri hızla öğrenir.',weight:'core',icon:'bolt'},
-    {code:'co',name:'Takım Çalışması',kf:'Collaborates',desc:'Farklı mağaza ve departmanlarla koordineli çalışır.',weight:'important',icon:'team'},
-    {code:'de',name:'Motivasyon & Bağlılık',kf:'Drives Engagement',desc:'Katılımcıları öğrenmeye motive eder.',weight:'important',icon:'heart'},
-    {code:'pa',name:'Planlama & Önceliklendirme',kf:'Plans and Aligns',desc:'Eğitim takvimini ve içeriklerini organize eder.',weight:'nice',icon:'chart'},
-  ]},
   'Bölge Müdürü':{level:'Üst',comps:[
     {code:'dr',name:'Sonuç Odaklılık',kf:'Drives Results',desc:'Bölge bazında tutarlı büyüme sağlar.',weight:'core',icon:'bolt'},
     {code:'ea',name:'Sorumluluk Alma',kf:'Ensures Accountability',desc:'Mağaza müdürlerine hesap verebilirlik kültürü kazandırır.',weight:'core',icon:'check'},
@@ -236,119 +259,195 @@ const ROLES={
     {code:'sm',name:'Stratejik Bakış',kf:'Strategic Mindset',desc:'Kısa vadeli operasyonu uzun vadeli stratejiyle dengeler.',weight:'core',icon:'chart'},
     {code:'cf',name:'Müşteri Odaklılık',kf:'Customer Focus',desc:'Müşteri deneyimini bölge standartlarına taşır.',weight:'core',icon:'eye'},
     {code:'bt',name:'Ekip Kurma',kf:'Builds Effective Teams',desc:'Güçlü bölge ekibi inşa eder.',weight:'important',icon:'team'},
-    {code:'pa',name:'Planlama & Önceliklendirme',kf:'Plans and Aligns',desc:'Bölge hedeflerini kaynakla uyumlu planlar.',weight:'important',icon:'arrow'},
+    {code:'pa',name:'Planlama & Önc.',kf:'Plans and Aligns',desc:'Bölge hedeflerini kaynakla uyumlu planlar.',weight:'important',icon:'arrow'},
     {code:'de',name:'Motivasyon & Bağlılık',kf:'Drives Engagement',desc:'Mağaza ekiplerinin bağlılığını yüksek tutar.',weight:'important',icon:'heart'},
     {code:'co',name:'Takım Çalışması',kf:'Collaborates',desc:'Mağaza müdürleri arası iş birliğini teşvik eder.',weight:'important',icon:'team'},
     {code:'fa',name:'Finansal Okuryazarlık',kf:'Financial Acumen',desc:'Bölge P&L\'ini yönetir.',weight:'nice',icon:'chart'},
   ]},
 };
 
-// Arama için alias mapping
-const SEARCH_ALIASES={
-  'kasiyer':'Kasiyer','cashier':'Kasiyer',
-  'satış danışmanı':'Satış Danışmanı','satiş danışmanı':'Satış Danışmanı','sales associate':'Satış Danışmanı','satış':'Satış Danışmanı',
-  'kıdemli satış':'Kıdemli Satış Danışmanı','senior sales':'Kıdemli Satış Danışmanı',
-  'kat müdürü':'Kat Müdürü','floor lead':'Kat Müdürü','shift manager':'Kat Müdürü','floor manager':'Kat Müdürü',
-  'mağaza müdür yardımcısı':'Mağaza Müdür Yrd.','asm':'Mağaza Müdür Yrd.','assistant store manager':'Mağaza Müdür Yrd.',
-  'mağaza müdürü':'Mağaza Müdürü','store manager':'Mağaza Müdürü',
-  'visual merchandiser':'Visual Merchandiser','vm':'Visual Merchandiser','görsel satış':'Visual Merchandiser','görsel':'Visual Merchandiser',
-  'eğitim uzmanı':'Eğitim Uzmanı','training specialist':'Eğitim Uzmanı','eğitim':'Eğitim Uzmanı',
-  'bölge müdürü':'Bölge Müdürü','area manager':'Bölge Müdürü','bölge':'Bölge Müdürü',
+// Behavioral anchors — her yetkinlik için
+const ANCHORS={
+  cf:{
+    def:'Müşteri ihtiyaçlarını, isteklerini ve beklentilerini öncelikli olarak karşılamak; müşteri odaklı çözümler geliştirmek.',
+    strong:['Müşteri şikayetini fırsata çevirir; çözümle birlikte pozitif bir deneyim yaratır','Müşteriyle konuşmadan ihtiyacını sezebilir, doğru ürünü doğru anda önerir','Müşteriyi bir kez değil, her ziyarette hatırlar ve kişiselleştirir'],
+    growing:['Müşteriyle iletişim kurar ama çözüm önerisi üretmekte zorlanır','Ürün bilgisi yeterli ama bunu müşterinin ihtiyacıyla buluşturamıyor','Şikayetlerde savunmaya geçer, durumu yönetmekte güçlük çeker'],
+    interview:'Bu yetkinliği mülakatta nasıl anlatırsın? "Zorlu bir müşteri durumuyla nasıl başa çıktığını" anlatan gerçek bir örnek hazırla.'
+  },
+  ce:{
+    def:'Fikirlerini ve bilgileri açık, net ve etkili biçimde hem sözlü hem yazılı olarak aktarmak; aktif dinlemek.',
+    strong:['Karmaşık bilgiyi basit ve anlaşılır hale getirir','Dinleyicisinin bilgi düzeyine göre dilini ayarlar','Zor haberi bile karşı tarafı savunmaya sokmadan iletir'],
+    growing:['Bilgiyi bilir ama aktarırken detaylara takılır, mesajı kaybeder','Dinliyor gibi görünür ama cevap verirken konuyu kaçırır','Yazılı iletişimde net değil, yanlış anlamalara neden olur'],
+    interview:'"Karmaşık bir bilgiyi ekibine ya da müşterine nasıl aktardığını" gösteren somut bir örnek hazırla.'
+  },
+  it:{
+    def:'Tutarlı, dürüst ve şeffaf davranışlarla güven inşa etmek; söz verdiğini yerine getirmek.',
+    strong:['Söylediğini yapar, yapmayacağı sözü vermez','Hata yaptığında ilk kabul eden odur; başkasını suçlamaz','Mağaza kasası, ürün bilgisi, stok — her süreçte tutarlı davranır'],
+    growing:['İyi niyetle hareket eder ama takip etmediği taahhütler güveni zedeler','Zorlu durumlarda farklı kişilere farklı şeyler söyler','Kurumun çıkarı ile müşterinin çıkarı çatışınca ne yapacağını bilemez'],
+    interview:'"Güven sarsıcı bir durumda nasıl davrandığını" gösteren gerçek bir örnek hazırla.'
+  },
+  co:{
+    def:'Ortak hedeflere ulaşmak için başkalarıyla iş birliği yapmak; ekip başarısını kişisel çıkarın önünde tutmak.',
+    strong:['Kendisi kazanmak yerine ekibin kazanmasını tercih eder','Farklı departmanlardaki kişilerle gönüllü köprüler kurar','Başarıyı paylaşır, övgüyü ekiple böler'],
+    growing:['Kendi işini iyi yapar ama başkasına yardım etmeyi "fazladan iş" olarak görür','Grup çalışmasında pasif kalır, katkısını net ortaya koyamaz','Takım kararına katılmasa da farklı görüşünü açıkça söylemez'],
+    interview:'"Ekip çalışmasında öne çıktığın ya da zor bir ekip sürecini nasıl yönettiğini" anlat.'
+  },
+  ao:{
+    def:'Yeni fırsatları ve zorlu durumları enerji ve istekle ele almak; gereksiz beklemeksizin harekete geçmek.',
+    strong:['Fırsatı gördüğünde izin beklemez, inisiyatif alır','Mükemmel plan yerine iyi-yeterli plan ile hızlı hareket eder','Engelle karşılaştığında çözüm yolu arar, engeli şikayet etmez'],
+    growing:['Harekete geçmeden önce çok fazla onay bekler','Her adımı planlamadan yapamaz; belirsizlikte felç olur','Zor konulardan kaçınır, birisi zorlamadan adım atmaz'],
+    interview:'"Hızlı karar almak zorunda kaldığın bir durumu" anlat.'
+  },
+  ea:{
+    def:'Kendisi ve başkaları için net taahhütler oluşturmak ve bu taahhütlere bağlı kalmak.',
+    strong:['Ekibindeki herkesin ne yapacağını ve ne zaman teslim edeceğini bilir','Hata olduğunda "biz yaptık" değil "ben atladım" der','Süreçlere geri bildirim döngüleri ekler, sonuçları takip eder'],
+    growing:['İşi delege eder ama takip etmez, son gün sürprizle karşılaşır','Sorun olduğunda "sistem öyle" ya da "o yapmadı" der','Ekip üyelerine net beklenti iletmez, her şey varsayım üzerine yürür'],
+    interview:'"Sorumluluğunu aldığın ve zorlu koşullarda taahhüdünü yerine getirdiğin" bir örnek anlat.'
+  },
+  dr:{
+    def:'Zorlu koşullarda bile tutarlı sonuçlar üretmek; yüksek performans standartlarını sürdürmek.',
+    strong:['Zorlu hedefleri kendine zorbalık değil, kışkırtma olarak görür','Mağazanın rakamlarını her zaman bilir; güncel ve net','Ekibi hedefin gerisinde kalınca durumu analiz eder, suçlama değil çözüm üretir'],
+    growing:['Verilen hedefi takip eder ama proaktif olarak aşmak için çaba göstermez','Performans düşünce "piyasa kötü" açıklamasına sığınır','Kısa vadeli sonuçla uzun vadeli ekip sağlığını dengeleyemez'],
+    interview:'"Zor bir dönemde hedefi nasıl tutturduğunu" anlatan somut bir örnek hazırla.'
+  },
+  dw:{
+    def:'Ekibe net yön vermek, görevleri delege etmek ve önündeki engelleri kaldırmak.',
+    strong:['Her ekip üyesi gün başında ne yapması gerektiğini bilir','Delege ettiği işi mikroyönetmez ama ortada bırakmaz','Süreçteki engeli görmeden önce ekibi vurmuyor; önceden sezinler'],
+    growing:['Delege eder ama "nasıl yapacağını" anlatmaz, yanlış beklenti oluşur','Her şeyi kendisi yapmak ister; ekibin gelişimine yer bırakmaz','Ekibe yön verirken zaman zaman çelişkili mesajlar gönderir'],
+    interview:'"Ekibine görev dağıtırken karşılaştığın bir zorluğu ve nasıl çözdüğünü" anlat.'
+  },
+  bt:{
+    def:'Güçlü, çeşitli yetkinliklere sahip ve uyumlu ekipler kurmak ve yönetmek.',
+    strong:['Ekibindeki boşlukları görür ve doldurmak için proaktif davranır','Farklı güçlü yönlere sahip insanları bir arada çalıştırabilir','Ekip üyeleri kariyer hedeflerini onunla konuşmaktan çekinmez'],
+    growing:['Kendine benzeyen insanları tercih eder; çeşitlilik yaratmakta zorlanır','Takım performansı yerine bireysel performansı ölçmekle meşgul','Ekip üyeleri arasındaki çatışmayı fark etmez ya da görmezden gelir'],
+    interview:'"Kurduğun ya da geliştirdiğin bir ekibi ve süreci" anlat.'
+  },
+  dt:{
+    def:'Başkalarının gelişimini desteklemek, koçluk yapmak ve potansiyellerini ortaya çıkarmak.',
+    strong:['Ekibindeki her kişinin bir sonraki adımını düşünür','Gelişim konuşması yapar — sadece performans değerlendirme değil','Hata yaparken "bunu ben çözmeliyim" yerine "nasıl öğrenebilir" diye bakar'],
+    growing:['Ekibine iş yaptırır ama geliştirmek için zaman ayırmaz','Eğitimi "HR\'ın işi" olarak görür','Potansiyeli yüksek çalışanla ayrı konuşma yapmaz'],
+    interview:'"Ekibinden birini geliştirdiğin somut bir süreci" anlat.'
+  },
+  fa:{
+    def:'Finansal göstergeleri anlayıp yorumlamak ve iş kararlarına yansıtmak.',
+    strong:['Mağazanın P&L\'ini ezberden bilir; gelir, gider, kâr marjı','Promosyon kararını rakamla destekler, sezgiyle değil','Stok devir hızı, kayıp oranı gibi KPI\'ları düzenli takip eder'],
+    growing:['Satış rakamını bilir ama gider ve kâr marjına hakim değil','Finansal kararları "yönetim belirler" olarak görür, kendi payını görmez','Bütçe konuşmalarında rahat değil; rakamlardan kaçınır'],
+    interview:'"Finansal bir göstergeyi takip edip buna göre harekete geçtiğin" bir örneği anlat.'
+  },
+  sm:{
+    def:'Geleceği öngörmek, uzun vadeli düşünmek ve bunu operasyonel kararlara yansıtmak.',
+    strong:['Rakip mağazaların hareketini takip eder, kendi stratejisine katar','Kısa vadeli baskı altında uzun vadeli önemi olan kararlardan vazgeçmez','Bölge trendlerini okur ve erken pozisyon alır'],
+    growing:['Operasyonel detaylara odaklanır; büyük resmi kaçırır','Strateji konuşmalarında fikir söylemekte zorlanır','Değişen koşullara tepkisel davranır; öngörü değil','Bir adım önü düşünmez'],
+    interview:'"Uzun vadeli düşünerek aldığın ve kısa vadede fedakarlık gerektiren" bir karar anlat.'
+  },
+  de:{
+    def:'Ekibin motivasyonunu yüksek tutmak, bağlılık yaratan bir ortam oluşturmak.',
+    strong:['Ekibinin ne için çalıştığını bilir; anlam ve motivasyon birleştirir','Başarıları kutlar — hem büyük hem küçük','Zor dönemde bile ekibi umutlu tutabilir'],
+    growing:['Ekip bağlılığını "HR anketi" ile ölçer, gerçek sinyalleri kaçırır','Kendi motivasyonu yüksekken ekibininkini fark etmez','Takdir etmek için büyük başarı bekler'],
+    interview:'"Ekip motivasyonunun düştüğünü fark edip müdahale ettiğin" bir durumu anlat.'
+  },
+  pa:{
+    def:'İşi organize etmek, önceliklendirmek ve hedeflerle uyumlu planlar yapmak.',
+    strong:['Haftalık planını pazartesi sabahı değil, cuma öğleden sonra hazırlar','Önceliklerin çatıştığı anlarda hızlı ve net karar verir','Tüm ekibin planlarını bütüncül görebilir'],
+    growing:['Plan yapar ama değişime adapte olmakta zorlanır; plan kutsal olur','Önceliklendirme yapmak yerine her şeyi eşit önemde ele alır','Son dakika krizleri sık yaşar; önden göremez'],
+    interview:'"Karmaşık bir süreci planladığın ve yönettiğin" somut bir örnek anlat.'
+  },
+  co2:{
+    def:'Ortak hedeflere ulaşmak için başkalarıyla iş birliği yapmak.',
+    strong:['Başka departmanlarla proaktif iletişim kurar','Kaynak paylaşımında cömert davranır','Başarıyı ekiple paylaşır'],
+    growing:['Kendi işine odaklanır, başkasına yardım etmek "fazladan iş"','Ortak projelerde sessiz kalır, katkısını net ortaya koyamaz'],
+    interview:'"Farklı ekiplerle iş birliği yaptığın zorlu bir süreci" anlat.'
+  },
+  br:{
+    def:'Zorluklar, baskı ve geri bildirimler karşısında ayakta kalmak ve hızla toparlanmak.',
+    strong:['Yoğun sezonlarda enerji ve kalitesini düşürmez','Olumsuz geri bildirimden kişisel saldırı değil bilgi çıkarır','Başarısızlıktan sonra analiz yapar, suçlamaz'],
+    growing:['Yoğun dönemlerde motivasyonu gözle görülür düşer','Eleştiriyi kişisel alır; savunmaya geçer','Bir başarısızlığın etkisinden çıkmak için fazla zaman geçirir'],
+    interview:'"Gerçekten zor bir dönemi nasıl atlattığını" anlatan bir örnek hazırla.'
+  },
 };
 
-const MOTIVATIONAL_MSG={
-  'Giriş': {emoji:'🌱', title:'Rolünde en iyisi ol', msg:'Her büyük kariyer bir yerden başlar. <strong>Senin sahada yarattığın fark</strong>, hem müşteri deneyimini hem de kendi geleceğini şekillendirir. Bu yetkinlikler, %{role}% rolünde öne çıkmanı sağlayacak temel beceriler.'},
-  'Giriş-Orta': {emoji:'⚡', title:'Bir sonraki seviyeye adım at', msg:'Temel yetkinliklerini sağlamlaştırdın, şimdi sıra öne çıkmaya. <strong>%{role}% olarak</strong> ekibine katkın ve müşteriye kattığın değer seni bir üst role taşır.'},
-  'Orta': {emoji:'🎯', title:'Uzmanlığını derinleştir', msg:'Bu seviyede fark yaratan <strong>teknik derinlik ve insan yönetimi becerisi</strong>. %{role}% olarak hem performansın hem de etrafındakilere kattığın değer kariyer rotanı belirler.'},
-  'Orta-Üst': {emoji:'🏆', title:'Liderliğini kanıtla', msg:'Artık sadece kendi performansın değil, <strong>takımının başarısı da senin başarın</strong>. %{role}% seviyesinde doğru yetkinlik kombinasyonu seni üst yönetime taşır.'},
-  'Üst': {emoji:'🚀', title:'Vizyonunu sahaya yansıt', msg:'Bu seviyede liderler <strong>strateji ile operasyonu bir arada yürütür</strong>. %{role}% olarak kurumuna kattığın değer hem sayılar hem de insan gelişimiyle ölçülür.'},
-};
-
-const ICONS={
-  eye:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>',
-  msg:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>',
-  shield:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',
-  team:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
-  bolt:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>',
-  check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>',
-  arrow:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>',
-  star:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>',
-  chart:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>',
-  heart:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>',
-  lock:'<svg viewBox="0 0 24 24" fill="white"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4" fill="none" stroke="white" stroke-width="2"/></svg>',
-  search:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>',
-};
+const SEARCH_ALIASES={'kasiyer':'Kasiyer','cashier':'Kasiyer','satış danışmanı':'Satış Danışmanı','satiş danışmanı':'Satış Danışmanı','sales associate':'Satış Danışmanı','satış':'Satış Danışmanı','mağaza müdürü':'Mağaza Müdürü','store manager':'Mağaza Müdürü','bölge müdürü':'Bölge Müdürü','area manager':'Bölge Müdürü','bölge':'Bölge Müdürü'};
+const MOTIVATIONAL_MSG={'Giriş':{emoji:'🌱',title:'Rolünde en iyisi ol',msg:'Her büyük kariyer bir yerden başlar. <strong>Sahada yarattığın fark</strong> hem müşteri deneyimini hem kendi geleceğini şekillendirir.'},'Üst':{emoji:'🚀',title:'Vizyonunu sahaya yansıt',msg:'Bu seviyede liderler <strong>strateji ile operasyonu bir arada yürütür.</strong> Kurumuna kattığın değer hem sayılar hem de insan gelişimiyle ölçülür.'}};
+const ICONS={eye:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>',msg:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>',shield:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',team:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>',bolt:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>',check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>',arrow:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>',star:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>',chart:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>',heart:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>',lock:'<svg viewBox="0 0 24 24" fill="white"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4" fill="none" stroke="white" stroke-width="2"/></svg>',info:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="8"/><line x1="12" y1="12" x2="12" y2="16"/></svg>'};
 const ICON_COLOR={core:'#C94E28',important:'#1E2D5E',nice:'#6B7280'};
 const ICON_BG={core:'#FEF3F0',important:'#EEF2FF',nice:'#F3F4F6'};
 const WT={core:'Temel yetkinlik',important:'Önemli yetkinlik',nice:'Faydalı yetkinlik'};
 
-let role='Satış Danışmanı', tier='freemium', ratings={};
+let role='Satış Danışmanı',tier='freemium',ratings={};
 const FREE_LIMIT=2;
+let openedCards={};
 
-function setTier(t,btn){
-  tier=t;
-  document.querySelectorAll('.yk-tier-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  render();
-}
+function setTier(t,btn){tier=t;document.querySelectorAll('.yk-tier-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');render();}
 function setRole(r){role=r;render();}
-function rate(code,rating){
-  if(tier==='freemium')return;
-  const k=role+'_'+code;
-  ratings[k]=ratings[k]===rating?null:rating;
+function gr(code){return ratings[role+'_'+code]||null;}
+function rateCard(code,rating,e){if(e)e.stopPropagation();if(tier==='freemium')return;const k=role+'_'+code;ratings[k]=ratings[k]===rating?null:rating;render();}
+function rateDrawer(code,rating){const k=role+'_'+code;ratings[k]=ratings[k]===rating?null:rating;render();openDrawer(code);}
+
+function openDrawer(code){
+  const comps=ROLES[role].comps;
+  const c=comps.find(x=>x.code===code);
+  if(!c)return;
+  const a=ANCHORS[code];
+  const isPrem=tier==='premium';
+  const isLocked=!isPrem&&comps.findIndex(x=>x.code===code)>=FREE_LIMIT;
+  const r=gr(code);
+
+  // Mark as opened (unlock animation)
+  if(!openedCards[role+'_'+code]){openedCards[role+'_'+code]=true;}
+
+  document.getElementById('drawerName').textContent=c.name;
+  document.getElementById('drawerKf').textContent=c.kf+' · '+WT[c.weight];
+
+  let body='';
+  if(a){
+    body+=`<div class="drawer-section"><div class="drawer-section-title">Tanım</div><div class="drawer-definition">${a.def}</div></div>`;
+    if(!isLocked){
+      body+=`<div class="drawer-section"><div class="drawer-section-title">✅ Güçlüysen şunu yapıyorsun</div><div class="anchor-list">`;
+      a.strong.forEach(s=>{body+=`<div class="anchor-item strong-anchor"><div class="anchor-dot-strong"></div><span>${s}</span></div>`;});
+      body+=`</div></div>`;
+      body+=`<div class="drawer-section"><div class="drawer-section-title">↑ Gelişim aşamasındaysan</div><div class="anchor-list">`;
+      a.growing.forEach(g=>{body+=`<div class="anchor-item growing-anchor"><div class="anchor-dot-growing"></div><span>${g}</span></div>`;});
+      body+=`</div></div>`;
+      body+=`<div class="drawer-divider"></div>`;
+      body+=`<div class="drawer-rating-section"><div class="drawer-rating-title">Kendinle dürüst ol 🎯</div><div class="drawer-rating-sub">Yukarıdaki davranışları okuduktan sonra — hangi grubu daha çok tanımlıyor?</div><div class="drawer-rating-btns"><button class="drawer-rating-btn strong${r==='strong'?' active':''}" onclick="rateDrawer('${code}','strong')">✅ Beni güçlü tarif ediyor</button><button class="drawer-rating-btn growing${r==='growing'?' active':''}" onclick="rateDrawer('${code}','growing')">↑ Hâlâ gelişiyorum</button></div></div>`;
+      if(a.interview){
+        body+=`<button class="drawer-cta" onclick="alert('İş Görüşmeleri paneline yönlendiriliyorsun...')"><span>📋 Mülakatta nasıl anlatırsın?</span><span class="drawer-cta-sub">${a.interview}</span></button>`;
+      }
+    } else {
+      body+=`<div class="drawer-lock-notice"><div class="drawer-lock-notice-title">Bu içerik Premium'a özel</div><div class="drawer-lock-notice-sub">Behavioral anchor'ları görmek, kendini değerlendirmek ve mülakat hazırlığı yapmak için Premium'a geç.</div><button class="drawer-lock-btn" onclick="setTier('premium',document.querySelectorAll('.yk-tier-btn')[1]);closeDrawer()">Premium'a Geç →</button></div>`;
+    }
+  } else {
+    body+='<p style="font-size:13px;color:var(--muted)">Bu yetkinlik için içerik hazırlanıyor.</p>';
+  }
+  document.getElementById('drawerBody').innerHTML=body;
+  document.getElementById('drawer').classList.add('open');
+  document.getElementById('drawerOverlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+
+function closeDrawer(){
+  document.getElementById('drawer').classList.remove('open');
+  document.getElementById('drawerOverlay').classList.remove('open');
+  document.body.style.overflow='';
   render();
 }
-function gr(code){return ratings[role+'_'+code]||null;}
 
-function quickSearch(q){
-  document.getElementById('searchInput').value=q;
-  doSearch();
-}
-
-function onSearchInput(val){
-  if(!val.trim()){
-    const el=document.getElementById('searchResult');
-    el.classList.remove('show');
-  }
-}
-
+function quickSearch(q){document.getElementById('searchInput').value=q;doSearch();}
+function onSearchInput(v){if(!v.trim())document.getElementById('searchResult').classList.remove('show');}
 function doSearch(){
   const q=document.getElementById('searchInput').value.trim().toLowerCase();
-  const resultEl=document.getElementById('searchResult');
-  if(!q){resultEl.classList.remove('show');return;}
-
-  // Fuzzy match
-  let found=null;
-  // Direct alias
-  if(SEARCH_ALIASES[q]){found=SEARCH_ALIASES[q];}
-  // Partial match
-  if(!found){
-    for(const [alias,roleName] of Object.entries(SEARCH_ALIASES)){
-      if(alias.includes(q)||q.includes(alias)){found=roleName;break;}
-    }
-  }
-  // Role name partial
-  if(!found){
-    for(const roleName of Object.keys(ROLES)){
-      if(roleName.toLowerCase().includes(q)){found=roleName;break;}
-    }
-  }
-
+  const el=document.getElementById('searchResult');
+  if(!q){el.classList.remove('show');return;}
+  let found=SEARCH_ALIASES[q];
+  if(!found){for(const[k,v]of Object.entries(SEARCH_ALIASES)){if(k.includes(q)||q.includes(k)){found=v;break;}}}
+  if(!found){for(const r of Object.keys(ROLES)){if(r.toLowerCase().includes(q)){found=r;break;}}}
   if(found&&ROLES[found]){
     const comps=ROLES[found].comps;
-    const level=ROLES[found].level;
-    resultEl.innerHTML=`
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px">
-        <div class="sr-role">${found} <span style="font-size:11px;font-weight:400;color:var(--muted);margin-left:6px">${level} seviye · ${comps.length} yetkinlik</span></div>
-        <button onclick="setRole('${found}');document.getElementById('searchResult').classList.remove('show');window.scrollTo({top:300,behavior:'smooth'})" style="font-size:12px;font-weight:600;color:var(--verm);background:none;border:none;cursor:pointer;padding:4px 0">Bu role geç →</button>
-      </div>
-      <div class="sr-comps">
-        ${comps.map(c=>`<span class="sr-comp ${c.weight}"><span style="margin-right:2px">${c.weight==='core'?'◆':c.weight==='important'?'◇':'·'}</span>${c.name}</span>`).join('')}
-      </div>`;
-    resultEl.classList.add('show');
+    el.innerHTML=`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px"><div class="sr-role">${found} <span style="font-size:11px;font-weight:400;color:var(--muted)">${ROLES[found].level} seviye · ${comps.length} yetkinlik</span></div><button onclick="setRole('${found}');document.getElementById('searchResult').classList.remove('show');window.scrollTo({top:300,behavior:'smooth'})" style="font-size:12px;font-weight:600;color:var(--verm);background:none;border:none;cursor:pointer;padding:4px 0">Bu role geç →</button></div><div class="sr-comps">${comps.map(c=>`<span class="sr-comp ${c.weight}"><span style="margin-right:2px">${c.weight==='core'?'◆':'◇'}</span>${c.name}</span>`).join('')}</div>`;
+    el.classList.add('show');
   } else {
-    resultEl.innerHTML=`<div class="sr-empty">Sonuç bulunamadı — "${document.getElementById('searchInput').value}" için retail yetkinlik haritamızda eşleşme yok. Yukarıdaki önerilerden birini dene.</div>`;
-    resultEl.classList.add('show');
+    el.innerHTML=`<div class="sr-empty">Sonuç bulunamadı — "${document.getElementById('searchInput').value}" için eşleşme yok.</div>`;
+    el.classList.add('show');
   }
 }
 
@@ -356,56 +455,25 @@ function render(){
   const comps=ROLES[role].comps;
   const level=ROLES[role].level;
   const total=comps.length;
-  const rated=comps.filter(c=>gr(c.code)).length;
+  const read=comps.filter(c=>openedCards[role+'_'+c.code]).length;
   const strong=comps.filter(c=>gr(c.code)==='strong').length;
   const growing=comps.filter(c=>gr(c.code)==='growing').length;
-  const unknown=comps.filter(c=>gr(c.code)==='unknown').length;
+  const rated=strong+growing;
   const pct=Math.round(rated/total*100);
+  const readPct=Math.round(read/total*100);
   const isPrem=tier==='premium';
   const mot=MOTIVATIONAL_MSG[level]||MOTIVATIONAL_MSG['Giriş'];
 
-  // SUMMARY
   if(isPrem){
-    document.getElementById('summaryWrap').innerHTML=`
-    <div class="summary-card">
-      <div>
-        <div style="font-size:12px;opacity:.6;margin-bottom:4px">Değerlendirme ilerlemesi — ${role}</div>
-        <div style="font-size:14px;font-weight:600">${rated} / ${total} yetkinlik değerlendirildi</div>
-        <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
-      </div>
-      <div class="summary-stats">
-        <div class="stat-item stat-strong"><div class="stat-num">${strong}</div><div class="stat-label">Güçlü</div></div>
-        <div class="stat-item stat-growing"><div class="stat-num">${growing}</div><div class="stat-label">Gelişiyor</div></div>
-        <div class="stat-item stat-unknown"><div class="stat-num">${unknown}</div><div class="stat-label">Belirsiz</div></div>
-      </div>
-    </div>`;
-    document.getElementById('roleSelectorWrap').innerHTML=`
-    <div class="section-label">Rol seç</div>
-    <div class="role-bar">${Object.keys(ROLES).map(r=>`<button class="role-pill${r===role?' active':''}" onclick="setRole('${r}')">${r}</button>`).join('')}</div>`;
+    document.getElementById('summaryWrap').innerHTML=`<div class="summary-card"><div><div style="font-size:12px;opacity:.6;margin-bottom:4px">Değerlendirme ilerlemesi — ${role}</div><div style="font-size:14px;font-weight:600">${rated} / ${total} yetkinlik değerlendirildi</div><div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div></div><div class="summary-stats"><div class="stat-item stat-strong"><div class="stat-num">${strong}</div><div class="stat-label">Güçlü</div></div><div class="stat-item stat-growing"><div class="stat-num">${growing}</div><div class="stat-label">Gelişiyor</div></div></div></div>`;
+    document.getElementById('roleSelectorWrap').innerHTML=`<div class="section-label">Rol seç</div><div class="role-bar">${Object.keys(ROLES).map(r=>`<button class="role-pill${r===role?' active':''}" onclick="setRole('${r}')">${r}</button>`).join('')}</div>`;
+    document.getElementById('progressWrap').innerHTML=read<total?`<div class="unlock-progress"><div class="up-track"><div class="up-fill" style="width:${readPct}%"></div></div><span class="up-label">Okunan: </span><span class="up-count">${read}/${total}</span><span class="up-label" style="margin-left:4px">karta tıkla, detayları oku</span></div>`:'';
   } else {
-    // FREEMIUM HERO
-    const msgText=mot.msg.replace(/%\{role\}%/g,role);
-    document.getElementById('summaryWrap').innerHTML=`
-    <div class="freemium-hero">
-      <div class="fh-deco"></div>
-      <div class="fh-deco2"></div>
-      <div class="fh-tag">${mot.emoji} ${level} Seviye</div>
-      <div class="fh-role">${mot.title}</div>
-      <div class="fh-msg">${msgText}</div>
-      <div class="fh-actions">
-        <button class="fh-btn-primary" onclick="setTier('premium',document.querySelectorAll('.yk-tier-btn')[1])">Tümünü Değerlendir →</button>
-        <button class="fh-btn-secondary">Nasıl çalışır?</button>
-      </div>
-      <div class="fh-stats">
-        <div class="fh-stat"><div class="fh-stat-num">${total}</div><div class="fh-stat-label">yetkinlik belirlendi</div></div>
-        <div class="fh-stat"><div class="fh-stat-num">${comps.filter(c=>c.weight==='core').length}</div><div class="fh-stat-label">temel yetkinlik</div></div>
-        <div class="fh-stat"><div class="fh-stat-num">2</div><div class="fh-stat-label">ücretsiz önizleme</div></div>
-      </div>
-    </div>`;
+    document.getElementById('summaryWrap').innerHTML=`<div class="freemium-hero"><div class="fh-deco"></div><div class="fh-deco2"></div><div class="fh-tag">${mot.emoji} ${level} Seviye</div><div class="fh-role">${mot.title}</div><div class="fh-msg">${mot.msg}</div><div class="fh-actions"><button class="fh-btn-primary" onclick="setTier('premium',document.querySelectorAll('.yk-tier-btn')[1])">Tümünü Değerlendir →</button><button class="fh-btn-secondary" onclick="alert('Nasıl çalışır sayfası açılacak')">Nasıl çalışır?</button></div><div class="fh-stats"><div class="fh-stat"><div class="fh-stat-num">${total}</div><div class="fh-stat-label">yetkinlik</div></div><div class="fh-stat"><div class="fh-stat-num">${comps.filter(c=>c.weight==='core').length}</div><div class="fh-stat-label">temel</div></div><div class="fh-stat"><div class="fh-stat-num">2</div><div class="fh-stat-label">ücretsiz önizleme</div></div></div></div>`;
     document.getElementById('roleSelectorWrap').innerHTML='';
+    document.getElementById('progressWrap').innerHTML='';
   }
 
-  // GRID
   let grid='';
   comps.forEach((c,i)=>{
     const locked=!isPrem&&i>=FREE_LIMIT;
@@ -413,30 +481,31 @@ function render(){
     let cls='comp-card';
     if(r==='strong')cls+=' rated-strong';
     else if(r==='growing')cls+=' rated-growing';
-    else if(r==='unknown')cls+=' rated-unknown';
-    grid+=`
-    <div class="${cls}">
+    grid+=`<div class="${cls}" onclick="${locked?`setTier('premium',document.querySelectorAll('.yk-tier-btn')[1])`:`openDrawer('${c.code}')`}">
       <div class="comp-top">
-        <div class="comp-icon" style="background:${ICON_BG[c.weight]};color:${ICON_COLOR[c.weight]}">${ICONS[c.icon]||ICONS.bolt}</div>
-        <div><div class="comp-name">${c.name}</div><div class="comp-kf">${c.kf}</div></div>
+        <div class="comp-top-left">
+          <div class="comp-icon" style="background:${ICON_BG[c.weight]};color:${ICON_COLOR[c.weight]}">${ICONS[c.icon]||ICONS.bolt}</div>
+          <div><div class="comp-name">${c.name}</div><div class="comp-kf">${c.kf}</div></div>
+        </div>
+        <button class="info-btn" onclick="event.stopPropagation();${locked?`setTier('premium',document.querySelectorAll('.yk-tier-btn')[1])`:`openDrawer('${c.code}')`}">${ICONS.info}</button>
       </div>
+      ${r==='strong'?'<div class="rating-badge strong-badge">✅ Güçlü</div>':''}
+      ${r==='growing'?'<div class="rating-badge growing-badge">↑ Gelişiyor</div>':''}
       <span class="comp-weight ${c.weight}">${WT[c.weight]}</span>
       <div class="comp-desc">${c.desc}</div>
-      <div class="rating-btns">
-        <button class="rating-btn strong${r==='strong'?' active':''}" onclick="rate('${c.code}','strong')">✓ Güçlü</button>
-        <button class="rating-btn growing${r==='growing'?' active':''}" onclick="rate('${c.code}','growing')">↑ Gelişiyor</button>
-        <button class="rating-btn unknown${r==='unknown'?' active':''}" onclick="rate('${c.code}','unknown')">? Belirsiz</button>
+      <div class="rating-btns" onclick="event.stopPropagation()">
+        <button class="rating-btn strong${r==='strong'?' active':''}" onclick="rateCard('${c.code}','strong',event)">${r==='strong'?'✅ Güçlü':'✅ Güçlüyüm'}</button>
+        <button class="rating-btn growing${r==='growing'?' active':''}" onclick="rateCard('${c.code}','growing',event)">${r==='growing'?'↑ Gelişiyor':'↑ Gelişiyorum'}</button>
       </div>
-      ${locked?`<div class="lock-overlay"><div class="lock-icon">${ICONS.lock}</div><div class="lock-label">Premium özelliği</div></div>`:''}
+      ${locked?`<div class="lock-overlay"><div class="lock-icon">${ICONS.lock}</div><div class="lock-label">Detay için<br>Premium</div></div>`:''}
     </div>`;
   });
   document.getElementById('compGrid').innerHTML=grid;
 
-  // BOTTOM
   let bottom='';
   if(!isPrem){
-    bottom=`<div class="dashed-card"><div><span class="premium-badge">PREMIUM</span><div style="font-size:13px;color:var(--muted);margin-top:4px"><strong style="color:var(--navy)">Tüm yetkinlikleri değerlendir</strong>, gelişim önerileri al ve bir sonraki role hazırlan.</div></div><button class="upgrade-cta" onclick="setTier('premium',document.querySelectorAll('.yk-tier-btn')[1])">Başla →</button></div>`;
-  } else if(strong>0||growing>0){
+    bottom=`<div class="dashed-card"><div><span class="premium-badge">PREMIUM</span><div style="font-size:13px;color:var(--muted);margin-top:4px"><strong style="color:var(--navy)">Tüm yetkinlikleri gör, behavioral anchor'ları oku</strong> ve mülakat hazırlığına başla.</div></div><button class="upgrade-cta" onclick="setTier('premium',document.querySelectorAll('.yk-tier-btn')[1])">Başla →</button></div>`;
+  } else if(rated>0){
     bottom=`<div class="next-card"><div><span class="premium-badge">SONRAKI ADIM</span><div style="font-size:13px;color:var(--muted);margin-top:4px"><strong style="color:var(--navy)">İş Görüşmeleri paneline git</strong> — ${role} için mülakat sorularına ve hazırlık rehberine eriş.</div></div><button class="upgrade-cta" style="background:var(--navy)">Mülakata Hazırlan →</button></div>`;
   }
   document.getElementById('bottomCard').innerHTML=bottom;
