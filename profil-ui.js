@@ -220,16 +220,16 @@ function addExperienceCard(data) {
   header.appendChild(delBtn);
   card.appendChild(header);
 
-  // Row 1: Şirket / Marka
+  // Row 1: Şirket (left) + Pozisyon (right) — single balanced two-column row
   var row1 = document.createElement('div');
   row1.className = 'field-row';
-  row1.appendChild(makeSmartBrandField(cardId + '-sirket', d, 'Şirket adı', true));
-  card.appendChild(row1);
 
-  // Row 2: Pozisyon (cascade select + custom input)
-  // UX order wants Pozisyon early; keep existing cascade behavior intact.
-  var rowPoz = document.createElement('div');
-  rowPoz.className = 'field-row';
+  var brandField = makeSmartBrandField(cardId + '-sirket', d, 'Şirket adı', true);
+  row1.appendChild(brandField);
+
+  // Right column: Pozisyon (cascade select + custom input; one visible at a time)
+  var pozCol = document.createElement('div');
+  pozCol.className = 'exp-poz-col';
 
   // Pozisyon select (depends on rol ailesi)
   var unvanWrap = makeSelectField('Pozisyon <span class="field-req">*</span>', cardId + '-unvan-sec', [], null, 'Önce rol ailesi seçin');
@@ -240,9 +240,10 @@ function addExperienceCard(data) {
   var unvanCustomWrap = makeField('text', 'Pozisyon yazın <span class="field-req">*</span>', cardId + '-unvan-custom', 'Örnek: Mağaza Müdürü', d.rol_unvani);
   unvanCustomWrap.style.display = 'none';
 
-  rowPoz.appendChild(unvanWrap);
-  rowPoz.appendChild(unvanCustomWrap);
-  card.appendChild(rowPoz);
+  pozCol.appendChild(unvanWrap);
+  pozCol.appendChild(unvanCustomWrap);
+  row1.appendChild(pozCol);
+  card.appendChild(row1);
 
   // Row 3: Rol Ailesi → Sektör (cascading; rol ailesi still depends on sektör selection)
   var rowRole = document.createElement('div');

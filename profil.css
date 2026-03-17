@@ -940,6 +940,10 @@ html[data-theme="dark"] .bento-card.premium {
 /* ── Wizard Steps ── */
 .wiz-step{display:none;max-width:720px;margin:0 auto;animation:fadeIn 0.25s ease;}
 .wiz-step.active{display:block;}
+/* Kariyer step: wider on desktop so two-column experience form uses space and feels balanced */
+@media (min-width: 769px) {
+  #panel-profil #wiz-step-2 { max-width: 920px; }
+}
 @keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
 
 .wiz-step-title{
@@ -1036,6 +1040,8 @@ html[data-theme="dark"] .bento-card.premium {
 }
 .field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
 .field-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+/* Experience row: right cell contains Pozisyon (select or custom); avoid grid overflow */
+.exp-poz-col{min-width:0;}
 .field-error input,.field-error select,.field-error textarea{border-color:var(--verm) !important;}
 .field-error label{color:var(--verm) !important;}
 
@@ -1107,10 +1113,10 @@ html[data-theme="dark"] .bento-card.premium {
 .exp-card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
 .exp-card-title{font-size:14px;font-weight:700;color:var(--text-secondary);}
 
-/* Date block within experience card */
+/* Date block within experience card — aligned with field rows */
 .exp-date-block{
-  margin-top:4px;
-  padding:12px;
+  margin-top:14px;
+  padding:14px;
   border:1px solid var(--border-subtle);
   border-radius:14px;
   background:rgba(30,45,94,0.03);
@@ -1136,6 +1142,10 @@ html[data-theme="dark"] .exp-date-block .cb-wrap{
 }
 .exp-date-block .exp-devam-badge{
   margin-left:auto;
+}
+/* Full-width field below date block (e.g. Ayrılma Nedeni) */
+.exp-card > .ayrilma-field{
+  margin-top:14px;
 }
 
 /* ── Animated Delete Button (shared) ── */
