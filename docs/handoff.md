@@ -1,5 +1,5 @@
 # hellotalent.ai — Technical Handoff Document
-> Son güncelleme: 18 Mart 2026 (Session 3 — Yetkinlik İçerik Sprint)
+> Son güncelleme: 18 Mart 2026 (Session 3 — Wizard UX, Dashboard Cleanup & Yetkinlik İçerik Sprint)
 > Bu doküman, projenin mevcut durumunu, tamamlanan işleri ve kalan backlog'u kapsar.
 > Yeni bir chat/session başlatırken bu dosyayı referans olarak kullanın.
 
@@ -489,6 +489,40 @@ if(sessionStorage.getItem('ht_gate')!=='ok'){window.location.replace('gate.html'
 
 ---
 
+## 6c. Session 18 Mart 2026 — Wizard UX & Dashboard Cleanup
+
+### Wizard Field Reordering ✅ (pushed — d0731a7)
+- **Experience card**: Dates moved right after company/role (before detail fields like segment, team size)
+- **Step 4 Tercihlerim**: Kariyer Hedefi & Yönelimi moved to top; Çalışma Tipleri before Müsaitlik
+- Principle: big-picture questions first → specific preferences → details
+
+### Experience Card Date Frame Removal ✅ (pushed — 3564524)
+- Removed border, background, padding from `.exp-date-block` — flat layout matching other fields
+
+### Wizard Data Integrity Fixes ✅ (pushed — 7ee129f, cda592d)
+- **baslangic_yil NOT NULL fix**: Experience cards with empty start year are now skipped during save (prevents DB constraint violation)
+- **Dirty flag on deletion**: All delete buttons (experience, education, language, certificate, target role) now call `markWizardDirty()` so exit confirmation modal appears
+- **Draft cleared on discard**: "Kaydetmeden çık" now calls `clearDraft()` to prevent stale draft restoration on next visit
+- **collectTargetRoles**: Only sends rows where both rol_ailesi AND rol_unvani are filled (prevents DB NOT NULL violation)
+- **saveProfileRPC error handling**: Enhanced error object with code, details, hint fields
+
+### Delete Confirmation ✅ (pushed — fd38305)
+- All wizard delete buttons now use 2-step confirmation: first click → "Sil?" text, second click → actual deletion
+- Auto-resets to trash icon after 2.5s if not confirmed
+- `attachDeleteConfirm()` helper function in profil-ui.js
+- Applies to: experience cards, education rows, language rows, certificate rows, target role rows
+
+### Dashboard Lab Section Removal ✅ (pushed — 44d711f)
+- İş Görüşmeleri and Yetkinliklerim cards moved from Laboratuvar section to main bento grid
+- Lab section header (🧪 Laboratuvar) completely removed
+- Premium Yan Haklar card stays in main grid
+- CSS cleaned: `.lab-section/.lab-header/.lab-title/.lab-desc/.lab-icon` removed, `.lab-grid .bento-card.locked` → `.bento-card.locked`
+
+### Test Results
+- 102/102 Playwright tests passing (smoke + dark mode + regression)
+
+---
+
 ## 7. Kalan Backlog
 
 ### ~~Onaylanan Header Mockup~~ ✅ TAMAMLANDI (Glassmorphic Float)
@@ -586,11 +620,8 @@ cd /Users/peopleintk/Downloads/Hellotalent
 npx playwright test --reporter=list
 ```
 
-### Sonuç: 64/68 smoke + 24/24 dark mode passing
-**Smoke tests — bilinen false negatives (4):**
-- Brand fonts (2): Google Fonts CDN timing sorunu
-- Gate sessionStorage (2): Redirect timing sorunu
-**Dark mode tests:** 12 assertions × 2 viewports = 24/24 passing
+### Sonuç: 102/102 passing (18 Mart 2026)
+Smoke + dark mode + p3 regression tests — all passing.
 
 ### Config
 - baseURL: https://hellotalent.ai
