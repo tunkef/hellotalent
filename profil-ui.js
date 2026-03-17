@@ -1,4 +1,4 @@
-// ── STATUS UI ──
+// v20260317 ── STATUS UI ──
 function updateStatusUI(isActive) {
   var badges = ['card-status-badge'];
   var texts = ['card-status-text'];
@@ -3175,5 +3175,6 @@ function closeTgToast() {
   window.updateMerkezVisState = updateVisState;
   window.syncBeniOner = syncBeniOner;
 })();
+
 
 
