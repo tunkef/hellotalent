@@ -209,7 +209,7 @@ function addExperienceCard(data) {
   delBtn.className = 'exp-card-del';
   delBtn.type = 'button';
   delBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>';
-  delBtn.addEventListener('click', function() {
+  attachDeleteConfirm(delBtn, function() {
     card.remove();
     if (typeof markWizardDirty === 'function') markWizardDirty();
     var remaining = document.querySelectorAll('.exp-card');
@@ -542,6 +542,40 @@ function addExperienceCard(data) {
   if (container) container.appendChild(card);
 }
 
+// ── DELETE CONFIRMATION HELPER ──
+// First click → button becomes "Sil?" confirmation; second click → executes delete.
+// Resets after 2.5s if user doesn't confirm.
+// NOTE: DEL_ICON is a static SVG constant (no user input), safe for innerHTML.
+var DEL_ICON_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>';
+
+function attachDeleteConfirm(btn, onConfirm) {
+  var timer = null;
+  btn.addEventListener('click', function() {
+    if (btn.dataset.confirming === '1') {
+      clearTimeout(timer);
+      btn.dataset.confirming = '';
+      onConfirm();
+      return;
+    }
+    btn.dataset.confirming = '1';
+    btn.textContent = 'Sil?';
+    btn.style.width = 'auto';
+    btn.style.padding = '0 10px';
+    btn.style.fontSize = '11px';
+    btn.style.fontWeight = '700';
+    btn.style.fontFamily = "'Plus Jakarta Sans',sans-serif";
+    timer = setTimeout(function() {
+      btn.dataset.confirming = '';
+      btn.innerHTML = DEL_ICON_SVG; // static constant, safe
+      btn.style.width = '';
+      btn.style.padding = '';
+      btn.style.fontSize = '';
+      btn.style.fontWeight = '';
+      btn.style.fontFamily = '';
+    }, 2500);
+  });
+}
+
 // ── FIELD FACTORY HELPERS ──
 
 function makeField(type, labelText, id, placeholder, value) {
@@ -824,7 +858,7 @@ function addEducationRow(data) {
   delBtn.className = 'btn-del-row';
   delBtn.type = 'button';
   delBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>';
-  delBtn.addEventListener('click', function() {
+  attachDeleteConfirm(delBtn, function() {
     row.remove();
     if (typeof markWizardDirty === 'function') markWizardDirty();
     document.getElementById('edu-limit-msg').style.display = container.children.length >= 3 ? 'block' : 'none';
@@ -862,7 +896,7 @@ function addLanguageRow(data) {
   delBtn.className = 'btn-del-row';
   delBtn.type = 'button';
   delBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>';
-  delBtn.addEventListener('click', function() {
+  attachDeleteConfirm(delBtn, function() {
     row.remove();
     if (typeof markWizardDirty === 'function') markWizardDirty();
     document.getElementById('lang-limit-msg').style.display = container.children.length >= 5 ? 'block' : 'none';
@@ -897,7 +931,7 @@ function addCertificateRow(data) {
   delBtn.className = 'btn-del-row';
   delBtn.type = 'button';
   delBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>';
-  delBtn.addEventListener('click', function() { row.remove(); if (typeof markWizardDirty === 'function') markWizardDirty(); });
+  attachDeleteConfirm(delBtn, function() { row.remove(); if (typeof markWizardDirty === 'function') markWizardDirty(); });
   row.style.position = 'relative';
   row.appendChild(delBtn);
 
@@ -1140,7 +1174,7 @@ function addTargetRoleRow(data) {
   delBtn.className = 'btn-del-row';
   delBtn.type = 'button';
   delBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>';
-  delBtn.addEventListener('click', function() { row.remove(); if (typeof markWizardDirty === 'function') markWizardDirty(); });
+  attachDeleteConfirm(delBtn, function() { row.remove(); if (typeof markWizardDirty === 'function') markWizardDirty(); });
   row.appendChild(delBtn);
 
   container.appendChild(row);
