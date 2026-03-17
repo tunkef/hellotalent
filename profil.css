@@ -1107,6 +1107,37 @@ html[data-theme="dark"] .bento-card.premium {
 .exp-card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
 .exp-card-title{font-size:14px;font-weight:700;color:var(--text-secondary);}
 
+/* Date block within experience card */
+.exp-date-block{
+  margin-top:4px;
+  padding:12px;
+  border:1px solid var(--border-subtle);
+  border-radius:14px;
+  background:rgba(30,45,94,0.03);
+}
+html[data-theme="dark"] .exp-date-block{
+  background:rgba(247,246,244,0.04);
+}
+.exp-date-block .exp-date-row{margin:0;}
+.exp-date-row + .cb-wrap{margin-top:10px;}
+.cb-wrap + .exp-date-row{margin-top:10px;}
+
+/* Keep the checkbox readable inside date block */
+.exp-date-block .cb-wrap{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:10px 10px;
+  border-radius:12px;
+  background:rgba(201,78,40,0.06);
+}
+html[data-theme="dark"] .exp-date-block .cb-wrap{
+  background:rgba(201,78,40,0.10);
+}
+.exp-date-block .exp-devam-badge{
+  margin-left:auto;
+}
+
 /* ── Animated Delete Button (shared) ── */
 .exp-card-del,
 .btn-del-row {

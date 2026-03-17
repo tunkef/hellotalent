@@ -220,25 +220,16 @@ function addExperienceCard(data) {
   header.appendChild(delBtn);
   card.appendChild(header);
 
-  // Row 1: Şirket / Marka (full width)
+  // Row 1: Şirket / Marka
   var row1 = document.createElement('div');
   row1.className = 'field-row';
   row1.appendChild(makeSmartBrandField(cardId + '-sirket', d, 'Şirket adı', true));
   card.appendChild(row1);
 
-  // Row 2: Sektör → Rol Ailesi (cascading)
-  var rowRole = document.createElement('div');
-  rowRole.className = 'field-row';
-
-  // Sektör (required)
-  var sektorOptions = Object.keys(typeof SEKTOR_ROL_MAP === 'object' ? SEKTOR_ROL_MAP : {});
-  var sektorWrap = makeSelectField('Sektör <span class="field-req">*</span>', cardId + '-sektor', sektorOptions, d.sektor, 'Sektör seçin...');
-  var sektorSelect = sektorWrap.querySelector('select');
-
-  // Rol Ailesi (depends on sektor)
-  var rolAilesiWrap = makeSelectField('Rol Ailesi', cardId + '-ailesi', [], d.rol_ailesi, 'Önce sektör seçin');
-  var rolAilesiSelect = rolAilesiWrap.querySelector('select');
-  rolAilesiSelect.disabled = true;
+  // Row 2: Pozisyon (cascade select + custom input)
+  // UX order wants Pozisyon early; keep existing cascade behavior intact.
+  var rowPoz = document.createElement('div');
+  rowPoz.className = 'field-row';
 
   // Pozisyon select (depends on rol ailesi)
   var unvanWrap = makeSelectField('Pozisyon <span class="field-req">*</span>', cardId + '-unvan-sec', [], null, 'Önce rol ailesi seçin');
@@ -248,6 +239,24 @@ function addExperienceCard(data) {
   // Custom pozisyon input (hidden by default, shown when "+ Kendi pozisyonunu yaz" selected)
   var unvanCustomWrap = makeField('text', 'Pozisyon yazın <span class="field-req">*</span>', cardId + '-unvan-custom', 'Örnek: Mağaza Müdürü', d.rol_unvani);
   unvanCustomWrap.style.display = 'none';
+
+  rowPoz.appendChild(unvanWrap);
+  rowPoz.appendChild(unvanCustomWrap);
+  card.appendChild(rowPoz);
+
+  // Row 3: Rol Ailesi → Sektör (cascading; rol ailesi still depends on sektör selection)
+  var rowRole = document.createElement('div');
+  rowRole.className = 'field-row';
+
+  // Rol Ailesi (depends on sektor)
+  var rolAilesiWrap = makeSelectField('Rol Ailesi', cardId + '-ailesi', [], d.rol_ailesi, 'Önce sektör seçin');
+  var rolAilesiSelect = rolAilesiWrap.querySelector('select');
+  rolAilesiSelect.disabled = true;
+
+  // Sektör (required)
+  var sektorOptions = Object.keys(typeof SEKTOR_ROL_MAP === 'object' ? SEKTOR_ROL_MAP : {});
+  var sektorWrap = makeSelectField('Sektör <span class="field-req">*</span>', cardId + '-sektor', sektorOptions, d.sektor, 'Sektör seçin...');
+  var sektorSelect = sektorWrap.querySelector('select');
 
   function clearSelectOptions(sel, placeholderText) {
     while (sel.options.length > 0) sel.remove(0);
@@ -337,6 +346,60 @@ function addExperienceCard(data) {
     });
   }
 
+  // Suggestions (best-effort): infer sektor/rol ailesi from typed pozisyon
+  var suppressSuggest = true;
+  function _norm(s) { return trLower((s || '').trim()); }
+  function suggestFromPozisyonText(pozisyonText) {
+    var q = _norm(pozisyonText);
+    if (!q || q.length < 3) return null;
+    var matches = [];
+    try {
+      Object.keys(SEKTOR_ROL_MAP || {}).forEach(function(sek) {
+        var fams = SEKTOR_ROL_MAP[sek] || {};
+        Object.keys(fams).forEach(function(fam) {
+          (fams[fam] || []).forEach(function(t) {
+            if (_norm(t) === q) matches.push({ sektor: sek, aile: fam, unvan: t });
+          });
+        });
+      });
+    } catch (e) { return null; }
+    if (matches.length === 1) return matches[0];
+    return null;
+  }
+
+  var customInput = unvanCustomWrap.querySelector('input');
+  if (customInput) {
+    customInput.addEventListener('blur', function() {
+      if (suppressSuggest) return;
+      var text = customInput.value || '';
+      var sug = suggestFromPozisyonText(text);
+      if (!sug) return;
+      // If sector not chosen, set it (this will populate role families)
+      if (sektorSelect && !sektorSelect.value) {
+        sektorSelect.value = sug.sektor;
+        sektorSelect.dispatchEvent(new Event('change'));
+      }
+      // If role family empty (and sector matches), set it (this will populate pozisyon options)
+      if (rolAilesiSelect && (!rolAilesiSelect.value) && sektorSelect && sektorSelect.value === sug.sektor) {
+        populateRolAilesiForSector(sug.sektor, sug.aile);
+        rolAilesiSelect.value = sug.aile;
+        rolAilesiSelect.dispatchEvent(new Event('change'));
+      }
+      // If dropdown has the matching title, select it and hide custom
+      if (unvanSelect && !unvanSelect.disabled) {
+        var found = false;
+        for (var i = 0; i < unvanSelect.options.length; i++) {
+          if (unvanSelect.options[i].value === sug.unvan) { found = true; break; }
+        }
+        if (found) {
+          unvanSelect.value = sug.unvan;
+          unvanSelect.style.display = '';
+          unvanCustomWrap.style.display = 'none';
+        }
+      }
+    });
+  }
+
   // Initial restore wiring if data provided
   if (d.sektor) {
     if (sektorSelect) {
@@ -355,16 +418,11 @@ function addExperienceCard(data) {
     populateUnvanForAilesi(d.sektor, d.rol_ailesi, d.rol_unvani);
   }
 
-  rowRole.appendChild(sektorWrap);
-  rowRole.appendChild(rolAilesiWrap);
-  card.appendChild(rowRole);
+  suppressSuggest = false;
 
-  // Row 3: Pozisyon (cascade select + custom input, full width)
-  var rowPoz = document.createElement('div');
-  rowPoz.className = 'field-row';
-  rowPoz.appendChild(unvanWrap);
-  rowPoz.appendChild(unvanCustomWrap);
-  card.appendChild(rowPoz);
+  rowRole.appendChild(rolAilesiWrap);
+  rowRole.appendChild(sektorWrap);
+  card.appendChild(rowRole);
 
   // Row 4: Segment + İstihdam Tipi
   var row4 = document.createElement('div');
@@ -382,21 +440,17 @@ function addExperienceCard(data) {
   row5.appendChild(takimWrap);
   card.appendChild(row5);
 
-  // Row 6: Başlangıç Ay/Yıl + Bitiş Ay/Yıl
-  var row6 = document.createElement('div');
-  row6.className = 'field-row';
-  row6.style.gridTemplateColumns = '1fr 1fr 1fr 1fr';
-  row6.appendChild(makeSelectField('Başlangıç Ay', cardId + '-basay', AY_ISIMLERI, d.baslangic_ay, 'Ay'));
-  row6.appendChild(makeYearField('Başlangıç Yılı <span class=\"field-req\">*</span>', cardId + '-basyil', d.baslangic_yil));
-  var bitAyField = makeSelectField('Bitiş Ay', cardId + '-bitay', AY_ISIMLERI, d.bitis_ay, 'Ay');
-  bitAyField.classList.add('bitis-field');
-  row6.appendChild(bitAyField);
-  var bitYilField = makeYearField('Bitiş Yıl', cardId + '-bityil', d.bitis_yil);
-  bitYilField.classList.add('bitis-field');
-  row6.appendChild(bitYilField);
-  card.appendChild(row6);
+  // Dates block: Start → (devam) → End
+  var dateBlock = document.createElement('div');
+  dateBlock.className = 'exp-date-block';
 
-  // Checkbox: Halen burada çalışıyorum
+  var startRow = document.createElement('div');
+  startRow.className = 'field-row exp-date-row exp-date-row-start';
+  startRow.appendChild(makeSelectField('Başlangıç Ay', cardId + '-basay', AY_ISIMLERI, d.baslangic_ay, 'Ay'));
+  startRow.appendChild(makeYearField('Başlangıç Yıl <span class=\"field-req\">*</span>', cardId + '-basyil', d.baslangic_yil));
+  dateBlock.appendChild(startRow);
+
+  // Checkbox: Halen burada çalışıyorum (between start and end)
   var cbWrap = document.createElement('label');
   cbWrap.className = 'cb-wrap';
   var cb = document.createElement('input');
@@ -410,7 +464,7 @@ function addExperienceCard(data) {
   cbWrap.appendChild(cb);
   cbWrap.appendChild(checkmark);
   cbWrap.appendChild(cbLabel);
-  card.appendChild(cbWrap);
+  dateBlock.appendChild(cbWrap);
 
   // Devam ediyor badge
   var devamBadge = document.createElement('span');
@@ -420,7 +474,19 @@ function addExperienceCard(data) {
   devamBadge.style.fontSize = '11px';
   devamBadge.style.fontWeight = '600';
   devamBadge.style.color = 'var(--green)';
-  row6.appendChild(devamBadge);
+  cbWrap.appendChild(devamBadge);
+
+  var endRow = document.createElement('div');
+  endRow.className = 'field-row exp-date-row exp-date-row-end';
+  var bitAyField = makeSelectField('Bitiş Ay', cardId + '-bitay', AY_ISIMLERI, d.bitis_ay, 'Ay');
+  bitAyField.classList.add('bitis-field');
+  endRow.appendChild(bitAyField);
+  var bitYilField = makeYearField('Bitiş Yıl', cardId + '-bityil', d.bitis_yil);
+  bitYilField.classList.add('bitis-field');
+  endRow.appendChild(bitYilField);
+  dateBlock.appendChild(endRow);
+
+  card.appendChild(dateBlock);
 
   // Ayrılma Nedeni (hidden when devam_ediyor)
   var ayrilmaField = makeSelectField('Ayrılma Nedeni', cardId + '-ayrilma', AYRILMA_NEDENLERI, d.ayrilma_nedeni);
