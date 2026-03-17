@@ -225,6 +225,141 @@ function addExperienceCard(data) {
   row1.appendChild(makeField('text', 'Pozisyon <span class="field-req">*</span>', cardId + '-pozisyon', 'Pozisyon / Ünvan', d.pozisyon));
   card.appendChild(row1);
 
+   // Row 1.5: Sektör → Rol Ailesi → Unvan (cascading)
+  var rowRole = document.createElement('div');
+  rowRole.className = 'field-row';
+
+  // Sektör (required)
+  var sektorOptions = Object.keys(typeof SEKTOR_ROL_MAP === 'object' ? SEKTOR_ROL_MAP : {});
+  var sektorWrap = makeSelectField('Sektör <span class="field-req">*</span>', cardId + '-sektor', sektorOptions, d.sektor, 'Sektör seçin...');
+  var sektorSelect = sektorWrap.querySelector('select');
+
+  // Rol Ailesi (depends on sektor)
+  var rolAilesiWrap = makeSelectField('Rol Ailesi', cardId + '-ailesi', [], d.rol_ailesi, 'Önce sektör seçin');
+  var rolAilesiSelect = rolAilesiWrap.querySelector('select');
+  rolAilesiSelect.disabled = true;
+
+  // Unvan select (depends on rol ailesi)
+  var unvanWrap = makeSelectField('Unvan', cardId + '-unvan-sec', [], null, 'Önce rol ailesi seçin');
+  var unvanSelect = unvanWrap.querySelector('select');
+  unvanSelect.disabled = true;
+
+  // Custom unvan input (hidden by default, shown when "+ Kendi unvanını yaz" selected)
+  var unvanCustomWrap = makeField('text', 'Unvanınızı yazın <span class="field-req">*</span>', cardId + '-unvan-custom', 'Örnek: Mağaza Müdürü', d.rol_unvani);
+  unvanCustomWrap.style.display = 'none';
+
+  function clearSelectOptions(sel, placeholderText) {
+    while (sel.options.length > 0) sel.remove(0);
+    var defOpt = document.createElement('option');
+    defOpt.value = '';
+    defOpt.textContent = placeholderText || 'Seç...';
+    sel.appendChild(defOpt);
+  }
+
+  function populateRolAilesiForSector(sektor, selectedAile) {
+    clearSelectOptions(rolAilesiSelect, sektor ? 'Rol ailesi seçiniz...' : 'Önce sektör seçin');
+    rolAilesiSelect.disabled = true;
+    if (!sektor || !SEKTOR_ROL_MAP[sektor]) return;
+    var aileKeys = Object.keys(SEKTOR_ROL_MAP[sektor] || {});
+    aileKeys.forEach(function(a) {
+      var o = document.createElement('option');
+      o.value = a;
+      o.textContent = a;
+      if (selectedAile && a === selectedAile) o.selected = true;
+      rolAilesiSelect.appendChild(o);
+    });
+    rolAilesiSelect.disabled = aileKeys.length === 0;
+  }
+
+  function populateUnvanForAilesi(sektor, aile, selectedUnvan) {
+    clearSelectOptions(unvanSelect, aile ? 'Unvan seçiniz...' : 'Önce rol ailesi seçin');
+    unvanSelect.disabled = true;
+    unvanSelect.style.display = '';
+    unvanCustomWrap.style.display = 'none';
+
+    if (!sektor || !aile || !SEKTOR_ROL_MAP[sektor] || !SEKTOR_ROL_MAP[sektor][aile]) return;
+    var titles = SEKTOR_ROL_MAP[sektor][aile] || [];
+    var hasMatchInList = false;
+    titles.forEach(function(t) {
+      var o = document.createElement('option');
+      o.value = t;
+      o.textContent = t;
+      if (selectedUnvan && t === selectedUnvan) {
+        o.selected = true;
+        hasMatchInList = true;
+      }
+      unvanSelect.appendChild(o);
+    });
+    // "+ Kendi unvanını yaz" option
+    var customOpt = document.createElement('option');
+    customOpt.value = '__custom__';
+    customOpt.textContent = '+ Kendi unvanını yaz';
+    if (selectedUnvan && !hasMatchInList) {
+      customOpt.selected = true;
+      // Show custom field with restored value
+      unvanSelect.style.display = 'none';
+      unvanCustomWrap.style.display = '';
+    }
+    unvanSelect.appendChild(customOpt);
+
+    unvanSelect.disabled = false;
+  }
+
+  if (sektorSelect) {
+    sektorSelect.addEventListener('change', function() {
+      var sektor = sektorSelect.value;
+      populateRolAilesiForSector(sektor, null);
+      clearSelectOptions(unvanSelect, 'Önce rol ailesi seçin');
+      unvanSelect.disabled = true;
+      unvanSelect.style.display = '';
+      unvanCustomWrap.style.display = 'none';
+    });
+  }
+
+  if (rolAilesiSelect) {
+    rolAilesiSelect.addEventListener('change', function() {
+      var sektor = sektorSelect ? sektorSelect.value : '';
+      var aile = rolAilesiSelect.value;
+      populateUnvanForAilesi(sektor, aile, null);
+    });
+  }
+
+  if (unvanSelect) {
+    unvanSelect.addEventListener('change', function() {
+      if (unvanSelect.value === '__custom__') {
+        unvanSelect.style.display = 'none';
+        unvanCustomWrap.style.display = '';
+      } else {
+        unvanSelect.style.display = '';
+        unvanCustomWrap.style.display = 'none';
+      }
+    });
+  }
+
+  // Initial restore wiring if data provided
+  if (d.sektor) {
+    if (sektorSelect) {
+      sektorSelect.value = d.sektor;
+      sektorSelect.dispatchEvent(new Event('change'));
+    }
+  }
+  if (d.sektor && d.rol_ailesi) {
+    populateRolAilesiForSector(d.sektor, d.rol_ailesi);
+    if (rolAilesiSelect) {
+      rolAilesiSelect.value = d.rol_ailesi;
+      rolAilesiSelect.dispatchEvent(new Event('change'));
+    }
+  }
+  if (d.sektor && d.rol_ailesi && d.rol_unvani) {
+    populateUnvanForAilesi(d.sektor, d.rol_ailesi, d.rol_unvani);
+  }
+
+  rowRole.appendChild(sektorWrap);
+  rowRole.appendChild(rolAilesiWrap);
+  rowRole.appendChild(unvanWrap);
+  rowRole.appendChild(unvanCustomWrap);
+  card.appendChild(rowRole);
+
   // Pozisyon display normalization on blur
   var pozInput = document.getElementById(cardId + '-pozisyon');
   if (pozInput) {
@@ -536,10 +671,23 @@ function collectExperiences() {
     // Safety: normalize pozisyon at collect-time
     var rawPoz = val(prefix + 'pozisyon');
     var normalizedPoz = rawPoz ? normalizeForDisplay(rawPoz) : '';
+    // Unvan resolution: dropdown wins unless custom sentinel selected
+    var unvanSelectVal = nullIfEmpty(val(prefix + 'unvan-sec'));
+    var unvanCustomVal = nullIfEmpty(val(prefix + 'unvan-custom'));
+    var resolvedUnvan = null;
+    if (unvanSelectVal === '__custom__') {
+      resolvedUnvan = unvanCustomVal;
+    } else {
+      resolvedUnvan = unvanSelectVal || unvanCustomVal || null;
+    }
+
     result.push({
       sirket: resolvedSirket,
       marka: nullIfEmpty(resolvedMarka),
       pozisyon: normalizedPoz,
+      sektor: nullIfEmpty(val(prefix + 'sektor')),
+      rol_ailesi: nullIfEmpty(val(prefix + 'ailesi')),
+      rol_unvani: resolvedUnvan,
       departman: nullIfEmpty(val(prefix + 'departman')),
       segment: nullIfEmpty(val(prefix + 'segment')),
       istihdam_tipi: nullIfEmpty(val(prefix + 'istihdam')),
@@ -1807,6 +1955,9 @@ async function loadProfileFromDB() {
     experiences: (expRes.data || []).map(function(e) {
       return {
         sirket_adi: e.sirket, marka: e.marka, pozisyon: e.pozisyon,
+        sektor: e.sektor || null,
+        rol_ailesi: e.rol_ailesi || null,
+        rol_unvani: e.rol_unvani || null,
         departman: e.departman, segment: e.segment, istihdam_tipi: e.istihdam_tipi,
         kidem_seviyesi: e.kidem_seviyesi, lokasyon_tipi: e.lokasyon_tipi,
         sehir: e.sehir, takim_buyuklugu: e.takim_buyuklugu,
