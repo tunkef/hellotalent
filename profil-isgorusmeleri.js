@@ -388,7 +388,7 @@ function injectCSS() {
   css += '.ig-slide-question .ig-slide-hint{font-family:"Plus Jakarta Sans",sans-serif;font-size:11px;color:var(--text-muted,#6B7280);margin-top:12px}';
 
   /* STAR step slides */
-  css += '.ig-slide-step{background:var(--bg-surface,#fff);display:flex;gap:16px;align-items:flex-start;min-height:180px}';
+  css += '.ig-slide-step{background:var(--bg-surface,#fff);display:flex;gap:16px;align-items:flex-start;min-height:180px;position:relative}';
   css += '.ig-slide-badge{flex-shrink:0;width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-family:"Bricolage Grotesque",sans-serif;font-size:20px;font-weight:900;color:#fff}';
   css += '.ig-slide-badge.verm{background:var(--verm,#C94E28)}';
   css += '.ig-slide-badge.navy{background:var(--navy,#1E2D5E)}';
@@ -396,6 +396,17 @@ function injectCSS() {
   css += '.ig-slide-label{font-family:"Bricolage Grotesque",sans-serif;font-size:14px;font-weight:700;color:var(--text-primary,#111);margin-bottom:2px}';
   css += '.ig-slide-label-en{font-style:italic;font-weight:400;font-size:12px;color:var(--text-muted,#6B7280);margin-left:4px}';
   css += '.ig-slide-text{font-family:"Plus Jakarta Sans",sans-serif;font-size:13px;color:var(--text-secondary,#4B5563);line-height:1.7;margin-top:6px}';
+
+  /* Mini STAR wheel in carousel slides */
+  css += '.ig-mini-wheel{position:absolute;top:16px;right:16px;display:grid;grid-template-columns:1fr 1fr;gap:2px;width:44px}';
+  css += '.ig-mw-cell{width:20px;height:20px;background:var(--border-subtle,#E5E3DF);display:flex;align-items:center;justify-content:center;font-family:"Bricolage Grotesque",sans-serif;font-size:8px;font-weight:900;color:var(--text-muted,#9CA3AF);transition:all .2s}';
+  css += '.ig-mw-0{border-radius:10px 2px 2px 2px}';
+  css += '.ig-mw-1{border-radius:2px 10px 2px 2px}';
+  css += '.ig-mw-2{border-radius:2px 2px 2px 10px}';
+  css += '.ig-mw-3{border-radius:2px 2px 10px 2px}';
+  css += '.ig-mw-4{grid-column:1/-1;border-radius:4px;height:14px;font-size:7px;background:var(--navy,#1E2D5E);color:rgba(255,255,255,.3)}';
+  css += '.ig-mw-active{background:var(--verm,#C94E28);color:#fff}';
+  css += '.ig-mw-4.ig-mw-active{background:var(--navy,#1E2D5E);color:#fff}';
 
   /* Carousel dots */
   css += '.ig-carousel-dots{display:flex;justify-content:center;gap:6px;padding:12px 0 4px}';
@@ -564,15 +575,24 @@ function renderIntro() {
   ];
   html += '<div class="ig-bento-full ig-carousel-wrap" style="animation:igSlideUp .35s ease both;animation-delay:.15s">';
   html += '<div class="ig-carousel-track" id="ig-carousel-track">';
+  var miniLetters = ['S', 'T', 'A', 'R', '+T'];
   for (var e = 0; e < slides.length; e++) {
     var sl = slides[e];
     if (sl.type === 'question') {
       html += '<div class="ig-carousel-slide ig-slide-question">';
-      html += '<div class="ig-slide-q">' + sl.text + '</div>';
+      html += '<div class="ig-slide-q-label" style="color:var(--verm,#C94E28);font-family:\'Bricolage Grotesque\',sans-serif;font-size:13px;font-weight:800;letter-spacing:.3px;margin-bottom:8px">\u00D6rnek</div>';
+      html += '<div class="ig-slide-q">' + sl.text.replace('\u00D6rnek: ', '') + '</div>';
       html += '<div class="ig-slide-hint">Kayd\u0131rarak STAR yan\u0131t\u0131n\u0131 incele</div>';
       html += '</div>';
     } else {
       html += '<div class="ig-carousel-slide ig-slide-step">';
+      /* Mini STAR wheel indicator */
+      html += '<div class="ig-mini-wheel">';
+      for (var mw = 0; mw < 5; mw++) {
+        var mwActive = (e - 1) === mw ? ' ig-mw-active' : '';
+        html += '<div class="ig-mw-cell ig-mw-' + mw + mwActive + '">' + miniLetters[mw] + '</div>';
+      }
+      html += '</div>';
       html += '<div class="ig-slide-badge ' + sl.color + '">' + sl.badge + '</div>';
       html += '<div class="ig-slide-body">';
       html += '<div class="ig-slide-label">' + sl.tr + '<span class="ig-slide-label-en">(' + sl.en + ')</span></div>';
