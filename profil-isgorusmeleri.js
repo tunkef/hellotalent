@@ -321,9 +321,7 @@ function injectCSS() {
   css += '.ig-bento>.ig-card:nth-child(2){animation-delay:.05s}.ig-bento>.ig-card:nth-child(3){animation-delay:.1s}.ig-bento>.ig-card:nth-child(4){animation-delay:.15s}.ig-bento>.ig-card:nth-child(5){animation-delay:.2s}.ig-bento>.ig-card:nth-child(6){animation-delay:.25s}.ig-bento>.ig-card:nth-child(7){animation-delay:.3s}';
   css += '.ig-card:hover{box-shadow:0 8px 24px rgba(0,0,0,.06);transform:translateY(-1px)}';
 
-  /* Hero card — compact, matches mk-identity sizing */
-  css += '.ig-hero{background:#C94E28;color:#fff;padding:22px 24px;border:1px solid rgba(255,255,255,.1);border-radius:24px;box-shadow:0 2px 8px rgba(0,0,0,.08),0 8px 20px rgba(0,0,0,.06);margin-bottom:16px;min-height:80px;display:flex;align-items:center;animation:igFadeIn .3s ease}';
-  css += '.ig-hero-title{font-family:"Bricolage Grotesque",sans-serif;font-size:20px;font-weight:800;line-height:1.25;letter-spacing:-.2px}';
+  /* Hero uses .g-hero from profil.css — no custom hero CSS needed */
 
   /* Section titles */
   css += '.ig-section-title{font-family:"Bricolage Grotesque",sans-serif;font-size:18px;font-weight:700;color:var(--text-primary,#111);margin-bottom:6px}';
@@ -487,8 +485,7 @@ function injectCSS() {
   css += '.ig-bento-2{grid-column:1/-1}';
   css += '.ig-star-quad-card{padding:16px}';
   css += '.ig-tips-row{flex-direction:column}';
-  css += '.ig-hero-title{font-size:18px}';
-  css += '.ig-hero{padding:18px 20px}';
+  /* g-hero responsive handled by profil.css */
   css += '}';
 
   var el = document.createElement('style');
@@ -512,8 +509,8 @@ function renderIntro() {
   var html = '';
 
   /* Hero — outside bento grid, matches g-hero / mk-identity */
-  html += '<div class="ig-hero">';
-  html += '<div class="ig-hero-title">\u0130\u015F g\u00F6r\u00FC\u015Fmesi bir performanst\u0131r.</div>';
+  html += '<div class="g-hero">';
+  html += '<div class="g-hero-inner"><div style="font-family:\'Bricolage Grotesque\',sans-serif;font-size:20px;font-weight:800;color:#fff;">\u0130\u015F g\u00F6r\u00FC\u015Fmesi bir performanst\u0131r.</div></div>';
   html += '</div>';
 
   html += '<div class="ig-bento">';
