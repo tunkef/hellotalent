@@ -159,12 +159,10 @@ function injectCSS() {
   /* ========== READING: BENTO GRID LAYOUT ========== */
   css += '.yk-reading-page{max-width:720px;margin:0 auto}';
 
-  /* Header bar */
-  css += '.yk-rh{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;gap:12px}';
-  css += '.yk-rh-left{display:flex;flex-direction:column;gap:2px}';
-  css += '.yk-rh-title{font-family:"Bricolage Grotesque",sans-serif;font-size:24px;font-weight:700;color:var(--navy,#1E2D5E);line-height:1.2}';
-  css += '.yk-rh-kf{font-size:11px;color:var(--muted,#6B7280);font-family:"DM Mono",monospace}';
-  css += '.yk-rh-counter{font-size:11px;color:var(--muted,#6B7280);font-family:"DM Mono",monospace;white-space:nowrap;padding:6px 12px;background:var(--bg,#F7F6F4);border-radius:8px;border:1px solid var(--border,#E5E3DF)}';
+  /* Header card */
+  css += '.yk-rh{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;gap:12px;background:#fff;border:1px solid var(--border,#E5E3DF);border-radius:20px;padding:20px 24px;box-shadow:0 2px 8px rgba(0,0,0,.04)}';
+  css += '.yk-rh-title{font-family:"Bricolage Grotesque",sans-serif;font-size:22px;font-weight:700;color:var(--verm,#C94E28);line-height:1.2}';
+  css += '.yk-rh-counter{font-size:12px;color:var(--verm,#C94E28);font-family:"DM Mono",monospace;white-space:nowrap;padding:6px 14px;background:rgba(201,78,40,.08);border-radius:10px;font-weight:600}';
 
   /* Bento grid */
   css += '.yk-bento{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}';
@@ -255,7 +253,7 @@ function injectCSS() {
   css += '.yk-select{font-size:16px !important}';
   css += '.yk-bento{grid-template-columns:1fr}';
   css += '.yk-bento-card.span-full{grid-column:span 1}';
-  css += '.yk-rh-title{font-size:20px}';
+  css += '.yk-rh{padding:16px 18px}.yk-rh-title{font-size:18px}';
   css += '.yk-bento-def{padding:20px}';
   css += '.yk-bento-card{padding:16px 18px}';
   css += '}';
@@ -393,7 +391,6 @@ function renderPreview() {
     var isWide = (i === 0 || i % 5 === 0);
     html += '<div class="yk-comp-card' + (isWide ? ' span-2' : '') + (locked ? ' locked' : '') + '" data-comp="' + code + '" data-idx="' + i + '">';
     html += '<div class="cc-name">' + name + '</div>';
-    html += '<div class="cc-kf">' + kf + '</div>';
     if (a) html += '<div class="cc-def">' + a.def + '</div>';
     if (locked) {
       html += '<div class="yk-lock"><div class="yk-lock-icon">' + LOCK_SVG + '</div><div class="yk-lock-text">Premium<br>i\u00e7erik</div></div>';
@@ -457,9 +454,9 @@ function renderReading(code) {
   var html = '<div class="yk-screen"><div class="yk-reading-page">';
   html += '<div class="yk-steps"><span class="yk-step"></span><span class="yk-step active"></span><span class="yk-step"></span></div>';
 
-  /* Header bar */
+  /* Header card */
   html += '<div class="yk-rh">';
-  html += '<div class="yk-rh-left"><div class="yk-rh-title">' + name + '</div><div class="yk-rh-kf">' + kf + '</div></div>';
+  html += '<div class="yk-rh-title">' + name + '</div>';
   html += '<div class="yk-rh-counter">' + (idx + 1) + ' / ' + comps.length + '</div>';
   html += '</div>';
 
