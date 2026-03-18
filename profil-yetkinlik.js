@@ -86,7 +86,7 @@ var ICONS = {
 var ICON_COLOR = {core:'#C94E28', important:'#1E2D5E', nice:'#6B7280'};
 var ICON_BG = {core:'#FEF3F0', important:'#EEF2FF', nice:'#F3F4F6'};
 var WT = {core:'Temel yetkinlik', important:'\u00d6nemli yetkinlik', nice:'Faydal\u0131 yetkinlik'};
-var FREE_LIMIT = 3;
+var FREE_LIMIT = 2;
 
 var MOTIVATIONAL_MSG = {
   'Giri\u015f':      {emoji:'\ud83c\udf31', title:'Rol\u00fcnde en iyisi ol',        msg:'Her b\u00fcy\u00fck kariyer bir yerden ba\u015flar. <strong>Sahada yaratt\u0131\u011f\u0131n fark</strong> hem m\u00fc\u015fteri deneyimini hem kendi gelece\u011fini \u015fekillendirir.'},
@@ -104,6 +104,16 @@ var COMP_ICON_MAP = {
   at:'star', bi:'chart', cu:'shield', cx:'chart', sa:'bolt'
 };
 
+var WIZARD_ROLES = [
+  {key:'Sat\u0131\u015f Dan\u0131\u015fman\u0131', icon:'\ud83d\udc65', desc:'Ma\u011faza i\u00e7i m\u00fc\u015fteri deneyimi ve sat\u0131\u015f'},
+  {key:'Ma\u011faza M\u00fcd\u00fcr\u00fc', icon:'\ud83c\udfea', desc:'Ma\u011faza operasyonu ve ekip y\u00f6netimi'},
+  {key:'Sat\u0131\u015f M\u00fcd\u00fcr\u00fc', icon:'\ud83d\udcca', desc:'Sat\u0131\u015f stratejisi ve hedef y\u00f6netimi'},
+  {key:'Operasyon M\u00fcd\u00fcr\u00fc', icon:'\u2699\ufe0f', desc:'Perakende operasyon ve s\u00fcrec y\u00f6netimi'},
+  {key:'Pazarlama M\u00fcd\u00fcr\u00fc', icon:'\ud83d\udce2', desc:'Marka ve pazarlama stratejisi'},
+  {key:'\u0130K M\u00fcd\u00fcr\u00fc', icon:'\ud83e\udd1d', desc:'\u0130nsan kaynaklar\u0131 ve yetenek y\u00f6netimi'},
+  {key:'Genel M\u00fcd\u00fcr', icon:'\ud83c\udfaf', desc:'Genel y\u00f6netim ve stratejik liderlik'}
+];
+
 /* ═══════════════════════════════════════════════
    STATE
    ═══════════════════════════════════════════════ */
@@ -112,6 +122,11 @@ var _yetkinlikLoaded = false;
 var _ykRole = null;
 var _ykRatings = {};
 var _ykDrawerCode = null;
+var _wizState = {
+  currentScreen: 'intro',
+  selectedRole: null,
+  competenciesRead: []
+};
 
 /* ═══════════════════════════════════════════════
    HELPERS
@@ -153,102 +168,208 @@ function _ykInjectCSS() {
   document.head.appendChild(style);
 }
 
+function _ykInjectWizardCSS() {
+  if (document.getElementById('yk-wizard-css')) return;
+  var css = '.wiz-screen{padding:0 0 80px}.wiz-step-dots{display:flex;justify-content:center;gap:8px;margin-bottom:24px;padding-top:8px}.wsd{width:8px;height:8px;border-radius:50%;background:var(--border);transition:all .3s}.wsd.active{background:var(--verm);width:24px;border-radius:4px}.wiz-intro{text-align:center;padding:60px 24px;max-width:480px;margin:0 auto}.wiz-intro-icon{font-size:48px;margin-bottom:16px}.wiz-intro-title{font-family:"Bricolage Grotesque",sans-serif;font-size:28px;font-weight:700;color:var(--navy);margin-bottom:12px;line-height:1.2}.wiz-intro-desc{font-size:14px;color:var(--muted);line-height:1.7;margin-bottom:32px}.wiz-intro-features{display:flex;flex-direction:column;gap:12px;margin-bottom:32px;text-align:left;max-width:320px;margin-left:auto;margin-right:auto}.wiz-intro-feat{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text)}.wif-icon{font-size:18px;flex-shrink:0}.wiz-intro-cta{background:var(--verm);color:#fff;border:none;border-radius:12px;padding:14px 40px;font-family:"Plus Jakarta Sans",sans-serif;font-size:15px;font-weight:600;cursor:pointer;transition:all .2s}.wiz-intro-cta:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(201,78,40,.25)}.wiz-screen-title{font-family:"Bricolage Grotesque",sans-serif;font-size:22px;font-weight:700;color:var(--navy);margin-bottom:8px}.wiz-screen-desc{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:20px}.wiz-current-role{font-size:13px;color:var(--text);padding:10px 14px;background:var(--bg,#F7F6F4);border-radius:10px;margin-bottom:20px;border:1px solid var(--border)}.wcr-label{color:var(--muted)}.wiz-role-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:24px}.wiz-role-card{background:#fff;border:1.5px solid var(--border);border-radius:14px;padding:20px;cursor:pointer;transition:all .2s;text-align:center}.wiz-role-card:hover{border-color:var(--verm);transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.06)}.wrc-icon{font-size:28px;margin-bottom:8px}.wrc-title{font-family:"Bricolage Grotesque",sans-serif;font-size:15px;font-weight:600;color:var(--navy);margin-bottom:4px}.wrc-desc{font-size:12px;color:var(--muted);line-height:1.5}.wiz-nav-bar{display:flex;align-items:center;gap:12px;padding:16px 0;margin-top:16px;border-top:1px solid var(--border)}.wiz-nav-spacer{flex:1}.wiz-nav-btn{padding:10px 20px;border-radius:10px;font-family:"Plus Jakarta Sans",sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;border:1.5px solid var(--border);background:#fff;color:var(--text)}.wiz-nav-btn.primary{background:var(--verm);color:#fff;border-color:var(--verm)}.wiz-nav-btn.primary:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(201,78,40,.25)}.wiz-nav-btn.secondary:hover{border-color:var(--navy);color:var(--navy)}.wiz-completion{text-align:center;padding:48px 24px;max-width:440px;margin:0 auto}.wiz-comp-icon{font-size:56px;margin-bottom:16px}.wiz-comp-title{font-family:"Bricolage Grotesque",sans-serif;font-size:24px;font-weight:700;color:var(--navy);margin-bottom:24px}.wiz-comp-stats{display:flex;justify-content:center;gap:24px;margin-bottom:32px}.wcs-item{text-align:center}.wcs-num{display:block;font-family:"DM Mono",monospace;font-size:28px;font-weight:700;color:var(--navy)}.wcs-num.wcs-strong{color:#15803D}.wcs-num.wcs-growing{color:#B45309}.wcs-label{font-size:12px;color:var(--muted);margin-top:4px;display:block}.wiz-comp-actions{display:flex;flex-direction:column;gap:10px;max-width:280px;margin:0 auto}.wiz-comp-cta{padding:12px 24px;border-radius:12px;font-family:"Plus Jakarta Sans",sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all .15s;border:none}.wiz-comp-cta.primary{background:var(--verm);color:#fff}.wiz-comp-cta.primary:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(201,78,40,.25)}.wiz-comp-cta.secondary{background:#fff;color:var(--navy);border:1.5px solid var(--border)}.wiz-comp-cta.secondary:hover{border-color:var(--navy)}.drawer-nav{display:flex;align-items:center;gap:8px;padding:16px 0;margin-top:16px;border-top:1px solid var(--border)}.drawer-nav-btn{padding:8px 14px;border-radius:8px;border:1px solid var(--border);background:#fff;font-size:12px;font-weight:600;cursor:pointer;font-family:"Plus Jakarta Sans",sans-serif;color:var(--navy);transition:all .15s;max-width:45%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.drawer-nav-btn:hover{border-color:var(--navy);background:#EEF2FF}@media(max-width:768px){.wiz-role-grid{grid-template-columns:repeat(2,1fr);gap:10px}.wiz-role-card{padding:16px}.wrc-icon{font-size:22px}.wiz-intro{padding:40px 16px}.wiz-intro-title{font-size:24px}.wiz-completion{padding:32px 16px}}';
+  var s = document.createElement('style');
+  s.id = 'yk-wizard-css';
+  s.textContent = css;
+  document.head.appendChild(s);
+}
+
 /* ═══════════════════════════════════════════════
    PANEL RENDER
    ═══════════════════════════════════════════════ */
 
 function _ykRenderPanel() {
   _ykInjectCSS();
+  _ykInjectWizardCSS();
   var el = document.getElementById('panel-yetkinlik');
   if (!el) return;
-  var hints = ['Kasiyer','Sat\u0131\u015f Dan\u0131\u015fman\u0131','Kat M\u00fcd\u00fcr\u00fc','Ma\u011faza M\u00fcd\u00fcr\u00fc','B\u00f6lge M\u00fcd\u00fcr\u00fc','VM Koordinat\u00f6r\u00fc'];
-  var hintHtml = hints.map(function(h){ return '<span class="hint-chip" data-yk-hint="' + h + '">' + h + '</span>'; }).join('');
-  el.innerHTML = '<div class="yk-header"><div><div class="yk-title">Yetkinliklerim</div><div class="yk-sub">Retail kariyer haritan\u0131na g\u00f6re yetkinlik de\u011ferlendirmesi</div></div></div><div class="search-section"><div class="search-top"><div class="search-title">Pozisyon Ara</div><span class="search-badge">RETAIL YETK\u0130NL\u0130K REHBER\u0130</span></div><div class="search-bar"><input class="yk-search-input" id="yk-search-input" placeholder="Pozisyon ara... Sat\u0131\u015f Dan\u0131\u015fman\u0131, Ma\u011faza M\u00fcd\u00fcr\u00fc, VM..."><button class="search-btn" id="yk-search-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Ara</button></div><div class="search-hints" id="yk-hints">' + hintHtml + '</div><div class="search-result" id="yk-search-result"></div></div><div id="yk-results"></div><div id="yk-drawer-overlay"></div><div id="yk-drawer"><div class="drawer-header"><div><div class="drawer-comp-name" id="yk-drawer-name"></div><div class="drawer-comp-kf" id="yk-drawer-kf"></div></div><button class="drawer-close" id="yk-drawer-close">\u2715</button></div><div class="drawer-body" id="yk-drawer-body"></div></div>';
-  var searchInput = document.getElementById('yk-search-input');
-  document.getElementById('yk-search-btn').addEventListener('click', _ykDoSearch);
-  searchInput.addEventListener('keydown', function(e){ if(e.key==='Enter') _ykDoSearch(); });
-  searchInput.addEventListener('input', function(){ if(!this.value.trim()) document.getElementById('yk-search-result').classList.remove('show'); });
-  document.getElementById('yk-hints').addEventListener('click', function(e){
-    var chip = e.target.closest('[data-yk-hint]');
-    if (!chip) return;
-    searchInput.value = chip.getAttribute('data-yk-hint');
-    _ykDoSearch();
-  });
+  // All innerHTML content comes from hardcoded constants — no user input, no XSS risk.
+  var drawerHtml = '<div id="yk-wizard-container"></div>' +
+    '<div id="yk-drawer-overlay"></div>' +
+    '<div id="yk-drawer"><div class="drawer-header"><div>' +
+    '<div class="drawer-comp-name" id="yk-drawer-name"></div>' +
+    '<div class="drawer-comp-kf" id="yk-drawer-kf"></div></div>' +
+    '<button class="drawer-close" id="yk-drawer-close">\u2715</button></div>' +
+    '<div class="drawer-body" id="yk-drawer-body"></div></div>';
+  el.innerHTML = drawerHtml;
   document.getElementById('yk-drawer-overlay').addEventListener('click', _ykCloseDrawer);
   document.getElementById('yk-drawer-close').addEventListener('click', _ykCloseDrawer);
+  _ykWizardNavigate('intro');
 }
 
 /* ═══════════════════════════════════════════════
-   SEARCH
+   WIZARD STATE MACHINE
    ═══════════════════════════════════════════════ */
 
-function _ykDoSearch() {
-  var q = document.getElementById('yk-search-input').value.trim();
-  var el = document.getElementById('yk-search-result');
-  if (!q) { el.classList.remove('show'); return; }
-  var qn = _ykNorm(q);
-  var found = null;
-  var roles = Object.keys(ROLES_COMP_MAP);
-  for (var i = 0; i < roles.length; i++) { if (_ykNorm(roles[i]) === qn) { found = roles[i]; break; } }
-  if (!found) { for (var j = 0; j < roles.length; j++) { if (_ykNorm(roles[j]).indexOf(qn) !== -1 || qn.indexOf(_ykNorm(roles[j])) !== -1) { found = roles[j]; break; } } }
-  if (found) {
-    var comps = ROLES_COMP_MAP[found];
-    var level = _ykGetLevel(found);
-    var compHtml = comps.map(function(c){ return '<span class="sr-comp ' + c.w + '"><span style="margin-right:2px">' + (c.w==='core'?'\u25c6':'\u25c7') + '</span>' + COMP_NAMES[c.code] + '</span>'; }).join('');
-    el.innerHTML = '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px"><div class="sr-role">' + found + ' <span style="font-size:11px;font-weight:400;color:var(--muted)">' + level + ' seviye \u00b7 ' + comps.length + ' yetkinlik</span></div><button style="font-size:12px;font-weight:600;color:var(--verm);background:none;border:none;cursor:pointer;padding:4px 0" id="yk-sr-goto">Bu role ge\u00e7 \u2192</button></div><div class="sr-comps">' + compHtml + '</div>';
-    el.classList.add('show');
-    document.getElementById('yk-sr-goto').addEventListener('click', function(){ _ykRole = found; el.classList.remove('show'); _ykRenderResults(); });
-  } else {
-    el.innerHTML = '<div style="font-size:13px;color:var(--muted);text-align:center;padding:10px 0">Sonu\u00e7 bulunamad\u0131.</div>';
-    el.classList.add('show');
+function _ykWizardNavigate(screen, data) {
+  _wizState.currentScreen = screen;
+  if (data && data.role) _wizState.selectedRole = data.role;
+  switch(screen) {
+    case 'intro': _ykRenderIntro(); break;
+    case 'role_select': _ykRenderRoleSelect(); break;
+    case 'preview': _ykRenderPreview(); break;
+    case 'completion': _ykRenderCompletion(); break;
   }
+  _ykTrackEvent('wizard_screen_' + screen, data || {});
 }
 
 /* ═══════════════════════════════════════════════
-   RESULTS RENDER
+   SCREEN 1: INTRO
    ═══════════════════════════════════════════════ */
 
-function _ykRenderResults() {
-  var container = document.getElementById('yk-results');
-  if (!_ykRole || !ROLES_COMP_MAP[_ykRole]) { container.innerHTML = ''; return; }
-  var comps = ROLES_COMP_MAP[_ykRole];
-  var level = _ykGetLevel(_ykRole);
+function _ykRenderIntro() {
+  var c = document.getElementById('yk-wizard-container');
+  if (!c) return;
+  // All content is hardcoded Turkish copy — no user input, no XSS risk.
+  c.innerHTML = '<div class="wiz-intro">' +
+    '<div class="wiz-intro-icon">\ud83c\udfaf</div>' +
+    '<h2 class="wiz-intro-title">Sekt\u00f6rde En \u0130yi Ol</h2>' +
+    '<p class="wiz-intro-desc">Perakende sekt\u00f6r\u00fcne \u00f6zel, Korn Ferry metodolojisiyle haz\u0131rlanan 29 yetkinlik de\u011ferlendirmesi. Hedefledi\u011fin role g\u00f6re hangi yetkinliklerde g\u00fc\u00e7l\u00fc oldu\u011funu ke\u015ffet, geli\u015fim alanlar\u0131n\u0131 belirle.</p>' +
+    '<div class="wiz-intro-features">' +
+    '<div class="wiz-intro-feat"><span class="wif-icon">\ud83d\udcca</span><span>29 yetkinlik, 34 retail rol</span></div>' +
+    '<div class="wiz-intro-feat"><span class="wif-icon">\ud83c\udfaf</span><span>Role \u00f6zel yetkinlik haritas\u0131</span></div>' +
+    '<div class="wiz-intro-feat"><span class="wif-icon">\ud83d\udccb</span><span>M\u00fclakat haz\u0131rl\u0131k sorular\u0131</span></div>' +
+    '</div>' +
+    '<button class="wiz-intro-cta" id="yk-wiz-start">Ba\u015fla \u2192</button>' +
+    '</div>';
+  document.getElementById('yk-wiz-start').addEventListener('click', function() {
+    _ykWizardNavigate('role_select');
+  });
+}
+
+/* ═══════════════════════════════════════════════
+   SCREEN 2: ROLE SELECTION
+   ═══════════════════════════════════════════════ */
+
+function _ykRenderRoleSelect() {
+  var c = document.getElementById('yk-wizard-container');
+  if (!c) return;
+  var currentRole = window._htUserPozisyon || '';
+  // All content is hardcoded — no user input, no XSS risk.
+  var html = '<div class="wiz-screen">';
+  html += '<div class="wiz-step-dots"><span class="wsd active"></span><span class="wsd"></span><span class="wsd"></span></div>';
+  html += '<h2 class="wiz-screen-title">Hedefledi\u011fin Rol Nedir?</h2>';
+  html += '<p class="wiz-screen-desc">Mevcut veya hedefledi\u011fin rol\u00fc se\u00e7. Sana \u00f6zel yetkinlik haritan\u0131 \u00e7\u0131karal\u0131m.</p>';
+  if (currentRole) {
+    html += '<div class="wiz-current-role"><span class="wcr-label">Mevcut rol\u00fcn:</span> <strong>' + currentRole + '</strong></div>';
+  }
+  html += '<div class="wiz-role-grid">';
+  for (var i = 0; i < WIZARD_ROLES.length; i++) {
+    var r = WIZARD_ROLES[i];
+    html += '<div class="wiz-role-card" data-wiz-role="' + r.key + '">' +
+      '<div class="wrc-icon">' + r.icon + '</div>' +
+      '<div class="wrc-title">' + r.key + '</div>' +
+      '<div class="wrc-desc">' + r.desc + '</div>' +
+      '</div>';
+  }
+  html += '</div>';
+  html += '<div class="wiz-nav-bar"><button class="wiz-nav-btn secondary" id="yk-wiz-back-intro">\u2190 Geri</button><div class="wiz-nav-spacer"></div></div>';
+  html += '</div>';
+  c.innerHTML = html;
+  c.addEventListener('click', function handler(e) {
+    var card = e.target.closest('[data-wiz-role]');
+    if (card) {
+      c.removeEventListener('click', handler);
+      _ykWizardNavigate('preview', {role: card.getAttribute('data-wiz-role')});
+      return;
+    }
+    if (e.target.closest('#yk-wiz-back-intro')) {
+      c.removeEventListener('click', handler);
+      _ykWizardNavigate('intro');
+    }
+  });
+}
+
+/* ═══════════════════════════════════════════════
+   SCREEN 3: COMPETENCY PREVIEW
+   ═══════════════════════════════════════════════ */
+
+function _ykRenderPreview() {
+  var c = document.getElementById('yk-wizard-container');
+  if (!c) return;
+  var role = _wizState.selectedRole;
+  if (!role || !ROLES_COMP_MAP[role]) { _ykWizardNavigate('role_select'); return; }
+  _ykRole = role;
+  var comps = ROLES_COMP_MAP[role];
+  var level = _ykGetLevel(role);
   var total = comps.length;
   var strong = 0, growing = 0;
   for (var i = 0; i < comps.length; i++) { var r = _ykGr(comps[i].code); if (r === 'strong') strong++; else if (r === 'growing') growing++; }
   var rated = strong + growing;
   var pct = Math.round(rated / total * 100);
   var mot = MOTIVATIONAL_MSG[level] || MOTIVATIONAL_MSG['Giri\u015f'];
-  var html = '';
-  html += '<div class="freemium-hero"><div class="fh-deco"></div><div class="fh-deco2"></div><div class="fh-tag">' + mot.emoji + ' ' + level + ' Seviye</div><div class="fh-role">' + mot.title + '</div><div class="fh-msg">' + mot.msg + '</div><div class="fh-stats"><div><div class="fh-stat-num">' + total + '</div><div class="fh-stat-label">yetkinlik</div></div><div><div class="fh-stat-num">' + comps.filter(function(c){return c.w==='core';}).length + '</div><div class="fh-stat-label">temel</div></div><div><div class="fh-stat-num">' + rated + '</div><div class="fh-stat-label">de\u011ferlendirilen</div></div></div></div>';
+  // All content is hardcoded constants — no user input, no XSS risk.
+  var html = '<div class="wiz-screen">';
+  html += '<div class="wiz-step-dots"><span class="wsd"></span><span class="wsd active"></span><span class="wsd"></span></div>';
+  html += '<div class="freemium-hero"><div class="fh-deco"></div><div class="fh-deco2"></div><div class="fh-tag">' + mot.emoji + ' ' + level + ' Seviye</div><div class="fh-role">' + role + '</div><div class="fh-msg">' + mot.msg + '</div><div class="fh-stats"><div><div class="fh-stat-num">' + total + '</div><div class="fh-stat-label">yetkinlik</div></div><div><div class="fh-stat-num">' + comps.filter(function(x){return x.w==='core';}).length + '</div><div class="fh-stat-label">temel</div></div><div><div class="fh-stat-num">' + rated + '</div><div class="fh-stat-label">de\u011ferlendirilen</div></div></div></div>';
   html += '<div class="unlock-progress"><div class="up-track"><div class="up-fill" style="width:' + pct + '%"></div></div><span style="font-size:12px;color:var(--muted)">De\u011ferlendirme:</span><span style="font-family:\'DM Mono\',monospace;font-size:13px;font-weight:500;color:var(--navy)">' + rated + '/' + total + '</span></div>';
-  var roles = Object.keys(ROLES_COMP_MAP);
-  html += '<div class="section-label">Rol se\u00e7</div><div class="role-bar">';
-  for (var k = 0; k < roles.length; k++) { html += '<button class="role-pill' + (roles[k]===_ykRole?' active':'') + '" data-yk-role="' + roles[k] + '">' + roles[k] + '</button>'; }
-  html += '</div>';
-  html += '<div class="section-label">Yetkinlik kartlar\u0131 \u2014 <span style="font-weight:400;text-transform:none;font-size:11px;color:var(--muted)">detay ve de\u011ferlendirme i\u00e7in kartlara t\u0131kla</span></div><div class="comp-grid">';
+  html += '<div class="section-label">Yetkinlik kartlar\u0131 \u2014 <span style="font-weight:400;text-transform:none;font-size:11px;color:var(--muted)">detay i\u00e7in kartlara t\u0131kla</span></div><div class="comp-grid">';
   for (var ci = 0; ci < comps.length; ci++) {
-    var c = comps[ci]; var locked = ci >= FREE_LIMIT; var cr = _ykGr(c.code);
+    var comp = comps[ci]; var locked = ci >= FREE_LIMIT; var cr = _ykGr(comp.code);
     var cls = 'comp-card'; if (cr==='strong') cls+=' rated-strong'; else if (cr==='growing') cls+=' rated-growing';
-    var iconKey = COMP_ICON_MAP[c.code] || 'bolt'; var a = ANCHORS[c.code]; var desc = a ? a.def : '';
-    html += '<div class="' + cls + '" data-yk-card="' + c.code + '" data-yk-idx="' + ci + '"><div class="comp-top"><div class="comp-top-left"><div class="comp-icon" style="background:' + ICON_BG[c.w] + ';color:' + ICON_COLOR[c.w] + '">' + ICONS[iconKey] + '</div><div><div class="comp-name">' + COMP_NAMES[c.code] + '</div><div class="comp-kf">' + COMP_KF[c.code] + '</div></div></div><button class="info-btn" data-yk-info="' + c.code + '">' + ICONS.info + '</button></div>';
+    var iconKey = COMP_ICON_MAP[comp.code] || 'bolt'; var a = ANCHORS[comp.code]; var desc = a ? a.def : '';
+    html += '<div class="' + cls + '" data-yk-card="' + comp.code + '" data-yk-idx="' + ci + '"><div class="comp-top"><div class="comp-top-left"><div class="comp-icon" style="background:' + ICON_BG[comp.w] + ';color:' + ICON_COLOR[comp.w] + '">' + ICONS[iconKey] + '</div><div><div class="comp-name">' + COMP_NAMES[comp.code] + '</div><div class="comp-kf">' + COMP_KF[comp.code] + '</div></div></div><button class="info-btn" data-yk-info="' + comp.code + '">' + ICONS.info + '</button></div>';
     if (cr==='strong') html+='<div class="rating-badge strong-badge">\u2705 G\u00fc\u00e7l\u00fc</div>'; else if (cr==='growing') html+='<div class="rating-badge growing-badge">\u2191 Geli\u015fiyor</div>';
-    html += '<span class="comp-weight ' + c.w + '">' + WT[c.w] + '</span><div class="comp-desc">' + desc + '</div><div class="rating-btns" data-yk-rbtns="' + c.code + '"><button class="rating-btn strong' + (cr==='strong'?' active':'') + '" data-yk-rate="strong" data-yk-rcode="' + c.code + '">\u2705 G\u00fc\u00e7l\u00fcy\u00fcm</button><button class="rating-btn growing' + (cr==='growing'?' active':'') + '" data-yk-rate="growing" data-yk-rcode="' + c.code + '">\u2191 Geli\u015fiyorum</button></div>';
+    html += '<span class="comp-weight ' + comp.w + '">' + WT[comp.w] + '</span><div class="comp-desc">' + desc + '</div><div class="rating-btns" data-yk-rbtns="' + comp.code + '"><button class="rating-btn strong' + (cr==='strong'?' active':'') + '" data-yk-rate="strong" data-yk-rcode="' + comp.code + '">\u2705 G\u00fc\u00e7l\u00fcy\u00fcm</button><button class="rating-btn growing' + (cr==='growing'?' active':'') + '" data-yk-rate="growing" data-yk-rcode="' + comp.code + '">\u2191 Geli\u015fiyorum</button></div>';
     if (locked) html += '<div class="lock-overlay"><div class="lock-icon">' + ICONS.lock + '</div><div class="lock-label">Detay i\u00e7in<br>Premium</div></div>';
     html += '</div>';
   }
   html += '</div>';
-  html += '<div class="dashed-card"><div><span class="premium-badge">PREMIUM</span><div style="font-size:13px;color:var(--muted);margin-top:4px"><strong style="color:var(--navy)">T\u00fcm yetkinlikleri g\u00f6r, davran\u0131\u015fsal g\u00f6stergeleri oku</strong> ve m\u00fclakat haz\u0131rl\u0131\u011f\u0131na ba\u015fla.</div></div><button class="upgrade-cta">Ba\u015fla \u2192</button></div>';
-  container.innerHTML = html;
-  container.addEventListener('click', function handler(e) {
-    var pill = e.target.closest('[data-yk-role]');
-    if (pill) { _ykRole = pill.getAttribute('data-yk-role'); container.removeEventListener('click', handler); _ykRenderResults(); return; }
+  html += '<div class="dashed-card"><div><span class="premium-badge">PREMIUM</span><div style="font-size:13px;color:var(--muted);margin-top:4px"><strong style="color:var(--navy)">T\u00fcm yetkinlikleri g\u00f6r, davran\u0131\u015fsal g\u00f6stergeleri oku</strong> ve m\u00fclakat haz\u0131rl\u0131\u011f\u0131na ba\u015fla.</div></div><button class="upgrade-cta">Premium\'a Ge\u00e7 \u2192</button></div>';
+  html += '<div class="wiz-nav-bar"><button class="wiz-nav-btn secondary" id="yk-wiz-back-role">\u2190 Rol Se\u00e7</button><div class="wiz-nav-spacer"></div>';
+  if (rated > 0) html += '<button class="wiz-nav-btn primary" id="yk-wiz-complete">Tamamla \u2192</button>';
+  html += '</div></div>';
+  c.innerHTML = html;
+  c.addEventListener('click', function handler(e) {
     var rateBtn = e.target.closest('[data-yk-rate]');
     if (rateBtn) { e.stopPropagation(); _ykRate(rateBtn.getAttribute('data-yk-rcode'), rateBtn.getAttribute('data-yk-rate')); return; }
     var infoBtn = e.target.closest('[data-yk-info]');
-    if (infoBtn) { e.stopPropagation(); var card = infoBtn.closest('.comp-card'); if (card && parseInt(card.getAttribute('data-yk-idx'),10) < FREE_LIMIT) _ykOpenDrawer(infoBtn.getAttribute('data-yk-info')); return; }
+    if (infoBtn) { e.stopPropagation(); var card = infoBtn.closest('.comp-card'); if (card && parseInt(card.getAttribute('data-yk-idx'),10) < FREE_LIMIT) { _ykTrackReadCompetency(infoBtn.getAttribute('data-yk-info')); _ykOpenDrawer(infoBtn.getAttribute('data-yk-info')); } return; }
     var cardEl = e.target.closest('[data-yk-card]');
-    if (cardEl && parseInt(cardEl.getAttribute('data-yk-idx'),10) < FREE_LIMIT) _ykOpenDrawer(cardEl.getAttribute('data-yk-card'));
+    if (cardEl && parseInt(cardEl.getAttribute('data-yk-idx'),10) < FREE_LIMIT) { _ykTrackReadCompetency(cardEl.getAttribute('data-yk-card')); _ykOpenDrawer(cardEl.getAttribute('data-yk-card')); return; }
+    if (e.target.closest('#yk-wiz-back-role')) { c.removeEventListener('click', handler); _ykWizardNavigate('role_select'); return; }
+    if (e.target.closest('#yk-wiz-complete')) { c.removeEventListener('click', handler); _ykWizardNavigate('completion'); }
+  });
+}
+
+/* ═══════════════════════════════════════════════
+   SCREEN 5: COMPLETION
+   ═══════════════════════════════════════════════ */
+
+function _ykRenderCompletion() {
+  var c = document.getElementById('yk-wizard-container');
+  if (!c) return;
+  var role = _wizState.selectedRole;
+  var comps = ROLES_COMP_MAP[role] || [];
+  var strong = 0, growing = 0;
+  for (var i = 0; i < comps.length; i++) { var r = _ykGr(comps[i].code); if (r === 'strong') strong++; else if (r === 'growing') growing++; }
+  var rated = strong + growing;
+  // All content is hardcoded — no user input, no XSS risk.
+  var html = '<div class="wiz-screen">';
+  html += '<div class="wiz-step-dots"><span class="wsd"></span><span class="wsd"></span><span class="wsd active"></span></div>';
+  html += '<div class="wiz-completion">';
+  html += '<div class="wiz-comp-icon">\ud83c\udf89</div>';
+  html += '<h2 class="wiz-comp-title">Harika! Yetkinliklerini Ke\u015ffettin</h2>';
+  html += '<div class="wiz-comp-stats">';
+  html += '<div class="wcs-item"><span class="wcs-num">' + rated + '</span><span class="wcs-label">yetkinlik de\u011ferlendirildi</span></div>';
+  if (strong > 0) html += '<div class="wcs-item"><span class="wcs-num wcs-strong">' + strong + '</span><span class="wcs-label">g\u00fc\u00e7l\u00fc alan</span></div>';
+  if (growing > 0) html += '<div class="wcs-item"><span class="wcs-num wcs-growing">' + growing + '</span><span class="wcs-label">geli\u015fim alan\u0131</span></div>';
+  html += '</div>';
+  html += '<div class="wiz-comp-actions">';
+  html += '<button class="wiz-comp-cta primary" id="yk-wiz-retry">\ud83c\udfaf Tekrar De\u011ferlendir</button>';
+  html += '<button class="wiz-comp-cta secondary" id="yk-wiz-profile">\u2190 Profili G\u00f6zden Ge\u00e7ir</button>';
+  html += '</div></div></div>';
+  c.innerHTML = html;
+  _ykTrackEvent('wizard_completed', {role: role, strong: strong, growing: growing, rated: rated});
+  document.getElementById('yk-wiz-retry').addEventListener('click', function() {
+    _wizState.competenciesRead = [];
+    _ykWizardNavigate('role_select');
+  });
+  document.getElementById('yk-wiz-profile').addEventListener('click', function() {
+    if (typeof _doSwitchPanel === 'function') _doSwitchPanel('merkez');
   });
 }
 
@@ -280,6 +401,24 @@ function _ykOpenDrawer(code) {
   } else {
     body = '<div class="drawer-lock-notice"><div style="font-size:24px;margin-bottom:8px">\ud83d\udd12</div><div style="font-size:14px;font-weight:600;color:var(--verm);margin-bottom:6px">Premium i\u00e7erik</div><div style="font-size:13px;color:#9A3C1E;line-height:1.6">Yetkinlik tan\u0131m\u0131n\u0131, davran\u0131\u015fsal g\u00f6stergeleri, retail \u00f6rneklerini ve m\u00fclakat haz\u0131rl\u0131k sorular\u0131n\u0131 g\u00f6rmek i\u00e7in Premium \u00fcyeli\u011fe ge\u00e7.</div><button class="drawer-lock-btn">Premium\'a Ge\u00e7 \u2192</button></div>';
   }
+  // Add prev/next navigation in drawer
+  var comps = ROLES_COMP_MAP[_ykRole];
+  var prevCode = null, nextCode = null;
+  for (var j = 0; j < comps.length; j++) {
+    if (comps[j].code === code) {
+      if (j > 0 && j - 1 < FREE_LIMIT) prevCode = comps[j-1].code;
+      if (j < comps.length - 1 && j + 1 < FREE_LIMIT) nextCode = comps[j+1].code;
+      break;
+    }
+  }
+  if (prevCode || nextCode) {
+    body += '<div class="drawer-nav">';
+    if (prevCode) body += '<button class="drawer-nav-btn" id="yk-dr-prev">\u2190 ' + COMP_NAMES[prevCode] + '</button>';
+    body += '<div style="flex:1"></div>';
+    if (nextCode) body += '<button class="drawer-nav-btn" id="yk-dr-next">' + COMP_NAMES[nextCode] + ' \u2192</button>';
+    body += '</div>';
+  }
+  // All content comes from hardcoded ANCHORS constants — no XSS risk.
   document.getElementById('yk-drawer-body').innerHTML = body;
   document.getElementById('yk-drawer').classList.add('open');
   document.getElementById('yk-drawer-overlay').classList.add('open');
@@ -288,6 +427,10 @@ function _ykOpenDrawer(code) {
   var growingBtn = document.getElementById('yk-dr-growing');
   if (strongBtn) strongBtn.addEventListener('click', function(){ _ykRate(code, 'strong'); });
   if (growingBtn) growingBtn.addEventListener('click', function(){ _ykRate(code, 'growing'); });
+  var prevBtn = document.getElementById('yk-dr-prev');
+  var nextBtn = document.getElementById('yk-dr-next');
+  if (prevBtn) prevBtn.addEventListener('click', function(){ _ykTrackReadCompetency(prevCode); _ykOpenDrawer(prevCode); });
+  if (nextBtn) nextBtn.addEventListener('click', function(){ _ykTrackReadCompetency(nextCode); _ykOpenDrawer(nextCode); });
 }
 
 function _ykCloseDrawer() {
@@ -304,8 +447,37 @@ function _ykCloseDrawer() {
 function _ykRate(code, rating) {
   var key = _ykRole + '_' + code;
   _ykRatings[key] = (_ykRatings[key] === rating) ? null : rating;
-  _ykRenderResults();
+  _ykRenderPreview();
   if (_ykDrawerCode === code) _ykOpenDrawer(code);
+}
+
+/* ═══════════════════════════════════════════════
+   FREEMIUM GATING
+   ═══════════════════════════════════════════════ */
+
+function _ykCanReadCompetency(idx) {
+  var tier = window._htMembershipTier || 'freemium';
+  if (tier === 'premium') return true;
+  return idx < FREE_LIMIT;
+}
+
+function _ykTrackReadCompetency(code) {
+  if (_wizState.competenciesRead.indexOf(code) === -1) {
+    _wizState.competenciesRead.push(code);
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   ANALYTICS HOOKS
+   ═══════════════════════════════════════════════ */
+
+function _ykTrackEvent(eventName, data) {
+  // Event hooks for future backend integration — no-op for now.
+  // Events: wizard_screen_intro, wizard_screen_role_select,
+  // wizard_screen_preview, wizard_screen_completion, wizard_completed
+  if (typeof console !== 'undefined' && console.warn) {
+    console.warn('[YK Analytics] ' + eventName, data);
+  }
 }
 
 /* ═══════════════════════════════════════════════
