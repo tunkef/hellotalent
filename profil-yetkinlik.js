@@ -38,13 +38,13 @@ var ANCHORS={cf:{def:"G\u00fc\u00e7l\u00fc m\u00fc\u015fteri ili\u015fkileri kur
    ════════════════════════════════════════════════ */
 
 var RETAIL_ROLES = [
-  {key:'Sat\u0131\u015f Dan\u0131\u015fman\u0131',       level:'Giri\u015f',      icon:'\ud83d\udc64', desc:'Ma\u011faza i\u00e7i m\u00fc\u015fteri deneyimi ve sat\u0131\u015f'},
-  {key:'K\u0131demli Sat\u0131\u015f Dan.',  level:'Giri\u015f-Orta', icon:'\u2b50',       desc:'K\u0131demli sat\u0131\u015f dan\u0131\u015fmanl\u0131\u011f\u0131 ve mentorlik'},
-  {key:'Kat M\u00fcd\u00fcr\u00fc',          level:'Orta',       icon:'\ud83d\udccb', desc:'Kat y\u00f6netimi ve ekip koordinasyonu'},
-  {key:'Ma\u011faza M\u00fcd. Yrd.',   level:'Orta-\u00dcst',  icon:'\ud83e\udd1d', desc:'Ma\u011faza m\u00fcd\u00fcr yard\u0131mc\u0131l\u0131\u011f\u0131'},
-  {key:'Ma\u011faza M\u00fcd\u00fcr\u00fc',       level:'\u00dcst',      icon:'\ud83c\udfea', desc:'Ma\u011faza operasyonu ve ekip liderli\u011fi'},
-  {key:'B\u00f6lge M\u00fcd\u00fcr\u00fc',       level:'\u00dcst',      icon:'\ud83d\uddfa\ufe0f', desc:'\u00c7oklu ma\u011faza y\u00f6netimi ve strateji'},
-  {key:'Genel M\u00fcd\u00fcr',        level:'\u00dcst',      icon:'\ud83c\udfaf', desc:'Genel y\u00f6netim ve stratejik liderlik'}
+  {key:'Sat\u0131\u015f Dan\u0131\u015fman\u0131',       level:'Giri\u015f'},
+  {key:'K\u0131demli Sat\u0131\u015f Dan.',  level:'Giri\u015f-Orta'},
+  {key:'Kat M\u00fcd\u00fcr\u00fc',          level:'Orta'},
+  {key:'Ma\u011faza M\u00fcd. Yrd.',   level:'Orta-\u00dcst'},
+  {key:'Ma\u011faza M\u00fcd\u00fcr\u00fc',       level:'\u00dcst'},
+  {key:'B\u00f6lge M\u00fcd\u00fcr\u00fc',       level:'\u00dcst'},
+  {key:'Genel M\u00fcd\u00fcr',        level:'\u00dcst'}
 ];
 
 /* Role → competency codes mapping (uses ANCHORS keys) */
@@ -95,12 +95,8 @@ function injectCSS() {
 
   /* --- Intro --- */
   css += '.yk-intro{text-align:center;padding:56px 24px;max-width:480px;margin:0 auto}';
-  css += '.yk-intro-icon{font-size:52px;margin-bottom:16px}';
   css += '.yk-intro-title{font-family:"Bricolage Grotesque",sans-serif;font-size:28px;font-weight:700;color:var(--navy,#1E2D5E);margin-bottom:12px;line-height:1.2}';
   css += '.yk-intro-desc{font-size:14px;color:var(--muted,#6B7280);line-height:1.7;margin-bottom:28px}';
-  css += '.yk-intro-features{display:flex;flex-direction:column;gap:14px;margin-bottom:32px;text-align:left;max-width:340px;margin-left:auto;margin-right:auto}';
-  css += '.yk-intro-feat{display:flex;align-items:center;gap:12px;font-size:14px;color:var(--text,#111)}';
-  css += '.yk-intro-feat span:first-child{font-size:20px;flex-shrink:0;width:28px;text-align:center}';
   css += '.yk-cta{background:var(--verm,#C94E28);color:#fff;border:none;border-radius:12px;padding:14px 40px;font-family:"Plus Jakarta Sans",sans-serif;font-size:15px;font-weight:600;cursor:pointer;transition:all .2s}';
   css += '.yk-cta:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(201,78,40,.25)}';
   css += '.yk-cta.secondary{background:#fff;color:var(--navy,#1E2D5E);border:1.5px solid var(--border,#E5E3DF)}';
@@ -251,16 +247,9 @@ function renderIntro() {
   var c = getContainer();
   if (!c) return;
   c.innerHTML = '<div class="yk-screen"><div class="yk-intro">' +
-    '<div class="yk-intro-icon">\ud83c\udfaf</div>' +
-    '<h2 class="yk-intro-title">Sekt\u00f6rde En \u0130yi Ol</h2>' +
-    '<p class="yk-intro-desc">Perakende sekt\u00f6r\u00fcne \u00f6zel, Korn Ferry metodolojisiyle haz\u0131rlanan 29 yetkinlik de\u011ferlendirmesi. Hedefledi\u011fin role g\u00f6re hangi yetkinliklerde g\u00fc\u00e7l\u00fc oldu\u011funu ke\u015ffet.</p>' +
-    '<div class="yk-intro-features">' +
-    '<div class="yk-intro-feat"><span>\ud83d\udcca</span><span>29 yetkinlik, 7 kariyer basama\u011f\u0131</span></div>' +
-    '<div class="yk-intro-feat"><span>\ud83c\udfaf</span><span>Role \u00f6zel yetkinlik haritas\u0131</span></div>' +
-    '<div class="yk-intro-feat"><span>\ud83d\udccb</span><span>M\u00fclakat haz\u0131rl\u0131k sorular\u0131</span></div>' +
-    '<div class="yk-intro-feat"><span>\ud83c\udfea</span><span>Ger\u00e7ek retail \u00f6rnekleri</span></div>' +
-    '</div>' +
-    '<button class="yk-cta" id="yk-start">Ba\u015fla \u2192</button>' +
+    '<h2 class="yk-intro-title">Sekt\u00f6rde En \u0130yisi Ol</h2>' +
+    '<p class="yk-intro-desc">Hedefledi\u011fin role g\u00f6re yetkinlik haritan\u0131 ke\u015ffet.</p>' +
+    '<button class="yk-cta" id="yk-start">Ba\u015fla</button>' +
     '</div></div>';
   document.getElementById('yk-start').addEventListener('click', function() {
     navigate('role_select');
@@ -289,9 +278,7 @@ function renderRoleSelect() {
     var r = RETAIL_ROLES[i];
     html += '<div class="yk-role-card" data-role="' + r.key + '">' +
       '<div class="rc-level">' + r.level + '</div>' +
-      '<div class="rc-icon">' + r.icon + '</div>' +
       '<div class="rc-title">' + r.key + '</div>' +
-      '<div class="rc-desc">' + r.desc + '</div>' +
     '</div>';
   }
   html += '</div>';
@@ -330,7 +317,7 @@ function renderPreview() {
 
   /* Hero */
   html += '<div class="yk-preview-hero">';
-  html += '<div class="ph-tag">\ud83c\udfaf ' + role + '</div>';
+  html += '<div class="ph-tag">' + role + '</div>';
   html += '<div class="ph-title">' + role + ' i\u00e7in Gerekli Yetkinlikler</div>';
   html += '<div class="ph-count">' + total + ' yetkinlik \u00b7 ' + freeCount + ' \u00fccretsiz</div>';
   html += '</div>';
@@ -415,45 +402,45 @@ function renderReading(code) {
   html += '<div class="yk-reading-counter">' + (idx + 1) + ' / ' + comps.length + '</div></div>';
 
   /* Definition */
-  html += '<div class="yk-section"><div class="yk-section-title">\ud83d\udccc Tan\u0131m</div>';
+  html += '<div class="yk-section"><div class="yk-section-title">Tan\u0131m</div>';
   html += '<div class="yk-def-box">' + a.def + '</div>';
   html += '<div class="yk-why">' + a.why + '</div></div>';
 
   /* Skilled */
-  html += '<div class="yk-section"><div class="yk-section-title">\u2705 Yetkin olanlar</div><div class="yk-anchor-list">';
+  html += '<div class="yk-section"><div class="yk-section-title">Yetkin Olanlar</div><div class="yk-anchor-list">';
   for (var si = 0; si < a.skilled.length; si++) {
     html += '<div class="yk-anchor strong"><div class="yk-dot strong"></div><span>' + a.skilled[si] + '</span></div>';
   }
   html += '</div></div>';
 
   /* Less skilled */
-  html += '<div class="yk-section"><div class="yk-section-title">\u2b06 Geli\u015fim a\u015famas\u0131ndakiler</div><div class="yk-anchor-list">';
+  html += '<div class="yk-section"><div class="yk-section-title">Geli\u015fim A\u015famas\u0131ndakiler</div><div class="yk-anchor-list">';
   for (var li = 0; li < a.lessskilled.length; li++) {
     html += '<div class="yk-anchor growing"><div class="yk-dot growing"></div><span>' + a.lessskilled[li] + '</span></div>';
   }
   html += '</div></div>';
 
   /* Highly skilled */
-  html += '<div class="yk-section"><div class="yk-section-title">\ud83c\udf1f \u00c7ok yetenekliler</div><div class="yk-anchor-list">';
+  html += '<div class="yk-section"><div class="yk-section-title">\u00c7ok Yetenekliler</div><div class="yk-anchor-list">';
   for (var hi = 0; hi < a.highlyskilled.length; hi++) {
     html += '<div class="yk-anchor stellar"><div class="yk-dot stellar"></div><span>' + a.highlyskilled[hi] + '</span></div>';
   }
   html += '</div></div>';
 
   /* Overused */
-  html += '<div class="yk-section"><div class="yk-section-title">\u26a0 A\u015f\u0131r\u0131 kullan\u0131m</div><div class="yk-anchor-list">';
+  html += '<div class="yk-section"><div class="yk-section-title">A\u015f\u0131r\u0131 Kullan\u0131m</div><div class="yk-anchor-list">';
   for (var oi = 0; oi < a.overused.length; oi++) {
     html += '<div class="yk-anchor overused"><div class="yk-dot overused"></div><span>' + a.overused[oi] + '</span></div>';
   }
   html += '</div></div>';
 
   /* Retail example */
-  html += '<div class="yk-section"><div class="yk-retail-box"><div class="yk-retail-label">\ud83c\udfea Retail\'de nas\u0131l g\u00f6r\u00fcn\u00fcr</div>';
+  html += '<div class="yk-section"><div class="yk-retail-box"><div class="yk-retail-label">Retail\'de Nas\u0131l G\u00f6r\u00fcn\u00fcr</div>';
   html += '<div class="yk-retail-text">' + a.retail + '</div></div></div>';
 
   /* Interview */
   if (a.interview) {
-    html += '<div class="yk-interview-box"><div class="yk-interview-label">\ud83d\udccb M\u00fclakatta nas\u0131l anlat\u0131rs\u0131n?</div>';
+    html += '<div class="yk-interview-box"><div class="yk-interview-label">M\u00fclakatta Nas\u0131l Anlat\u0131rs\u0131n?</div>';
     html += '<div class="yk-interview-q">' + a.interview + '</div></div>';
   }
 
@@ -477,7 +464,7 @@ function renderReading(code) {
   } else if (allFreeRead) {
     html += '<button class="yk-nav-btn primary" id="yk-to-complete">Tamamla \u2192</button>';
   } else if (hasNext && !nextFree) {
-    html += '<button class="yk-nav-btn primary" id="yk-to-lock">Sonraki \ud83d\udd12</button>';
+    html += '<button class="yk-nav-btn primary" id="yk-to-lock">Sonraki</button>';
   }
   html += '</div></div>';
   c.innerHTML = html;
@@ -527,7 +514,7 @@ function renderLock() {
   var remaining = total - read;
 
   var html = '<div class="yk-screen"><div class="yk-lock-screen">';
-  html += '<div class="ls-icon">\ud83d\udd12</div>';
+  html += '';
   html += '<h2 class="ls-title">' + read + ' yetkinlik okudun</h2>';
   html += '<p class="ls-desc">' + remaining + ' yetkinlik daha seni bekliyor. Davran\u0131\u015fsal g\u00f6stergeler, retail \u00f6rnekleri ve m\u00fclakat sorular\u0131yla tam haz\u0131rl\u0131k i\u00e7in Premium\'a ge\u00e7.</p>';
   html += '<button class="ls-premium-cta">Premium\'a Ge\u00e7 \u2192</button>';
@@ -553,7 +540,7 @@ function renderCompletion() {
 
   var html = '<div class="yk-screen"><div class="yk-steps"><span class="yk-step"></span><span class="yk-step"></span><span class="yk-step active"></span></div>';
   html += '<div class="yk-completion">';
-  html += '<div class="cmp-icon">\ud83c\udf89</div>';
+  html += '';
   html += '<h2 class="cmp-title">Harika! Yetkinliklerini Ke\u015ffettin</h2>';
   html += '<p class="cmp-desc">' + S.role + ' rolunde ' + read + ' yetkinli\u011fi inceleyerek kariyer haritan\u0131 \u015fekillendirdin.</p>';
   html += '<div class="cmp-stats">';
@@ -561,7 +548,7 @@ function renderCompletion() {
   html += '<div class="cmp-stat"><span class="cmp-stat-num">' + (ROLE_COMP_MAP[S.role] || []).length + '</span><span class="cmp-stat-label">toplam yetkinlik</span></div>';
   html += '</div>';
   html += '<div class="cmp-actions">';
-  html += '<button class="yk-cta" id="yk-retry">\ud83c\udfaf Farkl\u0131 Rol Dene</button>';
+  html += '<button class="yk-cta" id="yk-retry">Farkl\u0131 Rol Dene</button>';
   html += '<button class="yk-cta secondary" id="yk-to-profile">\u2190 Profile D\u00f6n</button>';
   html += '</div></div></div>';
   c.innerHTML = html;
