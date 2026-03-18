@@ -13,9 +13,9 @@
 var COMP_NAMES = {
   cf:'Müşteri Odaklılık', ce:'Etkili İletişim', it:'Güven Oluşturma', co:'Takım Çalışması',
   ao:'Aksiyona Yönelim', ea:'Sorumluluk Alma', dr:'Sonuç Odaklılık', dw:'Ekip Yönlendirme',
-  bt:'Ekip Kurma', dt:'Yetenek Geliştirme', de:'Motivasyon & Bağlılık', pa:'Planlama & Önc.',
+  bt:'Ekip Kurma', dt:'Yetenek Geliştirme', de:'Motivasyon ve Bağlılık', pa:'Planlama ve Önceliklendirme',
   fa:'Finansal Okuryazarlık', sm:'Stratejik Bakış', nl:'Hızlı Öğrenme', br:'Dayanıklılık',
-  is:'İlişki Yönetimi', mc:'Çatışma Yönetimi', ci:'Yenilik & Yaratıcılık', pe:'İkna Etme',
+  is:'İlişki Yönetimi', mc:'Çatışma Yönetimi', ci:'Yenilik ve Yaratıcılık', pe:'İkna Etme',
   ts:'Dijital Yetkinlik', dq:'Karar Kalitesi', op:'Süreç Optimizasyonu', bs:'Paydaş Dengeleme',
   at:'Yetenek Çekme', bi:'İş Anlayışı', cu:'Cesaret', cx:'Karmaşıklık Yönetimi', sa:'Uyum Sağlama'
 };
