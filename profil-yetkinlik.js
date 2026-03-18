@@ -94,7 +94,7 @@ function injectCSS() {
   css += '@keyframes ykFadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}';
 
   /* --- Intro --- */
-  css += '.yk-intro{text-align:center;padding:56px 24px;max-width:480px;margin:0 auto}';
+  css += '.yk-intro{text-align:center;padding:24px;max-width:480px;margin:0 auto;min-height:60vh;display:flex;flex-direction:column;align-items:center;justify-content:center}';
   css += '.yk-intro-title{font-family:"Bricolage Grotesque",sans-serif;font-size:28px;font-weight:700;color:var(--navy,#1E2D5E);margin-bottom:12px;line-height:1.2}';
   css += '.yk-intro-desc{font-size:14px;color:var(--muted,#6B7280);line-height:1.7;margin-bottom:28px}';
   css += '.yk-cta{background:var(--verm,#C94E28);color:#fff;border:none;border-radius:12px;padding:14px 40px;font-family:"Plus Jakarta Sans",sans-serif;font-size:15px;font-weight:600;cursor:pointer;transition:all .2s}';
