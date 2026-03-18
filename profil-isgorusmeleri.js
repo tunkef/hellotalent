@@ -360,14 +360,18 @@ function injectCSS() {
   css += '.ig-sq-t.active,.ig-sq-r.active{background:var(--navy,#1E2D5E);border-color:var(--navy,#1E2D5E)}';
   css += '.ig-star-cell.active .ig-sq-letter,.ig-star-cell.active .ig-sq-label{color:#fff}';
 
-  /* Çıkarım card — separate bento card */
-  css += '.ig-takeaway-card{background:linear-gradient(135deg,#2A3F7A 0%,#1E2D5E 50%,#162247 100%);border:none;color:#fff}';
-  css += '.ig-takeaway-card .ig-section-title{color:#fff}';
-  css += '.ig-takeaway-header{display:flex;align-items:center;gap:12px;margin-bottom:10px}';
+  /* Çıkarım banner — slim full-width */
+  css += '.ig-takeaway-banner{background:linear-gradient(135deg,#2A3F7A 0%,#1E2D5E 50%,#162247 100%);border:none;color:#fff;display:flex;align-items:center;gap:16px;padding:16px 24px}';
   css += '.ig-takeaway-badge{font-family:"Bricolage Grotesque",sans-serif;font-size:22px;font-weight:900;color:var(--verm,#C94E28);flex-shrink:0}';
-  css += '.ig-takeaway-title{font-family:"Bricolage Grotesque",sans-serif;font-size:16px;font-weight:700}';
-  css += '.ig-takeaway-title-en{font-style:italic;font-weight:400;font-size:12px;color:rgba(255,255,255,.5);margin-left:6px}';
-  css += '.ig-takeaway-text{font-family:"Plus Jakarta Sans",sans-serif;font-size:13px;color:rgba(255,255,255,.8);line-height:1.7}';
+  css += '.ig-takeaway-body{flex:1;min-width:0}';
+  css += '.ig-takeaway-title{font-family:"Bricolage Grotesque",sans-serif;font-size:14px;font-weight:700;color:#fff;margin-bottom:2px}';
+  css += '.ig-takeaway-title-en{font-style:italic;font-weight:400;font-size:11px;color:rgba(255,255,255,.5);margin-left:4px}';
+  css += '.ig-takeaway-text{font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;color:rgba(255,255,255,.7);line-height:1.6}';
+
+  /* Benefit cards — asymmetric bento */
+  css += '.ig-benefit-card{display:flex;align-items:flex-start;gap:12px;padding:20px}';
+  css += '.ig-benefit-num{flex-shrink:0;width:28px;height:28px;border-radius:8px;background:rgba(201,78,40,.08);color:var(--verm,#C94E28);font-family:"DM Mono",monospace;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center}';
+  css += '.ig-benefit-text{font-family:"Plus Jakarta Sans",sans-serif;font-size:13px;color:var(--text-secondary,#4B5563);line-height:1.6}';
 
   /* Right panel — description */
   css += '.ig-star-right{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;min-height:180px}';
@@ -543,23 +547,23 @@ function renderIntro() {
 
   html += '</div></div>';
 
-  /* \u00C7\u0131kar\u0131m card — separate, next to benefits */
-  html += '<div class="ig-card ig-takeaway-card ig-bento-2">';
-  html += '<div class="ig-takeaway-header">';
+  /* \u00C7\u0131kar\u0131m — slim full-width banner */
+  html += '<div class="ig-card ig-takeaway-banner ig-bento-full">';
   html += '<div class="ig-takeaway-badge">+T</div>';
-  html += '<div><span class="ig-takeaway-title">\u00C7\u0131kar\u0131m</span><span class="ig-takeaway-title-en">(Takeaway)</span></div>';
-  html += '</div>';
+  html += '<div class="ig-takeaway-body">';
+  html += '<div class="ig-takeaway-title">\u00C7\u0131kar\u0131m <span class="ig-takeaway-title-en">(Takeaway)</span></div>';
   html += '<div class="ig-takeaway-text">' + d.what.takeaway.desc + '</div>';
-  html += '</div>';
+  html += '</div></div>';
 
-  /* Benefits card (span 1) */
-  html += '<div class="ig-card">';
-  html += '<div class="ig-section-title">Neden Etkili?</div>';
-  html += '<ul class="ig-benefits-list">';
+  /* Neden Etkili — 4 asymmetric bento cards */
+  html += '<div class="ig-section-title ig-bento-full" style="margin-top:4px;margin-bottom:-8px">Neden Etkili?</div>';
+  var benCls = ['ig-bento-2', '', '', 'ig-bento-2'];
   for (var b = 0; b < d.benefits.length; b++) {
-    html += '<li>' + checkSVG + '<span>' + d.benefits[b] + '</span></li>';
+    html += '<div class="ig-card ig-benefit-card ' + benCls[b] + '">';
+    html += '<div class="ig-benefit-num">' + (b + 1) + '</div>';
+    html += '<div class="ig-benefit-text">' + d.benefits[b] + '</div>';
+    html += '</div>';
   }
-  html += '</ul></div>';
 
   /* Example carousel (full width) */
   var slides = [
