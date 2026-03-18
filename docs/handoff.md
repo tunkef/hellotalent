@@ -1,5 +1,5 @@
 # hellotalent.ai — Technical Handoff Document
-> Son güncelleme: 18 Mart 2026 (Session 3 — Wizard UX, Dashboard Cleanup & Yetkinlik İçerik Sprint)
+> Son güncelleme: 18 Mart 2026 (Session 4 — Yetkinliklerim Panel Implementasyonu)
 > Bu doküman, projenin mevcut durumunu, tamamlanan işleri ve kalan backlog'u kapsar.
 > Yeni bir chat/session başlatırken bu dosyayı referans olarak kullanın.
 
@@ -41,12 +41,35 @@ Toplam: ~25,000 Türkçe kelime, Google'da bulunamayacak kalitede orijinal içer
 - Cloudflare cache purge yapıldı (Custom Purge → URL)
 - **Canlı ve çalışıyor:** https://hellotalent.ai/mockups/yetkinlikler.html
 
-### Sonraki Adımlar (Yarın)
-- [ ] `profil-core.js` → `RETAIL_COMPETENCY_MAP` constant (29 yetkinlik + rol eşleşmeleri)
+### Session 4 — 18 Mart 2026 (Devam)
+
+**5. profil-yetkinlik.js — Panel Implementasyonu (mockup → production)**
+- Yeni dosya: `profil-yetkinlik.js` (321 satır, IIFE pattern)
+- 29 ANCHORS yetkinlik verisi (def, why, skilled, lessskilled, highlyskilled, overused, retail, interview)
+- 34 rol → yetkinlik haritası (ROLES_COMP_MAP)
+- COMP_NAMES + COMP_KF lookup tabloları
+- Lazy loader: `window._htLoadYetkinlik()` — panel ilk açıldığında render
+- Panel render → search (fuzzy Turkish normalize) → results → right-sliding drawer
+- Freemium model: ilk 3 kart açık, geri kalanı lock overlay
+- Rating sistemi: toggle strong/growing (client-side state)
+- Tüm CSS inline inject via `<style>` tag (mockup ile birebir eşleşme)
+- SHA: `616c5e8`
+
+**6. profil.html — Panel Entegrasyonu**
+- `#panel-yetkinlik` placeholder basitleştirildi (JS'den render)
+- `<script src="profil-yetkinlik.js?v=20260318a">` eklendi
+- `_doSwitchPanel()`: yetkinlik lazy-load hook eklendi
+- Breadcrumb labels: `yetkinlik` ve `mulakat` eklendi
+- Cmd+K palette: Yetkinliklerim (🎯) ve İş Görüşmeleri (📋) eklendi
+- SHA: `5a5d3fe`
+
+### Sonraki Adımlar
+- [ ] Dashboard bento grid'de Yetkinliklerim ve İş Görüşmeleri kartları (panel-genel)
+- [ ] Sidebar nav'da Yetkinliklerim ve İş Görüşmeleri linkleri
 - [ ] Migration 042 → `competency_definitions`, `role_competency_map`, `candidate_competencies` tabloları
-- [ ] `profil.html` → `panel-yetkinlik` panel implementasyonu (mockup'tan gerçeğe)
+- [ ] Rating verilerini Supabase'e persist etme (candidate_competencies)
 - [ ] Freemium gate → `subscription_plan` check
-- [ ] Pending Cursor prompts: header+sidebar mockup implementasyonu, preview drawer, Sentry race condition fix
+- [ ] Pending Cursor prompts: header+sidebar mockup implementasyonu, preview drawer
 
 ---
 
