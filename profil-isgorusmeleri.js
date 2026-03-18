@@ -414,14 +414,14 @@ function injectCSS() {
   css += '.ig-benefits-list li:last-child{border-bottom:none}';
   css += '.ig-check{flex-shrink:0;width:18px;height:18px;color:var(--verm,#C94E28)}';
 
-  /* Tips grid */
-  css += '.ig-tips-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:12px}';
-  css += '.ig-tips-col h4{font-family:"Bricolage Grotesque",sans-serif;font-size:13px;font-weight:700;margin:0 0 10px;color:var(--text-primary,#111)}';
-  css += '.ig-tips-col ul{list-style:none;padding:0;margin:0}';
-  css += '.ig-tips-col li{font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;color:var(--text-secondary,#4B5563);line-height:1.5;padding:6px 0;padding-left:16px;position:relative}';
-  css += '.ig-tips-col li::before{content:"";position:absolute;left:0;top:12px;width:6px;height:6px;border-radius:50%}';
-  css += '.ig-tips-do li::before{background:var(--verm,#C94E28)}';
-  css += '.ig-tips-dont li::before{background:var(--text-muted,#6B7280)}';
+  /* Tips colored cards */
+  css += '.ig-tips-card-do{background:#C94E28;border:none !important;color:#fff}';
+  css += '.ig-tips-card-dont{background:var(--navy,#1E2D5E);border:none !important;color:#fff}';
+  css += '.ig-tips-heading{font-family:"Bricolage Grotesque",sans-serif;font-size:16px;font-weight:800;margin:0 0 14px;color:#fff}';
+  css += '.ig-tips-list{list-style:none;padding:0;margin:0}';
+  css += '.ig-tips-list li{font-family:"Plus Jakarta Sans",sans-serif;font-size:13px;color:rgba(255,255,255,.9);line-height:1.6;padding:7px 0;padding-left:18px;position:relative;border-bottom:1px solid rgba(255,255,255,.1)}';
+  css += '.ig-tips-list li:last-child{border-bottom:none}';
+  css += '.ig-tips-list li::before{content:"";position:absolute;left:0;top:14px;width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.5)}';
 
   /* Role selector */
   css += '.ig-role-card{background:linear-gradient(135deg,rgba(201,78,40,.04) 0%,rgba(201,78,40,.01) 100%);border:2px dashed var(--border-subtle,#E5E3DF);border-radius:16px;padding:28px 24px;text-align:center;transition:all .3s ease;cursor:pointer}';
@@ -472,7 +472,7 @@ function injectCSS() {
   css += '.ig-bento{grid-template-columns:1fr}';
   css += '.ig-bento-2{grid-column:1/-1}';
   css += '.ig-star-quad-card{padding:16px}';
-  css += '.ig-tips-grid{grid-template-columns:1fr}';
+  css += '.ig-tips-card-do,.ig-tips-card-dont{grid-column:1/-1}';
   css += '.ig-hero-title{font-size:18px}';
   css += '.ig-hero{padding:18px 20px}';
   css += '}';
@@ -589,17 +589,16 @@ function renderIntro() {
   }
   html += '</div></div>';
 
-  /* Tips card (full width) */
-  html += '<div class="ig-card ig-bento-full">';
-  html += '<div class="ig-section-title">\u0130pu\u00E7lar\u0131</div>';
-  html += '<div class="ig-tips-grid">';
-  html += '<div class="ig-tips-col ig-tips-do"><h4>Yap\u0131n</h4><ul>';
+  /* Tips — two separate colored cards */
+  html += '<div class="ig-card ig-tips-card-do">';
+  html += '<h4 class="ig-tips-heading">Yap\u0131n</h4><ul class="ig-tips-list">';
   for (var td = 0; td < d.tips_do.length; td++) html += '<li>' + d.tips_do[td] + '</li>';
   html += '</ul></div>';
-  html += '<div class="ig-tips-col ig-tips-dont"><h4>Yapmay\u0131n</h4><ul>';
+
+  html += '<div class="ig-card ig-tips-card-dont">';
+  html += '<h4 class="ig-tips-heading">Yapmay\u0131n</h4><ul class="ig-tips-list">';
   for (var tn = 0; tn < d.tips_dont.length; tn++) html += '<li>' + d.tips_dont[tn] + '</li>';
   html += '</ul></div>';
-  html += '</div></div>';
 
   /* Role selection card (full width) */
   html += '<div class="ig-card ig-role-card ig-bento-full" id="ig-role-area">';
