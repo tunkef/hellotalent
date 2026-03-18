@@ -240,14 +240,15 @@ var STAR_CONTENT = {
     title: 'STAR Tekni\u011Fi Nedir?',
     desc: 'STAR, i\u015F g\u00F6r\u00FC\u015Fmelerinde davran\u0131\u015Fsal sorular\u0131 yap\u0131land\u0131r\u0131lm\u0131\u015F ve etkili bi\u00E7imde yan\u0131tlamak i\u00E7in kullan\u0131lan kan\u0131tlanm\u0131\u015F bir y\u00F6ntemdir.',
     steps: [
-      { letter: 'S', label: 'Situation \u2014 Durum', desc: 'Kar\u015F\u0131la\u015Ft\u0131\u011F\u0131n\u0131z durumu veya zorlu\u011Fu tan\u0131mlay\u0131n. Bir veya iki c\u00FCmle yeterlidir.' },
-      { letter: 'T', label: 'Task \u2014 G\u00F6rev', desc: 'Ba\u015Ferman\u0131z gereken hedefi veya sorumlulu\u011Fu a\u00E7\u0131klay\u0131n. Tek c\u00FCmle.' },
-      { letter: 'A', label: 'Action \u2014 Aksiyon', desc: 'G\u00F6revi ba\u015Farmak i\u00E7in kulland\u0131\u011F\u0131n\u0131z teknik ve ki\u015Fisel becerileri detaylan-d\u0131r\u0131n. \u00DC\u00E7 ila be\u015F c\u00FCmle.' },
-      { letter: 'R', label: 'Result \u2014 Sonu\u00E7', desc: 'Eylemlerinizin yaratt\u0131\u011F\u0131 sonucu ve etkiyi payla\u015F\u0131n. Bir veya iki c\u00FCmle.' }
+      { letter: 'S', tr: 'Durum', en: 'Situation', desc: 'Kar\u015F\u0131la\u015Ft\u0131\u011F\u0131n\u0131z durumu, zorlu\u011Fu veya ba\u011Flam\u0131 tan\u0131mlay\u0131n. G\u00F6r\u00FC\u015Fmeciyi sahneye \u00E7ekin: neredeydiniz, ne oluyordu, neden \u00F6nemliydi? Ba\u011Flam\u0131 k\u0131sa ama net tutun \u2014 bir veya iki c\u00FCmle yeterlidir. Gereksiz detaylardan ka\u00E7\u0131n\u0131n, sadece hikayenin anla\u015F\u0131lmas\u0131 i\u00E7in gerekli olan arka plan\u0131 verin.' },
+      { letter: 'T', tr: 'G\u00F6rev', en: 'Task', desc: 'Bu durum i\u00E7inde sizin spesifik sorumlulu\u011Funuzu veya hedefinizi a\u00E7\u0131klay\u0131n. Ekibin genel g\u00F6revi de\u011Fil, sizden beklenen \u00E7\u0131kt\u0131y\u0131 netle\u015Ftirin. G\u00F6r\u00FC\u015Fmeci \u201Cbu ki\u015Finin rol\u00FC neydi?\u201D sorusuna net bir yan\u0131t almal\u0131. Tek c\u00FCmle ideal, ancak karma\u015F\u0131k g\u00F6revlerde iki c\u00FCmleye uzayabilir.' },
+      { letter: 'A', tr: 'Aksiyon', en: 'Action', desc: 'G\u00F6revi ba\u015Farmak i\u00E7in att\u0131\u011F\u0131n\u0131z somut ad\u0131mlar\u0131 detayland\u0131r\u0131n. Hem teknik becerileri (analiz, planlama, uygulama) hem de ki\u015Fisel becerileri (ileti\u015Fim, ikna, liderlik) dengeli bi\u00E7imde vurgulay\u0131n. \u201CBiz\u201D yerine \u201Cben\u201D kullanarak kendi katk\u0131n\u0131z\u0131 netle\u015Ftirin. Neden o yakla\u015F\u0131m\u0131 se\u00E7ti\u011Finizi ve alternatiflerden neden vazge\u00E7ti\u011Finizi k\u0131saca a\u00E7\u0131klay\u0131n. \u00DC\u00E7 ila be\u015F c\u00FCmle ideal uzunluktur.' },
+      { letter: 'R', tr: 'Sonu\u00E7', en: 'Result', desc: 'Eylemlerinizin yaratt\u0131\u011F\u0131 somut sonucu ve etkiyi payla\u015F\u0131n. M\u00FCmk\u00FCnse sonu\u00E7lar\u0131 rakamlarla destekleyin: y\u00FCzdelik art\u0131\u015F, s\u00FCre tasarrufu, m\u00FC\u015Fteri memnuniyet puan\u0131. Ba\u015Far\u0131 kadar ba\u015Far\u0131s\u0131zl\u0131ktan \u00F6\u011Frendikleriniz de de\u011Ferlidir \u2014 \u00F6nemli olan dersler \u00E7\u0131karm\u0131\u015F olman\u0131zd\u0131r. Bir veya iki c\u00FCmle.' }
     ],
     takeaway: {
-      label: '+T \u2014 \u00C7\u0131kar\u0131m',
-      desc: 'Deneyimden ne \u00F6\u011Frendi\u011Finizi ve bunu yeni role nas\u0131l ta\u015F\u0131yaca\u011F\u0131n\u0131z\u0131 ekleyin. Bu ek ad\u0131m, \u00F6z fark\u0131ndal\u0131\u011F\u0131n\u0131z\u0131 ve geli\u015Fim odakl\u0131 yakla\u015F\u0131m\u0131n\u0131z\u0131 g\u00F6sterir.'
+      tr: '\u00C7\u0131kar\u0131m',
+      en: 'Takeaway',
+      desc: 'Deneyimden ne \u00F6\u011Frendi\u011Finizi ve bu \u00F6\u011Frenimin yeni rolde nas\u0131l de\u011Fer yarataca\u011F\u0131n\u0131 a\u00E7\u0131klay\u0131n. Bu ek ad\u0131m, \u00F6z fark\u0131ndal\u0131\u011F\u0131n\u0131z\u0131, geli\u015Fim odakl\u0131 yakla\u015F\u0131m\u0131n\u0131z\u0131 ve ge\u00E7mi\u015F deneyimleri gelece\u011Fe ta\u015F\u0131ma kapasitenizi g\u00F6sterir. G\u00F6r\u00FC\u015Fmeciyi \u201Cbu aday \u00F6\u011Frenmeye a\u00E7\u0131k ve geli\u015Fiyor\u201D sonucuna ula\u015Ft\u0131r\u0131r.'
     }
   },
   example: {
@@ -335,10 +336,11 @@ function injectCSS() {
   /* Quad 2x2 */
   css += '.ig-star-quad{display:flex;flex-direction:column;gap:5px}';
   css += '.ig-star-row{display:flex;gap:5px}';
-  css += '.ig-star-cell{width:72px;height:72px;background:var(--bg-surface,#fff);border:2px solid var(--border-subtle,#E5E3DF);outline:none;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:all .25s ease;position:relative}';
+  css += '.ig-star-cell{width:76px;height:76px;background:var(--bg-surface,#fff);border:2px solid var(--border-subtle,#E5E3DF);outline:none;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:all .25s ease;position:relative}';
   css += '.ig-star-cell:hover{transform:scale(1.06);border-color:var(--text-muted,#6B7280)}';
-  css += '.ig-star-cell .ig-sq-letter{font-family:"DM Mono",monospace;font-size:26px;font-weight:700;transition:all .25s}';
-  css += '.ig-star-cell .ig-sq-label{font-family:"Bricolage Grotesque",sans-serif;font-size:8px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;transition:all .25s;margin-top:1px}';
+  css += '.ig-star-cell .ig-sq-letter{font-family:"Bricolage Grotesque",sans-serif;font-size:30px;font-weight:900;letter-spacing:-1px;transition:all .25s}';
+  css += '.ig-star-cell .ig-sq-label{font-family:"Plus Jakarta Sans",sans-serif;font-size:7.5px;font-weight:600;letter-spacing:.4px;text-transform:uppercase;transition:all .25s;margin-top:2px}';
+  css += '.ig-star-cell .ig-sq-label-en{font-style:italic;font-weight:400;text-transform:none;letter-spacing:0;opacity:.6}';
 
   /* Corner radii */
   css += '.ig-sq-s{border-radius:60px 5px 5px 5px}';
@@ -358,12 +360,14 @@ function injectCSS() {
   css += '.ig-sq-t.active,.ig-sq-r.active{background:var(--navy,#1E2D5E);border-color:var(--navy,#1E2D5E)}';
   css += '.ig-star-cell.active .ig-sq-letter,.ig-star-cell.active .ig-sq-label{color:#fff}';
 
-  /* +T pill below quad */
-  css += '.ig-star-plus-t{width:149px;background:linear-gradient(135deg,#2A3F7A 0%,#1E2D5E 50%,#162247 100%);border-radius:10px;padding:10px 12px;display:flex;align-items:center;gap:10px;color:#fff;cursor:pointer;transition:all .25s;border:2px solid transparent}';
-  css += '.ig-star-plus-t:hover{transform:scale(1.03)}';
-  css += '.ig-star-plus-t.active{border-color:var(--verm,#C94E28);box-shadow:0 0 0 2px rgba(201,78,40,.2)}';
-  css += '.ig-star-plus-t .ig-sq-letter{font-family:"DM Mono",monospace;font-size:16px;font-weight:700;color:var(--verm,#C94E28);flex-shrink:0}';
-  css += '.ig-star-plus-t .ig-sq-sublabel{font-family:"Bricolage Grotesque",sans-serif;font-size:10px;font-weight:700;color:#fff}';
+  /* Çıkarım card — separate bento card */
+  css += '.ig-takeaway-card{background:linear-gradient(135deg,#2A3F7A 0%,#1E2D5E 50%,#162247 100%);border:none;color:#fff}';
+  css += '.ig-takeaway-card .ig-section-title{color:#fff}';
+  css += '.ig-takeaway-header{display:flex;align-items:center;gap:12px;margin-bottom:10px}';
+  css += '.ig-takeaway-badge{font-family:"Bricolage Grotesque",sans-serif;font-size:22px;font-weight:900;color:var(--verm,#C94E28);flex-shrink:0}';
+  css += '.ig-takeaway-title{font-family:"Bricolage Grotesque",sans-serif;font-size:16px;font-weight:700}';
+  css += '.ig-takeaway-title-en{font-style:italic;font-weight:400;font-size:12px;color:rgba(255,255,255,.5);margin-left:6px}';
+  css += '.ig-takeaway-text{font-family:"Plus Jakarta Sans",sans-serif;font-size:13px;color:rgba(255,255,255,.8);line-height:1.7}';
 
   /* Right panel — description */
   css += '.ig-star-right{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;min-height:180px}';
@@ -444,9 +448,7 @@ function injectCSS() {
   css += '.ig-bento{grid-template-columns:1fr}';
   css += '.ig-bento-2{grid-column:1/-1}';
   css += '.ig-star-interactive{flex-direction:column}';
-  css += '.ig-star-left{flex-direction:row;justify-content:center}';
-  css += '.ig-star-quad{flex-direction:row}';
-  css += '.ig-star-plus-t{width:auto}';
+  css += '.ig-star-left{align-items:center}';
   css += '.ig-star-right{min-height:auto;padding-top:12px}';
   css += '.ig-tips-grid{grid-template-columns:1fr}';
   css += '.ig-hero-title{font-size:18px}';
@@ -492,27 +494,21 @@ function renderIntro() {
 
   html += '<div class="ig-star-interactive">';
 
-  /* Left: quad + takeaway */
+  /* Left: quad only */
   html += '<div class="ig-star-left">';
   html += '<div class="ig-star-quad">';
   html += '<div class="ig-star-row">';
   var qCls = ['ig-sq-s', 'ig-sq-t', 'ig-sq-a', 'ig-sq-r'];
   var qLtr = ['S', 'T', 'A', 'R'];
-  var qLbl = ['Durum', 'G\u00F6rev', 'Aksiyon', 'Sonu\u00E7'];
+  var steps = d.what.steps;
   for (var i = 0; i < 4; i++) {
     if (i === 2) html += '</div><div class="ig-star-row">';
     html += '<div class="ig-star-cell ' + qCls[i] + (i === 0 ? ' active' : '') + '" data-star="' + i + '">';
     html += '<div class="ig-sq-letter">' + qLtr[i] + '</div>';
-    html += '<div class="ig-sq-label">' + qLbl[i] + '</div>';
+    html += '<div class="ig-sq-label">' + steps[i].tr + ' <span class="ig-sq-label-en">(' + steps[i].en + ')</span></div>';
     html += '</div>';
   }
   html += '</div></div>';
-
-  /* +T pill */
-  html += '<div class="ig-star-plus-t" data-star="4">';
-  html += '<div class="ig-sq-letter">+T</div>';
-  html += '<div class="ig-sq-sublabel">\u00C7\u0131kar\u0131m</div>';
-  html += '</div>';
   html += '</div>';
 
   /* Right: detail panel — starts with S */
@@ -521,6 +517,15 @@ function renderIntro() {
   html += '</div>';
 
   html += '</div></div>';
+
+  /* \u00C7\u0131kar\u0131m card — separate, next to benefits */
+  html += '<div class="ig-card ig-takeaway-card ig-bento-2">';
+  html += '<div class="ig-takeaway-header">';
+  html += '<div class="ig-takeaway-badge">+T</div>';
+  html += '<div><span class="ig-takeaway-title">\u00C7\u0131kar\u0131m</span><span class="ig-takeaway-title-en">(Takeaway)</span></div>';
+  html += '</div>';
+  html += '<div class="ig-takeaway-text">' + d.what.takeaway.desc + '</div>';
+  html += '</div>';
 
   /* Benefits card (span 1) */
   html += '<div class="ig-card">';
@@ -574,17 +579,15 @@ function renderIntro() {
 
 function renderStarDetail(idx) {
   var d = STAR_CONTENT;
-  var titles = ['Situation \u2014 Durum', 'Task \u2014 G\u00F6rev', 'Action \u2014 Aksiyon', 'Result \u2014 Sonu\u00E7', '+T \u2014 \u00C7\u0131kar\u0131m'];
-  var subs = ['S', 'T', 'A', 'R', '+T'];
-  var descs = [];
-  for (var i = 0; i < d.what.steps.length; i++) descs.push(d.what.steps[i].desc);
-  descs.push(d.what.takeaway.desc);
+  var step = idx < 4 ? d.what.steps[idx] : null;
+  var tr = step ? step.tr : d.what.takeaway.tr;
+  var en = step ? step.en : d.what.takeaway.en;
+  var desc = step ? step.desc : d.what.takeaway.desc;
   var colors = ['var(--verm,#C94E28)', 'var(--navy,#1E2D5E)', 'var(--verm,#C94E28)', 'var(--navy,#1E2D5E)', 'var(--navy,#1E2D5E)'];
 
   var html = '<div class="ig-star-detail">';
-  html += '<div class="ig-star-detail-title" style="color:' + colors[idx] + '">' + titles[idx] + '</div>';
-  html += '<div class="ig-star-detail-sub">' + subs[idx] + '</div>';
-  html += '<div class="ig-star-detail-text">' + descs[idx] + '</div>';
+  html += '<div class="ig-star-detail-title" style="color:' + colors[idx] + '">' + tr + ' <span style="font-style:italic;font-weight:400;font-size:13px;opacity:.5">(' + en + ')</span></div>';
+  html += '<div class="ig-star-detail-text">' + desc + '</div>';
   html += '</div>';
   return html;
 }
@@ -704,17 +707,11 @@ function navigate(screen) {
 function bindIntroEvents() {
   /* STAR quad click handlers */
   var cells = document.querySelectorAll('.ig-star-cell[data-star]');
-  var plusT = document.querySelector('.ig-star-plus-t[data-star]');
   var detailPanel = document.getElementById('ig-star-detail');
 
   function setActiveStar(idx) {
     cells.forEach(function(c) { c.classList.remove('active'); });
-    if (plusT) plusT.classList.remove('active');
-    if (idx < 4) {
-      cells[idx] && cells[idx].classList.add('active');
-    } else {
-      if (plusT) plusT.classList.add('active');
-    }
+    if (idx < 4) cells[idx] && cells[idx].classList.add('active');
     if (detailPanel) detailPanel.innerHTML = renderStarDetail(idx);
   }
 
@@ -723,11 +720,6 @@ function bindIntroEvents() {
       setActiveStar(parseInt(this.getAttribute('data-star'), 10));
     });
   });
-  if (plusT) {
-    plusT.addEventListener('click', function() {
-      setActiveStar(4);
-    });
-  }
 
   /* Role dropdown */
   var dd = document.getElementById('ig-role-dd');
