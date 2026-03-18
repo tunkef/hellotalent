@@ -686,7 +686,7 @@ function navigate(screen) {
     bindQuestionEvents();
   }
 
-  container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function bindIntroEvents() {
