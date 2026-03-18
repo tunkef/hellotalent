@@ -322,7 +322,7 @@ function injectCSS() {
   css += '.ig-card:hover{box-shadow:0 8px 24px rgba(0,0,0,.06);transform:translateY(-1px)}';
 
   /* Hero card — compact, matches mk-identity sizing */
-  css += '.ig-hero{background:#C94E28;color:#fff;padding:22px 24px;border:none !important;border-radius:24px !important;box-shadow:0 2px 8px rgba(0,0,0,.08),0 8px 20px rgba(0,0,0,.06);margin-bottom:0;min-height:80px;display:flex;align-items:center}';
+  css += '.ig-hero{background:#C94E28;color:#fff;padding:22px 24px;border:none;border-radius:24px;box-shadow:0 2px 8px rgba(0,0,0,.08),0 8px 20px rgba(0,0,0,.06);margin-bottom:16px;min-height:80px;display:flex;align-items:center;animation:igFadeIn .3s ease}';
   css += '.ig-hero-title{font-family:"Bricolage Grotesque",sans-serif;font-size:20px;font-weight:800;line-height:1.25;letter-spacing:-.2px}';
 
   /* Section titles */
@@ -511,12 +511,12 @@ function renderIntro() {
   var d = STAR_CONTENT;
   var html = '';
 
-  html += '<div class="ig-bento">';
-
-  /* Hero — compact title only */
-  html += '<div class="ig-card ig-hero ig-bento-full">';
+  /* Hero — outside bento grid, matches g-hero / mk-identity */
+  html += '<div class="ig-hero">';
   html += '<div class="ig-hero-title">\u0130\u015F g\u00F6r\u00FC\u015Fmesi bir performanst\u0131r.</div>';
   html += '</div>';
+
+  html += '<div class="ig-bento">';
 
   /* Intro description card */
   html += '<div class="ig-card ig-bento-full">';
