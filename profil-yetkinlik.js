@@ -109,7 +109,7 @@ function injectCSS() {
   var css = '';
 
   /* --- Layout --- */
-  css += '#yk-container{max-width:720px;margin:0 auto;padding:0 0 40px}';
+  css += '#yk-container{max-width:100%;padding:0 0 40px}';
   css += '.yk-screen{animation:ykFadeIn .25s ease}';
   css += '@keyframes ykFadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}';
   css += '@keyframes ykSlideUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}';
@@ -157,7 +157,7 @@ function injectCSS() {
   css += '.yk-lock-text{font-size:11px;font-weight:600;color:var(--navy,#1E2D5E);text-align:center}';
 
   /* ========== READING: BENTO GRID LAYOUT ========== */
-  css += '.yk-reading-page{max-width:720px;margin:0 auto}';
+  css += '.yk-reading-page{max-width:100%}';
 
   /* Header card */
   css += '.yk-rh{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;gap:12px;background:#fff;border:1px solid var(--border,#E5E3DF);border-radius:20px;padding:20px 24px;box-shadow:0 2px 8px rgba(0,0,0,.04)}';

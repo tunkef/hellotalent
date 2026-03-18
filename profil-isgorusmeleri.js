@@ -304,7 +304,7 @@ function injectCSS() {
   var css = '';
 
   /* Container */
-  css += '#ig-container{max-width:960px;margin:0 auto;padding:0 16px 40px}';
+  css += '#ig-container{max-width:100%;padding:0 0 40px}';
 
   /* Bento Grid */
   css += '.ig-bento{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:20px}';
