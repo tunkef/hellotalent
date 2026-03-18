@@ -1179,21 +1179,24 @@ if (window.Sentry) {
 
 <!-- ═══ PANEL: MESAJLAR (Unified Inbox) ═══ -->
 <main class="panel" id="panel-inbox" data-panel="inbox">
-  <div class="wiz-step-title" style="display:flex;align-items:center;gap:10px;">
-    Mesajlar
-    <span id="inbox-unread-badge" class="badge-verm"></span>
+  <!-- Hero card -->
+  <div class="g-hero">
+    <div class="g-hero-inner" style="justify-content:space-between;">
+      <div style="font-family:'Bricolage Grotesque',sans-serif;font-size:20px;font-weight:800;color:#fff;display:flex;align-items:center;gap:10px;">
+        Mesajlar
+        <span id="inbox-unread-badge" class="badge-verm"></span>
+      </div>
+    </div>
   </div>
-  <div class="wiz-step-desc">Kampanya bildirimleri, sistem mesajları ve işveren iletişimleri</div>
 
   <!-- Filter tabs -->
-  <div id="inbox-tabs" class="tag-row"></div>
+  <div id="inbox-tabs" class="tag-row" style="border:1px solid var(--border-subtle,#E5E3DF);border-radius:16px;padding:12px 16px;background:var(--bg-surface,#fff);margin-bottom:16px;"></div>
 
   <!-- Message list -->
   <div id="inbox-list" style="display:flex;flex-direction:column;gap:8px;"></div>
 
   <!-- Empty state -->
-  <div id="inbox-empty" class="empty-state">
-    <div class="empty-icon">✉️</div>
+  <div id="inbox-empty" class="empty-state" style="border:1px solid var(--border-subtle,#E5E3DF);border-radius:16px;padding:40px 24px;background:var(--bg-surface,#fff);">
     <div class="empty-title">Henüz mesajın yok</div>
     <div class="sub-text">Kampanya bildirimleri ve işveren mesajları burada görünecek</div>
   </div>
@@ -1201,21 +1204,24 @@ if (window.Sentry) {
 
 <!-- ═══ PANEL: BİLDİRİMLER ═══ -->
 <main class="panel" id="panel-bildirimler" data-panel="bildirimler">
-  <div class="wiz-step-title" style="display:flex;align-items:center;gap:10px;">
-    Bildirimler
-    <span id="notif-unread-badge" class="badge-verm"></span>
+  <!-- Hero card -->
+  <div class="g-hero">
+    <div class="g-hero-inner" style="justify-content:space-between;">
+      <div style="font-family:'Bricolage Grotesque',sans-serif;font-size:20px;font-weight:800;color:#fff;display:flex;align-items:center;gap:10px;">
+        Bildirimler
+        <span id="notif-unread-badge" class="badge-verm"></span>
+      </div>
+    </div>
   </div>
-  <div class="wiz-step-desc">Sistem bildirimleri, mesaj uyarıları ve güncellemeler</div>
 
   <!-- Notification filter tabs -->
-  <div id="notif-tabs" class="tag-row"></div>
+  <div id="notif-tabs" class="tag-row" style="border:1px solid var(--border-subtle,#E5E3DF);border-radius:16px;padding:12px 16px;background:var(--bg-surface,#fff);margin-bottom:16px;"></div>
 
   <!-- Notification list -->
   <div id="notif-list" style="display:flex;flex-direction:column;gap:8px;"></div>
 
   <!-- Empty state -->
-  <div id="notif-empty" class="empty-state">
-    <div class="empty-icon">🔔</div>
+  <div id="notif-empty" class="empty-state" style="border:1px solid var(--border-subtle,#E5E3DF);border-radius:16px;padding:40px 24px;background:var(--bg-surface,#fff);">
     <div class="empty-title">Henüz bildirim yok</div>
     <div class="sub-text">Yeni mesajlar ve güncellemeler burada görünecek</div>
   </div>
@@ -1223,8 +1229,12 @@ if (window.Sentry) {
 
 <!-- ═══ PANEL: AYARLAR ═══ -->
 <main class="panel" id="panel-ayarlar" data-panel="ayarlar">
-  <div class="wiz-step-title">Hesap Ayarları</div>
-  <div class="wiz-step-desc">Hesap bilgilerini yönet.</div>
+  <!-- Hero card -->
+  <div class="g-hero">
+    <div class="g-hero-inner">
+      <div style="font-family:'Bricolage Grotesque',sans-serif;font-size:20px;font-weight:800;color:#fff;">Hesap Ayarları</div>
+    </div>
+  </div>
   <div class="card">
     <div class="card-title">Hesap Bilgileri</div>
     <div class="field">
