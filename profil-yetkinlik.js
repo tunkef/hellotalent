@@ -103,18 +103,13 @@ function injectCSS() {
   css += '.yk-cta.secondary:hover{border-color:var(--navy,#1E2D5E);transform:translateY(-1px)}';
 
   /* --- Role Selection --- */
-  css += '.yk-role-section{margin-bottom:24px}';
-  css += '.yk-screen-title{font-family:"Bricolage Grotesque",sans-serif;font-size:22px;font-weight:700;color:var(--navy,#1E2D5E);margin-bottom:8px}';
+  css += '.yk-screen-title{font-family:"Bricolage Grotesque",sans-serif;font-size:22px;font-weight:700;color:var(--navy,#1E2D5E);margin-bottom:24px}';
   css += '.yk-screen-desc{font-size:13px;color:var(--muted,#6B7280);line-height:1.6;margin-bottom:24px}';
-  css += '.yk-role-label{font-size:12px;font-weight:600;color:var(--muted,#6B7280);letter-spacing:.5px;text-transform:uppercase;margin-bottom:8px}';
-  css += '.yk-role-current{font-size:14px;color:var(--text,#111);padding:12px 16px;background:var(--bg,#F7F6F4);border-radius:10px;border:1px solid var(--border,#E5E3DF);margin-bottom:24px}';
-  css += '.yk-role-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:24px}';
-  css += '.yk-role-card{background:#fff;border:1.5px solid var(--border,#E5E3DF);border-radius:14px;padding:20px;cursor:pointer;transition:all .2s;text-align:center;position:relative}';
-  css += '.yk-role-card:hover{border-color:var(--verm,#C94E28);transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.06)}';
-  css += '.yk-role-card .rc-icon{font-size:28px;margin-bottom:8px}';
-  css += '.yk-role-card .rc-title{font-family:"Bricolage Grotesque",sans-serif;font-size:15px;font-weight:600;color:var(--navy,#1E2D5E);margin-bottom:4px}';
-  css += '.yk-role-card .rc-desc{font-size:12px;color:var(--muted,#6B7280);line-height:1.5}';
-  css += '.yk-role-card .rc-level{font-size:10px;font-weight:600;color:var(--verm,#C94E28);background:rgba(201,78,40,.08);padding:2px 8px;border-radius:8px;position:absolute;top:10px;right:10px}';
+  css += '.yk-role-page{text-align:center;min-height:50vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;max-width:400px;margin:0 auto}';
+  css += '.yk-select-wrap{width:100%;margin-bottom:24px}';
+  css += '.yk-select{width:100%;height:48px;border:1.5px solid var(--border,#E5E3DF);border-radius:10px;padding:0 16px;font-family:"Plus Jakarta Sans",sans-serif;font-size:14px;color:var(--text,#111);background:#fff;cursor:pointer;outline:none;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'12\' height=\'12\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%236B7280\' stroke-width=\'2\'%3E%3Cpath d=\'M6 9l6 6 6-6\'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;transition:border-color .2s}';
+  css += '.yk-select:focus{border-color:var(--navy,#1E2D5E)}';
+  css += '.yk-cta.disabled{opacity:.4;cursor:not-allowed}';
 
   /* --- Steps indicator --- */
   css += '.yk-steps{display:flex;justify-content:center;gap:8px;margin-bottom:28px;padding-top:8px}';
@@ -190,7 +185,7 @@ function injectCSS() {
   css += '.yk-completion .cmp-actions{display:flex;flex-direction:column;gap:10px;max-width:280px;margin:0 auto}';
 
   /* --- Mobile --- */
-  css += '@media(max-width:768px){.yk-role-grid{grid-template-columns:repeat(2,1fr);gap:10px}.yk-role-card{padding:16px}.yk-role-card .rc-icon{font-size:22px}.yk-intro{padding:40px 16px}.yk-intro-title{font-size:24px}.yk-completion{padding:32px 16px}.yk-reading{padding:20px 16px}.yk-comp-grid{grid-template-columns:1fr}}';
+  css += '@media(max-width:768px){.yk-intro{padding:40px 16px}.yk-intro-title{font-size:24px}.yk-completion{padding:32px 16px}.yk-reading{padding:20px 16px}.yk-comp-grid{grid-template-columns:1fr}.yk-select{font-size:16px !important}}';
 
   var el = document.createElement('style');
   el.id = 'yk-css';
@@ -262,39 +257,31 @@ function renderIntro() {
 function renderRoleSelect() {
   var c = getContainer();
   if (!c) return;
-  var currentRole = window._htUserPozisyon || '';
   var html = '<div class="yk-screen">';
   html += '<div class="yk-steps"><span class="yk-step active"></span><span class="yk-step"></span><span class="yk-step"></span></div>';
-  html += '<h2 class="yk-screen-title">Hangi Rol \u0130\u00e7in Haz\u0131rlan\u0131yorsun?</h2>';
-  html += '<p class="yk-screen-desc">Mevcut veya hedefledi\u011fin rol\u00fc se\u00e7. Sana \u00f6zel yetkinlik haritan\u0131 \u00e7\u0131karal\u0131m.</p>';
-  if (currentRole) {
-    html += '<div class="yk-role-section"><div class="yk-role-label">Mevcut rol\u00fcn</div>';
-    html += '<div class="yk-role-current"><strong>' + currentRole + '</strong></div></div>';
-  }
-  html += '<div class="yk-role-label">Hedef rol\u00fcn\u00fc se\u00e7</div>';
-  html += '<div class="yk-role-grid">';
+  html += '<div class="yk-role-page">';
+  html += '<h2 class="yk-screen-title">Mevcut veya hedef rol\u00fcn\u00fc se\u00e7</h2>';
+  html += '<div class="yk-select-wrap">';
+  html += '<select class="yk-select" id="yk-role-select"><option value="" disabled selected>Rol se\u00e7...</option>';
   for (var i = 0; i < RETAIL_ROLES.length; i++) {
-    var r = RETAIL_ROLES[i];
-    html += '<div class="yk-role-card" data-role="' + r.key + '">' +
-      '<div class="rc-level">' + r.level + '</div>' +
-      '<div class="rc-title">' + r.key + '</div>' +
-    '</div>';
+    html += '<option value="' + RETAIL_ROLES[i].key + '">' + RETAIL_ROLES[i].key + ' \u00b7 ' + RETAIL_ROLES[i].level + '</option>';
   }
+  html += '</select></div>';
+  html += '<button class="yk-cta disabled" id="yk-role-start" disabled>Ba\u015flat</button>';
   html += '</div>';
   html += '<div class="yk-nav"><button class="yk-nav-btn" id="yk-back-intro">\u2190 Geri</button><div class="yk-nav-spacer"></div></div>';
   html += '</div>';
   c.innerHTML = html;
-  c.addEventListener('click', function handler(e) {
-    var card = e.target.closest('[data-role]');
-    if (card) {
-      c.removeEventListener('click', handler);
-      navigate('preview', {role: card.getAttribute('data-role')});
-      return;
-    }
-    if (e.target.closest('#yk-back-intro')) {
-      c.removeEventListener('click', handler);
-      navigate('intro');
-    }
+  var sel = document.getElementById('yk-role-select');
+  var btn = document.getElementById('yk-role-start');
+  sel.addEventListener('change', function() {
+    if (sel.value) { btn.disabled = false; btn.classList.remove('disabled'); }
+  });
+  btn.addEventListener('click', function() {
+    if (sel.value) navigate('preview', {role: sel.value});
+  });
+  document.getElementById('yk-back-intro').addEventListener('click', function() {
+    navigate('intro');
   });
 }
 
