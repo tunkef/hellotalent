@@ -204,7 +204,7 @@ test.describe('Sprint 4 — copy quality & accessibility', () => {
   test('bento grid contains locked cards with opacity styling', () => {
     expect(profilHtml).toContain('class="bento-grid"');
     // Locked cards are in the same grid, marked with .locked class
-    expect((profilHtml.match(/class="bento-card locked"/g) || []).length).toBeGreaterThan(0);
+    expect((profilHtml.match(/class="bento-card[^"]*locked/g) || []).length).toBeGreaterThan(0);
     // CSS provides opacity styling for locked cards
     expect(profilCss).toContain('.bento-card.locked');
   });

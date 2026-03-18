@@ -769,6 +769,13 @@
       });
     }
 
+    var kbBtn = document.getElementById('header-kimbakti');
+    if (kbBtn) {
+      kbBtn.addEventListener('click', function() {
+        if (typeof switchPanel === 'function') switchPanel('kimbakti');
+      });
+    }
+
     var seeAllMsg = document.getElementById('popup-msg-see-all');
     if (seeAllMsg) {
       seeAllMsg.addEventListener('click', function(e) {
