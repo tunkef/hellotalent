@@ -37,25 +37,41 @@ var ANCHORS={cf:{def:"G\u00fc\u00e7l\u00fc m\u00fc\u015fteri ili\u015fkileri kur
    RETAIL ROLES TAXONOMY (fresh, career progression)
    ════════════════════════════════════════════════ */
 
-var RETAIL_ROLES = [
-  {key:'Sat\u0131\u015f Dan\u0131\u015fman\u0131',       level:'Giri\u015f'},
-  {key:'K\u0131demli Sat\u0131\u015f Dan.',  level:'Giri\u015f-Orta'},
-  {key:'Kat M\u00fcd\u00fcr\u00fc',          level:'Orta'},
-  {key:'Ma\u011faza M\u00fcd. Yrd.',   level:'Orta-\u00dcst'},
-  {key:'Ma\u011faza M\u00fcd\u00fcr\u00fc',       level:'\u00dcst'},
-  {key:'B\u00f6lge M\u00fcd\u00fcr\u00fc',       level:'\u00dcst'},
-  {key:'Genel M\u00fcd\u00fcr',        level:'\u00dcst'}
-];
-
-/* Role → competency codes mapping (uses ANCHORS keys) */
+/* Full 34-role taxonomy with competency mappings */
 var ROLE_COMP_MAP = {
+  'Kasiyer':              ['cf','it','ea','ce','br'],
   'Sat\u0131\u015f Dan\u0131\u015fman\u0131':      ['cf','ce','it','co','ao'],
-  'K\u0131demli Sat\u0131\u015f Dan.': ['cf','ce','it','co','is','nl'],
-  'Kat M\u00fcd\u00fcr\u00fc':         ['dw','cf','ea','co','pa','bt'],
-  'Ma\u011faza M\u00fcd. Yrd.':  ['bt','dw','cf','ea','pa','co','de'],
-  'Ma\u011faza M\u00fcd\u00fcr\u00fc':      ['bt','dr','dw','cf','ea','pa','de','fa','sm'],
-  'B\u00f6lge M\u00fcd\u00fcr\u00fc':      ['sm','dr','bt','de','pa','bs','fa','dw','at'],
-  'Genel M\u00fcd\u00fcr':       ['sm','bi','dr','bt','de','bs','fa','dw','at','cx']
+  'K\u0131demli Sat\u0131\u015f Dan.':   ['cf','ce','it','co','is','nl'],
+  'G\u00f6rsel Sat\u0131\u015f Uzm.':    ['ci','pa','cf','sa','ao'],
+  'Display Uzman\u0131':       ['ci','pa','ao','cf','nl'],
+  'Stok Sorumlusu':       ['ea','op','pa','co','dq'],
+  'Kasa Sorumlusu':       ['cf','ea','dw','it','co','ce'],
+  'VM Koordinat\u00f6r\u00fc':      ['ci','pa','co','cf','sa','ea'],
+  'Onboarding Uzman\u0131':    ['ce','is','co','cf','nl'],
+  'Sat\u0131\u015f Uzman\u0131':         ['cf','pe','bi','ce','co','is','dr'],
+  '\u00dcr\u00fcn Uzman\u0131':          ['cf','bi','ce','ts','co','nl','pe'],
+  'Omni-Channel Sat\u0131\u015f':   ['cf','ts','sa','ce','bi','co','dr'],
+  'Envanter Uzman\u0131':      ['op','dq','ea','pa','co','bi'],
+  'E\u011fitim Uzman\u0131':        ['dt','ce','nl','co','de','pa'],
+  'Ma\u011faza Ko\u00e7u':          ['dt','is','de','ce','co','cf'],
+  '\u0130\u015fe Al\u0131m Uzman\u0131':      ['at','is','ce','dq','co','pe'],
+  'CRM Uzman\u0131':           ['cf','ts','bi','ce','dq','pa'],
+  'Kat M\u00fcd\u00fcr\u00fc':           ['cf','dw','mc','ea','ao','co','ce'],
+  'Ma\u011faza M\u00fcd\u00fcr Yrd.':    ['ea','de','pa','cf','dw','mc','co','dr'],
+  'VM M\u00fcd\u00fcr\u00fc':            ['ci','sm','dw','pa','cf','co','dr'],
+  'E\u011fitim M\u00fcd\u00fcr\u00fc':        ['dt','ce','de','pa','co','dw','ea'],
+  'Operasyon M\u00fcd\u00fcr\u00fc':     ['op','dw','pa','ea','dq','co','bi','dr'],
+  '\u0130K \u0130\u015f Orta\u011f\u0131':         ['at','dt','ce','bs','is','mc','dq'],
+  'Ma\u011faza M\u00fcd\u00fcr\u00fc':        ['ea','dr','dw','bt','cf','dt','co','fa','de'],
+  'Store Leader':         ['sm','it','de','cf','dr','bt','co','cu','ea'],
+  'B\u00f6lge M\u00fcd\u00fcr\u00fc':         ['dr','ea','dt','sm','cf','bt','pa','de','co','fa'],
+  'B\u00f6lge Operasyon M\u00fcd.': ['op','pa','ea','dr','cx','dw','dq','co','fa'],
+  'B\u00f6lge G\u00f6rsel M\u00fcd\u00fcr\u00fc':  ['ci','sm','dw','pa','cf','pe','dr','co','bs'],
+  'B\u00f6lge Sat\u0131\u015f M\u00fcd\u00fcr\u00fc':   ['dr','cf','pe','de','bt','bi','pa','co','fa'],
+  'B\u00f6lge Direkt\u00f6r\u00fc':      ['sm','cu','ea','bs','bt','dr','co','fa','dt','cx'],
+  '\u00dclke M\u00fcd\u00fcr\u00fc':          ['sm','cu','ea','bs','bt','dr','co','fa','dt','cx','de'],
+  '\u0130K M\u00fcd\u00fcr\u00fc':            ['at','bt','is','ea','co','mc','bs','ce','sm'],
+  '\u00dclke E\u011fitim M\u00fcd\u00fcr\u00fc':   ['dt','sm','ce','pa','de','bt','dr','co','bs']
 };
 
 var FREE_LIMIT = 2;
@@ -262,9 +278,10 @@ function renderRoleSelect() {
   html += '<div class="yk-role-page">';
   html += '<h2 class="yk-screen-title">Mevcut veya hedef rol\u00fcn\u00fc se\u00e7</h2>';
   html += '<div class="yk-select-wrap">';
+  var roleKeys = Object.keys(ROLE_COMP_MAP);
   html += '<select class="yk-select" id="yk-role-select"><option value="" disabled selected>Rol se\u00e7...</option>';
-  for (var i = 0; i < RETAIL_ROLES.length; i++) {
-    html += '<option value="' + RETAIL_ROLES[i].key + '">' + RETAIL_ROLES[i].key + ' \u00b7 ' + RETAIL_ROLES[i].level + '</option>';
+  for (var i = 0; i < roleKeys.length; i++) {
+    html += '<option value="' + roleKeys[i] + '">' + roleKeys[i] + '</option>';
   }
   html += '</select></div>';
   html += '<button class="yk-cta disabled" id="yk-role-start" disabled>Ba\u015flat</button>';
