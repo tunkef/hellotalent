@@ -350,17 +350,12 @@ function injectCSS() {
   css += '.ig-sq-a{border-radius:5px 5px 5px 60px}';
   css += '.ig-sq-r{border-radius:5px 5px 60px 5px}';
 
-  /* Default colors */
-  css += '.ig-sq-s .ig-sq-letter,.ig-sq-a .ig-sq-letter{color:var(--verm,#C94E28)}';
-  css += '.ig-sq-s .ig-sq-label,.ig-sq-a .ig-sq-label{color:var(--verm,#C94E28)}';
-  css += '.ig-sq-t .ig-sq-letter,.ig-sq-r .ig-sq-letter{color:var(--navy,#1E2D5E)}';
-  css += '.ig-sq-t .ig-sq-label,.ig-sq-r .ig-sq-label{color:var(--navy,#1E2D5E)}';
+  /* Default: white bg, vermillion letters */
+  css += '.ig-star-cell .ig-sq-letter{color:var(--verm,#C94E28)}';
 
-  /* Active state */
-  css += '.ig-star-cell.active{transform:scale(1.06)}';
-  css += '.ig-sq-s.active,.ig-sq-a.active{background:var(--verm,#C94E28);border-color:var(--verm,#C94E28)}';
-  css += '.ig-sq-t.active,.ig-sq-r.active{background:var(--navy,#1E2D5E);border-color:var(--navy,#1E2D5E)}';
-  css += '.ig-star-cell.active .ig-sq-letter,.ig-star-cell.active .ig-sq-label{color:#fff}';
+  /* Active: navy bg, white letter */
+  css += '.ig-star-cell.active{transform:scale(1.06);background:var(--navy,#1E2D5E);border-color:var(--navy,#1E2D5E)}';
+  css += '.ig-star-cell.active .ig-sq-letter{color:#fff}';
 
   /* Çıkarım banner — slim full-width */
   css += '.ig-takeaway-banner{background:linear-gradient(135deg,#2A3F7A 0%,#1E2D5E 50%,#162247 100%);border:none;color:#fff;display:flex;align-items:center;gap:16px;padding:16px 24px}';
