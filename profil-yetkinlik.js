@@ -248,7 +248,6 @@ function renderIntro() {
   if (!c) return;
   c.innerHTML = '<div class="yk-screen"><div class="yk-intro">' +
     '<h2 class="yk-intro-title">Sekt\u00f6rde En \u0130yisi Ol</h2>' +
-    '<p class="yk-intro-desc">Hedefledi\u011fin role g\u00f6re yetkinlik haritan\u0131 ke\u015ffet.</p>' +
     '<button class="yk-cta" id="yk-start">Ba\u015fla</button>' +
     '</div></div>';
   document.getElementById('yk-start').addEventListener('click', function() {
