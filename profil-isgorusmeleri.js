@@ -328,54 +328,49 @@ function injectCSS() {
   css += '.ig-section-title{font-family:"Bricolage Grotesque",sans-serif;font-size:18px;font-weight:700;color:var(--text-primary,#111);margin-bottom:6px}';
   css += '.ig-section-desc{font-family:"Plus Jakarta Sans",sans-serif;font-size:13px;color:var(--text-muted,#6B7280);line-height:1.6}';
 
-  /* STAR Quad Card */
-  css += '.ig-star-quad-wrap{display:flex;flex-direction:column;align-items:center;margin-top:20px}';
-  css += '.ig-star-quad{display:flex;flex-direction:column;gap:6px;width:196px}';
-  css += '.ig-star-row{display:flex;gap:6px}';
-  css += '.ig-star-cell{width:95px;height:95px;background:var(--bg-surface,#fff);border:none;outline:none;border-radius:5px;box-shadow:rgba(50,50,93,.25) 0 2px 5px -1px,rgba(0,0,0,.3) 0 1px 3px -1px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:.25s ease-in-out;position:relative}';
-  css += '.ig-star-cell:hover{transform:scale(1.08)}';
-  css += '.ig-star-cell .ig-sq-letter{font-family:"DM Mono",monospace;font-size:32px;font-weight:700;transition:color .25s}';
-  css += '.ig-star-cell .ig-sq-label{font-family:"Bricolage Grotesque",sans-serif;font-size:9px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;transition:color .25s;margin-top:2px}';
-  css += '.ig-star-cell .ig-sq-desc{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:10px;font-family:"Plus Jakarta Sans",sans-serif;font-size:10px;line-height:1.4;text-align:center;color:#fff;opacity:0;transition:opacity .25s;pointer-events:none}';
+  /* STAR Interactive Card — layout */
+  css += '.ig-star-interactive{display:flex;gap:24px;align-items:stretch;margin-top:16px}';
+  css += '.ig-star-left{display:flex;flex-direction:column;align-items:center;gap:8px;flex-shrink:0}';
 
-  /* S — top-left */
-  css += '.ig-sq-s{border-radius:90px 5px 5px 5px}';
-  css += '.ig-sq-s .ig-sq-letter{color:var(--verm,#C94E28)}';
-  css += '.ig-sq-s .ig-sq-label{color:var(--verm,#C94E28)}';
-  css += '.ig-sq-s:hover{background:var(--verm,#C94E28)}';
-  css += '.ig-sq-s:hover .ig-sq-letter,.ig-sq-s:hover .ig-sq-label{color:#fff;opacity:0}';
-  css += '.ig-sq-s:hover .ig-sq-desc{opacity:1}';
+  /* Quad 2x2 */
+  css += '.ig-star-quad{display:flex;flex-direction:column;gap:5px}';
+  css += '.ig-star-row{display:flex;gap:5px}';
+  css += '.ig-star-cell{width:72px;height:72px;background:var(--bg-surface,#fff);border:2px solid var(--border-subtle,#E5E3DF);outline:none;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:all .25s ease;position:relative}';
+  css += '.ig-star-cell:hover{transform:scale(1.06);border-color:var(--text-muted,#6B7280)}';
+  css += '.ig-star-cell .ig-sq-letter{font-family:"DM Mono",monospace;font-size:26px;font-weight:700;transition:all .25s}';
+  css += '.ig-star-cell .ig-sq-label{font-family:"Bricolage Grotesque",sans-serif;font-size:8px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;transition:all .25s;margin-top:1px}';
 
-  /* T — top-right */
-  css += '.ig-sq-t{border-radius:5px 90px 5px 5px}';
-  css += '.ig-sq-t .ig-sq-letter{color:var(--navy,#1E2D5E)}';
-  css += '.ig-sq-t .ig-sq-label{color:var(--navy,#1E2D5E)}';
-  css += '.ig-sq-t:hover{background:var(--navy,#1E2D5E)}';
-  css += '.ig-sq-t:hover .ig-sq-letter,.ig-sq-t:hover .ig-sq-label{color:#fff;opacity:0}';
-  css += '.ig-sq-t:hover .ig-sq-desc{opacity:1}';
+  /* Corner radii */
+  css += '.ig-sq-s{border-radius:60px 5px 5px 5px}';
+  css += '.ig-sq-t{border-radius:5px 60px 5px 5px}';
+  css += '.ig-sq-a{border-radius:5px 5px 5px 60px}';
+  css += '.ig-sq-r{border-radius:5px 5px 60px 5px}';
 
-  /* A — bottom-left */
-  css += '.ig-sq-a{border-radius:5px 5px 5px 90px}';
-  css += '.ig-sq-a .ig-sq-letter{color:var(--verm,#C94E28)}';
-  css += '.ig-sq-a .ig-sq-label{color:var(--verm,#C94E28)}';
-  css += '.ig-sq-a:hover{background:var(--verm,#C94E28)}';
-  css += '.ig-sq-a:hover .ig-sq-letter,.ig-sq-a:hover .ig-sq-label{color:#fff;opacity:0}';
-  css += '.ig-sq-a:hover .ig-sq-desc{opacity:1}';
+  /* Default colors */
+  css += '.ig-sq-s .ig-sq-letter,.ig-sq-a .ig-sq-letter{color:var(--verm,#C94E28)}';
+  css += '.ig-sq-s .ig-sq-label,.ig-sq-a .ig-sq-label{color:var(--verm,#C94E28)}';
+  css += '.ig-sq-t .ig-sq-letter,.ig-sq-r .ig-sq-letter{color:var(--navy,#1E2D5E)}';
+  css += '.ig-sq-t .ig-sq-label,.ig-sq-r .ig-sq-label{color:var(--navy,#1E2D5E)}';
 
-  /* R — bottom-right */
-  css += '.ig-sq-r{border-radius:5px 5px 90px 5px}';
-  css += '.ig-sq-r .ig-sq-letter{color:var(--navy,#1E2D5E)}';
-  css += '.ig-sq-r .ig-sq-label{color:var(--navy,#1E2D5E)}';
-  css += '.ig-sq-r:hover{background:var(--navy,#1E2D5E)}';
-  css += '.ig-sq-r:hover .ig-sq-letter,.ig-sq-r:hover .ig-sq-label{color:#fff;opacity:0}';
-  css += '.ig-sq-r:hover .ig-sq-desc{opacity:1}';
+  /* Active state */
+  css += '.ig-star-cell.active{transform:scale(1.06)}';
+  css += '.ig-sq-s.active,.ig-sq-a.active{background:var(--verm,#C94E28);border-color:var(--verm,#C94E28)}';
+  css += '.ig-sq-t.active,.ig-sq-r.active{background:var(--navy,#1E2D5E);border-color:var(--navy,#1E2D5E)}';
+  css += '.ig-star-cell.active .ig-sq-letter,.ig-star-cell.active .ig-sq-label{color:#fff}';
 
-  /* Takeaway strip */
-  css += '.ig-star-takeaway{margin-top:10px;width:196px;background:linear-gradient(135deg,#2A3F7A 0%,#1E2D5E 50%,#162247 100%);border-radius:14px;padding:14px 16px;display:flex;align-items:center;gap:12px;color:#fff}';
-  css += '.ig-star-takeaway .ig-sq-letter{font-family:"DM Mono",monospace;font-size:20px;font-weight:700;color:var(--verm,#C94E28);flex-shrink:0}';
-  css += '.ig-star-takeaway-text{flex:1}';
-  css += '.ig-star-takeaway .ig-star-label{font-family:"Bricolage Grotesque",sans-serif;font-size:11px;font-weight:700;color:#fff;margin:0}';
-  css += '.ig-star-takeaway .ig-star-desc{font-family:"Plus Jakarta Sans",sans-serif;font-size:10px;color:rgba(255,255,255,.65);line-height:1.4;margin-top:2px}';
+  /* +T pill below quad */
+  css += '.ig-star-plus-t{width:149px;background:linear-gradient(135deg,#2A3F7A 0%,#1E2D5E 50%,#162247 100%);border-radius:10px;padding:10px 12px;display:flex;align-items:center;gap:10px;color:#fff;cursor:pointer;transition:all .25s;border:2px solid transparent}';
+  css += '.ig-star-plus-t:hover{transform:scale(1.03)}';
+  css += '.ig-star-plus-t.active{border-color:var(--verm,#C94E28);box-shadow:0 0 0 2px rgba(201,78,40,.2)}';
+  css += '.ig-star-plus-t .ig-sq-letter{font-family:"DM Mono",monospace;font-size:16px;font-weight:700;color:var(--verm,#C94E28);flex-shrink:0}';
+  css += '.ig-star-plus-t .ig-sq-sublabel{font-family:"Bricolage Grotesque",sans-serif;font-size:10px;font-weight:700;color:#fff}';
+
+  /* Right panel — description */
+  css += '.ig-star-right{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;min-height:180px}';
+  css += '.ig-star-detail{animation:igFadeIn .2s ease}';
+  css += '.ig-star-detail-title{font-family:"Bricolage Grotesque",sans-serif;font-size:16px;font-weight:800;margin-bottom:4px}';
+  css += '.ig-star-detail-sub{font-family:"DM Mono",monospace;font-size:10px;letter-spacing:.5px;color:var(--text-muted,#6B7280);margin-bottom:10px}';
+  css += '.ig-star-detail-text{font-family:"Plus Jakarta Sans",sans-serif;font-size:13px;color:var(--text-secondary,#4B5563);line-height:1.7}';
 
   /* Example card */
   css += '.ig-example{background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF);border-radius:16px;padding:24px}';
@@ -448,7 +443,11 @@ function injectCSS() {
   css += '@media(max-width:768px){';
   css += '.ig-bento{grid-template-columns:1fr}';
   css += '.ig-bento-2{grid-column:1/-1}';
-  css += '.ig-star-quad-wrap{margin-top:16px}';
+  css += '.ig-star-interactive{flex-direction:column}';
+  css += '.ig-star-left{flex-direction:row;justify-content:center}';
+  css += '.ig-star-quad{flex-direction:row}';
+  css += '.ig-star-plus-t{width:auto}';
+  css += '.ig-star-right{min-height:auto;padding-top:12px}';
   css += '.ig-tips-grid{grid-template-columns:1fr}';
   css += '.ig-hero-title{font-size:18px}';
   css += '.ig-hero{padding:18px 20px}';
@@ -486,48 +485,41 @@ function renderIntro() {
   html += '<div class="ig-section-desc" style="font-size:14px;line-height:1.7;color:var(--text-secondary,#4B5563)">' + d.intro + '</div>';
   html += '</div>';
 
-  /* STAR Technique card (span 2) with quad-card */
-  html += '<div class="ig-card ig-bento-2" style="display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap">';
-  html += '<div style="flex:1;min-width:200px">';
+  /* STAR Technique card (full width) — interactive */
+  html += '<div class="ig-card ig-bento-full">';
   html += '<div class="ig-section-title">' + d.what.title + '</div>';
-  html += '<div class="ig-section-desc">' + d.what.desc + '</div>';
-  html += '</div>';
+  html += '<div class="ig-section-desc" style="margin-bottom:4px">' + d.what.desc + '</div>';
 
-  /* Quad card block */
-  html += '<div class="ig-star-quad-wrap">';
+  html += '<div class="ig-star-interactive">';
+
+  /* Left: quad + takeaway */
+  html += '<div class="ig-star-left">';
   html += '<div class="ig-star-quad">';
   html += '<div class="ig-star-row">';
-  var quadClasses = ['ig-sq-s', 'ig-sq-t'];
-  var quadLetters = ['S', 'T'];
-  for (var i = 0; i < 2; i++) {
-    var s = d.what.steps[i];
-    html += '<div class="ig-star-cell ' + quadClasses[i] + '">';
-    html += '<div class="ig-sq-letter">' + quadLetters[i] + '</div>';
-    html += '<div class="ig-sq-label">' + s.label.split(' \u2014 ')[1] + '</div>';
-    html += '<div class="ig-sq-desc">' + s.desc + '</div>';
-    html += '</div>';
-  }
-  html += '</div>';
-  html += '<div class="ig-star-row">';
-  var quadClasses2 = ['ig-sq-a', 'ig-sq-r'];
-  var quadLetters2 = ['A', 'R'];
-  for (var j = 0; j < 2; j++) {
-    var s2 = d.what.steps[j + 2];
-    html += '<div class="ig-star-cell ' + quadClasses2[j] + '">';
-    html += '<div class="ig-sq-letter">' + quadLetters2[j] + '</div>';
-    html += '<div class="ig-sq-label">' + s2.label.split(' \u2014 ')[1] + '</div>';
-    html += '<div class="ig-sq-desc">' + s2.desc + '</div>';
+  var qCls = ['ig-sq-s', 'ig-sq-t', 'ig-sq-a', 'ig-sq-r'];
+  var qLtr = ['S', 'T', 'A', 'R'];
+  var qLbl = ['Durum', 'G\u00F6rev', 'Aksiyon', 'Sonu\u00E7'];
+  for (var i = 0; i < 4; i++) {
+    if (i === 2) html += '</div><div class="ig-star-row">';
+    html += '<div class="ig-star-cell ' + qCls[i] + (i === 0 ? ' active' : '') + '" data-star="' + i + '">';
+    html += '<div class="ig-sq-letter">' + qLtr[i] + '</div>';
+    html += '<div class="ig-sq-label">' + qLbl[i] + '</div>';
     html += '</div>';
   }
   html += '</div></div>';
 
-  /* Takeaway strip below quad */
-  html += '<div class="ig-star-takeaway">';
+  /* +T pill */
+  html += '<div class="ig-star-plus-t" data-star="4">';
   html += '<div class="ig-sq-letter">+T</div>';
-  html += '<div class="ig-star-takeaway-text">';
-  html += '<div class="ig-star-label">' + d.what.takeaway.label + '</div>';
-  html += '<div class="ig-star-desc">' + d.what.takeaway.desc + '</div>';
-  html += '</div></div>';
+  html += '<div class="ig-sq-sublabel">\u00C7\u0131kar\u0131m</div>';
+  html += '</div>';
+  html += '</div>';
+
+  /* Right: detail panel — starts with S */
+  html += '<div class="ig-star-right" id="ig-star-detail">';
+  html += renderStarDetail(0);
+  html += '</div>';
+
   html += '</div></div>';
 
   /* Benefits card (span 1) */
@@ -576,6 +568,23 @@ function renderIntro() {
   html += renderRoleDropdown();
   html += '</div>';
 
+  html += '</div>';
+  return html;
+}
+
+function renderStarDetail(idx) {
+  var d = STAR_CONTENT;
+  var titles = ['Situation \u2014 Durum', 'Task \u2014 G\u00F6rev', 'Action \u2014 Aksiyon', 'Result \u2014 Sonu\u00E7', '+T \u2014 \u00C7\u0131kar\u0131m'];
+  var subs = ['S', 'T', 'A', 'R', '+T'];
+  var descs = [];
+  for (var i = 0; i < d.what.steps.length; i++) descs.push(d.what.steps[i].desc);
+  descs.push(d.what.takeaway.desc);
+  var colors = ['var(--verm,#C94E28)', 'var(--navy,#1E2D5E)', 'var(--verm,#C94E28)', 'var(--navy,#1E2D5E)', 'var(--navy,#1E2D5E)'];
+
+  var html = '<div class="ig-star-detail">';
+  html += '<div class="ig-star-detail-title" style="color:' + colors[idx] + '">' + titles[idx] + '</div>';
+  html += '<div class="ig-star-detail-sub">' + subs[idx] + '</div>';
+  html += '<div class="ig-star-detail-text">' + descs[idx] + '</div>';
   html += '</div>';
   return html;
 }
@@ -693,6 +702,34 @@ function navigate(screen) {
 }
 
 function bindIntroEvents() {
+  /* STAR quad click handlers */
+  var cells = document.querySelectorAll('.ig-star-cell[data-star]');
+  var plusT = document.querySelector('.ig-star-plus-t[data-star]');
+  var detailPanel = document.getElementById('ig-star-detail');
+
+  function setActiveStar(idx) {
+    cells.forEach(function(c) { c.classList.remove('active'); });
+    if (plusT) plusT.classList.remove('active');
+    if (idx < 4) {
+      cells[idx] && cells[idx].classList.add('active');
+    } else {
+      if (plusT) plusT.classList.add('active');
+    }
+    if (detailPanel) detailPanel.innerHTML = renderStarDetail(idx);
+  }
+
+  cells.forEach(function(cell) {
+    cell.addEventListener('click', function() {
+      setActiveStar(parseInt(this.getAttribute('data-star'), 10));
+    });
+  });
+  if (plusT) {
+    plusT.addEventListener('click', function() {
+      setActiveStar(4);
+    });
+  }
+
+  /* Role dropdown */
   var dd = document.getElementById('ig-role-dd');
   if (dd) {
     dd.addEventListener('change', function() {
