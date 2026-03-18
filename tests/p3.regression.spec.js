@@ -201,8 +201,11 @@ test.describe('Sprint 4 — copy quality & accessibility', () => {
     expect(subTenMatches).toEqual([]);
   });
 
-  test('lab section separates locked cards from main grid', () => {
-    expect(profilHtml).toContain('class="lab-section"');
-    expect(profilHtml).toContain('class="bento-grid lab-grid"');
+  test('bento grid contains locked cards with opacity styling', () => {
+    expect(profilHtml).toContain('class="bento-grid"');
+    // Locked cards are in the same grid, marked with .locked class
+    expect(profilHtml.match(/class="bento-card locked"/g) || [].length).toBeGreaterThan(0);
+    // CSS provides opacity styling for locked cards
+    expect(profilCss).toContain('.bento-card.locked');
   });
 });

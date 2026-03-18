@@ -146,7 +146,7 @@ if (window.Sentry) {
           </div>
         </div>
         <div class="avd-divider"></div>
-        <button type="button" class="avd-item" id="avd-settings-btn" onclick="if(window.switchPanel) switchPanel('ayarlar'); document.getElementById('avatar-dropdown').style.display='none';">
+        <button type="button" class="avd-item" id="avd-settings-btn" data-panel="ayarlar" data-close-dropdown="avatar-dropdown">
           <svg class="avd-item-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
           <span>Ayarlar ve Gizlilik</span>
         </button>
@@ -493,7 +493,7 @@ if (window.Sentry) {
       </button>
 
       <!-- Kim Baktı -->
-      <div class="bento-card" id="lab-viewers-card" style="cursor:pointer;" onclick="if(window.switchPanel) switchPanel('kimbakti');">
+      <div class="bento-card" id="lab-viewers-card" style="cursor:pointer;" data-panel="kimbakti">
         <div class="bento-content">
           <div class="bento-icon navy">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="1" fill="currentColor" opacity="0.3"/></svg>
@@ -518,7 +518,7 @@ if (window.Sentry) {
       </div>
 
       <!-- Yetkinliklerim -->
-      <div class="bento-card" style="cursor:pointer;" onclick="if(window.switchPanel) switchPanel('yetkinlik');">
+      <div class="bento-card" style="cursor:pointer;" data-panel="yetkinlik">
         <div class="bento-content">
           <div class="bento-icon navy">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
@@ -1524,7 +1524,7 @@ if (window.Sentry) {
         <div style="font-size:12px;color:rgba(255,255,255,0.7);margin-top:2px;">Hangi şirketlerin profilini incelediğini, pozisyon detaylarını ve trendleri gör.</div>
       </div>
     </div>
-    <button type="button" onclick="if(window.switchPanel) switchPanel('ayarlar');" style="margin-top:12px;width:100%;padding:10px;background:var(--verm);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;">Premium'a Geç</button>
+    <button type="button" data-panel="ayarlar" style="margin-top:12px;width:100%;padding:10px;background:var(--verm);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;">Premium'a Geç</button>
   </div>
 
   <!-- Conversion stat (premium only) -->
@@ -1572,6 +1572,26 @@ if (window.Sentry) {
 <script src="profil-teklifler.js?v=20260317d"></script>
 <script src="profil-inbox.js?v=20260317d"></script>
 <script src="profil-yetkinlik.js?v=20260318a"></script>
+
+<script>
+// ─── Panel click handlers (converted from inline onclick) ────────
+(function() {
+  var panelButtons = document.querySelectorAll('[data-panel]');
+  panelButtons.forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      var panelName = this.getAttribute('data-panel');
+      if (window.switchPanel) switchPanel(panelName);
+      // Close dropdown if specified
+      var dropdownId = this.getAttribute('data-close-dropdown');
+      if (dropdownId) {
+        var dropdown = document.getElementById(dropdownId);
+        if (dropdown) dropdown.style.display = 'none';
+      }
+    });
+  });
+})();
+</script>
 
 <script>
 /* ═══════════════════════════════════════════════════════════════
