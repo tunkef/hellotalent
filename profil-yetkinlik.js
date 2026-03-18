@@ -280,7 +280,7 @@ function renderRoleSelect() {
   html += '<div class="yk-role-page">';
   html += '<h2 class="yk-screen-title">Mevcut veya hedef rol\u00fcn\u00fc se\u00e7</h2>';
   html += '<div class="yk-select-wrap">';
-  var roleKeys = Object.keys(ROLE_COMP_MAP);
+  var roleKeys = Object.keys(ROLE_COMP_MAP).sort(function(a,b){ return a.localeCompare(b,'tr'); });
   html += '<select class="yk-select" id="yk-role-select"><option value="" disabled selected>Rol se\u00e7...</option>';
   for (var i = 0; i < roleKeys.length; i++) {
     html += '<option value="' + roleKeys[i] + '">' + roleKeys[i] + '</option>';
