@@ -132,19 +132,20 @@ function injectCSS() {
   css += '.yk-step{width:8px;height:8px;border-radius:50%;background:var(--border,#E5E3DF);transition:all .3s}';
   css += '.yk-step.active{background:var(--verm,#C94E28);width:28px;border-radius:4px}';
 
-  /* --- Preview Grid --- */
-  css += '.yk-preview-hero{background:linear-gradient(135deg,#2A3F7A 0%,var(--navy,#1E2D5E) 50%,#162247 100%);border-radius:16px;padding:24px;margin-bottom:24px;position:relative;overflow:hidden}';
+  /* --- Preview Grid (bento asymmetric) --- */
+  css += '.yk-preview-hero{background:linear-gradient(135deg,#2A3F7A 0%,var(--navy,#1E2D5E) 50%,#162247 100%);border-radius:20px;padding:24px;margin-bottom:20px;position:relative;overflow:hidden}';
   css += '.yk-preview-hero .ph-tag{display:inline-flex;align-items:center;gap:5px;background:rgba(201,78,40,.2);border:1px solid rgba(201,78,40,.4);border-radius:12px;padding:4px 10px;font-size:11px;font-weight:600;color:#FCA47A;margin-bottom:10px}';
   css += '.yk-preview-hero .ph-title{font-family:"Bricolage Grotesque",sans-serif;font-size:20px;font-weight:700;color:#fff;margin-bottom:8px;line-height:1.3}';
   css += '.yk-preview-hero .ph-count{font-family:"DM Mono",monospace;font-size:13px;color:rgba(255,255,255,.6)}';
-  css += '.yk-comp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;margin-bottom:24px}';
-  css += '.yk-comp-card{background:#fff;border:1.5px solid var(--border,#E5E3DF);border-radius:14px;padding:18px;transition:all .2s;position:relative;overflow:hidden;cursor:pointer}';
-  css += '.yk-comp-card:hover{border-color:#C4B5B0;transform:translateY(-1px);box-shadow:0 4px 16px rgba(0,0,0,.06)}';
-  css += '.yk-comp-card.locked{cursor:default}.yk-comp-card.locked:hover{transform:none;box-shadow:none}';
+  css += '.yk-comp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px}';
+  css += '.yk-comp-card{background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,var(--border,#E5E3DF));border-radius:20px;padding:20px;position:relative;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;box-shadow:0 0 0 1px rgba(0,0,0,.03),0 2px 4px rgba(0,0,0,.05),0 12px 24px rgba(0,0,0,.05);transition:all .35s cubic-bezier(.4,0,.2,1)}';
+  css += '.yk-comp-card:hover{transform:translateY(-2px);border-color:rgba(201,78,40,.2);box-shadow:0 0 0 1px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.08),0 16px 32px rgba(0,0,0,.07)}';
+  css += '.yk-comp-card.span-2{grid-column:span 2}';
+  css += '.yk-comp-card.locked{cursor:default}.yk-comp-card.locked:hover{transform:none;box-shadow:0 0 0 1px rgba(0,0,0,.03),0 2px 4px rgba(0,0,0,.05),0 12px 24px rgba(0,0,0,.05);border-color:var(--border-subtle,var(--border,#E5E3DF))}';
   css += '.yk-comp-card .cc-name{font-family:"Bricolage Grotesque",sans-serif;font-size:14px;font-weight:600;color:var(--navy,#1E2D5E);margin-bottom:2px}';
-  css += '.yk-comp-card .cc-kf{font-size:10px;color:var(--muted,#6B7280);font-family:"DM Mono",monospace;margin-bottom:8px}';
-  css += '.yk-comp-card .cc-def{font-size:12px;color:var(--muted,#6B7280);line-height:1.5}';
-  css += '.yk-lock{position:absolute;inset:0;background:rgba(247,246,244,.9);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;border-radius:12px;backdrop-filter:blur(3px)}';
+  css += '.yk-comp-card .cc-kf{font-size:10px;color:var(--muted,#6B7280);font-family:"DM Mono",monospace;margin-bottom:10px}';
+  css += '.yk-comp-card .cc-def{font-size:12px;color:var(--muted,#6B7280);line-height:1.6}';
+  css += '.yk-lock{position:absolute;inset:0;background:rgba(247,246,244,.88);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;border-radius:18px;backdrop-filter:blur(3px)}';
   css += '.yk-lock-icon{width:36px;height:36px;background:var(--navy,#1E2D5E);border-radius:50%;display:flex;align-items:center;justify-content:center}';
   css += '.yk-lock-icon svg{width:16px;height:16px}';
   css += '.yk-lock-text{font-size:11px;font-weight:600;color:var(--navy,#1E2D5E);text-align:center}';
@@ -201,7 +202,8 @@ function injectCSS() {
   css += '.yk-completion .cmp-actions{display:flex;flex-direction:column;gap:10px;max-width:280px;margin:0 auto}';
 
   /* --- Mobile --- */
-  css += '@media(max-width:768px){.yk-intro{padding:40px 16px}.yk-intro-title{font-size:24px}.yk-completion{padding:32px 16px}.yk-reading{padding:20px 16px}.yk-comp-grid{grid-template-columns:1fr}.yk-select{font-size:16px !important}}';
+  css += '@media(max-width:900px){.yk-comp-grid{grid-template-columns:repeat(2,1fr)}.yk-comp-card.span-2{grid-column:span 1}}';
+  css += '@media(max-width:768px){.yk-intro{padding:40px 16px}.yk-intro-title{font-size:24px}.yk-completion{padding:32px 16px}.yk-reading{padding:20px 16px}.yk-comp-grid{grid-template-columns:1fr}.yk-comp-card.span-2{grid-column:span 1}.yk-select{font-size:16px !important}}';
 
   var el = document.createElement('style');
   el.id = 'yk-css';
@@ -333,7 +335,8 @@ function renderPreview() {
     var name = COMP_NAMES[code] || code;
     var kf = COMP_KF[code] || '';
     var locked = !canRead(i);
-    html += '<div class="yk-comp-card' + (locked ? ' locked' : '') + '" data-comp="' + code + '" data-idx="' + i + '">';
+    var isWide = (i === 0 || i % 5 === 0);
+    html += '<div class="yk-comp-card' + (isWide ? ' span-2' : '') + (locked ? ' locked' : '') + '" data-comp="' + code + '" data-idx="' + i + '">';
     html += '<div class="cc-name">' + name + '</div>';
     html += '<div class="cc-kf">' + kf + '</div>';
     if (a) html += '<div class="cc-def">' + a.def + '</div>';
