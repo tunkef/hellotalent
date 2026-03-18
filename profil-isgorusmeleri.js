@@ -320,10 +320,9 @@ function injectCSS() {
   css += '.ig-bento>.ig-card:nth-child(2){animation-delay:.05s}.ig-bento>.ig-card:nth-child(3){animation-delay:.1s}.ig-bento>.ig-card:nth-child(4){animation-delay:.15s}.ig-bento>.ig-card:nth-child(5){animation-delay:.2s}.ig-bento>.ig-card:nth-child(6){animation-delay:.25s}.ig-bento>.ig-card:nth-child(7){animation-delay:.3s}';
   css += '.ig-card:hover{box-shadow:0 8px 24px rgba(0,0,0,.06);transform:translateY(-1px)}';
 
-  /* Hero card */
-  css += '.ig-hero{background:var(--navy,#1E2D5E);color:#fff;padding:40px 32px;border:none;border-radius:20px}';
-  css += '.ig-hero-title{font-family:"Bricolage Grotesque",sans-serif;font-size:28px;font-weight:800;line-height:1.25;margin-bottom:12px;letter-spacing:-.3px}';
-  css += '.ig-hero-sub{font-family:"Plus Jakarta Sans",sans-serif;font-size:15px;color:rgba(255,255,255,.75);line-height:1.65;max-width:640px}';
+  /* Hero card — compact, matches mk-identity sizing */
+  css += '.ig-hero{background:var(--navy,#1E2D5E);color:#fff;padding:22px 24px;border:none;border-radius:24px;box-shadow:0 2px 8px rgba(0,0,0,.08),0 8px 20px rgba(0,0,0,.06)}';
+  css += '.ig-hero-title{font-family:"Bricolage Grotesque",sans-serif;font-size:20px;font-weight:800;line-height:1.25;letter-spacing:-.2px}';
 
   /* Section titles */
   css += '.ig-section-title{font-family:"Bricolage Grotesque",sans-serif;font-size:18px;font-weight:700;color:var(--text-primary,#111);margin-bottom:6px}';
@@ -451,8 +450,8 @@ function injectCSS() {
   css += '.ig-bento-2{grid-column:1/-1}';
   css += '.ig-star-quad-wrap{margin-top:16px}';
   css += '.ig-tips-grid{grid-template-columns:1fr}';
-  css += '.ig-hero-title{font-size:22px}';
-  css += '.ig-hero{padding:28px 20px}';
+  css += '.ig-hero-title{font-size:18px}';
+  css += '.ig-hero{padding:18px 20px}';
   css += '}';
 
   var el = document.createElement('style');
@@ -477,10 +476,14 @@ function renderIntro() {
 
   html += '<div class="ig-bento">';
 
-  /* Hero */
+  /* Hero — compact title only */
   html += '<div class="ig-card ig-hero ig-bento-full">';
   html += '<div class="ig-hero-title">\u0130\u015F g\u00F6r\u00FC\u015Fmesi bir performanst\u0131r.</div>';
-  html += '<div class="ig-hero-sub">' + d.intro + '</div>';
+  html += '</div>';
+
+  /* Intro description card */
+  html += '<div class="ig-card ig-bento-full">';
+  html += '<div class="ig-section-desc" style="font-size:14px;line-height:1.7;color:var(--text-secondary,#4B5563)">' + d.intro + '</div>';
   html += '</div>';
 
   /* STAR Technique card (span 2) with quad-card */
