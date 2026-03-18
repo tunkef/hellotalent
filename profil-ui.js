@@ -29,6 +29,15 @@ function updateStatusUI(isActive) {
       genelText.textContent = 'Beni önerme';
     }
   }
+
+  // Avatar glow (eclipse effect) for "Beni Öner" state
+  ['merkez-avatar', 'ps-avatar'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) {
+      if (isActive) { el.classList.add('glow-active'); }
+      else { el.classList.remove('glow-active'); }
+    }
+  });
 }
 
 // ═══════════════════════════════════════════════════
