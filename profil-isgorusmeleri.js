@@ -376,13 +376,38 @@ function injectCSS() {
   css += '.ig-star-detail-sub{font-family:"DM Mono",monospace;font-size:10px;letter-spacing:.5px;color:var(--text-muted,#6B7280);margin-bottom:10px}';
   css += '.ig-star-detail-text{font-family:"Plus Jakarta Sans",sans-serif;font-size:13px;color:var(--text-secondary,#4B5563);line-height:1.7}';
 
-  /* Example card */
-  css += '.ig-example{background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF);border-radius:16px;padding:24px}';
-  css += '.ig-example-title{font-family:"Bricolage Grotesque",sans-serif;font-size:15px;font-weight:700;color:var(--text-primary,#111);margin-bottom:16px}';
-  css += '.ig-example-row{display:flex;gap:12px;margin-bottom:12px;align-items:flex-start}';
-  css += '.ig-example-badge{flex-shrink:0;width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:"DM Mono",monospace;font-size:13px;font-weight:700;color:#fff;background:var(--verm,#C94E28)}';
-  css += '.ig-example-badge.navy{background:var(--navy,#1E2D5E)}';
-  css += '.ig-example-text{font-family:"Plus Jakarta Sans",sans-serif;font-size:13px;color:var(--text-secondary,#4B5563);line-height:1.6}';
+  /* Example carousel */
+  css += '.ig-carousel-wrap{position:relative;overflow:hidden;border-radius:16px;border:1px solid var(--border-subtle,#E5E3DF)}';
+  css += '.ig-carousel-track{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none}';
+  css += '.ig-carousel-track::-webkit-scrollbar{display:none}';
+  css += '.ig-carousel-slide{min-width:100%;scroll-snap-align:start;padding:28px 24px;box-sizing:border-box}';
+
+  /* Question slide (first) */
+  css += '.ig-slide-question{background:var(--bg-surface,#fff);display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;min-height:180px}';
+  css += '.ig-slide-question .ig-slide-q{font-family:"Bricolage Grotesque",sans-serif;font-size:18px;font-weight:800;color:var(--text-primary,#111);line-height:1.4;max-width:480px}';
+  css += '.ig-slide-question .ig-slide-hint{font-family:"Plus Jakarta Sans",sans-serif;font-size:11px;color:var(--text-muted,#6B7280);margin-top:12px}';
+
+  /* STAR step slides */
+  css += '.ig-slide-step{background:var(--bg-surface,#fff);display:flex;gap:16px;align-items:flex-start;min-height:180px}';
+  css += '.ig-slide-badge{flex-shrink:0;width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-family:"Bricolage Grotesque",sans-serif;font-size:20px;font-weight:900;color:#fff}';
+  css += '.ig-slide-badge.verm{background:var(--verm,#C94E28)}';
+  css += '.ig-slide-badge.navy{background:var(--navy,#1E2D5E)}';
+  css += '.ig-slide-body{flex:1;min-width:0}';
+  css += '.ig-slide-label{font-family:"Bricolage Grotesque",sans-serif;font-size:14px;font-weight:700;color:var(--text-primary,#111);margin-bottom:2px}';
+  css += '.ig-slide-label-en{font-style:italic;font-weight:400;font-size:12px;color:var(--text-muted,#6B7280);margin-left:4px}';
+  css += '.ig-slide-text{font-family:"Plus Jakarta Sans",sans-serif;font-size:13px;color:var(--text-secondary,#4B5563);line-height:1.7;margin-top:6px}';
+
+  /* Carousel dots */
+  css += '.ig-carousel-dots{display:flex;justify-content:center;gap:6px;padding:12px 0 4px}';
+  css += '.ig-carousel-dot{width:8px;height:8px;border-radius:50%;background:var(--border-subtle,#E5E3DF);transition:all .2s;cursor:pointer}';
+  css += '.ig-carousel-dot.active{background:var(--verm,#C94E28);width:20px;border-radius:4px}';
+
+  /* Carousel arrows */
+  css += '.ig-carousel-arrows{position:absolute;top:50%;left:0;right:0;display:flex;justify-content:space-between;pointer-events:none;transform:translateY(-50%);padding:0 8px}';
+  css += '.ig-carousel-arrow{pointer-events:auto;width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.9);border:1px solid var(--border-subtle,#E5E3DF);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;box-shadow:0 2px 8px rgba(0,0,0,.08)}';
+  css += '.ig-carousel-arrow:hover{background:#fff;box-shadow:0 4px 12px rgba(0,0,0,.12)}';
+  css += '.ig-carousel-arrow svg{width:16px;height:16px;color:var(--text-muted,#6B7280)}';
+  css += '.ig-carousel-arrow.disabled{opacity:.3;cursor:default}';
 
   /* Benefits */
   css += '.ig-benefits-list{list-style:none;padding:0;margin:12px 0 0}';
@@ -536,23 +561,45 @@ function renderIntro() {
   }
   html += '</ul></div>';
 
-  /* Example card (full width) */
-  html += '<div class="ig-card ig-example ig-bento-full">';
-  html += '<div class="ig-example-title">' + d.example.title + '</div>';
-  var ex = [
-    { badge: 'S', text: d.example.situation },
-    { badge: 'T', text: d.example.task },
-    { badge: 'A', text: d.example.action },
-    { badge: 'R', text: d.example.result },
-    { badge: '+T', text: d.example.takeaway, navy: true }
+  /* Example carousel (full width) */
+  var slides = [
+    { type: 'question', text: d.example.title },
+    { type: 'step', badge: 'S', color: 'verm', tr: 'Durum', en: 'Situation', text: d.example.situation },
+    { type: 'step', badge: 'T', color: 'navy', tr: 'G\u00F6rev', en: 'Task', text: d.example.task },
+    { type: 'step', badge: 'A', color: 'verm', tr: 'Aksiyon', en: 'Action', text: d.example.action },
+    { type: 'step', badge: 'R', color: 'navy', tr: 'Sonu\u00E7', en: 'Result', text: d.example.result },
+    { type: 'step', badge: '+T', color: 'navy', tr: '\u00C7\u0131kar\u0131m', en: 'Takeaway', text: d.example.takeaway }
   ];
-  for (var e = 0; e < ex.length; e++) {
-    html += '<div class="ig-example-row">';
-    html += '<div class="ig-example-badge' + (ex[e].navy ? ' navy' : '') + '">' + ex[e].badge + '</div>';
-    html += '<div class="ig-example-text">' + ex[e].text + '</div>';
-    html += '</div>';
+  html += '<div class="ig-bento-full ig-carousel-wrap" style="animation:igSlideUp .35s ease both;animation-delay:.15s">';
+  html += '<div class="ig-carousel-track" id="ig-carousel-track">';
+  for (var e = 0; e < slides.length; e++) {
+    var sl = slides[e];
+    if (sl.type === 'question') {
+      html += '<div class="ig-carousel-slide ig-slide-question">';
+      html += '<div class="ig-slide-q">' + sl.text + '</div>';
+      html += '<div class="ig-slide-hint">Kayd\u0131rarak STAR yan\u0131t\u0131n\u0131 incele</div>';
+      html += '</div>';
+    } else {
+      html += '<div class="ig-carousel-slide ig-slide-step">';
+      html += '<div class="ig-slide-badge ' + sl.color + '">' + sl.badge + '</div>';
+      html += '<div class="ig-slide-body">';
+      html += '<div class="ig-slide-label">' + sl.tr + '<span class="ig-slide-label-en">(' + sl.en + ')</span></div>';
+      html += '<div class="ig-slide-text">' + sl.text + '</div>';
+      html += '</div></div>';
+    }
   }
   html += '</div>';
+  /* Arrows */
+  html += '<div class="ig-carousel-arrows">';
+  html += '<div class="ig-carousel-arrow disabled" id="ig-prev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg></div>';
+  html += '<div class="ig-carousel-arrow" id="ig-next"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></div>';
+  html += '</div>';
+  /* Dots */
+  html += '<div class="ig-carousel-dots" id="ig-carousel-dots">';
+  for (var di = 0; di < slides.length; di++) {
+    html += '<div class="ig-carousel-dot' + (di === 0 ? ' active' : '') + '" data-slide="' + di + '"></div>';
+  }
+  html += '</div></div>';
 
   /* Tips card (full width) */
   html += '<div class="ig-card ig-bento-full">';
@@ -720,6 +767,46 @@ function bindIntroEvents() {
       setActiveStar(parseInt(this.getAttribute('data-star'), 10));
     });
   });
+
+  /* Carousel logic */
+  var track = document.getElementById('ig-carousel-track');
+  var dots = document.querySelectorAll('#ig-carousel-dots .ig-carousel-dot');
+  var prevBtn = document.getElementById('ig-prev');
+  var nextBtn = document.getElementById('ig-next');
+  if (track && dots.length) {
+    var currentSlide = 0;
+    var totalSlides = dots.length;
+
+    function goToSlide(idx) {
+      if (idx < 0 || idx >= totalSlides) return;
+      currentSlide = idx;
+      var slideWidth = track.querySelector('.ig-carousel-slide').offsetWidth;
+      track.scrollTo({ left: slideWidth * idx, behavior: 'smooth' });
+      dots.forEach(function(d, i) { d.classList.toggle('active', i === idx); });
+      if (prevBtn) prevBtn.classList.toggle('disabled', idx === 0);
+      if (nextBtn) nextBtn.classList.toggle('disabled', idx === totalSlides - 1);
+    }
+
+    dots.forEach(function(dot) {
+      dot.addEventListener('click', function() {
+        goToSlide(parseInt(this.getAttribute('data-slide'), 10));
+      });
+    });
+    if (prevBtn) prevBtn.addEventListener('click', function() { goToSlide(currentSlide - 1); });
+    if (nextBtn) nextBtn.addEventListener('click', function() { goToSlide(currentSlide + 1); });
+
+    /* Sync dots on manual scroll */
+    track.addEventListener('scroll', function() {
+      var slideWidth = track.querySelector('.ig-carousel-slide').offsetWidth;
+      var idx = Math.round(track.scrollLeft / slideWidth);
+      if (idx !== currentSlide && idx >= 0 && idx < totalSlides) {
+        currentSlide = idx;
+        dots.forEach(function(d, i) { d.classList.toggle('active', i === idx); });
+        if (prevBtn) prevBtn.classList.toggle('disabled', idx === 0);
+        if (nextBtn) nextBtn.classList.toggle('disabled', idx === totalSlides - 1);
+      }
+    });
+  }
 
   /* Role dropdown */
   var dd = document.getElementById('ig-role-dd');
