@@ -532,7 +532,7 @@ function renderReading(code) {
   if (hasPrev) {
     html += '<button class="yk-nav-btn" id="yk-read-prev">\u2190 ' + (COMP_NAMES[comps[idx - 1]] || '\u00d6nceki') + '</button>';
   } else {
-    html += '<button class="yk-nav-btn" id="yk-back-preview">\u2190 \u00d6nizleme</button>';
+    html += '<button class="yk-nav-btn" id="yk-back-preview">\u2190 Kapat</button>';
   }
   html += '<div class="yk-nav-spacer"></div>';
   if (hasNext && nextFree) {
