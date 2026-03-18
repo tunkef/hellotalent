@@ -505,7 +505,7 @@ function renderIntro() {
     if (i === 2) html += '</div><div class="ig-star-row">';
     html += '<div class="ig-star-cell ' + qCls[i] + (i === 0 ? ' active' : '') + '" data-star="' + i + '">';
     html += '<div class="ig-sq-letter">' + qLtr[i] + '</div>';
-    html += '<div class="ig-sq-label">' + steps[i].tr + ' <span class="ig-sq-label-en">(' + steps[i].en + ')</span></div>';
+    html += '';
     html += '</div>';
   }
   html += '</div></div>';
