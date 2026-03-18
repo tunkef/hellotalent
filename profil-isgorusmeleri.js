@@ -322,7 +322,7 @@ function injectCSS() {
   css += '.ig-card:hover{box-shadow:0 8px 24px rgba(0,0,0,.06);transform:translateY(-1px)}';
 
   /* Hero card — compact, matches mk-identity sizing */
-  css += '.ig-hero{background:#C94E28;color:#fff;padding:22px 24px;border:none !important;border-radius:24px !important;box-shadow:0 2px 8px rgba(0,0,0,.08),0 8px 20px rgba(0,0,0,.06);margin-bottom:0}';
+  css += '.ig-hero{background:#C94E28;color:#fff;padding:22px 24px;border:none !important;border-radius:24px !important;box-shadow:0 2px 8px rgba(0,0,0,.08),0 8px 20px rgba(0,0,0,.06);margin-bottom:0;min-height:80px;display:flex;align-items:center}';
   css += '.ig-hero-title{font-family:"Bricolage Grotesque",sans-serif;font-size:20px;font-weight:800;line-height:1.25;letter-spacing:-.2px}';
 
   /* Section titles */
