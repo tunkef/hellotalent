@@ -2687,6 +2687,10 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 
+  // Kim Baktı header icon
+  var kbBtn = document.getElementById('header-kimbakti');
+  if (kbBtn) kbBtn.addEventListener('click', function() { switchPanel('kimbakti'); });
+
   // mk-card clicks (semantic buttons with data-step)
   document.querySelectorAll('.mk-card[data-step]').forEach(function(card) {
     card.addEventListener('click', function() {
