@@ -1762,7 +1762,7 @@ function _doSwitchPanel(name) {
   if (target) target.classList.add('active');
   var bc = document.getElementById('breadcrumb-current');
   if (bc) {
-    var labels = { genel: 'Genel Bakış', merkez: 'Profil Merkezi', sirketler: 'Markalar', teklifler: 'Özel Teklifler', inbox: 'Mesajlar', bildirimler: 'Bildirimler', ayarlar: 'Ayarlar', profil: 'Profil' };
+    var labels = { genel: 'Genel Bakış', merkez: 'Profil Merkezi', sirketler: 'Markalar', teklifler: 'Özel Teklifler', inbox: 'Mesajlar', bildirimler: 'Bildirimler', ayarlar: 'Ayarlar', profil: 'Profil', yetkinlik: 'Yetkinliklerim', mulakat: 'İş Görüşmeleri' };
     bc.textContent = labels[name] || name;
   }
   // Update sidebar nav
@@ -1802,6 +1802,8 @@ function _doSwitchPanel(name) {
   if (name === 'teklifler') { window._htLoadTeklifler && window._htLoadTeklifler(); }
   // Lazy-load Inbox messages on first visit
   if (name === 'inbox') { window._htLoadInbox && window._htLoadInbox(); }
+  // Lazy-load Yetkinlik panel on first visit
+  if (name === 'yetkinlik') { window._htLoadYetkinlik && window._htLoadYetkinlik(); }
   // Lazy-load Bildirimler on first visit
   if (name === 'bildirimler') { window._htLoadBildirimler && window._htLoadBildirimler(); }
   // Populate Settings from Profile when opening Ayarlar
@@ -2695,7 +2697,9 @@ document.addEventListener('DOMContentLoaded', function() {
     { label: 'Mesajlar', panel: 'inbox', icon: '\u2709\uFE0F' },
     { label: 'Bildirimler', panel: 'bildirimler', icon: '\uD83D\uDD14' },
     { label: 'Ayarlar', panel: 'ayarlar', icon: '\u2699\uFE0F' },
-    { label: 'Profil D\u00FCzenle', panel: 'profil', icon: '\u270F\uFE0F' }
+    { label: 'Profil D\u00FCzenle', panel: 'profil', icon: '\u270F\uFE0F' },
+    { label: 'Yetkinliklerim', panel: 'yetkinlik', icon: '\uD83C\uDFAF' },
+    { label: '\u0130\u015F G\u00F6r\u00FC\u015Fmeleri', panel: 'mulakat', icon: '\uD83D\uDCCB' }
   ];
   var cmdkOverlay = document.getElementById('modal-cmdk');
   var cmdkInput = document.getElementById('cmdk-input');
