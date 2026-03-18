@@ -329,8 +329,8 @@ function injectCSS() {
   css += '.ig-section-title{font-family:"Bricolage Grotesque",sans-serif;font-size:18px;font-weight:700;color:var(--text-primary,#111);margin-bottom:6px}';
   css += '.ig-section-desc{font-family:"Plus Jakarta Sans",sans-serif;font-size:13px;color:var(--text-muted,#6B7280);line-height:1.6}';
 
-  /* STAR Quad card — centered wheel */
-  css += '.ig-star-quad-card{display:flex;align-items:center;justify-content:center;padding:24px}';
+  /* STAR Quad card — vermillion bg */
+  css += '.ig-star-quad-card{display:flex;align-items:center;justify-content:center;padding:24px;background:#C94E28 !important;border:none !important}';
 
   /* STAR Detail card */
   css += '.ig-star-detail-card{display:flex;align-items:center;padding:24px 28px}';
@@ -338,8 +338,8 @@ function injectCSS() {
   /* Quad 2x2 */
   css += '.ig-star-quad{display:flex;flex-direction:column;gap:5px}';
   css += '.ig-star-row{display:flex;gap:5px}';
-  css += '.ig-star-cell{width:76px;height:76px;background:var(--bg-surface,#fff);border:2px solid var(--border-subtle,#E5E3DF);outline:none;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:all .25s ease;position:relative}';
-  css += '.ig-star-cell:hover{transform:scale(1.06);border-color:var(--text-muted,#6B7280)}';
+  css += '.ig-star-cell{width:76px;height:76px;background:#fff;border:none;outline:none;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:all .25s ease;position:relative;box-shadow:0 2px 8px rgba(0,0,0,.06)}';
+  css += '.ig-star-cell:hover{transform:scale(1.06)}';
   css += '.ig-star-cell .ig-sq-letter{font-family:"Bricolage Grotesque",sans-serif;font-size:30px;font-weight:900;letter-spacing:-1px;transition:all .25s}';
   css += '.ig-star-cell .ig-sq-label{font-family:"Plus Jakarta Sans",sans-serif;font-size:7.5px;font-weight:600;letter-spacing:.4px;text-transform:uppercase;transition:all .25s;margin-top:2px}';
   css += '.ig-star-cell .ig-sq-label-en{font-style:italic;font-weight:400;text-transform:none;letter-spacing:0;opacity:.6}';
@@ -353,8 +353,8 @@ function injectCSS() {
   /* Default: white bg, vermillion letters */
   css += '.ig-star-cell .ig-sq-letter{color:var(--verm,#C94E28)}';
 
-  /* Active: navy bg, white letter */
-  css += '.ig-star-cell.active{transform:scale(1.06);background:var(--navy,#1E2D5E);border-color:var(--navy,#1E2D5E)}';
+  /* Active: vermillion gradient, shadow to pop from bg */
+  css += '.ig-star-cell.active{transform:scale(1.06);background:linear-gradient(135deg,#d4572f 0%,#b84420 100%);box-shadow:0 4px 16px rgba(0,0,0,.2),inset 0 1px 0 rgba(255,255,255,.15)}';
   css += '.ig-star-cell.active .ig-sq-letter{color:#fff}';
 
   /* Çıkarım banner — slim full-width */
