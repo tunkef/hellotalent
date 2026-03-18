@@ -1154,21 +1154,24 @@ if (window.Sentry) {
 
 <!-- ═══ PANEL: ÖZEL TEKLİFLER ═══ -->
 <main class="panel" id="panel-teklifler" data-panel="teklifler">
-  <div class="wiz-step-title" style="display:flex;align-items:center;gap:10px;">
-    Özel Teklifler
-    <span id="teklifler-count-badge" class="badge-verm"></span>
+  <!-- Hero card -->
+  <div class="g-hero">
+    <div class="g-hero-inner" style="justify-content:space-between;">
+      <div style="font-family:'Bricolage Grotesque',sans-serif;font-size:20px;font-weight:800;color:#fff;display:flex;align-items:center;gap:10px;">
+        Özel Teklifler
+        <span id="teklifler-count-badge" class="badge-verm"></span>
+      </div>
+    </div>
   </div>
-  <div class="wiz-step-desc">Markalardan sana özel kampanyalar, fırsatlar ve teklifler</div>
 
   <!-- Filter bar -->
-  <div id="teklifler-filters" class="tag-row"></div>
+  <div id="teklifler-filters" class="tag-row" style="border:1px solid var(--border-subtle,#E5E3DF);border-radius:16px;padding:12px 16px;background:var(--bg-surface,#fff);margin-bottom:16px;"></div>
 
   <!-- Campaign grid -->
   <div id="teklifler-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;"></div>
 
   <!-- Empty state -->
-  <div id="teklifler-empty" class="empty-state">
-    <div class="empty-icon">🎁</div>
+  <div id="teklifler-empty" class="empty-state" style="border:1px solid var(--border-subtle,#E5E3DF);border-radius:16px;padding:40px 24px;background:var(--bg-surface,#fff);">
     <div class="empty-title">Henüz aktif teklif yok</div>
     <div class="sub-text">Markalar yeni kampanyalar oluşturduğunda burada görünecek</div>
   </div>
