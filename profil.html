@@ -1515,16 +1515,17 @@ if (window.Sentry) {
   <!-- Bento grid -->
   <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;">
 
-    <!-- Stat + chart card (span 2) -->
-    <div class="card" id="kb-hero" style="grid-column:span 2;margin-bottom:0;position:relative;overflow:hidden;">
-      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;">
-        <div>
-          <div style="font-family:'Bricolage Grotesque',sans-serif;font-size:14px;font-weight:700;color:var(--text-primary,#111);margin-bottom:8px;">Son 7 Gün</div>
-          <div id="kb-trend" style="font-size:12px;display:none;"></div>
-          <div id="kb-last-viewed" style="font-size:11px;color:var(--muted);margin-top:8px;display:none;"></div>
-        </div>
-        <div id="kb-chart" style="display:flex;align-items:flex-end;gap:4px;height:64px;min-width:140px;"></div>
-      </div>
+    <!-- Stat card (span 1) -->
+    <div class="card" id="kb-hero" style="margin-bottom:0;position:relative;overflow:hidden;">
+      <div style="font-family:'Bricolage Grotesque',sans-serif;font-size:14px;font-weight:700;color:var(--text-primary,#111);margin-bottom:8px;">Son 7 Gün</div>
+      <div id="kb-trend" style="font-size:12px;display:none;"></div>
+      <div id="kb-last-viewed" style="font-size:11px;color:var(--muted);margin-top:8px;display:none;"></div>
+    </div>
+
+    <!-- Chart card (span 2) -->
+    <div class="card" style="grid-column:span 2;margin-bottom:0;">
+      <div style="font-family:'Bricolage Grotesque',sans-serif;font-size:13px;font-weight:700;color:var(--text-primary,#111);margin-bottom:12px;">Haftalık Görüntülenme</div>
+      <div id="kb-chart" style="display:flex;align-items:flex-end;gap:6px;height:80px;width:100%;justify-content:space-around;"></div>
     </div>
 
     <!-- Segment breakdown (span 1) -->
