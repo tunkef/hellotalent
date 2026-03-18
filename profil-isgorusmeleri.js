@@ -329,9 +329,11 @@ function injectCSS() {
   css += '.ig-section-title{font-family:"Bricolage Grotesque",sans-serif;font-size:18px;font-weight:700;color:var(--text-primary,#111);margin-bottom:6px}';
   css += '.ig-section-desc{font-family:"Plus Jakarta Sans",sans-serif;font-size:13px;color:var(--text-muted,#6B7280);line-height:1.6}';
 
-  /* STAR Interactive Card — layout */
-  css += '.ig-star-interactive{display:flex;gap:24px;align-items:stretch;margin-top:16px}';
-  css += '.ig-star-left{display:flex;flex-direction:column;align-items:center;gap:8px;flex-shrink:0}';
+  /* STAR Quad card — centered wheel */
+  css += '.ig-star-quad-card{display:flex;align-items:center;justify-content:center;padding:24px}';
+
+  /* STAR Detail card */
+  css += '.ig-star-detail-card{display:flex;align-items:center;padding:24px 28px}';
 
   /* Quad 2x2 */
   css += '.ig-star-quad{display:flex;flex-direction:column;gap:5px}';
@@ -373,11 +375,9 @@ function injectCSS() {
   css += '.ig-benefit-num{flex-shrink:0;width:28px;height:28px;border-radius:8px;background:rgba(201,78,40,.08);color:var(--verm,#C94E28);font-family:"DM Mono",monospace;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center}';
   css += '.ig-benefit-text{font-family:"Plus Jakarta Sans",sans-serif;font-size:13px;color:var(--text-secondary,#4B5563);line-height:1.6}';
 
-  /* Right panel — description */
-  css += '.ig-star-right{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;min-height:180px}';
+  /* Detail panel content */
   css += '.ig-star-detail{animation:igFadeIn .2s ease}';
-  css += '.ig-star-detail-title{font-family:"Bricolage Grotesque",sans-serif;font-size:16px;font-weight:800;margin-bottom:4px}';
-  css += '.ig-star-detail-sub{font-family:"DM Mono",monospace;font-size:10px;letter-spacing:.5px;color:var(--text-muted,#6B7280);margin-bottom:10px}';
+  css += '.ig-star-detail-title{font-family:"Bricolage Grotesque",sans-serif;font-size:18px;font-weight:800;margin-bottom:8px}';
   css += '.ig-star-detail-text{font-family:"Plus Jakarta Sans",sans-serif;font-size:13px;color:var(--text-secondary,#4B5563);line-height:1.7}';
 
   /* Example carousel */
@@ -476,9 +476,7 @@ function injectCSS() {
   css += '@media(max-width:768px){';
   css += '.ig-bento{grid-template-columns:1fr}';
   css += '.ig-bento-2{grid-column:1/-1}';
-  css += '.ig-star-interactive{flex-direction:column}';
-  css += '.ig-star-left{align-items:center}';
-  css += '.ig-star-right{min-height:auto;padding-top:12px}';
+  css += '.ig-star-quad-card{padding:16px}';
   css += '.ig-tips-grid{grid-template-columns:1fr}';
   css += '.ig-hero-title{font-size:18px}';
   css += '.ig-hero{padding:18px 20px}';
@@ -516,36 +514,27 @@ function renderIntro() {
   html += '<div class="ig-section-desc" style="font-size:14px;line-height:1.7;color:var(--text-secondary,#4B5563)">' + d.intro + '</div>';
   html += '</div>';
 
-  /* STAR Technique card (full width) — interactive */
-  html += '<div class="ig-card ig-bento-full">';
-  html += '<div class="ig-section-title">' + d.what.title + '</div>';
-  html += '<div class="ig-section-desc" style="margin-bottom:4px">' + d.what.desc + '</div>';
-
-  html += '<div class="ig-star-interactive">';
-
-  /* Left: quad only */
-  html += '<div class="ig-star-left">';
+  /* STAR Quad card — just the wheel */
+  html += '<div class="ig-card ig-star-quad-card">';
   html += '<div class="ig-star-quad">';
   html += '<div class="ig-star-row">';
   var qCls = ['ig-sq-s', 'ig-sq-t', 'ig-sq-a', 'ig-sq-r'];
   var qLtr = ['S', 'T', 'A', 'R'];
-  var steps = d.what.steps;
   for (var i = 0; i < 4; i++) {
     if (i === 2) html += '</div><div class="ig-star-row">';
     html += '<div class="ig-star-cell ' + qCls[i] + (i === 0 ? ' active' : '') + '" data-star="' + i + '">';
     html += '<div class="ig-sq-letter">' + qLtr[i] + '</div>';
-    html += '';
     html += '</div>';
   }
   html += '</div></div>';
   html += '</div>';
 
-  /* Right: detail panel — starts with S */
-  html += '<div class="ig-star-right" id="ig-star-detail">';
+  /* STAR Detail card — shows selected step */
+  html += '<div class="ig-card ig-star-detail-card ig-bento-2">';
+  html += '<div id="ig-star-detail">';
   html += renderStarDetail(0);
   html += '</div>';
-
-  html += '</div></div>';
+  html += '</div>';
 
   /* \u00C7\u0131kar\u0131m — slim full-width banner */
   html += '<div class="ig-card ig-takeaway-banner ig-bento-full">';
