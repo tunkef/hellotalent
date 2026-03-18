@@ -175,7 +175,7 @@ function injectCSS() {
   css += '.yk-bento-def .bd-why{font-size:13px;line-height:1.7;color:rgba(255,255,255,.7);margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,.12)}';
 
   /* Generic bento card */
-  css += '.yk-bento-card{background:#fff;border:1px solid var(--border,#E5E3DF);border-radius:20px;padding:20px 22px;position:relative;overflow:hidden;animation:ykSlideUp .35s ease both}';
+  css += '.yk-bento-card{background:#fff;border:1px solid var(--border,#E5E3DF);border-radius:20px;padding:20px 22px;position:relative;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.08),0 8px 20px rgba(0,0,0,.06);animation:ykSlideUp .35s ease both}';
   css += '.yk-bento-card:nth-child(2){animation-delay:.05s}.yk-bento-card:nth-child(3){animation-delay:.1s}.yk-bento-card:nth-child(4){animation-delay:.15s}.yk-bento-card:nth-child(5){animation-delay:.2s}.yk-bento-card:nth-child(6){animation-delay:.25s}.yk-bento-card:nth-child(7){animation-delay:.3s}';
   css += '.yk-bento-card.span-full{grid-column:1/-1}';
 
