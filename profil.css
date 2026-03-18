@@ -1351,8 +1351,8 @@ html[data-theme="dark"] .field-req{color:#F87171;}
   padding:0;font:inherit;color:inherit;text-align:left;width:100%;
   -webkit-appearance:none;appearance:none;
 }
-.bento-card.active{cursor:pointer;}
-.bento-card.active:hover{
+.bento-card.active,.bento-card[data-panel]{cursor:pointer;}
+.bento-card.active:hover,.bento-card[data-panel]:hover{
   transform:translateY(-3px);
   border-color:rgba(201,78,40,0.2);
   box-shadow:0 0 0 1px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.08),0 16px 32px rgba(0,0,0,.07);
