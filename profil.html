@@ -142,7 +142,7 @@ if (window.Sentry) {
           <div class="avd-avatar" id="avd-avatar-img">?</div>
           <div class="avd-info">
             <div class="avd-name" id="avd-user-name">&mdash;</div>
-            <div class="avd-email" id="avd-user-email">&mdash;</div>
+            <div class="avd-talent-badge">Talent</div>
           </div>
         </div>
         <div class="avd-divider"></div>
@@ -2846,10 +2846,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // Populate user info when profile loads
     window._htPopulateAvatarDropdown = function(name, email, avatarUrl) {
       var avdName = document.getElementById('avd-user-name');
-      var avdEmail = document.getElementById('avd-user-email');
       var avdAvatar = document.getElementById('avd-avatar-img');
       if (avdName && name) avdName.textContent = name;
-      if (avdEmail && email) avdEmail.textContent = email;
       if (avdAvatar && avatarUrl) {
         avdAvatar.textContent = '';
         var img = document.createElement('img');

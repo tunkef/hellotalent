@@ -332,9 +332,11 @@ html[data-theme="dark"] .header-msg-dot{border-color:var(--bg-elevated,#1F2937);
   font-size:14px;font-weight:800;color:var(--text-primary,#111);
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
 }
-.avd-email{
-  font-size:11px;color:var(--text-muted,#6B7280);margin-top:1px;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+.avd-email{display:none;}
+.avd-talent-badge{
+  display:inline-block;margin-top:3px;
+  font-family:'DM Mono',monospace;font-size:11px;font-weight:600;
+  color:var(--verm,#C94E28);letter-spacing:.5px;
 }
 .avd-divider{height:1px;background:rgba(0,0,0,0.06);margin:0 12px;}
 .avd-item{
@@ -396,7 +398,7 @@ html[data-theme="dark"] .avatar-dropdown{
   box-shadow:0 4px 6px rgba(0,0,0,0.3),0 20px 40px rgba(0,0,0,0.4),0 0 0 1px rgba(255,255,255,0.06);
 }
 html[data-theme="dark"] .avd-name{color:#E5E7EB;}
-html[data-theme="dark"] .avd-email{color:#9CA3AF;}
+html[data-theme="dark"] .avd-talent-badge{color:#E8845C;}
 html[data-theme="dark"] .avd-divider{background:rgba(255,255,255,0.06);}
 html[data-theme="dark"] .avd-item{color:#E5E7EB;}
 html[data-theme="dark"] .avd-item:hover{background:rgba(255,255,255,0.04);}
