@@ -479,7 +479,7 @@ if (window.Sentry) {
       </button>
 
       <!-- 3. Özel Teklifler — active -->
-      <button type="button" class="bento-card" id="bento-teklifler" data-panel="teklifler" aria-label="Özel Teklifler paneline git">
+      <button type="button" class="bento-card active" id="bento-teklifler" data-panel="teklifler" aria-label="Özel Teklifler paneline git">
         <div class="bento-content">
           <div class="bento-icon green">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12v10H4V12"/><rect x="2" y="7" width="20" height="5" rx="1"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z" fill="currentColor" opacity="0.15"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
@@ -487,10 +487,13 @@ if (window.Sentry) {
           <div class="bento-title">Özel Teklifler</div>
           <div class="bento-desc" id="bento-teklifler-count">Kampanyalar ve fırsatlar</div>
         </div>
+        <div class="bento-cta">
+          <span>Sana özel teklifleri incele<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+        </div>
       </button>
 
       <!-- Kim Baktı -->
-      <div class="bento-card" id="lab-viewers-card" style="cursor:pointer;" data-panel="kimbakti">
+      <div class="bento-card active" id="lab-viewers-card" style="cursor:pointer;" data-panel="kimbakti">
         <div class="bento-content">
           <div class="bento-icon navy">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="1" fill="currentColor" opacity="0.3"/></svg>
@@ -500,10 +503,13 @@ if (window.Sentry) {
             <div class="bento-desc" style="color:var(--muted);font-size:12px;">Yükleniyor…</div>
           </div>
         </div>
+        <div class="bento-cta">
+          <span>Profiline bakanları gör<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+        </div>
       </div>
 
       <!-- İş Görüşmeleri -->
-      <div class="bento-card" style="cursor:pointer;" data-panel="mulakat">
+      <div class="bento-card active" style="cursor:pointer;" data-panel="mulakat">
         <div class="bento-content">
           <div class="bento-icon verm">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
@@ -511,16 +517,22 @@ if (window.Sentry) {
           <div class="bento-title">İş Görüşmeleri</div>
           <div class="bento-desc">Mülakat süreçlerini takip et ve hazırlan</div>
         </div>
+        <div class="bento-cta">
+          <span>Bir sonraki iş görüşmene hazırlan<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+        </div>
       </div>
 
       <!-- Yetkinliklerim -->
-      <div class="bento-card" style="cursor:pointer;" data-panel="yetkinlik">
+      <div class="bento-card active" style="cursor:pointer;" data-panel="yetkinlik">
         <div class="bento-content">
           <div class="bento-icon navy">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
           </div>
           <div class="bento-title">Yetkinliklerim</div>
           <div class="bento-desc">Güçlü ve gelişim alanlarını keşfet</div>
+        </div>
+        <div class="bento-cta">
+          <span>Yetkinliklerini geliştir<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
         </div>
       </div>
 
