@@ -161,6 +161,7 @@ select:focus-visible{
   border-radius:14px;
   box-shadow:0 4px 20px rgba(0,0,0,0.06);
   display:flex;align-items:center;padding:0 20px;gap:16px;
+  overflow:visible;
 }
 .logo{
   font-family:'Bricolage Grotesque',sans-serif;font-size:17px;font-weight:800;
@@ -413,7 +414,7 @@ html[data-theme="dark"] .mk-identity{box-shadow:0 4px 16px rgba(0,0,0,0.3), 0 12
 /* ── LinkedIn-style Header Nav ── */
 .header-nav{
   display:flex;align-items:stretch;gap:0;
-  justify-content:center;flex:1;height:100%;
+  justify-content:center;flex:1;height:100%;overflow:visible;
 }
 .hn-item{
   display:flex;flex-direction:column;align-items:center;justify-content:center;
