@@ -2398,8 +2398,10 @@ function reapplyDynamicFields() {
     if (!labBody) return;
     while (labBody.firstChild) labBody.removeChild(labBody.firstChild);
     var total = (stats && stats.total_views) ? stats.total_views : 0;
-    labBody.appendChild(_makeEl('div', 'font-size:24px;font-weight:800;color:var(--text);font-family:\'DM Mono\',monospace;line-height:1;', String(total)));
-    labBody.appendChild(_makeEl('div', 'font-size:11px;color:var(--muted);margin-top:2px;', 'görüntülenme'));
+    var row = _makeEl('div', 'display:flex;align-items:baseline;gap:6px;');
+    row.appendChild(_makeEl('span', 'font-size:24px;font-weight:800;color:var(--text);font-family:\'DM Mono\',monospace;line-height:1;', String(total)));
+    row.appendChild(_makeEl('span', 'font-size:11px;color:var(--muted);', 'görüntülenme'));
+    labBody.appendChild(row);
     if (stats && stats.last_viewed_at) {
       labBody.appendChild(_makeEl('div', 'font-size:11px;color:var(--muted);margin-top:4px;', 'Son: ' + _relativeTimeTR(stats.last_viewed_at)));
     }
