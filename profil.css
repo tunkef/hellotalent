@@ -760,8 +760,8 @@ html[data-theme="dark"] .mk-card:hover .mk-edit-btn svg {
 }
 html[data-theme="dark"] .mk-card-icon.green { background: #0d9488; }
 html[data-theme="dark"] .mk-card-icon.purple { background: #7c3aed; }
-html[data-theme="dark"] .mk-card-status .ring-done {
-  background: rgba(22,163,74,0.15);
+html[data-theme="dark"] .mk-bar-track {
+  background: rgba(255,255,255,0.1);
 }
 html[data-theme="dark"] .mk-card-data .data-pill {
   background: rgba(201,78,40,0.15);
@@ -1606,7 +1606,7 @@ html[data-theme="dark"] .field-req{color:#F87171;}
 
 .mk-card-content {
   flex: 1;
-  padding: 14px 14px 10px 14px;
+  padding: 14px 14px 22px 14px;
   position: relative;
   z-index: 1;
   display: flex;
@@ -1680,41 +1680,44 @@ html[data-theme="dark"] .field-req{color:#F87171;}
 
 .mk-card-status {
   position: absolute;
-  bottom: 14px;
-  right: 14px;
+  bottom: 0; left: 0; right: 0;
   top: auto;
-  left: auto;
-  width: 28px; height: 28px;
   z-index: 5;
+  display: flex; align-items: center; gap: 8px;
+  padding: 0 16px 12px;
 }
 .mk-card-status .ring-done {
-  width: 28px; height: 28px;
-  background: rgba(22,163,74,0.1);
-  color: var(--green);
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 13px; font-weight: 700;
+  display: flex; align-items: center; gap: 6px; width: 100%;
 }
-.mk-card-status svg {
-  width: 28px; height: 28px;
-  transform: rotate(-90deg);
+.mk-card-status .ring-done .mk-bar-track {
+  flex: 1; height: 4px; border-radius: 4px;
+  background: rgba(22,163,74,0.15);
 }
-.mk-card-status .ring-track {
-  fill: none; stroke: var(--border-subtle, var(--border)); stroke-width: 3;
+.mk-card-status .ring-done .mk-bar-fill {
+  width: 100%; height: 100%; border-radius: 4px;
+  background: var(--green, #16A34A);
 }
-.mk-card-status .ring-fill {
-  fill: none; stroke-width: 3; stroke-linecap: round;
-  stroke: var(--verm);
-  stroke-dasharray: 62.83;
-  stroke-dashoffset: 62.83;
-  transition: stroke-dashoffset 0.6s ease;
-}
-.mk-card-status .ring-pct {
-  position: absolute; inset: 0;
-  display: flex; align-items: center; justify-content: center;
+.mk-card-status .ring-done .mk-bar-pct {
   font-family: 'DM Mono', monospace;
-  font-size: 10px; font-weight: 700;
-  color: var(--text-muted, #6B7280);
+  font-size: 11px; font-weight: 700;
+  color: var(--green, #16A34A);
+}
+.mk-bar-track {
+  flex: 1; height: 4px; border-radius: 4px;
+  background: var(--border-subtle, var(--border, #E5E3DF));
+  overflow: hidden;
+}
+.mk-bar-fill {
+  height: 100%; border-radius: 4px;
+  background: var(--verm, #C94E28);
+  width: 0%;
+  transition: width 0.6s cubic-bezier(.4,0,.2,1);
+}
+.mk-bar-pct {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px; font-weight: 700;
+  color: var(--verm, #C94E28);
+  white-space: nowrap;
 }
 
 .mk-card-title {

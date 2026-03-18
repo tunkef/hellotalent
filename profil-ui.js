@@ -1827,19 +1827,28 @@ function updateBentoRing(step, pct) {
   if (!container) return;
 
   if (pct >= 100) {
-    container.textContent = '';
-    var done = document.createElement('span');
+    while (container.firstChild) container.removeChild(container.firstChild);
+    container.classList.add('complete');
+    var done = document.createElement('div');
     done.className = 'ring-done';
-    done.textContent = '\u2713';
+    var track = document.createElement('div');
+    track.className = 'mk-bar-track';
+    var barFill = document.createElement('div');
+    barFill.className = 'mk-bar-fill';
+    barFill.style.width = '100%';
+    track.appendChild(barFill);
+    var label = document.createElement('span');
+    label.className = 'mk-bar-pct';
+    label.textContent = '\u2713';
+    done.appendChild(track);
+    done.appendChild(label);
     container.appendChild(done);
     return;
   }
 
-  var fill = container.querySelector('.ring-fill');
-  var label = container.querySelector('.ring-pct');
-  var circumference = 2 * Math.PI * 10;
-  var offset = circumference - (circumference * Math.min(pct, 100) / 100);
-  if (fill) fill.style.strokeDashoffset = offset;
+  var fill = container.querySelector('.mk-bar-fill');
+  var label = container.querySelector('.mk-bar-pct');
+  if (fill) fill.style.width = Math.min(pct, 100) + '%';
   if (label) label.textContent = pct + '%';
 }
 
