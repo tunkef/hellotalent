@@ -365,7 +365,8 @@ function injectCSS() {
   css += '.ig-takeaway-title-en{font-style:italic;font-weight:400;font-size:11px;color:rgba(255,255,255,.5);margin-left:4px}';
   css += '.ig-takeaway-text{font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;color:rgba(255,255,255,.7);line-height:1.6}';
 
-  /* Benefit cards — asymmetric bento */
+  /* Benefit cards — equal 2x2 grid */
+  css += '.ig-benefits-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}';
   css += '.ig-benefit-card{display:flex;align-items:flex-start;gap:12px;padding:20px}';
   css += '.ig-benefit-num{flex-shrink:0;width:28px;height:28px;border-radius:8px;background:rgba(201,78,40,.08);color:var(--verm,#C94E28);font-family:"DM Mono",monospace;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center}';
   css += '.ig-benefit-text{font-family:"Plus Jakarta Sans",sans-serif;font-size:13px;color:var(--text-secondary,#4B5563);line-height:1.6}';
@@ -541,15 +542,16 @@ function renderIntro() {
   html += '<div class="ig-takeaway-text">' + d.what.takeaway.desc + '</div>';
   html += '</div></div>';
 
-  /* Neden Etkili — 4 asymmetric bento cards */
+  /* Neden Etkili — 4 equal cards in 2x2 grid */
   html += '<div class="ig-section-title ig-bento-full" style="margin-top:4px;margin-bottom:-8px">Neden Etkili?</div>';
-  var benCls = ['ig-bento-2', '', '', 'ig-bento-2'];
+  html += '<div class="ig-benefits-grid ig-bento-full">';
   for (var b = 0; b < d.benefits.length; b++) {
-    html += '<div class="ig-card ig-benefit-card ' + benCls[b] + '">';
+    html += '<div class="ig-card ig-benefit-card">';
     html += '<div class="ig-benefit-num">' + (b + 1) + '</div>';
     html += '<div class="ig-benefit-text">' + d.benefits[b] + '</div>';
     html += '</div>';
   }
+  html += '</div>';
 
   /* Example carousel (full width) */
   var slides = [
