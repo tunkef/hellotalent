@@ -1,5 +1,5 @@
 # hellotalent.ai — Technical Handoff Document
-> Son güncelleme: 18 Mart 2026 (Session 4 — Yetkinliklerim Panel Implementasyonu)
+> Son güncelleme: 18 Mart 2026 (Session 4b — Yetkinlik Wizard v2, Bento Grid, Dashboard Polish)
 > Bu doküman, projenin mevcut durumunu, tamamlanan işleri ve kalan backlog'u kapsar.
 > Yeni bir chat/session başlatırken bu dosyayı referans olarak kullanın.
 
@@ -63,13 +63,62 @@ Toplam: ~25,000 Türkçe kelime, Google'da bulunamayacak kalitede orijinal içer
 - Cmd+K palette: Yetkinliklerim (🎯) ve İş Görüşmeleri (📋) eklendi
 - SHA: `5a5d3fe`
 
+### Session 4b — 18 Mart 2026 (Akşam — Yetkinlik Wizard v2 & Dashboard Polish)
+
+**7. profil-yetkinlik.js — Ground-Up Rebuild (v1 → v2)**
+- Wizard tamamen sıfırdan yeniden yazıldı (tüm 40 regression test geçti)
+- 34 rol taksonomisi korundu, rol dropdown alfabetik sıralı (Turkish locale)
+- Kısaltılmış yetkinlik isimleri tam Türkçe formlarına genişletildi
+- Bento grid layout: asimetrik kart boyutları ile modern grid tasarımı
+- Premium bento grid reading view + tam Korn Ferry içerik entegrasyonu (29 yetkinlik)
+- Yetkinlik header bento card formatında, İngilizce isimler kaldırıldı
+- Önizleme butonu → "Kapat" olarak yeniden adlandırıldı
+
+**8. Dashboard Bento Grid Polish**
+- SVG donut chart → horizontal progress bar (profil tamamlanma göstergesi)
+- İş Görüşmeleri kartı tıklanabilir hale getirildi, header rename
+- Bento card `.locked` kartlara cursor: pointer eklendi (Özel Teklifler vb.)
+- Tüm bento kartlara hover CTA animasyonları eklendi
+
+**9. Kim Baktı Feature — Header Icon Bar**
+- Kim Baktı header icon bar'a taşındı (mesajlar ve bildirimler yanına)
+- "Detayları gör" linki kaldırıldı, görüntülenme label inline
+- Header icon click handler düzgün bağlandı
+
+**10. Avatar & Beni Öner Enhancements**
+- Avatar dropdown: title case isim, Bricolage Grotesque font, Talent badge (vermillion)
+- Beni Öner aktifken avatar'da yeşil eclipse glow efekti
+- Glow efekti güçlendirildi: solid ring + parlak glow
+- Profil summary'deki aktif durum göstergesi gizlendi (glow yeterli)
+
+**Commit Geçmişi (Session 4b):**
+```
+13a5ec1 fix: stronger green glow on avatar — solid ring + bright glow for visibility
+6f135cd feat: add hover CTA animations to all bento cards
+bf24d3f fix: Kim Baktı — görüntülenme label inline next to count
+f5a070f feat: green eclipse glow on avatar when Beni Öner is active
+2e8e3c0 fix: wire Kim Baktı header icon click in main script block
+5830ae9 fix: pointer cursor on button.bento-card (Özel Teklifler)
+5358245 feat: move Kim Baktı to header icon bar
+06daba0 fix: İş Görüşmeleri card clickable, header rename, cursor on bento cards
+dfb0d6e fix: remove 'Detayları gör' link from Kim Baktı card
+43e2b01 feat: replace donut chart with horizontal progress bar
+c8cbcbd fix: expand abbreviated competency names to full Turkish
+e2dce6d fix: rename Önizleme button to Kapat in competency reading view
+0fe8475 fix: competency header as bento card, remove English names
+a228843 feat: premium bento grid reading view + full Korn Ferry competency content
+551c62d fix: sort role dropdown alphabetically (Turkish locale)
+85190dd feat: bento grid layout for competency preview
+0498e8a fix: restore full 34-role taxonomy in competency wizard
+```
+
 ### Sonraki Adımlar
-- [ ] Dashboard bento grid'de Yetkinliklerim ve İş Görüşmeleri kartları (panel-genel)
-- [ ] Sidebar nav'da Yetkinliklerim ve İş Görüşmeleri linkleri
 - [ ] Migration 042 → `competency_definitions`, `role_competency_map`, `candidate_competencies` tabloları
 - [ ] Rating verilerini Supabase'e persist etme (candidate_competencies)
 - [ ] Freemium gate → `subscription_plan` check
-- [ ] Pending Cursor prompts: header+sidebar mockup implementasyonu, preview drawer
+- [ ] `avd-avatar-img` → setAvatarImage() targets (profil-ui.js)
+- [ ] Brand color audit: Batch 2 (index, blog, hakkimizda) + Batch 3 (ik, aday, profil.css)
+- [ ] Dark mode remaining: profil-settings.js alert→modal (7 instances), ik/giris/gate pages
 
 ---
 
@@ -134,6 +183,8 @@ DM Mono              → data/numbers
 ```
 **Yasaklar:** Inter, Roboto, purple gradients (#8B5CF6 kaldırıldı), "röportaj" (her zaman "mülakat" veya "iş görüşmesi"), random greys (#aaa, #ccc etc. → design system greys)
 
+**Layout:** Bento grid varsayılan tasarım yaklaşımı — yeni UI bileşenlerinde asimetrik kart boyutları (`grid-column: span 2`) ile modern, dinamik grid kullanılır. Referans: `profil-yetkinlik.js` bento grid implementasyonu.
+
 ---
 
 ## 2. Dosya Yapısı
@@ -173,6 +224,7 @@ gizlilik.html, kvkk.html, kullanim-sartlari.html, cerez-politikasi.html
 | profil-data.js | Data loading/saving utilities |
 | profil-ui.js | ~3100+ lines — flip cards, brand colors, merkez cards, preview modal, toggle logic, retry logic |
 | profil-settings.js | Settings panel, deletion banner |
+| profil-yetkinlik.js | Competency wizard v2 — 29 yetkinlik, bento grid, Korn Ferry content, role-based mapping |
 | profil.css | ~3000+ lines — all profil dashboard styles (dark mode tokens, semantic variables) |
 
 ### Config & Test
@@ -765,10 +817,13 @@ cat docs/handoff.md
 3. ~~**Profil Merkezi mk-card redesign**~~ ✅ Gradient + shadow + tokenized
 4. ~~**Dark mode foundations (profil.css)**~~ ✅ 7-phase systematic hardening, 24 tests passing
 5. ~~**Header modernization**~~ ✅ Glassmorphic float header + avatar dropdown
-6. **Minor fix:** `avd-avatar-img` → setAvatarImage() targets (profil-ui.js line ~2332)
-7. **Brand color audit:** Batch 2 (index, blog, hakkimizda) + Batch 3 (ik, aday, profil.css)
-8. **Dark mode remaining:** profil-settings.js alert→modal (7 instances), ik.html/giris.html/gate.html
-9. **P4 — Public pages content review + dark mode expansion + performance**
+6. ~~**Yetkinlik Wizard**~~ ✅ v2 rebuild, bento grid, 29 KF yetkinlik, premium reading view
+7. ~~**Dashboard polish**~~ ✅ Progress bar, Kim Baktı header, bento CTA animations, avatar glow
+8. **Minor fix:** `avd-avatar-img` → setAvatarImage() targets (profil-ui.js)
+9. **Migration 042:** competency_definitions + role_competency_map + candidate_competencies
+10. **Brand color audit:** Batch 2 (index, blog, hakkimizda) + Batch 3 (ik, aday, profil.css)
+11. **Dark mode remaining:** profil-settings.js alert→modal (7 instances), ik/giris/gate pages
+12. **P4 — Public pages content review + dark mode expansion + performance**
 
 ### Önceki Transkriptler
 Tam konuşma geçmişi:

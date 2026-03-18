@@ -1563,8 +1563,7 @@ if (window.Sentry) {
 </div>
 
 <div class="panel" id="panel-mulakat">
-  <div class="section-header"><div class="section-title">İş Görüşmeleri</div></div>
-  <div style="padding:40px 0;text-align:center;color:var(--muted);font-size:14px;">Mülakat süreçlerin burada görünecek.</div>
+  <!-- Content is rendered by profil-isgorusmeleri.js via window._htLoadMulakat() -->
 </div>
 
 <div class="panel" id="panel-yetkinlik">
@@ -1579,7 +1578,8 @@ if (window.Sentry) {
 <script src="profil-settings.js?v=20260317d"></script>
 <script src="profil-teklifler.js?v=20260317d"></script>
 <script src="profil-inbox.js?v=20260317d"></script>
-<script src="profil-yetkinlik.js?v=20260318b"></script>
+<script src="profil-yetkinlik.js?v=20260318c"></script>
+<script src="profil-isgorusmeleri.js?v=20260318a"></script>
 
 <script>
 // ─── Panel click handlers (converted from inline onclick) ────────
@@ -1835,6 +1835,8 @@ function _doSwitchPanel(name) {
   if (name === 'inbox') { window._htLoadInbox && window._htLoadInbox(); }
   // Lazy-load Yetkinlik panel on first visit
   if (name === 'yetkinlik') { window._htLoadYetkinlik && window._htLoadYetkinlik(); }
+  // Lazy-load Mulakat panel on first visit
+  if (name === 'mulakat') { window._htLoadMulakat && window._htLoadMulakat(); }
   // Lazy-load Bildirimler on first visit
   if (name === 'bildirimler') { window._htLoadBildirimler && window._htLoadBildirimler(); }
   // Populate Settings from Profile when opening Ayarlar
