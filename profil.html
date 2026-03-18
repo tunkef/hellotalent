@@ -2407,9 +2407,6 @@ function reapplyDynamicFields() {
     if (stats && stats.last_viewed_at) {
       labBody.appendChild(_makeEl('div', 'font-size:11px;color:var(--muted);margin-top:4px;', 'Son: ' + _relativeTimeTR(stats.last_viewed_at)));
     }
-    var link = _makeEl('div', 'font-size:11px;color:var(--verm);margin-top:6px;cursor:pointer;font-weight:600;', 'Detayları gör →');
-    link.addEventListener('click', function(e) { e.stopPropagation(); if (window.switchPanel) switchPanel('kimbakti'); });
-    labBody.appendChild(link);
   }
 
   // ── Render the rich Kim Baktı panel ──
