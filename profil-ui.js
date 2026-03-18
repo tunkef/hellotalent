@@ -3086,7 +3086,8 @@ function openProfilePreview() {
   }
 
   html += '<div class="pp-hero-card">';
-  html += '<div class="pp-avatar">' + avatarInner + '</div>';
+  var ppGlow = (p && p.is_active !== false) ? ' glow-active' : '';
+  html += '<div class="pp-avatar' + ppGlow + '">' + avatarInner + '</div>';
   html += '<div style="flex:1;min-width:0;">';
   html += '<div class="pp-name">' + _escHtml(showPersonalInfo ? (p.full_name || '—') : '●●●●● ●●●●●●') + '</div>';
   if (currentRole) {
