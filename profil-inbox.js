@@ -72,12 +72,15 @@
     try {
       // Query employer_messages sent to this candidate
       var res = await supa.from('employer_messages')
-        .select('id, subject, body, status, created_at, read_at, company_id, position_id, companies(company_name, logo_url), positions(title)')
+        .select('id, subject, body, status, created_at, read_at, company_id, companies(company_name, logo_url)')
         .order('created_at', { ascending: false })
         .limit(50);
 
       if (res.error) {
         console.error('Inbox load error:', res.error.message);
+        while (listEl.firstChild) listEl.removeChild(listEl.firstChild);
+        loaded = true;
+        renderMessages();
         return;
       }
 
@@ -93,7 +96,7 @@
           read_at: m.read_at,
           company_name: m.companies ? m.companies.company_name : null,
           company_logo: m.companies ? m.companies.logo_url : null,
-          position_title: m.positions ? m.positions.title : null
+          position_title: null
         };
       });
       loaded = true;
