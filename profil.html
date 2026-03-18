@@ -2847,7 +2847,7 @@ document.addEventListener('DOMContentLoaded', function() {
     window._htPopulateAvatarDropdown = function(name, email, avatarUrl) {
       var avdName = document.getElementById('avd-user-name');
       var avdAvatar = document.getElementById('avd-avatar-img');
-      if (avdName && name) avdName.textContent = name;
+      if (avdName && name) avdName.textContent = typeof titleCaseTR === 'function' ? titleCaseTR(name) : name;
       if (avdAvatar && avatarUrl) {
         avdAvatar.textContent = '';
         var img = document.createElement('img');
