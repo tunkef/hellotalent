@@ -586,13 +586,6 @@ function renderIntro() {
       html += '</div>';
     } else {
       html += '<div class="ig-carousel-slide ig-slide-step">';
-      /* Mini STAR wheel indicator */
-      html += '<div class="ig-mini-wheel">';
-      for (var mw = 0; mw < 5; mw++) {
-        var mwActive = (e - 1) === mw ? ' ig-mw-active' : '';
-        html += '<div class="ig-mw-cell ig-mw-' + mw + mwActive + '">' + miniLetters[mw] + '</div>';
-      }
-      html += '</div>';
       html += '<div class="ig-slide-badge ' + sl.color + '">' + sl.badge + '</div>';
       html += '<div class="ig-slide-body">';
       html += '<div class="ig-slide-label">' + sl.tr + '<span class="ig-slide-label-en">(' + sl.en + ')</span></div>';
