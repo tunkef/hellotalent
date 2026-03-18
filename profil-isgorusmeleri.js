@@ -311,7 +311,13 @@ function injectCSS() {
   css += '.ig-bento-2{grid-column:span 2}';
 
   /* Cards base */
-  css += '.ig-card{background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF);border-radius:16px;padding:24px;position:relative;overflow:hidden;transition:box-shadow .3s ease,transform .3s ease}';
+  /* Animations */
+  css += '@keyframes igFadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}';
+  css += '@keyframes igSlideUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}';
+  css += '#ig-container{animation:igFadeIn .25s ease}';
+
+  css += '.ig-card{background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF);border-radius:16px;padding:24px;position:relative;overflow:hidden;transition:box-shadow .3s ease,transform .3s ease;animation:igSlideUp .35s ease both}';
+  css += '.ig-bento>.ig-card:nth-child(2){animation-delay:.05s}.ig-bento>.ig-card:nth-child(3){animation-delay:.1s}.ig-bento>.ig-card:nth-child(4){animation-delay:.15s}.ig-bento>.ig-card:nth-child(5){animation-delay:.2s}.ig-bento>.ig-card:nth-child(6){animation-delay:.25s}.ig-bento>.ig-card:nth-child(7){animation-delay:.3s}';
   css += '.ig-card:hover{box-shadow:0 8px 24px rgba(0,0,0,.06);transform:translateY(-1px)}';
 
   /* Hero card */
@@ -375,7 +381,8 @@ function injectCSS() {
   css += '.ig-q-count{font-family:"DM Mono",monospace;font-size:12px;color:var(--text-muted,#6B7280);background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF);border-radius:20px;padding:4px 12px}';
 
   /* Question cards */
-  css += '.ig-q-card{background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF);border-radius:16px;padding:22px;position:relative;overflow:hidden;transition:all .3s ease}';
+  css += '.ig-q-card{background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF);border-radius:16px;padding:22px;position:relative;overflow:hidden;transition:all .3s ease;animation:igSlideUp .35s ease both}';
+  css += '.ig-bento>.ig-q-card:nth-child(2){animation-delay:.08s}.ig-bento>.ig-q-card:nth-child(3){animation-delay:.16s}.ig-bento>.ig-q-card:nth-child(4){animation-delay:.24s}.ig-bento>.ig-q-card:nth-child(5){animation-delay:.32s}.ig-bento>.ig-q-card:nth-child(6){animation-delay:.4s}.ig-bento>.ig-q-card:nth-child(7){animation-delay:.48s}.ig-bento>.ig-q-card:nth-child(8){animation-delay:.56s}.ig-bento>.ig-q-card:nth-child(9){animation-delay:.64s}.ig-bento>.ig-q-card:nth-child(10){animation-delay:.72s}';
   css += '.ig-q-card:hover{box-shadow:0 6px 20px rgba(0,0,0,.05)}';
   css += '.ig-q-comp{font-family:"Bricolage Grotesque",sans-serif;font-size:14px;font-weight:700;color:var(--text-primary,#111);margin-bottom:4px}';
   css += '.ig-q-comp-kf{font-family:"DM Mono",monospace;font-size:10px;color:var(--text-muted,#6B7280);letter-spacing:.4px;margin-bottom:12px}';
@@ -400,7 +407,7 @@ function injectCSS() {
   css += '.ig-q-lock-cta:hover{background:var(--verm-dark,#b84420)}';
 
   /* Back nav pill */
-  css += '.ig-nav-pill{display:inline-flex;align-items:center;gap:6px;font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;font-weight:600;color:var(--verm,#C94E28);background:rgba(201,78,40,.06);border:1px solid rgba(201,78,40,.15);border-radius:20px;padding:6px 14px;cursor:pointer;transition:all .2s;margin-bottom:16px;border-style:solid}';
+  css += '.ig-nav-pill{display:inline-flex;align-items:center;gap:6px;font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;font-weight:600;color:var(--verm,#C94E28);background:rgba(201,78,40,.06);border:1px solid rgba(201,78,40,.15);border-radius:20px;padding:6px 14px;cursor:pointer;transition:all .2s;margin-bottom:16px;border-style:solid;animation:igFadeIn .25s ease}';
   css += '.ig-nav-pill:hover{background:rgba(201,78,40,.1);border-color:rgba(201,78,40,.3)}';
   css += '.ig-nav-pill svg{width:14px;height:14px}';
 
