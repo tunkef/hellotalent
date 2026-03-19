@@ -270,7 +270,7 @@ function renderBrandGrid(query) {
     var logoFront = _brandLogoHtml(b, 76);
     var logoBack = _brandLogoHtml(b, 40);
 
-    html += '<div class="flip-card" style="animation-delay:' + (i * 0.03) + 's;background:' + colors.backBg + ';">' +
+    html += '<div class="flip-card" onclick="this.classList.toggle(\'active\')" style="animation-delay:' + (i * 0.03) + 's;background:' + colors.backBg + ';">' +
       '<div class="flip-card-inner">' +
         '<div class="flip-front" style="background:' + _hexToRgba(colors.accent, 0.15) + ';">' +
           '<div class="front-logo">' + logoFront + '</div>' +

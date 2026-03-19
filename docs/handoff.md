@@ -816,9 +816,17 @@ if(sessionStorage.getItem('ht_gate')!=='ok'){window.location.replace('gate.html'
 | 042a | Seed: 29 yetkinlik tanımı + 237 rol-yetkinlik eşlemesi | ✅ Deployed |
 
 ### Markalar TODO
-- [ ] Mobil test (390×844) — hover-reveal kartlar touch'da test edilmeli
-- [ ] Dark mode uyumu
-- [ ] Yeni marka eklendiğinde logo upload + color map güncelleme süreci dokümante et
+- [x] ~~Mobil test (390×844)~~ ✅ Touch toggle (`.active` class) eklendi, hover + click ile çalışır
+- [x] ~~Dark mode uyumu~~ ✅ Glassmorphic ön yüz korunuyor, koyu gölgeler, logo wrap uyumlu
+- [x] ~~Yeni marka ekleme süreci~~ ✅ Aşağıda dokümante edildi
+
+### Yeni Marka Ekleme Süreci
+1. **Supabase → brands tablosu:** Yeni satır ekle (brand_name, company_id, segment, store_count_tr, store_cities, employee_count_tr, hq_city, short_description, website_url, instagram_url)
+2. **Logo upload:** Supabase Storage → `brand-logos/` bucket'ına PNG/SVG yükle, `logo_url` kolonunu güncelle. Logo yoksa otomatik olarak Google Favicons API kullanılır (website_url'den).
+3. **Renk ekle:** `profil-markalar.js` → `_BRAND_COLORS` objesine yeni entry: `'Marka Adı': { frontBg: '', backBg: '#HEX', accent: '#HEX' }` — backBg ve accent aynı kurumsal renk olmalı
+4. **Hafıza güncelle:** `.claude/projects/.../memory/project_brand_colors.md` dosyasına yeni markayı ekle
+5. **Deploy:** `git push origin main` → ~40 saniye → `Cmd+Shift+R`
+6. **Doğrula:** Markalar panelinde yeni kartın göründüğünü, rengin doğru olduğunu, hover-reveal'ın çalıştığını kontrol et
 
 ---
 

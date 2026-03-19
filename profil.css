@@ -3205,12 +3205,12 @@ html[data-theme="dark"] .lok-modal #btn-lok-close:hover{
 
 /* Card — hover reveal (front fades, back rotates in) */
 .flip-card{position:relative;z-index:1;height:100%;cursor:pointer;border-radius:18px;transition:all 0.4s;box-shadow:0 2px 12px rgba(0,0,0,0.08);}
-.flip-card:hover{z-index:10;border-radius:18px;transform:scale(1.03);box-shadow:0 8px 32px rgba(0,0,0,0.18);}
+.flip-card:hover,.flip-card.active{z-index:10;border-radius:18px;transform:scale(1.03);box-shadow:0 8px 32px rgba(0,0,0,0.18);}
 .flip-card-inner{position:relative;width:100%;height:100%;overflow:hidden;border-radius:18px;}
 
 .flip-front,.flip-back{width:100%;border-radius:18px;overflow:hidden;}
 .flip-front{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:16px 12px 12px;transition:all 0.4s;opacity:1;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.25);box-shadow:0 8px 32px rgba(0,0,0,0.06);}
-.flip-card:hover .flip-front{height:0;opacity:0;padding:0;}
+.flip-card:hover .flip-front,.flip-card.active .flip-front{height:0;opacity:0;padding:0;}
 
 .front-logo{width:64px;height:64px;border-radius:14px;background:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.08);margin-bottom:6px;}
 .front-logo .brand-logo-wrap{width:64px!important;height:64px!important;min-width:64px!important;min-height:64px!important;border-radius:16px;flex-shrink:0!important;background:rgba(255,255,255,0.2)!important;backdrop-filter:blur(14px)!important;-webkit-backdrop-filter:blur(14px)!important;border:1.5px solid rgba(255,255,255,0.45)!important;box-shadow:0 4px 16px rgba(0,0,0,0.06),inset 0 1px 0 rgba(255,255,255,0.6)!important;}
@@ -3222,7 +3222,7 @@ html[data-theme="dark"] .lok-modal #btn-lok-close:hover{
 .flip-hint{display:none;}
 
 .flip-back{height:0;opacity:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;color:#fff;transition:all 0.4s;font-size:0;transform:rotate(90deg) scale(-1);overflow:hidden;border-radius:18px;}
-.flip-card:hover .flip-back{opacity:1;height:100%;font-size:1rem;transform:rotate(0deg);}
+.flip-card:hover .flip-back,.flip-card.active .flip-back{opacity:1;height:100%;font-size:1rem;transform:rotate(0deg);}
 .flip-back::before{display:none;}
 .back-brand-name{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:20px;line-height:1.2;letter-spacing:-0.5px;text-align:center;padding:0 16px;width:100%;}
 .back-follow-mini{padding:0;border:none;background:none;color:#fff;cursor:pointer;}
@@ -3280,8 +3280,9 @@ html[data-theme="dark"] .lok-modal #btn-lok-close:hover{
 .brand-loading{text-align:center;padding:40px 0;color:var(--text-muted);font-size:13px;grid-column:1/-1;}
 
 /* Brand cards — force light mode always (colors/glow must not change in dark mode) */
-html[data-theme="dark"] .flip-front{background:#fff !important;color:#111 !important;}
-html[data-theme="dark"] .flip-front .front-name{color:#111 !important;}
-html[data-theme="dark"] .flip-front .brand-logo-wrap{background:rgba(255,255,255,0.25) !important;border-color:rgba(255,255,255,0.4) !important;}
-html[data-theme="dark"] .flip-front .flip-hint{color:#6B7280 !important;}
-html[data-theme="dark"] .flip-card{border-color:var(--border-subtle) !important;}
+html[data-theme="dark"] .flip-front{border-color:rgba(255,255,255,0.1) !important;}
+html[data-theme="dark"] .flip-front .brand-logo-wrap{background:rgba(255,255,255,0.15) !important;border-color:rgba(255,255,255,0.25) !important;}
+html[data-theme="dark"] .flip-card{box-shadow:0 2px 12px rgba(0,0,0,0.3) !important;}
+html[data-theme="dark"] .flip-card:hover,html[data-theme="dark"] .flip-card.active{box-shadow:0 8px 32px rgba(0,0,0,0.4) !important;}
+html[data-theme="dark"] .back-brand-name{color:#fff;}
+html[data-theme="dark"] .back-follow-mini .tooltip-container{border-color:rgba(255,255,255,0.2);}
