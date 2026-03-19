@@ -2869,7 +2869,7 @@ function renderBrandGrid(query) {
 
     html += '<div class="flip-card" onclick="this.classList.toggle(\'flipped\')" style="animation-delay:' + (i * 0.03) + 's">' +
       '<div class="flip-card-inner">' +
-        '<div class="flip-front" style="background:#fff;box-shadow:inset 0 0 60px ' + _hexToRgba(colors.accent || '#999', 0.4) + ',inset 0 0 120px ' + _hexToRgba(colors.accent || '#999', 0.2) + ',inset 0 -40px 80px ' + _hexToRgba(colors.accent || '#999', 0.15) + ';">' +
+        '<div class="flip-front" style="background:#fff;">' +
           '<div class="front-logo">' + logoFront + '</div>' +
           '<div class="front-name">' + _escHtml(b.brand_name) + '</div>' +
           (segLabel ? '<div class="front-segment" style="background:' + segColor + '">' + _escHtml(segLabel) + '</div>' : '') +
