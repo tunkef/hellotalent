@@ -1588,6 +1588,10 @@ if (window.Sentry) {
   <!-- Content is rendered by profil-yetkinlik.js via window._htLoadYetkinlik() -->
 </div>
 
+<div class="panel" id="panel-premium">
+  <!-- Content is rendered by profil-premium.js via window._htLoadPremium() -->
+</div>
+
 </div><!-- /app-body -->
 
 <script src="profil-core.js?v=20260317d"></script>
@@ -1598,6 +1602,7 @@ if (window.Sentry) {
 <script src="profil-inbox.js?v=20260317d"></script>
 <script src="profil-yetkinlik.js?v=20260319b"></script>
 <script src="profil-isgorusmeleri.js?v=20260319m"></script>
+<script src="profil-premium.js?v=20260319a"></script>
 
 <script>
 // ─── Panel click handlers (converted from inline onclick) ────────
@@ -1811,7 +1816,7 @@ function _doSwitchPanel(name) {
   if (target) target.classList.add('active');
   var bc = document.getElementById('breadcrumb-current');
   if (bc) {
-    var labels = { genel: 'Genel Bakış', merkez: 'Profil Merkezi', sirketler: 'Markalar', teklifler: 'Özel Teklifler', inbox: 'Mesajlar', bildirimler: 'Bildirimler', ayarlar: 'Ayarlar', profil: 'Profil', yetkinlik: 'Yetkinliklerim', mulakat: 'İş Görüşmeleri' };
+    var labels = { genel: 'Genel Bakış', merkez: 'Profil Merkezi', sirketler: 'Markalar', teklifler: 'Özel Teklifler', inbox: 'Mesajlar', bildirimler: 'Bildirimler', ayarlar: 'Ayarlar', profil: 'Profil', yetkinlik: 'Yetkinliklerim', mulakat: 'İş Görüşmeleri', premium: 'Premium', kimbakti: 'Kim Baktı' };
     bc.textContent = labels[name] || name;
   }
   // Update sidebar nav
@@ -1855,6 +1860,8 @@ function _doSwitchPanel(name) {
   if (name === 'yetkinlik') { window._htLoadYetkinlik && window._htLoadYetkinlik(); }
   // Lazy-load Mulakat panel on first visit
   if (name === 'mulakat') { window._htLoadMulakat && window._htLoadMulakat(); }
+  // Lazy-load Premium panel on first visit
+  if (name === 'premium') { window._htLoadPremium && window._htLoadPremium(); }
   // Lazy-load Bildirimler on first visit
   if (name === 'bildirimler') { window._htLoadBildirimler && window._htLoadBildirimler(); }
   // Populate Settings from Profile when opening Ayarlar
@@ -2911,11 +2918,11 @@ document.addEventListener('DOMContentLoaded', function() {
       observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
     }
 
-    // Premium button
+    // Premium button → Premium panel
     var premBtn = document.getElementById('avd-premium-btn');
     if (premBtn) premBtn.addEventListener('click', function() {
       dropdown.style.display = 'none';
-      // Could open premium modal or scroll to premium section
+      if (typeof switchPanel === 'function') switchPanel('premium');
     });
 
     // Logout button
