@@ -439,7 +439,7 @@ function injectCSS() {
   css += '.ig-role-card{background:linear-gradient(135deg,#2A3F7A 0%,#1E2D5E 50%,#162247 100%);border:1px solid rgba(255,255,255,.1) !important;border-radius:16px;padding:20px;text-align:center;transition:all .3s ease;cursor:pointer;display:flex;flex-direction:column;justify-content:center;color:#fff}';
   css += '.ig-role-card .ig-role-label{color:#fff !important}';
   css += '.ig-role-card .ig-role-desc{color:rgba(255,255,255,.7) !important}';
-  css += '.ig-role-card .ig-role-select{background:rgba(255,255,255,.12) !important;border:1px solid rgba(255,255,255,.25) !important;color:#fff !important}';
+  css += '.ig-role-card .ig-role-select{background:rgba(255,255,255,.12) !important;border:1px solid rgba(255,255,255,.25) !important;color:#fff !important;height:44px !important;padding:0 36px 0 14px !important;display:flex !important;align-items:center !important}';
   css += '.ig-role-card .ig-role-select:focus{border-color:var(--verm,#C94E28) !important;box-shadow:0 0 0 3px rgba(201,78,40,.2)}';
   css += '.ig-role-card .ig-role-select option{background:var(--navy,#1E2D5E);color:#fff}';
   css += '.ig-role-card:hover{border-color:var(--verm,#C94E28);border-style:solid}';
@@ -658,7 +658,7 @@ function renderRoleDropdown() {
     html += '<option value="' + roleKeys[i] + '">' + roleKeys[i] + '</option>';
   }
   html += '</select>';
-  html += '<button type="button" id="ig-role-start" style="flex-shrink:0;padding:0 24px;border:none;border-radius:10px;background:var(--verm,#C94E28);color:#fff;font-family:\'Plus Jakarta Sans\',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:opacity .2s;white-space:nowrap;">Ba\u015Fla</button>';
+  html += '<button type="button" id="ig-role-start" style="flex-shrink:0;height:44px;padding:0 24px;border:none;border-radius:10px;background:var(--verm,#C94E28);color:#fff;font-family:\'Plus Jakarta Sans\',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:opacity .2s;white-space:nowrap;">Ba\u015Fla</button>';
   html += '</div>';
   return html;
 }
