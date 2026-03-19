@@ -1,6 +1,6 @@
 /**
- * profil-isgorusmeleri.js — Is Gorusmeleri (Interview Prep) Panel for profil.html
- * Bento grid layout, STAR technique education, role-based interview questions.
+ * profil-isgorusmeleri.js — İş Görüşmeleri (Interview Practice) Panel
+ * 6-screen guided flow: star_intro → role_select → lobby → practice → completion → session_complete
  * Depends on profil-yetkinlik.js bridge: window._htYetkinlikData
  * All innerHTML content comes from hardcoded constants — no user input, no XSS risk.
  */
@@ -8,9 +8,8 @@
 'use strict';
 
 /* ════════════════════════════════════════════════
-   DATA BRIDGE — from profil-yetkinlik.js
+   DATA BRIDGE
    ════════════════════════════════════════════════ */
-
 var _bridge = null;
 function getBridge() {
   if (!_bridge && window._htYetkinlikData) _bridge = window._htYetkinlikData;
@@ -18,11 +17,8 @@ function getBridge() {
 }
 
 /* ════════════════════════════════════════════════
-   INTERVIEW QUESTIONS DATA — 29 competencies, 289 questions
-   5 themes per competency, 2 questions per theme
-   All content Turkish, retail-adapted.
+   INTERVIEW QUESTIONS — 29 competencies, 289 questions
    ════════════════════════════════════════════════ */
-
 var INTERVIEW_QUESTIONS = {
   'ao':[
     {theme:"Önce harekete geçmek",q:["Bir konuda harekete geçen ilk kişi olduğun bir zamanı anlat.","Daha fazla planlama yapmak ile hemen harekete geçmek arasında karar vermek zorunda kaldığın bir zamanı anlat."]},
@@ -50,7 +46,7 @@ var INTERVIEW_QUESTIONS = {
     {theme:"Kriz yönetmek",q:["Yönetmek zorunda kaldığın bir krizi anlat.","Acil bir durumu nasıl yönettiğine dair bir örnek ver."]},
     {theme:"Aksiliklerle baş etmek",q:["Birinin veya bir şeyin seni hazırlıksız yakalayıp hedeflerini engellediği bir zamanı anlat.","Savunmaya geçtiğin veya sinirlendiğin ama odağını başarıyla yeniden kazandığın bir zamanı anlat."]},
     {theme:"Pozitif kalmak",q:["Bir proje veya girişimin başarısız olacağı gibi göründüğü bir zamanı anlat.","Haklı olduğundan kesinlikle emin olduğun halde yetkili birinin seni geçersiz kıldığı bir zamanı anlat."]},
-    {theme:"Zorlukların üstesinden gelmek",q:["Zorlu bir görev veya durumla nasıl başa çıktığını anlat.","Olumsuz bir i\u015F deneyiminden nas\u0131l toparland\u0131\u011F\u0131na dair bir \u00F6rnek ver."]}
+    {theme:"Zorlukların üstesinden gelmek",q:["Zorlu bir görev veya durumla nasıl başa çıktığını anlat.","Olumsuz bir iş deneyiminden nasıl toparlandığına dair bir örnek ver."]}
   ],
   'bs':[
     {theme:"Paydaş endişelerini öngörmek",q:["Paydaş ihtiyaçlarını ve endişelerini önceden öngördüğün bir zamanı anlat.","Bir proje sırasında tüm paydaşlardan yeterli girdi toplamadığın bir zamanı anlat."]},
@@ -137,7 +133,7 @@ var INTERVIEW_QUESTIONS = {
     {theme:"Genç bireyleri geliştirmek",q:["Senden genç ve daha az deneyimli insanlara koçluk veya mentorluk yaptığın bir zamanı anlat.","Deneyimsiz biriyle çalışıp hızlandırılmış bir gelişim yolculuğuna başlattığın bir zamanı anlat."]}
   ],
   'dw':[
-    {theme:"Yön belirlemek",q:["Başkalarını bir hedef belirleme sürecine dahil ettiğin bir zamanı anlat.","Liderlik pozisyonundayken i\u015F y\u00FCk\u00FCn\u00FC nas\u0131l organize etti\u011Fini, hedefleri nas\u0131l belirledi\u011Fini ve ekibinle nas\u0131l ileti\u015Fim kurdu\u011Funu anlat."]},
+    {theme:"Yön belirlemek",q:["Başkalarını bir hedef belirleme sürecine dahil ettiğin bir zamanı anlat.","Liderlik pozisyonundayken iş yükünü nasıl organize ettiğini, hedefleri nasıl belirlediğini ve ekibinle nasıl iletişim kurduğunu anlat."]},
     {theme:"Etkili biçimde delege etmek",q:["Bir projenin veya görevin öğelerini başkalarına nasıl böldüğüne dair bir örnek ver.","Fazla delege ettiğin ve başını belaya soktuğu bir durumu anlat."]},
     {theme:"Projeyi rayında tutmak",q:["Herkes çok meşgulken ve sıkı bir teslim tarihiyle karşı karşıyayken grupta işleri nasıl rayında tuttuğuna dair bir örnek ver.","Kafası karışık veya farklı yönlere giden bir gruba odak kazandırdığın bir durumu anlat."]},
     {theme:"Rehberlik ile güçlendirmeyi dengelemek",q:["Başka birine devrettiğin bir işe dahil olma dürtüsüne direndiğin bir zamanı anlat.","Sadece senin üzerinde çalıştığın veya nasıl yapılacağını bildiğin bir görevi delege ettiğin durumu anlat."]},
@@ -165,7 +161,7 @@ var INTERVIEW_QUESTIONS = {
     {theme:"Kişilerarası dinamiklerden yararlanmak",q:["Çeşitli iş ağını kullanarak iş sorumluluklarını yerine getirdiğin bir zamanı anlat.","Yeni bir kişiyle tanıştığında nasıl yakınlık kurduğuna dair bir örnek ver."]}
   ],
   'it':[
-    {theme:"Tutarlı davranmak",q:["Söylediklerini uygulamanın zor olduğu bir durumu anlat.","S\u00F6yleneni veya bekleneni yapmak yerine kendi de\u011Ferlerine sad\u0131k kalmay\u0131 se\u00E7ti\u011Fin bir \u00F6rnek ver."]},
+    {theme:"Tutarlı davranmak",q:["Söylediklerini uygulamanın zor olduğu bir durumu anlat.","Söyleneni veya bekleneni yapmak yerine kendi değerlerine sadık kalmayı seçtiğin bir örnek ver."]},
     {theme:"Güven kazanmak",q:["İlk kez birlikte çalıştığın kişilerin güvenini nasıl kazandığına dair bir örnek ver.","Birine şüpheyi lehine yorumlamaya karar verdiğin bir durumu anlat."]},
     {theme:"Sırları korumak",q:["Birinin gizli tutmanı istediği bir şeyi ifşa etmen istendiğinde ne yaptığını anlat.","Birinin sana gizli bir şey söylediği ama başka birine söylemen gerektiğini hissettiğin bir zamanı anlat."]},
     {theme:"Dürüstlükle hareket etmek",q:["Bir hatayı veya başarısızlığı kamuoyu önünde kabul ettiğin bir zamanı anlat.","Etik dışı bulduğun bir şeyi yapman istendiğinde ne yaptığını anlat."]},
@@ -229,71 +225,272 @@ var INTERVIEW_QUESTIONS = {
   ]
 };
 
-
 /* ════════════════════════════════════════════════
-   STAR TECHNIQUE CONTENT (Turkish, retail-adapted)
+   STAR TECHNIQUE CONTENT
    ════════════════════════════════════════════════ */
-
 var STAR_CONTENT = {
-  intro: '\u0130\u015F g\u00F6r\u00FC\u015Fmesi bir performanst\u0131r. Haz\u0131rl\u0131k yapan aday, yapmayana kar\u015F\u0131 her zaman avantajl\u0131d\u0131r. STAR tekni\u011Fi ile deneyimlerinizi yap\u0131land\u0131r\u0131lm\u0131\u015F, etkileyici ve ak\u0131lda kal\u0131c\u0131 \u015Fekilde anlatmay\u0131 \u00F6\u011Frenin.',
+  intro: 'İş görüşmesi bir performanstır. Hazırlık yapan aday, yapmayana karşı her zaman avantajlıdır. STAR tekniği ile deneyimlerinizi yapılandırılmış, etkileyici ve akılda kalıcı şekilde anlatmayı öğrenin.',
   what: {
-    title: 'STAR Tekni\u011Fi Nedir?',
-    desc: 'STAR, i\u015F g\u00F6r\u00FC\u015Fmelerinde davran\u0131\u015Fsal sorular\u0131 yap\u0131land\u0131r\u0131lm\u0131\u015F ve etkili bi\u00E7imde yan\u0131tlamak i\u00E7in kullan\u0131lan kan\u0131tlanm\u0131\u015F bir y\u00F6ntemdir.',
+    title: 'STAR Tekniği Nedir?',
+    desc: 'STAR, iş görüşmelerinde davranışsal soruları yapılandırılmış ve etkili biçimde yanıtlamak için kullanılan kanıtlanmış bir yöntemdir.',
     steps: [
-      { letter: 'S', tr: 'Durum', en: 'Situation', desc: 'Kar\u015F\u0131la\u015Ft\u0131\u011F\u0131n\u0131z durumu, zorlu\u011Fu veya ba\u011Flam\u0131 tan\u0131mlay\u0131n. G\u00F6r\u00FC\u015Fmeciyi sahneye \u00E7ekin: neredeydiniz, ne oluyordu, neden \u00F6nemliydi? Ba\u011Flam\u0131 k\u0131sa ama net tutun \u2014 bir veya iki c\u00FCmle yeterlidir. Gereksiz detaylardan ka\u00E7\u0131n\u0131n, sadece hikayenin anla\u015F\u0131lmas\u0131 i\u00E7in gerekli olan arka plan\u0131 verin.' },
-      { letter: 'T', tr: 'G\u00F6rev', en: 'Task', desc: 'Bu durum i\u00E7inde sizin spesifik sorumlulu\u011Funuzu veya hedefinizi a\u00E7\u0131klay\u0131n. Ekibin genel g\u00F6revi de\u011Fil, sizden beklenen \u00E7\u0131kt\u0131y\u0131 netle\u015Ftirin. G\u00F6r\u00FC\u015Fmeci \u201Cbu ki\u015Finin rol\u00FC neydi?\u201D sorusuna net bir yan\u0131t almal\u0131. Tek c\u00FCmle ideal, ancak karma\u015F\u0131k g\u00F6revlerde iki c\u00FCmleye uzayabilir.' },
-      { letter: 'A', tr: 'Aksiyon', en: 'Action', desc: 'G\u00F6revi ba\u015Farmak i\u00E7in att\u0131\u011F\u0131n\u0131z somut ad\u0131mlar\u0131 detayland\u0131r\u0131n. Hem teknik becerileri (analiz, planlama, uygulama) hem de ki\u015Fisel becerileri (ileti\u015Fim, ikna, liderlik) dengeli bi\u00E7imde vurgulay\u0131n. \u201CBiz\u201D yerine \u201Cben\u201D kullanarak kendi katk\u0131n\u0131z\u0131 netle\u015Ftirin. Neden o yakla\u015F\u0131m\u0131 se\u00E7ti\u011Finizi ve alternatiflerden neden vazge\u00E7ti\u011Finizi k\u0131saca a\u00E7\u0131klay\u0131n. \u00DC\u00E7 ila be\u015F c\u00FCmle ideal uzunluktur.' },
-      { letter: 'R', tr: 'Sonu\u00E7', en: 'Result', desc: 'Eylemlerinizin yaratt\u0131\u011F\u0131 somut sonucu ve etkiyi payla\u015F\u0131n. M\u00FCmk\u00FCnse sonu\u00E7lar\u0131 rakamlarla destekleyin: y\u00FCzdelik art\u0131\u015F, s\u00FCre tasarrufu, m\u00FC\u015Fteri memnuniyet puan\u0131. Ba\u015Far\u0131 kadar ba\u015Far\u0131s\u0131zl\u0131ktan \u00F6\u011Frendikleriniz de de\u011Ferlidir \u2014 \u00F6nemli olan dersler \u00E7\u0131karm\u0131\u015F olman\u0131zd\u0131r. Bir veya iki c\u00FCmle.' }
+      { letter: 'S', tr: 'Durum', en: 'Situation', desc: 'Karşılaştığınız durumu, zorluğu veya bağlamı tanımlayın. Görüşmeciyi sahneye çekin: neredeydiniz, ne oluyordu, neden önemliydi? Bağlamı kısa ama net tutun \u2014 bir veya iki cümle yeterlidir. Gereksiz detaylardan kaçının, sadece hikayenin anlaşılması için gerekli olan arka planı verin.' },
+      { letter: 'T', tr: 'Görev', en: 'Task', desc: 'Bu durum içinde sizin spesifik sorumluluğunuzu veya hedefinizi açıklayın. Ekibin genel görevi değil, sizden beklenen çıktıyı netleştirin. Görüşmeci \u201Cbu kişinin rolü neydi?\u201D sorusuna net bir yanıt almalı. Tek cümle ideal, ancak karmaşık görevlerde iki cümleye uzayabilir.' },
+      { letter: 'A', tr: 'Aksiyon', en: 'Action', desc: 'Görevi başarmak için attığınız somut adımları detaylandırın. Hem teknik becerileri (analiz, planlama, uygulama) hem de kişisel becerileri (iletişim, ikna, liderlik) dengeli biçimde vurgulayın. \u201CBiz\u201D yerine \u201Cben\u201D kullanarak kendi katkınızı netleştirin. Neden o yaklaşımı seçtiğinizi ve alternatiflerden neden vazgeçtiğinizi kısaca açıklayın. Üç ila beş cümle ideal uzunluktur.' },
+      { letter: 'R', tr: 'Sonuç', en: 'Result', desc: 'Eylemlerinizin yarattığı somut sonucu ve etkiyi paylaşın. Mümkünse sonuçları rakamlarla destekleyin: yüzdelik artış, süre tasarrufu, müşteri memnuniyet puanı. Başarı kadar başarısızlıktan öğrendikleriniz de değerlidir \u2014 önemli olan dersler çıkarmış olmanızdır. Bir veya iki cümle.' }
     ],
     takeaway: {
-      tr: '\u00C7\u0131kar\u0131m',
+      tr: 'Çıkarım',
       en: 'Takeaway',
-      desc: 'Deneyimden ne \u00F6\u011Frendi\u011Finizi ve bu \u00F6\u011Frenimin yeni rolde nas\u0131l de\u011Fer yarataca\u011F\u0131n\u0131 a\u00E7\u0131klay\u0131n. Bu ek ad\u0131m, \u00F6z fark\u0131ndal\u0131\u011F\u0131n\u0131z\u0131, geli\u015Fim odakl\u0131 yakla\u015F\u0131m\u0131n\u0131z\u0131 ve ge\u00E7mi\u015F deneyimleri gelece\u011Fe ta\u015F\u0131ma kapasitenizi g\u00F6sterir. G\u00F6r\u00FC\u015Fmeciyi \u201Cbu aday \u00F6\u011Frenmeye a\u00E7\u0131k ve geli\u015Fiyor\u201D sonucuna ula\u015Ft\u0131r\u0131r.'
+      desc: 'Deneyimden ne öğrendiğinizi ve bu öğrenimin yeni rolde nasıl değer yaratacağını açıklayın. Bu ek adım, öz farkındalığınızı, gelişim odaklı yaklaşımınızı ve geçmiş deneyimleri geleceğe taşıma kapasitenizi gösterir. Görüşmeciyi \u201Cbu aday öğrenmeye açık ve gelişiyor\u201D sonucuna ulaştırır.'
     }
   },
   example: {
-    title: '\u201CBa\u015Far\u0131s\u0131z oldu\u011Funuz bir d\u00F6nemi anlat\u0131n\u201D',
-    situation: 'Premium segmentte bir ma\u011Fazada k\u0131demli sat\u0131\u015F dan\u0131\u015Fman\u0131 olarak \u00E7al\u0131\u015F\u0131yordum. \u00D6nemli bir kurumsal m\u00FC\u015Fterinin \u00F6zel sipari\u015F s\u00FCreci vard\u0131 \u2014 y\u00FCksek adetli bir \u00E7al\u0131\u015Fan hediye program\u0131 i\u00E7in yakla\u015F\u0131k 200 \u00FCr\u00FCn se\u00E7imi yap\u0131yorduk. \u00DC\u00E7 ayd\u0131r ili\u015Fkiyi y\u00FCr\u00FCt\u00FCyor, \u00F6zel fiyatland\u0131rma ve paketleme se\u00E7enekleri haz\u0131rl\u0131yorduk. M\u00FC\u015Fteri sat\u0131n alma m\u00FCd\u00FCr\u00FC ile d\u00FCzenli g\u00F6r\u00FC\u015Fmelerimiz oluyordu ve s\u00FCre\u00E7 olumlu ilerliyordu.',
-    task: 'Bu sipari\u015Fi kapatmak benim sorumlulu\u011Fumdayd\u0131. Ba\u015Far\u0131l\u0131 olursam \u00E7eyreklik sat\u0131\u015F hedefimi tek ba\u015F\u0131na y\u00FCzde k\u0131rk a\u015Facakt\u0131m ve ma\u011Faza i\u00E7in de \u00F6nemli bir referans proje olacakt\u0131.',
-    action: 'M\u00FC\u015Fterinin b\u00FCtce s\u0131n\u0131rlar\u0131n\u0131 ve marka tercihlerini analiz ederek detayl\u0131 bir \u00FCr\u00FCn \u00F6nerisi haz\u0131rlad\u0131m. \u00DCst d\u00FCzey y\u00F6netimden ek indirim onay\u0131 alarak rekabet\u00E7i bir fiyat teklifi olu\u015Fturdum. Paketleme ve teslimat i\u00E7in lojistik ekibiyle koordinasyon sa\u011Flad\u0131m. Ancak final toplant\u0131s\u0131nda m\u00FC\u015Fterinin tedarik zinciri m\u00FCd\u00FCr\u00FC beklemedi\u011Fim teknik sorular sordu: kargo sigortas\u0131, toplu iade ko\u015Fullar\u0131 ve fatura kesim takvimi. Bu detaylar\u0131 haz\u0131rlamam\u0131\u015Ft\u0131m ve o anda profesyonel bir yan\u0131t veremedim. Sat\u0131n alma m\u00FCd\u00FCr\u00FC ile kurdu\u011Fum g\u00FCvene ra\u011Fmen, fark ettim ki karar masa\u0131nda sadece o yokmu\u015F \u2014 t\u00FCm payda\u015Flar\u0131 haritalamam\u0131\u015Ft\u0131m.',
-    result: 'Toplant\u0131 sonras\u0131 eksik bilgileri h\u0131zla tamamlay\u0131p g\u00F6nderdim, ama m\u00FC\u015Fteri s\u00FCreci bir rakiple ilerletme karar\u0131 alm\u0131\u015Ft\u0131. \u00DC\u00E7 ayl\u0131k eme\u011Fi kaybettim ve \u00E7eyrek hedefimi tutturamazken, ekip olarak da \u00F6nemli bir referans\u0131 ka\u00E7\u0131rm\u0131\u015F olduk. Bu benim i\u015F hayat\u0131mda en \u00E7ok \u00F6\u011Freten ba\u015Far\u0131s\u0131zl\u0131klardan biri oldu.',
-    takeaway: 'Bu deneyim bana \u00FC\u00E7 kritik ders \u00F6\u011Fretti. Birincisi, bir sat\u0131\u015F s\u00FCrecinde t\u00FCm karar vericileri ve etki alanlar\u0131n\u0131 ba\u015Ftan haritalamak gerekiyor \u2014 tek ki\u015Fiyle ili\u015Fki kurmak yetmiyor. \u0130kincisi, her sunumumda art\u0131k ekip arkada\u015Flar\u0131m ve y\u00F6neticimle \u00F6n provalar yap\u0131yorum; zay\u0131f noktalar\u0131 bulmam\u0131 ve itirazlara haz\u0131rl\u0131kl\u0131 olmam\u0131 sa\u011Fl\u0131yorlar. \u00DC\u00E7\u00FCnc\u00FCs\u00FC, ba\u015Far\u0131n\u0131n bireysel de\u011Fil tak\u0131m i\u015Fi oldu\u011Funu i\u00E7selle\u015Ftirdim \u2014 lojistik, finans ve y\u00F6netim deste\u011Fini proaktif olarak dahil etmeyi \u00F6\u011Frendim.'
+    title: '\u201CBaşarısız olduğunuz bir dönemi anlatın\u201D',
+    situation: 'Premium segmentte bir mağazada kıdemli satış danışmanı olarak çalışıyordum. Önemli bir kurumsal müşterinin özel sipariş süreci vardı \u2014 yüksek adetli bir çalışan hediye programı için yaklaşık 200 ürün seçimi yapıyorduk. Üç aydır ilişkiyi yürütüyor, özel fiyatlandırma ve paketleme seçenekleri hazırlıyorduk. Müşteri satın alma müdürü ile düzenli görüşmelerimiz oluyordu ve süreç olumlu ilerliyordu.',
+    task: 'Bu siparişi kapatmak benim sorumluluğumdaydı. Başarılı olursam çeyreklik satış hedefimi tek başına yüzde kırk aşacaktım ve mağaza için de önemli bir referans proje olacaktı.',
+    action: 'Müşterinin bütce sınırlarını ve marka tercihlerini analiz ederek detaylı bir ürün önerisi hazırladım. Üst düzey yönetimden ek indirim onayı alarak rekabetçi bir fiyat teklifi oluşturdum. Paketleme ve teslimat için lojistik ekibiyle koordinasyon sağladım. Ancak final toplantısında müşterinin tedarik zinciri müdürü beklemediğim teknik sorular sordu: kargo sigortası, toplu iade koşulları ve fatura kesim takvimi. Bu detayları hazırlamamıştım ve o anda profesyonel bir yanıt veremedim. Satın alma müdürü ile kurduğum güvene rağmen, fark ettim ki karar masasında sadece o yokmuş \u2014 tüm paydaşları haritalamamıştım.',
+    result: 'Toplantı sonrası eksik bilgileri hızla tamamlayıp gönderdim, ama müşteri süreci bir rakiple ilerletme kararı almıştı. Üç aylık emeği kaybettim ve çeyrek hedefimi tutturamazken, ekip olarak da önemli bir referansı kaçırmış olduk. Bu benim iş hayatımda en çok öğreten başarısızlıklardan biri oldu.',
+    takeaway: 'Bu deneyim bana üç kritik ders öğretti. Birincisi, bir satış sürecinde tüm karar vericileri ve etki alanlarını baştan haritalamak gerekiyor \u2014 tek kişiyle ilişki kurmak yetmiyor. İkincisi, her sunumumda artık ekip arkadaşlarım ve yöneticimle ön provalar yapıyorum; zayıf noktalarımı bulmamı ve itirazlara hazırlıklı olmamı sağlıyorlar. Üçüncüsü, başarının bireysel değil takım işi olduğunu içselleştirdim \u2014 lojistik, finans ve yönetim desteğini proaktif olarak dahil etmeyi öğrendim.'
   },
   benefits: [
-    'D\u00FC\u015F\u00FCncelerinizi yap\u0131land\u0131r\u0131r, ilgili ve etkili detaylara odaklanman\u0131z\u0131 sa\u011Flar',
-    'Ge\u00E7mi\u015F ba\u015Far\u0131lar\u0131n\u0131z ile gelecek i\u015F sorumluluklar\u0131n\u0131z aras\u0131nda do\u011Frudan ba\u011Flant\u0131 kurar',
-    'Somut ve \u00F6l\u00E7\u00FClebilir sonu\u00E7lar sunma kapasitenizi g\u00F6sterir',
-    '\u00D6z fark\u0131ndal\u0131k, duygusal zeka ve mesleki geli\u015Fimi ortaya koyar'
+    'Düşüncelerinizi yapılandırır, ilgili ve etkili detaylara odaklanmanızı sağlar',
+    'Geçmiş başarılarınız ile gelecek iş sorumluluklarınız arasında doğrudan bağlantı kurar',
+    'Somut ve ölçülebilir sonuçlar sunma kapasitenizi gösterir',
+    'Öz farkındalık, duygusal zeka ve mesleki gelişimi ortaya koyar'
   ],
   tips_do: [
-    'Sorunun ger\u00E7ekten bir STAR yan\u0131t\u0131 gerektirip gerektirmedi\u011Fini de\u011Ferlendirin',
-    'Canl\u0131 ve spesifik \u00F6rneklerle ak\u0131lda kal\u0131c\u0131 olun',
-    'Sonu\u00E7lar\u0131 m\u00FCmk\u00FCn oldu\u011Funda rakamlarla destekleyin',
-    '\u201CBiz\u201D yerine \u201Cben\u201D kullanarak kendi katk\u0131n\u0131z\u0131 netle\u015Ftirin',
-    'Hem teknik hem ki\u015Fisel becerilerinizi dengeli \u015Fekilde vurgulay\u0131n',
-    'Deneyimlerinizi yeni pozisyonun gereklilikleriyle ili\u015Fkilendirin',
-    'Her yan\u0131t\u0131 iki dakikan\u0131n alt\u0131nda tutun'
+    'Sorunun gerçekten bir STAR yanıtı gerektirip gerektirmediğini değerlendirin',
+    'Canlı ve spesifik örneklerle akılda kalıcı olun',
+    'Sonuçları mümkün olduğunda rakamlarla destekleyin',
+    '\u201CBiz\u201D yerine \u201Cben\u201D kullanarak kendi katkınızı netleştirin',
+    'Hem teknik hem kişisel becerilerinizi dengeli şekilde vurgulayın',
+    'Deneyimlerinizi yeni pozisyonun gereklilikleriyle ilişkilendirin',
+    'Her yanıtı iki dakikanın altında tutun'
   ],
   tips_dont: [
-    'Her soruya STAR format\u0131yla yan\u0131tlamay\u0131n \u2014 baz\u0131 sorular bunu gerektirmez',
-    'Gereksiz detayla uzatmay\u0131n, oda\u011F\u0131n\u0131z\u0131 kaybetmeyin',
-    'Haz\u0131r hikayenizi sorulan soruya uyarlamadan anlatmay\u0131n',
-    'Sadece ba\u015Far\u0131 hikayelerine odaklanmay\u0131n \u2014 zorluklardan \u00F6\u011Frendi\u011Finizi de payla\u015F\u0131n',
-    'Ayn\u0131 hikayeyi farkl\u0131 g\u00F6r\u00FC\u015Fmecilere tekrarlamay\u0131n',
-    'Ba\u015Far\u0131lar\u0131n\u0131z\u0131 abartmay\u0131n \u2014 samimi ve ger\u00E7ek\u00E7i olun'
+    'Her soruya STAR formatıyla yanıtlamayın \u2014 bazı sorular bunu gerektirmez',
+    'Gereksiz detayla uzatmayın, odağınızı kaybetmeyin',
+    'Hazır hikayenizi sorulan soruya uyarlamadan anlatmayın',
+    'Sadece başarı hikayelerine odaklanmayın \u2014 zorluklardan öğrendiğinizi de paylaşın',
+    'Aynı hikayeyi farklı görüşmecilere tekrarlamayın',
+    'Başarılarınızı abartmayın \u2014 samimi ve gerçekçi olun'
   ]
 };
 
 /* ════════════════════════════════════════════════
+   FREEMIUM CONSTANTS
+   ════════════════════════════════════════════════ */
+var FREE_COMP_LIMIT = 2;
+var FREE_Q_PER_COMP = 3;
+var FREE_SWAP_LIMIT = 2;
+
+/* ════════════════════════════════════════════════
    STATE
    ════════════════════════════════════════════════ */
-
 var _loaded = false;
 var S = {
-  screen: 'intro',
+  screen: 'star_intro',
   role: null,
-  reset: function() { this.screen = 'intro'; this.role = null; }
+  comps: [],
+  isPremium: false,
+  activeComp: null,
+  activeCompIdx: 0,
+  dealt: [],
+  currentQ: 0,
+  swapsUsed: 0,
+  answeredCount: 0,
+  starHintOpen: false,
+  completedComps: [],
+  totalAnswered: 0,
+  totalSwaps: 0
 };
+
+function resetState() {
+  S.screen = 'star_intro';
+  S.role = null;
+  S.comps = [];
+  S.isPremium = false;
+  S.activeComp = null;
+  S.activeCompIdx = 0;
+  S.dealt = [];
+  S.currentQ = 0;
+  S.swapsUsed = 0;
+  S.answeredCount = 0;
+  S.starHintOpen = false;
+  S.completedComps = [];
+  S.totalAnswered = 0;
+  S.totalSwaps = 0;
+}
+
+/* ════════════════════════════════════════════════
+   QUESTION POOL HELPERS
+   ════════════════════════════════════════════════ */
+
+function shuffle(arr) {
+  var a = arr.slice();
+  for (var i = a.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var tmp = a[i]; a[i] = a[j]; a[j] = tmp;
+  }
+  return a;
+}
+
+function flattenQuestions(compCode) {
+  var themes = INTERVIEW_QUESTIONS[compCode] || [];
+  var flat = [];
+  for (var t = 0; t < themes.length; t++) {
+    for (var q = 0; q < themes[t].q.length; q++) {
+      flat.push({ theme: themes[t].theme, text: themes[t].q[q], themeIdx: t });
+    }
+  }
+  return flat;
+}
+
+function dealQuestions(compCode, count) {
+  var all = flattenQuestions(compCode);
+  if (!all.length) return [];
+  var recent = getRecentQuestions();
+  var themes = INTERVIEW_QUESTIONS[compCode] || [];
+  var themeCount = themes.length;
+  var dealt = [];
+
+  /* Build a shuffled theme order so we don't always start at 0,1,2 */
+  var themeOrder = [];
+  for (var t = 0; t < themeCount; t++) themeOrder.push(t);
+  themeOrder = shuffle(themeOrder);
+
+  /* Pick one question per shuffled theme, cycling if count > themeCount */
+  var round = 0;
+  while (dealt.length < count && dealt.length < all.length) {
+    var targetTheme = themeOrder[round % themeCount];
+    var candidates = all.filter(function(q) {
+      return q.themeIdx === targetTheme &&
+        dealt.indexOf(q) === -1 &&
+        recent.indexOf(q.text) === -1;
+    });
+    if (!candidates.length) {
+      candidates = all.filter(function(q) {
+        return q.themeIdx === targetTheme && dealt.indexOf(q) === -1;
+      });
+    }
+    if (candidates.length) {
+      var pick = candidates[Math.floor(Math.random() * candidates.length)];
+      dealt.push(pick);
+    }
+    round++;
+    if (round > count * themeCount) break;
+  }
+  return dealt;
+}
+
+function getSwapQuestion(compCode, currentPool, currentIdx) {
+  var all = flattenQuestions(compCode);
+  var usedTexts = currentPool.map(function(q) { return q.text; });
+  var recent = getRecentQuestions();
+  var candidates = all.filter(function(q) {
+    return usedTexts.indexOf(q.text) === -1 && recent.indexOf(q.text) === -1;
+  });
+  if (!candidates.length) {
+    candidates = all.filter(function(q) { return usedTexts.indexOf(q.text) === -1; });
+  }
+  if (!candidates.length) return null;
+  return candidates[Math.floor(Math.random() * candidates.length)];
+}
+
+/* ════════════════════════════════════════════════
+   LOCAL STORAGE HELPERS
+   ════════════════════════════════════════════════ */
+
+var LS_STAR_SEEN = 'ht_star_seen';
+var LS_RECENT_Q = 'ht_recent_q';
+var RECENT_Q_MAX = 20;
+
+function hasSeenStar() {
+  try { return localStorage.getItem(LS_STAR_SEEN) === '1'; } catch(e) { return false; }
+}
+function markStarSeen() {
+  try { localStorage.setItem(LS_STAR_SEEN, '1'); } catch(e) {}
+}
+function getRecentQuestions() {
+  try {
+    var raw = localStorage.getItem(LS_RECENT_Q);
+    return raw ? JSON.parse(raw) : [];
+  } catch(e) { return []; }
+}
+function addRecentQuestion(text) {
+  try {
+    var arr = getRecentQuestions();
+    if (arr.indexOf(text) === -1) arr.push(text);
+    if (arr.length > RECENT_Q_MAX) arr = arr.slice(arr.length - RECENT_Q_MAX);
+    localStorage.setItem(LS_RECENT_Q, JSON.stringify(arr));
+  } catch(e) {}
+}
+
+/* ════════════════════════════════════════════════
+   SESSION STORAGE — persist/restore in-progress session
+   ════════════════════════════════════════════════ */
+
+var SS_KEY = 'ht_ig_session';
+
+function saveSession() {
+  try {
+    var data = {
+      screen: S.screen,
+      role: S.role,
+      comps: S.comps,
+      activeComp: S.activeComp,
+      activeCompIdx: S.activeCompIdx,
+      dealt: S.dealt,
+      currentQ: S.currentQ,
+      swapsUsed: S.swapsUsed,
+      answeredCount: S.answeredCount,
+      starHintOpen: S.starHintOpen,
+      completedComps: S.completedComps,
+      totalAnswered: S.totalAnswered,
+      totalSwaps: S.totalSwaps
+    };
+    sessionStorage.setItem(SS_KEY, JSON.stringify(data));
+  } catch(e) {}
+}
+
+function loadSession() {
+  try {
+    var raw = sessionStorage.getItem(SS_KEY);
+    if (!raw) return false;
+    var data = JSON.parse(raw);
+    if (!data || !data.screen) return false;
+    S.screen = data.screen;
+    S.role = data.role || null;
+    S.comps = data.comps || [];
+    S.activeComp = data.activeComp || null;
+    S.activeCompIdx = data.activeCompIdx || 0;
+    S.dealt = data.dealt || [];
+    S.currentQ = data.currentQ || 0;
+    S.swapsUsed = data.swapsUsed || 0;
+    S.answeredCount = data.answeredCount || 0;
+    S.starHintOpen = data.starHintOpen || false;
+    S.completedComps = data.completedComps || [];
+    S.totalAnswered = data.totalAnswered || 0;
+    S.totalSwaps = data.totalSwaps || 0;
+    return true;
+  } catch(e) { return false; }
+}
+
+function clearSession() {
+  try { sessionStorage.removeItem(SS_KEY); } catch(e) {}
+}
+
+/* ════════════════════════════════════════════════
+   SVG ICONS
+   ════════════════════════════════════════════════ */
+
+var lockSVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>';
+var arrowLeftSVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>';
+var checkSVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+var swapSVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3l4 4-4 4"/><path d="M20 7H4"/><path d="M8 21l-4-4 4-4"/><path d="M4 17h16"/></svg>';
+var starSVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>';
+var trophySVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>';
 
 /* ════════════════════════════════════════════════
    CSS INJECTION
@@ -303,171 +500,84 @@ function injectCSS() {
   if (document.getElementById('ig-style')) return;
   var css = '';
 
-  /* Container */
-  css += '#ig-container{max-width:100%;padding:0 0 40px}';
+  /* Animations */
+  css += '@keyframes igFadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}';
+  css += '@keyframes igSlideUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}';
+  css += '@keyframes igPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}';
+  css += '#ig-container{animation:igFadeIn .25s ease;max-width:100%;padding:0 0 40px}';
 
   /* Bento Grid */
   css += '.ig-bento{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:20px}';
   css += '.ig-bento-full{grid-column:1/-1}';
   css += '.ig-bento-2{grid-column:span 2}';
 
-  /* Cards base */
-  /* Animations */
-  css += '@keyframes igFadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}';
-  css += '@keyframes igSlideUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}';
-  css += '#ig-container{animation:igFadeIn .25s ease}';
-
+  /* Cards */
   css += '.ig-card{background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF);border-radius:16px;padding:24px;position:relative;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.08),0 8px 20px rgba(0,0,0,.06);transition:box-shadow .3s ease,transform .3s ease;animation:igSlideUp .35s ease both}';
-  css += '.ig-bento>.ig-card:nth-child(2){animation-delay:.05s}.ig-bento>.ig-card:nth-child(3){animation-delay:.1s}.ig-bento>.ig-card:nth-child(4){animation-delay:.15s}.ig-bento>.ig-card:nth-child(5){animation-delay:.2s}.ig-bento>.ig-card:nth-child(6){animation-delay:.25s}.ig-bento>.ig-card:nth-child(7){animation-delay:.3s}';
+  css += '.ig-bento>.ig-card:nth-child(2){animation-delay:.05s}.ig-bento>.ig-card:nth-child(3){animation-delay:.1s}.ig-bento>.ig-card:nth-child(4){animation-delay:.15s}.ig-bento>.ig-card:nth-child(5){animation-delay:.2s}.ig-bento>.ig-card:nth-child(6){animation-delay:.25s}';
   css += '.ig-card:hover{box-shadow:0 8px 24px rgba(0,0,0,.06);transform:translateY(-1px)}';
-
-  /* Hero uses .g-hero from profil.css — no custom hero CSS needed */
 
   /* Section titles */
   css += '.ig-section-title{font-family:"Bricolage Grotesque",sans-serif;font-size:18px;font-weight:700;color:var(--text-primary,#111);margin-bottom:6px}';
   css += '.ig-section-desc{font-family:"Plus Jakarta Sans",sans-serif;font-size:13px;color:var(--text-muted,#6B7280);line-height:1.6}';
 
-  /* STAR Quad card — vermillion bg */
+  /* STAR Quad card */
   css += '.ig-star-quad-card{display:flex;align-items:center;justify-content:center;padding:24px;background:#C94E28 !important;border:none !important}';
-
-  /* STAR Detail card */
-  css += '.ig-star-detail-card{display:flex;align-items:center;padding:24px 28px}';
-
-  /* Quad 2x2 */
   css += '.ig-star-quad{display:flex;flex-direction:column;gap:5px}';
   css += '.ig-star-row{display:flex;gap:5px}';
   css += '.ig-star-cell{width:76px;height:76px;background:#fff;border:none;outline:none;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:all .25s ease;position:relative;box-shadow:0 2px 8px rgba(0,0,0,.06)}';
   css += '.ig-star-cell:hover{transform:scale(1.06)}';
-  css += '.ig-star-cell .ig-sq-letter{font-family:"Bricolage Grotesque",sans-serif;font-size:30px;font-weight:900;letter-spacing:-1px;transition:all .25s}';
+  css += '.ig-star-cell .ig-sq-letter{font-family:"Bricolage Grotesque",sans-serif;font-size:30px;font-weight:900;letter-spacing:-1px;transition:all .25s;color:var(--verm,#C94E28)}';
   css += '.ig-star-cell .ig-sq-label{font-family:"Plus Jakarta Sans",sans-serif;font-size:7.5px;font-weight:600;letter-spacing:.4px;text-transform:uppercase;transition:all .25s;margin-top:2px}';
-  css += '.ig-star-cell .ig-sq-label-en{font-style:italic;font-weight:400;text-transform:none;letter-spacing:0;opacity:.6}';
-
-  /* Corner radii */
-  css += '.ig-sq-s{border-radius:60px 5px 5px 5px}';
-  css += '.ig-sq-t{border-radius:5px 60px 5px 5px}';
-  css += '.ig-sq-a{border-radius:5px 5px 5px 60px}';
-  css += '.ig-sq-r{border-radius:5px 5px 60px 5px}';
-
-  /* Default: white bg, vermillion letters */
-  css += '.ig-star-cell .ig-sq-letter{color:var(--verm,#C94E28)}';
-
-  /* Active: vermillion gradient, shadow to pop from bg */
+  css += '.ig-sq-s{border-radius:60px 5px 5px 5px}.ig-sq-t{border-radius:5px 60px 5px 5px}.ig-sq-a{border-radius:5px 5px 5px 60px}.ig-sq-r{border-radius:5px 5px 60px 5px}';
   css += '.ig-star-cell.active{transform:scale(1.06);background:linear-gradient(135deg,#d4572f 0%,#b84420 100%);box-shadow:0 4px 16px rgba(0,0,0,.2),inset 0 1px 0 rgba(255,255,255,.15)}';
   css += '.ig-star-cell.active .ig-sq-letter{color:#fff}';
 
-  /* Çıkarım banner — slim full-width */
+  /* STAR Detail card */
+  css += '.ig-star-detail-card{display:flex;align-items:center;padding:24px 28px}';
+  css += '.ig-star-detail{animation:igFadeIn .2s ease}';
+  css += '.ig-star-detail-title{font-family:"Bricolage Grotesque",sans-serif;font-size:18px;font-weight:800;margin-bottom:8px}';
+  css += '.ig-star-detail-text{font-family:"Plus Jakarta Sans",sans-serif;font-size:13px;color:var(--text-secondary,#4B5563);line-height:1.7}';
+
+  /* Takeaway banner */
   css += '.ig-takeaway-banner{background:linear-gradient(135deg,#2A3F7A 0%,#1E2D5E 50%,#162247 100%);border:none;color:#fff;display:flex;align-items:center;gap:16px;padding:16px 24px}';
   css += '.ig-takeaway-badge{font-family:"Bricolage Grotesque",sans-serif;font-size:22px;font-weight:900;color:var(--verm,#C94E28);flex-shrink:0}';
   css += '.ig-takeaway-body{flex:1;min-width:0}';
   css += '.ig-takeaway-title{font-family:"Bricolage Grotesque",sans-serif;font-size:14px;font-weight:700;color:#fff;margin-bottom:2px}';
-  css += '.ig-takeaway-title-en{font-style:italic;font-weight:400;font-size:11px;color:rgba(255,255,255,.5);margin-left:4px}';
   css += '.ig-takeaway-text{font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;color:rgba(255,255,255,.7);line-height:1.6}';
 
-  /* Benefit cards — equal 2x2 grid */
+  /* Benefits grid */
   css += '.ig-benefits-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}';
   css += '.ig-benefit-card{display:flex;align-items:flex-start;gap:12px;padding:20px}';
   css += '.ig-benefit-num{flex-shrink:0;width:28px;height:28px;border-radius:8px;background:rgba(201,78,40,.08);color:var(--verm,#C94E28);font-family:"DM Mono",monospace;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center}';
   css += '.ig-benefit-text{font-family:"Plus Jakarta Sans",sans-serif;font-size:13px;color:var(--text-secondary,#4B5563);line-height:1.6}';
 
-  /* Detail panel content */
-  css += '.ig-star-detail{animation:igFadeIn .2s ease}';
-  css += '.ig-star-detail-title{font-family:"Bricolage Grotesque",sans-serif;font-size:18px;font-weight:800;margin-bottom:8px}';
-  css += '.ig-star-detail-text{font-family:"Plus Jakarta Sans",sans-serif;font-size:13px;color:var(--text-secondary,#4B5563);line-height:1.7}';
-
-  /* Example carousel */
-  css += '.ig-carousel-wrap{position:relative;overflow:hidden;border-radius:16px;border:1px solid var(--border-subtle,#E5E3DF)}';
-  css += '.ig-carousel-track{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none}';
-  css += '.ig-carousel-track::-webkit-scrollbar{display:none}';
-  css += '.ig-carousel-slide{min-width:100%;scroll-snap-align:start;padding:28px 24px;box-sizing:border-box}';
-
-  /* Question slide (first) */
-  css += '.ig-slide-question{background:var(--bg-surface,#fff);display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;min-height:180px}';
-  css += '.ig-slide-question .ig-slide-q{font-family:"Bricolage Grotesque",sans-serif;font-size:18px;font-weight:800;color:var(--text-primary,#111);line-height:1.4;max-width:480px}';
-  css += '.ig-slide-question .ig-slide-hint{font-family:"Plus Jakarta Sans",sans-serif;font-size:11px;color:var(--text-muted,#6B7280);margin-top:12px}';
-
-  /* STAR step slides */
-  css += '.ig-slide-step{background:var(--bg-surface,#fff);display:flex;gap:16px;align-items:flex-start;min-height:180px;position:relative}';
-  css += '.ig-slide-badge{flex-shrink:0;width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-family:"Bricolage Grotesque",sans-serif;font-size:20px;font-weight:900;color:#fff}';
-  css += '.ig-slide-badge.verm{background:var(--verm,#C94E28)}';
-  css += '.ig-slide-badge.navy{background:var(--navy,#1E2D5E)}';
-  css += '.ig-slide-body{flex:1;min-width:0}';
-  css += '.ig-slide-label{font-family:"Bricolage Grotesque",sans-serif;font-size:14px;font-weight:700;color:var(--text-primary,#111);margin-bottom:2px}';
-  css += '.ig-slide-label-en{font-style:italic;font-weight:400;font-size:12px;color:var(--text-muted,#6B7280);margin-left:4px}';
-  css += '.ig-slide-text{font-family:"Plus Jakarta Sans",sans-serif;font-size:13px;color:var(--text-secondary,#4B5563);line-height:1.7;margin-top:6px}';
-
-  /* Mini STAR wheel in carousel slides */
-  css += '.ig-mini-wheel{position:absolute;top:16px;right:16px;display:grid;grid-template-columns:1fr 1fr;gap:2px;width:44px}';
-  css += '.ig-mw-cell{width:20px;height:20px;background:var(--border-subtle,#E5E3DF);display:flex;align-items:center;justify-content:center;font-family:"Bricolage Grotesque",sans-serif;font-size:8px;font-weight:900;color:var(--text-muted,#9CA3AF);transition:all .2s}';
-  css += '.ig-mw-0{border-radius:10px 2px 2px 2px}';
-  css += '.ig-mw-1{border-radius:2px 10px 2px 2px}';
-  css += '.ig-mw-2{border-radius:2px 2px 2px 10px}';
-  css += '.ig-mw-3{border-radius:2px 2px 10px 2px}';
-  css += '.ig-mw-4{grid-column:1/-1;border-radius:4px;height:14px;font-size:7px;background:var(--navy,#1E2D5E);color:rgba(255,255,255,.3)}';
-  css += '.ig-mw-active{background:var(--verm,#C94E28);color:#fff}';
-  css += '.ig-mw-4.ig-mw-active{background:var(--navy,#1E2D5E);color:#fff}';
-
-  /* Carousel dots */
-  css += '.ig-carousel-dots{display:flex;justify-content:center;gap:6px;padding:12px 0 4px}';
-  css += '.ig-carousel-dot{width:8px;height:8px;border-radius:50%;background:var(--border-subtle,#E5E3DF);transition:all .2s;cursor:pointer}';
-  css += '.ig-carousel-dot.active{background:var(--verm,#C94E28);width:20px;border-radius:4px}';
-
-  /* Carousel arrows */
-  css += '.ig-carousel-arrows{position:absolute;top:50%;left:0;right:0;display:flex;justify-content:space-between;pointer-events:none;transform:translateY(-50%);padding:0 8px}';
-  css += '.ig-carousel-arrow{pointer-events:auto;width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.9);border:1px solid var(--border-subtle,#E5E3DF);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;box-shadow:0 2px 8px rgba(0,0,0,.08)}';
-  css += '.ig-carousel-arrow:hover{background:#fff;box-shadow:0 4px 12px rgba(0,0,0,.12)}';
-  css += '.ig-carousel-arrow svg{width:16px;height:16px;color:var(--text-muted,#6B7280)}';
-  css += '.ig-carousel-arrow.disabled{opacity:.3;cursor:default}';
-
-  /* Benefits */
-  css += '.ig-benefits-list{list-style:none;padding:0;margin:12px 0 0}';
-  css += '.ig-benefits-list li{font-family:"Plus Jakarta Sans",sans-serif;font-size:13px;color:var(--text-secondary,#4B5563);line-height:1.6;padding:8px 0;border-bottom:1px solid var(--border-subtle,#E5E3DF);display:flex;align-items:flex-start;gap:10px}';
-  css += '.ig-benefits-list li:last-child{border-bottom:none}';
-  css += '.ig-check{flex-shrink:0;width:18px;height:18px;color:var(--verm,#C94E28)}';
-
-  /* Tips row + colored cards */
-  css += '.ig-tips-row{display:flex;gap:16px}';
-  css += '.ig-tips-card-do,.ig-tips-card-dont{flex:1;min-width:0}';
-  css += '.ig-tips-card-do{background:#C94E28;border:none !important;color:#fff}';
-  css += '.ig-tips-card-dont{background:var(--navy,#1E2D5E);border:none !important;color:#fff}';
-  css += '.ig-tips-heading{font-family:"Bricolage Grotesque",sans-serif;font-size:16px;font-weight:800;margin:0 0 14px;color:#fff}';
-  css += '.ig-tips-list{list-style:none;padding:0;margin:0}';
-  css += '.ig-tips-list li{font-family:"Plus Jakarta Sans",sans-serif;font-size:13px;color:rgba(255,255,255,.9);line-height:1.6;padding:7px 0;padding-left:18px;position:relative;border-bottom:1px solid rgba(255,255,255,.1)}';
-  css += '.ig-tips-list li:last-child{border-bottom:none}';
-  css += '.ig-tips-list li::before{content:"";position:absolute;left:0;top:14px;width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.5)}';
-
-  /* Role selector */
+  /* Role card */
   css += '.ig-role-card{background:linear-gradient(135deg,#2A3F7A 0%,#1E2D5E 50%,#162247 100%);border:1px solid rgba(255,255,255,.1) !important;border-radius:16px;padding:20px;text-align:center;transition:all .3s ease;cursor:pointer;display:flex;flex-direction:column;justify-content:center;color:#fff}';
   css += '.ig-role-card .ig-role-label{color:#fff !important}';
   css += '.ig-role-card .ig-role-desc{color:rgba(255,255,255,.7) !important}';
-  css += '.ig-role-card .ig-role-select{background:rgba(255,255,255,.12) !important;border:1px solid rgba(255,255,255,.25) !important;color:#fff !important;height:44px !important;padding:0 36px 0 14px !important;display:flex !important;align-items:center !important}';
-  css += '.ig-role-card .ig-role-select:focus{border-color:var(--verm,#C94E28) !important;box-shadow:0 0 0 3px rgba(201,78,40,.2)}';
-  css += '.ig-role-card .ig-role-select option{background:var(--navy,#1E2D5E);color:#fff}';
-  css += '.ig-role-card:hover{border-color:var(--verm,#C94E28);border-style:solid}';
   css += '.ig-role-label{font-family:"Bricolage Grotesque",sans-serif;font-size:15px;font-weight:700;color:var(--text-primary,#111);margin-bottom:8px}';
   css += '.ig-role-desc{font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;color:var(--text-muted,#6B7280)}';
   css += '.ig-role-select{width:100%;max-width:400px;margin:16px auto 0;display:block;padding:12px 16px;border:1px solid var(--border-subtle,#E5E3DF);border-radius:10px;font-family:"Plus Jakarta Sans",sans-serif;font-size:14px;color:var(--text-primary,#111);background:var(--bg-surface,#fff);cursor:pointer;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'12\' height=\'12\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%236B7280\' stroke-width=\'2\'%3E%3Cpath d=\'M6 9l6 6 6-6\'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center}';
   css += '.ig-role-select:focus{outline:none;border-color:var(--verm,#C94E28);box-shadow:0 0 0 3px rgba(201,78,40,.1)}';
+  css += '.ig-role-card .ig-role-select{background:rgba(255,255,255,.12) !important;border:1px solid rgba(255,255,255,.25) !important;color:#fff !important;height:44px !important;padding:0 36px 0 14px !important}';
+  css += '.ig-role-card .ig-role-select:focus{border-color:var(--verm,#C94E28) !important;box-shadow:0 0 0 3px rgba(201,78,40,.2)}';
+  css += '.ig-role-card .ig-role-select option{background:var(--navy,#1E2D5E);color:#fff}';
 
-  /* Questions screen */
-  css += '.ig-q-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px}';
-  css += '.ig-q-role{font-family:"Bricolage Grotesque",sans-serif;font-size:20px;font-weight:800;color:var(--text-primary,#111)}';
-  css += '.ig-q-count{font-family:"DM Mono",monospace;font-size:12px;color:var(--text-muted,#6B7280);background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF);border-radius:20px;padding:4px 12px}';
+  /* Nav pill */
+  css += '.ig-nav-pill{display:inline-flex;align-items:center;gap:6px;font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;font-weight:600;color:var(--verm,#C94E28);background:rgba(201,78,40,.06);border:1px solid rgba(201,78,40,.15);border-radius:20px;padding:6px 14px;cursor:pointer;transition:all .2s;margin-bottom:16px;animation:igFadeIn .25s ease}';
+  css += '.ig-nav-pill:hover{background:rgba(201,78,40,.1);border-color:rgba(201,78,40,.3)}';
+  css += '.ig-nav-pill svg{width:14px;height:14px}';
 
-  /* Question cards */
-  css += '.ig-q-card{background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF);border-radius:16px;padding:22px;position:relative;overflow:hidden;transition:all .3s ease;animation:igSlideUp .35s ease both}';
-  css += '.ig-bento>.ig-q-card:nth-child(2){animation-delay:.08s}.ig-bento>.ig-q-card:nth-child(3){animation-delay:.16s}.ig-bento>.ig-q-card:nth-child(4){animation-delay:.24s}.ig-bento>.ig-q-card:nth-child(5){animation-delay:.32s}.ig-bento>.ig-q-card:nth-child(6){animation-delay:.4s}.ig-bento>.ig-q-card:nth-child(7){animation-delay:.48s}.ig-bento>.ig-q-card:nth-child(8){animation-delay:.56s}.ig-bento>.ig-q-card:nth-child(9){animation-delay:.64s}.ig-bento>.ig-q-card:nth-child(10){animation-delay:.72s}';
-  css += '.ig-q-card:hover{box-shadow:0 6px 20px rgba(0,0,0,.05)}';
-  css += '.ig-q-comp{font-family:"Bricolage Grotesque",sans-serif;font-size:14px;font-weight:700;color:var(--text-primary,#111);margin-bottom:4px}';
-  css += '.ig-q-comp-kf{font-family:"DM Mono",monospace;font-size:10px;color:var(--text-muted,#6B7280);letter-spacing:.4px;margin-bottom:12px}';
-  css += '.ig-q-question{font-family:"Plus Jakarta Sans",sans-serif;font-size:13px;color:var(--text-secondary,#4B5563);line-height:1.7;font-style:italic}';
-  css += '.ig-q-star-hint{margin-top:14px;padding-top:12px;border-top:1px solid var(--border-subtle,#E5E3DF);font-family:"Plus Jakarta Sans",sans-serif;font-size:11px;color:var(--text-muted,#6B7280);line-height:1.6}';
-  css += '.ig-q-star-hint strong{font-family:"DM Mono",monospace;color:var(--verm,#C94E28);font-size:10px;letter-spacing:.3px}';
-
-  /* Theme sections inside competency cards */
-  css += '.ig-themes{margin-top:12px}';
-  css += '.ig-theme{padding:12px 0;border-bottom:1px solid var(--border-subtle,#E5E3DF)}';
-  css += '.ig-theme:last-child{border-bottom:none}';
-  css += '.ig-theme-title{font-family:"Bricolage Grotesque",sans-serif;font-size:12px;font-weight:700;color:var(--verm,#C94E28);letter-spacing:.3px;margin-bottom:8px}';
+  /* Lobby comp cards */
+  css += '.ig-lobby-card{background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF);border-radius:16px;padding:20px;cursor:pointer;transition:all .3s ease;animation:igSlideUp .35s ease both}';
+  css += '.ig-lobby-card:hover{box-shadow:0 6px 20px rgba(0,0,0,.06);transform:translateY(-2px);border-color:var(--verm,#C94E28)}';
+  css += '.ig-lobby-card.ig-completed{border-color:rgba(201,78,40,.3);background:rgba(201,78,40,.02)}';
+  css += '.ig-lobby-comp-name{font-family:"Bricolage Grotesque",sans-serif;font-size:15px;font-weight:700;color:var(--text-primary,#111);margin-bottom:4px}';
+  css += '.ig-lobby-comp-kf{font-family:"DM Mono",monospace;font-size:10px;color:var(--text-muted,#6B7280);letter-spacing:.4px;margin-bottom:8px}';
+  css += '.ig-lobby-comp-meta{font-family:"Plus Jakarta Sans",sans-serif;font-size:11px;color:var(--text-muted,#6B7280)}';
+  css += '.ig-lobby-badge{display:inline-flex;align-items:center;gap:4px;font-family:"DM Mono",monospace;font-size:10px;padding:3px 8px;border-radius:6px;margin-top:8px}';
+  css += '.ig-lobby-badge-done{background:rgba(201,78,40,.08);color:var(--verm,#C94E28)}';
+  css += '.ig-lobby-badge-done svg{width:12px;height:12px}';
 
   /* Locked overlay */
   css += '.ig-q-locked{position:relative;overflow:hidden}';
@@ -479,18 +589,85 @@ function injectCSS() {
   css += '.ig-q-lock-cta{font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;font-weight:700;color:#fff;background:var(--verm,#C94E28);border:none;border-radius:8px;padding:8px 20px;cursor:pointer;transition:background .2s}';
   css += '.ig-q-lock-cta:hover{background:var(--verm-dark,#b84420)}';
 
-  /* Back nav pill */
-  css += '.ig-nav-pill{display:inline-flex;align-items:center;gap:6px;font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;font-weight:600;color:var(--verm,#C94E28);background:rgba(201,78,40,.06);border:1px solid rgba(201,78,40,.15);border-radius:20px;padding:6px 14px;cursor:pointer;transition:all .2s;margin-bottom:16px;border-style:solid;animation:igFadeIn .25s ease}';
-  css += '.ig-nav-pill:hover{background:rgba(201,78,40,.1);border-color:rgba(201,78,40,.3)}';
-  css += '.ig-nav-pill svg{width:14px;height:14px}';
+  /* Practice screen */
+  css += '.ig-practice-wrap{max-width:640px;margin:0 auto;animation:igFadeIn .3s ease}';
+  css += '.ig-practice-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:8px}';
+  css += '.ig-practice-comp{font-family:"Bricolage Grotesque",sans-serif;font-size:18px;font-weight:800;color:var(--text-primary,#111)}';
+  css += '.ig-practice-progress{font-family:"DM Mono",monospace;font-size:12px;color:var(--text-muted,#6B7280);background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF);border-radius:20px;padding:4px 12px}';
+
+  /* Question card (single, centered) */
+  css += '.ig-q-focus{background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF);border-radius:20px;padding:32px 28px;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,.06);animation:igFadeIn .3s ease}';
+  css += '.ig-q-theme{font-family:"Bricolage Grotesque",sans-serif;font-size:12px;font-weight:700;color:var(--verm,#C94E28);letter-spacing:.3px;margin-bottom:12px;text-transform:uppercase}';
+  css += '.ig-q-text{font-family:"Plus Jakarta Sans",sans-serif;font-size:16px;color:var(--text-primary,#111);line-height:1.7;font-style:italic;margin-bottom:24px}';
+
+  /* Action buttons */
+  css += '.ig-q-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}';
+  css += '.ig-btn{display:inline-flex;align-items:center;gap:6px;font-family:"Plus Jakarta Sans",sans-serif;font-size:13px;font-weight:600;border:none;border-radius:10px;padding:10px 20px;cursor:pointer;transition:all .2s}';
+  css += '.ig-btn svg{width:16px;height:16px}';
+  css += '.ig-btn-swap{background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF) !important;color:var(--text-secondary,#4B5563)}';
+  css += '.ig-btn-swap:hover{border-color:var(--verm,#C94E28) !important;color:var(--verm,#C94E28)}';
+  css += '.ig-btn-swap.disabled{opacity:.4;cursor:not-allowed}';
+  css += '.ig-btn-star{background:rgba(30,45,94,.06);color:var(--navy,#1E2D5E)}';
+  css += '.ig-btn-star:hover{background:rgba(30,45,94,.12)}';
+  css += '.ig-btn-star.active{background:var(--navy,#1E2D5E);color:#fff}';
+  css += '.ig-btn-answered{background:var(--verm,#C94E28);color:#fff}';
+  css += '.ig-btn-answered:hover{background:#b84420}';
+
+  /* STAR hint panel */
+  css += '.ig-star-hint-panel{margin-top:20px;background:linear-gradient(135deg,#f8f6f4 0%,#fff 100%);border:1px solid var(--border-subtle,#E5E3DF);border-radius:16px;padding:20px 24px;animation:igSlideUp .25s ease;text-align:left}';
+  css += '.ig-star-hint-title{font-family:"Bricolage Grotesque",sans-serif;font-size:14px;font-weight:700;color:var(--navy,#1E2D5E);margin-bottom:12px}';
+  css += '.ig-star-hint-step{display:flex;gap:10px;align-items:flex-start;margin-bottom:10px}';
+  css += '.ig-star-hint-step:last-child{margin-bottom:0}';
+  css += '.ig-star-hint-letter{flex-shrink:0;width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:"Bricolage Grotesque",sans-serif;font-size:14px;font-weight:900;color:#fff}';
+  css += '.ig-star-hint-letter.verm{background:var(--verm,#C94E28)}';
+  css += '.ig-star-hint-letter.navy{background:var(--navy,#1E2D5E)}';
+  css += '.ig-star-hint-desc{font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;color:var(--text-secondary,#4B5563);line-height:1.6;padding-top:4px}';
+
+  /* Completion screen */
+  css += '.ig-completion{max-width:480px;margin:40px auto;text-align:center;animation:igFadeIn .3s ease}';
+  css += '.ig-completion-icon{width:64px;height:64px;background:rgba(201,78,40,.08);border-radius:20px;display:flex;align-items:center;justify-content:center;margin:0 auto 20px}';
+  css += '.ig-completion-icon svg{width:32px;height:32px;color:var(--verm,#C94E28)}';
+  css += '.ig-completion-title{font-family:"Bricolage Grotesque",sans-serif;font-size:22px;font-weight:800;color:var(--text-primary,#111);margin-bottom:8px}';
+  css += '.ig-completion-desc{font-family:"Plus Jakarta Sans",sans-serif;font-size:14px;color:var(--text-muted,#6B7280);line-height:1.6;margin-bottom:24px}';
+  css += '.ig-completion-stats{display:flex;gap:16px;justify-content:center;margin-bottom:24px}';
+  css += '.ig-stat{background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF);border-radius:12px;padding:16px 20px;min-width:100px}';
+  css += '.ig-stat-num{font-family:"DM Mono",monospace;font-size:24px;font-weight:700;color:var(--verm,#C94E28)}';
+  css += '.ig-stat-label{font-family:"Plus Jakarta Sans",sans-serif;font-size:11px;color:var(--text-muted,#6B7280);margin-top:4px}';
+
+  /* Progress strip (lobby) */
+  css += '.ig-progress-strip{display:flex;align-items:center;gap:12px;margin-bottom:20px;padding:12px 16px;background:linear-gradient(135deg,rgba(201,78,40,.04) 0%,rgba(201,78,40,.08) 100%);border:1px solid rgba(201,78,40,.12);border-radius:12px;animation:igFadeIn .3s ease}';
+  css += '.ig-progress-bar{flex:1;height:6px;background:var(--border-subtle,#E5E3DF);border-radius:3px;overflow:hidden}';
+  css += '.ig-progress-fill{height:100%;background:var(--verm,#C94E28);border-radius:3px;transition:width .4s ease}';
+  css += '.ig-progress-text{font-family:"DM Mono",monospace;font-size:11px;color:var(--verm,#C94E28);white-space:nowrap;font-weight:600}';
+
+  /* Competency definition (lobby cards + practice) */
+  css += '.ig-lobby-comp-def{font-family:"Plus Jakarta Sans",sans-serif;font-size:11px;color:var(--text-secondary,#4B5563);line-height:1.5;margin-bottom:8px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}';
+  css += '.ig-practice-def{font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;color:var(--text-muted,#6B7280);line-height:1.5;margin-bottom:16px;font-style:italic}';
+
+  /* Session progress pill (practice) */
+  css += '.ig-session-progress{font-family:"DM Mono",monospace;font-size:10px;color:var(--text-muted,#6B7280);background:rgba(201,78,40,.06);border:1px solid rgba(201,78,40,.12);border-radius:20px;padding:3px 10px}';
+
+  /* Premium nudge (practice swap exhaustion) */
+  css += '.ig-swap-nudge{margin-top:16px;padding:12px 16px;background:linear-gradient(135deg,rgba(30,45,94,.03) 0%,rgba(30,45,94,.06) 100%);border:1px solid rgba(30,45,94,.1);border-radius:12px;text-align:center;animation:igFadeIn .3s ease}';
+  css += '.ig-swap-nudge-text{font-family:"Plus Jakarta Sans",sans-serif;font-size:11px;color:var(--navy,#1E2D5E);line-height:1.5}';
+  css += '.ig-swap-nudge-cta{display:inline-block;margin-top:6px;font-family:"Plus Jakarta Sans",sans-serif;font-size:11px;font-weight:700;color:var(--verm,#C94E28);cursor:pointer;text-decoration:none;border:none;background:none;padding:0}';
+  css += '.ig-swap-nudge-cta:hover{text-decoration:underline}';
+
+  /* Locked comp preview (session_complete) */
+  css += '.ig-locked-preview{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:12px 0}';
+  css += '.ig-locked-tag{display:inline-flex;align-items:center;gap:4px;font-family:"Plus Jakarta Sans",sans-serif;font-size:11px;color:var(--text-muted,#6B7280);background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF);border-radius:20px;padding:4px 12px}';
+  css += '.ig-locked-tag svg{width:10px;height:10px;opacity:.5}';
 
   /* Responsive */
   css += '@media(max-width:768px){';
   css += '.ig-bento{grid-template-columns:1fr}';
   css += '.ig-bento-2{grid-column:1/-1}';
   css += '.ig-star-quad-card{padding:16px}';
-  css += '.ig-tips-row{flex-direction:column}';
-  /* g-hero responsive handled by profil.css */
+  css += '.ig-benefits-grid{grid-template-columns:1fr}';
+  css += '.ig-q-focus{padding:24px 20px}';
+  css += '.ig-q-text{font-size:15px}';
+  css += '.ig-completion-stats{flex-direction:column;align-items:center}';
+  css += '.ig-progress-strip{flex-wrap:wrap}';
   css += '}';
 
   var el = document.createElement('style');
@@ -500,39 +677,42 @@ function injectCSS() {
 }
 
 /* ════════════════════════════════════════════════
-   RENDER FUNCTIONS
-   All content is from hardcoded STAR_CONTENT and
-   bridge constants — safe for innerHTML assignment.
+   RENDER — STAR INTRO (Screen 1)
+   All innerHTML from hardcoded STAR_CONTENT — no XSS.
    ════════════════════════════════════════════════ */
 
-var checkSVG = '<svg class="ig-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
-var lockSVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>';
-var arrowLeftSVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>';
+function renderStarDetail(idx) {
+  var d = STAR_CONTENT;
+  var step = idx < 4 ? d.what.steps[idx] : null;
+  var tr = step ? step.tr : d.what.takeaway.tr;
+  var en = step ? step.en : d.what.takeaway.en;
+  var desc = step ? step.desc : d.what.takeaway.desc;
+  var colors = ['var(--verm,#C94E28)', 'var(--navy,#1E2D5E)', 'var(--verm,#C94E28)', 'var(--navy,#1E2D5E)', 'var(--navy,#1E2D5E)'];
+  var html = '<div class="ig-star-detail">';
+  html += '<div class="ig-star-detail-title" style="color:' + colors[idx] + '">' + tr + ' <span style="font-style:italic;font-weight:400;font-size:13px;opacity:.5">(' + en + ')</span></div>';
+  html += '<div class="ig-star-detail-text">' + desc + '</div>';
+  html += '</div>';
+  return html;
+}
 
-function renderIntro() {
+function renderStarIntro() {
   var d = STAR_CONTENT;
   var html = '';
 
-  /* Hero — outside bento grid, matches g-hero / mk-identity */
-  html += '<div class="g-hero">';
-  html += '<div class="g-hero-inner"><div style="font-family:\'Bricolage Grotesque\',sans-serif;font-size:20px;font-weight:800;color:#fff;">\u0130\u015F g\u00F6r\u00FC\u015Fmesi bir performanst\u0131r.</div></div>';
-  html += '</div>';
+  html += '<div class="g-hero"><div class="g-hero-inner"><div style="font-family:\'Bricolage Grotesque\',sans-serif;font-size:20px;font-weight:800;color:#fff;">M\u00FClakat Haz\u0131rl\u0131k Koçu</div></div></div>';
 
   html += '<div class="ig-bento">';
 
-  /* Intro description (span 1) + Role select (span 2) — side by side */
+  /* Intro + skip CTA */
   html += '<div class="ig-card">';
   html += '<div class="ig-section-desc" style="font-size:14px;line-height:1.7;color:var(--text-secondary,#4B5563)">' + d.intro + '</div>';
+  if (hasSeenStar()) {
+    html += '<div style="margin-top:14px"><button class="ig-btn ig-btn-answered" id="ig-skip-star">Pratik Yap\u0131n \u2192</button></div>';
+  }
   html += '</div>';
 
-  html += '<div class="ig-card ig-role-card ig-bento-2" id="ig-role-area">';
-  html += '<div class="ig-role-label">Rol\u00FCne \u00F6zel m\u00FClakat sorular\u0131n\u0131 g\u00F6r</div>';
-  html += '<div class="ig-role-desc">Hedef pozisyonunu se\u00E7, o role ait yetkinlik bazl\u0131 m\u00FClakat sorular\u0131n\u0131 incele.</div>';
-  html += renderRoleDropdown();
-  html += '</div>';
-
-  /* STAR Quad card — just the wheel */
-  html += '<div class="ig-card ig-star-quad-card">';
+  /* STAR Quad card */
+  html += '<div class="ig-card ig-star-quad-card ig-bento-2">';
   html += '<div class="ig-star-quad">';
   html += '<div class="ig-star-row">';
   var qCls = ['ig-sq-s', 'ig-sq-t', 'ig-sq-a', 'ig-sq-r'];
@@ -543,25 +723,22 @@ function renderIntro() {
     html += '<div class="ig-sq-letter">' + qLtr[i] + '</div>';
     html += '</div>';
   }
-  html += '</div></div>';
+  html += '</div></div></div>';
+
+  /* STAR Detail */
+  html += '<div class="ig-card ig-star-detail-card ig-bento-full">';
+  html += '<div id="ig-star-detail">' + renderStarDetail(0) + '</div>';
   html += '</div>';
 
-  /* STAR Detail card — shows selected step */
-  html += '<div class="ig-card ig-star-detail-card ig-bento-2">';
-  html += '<div id="ig-star-detail">';
-  html += renderStarDetail(0);
-  html += '</div>';
-  html += '</div>';
-
-  /* \u00C7\u0131kar\u0131m — slim full-width banner */
+  /* Takeaway banner */
   html += '<div class="ig-card ig-takeaway-banner ig-bento-full">';
   html += '<div class="ig-takeaway-badge">+T</div>';
   html += '<div class="ig-takeaway-body">';
-  html += '<div class="ig-takeaway-title">\u00C7\u0131kar\u0131m <span class="ig-takeaway-title-en">(Takeaway)</span></div>';
+  html += '<div class="ig-takeaway-title">\u00C7\u0131kar\u0131m</div>';
   html += '<div class="ig-takeaway-text">' + d.what.takeaway.desc + '</div>';
   html += '</div></div>';
 
-  /* Neden Etkili — 4 equal cards in 2x2 grid */
+  /* Benefits */
   html += '<div class="ig-section-title ig-bento-full" style="margin-top:4px;margin-bottom:-8px">Neden Etkili?</div>';
   html += '<div class="ig-benefits-grid ig-bento-full">';
   for (var b = 0; b < d.benefits.length; b++) {
@@ -572,136 +749,116 @@ function renderIntro() {
   }
   html += '</div>';
 
-  /* Example carousel (full width) */
-  var slides = [
-    { type: 'question', text: d.example.title },
-    { type: 'step', badge: 'S', color: 'verm', tr: 'Durum', en: 'Situation', text: d.example.situation },
-    { type: 'step', badge: 'T', color: 'navy', tr: 'G\u00F6rev', en: 'Task', text: d.example.task },
-    { type: 'step', badge: 'A', color: 'verm', tr: 'Aksiyon', en: 'Action', text: d.example.action },
-    { type: 'step', badge: 'R', color: 'navy', tr: 'Sonu\u00E7', en: 'Result', text: d.example.result },
-    { type: 'step', badge: '+T', color: 'navy', tr: '\u00C7\u0131kar\u0131m', en: 'Takeaway', text: d.example.takeaway }
-  ];
-  html += '<div class="ig-bento-full ig-carousel-wrap" style="animation:igSlideUp .35s ease both;animation-delay:.15s">';
-  html += '<div class="ig-carousel-track" id="ig-carousel-track">';
-  var miniLetters = ['S', 'T', 'A', 'R', '+T'];
-  for (var e = 0; e < slides.length; e++) {
-    var sl = slides[e];
-    if (sl.type === 'question') {
-      html += '<div class="ig-carousel-slide ig-slide-question">';
-      html += '<div class="ig-slide-q-label" style="color:var(--verm,#C94E28);font-family:\'Bricolage Grotesque\',sans-serif;font-size:13px;font-weight:800;letter-spacing:.3px;margin-bottom:8px">\u00D6rnek</div>';
-      html += '<div class="ig-slide-q">' + sl.text.replace('\u00D6rnek: ', '') + '</div>';
-      html += '<div class="ig-slide-hint">Kayd\u0131rarak STAR yan\u0131t\u0131n\u0131 incele</div>';
-      html += '</div>';
-    } else {
-      html += '<div class="ig-carousel-slide ig-slide-step">';
-      html += '<div class="ig-slide-badge ' + sl.color + '">' + sl.badge + '</div>';
-      html += '<div class="ig-slide-body">';
-      html += '<div class="ig-slide-label">' + sl.tr + '<span class="ig-slide-label-en">(' + sl.en + ')</span></div>';
-      html += '<div class="ig-slide-text">' + sl.text + '</div>';
-      html += '</div></div>';
-    }
-  }
+  /* CTA to proceed */
+  html += '<div class="ig-bento-full" style="text-align:center;margin-top:8px">';
+  html += '<button class="ig-btn ig-btn-answered" id="ig-start-practice" style="padding:14px 32px;font-size:15px;border-radius:12px">Pratik Yapmaya Ba\u015Flay\u0131n \u2192</button>';
   html += '</div>';
-  /* Arrows */
-  html += '<div class="ig-carousel-arrows">';
-  html += '<div class="ig-carousel-arrow disabled" id="ig-prev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg></div>';
-  html += '<div class="ig-carousel-arrow" id="ig-next"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></div>';
-  html += '</div>';
-  /* Dots */
-  html += '<div class="ig-carousel-dots" id="ig-carousel-dots">';
-  for (var di = 0; di < slides.length; di++) {
-    html += '<div class="ig-carousel-dot' + (di === 0 ? ' active' : '') + '" data-slide="' + di + '"></div>';
-  }
-  html += '</div></div>';
-
-  /* Tips — two colored cards side by side */
-  html += '<div class="ig-tips-row ig-bento-full">';
-  html += '<div class="ig-card ig-tips-card-do">';
-  html += '<h4 class="ig-tips-heading">Yap\u0131n</h4><ul class="ig-tips-list">';
-  for (var td = 0; td < d.tips_do.length; td++) html += '<li>' + d.tips_do[td] + '</li>';
-  html += '</ul></div>';
-  html += '<div class="ig-card ig-tips-card-dont">';
-  html += '<h4 class="ig-tips-heading">Yapmay\u0131n</h4><ul class="ig-tips-list">';
-  for (var tn = 0; tn < d.tips_dont.length; tn++) html += '<li>' + d.tips_dont[tn] + '</li>';
-  html += '</ul></div>';
-  html += '</div>';
-
-  /* Role select card already rendered above next to intro */
 
   html += '</div>';
   return html;
 }
 
-function renderStarDetail(idx) {
-  var d = STAR_CONTENT;
-  var step = idx < 4 ? d.what.steps[idx] : null;
-  var tr = step ? step.tr : d.what.takeaway.tr;
-  var en = step ? step.en : d.what.takeaway.en;
-  var desc = step ? step.desc : d.what.takeaway.desc;
-  var colors = ['var(--verm,#C94E28)', 'var(--navy,#1E2D5E)', 'var(--verm,#C94E28)', 'var(--navy,#1E2D5E)', 'var(--navy,#1E2D5E)'];
+/* ════════════════════════════════════════════════
+   RENDER — ROLE SELECT (Screen 2)
+   ════════════════════════════════════════════════ */
 
-  var html = '<div class="ig-star-detail">';
-  html += '<div class="ig-star-detail-title" style="color:' + colors[idx] + '">' + tr + ' <span style="font-style:italic;font-weight:400;font-size:13px;opacity:.5">(' + en + ')</span></div>';
-  html += '<div class="ig-star-detail-text">' + desc + '</div>';
-  html += '</div>';
-  return html;
-}
-
-function renderRoleDropdown() {
+function renderRoleSelect() {
   var bridge = getBridge();
-  if (!bridge) return '<div class="ig-section-desc">Yetkinlik verileri y\u00FCklenirken bekleyin...</div>';
-  var roleKeys = Object.keys(bridge.ROLE_COMP_MAP).sort(function(a,b){ return a.localeCompare(b,'tr'); });
-  var html = '<div style="display:flex;gap:10px;align-items:stretch;justify-content:center;max-width:400px;margin:16px auto 0;">';
-  html += '<select class="ig-role-select" id="ig-role-dd" style="flex:1;min-width:0;margin:0;height:auto;padding:10px 36px 10px 14px;">';
-  html += '<option value="">Pozisyon se\u00E7in...</option>';
-  for (var i = 0; i < roleKeys.length; i++) {
-    html += '<option value="' + roleKeys[i] + '">' + roleKeys[i] + '</option>';
-  }
-  html += '</select>';
-  html += '<button type="button" id="ig-role-start" style="flex-shrink:0;height:44px;padding:0 24px;border:none;border-radius:10px;background:var(--verm,#C94E28);color:#fff;font-family:\'Plus Jakarta Sans\',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:opacity .2s;white-space:nowrap;">Ba\u015Fla</button>';
-  html += '</div>';
-  return html;
-}
-
-function renderQuestions(role) {
-  var bridge = getBridge();
-  if (!bridge) return '<div class="ig-section-desc">Veri y\u00FCklenemedi.</div>';
-  var comps = bridge.ROLE_COMP_MAP[role] || [];
-  var freeLimit = bridge.FREE_LIMIT || 2;
-  var totalQuestions = 0;
-  for (var c = 0; c < comps.length; c++) {
-    var iq = INTERVIEW_QUESTIONS[comps[c]];
-    if (iq) for (var t = 0; t < iq.length; t++) totalQuestions += iq[t].q.length;
-  }
   var html = '';
 
-  html += '<div class="ig-nav-pill" id="ig-back-btn">' + arrowLeftSVG + ' STAR Rehberi</div>';
+  html += '<div class="ig-nav-pill" id="ig-back-star">' + arrowLeftSVG + ' STAR Rehberi</div>';
 
-  html += '<div class="ig-q-header">';
-  html += '<div class="ig-q-role">' + role + '</div>';
-  html += '<div class="ig-q-count">' + comps.length + ' yetkinlik \u00B7 ' + totalQuestions + ' soru</div>';
+  html += '<div class="g-hero"><div class="g-hero-inner"><div style="font-family:\'Bricolage Grotesque\',sans-serif;font-size:20px;font-weight:800;color:#fff;">Hedef Pozisyonunuzu Se\u00E7in</div></div></div>';
+
+  html += '<div style="max-width:480px;margin:24px auto;text-align:center">';
+  html += '<div class="ig-card ig-role-card">';
+  html += '<div class="ig-role-label">Rol\u00FCn\u00FCze \u00F6zel m\u00FClakat prati\u011Fi</div>';
+  html += '<div class="ig-role-desc">Hedef pozisyonunuzu se\u00E7in, o role ait yetkinlik bazl\u0131 sorularla pratik yap\u0131n.</div>';
+
+  if (bridge) {
+    var roleKeys = Object.keys(bridge.ROLE_COMP_MAP).sort(function(a,b){ return a.localeCompare(b,'tr'); });
+    html += '<div style="display:flex;gap:10px;align-items:stretch;justify-content:center;max-width:400px;margin:16px auto 0;">';
+    html += '<select class="ig-role-select" id="ig-role-dd" style="flex:1;min-width:0;margin:0;height:auto;padding:10px 36px 10px 14px;">';
+    html += '<option value="">Pozisyon se\u00E7in...</option>';
+    for (var i = 0; i < roleKeys.length; i++) {
+      html += '<option value="' + roleKeys[i] + '">' + roleKeys[i] + '</option>';
+    }
+    html += '</select>';
+    html += '<button type="button" id="ig-role-start" style="flex-shrink:0;height:44px;padding:0 24px;border:none;border-radius:10px;background:var(--verm,#C94E28);color:#fff;font-family:\'Plus Jakarta Sans\',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:opacity .2s;white-space:nowrap;">Ba\u015Fla</button>';
+    html += '</div>';
+  } else {
+    html += '<div class="ig-section-desc">Yetkinlik verileri y\u00FCklenirken bekleyin...</div>';
+  }
+
+  html += '</div></div>';
+  return html;
+}
+
+/* ════════════════════════════════════════════════
+   RENDER — LOBBY (Screen 3)
+   ════════════════════════════════════════════════ */
+
+function renderLobby() {
+  var bridge = getBridge();
+  if (!bridge) return '<div class="ig-section-desc">Veri y\u00FCklenemedi.</div>';
+
+  var comps = S.comps;
+  var freeLimit = S.isPremium ? comps.length : FREE_COMP_LIMIT;
+  var completedCount = S.completedComps.length;
+  var accessibleCount = Math.min(freeLimit, comps.length);
+  var anchors = bridge.ANCHORS || {};
+  var html = '';
+
+  html += '<div class="ig-nav-pill" id="ig-back-role">' + arrowLeftSVG + ' Pozisyon Se\u00E7imi</div>';
+
+  html += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:12px">';
+  html += '<div style="font-family:\'Bricolage Grotesque\',sans-serif;font-size:20px;font-weight:800;color:var(--text-primary,#111)">' + S.role + '</div>';
+  html += '<div style="font-family:\'DM Mono\',monospace;font-size:12px;color:var(--text-muted,#6B7280);background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF);border-radius:20px;padding:4px 12px">' + comps.length + ' yetkinlik</div>';
   html += '</div>';
+
+  /* Progress strip */
+  if (completedCount > 0 || accessibleCount > 1) {
+    var pct = accessibleCount > 0 ? Math.round((completedCount / accessibleCount) * 100) : 0;
+    html += '<div class="ig-progress-strip">';
+    html += '<div class="ig-progress-bar"><div class="ig-progress-fill" style="width:' + pct + '%"></div></div>';
+    html += '<div class="ig-progress-text">' + completedCount + ' / ' + accessibleCount + '</div>';
+    html += '</div>';
+  }
 
   html += '<div class="ig-bento">';
   for (var i = 0; i < comps.length; i++) {
     var code = comps[i];
     var name = bridge.COMP_NAMES[code] || code;
+    var kf = bridge.COMP_KF[code] || '';
+    var def = (anchors[code] && anchors[code].def) ? anchors[code].def : '';
     var isLocked = i >= freeLimit;
+    var isCompleted = S.completedComps.indexOf(code) !== -1;
+    var qCount = flattenQuestions(code).length;
+    var practiceCount = S.isPremium ? qCount : Math.min(FREE_Q_PER_COMP, qCount);
 
     if (isLocked) {
-      html += '<div class="ig-q-card ig-q-locked ig-bento-full">';
+      html += '<div class="ig-lobby-card ig-q-locked" style="animation-delay:' + (i * 0.06) + 's">';
       html += '<div class="ig-q-inner">';
-      html += renderCompetencyQuestions(code, name);
+      html += '<div class="ig-lobby-comp-name">' + name + '</div>';
+      html += '<div class="ig-lobby-comp-kf">' + kf + '</div>';
+      if (def) html += '<div class="ig-lobby-comp-def">' + def + '</div>';
+      html += '<div class="ig-lobby-comp-meta">' + qCount + ' soru</div>';
       html += '</div>';
       html += '<div class="ig-q-lock-overlay">';
       html += '<div class="ig-q-lock-icon">' + lockSVG + '</div>';
-      html += '<div class="ig-q-lock-text">Premium ile t\u00FCm yetkinlik sorular\u0131n\u0131 g\u00F6r</div>';
-      html += '<button class="ig-q-lock-cta">Premium\u2019a Ge\u00E7</button>';
+      html += '<div class="ig-q-lock-text">Bu yetkinli\u011Fe eri\u015Fmek i\u00E7in Premium\u2019a ge\u00E7in</div>';
+      html += '<button class="ig-q-lock-cta">T\u00FCm Yetkinlikleri A\u00E7</button>';
       html += '</div>';
       html += '</div>';
     } else {
-      html += '<div class="ig-q-card ig-bento-full">';
-      html += renderCompetencyQuestions(code, name);
+      html += '<div class="ig-lobby-card' + (isCompleted ? ' ig-completed' : '') + '" data-comp="' + code + '" data-idx="' + i + '" style="animation-delay:' + (i * 0.06) + 's">';
+      html += '<div class="ig-lobby-comp-name">' + name + '</div>';
+      html += '<div class="ig-lobby-comp-kf">' + kf + '</div>';
+      if (def) html += '<div class="ig-lobby-comp-def">' + def + '</div>';
+      html += '<div class="ig-lobby-comp-meta">' + practiceCount + ' soru ile pratik yap\u0131n</div>';
+      if (isCompleted) {
+        html += '<div class="ig-lobby-badge ig-lobby-badge-done">' + checkSVG + ' Tamamland\u0131</div>';
+      }
       html += '</div>';
     }
   }
@@ -710,31 +867,186 @@ function renderQuestions(role) {
   return html;
 }
 
-function renderCompetencyQuestions(code, name) {
-  var themes = INTERVIEW_QUESTIONS[code] || [];
-  var html = '';
-  html += '<div class="ig-q-comp">' + name + '</div>';
-  html += '<div class="ig-q-comp-kf">' + (getBridge().COMP_KF[code] || '') + '</div>';
+/* ════════════════════════════════════════════════
+   RENDER — PRACTICE (Screen 4)
+   ════════════════════════════════════════════════ */
 
-  if (!themes.length) {
-    html += '<div class="ig-q-question" style="color:var(--text-muted)">M\u00FClakat sorular\u0131 haz\u0131rlan\u0131yor...</div>';
-    return html;
+function renderPractice() {
+  var bridge = getBridge();
+  if (!bridge || !S.dealt.length) return '<div class="ig-section-desc">Soru bulunamad\u0131.</div>';
+
+  var compName = bridge.COMP_NAMES[S.activeComp] || S.activeComp;
+  var anchors = bridge.ANCHORS || {};
+  var compDef = (anchors[S.activeComp] && anchors[S.activeComp].def) ? anchors[S.activeComp].def : '';
+  var q = S.dealt[S.currentQ];
+  var maxSwaps = S.isPremium ? 999 : FREE_SWAP_LIMIT;
+  var swapsLeft = Math.max(0, maxSwaps - S.swapsUsed);
+  var freeLimit = S.isPremium ? S.comps.length : FREE_COMP_LIMIT;
+  var accessibleCount = Math.min(freeLimit, S.comps.length);
+  /* Which accessible comp number is this? */
+  var compOrder = 0;
+  for (var ci = 0; ci < S.comps.length && ci < freeLimit; ci++) {
+    if (S.comps[ci] === S.activeComp) { compOrder = ci + 1; break; }
+  }
+  var html = '';
+
+  html += '<div class="ig-practice-wrap">';
+
+  html += '<div class="ig-nav-pill" id="ig-back-lobby">' + arrowLeftSVG + ' Yetkinlikler</div>';
+
+  html += '<div class="ig-practice-header">';
+  html += '<div style="flex:1;min-width:0">';
+  html += '<div class="ig-practice-comp">' + compName + '</div>';
+  if (compDef) html += '<div class="ig-practice-def">' + compDef + '</div>';
+  html += '</div>';
+  html += '<div style="display:flex;gap:8px;align-items:center;flex-shrink:0">';
+  if (accessibleCount > 1) html += '<div class="ig-session-progress">Yetkinlik ' + compOrder + '/' + accessibleCount + '</div>';
+  html += '<div class="ig-practice-progress">' + (S.currentQ + 1) + ' / ' + S.dealt.length + '</div>';
+  html += '</div>';
+  html += '</div>';
+
+  /* Question card */
+  html += '<div class="ig-q-focus">';
+  html += '<div class="ig-q-theme">' + q.theme + '</div>';
+  html += '<div class="ig-q-text">\u201C' + q.text + '\u201D</div>';
+
+  /* Actions */
+  html += '<div class="ig-q-actions">';
+
+  /* Değiştir */
+  if (swapsLeft > 0) {
+    html += '<button class="ig-btn ig-btn-swap" id="ig-swap">' + swapSVG + ' De\u011Fi\u015Ftir <span style="font-size:10px;opacity:.6">(' + swapsLeft + ')</span></button>';
+  } else {
+    html += '<button class="ig-btn ig-btn-swap disabled" disabled>' + swapSVG + ' De\u011Fi\u015Ftir</button>';
   }
 
-  html += '<div class="ig-themes">';
-  for (var t = 0; t < themes.length; t++) {
-    var theme = themes[t];
-    html += '<div class="ig-theme">';
-    html += '<div class="ig-theme-title">' + theme.theme + '</div>';
-    for (var q = 0; q < theme.q.length; q++) {
-      html += '<div class="ig-q-question">\u201C' + theme.q[q] + '\u201D</div>';
-    }
+  /* STAR İpucu */
+  html += '<button class="ig-btn ig-btn-star' + (S.starHintOpen ? ' active' : '') + '" id="ig-star-hint">' + starSVG + ' STAR \u0130pucu</button>';
+
+  /* Yanıtladım */
+  html += '<button class="ig-btn ig-btn-answered" id="ig-answered">' + checkSVG + ' Yan\u0131tlad\u0131m</button>';
+
+  html += '</div>'; /* actions */
+
+  /* Swap exhaustion premium nudge */
+  if (!S.isPremium && swapsLeft === 0) {
+    html += '<div class="ig-swap-nudge">';
+    html += '<div class="ig-swap-nudge-text">De\u011Fi\u015Ftirme hakk\u0131n\u0131z doldu. <strong>Premium</strong> ile s\u0131n\u0131rs\u0131z soru de\u011Fi\u015Ftirme.</div>';
+    html += '<button class="ig-swap-nudge-cta ig-q-lock-cta" style="font-size:11px;padding:5px 16px;margin-top:8px">Premium\u2019a Ge\u00E7</button>';
+    html += '</div>';
+  }
+
+  /* STAR hint panel (conditionally shown) */
+  if (S.starHintOpen) {
+    html += renderStarHintPanel();
+  }
+
+  html += '</div>'; /* q-focus */
+
+  html += '</div>'; /* practice-wrap */
+  return html;
+}
+
+function renderStarHintPanel() {
+  var steps = STAR_CONTENT.what.steps;
+  var colors = ['verm', 'navy', 'verm', 'navy'];
+  var html = '<div class="ig-star-hint-panel">';
+  html += '<div class="ig-star-hint-title">STAR ile Yan\u0131tla</div>';
+  for (var i = 0; i < steps.length; i++) {
+    html += '<div class="ig-star-hint-step">';
+    html += '<div class="ig-star-hint-letter ' + colors[i] + '">' + steps[i].letter + '</div>';
+    html += '<div class="ig-star-hint-desc"><strong>' + steps[i].tr + ':</strong> ' + steps[i].desc.split('.')[0] + '.</div>';
     html += '</div>';
   }
   html += '</div>';
+  return html;
+}
 
-  html += '<div class="ig-q-star-hint">';
-  html += '<strong>STAR ile yan\u0131tla:</strong> Durumu tan\u0131mla, g\u00F6revini a\u00E7\u0131kla, hangi aksiyonlar\u0131 ald\u0131\u011F\u0131n\u0131 anlat ve ula\u015Ft\u0131\u011F\u0131n sonucu payla\u015F.';
+/* ════════════════════════════════════════════════
+   RENDER — COMP COMPLETION (Screen 5)
+   Lighter screen — no aggressive upsell here.
+   ════════════════════════════════════════════════ */
+
+function renderCompletion() {
+  var bridge = getBridge();
+  var compName = bridge ? (bridge.COMP_NAMES[S.activeComp] || S.activeComp) : S.activeComp;
+  var freeLimit = S.isPremium ? S.comps.length : FREE_COMP_LIMIT;
+  var accessibleComps = Math.min(freeLimit, S.comps.length);
+  var allAccessibleDone = S.completedComps.length >= accessibleComps;
+  var html = '';
+
+  html += '<div class="ig-completion">';
+  html += '<div class="ig-completion-icon">' + checkSVG + '</div>';
+  html += '<div class="ig-completion-title">' + compName + ' Tamamland\u0131</div>';
+  html += '<div class="ig-completion-desc">' + S.answeredCount + ' soru yan\u0131tland\u0131' + (S.swapsUsed > 0 ? ', ' + S.swapsUsed + ' soru de\u011Fi\u015Ftirildi' : '') + '.</div>';
+
+  html += '<div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:16px">';
+  html += '<button class="ig-btn ig-btn-swap" id="ig-restart-comp" style="border:1px solid var(--border-subtle,#E5E3DF) !important">Tekrar Pratik Yap\u0131n</button>';
+
+  if (allAccessibleDone) {
+    html += '<button class="ig-btn ig-btn-answered" id="ig-session-complete">Oturumu Tamamla \u2192</button>';
+  } else {
+    html += '<button class="ig-btn ig-btn-answered" id="ig-back-lobby-comp">Sonraki Yetkinlik \u2192</button>';
+  }
+  html += '</div>';
+
+  html += '</div>';
+  return html;
+}
+
+/* ════════════════════════════════════════════════
+   RENDER — SESSION COMPLETION (Screen 6)
+   Main premium upsell moment for free users.
+   ════════════════════════════════════════════════ */
+
+function renderSessionComplete() {
+  var bridge = getBridge();
+  var freeLimit = S.isPremium ? S.comps.length : FREE_COMP_LIMIT;
+  var lockedCount = Math.max(0, S.comps.length - freeLimit);
+  var html = '';
+
+  html += '<div class="ig-completion">';
+  html += '<div class="ig-completion-icon">' + trophySVG + '</div>';
+  html += '<div class="ig-completion-title">Tebrikler!</div>';
+  html += '<div class="ig-completion-desc"><strong>' + S.role + '</strong> pozisyonu i\u00E7in \u00FCcretsiz m\u00FClakat prati\u011Fini tamamlad\u0131n\u0131z.</div>';
+
+  html += '<div class="ig-completion-stats">';
+  html += '<div class="ig-stat"><div class="ig-stat-num">' + S.completedComps.length + '</div><div class="ig-stat-label">Yetkinlik</div></div>';
+  html += '<div class="ig-stat"><div class="ig-stat-num">' + S.totalAnswered + '</div><div class="ig-stat-label">Yan\u0131tlanan</div></div>';
+  html += '<div class="ig-stat"><div class="ig-stat-num">' + S.totalSwaps + '</div><div class="ig-stat-label">De\u011Fi\u015Ftirilen</div></div>';
+  html += '</div>';
+
+  /* Premium upsell — the main moment */
+  if (!S.isPremium && lockedCount > 0) {
+    html += '<div class="ig-card" style="margin-top:24px;text-align:center;border:1px solid rgba(201,78,40,.2)">';
+    html += '<div style="font-family:\'Bricolage Grotesque\',sans-serif;font-size:17px;font-weight:800;margin-bottom:8px">' + lockedCount + ' yetkinlik daha sizi bekliyor</div>';
+    html += '<div class="ig-section-desc" style="margin-bottom:10px"><strong>' + S.role + '</strong> m\u00FClakat\u0131nda de\u011Ferlendirilecek ' + S.comps.length + ' yetkinli\u011Fin tamam\u0131na haz\u0131rlan\u0131n.</div>';
+
+    /* Show up to 3 locked competency names as preview tags */
+    var lockedNames = [];
+    for (var li = freeLimit; li < S.comps.length && lockedNames.length < 3; li++) {
+      var ln = bridge ? (bridge.COMP_NAMES[S.comps[li]] || S.comps[li]) : S.comps[li];
+      lockedNames.push(ln);
+    }
+    if (lockedNames.length > 0) {
+      html += '<div class="ig-locked-preview">';
+      for (var lt = 0; lt < lockedNames.length; lt++) {
+        html += '<span class="ig-locked-tag">' + lockSVG + ' ' + lockedNames[lt] + '</span>';
+      }
+      if (lockedCount > 3) html += '<span class="ig-locked-tag">+' + (lockedCount - 3) + ' daha</span>';
+      html += '</div>';
+    }
+
+    html += '<div class="ig-section-desc" style="font-size:11px;margin-bottom:14px;color:var(--text-muted,#6B7280)">S\u0131n\u0131rs\u0131z soru de\u011Fi\u015Ftirme \u00B7 T\u00FCm yetkinlikler \u00B7 Daha fazla soru \u00E7e\u015Fitlili\u011Fi</div>';
+    html += '<button class="ig-q-lock-cta" style="padding:10px 28px;font-size:14px">Premium\u2019a Ge\u00E7</button>';
+    html += '</div>';
+  }
+
+  html += '<div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:20px">';
+  html += '<button class="ig-btn ig-btn-swap" id="ig-back-lobby-session" style="border:1px solid var(--border-subtle,#E5E3DF) !important">' + arrowLeftSVG + ' Yetkinliklere D\u00F6n\u00FCn</button>';
+  html += '<button class="ig-btn ig-btn-star" id="ig-new-session">Farkl\u0131 Rol Se\u00E7in</button>';
+  html += '</div>';
+
   html += '</div>';
   return html;
 }
@@ -746,100 +1058,210 @@ function renderCompetencyQuestions(code, name) {
 function navigate(screen) {
   var container = document.getElementById('ig-container');
   if (!container) return;
-
   S.screen = screen;
 
-  /* All content assigned to innerHTML is from hardcoded constants (STAR_CONTENT, bridge data).
-     No user-generated input is rendered — safe from XSS. */
-  if (screen === 'intro') {
-    container.innerHTML = renderIntro();
-    bindIntroEvents();
-  } else if (screen === 'questions') {
-    container.innerHTML = renderQuestions(S.role);
-    bindQuestionEvents();
+  /* All innerHTML content from hardcoded constants — safe from XSS */
+  if (screen === 'star_intro') {
+    container.innerHTML = renderStarIntro();
+    bindStarIntroEvents();
+  } else if (screen === 'role_select') {
+    container.innerHTML = renderRoleSelect();
+    bindRoleSelectEvents();
+  } else if (screen === 'lobby') {
+    container.innerHTML = renderLobby();
+    bindLobbyEvents();
+  } else if (screen === 'practice') {
+    container.innerHTML = renderPractice();
+    bindPracticeEvents();
+  } else if (screen === 'completion') {
+    container.innerHTML = renderCompletion();
+    bindCompletionEvents();
+  } else if (screen === 'session_complete') {
+    container.innerHTML = renderSessionComplete();
+    bindSessionCompleteEvents();
   }
 
+  saveSession();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-function bindIntroEvents() {
-  /* STAR quad click handlers */
+/* ════════════════════════════════════════════════
+   EVENT BINDINGS
+   ════════════════════════════════════════════════ */
+
+function bindStarIntroEvents() {
+  /* STAR quad clicks */
   var cells = document.querySelectorAll('.ig-star-cell[data-star]');
   var detailPanel = document.getElementById('ig-star-detail');
-
-  function setActiveStar(idx) {
-    cells.forEach(function(c) { c.classList.remove('active'); });
-    if (idx < 4) cells[idx] && cells[idx].classList.add('active');
-    if (detailPanel) detailPanel.innerHTML = renderStarDetail(idx);
-  }
-
   cells.forEach(function(cell) {
     cell.addEventListener('click', function() {
-      setActiveStar(parseInt(this.getAttribute('data-star'), 10));
+      var idx = parseInt(this.getAttribute('data-star'), 10);
+      cells.forEach(function(c) { c.classList.remove('active'); });
+      if (idx < 4) cells[idx] && cells[idx].classList.add('active');
+      if (detailPanel) detailPanel.innerHTML = renderStarDetail(idx);
     });
   });
 
-  /* Carousel logic */
-  var track = document.getElementById('ig-carousel-track');
-  var dots = document.querySelectorAll('#ig-carousel-dots .ig-carousel-dot');
-  var prevBtn = document.getElementById('ig-prev');
-  var nextBtn = document.getElementById('ig-next');
-  if (track && dots.length) {
-    var currentSlide = 0;
-    var totalSlides = dots.length;
+  /* Start practice button */
+  var startBtn = document.getElementById('ig-start-practice');
+  if (startBtn) startBtn.addEventListener('click', function() {
+    markStarSeen();
+    navigate('role_select');
+  });
 
-    function goToSlide(idx) {
-      if (idx < 0 || idx >= totalSlides) return;
-      currentSlide = idx;
-      var slideWidth = track.querySelector('.ig-carousel-slide').offsetWidth;
-      track.scrollTo({ left: slideWidth * idx, behavior: 'smooth' });
-      dots.forEach(function(d, i) { d.classList.toggle('active', i === idx); });
-      if (prevBtn) prevBtn.classList.toggle('disabled', idx === 0);
-      if (nextBtn) nextBtn.classList.toggle('disabled', idx === totalSlides - 1);
-    }
-
-    dots.forEach(function(dot) {
-      dot.addEventListener('click', function() {
-        goToSlide(parseInt(this.getAttribute('data-slide'), 10));
-      });
-    });
-    if (prevBtn) prevBtn.addEventListener('click', function() { goToSlide(currentSlide - 1); });
-    if (nextBtn) nextBtn.addEventListener('click', function() { goToSlide(currentSlide + 1); });
-
-    /* Sync dots on manual scroll */
-    track.addEventListener('scroll', function() {
-      var slideWidth = track.querySelector('.ig-carousel-slide').offsetWidth;
-      var idx = Math.round(track.scrollLeft / slideWidth);
-      if (idx !== currentSlide && idx >= 0 && idx < totalSlides) {
-        currentSlide = idx;
-        dots.forEach(function(d, i) { d.classList.toggle('active', i === idx); });
-        if (prevBtn) prevBtn.classList.toggle('disabled', idx === 0);
-        if (nextBtn) nextBtn.classList.toggle('disabled', idx === totalSlides - 1);
-      }
-    });
-  }
-
-  /* Role dropdown + start button */
-  var dd = document.getElementById('ig-role-dd');
-  var startBtn = document.getElementById('ig-role-start');
-  if (startBtn) {
-    startBtn.addEventListener('click', function() {
-      if (dd && dd.value) {
-        S.role = dd.value;
-        navigate('questions');
-      }
-    });
-  }
+  /* Skip button (returning users) */
+  var skipBtn = document.getElementById('ig-skip-star');
+  if (skipBtn) skipBtn.addEventListener('click', function() {
+    navigate('role_select');
+  });
 }
 
-function bindQuestionEvents() {
-  var backBtn = document.getElementById('ig-back-btn');
-  if (backBtn) {
-    backBtn.addEventListener('click', function() {
-      S.role = null;
-      navigate('intro');
+function bindRoleSelectEvents() {
+  /* Back to STAR */
+  var backBtn = document.getElementById('ig-back-star');
+  if (backBtn) backBtn.addEventListener('click', function() { navigate('star_intro'); });
+
+  /* Role start */
+  var dd = document.getElementById('ig-role-dd');
+  var startBtn = document.getElementById('ig-role-start');
+  if (startBtn) startBtn.addEventListener('click', function() {
+    if (dd && dd.value) {
+      startSession(dd.value);
+    }
+  });
+}
+
+function startSession(role) {
+  var bridge = getBridge();
+  if (!bridge) return;
+  S.role = role;
+  S.comps = bridge.ROLE_COMP_MAP[role] || [];
+  S.activeComp = null;
+  S.activeCompIdx = 0;
+  S.dealt = [];
+  S.currentQ = 0;
+  S.swapsUsed = 0;
+  S.answeredCount = 0;
+  S.starHintOpen = false;
+  S.completedComps = [];
+  S.totalAnswered = 0;
+  S.totalSwaps = 0;
+  navigate('lobby');
+}
+
+function startPractice(compCode, compIdx) {
+  S.activeComp = compCode;
+  S.activeCompIdx = compIdx;
+  var qCount = S.isPremium ? flattenQuestions(compCode).length : Math.min(FREE_Q_PER_COMP, flattenQuestions(compCode).length);
+  S.dealt = dealQuestions(compCode, qCount);
+  S.currentQ = 0;
+  S.swapsUsed = 0;
+  S.answeredCount = 0;
+  S.starHintOpen = false;
+  navigate('practice');
+}
+
+function bindLobbyEvents() {
+  /* Back to role select */
+  var backBtn = document.getElementById('ig-back-role');
+  if (backBtn) backBtn.addEventListener('click', function() { navigate('role_select'); });
+
+  /* Comp card clicks */
+  var cards = document.querySelectorAll('.ig-lobby-card[data-comp]');
+  cards.forEach(function(card) {
+    card.addEventListener('click', function() {
+      var code = this.getAttribute('data-comp');
+      var idx = parseInt(this.getAttribute('data-idx'), 10);
+      startPractice(code, idx);
     });
-  }
+  });
+}
+
+function bindPracticeEvents() {
+  /* Back to lobby */
+  var backBtn = document.getElementById('ig-back-lobby');
+  if (backBtn) backBtn.addEventListener('click', function() { navigate('lobby'); });
+
+  /* Swap */
+  var swapBtn = document.getElementById('ig-swap');
+  if (swapBtn) swapBtn.addEventListener('click', function() {
+    var replacement = getSwapQuestion(S.activeComp, S.dealt, S.currentQ);
+    if (replacement) {
+      S.dealt[S.currentQ] = replacement;
+      S.swapsUsed++;
+      navigate('practice');
+    }
+  });
+
+  /* STAR hint toggle */
+  var starBtn = document.getElementById('ig-star-hint');
+  if (starBtn) starBtn.addEventListener('click', function() {
+    S.starHintOpen = !S.starHintOpen;
+    navigate('practice');
+  });
+
+  /* Answered */
+  var answeredBtn = document.getElementById('ig-answered');
+  if (answeredBtn) answeredBtn.addEventListener('click', function() {
+    addRecentQuestion(S.dealt[S.currentQ].text);
+    S.answeredCount++;
+    S.totalAnswered++;
+    S.starHintOpen = false;
+
+    if (S.currentQ < S.dealt.length - 1) {
+      S.currentQ++;
+      navigate('practice');
+    } else {
+      S.totalSwaps += S.swapsUsed;
+      if (S.completedComps.indexOf(S.activeComp) === -1) {
+        S.completedComps.push(S.activeComp);
+      }
+      navigate('completion');
+    }
+  });
+}
+
+function bindCompletionEvents() {
+  /* Back to lobby (next competency) */
+  var backBtn = document.getElementById('ig-back-lobby-comp');
+  if (backBtn) backBtn.addEventListener('click', function() { navigate('lobby'); });
+
+  /* Session complete */
+  var sessionBtn = document.getElementById('ig-session-complete');
+  if (sessionBtn) sessionBtn.addEventListener('click', function() { navigate('session_complete'); });
+
+  /* Restart same comp */
+  var restartBtn = document.getElementById('ig-restart-comp');
+  if (restartBtn) restartBtn.addEventListener('click', function() {
+    startPractice(S.activeComp, S.activeCompIdx);
+  });
+}
+
+function bindSessionCompleteEvents() {
+  /* Back to lobby */
+  var backBtn = document.getElementById('ig-back-lobby-session');
+  if (backBtn) backBtn.addEventListener('click', function() { navigate('lobby'); });
+
+  /* New session (different role) */
+  var newBtn = document.getElementById('ig-new-session');
+  if (newBtn) newBtn.addEventListener('click', function() {
+    /* Reset in-memory state first, then clear storage, then navigate.
+       navigate() will saveSession() with the clean role_select state. */
+    S.role = null;
+    S.comps = [];
+    S.activeComp = null;
+    S.activeCompIdx = 0;
+    S.dealt = [];
+    S.currentQ = 0;
+    S.swapsUsed = 0;
+    S.answeredCount = 0;
+    S.starHintOpen = false;
+    S.completedComps = [];
+    S.totalAnswered = 0;
+    S.totalSwaps = 0;
+    clearSession();
+    navigate('role_select');
+  });
 }
 
 /* ════════════════════════════════════════════════
@@ -854,7 +1276,28 @@ window._htLoadMulakat = function() {
   if (!panel) return;
   /* Safe: only hardcoded constant content is rendered */
   panel.innerHTML = '<div id="ig-container"></div>';
-  navigate('intro');
+
+  /* Returning user: restore session or skip STAR intro */
+  if (loadSession()) {
+    /* Restored in-progress session — validate screen is renderable */
+    var validScreens = ['star_intro', 'role_select', 'lobby', 'practice', 'completion', 'session_complete'];
+    if (validScreens.indexOf(S.screen) !== -1) {
+      /* For practice/completion, verify we have the data needed */
+      if ((S.screen === 'practice' || S.screen === 'completion') && (!S.dealt || !S.dealt.length)) {
+        navigate(S.role ? 'lobby' : 'role_select');
+      } else {
+        navigate(S.screen);
+      }
+      return;
+    }
+  }
+
+  /* No session to restore — check if returning user */
+  if (hasSeenStar()) {
+    navigate('role_select');
+  } else {
+    navigate('star_intro');
+  }
 };
 
 })();
