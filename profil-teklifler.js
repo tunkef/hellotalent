@@ -150,11 +150,11 @@
       html += '<div class="tk-section-head"><div class="tk-section-title">' + (currentTab === 'premium' ? 'Premium F\u0131rsatlar' : '\u00D6ne \u00C7\u0131kan F\u0131rsatlar') + '</div></div>';
       html += '<div class="tk-carousel-wrap"><div class="tk-carousel-track" id="tk-carousel">';
       html += '<div class="tk-carousel-slide">';
-      for (var i = 0; i < Math.min(3, featured.length); i++) html += buildCardHTML(featured[i], isLocked);
+      for (var i = 0; i < Math.min(3, featured.length); i++) html += buildCardHTML(featured[i], false);
       html += '</div>';
       if (featured.length > 3) {
         html += '<div class="tk-carousel-slide">';
-        for (var j = 3; j < Math.min(6, featured.length); j++) html += buildCardHTML(featured[j], isLocked);
+        for (var j = 3; j < Math.min(6, featured.length); j++) html += buildCardHTML(featured[j], false);
         html += '</div>';
       }
       html += '</div>';
