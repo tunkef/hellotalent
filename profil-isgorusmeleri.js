@@ -301,6 +301,7 @@ var S = {
   swapsUsed: 0,
   answeredCount: 0,
   starHintOpen: false,
+  coachOpen: false,
   completedComps: [],
   totalAnswered: 0,
   totalSwaps: 0
@@ -318,6 +319,7 @@ function resetState() {
   S.swapsUsed = 0;
   S.answeredCount = 0;
   S.starHintOpen = false;
+  S.coachOpen = false;
   S.completedComps = [];
   S.totalAnswered = 0;
   S.totalSwaps = 0;
@@ -446,6 +448,7 @@ function saveSession() {
       swapsUsed: S.swapsUsed,
       answeredCount: S.answeredCount,
       starHintOpen: S.starHintOpen,
+      coachOpen: S.coachOpen,
       completedComps: S.completedComps,
       totalAnswered: S.totalAnswered,
       totalSwaps: S.totalSwaps
@@ -470,6 +473,7 @@ function loadSession() {
     S.swapsUsed = data.swapsUsed || 0;
     S.answeredCount = data.answeredCount || 0;
     S.starHintOpen = data.starHintOpen || false;
+    S.coachOpen = data.coachOpen || false;
     S.completedComps = data.completedComps || [];
     S.totalAnswered = data.totalAnswered || 0;
     S.totalSwaps = data.totalSwaps || 0;
@@ -491,6 +495,7 @@ var checkSVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strok
 var swapSVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3l4 4-4 4"/><path d="M20 7H4"/><path d="M8 21l-4-4 4-4"/><path d="M4 17h16"/></svg>';
 var starSVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>';
 var trophySVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>';
+var coachSVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>';
 
 /* ════════════════════════════════════════════════
    CSS INJECTION
@@ -652,6 +657,25 @@ function injectCSS() {
   css += '.ig-swap-nudge-text{font-family:"Plus Jakarta Sans",sans-serif;font-size:11px;color:var(--navy,#1E2D5E);line-height:1.5}';
   css += '.ig-swap-nudge-cta{display:inline-block;margin-top:6px;font-family:"Plus Jakarta Sans",sans-serif;font-size:11px;font-weight:700;color:var(--verm,#C94E28);cursor:pointer;text-decoration:none;border:none;background:none;padding:0}';
   css += '.ig-swap-nudge-cta:hover{text-decoration:underline}';
+
+  /* Coach panel (practice screen — competency signals) */
+  css += '.ig-coach-panel{margin-top:20px;background:linear-gradient(135deg,rgba(201,78,40,.03) 0%,rgba(201,78,40,.06) 100%);border:1px solid rgba(201,78,40,.12);border-radius:16px;padding:20px 24px;animation:igSlideUp .25s ease;text-align:left}';
+  css += '.ig-coach-intro{font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;color:var(--text-secondary,#4B5563);line-height:1.6;font-style:italic;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid rgba(201,78,40,.1)}';
+  css += '.ig-coach-section{margin-bottom:14px}';
+  css += '.ig-coach-section:last-child{margin-bottom:0}';
+  css += '.ig-coach-header{display:flex;align-items:center;gap:8px;margin-bottom:8px}';
+  css += '.ig-coach-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}';
+  css += '.ig-coach-dot-strong{background:#2D8A56}';
+  css += '.ig-coach-dot-risk{background:var(--verm,#C94E28)}';
+  css += '.ig-coach-dot-over{background:var(--navy,#1E2D5E)}';
+  css += '.ig-coach-label{font-family:"Bricolage Grotesque",sans-serif;font-size:13px;font-weight:700;color:var(--text-primary,#111)}';
+  css += '.ig-coach-bullets{list-style:none;margin:0;padding:0}';
+  css += '.ig-coach-bullet{display:flex;gap:8px;align-items:flex-start;font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;color:var(--text-secondary,#4B5563);line-height:1.6;margin-bottom:6px}';
+  css += '.ig-coach-bullet:last-child{margin-bottom:0}';
+  css += '.ig-coach-bullet::before{content:"";flex-shrink:0;width:4px;height:4px;border-radius:50%;background:var(--text-muted,#6B7280);margin-top:7px}';
+  css += '.ig-btn-coach{background:rgba(201,78,40,.06);color:var(--verm,#C94E28)}';
+  css += '.ig-btn-coach:hover{background:rgba(201,78,40,.12)}';
+  css += '.ig-btn-coach.active{background:var(--verm,#C94E28);color:#fff}';
 
   /* Locked comp preview (session_complete) */
   css += '.ig-locked-preview{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:12px 0}';
@@ -923,6 +947,9 @@ function renderPractice() {
   /* STAR İpucu */
   html += '<button class="ig-btn ig-btn-star' + (S.starHintOpen ? ' active' : '') + '" id="ig-star-hint">' + starSVG + ' STAR \u0130pucu</button>';
 
+  /* Coaching toggle */
+  html += '<button class="ig-btn ig-btn-coach' + (S.coachOpen ? ' active' : '') + '" id="ig-coach-toggle">' + coachSVG + ' Ne Aran\u0131r?</button>';
+
   /* Yanıtladım */
   html += '<button class="ig-btn ig-btn-answered" id="ig-answered">' + checkSVG + ' Yan\u0131tlad\u0131m</button>';
 
@@ -939,6 +966,11 @@ function renderPractice() {
   /* STAR hint panel (conditionally shown) */
   if (S.starHintOpen) {
     html += renderStarHintPanel();
+  }
+
+  /* Coach panel (conditionally shown) */
+  if (S.coachOpen) {
+    html += renderCoachPanel();
   }
 
   html += '</div>'; /* q-focus */
@@ -963,6 +995,60 @@ function renderStarHintPanel() {
 }
 
 /* ════════════════════════════════════════════════
+   RENDER — COACH PANEL (competency signals)
+   Uses ANCHORS[code].skilled / lessskilled / overused
+   ════════════════════════════════════════════════ */
+
+function renderCoachPanel() {
+  var bridge = getBridge();
+  if (!bridge) return '';
+  var anchors = bridge.ANCHORS || {};
+  var a = anchors[S.activeComp];
+  if (!a) return '';
+
+  var html = '<div class="ig-coach-panel">';
+  html += '<div class="ig-coach-intro">Bu soru, yaln\u0131zca ne yapt\u0131\u011F\u0131n\u0131z\u0131 de\u011Fil \u2014 nas\u0131l d\u00FC\u015F\u00FCnd\u00FC\u011F\u00FCn\u00FCz\u00FC de \u00F6l\u00E7er.</div>';
+
+  var COACH_PREVIEW = 2;
+
+  /* Güçlü Sinyaller */
+  if (a.skilled && a.skilled.length) {
+    html += '<div class="ig-coach-section">';
+    html += '<div class="ig-coach-header"><div class="ig-coach-dot ig-coach-dot-strong"></div><div class="ig-coach-label">G\u00FC\u00E7l\u00FC Sinyaller</div></div>';
+    html += '<ul class="ig-coach-bullets">';
+    for (var si = 0; si < Math.min(COACH_PREVIEW, a.skilled.length); si++) {
+      html += '<li class="ig-coach-bullet">' + a.skilled[si] + '</li>';
+    }
+    html += '</ul></div>';
+  }
+
+  /* Risk Sinyalleri */
+  if (a.lessskilled && a.lessskilled.length) {
+    html += '<div class="ig-coach-section">';
+    html += '<div class="ig-coach-header"><div class="ig-coach-dot ig-coach-dot-risk"></div><div class="ig-coach-label">Risk Sinyalleri</div></div>';
+    html += '<ul class="ig-coach-bullets">';
+    for (var ri = 0; ri < Math.min(COACH_PREVIEW, a.lessskilled.length); ri++) {
+      html += '<li class="ig-coach-bullet">' + a.lessskilled[ri] + '</li>';
+    }
+    html += '</ul></div>';
+  }
+
+  /* Aşırı Kullanım */
+  if (a.overused && a.overused.length) {
+    html += '<div class="ig-coach-section">';
+    html += '<div class="ig-coach-header"><div class="ig-coach-dot ig-coach-dot-over"></div><div class="ig-coach-label">A\u015F\u0131r\u0131 Kullan\u0131m</div></div>';
+    html += '<ul class="ig-coach-bullets">';
+    for (var oi = 0; oi < Math.min(COACH_PREVIEW, a.overused.length); oi++) {
+      html += '<li class="ig-coach-bullet">' + a.overused[oi] + '</li>';
+    }
+    html += '</ul></div>';
+  }
+
+  html += '</div>';
+  return html;
+}
+
+/* ════════════════════════════════════════════════
    RENDER — COMP COMPLETION (Screen 5)
    Lighter screen — no aggressive upsell here.
    ════════════════════════════════════════════════ */
@@ -979,6 +1065,7 @@ function renderCompletion() {
   html += '<div class="ig-completion-icon">' + checkSVG + '</div>';
   html += '<div class="ig-completion-title">' + compName + ' Tamamland\u0131</div>';
   html += '<div class="ig-completion-desc">' + S.answeredCount + ' soru yan\u0131tland\u0131' + (S.swapsUsed > 0 ? ', ' + S.swapsUsed + ' soru de\u011Fi\u015Ftirildi' : '') + '.</div>';
+  html += '<div style="font-family:\'Plus Jakarta Sans\',sans-serif;font-size:12px;color:var(--text-muted,#6B7280);line-height:1.5;max-width:360px;margin:0 auto 8px">Haz\u0131rl\u0131k yapmak fark yarat\u0131r \u2014 bu yetkinli\u011Fi pratik ederek bir ad\u0131m \u00F6ndesiniz.</div>';
 
   html += '<div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:16px">';
   html += '<button class="ig-btn ig-btn-swap" id="ig-restart-comp" style="border:1px solid var(--border-subtle,#E5E3DF) !important">Tekrar Pratik Yap\u0131n</button>';
@@ -1143,6 +1230,7 @@ function startSession(role) {
   S.swapsUsed = 0;
   S.answeredCount = 0;
   S.starHintOpen = false;
+  S.coachOpen = false;
   S.completedComps = [];
   S.totalAnswered = 0;
   S.totalSwaps = 0;
@@ -1158,6 +1246,7 @@ function startPractice(compCode, compIdx) {
   S.swapsUsed = 0;
   S.answeredCount = 0;
   S.starHintOpen = false;
+  S.coachOpen = false;
   navigate('practice');
 }
 
@@ -1200,6 +1289,13 @@ function bindPracticeEvents() {
     navigate('practice');
   });
 
+  /* Coach panel toggle */
+  var coachBtn = document.getElementById('ig-coach-toggle');
+  if (coachBtn) coachBtn.addEventListener('click', function() {
+    S.coachOpen = !S.coachOpen;
+    navigate('practice');
+  });
+
   /* Answered */
   var answeredBtn = document.getElementById('ig-answered');
   if (answeredBtn) answeredBtn.addEventListener('click', function() {
@@ -1207,6 +1303,7 @@ function bindPracticeEvents() {
     S.answeredCount++;
     S.totalAnswered++;
     S.starHintOpen = false;
+    S.coachOpen = false;
 
     if (S.currentQ < S.dealt.length - 1) {
       S.currentQ++;
@@ -1256,6 +1353,7 @@ function bindSessionCompleteEvents() {
     S.swapsUsed = 0;
     S.answeredCount = 0;
     S.starHintOpen = false;
+    S.coachOpen = false;
     S.completedComps = [];
     S.totalAnswered = 0;
     S.totalSwaps = 0;
