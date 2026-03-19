@@ -83,10 +83,10 @@
     css += '.tk-cta{display:inline-flex;align-items:center;gap:4px;padding:8px 14px;border-radius:8px;font-size:11px;font-weight:700;text-decoration:none;background:var(--verm,#C94E28);color:#fff;transition:opacity .15s;margin-top:12px;align-self:flex-start;border:none;cursor:pointer;font-family:"Plus Jakarta Sans",sans-serif}';
     css += '.tk-cta:hover{opacity:.85}';
     /* Premium gate — frosted glass over cards */
-    css += '.tk-premium-gate{position:relative;overflow:hidden;border-radius:16px;min-height:400px}';
+    css += '.tk-premium-gate{position:relative;overflow:auto;border-radius:16px;min-height:400px}';
     css += '.tk-gate-cards{pointer-events:none;user-select:none}';
-    css += '.tk-gate-overlay{position:absolute;inset:0;display:flex;align-items:flex-start;justify-content:center;background:rgba(255,255,255,.7);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);z-index:5;border-radius:16px}';
-    css += '.tk-gate-content{position:sticky;top:120px;padding:40px 32px}';
+    css += '.tk-gate-overlay{position:absolute;inset:0;background:rgba(255,255,255,.7);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);z-index:5;border-radius:16px;pointer-events:none}';
+    css += '.tk-gate-float{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:6;text-align:center;max-width:380px;padding:32px;pointer-events:auto}';
     css += '.tk-gate-content{text-align:center;max-width:380px;padding:32px}';
     css += '.tk-gate-title{font-family:"Bricolage Grotesque",sans-serif;font-size:28px;font-weight:900;color:var(--text-primary,#111);margin-bottom:8px;letter-spacing:-.5px}';
     css += '.tk-gate-desc{font-family:"Plus Jakarta Sans",sans-serif;font-size:14px;color:var(--text-muted,#6B7280);line-height:1.6;margin-bottom:20px}';
@@ -141,6 +141,9 @@
   function renderTabContent() {
     var container = document.getElementById('tk-tab-content');
     if (!container) return;
+    /* Remove any existing float */
+    var oldFloat = document.getElementById('tk-gate-float');
+    if (oldFloat) oldFloat.parentNode.removeChild(oldFloat);
     var campaigns = getCampaignsForTab();
     var featured = campaigns.slice(0, 6);
     var rest = campaigns.slice(6);
@@ -183,14 +186,15 @@
       for (var g = 0; g < campaigns.length; g++) html += buildCardHTML(campaigns[g], false);
       html += '</div>';
       html += '</div>';
-      /* Overlay */
-      html += '<div class="tk-gate-overlay">';
-      html += '<div class="tk-gate-content">';
+      /* Overlay (blur only) + Floating CTA (fixed center) */
+      html += '<div class="tk-gate-overlay"></div>';
+      html += '</div>';
+      html += '<div class="tk-gate-float" id="tk-gate-float">';
       html += '<svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor" style="color:var(--verm,#C94E28);margin-bottom:12px;"><path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5z"/><path d="M5 19a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-1H5v1z" opacity=".5"/></svg>';
       html += '<div class="tk-gate-title">S\u0131n\u0131rs\u0131z Eri\u015Fim</div>';
       html += '<div class="tk-gate-desc">Premium ile t\u00FCm f\u0131rsatlara, \u00F6zel tekliflere ve ayr\u0131cal\u0131klara s\u0131n\u0131rs\u0131z eri\u015F.</div>';
       html += '<button class="tk-gate-cta" data-panel="premium">Premium\u2019u Ke\u015Ffet</button>';
-      html += '</div></div></div>';
+      html += '</div>';
     }
     container.textContent = '';
     container.insertAdjacentHTML('afterbegin', html);
