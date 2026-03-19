@@ -2680,6 +2680,15 @@ var _BRAND_COLORS = {
   'Teknosa': { frontBg: '', backBg: 'linear-gradient(160deg, #f01820 0%, #cc1018 40%, #a00c12 100%)', accent: '#ED1C24' }
 };
 
+function _hexToRgba(hex, alpha) {
+  hex = hex.replace('#', '');
+  if (hex.length === 3) hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
+  var r = parseInt(hex.substring(0,2), 16);
+  var g = parseInt(hex.substring(2,4), 16);
+  var b = parseInt(hex.substring(4,6), 16);
+  return 'rgba(' + r + ',' + g + ',' + b + ',' + alpha + ')';
+}
+
 function _brandColors(brandName) {
   return _BRAND_COLORS[brandName] || {
     frontBg: '',
@@ -2860,7 +2869,7 @@ function renderBrandGrid(query) {
 
     html += '<div class="flip-card" onclick="this.classList.toggle(\'flipped\')" style="animation-delay:' + (i * 0.03) + 's">' +
       '<div class="flip-card-inner">' +
-        '<div class="flip-front" style="background:#fff;box-shadow:inset 0 0 60px ' + (colors.accent || '#999') + '33,inset 0 0 120px ' + (colors.accent || '#999') + '1a;">' +
+        '<div class="flip-front" style="background:#fff;box-shadow:inset 0 0 80px ' + _hexToRgba(colors.accent || '#999', 0.25) + ',inset 0 0 160px ' + _hexToRgba(colors.accent || '#999', 0.12) + ';">' +
           '<div class="front-logo">' + logoFront + '</div>' +
           '<div class="front-name">' + _escHtml(b.brand_name) + '</div>' +
           (segLabel ? '<div class="front-segment" style="background:' + segColor + '">' + _escHtml(segLabel) + '</div>' : '') +
