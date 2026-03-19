@@ -3235,7 +3235,7 @@ html[data-theme="dark"] .lok-modal #btn-lok-close:hover{
 .flip-back::before{content:'';position:absolute;inset:0;border-radius:18px;padding:2px;background:linear-gradient(135deg,rgba(255,255,255,0.3),rgba(255,255,255,0.05));-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;}
 .back-header{display:flex;align-items:center;gap:10px;padding:16px 16px 12px;}
 .back-logo{width:40px;height:40px;border-radius:10px;background:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;}
-.back-logo .brand-logo-wrap{width:40px!important;height:40px!important;border-radius:10px;}
+.back-logo{display:none !important;}
 .back-logo img{width:100%;height:100%;object-fit:contain;padding:4px;background:#fff;}
 .back-logo .brand-initial{font-weight:700;font-size:14px;color:#fff;}
 .back-title-area{flex:1;min-width:0;}
