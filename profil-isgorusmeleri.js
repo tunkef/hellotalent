@@ -515,9 +515,15 @@ function renderIntro() {
 
   html += '<div class="ig-bento">';
 
-  /* Intro description card (span 2) */
+  /* Intro description (span 2) + Role select (span 1) — side by side */
   html += '<div class="ig-card ig-bento-2">';
   html += '<div class="ig-section-desc" style="font-size:14px;line-height:1.7;color:var(--text-secondary,#4B5563)">' + d.intro + '</div>';
+  html += '</div>';
+
+  html += '<div class="ig-card ig-role-card" id="ig-role-area">';
+  html += '<div class="ig-role-label">Rol\u00FCne \u00F6zel m\u00FClakat sorular\u0131n\u0131 g\u00F6r</div>';
+  html += '<div class="ig-role-desc">Hedef pozisyonunu se\u00E7, o role ait yetkinlik bazl\u0131 m\u00FClakat sorular\u0131n\u0131 incele.</div>';
+  html += renderRoleDropdown();
   html += '</div>';
 
   /* STAR Quad card — just the wheel */
@@ -615,12 +621,7 @@ function renderIntro() {
   html += '</ul></div>';
   html += '</div>';
 
-  /* Role selection card (span 1, next to intro) */
-  html += '<div class="ig-card ig-role-card" id="ig-role-area">';
-  html += '<div class="ig-role-label">Rol\u00FCne \u00F6zel m\u00FClakat sorular\u0131n\u0131 g\u00F6r</div>';
-  html += '<div class="ig-role-desc">Hedef pozisyonunu se\u00E7, o role ait yetkinlik bazl\u0131 m\u00FClakat sorular\u0131n\u0131 incele.</div>';
-  html += renderRoleDropdown();
-  html += '</div>';
+  /* Role select card already rendered above next to intro */
 
   html += '</div>';
   return html;
