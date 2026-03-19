@@ -3188,8 +3188,14 @@ html[data-theme="dark"] .lok-modal #btn-lok-close:hover{
 /* All brands section — flip card grid */
 .all-brands-section{margin-top:8px;}
 .brand-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;grid-auto-flow:dense;}
-.brand-grid>.flip-card:first-child{grid-column:span 2;}
-@media(max-width:750px){.brand-grid{grid-template-columns:repeat(2,1fr);}.brand-grid>.flip-card:first-child{grid-column:span 1;}}
+.brand-grid>.flip-card:nth-child(1){grid-column:span 2;}
+.brand-grid>.flip-card:nth-child(6){grid-column:span 2;}
+.brand-grid>.flip-card:nth-child(11){grid-column:span 2;}
+.brand-grid>.flip-card:nth-child(16){grid-column:span 2;}
+.brand-grid>.flip-card:nth-child(21){grid-column:span 2;}
+.brand-grid>.flip-card:nth-child(26){grid-column:span 2;}
+.brand-grid>.flip-card:nth-child(31){grid-column:span 2;}
+@media(max-width:750px){.brand-grid{grid-template-columns:repeat(2,1fr);}.brand-grid>.flip-card:nth-child(n){grid-column:span 1;}}
 @media(max-width:480px){.brand-grid{grid-template-columns:1fr;}}
 
 /* Flip card — z-index prevents hover leak */
