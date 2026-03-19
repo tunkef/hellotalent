@@ -146,33 +146,43 @@
     var isLocked = currentTab === 'premium' && !_isPremiumUser;
     var html = '';
 
-    if (featured.length > 0) {
-      html += '<div class="tk-section-head"><div class="tk-section-title">' + (currentTab === 'premium' ? 'Premium F\u0131rsatlar' : '\u00D6ne \u00C7\u0131kan F\u0131rsatlar') + '</div></div>';
-      html += '<div class="tk-carousel-wrap"><div class="tk-carousel-track" id="tk-carousel">';
-      html += '<div class="tk-carousel-slide">';
-      for (var i = 0; i < Math.min(3, featured.length); i++) html += buildCardHTML(featured[i], false);
-      html += '</div>';
-      if (featured.length > 3) {
+    if (!isLocked) {
+      /* Freemium: carousel + filters + bento */
+      if (featured.length > 0) {
+        html += '<div class="tk-section-head"><div class="tk-section-title">\u00D6ne \u00C7\u0131kan F\u0131rsatlar</div></div>';
+        html += '<div class="tk-carousel-wrap"><div class="tk-carousel-track" id="tk-carousel">';
         html += '<div class="tk-carousel-slide">';
-        for (var j = 3; j < Math.min(6, featured.length); j++) html += buildCardHTML(featured[j], false);
+        for (var i = 0; i < Math.min(3, featured.length); i++) html += buildCardHTML(featured[i], false);
+        html += '</div>';
+        if (featured.length > 3) {
+          html += '<div class="tk-carousel-slide">';
+          for (var j = 3; j < Math.min(6, featured.length); j++) html += buildCardHTML(featured[j], false);
+          html += '</div>';
+        }
+        html += '</div>';
+        if (featured.length > 3) {
+          html += '<div class="tk-carousel-dots"><div class="tk-carousel-dot active" data-slide="0"></div><div class="tk-carousel-dot" data-slide="1"></div></div>';
+        }
         html += '</div>';
       }
-      html += '</div>';
-      if (featured.length > 3) {
-        html += '<div class="tk-carousel-dots"><div class="tk-carousel-dot active" data-slide="0"></div><div class="tk-carousel-dot" data-slide="1"></div></div>';
-      }
-      html += '</div>';
-    }
-
-    if (!isLocked) {
       html += '<div class="tk-filters" id="tk-filters"></div>';
       html += '<div class="tk-bento" id="tk-bento-grid"></div>';
     } else {
-      /* Frosted glass: cards visible but not readable, single CTA overlay */
+      /* Premium: everything inside frosted glass gate */
       html += '<div class="tk-premium-gate">';
-      html += '<div class="tk-gate-cards tk-bento">';
+      html += '<div class="tk-gate-cards">';
+      /* Carousel inside gate */
+      html += '<div class="tk-section-head"><div class="tk-section-title" style="opacity:.5">Premium F\u0131rsatlar</div></div>';
+      html += '<div class="tk-carousel-wrap" style="border:none;box-shadow:none;"><div class="tk-carousel-track">';
+      html += '<div class="tk-carousel-slide">';
+      for (var i = 0; i < Math.min(3, featured.length); i++) html += buildCardHTML(featured[i], false);
+      html += '</div></div></div>';
+      /* Bento inside gate */
+      html += '<div class="tk-bento" style="margin-top:16px;">';
       for (var g = 0; g < campaigns.length; g++) html += buildCardHTML(campaigns[g], false);
       html += '</div>';
+      html += '</div>';
+      /* Overlay */
       html += '<div class="tk-gate-overlay" data-panel="premium">';
       html += '<div class="tk-gate-content">';
       html += '<svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor" style="color:var(--verm,#C94E28);margin-bottom:12px;"><path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5z"/><path d="M5 19a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-1H5v1z" opacity=".5"/></svg>';
