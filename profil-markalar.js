@@ -269,7 +269,7 @@ function renderBrandGrid(query) {
 
     var isColored = colors.accent !== '#000000' && colors.accent !== '#555555';
     var sizeClass = isColored ? ' brand-colored' : ' brand-dark';
-    html += '<div class="flip-card' + sizeClass + '" onclick="this.classList.toggle(\'flipped\')" style="animation-delay:' + (i * 0.03) + 's;background:' + colors.backBg + ';border-radius:18px;">' +
+    html += '<div class="flip-card' + sizeClass + '" style="animation-delay:' + (i * 0.03) + 's;background:' + colors.backBg + ';">' +
       '<div class="flip-card-inner">' +
         '<div class="flip-front" style="background:' + (isColored ? _hexToRgba(colors.accent, 0.15) : 'rgba(255,255,255,0.12)') + ';">' +
           '<div class="front-logo">' + logoFront + '</div>' +

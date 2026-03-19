@@ -3200,16 +3200,14 @@ html[data-theme="dark"] .lok-modal #btn-lok-close:hover{
 @media(max-width:600px){.brand-grid{grid-template-columns:repeat(2,1fr);grid-auto-rows:160px;}.brand-grid>.flip-card:nth-child(n){grid-column:span 1;grid-row:span 1;}}
 @media(max-width:400px){.brand-grid{grid-template-columns:1fr;}}
 
-/* Flip card — z-index prevents hover leak */
-.flip-card{position:relative;z-index:1;perspective:1200px;height:100%;cursor:pointer;}
-.flip-card:hover{z-index:10;}
-.flip-card-inner{position:relative;width:100%;height:100%;transition:transform .55s cubic-bezier(0.4,0,0.15,1);transform-style:preserve-3d;}
-@media(hover:hover){.flip-card:hover .flip-card-inner{transform:rotateY(180deg);}}
-.flip-card.flipped .flip-card-inner{transform:rotateY(180deg);}
+/* Card — hover reveal (front fades, back rotates in) */
+.flip-card{position:relative;z-index:1;height:100%;cursor:pointer;border-radius:18px;transition:all 0.4s;box-shadow:0 2px 12px rgba(0,0,0,0.08);}
+.flip-card:hover{z-index:10;border-radius:18px;transform:scale(1.03);box-shadow:0 8px 32px rgba(0,0,0,0.18);}
+.flip-card-inner{position:relative;width:100%;height:100%;overflow:hidden;border-radius:18px;}
 
-.flip-front,.flip-back{position:absolute;width:100%;height:100%;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:18px;overflow:hidden;}
-.flip-front{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:16px 12px 12px;transition:all .3s;overflow:hidden;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.25);box-shadow:0 8px 32px rgba(0,0,0,0.06);}
-.flip-card:hover .flip-front{border-color:transparent;}
+.flip-front,.flip-back{width:100%;border-radius:18px;overflow:hidden;}
+.flip-front{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:16px 12px 12px;transition:all 0.4s;opacity:1;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.25);box-shadow:0 8px 32px rgba(0,0,0,0.06);}
+.flip-card:hover .flip-front{height:0;opacity:0;padding:0;}
 
 .front-logo{width:64px;height:64px;border-radius:14px;background:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.08);margin-bottom:6px;}
 .front-logo .brand-logo-wrap{width:64px!important;height:64px!important;min-width:64px!important;min-height:64px!important;border-radius:16px;flex-shrink:0!important;background:rgba(255,255,255,0.2)!important;backdrop-filter:blur(14px)!important;-webkit-backdrop-filter:blur(14px)!important;border:1.5px solid rgba(255,255,255,0.45)!important;box-shadow:0 4px 16px rgba(0,0,0,0.06),inset 0 1px 0 rgba(255,255,255,0.6)!important;}
@@ -3218,11 +3216,11 @@ html[data-theme="dark"] .lok-modal #btn-lok-close:hover{
 .front-name{display:none;}
 .front-segment{display:none;}
 .front-stores{display:none;}
-.flip-hint{position:absolute;bottom:10px;font-size:10px;color:var(--text-muted);opacity:0;transition:opacity .25s;font-family:var(--font-mono,'DM Mono',monospace);letter-spacing:.5px;}
-.flip-card:hover .flip-hint{opacity:.7;}
+.flip-hint{display:none;}
 
-.flip-back{transform:rotateY(180deg);display:flex;flex-direction:column;color:#fff;}
-.flip-back::before{content:'';position:absolute;inset:0;border-radius:18px;padding:2px;background:linear-gradient(135deg,rgba(255,255,255,0.3),rgba(255,255,255,0.05));-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;}
+.flip-back{height:0;opacity:0;display:flex;flex-direction:column;color:#fff;transition:all 0.4s;font-size:0;transform:rotate(90deg) scale(-1);overflow:hidden;}
+.flip-card:hover .flip-back{opacity:1;height:100%;font-size:1rem;transform:rotate(0deg);}
+.flip-back::before{display:none;}
 .back-header{display:flex;align-items:center;gap:8px;padding:10px 12px 6px;}
 .back-logo{width:40px;height:40px;border-radius:10px;background:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;}
 .back-logo{display:none !important;}
