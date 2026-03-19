@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Profilim — hellotalent.ai</title>
 <meta name="robots" content="noindex">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23C94E28'/%3E%3Ctext x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='800' font-size='20'%3Eht%3C/text%3E%3C/svg%3E">
 <meta name="theme-color" content="#ffffff" id="meta-theme-color">
 <script>
 (function(){
@@ -2671,11 +2672,11 @@ function reapplyDynamicFields() {
     // Skeleton is already in HTML, just fetch data
     try {
       var statsP = supabase.from('candidate_view_stats').select('*').eq('candidate_id', candidateId).maybeSingle();
-      var eventsP = supabase.from('profile_view_events').select('viewed_at, position_ad_snapshot, position_seg_snapshot, company_id, companies(ad, segment)').eq('candidate_id', candidateId).order('viewed_at', { ascending: false }).limit(20);
+      var eventsP = supabase.from('profile_view_events').select('viewed_at, position_ad_snapshot, position_seg_snapshot, company_id, companies(company_name, segment)').eq('candidate_id', candidateId).order('viewed_at', { ascending: false }).limit(20);
 
-      var results = await Promise.all([statsP, eventsP]);
-      var stats = results[0].data;
-      var events = (results[1].data || []);
+      var results = await Promise.allSettled([statsP, eventsP]);
+      var stats = results[0].status === 'fulfilled' ? results[0].value.data : null;
+      var events = results[1].status === 'fulfilled' ? (results[1].value.data || []) : [];
 
       // Check premium status (placeholder — all users are freemium for now)
       var isPremium = false;
