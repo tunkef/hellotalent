@@ -464,9 +464,11 @@ function saveJournalDraft(compCode, qText, fields) {
       takeaway: fields.takeaway || '',
       savedAt: Date.now()
     };
-    /* Only save if at least one field has content */
+    /* Save if content exists; remove entry if all fields cleared */
     if (data.s || data.t || data.a || data.r || data.takeaway) {
       localStorage.setItem(key, JSON.stringify(data));
+    } else {
+      localStorage.removeItem(key);
     }
   } catch(e) {}
 }
@@ -1605,11 +1607,12 @@ function bindCompetencyIntroEvents() {
 function bindPracticeEvents() {
   /* Back to lobby */
   var backBtn = document.getElementById('ig-back-lobby');
-  if (backBtn) backBtn.addEventListener('click', function() { navigate('lobby'); });
+  if (backBtn) backBtn.addEventListener('click', function() { flushJournal(); navigate('lobby'); });
 
   /* Swap */
   var swapBtn = document.getElementById('ig-swap');
   if (swapBtn) swapBtn.addEventListener('click', function() {
+    flushJournal();
     var replacement = getSwapQuestion(S.activeComp, S.dealt, S.currentQ);
     if (replacement) {
       S.dealt[S.currentQ] = replacement;
@@ -1621,6 +1624,7 @@ function bindPracticeEvents() {
   /* STAR hint toggle */
   var starBtn = document.getElementById('ig-star-hint');
   if (starBtn) starBtn.addEventListener('click', function() {
+    flushJournal();
     S.starHintOpen = !S.starHintOpen;
     navigate('practice');
   });
@@ -1628,6 +1632,7 @@ function bindPracticeEvents() {
   /* Coach panel toggle */
   var coachBtn = document.getElementById('ig-coach-toggle');
   if (coachBtn) coachBtn.addEventListener('click', function() {
+    flushJournal();
     S.coachOpen = !S.coachOpen;
     navigate('practice');
   });
@@ -1635,6 +1640,7 @@ function bindPracticeEvents() {
   /* Journal toggle */
   var journalBtn = document.getElementById('ig-journal-toggle');
   if (journalBtn) journalBtn.addEventListener('click', function() {
+    flushJournal();
     S.journalOpen = !S.journalOpen;
     navigate('practice');
     /* Focus first textarea if opening */
@@ -1645,6 +1651,21 @@ function bindPracticeEvents() {
       }, 100);
     }
   });
+
+  /* Flush journal — immediate save of current textarea values.
+     Called before any navigation that leaves the current question. */
+  function flushJournal() {
+    var q = S.dealt && S.dealt[S.currentQ];
+    if (!q || !S.activeComp) return;
+    var all = document.querySelectorAll('.ig-journal-textarea');
+    if (!all.length) return;
+    var fields = {};
+    all.forEach(function(el) {
+      fields[el.getAttribute('data-field')] = el.value;
+    });
+    saveJournalDraft(S.activeComp, q.text, fields);
+    if (_journalTimer) { clearTimeout(_journalTimer); _journalTimer = null; }
+  }
 
   /* Journal auto-save (debounced keyup on textareas) */
   var _journalTimer = null;
@@ -1679,6 +1700,7 @@ function bindPracticeEvents() {
   /* Answered */
   var answeredBtn = document.getElementById('ig-answered');
   if (answeredBtn) answeredBtn.addEventListener('click', function() {
+    flushJournal();
     addRecentQuestion(S.dealt[S.currentQ].text);
     S.answeredCount++;
     S.totalAnswered++;
