@@ -520,12 +520,12 @@ function renderIntro() {
 
   html += '<div class="ig-bento">';
 
-  /* Intro description (span 2) + Role select (span 1) — side by side */
-  html += '<div class="ig-card ig-bento-2">';
+  /* Intro description (span 1) + Role select (span 2) — side by side */
+  html += '<div class="ig-card">';
   html += '<div class="ig-section-desc" style="font-size:14px;line-height:1.7;color:var(--text-secondary,#4B5563)">' + d.intro + '</div>';
   html += '</div>';
 
-  html += '<div class="ig-card ig-role-card" id="ig-role-area">';
+  html += '<div class="ig-card ig-role-card ig-bento-2" id="ig-role-area">';
   html += '<div class="ig-role-label">Rol\u00FCne \u00F6zel m\u00FClakat sorular\u0131n\u0131 g\u00F6r</div>';
   html += '<div class="ig-role-desc">Hedef pozisyonunu se\u00E7, o role ait yetkinlik bazl\u0131 m\u00FClakat sorular\u0131n\u0131 incele.</div>';
   html += renderRoleDropdown();
@@ -651,12 +651,15 @@ function renderRoleDropdown() {
   var bridge = getBridge();
   if (!bridge) return '<div class="ig-section-desc">Yetkinlik verileri y\u00FCklenirken bekleyin...</div>';
   var roleKeys = Object.keys(bridge.ROLE_COMP_MAP).sort(function(a,b){ return a.localeCompare(b,'tr'); });
-  var html = '<select class="ig-role-select" id="ig-role-dd">';
+  var html = '<div style="display:flex;gap:10px;align-items:center;max-width:100%;">';
+  html += '<select class="ig-role-select" id="ig-role-dd" style="flex:1;">';
   html += '<option value="">Pozisyon se\u00E7in...</option>';
   for (var i = 0; i < roleKeys.length; i++) {
     html += '<option value="' + roleKeys[i] + '">' + roleKeys[i] + '</option>';
   }
   html += '</select>';
+  html += '<button type="button" id="ig-role-start" style="flex-shrink:0;padding:12px 20px;border:none;border-radius:10px;background:var(--verm,#C94E28);color:#fff;font-family:\'Plus Jakarta Sans\',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:opacity .2s;white-space:nowrap;">Ba\u015Fla</button>';
+  html += '</div>';
   return html;
 }
 
@@ -816,12 +819,13 @@ function bindIntroEvents() {
     });
   }
 
-  /* Role dropdown */
+  /* Role dropdown + start button */
   var dd = document.getElementById('ig-role-dd');
-  if (dd) {
-    dd.addEventListener('change', function() {
-      if (this.value) {
-        S.role = this.value;
+  var startBtn = document.getElementById('ig-role-start');
+  if (startBtn) {
+    startBtn.addEventListener('click', function() {
+      if (dd && dd.value) {
+        S.role = dd.value;
         navigate('questions');
       }
     });
