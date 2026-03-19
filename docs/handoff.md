@@ -180,9 +180,67 @@ a228843 feat: premium bento grid reading view + full Korn Ferry competency conte
 - Avatar dropdown isim: DB'den güncelleme eklendi
 - Dark mode: marka kartları light mode'da sabit
 
+### Session 6 — 19 Mart 2026 (Marka Kartları Redesign & Hover-Reveal)
+
+**19. Marka Kartları Renk Sistemi Yenileme**
+- 32 markanın resmi kurumsal renkleri kullanıcı tarafından doğrulandı ve güncellendi
+- Tüm gradient'ler kaldırıldı → düz hex renkler (backBg + accent eşitlendi)
+- Siyah markalar (#000000) için premium dinamik renkler atandı:
+  - Prada gece mavisi, Vakko bordo, Mango amber, Bershka mor, Sephora erik, MAC şarap, vb.
+- 10 renk düzeltmesi: LC Waikiki kırmızı→mavi, Teknosa kırmızı→turuncu, Beymen kahve→siyah, vb.
+- Koton markası renk haritasına eklendi (eksikti)
+- Fallback renk: `#000000` → `#2A2A3A` (koyu lacivert)
+
+**20. Marka Kartları Hover-Reveal Animasyonu**
+- 3D flip mekanizması kaldırıldı → CSS hover-reveal geçişine dönüştürüldü
+- Ön yüz: hover'da `height:0 + opacity:0` ile kaybolur
+- Arka yüz: `rotate(90deg) scale(-1)` → `rotate(0deg)` ile dönerek belirir
+- Kart hover'da `scale(1.03)` + derin gölge efekti
+- Tıklama (onclick flip) kaldırıldı — sadece hover ile geçiş
+
+**21. Marka Kartları Glassmorphic Ön Yüz**
+- Kartın tabanına marka kurumsal rengi uygulandı (solid background)
+- Ön yüz: `rgba(accent, 0.15)` yarı saydam dolgu + `backdrop-filter:blur(20px)`
+- Cam kenarlık: `1px solid rgba(255,255,255,0.25)`
+- Yumuşak gölge: `0 8px 32px rgba(0,0,0,0.06)`
+- Marka adı ön yüzden gizlendi → sadece logo görünür
+
+**22. Marka Kartları Arka Yüz Sadeleştirme**
+- Mağaza sayısı, çalışan sayısı, merkez şehir, açıklama kaldırıldı
+- Sadece marka adı (ortalı, 20px/800) + Takip Et butonu kaldı
+- Website/Instagram ikon linkleri kaldırıldı
+- Takip Et butonu yeniden tasarlandı: SVG kişi ikonu + tooltip container
+
+**23. Asimetrik Bento Grid**
+- `nth-child(10n+X)` ile 10 kartta bir tekrarlanan desen:
+  - Pozisyon 1: 2x2 büyük hero
+  - Pozisyon 4, 9: 1x2 dikey uzun
+  - Pozisyon 5, 8: 2x1 yatay geniş
+  - Geri kalan: 1x1 standart
+- Canlı renkli markalar hero pozisyonlara sıralandı (interleave sort)
+- `grid-auto-flow:dense` boşlukları otomatik doldurur
+- Responsive: 900px 3-kolon, 600px 2-kolon, 400px 1-kolon
+
+**24. İş Görüşmeleri Panel Fix**
+- Rol dropdown ve "Başla" butonu hiza düzeltmesi
+- İkisi de sabit `height:44px` ile eşitlendi
+
+**Commit Geçmişi (Session 6):**
+```
+187af98 fix: force 44px height on both dropdown and Başla button + cache bust
+d03c1b7 fix: center brand name + follow button on card back
+eeeb193 fix: simplify card back — brand name + follow button only
+4dbf4ed feat: asymmetric bento grid for brand cards — proper rhythm
+4623410 feat: premium dynamic colors for all brands + balanced card sizes
+0fc3343 feat: replace flip cards with hover-reveal animation
+17d7262 feat: true glassmorphic front — brand color shows through frosted glass
+ad4fa43 fix: hide brand name on card front — logo only
+a942127 fix: remove website/instagram link icons from brand card back
+7309fcf feat: brand card follow button with person icon tooltip design
+5f93ccc fix: brand cards use flat official colors — no gradients
+```
+
 ### Sonraki Adımlar
-- [ ] Marka kartlarına hover glow efekti (kayıtlı renklerle)
-- [ ] Marka kartı tıklanınca büyüme animasyonu (expand + diğerleri blur)
 - [ ] Migration 042 → competency tabloları
 - [ ] İşveren kampanya wizard'ı (ik.html)
 - [ ] iyzico ödeme entegrasyonu
