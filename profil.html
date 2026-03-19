@@ -1737,9 +1737,10 @@ function validateKariyer() {
   cards.forEach(function(card, i) {
     var prefix = card.id + '-';
     var num = i + 1;
-    if (!val(prefix + 'sirket')) errors.push('Deneyim #' + num + ': Şirket zorunludur');
-    if (!val(prefix + 'pozisyon')) errors.push('Deneyim #' + num + ': Pozisyon zorunludur');
-    if (!val(prefix + 'basyil')) errors.push('Deneyim #' + num + ': Başlangıç yılı zorunludur');
+    if (!val(prefix + 'sirket')) errors.push('Deneyim #' + num + ': \u015Eirket zorunludur');
+    var pozVal = val(prefix + 'unvan-sec') || val(prefix + 'unvan-custom');
+    if (!pozVal) errors.push('Deneyim #' + num + ': Pozisyon zorunludur');
+    if (!val(prefix + 'basyil')) errors.push('Deneyim #' + num + ': Ba\u015Flang\u0131\u00E7 y\u0131l\u0131 zorunludur');
   });
   if (errors.length > 0) { showStepErrors(errors); return false; }
   return true;

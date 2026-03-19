@@ -362,15 +362,17 @@
 
   document.addEventListener('DOMContentLoaded', function() {
     setTimeout(function() {
-      var supa = window._htSupa || window.supabase;
-      if (!supa) return;
-      supa.from('campaigns').select('id', { count:'exact', head:true }).eq('status', 'active')
-        .then(function(r) {
-          if (!r.error && r.count > 0) {
-            var el = document.getElementById('bento-teklifler-count');
-            if (el) el.textContent = r.count + ' aktif teklif';
-          }
-        });
+      try {
+        var supa = window._htSupa || window.supabase;
+        if (!supa) return;
+        supa.from('campaigns').select('id', { count:'exact', head:true }).eq('status', 'active')
+          .then(function(r) {
+            if (!r.error && r.count > 0) {
+              var el = document.getElementById('bento-teklifler-count');
+              if (el) el.textContent = r.count + ' aktif teklif';
+            }
+          }).catch(function() {});
+      } catch(e) {}
     }, 2000);
   });
 
