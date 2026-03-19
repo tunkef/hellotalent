@@ -269,9 +269,9 @@ function renderBrandGrid(query) {
 
     var isColored = colors.accent !== '#000000' && colors.accent !== '#555555';
     var sizeClass = isColored ? ' brand-colored' : ' brand-dark';
-    html += '<div class="flip-card' + sizeClass + '" onclick="this.classList.toggle(\'flipped\')" style="animation-delay:' + (i * 0.03) + 's">' +
+    html += '<div class="flip-card' + sizeClass + '" onclick="this.classList.toggle(\'flipped\')" style="animation-delay:' + (i * 0.03) + 's;background:' + colors.backBg + ';border-radius:18px;">' +
       '<div class="flip-card-inner">' +
-        '<div class="flip-front" style="background:' + (isColored ? _hexToRgba(colors.accent, 0.85) : 'rgba(0,0,0,0.08)') + ';border:1px solid ' + (isColored ? _hexToRgba(colors.accent, 0.9) : 'rgba(0,0,0,0.12)') + ';">' +
+        '<div class="flip-front" style="background:' + (isColored ? _hexToRgba(colors.accent, 0.15) : 'rgba(255,255,255,0.12)') + ';">' +
           '<div class="front-logo">' + logoFront + '</div>' +
           '<div class="front-name">' + _escHtml(b.brand_name) + '</div>' +
           (segLabel ? '<div class="front-segment" style="background:' + segColor + '">' + _escHtml(segLabel) + '</div>' : '') +
