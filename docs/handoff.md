@@ -1,5 +1,5 @@
 # hellotalent.ai — Technical Handoff Document
-> Son güncelleme: 18 Mart 2026 (Session 4b — Yetkinlik Wizard v2, Bento Grid, Dashboard Polish)
+> Son güncelleme: 19 Mart 2026 (Session 5 — Full Bento Standardization, Teklifler v2, Premium Panel, Marka Bento Box)
 > Bu doküman, projenin mevcut durumunu, tamamlanan işleri ve kalan backlog'u kapsar.
 > Yeni bir chat/session başlatırken bu dosyayı referans olarak kullanın.
 
@@ -112,11 +112,82 @@ a228843 feat: premium bento grid reading view + full Korn Ferry competency conte
 0498e8a fix: restore full 34-role taxonomy in competency wizard
 ```
 
+### Session 5 — 19 Mart 2026 (Full Bento Standardization & New Panels)
+
+**11. Bento Grid Design System Standardization**
+- `.agents/skills/bento-grid-design/SKILL.md` — tüm AI agent'lar için design skill oluşturuldu
+- Tüm panellere turuncu `g-hero` card eklendi (Markalar, Teklifler, Mesajlar, Bildirimler, Ayarlar, Kim Baktı)
+- Hero card `min-height:110px` — tüm panellerde aynı boyut
+- Border tutarlılığı: tüm kartlara `1px solid var(--border-subtle)` veya `rgba(255,255,255,0.1)`
+- Shadow standardizasyonu: tek shadow `0 2px 8px, 0 8px 20px` tüm kartlarda
+- Gap standardizasyonu: tüm grid'ler `16px`
+- Border-radius: bento-card + mk-card `23px → 16px`
+
+**12. Panel Bento Grid Uygulamaları**
+- Kim Baktı: bento grid (stat span 1 + chart span 2 + segment + viewers + premium CTA)
+- Ayarlar: 3 kolon bento grid (asimetrik span'lar)
+- Profil Merkezi: 4 kolon → 3 kolon, Kişisel Bilgiler + Tercihler span 2
+- Markalar: 4 kolon bento box (tall 1x2, wide 2x1, large 2x2 kartlar)
+
+**13. İş Görüşmeleri Panel Polish**
+- STAR quad card: turuncu arka plan, beyaz hücreler, navy aktif
+- İnteraktif: tıkla → sağda açıklama
+- Carousel: STAR örneği 6 slide
+- Yapın/Yapmayın: ayrı turuncu/navy kartlar
+- Çıkarım: slim navy banner
+- Rol seçim: navy gradient card + "Başla" butonu
+- Intro + rol seç yan yana (span 1 + span 2)
+
+**14. Teklifler v2 — Freemium/Premium Toggle**
+- Yeni dosya: `profil-teklifler.js` tamamen yeniden yazıldı (377 satır)
+- Toggle bar: Herkese Açık / Premium (taç ikonu)
+- Top 6 carousel (2 slide x 3 kart, dots navigasyon)
+- Bento grid: asimetrik (5n+1 span 2), dense flow
+- 6 freemium + 6 premium demo kampanya (retail temalı)
+- Premium tab: frosted glass gate (blur overlay + fixed CTA ortada)
+- Demo kartlar: gerçek kampanya geldiğinde otomatik kaybolur
+
+**15. Premium Panel**
+- Yeni dosya: `profil-premium.js` (187 satır)
+- 6 premium özellik kartı bento grid'de (asimetrik)
+- 3 plan kartı: Aylık 149 TL, Yıllık 99 TL (navy highlight), Kariyer 249 TL
+- Tüm "Yakında" etiketleri kaldırıldı → Premium paneline yönlendirme
+- Global premium CTA delegation: tüm "Premium'a Geç" butonları tek handler
+
+**16. Profil Preview Drawer Redesign**
+- Drawer: header altından başlıyor, `border-radius:20px`, 12px margin
+- Avatar glow: Beni Öner aktifken yeşil eclipse (header + preview)
+- Overlay: header'ı engellemiyor
+
+**17. Markalar Panel Refactor**
+- `profil-markalar.js` ayrı dosya olarak extract edildi (449 satır, 22 fonksiyon)
+- profil-ui.js: 3484 → 3066 satır (-418)
+- Marka kartları düz beyaz (gradient/glow kaldırıldı, renkler hafızada)
+- Glassmorphic logo kutuları
+- Ön yüz sadeleştirildi: segment badge + mağaza sayısı gizlendi
+- Arka yüz: kompakt layout, Website/Instagram ikon-only butonlar
+- Bento box grid: 4 kolon, farklı boyutlar (tall, wide, large)
+- 32 marka resmi renkleri doğrulandı ve hafızaya kaydedildi
+
+**18. Genel İyileştirmeler**
+- URL hash ile panel persist: sayfa yenilendiğinde kaldığın yerde devam
+- Wizard pozisyon validasyonu düzeltildi (unvan-sec/unvan-custom)
+- Inbox yükleme sorunu düzeltildi (positions FK kaldırıldı)
+- profile_view_events 400 hatası düzeltildi (companies.ad → company_name)
+- Favicon eklendi (inline SVG, vermillion "ht")
+- Header nav: glow efekti (pointer yerine)
+- Loading screen: pointer-events:none on fade-out
+- Avatar dropdown isim: DB'den güncelleme eklendi
+- Dark mode: marka kartları light mode'da sabit
+
 ### Sonraki Adımlar
-- [ ] Migration 042 → `competency_definitions`, `role_competency_map`, `candidate_competencies` tabloları
-- [ ] Rating verilerini Supabase'e persist etme (candidate_competencies)
-- [ ] Freemium gate → `subscription_plan` check
-- [ ] `avd-avatar-img` → setAvatarImage() targets (profil-ui.js)
+- [ ] Marka kartlarına hover glow efekti (kayıtlı renklerle)
+- [ ] Marka kartı tıklanınca büyüme animasyonu (expand + diğerleri blur)
+- [ ] Migration 042 → competency tabloları
+- [ ] İşveren kampanya wizard'ı (ik.html)
+- [ ] iyzico ödeme entegrasyonu
+- [ ] Email delivery worker
+- [ ] Label accessibility audit (43 uyarı)
 - [ ] Brand color audit: Batch 2 (index, blog, hakkimizda) + Batch 3 (ik, aday, profil.css)
 - [ ] Dark mode remaining: profil-settings.js alert→modal (7 instances), ik/giris/gate pages
 
@@ -225,6 +296,10 @@ gizlilik.html, kvkk.html, kullanim-sartlari.html, cerez-politikasi.html
 | profil-ui.js | ~3100+ lines — flip cards, brand colors, merkez cards, preview modal, toggle logic, retry logic |
 | profil-settings.js | Settings panel, deletion banner |
 | profil-yetkinlik.js | Competency wizard v2 — 29 yetkinlik, bento grid, Korn Ferry content, role-based mapping |
+| profil-isgorusmeleri.js | Interview prep — STAR technique, 289 questions, carousel, bento grid |
+| profil-teklifler.js | Teklifler v2 — freemium/premium toggle, carousel, demo campaigns, frosted glass gate |
+| profil-premium.js | Premium panel — features showcase, plan cards, pricing |
+| profil-markalar.js | Markalar panel — brand cards, flip, follow, search, segment pills (extracted from profil-ui.js) |
 | profil.css | ~3000+ lines — all profil dashboard styles (dark mode tokens, semantic variables) |
 
 ### Config & Test
