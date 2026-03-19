@@ -2742,12 +2742,25 @@ document.addEventListener('DOMContentLoaded', function() {
   var kbBtn = document.getElementById('header-kimbakti');
   if (kbBtn) kbBtn.addEventListener('click', function() { switchPanel('kimbakti'); });
 
-  // mk-card clicks (semantic buttons with data-step)
+  // mk-card clicks — card itself OR edit button inside it
   document.querySelectorAll('.mk-card[data-step]').forEach(function(card) {
     card.addEventListener('click', function(e) {
       e.preventDefault();
+      e.stopPropagation();
       var step = parseInt(this.dataset.step);
       if (step) window.editSection(step);
+    });
+  });
+  // Edit button clicks (z-index:5 may intercept parent click)
+  document.querySelectorAll('.mk-edit-btn').forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      var card = this.closest('.mk-card[data-step]');
+      if (card) {
+        var step = parseInt(card.dataset.step);
+        if (step) window.editSection(step);
+      }
     });
   });
 
@@ -2965,21 +2978,25 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
   // Global premium CTA delegation — catches ALL premium buttons across all panels
-  // Covers: .ls-premium-cta (yetkinlik), .ig-q-lock-cta (mulakat), .tk-lock-btn (teklifler),
-  // #mk-footer-premium, #mk-premium-card-link, and any future premium CTAs
   document.addEventListener('click', function(e) {
-    var target = e.target;
-    if (target.classList.contains('ls-premium-cta') ||
-        target.classList.contains('ig-q-lock-cta') ||
-        target.classList.contains('tk-lock-btn') ||
-        target.classList.contains('kb-premium-btn') ||
-        target.id === 'mk-footer-premium' || target.closest('#mk-footer-premium') ||
-        target.id === 'mk-premium-card-link' || target.closest('#mk-premium-card-link')) {
+    var t = e.target;
+    if (t.classList.contains('ls-premium-cta') ||
+        t.classList.contains('ig-q-lock-cta') ||
+        t.classList.contains('tk-lock-btn') ||
+        t.classList.contains('kb-premium-btn') ||
+        t.closest && t.closest('#mk-footer-premium') ||
+        t.closest && t.closest('#mk-premium-card-link')) {
       e.preventDefault();
       e.stopPropagation();
-      if (typeof switchPanel === 'function') switchPanel('premium');
+      switchPanel('premium');
     }
   });
+
+  // Profil Merkezi premium links (direct binding as backup)
+  var mkFooter = document.getElementById('mk-footer-premium');
+  if (mkFooter) mkFooter.addEventListener('click', function() { switchPanel('premium'); });
+  var mkPremCard = document.getElementById('mk-premium-card-link');
+  if (mkPremCard) mkPremCard.addEventListener('click', function() { switchPanel('premium'); });
 
   // Dashboard buttons
   var btnStart = document.getElementById('btn-start-wizard');
