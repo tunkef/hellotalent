@@ -436,7 +436,12 @@ function injectCSS() {
   css += '.ig-tips-list li::before{content:"";position:absolute;left:0;top:14px;width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.5)}';
 
   /* Role selector */
-  css += '.ig-role-card{background:linear-gradient(135deg,rgba(201,78,40,.04) 0%,rgba(201,78,40,.01) 100%);border:2px dashed var(--border-subtle,#E5E3DF);border-radius:16px;padding:20px;text-align:center;transition:all .3s ease;cursor:pointer;display:flex;flex-direction:column;justify-content:center}';
+  css += '.ig-role-card{background:linear-gradient(135deg,#2A3F7A 0%,#1E2D5E 50%,#162247 100%);border:1px solid rgba(255,255,255,.1) !important;border-radius:16px;padding:20px;text-align:center;transition:all .3s ease;cursor:pointer;display:flex;flex-direction:column;justify-content:center;color:#fff}';
+  css += '.ig-role-label{color:#fff}';
+  css += '.ig-role-desc{color:rgba(255,255,255,.7)}';
+  css += '.ig-role-select{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);color:#fff}';
+  css += '.ig-role-select:focus{border-color:var(--verm,#C94E28);box-shadow:0 0 0 3px rgba(201,78,40,.2)}';
+  css += '.ig-role-select option{background:var(--navy,#1E2D5E);color:#fff}';
   css += '.ig-role-card:hover{border-color:var(--verm,#C94E28);border-style:solid}';
   css += '.ig-role-label{font-family:"Bricolage Grotesque",sans-serif;font-size:15px;font-weight:700;color:var(--text-primary,#111);margin-bottom:8px}';
   css += '.ig-role-desc{font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;color:var(--text-muted,#6B7280)}';
