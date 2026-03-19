@@ -85,7 +85,8 @@
     /* Premium gate — frosted glass over cards */
     css += '.tk-premium-gate{position:relative;overflow:hidden;border-radius:16px;min-height:400px}';
     css += '.tk-gate-cards{pointer-events:none;user-select:none}';
-    css += '.tk-gate-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.7);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);z-index:5;border-radius:16px;cursor:pointer}';
+    css += '.tk-gate-overlay{position:absolute;inset:0;display:flex;align-items:flex-start;justify-content:center;background:rgba(255,255,255,.7);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);z-index:5;border-radius:16px;cursor:pointer}';
+    css += '.tk-gate-content{position:sticky;top:calc(50vh - 100px);margin-top:0}';
     css += '.tk-gate-content{text-align:center;max-width:380px;padding:32px}';
     css += '.tk-gate-title{font-family:"Bricolage Grotesque",sans-serif;font-size:28px;font-weight:900;color:var(--text-primary,#111);margin-bottom:8px;letter-spacing:-.5px}';
     css += '.tk-gate-desc{font-family:"Plus Jakarta Sans",sans-serif;font-size:14px;color:var(--text-muted,#6B7280);line-height:1.6;margin-bottom:20px}';
