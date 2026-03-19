@@ -39,37 +39,38 @@ var _SEGMENTS = [
 var _ht_active_segment = null;
 
 var _BRAND_COLORS = {
-  'Louis Vuitton': { frontBg: '', backBg: 'linear-gradient(160deg, #7d5c35 0%, #614626 40%, #44301a 100%)', accent: '#8B6914' },
-  'Gucci': { frontBg: '', backBg: 'linear-gradient(160deg, #00714a 0%, #005c3a 40%, #003d26 100%)', accent: '#006B3F' },
-  'Prada': { frontBg: '', backBg: 'linear-gradient(160deg, #2a2a2a 0%, #1a1a1a 40%, #0d0d0d 100%)', accent: '#444444' },
-  'Hermès': { frontBg: '', backBg: 'linear-gradient(160deg, #e86218 0%, #c44e0e 40%, #9a3d0a 100%)', accent: '#F37021' },
-  'Dior': { frontBg: '', backBg: 'linear-gradient(160deg, #2a2a2a 0%, #1a1a1a 40%, #0d0d0d 100%)', accent: '#444444' },
-  'Chanel': { frontBg: '', backBg: 'linear-gradient(160deg, #2a2a2a 0%, #1a1a1a 40%, #0d0d0d 100%)', accent: '#444444' },
-  'Cartier': { frontBg: '', backBg: 'linear-gradient(160deg, #b82030 0%, #961a28 40%, #70131e 100%)', accent: '#C41230' },
-  'Beymen': { frontBg: '', backBg: 'linear-gradient(160deg, #9e8465 0%, #7d6748 40%, #5c4a33 100%)', accent: '#8B7355' },
-  'Vakko': { frontBg: '', backBg: 'linear-gradient(160deg, #3a3a3a 0%, #2a2a2a 40%, #1a1a1a 100%)', accent: '#444444' },
-  'Massimo Dutti': { frontBg: '', backBg: 'linear-gradient(160deg, #5e4430 0%, #4a3524 40%, #36271a 100%)', accent: '#4A3728' },
-  'Hugo Boss': { frontBg: '', backBg: 'linear-gradient(160deg, #2a2a2a 0%, #1a1a1a 40%, #0d0d0d 100%)', accent: '#444444' },
-  'Ralph Lauren': { frontBg: '', backBg: 'linear-gradient(160deg, #264d82 0%, #1d3d68 40%, #142c4d 100%)', accent: '#041E42' },
-  'Lacoste': { frontBg: '', backBg: 'linear-gradient(160deg, #006838 0%, #005228 40%, #003d1e 100%)', accent: '#004526' },
-  'Alo Yoga': { frontBg: '', backBg: 'linear-gradient(160deg, #d4b070 0%, #b89555 40%, #96793e 100%)', accent: '#444444' },
-  'lululemon': { frontBg: '', backBg: 'linear-gradient(160deg, #e01a3e 0%, #be1534 40%, #961028 100%)', accent: '#D31334' },
-  'Nike': { frontBg: '', backBg: 'linear-gradient(160deg, #2a2a2a 0%, #1a1a1a 40%, #0d0d0d 100%)', accent: '#444444' },
-  'Adidas': { frontBg: '', backBg: 'linear-gradient(160deg, #2a2a2a 0%, #1a1a1a 40%, #0d0d0d 100%)', accent: '#444444' },
-  'Zara': { frontBg: '', backBg: 'linear-gradient(160deg, #2a2a2a 0%, #1a1a1a 40%, #0d0d0d 100%)', accent: '#444444' },
-  'H&M': { frontBg: '', backBg: 'linear-gradient(160deg, #e52020 0%, #c41515 40%, #9a0e0e 100%)', accent: '#E50010' },
-  'Mango': { frontBg: '', backBg: 'linear-gradient(160deg, #d4b078 0%, #b8955d 40%, #967944 100%)', accent: '#444444' },
-  'Boyner': { frontBg: '', backBg: 'linear-gradient(160deg, #0070b0 0%, #005a8e 40%, #00446b 100%)', accent: '#00A0E1' },
-  'Pull & Bear': { frontBg: '', backBg: 'linear-gradient(160deg, #587e4e 0%, #46643d 40%, #354c2e 100%)', accent: '#444444' },
-  'Bershka': { frontBg: '', backBg: 'linear-gradient(160deg, #2a2a2a 0%, #1a1a1a 40%, #0d0d0d 100%)', accent: '#444444' },
-  'Stradivarius': { frontBg: '', backBg: 'linear-gradient(160deg, #9e7d55 0%, #7d6342 40%, #5e4a30 100%)', accent: '#8B6F47' },
-  'Zara Home': { frontBg: '', backBg: 'linear-gradient(160deg, #7e6e5e 0%, #645648 40%, #4c4035 100%)', accent: '#6B5B4E' },
-  'LC Waikiki': { frontBg: '', backBg: 'linear-gradient(160deg, #f05545 0%, #d44535 40%, #aa3628 100%)', accent: '#E31E24' },
-  'Sephora': { frontBg: '', backBg: 'linear-gradient(160deg, #2a2a2a 0%, #1a1a1a 40%, #0d0d0d 100%)', accent: '#444444' },
-  'MAC': { frontBg: '', backBg: 'linear-gradient(160deg, #2a2a2a 0%, #1a1a1a 40%, #0d0d0d 100%)', accent: '#444444' },
-  'Apple': { frontBg: '', backBg: 'linear-gradient(160deg, #444 0%, #333 40%, #1a1a1a 100%)', accent: '#555555' },
-  'Samsung': { frontBg: '', backBg: 'linear-gradient(160deg, #1e38b8 0%, #162c96 40%, #0f2070 100%)', accent: '#1428A0' },
-  'Teknosa': { frontBg: '', backBg: 'linear-gradient(160deg, #f01820 0%, #cc1018 40%, #a00c12 100%)', accent: '#ED1C24' }
+  'Louis Vuitton': { frontBg: '', backBg: '#4D3022', accent: '#4D3022' },
+  'Gucci': { frontBg: '', backBg: '#006633', accent: '#006633' },
+  'Prada': { frontBg: '', backBg: '#000000', accent: '#000000' },
+  'Hermès': { frontBg: '', backBg: '#F37021', accent: '#F37021' },
+  'Dior': { frontBg: '', backBg: '#000000', accent: '#000000' },
+  'Chanel': { frontBg: '', backBg: '#000000', accent: '#000000' },
+  'Cartier': { frontBg: '', backBg: '#B11F24', accent: '#B11F24' },
+  'Beymen': { frontBg: '', backBg: '#000000', accent: '#000000' },
+  'Vakko': { frontBg: '', backBg: '#000000', accent: '#000000' },
+  'Massimo Dutti': { frontBg: '', backBg: '#2D2926', accent: '#2D2926' },
+  'Hugo Boss': { frontBg: '', backBg: '#000000', accent: '#000000' },
+  'Ralph Lauren': { frontBg: '', backBg: '#041E42', accent: '#041E42' },
+  'Lacoste': { frontBg: '', backBg: '#004526', accent: '#004526' },
+  'Alo Yoga': { frontBg: '', backBg: '#000000', accent: '#000000' },
+  'lululemon': { frontBg: '', backBg: '#D31334', accent: '#D31334' },
+  'Nike': { frontBg: '', backBg: '#000000', accent: '#000000' },
+  'Adidas': { frontBg: '', backBg: '#000000', accent: '#000000' },
+  'Zara': { frontBg: '', backBg: '#000000', accent: '#000000' },
+  'H&M': { frontBg: '', backBg: '#E50010', accent: '#E50010' },
+  'Mango': { frontBg: '', backBg: '#000000', accent: '#000000' },
+  'Boyner': { frontBg: '', backBg: '#00AEEF', accent: '#00AEEF' },
+  'Pull & Bear': { frontBg: '', backBg: '#000000', accent: '#000000' },
+  'Bershka': { frontBg: '', backBg: '#000000', accent: '#000000' },
+  'Stradivarius': { frontBg: '', backBg: '#000000', accent: '#000000' },
+  'Zara Home': { frontBg: '', backBg: '#000000', accent: '#000000' },
+  'LC Waikiki': { frontBg: '', backBg: '#1F4294', accent: '#1F4294' },
+  'Sephora': { frontBg: '', backBg: '#000000', accent: '#000000' },
+  'MAC': { frontBg: '', backBg: '#000000', accent: '#000000' },
+  'Apple': { frontBg: '', backBg: '#555555', accent: '#555555' },
+  'Samsung': { frontBg: '', backBg: '#1428A0', accent: '#1428A0' },
+  'Teknosa': { frontBg: '', backBg: '#FF6700', accent: '#FF6700' },
+  'Koton': { frontBg: '', backBg: '#000000', accent: '#000000' }
 };
 
 function _hexToRgba(hex, alpha) {
@@ -84,8 +85,8 @@ function _hexToRgba(hex, alpha) {
 function _brandColors(brandName) {
   return _BRAND_COLORS[brandName] || {
     frontBg: '',
-    backBg: 'linear-gradient(160deg, #555 0%, #444 40%, #333 100%)',
-    accent: '#6B7280'
+    backBg: '#000000',
+    accent: '#000000'
   };
 }
 
