@@ -2292,7 +2292,10 @@ function reapplyDynamicFields() {
     if (dbData.profile && dbData.profile.avatar_url) setAvatarImage(dbData.profile.avatar_url);
     if (dbData.profile && dbData.profile.full_name) {
       var n = dbData.profile.full_name;
-      document.getElementById('sidebar-user-name').textContent = n;
+      var displayName = typeof titleCaseTR === 'function' ? titleCaseTR(n) : n;
+      document.getElementById('sidebar-user-name').textContent = displayName;
+      var avdNameEl = document.getElementById('avd-user-name');
+      if (avdNameEl) avdNameEl.textContent = displayName;
       var ini = n.split(' ').map(function(w) { return w[0]; }).join('').substring(0,2).toUpperCase();
       document.querySelectorAll('#user-avatar-header, #sidebar-avatar, #ps-avatar').forEach(function(el) {
         if (!el.querySelector('img')) el.textContent = ini;
