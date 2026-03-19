@@ -1914,14 +1914,15 @@ var returnToPanel = null;
 
 function editSection(step) {
   returnToPanel = 'merkez';
-  wizardDirty = false; // Reset on entering wizard
+  wizardDirty = false;
   wizStep = step;
   renderWizard();
   _doSwitchPanel('profil');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
   ht_track('wizard_started', { entry_step: step });
-  // Attach dirty listeners after a tick (so DOM is ready)
   setTimeout(attachWizardDirtyListeners, 100);
 }
+window.editSection = editSection;
 
 // ═══════════════════════════════════════════════════
 // MOBILE SIDEBAR
@@ -2729,9 +2730,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // mk-card clicks (semantic buttons with data-step)
   document.querySelectorAll('.mk-card[data-step]').forEach(function(card) {
-    card.addEventListener('click', function() {
+    card.addEventListener('click', function(e) {
+      e.preventDefault();
       var step = parseInt(this.dataset.step);
-      if (step && typeof editSection === 'function') editSection(step);
+      if (step) window.editSection(step);
     });
   });
 
