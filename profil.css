@@ -3189,19 +3189,29 @@ html[data-theme="dark"] .lok-modal #btn-lok-close:hover{
 
 /* All brands section — flip card grid */
 .all-brands-section{margin-top:8px;}
-.brand-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;grid-auto-flow:dense;}
-.brand-grid>.flip-card:nth-child(1){grid-column:span 2;}
-.brand-grid>.flip-card:nth-child(6){grid-column:span 2;}
-.brand-grid>.flip-card:nth-child(11){grid-column:span 2;}
-.brand-grid>.flip-card:nth-child(16){grid-column:span 2;}
-.brand-grid>.flip-card:nth-child(21){grid-column:span 2;}
-.brand-grid>.flip-card:nth-child(26){grid-column:span 2;}
-.brand-grid>.flip-card:nth-child(31){grid-column:span 2;}
-@media(max-width:750px){.brand-grid{grid-template-columns:repeat(2,1fr);}.brand-grid>.flip-card:nth-child(n){grid-column:span 1;}}
-@media(max-width:480px){.brand-grid{grid-template-columns:1fr;}}
+/* Bento box brand grid — 4 columns, varied sizes */
+.brand-grid{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:140px;gap:14px;grid-auto-flow:dense;}
+/* Tall cards (span 2 rows) */
+.brand-grid>.flip-card:nth-child(1){grid-column:span 1;grid-row:span 2;}
+.brand-grid>.flip-card:nth-child(4){grid-column:span 1;grid-row:span 2;}
+.brand-grid>.flip-card:nth-child(9){grid-column:span 1;grid-row:span 2;}
+.brand-grid>.flip-card:nth-child(14){grid-column:span 1;grid-row:span 2;}
+.brand-grid>.flip-card:nth-child(19){grid-column:span 1;grid-row:span 2;}
+/* Wide cards (span 2 cols) */
+.brand-grid>.flip-card:nth-child(5){grid-column:span 2;}
+.brand-grid>.flip-card:nth-child(12){grid-column:span 2;}
+.brand-grid>.flip-card:nth-child(20){grid-column:span 2;}
+/* Large cards (span 2x2) */
+.brand-grid>.flip-card:nth-child(7){grid-column:span 2;grid-row:span 2;}
+.brand-grid>.flip-card:nth-child(17){grid-column:span 2;grid-row:span 2;}
+
+.brand-grid>.flip-card{height:100%;}
+@media(max-width:900px){.brand-grid{grid-template-columns:repeat(3,1fr);grid-auto-rows:130px;}.brand-grid>.flip-card:nth-child(n){grid-column:span 1;grid-row:span 1;}.brand-grid>.flip-card:nth-child(1),.brand-grid>.flip-card:nth-child(7){grid-column:span 2;grid-row:span 1;}}
+@media(max-width:600px){.brand-grid{grid-template-columns:repeat(2,1fr);grid-auto-rows:160px;}.brand-grid>.flip-card:nth-child(n){grid-column:span 1;grid-row:span 1;}}
+@media(max-width:400px){.brand-grid{grid-template-columns:1fr;}}
 
 /* Flip card — z-index prevents hover leak */
-.flip-card{position:relative;z-index:1;perspective:1200px;height:260px;cursor:pointer;}
+.flip-card{position:relative;z-index:1;perspective:1200px;height:100%;cursor:pointer;}
 .flip-card:hover{z-index:10;}
 .flip-card-inner{position:relative;width:100%;height:100%;transition:transform .55s cubic-bezier(0.4,0,0.15,1);transform-style:preserve-3d;}
 @media(hover:hover){.flip-card:hover .flip-card-inner{transform:rotateY(180deg);}}
