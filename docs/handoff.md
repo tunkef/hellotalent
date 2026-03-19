@@ -240,8 +240,20 @@ a942127 fix: remove website/instagram link icons from brand card back
 5f93ccc fix: brand cards use flat official colors — no gradients
 ```
 
+**25. Migration 042 — Competency Tables Deployed**
+- 3 tablo oluşturuldu ve Supabase'e deploy edildi:
+  - `competency_definitions` (29 satır) — 29 KF yetkinlik, text[] array kolonları
+  - `role_competency_map` (237 satır) — 33 rol × ortalama 7 yetkinlik eşlemesi
+  - `candidate_competencies` (boş) — aday self-assessment (strong/growing)
+- RLS: referans tablolar public read, aday tablosu own CRUD + employer read
+- Updated_at trigger aktif
+- Seed verisi Management API ile deploy edildi (042 schema + 042a seed)
+- Commit: `b0c3b1b`
+
 ### Sonraki Adımlar
-- [ ] Migration 042 → competency tabloları
+- [x] ~~Migration 042 → competency tabloları~~ ✅ Deployed
+- [ ] profil-yetkinlik.js → DB'den veri çekmeye geçiş (hardcoded ANCHORS → Supabase query)
+- [ ] candidate_competencies save/load entegrasyonu (aday yetkinlik rating'leri kalıcı)
 - [ ] İşveren kampanya wizard'ı (ik.html)
 - [ ] iyzico ödeme entegrasyonu
 - [ ] Email delivery worker
@@ -800,9 +812,11 @@ if(sessionStorage.getItem('ht_gate')!=='ok'){window.location.replace('gate.html'
 | 035 | profile_completion_pct + employer RLS update | ✅ Deployed |
 | 036 | profile completion sync triggers + admin hardening | ✅ Deployed |
 | 037 | seat limits + plan update (free/premium/pro/enterprise) | ✅ Deployed |
+| 042 | competency_definitions + role_competency_map + candidate_competencies | ✅ Deployed |
+| 042a | Seed: 29 yetkinlik tanımı + 237 rol-yetkinlik eşlemesi | ✅ Deployed |
 
 ### Markalar TODO
-- [ ] Mobil test (390×844) — flip kartlar touch'da test edilmeli
+- [ ] Mobil test (390×844) — hover-reveal kartlar touch'da test edilmeli
 - [ ] Dark mode uyumu
 - [ ] Yeni marka eklendiğinde logo upload + color map güncelleme süreci dokümante et
 
