@@ -582,7 +582,7 @@ if (window.Sentry) {
   </div>
 
   <!-- Premium CTA (top) -->
-  <div class="mk-footer" style="cursor:pointer;" id="mk-footer-premium">
+  <div class="mk-footer" style="cursor:pointer;" id="mk-footer-premium" data-panel="premium">
     <div class="mk-footer-left">
       <div class="mk-footer-icon">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
@@ -709,7 +709,7 @@ if (window.Sentry) {
     </div>
 
     <!-- Premium Öne Çıkar (dark navy) → links to premium panel -->
-    <div class="mk-card mk-premium-toggle-card" style="cursor:pointer;" id="mk-premium-card-link">
+    <div class="mk-card mk-premium-toggle-card" style="cursor:pointer;" id="mk-premium-card-link" data-panel="premium">
       <span class="mk-premium-badge">PREMIUM</span>
       <span class="mk-premium-title">Beni Öne Çıkar</span>
       <span class="mk-premium-desc">Profilini listelerin başına taşı</span>
@@ -1607,23 +1607,20 @@ if (window.Sentry) {
 <script src="profil-premium.js?v=20260319a"></script>
 
 <script>
-// ─── Panel click handlers (converted from inline onclick) ────────
-(function() {
-  var panelButtons = document.querySelectorAll('[data-panel]');
-  panelButtons.forEach(function(btn) {
-    btn.addEventListener('click', function(e) {
-      e.stopPropagation();
-      var panelName = this.getAttribute('data-panel');
-      if (window.switchPanel) switchPanel(panelName);
-      // Close dropdown if specified
-      var dropdownId = this.getAttribute('data-close-dropdown');
-      if (dropdownId) {
-        var dropdown = document.getElementById(dropdownId);
-        if (dropdown) dropdown.style.display = 'none';
-      }
-    });
-  });
-})();
+// ─── Panel click handlers — document-level delegation for ALL [data-panel] ────────
+document.addEventListener('click', function(e) {
+  var el = e.target.closest('[data-panel]');
+  if (!el) return;
+  var panelName = el.getAttribute('data-panel');
+  if (!panelName) return;
+  e.stopPropagation();
+  if (window.switchPanel) switchPanel(panelName);
+  var dropdownId = el.getAttribute('data-close-dropdown');
+  if (dropdownId) {
+    var dropdown = document.getElementById(dropdownId);
+    if (dropdown) dropdown.style.display = 'none';
+  }
+});
 </script>
 
 <script>
