@@ -1,5 +1,5 @@
 /**
- * profil-isgorusmeleri.js — İş Görüşmeleri (Interview Practice) Panel
+ * profil-isgorusmeleri.js — Mülakat Koçu (Interview Coaching) Panel
  * 7-screen Mülakat Koçu flow: star_intro → role_select → lobby → competency_intro → practice → completion → session_complete
  * Depends on profil-yetkinlik.js bridge: window._htYetkinlikData
  * All innerHTML content comes from hardcoded constants — no user input, no XSS risk.
@@ -848,7 +848,7 @@ function renderStarIntro() {
   var d = STAR_CONTENT;
   var html = '';
 
-  html += '<div class="g-hero"><div class="g-hero-inner"><div style="font-family:\'Bricolage Grotesque\',sans-serif;font-size:20px;font-weight:800;color:#fff;">M\u00FClakat Haz\u0131rl\u0131k Koçu</div></div></div>';
+  html += '<div class="g-hero"><div class="g-hero-inner"><div style="font-family:\'Bricolage Grotesque\',sans-serif;font-size:20px;font-weight:800;color:#fff;">M\u00FClakat Koçu</div></div></div>';
 
   html += '<div class="ig-bento">';
 
