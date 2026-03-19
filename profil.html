@@ -582,7 +582,7 @@ if (window.Sentry) {
   </div>
 
   <!-- Premium CTA (top) -->
-  <div class="mk-footer">
+  <div class="mk-footer" style="cursor:pointer;" id="mk-footer-premium">
     <div class="mk-footer-left">
       <div class="mk-footer-icon">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
@@ -709,7 +709,7 @@ if (window.Sentry) {
     </div>
 
     <!-- Premium Öne Çıkar (dark navy) → links to premium panel -->
-    <div class="mk-card mk-premium-toggle-card" style="cursor:pointer;" onclick="if(typeof switchPanel==='function')switchPanel('premium');">
+    <div class="mk-card mk-premium-toggle-card" style="cursor:pointer;" id="mk-premium-card-link">
       <span class="mk-premium-badge">PREMIUM</span>
       <span class="mk-premium-title">Beni Öne Çıkar</span>
       <span class="mk-premium-desc">Profilini listelerin başına taşı</span>
@@ -1557,7 +1557,7 @@ if (window.Sentry) {
           <div style="font-size:12px;color:rgba(255,255,255,0.7);margin-top:2px;">Hangi şirketlerin profilini incelediğini, pozisyon detaylarını ve trendleri gör.</div>
         </div>
       </div>
-      <button type="button" data-panel="ayarlar" style="margin-top:12px;width:100%;padding:10px;background:var(--verm);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;">Premium'a Geç</button>
+      <button type="button" class="kb-premium-btn" style="margin-top:12px;width:100%;padding:10px;background:var(--verm);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;">Premium'a Geç</button>
     </div>
 
   </div>
@@ -2962,6 +2962,23 @@ document.addEventListener('DOMContentLoaded', function() {
       var target = parseInt(this.dataset.wstep);
       if (target <= wizStep) wizGoTo(target);
     });
+  });
+
+  // Global premium CTA delegation — catches ALL premium buttons across all panels
+  // Covers: .ls-premium-cta (yetkinlik), .ig-q-lock-cta (mulakat), .tk-lock-btn (teklifler),
+  // #mk-footer-premium, #mk-premium-card-link, and any future premium CTAs
+  document.addEventListener('click', function(e) {
+    var target = e.target;
+    if (target.classList.contains('ls-premium-cta') ||
+        target.classList.contains('ig-q-lock-cta') ||
+        target.classList.contains('tk-lock-btn') ||
+        target.classList.contains('kb-premium-btn') ||
+        target.id === 'mk-footer-premium' || target.closest('#mk-footer-premium') ||
+        target.id === 'mk-premium-card-link' || target.closest('#mk-premium-card-link')) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (typeof switchPanel === 'function') switchPanel('premium');
+    }
   });
 
   // Dashboard buttons
