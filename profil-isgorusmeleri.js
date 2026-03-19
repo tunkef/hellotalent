@@ -436,7 +436,7 @@ function injectCSS() {
   css += '.ig-tips-list li::before{content:"";position:absolute;left:0;top:14px;width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.5)}';
 
   /* Role selector */
-  css += '.ig-role-card{background:linear-gradient(135deg,rgba(201,78,40,.04) 0%,rgba(201,78,40,.01) 100%);border:2px dashed var(--border-subtle,#E5E3DF);border-radius:16px;padding:28px 24px;text-align:center;transition:all .3s ease;cursor:pointer}';
+  css += '.ig-role-card{background:linear-gradient(135deg,rgba(201,78,40,.04) 0%,rgba(201,78,40,.01) 100%);border:2px dashed var(--border-subtle,#E5E3DF);border-radius:16px;padding:20px;text-align:center;transition:all .3s ease;cursor:pointer;display:flex;flex-direction:column;justify-content:center}';
   css += '.ig-role-card:hover{border-color:var(--verm,#C94E28);border-style:solid}';
   css += '.ig-role-label{font-family:"Bricolage Grotesque",sans-serif;font-size:15px;font-weight:700;color:var(--text-primary,#111);margin-bottom:8px}';
   css += '.ig-role-desc{font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;color:var(--text-muted,#6B7280)}';
@@ -515,8 +515,8 @@ function renderIntro() {
 
   html += '<div class="ig-bento">';
 
-  /* Intro description card */
-  html += '<div class="ig-card ig-bento-full">';
+  /* Intro description card (span 2) */
+  html += '<div class="ig-card ig-bento-2">';
   html += '<div class="ig-section-desc" style="font-size:14px;line-height:1.7;color:var(--text-secondary,#4B5563)">' + d.intro + '</div>';
   html += '</div>';
 
@@ -615,8 +615,8 @@ function renderIntro() {
   html += '</ul></div>';
   html += '</div>';
 
-  /* Role selection card (full width) */
-  html += '<div class="ig-card ig-role-card ig-bento-full" id="ig-role-area">';
+  /* Role selection card (span 1, next to intro) */
+  html += '<div class="ig-card ig-role-card" id="ig-role-area">';
   html += '<div class="ig-role-label">Rol\u00FCne \u00F6zel m\u00FClakat sorular\u0131n\u0131 g\u00F6r</div>';
   html += '<div class="ig-role-desc">Hedef pozisyonunu se\u00E7, o role ait yetkinlik bazl\u0131 m\u00FClakat sorular\u0131n\u0131 incele.</div>';
   html += renderRoleDropdown();
