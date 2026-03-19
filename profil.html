@@ -1807,6 +1807,12 @@ function switchPanel(name) {
     return;
   }
   _doSwitchPanel(name);
+  // Persist active panel in URL hash
+  if (name && name !== 'genel') {
+    history.replaceState(null, '', '#' + name);
+  } else {
+    history.replaceState(null, '', window.location.pathname);
+  }
 }
 
 function _doSwitchPanel(name) {
@@ -2994,6 +3000,12 @@ document.addEventListener('DOMContentLoaded', function() {
   if (mkFooter) mkFooter.addEventListener('click', function() { switchPanel('premium'); });
   var mkPremCard = document.getElementById('mk-premium-card-link');
   if (mkPremCard) mkPremCard.addEventListener('click', function() { switchPanel('premium'); });
+
+  // Restore panel from URL hash on page load
+  var hashPanel = window.location.hash.replace('#', '');
+  if (hashPanel && document.getElementById('panel-' + hashPanel)) {
+    setTimeout(function() { switchPanel(hashPanel); }, 300);
+  }
 
   // Dashboard buttons
   var btnStart = document.getElementById('btn-start-wizard');
