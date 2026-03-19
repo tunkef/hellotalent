@@ -3221,11 +3221,11 @@ html[data-theme="dark"] .lok-modal #btn-lok-close:hover{
 .front-stores{display:none;}
 .flip-hint{display:none;}
 
-.flip-back{height:0;opacity:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;color:#fff;transition:all 0.4s;font-size:0;transform:rotate(90deg) scale(-1);overflow:hidden;}
+.flip-back{height:0;opacity:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;color:#fff;transition:all 0.4s;font-size:0;transform:rotate(90deg) scale(-1);overflow:hidden;border-radius:18px;}
 .flip-card:hover .flip-back{opacity:1;height:100%;font-size:1rem;transform:rotate(0deg);}
 .flip-back::before{display:none;}
-.back-brand-name{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:18px;line-height:1.2;letter-spacing:-0.3px;text-align:center;padding:0 12px;}
-.back-follow-mini{padding:0;border:none;background:none;color:#fff;cursor:pointer;flex-shrink:0;align-self:center;}
+.back-brand-name{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:20px;line-height:1.2;letter-spacing:-0.5px;text-align:center;padding:0 16px;width:100%;}
+.back-follow-mini{padding:0;border:none;background:none;color:#fff;cursor:pointer;}
 .back-follow-mini .tooltip-container{position:relative;overflow:hidden;background:rgba(255,255,255,0.15);border:1.5px solid rgba(255,255,255,0.3);padding:6px 14px;border-radius:8px;transition:all 0.2s;display:flex;align-items:center;justify-content:center;}
 .back-follow-mini .tooltip-container:hover{background:rgba(255,255,255,0.28);border-color:rgba(255,255,255,0.5);transform:scale(1.05);}
 .back-follow-mini .tooltip-container .text{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:600;font-family:var(--font-body,'Plus Jakarta Sans',sans-serif);color:#fff;white-space:nowrap;}
