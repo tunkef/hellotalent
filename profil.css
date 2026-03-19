@@ -3291,3 +3291,10 @@ html[data-theme="dark"] .lok-modal #btn-lok-close:hover{
 
 /* Loading / empty */
 .brand-loading{text-align:center;padding:40px 0;color:var(--text-muted);font-size:13px;grid-column:1/-1;}
+
+/* Brand cards — force light mode always (colors/glow must not change in dark mode) */
+html[data-theme="dark"] .flip-front{background:#fff !important;color:#111 !important;}
+html[data-theme="dark"] .flip-front .front-name{color:#111 !important;}
+html[data-theme="dark"] .flip-front .brand-logo-wrap{background:rgba(255,255,255,0.25) !important;border-color:rgba(255,255,255,0.4) !important;}
+html[data-theme="dark"] .flip-front .flip-hint{color:#6B7280 !important;}
+html[data-theme="dark"] .flip-card{border-color:var(--border-subtle) !important;}
