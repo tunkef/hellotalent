@@ -280,20 +280,8 @@ function renderBrandGrid(query) {
           '<span class="flip-hint">detaylar →</span>' +
         '</div>' +
         '<div class="flip-back" style="background:' + colors.backBg + '">' +
-          '<div class="back-header">' +
-            '<div class="back-logo">' + logoBack + '</div>' +
-            '<div class="back-title-area">' +
-              '<div class="back-brand-name">' + _escHtml(b.brand_name) + '</div>' +
-              (segLabel ? '<div class="back-segment-pill">' + _escHtml(segLabel) + '</div>' : '') +
-            '</div>' +
-            '<button type="button" class="back-follow-mini' + (isF ? ' following' : '') + '" data-brand-id="' + b.id + '" onclick="event.stopPropagation(); toggleBrandFollow(' + b.id + ',event)"><div class="tooltip-container"><span class="text"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 95 114" class="svgIcon"><rect fill="currentColor" rx="28.5" height="57" width="57" x="19"></rect><path fill="currentColor" d="M0 109.5C0 83.2665 21.2665 62 47.5 62V62C73.7335 62 95 83.2665 95 109.5V114H0V109.5Z"></path></svg>' + (isF ? 'Takipte' : 'Takip Et') + '</span></div></button>' +
-          '</div>' +
-          '<div class="back-info">' +
-            (storeText ? '<div class="back-info-row"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>' + _escHtml(storeText) + (cityText ? ' · ' + _escHtml(cityText) : '') + '</div>' : '') +
-            (b.employee_count_tr ? '<div class="back-info-row"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>~' + b.employee_count_tr.toLocaleString('tr-TR') + ' çalışan</div>' : '') +
-            (b.hq_city ? '<div class="back-info-row"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Merkez: ' + _escHtml(b.hq_city) + '</div>' : '') +
-          '</div>' +
-          (b.short_description ? '<div class="back-desc">' + _escHtml(b.short_description) + '</div>' : '') +
+          '<div class="back-brand-name">' + _escHtml(b.brand_name) + '</div>' +
+          '<button type="button" class="back-follow-mini' + (isF ? ' following' : '') + '" data-brand-id="' + b.id + '" onclick="event.stopPropagation(); toggleBrandFollow(' + b.id + ',event)"><div class="tooltip-container"><span class="text"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 95 114" class="svgIcon"><rect fill="currentColor" rx="28.5" height="57" width="57" x="19"></rect><path fill="currentColor" d="M0 109.5C0 83.2665 21.2665 62 47.5 62V62C73.7335 62 95 83.2665 95 109.5V114H0V109.5Z"></path></svg>' + (isF ? 'Takipte' : 'Takip Et') + '</span></div></button>' +
         '</div>' +
       '</div>' +
     '</div>';
