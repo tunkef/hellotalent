@@ -3208,7 +3208,7 @@ html[data-theme="dark"] .lok-modal #btn-lok-close:hover{
 .flip-card.flipped .flip-card-inner{transform:rotateY(180deg);}
 
 .flip-front,.flip-back{position:absolute;width:100%;height:100%;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:18px;overflow:hidden;}
-.flip-front{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:16px 12px 12px;border:1.5px solid var(--border-subtle);transition:border-color .3s;overflow:hidden;}
+.flip-front{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:16px 12px 12px;transition:border-color .3s, background .3s;overflow:hidden;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);}
 .flip-card:hover .flip-front{border-color:transparent;}
 
 .front-logo{width:64px;height:64px;border-radius:14px;background:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.08);margin-bottom:6px;}

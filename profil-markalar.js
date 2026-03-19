@@ -271,7 +271,7 @@ function renderBrandGrid(query) {
     var sizeClass = isColored ? ' brand-colored' : ' brand-dark';
     html += '<div class="flip-card' + sizeClass + '" onclick="this.classList.toggle(\'flipped\')" style="animation-delay:' + (i * 0.03) + 's">' +
       '<div class="flip-card-inner">' +
-        '<div class="flip-front" style="background:#fff;">' +
+        '<div class="flip-front" style="background:' + (isColored ? _hexToRgba(colors.accent, 0.08) : 'rgba(0,0,0,0.04)') + ';border:1px solid ' + (isColored ? _hexToRgba(colors.accent, 0.15) : 'rgba(0,0,0,0.08)') + ';">' +
           '<div class="front-logo">' + logoFront + '</div>' +
           '<div class="front-name">' + _escHtml(b.brand_name) + '</div>' +
           (segLabel ? '<div class="front-segment" style="background:' + segColor + '">' + _escHtml(segLabel) + '</div>' : '') +
