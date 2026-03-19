@@ -1,6 +1,6 @@
 /**
  * profil-isgorusmeleri.js — İş Görüşmeleri (Interview Practice) Panel
- * 6-screen guided flow: star_intro → role_select → lobby → practice → completion → session_complete
+ * 7-screen Mülakat Koçu flow: star_intro → role_select → lobby → competency_intro → practice → completion → session_complete
  * Depends on profil-yetkinlik.js bridge: window._htYetkinlikData
  * All innerHTML content comes from hardcoded constants — no user input, no XSS risk.
  */
@@ -302,6 +302,7 @@ var S = {
   answeredCount: 0,
   starHintOpen: false,
   coachOpen: false,
+  journalOpen: false,
   completedComps: [],
   totalAnswered: 0,
   totalSwaps: 0
@@ -320,6 +321,7 @@ function resetState() {
   S.answeredCount = 0;
   S.starHintOpen = false;
   S.coachOpen = false;
+  S.journalOpen = false;
   S.completedComps = [];
   S.totalAnswered = 0;
   S.totalSwaps = 0;
@@ -430,6 +432,71 @@ function addRecentQuestion(text) {
 }
 
 /* ════════════════════════════════════════════════
+   JOURNAL (Gelişim Günlüğü) — localStorage persistence
+   ════════════════════════════════════════════════ */
+
+var LS_JOURNAL_PREFIX = 'ht_journal_';
+
+function journalHash(str) {
+  /* Simple deterministic hash for question text → short key */
+  var h = 0;
+  for (var i = 0; i < str.length; i++) {
+    h = ((h << 5) - h) + str.charCodeAt(i);
+    h = h & h; /* Convert to 32-bit int */
+  }
+  return Math.abs(h).toString(36);
+}
+
+function journalKey(compCode, qText) {
+  return LS_JOURNAL_PREFIX + compCode + '_' + journalHash(qText);
+}
+
+function saveJournalDraft(compCode, qText, fields) {
+  try {
+    var key = journalKey(compCode, qText);
+    var data = {
+      comp: compCode,
+      qHash: journalHash(qText),
+      s: fields.s || '',
+      t: fields.t || '',
+      a: fields.a || '',
+      r: fields.r || '',
+      takeaway: fields.takeaway || '',
+      savedAt: Date.now()
+    };
+    /* Only save if at least one field has content */
+    if (data.s || data.t || data.a || data.r || data.takeaway) {
+      localStorage.setItem(key, JSON.stringify(data));
+    }
+  } catch(e) {}
+}
+
+function loadJournalDraft(compCode, qText) {
+  try {
+    var raw = localStorage.getItem(journalKey(compCode, qText));
+    return raw ? JSON.parse(raw) : null;
+  } catch(e) { return null; }
+}
+
+function countJournalDraftsForComp(compCode) {
+  var count = 0;
+  try {
+    var prefix = LS_JOURNAL_PREFIX + compCode + '_';
+    for (var i = 0; i < localStorage.length; i++) {
+      var k = localStorage.key(i);
+      if (k && k.indexOf(prefix) === 0) {
+        var raw = localStorage.getItem(k);
+        if (raw) {
+          var d = JSON.parse(raw);
+          if (d.s || d.t || d.a || d.r || d.takeaway) count++;
+        }
+      }
+    }
+  } catch(e) {}
+  return count;
+}
+
+/* ════════════════════════════════════════════════
    SESSION STORAGE — persist/restore in-progress session
    ════════════════════════════════════════════════ */
 
@@ -449,6 +516,7 @@ function saveSession() {
       answeredCount: S.answeredCount,
       starHintOpen: S.starHintOpen,
       coachOpen: S.coachOpen,
+      journalOpen: S.journalOpen,
       completedComps: S.completedComps,
       totalAnswered: S.totalAnswered,
       totalSwaps: S.totalSwaps
@@ -474,6 +542,7 @@ function loadSession() {
     S.answeredCount = data.answeredCount || 0;
     S.starHintOpen = data.starHintOpen || false;
     S.coachOpen = data.coachOpen || false;
+    S.journalOpen = data.journalOpen || false;
     S.completedComps = data.completedComps || [];
     S.totalAnswered = data.totalAnswered || 0;
     S.totalSwaps = data.totalSwaps || 0;
@@ -496,6 +565,9 @@ var swapSVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke
 var starSVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>';
 var trophySVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>';
 var coachSVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>';
+var journalSVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>';
+var penSVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>';
+var briefSVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>';
 
 /* ════════════════════════════════════════════════
    CSS INJECTION
@@ -677,6 +749,55 @@ function injectCSS() {
   css += '.ig-btn-coach:hover{background:rgba(201,78,40,.12)}';
   css += '.ig-btn-coach.active{background:var(--verm,#C94E28);color:#fff}';
 
+  /* Competency Intro screen */
+  css += '.ig-intro-wrap{max-width:640px;margin:0 auto;animation:igFadeIn .3s ease}';
+  css += '.ig-intro-hero{background:linear-gradient(135deg,#2A3F7A 0%,#1E2D5E 50%,#162247 100%);border-radius:16px;padding:28px 24px;margin-bottom:20px;color:#fff}';
+  css += '.ig-intro-comp-name{font-family:"Bricolage Grotesque",sans-serif;font-size:22px;font-weight:800;margin-bottom:6px}';
+  css += '.ig-intro-comp-def{font-family:"Plus Jakarta Sans",sans-serif;font-size:13px;color:rgba(255,255,255,.75);line-height:1.6}';
+  css += '.ig-intro-why{background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF);border-radius:16px;padding:20px 24px;margin-bottom:16px}';
+  css += '.ig-intro-why-title{font-family:"Bricolage Grotesque",sans-serif;font-size:14px;font-weight:700;color:var(--text-primary,#111);margin-bottom:8px;display:flex;align-items:center;gap:8px}';
+  css += '.ig-intro-why-title svg{width:18px;height:18px;color:var(--verm,#C94E28)}';
+  css += '.ig-intro-why-text{font-family:"Plus Jakarta Sans",sans-serif;font-size:13px;color:var(--text-secondary,#4B5563);line-height:1.7}';
+  css += '.ig-intro-signals{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}';
+  css += '.ig-intro-signal-card{background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF);border-radius:14px;padding:16px 18px}';
+  css += '.ig-intro-signal-full{grid-column:1/-1}';
+  css += '.ig-intro-star-block{background:linear-gradient(135deg,rgba(201,78,40,.03) 0%,rgba(201,78,40,.06) 100%);border:1px solid rgba(201,78,40,.12);border-radius:16px;padding:20px 24px;margin-bottom:20px}';
+  css += '.ig-intro-star-title{font-family:"Bricolage Grotesque",sans-serif;font-size:14px;font-weight:700;color:var(--verm,#C94E28);margin-bottom:10px;display:flex;align-items:center;gap:8px}';
+  css += '.ig-intro-star-text{font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;color:var(--text-secondary,#4B5563);line-height:1.7}';
+  css += '.ig-intro-star-letters{display:flex;gap:6px;margin-top:12px}';
+  css += '.ig-intro-star-badge{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:"Bricolage Grotesque",sans-serif;font-size:15px;font-weight:900;color:#fff}';
+  css += '.ig-intro-cta-row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}';
+
+  /* Journal panel (practice screen) */
+  css += '.ig-journal-wrap{margin-top:20px;animation:igFadeIn .3s ease}';
+  css += '.ig-journal-toggle{display:flex;align-items:center;gap:8px;width:100%;padding:14px 18px;background:linear-gradient(135deg,rgba(30,45,94,.03) 0%,rgba(30,45,94,.06) 100%);border:1px solid rgba(30,45,94,.1);border-radius:14px;cursor:pointer;transition:all .2s;text-align:left}';
+  css += '.ig-journal-toggle:hover{border-color:rgba(30,45,94,.2);background:linear-gradient(135deg,rgba(30,45,94,.04) 0%,rgba(30,45,94,.08) 100%)}';
+  css += '.ig-journal-toggle.active{border-radius:14px 14px 0 0;border-bottom-color:transparent}';
+  css += '.ig-journal-toggle svg{width:16px;height:16px;color:var(--navy,#1E2D5E);flex-shrink:0}';
+  css += '.ig-journal-toggle-label{flex:1;font-family:"Bricolage Grotesque",sans-serif;font-size:13px;font-weight:700;color:var(--navy,#1E2D5E)}';
+  css += '.ig-journal-toggle-hint{font-family:"Plus Jakarta Sans",sans-serif;font-size:10px;color:var(--text-muted,#6B7280)}';
+  css += '.ig-journal-toggle-arrow{font-size:12px;color:var(--text-muted,#6B7280);transition:transform .2s}';
+  css += '.ig-journal-toggle.active .ig-journal-toggle-arrow{transform:rotate(180deg)}';
+  css += '.ig-journal-body{background:linear-gradient(135deg,rgba(30,45,94,.02) 0%,rgba(30,45,94,.04) 100%);border:1px solid rgba(30,45,94,.1);border-top:none;border-radius:0 0 14px 14px;padding:20px 18px;animation:igSlideUp .2s ease}';
+  css += '.ig-journal-intro{font-family:"Plus Jakarta Sans",sans-serif;font-size:11px;color:var(--text-muted,#6B7280);line-height:1.5;margin-bottom:14px;font-style:italic}';
+  css += '.ig-journal-field{margin-bottom:14px}';
+  css += '.ig-journal-field:last-of-type{margin-bottom:8px}';
+  css += '.ig-journal-field-header{display:flex;align-items:center;gap:8px;margin-bottom:6px}';
+  css += '.ig-journal-field-badge{width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-family:"Bricolage Grotesque",sans-serif;font-size:13px;font-weight:900;color:#fff;flex-shrink:0}';
+  css += '.ig-journal-field-badge.verm{background:var(--verm,#C94E28)}';
+  css += '.ig-journal-field-badge.navy{background:var(--navy,#1E2D5E)}';
+  css += '.ig-journal-field-label{font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;font-weight:600;color:var(--text-primary,#111)}';
+  css += '.ig-journal-textarea{width:100%;min-height:60px;padding:10px 12px;border:1px solid var(--border-subtle,#E5E3DF);border-radius:10px;font-family:"Plus Jakarta Sans",sans-serif;font-size:13px;color:var(--text-primary,#111);line-height:1.6;resize:vertical;background:var(--bg-surface,#fff);transition:border-color .2s;box-sizing:border-box}';
+  css += '.ig-journal-textarea:focus{outline:none;border-color:var(--navy,#1E2D5E);box-shadow:0 0 0 3px rgba(30,45,94,.08)}';
+  css += '.ig-journal-textarea::placeholder{color:var(--text-muted,#6B7280);font-style:italic}';
+  css += '.ig-journal-saved{font-family:"DM Mono",monospace;font-size:10px;color:var(--text-muted,#6B7280);text-align:right;padding-top:4px;min-height:16px}';
+  css += '.ig-journal-saved.visible{color:#2D8A56}';
+  css += '.ig-journal-ai-hint{margin-top:12px;padding:10px 14px;background:rgba(30,45,94,.04);border-radius:10px;font-family:"Plus Jakarta Sans",sans-serif;font-size:10px;color:var(--text-muted,#6B7280);line-height:1.5;text-align:center}';
+
+  /* Lobby draft badge */
+  css += '.ig-lobby-badge-draft{background:rgba(30,45,94,.08);color:var(--navy,#1E2D5E)}';
+  css += '.ig-lobby-badge-draft svg{width:12px;height:12px}';
+
   /* Locked comp preview (session_complete) */
   css += '.ig-locked-preview{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:12px 0}';
   css += '.ig-locked-tag{display:inline-flex;align-items:center;gap:4px;font-family:"Plus Jakarta Sans",sans-serif;font-size:11px;color:var(--text-muted,#6B7280);background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF);border-radius:20px;padding:4px 12px}';
@@ -692,6 +813,8 @@ function injectCSS() {
   css += '.ig-q-text{font-size:15px}';
   css += '.ig-completion-stats{flex-direction:column;align-items:center}';
   css += '.ig-progress-strip{flex-wrap:wrap}';
+  css += '.ig-intro-signals{grid-template-columns:1fr}';
+  css += '.ig-intro-signal-full{grid-column:1/-1}';
   css += '}';
 
   var el = document.createElement('style');
@@ -819,6 +942,122 @@ function renderRoleSelect() {
 }
 
 /* ════════════════════════════════════════════════
+   RENDER — COMPETENCY INTRO (Screen 4)
+   Coaching briefing before first question.
+   ════════════════════════════════════════════════ */
+
+function truncateWhy(whyText) {
+  /* Extract first 2 meaningful sentences from the long 'why' paragraph */
+  if (!whyText) return '';
+  var sentences = whyText.split(/(?<=[.!?])\s+/);
+  var result = '';
+  var count = 0;
+  for (var i = 0; i < sentences.length && count < 2; i++) {
+    if (sentences[i].length > 15) { /* Skip very short fragments */
+      result += (result ? ' ' : '') + sentences[i];
+      count++;
+    }
+  }
+  return result || sentences[0] || '';
+}
+
+function renderCompetencyIntro() {
+  var bridge = getBridge();
+  if (!bridge) return '<div class="ig-section-desc">Veri y\u00FCklenemedi.</div>';
+
+  var code = S.activeComp;
+  var compName = bridge.COMP_NAMES[code] || code;
+  var kf = bridge.COMP_KF[code] || '';
+  var anchors = bridge.ANCHORS || {};
+  var a = anchors[code] || {};
+  var def = a.def || '';
+  var why = truncateWhy(a.why || '');
+  var PREVIEW = 2;
+
+  var html = '';
+
+  html += '<div class="ig-intro-wrap">';
+
+  html += '<div class="ig-nav-pill" id="ig-back-lobby-intro">' + arrowLeftSVG + ' Yetkinlikler</div>';
+
+  /* Hero */
+  html += '<div class="ig-intro-hero">';
+  html += '<div style="font-family:\'DM Mono\',monospace;font-size:10px;color:rgba(255,255,255,.5);letter-spacing:.5px;margin-bottom:6px;text-transform:uppercase">M\u00FClakat Ko\u00E7u</div>';
+  html += '<div class="ig-intro-comp-name">' + compName + '</div>';
+  if (kf) html += '<div style="font-family:\'DM Mono\',monospace;font-size:10px;color:rgba(255,255,255,.4);letter-spacing:.4px;margin-bottom:8px">' + kf + '</div>';
+  if (def) html += '<div class="ig-intro-comp-def">' + def + '</div>';
+  html += '</div>';
+
+  /* Why this matters */
+  if (why) {
+    html += '<div class="ig-intro-why">';
+    html += '<div class="ig-intro-why-title">' + briefSVG + ' Neden \u00D6nemli?</div>';
+    html += '<div class="ig-intro-why-text">' + why + '</div>';
+    html += '</div>';
+  }
+
+  /* Signal cards — 2x2 grid + overuse full-width */
+  html += '<div class="ig-intro-signals">';
+
+  /* Güçlü Sinyaller */
+  if (a.skilled && a.skilled.length) {
+    html += '<div class="ig-intro-signal-card">';
+    html += '<div class="ig-coach-header"><div class="ig-coach-dot ig-coach-dot-strong"></div><div class="ig-coach-label">G\u00FC\u00E7l\u00FC Sinyaller</div></div>';
+    html += '<ul class="ig-coach-bullets">';
+    for (var si = 0; si < Math.min(PREVIEW, a.skilled.length); si++) {
+      html += '<li class="ig-coach-bullet">' + a.skilled[si] + '</li>';
+    }
+    html += '</ul></div>';
+  }
+
+  /* Risk Sinyalleri */
+  if (a.lessskilled && a.lessskilled.length) {
+    html += '<div class="ig-intro-signal-card">';
+    html += '<div class="ig-coach-header"><div class="ig-coach-dot ig-coach-dot-risk"></div><div class="ig-coach-label">Risk Sinyalleri</div></div>';
+    html += '<ul class="ig-coach-bullets">';
+    for (var ri = 0; ri < Math.min(PREVIEW, a.lessskilled.length); ri++) {
+      html += '<li class="ig-coach-bullet">' + a.lessskilled[ri] + '</li>';
+    }
+    html += '</ul></div>';
+  }
+
+  /* Aşırı Kullanım */
+  if (a.overused && a.overused.length) {
+    html += '<div class="ig-intro-signal-card ig-intro-signal-full">';
+    html += '<div class="ig-coach-header"><div class="ig-coach-dot ig-coach-dot-over"></div><div class="ig-coach-label">A\u015F\u0131r\u0131 Kullan\u0131m</div></div>';
+    html += '<ul class="ig-coach-bullets">';
+    for (var oi = 0; oi < Math.min(PREVIEW, a.overused.length); oi++) {
+      html += '<li class="ig-coach-bullet">' + a.overused[oi] + '</li>';
+    }
+    html += '</ul></div>';
+  }
+
+  html += '</div>'; /* signals grid */
+
+  /* STAR+T coaching block */
+  html += '<div class="ig-intro-star-block">';
+  html += '<div class="ig-intro-star-title">' + starSVG + ' STAR+T ile Haz\u0131rlan\u0131n</div>';
+  html += '<div class="ig-intro-star-text">Bu yetkinli\u011Fe dair sorularda ya\u015Fad\u0131\u011F\u0131n\u0131z ger\u00E7ek bir deneyimi STAR+T yap\u0131s\u0131yla anlat\u0131n. Durumu (\u201CS\u201D), g\u00F6revinizi (\u201CT\u201D), att\u0131\u011F\u0131n\u0131z somut ad\u0131mlar\u0131 (\u201CA\u201D), ula\u015Ft\u0131\u011F\u0131n\u0131z sonucu (\u201CR\u201D) ve bu deneyimden ne \u00F6\u011Frendi\u011Finizi (\u201C+T\u201D) payla\u015F\u0131n.</div>';
+  html += '<div class="ig-intro-star-letters">';
+  var starColors = ['var(--verm,#C94E28)', 'var(--navy,#1E2D5E)', 'var(--verm,#C94E28)', 'var(--navy,#1E2D5E)', 'var(--navy,#1E2D5E)'];
+  var starLabels = ['S', 'T', 'A', 'R', '+T'];
+  for (var sl = 0; sl < 5; sl++) {
+    html += '<div class="ig-intro-star-badge" style="background:' + starColors[sl] + '">' + starLabels[sl] + '</div>';
+  }
+  html += '</div>';
+  html += '</div>';
+
+  /* CTA row */
+  html += '<div class="ig-intro-cta-row">';
+  html += '<button class="ig-btn ig-btn-swap" id="ig-intro-back" style="border:1px solid var(--border-subtle,#E5E3DF) !important">' + arrowLeftSVG + ' Yetkinliklere D\u00F6n\u00FCn</button>';
+  html += '<button class="ig-btn ig-btn-answered" id="ig-intro-start" style="padding:12px 28px;font-size:14px">\u0130lk Soruyu A\u00E7\u0131n \u2192</button>';
+  html += '</div>';
+
+  html += '</div>'; /* intro-wrap */
+  return html;
+}
+
+/* ════════════════════════════════════════════════
    RENDER — LOBBY (Screen 3)
    ════════════════════════════════════════════════ */
 
@@ -880,8 +1119,12 @@ function renderLobby() {
       html += '<div class="ig-lobby-comp-kf">' + kf + '</div>';
       if (def) html += '<div class="ig-lobby-comp-def">' + def + '</div>';
       html += '<div class="ig-lobby-comp-meta">' + practiceCount + ' soru ile pratik yap\u0131n</div>';
+      var draftCount = countJournalDraftsForComp(code);
       if (isCompleted) {
         html += '<div class="ig-lobby-badge ig-lobby-badge-done">' + checkSVG + ' Tamamland\u0131</div>';
+      }
+      if (draftCount > 0) {
+        html += '<div class="ig-lobby-badge ig-lobby-badge-draft">' + penSVG + ' ' + draftCount + ' taslak</div>';
       }
       html += '</div>';
     }
@@ -975,8 +1218,75 @@ function renderPractice() {
 
   html += '</div>'; /* q-focus */
 
+  /* Journal (Gelişim Günlüğü) — below the question card */
+  html += renderJournalPanel();
+
   html += '</div>'; /* practice-wrap */
   return html;
+}
+
+/* ════════════════════════════════════════════════
+   RENDER — JOURNAL PANEL (Gelişim Günlüğü)
+   Collapsible STAR+T draft area below the question.
+   ════════════════════════════════════════════════ */
+
+function renderJournalPanel() {
+  if (!S.activeComp || !S.dealt || !S.dealt.length) return '';
+  var q = S.dealt[S.currentQ];
+  if (!q) return '';
+
+  var draft = loadJournalDraft(S.activeComp, q.text);
+  var hasDraft = draft && (draft.s || draft.t || draft.a || draft.r || draft.takeaway);
+
+  var html = '<div class="ig-journal-wrap">';
+
+  /* Toggle bar */
+  html += '<button class="ig-journal-toggle' + (S.journalOpen ? ' active' : '') + '" id="ig-journal-toggle">';
+  html += journalSVG;
+  html += '<div class="ig-journal-toggle-label">Geli\u015Fim G\u00FCnl\u00FC\u011F\u00FC' + (hasDraft && !S.journalOpen ? ' <span style="font-size:10px;font-weight:400;color:var(--text-muted,#6B7280)">(taslak var)</span>' : '') + '</div>';
+  html += '<div class="ig-journal-toggle-hint">' + (S.journalOpen ? '' : 'Yan\u0131t\u0131n\u0131z\u0131 haz\u0131rlay\u0131n') + '</div>';
+  html += '<div class="ig-journal-toggle-arrow">\u25BC</div>';
+  html += '</button>';
+
+  /* Body (only if open) */
+  if (S.journalOpen) {
+    html += '<div class="ig-journal-body">';
+    html += '<div class="ig-journal-intro">Bu soruya haz\u0131rlan\u0131rken deneyimlerinizi STAR+T yap\u0131s\u0131yla not edin. Notlar\u0131n\u0131z otomatik kaydedilir ve istedikten sonra tekrar g\u00F6zden ge\u00E7irebilirsiniz.</div>';
+
+    var fields = [
+      { key: 's', letter: 'S', label: 'Durum', color: 'verm', placeholder: 'Kar\u015F\u0131la\u015Ft\u0131\u011F\u0131n\u0131z durumu k\u0131saca tan\u0131mlay\u0131n...' },
+      { key: 't', letter: 'T', label: 'G\u00F6rev', color: 'navy', placeholder: 'Sizden beklenen g\u00F6revi a\u00E7\u0131klay\u0131n...' },
+      { key: 'a', letter: 'A', label: 'Aksiyon', color: 'verm', placeholder: 'Att\u0131\u011F\u0131n\u0131z somut ad\u0131mlar\u0131 anlat\u0131n...' },
+      { key: 'r', letter: 'R', label: 'Sonu\u00E7', color: 'navy', placeholder: 'Sonucu ve etkisini payla\u015F\u0131n...' },
+      { key: 'takeaway', letter: '+T', label: '\u00C7\u0131kar\u0131m', color: 'navy', placeholder: 'Bu deneyimden ne \u00F6\u011Frendiniz?' }
+    ];
+
+    for (var fi = 0; fi < fields.length; fi++) {
+      var f = fields[fi];
+      var val = draft ? (draft[f.key] || '') : '';
+      html += '<div class="ig-journal-field">';
+      html += '<div class="ig-journal-field-header">';
+      html += '<div class="ig-journal-field-badge ' + f.color + '">' + f.letter + '</div>';
+      html += '<div class="ig-journal-field-label">' + f.label + '</div>';
+      html += '</div>';
+      html += '<textarea class="ig-journal-textarea" data-field="' + f.key + '" placeholder="' + f.placeholder + '" rows="3">' + escapeHtml(val) + '</textarea>';
+      html += '</div>';
+    }
+
+    html += '<div class="ig-journal-saved" id="ig-journal-saved"></div>';
+
+    html += '<div class="ig-journal-ai-hint">Yak\u0131nda: Yapay zeka ko\u00E7unuz bu yan\u0131t\u0131 de\u011Ferlendirecek ve g\u00FC\u00E7l\u00FC / zay\u0131f sinyalleri belirleyecek.</div>';
+
+    html += '</div>'; /* journal-body */
+  }
+
+  html += '</div>'; /* journal-wrap */
+  return html;
+}
+
+function escapeHtml(str) {
+  if (!str) return '';
+  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
 function renderStarHintPanel() {
@@ -1065,7 +1375,11 @@ function renderCompletion() {
   html += '<div class="ig-completion-icon">' + checkSVG + '</div>';
   html += '<div class="ig-completion-title">' + compName + ' Tamamland\u0131</div>';
   html += '<div class="ig-completion-desc">' + S.answeredCount + ' soru yan\u0131tland\u0131' + (S.swapsUsed > 0 ? ', ' + S.swapsUsed + ' soru de\u011Fi\u015Ftirildi' : '') + '.</div>';
-  html += '<div style="font-family:\'Plus Jakarta Sans\',sans-serif;font-size:12px;color:var(--text-muted,#6B7280);line-height:1.5;max-width:360px;margin:0 auto 8px">Haz\u0131rl\u0131k yapmak fark yarat\u0131r \u2014 bu yetkinli\u011Fi pratik ederek bir ad\u0131m \u00F6ndesiniz.</div>';
+  var compDrafts = countJournalDraftsForComp(S.activeComp);
+  var draftCopy = compDrafts > 0
+    ? 'Bu yetkinlik i\u00E7in ' + compDrafts + ' taslak yan\u0131t kaydettiniz \u2014 i\u015F g\u00F6r\u00FC\u015Fmesi \u00F6ncesi tekrar g\u00F6zden ge\u00E7irebilirsiniz.'
+    : 'Haz\u0131rl\u0131k yapmak fark yarat\u0131r \u2014 bu yetkinli\u011Fi pratik ederek bir ad\u0131m \u00F6ndesiniz.';
+  html += '<div style="font-family:\'Plus Jakarta Sans\',sans-serif;font-size:12px;color:var(--text-muted,#6B7280);line-height:1.5;max-width:360px;margin:0 auto 8px">' + draftCopy + '</div>';
 
   html += '<div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:16px">';
   html += '<button class="ig-btn ig-btn-swap" id="ig-restart-comp" style="border:1px solid var(--border-subtle,#E5E3DF) !important">Tekrar Pratik Yap\u0131n</button>';
@@ -1124,7 +1438,7 @@ function renderSessionComplete() {
       html += '</div>';
     }
 
-    html += '<div class="ig-section-desc" style="font-size:11px;margin-bottom:14px;color:var(--text-muted,#6B7280)">S\u0131n\u0131rs\u0131z soru de\u011Fi\u015Ftirme \u00B7 T\u00FCm yetkinlikler \u00B7 Daha fazla soru \u00E7e\u015Fitlili\u011Fi</div>';
+    html += '<div class="ig-section-desc" style="font-size:11px;margin-bottom:14px;color:var(--text-muted,#6B7280)">S\u0131n\u0131rs\u0131z soru de\u011Fi\u015Ftirme \u00B7 T\u00FCm yetkinlikler \u00B7 Geli\u015Fim G\u00FCnl\u00FC\u011F\u00FC \u00B7 AI Ko\u00E7luk (yak\u0131nda)</div>';
     html += '<button class="ig-q-lock-cta" style="padding:10px 28px;font-size:14px">Premium\u2019a Ge\u00E7</button>';
     html += '</div>';
   }
@@ -1157,6 +1471,9 @@ function navigate(screen) {
   } else if (screen === 'lobby') {
     container.innerHTML = renderLobby();
     bindLobbyEvents();
+  } else if (screen === 'competency_intro') {
+    container.innerHTML = renderCompetencyIntro();
+    bindCompetencyIntroEvents();
   } else if (screen === 'practice') {
     container.innerHTML = renderPractice();
     bindPracticeEvents();
@@ -1231,6 +1548,7 @@ function startSession(role) {
   S.answeredCount = 0;
   S.starHintOpen = false;
   S.coachOpen = false;
+  S.journalOpen = false;
   S.completedComps = [];
   S.totalAnswered = 0;
   S.totalSwaps = 0;
@@ -1247,6 +1565,7 @@ function startPractice(compCode, compIdx) {
   S.answeredCount = 0;
   S.starHintOpen = false;
   S.coachOpen = false;
+  S.journalOpen = false;
   navigate('practice');
 }
 
@@ -1255,14 +1574,31 @@ function bindLobbyEvents() {
   var backBtn = document.getElementById('ig-back-role');
   if (backBtn) backBtn.addEventListener('click', function() { navigate('role_select'); });
 
-  /* Comp card clicks */
+  /* Comp card clicks — go to competency intro first */
   var cards = document.querySelectorAll('.ig-lobby-card[data-comp]');
   cards.forEach(function(card) {
     card.addEventListener('click', function() {
       var code = this.getAttribute('data-comp');
       var idx = parseInt(this.getAttribute('data-idx'), 10);
-      startPractice(code, idx);
+      S.activeComp = code;
+      S.activeCompIdx = idx;
+      navigate('competency_intro');
     });
+  });
+}
+
+function bindCompetencyIntroEvents() {
+  /* Back to lobby */
+  var backBtn = document.getElementById('ig-back-lobby-intro');
+  if (backBtn) backBtn.addEventListener('click', function() { navigate('lobby'); });
+
+  var backBtn2 = document.getElementById('ig-intro-back');
+  if (backBtn2) backBtn2.addEventListener('click', function() { navigate('lobby'); });
+
+  /* Start practice */
+  var startBtn = document.getElementById('ig-intro-start');
+  if (startBtn) startBtn.addEventListener('click', function() {
+    startPractice(S.activeComp, S.activeCompIdx);
   });
 }
 
@@ -1296,6 +1632,50 @@ function bindPracticeEvents() {
     navigate('practice');
   });
 
+  /* Journal toggle */
+  var journalBtn = document.getElementById('ig-journal-toggle');
+  if (journalBtn) journalBtn.addEventListener('click', function() {
+    S.journalOpen = !S.journalOpen;
+    navigate('practice');
+    /* Focus first textarea if opening */
+    if (S.journalOpen) {
+      setTimeout(function() {
+        var first = document.querySelector('.ig-journal-textarea');
+        if (first) first.focus();
+      }, 100);
+    }
+  });
+
+  /* Journal auto-save (debounced keyup on textareas) */
+  var _journalTimer = null;
+  var textareas = document.querySelectorAll('.ig-journal-textarea');
+  textareas.forEach(function(ta) {
+    ta.addEventListener('input', function() {
+      if (_journalTimer) clearTimeout(_journalTimer);
+      _journalTimer = setTimeout(function() {
+        var q = S.dealt[S.currentQ];
+        if (!q) return;
+        var all = document.querySelectorAll('.ig-journal-textarea');
+        var fields = {};
+        all.forEach(function(el) {
+          fields[el.getAttribute('data-field')] = el.value;
+        });
+        saveJournalDraft(S.activeComp, q.text, fields);
+        var indicator = document.getElementById('ig-journal-saved');
+        if (indicator) {
+          indicator.textContent = 'Kaydedildi';
+          indicator.classList.add('visible');
+          setTimeout(function() {
+            if (indicator) {
+              indicator.textContent = '';
+              indicator.classList.remove('visible');
+            }
+          }, 2000);
+        }
+      }, 1500);
+    });
+  });
+
   /* Answered */
   var answeredBtn = document.getElementById('ig-answered');
   if (answeredBtn) answeredBtn.addEventListener('click', function() {
@@ -1304,6 +1684,7 @@ function bindPracticeEvents() {
     S.totalAnswered++;
     S.starHintOpen = false;
     S.coachOpen = false;
+    S.journalOpen = false;
 
     if (S.currentQ < S.dealt.length - 1) {
       S.currentQ++;
@@ -1354,6 +1735,7 @@ function bindSessionCompleteEvents() {
     S.answeredCount = 0;
     S.starHintOpen = false;
     S.coachOpen = false;
+    S.journalOpen = false;
     S.completedComps = [];
     S.totalAnswered = 0;
     S.totalSwaps = 0;
@@ -1378,8 +1760,13 @@ window._htLoadMulakat = function() {
   /* Returning user: restore session or skip STAR intro */
   if (loadSession()) {
     /* Restored in-progress session — validate screen is renderable */
-    var validScreens = ['star_intro', 'role_select', 'lobby', 'practice', 'completion', 'session_complete'];
+    var validScreens = ['star_intro', 'role_select', 'lobby', 'competency_intro', 'practice', 'completion', 'session_complete'];
     if (validScreens.indexOf(S.screen) !== -1) {
+      /* For competency_intro, verify we have activeComp */
+      if (S.screen === 'competency_intro' && !S.activeComp) {
+        navigate(S.role ? 'lobby' : 'role_select');
+        return;
+      }
       /* For practice/completion, verify we have the data needed */
       if ((S.screen === 'practice' || S.screen === 'completion') && (!S.dealt || !S.dealt.length)) {
         navigate(S.role ? 'lobby' : 'role_select');
