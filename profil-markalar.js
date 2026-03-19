@@ -168,13 +168,20 @@ async function loadSirketlerPanel() {
   _ht_brands = brandsRes.data || [];
   _ht_follows = new Set((followsRes.data || []).map(function(f) { return f.brand_id; }));
 
-  // Featured first, then alphabetical (no UI label for featured)
+  // Colored brands interleaved with dark brands for visual variety
   _ht_brands.sort(function(a, b) {
-    var af = !!a.is_featured; var bf = !!b.is_featured;
-    if (af && !bf) return -1;
-    if (!af && bf) return 1;
     return (a.brand_name || '').localeCompare(b.brand_name || '', 'tr');
   });
+  var colored = _ht_brands.filter(function(b) { var c = _brandColors(b.brand_name).accent; return c !== '#000000' && c !== '#555555'; });
+  var dark = _ht_brands.filter(function(b) { var c = _brandColors(b.brand_name).accent; return c === '#000000' || c === '#555555'; });
+  var mixed = [];
+  var ci = 0, di = 0;
+  while (ci < colored.length || di < dark.length) {
+    if (ci < colored.length) mixed.push(colored[ci++]);
+    if (di < dark.length) mixed.push(dark[di++]);
+    if (di < dark.length) mixed.push(dark[di++]);
+  }
+  _ht_brands = mixed;
 
   _ht_visible_count = 12;
   renderSegmentPills();
@@ -260,7 +267,9 @@ function renderBrandGrid(query) {
     var logoFront = _brandLogoHtml(b, 76);
     var logoBack = _brandLogoHtml(b, 40);
 
-    html += '<div class="flip-card" onclick="this.classList.toggle(\'flipped\')" style="animation-delay:' + (i * 0.03) + 's">' +
+    var isColored = colors.accent !== '#000000' && colors.accent !== '#555555';
+    var sizeClass = isColored ? ' brand-colored' : ' brand-dark';
+    html += '<div class="flip-card' + sizeClass + '" onclick="this.classList.toggle(\'flipped\')" style="animation-delay:' + (i * 0.03) + 's">' +
       '<div class="flip-card-inner">' +
         '<div class="flip-front" style="background:#fff;">' +
           '<div class="front-logo">' + logoFront + '</div>' +

@@ -3190,23 +3190,13 @@ html[data-theme="dark"] .lok-modal #btn-lok-close:hover{
 /* All brands section — flip card grid */
 .all-brands-section{margin-top:8px;}
 /* Bento box brand grid — 4 columns, varied sizes */
-.brand-grid{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:140px;gap:14px;grid-auto-flow:dense;}
-/* Tall cards (span 2 rows) */
-.brand-grid>.flip-card:nth-child(1){grid-column:span 1;grid-row:span 2;}
-.brand-grid>.flip-card:nth-child(4){grid-column:span 1;grid-row:span 2;}
-.brand-grid>.flip-card:nth-child(9){grid-column:span 1;grid-row:span 2;}
-.brand-grid>.flip-card:nth-child(14){grid-column:span 1;grid-row:span 2;}
-.brand-grid>.flip-card:nth-child(19){grid-column:span 1;grid-row:span 2;}
-/* Wide cards (span 2 cols) */
-.brand-grid>.flip-card:nth-child(5){grid-column:span 2;}
-.brand-grid>.flip-card:nth-child(12){grid-column:span 2;}
-.brand-grid>.flip-card:nth-child(20){grid-column:span 2;}
-/* Large cards (span 2x2) */
-.brand-grid>.flip-card:nth-child(7){grid-column:span 2;grid-row:span 2;}
-.brand-grid>.flip-card:nth-child(17){grid-column:span 2;grid-row:span 2;}
+.brand-grid{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:130px;gap:14px;grid-auto-flow:dense;}
+/* Colored brands get large cards, dark/grey brands stay small */
+.brand-grid>.flip-card.brand-colored{grid-column:span 2;grid-row:span 2;}
+.brand-grid>.flip-card.brand-dark{grid-column:span 1;grid-row:span 1;}
 
 .brand-grid>.flip-card{height:100%;}
-@media(max-width:900px){.brand-grid{grid-template-columns:repeat(3,1fr);grid-auto-rows:130px;}.brand-grid>.flip-card:nth-child(n){grid-column:span 1;grid-row:span 1;}.brand-grid>.flip-card:nth-child(1),.brand-grid>.flip-card:nth-child(7){grid-column:span 2;grid-row:span 1;}}
+@media(max-width:900px){.brand-grid{grid-template-columns:repeat(3,1fr);grid-auto-rows:130px;}.brand-grid>.flip-card.brand-colored{grid-column:span 2;grid-row:span 1;}.brand-grid>.flip-card.brand-dark{grid-column:span 1;grid-row:span 1;}}
 @media(max-width:600px){.brand-grid{grid-template-columns:repeat(2,1fr);grid-auto-rows:160px;}.brand-grid>.flip-card:nth-child(n){grid-column:span 1;grid-row:span 1;}}
 @media(max-width:400px){.brand-grid{grid-template-columns:1fr;}}
 
