@@ -276,7 +276,7 @@ function renderBrandGrid(query) {
               '<div class="back-brand-name">' + _escHtml(b.brand_name) + '</div>' +
               (segLabel ? '<div class="back-segment-pill">' + _escHtml(segLabel) + '</div>' : '') +
             '</div>' +
-            '<button type="button" class="back-follow-mini' + (isF ? ' following' : '') + '" data-brand-id="' + b.id + '" onclick="event.stopPropagation(); toggleBrandFollow(' + b.id + ',event)">' + (isF ? 'Takipte ✓' : 'Takip Et') + '</button>' +
+            '<button type="button" class="back-follow-mini' + (isF ? ' following' : '') + '" data-brand-id="' + b.id + '" onclick="event.stopPropagation(); toggleBrandFollow(' + b.id + ',event)"><div class="tooltip-container"><span class="text"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 95 114" class="svgIcon"><rect fill="currentColor" rx="28.5" height="57" width="57" x="19"></rect><path fill="currentColor" d="M0 109.5C0 83.2665 21.2665 62 47.5 62V62C73.7335 62 95 83.2665 95 109.5V114H0V109.5Z"></path></svg>' + (isF ? 'Takipte' : 'Takip Et') + '</span></div></button>' +
           '</div>' +
           '<div class="back-info">' +
             (storeText ? '<div class="back-info-row"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>' + _escHtml(storeText) + (cityText ? ' · ' + _escHtml(cityText) : '') + '</div>' : '') +
@@ -350,7 +350,8 @@ function _updateAllFollowBtns(brandId) {
   // Flip card back follow button
   var backBtns = document.querySelectorAll('.back-follow-mini[data-brand-id="' + brandId + '"]');
   for (var j = 0; j < backBtns.length; j++) {
-    backBtns[j].textContent = isF ? 'Takipte ✓' : 'Takip Et';
+    var _svgIcon = '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 95 114" class="svgIcon"><rect fill="currentColor" rx="28.5" height="57" width="57" x="19"></rect><path fill="currentColor" d="M0 109.5C0 83.2665 21.2665 62 47.5 62V62C73.7335 62 95 83.2665 95 109.5V114H0V109.5Z"></path></svg>';
+    backBtns[j].innerHTML = '<div class="tooltip-container"><span class="text">' + _svgIcon + (isF ? 'Takipte' : 'Takip Et') + '</span></div>';
     if (isF) backBtns[j].classList.add('following'); else backBtns[j].classList.remove('following');
   }
 }
