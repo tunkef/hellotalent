@@ -82,12 +82,15 @@
     css += '.tk-promo-copy:hover{background:#059669;color:#fff}';
     css += '.tk-cta{display:inline-flex;align-items:center;gap:4px;padding:8px 14px;border-radius:8px;font-size:11px;font-weight:700;text-decoration:none;background:var(--verm,#C94E28);color:#fff;transition:opacity .15s;margin-top:12px;align-self:flex-start;border:none;cursor:pointer;font-family:"Plus Jakarta Sans",sans-serif}';
     css += '.tk-cta:hover{opacity:.85}';
-    css += '.tk-locked .tk-card-body{filter:blur(3px);pointer-events:none;user-select:none}';
-    css += '.tk-lock-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(255,255,255,.5);backdrop-filter:blur(1px);z-index:3;border-radius:16px}';
-    css += '.tk-lock-icon{width:32px;height:32px;background:var(--navy,#1E2D5E);border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:8px}';
-    css += '.tk-lock-icon svg{width:16px;height:16px;color:#fff}';
-    css += '.tk-lock-text{font-family:"Plus Jakarta Sans",sans-serif;font-size:11px;color:var(--text-muted,#6B7280);text-align:center;margin-bottom:8px}';
-    css += '.tk-lock-btn{font-family:"Plus Jakarta Sans",sans-serif;font-size:11px;font-weight:700;color:#fff;background:var(--verm,#C94E28);border:none;border-radius:6px;padding:6px 16px;cursor:pointer}';
+    /* Premium gate — frosted glass over cards */
+    css += '.tk-premium-gate{position:relative;overflow:hidden;border-radius:16px;min-height:400px}';
+    css += '.tk-gate-cards{pointer-events:none;user-select:none}';
+    css += '.tk-gate-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.7);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);z-index:5;border-radius:16px;cursor:pointer}';
+    css += '.tk-gate-content{text-align:center;max-width:380px;padding:32px}';
+    css += '.tk-gate-title{font-family:"Bricolage Grotesque",sans-serif;font-size:28px;font-weight:900;color:var(--text-primary,#111);margin-bottom:8px;letter-spacing:-.5px}';
+    css += '.tk-gate-desc{font-family:"Plus Jakarta Sans",sans-serif;font-size:14px;color:var(--text-muted,#6B7280);line-height:1.6;margin-bottom:20px}';
+    css += '.tk-gate-cta{font-family:"Plus Jakarta Sans",sans-serif;font-size:14px;font-weight:700;color:#fff;background:var(--verm,#C94E28);border:none;border-radius:10px;padding:12px 32px;cursor:pointer;transition:opacity .2s}';
+    css += '.tk-gate-cta:hover{opacity:.85}';
     css += '.tk-filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}';
     css += '.tk-filter-btn{padding:6px 16px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid var(--border-subtle,#E5E3DF);font-family:"Plus Jakarta Sans",sans-serif;transition:all .15s;background:var(--bg-surface,#fff);color:var(--text-primary,#111)}';
     css += '.tk-filter-btn.active{background:var(--navy,#1E2D5E);color:#fff;border-color:var(--navy,#1E2D5E)}';
@@ -161,12 +164,29 @@
       html += '</div>';
     }
 
-    html += '<div class="tk-filters" id="tk-filters"></div>';
-    html += '<div class="tk-bento" id="tk-bento-grid"></div>';
+    if (!isLocked) {
+      html += '<div class="tk-filters" id="tk-filters"></div>';
+      html += '<div class="tk-bento" id="tk-bento-grid"></div>';
+    } else {
+      /* Frosted glass: cards visible but not readable, single CTA overlay */
+      html += '<div class="tk-premium-gate">';
+      html += '<div class="tk-gate-cards tk-bento">';
+      for (var g = 0; g < campaigns.length; g++) html += buildCardHTML(campaigns[g], false);
+      html += '</div>';
+      html += '<div class="tk-gate-overlay" data-panel="premium">';
+      html += '<div class="tk-gate-content">';
+      html += '<svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor" style="color:var(--verm,#C94E28);margin-bottom:12px;"><path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5z"/><path d="M5 19a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-1H5v1z" opacity=".5"/></svg>';
+      html += '<div class="tk-gate-title">S\u0131n\u0131rs\u0131z Eri\u015Fim</div>';
+      html += '<div class="tk-gate-desc">Premium ile t\u00FCm f\u0131rsatlara, \u00F6zel tekliflere ve ayr\u0131cal\u0131klara s\u0131n\u0131rs\u0131z eri\u015F.</div>';
+      html += '<button class="tk-gate-cta" data-panel="premium">Premium\u2019u Ke\u015Ffet</button>';
+      html += '</div></div></div>';
+    }
     container.textContent = '';
     container.insertAdjacentHTML('afterbegin', html);
-    renderFilters();
-    renderBentoGrid(rest.length > 0 ? rest : campaigns, isLocked);
+    if (!isLocked) {
+      renderFilters();
+      renderBentoGrid(rest.length > 0 ? rest : campaigns, false);
+    }
     bindCarousel();
   }
 
@@ -187,8 +207,7 @@
     var isDemo = c.demo === true;
     var compName = c.company_name || (c.companies ? c.companies.company_name : '?');
     var html = '<div class="tk-card' + (locked ? ' tk-locked' : '') + '" data-campaign-id="' + c.id + '">';
-    if (c.premium) html += '<span class="tk-ribbon"></span>';
-    if (isDemo) html += '<span class="tk-demo-badge">\u00D6RNEK</span>';
+    if (isDemo && !c.premium) html += '<span class="tk-demo-badge">\u00D6RNEK</span>';
     html += '<div class="tk-card-cover">';
     if (c.cover_image_url) {
       html += '<img src="' + c.cover_image_url + '" alt="" loading="lazy">';
