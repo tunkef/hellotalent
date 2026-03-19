@@ -41,36 +41,36 @@ var _ht_active_segment = null;
 var _BRAND_COLORS = {
   'Louis Vuitton': { frontBg: '', backBg: '#4D3022', accent: '#4D3022' },
   'Gucci': { frontBg: '', backBg: '#006633', accent: '#006633' },
-  'Prada': { frontBg: '', backBg: '#000000', accent: '#000000' },
+  'Prada': { frontBg: '', backBg: '#1A1A2E', accent: '#1A1A2E' },
   'Hermès': { frontBg: '', backBg: '#F37021', accent: '#F37021' },
-  'Dior': { frontBg: '', backBg: '#000000', accent: '#000000' },
-  'Chanel': { frontBg: '', backBg: '#000000', accent: '#000000' },
+  'Dior': { frontBg: '', backBg: '#2C2C3A', accent: '#2C2C3A' },
+  'Chanel': { frontBg: '', backBg: '#1B1B1B', accent: '#1B1B1B' },
   'Cartier': { frontBg: '', backBg: '#B11F24', accent: '#B11F24' },
-  'Beymen': { frontBg: '', backBg: '#000000', accent: '#000000' },
-  'Vakko': { frontBg: '', backBg: '#000000', accent: '#000000' },
+  'Beymen': { frontBg: '', backBg: '#4A3728', accent: '#4A3728' },
+  'Vakko': { frontBg: '', backBg: '#3D0C02', accent: '#3D0C02' },
   'Massimo Dutti': { frontBg: '', backBg: '#2D2926', accent: '#2D2926' },
-  'Hugo Boss': { frontBg: '', backBg: '#000000', accent: '#000000' },
+  'Hugo Boss': { frontBg: '', backBg: '#1C1C28', accent: '#1C1C28' },
   'Ralph Lauren': { frontBg: '', backBg: '#041E42', accent: '#041E42' },
   'Lacoste': { frontBg: '', backBg: '#004526', accent: '#004526' },
-  'Alo Yoga': { frontBg: '', backBg: '#000000', accent: '#000000' },
+  'Alo Yoga': { frontBg: '', backBg: '#5C4033', accent: '#5C4033' },
   'lululemon': { frontBg: '', backBg: '#D31334', accent: '#D31334' },
-  'Nike': { frontBg: '', backBg: '#000000', accent: '#000000' },
-  'Adidas': { frontBg: '', backBg: '#000000', accent: '#000000' },
-  'Zara': { frontBg: '', backBg: '#000000', accent: '#000000' },
+  'Nike': { frontBg: '', backBg: '#2D2D2D', accent: '#2D2D2D' },
+  'Adidas': { frontBg: '', backBg: '#1A3C34', accent: '#1A3C34' },
+  'Zara': { frontBg: '', backBg: '#232328', accent: '#232328' },
   'H&M': { frontBg: '', backBg: '#E50010', accent: '#E50010' },
-  'Mango': { frontBg: '', backBg: '#000000', accent: '#000000' },
+  'Mango': { frontBg: '', backBg: '#8B4513', accent: '#8B4513' },
   'Boyner': { frontBg: '', backBg: '#00AEEF', accent: '#00AEEF' },
-  'Pull & Bear': { frontBg: '', backBg: '#000000', accent: '#000000' },
-  'Bershka': { frontBg: '', backBg: '#000000', accent: '#000000' },
-  'Stradivarius': { frontBg: '', backBg: '#000000', accent: '#000000' },
-  'Zara Home': { frontBg: '', backBg: '#000000', accent: '#000000' },
+  'Pull & Bear': { frontBg: '', backBg: '#2F4F3A', accent: '#2F4F3A' },
+  'Bershka': { frontBg: '', backBg: '#3B1F5E', accent: '#3B1F5E' },
+  'Stradivarius': { frontBg: '', backBg: '#6B4226', accent: '#6B4226' },
+  'Zara Home': { frontBg: '', backBg: '#4A5548', accent: '#4A5548' },
   'LC Waikiki': { frontBg: '', backBg: '#1F4294', accent: '#1F4294' },
-  'Sephora': { frontBg: '', backBg: '#000000', accent: '#000000' },
-  'MAC': { frontBg: '', backBg: '#000000', accent: '#000000' },
-  'Apple': { frontBg: '', backBg: '#555555', accent: '#555555' },
+  'Sephora': { frontBg: '', backBg: '#2D1F3D', accent: '#2D1F3D' },
+  'MAC': { frontBg: '', backBg: '#5C1A2A', accent: '#5C1A2A' },
+  'Apple': { frontBg: '', backBg: '#3C3C3C', accent: '#3C3C3C' },
   'Samsung': { frontBg: '', backBg: '#1428A0', accent: '#1428A0' },
   'Teknosa': { frontBg: '', backBg: '#FF6700', accent: '#FF6700' },
-  'Koton': { frontBg: '', backBg: '#000000', accent: '#000000' }
+  'Koton': { frontBg: '', backBg: '#3A2F4A', accent: '#3A2F4A' }
 };
 
 function _hexToRgba(hex, alpha) {
@@ -85,8 +85,8 @@ function _hexToRgba(hex, alpha) {
 function _brandColors(brandName) {
   return _BRAND_COLORS[brandName] || {
     frontBg: '',
-    backBg: '#000000',
-    accent: '#000000'
+    backBg: '#2A2A3A',
+    accent: '#2A2A3A'
   };
 }
 
@@ -267,11 +267,12 @@ function renderBrandGrid(query) {
     var logoFront = _brandLogoHtml(b, 76);
     var logoBack = _brandLogoHtml(b, 40);
 
-    var isColored = colors.accent !== '#000000' && colors.accent !== '#555555';
-    var sizeClass = isColored ? ' brand-colored' : ' brand-dark';
+    var _originalBrands = ['Louis Vuitton','Gucci','Hermès','Cartier','Massimo Dutti','Ralph Lauren','Lacoste','lululemon','H&M','Boyner','LC Waikiki','Samsung','Teknosa'];
+    var isOriginal = _originalBrands.indexOf(b.brand_name) !== -1;
+    var sizeClass = isOriginal ? ' brand-colored' : ' brand-dark';
     html += '<div class="flip-card' + sizeClass + '" style="animation-delay:' + (i * 0.03) + 's;background:' + colors.backBg + ';">' +
       '<div class="flip-card-inner">' +
-        '<div class="flip-front" style="background:' + (isColored ? _hexToRgba(colors.accent, 0.15) : 'rgba(255,255,255,0.12)') + ';">' +
+        '<div class="flip-front" style="background:' + _hexToRgba(colors.accent, 0.15) + ';">' +
           '<div class="front-logo">' + logoFront + '</div>' +
           '<div class="front-name">' + _escHtml(b.brand_name) + '</div>' +
           (segLabel ? '<div class="front-segment" style="background:' + segColor + '">' + _escHtml(segLabel) + '</div>' : '') +
