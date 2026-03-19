@@ -168,18 +168,21 @@ async function loadSirketlerPanel() {
   _ht_brands = brandsRes.data || [];
   _ht_follows = new Set((followsRes.data || []).map(function(f) { return f.brand_id; }));
 
-  // Colored brands interleaved with dark brands for visual variety
+  // Bento sort: vibrant brands at hero positions (1,4,5,8,9,11,14,15,18,19...)
   _ht_brands.sort(function(a, b) {
     return (a.brand_name || '').localeCompare(b.brand_name || '', 'tr');
   });
-  var colored = _ht_brands.filter(function(b) { var c = _brandColors(b.brand_name).accent; return c !== '#000000' && c !== '#555555'; });
-  var dark = _ht_brands.filter(function(b) { var c = _brandColors(b.brand_name).accent; return c === '#000000' || c === '#555555'; });
-  var mixed = [];
-  var ci = 0, di = 0;
-  while (ci < colored.length || di < dark.length) {
-    if (ci < colored.length) mixed.push(colored[ci++]);
-    if (di < dark.length) mixed.push(dark[di++]);
-    if (di < dark.length) mixed.push(dark[di++]);
+  var _vibrant = ['Boyner','Cartier','Gucci','H&M','Hermès','Lacoste','LC Waikiki','lululemon','Louis Vuitton','Mango','Ralph Lauren','Samsung','Teknosa'];
+  var hero = _ht_brands.filter(function(b) { return _vibrant.indexOf(b.brand_name) !== -1; });
+  var rest = _ht_brands.filter(function(b) { return _vibrant.indexOf(b.brand_name) === -1; });
+  // Interleave: 1 hero then 2 rest, repeat — heroes land on nth-child(10n+1,4,5,8,9)
+  var mixed = [], hi = 0, ri = 0;
+  while (hi < hero.length || ri < rest.length) {
+    if (hi < hero.length) mixed.push(hero[hi++]);
+    if (ri < rest.length) mixed.push(rest[ri++]);
+    if (ri < rest.length) mixed.push(rest[ri++]);
+    if (hi < hero.length) mixed.push(hero[hi++]);
+    if (ri < rest.length) mixed.push(rest[ri++]);
   }
   _ht_brands = mixed;
 
@@ -267,10 +270,7 @@ function renderBrandGrid(query) {
     var logoFront = _brandLogoHtml(b, 76);
     var logoBack = _brandLogoHtml(b, 40);
 
-    var _originalBrands = ['Louis Vuitton','Gucci','Hermès','Cartier','Massimo Dutti','Ralph Lauren','Lacoste','lululemon','H&M','Boyner','LC Waikiki','Samsung','Teknosa'];
-    var isOriginal = _originalBrands.indexOf(b.brand_name) !== -1;
-    var sizeClass = isOriginal ? ' brand-colored' : ' brand-dark';
-    html += '<div class="flip-card' + sizeClass + '" style="animation-delay:' + (i * 0.03) + 's;background:' + colors.backBg + ';">' +
+    html += '<div class="flip-card" style="animation-delay:' + (i * 0.03) + 's;background:' + colors.backBg + ';">' +
       '<div class="flip-card-inner">' +
         '<div class="flip-front" style="background:' + _hexToRgba(colors.accent, 0.15) + ';">' +
           '<div class="front-logo">' + logoFront + '</div>' +
