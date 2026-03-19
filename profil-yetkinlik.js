@@ -654,7 +654,7 @@ window._htLoadYetkinlik = function() {
   navigate('intro');
 };
 
-/* Bridge: expose data for profil-isgorusmeleri.js */
+/* Bridge: expose data for profil-mulakatkocu.js */
 window._htYetkinlikData = { ANCHORS: ANCHORS, ROLE_COMP_MAP: ROLE_COMP_MAP, COMP_NAMES: COMP_NAMES, COMP_KF: COMP_KF, FREE_LIMIT: FREE_LIMIT };
 
 })();

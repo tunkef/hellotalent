@@ -1,5 +1,5 @@
 # hellotalent.ai — Technical Handoff Document
-> Son güncelleme: 19 Mart 2026 (Session 5 — Full Bento Standardization, Teklifler v2, Premium Panel, Marka Bento Box)
+> Son güncelleme: 20 Mart 2026 (Session 7 — Mülakat Koçu Unification)
 > Bu doküman, projenin mevcut durumunu, tamamlanan işleri ve kalan backlog'u kapsar.
 > Yeni bir chat/session başlatırken bu dosyayı referans olarak kullanın.
 
@@ -60,7 +60,7 @@ Toplam: ~25,000 Türkçe kelime, Google'da bulunamayacak kalitede orijinal içer
 - `<script src="profil-yetkinlik.js?v=20260318a">` eklendi
 - `_doSwitchPanel()`: yetkinlik lazy-load hook eklendi
 - Breadcrumb labels: `yetkinlik` ve `mulakat` eklendi
-- Cmd+K palette: Yetkinliklerim (🎯) ve İş Görüşmeleri (📋) eklendi
+- Cmd+K palette: Mülakat Koçu (📋) eklendi (Yetkinliklerim artık Mülakat Koçu altında)
 - SHA: `5a5d3fe`
 
 ### Session 4b — 18 Mart 2026 (Akşam — Yetkinlik Wizard v2 & Dashboard Polish)
@@ -76,7 +76,7 @@ Toplam: ~25,000 Türkçe kelime, Google'da bulunamayacak kalitede orijinal içer
 
 **8. Dashboard Bento Grid Polish**
 - SVG donut chart → horizontal progress bar (profil tamamlanma göstergesi)
-- İş Görüşmeleri kartı tıklanabilir hale getirildi, header rename
+- Mülakat kartı tıklanabilir hale getirildi, header rename
 - Bento card `.locked` kartlara cursor: pointer eklendi (Özel Teklifler vb.)
 - Tüm bento kartlara hover CTA animasyonları eklendi
 
@@ -100,7 +100,7 @@ f5a070f feat: green eclipse glow on avatar when Beni Öner is active
 2e8e3c0 fix: wire Kim Baktı header icon click in main script block
 5830ae9 fix: pointer cursor on button.bento-card (Özel Teklifler)
 5358245 feat: move Kim Baktı to header icon bar
-06daba0 fix: İş Görüşmeleri card clickable, header rename, cursor on bento cards
+06daba0 fix: Mülakat card clickable, header rename, cursor on bento cards
 dfb0d6e fix: remove 'Detayları gör' link from Kim Baktı card
 43e2b01 feat: replace donut chart with horizontal progress bar
 c8cbcbd fix: expand abbreviated competency names to full Turkish
@@ -129,14 +129,10 @@ a228843 feat: premium bento grid reading view + full Korn Ferry competency conte
 - Profil Merkezi: 4 kolon → 3 kolon, Kişisel Bilgiler + Tercihler span 2
 - Markalar: 4 kolon bento box (tall 1x2, wide 2x1, large 2x2 kartlar)
 
-**13. İş Görüşmeleri Panel Polish**
-- STAR quad card: turuncu arka plan, beyaz hücreler, navy aktif
-- İnteraktif: tıkla → sağda açıklama
-- Carousel: STAR örneği 6 slide
-- Yapın/Yapmayın: ayrı turuncu/navy kartlar
-- Çıkarım: slim navy banner
-- Rol seçim: navy gradient card + "Başla" butonu
-- Intro + rol seç yan yana (span 1 + span 2)
+**13. Mülakat Koçu Panel (eski İş Görüşmeleri)**
+- Tamamen yeniden tasarlandı → 7-screen guided flow (Session 7'de son hali)
+- ~~STAR quad card, carousel, yapın/yapmayın ayrı kartlar~~ → bento grid landing + collapsible STAR
+- Rol seçim, lobby, competency intro, practice, completion, session_complete ekranları eklendi
 
 **14. Teklifler v2 — Freemium/Premium Toggle**
 - Yeni dosya: `profil-teklifler.js` tamamen yeniden yazıldı (377 satır)
@@ -221,7 +217,7 @@ a228843 feat: premium bento grid reading view + full Korn Ferry competency conte
 - `grid-auto-flow:dense` boşlukları otomatik doldurur
 - Responsive: 900px 3-kolon, 600px 2-kolon, 400px 1-kolon
 
-**24. İş Görüşmeleri Panel Fix**
+**24. Mülakat Koçu Panel Fix (eski İş Görüşmeleri)**
 - Rol dropdown ve "Başla" butonu hiza düzeltmesi
 - İkisi de sabit `height:44px` ile eşitlendi
 
@@ -250,8 +246,80 @@ a942127 fix: remove website/instagram link icons from brand card back
 - Seed verisi Management API ile deploy edildi (042 schema + 042a seed)
 - Commit: `b0c3b1b`
 
+### Session 7 — 20 Mart 2026 (Mülakat Koçu Unification)
+
+**26. Yetkinlik + İş Görüşmeleri → Mülakat Koçu Birleşimi**
+
+Aday tarafında iki ayrı ürün (`Yetkinliklerim` + `İş Görüşmeleri`) tek bir `Mülakat Koçu` deneyimine birleştirildi.
+
+**Ürün Kapsamı:**
+- Yetkinlik öğrenimi (güçlü sinyaller, risk sinyalleri, aşırı kullanım)
+- Tek-soru mülakat pratiği (289 yetkinlik bazlı soru, 29 yetkinlik)
+- `Ne Aranır?` koçluk paneli (skilled / lessskilled / overused)
+- STAR+T ipucu (açılır/kapanır)
+- Gelişim Günlüğü (STAR taslak kaydetme)
+- Freemium gating (FREE_COMP_LIMIT=2, FREE_Q_PER_COMP=3, FREE_SWAP_LIMIT=2)
+
+**7-Screen Flow:**
+```
+star_intro → role_select → lobby → competency_intro → practice → completion → session_complete
+```
+
+**Dosya Değişiklikleri:**
+- `profil-isgorusmeleri.js` → `profil-mulakatkocu.js` (git mv ile rename)
+- `profil.html`: script tag güncellendi, panel comment güncellendi, navigation birleştirildi
+- `profil-yetkinlik.js`: bridge comment güncellendi (veri kaynağı rolü korundu)
+- `docs/mulakat-theme-reference.md`: yeni referans dokümanı oluşturuldu
+
+**Navigasyon Birleşimi:**
+- Header: tek `Mülakat Koçu` butonu (`data-panel="mulakat"`)
+- Bottom nav: tek `Mülakat Koçu` girişi
+- Dashboard bento card: tek `Mülakat Koçu` kartı
+- Eski ayrı `Yetkinliklerim` girişleri kaldırıldı
+
+**Runtime Contract (değişmedi):**
+- Panel key: `mulakat`
+- Loader: `window._htLoadMulakat()`
+- DOM target: `panel-mulakat`
+- Data bridge: `window._htYetkinlikData` (ANCHORS, ROLE_COMP_MAP, COMP_NAMES, COMP_KF, FREE_LIMIT)
+
+**Persistence:**
+- `sessionStorage`: flow state (current screen, selected role, comp queue, question index)
+- `localStorage`: star_seen flag, recent questions, journal drafts (`ht_journal_{compCode}_{qHash}`)
+- Journal drafts survive page refresh and cross-session
+
+**Intro Screen (star_intro):**
+- Navy gradient hero card (product-level landing)
+- Bento grid: Yetkinliği Öğrenin (span 2) + proof stats (span 1, navy) + Soruları Çalışın + Günlüğünüzü Oluşturun + STAR+T collapsible
+- STAR present but secondary (collapsible, not dominant)
+- Proof stats: 29 yetkinlik, 289 yetkinlik bazlı soru, gelişim günlüğü
+
+**Design System Alignment:**
+- All card surfaces follow bento spec: 16px radius, 24px hero, `0 2px 8px / 0 8px 20px` shadow, 16px gap
+- Typography: Bricolage Grotesque headings (16px/700), Plus Jakarta Sans body (12px/400), DM Mono data
+- Colors: Vermillion #C94E28 (primary), Navy #1E2D5E (authority), bg-surface, border-subtle
+
+**Referans Dokümanlar:**
+- `docs/mulakat-theme-reference.md` — PDF kaynak model, veri kontratı, V1/V2 entegrasyon planı
+- `.agents/skills/bento-grid-design/SKILL.md` — tasarım sistemi kuralları
+
+**27. Intro Screen Micro-Polish**
+- Proof card copy: `gerçek soru` → `yetkinlik bazlı soru`, `∞` → pen SVG icon
+- STAR card: `.ig-lcard` wrapper kaldırıldı → `.ig-landing-star` direct grid child
+- Inline style overrides → CSS classes (`.ig-landing-star-desc`, `.ig-proof-num svg`)
+- Card title size: 15px → 16px (dashboard `.bento-title` ile uyumlu)
+- STAR card hover lift + transition eklendi
+
+**28. Dosya Rename & Copy Consistency**
+- `profil-isgorusmeleri.js` → `profil-mulakatkocu.js` (tüm referanslar güncellendi)
+- Hero subtitle: `gerçek sorularla pratik yapın` → `yetkinlik bazlı sorularla pratik yapın`
+- Cache bust: `v=20260320a` → `v=20260320b`
+
 ### Sonraki Adımlar
 - [x] ~~Migration 042 → competency tabloları~~ ✅ Deployed
+- [x] ~~Mülakat Koçu unification (Yetkinlik + İş Görüşmeleri → tek ürün)~~ ✅ Session 7
+- [ ] Mülakat Koçu: Günlüğüm / journal review surface (taslakları gözden geçirme ekranı)
+- [ ] Mülakat Koçu: AI scoring / feedback on journal drafts
 - [ ] profil-yetkinlik.js → DB'den veri çekmeye geçiş (hardcoded ANCHORS → Supabase query)
 - [ ] candidate_competencies save/load entegrasyonu (aday yetkinlik rating'leri kalıcı)
 - [ ] İşveren kampanya wizard'ı (ik.html)
@@ -324,7 +392,7 @@ DM Mono              → data/numbers
 ```
 **Yasaklar:** Inter, Roboto, purple gradients (#8B5CF6 kaldırıldı), "röportaj" (her zaman "mülakat" veya "iş görüşmesi"), random greys (#aaa, #ccc etc. → design system greys)
 
-**Layout:** Bento grid varsayılan tasarım yaklaşımı — yeni UI bileşenlerinde asimetrik kart boyutları (`grid-column: span 2`) ile modern, dinamik grid kullanılır. Referans: `profil-yetkinlik.js` bento grid implementasyonu.
+**Layout:** Bento grid varsayılan tasarım yaklaşımı — yeni UI bileşenlerinde asimetrik kart boyutları (`grid-column: span 2`) ile modern, dinamik grid kullanılır. Referans: `.agents/skills/bento-grid-design/SKILL.md`, `profil-mulakatkocu.js` landing screen, `profil-yetkinlik.js` bento grid implementasyonu.
 
 ---
 
@@ -366,7 +434,7 @@ gizlilik.html, kvkk.html, kullanim-sartlari.html, cerez-politikasi.html
 | profil-ui.js | ~3100+ lines — flip cards, brand colors, merkez cards, preview modal, toggle logic, retry logic |
 | profil-settings.js | Settings panel, deletion banner |
 | profil-yetkinlik.js | Competency wizard v2 — 29 yetkinlik, bento grid, Korn Ferry content, role-based mapping |
-| profil-isgorusmeleri.js | Interview prep — STAR technique, 289 questions, carousel, bento grid |
+| profil-mulakatkocu.js | Mülakat Koçu — 7-screen interview coaching flow, 289 questions, competency coaching, development journal |
 | profil-teklifler.js | Teklifler v2 — freemium/premium toggle, carousel, demo campaigns, frosted glass gate |
 | profil-premium.js | Premium panel — features showcase, plan cards, pricing |
 | profil-markalar.js | Markalar panel — brand cards, flip, follow, search, segment pills (extracted from profil-ui.js) |
@@ -733,7 +801,7 @@ if(sessionStorage.getItem('ht_gate')!=='ok'){window.location.replace('gate.html'
 - Applies to: experience cards, education rows, language rows, certificate rows, target role rows
 
 ### Dashboard Lab Section Removal ✅ (pushed — 44d711f)
-- İş Görüşmeleri and Yetkinliklerim cards moved from Laboratuvar section to main bento grid
+- Mülakat Koçu card (eski İş Görüşmeleri + Yetkinliklerim) moved from Laboratuvar section to main bento grid
 - Lab section header (🧪 Laboratuvar) completely removed
 - Premium Yan Haklar card stays in main grid
 - CSS cleaned: `.lab-section/.lab-header/.lab-title/.lab-desc/.lab-icon` removed, `.lab-grid .bento-card.locked` → `.bento-card.locked`
@@ -869,12 +937,14 @@ git add [dosya] && git commit -m "mesaj" && git push origin main
 Propagation: ~40 saniye → hard refresh (Cmd+Shift+R)
 
 ### Cache Busting
-profil.html JS imports: `?v=YYYYMMDD` query string. Her deploy'da bump et:
+profil.html JS imports: `?v=YYYYMMDDx` query string. Her deploy'da bump et:
 ```html
-<script src="profil-core.js?v=20260316"></script>
-<script src="profil-data.js?v=20260316"></script>
-<script src="profil-ui.js?v=20260316"></script>
-<script src="profil-settings.js?v=20260316"></script>
+<script src="profil-core.js?v=20260317d"></script>
+<script src="profil-data.js?v=20260317d"></script>
+<script src="profil-ui.js?v=20260319a"></script>
+<script src="profil-yetkinlik.js?v=20260319b"></script>
+<script src="profil-mulakatkocu.js?v=20260320b"></script>
+<script src="profil-settings.js?v=20260317d"></script>
 ```
 
 ### Cursor Workflow
@@ -974,9 +1044,11 @@ cat docs/handoff.md
 5. ~~**Header modernization**~~ ✅ Glassmorphic float header + avatar dropdown
 6. ~~**Yetkinlik Wizard**~~ ✅ v2 rebuild, bento grid, 29 KF yetkinlik, premium reading view
 7. ~~**Dashboard polish**~~ ✅ Progress bar, Kim Baktı header, bento CTA animations, avatar glow
-8. **Minor fix:** `avd-avatar-img` → setAvatarImage() targets (profil-ui.js)
-9. **Migration 042:** competency_definitions + role_competency_map + candidate_competencies
-10. **Brand color audit:** Batch 2 (index, blog, hakkimizda) + Batch 3 (ik, aday, profil.css)
+8. ~~**Mülakat Koçu unification**~~ ✅ 7-screen flow, competency coaching, journal, file rename
+9. **Mülakat Koçu V2:** Günlüğüm review surface, AI feedback on drafts, design polish
+10. **Minor fix:** `avd-avatar-img` → setAvatarImage() targets (profil-ui.js)
+11. **Migration 042:** competency_definitions + role_competency_map + candidate_competencies
+12. **Brand color audit:** Batch 2 (index, blog, hakkimizda) + Batch 3 (ik, aday, profil.css)
 11. **Dark mode remaining:** profil-settings.js alert→modal (7 instances), ik/giris/gate pages
 12. **P4 — Public pages content review + dark mode expansion + performance**
 

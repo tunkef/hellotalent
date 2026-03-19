@@ -1,5 +1,5 @@
 /**
- * profil-isgorusmeleri.js — Mülakat Koçu (Interview Coaching) Panel
+ * profil-mulakatkocu.js — Mülakat Koçu (Interview Coaching) Panel
  * 7-screen Mülakat Koçu flow: star_intro → role_select → lobby → competency_intro → practice → completion → session_complete
  * Depends on profil-yetkinlik.js bridge: window._htYetkinlikData
  * All innerHTML content comes from hardcoded constants — no user input, no XSS risk.
@@ -631,7 +631,7 @@ function injectCSS() {
   css += '.ig-benefit-text{font-family:"Plus Jakarta Sans",sans-serif;font-size:13px;color:var(--text-secondary,#4B5563);line-height:1.6}';
 
   /* Role card */
-  css += '.ig-role-card{background:linear-gradient(135deg,#2A3F7A 0%,#1E2D5E 50%,#162247 100%);border:1px solid rgba(255,255,255,.1) !important;border-radius:16px;padding:20px;text-align:center;transition:all .3s ease;cursor:pointer;display:flex;flex-direction:column;justify-content:center;color:#fff}';
+  css += '.ig-role-card{background:linear-gradient(135deg,#2A3F7A 0%,#1E2D5E 50%,#162247 100%);border:1px solid rgba(255,255,255,.1) !important;border-radius:16px;padding:20px;text-align:center;transition:all .3s ease;cursor:pointer;display:flex;flex-direction:column;justify-content:center;color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.08),0 8px 20px rgba(0,0,0,.06)}';
   css += '.ig-role-card .ig-role-label{color:#fff !important}';
   css += '.ig-role-card .ig-role-desc{color:rgba(255,255,255,.7) !important}';
   css += '.ig-role-label{font-family:"Bricolage Grotesque",sans-serif;font-size:15px;font-weight:700;color:var(--text-primary,#111);margin-bottom:8px}';
@@ -648,8 +648,8 @@ function injectCSS() {
   css += '.ig-nav-pill svg{width:14px;height:14px}';
 
   /* Lobby comp cards */
-  css += '.ig-lobby-card{background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF);border-radius:16px;padding:20px;cursor:pointer;transition:all .3s ease;animation:igSlideUp .35s ease both}';
-  css += '.ig-lobby-card:hover{box-shadow:0 6px 20px rgba(0,0,0,.06);transform:translateY(-2px);border-color:var(--verm,#C94E28)}';
+  css += '.ig-lobby-card{background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF);border-radius:16px;padding:20px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.08),0 8px 20px rgba(0,0,0,.06);transition:all .3s ease;animation:igSlideUp .35s ease both}';
+  css += '.ig-lobby-card:hover{box-shadow:0 8px 24px rgba(0,0,0,.06);transform:translateY(-2px);border-color:var(--verm,#C94E28)}';
   css += '.ig-lobby-card.ig-completed{border-color:rgba(201,78,40,.3);background:rgba(201,78,40,.02)}';
   css += '.ig-lobby-comp-name{font-family:"Bricolage Grotesque",sans-serif;font-size:15px;font-weight:700;color:var(--text-primary,#111);margin-bottom:4px}';
   css += '.ig-lobby-comp-kf{font-family:"DM Mono",monospace;font-size:10px;color:var(--text-muted,#6B7280);letter-spacing:.4px;margin-bottom:8px}';
@@ -675,7 +675,7 @@ function injectCSS() {
   css += '.ig-practice-progress{font-family:"DM Mono",monospace;font-size:12px;color:var(--text-muted,#6B7280);background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF);border-radius:20px;padding:4px 12px}';
 
   /* Question card (single, centered) */
-  css += '.ig-q-focus{background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF);border-radius:20px;padding:32px 28px;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,.06);animation:igFadeIn .3s ease}';
+  css += '.ig-q-focus{background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF);border-radius:16px;padding:32px 28px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.08),0 8px 20px rgba(0,0,0,.06);animation:igFadeIn .3s ease}';
   css += '.ig-q-theme{font-family:"Bricolage Grotesque",sans-serif;font-size:12px;font-weight:700;color:var(--verm,#C94E28);letter-spacing:.3px;margin-bottom:12px;text-transform:uppercase}';
   css += '.ig-q-text{font-family:"Plus Jakarta Sans",sans-serif;font-size:16px;color:var(--text-primary,#111);line-height:1.7;font-style:italic;margin-bottom:24px}';
 
@@ -703,18 +703,18 @@ function injectCSS() {
   css += '.ig-star-hint-desc{font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;color:var(--text-secondary,#4B5563);line-height:1.6;padding-top:4px}';
 
   /* Completion screen */
-  css += '.ig-completion{max-width:480px;margin:40px auto;text-align:center;animation:igFadeIn .3s ease}';
-  css += '.ig-completion-icon{width:64px;height:64px;background:rgba(201,78,40,.08);border-radius:20px;display:flex;align-items:center;justify-content:center;margin:0 auto 20px}';
+  css += '.ig-completion{max-width:520px;margin:24px auto;text-align:center;animation:igFadeIn .3s ease;background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF);border-radius:16px;padding:36px 28px;box-shadow:0 2px 8px rgba(0,0,0,.08),0 8px 20px rgba(0,0,0,.06)}';
+  css += '.ig-completion-icon{width:64px;height:64px;background:rgba(201,78,40,.08);border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 20px}';
   css += '.ig-completion-icon svg{width:32px;height:32px;color:var(--verm,#C94E28)}';
   css += '.ig-completion-title{font-family:"Bricolage Grotesque",sans-serif;font-size:22px;font-weight:800;color:var(--text-primary,#111);margin-bottom:8px}';
   css += '.ig-completion-desc{font-family:"Plus Jakarta Sans",sans-serif;font-size:14px;color:var(--text-muted,#6B7280);line-height:1.6;margin-bottom:24px}';
   css += '.ig-completion-stats{display:flex;gap:16px;justify-content:center;margin-bottom:24px}';
-  css += '.ig-stat{background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF);border-radius:12px;padding:16px 20px;min-width:100px}';
+  css += '.ig-stat{background:var(--bg-muted,#F7F6F4);border:1px solid var(--border-subtle,#E5E3DF);border-radius:16px;padding:16px 20px;min-width:100px}';
   css += '.ig-stat-num{font-family:"DM Mono",monospace;font-size:24px;font-weight:700;color:var(--verm,#C94E28)}';
   css += '.ig-stat-label{font-family:"Plus Jakarta Sans",sans-serif;font-size:11px;color:var(--text-muted,#6B7280);margin-top:4px}';
 
   /* Progress strip (lobby) */
-  css += '.ig-progress-strip{display:flex;align-items:center;gap:12px;margin-bottom:20px;padding:12px 16px;background:linear-gradient(135deg,rgba(201,78,40,.04) 0%,rgba(201,78,40,.08) 100%);border:1px solid rgba(201,78,40,.12);border-radius:12px;animation:igFadeIn .3s ease}';
+  css += '.ig-progress-strip{display:flex;align-items:center;gap:12px;margin-bottom:20px;padding:12px 16px;background:linear-gradient(135deg,rgba(201,78,40,.04) 0%,rgba(201,78,40,.08) 100%);border:1px solid rgba(201,78,40,.12);border-radius:16px;animation:igFadeIn .3s ease}';
   css += '.ig-progress-bar{flex:1;height:6px;background:var(--border-subtle,#E5E3DF);border-radius:3px;overflow:hidden}';
   css += '.ig-progress-fill{height:100%;background:var(--verm,#C94E28);border-radius:3px;transition:width .4s ease}';
   css += '.ig-progress-text{font-family:"DM Mono",monospace;font-size:11px;color:var(--verm,#C94E28);white-space:nowrap;font-weight:600}';
@@ -727,7 +727,7 @@ function injectCSS() {
   css += '.ig-session-progress{font-family:"DM Mono",monospace;font-size:10px;color:var(--text-muted,#6B7280);background:rgba(201,78,40,.06);border:1px solid rgba(201,78,40,.12);border-radius:20px;padding:3px 10px}';
 
   /* Premium nudge (practice swap exhaustion) */
-  css += '.ig-swap-nudge{margin-top:16px;padding:12px 16px;background:linear-gradient(135deg,rgba(30,45,94,.03) 0%,rgba(30,45,94,.06) 100%);border:1px solid rgba(30,45,94,.1);border-radius:12px;text-align:center;animation:igFadeIn .3s ease}';
+  css += '.ig-swap-nudge{margin-top:16px;padding:12px 16px;background:linear-gradient(135deg,rgba(30,45,94,.03) 0%,rgba(30,45,94,.06) 100%);border:1px solid rgba(30,45,94,.1);border-radius:16px;text-align:center;animation:igFadeIn .3s ease}';
   css += '.ig-swap-nudge-text{font-family:"Plus Jakarta Sans",sans-serif;font-size:11px;color:var(--navy,#1E2D5E);line-height:1.5}';
   css += '.ig-swap-nudge-cta{display:inline-block;margin-top:6px;font-family:"Plus Jakarta Sans",sans-serif;font-size:11px;font-weight:700;color:var(--verm,#C94E28);cursor:pointer;text-decoration:none;border:none;background:none;padding:0}';
   css += '.ig-swap-nudge-cta:hover{text-decoration:underline}';
@@ -753,34 +753,34 @@ function injectCSS() {
 
   /* Competency Intro screen */
   css += '.ig-intro-wrap{max-width:640px;margin:0 auto;animation:igFadeIn .3s ease}';
-  css += '.ig-intro-hero{background:linear-gradient(135deg,#2A3F7A 0%,#1E2D5E 50%,#162247 100%);border-radius:16px;padding:28px 24px;margin-bottom:20px;color:#fff}';
+  css += '.ig-intro-hero{background:linear-gradient(135deg,#2A3F7A 0%,#1E2D5E 50%,#162247 100%);border-radius:24px;padding:28px 24px;margin-bottom:16px;color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.08),0 8px 20px rgba(0,0,0,.06)}';
   css += '.ig-intro-comp-name{font-family:"Bricolage Grotesque",sans-serif;font-size:22px;font-weight:800;margin-bottom:6px}';
   css += '.ig-intro-comp-def{font-family:"Plus Jakarta Sans",sans-serif;font-size:13px;color:rgba(255,255,255,.75);line-height:1.6}';
-  css += '.ig-intro-why{background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF);border-radius:16px;padding:20px 24px;margin-bottom:16px}';
+  css += '.ig-intro-why{background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF);border-radius:16px;padding:20px 24px;margin-bottom:16px;box-shadow:0 2px 8px rgba(0,0,0,.08),0 8px 20px rgba(0,0,0,.06)}';
   css += '.ig-intro-why-title{font-family:"Bricolage Grotesque",sans-serif;font-size:14px;font-weight:700;color:var(--text-primary,#111);margin-bottom:8px;display:flex;align-items:center;gap:8px}';
   css += '.ig-intro-why-title svg{width:18px;height:18px;color:var(--verm,#C94E28)}';
   css += '.ig-intro-why-text{font-family:"Plus Jakarta Sans",sans-serif;font-size:13px;color:var(--text-secondary,#4B5563);line-height:1.7}';
-  css += '.ig-intro-signals{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}';
-  css += '.ig-intro-signal-card{background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF);border-radius:14px;padding:16px 18px}';
+  css += '.ig-intro-signals{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}';
+  css += '.ig-intro-signal-card{background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF);border-radius:16px;padding:16px 18px}';
   css += '.ig-intro-signal-full{grid-column:1/-1}';
-  css += '.ig-intro-star-block{background:linear-gradient(135deg,rgba(201,78,40,.03) 0%,rgba(201,78,40,.06) 100%);border:1px solid rgba(201,78,40,.12);border-radius:16px;padding:20px 24px;margin-bottom:20px}';
+  css += '.ig-intro-star-block{background:linear-gradient(135deg,rgba(201,78,40,.03) 0%,rgba(201,78,40,.06) 100%);border:1px solid rgba(201,78,40,.12);border-radius:16px;padding:20px 24px;margin-bottom:16px}';
   css += '.ig-intro-star-title{font-family:"Bricolage Grotesque",sans-serif;font-size:14px;font-weight:700;color:var(--verm,#C94E28);margin-bottom:10px;display:flex;align-items:center;gap:8px}';
   css += '.ig-intro-star-text{font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;color:var(--text-secondary,#4B5563);line-height:1.7}';
   css += '.ig-intro-star-letters{display:flex;gap:6px;margin-top:12px}';
   css += '.ig-intro-star-badge{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:"Bricolage Grotesque",sans-serif;font-size:15px;font-weight:900;color:#fff}';
-  css += '.ig-intro-cta-row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}';
+  css += '.ig-intro-cta-row{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}';
 
   /* Journal panel (practice screen) */
   css += '.ig-journal-wrap{margin-top:20px;animation:igFadeIn .3s ease}';
-  css += '.ig-journal-toggle{display:flex;align-items:center;gap:8px;width:100%;padding:14px 18px;background:linear-gradient(135deg,rgba(30,45,94,.03) 0%,rgba(30,45,94,.06) 100%);border:1px solid rgba(30,45,94,.1);border-radius:14px;cursor:pointer;transition:all .2s;text-align:left}';
+  css += '.ig-journal-toggle{display:flex;align-items:center;gap:8px;width:100%;padding:14px 18px;background:linear-gradient(135deg,rgba(30,45,94,.03) 0%,rgba(30,45,94,.06) 100%);border:1px solid rgba(30,45,94,.1);border-radius:16px;cursor:pointer;transition:all .2s;text-align:left}';
   css += '.ig-journal-toggle:hover{border-color:rgba(30,45,94,.2);background:linear-gradient(135deg,rgba(30,45,94,.04) 0%,rgba(30,45,94,.08) 100%)}';
-  css += '.ig-journal-toggle.active{border-radius:14px 14px 0 0;border-bottom-color:transparent}';
+  css += '.ig-journal-toggle.active{border-radius:16px 16px 0 0;border-bottom-color:transparent}';
   css += '.ig-journal-toggle svg{width:16px;height:16px;color:var(--navy,#1E2D5E);flex-shrink:0}';
   css += '.ig-journal-toggle-label{flex:1;font-family:"Bricolage Grotesque",sans-serif;font-size:13px;font-weight:700;color:var(--navy,#1E2D5E)}';
   css += '.ig-journal-toggle-hint{font-family:"Plus Jakarta Sans",sans-serif;font-size:10px;color:var(--text-muted,#6B7280)}';
   css += '.ig-journal-toggle-arrow{font-size:12px;color:var(--text-muted,#6B7280);transition:transform .2s}';
   css += '.ig-journal-toggle.active .ig-journal-toggle-arrow{transform:rotate(180deg)}';
-  css += '.ig-journal-body{background:linear-gradient(135deg,rgba(30,45,94,.02) 0%,rgba(30,45,94,.04) 100%);border:1px solid rgba(30,45,94,.1);border-top:none;border-radius:0 0 14px 14px;padding:20px 18px;animation:igSlideUp .2s ease}';
+  css += '.ig-journal-body{background:linear-gradient(135deg,rgba(30,45,94,.02) 0%,rgba(30,45,94,.04) 100%);border:1px solid rgba(30,45,94,.1);border-top:none;border-radius:0 0 16px 16px;padding:20px 18px;animation:igSlideUp .2s ease}';
   css += '.ig-journal-intro{font-family:"Plus Jakarta Sans",sans-serif;font-size:11px;color:var(--text-muted,#6B7280);line-height:1.5;margin-bottom:14px;font-style:italic}';
   css += '.ig-journal-field{margin-bottom:14px}';
   css += '.ig-journal-field:last-of-type{margin-bottom:8px}';
@@ -800,6 +800,74 @@ function injectCSS() {
   css += '.ig-lobby-badge-draft{background:rgba(30,45,94,.08);color:var(--navy,#1E2D5E)}';
   css += '.ig-lobby-badge-draft svg{width:12px;height:12px}';
 
+  /* Landing screen (star_intro — Mülakat Koçu product landing) */
+  css += '.ig-landing{animation:igFadeIn .3s ease}';
+
+  /* Hero — navy gradient, full-width, editorial feel */
+  css += '.ig-landing-hero{background:linear-gradient(135deg,#2A3F7A 0%,#1E2D5E 50%,#162247 100%);border-radius:24px;padding:40px 32px 36px;color:#fff;text-align:center;margin-bottom:16px;position:relative;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.08),0 8px 20px rgba(0,0,0,.06)}';
+  css += '.ig-landing-hero::before{content:"";position:absolute;top:-40%;right:-20%;width:60%;height:120%;background:radial-gradient(ellipse,rgba(201,78,40,.1) 0%,transparent 70%);pointer-events:none}';
+  css += '.ig-landing-hero::after{content:"";position:absolute;bottom:-30%;left:-15%;width:50%;height:100%;background:radial-gradient(ellipse,rgba(30,45,94,.3) 0%,transparent 60%);pointer-events:none}';
+  css += '.ig-landing-badge{display:inline-flex;align-items:center;gap:6px;font-family:"DM Mono",monospace;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:16px}';
+  css += '.ig-landing-badge::before,.ig-landing-badge::after{content:"";width:20px;height:1px;background:rgba(255,255,255,.2)}';
+  css += '.ig-landing-title{font-family:"Bricolage Grotesque",sans-serif;font-size:32px;font-weight:800;letter-spacing:-.5px;margin-bottom:10px;line-height:1.1}';
+  css += '.ig-landing-subtitle{font-family:"Plus Jakarta Sans",sans-serif;font-size:14px;color:rgba(255,255,255,.65);line-height:1.6;max-width:380px;margin:0 auto 28px}';
+  css += '.ig-landing-cta{display:inline-flex;align-items:center;gap:8px;font-family:"Plus Jakarta Sans",sans-serif;font-size:15px;font-weight:700;color:var(--navy,#1E2D5E);background:#fff;border:none;border-radius:12px;padding:14px 36px;cursor:pointer;transition:all .25s;box-shadow:0 4px 16px rgba(0,0,0,.15);position:relative;z-index:1}';
+  css += '.ig-landing-cta:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,0,0,.2)}';
+  css += '.ig-landing-cta svg{width:18px;height:18px}';
+
+  /* Bento grid — asymmetric layout below hero */
+  css += '.ig-landing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:16px}';
+  css += '.ig-landing-grid>.ig-lcard{background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF);border-radius:16px;padding:24px;position:relative;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.08),0 8px 20px rgba(0,0,0,.06);transition:box-shadow .3s ease,transform .3s ease;animation:igSlideUp .35s ease both}';
+  css += '.ig-landing-grid>.ig-lcard:nth-child(1){animation-delay:0s}';
+  css += '.ig-landing-grid>.ig-lcard:nth-child(2){animation-delay:.05s}';
+  css += '.ig-landing-grid>.ig-lcard:nth-child(3){animation-delay:.1s}';
+  css += '.ig-landing-grid>.ig-lcard:nth-child(4){animation-delay:.15s}';
+  css += '.ig-landing-grid>.ig-lcard:hover{box-shadow:0 8px 24px rgba(0,0,0,.06);transform:translateY(-1px)}';
+  css += '.ig-lcard.span-2{grid-column:span 2}';
+  css += '.ig-lcard.span-3{grid-column:1/-1}';
+
+  /* Pillar card icon */
+  css += '.ig-lcard-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:12px}';
+  css += '.ig-lcard-icon svg{width:20px;height:20px}';
+  css += '.ig-lcard-icon.verm{background:rgba(201,78,40,.08);color:var(--verm,#C94E28)}';
+  css += '.ig-lcard-icon.navy{background:rgba(30,45,94,.08);color:var(--navy,#1E2D5E)}';
+  css += '.ig-lcard-icon.green{background:rgba(45,138,86,.08);color:#2D8A56}';
+  css += '.ig-lcard-title{font-family:"Bricolage Grotesque",sans-serif;font-size:16px;font-weight:700;color:var(--text-primary,#111);margin-bottom:4px;letter-spacing:-.2px}';
+  css += '.ig-lcard-desc{font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;color:var(--text-muted,#6B7280);line-height:1.5}';
+
+  /* Stats proof card — navy bg */
+  css += '.ig-lcard.ig-lcard-proof{background:linear-gradient(135deg,#2A3F7A 0%,#1E2D5E 50%,#162247 100%);border:1px solid rgba(255,255,255,.1)}';
+  css += '.ig-proof-row{display:flex;align-items:center;gap:10px;margin-bottom:12px}';
+  css += '.ig-proof-row:last-child{margin-bottom:0}';
+  css += '.ig-proof-num{font-family:"DM Mono",monospace;font-size:20px;font-weight:700;color:#fff;min-width:36px}';
+  css += '.ig-proof-label{font-family:"Plus Jakarta Sans",sans-serif;font-size:11px;color:rgba(255,255,255,.55);line-height:1.4}';
+  css += '.ig-proof-num svg{width:20px;height:20px}';
+
+  /* STAR collapsible — secondary weight */
+  css += '.ig-landing-star{background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF);border-radius:16px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.08),0 8px 20px rgba(0,0,0,.06);transition:box-shadow .3s ease,transform .3s ease;animation:igSlideUp .35s ease both;animation-delay:.2s}';
+  css += '.ig-landing-star-header{display:flex;align-items:center;gap:12px;padding:16px 20px;cursor:pointer;transition:background .2s}';
+  css += '.ig-landing-star:hover{box-shadow:0 8px 24px rgba(0,0,0,.06);transform:translateY(-1px)}';
+  css += '.ig-landing-star-header:hover{background:rgba(201,78,40,.02)}';
+  css += '.ig-landing-star-badges{display:flex;gap:3px}';
+  css += '.ig-landing-star-letter{width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:"Bricolage Grotesque",sans-serif;font-size:12px;font-weight:900;color:#fff}';
+  css += '.ig-landing-star-letter.verm{background:var(--verm,#C94E28)}.ig-landing-star-letter.navy{background:var(--navy,#1E2D5E)}';
+  css += '.ig-landing-star-label{flex:1;font-family:"Plus Jakarta Sans",sans-serif;font-size:13px;font-weight:600;color:var(--text-secondary,#4B5563)}';
+  css += '.ig-landing-star-arrow{font-size:12px;color:var(--text-muted,#6B7280);transition:transform .25s}';
+  css += '.ig-landing-star.open .ig-landing-star-arrow{transform:rotate(180deg)}';
+  css += '.ig-landing-star-body{display:none;padding:0 20px 20px;animation:igFadeIn .2s ease}';
+  css += '.ig-landing-star.open .ig-landing-star-body{display:block}';
+  css += '.ig-landing-star-desc{font-family:"Plus Jakarta Sans",sans-serif;font-size:11px;color:var(--text-muted,#6B7280);line-height:1.6;margin-bottom:12px}';
+  css += '.ig-landing-star-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}';
+  css += '.ig-landing-star-step{display:flex;align-items:flex-start;gap:10px;padding:12px;background:var(--bg-muted,#F7F6F4);border-radius:10px}';
+  css += '.ig-landing-star-step-letter{flex-shrink:0;width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:"Bricolage Grotesque",sans-serif;font-size:12px;font-weight:900;color:#fff}';
+  css += '.ig-landing-star-step-text{font-family:"Plus Jakarta Sans",sans-serif;font-size:11px;color:var(--text-secondary,#4B5563);line-height:1.5}';
+  css += '.ig-landing-star-step-name{font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;font-weight:600;color:var(--text-primary,#111);margin-bottom:2px}';
+
+  /* Returning-user skip */
+  css += '.ig-landing-skip{text-align:center;margin-top:16px;animation:igFadeIn .3s ease .28s both}';
+  css += '.ig-landing-skip-link{font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;font-weight:600;color:var(--verm,#C94E28);cursor:pointer;border:none;background:none;padding:6px 12px;transition:opacity .2s;opacity:.7}';
+  css += '.ig-landing-skip-link:hover{opacity:1}';
+
   /* Locked comp preview (session_complete) */
   css += '.ig-locked-preview{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:12px 0}';
   css += '.ig-locked-tag{display:inline-flex;align-items:center;gap:4px;font-family:"Plus Jakarta Sans",sans-serif;font-size:11px;color:var(--text-muted,#6B7280);background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF);border-radius:20px;padding:4px 12px}';
@@ -817,6 +885,11 @@ function injectCSS() {
   css += '.ig-progress-strip{flex-wrap:wrap}';
   css += '.ig-intro-signals{grid-template-columns:1fr}';
   css += '.ig-intro-signal-full{grid-column:1/-1}';
+  css += '.ig-landing-grid{grid-template-columns:1fr}';
+  css += '.ig-lcard.span-2{grid-column:1/-1}';
+  css += '.ig-landing-star-grid{grid-template-columns:1fr}';
+  css += '.ig-landing-title{font-size:24px}';
+  css += '.ig-landing-hero{padding:28px 20px 24px;border-radius:16px}';
   css += '}';
 
   var el = document.createElement('style');
@@ -848,60 +921,86 @@ function renderStarIntro() {
   var d = STAR_CONTENT;
   var html = '';
 
-  html += '<div class="g-hero"><div class="g-hero-inner"><div style="font-family:\'Bricolage Grotesque\',sans-serif;font-size:20px;font-weight:800;color:#fff;">M\u00FClakat Koçu</div></div></div>';
+  html += '<div class="ig-landing">';
 
-  html += '<div class="ig-bento">';
-
-  /* Intro + skip CTA */
-  html += '<div class="ig-card">';
-  html += '<div class="ig-section-desc" style="font-size:14px;line-height:1.7;color:var(--text-secondary,#4B5563)">' + d.intro + '</div>';
-  if (hasSeenStar()) {
-    html += '<div style="margin-top:14px"><button class="ig-btn ig-btn-answered" id="ig-skip-star">Pratik Yap\u0131n \u2192</button></div>';
-  }
+  /* ── Hero card (outside grid, full-width, editorial) ── */
+  html += '<div class="ig-landing-hero">';
+  html += '<div class="ig-landing-badge">hellotalent.ai</div>';
+  html += '<div class="ig-landing-title">M\u00FClakat Ko\u00E7u</div>';
+  html += '<div class="ig-landing-subtitle">Yetkinlikleri \u00F6\u011Frenin, yetkinlik bazl\u0131 sorularla pratik yap\u0131n, yan\u0131t taslaklar\u0131n\u0131z\u0131 olu\u015Fturun.</div>';
+  html += '<button class="ig-landing-cta" id="ig-start-practice">Ko\u00E7lu\u011Fa Ba\u015Flay\u0131n <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>';
   html += '</div>';
 
-  /* STAR Quad card */
-  html += '<div class="ig-card ig-star-quad-card ig-bento-2">';
-  html += '<div class="ig-star-quad">';
-  html += '<div class="ig-star-row">';
-  var qCls = ['ig-sq-s', 'ig-sq-t', 'ig-sq-a', 'ig-sq-r'];
-  var qLtr = ['S', 'T', 'A', 'R'];
+  /* ── Bento grid — asymmetric composition ── */
+  html += '<div class="ig-landing-grid">';
+
+  /* Row 1: Primary pillar (span 2) + proof stats (span 1) */
+  html += '<div class="ig-lcard span-2">';
+  html += '<div class="ig-lcard-icon verm">' + briefSVG + '</div>';
+  html += '<div class="ig-lcard-title">Yetkinli\u011Fi \u00D6\u011Frenin</div>';
+  html += '<div class="ig-lcard-desc">G\u00FC\u00E7l\u00FC sinyalleri, risk i\u015Faretlerini ve a\u015F\u0131r\u0131 kullan\u0131m tehlikelerini ke\u015Ffedin. M\u00FClakatta neyin arand\u0131\u011F\u0131n\u0131 anlay\u0131n.</div>';
+  html += '</div>';
+
+  html += '<div class="ig-lcard ig-lcard-proof">';
+  html += '<div class="ig-proof-row"><div class="ig-proof-num">29</div><div class="ig-proof-label">yetkinlik</div></div>';
+  html += '<div class="ig-proof-row"><div class="ig-proof-num">289</div><div class="ig-proof-label">yetkinlik bazl\u0131 soru</div></div>';
+  html += '<div class="ig-proof-row"><div class="ig-proof-num">' + penSVG + '</div><div class="ig-proof-label">geli\u015Fim g\u00FCnl\u00FC\u011F\u00FC</div></div>';
+  html += '</div>';
+
+  /* Row 2: Practice (span 1) + Journal (span 1) + STAR ref (span 1) */
+  html += '<div class="ig-lcard">';
+  html += '<div class="ig-lcard-icon navy">' + coachSVG + '</div>';
+  html += '<div class="ig-lcard-title">Sorular\u0131 \u00C7al\u0131\u015F\u0131n</div>';
+  html += '<div class="ig-lcard-desc">Rol\u00FCn\u00FCze \u00F6zel sorularla pratik yap\u0131n, ko\u00E7luk kartlar\u0131yla ne arand\u0131\u011F\u0131n\u0131 g\u00F6r\u00FCn.</div>';
+  html += '</div>';
+
+  html += '<div class="ig-lcard">';
+  html += '<div class="ig-lcard-icon green">' + penSVG + '</div>';
+  html += '<div class="ig-lcard-title">G\u00FCnl\u00FC\u011F\u00FCn\u00FCz\u00FC Olu\u015Fturun</div>';
+  html += '<div class="ig-lcard-desc">STAR+T taslaklar\u0131n\u0131z\u0131 kaydedin, g\u00F6r\u00FC\u015Fmeye haz\u0131r gidin.</div>';
+  html += '</div>';
+
+  /* STAR reference — direct grid child, collapsible */
+  html += '<div class="ig-landing-star" id="ig-star-collapse">';
+  html += '<div class="ig-landing-star-header" id="ig-star-toggle">';
+  html += '<div class="ig-landing-star-badges">';
+  html += '<div class="ig-landing-star-letter verm">S</div>';
+  html += '<div class="ig-landing-star-letter navy">T</div>';
+  html += '<div class="ig-landing-star-letter verm">A</div>';
+  html += '<div class="ig-landing-star-letter navy">R</div>';
+  html += '</div>';
+  html += '<div class="ig-landing-star-label">STAR+T Nedir?</div>';
+  html += '<div class="ig-landing-star-arrow">\u25BE</div>';
+  html += '</div>';
+  html += '<div class="ig-landing-star-body">';
+  html += '<div class="ig-landing-star-desc">' + d.what.desc + '</div>';
+  html += '<div class="ig-landing-star-grid">';
+  var stepColors = ['verm', 'navy', 'verm', 'navy'];
   for (var i = 0; i < 4; i++) {
-    if (i === 2) html += '</div><div class="ig-star-row">';
-    html += '<div class="ig-star-cell ' + qCls[i] + (i === 0 ? ' active' : '') + '" data-star="' + i + '">';
-    html += '<div class="ig-sq-letter">' + qLtr[i] + '</div>';
-    html += '</div>';
-  }
-  html += '</div></div></div>';
-
-  /* STAR Detail */
-  html += '<div class="ig-card ig-star-detail-card ig-bento-full">';
-  html += '<div id="ig-star-detail">' + renderStarDetail(0) + '</div>';
-  html += '</div>';
-
-  /* Takeaway banner */
-  html += '<div class="ig-card ig-takeaway-banner ig-bento-full">';
-  html += '<div class="ig-takeaway-badge">+T</div>';
-  html += '<div class="ig-takeaway-body">';
-  html += '<div class="ig-takeaway-title">\u00C7\u0131kar\u0131m</div>';
-  html += '<div class="ig-takeaway-text">' + d.what.takeaway.desc + '</div>';
-  html += '</div></div>';
-
-  /* Benefits */
-  html += '<div class="ig-section-title ig-bento-full" style="margin-top:4px;margin-bottom:-8px">Neden Etkili?</div>';
-  html += '<div class="ig-benefits-grid ig-bento-full">';
-  for (var b = 0; b < d.benefits.length; b++) {
-    html += '<div class="ig-card ig-benefit-card">';
-    html += '<div class="ig-benefit-num">' + (b + 1) + '</div>';
-    html += '<div class="ig-benefit-text">' + d.benefits[b] + '</div>';
+    var step = d.what.steps[i];
+    html += '<div class="ig-landing-star-step">';
+    html += '<div class="ig-landing-star-step-letter ' + stepColors[i] + '">' + step.letter + '</div>';
+    html += '<div><div class="ig-landing-star-step-name">' + step.tr + '</div>';
+    var firstSentence = step.desc.split(/(?<=[.!?])\s+/)[0] || step.desc;
+    html += '<div class="ig-landing-star-step-text">' + firstSentence + '</div></div>';
     html += '</div>';
   }
   html += '</div>';
-
-  /* CTA to proceed */
-  html += '<div class="ig-bento-full" style="text-align:center;margin-top:8px">';
-  html += '<button class="ig-btn ig-btn-answered" id="ig-start-practice" style="padding:14px 32px;font-size:15px;border-radius:12px">Pratik Yapmaya Ba\u015Flay\u0131n \u2192</button>';
+  html += '<div class="ig-landing-star-step" style="margin-top:10px">';
+  html += '<div class="ig-landing-star-step-letter navy">+T</div>';
+  html += '<div><div class="ig-landing-star-step-name">\u00C7\u0131kar\u0131m</div>';
+  var takeFirstSentence = d.what.takeaway.desc.split(/(?<=[.!?])\s+/)[0] || d.what.takeaway.desc;
+  html += '<div class="ig-landing-star-step-text">' + takeFirstSentence + '</div></div>';
   html += '</div>';
+  html += '</div>'; /* close ig-landing-star-body */
+  html += '</div>'; /* close ig-landing-star */
+
+  html += '</div>'; /* close ig-landing-grid */
+
+  /* ── Returning user skip ── */
+  if (hasSeenStar()) {
+    html += '<div class="ig-landing-skip"><button class="ig-landing-skip-link" id="ig-skip-star">Devam edin \u2192</button></div>';
+  }
 
   html += '</div>';
   return html;
@@ -915,7 +1014,7 @@ function renderRoleSelect() {
   var bridge = getBridge();
   var html = '';
 
-  html += '<div class="ig-nav-pill" id="ig-back-star">' + arrowLeftSVG + ' STAR Rehberi</div>';
+  html += '<div class="ig-nav-pill" id="ig-back-star">' + arrowLeftSVG + ' M\u00FClakat Ko\u00E7u</div>';
 
   html += '<div class="g-hero"><div class="g-hero-inner"><div style="font-family:\'Bricolage Grotesque\',sans-serif;font-size:20px;font-weight:800;color:#fff;">Hedef Pozisyonunuzu Se\u00E7in</div></div></div>';
 
@@ -1383,7 +1482,7 @@ function renderCompletion() {
     : 'Haz\u0131rl\u0131k yapmak fark yarat\u0131r \u2014 bu yetkinli\u011Fi pratik ederek bir ad\u0131m \u00F6ndesiniz.';
   html += '<div style="font-family:\'Plus Jakarta Sans\',sans-serif;font-size:12px;color:var(--text-muted,#6B7280);line-height:1.5;max-width:360px;margin:0 auto 8px">' + draftCopy + '</div>';
 
-  html += '<div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:16px">';
+  html += '<div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-top:16px">';
   html += '<button class="ig-btn ig-btn-swap" id="ig-restart-comp" style="border:1px solid var(--border-subtle,#E5E3DF) !important">Tekrar Pratik Yap\u0131n</button>';
 
   if (allAccessibleDone) {
@@ -1421,7 +1520,7 @@ function renderSessionComplete() {
 
   /* Premium upsell — the main moment */
   if (!S.isPremium && lockedCount > 0) {
-    html += '<div class="ig-card" style="margin-top:24px;text-align:center;border:1px solid rgba(201,78,40,.2)">';
+    html += '<div style="margin-top:24px;text-align:center;background:var(--bg-muted,#F7F6F4);border:1px solid rgba(201,78,40,.15);border-radius:16px;padding:24px">';
     html += '<div style="font-family:\'Bricolage Grotesque\',sans-serif;font-size:17px;font-weight:800;margin-bottom:8px">' + lockedCount + ' yetkinlik daha sizi bekliyor</div>';
     html += '<div class="ig-section-desc" style="margin-bottom:10px"><strong>' + S.role + '</strong> m\u00FClakat\u0131nda de\u011Ferlendirilecek ' + S.comps.length + ' yetkinli\u011Fin tamam\u0131na haz\u0131rlan\u0131n.</div>';
 
@@ -1445,7 +1544,7 @@ function renderSessionComplete() {
     html += '</div>';
   }
 
-  html += '<div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:20px">';
+  html += '<div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-top:20px">';
   html += '<button class="ig-btn ig-btn-swap" id="ig-back-lobby-session" style="border:1px solid var(--border-subtle,#E5E3DF) !important">' + arrowLeftSVG + ' Yetkinliklere D\u00F6n\u00FCn</button>';
   html += '<button class="ig-btn ig-btn-star" id="ig-new-session">Farkl\u0131 Rol Se\u00E7in</button>';
   html += '</div>';
@@ -1496,26 +1595,23 @@ function navigate(screen) {
    ════════════════════════════════════════════════ */
 
 function bindStarIntroEvents() {
-  /* STAR quad clicks */
-  var cells = document.querySelectorAll('.ig-star-cell[data-star]');
-  var detailPanel = document.getElementById('ig-star-detail');
-  cells.forEach(function(cell) {
-    cell.addEventListener('click', function() {
-      var idx = parseInt(this.getAttribute('data-star'), 10);
-      cells.forEach(function(c) { c.classList.remove('active'); });
-      if (idx < 4) cells[idx] && cells[idx].classList.add('active');
-      if (detailPanel) detailPanel.innerHTML = renderStarDetail(idx);
-    });
-  });
-
-  /* Start practice button */
+  /* Start coaching CTA */
   var startBtn = document.getElementById('ig-start-practice');
   if (startBtn) startBtn.addEventListener('click', function() {
     markStarSeen();
     navigate('role_select');
   });
 
-  /* Skip button (returning users) */
+  /* STAR collapsible toggle */
+  var starToggle = document.getElementById('ig-star-toggle');
+  var starCollapse = document.getElementById('ig-star-collapse');
+  if (starToggle && starCollapse) {
+    starToggle.addEventListener('click', function() {
+      starCollapse.classList.toggle('open');
+    });
+  }
+
+  /* Skip link (returning users) */
   var skipBtn = document.getElementById('ig-skip-star');
   if (skipBtn) skipBtn.addEventListener('click', function() {
     navigate('role_select');

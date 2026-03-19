@@ -5,7 +5,7 @@ Bu doküman, `/Users/peopleintk/Desktop/peoplein/interview architect/0- architec
 Amaç:
 - Kaynak PDF'in kullandığı değerlendirme mantığını özetlemek
 - Mevcut Hellotalent veri yapısındaki karşılığını göstermek
-- `profil-isgorusmeleri.js` içinde aday deneyimine nasıl entegre edilmesi gerektiğini netleştirmek
+- `profil-mulakatkocu.js` içinde aday deneyimine nasıl entegre edilmesi gerektiğini netleştirmek
 
 ## 1. Kaynak PDF'den Çıkan Model
 
@@ -42,7 +42,7 @@ PDF taranmış/görsel tabanlı olduğu için metin doğrudan çıkarılamadı; 
 Kaynak model aslında ürün içinde iki ayrı dosyaya dağılmış durumda:
 
 ### Soru tarafı
-- Dosya: `/Users/peopleintk/Downloads/Hellotalent/profil-isgorusmeleri.js`
+- Dosya: `/Users/peopleintk/Downloads/Hellotalent/profil-mulakatkocu.js`
 - Kaynak: `INTERVIEW_QUESTIONS`
 - İçerik:
   - Yetkinlik bazlı soru havuzu
@@ -382,7 +382,7 @@ V1 için en doğru karar:
 
 Claude bir sonraki aşamada şu dosyaları birlikte okumalı:
 - `/Users/peopleintk/Downloads/Hellotalent/docs/mulakat-theme-reference.md`
-- `/Users/peopleintk/Downloads/Hellotalent/profil-isgorusmeleri.js`
+- `/Users/peopleintk/Downloads/Hellotalent/profil-mulakatkocu.js`
 - `/Users/peopleintk/Downloads/Hellotalent/profil-yetkinlik.js`
 - `/Users/peopleintk/Downloads/Hellotalent/docs/handoff.md`
 
