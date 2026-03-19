@@ -297,6 +297,8 @@ html[data-theme="dark"] .header-msg-dot{border-color:var(--bg-elevated,#1F2937);
   transition:box-shadow 0.2s,transform 0.15s;
 }
 .header-avatar-btn:hover{box-shadow:0 0 0 3px rgba(201,78,40,0.18);transform:scale(1.05);}
+.header-avatar-btn.glow-active{box-shadow:0 0 0 3px #22C55E,0 0 12px 4px rgba(34,197,94,0.6),0 0 24px 8px rgba(34,197,94,0.3);transition:box-shadow 0.4s ease;}
+.header-avatar-btn.glow-active:hover{box-shadow:0 0 0 3px #22C55E,0 0 16px 6px rgba(34,197,94,0.7),0 0 28px 10px rgba(34,197,94,0.4);transform:scale(1.05);}
 .header-avatar-btn #user-avatar-header{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;overflow:hidden;}
 .header-avatar-btn #user-avatar-header img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
 /* keep old class for backwards compat */

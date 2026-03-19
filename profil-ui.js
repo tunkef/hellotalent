@@ -38,6 +38,12 @@ function updateStatusUI(isActive) {
       else { el.classList.remove('glow-active'); }
     }
   });
+  // Header avatar glow
+  var headerAvBtn = document.querySelector('.header-avatar-btn');
+  if (headerAvBtn) {
+    if (isActive) { headerAvBtn.classList.add('glow-active'); }
+    else { headerAvBtn.classList.remove('glow-active'); }
+  }
 }
 
 // ═══════════════════════════════════════════════════
