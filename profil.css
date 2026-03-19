@@ -1352,7 +1352,7 @@ html[data-theme="dark"] .field-req{color:#F87171;}
 /* Bento Grid Dashboard */
 .bento-grid{display:grid;grid-template-columns:repeat(3,1fr);grid-auto-rows:200px;gap:16px;}
 .bento-card{
-  position:relative;border-radius:23px;overflow:hidden;
+  position:relative;border-radius:16px;overflow:hidden;
   box-shadow:0 2px 8px rgba(0,0,0,0.08), 0 8px 20px rgba(0,0,0,0.06);
   background:var(--bg-surface,#fff);
   border:1px solid var(--border-subtle, var(--border));
@@ -1606,7 +1606,7 @@ html[data-theme="dark"] .field-req{color:#F87171;}
   min-width: 0;
   background: var(--bg-surface, #fff);
   border: 1px solid var(--border-subtle, var(--border));
-  border-radius: 23px;
+  border-radius: 16px;
   box-shadow: 0 0 0 1px rgba(0,0,0,.03), 0 2px 4px rgba(0,0,0,.05), 0 12px 24px rgba(0,0,0,.05);
   position: relative;
   overflow: hidden;
