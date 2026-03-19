@@ -651,8 +651,8 @@ function renderRoleDropdown() {
   var bridge = getBridge();
   if (!bridge) return '<div class="ig-section-desc">Yetkinlik verileri y\u00FCklenirken bekleyin...</div>';
   var roleKeys = Object.keys(bridge.ROLE_COMP_MAP).sort(function(a,b){ return a.localeCompare(b,'tr'); });
-  var html = '<div style="display:flex;gap:10px;align-items:center;max-width:100%;">';
-  html += '<select class="ig-role-select" id="ig-role-dd" style="flex:1;">';
+  var html = '<div style="display:flex;gap:10px;align-items:center;justify-content:center;max-width:360px;margin:16px auto 0;">';
+  html += '<select class="ig-role-select" id="ig-role-dd" style="flex:1;min-width:0;">';
   html += '<option value="">Pozisyon se\u00E7in...</option>';
   for (var i = 0; i < roleKeys.length; i++) {
     html += '<option value="' + roleKeys[i] + '">' + roleKeys[i] + '</option>';
