@@ -1920,14 +1920,18 @@ function _doSwitchPanel(name) {
 var returnToPanel = null;
 
 function editSection(step) {
-  returnToPanel = 'merkez';
-  wizardDirty = false;
-  wizStep = step;
-  renderWizard();
-  _doSwitchPanel('profil');
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-  ht_track('wizard_started', { entry_step: step });
-  setTimeout(attachWizardDirtyListeners, 100);
+  try {
+    returnToPanel = 'merkez';
+    wizardDirty = false;
+    wizStep = step;
+    renderWizard();
+    _doSwitchPanel('profil');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    ht_track('wizard_started', { entry_step: step });
+    setTimeout(attachWizardDirtyListeners, 100);
+  } catch(err) {
+    console.error('editSection error:', err);
+  }
 }
 window.editSection = editSection;
 
@@ -2959,9 +2963,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Dashboard buttons
   var btnStart = document.getElementById('btn-start-wizard');
-  if (btnStart) btnStart.addEventListener('click', function() { editSection(1); });
+  if (btnStart) btnStart.addEventListener('click', function(e) { e.preventDefault(); e.stopPropagation(); window.editSection(1); });
   var btnEdit = document.getElementById('btn-edit-profile');
-  if (btnEdit) btnEdit.addEventListener('click', function() { editSection(1); });
+  if (btnEdit) btnEdit.addEventListener('click', function(e) { e.preventDefault(); e.stopPropagation(); window.editSection(1); });
 
   // Wizard complete button
   var btnComplete = document.getElementById('btn-wiz-complete');
