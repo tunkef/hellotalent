@@ -1158,23 +1158,14 @@ if (window.Sentry) {
   <div class="g-hero">
     <div class="g-hero-inner" style="justify-content:space-between;">
       <div style="font-family:'Bricolage Grotesque',sans-serif;font-size:20px;font-weight:800;color:#fff;display:flex;align-items:center;gap:10px;">
-        Özel Teklifler
+        Teklifler
         <span id="teklifler-count-badge" class="badge-verm"></span>
       </div>
     </div>
   </div>
 
-  <!-- Filter bar -->
-  <div id="teklifler-filters" class="tag-row" style="border:1px solid var(--border-subtle,#E5E3DF);border-radius:16px;padding:12px 16px;background:var(--bg-surface,#fff);margin-bottom:16px;"></div>
-
-  <!-- Campaign grid -->
-  <div id="teklifler-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;"></div>
-
-  <!-- Empty state -->
-  <div id="teklifler-empty" class="empty-state" style="border:1px solid var(--border-subtle,#E5E3DF);border-radius:16px;padding:40px 24px;background:var(--bg-surface,#fff);">
-    <div class="empty-title">Henüz aktif teklif yok</div>
-    <div class="sub-text">Markalar yeni kampanyalar oluşturduğunda burada görünecek</div>
-  </div>
+  <!-- Content rendered by profil-teklifler.js -->
+  <div id="teklifler-root"></div>
 </main>
 
 <!-- ═══ PANEL: MESAJLAR (Unified Inbox) ═══ -->
@@ -1603,7 +1594,7 @@ if (window.Sentry) {
 <script src="profil-data.js?v=20260317d"></script>
 <script src="profil-ui.js?v=20260317d"></script>
 <script src="profil-settings.js?v=20260317d"></script>
-<script src="profil-teklifler.js?v=20260317d"></script>
+<script src="profil-teklifler.js?v=20260319a"></script>
 <script src="profil-inbox.js?v=20260317d"></script>
 <script src="profil-yetkinlik.js?v=20260319b"></script>
 <script src="profil-isgorusmeleri.js?v=20260319m"></script>
