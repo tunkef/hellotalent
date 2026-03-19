@@ -85,13 +85,8 @@ if (window.Sentry) {
       <span class="hn-bar"></span>
     </button>
     <button class="hn-item" data-panel="mulakat">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-      <span class="hn-label">İş Görüşmesi</span>
-      <span class="hn-bar"></span>
-    </button>
-    <button class="hn-item" data-panel="yetkinlik">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-      <span class="hn-label">Yetkinlik</span>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+      <span class="hn-label">Mülakat Koçu</span>
       <span class="hn-bar"></span>
     </button>
   </nav>
@@ -210,9 +205,9 @@ if (window.Sentry) {
       <span class="nav-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span>
       Markalar
     </button>
-    <button class="nav-item" id="nav-yetkinlik" data-panel="yetkinlik">
-      <span class="nav-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span>
-      Yetkinliklerim
+    <button class="nav-item" id="nav-mulakat" data-panel="mulakat">
+      <span class="nav-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></span>
+      Mülakat Koçu
     </button>
     <button class="nav-item" id="nav-teklifler" data-panel="teklifler">
       <span class="nav-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 12v10H4V12"/><rect x="2" y="7" width="20" height="5" rx="1"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg></span>
@@ -509,31 +504,17 @@ if (window.Sentry) {
         </div>
       </div>
 
-      <!-- İş Görüşmeleri -->
+      <!-- Mülakat Koçu -->
       <div class="bento-card active" style="cursor:pointer;" data-panel="mulakat">
         <div class="bento-content">
           <div class="bento-icon verm">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
           </div>
-          <div class="bento-title">İş Görüşmeleri</div>
-          <div class="bento-desc">Mülakat süreçlerini takip et ve hazırlan</div>
+          <div class="bento-title">Mülakat Koçu</div>
+          <div class="bento-desc">Yetkinlikleri öğrenin, soruları çalışın, gelişim günlüğünüzü oluşturun.</div>
         </div>
         <div class="bento-cta">
-          <span>Bir sonraki iş görüşmene hazırlan<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
-        </div>
-      </div>
-
-      <!-- Yetkinliklerim -->
-      <div class="bento-card active" style="cursor:pointer;" data-panel="yetkinlik">
-        <div class="bento-content">
-          <div class="bento-icon navy">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-          </div>
-          <div class="bento-title">Yetkinliklerim</div>
-          <div class="bento-desc">Güçlü ve gelişim alanlarını keşfet</div>
-        </div>
-        <div class="bento-cta">
-          <span>Yetkinliklerini geliştir<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+          <span>Koçunuza başlayın<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
         </div>
       </div>
 
@@ -1604,7 +1585,7 @@ if (window.Sentry) {
 <script src="profil-teklifler.js?v=20260319g"></script>
 <script src="profil-inbox.js?v=20260317d"></script>
 <script src="profil-yetkinlik.js?v=20260319b"></script>
-<script src="profil-isgorusmeleri.js?v=20260319u"></script>
+<script src="profil-isgorusmeleri.js?v=20260319v"></script>
 <script src="profil-premium.js?v=20260319a"></script>
 
 <script>
@@ -1823,7 +1804,7 @@ function _doSwitchPanel(name) {
   if (target) target.classList.add('active');
   var bc = document.getElementById('breadcrumb-current');
   if (bc) {
-    var labels = { genel: 'Genel Bakış', merkez: 'Profil Merkezi', sirketler: 'Markalar', teklifler: 'Özel Teklifler', inbox: 'Mesajlar', bildirimler: 'Bildirimler', ayarlar: 'Ayarlar', profil: 'Profil', yetkinlik: 'Yetkinliklerim', mulakat: 'İş Görüşmeleri', premium: 'Premium', kimbakti: 'Kim Baktı' };
+    var labels = { genel: 'Genel Bakış', merkez: 'Profil Merkezi', sirketler: 'Markalar', teklifler: 'Özel Teklifler', inbox: 'Mesajlar', bildirimler: 'Bildirimler', ayarlar: 'Ayarlar', profil: 'Profil', yetkinlik: 'Mülakat Koçu', mulakat: 'Mülakat Koçu', premium: 'Premium', kimbakti: 'Kim Baktı' };
     bc.textContent = labels[name] || name;
   }
   // Update sidebar nav
@@ -1863,10 +1844,10 @@ function _doSwitchPanel(name) {
   if (name === 'teklifler') { window._htLoadTeklifler && window._htLoadTeklifler(); }
   // Lazy-load Inbox messages on first visit
   if (name === 'inbox') { window._htLoadInbox && window._htLoadInbox(); }
-  // Lazy-load Yetkinlik panel on first visit
-  if (name === 'yetkinlik') { window._htLoadYetkinlik && window._htLoadYetkinlik(); }
-  // Lazy-load Mulakat panel on first visit
-  if (name === 'mulakat') { window._htLoadMulakat && window._htLoadMulakat(); }
+  // Legacy yetkinlik panel key → redirect to unified mulakat
+  if (name === 'yetkinlik') { _doSwitchPanel('mulakat'); return; }
+  // Lazy-load Mulakat panel on first visit (also load yetkinlik bridge data)
+  if (name === 'mulakat') { window._htLoadYetkinlik && window._htLoadYetkinlik(); window._htLoadMulakat && window._htLoadMulakat(); }
   // Lazy-load Premium panel on first visit
   if (name === 'premium') { window._htLoadPremium && window._htLoadPremium(); }
   // Lazy-load Bildirimler on first visit
@@ -2788,8 +2769,7 @@ document.addEventListener('DOMContentLoaded', function() {
     { label: 'Bildirimler', panel: 'bildirimler', icon: '\uD83D\uDD14' },
     { label: 'Ayarlar', panel: 'ayarlar', icon: '\u2699\uFE0F' },
     { label: 'Profil D\u00FCzenle', panel: 'profil', icon: '\u270F\uFE0F' },
-    { label: 'Yetkinliklerim', panel: 'yetkinlik', icon: '\uD83C\uDFAF' },
-    { label: '\u0130\u015F G\u00F6r\u00FC\u015Fmeleri', panel: 'mulakat', icon: '\uD83D\uDCCB' }
+    { label: 'M\u00FClakat Ko\u00E7u', panel: 'mulakat', icon: '\uD83D\uDCDA' }
   ];
   var cmdkOverlay = document.getElementById('modal-cmdk');
   var cmdkInput = document.getElementById('cmdk-input');
