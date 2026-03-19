@@ -651,14 +651,14 @@ function renderRoleDropdown() {
   var bridge = getBridge();
   if (!bridge) return '<div class="ig-section-desc">Yetkinlik verileri y\u00FCklenirken bekleyin...</div>';
   var roleKeys = Object.keys(bridge.ROLE_COMP_MAP).sort(function(a,b){ return a.localeCompare(b,'tr'); });
-  var html = '<div style="display:flex;gap:10px;align-items:center;justify-content:center;max-width:360px;margin:16px auto 0;">';
-  html += '<select class="ig-role-select" id="ig-role-dd" style="flex:1;min-width:0;">';
+  var html = '<div style="display:flex;gap:10px;align-items:stretch;justify-content:center;max-width:400px;margin:16px auto 0;">';
+  html += '<select class="ig-role-select" id="ig-role-dd" style="flex:1;min-width:0;margin:0;height:auto;padding:10px 36px 10px 14px;">';
   html += '<option value="">Pozisyon se\u00E7in...</option>';
   for (var i = 0; i < roleKeys.length; i++) {
     html += '<option value="' + roleKeys[i] + '">' + roleKeys[i] + '</option>';
   }
   html += '</select>';
-  html += '<button type="button" id="ig-role-start" style="flex-shrink:0;padding:12px 20px;border:none;border-radius:10px;background:var(--verm,#C94E28);color:#fff;font-family:\'Plus Jakarta Sans\',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:opacity .2s;white-space:nowrap;">Ba\u015Fla</button>';
+  html += '<button type="button" id="ig-role-start" style="flex-shrink:0;padding:0 24px;border:none;border-radius:10px;background:var(--verm,#C94E28);color:#fff;font-family:\'Plus Jakarta Sans\',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:opacity .2s;white-space:nowrap;">Ba\u015Fla</button>';
   html += '</div>';
   return html;
 }
