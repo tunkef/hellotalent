@@ -308,7 +308,7 @@ if (window.Sentry) {
     <div class="modal-title">Profilin güncellendi</div>
     <div class="modal-desc">Değişikliklerin kaydedildi ve profiline yansıtıldı.</div>
     <button class="btn btn-navy" id="btn-success-ok" style="width:100%;padding:11px 0;">Tamam</button>
-    <div class="modal-premium-line" style="cursor:pointer;" onclick="if(typeof switchPanel==='function'){switchPanel('premium');this.closest('.modal-overlay').style.display='none';}">Premium avantajlarını keşfet</div>
+    <div class="modal-premium-line" style="cursor:pointer;" data-premium-cta>Premium avantajlarını keşfet</div>
   </div>
 </div>
 
@@ -735,7 +735,7 @@ if (window.Sentry) {
           <div class="mk-ai-title">AI ile CV Optimize</div>
           <div class="mk-ai-sub">CV'ni analiz edip güçlendirelim</div>
         </div>
-        <button type="button" class="mk-ai-btn" id="btn-generate-cv-merkez" onclick="if(typeof switchPanel==='function')switchPanel('premium');">Premium</button>
+        <button type="button" class="mk-ai-btn" id="btn-generate-cv-merkez" data-premium-cta>Premium</button>
       </div>
     </div>
 
@@ -1073,7 +1073,7 @@ if (window.Sentry) {
           </div>
           <label class="toggle"><input type="checkbox" disabled><span class="toggle-slider"></span></label>
         </div>
-        <div class="wiz-premium-soon" style="cursor:pointer;text-decoration:underline;" onclick="if(typeof switchPanel==='function')switchPanel('premium');">Premium'u Keşfet</div>
+        <div class="wiz-premium-soon" style="cursor:pointer;text-decoration:underline;" data-premium-cta>Premium'u Keşfet</div>
       </div>
 
     </div>
@@ -1256,7 +1256,7 @@ if (window.Sentry) {
 
   <div class="card" style="margin-bottom:0;">
     <div class="card-title">Premium Ayarları</div>
-    <div class="wiz-step-desc mt-4" style="cursor:pointer;" onclick="if(typeof switchPanel==='function')switchPanel('premium');">Premium avantajlarını keşfet — öne çıkan aday, detaylı analiz ve daha fazlası. <span style="color:var(--verm);font-weight:600;text-decoration:underline;">Planları İncele</span></div>
+    <div class="wiz-step-desc mt-4" style="cursor:pointer;" id="settings-premium-pitch" data-premium-cta>Premium avantajlarını keşfet — öne çıkan aday, detaylı analiz ve daha fazlası. <span style="color:var(--verm);font-weight:600;text-decoration:underline;">Planları İncele</span></div>
   </div>
 
   <div class="card" style="grid-column:span 2;margin-bottom:0;">
@@ -1593,6 +1593,10 @@ if (window.Sentry) {
 document.addEventListener('click', function(e) {
   var el = e.target.closest('[data-panel]');
   if (!el) return;
+  // Ignore panel root <main class="panel"> — inner clicks (toggles, inputs) would otherwise
+  // match this node and re-run switchPanel, resetting Ayarlar/Merkez from _loadedDBData.
+  // Buttons/cards with their own data-panel still match first via closest().
+  if (el.tagName === 'MAIN' && el.classList && el.classList.contains('panel')) return;
   var panelName = el.getAttribute('data-panel');
   if (!panelName) return;
   e.stopPropagation();
@@ -2956,6 +2960,15 @@ document.addEventListener('DOMContentLoaded', function() {
   // Global premium CTA delegation — catches ALL premium buttons across all panels
   document.addEventListener('click', function(e) {
     var t = e.target;
+    var premiumHost = t.closest && t.closest('[data-premium-cta]');
+    if (premiumHost) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (typeof switchPanel === 'function') switchPanel('premium');
+      var premOv = premiumHost.closest('.modal-overlay');
+      if (premOv) premOv.style.display = 'none';
+      return;
+    }
     if (t.classList.contains('ls-premium-cta') ||
         t.classList.contains('ig-q-lock-cta') ||
         t.classList.contains('tk-lock-btn') ||

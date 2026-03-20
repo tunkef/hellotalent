@@ -7,7 +7,10 @@
     "doc": "docs"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "playwright test --reporter=list",
+    "test:smoke": "playwright test tests/hellotalent.smoke.spec.js --reporter=list",
+    "test:p3": "playwright test tests/p3.regression.spec.js --reporter=list",
+    "test:profil-delegation": "playwright test tests/profil.panel-delegation.spec.js --reporter=list"
   },
   "repository": {
     "type": "git",
