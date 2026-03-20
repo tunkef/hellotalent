@@ -1,5 +1,5 @@
 # hellotalent.ai — Technical Handoff Document
-> Son güncelleme: 20 Mart 2026 (Session 10 — Phase 3C Position-Aware Scoring)
+> Son güncelleme: 20 Mart 2026 (Session 10 — Phase 3C: Migration 050 deploy + pozisyon skoru canlı)
 > Bu doküman, projenin mevcut durumunu, tamamlanan işleri ve kalan backlog'u kapsar.
 > Yeni bir chat/session başlatırken bu dosyayı referans olarak kullanın.
 
@@ -419,8 +419,8 @@ Cache: `profil-ui.js?v=20260320d`, `profil-settings.js?v=20260320d`
 - Pozisyon `exp` text alanı regex ile parse: "3-5 yıl", "5+ yıl", "5 yıl" → min/max int
 - Güvenlik: `p_position_id` çağıranın company_id'sine ait olmalı
 - Dosya: `docs/migrations/050_position_aware_scoring.sql`
-- ⚠️ SQL henüz Supabase'e deploy EDİLMEDİ — aşağıdaki deploy notlarına bak
-- ⚠️ **PostgREST riski:** 050 deploy edilmeden `p_position_id` göndermek `42883 — function does not exist` hatası verir. PostgREST bilinmeyen parametreleri sessizce yok saymaz, tam imza eşleşmesi arar. Frontend'de `window.__HT_POSITION_SCORING` feature flag'i eklendi; 050 deploy sonrası `true` yapılmalı.
+- ✅ **Supabase:** Migration 050 SQL Editor'da uygulandı (`CREATE OR REPLACE FUNCTION` başarılı).
+- **PostgREST overload:** 5-param (eski) ve 6-param (`p_position_id` dahil) sürümler birlikte duruyor; çağrı parametre adlarına göre eşleşir — `p_position_id` göndermeyen istemciler 5-param, gönderenler 6-param RPC'ye gider.
 
 **38. ik.html — Pozisyon eşleştirme UI**
 - Aday araç çubuğuna "Pozisyon:" dropdown eklendi (`poz-match-select`)
@@ -432,6 +432,12 @@ Cache: `profil-ui.js?v=20260320d`, `profil-settings.js?v=20260320d`
   - Reasons: verm tintli tag'ler (F5EDE9 bg, C94E28 text)
 - Pozisyon CRUD sonrası dropdown otomatik güncelleniyor
 - Commit: `7623f3a`
+
+**39. Phase 3C — Canlı aktivasyon (20 Mart 2026, akşam)**
+- `window.__HT_POSITION_SCORING = true` — `ik.html` içinde (auth guard öncesi atanır; oturumsuz sayfada redirect olsa da bayrak kaynakta mevcut).
+- `searchCandidates()` → `p_position_id` yalnızca bayrak `true` iken RPC'ye eklenir (migration yokken güvenli kapanma için tasarlanmıştı; artık migration da canlı).
+- Git: `a8fc46e` — `feat(ik): enable position-aware scoring after migration 050 deploy` (push: `origin/main`).
+- Doğrulama notu: Oturumsuz `ik.html` ziyareti `giris.html?tab=ik` yönlendirmesi beklenen davranış; tam E2E için işveren oturumu + pozisyon seçimi + aday listesi smoke önerilir.
 
 ### Sonraki Adımlar
 - [x] ~~Migration 042 → competency tabloları~~ ✅ Deployed
@@ -451,8 +457,8 @@ Cache: `profil-ui.js?v=20260320d`, `profil-settings.js?v=20260320d`
 - [ ] Label accessibility audit (43 uyarı)
 - [ ] Brand color audit: Batch 2 (index, blog, hakkimizda) + Batch 3 (ik, aday, profil.css)
 - [ ] Dark mode remaining: profil-settings.js alert→modal (7 instances), ik/giris/gate pages
-- [x] ~~Phase 3C: Position-aware recommendation scoring (migration 050 + ik.html UI)~~ ✅ Session 10 — SQL + frontend committed. **SQL deploy bekliyor.**
-- [ ] Phase 3C deploy: Migration 050'yi Supabase SQL Editor'a uygula, ardından ik.html'de `window.__HT_POSITION_SCORING = true;` ekle ve push et
+- [x] ~~Phase 3C: Position-aware recommendation scoring (migration 050 + ik.html UI)~~ ✅ Session 10 — SQL repoda + UI committed (`7623f3a`).
+- [x] ~~Phase 3C deploy~~ ✅ Migration 050 Supabase'te çalıştırıldı; `window.__HT_POSITION_SCORING = true` + push `a8fc46e` (`origin/main`).
 
 ---
 
@@ -1053,7 +1059,7 @@ if(sessionStorage.getItem('ht_gate')!=='ok'){window.location.replace('gate.html'
 | 047 | `047_candidate_brand_company_fk_prep.sql` — nullable company_id/brand_id on experiences + brand_interests | ✅ Deployed Session 9 |
 | 048 | `048_save_profile_brand_company_ids.sql` — RPC writes company_id/brand_id alongside text | ✅ Deployed Session 9 |
 | 049 | `049_visibility_and_search_id_first_matching.sql` — id-first search + exact backfill | ✅ Deployed Session 9 |
-| 050 | `050_position_aware_scoring.sql` — 12-signal position-aware scoring engine | ⏳ Committed Session 10, deploy bekliyor |
+| 050 | `050_position_aware_scoring.sql` — 12-signal position-aware scoring engine | ✅ Deployed Session 10 — 5+6 param overload; `a8fc46e` ile UI bayrağı açık |
 
 ### Markalar TODO
 - [x] ~~Mobil test (390×844)~~ ✅ Touch toggle (`.active` class) eklendi, hover + click ile çalışır
@@ -1202,7 +1208,7 @@ style: neutral shadow on hero cards, remove vermillion glow (f6c4fc6)
 ### GitHub Pages — ne canlıya gider?
 - **Yalnızca `origin/main`** üzerindeki dosyalar (son başarılı Pages build). Yerelde değiştirilip **commit + push edilmeyen** hiçbir şey production’da yoktur.
 - **Push eksik mi?** `git fetch origin && git status -sb` → `main...origin/main` satırında `[ahead N]` yoksa, pushlanmamış commit yoktur. `[ahead N]` varsa `git push origin main` gerekir.
-- **SQL migration** dosyaları repoda durabilir; Supabase SQL Editor’da (veya pipeline’da) uygulanmadıkça veritabanı tarafı “deploy edilmemiş” kalır (ör. `050_*` vb. ayrı kontrol).
+- **SQL migration** dosyaları repoda durabilir; Supabase SQL Editor’da (veya pipeline’da) uygulanmadıkça veritabanı tarafı “deploy edilmemiş” kalır. **050 (pozisyon skoru) Session 10’da canlıya alındı** — bundan sonraki migration’lar için yine ayrı doğrulama gerekir.
 
 ### Bu dönem — test çıktısı (bilinen tablo)
 - **Profil panel delegasyon guard:** `tests/profil.panel-delegation.spec.js` → **2/2** geçti.
@@ -1235,12 +1241,13 @@ cat docs/handoff.md
 6. ~~**Yetkinlik Wizard**~~ ✅ v2 rebuild, bento grid, 29 KF yetkinlik, premium reading view
 7. ~~**Dashboard polish**~~ ✅ Progress bar, Kim Baktı header, bento CTA animations, avatar glow
 8. ~~**Mülakat Koçu unification**~~ ✅ 7-screen flow, competency coaching, journal, file rename
-9. **Mülakat Koçu V2:** Günlüğüm review surface, AI feedback on drafts, design polish
-10. **Minor fix:** `avd-avatar-img` → setAvatarImage() targets (profil-ui.js)
-11. **Migration 042:** competency_definitions + role_competency_map + candidate_competencies
-12. **Brand color audit:** Batch 2 (index, blog, hakkimizda) + Batch 3 (ik, aday, profil.css)
-11. **Dark mode remaining:** profil-settings.js alert→modal (7 instances), ik/giris/gate pages
-12. **P4 — Public pages content review + dark mode expansion + performance**
+9. ~~**Phase 3C — employer pozisyon skoru**~~ ✅ Migration 050 Supabase’te; `ik.html` `window.__HT_POSITION_SCORING = true` (`a8fc46e`, `origin/main`)
+10. **Mülakat Koçu V2:** Günlüğüm review surface, AI feedback on drafts, design polish
+11. **Minor fix:** `avd-avatar-img` → setAvatarImage() targets (profil-ui.js)
+12. ~~**Migration 042**~~ ✅ competency tabloları — Session 5 / handoff §25
+13. **Brand color audit:** Batch 2 (index, blog, hakkimizda) + Batch 3 (ik, aday, profil.css)
+14. **Dark mode remaining:** profil-settings.js alert→modal (7 instances), ik/giris/gate pages
+15. **P4 — Public pages content review + dark mode expansion + performance**
 
 ### Önceki Transkriptler
 Tam konuşma geçmişi:
