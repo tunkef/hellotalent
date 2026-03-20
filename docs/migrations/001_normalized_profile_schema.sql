@@ -561,7 +561,9 @@ BEGIN
   SELECT
     v_candidate_id,
     e->>'rol_ailesi', e->>'rol_unvani'
-  FROM jsonb_array_elements(p_target_roles) WITH ORDINALITY AS t(e, ord);
+  FROM jsonb_array_elements(COALESCE(p_target_roles, '[]'::jsonb)) WITH ORDINALITY AS t(e, ord)
+  WHERE (e->>'rol_ailesi') IS NOT NULL AND trim(e->>'rol_ailesi') <> ''
+    AND (e->>'rol_unvani') IS NOT NULL AND trim(e->>'rol_unvani') <> '';
 
   -- ── Work preferences: upsert (1:1) ──
   IF p_work_prefs IS NOT NULL THEN

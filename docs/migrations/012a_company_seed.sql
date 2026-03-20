@@ -29,6 +29,14 @@
 --   Standalone brands FK to their own same-name company row.
 --
 -- Depends on: 012_company_ecosystem_phase_a.sql (tables + RLS)
+--
+-- ⚠️  DRIFT NOTE (added 2026-03-20):
+--   INSERT statements below use `name` for both companies and brands.
+--   Production columns have since been renamed to `company_name` and
+--   `brand_name`. This is intentional — do NOT edit the INSERTs.
+--   Fresh install order: 012 → 012a → 046
+--   046_brands_column_reconciliation.sql renames the columns AFTER
+--   seed data is inserted.
 -- ═══════════════════════════════════════════════════════════════
 
 BEGIN;
