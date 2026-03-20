@@ -1,5 +1,5 @@
 # hellotalent.ai — Technical Handoff Document
-> Son güncelleme: 20 Mart 2026 (Session 7 — Mülakat Koçu Unification)
+> Son güncelleme: 20 Mart 2026 (Session 9 — Phase 3B Frontend Deploy + Smoke Test)
 > Bu doküman, projenin mevcut durumunu, tamamlanan işleri ve kalan backlog'u kapsar.
 > Yeni bir chat/session başlatırken bu dosyayı referans olarak kullanın.
 
@@ -388,7 +388,7 @@ star_intro → role_select → lobby → competency_intro → practice → compl
 - [x] ~~Deploy 045~~ ✅ Session 8 — deployed + security tested
 - [x] ~~Deploy 046~~ ✅ Session 9 — no-op (production already had brand_name/company_name)
 - [x] ~~Deploy 047 → 048 → 049~~ ✅ Session 9 — FK columns + RPC + backfill deployed. Backfill: 3/3 exp company_id, 2/3 exp brand_id, 6/7 brand interest brand_id filled.
-- [ ] **Push profil-ui.js + profil.html to GitHub Pages** — JS layer for FK id resolution not yet deployed to frontend
+- [x] ~~Push profil-ui.js + profil.html + ik.html to GitHub Pages~~ ✅ Session 9 — frontend published + smoke tested. FK resolution live: Zara→brand_id:1/company_id:10, Apple→brand_id:75/company_id:23. diller returns string[], languages returns object[], education uses egitim_seviye. No [object Object] regression.
 - [ ] Mülakat Koçu: Günlüğüm / journal review surface (taslakları gözden geçirme ekranı)
 - [ ] Mülakat Koçu: AI scoring / feedback on journal drafts
 - [ ] profil-yetkinlik.js → DB'den veri çekmeye geçiş (hardcoded ANCHORS → Supabase query)
