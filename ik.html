@@ -244,10 +244,10 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
 .toggle-row:last-child{border-bottom:none;}
 .toggle-info h4{font-size:14px;font-weight:700;}
 .toggle-info p{font-size:12px;color:var(--muted);margin-top:2px;}
-.toggle{width:40px;height:22px;background:#D1D5DB;border-radius:11px;position:relative;cursor:pointer;transition:background 0.2s;flex-shrink:0;border:none;}
+.toggle{width:40px;height:22px;background:#D1D5DB;border-radius:11px;position:relative;cursor:pointer;transition:background 0.2s;flex-shrink:0;border:none;-webkit-tap-highlight-color:transparent;touch-action:manipulation;user-select:none;z-index:1;}
 .toggle.on{background:var(--green);}
-.toggle::after{content:'';width:16px;height:16px;background:white;border-radius:50%;position:absolute;top:3px;left:3px;transition:left 0.2s;box-shadow:0 1px 3px rgba(0,0,0,0.2);}
-.toggle.on::after{left:21px;}
+.toggle::after{content:'';width:16px;height:16px;background:white;border-radius:50%;position:absolute;top:3px;left:3px;transition:transform 0.2s ease;box-shadow:0 1px 3px rgba(0,0,0,0.2);transform:translateX(0);}
+.toggle.on::after{transform:translateX(18px);}
 
 /* ── RECENT AKTİVİTE ── */
 .activity-card{background:white;border:1px solid var(--border);border-radius:12px;overflow:hidden;}
@@ -1159,28 +1159,28 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
               <h4>Yeni Aday Bildirimi</h4>
               <p>Havuza yeni retail uzmanı eklendiğinde</p>
             </div>
-            <button class="toggle on" onclick="this.classList.toggle('on')"></button>
+            <button type="button" class="toggle on" aria-pressed="true" aria-label="Yeni aday bildirimi"></button>
           </div>
           <div class="toggle-row">
             <div class="toggle-info">
               <h4>Haftalık Özet</h4>
               <p>Aday havuzu aktivite raporu</p>
             </div>
-            <button class="toggle on" onclick="this.classList.toggle('on')"></button>
+            <button type="button" class="toggle on" aria-pressed="true" aria-label="Haftalık özet"></button>
           </div>
           <div class="toggle-row">
             <div class="toggle-info">
               <h4>hellohunter Teklifleri</h4>
               <p>Pozisyona özel aday önerileri</p>
             </div>
-            <button class="toggle" onclick="this.classList.toggle('on')"></button>
+            <button type="button" class="toggle" aria-pressed="false" aria-label="hellohunter teklifleri"></button>
           </div>
           <div class="toggle-row">
             <div class="toggle-info">
               <h4>Ürün Güncellemeleri</h4>
               <p>Yeni özellikler ve duyurular</p>
             </div>
-            <button class="toggle on" onclick="this.classList.toggle('on')"></button>
+            <button type="button" class="toggle on" aria-pressed="true" aria-label="Ürün güncellemeleri"></button>
           </div>
 
           <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border);">
@@ -2074,6 +2074,8 @@ async function searchCandidates(){
     var companyId = (hrProfile && hrProfile.company_id) ? hrProfile.company_id : null;
 
     // Phase 3C: position-aware scoring
+    // Guard: p_position_id requires migration 050 deployed to Supabase.
+    // PostgREST rejects unknown params (42883), so only send when RPC exists.
     var pozSelect = document.getElementById('poz-match-select');
     var selectedPozId = (pozSelect && pozSelect.value) ? parseInt(pozSelect.value) : null;
 
@@ -2084,7 +2086,7 @@ async function searchCandidates(){
       p_limit: 100,
       p_offset: 0
     };
-    if(selectedPozId) rpcParams.p_position_id = selectedPozId;
+    if(selectedPozId && window.__HT_POSITION_SCORING === true) rpcParams.p_position_id = selectedPozId;
 
     var { data: result, error: err } = await sb.rpc('search_employer_candidates', rpcParams);
     if(err) throw err;
@@ -2142,6 +2144,16 @@ async function initApp(){
     return;
   }
   currentUser = data.session.user;
+
+  function scheduleHideAppLoading(){
+    setTimeout(function(){
+      var el = document.getElementById('app-loading');
+      if(el) el.classList.add('hide');
+      try { updateSirketCompletion(); } catch(e2) {}
+    }, 600);
+  }
+
+  try {
 
   // Favorileri Supabase'den yükle
   await loadFavoritesFromDB();
@@ -2238,11 +2250,11 @@ async function initApp(){
   renderFavoriler();
   updateFavCount();
 
-  // Loading gizle
-  setTimeout(function(){
-    document.getElementById('app-loading').classList.add('hide');
-    updateSirketCompletion();
-  }, 600);
+  } catch(e) {
+    console.error('initApp:', e);
+  } finally {
+    scheduleHideAppLoading();
+  }
 }
 
 // ── NAVIGATION ──
@@ -4027,6 +4039,19 @@ async function sendTeamInvite(){
     if(btn) btn.disabled = false;
   }
 }
+
+// ── AYARLAR: bildirim anahtarları (delegation — mobil / overlay sonrası daha güvenilir) ──
+(function(){
+  var panel = document.getElementById('panel-ayarlar');
+  if(!panel) return;
+  panel.addEventListener('click', function(e){
+    var btn = e.target && e.target.closest && e.target.closest('button.toggle');
+    if(!btn || !panel.contains(btn)) return;
+    e.preventDefault();
+    btn.classList.toggle('on');
+    btn.setAttribute('aria-pressed', btn.classList.contains('on') ? 'true' : 'false');
+  });
+})();
 
 // ── INIT ──
 initApp();
