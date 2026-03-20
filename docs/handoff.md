@@ -1,5 +1,5 @@
 # hellotalent.ai — Technical Handoff Document
-> Son güncelleme: 20 Mart 2026 (Session 9 — Phase 3B Deploy + Toggle State Fix)
+> Son güncelleme: 20 Mart 2026 (Session 9 — Phase 3B Deploy + Toggle Fix + Live Smoke Test)
 > Bu doküman, projenin mevcut durumunu, tamamlanan işleri ve kalan backlog'u kapsar.
 > Yeni bir chat/session başlatırken bu dosyayı referans olarak kullanın.
 
@@ -388,9 +388,14 @@ star_intro → role_select → lobby → competency_intro → practice → compl
 - profil-settings.js: removed 3 competing DB write listeners, now delegates to `window.syncBeniOner/syncActivelyLooking/syncHideFromEmployer`
 - profil.html: `refreshAfterVisibilitySave()` converted to thin redirect → `syncBeniOner()`
 - Wizard toggle dispatches (lines ~1466-1474 profil-ui.js) → fires merkez change event → merkez listener calls shared sync (safe chain)
-- Cache busters: `profil-ui.js?v=20260320b`, `profil-settings.js?v=20260320b`
+- Cache busters: `profil-ui.js?v=20260320d`, `profil-settings.js?v=20260320d`
 - DB update paths reduced: 7 → 3 (one per toggle type, all in profil-ui.js)
-- Files changed: profil-ui.js (+162 -46), profil-settings.js (+10 -56), profil.html (+8 -12)
+- Smoke test bugfixes (found during live test):
+  - `is_actively_looking` and `user_id` were missing from `loadProfileFromDB()` profile mapping (select('*') fetched them but manual object omitted them)
+  - `merkez-toggle-active` and `wiz-toggle-active` had hardcoded `checked` HTML attribute → showed true before DB data loaded
+- Live smoke test: 6/6 scenarios PASS, DB verified via Supabase SQL Editor, hard refresh persistence confirmed
+- Files changed: profil-ui.js, profil-settings.js, profil.html
+- Commits: `7ed4619` (shared sync), `45579e2` (missing field fix), `ef04f95` (hardcoded checked fix)
 
 ### Sonraki Adımlar
 - [x] ~~Migration 042 → competency tabloları~~ ✅ Deployed
