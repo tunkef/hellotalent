@@ -1390,6 +1390,8 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
 <script>
 // ── SUPABASE ──
 var _supa = null;
+// Feature flag: position-aware scoring (migration 050 deployed 2026-03-20)
+window.__HT_POSITION_SCORING = true;
 function getSupa(){
   // Supabase config — single source: shared.js
   // If URL/KEY change, update shared.js AND these 3 files: profil.html, ik.html, giris.html
