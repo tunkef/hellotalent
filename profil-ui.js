@@ -2196,11 +2196,13 @@ async function loadProfileFromDB() {
       askerlik_durumu: cand.askerlik_durumu,
       avatar_url: cand.avatar_url,
       is_active: cand.is_active,
+      is_actively_looking: cand.is_actively_looking === true,
       cv_url: cand.cv_url || null,
       cv_filename: cand.cv_filename || null,
       cv_uploaded_at: cand.cv_uploaded_at || null,
       son_sirket: cand.son_sirket || null,
       hide_from_current_employer: cand.hide_from_current_employer === true,
+      user_id: cand.user_id || null,
       updated_at: cand.updated_at || null
     },
     no_experience: cand.ilk_deneyim || false,
