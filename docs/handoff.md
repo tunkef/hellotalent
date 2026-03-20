@@ -1,5 +1,5 @@
 # hellotalent.ai — Technical Handoff Document
-> Son güncelleme: 20 Mart 2026 (Session 9 — Phase 3B Deploy + Toggle Fix + Live Smoke Test)
+> Son güncelleme: 20 Mart 2026 (Session 10 — Phase 3C Position-Aware Scoring)
 > Bu doküman, projenin mevcut durumunu, tamamlanan işleri ve kalan backlog'u kapsar.
 > Yeni bir chat/session başlatırken bu dosyayı referans olarak kullanın.
 
@@ -405,6 +405,33 @@ Commits: `7ed4619` → `45579e2` → `ef04f95` → `fa21a4a`
 Cache: `profil-ui.js?v=20260320d`, `profil-settings.js?v=20260320d`
 **Toggle tarafında blocker kalmadı.** `saveProfileRPC` başarı sonrası `_loadedDBData.profile` artık merkez DOM’dan `is_actively_looking` / `hide_from_current_employer` ile güncelleniyor ve `applyAllVisibilityMirrorsFromProfile()` çağrılıyor (gereksiz `syncBeniOner` DB tekrarı kaldırıldı). Cache: `profil-ui.js?v=20260320f`.
 
+### Session 10 — 20 Mart 2026 (Phase 3C — Position-Aware Recommendation Scoring)
+
+**37. Migration 050 — Position-aware scoring engine**
+- `search_employer_candidates` RPC genişletildi: 6. parametre `p_position_id bigint DEFAULT NULL`
+- Pozisyon seçildiğinde 12-sinyalli skorlama (100 puan üzerinden):
+  - Hedef rol tam eşleşme (+18), rol ailesi (+10), deneyim eşleşmesi (+12)
+  - Segment (+10), şehir (+10), deneyim süresi uyumu (+8)
+  - Müsaitlik (+8), marka ekosistemi (+6), aktif arıyor (+6)
+  - Güncellik (+5), profil tamlığı (+4), çalışma tipi (+3)
+- Pozisyon seçilmediğinde geriye uyumlu genel skor (mevcut 049 mantığı korunuyor)
+- Türkçe `match_reasons` dizisi: "Hedef rol: tam eşleşme", "Deneyim: aynı pozisyon", vb.
+- Pozisyon `exp` text alanı regex ile parse: "3-5 yıl", "5+ yıl", "5 yıl" → min/max int
+- Güvenlik: `p_position_id` çağıranın company_id'sine ait olmalı
+- Dosya: `docs/migrations/050_position_aware_scoring.sql`
+- ⚠️ SQL henüz Supabase'e deploy EDİLMEDİ — aşağıdaki deploy notlarına bak
+
+**38. ik.html — Pozisyon eşleştirme UI**
+- Aday araç çubuğuna "Pozisyon:" dropdown eklendi (`poz-match-select`)
+  - Aktif pozisyonlardan otomatik dolduruluyor (`populatePozMatchDropdown`)
+  - "Tümü (Genel Skor)" default seçenek → geriye uyumlu
+- `searchCandidates()` → `p_position_id` RPC'ye gönderiliyor (sadece seçiliyse)
+- `buildCandidateCard()` → match score pill (⚡ X puan) + match reason tag'leri
+  - Score: navy gradient pill, bold
+  - Reasons: verm tintli tag'ler (F5EDE9 bg, C94E28 text)
+- Pozisyon CRUD sonrası dropdown otomatik güncelleniyor
+- Commit: `7623f3a`
+
 ### Sonraki Adımlar
 - [x] ~~Migration 042 → competency tabloları~~ ✅ Deployed
 - [x] ~~Mülakat Koçu unification (Yetkinlik + İş Görüşmeleri → tek ürün)~~ ✅ Session 7
@@ -423,7 +450,8 @@ Cache: `profil-ui.js?v=20260320d`, `profil-settings.js?v=20260320d`
 - [ ] Label accessibility audit (43 uyarı)
 - [ ] Brand color audit: Batch 2 (index, blog, hakkimizda) + Batch 3 (ik, aday, profil.css)
 - [ ] Dark mode remaining: profil-settings.js alert→modal (7 instances), ik/giris/gate pages
-- [ ] Phase 3C: Position-aware recommendation scoring (migration 050 + ik.html UI) — toggle blocker kapandı, geçilebilir. **Claude Code prompt:** `docs/claude-code-prompt-phase-3c.md`
+- [x] ~~Phase 3C: Position-aware recommendation scoring (migration 050 + ik.html UI)~~ ✅ Session 10 — SQL + frontend committed. **SQL deploy bekliyor.**
+- [ ] Phase 3C deploy: Migration 050'yi Supabase SQL Editor'a uygula (detay: Session 10 notları)
 
 ---
 
@@ -985,6 +1013,7 @@ if(sessionStorage.getItem('ht_gate')!=='ok'){window.location.replace('gate.html'
 | 047 | `047_candidate_brand_company_fk_prep.sql` — nullable company_id/brand_id on experiences + brand_interests | ✅ Deployed Session 9 |
 | 048 | `048_save_profile_brand_company_ids.sql` — RPC writes company_id/brand_id alongside text | ✅ Deployed Session 9 |
 | 049 | `049_visibility_and_search_id_first_matching.sql` — id-first search + exact backfill | ✅ Deployed Session 9 |
+| 050 | `050_position_aware_scoring.sql` — 12-signal position-aware scoring engine | ⏳ Committed Session 10, deploy bekliyor |
 
 ### Markalar TODO
 - [x] ~~Mobil test (390×844)~~ ✅ Touch toggle (`.active` class) eklendi, hover + click ile çalışır
