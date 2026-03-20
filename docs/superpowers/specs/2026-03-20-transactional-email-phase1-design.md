@@ -81,7 +81,7 @@ pending -> processing -> sent       (success)
 pending -> processing -> pending    (retry: attempt < 3, next_retry_at updated)
 pending -> processing -> failed     (attempt >= 3)
 pending -> skipped                  (notify preference false, at enqueue time)
-processing -> pending               (stale recovery: 5min+ in processing)
+processing -> pending               (stale recovery: 10min+ in processing)
 ```
 
 ### Dedupe Key Convention
@@ -151,7 +151,8 @@ $$;
 - CTE `FOR UPDATE SKIP LOCKED` ensures no two workers claim the same row
 - `pending -> processing` transition is atomic (single UPDATE)
 - `SECURITY DEFINER` bypasses RLS for the edge function
-- Stale recovery: rows in `processing` for 5+ minutes are reset to `pending`
+- Stale recovery: rows in `processing` for 10+ minutes are reset to `pending`
+- **Stale recovery race note:** If a slow worker completes after its row is recovered and re-claimed, the Resend `Idempotency-Key` header prevents duplicate delivery. The second worker's send call returns success (Resend dedup, 24h window) and both workers write `status='sent'` — last write wins, no data corruption. This is a known benign race.
 
 ---
 
@@ -169,8 +170,13 @@ Flow:
    - Check `user_metadata.role`
    - Candidate: query `candidates` table for `full_name`, `email`
    - Employer: query `hr_profiles` for `ad`, `soyad`, `email`, `company_id` + join `companies.company_name`
-3. Insert into `email_outbox` with `ON CONFLICT (dedupe_key) DO NOTHING`
-4. Return enqueued counts
+3. **Payload assembly:**
+   - Candidate: `payload.full_name = candidates.full_name` (may be null — fallback in template)
+   - Employer: `payload.full_name = TRIM(COALESCE(ad,'') + ' ' + COALESCE(soyad,''))` — if result is empty string, set to null (template fallback applies). **Note:** `hr_profiles` has `ad` + `soyad` columns, NOT a combined `full_name` field.
+4. Insert into `email_outbox` with `ON CONFLICT (dedupe_key) DO NOTHING`
+5. Return enqueued counts
+
+**Partial completion safety:** If the function times out mid-pagination, already-enqueued rows are safe (committed). Next run re-scans from page 1 — `ON CONFLICT DO NOTHING` skips already-processed users. No data loss or duplication. Phase 1 assumption: safe up to ~2,000 users. Beyond that, add `created_at` filter (last 7 days) to limit scan.
 
 **Why Auth Admin API instead of SQL:**
 - No coupling to `auth` schema
@@ -183,7 +189,7 @@ Flow:
 **Auth:** Service role key
 
 Flow:
-1. **Stale recovery:** Reset rows stuck in `processing` for 5+ minutes back to `pending`
+1. **Stale recovery:** Reset rows stuck in `processing` for 10+ minutes back to `pending`
 2. **Claim:** Call `claim_email_outbox_batch(10)` RPC
 3. **Process each row:**
    - Select template by `email_type`
@@ -196,11 +202,16 @@ Flow:
 
 ### Retry Schedule
 
+**Order of operations:** On failure, increment `attempt_count` FIRST, then check threshold.
+
 ```
-Attempt 1 fail → next_retry_at = now() + 1 minute
-Attempt 2 fail → next_retry_at = now() + 4 minutes
-Attempt 3 fail → status = 'failed' (permanent)
+attempt_count incremented to 1 → next_retry_at = now() + 1 minute   (1^2)
+attempt_count incremented to 2 → next_retry_at = now() + 4 minutes  (2^2)
+attempt_count incremented to 3 → status = 'failed' (permanent)
 ```
+
+Formula: `next_retry_at = now() + (attempt_count ^ 2) * interval '1 minute'`
+Threshold: `IF attempt_count >= 3 THEN status = 'failed'`
 
 ---
 
@@ -228,11 +239,13 @@ Fires on `employer_messages` AFTER INSERT.
    - settings_url = 'https://hellotalent.ai/giris.html'
 
 5. INSERT email_outbox:
-   - dedupe_key = 'new_message:' || NEW.id
+   - dedupe_key = 'new_message:' || NEW.id::text
    - email_type = 'new_message'
    - source_table = 'employer_messages'
    - source_id = NEW.id::text
    - ON CONFLICT (dedupe_key) DO NOTHING
+
+**Type cast note:** `NEW.id` is `bigint` — must be explicitly cast to `text` with `::text` for string concatenation in PL/pgSQL. Both `dedupe_key` and `source_id` require this cast.
 ```
 
 **Scope rule:** Only candidates receive message notifications in Phase 1. Employer-side message email is Phase 2 (hr_profiles has no notify preference columns).
@@ -362,7 +375,7 @@ Does NOT contain:
 
 ### Modified Files
 - `docs/handoff.md` — Phase 1 email infrastructure note
-- `docs/db-schema-reference.js` — email_outbox typedef (if needed)
+- `docs/db-schema-reference.js` — email_outbox typedef + fix `HrProfile.full_name` → `ad` + `soyad`
 
 ### Untouched Files
 - profil.html, ik.html, giris.html — no UI changes
