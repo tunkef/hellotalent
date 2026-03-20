@@ -420,12 +420,13 @@ Cache: `profil-ui.js?v=20260320d`, `profil-settings.js?v=20260320d`
 - Güvenlik: `p_position_id` çağıranın company_id'sine ait olmalı
 - Dosya: `docs/migrations/050_position_aware_scoring.sql`
 - ⚠️ SQL henüz Supabase'e deploy EDİLMEDİ — aşağıdaki deploy notlarına bak
+- ⚠️ **PostgREST riski:** 050 deploy edilmeden `p_position_id` göndermek `42883 — function does not exist` hatası verir. PostgREST bilinmeyen parametreleri sessizce yok saymaz, tam imza eşleşmesi arar. Frontend'de `window.__HT_POSITION_SCORING` feature flag'i eklendi; 050 deploy sonrası `true` yapılmalı.
 
 **38. ik.html — Pozisyon eşleştirme UI**
 - Aday araç çubuğuna "Pozisyon:" dropdown eklendi (`poz-match-select`)
   - Aktif pozisyonlardan otomatik dolduruluyor (`populatePozMatchDropdown`)
   - "Tümü (Genel Skor)" default seçenek → geriye uyumlu
-- `searchCandidates()` → `p_position_id` RPC'ye gönderiliyor (sadece seçiliyse)
+- `searchCandidates()` → `p_position_id` RPC'ye gönderiliyor (sadece `window.__HT_POSITION_SCORING === true` ise)
 - `buildCandidateCard()` → match score pill (⚡ X puan) + match reason tag'leri
   - Score: navy gradient pill, bold
   - Reasons: verm tintli tag'ler (F5EDE9 bg, C94E28 text)
@@ -451,7 +452,7 @@ Cache: `profil-ui.js?v=20260320d`, `profil-settings.js?v=20260320d`
 - [ ] Brand color audit: Batch 2 (index, blog, hakkimizda) + Batch 3 (ik, aday, profil.css)
 - [ ] Dark mode remaining: profil-settings.js alert→modal (7 instances), ik/giris/gate pages
 - [x] ~~Phase 3C: Position-aware recommendation scoring (migration 050 + ik.html UI)~~ ✅ Session 10 — SQL + frontend committed. **SQL deploy bekliyor.**
-- [ ] Phase 3C deploy: Migration 050'yi Supabase SQL Editor'a uygula (detay: Session 10 notları)
+- [ ] Phase 3C deploy: Migration 050'yi Supabase SQL Editor'a uygula, ardından ik.html'de `window.__HT_POSITION_SCORING = true;` ekle ve push et
 
 ---
 
@@ -471,7 +472,7 @@ Adaylar (candidates) ve İK/işverenler (employers) arasında köprü kurar.
 | CDN/DNS | Cloudflare (free tier — nameservers aktif, propagation bekliyor) |
 | Backend | Supabase (PostgreSQL + Auth + Storage + RLS) |
 | Repo | github.com/tunkef/hellotalent (private) |
-| Test | Playwright (68 smoke tests) |
+| Test | Playwright (68 smoke + E2E auth tests) |
 | Error tracking | Sentry (profil.html only) |
 
 ### Credentials
@@ -570,9 +571,48 @@ gizlilik.html, kvkk.html, kullanim-sartlari.html, cerez-politikasi.html
 | playwright.config.js | Test config (mobile 390×844 + desktop 1440×900) |
 | tests/hellotalent.smoke.spec.js | 68 smoke tests |
 | tests/dark-mode.spec.js | 12 dark mode regression tests (pre-paint, tokens, contrast) |
+| tests/profil.panel-delegation.spec.js | Guard: `[data-panel]` delegation ignores `<main>` roots |
+| tests/auth.setup.js | Playwright auth setup — logs in candidate, saves storageState |
+| tests/profil.ayarlar-toggles.e2e.spec.js | E2E: Ayarlar Gizlilik + Bildirim toggle persistence |
+| playwright/.auth/candidate.json | Saved auth state (git-ignored) |
 | docs/schema-drift-report.md | DB schema audit raporu |
 | docs/handoff.md | Bu dosya |
 | .claude/skills/hellotalent-dev/ | Custom Claude skill (SKILL.md + references/) |
+
+### E2E Testing (Authenticated)
+
+E2E tests require a real Supabase candidate account. They test toggle persistence, panel navigation, and DB round-trips.
+
+**Setup (one-time):**
+1. Create a test candidate on hellotalent.ai (or use an existing one)
+2. Set env vars:
+   ```bash
+   export HT_TEST_EMAIL="test-aday@example.com"
+   export HT_TEST_PASSWORD="your-password"
+   ```
+3. Run auth setup to generate storageState:
+   ```bash
+   npx playwright test --project=setup
+   ```
+   This creates `playwright/.auth/candidate.json` (git-ignored).
+
+**Running E2E tests:**
+```bash
+npm run test:profil-ayarlar-e2e          # Ayarlar toggles (mobile + desktop)
+npx playwright test --project=e2e-mobile  # All E2E, mobile viewport
+npx playwright test --project=e2e-desktop # All E2E, desktop viewport
+```
+
+**Running non-auth tests (unchanged):**
+```bash
+npm test                                  # All smoke + unit tests
+npm run test:smoke                        # 68 smoke tests only
+npm run test:profil-delegation            # Panel delegation guard
+```
+
+**CI integration:** E2E tests require `HT_TEST_EMAIL` + `HT_TEST_PASSWORD` secrets. Skip the `setup` / `e2e-*` projects if secrets are unavailable.
+
+**Naming convention:** E2E specs use `.e2e.spec.js` suffix; smoke/unit use `.spec.js`. The config isolates them into separate Playwright projects.
 
 ---
 
@@ -1154,6 +1194,24 @@ style: flat #C94E28 vermillion on hero cards, no gradient (7b590ec)
 style: logo text changed from hellotalent.ai to hellotalent (3130c9f)
 style: neutral shadow on hero cards, remove vermillion glow (f6c4fc6)
 ```
+
+---
+
+## Deploy, push ve Playwright doğrulama (20 Mart 2026)
+
+### GitHub Pages — ne canlıya gider?
+- **Yalnızca `origin/main`** üzerindeki dosyalar (son başarılı Pages build). Yerelde değiştirilip **commit + push edilmeyen** hiçbir şey production’da yoktur.
+- **Push eksik mi?** `git fetch origin && git status -sb` → `main...origin/main` satırında `[ahead N]` yoksa, pushlanmamış commit yoktur. `[ahead N]` varsa `git push origin main` gerekir.
+- **SQL migration** dosyaları repoda durabilir; Supabase SQL Editor’da (veya pipeline’da) uygulanmadıkça veritabanı tarafı “deploy edilmemiş” kalır (ör. `050_*` vb. ayrı kontrol).
+
+### Bu dönem — test çıktısı (bilinen tablo)
+- **Profil panel delegasyon guard:** `tests/profil.panel-delegation.spec.js` → **2/2** geçti.
+- **P3 regression guard:** **42/42** geçti; bu pakete göre yeni regresyon yok.
+- **Tam Playwright suite:** ör. **108 passed / 26 failed** — failed testlerin tamamı **önceden bilinen** dış koşullar (Cloudflare Access ile canlı URL blokajı, `--text` token denetimi vb.). Failure varken Playwright **exit code 1** normaldir.
+- İlgili görevde **kaynak olarak `profil.html` / `ik.html` değiştirilmediyse** (yalnızca test infra + dokümantasyon), dev sunucuda doğrulanan davranış ile repo farkı bilinçli olabilir; canlıyı etkileyen tek yol yine `main` push + Pages.
+
+### Yerelde commit dışı kalanlar (örnek — `git status` ile güncel bak)
+Workspace’te sık görülen unstaged örnekler: `package.json`, `playwright.config.js`, `ik.html`, `docs/handoff.md`, yeni E2E dosyaları (`tests/auth.setup.js`, `tests/profil.ayarlar-toggles.e2e.spec.js` vb.). Bunlar **henüz `origin/main`’de yoksa** deploy da yoktur; canlıya almak için ayrı commit + push gerekir.
 
 ---
 
