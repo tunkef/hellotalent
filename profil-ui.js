@@ -1,3 +1,49 @@
+// v20260320 ── BRAND/COMPANY ID LOOKUP ──
+// Populated at page load from Supabase; used by makeSmartBrandField + collectExperiences
+var _brandIdLookup = {};   // trLower(brand_name) → { brand_id, company_id }
+var _companyIdLookup = {};  // trLower(company_name) → company_id
+
+function _initBrandCompanyLookup() {
+  if (typeof supabase === 'undefined') return Promise.resolve();
+  var bP = supabase.from('brands').select('id, brand_name, company_id');
+  var cP = supabase.from('companies').select('id, company_name');
+  return Promise.all([bP, cP]).then(function(results) {
+    var bRes = results[0];
+    var cRes = results[1];
+    if (bRes.data) {
+      bRes.data.forEach(function(b) {
+        if (b.brand_name) _brandIdLookup[trLower(b.brand_name.trim())] = { brand_id: b.id, company_id: b.company_id };
+      });
+    }
+    if (cRes.data) {
+      cRes.data.forEach(function(c) {
+        if (c.company_name) _companyIdLookup[trLower(c.company_name.trim())] = c.id;
+      });
+    }
+    // Enrich BRAND_DB entries with ids for autocomplete picks
+    if (typeof BRAND_DB !== 'undefined') {
+      BRAND_DB.forEach(function(b) {
+        var hit = _brandIdLookup[trLower(b.name)];
+        if (hit) { b.brand_id = hit.brand_id; b.company_id = hit.company_id; }
+      });
+    }
+  }).catch(function(e) { console.warn('[HT] Brand/company ID lookup failed:', e.message); });
+}
+
+// Resolve brand/company ids from text. Returns { brand_id, company_id } or nulls.
+function _resolveBrandCompanyIds(marka, sirket) {
+  var result = { brand_id: null, company_id: null };
+  if (marka) {
+    var bHit = _brandIdLookup[trLower(marka.trim())];
+    if (bHit) { result.brand_id = bHit.brand_id; result.company_id = bHit.company_id; }
+  }
+  if (!result.company_id && sirket) {
+    var cHit = _companyIdLookup[trLower(sirket.trim())];
+    if (cHit) result.company_id = cHit;
+  }
+  return result;
+}
+
 // v20260317 ── STATUS UI ──
 function updateStatusUI(isActive) {
   var badges = ['card-status-badge'];
@@ -687,6 +733,9 @@ function makeSmartBrandField(id, data, required) {
   // Hidden data: the resolved sirket + marka values for DB
   input.dataset.resolvedSirket = data.sirket_adi || data.sirket || '';
   input.dataset.resolvedMarka = data.marka || '';
+  // FK ids: populated from autocomplete pick, blur resolve, or DB restore
+  input.dataset.brandId = data.brand_id || '';
+  input.dataset.companyId = data.company_id || '';
   // Snapshot of the display string set by autocomplete pick (used for race-condition guard)
   input.dataset.pickedDisplay = input.value || '';
 
@@ -699,6 +748,8 @@ function makeSmartBrandField(id, data, required) {
     if (input.dataset.resolvedMarka && input.value === input.dataset.pickedDisplay) return;
     input.dataset.resolvedSirket = input.value;
     input.dataset.resolvedMarka = '';
+    input.dataset.brandId = '';
+    input.dataset.companyId = '';
     input.dataset.pickedDisplay = '';
     showSmartBrandSuggestions(input, sugBox);
   });
@@ -712,15 +763,64 @@ function makeSmartBrandField(id, data, required) {
   // Display normalization on blur (freeform only — brand picks are already clean)
   input.addEventListener('blur', function() {
     if (!input.dataset.resolvedMarka && input.value) {
-      // Freeform: normalize display, keep resolvedSirket in sync
-      input.value = normalizeForDisplay(input.value);
-      input.dataset.resolvedSirket = input.value;
+      // Try exact match against BRAND_DB before falling back to freeform
+      var q = trLower(input.value.trim());
+      if (typeof BRAND_DB === 'undefined') { input.value = normalizeForDisplay(input.value); input.dataset.resolvedSirket = input.value; return; }
+
+      // 1) Exact brand name match
+      var brandMatch = BRAND_DB.find(function(b) { return trLower(b.name) === q; });
+      if (brandMatch) {
+        var pickText = formatBrandDisplay(brandMatch.name, brandMatch.parent || '');
+        input.value = pickText;
+        input.dataset.resolvedMarka = brandMatch.name;
+        input.dataset.resolvedSirket = brandMatch.parent || brandMatch.name;
+        input.dataset.brandId = brandMatch.brand_id || '';
+        input.dataset.companyId = brandMatch.company_id || '';
+        input.dataset.pickedDisplay = pickText;
+        return;
+      }
+
+      // 2) Exact parent/company name match
+      var childBrands = BRAND_DB.filter(function(b) { return b.parent && trLower(b.parent) === q; });
+      if (childBrands.length === 1) {
+        // Single brand under this company — safe to resolve fully
+        var only = childBrands[0];
+        var pickText2 = formatBrandDisplay(only.name, only.parent);
+        input.value = pickText2;
+        input.dataset.resolvedMarka = only.name;
+        input.dataset.resolvedSirket = only.parent;
+        input.dataset.brandId = only.brand_id || '';
+        input.dataset.companyId = only.company_id || '';
+        input.dataset.pickedDisplay = pickText2;
+      } else if (childBrands.length > 1) {
+        // Multiple brands — resolve company only, don't guess brand
+        var companyName = childBrands[0].parent;
+        input.value = companyName;
+        input.dataset.resolvedSirket = companyName;
+        input.dataset.resolvedMarka = '';
+        input.dataset.brandId = '';
+        // Company id from lookup (safe — all children share same parent company_id)
+        input.dataset.companyId = _companyIdLookup[trLower(companyName)] || '';
+        input.dataset.pickedDisplay = '';
+      } else {
+        // No match at all — freeform, try company name lookup for id
+        input.value = normalizeForDisplay(input.value);
+        input.dataset.resolvedSirket = input.value;
+        input.dataset.brandId = '';
+        input.dataset.companyId = _companyIdLookup[trLower(input.value.trim())] || '';
+      }
     }
   });
+
+  var helper = document.createElement('p');
+  helper.className = 'helper-text';
+  helper.style.cssText = 'font-size:12px;color:var(--muted);margin:4px 0 0 0;';
+  helper.textContent = 'Listeden seç veya serbest yaz. Marka adı otomatik eşleştirilir.';
 
   wrap.appendChild(lbl);
   wrap.appendChild(input);
   wrap.appendChild(sugBox);
+  wrap.appendChild(helper);
   return wrap;
 }
 
@@ -743,6 +843,8 @@ function showSmartBrandSuggestions(input, sugBox) {
       input.value = pickText;
       input.dataset.resolvedMarka = b.name;
       input.dataset.resolvedSirket = b.parent || b.name;
+      input.dataset.brandId = b.brand_id || '';
+      input.dataset.companyId = b.company_id || '';
       input.dataset.pickedDisplay = pickText;
       sugBox.style.display = 'none';
     });
@@ -788,6 +890,16 @@ function collectExperiences() {
     var basyil = val(prefix + 'basyil') ? parseInt(val(prefix + 'basyil')) : null;
     if (!basyil) return;
 
+    // Resolve FK ids from dataset (set by autocomplete pick or blur match)
+    var resolvedBrandId = sirketInput ? (sirketInput.dataset.brandId || null) : null;
+    var resolvedCompanyId = sirketInput ? (sirketInput.dataset.companyId || null) : null;
+    // Safety fallback: if ids missing but text resolved, try lookup now
+    if ((!resolvedBrandId || !resolvedCompanyId) && (resolvedMarka || resolvedSirket)) {
+      var ids = _resolveBrandCompanyIds(resolvedMarka, resolvedSirket);
+      if (!resolvedBrandId && ids.brand_id) resolvedBrandId = ids.brand_id;
+      if (!resolvedCompanyId && ids.company_id) resolvedCompanyId = ids.company_id;
+    }
+
     result.push({
       sirket: resolvedSirket,
       marka: nullIfEmpty(resolvedMarka),
@@ -807,7 +919,9 @@ function collectExperiences() {
       bitis_yil: val(prefix + 'bityil') ? parseInt(val(prefix + 'bityil')) : null,
       devam_ediyor: document.getElementById(prefix + 'devam') ? document.getElementById(prefix + 'devam').checked : false,
       ayrilma_nedeni: nullIfEmpty(val(prefix + 'ayrilma')),
-      basari_ozeti: null      // Decision 5: removed from wizard, always null
+      basari_ozeti: null,     // Decision 5: removed from wizard, always null
+      company_id: resolvedCompanyId ? parseInt(resolvedCompanyId) : null,
+      brand_id: resolvedBrandId ? parseInt(resolvedBrandId) : null
     });
   });
   return result;
@@ -1251,7 +1365,17 @@ function collectTargetRoles() {
   var result = [];
   rows.forEach(function(row) {
     var p = row.id + '-';
-    var item = { rol_ailesi: nullIfEmpty(val(p + 'ailesi')), rol_unvani: nullIfEmpty(val(p + 'unvan')) };
+    var rawUnvan = nullIfEmpty(val(p + 'unvan'));
+    // Normalize rol_unvani: canonical synonym mapping (fallback to titleCaseTR if no match)
+    if (rawUnvan) {
+      var canonical = typeof canonicalizeRole === 'function' ? canonicalizeRole(rawUnvan) : null;
+      if (canonical && canonical.canonical) {
+        rawUnvan = canonical.canonical;
+      } else {
+        rawUnvan = typeof titleCaseTR === 'function' ? titleCaseTR(rawUnvan) : rawUnvan;
+      }
+    }
+    var item = { rol_ailesi: nullIfEmpty(val(p + 'ailesi')), rol_unvani: rawUnvan };
     // DB requires both NOT NULL; only send complete rows to avoid constraint violation
     if (item.rol_ailesi && item.rol_unvani) result.push(item);
   });
@@ -1573,7 +1697,10 @@ async function saveProfileRPC(onComplete) {
   };
 
   // Assemble brand interests
-  var p_brand_interests = selectedBrandInterests.map(function(name) { return { marka: name }; });
+  var p_brand_interests = selectedBrandInterests.map(function(name) {
+    var bHit = _brandIdLookup[trLower(name)];
+    return { marka: name, brand_id: bHit ? bHit.brand_id : null };
+  });
 
   // Assemble locations
   var p_locations = collectLocations();
@@ -2091,7 +2218,9 @@ async function loadProfileFromDB() {
         bitis_ay: monthIndexToName(e.bitis_ay),
         bitis_yil: e.bitis_yil ? String(e.bitis_yil) : '',
         devam_ediyor: e.devam_ediyor, ayrilma_nedeni: e.ayrilma_nedeni,
-        basari_ozeti: e.basari_ozeti
+        basari_ozeti: e.basari_ozeti,
+        brand_id: e.brand_id || null,
+        company_id: e.company_id || null
       };
     }),
     education: (eduRes.data || []).map(function(e) {
@@ -3037,11 +3166,18 @@ function closeTgToast() {
   var aktifToggle = document.getElementById('merkez-toggle-active');
   if (aktifToggle) {
     aktifToggle.addEventListener('change', function() {
+      var newVal = this.checked;
       var cell = this.closest('.mk-controls-item');
-      if (this.checked) {
+      if (newVal) {
         showTgToast('İşverenler profilinde "Aktif iş arıyor" rozeti görecek.', cell);
       } else {
         showTgToast('Rozet kaldırıldı. Profilin hâlâ görünür, sadece aktif arama rozeti gizli.', cell);
+      }
+      // Sync to settings toggle and let profil-settings.js handle persistence
+      var settingsAl = document.getElementById('settings-actively-looking');
+      if (settingsAl) {
+        settingsAl.checked = newVal;
+        settingsAl.dispatchEvent(new Event('change'));
       }
     });
   }
@@ -3062,5 +3198,25 @@ function closeTgToast() {
   window.syncBeniOner = syncBeniOner;
 })();
 
+// ═══════════════════════════════════════════════════
+// LinkedIn URL normalization on blur
+// ═══════════════════════════════════════════════════
+(function() {
+  var linkedinField = document.getElementById('f-linkedin');
+  if (!linkedinField) return;
+  linkedinField.addEventListener('blur', function() {
+    var v = linkedinField.value.trim();
+    if (!v) return;
+    // Auto-prepend https:// if missing
+    if (/^linkedin\.com/i.test(v)) {
+      v = 'https://' + v;
+    } else if (/^www\.linkedin\.com/i.test(v)) {
+      v = 'https://' + v;
+    } else if (/^http:\/\//i.test(v)) {
+      v = v.replace(/^http:\/\//i, 'https://');
+    }
+    linkedinField.value = v;
+  });
+})();
 
 

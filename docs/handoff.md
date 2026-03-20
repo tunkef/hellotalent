@@ -315,9 +315,80 @@ star_intro → role_select → lobby → competency_intro → practice → compl
 - Hero subtitle: `gerçek sorularla pratik yapın` → `yetkinlik bazlı sorularla pratik yapın`
 - Cache bust: `v=20260320a` → `v=20260320b`
 
+### Session 8 — 20 Mart 2026 (Phase 2A/2B Data Contract & Drift Reconciliation)
+
+**29. Phase 2A — Data-Contract Hardening Patch**
+- Müsaitlik zorunlu alan yapıldı (validateTercihler + kırmızı yıldız)
+- LinkedIn blur normalizer (auto-prefix https://, format validation)
+- collectTargetRoles: canonicalizeRole() → canonical string extraction (object return type fix)
+- Smart brand blur: parent/company exact-match resolution (tek çocuk → resolve, çoklu → company-only)
+- Duplicate actively-looking toggle cleanup (profil-ui.js settings listener kaldırıldı)
+- Helper text: "Listeden seç veya serbest yaz. Marka adı otomatik eşleştirilir."
+
+**30. Schema Reference File**
+- `docs/db-schema-reference.js` — JSDoc @typedef for 15 tables, 9 RPC functions, storage paths
+- IDE intellisense desteği (VS Code Go to Symbol, Cmd+F)
+- Vanilla JS codebase, build system yok → Supabase CLI type gen yerine JSDoc tercih edildi
+
+**31. Phase 2B — Drift Reconciliation**
+- Live schema truth: information_schema.columns query ile 10 drift column teyit edildi
+- `043_drift_reconciliation.sql`: 8 candidates + 2 candidate_experiences column formalized
+  - candidates: is_actively_looking, ilk_deneyim, adres_ilce, account_status (enum), 4× notify
+  - candidate_experiences: rol_ailesi, rol_unvani
+- `044_save_profile_experience_role_fields.sql`: RPC silent data loss fix
+  - save_candidate_profile() experience INSERT'e rol_ailesi + rol_unvani eklendi
+  - Bug: front-end sent both fields, RPC silently dropped them, DELETE+re-INSERT wiped existing values
+- Deploy sırası: 043 → 044 (044 depends on 043 column existence)
+
+### Session 9 — 20 Mart 2026 (Phase 3A — Server-Side Candidate Search)
+
+**32. search_employer_candidates RPC (Migration 045)**
+- `045_employer_candidate_search_rpc.sql`: Single RPC replaces 6-7 client-side queries
+- Server-side filtering: pozisyon, şehir, deneyim range, segment, müsaitlik, çalışma tipi, eğitim, dil, aktif arayan
+- Ranking contract (0-100 match_score):
+  - +20 is_actively_looking, +15 profile_completion_pct (scaled), +20 recency (30/90 day tiers)
+  - +10 experience depth (capped 10yr), +15 target role match, +10 availability urgency, +10 language match
+- match_reasons: Turkish text array explaining active score components
+- Blocked companies + hide_from_current_employer handled server-side
+- 6 supporting indexes for hot filter paths
+- Pagination: p_limit + p_offset with total count
+- Sort: relevance (match_score), newest, exp_asc, exp_desc
+
+**33. ik.html RPC Integration**
+- Replaced loadLiveCandidates() waterfall (candidates + 4 child tables) with single searchCandidates() RPC call
+- applyFilters() → debounced (300ms) server-side search
+- Sort dropdown: added "Önerilen" (relevance) as default, value attributes for RPC mapping
+- mapRPCtoADAYLAR(): maps RPC JSONB response → existing ADAYLAR shape (card/drawer compatibility)
+- collectFilters(): reads DOM filter state → p_filters JSONB for RPC
+- resetFilters() also resets sort to "Önerilen"
+- result-count shows RPC total (_searchTotal) not page list.length — "137 aday bulundu" even if page=100
+
+**34. Phase 3A Patch — Security + Schema Fixes**
+- RPC auth guard: auth.uid() → hr_profiles lookup → NOT FOUND = reject (candidates cannot call)
+- company_id derived server-side from hr_profiles, not trusted from p_employer_company_id parameter
+- p_employer_company_id kept for backward compat but validated against derived value
+- brands column confirmed as `brand_name` in production (live schema query verified)
+- Migration 012 originally used `name` — renamed to `brand_name` post-012 (untracked)
+- Migration 046 added: idempotent reconciliation (brands.name→brand_name, companies.name→company_name)
+- ik.html, 045 RPC, db-schema-reference.js all aligned to `brand_name`
+
+**35. Phase 3B — Brand/Company Canonicalization + FK Prep**
+- Migration 047: Added nullable `company_id` and `brand_id` FK columns to `candidate_experiences` and `candidate_brand_interests`
+- Migration 048: Updated `save_candidate_profile` RPC to write company_id/brand_id alongside text fields
+- Migration 049: Updated `search_employer_candidates` — id-first visibility matching with text fallback for legacy rows. Also replaces `check_candidate_visible_to_employer` and `send_employer_message` (was 032) with id-first + brand_name versions.
+- Backfill (049 Part 4): Unique-match-only backfill (HAVING count(*)=1) for brand_id/company_id on experiences + brand interests. Ambiguous rows skipped.
+- Response contract: `diller` = string[] (dil names for chips), `languages` = object[] ({dil,seviye} for detail view), `segment`, `egitim_seviye` aligned to ik.html mapper.
+- profil-ui.js: `_initBrandCompanyLookup()` fetches brands/companies at page load, enriches BRAND_DB with ids. Autocomplete picks and blur exact-matches now resolve company_id/brand_id into dataset attributes. `collectExperiences()` and brand interests save paths include ids.
+- **Text columns preserved** — sirket, marka still written on every save. Old data works via text fallback. New data has both text + FK ids.
+
 ### Sonraki Adımlar
 - [x] ~~Migration 042 → competency tabloları~~ ✅ Deployed
 - [x] ~~Mülakat Koçu unification (Yetkinlik + İş Görüşmeleri → tek ürün)~~ ✅ Session 7
+- [x] ~~Deploy 043 + 044~~ ✅ Session 8
+- [x] ~~Deploy 045~~ ✅ Session 8 — deployed + security tested
+- [x] ~~Deploy 046~~ ✅ Session 9 — no-op (production already had brand_name/company_name)
+- [x] ~~Deploy 047 → 048 → 049~~ ✅ Session 9 — FK columns + RPC + backfill deployed. Backfill: 3/3 exp company_id, 2/3 exp brand_id, 6/7 brand interest brand_id filled.
+- [ ] **Push profil-ui.js + profil.html to GitHub Pages** — JS layer for FK id resolution not yet deployed to frontend
 - [ ] Mülakat Koçu: Günlüğüm / journal review surface (taslakları gözden geçirme ekranı)
 - [ ] Mülakat Koçu: AI scoring / feedback on journal drafts
 - [ ] profil-yetkinlik.js → DB'den veri çekmeye geçiş (hardcoded ANCHORS → Supabase query)
@@ -882,6 +953,13 @@ if(sessionStorage.getItem('ht_gate')!=='ok'){window.location.replace('gate.html'
 | 037 | seat limits + plan update (free/premium/pro/enterprise) | ✅ Deployed |
 | 042 | competency_definitions + role_competency_map + candidate_competencies | ✅ Deployed |
 | 042a | Seed: 29 yetkinlik tanımı + 237 rol-yetkinlik eşlemesi | ✅ Deployed |
+| 043 | Schema drift reconciliation (candidates + experiences) | ✅ Deployed |
+| 044 | save_candidate_profile: experience rol_ailesi/rol_unvani fix | ✅ Deployed |
+| 045 | search_employer_candidates RPC (employer search) | ✅ Deployed |
+| 046 | `046_brands_column_reconciliation.sql` — brands.name→brand_name, companies.name→company_name | ✅ Deployed Session 9 — no-op |
+| 047 | `047_candidate_brand_company_fk_prep.sql` — nullable company_id/brand_id on experiences + brand_interests | ✅ Deployed Session 9 |
+| 048 | `048_save_profile_brand_company_ids.sql` — RPC writes company_id/brand_id alongside text | ✅ Deployed Session 9 |
+| 049 | `049_visibility_and_search_id_first_matching.sql` — id-first search + exact backfill | ✅ Deployed Session 9 |
 
 ### Markalar TODO
 - [x] ~~Mobil test (390×844)~~ ✅ Touch toggle (`.active` class) eklendi, hover + click ile çalışır

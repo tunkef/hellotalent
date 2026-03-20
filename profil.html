@@ -971,7 +971,7 @@ if (window.Sentry) {
       <hr class="section-divider">
 
       <!-- MUSAITLIK -->
-      <div class="card-title mb-4">Müsaitlik</div>
+      <div class="card-title mb-4">Müsaitlik <span class="field-req">*</span></div>
       <p class="helper-text" style="font-size:13px;color:var(--muted);margin:0 0 12px 0;">Yeni bir işe ne kadar sürede başlayabilirsin?</p>
       <div class="chips-row" id="musaitlik-chips"></div>
 
@@ -1691,9 +1691,14 @@ function validateKisisel() {
   if (!val('f-adsoyad')) errors.push('Ad Soyad zorunludur');
   if (!val('f-telefon')) errors.push('Telefon zorunludur');
   if (!val('f-adresil')) errors.push('Adres / İl zorunludur');
+  // LinkedIn format validation (optional field, but if filled must be valid)
+  var li = val('f-linkedin');
+  if (li && !/^https?:\/\/(www\.)?linkedin\.com\/in\/.+/i.test(li)) {
+    errors.push('LinkedIn URL formatı geçersiz. Örnek: https://linkedin.com/in/adiniz');
+    markFieldError('f-linkedin');
+  }
   if (errors.length > 0) {
     showStepErrors(errors);
-    // Mark error fields
     if (!val('f-adsoyad')) markFieldError('f-adsoyad');
     if (!val('f-telefon')) markFieldError('f-telefon');
     if (!val('f-adresil')) markFieldError('f-adresil');
@@ -1727,7 +1732,16 @@ function validateKariyer() {
   return true;
 }
 function validateEgitim() { return true; } // Egitim is optional, no required fields
-function validateTercihler() { return true; } // Preferences are optional
+function validateTercihler() {
+  var errors = [];
+  if (typeof selectedMusaitlik === 'undefined' || !selectedMusaitlik) {
+    errors.push('Müsaitlik alanı zorunludur. Yeni bir işe ne kadar sürede başlayabileceğini seç.');
+    var chipsRow = document.getElementById('musaitlik-chips');
+    if (chipsRow) chipsRow.classList.add('field-error');
+  }
+  if (errors.length > 0) { showStepErrors(errors); return false; }
+  return true;
+}
 function validateLokasyon() { return true; } // Location is optional for the last step
 
 function showStepErrors(errors) {
@@ -1829,7 +1843,7 @@ function _doSwitchPanel(name) {
     var isActive = _loadedDBData && _loadedDBData.profile && _loadedDBData.profile.is_active !== false;
     updateStatusUI(isActive);
     var mta = document.getElementById('merkez-toggle-active');
-    if (mta) mta.checked = isActive;
+    if (mta) mta.checked = _loadedDBData && _loadedDBData.profile && _loadedDBData.profile.is_actively_looking === true;
     var merkezHide = document.getElementById('merkez-hide-from-current-employer');
     if (merkezHide) {
       var currentEmp = getCurrentEmployerDisplayFromExperiences(_loadedDBData ? _loadedDBData.experiences : null);
@@ -2281,6 +2295,9 @@ function reapplyDynamicFields() {
 
   // Show app body behind loading screen
   document.getElementById('app-body').style.display = 'block';
+
+  // Init brand/company id lookup (non-blocking — enriches BRAND_DB with FK ids)
+  if (typeof _initBrandCompanyLookup === 'function') await _initBrandCompanyLookup();
 
   // Try loading profile data from DB
   var dbData = await loadProfileFromDB();
@@ -3048,7 +3065,7 @@ document.addEventListener('DOMContentLoaded', function() {
     window.location.href = 'giris.html';
   });
 
-  // "Aktif İş Arıyorum" (merkez-toggle-active) is UI-only — no DB write. Only "Beni Öner" (merkez-toggle-visibility) writes is_active; sync is in profil-ui.js.
+  // "Aktif İş Arıyorum" (merkez-toggle-active) writes is_actively_looking to DB via profil-ui.js. "Beni Öner" (merkez-toggle-visibility) writes is_active.
 
   // Modal close buttons
   var btnSuccessOk = document.getElementById('btn-success-ok');

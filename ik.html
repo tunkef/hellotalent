@@ -628,13 +628,16 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
           <div class="filter-group">
             <span class="filter-label">Pozisyon</span>
             <div class="filter-chips" id="filter-pozisyon">
-              <div class="chip" data-val="Store Manager" onclick="toggleChip(this,'pozisyon')">Store Manager</div>
-              <div class="chip" data-val="Sales Specialist" onclick="toggleChip(this,'pozisyon')">Sales Specialist</div>
-              <div class="chip" data-val="Departman Müdürü" onclick="toggleChip(this,'pozisyon')">Dept. Müdürü</div>
-              <div class="chip" data-val="Visual Merchandiser" onclick="toggleChip(this,'pozisyon')">Visual MD</div>
-              <div class="chip" data-val="Ops Lead" onclick="toggleChip(this,'pozisyon')">Ops Lead</div>
+              <div class="chip" data-val="Mağaza Müdürü" onclick="toggleChip(this,'pozisyon')">Mağaza Müdürü</div>
+              <div class="chip" data-val="Mağaza Müdür Yardımcısı" onclick="toggleChip(this,'pozisyon')">Müdür Yrd.</div>
+              <div class="chip" data-val="Satış Danışmanı" onclick="toggleChip(this,'pozisyon')">Satış Danışmanı</div>
+              <div class="chip" data-val="Kıdemli Satış Danışmanı" onclick="toggleChip(this,'pozisyon')">Kıdemli Satış</div>
+              <div class="chip" data-val="Bölge Müdürü" onclick="toggleChip(this,'pozisyon')">Bölge Müdürü</div>
+              <div class="chip" data-val="Görsel Satış Uzmanı / Visual Merchandiser" onclick="toggleChip(this,'pozisyon')">Visual MD</div>
               <div class="chip" data-val="Kasiyer" onclick="toggleChip(this,'pozisyon')">Kasiyer</div>
-              <div class="chip" data-val="Eğitim Uzmanı" onclick="toggleChip(this,'pozisyon')">Eğitim</div>
+              <div class="chip" data-val="Stok Sorumlusu" onclick="toggleChip(this,'pozisyon')">Stok Sorumlusu</div>
+              <div class="chip" data-val="Eğitim Uzmanı" onclick="toggleChip(this,'pozisyon')">Eğitim Uzmanı</div>
+              <div class="chip" data-val="Operasyon Müdürü" onclick="toggleChip(this,'pozisyon')">Operasyon Md.</div>
             </div>
           </div>
 
@@ -665,10 +668,13 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
             <span class="filter-label">Segment</span>
             <div class="filter-chips" id="filter-segment">
               <div class="chip" data-val="Lüks" onclick="toggleChip(this,'segment')">Lüks</div>
+              <div class="chip" data-val="Premium" onclick="toggleChip(this,'segment')">Premium</div>
               <div class="chip" data-val="Fast Fashion" onclick="toggleChip(this,'segment')">Fast Fashion</div>
-              <div class="chip" data-val="Teknoloji" onclick="toggleChip(this,'segment')">Teknoloji</div>
+              <div class="chip" data-val="Orta Segment" onclick="toggleChip(this,'segment')">Orta Segment</div>
               <div class="chip" data-val="Spor" onclick="toggleChip(this,'segment')">Spor</div>
-              <div class="chip" data-val="Ev & Yaşam" onclick="toggleChip(this,'segment')">Ev & Yaşam</div>
+              <div class="chip" data-val="Teknoloji" onclick="toggleChip(this,'segment')">Teknoloji</div>
+              <div class="chip" data-val="Kozmetik" onclick="toggleChip(this,'segment')">Kozmetik</div>
+              <div class="chip" data-val="Ev / Yaşam" onclick="toggleChip(this,'segment')">Ev / Yaşam</div>
             </div>
           </div>
 
@@ -676,8 +682,9 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
             <span class="filter-label">Müsaitlik</span>
             <div class="filter-chips" id="filter-musait">
               <div class="chip" data-val="Hemen" onclick="toggleChip(this,'musait')">Hemen</div>
-              <div class="chip" data-val="1 ay" onclick="toggleChip(this,'musait')">1 ay</div>
-              <div class="chip" data-val="3 ay" onclick="toggleChip(this,'musait')">3 ay</div>
+              <div class="chip" data-val="2 Hafta İçinde" onclick="toggleChip(this,'musait')">2 Hafta</div>
+              <div class="chip" data-val="1 Ay İçinde" onclick="toggleChip(this,'musait')">1 Ay</div>
+              <div class="chip" data-val="2+ Ay İçinde" onclick="toggleChip(this,'musait')">2+ Ay</div>
             </div>
           </div>
 
@@ -686,8 +693,8 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
             <div class="filter-chips" id="filter-calisma">
               <div class="chip" data-val="Tam Zamanlı" onclick="toggleChip(this,'calisma')">Tam Zamanlı</div>
               <div class="chip" data-val="Yarı Zamanlı" onclick="toggleChip(this,'calisma')">Yarı Zamanlı</div>
-              <div class="chip" data-val="Dönemsel" onclick="toggleChip(this,'calisma')">Dönemsel</div>
-              <div class="chip" data-val="Her İkisi" onclick="toggleChip(this,'calisma')">Fark Etmez</div>
+              <div class="chip" data-val="Sezonluk" onclick="toggleChip(this,'calisma')">Sezonluk</div>
+              <div class="chip" data-val="Sözleşmeli" onclick="toggleChip(this,'calisma')">Sözleşmeli</div>
             </div>
           </div>
 
@@ -695,9 +702,10 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
             <span class="filter-label">Eğitim Seviyesi</span>
             <div class="filter-chips" id="filter-egitim">
               <div class="chip" data-val="Lise" onclick="toggleChip(this,'egitim')">Lise</div>
-              <div class="chip" data-val="Ön Lisans (2 Yıllık)" onclick="toggleChip(this,'egitim')">Ön Lisans</div>
-              <div class="chip" data-val="Lisans (4 Yıllık)" onclick="toggleChip(this,'egitim')">Lisans</div>
+              <div class="chip" data-val="Ön Lisans" onclick="toggleChip(this,'egitim')">Ön Lisans</div>
+              <div class="chip" data-val="Lisans" onclick="toggleChip(this,'egitim')">Lisans</div>
               <div class="chip" data-val="Yüksek Lisans" onclick="toggleChip(this,'egitim')">Y. Lisans</div>
+              <div class="chip" data-val="Doktora" onclick="toggleChip(this,'egitim')">Doktora</div>
             </div>
           </div>
 
@@ -731,10 +739,11 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
             </div>
             <div class="candidates-sort">
               Sırala:
-              <select class="sort-select" onchange="applyFilters()">
-                <option>En Yeni</option>
-                <option>Deneyim (Artan)</option>
-                <option>Deneyim (Azalan)</option>
+              <select class="sort-select" id="sort-select" onchange="applyFilters()">
+                <option value="relevance">Önerilen</option>
+                <option value="newest">En Yeni</option>
+                <option value="exp_asc">Deneyim (Artan)</option>
+                <option value="exp_desc">Deneyim (Azalan)</option>
               </select>
             </div>
           </div>
@@ -1749,10 +1758,10 @@ async function loadFollowers(){
     var hideCandidates = candidates.filter(function(c){ return c.hide_from_current_employer === true; });
     if(hideCandidates.length > 0 && hrProfile.company_id) {
       try {
-        var brandNamesForHide = await supa.from('brands').select('name').eq('company_id', hrProfile.company_id);
+        var brandNamesForHide = await supa.from('brands').select('brand_name').eq('company_id', hrProfile.company_id);
         var compForHide = await supa.from('companies').select('company_name').eq('id', hrProfile.company_id).maybeSingle();
         var employerNames = {};
-        (brandNamesForHide.data || []).forEach(function(b){ if(b.name) employerNames[b.name.trim().toLowerCase()] = true; });
+        (brandNamesForHide.data || []).forEach(function(b){ if(b.brand_name) employerNames[b.brand_name.trim().toLowerCase()] = true; });
         if(compForHide.data && compForHide.data.company_name) employerNames[compForHide.data.company_name.trim().toLowerCase()] = true;
 
         if(Object.keys(employerNames).length > 0) {
@@ -1783,9 +1792,9 @@ async function loadFollowers(){
     uniqueFollows = uniqueFollows.filter(function(f){ return !!candMap[f.candidate_id]; });
 
     // Also get brand names for display
-    var brandNameRes = await supa.from('brands').select('id, name').in('id', brandIds);
+    var brandNameRes = await supa.from('brands').select('id, brand_name').in('id', brandIds);
     var brandNameMap = {};
-    (brandNameRes.data || []).forEach(function(b){ brandNameMap[b.id] = b.name; });
+    (brandNameRes.data || []).forEach(function(b){ brandNameMap[b.id] = b.brand_name; });
 
     list.innerHTML = '';
     if(countEl) countEl.textContent = uniqueFollows.length + ' takipçi';
@@ -1941,7 +1950,79 @@ async function deletePositionFromDB(id){
   }
 }
 
-async function loadLiveCandidates(){
+// ── SERVER-SIDE CANDIDATE SEARCH (Phase 3A) ──
+var _searchTimer = null;
+var _searchTotal = 0;
+
+function mapRPCtoADAYLAR(candidates){
+  return (candidates || []).map(function(c){
+    var fullName = (c.full_name || '').trim() || '?';
+    var parts = fullName.split(/\s+/).filter(Boolean);
+    var ad = parts[0] || '?';
+    var soyad = parts.slice(1).join(' ') || '';
+    var initials = (ad[0] || '').toUpperCase() + (soyad ? (soyad[0] || '').toUpperCase() : (ad[1] || ad[0] || '?').toUpperCase());
+    if(!initials) initials = '?';
+    var exp = c.experiences || [];
+    var exp0 = exp[0];
+    var calismaArr = c.calisma_tipleri ? (Array.isArray(c.calisma_tipleri) ? c.calisma_tipleri : []) : [];
+    var derivedPoz = (c.son_pozisyon || '').trim();
+    var derivedSirket = (c.son_marka || c.son_sirket || '').trim();
+    return {
+      id: c.id,
+      ad: ad,
+      soyad: soyad,
+      initials: initials,
+      color: avatarColorFromName(fullName),
+      pozisyon: derivedPoz || ((exp0 && exp0.pozisyon) ? exp0.pozisyon : ''),
+      exp: c.toplam_deneyim_ay != null ? Math.round(c.toplam_deneyim_ay / 12) : 0,
+      sehir: (c.adres_il || '').trim() || '',
+      segment: c.segment || '',
+      musait: c.musaitlik || '',
+      calismaTipleri: calismaArr,
+      egitim: c.egitim_seviye || '',
+      diller: (c.diller || []).filter(Boolean),
+      tel: c.telefon || '',
+      telMasked: maskPhone(c.telefon),
+      email: c.email || '',
+      emailMasked: maskEmail(c.email),
+      brand: derivedSirket || ((exp0 && (exp0.marka || exp0.sirket)) ? (exp0.marka || exp0.sirket) : ''),
+      maas: c.maas_beklenti ? c.maas_beklenti + ' TL' : '',
+      aktifAriyor: c.is_actively_looking === true,
+      updated_at: c.updated_at || null,
+      experiences: exp,
+      education: c.education || [],
+      languages: c.languages || [],
+      devamEdiyor: c.halen_calisiyor === true || ((exp0 && exp0.devam_ediyor) ? true : false),
+      match_score: c.match_score || 0,
+      match_reasons: c.match_reasons || []
+    };
+  });
+}
+
+function collectFilters(){
+  var sortEl = document.getElementById('sort-select');
+  var sehirVal = document.getElementById('filter-sehir').value;
+  var expMinVal = parseInt(document.getElementById('filter-exp-min').value) || 0;
+  var expMaxVal = parseInt(document.getElementById('filter-exp-max').value) || 99;
+
+  return {
+    filters: {
+      aktifArayanlar: filterState.aktifArayanlar || false,
+      pozisyon: filterState.pozisyon.length ? filterState.pozisyon : [],
+      sehir: sehirVal || '',
+      expMin: expMinVal,
+      expMax: expMaxVal,
+      segment: filterState.segment.length ? filterState.segment : [],
+      musait: filterState.musait.length ? filterState.musait : [],
+      calisma: filterState.calisma.length ? filterState.calisma : [],
+      egitim: filterState.egitim.length ? filterState.egitim : [],
+      dil: filterState.dil.length ? filterState.dil : []
+    },
+    sort: sortEl ? sortEl.value : 'relevance'
+  };
+}
+
+async function searchCandidates(){
   var container = document.getElementById('candidate-list');
   while(container.firstChild) container.removeChild(container.firstChild);
   var loadingDiv = document.createElement('div');
@@ -1952,129 +2033,33 @@ async function loadLiveCandidates(){
   loadingDiv.appendChild(spinnerDiv);
   loadingDiv.appendChild(document.createTextNode('Adaylar yükleniyor...'));
   container.appendChild(loadingDiv);
+
   try {
     var sb = getSupa();
-    if(!sb){ throw new Error('Supabase bağlantısı yok'); }
-    var { data: rows, error: err } = await sb.from('candidates')
-      .select('id, full_name, adres_il, avatar_url, telefon, email, is_active, profile_completed, hide_from_current_employer, is_actively_looking, updated_at')
-      .eq('is_active', true)
-      .or('profile_completed.eq.true,profile_completion_pct.gte.45');
-    if(err) throw err;
-    if(!rows || rows.length === 0){ ADAYLAR = []; renderCandidates(ADAYLAR); return; }
-    // ── Blocked companies filter ──
-    // If employer has a company_id, filter out candidates who blocked that company
-    if(hrProfile && hrProfile.company_id) {
-      try {
-        var { data: blockedRows } = await sb
-          .from('candidate_blocked_companies')
-          .select('candidate_id')
-          .eq('company_id', hrProfile.company_id);
-        if(blockedRows && blockedRows.length > 0) {
-          var blockedSet = {};
-          blockedRows.forEach(function(b){ blockedSet[b.candidate_id] = true; });
-          rows = rows.filter(function(r){ return !blockedSet[r.id]; });
-          if(rows.length === 0){ ADAYLAR = []; renderCandidates(ADAYLAR); return; }
-        }
-      } catch(blockErr) {
-        console.warn('Blocked companies check failed, continuing without filter:', blockErr.message);
-      }
-    }
-    // ── hide_from_current_employer filter ──
-    // Uses company_id-based brand/company name matching (not fragile string compare)
-    var hideRows = rows.filter(function(r){ return r.hide_from_current_employer === true; });
-    if(hideRows.length > 0 && hrProfile && hrProfile.company_id) {
-      try {
-        // Get all brand names + company name for employer's company
-        var [hideCompBrands, hideCompName] = await Promise.all([
-          sb.from('brands').select('name').eq('company_id', hrProfile.company_id),
-          sb.from('companies').select('company_name').eq('id', hrProfile.company_id).maybeSingle()
-        ]);
-        var employerNames = {};
-        (hideCompBrands.data || []).forEach(function(b){ if(b.name) employerNames[b.name.trim().toLowerCase()] = true; });
-        if(hideCompName.data && hideCompName.data.company_name) employerNames[hideCompName.data.company_name.trim().toLowerCase()] = true;
+    if(!sb) throw new Error('Supabase bağlantısı yok');
 
-        if(Object.keys(employerNames).length > 0) {
-          var hideCids = hideRows.map(function(r){ return r.id; });
-          var { data: currentExps } = await sb
-            .from('candidate_experiences')
-            .select('candidate_id, sirket, marka, devam_ediyor')
-            .in('candidate_id', hideCids)
-            .eq('devam_ediyor', true);
-          if(currentExps && currentExps.length > 0) {
-            var hideSet = {};
-            currentExps.forEach(function(exp){
-              [exp.sirket, exp.marka].filter(Boolean).forEach(function(n){
-                if(employerNames[n.trim().toLowerCase()]) hideSet[exp.candidate_id] = true;
-              });
-            });
-            if(Object.keys(hideSet).length > 0) {
-              rows = rows.filter(function(r){ return !hideSet[r.id]; });
-              if(rows.length === 0){ ADAYLAR = []; renderCandidates(ADAYLAR); return; }
-            }
-          }
-        }
-      } catch(hideErr) {
-        console.warn('hide_from_current_employer check failed:', hideErr.message);
-      }
-    }
+    var params = collectFilters();
+    var companyId = (hrProfile && hrProfile.company_id) ? hrProfile.company_id : null;
 
-    var cids = rows.map(function(r){ return r.id; });
-    var [expRes, workRes, eduRes, langRes] = await Promise.all([
-      sb.from('candidate_experiences').select('*').in('candidate_id', cids).order('sira', { ascending: true }),
-      sb.from('candidate_work_preferences').select('*').in('candidate_id', cids),
-      sb.from('candidate_education').select('*').in('candidate_id', cids).order('sira', { ascending: true }),
-      sb.from('candidate_languages').select('*').in('candidate_id', cids)
-    ]);
-    var expByCid = {};
-    (expRes.data || []).forEach(function(e){ if(!expByCid[e.candidate_id]) expByCid[e.candidate_id] = []; expByCid[e.candidate_id].push(e); });
-    var workByCid = {};
-    (workRes.data || []).forEach(function(w){ workByCid[w.candidate_id] = w; });
-    var eduByCid = {};
-    (eduRes.data || []).forEach(function(e){ if(!eduByCid[e.candidate_id]) eduByCid[e.candidate_id] = []; eduByCid[e.candidate_id].push(e); });
-    var langByCid = {};
-    (langRes.data || []).forEach(function(l){ if(!langByCid[l.candidate_id]) langByCid[l.candidate_id] = []; langByCid[l.candidate_id].push(l); });
-    ADAYLAR = rows.map(function(c){
-      var fullName = (c.full_name || '').trim() || '?';
-      var parts = fullName.split(/\s+/).filter(Boolean);
-      var ad = parts[0] || '?';
-      var soyad = parts.slice(1).join(' ') || '';
-      var initials = (ad[0] || '').toUpperCase() + (soyad ? (soyad[0] || '').toUpperCase() : (ad[1] || ad[0] || '?').toUpperCase());
-      if(!initials) initials = '?';
-      var exp = expByCid[c.id] || [];
-      var workPrefs = workByCid[c.id];
-      var edu = eduByCid[c.id] || [];
-      var languages = langByCid[c.id] || [];
-      var exp0 = exp[0];
-      var edu0 = edu[0];
-      var calismaArr = workPrefs && workPrefs.calisma_tipleri ? (Array.isArray(workPrefs.calisma_tipleri) ? workPrefs.calisma_tipleri : []) : [];
-      return {
-        id: c.id,
-        ad: ad,
-        soyad: soyad,
-        initials: initials,
-        color: avatarColorFromName(fullName),
-        pozisyon: (exp0 && exp0.pozisyon) ? exp0.pozisyon : '',
-        exp: calcTotalExp(exp),
-        sehir: (c.adres_il || '').trim() || '',
-        segment: (exp0 && exp0.segment) ? exp0.segment : '',
-        musait: (workPrefs && workPrefs.musaitlik) ? workPrefs.musaitlik : '',
-        calisma: (calismaArr[0] != null) ? String(calismaArr[0]) : '',
-        egitim: (edu0 && edu0.egitim_seviye) ? edu0.egitim_seviye : '',
-        diller: languages.map(function(l){ return l.dil || ''; }).filter(Boolean),
-        tel: c.telefon || '',
-        telMasked: maskPhone(c.telefon),
-        email: c.email || '',
-        emailMasked: maskEmail(c.email),
-        brand: (exp0 && (exp0.marka || exp0.sirket)) ? (exp0.marka || exp0.sirket) : '',
-        maas: (workPrefs && workPrefs.maas_beklenti) ? workPrefs.maas_beklenti + ' TL' : '',
-        aktifAriyor: c.is_actively_looking === true,
-        updated_at: c.updated_at || null,
-        experiences: exp,
-        education: edu,
-        languages: languages,
-        devamEdiyor: (exp0 && exp0.devam_ediyor) ? true : false
-      };
+    var { data: result, error: err } = await sb.rpc('search_employer_candidates', {
+      p_filters: params.filters,
+      p_employer_company_id: companyId,
+      p_sort: params.sort,
+      p_limit: 100,
+      p_offset: 0
     });
+    if(err) throw err;
+
+    _searchTotal = (result && result.total) || 0;
+    var candidates = (result && result.candidates) || [];
+    ADAYLAR = mapRPCtoADAYLAR(candidates);
+
+    // Update active filter count badge
+    var fs = params.filters;
+    var activeCount = (fs.aktifArayanlar ? 1 : 0) + fs.pozisyon.length + fs.segment.length + fs.musait.length + fs.calisma.length + fs.egitim.length + fs.dil.length + (fs.sehir ? 1 : 0);
+    var badge = document.getElementById('filter-active-count');
+    if(badge){ badge.textContent = activeCount; badge.style.display = activeCount > 0 ? '' : 'none'; }
+
     renderCandidates(ADAYLAR);
   } catch(e) {
     while(container.firstChild) container.removeChild(container.firstChild);
@@ -2094,6 +2079,11 @@ async function loadLiveCandidates(){
     errState.appendChild(errSub);
     container.appendChild(errState);
   }
+}
+
+// Backward-compatible wrapper — called from initApp
+async function loadLiveCandidates(){
+  await searchCandidates();
 }
 
 // ── POZİSYONLAR ──
@@ -2320,7 +2310,9 @@ async function doLogout(){
 // ── CANDIDATE RENDER ──
 function renderCandidates(list){
   var container = document.getElementById('candidate-list');
-  document.getElementById('result-count').textContent = list.length;
+  // Show RPC total (may exceed page size) when available, else fall back to list length
+  var displayCount = (_searchTotal > 0 && _searchTotal >= list.length) ? _searchTotal : list.length;
+  document.getElementById('result-count').textContent = displayCount;
   while(container.firstChild) container.removeChild(container.firstChild);
   if(list.length === 0){
     var emptyDiv = document.createElement('div');
@@ -2578,30 +2570,9 @@ function toggleChip(el, type){
 }
 
 function applyFilters(){
-  var sehir = document.getElementById('filter-sehir').value;
-  var expMin = parseInt(document.getElementById('filter-exp-min').value) || 0;
-  var expMax = parseInt(document.getElementById('filter-exp-max').value) || 99;
-
-  var result = ADAYLAR.filter(function(c){
-    if(filterState.aktifArayanlar && !c.aktifAriyor) return false;
-    if(filterState.pozisyon.length && filterState.pozisyon.indexOf(c.pozisyon)===-1) return false;
-    if(sehir && c.sehir !== sehir) return false;
-    if(c.exp < expMin || c.exp > expMax) return false;
-    if(filterState.segment.length && filterState.segment.indexOf(c.segment)===-1) return false;
-    if(filterState.musait.length && filterState.musait.indexOf(c.musait)===-1) return false;
-    if(filterState.calisma.length && filterState.calisma.indexOf(c.calisma)===-1) return false;
-    if(filterState.egitim.length && c.egitim && filterState.egitim.indexOf(c.egitim)===-1) return false;
-    if(filterState.dil.length){
-      var hasDil = filterState.dil.some(function(d){ return c.diller && c.diller.indexOf(d)!==-1; });
-      if(!hasDil) return false;
-    }
-    return true;
-  });
-  // aktif filtre sayısı güncelle
-  var activeCount = (filterState.aktifArayanlar ? 1 : 0) + filterState.pozisyon.length + filterState.segment.length + filterState.musait.length + filterState.calisma.length + filterState.egitim.length + filterState.dil.length + (sehir?1:0);
-  var badge = document.getElementById('filter-active-count');
-  if(badge){ badge.textContent = activeCount; badge.style.display = activeCount>0?'':'none'; }
-  renderCandidates(result);
+  // Debounce server-side search: 300ms delay to batch rapid chip clicks
+  if(_searchTimer) clearTimeout(_searchTimer);
+  _searchTimer = setTimeout(function(){ searchCandidates(); }, 300);
 }
 
 function resetFilters(){
@@ -2614,7 +2585,9 @@ function resetFilters(){
   document.getElementById('filter-sehir').value='';
   document.getElementById('filter-exp-min').value='';
   document.getElementById('filter-exp-max').value='';
-  renderCandidates(ADAYLAR);
+  var sortEl = document.getElementById('sort-select');
+  if(sortEl) sortEl.value = 'relevance';
+  searchCandidates();
 }
 
 // ── DRAWER ──
@@ -2741,7 +2714,7 @@ async function openDrawer(id){
   makeInfoGrid('Temel Bilgiler', [
     {label:'Şehir', value:c.sehir}, {label:'Deneyim', value:c.exp+' yıl'},
     {label:'Müsaitlik', value:c.musait}, {label:'Segment', value:c.segment},
-    {label:'Çalışma', value:c.calisma}, {label:'Maaş Beklenti', value:c.maas}
+    {label:'Çalışma', value:(c.calismaTipleri||[]).join(', ') || '—'}, {label:'Maaş Beklenti', value:c.maas}
   ]);
 
   makeInfoGrid('İletişim', [
@@ -3330,7 +3303,7 @@ function buildAccordionItem(c){
     ['Şehir', c.sehir || '—'],
     ['Deneyim', c.exp + ' yıl'],
     ['Segment', c.segment || '—'],
-    ['Çalışma Tipi', c.calisma || '—'],
+    ['Çalışma Tipi', (c.calismaTipleri||[]).join(', ') || '—'],
     ['Eğitim', c.egitim || '—'],
     ['Maaş Beklenti', c.maas || '—'],
     ['Müsaitlik', c.musait || '—'],
