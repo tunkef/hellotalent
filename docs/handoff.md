@@ -381,21 +381,29 @@ star_intro → role_select → lobby → competency_intro → practice → compl
 - profil-ui.js: `_initBrandCompanyLookup()` fetches brands/companies at page load, enriches BRAND_DB with ids. Autocomplete picks and blur exact-matches now resolve company_id/brand_id into dataset attributes. `collectExperiences()` and brand interests save paths include ids.
 - **Text columns preserved** — sirket, marka still written on every save. Old data works via text fallback. New data has both text + FK ids.
 
-**36. Toggle State Management Fix — Single Source of Truth**
-- Root cause: Toggle DB writes fragmented across profil-ui.js (3 paths) + profil-settings.js (3 paths) + profil.html (1 path) = 7 independent save paths, no rollback, no cross-panel sync
-- Solution: Shared sync IIFE in profil-ui.js — `syncBeniOner()`, `syncActivelyLooking()`, `syncHideFromEmployer()`
-- Each shared sync: updates all DOM toggles → writes `_loadedDBData.profile` → single DB `.update()` → rollback on failure with Turkish error toast
-- profil-settings.js: removed 3 competing DB write listeners, now delegates to `window.syncBeniOner/syncActivelyLooking/syncHideFromEmployer`
-- profil.html: `refreshAfterVisibilitySave()` converted to thin redirect → `syncBeniOner()`
-- Wizard toggle dispatches (lines ~1466-1474 profil-ui.js) → fires merkez change event → merkez listener calls shared sync (safe chain)
-- Cache busters: `profil-ui.js?v=20260320d`, `profil-settings.js?v=20260320d`
-- DB update paths reduced: 7 → 3 (one per toggle type, all in profil-ui.js)
-- Smoke test bugfixes (found during live test):
-  - `is_actively_looking` and `user_id` were missing from `loadProfileFromDB()` profile mapping (select('*') fetched them but manual object omitted them)
-  - `merkez-toggle-active` and `wiz-toggle-active` had hardcoded `checked` HTML attribute → showed true before DB data loaded
-- Live smoke test: 6/6 scenarios PASS, DB verified via Supabase SQL Editor, hard refresh persistence confirmed
-- Files changed: profil-ui.js, profil-settings.js, profil.html
-- Commits: `7ed4619` (shared sync), `45579e2` (missing field fix), `ef04f95` (hardcoded checked fix)
+**36. Toggle State Management Fix — Verified ✅**
+
+Root cause (3 katman):
+1. **Dağınık DB write:** 7 bağımsız `.update()` yolu (profil-ui.js ×3, profil-settings.js ×3, profil.html ×1), rollback yok, cross-panel sync yok
+2. **Eksik profile mapping:** `loadProfileFromDB()` `select('*')` ile çekiyor ama döndürdüğü objeye `is_actively_looking` ve `user_id` eklememiş → `undefined` → merkez/ayarlar desync
+3. **Hardcoded HTML default:** `merkez-toggle-active` ve `wiz-toggle-active` HTML'de `checked` attribute ile başlıyor → DB verisi yüklenmeden `true` gösteriyor
+
+Çözüm:
+- Shared sync IIFE: `syncBeniOner()`, `syncActivelyLooking()`, `syncHideFromEmployer()` — tek DB write noktası, tüm panel DOM sync, rollback on failure
+- profil-settings.js: 3 competing DB write kaldırıldı → `window.sync*` delegate
+- profil.html: `refreshAfterVisibilitySave()` → thin redirect to `syncBeniOner()`
+- `loadProfileFromDB()` profile mapping'e `is_actively_looking` + `user_id` eklendi
+- `merkez-toggle-active`, `wiz-toggle-active` HTML'den `checked` kaldırıldı
+
+Canlı smoke test (candidate_id=5):
+- 6/6 senaryo PASS (Merkez↔Ayarlar her toggle ON/OFF)
+- DB doğrulama: her toggle değişikliği Supabase SQL Editor ile teyit edildi
+- Hard refresh sonrası 7/7 toggle DB ile eşleşiyor
+- Son temiz state: `is_active=true, is_actively_looking=false, hide_from_current_employer=false`
+
+Commits: `7ed4619` → `45579e2` → `ef04f95` → `fa21a4a`
+Cache: `profil-ui.js?v=20260320d`, `profil-settings.js?v=20260320d`
+**Toggle tarafında blocker kalmadı.**
 
 ### Sonraki Adımlar
 - [x] ~~Migration 042 → competency tabloları~~ ✅ Deployed
@@ -415,6 +423,7 @@ star_intro → role_select → lobby → competency_intro → practice → compl
 - [ ] Label accessibility audit (43 uyarı)
 - [ ] Brand color audit: Batch 2 (index, blog, hakkimizda) + Batch 3 (ik, aday, profil.css)
 - [ ] Dark mode remaining: profil-settings.js alert→modal (7 instances), ik/giris/gate pages
+- [ ] Phase 3C: Position-aware recommendation scoring (migration 050 + ik.html UI) — toggle blocker kapandı, geçilebilir
 
 ---
 
