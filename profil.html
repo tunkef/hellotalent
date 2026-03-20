@@ -1579,7 +1579,7 @@ if (window.Sentry) {
 
 <script src="profil-core.js?v=20260317d"></script>
 <script src="profil-data.js?v=20260317d"></script>
-<script src="profil-ui.js?v=20260320d"></script>
+<script src="profil-ui.js?v=20260320f"></script>
 <script src="profil-markalar.js?v=20260319f"></script>
 <script src="profil-settings.js?v=20260320d"></script>
 <script src="profil-teklifler.js?v=20260319g"></script>
@@ -1840,16 +1840,7 @@ function _doSwitchPanel(name) {
   if (name === 'merkez') {
     updateMerkezCards();
     updateCompletionUI();
-    var isActive = _loadedDBData && _loadedDBData.profile && _loadedDBData.profile.is_active !== false;
-    updateStatusUI(isActive);
-    var mta = document.getElementById('merkez-toggle-active');
-    if (mta) mta.checked = _loadedDBData && _loadedDBData.profile && _loadedDBData.profile.is_actively_looking === true;
-    var merkezHide = document.getElementById('merkez-hide-from-current-employer');
-    if (merkezHide) {
-      var currentEmp = getCurrentEmployerDisplayFromExperiences(_loadedDBData ? _loadedDBData.experiences : null);
-      merkezHide.checked = _loadedDBData && _loadedDBData.profile && _loadedDBData.profile.hide_from_current_employer === true;
-      merkezHide.disabled = !currentEmp;
-    }
+    if (typeof applyAllVisibilityMirrorsFromProfile === 'function') applyAllVisibilityMirrorsFromProfile();
     ht_track('merkez_viewed');
   }
   // Lazy-load Şirketler data on first visit
@@ -1913,6 +1904,7 @@ function _doSwitchPanel(name) {
     var al = document.getElementById('settings-actively-looking');
     if(al && _loadedDBData && _loadedDBData.profile) al.checked = _loadedDBData.profile.is_actively_looking === true;
     if (window._htLoadBlockedCompanies) window._htLoadBlockedCompanies();
+    if (typeof applyAllVisibilityMirrorsFromProfile === 'function') applyAllVisibilityMirrorsFromProfile();
   }
   // Close mobile sidebar
   closeMobileSidebar();
@@ -2308,15 +2300,7 @@ function reapplyDynamicFields() {
         if (!el.querySelector('img')) el.textContent = ini;
       });
     }
-    if (dbData.profile && dbData.profile.is_active !== undefined) {
-      var isActive = dbData.profile.is_active;
-      var vis = document.getElementById('merkez-toggle-visibility');
-      if (vis) vis.checked = isActive;
-      var sidebarBeni = document.getElementById('sidebar-toggle-benioner');
-      if (sidebarBeni) sidebarBeni.checked = isActive;
-      updateStatusUI(isActive);
-      if (typeof updateMerkezVisState === 'function') updateMerkezVisState();
-    }
+    // Görünürlük aynaları: applyAllVisibilityMirrorsFromProfile (load sonunda + DOMContentLoaded sonrası)
     // Load CV state if exists
     if (dbData.profile.cv_url && dbData.profile.cv_filename) {
       showCVUploaded(dbData.profile.cv_filename, new Date(dbData.profile.cv_uploaded_at || Date.now()));
@@ -2327,6 +2311,7 @@ function reapplyDynamicFields() {
     }
     updateDashboardSummary(dbData.profile, dbData.experiences);
     updateMerkezCards(); // Populate Profil Merkezi section cards
+    if (typeof applyAllVisibilityMirrorsFromProfile === 'function') applyAllVisibilityMirrorsFromProfile();
     syncAccountEmail();
     // Auto-sync auth email → candidates.email if they differ
     if (_loadedDBData && _loadedDBData.profile && currentUser.email) {
@@ -3104,6 +3089,9 @@ document.addEventListener('DOMContentLoaded', function() {
   // Re-apply DB values to selects/chips that were just created by initStep1/4/5.
   // Covers the race where applyDraft ran before these options/chips existed.
   reapplyDynamicFields();
+  if (typeof applyAllVisibilityMirrorsFromProfile === 'function' && _loadedDBData && _loadedDBData.profile) {
+    applyAllVisibilityMirrorsFromProfile();
+  }
   console.timeEnd('[HT] total-load');
 
   // Location modal

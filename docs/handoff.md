@@ -403,7 +403,7 @@ Canlı smoke test (candidate_id=5):
 
 Commits: `7ed4619` → `45579e2` → `ef04f95` → `fa21a4a`
 Cache: `profil-ui.js?v=20260320d`, `profil-settings.js?v=20260320d`
-**Toggle tarafında blocker kalmadı.**
+**Toggle tarafında blocker kalmadı.** `saveProfileRPC` başarı sonrası `_loadedDBData.profile` artık merkez DOM’dan `is_actively_looking` / `hide_from_current_employer` ile güncelleniyor ve `applyAllVisibilityMirrorsFromProfile()` çağrılıyor (gereksiz `syncBeniOner` DB tekrarı kaldırıldı). Cache: `profil-ui.js?v=20260320f`.
 
 ### Sonraki Adımlar
 - [x] ~~Migration 042 → competency tabloları~~ ✅ Deployed
@@ -423,7 +423,7 @@ Cache: `profil-ui.js?v=20260320d`, `profil-settings.js?v=20260320d`
 - [ ] Label accessibility audit (43 uyarı)
 - [ ] Brand color audit: Batch 2 (index, blog, hakkimizda) + Batch 3 (ik, aday, profil.css)
 - [ ] Dark mode remaining: profil-settings.js alert→modal (7 instances), ik/giris/gate pages
-- [ ] Phase 3C: Position-aware recommendation scoring (migration 050 + ik.html UI) — toggle blocker kapandı, geçilebilir
+- [ ] Phase 3C: Position-aware recommendation scoring (migration 050 + ik.html UI) — toggle blocker kapandı, geçilebilir. **Claude Code prompt:** `docs/claude-code-prompt-phase-3c.md`
 
 ---
 
