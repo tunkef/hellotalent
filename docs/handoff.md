@@ -1,5 +1,5 @@
 # hellotalent.ai — Technical Handoff Document
-> Son güncelleme: 20 Mart 2026 (Session 9 — Phase 3B Frontend Deploy + Smoke Test)
+> Son güncelleme: 20 Mart 2026 (Session 9 — Phase 3B Deploy + Toggle State Fix)
 > Bu doküman, projenin mevcut durumunu, tamamlanan işleri ve kalan backlog'u kapsar.
 > Yeni bir chat/session başlatırken bu dosyayı referans olarak kullanın.
 
@@ -380,6 +380,17 @@ star_intro → role_select → lobby → competency_intro → practice → compl
 - Response contract: `diller` = string[] (dil names for chips), `languages` = object[] ({dil,seviye} for detail view), `segment`, `egitim_seviye` aligned to ik.html mapper.
 - profil-ui.js: `_initBrandCompanyLookup()` fetches brands/companies at page load, enriches BRAND_DB with ids. Autocomplete picks and blur exact-matches now resolve company_id/brand_id into dataset attributes. `collectExperiences()` and brand interests save paths include ids.
 - **Text columns preserved** — sirket, marka still written on every save. Old data works via text fallback. New data has both text + FK ids.
+
+**36. Toggle State Management Fix — Single Source of Truth**
+- Root cause: Toggle DB writes fragmented across profil-ui.js (3 paths) + profil-settings.js (3 paths) + profil.html (1 path) = 7 independent save paths, no rollback, no cross-panel sync
+- Solution: Shared sync IIFE in profil-ui.js — `syncBeniOner()`, `syncActivelyLooking()`, `syncHideFromEmployer()`
+- Each shared sync: updates all DOM toggles → writes `_loadedDBData.profile` → single DB `.update()` → rollback on failure with Turkish error toast
+- profil-settings.js: removed 3 competing DB write listeners, now delegates to `window.syncBeniOner/syncActivelyLooking/syncHideFromEmployer`
+- profil.html: `refreshAfterVisibilitySave()` converted to thin redirect → `syncBeniOner()`
+- Wizard toggle dispatches (lines ~1466-1474 profil-ui.js) → fires merkez change event → merkez listener calls shared sync (safe chain)
+- Cache busters: `profil-ui.js?v=20260320b`, `profil-settings.js?v=20260320b`
+- DB update paths reduced: 7 → 3 (one per toggle type, all in profil-ui.js)
+- Files changed: profil-ui.js (+162 -46), profil-settings.js (+10 -56), profil.html (+8 -12)
 
 ### Sonraki Adımlar
 - [x] ~~Migration 042 → competency tabloları~~ ✅ Deployed

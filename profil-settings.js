@@ -90,48 +90,18 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 
-  // Gizlilik: visibility toggle (Settings) — read/write candidates.is_active
+  // Gizlilik: visibility toggle (Settings) — delegates to shared syncBeniOner
   var settingsVisibilityToggle = document.getElementById('settings-visibility-active');
-  if (settingsVisibilityToggle) settingsVisibilityToggle.addEventListener('change', async function() {
-    var isActive = this.checked;
-    if (!currentUser) return;
-    var res = await supabase.from('candidates').update({ is_active: isActive }).eq('user_id', currentUser.id);
-    if (res.error) {
-      this.checked = !isActive;
-      return;
-    }
-    refreshAfterVisibilitySave(isActive);
+  if (settingsVisibilityToggle) settingsVisibilityToggle.addEventListener('change', function() {
+    if (typeof syncBeniOner === 'function') syncBeniOner(this.checked, 'ayarlar');
   });
 
-  // Gizlilik: hide from current employer — read/write candidates.hide_from_current_employer
+  // Gizlilik: hide from current employer (Settings) — delegates to shared syncHideFromEmployer
   var settingsHideFromEmployer = document.getElementById('settings-hide-from-current-employer');
-  if (settingsHideFromEmployer) settingsHideFromEmployer.addEventListener('change', async function() {
-    if (this.disabled || !currentUser) return;
-    var val = this.checked;
-    var res = await supabase.from('candidates').update({ hide_from_current_employer: val }).eq('user_id', currentUser.id);
-    if (res.error) {
-      this.checked = !val;
-      return;
-    }
-    if (_loadedDBData && _loadedDBData.profile) _loadedDBData.profile.hide_from_current_employer = val;
-    var merkezHide = document.getElementById('merkez-hide-from-current-employer');
-    if (merkezHide) merkezHide.checked = val;
-    refreshVisibilitySummary();
+  if (settingsHideFromEmployer) settingsHideFromEmployer.addEventListener('change', function() {
+    if (typeof syncHideFromEmployer === 'function') syncHideFromEmployer(this.checked, 'ayarlar');
   });
-  var merkezHideFromEmployer = document.getElementById('merkez-hide-from-current-employer');
-  if (merkezHideFromEmployer) merkezHideFromEmployer.addEventListener('change', async function() {
-    if (this.disabled || !currentUser) return;
-    var val = this.checked;
-    var res = await supabase.from('candidates').update({ hide_from_current_employer: val }).eq('user_id', currentUser.id);
-    if (res.error) {
-      this.checked = !val;
-      return;
-    }
-    if (_loadedDBData && _loadedDBData.profile) _loadedDBData.profile.hide_from_current_employer = val;
-    var settingsHide = document.getElementById('settings-hide-from-current-employer');
-    if (settingsHide) settingsHide.checked = val;
-    refreshVisibilitySummary();
-  });
+  // NOTE: merkez-hide-from-current-employer listener is in profil-ui.js shared sync IIFE
 
   // Hesap Bilgileri save (Settings)
   var btnSettingsAccountSave = document.getElementById('btn-settings-account-save');
@@ -267,28 +237,12 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   })();
 
-  // ── ACTIVELY LOOKING TOGGLE ──
+  // ── ACTIVELY LOOKING TOGGLE (Settings) — delegates to shared syncActivelyLooking ──
   (function(){
     var toggle = document.getElementById('settings-actively-looking');
     if(!toggle) return;
-    toggle.addEventListener('change', async function(){
-      var msg = document.getElementById('actively-looking-msg');
-      msg.style.display='none';
-      try {
-        var { error } = await supabase
-          .from('candidates')
-          .update({ is_actively_looking: toggle.checked })
-          .eq('user_id', currentUser.id);
-        if(error) throw error;
-        if(_loadedDBData && _loadedDBData.profile) _loadedDBData.profile.is_actively_looking = toggle.checked;
-        msg.style.color='var(--green)';
-        msg.textContent = toggle.checked ? 'Aktif arama modu açıldı.' : 'Aktif arama modu kapatıldı.';
-        msg.style.display='block';
-        setTimeout(function(){ msg.style.display='none'; }, 3000);
-      } catch(e) {
-        msg.style.color='var(--red)'; msg.textContent='Hata: ' + e.message; msg.style.display='block';
-        toggle.checked = !toggle.checked;
-      }
+    toggle.addEventListener('change', function(){
+      if (typeof syncActivelyLooking === 'function') syncActivelyLooking(toggle.checked, 'ayarlar');
     });
   })();
 

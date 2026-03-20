@@ -3086,15 +3086,17 @@ function closeTgToast() {
   if (_tgToastTimer) { clearTimeout(_tgToastTimer); _tgToastTimer = null; }
 }
 
-// ── Toggle Grid Logic: "Beni Öner" (merkez-toggle-visibility) syncs with sidebar + Ayarlar; only this controls is_active ──
+// ═══════════════════════════════════════════════════
+// SHARED TOGGLE SYNC — Single source of truth for all visibility toggles
+// Each toggle (Beni Öner, Aktif Arıyorum, Hide From Employer) has ONE
+// shared sync function that: syncs all UI instances, updates _loadedDBData,
+// writes to DB ONCE, rolls back ALL toggles on failure.
+// ═══════════════════════════════════════════════════
 (function() {
-  var visToggle = document.getElementById('merkez-toggle-visibility');
-  var hideCell = document.getElementById('merkez-hide-row');
-  var gridId = 'merkez-toggle-visibility';
-  var sidebarId = 'sidebar-toggle-benioner';
-  var ayarlarId = 'settings-visibility-active';
 
+  // ── Helper: update Merkez visual state from current toggle values ──
   function updateVisState() {
+    var visToggle = document.getElementById('merkez-toggle-visibility');
     if (!visToggle) return;
     var isOn = visToggle.checked;
 
@@ -3105,9 +3107,8 @@ function closeTgToast() {
       text.textContent = isOn ? 'Profilin aktif' : 'Profilin gizli';
       text.classList.toggle('off', !isOn);
     }
-    if (hideCell) {
-      hideCell.classList.toggle('disabled', !isOn);
-    }
+    var hideCell = document.getElementById('merkez-hide-row');
+    if (hideCell) hideCell.classList.toggle('disabled', !isOn);
 
     var sidebarDesc = document.getElementById('sidebar-benioner-desc');
     if (sidebarDesc) {
@@ -3122,27 +3123,125 @@ function closeTgToast() {
     }
   }
 
+  // ════════════════════════════════════════════════
+  // 1. syncBeniOner — is_active toggle
+  //    source: 'merkez' | 'sidebar' | 'ayarlar'
+  // ════════════════════════════════════════════════
   function syncBeniOner(newValue, source) {
-    var grid = document.getElementById(gridId);
-    var sidebar = document.getElementById(sidebarId);
-    var ayarlar = document.getElementById(ayarlarId);
-    if (source !== 'grid' && grid) grid.checked = newValue;
-    if (source !== 'sidebar' && sidebar) sidebar.checked = newValue;
-    if (source !== 'ayarlar' && ayarlar) ayarlar.checked = newValue;
+    var merkez = document.getElementById('merkez-toggle-visibility');
+    var sidebar = document.getElementById('sidebar-toggle-benioner');
+    var ayarlar = document.getElementById('settings-visibility-active');
+
+    // Optimistic UI: sync all toggles immediately
+    if (merkez) merkez.checked = newValue;
+    if (sidebar) sidebar.checked = newValue;
+    if (ayarlar) ayarlar.checked = newValue;
+    if (_loadedDBData && _loadedDBData.profile) _loadedDBData.profile.is_active = newValue;
     updateVisState();
     if (typeof updateStatusUI === 'function') updateStatusUI(newValue);
-    if (typeof _loadedDBData !== 'undefined' && _loadedDBData && _loadedDBData.profile) _loadedDBData.profile.is_active = newValue;
     if (typeof refreshVisibilitySummary === 'function') refreshVisibilitySummary();
-    if ((source === 'grid' || source === 'sidebar') && typeof supabase !== 'undefined' && typeof currentUser !== 'undefined' && currentUser) {
-      supabase.from('candidates')
-        .update({ is_active: newValue })
-        .eq('user_id', currentUser.id)
-        .then(function(res) {
-          if (res.error) console.error('[HT] beni-oner save failed', res.error);
-        });
-    }
+
+    // DB write — single path regardless of source
+    if (typeof supabase === 'undefined' || typeof currentUser === 'undefined' || !currentUser) return;
+    supabase.from('candidates')
+      .update({ is_active: newValue })
+      .eq('user_id', currentUser.id)
+      .then(function(res) {
+        if (res.error) {
+          console.error('[HT] beni-oner save failed', res.error);
+          // Rollback all toggles
+          var rollback = !newValue;
+          if (merkez) merkez.checked = rollback;
+          if (sidebar) sidebar.checked = rollback;
+          if (ayarlar) ayarlar.checked = rollback;
+          if (_loadedDBData && _loadedDBData.profile) _loadedDBData.profile.is_active = rollback;
+          updateVisState();
+          if (typeof updateStatusUI === 'function') updateStatusUI(rollback);
+          if (typeof refreshVisibilitySummary === 'function') refreshVisibilitySummary();
+          showTgToast('Hata: Görünürlük kaydedilemedi. Lütfen tekrar deneyin.', null);
+        }
+      });
   }
 
+  // ════════════════════════════════════════════════
+  // 2. syncActivelyLooking — is_actively_looking toggle
+  //    source: 'merkez' | 'ayarlar'
+  // ════════════════════════════════════════════════
+  function syncActivelyLooking(newValue, source) {
+    var merkez = document.getElementById('merkez-toggle-active');
+    var ayarlar = document.getElementById('settings-actively-looking');
+    var msg = document.getElementById('actively-looking-msg');
+
+    // Optimistic UI: sync all toggles
+    if (merkez) merkez.checked = newValue;
+    if (ayarlar) ayarlar.checked = newValue;
+    if (_loadedDBData && _loadedDBData.profile) _loadedDBData.profile.is_actively_looking = newValue;
+
+    // DB write — single path
+    if (typeof supabase === 'undefined' || typeof currentUser === 'undefined' || !currentUser) return;
+    supabase.from('candidates')
+      .update({ is_actively_looking: newValue })
+      .eq('user_id', currentUser.id)
+      .then(function(res) {
+        if (res.error) {
+          console.error('[HT] actively-looking save failed', res.error);
+          // Rollback all toggles
+          var rollback = !newValue;
+          if (merkez) merkez.checked = rollback;
+          if (ayarlar) ayarlar.checked = rollback;
+          if (_loadedDBData && _loadedDBData.profile) _loadedDBData.profile.is_actively_looking = rollback;
+          if (msg) { msg.style.color = 'var(--red)'; msg.textContent = 'Hata: Kaydedilemedi. Lütfen tekrar deneyin.'; msg.style.display = 'block'; }
+          showTgToast('Hata: Kaydedilemedi. Lütfen tekrar deneyin.', null);
+        } else {
+          if (msg) {
+            msg.style.color = 'var(--green)';
+            msg.textContent = newValue ? 'Aktif arama modu açıldı.' : 'Aktif arama modu kapatıldı.';
+            msg.style.display = 'block';
+            setTimeout(function() { msg.style.display = 'none'; }, 3000);
+          }
+        }
+      });
+  }
+
+  // ════════════════════════════════════════════════
+  // 3. syncHideFromEmployer — hide_from_current_employer toggle
+  //    source: 'merkez' | 'ayarlar'
+  // ════════════════════════════════════════════════
+  function syncHideFromEmployer(newValue, source) {
+    var merkez = document.getElementById('merkez-hide-from-current-employer');
+    var ayarlar = document.getElementById('settings-hide-from-current-employer');
+
+    // Eligibility guard: don't save if disabled
+    if (merkez && merkez.disabled) return;
+    if (ayarlar && ayarlar.disabled) return;
+
+    // Optimistic UI: sync all toggles
+    if (merkez) merkez.checked = newValue;
+    if (ayarlar) ayarlar.checked = newValue;
+    if (_loadedDBData && _loadedDBData.profile) _loadedDBData.profile.hide_from_current_employer = newValue;
+    if (typeof refreshVisibilitySummary === 'function') refreshVisibilitySummary();
+
+    // DB write — single path
+    if (typeof supabase === 'undefined' || typeof currentUser === 'undefined' || !currentUser) return;
+    supabase.from('candidates')
+      .update({ hide_from_current_employer: newValue })
+      .eq('user_id', currentUser.id)
+      .then(function(res) {
+        if (res.error) {
+          console.error('[HT] hide-from-employer save failed', res.error);
+          // Rollback all toggles
+          var rollback = !newValue;
+          if (merkez) merkez.checked = rollback;
+          if (ayarlar) ayarlar.checked = rollback;
+          if (_loadedDBData && _loadedDBData.profile) _loadedDBData.profile.hide_from_current_employer = rollback;
+          if (typeof refreshVisibilitySummary === 'function') refreshVisibilitySummary();
+          showTgToast('Hata: Kaydedilemedi. Lütfen tekrar deneyin.', null);
+        }
+      });
+  }
+
+  // ── Wire Merkez toggles ──
+  var visToggle = document.getElementById('merkez-toggle-visibility');
   if (visToggle) {
     visToggle.addEventListener('change', function() {
       var cell = visToggle.closest('.mk-controls-item');
@@ -3151,12 +3250,12 @@ function closeTgToast() {
       } else {
         showTgToast('Profilin gizlendi. İşverenler kişisel bilgilerini ve CV\'ni göremez.', cell);
       }
-      syncBeniOner(visToggle.checked, 'grid');
+      syncBeniOner(visToggle.checked, 'merkez');
     });
     updateVisState();
   }
 
-  var sidebarToggle = document.getElementById(sidebarId);
+  var sidebarToggle = document.getElementById('sidebar-toggle-benioner');
   if (sidebarToggle) {
     sidebarToggle.addEventListener('change', function() {
       syncBeniOner(sidebarToggle.checked, 'sidebar');
@@ -3173,12 +3272,7 @@ function closeTgToast() {
       } else {
         showTgToast('Rozet kaldırıldı. Profilin hâlâ görünür, sadece aktif arama rozeti gizli.', cell);
       }
-      // Sync to settings toggle and let profil-settings.js handle persistence
-      var settingsAl = document.getElementById('settings-actively-looking');
-      if (settingsAl) {
-        settingsAl.checked = newVal;
-        settingsAl.dispatchEvent(new Event('change'));
-      }
+      syncActivelyLooking(newVal, 'merkez');
     });
   }
 
@@ -3191,11 +3285,15 @@ function closeTgToast() {
       } else {
         showTgToast('Mevcut işverenin de dahil tüm işverenler profilini görebilir.', cell);
       }
+      syncHideFromEmployer(this.checked, 'merkez');
     });
   }
 
+  // ── Expose to other modules (profil-settings.js, profil.html) ──
   window.updateMerkezVisState = updateVisState;
   window.syncBeniOner = syncBeniOner;
+  window.syncActivelyLooking = syncActivelyLooking;
+  window.syncHideFromEmployer = syncHideFromEmployer;
 })();
 
 // ═══════════════════════════════════════════════════
