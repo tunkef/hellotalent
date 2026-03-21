@@ -1368,10 +1368,11 @@ if(sessionStorage.getItem('ht_gate')!=='ok'){window.location.replace('gate.html'
 | 055 | `055_thread_list_3way_activity.sql` — 3-way activity for thread list RPCs | ✅ Deployed Session 14 |
 | 056 | `056_candidate_unread_count.sql` — candidate unread count RPC + deleted-thread reactivation | ✅ Deployed Session 14 |
 | 057 | `057_canonical_thread_model.sql` — read-only unread count, write-side reactivation, canonical summaries | ✅ Deployed Session 14 |
-| 058 | `058_coach_system.sql` — coach_invites, coach_profiles, coach_posts, coach_post_likes + RPCs + triggers | ⬜ Not yet deployed |
-| 059 | `059_email_outbox_coach_invite.sql` — adds coach_invite to email_outbox CHECK constraint | ⬜ Not yet deployed |
-| 060 | `060_coach_posts_rls_tighten.sql` — tighten coach INSERT/UPDATE: draft-only insert, no self-publish/admin_note/like_count bypass | ⬜ Not yet deployed |
-| 061 | `061_coach_update_like_count_guard.sql` — add like_count = 0 to coach UPDATE WITH CHECK | ⬜ Not yet deployed |
+| 058 | `058_coach_system.sql` — coach_invites, coach_profiles, coach_posts, coach_post_likes + RPCs + triggers | ✅ Deployed Session 15 |
+| 059 | `059_email_outbox_coach_invite.sql` — adds coach_invite to email_outbox CHECK constraint | ✅ Deployed Session 15 |
+| 060 | `060_coach_posts_rls_tighten.sql` — tighten coach INSERT/UPDATE: draft-only insert, no self-publish/admin_note/like_count bypass | ✅ Deployed Session 15 |
+| 061 | `061_coach_update_like_count_guard.sql` — add like_count = 0 to coach UPDATE WITH CHECK | ✅ Deployed Session 15 |
+| 062 | `062_coach_invites_rls_auth_users_fix.sql` — fix own_read policy (auth.jwt() instead of auth.users subquery) + explicit GRANTs | ✅ Deployed Session 15 |
 
 ### Markalar TODO
 - [x] ~~Mobil test (390×844)~~ ✅ Touch toggle (`.active` class) eklendi, hover + click ile çalışır
