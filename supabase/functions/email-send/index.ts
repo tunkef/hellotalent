@@ -1,0 +1,459 @@
+// email-send — Outbox Processor & Resend Delivery
+// Schedule: */1 * * * * (every 1 minute via pg_cron)
+// Spec: docs/superpowers/specs/2026-03-20-transactional-email-phase1-design.md
+//
+// Claims pending outbox rows, renders templates, sends via Resend API.
+// Handles retry with exponential backoff and stale recovery.
+// dedupe_key is sent as Idempotency-Key to Resend for dual-layer protection.
+
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
+const SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY")!;
+const EMAIL_FROM = Deno.env.get("EMAIL_FROM") || "HelloTalent <noreply@hellotalent.ai>";
+const REPLY_TO = Deno.env.get("REPLY_TO") || "support@hellotalent.ai";
+
+const BATCH_SIZE = 10;
+const MAX_ATTEMPTS = 3;
+const STALE_THRESHOLD_MINUTES = 10;
+
+Deno.serve(async (_req: Request) => {
+  try {
+    // Auth: JWT verification is handled by Supabase gateway (deploy without --no-verify-jwt).
+    // Only service_role or authenticated JWTs reach this point.
+
+    const supabase = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, {
+      auth: { persistSession: false },
+    });
+
+    // Step 1: Stale recovery — reset rows stuck in processing for 10+ minutes
+    await supabase
+      .from("email_outbox")
+      .update({ status: "pending", processing_started_at: null })
+      .eq("status", "processing")
+      .lt(
+        "processing_started_at",
+        new Date(Date.now() - STALE_THRESHOLD_MINUTES * 60 * 1000).toISOString(),
+      );
+
+    // Step 2: Claim batch
+    const { data: batch, error: claimError } = await supabase.rpc(
+      "claim_email_outbox_batch",
+      { p_limit: BATCH_SIZE },
+    );
+
+    if (claimError) {
+      console.error("claim error:", claimError.message);
+      return new Response(
+        JSON.stringify({ error: claimError.message }),
+        { status: 500 },
+      );
+    }
+
+    if (!batch || batch.length === 0) {
+      return new Response(
+        JSON.stringify({ ok: true, sent: 0, failed: 0, retried: 0 }),
+        { headers: { "Content-Type": "application/json" } },
+      );
+    }
+
+    let sent = 0;
+    let failed = 0;
+    let retried = 0;
+
+    // Step 3: Process each row
+    for (const row of batch) {
+      try {
+        const template = renderTemplate(row.email_type, row.payload);
+        await sendViaResend(template, row.recipient_email, row.dedupe_key);
+
+        // Success
+        await supabase
+          .from("email_outbox")
+          .update({ status: "sent", sent_at: new Date().toISOString() })
+          .eq("id", row.id);
+        sent++;
+      } catch (err) {
+        const errorMsg = (err as Error).message || "Unknown error";
+        const newAttempt = (row.attempt_count || 0) + 1;
+
+        if (newAttempt >= MAX_ATTEMPTS) {
+          // Permanent failure
+          await supabase
+            .from("email_outbox")
+            .update({
+              status: "failed",
+              attempt_count: newAttempt,
+              last_error: errorMsg,
+            })
+            .eq("id", row.id);
+          failed++;
+        } else {
+          // Retry with exponential backoff: n^2 minutes
+          const retryMinutes = newAttempt * newAttempt;
+          const nextRetry = new Date(
+            Date.now() + retryMinutes * 60 * 1000,
+          ).toISOString();
+
+          await supabase
+            .from("email_outbox")
+            .update({
+              status: "pending",
+              attempt_count: newAttempt,
+              last_error: errorMsg,
+              next_retry_at: nextRetry,
+              processing_started_at: null,
+            })
+            .eq("id", row.id);
+          retried++;
+        }
+      }
+    }
+
+    return new Response(
+      JSON.stringify({ ok: true, claimed: batch.length, sent, failed, retried }),
+      { headers: { "Content-Type": "application/json" } },
+    );
+  } catch (err) {
+    console.error("email-send error:", err);
+    return new Response(
+      JSON.stringify({ error: (err as Error).message }),
+      { status: 500 },
+    );
+  }
+});
+
+// ═══════════════════════════════════════════════════
+// RESEND API
+// ═══════════════════════════════════════════════════
+
+interface EmailContent {
+  subject: string;
+  html: string;
+  text: string;
+}
+
+async function sendViaResend(
+  content: EmailContent,
+  to: string,
+  idempotencyKey: string,
+): Promise<void> {
+  const res = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${RESEND_API_KEY}`,
+      "Content-Type": "application/json",
+      "Idempotency-Key": idempotencyKey,
+    },
+    body: JSON.stringify({
+      from: EMAIL_FROM,
+      to: [to],
+      reply_to: REPLY_TO,
+      subject: content.subject,
+      html: content.html,
+      text: content.text,
+    }),
+  });
+
+  if (!res.ok) {
+    const body = await res.text().catch(() => "");
+    throw new Error(`Resend ${res.status}: ${body}`);
+  }
+}
+
+// ═══════════════════════════════════════════════════
+// TEMPLATE ENGINE
+// ═══════════════════════════════════════════════════
+
+interface Payload {
+  full_name?: string | null;
+  recipient_name?: string | null;
+  company_name?: string | null;
+  email?: string | null;
+  cta_url?: string;
+  sender_name?: string;
+  message_preview?: string | null;
+  sent_at?: string | null;
+  settings_url?: string | null;
+}
+
+function renderTemplate(
+  emailType: string,
+  payload: Payload,
+): EmailContent {
+  switch (emailType) {
+    case "candidate_welcome":
+      return candidateWelcomeTemplate(payload);
+    case "employer_welcome":
+      return employerWelcomeTemplate(payload);
+    case "new_message":
+      return newMessageTemplate(payload);
+    default:
+      throw new Error(`Unknown email_type: ${emailType}`);
+  }
+}
+
+// ─── HTML escape ─────────────────────────────────────
+
+// Escapes user-authored content before inserting into HTML templates.
+// Prevents layout breakage and XSS from dynamic fields like
+// sender_name, message_preview, full_name, company_name, email.
+function esc(str: string | null | undefined): string {
+  if (!str) return "";
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+// ─── Shared HTML helpers ─────────────────────────────
+
+const COLORS = {
+  verm: "#C94E28",
+  navy: "#1E2D5E",
+  bg: "#F7F6F4",
+  border: "#E5E3DF",
+  text: "#111111",
+  muted: "#6B7280",
+  white: "#FFFFFF",
+};
+
+function emailWrapper(bodyContent: string): string {
+  return `<!DOCTYPE html>
+<html lang="tr">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:${COLORS.bg};font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:${COLORS.bg};padding:24px 0;">
+<tr><td align="center">
+<table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:${COLORS.white};border-radius:12px;border:1px solid ${COLORS.border};overflow:hidden;">
+${bodyContent}
+</table>
+</td></tr>
+</table>
+</body>
+</html>`;
+}
+
+function logoRow(): string {
+  return `<tr><td style="padding:28px 32px 16px;text-align:center;">
+<a href="https://hellotalent.ai" style="text-decoration:none;font-family:'Bricolage Grotesque',Georgia,serif;font-size:22px;font-weight:700;color:${COLORS.navy};">
+Hello<span style="color:${COLORS.verm};">Talent</span>
+</a>
+</td></tr>`;
+}
+
+function ctaButton(label: string, url: string): string {
+  return `<tr><td style="padding:8px 32px 24px;">
+<table cellpadding="0" cellspacing="0" style="margin:0 auto;">
+<tr><td style="background:${COLORS.verm};border-radius:8px;">
+<a href="${url}" style="display:inline-block;padding:14px 32px;color:${COLORS.white};text-decoration:none;font-family:'Plus Jakarta Sans',-apple-system,sans-serif;font-size:15px;font-weight:600;">
+${label}
+</a>
+</td></tr>
+</table>
+</td></tr>`;
+}
+
+function footerRow(extra?: string): string {
+  const extraLine = extra
+    ? `<p style="margin:0 0 12px;">${extra}</p>`
+    : "";
+  return `<tr><td style="padding:20px 32px;border-top:1px solid ${COLORS.border};font-size:12px;color:${COLORS.muted};line-height:1.5;">
+${extraLine}
+<p style="margin:0;">&copy; 2026 HelloTalent &mdash; Perakende sekt\u00f6r\u00fcne \u00f6zel yetenek platformu</p>
+<p style="margin:4px 0 0;"><a href="https://hellotalent.ai/gizlilik.html" style="color:${COLORS.muted};">Gizlilik Politikas\u0131</a> &middot; <a href="https://hellotalent.ai/kullanim-sartlari.html" style="color:${COLORS.muted};">Kullan\u0131m \u015eartlar\u0131</a></p>
+<p style="margin:4px 0 0;">Bu bir hesap bildirimidir.</p>
+</td></tr>`;
+}
+
+// ─── Candidate Welcome ──────────────────────────────
+
+function candidateWelcomeTemplate(p: Payload): EmailContent {
+  const name = esc(p.full_name);
+  const greeting = name ? `Ho\u015f geldiniz, ${name}!` : "Ho\u015f geldiniz!";
+  const greetingPlain = p.full_name ? `Ho\u015f geldiniz, ${p.full_name}!` : "Ho\u015f geldiniz!";
+  const ctaUrl = p.cta_url || "https://hellotalent.ai/giris.html";
+
+  const securityNote = p.email
+    ? `<tr><td style="padding:0 32px 20px;font-size:13px;color:${COLORS.muted};line-height:1.5;">
+Bu e-posta ${esc(p.email)} adresine g\u00f6nderildi \u00e7\u00fcnk\u00fc bu adresle bir HelloTalent hesab\u0131 olu\u015fturuldu. E\u011fer bu siz de\u011filseniz, bu e-postay\u0131 g\u00f6rmezden gelebilirsiniz.
+</td></tr>`
+    : "";
+
+  const html = emailWrapper(`
+${logoRow()}
+<tr><td style="padding:8px 32px 4px;text-align:center;">
+<span style="display:none;max-height:0;overflow:hidden;">Profilinizi tamamlay\u0131n, perakende sekt\u00f6r\u00fcndeki i\u015fverenler sizi g\u00f6rs\u00fcn.</span>
+<h1 style="margin:0;font-family:'Bricolage Grotesque',Georgia,serif;font-size:24px;color:${COLORS.navy};font-weight:700;">${greeting}</h1>
+</td></tr>
+<tr><td style="padding:16px 32px;font-size:15px;color:${COLORS.text};line-height:1.6;">
+<p style="margin:0 0 12px;">HelloTalent\u2019a kat\u0131ld\u0131n\u0131z \u2014 T\u00fcrkiye\u2019nin perakende sekt\u00f6r\u00fcne \u00f6zel yetenek platformu.</p>
+<p style="margin:0 0 16px;">Profilinizi tamamlad\u0131\u011f\u0131n\u0131zda, sekt\u00f6rdeki i\u015fverenler sizi bulabilir ve size uygun pozisyonlarla e\u015fle\u015febilirsiniz.</p>
+<p style="margin:0 0 4px;"><strong>1. Profilinizi olu\u015fturun</strong> \u2014 Deneyim, tercihler ve hedeflerinizi ekleyin.</p>
+<p style="margin:0 0 4px;"><strong>2. G\u00f6r\u00fcn\u00fcr olun</strong> \u2014 \u0130\u015fverenler sizi arama sonu\u00e7lar\u0131nda g\u00f6rs\u00fcn.</p>
+<p style="margin:0 0 0;"><strong>3. E\u015fle\u015fin</strong> \u2014 Size uygun pozisyonlar i\u00e7in i\u015fverenlerden mesaj al\u0131n.</p>
+</td></tr>
+${ctaButton("Giri\u015f Yap ve Profilini Tamamla", ctaUrl)}
+${securityNote}
+${footerRow()}
+`);
+
+  const text = `${greetingPlain}
+
+HelloTalent\u2019a kat\u0131ld\u0131n\u0131z \u2014 T\u00fcrkiye\u2019nin perakende sekt\u00f6r\u00fcne \u00f6zel yetenek platformu.
+
+Profilinizi tamamlad\u0131\u011f\u0131n\u0131zda, sekt\u00f6rdeki i\u015fverenler sizi bulabilir ve size uygun pozisyonlarla e\u015fle\u015febilirsiniz.
+
+\u00dc\u00e7 ad\u0131mda ba\u015flay\u0131n:
+
+1. Profilinizi olu\u015fturun \u2014 Deneyim, tercihler ve hedeflerinizi ekleyin.
+2. G\u00f6r\u00fcn\u00fcr olun \u2014 \u0130\u015fverenler sizi arama sonu\u00e7lar\u0131nda g\u00f6rs\u00fcn.
+3. E\u015fle\u015fin \u2014 Size uygun pozisyonlar i\u00e7in i\u015fverenlerden mesaj al\u0131n.
+
+\u2192 Giri\u015f Yap ve Profilini Tamamla: ${ctaUrl}
+
+---
+${p.email ? `Bu e-posta ${p.email} adresine g\u00f6nderildi.\n` : ""}\
+\u00a9 2026 HelloTalent
+Gizlilik: https://hellotalent.ai/gizlilik.html
+Kullan\u0131m \u015eartlar\u0131: https://hellotalent.ai/kullanim-sartlari.html`;
+
+  return {
+    subject: "HelloTalent\u2019e ho\u015f geldiniz",
+    html,
+    text,
+  };
+}
+
+// ─── Employer Welcome ───────────────────────────────
+
+function employerWelcomeTemplate(p: Payload): EmailContent {
+  const name = esc(p.full_name);
+  const greeting = name ? `Ho\u015f geldiniz, ${name}!` : "Ho\u015f geldiniz!";
+  const greetingPlain = p.full_name ? `Ho\u015f geldiniz, ${p.full_name}!` : "Ho\u015f geldiniz!";
+  const ctaUrl = p.cta_url || "https://hellotalent.ai/giris.html?tab=ik";
+
+  const companyLine = p.company_name
+    ? `<tr><td style="padding:0 32px 8px;font-size:15px;color:${COLORS.muted};">${esc(p.company_name)} olarak HelloTalent\u2019a ho\u015f geldiniz.</td></tr>`
+    : "";
+
+  const securityNote = p.email
+    ? `<tr><td style="padding:0 32px 20px;font-size:13px;color:${COLORS.muted};line-height:1.5;">
+Bu e-posta ${esc(p.email)} adresine g\u00f6nderildi \u00e7\u00fcnk\u00fc bu adresle bir HelloTalent i\u015fveren hesab\u0131 olu\u015fturuldu. E\u011fer bu siz de\u011filseniz, bu e-postay\u0131 g\u00f6rmezden gelebilirsiniz.
+</td></tr>`
+    : "";
+
+  const html = emailWrapper(`
+${logoRow()}
+<tr><td style="padding:8px 32px 4px;text-align:center;">
+<span style="display:none;max-height:0;overflow:hidden;">\u0130K panelinize giri\u015f yap\u0131n ve perakende aday havuzuyla tan\u0131\u015f\u0131n.</span>
+<h1 style="margin:0;font-family:'Bricolage Grotesque',Georgia,serif;font-size:24px;color:${COLORS.navy};font-weight:700;">${greeting}</h1>
+</td></tr>
+${companyLine}
+<tr><td style="padding:16px 32px;font-size:15px;color:${COLORS.text};line-height:1.6;">
+<p style="margin:0 0 12px;">HelloTalent \u0130K paneline kat\u0131ld\u0131n\u0131z.</p>
+<p style="margin:0 0 16px;">T\u00fcrkiye\u2019nin perakende sekt\u00f6r\u00fcne \u00f6zel yetenek platformunda, arad\u0131\u011f\u0131n\u0131z deneyim ve yetkinliklere sahip adaylara do\u011frudan ula\u015fabilirsiniz.</p>
+<p style="margin:0 0 4px;"><strong>1. \u0130K panelinize giri\u015f yap\u0131n</strong> \u2014 \u015eirket bilgilerinizi tamamlay\u0131n.</p>
+<p style="margin:0 0 4px;"><strong>2. Pozisyon olu\u015fturun</strong> \u2014 Arad\u0131\u011f\u0131n\u0131z rol, deneyim ve segment bilgilerini girin.</p>
+<p style="margin:0 0 0;"><strong>3. Adaylarla e\u015fle\u015fin</strong> \u2014 Sistem, pozisyonunuza en uygun adaylar\u0131 \u00f6ne \u00e7\u0131kar\u0131r.</p>
+</td></tr>
+${ctaButton("\u0130K Paneline Giri\u015f Yap", ctaUrl)}
+${securityNote}
+${footerRow()}
+`);
+
+  const text = `${greetingPlain}
+
+${p.company_name ? `${p.company_name} olarak HelloTalent\u2019a ho\u015f geldiniz.\n\n` : ""}\
+HelloTalent \u0130K paneline kat\u0131ld\u0131n\u0131z.
+
+T\u00fcrkiye\u2019nin perakende sekt\u00f6r\u00fcne \u00f6zel yetenek platformunda, arad\u0131\u011f\u0131n\u0131z deneyim ve yetkinliklere sahip adaylara do\u011frudan ula\u015fabilirsiniz.
+
+\u00dc\u00e7 ad\u0131mda ba\u015flay\u0131n:
+
+1. \u0130K panelinize giri\u015f yap\u0131n \u2014 \u015eirket bilgilerinizi tamamlay\u0131n.
+2. Pozisyon olu\u015fturun \u2014 Arad\u0131\u011f\u0131n\u0131z rol, deneyim ve segment bilgilerini girin.
+3. Adaylarla e\u015fle\u015fin \u2014 Sistem, pozisyonunuza en uygun adaylar\u0131 \u00f6ne \u00e7\u0131kar\u0131r.
+
+\u2192 \u0130K Paneline Giri\u015f Yap: ${ctaUrl}
+
+---
+${p.email ? `Bu e-posta ${p.email} adresine g\u00f6nderildi.\n` : ""}\
+\u00a9 2026 HelloTalent
+Gizlilik: https://hellotalent.ai/gizlilik.html
+Kullan\u0131m \u015eartlar\u0131: https://hellotalent.ai/kullanim-sartlari.html`;
+
+  return {
+    subject: "HelloTalent i\u015fveren hesab\u0131n\u0131z haz\u0131r",
+    html,
+    text,
+  };
+}
+
+// ─── New Message Notification ───────────────────────
+
+function newMessageTemplate(p: Payload): EmailContent {
+  const recipientNameEsc = esc(p.recipient_name);
+  const greeting = recipientNameEsc
+    ? `Merhaba ${recipientNameEsc},`
+    : "Merhaba,";
+  const greetingPlain = p.recipient_name
+    ? `Merhaba ${p.recipient_name},`
+    : "Merhaba,";
+  const ctaUrl = p.cta_url || "https://hellotalent.ai/giris.html";
+  const settingsUrl = p.settings_url || "https://hellotalent.ai/giris.html";
+  const senderName = p.sender_name || "HelloTalent \u0130\u015fveren Ekibi";
+  const senderNameEsc = esc(senderName);
+  const preview = p.message_preview || "Mesaj\u0131 g\u00f6r\u00fcnt\u00fclemek i\u00e7in giri\u015f yap\u0131n.";
+  const previewEsc = esc(preview);
+  const timeStr = p.sent_at
+    ? `<span style="color:${COLORS.muted};font-size:13px;margin-left:8px;">${esc(p.sent_at)}</span>`
+    : "";
+
+  const html = emailWrapper(`
+${logoRow()}
+<tr><td style="padding:8px 32px 4px;text-align:center;">
+<span style="display:none;max-height:0;overflow:hidden;">Mesaj\u0131n\u0131z\u0131 g\u00f6r\u00fcnt\u00fclemek i\u00e7in giri\u015f yap\u0131n.</span>
+<h1 style="margin:0;font-family:'Bricolage Grotesque',Georgia,serif;font-size:20px;color:${COLORS.navy};font-weight:700;">Yeni mesaj\u0131n\u0131z var</h1>
+</td></tr>
+<tr><td style="padding:16px 32px;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:${COLORS.bg};border:1px solid ${COLORS.border};border-radius:12px;">
+<tr><td style="padding:16px;">
+<p style="margin:0 0 4px;font-size:15px;font-weight:700;color:${COLORS.text};">${senderNameEsc}${timeStr}</p>
+<p style="margin:0;font-size:14px;color:${COLORS.text};line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">${previewEsc}</p>
+</td></tr>
+</table>
+</td></tr>
+<tr><td style="padding:4px 32px 8px;font-size:13px;color:${COLORS.muted};line-height:1.5;">
+Yan\u0131tlamak i\u00e7in HelloTalent\u2019a giri\u015f yap\u0131n. Mesajlar platform \u00fczerinden iletilir.
+</td></tr>
+${ctaButton("Mesaj\u0131 G\u00f6r\u00fcnt\u00fcle", ctaUrl)}
+${footerRow(`Bu bildirimi almak istemiyorsan\u0131z <a href="${settingsUrl}" style="color:${COLORS.muted};">Ayarlar</a> sayfas\u0131ndan mesaj bildirimlerini kapatabilirsiniz.`)}
+`);
+
+  const text = `${greetingPlain}
+
+Yeni mesaj\u0131n\u0131z var.
+
+${senderName}${p.sent_at ? ` \u2014 ${p.sent_at}` : ""}
+${preview}
+
+Yan\u0131tlamak i\u00e7in HelloTalent\u2019a giri\u015f yap\u0131n. Mesajlar platform \u00fczerinden iletilir.
+
+\u2192 Mesaj\u0131 G\u00f6r\u00fcnt\u00fcle: ${ctaUrl}
+
+---
+Bu bildirimi almak istemiyorsan\u0131z: ${settingsUrl}
+
+\u00a9 2026 HelloTalent
+Gizlilik: https://hellotalent.ai/gizlilik.html`;
+
+  return {
+    subject: "HelloTalent\u2019te yeni bir mesaj\u0131n\u0131z var",
+    html,
+    text,
+  };
+}

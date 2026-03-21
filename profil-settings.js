@@ -183,25 +183,28 @@ document.addEventListener('DOMContentLoaded', function() {
     if (!btn) return;
     btn.addEventListener('click', async function(){
       var msg = document.getElementById('notifications-msg');
-      msg.style.display = 'none';
+      if (msg) msg.style.display = 'none';
       btn.disabled = true;
       btn.textContent = 'Kaydediliyor...';
       try {
+        var nemVal = document.getElementById('settings-notify-email-messages').checked;
+        var nejVal = document.getElementById('settings-notify-email-jobs').checked;
         var res = await supabase
           .from('candidates')
           .update({
-            notify_email_messages: document.getElementById('settings-notify-email-messages').checked,
-            notify_email_jobs: document.getElementById('settings-notify-email-jobs').checked
+            notify_email_messages: nemVal,
+            notify_email_jobs: nejVal
           })
           .eq('user_id', currentUser.id);
         if (res.error) throw res.error;
-        msg.style.color = 'var(--green)';
-        msg.textContent = 'Bildirim tercihleri kaydedildi.';
-        msg.style.display = 'block';
+        // Sync in-memory cache
+        if (window._loadedDBData && _loadedDBData.profile) {
+          _loadedDBData.profile.notify_email_messages = nemVal;
+          _loadedDBData.profile.notify_email_jobs = nejVal;
+        }
+        if (msg) { msg.style.color = 'var(--green)'; msg.textContent = 'Bildirim tercihleri kaydedildi.'; msg.style.display = 'block'; }
       } catch (e) {
-        msg.style.color = 'var(--red)';
-        msg.textContent = 'Hata: ' + (e.message || 'Kaydedilemedi.');
-        msg.style.display = 'block';
+        if (msg) { msg.style.color = 'var(--red)'; msg.textContent = 'Hata: ' + (e.message || 'Kaydedilemedi.'); msg.style.display = 'block'; }
       } finally {
         btn.disabled = false;
         btn.textContent = 'Bildirim Tercihlerini Kaydet';
@@ -215,22 +218,31 @@ document.addEventListener('DOMContentLoaded', function() {
     if(!btn) return;
     btn.addEventListener('click', async function(){
       var msg = document.getElementById('contact-prefs-msg');
-      msg.style.display='none';
+      if (msg) msg.style.display='none';
       btn.disabled = true;
       btn.textContent = 'Kaydediliyor...';
       try {
+        var ceVal = document.getElementById('settings-contact-email').checked;
+        var cpVal = document.getElementById('settings-contact-phone').checked;
+        var cwVal = document.getElementById('settings-contact-whatsapp').checked;
         var { error } = await supabase
           .from('candidates')
           .update({
-            contact_pref_email: document.getElementById('settings-contact-email').checked,
-            contact_pref_phone: document.getElementById('settings-contact-phone').checked,
-            contact_pref_whatsapp: document.getElementById('settings-contact-whatsapp').checked
+            contact_pref_email: ceVal,
+            contact_pref_phone: cpVal,
+            contact_pref_whatsapp: cwVal
           })
           .eq('user_id', currentUser.id);
         if(error) throw error;
-        msg.style.color='var(--green)'; msg.textContent='İletişim tercihleri kaydedildi.'; msg.style.display='block';
+        // Sync in-memory cache
+        if (window._loadedDBData && _loadedDBData.profile) {
+          _loadedDBData.profile.contact_pref_email = ceVal;
+          _loadedDBData.profile.contact_pref_phone = cpVal;
+          _loadedDBData.profile.contact_pref_whatsapp = cwVal;
+        }
+        if (msg) { msg.style.color='var(--green)'; msg.textContent='İletişim tercihleri kaydedildi.'; msg.style.display='block'; }
       } catch(e) {
-        msg.style.color='var(--red)'; msg.textContent='Hata: ' + e.message; msg.style.display='block';
+        if (msg) { msg.style.color='var(--red)'; msg.textContent='Hata: ' + e.message; msg.style.display='block'; }
       } finally {
         btn.disabled = false; btn.textContent = 'İletişim Tercihlerini Kaydet';
       }

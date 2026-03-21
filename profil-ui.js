@@ -1615,16 +1615,18 @@ function openLocationModal() {
     lokBody.appendChild(regionDiv);
   });
 
-  // Search filter
+  // Search filter — bind once, remove previous handler to prevent accumulation
   var searchInput = document.getElementById('lok-search-input');
   if (searchInput) {
     searchInput.value = '';
-    searchInput.addEventListener('input', function() {
+    if (searchInput._htLokFilter) searchInput.removeEventListener('input', searchInput._htLokFilter);
+    searchInput._htLokFilter = function() {
       var q = trLower(searchInput.value);
       lokBody.querySelectorAll('.lok-city').forEach(function(chip) {
         chip.style.display = trLower(chip.textContent).indexOf(q) !== -1 ? '' : 'none';
       });
-    });
+    };
+    searchInput.addEventListener('input', searchInput._htLokFilter);
   }
 
   updateCityChipStates();
@@ -1735,11 +1737,23 @@ async function saveProfileRPC(onComplete) {
     if (_loadedDBData) {
       _loadedDBData.experiences = p_experiences;
       if (_loadedDBData.profile) {
-        _loadedDBData.profile.is_active = p_profile.is_active;
+        // Merge saved profile fields into cache
+        var _pp = _loadedDBData.profile;
+        _pp.full_name = p_profile.full_name;
+        _pp.email = p_profile.email;
+        _pp.telefon = p_profile.telefon;
+        _pp.cinsiyet = p_profile.cinsiyet;
+        _pp.dogum_yili = p_profile.dogum_yili;
+        _pp.adres_il = p_profile.adres_il;
+        _pp.adres_ilce = p_profile.adres_ilce;
+        _pp.linkedin = p_profile.linkedin;
+        _pp.engel_durumu = p_profile.engel_durumu;
+        _pp.askerlik_durumu = p_profile.askerlik_durumu;
+        _pp.is_active = p_profile.is_active;
         var mA = document.getElementById('merkez-toggle-active');
         var mH = document.getElementById('merkez-hide-from-current-employer');
-        if (mA) _loadedDBData.profile.is_actively_looking = mA.checked;
-        if (mH && !mH.disabled) _loadedDBData.profile.hide_from_current_employer = mH.checked;
+        if (mA) _pp.is_actively_looking = mA.checked;
+        if (mH && !mH.disabled) _pp.hide_from_current_employer = mH.checked;
       }
     }
     if (typeof applyAllVisibilityMirrorsFromProfile === 'function') applyAllVisibilityMirrorsFromProfile();
@@ -2211,7 +2225,15 @@ async function loadProfileFromDB() {
       son_sirket: cand.son_sirket || null,
       hide_from_current_employer: cand.hide_from_current_employer === true,
       user_id: cand.user_id || null,
-      updated_at: cand.updated_at || null
+      updated_at: cand.updated_at || null,
+      email: cand.email || null,
+      notify_email_messages: cand.notify_email_messages,
+      notify_email_jobs: cand.notify_email_jobs,
+      contact_pref_email: cand.contact_pref_email,
+      contact_pref_phone: cand.contact_pref_phone,
+      contact_pref_whatsapp: cand.contact_pref_whatsapp,
+      account_status: cand.account_status || 'active',
+      deletion_requested_at: cand.deletion_requested_at || null
     },
     no_experience: cand.ilk_deneyim || false,
     experiences: (expRes.data || []).map(function(e) {

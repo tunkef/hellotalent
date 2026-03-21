@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LinkedIn-Style Header — hellotalent.ai</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+
+  :root {
+    --verm: #C94E28;
+    --verm-dark: #b84420;
+    --navy: #1E2D5E;
+    --bg: #F7F6F4;
+    --text: #111;
+    --muted: #6B7280;
+    --border: #E5E3DF;
+    --green: #16a34a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    background: #0f0f0f;
+    color: #e0e0e0;
+    min-height: 100vh;
+  }
+
+  .playground {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    min-height: 100vh;
+  }
+
+  /* Controls */
+  .controls {
+    background: #1a1a1a;
+    border-right: 1px solid #2a2a2a;
+    padding: 24px 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .controls h1 {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 18px; font-weight: 800; color: #fff;
+  }
+  .controls .subtitle { font-size: 12px; color: #666; margin-top: 4px; }
+
+  .presets { display: flex; flex-direction: column; gap: 6px; }
+  .preset-btn {
+    padding: 10px 14px; border: 1.5px solid #333; border-radius: 10px;
+    background: #222; color: #ccc;
+    font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13px; font-weight: 600;
+    cursor: pointer; transition: all 0.2s; text-align: left;
+    display: flex; flex-direction: column; gap: 2px;
+  }
+  .preset-btn:hover { border-color: #555; background: #2a2a2a; }
+  .preset-btn.active { border-color: var(--verm); background: rgba(201,78,40,0.1); color: #fff; }
+  .preset-btn .pn { font-weight: 700; }
+  .preset-btn .pd { font-size: 10px; color: #777; font-weight: 400; }
+  .preset-btn.active .pd { color: rgba(201,78,40,0.7); }
+
+  .control-group { display: flex; flex-direction: column; gap: 8px; }
+  .control-group label {
+    font-size: 11px; font-weight: 600; color: #888;
+    text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .divider { height: 1px; background: #2a2a2a; margin: 4px 0; }
+
+  .prompt-section { background: #1a1a1a; border-top: 1px solid #2a2a2a; padding: 16px 20px; }
+  .prompt-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+  .prompt-label { font-family: 'DM Mono', monospace; font-size: 10px; color: #666; text-transform: uppercase; letter-spacing: 1px; }
+  .copy-btn {
+    padding: 5px 12px; border-radius: 6px; border: 1px solid #333;
+    background: #222; color: #aaa;
+    font-family: 'DM Mono', monospace; font-size: 11px; cursor: pointer;
+  }
+  .copy-btn:hover { background: #333; color: #fff; }
+  .copy-btn.copied { background: rgba(22,163,74,0.15); border-color: rgba(22,163,74,0.3); color: var(--green); }
+  .prompt-text { font-family: 'DM Mono', monospace; font-size: 12px; color: #bbb; line-height: 1.6; white-space: pre-wrap; max-height: 140px; overflow-y: auto; }
+
+  /* Preview */
+  .preview-area {
+    background: #222;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 30px;
+    overflow: auto;
+  }
+
+  .frame {
+    width: 100%;
+    max-width: 1200px;
+    min-height: 700px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    position: relative;
+    background: var(--bg);
+  }
+
+  /* ── LINKEDIN-STYLE HEADER ── */
+  .hdr {
+    display: flex;
+    align-items: center;
+    padding: 0 24px;
+    position: relative;
+    z-index: 10;
+    transition: all 0.3s;
+  }
+
+  .hdr-logo {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 17px; font-weight: 800;
+    margin-right: 16px; flex-shrink: 0;
+  }
+
+  /* LinkedIn-style: icons on top, labels below, vertical layout */
+  .hdr-nav {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    flex: 1;
+    justify-content: center;
+    height: 100%;
+  }
+  .hdr-nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    padding: 0 16px;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+    position: relative;
+    min-width: 70px;
+    text-decoration: none;
+    border: none;
+    background: none;
+  }
+  .hdr-nav-item .nav-icon {
+    font-size: 20px;
+    line-height: 1;
+    transition: color 0.15s;
+  }
+  .hdr-nav-item .nav-label {
+    font-size: 11px;
+    font-weight: 500;
+    transition: color 0.15s;
+    letter-spacing: -0.01em;
+  }
+  .hdr-nav-item .active-bar {
+    position: absolute;
+    bottom: 0;
+    left: 8px;
+    right: 8px;
+    height: 2px;
+    border-radius: 2px 2px 0 0;
+    transition: all 0.2s;
+  }
+
+  .hdr-right {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: auto;
+    flex-shrink: 0;
+  }
+  .hdr-icon-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    padding: 0 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+    position: relative;
+    min-width: 50px;
+    height: 100%;
+  }
+  .hdr-icon-wrap .nav-icon { font-size: 20px; line-height: 1; }
+  .hdr-icon-wrap .nav-label { font-size: 11px; font-weight: 500; }
+
+  .hdr-avatar {
+    width: 28px; height: 28px; border-radius: 50%;
+    overflow: hidden; cursor: pointer;
+    border: 2px solid transparent;
+  }
+  .hdr-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+  .hdr-divider {
+    width: 1px; height: 40px; margin: 0 8px; flex-shrink: 0;
+  }
+
+  /* Notification badge */
+  .notif-badge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    min-width: 16px;
+    height: 16px;
+    border-radius: 8px;
+    font-size: 9px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
+  }
+
+  /* ── CONTENT ── */
+  .content {
+    padding: 24px 32px;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  /* Identity card */
+  .mk-identity {
+    background: #fff; border-radius: 23px; padding: 18px 20px;
+    box-shadow: 0 0 0 1px rgba(0,0,0,.03), 0 2px 4px rgba(0,0,0,.05), 0 12px 24px rgba(0,0,0,.05);
+    display: flex; align-items: center; gap: 14px; margin-bottom: 16px;
+    border: 1px solid var(--border);
+  }
+  .mk-av { width: 48px; height: 48px; border-radius: 50%; overflow: hidden; flex-shrink: 0; }
+  .mk-av img { width: 100%; height: 100%; object-fit: cover; }
+  .mk-nm { font-family: 'Bricolage Grotesque', sans-serif; font-size: 18px; font-weight: 800; color: var(--text); }
+  .mk-rl { font-size: 12px; color: var(--muted); margin-top: 1px; }
+  .mk-rl strong { color: #374151; font-weight: 600; }
+  .mk-spacer { flex: 1; }
+  .mk-btn-preview {
+    padding: 9px 18px; border-radius: 10px;
+    background: var(--verm); color: #fff; border: none;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 12px; font-weight: 600; cursor: pointer;
+    display: flex; align-items: center; gap: 6px;
+  }
+
+  /* Premium bar */
+  .premium-bar {
+    background: linear-gradient(135deg, #2A3F7A 0%, #1E2D5E 50%, #162247 100%);
+    border-radius: 12px; padding: 12px 16px;
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 16px; position: relative; overflow: hidden;
+  }
+  .premium-bar::before {
+    content: ''; position: absolute; top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+    animation: shimmer 3s infinite;
+  }
+  @keyframes shimmer { 0%{left:-100%;} 50%{left:100%;} 100%{left:100%;} }
+  .prem-left { display: flex; align-items: center; gap: 10px; }
+  .prem-icon {
+    width: 30px; height: 30px; border-radius: 8px;
+    background: rgba(255,255,255,0.1);
+    display: flex; align-items: center; justify-content: center;
+    color: rgba(255,255,255,0.6); font-size: 14px;
+  }
+  .prem-text { font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.8); }
+  .prem-sub { font-size: 10px; color: rgba(255,255,255,0.4); }
+  .prem-arrow { color: rgba(255,255,255,0.3); font-size: 16px; }
+
+  /* Card grid */
+  .mk-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+  .mk-c {
+    background: #fff; border: 1px solid var(--border); border-radius: 23px;
+    box-shadow: 0 0 0 1px rgba(0,0,0,.03), 0 2px 4px rgba(0,0,0,.05), 0 12px 24px rgba(0,0,0,.05);
+    padding: 14px; display: flex; flex-direction: column; gap: 6px;
+    transition: all 0.3s; cursor: pointer; min-height: 150px;
+  }
+  .mk-c:hover { transform: translateY(-2px); border-color: rgba(201,78,40,0.2); }
+  .mk-c-icon {
+    width: 40px; height: 40px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 16px;
+  }
+  .mk-c-icon.c1 { background: var(--navy); }
+  .mk-c-icon.c2 { background: var(--verm); }
+  .mk-c-icon.c3 { background: #0d9488; }
+  .mk-c-icon.c4 { background: #7c3aed; }
+  .mk-c-title { font-family: 'Bricolage Grotesque', sans-serif; font-size: 14px; font-weight: 700; color: var(--text); }
+  .mk-c-data { font-size: 11px; color: var(--muted); }
+  .mk-c-pill {
+    display: inline-block; padding: 3px 8px; border-radius: 6px;
+    font-size: 10px; font-weight: 600;
+    background: rgba(201,78,40,0.08); color: var(--verm);
+    margin: 2px 2px 2px 0;
+  }
+  .mk-c-check {
+    position: absolute; bottom: 12px; right: 12px;
+    width: 24px; height: 24px; border-radius: 50%;
+    background: rgba(22,163,74,0.1); color: var(--green);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700;
+  }
+
+  @media (max-width: 900px) {
+    .playground { grid-template-columns: 1fr; }
+    .mk-grid { grid-template-columns: repeat(2, 1fr); }
+    .hdr-nav-item .nav-label { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="playground">
+
+  <!-- CONTROLS -->
+  <div class="controls">
+    <div>
+      <h1>LinkedIn-Style Header</h1>
+      <div class="subtitle">Ikon ustte, label altta — minimal</div>
+    </div>
+
+    <div class="control-group">
+      <label>Header Varyanti</label>
+      <div class="presets" id="presets">
+        <button class="preset-btn active" onclick="setConcept(0)">
+          <span class="pn">A — Beyaz + Underline</span>
+          <span class="pd">LinkedIn klasik: beyaz bg, alt cizgi aktif</span>
+        </button>
+        <button class="preset-btn" onclick="setConcept(1)">
+          <span class="pn">B — Beyaz + Vermillion Accent</span>
+          <span class="pd">Aktif ikon + label turuncu, kalın underline</span>
+        </button>
+        <button class="preset-btn" onclick="setConcept(2)">
+          <span class="pn">C — Acik Gri + Soft Pill</span>
+          <span class="pd">Hafif gri bg, aktif item soft pill icinde</span>
+        </button>
+        <button class="preset-btn" onclick="setConcept(3)">
+          <span class="pn">D — Navy Slim + Ikon</span>
+          <span class="pd">Ince lacivert bar, beyaz ikonlar, aktif dot</span>
+        </button>
+        <button class="preset-btn" onclick="setConcept(4)">
+          <span class="pn">E — Glassmorphic Float</span>
+          <span class="pd">Yuzen transparan header, blur efekt</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="prompt-section" style="margin: 0 -20px -24px; padding: 16px 20px;">
+      <div class="prompt-header">
+        <span class="prompt-label">Uygulama Prompt</span>
+        <button class="copy-btn" id="btn-copy" onclick="copyPrompt()">Kopyala</button>
+      </div>
+      <div class="prompt-text" id="prompt-output"></div>
+    </div>
+  </div>
+
+  <!-- PREVIEW -->
+  <div class="preview-area">
+    <div class="frame" id="frame">
+      <div class="hdr" id="hdr"></div>
+      <div class="content" id="main-content">
+        <div class="mk-identity">
+          <div class="mk-av"><img src="https://i.pravatar.cc/96?img=12" alt=""></div>
+          <div>
+            <div class="mk-nm">Tuna Kefeli</div>
+            <div class="mk-rl"><strong>Ma&#287;aza M&#252;d&#252;r&#252;</strong> <span style="opacity:.3;margin:0 4px;">.</span> Apple</div>
+          </div>
+          <div class="mk-spacer"></div>
+          <button class="mk-btn-preview">&#128065; Profilimi &#214;nizle</button>
+        </div>
+
+        <div class="premium-bar">
+          <div class="prem-left">
+            <div class="prem-icon">&#9734;</div>
+            <div>
+              <div class="prem-text">Premium Aday Avantajlar&#305;</div>
+              <div class="prem-sub">&#214;ne &#231;&#305;k, AI CV, kariyer ko&#231;lu&#287;u</div>
+            </div>
+          </div>
+          <div class="prem-arrow">&#8250;</div>
+        </div>
+
+        <div class="mk-grid">
+          <div class="mk-c" style="position:relative;">
+            <div class="mk-c-icon c1">&#128100;</div>
+            <div class="mk-c-title">Ki&#351;isel Bilgiler</div>
+            <div class="mk-c-data">Tuna Kefeli</div>
+            <div class="mk-c-data">&#304;stanbul . 1992 . Erkek</div>
+            <div><span class="mk-c-pill">Telefon</span><span class="mk-c-pill">LinkedIn</span></div>
+            <div class="mk-c-check">&#10003;</div>
+          </div>
+          <div class="mk-c" style="position:relative;">
+            <div class="mk-c-icon c2">&#128188;</div>
+            <div class="mk-c-title">Deneyim</div>
+            <div class="mk-c-data">Ma&#287;aza M&#252;d&#252;r&#252;</div>
+            <div class="mk-c-data">Apple</div>
+            <div class="mk-c-data" style="font-family:'DM Mono',monospace;font-size:10px;">2023 — Devam</div>
+            <div class="mk-c-check">&#10003;</div>
+          </div>
+          <div class="mk-c" style="position:relative;">
+            <div class="mk-c-icon c3">&#127891;</div>
+            <div class="mk-c-title">E&#287;itim & Dil</div>
+            <div class="mk-c-data">&#304;stanbul &#220;ni . &#304;&#351;letme</div>
+            <div><span class="mk-c-pill">T&#252;rk&#231;e</span><span class="mk-c-pill">&#304;ngilizce (C2)</span></div>
+            <div class="mk-c-check">&#10003;</div>
+          </div>
+          <div class="mk-c" style="position:relative;">
+            <div class="mk-c-icon c4">&#9881;</div>
+            <div class="mk-c-title">Tercihler & Lokasyon</div>
+            <div><span class="mk-c-pill">Tam Zamanl&#305;</span><span class="mk-c-pill">Hedef pozisyon</span><span class="mk-c-pill">&#304;stanbul</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  var NAV_ITEMS = [
+    { icon: '\u{1F3E0}', label: 'Genel', active: true },
+    { icon: '\u{1F464}', label: 'Profil', active: false },
+    { icon: '\u{1F3EC}', label: 'Markalar', active: false },
+    { icon: '\u{1F381}', label: 'Teklifler', active: false, badge: 2 },
+    { icon: '\u2699', label: 'Ayarlar', active: false },
+  ];
+
+  var SVG_ICONS = {
+    home: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>',
+    user: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>',
+    store: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1-4h16l1 4"/><path d="M3 9v10a1 1 0 001 1h16a1 1 0 001-1V9"/><path d="M9 20V12h6v8"/><path d="M3 9c0 1.1.9 2 2 2s2-.9 2-2"/><path d="M7 9c0 1.1.9 2 2 2s2-.9 2-2"/><path d="M11 9c0 1.1.9 2 2 2s2-.9 2-2"/><path d="M15 9c0 1.1.9 2 2 2s2-.9 2-2"/></svg>',
+    gift: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13"/><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5C9 3 12 7 12 8"/><path d="M16.5 8a2.5 2.5 0 0 0 0-5C15 3 12 7 12 8"/></svg>',
+    settings: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>',
+    search: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>',
+    bell: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>',
+    msg: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>',
+  };
+
+  var NAV_SVG_KEYS = ['home', 'user', 'store', 'gift', 'settings'];
+
+  var state = { concept: 0 };
+
+  var CONCEPTS = [
+    {
+      name: 'Beyaz + Underline',
+      desc: 'LinkedIn klasik — beyaz header, ikon+label dikey, aktif underline',
+      hdrBg: '#fff',
+      hdrH: '56px',
+      hdrBorder: '1px solid #E5E3DF',
+      hdrShadow: '0 1px 2px rgba(0,0,0,0.06)',
+      logoHello: 'var(--verm)', logoTalent: 'var(--navy)', logoAi: 'var(--muted)',
+      navColor: 'var(--muted)',
+      navActiveColor: 'var(--text)',
+      navActiveBarColor: 'var(--text)',
+      navActiveBarH: '2px',
+      navActiveBg: 'transparent',
+      navHoverBg: 'rgba(0,0,0,0.04)',
+      iconColor: 'var(--muted)',
+      iconHoverBg: 'rgba(0,0,0,0.04)',
+      dividerColor: 'var(--border)',
+      badgeBg: 'var(--verm)', badgeColor: '#fff',
+      avatarBorder: 'transparent',
+      rightLabelColor: 'var(--muted)',
+    },
+    {
+      name: 'Beyaz + Vermillion Accent',
+      desc: 'Beyaz bg, aktif ikon+label turuncu, kalin vermillion underline',
+      hdrBg: '#fff',
+      hdrH: '56px',
+      hdrBorder: '1px solid #E5E3DF',
+      hdrShadow: '0 1px 3px rgba(0,0,0,0.06)',
+      logoHello: 'var(--verm)', logoTalent: 'var(--navy)', logoAi: 'var(--muted)',
+      navColor: 'var(--muted)',
+      navActiveColor: 'var(--verm)',
+      navActiveBarColor: 'var(--verm)',
+      navActiveBarH: '3px',
+      navActiveBg: 'transparent',
+      navHoverBg: 'rgba(201,78,40,0.04)',
+      iconColor: 'var(--muted)',
+      iconHoverBg: 'rgba(201,78,40,0.04)',
+      dividerColor: 'var(--border)',
+      badgeBg: 'var(--verm)', badgeColor: '#fff',
+      avatarBorder: 'transparent',
+      rightLabelColor: 'var(--muted)',
+    },
+    {
+      name: 'Acik Gri + Soft Pill',
+      desc: 'Hafif gri header bg, aktif item soft pill, rounded',
+      hdrBg: '#FAFAF8',
+      hdrH: '60px',
+      hdrBorder: '1px solid #E5E3DF',
+      hdrShadow: 'none',
+      logoHello: 'var(--verm)', logoTalent: 'var(--navy)', logoAi: 'var(--muted)',
+      navColor: 'var(--muted)',
+      navActiveColor: 'var(--verm)',
+      navActiveBarColor: 'transparent',
+      navActiveBarH: '0',
+      navActiveBg: 'rgba(201,78,40,0.08)',
+      navActivePill: true,
+      navHoverBg: 'rgba(0,0,0,0.03)',
+      iconColor: 'var(--muted)',
+      iconHoverBg: 'rgba(0,0,0,0.04)',
+      dividerColor: 'var(--border)',
+      badgeBg: 'var(--verm)', badgeColor: '#fff',
+      avatarBorder: 'transparent',
+      rightLabelColor: 'var(--muted)',
+    },
+    {
+      name: 'Navy Slim + Ikon',
+      desc: 'Ince lacivert bar, beyaz ikonlar, label yok, aktif dot',
+      hdrBg: 'linear-gradient(135deg, #2A3F7A 0%, #1E2D5E 100%)',
+      hdrH: '48px',
+      hdrBorder: 'none',
+      hdrShadow: '0 2px 8px rgba(30,45,94,0.3)',
+      logoHello: '#fff', logoTalent: 'rgba(255,255,255,0.8)', logoAi: 'rgba(255,255,255,0.5)',
+      navColor: 'rgba(255,255,255,0.5)',
+      navActiveColor: '#fff',
+      navActiveBarColor: '#fff',
+      navActiveBarH: '2px',
+      navActiveBg: 'transparent',
+      navHoverBg: 'rgba(255,255,255,0.08)',
+      hideLabels: true,
+      iconColor: 'rgba(255,255,255,0.5)',
+      iconHoverBg: 'rgba(255,255,255,0.1)',
+      dividerColor: 'rgba(255,255,255,0.12)',
+      badgeBg: 'var(--verm)', badgeColor: '#fff',
+      avatarBorder: 'rgba(255,255,255,0.3)',
+      rightLabelColor: 'rgba(255,255,255,0.5)',
+      dark: true,
+    },
+    {
+      name: 'Glassmorphic Float',
+      desc: 'Yuzen transparan header, backdrop-blur, soft shadow',
+      hdrBg: 'rgba(255,255,255,0.72)',
+      hdrH: '56px',
+      hdrBorder: '1px solid rgba(255,255,255,0.5)',
+      hdrShadow: '0 4px 20px rgba(0,0,0,0.06)',
+      hdrBlur: true,
+      hdrFloat: true,
+      logoHello: 'var(--verm)', logoTalent: 'var(--navy)', logoAi: 'var(--muted)',
+      navColor: 'var(--muted)',
+      navActiveColor: 'var(--verm)',
+      navActiveBarColor: 'var(--verm)',
+      navActiveBarH: '2px',
+      navActiveBg: 'transparent',
+      navHoverBg: 'rgba(201,78,40,0.04)',
+      iconColor: 'var(--muted)',
+      iconHoverBg: 'rgba(0,0,0,0.04)',
+      dividerColor: 'rgba(0,0,0,0.08)',
+      badgeBg: 'var(--verm)', badgeColor: '#fff',
+      avatarBorder: 'transparent',
+      rightLabelColor: 'var(--muted)',
+    },
+  ];
+
+  function setConcept(idx) {
+    state.concept = idx;
+    document.querySelectorAll('.preset-btn').forEach(function(b, i) {
+      b.classList.toggle('active', i === idx);
+    });
+    render();
+  }
+
+  function render() {
+    var c = CONCEPTS[state.concept];
+    var hdr = document.getElementById('hdr');
+
+    var html = '';
+
+    // Logo
+    html += '<div class="hdr-logo"><span style="color:' + c.logoHello + '">hello</span><span style="color:' + c.logoTalent + '">talent</span><span style="color:' + c.logoAi + '">.ai</span></div>';
+
+    // Nav — LinkedIn style: icon on top, label below
+    html += '<div class="hdr-nav">';
+    NAV_ITEMS.forEach(function(item, i) {
+      var isActive = item.active;
+      var col = isActive ? c.navActiveColor : c.navColor;
+      var bg = isActive ? c.navActiveBg : 'transparent';
+      var barColor = isActive ? c.navActiveBarColor : 'transparent';
+      var pillStyle = '';
+      if (c.navActivePill && isActive) {
+        pillStyle = 'border-radius:12px;padding:6px 14px;';
+      }
+      html += '<div class="hdr-nav-item" style="color:' + col + ';background:' + bg + ';' + pillStyle + '">';
+      html += '<span class="nav-icon">' + SVG_ICONS[NAV_SVG_KEYS[i]] + '</span>';
+      if (!c.hideLabels) {
+        html += '<span class="nav-label">' + item.label + '</span>';
+      }
+      if (item.badge) {
+        html += '<span class="notif-badge" style="background:' + c.badgeBg + ';color:' + c.badgeColor + ';">' + item.badge + '</span>';
+      }
+      html += '<span class="active-bar" style="background:' + barColor + ';height:' + c.navActiveBarH + ';"></span>';
+      html += '</div>';
+    });
+    html += '</div>';
+
+    // Right side — search, messages, bell, avatar
+    html += '<div class="hdr-right">';
+    html += '<div class="hdr-divider" style="background:' + c.dividerColor + '"></div>';
+
+    // Search icon
+    html += '<div class="hdr-icon-wrap" style="color:' + c.iconColor + ';min-width:40px;padding:0 8px;">';
+    html += '<span class="nav-icon">' + SVG_ICONS.search + '</span>';
+    html += '</div>';
+
+    // Messages
+    html += '<div class="hdr-icon-wrap" style="color:' + c.iconColor + ';min-width:40px;padding:0 8px;position:relative;">';
+    html += '<span class="nav-icon">' + SVG_ICONS.msg + '</span>';
+    html += '<span class="notif-badge" style="background:' + c.badgeBg + ';color:' + c.badgeColor + ';top:4px;right:2px;">3</span>';
+    html += '</div>';
+
+    // Notifications
+    html += '<div class="hdr-icon-wrap" style="color:' + c.iconColor + ';min-width:40px;padding:0 8px;position:relative;">';
+    html += '<span class="nav-icon">' + SVG_ICONS.bell + '</span>';
+    html += '<span style="position:absolute;top:8px;right:8px;width:7px;height:7px;border-radius:50%;background:var(--verm);"></span>';
+    html += '</div>';
+
+    html += '<div class="hdr-divider" style="background:' + c.dividerColor + ';height:32px;"></div>';
+
+    // Avatar + dropdown
+    html += '<div style="display:flex;align-items:center;gap:6px;cursor:pointer;padding:0 4px;">';
+    html += '<div class="hdr-avatar" style="border-color:' + c.avatarBorder + ';"><img src="https://i.pravatar.cc/64?img=12" alt=""></div>';
+    html += '<span style="font-size:10px;color:' + c.rightLabelColor + ';">&#9660;</span>';
+    html += '</div>';
+
+    html += '</div>';
+
+    // Apply styles
+    hdr.style.background = c.hdrBg;
+    hdr.style.height = c.hdrH;
+    hdr.style.borderBottom = c.hdrBorder;
+    hdr.style.boxShadow = c.hdrShadow;
+
+    if (c.hdrBlur) {
+      hdr.style.backdropFilter = 'blur(16px)';
+      hdr.style.webkitBackdropFilter = 'blur(16px)';
+    } else {
+      hdr.style.backdropFilter = 'none';
+      hdr.style.webkitBackdropFilter = 'none';
+    }
+
+    if (c.hdrFloat) {
+      hdr.style.margin = '8px 12px 0';
+      hdr.style.borderRadius = '14px';
+      hdr.style.border = c.hdrBorder;
+    } else {
+      hdr.style.margin = '0';
+      hdr.style.borderRadius = '0';
+      hdr.style.border = 'none';
+      hdr.style.borderBottom = c.hdrBorder;
+    }
+
+    hdr.textContent = '';
+    hdr.insertAdjacentHTML('beforeend', html);
+
+    updatePrompt();
+  }
+
+  function updatePrompt() {
+    var c = CONCEPTS[state.concept];
+    var parts = [];
+    parts.push('profil.html header\'ini LinkedIn tarzi yeniden tasarla.');
+    parts.push('Sidebar kaldirilacak, tum navigasyon header\'da.');
+    parts.push('');
+    parts.push('Secilen konsept: ' + c.name);
+    parts.push(c.desc);
+    parts.push('');
+    parts.push('Header ozellikleri:');
+    parts.push('- Yukseklik: ' + c.hdrH);
+    parts.push('- Arka plan: ' + (c.hdrBg.length > 40 ? c.hdrBg.substring(0, 50) + '...' : c.hdrBg));
+    parts.push('- Nav item yonu: dikey (ikon ustte, label altta)');
+    if (c.hideLabels) {
+      parts.push('- Nav label gizli, sadece ikon');
+    }
+    parts.push('- Aktif gosterge: ' + (c.navActiveBarH !== '0' ? 'alt cizgi (' + c.navActiveBarH + ')' : c.navActivePill ? 'soft pill bg' : 'renk degisimi'));
+    if (c.hdrBlur) {
+      parts.push('- Glassmorphic: backdrop-filter: blur(16px)');
+    }
+    if (c.hdrFloat) {
+      parts.push('- Yuzen header: margin + border-radius');
+    }
+    parts.push('');
+    parts.push('SVG ikonlar kullan (emoji degil).');
+    parts.push('Sag taraf: arama, mesajlar, bildirimler, avatar.');
+    parts.push('Content alani tam genislik (max-width ile sinirla).');
+    document.getElementById('prompt-output').textContent = parts.join('\n');
+  }
+
+  function copyPrompt() {
+    var text = document.getElementById('prompt-output').textContent;
+    navigator.clipboard.writeText(text).then(function() {
+      var btn = document.getElementById('btn-copy');
+      btn.textContent = 'Kopyalandi!';
+      btn.classList.add('copied');
+      setTimeout(function() { btn.textContent = 'Kopyala'; btn.classList.remove('copied'); }, 2000);
+    });
+  }
+
+  render();
+</script>
+</body>
+</html>

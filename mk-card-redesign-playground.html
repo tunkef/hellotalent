@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Profil Merkezi Kart Redesign — hellotalent.ai</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+
+  :root {
+    --verm: #C94E28;
+    --verm-dark: #b84420;
+    --navy: #1E2D5E;
+    --navy-mid: #2A3F7A;
+    --navy-deep: #162247;
+    --bg: #F7F6F4;
+    --text: #111111;
+    --muted: #6B7280;
+    --border: #E5E3DF;
+    --green: #16a34a;
+    --surface: #fff;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    background: #0f0f0f;
+    color: #e0e0e0;
+    min-height: 100vh;
+  }
+
+  /* Layout */
+  .playground {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    min-height: 100vh;
+  }
+
+  /* Sidebar Controls */
+  .controls {
+    background: #1a1a1a;
+    border-right: 1px solid #2a2a2a;
+    padding: 24px 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .controls h1 {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 18px;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: -0.5px;
+  }
+  .controls .subtitle {
+    font-size: 12px;
+    color: #666;
+    margin-top: 4px;
+  }
+
+  .control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .control-group label {
+    font-size: 11px;
+    font-weight: 600;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .presets {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .preset-btn {
+    padding: 10px 14px;
+    border: 1.5px solid #333;
+    border-radius: 10px;
+    background: #222;
+    color: #ccc;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .preset-btn:hover { border-color: #555; background: #2a2a2a; }
+  .preset-btn.active {
+    border-color: var(--verm);
+    background: rgba(201,78,40,0.1);
+    color: #fff;
+  }
+  .preset-btn .preset-name { font-weight: 700; font-size: 13px; }
+  .preset-btn .preset-desc { font-size: 10px; color: #777; font-weight: 400; }
+  .preset-btn.active .preset-desc { color: rgba(201,78,40,0.7); }
+
+  .slider-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .slider-row input[type="range"] { flex: 1; accent-color: var(--verm); height: 4px; }
+  .slider-val {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: #aaa;
+    min-width: 36px;
+    text-align: right;
+  }
+
+  .toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 0;
+  }
+  .toggle-row span { font-size: 12px; color: #bbb; }
+  .mini-toggle {
+    width: 36px; height: 20px; border-radius: 10px;
+    background: #333; position: relative; cursor: pointer; transition: background 0.2s;
+  }
+  .mini-toggle.on { background: var(--verm); }
+  .mini-toggle::after {
+    content: ''; position: absolute; top: 2px; left: 2px;
+    width: 16px; height: 16px; border-radius: 50%;
+    background: #fff; transition: transform 0.2s;
+  }
+  .mini-toggle.on::after { transform: translateX(16px); }
+
+  .divider { height: 1px; background: #2a2a2a; margin: 4px 0; }
+
+  /* Preview Area */
+  .preview-area {
+    background: var(--bg);
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-y: auto;
+  }
+
+  .preview-container { width: 100%; max-width: 860px; }
+
+  .comparison-tag {
+    display: inline-block;
+    font-family: 'DM Mono', monospace;
+    font-size: 9px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 1.5px;
+    padding: 3px 8px; border-radius: 4px; margin-bottom: 16px;
+  }
+  .tag-current { background: rgba(201,78,40,0.1); color: var(--verm); }
+  .tag-new { background: rgba(22,163,74,0.1); color: var(--green); }
+
+  /* Identity Card */
+  .mk-identity {
+    background: #fff;
+    border-radius: 24px;
+    box-shadow: 0 0 0 1px rgba(0,0,0,.03), 0 2px 4px rgba(0,0,0,.05), 0 12px 24px rgba(0,0,0,.05);
+    padding: 22px 24px;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .mk-avatar {
+    width: 56px; height: 56px; border-radius: 50%;
+    background: linear-gradient(135deg, rgba(201,78,40,0.15), rgba(30,45,94,0.2));
+    overflow: hidden; flex-shrink: 0;
+  }
+  .mk-avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .mk-info { flex: 1; }
+  .mk-name {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 20px; font-weight: 800; color: var(--text);
+  }
+  .mk-role { font-size: 13px; color: var(--muted); margin-top: 2px; }
+  .mk-role strong { color: #374151; font-weight: 600; }
+  .mk-meta {
+    display: flex; align-items: center; gap: 6px;
+    margin-top: 4px; font-size: 11px; color: var(--muted);
+  }
+  .mk-preview-btn {
+    padding: 10px 20px; border-radius: 12px;
+    background: var(--verm); color: #fff;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 13px; font-weight: 600; border: none;
+    cursor: pointer; display: flex; align-items: center;
+    gap: 8px; white-space: nowrap; flex-shrink: 0;
+  }
+
+  /* Premium CTA */
+  .mk-footer {
+    margin-bottom: 14px; padding: 14px 18px;
+    background: linear-gradient(135deg, #2A3F7A 0%, #1E2D5E 50%, #162247 100%);
+    border-radius: 12px; display: flex;
+    align-items: center; justify-content: space-between;
+    position: relative; overflow: hidden;
+  }
+  .mk-footer-left { display: flex; align-items: center; gap: 10px; }
+  .mk-footer-icon {
+    width: 32px; height: 32px; border-radius: 8px;
+    background: rgba(255,255,255,0.1);
+    display: flex; align-items: center; justify-content: center;
+    color: rgba(255,255,255,0.6); font-size: 16px;
+  }
+  .mk-footer-text { font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.8); }
+  .mk-footer-sub { font-size: 10px; color: rgba(255,255,255,0.4); }
+  .mk-footer-arrow { color: rgba(255,255,255,0.3); font-size: 18px; }
+
+  /* Bento Grid */
+  .mk-bento-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  /* Base Card */
+  .mk-card {
+    border-radius: 24px; display: flex; flex-direction: column;
+    position: relative; transition: all 0.35s cubic-bezier(0.4,0,0.2,1);
+    cursor: pointer; border: none; padding: 0;
+    font: inherit; text-align: left; width: 100%;
+  }
+  .mk-card:hover { transform: translateY(-2px); }
+
+  .mk-card-content {
+    flex: 1; padding: 20px 20px 16px 20px;
+    display: flex; flex-direction: column;
+  }
+  .mk-card-head {
+    display: flex; align-items: center;
+    justify-content: space-between; margin-bottom: 12px;
+  }
+  .mk-card-icon {
+    width: 44px; height: 44px; border-radius: 14px;
+    display: flex; align-items: center; justify-content: center; font-size: 20px;
+  }
+  .mk-edit-btn {
+    position: absolute; top: 12px; right: 12px;
+    width: 36px; height: 36px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.3s; z-index: 5; font-size: 14px;
+  }
+  .mk-card-title {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 17px; font-weight: 700;
+    letter-spacing: -0.3px; margin-bottom: 8px;
+  }
+  .mk-card-data { font-size: 13px; line-height: 1.55; }
+  .data-line { font-size: 14px; font-weight: 600; margin-bottom: 3px; }
+  .data-sub { font-size: 12px; margin-bottom: 3px; }
+
+  .mk-card-status {
+    position: absolute; bottom: 14px; right: 14px; width: 28px; height: 28px;
+  }
+  .ring-done {
+    width: 28px; height: 28px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700;
+  }
+
+  /* ── CONCEPT A: Frosted Surface ── */
+  .concept-a .mk-card {
+    background: #fff; border: 1px solid var(--border);
+    box-shadow: 0 0 0 1px rgba(0,0,0,.03), 0 2px 4px rgba(0,0,0,.05), 0 12px 24px rgba(0,0,0,.05);
+    color: var(--text);
+  }
+  .concept-a .mk-card:hover {
+    box-shadow: 0 0 0 1px rgba(0,0,0,.04), 0 4px 12px rgba(0,0,0,.08), 0 16px 32px rgba(0,0,0,.07);
+    border-color: rgba(201,78,40,0.2);
+  }
+  .concept-a .mk-card-icon { color: #fff; }
+  .concept-a .mk-card-icon.c1 { background: var(--navy); }
+  .concept-a .mk-card-icon.c2 { background: var(--verm); }
+  .concept-a .mk-card-icon.c3 { background: #0d9488; }
+  .concept-a .mk-card-icon.c4 { background: #7c3aed; }
+  .concept-a .mk-edit-btn {
+    background: rgba(0,0,0,0.04); border: 1px solid rgba(0,0,0,0.06); color: var(--muted);
+  }
+  .concept-a .mk-card:hover .mk-edit-btn {
+    background: rgba(201,78,40,0.08); border-color: rgba(201,78,40,0.15); color: var(--verm);
+  }
+  .concept-a .mk-card-title { color: var(--text); }
+  .concept-a .data-line { color: #374151; }
+  .concept-a .data-sub { color: var(--muted); }
+  .concept-a .data-pill {
+    display: inline-block; padding: 4px 10px; border-radius: 8px;
+    font-size: 12px; font-weight: 600;
+    background: rgba(201,78,40,0.08); color: var(--verm); margin: 3px 3px 3px 0;
+  }
+  .concept-a .ring-done { background: rgba(22,163,74,0.1); color: var(--green); }
+  .concept-a .ring-track { stroke: var(--border); fill: none; stroke-width: 3; }
+  .concept-a .ring-fill { fill: none; stroke-width: 3; stroke-linecap: round; stroke: var(--verm); }
+  .concept-a .ring-pct {
+    font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 700;
+    color: var(--muted); position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  /* ── CONCEPT B: Left Accent Bar ── */
+  .concept-b .mk-card {
+    background: #fff; border: 1px solid var(--border);
+    box-shadow: 0 0 0 1px rgba(0,0,0,.03), 0 2px 4px rgba(0,0,0,.05), 0 12px 24px rgba(0,0,0,.05);
+    color: var(--text); overflow: hidden;
+  }
+  .concept-b .mk-card::before {
+    content: ''; position: absolute; top: 0; left: 0;
+    width: 4px; height: 100%; border-radius: 24px 0 0 24px; transition: width 0.3s;
+  }
+  .concept-b .mk-card.c1::before { background: var(--navy); }
+  .concept-b .mk-card.c2::before { background: var(--verm); }
+  .concept-b .mk-card.c3::before { background: #0d9488; }
+  .concept-b .mk-card.c4::before { background: #7c3aed; }
+  .concept-b .mk-card:hover {
+    box-shadow: 0 0 0 1px rgba(0,0,0,.04), 0 4px 12px rgba(0,0,0,.08), 0 16px 32px rgba(0,0,0,.07);
+  }
+  .concept-b .mk-card:hover::before { width: 6px; }
+  .concept-b .mk-card-icon { color: #fff; }
+  .concept-b .mk-card-icon.c1 { background: rgba(30,45,94,0.1); color: var(--navy); }
+  .concept-b .mk-card-icon.c2 { background: rgba(201,78,40,0.1); color: var(--verm); }
+  .concept-b .mk-card-icon.c3 { background: rgba(13,148,136,0.1); color: #0d9488; }
+  .concept-b .mk-card-icon.c4 { background: rgba(124,58,237,0.1); color: #7c3aed; }
+  .concept-b .mk-edit-btn {
+    background: transparent; border: 1.5px solid var(--border); color: var(--muted);
+  }
+  .concept-b .mk-card:hover .mk-edit-btn {
+    border-color: rgba(201,78,40,0.3); color: var(--verm);
+  }
+  .concept-b .mk-card-title { color: var(--text); }
+  .concept-b .data-line { color: #374151; }
+  .concept-b .data-sub { color: var(--muted); }
+  .concept-b .data-pill {
+    display: inline-block; padding: 4px 10px; border-radius: 8px;
+    font-size: 12px; font-weight: 600;
+    border: 1.5px solid var(--border); background: transparent;
+    color: #374151; margin: 3px 3px 3px 0;
+  }
+  .concept-b .ring-done { background: rgba(22,163,74,0.1); color: var(--green); }
+  .concept-b .ring-track { stroke: #E5E7EB; fill: none; stroke-width: 3; }
+  .concept-b .ring-fill { fill: none; stroke-width: 3; stroke-linecap: round; }
+  .concept-b .mk-card.c1 .ring-fill { stroke: var(--navy); }
+  .concept-b .mk-card.c2 .ring-fill { stroke: var(--verm); }
+  .concept-b .mk-card.c3 .ring-fill { stroke: #0d9488; }
+  .concept-b .mk-card.c4 .ring-fill { stroke: #7c3aed; }
+  .concept-b .ring-pct {
+    font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 700;
+    color: var(--muted); position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  /* ── CONCEPT C: Navy Depth ── */
+  .concept-c .mk-card {
+    background: linear-gradient(135deg, #2A3F7A 0%, #1E2D5E 50%, #162247 100%);
+    border: 1px solid rgba(255,255,255,0.06);
+    box-shadow: 0 0 0 1px rgba(0,0,0,.06), 0 4px 16px rgba(0,0,0,.12); color: #fff;
+  }
+  .concept-c .mk-card:hover {
+    box-shadow: 0 0 0 1px rgba(0,0,0,.08), 0 8px 24px rgba(0,0,0,.16);
+    border-color: rgba(255,255,255,0.1);
+  }
+  .concept-c .mk-card-icon { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.7); }
+  .concept-c .mk-edit-btn {
+    background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+    color: rgba(255,255,255,0.5);
+  }
+  .concept-c .mk-card:hover .mk-edit-btn {
+    background: rgba(255,255,255,0.12); color: rgba(255,255,255,0.8);
+  }
+  .concept-c .mk-card-title { color: #fff; }
+  .concept-c .data-line { color: rgba(255,255,255,0.9); }
+  .concept-c .data-sub { color: rgba(255,255,255,0.5); }
+  .concept-c .data-pill {
+    display: inline-block; padding: 4px 10px; border-radius: 8px;
+    font-size: 12px; font-weight: 600;
+    background: var(--verm); color: #fff; margin: 3px 3px 3px 0;
+  }
+  .concept-c .ring-done { background: rgba(255,255,255,0.15); color: var(--green); }
+  .concept-c .ring-track { stroke: rgba(255,255,255,0.1); fill: none; stroke-width: 3; }
+  .concept-c .ring-fill { fill: none; stroke-width: 3; stroke-linecap: round; stroke: var(--verm); }
+  .concept-c .ring-pct {
+    font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 700;
+    color: rgba(255,255,255,0.6); position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  /* ── CONCEPT D: Glass Warm ── */
+  .concept-d .mk-card {
+    background: rgba(255,255,255,0.65);
+    backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255,255,255,0.5);
+    box-shadow: 0 2px 8px rgba(0,0,0,.04), 0 8px 24px rgba(0,0,0,.06); color: var(--text);
+  }
+  .concept-d .mk-card:hover {
+    background: rgba(255,255,255,0.8);
+    box-shadow: 0 4px 12px rgba(0,0,0,.06), 0 12px 32px rgba(0,0,0,.08);
+    border-color: rgba(201,78,40,0.15);
+  }
+  .concept-d .mk-card-icon { color: #fff; }
+  .concept-d .mk-card-icon.c1 { background: var(--navy); }
+  .concept-d .mk-card-icon.c2 { background: var(--verm); }
+  .concept-d .mk-card-icon.c3 { background: #0d9488; }
+  .concept-d .mk-card-icon.c4 { background: #7c3aed; }
+  .concept-d .mk-edit-btn {
+    background: rgba(255,255,255,0.5); border: 1px solid rgba(0,0,0,0.06); color: var(--muted);
+  }
+  .concept-d .mk-card:hover .mk-edit-btn {
+    background: rgba(201,78,40,0.08); color: var(--verm);
+  }
+  .concept-d .mk-card-title { color: var(--text); }
+  .concept-d .data-line { color: #374151; }
+  .concept-d .data-sub { color: var(--muted); }
+  .concept-d .data-pill {
+    display: inline-block; padding: 4px 10px; border-radius: 8px;
+    font-size: 12px; font-weight: 600;
+    background: rgba(201,78,40,0.1); color: var(--verm); margin: 3px 3px 3px 0;
+  }
+  .concept-d .ring-done { background: rgba(22,163,74,0.12); color: var(--green); }
+  .concept-d .ring-track { stroke: rgba(0,0,0,0.06); fill: none; stroke-width: 3; }
+  .concept-d .ring-fill { fill: none; stroke-width: 3; stroke-linecap: round; stroke: var(--verm); }
+  .concept-d .ring-pct {
+    font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 700;
+    color: var(--muted); position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  /* ── CONCEPT E: Vermillion Whisper ── */
+  .concept-e .mk-card {
+    background: linear-gradient(135deg, rgba(201,78,40,0.04) 0%, rgba(201,78,40,0.08) 100%);
+    border: 1px solid rgba(201,78,40,0.1);
+    box-shadow: 0 0 0 1px rgba(201,78,40,.03), 0 2px 4px rgba(0,0,0,.04), 0 12px 24px rgba(0,0,0,.04);
+    color: var(--text);
+  }
+  .concept-e .mk-card:hover {
+    background: linear-gradient(135deg, rgba(201,78,40,0.06) 0%, rgba(201,78,40,0.12) 100%);
+    box-shadow: 0 0 0 1px rgba(201,78,40,.06), 0 4px 12px rgba(201,78,40,.08), 0 16px 32px rgba(0,0,0,.06);
+    border-color: rgba(201,78,40,0.18);
+  }
+  .concept-e .mk-card-icon { color: #fff; }
+  .concept-e .mk-card-icon.c1 { background: var(--navy); }
+  .concept-e .mk-card-icon.c2 { background: var(--verm); }
+  .concept-e .mk-card-icon.c3 { background: #0d9488; }
+  .concept-e .mk-card-icon.c4 { background: #7c3aed; }
+  .concept-e .mk-edit-btn {
+    background: rgba(201,78,40,0.06); border: 1px solid rgba(201,78,40,0.1);
+    color: rgba(201,78,40,0.5);
+  }
+  .concept-e .mk-card:hover .mk-edit-btn {
+    background: rgba(201,78,40,0.12); color: var(--verm);
+  }
+  .concept-e .mk-card-title { color: var(--text); }
+  .concept-e .data-line { color: #374151; }
+  .concept-e .data-sub { color: var(--muted); }
+  .concept-e .data-pill {
+    display: inline-block; padding: 4px 10px; border-radius: 8px;
+    font-size: 12px; font-weight: 600;
+    background: var(--verm); color: #fff; margin: 3px 3px 3px 0;
+  }
+  .concept-e .ring-done { background: rgba(22,163,74,0.1); color: var(--green); }
+  .concept-e .ring-track { stroke: rgba(201,78,40,0.12); fill: none; stroke-width: 3; }
+  .concept-e .ring-fill { fill: none; stroke-width: 3; stroke-linecap: round; stroke: var(--verm); }
+  .concept-e .ring-pct {
+    font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 700;
+    color: var(--verm-dark); position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  /* Prompt Output */
+  .prompt-section {
+    background: #1a1a1a; border-top: 1px solid #2a2a2a; padding: 16px 20px;
+  }
+  .prompt-header {
+    display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;
+  }
+  .prompt-label {
+    font-family: 'DM Mono', monospace; font-size: 10px;
+    color: #666; text-transform: uppercase; letter-spacing: 1px;
+  }
+  .copy-btn {
+    padding: 5px 12px; border-radius: 6px; border: 1px solid #333;
+    background: #222; color: #aaa;
+    font-family: 'DM Mono', monospace; font-size: 11px;
+    cursor: pointer; transition: all 0.15s;
+  }
+  .copy-btn:hover { background: #333; color: #fff; }
+  .copy-btn.copied { background: rgba(22,163,74,0.15); border-color: rgba(22,163,74,0.3); color: var(--green); }
+  .prompt-text {
+    font-family: 'DM Mono', monospace; font-size: 12px;
+    color: #bbb; line-height: 1.6; white-space: pre-wrap;
+    max-height: 120px; overflow-y: auto;
+  }
+
+  @media (max-width: 900px) {
+    .playground { grid-template-columns: 1fr; }
+    .controls { border-right: none; border-bottom: 1px solid #2a2a2a; }
+    .mk-bento-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="playground">
+
+  <!-- CONTROLS -->
+  <div class="controls">
+    <div>
+      <h1>Kart Redesign</h1>
+      <div class="subtitle">Profil Merkezi bento kartlari</div>
+    </div>
+
+    <div class="control-group">
+      <label>Konsept</label>
+      <div class="presets" id="preset-btns">
+        <button class="preset-btn active" data-concept="a" onclick="setConcept('a')">
+          <span class="preset-name">A — Frosted Surface</span>
+          <span class="preset-desc">Beyaz kart, renkli icon, vermillion accent</span>
+        </button>
+        <button class="preset-btn" data-concept="b" onclick="setConcept('b')">
+          <span class="preset-name">B — Left Accent Bar</span>
+          <span class="preset-desc">Beyaz kart, sol kenar renk cizgisi, outlined pill</span>
+        </button>
+        <button class="preset-btn" data-concept="c" onclick="setConcept('c')">
+          <span class="preset-name">C — Navy Depth</span>
+          <span class="preset-desc">Navy gradient kart, vermillion pill accent</span>
+        </button>
+        <button class="preset-btn" data-concept="d" onclick="setConcept('d')">
+          <span class="preset-name">D — Glass Warm</span>
+          <span class="preset-desc">Yari saydam cam efekt, blur backdrop</span>
+        </button>
+        <button class="preset-btn" data-concept="e" onclick="setConcept('e')">
+          <span class="preset-name">E — Vermillion Whisper</span>
+          <span class="preset-desc">%4-8 turuncu tint, hafif marka hissi</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="control-group">
+      <label>Border Radius</label>
+      <div class="slider-row">
+        <input type="range" min="8" max="32" value="24" id="sl-radius" oninput="updateAll()">
+        <span class="slider-val" id="val-radius">24px</span>
+      </div>
+    </div>
+    <div class="control-group">
+      <label>Kart Padding</label>
+      <div class="slider-row">
+        <input type="range" min="12" max="32" value="20" id="sl-padding" oninput="updateAll()">
+        <span class="slider-val" id="val-padding">20px</span>
+      </div>
+    </div>
+    <div class="control-group">
+      <label>Gap</label>
+      <div class="slider-row">
+        <input type="range" min="6" max="20" value="12" id="sl-gap" oninput="updateAll()">
+        <span class="slider-val" id="val-gap">12px</span>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="control-group">
+      <label>Ayarlar</label>
+      <div class="toggle-row">
+        <span>Mevcut ile karsilastir</span>
+        <div class="mini-toggle" id="tog-compare" onclick="toggleOpt(this); updateAll()"></div>
+      </div>
+    </div>
+
+    <div class="prompt-section" style="margin: 0 -20px -24px; padding: 16px 20px;">
+      <div class="prompt-header">
+        <span class="prompt-label">Uygulama Prompt</span>
+        <button class="copy-btn" id="btn-copy" onclick="copyPrompt()">Kopyala</button>
+      </div>
+      <div class="prompt-text" id="prompt-output"></div>
+    </div>
+  </div>
+
+  <!-- PREVIEW -->
+  <div class="preview-area" id="preview-area">
+
+    <!-- Current design for comparison -->
+    <div class="preview-container" id="current-design" style="display:none; margin-bottom: 40px;">
+      <span class="comparison-tag tag-current">Mevcut Tasarim</span>
+      <div class="mk-identity">
+        <div class="mk-avatar"><img src="https://i.pravatar.cc/112?img=12" alt="avatar"></div>
+        <div class="mk-info">
+          <div class="mk-name">Tuna Kefeli</div>
+          <div class="mk-role"><strong>Magaza Muduru</strong> <span style="margin:0 4px;opacity:.3">.</span> Apple</div>
+          <div class="mk-meta">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            Istanbul <span style="margin:0 4px;opacity:.4">.</span> 3 deneyim
+          </div>
+        </div>
+        <button class="mk-preview-btn">Profilimi Onizle</button>
+      </div>
+      <div class="mk-bento-grid" id="current-grid"></div>
+    </div>
+
+    <!-- New design -->
+    <div class="preview-container" id="new-design">
+      <span class="comparison-tag tag-new" id="new-tag">Konsept A — Frosted Surface</span>
+      <div class="mk-identity">
+        <div class="mk-avatar"><img src="https://i.pravatar.cc/112?img=12" alt="avatar"></div>
+        <div class="mk-info">
+          <div class="mk-name">Tuna Kefeli</div>
+          <div class="mk-role"><strong>Magaza Muduru</strong> <span style="margin:0 4px;opacity:.3">.</span> Apple</div>
+          <div class="mk-meta">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            Istanbul <span style="margin:0 4px;opacity:.4">.</span> 3 deneyim
+          </div>
+        </div>
+        <button class="mk-preview-btn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          Profilimi Onizle
+        </button>
+      </div>
+      <div class="mk-footer">
+        <div class="mk-footer-left">
+          <div class="mk-footer-icon">&#9734;</div>
+          <div>
+            <div class="mk-footer-text">Premium Aday Avantajlari</div>
+            <div class="mk-footer-sub">One cikar, AI CV, kariyer koclugu</div>
+          </div>
+        </div>
+        <div class="mk-footer-arrow">&#8250;</div>
+      </div>
+      <div class="mk-bento-grid" id="card-grid"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  var state = { concept: 'a', radius: 24, padding: 20, gap: 12, compare: false };
+
+  var CONCEPTS = {
+    a: { name: 'Frosted Surface', cls: 'concept-a', desc: 'Beyaz yuzey kartlar. Renkli solid icon\'lar kategoriye kimlik verir. Vermillion sadece pill ve hover accent\'te kullanilir.' },
+    b: { name: 'Left Accent Bar', cls: 'concept-b', desc: 'Beyaz kartin sol kenarinda 4px renk cizgisi. Hover\'da 6px\'e genisler. Pill\'ler outlined.' },
+    c: { name: 'Navy Depth', cls: 'concept-c', desc: 'Sidebar ile ayni navy gradient. Vermillion pill\'ler navy uzerinde net okunur.' },
+    d: { name: 'Glass Warm', cls: 'concept-d', desc: 'Yari saydam beyaz (%65) + backdrop blur. Modern cam efekti.' },
+    e: { name: 'Vermillion Whisper', cls: 'concept-e', desc: 'Mevcut turuncunun %4-8\'e dusurulmus hali. Marka rengi korunur ama siritmaz.' }
+  };
+
+  var CARD_DATA = [
+    {
+      icon: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>',
+      color: 'c1', title: 'Kisisel Bilgiler',
+      line: 'Tuna Kefeli', sub: 'Istanbul . 1992 dogumlu . Erkek',
+      pills: ['Telefon', 'LinkedIn'], pct: 100
+    },
+    {
+      icon: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 7V5a4 4 0 0 0-8 0v2"/></svg>',
+      color: 'c2', title: 'Deneyim',
+      line: 'Magaza Muduru', sub: 'Apple',
+      extraHtml: '<div class="data-sub" style="font-family:DM Mono,monospace;font-size:10px;">2023 — Devam</div><div class="data-sub" style="opacity:0.6">+2 deneyim daha</div>',
+      pct: 100
+    },
+    {
+      icon: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 6.5 3 12 0"/></svg>',
+      color: 'c3', title: 'Egitim &amp; Dil',
+      line: 'Istanbul Universitesi . Isletme',
+      pills: ['Turkce (Anadil)', 'Ingilizce (C2)'],
+      extraText: '1 sertifika', pct: 100
+    },
+    {
+      icon: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>',
+      color: 'c4', title: 'Tercihler &amp; Lokasyon',
+      pills: ['Tam Zamanli', 'Hedef pozisyon', 'Kariyer yonelimi', 'Istanbul'], pct: 83
+    }
+  ];
+
+  function setConcept(c) {
+    state.concept = c;
+    document.querySelectorAll('.preset-btn').forEach(function(b) {
+      b.classList.toggle('active', b.dataset.concept === c);
+    });
+    updateAll();
+  }
+
+  function toggleOpt(el) {
+    el.classList.toggle('on');
+    if (el.id === 'tog-compare') state.compare = el.classList.contains('on');
+  }
+
+  function buildCardHtml(card, r, p) {
+    var ringHtml = '';
+    if (card.pct >= 100) {
+      ringHtml = '<div class="mk-card-status"><div class="ring-done">&#10003;</div></div>';
+    } else {
+      var c = 2 * Math.PI * 10;
+      var o = c - (c * card.pct / 100);
+      ringHtml = '<div class="mk-card-status"><svg viewBox="0 0 24 24" width="28" height="28" style="transform:rotate(-90deg)"><circle class="ring-track" cx="12" cy="12" r="10"/><circle class="ring-fill" cx="12" cy="12" r="10" stroke-dasharray="' + c.toFixed(2) + '" stroke-dashoffset="' + o.toFixed(2) + '"/></svg><span class="ring-pct">' + card.pct + '%</span></div>';
+    }
+    var dataHtml = '';
+    if (card.line) dataHtml += '<div class="data-line">' + card.line + '</div>';
+    if (card.sub) dataHtml += '<div class="data-sub">' + card.sub + '</div>';
+    if (card.extraHtml) dataHtml += card.extraHtml;
+    if (card.pills) {
+      dataHtml += '<div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px">';
+      card.pills.forEach(function(pill) { dataHtml += '<span class="data-pill">' + pill + '</span>'; });
+      dataHtml += '</div>';
+    }
+    if (card.extraText) dataHtml += '<div class="data-sub" style="margin-top:4px;">' + card.extraText + '</div>';
+    return '<div class="mk-card ' + card.color + '" style="border-radius:' + r + 'px;">' +
+      '<div class="mk-edit-btn">&#9998;</div>' + ringHtml +
+      '<div class="mk-card-content" style="padding:' + p + 'px ' + p + 'px ' + (p-4) + 'px ' + p + 'px;">' +
+      '<div class="mk-card-head"><div class="mk-card-icon ' + card.color + '">' + card.icon + '</div></div>' +
+      '<div class="mk-card-title">' + card.title + '</div>' +
+      '<div class="mk-card-data">' + dataHtml + '</div></div></div>';
+  }
+
+  function renderCards() {
+    var concept = CONCEPTS[state.concept];
+    var wrapper = document.getElementById('new-design');
+    Object.keys(CONCEPTS).forEach(function(k) { wrapper.classList.remove(CONCEPTS[k].cls); });
+    wrapper.classList.add(concept.cls);
+    document.getElementById('new-tag').textContent = 'Konsept ' + state.concept.toUpperCase() + ' — ' + concept.name;
+
+    var grid = document.getElementById('card-grid');
+    var html = '';
+    CARD_DATA.forEach(function(card) { html += buildCardHtml(card, state.radius, state.padding); });
+    grid.textContent = '';
+    grid.insertAdjacentHTML('beforeend', html);
+    grid.style.gap = state.gap + 'px';
+
+    // Current design comparison
+    if (state.compare) {
+      var cGrid = document.getElementById('current-grid');
+      var cHtml = '';
+      CARD_DATA.forEach(function(card) {
+        var ringH = card.pct >= 100
+          ? '<div style="position:absolute;bottom:14px;right:14px;width:28px;height:28px;border-radius:50%;background:#fff;color:#16a34a;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;">&#10003;</div>'
+          : '<div style="position:absolute;bottom:14px;right:14px;width:28px;height:28px;"><svg viewBox="0 0 24 24" width="28" height="28" style="transform:rotate(-90deg)"><circle cx="12" cy="12" r="10" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="3"/><circle cx="12" cy="12" r="10" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-dasharray="62.83" stroke-dashoffset="' + (62.83 - 62.83 * card.pct / 100).toFixed(2) + '"/></svg><span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:DM Mono,monospace;font-size:10px;font-weight:700;color:rgba(255,255,255,0.85);">' + card.pct + '%</span></div>';
+        var dH = '';
+        if (card.line) dH += '<div style="font-size:14px;font-weight:600;margin-bottom:3px;">' + card.line + '</div>';
+        if (card.sub) dH += '<div style="font-size:12px;color:rgba(255,255,255,0.6);margin-bottom:3px;">' + card.sub + '</div>';
+        if (card.extraHtml) dH += card.extraHtml.replace(/class="data-sub"/g, 'style="font-size:12px;color:rgba(255,255,255,0.6);margin-bottom:3px;"');
+        if (card.pills) {
+          dH += '<div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px">';
+          card.pills.forEach(function(p) { dH += '<span style="display:inline-block;padding:4px 10px;border-radius:8px;font-size:12px;font-weight:600;background:#C94E28;color:#fff;margin:3px 3px 3px 0;">' + p + '</span>'; });
+          dH += '</div>';
+        }
+        if (card.extraText) dH += '<div style="font-size:12px;color:rgba(255,255,255,0.5);margin-top:4px;">' + card.extraText + '</div>';
+        cHtml += '<div style="background:linear-gradient(135deg,rgba(201,78,40,0.55) 0%,rgba(180,60,30,0.45) 50%,rgba(201,78,40,0.50) 100%);border:1px solid rgba(201,78,40,0.15);border-radius:24px;padding:20px;color:#fff;position:relative;min-height:180px;">' +
+          '<div style="position:absolute;top:12px;right:12px;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.1);border:1.5px solid rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.8);font-size:14px;">&#9998;</div>' +
+          '<div style="width:44px;height:44px;border-radius:14px;background:rgba(255,255,255,0.18);display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:12px;">' + card.icon + '</div>' +
+          '<div style="font-family:Bricolage Grotesque,sans-serif;font-size:17px;font-weight:700;margin-bottom:8px;">' + card.title + '</div>' +
+          dH + ringH + '</div>';
+      });
+      cGrid.textContent = '';
+      cGrid.insertAdjacentHTML('beforeend', cHtml);
+    }
+  }
+
+  function updatePrompt() {
+    var concept = CONCEPTS[state.concept];
+    var parts = [];
+    parts.push('profil.html Profil Merkezi bolumundeki 4 mk-card\'i "' + concept.name + '" konseptine gore yeniden tasarla.');
+    parts.push('');
+    parts.push('Konsept: ' + concept.desc);
+
+    if (state.concept === 'a') {
+      parts.push('\nCSS (profil.css):');
+      parts.push('- .mk-card: bg #fff, border 1px solid var(--border), 3-layer shadow');
+      parts.push('- .mk-card:hover: border-color rgba(201,78,40,0.2)');
+      parts.push('- .mk-card-icon.navy/verm/green/purple: solid bg + white icon');
+      parts.push('- .data-pill/.data-ok: bg rgba(201,78,40,0.08), color var(--verm)');
+      parts.push('- .ring-fill: stroke var(--verm), .ring-track: stroke var(--border)');
+      parts.push('- .mk-edit-btn: bg rgba(0,0,0,0.04), hover -> verm tint');
+    } else if (state.concept === 'b') {
+      parts.push('\nCSS (profil.css):');
+      parts.push('- .mk-card: bg #fff, overflow hidden, ::before 4px left accent');
+      parts.push('- .mk-card.navy/verm/green/purple::before: kendi rengi');
+      parts.push('- Hover: ::before width 6px');
+      parts.push('- .mk-card-icon: tinted bg (0.1 opacity), colored text');
+      parts.push('- .data-pill: border 1.5px solid var(--border), bg transparent');
+      parts.push('- Ring fill: her kart kendi renginde');
+    } else if (state.concept === 'c') {
+      parts.push('\nCSS (profil.css):');
+      parts.push('- .mk-card: navy gradient (3-stop), white text');
+      parts.push('- .mk-card-icon: bg rgba(255,255,255,0.1)');
+      parts.push('- .data-pill: bg var(--verm), color #fff');
+    } else if (state.concept === 'd') {
+      parts.push('\nCSS (profil.css):');
+      parts.push('- .mk-card: bg rgba(255,255,255,0.65), backdrop-filter blur(16px)');
+      parts.push('- Hover: bg 0.8, border-color verm tint');
+      parts.push('- .data-pill: bg rgba(201,78,40,0.1), color var(--verm)');
+    } else if (state.concept === 'e') {
+      parts.push('\nCSS (profil.css):');
+      parts.push('- .mk-card: gradient rgba(201,78,40,0.04)->0.08');
+      parts.push('- Border: rgba(201,78,40,0.1)');
+      parts.push('- .data-pill: bg var(--verm), color #fff (solid korunur)');
+      parts.push('- .mk-edit-btn: verm tinted (0.06 bg, 0.1 border)');
+    }
+
+    if (state.radius !== 24) parts.push('\nborder-radius: ' + state.radius + 'px');
+    if (state.padding !== 20) parts.push('padding: ' + state.padding + 'px');
+    if (state.gap !== 12) parts.push('gap: ' + state.gap + 'px');
+
+    parts.push('\nDark mode tokenlari da guncelle.');
+    parts.push('Sadece profil.css degisecek.');
+    document.getElementById('prompt-output').textContent = parts.join('\n');
+  }
+
+  function updateAll() {
+    state.radius = parseInt(document.getElementById('sl-radius').value);
+    state.padding = parseInt(document.getElementById('sl-padding').value);
+    state.gap = parseInt(document.getElementById('sl-gap').value);
+    document.getElementById('val-radius').textContent = state.radius + 'px';
+    document.getElementById('val-padding').textContent = state.padding + 'px';
+    document.getElementById('val-gap').textContent = state.gap + 'px';
+    document.getElementById('current-design').style.display = state.compare ? 'block' : 'none';
+    renderCards();
+    updatePrompt();
+  }
+
+  function copyPrompt() {
+    var text = document.getElementById('prompt-output').textContent;
+    navigator.clipboard.writeText(text).then(function() {
+      var btn = document.getElementById('btn-copy');
+      btn.textContent = 'Kopyalandi!';
+      btn.classList.add('copied');
+      setTimeout(function() { btn.textContent = 'Kopyala'; btn.classList.remove('copied'); }, 2000);
+    });
+  }
+
+  updateAll();
+</script>
+</body>
+</html>
