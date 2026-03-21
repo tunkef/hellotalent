@@ -3234,34 +3234,63 @@ function openSingleThreadModal(messageId, candidateName) {
   });
 }
 
+function ikAppendBubble(container, text, isOwn, time) {
+  var bubble = document.createElement('div');
+  bubble.style.cssText = 'max-width:85%;padding:8px 12px;border-radius:12px;' +
+    (isOwn
+      ? 'align-self:flex-end;background:var(--navy,#1E2D5E);color:white;border-bottom-right-radius:4px;'
+      : 'align-self:flex-start;background:var(--bg);border-bottom-left-radius:4px;');
+  var bodyEl = document.createElement('div');
+  bodyEl.style.cssText = 'font-size:13px;line-height:1.5;white-space:pre-wrap;word-break:break-word;';
+  bodyEl.textContent = text;
+  bubble.appendChild(bodyEl);
+  var timeEl = document.createElement('div');
+  timeEl.style.cssText = 'text-align:right;margin-top:3px;font-size:10px;' +
+    (isOwn ? 'color:rgba(255,255,255,0.6);' : 'color:var(--muted);');
+  timeEl.textContent = time || ikBubbleTime(new Date().toISOString());
+  bubble.appendChild(timeEl);
+  container.appendChild(bubble);
+}
+
 async function sendEmployerFollowup(messageId, textarea, sendBtn, statusEl, threadBody) {
   var body = textarea.value.trim();
   if (!body) return;
+
+  // Optimistic: append bubble immediately
+  var wasNear = threadBody.scrollHeight - threadBody.scrollTop - threadBody.clientHeight < 80;
+  ikAppendBubble(threadBody, body, true);
+  var optLabel = document.createElement('div');
+  optLabel.style.cssText = 'align-self:flex-end;font-size:10px;color:var(--muted);margin-top:1px;';
+  optLabel.textContent = 'G\u00F6nderiliyor...';
+  optLabel.id = 'ik-opt-receipt';
+  threadBody.appendChild(optLabel);
+  if (wasNear) threadBody.scrollTop = threadBody.scrollHeight;
+
+  textarea.value = '';
+  textarea.style.height = 'auto';
   sendBtn.disabled = true;
   sendBtn.textContent = 'G\u00F6nderiliyor...';
+
   try {
     var res = await getSupa().rpc('send_employer_followup', { p_message_id: messageId, p_body: body });
+    sendBtn.disabled = false;
+    sendBtn.textContent = 'G\u00F6nder';
+    var ol = document.getElementById('ik-opt-receipt');
     if (res.error) {
       console.error('sendEmployerFollowup error:', res.error.message);
-      statusEl.textContent = 'Hata: ' + res.error.message;
-      statusEl.style.cssText = 'display:block;padding:6px 0;font-size:12px;font-weight:600;text-align:center;color:#DC2626;';
-      setTimeout(function() { statusEl.style.display = 'none'; }, 4000);
-      sendBtn.disabled = false;
-      sendBtn.textContent = 'G\u00F6nder';
+      if (ol) { ol.textContent = 'Hata!'; ol.style.color = '#DC2626'; }
       return;
     }
-    textarea.value = '';
-    textarea.style.height = 'auto';
-    sendBtn.disabled = false;
-    sendBtn.textContent = 'G\u00F6nder';
-    loadEmployerThread(messageId, threadBody);
+    if (ol) ol.textContent = '\u0130letildi';
+    // Refresh thread list
+    _mesajlarLoaded = false;
+    loadMesajlarPanel();
   } catch (err) {
     console.error('sendEmployerFollowup exception:', err);
-    statusEl.textContent = 'Hata: Yan\u0131t g\u00F6nderilemedi.';
-    statusEl.style.cssText = 'display:block;padding:6px 0;font-size:12px;font-weight:600;text-align:center;color:#DC2626;';
-    setTimeout(function() { statusEl.style.display = 'none'; }, 4000);
     sendBtn.disabled = false;
     sendBtn.textContent = 'G\u00F6nder';
+    var ol2 = document.getElementById('ik-opt-receipt');
+    if (ol2) { ol2.textContent = 'Hata!'; ol2.style.color = '#DC2626'; }
   }
 }
 
@@ -4446,25 +4475,55 @@ async function sendTeamInvite(){
   });
 })();
 
-// ── EMPLOYER REALTIME: refresh Mesajlar on candidate reply events ──
+// ── EMPLOYER REALTIME: live-chat subscriptions ──
 (function() {
-  setTimeout(function() {
+  var _ikRefreshTimer = null;
+  function ikDebouncedRefresh() {
+    if (_ikRefreshTimer) clearTimeout(_ikRefreshTimer);
+    _ikRefreshTimer = setTimeout(function() {
+      _ikRefreshTimer = null;
+      var panel = document.getElementById('panel-mesajlar');
+      if (panel && panel.classList.contains('active')) { _mesajlarLoaded = false; loadMesajlarPanel(); }
+    }, 500);
+  }
+
+  function setupIkRealtime() {
     var supa = (typeof getSupa === 'function') ? getSupa() : null;
     if (!supa || !supa.channel) return;
 
     supa.channel('ik-msg-live')
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'candidate_message_replies' }, function() {
-        // Candidate replied — refresh badge + list if panel is active
-        var navBadge = document.getElementById('nav-mesaj-count');
-        var panel = document.getElementById('panel-mesajlar');
-        if (panel && panel.classList.contains('active')) { _mesajlarLoaded = false; loadMesajlarPanel(); }
-        else if (navBadge) { _mesajlarLoaded = false; }
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'candidate_message_replies' }, function(payload) {
+        ikDebouncedRefresh();
+        // Live append if this thread is open
+        if (_ikActiveThreadId && payload.new && payload.new.message_id === _ikActiveThreadId) {
+          var containers = document.querySelectorAll('#ik-msg-right > div');
+          var threadBody = null;
+          for (var ci = 0; ci < containers.length; ci++) {
+            if (containers[ci].style.cssText && containers[ci].style.cssText.indexOf('overflow-y') > -1) { threadBody = containers[ci]; break; }
+          }
+          if (threadBody) {
+            // Add candidate label + bubble
+            var sLabel = document.createElement('div');
+            sLabel.style.cssText = 'font-size:10px;font-weight:600;color:var(--verm,#C94E28);margin-bottom:2px;align-self:flex-start;';
+            sLabel.textContent = 'Aday';
+            threadBody.appendChild(sLabel);
+            ikAppendBubble(threadBody, payload.new.body, false, ikBubbleTime(payload.new.created_at));
+            threadBody.scrollTop = threadBody.scrollHeight;
+          }
+        }
       })
       .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'candidate_message_replies' }, function() {
-        // Read state changed — no action needed unless panel is active
+        // Read state changed
       })
       .subscribe();
-  }, 3000);
+  }
+
+  // Start immediately if getSupa is available, otherwise short fallback
+  if (typeof getSupa === 'function' && getSupa()) {
+    setupIkRealtime();
+  } else {
+    setTimeout(setupIkRealtime, 1500);
+  }
 })();
 
 // ── INIT ──

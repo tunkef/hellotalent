@@ -539,43 +539,85 @@
     }
   }
 
-  /* ═══ SEND REPLY ═══ */
+  /* ═══ APPEND BUBBLE (for optimistic + realtime) ═══ */
+  function appendBubble(container, text, sender, time) {
+    var isEmp = sender === 'employer';
+    var bubble = document.createElement('div');
+    bubble.style.cssText = 'max-width:80%;padding:10px 14px;border-radius:16px;position:relative;' +
+      (isEmp
+        ? 'align-self:flex-start;background:var(--bg,#F7F6F4);border-bottom-left-radius:4px;'
+        : 'align-self:flex-end;background:var(--verm,#C94E28);color:white;border-bottom-right-radius:4px;');
+    var bodyEl = document.createElement('div');
+    bodyEl.style.cssText = 'font-size:14px;line-height:1.5;white-space:pre-wrap;word-break:break-word;';
+    bodyEl.textContent = text;
+    bubble.appendChild(bodyEl);
+    var timeWrap = document.createElement('div');
+    timeWrap.style.cssText = 'display:flex;align-items:center;justify-content:flex-end;gap:4px;margin-top:4px;';
+    var timeSpan = document.createElement('span');
+    timeSpan.style.cssText = 'font-size:10px;' + (isEmp ? 'color:var(--text-muted,#6B7280);' : 'color:rgba(255,255,255,0.7);');
+    timeSpan.textContent = time || bubbleTime(new Date().toISOString());
+    timeWrap.appendChild(timeSpan);
+    bubble.appendChild(timeWrap);
+    container.appendChild(bubble);
+  }
+
+  function isNearBottom(el) {
+    return el.scrollHeight - el.scrollTop - el.clientHeight < 80;
+  }
+
+  function scrollToBottom(el) {
+    el.scrollTop = el.scrollHeight;
+  }
+
+  /* ═══ SEND REPLY (optimistic) ═══ */
   async function sendReply(messageId, textarea, sendBtn, statusEl, msgArea, msg) {
     var supa = getSupa();
     if (!supa) return;
     var body = textarea.value.trim();
     if (!body) return;
+
+    // Optimistic: append bubble immediately
+    var wasNearBottom = isNearBottom(msgArea);
+    appendBubble(msgArea, body, 'candidate');
+    // Add optimistic receipt
+    var optReceipt = document.createElement('div');
+    optReceipt.style.cssText = 'align-self:flex-end;font-size:10px;color:var(--text-muted,#6B7280);margin-top:1px;padding-right:2px;';
+    optReceipt.textContent = 'G\u00F6nderiliyor...';
+    optReceipt.id = 'opt-receipt';
+    msgArea.appendChild(optReceipt);
+    if (wasNearBottom) scrollToBottom(msgArea);
+
+    textarea.value = '';
+    textarea.style.height = 'auto';
     sendBtn.disabled = true;
     sendBtn.style.opacity = '0.6';
+
     try {
       var res = await supa.rpc('send_candidate_reply', { p_message_id: messageId, p_body: body });
+      sendBtn.disabled = false; sendBtn.style.opacity = '1';
+      var or = document.getElementById('opt-receipt');
       if (res.error) {
         console.error('Send reply error:', res.error.message);
-        statusEl.textContent = 'Hata: ' + res.error.message;
-        statusEl.style.cssText = 'display:block;padding:6px 14px;font-size:12px;font-weight:600;text-align:center;background:#FEF2F2;color:#DC2626;';
-        setTimeout(function() { statusEl.style.display = 'none'; }, 4000);
-        sendBtn.disabled = false; sendBtn.style.opacity = '1';
+        if (or) { or.textContent = 'Hata! Tekrar deneyin.'; or.style.color = '#DC2626'; }
         return;
       }
-      textarea.value = '';
-      textarea.style.height = 'auto';
-      sendBtn.disabled = false; sendBtn.style.opacity = '1';
-      loadThread(messageId, msgArea, msg);
+      if (or) or.textContent = '\u0130letildi';
       // Update local preview
       for (var i = 0; i < allMessages.length; i++) {
         if (allMessages[i].id === messageId) {
           allMessages[i].latest_reply = { body: body, created_at: new Date().toISOString(), read_at: null };
           allMessages[i].latest_sender = 'candidate';
           allMessages[i].last_activity = new Date().toISOString();
+          allMessages[i].is_unread = false;
           break;
         }
       }
+      renderMessages();
     } catch (err) {
       console.error('Send reply exception:', err);
-      statusEl.textContent = 'Hata: Yan\u0131t g\u00F6nderilemedi.';
-      statusEl.style.cssText = 'display:block;padding:6px 14px;font-size:12px;font-weight:600;text-align:center;background:#FEF2F2;color:#DC2626;';
-      setTimeout(function() { statusEl.style.display = 'none'; }, 4000);
       sendBtn.disabled = false; sendBtn.style.opacity = '1';
+      var or2 = document.getElementById('opt-receipt');
+      if (or2) { or2.textContent = 'Hata! Tekrar deneyin.'; or2.style.color = '#DC2626'; }
     }
   }
 
@@ -952,45 +994,80 @@
   }
 
   /* ═══════════════════════════════════════════════════════════════
-     REALTIME: Subscribe to new messages for live badge updates
+     REALTIME: Live-chat subscriptions (auth-ready, no fixed delay)
      ═══════════════════════════════════════════════════════════════ */
+  var _refreshTimer = null;
+  function debouncedRefresh() {
+    if (_refreshTimer) clearTimeout(_refreshTimer);
+    _refreshTimer = setTimeout(function() {
+      _refreshTimer = null;
+      preloadUnreadCount();
+      var inboxPanel = document.getElementById('panel-inbox');
+      if (inboxPanel && inboxPanel.classList.contains('active')) {
+        loaded = false;
+        window._htLoadInbox(currentFilter);
+      }
+    }, 500);
+  }
+
   function setupRealtimeInbox() {
     var supa = getSupa();
     if (!supa || !supa.channel) return;
 
-    function refreshInboxIfActive() {
-      preloadUnreadCount();
-      var inboxPanel = document.getElementById('panel-inbox');
-      if (inboxPanel && inboxPanel.classList.contains('active')) window._htLoadInbox(currentFilter);
-      var notifPanel = document.getElementById('panel-bildirimler');
-      if (notifPanel && notifPanel.classList.contains('active') && window._htLoadBildirimler) window._htLoadBildirimler();
-    }
-
-    function refreshActiveThread() {
-      if (activeThreadMsgId) {
-        var container = document.getElementById('thread-messages');
-        if (container) loadThread(activeThreadMsgId, container, {});
-      }
-    }
-
     supa.channel('inbox-live')
       // Root employer messages
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'employer_messages' }, refreshInboxIfActive)
-      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'employer_messages' }, function() { preloadUnreadCount(); })
-      // Employer follow-up replies (new inbound for candidate)
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'employer_message_replies' }, function() {
-        refreshInboxIfActive();
-        refreshActiveThread();
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'employer_messages' }, function() {
+        debouncedRefresh();
       })
-      // Candidate reply read-state updates (employer marked read)
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'employer_messages' }, function() {
+        preloadUnreadCount();
+      })
+      // Employer follow-up replies (inbound for candidate)
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'employer_message_replies' }, function(payload) {
+        debouncedRefresh();
+        // Live append if this thread is open
+        if (activeThreadMsgId && payload.new && payload.new.message_id === activeThreadMsgId) {
+          var container = document.getElementById('thread-messages');
+          if (container && isNearBottom(container)) {
+            appendBubble(container, payload.new.body, 'employer', bubbleTime(payload.new.created_at));
+            scrollToBottom(container);
+          } else if (container) {
+            appendBubble(container, payload.new.body, 'employer', bubbleTime(payload.new.created_at));
+          }
+        }
+      })
+      // Candidate reply read-state updates (employer marked read → update receipt)
       .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'candidate_message_replies' }, function() {
-        refreshActiveThread();
+        // Refresh thread to update receipt labels
+        if (activeThreadMsgId) {
+          var container = document.getElementById('thread-messages');
+          if (container) loadThread(activeThreadMsgId, container, {});
+        }
       })
       .subscribe();
   }
 
-  document.addEventListener('DOMContentLoaded', function() {
-    setTimeout(setupRealtimeInbox, 3000);
-  });
+  // Start realtime as soon as auth is ready (no fixed 3s delay)
+  function initRealtime() {
+    var supa = getSupa();
+    if (!supa) return;
+    if (supa.auth && supa.auth.onAuthStateChange) {
+      supa.auth.onAuthStateChange(function(event) {
+        if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
+          setupRealtimeInbox();
+          preloadUnreadCount();
+        }
+      });
+    } else {
+      // Fallback: try after short delay
+      setTimeout(function() { setupRealtimeInbox(); preloadUnreadCount(); }, 1500);
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initRealtime);
+  } else {
+    initRealtime();
+  }
 
 })();
