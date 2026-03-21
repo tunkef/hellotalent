@@ -528,6 +528,27 @@ function checkLoginCooldown(type, btn) {
   return false;
 }
 
+// ── POST-AUTH REDIRECT HELPER ──
+// Centralized candidate post-auth destination.
+// Validates ht_return_url is a safe same-origin coach-studio URL.
+// Returns validated URL or 'profil.html' fallback. Clears storage on use.
+function getCandidatePostAuthUrl() {
+  var ret = null;
+  try { ret = sessionStorage.getItem('ht_return_url'); } catch(e) {}
+  if (ret) {
+    try { sessionStorage.removeItem('ht_return_url'); } catch(e) {}
+    // Validate: must be same-origin coach-studio.html (with optional query)
+    try {
+      var parsed = new URL(ret, window.location.origin);
+      if (parsed.origin === window.location.origin && parsed.pathname.endsWith('/coach-studio.html')) {
+        return ret;
+      }
+    } catch(e) {}
+    // Invalid return URL — ignore silently
+  }
+  return 'profil.html';
+}
+
 // ── OTURUM KONTROLÜ ──
 (async function() {
   // URL parametresine göre tab'ı aç
@@ -539,14 +560,7 @@ function checkLoginCooldown(type, btn) {
   if (data.session) {
     // Zaten giriş yapmış → role'e göre yönlendir
     var role = data.session.user.user_metadata?.role;
-    var _returnUrl = null;
-    try { _returnUrl = sessionStorage.getItem('ht_return_url'); } catch(e) {}
-    if (_returnUrl && role !== 'employer') {
-      try { sessionStorage.removeItem('ht_return_url'); } catch(e) {}
-      window.location.href = _returnUrl;
-    } else {
-      window.location.href = role === 'employer' ? 'ik.html' : 'profil.html';
-    }
+    window.location.href = role === 'employer' ? 'ik.html' : getCandidatePostAuthUrl();
   }
 })();
 
@@ -614,14 +628,7 @@ async function loginAday() {
     btnText.textContent = 'Giriş Yap →';
     return;
   }
-  var _ret = null;
-  try { _ret = sessionStorage.getItem('ht_return_url'); } catch(e) {}
-  if (_ret) {
-    try { sessionStorage.removeItem('ht_return_url'); } catch(e) {}
-    window.location.href = _ret;
-  } else {
-    window.location.href = 'profil.html';
-  }
+  window.location.href = getCandidatePostAuthUrl();
 }
 
 // ── IK GİRİŞ ──
@@ -751,7 +758,7 @@ document.addEventListener('keydown', function(e) {
     if(!sb) { alert('Bağlantı hatası'); btnGoogle.disabled = false; return; }
     var { error } = await sb.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: window.location.origin + '/profil.html' }
+      options: { redirectTo: window.location.origin + '/giris.html' }
     });
     if(error) { alert('Google giriş hatası: ' + error.message); btnGoogle.disabled = false; }
   });
@@ -765,7 +772,7 @@ document.addEventListener('keydown', function(e) {
     if(!sb) { alert('Bağlantı hatası'); btnLinkedin.disabled = false; return; }
     var { error } = await sb.auth.signInWithOAuth({
       provider: 'linkedin_oidc',
-      options: { redirectTo: window.location.origin + '/profil.html' }
+      options: { redirectTo: window.location.origin + '/giris.html' }
     });
     if(error) { alert('LinkedIn giriş hatası: ' + error.message); btnLinkedin.disabled = false; }
   });
@@ -889,14 +896,7 @@ document.addEventListener('keydown', function(e) {
     try {
       var r = await getSupa().auth.signUp({ email: email, password: sifre });
       if(r.error) throw r.error;
-      var _retReg = null;
-      try { _retReg = sessionStorage.getItem('ht_return_url'); } catch(e) {}
-      if (_retReg) {
-        try { sessionStorage.removeItem('ht_return_url'); } catch(e) {}
-        window.location.href = _retReg;
-      } else {
-        window.location.href = 'profil.html';
-      }
+      window.location.href = getCandidatePostAuthUrl();
     } catch(ex) {
       var msg = ex.message || '';
       if(msg.includes('already registered')) msg = 'Bu e-posta adresi zaten kayıtlı.';
