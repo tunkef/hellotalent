@@ -2810,6 +2810,11 @@ async function openDrawer(id){
   btnMsg.textContent = '✉️ Mesaj Gönder';
   btnMsg.onclick = function(){ openMesajModal(c.id, c.ad[0] + '. ' + c.soyad); };
   actions.appendChild(btnMsg);
+  var btnReplies = document.createElement('button');
+  btnReplies.className = 'btn-secondary btn-sm';
+  btnReplies.textContent = '💬 Yanıtlar';
+  btnReplies.onclick = function(){ openCandidateRepliesModal(c.id, c.ad[0] + '. ' + c.soyad); };
+  actions.appendChild(btnReplies);
   var btnCV = document.createElement('button');
   btnCV.className = 'btn-primary btn-sm';
   btnCV.style.cssText = 'filter:blur(2px);pointer-events:none;';
@@ -2978,6 +2983,224 @@ async function sendMesaj(){
   }catch(e){
     console.error('sendMesaj exception:', e);
     document.getElementById('mesaj-send-text').textContent = 'Gönder';
+  }
+}
+
+// ── ADAY YANITLARI GÖRÜNTÜLE (Thread View) ──
+
+var _ikTrDays = ['Pazar','Pazartesi','Sal\u0131','\u00C7ar\u015Famba','Per\u015Fembe','Cuma','Cumartesi'];
+var _ikTrMonths = ['Oca','\u015Eub','Mar','Nis','May','Haz','Tem','A\u011Fu','Eyl','Eki','Kas','Ara'];
+
+function timeAgoIK(dateStr) {
+  if (!dateStr) return '';
+  var diff = Math.floor((Date.now() - new Date(dateStr).getTime()) / 1000);
+  if (diff < 60) return 'az \u00F6nce';
+  if (diff < 3600) return Math.floor(diff / 60) + ' dk \u00F6nce';
+  if (diff < 86400) return Math.floor(diff / 3600) + ' saat \u00F6nce';
+  if (diff < 172800) return 'D\u00FCn';
+  if (diff < 604800) return Math.floor(diff / 86400) + ' g\u00FCn \u00F6nce';
+  var d = new Date(dateStr);
+  return d.getDate() + ' ' + _ikTrMonths[d.getMonth()];
+}
+
+function ikBubbleTime(dateStr) {
+  if (!dateStr) return '';
+  var d = new Date(dateStr);
+  return (d.getHours() < 10 ? '0' : '') + d.getHours() + ':' + (d.getMinutes() < 10 ? '0' : '') + d.getMinutes();
+}
+
+function ikDateSep(dateStr) {
+  var d = new Date(dateStr);
+  var now = new Date();
+  var today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  var target = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  var diff = Math.round((today - target) / 86400000);
+  if (diff === 0) return 'Bug\u00FCn';
+  if (diff === 1) return 'D\u00FCn';
+  if (diff < 7) return _ikTrDays[d.getDay()];
+  return d.getDate() + ' ' + _ikTrMonths[d.getMonth()] + ' ' + d.getFullYear();
+}
+
+function ikSameDay(a, b) {
+  var da = new Date(a), db = new Date(b);
+  return da.getFullYear() === db.getFullYear() && da.getMonth() === db.getMonth() && da.getDate() === db.getDate();
+}
+
+async function openCandidateRepliesModal(candidateId, candidateName) {
+  var existing = document.getElementById('yanitlar-modal-overlay');
+  if (existing) existing.remove();
+
+  var overlay = document.createElement('div');
+  overlay.id = 'yanitlar-modal-overlay';
+  overlay.className = 'modal-overlay show';
+
+  var modal = document.createElement('div');
+  modal.className = 'modal';
+  modal.style.maxWidth = '560px';
+
+  var header = document.createElement('div');
+  header.className = 'modal-header';
+  var title = document.createElement('span');
+  title.className = 'modal-title';
+  title.textContent = '\uD83D\uDCAC Mesaj Ge\u00E7mi\u015Fi';
+  header.appendChild(title);
+  var closeBtn = document.createElement('button');
+  closeBtn.className = 'modal-close';
+  closeBtn.textContent = '\u2715';
+  closeBtn.onclick = function() { overlay.remove(); };
+  header.appendChild(closeBtn);
+  modal.appendChild(header);
+
+  var nameEl = document.createElement('div');
+  nameEl.style.cssText = 'font-size:13px;color:var(--muted);margin-bottom:16px;';
+  nameEl.textContent = 'Aday: ' + candidateName;
+  modal.appendChild(nameEl);
+
+  var content = document.createElement('div');
+  content.id = 'yanitlar-content';
+  content.style.cssText = 'max-height:60vh;overflow-y:auto;';
+  var loading = document.createElement('div');
+  loading.style.cssText = 'text-align:center;padding:24px;color:var(--muted);font-size:13px;';
+  loading.textContent = 'Y\u00FCkleniyor...';
+  content.appendChild(loading);
+  modal.appendChild(content);
+
+  overlay.appendChild(modal);
+  overlay.addEventListener('click', function(e) { if (e.target === overlay) overlay.remove(); });
+  document.body.appendChild(overlay);
+
+  try {
+    var companyId = hrProfile ? hrProfile.company_id : null;
+    if (!companyId) {
+      content.textContent = '';
+      var noC = document.createElement('div');
+      noC.style.cssText = 'text-align:center;padding:24px;color:var(--muted);font-size:13px;';
+      noC.textContent = '\u015Eirket bilgisi bulunamad\u0131.';
+      content.appendChild(noC);
+      return;
+    }
+
+    var res = await getSupa().from('employer_messages')
+      .select('id, subject, body, status, read_at, created_at')
+      .eq('candidate_id', candidateId)
+      .eq('company_id', companyId)
+      .order('created_at', { ascending: false })
+      .limit(20);
+
+    content.textContent = '';
+
+    if (res.error || !res.data || res.data.length === 0) {
+      var emptyDiv = document.createElement('div');
+      emptyDiv.style.cssText = 'text-align:center;padding:24px;color:var(--muted);font-size:13px;';
+      emptyDiv.textContent = 'Bu adaya hen\u00FCz mesaj g\u00F6nderilmemi\u015F.';
+      content.appendChild(emptyDiv);
+      return;
+    }
+
+    for (var i = 0; i < res.data.length; i++) {
+      var msg = res.data[i];
+      var threadCard = document.createElement('div');
+      threadCard.style.cssText = 'border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:12px;';
+
+      // Thread header: subject + expand
+      var tHeader = document.createElement('div');
+      tHeader.style.cssText = 'display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;';
+      var tSubject = document.createElement('div');
+      tSubject.style.cssText = 'font-size:14px;font-weight:700;color:var(--text);';
+      tSubject.textContent = msg.subject;
+      tHeader.appendChild(tSubject);
+
+      // Seen by candidate indicator
+      var seenLabel = document.createElement('span');
+      seenLabel.style.cssText = 'font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600;' +
+        (msg.read_at ? 'background:#F0FDF4;color:#16A34A;' : 'background:var(--bg);color:var(--muted);');
+      seenLabel.textContent = msg.read_at ? 'G\u00F6r\u00FCld\u00FC' : '\u0130letildi';
+      tHeader.appendChild(seenLabel);
+      threadCard.appendChild(tHeader);
+
+      // Thread body — loaded via RPC
+      var threadBody = document.createElement('div');
+      threadBody.style.cssText = 'display:flex;flex-direction:column;gap:4px;';
+      threadCard.appendChild(threadBody);
+      content.appendChild(threadCard);
+
+      // Load full thread
+      loadEmployerThread(msg.id, threadBody);
+    }
+  } catch (err) {
+    console.error('openCandidateRepliesModal error:', err);
+    content.textContent = '';
+    var errDiv = document.createElement('div');
+    errDiv.style.cssText = 'text-align:center;padding:24px;color:#DC2626;font-size:13px;';
+    errDiv.textContent = 'Yan\u0131tlar y\u00FCklenemedi.';
+    content.appendChild(errDiv);
+  }
+}
+
+async function loadEmployerThread(messageId, container) {
+  try {
+    var res = await getSupa().rpc('get_message_thread', { p_message_id: messageId });
+    if (res.error) {
+      console.error('loadEmployerThread error:', res.error.message);
+      var errEl = document.createElement('div');
+      errEl.style.cssText = 'font-size:12px;color:#DC2626;';
+      errEl.textContent = 'Y\u00FCklenemedi.';
+      container.appendChild(errEl);
+      return;
+    }
+
+    var items = res.data || [];
+    if (items.length === 0) return;
+
+    // Mark candidate replies as read
+    getSupa().rpc('mark_replies_read', { p_message_id: messageId }).then(function(){}).catch(function(){});
+
+    var lastDate = null;
+    for (var i = 0; i < items.length; i++) {
+      var item = items[i];
+
+      // Date separator
+      if (!lastDate || !ikSameDay(lastDate, item.created_at)) {
+        var sep = document.createElement('div');
+        sep.style.cssText = 'text-align:center;padding:6px 0;';
+        var sepSpan = document.createElement('span');
+        sepSpan.style.cssText = 'font-size:10px;color:var(--muted);background:white;padding:2px 10px;border-radius:8px;font-weight:500;';
+        sepSpan.textContent = ikDateSep(item.created_at);
+        sep.appendChild(sepSpan);
+        container.appendChild(sep);
+        lastDate = item.created_at;
+      }
+
+      var isEmp = item.sender === 'employer';
+      var bubble = document.createElement('div');
+      bubble.style.cssText = 'max-width:85%;padding:8px 12px;border-radius:12px;' +
+        (isEmp
+          ? 'align-self:flex-start;background:var(--bg);border-bottom-left-radius:4px;'
+          : 'align-self:flex-end;background:var(--navy,#1E2D5E);color:white;border-bottom-right-radius:4px;');
+
+      // Sender label for candidate
+      if (!isEmp) {
+        var sLabel = document.createElement('div');
+        sLabel.style.cssText = 'font-size:10px;font-weight:600;color:rgba(255,255,255,0.7);margin-bottom:2px;';
+        sLabel.textContent = 'Aday';
+        bubble.appendChild(sLabel);
+      }
+
+      var bodyEl = document.createElement('div');
+      bodyEl.style.cssText = 'font-size:13px;line-height:1.5;white-space:pre-wrap;word-break:break-word;';
+      bodyEl.textContent = item.body;
+      bubble.appendChild(bodyEl);
+
+      var timeEl = document.createElement('div');
+      timeEl.style.cssText = 'text-align:right;margin-top:3px;font-size:10px;' +
+        (isEmp ? 'color:var(--muted);' : 'color:rgba(255,255,255,0.6);');
+      timeEl.textContent = ikBubbleTime(item.created_at);
+      bubble.appendChild(timeEl);
+
+      container.appendChild(bubble);
+    }
+  } catch (err) {
+    console.error('loadEmployerThread error:', err);
   }
 }
 
