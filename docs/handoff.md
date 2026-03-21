@@ -1,5 +1,5 @@
 # hellotalent.ai — Technical Handoff Document
-> Son güncelleme: 21 Mart 2026 (Session 13 — Candidate replies + DM inbox + employer Mesajlar panel)
+> Son güncelleme: 22 Mart 2026 (Session 14 — Messaging hardening: bi-directional threads, live-chat realtime, split-pane desktop UI)
 > Bu doküman, projenin mevcut durumunu, tamamlanan işleri ve kalan backlog'u kapsar.
 > Yeni bir chat/session başlatırken bu dosyayı referans olarak kullanın.
 
@@ -454,7 +454,8 @@ Cache: `profil-ui.js?v=20260320d`, `profil-settings.js?v=20260320d`
 - [ ] İşveren kampanya wizard'ı (ik.html)
 - [ ] iyzico ödeme entegrasyonu
 - [x] ~~Email delivery worker~~ ✅ Phase 1 email infrastructure built (Session 11, migration 051)
-- [x] ~~Candidate reply flow + DM inbox~~ ✅ Session 13 — migrations 052+053 deployed, profil-inbox.js DM rewrite, ik.html Mesajlar panel. Authenticated E2E smoke pending.
+- [x] ~~Candidate reply flow + DM inbox~~ ✅ Session 13-14 — migrations 052-057 deployed, bi-directional threads, live-chat realtime, split-pane desktop UI. Authenticated E2E smoke pending.
+- [ ] Messaging email Phase 2: employer follow-up email trigger + employer notification on candidate reply
 - [ ] Label accessibility audit (43 uyarı)
 - [ ] Brand color audit: Batch 2 (index, blog, hakkimizda) + Batch 3 (ik, aday, profil.css)
 - [ ] Dark mode remaining: profil-settings.js alert→modal (7 instances), ik/giris/gate pages
@@ -572,7 +573,122 @@ Değişen dosyalar: `profil.html`, `profil-ui.js`, `profil-settings.js`
 - "Yanıtlar" button in candidate drawer preserved
 - Commit: `7dcc696`
 
-**Authenticated E2E smoke test:** NOT YET PERFORMED. DB deployment verified (migrations 052+053 confirmed in production). JS parse and structural checks all pass. Full 14-step authenticated smoke test (employer sends → candidate replies → employer sees thread) requires manual testing with real accounts on hellotalent.ai.
+**Session 13 E2E smoke:** DB deployment verified (migrations 052+053). Authenticated E2E smoke pending at session close.
+
+---
+
+### Session 14 — 22 Mart 2026 (Messaging Hardening: Bi-directional, Realtime, Split-Pane)
+
+**48. Migration 054 — employer_message_replies table + RPCs**
+- `employer_message_replies` tablosu: employer follow-up replies to threads (symmetric to candidate_message_replies)
+- `send_employer_followup(bigint, text)` RPC: SECURITY DEFINER, server-side ownership validation
+- `mark_employer_replies_read(bigint)` RPC: candidate marks employer follow-ups as read
+- `get_message_thread` güncellendi: 3-way UNION ALL (root + candidate replies + employer replies), chronological
+- RLS: 4 policy (select/insert own, employer read, candidate read)
+- ✅ Deployed to Supabase
+
+**49. Migration 055 — 3-way thread activity for RPCs**
+- `get_company_message_threads` güncellendi: last_body/last_sender/last_activity_at artık 3 tablodan (root + candidate + employer replies) türetiliyor
+- `get_candidate_thread_summaries` RPC eklendi: candidate-facing canonical thread summary
+- ✅ Deployed to Supabase
+
+**50. Migration 056 — candidate unread count RPC**
+- `get_candidate_unread_count()` RPC: candidate-facing unread count (root messages + employer follow-ups)
+- Deleted-thread auto-reactivation (status='deleted' → reactivated on new employer follow-up)
+- ✅ Deployed to Supabase
+
+**51. Migration 057 — canonical thread model hardening**
+- `get_candidate_unread_count()` artık read-only (STABLE) — UPDATE side-effect kaldırıldı
+- Deleted-thread reactivation write-side'a taşındı: `send_employer_followup` RPC'de otomatik reactivation
+- `get_candidate_thread_summaries` canonical RPC güncellendi: unread_followups doğru hesaplama
+- ✅ Deployed to Supabase
+
+**52. profil-inbox.js — Full messaging hardening**
+- Canonical thread summary: tüm candidate surfaces (inbox list, unread filter, header msg popup, header notif popup, Bildirimler panel, badges) aynı `get_candidate_thread_summaries` RPC'den türetiliyor
+- 3-way thread truth: root employer message + candidate replies + employer follow-up replies
+- Unread model: employer root + employer follow-ups → candidate unread; candidate replies → employer unread; self-sent asla self-unread yaratmaz
+- Deleted-thread auto-reactivation: employer yeni follow-up gönderirse, silinmiş thread otomatik reactivate
+- Popup/panel freshness: açıldığında fresh canonical data (stale preview düzeltildi)
+- Notification preview: latest thread body (subject yerine canonical last_body)
+- Desktop split-pane: Instagram Web tarzı 2-kolon layout (sol: thread list, sağ: aktif thread)
+- Mobile: sheet/fullscreen thread behavior korundu
+- Bubble direction: employer incoming sol, candidate outgoing sağ (doğru semantik)
+- Live-chat realtime: active-thread scoped subscriptions, yeni mesajlar bubble olarak anında ekleniyor
+- Optimistic send: gönder tıkla → anında geçici bubble → RPC onayı → reconcile
+- Auto-scroll: kullanıcı alt kısımdaysa otomatik scroll, yukarı okuyorsa müdahale yok
+- Open-thread auto-mark-read: açık thread'e gelen live mesaj otomatik read olarak işaretleniyor
+- Singleton-safe realtime: duplicate subscription guard
+- Filter/selection sync: filtre değiştiğinde sağ panel uygun thread'i seçiyor
+
+**53. ik.html — Employer messaging hardening**
+- Employer follow-up reply composer: thread modal/pane alt kısmında composer
+- Employer desktop split-pane: modal yerine inline 2-kolon layout (sol: thread list, sağ: aktif thread)
+- Bubble direction düzeltmesi: employer mesajları sağ (outgoing), candidate mesajları sol (incoming)
+- Date separators + bubble times full thread render'da
+- Live-chat realtime: candidate reply INSERT → bubble anında ekleniyor
+- Optimistic send: employer follow-up anında görünüyor
+- Shared render helper: full render + live append aynı fonksiyonu kullanıyor
+- Auto-mark-read on live: açık thread'e gelen candidate reply otomatik read
+- Nav badge güncelleme: panel aktif olmasa bile unread badge doğru güncelleniyor
+- Near-bottom scroll check: kullanıcı yukarı okuyorsa force scroll yok
+- "Yanıtlar" buton path: modal kaldırıldı, Mesajlar split-pane'e yönlendiriliyor
+
+**Messaging Architecture (Final State)**
+```
+Tables:
+  employer_messages        — root employer→candidate message (thread root)
+  candidate_message_replies — candidate replies to thread
+  employer_message_replies  — employer follow-up replies to thread
+
+RPCs:
+  send_candidate_reply(bigint, text)          — candidate sends reply
+  send_employer_followup(bigint, text)        — employer sends follow-up (+ reactivates deleted threads)
+  get_message_thread(bigint)                  — full 3-way chronological thread
+  get_candidate_thread_summaries()            — canonical candidate inbox summary
+  get_company_message_threads(int, int)       — canonical employer thread list
+  get_candidate_unread_count()                — candidate unread count (read-only)
+  mark_replies_read(bigint)                   — employer marks candidate replies read
+  mark_employer_replies_read(bigint)          — candidate marks employer follow-ups read
+
+Unread Rules:
+  employer root/follow-up → candidate unread
+  candidate reply → employer unread
+  self-sent → never self-unread
+  open thread → clears role-correct unread
+  deleted thread + new employer follow-up → auto-reactivate
+
+Realtime:
+  candidate subscribes: employer_messages, employer_message_replies, candidate_message_replies
+  employer subscribes: candidate_message_replies, employer_message_replies
+  active-thread scoped: live bubble append + auto-mark-read
+  summary-level: debounced refresh on any event
+
+UI:
+  candidate: desktop split-pane, mobile sheet, DM-style list, bubble thread
+  employer: desktop split-pane, mobile modal, DM-style list, bubble thread
+```
+
+**Commit Geçmişi (Session 14):**
+```
+ae50bff feat(messaging): add employer reply-back and bi-directional threads
+f4ce3b6 fix(messaging): 3-way thread activity for inbox and employer list
+3d5d5b6 fix(messaging): harden unread model, realtime, and deleted-thread reactivation
+30beb34 fix(messaging): canonical thread model — single source of truth
+f4558f7 fix(messaging): fresh data on popup/panel open + canonical preview text
+a09e945 feat(messaging): desktop split-pane layout + employer bubble direction fix
+a796fa8 fix(messaging): remove old modal path + fix desktop filter/selection sync
+9211a06 feat(messaging): live-chat realtime + optimistic send on both sides
+67c2a38 fix(messaging): singleton realtime channels + shared employer render
+f3fcf20 fix(messaging): auto-mark live messages read + employer badge when inactive
+```
+
+**Authenticated E2E smoke test:** NOT YET PERFORMED. All migrations (052-057) deployed and structurally verified. JS structural checks pass (no syntax errors, no console.log, Turkish UI only, var style in ik.html). Full authenticated E2E smoke test (employer sends → candidate replies → employer follow-up → live realtime → read receipts → deleted-thread reactivation) requires manual testing with real accounts on hellotalent.ai.
+
+**Email alert truth (as of Session 14):**
+- Candidate receives email on new employer message: ✅ (Session 12, migration 051 trigger)
+- Candidate receives email on employer follow-up: ❌ Not yet (no trigger on employer_message_replies)
+- Employer receives email on candidate reply: ❌ Not yet (Phase 2 email scope)
+- In-app alerts (unread dots, badges, popups): ✅ Working for all 3-way thread activity
 
 ---
 
@@ -1177,6 +1293,10 @@ if(sessionStorage.getItem('ht_gate')!=='ok'){window.location.replace('gate.html'
 | 051 | `051_transactional_email_phase1.sql` — email_outbox + claim + message trigger | ✅ Deployed Session 12 |
 | 052 | `052_candidate_message_replies.sql` — reply table + send/thread/mark-read RPCs + RLS | ✅ Deployed Session 13 |
 | 053 | `053_employer_thread_list_rpc.sql` — get_company_message_threads RPC | ✅ Deployed Session 13 |
+| 054 | `054_employer_followup_replies.sql` — employer follow-up table + send/mark-read RPCs + 3-way thread | ✅ Deployed Session 14 |
+| 055 | `055_thread_list_3way_activity.sql` — 3-way activity for thread list RPCs | ✅ Deployed Session 14 |
+| 056 | `056_candidate_unread_count.sql` — candidate unread count RPC + deleted-thread reactivation | ✅ Deployed Session 14 |
+| 057 | `057_canonical_thread_model.sql` — read-only unread count, write-side reactivation, canonical summaries | ✅ Deployed Session 14 |
 
 ### Markalar TODO
 - [x] ~~Mobil test (390×844)~~ ✅ Touch toggle (`.active` class) eklendi, hover + click ile çalışır
@@ -1358,13 +1478,16 @@ cat docs/handoff.md
 6. ~~**Yetkinlik Wizard**~~ ✅ v2 rebuild, bento grid, 29 KF yetkinlik, premium reading view
 7. ~~**Dashboard polish**~~ ✅ Progress bar, Kim Baktı header, bento CTA animations, avatar glow
 8. ~~**Mülakat Koçu unification**~~ ✅ 7-screen flow, competency coaching, journal, file rename
-9. ~~**Phase 3C — employer pozisyon skoru**~~ ✅ Migration 050 Supabase’te; `ik.html` `window.__HT_POSITION_SCORING = true` (`a8fc46e`, `origin/main`)
-10. **Mülakat Koçu V2:** Günlüğüm review surface, AI feedback on drafts, design polish
-11. **Minor fix:** `avd-avatar-img` → setAvatarImage() targets (profil-ui.js)
-12. ~~**Migration 042**~~ ✅ competency tabloları — Session 5 / handoff §25
-13. **Brand color audit:** Batch 2 (index, blog, hakkimizda) + Batch 3 (ik, aday, profil.css)
-14. **Dark mode remaining:** profil-settings.js alert→modal (7 instances), ik/giris/gate pages
-15. **P4 — Public pages content review + dark mode expansion + performance**
+9. ~~**Phase 3C — employer pozisyon skoru**~~ ✅ Migration 050 Supabase’te
+10. ~~**Messaging: bi-directional live-chat**~~ ✅ Session 13-14 — migrations 052-057, split-pane, realtime
+11. **🔴 Messaging E2E smoke test:** Authenticated manual test with real accounts required
+12. **Messaging email Phase 2:** employer follow-up trigger + employer reply notification
+13. **Mülakat Koçu V2:** Günlüğüm review surface, AI feedback on drafts, design polish
+14. **Minor fix:** `avd-avatar-img` → setAvatarImage() targets (profil-ui.js)
+15. ~~**Migration 042**~~ ✅ competency tabloları — Session 5 / handoff §25
+16. **Brand color audit:** Batch 2 (index, blog, hakkimizda) + Batch 3 (ik, aday, profil.css)
+17. **Dark mode remaining:** profil-settings.js alert→modal (7 instances), ik/giris/gate pages
+18. **P4 — Public pages content review + dark mode expansion + performance**
 
 ### Önceki Transkriptler
 Tam konuşma geçmişi:
