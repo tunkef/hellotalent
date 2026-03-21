@@ -3158,7 +3158,7 @@ async function openSingleThreadModal(messageId, candidateName) {
 
   var modal = document.createElement('div');
   modal.className = 'modal';
-  modal.style.maxWidth = '560px';
+  modal.style.cssText = 'max-width:560px;display:flex;flex-direction:column;max-height:85vh;';
 
   var header = document.createElement('div');
   header.className = 'modal-header';
@@ -3174,18 +3174,77 @@ async function openSingleThreadModal(messageId, candidateName) {
   modal.appendChild(header);
 
   var threadBody = document.createElement('div');
-  threadBody.style.cssText = 'display:flex;flex-direction:column;gap:4px;max-height:60vh;overflow-y:auto;padding:4px 0;';
+  threadBody.style.cssText = 'display:flex;flex-direction:column;gap:4px;flex:1;overflow-y:auto;padding:4px 0;';
   var ld = document.createElement('div');
   ld.style.cssText = 'text-align:center;padding:24px;color:var(--muted);font-size:13px;';
   ld.textContent = 'Y\u00FCkleniyor...';
   threadBody.appendChild(ld);
   modal.appendChild(threadBody);
 
+  // Composer
+  var composer = document.createElement('div');
+  composer.style.cssText = 'display:flex;align-items:flex-end;gap:8px;padding:12px 0 0;border-top:1px solid var(--border);flex-shrink:0;';
+  var textarea = document.createElement('textarea');
+  textarea.placeholder = 'Yan\u0131t yaz...';
+  textarea.maxLength = 5000;
+  textarea.rows = 1;
+  textarea.style.cssText = 'flex:1;border:1px solid var(--border);border-radius:20px;padding:9px 14px;font-size:13px;font-family:\'Plus Jakarta Sans\',sans-serif;line-height:1.4;resize:none;box-sizing:border-box;color:var(--text);background:var(--bg);max-height:80px;overflow-y:auto;';
+  textarea.addEventListener('input', function() { this.style.height = 'auto'; this.style.height = Math.min(this.scrollHeight, 80) + 'px'; });
+  composer.appendChild(textarea);
+
+  var sendBtn = document.createElement('button');
+  sendBtn.type = 'button';
+  sendBtn.className = 'btn-primary';
+  sendBtn.style.cssText = 'padding:8px 16px;border-radius:20px;font-size:13px;white-space:nowrap;height:36px;';
+  sendBtn.textContent = 'G\u00F6nder';
+  composer.appendChild(sendBtn);
+  modal.appendChild(composer);
+
+  var statusEl = document.createElement('div');
+  statusEl.style.cssText = 'display:none;padding:6px 0;font-size:12px;font-weight:600;text-align:center;';
+  modal.appendChild(statusEl);
+
   overlay.appendChild(modal);
   overlay.addEventListener('click', function(e) { if (e.target === overlay) { overlay.remove(); _mesajlarLoaded = false; loadMesajlarPanel(); } });
   document.body.appendChild(overlay);
 
   loadEmployerThread(messageId, threadBody);
+
+  sendBtn.addEventListener('click', function() { sendEmployerFollowup(messageId, textarea, sendBtn, statusEl, threadBody); });
+  textarea.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendEmployerFollowup(messageId, textarea, sendBtn, statusEl, threadBody); }
+  });
+}
+
+async function sendEmployerFollowup(messageId, textarea, sendBtn, statusEl, threadBody) {
+  var body = textarea.value.trim();
+  if (!body) return;
+  sendBtn.disabled = true;
+  sendBtn.textContent = 'G\u00F6nderiliyor...';
+  try {
+    var res = await getSupa().rpc('send_employer_followup', { p_message_id: messageId, p_body: body });
+    if (res.error) {
+      console.error('sendEmployerFollowup error:', res.error.message);
+      statusEl.textContent = 'Hata: ' + res.error.message;
+      statusEl.style.cssText = 'display:block;padding:6px 0;font-size:12px;font-weight:600;text-align:center;color:#DC2626;';
+      setTimeout(function() { statusEl.style.display = 'none'; }, 4000);
+      sendBtn.disabled = false;
+      sendBtn.textContent = 'G\u00F6nder';
+      return;
+    }
+    textarea.value = '';
+    textarea.style.height = 'auto';
+    sendBtn.disabled = false;
+    sendBtn.textContent = 'G\u00F6nder';
+    loadEmployerThread(messageId, threadBody);
+  } catch (err) {
+    console.error('sendEmployerFollowup exception:', err);
+    statusEl.textContent = 'Hata: Yan\u0131t g\u00F6nderilemedi.';
+    statusEl.style.cssText = 'display:block;padding:6px 0;font-size:12px;font-weight:600;text-align:center;color:#DC2626;';
+    setTimeout(function() { statusEl.style.display = 'none'; }, 4000);
+    sendBtn.disabled = false;
+    sendBtn.textContent = 'G\u00F6nder';
+  }
 }
 
 // ── ADAY YANITLARI GÖRÜNTÜLE (Thread View) ──

@@ -399,6 +399,8 @@
     if (!supa) return;
     try {
       var res = await supa.rpc('get_message_thread', { p_message_id: messageId });
+      // Mark employer follow-up replies as read (fire and forget)
+      supa.rpc('mark_employer_replies_read', { p_message_id: messageId }).then(function(){}).catch(function(){});
       if (res.error) {
         console.error('Load thread error:', res.error.message);
         container.textContent = '';
