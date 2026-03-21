@@ -1371,6 +1371,7 @@ if(sessionStorage.getItem('ht_gate')!=='ok'){window.location.replace('gate.html'
 | 058 | `058_coach_system.sql` — coach_invites, coach_profiles, coach_posts, coach_post_likes + RPCs + triggers | ⬜ Not yet deployed |
 | 059 | `059_email_outbox_coach_invite.sql` — adds coach_invite to email_outbox CHECK constraint | ⬜ Not yet deployed |
 | 060 | `060_coach_posts_rls_tighten.sql` — tighten coach INSERT/UPDATE: draft-only insert, no self-publish/admin_note/like_count bypass | ⬜ Not yet deployed |
+| 061 | `061_coach_update_like_count_guard.sql` — add like_count = 0 to coach UPDATE WITH CHECK | ⬜ Not yet deployed |
 
 ### Markalar TODO
 - [x] ~~Mobil test (390×844)~~ ✅ Touch toggle (`.active` class) eklendi, hover + click ile çalışır
