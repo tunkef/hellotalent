@@ -96,21 +96,52 @@
       }
 
       var msgIds = (res.data || []).map(function(m) { return m.id; });
-      var repliesMap = {};
+      var candidateRepliesMap = {};
+      var employerFollowupsMap = {};
+      var unreadFollowupsMap = {};
       if (msgIds.length > 0) {
+        // Candidate replies (for "Sen:" preview)
         var rRes = await supa.from('candidate_message_replies')
           .select('message_id, body, created_at, read_at')
           .in('message_id', msgIds)
           .order('created_at', { ascending: false });
         if (rRes.data) {
           rRes.data.forEach(function(r) {
-            if (!repliesMap[r.message_id]) repliesMap[r.message_id] = r;
+            if (!candidateRepliesMap[r.message_id]) candidateRepliesMap[r.message_id] = r;
+          });
+        }
+        // Employer follow-up replies (for thread activity + unread count)
+        var efRes = await supa.from('employer_message_replies')
+          .select('message_id, body, created_at, read_at')
+          .in('message_id', msgIds)
+          .order('created_at', { ascending: false });
+        if (efRes.data) {
+          efRes.data.forEach(function(r) {
+            if (!employerFollowupsMap[r.message_id]) employerFollowupsMap[r.message_id] = r;
+            if (!r.read_at) {
+              unreadFollowupsMap[r.message_id] = (unreadFollowupsMap[r.message_id] || 0) + 1;
+            }
           });
         }
       }
 
       allMessages = (res.data || []).map(function(m) {
-        var lr = repliesMap[m.id] || null;
+        var cr = candidateRepliesMap[m.id] || null;
+        var ef = employerFollowupsMap[m.id] || null;
+        // Determine the true latest thread item
+        var latestItem = null;
+        var latestSender = null;
+        if (cr && ef) {
+          if (new Date(cr.created_at) > new Date(ef.created_at)) {
+            latestItem = cr; latestSender = 'candidate';
+          } else {
+            latestItem = ef; latestSender = 'employer';
+          }
+        } else if (cr) {
+          latestItem = cr; latestSender = 'candidate';
+        } else if (ef) {
+          latestItem = ef; latestSender = 'employer';
+        }
         return {
           id: m.id,
           message_type: 'employer_dm',
@@ -121,8 +152,10 @@
           read_at: m.read_at,
           company_name: m.companies ? m.companies.company_name : null,
           company_logo: m.companies ? m.companies.logo_url : null,
-          latest_reply: lr,
-          last_activity: lr ? lr.created_at : m.created_at
+          latest_reply: latestItem,
+          latest_sender: latestSender,
+          unread_followups: unreadFollowupsMap[m.id] || 0,
+          last_activity: latestItem ? latestItem.created_at : m.created_at
         };
       });
       allMessages.sort(function(a, b) { return new Date(b.last_activity) - new Date(a.last_activity); });
@@ -208,7 +241,8 @@
      BUILD CONVERSATION ROW — slim DM-style
      ═══════════════════════════════════════════════════════════════ */
   function buildConversationRow(msg) {
-    var isUnread = msg.status !== 'read' && msg.status !== 'deleted';
+    var hasUnreadFollowups = (msg.unread_followups || 0) > 0;
+    var isUnread = (msg.status !== 'read' && msg.status !== 'deleted') || hasUnreadFollowups;
     var isDeleted = msg.status === 'deleted';
     var hasReply = msg.latest_reply !== null;
 
@@ -251,7 +285,11 @@
     var previewEl = document.createElement('div');
     previewEl.style.cssText = 'font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1.3;' +
       (isUnread ? 'color:var(--text-primary,#111);font-weight:500;' : 'color:var(--text-muted,#6B7280);');
-    previewEl.textContent = hasReply ? ('Sen: ' + msg.latest_reply.body) : (msg.body || msg.title);
+    var previewText = msg.body || msg.title;
+    if (hasReply) {
+      previewText = msg.latest_sender === 'candidate' ? ('Sen: ' + msg.latest_reply.body) : (msg.company_name || '\u0130\u015Fveren') + ': ' + msg.latest_reply.body;
+    }
+    previewEl.textContent = previewText;
     content.appendChild(previewEl);
     row.appendChild(content);
 
@@ -497,6 +535,7 @@
       for (var i = 0; i < allMessages.length; i++) {
         if (allMessages[i].id === messageId) {
           allMessages[i].latest_reply = { body: body, created_at: new Date().toISOString(), read_at: null };
+          allMessages[i].latest_sender = 'candidate';
           allMessages[i].last_activity = new Date().toISOString();
           break;
         }
@@ -546,7 +585,11 @@
   /* ═══ UNREAD BADGES ═══ */
   function updateUnreadBadges() {
     var c = 0;
-    for (var i = 0; i < allMessages.length; i++) { if (allMessages[i].status !== 'read' && allMessages[i].status !== 'deleted') c++; }
+    for (var i = 0; i < allMessages.length; i++) {
+      var m = allMessages[i];
+      if (m.status === 'deleted') continue;
+      if (m.status !== 'read' || (m.unread_followups || 0) > 0) c++;
+    }
     var sb = document.getElementById('badge-inbox-unread');
     if (sb) { sb.textContent = c > 99 ? '99+' : c; sb.style.display = c > 0 ? '' : 'none'; }
     var bb = document.getElementById('badge-inbox-bn');
