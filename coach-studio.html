@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Koc Studio — hellotalent.ai</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23C94E28'/%3E%3Ctext x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='800' font-size='20'%3Eht%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{overflow-x:hidden;}
+:root{
+  --verm:#C94E28;--verm-hover:#b84420;--verm-light:#F5EDE9;
+  --navy:#1E2D5E;--navy-light:#EEF0F7;
+  --bg:#F7F6F4;--text:#111111;--muted:#6B7280;--border:#E5E3DF;--white:#fff;
+  --green:#10B981;--yellow:#F59E0B;--red:#EF4444;
+}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+.cs-gate{display:flex;align-items:center;justify-content:center;min-height:100vh;flex-direction:column;gap:16px;}
+.cs-gate-title{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:20px;color:var(--navy);}
+.cs-gate-msg{font-size:14px;color:var(--muted);max-width:360px;text-align:center;line-height:1.6;}
+.cs-gate-spinner{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--verm);border-radius:50%;animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.cs-shell{display:none;min-height:100vh;}
+.cs-shell.active{display:flex;flex-direction:column;}
+.cs-header{background:var(--white);border-bottom:1px solid var(--border);padding:16px 24px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:50;}
+.cs-logo{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:17px;color:var(--navy);letter-spacing:-0.5px;}
+.cs-logo span{color:var(--verm);}
+.cs-header-sep{width:1px;height:20px;background:var(--border);}
+.cs-header-label{font-size:12px;font-weight:600;color:var(--muted);letter-spacing:0.5px;text-transform:uppercase;font-family:'DM Mono',monospace;}
+.cs-header-right{margin-left:auto;display:flex;align-items:center;gap:12px;}
+.cs-header-user{font-size:13px;font-weight:600;color:var(--text);}
+.cs-btn-logout{font-size:12px;font-weight:600;color:var(--muted);background:none;border:1px solid var(--border);border-radius:8px;padding:6px 14px;cursor:pointer;font-family:inherit;transition:all 0.15s;}
+.cs-btn-logout:hover{border-color:var(--red);color:var(--red);}
+.cs-content{display:flex;flex:1;max-width:1200px;width:100%;margin:0 auto;padding:24px;gap:24px;}
+.cs-sidebar{width:280px;flex-shrink:0;}
+.cs-sidebar-title{font-family:'Bricolage Grotesque',sans-serif;font-size:14px;font-weight:700;color:var(--text);margin-bottom:12px;}
+.cs-btn-new{width:100%;padding:10px;margin-bottom:16px;background:var(--verm);color:white;border:none;border-radius:10px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;transition:background 0.15s;}
+.cs-btn-new:hover{background:var(--verm-hover);}
+.cs-post-item{padding:12px;border-radius:10px;border:1px solid var(--border);background:var(--white);margin-bottom:8px;cursor:pointer;transition:all 0.15s;}
+.cs-post-item:hover{border-color:var(--verm);box-shadow:0 2px 8px rgba(0,0,0,0.04);}
+.cs-post-item.active{border-color:var(--verm);background:var(--verm-light);}
+.cs-post-item-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.cs-post-item-meta{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--muted);}
+.cs-status-badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;letter-spacing:0.3px;text-transform:uppercase;}
+.cs-status-badge.draft{background:#F3F4F6;color:#6B7280;}
+.cs-status-badge.submitted{background:#FEF3C7;color:#92400E;}
+.cs-status-badge.changes_requested{background:#FEE2E2;color:#991B1B;}
+.cs-status-badge.published{background:#D1FAE5;color:#065F46;}
+.cs-status-badge.archived{background:#E5E7EB;color:#4B5563;}
+.cs-status-badge.rejected{background:#FEE2E2;color:#991B1B;}
+.cs-editor{flex:1;min-width:0;}
+.cs-editor-empty{display:flex;align-items:center;justify-content:center;height:400px;border:2px dashed var(--border);border-radius:16px;color:var(--muted);font-size:14px;}
+.cs-editor-card{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:28px;box-shadow:0 2px 8px rgba(0,0,0,0.04);}
+.cs-editor-card h3{font-family:'Bricolage Grotesque',sans-serif;font-size:18px;font-weight:700;margin-bottom:20px;}
+.cs-field{margin-bottom:16px;}
+.cs-field label{display:block;font-size:12px;font-weight:600;color:var(--text);margin-bottom:5px;}
+.cs-field input,.cs-field textarea,.cs-field select{width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;font-family:inherit;transition:border-color 0.15s;background:var(--white);color:var(--text);}
+.cs-field input:focus,.cs-field textarea:focus,.cs-field select:focus{outline:none;border-color:var(--navy);}
+.cs-field textarea{resize:vertical;min-height:80px;}
+.cs-field-body textarea{min-height:240px;line-height:1.7;}
+.cs-field-hint{font-size:11px;color:var(--muted);margin-top:4px;}
+.cs-admin-note{margin-bottom:16px;padding:14px;border-radius:10px;background:#FEF3C7;border:1px solid #FCD34D;}
+.cs-admin-note-label{font-size:11px;font-weight:700;color:#92400E;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.5px;}
+.cs-admin-note-text{font-size:13px;color:#78350F;line-height:1.5;}
+.cs-actions{display:flex;gap:10px;margin-top:20px;flex-wrap:wrap;}
+.cs-btn{padding:10px 20px;border:none;border-radius:10px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;transition:all 0.15s;}
+.cs-btn-primary{background:var(--verm);color:white;}
+.cs-btn-primary:hover{background:var(--verm-hover);}
+.cs-btn-secondary{background:var(--navy);color:white;}
+.cs-btn-secondary:hover{background:#162247;}
+.cs-btn-ghost{background:none;color:var(--muted);border:1px solid var(--border);}
+.cs-btn-ghost:hover{border-color:var(--text);color:var(--text);}
+.cs-btn:disabled{opacity:0.5;cursor:not-allowed;}
+.cs-msg{margin-top:12px;padding:10px 14px;border-radius:8px;font-size:13px;display:none;}
+.cs-msg.success{display:block;background:#D1FAE5;color:#065F46;}
+.cs-msg.error{display:block;background:#FEE2E2;color:#991B1B;}
+.cs-readonly-label{display:inline-block;padding:4px 12px;border-radius:8px;background:var(--navy-light);color:var(--navy);font-size:11px;font-weight:600;margin-bottom:16px;}
+@media (max-width:768px){.cs-content{flex-direction:column;padding:16px;}.cs-sidebar{width:100%;}}
+</style>
+</head>
+<body>
+
+<div class="cs-gate" id="cs-gate">
+  <div class="cs-gate-spinner"></div>
+  <div class="cs-gate-title">Koc Studio</div>
+  <div class="cs-gate-msg" id="cs-gate-msg">Yukleniyor...</div>
+</div>
+
+<div class="cs-shell" id="cs-shell">
+  <header class="cs-header">
+    <div class="cs-logo"><span>hello</span>talent</div>
+    <div class="cs-header-sep"></div>
+    <div class="cs-header-label">Koc Studio</div>
+    <div class="cs-header-right">
+      <span class="cs-header-user" id="cs-user-name"></span>
+      <button class="cs-btn-logout" id="cs-logout">Cikis Yap</button>
+    </div>
+  </header>
+  <div class="cs-content">
+    <div class="cs-sidebar">
+      <div class="cs-sidebar-title">Yazilarim</div>
+      <button class="cs-btn-new" id="cs-new-post">Yeni Yazi</button>
+      <div id="cs-post-list"></div>
+    </div>
+    <div class="cs-editor" id="cs-editor">
+      <div class="cs-editor-empty">Bir yazi secin veya yeni olusturun</div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  'use strict';
+
+  var HT_SUPA_URL = 'https://cpwibefquojehjehtrog.supabase.co';
+  var HT_SUPA_KEY = 'sb_publishable_POUtNwJyjAAheukwYP5hmA_TKKjphwa';
+  var _supa = supabase.createClient(HT_SUPA_URL, HT_SUPA_KEY);
+
+  var _coachProfile = null;
+  var _posts = [];
+  var _activePostId = null;
+
+  var CATEGORIES = [
+    { value: 'mulakat_ipucu', label: 'Mulakat Ipucu' },
+    { value: 'yetkinlik_rehberi', label: 'Yetkinlik Rehberi' },
+    { value: 'kariyer_hikaye', label: 'Kariyer Hikayesi' },
+    { value: 'sektor_analiz', label: 'Sektor Analizi' }
+  ];
+
+  var STATUS_LABELS = {
+    draft: 'Taslak', submitted: 'Incelemede', changes_requested: 'Duzeltme Gerekli',
+    published: 'Yayinda', archived: 'Arsivlendi', rejected: 'Reddedildi'
+  };
+
+  var gateEl = document.getElementById('cs-gate');
+  var gateMsg = document.getElementById('cs-gate-msg');
+  var shellEl = document.getElementById('cs-shell');
+
+  function showGate(msg) {
+    gateEl.style.display = 'flex';
+    shellEl.className = 'cs-shell';
+    gateMsg.textContent = msg || 'Yukleniyor...';
+  }
+
+  function showStudio() {
+    gateEl.style.display = 'none';
+    shellEl.className = 'cs-shell active';
+  }
+
+  /* ── AUTH + ACCESS CHECK ── */
+  async function init() {
+    try {
+      var sessionRes = await _supa.auth.getSession();
+      var session = sessionRes.data && sessionRes.data.session;
+      if (!session) {
+        /* Preserve full URL (with token) so giris.html can redirect back */
+        try { sessionStorage.setItem('ht_return_url', window.location.href); } catch(e) {}
+        window.location.replace('giris.html');
+        return;
+      }
+
+      var userId = session.user.id;
+      var profileRes = await _supa.from('coach_profiles').select('*').eq('id', userId).maybeSingle();
+
+      if (profileRes.data) {
+        _coachProfile = profileRes.data;
+        startStudio();
+        return;
+      }
+
+      var params = new URLSearchParams(window.location.search);
+      var token = params.get('token');
+      if (!token) {
+        showGate('Erisim yetkiniz yok. Davet baglantisi gereklidir.');
+        setTimeout(function() { window.location.replace('giris.html'); }, 3000);
+        return;
+      }
+
+      showGate('Davet kabul ediliyor...');
+      var acceptRes = await _supa.rpc('accept_coach_invite', { p_token: token });
+      if (acceptRes.error) { showGate('Hata: ' + acceptRes.error.message); return; }
+
+      _coachProfile = acceptRes.data;
+      window.history.replaceState({}, '', 'coach-studio.html');
+      startStudio();
+    } catch (e) {
+      console.error('Coach studio init error:', e);
+      showGate('Baglanti hatasi. Lutfen tekrar deneyin.');
+    }
+  }
+
+  function startStudio() {
+    document.getElementById('cs-user-name').textContent = _coachProfile.display_name || '';
+    showStudio();
+    loadPosts();
+  }
+
+  /* ── LOAD POSTS ── */
+  async function loadPosts() {
+    try {
+      var res = await _supa.from('coach_posts')
+        .select('id, title, status, category, created_at, updated_at')
+        .eq('coach_id', _coachProfile.id)
+        .order('updated_at', { ascending: false });
+      _posts = res.data || [];
+      renderPostList();
+    } catch (e) { console.error('Load posts error:', e); }
+  }
+
+  /* ── RENDER POST LIST (safe DOM) ── */
+  function renderPostList() {
+    var container = document.getElementById('cs-post-list');
+    if (!container) return;
+    while (container.firstChild) container.removeChild(container.firstChild);
+
+    if (_posts.length === 0) {
+      var empty = document.createElement('div');
+      empty.style.cssText = 'font-size:13px;color:var(--muted);text-align:center;padding:20px 0;';
+      empty.textContent = 'Henuz yazi yok';
+      container.appendChild(empty);
+      return;
+    }
+
+    for (var i = 0; i < _posts.length; i++) {
+      var post = _posts[i];
+      var item = document.createElement('div');
+      item.className = 'cs-post-item' + (_activePostId === post.id ? ' active' : '');
+      item.setAttribute('data-id', post.id);
+
+      var titleDiv = document.createElement('div');
+      titleDiv.className = 'cs-post-item-title';
+      titleDiv.textContent = post.title || '(Basliksiz)';
+      item.appendChild(titleDiv);
+
+      var metaDiv = document.createElement('div');
+      metaDiv.className = 'cs-post-item-meta';
+      var badge = document.createElement('span');
+      badge.className = 'cs-status-badge ' + post.status;
+      badge.textContent = STATUS_LABELS[post.status] || post.status;
+      metaDiv.appendChild(badge);
+
+      var catLabel = CATEGORIES.find(function(c) { return c.value === post.category; });
+      if (catLabel) {
+        var catSpan = document.createElement('span');
+        catSpan.textContent = catLabel.label;
+        metaDiv.appendChild(catSpan);
+      }
+      item.appendChild(metaDiv);
+
+      item.addEventListener('click', (function(pid) {
+        return function() { openPost(pid); };
+      })(post.id));
+      container.appendChild(item);
+    }
+  }
+
+  /* ── OPEN POST ── */
+  async function openPost(postId) {
+    _activePostId = postId;
+    renderPostList();
+    var editorEl = document.getElementById('cs-editor');
+    if (!editorEl) return;
+    editorEl.textContent = 'Yukleniyor...';
+
+    try {
+      var res = await _supa.from('coach_posts').select('*').eq('id', postId).maybeSingle();
+      if (!res.data) { editorEl.textContent = 'Yazi bulunamadi'; return; }
+      renderEditor(res.data);
+    } catch (e) {
+      console.error('Open post error:', e);
+      editorEl.textContent = 'Yukleme hatasi';
+    }
+  }
+
+  /* ── RENDER EDITOR (safe DOM construction) ── */
+  function renderEditor(post) {
+    var editorEl = document.getElementById('cs-editor');
+    if (!editorEl) return;
+    while (editorEl.firstChild) editorEl.removeChild(editorEl.firstChild);
+
+    var isReadOnly = post.status === 'published' || post.status === 'archived' || post.status === 'rejected';
+    var card = document.createElement('div');
+    card.className = 'cs-editor-card';
+
+    if (isReadOnly) {
+      var roLabel = document.createElement('div');
+      roLabel.className = 'cs-readonly-label';
+      roLabel.textContent = (STATUS_LABELS[post.status] || post.status) + ' — Salt okunur';
+      card.appendChild(roLabel);
+    }
+
+    // Admin note
+    if (post.admin_note && (post.status === 'changes_requested' || post.status === 'rejected')) {
+      var noteBox = document.createElement('div');
+      noteBox.className = 'cs-admin-note';
+      var noteLabel = document.createElement('div');
+      noteLabel.className = 'cs-admin-note-label';
+      noteLabel.textContent = 'Admin Notu';
+      noteBox.appendChild(noteLabel);
+      var noteText = document.createElement('div');
+      noteText.className = 'cs-admin-note-text';
+      noteText.textContent = post.admin_note;
+      noteBox.appendChild(noteText);
+      card.appendChild(noteBox);
+    }
+
+    var heading = document.createElement('h3');
+    heading.textContent = isReadOnly ? post.title : 'Yaziyi Duzenle';
+    card.appendChild(heading);
+
+    if (!isReadOnly) {
+      card.appendChild(buildField('Baslik', 'input', 'cs-f-title', post.title || '', 120));
+      card.appendChild(buildField('Ozet', 'textarea', 'cs-f-excerpt', post.excerpt || '', 200, 'Kisa onizleme metni (maks. 200 karakter)', 2));
+      var bodyField = buildField('Icerik', 'textarea', 'cs-f-body', post.body || '', 0, '', 10);
+      bodyField.className = 'cs-field cs-field-body';
+      card.appendChild(bodyField);
+      card.appendChild(buildSelectField('Kategori', 'cs-f-category', CATEGORIES, post.category));
+      card.appendChild(buildField('Iliskili Rol (istege bagli)', 'input', 'cs-f-role', post.related_role || '', 0, 'Mulakat Kocu rol kodlarindan biri'));
+      card.appendChild(buildField('Iliskili Yetkinlik Kodu (istege bagli)', 'input', 'cs-f-comp', post.related_competency_code || '', 0, 'Yetkinlik kodu (2 harf)'));
+    } else {
+      var catObj = CATEGORIES.find(function(c) { return c.value === post.category; });
+      if (catObj) {
+        var catPill = document.createElement('span');
+        catPill.style.cssText = 'display:inline-block;padding:3px 10px;border-radius:10px;background:var(--verm-light);color:var(--verm);font-size:11px;font-weight:600;margin-bottom:12px;';
+        catPill.textContent = catObj.label;
+        card.appendChild(catPill);
+      }
+      if (post.excerpt) {
+        var excerptDiv = document.createElement('div');
+        excerptDiv.style.cssText = 'font-size:14px;color:var(--muted);margin-bottom:16px;line-height:1.6;';
+        excerptDiv.textContent = post.excerpt;
+        card.appendChild(excerptDiv);
+      }
+      var bodyDiv = document.createElement('div');
+      bodyDiv.style.cssText = 'font-size:14px;color:var(--text);line-height:1.8;white-space:pre-wrap;';
+      bodyDiv.textContent = post.body;
+      card.appendChild(bodyDiv);
+
+      if (post.related_role) {
+        var roleInfo = document.createElement('div');
+        roleInfo.style.cssText = 'font-size:12px;color:var(--muted);margin-top:12px;';
+        roleInfo.textContent = 'Iliskili Rol: ' + post.related_role;
+        card.appendChild(roleInfo);
+      }
+      if (post.related_competency_code) {
+        var compInfo = document.createElement('div');
+        compInfo.style.cssText = 'font-size:12px;color:var(--muted);margin-top:4px;';
+        compInfo.textContent = 'Iliskili Yetkinlik: ' + post.related_competency_code;
+        card.appendChild(compInfo);
+      }
+    }
+
+    // Actions
+    var actions = document.createElement('div');
+    actions.className = 'cs-actions';
+    if (!isReadOnly) {
+      var saveBtn = document.createElement('button');
+      saveBtn.className = 'cs-btn cs-btn-ghost';
+      saveBtn.textContent = 'Kaydet';
+      saveBtn.addEventListener('click', function() { savePost(post.id, false); });
+      actions.appendChild(saveBtn);
+    }
+    if (post.status === 'draft' || post.status === 'changes_requested') {
+      var submitBtn = document.createElement('button');
+      submitBtn.className = 'cs-btn cs-btn-primary';
+      submitBtn.textContent = 'Incelemeye Gonder';
+      submitBtn.addEventListener('click', function() { savePost(post.id, true); });
+      actions.appendChild(submitBtn);
+    }
+    card.appendChild(actions);
+
+    var msgEl = document.createElement('div');
+    msgEl.className = 'cs-msg';
+    msgEl.id = 'cs-editor-msg';
+    card.appendChild(msgEl);
+
+    editorEl.appendChild(card);
+  }
+
+  /* ── FIELD BUILDERS ── */
+  function buildField(label, type, id, value, maxLen, hint, rows) {
+    var wrap = document.createElement('div');
+    wrap.className = 'cs-field';
+    var lbl = document.createElement('label');
+    lbl.textContent = label;
+    wrap.appendChild(lbl);
+
+    var input;
+    if (type === 'textarea') {
+      input = document.createElement('textarea');
+      if (rows) input.rows = rows;
+      input.textContent = value;
+    } else {
+      input = document.createElement('input');
+      input.type = 'text';
+      input.value = value;
+    }
+    input.id = id;
+    if (maxLen) input.maxLength = maxLen;
+    wrap.appendChild(input);
+
+    if (hint) {
+      var hintEl = document.createElement('div');
+      hintEl.className = 'cs-field-hint';
+      hintEl.textContent = hint;
+      wrap.appendChild(hintEl);
+    }
+    return wrap;
+  }
+
+  function buildSelectField(label, id, options, selected) {
+    var wrap = document.createElement('div');
+    wrap.className = 'cs-field';
+    var lbl = document.createElement('label');
+    lbl.textContent = label;
+    wrap.appendChild(lbl);
+
+    var sel = document.createElement('select');
+    sel.id = id;
+    for (var i = 0; i < options.length; i++) {
+      var opt = document.createElement('option');
+      opt.value = options[i].value;
+      opt.textContent = options[i].label;
+      if (options[i].value === selected) opt.selected = true;
+      sel.appendChild(opt);
+    }
+    wrap.appendChild(sel);
+    return wrap;
+  }
+
+  /* ── SAVE POST ── */
+  async function savePost(postId, submit) {
+    var titleEl = document.getElementById('cs-f-title');
+    var excerptEl = document.getElementById('cs-f-excerpt');
+    var bodyEl = document.getElementById('cs-f-body');
+    var catEl = document.getElementById('cs-f-category');
+    var roleEl = document.getElementById('cs-f-role');
+    var compEl = document.getElementById('cs-f-comp');
+    var msgEl = document.getElementById('cs-editor-msg');
+
+    if (!titleEl || !bodyEl) return;
+    var title = titleEl.value.trim();
+    var body = bodyEl.value.trim();
+    if (!title) { showMsg(msgEl, 'Baslik gereklidir.', 'error'); return; }
+    if (!body) { showMsg(msgEl, 'Icerik gereklidir.', 'error'); return; }
+
+    var updates = {
+      title: title,
+      excerpt: excerptEl ? excerptEl.value.trim() : '',
+      body: body,
+      category: catEl ? catEl.value : 'mulakat_ipucu',
+      related_role: roleEl && roleEl.value.trim() ? roleEl.value.trim() : null,
+      related_competency_code: compEl && compEl.value.trim() ? compEl.value.trim() : null
+    };
+    if (submit) updates.status = 'submitted';
+
+    try {
+      var res = await _supa.from('coach_posts').update(updates).eq('id', postId);
+      if (res.error) { showMsg(msgEl, 'Hata: ' + res.error.message, 'error'); return; }
+      showMsg(msgEl, submit ? 'Incelemeye gonderildi.' : 'Kaydedildi.', 'success');
+      await loadPosts();
+      if (submit) openPost(postId);
+    } catch (e) {
+      console.error('Save error:', e);
+      showMsg(msgEl, 'Kaydetme hatasi.', 'error');
+    }
+  }
+
+  /* ── NEW POST ── */
+  async function createNewPost() {
+    try {
+      var res = await _supa.from('coach_posts').insert({
+        coach_id: _coachProfile.id, title: 'Yeni Yazi', body: '', category: 'mulakat_ipucu', status: 'draft'
+      }).select('id').maybeSingle();
+      if (res.error) { console.error('Create post error:', res.error); return; }
+      if (res.data) { await loadPosts(); openPost(res.data.id); }
+    } catch (e) { console.error('Create post exception:', e); }
+  }
+
+  function showMsg(el, text, type) {
+    if (!el) return;
+    el.textContent = text;
+    el.className = 'cs-msg ' + type;
+    setTimeout(function() { el.className = 'cs-msg'; el.textContent = ''; }, 4000);
+  }
+
+  document.getElementById('cs-new-post').addEventListener('click', createNewPost);
+  document.getElementById('cs-logout').addEventListener('click', async function() {
+    await _supa.auth.signOut();
+    window.location.replace('giris.html');
+  });
+
+  init();
+})();
+</script>
+</body>
+</html>

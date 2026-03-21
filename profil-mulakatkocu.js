@@ -868,6 +868,45 @@ function injectCSS() {
   css += '.ig-landing-skip-link{font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;font-weight:600;color:var(--verm,#C94E28);cursor:pointer;border:none;background:none;padding:6px 12px;transition:opacity .2s;opacity:.7}';
   css += '.ig-landing-skip-link:hover{opacity:1}';
 
+  /* Coach feed — Koclardan Ogren section */
+  css += '.ig-coach-feed{margin-top:20px;animation:igFadeIn .3s ease}';
+  css += '.ig-coach-feed-header{display:flex;align-items:center;gap:10px;margin-bottom:14px}';
+  css += '.ig-coach-feed-title{font-family:"Bricolage Grotesque",sans-serif;font-size:16px;font-weight:700;color:var(--text-primary,#111);letter-spacing:-.2px}';
+  css += '.ig-coach-feed-sub{font-family:"Plus Jakarta Sans",sans-serif;font-size:11px;color:var(--text-muted,#6B7280)}';
+  css += '.ig-coach-feed-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}';
+  css += '.ig-coach-card{background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF);border-radius:16px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,.06);transition:box-shadow .3s ease,transform .3s ease;cursor:pointer;display:flex;flex-direction:column}';
+  css += '.ig-coach-card:hover{box-shadow:0 8px 24px rgba(0,0,0,.08);transform:translateY(-2px)}';
+  css += '.ig-coach-card-coach{font-family:"Plus Jakarta Sans",sans-serif;font-size:11px;color:var(--text-muted,#6B7280);margin-bottom:6px}';
+  css += '.ig-coach-card-title{font-family:"Bricolage Grotesque",sans-serif;font-size:14px;font-weight:700;color:var(--text-primary,#111);margin-bottom:6px;letter-spacing:-.1px;line-height:1.3}';
+  css += '.ig-coach-card-excerpt{font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;color:var(--text-secondary,#4B5563);line-height:1.5;flex:1;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}';
+  css += '.ig-coach-card-footer{display:flex;align-items:center;justify-content:space-between;margin-top:12px;padding-top:10px;border-top:1px solid var(--border-subtle,#E5E3DF)}';
+  css += '.ig-coach-card-cat{font-family:"Plus Jakarta Sans",sans-serif;font-size:10px;font-weight:600;color:var(--verm,#C94E28);background:rgba(201,78,40,.06);padding:3px 8px;border-radius:8px}';
+  css += '.ig-coach-card-like{display:flex;align-items:center;gap:4px;font-family:"DM Mono",monospace;font-size:11px;color:var(--text-muted,#6B7280);background:none;border:none;cursor:pointer;padding:2px 6px;border-radius:6px;transition:all .2s}';
+  css += '.ig-coach-card-like:hover{background:rgba(201,78,40,.06)}';
+  css += '.ig-coach-card-like.liked{color:var(--verm,#C94E28)}';
+  css += '.ig-coach-card-like svg{width:14px;height:14px}';
+
+  /* Coach detail overlay */
+  css += '.ig-coach-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.4);z-index:9000;display:flex;align-items:center;justify-content:center;animation:igFadeIn .2s ease}';
+  css += '.ig-coach-detail{background:var(--bg-surface,#fff);border-radius:20px;max-width:640px;width:92%;max-height:85vh;overflow-y:auto;padding:32px;box-shadow:0 20px 60px rgba(0,0,0,.2);position:relative;animation:igSlideUp .25s ease}';
+  css += '.ig-coach-detail-close{position:absolute;top:16px;right:16px;width:32px;height:32px;border-radius:50%;border:1px solid var(--border-subtle,#E5E3DF);background:var(--bg-surface,#fff);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;color:var(--text-muted,#6B7280)}';
+  css += '.ig-coach-detail-close:hover{border-color:var(--verm,#C94E28);color:var(--verm,#C94E28)}';
+  css += '.ig-coach-detail-close svg{width:14px;height:14px}';
+  css += '.ig-coach-detail-cat{display:inline-block;font-family:"Plus Jakarta Sans",sans-serif;font-size:10px;font-weight:600;color:var(--verm,#C94E28);background:rgba(201,78,40,.06);padding:3px 10px;border-radius:8px;margin-bottom:12px}';
+  css += '.ig-coach-detail-title{font-family:"Bricolage Grotesque",sans-serif;font-size:22px;font-weight:800;color:var(--text-primary,#111);margin-bottom:8px;letter-spacing:-.3px;line-height:1.2}';
+  css += '.ig-coach-detail-coach{font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;color:var(--text-muted,#6B7280);margin-bottom:20px}';
+  css += '.ig-coach-detail-body{font-family:"Plus Jakarta Sans",sans-serif;font-size:14px;color:var(--text-secondary,#4B5563);line-height:1.8;white-space:pre-wrap;margin-bottom:24px}';
+  css += '.ig-coach-detail-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap}';
+  css += '.ig-coach-detail-like{display:inline-flex;align-items:center;gap:6px;font-family:"Plus Jakarta Sans",sans-serif;font-size:13px;font-weight:600;color:var(--text-muted,#6B7280);background:none;border:1px solid var(--border-subtle,#E5E3DF);border-radius:10px;padding:8px 16px;cursor:pointer;transition:all .2s}';
+  css += '.ig-coach-detail-like:hover,.ig-coach-detail-like.liked{border-color:var(--verm,#C94E28);color:var(--verm,#C94E28)}';
+  css += '.ig-coach-detail-like svg{width:16px;height:16px}';
+  css += '.ig-coach-detail-bridge{display:inline-flex;align-items:center;gap:6px;font-family:"Plus Jakarta Sans",sans-serif;font-size:13px;font-weight:700;color:#fff;background:var(--verm,#C94E28);border:none;border-radius:10px;padding:10px 20px;cursor:pointer;transition:all .2s}';
+  css += '.ig-coach-detail-bridge:hover{background:#b84420;transform:translateY(-1px)}';
+  css += '.ig-coach-detail-bridge svg{width:16px;height:16px}';
+
+  /* Coach feed responsive */
+  css += '@media(max-width:768px){.ig-coach-feed-grid{grid-template-columns:1fr}.ig-coach-detail{max-width:100%;width:96%;padding:24px 20px;border-radius:16px}}';
+
   /* Locked comp preview (session_complete) */
   css += '.ig-locked-preview{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:12px 0}';
   css += '.ig-locked-tag{display:inline-flex;align-items:center;gap:4px;font-family:"Plus Jakarta Sans",sans-serif;font-size:11px;color:var(--text-muted,#6B7280);background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF);border-radius:20px;padding:4px 12px}';
@@ -996,6 +1035,9 @@ function renderStarIntro() {
   html += '</div>'; /* close ig-landing-star */
 
   html += '</div>'; /* close ig-landing-grid */
+
+  /* ── Coach feed placeholder (hydrated async in bindStarIntroEvents) ── */
+  html += '<div id="ig-coach-feed" class="ig-coach-feed" style="display:none;"></div>';
 
   /* ── Returning user skip ── */
   if (hasSeenStar()) {
@@ -1554,6 +1596,260 @@ function renderSessionComplete() {
 }
 
 /* ════════════════════════════════════════════════
+   COACH FEED — Koclardan Ogren
+   Async hydration for star_intro landing.
+   Queries coach_posts (published) + coach_post_likes (own, via RLS).
+   All innerHTML from hardcoded SVG constants — no user input, no XSS risk.
+   ════════════════════════════════════════════════ */
+
+var _coachFeedLoaded = false;
+
+var COACH_CATEGORY_LABELS = {
+  mulakat_ipucu: 'M\u00FClakat \u0130pucu',
+  yetkinlik_rehberi: 'Yetkinlik Rehberi',
+  kariyer_hikaye: 'Kariyer Hikayesi',
+  sektor_analiz: 'Sekt\u00F6r Analizi'
+};
+
+/* Hardcoded SVG constants — safe for innerHTML */
+var heartOutlineSVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>';
+var heartFilledSVG = '<svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>';
+var closeSVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>';
+var arrowRightSVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
+
+async function hydrateCoachFeed() {
+  if (_coachFeedLoaded) return;
+  _coachFeedLoaded = true;
+
+  var feedEl = document.getElementById('ig-coach-feed');
+  if (!feedEl) return;
+
+  try {
+    /* Fetch published posts with coach info */
+    var postsRes = await supabase
+      .from('coach_posts')
+      .select('id, title, excerpt, category, like_count, related_role, related_competency_code, body, coach_profiles(display_name, title)')
+      .eq('status', 'published')
+      .order('published_at', { ascending: false })
+      .limit(6);
+
+    var posts = (postsRes.data && postsRes.data.length) ? postsRes.data : [];
+    if (posts.length === 0) return; /* No published posts — keep feed hidden */
+
+    /* Fetch candidate's own likes — RLS returns only own rows */
+    var postIds = posts.map(function(p) { return p.id; });
+    var likesRes = await supabase
+      .from('coach_post_likes')
+      .select('post_id')
+      .in('post_id', postIds);
+
+    var likedSet = {};
+    if (likesRes.data) {
+      for (var li = 0; li < likesRes.data.length; li++) {
+        likedSet[likesRes.data[li].post_id] = true;
+      }
+    }
+
+    /* Build feed DOM */
+    while (feedEl.firstChild) feedEl.removeChild(feedEl.firstChild);
+
+    /* Header */
+    var header = document.createElement('div');
+    header.className = 'ig-coach-feed-header';
+    var titleEl = document.createElement('div');
+    titleEl.className = 'ig-coach-feed-title';
+    titleEl.textContent = 'Ko\u00E7lardan \u00D6\u011Fren';
+    header.appendChild(titleEl);
+    var subEl = document.createElement('div');
+    subEl.className = 'ig-coach-feed-sub';
+    subEl.textContent = 'Deneyimli ko\u00E7lardan m\u00FClakat ve kariyer ipuclar\u0131';
+    header.appendChild(subEl);
+    feedEl.appendChild(header);
+
+    /* Grid */
+    var grid = document.createElement('div');
+    grid.className = 'ig-coach-feed-grid';
+
+    for (var i = 0; i < posts.length; i++) {
+      var post = posts[i];
+      var card = buildCoachCard(post, !!likedSet[post.id]);
+      grid.appendChild(card);
+    }
+
+    feedEl.appendChild(grid);
+    feedEl.style.display = '';
+
+  } catch (e) {
+    console.error('Coach feed load error:', e);
+  }
+}
+
+function buildCoachCard(post, isLiked) {
+  var card = document.createElement('div');
+  card.className = 'ig-coach-card';
+  card.setAttribute('data-post-id', post.id);
+
+  var coachName = (post.coach_profiles && post.coach_profiles.display_name) || '';
+  var coachTitle = (post.coach_profiles && post.coach_profiles.title) || '';
+  var coachLabel = coachName + (coachTitle ? ' \u00B7 ' + coachTitle : '');
+
+  var coachEl = document.createElement('div');
+  coachEl.className = 'ig-coach-card-coach';
+  coachEl.textContent = coachLabel;
+  card.appendChild(coachEl);
+
+  var titleEl = document.createElement('div');
+  titleEl.className = 'ig-coach-card-title';
+  titleEl.textContent = post.title;
+  card.appendChild(titleEl);
+
+  var excerptEl = document.createElement('div');
+  excerptEl.className = 'ig-coach-card-excerpt';
+  excerptEl.textContent = post.excerpt || '';
+  card.appendChild(excerptEl);
+
+  var footer = document.createElement('div');
+  footer.className = 'ig-coach-card-footer';
+
+  var catPill = document.createElement('span');
+  catPill.className = 'ig-coach-card-cat';
+  catPill.textContent = COACH_CATEGORY_LABELS[post.category] || post.category;
+  footer.appendChild(catPill);
+
+  var likeBtn = document.createElement('button');
+  likeBtn.className = 'ig-coach-card-like' + (isLiked ? ' liked' : '');
+  likeBtn.setAttribute('data-post-id', post.id);
+  /* Safe: SVG is hardcoded constant, not user data */
+  likeBtn.innerHTML = (isLiked ? heartFilledSVG : heartOutlineSVG) + '<span>' + (post.like_count || 0) + '</span>';
+  likeBtn.addEventListener('click', function(e) {
+    e.stopPropagation();
+    toggleCoachLike(post.id, likeBtn);
+  });
+  footer.appendChild(likeBtn);
+
+  card.appendChild(footer);
+
+  card.addEventListener('click', function() {
+    openCoachDetail(post, isLiked);
+  });
+
+  return card;
+}
+
+async function toggleCoachLike(postId, btnEl) {
+  try {
+    var res = await supabase.rpc('toggle_coach_post_like', { p_post_id: postId });
+    if (res.error) { console.error('Like toggle error:', res.error); return; }
+
+    var newCount = res.data;
+    var wasLiked = btnEl.classList.contains('liked');
+
+    if (wasLiked) {
+      btnEl.classList.remove('liked');
+      /* Safe: SVG constant + number */
+      btnEl.innerHTML = heartOutlineSVG + '<span>' + newCount + '</span>';
+    } else {
+      btnEl.classList.add('liked');
+      btnEl.innerHTML = heartFilledSVG + '<span>' + newCount + '</span>';
+    }
+  } catch (e) {
+    console.error('Like toggle exception:', e);
+  }
+}
+
+function openCoachDetail(post, isLiked) {
+  var existing = document.getElementById('ig-coach-overlay');
+  if (existing) existing.parentNode.removeChild(existing);
+
+  var overlay = document.createElement('div');
+  overlay.className = 'ig-coach-overlay';
+  overlay.id = 'ig-coach-overlay';
+
+  var detail = document.createElement('div');
+  detail.className = 'ig-coach-detail';
+
+  /* Close button — safe: closeSVG is hardcoded constant */
+  var closeBtn = document.createElement('button');
+  closeBtn.className = 'ig-coach-detail-close';
+  closeBtn.innerHTML = closeSVG;
+  closeBtn.addEventListener('click', function() { overlay.parentNode.removeChild(overlay); });
+  detail.appendChild(closeBtn);
+
+  var catEl = document.createElement('div');
+  catEl.className = 'ig-coach-detail-cat';
+  catEl.textContent = COACH_CATEGORY_LABELS[post.category] || post.category;
+  detail.appendChild(catEl);
+
+  var titleEl = document.createElement('div');
+  titleEl.className = 'ig-coach-detail-title';
+  titleEl.textContent = post.title;
+  detail.appendChild(titleEl);
+
+  var coachName = (post.coach_profiles && post.coach_profiles.display_name) || '';
+  var coachTitle = (post.coach_profiles && post.coach_profiles.title) || '';
+  var coachEl = document.createElement('div');
+  coachEl.className = 'ig-coach-detail-coach';
+  coachEl.textContent = coachName + (coachTitle ? ' \u00B7 ' + coachTitle : '');
+  detail.appendChild(coachEl);
+
+  var bodyEl = document.createElement('div');
+  bodyEl.className = 'ig-coach-detail-body';
+  bodyEl.textContent = post.body || '';
+  detail.appendChild(bodyEl);
+
+  var actionsEl = document.createElement('div');
+  actionsEl.className = 'ig-coach-detail-actions';
+
+  /* Like button — safe: SVG constants */
+  var likeBtn = document.createElement('button');
+  likeBtn.className = 'ig-coach-detail-like' + (isLiked ? ' liked' : '');
+  likeBtn.innerHTML = (isLiked ? heartFilledSVG : heartOutlineSVG) + '<span>' + (post.like_count || 0) + '</span>';
+  likeBtn.addEventListener('click', function() {
+    toggleCoachLike(post.id, likeBtn);
+  });
+  actionsEl.appendChild(likeBtn);
+
+  /* Practice bridge CTA — uses verified existing functions only */
+  var bridge = getBridge();
+  if (post.related_role && bridge && bridge.ROLE_COMP_MAP && bridge.ROLE_COMP_MAP[post.related_role]) {
+    /* related_role is valid ROLE_COMP_MAP key → use startSession (safe) */
+    var bridgeBtn = document.createElement('button');
+    bridgeBtn.className = 'ig-coach-detail-bridge';
+    bridgeBtn.textContent = 'Bu konuyu \u015Fimdi \u00E7al\u0131\u015F';
+    var arrowSpan = document.createElement('span');
+    arrowSpan.innerHTML = arrowRightSVG;
+    bridgeBtn.appendChild(arrowSpan);
+    bridgeBtn.addEventListener('click', function() {
+      overlay.parentNode.removeChild(overlay);
+      startSession(post.related_role);
+    });
+    actionsEl.appendChild(bridgeBtn);
+  } else if (post.related_competency_code) {
+    /* No valid role → guide user to role_select first (safe) */
+    var bridgeBtn2 = document.createElement('button');
+    bridgeBtn2.className = 'ig-coach-detail-bridge';
+    bridgeBtn2.textContent = 'Bu yetkinli\u011Fi ke\u015Ffet';
+    var arrowSpan2 = document.createElement('span');
+    arrowSpan2.innerHTML = arrowRightSVG;
+    bridgeBtn2.appendChild(arrowSpan2);
+    bridgeBtn2.addEventListener('click', function() {
+      overlay.parentNode.removeChild(overlay);
+      navigate('role_select');
+    });
+    actionsEl.appendChild(bridgeBtn2);
+  }
+
+  detail.appendChild(actionsEl);
+  overlay.appendChild(detail);
+
+  overlay.addEventListener('click', function(e) {
+    if (e.target === overlay) overlay.parentNode.removeChild(overlay);
+  });
+
+  document.body.appendChild(overlay);
+}
+
+/* ════════════════════════════════════════════════
    NAVIGATION
    ════════════════════════════════════════════════ */
 
@@ -1564,6 +1860,7 @@ function navigate(screen) {
 
   /* All innerHTML content from hardcoded constants — safe from XSS */
   if (screen === 'star_intro') {
+    _coachFeedLoaded = false; /* Reset so feed re-hydrates on return */
     container.innerHTML = renderStarIntro();
     bindStarIntroEvents();
   } else if (screen === 'role_select') {
@@ -1616,6 +1913,9 @@ function bindStarIntroEvents() {
   if (skipBtn) skipBtn.addEventListener('click', function() {
     navigate('role_select');
   });
+
+  /* Coach feed — async hydration after landing is mounted */
+  hydrateCoachFeed();
 }
 
 function bindRoleSelectEvents() {

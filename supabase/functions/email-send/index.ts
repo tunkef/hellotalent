@@ -176,6 +176,9 @@ interface Payload {
   message_preview?: string | null;
   sent_at?: string | null;
   settings_url?: string | null;
+  display_name?: string | null;
+  invite_url?: string | null;
+  expires_at?: string | null;
 }
 
 function renderTemplate(
@@ -189,6 +192,8 @@ function renderTemplate(
       return employerWelcomeTemplate(payload);
     case "new_message":
       return newMessageTemplate(payload);
+    case "coach_invite":
+      return coachInviteTemplate(payload);
     default:
       throw new Error(`Unknown email_type: ${emailType}`);
   }
@@ -453,6 +458,48 @@ Gizlilik: https://hellotalent.ai/gizlilik.html`;
 
   return {
     subject: "HelloTalent\u2019te yeni bir mesaj\u0131n\u0131z var",
+    html,
+    text,
+  };
+}
+
+// ─── Coach Invite ─────────────────────────────────────
+
+function coachInviteTemplate(p: Payload): EmailContent {
+  const name = esc(p.display_name);
+  const greeting = name ? `Merhaba ${name}` : "Merhaba";
+  const greetingPlain = p.display_name ? `Merhaba ${p.display_name}` : "Merhaba";
+  const inviteUrl = p.invite_url || "https://hellotalent.ai/coach-studio.html";
+
+  const html = emailWrapper(`
+${logoRow()}
+<tr><td style="padding:8px 32px 4px;text-align:center;">
+<span style="display:none;max-height:0;overflow:hidden;">HelloTalent Ko\u00e7 Studio\u2019ya davet edildiniz.</span>
+<h1 style="margin:0;font-family:'Bricolage Grotesque',Georgia,serif;font-size:24px;color:${COLORS.navy};font-weight:700;">${greeting}</h1>
+</td></tr>
+<tr><td style="padding:16px 32px;font-size:15px;color:${COLORS.text};line-height:1.6;">
+<p style="margin:0 0 12px;">HelloTalent Ko\u00e7 Studio\u2019ya davet edildiniz. Ko\u00e7 olarak m\u00fclakat ipuclar\u0131, yetkinlik rehberleri ve kariyer hikayeleri yazabilirsiniz.</p>
+<p style="margin:0 0 12px;">Yaz\u0131lar\u0131n\u0131z onaylanarak binlerce perakende adaya ula\u015ft\u0131r\u0131l\u0131r.</p>
+<p style="margin:0 0 16px;">A\u015fa\u011f\u0131daki ba\u011flant\u0131ya t\u0131klayarak daveti kabul edin ve yazmaya ba\u015flay\u0131n.</p>
+</td></tr>
+${ctaButton("Daveti Kabul Et", inviteUrl)}
+${footerRow("Bu davet size HelloTalent admin taraf\u0131ndan g\u00f6nderilmi\u015ftir.")}
+`);
+
+  const text = `${greetingPlain}
+
+HelloTalent Ko\u00e7 Studio\u2019ya davet edildiniz.
+
+Ko\u00e7 olarak m\u00fclakat ipuclar\u0131, yetkinlik rehberleri ve kariyer hikayeleri yazabilirsiniz. Yaz\u0131lar\u0131n\u0131z onaylanarak binlerce perakende adaya ula\u015ft\u0131r\u0131l\u0131r.
+
+Daveti Kabul Et: ${inviteUrl}
+
+---
+\u00a9 2026 HelloTalent
+Gizlilik: https://hellotalent.ai/gizlilik.html`;
+
+  return {
+    subject: "HelloTalent Ko\u00e7 Studio\u2019ya Davet",
     html,
     text,
   };

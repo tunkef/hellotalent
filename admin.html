@@ -231,10 +231,60 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
 .unauthorized h2{font-family:'Bricolage Grotesque',sans-serif;font-size:24px;color:var(--red);margin-bottom:8px;}
 .unauthorized p{color:var(--muted);margin-bottom:20px;}
 
+/* ── COACH CONTENT MODULE ── */
+.acc-tabs{display:flex;gap:4px;margin-bottom:20px;border-bottom:1px solid var(--border);padding-bottom:0;}
+.acc-tab{padding:10px 20px;border:none;background:none;font-size:13px;font-weight:600;font-family:inherit;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:all 0.15s;}
+.acc-tab.active{color:var(--verm);border-bottom-color:var(--verm);}
+.acc-tab:hover{color:var(--text);}
+.acc-content{min-height:200px;}
+.acc-invite-form{background:var(--white);border-radius:12px;padding:20px;margin-bottom:20px;box-shadow:0 1px 3px rgba(0,0,0,0.06);}
+.acc-form-title{font-family:'Bricolage Grotesque',sans-serif;font-size:14px;font-weight:700;margin-bottom:12px;}
+.acc-form-row{display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;}
+.acc-form-field{flex:1;min-width:160px;}
+.acc-form-field label{display:block;font-size:11px;font-weight:600;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.3px;}
+.acc-form-field input{width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-family:inherit;}
+.acc-form-field input:focus{outline:none;border-color:var(--navy);}
+.acc-form-btn-wrap{flex:0 0 auto;}
+.acc-form-msg{margin-top:8px;font-size:12px;min-height:18px;}
+.acc-form-msg.success{color:var(--green);}
+.acc-form-msg.error{color:var(--red);}
+.acc-btn-sm{display:inline-block;padding:6px 12px;border:none;border-radius:7px;font-size:11px;font-weight:700;font-family:inherit;cursor:pointer;transition:all 0.15s;}
+.acc-btn-primary{background:var(--verm);color:white;}
+.acc-btn-primary:hover{background:var(--verm-hover);}
+.acc-btn-warning{background:var(--yellow);color:white;}
+.acc-btn-danger{background:var(--red);color:white;}
+.acc-btn-ghost{background:none;color:var(--muted);border:1px solid var(--border);}
+.acc-btn-ghost:hover{border-color:var(--text);color:var(--text);}
+.acc-badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;letter-spacing:0.3px;text-transform:uppercase;}
+.acc-badge-pending{background:#FEF3C7;color:#92400E;}
+.acc-badge-accepted{background:#D1FAE5;color:#065F46;}
+.acc-badge-expired{background:#E5E7EB;color:#4B5563;}
+.acc-badge-revoked{background:#FEE2E2;color:#991B1B;}
+.acc-badge-draft{background:#F3F4F6;color:#6B7280;}
+.acc-badge-submitted{background:#FEF3C7;color:#92400E;}
+.acc-badge-changes_requested{background:#FEE2E2;color:#991B1B;}
+.acc-badge-published{background:#D1FAE5;color:#065F46;}
+.acc-badge-archived{background:#E5E7EB;color:#4B5563;}
+.acc-badge-rejected{background:#FEE2E2;color:#991B1B;}
+.acc-empty{text-align:center;padding:40px 20px;color:var(--muted);font-size:13px;}
+.acc-filter-bar{display:flex;gap:6px;margin-bottom:16px;}
+.acc-filter-btn{padding:6px 14px;border:1px solid var(--border);border-radius:8px;background:var(--white);font-size:12px;font-weight:600;font-family:inherit;cursor:pointer;color:var(--muted);transition:all 0.15s;}
+.acc-filter-btn.active{background:var(--navy);color:white;border-color:var(--navy);}
+.acc-filter-btn:hover{border-color:var(--navy);}
+.acc-post-card{background:var(--white);border-radius:12px;padding:16px 20px;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,0.06);border:1px solid var(--border);}
+.acc-post-header{display:flex;align-items:center;gap:10px;margin-bottom:6px;}
+.acc-post-title{font-family:'Bricolage Grotesque',sans-serif;font-size:15px;font-weight:700;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.acc-post-meta{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);margin-bottom:8px;flex-wrap:wrap;}
+.acc-post-sep{opacity:0.3;}
+.acc-post-excerpt{font-size:13px;color:var(--muted);line-height:1.5;margin-bottom:10px;}
+.acc-post-actions{display:flex;gap:8px;flex-wrap:wrap;}
+.acc-post-body{margin-top:12px;padding:16px;background:var(--bg);border-radius:10px;font-size:13px;line-height:1.7;white-space:pre-wrap;max-height:400px;overflow-y:auto;}
+
 /* ── RESPONSIVE ── */
 @media(max-width:768px){
   .sidebar{display:none;}
   .main-content{margin-left:0;padding:20px 16px;}
+  .acc-form-row{flex-direction:column;}
 }
 </style>
 </head>
@@ -290,6 +340,12 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
       <div class="nav-item" data-panel="campaigns" onclick="switchPanel('campaigns',this)">
         <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg></span>
         Tüm Kampanyalar
+      </div>
+
+      <div class="nav-item" data-panel="coach-content" onclick="switchPanel('coach-content',this)">
+        <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></span>
+        Icerik Yonetimi
+        <span class="nav-badge" id="badge-coach-pending" style="display:none;">0</span>
       </div>
 
       <div class="nav-section-label">Yönetim</div>
@@ -408,6 +464,14 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
       </div>
     </div>
 
+    <!-- ═══ PANEL: ICERIK YONETIMI ═══ -->
+    <div class="panel" id="panel-coach-content">
+      <div class="panel-header">
+        <h2>Icerik Yonetimi</h2>
+      </div>
+      <div id="coach-content-area"></div>
+    </div>
+
     <!-- ═══ PANEL: ADAYLAR ═══ -->
     <div class="panel" id="panel-candidates">
       <div class="panel-header">
@@ -475,6 +539,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
 <script src="admin-campaigns.js?v=1"></script>
 <script src="admin-candidates.js?v=1"></script>
 <script src="admin-employers.js?v=1"></script>
+<script src="admin-coach-content.js?v=1"></script>
 <script>
 (function(){
   'use strict';
@@ -651,6 +716,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
     if (name === 'campaigns') window._htAdminLoadAllCampaigns && window._htAdminLoadAllCampaigns();
     if (name === 'candidates') window._htAdminLoadCandidates && window._htAdminLoadCandidates();
     if (name === 'employers') window._htAdminLoadEmployers && window._htAdminLoadEmployers();
+    if (name === 'coach-content') window._htAdminLoadCoachContent && window._htAdminLoadCoachContent();
   };
 
   /* ── INIT ── */

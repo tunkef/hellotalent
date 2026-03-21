@@ -692,6 +692,77 @@ f3fcf20 fix(messaging): auto-mark live messages read + employer badge when inact
 
 ---
 
+### Session 15 — 22 Mart 2026 (Coach Content System — Koclardan Ogren)
+
+**54. Migration 058 — Coach System Tables**
+- `coach_invites` tablosu: admin-created invitations with token-based acceptance + email verification
+- `coach_profiles` tablosu: accepted coaches (uuid PK → auth.users), invite_id FK
+- `coach_posts` tablosu: coach-authored content with 6-status workflow (draft→submitted→changes_requested→published→archived→rejected)
+- `coach_post_likes` tablosu: privacy-safe likes (candidate sees own + total count only)
+- `accept_coach_invite(uuid)` RPC: validates token + email match + creates profile. SECURITY DEFINER
+- `toggle_coach_post_like(bigint)` RPC: atomic like/unlike with denormalized count. SECURITY DEFINER
+- `enqueue_coach_invite_email()` trigger: enqueues invite email into existing email_outbox pipeline
+- RLS: admin-only for invites, coach own + admin + authenticated-read-published for posts
+- Dosya: `docs/migrations/058_coach_system.sql`
+
+**55. coach-studio.html — Invite-Only Coach Authoring**
+- Self-contained authoring page (no shared chrome)
+- Auth flow: Supabase session → coach_profiles check → token acceptance → studio
+- Security: email must match invite (RPC enforced), no profile + no token = redirect
+- Post management: create, edit, submit for review, see admin notes
+- Status-aware UI: draft/changes_requested = editable, published/archived/rejected = read-only
+- Safe DOM construction (no innerHTML with user data)
+
+**56. admin-coach-content.js — Admin Content Review**
+- New admin panel module: "Icerik Yonetimi" in sidebar Moderasyon section
+- Two tabs: Davetler (create/revoke invites) + Icerikler (review/approve/reject posts)
+- Invite creation triggers email_outbox enqueue via DB trigger
+- Post actions: Yayinla, Duzeltme Iste (with note), Reddet (with note), Arsivle
+- Pending badge on sidebar nav item
+
+**57. profil-mulakatkocu.js — Koclardan Ogren Feed**
+- Additive section in star_intro landing, between bento grid and skip link
+- Placeholder + post-mount async hydration pattern (renderStarIntro stays synchronous)
+- Fetches published coach_posts + candidate's own likes (via RLS, not client filter)
+- 3-column grid of feed cards: coach name, title, excerpt, category pill, like count + state
+- Detail overlay: full body, coach info, like toggle, practice bridge CTA
+- Practice bridge: related_role → startSession(role), competency-only → navigate('role_select')
+- Verified: uses only existing functions (startSession, navigate), no unsupported deep-links
+- CSS injected via existing injectCSS() pattern, responsive at 768px breakpoint
+
+**Dosya Degisiklikleri:**
+```
+CREATE  docs/migrations/058_coach_system.sql
+CREATE  coach-studio.html
+CREATE  admin-coach-content.js
+EDIT    admin.html (nav item + panel + script tag + switchPanel hook + CSS)
+EDIT    profil-mulakatkocu.js (feed placeholder + hydration + CSS + coach feed functions)
+EDIT    docs/db-schema-reference.js (CoachInvite, CoachProfile, CoachPost, CoachPostLike typedefs)
+EDIT    docs/handoff.md (this session summary)
+```
+
+**Dogrulama:**
+- JS syntax: profil-mulakatkocu.js, admin-coach-content.js, coach-studio.html all pass node --check
+- No console.log in any new code (only console.error)
+- var used throughout (no const/let) in profil-mulakatkocu.js
+- Turkish UI text throughout
+- No emoji in UI
+- Migration SQL valid PostgreSQL with IF NOT EXISTS guards
+
+**Sinirlamalar:**
+- Migration 058 + 059 not yet deployed to Supabase — requires SQL Editor execution
+- email-send Edge Function updated with coach_invite template — redeploy needed
+- Coach feed shows nothing until coach_posts with status='published' exist
+- No image upload for coach posts (text only)
+- No rich text/markdown rendering in post body (plain text with pre-wrap)
+- Admin note input uses browser prompt() — should be upgraded to modal in future
+
+**Blocker fixes (Session 15 patch):**
+- email_outbox insert shape corrected: `template_data` → `payload`, added `source_table`/`source_id`
+- Migration 059 created: adds `coach_invite` to email_outbox CHECK constraint
+- email-send/index.ts: coach_invite template + Payload interface extended
+- Coach invite auth flow: coach-studio.html saves `ht_return_url` to sessionStorage before redirect; giris.html checks it after login/register and redirects back with token
+- giris.html return URL checked in 3 paths: session auto-redirect, aday login, aday registration
 
 ---
 
@@ -1297,6 +1368,8 @@ if(sessionStorage.getItem('ht_gate')!=='ok'){window.location.replace('gate.html'
 | 055 | `055_thread_list_3way_activity.sql` — 3-way activity for thread list RPCs | ✅ Deployed Session 14 |
 | 056 | `056_candidate_unread_count.sql` — candidate unread count RPC + deleted-thread reactivation | ✅ Deployed Session 14 |
 | 057 | `057_canonical_thread_model.sql` — read-only unread count, write-side reactivation, canonical summaries | ✅ Deployed Session 14 |
+| 058 | `058_coach_system.sql` — coach_invites, coach_profiles, coach_posts, coach_post_likes + RPCs + triggers | ⬜ Not yet deployed |
+| 059 | `059_email_outbox_coach_invite.sql` — adds coach_invite to email_outbox CHECK constraint | ⬜ Not yet deployed |
 
 ### Markalar TODO
 - [x] ~~Mobil test (390×844)~~ ✅ Touch toggle (`.active` class) eklendi, hover + click ile çalışır

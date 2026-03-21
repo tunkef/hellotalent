@@ -371,8 +371,10 @@ BEGIN
     INSERT INTO email_outbox (
       email_type,
       recipient_email,
-      template_data,
-      dedupe_key
+      payload,
+      dedupe_key,
+      source_table,
+      source_id
     ) VALUES (
       'coach_invite',
       NEW.email,
@@ -381,7 +383,9 @@ BEGIN
         'invite_url', 'https://hellotalent.ai/coach-studio.html?token=' || NEW.token::text,
         'expires_at', NEW.expires_at::text
       ),
-      'coach_invite:' || NEW.id::text
+      'coach_invite:' || NEW.id::text,
+      'coach_invites',
+      NEW.id::text
     );
   END IF;
   RETURN NEW;

@@ -539,7 +539,14 @@ function checkLoginCooldown(type, btn) {
   if (data.session) {
     // Zaten giriş yapmış → role'e göre yönlendir
     var role = data.session.user.user_metadata?.role;
-    window.location.href = role === 'employer' ? 'ik.html' : 'profil.html';
+    var _returnUrl = null;
+    try { _returnUrl = sessionStorage.getItem('ht_return_url'); } catch(e) {}
+    if (_returnUrl && role !== 'employer') {
+      try { sessionStorage.removeItem('ht_return_url'); } catch(e) {}
+      window.location.href = _returnUrl;
+    } else {
+      window.location.href = role === 'employer' ? 'ik.html' : 'profil.html';
+    }
   }
 })();
 
@@ -607,7 +614,14 @@ async function loginAday() {
     btnText.textContent = 'Giriş Yap →';
     return;
   }
-  window.location.href = 'profil.html';
+  var _ret = null;
+  try { _ret = sessionStorage.getItem('ht_return_url'); } catch(e) {}
+  if (_ret) {
+    try { sessionStorage.removeItem('ht_return_url'); } catch(e) {}
+    window.location.href = _ret;
+  } else {
+    window.location.href = 'profil.html';
+  }
 }
 
 // ── IK GİRİŞ ──
@@ -875,7 +889,14 @@ document.addEventListener('keydown', function(e) {
     try {
       var r = await getSupa().auth.signUp({ email: email, password: sifre });
       if(r.error) throw r.error;
-      window.location.href = 'profil.html';
+      var _retReg = null;
+      try { _retReg = sessionStorage.getItem('ht_return_url'); } catch(e) {}
+      if (_retReg) {
+        try { sessionStorage.removeItem('ht_return_url'); } catch(e) {}
+        window.location.href = _retReg;
+      } else {
+        window.location.href = 'profil.html';
+      }
     } catch(ex) {
       var msg = ex.message || '';
       if(msg.includes('already registered')) msg = 'Bu e-posta adresi zaten kayıtlı.';
