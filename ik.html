@@ -3334,6 +3334,54 @@ function ikSameDay(a, b) {
   return da.getFullYear() === db.getFullYear() && da.getMonth() === db.getMonth() && da.getDate() === db.getDate();
 }
 
+// Track last rendered date for live append date separators
+var _ikLastRenderedDate = null;
+
+function ikRenderThreadItem(container, senderType, body, createdAt) {
+  // Date separator if day changed
+  if (!_ikLastRenderedDate || !ikSameDay(_ikLastRenderedDate, createdAt)) {
+    var sep = document.createElement('div');
+    sep.style.cssText = 'text-align:center;padding:6px 0;';
+    var sepSpan = document.createElement('span');
+    sepSpan.style.cssText = 'font-size:10px;color:var(--muted);background:white;padding:2px 10px;border-radius:8px;font-weight:500;';
+    sepSpan.textContent = ikDateSep(createdAt);
+    sep.appendChild(sepSpan);
+    container.appendChild(sep);
+    _ikLastRenderedDate = createdAt;
+  }
+
+  var isEmp = senderType === 'employer';
+  var bubble = document.createElement('div');
+  bubble.style.cssText = 'max-width:85%;padding:8px 12px;border-radius:12px;' +
+    (isEmp
+      ? 'align-self:flex-end;background:var(--navy,#1E2D5E);color:white;border-bottom-right-radius:4px;'
+      : 'align-self:flex-start;background:var(--bg);border-bottom-left-radius:4px;');
+
+  if (!isEmp) {
+    var sLabel = document.createElement('div');
+    sLabel.style.cssText = 'font-size:10px;font-weight:600;color:var(--verm,#C94E28);margin-bottom:2px;';
+    sLabel.textContent = 'Aday';
+    bubble.appendChild(sLabel);
+  }
+
+  var bodyEl = document.createElement('div');
+  bodyEl.style.cssText = 'font-size:13px;line-height:1.5;white-space:pre-wrap;word-break:break-word;';
+  bodyEl.textContent = body;
+  bubble.appendChild(bodyEl);
+
+  var timeEl = document.createElement('div');
+  timeEl.style.cssText = 'text-align:right;margin-top:3px;font-size:10px;' +
+    (isEmp ? 'color:rgba(255,255,255,0.6);' : 'color:var(--muted);');
+  timeEl.textContent = ikBubbleTime(createdAt);
+  bubble.appendChild(timeEl);
+
+  container.appendChild(bubble);
+}
+
+function ikIsNearBottom(el) {
+  return el.scrollHeight - el.scrollTop - el.clientHeight < 80;
+}
+
 async function loadEmployerThread(messageId, container) {
   try {
     var res = await getSupa().rpc('get_message_thread', { p_message_id: messageId });
@@ -3349,53 +3397,13 @@ async function loadEmployerThread(messageId, container) {
     var items = res.data || [];
     if (items.length === 0) return;
 
-    // Mark candidate replies as read
     getSupa().rpc('mark_replies_read', { p_message_id: messageId }).then(function(){}).catch(function(){});
 
-    var lastDate = null;
+    _ikLastRenderedDate = null;
     for (var i = 0; i < items.length; i++) {
-      var item = items[i];
-
-      // Date separator
-      if (!lastDate || !ikSameDay(lastDate, item.created_at)) {
-        var sep = document.createElement('div');
-        sep.style.cssText = 'text-align:center;padding:6px 0;';
-        var sepSpan = document.createElement('span');
-        sepSpan.style.cssText = 'font-size:10px;color:var(--muted);background:white;padding:2px 10px;border-radius:8px;font-weight:500;';
-        sepSpan.textContent = ikDateSep(item.created_at);
-        sep.appendChild(sepSpan);
-        container.appendChild(sep);
-        lastDate = item.created_at;
-      }
-
-      var isEmp = item.sender === 'employer';
-      var bubble = document.createElement('div');
-      bubble.style.cssText = 'max-width:85%;padding:8px 12px;border-radius:12px;' +
-        (isEmp
-          ? 'align-self:flex-end;background:var(--navy,#1E2D5E);color:white;border-bottom-right-radius:4px;'
-          : 'align-self:flex-start;background:var(--bg);border-bottom-left-radius:4px;');
-
-      // Sender label for candidate replies (incoming for employer)
-      if (!isEmp) {
-        var sLabel = document.createElement('div');
-        sLabel.style.cssText = 'font-size:10px;font-weight:600;color:var(--verm,#C94E28);margin-bottom:2px;';
-        sLabel.textContent = 'Aday';
-        bubble.appendChild(sLabel);
-      }
-
-      var bodyEl = document.createElement('div');
-      bodyEl.style.cssText = 'font-size:13px;line-height:1.5;white-space:pre-wrap;word-break:break-word;';
-      bodyEl.textContent = item.body;
-      bubble.appendChild(bodyEl);
-
-      var timeEl = document.createElement('div');
-      timeEl.style.cssText = 'text-align:right;margin-top:3px;font-size:10px;' +
-        (isEmp ? 'color:rgba(255,255,255,0.6);' : 'color:var(--muted);');
-      timeEl.textContent = ikBubbleTime(item.created_at);
-      bubble.appendChild(timeEl);
-
-      container.appendChild(bubble);
+      ikRenderThreadItem(container, items[i].sender, items[i].body, items[i].created_at);
     }
+    container.scrollTop = container.scrollHeight;
   } catch (err) {
     console.error('loadEmployerThread error:', err);
   }
@@ -4475,9 +4483,11 @@ async function sendTeamInvite(){
   });
 })();
 
-// ── EMPLOYER REALTIME: live-chat subscriptions ──
+// ── EMPLOYER REALTIME: live-chat subscriptions (singleton) ──
 (function() {
   var _ikRefreshTimer = null;
+  var _ikRealtimeChannel = null;
+
   function ikDebouncedRefresh() {
     if (_ikRefreshTimer) clearTimeout(_ikRefreshTimer);
     _ikRefreshTimer = setTimeout(function() {
@@ -4487,38 +4497,36 @@ async function sendTeamInvite(){
     }, 500);
   }
 
+  function findThreadBody() {
+    var containers = document.querySelectorAll('#ik-msg-right > div');
+    for (var ci = 0; ci < containers.length; ci++) {
+      if (containers[ci].style.cssText && containers[ci].style.cssText.indexOf('overflow-y') > -1) return containers[ci];
+    }
+    return null;
+  }
+
   function setupIkRealtime() {
     var supa = (typeof getSupa === 'function') ? getSupa() : null;
     if (!supa || !supa.channel) return;
+    if (_ikRealtimeChannel) return; // singleton guard
 
-    supa.channel('ik-msg-live')
+    _ikRealtimeChannel = supa.channel('ik-msg-live');
+    _ikRealtimeChannel
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'candidate_message_replies' }, function(payload) {
         ikDebouncedRefresh();
-        // Live append if this thread is open
         if (_ikActiveThreadId && payload.new && payload.new.message_id === _ikActiveThreadId) {
-          var containers = document.querySelectorAll('#ik-msg-right > div');
-          var threadBody = null;
-          for (var ci = 0; ci < containers.length; ci++) {
-            if (containers[ci].style.cssText && containers[ci].style.cssText.indexOf('overflow-y') > -1) { threadBody = containers[ci]; break; }
-          }
-          if (threadBody) {
-            // Add candidate label + bubble
-            var sLabel = document.createElement('div');
-            sLabel.style.cssText = 'font-size:10px;font-weight:600;color:var(--verm,#C94E28);margin-bottom:2px;align-self:flex-start;';
-            sLabel.textContent = 'Aday';
-            threadBody.appendChild(sLabel);
-            ikAppendBubble(threadBody, payload.new.body, false, ikBubbleTime(payload.new.created_at));
-            threadBody.scrollTop = threadBody.scrollHeight;
+          var tb = findThreadBody();
+          if (tb) {
+            var wasNear = ikIsNearBottom(tb);
+            ikRenderThreadItem(tb, 'candidate', payload.new.body, payload.new.created_at);
+            if (wasNear) tb.scrollTop = tb.scrollHeight;
           }
         }
       })
-      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'candidate_message_replies' }, function() {
-        // Read state changed
-      })
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'candidate_message_replies' }, function() {})
       .subscribe();
   }
 
-  // Start immediately if getSupa is available, otherwise short fallback
   if (typeof getSupa === 'function' && getSupa()) {
     setupIkRealtime();
   } else {

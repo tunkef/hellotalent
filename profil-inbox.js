@@ -997,6 +997,7 @@
      REALTIME: Live-chat subscriptions (auth-ready, no fixed delay)
      ═══════════════════════════════════════════════════════════════ */
   var _refreshTimer = null;
+  var _realtimeChannel = null;
   function debouncedRefresh() {
     if (_refreshTimer) clearTimeout(_refreshTimer);
     _refreshTimer = setTimeout(function() {
@@ -1014,7 +1015,11 @@
     var supa = getSupa();
     if (!supa || !supa.channel) return;
 
-    supa.channel('inbox-live')
+    // Singleton guard: do not create duplicate channels
+    if (_realtimeChannel) return;
+
+    _realtimeChannel = supa.channel('inbox-live');
+    _realtimeChannel
       // Root employer messages
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'employer_messages' }, function() {
         debouncedRefresh();
