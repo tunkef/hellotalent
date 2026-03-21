@@ -1373,6 +1373,7 @@ if(sessionStorage.getItem('ht_gate')!=='ok'){window.location.replace('gate.html'
 | 060 | `060_coach_posts_rls_tighten.sql` — tighten coach INSERT/UPDATE: draft-only insert, no self-publish/admin_note/like_count bypass | ✅ Deployed Session 15 |
 | 061 | `061_coach_update_like_count_guard.sql` — add like_count = 0 to coach UPDATE WITH CHECK | ✅ Deployed Session 15 |
 | 062 | `062_coach_invites_rls_auth_users_fix.sql` — fix own_read policy (auth.jwt() instead of auth.users subquery) + explicit GRANTs | ✅ Deployed Session 15 |
+| 063 | `063_fix_cron_http_post.sql` — fix pg_cron email jobs: extensions.http_post -> net.http_post | ✅ Deployed Session 15 (live fix) |
 
 ### Markalar TODO
 - [x] ~~Mobil test (390×844)~~ ✅ Touch toggle (`.active` class) eklendi, hover + click ile çalışır
