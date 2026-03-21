@@ -1,5 +1,5 @@
 # hellotalent.ai — Technical Handoff Document
-> Son güncelleme: 20 Mart 2026 (Session 10 — Phase 3C: Migration 050 deploy + pozisyon skoru canlı)
+> Son güncelleme: 21 Mart 2026 (Session 13 — Candidate replies + DM inbox + employer Mesajlar panel)
 > Bu doküman, projenin mevcut durumunu, tamamlanan işleri ve kalan backlog'u kapsar.
 > Yeni bir chat/session başlatırken bu dosyayı referans olarak kullanın.
 
@@ -453,12 +453,126 @@ Cache: `profil-ui.js?v=20260320d`, `profil-settings.js?v=20260320d`
 - [ ] candidate_competencies save/load entegrasyonu (aday yetkinlik rating'leri kalıcı)
 - [ ] İşveren kampanya wizard'ı (ik.html)
 - [ ] iyzico ödeme entegrasyonu
-- [ ] Email delivery worker
+- [x] ~~Email delivery worker~~ ✅ Phase 1 email infrastructure built (Session 11, migration 051)
+- [x] ~~Candidate reply flow + DM inbox~~ ✅ Session 13 — migrations 052+053 deployed, profil-inbox.js DM rewrite, ik.html Mesajlar panel. Authenticated E2E smoke pending.
 - [ ] Label accessibility audit (43 uyarı)
 - [ ] Brand color audit: Batch 2 (index, blog, hakkimizda) + Batch 3 (ik, aday, profil.css)
 - [ ] Dark mode remaining: profil-settings.js alert→modal (7 instances), ik/giris/gate pages
 - [x] ~~Phase 3C: Position-aware recommendation scoring (migration 050 + ik.html UI)~~ ✅ Session 10 — SQL repoda + UI committed (`7623f3a`).
 - [x] ~~Phase 3C deploy~~ ✅ Migration 050 Supabase'te çalıştırıldı; `window.__HT_POSITION_SCORING = true` + push `a8fc46e` (`origin/main`).
+
+### Session 11 — 20 Mart 2026 (Phase 1 Transactional Email Infrastructure)
+
+**40. Migration 051 — email_outbox + claim + message trigger**
+- `email_outbox` tablosu: tek outbox tüm mail tipleri için (candidate_welcome, employer_welcome, new_message)
+- `claim_email_outbox_batch(p_limit)` RPC: atomik batch claim (FOR UPDATE SKIP LOCKED)
+- `enqueue_message_email()` trigger: employer_messages INSERT → outbox enqueue
+- Dedupe: `dedupe_key` UNIQUE + Resend `Idempotency-Key` header (dual-layer)
+- Status flow: pending → processing → sent/failed/skipped
+- Retry: exponential backoff (1m, 4m), max 3 attempts
+- Dosya: `docs/migrations/051_transactional_email_phase1.sql`
+
+**41. Edge Functions — email-reconcile + email-send**
+- `supabase/functions/email-reconcile/index.ts`: Supabase Auth Admin API ile confirmed user'ları tarar, welcome mail'leri outbox'a enqueue eder. auth şemasına SQL coupling yok.
+- `supabase/functions/email-send/index.ts`: Outbox'tan pending claim eder, template render eder, Resend API ile gönderir. Stale recovery (10dk), retry, idempotency dahil.
+- 3 template inline: aday hoş geldin, işveren hoş geldin, yeni mesaj bildirimi
+- Tüm CTA'lar login-safe (giris.html bazlı)
+- Sender: env var (`EMAIL_FROM`), Reply-To: `support@hellotalent.ai`
+
+**42. db-schema-reference.js drift cleanup**
+- HrProfile: `full_name` → `ad` + `soyad` (canlı şemayla hizalandı)
+- Position: `id uuid` → `id bigint`, `title` → `ad`, tüm canlı alanlar eklendi
+
+**Session 12 — 21 Mart 2026: Deploy + Smoke Test PASS**
+
+Deployment (tamamlandı):
+1. [x] Migration 051 deploy: `email_outbox` table + `claim_email_outbox_batch` RPC + `enqueue_message_email` trigger + `trg_employer_message_email`
+2. [x] Resend API key set (domain: auth.hellotalent.ai verified)
+3. [x] Edge Functions deploy: `email-reconcile` + `email-send` (JWT verification enabled at gateway)
+4. [x] Env vars: `RESEND_API_KEY`, `EMAIL_FROM=HelloTalent <auth@auth.hellotalent.ai>`, `REPLY_TO=support@hellotalent.ai`
+5. [x] pg_cron: `email-reconcile` (*/5 * * * *), `email-send` (* * * * *)
+6. [x] pg_net extension enabled
+
+Auth fix during deploy:
+- Supabase Edge Functions now use `sb_secret_*` format as `SUPABASE_SERVICE_ROLE_KEY` (not JWT)
+- Custom auth check (`authHeader.includes(SERVICE_ROLE_KEY)`) failed with JWT tokens from pg_cron
+- Fix: removed custom auth check, enabled Supabase gateway JWT verification (default behavior)
+- pg_cron sends JWT service_role key → gateway verifies → function processes
+
+Smoke test results (21 Mart 2026, 00:08 UTC+3):
+- candidate_welcome: 3 sent ✅ (idempotency verified — second reconcile: 0 new rows)
+- employer_welcome: 1 sent ✅
+- new_message (notify=true): 1 sent ✅ (trigger fired on employer_messages INSERT with status='sent')
+- new_message (notify=false): 1 skipped ✅ (preference gating works)
+- claim_email_outbox_batch: double-claim prevented ✅ (SKIP LOCKED)
+- stale recovery: processing row >10min → recovered → sent ✅
+- empty queue: email-send returns {sent:0, failed:0} ✅
+
+**Faz 2 email scope (henüz yapılmadı):**
+- İşveren-side message notification (hr_profiles'da notify preference yok)
+- Newsletter, digest, bulk invite
+- Bounce handling, analytics, A/B testing
+
+**43. profil.html stability cleanup (Session 12 devam)**
+
+P1 — `_loadedDBData.profile` tek source-of-truth:
+- `loadProfileFromDB()` return objesine 8 eksik alan eklendi: `email`, `notify_email_messages`, `notify_email_jobs`, `contact_pref_email/phone/whatsapp`, `account_status`, `deletion_requested_at`
+- `saveProfileRPC()` başarı yolunda `_loadedDBData.profile`'a tüm profile alanları merge ediliyor
+- `profil-settings.js`: bildirim ve iletişim save sonrası `_loadedDBData.profile` sync eklendi
+- `profil-settings.js`: `notifications-msg` ve `contact-prefs-msg` null check eklendi (crash fix)
+
+P2 — Panel navigation tekilleştirme:
+- `switchPanel()`: `yetkinlik` → `mulakat` normalization eklendi (hash override bug fix)
+- Sidebar/header/bento direct binding'ler kaldırıldı — document-level `[data-panel]` delegation tek yol
+- Logo ve Kim Baktı direct binding'leri korundu (data-panel attr'ları yok)
+- Premium CTA: `mk-footer-premium` / `mk-premium-card-link` direct + delegation duplicate kaldırıldı (data-panel="premium" yeterli)
+- Wizard exit: `_doSwitchPanel(dest)` → `switchPanel(dest)` (hash + normalization tek yoldan)
+- Kaydet ve Çık: `_doSwitchPanel('merkez')` → `switchPanel('merkez')` (hash `#merkez` yazılıyor)
+
+P3 — Bug fix'ler:
+- `openLocationModal`: search input listener birikmesi engellendi (named ref + removeEventListener)
+
+Değişen dosyalar: `profil.html`, `profil-ui.js`, `profil-settings.js`
+
+### Session 13 — 21 Mart 2026 (Candidate Replies + DM Inbox + Employer Mesajlar)
+
+**44. Migration 052 — candidate_message_replies table + RPCs**
+- `candidate_message_replies` tablosu: `id bigint`, `message_id bigint` (FK → employer_messages), `candidate_id bigint`, `body text`, `read_at timestamptz`, `created_at timestamptz`
+- 3 index: message_id, candidate_id, created_at
+- 4 RLS policy: cmr_select_own, cmr_insert_own (defense in depth — message ownership check), cmr_employer_read, cmr_employer_update_read
+- `send_candidate_reply(bigint, bigint)` RPC: server-side validation, SECURITY DEFINER, REVOKE/GRANT authenticated
+- `get_message_thread(bigint)` RPC: returns full thread (employer message + candidate replies) chronologically, with read_at per item
+- `mark_replies_read(bigint)` RPC: employer marks all unread candidate replies as read
+- Old `get_message_replies(uuid)` dropped (type mismatch fix — employer_messages.id is bigint, not uuid)
+- ✅ Deployed to Supabase (21 Mart 2026), post-deploy verification 7/7 checks PASS
+
+**45. Migration 053 — get_company_message_threads RPC**
+- `get_company_message_threads(p_limit, p_offset)` RPC: returns employer's message threads with candidate_name, subject, last_body, last_sender, last_activity_at, employer_read_at, unread_replies count
+- LATERAL JOIN for latest reply, sorted by last activity
+- SECURITY DEFINER, REVOKE/GRANT authenticated
+- ✅ Deployed to Supabase (21 Mart 2026)
+
+**46. profil-inbox.js — Instagram DM-style inbox (full rewrite)**
+- Conversation list: slim DM-style rows (round avatar, bold sender, one-line preview, relative time, vermillion unread dot, hover-reveal trash)
+- "Sen:" prefix on preview when latest item is candidate's own reply
+- Sort by last activity (threads with newest replies bubble to top)
+- Thread view: bottom-sheet (85vh), WhatsApp-style bubbles — employer left-aligned on --bg, candidate right-aligned on --verm
+- Bubble times (HH:MM bottom-right), Turkish date separators (Bugün/Dün/weekday/date)
+- Read receipts: "İletildi" / "Görüldü" under last outbound candidate reply
+- Composer: rounded textarea, auto-grow, circular send button, Enter-to-send (Shift+Enter for newline)
+- Restored: Bildirimler panel (_htLoadBildirimler), header popup wiring (_htCloseAllPopups, togglePopup, outside-click, Escape-to-close), realtime subscription
+- Commits: `307ea1e`, `7dcc696`
+
+**47. ik.html — Employer Mesajlar panel**
+- Sidebar nav item "Mesajlar" (between Takipçiler and Kampanyalar) with unread badge
+- Panel: DM-style thread list via `get_company_message_threads` RPC
+- Thread rows: navy avatar initials, candidate name, subject, preview with "Aday:" prefix, unread reply count badge, Görüldü/İletildi state
+- Click → thread modal reusing `get_message_thread` + `mark_replies_read` RPCs
+- Thread modal: chronological bubbles with date separators, bubble times, auto mark-as-read on open
+- "Yanıtlar" button in candidate drawer preserved
+- Commit: `7dcc696`
+
+**Authenticated E2E smoke test:** NOT YET PERFORMED. DB deployment verified (migrations 052+053 confirmed in production). JS parse and structural checks all pass. Full 14-step authenticated smoke test (employer sends → candidate replies → employer sees thread) requires manual testing with real accounts on hellotalent.ai.
 
 ---
 
@@ -1060,6 +1174,9 @@ if(sessionStorage.getItem('ht_gate')!=='ok'){window.location.replace('gate.html'
 | 048 | `048_save_profile_brand_company_ids.sql` — RPC writes company_id/brand_id alongside text | ✅ Deployed Session 9 |
 | 049 | `049_visibility_and_search_id_first_matching.sql` — id-first search + exact backfill | ✅ Deployed Session 9 |
 | 050 | `050_position_aware_scoring.sql` — 12-signal position-aware scoring engine | ✅ Deployed Session 10 — 5+6 param overload; `a8fc46e` ile UI bayrağı açık |
+| 051 | `051_transactional_email_phase1.sql` — email_outbox + claim + message trigger | ✅ Deployed Session 12 |
+| 052 | `052_candidate_message_replies.sql` — reply table + send/thread/mark-read RPCs + RLS | ✅ Deployed Session 13 |
+| 053 | `053_employer_thread_list_rpc.sql` — get_company_message_threads RPC | ✅ Deployed Session 13 |
 
 ### Markalar TODO
 - [x] ~~Mobil test (390×844)~~ ✅ Touch toggle (`.active` class) eklendi, hover + click ile çalışır
