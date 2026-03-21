@@ -208,7 +208,10 @@
     if (currentFilter === 'deleted') {
       filtered = allMessages.filter(function(m) { return m.status === 'deleted'; });
     } else if (currentFilter === 'unread') {
-      filtered = allMessages.filter(function(m) { return m.status !== 'read' && m.status !== 'deleted'; });
+      filtered = allMessages.filter(function(m) {
+        if (m.status === 'deleted') return false;
+        return m.status !== 'read' || (m.unread_followups || 0) > 0;
+      });
     } else if (currentFilter === 'all') {
       filtered = allMessages.filter(function(m) { return m.status !== 'deleted'; });
     } else {
@@ -330,7 +333,14 @@
     row.addEventListener('click', function() {
       if (isDeleted) return;
       openThread(msg);
-      if (isUnread) { markAsRead(msg.id); msg.status = 'read'; renderMessages(); updateUnreadBadges(); }
+      if (isUnread) {
+        if (msg.status !== 'read') markAsRead(msg.id);
+        msg.status = 'read';
+        msg.unread_followups = 0;
+        renderMessages();
+        updateUnreadBadges();
+        preloadUnreadCount();
+      }
     });
     return row;
   }
@@ -598,24 +608,33 @@
     if (pb) { pb.textContent = c + ' okunmam\u0131\u015F'; pb.style.display = c > 0 ? '' : 'none'; }
   }
 
-  /* ═══ PRELOAD UNREAD COUNT ═══ */
+  /* ═══ PRELOAD UNREAD COUNT (canonical — uses server RPC) ═══ */
   async function preloadUnreadCount() {
     var supa = getSupa();
     if (!supa) return;
     try {
-      var res = await supa.from('employer_messages').select('id', { count: 'exact', head: true }).eq('status', 'sent');
-      var c = res.count || 0;
-      var sb = document.getElementById('badge-inbox-unread');
-      if (sb) { sb.textContent = c > 99 ? '99+' : c; sb.style.display = c > 0 ? '' : 'none'; }
-      var bb = document.getElementById('badge-inbox-bn');
-      if (bb) { bb.textContent = c > 9 ? '9+' : c; bb.style.display = c > 0 ? 'flex' : 'none'; }
-      var md = document.getElementById('header-msg-dot');
-      if (md) md.style.display = c > 0 ? '' : 'none';
-      var nd = document.getElementById('header-notif-dot');
-      if (nd) nd.style.display = c > 0 ? '' : 'none';
-      var nb = document.getElementById('badge-bildirimler');
-      if (nb) { nb.textContent = c > 99 ? '99+' : c; nb.style.display = c > 0 ? '' : 'none'; }
+      var res = await supa.rpc('get_candidate_unread_count');
+      var c = (res.data !== null && res.data !== undefined) ? res.data : 0;
+      if (res.error) {
+        // Fallback to old method if RPC not deployed yet
+        var fallback = await supa.from('employer_messages').select('id', { count: 'exact', head: true }).eq('status', 'sent');
+        c = fallback.count || 0;
+      }
+      applyUnreadCountToUI(c);
     } catch (err) { console.error('Inbox preload error:', err); }
+  }
+
+  function applyUnreadCountToUI(c) {
+    var sb = document.getElementById('badge-inbox-unread');
+    if (sb) { sb.textContent = c > 99 ? '99+' : c; sb.style.display = c > 0 ? '' : 'none'; }
+    var bb = document.getElementById('badge-inbox-bn');
+    if (bb) { bb.textContent = c > 9 ? '9+' : c; bb.style.display = c > 0 ? 'flex' : 'none'; }
+    var md = document.getElementById('header-msg-dot');
+    if (md) md.style.display = c > 0 ? '' : 'none';
+    var nd = document.getElementById('header-notif-dot');
+    if (nd) nd.style.display = c > 0 ? '' : 'none';
+    var nb = document.getElementById('badge-bildirimler');
+    if (nb) { nb.textContent = c > 99 ? '99+' : c; nb.style.display = c > 0 ? '' : 'none'; }
   }
 
   /* ═══ HEADER POPUP: Message preview ═══ */
@@ -915,20 +934,33 @@
     var supa = getSupa();
     if (!supa || !supa.channel) return;
 
+    function refreshInboxIfActive() {
+      preloadUnreadCount();
+      var inboxPanel = document.getElementById('panel-inbox');
+      if (inboxPanel && inboxPanel.classList.contains('active')) window._htLoadInbox(currentFilter);
+      var notifPanel = document.getElementById('panel-bildirimler');
+      if (notifPanel && notifPanel.classList.contains('active') && window._htLoadBildirimler) window._htLoadBildirimler();
+    }
+
+    function refreshActiveThread() {
+      if (activeThreadMsgId) {
+        var container = document.getElementById('thread-messages');
+        if (container) loadThread(activeThreadMsgId, container, {});
+      }
+    }
+
     supa.channel('inbox-live')
-      .on('postgres_changes', {
-        event: 'INSERT', schema: 'public', table: 'employer_messages'
-      }, function() {
-        preloadUnreadCount();
-        var inboxPanel = document.getElementById('panel-inbox');
-        if (inboxPanel && inboxPanel.classList.contains('active')) window._htLoadInbox(currentFilter);
-        var notifPanel = document.getElementById('panel-bildirimler');
-        if (notifPanel && notifPanel.classList.contains('active') && window._htLoadBildirimler) window._htLoadBildirimler();
+      // Root employer messages
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'employer_messages' }, refreshInboxIfActive)
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'employer_messages' }, function() { preloadUnreadCount(); })
+      // Employer follow-up replies (new inbound for candidate)
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'employer_message_replies' }, function() {
+        refreshInboxIfActive();
+        refreshActiveThread();
       })
-      .on('postgres_changes', {
-        event: 'UPDATE', schema: 'public', table: 'employer_messages'
-      }, function() {
-        preloadUnreadCount();
+      // Candidate reply read-state updates (employer marked read)
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'candidate_message_replies' }, function() {
+        refreshActiveThread();
       })
       .subscribe();
   }

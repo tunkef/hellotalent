@@ -4539,6 +4539,27 @@ async function sendTeamInvite(){
   });
 })();
 
+// ── EMPLOYER REALTIME: refresh Mesajlar on candidate reply events ──
+(function() {
+  setTimeout(function() {
+    var supa = (typeof getSupa === 'function') ? getSupa() : null;
+    if (!supa || !supa.channel) return;
+
+    supa.channel('ik-msg-live')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'candidate_message_replies' }, function() {
+        // Candidate replied — refresh badge + list if panel is active
+        var navBadge = document.getElementById('nav-mesaj-count');
+        var panel = document.getElementById('panel-mesajlar');
+        if (panel && panel.classList.contains('active')) { _mesajlarLoaded = false; loadMesajlarPanel(); }
+        else if (navBadge) { _mesajlarLoaded = false; }
+      })
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'candidate_message_replies' }, function() {
+        // Read state changed — no action needed unless panel is active
+      })
+      .subscribe();
+  }, 3000);
+})();
+
 // ── INIT ──
 initApp();
 </script>
