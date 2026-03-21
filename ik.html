@@ -2841,8 +2841,13 @@ async function openDrawer(id){
   actions.appendChild(btnMsg);
   var btnReplies = document.createElement('button');
   btnReplies.className = 'btn-secondary btn-sm';
-  btnReplies.textContent = '💬 Yanıtlar';
-  btnReplies.onclick = function(){ openCandidateRepliesModal(c.id, c.ad[0] + '. ' + c.soyad); };
+  btnReplies.textContent = '\uD83D\uDCAC Mesajlar';
+  btnReplies.onclick = function(){
+    closeDrawer();
+    _mesajlarLoaded = false;
+    _ikActiveThreadId = null;
+    switchPanel('mesajlar', document.querySelector('[data-panel="mesajlar"]'));
+  };
   actions.appendChild(btnReplies);
   var btnCV = document.createElement('button');
   btnCV.className = 'btn-primary btn-sm';
@@ -3298,117 +3303,6 @@ function ikDateSep(dateStr) {
 function ikSameDay(a, b) {
   var da = new Date(a), db = new Date(b);
   return da.getFullYear() === db.getFullYear() && da.getMonth() === db.getMonth() && da.getDate() === db.getDate();
-}
-
-async function openCandidateRepliesModal(candidateId, candidateName) {
-  var existing = document.getElementById('yanitlar-modal-overlay');
-  if (existing) existing.remove();
-
-  var overlay = document.createElement('div');
-  overlay.id = 'yanitlar-modal-overlay';
-  overlay.className = 'modal-overlay show';
-
-  var modal = document.createElement('div');
-  modal.className = 'modal';
-  modal.style.maxWidth = '560px';
-
-  var header = document.createElement('div');
-  header.className = 'modal-header';
-  var title = document.createElement('span');
-  title.className = 'modal-title';
-  title.textContent = '\uD83D\uDCAC Mesaj Ge\u00E7mi\u015Fi';
-  header.appendChild(title);
-  var closeBtn = document.createElement('button');
-  closeBtn.className = 'modal-close';
-  closeBtn.textContent = '\u2715';
-  closeBtn.onclick = function() { overlay.remove(); };
-  header.appendChild(closeBtn);
-  modal.appendChild(header);
-
-  var nameEl = document.createElement('div');
-  nameEl.style.cssText = 'font-size:13px;color:var(--muted);margin-bottom:16px;';
-  nameEl.textContent = 'Aday: ' + candidateName;
-  modal.appendChild(nameEl);
-
-  var content = document.createElement('div');
-  content.id = 'yanitlar-content';
-  content.style.cssText = 'max-height:60vh;overflow-y:auto;';
-  var loading = document.createElement('div');
-  loading.style.cssText = 'text-align:center;padding:24px;color:var(--muted);font-size:13px;';
-  loading.textContent = 'Y\u00FCkleniyor...';
-  content.appendChild(loading);
-  modal.appendChild(content);
-
-  overlay.appendChild(modal);
-  overlay.addEventListener('click', function(e) { if (e.target === overlay) overlay.remove(); });
-  document.body.appendChild(overlay);
-
-  try {
-    var companyId = hrProfile ? hrProfile.company_id : null;
-    if (!companyId) {
-      content.textContent = '';
-      var noC = document.createElement('div');
-      noC.style.cssText = 'text-align:center;padding:24px;color:var(--muted);font-size:13px;';
-      noC.textContent = '\u015Eirket bilgisi bulunamad\u0131.';
-      content.appendChild(noC);
-      return;
-    }
-
-    var res = await getSupa().from('employer_messages')
-      .select('id, subject, body, status, read_at, created_at')
-      .eq('candidate_id', candidateId)
-      .eq('company_id', companyId)
-      .order('created_at', { ascending: false })
-      .limit(20);
-
-    content.textContent = '';
-
-    if (res.error || !res.data || res.data.length === 0) {
-      var emptyDiv = document.createElement('div');
-      emptyDiv.style.cssText = 'text-align:center;padding:24px;color:var(--muted);font-size:13px;';
-      emptyDiv.textContent = 'Bu adaya hen\u00FCz mesaj g\u00F6nderilmemi\u015F.';
-      content.appendChild(emptyDiv);
-      return;
-    }
-
-    for (var i = 0; i < res.data.length; i++) {
-      var msg = res.data[i];
-      var threadCard = document.createElement('div');
-      threadCard.style.cssText = 'border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:12px;';
-
-      // Thread header: subject + expand
-      var tHeader = document.createElement('div');
-      tHeader.style.cssText = 'display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;';
-      var tSubject = document.createElement('div');
-      tSubject.style.cssText = 'font-size:14px;font-weight:700;color:var(--text);';
-      tSubject.textContent = msg.subject;
-      tHeader.appendChild(tSubject);
-
-      // Seen by candidate indicator
-      var seenLabel = document.createElement('span');
-      seenLabel.style.cssText = 'font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600;' +
-        (msg.read_at ? 'background:#F0FDF4;color:#16A34A;' : 'background:var(--bg);color:var(--muted);');
-      seenLabel.textContent = msg.read_at ? 'G\u00F6r\u00FCld\u00FC' : '\u0130letildi';
-      tHeader.appendChild(seenLabel);
-      threadCard.appendChild(tHeader);
-
-      // Thread body — loaded via RPC
-      var threadBody = document.createElement('div');
-      threadBody.style.cssText = 'display:flex;flex-direction:column;gap:4px;';
-      threadCard.appendChild(threadBody);
-      content.appendChild(threadCard);
-
-      // Load full thread
-      loadEmployerThread(msg.id, threadBody);
-    }
-  } catch (err) {
-    console.error('openCandidateRepliesModal error:', err);
-    content.textContent = '';
-    var errDiv = document.createElement('div');
-    errDiv.style.cssText = 'text-align:center;padding:24px;color:#DC2626;font-size:13px;';
-    errDiv.textContent = 'Yan\u0131tlar y\u00FCklenemedi.';
-    content.appendChild(errDiv);
-  }
 }
 
 async function loadEmployerThread(messageId, container) {

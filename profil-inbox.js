@@ -191,9 +191,31 @@
 
     filtered.forEach(function(msg) { listEl.appendChild(buildConversationRow(msg)); });
 
-    // Desktop: auto-select first thread if no thread is active
-    if (isDesktop() && !activeThreadMsgId && filtered.length > 0 && filtered[0].status !== 'deleted') {
-      openThread(filtered[0]);
+    // Desktop: keep right pane consistent with filtered list
+    if (isDesktop()) {
+      var activeStillVisible = false;
+      if (activeThreadMsgId) {
+        for (var fi = 0; fi < filtered.length; fi++) {
+          if (filtered[fi].id === activeThreadMsgId && filtered[fi].status !== 'deleted') { activeStillVisible = true; break; }
+        }
+      }
+      if (!activeStillVisible) {
+        activeThreadMsgId = null;
+        var nonDeleted = filtered.filter(function(m) { return m.status !== 'deleted'; });
+        if (nonDeleted.length > 0) {
+          openThread(nonDeleted[0]);
+        } else {
+          // Show placeholder
+          var rightPane = document.getElementById('inbox-right-pane');
+          if (rightPane) {
+            rightPane.textContent = '';
+            var ph = document.createElement('div');
+            ph.style.cssText = 'display:flex;align-items:center;justify-content:center;flex:1;color:var(--text-muted,#6B7280);font-size:14px;padding:40px;';
+            ph.textContent = 'Bir konu\u015Fma se\u00E7in';
+            rightPane.appendChild(ph);
+          }
+        }
+      }
     }
   }
 
