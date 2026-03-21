@@ -1163,17 +1163,31 @@ if (window.Sentry) {
     </div>
   </div>
 
-  <!-- Filter tabs -->
-  <div id="inbox-tabs" class="tag-row" style="border:1px solid var(--border-subtle,#E5E3DF);border-radius:16px;padding:12px 16px;background:var(--bg-surface,#fff);margin-bottom:16px;"></div>
-
-  <!-- Message list -->
-  <div id="inbox-list" style="display:flex;flex-direction:column;gap:8px;"></div>
-
-  <!-- Empty state -->
-  <div id="inbox-empty" class="empty-state" style="border:1px solid var(--border-subtle,#E5E3DF);border-radius:16px;padding:40px 24px;background:var(--bg-surface,#fff);">
-    <div class="empty-title">Henüz mesajın yok</div>
-    <div class="sub-text">Kampanya bildirimleri ve işveren mesajları burada görünecek</div>
+  <!-- Split-pane container: list left, thread right on desktop -->
+  <div id="inbox-split" style="display:flex;gap:0;min-height:70vh;border:1px solid var(--border-subtle,#E5E3DF);border-radius:16px;overflow:hidden;background:var(--bg-surface,#fff);">
+    <!-- Left pane: thread list -->
+    <div id="inbox-left-pane" style="width:340px;min-width:280px;max-width:400px;border-right:1px solid var(--border-subtle,#E5E3DF);display:flex;flex-direction:column;overflow:hidden;">
+      <div id="inbox-tabs" class="tag-row" style="padding:12px 14px;border-bottom:1px solid var(--border-subtle,#E5E3DF);flex-shrink:0;"></div>
+      <div id="inbox-list" style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:2px;padding:6px;"></div>
+      <div id="inbox-empty" style="display:none;text-align:center;padding:40px 20px;">
+        <div class="empty-title">Henüz mesajın yok</div>
+        <div class="sub-text">İşveren mesajları burada görünecek</div>
+      </div>
+    </div>
+    <!-- Right pane: active thread (desktop inline, mobile overlay) -->
+    <div id="inbox-right-pane" style="flex:1;display:flex;flex-direction:column;min-width:0;">
+      <div id="inbox-thread-placeholder" style="display:flex;align-items:center;justify-content:center;flex:1;color:var(--text-muted,#6B7280);font-size:14px;padding:40px;">
+        Bir konuşma seçin
+      </div>
+    </div>
   </div>
+  <style>
+    @media (max-width: 768px) {
+      #inbox-split { flex-direction: column; min-height: auto; border: none; border-radius: 0; }
+      #inbox-left-pane { width: 100% !important; max-width: none !important; min-width: 0 !important; border-right: none !important; border-bottom: 1px solid var(--border-subtle,#E5E3DF); }
+      #inbox-right-pane { display: none !important; }
+    }
+  </style>
 </main>
 
 <!-- ═══ PANEL: BİLDİRİMLER ═══ -->
@@ -1806,10 +1820,12 @@ function switchPanel(name) {
     document.getElementById('modal-wizard-exit').classList.add('show');
     return;
   }
-  _doSwitchPanel(name);
+  // Normalize legacy panel aliases before switching
+  var effectiveName = (name === 'yetkinlik') ? 'mulakat' : name;
+  _doSwitchPanel(effectiveName);
   // Persist active panel in URL hash
-  if (name && name !== 'genel') {
-    history.replaceState(null, '', '#' + name);
+  if (effectiveName && effectiveName !== 'genel') {
+    history.replaceState(null, '', '#' + effectiveName);
   } else {
     history.replaceState(null, '', window.location.pathname);
   }
@@ -1853,8 +1869,7 @@ function _doSwitchPanel(name) {
   if (name === 'teklifler') { window._htLoadTeklifler && window._htLoadTeklifler(); }
   // Lazy-load Inbox messages on first visit
   if (name === 'inbox') { window._htLoadInbox && window._htLoadInbox(); }
-  // Legacy yetkinlik panel key → redirect to unified mulakat
-  if (name === 'yetkinlik') { _doSwitchPanel('mulakat'); return; }
+  // Note: yetkinlik → mulakat normalization handled in switchPanel() before this is called
   // Lazy-load Mulakat panel on first visit (also load yetkinlik bridge data)
   if (name === 'mulakat') { window._htLoadYetkinlik && window._htLoadYetkinlik(); window._htLoadMulakat && window._htLoadMulakat(); }
   // Lazy-load Premium panel on first visit
@@ -2691,35 +2706,14 @@ document.addEventListener('DOMContentLoaded', function() {
   initThemeFromStorage();
   if (window.syncThemeToggleButtons) window.syncThemeToggleButtons();
 
-  // Sidebar nav clicks
-  document.querySelectorAll('.sidebar-nav .nav-item').forEach(function(btn) {
-    btn.addEventListener('click', function() {
-      var panel = this.dataset.panel;
-      if (panel) switchPanel(panel);
-    });
-  });
+  // Sidebar/header/bento nav clicks handled by document-level [data-panel] delegation (line ~1593).
+  // Only elements WITHOUT data-panel need direct bindings:
 
-  // Header nav clicks (LinkedIn-style)
-  document.querySelectorAll('.header-nav .hn-item').forEach(function(btn) {
-    btn.addEventListener('click', function() {
-      var panel = this.dataset.panel;
-      if (panel) switchPanel(panel);
-    });
-  });
-
-  // Logo → Genel Bakış
+  // Logo → Genel Bakış (no data-panel attr)
   var logoBtn = document.getElementById('btn-logo-home');
   if (logoBtn) logoBtn.addEventListener('click', function() { switchPanel('genel'); });
 
-  // Bento card clicks (semantic buttons with data-panel)
-  document.querySelectorAll('.bento-card[data-panel]').forEach(function(card) {
-    card.addEventListener('click', function() {
-      var panel = this.dataset.panel;
-      if (panel) switchPanel(panel);
-    });
-  });
-
-  // Kim Baktı header icon
+  // Kim Baktı header icon (no data-panel attr)
   var kbBtn = document.getElementById('header-kimbakti');
   if (kbBtn) kbBtn.addEventListener('click', function() { switchPanel('kimbakti'); });
 
@@ -2972,20 +2966,14 @@ document.addEventListener('DOMContentLoaded', function() {
     if (t.classList.contains('ls-premium-cta') ||
         t.classList.contains('ig-q-lock-cta') ||
         t.classList.contains('tk-lock-btn') ||
-        t.classList.contains('kb-premium-btn') ||
-        t.closest && t.closest('#mk-footer-premium') ||
-        t.closest && t.closest('#mk-premium-card-link')) {
+        t.classList.contains('kb-premium-btn')) {
       e.preventDefault();
       e.stopPropagation();
       switchPanel('premium');
     }
+    // mk-footer-premium and mk-premium-card-link have data-panel="premium"
+    // and are handled by document-level [data-panel] delegation — no duplicate needed
   });
-
-  // Profil Merkezi premium links (direct binding as backup)
-  var mkFooter = document.getElementById('mk-footer-premium');
-  if (mkFooter) mkFooter.addEventListener('click', function() { switchPanel('premium'); });
-  var mkPremCard = document.getElementById('mk-premium-card-link');
-  if (mkPremCard) mkPremCard.addEventListener('click', function() { switchPanel('premium'); });
 
   // Restore panel from URL hash on page load
   var hashPanel = window.location.hash.replace('#', '');
@@ -3013,8 +3001,8 @@ document.addEventListener('DOMContentLoaded', function() {
       saveProfileRPC(function() {
         btnSaveExit.disabled = false;
         btnSaveExit.innerHTML = saveExitLabel;
-        _doSwitchPanel('merkez');
         wizardDirty = false;
+        switchPanel('merkez');
       }).catch(function() {
         btnSaveExit.disabled = false;
         btnSaveExit.innerHTML = saveExitLabel;
@@ -3085,7 +3073,11 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('modal-wizard-exit').classList.remove('show');
     wizardDirty = false;
     clearDraft();
-    if (pendingPanelSwitch) { _doSwitchPanel(pendingPanelSwitch); pendingPanelSwitch = null; }
+    if (pendingPanelSwitch) {
+      var dest = pendingPanelSwitch;
+      pendingPanelSwitch = null;
+      switchPanel(dest); // wizardDirty is false, guard won't re-trigger
+    }
   });
 
   // CV upload initialization

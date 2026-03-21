@@ -190,6 +190,11 @@
     if (emptyEl) emptyEl.style.display = 'none';
 
     filtered.forEach(function(msg) { listEl.appendChild(buildConversationRow(msg)); });
+
+    // Desktop: auto-select first thread if no thread is active
+    if (isDesktop() && !activeThreadMsgId && filtered.length > 0 && filtered[0].status !== 'deleted') {
+      openThread(filtered[0]);
+    }
   }
 
   /* ═══════════════════════════════════════════════════════════════
@@ -201,6 +206,7 @@
     var hasReply = msg.latest_reply !== null;
 
     var row = document.createElement('div');
+    row.dataset.msgId = msg.id;
     row.style.cssText = 'display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;cursor:pointer;transition:all .15s;background:' +
       (isUnread ? 'rgba(201,78,40,0.04)' : 'var(--bg-surface,white)') + ';';
 
@@ -298,29 +304,31 @@
   }
 
   /* ═══════════════════════════════════════════════════════════════
-     OPEN THREAD — sheet-style conversation view
+     OPEN THREAD — inline split-pane on desktop, sheet on mobile
      ═══════════════════════════════════════════════════════════════ */
+  function isDesktop() { return window.innerWidth > 768; }
+
   function openThread(msg) {
-    var existing = document.getElementById('inbox-expanded');
-    if (existing) existing.remove();
     activeThreadMsgId = msg.id;
 
-    var overlay = document.createElement('div');
-    overlay.id = 'inbox-expanded';
-    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:900;display:flex;align-items:flex-end;justify-content:center;padding:0;';
+    // Highlight active row in list
+    var rows = document.querySelectorAll('#inbox-list > div');
+    for (var r = 0; r < rows.length; r++) {
+      rows[r].style.background = rows[r].dataset.msgId == msg.id
+        ? 'rgba(201,78,40,0.08)' : '';
+    }
 
-    var sheet = document.createElement('div');
-    sheet.style.cssText = 'background:var(--bg-surface,white);width:100%;max-width:480px;height:85vh;border-radius:16px 16px 0 0;display:flex;flex-direction:column;box-shadow:0 -4px 40px rgba(0,0,0,0.12);';
+    if (isDesktop()) {
+      openThreadInline(msg);
+    } else {
+      openThreadSheet(msg);
+    }
+  }
 
+  function buildThreadContent(msg, container) {
     // Header
     var header = document.createElement('div');
     header.style.cssText = 'display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--border-subtle,#E5E3DF);flex-shrink:0;';
-    var backBtn = document.createElement('button');
-    backBtn.type = 'button';
-    backBtn.style.cssText = 'background:none;border:none;font-size:18px;cursor:pointer;color:var(--text-muted,#6B7280);padding:0;line-height:1;';
-    backBtn.textContent = '\u2190';
-    backBtn.onclick = function() { overlay.remove(); activeThreadMsgId = null; };
-    header.appendChild(backBtn);
 
     var avi = document.createElement('div');
     avi.style.cssText = 'width:32px;height:32px;border-radius:50%;overflow:hidden;flex-shrink:0;background:var(--bg,#F7F6F4);display:flex;align-items:center;justify-content:center;font-size:14px;';
@@ -343,7 +351,7 @@
     hSubject.textContent = msg.title;
     hInfo.appendChild(hSubject);
     header.appendChild(hInfo);
-    sheet.appendChild(header);
+    container.appendChild(header);
 
     // Messages area
     var msgArea = document.createElement('div');
@@ -353,7 +361,7 @@
     threadLoading.style.cssText = 'text-align:center;padding:24px;color:var(--text-muted,#6B7280);font-size:13px;';
     threadLoading.textContent = 'Y\u00FCkleniyor...';
     msgArea.appendChild(threadLoading);
-    sheet.appendChild(msgArea);
+    container.appendChild(msgArea);
 
     // Composer
     var composer = document.createElement('div');
@@ -369,26 +377,64 @@
     var sendBtn = document.createElement('button');
     sendBtn.type = 'button';
     sendBtn.style.cssText = 'width:36px;height:36px;border-radius:50%;border:none;background:var(--verm,#C94E28);color:white;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .15s;';
-    sendBtn.textContent = '\u27A4'; // ➤
+    sendBtn.textContent = '\u27A4';
     sendBtn.addEventListener('mouseenter', function() { this.style.background = '#b84420'; });
     sendBtn.addEventListener('mouseleave', function() { this.style.background = 'var(--verm,#C94E28)'; });
     composer.appendChild(sendBtn);
-    sheet.appendChild(composer);
+    container.appendChild(composer);
 
     var statusMsg = document.createElement('div');
     statusMsg.id = 'thread-status-msg';
     statusMsg.style.cssText = 'display:none;padding:6px 14px;font-size:12px;font-weight:600;text-align:center;';
-    sheet.appendChild(statusMsg);
-
-    overlay.appendChild(sheet);
-    overlay.addEventListener('click', function(e) { if (e.target === overlay) { overlay.remove(); activeThreadMsgId = null; } });
-    document.body.appendChild(overlay);
+    container.appendChild(statusMsg);
 
     loadThread(msg.id, msgArea, msg);
     sendBtn.addEventListener('click', function() { sendReply(msg.id, textarea, sendBtn, statusMsg, msgArea, msg); });
     textarea.addEventListener('keydown', function(e) {
       if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendReply(msg.id, textarea, sendBtn, statusMsg, msgArea, msg); }
     });
+  }
+
+  /* ── Desktop: render thread inline in right pane ── */
+  function openThreadInline(msg) {
+    var existing = document.getElementById('inbox-expanded');
+    if (existing) existing.remove();
+
+    var rightPane = document.getElementById('inbox-right-pane');
+    if (!rightPane) return;
+    rightPane.textContent = '';
+    rightPane.style.display = 'flex';
+    buildThreadContent(msg, rightPane);
+  }
+
+  /* ── Mobile: sheet overlay ── */
+  function openThreadSheet(msg) {
+    var existing = document.getElementById('inbox-expanded');
+    if (existing) existing.remove();
+
+    var overlay = document.createElement('div');
+    overlay.id = 'inbox-expanded';
+    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:900;display:flex;align-items:flex-end;justify-content:center;padding:0;';
+
+    var sheet = document.createElement('div');
+    sheet.style.cssText = 'background:var(--bg-surface,white);width:100%;max-width:480px;height:90vh;border-radius:16px 16px 0 0;display:flex;flex-direction:column;box-shadow:0 -4px 40px rgba(0,0,0,0.12);';
+
+    // Back button for mobile
+    var backRow = document.createElement('div');
+    backRow.style.cssText = 'padding:10px 14px 0;flex-shrink:0;';
+    var backBtn = document.createElement('button');
+    backBtn.type = 'button';
+    backBtn.style.cssText = 'background:none;border:none;font-size:16px;cursor:pointer;color:var(--text-muted,#6B7280);padding:4px 8px;line-height:1;';
+    backBtn.textContent = '\u2190 Geri';
+    backBtn.onclick = function() { overlay.remove(); activeThreadMsgId = null; };
+    backRow.appendChild(backBtn);
+    sheet.appendChild(backRow);
+
+    buildThreadContent(msg, sheet);
+
+    overlay.appendChild(sheet);
+    overlay.addEventListener('click', function(e) { if (e.target === overlay) { overlay.remove(); activeThreadMsgId = null; } });
+    document.body.appendChild(overlay);
   }
 
   /* ═══════════════════════════════════════════════════════════════

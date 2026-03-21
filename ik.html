@@ -831,9 +831,19 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
         <div class="section-title">Mesajlar</div>
         <div style="font-size:12px;color:var(--muted);" id="mesajlar-thread-count"></div>
       </div>
-      <div id="mesajlar-thread-list" style="display:flex;flex-direction:column;gap:6px;"></div>
-      <div id="mesajlar-empty" style="display:none;text-align:center;padding:40px;color:var(--muted);font-size:13px;border:1px solid var(--border);border-radius:10px;background:white;">
-        Hen\u00FCz mesaj yok. Aday arama panelinden mesaj g\u00F6nderebilirsiniz.
+      <!-- Split-pane: list left, thread right on desktop -->
+      <div id="ik-msg-split" style="display:flex;gap:0;min-height:65vh;border:1px solid var(--border);border-radius:12px;overflow:hidden;background:white;">
+        <div id="ik-msg-left" style="width:320px;min-width:260px;max-width:380px;border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;">
+          <div id="mesajlar-thread-list" style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:2px;padding:6px;"></div>
+          <div id="mesajlar-empty" style="display:none;text-align:center;padding:40px;color:var(--muted);font-size:13px;">
+            Hen\u00FCz mesaj yok.
+          </div>
+        </div>
+        <div id="ik-msg-right" style="flex:1;display:flex;flex-direction:column;min-width:0;">
+          <div id="ik-thread-placeholder" style="display:flex;align-items:center;justify-content:center;flex:1;color:var(--muted);font-size:14px;padding:40px;">
+            Bir konu\u015Fma se\u00E7in
+          </div>
+        </div>
       </div>
     </div>
 
@@ -3059,6 +3069,11 @@ async function loadMesajlarPanel() {
     threads.forEach(function(t) {
       listEl.appendChild(buildThreadRow(t));
     });
+
+    // Auto-select first thread on desktop if none active
+    if (window.innerWidth > 768 && !_ikActiveThreadId && threads.length > 0) {
+      openSingleThreadModal(threads[0].message_id, threads[0].candidate_name);
+    }
   } catch (err) {
     console.error('loadMesajlarPanel exception:', err);
   }
@@ -3069,6 +3084,7 @@ function buildThreadRow(t) {
   var isCandidateReply = t.last_sender === 'candidate';
 
   var row = document.createElement('div');
+  row.dataset.msgId = t.message_id;
   row.style.cssText = 'display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:10px;border:1px solid var(--border);background:white;cursor:pointer;transition:all .15s;' +
     (hasUnread ? 'border-left:3px solid var(--verm);background:#FFFBFA;' : '');
 
@@ -3148,42 +3164,43 @@ function buildThreadRow(t) {
   return row;
 }
 
-async function openSingleThreadModal(messageId, candidateName) {
-  var existing = document.getElementById('yanitlar-modal-overlay');
-  if (existing) existing.remove();
+var _ikActiveThreadId = null;
 
-  var overlay = document.createElement('div');
-  overlay.id = 'yanitlar-modal-overlay';
-  overlay.className = 'modal-overlay show';
+function openSingleThreadModal(messageId, candidateName) {
+  _ikActiveThreadId = messageId;
 
-  var modal = document.createElement('div');
-  modal.className = 'modal';
-  modal.style.cssText = 'max-width:560px;display:flex;flex-direction:column;max-height:85vh;';
+  // Highlight active row
+  var rows = document.querySelectorAll('#mesajlar-thread-list > div');
+  for (var r = 0; r < rows.length; r++) {
+    rows[r].style.background = rows[r].dataset.msgId == messageId ? 'rgba(30,45,94,0.06)' : '';
+  }
 
+  // Render inline in right pane
+  var rightPane = document.getElementById('ik-msg-right');
+  if (!rightPane) return;
+  rightPane.textContent = '';
+
+  // Header
   var header = document.createElement('div');
-  header.className = 'modal-header';
-  var title = document.createElement('span');
-  title.className = 'modal-title';
-  title.textContent = '\uD83D\uDCAC ' + (candidateName || 'Aday');
-  header.appendChild(title);
-  var closeBtn = document.createElement('button');
-  closeBtn.className = 'modal-close';
-  closeBtn.textContent = '\u2715';
-  closeBtn.onclick = function() { overlay.remove(); _mesajlarLoaded = false; loadMesajlarPanel(); };
-  header.appendChild(closeBtn);
-  modal.appendChild(header);
+  header.style.cssText = 'display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--border);flex-shrink:0;';
+  var nameEl = document.createElement('div');
+  nameEl.style.cssText = 'font-size:14px;font-weight:700;color:var(--text);';
+  nameEl.textContent = '\uD83D\uDCAC ' + (candidateName || 'Aday');
+  header.appendChild(nameEl);
+  rightPane.appendChild(header);
 
+  // Thread body
   var threadBody = document.createElement('div');
-  threadBody.style.cssText = 'display:flex;flex-direction:column;gap:4px;flex:1;overflow-y:auto;padding:4px 0;';
+  threadBody.style.cssText = 'display:flex;flex-direction:column;gap:4px;flex:1;overflow-y:auto;padding:12px 16px;';
   var ld = document.createElement('div');
   ld.style.cssText = 'text-align:center;padding:24px;color:var(--muted);font-size:13px;';
   ld.textContent = 'Y\u00FCkleniyor...';
   threadBody.appendChild(ld);
-  modal.appendChild(threadBody);
+  rightPane.appendChild(threadBody);
 
   // Composer
   var composer = document.createElement('div');
-  composer.style.cssText = 'display:flex;align-items:flex-end;gap:8px;padding:12px 0 0;border-top:1px solid var(--border);flex-shrink:0;';
+  composer.style.cssText = 'display:flex;align-items:flex-end;gap:8px;padding:10px 14px;border-top:1px solid var(--border);flex-shrink:0;';
   var textarea = document.createElement('textarea');
   textarea.placeholder = 'Yan\u0131t yaz...';
   textarea.maxLength = 5000;
@@ -3198,15 +3215,11 @@ async function openSingleThreadModal(messageId, candidateName) {
   sendBtn.style.cssText = 'padding:8px 16px;border-radius:20px;font-size:13px;white-space:nowrap;height:36px;';
   sendBtn.textContent = 'G\u00F6nder';
   composer.appendChild(sendBtn);
-  modal.appendChild(composer);
+  rightPane.appendChild(composer);
 
   var statusEl = document.createElement('div');
   statusEl.style.cssText = 'display:none;padding:6px 0;font-size:12px;font-weight:600;text-align:center;';
-  modal.appendChild(statusEl);
-
-  overlay.appendChild(modal);
-  overlay.addEventListener('click', function(e) { if (e.target === overlay) { overlay.remove(); _mesajlarLoaded = false; loadMesajlarPanel(); } });
-  document.body.appendChild(overlay);
+  rightPane.appendChild(statusEl);
 
   loadEmployerThread(messageId, threadBody);
 
@@ -3436,13 +3449,13 @@ async function loadEmployerThread(messageId, container) {
       var bubble = document.createElement('div');
       bubble.style.cssText = 'max-width:85%;padding:8px 12px;border-radius:12px;' +
         (isEmp
-          ? 'align-self:flex-start;background:var(--bg);border-bottom-left-radius:4px;'
-          : 'align-self:flex-end;background:var(--navy,#1E2D5E);color:white;border-bottom-right-radius:4px;');
+          ? 'align-self:flex-end;background:var(--navy,#1E2D5E);color:white;border-bottom-right-radius:4px;'
+          : 'align-self:flex-start;background:var(--bg);border-bottom-left-radius:4px;');
 
-      // Sender label for candidate
+      // Sender label for candidate replies (incoming for employer)
       if (!isEmp) {
         var sLabel = document.createElement('div');
-        sLabel.style.cssText = 'font-size:10px;font-weight:600;color:rgba(255,255,255,0.7);margin-bottom:2px;';
+        sLabel.style.cssText = 'font-size:10px;font-weight:600;color:var(--verm,#C94E28);margin-bottom:2px;';
         sLabel.textContent = 'Aday';
         bubble.appendChild(sLabel);
       }
@@ -3454,7 +3467,7 @@ async function loadEmployerThread(messageId, container) {
 
       var timeEl = document.createElement('div');
       timeEl.style.cssText = 'text-align:right;margin-top:3px;font-size:10px;' +
-        (isEmp ? 'color:var(--muted);' : 'color:rgba(255,255,255,0.6);');
+        (isEmp ? 'color:rgba(255,255,255,0.6);' : 'color:var(--muted);');
       timeEl.textContent = ikBubbleTime(item.created_at);
       bubble.appendChild(timeEl);
 
