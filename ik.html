@@ -4488,12 +4488,28 @@ async function sendTeamInvite(){
   var _ikRefreshTimer = null;
   var _ikRealtimeChannel = null;
 
+  function ikRefreshNavBadge() {
+    var supa = (typeof getSupa === 'function') ? getSupa() : null;
+    if (!supa) return;
+    supa.rpc('get_company_message_threads', { p_limit: 50, p_offset: 0 }).then(function(res) {
+      if (res.error || !res.data) return;
+      var totalUnread = 0;
+      for (var i = 0; i < res.data.length; i++) totalUnread += (res.data[i].unread_replies || 0);
+      var navBadge = document.getElementById('nav-mesaj-count');
+      if (navBadge) {
+        navBadge.textContent = totalUnread;
+        navBadge.style.display = totalUnread > 0 ? '' : 'none';
+      }
+    }).catch(function(){});
+  }
+
   function ikDebouncedRefresh() {
     if (_ikRefreshTimer) clearTimeout(_ikRefreshTimer);
     _ikRefreshTimer = setTimeout(function() {
       _ikRefreshTimer = null;
       var panel = document.getElementById('panel-mesajlar');
       if (panel && panel.classList.contains('active')) { _mesajlarLoaded = false; loadMesajlarPanel(); }
+      else { ikRefreshNavBadge(); }
     }, 500);
   }
 
@@ -4521,6 +4537,8 @@ async function sendTeamInvite(){
             ikRenderThreadItem(tb, 'candidate', payload.new.body, payload.new.created_at);
             if (wasNear) tb.scrollTop = tb.scrollHeight;
           }
+          // Auto-mark read since employer is viewing the thread
+          supa.rpc('mark_replies_read', { p_message_id: _ikActiveThreadId }).then(function(){}).catch(function(){});
         }
       })
       .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'candidate_message_replies' }, function() {})

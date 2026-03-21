@@ -1030,15 +1030,17 @@
       // Employer follow-up replies (inbound for candidate)
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'employer_message_replies' }, function(payload) {
         debouncedRefresh();
-        // Live append if this thread is open
+        // Live append + auto-mark read if this thread is open
         if (activeThreadMsgId && payload.new && payload.new.message_id === activeThreadMsgId) {
           var container = document.getElementById('thread-messages');
-          if (container && isNearBottom(container)) {
+          if (container) {
+            var wasNear = isNearBottom(container);
             appendBubble(container, payload.new.body, 'employer', bubbleTime(payload.new.created_at));
-            scrollToBottom(container);
-          } else if (container) {
-            appendBubble(container, payload.new.body, 'employer', bubbleTime(payload.new.created_at));
+            if (wasNear) scrollToBottom(container);
           }
+          // Mark as read since user is viewing the thread
+          supa.rpc('mark_employer_replies_read', { p_message_id: activeThreadMsgId }).then(function(){}).catch(function(){});
+          preloadUnreadCount();
         }
       })
       // Candidate reply read-state updates (employer marked read → update receipt)
