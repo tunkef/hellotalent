@@ -453,6 +453,11 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
       Takipçiler
       <span class="nav-badge" id="nav-follower-count" style="display:none">0</span>
     </div>
+    <div class="nav-item" data-panel="mesajlar" onclick="switchPanel('mesajlar',this)">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+      Mesajlar
+      <span class="nav-badge" id="nav-mesaj-count" style="display:none">0</span>
+    </div>
     <div class="nav-section-label">Kampanya</div>
     <div class="nav-item" data-panel="kampanyalar" onclick="switchPanel('kampanyalar',this)">
       <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
@@ -818,6 +823,18 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
         <div style="font-size:12px;color:var(--muted);" id="follower-panel-count"></div>
       </div>
       <div id="follower-list"></div>
+    </div>
+
+    <!-- ═══ PANEL: MESAJLAR ═══ -->
+    <div class="panel" id="panel-mesajlar">
+      <div class="section-header">
+        <div class="section-title">Mesajlar</div>
+        <div style="font-size:12px;color:var(--muted);" id="mesajlar-thread-count"></div>
+      </div>
+      <div id="mesajlar-thread-list" style="display:flex;flex-direction:column;gap:6px;"></div>
+      <div id="mesajlar-empty" style="display:none;text-align:center;padding:40px;color:var(--muted);font-size:13px;border:1px solid var(--border);border-radius:10px;background:white;">
+        Hen\u00FCz mesaj yok. Aday arama panelinden mesaj g\u00F6nderebilirsiniz.
+      </div>
     </div>
 
     <!-- ═══ ŞİRKET PROFİLİ PANELİ ═══ -->
@@ -2268,7 +2285,8 @@ var PANEL_TITLES = {
   sirket:'Şirket Profili',
   takipciler:'Takipçiler',
   kampanyalar:'Kampanyalar',
-  ekip:'Ekip Yönetimi',
+  ekip:'Ekip Y\u00F6netimi',
+  mesajlar:'Mesajlar',
   ayarlar:'Ayarlar'
 };
 // ── ONBOARDING BANNER ──
@@ -2333,6 +2351,7 @@ function switchPanel(name, el){
   }
   // lazy-load panel data
   if(name === 'takipciler') loadFollowers();
+  if(name === 'mesajlar') loadMesajlarPanel();
   if(name === 'ekip') loadTeamPanel();
   // mobile — scroll to top
   window.scrollTo({top:0, behavior:'smooth'});
@@ -2984,6 +3003,189 @@ async function sendMesaj(){
     console.error('sendMesaj exception:', e);
     document.getElementById('mesaj-send-text').textContent = 'Gönder';
   }
+}
+
+// ── MESAJLAR PANELİ (Thread List) ──
+
+var _mesajlarLoaded = false;
+
+async function loadMesajlarPanel() {
+  var listEl = document.getElementById('mesajlar-thread-list');
+  var emptyEl = document.getElementById('mesajlar-empty');
+  var countEl = document.getElementById('mesajlar-thread-count');
+  if (!listEl) return;
+
+  if (!_mesajlarLoaded) {
+    while (listEl.firstChild) listEl.removeChild(listEl.firstChild);
+    var ld = document.createElement('div');
+    ld.style.cssText = 'text-align:center;padding:32px;color:var(--muted);font-size:13px;';
+    ld.textContent = 'Mesajlar y\u00FCkleniyor...';
+    listEl.appendChild(ld);
+  }
+
+  try {
+    var res = await getSupa().rpc('get_company_message_threads', { p_limit: 50, p_offset: 0 });
+    if (res.error) {
+      console.error('loadMesajlarPanel error:', res.error.message);
+      while (listEl.firstChild) listEl.removeChild(listEl.firstChild);
+      var errEl = document.createElement('div');
+      errEl.style.cssText = 'text-align:center;padding:32px;color:#DC2626;font-size:13px;';
+      errEl.textContent = 'Mesajlar y\u00FCklenemedi.';
+      listEl.appendChild(errEl);
+      return;
+    }
+
+    var threads = res.data || [];
+    _mesajlarLoaded = true;
+    while (listEl.firstChild) listEl.removeChild(listEl.firstChild);
+
+    if (threads.length === 0) {
+      if (emptyEl) emptyEl.style.display = '';
+      if (countEl) countEl.textContent = '';
+      return;
+    }
+    if (emptyEl) emptyEl.style.display = 'none';
+    if (countEl) countEl.textContent = threads.length + ' konu\u015Fma';
+
+    // Update nav badge with total unread
+    var totalUnread = 0;
+    for (var i = 0; i < threads.length; i++) totalUnread += (threads[i].unread_replies || 0);
+    var navBadge = document.getElementById('nav-mesaj-count');
+    if (navBadge) {
+      navBadge.textContent = totalUnread;
+      navBadge.style.display = totalUnread > 0 ? '' : 'none';
+    }
+
+    threads.forEach(function(t) {
+      listEl.appendChild(buildThreadRow(t));
+    });
+  } catch (err) {
+    console.error('loadMesajlarPanel exception:', err);
+  }
+}
+
+function buildThreadRow(t) {
+  var hasUnread = (t.unread_replies || 0) > 0;
+  var isCandidateReply = t.last_sender === 'candidate';
+
+  var row = document.createElement('div');
+  row.style.cssText = 'display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:10px;border:1px solid var(--border);background:white;cursor:pointer;transition:all .15s;' +
+    (hasUnread ? 'border-left:3px solid var(--verm);background:#FFFBFA;' : '');
+
+  // Avatar circle with initial
+  var avatar = document.createElement('div');
+  avatar.style.cssText = 'width:40px;height:40px;border-radius:50%;background:var(--navy);color:white;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;flex-shrink:0;font-family:\'Bricolage Grotesque\',sans-serif;';
+  var initials = (t.candidate_name || 'A').split(' ').map(function(w) { return w.charAt(0); }).join('').substring(0, 2).toUpperCase();
+  avatar.textContent = initials;
+  row.appendChild(avatar);
+
+  // Content
+  var content = document.createElement('div');
+  content.style.cssText = 'flex:1;min-width:0;';
+
+  var topRow = document.createElement('div');
+  topRow.style.cssText = 'display:flex;align-items:center;justify-content:space-between;margin-bottom:2px;';
+  var nameEl = document.createElement('span');
+  nameEl.style.cssText = 'font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;' +
+    (hasUnread ? 'font-weight:700;' : 'font-weight:500;') + 'color:var(--text);';
+  nameEl.textContent = t.candidate_name || 'Aday';
+  topRow.appendChild(nameEl);
+
+  var timeEl = document.createElement('span');
+  timeEl.style.cssText = 'font-size:11px;white-space:nowrap;flex-shrink:0;margin-left:8px;' +
+    (hasUnread ? 'color:var(--verm);font-weight:600;' : 'color:var(--muted);');
+  timeEl.textContent = timeAgoIK(t.last_activity_at);
+  topRow.appendChild(timeEl);
+  content.appendChild(topRow);
+
+  // Subject line
+  var subjectEl = document.createElement('div');
+  subjectEl.style.cssText = 'font-size:12px;color:var(--muted);margin-bottom:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;';
+  subjectEl.textContent = t.subject || '';
+  content.appendChild(subjectEl);
+
+  // Preview
+  var previewEl = document.createElement('div');
+  previewEl.style.cssText = 'font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1.3;' +
+    (hasUnread ? 'color:var(--text);font-weight:500;' : 'color:var(--muted);');
+  var previewText = '';
+  if (isCandidateReply) {
+    previewText = 'Aday: ' + (t.last_body || '');
+  } else {
+    previewText = t.last_body || '';
+  }
+  previewEl.textContent = previewText;
+  content.appendChild(previewEl);
+  row.appendChild(content);
+
+  // Right side: unread count or seen state
+  var rightCol = document.createElement('div');
+  rightCol.style.cssText = 'display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0;';
+  if (hasUnread) {
+    var badge = document.createElement('div');
+    badge.style.cssText = 'background:var(--verm);color:white;font-size:11px;font-weight:700;min-width:20px;height:20px;border-radius:10px;display:flex;align-items:center;justify-content:center;padding:0 6px;';
+    badge.textContent = t.unread_replies;
+    rightCol.appendChild(badge);
+  } else {
+    // Seen state of the employer's original message
+    var seenEl = document.createElement('div');
+    seenEl.style.cssText = 'font-size:10px;font-weight:500;' +
+      (t.employer_read_at ? 'color:#16A34A;' : 'color:var(--muted);');
+    seenEl.textContent = t.employer_read_at ? 'G\u00F6r\u00FCld\u00FC' : '\u0130letildi';
+    rightCol.appendChild(seenEl);
+  }
+  row.appendChild(rightCol);
+
+  // Hover
+  row.addEventListener('mouseenter', function() { row.style.boxShadow = '0 2px 8px rgba(0,0,0,0.06)'; });
+  row.addEventListener('mouseleave', function() { row.style.boxShadow = 'none'; });
+
+  // Click -> open thread view (reuses existing openCandidateRepliesModal but for single message)
+  row.addEventListener('click', function() {
+    openSingleThreadModal(t.message_id, t.candidate_name);
+  });
+
+  return row;
+}
+
+async function openSingleThreadModal(messageId, candidateName) {
+  var existing = document.getElementById('yanitlar-modal-overlay');
+  if (existing) existing.remove();
+
+  var overlay = document.createElement('div');
+  overlay.id = 'yanitlar-modal-overlay';
+  overlay.className = 'modal-overlay show';
+
+  var modal = document.createElement('div');
+  modal.className = 'modal';
+  modal.style.maxWidth = '560px';
+
+  var header = document.createElement('div');
+  header.className = 'modal-header';
+  var title = document.createElement('span');
+  title.className = 'modal-title';
+  title.textContent = '\uD83D\uDCAC ' + (candidateName || 'Aday');
+  header.appendChild(title);
+  var closeBtn = document.createElement('button');
+  closeBtn.className = 'modal-close';
+  closeBtn.textContent = '\u2715';
+  closeBtn.onclick = function() { overlay.remove(); _mesajlarLoaded = false; loadMesajlarPanel(); };
+  header.appendChild(closeBtn);
+  modal.appendChild(header);
+
+  var threadBody = document.createElement('div');
+  threadBody.style.cssText = 'display:flex;flex-direction:column;gap:4px;max-height:60vh;overflow-y:auto;padding:4px 0;';
+  var ld = document.createElement('div');
+  ld.style.cssText = 'text-align:center;padding:24px;color:var(--muted);font-size:13px;';
+  ld.textContent = 'Y\u00FCkleniyor...';
+  threadBody.appendChild(ld);
+  modal.appendChild(threadBody);
+
+  overlay.appendChild(modal);
+  overlay.addEventListener('click', function(e) { if (e.target === overlay) { overlay.remove(); _mesajlarLoaded = false; loadMesajlarPanel(); } });
+  document.body.appendChild(overlay);
+
+  loadEmployerThread(messageId, threadBody);
 }
 
 // ── ADAY YANITLARI GÖRÜNTÜLE (Thread View) ──
