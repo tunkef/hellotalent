@@ -592,8 +592,8 @@
     var listEl = document.getElementById('popup-msg-list');
     if (!listEl) return;
 
-    // Ensure data is loaded
-    if (!loaded) await window._htLoadInbox();
+    // Always refresh canonical data when popup opens
+    await window._htLoadInbox();
 
     listEl.textContent = '';
     var threads = allMessages.filter(function(m) { return m.status !== 'deleted'; }).slice(0, 5);
@@ -628,7 +628,8 @@
     var listEl = document.getElementById('popup-notif-list');
     if (!listEl) return;
 
-    if (!loaded) await window._htLoadInbox();
+    // Always refresh canonical data when popup opens
+    await window._htLoadInbox();
 
     listEl.textContent = '';
     var threads = allMessages.filter(function(m) { return m.status !== 'deleted'; }).slice(0, 5);
@@ -640,7 +641,10 @@
       var icon = document.createElement('div'); icon.className = 'header-popup-icon'; icon.style.background = '#EEF2FF'; icon.textContent = '\uD83D\uDD14';
       var info = document.createElement('div'); info.className = 'header-popup-info';
       var sender = document.createElement('div'); sender.className = 'header-popup-sender'; sender.textContent = m.company_name || 'Bildirim';
-      var preview = document.createElement('div'); preview.className = 'header-popup-preview'; preview.textContent = m.title || '';
+      var preview = document.createElement('div'); preview.className = 'header-popup-preview';
+      var npText = m.body || m.title || '';
+      if (m.latest_reply) { npText = m.latest_sender === 'candidate' ? 'Sen: ' + m.latest_reply.body : (m.company_name || '\u0130\u015Fveren') + ': ' + m.latest_reply.body; }
+      preview.textContent = npText.substring(0, 60);
       info.appendChild(sender); info.appendChild(preview);
       var right = document.createElement('div'); right.style.cssText = 'display:flex;flex-direction:column;align-items:flex-end;gap:4px;';
       var time = document.createElement('div'); time.className = 'header-popup-time'; time.textContent = timeAgo(m.last_activity);
@@ -733,15 +737,19 @@
       listEl.appendChild(ld);
     }
 
-    // Use canonical thread data — ensure loaded
-    if (!loaded) await window._htLoadInbox();
+    // Always refresh canonical data when panel opens
+    await window._htLoadInbox();
 
     allNotifs = allMessages.filter(function(m) { return m.status !== 'deleted'; }).map(function(m) {
+      var notifBody = m.body || m.title || '';
+      if (m.latest_reply) {
+        notifBody = m.latest_sender === 'candidate' ? 'Sen: ' + m.latest_reply.body : (m.company_name || '\u0130\u015Fveren') + ': ' + m.latest_reply.body;
+      }
       return {
         id: m.id,
         notif_type: 'mesaj',
         title: m.company_name ? m.company_name + ' mesaj g\u00F6nderdi' : 'Yeni mesaj',
-        body: m.title || m.body || '',
+        body: notifBody,
         status: m.status,
         created_at: m.last_activity,
         is_unread: m.is_unread,
