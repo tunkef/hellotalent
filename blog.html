@@ -235,8 +235,8 @@
 
 <!-- ══════════ SUPABASE + JS ══════════ -->
 <script>
-// ── SUPABASE ──
-const sb = (window.HT && HT.getSupa) ? HT.getSupa() : (typeof supabase !== 'undefined' ? supabase.createClient('https://cpwibefquojehjehtrog.supabase.co','sb_publishable_POUtNwJyjAAheukwYP5hmA_TKKjphwa') : null);
+// ── SUPABASE (config from shared.js — HT.getSupa()) ──
+var sb = HT.getSupa();
 
 // ── KARİYER TABS ──
 var tabDescriptions = {

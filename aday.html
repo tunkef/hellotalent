@@ -1001,13 +1001,11 @@ async function submitGiris(e){
 </script>
 <script>
 (function(){
-  var SUPABASE_URL = 'https://cpwibefquojehjehtrog.supabase.co';
-  var SUPABASE_KEY = 'sb_publishable_POUtNwJyjAAheukwYP5hmA_TKKjphwa';
-
+  // Supabase config from shared.js — HT.getSupa() (singleton, no duplicate client)
   function googleSignUp(btn) {
     btn.disabled = true;
     btn.style.opacity = '0.6';
-    var sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    var sb = HT.getSupa();
     sb.auth.signInWithOAuth({
       provider: 'google',
       options: { redirectTo: window.location.origin + '/profil.html' }

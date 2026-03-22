@@ -62,10 +62,11 @@
   <div id="reset-msg" style="font-size:12px;margin-top:12px;display:none;text-align:center;"></div>
 </div>
 
+<!-- shared.js: Supabase config source of truth (no header/footer injected — no ht-header/ht-footer divs) -->
+<script src="/shared.js?v=20260322a"></script>
 <script>
-var SUPABASE_URL = 'https://cpwibefquojehjehtrog.supabase.co';
-var SUPABASE_KEY = 'sb_publishable_POUtNwJyjAAheukwYP5hmA_TKKjphwa';
-var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+// Supabase config from shared.js — HT.getSupa() (singleton)
+var supabase = HT.getSupa();
 
 // Password strength indicator
 (function(){

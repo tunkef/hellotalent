@@ -540,14 +540,14 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
 <script src="admin-candidates.js?v=1"></script>
 <script src="admin-employers.js?v=1"></script>
 <script src="admin-coach-content.js?v=2"></script>
+<!-- shared.js: Supabase config source of truth (no header/footer injected — no ht-header/ht-footer divs) -->
+<script src="/shared.js?v=20260322a"></script>
 <script>
 (function(){
   'use strict';
 
-  /* ── SUPABASE INIT ── */
-  var HT_SUPA_URL = 'https://cpwibefquojehjehtrog.supabase.co';
-  var HT_SUPA_KEY = 'sb_publishable_POUtNwJyjAAheukwYP5hmA_TKKjphwa';
-  var _supa = supabase.createClient(HT_SUPA_URL, HT_SUPA_KEY);
+  /* ── SUPABASE INIT (config from shared.js — HT.getSupa()) ── */
+  var _supa = HT.getSupa();
 
   /* Expose for module JS files */
   window._htAdminSupa = _supa;

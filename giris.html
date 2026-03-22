@@ -484,19 +484,12 @@
   </div>
 </div>
 
+<!-- shared.js: Supabase config source of truth (no header/footer injected — no ht-header/ht-footer divs) -->
+<script src="/shared.js?v=20260322a"></script>
 <script>
-// ── SUPABASE ──
-let _supa = null;
+// ── SUPABASE (config from shared.js — HT.getSupa()) ──
 function getSupa() {
-  if (!_supa) {
-    // Supabase config — single source: shared.js
-    // If URL/KEY change, update shared.js AND these 3 files: profil.html, ik.html, giris.html
-    _supa = supabase.createClient(
-      'https://cpwibefquojehjehtrog.supabase.co',
-      'sb_publishable_POUtNwJyjAAheukwYP5hmA_TKKjphwa'
-    );
-  }
-  return _supa;
+  return HT.getSupa();
 }
 
 // ── LOGIN RATE LIMIT ──
