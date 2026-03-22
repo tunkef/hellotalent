@@ -5,9 +5,9 @@
 // viewers summary, premium CTA), center feed (coach articles),
 // right rail (teklifler + markalar teasers).
 // Depends on: profil-core.js, profil-summary.js, profil-ui.js globals,
-//   window._htGenelCoachTeaser (profil-mulakatkocu.js),
 //   window._htGenelTeklifTeaser (profil-teklifler.js),
-//   window._htGenelMarkaTeaser (profil-markalar.js)
+//   window._htGenelMarkaTeaser (profil-markalar.js),
+//   window._htBrandFollowReady + window.toggleBrandFollow (profil-markalar.js)
 // SECURITY: All innerHTML assignments use only hardcoded SVG
 // constants — no user data is rendered via innerHTML. All user
 // data uses textContent for XSS safety.
@@ -444,14 +444,7 @@
   }
 
   async function fetchCoachPosts() {
-    /* Try cached data from mulakatkocu first */
-    if (typeof window._htGenelCoachTeaser === 'function') {
-      var teaser = window._htGenelCoachTeaser();
-      if (teaser.posts && teaser.posts.length > 0) {
-        return { posts: teaser.posts, likedSet: teaser.likedSet || {} };
-      }
-    }
-    /* Cache empty or not populated yet — fetch directly */
+    /* Always fetch the full published stream directly — never cap by Mulakat cache */
     var posts = [];
     var likedSet = {};
     var postsRes = await supabase
@@ -682,23 +675,51 @@
     if (!listEl) return;
 
     try {
-      /* Try teaser helper first (includes follow state if markalar loaded) */
       var brands = [];
       var followedIds = {};
+
+      /* Use teaser helper if markalar panel has fully loaded (includes follow state + priority) */
       if (typeof window._htGenelMarkaTeaser === 'function') {
         var tData = window._htGenelMarkaTeaser();
-        brands = tData.brands || tData; /* backward compat: old helper returns array */
-        followedIds = tData.followedIds || {};
+        var tBrands = tData.brands || [];
+        if (tBrands.length > 0) {
+          brands = tBrands;
+          followedIds = tData.followedIds || {};
+        }
       }
-      if (!brands || brands.length === 0 || (Array.isArray(brands) && brands.length === 0)) {
-        /* Direct fetch */
-        var res = await supabase.from('brands')
+
+      /* Fresh session: teaser helper has no state — fetch brands + follows directly */
+      if (brands.length === 0) {
+        var allBrands = [];
+        var bRes = await supabase.from('brands')
           .select('id, brand_name, slug, logo_url, segment')
           .eq('is_active', true)
           .not('website_url', 'is', null)
           .order('is_featured', { ascending: false })
-          .limit(3);
-        brands = (res.data && res.data.length) ? res.data : [];
+          .limit(20);
+        allBrands = (bRes.data && bRes.data.length) ? bRes.data : [];
+
+        /* Fetch candidate follows to enable not-followed-first ordering */
+        if (allBrands.length > 0 && currentUser) {
+          var candRes = await supabase.from('candidates').select('id').eq('user_id', currentUser.id).maybeSingle();
+          if (candRes.data) {
+            var fRes = await supabase.from('candidate_brand_follows').select('brand_id').eq('candidate_id', candRes.data.id);
+            if (fRes.data) {
+              for (var fi = 0; fi < fRes.data.length; fi++) {
+                followedIds[fRes.data[fi].brand_id] = true;
+              }
+            }
+          }
+        }
+
+        /* Sort: not-followed first for discovery value */
+        var notFollowed = [];
+        var alreadyFollowed = [];
+        for (var bi = 0; bi < allBrands.length; bi++) {
+          if (followedIds[allBrands[bi].id]) { alreadyFollowed.push(allBrands[bi]); }
+          else { notFollowed.push(allBrands[bi]); }
+        }
+        brands = notFollowed.concat(alreadyFollowed).slice(0, 3);
       }
 
       while (listEl.firstChild) listEl.removeChild(listEl.firstChild);
