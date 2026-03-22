@@ -86,6 +86,7 @@ Deno.serve(async (_req: Request) => {
               status: "failed",
               attempt_count: newAttempt,
               last_error: errorMsg,
+              failed_at: new Date().toISOString(),
             })
             .eq("id", row.id);
           failed++;

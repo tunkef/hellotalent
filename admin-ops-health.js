@@ -89,7 +89,7 @@
 
     var thead = document.createElement('thead');
     var hrow = document.createElement('tr');
-    var headers = ['ID', 'Tur', 'Alici', 'Hata', 'Deneme', 'Tarih'];
+    var headers = ['ID', 'Tur', 'Alici', 'Hata', 'Deneme', 'Basarisizlik Zamani'];
     for (var h = 0; h < headers.length; h++) {
       var th = document.createElement('th');
       th.textContent = headers[h];
@@ -133,8 +133,13 @@
       tr.appendChild(tdAttempt);
 
       var tdDate = document.createElement('td');
-      tdDate.textContent = r.created_at ? new Date(r.created_at).toLocaleString('tr-TR') : '-';
+      var failTime = r.failed_at || r.created_at;
+      tdDate.textContent = failTime ? new Date(failTime).toLocaleString('tr-TR') : '-';
       tdDate.style.fontSize = '12px';
+      if (!r.failed_at && r.created_at) {
+        tdDate.title = 'failed_at yok — olusturma zamani gosteriliyor';
+        tdDate.style.fontStyle = 'italic';
+      }
       tr.appendChild(tdDate);
 
       tbody.appendChild(tr);
