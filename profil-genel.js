@@ -128,7 +128,8 @@
     css += '.gh-btn-secondary:hover{border-color:var(--navy,#1E2D5E);color:var(--navy,#1E2D5E)}';
 
     /* ── Teaser article cards ── */
-    css += '.gh-teaser{background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF);border-radius:16px;padding:18px 22px;box-shadow:0 2px 8px rgba(0,0,0,.08),0 8px 20px rgba(0,0,0,.06);transition:all .25s;cursor:pointer}';
+    css += '.gh-teaser{background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF);border-radius:16px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.08),0 8px 20px rgba(0,0,0,.06);transition:all .25s;cursor:pointer}';
+    css += '.gh-teaser-body{padding:14px 22px 18px}';
     css += '.gh-teaser:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(0,0,0,.1)}';
     css += '.gh-teaser-cat{display:inline-block;padding:2px 8px;border-radius:20px;font-family:"Plus Jakarta Sans",sans-serif;font-size:9px;font-weight:700;background:var(--verm-light,#F5EDE9);color:var(--verm,#C94E28);margin-bottom:8px;letter-spacing:.2px}';
     css += '.gh-teaser-title{font-family:"Bricolage Grotesque",sans-serif;font-size:14px;font-weight:700;color:var(--text-primary,#111);line-height:1.3;margin-bottom:4px}';
@@ -192,6 +193,31 @@
     /* ── Brand teaser empty state ── */
     css += '.gh-brand-empty{font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;color:var(--text-muted,#6B7280);text-align:center;padding:16px 8px;line-height:1.5}';
 
+    /* ── Coach cover images ── */
+    css += '.gh-cover{width:100%;aspect-ratio:16/9;border-radius:16px 16px 0 0;overflow:hidden;position:relative}';
+    css += '.gh-cover img{width:100%;height:100%;object-fit:cover}';
+    css += '.gh-cover-compact{width:100%;aspect-ratio:3/1;border-radius:16px 16px 0 0;overflow:hidden;position:relative}';
+    css += '.gh-cover-compact img{width:100%;height:100%;object-fit:cover}';
+
+    /* ── Fallback editorial cover ── */
+    css += '.gh-fallback-cover{display:flex;flex-direction:column;justify-content:flex-end;padding:20px 24px;position:relative;overflow:hidden}';
+    css += '.gh-fallback-cover::before{content:"";position:absolute;top:-20%;right:-10%;width:120px;height:120px;border-radius:50%;opacity:.12;pointer-events:none}';
+    css += '.gh-fallback-cover::after{content:"";position:absolute;bottom:-30%;left:-5%;width:180px;height:180px;border-radius:50%;opacity:.08;pointer-events:none}';
+    css += '.gh-fallback-cat{display:inline-block;padding:2px 8px;border-radius:12px;font-family:"Plus Jakarta Sans",sans-serif;font-size:9px;font-weight:700;letter-spacing:.3px;margin-bottom:8px;align-self:flex-start}';
+    css += '.gh-fallback-title{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;line-height:1.2;display:-webkit-box;-webkit-box-orient:vertical;overflow:hidden}';
+    css += '.gh-fallback-cover.gh-cover{aspect-ratio:16/9;border-radius:16px 16px 0 0}';
+    css += '.gh-fallback-cover.gh-cover .gh-fallback-title{font-size:18px;-webkit-line-clamp:2;color:rgba(0,0,0,.7)}';
+    css += '.gh-fallback-cover.gh-cover-compact{aspect-ratio:3/1;border-radius:16px 16px 0 0}';
+    css += '.gh-fallback-cover.gh-cover-compact .gh-fallback-title{font-size:13px;-webkit-line-clamp:1;color:rgba(0,0,0,.65)}';
+
+    /* ── Coach avatar (inline) ── */
+    css += '.gh-coach-avatar{width:28px;height:28px;border-radius:50%;flex-shrink:0;overflow:hidden;display:flex;align-items:center;justify-content:center;font-family:"Bricolage Grotesque",sans-serif;font-size:11px;font-weight:800;color:#fff;background:var(--navy,#1E2D5E)}';
+    css += '.gh-coach-avatar img{width:100%;height:100%;object-fit:cover}';
+    css += '.gh-coach-avatar--sm{width:22px;height:22px;font-size:9px}';
+
+    /* ── Author row with avatar ── */
+    css += '.gh-author-row{display:flex;align-items:center;gap:8px}';
+
     /* ── Feed body container ── */
     css += '.gh-feed-body{display:flex;flex-direction:column;gap:16px}';
 
@@ -209,6 +235,82 @@
   var heartSVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>';
   var crownSVG = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5z"/><path d="M5 19a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-1H5v1z" opacity=".5"/></svg>';
   var pinSVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>';
+
+  /* ── Fallback editorial cover: category color map ── */
+  var COVER_COLORS = {
+    mulakat_ipucu:            { bg: '#FEF7F5', accent: '#C94E28', circle: '#C94E28' },
+    yetkinlik_rehberi:        { bg: '#EEF0F7', accent: '#1E2D5E', circle: '#1E2D5E' },
+    kariyer_gelisim_onerileri: { bg: '#ECFDF5', accent: '#059669', circle: '#059669' },
+    performans:               { bg: '#FEF3C7', accent: '#D97706', circle: '#D97706' },
+    kariyer_hikayesi:         { bg: '#F5EDE9', accent: '#92400E', circle: '#92400E' },
+    kariyer_hikaye:           { bg: '#F5EDE9', accent: '#92400E', circle: '#92400E' },
+    sektor_analizi:           { bg: '#E0E7FF', accent: '#4338CA', circle: '#4338CA' },
+    sektor_analiz:            { bg: '#E0E7FF', accent: '#4338CA', circle: '#4338CA' }
+  };
+  var COVER_DEFAULT = { bg: '#F7F6F4', accent: '#6B7280', circle: '#6B7280' };
+
+  /* Build a fallback editorial cover element.
+     sizeClass: 'gh-cover' (large) or 'gh-cover-compact' (teaser).
+     Shared visual logic for Genel + Mulakat (same profil.html page). */
+  function buildFallbackCover(post, sizeClass) {
+    var colors = COVER_COLORS[post.category] || COVER_DEFAULT;
+    var wrapper = el('div', 'gh-fallback-cover ' + sizeClass);
+    wrapper.style.background = colors.bg;
+
+    /* Abstract circles via CSS pseudo — set accent color */
+    wrapper.style.setProperty('--fb-circle', colors.circle);
+    wrapper.setAttribute('data-cat', post.category || '');
+
+    var catLabel = COACH_CAT_LABELS[post.category] || post.category || '';
+    if (catLabel) {
+      var catEl = txt('span', 'gh-fallback-cat', catLabel);
+      catEl.style.background = 'rgba(255,255,255,.7)';
+      catEl.style.color = colors.accent;
+      wrapper.appendChild(catEl);
+    }
+
+    var titleEl = txt('div', 'gh-fallback-title', post.title || '');
+    wrapper.appendChild(titleEl);
+
+    return wrapper;
+  }
+
+  /* Build a cover element: uploaded image or fallback.
+     sizeClass: 'gh-cover' or 'gh-cover-compact'. */
+  function buildCover(post, sizeClass) {
+    if (post.cover_image_url) {
+      var wrapper = el('div', sizeClass);
+      var img = document.createElement('img');
+      img.src = post.cover_image_url;
+      img.alt = post.cover_image_alt || '';
+      img.loading = 'lazy';
+      wrapper.appendChild(img);
+      return wrapper;
+    }
+    return buildFallbackCover(post, sizeClass);
+  }
+
+  /* Build a coach avatar element (uploaded or initials fallback).
+     extraClass: '' or 'gh-coach-avatar--sm'. */
+  function buildCoachAvatar(cp, extraClass) {
+    var avatar = el('div', 'gh-coach-avatar' + (extraClass ? ' ' + extraClass : ''));
+    if (cp && cp.avatar_url) {
+      var img = document.createElement('img');
+      img.src = cp.avatar_url;
+      img.alt = '';
+      img.loading = 'lazy';
+      avatar.appendChild(img);
+    } else {
+      var name = (cp && cp.display_name) || '?';
+      avatar.textContent = name.charAt(0).toUpperCase();
+    }
+    return avatar;
+  }
+
+  /* Expose cover builders for profil-mulakatkocu.js (same page, safe) */
+  window._htBuildCoachCover = buildCover;
+  window._htBuildFallbackCover = buildFallbackCover;
+  window._htBuildCoachAvatar = buildCoachAvatar;
 
   var COACH_CAT_LABELS = {
     mulakat_ipucu: 'M\u00FClakat \u0130pucu',
@@ -460,7 +562,7 @@
     var likedSet = {};
     var postsRes = await supabase
       .from('coach_posts')
-      .select('id, title, excerpt, category, like_count, related_role, body, coach_profiles(display_name, title)')
+      .select('id, title, excerpt, category, like_count, related_role, body, cover_image_url, cover_image_alt, coach_profiles(display_name, title, avatar_url)')
       .eq('status', 'published')
       .order('published_at', { ascending: false });
     posts = (postsRes.data && postsRes.data.length) ? postsRes.data : [];
@@ -509,6 +611,10 @@
 
   function buildFeaturedCard(post) {
     var card = el('div', 'gh-featured gh-animate');
+
+    /* Cover image (uploaded or fallback) */
+    card.appendChild(buildCover(post, 'gh-cover'));
+
     var body = el('div', 'gh-featured-body');
 
     body.appendChild(txt('span', 'gh-featured-cat', COACH_CAT_LABELS[post.category] || post.category));
@@ -517,12 +623,15 @@
       body.appendChild(txt('div', 'gh-featured-excerpt', post.excerpt));
     }
 
-    /* Meta row */
+    /* Meta row with avatar */
     var meta = el('div', 'gh-featured-meta');
+    var authorRow = el('div', 'gh-author-row');
+    authorRow.appendChild(buildCoachAvatar(post.coach_profiles, ''));
     var coachName = (post.coach_profiles && post.coach_profiles.display_name) || '';
     var coachTitle = (post.coach_profiles && post.coach_profiles.title) || '';
     var authorText = coachName + (coachTitle ? ' \u00B7 ' + coachTitle : '');
-    if (authorText) meta.appendChild(txt('span', 'gh-featured-author', authorText));
+    if (authorText) authorRow.appendChild(txt('span', 'gh-featured-author', authorText));
+    meta.appendChild(authorRow);
 
     var pills = el('div', 'gh-featured-pills');
     if (post.related_role) {
@@ -565,14 +674,21 @@
   function buildTeaserCard(post) {
     var card = el('div', 'gh-teaser gh-animate');
 
-    card.appendChild(txt('span', 'gh-teaser-cat', COACH_CAT_LABELS[post.category] || post.category));
-    card.appendChild(txt('div', 'gh-teaser-title', post.title));
-    if (post.excerpt) card.appendChild(txt('div', 'gh-teaser-excerpt', post.excerpt));
+    /* Compact cover (uploaded or fallback) */
+    card.appendChild(buildCover(post, 'gh-cover-compact'));
+
+    var teaserBody = el('div', 'gh-teaser-body');
+    teaserBody.appendChild(txt('span', 'gh-teaser-cat', COACH_CAT_LABELS[post.category] || post.category));
+    teaserBody.appendChild(txt('div', 'gh-teaser-title', post.title));
+    if (post.excerpt) teaserBody.appendChild(txt('div', 'gh-teaser-excerpt', post.excerpt));
 
     var footer = el('div', 'gh-teaser-footer');
+    var authorRow = el('div', 'gh-author-row');
+    authorRow.appendChild(buildCoachAvatar(post.coach_profiles, 'gh-coach-avatar--sm'));
     var coachName = (post.coach_profiles && post.coach_profiles.display_name) || '';
     var coachTitle = (post.coach_profiles && post.coach_profiles.title) || '';
-    if (coachName) footer.appendChild(txt('span', 'gh-teaser-author', coachName + (coachTitle ? ' \u00B7 ' + coachTitle : '')));
+    if (coachName) authorRow.appendChild(txt('span', 'gh-teaser-author', coachName + (coachTitle ? ' \u00B7 ' + coachTitle : '')));
+    footer.appendChild(authorRow);
 
     var right = el('div', 'gh-teaser-right');
     if (post.related_role) right.appendChild(txt('span', 'gh-role-pill', post.related_role));
@@ -585,8 +701,9 @@
     readBtn.addEventListener('click', function(e) { e.stopPropagation(); openArticleInCoach(post); });
     right.appendChild(readBtn);
     footer.appendChild(right);
+    teaserBody.appendChild(footer);
 
-    card.appendChild(footer);
+    card.appendChild(teaserBody);
     card.addEventListener('click', function() { openArticleInCoach(post); });
 
     return card;

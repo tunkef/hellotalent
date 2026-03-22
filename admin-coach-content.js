@@ -262,7 +262,7 @@
 
     try {
       var query = supa.from('coach_posts')
-        .select('*, coach_profiles(display_name, title, bio_short, sector_background, experience_years)')
+        .select('*, coach_profiles(display_name, title, avatar_url, bio_short, sector_background, experience_years)')
         .order('updated_at', { ascending: false });
 
       if (_postsFilter === 'submitted') {
@@ -314,8 +314,26 @@
     header.appendChild(buildStatusBadge(post.status));
     card.appendChild(header);
 
+    /* Cover thumbnail if available */
+    if (post.cover_image_url) {
+      var coverThumb = document.createElement('img');
+      coverThumb.src = post.cover_image_url;
+      coverThumb.alt = post.cover_image_alt || '';
+      coverThumb.style.cssText = 'width:100%;max-height:120px;object-fit:cover;border-radius:8px;margin-bottom:8px;';
+      card.appendChild(coverThumb);
+    }
+
     var meta = el('div', 'acc-post-meta');
-    var coachName = (post.coach_profiles && post.coach_profiles.display_name) || 'Bilinmeyen Koc';
+    /* Coach avatar */
+    var cp = post.coach_profiles;
+    if (cp && cp.avatar_url) {
+      var avatarImg = document.createElement('img');
+      avatarImg.src = cp.avatar_url;
+      avatarImg.alt = '';
+      avatarImg.style.cssText = 'width:20px;height:20px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:4px;';
+      meta.appendChild(avatarImg);
+    }
+    var coachName = (cp && cp.display_name) || 'Bilinmeyen Koc';
     meta.appendChild(el('span', '', coachName));
     meta.appendChild(el('span', 'acc-post-sep', '·'));
     meta.appendChild(el('span', '', CATEGORY_LABELS[post.category] || post.category));
@@ -329,7 +347,6 @@
     }
 
     /* Author signature — for editorial review */
-    var cp = post.coach_profiles;
     if (cp && (cp.bio_short || cp.sector_background || cp.experience_years || cp.title)) {
       var authorInfo = el('div', 'acc-post-author');
       authorInfo.style.cssText = 'font-size:11px;color:var(--muted);margin:4px 0 8px;padding:8px 12px;background:#F9FAFB;border-radius:8px;border:1px solid #F3F4F6;line-height:1.6;';

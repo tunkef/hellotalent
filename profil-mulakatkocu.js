@@ -875,12 +875,14 @@ function injectCSS() {
   css += '.ig-coach-feed-title{font-family:"Bricolage Grotesque",sans-serif;font-size:16px;font-weight:700;color:var(--text-primary,#111);letter-spacing:-.2px}';
   css += '.ig-coach-feed-sub{font-family:"Plus Jakarta Sans",sans-serif;font-size:11px;color:var(--text-muted,#6B7280)}';
   css += '.ig-coach-feed-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}';
-  css += '.ig-coach-card{background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF);border-radius:16px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,.06);transition:box-shadow .3s ease,transform .3s ease;cursor:pointer;display:flex;flex-direction:column}';
+  css += '.ig-coach-card{background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF);border-radius:16px;padding:0;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.06);transition:box-shadow .3s ease,transform .3s ease;cursor:pointer;display:flex;flex-direction:column}';
+  css += '.ig-coach-card-coach,.ig-coach-card-title,.ig-coach-card-excerpt,.ig-coach-card-footer{padding-left:20px;padding-right:20px}';
+  css += '.ig-coach-card-coach{padding-top:16px;display:flex;align-items:center;gap:6px}';
   css += '.ig-coach-card:hover{box-shadow:0 8px 24px rgba(0,0,0,.08);transform:translateY(-2px)}';
   css += '.ig-coach-card-coach{font-family:"Plus Jakarta Sans",sans-serif;font-size:11px;color:var(--text-muted,#6B7280);margin-bottom:6px}';
   css += '.ig-coach-card-title{font-family:"Bricolage Grotesque",sans-serif;font-size:14px;font-weight:700;color:var(--text-primary,#111);margin-bottom:6px;letter-spacing:-.1px;line-height:1.3}';
   css += '.ig-coach-card-excerpt{font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;color:var(--text-secondary,#4B5563);line-height:1.5;flex:1;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}';
-  css += '.ig-coach-card-footer{display:flex;align-items:center;justify-content:space-between;margin-top:12px;padding-top:10px;border-top:1px solid var(--border-subtle,#E5E3DF)}';
+  css += '.ig-coach-card-footer{display:flex;align-items:center;justify-content:space-between;margin-top:12px;padding-top:10px;padding-bottom:16px;border-top:1px solid var(--border-subtle,#E5E3DF)}';
   css += '.ig-coach-card-cat{font-family:"Plus Jakarta Sans",sans-serif;font-size:10px;font-weight:600;color:var(--verm,#C94E28);background:rgba(201,78,40,.06);padding:3px 8px;border-radius:8px}';
   css += '.ig-coach-card-like{display:flex;align-items:center;gap:4px;font-family:"DM Mono",monospace;font-size:11px;color:var(--text-muted,#6B7280);background:none;border:none;cursor:pointer;padding:2px 6px;border-radius:6px;transition:all .2s}';
   css += '.ig-coach-card-like:hover{background:rgba(201,78,40,.06)}';
@@ -1666,7 +1668,7 @@ async function hydrateCoachFeed() {
     /* Fetch bounded set of published posts (latest 24) for client-side filtering */
     var postsRes = await supabase
       .from('coach_posts')
-      .select('id, title, excerpt, category, like_count, related_role, body, coach_profiles(display_name, title, bio_short, sector_background, experience_years)')
+      .select('id, title, excerpt, category, like_count, related_role, body, cover_image_url, cover_image_alt, coach_profiles(display_name, title, avatar_url, bio_short, sector_background, experience_years)')
       .eq('status', 'published')
       .order('published_at', { ascending: false })
       .limit(24);
@@ -1867,13 +1869,25 @@ function buildCoachCard(post, isLiked) {
   card.className = 'ig-coach-card';
   card.setAttribute('data-post-id', post.id);
 
+  /* Compact cover (uses shared builder from profil-genel.js, same page) */
+  if (typeof window._htBuildCoachCover === 'function') {
+    card.appendChild(window._htBuildCoachCover(post, 'gh-cover-compact'));
+  }
+
   var coachName = (post.coach_profiles && post.coach_profiles.display_name) || '';
   var coachTitle = (post.coach_profiles && post.coach_profiles.title) || '';
   var coachLabel = coachName + (coachTitle ? ' \u00B7 ' + coachTitle : '');
 
+  /* Author line with avatar */
   var coachEl = document.createElement('div');
   coachEl.className = 'ig-coach-card-coach';
-  coachEl.textContent = coachLabel;
+  if (typeof window._htBuildCoachAvatar === 'function') {
+    coachEl.appendChild(window._htBuildCoachAvatar(post.coach_profiles, 'gh-coach-avatar--sm'));
+    coachEl.appendChild(document.createTextNode(' '));
+  }
+  var coachText = document.createElement('span');
+  coachText.textContent = coachLabel;
+  coachEl.appendChild(coachText);
   card.appendChild(coachEl);
 
   var titleEl = document.createElement('div');
@@ -1953,6 +1967,13 @@ function openCoachDetail(post, isLiked) {
   closeBtn.addEventListener('click', function() { overlay.parentNode.removeChild(overlay); });
   detail.appendChild(closeBtn);
 
+  /* Hero cover (uses shared builder from profil-genel.js, same page) */
+  if (typeof window._htBuildCoachCover === 'function') {
+    var heroCover = window._htBuildCoachCover(post, 'gh-cover');
+    heroCover.style.borderRadius = '0';
+    detail.appendChild(heroCover);
+  }
+
   var catEl = document.createElement('div');
   catEl.className = 'ig-coach-detail-cat';
   catEl.textContent = COACH_CATEGORY_LABELS[post.category] || post.category;
@@ -1986,10 +2007,17 @@ function openCoachDetail(post, isLiked) {
     authorTitle.textContent = 'Yazar Hakk\u0131nda';
     authorBlock.appendChild(authorTitle);
 
+    /* Author name with avatar */
+    var authorNameRow = document.createElement('div');
+    authorNameRow.style.cssText = 'display:flex;align-items:center;gap:8px';
+    if (typeof window._htBuildCoachAvatar === 'function') {
+      authorNameRow.appendChild(window._htBuildCoachAvatar(cp, ''));
+    }
     var authorName = document.createElement('div');
     authorName.className = 'ig-coach-author-name';
     authorName.textContent = (cp.display_name || '') + (cp.title ? ' \u00B7 ' + cp.title : '');
-    authorBlock.appendChild(authorName);
+    authorNameRow.appendChild(authorName);
+    authorBlock.appendChild(authorNameRow);
 
     var authorMeta = [];
     if (cp.sector_background) authorMeta.push(cp.sector_background);

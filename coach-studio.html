@@ -264,6 +264,33 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
     profileForm.appendChild(buildField('Deneyim (yil)', 'input', 'cs-p-years', p.experience_years != null ? String(p.experience_years) : '', 3, ''));
     profileForm.appendChild(buildField('Kisa Biyografi', 'textarea', 'cs-p-bio', p.bio_short || '', 300, 'Kisa tanitim metni (maks. 300 karakter)', 3));
 
+    /* ── Avatar upload ── */
+    var avatarSection = document.createElement('div');
+    avatarSection.style.cssText = 'margin-top:12px;margin-bottom:8px;';
+    var avatarLabel = document.createElement('label');
+    avatarLabel.style.cssText = 'font-size:11px;font-weight:600;color:var(--navy);display:block;margin-bottom:6px;';
+    avatarLabel.textContent = 'Profil Fotografi';
+    avatarSection.appendChild(avatarLabel);
+    if (p.avatar_url) {
+      var avatarPreview = document.createElement('img');
+      avatarPreview.id = 'cs-avatar-preview';
+      avatarPreview.src = p.avatar_url;
+      avatarPreview.style.cssText = 'width:56px;height:56px;border-radius:50%;object-fit:cover;border:2px solid var(--border);margin-bottom:8px;display:block;';
+      avatarSection.appendChild(avatarPreview);
+    }
+    var avatarInput = document.createElement('input');
+    avatarInput.type = 'file';
+    avatarInput.accept = 'image/jpeg,image/png,image/webp';
+    avatarInput.id = 'cs-avatar-input';
+    avatarInput.style.cssText = 'font-size:12px;';
+    avatarInput.addEventListener('change', handleAvatarUpload);
+    avatarSection.appendChild(avatarInput);
+    var avatarMsg = document.createElement('div');
+    avatarMsg.id = 'cs-avatar-msg';
+    avatarMsg.className = 'cs-msg';
+    avatarSection.appendChild(avatarMsg);
+    profileForm.appendChild(avatarSection);
+
     var saveProfileBtn = document.createElement('button');
     saveProfileBtn.className = 'cs-btn cs-btn-secondary';
     saveProfileBtn.style.cssText = 'margin-top:8px;margin-bottom:12px;width:100%;font-size:12px;padding:8px;';
@@ -317,6 +344,36 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
     } catch (e) {
       console.error('Save profile error:', e);
       showMsg(msgEl, 'Kaydetme hatasi.', 'error');
+    }
+  }
+
+  /* ── AVATAR UPLOAD ── */
+  async function handleAvatarUpload() {
+    var input = document.getElementById('cs-avatar-input');
+    var msgEl = document.getElementById('cs-avatar-msg');
+    if (!input || !input.files || !input.files.length) return;
+    var file = input.files[0];
+    if (file.size > 2 * 1024 * 1024) { showMsg(msgEl, 'Dosya 2MB\'dan kucuk olmali.', 'error'); return; }
+    var ext = file.name.split('.').pop().toLowerCase();
+    if (['jpg','jpeg','png','webp'].indexOf(ext) === -1) { showMsg(msgEl, 'Sadece JPG, PNG veya WebP.', 'error'); return; }
+
+    var path = 'coach_avatars/' + _coachProfile.id + '.' + ext;
+    try {
+      showMsg(msgEl, 'Yukleniyor...', 'info');
+      var upRes = await _supa.storage.from('cvs').upload(path, file, { upsert: true, cacheControl: '3600', contentType: file.type });
+      if (upRes.error) { showMsg(msgEl, 'Yukleme hatasi: ' + upRes.error.message, 'error'); return; }
+      var publicUrl = _supa.storage.from('cvs').getPublicUrl(path).data.publicUrl;
+      var cleanUrl = publicUrl.split('?')[0];
+      var dbRes = await _supa.from('coach_profiles').update({ avatar_url: cleanUrl }).eq('id', _coachProfile.id);
+      if (dbRes.error) { showMsg(msgEl, 'Kayit hatasi: ' + dbRes.error.message, 'error'); return; }
+      _coachProfile.avatar_url = cleanUrl;
+      var preview = document.getElementById('cs-avatar-preview');
+      if (preview) { preview.src = cleanUrl + '?t=' + Date.now(); }
+      else { renderProfileSection(); }
+      showMsg(msgEl, 'Profil fotografi guncellendi.', 'success');
+    } catch (e) {
+      console.error('Avatar upload error:', e);
+      showMsg(msgEl, 'Yukleme hatasi.', 'error');
     }
   }
 
@@ -441,6 +498,57 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
       card.appendChild(bodyField);
       card.appendChild(buildSelectField('Kategori', 'cs-f-category', CATEGORIES, post.category));
       card.appendChild(buildSelectField('Iliskili Rol (istege bagli)', 'cs-f-role', ROLE_OPTIONS, post.related_role || ''));
+
+      /* ── Cover image upload ── */
+      var coverSection = document.createElement('div');
+      coverSection.style.cssText = 'margin-top:12px;padding:14px;background:var(--bg,#F7F6F4);border-radius:12px;border:1px solid var(--border);';
+
+      var coverLabel = document.createElement('div');
+      coverLabel.style.cssText = 'font-size:11px;font-weight:600;color:var(--navy);margin-bottom:8px;';
+      coverLabel.textContent = 'Kapak Gorseli (istege bagli)';
+      coverSection.appendChild(coverLabel);
+
+      if (post.cover_image_url) {
+        var coverPreview = document.createElement('img');
+        coverPreview.id = 'cs-cover-preview';
+        coverPreview.src = post.cover_image_url;
+        coverPreview.alt = post.cover_image_alt || '';
+        coverPreview.style.cssText = 'width:100%;max-height:160px;object-fit:cover;border-radius:8px;margin-bottom:8px;display:block;';
+        coverSection.appendChild(coverPreview);
+      }
+
+      coverSection.appendChild(buildField('Alt Metin (gorsel aciklamasi)', 'input', 'cs-f-cover-alt', post.cover_image_alt || '', 120, 'Gorseli kisa tanimlayin'));
+
+      var rightsRow = document.createElement('label');
+      rightsRow.style.cssText = 'display:flex;align-items:center;gap:8px;margin:8px 0;cursor:pointer;font-size:11px;color:var(--text);';
+      var rightsCheck = document.createElement('input');
+      rightsCheck.type = 'checkbox';
+      rightsCheck.id = 'cs-cover-rights';
+      rightsCheck.style.cssText = 'width:16px;height:16px;accent-color:var(--verm);';
+      rightsRow.appendChild(rightsCheck);
+      rightsRow.appendChild(document.createTextNode('Bu g\u00F6rseli kullanma hakk\u0131na sahibim'));
+      coverSection.appendChild(rightsRow);
+
+      var coverInput = document.createElement('input');
+      coverInput.type = 'file';
+      coverInput.accept = 'image/jpeg,image/png,image/webp';
+      coverInput.id = 'cs-cover-input';
+      coverInput.style.cssText = 'font-size:12px;';
+      coverInput.disabled = true;
+      coverInput.addEventListener('change', function() { handleCoverUpload(post.id); });
+      coverSection.appendChild(coverInput);
+
+      /* Enable file input only when rights checkbox is checked */
+      rightsCheck.addEventListener('change', function() {
+        coverInput.disabled = !rightsCheck.checked;
+      });
+
+      var coverMsg = document.createElement('div');
+      coverMsg.id = 'cs-cover-msg';
+      coverMsg.className = 'cs-msg';
+      coverSection.appendChild(coverMsg);
+
+      card.appendChild(coverSection);
     } else {
       var catObj = CATEGORIES.find(function(c) { return c.value === post.category; });
       if (catObj) {
@@ -547,6 +655,42 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
   }
 
   /* ── SAVE POST ── */
+  /* ── COVER IMAGE UPLOAD ── */
+  async function handleCoverUpload(postId) {
+    var input = document.getElementById('cs-cover-input');
+    var msgEl = document.getElementById('cs-cover-msg');
+    var altEl = document.getElementById('cs-f-cover-alt');
+    var rightsEl = document.getElementById('cs-cover-rights');
+
+    if (!input || !input.files || !input.files.length) return;
+    if (!rightsEl || !rightsEl.checked) { showMsg(msgEl, 'Gorsel hakki onaylanmali.', 'error'); return; }
+
+    var altText = altEl ? altEl.value.trim() : '';
+    if (!altText) { showMsg(msgEl, 'Alt metin (gorsel aciklamasi) gereklidir.', 'error'); return; }
+
+    var file = input.files[0];
+    if (file.size > 5 * 1024 * 1024) { showMsg(msgEl, 'Dosya 5MB\'dan kucuk olmali.', 'error'); return; }
+    var ext = file.name.split('.').pop().toLowerCase();
+    if (['jpg','jpeg','png','webp'].indexOf(ext) === -1) { showMsg(msgEl, 'Sadece JPG, PNG veya WebP.', 'error'); return; }
+
+    var path = 'coach_covers/' + postId + '/' + Date.now() + '_cover.' + ext;
+    try {
+      showMsg(msgEl, 'Yukleniyor...', 'info');
+      var upRes = await _supa.storage.from('cvs').upload(path, file, { upsert: true, cacheControl: '3600', contentType: file.type });
+      if (upRes.error) { showMsg(msgEl, 'Yukleme hatasi: ' + upRes.error.message, 'error'); return; }
+      var publicUrl = _supa.storage.from('cvs').getPublicUrl(path).data.publicUrl;
+      var cleanUrl = publicUrl.split('?')[0];
+      var dbRes = await _supa.from('coach_posts').update({ cover_image_url: cleanUrl, cover_image_alt: altText }).eq('id', postId);
+      if (dbRes.error) { showMsg(msgEl, 'Kayit hatasi: ' + dbRes.error.message, 'error'); return; }
+      var preview = document.getElementById('cs-cover-preview');
+      if (preview) { preview.src = cleanUrl + '?t=' + Date.now(); }
+      showMsg(msgEl, 'Kapak gorseli guncellendi.', 'success');
+    } catch (e) {
+      console.error('Cover upload error:', e);
+      showMsg(msgEl, 'Yukleme hatasi.', 'error');
+    }
+  }
+
   async function savePost(postId, submit) {
     var titleEl = document.getElementById('cs-f-title');
     var excerptEl = document.getElementById('cs-f-excerpt');
@@ -561,12 +705,14 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
     if (!title) { showMsg(msgEl, 'Baslik gereklidir.', 'error'); return; }
     if (!body) { showMsg(msgEl, 'Icerik gereklidir.', 'error'); return; }
 
+    var coverAltEl = document.getElementById('cs-f-cover-alt');
     var updates = {
       title: title,
       excerpt: excerptEl ? excerptEl.value.trim() : '',
       body: body,
       category: catEl ? catEl.value : 'mulakat_ipucu',
-      related_role: roleEl && roleEl.value ? roleEl.value : null
+      related_role: roleEl && roleEl.value ? roleEl.value : null,
+      cover_image_alt: coverAltEl ? coverAltEl.value.trim() || null : null
     };
     if (submit) updates.status = 'submitted';
 
