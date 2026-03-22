@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "checkJs": false,
+    "allowJs": true,
+    "noEmit": true,
+    "target": "ES2020",
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "moduleDetection": "auto",
+    "strict": false,
+    "skipLibCheck": true,
+    "baseUrl": "."
+  },
+  "include": [
+    "*.js",
+    "global.d.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "tests",
+    "docs",
+    "playwright.config.js",
+    "eslint.config.js"
+  ]
+}
