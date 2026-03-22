@@ -2327,7 +2327,7 @@ function reapplyDynamicFields() {
     // Görünürlük aynaları: applyAllVisibilityMirrorsFromProfile (load sonunda + DOMContentLoaded sonrası)
     // Load CV state if exists
     if (dbData.profile.cv_url && dbData.profile.cv_filename) {
-      showCVUploaded(dbData.profile.cv_filename, new Date(dbData.profile.cv_uploaded_at || Date.now()));
+      showCVUploaded(dbData.profile.cv_url, new Date(dbData.profile.cv_uploaded_at || Date.now()));
       // Reconstruct storage path from URL for cleanup tracking
       try {
         currentCVStoragePath = STORAGE.extractStoragePath(dbData.profile.cv_url);
