@@ -450,15 +450,24 @@ window._htBrandFollowReady = function() {
 };
 
 /* ── Teaser helper for Genel Bakis home surface ── */
-/* Returns 3 brand objects + follow state for the right-rail teaser card */
+/* Returns 3 brand objects (not-followed first) + follow state */
 window._htGenelMarkaTeaser = function() {
   if (!_ht_brands || _ht_brands.length === 0) return { brands: [], followedIds: {} };
   var followedIds = {};
   if (_ht_follows) {
     _ht_follows.forEach(function(id) { followedIds[id] = true; });
   }
+  /* Prioritize not-followed brands for discovery value */
+  var notFollowed = [];
+  var followed = [];
+  for (var i = 0; i < _ht_brands.length; i++) {
+    var b = _ht_brands[i];
+    if (_ht_follows && _ht_follows.has(b.id)) { followed.push(b); }
+    else { notFollowed.push(b); }
+  }
+  var picked = notFollowed.concat(followed).slice(0, 3);
   return {
-    brands: _ht_brands.slice(0, 3).map(function(b) {
+    brands: picked.map(function(b) {
       return { id: b.id, brand_name: b.brand_name, logo_url: b.logo_url, segment: b.segment };
     }),
     followedIds: followedIds

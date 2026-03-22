@@ -59,8 +59,8 @@
     css += '.gh-id-top{display:flex;align-items:center;gap:14px;margin-bottom:14px}';
     css += '.gh-id-avatar{width:56px;height:56px;border-radius:50%;background:var(--navy,#1E2D5E);color:#fff;display:flex;align-items:center;justify-content:center;font-family:"Bricolage Grotesque",sans-serif;font-size:18px;font-weight:800;flex-shrink:0;overflow:hidden}';
     css += '.gh-id-avatar img{width:100%;height:100%;object-fit:cover}';
-    /* Beni Oner active glow on avatar */
-    css += '.gh-id-avatar--glow{box-shadow:0 0 0 3px #10B981,0 0 12px 4px rgba(16,185,129,.35);border:2px solid #fff}';
+    /* Beni Oner active glow — matches repo-native .g-avatar.glow-active recipe */
+    css += '.gh-id-avatar--glow{box-shadow:0 0 0 3px #22C55E,0 0 12px 4px rgba(34,197,94,0.6),0 0 24px 8px rgba(34,197,94,0.3);transition:box-shadow 0.4s ease}';
     css += '.gh-id-name{font-family:"Bricolage Grotesque",sans-serif;font-size:16px;font-weight:800;color:var(--text-primary,#111);line-height:1.2}';
     css += '.gh-id-role{font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;color:var(--text-secondary,#4B5563);margin-top:2px;line-height:1.3}';
     css += '.gh-id-city{display:flex;align-items:center;gap:4px;font-family:"Plus Jakarta Sans",sans-serif;font-size:11px;color:var(--text-muted,#6B7280);margin-top:4px}';
@@ -185,6 +185,9 @@
     css += '.gh-animate{animation:ghSlideUp .35s ease both}';
     css += '.gh-animate:nth-child(1){animation-delay:0s}.gh-animate:nth-child(2){animation-delay:.05s}.gh-animate:nth-child(3){animation-delay:.1s}.gh-animate:nth-child(4){animation-delay:.15s}.gh-animate:nth-child(5){animation-delay:.2s}';
 
+    /* ── Feed body container ── */
+    css += '.gh-feed-body{display:flex;flex-direction:column;gap:16px}';
+
     /* ── Feed empty state ── */
     css += '.gh-feed-empty{font-family:"Plus Jakarta Sans",sans-serif;font-size:13px;color:var(--text-muted,#6B7280);text-align:center;padding:32px 16px;line-height:1.5}';
 
@@ -290,12 +293,13 @@
     compRow.appendChild(txt('span', 'gh-id-bar-pct', pct + '%'));
     card.appendChild(compRow);
 
-    /* Status badges */
-    var badges = el('div', 'gh-id-badges');
+    /* Status badge — only Aktif İş Arıyor, only when true (glow handles Beni Öner) */
     var isLooking = profile.is_actively_looking === true;
-    badges.appendChild(buildBadge('Beni \u00D6ner', isActive));
-    badges.appendChild(buildBadge('Aktif \u0130\u015F Ar\u0131yor', isLooking));
-    card.appendChild(badges);
+    if (isLooking) {
+      var badges = el('div', 'gh-id-badges');
+      badges.appendChild(buildBadge('Aktif \u0130\u015F Ar\u0131yor', true));
+      card.appendChild(badges);
+    }
 
     /* CTA */
     var cta = txt('button', 'gh-id-cta', 'Profili D\u00FCzenle');
@@ -431,8 +435,8 @@
     hdr.appendChild(hdrRight);
     section.appendChild(hdr);
 
-    /* Feed body placeholder — will be hydrated */
-    var feedContainer = el('div', '');
+    /* Feed body — will be hydrated with article cards */
+    var feedContainer = el('div', 'gh-feed-body');
     feedContainer.id = 'gh-feed-container';
     section.appendChild(feedContainer);
 
@@ -454,8 +458,7 @@
       .from('coach_posts')
       .select('id, title, excerpt, category, like_count, related_role, body, coach_profiles(display_name, title)')
       .eq('status', 'published')
-      .order('published_at', { ascending: false })
-      .limit(8);
+      .order('published_at', { ascending: false });
     posts = (postsRes.data && postsRes.data.length) ? postsRes.data : [];
 
     if (posts.length > 0 && currentUser) {
