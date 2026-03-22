@@ -1,3 +1,4 @@
+/* global hrProfile */
 /* ═══════════════════════════════════════════════════════════════
    HELLOTALENT — IK KAMPANYA JS
    Kampanya listesi + 6 adımlı wizard

@@ -1,3 +1,4 @@
+/* global supabase, currentUser, trLower */
 /**
  * profil-markalar.js — Markalar Panel for profil.html
  * Brand card grid, flip cards, follow system, search, segment pills.

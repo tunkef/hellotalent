@@ -1,3 +1,4 @@
+/* global supabase, switchPanel */
 /* ═══════════════════════════════════════════════════════════════
    HELLOTALENT — PROFİL INBOX JS
    Instagram DM-style inbox: conversation list + thread view

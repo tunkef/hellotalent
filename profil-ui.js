@@ -1,3 +1,5 @@
+/* global supabase, AYRILMA_NEDENLERI, AY_ISIMLERI, BOLUM_DB, BRAND_DB, CALISMA_TIPLERI, CAREER_TYPE_OPTIONS, CAREER_TYPE_ORDER, DIL_LISTESI, DIL_SEVIYELERI, EGITIM_SEVIYELERI, ILCELER, ISTIHDAM_TIPLERI, MAAS_ARALIKLARI, MUSAITLIK_SECENEKLERI, ROL_AILELERI, SEGMENTLER, SEKTOR_ROL_MAP, STORAGE, TAKIM_BUYUKLUKLERI, TUR_ILLER, UNIVERSITE_DB */
+/* global _loadedDBData, applyAllVisibilityMirrorsFromProfile, canonicalizeRole, clearDraft, currentUser, getCurrentEmployerDisplayFromExperiences, ht_track, markWizardDirty, normalizeForDisplay, nullIfEmpty, refreshVisibilitySummary, selectedCareerTypes, syncAccountEmail, titleCaseTR, trLower, updateMerkezVisState, val, wizardDirty */
 // v20260320 ── BRAND/COMPANY ID LOOKUP ──
 // Populated at page load from Supabase; used by makeSmartBrandField + collectExperiences
 var _brandIdLookup = {};   // trLower(brand_name) → { brand_id, company_id }

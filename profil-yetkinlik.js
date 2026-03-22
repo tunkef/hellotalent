@@ -1,3 +1,4 @@
+/* global _doSwitchPanel */
 /**
  * profil-yetkinlik.js — Yetkinlik Wizard for profil.html
  * Ground-up rebuild: full-page reading, no drawer, no ratings.

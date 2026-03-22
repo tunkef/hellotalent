@@ -1,3 +1,4 @@
+/* global supabase */
 /**
  * profil-mulakatkocu.js — Mülakat Koçu (Interview Coaching) Panel
  * 7-screen Mülakat Koçu flow: star_intro → role_select → lobby → competency_intro → practice → completion → session_complete

@@ -1,3 +1,4 @@
+/* global supabase, _loadedDBData, currentUser, refreshAfterSettingsSave, refreshVisibilitySummary, setThemePreference, syncActivelyLooking, syncBeniOner, syncHideFromEmployer, val */
 /* ═══════════════════════════════════════════════════════════════
    PROFIL-SETTINGS — Ayarlar panel logic
    Notification, contact, visibility, blocked companies, account mgmt

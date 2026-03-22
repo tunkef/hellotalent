@@ -1,3 +1,4 @@
+/* global supabase */
 /* ════════════════════════════════════════════════════
    HELLOTALENT — SHARED JS
    Çalışma mantığı:
