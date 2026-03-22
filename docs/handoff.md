@@ -1,5 +1,5 @@
 # hellotalent.ai — Technical Handoff Document
-> Son güncelleme: 22 Mart 2026 (Session 14 — Messaging hardening: bi-directional threads, live-chat realtime, split-pane desktop UI)
+> Son güncelleme: 22 Mart 2026 (Session 16 — Coach taxonomy refresh, search/filter, CI cleanup)
 > Bu doküman, projenin mevcut durumunu, tamamlanan işleri ve kalan backlog'u kapsar.
 > Yeni bir chat/session başlatırken bu dosyayı referans olarak kullanın.
 
@@ -764,6 +764,55 @@ EDIT    docs/handoff.md (this session summary)
 - Coach invite auth flow: coach-studio.html saves `ht_return_url` to sessionStorage before redirect; giris.html checks it after login/register and redirects back with token
 - giris.html return URL checked in 3 paths: session auto-redirect, aday login, aday registration
 
+### Session 16 — 22 Mart 2026 (Coach Taxonomy, Search/Filter, CI Cleanup)
+
+**58. Migration 063 — pg_cron email job fix (live fix)**
+- Root cause: pg_cron email-send/email-reconcile jobs used `extensions.http_post()` but only `pg_net` extension was installed (provides `net.http_post()`)
+- All cron runs were silently failing with "function does not exist"
+- Fix: rescheduled both jobs using `net.http_post(url, body, params, headers)`
+- Result: all 4 pending coach invite emails sent successfully
+
+**59. Migration 064 — Coach taxonomy + metadata**
+- Category taxonomy expanded from 4 to 6: added `kariyer_gelisim_onerileri`, `performans`; renamed `kariyer_hikaye` → `kariyer_hikayesi`, `sektor_analiz` → `sektor_analizi`
+- coach_profiles: added `bio_short` (text), `sector_background` (text), `experience_years` (integer)
+- Safe data migration for existing rows with old category values
+- `related_competency_code` deprecated from UI (column kept for backward compat)
+
+**60. coach-studio.html — Taxonomy + author profile updates**
+- Categories updated (6 options)
+- `related_role` changed from free-text to controlled dropdown (31 ROLE_COMP_MAP keys)
+- `related_competency_code` removed from authoring UI
+- Added "Koc Profilimi Duzenle" collapsible section for author metadata (display_name, title, sector_background, experience_years, bio_short)
+
+**61. profil-mulakatkocu.js — Search/filter + author block**
+- Feed query: bounded fetch of latest 24 published posts (was 6), client-side filtering
+- Filter bar: category dropdown (6 options), role dropdown (dynamic from posts), text search input
+- Turkish-safe search via `trLowerCoach()` over title + excerpt + body
+- Combined AND filtering: category + role + text
+- Empty filter state: Turkish message + reset action
+- "Yazar Hakkinda" block in post detail view (display_name, title, sector_background, experience_years, bio_short)
+- Practice CTA simplified: role-based "Bu konuyu simdi calis" or general "Kocluga Baslayin" fallback
+
+**62. CI cleanup — Playwright workflow**
+- Smoke E2E gated to `workflow_dispatch` only (was running on every push to main, failing noisily)
+- Static guards (P3 Regression, Profil delegation) still auto on push/PR to main
+- Added concurrency group with `cancel-in-progress: true`
+- Smoke E2E available manually from GitHub Actions tab
+
+**Dosya Degisiklikleri:**
+```
+CREATE  docs/migrations/063_fix_cron_http_post.sql
+CREATE  docs/migrations/064_coach_taxonomy_metadata.sql
+EDIT    coach-studio.html (categories, role dropdown, profile section)
+EDIT    profil-mulakatkocu.js (search/filter, author block, taxonomy)
+EDIT    admin-coach-content.js (categories, author info in preview)
+EDIT    admin.html (cache-bust)
+EDIT    profil.html (cache-bust)
+EDIT    docs/db-schema-reference.js (coach_profiles + coach_posts updates)
+EDIT    .github/workflows/playwright.yml (smoke gating + concurrency)
+EDIT    docs/handoff.md
+```
+
 ---
 
 ## 1. Proje Özeti
@@ -779,7 +828,7 @@ Adaylar (candidates) ve İK/işverenler (employers) arasında köprü kurar.
 | CDN/DNS | Cloudflare (free tier — nameservers aktif, propagation bekliyor) |
 | Backend | Supabase (PostgreSQL + Auth + Storage + RLS) |
 | Repo | github.com/tunkef/hellotalent (private) |
-| Test | Playwright (68 smoke + E2E auth tests) |
+| Test | Playwright (68 smoke + E2E auth tests). CI: static guards auto on push, Smoke E2E manual only (workflow_dispatch) |
 | Error tracking | Sentry (profil.html only) |
 
 ### Credentials
