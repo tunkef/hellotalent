@@ -675,9 +675,7 @@
     footer.appendChild(cta);
     card.appendChild(footer);
 
-    /* Async hydrate brands */
-    hydrateMarkaTeaserList();
-
+    /* Hydration deferred to render() after DOM attach */
     return card;
   }
 
@@ -789,6 +787,7 @@
       layout.appendChild(buildRightRail());
       shell.appendChild(layout);
       hydrateFeed();
+      hydrateMarkaTeaserList();
       return;
     }
 
@@ -803,6 +802,7 @@
     shell.appendChild(layout2);
 
     hydrateFeed();
+    hydrateMarkaTeaserList();
   }
 
   /* ═══════════════════════════════════════════════════
