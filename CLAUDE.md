@@ -27,3 +27,9 @@
 
 ## Context7
 Always use context7 when working with Supabase API, CSS, or any library docs.
+
+## 🚨 CRITICAL AI DIRECTIVE (READ THIS FIRST)
+Before you write ANY HTML, CSS, or JS for a new feature, you MUST forcefully read and load these two files into your context:
+1. `.agents/skills/bento-grid-design/SKILL.md` -> Contains the EXACT HTML/CSS templates for Bento grids and cards. 
+2. `.agents/skills/hellotalent-dev/SKILL.md` -> Contains architecture and component rules.
+**DO NOT generate any UI code from scratch without reading the Bento Grid SKILL.md file first.**
