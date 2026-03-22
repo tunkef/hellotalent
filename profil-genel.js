@@ -59,6 +59,8 @@
     css += '.gh-id-top{display:flex;align-items:center;gap:14px;margin-bottom:14px}';
     css += '.gh-id-avatar{width:56px;height:56px;border-radius:50%;background:var(--navy,#1E2D5E);color:#fff;display:flex;align-items:center;justify-content:center;font-family:"Bricolage Grotesque",sans-serif;font-size:18px;font-weight:800;flex-shrink:0;overflow:hidden}';
     css += '.gh-id-avatar img{width:100%;height:100%;object-fit:cover}';
+    /* Beni Oner active glow on avatar */
+    css += '.gh-id-avatar--glow{box-shadow:0 0 0 3px #10B981,0 0 12px 4px rgba(16,185,129,.35);border:2px solid #fff}';
     css += '.gh-id-name{font-family:"Bricolage Grotesque",sans-serif;font-size:16px;font-weight:800;color:var(--text-primary,#111);line-height:1.2}';
     css += '.gh-id-role{font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;color:var(--text-secondary,#4B5563);margin-top:2px;line-height:1.3}';
     css += '.gh-id-city{display:flex;align-items:center;gap:4px;font-family:"Plus Jakarta Sans",sans-serif;font-size:11px;color:var(--text-muted,#6B7280);margin-top:4px}';
@@ -100,11 +102,10 @@
     css += '.gh-premium-cta{display:block;width:100%;padding:9px 0;border:1px solid rgba(255,255,255,.2);border-radius:10px;background:transparent;color:#fff;font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;text-align:center}';
     css += '.gh-premium-cta:hover{background:rgba(255,255,255,.1)}';
 
-    /* ── Feed header ── */
-    css += '.gh-feed-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:4px}';
+    /* ── Feed header text (reused inside coach header card) ── */
     css += '.gh-feed-title{font-family:"Bricolage Grotesque",sans-serif;font-size:20px;font-weight:800;color:var(--text-primary,#111)}';
     css += '.gh-feed-sub{font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;color:var(--text-muted,#6B7280);margin-top:2px;line-height:1.4}';
-    css += '.gh-feed-seeall{font-family:"Plus Jakarta Sans",sans-serif;font-size:11px;font-weight:700;color:var(--verm,#C94E28);background:none;border:none;cursor:pointer;padding:4px 0;white-space:nowrap;flex-shrink:0;margin-top:4px}';
+    css += '.gh-feed-seeall{font-family:"Plus Jakarta Sans",sans-serif;font-size:11px;font-weight:700;color:var(--verm,#C94E28);background:none;border:none;cursor:pointer;padding:4px 0;white-space:nowrap;flex-shrink:0}';
     css += '.gh-feed-seeall:hover{text-decoration:underline}';
 
     /* ── Featured article card ── */
@@ -138,14 +139,6 @@
     css += '.gh-teaser-read{font-family:"Plus Jakarta Sans",sans-serif;font-size:11px;font-weight:700;color:var(--verm,#C94E28);background:none;border:none;cursor:pointer;padding:0}';
     css += '.gh-teaser-read:hover{text-decoration:underline}';
 
-    /* ── Micro practice card ── */
-    css += '.gh-practice{background:var(--verm-light,#F5EDE9);border:1px solid rgba(201,78,40,.15);border-radius:16px;padding:18px 22px;transition:all .25s;cursor:pointer}';
-    css += '.gh-practice:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(201,78,40,.12)}';
-    css += '.gh-practice-title{font-family:"Bricolage Grotesque",sans-serif;font-size:14px;font-weight:700;color:var(--verm,#C94E28);margin-bottom:4px}';
-    css += '.gh-practice-desc{font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;color:var(--text-secondary,#4B5563);margin-bottom:10px;line-height:1.4}';
-    css += '.gh-practice-cta{display:inline-flex;align-items:center;gap:4px;padding:8px 16px;border-radius:10px;border:none;background:var(--verm,#C94E28);color:#fff;font-family:"Plus Jakarta Sans",sans-serif;font-size:11px;font-weight:700;cursor:pointer;transition:opacity .2s}';
-    css += '.gh-practice-cta:hover{opacity:.85}';
-
     /* ── Right rail cards ── */
     css += '.gh-rail-card{background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF);border-radius:16px;padding:18px 20px;box-shadow:0 2px 8px rgba(0,0,0,.08),0 8px 20px rgba(0,0,0,.06)}';
     css += '.gh-rail-title{font-family:"Bricolage Grotesque",sans-serif;font-size:13px;font-weight:700;color:var(--text-primary,#111);margin-bottom:12px}';
@@ -168,6 +161,18 @@
     css += '.gh-brand-info{flex:1;min-width:0}';
     css += '.gh-brand-name{font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;font-weight:600;color:var(--text-primary,#111)}';
     css += '.gh-brand-seg{font-family:"Plus Jakarta Sans",sans-serif;font-size:10px;color:var(--text-muted,#6B7280);margin-top:1px}';
+
+    /* ── Brand follow button ── */
+    css += '.gh-brand-follow{padding:4px 12px;border-radius:20px;border:1px solid var(--border-subtle,#E5E3DF);background:var(--bg-surface,#fff);font-family:"Plus Jakarta Sans",sans-serif;font-size:10px;font-weight:700;color:var(--verm,#C94E28);cursor:pointer;transition:all .15s;flex-shrink:0}';
+    css += '.gh-brand-follow:hover{border-color:var(--verm,#C94E28);background:var(--verm-light,#F5EDE9)}';
+    css += '.gh-brand-follow--active{background:var(--verm,#C94E28);color:#fff;border-color:var(--verm,#C94E28)}';
+    css += '.gh-brand-follow--active:hover{opacity:.85;background:var(--verm,#C94E28)}';
+
+    /* ── Coach header card (polished bento block) ── */
+    css += '.gh-coach-header{background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF);border-radius:16px;padding:20px 24px;box-shadow:0 2px 8px rgba(0,0,0,.08),0 8px 20px rgba(0,0,0,.06);display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}';
+    css += '.gh-coach-header-left{flex:1;min-width:0}';
+    css += '.gh-coach-header-right{display:flex;align-items:center;gap:8px;flex-shrink:0;flex-wrap:wrap}';
+    css += '@media(max-width:480px){.gh-coach-header{flex-direction:column;align-items:stretch}.gh-coach-header-right{justify-content:flex-start}}';
 
     /* ── Empty / onboarding adaptation ── */
     css += '.gh-empty-prompt{background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF);border-radius:16px;padding:28px 24px;box-shadow:0 2px 8px rgba(0,0,0,.08),0 8px 20px rgba(0,0,0,.06);text-align:center}';
@@ -223,7 +228,8 @@
 
     /* Top: avatar + name/role */
     var top = el('div', 'gh-id-top');
-    var avatar = el('div', 'gh-id-avatar');
+    var isActive = profile.is_active === true;
+    var avatar = el('div', 'gh-id-avatar' + (isActive ? ' gh-id-avatar--glow' : ''));
     var avatarUrl = profile.avatar_url || null;
     if (avatarUrl) {
       var img = document.createElement('img');
@@ -286,7 +292,6 @@
 
     /* Status badges */
     var badges = el('div', 'gh-id-badges');
-    var isActive = profile.is_active === true;
     var isLooking = profile.is_actively_looking === true;
     badges.appendChild(buildBadge('Beni \u00D6ner', isActive));
     badges.appendChild(buildBadge('Aktif \u0130\u015F Ar\u0131yor', isLooking));
@@ -314,11 +319,11 @@
     card.appendChild(txt('div', 'gh-viewers-title', 'Profiline Bakanlar'));
 
     var row = el('div', 'gh-viewers-row');
-    row.appendChild(txt('span', 'gh-viewers-num', '\u2014'));
+    row.appendChild(txt('span', 'gh-viewers-num', '0'));
     row.appendChild(txt('span', 'gh-viewers-label', 'g\u00F6r\u00FCnt\u00FClenme'));
     card.appendChild(row);
 
-    card.appendChild(txt('div', 'gh-viewers-sub', '\u0130\u015Fverenler profiline bakt\u0131\u011F\u0131nda burada g\u00F6r\u00FCrs\u00FCn'));
+    card.appendChild(txt('div', 'gh-viewers-sub', 'Profilin g\u00F6r\u00FCnt\u00FClendi\u011Finde burada g\u00F6r\u00FCrs\u00FCn'));
 
     /* Safe: arrowSVG is hardcoded constant */
     var cta = elSVG('button', 'gh-viewers-cta', 'Detaylar\u0131 G\u00F6r ' + arrowSVG);
@@ -344,12 +349,11 @@
       if (!candidateId) return;
 
       var res = await supabase.from('candidate_view_stats').select('total_views, last_viewed_at').eq('candidate_id', candidateId).maybeSingle();
-      if (!res.data) return;
 
       var numEl = card.querySelector('.gh-viewers-num');
-      if (numEl) numEl.textContent = String(res.data.total_views || 0);
+      if (numEl) numEl.textContent = String(res.data ? (res.data.total_views || 0) : 0);
 
-      if (res.data.last_viewed_at) {
+      if (res.data && res.data.last_viewed_at) {
         var subEl = card.querySelector('.gh-viewers-sub');
         if (subEl) subEl.textContent = 'Son: ' + relativeTimeTR(res.data.last_viewed_at);
       }
@@ -409,19 +413,25 @@
   function buildFeedSection() {
     var section = el('div', 'gh-center');
 
-    /* Header */
-    var hdr = el('div', 'gh-feed-header');
-    var hdrLeft = el('div', '');
+    /* Polished coach header card (bento block) */
+    var hdr = el('div', 'gh-coach-header gh-animate');
+    var hdrLeft = el('div', 'gh-coach-header-left');
     hdrLeft.appendChild(txt('div', 'gh-feed-title', 'Ko\u00E7lardan \u00D6\u011Fren'));
     hdrLeft.appendChild(txt('div', 'gh-feed-sub', 'Perakende kariyerinde \u00F6ne \u00E7\u0131kmak i\u00E7in edit\u00F6r se\u00E7kisi'));
     hdr.appendChild(hdrLeft);
+    var hdrRight = el('div', 'gh-coach-header-right');
+    var practiceBtn = txt('button', 'gh-btn-secondary', 'Bug\u00FCn 5 dk \u00E7al\u0131\u015F');
+    practiceBtn.type = 'button';
+    practiceBtn.addEventListener('click', function() { switchPanel('mulakat'); });
+    hdrRight.appendChild(practiceBtn);
     var seeAll = txt('button', 'gh-feed-seeall', 'T\u00FCm\u00FCn\u00FC G\u00F6r');
     seeAll.type = 'button';
     seeAll.addEventListener('click', function() { switchPanel('mulakat'); });
-    hdr.appendChild(seeAll);
+    hdrRight.appendChild(seeAll);
+    hdr.appendChild(hdrRight);
     section.appendChild(hdr);
 
-    /* Feed placeholder — will be hydrated */
+    /* Feed body placeholder — will be hydrated */
     var feedContainer = el('div', '');
     feedContainer.id = 'gh-feed-container';
     section.appendChild(feedContainer);
@@ -429,58 +439,59 @@
     return section;
   }
 
+  async function fetchCoachPosts() {
+    /* Try cached data from mulakatkocu first */
+    if (typeof window._htGenelCoachTeaser === 'function') {
+      var teaser = window._htGenelCoachTeaser();
+      if (teaser.posts && teaser.posts.length > 0) {
+        return { posts: teaser.posts, likedSet: teaser.likedSet || {} };
+      }
+    }
+    /* Cache empty or not populated yet — fetch directly */
+    var posts = [];
+    var likedSet = {};
+    var postsRes = await supabase
+      .from('coach_posts')
+      .select('id, title, excerpt, category, like_count, related_role, body, coach_profiles(display_name, title)')
+      .eq('status', 'published')
+      .order('published_at', { ascending: false })
+      .limit(8);
+    posts = (postsRes.data && postsRes.data.length) ? postsRes.data : [];
+
+    if (posts.length > 0 && currentUser) {
+      var postIds = posts.map(function(p) { return p.id; });
+      var likesRes = await supabase
+        .from('coach_post_likes')
+        .select('post_id')
+        .in('post_id', postIds);
+      if (likesRes.data) {
+        for (var i = 0; i < likesRes.data.length; i++) {
+          likedSet[likesRes.data[i].post_id] = true;
+        }
+      }
+    }
+    return { posts: posts, likedSet: likedSet };
+  }
+
   async function hydrateFeed() {
     var container = document.getElementById('gh-feed-container');
     if (!container) return;
 
     try {
-      var posts = [];
-      var likedSet = {};
-
-      if (typeof window._htGenelCoachTeaser === 'function') {
-        var teaser = window._htGenelCoachTeaser();
-        posts = teaser.posts || [];
-        likedSet = teaser.likedSet || {};
-      } else {
-        /* Direct fetch — mulakatkocu not loaded yet */
-        var postsRes = await supabase
-          .from('coach_posts')
-          .select('id, title, excerpt, category, like_count, related_role, body, coach_profiles(display_name, title)')
-          .eq('status', 'published')
-          .order('published_at', { ascending: false })
-          .limit(6);
-        posts = (postsRes.data && postsRes.data.length) ? postsRes.data : [];
-
-        if (posts.length > 0 && currentUser) {
-          var postIds = posts.map(function(p) { return p.id; });
-          var likesRes = await supabase
-            .from('coach_post_likes')
-            .select('post_id')
-            .in('post_id', postIds);
-          if (likesRes.data) {
-            for (var i = 0; i < likesRes.data.length; i++) {
-              likedSet[likesRes.data[i].post_id] = true;
-            }
-          }
-        }
-      }
+      var data = await fetchCoachPosts();
+      var posts = data.posts;
 
       if (posts.length === 0) {
         container.appendChild(txt('div', 'gh-feed-empty', 'Hen\u00FCz yay\u0131nlanm\u0131\u015F ko\u00E7 i\u00E7eri\u011Fi yok.\nYak\u0131nda perakende uzmanlar\u0131ndan i\u00E7erikler burada olacak.'));
-        container.appendChild(buildPracticeCard());
         return;
       }
 
-      /* Featured card (first post) */
-      container.appendChild(buildFeaturedCard(posts[0], !!likedSet[posts[0].id]));
+      /* Featured card (newest post) */
+      container.appendChild(buildFeaturedCard(posts[0]));
 
-      /* Micro practice card */
-      container.appendChild(buildPracticeCard());
-
-      /* Teaser cards (next 3-5) */
-      var teaserPosts = posts.slice(1, 5);
-      for (var t = 0; t < teaserPosts.length; t++) {
-        container.appendChild(buildTeaserCard(teaserPosts[t], !!likedSet[teaserPosts[t].id]));
+      /* Remaining posts as teaser cards (continuous editorial stream) */
+      for (var t = 1; t < posts.length; t++) {
+        container.appendChild(buildTeaserCard(posts[t]));
       }
 
     } catch (e) {
@@ -571,18 +582,6 @@
     card.appendChild(footer);
     card.addEventListener('click', function() { openArticleInCoach(post); });
 
-    return card;
-  }
-
-  function buildPracticeCard() {
-    var card = el('div', 'gh-practice gh-animate');
-    card.appendChild(txt('div', 'gh-practice-title', 'Bug\u00FCn 5 dakikada \u00E7al\u0131\u015F'));
-    card.appendChild(txt('div', 'gh-practice-desc', 'Yetkinlik bazl\u0131 sorularla m\u00FClakat prati\u011Fi yap, geli\u015Fim g\u00FCnl\u00FC\u011F\u00FCn\u00FC olu\u015Ftur.'));
-    var cta = txt('button', 'gh-practice-cta', 'M\u00FClakat Ko\u00E7u\'na Git');
-    cta.type = 'button';
-    cta.addEventListener('click', function(e) { e.stopPropagation(); switchPanel('mulakat'); });
-    card.appendChild(cta);
-    card.addEventListener('click', function() { switchPanel('mulakat'); });
     return card;
   }
 
@@ -680,25 +679,23 @@
     if (!listEl) return;
 
     try {
+      /* Try teaser helper first (includes follow state if markalar loaded) */
       var brands = [];
+      var followedIds = {};
       if (typeof window._htGenelMarkaTeaser === 'function') {
-        brands = window._htGenelMarkaTeaser();
+        var tData = window._htGenelMarkaTeaser();
+        brands = tData.brands || tData; /* backward compat: old helper returns array */
+        followedIds = tData.followedIds || {};
       }
-      if (!brands || brands.length === 0) {
+      if (!brands || brands.length === 0 || (Array.isArray(brands) && brands.length === 0)) {
+        /* Direct fetch */
         var res = await supabase.from('brands')
           .select('id, brand_name, slug, logo_url, segment')
           .eq('is_active', true)
-          .eq('is_featured', true)
+          .not('website_url', 'is', null)
+          .order('is_featured', { ascending: false })
           .limit(3);
         brands = (res.data && res.data.length) ? res.data : [];
-        if (brands.length === 0) {
-          var res2 = await supabase.from('brands')
-            .select('id, brand_name, slug, logo_url, segment')
-            .eq('is_active', true)
-            .not('website_url', 'is', null)
-            .limit(3);
-          brands = (res2.data || []);
-        }
       }
 
       while (listEl.firstChild) listEl.removeChild(listEl.firstChild);
@@ -722,6 +719,33 @@
         var seg = SEGMENT_TR[b.segment] || b.segment || '';
         if (seg) info.appendChild(txt('div', 'gh-brand-seg', seg));
         row.appendChild(info);
+
+        /* Takip Et button — reuses toggleBrandFollow if available */
+        var isFollowed = !!(followedIds[b.id]);
+        var followBtn = txt('button', 'gh-brand-follow' + (isFollowed ? ' gh-brand-follow--active' : ''), isFollowed ? 'Takipte' : 'Takip Et');
+        followBtn.type = 'button';
+        followBtn.setAttribute('data-brand-id', b.id);
+        followBtn.addEventListener('click', (function(brandId, btnEl) {
+          return function(ev) {
+            ev.stopPropagation();
+            if (typeof window.toggleBrandFollow === 'function') {
+              window.toggleBrandFollow(brandId, ev);
+              /* Optimistic toggle UI */
+              var wasActive = btnEl.classList.contains('gh-brand-follow--active');
+              if (wasActive) {
+                btnEl.classList.remove('gh-brand-follow--active');
+                btnEl.textContent = 'Takip Et';
+              } else {
+                btnEl.classList.add('gh-brand-follow--active');
+                btnEl.textContent = 'Takipte';
+              }
+            } else {
+              /* Markalar panel not loaded — navigate there */
+              switchPanel('sirketler');
+            }
+          };
+        })(b.id, followBtn));
+        row.appendChild(followBtn);
 
         listEl.appendChild(row);
       });

@@ -1748,6 +1748,8 @@ function _doSwitchPanel(name) {
     btn.classList.remove('active');
     if (btn.dataset.panel === name) btn.classList.add('active');
   });
+  // Refresh Genel home when returning to it (picks up profile/settings changes)
+  if (name === 'genel') { window._htRefreshGenelHome && window._htRefreshGenelHome(); }
   // Refresh Profil Merkezi cards when switching to it
   if (name === 'merkez') {
     updateMerkezCards();
