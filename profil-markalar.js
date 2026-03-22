@@ -449,29 +449,61 @@ window._htBrandFollowReady = function() {
   return !!_ht_candidate_id && _ht_sirketler_loaded;
 };
 
-/* ── Teaser helper for Genel Bakis home surface ── */
-/* Returns 3 brand objects (not-followed first) + follow state */
-window._htGenelMarkaTeaser = function() {
-  if (!_ht_brands || _ht_brands.length === 0) return { brands: [], followedIds: {} };
-  var followedIds = {};
-  if (_ht_follows) {
-    _ht_follows.forEach(function(id) { followedIds[id] = true; });
-  }
-  /* Prioritize not-followed brands for discovery value */
-  var notFollowed = [];
-  var followed = [];
-  for (var i = 0; i < _ht_brands.length; i++) {
-    var b = _ht_brands[i];
-    if (_ht_follows && _ht_follows.has(b.id)) { followed.push(b); }
-    else { notFollowed.push(b); }
-  }
-  var picked = notFollowed.concat(followed).slice(0, 3);
-  return {
-    brands: picked.map(function(b) {
+/* ── Single async teaser contract for Genel right-rail brand card ── */
+/* Owns all data fetching, sorting, and state — Genel only renders the result. */
+/* Returns: { items: [{id,brand_name,logo_url,segment}], followedIds: {id:true}, canToggleInline: bool, empty: bool } */
+window._htGetGenelBrandTeaser = async function() {
+  /* If markalar panel already loaded, use its cached truth */
+  if (_ht_brands && _ht_brands.length > 0) {
+    var followedIds = {};
+    if (_ht_follows) _ht_follows.forEach(function(id) { followedIds[id] = true; });
+    var nf = [];
+    var af = [];
+    for (var i = 0; i < _ht_brands.length; i++) {
+      if (_ht_follows && _ht_follows.has(_ht_brands[i].id)) af.push(_ht_brands[i]);
+      else nf.push(_ht_brands[i]);
+    }
+    var picked = nf.concat(af).slice(0, 3).map(function(b) {
       return { id: b.id, brand_name: b.brand_name, logo_url: b.logo_url, segment: b.segment };
-    }),
-    followedIds: followedIds
-  };
+    });
+    return { items: picked, followedIds: followedIds, canToggleInline: !!_ht_candidate_id, empty: false };
+  }
+
+  /* Fresh session — fetch brands + follows directly */
+  try {
+    var bRes = await supabase.from('brands')
+      .select('id, brand_name, logo_url, segment')
+      .eq('is_active', true)
+      .not('website_url', 'is', null)
+      .order('is_featured', { ascending: false })
+      .limit(20);
+    var allBrands = (bRes.data && bRes.data.length) ? bRes.data : [];
+    if (allBrands.length === 0) return { items: [], followedIds: {}, canToggleInline: false, empty: true };
+
+    var fIds = {};
+    if (currentUser) {
+      var cRes = await supabase.from('candidates').select('id').eq('user_id', currentUser.id).maybeSingle();
+      if (cRes.data) {
+        var fRes = await supabase.from('candidate_brand_follows').select('brand_id').eq('candidate_id', cRes.data.id);
+        if (fRes.data) {
+          for (var fi = 0; fi < fRes.data.length; fi++) fIds[fRes.data[fi].brand_id] = true;
+        }
+      }
+    }
+    var nf2 = [];
+    var af2 = [];
+    for (var bi = 0; bi < allBrands.length; bi++) {
+      if (fIds[allBrands[bi].id]) af2.push(allBrands[bi]);
+      else nf2.push(allBrands[bi]);
+    }
+    var items = nf2.concat(af2).slice(0, 3).map(function(b) {
+      return { id: b.id, brand_name: b.brand_name, logo_url: b.logo_url, segment: b.segment };
+    });
+    return { items: items, followedIds: fIds, canToggleInline: false, empty: false };
+  } catch (e) {
+    console.error('[HT] brand teaser fetch:', e.message);
+    return { items: [], followedIds: {}, canToggleInline: false, empty: true };
+  }
 };
 
 })();

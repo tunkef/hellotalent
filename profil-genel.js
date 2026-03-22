@@ -168,14 +168,15 @@
     css += '.gh-brand-follow--active{background:var(--verm,#C94E28);color:#fff;border-color:var(--verm,#C94E28)}';
     css += '.gh-brand-follow--active:hover{opacity:.85;background:var(--verm,#C94E28)}';
 
-    /* ── Coach header card (editorial bento block with accent stripe) ── */
+    /* ── Coach header card (editorial bento block) ── */
     css += '.gh-coach-header{background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF);border-radius:16px;box-shadow:0 2px 8px rgba(0,0,0,.08),0 8px 20px rgba(0,0,0,.06);overflow:hidden}';
-    css += '.gh-coach-header-stripe{height:4px;background:var(--verm,#C94E28);border-radius:0}';
-    css += '.gh-coach-header-inner{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;padding:18px 24px 20px;flex-wrap:wrap}';
-    css += '.gh-coach-header-left{flex:1;min-width:160px}';
-    css += '.gh-feed-sub{max-width:320px}';
-    css += '.gh-coach-header-right{display:flex;align-items:center;gap:8px;flex-shrink:0}';
-    css += '@media(max-width:480px){.gh-coach-header-inner{flex-direction:column;align-items:stretch;gap:12px}.gh-coach-header-right{justify-content:flex-start}}';
+    css += '.gh-coach-header-stripe{height:4px;background:var(--verm,#C94E28)}';
+    css += '.gh-coach-header-inner{display:grid;grid-template-columns:1fr auto;gap:16px;padding:18px 24px 20px;align-items:end}';
+    css += '.gh-coach-header-left{min-width:0}';
+    css += '.gh-coach-kicker{font-family:"DM Mono",monospace;font-size:10px;font-weight:600;color:var(--verm,#C94E28);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}';
+    css += '.gh-feed-sub{max-width:300px;margin-top:4px}';
+    css += '.gh-coach-header-right{display:flex;flex-direction:column;align-items:flex-end;gap:6px}';
+    css += '@media(max-width:480px){.gh-coach-header-inner{grid-template-columns:1fr;gap:12px}.gh-coach-header-right{flex-direction:row;align-items:center;gap:8px}}';
 
     /* ── Empty / onboarding adaptation ── */
     css += '.gh-empty-prompt{background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF);border-radius:16px;padding:28px 24px;box-shadow:0 2px 8px rgba(0,0,0,.08),0 8px 20px rgba(0,0,0,.06);text-align:center}';
@@ -423,20 +424,21 @@
   function buildFeedSection() {
     var section = el('div', 'gh-center');
 
-    /* Coach header card with vermillion accent stripe */
+    /* Coach header card — editorial bento block */
     var hdr = el('div', 'gh-coach-header gh-animate');
     hdr.appendChild(el('div', 'gh-coach-header-stripe'));
     var hdrInner = el('div', 'gh-coach-header-inner');
     var hdrLeft = el('div', 'gh-coach-header-left');
+    hdrLeft.appendChild(txt('div', 'gh-coach-kicker', 'ED\u0130T\u00D6R SE\u00C7K\u0130S\u0130'));
     hdrLeft.appendChild(txt('div', 'gh-feed-title', 'Ko\u00E7lardan \u00D6\u011Fren'));
-    hdrLeft.appendChild(txt('div', 'gh-feed-sub', 'Perakende kariyerinde \u00F6ne \u00E7\u0131kmak i\u00E7in edit\u00F6r se\u00E7kisi'));
+    hdrLeft.appendChild(txt('div', 'gh-feed-sub', 'Perakende kariyerinde \u00F6ne \u00E7\u0131kmak i\u00E7in uzman i\u00E7g\u00F6r\u00FCleri'));
     hdrInner.appendChild(hdrLeft);
     var hdrRight = el('div', 'gh-coach-header-right');
-    var practiceBtn = txt('button', 'gh-btn-secondary', 'Bug\u00FCn 5 dk \u00E7al\u0131\u015F');
+    var practiceBtn = txt('button', 'gh-btn-primary', 'Bug\u00FCn 5 dk \u00E7al\u0131\u015F');
     practiceBtn.type = 'button';
     practiceBtn.addEventListener('click', function() { switchPanel('mulakat'); });
     hdrRight.appendChild(practiceBtn);
-    var seeAll = txt('button', 'gh-feed-seeall', 'T\u00FCm\u00FCn\u00FC G\u00F6r');
+    var seeAll = txt('button', 'gh-feed-seeall', 'T\u00FCm\u00FCn\u00FC G\u00F6r \u2192');
     seeAll.type = 'button';
     seeAll.addEventListener('click', function() { switchPanel('mulakat'); });
     hdrRight.appendChild(seeAll);
@@ -683,117 +685,61 @@
     var listEl = document.getElementById('gh-marka-list');
     if (!listEl) return;
 
-    try {
-      var brands = [];
-      var followedIds = {};
-
-      /* Use teaser helper if markalar panel has fully loaded (includes follow state + priority) */
-      if (typeof window._htGenelMarkaTeaser === 'function') {
-        var tData = window._htGenelMarkaTeaser();
-        var tBrands = tData.brands || [];
-        if (tBrands.length > 0) {
-          brands = tBrands;
-          followedIds = tData.followedIds || {};
-        }
-      }
-
-      /* Fresh session: teaser helper has no state — fetch brands + follows directly */
-      if (brands.length === 0) {
-        var allBrands = [];
-        var bRes = await supabase.from('brands')
-          .select('id, brand_name, slug, logo_url, segment')
-          .eq('is_active', true)
-          .not('website_url', 'is', null)
-          .order('is_featured', { ascending: false })
-          .limit(20);
-        allBrands = (bRes.data && bRes.data.length) ? bRes.data : [];
-
-        /* Fetch candidate follows to enable not-followed-first ordering */
-        if (allBrands.length > 0 && currentUser) {
-          var candRes = await supabase.from('candidates').select('id').eq('user_id', currentUser.id).maybeSingle();
-          if (candRes.data) {
-            var fRes = await supabase.from('candidate_brand_follows').select('brand_id').eq('candidate_id', candRes.data.id);
-            if (fRes.data) {
-              for (var fi = 0; fi < fRes.data.length; fi++) {
-                followedIds[fRes.data[fi].brand_id] = true;
-              }
-            }
-          }
-        }
-
-        /* Sort: not-followed first for discovery value */
-        var notFollowed = [];
-        var alreadyFollowed = [];
-        for (var bi = 0; bi < allBrands.length; bi++) {
-          if (followedIds[allBrands[bi].id]) { alreadyFollowed.push(allBrands[bi]); }
-          else { notFollowed.push(allBrands[bi]); }
-        }
-        brands = notFollowed.concat(alreadyFollowed).slice(0, 3);
-      }
-
-      while (listEl.firstChild) listEl.removeChild(listEl.firstChild);
-
-      /* Explicit empty state when no brands available */
-      if (brands.length === 0) {
-        listEl.appendChild(txt('div', 'gh-brand-empty', 'Hen\u00FCz marka verisi y\u00FCklenemedi.\nMarkalar panelinden ke\u015Ffedebilirsin.'));
-        return;
-      }
-
-      brands.slice(0, 3).forEach(function(b) {
-        var row = el('div', 'gh-brand-item');
-
-        var logo = el('div', 'gh-brand-logo');
-        if (b.logo_url) {
-          var img = document.createElement('img');
-          img.src = b.logo_url;
-          img.alt = b.brand_name || '';
-          logo.appendChild(img);
-        } else {
-          logo.textContent = (b.brand_name || '?').charAt(0).toUpperCase();
-        }
-        row.appendChild(logo);
-
-        var info = el('div', 'gh-brand-info');
-        info.appendChild(txt('div', 'gh-brand-name', b.brand_name));
-        var seg = SEGMENT_TR[b.segment] || b.segment || '';
-        if (seg) info.appendChild(txt('div', 'gh-brand-seg', seg));
-        row.appendChild(info);
-
-        /* Takip Et button — reuses toggleBrandFollow if available */
-        var isFollowed = !!(followedIds[b.id]);
-        var followBtn = txt('button', 'gh-brand-follow' + (isFollowed ? ' gh-brand-follow--active' : ''), isFollowed ? 'Takipte' : 'Takip Et');
-        followBtn.type = 'button';
-        followBtn.setAttribute('data-brand-id', b.id);
-        followBtn.addEventListener('click', (function(brandId, btnEl) {
-          return function(ev) {
-            ev.stopPropagation();
-            /* Only toggle if follow state is truly initialized */
-            var ready = typeof window._htBrandFollowReady === 'function' && window._htBrandFollowReady();
-            if (ready && typeof window.toggleBrandFollow === 'function') {
-              window.toggleBrandFollow(brandId, ev);
-              /* Safe optimistic UI — toggleBrandFollow only runs when ready */
-              var wasActive = btnEl.classList.contains('gh-brand-follow--active');
-              if (wasActive) {
-                btnEl.classList.remove('gh-brand-follow--active');
-                btnEl.textContent = 'Takip Et';
-              } else {
-                btnEl.classList.add('gh-brand-follow--active');
-                btnEl.textContent = 'Takipte';
-              }
-            } else {
-              /* Follow state not ready — navigate to full panel */
-              switchPanel('sirketler');
-            }
-          };
-        })(b.id, followBtn));
-        row.appendChild(followBtn);
-
-        listEl.appendChild(row);
-      });
-
-    } catch (e) {
-      console.error('[HT] Genel marka teaser:', e.message);
+    /* Single source of truth: _htGetGenelBrandTeaser owns all data */
+    var payload = { items: [], followedIds: {}, canToggleInline: false, empty: true };
+    if (typeof window._htGetGenelBrandTeaser === 'function') {
+      try { payload = await window._htGetGenelBrandTeaser(); } catch (_e) { /* keep default */ }
     }
+
+    while (listEl.firstChild) listEl.removeChild(listEl.firstChild);
+
+    if (payload.empty || payload.items.length === 0) {
+      listEl.appendChild(txt('div', 'gh-brand-empty', 'Hen\u00FCz ke\u015Ffedilecek marka yok.\nMarkalar panelinden g\u00F6z at.'));
+      return;
+    }
+
+    payload.items.forEach(function(b) {
+      var row = el('div', 'gh-brand-item');
+
+      var logo = el('div', 'gh-brand-logo');
+      if (b.logo_url) {
+        var img = document.createElement('img');
+        img.src = b.logo_url;
+        img.alt = b.brand_name || '';
+        logo.appendChild(img);
+      } else {
+        logo.textContent = (b.brand_name || '?').charAt(0).toUpperCase();
+      }
+      row.appendChild(logo);
+
+      var info = el('div', 'gh-brand-info');
+      info.appendChild(txt('div', 'gh-brand-name', b.brand_name));
+      var seg = SEGMENT_TR[b.segment] || b.segment || '';
+      if (seg) info.appendChild(txt('div', 'gh-brand-seg', seg));
+      row.appendChild(info);
+
+      var isFollowed = !!(payload.followedIds[b.id]);
+      var followBtn = txt('button', 'gh-brand-follow' + (isFollowed ? ' gh-brand-follow--active' : ''), isFollowed ? 'Takipte' : 'Takip Et');
+      followBtn.type = 'button';
+      followBtn.setAttribute('data-brand-id', b.id);
+      followBtn.addEventListener('click', (function(brandId, btnEl, canToggle) {
+        return function(ev) {
+          ev.stopPropagation();
+          var ready = canToggle && typeof window._htBrandFollowReady === 'function' && window._htBrandFollowReady();
+          if (ready && typeof window.toggleBrandFollow === 'function') {
+            window.toggleBrandFollow(brandId, ev);
+            var wasActive = btnEl.classList.contains('gh-brand-follow--active');
+            if (wasActive) { btnEl.classList.remove('gh-brand-follow--active'); btnEl.textContent = 'Takip Et'; }
+            else { btnEl.classList.add('gh-brand-follow--active'); btnEl.textContent = 'Takipte'; }
+          } else {
+            switchPanel('sirketler');
+          }
+        };
+      })(b.id, followBtn, payload.canToggleInline));
+      row.appendChild(followBtn);
+
+      listEl.appendChild(row);
+    });
   }
 
   /* ═══════════════════════════════════════════════════
