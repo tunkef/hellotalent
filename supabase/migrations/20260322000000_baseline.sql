@@ -1,0 +1,12 @@
+-- ═══════════════════════════════════════════════════════════════════════════
+-- BASELINE MIGRATION — 22 Mart 2026
+--
+-- Bu dosya production DB'nin mevcut halini temsil eder.
+-- Tum onceki migration'lar (001-064) zaten uygulanmistir.
+-- Bu baseline, supabase db push pipeline'ini baslatan ilk kayittir.
+--
+-- Onceki migration arsivi: docs/migrations/
+-- ═══════════════════════════════════════════════════════════════════════════
+
+-- Intentionally empty: all prior schema already exists in production.
+-- This migration is marked as "applied" via `supabase migration repair`.

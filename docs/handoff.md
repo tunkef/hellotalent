@@ -1,5 +1,5 @@
 # hellotalent.ai — Technical Handoff Document
-> Son güncelleme: 22 Mart 2026 (Session 16 — Coach taxonomy refresh, search/filter, CI cleanup)
+> Son güncelleme: 22 Mart 2026 (Session 16 — Coach taxonomy, search/filter, CI cleanup, ESLint+Husky, jsconfig, Supabase CLI migrations)
 > Bu doküman, projenin mevcut durumunu, tamamlanan işleri ve kalan backlog'u kapsar.
 > Yeni bir chat/session başlatırken bu dosyayı referans olarak kullanın.
 
@@ -812,6 +812,27 @@ EDIT    docs/db-schema-reference.js (coach_profiles + coach_posts updates)
 EDIT    .github/workflows/playwright.yml (smoke gating + concurrency)
 EDIT    docs/handoff.md
 ```
+
+**63. ESLint + Husky Pre-commit Hook**
+- ESLint 9 flat config: `no-undef`, `no-console` (allow error/warn), `no-dupe-keys`, `no-unreachable`
+- `no-var: off` (project uses var for Safari compat)
+- Cross-file globals declared via `/* global */` comments per file
+- Husky + lint-staged: blocks commit on ESLint errors, allows warnings
+- CI: ESLint step added to P3 Regression Guards job
+
+**64. jsconfig.json + global.d.ts (IDE Type Checking)**
+- `jsconfig.json` with `checkJs: false` (opt-in per file with `// @ts-check`)
+- `global.d.ts`: cross-file global type declarations (supabase, currentUser, switchPanel, etc.)
+- Window interface extensions for `_ht*` pattern
+- IDE catches undefined variables, provides autocomplete
+
+**65. Supabase CLI Migration Pipeline**
+- `supabase/migrations/` directory with timestamped migration files
+- Baseline migration `20260322000000_baseline.sql` (empty — marks prior 001-064 as applied)
+- Pipeline verified: `20260322082741_pipeline_test.sql` deployed via `db push`
+- npm scripts: `db:push`, `db:new`, `db:list`, `db:status`
+- Old migrations preserved as archive in `docs/migrations/`
+- Deploy workflow updated: `npm run db:new -- name` → edit → `npm run db:push`
 
 ---
 

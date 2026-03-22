@@ -14,7 +14,11 @@
     "test:profil-ayarlar-e2e": "playwright test tests/profil.ayarlar-toggles.e2e.spec.js --project=e2e-mobile --project=e2e-desktop --reporter=list",
     "lint": "eslint *.js",
     "lint:fix": "eslint --fix *.js",
-    "prepare": "husky"
+    "prepare": "husky",
+    "db:push": "supabase db push --linked",
+    "db:new": "supabase migration new",
+    "db:list": "supabase migration list --linked",
+    "db:status": "supabase migration list --linked"
   },
   "repository": {
     "type": "git",
