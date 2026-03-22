@@ -168,11 +168,14 @@
     css += '.gh-brand-follow--active{background:var(--verm,#C94E28);color:#fff;border-color:var(--verm,#C94E28)}';
     css += '.gh-brand-follow--active:hover{opacity:.85;background:var(--verm,#C94E28)}';
 
-    /* ── Coach header card (polished bento block) ── */
-    css += '.gh-coach-header{background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF);border-radius:16px;padding:20px 24px;box-shadow:0 2px 8px rgba(0,0,0,.08),0 8px 20px rgba(0,0,0,.06);display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}';
-    css += '.gh-coach-header-left{flex:1;min-width:0}';
-    css += '.gh-coach-header-right{display:flex;align-items:center;gap:8px;flex-shrink:0;flex-wrap:wrap}';
-    css += '@media(max-width:480px){.gh-coach-header{flex-direction:column;align-items:stretch}.gh-coach-header-right{justify-content:flex-start}}';
+    /* ── Coach header card (editorial bento block with accent stripe) ── */
+    css += '.gh-coach-header{background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF);border-radius:16px;box-shadow:0 2px 8px rgba(0,0,0,.08),0 8px 20px rgba(0,0,0,.06);overflow:hidden}';
+    css += '.gh-coach-header-stripe{height:4px;background:var(--verm,#C94E28);border-radius:0}';
+    css += '.gh-coach-header-inner{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;padding:18px 24px 20px;flex-wrap:wrap}';
+    css += '.gh-coach-header-left{flex:1;min-width:160px}';
+    css += '.gh-feed-sub{max-width:320px}';
+    css += '.gh-coach-header-right{display:flex;align-items:center;gap:8px;flex-shrink:0}';
+    css += '@media(max-width:480px){.gh-coach-header-inner{flex-direction:column;align-items:stretch;gap:12px}.gh-coach-header-right{justify-content:flex-start}}';
 
     /* ── Empty / onboarding adaptation ── */
     css += '.gh-empty-prompt{background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF);border-radius:16px;padding:28px 24px;box-shadow:0 2px 8px rgba(0,0,0,.08),0 8px 20px rgba(0,0,0,.06);text-align:center}';
@@ -184,6 +187,9 @@
     css += '@keyframes ghSlideUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}';
     css += '.gh-animate{animation:ghSlideUp .35s ease both}';
     css += '.gh-animate:nth-child(1){animation-delay:0s}.gh-animate:nth-child(2){animation-delay:.05s}.gh-animate:nth-child(3){animation-delay:.1s}.gh-animate:nth-child(4){animation-delay:.15s}.gh-animate:nth-child(5){animation-delay:.2s}';
+
+    /* ── Brand teaser empty state ── */
+    css += '.gh-brand-empty{font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;color:var(--text-muted,#6B7280);text-align:center;padding:16px 8px;line-height:1.5}';
 
     /* ── Feed body container ── */
     css += '.gh-feed-body{display:flex;flex-direction:column;gap:16px}';
@@ -417,12 +423,14 @@
   function buildFeedSection() {
     var section = el('div', 'gh-center');
 
-    /* Polished coach header card (bento block) */
+    /* Coach header card with vermillion accent stripe */
     var hdr = el('div', 'gh-coach-header gh-animate');
+    hdr.appendChild(el('div', 'gh-coach-header-stripe'));
+    var hdrInner = el('div', 'gh-coach-header-inner');
     var hdrLeft = el('div', 'gh-coach-header-left');
     hdrLeft.appendChild(txt('div', 'gh-feed-title', 'Ko\u00E7lardan \u00D6\u011Fren'));
     hdrLeft.appendChild(txt('div', 'gh-feed-sub', 'Perakende kariyerinde \u00F6ne \u00E7\u0131kmak i\u00E7in edit\u00F6r se\u00E7kisi'));
-    hdr.appendChild(hdrLeft);
+    hdrInner.appendChild(hdrLeft);
     var hdrRight = el('div', 'gh-coach-header-right');
     var practiceBtn = txt('button', 'gh-btn-secondary', 'Bug\u00FCn 5 dk \u00E7al\u0131\u015F');
     practiceBtn.type = 'button';
@@ -432,7 +440,8 @@
     seeAll.type = 'button';
     seeAll.addEventListener('click', function() { switchPanel('mulakat'); });
     hdrRight.appendChild(seeAll);
-    hdr.appendChild(hdrRight);
+    hdrInner.appendChild(hdrRight);
+    hdr.appendChild(hdrInner);
     section.appendChild(hdr);
 
     /* Feed body — will be hydrated with article cards */
@@ -723,6 +732,12 @@
       }
 
       while (listEl.firstChild) listEl.removeChild(listEl.firstChild);
+
+      /* Explicit empty state when no brands available */
+      if (brands.length === 0) {
+        listEl.appendChild(txt('div', 'gh-brand-empty', 'Hen\u00FCz marka verisi y\u00FCklenemedi.\nMarkalar panelinden ke\u015Ffedebilirsin.'));
+        return;
+      }
 
       brands.slice(0, 3).forEach(function(b) {
         var row = el('div', 'gh-brand-item');
