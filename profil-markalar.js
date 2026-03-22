@@ -443,4 +443,13 @@ window.openBrandFollowsPopup = openBrandFollowsPopup;
 window.closeBrandFollowsPopup = closeBrandFollowsPopup;
 window.updateMarkalaBgDots = updateMarkalaBgDots;
 
+/* ── Teaser helper for Genel Bakis home surface ── */
+/* Returns 3 brand objects for the right-rail teaser card */
+window._htGenelMarkaTeaser = function() {
+  if (!_ht_brands || _ht_brands.length === 0) return [];
+  return _ht_brands.slice(0, 3).map(function(b) {
+    return { id: b.id, brand_name: b.brand_name, logo_url: b.logo_url, segment: b.segment };
+  });
+};
+
 })();

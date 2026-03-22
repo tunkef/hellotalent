@@ -2416,4 +2416,13 @@ window._htLoadMulakat = function() {
   }
 };
 
+/* ── Teaser helper for Genel Bakis home surface ── */
+/* Returns cached coach posts + liked set for read-only feed teaser */
+window._htGenelCoachTeaser = function() {
+  return { posts: _coachFeedPosts || [], likedSet: _coachLikedSet || {} };
+};
+
+/* Expose openCoachDetail so Genel home can trigger article detail */
+window.openCoachDetail = openCoachDetail;
+
 })();

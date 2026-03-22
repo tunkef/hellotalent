@@ -404,137 +404,8 @@ if (window.Sentry) {
 
 <!-- ═══ PANEL: GENEL BAKIS ═══ -->
 <main class="panel active" id="panel-genel" data-panel="genel">
-  <!-- Compact profile hero -->
-  <div class="g-hero" id="profile-summary" style="display:none;">
-    <div class="g-hero-inner">
-      <div class="g-hero-left">
-        <div class="g-avatar" id="ps-avatar">?</div>
-        <div class="g-info">
-          <div class="g-name" id="ps-name">&mdash;</div>
-          <div class="g-meta">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-            <span id="ps-city-text"></span>
-            <span class="badge-active" id="genel-active-indicator" style="display:none;">
-              <span class="dot" id="genel-active-dot"></span>
-              <span id="genel-active-text">Beni öner</span>
-            </span>
-          </div>
-        </div>
-      </div>
-      <div class="g-hero-right">
-        <div class="g-completion">
-          <div class="g-completion-bar"><div class="g-completion-fill" id="g-completion-fill" style="width:0%;"></div></div>
-          <span class="g-completion-text" id="completion-pct">0%</span>
-        </div>
-        <button class="btn btn-primary" id="btn-edit-profile" style="font-size:11px;padding:7px 14px;">Profili Düzenle</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- EMPTY PROMPT (first-time users) -->
-  <div class="dash-empty-prompt" id="dash-empty-prompt" style="display:none;">
-    <div class="dash-empty-icon">&#128100;</div>
-    <div class="dash-empty-title">Profilini Oluştur</div>
-    <div class="dash-empty-desc">Henüz profil bilgilerin eklenmemiş. Profilini tamamla, perakende markaları seni bulsun!</div>
-    <button class="btn btn-primary" id="btn-start-wizard">Profili Düzenle</button>
-  </div>
-
-  <!-- DASHBOARD CARDS (bento grid) -->
-  <div id="dash-content" style="display:none;">
-    <div class="bento-grid">
-
-      <!-- 1. Profil Merkezi — 2 col -->
-      <button type="button" class="bento-card active col-2" data-panel="merkez" aria-label="Profil Merkezi paneline git">
-        <div class="bento-bg"></div>
-        <div class="bento-content">
-          <div class="bento-icon navy">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/><path d="M16 3.13a4 4 0 0 1 0 7.75" opacity="0.3"/></svg>
-          </div>
-          <div class="bento-title">Profil Merkezi</div>
-          <div class="bento-desc">Kişisel bilgiler, deneyim, eğitim ve tercihlerini yönet</div>
-        </div>
-        <div class="bento-cta">
-          <span>Profili Düzenle<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
-        </div>
-      </button>
-
-      <!-- 2. Markalar — 1 col -->
-      <button type="button" class="bento-card active" data-panel="sirketler" aria-label="Markalar paneline git">
-        <div class="bento-bg"><div class="bg-markalar"></div></div>
-        <span class="badge-count" id="sirket-follow-count" style="display:none;"><span class="badge-count-text"></span></span>
-        <div class="bento-content">
-          <div class="bento-icon navy">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a4 4 0 0 0-8 0v2"/><circle cx="12" cy="14" r="2" fill="currentColor" opacity="0.2"/></svg>
-          </div>
-          <div class="bento-title">Markalar</div>
-          <div class="bento-desc">Keşfet ve takip et</div>
-        </div>
-        <div class="bento-cta">
-          <span>Markaları Gör<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
-        </div>
-      </button>
-
-      <!-- 3. Özel Teklifler — active -->
-      <button type="button" class="bento-card active" id="bento-teklifler" data-panel="teklifler" aria-label="Özel Teklifler paneline git">
-        <div class="bento-content">
-          <div class="bento-icon green">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12v10H4V12"/><rect x="2" y="7" width="20" height="5" rx="1"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z" fill="currentColor" opacity="0.15"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
-          </div>
-          <div class="bento-title">Özel Teklifler</div>
-          <div class="bento-desc" id="bento-teklifler-count">Kampanyalar ve fırsatlar</div>
-        </div>
-        <div class="bento-cta">
-          <span>Sana özel teklifleri incele<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
-        </div>
-      </button>
-
-      <!-- Kim Baktı -->
-      <div class="bento-card active" id="lab-viewers-card" style="cursor:pointer;" data-panel="kimbakti">
-        <div class="bento-content">
-          <div class="bento-icon navy">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="1" fill="currentColor" opacity="0.3"/></svg>
-          </div>
-          <div class="bento-title">Kim Baktı</div>
-          <div id="lab-viewers-body">
-            <div class="bento-desc" style="color:var(--muted);font-size:12px;">Yükleniyor…</div>
-          </div>
-        </div>
-        <div class="bento-cta">
-          <span>Profiline bakanları gör<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
-        </div>
-      </div>
-
-      <!-- Mülakat Koçu -->
-      <div class="bento-card active" style="cursor:pointer;" data-panel="mulakat">
-        <div class="bento-content">
-          <div class="bento-icon verm">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-          </div>
-          <div class="bento-title">Mülakat Koçu</div>
-          <div class="bento-desc">Yetkinlikleri öğrenin, soruları çalışın, gelişim günlüğünüzü oluşturun.</div>
-        </div>
-        <div class="bento-cta">
-          <span>Koçunuza başlayın<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
-        </div>
-      </div>
-
-      <!-- Premium — 2 col, dark, links to premium panel -->
-      <button type="button" class="bento-card active premium col-2" data-panel="premium" style="cursor:pointer;">
-        <div class="bento-bg"><div class="bg-premium"><svg class="star" style="top:20px;right:60px;" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg class="star" style="top:45px;right:30px;" width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div></div>
-        <div class="bento-content">
-          <div class="bento-icon white">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.8"><path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5z"/><path d="M5 19a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-1H5v1z" opacity=".5"/></svg>
-          </div>
-          <div class="bento-title">Premium</div>
-          <div class="bento-desc">Avantajları keşfet ve planını seç</div>
-        </div>
-        <div class="bento-cta">
-          <span>Premium'u Keşfet<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
-        </div>
-      </button>
-
-    </div>
-  </div>
+  <!-- Genel Bakis Home/Feed — rendered by profil-genel.js -->
+  <div id="gh-shell"></div>
 </main>
 
 <!-- ═══ PANEL: PROFIL MERKEZI — card-based bento design ═══ -->
@@ -1611,6 +1482,7 @@ if (window.Sentry) {
 <script src="profil-ui.js?v=20260322k"></script>
 <script src="profil-locations.js?v=20260322a"></script>
 <script src="profil-summary.js?v=20260322a"></script>
+<script src="profil-genel.js?v=20260322a"></script>
 <script src="profil-visibility.js?v=20260322a"></script>
 <script src="profil-preview.js?v=20260322a"></script>
 <script src="profil-cv.js?v=20260322a"></script>
@@ -2349,6 +2221,7 @@ function reapplyDynamicFields() {
       } catch (e) {}
     }
     updateDashboardSummary(dbData.profile, dbData.experiences);
+    if (typeof window._htLoadGenelHome === 'function') window._htLoadGenelHome();
     updateMerkezCards(); // Populate Profil Merkezi section cards
     if (typeof applyAllVisibilityMirrorsFromProfile === 'function') applyAllVisibilityMirrorsFromProfile();
     syncAccountEmail();
@@ -2391,7 +2264,10 @@ function reapplyDynamicFields() {
     if (draft) {
       document.getElementById('modal-draft').classList.add('show');
     }
-    document.getElementById('dash-empty-prompt').style.display = 'block';
+    var _dep = document.getElementById('dash-empty-prompt');
+    if (_dep) _dep.style.display = 'block';
+    /* Genel home handles empty state via _htLoadGenelHome */
+    if (typeof window._htLoadGenelHome === 'function') window._htLoadGenelHome();
   }
 
   // ── Dismiss loading screen now that data is ready ──

@@ -410,4 +410,13 @@
     }, 2000);
   });
 
+  /* ── Teaser helper for Genel Bakis home surface ── */
+  /* Returns 3 campaign items for the right-rail teaser card */
+  window._htGenelTeklifTeaser = function() {
+    var src = allCampaigns.length > 0 ? allCampaigns : DEMO_FREEMIUM;
+    return src.slice(0, 3).map(function(c) {
+      return { title: c.title, company_name: c.company_name || (c.companies && c.companies.company_name) || '', campaign_type: c.campaign_type };
+    });
+  };
+
 })();
