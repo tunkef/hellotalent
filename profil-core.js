@@ -1,13 +1,15 @@
-// v20260317c
+/* global HT */
+// v20260322d
 // ── SUPABASE CLIENT ──
 // Use var to avoid Safari SyntaxError: "Can't create duplicate variable that shadows a global property"
 // window.supabase is set by the CDN script; const/let would shadow it and crash in Safari.
-// Supabase config — single source: shared.js HT_SUPA_URL / HT_SUPA_KEY
-// These pages create their own client because they need auth before shared.js header injection.
-// If URL/KEY change, update shared.js AND these 3 files: profil.html, ik.html, giris.html
-var SUPABASE_URL = 'https://cpwibefquojehjehtrog.supabase.co';
-var SUPABASE_KEY = 'sb_publishable_POUtNwJyjAAheukwYP5hmA_TKKjphwa';
+// Supabase config from shared.js (loaded before this file in profil.html).
+// HT.SUPA_URL / HT.SUPA_KEY are the single source of truth.
+var SUPABASE_URL = HT.SUPA_URL;
+var SUPABASE_KEY = HT.SUPA_KEY;
 var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+// Unify with HT.getSupa() singleton so any code calling HT.getSupa() gets the same client
+window._htSupa = supabase;
 var currentUser = null;
 
 // Single auth boot: one getSession() for the whole page to avoid Sentry AbortError (racing getSession calls).
