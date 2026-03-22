@@ -1,5 +1,5 @@
 # hellotalent.ai — Technical Handoff Document
-> Son güncelleme: 22 Mart 2026 (Session 16 — Coach taxonomy, search/filter, CI cleanup, ESLint+Husky, jsconfig, Supabase CLI migrations)
+> Son güncelleme: 22 Mart 2026 (Session 17 — Supabase config consolidation, Ops Health Dashboard, profil-ui.js modularization)
 > Bu doküman, projenin mevcut durumunu, tamamlanan işleri ve kalan backlog'u kapsar.
 > Yeni bir chat/session başlatırken bu dosyayı referans olarak kullanın.
 
@@ -834,6 +834,88 @@ EDIT    docs/handoff.md
 - Old migrations preserved as archive in `docs/migrations/`
 - Deploy workflow updated: `npm run db:new -- name` → edit → `npm run db:push`
 
+### Session 17 — 22 Mart 2026 (Supabase Config Consolidation, Ops Health Dashboard, Profil Modularization)
+
+**66. Supabase Config Consolidation — Phase 2 (10 pages)**
+- Removed hardcoded Supabase URL/KEY from 10 pages, all now use shared.js `HT.getSupa()`
+- Pages migrated: blog.html, kariyer.html, pozisyonlar.html, yetkinlik.html, index.html, aday.html, giris.html, coach-studio.html, admin.html, sifre-yenile.html
+- shared.js is now the single source of truth for Supabase config across the project
+- SHA: `c2a4384`
+
+**67. Load-order Blocker Fix (4 public pages)**
+- blog.html, kariyer.html, pozisyonlar.html, yetkinlik.html were calling `HT.getSupa()` before shared.js loaded
+- Fix: moved shared.js `<script>` before the inline scripts that reference `HT`
+- SHA: `6fbeb32`
+
+**68. Supabase Config Consolidation — Phase 3 (high-sensitivity files)**
+- profil-core.js: replaced hardcoded URL/KEY with `HT.SUPA_URL` / `HT.SUPA_KEY` from shared.js
+- ik.html: same pattern — removed local constants, uses shared.js config
+- Both files are auth-heavy dashboard entrypoints; consolidation verified without auth regression
+- SHA: `654e52c`
+
+**69. Ops Health Dashboard — admin panel**
+- New file: `admin-ops-health.js` — modular admin panel for system health monitoring
+- New nav item: "Sistem Sağlığı" in admin.html sidebar (SİSTEM section)
+- Migration `20260322093832_ops_health_rpc.sql`: `get_ops_health_stats()` + `get_ops_failed_emails()` RPCs (SECURITY DEFINER, admin guard)
+- Sections: E-posta Pipeline (8 metrics), Son Başarısız E-postalar table, Kullanıcı Metrikleri, Profil Tamamlama Dağılımı, Bildirim Tercihleri, CLI Pipeline Durumu, Cron İşleri (with last-run details from cron.job_run_details)
+- Health banner: green/yellow/red based on stale_processing, old_pending, failed_1h thresholds
+- RPC fallback: if RPC unavailable, falls back to direct table queries with reduced stats
+- SHA: `9317beb`
+
+**70. Ops Health — failed_at truthfulness fix**
+- Problem: `failed_1h` used `created_at` (enqueue time), not actual failure time
+- Migration `20260322095713_email_outbox_failed_at.sql`: added `failed_at timestamptz` column to email_outbox
+- Updated RPCs: `failed_1h` now uses `failed_at`, `get_ops_failed_emails` returns and sorts by `failed_at`
+- Updated `email-send` Edge Function: sets `failed_at = new Date().toISOString()` on permanent failure
+- Legacy rows with null `failed_at` handled gracefully (NULLS LAST ordering, italic created_at fallback in UI)
+- SHA: `fe233c8`
+
+**71. Ops Health — production deployment**
+- Both migrations deployed via Supabase SQL Editor (Chrome browser automation)
+- Migrations marked as applied in `supabase_migrations.schema_migrations`
+- email-send Edge Function redeployed via CLI with temporary access token
+- Production verification: all 8 sections rendering real data (5 sent_24h, 0 failed, 5 cron jobs all succeeded)
+
+**72. Profil Modularization — 5 extraction passes**
+profil-ui.js was systematically split into 5 domain modules, reducing it from ~3420 → ~1870 lines (−45%):
+
+| Pass | New File | Domain | Lines |
+|------|----------|--------|-------|
+| 1 | profil-visibility.js | Toggle sync (syncBeniOner, syncActivelyLooking, syncHideFromEmployer), toast | ~200 |
+| 2 | profil-preview.js | Profile preview drawer (open/close/ESC/overlay, render) | ~280 |
+| 3 | profil-cv.js | CV upload/delete/generate (initCVUpload, showCVUploaded, showCVEmpty, generateCV) | ~330 |
+| 4 | profil-summary.js | Dashboard summary, merkez cards, bento rings, completion/score calc + UI | ~550 |
+| 5 | profil-locations.js | Location modal, selectedLocations state, city/district chips, collectLocations | ~200 |
+
+Each pass followed the same discipline: dependency mapping → create module → shrink source → update script order → verify behavior.
+
+- CV boot-path bug found and fixed: `showCVUploaded()` was receiving `cv_filename` instead of `cv_url` from DB boot path. SHA: `0852f0e`
+- Post-extraction stabilization: script load-order comments added to profil.html, stale comments fixed. SHA: `be081fa`
+- Decision: remaining profil-ui.js (~1870 lines) is tightly coupled wizard/save/load core — no further extraction unless concrete product need.
+
+**Dosya Değişiklikleri (Session 17):**
+```
+CREATE  admin-ops-health.js
+CREATE  profil-visibility.js
+CREATE  profil-preview.js
+CREATE  profil-cv.js
+CREATE  profil-summary.js
+CREATE  profil-locations.js
+CREATE  supabase/migrations/20260322093832_ops_health_rpc.sql
+CREATE  supabase/migrations/20260322095713_email_outbox_failed_at.sql
+EDIT    admin.html (ops health nav + panel + script)
+EDIT    profil.html (script order, load-order comments, extraction shrink)
+EDIT    profil-ui.js (3420→1870 lines after 5 extractions)
+EDIT    profil-core.js (Supabase config consolidation)
+EDIT    ik.html (Supabase config consolidation)
+EDIT    giris.html, coach-studio.html, admin.html, sifre-yenile.html (config consolidation)
+EDIT    blog.html, kariyer.html, pozisyonlar.html, yetkinlik.html (config consolidation + load-order fix)
+EDIT    index.html, aday.html (config consolidation)
+EDIT    supabase/functions/email-send/index.ts (failed_at on permanent failure)
+EDIT    shared.js (config source of truth — no change, already correct)
+EDIT    docs/handoff.md
+```
+
 ---
 
 ## 1. Proje Özeti
@@ -1452,6 +1534,8 @@ if(sessionStorage.getItem('ht_gate')!=='ok'){window.location.replace('gate.html'
 | 062 | `062_coach_invites_rls_auth_users_fix.sql` — fix own_read policy (auth.jwt() instead of auth.users subquery) + explicit GRANTs | ✅ Deployed Session 15 |
 | 063 | `063_fix_cron_http_post.sql` — fix pg_cron email jobs: extensions.http_post -> net.http_post | ✅ Deployed Session 15 (live fix) |
 | 064 | `064_coach_taxonomy_metadata.sql` — category taxonomy refresh (4→6), coach_profiles author metadata, old category migration | ✅ Deployed Session 16 |
+| 065 | `20260322093832_ops_health_rpc.sql` — get_ops_health_stats() + get_ops_failed_emails() RPCs (admin-only, SECURITY DEFINER) | ✅ Deployed Session 17 (SQL Editor) |
+| 066 | `20260322095713_email_outbox_failed_at.sql` — failed_at column + RPC update for truthful failure timing | ✅ Deployed Session 17 (SQL Editor) |
 
 ### Markalar TODO
 - [x] ~~Mobil test (390×844)~~ ✅ Touch toggle (`.active` class) eklendi, hover + click ile çalışır
@@ -1635,14 +1719,17 @@ cat docs/handoff.md
 8. ~~**Mülakat Koçu unification**~~ ✅ 7-screen flow, competency coaching, journal, file rename
 9. ~~**Phase 3C — employer pozisyon skoru**~~ ✅ Migration 050 Supabase’te
 10. ~~**Messaging: bi-directional live-chat**~~ ✅ Session 13-14 — migrations 052-057, split-pane, realtime
-11. **🔴 Messaging E2E smoke test:** Authenticated manual test with real accounts required
-12. **Messaging email Phase 2:** employer follow-up trigger + employer reply notification
-13. **Mülakat Koçu V2:** Günlüğüm review surface, AI feedback on drafts, design polish
-14. **Minor fix:** `avd-avatar-img` → setAvatarImage() targets (profil-ui.js)
-15. ~~**Migration 042**~~ ✅ competency tabloları — Session 5 / handoff §25
-16. **Brand color audit:** Batch 2 (index, blog, hakkimizda) + Batch 3 (ik, aday, profil.css)
-17. **Dark mode remaining:** profil-settings.js alert→modal (7 instances), ik/giris/gate pages
-18. **P4 — Public pages content review + dark mode expansion + performance**
+11. ~~**Supabase config consolidation**~~ ✅ Session 17 — Phase 2+3, shared.js single source
+12. ~~**Ops Health Dashboard**~~ ✅ Session 17 — admin panel, RPCs, failed_at truthfulness, deployed
+13. ~~**Profil modularization**~~ ✅ Session 17 — 5 extraction passes, profil-ui.js 3420→1870 lines
+14. **🔴 Messaging E2E smoke test:** Authenticated manual test with real accounts required
+15. **Messaging email Phase 2:** employer follow-up trigger + employer reply notification
+16. **Mülakat Koçu V2:** Günlüğüm review surface, AI feedback on drafts, design polish
+17. **Minor fix:** `avd-avatar-img` → setAvatarImage() targets (profil-ui.js)
+18. ~~**Migration 042**~~ ✅ competency tabloları — Session 5 / handoff §25
+19. **Brand color audit:** Batch 2 (index, blog, hakkimizda) + Batch 3 (ik, aday, profil.css)
+20. **Dark mode remaining:** profil-settings.js alert→modal (7 instances), ik/giris/gate pages
+21. **P4 — Public pages content review + dark mode expansion + performance**
 
 ### Önceki Transkriptler
 Tam konuşma geçmişi:
