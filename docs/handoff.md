@@ -931,9 +931,14 @@ gizlilik.html, kvkk.html, kullanim-sartlari.html, cerez-politikasi.html
 | Dosya | İçerik |
 |-------|--------|
 | profil.html | ~5900+ lines — tüm paneller, bento grid, loading screen, toggle grid, preview modal |
-| profil-core.js | Supabase client, shared auth promise, theme (pre-paint bootstrap + meta-theme-color sync), normalization, reference data |
-| profil-data.js | Data loading/saving utilities |
-| profil-ui.js | ~3100+ lines — flip cards, brand colors, merkez cards, preview modal, toggle logic, retry logic |
+| profil-core.js | Supabase client, shared auth promise, theme, normalization, reference data (STORAGE, val, trLower) |
+| profil-data.js | Reference data: TUR_ILLER, ILCELER, BRAND_DB, ROL_AILELERI, etc. |
+| profil-ui.js | ~1870 lines — wizard core (steps 1-4 init/collect, step 6), saveProfileRPC, loadProfileFromDB, avatar, brand lookup, shared helpers |
+| profil-locations.js | Location modal, selectedLocations state, initStep5, city/district chips, collectLocations (extracted from profil-ui.js) |
+| profil-summary.js | Dashboard summary, merkez cards, bento rings, completion/score calculation + UI (extracted from profil-ui.js) |
+| profil-visibility.js | Toggle sync (syncBeniOner, syncActivelyLooking, syncHideFromEmployer), showTgToast, closeTgToast (extracted from profil-ui.js) |
+| profil-preview.js | Profile preview drawer — openProfilePreview, closeProfilePreview, ESC handler (extracted from profil-ui.js) |
+| profil-cv.js | CV upload/delete/generate — initCVUpload, showCVUploaded, showCVEmpty, generateCV (extracted from profil-ui.js) |
 | profil-settings.js | Settings panel, deletion banner |
 | profil-yetkinlik.js | Competency wizard v2 — 29 yetkinlik, bento grid, Korn Ferry content, role-based mapping |
 | profil-mulakatkocu.js | Mülakat Koçu — 7-screen interview coaching flow, 289 questions, competency coaching, development journal |
@@ -941,6 +946,8 @@ gizlilik.html, kvkk.html, kullanim-sartlari.html, cerez-politikasi.html
 | profil-premium.js | Premium panel — features showcase, plan cards, pricing |
 | profil-markalar.js | Markalar panel — brand cards, flip, follow, search, segment pills (extracted from profil-ui.js) |
 | profil.css | ~3000+ lines — all profil dashboard styles (dark mode tokens, semantic variables) |
+
+**Modularization note (March 2026):** profil-ui.js was split into 5 domain modules (locations, summary, visibility, preview, CV) across 5 careful extraction passes. profil-ui.js went from ~3420 → ~1870 lines (−45%). The remaining core is tightly coupled wizard/save/load logic and should not be further split unless a concrete product need appears. Script load order in profil.html is documented with an inline comment block.
 
 ### Config & Test
 | Dosya/Klasör | İçerik |

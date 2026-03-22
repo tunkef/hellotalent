@@ -1591,7 +1591,20 @@ if (window.Sentry) {
 
 </div><!-- /app-body -->
 
-<!-- shared.js: Supabase config source of truth (no header/footer injected — no ht-header/ht-footer divs) -->
+<!--
+  Script load order matters — do not reshuffle.
+  1. shared.js     — Supabase config (HT.SUPA_URL/KEY/getSupa)
+  2. profil-core.js — globals: supabase, currentUser, _loadedDBData, STORAGE, val, trLower
+  3. profil-data.js — reference data: TUR_ILLER, ILCELER, BRAND_DB, ROL_AILELERI, etc.
+  4. profil-ui.js   — wizard core (steps 1-4 init/collect, step 6, save RPC, load, helpers)
+     Modules extracted from profil-ui.js (must load after it):
+  5. profil-locations.js — selectedLocations state, initStep5, location modal, collectLocations
+  6. profil-summary.js   — dashboard summary, merkez cards, completion/score UI
+  7. profil-visibility.js — toggle sync (syncBeniOner etc.), showTgToast, closeTgToast
+  8. profil-preview.js    — profile preview drawer (depends on _escHtml from profil-ui.js)
+  9. profil-cv.js          — CV upload/delete/generate (depends on showToast, collect* from profil-ui.js)
+  10-14. Feature modules (markalar, settings, teklifler, inbox, yetkinlik, mulakat kocu, premium)
+-->
 <script src="/shared.js?v=20260322a"></script>
 <script src="profil-core.js?v=20260322d"></script>
 <script src="profil-data.js?v=20260317d"></script>
@@ -2151,8 +2164,8 @@ function refreshAfterSettingsSave(savedFullName, savedTelefon) {
   updateMerkezCards();
 }
 
-// refreshAfterVisibilitySave — REMOVED: replaced by shared syncBeniOner in profil-ui.js
-// Kept as thin redirect for any remaining callers (defensive)
+// refreshAfterVisibilitySave — thin redirect to syncBeniOner (profil-visibility.js)
+// Kept for any remaining callers (defensive)
 function refreshAfterVisibilitySave(isActive) {
   if (typeof syncBeniOner === 'function') syncBeniOner(isActive, 'ayarlar');
 }
