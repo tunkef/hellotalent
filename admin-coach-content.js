@@ -13,6 +13,9 @@
 
   var CATEGORY_LABELS = {
     mulakat_ipucu: 'Mulakat Ipucu', yetkinlik_rehberi: 'Yetkinlik Rehberi',
+    kariyer_gelisim_onerileri: 'Kariyer Gelisim', performans: 'Performans',
+    kariyer_hikayesi: 'Kariyer Hikayesi', sektor_analizi: 'Sektor Analizi',
+    /* backward compat */
     kariyer_hikaye: 'Kariyer Hikayesi', sektor_analiz: 'Sektor Analizi'
   };
 
@@ -259,7 +262,7 @@
 
     try {
       var query = supa.from('coach_posts')
-        .select('*, coach_profiles(display_name)')
+        .select('*, coach_profiles(display_name, title, bio_short, sector_background, experience_years)')
         .order('updated_at', { ascending: false });
 
       if (_postsFilter === 'submitted') {
@@ -323,6 +326,20 @@
     if (post.excerpt) {
       var excerptDiv = el('div', 'acc-post-excerpt', post.excerpt);
       card.appendChild(excerptDiv);
+    }
+
+    /* Author signature — for editorial review */
+    var cp = post.coach_profiles;
+    if (cp && (cp.bio_short || cp.sector_background || cp.experience_years || cp.title)) {
+      var authorInfo = el('div', 'acc-post-author');
+      authorInfo.style.cssText = 'font-size:11px;color:var(--muted);margin:4px 0 8px;padding:8px 12px;background:#F9FAFB;border-radius:8px;border:1px solid #F3F4F6;line-height:1.6;';
+      var authorParts = [];
+      if (cp.title) authorParts.push(cp.title);
+      if (cp.sector_background) authorParts.push(cp.sector_background);
+      if (cp.experience_years) authorParts.push(cp.experience_years + ' yil deneyim');
+      if (cp.bio_short) authorParts.push(cp.bio_short);
+      authorInfo.textContent = 'Yazar: ' + authorParts.join(' · ');
+      card.appendChild(authorInfo);
     }
 
     // Expandable body

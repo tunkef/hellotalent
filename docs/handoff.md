@@ -1374,6 +1374,7 @@ if(sessionStorage.getItem('ht_gate')!=='ok'){window.location.replace('gate.html'
 | 061 | `061_coach_update_like_count_guard.sql` — add like_count = 0 to coach UPDATE WITH CHECK | ✅ Deployed Session 15 |
 | 062 | `062_coach_invites_rls_auth_users_fix.sql` — fix own_read policy (auth.jwt() instead of auth.users subquery) + explicit GRANTs | ✅ Deployed Session 15 |
 | 063 | `063_fix_cron_http_post.sql` — fix pg_cron email jobs: extensions.http_post -> net.http_post | ✅ Deployed Session 15 (live fix) |
+| 064 | `064_coach_taxonomy_metadata.sql` — category taxonomy refresh (4→6), coach_profiles author metadata, old category migration | ✅ Deployed Session 16 |
 
 ### Markalar TODO
 - [x] ~~Mobil test (390×844)~~ ✅ Touch toggle (`.active` class) eklendi, hover + click ile çalışır

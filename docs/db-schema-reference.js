@@ -404,6 +404,9 @@ var _storageConfig;
  * @property {string} display_name
  * @property {string} [title] - short bio, e.g. "Perakende IK Danismani"
  * @property {string} [avatar_url]
+ * @property {string} [bio_short] - max ~300 char author bio (migration 064)
+ * @property {string} [sector_background] - e.g. "Hizli moda, luxury" (migration 064)
+ * @property {number} [experience_years] - integer (migration 064)
  * @property {boolean} is_active - default true
  * @property {string} created_at - timestamptz
  *
@@ -417,9 +420,9 @@ var _storageConfig;
  * @property {string} title
  * @property {string} [excerpt] - ~200 char preview
  * @property {string} body - full content
- * @property {string} category - 'mulakat_ipucu' | 'yetkinlik_rehberi' | 'kariyer_hikaye' | 'sektor_analiz'
- * @property {string} [related_role] - maps to ROLE_COMP_MAP keys
- * @property {string} [related_competency_code] - maps to competency codes (ao, bi, etc.)
+ * @property {string} category - 'mulakat_ipucu' | 'yetkinlik_rehberi' | 'kariyer_gelisim_onerileri' | 'performans' | 'kariyer_hikayesi' | 'sektor_analizi' (migration 064)
+ * @property {string} [related_role] - controlled dropdown, maps to ROLE_COMP_MAP keys (migration 064: free-text → dropdown)
+ * @property {string} [related_competency_code] - DEPRECATED: no longer exposed in UI (migration 064), column kept for backward compat
  * @property {string} status - 'draft' | 'submitted' | 'changes_requested' | 'published' | 'archived' | 'rejected'
  * @property {string} [admin_note] - admin feedback
  * @property {number} like_count - denormalized, default 0

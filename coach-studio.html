@@ -102,6 +102,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
   </header>
   <div class="cs-content">
     <div class="cs-sidebar">
+      <div id="cs-profile-section"></div>
       <div class="cs-sidebar-title">Yazilarim</div>
       <button class="cs-btn-new" id="cs-new-post">Yeni Yazi</button>
       <div id="cs-post-list"></div>
@@ -127,8 +128,46 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
   var CATEGORIES = [
     { value: 'mulakat_ipucu', label: 'Mulakat Ipucu' },
     { value: 'yetkinlik_rehberi', label: 'Yetkinlik Rehberi' },
-    { value: 'kariyer_hikaye', label: 'Kariyer Hikayesi' },
-    { value: 'sektor_analiz', label: 'Sektor Analizi' }
+    { value: 'kariyer_gelisim_onerileri', label: 'Kariyer Gelisim Onerileri' },
+    { value: 'performans', label: 'Performans' },
+    { value: 'kariyer_hikayesi', label: 'Kariyer Hikayesi' },
+    { value: 'sektor_analizi', label: 'Sektor Analizi' }
+  ];
+
+  /* Controlled role list — must match ROLE_COMP_MAP keys from profil-yetkinlik.js */
+  var ROLE_OPTIONS = [
+    { value: '', label: 'Rol secin (istege bagli)...' },
+    { value: 'Kasiyer', label: 'Kasiyer' },
+    { value: 'Sat\u0131\u015f Dan\u0131\u015fman\u0131', label: 'Sat\u0131\u015f Dan\u0131\u015fman\u0131' },
+    { value: 'K\u0131demli Sat\u0131\u015f Dan.', label: 'K\u0131demli Sat\u0131\u015f Dan.' },
+    { value: 'G\u00f6rsel Sat\u0131\u015f Uzm.', label: 'G\u00f6rsel Sat\u0131\u015f Uzm.' },
+    { value: 'Display Uzman\u0131', label: 'Display Uzman\u0131' },
+    { value: 'Stok Sorumlusu', label: 'Stok Sorumlusu' },
+    { value: 'Kasa Sorumlusu', label: 'Kasa Sorumlusu' },
+    { value: 'VM Koordinat\u00f6r\u00fc', label: 'VM Koordinat\u00f6r\u00fc' },
+    { value: 'Onboarding Uzman\u0131', label: 'Onboarding Uzman\u0131' },
+    { value: 'Sat\u0131\u015f Uzman\u0131', label: 'Sat\u0131\u015f Uzman\u0131' },
+    { value: '\u00dcr\u00fcn Uzman\u0131', label: '\u00dcr\u00fcn Uzman\u0131' },
+    { value: 'Omni-Channel Sat\u0131\u015f', label: 'Omni-Channel Sat\u0131\u015f' },
+    { value: 'Envanter Uzman\u0131', label: 'Envanter Uzman\u0131' },
+    { value: 'E\u011fitim Uzman\u0131', label: 'E\u011fitim Uzman\u0131' },
+    { value: 'Ma\u011faza Ko\u00e7u', label: 'Ma\u011faza Ko\u00e7u' },
+    { value: '\u0130\u015fe Al\u0131m Uzman\u0131', label: '\u0130\u015fe Al\u0131m Uzman\u0131' },
+    { value: 'CRM Uzman\u0131', label: 'CRM Uzman\u0131' },
+    { value: 'Kat M\u00fcd\u00fcr\u00fc', label: 'Kat M\u00fcd\u00fcr\u00fc' },
+    { value: 'Ma\u011faza M\u00fcd\u00fcr Yrd.', label: 'Ma\u011faza M\u00fcd\u00fcr Yrd.' },
+    { value: 'VM M\u00fcd\u00fcr\u00fc', label: 'VM M\u00fcd\u00fcr\u00fc' },
+    { value: 'E\u011fitim M\u00fcd\u00fcr\u00fc', label: 'E\u011fitim M\u00fcd\u00fcr\u00fc' },
+    { value: 'Operasyon M\u00fcd\u00fcr\u00fc', label: 'Operasyon M\u00fcd\u00fcr\u00fc' },
+    { value: '\u0130K \u0130\u015f Orta\u011f\u0131', label: '\u0130K \u0130\u015f Orta\u011f\u0131' },
+    { value: 'Ma\u011faza M\u00fcd\u00fcr\u00fc', label: 'Ma\u011faza M\u00fcd\u00fcr\u00fc' },
+    { value: 'Store Leader', label: 'Store Leader' },
+    { value: 'B\u00f6lge M\u00fcd\u00fcr\u00fc', label: 'B\u00f6lge M\u00fcd\u00fcr\u00fc' },
+    { value: 'B\u00f6lge Operasyon M\u00fcd.', label: 'B\u00f6lge Operasyon M\u00fcd.' },
+    { value: 'B\u00f6lge G\u00f6rsel M\u00fcd\u00fcr\u00fc', label: 'B\u00f6lge G\u00f6rsel M\u00fcd\u00fcr\u00fc' },
+    { value: 'B\u00f6lge Sat\u0131\u015f M\u00fcd\u00fcr\u00fc', label: 'B\u00f6lge Sat\u0131\u015f M\u00fcd\u00fcr\u00fc' },
+    { value: 'B\u00f6lge Direkt\u00f6r\u00fc', label: 'B\u00f6lge Direkt\u00f6r\u00fc' },
+    { value: '\u00dclke M\u00fcd\u00fcr\u00fc', label: '\u00dclke M\u00fcd\u00fcr\u00fc' }
   ];
 
   var STATUS_LABELS = {
@@ -196,7 +235,88 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
   function startStudio() {
     document.getElementById('cs-user-name').textContent = _coachProfile.display_name || '';
     showStudio();
+    renderProfileSection();
     loadPosts();
+  }
+
+  /* ── COACH PROFILE SECTION ── */
+  function renderProfileSection() {
+    var container = document.getElementById('cs-profile-section');
+    if (!container) return;
+    while (container.firstChild) container.removeChild(container.firstChild);
+
+    var toggle = document.createElement('button');
+    toggle.style.cssText = 'width:100%;padding:10px;margin-bottom:8px;background:none;border:1px solid var(--border);border-radius:10px;font-size:12px;font-weight:600;font-family:inherit;color:var(--navy);cursor:pointer;transition:all 0.15s;text-align:left;';
+    toggle.textContent = 'Koc Profilimi Duzenle';
+    var profileForm = document.createElement('div');
+    profileForm.style.display = 'none';
+    toggle.addEventListener('click', function() {
+      profileForm.style.display = profileForm.style.display === 'none' ? 'block' : 'none';
+      toggle.textContent = profileForm.style.display === 'none' ? 'Koc Profilimi Duzenle' : 'Profili Gizle';
+    });
+    container.appendChild(toggle);
+
+    var p = _coachProfile;
+    profileForm.appendChild(buildField('Gorunen Ad', 'input', 'cs-p-name', p.display_name || '', 80));
+    profileForm.appendChild(buildField('Unvan', 'input', 'cs-p-title', p.title || '', 100, 'Ornek: Perakende IK Danismani'));
+    profileForm.appendChild(buildField('Sektor Gecmisi', 'input', 'cs-p-sector', p.sector_background || '', 120, 'Ornek: Hizli moda, luksury'));
+    profileForm.appendChild(buildField('Deneyim (yil)', 'input', 'cs-p-years', p.experience_years != null ? String(p.experience_years) : '', 3, ''));
+    profileForm.appendChild(buildField('Kisa Biyografi', 'textarea', 'cs-p-bio', p.bio_short || '', 300, 'Kisa tanitim metni (maks. 300 karakter)', 3));
+
+    var saveProfileBtn = document.createElement('button');
+    saveProfileBtn.className = 'cs-btn cs-btn-secondary';
+    saveProfileBtn.style.cssText = 'margin-top:8px;margin-bottom:12px;width:100%;font-size:12px;padding:8px;';
+    saveProfileBtn.textContent = 'Profili Kaydet';
+    saveProfileBtn.addEventListener('click', saveProfile);
+    profileForm.appendChild(saveProfileBtn);
+
+    var profileMsg = document.createElement('div');
+    profileMsg.className = 'cs-msg';
+    profileMsg.id = 'cs-profile-msg';
+    profileForm.appendChild(profileMsg);
+
+    container.appendChild(profileForm);
+  }
+
+  async function saveProfile() {
+    var nameEl = document.getElementById('cs-p-name');
+    var titleEl = document.getElementById('cs-p-title');
+    var sectorEl = document.getElementById('cs-p-sector');
+    var yearsEl = document.getElementById('cs-p-years');
+    var bioEl = document.getElementById('cs-p-bio');
+    var msgEl = document.getElementById('cs-profile-msg');
+
+    var displayName = nameEl ? nameEl.value.trim() : '';
+    if (!displayName) { showMsg(msgEl, 'Gorunen ad gereklidir.', 'error'); return; }
+
+    var yearsVal = yearsEl && yearsEl.value.trim() ? parseInt(yearsEl.value.trim(), 10) : null;
+    if (yearsVal !== null && (isNaN(yearsVal) || yearsVal < 0 || yearsVal > 50)) {
+      showMsg(msgEl, 'Deneyim yili 0-50 arasi olmalidir.', 'error'); return;
+    }
+
+    var updates = {
+      display_name: displayName,
+      title: titleEl ? titleEl.value.trim() || null : null,
+      sector_background: sectorEl ? sectorEl.value.trim() || null : null,
+      experience_years: yearsVal,
+      bio_short: bioEl ? bioEl.value.trim() || null : null
+    };
+
+    try {
+      var res = await _supa.from('coach_profiles').update(updates).eq('id', _coachProfile.id);
+      if (res.error) { showMsg(msgEl, 'Hata: ' + res.error.message, 'error'); return; }
+      /* Update local state */
+      _coachProfile.display_name = updates.display_name;
+      _coachProfile.title = updates.title;
+      _coachProfile.sector_background = updates.sector_background;
+      _coachProfile.experience_years = updates.experience_years;
+      _coachProfile.bio_short = updates.bio_short;
+      document.getElementById('cs-user-name').textContent = updates.display_name;
+      showMsg(msgEl, 'Profil kaydedildi.', 'success');
+    } catch (e) {
+      console.error('Save profile error:', e);
+      showMsg(msgEl, 'Kaydetme hatasi.', 'error');
+    }
   }
 
   /* ── LOAD POSTS ── */
@@ -319,8 +439,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
       bodyField.className = 'cs-field cs-field-body';
       card.appendChild(bodyField);
       card.appendChild(buildSelectField('Kategori', 'cs-f-category', CATEGORIES, post.category));
-      card.appendChild(buildField('Iliskili Rol (istege bagli)', 'input', 'cs-f-role', post.related_role || '', 0, 'Mulakat Kocu rol kodlarindan biri'));
-      card.appendChild(buildField('Iliskili Yetkinlik Kodu (istege bagli)', 'input', 'cs-f-comp', post.related_competency_code || '', 0, 'Yetkinlik kodu (2 harf)'));
+      card.appendChild(buildSelectField('Iliskili Rol (istege bagli)', 'cs-f-role', ROLE_OPTIONS, post.related_role || ''));
     } else {
       var catObj = CATEGORIES.find(function(c) { return c.value === post.category; });
       if (catObj) {
@@ -345,12 +464,6 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
         roleInfo.style.cssText = 'font-size:12px;color:var(--muted);margin-top:12px;';
         roleInfo.textContent = 'Iliskili Rol: ' + post.related_role;
         card.appendChild(roleInfo);
-      }
-      if (post.related_competency_code) {
-        var compInfo = document.createElement('div');
-        compInfo.style.cssText = 'font-size:12px;color:var(--muted);margin-top:4px;';
-        compInfo.textContent = 'Iliskili Yetkinlik: ' + post.related_competency_code;
-        card.appendChild(compInfo);
       }
     }
 
@@ -439,7 +552,6 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
     var bodyEl = document.getElementById('cs-f-body');
     var catEl = document.getElementById('cs-f-category');
     var roleEl = document.getElementById('cs-f-role');
-    var compEl = document.getElementById('cs-f-comp');
     var msgEl = document.getElementById('cs-editor-msg');
 
     if (!titleEl || !bodyEl) return;
@@ -453,8 +565,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
       excerpt: excerptEl ? excerptEl.value.trim() : '',
       body: body,
       category: catEl ? catEl.value : 'mulakat_ipucu',
-      related_role: roleEl && roleEl.value.trim() ? roleEl.value.trim() : null,
-      related_competency_code: compEl && compEl.value.trim() ? compEl.value.trim() : null
+      related_role: roleEl && roleEl.value ? roleEl.value : null
     };
     if (submit) updates.status = 'submitted';
 

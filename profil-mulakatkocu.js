@@ -896,6 +896,11 @@ function injectCSS() {
   css += '.ig-coach-detail-title{font-family:"Bricolage Grotesque",sans-serif;font-size:22px;font-weight:800;color:var(--text-primary,#111);margin-bottom:8px;letter-spacing:-.3px;line-height:1.2}';
   css += '.ig-coach-detail-coach{font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;color:var(--text-muted,#6B7280);margin-bottom:20px}';
   css += '.ig-coach-detail-body{font-family:"Plus Jakarta Sans",sans-serif;font-size:14px;color:var(--text-secondary,#4B5563);line-height:1.8;white-space:pre-wrap;margin-bottom:24px}';
+  css += '.ig-coach-author-block{margin-bottom:24px;padding:16px;border-radius:12px;border:1px solid var(--border-subtle,#E5E3DF);background:var(--bg-surface,#FAFAF9)}';
+  css += '.ig-coach-author-title{font-family:"Bricolage Grotesque",sans-serif;font-size:11px;font-weight:700;color:var(--text-muted,#6B7280);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}';
+  css += '.ig-coach-author-name{font-family:"Plus Jakarta Sans",sans-serif;font-size:14px;font-weight:700;color:var(--text-primary,#111);margin-bottom:4px}';
+  css += '.ig-coach-author-meta{font-family:"DM Mono",monospace;font-size:11px;color:var(--text-muted,#6B7280);margin-bottom:6px}';
+  css += '.ig-coach-author-bio{font-family:"Plus Jakarta Sans",sans-serif;font-size:13px;color:var(--text-secondary,#4B5563);line-height:1.6}';
   css += '.ig-coach-detail-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap}';
   css += '.ig-coach-detail-like{display:inline-flex;align-items:center;gap:6px;font-family:"Plus Jakarta Sans",sans-serif;font-size:13px;font-weight:600;color:var(--text-muted,#6B7280);background:none;border:1px solid var(--border-subtle,#E5E3DF);border-radius:10px;padding:8px 16px;cursor:pointer;transition:all .2s}';
   css += '.ig-coach-detail-like:hover,.ig-coach-detail-like.liked{border-color:var(--verm,#C94E28);color:var(--verm,#C94E28)}';
@@ -1607,6 +1612,11 @@ var _coachFeedLoaded = false;
 var COACH_CATEGORY_LABELS = {
   mulakat_ipucu: 'M\u00FClakat \u0130pucu',
   yetkinlik_rehberi: 'Yetkinlik Rehberi',
+  kariyer_gelisim_onerileri: 'Kariyer Geli\u015Fim',
+  performans: 'Performans',
+  kariyer_hikayesi: 'Kariyer Hikayesi',
+  sektor_analizi: 'Sekt\u00F6r Analizi',
+  /* backward compat for old rows that might not be migrated yet */
   kariyer_hikaye: 'Kariyer Hikayesi',
   sektor_analiz: 'Sekt\u00F6r Analizi'
 };
@@ -1625,10 +1635,10 @@ async function hydrateCoachFeed() {
   if (!feedEl) return;
 
   try {
-    /* Fetch published posts with coach info */
+    /* Fetch published posts with coach info (including author metadata) */
     var postsRes = await supabase
       .from('coach_posts')
-      .select('id, title, excerpt, category, like_count, related_role, related_competency_code, body, coach_profiles(display_name, title)')
+      .select('id, title, excerpt, category, like_count, related_role, body, coach_profiles(display_name, title, bio_short, sector_background, experience_years)')
       .eq('status', 'published')
       .order('published_at', { ascending: false })
       .limit(6);
@@ -1797,6 +1807,41 @@ function openCoachDetail(post, isLiked) {
   bodyEl.textContent = post.body || '';
   detail.appendChild(bodyEl);
 
+  /* ── Yazar Hakkinda block ── */
+  var cp = post.coach_profiles;
+  if (cp && (cp.bio_short || cp.sector_background || cp.experience_years)) {
+    var authorBlock = document.createElement('div');
+    authorBlock.className = 'ig-coach-author-block';
+
+    var authorTitle = document.createElement('div');
+    authorTitle.className = 'ig-coach-author-title';
+    authorTitle.textContent = 'Yazar Hakk\u0131nda';
+    authorBlock.appendChild(authorTitle);
+
+    var authorName = document.createElement('div');
+    authorName.className = 'ig-coach-author-name';
+    authorName.textContent = (cp.display_name || '') + (cp.title ? ' \u00B7 ' + cp.title : '');
+    authorBlock.appendChild(authorName);
+
+    var authorMeta = [];
+    if (cp.sector_background) authorMeta.push(cp.sector_background);
+    if (cp.experience_years) authorMeta.push(cp.experience_years + ' y\u0131l deneyim');
+    if (authorMeta.length) {
+      var metaEl = document.createElement('div');
+      metaEl.className = 'ig-coach-author-meta';
+      metaEl.textContent = authorMeta.join(' \u00B7 ');
+      authorBlock.appendChild(metaEl);
+    }
+
+    if (cp.bio_short) {
+      var bioEl2 = document.createElement('div');
+      bioEl2.className = 'ig-coach-author-bio';
+      bioEl2.textContent = cp.bio_short;
+      authorBlock.appendChild(bioEl2);
+    }
+    detail.appendChild(authorBlock);
+  }
+
   var actionsEl = document.createElement('div');
   actionsEl.className = 'ig-coach-detail-actions';
 
@@ -1809,10 +1854,10 @@ function openCoachDetail(post, isLiked) {
   });
   actionsEl.appendChild(likeBtn);
 
-  /* Practice bridge CTA — uses verified existing functions only */
+  /* Practice bridge CTA — role-based or general fallback */
   var bridge = getBridge();
   if (post.related_role && bridge && bridge.ROLE_COMP_MAP && bridge.ROLE_COMP_MAP[post.related_role]) {
-    /* related_role is valid ROLE_COMP_MAP key → use startSession (safe) */
+    /* related_role is valid ROLE_COMP_MAP key → direct session start */
     var bridgeBtn = document.createElement('button');
     bridgeBtn.className = 'ig-coach-detail-bridge';
     bridgeBtn.textContent = 'Bu konuyu \u015Fimdi \u00E7al\u0131\u015F';
@@ -1824,11 +1869,11 @@ function openCoachDetail(post, isLiked) {
       startSession(post.related_role);
     });
     actionsEl.appendChild(bridgeBtn);
-  } else if (post.related_competency_code) {
-    /* No valid role → guide user to role_select first (safe) */
+  } else {
+    /* No specific role → general coaching entry */
     var bridgeBtn2 = document.createElement('button');
     bridgeBtn2.className = 'ig-coach-detail-bridge';
-    bridgeBtn2.textContent = 'Bu yetkinli\u011Fi ke\u015Ffet';
+    bridgeBtn2.textContent = 'Ko\u00E7lu\u011Fa Ba\u015Flay\u0131n';
     var arrowSpan2 = document.createElement('span');
     arrowSpan2.innerHTML = arrowRightSVG;
     bridgeBtn2.appendChild(arrowSpan2);
