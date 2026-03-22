@@ -443,6 +443,12 @@ window.openBrandFollowsPopup = openBrandFollowsPopup;
 window.closeBrandFollowsPopup = closeBrandFollowsPopup;
 window.updateMarkalaBgDots = updateMarkalaBgDots;
 
+/* ── Readiness helper for Genel teaser follow interactions ── */
+/* Returns true only when candidate_id + follow state are initialized */
+window._htBrandFollowReady = function() {
+  return !!_ht_candidate_id && _ht_sirketler_loaded;
+};
+
 /* ── Teaser helper for Genel Bakis home surface ── */
 /* Returns 3 brand objects + follow state for the right-rail teaser card */
 window._htGenelMarkaTeaser = function() {

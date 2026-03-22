@@ -1017,6 +1017,7 @@ gizlilik.html, kvkk.html, kullanim-sartlari.html, cerez-politikasi.html
 | profil-data.js | Reference data: TUR_ILLER, ILCELER, BRAND_DB, ROL_AILELERI, etc. |
 | profil-ui.js | ~1870 lines — wizard core (steps 1-4 init/collect, step 6), saveProfileRPC, loadProfileFromDB, avatar, brand lookup, shared helpers |
 | profil-locations.js | Location modal, selectedLocations state, initStep5, city/district chips, collectLocations (extracted from profil-ui.js) |
+| profil-genel.js | Genel Bakış home/feed surface — 3-column editorial layout (identity card, viewers summary, premium CTA / coach feed / teklifler + markalar teasers). Loader: `_htLoadGenelHome()`, refresh: `_htRefreshGenelHome()` |
 | profil-summary.js | Dashboard summary, merkez cards, bento rings, completion/score calculation + UI (extracted from profil-ui.js) |
 | profil-visibility.js | Toggle sync (syncBeniOner, syncActivelyLooking, syncHideFromEmployer), showTgToast, closeTgToast (extracted from profil-ui.js) |
 | profil-preview.js | Profile preview drawer — openProfilePreview, closeProfilePreview, ESC handler (extracted from profil-ui.js) |

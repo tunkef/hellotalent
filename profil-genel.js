@@ -728,9 +728,11 @@
         followBtn.addEventListener('click', (function(brandId, btnEl) {
           return function(ev) {
             ev.stopPropagation();
-            if (typeof window.toggleBrandFollow === 'function') {
+            /* Only toggle if follow state is truly initialized */
+            var ready = typeof window._htBrandFollowReady === 'function' && window._htBrandFollowReady();
+            if (ready && typeof window.toggleBrandFollow === 'function') {
               window.toggleBrandFollow(brandId, ev);
-              /* Optimistic toggle UI */
+              /* Safe optimistic UI — toggleBrandFollow only runs when ready */
               var wasActive = btnEl.classList.contains('gh-brand-follow--active');
               if (wasActive) {
                 btnEl.classList.remove('gh-brand-follow--active');
@@ -740,7 +742,7 @@
                 btnEl.textContent = 'Takipte';
               }
             } else {
-              /* Markalar panel not loaded — navigate there */
+              /* Follow state not ready — navigate to full panel */
               switchPanel('sirketler');
             }
           };
