@@ -1,5 +1,5 @@
 # hellotalent.ai — Technical Handoff Document
-> Son güncelleme: 22 Mart 2026 (Session 17 — Supabase config consolidation, Ops Health Dashboard, profil-ui.js modularization)
+> Son güncelleme: 22 Mart 2026 (Session 18 — Genel Bakış editorial home rebuild, coach media system V1)
 > Bu doküman, projenin mevcut durumunu, tamamlanan işleri ve kalan backlog'u kapsar.
 > Yeni bir chat/session başlatırken bu dosyayı referans olarak kullanın.
 
@@ -918,6 +918,125 @@ EDIT    docs/handoff.md
 
 ---
 
+### Session 18 — 22 Mart 2026 (Genel Bakış finalize + Coach editorial media V1)
+
+**73. Genel Bakış — aday ana sayfası finalize**
+- `panel-genel` eski shortcut/bento tekrarından çıkarıldı; left rail + center editorial feed + right rail discovery yapısına taşındı
+- Sol ray: kimlik kartı, Profiline Bakanlar özeti, Premium CTA
+- Orta kolon: `Koçlardan Öğren` header kartı + featured article + kronolojik teaser akışı
+- Sağ ray: Teklifler teaser + Takip Edebileceğin Markalar teaser
+- `profil-genel.js` render orchestration modülü oldu; `switchPanel('genel')` sonrası refresh hook çalışıyor
+- Markalar teaser blank-card root cause'u DOM timing idi; `hydrateMarkaTeaserList()` DOM attach sonrasına taşındı
+- Cache-bust drift birkaç kez stale/blank UI yarattı; Genel ile ilişkili scriptler birlikte bump edilmeden deploy edilmemeli
+
+**74. Coach editorial media V1**
+- Yeni migration: `supabase/migrations/20260322142905_coach_media_fields.sql`
+- `coach_posts` için `cover_image_url` + `cover_image_alt` alanları repo tarafında eklendi
+- `coach_profiles.avatar_url` artık read-side’da kullanılıyor
+- `profil-genel.js` featured + teaser kartlarında:
+  - uploaded cover image
+  - fallback editorial cover
+  - coach avatar
+- `profil-mulakatkocu.js` feed/detail yüzeylerinde:
+  - compact cover / hero cover
+  - coach avatar
+  - same fallback cover visual family as Genel
+- `coach-studio.html`:
+  - coach avatar upload
+  - cover upload
+  - rights checkbox (`Bu görseli kullanma hakkına sahibim`)
+  - uploaded cover için alt text alanı
+- `admin-coach-content.js` preview now shows cover thumbnail + coach avatar
+
+**75. Açık truth / yarına kalan ilk işler**
+- **SQL migration henüz Supabase’e uygulanmadı.** Kritik not: `profil-genel.js` ve `profil-mulakatkocu.js` artık `cover_image_url` / `cover_image_alt` kolonlarını doğrudan select ediyor; migration deploy edilmeden query error riski var. Repo değişikliği tamamlandı ama DB deploy tamamlanmadı.
+- **coach-studio alt text kuralı save akışında delinmiş durumda.** Upload tarafı boş alt text’i blokluyor, fakat normal `Kaydet` akışı `cover_image_alt` alanını tekrar `null` yazabiliyor. İlk sonraki fix: “kapak varsa alt text boş olamaz” guard’ını `savePost()` içine de eklemek.
+- `cvs` bucket üzerinde coach media path’leri kullanılıyor (`coach_avatars/`, `coach_covers/`). RLS/policy doğrulaması canlı testte tekrar kontrol edilmeli.
+
+**Dosya Degisiklikleri:**
+```
+CREATE  supabase/migrations/20260322142905_coach_media_fields.sql
+EDIT    profil-genel.js
+EDIT    profil-mulakatkocu.js
+EDIT    coach-studio.html
+EDIT    admin-coach-content.js
+EDIT    profil.html (cache-bust)
+EDIT    admin.html (cache-bust)
+EDIT    docs/handoff.md
+```
+
+**Durum:**
+- Genel Bakış redesign tarafı kullanılabilir ve görsel olarak oturdu
+- Markalar teaser blank-state / hydration / cache-bust zinciri kapandı
+- Coach media read-side implement edildi
+- Tam kapanış için 2 net adım kaldı: Supabase migration deploy + coach-studio alt-text save guard fix
+
+### Session 19 — 23 Mart 2026 (Coach Lifecycle System + Reset + Recovery)
+
+**76. Coach Feed Regression Fix**
+- `profil-genel.js` ve `profil-mulakatkocu.js`: defensive two-tier query (cover_image alanları yoksa fallback query)
+- `postsRes.error` kontrolü eklendi — sessiz fail engellendi
+- Türkçe hata mesajı: "İçerikler şu an yüklenemiyor"
+- Commit: `c3cefe0`
+
+**77. Coach Lifecycle Guard + Admin Koçlar Tabı + RLS Hardening**
+- `coach-studio.html`: `is_active === false` → gate mesajı ("Hesabınız askıya alınmıştır")
+- `admin-coach-content.js`: 3-tab yapı (Koçlar / Davetler / İçerikler), coach listesi + aktif/pasif toggle
+- RLS migration: `coach_posts_coach_update` policy'ye `is_active = true` guard eklendi
+- Migration: `20260323131211_coach_update_is_active_guard.sql`
+- Commit: `01c50c7`
+
+**78. Coach Media Fields Deploy + Alt Text Save Guard**
+- `20260322142905_coach_media_fields.sql` Supabase'e deploy edildi (cover_image_url, cover_image_alt)
+- `coach-studio.html`: savePost() içinde cover varsa alt text zorunlu guard
+- Commit: `4cd4e09`
+
+**79. Coach Reset + LinkedIn + Mini Coach Kimlik Kartı**
+- Safe reset: coach_post_likes → coach_posts → coach_profiles → coach_invites temizlendi (auth.users dokunulmadı)
+- 2 coach yeniden davet edildi: kefelituna@gmail.com (Tuna Kefeli), bozsoy@peoplein.com.tr (Baris Ozsoy)
+- `coach_profiles.linkedin_url` kolonu eklendi (migration: `20260323133903_coach_profiles_linkedin.sql`)
+- `coach-studio.html`: LinkedIn alanı + https normalize + profil yeni coach için otomatik açılır
+- `profil-genel.js`: mini coach kimlik kartı (popover) — avatar, isim, unvan, bio, sektör, deneyim, LinkedIn
+- `profil-mulakatkocu.js`: Yazar Hakkında bloğuna LinkedIn + tıklanabilir avatar
+- Read-side query'lere `linkedin_url, bio_short, sector_background, experience_years` eklendi
+- Commit: `7b2ca23`
+
+**80. Recovery Operasyonu (Faz 5)**
+- `admin-coach-content.js`: Koçlar tabına "Studio Linkini Kopyala" butonu
+- Recovery kararı: invite sistemi kullanılmıyor, admin token'sız studio URL kopyalar ve coach'a iletir
+- Test draft temizliği: "Cover Test Yazisi" (id=6, draft) silindi
+
+**Coach Access Modeli (kilitli kararlar):**
+- Coach bağımsız workspace — aday/işveren yüzeylerinden ayrı
+- `giris.html`e coach routing eklenmez
+- Entry point: davet linki (ilk aktivasyon + recovery)
+- İlk aktivasyondan sonra token'sız studio URL çalışır
+- Workspace switcher yok — portal değişimi çıkış yapıp yeniden giriş ile
+- `is_active` tek lifecycle kontrolü; hard delete yok
+- Recovery: admin "Studio Linkini Kopyala" → coach'a URL iletir
+
+**Deploy edilen migration'lar (Session 19):**
+- `20260323131211_coach_update_is_active_guard.sql` (RLS UPDATE policy)
+- `20260322142905_coach_media_fields.sql` (cover_image_url/alt)
+- `20260323133903_coach_profiles_linkedin.sql` (linkedin_url)
+
+**Doğrulanmış smoke sonuçları:**
+- ✅ Coach 1 (Tuna Kefeli): invite kabul → profil doldurma → LinkedIn save → post oluştur → draft kaydet → incelemeye gönder → admin yayınla → feed'de görünür
+- ✅ Admin Koçlar tabı: coach listesi, aktif/pasif toggle, post sayısı
+- ✅ Pasif coach gate: "Hesabınız askıya alınmıştır" mesajı + studio bloklanır
+- ✅ Genel Bakış feed: published post görünür, fallback editorial cover
+- ✅ Mülakat Koçu feed: post kartı + detay overlay + Yazar Hakkında bloğu
+- ✅ Mini coach kimlik kartı: avatar, isim, unvan, bio, sektör, deneyim, LinkedIn
+- ✅ Email delivery: 2/2 coach invite sent (email_outbox durumu doğrulandı)
+
+**Açık operasyonel doğrulamalar:**
+- Coach 2 (Barış Özsoy) gerçek login smoke (credentials gerekli)
+- Native file picker ile cover upload E2E
+- 2-3 gerçek published içerikle feed gözlemi
+- Invite delivery rutin takibi
+
+---
+
 ## 1. Proje Özeti
 
 **hellotalent.ai** — Türk perakende (retail) sektörüne özel yetenek pazaryeri (talent marketplace).
@@ -1017,14 +1136,14 @@ gizlilik.html, kvkk.html, kullanim-sartlari.html, cerez-politikasi.html
 | profil-data.js | Reference data: TUR_ILLER, ILCELER, BRAND_DB, ROL_AILELERI, etc. |
 | profil-ui.js | ~1870 lines — wizard core (steps 1-4 init/collect, step 6), saveProfileRPC, loadProfileFromDB, avatar, brand lookup, shared helpers |
 | profil-locations.js | Location modal, selectedLocations state, initStep5, city/district chips, collectLocations (extracted from profil-ui.js) |
-| profil-genel.js | Genel Bakış home/feed surface — 3-column editorial layout (identity card, viewers summary, premium CTA / coach feed / teklifler + markalar teasers). Loader: `_htLoadGenelHome()`, refresh: `_htRefreshGenelHome()` |
+| profil-genel.js | Genel Bakış home/feed surface — 3-column editorial layout (identity card, viewers summary, premium CTA / coach feed / teklifler + markalar teasers). Coach feed cards support avatar + uploaded cover image + fallback editorial covers. Loader: `_htLoadGenelHome()`, refresh: `_htRefreshGenelHome()` |
 | profil-summary.js | Dashboard summary, merkez cards, bento rings, completion/score calculation + UI (extracted from profil-ui.js) |
 | profil-visibility.js | Toggle sync (syncBeniOner, syncActivelyLooking, syncHideFromEmployer), showTgToast, closeTgToast (extracted from profil-ui.js) |
 | profil-preview.js | Profile preview drawer — openProfilePreview, closeProfilePreview, ESC handler (extracted from profil-ui.js) |
 | profil-cv.js | CV upload/delete/generate — initCVUpload, showCVUploaded, showCVEmpty, generateCV (extracted from profil-ui.js) |
 | profil-settings.js | Settings panel, deletion banner |
 | profil-yetkinlik.js | Competency wizard v2 — 29 yetkinlik, bento grid, Korn Ferry content, role-based mapping |
-| profil-mulakatkocu.js | Mülakat Koçu — 7-screen interview coaching flow, 289 questions, competency coaching, development journal |
+| profil-mulakatkocu.js | Mülakat Koçu — 7-screen interview coaching flow, 289 questions, competency coaching, development journal. Feed/detail surfaces support coach avatar + uploaded cover image + shared fallback editorial covers |
 | profil-teklifler.js | Teklifler v2 — freemium/premium toggle, carousel, demo campaigns, frosted glass gate |
 | profil-premium.js | Premium panel — features showcase, plan cards, pricing |
 | profil-markalar.js | Markalar panel — brand cards, flip, follow, search, segment pills (extracted from profil-ui.js) |
@@ -1724,13 +1843,15 @@ cat docs/handoff.md
 12. ~~**Ops Health Dashboard**~~ ✅ Session 17 — admin panel, RPCs, failed_at truthfulness, deployed
 13. ~~**Profil modularization**~~ ✅ Session 17 — 5 extraction passes, profil-ui.js 3420→1870 lines
 14. **🔴 Messaging E2E smoke test:** Authenticated manual test with real accounts required
-15. **Messaging email Phase 2:** employer follow-up trigger + employer reply notification
-16. **Mülakat Koçu V2:** Günlüğüm review surface, AI feedback on drafts, design polish
-17. **Minor fix:** `avd-avatar-img` → setAvatarImage() targets (profil-ui.js)
-18. ~~**Migration 042**~~ ✅ competency tabloları — Session 5 / handoff §25
-19. **Brand color audit:** Batch 2 (index, blog, hakkimizda) + Batch 3 (ik, aday, profil.css)
-20. **Dark mode remaining:** profil-settings.js alert→modal (7 instances), ik/giris/gate pages
-21. **P4 — Public pages content review + dark mode expansion + performance**
+15. **Coach media V1 — DB deploy:** `20260322142905_coach_media_fields.sql` Supabase'e uygulanmalı
+16. **Coach media V1 — alt text guard:** coach-studio `savePost()` cover varsa boş `cover_image_alt` yazmamalı
+17. **Messaging email Phase 2:** employer follow-up trigger + employer reply notification
+18. **Mülakat Koçu V2:** Günlüğüm review surface, AI feedback on drafts, design polish
+19. **Minor fix:** `avd-avatar-img` → setAvatarImage() targets (profil-ui.js)
+20. ~~**Migration 042**~~ ✅ competency tabloları — Session 5 / handoff §25
+21. **Brand color audit:** Batch 2 (index, blog, hakkimizda) + Batch 3 (ik, aday, profil.css)
+22. **Dark mode remaining:** profil-settings.js alert→modal (7 instances), ik/giris/gate pages
+23. **P4 — Public pages content review + dark mode expansion + performance**
 
 ### Önceki Transkriptler
 Tam konuşma geçmişi:

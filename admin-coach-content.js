@@ -201,6 +201,26 @@
           return function() { toggleCoachActive(coachId, currentActive, container); };
         })(coach.id, coach.is_active));
         tdAction.appendChild(toggleBtn);
+
+        /* Studio link copy — recovery operasyonu */
+        var copyBtn = el('button', 'acc-btn-sm acc-btn-ghost', 'Studio Linkini Kopyala');
+        copyBtn.style.cssText = 'margin-left:6px;font-size:11px;';
+        copyBtn.addEventListener('click', function() {
+          var url = 'https://hellotalent.ai/coach-studio.html';
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(url).then(function() {
+              copyBtn.textContent = 'Kopyalandi';
+              setTimeout(function() { copyBtn.textContent = 'Studio Linkini Kopyala'; }, 2000);
+            }).catch(function() {
+              copyBtn.textContent = 'Kopyalanamadi';
+              setTimeout(function() { copyBtn.textContent = 'Studio Linkini Kopyala'; }, 2000);
+            });
+          } else {
+            copyBtn.textContent = 'Kopyalanamadi';
+            setTimeout(function() { copyBtn.textContent = 'Studio Linkini Kopyala'; }, 2000);
+          }
+        });
+        tdAction.appendChild(copyBtn);
         tr.appendChild(tdAction);
 
         tbody.appendChild(tr);
