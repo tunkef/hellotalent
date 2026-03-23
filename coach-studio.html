@@ -262,11 +262,18 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
     container.appendChild(toggle);
 
     var p = _coachProfile;
+    /* Auto-open profile section for new coaches (no title or bio yet) */
+    var isNewCoach = !p.title && !p.bio_short;
+    if (isNewCoach) {
+      profileForm.style.display = 'block';
+      toggle.textContent = 'Profili Gizle';
+    }
     profileForm.appendChild(buildField('Gorunen Ad', 'input', 'cs-p-name', p.display_name || '', 80));
     profileForm.appendChild(buildField('Unvan', 'input', 'cs-p-title', p.title || '', 100, 'Ornek: Perakende IK Danismani'));
-    profileForm.appendChild(buildField('Sektor Gecmisi', 'input', 'cs-p-sector', p.sector_background || '', 120, 'Ornek: Hizli moda, luksury'));
+    profileForm.appendChild(buildField('Sektor Gecmisi', 'input', 'cs-p-sector', p.sector_background || '', 120, 'Ornek: Hizli moda, luxury'));
     profileForm.appendChild(buildField('Deneyim (yil)', 'input', 'cs-p-years', p.experience_years != null ? String(p.experience_years) : '', 3, ''));
     profileForm.appendChild(buildField('Kisa Biyografi', 'textarea', 'cs-p-bio', p.bio_short || '', 300, 'Kisa tanitim metni (maks. 300 karakter)', 3));
+    profileForm.appendChild(buildField('LinkedIn', 'input', 'cs-p-linkedin', p.linkedin_url || '', 200, 'https://linkedin.com/in/kullaniciadi'));
 
     /* ── Avatar upload ── */
     var avatarSection = document.createElement('div');
@@ -326,12 +333,20 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
       showMsg(msgEl, 'Deneyim yili 0-50 arasi olmalidir.', 'error'); return;
     }
 
+    var linkedinEl = document.getElementById('cs-p-linkedin');
+    var linkedinVal = linkedinEl ? linkedinEl.value.trim() : '';
+    /* Normalize LinkedIn URL */
+    if (linkedinVal && linkedinVal.indexOf('http') !== 0) {
+      linkedinVal = 'https://' + linkedinVal;
+    }
+
     var updates = {
       display_name: displayName,
       title: titleEl ? titleEl.value.trim() || null : null,
       sector_background: sectorEl ? sectorEl.value.trim() || null : null,
       experience_years: yearsVal,
-      bio_short: bioEl ? bioEl.value.trim() || null : null
+      bio_short: bioEl ? bioEl.value.trim() || null : null,
+      linkedin_url: linkedinVal || null
     };
 
     try {
@@ -343,6 +358,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
       _coachProfile.sector_background = updates.sector_background;
       _coachProfile.experience_years = updates.experience_years;
       _coachProfile.bio_short = updates.bio_short;
+      _coachProfile.linkedin_url = updates.linkedin_url;
       document.getElementById('cs-user-name').textContent = updates.display_name;
       showMsg(msgEl, 'Profil kaydedildi.', 'success');
     } catch (e) {

@@ -224,6 +224,22 @@
     /* ── Feed empty state ── */
     css += '.gh-feed-empty{font-family:"Plus Jakarta Sans",sans-serif;font-size:13px;color:var(--text-muted,#6B7280);text-align:center;padding:32px 16px;line-height:1.5}';
 
+    /* ── Mini coach card (popover) ── */
+    css += '.gh-coach-card-overlay{position:fixed;top:0;left:0;width:100%;height:100%;z-index:9998;background:rgba(0,0,0,.25)}';
+    css += '.gh-coach-card{position:fixed;z-index:9999;background:#fff;border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,.15),0 2px 8px rgba(0,0,0,.08);padding:24px;width:320px;max-width:calc(100vw - 32px);font-family:"Plus Jakarta Sans",sans-serif}';
+    css += '.gh-coach-card-avatar{width:56px;height:56px;border-radius:50%;overflow:hidden;display:flex;align-items:center;justify-content:center;font-family:"Bricolage Grotesque",sans-serif;font-size:20px;font-weight:800;color:#fff;background:var(--navy,#1E2D5E);margin-bottom:12px}';
+    css += '.gh-coach-card-avatar img{width:100%;height:100%;object-fit:cover}';
+    css += '.gh-coach-card-name{font-family:"Bricolage Grotesque",sans-serif;font-size:16px;font-weight:700;color:var(--text,#111);margin-bottom:2px}';
+    css += '.gh-coach-card-title{font-size:12px;color:var(--muted,#6B7280);margin-bottom:10px}';
+    css += '.gh-coach-card-bio{font-size:12px;color:var(--text,#111);line-height:1.5;margin-bottom:10px}';
+    css += '.gh-coach-card-meta{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}';
+    css += '.gh-coach-card-pill{display:inline-block;padding:3px 10px;border-radius:12px;font-size:10px;font-weight:600;letter-spacing:.2px;background:var(--navy-light,#EEF0F7);color:var(--navy,#1E2D5E)}';
+    css += '.gh-coach-card-linkedin{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:10px;background:#0A66C2;color:#fff;font-size:12px;font-weight:600;text-decoration:none;transition:opacity .15s}';
+    css += '.gh-coach-card-linkedin:hover{opacity:.85}';
+    css += '.gh-coach-card-linkedin svg{width:14px;height:14px;fill:currentColor}';
+    css += '.gh-coach-card-close{position:absolute;top:12px;right:12px;width:28px;height:28px;border:none;background:none;cursor:pointer;color:var(--muted,#6B7280);font-size:18px;display:flex;align-items:center;justify-content:center;border-radius:50%;transition:background .15s}';
+    css += '.gh-coach-card-close:hover{background:var(--bg,#F7F6F4)}';
+
     var styleEl = document.createElement('style');
     styleEl.id = 'gh-style';
     styleEl.textContent = css;
@@ -307,10 +323,96 @@
     return avatar;
   }
 
+  /* ── Mini coach identity card (popover) ── */
+  /* Safe: linkedinSVG is a hardcoded constant, no user input */
+  var linkedinSVG = '<svg viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>';
+
+  function showCoachCard(cp) {
+    /* Remove any existing card */
+    var existing = document.getElementById('gh-coach-card-overlay');
+    if (existing) existing.remove();
+    var existingCard = document.getElementById('gh-coach-card');
+    if (existingCard) existingCard.remove();
+    if (!cp) return;
+
+    /* Overlay */
+    var overlay = document.createElement('div');
+    overlay.className = 'gh-coach-card-overlay';
+    overlay.id = 'gh-coach-card-overlay';
+    overlay.addEventListener('click', closeCoachCard);
+
+    /* Card */
+    var card = document.createElement('div');
+    card.className = 'gh-coach-card';
+    card.id = 'gh-coach-card';
+
+    /* Close button — safe: hardcoded HTML entity */
+    var closeBtn = document.createElement('button');
+    closeBtn.className = 'gh-coach-card-close';
+    closeBtn.type = 'button';
+    closeBtn.textContent = '\u2715';
+    closeBtn.addEventListener('click', closeCoachCard);
+    card.appendChild(closeBtn);
+
+    /* Avatar (large) */
+    var avatarDiv = document.createElement('div');
+    avatarDiv.className = 'gh-coach-card-avatar';
+    if (cp.avatar_url) {
+      var aImg = document.createElement('img');
+      aImg.src = cp.avatar_url;
+      aImg.alt = '';
+      avatarDiv.appendChild(aImg);
+    } else {
+      avatarDiv.textContent = (cp.display_name || '?').charAt(0).toUpperCase();
+    }
+    card.appendChild(avatarDiv);
+
+    if (cp.display_name) card.appendChild(txt('div', 'gh-coach-card-name', cp.display_name));
+    if (cp.title) card.appendChild(txt('div', 'gh-coach-card-title', cp.title));
+    if (cp.bio_short) card.appendChild(txt('div', 'gh-coach-card-bio', cp.bio_short));
+
+    /* Meta pills */
+    var metaDiv = el('div', 'gh-coach-card-meta');
+    if (cp.sector_background) metaDiv.appendChild(txt('span', 'gh-coach-card-pill', cp.sector_background));
+    if (cp.experience_years) metaDiv.appendChild(txt('span', 'gh-coach-card-pill', cp.experience_years + ' y\u0131l deneyim'));
+    if (metaDiv.childNodes.length > 0) card.appendChild(metaDiv);
+
+    /* LinkedIn button — safe: linkedinSVG is hardcoded constant */
+    if (cp.linkedin_url) {
+      var liLink = document.createElement('a');
+      liLink.className = 'gh-coach-card-linkedin';
+      liLink.href = cp.linkedin_url;
+      liLink.target = '_blank';
+      liLink.rel = 'noopener noreferrer';
+      var liIcon = document.createElement('span');
+      liIcon.innerHTML = linkedinSVG; /* safe: hardcoded SVG constant, no user input */
+      liLink.appendChild(liIcon);
+      liLink.appendChild(document.createTextNode(' LinkedIn'));
+      card.appendChild(liLink);
+    }
+
+    document.body.appendChild(overlay);
+    document.body.appendChild(card);
+
+    /* Center on viewport */
+    var cw = card.offsetWidth;
+    var ch = card.offsetHeight;
+    card.style.left = Math.max(16, (window.innerWidth - cw) / 2) + 'px';
+    card.style.top = Math.max(16, (window.innerHeight - ch) / 2) + 'px';
+  }
+
+  function closeCoachCard() {
+    var o = document.getElementById('gh-coach-card-overlay');
+    var c = document.getElementById('gh-coach-card');
+    if (o) o.remove();
+    if (c) c.remove();
+  }
+
   /* Expose cover builders for profil-mulakatkocu.js (same page, safe) */
   window._htBuildCoachCover = buildCover;
   window._htBuildFallbackCover = buildFallbackCover;
   window._htBuildCoachAvatar = buildCoachAvatar;
+  window._htShowCoachCard = showCoachCard;
 
   var COACH_CAT_LABELS = {
     mulakat_ipucu: 'M\u00FClakat \u0130pucu',
@@ -557,9 +659,9 @@
   }
 
   /* Select string with cover image fields (requires migration 20260322142905) */
-  var COACH_SELECT_FULL = 'id, title, excerpt, category, like_count, related_role, body, cover_image_url, cover_image_alt, coach_profiles(display_name, title, avatar_url)';
+  var COACH_SELECT_FULL = 'id, title, excerpt, category, like_count, related_role, body, cover_image_url, cover_image_alt, coach_profiles(display_name, title, avatar_url, bio_short, sector_background, experience_years, linkedin_url)';
   /* Fallback select without cover image fields (pre-migration compat) */
-  var COACH_SELECT_SAFE = 'id, title, excerpt, category, like_count, related_role, body, coach_profiles(display_name, title, avatar_url)';
+  var COACH_SELECT_SAFE = 'id, title, excerpt, category, like_count, related_role, body, coach_profiles(display_name, title, avatar_url, bio_short, sector_background, experience_years, linkedin_url)';
 
   async function fetchCoachPosts() {
     /* Always fetch the full published stream directly — never cap by Mulakat cache */
@@ -647,14 +749,26 @@
       body.appendChild(txt('div', 'gh-featured-excerpt', post.excerpt));
     }
 
-    /* Meta row with avatar */
+    /* Meta row with avatar — clickable for coach card */
     var meta = el('div', 'gh-featured-meta');
     var authorRow = el('div', 'gh-author-row');
-    authorRow.appendChild(buildCoachAvatar(post.coach_profiles, ''));
+    var avatarEl = buildCoachAvatar(post.coach_profiles, '');
+    avatarEl.style.cursor = 'pointer';
+    avatarEl.addEventListener('click', (function(cp) {
+      return function(e) { e.stopPropagation(); showCoachCard(cp); };
+    })(post.coach_profiles));
+    authorRow.appendChild(avatarEl);
     var coachName = (post.coach_profiles && post.coach_profiles.display_name) || '';
     var coachTitle = (post.coach_profiles && post.coach_profiles.title) || '';
     var authorText = coachName + (coachTitle ? ' \u00B7 ' + coachTitle : '');
-    if (authorText) authorRow.appendChild(txt('span', 'gh-featured-author', authorText));
+    if (authorText) {
+      var authorSpan = txt('span', 'gh-featured-author', authorText);
+      authorSpan.style.cursor = 'pointer';
+      authorSpan.addEventListener('click', (function(cp) {
+        return function(e) { e.stopPropagation(); showCoachCard(cp); };
+      })(post.coach_profiles));
+      authorRow.appendChild(authorSpan);
+    }
     meta.appendChild(authorRow);
 
     var pills = el('div', 'gh-featured-pills');
@@ -708,10 +822,22 @@
 
     var footer = el('div', 'gh-teaser-footer');
     var authorRow = el('div', 'gh-author-row');
-    authorRow.appendChild(buildCoachAvatar(post.coach_profiles, 'gh-coach-avatar--sm'));
+    var tAvatarEl = buildCoachAvatar(post.coach_profiles, 'gh-coach-avatar--sm');
+    tAvatarEl.style.cursor = 'pointer';
+    tAvatarEl.addEventListener('click', (function(cp) {
+      return function(e) { e.stopPropagation(); showCoachCard(cp); };
+    })(post.coach_profiles));
+    authorRow.appendChild(tAvatarEl);
     var coachName = (post.coach_profiles && post.coach_profiles.display_name) || '';
     var coachTitle = (post.coach_profiles && post.coach_profiles.title) || '';
-    if (coachName) authorRow.appendChild(txt('span', 'gh-teaser-author', coachName + (coachTitle ? ' \u00B7 ' + coachTitle : '')));
+    if (coachName) {
+      var tAuthorSpan = txt('span', 'gh-teaser-author', coachName + (coachTitle ? ' \u00B7 ' + coachTitle : ''));
+      tAuthorSpan.style.cursor = 'pointer';
+      tAuthorSpan.addEventListener('click', (function(cp) {
+        return function(e) { e.stopPropagation(); showCoachCard(cp); };
+      })(post.coach_profiles));
+      authorRow.appendChild(tAuthorSpan);
+    }
     footer.appendChild(authorRow);
 
     var right = el('div', 'gh-teaser-right');

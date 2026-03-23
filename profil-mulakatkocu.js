@@ -1666,8 +1666,8 @@ async function hydrateCoachFeed() {
 
   try {
     /* Fetch bounded set of published posts (latest 24) for client-side filtering */
-    var MK_SELECT_FULL = 'id, title, excerpt, category, like_count, related_role, body, cover_image_url, cover_image_alt, coach_profiles(display_name, title, avatar_url, bio_short, sector_background, experience_years)';
-    var MK_SELECT_SAFE = 'id, title, excerpt, category, like_count, related_role, body, coach_profiles(display_name, title, avatar_url, bio_short, sector_background, experience_years)';
+    var MK_SELECT_FULL = 'id, title, excerpt, category, like_count, related_role, body, cover_image_url, cover_image_alt, coach_profiles(display_name, title, avatar_url, bio_short, sector_background, experience_years, linkedin_url)';
+    var MK_SELECT_SAFE = 'id, title, excerpt, category, like_count, related_role, body, coach_profiles(display_name, title, avatar_url, bio_short, sector_background, experience_years, linkedin_url)';
 
     var postsRes = await supabase
       .from('coach_posts')
@@ -2032,9 +2032,9 @@ function openCoachDetail(post, isLiked) {
     authorTitle.textContent = 'Yazar Hakk\u0131nda';
     authorBlock.appendChild(authorTitle);
 
-    /* Author name with avatar */
+    /* Author name with avatar — clickable for coach card */
     var authorNameRow = document.createElement('div');
-    authorNameRow.style.cssText = 'display:flex;align-items:center;gap:8px';
+    authorNameRow.style.cssText = 'display:flex;align-items:center;gap:8px;cursor:pointer';
     if (typeof window._htBuildCoachAvatar === 'function') {
       authorNameRow.appendChild(window._htBuildCoachAvatar(cp, ''));
     }
@@ -2042,6 +2042,9 @@ function openCoachDetail(post, isLiked) {
     authorName.className = 'ig-coach-author-name';
     authorName.textContent = (cp.display_name || '') + (cp.title ? ' \u00B7 ' + cp.title : '');
     authorNameRow.appendChild(authorName);
+    authorNameRow.addEventListener('click', (function(cpRef) {
+      return function() { if (typeof window._htShowCoachCard === 'function') window._htShowCoachCard(cpRef); };
+    })(cp));
     authorBlock.appendChild(authorNameRow);
 
     var authorMeta = [];
@@ -2059,6 +2062,17 @@ function openCoachDetail(post, isLiked) {
       bioEl2.className = 'ig-coach-author-bio';
       bioEl2.textContent = cp.bio_short;
       authorBlock.appendChild(bioEl2);
+    }
+
+    /* LinkedIn link in author block */
+    if (cp.linkedin_url) {
+      var liLink = document.createElement('a');
+      liLink.href = cp.linkedin_url;
+      liLink.target = '_blank';
+      liLink.rel = 'noopener noreferrer';
+      liLink.style.cssText = 'display:inline-flex;align-items:center;gap:4px;margin-top:6px;font-size:11px;font-weight:600;color:#0A66C2;text-decoration:none;';
+      liLink.textContent = 'LinkedIn';
+      authorBlock.appendChild(liLink);
     }
     detail.appendChild(authorBlock);
   }
