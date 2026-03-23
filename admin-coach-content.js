@@ -504,7 +504,7 @@
 
     try {
       var query = supa.from('coach_posts')
-        .select('*, coach_profiles(display_name, title, avatar_url, bio_short, sector_background, experience_years, coach_invites(email))')
+        .select('*, coach_profiles(display_name, title, avatar_url, bio_short, sector_background, experience_years)')
         .order('updated_at', { ascending: false });
 
       if (_postsFilter === 'submitted') {
@@ -661,41 +661,18 @@
     }
   }
 
-  /* ── COACH NOTIFICATION EMAIL ── */
+  /* ── COACH NOTIFICATION EMAIL (via SECURITY DEFINER RPC) ── */
   async function enqueueCoachNotification(postId, newStatus, adminNote) {
-    var emailType = NOTIF_EMAIL_TYPES[newStatus];
-    if (!emailType) return; /* only published / changes_requested / rejected */
+    if (!NOTIF_EMAIL_TYPES[newStatus]) return;
 
     var supa = window._htAdminSupa;
     try {
-      /* Fetch post + coach profile + coach email in one query */
-      var postRes = await supa.from('coach_posts')
-        .select('title, coach_profiles(display_name, coach_invites(email))')
-        .eq('id', postId)
-        .maybeSingle();
-
-      if (!postRes.data) return;
-      var cp = postRes.data.coach_profiles;
-      var coachEmail = (cp && cp.coach_invites && cp.coach_invites.email) || null;
-      var coachName = (cp && cp.display_name) || '';
-      if (!coachEmail) return; /* cannot send without email */
-
-      var payload = {
-        coach_name: coachName,
-        post_title: postRes.data.title,
-        status: newStatus,
-        admin_note: adminNote || null,
-        studio_url: 'https://hellotalent.ai/coach-studio.html'
-      };
-
-      await supa.from('email_outbox').insert({
-        email_type: emailType,
-        recipient_email: coachEmail,
-        payload: payload,
-        dedupe_key: emailType + ':' + postId,
-        source_table: 'coach_posts',
-        source_id: String(postId)
+      var res = await supa.rpc('enqueue_coach_post_notification', {
+        p_post_id: postId,
+        p_new_status: newStatus,
+        p_admin_note: adminNote || null
       });
+      if (res.error) console.error('Coach notification enqueue error:', res.error.message);
     } catch (e) {
       console.error('Coach notification enqueue error:', e);
       /* Best effort — don't block the moderation flow */
