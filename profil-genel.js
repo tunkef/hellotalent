@@ -556,15 +556,34 @@
     return section;
   }
 
+  /* Select string with cover image fields (requires migration 20260322142905) */
+  var COACH_SELECT_FULL = 'id, title, excerpt, category, like_count, related_role, body, cover_image_url, cover_image_alt, coach_profiles(display_name, title, avatar_url)';
+  /* Fallback select without cover image fields (pre-migration compat) */
+  var COACH_SELECT_SAFE = 'id, title, excerpt, category, like_count, related_role, body, coach_profiles(display_name, title, avatar_url)';
+
   async function fetchCoachPosts() {
     /* Always fetch the full published stream directly — never cap by Mulakat cache */
     var posts = [];
     var likedSet = {};
     var postsRes = await supabase
       .from('coach_posts')
-      .select('id, title, excerpt, category, like_count, related_role, body, cover_image_url, cover_image_alt, coach_profiles(display_name, title, avatar_url)')
+      .select(COACH_SELECT_FULL)
       .eq('status', 'published')
       .order('published_at', { ascending: false });
+
+    /* If query fails (e.g. cover_image columns missing), retry without media fields */
+    if (postsRes.error) {
+      console.warn('[genel] coach_posts query failed, retrying without cover fields:', postsRes.error.message);
+      postsRes = await supabase
+        .from('coach_posts')
+        .select(COACH_SELECT_SAFE)
+        .eq('status', 'published')
+        .order('published_at', { ascending: false });
+    }
+    if (postsRes.error) {
+      console.error('[genel] coach_posts query failed:', postsRes.error.message);
+      return { posts: [], likedSet: {}, queryError: true };
+    }
     posts = (postsRes.data && postsRes.data.length) ? postsRes.data : [];
 
     if (posts.length > 0 && currentUser) {
@@ -579,7 +598,7 @@
         }
       }
     }
-    return { posts: posts, likedSet: likedSet };
+    return { posts: posts, likedSet: likedSet, queryError: false };
   }
 
   async function hydrateFeed() {
@@ -589,6 +608,11 @@
     try {
       var data = await fetchCoachPosts();
       var posts = data.posts;
+
+      if (data.queryError) {
+        container.appendChild(txt('div', 'gh-feed-empty', '\u0130\u00E7erikler \u015Fu an y\u00FCklenemiyor. L\u00FCtfen sayfay\u0131 yenileyin.'));
+        return;
+      }
 
       if (posts.length === 0) {
         container.appendChild(txt('div', 'gh-feed-empty', 'Hen\u00FCz yay\u0131nlanm\u0131\u015F ko\u00E7 i\u00E7eri\u011Fi yok.\nYak\u0131nda perakende uzmanlar\u0131ndan i\u00E7erikler burada olacak.'));

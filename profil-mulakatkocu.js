@@ -1666,12 +1666,37 @@ async function hydrateCoachFeed() {
 
   try {
     /* Fetch bounded set of published posts (latest 24) for client-side filtering */
+    var MK_SELECT_FULL = 'id, title, excerpt, category, like_count, related_role, body, cover_image_url, cover_image_alt, coach_profiles(display_name, title, avatar_url, bio_short, sector_background, experience_years)';
+    var MK_SELECT_SAFE = 'id, title, excerpt, category, like_count, related_role, body, coach_profiles(display_name, title, avatar_url, bio_short, sector_background, experience_years)';
+
     var postsRes = await supabase
       .from('coach_posts')
-      .select('id, title, excerpt, category, like_count, related_role, body, cover_image_url, cover_image_alt, coach_profiles(display_name, title, avatar_url, bio_short, sector_background, experience_years)')
+      .select(MK_SELECT_FULL)
       .eq('status', 'published')
       .order('published_at', { ascending: false })
       .limit(24);
+
+    /* If query fails (e.g. cover_image columns missing), retry without media fields */
+    if (postsRes.error) {
+      console.warn('[mulakatkocu] coach_posts query failed, retrying without cover fields:', postsRes.error.message);
+      postsRes = await supabase
+        .from('coach_posts')
+        .select(MK_SELECT_SAFE)
+        .eq('status', 'published')
+        .order('published_at', { ascending: false })
+        .limit(24);
+    }
+    if (postsRes.error) {
+      console.error('[mulakatkocu] coach_posts query failed:', postsRes.error.message);
+      /* Show error state instead of silently hiding feed */
+      if (feedEl) {
+        var errMsg = document.createElement('div');
+        errMsg.style.cssText = 'text-align:center;padding:24px;color:var(--muted,#6B7280);font-size:13px;';
+        errMsg.textContent = '\u0130\u00E7erikler \u015Fu an y\u00FCklenemiyor. L\u00FCtfen sayfay\u0131 yenileyin.';
+        feedEl.appendChild(errMsg);
+      }
+      return;
+    }
 
     var posts = (postsRes.data && postsRes.data.length) ? postsRes.data : [];
     if (posts.length === 0) return; /* No published posts — keep feed hidden */
