@@ -3,7 +3,7 @@
   'use strict';
 
   var loaded = false;
-  var _currentTab = 'invites'; /* invites | posts */
+  var _currentTab = 'coaches'; /* coaches | invites | posts */
   var _postsFilter = 'submitted'; /* submitted | published | all */
 
   var STATUS_LABELS = {
@@ -56,10 +56,13 @@
     while (container.firstChild) container.removeChild(container.firstChild);
 
     var tabBar = el('div', 'acc-tabs');
+    var tabCoaches = el('button', 'acc-tab' + (_currentTab === 'coaches' ? ' active' : ''), 'Koclar');
+    tabCoaches.addEventListener('click', function() { _currentTab = 'coaches'; renderTabs(container); });
     var tabInvites = el('button', 'acc-tab' + (_currentTab === 'invites' ? ' active' : ''), 'Davetler');
     tabInvites.addEventListener('click', function() { _currentTab = 'invites'; renderTabs(container); });
     var tabPosts = el('button', 'acc-tab' + (_currentTab === 'posts' ? ' active' : ''), 'Icerikler');
     tabPosts.addEventListener('click', function() { _currentTab = 'posts'; renderTabs(container); });
+    tabBar.appendChild(tabCoaches);
     tabBar.appendChild(tabInvites);
     tabBar.appendChild(tabPosts);
     container.appendChild(tabBar);
@@ -67,10 +70,168 @@
     var contentArea = el('div', 'acc-content');
     container.appendChild(contentArea);
 
-    if (_currentTab === 'invites') {
+    if (_currentTab === 'coaches') {
+      loadCoaches(contentArea);
+    } else if (_currentTab === 'invites') {
       loadInvites(contentArea);
     } else {
       loadPosts(contentArea);
+    }
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+     COACHES TAB
+     ═══════════════════════════════════════════════════════════════ */
+
+  var COACH_ACTIVE_LABELS = { true: 'Aktif', false: 'Pasif' };
+
+  async function loadCoaches(container) {
+    container.textContent = 'Yukleniyor...';
+    var supa = window._htAdminSupa;
+
+    try {
+      /* Fetch coach profiles with invite email via invite_id FK */
+      var res = await supa.from('coach_profiles')
+        .select('*, coach_invites(email)')
+        .order('created_at', { ascending: false });
+
+      if (res.error) {
+        console.error('Load coaches error:', res.error);
+        container.textContent = 'Yukleme hatasi';
+        return;
+      }
+
+      var coaches = res.data || [];
+
+      /* Fetch post counts per coach */
+      var postCounts = {};
+      if (coaches.length > 0) {
+        var coachIds = coaches.map(function(c) { return c.id; });
+        var countRes = await supa.from('coach_posts')
+          .select('coach_id')
+          .in('coach_id', coachIds);
+        if (countRes.data) {
+          for (var ci = 0; ci < countRes.data.length; ci++) {
+            var cid = countRes.data[ci].coach_id;
+            postCounts[cid] = (postCounts[cid] || 0) + 1;
+          }
+        }
+      }
+
+      while (container.firstChild) container.removeChild(container.firstChild);
+
+      if (coaches.length === 0) {
+        container.appendChild(el('div', 'acc-empty', 'Henuz koc profili yok'));
+        return;
+      }
+
+      var table = document.createElement('table');
+      table.className = 'admin-table';
+      var thead = document.createElement('thead');
+      var headerRow = document.createElement('tr');
+      var headers = ['', 'Ad', 'E-posta', 'Durum', 'Yazi', 'Kayit', 'Islem'];
+      for (var h = 0; h < headers.length; h++) {
+        var th = document.createElement('th');
+        th.textContent = headers[h];
+        headerRow.appendChild(th);
+      }
+      thead.appendChild(headerRow);
+      table.appendChild(thead);
+
+      var tbody = document.createElement('tbody');
+      for (var i = 0; i < coaches.length; i++) {
+        var coach = coaches[i];
+        var tr = document.createElement('tr');
+
+        /* Avatar */
+        var tdAvatar = document.createElement('td');
+        tdAvatar.style.cssText = 'width:36px;';
+        var avatarEl = document.createElement('div');
+        avatarEl.style.cssText = 'width:32px;height:32px;border-radius:50%;overflow:hidden;background:var(--navy-light,#EEF0F7);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--navy,#1E2D5E);';
+        if (coach.avatar_url) {
+          var avatarImg = document.createElement('img');
+          avatarImg.src = coach.avatar_url;
+          avatarImg.alt = '';
+          avatarImg.style.cssText = 'width:100%;height:100%;object-fit:cover;';
+          avatarEl.appendChild(avatarImg);
+        } else {
+          avatarEl.textContent = (coach.display_name || '?').charAt(0).toUpperCase();
+        }
+        tdAvatar.appendChild(avatarEl);
+        tr.appendChild(tdAvatar);
+
+        /* Display name */
+        var tdName = document.createElement('td');
+        tdName.style.cssText = 'font-weight:600;';
+        tdName.textContent = coach.display_name || '-';
+        tr.appendChild(tdName);
+
+        /* Email from invite */
+        var tdEmail = document.createElement('td');
+        tdEmail.style.cssText = 'font-size:12px;color:var(--muted);';
+        var inviteEmail = (coach.coach_invites && coach.coach_invites.email) || '-';
+        tdEmail.textContent = inviteEmail !== '-' ? inviteEmail + ' (davet)' : '-';
+        tr.appendChild(tdEmail);
+
+        /* Active status badge */
+        var tdStatus = document.createElement('td');
+        var statusBadge = el('span', 'acc-badge acc-badge-' + (coach.is_active ? 'published' : 'rejected'),
+          coach.is_active ? 'Aktif' : 'Pasif');
+        tdStatus.appendChild(statusBadge);
+        tr.appendChild(tdStatus);
+
+        /* Post count */
+        var tdPosts = document.createElement('td');
+        tdPosts.style.cssText = 'font-family:"DM Mono",monospace;font-size:13px;';
+        tdPosts.textContent = postCounts[coach.id] || 0;
+        tr.appendChild(tdPosts);
+
+        /* Created date */
+        var tdCreated = document.createElement('td');
+        tdCreated.style.cssText = 'font-size:12px;color:var(--muted);';
+        tdCreated.textContent = formatDate(coach.created_at);
+        tr.appendChild(tdCreated);
+
+        /* Toggle action */
+        var tdAction = document.createElement('td');
+        var toggleBtn = el('button',
+          'acc-btn-sm ' + (coach.is_active ? 'acc-btn-warning' : 'acc-btn-primary'),
+          coach.is_active ? 'Pasife Al' : 'Aktif Et');
+        toggleBtn.addEventListener('click', (function(coachId, currentActive) {
+          return function() { toggleCoachActive(coachId, currentActive, container); };
+        })(coach.id, coach.is_active));
+        tdAction.appendChild(toggleBtn);
+        tr.appendChild(tdAction);
+
+        tbody.appendChild(tr);
+      }
+      table.appendChild(tbody);
+      container.appendChild(table);
+    } catch (e) {
+      console.error('Load coaches error:', e);
+      container.textContent = 'Yukleme hatasi';
+    }
+  }
+
+  async function toggleCoachActive(coachId, currentActive, container) {
+    /* Only confirm when deactivating */
+    if (currentActive) {
+      var confirmed = window.confirm('Bu kocun yayindaki tum icerikleri feed\'den kaldirilacak. Devam etmek istediginize emin misiniz?');
+      if (!confirmed) return;
+    }
+
+    var supa = window._htAdminSupa;
+    try {
+      var res = await supa.from('coach_profiles')
+        .update({ is_active: !currentActive })
+        .eq('id', coachId);
+      if (res.error) {
+        console.error('Toggle coach error:', res.error);
+        return;
+      }
+      loadCoaches(container);
+    } catch (e) {
+      console.error('Toggle coach error:', e);
     }
   }
 

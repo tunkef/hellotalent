@@ -207,6 +207,10 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
       var profileRes = await _supa.from('coach_profiles').select('*').eq('id', userId).maybeSingle();
 
       if (profileRes.data) {
+        if (profileRes.data.is_active === false) {
+          showGate('Hesab\u0131n\u0131z ask\u0131ya al\u0131nm\u0131\u015ft\u0131r. Destek i\u00e7in support@hellotalent.ai adresine yazabilirsiniz.');
+          return;
+        }
         _coachProfile = profileRes.data;
         startStudio();
         return;
