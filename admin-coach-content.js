@@ -23,6 +23,13 @@
     pending: 'Bekliyor', accepted: 'Kabul Edildi', expired: 'Suresi Doldu', revoked: 'Iptal Edildi'
   };
 
+  /* ── Coach notification email type map ── */
+  var NOTIF_EMAIL_TYPES = {
+    published: 'coach_post_published',
+    changes_requested: 'coach_post_changes_requested',
+    rejected: 'coach_post_rejected'
+  };
+
   /* ── HELPERS ── */
   function el(tag, cls, text) {
     var e = document.createElement(tag);
@@ -85,6 +92,8 @@
 
   var COACH_ACTIVE_LABELS = { true: 'Aktif', false: 'Pasif' };
 
+  var _coachSearchTerm = '';
+
   async function loadCoaches(container) {
     container.textContent = 'Yukleniyor...';
     var supa = window._htAdminSupa;
@@ -103,22 +112,37 @@
 
       var coaches = res.data || [];
 
-      /* Fetch post counts per coach */
+      /* Fetch post counts + latest post per coach */
       var postCounts = {};
+      var latestPost = {}; /* coach_id → { status, updated_at } */
       if (coaches.length > 0) {
         var coachIds = coaches.map(function(c) { return c.id; });
-        var countRes = await supa.from('coach_posts')
-          .select('coach_id')
-          .in('coach_id', coachIds);
-        if (countRes.data) {
-          for (var ci = 0; ci < countRes.data.length; ci++) {
-            var cid = countRes.data[ci].coach_id;
-            postCounts[cid] = (postCounts[cid] || 0) + 1;
+        var postsRes = await supa.from('coach_posts')
+          .select('coach_id, status, updated_at')
+          .in('coach_id', coachIds)
+          .order('updated_at', { ascending: false });
+        if (postsRes.data) {
+          for (var ci = 0; ci < postsRes.data.length; ci++) {
+            var row = postsRes.data[ci];
+            postCounts[row.coach_id] = (postCounts[row.coach_id] || 0) + 1;
+            if (!latestPost[row.coach_id]) latestPost[row.coach_id] = row;
           }
         }
       }
 
       while (container.firstChild) container.removeChild(container.firstChild);
+
+      /* Search bar */
+      var searchInput = document.createElement('input');
+      searchInput.type = 'text';
+      searchInput.placeholder = 'Koc adi veya e-posta ile ara...';
+      searchInput.value = _coachSearchTerm;
+      searchInput.style.cssText = 'width:100%;padding:8px 12px;border:1.5px solid var(--border,#E5E3DF);border-radius:8px;font-size:13px;font-family:inherit;margin-bottom:12px;background:var(--white,#fff);color:var(--text,#111);';
+      searchInput.addEventListener('input', function() {
+        _coachSearchTerm = searchInput.value.trim().toLowerCase();
+        renderCoachTable(tbody, coaches, postCounts, latestPost, container);
+      });
+      container.appendChild(searchInput);
 
       if (coaches.length === 0) {
         container.appendChild(el('div', 'acc-empty', 'Henuz koc profili yok'));
@@ -129,7 +153,7 @@
       table.className = 'admin-table';
       var thead = document.createElement('thead');
       var headerRow = document.createElement('tr');
-      var headers = ['', 'Ad', 'E-posta', 'Durum', 'Yazi', 'Kayit', 'Islem'];
+      var headers = ['', 'Ad', 'E-posta', 'Durum', 'Yazi', 'Son Icerik', 'Islem'];
       for (var h = 0; h < headers.length; h++) {
         var th = document.createElement('th');
         th.textContent = headers[h];
@@ -139,8 +163,40 @@
       table.appendChild(thead);
 
       var tbody = document.createElement('tbody');
-      for (var i = 0; i < coaches.length; i++) {
-        var coach = coaches[i];
+      renderCoachTable(tbody, coaches, postCounts, latestPost, container);
+      table.appendChild(tbody);
+      container.appendChild(table);
+    } catch (e) {
+      console.error('Load coaches error:', e);
+      container.textContent = 'Yukleme hatasi';
+    }
+  }
+
+  function renderCoachTable(tbody, coaches, postCounts, latestPost, container) {
+    while (tbody.firstChild) tbody.removeChild(tbody.firstChild);
+
+    var filtered = coaches;
+    if (_coachSearchTerm) {
+      filtered = coaches.filter(function(c) {
+        var name = (c.display_name || '').toLowerCase();
+        var email = ((c.coach_invites && c.coach_invites.email) || '').toLowerCase();
+        return name.indexOf(_coachSearchTerm) !== -1 || email.indexOf(_coachSearchTerm) !== -1;
+      });
+    }
+
+    if (filtered.length === 0) {
+      var emptyRow = document.createElement('tr');
+      var emptyTd = document.createElement('td');
+      emptyTd.colSpan = 7;
+      emptyTd.style.cssText = 'text-align:center;color:var(--muted);padding:16px;';
+      emptyTd.textContent = _coachSearchTerm ? 'Sonuc bulunamadi' : 'Henuz koc profili yok';
+      emptyRow.appendChild(emptyTd);
+      tbody.appendChild(emptyRow);
+      return;
+    }
+
+    for (var i = 0; i < filtered.length; i++) {
+      var coach = filtered[i];
         var tr = document.createElement('tr');
 
         /* Avatar */
@@ -186,11 +242,22 @@
         tdPosts.textContent = postCounts[coach.id] || 0;
         tr.appendChild(tdPosts);
 
-        /* Created date */
-        var tdCreated = document.createElement('td');
-        tdCreated.style.cssText = 'font-size:12px;color:var(--muted);';
-        tdCreated.textContent = formatDate(coach.created_at);
-        tr.appendChild(tdCreated);
+        /* Latest post activity signal */
+        var tdActivity = document.createElement('td');
+        tdActivity.style.cssText = 'font-size:11px;';
+        var lp = latestPost[coach.id];
+        if (lp) {
+          var lpBadge = buildStatusBadge(lp.status);
+          lpBadge.style.cssText += 'font-size:9px;padding:1px 6px;margin-right:4px;';
+          tdActivity.appendChild(lpBadge);
+          var lpDate = el('span', '', formatDate(lp.updated_at));
+          lpDate.style.cssText = 'color:var(--muted);';
+          tdActivity.appendChild(lpDate);
+        } else {
+          tdActivity.style.color = 'var(--muted)';
+          tdActivity.textContent = '-';
+        }
+        tr.appendChild(tdActivity);
 
         /* Toggle action */
         var tdAction = document.createElement('td');
@@ -225,12 +292,6 @@
 
         tbody.appendChild(tr);
       }
-      table.appendChild(tbody);
-      container.appendChild(table);
-    } catch (e) {
-      console.error('Load coaches error:', e);
-      container.textContent = 'Yukleme hatasi';
-    }
   }
 
   async function toggleCoachActive(coachId, currentActive, container) {
@@ -443,7 +504,7 @@
 
     try {
       var query = supa.from('coach_posts')
-        .select('*, coach_profiles(display_name, title, avatar_url, bio_short, sector_background, experience_years)')
+        .select('*, coach_profiles(display_name, title, avatar_url, bio_short, sector_background, experience_years, coach_invites(email))')
         .order('updated_at', { ascending: false });
 
       if (_postsFilter === 'submitted') {
@@ -589,10 +650,55 @@
     try {
       var res = await supa.from('coach_posts').update(updates).eq('id', postId);
       if (res.error) { console.error('Update post error:', res.error); return; }
+
+      /* Enqueue coach notification email (best effort) */
+      enqueueCoachNotification(postId, newStatus, adminNote);
+
       loadPosts(container);
       updatePendingBadge();
     } catch (e) {
       console.error('Update post exception:', e);
+    }
+  }
+
+  /* ── COACH NOTIFICATION EMAIL ── */
+  async function enqueueCoachNotification(postId, newStatus, adminNote) {
+    var emailType = NOTIF_EMAIL_TYPES[newStatus];
+    if (!emailType) return; /* only published / changes_requested / rejected */
+
+    var supa = window._htAdminSupa;
+    try {
+      /* Fetch post + coach profile + coach email in one query */
+      var postRes = await supa.from('coach_posts')
+        .select('title, coach_profiles(display_name, coach_invites(email))')
+        .eq('id', postId)
+        .maybeSingle();
+
+      if (!postRes.data) return;
+      var cp = postRes.data.coach_profiles;
+      var coachEmail = (cp && cp.coach_invites && cp.coach_invites.email) || null;
+      var coachName = (cp && cp.display_name) || '';
+      if (!coachEmail) return; /* cannot send without email */
+
+      var payload = {
+        coach_name: coachName,
+        post_title: postRes.data.title,
+        status: newStatus,
+        admin_note: adminNote || null,
+        studio_url: 'https://hellotalent.ai/coach-studio.html'
+      };
+
+      await supa.from('email_outbox').insert({
+        email_type: emailType,
+        recipient_email: coachEmail,
+        payload: payload,
+        dedupe_key: emailType + ':' + postId,
+        source_table: 'coach_posts',
+        source_id: String(postId)
+      });
+    } catch (e) {
+      console.error('Coach notification enqueue error:', e);
+      /* Best effort — don't block the moderation flow */
     }
   }
 

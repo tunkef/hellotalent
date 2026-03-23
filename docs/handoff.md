@@ -1035,6 +1035,13 @@ EDIT    docs/handoff.md
 - 2-3 gerçek published içerikle feed gözlemi
 - Invite delivery rutin takibi
 
+**81. Coach Notification E-postaları + Admin Polish + Support SOP**
+- `admin-coach-content.js`: moderasyon aksiyonu (Yayınla/Düzeltme İste/Reddet) sonrası coach'a e-posta bildirimi (email_outbox enqueue)
+- Migration: `20260323194121_coach_notification_email_types.sql` — email_outbox CHECK constraint'ine 3 yeni tip eklendi
+- `email-send/index.ts`: `coachPostNotificationTemplate()` — yayınlandı/düzeltme istendi/reddedildi Türkçe e-posta şablonları
+- Admin Koçlar tabı: arama eklendi (isim + e-posta filtre), "Son İçerik" kolonu (son post durumu + tarihi)
+- `docs/coach-support-sop.md`: Coach onboarding, link kaybı recovery, pasife alma/aktifleştirme, içerik moderasyonu SOP'u
+
 ---
 
 ## 1. Proje Özeti

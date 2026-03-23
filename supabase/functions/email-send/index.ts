@@ -180,6 +180,11 @@ interface Payload {
   display_name?: string | null;
   invite_url?: string | null;
   expires_at?: string | null;
+  coach_name?: string | null;
+  post_title?: string | null;
+  status?: string | null;
+  admin_note?: string | null;
+  studio_url?: string | null;
 }
 
 function renderTemplate(
@@ -195,6 +200,10 @@ function renderTemplate(
       return newMessageTemplate(payload);
     case "coach_invite":
       return coachInviteTemplate(payload);
+    case "coach_post_published":
+    case "coach_post_changes_requested":
+    case "coach_post_rejected":
+      return coachPostNotificationTemplate(payload);
     default:
       throw new Error(`Unknown email_type: ${emailType}`);
   }
@@ -504,4 +513,70 @@ Gizlilik: https://hellotalent.ai/gizlilik.html`;
     html,
     text,
   };
+}
+
+// ─── Coach Post Notification Templates ─────────────
+function coachPostNotificationTemplate(p: Payload): EmailContent {
+  const name = esc(p.coach_name);
+  const title = esc(p.post_title);
+  const greeting = name ? `Merhaba ${name}` : "Merhaba";
+  const greetingPlain = p.coach_name ? `Merhaba ${p.coach_name}` : "Merhaba";
+  const studioUrl = p.studio_url || "https://hellotalent.ai/coach-studio.html";
+  const adminNote = p.admin_note ? esc(p.admin_note) : "";
+  const adminNotePlain = p.admin_note || "";
+
+  let subject = "";
+  let statusMsg = "";
+  let statusMsgPlain = "";
+  let statusColor = COLORS.navy;
+
+  if (p.status === "published") {
+    subject = `Yaz\u0131n\u0131z Yay\u0131nland\u0131: ${p.post_title || ""}`;
+    statusMsg = `<strong>\u201C${title}\u201D</strong> ba\u015fl\u0131kl\u0131 yaz\u0131n\u0131z ba\u015far\u0131yla yay\u0131nland\u0131. Art\u0131k adaylar taraf\u0131ndan okunabilir.`;
+    statusMsgPlain = `"${p.post_title || ""}" baslikli yaziniz yayinlandi.`;
+    statusColor = "#10B981";
+  } else if (p.status === "changes_requested") {
+    subject = `D\u00FCzeltme Istendi: ${p.post_title || ""}`;
+    statusMsg = `<strong>\u201C${title}\u201D</strong> ba\u015fl\u0131kl\u0131 yaz\u0131n\u0131z i\u00e7in d\u00fczeltme istendi. L\u00fctfen Ko\u00e7 Studio\u2019dan yaz\u0131n\u0131z\u0131 g\u00f6zden ge\u00e7irin.`;
+    statusMsgPlain = `"${p.post_title || ""}" baslikli yaziniz icin duzeltme istendi.`;
+    statusColor = COLORS.verm;
+  } else if (p.status === "rejected") {
+    subject = `Yaz\u0131n\u0131z Yay\u0131nlanmad\u0131: ${p.post_title || ""}`;
+    statusMsg = `<strong>\u201C${title}\u201D</strong> ba\u015fl\u0131kl\u0131 yaz\u0131n\u0131z bu a\u015famada yay\u0131nlanmad\u0131. Daha fazla bilgi i\u00e7in a\u015fa\u011f\u0131daki notu inceleyebilirsiniz.`;
+    statusMsgPlain = `"${p.post_title || ""}" baslikli yaziniz yayinlanmadi.`;
+    statusColor = "#EF4444";
+  }
+
+  const noteBlock = adminNote
+    ? `<tr><td style="padding:0 32px 16px;"><div style="background:#FEF3C7;border:1px solid #FCD34D;border-radius:8px;padding:12px 16px;font-size:13px;color:#78350F;line-height:1.5;"><strong>Admin Notu:</strong> ${adminNote}</div></td></tr>`
+    : "";
+  const noteBlockPlain = adminNotePlain
+    ? `\nAdmin Notu: ${adminNotePlain}\n`
+    : "";
+
+  const html = emailWrapper(`
+${logoRow()}
+<tr><td style="padding:8px 32px 4px;text-align:center;">
+<h1 style="margin:0;font-family:'Bricolage Grotesque',Georgia,serif;font-size:22px;color:${COLORS.navy};font-weight:700;">${greeting}</h1>
+</td></tr>
+<tr><td style="padding:16px 32px;font-size:15px;color:${COLORS.text};line-height:1.6;">
+<div style="display:inline-block;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700;color:#fff;background:${statusColor};margin-bottom:12px;">${p.status === "published" ? "Yay\u0131nda" : p.status === "changes_requested" ? "D\u00FCzeltme Gerekli" : "Reddedildi"}</div>
+<p style="margin:0 0 16px;">${statusMsg}</p>
+</td></tr>
+${noteBlock}
+${ctaButton("Ko\u00e7 Studio\u2019ya Git", studioUrl)}
+${footerRow("Bu bildirim HelloTalent i\u00e7erik y\u00f6netimi taraf\u0131ndan g\u00f6nderilmi\u015ftir.")}
+`);
+
+  const text = `${greetingPlain}
+
+${statusMsgPlain}
+${noteBlockPlain}
+Koc Studio: ${studioUrl}
+
+---
+\u00a9 2026 HelloTalent
+Gizlilik: https://hellotalent.ai/gizlilik.html`;
+
+  return { subject, html, text };
 }
