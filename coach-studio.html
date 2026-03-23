@@ -710,13 +710,21 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
     if (!body) { showMsg(msgEl, 'Icerik gereklidir.', 'error'); return; }
 
     var coverAltEl = document.getElementById('cs-f-cover-alt');
+    var coverAltVal = coverAltEl ? coverAltEl.value.trim() : '';
+    /* If post has a cover image, alt text is required */
+    var hasCover = !!document.getElementById('cs-cover-preview');
+    if (hasCover && !coverAltVal) {
+      showMsg(msgEl, 'Kapak gorseli icin alt metin (gorsel aciklamasi) zorunludur.', 'error');
+      if (coverAltEl) coverAltEl.focus();
+      return;
+    }
     var updates = {
       title: title,
       excerpt: excerptEl ? excerptEl.value.trim() : '',
       body: body,
       category: catEl ? catEl.value : 'mulakat_ipucu',
       related_role: roleEl && roleEl.value ? roleEl.value : null,
-      cover_image_alt: coverAltEl ? coverAltEl.value.trim() || null : null
+      cover_image_alt: coverAltVal || null
     };
     if (submit) updates.status = 'submitted';
 
