@@ -1181,6 +1181,51 @@ EDIT  docs/handoff.md (bu patch notu)
 - ❓ Tüm email template branch'lerin gerçek Resend delivery testi (Edge Function redeploy gerekli)
 - ❓ Admin panel ile gerçek silme talebi → onay → email delivery E2E
 
+**Session 20c — 24 Mart 2026 (Operasyonel Deploy + Canlı Smoke)**
+
+**87. Migration 20260324111936 — Canlı Deploy**
+- SQL Editor'da 5-part migration çalıştırıldı: `Success. No rows returned`
+- Doğrulama:
+  - `coach_posts.deletion_requested_at` timestamptz kolonu → ✅ EXISTS
+  - `request_coach_post_deletion(bigint)` → ✅ SECURITY DEFINER
+  - `cancel_coach_post_deletion_request(bigint)` → ✅ SECURITY DEFINER
+  - `enqueue_coach_post_notification(bigint, text, text)` → ✅ SECURITY DEFINER, güncel mapping
+  - `email_outbox_email_type_check` → ✅ 10 type (deletion_requested + deletion_dismissed dahil)
+
+**88. email-send Edge Function Redeploy**
+- `supabase functions deploy email-send --project-ref cpwibefquojehjehtrog` → Deployed ✅
+- Function status: ACTIVE, deploy timestamp: 2026-03-24 09:36:02
+- Yeni template branch'ler: `deletion_requested`, split `archived` (normal vs deletion approval), `__deletion_approved__` sentinel suppress
+
+**89. Frontend Push — ed1d35e**
+- `coach-studio.html`, `admin-coach-content.js`, `email-send/index.ts`, `docs/handoff.md` → `origin/main` pushed
+- GitHub Pages propagation ~40s, Cloudflare cache-bust ile doğrulandı
+
+**90. Canlı E2E Smoke Sonuçları**
+Coach Studio (Tuna Kefeli session):
+- ✅ Redesigned studio yükleniyor (Profilim / Yazılarım / Yayında tab'lar)
+- ✅ Profilim: bento grid, profil kartı (isim, unvan, bio, sektör, deneyim, LinkedIn), analytics (3 Toplam Yazı, 1 Toplam Beğeni, 1 Yayında)
+- ✅ Yayında tab: published post listesi (başlık, YAYINDA badge, kategori, ♡1 like, 23 Mar 2026 tarih)
+- ✅ Published detay: salt okunur içerik, PAYLAŞ araçları (WhatsApp, LinkedIn, Facebook, Metni Kopyala), Silme Talebi Gönder butonu, Listeye Dön
+- ❓ Silme Talebi Gönder: native confirm() diyaloğu açıldı ama programatik olarak kabul edilemedi (Chrome extension limitation). Manuel test gerekli.
+
+Admin Panel (tunkef868 superadmin):
+- ✅ İçerik Yönetimi → Koçlar tabı: Tuna Kefeli AKTİF, 3 yazı, Son İçerik YAYINDA 24 Mar 2026, Pasife Al + Studio Linkini Kopyala
+- ✅ İçerik Yönetimi → İçerikler → Yayında: post kartı gösterildi, yazar bilgisi, Önizleme + Arşivle butonları. Crash yok.
+- ✅ Pre-migration defensive fallback: admin tarafı `deletion_requested_at` kolonu olsa da olmasa da çalışıyor
+
+**Doğrulanmamış (manuel test gerekli):**
+- ❓ Coach silme talebi gönder → DB'de `deletion_requested_at` set edildi mi (confirm dialog programatik olarak kabul edilemedi)
+- ❓ Coach silme talebi sonrası admin'de "Silme Talebi" badge'i göründü mü
+- ❓ Admin "Arşivle" (silme talebi olan post) → `coach_post_archived` email `__deletion_approved__` context ile `sent` oldu mu
+- ❓ Admin "Talebi Reddet" → `coach_post_deletion_dismissed` email `sent` oldu mu
+- ❓ Normal arşiv (silme talebi olmayan) → nötr email tonu doğru mu
+- ❓ `__deletion_approved__` sentinel mail body'de sızmıyor mu (email render testi)
+- ❓ WhatsApp/LinkedIn/Facebook paylaşım linkleri doğru çalışıyor mu
+
+**Deploy edilen migration'lar:**
+- `20260324111936_coach_post_deletion_request.sql` → ✅ Supabase SQL Editor ile deploy edildi
+
 ---
 
 ## 1. Proje Özeti
