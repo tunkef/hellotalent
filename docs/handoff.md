@@ -1251,6 +1251,80 @@ Gerçek coach (Tuna Kefeli) + gerçek admin (tunkef868) hesaplarıyla deletion l
 **Deploy edilen migration'lar:**
 - `20260324111936_coach_post_deletion_request.sql` → ✅ Supabase SQL Editor ile deploy edildi
 
+**Session 20e — 24 Mart 2026 (Coach Studio UX Polish — Accordion + Share Icons + Draft Delete)**
+
+**91. Yazılarım accordion restructure**
+- "+ Yeni Yazı" CTA üstte, altında "Taslaklar (N)" collapsible accordion header
+- Her draft satırında chevron — tıklayınca inline editor accordion olarak açılır
+- Tek açık kart mantığı (controlled accordion, `_expandedDraftId` state)
+- Accordion kapalıyken taslak preview'ları gizli — dağınık liste sorunu çözüldü
+- Commit: `7366f65`
+
+**92. Yayında accordion**
+- Published post'lar accordion row olarak gösterilir (chevron aç/kapa)
+- Inline detay: kapak, başlık, meta, gövde, paylaşım, silme talebi
+- "Listeye Dön" butonu kaldırıldı (accordion toggle ile yönetim)
+- `_expandedPublishedId` state ile tek açık kontrol
+
+**93. Paylaş ikonları**
+- WhatsApp (chat bubble SVG), LinkedIn ("in" SVG), Facebook ("f" SVG), Metni Kopyala (clipboard SVG)
+- `SHARE_ICONS` objesi + `makeShareBtn()` 16x16 icon+label yapısı
+- Action bar daha rafine ve editoryal
+
+**94. Draft silme**
+- Draft status'teki postlarda "Sil" butonu (kırmızı danger)
+- `archiveDraft()` → `status = 'archived'` soft delete
+- Submitted / changes_requested / published'da Sil yok
+
+**95. Header logo**
+- `<a href>` → `<span>` — logo tıklanamaz, kullanıcıyı sayfadan dışarı atmaz
+
+**Session 20f — 24 Mart 2026 (Yeni Yazı akışı: Vazgeç + canlı title sync)**
+
+**96. + Yeni Yazı akışı iyileştirmesi**
+- Yeni post boş başlıkla oluşturulur (eskiden "Yeni Yazı" hardcoded)
+- `_newDraftId` state ile yeni draft takibi
+- Accordion'da otomatik genişler, title input'a focus verilir
+- "Yeni" vermillion etiketi yeni draft'ta görünür, kayıt sonrası kaybolur
+
+**97. Canlı title sync**
+- Title input'a `input` event listener
+- Kullanıcı yazarken accordion row başlığı anında güncellenir
+- Boş başlık fallback: "Yeni Yazı"
+
+**98. Vazgeç akışı**
+- Editable editor'larda "Vazgeç" butonu
+- Tıklayınca editorial dismiss overlay:
+  - "Taslağa Kaydet" (navy) → save + close
+  - "Sil" (kırmızı) → archive + remove
+  - "Düzenlemeye Dön" (ghost) → overlay kapanır
+- Overlay dışı tıklama ile de kapanır
+
+**Canlı smoke sonuçları (Session 20e+20f):**
+- ✅ Header logo tıklanamaz (`<span>`, no href)
+- ✅ Yazılarım: "+ Yeni Yazı" CTA doğru yerde, "Taslaklar (N)" accordion çalışıyor
+- ✅ Draft accordion: tek açık kart, chevron rotate, inline editor
+- ✅ Yayında accordion: aç/kapa, paylaş ikonları (WhatsApp/LinkedIn/Facebook/clipboard SVG)
+- ✅ "Listeye Dön" kaldırılmış
+- ✅ Senaryo 1: + Yeni Yazı → Vazgeç → Sil → draft silindi (5→4), ghost satır yok
+- ✅ Senaryo 2: + Yeni Yazı → başlık yaz → canlı sync → Vazgeç → Taslağa Kaydet → draft korundu, başlık persist
+- ✅ Kaydedilmiş draft tekrar açılıp düzenlenebiliyor
+- ✅ "Yeni" etiketi save sonrası tab switch'te kayboluyor
+- ✅ Kaydedilmiş draft'ta hem "Vazgeç" hem "Sil" butonları var
+- ✅ Yeni draft'ta sadece "Vazgeç" (Sil overlay'de)
+- ✅ Duplicate satır yok, state temiz
+
+**Doğrulanmamış:**
+- ❓ Submitted/changes_requested postların accordion'da read-only davranışı (test data'da sadece draft var)
+- ❓ Mobil responsive (768px breakpoint)
+- ❓ Kaydet akışının DB round-trip doğrulaması (form doldur → kaydet → DB check)
+
+**Dosya değişiklikleri (Session 20e+20f):**
+```
+EDIT  coach-studio.html (+362 satır net: accordion CSS/JS, share icons, draft delete, Vazgeç overlay, live title sync)
+```
+Commits: `7366f65` (accordion + icons + draft delete), `a1089fa` (Vazgeç + live title sync)
+
 ---
 
 ## 1. Proje Özeti
