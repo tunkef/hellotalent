@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Koc Studio — hellotalent.ai</title>
+<title>Koç Studio — hellotalent.ai</title>
 <meta name="robots" content="noindex, nofollow">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23C94E28'/%3E%3Ctext x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='800' font-size='20'%3Eht%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -14,130 +14,284 @@
 html,body{overflow-x:hidden;}
 :root{
   --verm:#C94E28;--verm-hover:#b84420;--verm-light:#F5EDE9;
-  --navy:#1E2D5E;--navy-light:#EEF0F7;
-  --bg:#F7F6F4;--text:#111111;--muted:#6B7280;--border:#E5E3DF;--white:#fff;
+  --navy:#1E2D5E;--navy-light:#EEF0F7;--navy-deep:#162247;
+  --bg:#F7F6F4;--bg-surface:#fff;--text:#111111;--muted:#6B7280;--border:#E5E3DF;
   --green:#10B981;--yellow:#F59E0B;--red:#EF4444;
+  --shadow-card:0 2px 8px rgba(0,0,0,0.08), 0 8px 20px rgba(0,0,0,0.06);
 }
 body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+
+/* ── Gate ── */
 .cs-gate{display:flex;align-items:center;justify-content:center;min-height:100vh;flex-direction:column;gap:16px;}
 .cs-gate-title{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:20px;color:var(--navy);}
 .cs-gate-msg{font-size:14px;color:var(--muted);max-width:360px;text-align:center;line-height:1.6;}
 .cs-gate-spinner{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--verm);border-radius:50%;animation:spin .8s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── Shell ── */
 .cs-shell{display:none;min-height:100vh;}
 .cs-shell.active{display:flex;flex-direction:column;}
-.cs-header{background:var(--white);border-bottom:1px solid var(--border);padding:16px 24px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:50;}
-.cs-logo{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:17px;color:var(--navy);letter-spacing:-0.5px;}
+
+/* ── Header ── */
+.cs-header{background:var(--bg-surface);border-bottom:1px solid var(--border);padding:14px 24px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:50;}
+.cs-logo{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:17px;color:var(--navy);letter-spacing:-0.5px;text-decoration:none;}
 .cs-logo span{color:var(--verm);}
 .cs-header-sep{width:1px;height:20px;background:var(--border);}
-.cs-header-label{font-size:12px;font-weight:600;color:var(--muted);letter-spacing:0.5px;text-transform:uppercase;font-family:'DM Mono',monospace;}
+.cs-header-label{font-size:11px;font-weight:600;color:var(--muted);letter-spacing:0.5px;text-transform:uppercase;font-family:'DM Mono',monospace;}
+.cs-header-nav{display:flex;gap:4px;margin-left:24px;}
+.cs-header-nav button{background:none;border:none;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;font-family:inherit;color:var(--muted);cursor:pointer;transition:all 0.15s;}
+.cs-header-nav button:hover{background:var(--verm-light);color:var(--verm);}
+.cs-header-nav button.active{background:var(--verm);color:#fff;}
 .cs-header-right{margin-left:auto;display:flex;align-items:center;gap:12px;}
 .cs-header-user{font-size:13px;font-weight:600;color:var(--text);}
 .cs-btn-logout{font-size:12px;font-weight:600;color:var(--muted);background:none;border:1px solid var(--border);border-radius:8px;padding:6px 14px;cursor:pointer;font-family:inherit;transition:all 0.15s;}
 .cs-btn-logout:hover{border-color:var(--red);color:var(--red);}
-.cs-content{display:flex;flex:1;max-width:1200px;width:100%;margin:0 auto;padding:24px;gap:24px;}
-.cs-sidebar{width:280px;flex-shrink:0;}
-.cs-sidebar-title{font-family:'Bricolage Grotesque',sans-serif;font-size:14px;font-weight:700;color:var(--text);margin-bottom:12px;}
-.cs-btn-new{width:100%;padding:10px;margin-bottom:16px;background:var(--verm);color:white;border:none;border-radius:10px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;transition:background 0.15s;}
-.cs-btn-new:hover{background:var(--verm-hover);}
-.cs-post-item{padding:12px;border-radius:10px;border:1px solid var(--border);background:var(--white);margin-bottom:8px;cursor:pointer;transition:all 0.15s;}
-.cs-post-item:hover{border-color:var(--verm);box-shadow:0 2px 8px rgba(0,0,0,0.04);}
-.cs-post-item.active{border-color:var(--verm);background:var(--verm-light);}
-.cs-post-item-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.cs-post-item-meta{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--muted);}
-.cs-status-badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;letter-spacing:0.3px;text-transform:uppercase;}
-.cs-status-badge.draft{background:#F3F4F6;color:#6B7280;}
-.cs-status-badge.submitted{background:#FEF3C7;color:#92400E;}
-.cs-status-badge.changes_requested{background:#FEE2E2;color:#991B1B;}
-.cs-status-badge.published{background:#D1FAE5;color:#065F46;}
-.cs-status-badge.archived{background:#E5E7EB;color:#4B5563;}
-.cs-status-badge.rejected{background:#FEE2E2;color:#991B1B;}
-.cs-editor{flex:1;min-width:0;}
-.cs-editor-empty{display:flex;align-items:center;justify-content:center;height:400px;border:2px dashed var(--border);border-radius:16px;color:var(--muted);font-size:14px;}
-.cs-editor-card{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:28px;box-shadow:0 2px 8px rgba(0,0,0,0.04);}
-.cs-editor-card h3{font-family:'Bricolage Grotesque',sans-serif;font-size:18px;font-weight:700;margin-bottom:20px;}
+
+/* ── Content ── */
+.cs-content{flex:1;max-width:960px;width:100%;margin:0 auto;padding:24px;}
+.cs-tab-content{display:none;}
+.cs-tab-content.active{display:block;}
+
+/* ── Cards / Bento ── */
+.cs-card{background:var(--bg-surface);border:1px solid var(--border);border-radius:16px;padding:24px;box-shadow:var(--shadow-card);}
+.cs-card-sm{background:var(--bg-surface);border:1px solid var(--border);border-radius:16px;padding:20px;box-shadow:var(--shadow-card);}
+.cs-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+.cs-grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}
+.cs-span2{grid-column:span 2;}
+.cs-span3{grid-column:span 3;}
+
+/* ── Hero Card ── */
+.cs-hero{background:var(--verm);border:1px solid rgba(255,255,255,0.1);border-radius:24px;padding:22px 24px;margin-bottom:16px;box-shadow:var(--shadow-card);}
+.cs-hero-title{font-family:'Bricolage Grotesque',sans-serif;font-size:20px;font-weight:800;color:#fff;}
+.cs-hero-sub{font-size:13px;color:rgba(255,255,255,0.8);margin-top:4px;}
+
+/* ── Profile Card ── */
+.cs-profile-card{display:flex;gap:20px;align-items:flex-start;}
+.cs-profile-avatar{width:72px;height:72px;border-radius:50%;object-fit:cover;border:3px solid var(--border);flex-shrink:0;background:var(--navy-light);}
+.cs-profile-avatar-placeholder{width:72px;height:72px;border-radius:50%;background:var(--navy-light);display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;color:var(--navy);flex-shrink:0;font-family:'Bricolage Grotesque',sans-serif;}
+.cs-profile-info{flex:1;min-width:0;}
+.cs-profile-name{font-family:'Bricolage Grotesque',sans-serif;font-size:18px;font-weight:800;color:var(--text);}
+.cs-profile-title{font-size:13px;color:var(--muted);margin-top:2px;}
+.cs-profile-bio{font-size:13px;color:var(--text);line-height:1.6;margin-top:8px;}
+.cs-profile-meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
+.cs-profile-tag{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:8px;background:var(--bg);border:1px solid var(--border);font-size:11px;font-weight:600;color:var(--muted);}
+.cs-profile-edit-btn{margin-top:12px;padding:8px 20px;background:var(--navy);color:#fff;border:none;border-radius:10px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;transition:all 0.15s;}
+.cs-profile-edit-btn:hover{background:var(--navy-deep);}
+
+/* ── Stats ── */
+.cs-stat-num{font-family:'DM Mono',monospace;font-size:28px;font-weight:600;color:var(--navy);}
+.cs-stat-label{font-size:11px;font-weight:600;color:var(--muted);margin-top:2px;text-transform:uppercase;letter-spacing:0.3px;}
+
+/* ── Post List Items ── */
+.cs-post-row{padding:16px;border-radius:12px;border:1px solid var(--border);background:var(--bg-surface);margin-bottom:8px;cursor:pointer;transition:all 0.15s;display:flex;gap:14px;align-items:flex-start;}
+.cs-post-row:hover{border-color:var(--verm);box-shadow:0 2px 12px rgba(0,0,0,0.06);transform:translateY(-1px);}
+.cs-post-row.active{border-color:var(--verm);background:var(--verm-light);}
+.cs-post-cover-thumb{width:80px;height:56px;border-radius:8px;object-fit:cover;flex-shrink:0;background:var(--bg);}
+.cs-post-row-body{flex:1;min-width:0;}
+.cs-post-row-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:'Bricolage Grotesque',sans-serif;}
+.cs-post-row-meta{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--muted);flex-wrap:wrap;}
+
+/* ── Status Badges ── */
+.cs-badge{display:inline-block;padding:3px 10px;border-radius:10px;font-size:10px;font-weight:700;letter-spacing:0.3px;text-transform:uppercase;}
+.cs-badge-draft{background:#F3F4F6;color:#6B7280;}
+.cs-badge-submitted{background:#FEF3C7;color:#92400E;}
+.cs-badge-changes_requested{background:#FEE2E2;color:#991B1B;}
+.cs-badge-published{background:#D1FAE5;color:#065F46;}
+.cs-badge-archived{background:#E5E7EB;color:#4B5563;}
+.cs-badge-rejected{background:#FEE2E2;color:#991B1B;}
+
+/* ── Editor Card ── */
+.cs-editor-card{background:var(--bg-surface);border:1px solid var(--border);border-radius:16px;padding:28px;box-shadow:var(--shadow-card);}
+
+/* ── Form Fields ── */
 .cs-field{margin-bottom:16px;}
 .cs-field label{display:block;font-size:12px;font-weight:600;color:var(--text);margin-bottom:5px;}
-.cs-field input,.cs-field textarea,.cs-field select{width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;font-family:inherit;transition:border-color 0.15s;background:var(--white);color:var(--text);}
+.cs-field input,.cs-field textarea,.cs-field select{width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;font-family:inherit;transition:border-color 0.15s;background:var(--bg-surface);color:var(--text);}
 .cs-field input:focus,.cs-field textarea:focus,.cs-field select:focus{outline:none;border-color:var(--navy);}
 .cs-field textarea{resize:vertical;min-height:80px;}
 .cs-field-body textarea{min-height:240px;line-height:1.7;}
 .cs-field-hint{font-size:11px;color:var(--muted);margin-top:4px;}
+
+/* ── Admin Note ── */
 .cs-admin-note{margin-bottom:16px;padding:14px;border-radius:10px;background:#FEF3C7;border:1px solid #FCD34D;}
 .cs-admin-note-label{font-size:11px;font-weight:700;color:#92400E;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.5px;}
 .cs-admin-note-text{font-size:13px;color:#78350F;line-height:1.5;}
-.cs-actions{display:flex;gap:10px;margin-top:20px;flex-wrap:wrap;}
-.cs-btn{padding:10px 20px;border:none;border-radius:10px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;transition:all 0.15s;}
+
+/* ── Buttons ── */
+.cs-btn{padding:10px 20px;border:none;border-radius:10px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;transition:all 0.15s;display:inline-flex;align-items:center;gap:6px;}
 .cs-btn-primary{background:var(--verm);color:white;}
 .cs-btn-primary:hover{background:var(--verm-hover);}
 .cs-btn-secondary{background:var(--navy);color:white;}
-.cs-btn-secondary:hover{background:#162247;}
+.cs-btn-secondary:hover{background:var(--navy-deep);}
 .cs-btn-ghost{background:none;color:var(--muted);border:1px solid var(--border);}
 .cs-btn-ghost:hover{border-color:var(--text);color:var(--text);}
+.cs-btn-danger{background:none;color:var(--red);border:1px solid var(--red);}
+.cs-btn-danger:hover{background:#FEE2E2;}
+.cs-btn-sm{padding:7px 14px;font-size:12px;border-radius:8px;}
 .cs-btn:disabled{opacity:0.5;cursor:not-allowed;}
+.cs-actions{display:flex;gap:10px;margin-top:20px;flex-wrap:wrap;}
+
+/* ── Messages ── */
 .cs-msg{margin-top:12px;padding:10px 14px;border-radius:8px;font-size:13px;display:none;}
 .cs-msg.success{display:block;background:#D1FAE5;color:#065F46;}
 .cs-msg.error{display:block;background:#FEE2E2;color:#991B1B;}
-.cs-readonly-label{display:inline-block;padding:4px 12px;border-radius:8px;background:var(--navy-light);color:var(--navy);font-size:11px;font-weight:600;margin-bottom:16px;}
-@media (max-width:768px){.cs-content{flex-direction:column;padding:16px;}.cs-sidebar{width:100%;}}
+.cs-msg.info{display:block;background:var(--navy-light);color:var(--navy);}
+
+/* ── Cover Upload Zone ── */
+.cs-upload-zone{border:2px dashed var(--border);border-radius:12px;padding:24px;text-align:center;cursor:pointer;transition:all 0.2s;background:var(--bg);position:relative;}
+.cs-upload-zone:hover{border-color:var(--verm);background:var(--verm-light);}
+.cs-upload-zone.has-file{border-style:solid;border-color:var(--green);}
+.cs-upload-zone-icon{font-size:24px;color:var(--muted);margin-bottom:8px;}
+.cs-upload-zone-text{font-size:13px;color:var(--muted);}
+.cs-upload-zone-file{font-size:12px;font-weight:600;color:var(--green);margin-top:6px;}
+.cs-upload-zone input[type="file"]{position:absolute;inset:0;opacity:0;cursor:pointer;}
+.cs-upload-preview{width:100%;max-height:180px;object-fit:cover;border-radius:10px;margin-top:12px;display:block;}
+
+/* ── Preview Overlay ── */
+.cs-preview-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:100;display:flex;align-items:center;justify-content:center;padding:24px;overflow-y:auto;}
+.cs-preview-panel{background:var(--bg-surface);border-radius:20px;max-width:640px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 24px 60px rgba(0,0,0,0.15);}
+.cs-preview-header{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;}
+.cs-preview-body{padding:24px;}
+.cs-preview-cover{width:100%;max-height:240px;object-fit:cover;border-radius:0;}
+.cs-preview-cat{display:inline-block;padding:3px 10px;border-radius:10px;background:var(--verm-light);color:var(--verm);font-size:11px;font-weight:600;margin-bottom:12px;}
+.cs-preview-title{font-family:'Bricolage Grotesque',sans-serif;font-size:22px;font-weight:800;color:var(--text);margin-bottom:8px;line-height:1.3;}
+.cs-preview-coach{font-size:13px;color:var(--muted);margin-bottom:16px;}
+.cs-preview-excerpt{font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:16px;font-style:italic;padding-bottom:16px;border-bottom:1px solid var(--border);}
+.cs-preview-content{font-size:14px;color:var(--text);line-height:1.8;white-space:pre-wrap;}
+.cs-preview-actions{padding:16px 24px;border-top:1px solid var(--border);display:flex;gap:10px;justify-content:flex-end;}
+
+/* ── Published Detail ── */
+.cs-pub-cover{width:100%;max-height:260px;object-fit:cover;border-radius:12px;margin-bottom:16px;}
+.cs-pub-title{font-family:'Bricolage Grotesque',sans-serif;font-size:22px;font-weight:800;color:var(--text);line-height:1.3;margin-bottom:8px;}
+.cs-pub-meta{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);margin-bottom:16px;flex-wrap:wrap;}
+.cs-pub-body{font-size:14px;color:var(--text);line-height:1.8;white-space:pre-wrap;}
+
+/* ── Share Tools ── */
+.cs-share-bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:16px;padding-top:16px;border-top:1px solid var(--border);}
+.cs-share-label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.3px;}
+.cs-share-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:8px;border:1px solid var(--border);background:var(--bg-surface);font-size:12px;font-weight:600;color:var(--text);cursor:pointer;font-family:inherit;transition:all 0.15s;}
+.cs-share-btn:hover{border-color:var(--verm);color:var(--verm);background:var(--verm-light);}
+.cs-share-btn svg{width:16px;height:16px;flex-shrink:0;}
+
+/* ── Readonly / Deletion ── */
+.cs-readonly-label{display:inline-block;padding:4px 12px;border-radius:8px;background:var(--navy-light);color:var(--navy);font-size:11px;font-weight:600;}
+.cs-deletion-banner{padding:12px 16px;border-radius:10px;background:#FEF3C7;border:1px solid #FCD34D;display:flex;align-items:center;gap:12px;margin-bottom:16px;}
+.cs-deletion-banner-text{font-size:13px;color:#78350F;flex:1;}
+.cs-deletion-banner-btn{padding:6px 12px;border-radius:6px;border:1px solid #92400E;background:none;color:#92400E;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;}
+
+/* ── Responsive ── */
+@media(max-width:768px){
+  .cs-content{padding:16px;}
+  .cs-grid{grid-template-columns:1fr;}
+  .cs-grid-2{grid-template-columns:1fr;}
+  .cs-span2,.cs-span3{grid-column:span 1;}
+  .cs-header-nav{display:none;}
+  .cs-profile-card{flex-direction:column;align-items:center;text-align:center;}
+  .cs-profile-meta{justify-content:center;}
+  .cs-post-row{flex-direction:column;}
+  .cs-post-cover-thumb{width:100%;height:120px;}
+}
+@media(max-width:480px){
+  .cs-hero{padding:18px 20px;}
+  .cs-hero-title{font-size:18px;}
+}
+
+/* ── Animations ── */
+@keyframes slideUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+.cs-animate{animation:slideUp 0.3s ease both;}
 </style>
 </head>
 <body>
 
 <div class="cs-gate" id="cs-gate">
   <div class="cs-gate-spinner"></div>
-  <div class="cs-gate-title">Koc Studio</div>
-  <div class="cs-gate-msg" id="cs-gate-msg">Yukleniyor...</div>
+  <div class="cs-gate-title">Koç Studio</div>
+  <div class="cs-gate-msg" id="cs-gate-msg">Yükleniyor...</div>
 </div>
 
 <div class="cs-shell" id="cs-shell">
   <header class="cs-header">
-    <div class="cs-logo"><span>hello</span>talent</div>
+    <a href="https://hellotalent.ai" class="cs-logo"><span>hello</span>talent</a>
     <div class="cs-header-sep"></div>
-    <div class="cs-header-label">Koc Studio</div>
+    <div class="cs-header-label">Koç Studio</div>
+    <div class="cs-header-nav" id="cs-nav">
+      <button class="active" data-tab="profile">Profilim</button>
+      <button data-tab="drafts">Yazılarım</button>
+      <button data-tab="published">Yayında</button>
+    </div>
     <div class="cs-header-right">
       <span class="cs-header-user" id="cs-user-name"></span>
-      <button class="cs-btn-logout" id="cs-logout">Cikis Yap</button>
+      <button class="cs-btn-logout" id="cs-logout">Çıkış Yap</button>
     </div>
   </header>
+
   <div class="cs-content">
-    <div class="cs-sidebar">
-      <div id="cs-profile-section"></div>
-      <div class="cs-sidebar-title">Yazilarim</div>
-      <button class="cs-btn-new" id="cs-new-post">Yeni Yazi</button>
-      <div id="cs-post-list"></div>
+    <!-- TAB: Profilim -->
+    <div class="cs-tab-content active" id="tab-profile">
+      <div class="cs-hero">
+        <div class="cs-hero-title">Koç Profilim</div>
+        <div class="cs-hero-sub">Adayların seni nasıl göreceğini buradan yönet</div>
+      </div>
+      <div class="cs-grid" style="margin-bottom:16px;">
+        <div class="cs-card cs-span2" id="cs-profile-card-area"></div>
+        <div style="display:flex;flex-direction:column;gap:16px;">
+          <div class="cs-card-sm" id="cs-stat-posts" style="text-align:center;"></div>
+          <div class="cs-card-sm" id="cs-stat-likes" style="text-align:center;"></div>
+          <div class="cs-card-sm" id="cs-stat-published" style="text-align:center;"></div>
+        </div>
+      </div>
+      <div class="cs-card" id="cs-profile-form-area" style="display:none;"></div>
     </div>
-    <div class="cs-editor" id="cs-editor">
-      <div class="cs-editor-empty">Bir yazi secin veya yeni olusturun</div>
+
+    <!-- TAB: Yazılarım -->
+    <div class="cs-tab-content" id="tab-drafts">
+      <div class="cs-hero">
+        <div class="cs-hero-title">Yazılarım</div>
+        <div class="cs-hero-sub">Taslaklar, incelemede olanlar ve düzeltme bekleyenler</div>
+      </div>
+      <div id="cs-drafts-toolbar" style="display:flex;gap:10px;margin-bottom:16px;align-items:center;flex-wrap:wrap;"></div>
+      <div id="cs-drafts-list"></div>
+      <div id="cs-editor-area" style="display:none;margin-top:16px;"></div>
+    </div>
+
+    <!-- TAB: Yayında -->
+    <div class="cs-tab-content" id="tab-published">
+      <div class="cs-hero">
+        <div class="cs-hero-title">Yayında Olan Yazılar</div>
+        <div class="cs-hero-sub">Yayınlanmış içeriklerini incele ve paylaş</div>
+      </div>
+      <div id="cs-published-list"></div>
+      <div id="cs-published-detail-area" style="display:none;margin-top:16px;"></div>
     </div>
   </div>
 </div>
 
-<!-- shared.js: Supabase config source of truth (no header/footer injected — no ht-header/ht-footer divs) -->
-<script src="/shared.js?v=20260322a"></script>
+<!-- shared.js: Supabase config source of truth -->
+<script src="/shared.js?v=20260324a"></script>
 <script>
 (function(){
   'use strict';
 
-  // Supabase config from shared.js — HT.getSupa() (singleton)
   var _supa = HT.getSupa();
-
   var _coachProfile = null;
   var _posts = [];
   var _activePostId = null;
+  var _currentTab = 'profile';
+  var _pendingCoverFile = null;
 
   var CATEGORIES = [
-    { value: 'mulakat_ipucu', label: 'Mulakat Ipucu' },
+    { value: 'mulakat_ipucu', label: 'M\u00fclakat \u0130pucu' },
     { value: 'yetkinlik_rehberi', label: 'Yetkinlik Rehberi' },
-    { value: 'kariyer_gelisim_onerileri', label: 'Kariyer Gelisim Onerileri' },
+    { value: 'kariyer_gelisim_onerileri', label: 'Kariyer Geli\u015fim \u00d6nerileri' },
     { value: 'performans', label: 'Performans' },
-    { value: 'kariyer_hikayesi', label: 'Kariyer Hikayesi' },
-    { value: 'sektor_analizi', label: 'Sektor Analizi' }
+    { value: 'kariyer_hikayesi', label: 'Kariyer Hik\u00e2yesi' },
+    { value: 'sektor_analizi', label: 'Sekt\u00f6r Analizi' }
   ];
+  var CATEGORY_MAP = {};
+  for (var ci = 0; ci < CATEGORIES.length; ci++) CATEGORY_MAP[CATEGORIES[ci].value] = CATEGORIES[ci].label;
 
-  /* Controlled role list — must match ROLE_COMP_MAP keys from profil-yetkinlik.js */
   var ROLE_OPTIONS = [
-    { value: '', label: 'Rol secin (istege bagli)...' },
+    { value: '', label: 'Rol se\u00e7in (iste\u011fe ba\u011fl\u0131)...' },
     { value: 'Kasiyer', label: 'Kasiyer' },
     { value: 'Sat\u0131\u015f Dan\u0131\u015fman\u0131', label: 'Sat\u0131\u015f Dan\u0131\u015fman\u0131' },
     { value: 'K\u0131demli Sat\u0131\u015f Dan.', label: 'K\u0131demli Sat\u0131\u015f Dan.' },
@@ -172,40 +326,29 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
   ];
 
   var STATUS_LABELS = {
-    draft: 'Taslak', submitted: 'Incelemede', changes_requested: 'Duzeltme Gerekli',
-    published: 'Yayinda', archived: 'Arsivlendi', rejected: 'Reddedildi'
+    draft: 'Taslak', submitted: '\u0130ncelemede', changes_requested: 'D\u00fczeltme Gerekli',
+    published: 'Yay\u0131nda', archived: 'Ar\u015fivlendi', rejected: 'Reddedildi'
   };
 
   var gateEl = document.getElementById('cs-gate');
   var gateMsg = document.getElementById('cs-gate-msg');
   var shellEl = document.getElementById('cs-shell');
 
-  function showGate(msg) {
-    gateEl.style.display = 'flex';
-    shellEl.className = 'cs-shell';
-    gateMsg.textContent = msg || 'Yukleniyor...';
-  }
+  function showGate(msg) { gateEl.style.display = 'flex'; shellEl.className = 'cs-shell'; gateMsg.textContent = msg || 'Y\u00fckleniyor...'; }
+  function showStudio() { gateEl.style.display = 'none'; shellEl.className = 'cs-shell active'; }
 
-  function showStudio() {
-    gateEl.style.display = 'none';
-    shellEl.className = 'cs-shell active';
-  }
-
-  /* ── AUTH + ACCESS CHECK ── */
+  /* ══ AUTH + ACCESS CHECK ══ */
   async function init() {
     try {
       var sessionRes = await _supa.auth.getSession();
       var session = sessionRes.data && sessionRes.data.session;
       if (!session) {
-        /* Preserve full URL (with token) so giris.html can redirect back */
         try { sessionStorage.setItem('ht_return_url', window.location.href); } catch(e) {}
         window.location.replace('giris.html');
         return;
       }
-
       var userId = session.user.id;
       var profileRes = await _supa.from('coach_profiles').select('*').eq('id', userId).maybeSingle();
-
       if (profileRes.data) {
         if (profileRes.data.is_active === false) {
           showGate('Hesab\u0131n\u0131z ask\u0131ya al\u0131nm\u0131\u015ft\u0131r. Destek i\u00e7in support@hellotalent.ai adresine yazabilirsiniz.');
@@ -215,571 +358,595 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
         startStudio();
         return;
       }
-
       var params = new URLSearchParams(window.location.search);
       var token = params.get('token');
       if (!token) {
-        showGate('Erisim yetkiniz yok. Davet baglantisi gereklidir.');
+        showGate('Eri\u015fim yetkiniz yok. Davet ba\u011flant\u0131s\u0131 gereklidir.');
         setTimeout(function() { window.location.replace('giris.html'); }, 3000);
         return;
       }
-
       showGate('Davet kabul ediliyor...');
       var acceptRes = await _supa.rpc('accept_coach_invite', { p_token: token });
       if (acceptRes.error) { showGate('Hata: ' + acceptRes.error.message); return; }
-
       _coachProfile = acceptRes.data;
       window.history.replaceState({}, '', 'coach-studio.html');
       startStudio();
     } catch (e) {
       console.error('Coach studio init error:', e);
-      showGate('Baglanti hatasi. Lutfen tekrar deneyin.');
+      showGate('Ba\u011flant\u0131 hatas\u0131. L\u00fctfen tekrar deneyin.');
     }
   }
 
   function startStudio() {
     document.getElementById('cs-user-name').textContent = _coachProfile.display_name || '';
     showStudio();
-    renderProfileSection();
-    loadPosts();
-  }
-
-  /* ── COACH PROFILE SECTION ── */
-  function renderProfileSection() {
-    var container = document.getElementById('cs-profile-section');
-    if (!container) return;
-    while (container.firstChild) container.removeChild(container.firstChild);
-
-    var toggle = document.createElement('button');
-    toggle.style.cssText = 'width:100%;padding:10px;margin-bottom:8px;background:none;border:1px solid var(--border);border-radius:10px;font-size:12px;font-weight:600;font-family:inherit;color:var(--navy);cursor:pointer;transition:all 0.15s;text-align:left;';
-    toggle.textContent = 'Koc Profilimi Duzenle';
-    var profileForm = document.createElement('div');
-    profileForm.style.display = 'none';
-    toggle.addEventListener('click', function() {
-      profileForm.style.display = profileForm.style.display === 'none' ? 'block' : 'none';
-      toggle.textContent = profileForm.style.display === 'none' ? 'Koc Profilimi Duzenle' : 'Profili Gizle';
+    loadPosts().then(function() {
+      renderProfileTab();
+      if (!_coachProfile.title && !_coachProfile.bio_short) {
+        switchTab('profile');
+        toggleProfileForm(true);
+      }
     });
-    container.appendChild(toggle);
-
-    var p = _coachProfile;
-    /* Auto-open profile section for new coaches (no title or bio yet) */
-    var isNewCoach = !p.title && !p.bio_short;
-    if (isNewCoach) {
-      profileForm.style.display = 'block';
-      toggle.textContent = 'Profili Gizle';
-    }
-    profileForm.appendChild(buildField('Gorunen Ad', 'input', 'cs-p-name', p.display_name || '', 80));
-    profileForm.appendChild(buildField('Unvan', 'input', 'cs-p-title', p.title || '', 100, 'Ornek: Perakende IK Danismani'));
-    profileForm.appendChild(buildField('Sektor Gecmisi', 'input', 'cs-p-sector', p.sector_background || '', 120, 'Ornek: Hizli moda, luxury'));
-    profileForm.appendChild(buildField('Deneyim (yil)', 'input', 'cs-p-years', p.experience_years != null ? String(p.experience_years) : '', 3, ''));
-    profileForm.appendChild(buildField('Kisa Biyografi', 'textarea', 'cs-p-bio', p.bio_short || '', 300, 'Kisa tanitim metni (maks. 300 karakter)', 3));
-    profileForm.appendChild(buildField('LinkedIn', 'input', 'cs-p-linkedin', p.linkedin_url || '', 200, 'https://linkedin.com/in/kullaniciadi'));
-
-    /* ── Avatar upload ── */
-    var avatarSection = document.createElement('div');
-    avatarSection.style.cssText = 'margin-top:12px;margin-bottom:8px;';
-    var avatarLabel = document.createElement('label');
-    avatarLabel.style.cssText = 'font-size:11px;font-weight:600;color:var(--navy);display:block;margin-bottom:6px;';
-    avatarLabel.textContent = 'Profil Fotografi';
-    avatarSection.appendChild(avatarLabel);
-    if (p.avatar_url) {
-      var avatarPreview = document.createElement('img');
-      avatarPreview.id = 'cs-avatar-preview';
-      avatarPreview.src = p.avatar_url;
-      avatarPreview.style.cssText = 'width:56px;height:56px;border-radius:50%;object-fit:cover;border:2px solid var(--border);margin-bottom:8px;display:block;';
-      avatarSection.appendChild(avatarPreview);
-    }
-    var avatarInput = document.createElement('input');
-    avatarInput.type = 'file';
-    avatarInput.accept = 'image/jpeg,image/png,image/webp';
-    avatarInput.id = 'cs-avatar-input';
-    avatarInput.style.cssText = 'font-size:12px;';
-    avatarInput.addEventListener('change', handleAvatarUpload);
-    avatarSection.appendChild(avatarInput);
-    var avatarMsg = document.createElement('div');
-    avatarMsg.id = 'cs-avatar-msg';
-    avatarMsg.className = 'cs-msg';
-    avatarSection.appendChild(avatarMsg);
-    profileForm.appendChild(avatarSection);
-
-    var saveProfileBtn = document.createElement('button');
-    saveProfileBtn.className = 'cs-btn cs-btn-secondary';
-    saveProfileBtn.style.cssText = 'margin-top:8px;margin-bottom:12px;width:100%;font-size:12px;padding:8px;';
-    saveProfileBtn.textContent = 'Profili Kaydet';
-    saveProfileBtn.addEventListener('click', saveProfile);
-    profileForm.appendChild(saveProfileBtn);
-
-    var profileMsg = document.createElement('div');
-    profileMsg.className = 'cs-msg';
-    profileMsg.id = 'cs-profile-msg';
-    profileForm.appendChild(profileMsg);
-
-    container.appendChild(profileForm);
+    initNavigation();
   }
 
-  async function saveProfile() {
-    var nameEl = document.getElementById('cs-p-name');
-    var titleEl = document.getElementById('cs-p-title');
-    var sectorEl = document.getElementById('cs-p-sector');
-    var yearsEl = document.getElementById('cs-p-years');
-    var bioEl = document.getElementById('cs-p-bio');
-    var msgEl = document.getElementById('cs-profile-msg');
-
-    var displayName = nameEl ? nameEl.value.trim() : '';
-    if (!displayName) { showMsg(msgEl, 'Gorunen ad gereklidir.', 'error'); return; }
-
-    var yearsVal = yearsEl && yearsEl.value.trim() ? parseInt(yearsEl.value.trim(), 10) : null;
-    if (yearsVal !== null && (isNaN(yearsVal) || yearsVal < 0 || yearsVal > 50)) {
-      showMsg(msgEl, 'Deneyim yili 0-50 arasi olmalidir.', 'error'); return;
-    }
-
-    var linkedinEl = document.getElementById('cs-p-linkedin');
-    var linkedinVal = linkedinEl ? linkedinEl.value.trim() : '';
-    /* Normalize LinkedIn URL */
-    if (linkedinVal && linkedinVal.indexOf('http') !== 0) {
-      linkedinVal = 'https://' + linkedinVal;
-    }
-
-    var updates = {
-      display_name: displayName,
-      title: titleEl ? titleEl.value.trim() || null : null,
-      sector_background: sectorEl ? sectorEl.value.trim() || null : null,
-      experience_years: yearsVal,
-      bio_short: bioEl ? bioEl.value.trim() || null : null,
-      linkedin_url: linkedinVal || null
-    };
-
-    try {
-      var res = await _supa.from('coach_profiles').update(updates).eq('id', _coachProfile.id);
-      if (res.error) { showMsg(msgEl, 'Hata: ' + res.error.message, 'error'); return; }
-      /* Update local state */
-      _coachProfile.display_name = updates.display_name;
-      _coachProfile.title = updates.title;
-      _coachProfile.sector_background = updates.sector_background;
-      _coachProfile.experience_years = updates.experience_years;
-      _coachProfile.bio_short = updates.bio_short;
-      _coachProfile.linkedin_url = updates.linkedin_url;
-      document.getElementById('cs-user-name').textContent = updates.display_name;
-      showMsg(msgEl, 'Profil kaydedildi.', 'success');
-    } catch (e) {
-      console.error('Save profile error:', e);
-      showMsg(msgEl, 'Kaydetme hatasi.', 'error');
+  /* ══ NAVIGATION ══ */
+  function initNavigation() {
+    var navBtns = document.querySelectorAll('#cs-nav button');
+    for (var i = 0; i < navBtns.length; i++) {
+      navBtns[i].addEventListener('click', (function(btn) {
+        return function() { switchTab(btn.getAttribute('data-tab')); };
+      })(navBtns[i]));
     }
   }
 
-  /* ── AVATAR UPLOAD ── */
-  async function handleAvatarUpload() {
-    var input = document.getElementById('cs-avatar-input');
-    var msgEl = document.getElementById('cs-avatar-msg');
-    if (!input || !input.files || !input.files.length) return;
-    var file = input.files[0];
-    if (file.size > 2 * 1024 * 1024) { showMsg(msgEl, 'Dosya 2MB\'dan kucuk olmali.', 'error'); return; }
-    var ext = file.name.split('.').pop().toLowerCase();
-    if (['jpg','jpeg','png','webp'].indexOf(ext) === -1) { showMsg(msgEl, 'Sadece JPG, PNG veya WebP.', 'error'); return; }
-
-    var path = 'coach_avatars/' + _coachProfile.id + '.' + ext;
-    try {
-      showMsg(msgEl, 'Yukleniyor...', 'info');
-      var upRes = await _supa.storage.from('cvs').upload(path, file, { upsert: true, cacheControl: '3600', contentType: file.type });
-      if (upRes.error) { showMsg(msgEl, 'Yukleme hatasi: ' + upRes.error.message, 'error'); return; }
-      var publicUrl = _supa.storage.from('cvs').getPublicUrl(path).data.publicUrl;
-      var cleanUrl = publicUrl.split('?')[0];
-      var dbRes = await _supa.from('coach_profiles').update({ avatar_url: cleanUrl }).eq('id', _coachProfile.id);
-      if (dbRes.error) { showMsg(msgEl, 'Kayit hatasi: ' + dbRes.error.message, 'error'); return; }
-      _coachProfile.avatar_url = cleanUrl;
-      var preview = document.getElementById('cs-avatar-preview');
-      if (preview) { preview.src = cleanUrl + '?t=' + Date.now(); }
-      else { renderProfileSection(); }
-      showMsg(msgEl, 'Profil fotografi guncellendi.', 'success');
-    } catch (e) {
-      console.error('Avatar upload error:', e);
-      showMsg(msgEl, 'Yukleme hatasi.', 'error');
+  function switchTab(tabName) {
+    _currentTab = tabName;
+    _activePostId = null;
+    var navBtns = document.querySelectorAll('#cs-nav button');
+    for (var i = 0; i < navBtns.length; i++) {
+      navBtns[i].classList.toggle('active', navBtns[i].getAttribute('data-tab') === tabName);
     }
+    var tabs = document.querySelectorAll('.cs-tab-content');
+    for (var j = 0; j < tabs.length; j++) {
+      tabs[j].classList.toggle('active', tabs[j].id === 'tab-' + tabName);
+    }
+    if (tabName === 'profile') renderProfileTab();
+    else if (tabName === 'drafts') renderDraftsTab();
+    else if (tabName === 'published') renderPublishedTab();
   }
 
-  /* ── LOAD POSTS ── */
+  /* ══ LOAD POSTS ══ */
   async function loadPosts() {
     try {
+      var cols = 'id, title, excerpt, body, status, category, related_role, cover_image_url, cover_image_alt, like_count, admin_note, created_at, updated_at, published_at';
+      /* deletion_requested_at may not exist yet if migration not deployed — defensive */
       var res = await _supa.from('coach_posts')
-        .select('id, title, status, category, created_at, updated_at')
+        .select(cols + ', deletion_requested_at')
         .eq('coach_id', _coachProfile.id)
         .order('updated_at', { ascending: false });
+      if (res.error && res.error.message && res.error.message.indexOf('deletion_requested_at') !== -1) {
+        /* Fallback without new column */
+        res = await _supa.from('coach_posts')
+          .select(cols)
+          .eq('coach_id', _coachProfile.id)
+          .order('updated_at', { ascending: false });
+      }
       _posts = res.data || [];
-      renderPostList();
     } catch (e) { console.error('Load posts error:', e); }
   }
 
-  /* ── RENDER POST LIST (safe DOM) ── */
-  function renderPostList() {
-    var container = document.getElementById('cs-post-list');
-    if (!container) return;
-    while (container.firstChild) container.removeChild(container.firstChild);
+  /* ══ PROFILE TAB ══ */
+  function renderProfileTab() { renderProfileCard(); renderProfileStats(); }
 
-    if (_posts.length === 0) {
-      var empty = document.createElement('div');
-      empty.style.cssText = 'font-size:13px;color:var(--muted);text-align:center;padding:20px 0;';
-      empty.textContent = 'Henuz yazi yok';
-      container.appendChild(empty);
-      return;
+  function renderProfileCard() {
+    var area = document.getElementById('cs-profile-card-area');
+    if (!area) return;
+    clear(area);
+    var p = _coachProfile;
+    var card = document.createElement('div');
+    card.className = 'cs-profile-card';
+    if (p.avatar_url) {
+      var img = document.createElement('img');
+      img.className = 'cs-profile-avatar';
+      img.src = p.avatar_url;
+      img.alt = p.display_name || '';
+      card.appendChild(img);
+    } else {
+      var ph = document.createElement('div');
+      ph.className = 'cs-profile-avatar-placeholder';
+      ph.textContent = (p.display_name || '?').charAt(0).toUpperCase();
+      card.appendChild(ph);
     }
-
-    for (var i = 0; i < _posts.length; i++) {
-      var post = _posts[i];
-      var item = document.createElement('div');
-      item.className = 'cs-post-item' + (_activePostId === post.id ? ' active' : '');
-      item.setAttribute('data-id', post.id);
-
-      var titleDiv = document.createElement('div');
-      titleDiv.className = 'cs-post-item-title';
-      titleDiv.textContent = post.title || '(Basliksiz)';
-      item.appendChild(titleDiv);
-
-      var metaDiv = document.createElement('div');
-      metaDiv.className = 'cs-post-item-meta';
-      var badge = document.createElement('span');
-      badge.className = 'cs-status-badge ' + post.status;
-      badge.textContent = STATUS_LABELS[post.status] || post.status;
-      metaDiv.appendChild(badge);
-
-      var catLabel = CATEGORIES.find(function(c) { return c.value === post.category; });
-      if (catLabel) {
-        var catSpan = document.createElement('span');
-        catSpan.textContent = catLabel.label;
-        metaDiv.appendChild(catSpan);
-      }
-      item.appendChild(metaDiv);
-
-      item.addEventListener('click', (function(pid) {
-        return function() { openPost(pid); };
-      })(post.id));
-      container.appendChild(item);
-    }
+    var info = document.createElement('div');
+    info.className = 'cs-profile-info';
+    var name = document.createElement('div');
+    name.className = 'cs-profile-name';
+    name.textContent = p.display_name || '\u0130simsiz Ko\u00e7';
+    info.appendChild(name);
+    if (p.title) { var t = document.createElement('div'); t.className = 'cs-profile-title'; t.textContent = p.title; info.appendChild(t); }
+    if (p.bio_short) { var bio = document.createElement('div'); bio.className = 'cs-profile-bio'; bio.textContent = p.bio_short; info.appendChild(bio); }
+    var meta = document.createElement('div');
+    meta.className = 'cs-profile-meta';
+    if (p.sector_background) meta.appendChild(makeTag(p.sector_background));
+    if (p.experience_years) meta.appendChild(makeTag(p.experience_years + ' y\u0131l deneyim'));
+    if (p.linkedin_url) { var li = makeTag('LinkedIn'); li.style.cursor = 'pointer'; li.style.color = 'var(--navy)'; li.addEventListener('click', function() { window.open(p.linkedin_url, '_blank'); }); meta.appendChild(li); }
+    info.appendChild(meta);
+    var editBtn = document.createElement('button');
+    editBtn.className = 'cs-profile-edit-btn';
+    editBtn.textContent = 'Profili D\u00fczenle';
+    editBtn.addEventListener('click', function() { toggleProfileForm(true); });
+    info.appendChild(editBtn);
+    card.appendChild(info);
+    area.appendChild(card);
   }
 
-  /* ── OPEN POST ── */
-  async function openPost(postId) {
-    _activePostId = postId;
-    renderPostList();
-    var editorEl = document.getElementById('cs-editor');
-    if (!editorEl) return;
-    editorEl.textContent = 'Yukleniyor...';
+  function makeTag(text) { var t = document.createElement('span'); t.className = 'cs-profile-tag'; t.textContent = text; return t; }
 
+  function renderProfileStats() {
+    var totalPosts = _posts.length;
+    var publishedPosts = _posts.filter(function(p) { return p.status === 'published'; }).length;
+    var totalLikes = 0;
+    for (var i = 0; i < _posts.length; i++) totalLikes += (_posts[i].like_count || 0);
+    fillStat('cs-stat-posts', totalPosts, 'Toplam Yaz\u0131');
+    fillStat('cs-stat-likes', totalLikes, 'Toplam Be\u011feni');
+    fillStat('cs-stat-published', publishedPosts, 'Yay\u0131nda');
+  }
+
+  function fillStat(id, num, label) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    clear(el);
+    var n = document.createElement('div'); n.className = 'cs-stat-num'; n.textContent = num; el.appendChild(n);
+    var l = document.createElement('div'); l.className = 'cs-stat-label'; l.textContent = label; el.appendChild(l);
+  }
+
+  var _profileFormOpen = false;
+  function toggleProfileForm(open) {
+    _profileFormOpen = open;
+    var area = document.getElementById('cs-profile-form-area');
+    if (!area) return;
+    area.style.display = open ? 'block' : 'none';
+    if (open) renderProfileForm();
+  }
+
+  function renderProfileForm() {
+    var area = document.getElementById('cs-profile-form-area');
+    if (!area) return;
+    clear(area);
+    var p = _coachProfile;
+    var heading = document.createElement('h3');
+    heading.style.cssText = "font-family:'Bricolage Grotesque',sans-serif;font-size:16px;font-weight:700;margin-bottom:16px;";
+    heading.textContent = 'Profil Bilgilerini D\u00fczenle';
+    area.appendChild(heading);
+    var grid = document.createElement('div');
+    grid.className = 'cs-grid-2';
+    grid.appendChild(buildField('G\u00f6r\u00fcnen Ad', 'input', 'cs-p-name', p.display_name || '', 80));
+    grid.appendChild(buildField('Unvan', 'input', 'cs-p-title', p.title || '', 100, '\u00d6rn: Perakende \u0130K Dan\u0131\u015fman\u0131'));
+    grid.appendChild(buildField('Sekt\u00f6r Ge\u00e7mi\u015fi', 'input', 'cs-p-sector', p.sector_background || '', 120, '\u00d6rn: H\u0131zl\u0131 moda, l\u00fcks'));
+    grid.appendChild(buildField('Deneyim (y\u0131l)', 'input', 'cs-p-years', p.experience_years != null ? String(p.experience_years) : '', 3));
+    area.appendChild(grid);
+    area.appendChild(buildField('K\u0131sa Biyografi', 'textarea', 'cs-p-bio', p.bio_short || '', 300, 'K\u0131sa tan\u0131t\u0131m metni (maks. 300 karakter)', 3));
+    area.appendChild(buildField('LinkedIn', 'input', 'cs-p-linkedin', p.linkedin_url || '', 200, 'https://linkedin.com/in/kullaniciadi'));
+
+    /* Avatar upload */
+    var avSec = document.createElement('div'); avSec.className = 'cs-field';
+    var avLabel = document.createElement('label'); avLabel.textContent = 'Profil Foto\u011fraf\u0131'; avSec.appendChild(avLabel);
+    if (p.avatar_url) {
+      var avPrev = document.createElement('img'); avPrev.id = 'cs-avatar-preview'; avPrev.src = p.avatar_url;
+      avPrev.style.cssText = 'width:64px;height:64px;border-radius:50%;object-fit:cover;border:2px solid var(--border);margin-bottom:8px;display:block;';
+      avSec.appendChild(avPrev);
+    }
+    var avInput = document.createElement('input'); avInput.type = 'file'; avInput.accept = 'image/jpeg,image/png,image/webp'; avInput.id = 'cs-avatar-input'; avInput.style.cssText = 'font-size:12px;';
+    avInput.addEventListener('change', handleAvatarUpload); avSec.appendChild(avInput);
+    var avHint = document.createElement('div'); avHint.className = 'cs-field-hint'; avHint.textContent = 'JPG, PNG veya WebP. Maks. 2 MB.'; avSec.appendChild(avHint);
+    var avMsg = document.createElement('div'); avMsg.id = 'cs-avatar-msg'; avMsg.className = 'cs-msg'; avSec.appendChild(avMsg);
+    area.appendChild(avSec);
+
+    var actions = document.createElement('div'); actions.className = 'cs-actions';
+    var saveBtn = document.createElement('button'); saveBtn.className = 'cs-btn cs-btn-secondary'; saveBtn.textContent = 'Profili Kaydet'; saveBtn.addEventListener('click', saveProfile); actions.appendChild(saveBtn);
+    var cancelBtn = document.createElement('button'); cancelBtn.className = 'cs-btn cs-btn-ghost'; cancelBtn.textContent = 'Vazge\u00e7'; cancelBtn.addEventListener('click', function() { toggleProfileForm(false); }); actions.appendChild(cancelBtn);
+    area.appendChild(actions);
+    var msg = document.createElement('div'); msg.className = 'cs-msg'; msg.id = 'cs-profile-msg'; area.appendChild(msg);
+  }
+
+  async function saveProfile() {
+    var nameEl = document.getElementById('cs-p-name'); var msgEl = document.getElementById('cs-profile-msg');
+    var displayName = nameEl ? nameEl.value.trim() : '';
+    if (!displayName) { showMsg(msgEl, 'G\u00f6r\u00fcnen ad gereklidir.', 'error'); return; }
+    var yearsEl = document.getElementById('cs-p-years');
+    var yearsVal = yearsEl && yearsEl.value.trim() ? parseInt(yearsEl.value.trim(), 10) : null;
+    if (yearsVal !== null && (isNaN(yearsVal) || yearsVal < 0 || yearsVal > 50)) { showMsg(msgEl, 'Deneyim y\u0131l\u0131 0-50 aras\u0131 olmal\u0131d\u0131r.', 'error'); return; }
+    var linkedinEl = document.getElementById('cs-p-linkedin');
+    var linkedinVal = linkedinEl ? linkedinEl.value.trim() : '';
+    if (linkedinVal && linkedinVal.indexOf('http') !== 0) linkedinVal = 'https://' + linkedinVal;
+    var updates = { display_name: displayName, title: valOrNull('cs-p-title'), sector_background: valOrNull('cs-p-sector'), experience_years: yearsVal, bio_short: valOrNull('cs-p-bio'), linkedin_url: linkedinVal || null };
+    try {
+      var res = await _supa.from('coach_profiles').update(updates).eq('id', _coachProfile.id);
+      if (res.error) { showMsg(msgEl, 'Hata: ' + res.error.message, 'error'); return; }
+      Object.assign(_coachProfile, updates);
+      document.getElementById('cs-user-name').textContent = updates.display_name;
+      showMsg(msgEl, 'Profil kaydedildi.', 'success');
+      renderProfileCard();
+    } catch (e) { console.error('Save profile error:', e); showMsg(msgEl, 'Kaydetme hatas\u0131.', 'error'); }
+  }
+
+  function valOrNull(id) { var el = document.getElementById(id); return el && el.value.trim() ? el.value.trim() : null; }
+
+  async function handleAvatarUpload() {
+    var input = document.getElementById('cs-avatar-input'); var msgEl = document.getElementById('cs-avatar-msg');
+    if (!input || !input.files || !input.files.length) return;
+    var file = input.files[0];
+    if (file.size > 2 * 1024 * 1024) { showMsg(msgEl, 'Dosya 2 MB\'dan k\u00fc\u00e7\u00fck olmal\u0131.', 'error'); return; }
+    var ext = file.name.split('.').pop().toLowerCase();
+    if (['jpg','jpeg','png','webp'].indexOf(ext) === -1) { showMsg(msgEl, 'Sadece JPG, PNG veya WebP.', 'error'); return; }
+    var path = 'coach_avatars/' + _coachProfile.id + '.' + ext;
+    try {
+      showMsg(msgEl, 'Y\u00fckleniyor...', 'info');
+      var upRes = await _supa.storage.from('cvs').upload(path, file, { upsert: true, cacheControl: '3600', contentType: file.type });
+      if (upRes.error) { showMsg(msgEl, 'Y\u00fckleme hatas\u0131: ' + upRes.error.message, 'error'); return; }
+      var publicUrl = _supa.storage.from('cvs').getPublicUrl(path).data.publicUrl;
+      var cleanUrl = publicUrl.split('?')[0];
+      var dbRes = await _supa.from('coach_profiles').update({ avatar_url: cleanUrl }).eq('id', _coachProfile.id);
+      if (dbRes.error) { showMsg(msgEl, 'Kay\u0131t hatas\u0131: ' + dbRes.error.message, 'error'); return; }
+      _coachProfile.avatar_url = cleanUrl;
+      var preview = document.getElementById('cs-avatar-preview');
+      if (preview) preview.src = cleanUrl + '?t=' + Date.now();
+      showMsg(msgEl, 'Profil foto\u011fraf\u0131 g\u00fcncellendi.', 'success');
+      renderProfileCard();
+    } catch (e) { console.error('Avatar upload error:', e); showMsg(msgEl, 'Y\u00fckleme hatas\u0131.', 'error'); }
+  }
+
+  /* ══ DRAFTS TAB ══ */
+  function renderDraftsTab() {
+    _activePostId = null;
+    var toolbar = document.getElementById('cs-drafts-toolbar');
+    var list = document.getElementById('cs-drafts-list');
+    var editorArea = document.getElementById('cs-editor-area');
+    clear(toolbar); clear(list); editorArea.style.display = 'none';
+    var newBtn = document.createElement('button'); newBtn.className = 'cs-btn cs-btn-primary'; newBtn.textContent = '+ Yeni Yaz\u0131'; newBtn.addEventListener('click', createNewPost); toolbar.appendChild(newBtn);
+    var drafts = _posts.filter(function(p) { return p.status === 'draft' || p.status === 'submitted' || p.status === 'changes_requested' || p.status === 'rejected'; });
+    if (drafts.length === 0) {
+      var empty = document.createElement('div'); empty.style.cssText = 'text-align:center;padding:40px 20px;color:var(--muted);font-size:14px;'; empty.textContent = 'Hen\u00fcz taslak yaz\u0131 yok. Yeni bir yaz\u0131 olu\u015fturarak ba\u015flay\u0131n.'; list.appendChild(empty); return;
+    }
+    for (var i = 0; i < drafts.length; i++) list.appendChild(buildPostRow(drafts[i], 'drafts'));
+  }
+
+  function buildPostRow(post, context) {
+    var row = document.createElement('div'); row.className = 'cs-post-row' + (_activePostId === post.id ? ' active' : '');
+    if (post.cover_image_url) { var thumb = document.createElement('img'); thumb.className = 'cs-post-cover-thumb'; thumb.src = post.cover_image_url; thumb.alt = post.cover_image_alt || ''; row.appendChild(thumb); }
+    var body = document.createElement('div'); body.className = 'cs-post-row-body';
+    var title = document.createElement('div'); title.className = 'cs-post-row-title'; title.textContent = post.title || '(Ba\u015fl\u0131ks\u0131z)'; body.appendChild(title);
+    var meta = document.createElement('div'); meta.className = 'cs-post-row-meta';
+    var badge = document.createElement('span'); badge.className = 'cs-badge cs-badge-' + post.status; badge.textContent = STATUS_LABELS[post.status] || post.status; meta.appendChild(badge);
+    var cat = CATEGORY_MAP[post.category]; if (cat) { var cs = document.createElement('span'); cs.textContent = cat; meta.appendChild(cs); }
+    if (post.like_count > 0 && context === 'published') { var ls = document.createElement('span'); ls.textContent = '\u2661 ' + post.like_count; meta.appendChild(ls); }
+    var dateStr = (context === 'published' && post.published_at) ? post.published_at : post.updated_at;
+    var ds = document.createElement('span'); ds.textContent = formatDate(dateStr); meta.appendChild(ds);
+    body.appendChild(meta); row.appendChild(body);
+    row.addEventListener('click', function() { if (context === 'published') openPublishedDetail(post.id); else openEditor(post.id); });
+    return row;
+  }
+
+  /* ══ EDITOR ══ */
+  async function openEditor(postId) {
+    _activePostId = postId;
+    renderDraftsTab();
+    var editorArea = document.getElementById('cs-editor-area');
+    editorArea.style.display = 'block'; editorArea.textContent = 'Y\u00fckleniyor...';
     try {
       var res = await _supa.from('coach_posts').select('*').eq('id', postId).maybeSingle();
-      if (!res.data) { editorEl.textContent = 'Yazi bulunamadi'; return; }
-      renderEditor(res.data);
-    } catch (e) {
-      console.error('Open post error:', e);
-      editorEl.textContent = 'Yukleme hatasi';
-    }
+      if (!res.data) { editorArea.textContent = 'Yaz\u0131 bulunamad\u0131'; return; }
+      renderEditorForm(res.data);
+    } catch (e) { console.error('Open post error:', e); editorArea.textContent = 'Y\u00fckleme hatas\u0131'; }
   }
 
-  /* ── RENDER EDITOR (safe DOM construction) ── */
-  function renderEditor(post) {
-    var editorEl = document.getElementById('cs-editor');
-    if (!editorEl) return;
-    while (editorEl.firstChild) editorEl.removeChild(editorEl.firstChild);
-
-    var isReadOnly = post.status === 'published' || post.status === 'archived' || post.status === 'rejected';
-    var card = document.createElement('div');
-    card.className = 'cs-editor-card';
-
-    if (isReadOnly) {
-      var roLabel = document.createElement('div');
-      roLabel.className = 'cs-readonly-label';
-      roLabel.textContent = (STATUS_LABELS[post.status] || post.status) + ' — Salt okunur';
-      card.appendChild(roLabel);
-    }
-
-    // Admin note
+  function renderEditorForm(post) {
+    var area = document.getElementById('cs-editor-area'); if (!area) return; clear(area); _pendingCoverFile = null;
+    var isEditable = post.status === 'draft' || post.status === 'changes_requested';
+    var card = document.createElement('div'); card.className = 'cs-editor-card cs-animate';
+    /* Status */
+    var statusRow = document.createElement('div'); statusRow.style.cssText = 'display:flex;align-items:center;gap:8px;margin-bottom:16px;';
+    var sBadge = document.createElement('span'); sBadge.className = 'cs-badge cs-badge-' + post.status; sBadge.textContent = STATUS_LABELS[post.status] || post.status; statusRow.appendChild(sBadge);
+    if (!isEditable) { var roL = document.createElement('span'); roL.className = 'cs-readonly-label'; roL.textContent = 'Salt okunur'; statusRow.appendChild(roL); }
+    card.appendChild(statusRow);
+    /* Admin note */
     if (post.admin_note && (post.status === 'changes_requested' || post.status === 'rejected')) {
-      var noteBox = document.createElement('div');
-      noteBox.className = 'cs-admin-note';
-      var noteLabel = document.createElement('div');
-      noteLabel.className = 'cs-admin-note-label';
-      noteLabel.textContent = 'Admin Notu';
-      noteBox.appendChild(noteLabel);
-      var noteText = document.createElement('div');
-      noteText.className = 'cs-admin-note-text';
-      noteText.textContent = post.admin_note;
-      noteBox.appendChild(noteText);
-      card.appendChild(noteBox);
+      var nb = document.createElement('div'); nb.className = 'cs-admin-note';
+      var nl = document.createElement('div'); nl.className = 'cs-admin-note-label'; nl.textContent = 'Admin Notu'; nb.appendChild(nl);
+      var nt = document.createElement('div'); nt.className = 'cs-admin-note-text'; nt.textContent = post.admin_note; nb.appendChild(nt);
+      card.appendChild(nb);
     }
-
-    var heading = document.createElement('h3');
-    heading.textContent = isReadOnly ? post.title : 'Yaziyi Duzenle';
-    card.appendChild(heading);
-
-    if (!isReadOnly) {
-      card.appendChild(buildField('Baslik', 'input', 'cs-f-title', post.title || '', 120));
-      card.appendChild(buildField('Ozet', 'textarea', 'cs-f-excerpt', post.excerpt || '', 200, 'Kisa onizleme metni (maks. 200 karakter)', 2));
-      var bodyField = buildField('Icerik', 'textarea', 'cs-f-body', post.body || '', 0, '', 10);
-      bodyField.className = 'cs-field cs-field-body';
-      card.appendChild(bodyField);
+    if (isEditable) {
+      card.appendChild(buildField('Ba\u015fl\u0131k', 'input', 'cs-f-title', post.title || '', 120));
+      card.appendChild(buildField('\u00d6zet', 'textarea', 'cs-f-excerpt', post.excerpt || '', 200, 'K\u0131sa \u00f6nizleme metni (maks. 200 karakter)', 2));
+      var bf = buildField('\u0130\u00e7erik', 'textarea', 'cs-f-body', post.body || '', 0, '', 12); bf.className = 'cs-field cs-field-body'; card.appendChild(bf);
       card.appendChild(buildSelectField('Kategori', 'cs-f-category', CATEGORIES, post.category));
-      card.appendChild(buildSelectField('Iliskili Rol (istege bagli)', 'cs-f-role', ROLE_OPTIONS, post.related_role || ''));
-
-      /* ── Cover image upload ── */
-      var coverSection = document.createElement('div');
-      coverSection.style.cssText = 'margin-top:12px;padding:14px;background:var(--bg,#F7F6F4);border-radius:12px;border:1px solid var(--border);';
-
-      var coverLabel = document.createElement('div');
-      coverLabel.style.cssText = 'font-size:11px;font-weight:600;color:var(--navy);margin-bottom:8px;';
-      coverLabel.textContent = 'Kapak Gorseli (istege bagli)';
-      coverSection.appendChild(coverLabel);
-
-      if (post.cover_image_url) {
-        var coverPreview = document.createElement('img');
-        coverPreview.id = 'cs-cover-preview';
-        coverPreview.src = post.cover_image_url;
-        coverPreview.alt = post.cover_image_alt || '';
-        coverPreview.style.cssText = 'width:100%;max-height:160px;object-fit:cover;border-radius:8px;margin-bottom:8px;display:block;';
-        coverSection.appendChild(coverPreview);
-      }
-
-      coverSection.appendChild(buildField('Alt Metin (gorsel aciklamasi)', 'input', 'cs-f-cover-alt', post.cover_image_alt || '', 120, 'Gorseli kisa tanimlayin'));
-
-      var rightsRow = document.createElement('label');
-      rightsRow.style.cssText = 'display:flex;align-items:center;gap:8px;margin:8px 0;cursor:pointer;font-size:11px;color:var(--text);';
-      var rightsCheck = document.createElement('input');
-      rightsCheck.type = 'checkbox';
-      rightsCheck.id = 'cs-cover-rights';
-      rightsCheck.style.cssText = 'width:16px;height:16px;accent-color:var(--verm);';
-      rightsRow.appendChild(rightsCheck);
-      rightsRow.appendChild(document.createTextNode('Bu g\u00F6rseli kullanma hakk\u0131na sahibim'));
-      coverSection.appendChild(rightsRow);
-
-      var coverInput = document.createElement('input');
-      coverInput.type = 'file';
-      coverInput.accept = 'image/jpeg,image/png,image/webp';
-      coverInput.id = 'cs-cover-input';
-      coverInput.style.cssText = 'font-size:12px;';
-      coverInput.disabled = true;
-      coverInput.addEventListener('change', function() { handleCoverUpload(post.id); });
-      coverSection.appendChild(coverInput);
-
-      /* Enable file input only when rights checkbox is checked */
-      rightsCheck.addEventListener('change', function() {
-        coverInput.disabled = !rightsCheck.checked;
-      });
-
-      var coverMsg = document.createElement('div');
-      coverMsg.id = 'cs-cover-msg';
-      coverMsg.className = 'cs-msg';
-      coverSection.appendChild(coverMsg);
-
-      card.appendChild(coverSection);
+      card.appendChild(buildSelectField('\u0130li\u015fkili Rol (iste\u011fe ba\u011fl\u0131)', 'cs-f-role', ROLE_OPTIONS, post.related_role || ''));
+      card.appendChild(buildCoverUploadZone(post));
     } else {
-      var catObj = CATEGORIES.find(function(c) { return c.value === post.category; });
-      if (catObj) {
-        var catPill = document.createElement('span');
-        catPill.style.cssText = 'display:inline-block;padding:3px 10px;border-radius:10px;background:var(--verm-light);color:var(--verm);font-size:11px;font-weight:600;margin-bottom:12px;';
-        catPill.textContent = catObj.label;
-        card.appendChild(catPill);
-      }
-      if (post.excerpt) {
-        var excerptDiv = document.createElement('div');
-        excerptDiv.style.cssText = 'font-size:14px;color:var(--muted);margin-bottom:16px;line-height:1.6;';
-        excerptDiv.textContent = post.excerpt;
-        card.appendChild(excerptDiv);
-      }
-      var bodyDiv = document.createElement('div');
-      bodyDiv.style.cssText = 'font-size:14px;color:var(--text);line-height:1.8;white-space:pre-wrap;';
-      bodyDiv.textContent = post.body;
-      card.appendChild(bodyDiv);
-
-      if (post.related_role) {
-        var roleInfo = document.createElement('div');
-        roleInfo.style.cssText = 'font-size:12px;color:var(--muted);margin-top:12px;';
-        roleInfo.textContent = 'Iliskili Rol: ' + post.related_role;
-        card.appendChild(roleInfo);
-      }
+      if (post.cover_image_url) { var ci = document.createElement('img'); ci.src = post.cover_image_url; ci.alt = post.cover_image_alt || ''; ci.style.cssText = 'width:100%;max-height:200px;object-fit:cover;border-radius:10px;margin-bottom:16px;'; card.appendChild(ci); }
+      var h = document.createElement('h3'); h.style.cssText = "font-family:'Bricolage Grotesque',sans-serif;font-size:20px;font-weight:800;margin-bottom:8px;"; h.textContent = post.title; card.appendChild(h);
+      if (post.excerpt) { var exc = document.createElement('div'); exc.style.cssText = 'font-size:14px;color:var(--muted);margin-bottom:16px;line-height:1.6;font-style:italic;'; exc.textContent = post.excerpt; card.appendChild(exc); }
+      var bd = document.createElement('div'); bd.style.cssText = 'font-size:14px;line-height:1.8;white-space:pre-wrap;'; bd.textContent = post.body; card.appendChild(bd);
     }
-
-    // Actions
-    var actions = document.createElement('div');
-    actions.className = 'cs-actions';
-    if (!isReadOnly) {
-      var saveBtn = document.createElement('button');
-      saveBtn.className = 'cs-btn cs-btn-ghost';
-      saveBtn.textContent = 'Kaydet';
-      saveBtn.addEventListener('click', function() { savePost(post.id, false); });
-      actions.appendChild(saveBtn);
-    }
-    if (post.status === 'draft' || post.status === 'changes_requested') {
-      var submitBtn = document.createElement('button');
-      submitBtn.className = 'cs-btn cs-btn-primary';
-      submitBtn.textContent = 'Incelemeye Gonder';
-      submitBtn.addEventListener('click', function() { savePost(post.id, true); });
-      actions.appendChild(submitBtn);
+    /* Actions */
+    var actions = document.createElement('div'); actions.className = 'cs-actions';
+    if (isEditable) {
+      var sBtn = document.createElement('button'); sBtn.className = 'cs-btn cs-btn-ghost'; sBtn.textContent = 'Kaydet'; sBtn.addEventListener('click', function() { savePost(post.id, false); }); actions.appendChild(sBtn);
+      var pBtn = document.createElement('button'); pBtn.className = 'cs-btn cs-btn-secondary'; pBtn.textContent = '\u00d6n \u0130zleme'; pBtn.addEventListener('click', function() { showPreview(post.id, false); }); actions.appendChild(pBtn);
+      var subBtn = document.createElement('button'); subBtn.className = 'cs-btn cs-btn-primary'; subBtn.textContent = '\u0130ncelemeye G\u00f6nder'; subBtn.addEventListener('click', function() { showPreview(post.id, true); }); actions.appendChild(subBtn);
     }
     card.appendChild(actions);
-
-    var msgEl = document.createElement('div');
-    msgEl.className = 'cs-msg';
-    msgEl.id = 'cs-editor-msg';
-    card.appendChild(msgEl);
-
-    editorEl.appendChild(card);
+    var mEl = document.createElement('div'); mEl.className = 'cs-msg'; mEl.id = 'cs-editor-msg'; card.appendChild(mEl);
+    area.appendChild(card);
   }
 
-  /* ── FIELD BUILDERS ── */
+  /* ── Cover Upload Zone ── */
+  function buildCoverUploadZone(post) {
+    var section = document.createElement('div'); section.className = 'cs-field';
+    var lbl = document.createElement('label'); lbl.textContent = 'Kapak G\u00f6rseli (iste\u011fe ba\u011fl\u0131)'; section.appendChild(lbl);
+    var zone = document.createElement('div'); zone.className = 'cs-upload-zone'; zone.id = 'cs-cover-zone';
+    var icon = document.createElement('div'); icon.className = 'cs-upload-zone-icon'; icon.textContent = '\ud83d\udcf7'; zone.appendChild(icon);
+    var text = document.createElement('div'); text.className = 'cs-upload-zone-text'; text.textContent = 'T\u0131klay\u0131n veya dosyay\u0131 s\u00fcr\u00fckleyin'; zone.appendChild(text);
+    var hint = document.createElement('div'); hint.className = 'cs-field-hint'; hint.style.marginTop = '6px'; hint.textContent = 'JPG, PNG veya WebP \u00b7 Maks. 5 MB'; zone.appendChild(hint);
+    var fileInfo = document.createElement('div'); fileInfo.className = 'cs-upload-zone-file'; fileInfo.id = 'cs-cover-file-info'; zone.appendChild(fileInfo);
+    var fileInput = document.createElement('input'); fileInput.type = 'file'; fileInput.accept = 'image/jpeg,image/png,image/webp'; fileInput.id = 'cs-cover-input';
+    fileInput.addEventListener('change', function() {
+      var f = fileInput.files && fileInput.files[0]; if (!f) return;
+      if (f.size > 5 * 1024 * 1024) { showMsg(document.getElementById('cs-cover-msg'), 'Dosya 5 MB\'dan k\u00fc\u00e7\u00fck olmal\u0131.', 'error'); fileInput.value = ''; return; }
+      var ext = f.name.split('.').pop().toLowerCase();
+      if (['jpg','jpeg','png','webp'].indexOf(ext) === -1) { showMsg(document.getElementById('cs-cover-msg'), 'Sadece JPG, PNG veya WebP.', 'error'); fileInput.value = ''; return; }
+      _pendingCoverFile = f; fileInfo.textContent = f.name + ' (' + (f.size / 1024).toFixed(0) + ' KB)'; zone.classList.add('has-file');
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        var ep = document.getElementById('cs-cover-local-preview'); if (ep) ep.parentNode.removeChild(ep);
+        var pi = document.createElement('img'); pi.id = 'cs-cover-local-preview'; pi.className = 'cs-upload-preview'; pi.src = e.target.result; section.appendChild(pi);
+      };
+      reader.readAsDataURL(f);
+    });
+    zone.appendChild(fileInput); section.appendChild(zone);
+    if (post.cover_image_url) { var ex = document.createElement('img'); ex.id = 'cs-cover-existing'; ex.className = 'cs-upload-preview'; ex.src = post.cover_image_url; ex.alt = post.cover_image_alt || ''; section.appendChild(ex); }
+    section.appendChild(buildField('G\u00f6rsel a\u00e7\u0131klamas\u0131 (alt metin)', 'input', 'cs-f-cover-alt', post.cover_image_alt || '', 120, 'G\u00f6rseli k\u0131sa tan\u0131mlay\u0131n'));
+    var cm = document.createElement('div'); cm.id = 'cs-cover-msg'; cm.className = 'cs-msg'; section.appendChild(cm);
+    return section;
+  }
+
+  /* ══ SAVE POST ══ */
+  async function savePost(postId, submit) {
+    var titleEl = document.getElementById('cs-f-title'); var bodyEl = document.getElementById('cs-f-body'); var msgEl = document.getElementById('cs-editor-msg');
+    if (!titleEl || !bodyEl) return;
+    var title = titleEl.value.trim(); var body = bodyEl.value.trim();
+    if (!title) { showMsg(msgEl, 'Ba\u015fl\u0131k gereklidir.', 'error'); return; }
+    if (submit && !body) { showMsg(msgEl, '\u0130\u00e7erik gereklidir.', 'error'); return; }
+    if (_pendingCoverFile) { var ok = await uploadCover(postId); if (!ok) return; }
+    var coverAltEl = document.getElementById('cs-f-cover-alt'); var coverAltVal = coverAltEl ? coverAltEl.value.trim() : '';
+    var excerptEl = document.getElementById('cs-f-excerpt'); var catEl = document.getElementById('cs-f-category'); var roleEl = document.getElementById('cs-f-role');
+    var updates = { title: title, excerpt: excerptEl ? excerptEl.value.trim() : '', body: body, category: catEl ? catEl.value : 'mulakat_ipucu', related_role: roleEl && roleEl.value ? roleEl.value : null, cover_image_alt: coverAltVal || null };
+    if (submit) updates.status = 'submitted';
+    try {
+      var res = await _supa.from('coach_posts').update(updates).eq('id', postId);
+      if (res.error) { showMsg(msgEl, 'Hata: ' + res.error.message, 'error'); return; }
+      showMsg(msgEl, submit ? '\u0130ncelemeye g\u00f6nderildi.' : 'Kaydedildi.', 'success');
+      await loadPosts();
+      if (submit) renderDraftsTab(); else openEditor(postId);
+    } catch (e) { console.error('Save error:', e); showMsg(msgEl, 'Kaydetme hatas\u0131.', 'error'); }
+  }
+
+  async function uploadCover(postId) {
+    var file = _pendingCoverFile; if (!file) return true;
+    var msgEl = document.getElementById('cs-cover-msg');
+    var ext = file.name.split('.').pop().toLowerCase();
+    var path = 'coach_covers/' + postId + '/' + Date.now() + '_cover.' + ext;
+    try {
+      showMsg(msgEl, 'Kapak y\u00fckleniyor...', 'info');
+      var upRes = await _supa.storage.from('cvs').upload(path, file, { upsert: true, cacheControl: '3600', contentType: file.type });
+      if (upRes.error) { showMsg(msgEl, 'Y\u00fckleme hatas\u0131: ' + upRes.error.message, 'error'); return false; }
+      var publicUrl = _supa.storage.from('cvs').getPublicUrl(path).data.publicUrl;
+      var cleanUrl = publicUrl.split('?')[0];
+      var dbRes = await _supa.from('coach_posts').update({ cover_image_url: cleanUrl }).eq('id', postId);
+      if (dbRes.error) { showMsg(msgEl, 'Kay\u0131t hatas\u0131: ' + dbRes.error.message, 'error'); return false; }
+      _pendingCoverFile = null; return true;
+    } catch (e) { console.error('Cover upload error:', e); showMsg(msgEl, 'Y\u00fckleme hatas\u0131.', 'error'); return false; }
+  }
+
+  /* ══ PREVIEW BEFORE SUBMIT ══ */
+  function showPreview(postId, andSubmit) {
+    var titleEl = document.getElementById('cs-f-title'); var excerptEl = document.getElementById('cs-f-excerpt'); var bodyEl = document.getElementById('cs-f-body'); var catEl = document.getElementById('cs-f-category');
+    if (!titleEl) return;
+    var title = titleEl.value.trim(); var body = bodyEl ? bodyEl.value.trim() : '';
+    if (!title) { showMsg(document.getElementById('cs-editor-msg'), 'Ba\u015fl\u0131k gereklidir.', 'error'); return; }
+    if (andSubmit && !body) { showMsg(document.getElementById('cs-editor-msg'), '\u0130\u00e7erik gereklidir.', 'error'); return; }
+    var overlay = document.createElement('div'); overlay.className = 'cs-preview-overlay'; overlay.id = 'cs-preview-overlay';
+    var panel = document.createElement('div'); panel.className = 'cs-preview-panel';
+    /* Header */
+    var header = document.createElement('div'); header.className = 'cs-preview-header';
+    var hTitle = document.createElement('div'); hTitle.style.cssText = "font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:16px;flex:1;"; hTitle.textContent = '\u00d6n \u0130zleme'; header.appendChild(hTitle);
+    var closeBtn = document.createElement('button'); closeBtn.className = 'cs-btn cs-btn-ghost cs-btn-sm'; closeBtn.textContent = 'Kapat';
+    closeBtn.addEventListener('click', function() { document.body.removeChild(overlay); }); header.appendChild(closeBtn);
+    panel.appendChild(header);
+    /* Cover */
+    var localP = document.getElementById('cs-cover-local-preview'); var existP = document.getElementById('cs-cover-existing');
+    var coverSrc = localP ? localP.src : (existP ? existP.src : null);
+    if (coverSrc) { var cImg = document.createElement('img'); cImg.className = 'cs-preview-cover'; cImg.src = coverSrc; panel.appendChild(cImg); }
+    var pBody = document.createElement('div'); pBody.className = 'cs-preview-body';
+    var catVal = catEl ? catEl.value : '';
+    if (catVal && CATEGORY_MAP[catVal]) { var cp = document.createElement('div'); cp.className = 'cs-preview-cat'; cp.textContent = CATEGORY_MAP[catVal]; pBody.appendChild(cp); }
+    var pTitle = document.createElement('div'); pTitle.className = 'cs-preview-title'; pTitle.textContent = title; pBody.appendChild(pTitle);
+    var pCoach = document.createElement('div'); pCoach.className = 'cs-preview-coach'; pCoach.textContent = (_coachProfile.display_name || '') + (_coachProfile.title ? ' \u00b7 ' + _coachProfile.title : ''); pBody.appendChild(pCoach);
+    var excerpt = excerptEl ? excerptEl.value.trim() : '';
+    if (excerpt) { var pExc = document.createElement('div'); pExc.className = 'cs-preview-excerpt'; pExc.textContent = excerpt; pBody.appendChild(pExc); }
+    var pContent = document.createElement('div'); pContent.className = 'cs-preview-content'; pContent.textContent = body; pBody.appendChild(pContent);
+    panel.appendChild(pBody);
+    /* Actions */
+    var actions = document.createElement('div'); actions.className = 'cs-preview-actions';
+    var backBtn = document.createElement('button'); backBtn.className = 'cs-btn cs-btn-ghost'; backBtn.textContent = 'D\u00fczenlemeye D\u00f6n';
+    backBtn.addEventListener('click', function() { document.body.removeChild(overlay); }); actions.appendChild(backBtn);
+    if (andSubmit) {
+      var confirmBtn = document.createElement('button'); confirmBtn.className = 'cs-btn cs-btn-primary'; confirmBtn.textContent = 'Onayla ve \u0130ncelemeye G\u00f6nder';
+      confirmBtn.addEventListener('click', function() { document.body.removeChild(overlay); savePost(postId, true); }); actions.appendChild(confirmBtn);
+    }
+    panel.appendChild(actions);
+    overlay.appendChild(panel);
+    overlay.addEventListener('click', function(e) { if (e.target === overlay) document.body.removeChild(overlay); });
+    document.body.appendChild(overlay);
+  }
+
+  /* ══ PUBLISHED TAB ══ */
+  function renderPublishedTab() {
+    var list = document.getElementById('cs-published-list'); var detailArea = document.getElementById('cs-published-detail-area');
+    clear(list); detailArea.style.display = 'none';
+    var published = _posts.filter(function(p) { return p.status === 'published'; });
+    if (published.length === 0) {
+      var empty = document.createElement('div'); empty.style.cssText = 'text-align:center;padding:40px 20px;color:var(--muted);font-size:14px;'; empty.textContent = 'Hen\u00fcz yay\u0131nlanm\u0131\u015f yaz\u0131 yok.'; list.appendChild(empty); return;
+    }
+    for (var i = 0; i < published.length; i++) list.appendChild(buildPostRow(published[i], 'published'));
+  }
+
+  async function openPublishedDetail(postId) {
+    var detailArea = document.getElementById('cs-published-detail-area');
+    detailArea.style.display = 'block'; detailArea.textContent = 'Y\u00fckleniyor...';
+    try {
+      var cols = '*, deletion_requested_at';
+      var res = await _supa.from('coach_posts').select(cols).eq('id', postId).maybeSingle();
+      if (res.error) {
+        res = await _supa.from('coach_posts').select('*').eq('id', postId).maybeSingle();
+      }
+      if (!res.data) { detailArea.textContent = 'Yaz\u0131 bulunamad\u0131'; return; }
+      renderPublishedDetail(res.data);
+    } catch (e) { console.error('Open published error:', e); detailArea.textContent = 'Y\u00fckleme hatas\u0131'; }
+  }
+
+  function renderPublishedDetail(post) {
+    var area = document.getElementById('cs-published-detail-area'); if (!area) return; clear(area);
+    var card = document.createElement('div'); card.className = 'cs-editor-card cs-animate';
+    /* Deletion banner */
+    if (post.deletion_requested_at) {
+      var banner = document.createElement('div'); banner.className = 'cs-deletion-banner';
+      var bText = document.createElement('div'); bText.className = 'cs-deletion-banner-text'; bText.textContent = 'Silme talebi g\u00f6nderildi (' + formatDate(post.deletion_requested_at) + '). Admin onay\u0131 bekleniyor.'; banner.appendChild(bText);
+      var cBtn = document.createElement('button'); cBtn.className = 'cs-deletion-banner-btn'; cBtn.textContent = 'Talebi \u0130ptal Et'; cBtn.addEventListener('click', function() { cancelDeletionRequest(post.id); }); banner.appendChild(cBtn);
+      card.appendChild(banner);
+    }
+    if (post.cover_image_url) { var ci = document.createElement('img'); ci.className = 'cs-pub-cover'; ci.src = post.cover_image_url; ci.alt = post.cover_image_alt || ''; card.appendChild(ci); }
+    if (post.category && CATEGORY_MAP[post.category]) { var cPill = document.createElement('span'); cPill.className = 'cs-badge cs-badge-published'; cPill.style.cssText = 'background:var(--verm-light);color:var(--verm);'; cPill.textContent = CATEGORY_MAP[post.category]; card.appendChild(cPill); }
+    var title = document.createElement('div'); title.className = 'cs-pub-title'; title.textContent = post.title; card.appendChild(title);
+    var meta = document.createElement('div'); meta.className = 'cs-pub-meta';
+    meta.appendChild(makeSpan('Yay\u0131n: ' + formatDate(post.published_at)));
+    meta.appendChild(makeSpan('\u00b7'));
+    meta.appendChild(makeSpan('\u2661 ' + (post.like_count || 0) + ' be\u011feni'));
+    if (post.related_role) { meta.appendChild(makeSpan('\u00b7')); meta.appendChild(makeSpan(post.related_role)); }
+    card.appendChild(meta);
+    if (post.excerpt) { var exc = document.createElement('div'); exc.style.cssText = 'font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:16px;font-style:italic;padding-bottom:16px;border-bottom:1px solid var(--border);'; exc.textContent = post.excerpt; card.appendChild(exc); }
+    var bd = document.createElement('div'); bd.className = 'cs-pub-body'; bd.textContent = post.body; card.appendChild(bd);
+    /* Share bar */
+    card.appendChild(buildShareBar(post));
+    /* Actions */
+    var actions = document.createElement('div'); actions.className = 'cs-actions'; actions.style.marginTop = '16px';
+    if (!post.deletion_requested_at) {
+      var delBtn = document.createElement('button'); delBtn.className = 'cs-btn cs-btn-danger cs-btn-sm'; delBtn.textContent = 'Silme Talebi G\u00f6nder'; delBtn.addEventListener('click', function() { requestDeletion(post.id); }); actions.appendChild(delBtn);
+    }
+    var backBtn = document.createElement('button'); backBtn.className = 'cs-btn cs-btn-ghost cs-btn-sm'; backBtn.textContent = 'Listeye D\u00f6n';
+    backBtn.addEventListener('click', function() { area.style.display = 'none'; renderPublishedTab(); }); actions.appendChild(backBtn);
+    card.appendChild(actions);
+    var mEl = document.createElement('div'); mEl.className = 'cs-msg'; mEl.id = 'cs-pub-msg'; card.appendChild(mEl);
+    area.appendChild(card);
+  }
+
+  /* ══ SHARE TOOLS ══ */
+  function buildShareBar(post) {
+    var bar = document.createElement('div'); bar.className = 'cs-share-bar';
+    var label = document.createElement('div'); label.className = 'cs-share-label'; label.textContent = 'Payla\u015f'; bar.appendChild(label);
+    var shareUrl = 'https://hellotalent.ai';
+    var shareText = buildShareText(post);
+    /* WhatsApp — supports text+link natively */
+    bar.appendChild(makeShareBtn('WhatsApp', function() { window.open('https://wa.me/?text=' + encodeURIComponent(shareText + '\n\n' + shareUrl), '_blank'); }));
+    /* LinkedIn — sharing API only supports URL; text must be copied separately */
+    bar.appendChild(makeShareBtn('LinkedIn', function() { window.open('https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent(shareUrl), '_blank'); copyToClipboard(shareText); }));
+    /* Facebook */
+    bar.appendChild(makeShareBtn('Facebook', function() { window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(shareUrl), '_blank'); }));
+    /* Copy share text */
+    bar.appendChild(makeShareBtn('Metni Kopyala', function() { copyToClipboard(shareText + '\n\n' + shareUrl); }));
+    return bar;
+  }
+
+  function buildShareText(post) {
+    var coach = _coachProfile.display_name || '';
+    var title = post.title || '';
+    return coach + ' olarak HelloTalent\'ta "\u201C' + title + '\u201D" ba\u015fl\u0131kl\u0131 yaz\u0131m\u0131 payla\u015f\u0131yorum.\n\nPerakende ve ma\u011faza profesyonellerine y\u00f6nelik i\u00e7erikler i\u00e7in HelloTalent\'\u0131 ke\u015ffedin.';
+  }
+
+  function copyToClipboard(text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).catch(function() {});
+    }
+  }
+
+  function makeShareBtn(label, handler) {
+    var btn = document.createElement('button'); btn.className = 'cs-share-btn';
+    var txt = document.createElement('span'); txt.textContent = label; btn.appendChild(txt);
+    btn.addEventListener('click', handler);
+    return btn;
+  }
+
+  /* ══ DELETION REQUEST ══ */
+  async function requestDeletion(postId) {
+    var confirmed = window.confirm('Bu yaz\u0131 i\u00e7in silme talebi g\u00f6ndermek istedi\u011finize emin misiniz? Admin onay\u0131 gereklidir.');
+    if (!confirmed) return;
+    var msgEl = document.getElementById('cs-pub-msg');
+    try {
+      var res = await _supa.rpc('request_coach_post_deletion', { p_post_id: postId });
+      if (res.error) { showMsg(msgEl, 'Hata: ' + res.error.message, 'error'); return; }
+      showMsg(msgEl, 'Silme talebi g\u00f6nderildi.', 'success');
+      await loadPosts(); openPublishedDetail(postId);
+    } catch (e) { console.error('Deletion request error:', e); showMsg(msgEl, 'Talep g\u00f6nderilemedi.', 'error'); }
+  }
+
+  async function cancelDeletionRequest(postId) {
+    var msgEl = document.getElementById('cs-pub-msg');
+    try {
+      var res = await _supa.rpc('cancel_coach_post_deletion_request', { p_post_id: postId });
+      if (res.error) { showMsg(msgEl, 'Hata: ' + res.error.message, 'error'); return; }
+      showMsg(msgEl, 'Silme talebi iptal edildi.', 'success');
+      await loadPosts(); openPublishedDetail(postId);
+    } catch (e) { console.error('Cancel deletion error:', e); showMsg(msgEl, '\u0130ptal edilemedi.', 'error'); }
+  }
+
+  /* ══ NEW POST ══ */
+  async function createNewPost() {
+    try {
+      var res = await _supa.from('coach_posts').insert({ coach_id: _coachProfile.id, title: 'Yeni Yaz\u0131', body: '', category: 'mulakat_ipucu', status: 'draft' }).select('id').maybeSingle();
+      if (res.error) { console.error('Create post error:', res.error); return; }
+      if (res.data) { await loadPosts(); openEditor(res.data.id); }
+    } catch (e) { console.error('Create post exception:', e); }
+  }
+
+  /* ══ HELPERS ══ */
   function buildField(label, type, id, value, maxLen, hint, rows) {
-    var wrap = document.createElement('div');
-    wrap.className = 'cs-field';
-    var lbl = document.createElement('label');
-    lbl.textContent = label;
-    wrap.appendChild(lbl);
-
+    var wrap = document.createElement('div'); wrap.className = 'cs-field';
+    var lbl = document.createElement('label'); lbl.textContent = label; wrap.appendChild(lbl);
     var input;
-    if (type === 'textarea') {
-      input = document.createElement('textarea');
-      if (rows) input.rows = rows;
-      input.textContent = value;
-    } else {
-      input = document.createElement('input');
-      input.type = 'text';
-      input.value = value;
-    }
-    input.id = id;
-    if (maxLen) input.maxLength = maxLen;
-    wrap.appendChild(input);
-
-    if (hint) {
-      var hintEl = document.createElement('div');
-      hintEl.className = 'cs-field-hint';
-      hintEl.textContent = hint;
-      wrap.appendChild(hintEl);
-    }
+    if (type === 'textarea') { input = document.createElement('textarea'); if (rows) input.rows = rows; input.textContent = value; }
+    else { input = document.createElement('input'); input.type = 'text'; input.value = value; }
+    input.id = id; if (maxLen) input.maxLength = maxLen; wrap.appendChild(input);
+    if (hint) { var h = document.createElement('div'); h.className = 'cs-field-hint'; h.textContent = hint; wrap.appendChild(h); }
     return wrap;
   }
 
   function buildSelectField(label, id, options, selected) {
-    var wrap = document.createElement('div');
-    wrap.className = 'cs-field';
-    var lbl = document.createElement('label');
-    lbl.textContent = label;
-    wrap.appendChild(lbl);
-
-    var sel = document.createElement('select');
-    sel.id = id;
-    for (var i = 0; i < options.length; i++) {
-      var opt = document.createElement('option');
-      opt.value = options[i].value;
-      opt.textContent = options[i].label;
-      if (options[i].value === selected) opt.selected = true;
-      sel.appendChild(opt);
-    }
-    wrap.appendChild(sel);
-    return wrap;
+    var wrap = document.createElement('div'); wrap.className = 'cs-field';
+    var lbl = document.createElement('label'); lbl.textContent = label; wrap.appendChild(lbl);
+    var sel = document.createElement('select'); sel.id = id;
+    for (var i = 0; i < options.length; i++) { var opt = document.createElement('option'); opt.value = options[i].value; opt.textContent = options[i].label; if (options[i].value === selected) opt.selected = true; sel.appendChild(opt); }
+    wrap.appendChild(sel); return wrap;
   }
 
-  /* ── SAVE POST ── */
-  /* ── COVER IMAGE UPLOAD ── */
-  async function handleCoverUpload(postId) {
-    var input = document.getElementById('cs-cover-input');
-    var msgEl = document.getElementById('cs-cover-msg');
-    var altEl = document.getElementById('cs-f-cover-alt');
-    var rightsEl = document.getElementById('cs-cover-rights');
+  function showMsg(el, text, type) { if (!el) return; el.textContent = text; el.className = 'cs-msg ' + type; if (type !== 'info') setTimeout(function() { el.className = 'cs-msg'; el.textContent = ''; }, 4000); }
+  function formatDate(d) { if (!d) return '-'; var dt = new Date(d); return dt.toLocaleDateString('tr-TR', { day: 'numeric', month: 'short', year: 'numeric' }); }
+  function makeSpan(text) { var s = document.createElement('span'); s.textContent = text; return s; }
+  function clear(el) { while (el && el.firstChild) el.removeChild(el.firstChild); }
 
-    if (!input || !input.files || !input.files.length) return;
-    if (!rightsEl || !rightsEl.checked) { showMsg(msgEl, 'Gorsel hakki onaylanmali.', 'error'); return; }
-
-    var altText = altEl ? altEl.value.trim() : '';
-    if (!altText) { showMsg(msgEl, 'Alt metin (gorsel aciklamasi) gereklidir.', 'error'); return; }
-
-    var file = input.files[0];
-    if (file.size > 5 * 1024 * 1024) { showMsg(msgEl, 'Dosya 5MB\'dan kucuk olmali.', 'error'); return; }
-    var ext = file.name.split('.').pop().toLowerCase();
-    if (['jpg','jpeg','png','webp'].indexOf(ext) === -1) { showMsg(msgEl, 'Sadece JPG, PNG veya WebP.', 'error'); return; }
-
-    var path = 'coach_covers/' + postId + '/' + Date.now() + '_cover.' + ext;
-    try {
-      showMsg(msgEl, 'Yukleniyor...', 'info');
-      var upRes = await _supa.storage.from('cvs').upload(path, file, { upsert: true, cacheControl: '3600', contentType: file.type });
-      if (upRes.error) { showMsg(msgEl, 'Yukleme hatasi: ' + upRes.error.message, 'error'); return; }
-      var publicUrl = _supa.storage.from('cvs').getPublicUrl(path).data.publicUrl;
-      var cleanUrl = publicUrl.split('?')[0];
-      var dbRes = await _supa.from('coach_posts').update({ cover_image_url: cleanUrl, cover_image_alt: altText }).eq('id', postId);
-      if (dbRes.error) { showMsg(msgEl, 'Kayit hatasi: ' + dbRes.error.message, 'error'); return; }
-      var preview = document.getElementById('cs-cover-preview');
-      if (preview) { preview.src = cleanUrl + '?t=' + Date.now(); }
-      showMsg(msgEl, 'Kapak gorseli guncellendi.', 'success');
-    } catch (e) {
-      console.error('Cover upload error:', e);
-      showMsg(msgEl, 'Yukleme hatasi.', 'error');
-    }
-  }
-
-  async function savePost(postId, submit) {
-    var titleEl = document.getElementById('cs-f-title');
-    var excerptEl = document.getElementById('cs-f-excerpt');
-    var bodyEl = document.getElementById('cs-f-body');
-    var catEl = document.getElementById('cs-f-category');
-    var roleEl = document.getElementById('cs-f-role');
-    var msgEl = document.getElementById('cs-editor-msg');
-
-    if (!titleEl || !bodyEl) return;
-    var title = titleEl.value.trim();
-    var body = bodyEl.value.trim();
-    if (!title) { showMsg(msgEl, 'Baslik gereklidir.', 'error'); return; }
-    if (!body) { showMsg(msgEl, 'Icerik gereklidir.', 'error'); return; }
-
-    var coverAltEl = document.getElementById('cs-f-cover-alt');
-    var coverAltVal = coverAltEl ? coverAltEl.value.trim() : '';
-    /* If post has a cover image, alt text is required */
-    var hasCover = !!document.getElementById('cs-cover-preview');
-    if (hasCover && !coverAltVal) {
-      showMsg(msgEl, 'Kapak gorseli icin alt metin (gorsel aciklamasi) zorunludur.', 'error');
-      if (coverAltEl) coverAltEl.focus();
-      return;
-    }
-    var updates = {
-      title: title,
-      excerpt: excerptEl ? excerptEl.value.trim() : '',
-      body: body,
-      category: catEl ? catEl.value : 'mulakat_ipucu',
-      related_role: roleEl && roleEl.value ? roleEl.value : null,
-      cover_image_alt: coverAltVal || null
-    };
-    if (submit) updates.status = 'submitted';
-
-    try {
-      var res = await _supa.from('coach_posts').update(updates).eq('id', postId);
-      if (res.error) { showMsg(msgEl, 'Hata: ' + res.error.message, 'error'); return; }
-      showMsg(msgEl, submit ? 'Incelemeye gonderildi.' : 'Kaydedildi.', 'success');
-      await loadPosts();
-      if (submit) openPost(postId);
-    } catch (e) {
-      console.error('Save error:', e);
-      showMsg(msgEl, 'Kaydetme hatasi.', 'error');
-    }
-  }
-
-  /* ── NEW POST ── */
-  async function createNewPost() {
-    try {
-      var res = await _supa.from('coach_posts').insert({
-        coach_id: _coachProfile.id, title: 'Yeni Yazi', body: '', category: 'mulakat_ipucu', status: 'draft'
-      }).select('id').maybeSingle();
-      if (res.error) { console.error('Create post error:', res.error); return; }
-      if (res.data) { await loadPosts(); openPost(res.data.id); }
-    } catch (e) { console.error('Create post exception:', e); }
-  }
-
-  function showMsg(el, text, type) {
-    if (!el) return;
-    el.textContent = text;
-    el.className = 'cs-msg ' + type;
-    setTimeout(function() { el.className = 'cs-msg'; el.textContent = ''; }, 4000);
-  }
-
-  document.getElementById('cs-new-post').addEventListener('click', createNewPost);
-  document.getElementById('cs-logout').addEventListener('click', async function() {
-    await _supa.auth.signOut();
-    window.location.replace('giris.html');
-  });
-
+  /* Init */
+  document.getElementById('cs-logout').addEventListener('click', async function() { await _supa.auth.signOut(); window.location.replace('giris.html'); });
   init();
 })();
 </script>

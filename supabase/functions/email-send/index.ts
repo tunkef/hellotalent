@@ -203,6 +203,9 @@ function renderTemplate(
     case "coach_post_published":
     case "coach_post_changes_requested":
     case "coach_post_rejected":
+    case "coach_post_archived":
+    case "coach_post_deletion_requested":
+    case "coach_post_deletion_dismissed":
       return coachPostNotificationTemplate(payload);
     default:
       throw new Error(`Unknown email_type: ${emailType}`);
@@ -522,8 +525,10 @@ function coachPostNotificationTemplate(p: Payload): EmailContent {
   const greeting = name ? `Merhaba ${name}` : "Merhaba";
   const greetingPlain = p.coach_name ? `Merhaba ${p.coach_name}` : "Merhaba";
   const studioUrl = p.studio_url || "https://hellotalent.ai/coach-studio.html";
-  const adminNote = p.admin_note ? esc(p.admin_note) : "";
-  const adminNotePlain = p.admin_note || "";
+  /* Suppress internal sentinel value from being displayed as a real admin note */
+  const isInternalNote = p.admin_note === "__deletion_approved__";
+  const adminNote = (p.admin_note && !isInternalNote) ? esc(p.admin_note) : "";
+  const adminNotePlain = (p.admin_note && !isInternalNote) ? p.admin_note : "";
 
   let subject = "";
   let statusMsg = "";
@@ -532,8 +537,8 @@ function coachPostNotificationTemplate(p: Payload): EmailContent {
 
   if (p.status === "published") {
     subject = `Yaz\u0131n\u0131z Yay\u0131nland\u0131: ${p.post_title || ""}`;
-    statusMsg = `<strong>\u201C${title}\u201D</strong> ba\u015fl\u0131kl\u0131 yaz\u0131n\u0131z ba\u015far\u0131yla yay\u0131nland\u0131. Art\u0131k adaylar taraf\u0131ndan okunabilir.`;
-    statusMsgPlain = `"${p.post_title || ""}" baslikli yaziniz yayinlandi.`;
+    statusMsg = `<strong>\u201C${title}\u201D</strong> ba\u015fl\u0131kl\u0131 yaz\u0131n\u0131z ba\u015far\u0131yla yay\u0131nland\u0131! Art\u0131k adaylar taraf\u0131ndan okunabilir.<br><br>Yaz\u0131n\u0131z\u0131 sosyal medyada payla\u015farak daha fazla okuyucuya ula\u015fabilirsiniz. Ko\u00e7 Studio\u2019daki <strong>Yay\u0131nda</strong> sekmesinden WhatsApp, LinkedIn ve Facebook payla\u015f\u0131m ara\u00e7lar\u0131n\u0131 kullanabilirsiniz.`;
+    statusMsgPlain = `"${p.post_title || ""}" baslikli yaziniz yayinlandi! Yazinizi sosyal medyada paylasarak daha fazla okuyucuya ulasabilirsiniz. Koc Studio'daki Yayinda sekmesinden paylasim araclarini kullanabilirsiniz.`;
     statusColor = "#10B981";
   } else if (p.status === "changes_requested") {
     subject = `D\u00FCzeltme Istendi: ${p.post_title || ""}`;
@@ -545,6 +550,28 @@ function coachPostNotificationTemplate(p: Payload): EmailContent {
     statusMsg = `<strong>\u201C${title}\u201D</strong> ba\u015fl\u0131kl\u0131 yaz\u0131n\u0131z bu a\u015famada yay\u0131nlanmad\u0131. Daha fazla bilgi i\u00e7in a\u015fa\u011f\u0131daki notu inceleyebilirsiniz.`;
     statusMsgPlain = `"${p.post_title || ""}" baslikli yaziniz yayinlanmadi.`;
     statusColor = "#EF4444";
+  } else if (p.status === "archived") {
+    const isDeletionApproval = p.admin_note === "__deletion_approved__";
+    subject = isDeletionApproval
+      ? `Silme Talebiniz Onayland\u0131: ${p.post_title || ""}`
+      : `Yaz\u0131n\u0131z Ar\u015fivlendi: ${p.post_title || ""}`;
+    statusMsg = isDeletionApproval
+      ? `<strong>\u201C${title}\u201D</strong> ba\u015fl\u0131kl\u0131 yaz\u0131n\u0131z i\u00e7in g\u00f6nderdi\u011finiz silme talebi onayland\u0131. Yaz\u0131n\u0131z ar\u015fivlendi ve art\u0131k feed\u2019de g\u00f6r\u00fcnm\u00fcyor.`
+      : `<strong>\u201C${title}\u201D</strong> ba\u015fl\u0131kl\u0131 yaz\u0131n\u0131z ar\u015fivlendi ve art\u0131k feed\u2019de g\u00f6r\u00fcnm\u00fcyor.`;
+    statusMsgPlain = isDeletionApproval
+      ? `"${p.post_title || ""}" baslikli yaziniz icin silme talebiniz onaylandi. Yaziniz arsivlendi.`
+      : `"${p.post_title || ""}" baslikli yaziniz arsivlendi ve artik feed'de gorunmuyor.`;
+    statusColor = "#6B7280";
+  } else if (p.status === "deletion_requested") {
+    subject = `Silme Talebi Al\u0131nd\u0131: ${p.post_title || ""}`;
+    statusMsg = `<strong>\u201C${title}\u201D</strong> ba\u015fl\u0131kl\u0131 yaz\u0131n\u0131z i\u00e7in silme talebi al\u0131nd\u0131. Talebiniz en k\u0131sa s\u00fcrede de\u011ferlendirilecektir.`;
+    statusMsgPlain = `"${p.post_title || ""}" baslikli yaziniz icin silme talebi alindi. Talebiniz en kisa surede degerlendirilecektir.`;
+    statusColor = COLORS.navy;
+  } else if (p.status === "deletion_dismissed") {
+    subject = `Silme Talebiniz Reddedildi: ${p.post_title || ""}`;
+    statusMsg = `<strong>\u201C${title}\u201D</strong> ba\u015fl\u0131kl\u0131 yaz\u0131n\u0131z i\u00e7in g\u00f6nderdi\u011finiz silme talebi reddedildi. Yaz\u0131n\u0131z yay\u0131nda kalmaya devam edecektir.`;
+    statusMsgPlain = `"${p.post_title || ""}" baslikli yaziniz icin silme talebiniz reddedildi. Yaziniz yayinda kalmaya devam edecektir.`;
+    statusColor = COLORS.verm;
   }
 
   const noteBlock = adminNote
@@ -560,7 +587,7 @@ ${logoRow()}
 <h1 style="margin:0;font-family:'Bricolage Grotesque',Georgia,serif;font-size:22px;color:${COLORS.navy};font-weight:700;">${greeting}</h1>
 </td></tr>
 <tr><td style="padding:16px 32px;font-size:15px;color:${COLORS.text};line-height:1.6;">
-<div style="display:inline-block;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700;color:#fff;background:${statusColor};margin-bottom:12px;">${p.status === "published" ? "Yay\u0131nda" : p.status === "changes_requested" ? "D\u00FCzeltme Gerekli" : "Reddedildi"}</div>
+<div style="display:inline-block;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700;color:#fff;background:${statusColor};margin-bottom:12px;">${p.status === "published" ? "Yay\u0131nda" : p.status === "changes_requested" ? "D\u00FCzeltme Gerekli" : p.status === "archived" ? "Ar\u015fivlendi" : p.status === "deletion_dismissed" ? "Talep Reddedildi" : p.status === "deletion_requested" ? "Silme Talebi" : "Reddedildi"}</div>
 <p style="margin:0 0 16px;">${statusMsg}</p>
 </td></tr>
 ${noteBlock}

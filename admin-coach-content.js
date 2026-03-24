@@ -27,7 +27,9 @@
   var NOTIF_EMAIL_TYPES = {
     published: 'coach_post_published',
     changes_requested: 'coach_post_changes_requested',
-    rejected: 'coach_post_rejected'
+    rejected: 'coach_post_rejected',
+    archived: 'coach_post_archived',
+    deletion_dismissed: 'coach_post_deletion_dismissed'
   };
 
   /* ── HELPERS ── */
@@ -503,9 +505,9 @@
     var supa = window._htAdminSupa;
 
     try {
-      var query = supa.from('coach_posts')
-        .select('*, coach_profiles(display_name, title, avatar_url, bio_short, sector_background, experience_years)')
-        .order('updated_at', { ascending: false });
+      /* Defensive two-tier query: deletion_requested_at may not exist pre-migration */
+      var selectCols = '*, deletion_requested_at, coach_profiles(display_name, title, avatar_url, bio_short, sector_background, experience_years)';
+      var query = supa.from('coach_posts').select(selectCols).order('updated_at', { ascending: false });
 
       if (_postsFilter === 'submitted') {
         query = query.in('status', ['submitted', 'changes_requested']);
@@ -514,6 +516,14 @@
       }
 
       var res = await query;
+      /* Fallback: if query fails because deletion_requested_at column doesn't exist yet */
+      if (res.error && res.error.message && res.error.message.indexOf('deletion_requested_at') !== -1) {
+        var fallbackCols = '*, coach_profiles(display_name, title, avatar_url, bio_short, sector_background, experience_years)';
+        query = supa.from('coach_posts').select(fallbackCols).order('updated_at', { ascending: false });
+        if (_postsFilter === 'submitted') query = query.in('status', ['submitted', 'changes_requested']);
+        else if (_postsFilter === 'published') query = query.eq('status', 'published');
+        res = await query;
+      }
       while (container.firstChild) container.removeChild(container.firstChild);
 
       // Filter tabs
@@ -630,9 +640,27 @@
     }
 
     if (post.status === 'published') {
+      /* Show deletion request indicator if coach requested deletion */
+      if (post.deletion_requested_at) {
+        var delReqBadge = el('span', 'acc-badge acc-badge-changes_requested', 'Silme Talebi');
+        delReqBadge.style.cssText = 'margin-right:6px;background:#FEF3C7;color:#92400E;';
+        actionRow.appendChild(delReqBadge);
+      }
       var archiveBtn = el('button', 'acc-btn-sm acc-btn-ghost', 'Arsivle');
-      archiveBtn.addEventListener('click', function() { updatePostStatus(post.id, 'archived', null, parentContainer); });
+      var _postHadDeletionReq = !!post.deletion_requested_at;
+      archiveBtn.addEventListener('click', function() {
+        var confirmed = window.confirm('Bu yaziyi arsivlemek istediginize emin misiniz? Feed\'den kaldirilacak.');
+        if (!confirmed) return;
+        /* Signal to email template whether this archive is a deletion approval or a normal archive */
+        var archiveNote = _postHadDeletionReq ? '__deletion_approved__' : null;
+        updatePostStatus(post.id, 'archived', archiveNote, parentContainer);
+      });
       actionRow.appendChild(archiveBtn);
+      if (post.deletion_requested_at) {
+        var dismissBtn = el('button', 'acc-btn-sm acc-btn-ghost', 'Talebi Reddet');
+        dismissBtn.addEventListener('click', function() { dismissDeletionRequest(post.id, parentContainer); });
+        actionRow.appendChild(dismissBtn);
+      }
     }
 
     card.appendChild(actionRow);
@@ -646,10 +674,17 @@
     var updates = { status: newStatus };
     if (adminNote !== null && adminNote !== undefined) updates.admin_note = adminNote;
     if (newStatus === 'published') updates.published_at = new Date().toISOString();
+    /* Clear deletion request when archiving (deletion approved) — best effort, column may not exist pre-migration */
+    var _clearDeletionOnArchive = (newStatus === 'archived');
 
     try {
       var res = await supa.from('coach_posts').update(updates).eq('id', postId);
       if (res.error) { console.error('Update post error:', res.error); return; }
+
+      /* Clear deletion_requested_at on archive — separate update, best effort (column may not exist pre-migration) */
+      if (_clearDeletionOnArchive) {
+        supa.from('coach_posts').update({ deletion_requested_at: null }).eq('id', postId).then(function() {}).catch(function() {});
+      }
 
       /* Enqueue coach notification email (best effort) */
       enqueueCoachNotification(postId, newStatus, adminNote);
@@ -683,6 +718,24 @@
     var note = prompt(targetStatus === 'rejected' ? 'Reddetme nedeni:' : 'Duzeltme notu:');
     if (note === null) return;
     updatePostStatus(postId, targetStatus, note.trim(), container);
+  }
+
+  /* ── DISMISS DELETION REQUEST ── */
+  async function dismissDeletionRequest(postId, container) {
+    var confirmed = window.confirm('Silme talebini reddetmek istediginize emin misiniz? Koc bilgilendirilecek.');
+    if (!confirmed) return;
+    var supa = window._htAdminSupa;
+    try {
+      var res = await supa.from('coach_posts')
+        .update({ deletion_requested_at: null })
+        .eq('id', postId);
+      if (res.error) { console.error('Dismiss deletion error:', res.error); return; }
+      /* Notify coach that deletion request was dismissed */
+      enqueueCoachNotification(postId, 'deletion_dismissed', null);
+      loadPosts(container);
+    } catch (e) {
+      console.error('Dismiss deletion error:', e);
+    }
   }
 
   async function updatePendingBadge() {

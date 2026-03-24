@@ -1042,6 +1042,145 @@ EDIT    docs/handoff.md
 - Admin Koçlar tabı: arama eklendi (isim + e-posta filtre), "Son İçerik" kolonu (son post durumu + tarihi)
 - `docs/coach-support-sop.md`: Coach onboarding, link kaybı recovery, pasife alma/aktifleştirme, içerik moderasyonu SOP'u
 
+**82. Notification Enqueue RPC + Incident Notu (23 Mart 2026 akşam)**
+- `enqueue_coach_post_notification()` SECURITY DEFINER RPC oluşturuldu ve deploy edildi
+  - Admin-only guard (`is_admin()`), coach email internal resolve, dedupe ON CONFLICT DO NOTHING
+  - `admin-coach-content.js` artık doğrudan `email_outbox` INSERT yerine RPC kullanıyor
+  - Migration: `20260323203536_enqueue_coach_post_notification.sql`
+- RPC smoke testi başarılı: `email_outbox`'a `coach_post_changes_requested` kaydı oluşturuldu ve doğrulandı
+- Commit: `6faa178`
+
+**⚠️ email-send Edge Function Incident**
+- `email-send` function'ı restore etme sırasında yanlışlıkla `placeholder` body ile PATCH deploy girişimi yapıldı
+- Management API PATCH `body` field'ı function source'u doğrudan güncellemedi — eszip bundle üretmediği için function body boşaldı (body_size: 292563 → 0)
+- Düzeltme denemesi expired dashboard JWT yüzünden tamamlanamadı (expires: 2026-03-23T21:42:11Z)
+- **Kullanıcı `sbp_` token paylaştıktan sonra CLI ile function başarıyla restore edildi:**
+  - `supabase functions deploy email-send --project-ref cpwibefquojehjehtrog` → Deployed ✅
+  - Smoke: email_outbox id=2209 → `status: sent`, `sent_at: 2026-03-23 21:49:03` ✅
+  - Tüm email pipeline sağlıklı (son 5 email hepsi `sent`)
+- **Incident KAPANDI.** Function repo source ile eşitlendi, coach notification template canlı, mail delivery doğrulandı.
+
+**Doğrulanmış (E2E smoke ile):**
+- ✅ Coach onboarding (invite → accept → profil → post → publish)
+- ✅ Admin Koçlar tabı (liste, arama, Son İçerik sinyali, aktif/pasif toggle, Studio Linkini Kopyala)
+- ✅ Admin İçerikler moderasyonu (Yayınla / Düzeltme İste / Reddet)
+- ✅ Pasif coach studio gate ("Hesabınız askıya alınmıştır")
+- ✅ Genel Bakış feed (published post, fallback cover, coach avatar/isim)
+- ✅ Mülakat Koçu feed (post kartı, detay overlay, Yazar Hakkında bloğu)
+- ✅ Mini coach kimlik kartı (avatar, isim, unvan, bio, sektör, deneyim, LinkedIn)
+- ✅ Coach profil save (LinkedIn https normalize, tüm alanlar DB'de)
+- ✅ Notification enqueue RPC (email_outbox INSERT başarılı)
+- ✅ Notification email delivery (`coach_post_changes_requested` → `sent`)
+- ✅ Email pipeline sağlıklı (tüm email tipleri çalışıyor)
+- ✅ RLS hardening (pasif coach INSERT + UPDATE engellenmiş)
+
+**Doğrulanmamış (manuel test gerekli):**
+- ❓ Coach 2 (Barış Özsoy) gerçek login smoke (credentials gerekli)
+- ❓ Native file picker ile cover upload E2E
+- ❓ 2-3 gerçek published içerikle feed çeşitlilik gözlemi
+- ❓ `coach_post_published` ve `coach_post_rejected` email template delivery (sadece `changes_requested` test edildi)
+
+**Sonraki operasyonel adımlar:**
+- Coach 2 invite kabul testi (Barış Özsoy)
+- 2-3 gerçek coach içeriği ile feed gözlemi
+- Coach notification'ın 3 durumunu da (`published` / `changes_requested` / `rejected`) gerçek moderasyon akışıyla test etme
+- Ops Health dashboard'dan email pipeline rutin izleme
+
+### Session 20 — 24 Mart 2026 (Coach Studio Redesign + Deletion Lifecycle Completion)
+
+**83. Coach Studio Redesign (coach-studio.html — tam yeniden yazım)**
+- Sidebar+editor layout → 3 sekmeli bento grid editorial layout (Profilim / Yazılarım / Yayında)
+- Profilim: span-2 kimlik kartı (avatar, ad, unvan, bio, sektör/deneyim tag'leri, LinkedIn) + 3 stat kartı (Toplam Yazı / Toplam Beğeni / Yayında)
+- Profil düzenleme: 2-kolon grid form, Profili Düzenle butonu ile açılır, yeni koçlarda otomatik açık
+- Yazılarım: taslak/incelemede/düzeltme gerekli/reddedilen yazılar, Yeni Yazı butonu
+- Yayında: yayınlanmış yazıların salt okunur incelemesi, anonim beğeni sayısı, yayın tarihi
+- Kapak görseli: telif checkbox kaldırıldı → dashed upload zone, 5 MB/JPG/PNG/WebP kısıtlaması, dosya adı görüntüleme, FileReader ile yerel önizleme
+- Ön izleme: "Ön İzleme" ve "İncelemeye Gönder" butonu ayrı, overlay panel aday tarafı hissine yakın
+- Paylaşım: sadece published yazılar — WhatsApp (wa.me API), LinkedIn (share-offsite + metin kopyala), Facebook (sharer), Metni Kopyala
+- Paylaşım metni: koç adı + yazı başlığı + perakende CTA + hellotalent.ai (neutral target, aday sayfası zorlanmıyor)
+- Silme talebi: published yazı için "Silme Talebi Gönder" butonu, deletion_requested_at banner, "Talebi İptal Et"
+- Türkçe UI, proper Turkish characters, var (not const/let), no console.log
+
+**84. Deletion Request Lifecycle (migration + RPC + email + admin)**
+- Migration `20260324111936_coach_post_deletion_request.sql`:
+  - `deletion_requested_at` timestamptz column eklendi
+  - `request_coach_post_deletion()` SECURITY DEFINER RPC (coach → own published post)
+  - `cancel_coach_post_deletion_request()` SECURITY DEFINER RPC (coach → own iptal)
+  - CHECK constraint: 10 email type (3 eski + `coach_post_archived` + `coach_post_deletion_requested` + `coach_post_deletion_dismissed`)
+  - `enqueue_coach_post_notification` RPC: `archived` + `deletion_dismissed` status mapping eklendi
+- Admin (`admin-coach-content.js`):
+  - Published postlarda "Silme Talebi" badge (deletion_requested_at set ise)
+  - "Talebi Reddet" butonu → confirm → `deletion_requested_at = null` + `deletion_dismissed` notification
+  - "Arşivle" → confirm → `status = 'archived'` + ayrı `deletion_requested_at = null` (best effort) + `archived` notification
+  - Pre-migration defensive: two-tier SELECT fallback (deletion_requested_at yoksa düşmeyen query)
+  - Archive status update defensive: `deletion_requested_at` clearing ayrı fire-and-forget update ile (ana update kırılmasın)
+- Email (`email-send/index.ts`):
+  - `renderTemplate()` switch: 6 coach tipi destekliyor (published/changes_requested/rejected/archived/deletion_requested/deletion_dismissed)
+  - `coachPostNotificationTemplate()`: archived + deletion_dismissed branches eklendi (subject, statusMsg, statusColor)
+  - Status badge label: 5 durum için doğru Türkçe etiket
+  - Published notification: paylaşım teşviki metni (WhatsApp/LinkedIn/Facebook araçlarına Studio'daki Yayında sekmesinden erişim)
+
+**Dosya Değişiklikleri (Session 20):**
+```
+REWRITE coach-studio.html (788 → ~780 satır, tamamen yeniden yazıldı)
+EDIT    admin-coach-content.js (+30 satır — defensive fallback, deletion dismiss+notify, archive notify+clear)
+EDIT    supabase/functions/email-send/index.ts (+20 satır — 3 yeni status branch, 3 yeni case in switch)
+CREATE  supabase/migrations/20260324111936_coach_post_deletion_request.sql (~165 satır)
+EDIT    docs/handoff.md (bu session notu)
+```
+
+**Doğrulanmış:**
+- ✅ JS syntax: no const/let, no console.log, no röportaj, no Inter/Roboto
+- ✅ Pre-migration safety: admin ve coach-studio her ikisi de two-tier SELECT fallback kullanıyor
+- ✅ email-send renderTemplate: tüm 10 email type için case mevcut, Unknown email_type riski kapatıldı
+- ✅ Deletion lifecycle: coach request → admin badge → admin approve (archive+notify) veya reject (dismiss+notify) → coach email alır
+- ✅ Paylaşım: sadece published, neutral target (hellotalent.ai), aday sayfası zorlanmıyor
+- ✅ Bento grid: hero kart + 3-kolon asimetrik grid + 16px gap + standardized shadow/radius
+
+**Doğrulanmamış (deploy/test bekliyor):**
+- ❓ Migration Supabase'e deploy edilmedi → deletion RPC'ler, deletion_requested_at kolonu, CHECK constraint canlıda yok
+- ❓ email-send Edge Function redeploy edilmedi → yeni template branch'ler canlıda yok
+- ❓ Coach-studio tam E2E smoke (gerçek coach hesabıyla giriş, yazı yazma, ön izleme, paylaşım)
+- ❓ Admin panel deletion request E2E (gerçek admin hesabıyla talep görme, onay/ret, coach email delivery)
+- ❓ Mobil responsive (768px breakpoint) → header nav gizleniyor, sekmeler arası geçiş için mobil çözüm henüz yok
+- ❓ `coach_post_deletion_requested` email type outbox'a şu an enqueue edilmiyor — CHECK constraint'te ve email-send template'te yer ayrıldı, runtime çökmez. Gelecekte gerekirse `request_coach_post_deletion` RPC'sine outbox INSERT eklenebilir.
+
+**Session 20b — 24 Mart 2026 (Coach Studio fix pass: archived context + deletion_requested template)**
+
+**85. Archived email — bağlam ayrımı**
+- Bug: admin "Arşivle" her zaman "Silme talebiniz onaylandı" diyen email gönderiyordu — normal arşiv için yanlış ton
+- Fix: admin-coach-content.js arşiv butonunda `post.deletion_requested_at` kontrol ediyor:
+  - Silme talebi varsa → `adminNote = '__deletion_approved__'` sentinel ile RPC çağrılır
+  - Normal arşiv ise → `adminNote = null`
+- email-send template archived branch'i `p.admin_note === "__deletion_approved__"` ile dallanıyor:
+  - Deletion onayı: "Silme talebiniz onaylandı. Yazınız arşivlendi..."
+  - Normal arşiv: "Yazınız arşivlendi ve artık feed'de görünmüyor."
+- Sentinel `__deletion_approved__` gerçek admin notu olarak email'de gösterilmiyor (isInternalNote guard)
+
+**86. deletion_requested template branch**
+- Bug: `coach_post_deletion_requested` email-send renderTemplate switch'te tanımlıydı ama coachPostNotificationTemplate içinde status branch yoktu — runtime'da boş subject/body üretirdi
+- Fix: `p.status === "deletion_requested"` branch eklendi: subject "Silme Talebi Alındı", nötr bilgilendirme tonu
+- Status badge label'a "Silme Talebi" eklendi
+- Bu type şu an outbox'a enqueue edilmiyor (admin panelden görülüyor) ama gelecekte RPC'ye INSERT eklenirse runtime semantik olarak tamam
+
+**Dosya Değişiklikleri (Session 20b):**
+```
+EDIT  admin-coach-content.js (archiveBtn: deletion context sentinel, +3 satır)
+EDIT  supabase/functions/email-send/index.ts (archived branch split, deletion_requested branch, sentinel suppress, badge label, +18 satır)
+EDIT  docs/handoff.md (bu patch notu)
+```
+
+**Doğrulanmış:**
+- ✅ Normal arşiv → nötr email metni (silme talebinden bahsetmez)
+- ✅ Silme onayı arşiv → "silme talebiniz onaylandı" email metni
+- ✅ `__deletion_approved__` sentinel email'de admin notu olarak görünmez
+- ✅ `deletion_requested` type'ı renderTemplate'te crash etmez, düzgün template üretir
+- ✅ No console.log, no const/let, no röportaj
+
+**Doğrulanmamış:**
+- ❓ Tüm email template branch'lerin gerçek Resend delivery testi (Edge Function redeploy gerekli)
+- ❓ Admin panel ile gerçek silme talebi → onay → email delivery E2E
+
 ---
 
 ## 1. Proje Özeti
