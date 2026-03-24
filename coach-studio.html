@@ -196,6 +196,25 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
   .cs-hero-title{font-size:18px;}
 }
 
+/* ── Accordion ── */
+.cs-accordion-header{display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:12px;border:1px solid var(--border);background:var(--bg-surface);cursor:pointer;transition:all 0.15s;user-select:none;margin-bottom:8px;}
+.cs-accordion-header:hover{border-color:var(--verm);background:var(--verm-light);}
+.cs-accordion-header.open{border-color:var(--verm);background:var(--verm-light);}
+.cs-accordion-header-title{flex:1;font-family:'Bricolage Grotesque',sans-serif;font-size:14px;font-weight:700;color:var(--text);}
+.cs-accordion-header-count{font-family:'DM Mono',monospace;font-size:12px;color:var(--muted);font-weight:400;}
+.cs-accordion-chevron{width:20px;height:20px;color:var(--muted);transition:transform 0.2s ease;flex-shrink:0;}
+.cs-accordion-header.open .cs-accordion-chevron{transform:rotate(180deg);}
+.cs-accordion-content{display:none;padding-left:0;margin-bottom:8px;}
+.cs-accordion-content.open{display:block;}
+.cs-post-accordion-row{display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:12px;border:1px solid var(--border);background:var(--bg-surface);margin-bottom:6px;cursor:pointer;transition:all 0.15s;}
+.cs-post-accordion-row:hover{border-color:var(--verm);box-shadow:0 2px 12px rgba(0,0,0,0.06);}
+.cs-post-accordion-row.open{border-color:var(--verm);background:var(--verm-light);}
+.cs-post-accordion-row .cs-post-row-body{flex:1;min-width:0;}
+.cs-post-accordion-row .cs-accordion-chevron{transition:transform 0.2s ease;}
+.cs-post-accordion-row.open .cs-accordion-chevron{transform:rotate(180deg);}
+.cs-post-inline-detail{display:none;padding:0 4px;margin-bottom:10px;}
+.cs-post-inline-detail.open{display:block;animation:slideUp 0.2s ease both;}
+
 /* ── Animations ── */
 @keyframes slideUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
 .cs-animate{animation:slideUp 0.3s ease both;}
@@ -211,7 +230,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
 
 <div class="cs-shell" id="cs-shell">
   <header class="cs-header">
-    <a href="https://hellotalent.ai" class="cs-logo"><span>hello</span>talent</a>
+    <span class="cs-logo"><span>hello</span>talent</span>
     <div class="cs-header-sep"></div>
     <div class="cs-header-label">Koç Studio</div>
     <div class="cs-header-nav" id="cs-nav">
@@ -598,8 +617,12 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
   }
 
   /* ══ DRAFTS TAB ══ */
+  var _draftsAccordionOpen = true;
+  var _expandedDraftId = null;
+
   function renderDraftsTab() {
     _activePostId = null;
+    _expandedDraftId = null;
     var toolbar = document.getElementById('cs-drafts-toolbar');
     var list = document.getElementById('cs-drafts-list');
     var editorArea = document.getElementById('cs-editor-area');
@@ -609,7 +632,153 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
     if (drafts.length === 0) {
       var empty = document.createElement('div'); empty.style.cssText = 'text-align:center;padding:40px 20px;color:var(--muted);font-size:14px;'; empty.textContent = 'Hen\u00fcz taslak yaz\u0131 yok. Yeni bir yaz\u0131 olu\u015fturarak ba\u015flay\u0131n.'; list.appendChild(empty); return;
     }
-    for (var i = 0; i < drafts.length; i++) list.appendChild(buildPostRow(drafts[i], 'drafts'));
+    /* Accordion header */
+    var accHeader = document.createElement('div');
+    accHeader.className = 'cs-accordion-header' + (_draftsAccordionOpen ? ' open' : '');
+    var accTitle = document.createElement('span');
+    accTitle.className = 'cs-accordion-header-title';
+    accTitle.textContent = 'Taslaklar';
+    accHeader.appendChild(accTitle);
+    var accCount = document.createElement('span');
+    accCount.className = 'cs-accordion-header-count';
+    accCount.textContent = '(' + drafts.length + ')';
+    accHeader.appendChild(accCount);
+    accHeader.appendChild(makeChevronSVG());
+    var accContent = document.createElement('div');
+    accContent.className = 'cs-accordion-content' + (_draftsAccordionOpen ? ' open' : '');
+    accHeader.addEventListener('click', function() {
+      _draftsAccordionOpen = !_draftsAccordionOpen;
+      accHeader.classList.toggle('open', _draftsAccordionOpen);
+      accContent.classList.toggle('open', _draftsAccordionOpen);
+    });
+    list.appendChild(accHeader);
+    for (var i = 0; i < drafts.length; i++) {
+      var postWrapper = buildDraftAccordionRow(drafts[i]);
+      accContent.appendChild(postWrapper);
+    }
+    list.appendChild(accContent);
+  }
+
+  function buildDraftAccordionRow(post) {
+    var wrapper = document.createElement('div');
+    var row = document.createElement('div');
+    row.className = 'cs-post-accordion-row';
+    if (post.cover_image_url) {
+      var thumb = document.createElement('img'); thumb.className = 'cs-post-cover-thumb'; thumb.src = post.cover_image_url; thumb.alt = post.cover_image_alt || ''; row.appendChild(thumb);
+    }
+    var body = document.createElement('div'); body.className = 'cs-post-row-body';
+    var title = document.createElement('div'); title.className = 'cs-post-row-title'; title.textContent = post.title || '(Ba\u015fl\u0131ks\u0131z)'; body.appendChild(title);
+    var meta = document.createElement('div'); meta.className = 'cs-post-row-meta';
+    var badge = document.createElement('span'); badge.className = 'cs-badge cs-badge-' + post.status; badge.textContent = STATUS_LABELS[post.status] || post.status; meta.appendChild(badge);
+    var cat = CATEGORY_MAP[post.category]; if (cat) { var cs = document.createElement('span'); cs.textContent = cat; meta.appendChild(cs); }
+    var ds = document.createElement('span'); ds.textContent = formatDate(post.updated_at); meta.appendChild(ds);
+    body.appendChild(meta); row.appendChild(body);
+    row.appendChild(makeChevronSVG());
+    var detail = document.createElement('div');
+    detail.className = 'cs-post-inline-detail';
+    row.addEventListener('click', function() {
+      if (_expandedDraftId === post.id) {
+        _expandedDraftId = null;
+        row.classList.remove('open');
+        detail.classList.remove('open');
+        clear(detail);
+        return;
+      }
+      /* Close any previously open */
+      var prevRows = wrapper.parentNode ? wrapper.parentNode.querySelectorAll('.cs-post-accordion-row.open') : [];
+      for (var j = 0; j < prevRows.length; j++) { prevRows[j].classList.remove('open'); }
+      var prevDetails = wrapper.parentNode ? wrapper.parentNode.querySelectorAll('.cs-post-inline-detail.open') : [];
+      for (var k = 0; k < prevDetails.length; k++) { prevDetails[k].classList.remove('open'); clear(prevDetails[k]); }
+      _expandedDraftId = post.id;
+      _activePostId = post.id;
+      row.classList.add('open');
+      detail.classList.add('open');
+      loadDraftInlineEditor(post.id, detail);
+    });
+    wrapper.appendChild(row);
+    wrapper.appendChild(detail);
+    return wrapper;
+  }
+
+  async function loadDraftInlineEditor(postId, container) {
+    clear(container);
+    var loading = document.createElement('div');
+    loading.style.cssText = 'padding:16px;color:var(--muted);font-size:13px;';
+    loading.textContent = 'Y\u00fckleniyor...';
+    container.appendChild(loading);
+    try {
+      var res = await _supa.from('coach_posts').select('*').eq('id', postId).maybeSingle();
+      if (!res.data) { loading.textContent = 'Yaz\u0131 bulunamad\u0131'; return; }
+      clear(container);
+      renderInlineEditorForm(res.data, container);
+    } catch (e) { console.error('Open draft inline error:', e); loading.textContent = 'Y\u00fckleme hatas\u0131'; }
+  }
+
+  function renderInlineEditorForm(post, container) {
+    _pendingCoverFile = null;
+    var isEditable = post.status === 'draft' || post.status === 'changes_requested';
+    var card = document.createElement('div'); card.className = 'cs-editor-card cs-animate';
+    /* Status */
+    var statusRow = document.createElement('div'); statusRow.style.cssText = 'display:flex;align-items:center;gap:8px;margin-bottom:16px;';
+    var sBadge = document.createElement('span'); sBadge.className = 'cs-badge cs-badge-' + post.status; sBadge.textContent = STATUS_LABELS[post.status] || post.status; statusRow.appendChild(sBadge);
+    if (!isEditable) { var roL = document.createElement('span'); roL.className = 'cs-readonly-label'; roL.textContent = 'Salt okunur'; statusRow.appendChild(roL); }
+    card.appendChild(statusRow);
+    /* Admin note */
+    if (post.admin_note && (post.status === 'changes_requested' || post.status === 'rejected')) {
+      var nb = document.createElement('div'); nb.className = 'cs-admin-note';
+      var nl = document.createElement('div'); nl.className = 'cs-admin-note-label'; nl.textContent = 'Admin Notu'; nb.appendChild(nl);
+      var nt = document.createElement('div'); nt.className = 'cs-admin-note-text'; nt.textContent = post.admin_note; nb.appendChild(nt);
+      card.appendChild(nb);
+    }
+    if (isEditable) {
+      card.appendChild(buildField('Ba\u015fl\u0131k', 'input', 'cs-f-title', post.title || '', 120));
+      card.appendChild(buildField('\u00d6zet', 'textarea', 'cs-f-excerpt', post.excerpt || '', 200, 'K\u0131sa \u00f6nizleme metni (maks. 200 karakter)', 2));
+      var bf = buildField('\u0130\u00e7erik', 'textarea', 'cs-f-body', post.body || '', 0, '', 12); bf.className = 'cs-field cs-field-body'; card.appendChild(bf);
+      card.appendChild(buildSelectField('Kategori', 'cs-f-category', CATEGORIES, post.category));
+      card.appendChild(buildSelectField('\u0130li\u015fkili Rol (iste\u011fe ba\u011fl\u0131)', 'cs-f-role', ROLE_OPTIONS, post.related_role || ''));
+      card.appendChild(buildCoverUploadZone(post));
+    } else {
+      if (post.cover_image_url) { var ci = document.createElement('img'); ci.src = post.cover_image_url; ci.alt = post.cover_image_alt || ''; ci.style.cssText = 'width:100%;max-height:200px;object-fit:cover;border-radius:10px;margin-bottom:16px;'; card.appendChild(ci); }
+      var h = document.createElement('h3'); h.style.cssText = "font-family:'Bricolage Grotesque',sans-serif;font-size:20px;font-weight:800;margin-bottom:8px;"; h.textContent = post.title; card.appendChild(h);
+      if (post.excerpt) { var exc = document.createElement('div'); exc.style.cssText = 'font-size:14px;color:var(--muted);margin-bottom:16px;line-height:1.6;font-style:italic;'; exc.textContent = post.excerpt; card.appendChild(exc); }
+      var bd = document.createElement('div'); bd.style.cssText = 'font-size:14px;line-height:1.8;white-space:pre-wrap;'; bd.textContent = post.body; card.appendChild(bd);
+    }
+    /* Actions */
+    var actions = document.createElement('div'); actions.className = 'cs-actions';
+    if (isEditable) {
+      var sBtn = document.createElement('button'); sBtn.className = 'cs-btn cs-btn-ghost'; sBtn.textContent = 'Kaydet'; sBtn.addEventListener('click', function() { savePost(post.id, false); }); actions.appendChild(sBtn);
+      var pBtn = document.createElement('button'); pBtn.className = 'cs-btn cs-btn-secondary'; pBtn.textContent = '\u00d6n \u0130zleme'; pBtn.addEventListener('click', function() { showPreview(post.id, false); }); actions.appendChild(pBtn);
+      var subBtn = document.createElement('button'); subBtn.className = 'cs-btn cs-btn-primary'; subBtn.textContent = '\u0130ncelemeye G\u00f6nder'; subBtn.addEventListener('click', function() { showPreview(post.id, true); }); actions.appendChild(subBtn);
+    }
+    /* Draft delete button — only for status === 'draft' */
+    if (post.status === 'draft') {
+      var delBtn = document.createElement('button'); delBtn.className = 'cs-btn cs-btn-danger cs-btn-sm'; delBtn.textContent = 'Sil';
+      delBtn.addEventListener('click', function() { archiveDraft(post.id); });
+      actions.appendChild(delBtn);
+    }
+    card.appendChild(actions);
+    var mEl = document.createElement('div'); mEl.className = 'cs-msg'; mEl.id = 'cs-editor-msg'; card.appendChild(mEl);
+    container.appendChild(card);
+  }
+
+  /* ══ DRAFT DELETION (soft archive) ══ */
+  async function archiveDraft(postId) {
+    var confirmed = window.confirm('Bu tasla\u011f\u0131 silmek istedi\u011finize emin misiniz?');
+    if (!confirmed) return;
+    try {
+      var res = await _supa.from('coach_posts').update({ status: 'archived' }).eq('id', postId);
+      if (res.error) { console.error('Archive draft error:', res.error); return; }
+      await loadPosts();
+      _expandedDraftId = null;
+      renderDraftsTab();
+    } catch (e) { console.error('Archive draft exception:', e); }
+  }
+
+  function findOpenInlineDetail() {
+    var accContent = document.querySelector('#cs-drafts-list .cs-accordion-content.open');
+    if (!accContent) return null;
+    var openDetail = accContent.querySelector('.cs-post-inline-detail.open');
+    return openDetail || null;
   }
 
   function buildPostRow(post, context) {
@@ -727,9 +896,21 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
     try {
       var res = await _supa.from('coach_posts').update(updates).eq('id', postId);
       if (res.error) { showMsg(msgEl, 'Hata: ' + res.error.message, 'error'); return; }
-      showMsg(msgEl, submit ? '\u0130ncelemeye g\u00f6nderildi.' : 'Kaydedildi.', 'success');
       await loadPosts();
-      if (submit) renderDraftsTab(); else openEditor(postId);
+      if (submit) {
+        renderDraftsTab();
+      } else {
+        /* Refresh inline editor if in accordion mode */
+        var inlineDetail = _expandedDraftId === postId ? findOpenInlineDetail() : null;
+        if (inlineDetail) {
+          loadDraftInlineEditor(postId, inlineDetail);
+        } else {
+          openEditor(postId);
+        }
+      }
+      /* Show msg after re-render (msgEl may be recreated) */
+      var freshMsg = document.getElementById('cs-editor-msg');
+      showMsg(freshMsg, submit ? '\u0130ncelemeye g\u00f6nderildi.' : 'Kaydedildi.', 'success');
     } catch (e) { console.error('Save error:', e); showMsg(msgEl, 'Kaydetme hatas\u0131.', 'error'); }
   }
 
@@ -793,32 +974,83 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
   }
 
   /* ══ PUBLISHED TAB ══ */
+  var _expandedPublishedId = null;
+
   function renderPublishedTab() {
     var list = document.getElementById('cs-published-list'); var detailArea = document.getElementById('cs-published-detail-area');
     clear(list); detailArea.style.display = 'none';
+    _expandedPublishedId = null;
     var published = _posts.filter(function(p) { return p.status === 'published'; });
     if (published.length === 0) {
       var empty = document.createElement('div'); empty.style.cssText = 'text-align:center;padding:40px 20px;color:var(--muted);font-size:14px;'; empty.textContent = 'Hen\u00fcz yay\u0131nlanm\u0131\u015f yaz\u0131 yok.'; list.appendChild(empty); return;
     }
-    for (var i = 0; i < published.length; i++) list.appendChild(buildPostRow(published[i], 'published'));
+    for (var i = 0; i < published.length; i++) {
+      list.appendChild(buildPublishedAccordionRow(published[i]));
+    }
   }
 
-  async function openPublishedDetail(postId) {
-    var detailArea = document.getElementById('cs-published-detail-area');
-    detailArea.style.display = 'block'; detailArea.textContent = 'Y\u00fckleniyor...';
+  function buildPublishedAccordionRow(post) {
+    var wrapper = document.createElement('div');
+    var row = document.createElement('div');
+    row.className = 'cs-post-accordion-row';
+    if (post.cover_image_url) {
+      var thumb = document.createElement('img'); thumb.className = 'cs-post-cover-thumb'; thumb.src = post.cover_image_url; thumb.alt = post.cover_image_alt || ''; row.appendChild(thumb);
+    }
+    var body = document.createElement('div'); body.className = 'cs-post-row-body';
+    var title = document.createElement('div'); title.className = 'cs-post-row-title'; title.textContent = post.title || '(Ba\u015fl\u0131ks\u0131z)'; body.appendChild(title);
+    var meta = document.createElement('div'); meta.className = 'cs-post-row-meta';
+    var badge = document.createElement('span'); badge.className = 'cs-badge cs-badge-published'; badge.textContent = STATUS_LABELS[post.status] || post.status; meta.appendChild(badge);
+    var cat = CATEGORY_MAP[post.category]; if (cat) { var cs = document.createElement('span'); cs.textContent = cat; meta.appendChild(cs); }
+    if (post.like_count > 0) { var ls = document.createElement('span'); ls.textContent = '\u2661 ' + post.like_count; meta.appendChild(ls); }
+    var dateStr = post.published_at || post.updated_at;
+    var ds = document.createElement('span'); ds.textContent = formatDate(dateStr); meta.appendChild(ds);
+    body.appendChild(meta); row.appendChild(body);
+    row.appendChild(makeChevronSVG());
+    var detail = document.createElement('div');
+    detail.className = 'cs-post-inline-detail';
+    row.addEventListener('click', function() {
+      if (_expandedPublishedId === post.id) {
+        _expandedPublishedId = null;
+        row.classList.remove('open');
+        detail.classList.remove('open');
+        clear(detail);
+        return;
+      }
+      /* Close any previously open */
+      var listEl = document.getElementById('cs-published-list');
+      var prevRows = listEl ? listEl.querySelectorAll('.cs-post-accordion-row.open') : [];
+      for (var j = 0; j < prevRows.length; j++) { prevRows[j].classList.remove('open'); }
+      var prevDetails = listEl ? listEl.querySelectorAll('.cs-post-inline-detail.open') : [];
+      for (var k = 0; k < prevDetails.length; k++) { prevDetails[k].classList.remove('open'); clear(prevDetails[k]); }
+      _expandedPublishedId = post.id;
+      row.classList.add('open');
+      detail.classList.add('open');
+      loadPublishedInlineDetail(post.id, detail);
+    });
+    wrapper.appendChild(row);
+    wrapper.appendChild(detail);
+    return wrapper;
+  }
+
+  async function loadPublishedInlineDetail(postId, container) {
+    clear(container);
+    var loading = document.createElement('div');
+    loading.style.cssText = 'padding:16px;color:var(--muted);font-size:13px;';
+    loading.textContent = 'Y\u00fckleniyor...';
+    container.appendChild(loading);
     try {
       var cols = '*, deletion_requested_at';
       var res = await _supa.from('coach_posts').select(cols).eq('id', postId).maybeSingle();
       if (res.error) {
         res = await _supa.from('coach_posts').select('*').eq('id', postId).maybeSingle();
       }
-      if (!res.data) { detailArea.textContent = 'Yaz\u0131 bulunamad\u0131'; return; }
-      renderPublishedDetail(res.data);
-    } catch (e) { console.error('Open published error:', e); detailArea.textContent = 'Y\u00fckleme hatas\u0131'; }
+      if (!res.data) { loading.textContent = 'Yaz\u0131 bulunamad\u0131'; return; }
+      clear(container);
+      renderPublishedInlineDetail(res.data, container);
+    } catch (e) { console.error('Open published inline error:', e); loading.textContent = 'Y\u00fckleme hatas\u0131'; }
   }
 
-  function renderPublishedDetail(post) {
-    var area = document.getElementById('cs-published-detail-area'); if (!area) return; clear(area);
+  function renderPublishedInlineDetail(post, container) {
     var card = document.createElement('div'); card.className = 'cs-editor-card cs-animate';
     /* Deletion banner */
     if (post.deletion_requested_at) {
@@ -840,16 +1072,26 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
     var bd = document.createElement('div'); bd.className = 'cs-pub-body'; bd.textContent = post.body; card.appendChild(bd);
     /* Share bar */
     card.appendChild(buildShareBar(post));
-    /* Actions */
+    /* Actions — no "Listeye D\u00f6n" needed, accordion chevron handles it */
     var actions = document.createElement('div'); actions.className = 'cs-actions'; actions.style.marginTop = '16px';
     if (!post.deletion_requested_at) {
       var delBtn = document.createElement('button'); delBtn.className = 'cs-btn cs-btn-danger cs-btn-sm'; delBtn.textContent = 'Silme Talebi G\u00f6nder'; delBtn.addEventListener('click', function() { requestDeletion(post.id); }); actions.appendChild(delBtn);
     }
-    var backBtn = document.createElement('button'); backBtn.className = 'cs-btn cs-btn-ghost cs-btn-sm'; backBtn.textContent = 'Listeye D\u00f6n';
-    backBtn.addEventListener('click', function() { area.style.display = 'none'; renderPublishedTab(); }); actions.appendChild(backBtn);
     card.appendChild(actions);
     var mEl = document.createElement('div'); mEl.className = 'cs-msg'; mEl.id = 'cs-pub-msg'; card.appendChild(mEl);
-    area.appendChild(card);
+    container.appendChild(card);
+  }
+
+  /* Keep legacy openPublishedDetail for deletion request refresh */
+  async function openPublishedDetail(postId) {
+    /* After deletion request/cancel, refresh the inline detail if open */
+    if (_expandedPublishedId === postId) {
+      var listEl = document.getElementById('cs-published-list');
+      var openDetails = listEl ? listEl.querySelectorAll('.cs-post-inline-detail.open') : [];
+      for (var i = 0; i < openDetails.length; i++) {
+        loadPublishedInlineDetail(postId, openDetails[i]);
+      }
+    }
   }
 
   /* ══ SHARE TOOLS ══ */
@@ -881,11 +1123,39 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
     }
   }
 
+  var SHARE_ICONS = {
+    WhatsApp: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>',
+    LinkedIn: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>',
+    Facebook: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>',
+    'Metni Kopyala': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>'
+  };
+
   function makeShareBtn(label, handler) {
     var btn = document.createElement('button'); btn.className = 'cs-share-btn';
+    if (SHARE_ICONS[label]) {
+      var iconWrap = document.createElement('span');
+      iconWrap.style.cssText = 'display:inline-flex;width:16px;height:16px;';
+      iconWrap.innerHTML = SHARE_ICONS[label];
+      btn.appendChild(iconWrap);
+    }
     var txt = document.createElement('span'); txt.textContent = label; btn.appendChild(txt);
     btn.addEventListener('click', handler);
     return btn;
+  }
+
+  function makeChevronSVG() {
+    var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('viewBox', '0 0 24 24');
+    svg.setAttribute('fill', 'none');
+    svg.setAttribute('stroke', 'currentColor');
+    svg.setAttribute('stroke-width', '2');
+    svg.setAttribute('stroke-linecap', 'round');
+    svg.setAttribute('stroke-linejoin', 'round');
+    svg.setAttribute('class', 'cs-accordion-chevron');
+    var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('d', 'M6 9l6 6 6-6');
+    svg.appendChild(path);
+    return svg;
   }
 
   /* ══ DELETION REQUEST ══ */
