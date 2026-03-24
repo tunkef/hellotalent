@@ -131,6 +131,13 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
 .cs-btn:disabled{opacity:0.5;cursor:not-allowed;}
 .cs-actions{display:flex;gap:10px;margin-top:20px;flex-wrap:wrap;}
 
+/* ── Dismiss Choice Overlay ── */
+.cs-dismiss-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:90;display:flex;align-items:center;justify-content:center;padding:24px;}
+.cs-dismiss-panel{background:var(--bg-surface);border-radius:16px;padding:28px;max-width:380px;width:100%;box-shadow:0 24px 60px rgba(0,0,0,0.15);text-align:center;}
+.cs-dismiss-title{font-family:'Bricolage Grotesque',sans-serif;font-size:17px;font-weight:700;color:var(--text);margin-bottom:8px;}
+.cs-dismiss-desc{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:20px;}
+.cs-dismiss-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+
 /* ── Messages ── */
 .cs-msg{margin-top:12px;padding:10px 14px;border-radius:8px;font-size:13px;display:none;}
 .cs-msg.success{display:block;background:#D1FAE5;color:#065F46;}
@@ -619,6 +626,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
   /* ══ DRAFTS TAB ══ */
   var _draftsAccordionOpen = true;
   var _expandedDraftId = null;
+  var _newDraftId = null; /* tracks freshly created draft for Vazgeç cleanup */
 
   function renderDraftsTab() {
     _activePostId = null;
@@ -663,14 +671,16 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
     var wrapper = document.createElement('div');
     var row = document.createElement('div');
     row.className = 'cs-post-accordion-row';
+    row.setAttribute('data-post-id', post.id);
     if (post.cover_image_url) {
       var thumb = document.createElement('img'); thumb.className = 'cs-post-cover-thumb'; thumb.src = post.cover_image_url; thumb.alt = post.cover_image_alt || ''; row.appendChild(thumb);
     }
     var body = document.createElement('div'); body.className = 'cs-post-row-body';
-    var title = document.createElement('div'); title.className = 'cs-post-row-title'; title.textContent = post.title || '(Ba\u015fl\u0131ks\u0131z)'; body.appendChild(title);
+    var title = document.createElement('div'); title.className = 'cs-post-row-title'; title.textContent = post.title || 'Yeni Yaz\u0131'; body.appendChild(title);
     var meta = document.createElement('div'); meta.className = 'cs-post-row-meta';
     var badge = document.createElement('span'); badge.className = 'cs-badge cs-badge-' + post.status; badge.textContent = STATUS_LABELS[post.status] || post.status; meta.appendChild(badge);
     var cat = CATEGORY_MAP[post.category]; if (cat) { var cs = document.createElement('span'); cs.textContent = cat; meta.appendChild(cs); }
+    if (_newDraftId === post.id) { var newTag = document.createElement('span'); newTag.style.cssText = 'color:var(--verm);font-weight:600;'; newTag.textContent = 'Yeni'; meta.appendChild(newTag); }
     var ds = document.createElement('span'); ds.textContent = formatDate(post.updated_at); meta.appendChild(ds);
     body.appendChild(meta); row.appendChild(body);
     row.appendChild(makeChevronSVG());
@@ -731,7 +741,18 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
       card.appendChild(nb);
     }
     if (isEditable) {
-      card.appendChild(buildField('Ba\u015fl\u0131k', 'input', 'cs-f-title', post.title || '', 120));
+      var titleField = buildField('Ba\u015fl\u0131k', 'input', 'cs-f-title', post.title || '', 120);
+      card.appendChild(titleField);
+      /* Live title sync: update accordion row title as user types */
+      var titleInput = titleField.querySelector('input');
+      if (titleInput) {
+        titleInput.addEventListener('input', function() {
+          var rowTitle = document.querySelector('.cs-post-accordion-row[data-post-id="' + post.id + '"] .cs-post-row-title');
+          if (rowTitle) rowTitle.textContent = titleInput.value.trim() || 'Yeni Yaz\u0131';
+        });
+        /* Focus title on new drafts */
+        if (_newDraftId === post.id) setTimeout(function() { titleInput.focus(); }, 100);
+      }
       card.appendChild(buildField('\u00d6zet', 'textarea', 'cs-f-excerpt', post.excerpt || '', 200, 'K\u0131sa \u00f6nizleme metni (maks. 200 karakter)', 2));
       var bf = buildField('\u0130\u00e7erik', 'textarea', 'cs-f-body', post.body || '', 0, '', 12); bf.className = 'cs-field cs-field-body'; card.appendChild(bf);
       card.appendChild(buildSelectField('Kategori', 'cs-f-category', CATEGORIES, post.category));
@@ -746,12 +767,18 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
     /* Actions */
     var actions = document.createElement('div'); actions.className = 'cs-actions';
     if (isEditable) {
-      var sBtn = document.createElement('button'); sBtn.className = 'cs-btn cs-btn-ghost'; sBtn.textContent = 'Kaydet'; sBtn.addEventListener('click', function() { savePost(post.id, false); }); actions.appendChild(sBtn);
+      var sBtn = document.createElement('button'); sBtn.className = 'cs-btn cs-btn-ghost'; sBtn.textContent = 'Kaydet';
+      sBtn.addEventListener('click', function() { _newDraftId = null; savePost(post.id, false); });
+      actions.appendChild(sBtn);
       var pBtn = document.createElement('button'); pBtn.className = 'cs-btn cs-btn-secondary'; pBtn.textContent = '\u00d6n \u0130zleme'; pBtn.addEventListener('click', function() { showPreview(post.id, false); }); actions.appendChild(pBtn);
-      var subBtn = document.createElement('button'); subBtn.className = 'cs-btn cs-btn-primary'; subBtn.textContent = '\u0130ncelemeye G\u00f6nder'; subBtn.addEventListener('click', function() { showPreview(post.id, true); }); actions.appendChild(subBtn);
+      var subBtn = document.createElement('button'); subBtn.className = 'cs-btn cs-btn-primary'; subBtn.textContent = '\u0130ncelemeye G\u00f6nder'; subBtn.addEventListener('click', function() { _newDraftId = null; showPreview(post.id, true); }); actions.appendChild(subBtn);
+      /* Vazgeç button */
+      var vazBtn = document.createElement('button'); vazBtn.className = 'cs-btn cs-btn-ghost cs-btn-sm'; vazBtn.textContent = 'Vazge\u00e7';
+      vazBtn.addEventListener('click', function() { showDismissChoice(post.id); });
+      actions.appendChild(vazBtn);
     }
-    /* Draft delete button — only for status === 'draft' */
-    if (post.status === 'draft') {
+    /* Draft delete button — only for status === 'draft' (existing drafts, not new) */
+    if (post.status === 'draft' && _newDraftId !== post.id) {
       var delBtn = document.createElement('button'); delBtn.className = 'cs-btn cs-btn-danger cs-btn-sm'; delBtn.textContent = 'Sil';
       delBtn.addEventListener('click', function() { archiveDraft(post.id); });
       actions.appendChild(delBtn);
@@ -759,6 +786,36 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
     card.appendChild(actions);
     var mEl = document.createElement('div'); mEl.className = 'cs-msg'; mEl.id = 'cs-editor-msg'; card.appendChild(mEl);
     container.appendChild(card);
+  }
+
+  /* ══ DISMISS CHOICE (Vazgeç overlay) ══ */
+  function showDismissChoice(postId) {
+    var overlay = document.createElement('div'); overlay.className = 'cs-dismiss-overlay';
+    var panel = document.createElement('div'); panel.className = 'cs-dismiss-panel';
+    var title = document.createElement('div'); title.className = 'cs-dismiss-title'; title.textContent = 'Yaz\u0131dan Vazge\u00e7'; panel.appendChild(title);
+    var desc = document.createElement('div'); desc.className = 'cs-dismiss-desc'; desc.textContent = 'De\u011fi\u015fikliklerinizi taslak olarak kaydedebilir veya bu yaz\u0131y\u0131 tamamen silebilirsiniz.'; panel.appendChild(desc);
+    var actions = document.createElement('div'); actions.className = 'cs-dismiss-actions';
+    var saveBtn = document.createElement('button'); saveBtn.className = 'cs-btn cs-btn-secondary'; saveBtn.textContent = 'Tasla\u011fa Kaydet';
+    saveBtn.addEventListener('click', function() {
+      document.body.removeChild(overlay);
+      _newDraftId = null;
+      savePost(postId, false);
+    });
+    actions.appendChild(saveBtn);
+    var delBtn = document.createElement('button'); delBtn.className = 'cs-btn cs-btn-danger'; delBtn.textContent = 'Sil';
+    delBtn.addEventListener('click', function() {
+      document.body.removeChild(overlay);
+      _newDraftId = null;
+      archiveDraft(postId);
+    });
+    actions.appendChild(delBtn);
+    var cancelBtn = document.createElement('button'); cancelBtn.className = 'cs-btn cs-btn-ghost'; cancelBtn.textContent = 'D\u00fczenlemeye D\u00f6n';
+    cancelBtn.addEventListener('click', function() { document.body.removeChild(overlay); });
+    actions.appendChild(cancelBtn);
+    panel.appendChild(actions);
+    overlay.appendChild(panel);
+    overlay.addEventListener('click', function(e) { if (e.target === overlay) document.body.removeChild(overlay); });
+    document.body.appendChild(overlay);
   }
 
   /* ══ DRAFT DELETION (soft archive) ══ */
@@ -1184,9 +1241,19 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
   /* ══ NEW POST ══ */
   async function createNewPost() {
     try {
-      var res = await _supa.from('coach_posts').insert({ coach_id: _coachProfile.id, title: 'Yeni Yaz\u0131', body: '', category: 'mulakat_ipucu', status: 'draft' }).select('id').maybeSingle();
+      var res = await _supa.from('coach_posts').insert({ coach_id: _coachProfile.id, title: '', body: '', category: 'mulakat_ipucu', status: 'draft' }).select('id').maybeSingle();
       if (res.error) { console.error('Create post error:', res.error); return; }
-      if (res.data) { await loadPosts(); openEditor(res.data.id); }
+      if (res.data) {
+        _newDraftId = res.data.id;
+        await loadPosts();
+        _draftsAccordionOpen = true;
+        _expandedDraftId = res.data.id;
+        _activePostId = res.data.id;
+        renderDraftsTab();
+        /* Auto-expand the new draft row */
+        var newRow = document.querySelector('.cs-post-accordion-row[data-post-id="' + res.data.id + '"]');
+        if (newRow) newRow.click();
+      }
     } catch (e) { console.error('Create post exception:', e); }
   }
 
