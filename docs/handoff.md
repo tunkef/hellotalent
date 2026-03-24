@@ -1214,14 +1214,39 @@ Admin Panel (tunkef868 superadmin):
 - ✅ İçerik Yönetimi → İçerikler → Yayında: post kartı gösterildi, yazar bilgisi, Önizleme + Arşivle butonları. Crash yok.
 - ✅ Pre-migration defensive fallback: admin tarafı `deletion_requested_at` kolonu olsa da olmasa da çalışıyor
 
-**Doğrulanmamış (manuel test gerekli):**
-- ❓ Coach silme talebi gönder → DB'de `deletion_requested_at` set edildi mi (confirm dialog programatik olarak kabul edilemedi)
-- ❓ Coach silme talebi sonrası admin'de "Silme Talebi" badge'i göründü mü
-- ❓ Admin "Arşivle" (silme talebi olan post) → `coach_post_archived` email `__deletion_approved__` context ile `sent` oldu mu
-- ❓ Admin "Talebi Reddet" → `coach_post_deletion_dismissed` email `sent` oldu mu
-- ❓ Normal arşiv (silme talebi olmayan) → nötr email tonu doğru mu
-- ❓ `__deletion_approved__` sentinel mail body'de sızmıyor mu (email render testi)
-- ❓ WhatsApp/LinkedIn/Facebook paylaşım linkleri doğru çalışıyor mu
+**Session 20d — 24 Mart 2026 (Full Deletion Lifecycle E2E Smoke — PASS)**
+
+Gerçek coach (Tuna Kefeli) + gerçek admin (tunkef868) hesaplarıyla deletion lifecycle uçtan uca test edildi:
+
+**Senaryo A — Talebi Reddet:**
+1. ✅ Coach: "Silme Talebi Gönder" → confirm auto-accepted → `deletion_requested_at = 2026-03-24 10:05:06` DB'de set
+2. ✅ Coach: yellow banner "Silme talebi gönderildi (24 Mar 2026). Admin onayı bekleniyor." + "Talebi İptal Et" butonu
+3. ✅ Coach: içerik greyed out, paylaşım araçları dimmed
+4. ✅ Admin: "SİLME TALEBİ" amber badge görünür + "Talebi Reddet" butonu
+5. ✅ Admin: "Talebi Reddet" → badge kayboldu, post YAYINDA kaldı
+6. ✅ Email: `coach_post_deletion_dismissed` (id=2826) → status: `sent`, sent_at: 10:11:02
+
+**Senaryo B — Silme Onayı (Arşivle):**
+1. ✅ Coach: ikinci kez "Silme Talebi Gönder" → banner tekrar göründü
+2. ✅ Admin: "SİLME TALEBİ" badge tekrar göründü
+3. ✅ Admin: "Arşivle" → post Yayında listesinden kayboldu ("İçerik bulunamadı")
+4. ✅ Email: `coach_post_archived` (id=2831) → status: `sent`, sent_at: 10:17:02
+5. ✅ Email payload: `admin_note = "__deletion_approved__"` → template doğru dallanma (silme onayı tonu)
+6. ✅ `__deletion_approved__` sentinel payload'da var ama email body'de admin notu olarak gösterilmiyor (isInternalNote guard)
+
+**Post restore:** smoke sonrası post `published` durumuna geri alındı (coach içerik kaybetmesin).
+
+**Email delivery özeti:**
+| id | email_type | status | sent_at |
+|----|-----------|--------|---------|
+| 2831 | coach_post_archived | sent | 2026-03-24 10:17 |
+| 2826 | coach_post_deletion_dismissed | sent | 2026-03-24 10:11 |
+| 2209 | coach_post_changes_requested | sent | 2026-03-23 21:49 |
+
+**Doğrulanmamış:**
+- ❓ Normal arşiv (silme talebi olmadan) → nötr email tonu (test edilmedi — tek published post arşivlendi ve geri alındı)
+- ❓ WhatsApp/LinkedIn/Facebook paylaşım linklerinin gerçek hedef doğrulaması
+- ❓ Email body render'ının gerçek inbox'ta görsel doğrulaması (Resend delivery confirmed, HTML render untested)
 
 **Deploy edilen migration'lar:**
 - `20260324111936_coach_post_deletion_request.sql` → ✅ Supabase SQL Editor ile deploy edildi
