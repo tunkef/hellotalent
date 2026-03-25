@@ -185,6 +185,16 @@ interface Payload {
   status?: string | null;
   admin_note?: string | null;
   studio_url?: string | null;
+  // Support ticket fields
+  candidate_name?: string | null;
+  candidate_email?: string | null;
+  ticket_no?: string | null;
+  subject?: string | null;
+  category?: string | null;
+  description?: string | null;
+  current_panel?: string | null;
+  page_path?: string | null;
+  user_agent?: string | null;
 }
 
 function renderTemplate(
@@ -207,6 +217,10 @@ function renderTemplate(
     case "coach_post_deletion_requested":
     case "coach_post_deletion_dismissed":
       return coachPostNotificationTemplate(payload);
+    case "support_ticket_confirmation":
+      return supportTicketConfirmationTemplate(payload);
+    case "support_ticket_internal_alert":
+      return supportTicketInternalAlertTemplate(payload);
     default:
       throw new Error(`Unknown email_type: ${emailType}`);
   }
@@ -606,4 +620,138 @@ Koc Studio: ${studioUrl}
 Gizlilik: https://hellotalent.ai/gizlilik.html`;
 
   return { subject, html, text };
+}
+
+// ─── Support Ticket Confirmation (candidate) ─────────
+
+const SUPPORT_CATEGORIES: Record<string, string> = {
+  hesap_giris: "Hesap ve Giri\u015f",
+  profil_cv: "Profil ve CV",
+  mesajlar_teklifler: "Mesajlar ve Teklifler",
+  premium_odeme: "Premium ve \u00d6deme",
+  teknik: "Teknik Sorunlar",
+};
+
+function supportTicketConfirmationTemplate(p: Payload): EmailContent {
+  const name = esc(p.candidate_name);
+  const greeting = name ? `Merhaba ${name},` : "Merhaba,";
+  const greetingPlain = p.candidate_name
+    ? `Merhaba ${p.candidate_name},`
+    : "Merhaba,";
+  const ticketNo = esc(p.ticket_no);
+  const subjectEsc = esc(p.subject);
+  const categoryLabel = SUPPORT_CATEGORIES[p.category || ""] || esc(p.category);
+  const ctaUrl = "https://hellotalent.ai/profil.html#destek";
+
+  const html = emailWrapper(`
+${logoRow()}
+<tr><td style="padding:8px 32px 4px;text-align:center;">
+<span style="display:none;max-height:0;overflow:hidden;">Destek talebiniz al\u0131nd\u0131 \u2014 ${ticketNo}</span>
+<h1 style="margin:0;font-family:'Bricolage Grotesque',Georgia,serif;font-size:22px;color:${COLORS.navy};font-weight:700;">${greeting}</h1>
+</td></tr>
+<tr><td style="padding:16px 32px;font-size:15px;color:${COLORS.text};line-height:1.6;">
+<p style="margin:0 0 12px;">Destek talebiniz ba\u015far\u0131yla olu\u015fturuldu.</p>
+<table width="100%" cellpadding="0" cellspacing="0" style="background:${COLORS.bg};border:1px solid ${COLORS.border};border-radius:10px;margin-bottom:16px;">
+<tr><td style="padding:14px 16px;">
+<p style="margin:0 0 6px;font-size:13px;color:${COLORS.muted};">Talep Numaras\u0131</p>
+<p style="margin:0 0 12px;font-family:'DM Mono',monospace;font-size:16px;font-weight:700;color:${COLORS.verm};">${ticketNo}</p>
+<p style="margin:0 0 4px;font-size:13px;color:${COLORS.muted};">Konu</p>
+<p style="margin:0 0 12px;font-size:14px;font-weight:600;color:${COLORS.text};">${subjectEsc}</p>
+<p style="margin:0 0 4px;font-size:13px;color:${COLORS.muted};">Kategori</p>
+<p style="margin:0;font-size:14px;color:${COLORS.text};">${categoryLabel}</p>
+</td></tr>
+</table>
+<p style="margin:0;">Talebinizi en k\u0131sa s\u00fcrede inceleyece\u011fiz. G\u00fcncellemeler bu e-posta adresine g\u00f6nderilecektir.</p>
+</td></tr>
+${ctaButton("Destek Merkezine Git", ctaUrl)}
+${footerRow()}
+`);
+
+  const text = `${greetingPlain}
+
+Destek talebiniz ba\u015far\u0131yla olu\u015fturuldu.
+
+Talep Numaras\u0131: ${p.ticket_no || ""}
+Konu: ${p.subject || ""}
+Kategori: ${SUPPORT_CATEGORIES[p.category || ""] || p.category || ""}
+
+Talebinizi en k\u0131sa s\u00fcrede inceleyece\u011fiz.
+
+\u2192 Destek Merkezi: ${ctaUrl}
+
+---
+\u00a9 2026 HelloTalent
+Gizlilik: https://hellotalent.ai/gizlilik.html`;
+
+  return {
+    subject: `Destek Talebiniz Al\u0131nd\u0131 \u2014 ${p.ticket_no || ""}`,
+    html,
+    text,
+  };
+}
+
+// ─── Support Ticket Internal Alert (support team) ────
+
+function supportTicketInternalAlertTemplate(p: Payload): EmailContent {
+  const ticketNo = esc(p.ticket_no);
+  const candidateName = esc(p.candidate_name);
+  const candidateEmail = esc(p.candidate_email);
+  const subjectEsc = esc(p.subject);
+  const categoryLabel = SUPPORT_CATEGORIES[p.category || ""] || esc(p.category);
+  const descEsc = esc(p.description);
+  const panel = esc(p.current_panel);
+  const path = esc(p.page_path);
+  const ua = esc(p.user_agent);
+
+  const html = emailWrapper(`
+${logoRow()}
+<tr><td style="padding:8px 32px 4px;">
+<h1 style="margin:0;font-family:'Bricolage Grotesque',Georgia,serif;font-size:20px;color:${COLORS.navy};font-weight:700;">Yeni Destek Talebi: ${ticketNo}</h1>
+</td></tr>
+<tr><td style="padding:16px 32px;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:${COLORS.bg};border:1px solid ${COLORS.border};border-radius:10px;">
+<tr><td style="padding:16px;">
+<table width="100%" cellpadding="0" cellspacing="0" style="font-size:13px;color:${COLORS.text};line-height:2;">
+<tr><td style="font-weight:700;color:${COLORS.muted};width:120px;vertical-align:top;">Talep No</td><td style="font-family:'DM Mono',monospace;color:${COLORS.verm};font-weight:700;">${ticketNo}</td></tr>
+<tr><td style="font-weight:700;color:${COLORS.muted};vertical-align:top;">Aday</td><td>${candidateName} (${candidateEmail})</td></tr>
+<tr><td style="font-weight:700;color:${COLORS.muted};vertical-align:top;">Kategori</td><td>${categoryLabel}</td></tr>
+<tr><td style="font-weight:700;color:${COLORS.muted};vertical-align:top;">Konu</td><td style="font-weight:600;">${subjectEsc}</td></tr>
+</table>
+</td></tr>
+</table>
+</td></tr>
+<tr><td style="padding:0 32px 16px;">
+<div style="background:${COLORS.white};border:1px solid ${COLORS.border};border-radius:10px;padding:16px;">
+<p style="margin:0 0 4px;font-size:11px;font-weight:700;color:${COLORS.muted};text-transform:uppercase;letter-spacing:0.5px;">A\u00e7\u0131klama</p>
+<p style="margin:0;font-size:14px;color:${COLORS.text};line-height:1.6;white-space:pre-wrap;">${descEsc}</p>
+</div>
+</td></tr>
+${panel || path || ua ? `<tr><td style="padding:0 32px 16px;font-size:11px;color:${COLORS.muted};line-height:1.8;">
+${panel ? `Panel: ${panel}<br>` : ""}${path ? `Sayfa: ${path}<br>` : ""}${ua ? `UA: ${ua}` : ""}
+</td></tr>` : ""}
+${footerRow("Bu bir dahili destek bildirimidir.")}
+`);
+
+  const text = `Yeni Destek Talebi: ${p.ticket_no || ""}
+
+Talep No: ${p.ticket_no || ""}
+Aday: ${p.candidate_name || ""} (${p.candidate_email || ""})
+Kategori: ${SUPPORT_CATEGORIES[p.category || ""] || p.category || ""}
+Konu: ${p.subject || ""}
+
+Aciklama:
+${p.description || ""}
+
+${p.current_panel ? `Panel: ${p.current_panel}` : ""}
+${p.page_path ? `Sayfa: ${p.page_path}` : ""}
+${p.user_agent ? `UA: ${p.user_agent}` : ""}
+
+---
+Dahili destek bildirimi - HelloTalent`;
+
+  return {
+    subject: `[Destek] ${p.ticket_no || ""} \u2014 ${p.subject || ""}`,
+    html,
+    text,
+  };
 }

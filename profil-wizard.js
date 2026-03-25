@@ -215,7 +215,7 @@ function _doSwitchPanel(name) {
   if (target) target.classList.add('active');
   var bc = document.getElementById('breadcrumb-current');
   if (bc) {
-    var labels = { genel: 'Genel Bakış', merkez: 'Profil Merkezi', sirketler: 'Markalar', teklifler: 'Özel Teklifler', inbox: 'Mesajlar', bildirimler: 'Bildirimler', ayarlar: 'Ayarlar', profil: 'Profil', yetkinlik: 'Mülakat Koçu', mulakat: 'Mülakat Koçu', premium: 'Premium', kimbakti: 'Kim Baktı' };
+    var labels = { genel: 'Genel Bakış', merkez: 'Profil Merkezi', sirketler: 'Markalar', teklifler: 'Özel Teklifler', inbox: 'Mesajlar', bildirimler: 'Bildirimler', ayarlar: 'Ayarlar', profil: 'Profil', yetkinlik: 'Mülakat Koçu', mulakat: 'Mülakat Koçu', premium: 'Premium', kimbakti: 'Kim Baktı', destek: 'Destek Merkezi' };
     bc.textContent = labels[name] || name;
   }
   // Update sidebar nav
@@ -255,6 +255,8 @@ function _doSwitchPanel(name) {
   if (name === 'premium') { window._htLoadPremium && window._htLoadPremium(); }
   // Lazy-load Bildirimler on first visit
   if (name === 'bildirimler') { window._htLoadBildirimler && window._htLoadBildirimler(); }
+  // Lazy-load Destek Merkezi on first visit
+  if (name === 'destek') { window._htLoadDestek && window._htLoadDestek(); }
   // Populate Settings from Profile when opening Ayarlar
   if (name === 'ayarlar') {
     setVal('settings-adsoyad', val('f-adsoyad'));
