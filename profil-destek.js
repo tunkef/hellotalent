@@ -63,8 +63,9 @@ function injectCSS() {
     '.destek-hero-title { font-family:"Bricolage Grotesque",sans-serif; font-size:22px; font-weight:700; margin-bottom:6px; }',
     '.destek-hero-sub { font-size:14px; opacity:0.9; }',
 
-    '.destek-tabs { display:flex; gap:4px; margin-bottom:24px; border-bottom:1px solid var(--border-subtle, #E5E3DF); padding-bottom:0; }',
-    '.destek-tab { font-family:"Plus Jakarta Sans",sans-serif; font-size:13px; font-weight:600; padding:10px 16px; cursor:pointer; border:none; background:none; color:var(--text-muted, #6B7280); border-bottom:2px solid transparent; transition:all .2s; }',
+    '.destek-tabs { display:flex; gap:4px; margin-bottom:24px; border-bottom:1px solid var(--border-subtle, #E5E3DF); padding-bottom:0; overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none; }',
+    '.destek-tabs::-webkit-scrollbar { display:none; }',
+    '.destek-tab { font-family:"Plus Jakarta Sans",sans-serif; font-size:13px; font-weight:600; padding:10px 16px; cursor:pointer; border:none; background:none; color:var(--text-muted, #6B7280); border-bottom:2px solid transparent; transition:all .2s; white-space:nowrap; flex-shrink:0; }',
     '.destek-tab:hover { color:var(--text, #111); }',
     '.destek-tab.active { color:var(--verm, #C94E28); border-bottom-color:var(--verm, #C94E28); }',
 
@@ -106,6 +107,7 @@ function injectCSS() {
     '.dt-submit { font-family:"Plus Jakarta Sans",sans-serif; font-size:14px; font-weight:600; padding:12px 24px; border:none; border-radius:10px; background:var(--verm, #C94E28); color:#fff; cursor:pointer; transition:all .2s; align-self:flex-start; }',
     '.dt-submit:hover { background:var(--verm-dark, #b84420); }',
     '.dt-submit:disabled { opacity:0.6; cursor:not-allowed; }',
+    '.dt-helper { font-size:12px; color:var(--text-muted, #6B7280); margin-top:4px; line-height:1.4; }',
     '.dt-success { background:var(--bg-surface, #fff); border:1px solid #059669; border-radius:12px; padding:24px; text-align:center; }',
     '.dt-success-title { font-family:"Bricolage Grotesque",sans-serif; font-size:18px; font-weight:700; margin-bottom:6px; margin-top:12px; }',
     '.dt-success-no { font-family:"DM Mono",monospace; font-size:15px; color:var(--verm, #C94E28); margin-bottom:8px; }',
@@ -128,12 +130,45 @@ function injectCSS() {
     '.destek-btn-ghost { background:transparent; color:var(--verm, #C94E28); border:1px solid var(--verm, #C94E28); }',
     '.destek-btn-ghost:hover { background:var(--verm-light, #F5EDE9); }',
 
+    /* Ticket detail */
+    '.dtd-wrap { background:var(--bg-surface, #fff); border:1px solid var(--border-subtle, #E5E3DF); border-radius:12px; padding:24px; }',
+    '.dtd-header { display:flex; align-items:center; gap:12px; margin-bottom:8px; flex-wrap:wrap; }',
+    '.dtd-no { font-family:"DM Mono",monospace; font-size:14px; font-weight:700; color:var(--verm, #C94E28); }',
+    '.dtd-subject { font-family:"Bricolage Grotesque",sans-serif; font-size:18px; font-weight:700; color:var(--text, #111); margin-bottom:6px; }',
+    '.dtd-meta { font-size:12px; color:var(--text-muted, #6B7280); margin-bottom:20px; }',
+    '.dtd-desc-card { background:var(--bg-elevated, #F3F4F6); border-radius:10px; padding:16px; margin-bottom:4px; }',
+    '.dtd-desc-label { font-size:11px; font-weight:700; color:var(--text-muted, #6B7280); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:6px; }',
+    '.dtd-desc-body { font-size:14px; line-height:1.6; color:var(--text, #111); white-space:pre-wrap; }',
+    '.dtd-messages { }',
+    '.dtd-msg { border-radius:10px; padding:12px 14px; margin-top:8px; }',
+    '.dtd-msg-own { background:var(--bg-elevated, #F3F4F6); }',
+    '.dtd-msg-support { background:var(--verm-light, #F5EDE9); border:1px solid rgba(201,78,40,0.12); }',
+    '.dtd-msg-author { font-size:11px; font-weight:600; color:var(--text-muted, #6B7280); margin-bottom:4px; }',
+    '.dtd-msg-body { font-size:13px; line-height:1.6; color:var(--text, #111); white-space:pre-wrap; }',
+    '.dtl-item:hover { border-color:var(--verm, #C94E28); box-shadow:0 2px 8px rgba(0,0,0,0.05); }',
+
     /* Responsive */
     '@media (max-width:600px) {',
-    '  .da-cats { grid-template-columns:repeat(2, 1fr); }',
-    '  .destek-tab { font-size:12px; padding:8px 10px; }',
+    '  .destek-wrap { padding:16px 12px; }',
+    '  .da-cats { grid-template-columns:repeat(2, 1fr); gap:8px; }',
+    '  .da-cat-card { padding:12px 10px; border-radius:10px; }',
+    '  .da-cat-label { font-size:11px; }',
+    '  .destek-tab { font-size:12px; padding:8px 12px; }',
     '  .destek-hero { padding:20px 16px; }',
     '  .destek-hero-title { font-size:18px; }',
+    '  .da-detail { padding:16px; }',
+    '  .da-detail-title { font-size:16px; }',
+    '  .da-detail-cta { flex-direction:column; align-items:flex-start; gap:10px; }',
+    '  .dtl-item { padding:12px 14px; }',
+    '  .dtl-subject { font-size:13px; }',
+    '  .dtd-wrap { padding:16px; }',
+    '  .dtd-subject { font-size:16px; }',
+    '  .dtd-meta { font-size:11px; word-break:break-word; }',
+    '  .dt-input, .dt-select, .dt-textarea { font-size:16px; }',
+    '  .dt-submit { width:100%; text-align:center; }',
+    '  .dt-success { padding:20px 16px; }',
+    '  .dt-success-title { font-size:16px; }',
+    '  .dt-success-no { font-size:14px; }',
     '}'
   ].join('\n');
   document.head.appendChild(style);
@@ -203,6 +238,11 @@ function switchDeskTab(key) {
     s.classList.toggle('active', s.id === 'destek-sec-' + key);
   });
   if (key === 'taleplerim') loadTickets();
+  // Reset create form to clean state when switching to it (clears stale success screen)
+  if (key === 'olustur') {
+    var sec = document.getElementById('destek-sec-olustur');
+    if (sec && !sec.querySelector('.dt-form')) renderCreateForm(sec);
+  }
 }
 
 // ── ARTICLES TAB ─────────────────────────────────
@@ -298,8 +338,8 @@ function renderArticleList(articles) {
 
   if (filtered.length === 0) {
     var emptyMsg = document.createElement('div');
-    emptyMsg.style.cssText = 'text-align:center;padding:20px;color:var(--text-muted);font-size:13px;';
-    emptyMsg.textContent = 'Bu kategoride makale bulunamad\u0131.';
+    emptyMsg.style.cssText = 'text-align:center;padding:24px 16px;color:var(--text-muted);font-size:13px;';
+    emptyMsg.textContent = 'Bu kategoride hen\u00FCz makale bulunmuyor. Arad\u0131\u011F\u0131n\u0131 bulamad\u0131ysan destek talebi olu\u015Fturabilirsin.';
     listEl.appendChild(emptyMsg);
     return;
   }
@@ -407,6 +447,14 @@ function renderCreateSection() {
   renderCreateForm(sec);
 }
 
+var SUBJECT_HINTS = {
+  hesap_giris:        '\u00D6r: Google ile giri\u015F yapam\u0131yorum',
+  profil_cv:          '\u00D6r: CV y\u00FCklerken hata al\u0131yorum',
+  mesajlar_teklifler: '\u00D6r: Mesajlar\u0131m y\u00FCklenmiyor',
+  premium_odeme:      '\u00D6r: Premium \u00F6deme tamamlanmad\u0131',
+  teknik:             '\u00D6r: Sayfa bo\u015F a\u00E7\u0131l\u0131yor'
+};
+
 function renderCreateForm(sec) {
   while (sec.firstChild) sec.removeChild(sec.firstChild);
   var form = document.createElement('div');
@@ -419,7 +467,7 @@ function renderCreateForm(sec) {
   catSel.id = 'dt-category';
   var defOpt = document.createElement('option');
   defOpt.value = '';
-  defOpt.textContent = 'Kategori se\u00E7...';
+  defOpt.textContent = 'Sorununla ilgili bir kategori se\u00E7';
   catSel.appendChild(defOpt);
   Object.keys(CATEGORIES).forEach(function(k) {
     var opt = document.createElement('option');
@@ -436,18 +484,30 @@ function renderCreateForm(sec) {
   subInp.type = 'text';
   subInp.className = 'dt-input';
   subInp.id = 'dt-subject';
-  subInp.placeholder = 'K\u0131saca sorununuzu \u00F6zetleyin...';
+  subInp.placeholder = 'K\u0131saca ne ya\u015Fad\u0131\u011F\u0131n\u0131 yaz...';
   subInp.maxLength = 200;
   subField.appendChild(subInp);
   form.appendChild(subField);
 
+  // Update subject placeholder when category changes
+  catSel.addEventListener('change', function() {
+    var hint = SUBJECT_HINTS[catSel.value];
+    subInp.placeholder = hint || 'K\u0131saca ne ya\u015Fad\u0131\u011F\u0131n\u0131 yaz...';
+  });
+
   // Description
-  var descField = makeField('Sorunu Anlat\u0131n', true);
+  var descField = makeField('Detaylar', true);
   var descTa = document.createElement('textarea');
   descTa.className = 'dt-textarea';
   descTa.id = 'dt-description';
-  descTa.placeholder = 'Ya\u015Fad\u0131\u011F\u0131n\u0131z sorunu m\u00FCmk\u00FCn oldu\u011Funca detayl\u0131 a\u00E7\u0131klay\u0131n...';
+  descTa.placeholder = 'Ne yapmaya \u00E7al\u0131\u015F\u0131yordun, ne oldu ve ne bekliyordun?';
   descField.appendChild(descTa);
+
+  var descHelper = document.createElement('div');
+  descHelper.className = 'dt-helper';
+  descHelper.textContent = 'Hangi sayfada oldu\u011Funu ve ad\u0131mlar\u0131 k\u0131saca yazarsan daha h\u0131zl\u0131 yard\u0131mc\u0131 olabiliriz.';
+  descField.appendChild(descHelper);
+
   form.appendChild(descField);
 
   // Error area
@@ -456,13 +516,23 @@ function renderCreateForm(sec) {
   errDiv.style.cssText = 'color:#ef4444;font-size:13px;display:none;';
   form.appendChild(errDiv);
 
-  // Submit
+  // Submit row
+  var submitRow = document.createElement('div');
+  submitRow.style.cssText = 'display:flex;align-items:center;gap:16px;flex-wrap:wrap;';
+
   var btn = document.createElement('button');
   btn.className = 'dt-submit';
   btn.id = 'dt-submit-btn';
   btn.textContent = 'Talebi G\u00F6nder';
   btn.addEventListener('click', submitTicket);
-  form.appendChild(btn);
+  submitRow.appendChild(btn);
+
+  var trustNote = document.createElement('span');
+  trustNote.style.cssText = 'font-size:12px;color:var(--text-muted, #6B7280);';
+  trustNote.textContent = 'G\u00FCncellemeler kay\u0131tl\u0131 e-posta adresine g\u00F6nderilir.';
+  submitRow.appendChild(trustNote);
+
+  form.appendChild(submitRow);
 
   sec.appendChild(form);
 }
@@ -492,10 +562,10 @@ function submitTicket() {
 
   // Validate
   var errors = [];
-  if (!catVal) errors.push('Kategori se\u00E7iniz.');
-  if (!subVal.trim()) errors.push('Konu giriniz.');
-  if (!descVal.trim()) errors.push('Sorunu a\u00E7\u0131klay\u0131n\u0131z.');
-  else if (descVal.trim().length < 10) errors.push('A\u00E7\u0131klama en az 10 karakter olmal\u0131d\u0131r.');
+  if (!catVal) errors.push('L\u00FCtfen bir kategori se\u00E7.');
+  if (!subVal.trim()) errors.push('Konuyu k\u0131saca belirt.');
+  if (!descVal.trim()) errors.push('Sorunu biraz a\u00E7\u0131kla, yard\u0131mc\u0131 olabilelim.');
+  else if (descVal.trim().length < 10) errors.push('A\u00E7\u0131klama biraz k\u0131sa kald\u0131 \u2014 birka\u00E7 c\u00FCmle daha ekle.');
 
   if (errors.length > 0) {
     if (errDiv) { errDiv.textContent = errors.join(' '); errDiv.style.display = 'block'; }
@@ -549,18 +619,23 @@ function showTicketSuccess(ticketNo) {
 
   var title = document.createElement('div');
   title.className = 'dt-success-title';
-  title.textContent = 'Talebini Ald\u0131k';
+  title.textContent = 'Talebini ald\u0131k, te\u015Fekk\u00FCrler';
   box.appendChild(title);
 
   var no = document.createElement('div');
   no.className = 'dt-success-no';
-  no.textContent = 'Talep numaran: ' + ticketNo;
+  no.textContent = ticketNo;
   box.appendChild(no);
 
   var sub = document.createElement('div');
   sub.className = 'dt-success-sub';
-  sub.textContent = 'G\u00FCncellemeleri e-posta ile payla\u015Faca\u011F\u0131z.';
+  sub.textContent = 'Talebini en k\u0131sa s\u00FCrede inceleyece\u011Fiz. G\u00FCncellemeler kay\u0131tl\u0131 e-posta adresine g\u00F6nderilecek.';
   box.appendChild(sub);
+
+  var hint = document.createElement('div');
+  hint.style.cssText = 'font-size:12px;color:var(--text-muted, #6B7280);margin-bottom:16px;';
+  hint.textContent = 'Talebinin durumunu istedi\u011Fin zaman Taleplerim sekmesinden takip edebilirsin.';
+  box.appendChild(hint);
 
   var actions = document.createElement('div');
   actions.style.cssText = 'display:flex;gap:10px;justify-content:center;flex-wrap:wrap;';
@@ -600,7 +675,7 @@ function loadTickets() {
 
   supabase
     .from('support_tickets')
-    .select('id, ticket_no, category, subject, status, created_at, updated_at')
+    .select('id, ticket_no, category, subject, description, status, created_at, updated_at')
     .order('created_at', { ascending: false })
     .then(function(res) {
       if (res.error) {
@@ -623,12 +698,37 @@ function renderTicketList(sec, tickets) {
   if (tickets.length === 0) {
     var empty = document.createElement('div');
     empty.className = 'dtl-empty';
+
     var emptyIcon = document.createElement('span');
-    emptyIcon.innerHTML = '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="opacity:0.4;"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg>';
+    emptyIcon.innerHTML = '<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="opacity:0.35;"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg>';
     empty.appendChild(emptyIcon);
-    empty.appendChild(document.createElement('br'));
-    var emptyText = document.createTextNode('Hen\u00FCz destek talebiniz bulunmuyor.');
-    empty.appendChild(emptyText);
+
+    var emptyTitle = document.createElement('div');
+    emptyTitle.style.cssText = 'font-weight:600;margin:12px 0 4px;font-size:14px;color:var(--text, #111);';
+    emptyTitle.textContent = 'Hen\u00FCz destek talebiniz yok';
+    empty.appendChild(emptyTitle);
+
+    var emptyDesc = document.createElement('div');
+    emptyDesc.style.cssText = 'font-size:13px;color:var(--text-muted, #6B7280);margin-bottom:16px;max-width:320px;margin-left:auto;margin-right:auto;';
+    emptyDesc.textContent = 'Bir sorunla kar\u015F\u0131la\u015F\u0131rsan talep olu\u015Fturabilir ya da yard\u0131m makalelerinden \u00E7\u00F6z\u00FCm arayabilirsin.';
+    empty.appendChild(emptyDesc);
+
+    var emptyActions = document.createElement('div');
+    emptyActions.style.cssText = 'display:flex;gap:10px;justify-content:center;flex-wrap:wrap;';
+
+    var emptyCreateBtn = document.createElement('button');
+    emptyCreateBtn.className = 'destek-btn destek-btn-verm';
+    emptyCreateBtn.textContent = 'Talep Olu\u015Ftur';
+    emptyCreateBtn.addEventListener('click', function() { switchDeskTab('olustur'); });
+    emptyActions.appendChild(emptyCreateBtn);
+
+    var emptyArticlesBtn = document.createElement('button');
+    emptyArticlesBtn.className = 'destek-btn destek-btn-ghost';
+    emptyArticlesBtn.textContent = 'Makalelere G\u00F6z At';
+    emptyArticlesBtn.addEventListener('click', function() { switchDeskTab('makaleler'); });
+    emptyActions.appendChild(emptyArticlesBtn);
+
+    empty.appendChild(emptyActions);
     sec.appendChild(empty);
     return;
   }
@@ -669,8 +769,134 @@ function renderTicketList(sec, tickets) {
     row.appendChild(pill);
 
     item.appendChild(row);
+    item.style.cursor = 'pointer';
+    item.addEventListener('click', function() { showTicketDetail(t); });
     sec.appendChild(item);
   });
+}
+
+// ── TICKET DETAIL VIEW ──────────────────────────
+
+function showTicketDetail(ticket) {
+  var sec = document.getElementById('destek-sec-taleplerim');
+  if (!sec) return;
+  while (sec.firstChild) sec.removeChild(sec.firstChild);
+
+  var wrap = document.createElement('div');
+  wrap.className = 'dtd-wrap';
+
+  // Back button
+  var back = document.createElement('button');
+  back.className = 'da-detail-back';
+  var backSvg = document.createElement('span');
+  backSvg.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>';
+  back.appendChild(backSvg);
+  back.appendChild(document.createTextNode(' Taleplere D\u00F6n'));
+  back.addEventListener('click', function() { loadTickets(); });
+  wrap.appendChild(back);
+
+  // Header: ticket number + status pill
+  var header = document.createElement('div');
+  header.className = 'dtd-header';
+
+  var noEl = document.createElement('span');
+  noEl.className = 'dtd-no';
+  noEl.textContent = ticket.ticket_no;
+  header.appendChild(noEl);
+
+  var pill = document.createElement('span');
+  pill.className = 'dtl-status';
+  pill.textContent = STATUS_LABELS[ticket.status] || ticket.status;
+  var sc = STATUS_COLORS[ticket.status] || '#6B7280';
+  pill.style.cssText = 'background:' + sc + '14;color:' + sc + ';';
+  header.appendChild(pill);
+  wrap.appendChild(header);
+
+  // Subject
+  var subEl = document.createElement('div');
+  subEl.className = 'dtd-subject';
+  subEl.textContent = ticket.subject;
+  wrap.appendChild(subEl);
+
+  // Meta row
+  var meta = document.createElement('div');
+  meta.className = 'dtd-meta';
+  meta.textContent = (CATEGORIES[ticket.category] || ticket.category) + ' \u00B7 Olu\u015Fturulma: ' + formatDate(ticket.created_at);
+  if (ticket.updated_at && ticket.updated_at !== ticket.created_at) {
+    meta.textContent += ' \u00B7 G\u00FCncelleme: ' + formatDate(ticket.updated_at);
+  }
+  wrap.appendChild(meta);
+
+  // Description card
+  var descCard = document.createElement('div');
+  descCard.className = 'dtd-desc-card';
+
+  var descLabel = document.createElement('div');
+  descLabel.className = 'dtd-desc-label';
+  descLabel.textContent = 'A\u00E7\u0131klama';
+  descCard.appendChild(descLabel);
+
+  var descBody = document.createElement('div');
+  descBody.className = 'dtd-desc-body';
+  descBody.textContent = ticket.description || '';
+  descCard.appendChild(descBody);
+
+  wrap.appendChild(descCard);
+
+  // Messages area — load async
+  var msgsWrap = document.createElement('div');
+  msgsWrap.id = 'dtd-messages';
+  msgsWrap.className = 'dtd-messages';
+  wrap.appendChild(msgsWrap);
+
+  sec.appendChild(wrap);
+
+  // Fetch public messages for this ticket
+  loadTicketMessages(ticket.id, msgsWrap);
+}
+
+function loadTicketMessages(ticketId, container) {
+  supabase
+    .from('support_ticket_messages')
+    .select('id, author_type, body, created_at')
+    .eq('ticket_id', ticketId)
+    .order('created_at', { ascending: true })
+    .then(function(res) {
+      if (res.error) {
+        console.error('support_ticket_messages load error:', res.error);
+        return; // silent — detail still shows description
+      }
+      var msgs = res.data || [];
+      // Skip if only the initial candidate message (same as description)
+      if (msgs.length <= 1) return;
+
+      var label = document.createElement('div');
+      label.className = 'dtd-desc-label';
+      label.style.marginTop = '20px';
+      label.textContent = 'Mesajlar';
+      container.appendChild(label);
+
+      msgs.forEach(function(m) {
+        var bubble = document.createElement('div');
+        bubble.className = 'dtd-msg' + (m.author_type === 'candidate' ? ' dtd-msg-own' : ' dtd-msg-support');
+
+        var authorLabel = m.author_type === 'candidate' ? 'Sen'
+          : m.author_type === 'support' ? 'Destek Ekibi'
+          : 'Sistem';
+
+        var who = document.createElement('div');
+        who.className = 'dtd-msg-author';
+        who.textContent = authorLabel + ' \u00B7 ' + formatDate(m.created_at);
+        bubble.appendChild(who);
+
+        var body = document.createElement('div');
+        body.className = 'dtd-msg-body';
+        body.textContent = m.body;
+        bubble.appendChild(body);
+
+        container.appendChild(bubble);
+      });
+    });
 }
 
 // ── HELPERS ──────────────────────────────────────
