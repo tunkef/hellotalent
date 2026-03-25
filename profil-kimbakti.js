@@ -1,4 +1,4 @@
-/* global supabase */
+/* global calculateCompletion, supabase */
 // ═══════════════════════════════════════════════════
 // PROFIL KIM BAKTI — Panel + Lab Card
 // Extracted from profil.html inline scripts.
@@ -153,6 +153,13 @@
         while (listEl.firstChild) listEl.removeChild(listEl.firstChild);
         if (events.length === 0) {
           listEl.appendChild(_makeEl('div', 'font-size:12px;color:var(--muted);padding:12px 0;', 'Profilini inceleyenler burada listelenecek.'));
+          // Show completion hint to motivate profile improvement
+          if (typeof calculateCompletion === 'function') {
+            var _pct = calculateCompletion();
+            if (_pct < 100) {
+              listEl.appendChild(_makeEl('div', 'font-size:11px;color:var(--verm);padding:0 0 8px;', 'Profilin %' + _pct + ' tamamlandı — güçlendirdikçe daha fazla işveren seni görür.'));
+            }
+          }
         }
         events.forEach(function(ev, idx) {
           var row = _makeEl('div', 'display:flex;align-items:center;gap:10px;padding:10px 0;' + (idx < events.length - 1 ? 'border-bottom:1px solid var(--border);' : ''));
@@ -215,18 +222,9 @@
     // Premium CTA (freemium only)
     if (ctaCard) ctaCard.style.display = isPremium ? 'none' : 'block';
 
-    // Conversion stat (premium only)
-    if (isPremium && convCard) {
-      convCard.style.display = 'block';
-      var convBody = document.getElementById('kb-conversion-body');
-      if (convBody) {
-        while (convBody.firstChild) convBody.removeChild(convBody.firstChild);
-        // Placeholder — will be real data when messaging analytics exist
-        convBody.appendChild(_makeEl('div', 'font-size:13px;color:var(--text);', 'Profilini görenlerin mesaj gönderme oranı'));
-        convBody.appendChild(_makeEl('div', 'font-size:32px;font-weight:800;color:var(--verm);font-family:\'DM Mono\',monospace;margin-top:4px;', '—'));
-        convBody.appendChild(_makeEl('div', 'font-size:11px;color:var(--muted);margin-top:4px;', 'Mesajlaşma verileri toplandıkça burada görünecek.'));
-      }
-    }
+    // Conversion stat — hidden until real messaging analytics data exists.
+    // No placeholder card shown; re-enable when backend provides conversion metrics.
+    if (convCard) convCard.style.display = 'none';
   }
 
   window.loadViewersCard = async function(candidateId) {
@@ -284,7 +282,12 @@
       var empty = document.getElementById('kb-empty');
       if (empty) {
         empty.style.display = 'block';
-        empty.querySelector('div:last-child').textContent = 'Veriler yüklenemedi.';
+        // Populate completion hint in error empty state
+        var _emptyPct = document.getElementById('kb-empty-pct');
+        if (_emptyPct && typeof calculateCompletion === 'function') {
+          var _p = calculateCompletion();
+          _emptyPct.textContent = _p < 100 ? 'Profil tamamlanma: %' + _p : '';
+        }
       }
     }
   };

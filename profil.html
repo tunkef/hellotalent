@@ -1416,11 +1416,11 @@ if (window.Sentry) {
       <div style="display:flex;align-items:center;gap:12px;">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
         <div>
-          <div style="font-size:14px;font-weight:700;color:#fff;">Tam listeyi aç</div>
-          <div style="font-size:12px;color:rgba(255,255,255,0.7);margin-top:2px;">Hangi şirketlerin profilini incelediğini, pozisyon detaylarını ve trendleri gör.</div>
+          <div style="font-size:14px;font-weight:700;color:#fff;">Seni inceleyen firmaları gör</div>
+          <div style="font-size:12px;color:rgba(255,255,255,0.7);margin-top:2px;">Şirket adlarını, açık pozisyonları ve hangi segmentlerin seni incelediğini öğren.</div>
         </div>
       </div>
-      <button type="button" class="kb-premium-btn" style="margin-top:12px;width:100%;padding:10px;background:var(--verm);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;">Premium'a Geç</button>
+      <button type="button" class="kb-premium-btn" style="margin-top:12px;width:100%;padding:10px;background:var(--verm);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;">Premium ile Kilidi Aç</button>
     </div>
 
   </div>
@@ -1428,7 +1428,9 @@ if (window.Sentry) {
   <!-- Empty state -->
   <div id="kb-empty" style="display:none;text-align:center;padding:40px 24px;border:1px solid var(--border-subtle,#E5E3DF);border-radius:16px;background:var(--bg-surface,#fff);margin-top:16px;box-shadow:0 2px 8px rgba(0,0,0,0.08),0 8px 20px rgba(0,0,0,0.06);">
     <div style="font-size:15px;font-weight:600;color:var(--text);margin-bottom:6px;">Henüz görüntüleme yok</div>
-    <div style="font-size:13px;color:var(--muted);line-height:1.5;max-width:320px;margin:0 auto;">Profilini tamamla ve aktif ol — işverenler seni bulsun.</div>
+    <div style="font-size:13px;color:var(--muted);line-height:1.5;max-width:320px;margin:0 auto;">Profilini güçlendir — tamamlanma oranın yükseldikçe işverenler seni daha kolay bulur.</div>
+    <div id="kb-empty-pct" style="font-size:12px;color:var(--muted);margin-top:8px;"></div>
+    <button type="button" data-panel="merkez" style="margin-top:14px;padding:8px 20px;background:var(--verm);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;">Profili Güçlendir</button>
   </div>
 
   <!-- Loading skeleton -->
