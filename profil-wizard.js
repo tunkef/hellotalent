@@ -330,10 +330,14 @@ function toggleMobileSidebar() {
   var overlay = document.getElementById('sidebar-overlay');
   if (sidebar) sidebar.classList.toggle('open');
   if (overlay) overlay.classList.toggle('show');
+  // Lock background scroll while sidebar is open (prevents iOS scroll-bleed)
+  var isOpen = sidebar && sidebar.classList.contains('open');
+  document.documentElement.classList.toggle('ht-scroll-lock', !!isOpen);
 }
 function closeMobileSidebar() {
   var sidebar = document.getElementById('sidebar');
   var overlay = document.getElementById('sidebar-overlay');
   if (sidebar) sidebar.classList.remove('open');
   if (overlay) overlay.classList.remove('show');
+  document.documentElement.classList.remove('ht-scroll-lock');
 }
