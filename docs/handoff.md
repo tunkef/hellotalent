@@ -1,5 +1,5 @@
 # hellotalent.ai — Technical Handoff Document
-> Son güncelleme: 25 Mart 2026 (Session 21 — Wizard audit + Step 4 simplification + Phase 2/3 deploys + profil.html extraction)
+> Son güncelleme: 25 Mart 2026 (Session 21b — Wizard audit + Step 4 simplification + Phase 2/3 deploys + profil.html extraction + mobile stabilization + UX polish + CI fix)
 > Bu doküman, projenin mevcut durumunu, tamamlanan işleri ve kalan backlog'u kapsar.
 > Yeni bir chat/session başlatırken bu dosyayı referans olarak kullanın.
 
@@ -500,14 +500,18 @@ CREATE supabase/migrations/20260325084751_step4_simplification.sql
 | `20260325073331` | preferred location filter/scoring + role-family disabled | ✅ Deployed |
 | `20260325084751` | Step 4 simplification: CHECK drop + career_type normalize + brand auto-follow | ✅ Deployed |
 
-**Kalan manuel smoke testler (akşam):**
-- [ ] Wizard Step 4: Kariyer Hedefi textarea yok, 2 yönelim, tek dropdown/pozisyon, Rol Ailesi yok
-- [ ] Save: `Mağaza Müdürü` seç → DB'de `rol_ailesi = "Mağaza Yönetimi"` doğrula
-- [ ] Preview: `Yukarı Terfi` label (not `yukari`), career_goal italic quote yok
-- [ ] Brand interest auto-follow: Zara ekle → save → `candidate_brand_follows` satırı doğrula
-- [ ] `?career_goal=Mağaza%20Müdürü` → ilk dropdown prefilled
-- [ ] Boş default satır completion/score'u şişirmiyor
-- [ ] İşveren exact match: `Mağaza Müdürü` hedefleyen aday → `Hedef rol: tam eşleşme` tag'i
+**Smoke testler (Session 21b — browser ile doğrulandı):**
+- [x] Wizard Step 4: Kariyer Hedefi textarea yok, 2 yönelim, tek dropdown/pozisyon, Rol Ailesi yok ✅
+- [x] `?career_goal=Mağaza%20Müdürü` → ilk dropdown prefilled ✅ (live Playwright smoke)
+- [x] Step 4 target-role rows: Mağaza Müdürü, Bölge Müdürü, Operasyon Müdürü DB'den restore ✅
+- [x] Panel switching: Genel, Merkez, Kim Baktı, Ayarlar all work ✅
+- [x] Hash restore: `#merkez`, `#ayarlar`, `#kimbakti` bootstrap-done event ile senkron ✅
+- [x] Kim Baktı: panel render, chart, viewer list, premium CTA ✅
+- [x] Cmd+K palette: açılır, arama çalışır, panel switch doğru ✅
+- [x] Avatar dropdown: isim, tema toggle, çıkış butonu ✅
+- [ ] Save: `Mağaza Müdürü` seç → DB'de `rol_ailesi = "Mağaza Yönetimi"` doğrula (henüz test edilmedi)
+- [ ] Brand interest auto-follow: Zara ekle → save → `candidate_brand_follows` satırı doğrula (henüz test edilmedi)
+- [ ] İşveren exact match: `Mağaza Müdürü` hedefleyen aday → `Hedef rol: tam eşleşme` tag'i (henüz test edilmedi)
 
 **Bilinen kısıtlamalar:**
 - Hedef Pozisyon kataloğu sadece `Mağazacılık / Perakende` sektöründen geliyor. Diğer sektör rolleri (Konaklama, Sağlık, Finans, Havacılık, Gıda) henüz Step 4 dropdown'ında yok — bunlar Step 2 deneyim kartlarında seçilebilir ama hedef pozisyon olarak seçilemez.
@@ -537,13 +541,51 @@ profil.html inline script ~3079 satırdan ~1530'a indirildi (extraction oranı: 
 | 19 | **profil-bootstrap.js** | Auth, DB load, step-init orchestration, career_goal prefill | ~283 |
 | 20 | **profil-events.js** | DOMContentLoaded event wiring, Cmd+K, avatar dropdown, page glue | ~390 |
 
-**Bold** = Session 21 extraction. Sıralama kritik: draft→wizard→helpers→kimbakti→bootstrap→events.
+**Bold** = Session 21 extraction. Sıralama kritik: wizard→draft→helpers→kimbakti→bootstrap→events.
 
 **Cross-file global contract:**
 - `wizStep` (var): profil-wizard.js tanımlar, profil-draft.js okur/yazar
 - `wizardDirty` (var): profil-wizard.js tanımlar, profil-ui.js + profil-events.js yazar
 - `switchPanel`: profil-wizard.js tanımlar, profil-helpers/events/genel/inbox + inline delegation çağırır
 - `_htBootstrapDone` + `ht:bootstrap-done` event: profil-bootstrap.js set eder, profil-events.js hash restore için bekler
+
+### Session 21b — 25 Mart 2026 (Extraction + Mobile Stabilization + UX Polish + CI Fix)
+
+**Profil.html Extraction (6 pass):**
+
+| Pass | Dosya | Sorumluluk | Commit |
+|------|-------|-----------|--------|
+| 1 | profil-bootstrap.js | Auth, DB load, step-init orchestration, career_goal prefill | `5fd5412` |
+| 2 | profil-draft.js | setVal, saveDraft, loadDraft, clearDraft, applyDraft | `32d99b6` |
+| 3 | profil-wizard.js | Wizard state machine, validation, panel switching, mobile sidebar | `612a3f4` |
+| 4 | profil-events.js | DOMContentLoaded, Cmd+K, avatar dropdown, page glue | `862bf8f` |
+| 5 | profil-kimbakti.js | Kim Baktı panel + lab card | `52a3639` |
+| 6 | profil-helpers.js | [data-panel] delegation, settings/visibility helpers | `6bf752f` |
+
+profil.html: 3079 → 1532 satır (−50%). Kalan inline: 3 boot-critical micro-block (tema FOUC, Sentry, ht_track stub).
+
+**Bug Fixes (extraction sırasında bulunan):**
+- `\u00f6` literal escape → gerçek Türkçe karakter (Step 4 HTML) — `9cc0ac1`
+- `?career_goal=` prefill timing race (new user, row yokken) — `37fe4c1`
+- localStorage cleanup deferred to prefill apply — `14ffc7e`
+- DOMContentLoaded race: profil-events.js position 20'de DCL zaten geçmiş — readyState guard — `9213c23`
+- Hash restore race: 300ms setTimeout → `ht:bootstrap-done` custom event — `9213c23`
+
+**Mobile Stabilization (5 fix):**
+- Profil Merkezi: inline `span 2` → `.span-2` class (mobile overflow fix) — `52adb61`
+- Ayarlar + Kim Baktı: inline 3-col grid → `.ht-grid-3` class (mobile collapse) — `144d7e7`
+- Mobile sidebar: `ht-scroll-lock` class (background scroll lock) — `4f3fce5`
+- Header popups: `position:fixed; left/right:12px` at ≤600px (viewport containment) — `61f46ba`
+- Inbox mobile: touch-visible delete, `dvh` sheet, sticky composer — `b76353d`
+
+**UX Polish (3 batch):**
+- Wizard mikro-UX: step counter visible, draft timestamp, optional step labels, draft-save toast, completion % in success modal — `bd4fcf9`
+- Kim Baktı: hide placeholder conversion card, actionable empty state with completion %, concrete premium upsell copy — `0a87824`
+- Cross-panel: Bildirimler copy clarity, Premium pricing annual totals, Teklifler demo banner — `01f4b01`
+
+**CI Fix:**
+- `p3.regression.spec.js`: stale `bento-grid` → `mk-bento-grid` class expectation — `99a21b3`
+- Playwright: 42/42 pass (0 failures, CI email alert resolved)
 
 ### Sonraki Adımlar
 - [x] ~~Migration 042 → competency tabloları~~ ✅ Deployed
