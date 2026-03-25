@@ -201,7 +201,7 @@ test.describe('Sprint 4 — copy quality & accessibility', () => {
   });
 
   test('bento grid and locked-card styling exist (locked class optional in HTML)', () => {
-    expect(profilHtml).toContain('class="bento-grid"');
+    expect(profilHtml).toContain('class="mk-bento-grid"');
     // .locked may be used for future/disabled tiles; rule must stay for when markup uses it
     expect(profilCss).toContain('.bento-card.locked');
   });
