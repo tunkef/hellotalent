@@ -229,6 +229,14 @@ function _htApplyCareerGoalPrefill() {
     // No DB data — check for draft
     var draft = loadDraft();
     if (draft) {
+      // Show draft timestamp if available
+      var _draftHint = document.getElementById('draft-timestamp-hint');
+      if (_draftHint && draft.timestamp) {
+        try {
+          var _d = new Date(draft.timestamp);
+          _draftHint.textContent = 'Kaydedilme: ' + _d.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+        } catch(e) { _draftHint.textContent = ''; }
+      }
       document.getElementById('modal-draft').classList.add('show');
     }
     var _dep = document.getElementById('dash-empty-prompt');

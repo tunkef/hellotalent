@@ -306,7 +306,7 @@ if (window.Sentry) {
       </svg>
     </div>
     <div class="modal-title">Profilin güncellendi</div>
-    <div class="modal-desc">Değişikliklerin kaydedildi ve profiline yansıtıldı.</div>
+    <div class="modal-desc" id="modal-success-desc">Değişikliklerin kaydedildi ve profiline yansıtıldı.</div>
     <button class="btn btn-navy" id="btn-success-ok" style="width:100%;padding:11px 0;">Tamam</button>
     <div class="modal-premium-line" style="cursor:pointer;" data-premium-cta>Premium avantajlarını keşfet</div>
   </div>
@@ -352,6 +352,7 @@ if (window.Sentry) {
     </div>
     <div class="modal-title">Taslak Bulundu</div>
     <div class="modal-desc">Daha önce başladığın bir taslak var. Kaldığın yerden devam etmek ister misin?</div>
+    <div class="modal-desc" id="draft-timestamp-hint" style="font-size:11px;color:var(--muted);margin-top:-4px;"></div>
     <div style="display:flex;gap:8px;justify-content:center;">
       <button class="btn btn-primary" id="btn-draft-resume">Devam Et</button>
       <button class="btn btn-secondary" id="btn-draft-discard">Baştan Başla</button>
@@ -619,7 +620,7 @@ if (window.Sentry) {
 
   <!-- WIZARD PROGRESS BAR -->
   <div class="wiz-progress" id="wiz-progress" style="position:relative;">
-    <div class="wiz-progress-meta" id="wiz-progress-meta" aria-hidden="true" style="display:none;">Adım <span id="wiz-current-step">1</span> / 6</div>
+    <div class="wiz-progress-meta" id="wiz-progress-meta">Adım <span id="wiz-current-step">1</span> / 6</div>
     <div class="wiz-progress-step active" data-wstep="1">
       <div class="wiz-progress-circle"><span class="wiz-circle-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span></div>
       <div class="wiz-progress-label">Kişisel</div>
@@ -780,7 +781,7 @@ if (window.Sentry) {
 
   <!-- WIZARD STEP 3: Eğitim -->
   <div class="wiz-step" id="wiz-step-3" data-step="3">
-    <div class="wiz-step-title">Eğitim, Diller, Sertifikalar</div>
+    <div class="wiz-step-title">Eğitim, Diller, Sertifikalar <span style="font-size:12px;font-weight:400;color:var(--muted);">(Opsiyonel)</span></div>
     <div class="wiz-step-desc">Eğitim geçmişini, bildiği dilleri ve sertifikalarını ekle.</div>
     <div id="step3-content">
 
@@ -873,7 +874,7 @@ if (window.Sentry) {
 
   <!-- WIZARD STEP 5: Lokasyon -->
   <div class="wiz-step" id="wiz-step-5" data-step="5">
-    <div class="wiz-step-title">Lokasyon Tercihleri</div>
+    <div class="wiz-step-title">Lokasyon Tercihleri <span style="font-size:12px;font-weight:400;color:var(--muted);">(Opsiyonel)</span></div>
     <div class="wiz-step-desc">Çalışmak istediğin şehirleri ve ilçeleri seç.</div>
     <div id="step5-content">
 

@@ -1,4 +1,4 @@
-/* global _loadedDBData, applyAllVisibilityMirrorsFromProfile, getCurrentEmployerDisplayFromExperiences, ht_track, loadSirketlerPanel, saveDraft, selectedMusaitlik, setVal, syncAccountEmail, updateCompletionUI, updateMerkezCards, updateStep6HideState, val */
+/* global _loadedDBData, applyAllVisibilityMirrorsFromProfile, getCurrentEmployerDisplayFromExperiences, ht_track, loadSirketlerPanel, saveDraft, selectedMusaitlik, setVal, showTgToast, syncAccountEmail, updateCompletionUI, updateMerkezCards, updateStep6HideState, val */
 // ═══════════════════════════════════════════════════
 // PROFIL WIZARD — state machine, validation, panel switching, mobile sidebar
 // Extracted from profil.html inline scripts.
@@ -18,7 +18,10 @@ function wizGoTo(step) {
   // Validate current step before moving forward
   if (step > wizStep && !validateStep(wizStep)) return;
   // Save draft on forward move
-  if (step > wizStep) saveDraft();
+  if (step > wizStep) {
+    saveDraft();
+    if (typeof showTgToast === 'function') showTgToast('Taslak kaydedildi', null);
+  }
   wizStep = step;
   renderWizard();
   ht_track('wizard_step_reached', { step: step });

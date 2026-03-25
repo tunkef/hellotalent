@@ -1,5 +1,5 @@
 /* global supabase, AYRILMA_NEDENLERI, AY_ISIMLERI, BOLUM_DB, BRAND_DB, CALISMA_TIPLERI, CAREER_TYPE_OPTIONS, CAREER_TYPE_ORDER, DIL_LISTESI, DIL_SEVIYELERI, EGITIM_SEVIYELERI, ILCELER, ISTIHDAM_TIPLERI, MAAS_ARALIKLARI, MUSAITLIK_SECENEKLERI, POSITION_TO_FAMILY, RETAIL_POSITIONS, ROL_AILELERI, SEGMENTLER, SEKTOR_ROL_MAP, STORAGE, TAKIM_BUYUKLUKLERI, TUR_ILLER, UNIVERSITE_DB */
-/* global _ht_follows, _loadedDBData, applyAllVisibilityMirrorsFromProfile, canonicalizeRole, clearDraft, collectLocations, currentUser, getCurrentEmployerDisplayFromExperiences, ht_track, markWizardDirty, normalizeForDisplay, nullIfEmpty, refreshVisibilitySummary, selectedCareerTypes, syncAccountEmail, titleCaseTR, trLower, updateBrandFollowCounter, updateCompletionUI, updateDashboardSummary, updateMerkezCards, updateMerkezVisState, val, wizardDirty */
+/* global _ht_follows, _loadedDBData, applyAllVisibilityMirrorsFromProfile, calculateCompletion, canonicalizeRole, clearDraft, collectLocations, currentUser, getCurrentEmployerDisplayFromExperiences, ht_track, markWizardDirty, normalizeForDisplay, nullIfEmpty, refreshVisibilitySummary, selectedCareerTypes, syncAccountEmail, titleCaseTR, trLower, updateBrandFollowCounter, updateCompletionUI, updateDashboardSummary, updateMerkezCards, updateMerkezVisState, val, wizardDirty */
 // v20260320 ── BRAND/COMPANY ID LOOKUP ──
 // Populated at page load from Supabase; used by makeSmartBrandField + collectExperiences
 var _brandIdLookup = {};   // trLower(brand_name) → { brand_id, company_id }
@@ -1555,6 +1555,14 @@ async function saveProfileRPC(onComplete) {
     clearDraft();
     wizardDirty = false; // Reset dirty state so success modal → switchPanel won't trigger guard
     ht_track('profile_save_success');
+    // Update success modal with completion percentage
+    var _successDesc = document.getElementById('modal-success-desc');
+    if (_successDesc && typeof calculateCompletion === 'function') {
+      var _pct = calculateCompletion();
+      _successDesc.textContent = _pct >= 100
+        ? 'Tebrikler! Profilin %100 tamamlandı.'
+        : 'Profilin %' + _pct + ' tamamlandı. Eksikleri tamamlayarak daha fazla işveren tarafından görülebilirsin.';
+    }
     document.getElementById('modal-success').classList.add('show');
     if (_loadedDBData) {
       // Transform collected shape to match loadProfileFromDB output shape
