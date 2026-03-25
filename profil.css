@@ -2440,7 +2440,13 @@ html[data-theme="dark"] .field-req{color:#F87171;}
   .pp-bento { grid-template-columns: 1fr; }
   .pp-hero-card { flex-direction: column; text-align: center; }
   .pp-meta { justify-content: center; }
-  .header-popup { width: calc(100vw - 24px); right: -60px; }
+  .header-popup {
+    position: fixed;
+    left: 12px;
+    right: 12px;
+    width: auto;
+    top: 72px; /* below header (8px offset + 60px height + 4px gap) */
+  }
 }
 
 /* ── Toggle Toast ── */
