@@ -2302,37 +2302,47 @@ function reapplyDynamicFields() {
     })(_loadedDBData.profile.id);
   }
 
-  // ── Career goal prefill: map incoming value to first target position if it matches ──
+  // ── Career goal prefill: capture incoming value early, apply later after initStep4 ──
   // Other pages (kariyer.html, giris.html etc.) send ?career_goal= or set localStorage.ht_career_goal
-  var urlParams = new URLSearchParams(window.location.search);
-  var incomingGoal = urlParams.get('career_goal') || localStorage.getItem('ht_career_goal') || '';
+  // Actual apply runs via _htApplyCareerGoalPrefill() after Step 4 rows exist.
+  var _htPrefillParams = new URLSearchParams(window.location.search);
+  var _htPendingCareerGoal = _htPrefillParams.get('career_goal') || localStorage.getItem('ht_career_goal') || '';
   localStorage.removeItem('ht_career_goal');
   localStorage.removeItem('ht_career_goal_set');
-  if (incomingGoal && typeof RETAIL_POSITIONS !== 'undefined') {
-    // Try to match against retail position catalog (exact or canonical)
-    var _goalNorm = trLower(incomingGoal.trim());
-    var matchedPos = RETAIL_POSITIONS.find(function(p) { return trLower(p) === _goalNorm; });
+
+  window._htApplyCareerGoalPrefill = function() {
+    var goal = _htPendingCareerGoal;
+    if (!goal || typeof RETAIL_POSITIONS === 'undefined') return;
+    _htPendingCareerGoal = ''; // consume once
+
+    // Match against retail position catalog (exact or canonical)
+    var goalNorm = trLower(goal.trim());
+    var matchedPos = RETAIL_POSITIONS.find(function(p) { return trLower(p) === goalNorm; });
     if (!matchedPos && typeof canonicalizeRole === 'function') {
-      var _canon = canonicalizeRole(incomingGoal);
-      if (_canon && _canon.canonical) {
-        matchedPos = RETAIL_POSITIONS.find(function(p) { return trLower(p) === trLower(_canon.canonical); });
+      var canon = canonicalizeRole(goal);
+      if (canon && canon.canonical) {
+        matchedPos = RETAIL_POSITIONS.find(function(p) { return trLower(p) === trLower(canon.canonical); });
       }
     }
     if (matchedPos) {
-      // Prefill first target role row
+      // Ensure at least one target-role row exists
       var firstRow = document.querySelector('#target-roles-container .dynamic-row');
+      if (!firstRow && typeof addTargetRoleRow === 'function') {
+        addTargetRoleRow();
+        firstRow = document.querySelector('#target-roles-container .dynamic-row');
+      }
       if (firstRow) {
         var sel = firstRow.querySelector('select[id$="-unvan"]');
         if (sel) sel.value = matchedPos;
       }
     }
     // Clean the URL without reload
-    if (urlParams.has('career_goal')) {
-      urlParams.delete('career_goal');
-      var cleanUrl = window.location.pathname + (urlParams.toString() ? '?' + urlParams.toString() : '');
+    if (_htPrefillParams.has('career_goal')) {
+      _htPrefillParams.delete('career_goal');
+      var cleanUrl = window.location.pathname + (_htPrefillParams.toString() ? '?' + _htPrefillParams.toString() : '');
       window.history.replaceState({}, '', cleanUrl);
     }
-  }
+  };
 })();
 
 // ═══════════════════════════════════════════════════
@@ -3023,6 +3033,8 @@ document.addEventListener('DOMContentLoaded', function() {
   // Re-apply DB values to selects/chips that were just created by initStep1/4/5.
   // Covers the race where applyDraft ran before these options/chips existed.
   reapplyDynamicFields();
+  // Apply ?career_goal= prefill now that Step 4 rows exist
+  if (typeof _htApplyCareerGoalPrefill === 'function') _htApplyCareerGoalPrefill();
   if (typeof applyAllVisibilityMirrorsFromProfile === 'function' && _loadedDBData && _loadedDBData.profile) {
     applyAllVisibilityMirrorsFromProfile();
   }
