@@ -441,6 +441,8 @@ Cache: `profil-ui.js?v=20260320d`, `profil-settings.js?v=20260320d`
 
 ### Session 21 — 25 Mart 2026 (Wizard Audit + Step 4 Simplification)
 
+> **⚠️ Current live truth for Step 4.** This session supersedes ALL earlier Step 4 references (Sessions 8, 10, 18). Kariyer Hedefi textarea is removed, Kariyer Yönelimi is 2-option single-select, Hedef Pozisyonlar uses a single retail-catalog dropdown (no Rol Ailesi in UI), and brand interests auto-follow on save. If you see older Step 4 wording in earlier sessions, treat it as historical context only — the model below is what is deployed.
+
 **Full wizard audit completed** — 5-phase fix/verification cycle covering save/restore consistency, DB contract alignment, employer visibility, scoring, and Step 4 UX simplification.
 
 **Phase 1 — Frontend wizard fixes (profil.html, profil-ui.js, ik.html):**
