@@ -317,9 +317,9 @@ function addExperienceCard(data) {
   var rolAilesiSelect = rolAilesiWrap.querySelector('select');
   rolAilesiSelect.disabled = true;
 
-  // Sektör (required)
+  // Sektör (optional — controls rol ailesi and pozisyon cascades)
   var sektorOptions = Object.keys(typeof SEKTOR_ROL_MAP === 'object' ? SEKTOR_ROL_MAP : {});
-  var sektorWrap = makeSelectField('Sektör <span class="field-req">*</span>', cardId + '-sektor', sektorOptions, d.sektor, 'Sektör seçin...');
+  var sektorWrap = makeSelectField('Sektör', cardId + '-sektor', sektorOptions, d.sektor, 'Sektör seçin...');
   var sektorSelect = sektorWrap.querySelector('select');
 
   function clearSelectOptions(sel, placeholderText) {
@@ -1548,7 +1548,29 @@ async function saveProfileRPC(onComplete) {
     ht_track('profile_save_success');
     document.getElementById('modal-success').classList.add('show');
     if (_loadedDBData) {
-      _loadedDBData.experiences = p_experiences;
+      // Transform collected shape to match loadProfileFromDB output shape
+      // so preview/summary consumers see consistent field names.
+      _loadedDBData.experiences = p_experiences.map(function(e) {
+        return {
+          sirket_adi: e.sirket || '',
+          marka: e.marka || '',
+          pozisyon: e.pozisyon || '',
+          sektor: e.sektor || null,
+          rol_ailesi: e.rol_ailesi || null,
+          rol_unvani: e.rol_unvani || null,
+          segment: e.segment, istihdam_tipi: e.istihdam_tipi,
+          kidem_seviyesi: e.kidem_seviyesi, lokasyon_tipi: e.lokasyon_tipi,
+          sehir: e.sehir, takim_buyuklugu: e.takim_buyuklugu,
+          baslangic_ay: monthIndexToName(e.baslangic_ay),
+          baslangic_yil: e.baslangic_yil != null ? String(e.baslangic_yil) : '',
+          bitis_ay: monthIndexToName(e.bitis_ay),
+          bitis_yil: e.bitis_yil != null ? String(e.bitis_yil) : '',
+          devam_ediyor: e.devam_ediyor, ayrilma_nedeni: e.ayrilma_nedeni,
+          basari_ozeti: e.basari_ozeti,
+          brand_id: e.brand_id || null,
+          company_id: e.company_id || null
+        };
+      });
       if (_loadedDBData.profile) {
         // Merge saved profile fields into cache
         var _pp = _loadedDBData.profile;
@@ -1568,6 +1590,23 @@ async function saveProfileRPC(onComplete) {
         if (mA) _pp.is_actively_looking = mA.checked;
         if (mH && !mH.disabled) _pp.hide_from_current_employer = mH.checked;
       }
+      // Sync remaining cache slices so preview reflects save without reload
+      _loadedDBData.no_experience = p_profile.ilk_deneyim || false;
+      _loadedDBData.education = p_education.map(function(e) {
+        return { seviye: e.egitim_seviye, okul_adi: e.okul, bolum: e.bolum, mezuniyet_yili: e.mezun_yil != null ? String(e.mezun_yil) : '' };
+      });
+      _loadedDBData.languages = p_languages.slice();
+      _loadedDBData.certificates = p_certificates.slice();
+      _loadedDBData.work_prefs = p_work_prefs ? {
+        musaitlik: p_work_prefs.musaitlik,
+        calisma_tipleri: p_work_prefs.calisma_tipleri || [],
+        maas_beklenti: p_work_prefs.maas_beklenti,
+        tercih_segmentler: p_work_prefs.segmentler || [],
+        career_goal: p_work_prefs.career_goal,
+        career_type: p_work_prefs.career_type
+      } : null;
+      _loadedDBData.brand_interests = p_brand_interests.map(function(b) { return b.marka; });
+      _loadedDBData.locations = p_locations.slice();
     }
     if (typeof applyAllVisibilityMirrorsFromProfile === 'function') applyAllVisibilityMirrorsFromProfile();
     else {

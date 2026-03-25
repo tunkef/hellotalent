@@ -828,8 +828,8 @@ if (window.Sentry) {
       <hr class="section-divider">
 
       <!-- TARGET ROLES -->
-      <div class="card-title mb-4">Hedef Pozisyonlar <span class="field-req">*</span></div>
-      <p class="helper-text" style="font-size:13px;color:var(--muted);margin:0 0 12px 0;line-height:1.5;">Bu bilgiler seni doğru pozisyonlarla eşleştirmemize yardımcı olur. Birden fazla hedef rol ekleyebilirsin.</p>
+      <div class="card-title mb-4">Hedef Pozisyonlar</div>
+      <p class="helper-text" style="font-size:13px;color:var(--muted);margin:0 0 12px 0;line-height:1.5;">Hedef rollerin, seni açık pozisyonlarla eşleştirmemize yardımcı olur.</p>
       <div id="target-roles-container"></div>
       <button class="btn btn-secondary btn-sm mt-8" id="btn-add-role" type="button">+ Rol Ekle</button>
 
@@ -1634,7 +1634,8 @@ function validateKariyer() {
     var prefix = card.id + '-';
     var num = i + 1;
     if (!val(prefix + 'sirket')) errors.push('Deneyim #' + num + ': \u015Eirket zorunludur');
-    var pozVal = val(prefix + 'unvan-sec') || val(prefix + 'unvan-custom');
+    var pozSecVal = val(prefix + 'unvan-sec');
+    var pozVal = (pozSecVal === '__custom__') ? val(prefix + 'unvan-custom') : (pozSecVal || val(prefix + 'unvan-custom'));
     if (!pozVal) errors.push('Deneyim #' + num + ': Pozisyon zorunludur');
     if (!val(prefix + 'basyil')) errors.push('Deneyim #' + num + ': Ba\u015Flang\u0131\u00E7 y\u0131l\u0131 zorunludur');
   });
@@ -1881,7 +1882,14 @@ function saveDraft() {
       askerlik_durumu: val('f-askerlik')
     },
     no_experience: document.getElementById('cb-no-experience') ? document.getElementById('cb-no-experience').checked : false,
-    experiences: collectExperiences(),
+    experiences: collectExperiences().map(function(e) {
+      // Convert month integers to names so draft restore matches makeSelectField expectations
+      e.baslangic_ay = monthIndexToName(e.baslangic_ay);
+      e.bitis_ay = monthIndexToName(e.bitis_ay);
+      if (e.baslangic_yil != null) e.baslangic_yil = String(e.baslangic_yil);
+      if (e.bitis_yil != null) e.bitis_yil = String(e.bitis_yil);
+      return e;
+    }),
     education: collectEducation(),
     languages: collectLanguages(),
     certificates: collectCertificates(),
@@ -1969,7 +1977,7 @@ function applyDraft(draft) {
   if (draft.work_prefs) {
     var wp = draft.work_prefs;
     if (wp.musaitlik) {
-      selectedMüsaitlik = wp.musaitlik;
+      selectedMusaitlik = wp.musaitlik;
       document.querySelectorAll('#musaitlik-chips .chip').forEach(function(c) {
         c.classList.toggle('selected', c.textContent === wp.musaitlik);
       });
@@ -2111,6 +2119,7 @@ function reapplyDynamicFields() {
     setVal('f-maas', wp.maas_beklenti);
     // Müsaitlik chips
     if (wp.musaitlik) {
+      selectedMusaitlik = wp.musaitlik;
       document.querySelectorAll('#musaitlik-chips .chip').forEach(function(c) {
         c.classList.toggle('selected', c.textContent === wp.musaitlik);
       });
