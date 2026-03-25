@@ -1090,9 +1090,9 @@ if (window.Sentry) {
       <div style="font-family:'Bricolage Grotesque',sans-serif;font-size:20px;font-weight:800;color:#fff;">Hesap Ayarları</div>
     </div>
   </div>
-  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;">
+  <div class="ht-grid-3">
 
-  <div class="card" style="grid-column:span 2;margin-bottom:0;">
+  <div class="card ht-span-2" style="margin-bottom:0;">
     <div class="card-title">Hesap Bilgileri</div>
     <div class="field">
       <label for="settings-email">E-posta</label>
@@ -1140,7 +1140,7 @@ if (window.Sentry) {
     <div class="wiz-step-desc mt-4" style="cursor:pointer;" id="settings-premium-pitch" data-premium-cta>Premium avantajlarını keşfet — öne çıkan aday, detaylı analiz ve daha fazlası. <span style="color:var(--verm);font-weight:600;text-decoration:underline;">Planları İncele</span></div>
   </div>
 
-  <div class="card" style="grid-column:span 2;margin-bottom:0;">
+  <div class="card ht-span-2" style="margin-bottom:0;">
     <div class="card-title">Gizlilik ve Görünürlük</div>
     <div class="field" style="display:flex;align-items:center;gap:12px;margin-top:8px;">
       <label class="toggle">
@@ -1295,7 +1295,7 @@ if (window.Sentry) {
     </div>
   </div>
 
-  <div class="card" style="grid-column:span 2;margin-bottom:0;" id="settings-account-management-card">
+  <div class="card ht-span-2" style="margin-bottom:0;" id="settings-account-management-card">
     <div class="card-title">Hesap Yönetimi</div>
     <div id="account-status-banner" style="display:none;padding:12px;border-radius:8px;margin-bottom:12px;font-size:13px;"></div>
     <p style="font-size:13px;color:var(--muted);line-height:1.5;">Hesabını dondurmak, silmek veya verilerini indirmek için hesap yönetimi sihirbazını kullan.</p>
@@ -1372,7 +1372,7 @@ if (window.Sentry) {
   </div>
 
   <!-- Bento grid -->
-  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;">
+  <div class="ht-grid-3">
 
     <!-- Stat card (span 1) -->
     <div class="card" id="kb-hero" style="margin-bottom:0;position:relative;overflow:hidden;">
@@ -1382,7 +1382,7 @@ if (window.Sentry) {
     </div>
 
     <!-- Chart card (span 2) -->
-    <div class="card" style="grid-column:span 2;margin-bottom:0;">
+    <div class="card ht-span-2" style="margin-bottom:0;">
       <div style="font-family:'Bricolage Grotesque',sans-serif;font-size:13px;font-weight:700;color:var(--text-primary,#111);margin-bottom:12px;">Haftalık Görüntülenme</div>
       <div id="kb-chart" style="display:flex;align-items:flex-end;gap:6px;height:80px;width:100%;justify-content:space-around;"></div>
     </div>
@@ -1394,7 +1394,7 @@ if (window.Sentry) {
     </div>
 
     <!-- Company / viewer list (span 2) -->
-    <div class="card" id="kb-viewers" style="grid-column:span 2;margin-bottom:0;display:none;">
+    <div class="card ht-span-2" id="kb-viewers" style="margin-bottom:0;display:none;">
       <div class="card-title" style="display:flex;align-items:center;justify-content:space-between;">
         <span>Kimler İnceledi</span>
         <span id="kb-viewers-lock" style="display:none;">

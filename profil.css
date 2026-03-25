@@ -1936,6 +1936,15 @@ html[data-theme="dark"] .field-req{color:#F87171;}
 @media (max-width: 640px) {
   .mk-bento-grid { grid-template-columns: 1fr; }
 }
+
+/* Reusable 3-col bento grid for panels (Ayarlar, Kim Baktı) */
+.ht-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.ht-grid-3 > .ht-span-2 { grid-column: span 2; }
+@media (max-width: 768px) {
+  .ht-grid-3 { grid-template-columns: 1fr; }
+  .ht-grid-3 > .ht-span-2 { grid-column: 1; }
+}
+
 @media (max-width: 768px) {
   .mk-card.span-2 { grid-column: 1; }
   .mk-edit-btn { opacity: 1; }
