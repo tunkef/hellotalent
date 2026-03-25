@@ -2307,13 +2307,13 @@ function reapplyDynamicFields() {
   // Actual apply runs via _htApplyCareerGoalPrefill() after Step 4 rows exist.
   var _htPrefillParams = new URLSearchParams(window.location.search);
   var _htPendingCareerGoal = _htPrefillParams.get('career_goal') || localStorage.getItem('ht_career_goal') || '';
-  localStorage.removeItem('ht_career_goal');
-  localStorage.removeItem('ht_career_goal_set');
 
   window._htApplyCareerGoalPrefill = function() {
     var goal = _htPendingCareerGoal;
     if (!goal || typeof RETAIL_POSITIONS === 'undefined') return;
     _htPendingCareerGoal = ''; // consume once
+    localStorage.removeItem('ht_career_goal');
+    localStorage.removeItem('ht_career_goal_set');
 
     // Match against retail position catalog (exact or canonical)
     var goalNorm = trLower(goal.trim());
