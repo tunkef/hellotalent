@@ -295,7 +295,8 @@
       var trashBtn = document.createElement('button');
       trashBtn.type = 'button';
       trashBtn.title = 'Sil';
-      trashBtn.style.cssText = 'padding:2px 4px;border:none;background:none;color:var(--text-muted,#6B7280);font-size:14px;cursor:pointer;opacity:0;transition:opacity .15s;line-height:1;';
+      var _isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+      trashBtn.style.cssText = 'padding:2px 4px;border:none;background:none;color:var(--text-muted,#6B7280);font-size:14px;cursor:pointer;transition:opacity .15s;line-height:1;' + (_isTouchDevice ? 'opacity:0.5;' : 'opacity:0;');
       trashBtn.textContent = '\uD83D\uDDD1\uFE0F';
       trashBtn.addEventListener('click', function(e) { e.stopPropagation(); softDeleteMessage(msg.id); });
       rightCol.appendChild(trashBtn);
@@ -305,7 +306,8 @@
       });
       row.addEventListener('mouseleave', function() {
         row.style.background = isUnread ? 'rgba(201,78,40,0.04)' : 'var(--bg-surface,white)';
-        trashBtn.style.opacity = '0';
+        if (!_isTouchDevice) trashBtn.style.opacity = '0';
+        else trashBtn.style.opacity = '0.5';
       });
     }
     row.appendChild(rightCol);
@@ -388,7 +390,7 @@
 
     // Composer
     var composer = document.createElement('div');
-    composer.style.cssText = 'display:flex;align-items:flex-end;gap:8px;padding:10px 14px;border-top:1px solid var(--border-subtle,#E5E3DF);flex-shrink:0;background:var(--bg-surface,white);';
+    composer.style.cssText = 'display:flex;align-items:flex-end;gap:8px;padding:10px 14px;border-top:1px solid var(--border-subtle,#E5E3DF);flex-shrink:0;background:var(--bg-surface,white);position:sticky;bottom:0;z-index:1;';
     var textarea = document.createElement('textarea');
     textarea.placeholder = 'Yan\u0131t yaz...';
     textarea.maxLength = 5000;
@@ -440,7 +442,7 @@
     overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:900;display:flex;align-items:flex-end;justify-content:center;padding:0;';
 
     var sheet = document.createElement('div');
-    sheet.style.cssText = 'background:var(--bg-surface,white);width:100%;max-width:480px;height:90vh;border-radius:16px 16px 0 0;display:flex;flex-direction:column;box-shadow:0 -4px 40px rgba(0,0,0,0.12);';
+    sheet.style.cssText = 'background:var(--bg-surface,white);width:100%;max-width:480px;max-height:90vh;max-height:90dvh;height:100%;border-radius:16px 16px 0 0;display:flex;flex-direction:column;box-shadow:0 -4px 40px rgba(0,0,0,0.12);';
 
     // Back button for mobile
     var backRow = document.createElement('div');
