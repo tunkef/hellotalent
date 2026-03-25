@@ -150,8 +150,13 @@
     var isLocked = currentTab === 'premium' && !_isPremiumUser;
     var html = '';
 
+    var _allDemo = campaigns.length > 0 && campaigns.every(function(c) { return c.demo === true; });
+
     if (!isLocked) {
       /* Freemium: carousel + filters + bento */
+      if (_allDemo) {
+        html += '<div style="background:var(--bg,#F7F6F4);border:1px solid var(--border-subtle,#E5E3DF);border-radius:10px;padding:10px 14px;margin-bottom:16px;font-size:12px;color:var(--muted);line-height:1.5;">Markalar\u0131n kampanyalar\u0131 yak\u0131nda burada yay\u0131nlanacak. A\u015Fa\u011F\u0131daki kartlar \u00F6rnek i\u00E7eriktir.</div>';
+      }
       if (featured.length > 0) {
         html += '<div class="tk-section-head"><div class="tk-section-title">\u00D6ne \u00C7\u0131kan F\u0131rsatlar</div></div>';
         html += '<div class="tk-carousel-wrap"><div class="tk-carousel-track" id="tk-carousel">';

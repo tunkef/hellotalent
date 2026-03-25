@@ -52,9 +52,9 @@ var FEATURES = [
 ];
 
 var PLANS = [
-  { name: 'Ayl\u0131k', price: '149', period: '/ay', desc: 'Esnek kullan\u0131m, istedi\u011Fin zaman iptal et.', highlight: false },
-  { name: 'Y\u0131ll\u0131k', price: '99', period: '/ay', desc: 'Y\u0131ll\u0131k \u00F6deme ile %33 tasarruf. En pop\u00FCler plan.', highlight: true },
-  { name: 'Kariyer', price: '249', period: 'tek seferlik', desc: '3 ay s\u00FCreli tam eri\u015Fim. \u0130\u015F arama d\u00F6nemine \u00F6zel.', highlight: false }
+  { name: 'Ayl\u0131k', price: '149', period: '/ay', annual: '1.788 TL/y\u0131l', desc: 'Esnek kullan\u0131m, istedi\u011Fin zaman iptal et.', highlight: false },
+  { name: 'Y\u0131ll\u0131k', price: '99', period: '/ay', annual: '1.188 TL/y\u0131l', desc: 'Y\u0131ll\u0131k \u00F6deme ile %33 tasarruf (600 TL). En pop\u00FCler plan.', highlight: true },
+  { name: 'Kariyer', price: '249', period: 'tek seferlik', annual: null, desc: '3 ay s\u00FCreli tam eri\u015Fim. \u0130\u015F arama d\u00F6nemine \u00F6zel.', highlight: false }
 ];
 
 /* ════════════════════════════════════════════════
@@ -160,6 +160,7 @@ function render() {
     html += '<div class="pm-plan-name">' + p.name + '</div>';
     html += '<div class="pm-plan-price">' + p.price + '<span> TL</span></div>';
     html += '<div class="pm-plan-period">' + p.period + '</div>';
+    if (p.annual) html += '<div class="pm-plan-annual" style="font-size:11px;color:var(--muted);margin-top:2px;">' + p.annual + '</div>';
     html += '<div class="pm-plan-desc">' + p.desc + '</div>';
     html += '<button class="pm-plan-cta ' + (p.highlight ? 'verm' : 'outline') + '">' + (p.highlight ? 'Hemen Ba\u015Fla' : 'Se\u00E7') + '</button>';
     html += '</div>';
