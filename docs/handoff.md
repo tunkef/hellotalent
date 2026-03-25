@@ -587,6 +587,50 @@ profil.html: 3079 → 1532 satır (−50%). Kalan inline: 3 boot-critical micro-
 - `p3.regression.spec.js`: stale `bento-grid` → `mk-bento-grid` class expectation — `99a21b3`
 - Playwright: 42/42 pass (0 failures, CI email alert resolved)
 
+### Session 22 — 26 Mart 2026 (Support Center Phase 1 + 1.1 — Destek Merkezi)
+
+**Candidate-facing Support Center — live end-to-end.**
+
+**Phase 1 — Core infrastructure:**
+- `profil-destek.js`: new lazy-loaded module (708 lines), entry via avatar dropdown above Ayarlar
+- `panel-destek` shell in profil.html, breadcrumb label, Cmd+K palette entry, lazy-load hook in switchPanel
+- 3 tabs: Yardım Makaleleri, Talep Oluştur, Taleplerim
+- Migration `20260325204647`: `support_articles` (6 seed), `support_tickets`, `support_ticket_messages` tables
+- `create_support_ticket` RPC: atomic ticket + first message + 2 email_outbox inserts
+- RLS: candidates read own tickets/messages only, articles readable by authenticated
+- `email-send` Edge Function: `support_ticket_confirmation` (candidate) + `support_ticket_internal_alert` (support@hellotalent.ai) templates
+- Email pipeline verified: both types `sent` via Resend, no failures
+
+**Phase 1.1 — Polish passes:**
+- Ticket detail view: click row → inline detail with ticket number, status, description, messages
+- Help article Turkish copy polish (migration `20260325212309`): proper ş/ı/ö/ü/ç, natural tone
+- Success state: warmer copy, trust hint about Taleplerim tracking
+- Empty state: dual CTAs (Talep Oluştur + Makalelere Göz At)
+- Form UX: category-aware placeholders (SUBJECT_HINTS), description helper text, friendly validation, form reset on tab return, trust note next to submit
+- Mobile: tab scroll, iOS zoom prevention (16px inputs), full-width CTA, tighter spacing at ≤600px
+- Cache-bust: `profil-destek.js?v=20260326a`
+
+**Commits:** `3edc266` (Phase 1), `566bfd1` (Phase 1.1 polish), `3c6255a` (cache bust)
+
+**Live smoke verified (26 Mart 2026):**
+- ✅ Avatar dropdown → Destek Merkezi above Ayarlar
+- ✅ Panel loads, #destek hash, breadcrumb correct
+- ✅ 5 category cards, 6 articles with proper Turkish
+- ✅ Article detail + CTA pre-fills category
+- ✅ Category-aware placeholder, helper text, friendly validation
+- ✅ Ticket creation → HT-000001 → success state
+- ✅ Taleplerim → ticket list → detail view → back to list
+- ✅ Email: both `support_ticket_confirmation` + `support_ticket_internal_alert` → `sent`
+- ✅ Mobile: no horizontal overflow at 390×844, 375×667, 360×800
+
+**Intentionally left for future phases:**
+- [ ] Support reply/thread UI (candidate replies to tickets)
+- [ ] Admin support queue / inbox
+- [ ] Live chat
+- [ ] Inbound email parsing
+- [ ] File/screenshot attachment on tickets
+- [ ] Support article search
+
 ### Sonraki Adımlar
 - [x] ~~Migration 042 → competency tabloları~~ ✅ Deployed
 - [x] ~~Mülakat Koçu unification (Yetkinlik + İş Görüşmeleri → tek ürün)~~ ✅ Session 7
