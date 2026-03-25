@@ -250,6 +250,10 @@ function _htApplyCareerGoalPrefill() {
       loadViewersCard(cid);
     })(_loadedDBData.profile.id);
   }
+
+  // Signal that async bootstrap is complete — hash restore waits for this
+  window._htBootstrapDone = true;
+  document.dispatchEvent(new Event('ht:bootstrap-done'));
 })();
 
 // ── Step-init orchestration ───────────────────────

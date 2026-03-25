@@ -268,10 +268,16 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 
-  // Restore panel from URL hash on page load
+  // Restore panel from URL hash — waits for bootstrap to finish so it doesn't get overridden
   var hashPanel = window.location.hash.replace('#', '');
   if (hashPanel && document.getElementById('panel-' + hashPanel)) {
-    setTimeout(function() { switchPanel(hashPanel); }, 300);
+    if (window._htBootstrapDone) {
+      switchPanel(hashPanel);
+    } else {
+      document.addEventListener('ht:bootstrap-done', function() {
+        switchPanel(hashPanel);
+      }, { once: true });
+    }
   }
 
   // Dashboard buttons

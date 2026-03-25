@@ -1,5 +1,5 @@
 # hellotalent.ai — Technical Handoff Document
-> Son güncelleme: 25 Mart 2026 (Session 21 — Wizard audit + Step 4 simplification + Phase 2/3 deploys)
+> Son güncelleme: 25 Mart 2026 (Session 21 — Wizard audit + Step 4 simplification + Phase 2/3 deploys + profil.html extraction)
 > Bu doküman, projenin mevcut durumunu, tamamlanan işleri ve kalan backlog'u kapsar.
 > Yeni bir chat/session başlatırken bu dosyayı referans olarak kullanın.
 
@@ -513,6 +513,35 @@ CREATE supabase/migrations/20260325084751_step4_simplification.sql
 - Hedef Pozisyon kataloğu sadece `Mağazacılık / Perakende` sektöründen geliyor. Diğer sektör rolleri (Konaklama, Sağlık, Finans, Havacılık, Gıda) henüz Step 4 dropdown'ında yok — bunlar Step 2 deneyim kartlarında seçilebilir ama hedef pozisyon olarak seçilemez.
 - `rol_ailesi` fallback `"Diğer"` değerine düşer — legacy veya katalog dışı pozisyon değerleri için.
 - Brand interest auto-follow additive only — wizard'dan silinen marka takibi kaldırmaz (manual follows korunuyor).
+
+### Profil Sayfası Modül Haritası (Session 21 sonrası)
+
+profil.html inline script ~3079 satırdan ~1530'a indirildi (extraction oranı: %50+). Kalan inline: tema FOUC önleme, Sentry init, ht_track stub (boot-critical, extract edilemez).
+
+**Yükleme sırası (script tag order):**
+
+| # | Dosya | Sorumluluk | Satır |
+|---|-------|-----------|-------|
+| 1 | shared.js | Supabase config (HT.getSupa) | — |
+| 2 | profil-core.js | Globals: supabase, currentUser, _loadedDBData, val, trLower | ~437 |
+| 3 | profil-data.js | Referans veri: TUR_ILLER, BRAND_DB, SEKTOR_ROL_MAP | — |
+| 4 | profil-ui.js | Wizard core: step init/collect, save RPC, load, helpers | ~1928 |
+| 5-9 | profil-locations/summary/genel/visibility/preview/cv | Extracted domain modules | — |
+| 10-14 | profil-markalar/settings/teklifler/inbox/yetkinlik/mulakatkocu/premium | Feature modules | — |
+| 15 | **profil-wizard.js** | Wizard state machine, validation, panel switching, mobile sidebar | ~339 |
+| 16 | **profil-draft.js** | setVal, saveDraft, loadDraft, clearDraft, applyDraft | ~188 |
+| 17 | **profil-helpers.js** | [data-panel] delegation, refreshAfterSettingsSave, visibility helpers | ~85 |
+| 18 | **profil-kimbakti.js** | Kim Baktı panel + lab card (loadViewersCard) | ~291 |
+| 19 | **profil-bootstrap.js** | Auth, DB load, step-init orchestration, career_goal prefill | ~283 |
+| 20 | **profil-events.js** | DOMContentLoaded event wiring, Cmd+K, avatar dropdown, page glue | ~390 |
+
+**Bold** = Session 21 extraction. Sıralama kritik: draft→wizard→helpers→kimbakti→bootstrap→events.
+
+**Cross-file global contract:**
+- `wizStep` (var): profil-wizard.js tanımlar, profil-draft.js okur/yazar
+- `wizardDirty` (var): profil-wizard.js tanımlar, profil-ui.js + profil-events.js yazar
+- `switchPanel`: profil-wizard.js tanımlar, profil-helpers/events/genel/inbox + inline delegation çağırır
+- `_htBootstrapDone` + `ht:bootstrap-done` event: profil-bootstrap.js set eder, profil-events.js hash restore için bekler
 
 ### Sonraki Adımlar
 - [x] ~~Migration 042 → competency tabloları~~ ✅ Deployed

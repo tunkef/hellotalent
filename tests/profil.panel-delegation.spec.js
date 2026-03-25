@@ -11,7 +11,8 @@ test.describe('profil.html — panel [data-panel] delegation', () => {
   let html;
 
   test.beforeAll(() => {
-    html = fs.readFileSync(path.join(__dirname, '..', 'profil.html'), 'utf8');
+    // Delegation handler was extracted from profil.html to profil-helpers.js
+    html = fs.readFileSync(path.join(__dirname, '..', 'profil-helpers.js'), 'utf8');
   });
 
   test('closest [data-panel] handler ignores main.panel roots', () => {
