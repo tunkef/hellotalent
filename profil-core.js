@@ -402,14 +402,32 @@ const ROL_AILELERI = Object.keys(SEKTOR_ROL_MAP['Ma\u011fazac\u0131l\u0131k / Pe
 
 const MUSAITLIK_SECENEKLERI = ['Hemen','2 Hafta \u0130\u00e7inde','1 Ay \u0130\u00e7inde','2+ Ay \u0130\u00e7inde'];
 
-// Career type options in canonical order (for consistent DB storage)
+// Career type options — single-select, 2 options (lider removed; collapses into yukari)
 var CAREER_TYPE_OPTIONS = [
-  {value: 'yukari', label: 'Yukari (Terfi)'},
-  {value: 'yatay', label: 'Yatay (Farkli Alan)'},
-  {value: 'lider', label: 'Liderlik'}
+  {value: 'yukari', label: 'Yukar\u0131 Terfi'},
+  {value: 'yatay', label: 'Yatay Ge\u00e7i\u015f'}
 ];
-var CAREER_TYPE_ORDER = ['yukari','yatay','lider'];
+var CAREER_TYPE_ORDER = ['yukari','yatay'];
 var selectedCareerTypes = [];
+
+// Career type DB key → Turkish display label (for preview/surfaces)
+var CAREER_TYPE_LABELS = { yukari: 'Yukar\u0131 Terfi', yatay: 'Yatay Ge\u00e7i\u015f' };
+
+// Flat retail position catalog from SEKTOR_ROL_MAP (Mağazacılık / Perakende only).
+// Used by Step 4 target-role dropdown. Built once at parse time.
+var RETAIL_POSITIONS = [];
+var POSITION_TO_FAMILY = {}; // rol_unvani → rol_ailesi reverse lookup
+(function() {
+  var retail = SEKTOR_ROL_MAP['Ma\u011fazac\u0131l\u0131k / Perakende'];
+  if (!retail) return;
+  Object.keys(retail).forEach(function(family) {
+    (retail[family] || []).forEach(function(title) {
+      RETAIL_POSITIONS.push(title);
+      POSITION_TO_FAMILY[title] = family;
+    });
+  });
+  RETAIL_POSITIONS.sort(function(a, b) { return trLower(a).localeCompare(trLower(b), 'tr'); });
+})();
 
 const MAAS_ARALIKLARI = ['','25000-30000','30000-35000','35000-45000','45000-60000','60000-80000','80000-100000','100000-150000','150000+'];
 

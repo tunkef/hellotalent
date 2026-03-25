@@ -814,14 +814,10 @@ if (window.Sentry) {
     <div class="wiz-step-desc">Hedef pozisyonlarını, çalışma tercihlerini ve ilgilendiğin markaları belirt.</div>
     <div id="step4-content">
 
-      <!-- KARIYER HEDEFI -->
+      <!-- KARIYER YONELIMI -->
       <div class="field">
-        <label for="f-career-goal">Kariyer Hedefi</label>
-        <textarea id="f-career-goal" rows="3" placeholder="Kariyer hedefini kısaca yaz..."></textarea>
-      </div>
-      <div class="field">
-        <div class="card-title mb-4">Kariyer Yönelimi</div>
-        <p class="helper-text" style="font-size:13px;color:var(--muted);margin:0 0 10px 0;">Birden fazla yönelim seçebilirsin.</p>
+        <div class="card-title mb-4">Kariyer Y\u00f6nelimi</div>
+        <p class="helper-text" style="font-size:13px;color:var(--muted);margin:0 0 10px 0;">Kariyerinde hangi y\u00f6nde ilerlemek istiyorsun?</p>
         <div id="career-type-checks" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
       </div>
 
@@ -831,7 +827,7 @@ if (window.Sentry) {
       <div class="card-title mb-4">Hedef Pozisyonlar</div>
       <p class="helper-text" style="font-size:13px;color:var(--muted);margin:0 0 12px 0;line-height:1.5;">Hedef rollerin, seni açık pozisyonlarla eşleştirmemize yardımcı olur.</p>
       <div id="target-roles-container"></div>
-      <button class="btn btn-secondary btn-sm mt-8" id="btn-add-role" type="button">+ Rol Ekle</button>
+      <button class="btn btn-secondary btn-sm mt-8" id="btn-add-role" type="button">+ Pozisyon Ekle</button>
 
       <hr class="section-divider">
 
@@ -1995,13 +1991,18 @@ function applyDraft(draft) {
         c.classList.toggle('selected', wp.tercih_segmentler.indexOf(c.textContent) !== -1);
       });
     }
-    setVal('f-career-goal', wp.career_goal);
-    // Career type multi-select restore
+    // Career type single-select restore (legacy tolerance: lider→yukari)
     if (wp.career_type) {
       var types = typeof wp.career_type === 'string' ? wp.career_type.split(',') : [];
-      selectedCareerTypes = types.slice();
+      // Legacy normalization: lider→yukari, single-select
+      var _ctNorm = null;
+      for (var _cti = 0; _cti < types.length; _cti++) {
+        if (types[_cti] === 'yukari' || types[_cti] === 'lider') { _ctNorm = 'yukari'; break; }
+        if (types[_cti] === 'yatay') { _ctNorm = 'yatay'; }
+      }
+      selectedCareerTypes = _ctNorm ? [_ctNorm] : [];
       document.querySelectorAll('#career-type-checks .check-item').forEach(function(btn) {
-        btn.classList.toggle('checked', types.indexOf(btn.dataset.value) !== -1);
+        btn.classList.toggle('checked', selectedCareerTypes.indexOf(btn.dataset.value) !== -1);
       });
     }
   }
@@ -2140,9 +2141,15 @@ function reapplyDynamicFields() {
     // Career type check-item buttons
     if (wp.career_type) {
       var types = typeof wp.career_type === 'string' ? wp.career_type.split(',') : [];
-      selectedCareerTypes = types.slice();
+      // Legacy normalization: lider→yukari, single-select
+      var _ctNorm = null;
+      for (var _cti = 0; _cti < types.length; _cti++) {
+        if (types[_cti] === 'yukari' || types[_cti] === 'lider') { _ctNorm = 'yukari'; break; }
+        if (types[_cti] === 'yatay') { _ctNorm = 'yatay'; }
+      }
+      selectedCareerTypes = _ctNorm ? [_ctNorm] : [];
       document.querySelectorAll('#career-type-checks .check-item').forEach(function(btn) {
-        btn.classList.toggle('checked', types.indexOf(btn.dataset.value) !== -1);
+        btn.classList.toggle('checked', selectedCareerTypes.indexOf(btn.dataset.value) !== -1);
       });
     }
   }
@@ -2295,15 +2302,30 @@ function reapplyDynamicFields() {
     })(_loadedDBData.profile.id);
   }
 
-  // ── Career goal override: query param > localStorage > draft/DB ──
+  // ── Career goal prefill: map incoming value to first target position if it matches ──
   // Other pages (kariyer.html, giris.html etc.) send ?career_goal= or set localStorage.ht_career_goal
   var urlParams = new URLSearchParams(window.location.search);
   var incomingGoal = urlParams.get('career_goal') || localStorage.getItem('ht_career_goal') || '';
   localStorage.removeItem('ht_career_goal');
   localStorage.removeItem('ht_career_goal_set');
-  if (incomingGoal) {
-    var cgField = document.getElementById('f-career-goal');
-    if (cgField) cgField.value = incomingGoal;
+  if (incomingGoal && typeof RETAIL_POSITIONS !== 'undefined') {
+    // Try to match against retail position catalog (exact or canonical)
+    var _goalNorm = trLower(incomingGoal.trim());
+    var matchedPos = RETAIL_POSITIONS.find(function(p) { return trLower(p) === _goalNorm; });
+    if (!matchedPos && typeof canonicalizeRole === 'function') {
+      var _canon = canonicalizeRole(incomingGoal);
+      if (_canon && _canon.canonical) {
+        matchedPos = RETAIL_POSITIONS.find(function(p) { return trLower(p) === trLower(_canon.canonical); });
+      }
+    }
+    if (matchedPos) {
+      // Prefill first target role row
+      var firstRow = document.querySelector('#target-roles-container .dynamic-row');
+      if (firstRow) {
+        var sel = firstRow.querySelector('select[id$="-unvan"]');
+        if (sel) sel.value = matchedPos;
+      }
+    }
     // Clean the URL without reload
     if (urlParams.has('career_goal')) {
       urlParams.delete('career_goal');

@@ -1,5 +1,5 @@
-/* global supabase, AYRILMA_NEDENLERI, AY_ISIMLERI, BOLUM_DB, BRAND_DB, CALISMA_TIPLERI, CAREER_TYPE_OPTIONS, CAREER_TYPE_ORDER, DIL_LISTESI, DIL_SEVIYELERI, EGITIM_SEVIYELERI, ILCELER, ISTIHDAM_TIPLERI, MAAS_ARALIKLARI, MUSAITLIK_SECENEKLERI, ROL_AILELERI, SEGMENTLER, SEKTOR_ROL_MAP, STORAGE, TAKIM_BUYUKLUKLERI, TUR_ILLER, UNIVERSITE_DB */
-/* global _loadedDBData, applyAllVisibilityMirrorsFromProfile, canonicalizeRole, clearDraft, collectLocations, currentUser, getCurrentEmployerDisplayFromExperiences, ht_track, markWizardDirty, normalizeForDisplay, nullIfEmpty, refreshVisibilitySummary, selectedCareerTypes, syncAccountEmail, titleCaseTR, trLower, updateCompletionUI, updateDashboardSummary, updateMerkezCards, updateMerkezVisState, val, wizardDirty */
+/* global supabase, AYRILMA_NEDENLERI, AY_ISIMLERI, BOLUM_DB, BRAND_DB, CALISMA_TIPLERI, CAREER_TYPE_OPTIONS, CAREER_TYPE_ORDER, DIL_LISTESI, DIL_SEVIYELERI, EGITIM_SEVIYELERI, ILCELER, ISTIHDAM_TIPLERI, MAAS_ARALIKLARI, MUSAITLIK_SECENEKLERI, POSITION_TO_FAMILY, RETAIL_POSITIONS, ROL_AILELERI, SEGMENTLER, SEKTOR_ROL_MAP, STORAGE, TAKIM_BUYUKLUKLERI, TUR_ILLER, UNIVERSITE_DB */
+/* global _ht_follows, _loadedDBData, applyAllVisibilityMirrorsFromProfile, canonicalizeRole, clearDraft, collectLocations, currentUser, getCurrentEmployerDisplayFromExperiences, ht_track, markWizardDirty, normalizeForDisplay, nullIfEmpty, refreshVisibilitySummary, selectedCareerTypes, syncAccountEmail, titleCaseTR, trLower, updateBrandFollowCounter, updateCompletionUI, updateDashboardSummary, updateMerkezCards, updateMerkezVisState, val, wizardDirty */
 // v20260320 ── BRAND/COMPANY ID LOOKUP ──
 // Populated at page load from Supabase; used by makeSmartBrandField + collectExperiences
 var _brandIdLookup = {};   // trLower(brand_name) → { brand_id, company_id }
@@ -1260,7 +1260,7 @@ function initStep4() {
     });
   }
 
-  // Career type — check-item buttons (multi-select, Decision 8)
+  // Career type — single-select check-item buttons
   var ctypeContainer = document.getElementById('career-type-checks');
   if (ctypeContainer) {
     CAREER_TYPE_OPTIONS.forEach(function(opt) {
@@ -1271,11 +1271,14 @@ function initStep4() {
       btn.dataset.value = opt.value;
       if (selectedCareerTypes.indexOf(opt.value) !== -1) btn.classList.add('checked');
       btn.addEventListener('click', function() {
-        btn.classList.toggle('checked');
-        if (btn.classList.contains('checked')) {
-          selectedCareerTypes.push(opt.value);
+        var wasChecked = btn.classList.contains('checked');
+        // Single-select: deselect all first
+        ctypeContainer.querySelectorAll('.check-item').forEach(function(b) { b.classList.remove('checked'); });
+        if (wasChecked) {
+          selectedCareerTypes = [];
         } else {
-          selectedCareerTypes = selectedCareerTypes.filter(function(t) { return t !== opt.value; });
+          btn.classList.add('checked');
+          selectedCareerTypes = [opt.value];
         }
       });
       ctypeContainer.appendChild(btn);
@@ -1286,25 +1289,36 @@ function initStep4() {
 function addTargetRoleRow(data) {
   var container = document.getElementById('target-roles-container');
   if (!container) return;
+  // Limit to 5 target positions
+  if (container.children.length >= 5) return;
   roleCounter++;
   var d = data || {};
   var rowId = 'role-' + roleCounter;
+  var restoreUnvan = d.rol_unvani || '';
 
   var row = document.createElement('div');
   row.className = 'dynamic-row';
   row.id = rowId;
   row.style.position = 'relative';
 
+  // Single dropdown for position title (rol_ailesi derived at save time)
+  var options = (typeof RETAIL_POSITIONS !== 'undefined') ? RETAIL_POSITIONS.slice() : [];
+  // If restoring a saved value not in the current catalog, inject it so it's not lost
+  if (restoreUnvan && options.indexOf(restoreUnvan) === -1) {
+    options.unshift(restoreUnvan);
+  }
+
   var fields = document.createElement('div');
   fields.className = 'field-row';
-  fields.appendChild(makeSelectField('Rol Ailesi', rowId + '-ailesi', ROL_AILELERI, d.rol_ailesi));
-  fields.appendChild(makeField('text', 'Rol Unvani', rowId + '-unvan', 'Ornek: Magaza Muduru', d.rol_unvani));
+  fields.appendChild(makeSelectField('Hedef Pozisyon', rowId + '-unvan', options, restoreUnvan, 'Pozisyon se\u00e7...'));
   row.appendChild(fields);
 
   var delBtn = document.createElement('button');
   delBtn.className = 'btn-del-row';
   delBtn.type = 'button';
-  delBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>';
+  delBtn.textContent = '';
+  // Static SVG icon (no user data)
+  delBtn.innerHTML = DEL_ICON_SVG;
   attachDeleteConfirm(delBtn, function() { row.remove(); if (typeof markWizardDirty === 'function') markWizardDirty(); });
   row.appendChild(delBtn);
 
@@ -1365,37 +1379,32 @@ function renderBrandInterestChips() {
 function collectTargetRoles() {
   var rows = document.querySelectorAll('#target-roles-container .dynamic-row');
   var result = [];
+  var seen = {}; // duplicate prevention
   rows.forEach(function(row) {
     var p = row.id + '-';
     var rawUnvan = nullIfEmpty(val(p + 'unvan'));
-    // Normalize rol_unvani: canonical synonym mapping (fallback to titleCaseTR if no match)
-    if (rawUnvan) {
-      var canonical = typeof canonicalizeRole === 'function' ? canonicalizeRole(rawUnvan) : null;
-      if (canonical && canonical.canonical) {
-        rawUnvan = canonical.canonical;
-      } else {
-        rawUnvan = typeof titleCaseTR === 'function' ? titleCaseTR(rawUnvan) : rawUnvan;
-      }
-    }
-    var item = { rol_ailesi: nullIfEmpty(val(p + 'ailesi')), rol_unvani: rawUnvan };
-    // DB requires both NOT NULL; only send complete rows to avoid constraint violation
-    if (item.rol_ailesi && item.rol_unvani) result.push(item);
+    if (!rawUnvan) return;
+    // Derive rol_ailesi from retail position catalog
+    var family = (typeof POSITION_TO_FAMILY !== 'undefined') ? POSITION_TO_FAMILY[rawUnvan] : null;
+    if (!family) family = 'Di\u011fer'; // fallback for legacy/custom values
+    // Deduplicate
+    if (seen[rawUnvan]) return;
+    seen[rawUnvan] = true;
+    result.push({ rol_ailesi: family, rol_unvani: rawUnvan });
   });
   return result;
 }
 
 function collectWorkPrefs() {
-  // Career type: canonical order sort (yukari < yatay < lider)
-  var sortedCareerTypes = selectedCareerTypes.slice().sort(function(a, b) {
-    return CAREER_TYPE_ORDER.indexOf(a) - CAREER_TYPE_ORDER.indexOf(b);
-  });
+  // Career type: single-select (max 1 value)
+  var ct = selectedCareerTypes.length > 0 ? selectedCareerTypes[0] : null;
   return {
     musaitlik: nullIfEmpty(selectedMusaitlik),
     calisma_tipleri: selectedCalismaTipleri,
     maas_beklenti: nullIfEmpty(val('f-maas')),
     tercih_segmentler: selectedSegmentler,
-    career_goal: nullIfEmpty(val('f-career-goal')),
-    career_type: sortedCareerTypes.length > 0 ? sortedCareerTypes.join(',') : null
+    career_goal: null,
+    career_type: ct
   };
 }
 
@@ -1607,6 +1616,19 @@ async function saveProfileRPC(onComplete) {
       } : null;
       _loadedDBData.brand_interests = p_brand_interests.map(function(b) { return b.marka; });
       _loadedDBData.locations = p_locations.slice();
+      // Sync brand follows if markalar panel was loaded (additive only)
+      if (typeof _ht_follows !== 'undefined' && _ht_follows instanceof Set) {
+        var _followsDirty = false;
+        p_brand_interests.forEach(function(b) {
+          if (b.brand_id && !_ht_follows.has(b.brand_id)) {
+            _ht_follows.add(parseInt(b.brand_id));
+            _followsDirty = true;
+          }
+        });
+        if (_followsDirty && typeof updateBrandFollowCounter === 'function') {
+          updateBrandFollowCounter();
+        }
+      }
     }
     if (typeof applyAllVisibilityMirrorsFromProfile === 'function') applyAllVisibilityMirrorsFromProfile();
     else {

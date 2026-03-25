@@ -1,5 +1,5 @@
 # hellotalent.ai — Technical Handoff Document
-> Son güncelleme: 22 Mart 2026 (Session 18 — Genel Bakış editorial home rebuild, coach media system V1)
+> Son güncelleme: 25 Mart 2026 (Session 21 — Wizard audit + Step 4 simplification + Phase 2/3 deploys)
 > Bu doküman, projenin mevcut durumunu, tamamlanan işleri ve kalan backlog'u kapsar.
 > Yeni bir chat/session başlatırken bu dosyayı referans olarak kullanın.
 
@@ -438,6 +438,79 @@ Cache: `profil-ui.js?v=20260320d`, `profil-settings.js?v=20260320d`
 - `searchCandidates()` → `p_position_id` yalnızca bayrak `true` iken RPC'ye eklenir (migration yokken güvenli kapanma için tasarlanmıştı; artık migration da canlı).
 - Git: `a8fc46e` — `feat(ik): enable position-aware scoring after migration 050 deploy` (push: `origin/main`).
 - Doğrulama notu: Oturumsuz `ik.html` ziyareti `giris.html?tab=ik` yönlendirmesi beklenen davranış; tam E2E için işveren oturumu + pozisyon seçimi + aday listesi smoke önerilir.
+
+### Session 21 — 25 Mart 2026 (Wizard Audit + Step 4 Simplification)
+
+**Full wizard audit completed** — 5-phase fix/verification cycle covering save/restore consistency, DB contract alignment, employer visibility, scoring, and Step 4 UX simplification.
+
+**Phase 1 — Frontend wizard fixes (profil.html, profil-ui.js, ik.html):**
+- Fixed `selectedMüsaitlik` → `selectedMusaitlik` typo in draft/DB restore (data-loss bug)
+- Fixed draft month restore (integer→string mismatch)
+- Fixed save-success cache: all 8 preview slices now sync without reload
+- Fixed pozisyon validation for `__custom__` sentinel
+- Removed misleading `*` from Sektör and Hedef Pozisyonlar labels
+- ik.html dashboard count now uses compound visibility rule
+- Commit: `e7bc25a`
+
+**Phase 2 — DB: clearable fields + completion + visibility (migration `20260325072721`):**
+- Optional profile fields use `CASE WHEN p_profile ? 'key'` pattern (omission-safe, clearable)
+- `ilk_deneyim = true` awards 25 experience points in `compute_candidate_profile_completion`
+- `check_candidate_visible_to_employer` + `send_employer_message` use compound visibility rule
+- ✅ Deployed to Supabase
+
+**Phase 3 — DB: location prefs + role-family fix (migration `20260325073331`):**
+- City filter and scoring include `candidate_location_preferences` (preferred work cities)
+- Role-family heuristic removed (was dead code / cross-candidate noise)
+- Exact target-role match (+18) preserved
+- ✅ Deployed to Supabase
+
+**Step 4 Simplification — Frontend + DB (migration `20260325084751`):**
+- Removed `Kariyer Hedefi` free-text textarea
+- `Kariyer Yönelimi`: reduced to 2 single-select options (Yukarı Terfi / Yatay Geçiş), `lider` removed
+- `Hedef Pozisyonlar`: Rol Ailesi removed from candidate UI; single dropdown from retail catalog; max 5; dedup
+- `rol_ailesi` derived from `POSITION_TO_FAMILY` reverse lookup at save time
+- DB: dropped stale `candidate_target_roles_rol_ailesi_check` (001 whitelist), replaced with non-empty text guard
+- DB: normalized legacy `career_type` values, added CHECK for `yukari|yatay|null`
+- DB: `save_candidate_profile` now auto-follows brands via `candidate_brand_follows` (ON CONFLICT DO NOTHING)
+- Preview: career_type shows Turkish labels; career_goal italic quote removed
+- `?career_goal=` prefill remapped to first target-position dropdown
+- Default blank target-role row no longer inflates completion/score
+- Brand follow counter refreshes after wizard save without reload (if markalar panel loaded)
+- ✅ Migration deployed to Supabase
+
+**Dosya Değişiklikleri:**
+```
+EDIT  profil.html (Step 4 HTML, applyDraft, reapplyDynamicFields, career_goal prefill)
+EDIT  profil-ui.js (addTargetRoleRow, collectTargetRoles, collectWorkPrefs, career type init, save cache, follow sync)
+EDIT  profil-core.js (CAREER_TYPE_OPTIONS, RETAIL_POSITIONS, POSITION_TO_FAMILY, CAREER_TYPE_LABELS)
+EDIT  profil-preview.js (career_type Turkish labels, career_goal removed)
+EDIT  profil-summary.js (target-role completion truth, hint text)
+EDIT  ik.html (dashboard count compound visibility)
+CREATE supabase/migrations/20260325072721_phase2_clearable_fields_completion_visibility.sql
+CREATE supabase/migrations/20260325073331_phase3_role_family_and_location_prefs.sql
+CREATE supabase/migrations/20260325084751_step4_simplification.sql
+```
+
+**Migration Deploy Durumu (Session 21):**
+| Migration | İçerik | Supabase |
+|-----------|--------|----------|
+| `20260325072721` | clearable fields + ilk_deneyim completion + compound visibility | ✅ Deployed |
+| `20260325073331` | preferred location filter/scoring + role-family disabled | ✅ Deployed |
+| `20260325084751` | Step 4 simplification: CHECK drop + career_type normalize + brand auto-follow | ✅ Deployed |
+
+**Kalan manuel smoke testler (akşam):**
+- [ ] Wizard Step 4: Kariyer Hedefi textarea yok, 2 yönelim, tek dropdown/pozisyon, Rol Ailesi yok
+- [ ] Save: `Mağaza Müdürü` seç → DB'de `rol_ailesi = "Mağaza Yönetimi"` doğrula
+- [ ] Preview: `Yukarı Terfi` label (not `yukari`), career_goal italic quote yok
+- [ ] Brand interest auto-follow: Zara ekle → save → `candidate_brand_follows` satırı doğrula
+- [ ] `?career_goal=Mağaza%20Müdürü` → ilk dropdown prefilled
+- [ ] Boş default satır completion/score'u şişirmiyor
+- [ ] İşveren exact match: `Mağaza Müdürü` hedefleyen aday → `Hedef rol: tam eşleşme` tag'i
+
+**Bilinen kısıtlamalar:**
+- Hedef Pozisyon kataloğu sadece `Mağazacılık / Perakende` sektöründen geliyor. Diğer sektör rolleri (Konaklama, Sağlık, Finans, Havacılık, Gıda) henüz Step 4 dropdown'ında yok — bunlar Step 2 deneyim kartlarında seçilebilir ama hedef pozisyon olarak seçilemez.
+- `rol_ailesi` fallback `"Diğer"` değerine düşer — legacy veya katalog dışı pozisyon değerleri için.
+- Brand interest auto-follow additive only — wizard'dan silinen marka takibi kaldırmaz (manual follows korunuyor).
 
 ### Sonraki Adımlar
 - [x] ~~Migration 042 → competency tabloları~~ ✅ Deployed

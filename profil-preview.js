@@ -1,4 +1,4 @@
-/* global _escHtml, _loadedDBData, currentUser */
+/* global _escHtml, _loadedDBData, CAREER_TYPE_LABELS, currentUser */
 // ═══════════════════════════════════════════════════
 // profil-preview.js — Profile Preview Drawer
 // Extracted from profil-ui.js to reduce change-risk.
@@ -175,7 +175,11 @@ function openProfilePreview() {
       if (wp.tercih_segmentler && wp.tercih_segmentler.length > 0) {
         wp.tercih_segmentler.forEach(function(s) { tags.push(s); });
       }
-      if (wp.career_type) tags.push(wp.career_type);
+      if (wp.career_type) {
+        var _ctLabel = (typeof CAREER_TYPE_LABELS !== 'undefined' && CAREER_TYPE_LABELS[wp.career_type])
+          ? CAREER_TYPE_LABELS[wp.career_type] : wp.career_type;
+        tags.push(_ctLabel);
+      }
     }
     locs.forEach(function(loc) {
       if (loc.sehir) tags.push('\uD83D\uDCCD ' + loc.sehir);
@@ -189,9 +193,6 @@ function openProfilePreview() {
         html += '<span class="pp-tag">' + _escHtml(t) + '</span>';
       });
       html += '</div>';
-    }
-    if (wp && wp.career_goal) {
-      html += '<div style="font-size:11px;color:var(--text-muted);margin-top:8px;font-style:italic;">"\u201C' + _escHtml(wp.career_goal) + '\u201D</div>';
     }
     html += '</div></div>';
   }

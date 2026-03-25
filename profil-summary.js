@@ -184,7 +184,14 @@ function updateMerkezCards() {
   var hasCalisma = typeof selectedCalismaTipleri !== 'undefined' && selectedCalismaTipleri.length > 0;
   var hasMusaitlik = typeof selectedMusaitlik !== 'undefined' && !!selectedMusaitlik;
   var hasMaas = !!val('f-maas');
-  var hasTarget = document.querySelectorAll('#target-roles-container .dynamic-row').length > 0;
+  var hasTarget = (function() {
+    var rows = document.querySelectorAll('#target-roles-container .dynamic-row');
+    for (var _i = 0; _i < rows.length; _i++) {
+      var sel = rows[_i].querySelector('select[id$="-unvan"]');
+      if (sel && sel.value) return true;
+    }
+    return false;
+  })();
   var hasCareer = typeof selectedCareerTypes !== 'undefined' && selectedCareerTypes.length > 0;
   var cityKeys = typeof selectedLocations !== 'undefined' ? Object.keys(selectedLocations) : [];
 
@@ -429,7 +436,13 @@ function calculateProfileScore() {
   if (val('f-maas'))                               score += 5;
 
   // ── E) Targeting / Intent — 15 points ──
-  if (document.querySelectorAll('#target-roles-container .dynamic-row').length > 0) score += 8;
+  var _trRows = document.querySelectorAll('#target-roles-container .dynamic-row');
+  var _hasFilledTarget = false;
+  for (var _ti = 0; _ti < _trRows.length; _ti++) {
+    var _tSel = _trRows[_ti].querySelector('select[id$="-unvan"]');
+    if (_tSel && _tSel.value) { _hasFilledTarget = true; break; }
+  }
+  if (_hasFilledTarget) score += 8;
   if (selectedCareerTypes.length > 0)              score += 7;
 
   return Math.min(score, 100);
@@ -443,10 +456,16 @@ function getProfileScoreHints() {
 
   if (!hasExp)
     hints.push('Deneyim bilgisi ekle veya deneyimsiz kutusunu isaretle');
-  if (document.querySelectorAll('#target-roles-container .dynamic-row').length === 0)
-    hints.push('Hedef pozisyon ekle — markalar seni daha kolay bulur');
+  var _hintRows = document.querySelectorAll('#target-roles-container .dynamic-row');
+  var _hintHasTarget = false;
+  for (var _hi = 0; _hi < _hintRows.length; _hi++) {
+    var _hSel = _hintRows[_hi].querySelector('select[id$="-unvan"]');
+    if (_hSel && _hSel.value) { _hintHasTarget = true; break; }
+  }
+  if (!_hintHasTarget)
+    hints.push('Hedef pozisyon ekle \u2014 markalar seni daha kolay bulur');
   if (selectedCareerTypes.length === 0)
-    hints.push('Kariyer yonelimi sec (yukari, yatay veya lider)');
+    hints.push('Kariyer y\u00f6nelimi se\u00e7 (Yukar\u0131 Terfi veya Yatay Ge\u00e7i\u015f)');
   if (!val('f-maas'))
     hints.push('Maas beklentini belirt');
   if (Object.keys(selectedLocations).length === 0)
