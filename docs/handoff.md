@@ -1,5 +1,5 @@
 # hellotalent.ai — Technical Handoff Document
-> Son güncelleme: 25 Mart 2026 (Session 21b — Wizard audit + Step 4 simplification + Phase 2/3 deploys + profil.html extraction + mobile stabilization + UX polish + CI fix)
+> Son güncelleme: 26 Mart 2026 (Session 22 — Support Center Phase 1 + 1.1 complete, Destek Merkezi live end-to-end)
 > Bu doküman, projenin mevcut durumunu, tamamlanan işleri ve kalan backlog'u kapsar.
 > Yeni bir chat/session başlatırken bu dosyayı referans olarak kullanın.
 
@@ -1628,6 +1628,7 @@ gizlilik.html, kvkk.html, kullanim-sartlari.html, cerez-politikasi.html
 | profil-mulakatkocu.js | Mülakat Koçu — 7-screen interview coaching flow, 289 questions, competency coaching, development journal. Feed/detail surfaces support coach avatar + uploaded cover image + shared fallback editorial covers |
 | profil-teklifler.js | Teklifler v2 — freemium/premium toggle, carousel, demo campaigns, frosted glass gate |
 | profil-premium.js | Premium panel — features showcase, plan cards, pricing |
+| profil-destek.js | Destek Merkezi — help articles, ticket creation, own tickets list, ticket detail. Lazy-loaded via `_htLoadDestek()` |
 | profil-markalar.js | Markalar panel — brand cards, flip, follow, search, segment pills (extracted from profil-ui.js) |
 | profil.css | ~3000+ lines — all profil dashboard styles (dark mode tokens, semantic variables) |
 
@@ -2138,6 +2139,8 @@ if(sessionStorage.getItem('ht_gate')!=='ok'){window.location.replace('gate.html'
 | 064 | `064_coach_taxonomy_metadata.sql` — category taxonomy refresh (4→6), coach_profiles author metadata, old category migration | ✅ Deployed Session 16 |
 | 065 | `20260322093832_ops_health_rpc.sql` — get_ops_health_stats() + get_ops_failed_emails() RPCs (admin-only, SECURITY DEFINER) | ✅ Deployed Session 17 (SQL Editor) |
 | 066 | `20260322095713_email_outbox_failed_at.sql` — failed_at column + RPC update for truthful failure timing | ✅ Deployed Session 17 (SQL Editor) |
+| 067 | `20260325204647_support_center_phase1.sql` — support_articles + support_tickets + support_ticket_messages + create_support_ticket RPC + email_outbox CHECK + 6 seed articles | ✅ Deployed Session 22 (CLI) |
+| 068 | `20260325212309_support_articles_turkish_polish.sql` — article copy polish (proper Turkish characters + natural tone) | ✅ Deployed Session 22 (CLI) |
 
 ### Markalar TODO
 - [x] ~~Mobil test (390×844)~~ ✅ Touch toggle (`.active` class) eklendi, hover + click ile çalışır
