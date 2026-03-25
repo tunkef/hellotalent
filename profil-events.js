@@ -5,7 +5,9 @@
 // Must load AFTER profil-bootstrap.js (last external before this).
 // ═══════════════════════════════════════════════════
 
-document.addEventListener('DOMContentLoaded', function() {
+// DOMContentLoaded may have already fired by the time this file loads (position 20 in script order).
+// Use readyState check to handle both cases.
+function _htInitEvents() {
   // PostHog: profile page viewed
   ht_track('profile_page_viewed');
 
@@ -268,17 +270,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 
-  // Restore panel from URL hash — waits for bootstrap to finish so it doesn't get overridden
-  var hashPanel = window.location.hash.replace('#', '');
-  if (hashPanel && document.getElementById('panel-' + hashPanel)) {
-    if (window._htBootstrapDone) {
-      switchPanel(hashPanel);
-    } else {
-      document.addEventListener('ht:bootstrap-done', function() {
-        switchPanel(hashPanel);
-      }, { once: true });
-    }
-  }
+  // Hash restore is deferred to the end of DOMContentLoaded — see below
 
   // Dashboard buttons
   var btnStart = document.getElementById('btn-start-wizard');
@@ -390,4 +382,26 @@ document.addEventListener('DOMContentLoaded', function() {
   if (lokOverlay) lokOverlay.addEventListener('click', function(e) {
     if (e.target === this) this.classList.remove('show');
   });
-});
+
+  // ── Hash restore — must run AFTER _htRunStepInits and all wiring ──
+  // Waits for bootstrap-done so async data load doesn't override the panel.
+  var hashPanel = window.location.hash.replace('#', '');
+  if (hashPanel && document.getElementById('panel-' + hashPanel)) {
+    var _applyHash = function() { switchPanel(hashPanel); };
+    if (window._htBootstrapDone) {
+      // Bootstrap already done — use setTimeout(0) to yield after any pending microtasks
+      setTimeout(_applyHash, 0);
+    } else {
+      document.addEventListener('ht:bootstrap-done', function() {
+        setTimeout(_applyHash, 0);
+      }, { once: true });
+    }
+  }
+}
+
+// Fire immediately if DOM already ready, otherwise wait
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', _htInitEvents);
+} else {
+  _htInitEvents();
+}

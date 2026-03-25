@@ -518,6 +518,8 @@ CREATE supabase/migrations/20260325084751_step4_simplification.sql
 
 profil.html inline script ~3079 satırdan ~1530'a indirildi (extraction oranı: %50+). Kalan inline: tema FOUC önleme, Sentry init, ht_track stub (boot-critical, extract edilemez).
 
+**Extraction track: CLOSED.** 6 modül extract edildi (wizard, draft, helpers, kimbakti, bootstrap, events). profil-events.js DOMContentLoaded yerine readyState guard kullanıyor (script position 20'de DCL zaten geçmiş olabiliyor). Hash restore `ht:bootstrap-done` custom event ile senkronize — pre-existing 300ms race fix edildi. Kalan inline JS boot-critical micro-block'lar — gelecekte yeni bir feature gerektirmedikçe ek extraction planlanmıyor.
+
 **Yükleme sırası (script tag order):**
 
 | # | Dosya | Sorumluluk | Satır |
