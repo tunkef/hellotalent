@@ -949,13 +949,13 @@ function injectCSS() {
   css += '.yk-rating-btn.active.strong{background:#059669;color:#fff;border-color:#059669}';
   css += '.yk-rating-btn.active.growing{background:#D97706;color:#fff;border-color:#D97706}';
   css += '.yk-chip-row{display:flex;gap:6px;flex-wrap:wrap}';
-  css += '.yk-chip{font-family:"DM Mono",monospace;font-size:9px;font-weight:600;padding:2px 8px;border-radius:20px;letter-spacing:.3px}';
-  css += '.yk-chip-practice{color:var(--navy,#1E2D5E);background:rgba(30,45,94,.06)}';
-  css += '.yk-chip-journal{color:#2D8A56;background:rgba(45,138,86,.06)}';
+  css += '.yk-chip{font-family:"DM Mono",monospace;font-size:9px;font-weight:600;padding:3px 10px;border-radius:20px;letter-spacing:.3px;border:1px solid transparent}';
+  css += '.yk-chip-practice{color:var(--navy,#1E2D5E);background:rgba(30,45,94,.06);border-color:rgba(30,45,94,.1)}';
+  css += '.yk-chip-journal{color:#2D8A56;background:rgba(45,138,86,.06);border-color:rgba(45,138,86,.1)}';
   css += '.yk-chip-ai{font-weight:700}';
-  css += '.yk-chip-ai-strong{color:#059669;background:rgba(5,150,105,.08)}';
-  css += '.yk-chip-ai-mixed{color:#D97706;background:rgba(217,119,6,.08)}';
-  css += '.yk-chip-ai-needs_work{color:#DC2626;background:rgba(220,38,38,.08)}';
+  css += '.yk-chip-ai-strong{color:#059669;background:rgba(5,150,105,.08);border-color:rgba(5,150,105,.15)}';
+  css += '.yk-chip-ai-mixed{color:#D97706;background:rgba(217,119,6,.08);border-color:rgba(217,119,6,.15)}';
+  css += '.yk-chip-ai-needs_work{color:#DC2626;background:rgba(220,38,38,.08);border-color:rgba(220,38,38,.15)}';
 
   /* Yetenek Home (learning portal) */
   css += '.yk-home{animation:igFadeIn .3s ease}';
@@ -985,7 +985,7 @@ function injectCSS() {
   css += '.yk-track-card:hover{border-color:var(--verm,#C94E28);box-shadow:0 4px 16px rgba(0,0,0,.08);transform:translateY(-1px)}';
   css += '.yk-track-locked{position:relative;overflow:hidden}';
   css += '.yk-track-locked .yk-track-inner{filter:blur(4px);pointer-events:none}';
-  css += '.yk-track-done{opacity:.7}.yk-track-done:hover{opacity:.85}';
+  css += '.yk-track-done{opacity:.8}.yk-track-done:hover{opacity:.9}';
   css += '.yk-track-top{display:flex;align-items:center;justify-content:space-between;gap:8px}';
   css += '.yk-track-name{font-family:"Bricolage Grotesque",sans-serif;font-size:15px;font-weight:700;color:var(--text-primary,#111)}';
   css += '.yk-track-badge-done{font-family:"DM Mono",monospace;font-size:12px;color:#059669;background:rgba(5,150,105,.08);padding:2px 8px;border-radius:20px}';
@@ -1047,7 +1047,8 @@ function injectCSS() {
   css += '.yk-unit-signals{background:rgba(5,150,105,.03);border:1px solid rgba(5,150,105,.1);border-radius:12px;padding:14px 18px;margin-top:16px}';
   css += '.yk-unit-signals-title{font-family:"Bricolage Grotesque",sans-serif;font-size:12px;font-weight:700;color:#059669;margin-bottom:8px;display:flex;align-items:center;gap:6px}';
   css += '.yk-unit-signals-title svg{width:14px;height:14px}';
-  css += '.yk-unit-signal-item{font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;color:var(--text-secondary,#4B5563);line-height:1.6;margin-bottom:4px}';
+  css += '.yk-unit-signal-item{font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;color:var(--text-secondary,#4B5563);line-height:1.6;margin-bottom:4px;display:flex;align-items:flex-start;gap:8px}';
+  css += '.yk-unit-signal-item::before{content:"";width:5px;height:5px;border-radius:50%;background:#059669;flex-shrink:0;margin-top:7px}';
   css += '.yk-unit-followup{background:rgba(30,45,94,.03);border:1px solid rgba(30,45,94,.08);border-radius:12px;padding:14px 18px;margin-top:10px}';
   css += '.yk-unit-followup-title{font-family:"Bricolage Grotesque",sans-serif;font-size:11px;font-weight:700;color:var(--navy,#1E2D5E);margin-bottom:6px;letter-spacing:-.1px}';
   css += '.yk-unit-followup-text{font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;color:var(--text-secondary,#4B5563);line-height:1.5;font-style:italic}';
@@ -1055,7 +1056,8 @@ function injectCSS() {
   /* Track weak signals block */
   css += '.yk-track-weak-block{background:rgba(220,38,38,.03);border:1px solid rgba(220,38,38,.08);border-radius:12px;padding:14px 18px;margin-top:12px}';
   css += '.yk-track-weak-title{font-family:"Bricolage Grotesque",sans-serif;font-size:12px;font-weight:700;color:#DC2626;margin-bottom:6px}';
-  css += '.yk-track-weak-item{font-family:"Plus Jakarta Sans",sans-serif;font-size:11px;color:var(--text-secondary,#4B5563);line-height:1.5;margin-bottom:3px}';
+  css += '.yk-track-weak-item{font-family:"Plus Jakarta Sans",sans-serif;font-size:11px;color:var(--text-secondary,#4B5563);line-height:1.5;margin-bottom:3px;display:flex;align-items:flex-start;gap:8px}';
+  css += '.yk-track-weak-item::before{content:"";width:4px;height:4px;border-radius:50%;background:#DC2626;flex-shrink:0;margin-top:6px}';
   /* Track unit content enrichment */
   css += '.yk-track-units-count{font-family:"DM Mono",monospace;font-size:10px;color:var(--text-muted,#6B7280);margin-bottom:10px;letter-spacing:.3px}';
   css += '.yk-track-unit-content{flex:1;min-width:0}';
@@ -1063,7 +1065,8 @@ function injectCSS() {
   /* Unit weak signals */
   css += '.yk-unit-weak{background:rgba(220,38,38,.03);border:1px solid rgba(220,38,38,.08);border-radius:12px;padding:14px 18px;margin-top:10px}';
   css += '.yk-unit-weak-title{font-family:"Bricolage Grotesque",sans-serif;font-size:12px;font-weight:700;color:#DC2626;margin-bottom:6px}';
-  css += '.yk-unit-weak-item{font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;color:var(--text-secondary,#4B5563);line-height:1.6;margin-bottom:3px}';
+  css += '.yk-unit-weak-item{font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;color:var(--text-secondary,#4B5563);line-height:1.6;margin-bottom:3px;display:flex;align-items:flex-start;gap:8px}';
+  css += '.yk-unit-weak-item::before{content:"";width:5px;height:5px;border-radius:50%;background:#DC2626;flex-shrink:0;margin-top:7px}';
 
   /* Lightweight summary */
   css += '.yk-summary-wrap{max-width:420px;margin:0 auto;text-align:center;animation:igFadeIn .3s ease}';
@@ -1553,7 +1556,7 @@ function renderCompetencyIntro() {
     html += '<div class="yk-track-weak-block">';
     html += '<div class="yk-track-weak-title">M\u00fclakatta Ka\u00e7\u0131n\u0131lmas\u0131 Gerekenler</div>';
     for (var wi = 0; wi < Math.min(2, a.lessskilled.length); wi++) {
-      html += '<div class="yk-track-weak-item">\u2022 ' + a.lessskilled[wi] + '</div>';
+      html += '<div class="yk-track-weak-item">' + a.lessskilled[wi] + '</div>';
     }
     html += '</div>';
   }
@@ -1814,7 +1817,7 @@ function renderPractice() {
     html += '<div class="yk-unit-signals">';
     html += '<div class="yk-unit-signals-title">' + checkSVG + ' G\u00fc\u00e7l\u00fc Yan\u0131tta Arananlar</div>';
     for (var sii = 0; sii < Math.min(3, a.skilled.length); sii++) {
-      html += '<div class="yk-unit-signal-item">\u2022 ' + a.skilled[sii] + '</div>';
+      html += '<div class="yk-unit-signal-item">' + a.skilled[sii] + '</div>';
     }
     html += '</div>';
   }
@@ -1824,7 +1827,7 @@ function renderPractice() {
     html += '<div class="yk-unit-weak">';
     html += '<div class="yk-unit-weak-title">Yayg\u0131n Zay\u0131fl\u0131klar</div>';
     for (var wii = 0; wii < Math.min(2, a.lessskilled.length); wii++) {
-      html += '<div class="yk-unit-weak-item">\u2022 ' + a.lessskilled[wii] + '</div>';
+      html += '<div class="yk-unit-weak-item">' + a.lessskilled[wii] + '</div>';
     }
     html += '</div>';
   }
