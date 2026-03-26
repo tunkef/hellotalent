@@ -1270,3 +1270,80 @@ test.describe('Yetenek data source migration — structural guards', () => {
     expect(migSql).toContain('candidate_competencies');
   });
 });
+
+// Yetenek Competency Profile Phase 1 — self-rating + evidence surface
+// ═══════════════════════════════════════════════
+
+test.describe('Yetenek competency profile — structural guards', () => {
+  var overviewSql, mulakatJs;
+
+  test.beforeAll(() => {
+    overviewSql = readFromRepo('supabase/migrations/20260326280000_yetenek_overview_rpc.sql');
+    mulakatJs = readFromRepo('profil-mulakatkocu.js');
+  });
+
+  // ── Overview RPC ──
+  test('migration creates get_my_yetenek_overview RPC', () => {
+    expect(overviewSql).toContain('get_my_yetenek_overview');
+    expect(overviewSql).toContain('p_role_key');
+    expect(overviewSql).toContain('self_rating');
+    expect(overviewSql).toContain('practice_status');
+    expect(overviewSql).toContain('journal_count');
+    expect(overviewSql).toContain('feedback_signal');
+  });
+
+  test('overview RPC joins all evidence tables', () => {
+    expect(overviewSql).toContain('candidate_competencies');
+    expect(overviewSql).toContain('candidate_yetenek_progress');
+    expect(overviewSql).toContain('candidate_studio_journals');
+    expect(overviewSql).toContain('candidate_journal_feedback');
+    expect(overviewSql).toContain('role_competency_map');
+  });
+
+  // ── Lobby evidence hydration ──
+  test('lobby has evidence hydration function', () => {
+    expect(mulakatJs).toContain('hydrateLobbyEvidence');
+    expect(mulakatJs).toContain('get_my_yetenek_overview');
+    expect(mulakatJs).toContain('_lobbyEvidenceCache');
+  });
+
+  test('lobby cards have evidence placeholder elements', () => {
+    expect(mulakatJs).toContain('data-ev-comp');
+    expect(mulakatJs).toContain('yk-evidence');
+  });
+
+  test('evidence summary strip renders aggregate stats', () => {
+    expect(mulakatJs).toContain('yk-evidence-summary');
+    expect(mulakatJs).toContain('yk-summary-chip');
+  });
+
+  // ── Self-rating UI ──
+  test('self-rating toggle renders with strong/growing options', () => {
+    expect(mulakatJs).toContain('yk-rating-toggle');
+    expect(mulakatJs).toContain('yk-rating-btn');
+    expect(mulakatJs).toContain("'strong'");
+    expect(mulakatJs).toContain("'growing'");
+  });
+
+  test('self-rating saves via upsert_competency_rating RPC', () => {
+    expect(mulakatJs).toContain('saveCompRating');
+    expect(mulakatJs).toContain('upsert_competency_rating');
+  });
+
+  test('rating click does not trigger card navigation', () => {
+    expect(mulakatJs).toContain('yk-rating-toggle');
+    expect(mulakatJs).toContain('e.stopPropagation');
+  });
+
+  // ── Evidence chips ──
+  test('evidence chips render for practice, journal, AI signal', () => {
+    expect(mulakatJs).toContain('yk-chip-practice');
+    expect(mulakatJs).toContain('yk-chip-journal');
+    expect(mulakatJs).toContain('yk-chip-ai');
+  });
+
+  test('AI feedback signal shows correct labels', () => {
+    expect(mulakatJs).toContain('AI: G');
+    expect(mulakatJs).toContain('AI: Karma');
+  });
+});

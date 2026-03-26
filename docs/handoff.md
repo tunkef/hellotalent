@@ -1,5 +1,5 @@
 # hellotalent.ai — Technical Handoff Document
-> Son güncelleme: 26 Mart 2026 (Session 31 — Studio Phase 5A Live Verification: premium gating E2E confirmed, OPENAI_API_KEY blocker documented)
+> Son güncelleme: 26 Mart 2026 (Session 32 — Yetenek data source migration: DB-backed competency loading, rating RPCs, deployed)
 > Bu doküman, projenin mevcut durumunu, tamamlanan işleri ve kalan backlog'u kapsar.
 > Yeni bir chat/session başlatırken bu dosyayı referans olarak kullanın.
 

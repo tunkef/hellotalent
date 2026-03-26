@@ -1,7 +1,7 @@
 # Stüdyo — Technical Foundation Document
 
 > Aday tarafındaki en derin değer alanı. Kariyer gelişimi, yetkinlik eğitimi, uzman içerikleri ve platform bilgisi.
-> Son güncelleme: 26 Mart 2026 (Studio Phase 5A — structured AI feedback for Yetenek journals)
+> Son güncelleme: 26 Mart 2026 (Yetenek data source migration — DB-backed competency loading + rating RPCs)
 
 ## Bilgi Mimarisi (Information Architecture)
 

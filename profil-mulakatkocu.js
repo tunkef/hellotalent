@@ -937,6 +937,26 @@ function injectCSS() {
   css += '.ig-lobby-badge-draft{background:rgba(30,45,94,.08);color:var(--navy,#1E2D5E)}';
   css += '.ig-lobby-badge-draft svg{width:12px;height:12px}';
 
+  /* Yetenek evidence + self-rating */
+  css += '.yk-evidence-summary{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;animation:igFadeIn .3s ease}';
+  css += '.yk-summary-chip{font-family:"DM Mono",monospace;font-size:10px;font-weight:600;color:var(--text-muted,#6B7280);background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF);border-radius:20px;padding:4px 12px;letter-spacing:.3px}';
+  css += '.yk-evidence{margin-top:10px;border-top:1px solid var(--border-subtle,#E5E3DF);padding-top:10px;animation:igFadeIn .2s ease}';
+  css += '.yk-rating-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap}';
+  css += '.yk-rating-label{font-family:"Plus Jakarta Sans",sans-serif;font-size:10px;color:var(--text-muted,#6B7280);flex-shrink:0}';
+  css += '.yk-rating-toggle{display:flex;gap:4px}';
+  css += '.yk-rating-btn{font-family:"Plus Jakarta Sans",sans-serif;font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px;border:1px solid var(--border-subtle,#E5E3DF);background:var(--bg-surface,#fff);color:var(--text-muted,#6B7280);cursor:pointer;transition:all .2s}';
+  css += '.yk-rating-btn:hover{border-color:var(--text-muted)}';
+  css += '.yk-rating-btn.active.strong{background:#059669;color:#fff;border-color:#059669}';
+  css += '.yk-rating-btn.active.growing{background:#D97706;color:#fff;border-color:#D97706}';
+  css += '.yk-chip-row{display:flex;gap:6px;flex-wrap:wrap}';
+  css += '.yk-chip{font-family:"DM Mono",monospace;font-size:9px;font-weight:600;padding:2px 8px;border-radius:20px;letter-spacing:.3px}';
+  css += '.yk-chip-practice{color:var(--navy,#1E2D5E);background:rgba(30,45,94,.06)}';
+  css += '.yk-chip-journal{color:#2D8A56;background:rgba(45,138,86,.06)}';
+  css += '.yk-chip-ai{font-weight:700}';
+  css += '.yk-chip-ai-strong{color:#059669;background:rgba(5,150,105,.08)}';
+  css += '.yk-chip-ai-mixed{color:#D97706;background:rgba(217,119,6,.08)}';
+  css += '.yk-chip-ai-needs_work{color:#DC2626;background:rgba(220,38,38,.08)}';
+
   /* Landing screen (star_intro — Studio landing) */
   css += '.ig-landing{animation:igFadeIn .3s ease}';
 
@@ -1454,6 +1474,9 @@ function renderLobby() {
     html += '</div>';
   }
 
+  /* Evidence summary strip — hydrated async */
+  html += '<div id="yk-evidence-summary" class="yk-evidence-summary" style="display:none;"></div>';
+
   html += '<div class="ig-bento">';
   for (var i = 0; i < comps.length; i++) {
     var code = comps[i];
@@ -1492,10 +1515,14 @@ function renderLobby() {
       if (draftCount > 0) {
         html += '<div class="ig-lobby-badge ig-lobby-badge-draft">' + penSVG + ' ' + draftCount + ' taslak</div>';
       }
+      /* Evidence + rating area — hydrated async */
+      html += '<div class="yk-evidence" data-ev-comp="' + code + '"></div>';
       html += '</div>';
     }
   }
   html += '</div>';
+
+  /* Premium upsell area placeholder (existing logic follows below) */
 
   return html;
 }
@@ -3312,7 +3339,9 @@ function bindLobbyEvents() {
   /* Comp card clicks — go to competency intro first */
   var cards = document.querySelectorAll('.ig-lobby-card[data-comp]');
   cards.forEach(function(card) {
-    card.addEventListener('click', function() {
+    card.addEventListener('click', function(e) {
+      /* Ignore clicks on rating toggle (handled separately) */
+      if (e.target.closest && e.target.closest('.yk-rating-toggle')) return;
       var code = this.getAttribute('data-comp');
       var idx = parseInt(this.getAttribute('data-idx'), 10);
       S.activeComp = code;
@@ -3320,6 +3349,154 @@ function bindLobbyEvents() {
       navigate('competency_intro');
     });
   });
+
+  /* Async evidence hydration */
+  hydrateLobbyEvidence();
+}
+
+/* ══ LOBBY EVIDENCE HYDRATION ══ */
+
+var _lobbyEvidenceCache = null;
+
+async function hydrateLobbyEvidence() {
+  if (!S.role || typeof supabase === 'undefined') return;
+
+  try {
+    var res = await supabase.rpc('get_my_yetenek_overview', { p_role_key: S.role });
+    if (res.error || !res.data) return;
+
+    _lobbyEvidenceCache = {};
+    var data = res.data;
+    var ratedCount = 0;
+    var practicedCount = 0;
+    var journalCount = 0;
+
+    for (var i = 0; i < data.length; i++) {
+      var d = data[i];
+      _lobbyEvidenceCache[d.competency_code] = d;
+      if (d.self_rating !== 'none') ratedCount++;
+      if (d.practice_status !== 'none') practicedCount++;
+      if (d.journal_count > 0) journalCount++;
+    }
+
+    /* Render summary strip */
+    var summaryEl = document.getElementById('yk-evidence-summary');
+    if (summaryEl && (ratedCount > 0 || practicedCount > 0 || journalCount > 0)) {
+      summaryEl.style.display = 'flex';
+      while (summaryEl.firstChild) summaryEl.removeChild(summaryEl.firstChild);
+
+      if (ratedCount > 0) {
+        var rs = document.createElement('span');
+        rs.className = 'yk-summary-chip';
+        rs.textContent = ratedCount + ' de\u011Ferlendirildi';
+        summaryEl.appendChild(rs);
+      }
+      if (practicedCount > 0) {
+        var ps = document.createElement('span');
+        ps.className = 'yk-summary-chip';
+        ps.textContent = practicedCount + ' pratik yap\u0131ld\u0131';
+        summaryEl.appendChild(ps);
+      }
+      if (journalCount > 0) {
+        var js = document.createElement('span');
+        js.className = 'yk-summary-chip';
+        js.textContent = journalCount + ' g\u00fcnl\u00fck';
+        summaryEl.appendChild(js);
+      }
+    }
+
+    /* Render per-card evidence */
+    var evidenceEls = document.querySelectorAll('[data-ev-comp]');
+    evidenceEls.forEach(function(el) {
+      var code = el.getAttribute('data-ev-comp');
+      var ev = _lobbyEvidenceCache[code];
+      if (!ev) return;
+      renderCardEvidence(el, code, ev);
+    });
+  } catch (e) { /* silent — evidence is best-effort */ }
+}
+
+function renderCardEvidence(el, code, ev) {
+  while (el.firstChild) el.removeChild(el.firstChild);
+
+  /* Self-rating toggle */
+  var ratingRow = document.createElement('div');
+  ratingRow.className = 'yk-rating-row';
+
+  var ratingLabel = document.createElement('span');
+  ratingLabel.className = 'yk-rating-label';
+  ratingLabel.textContent = 'Kendini de\u011Ferlendir:';
+  ratingRow.appendChild(ratingLabel);
+
+  var toggleWrap = document.createElement('div');
+  toggleWrap.className = 'yk-rating-toggle';
+
+  var btnStrong = document.createElement('button');
+  btnStrong.className = 'yk-rating-btn' + (ev.self_rating === 'strong' ? ' active strong' : '');
+  btnStrong.textContent = 'G\u00fc\u00e7l\u00fc';
+  btnStrong.addEventListener('click', function(e) {
+    e.stopPropagation();
+    saveCompRating(code, 'strong', toggleWrap);
+  });
+  toggleWrap.appendChild(btnStrong);
+
+  var btnGrowing = document.createElement('button');
+  btnGrowing.className = 'yk-rating-btn' + (ev.self_rating === 'growing' ? ' active growing' : '');
+  btnGrowing.textContent = 'Geli\u015fiyor';
+  btnGrowing.addEventListener('click', function(e) {
+    e.stopPropagation();
+    saveCompRating(code, 'growing', toggleWrap);
+  });
+  toggleWrap.appendChild(btnGrowing);
+
+  ratingRow.appendChild(toggleWrap);
+  el.appendChild(ratingRow);
+
+  /* Evidence chips */
+  var hasEvidence = ev.practice_status !== 'none' || ev.journal_count > 0 || ev.feedback_signal !== 'none';
+  if (hasEvidence) {
+    var chipRow = document.createElement('div');
+    chipRow.className = 'yk-chip-row';
+
+    if (ev.practice_status !== 'none') {
+      var pChip = document.createElement('span');
+      pChip.className = 'yk-chip yk-chip-practice';
+      pChip.textContent = ev.practice_count + ' pratik';
+      chipRow.appendChild(pChip);
+    }
+    if (ev.journal_count > 0) {
+      var jChip = document.createElement('span');
+      jChip.className = 'yk-chip yk-chip-journal';
+      jChip.textContent = ev.journal_count + ' g\u00fcnl\u00fck';
+      chipRow.appendChild(jChip);
+    }
+    if (ev.feedback_signal !== 'none') {
+      var fChip = document.createElement('span');
+      var sigLabels = { strong: 'AI: G\u00fc\u00e7l\u00fc', mixed: 'AI: Karma', needs_work: 'AI: Geli\u015ftir' };
+      fChip.className = 'yk-chip yk-chip-ai yk-chip-ai-' + ev.feedback_signal;
+      fChip.textContent = sigLabels[ev.feedback_signal] || 'AI';
+      chipRow.appendChild(fChip);
+    }
+    el.appendChild(chipRow);
+  }
+}
+
+function saveCompRating(code, rating, toggleWrap) {
+  if (typeof supabase === 'undefined') return;
+
+  /* Optimistic UI update */
+  var btns = toggleWrap.querySelectorAll('.yk-rating-btn');
+  btns.forEach(function(b) {
+    b.classList.remove('active', 'strong', 'growing');
+  });
+  var activeBtn = rating === 'strong' ? btns[0] : btns[1];
+  if (activeBtn) activeBtn.classList.add('active', rating);
+
+  /* Fire-and-forget DB save */
+  supabase.rpc('upsert_competency_rating', {
+    p_competency_code: code,
+    p_rating: rating
+  }).then(function() {});
 }
 
 function bindCompetencyIntroEvents() {
