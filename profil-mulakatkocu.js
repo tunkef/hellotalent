@@ -992,6 +992,12 @@ function injectCSS() {
   css += '.yk-track-kf{font-family:"DM Mono",monospace;font-size:10px;color:var(--text-muted,#6B7280);margin-top:2px;letter-spacing:.3px}';
   css += '.yk-track-def{font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;color:var(--text-secondary,#4B5563);line-height:1.5;margin-top:6px}';
   css += '.yk-track-meta{font-family:"DM Mono",monospace;font-size:10px;color:var(--text-muted,#6B7280);margin-top:6px}';
+  /* Next step guidance card */
+  css += '.yk-home-next-step{background:rgba(30,45,94,.03);border:1px solid rgba(30,45,94,.08);border-radius:14px;padding:16px 20px;margin-bottom:16px}';
+  css += '.yk-home-next-kicker{font-family:"DM Mono",monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--navy,#1E2D5E);margin-bottom:4px}';
+  css += '.yk-home-next-title{font-family:"Bricolage Grotesque",sans-serif;font-size:15px;font-weight:700;color:var(--text-primary,#111);margin-bottom:4px}';
+  css += '.yk-home-next-desc{font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;color:var(--text-muted,#6B7280);line-height:1.4}';
+
   css += '.yk-home-ai-teaser{display:flex;align-items:center;gap:14px;padding:16px 20px;background:linear-gradient(135deg,rgba(30,45,94,.03) 0%,rgba(30,45,94,.06) 100%);border:1px solid rgba(30,45,94,.08);border-radius:14px}';
   css += '.yk-home-ai-teaser-icon{width:36px;height:36px;border-radius:10px;background:rgba(30,45,94,.08);display:flex;align-items:center;justify-content:center;color:var(--navy,#1E2D5E);flex-shrink:0}';
   css += '.yk-home-ai-teaser-text{flex:1;min-width:0}';
@@ -1024,6 +1030,19 @@ function injectCSS() {
   css += '.yk-unit-followup{background:rgba(30,45,94,.03);border:1px solid rgba(30,45,94,.08);border-radius:12px;padding:14px 18px;margin-top:10px}';
   css += '.yk-unit-followup-title{font-family:"Bricolage Grotesque",sans-serif;font-size:11px;font-weight:700;color:var(--navy,#1E2D5E);margin-bottom:6px;letter-spacing:-.1px}';
   css += '.yk-unit-followup-text{font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;color:var(--text-secondary,#4B5563);line-height:1.5;font-style:italic}';
+
+  /* Track weak signals block */
+  css += '.yk-track-weak-block{background:rgba(220,38,38,.03);border:1px solid rgba(220,38,38,.08);border-radius:12px;padding:14px 18px;margin-top:12px}';
+  css += '.yk-track-weak-title{font-family:"Bricolage Grotesque",sans-serif;font-size:12px;font-weight:700;color:#DC2626;margin-bottom:6px}';
+  css += '.yk-track-weak-item{font-family:"Plus Jakarta Sans",sans-serif;font-size:11px;color:var(--text-secondary,#4B5563);line-height:1.5;margin-bottom:3px}';
+  /* Track unit content enrichment */
+  css += '.yk-track-units-count{font-family:"DM Mono",monospace;font-size:10px;color:var(--text-muted,#6B7280);margin-bottom:10px;letter-spacing:.3px}';
+  css += '.yk-track-unit-content{flex:1;min-width:0}';
+  css += '.yk-track-unit-preview{display:block;font-family:"Plus Jakarta Sans",sans-serif;font-size:10px;color:var(--text-muted,#6B7280);margin-top:2px;line-height:1.4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}';
+  /* Unit weak signals */
+  css += '.yk-unit-weak{background:rgba(220,38,38,.03);border:1px solid rgba(220,38,38,.08);border-radius:12px;padding:14px 18px;margin-top:10px}';
+  css += '.yk-unit-weak-title{font-family:"Bricolage Grotesque",sans-serif;font-size:12px;font-weight:700;color:#DC2626;margin-bottom:6px}';
+  css += '.yk-unit-weak-item{font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;color:var(--text-secondary,#4B5563);line-height:1.6;margin-bottom:3px}';
 
   /* Lightweight summary */
   css += '.yk-summary-wrap{max-width:420px;margin:0 auto;text-align:center;animation:igFadeIn .3s ease}';
@@ -1508,19 +1527,34 @@ function renderCompetencyIntro() {
   html += '</div>';
   html += '</div>';
 
+  /* ── What interviewers listen for (weak signals) ── */
+  if (a.lessskilled && a.lessskilled.length > PREVIEW) {
+    html += '<div class="yk-track-weak-block">';
+    html += '<div class="yk-track-weak-title">M\u00fclakatta Ka\u00e7\u0131n\u0131lmas\u0131 Gerekenler</div>';
+    for (var wi = 0; wi < Math.min(2, a.lessskilled.length); wi++) {
+      html += '<div class="yk-track-weak-item">\u2022 ' + a.lessskilled[wi] + '</div>';
+    }
+    html += '</div>';
+  }
+
   /* Practice units preview */
   var qs = flattenQuestions(code);
   var unitCount = S.isPremium ? qs.length : Math.min(FREE_Q_PER_COMP, qs.length);
   html += '<div class="yk-track-units">';
-  html += '<div class="yk-track-units-title">Pratik \u00dcniteleri (' + unitCount + ' soru)</div>';
-  for (var ui = 0; ui < Math.min(3, qs.length); ui++) {
+  html += '<div class="yk-track-units-title">\u0130nceleme \u00dcniteleri</div>';
+  html += '<div class="yk-track-units-count">' + unitCount + ' soru ile haz\u0131rlan</div>';
+  for (var ui = 0; ui < Math.min(4, qs.length); ui++) {
     html += '<div class="yk-track-unit-row">';
     html += '<span class="yk-track-unit-num">' + (ui + 1) + '</span>';
+    html += '<div class="yk-track-unit-content">';
     html += '<span class="yk-track-unit-theme">' + (qs[ui].theme || '') + '</span>';
+    var qPreview = qs[ui].text ? qs[ui].text.substring(0, 60) : '';
+    if (qPreview) html += '<span class="yk-track-unit-preview">' + qPreview + (qs[ui].text.length > 60 ? '\u2026' : '') + '</span>';
+    html += '</div>';
     html += '</div>';
   }
-  if (qs.length > 3) {
-    html += '<div class="yk-track-unit-more">+' + (qs.length - 3) + ' soru daha</div>';
+  if (qs.length > 4) {
+    html += '<div class="yk-track-unit-more">+' + (qs.length - 4) + ' soru daha</div>';
   }
   html += '</div>';
 
@@ -1563,13 +1597,22 @@ function renderLobby() {
   html += '<button class="yk-home-change-role" id="ig-back-role-change">Rol De\u011fi\u015ftir</button>';
   html += '</div>';
 
-  /* ── Continue card — if last active competency exists ── */
+  /* ── Continue card / Next step guidance ── */
   if (S.activeComp && S.completedComps.indexOf(S.activeComp) === -1) {
     var contName = bridge.COMP_NAMES[S.activeComp] || S.activeComp;
     html += '<div class="yk-home-continue" id="yk-continue-card" data-comp="' + S.activeComp + '" data-idx="' + S.activeCompIdx + '">';
     html += '<div class="yk-home-continue-kicker">KALDIĞIN YERDEN DEVAM ET</div>';
     html += '<div class="yk-home-continue-title">' + contName + '</div>';
     html += '<div class="yk-home-continue-cta">Devam Et \u2192</div>';
+    html += '</div>';
+  } else if (completedCount === 0 && comps.length > 0) {
+    /* First-time guidance */
+    var firstComp = comps[0];
+    var firstName = bridge.COMP_NAMES[firstComp] || firstComp;
+    html += '<div class="yk-home-next-step">';
+    html += '<div class="yk-home-next-kicker">\u00d6NER\u0130LEN BA\u015eLANGI\u00c7</div>';
+    html += '<div class="yk-home-next-title">' + firstName + ' ile ba\u015fla</div>';
+    html += '<div class="yk-home-next-desc">Bu yetkinlik ' + S.role + ' pozisyonu i\u00e7in \u00f6ncelikli de\u011ferlendirme alan\u0131d\u0131r.</div>';
     html += '</div>';
   }
 
@@ -1732,6 +1775,16 @@ function renderPractice() {
     html += '<div class="yk-unit-signals-title">' + checkSVG + ' G\u00fc\u00e7l\u00fc Yan\u0131tta Arananlar</div>';
     for (var sii = 0; sii < Math.min(3, a.skilled.length); sii++) {
       html += '<div class="yk-unit-signal-item">\u2022 ' + a.skilled[sii] + '</div>';
+    }
+    html += '</div>';
+  }
+
+  /* ── Common weak signals ── */
+  if (a && a.lessskilled && a.lessskilled.length > 0) {
+    html += '<div class="yk-unit-weak">';
+    html += '<div class="yk-unit-weak-title">Yayg\u0131n Zay\u0131fl\u0131klar</div>';
+    for (var wii = 0; wii < Math.min(2, a.lessskilled.length); wii++) {
+      html += '<div class="yk-unit-weak-item">\u2022 ' + a.lessskilled[wii] + '</div>';
     }
     html += '</div>';
   }
@@ -1917,8 +1970,8 @@ function renderCompletion() {
 
   html += '<div class="yk-summary-wrap">';
   html += '<div class="yk-summary-card">';
-  html += '<div class="yk-summary-title">' + compName + '</div>';
-  html += '<div class="yk-summary-desc">' + S.answeredCount + ' soru incelendi. Bu yetkinli\u011fi pratik ederek bir ad\u0131m \u00f6ndesin.</div>';
+  html += '<div class="yk-summary-title">' + compName + ' Tamamland\u0131</div>';
+  html += '<div class="yk-summary-desc">' + S.answeredCount + ' soruyu inceleyerek bu yetkinli\u011fin temel de\u011ferlendirme \u00f6l\u00e7\u00fctlerini \u00f6\u011frendin.</div>';
 
   html += '<div class="yk-summary-stats">';
   html += '<div class="yk-summary-stat"><div class="yk-summary-stat-num">' + S.answeredCount + '</div><div class="yk-summary-stat-label">Soru</div></div>';
@@ -1951,8 +2004,8 @@ function renderSessionComplete() {
 
   html += '<div class="yk-summary-wrap">';
   html += '<div class="yk-summary-card">';
-  html += '<div class="yk-summary-title">' + S.role + ' Haz\u0131rl\u0131\u011f\u0131</div>';
-  html += '<div class="yk-summary-desc">Eri\u015filebilir yetkinlikleri tamamlad\u0131n.</div>';
+  html += '<div class="yk-summary-title">' + S.role + ' Haz\u0131rl\u0131\u011f\u0131n Tamam</div>';
+  html += '<div class="yk-summary-desc">Eri\u015filebilir yetkinliklerin temel de\u011ferlendirme \u00f6l\u00e7\u00fctlerini \u00f6\u011frendin. Farkl\u0131 bir rol se\u00e7erek ba\u015fka yetkinlikleri ke\u015ffedebilirsin.</div>';
 
   html += '<div class="yk-summary-stats">';
   html += '<div class="yk-summary-stat"><div class="yk-summary-stat-num">' + S.completedComps.length + '</div><div class="yk-summary-stat-label">Yetkinlik</div></div>';
