@@ -1,5 +1,5 @@
 # hellotalent.ai — Technical Handoff Document
-> Son güncelleme: 26 Mart 2026 (Session 22b — Support Center Phase 1.2: Mesajlar/Teklifler split live end-to-end)
+> Son güncelleme: 26 Mart 2026 (Session 22c — Support Queue MVP live: admin queue, closure workflow, auto-close, resolved email)
 > Bu doküman, projenin mevcut durumunu, tamamlanan işleri ve kalan backlog'u kapsar.
 > Yeni bir chat/session başlatırken bu dosyayı referans olarak kullanın.
 
@@ -664,6 +664,54 @@ DB category `mesajlar_teklifler` remains unchanged. The split is implemented via
 - ✅ HT-000001 (legacy, pre-ui_topic) renders safely as "Hesap ve Giriş"
 - ✅ Subject hints distinct: messages → "Ör: İşveren mesajına yanıt veremiyorum", offers → "Ör: Teklif detayı açılmıyor"
 - ✅ DB integrity enforced: compound CHECK prevents `ui_topic` on non-merged categories; RPC normalizes via `v_ui_topic`
+
+### Session 22c — 26 Mart 2026 (Support Queue MVP — Phase 2A)
+
+**Support Queue MVP live and verified end-to-end.**
+
+**Migration `20260326140000_support_queue_mvp.sql` deployed:**
+- `resolved_at`, `closed_at`, `assigned_admin_user_id` columns on `support_tickets`
+- Admin RLS policies for tickets + messages (`support_tickets_admin_read`, `stm_admin_read`)
+- 5 admin RPCs: `admin_claim_support_ticket`, `admin_resolve_support_ticket` (with `v_message` sanitization), `admin_add_support_note`, `admin_close_support_ticket`, `admin_get_support_queue`
+- 2 candidate RPCs: `candidate_confirm_resolved`, `candidate_reopen_ticket`
+- `auto_close_resolved_tickets()` function + pg_cron daily at 03:00 UTC
+- `email_outbox` CHECK extended: `support_ticket_resolved`
+
+**Admin panel (`admin.html` + `admin-support.js`):**
+- "Destek Talepleri" nav item under Moderasyon with open-count badge
+- Queue list: status tabs (Açık/İnceleniyor/Çözüldü/Kapalı/Tümü), ticket table with category labels respecting `ui_topic`
+- Detail view: description, technical context toggle, chronological timeline (candidate/support/system messages, internal notes yellow-highlighted), status-dependent action area
+- Actions: Üstlen ve İncele, Çözüldü Olarak İşaretle (implicit claim from open), public/internal notes, Zorla Kapat
+
+**Candidate UI (`profil-destek.js`):**
+- Resolved ticket detail shows "Sorun Çözüldü" + "Devam Ediyor" buttons
+- `candidate_confirm_resolved` → closed, `candidate_reopen_ticket` → back to in_review
+- No buttons for open/in_review/closed tickets
+- `waiting_on_candidate` remains dormant — not wired into UI
+
+**Email (`email-send/index.ts`):**
+- `support_ticket_resolved` template: candidate notified with resolution text, 7-day auto-close warning, CTA to Destek Merkezi
+- Greeting uses `Merhaba İsim!` (exclamation form)
+
+**Commit:** `60c93c1`
+
+**Live smoke verified (26 Mart 2026, post-deploy):**
+- ✅ Admin queue renders with 3 tickets, badge shows correct count
+- ✅ "Üstlen ve İncele" → ticket becomes İnceleniyor, assigned to admin, system timeline message
+- ✅ "Çözüldü Olarak İşaretle" from open → implicit claim + resolved + resolution message in timeline
+- ✅ Candidate Taleplerim shows correct statuses per ticket
+- ✅ Resolved ticket detail: "Sorun Çözüldü" + "Devam Ediyor" buttons visible
+- ✅ "Sorun Çözüldü" → ticket becomes Kapatıldı
+- ✅ "Devam Ediyor" → ticket returns to İnceleniyor
+- ✅ Timeline coherent on both sides: 4 entries for full lifecycle (candidate → system claim → support resolve → system reopen)
+- ✅ No waiting_on_candidate UI activated
+
+**Intentionally left for Phase 2B:**
+- [ ] Candidate reply composer in ticket detail
+- [ ] `waiting_on_candidate` status activation
+- [ ] Admin reply notification email to candidate
+- [ ] Candidate reply notification to admin
+- [ ] Auto-close notification email
 
 ### Sonraki Adımlar
 - [x] ~~Migration 042 → competency tabloları~~ ✅ Deployed
