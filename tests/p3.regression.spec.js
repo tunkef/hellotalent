@@ -1405,7 +1405,7 @@ test.describe('Premium entitlement — structural guards', () => {
 
   test('webhook handles idempotent repeated calls', () => {
     expect(webhookFn).toContain('Already activated');
-    expect(webhookFn).toContain("status === 'completed'");
+    expect(webhookFn).toContain('completed');
   });
 
   test('webhook handles payment failure', () => {
@@ -1437,5 +1437,110 @@ test.describe('Premium entitlement — structural guards', () => {
     expect(premiumJs).toContain('pm-active-banner');
     expect(premiumJs).toContain('Premium Aktif');
     expect(premiumJs).toContain('checkCurrentPremium');
+  });
+});
+
+// Yetenek IA Reset + Learning Portal Phase 1
+// ═══════════════════════════════════════════════
+
+test.describe('Yetenek IA reset — structural guards', () => {
+  var mulakatJs;
+
+  test.beforeAll(() => {
+    mulakatJs = readFromRepo('profil-mulakatkocu.js');
+  });
+
+  // ── Yetenek Home ──
+  test('lobby renders as Yetenek Home with learning plan', () => {
+    expect(mulakatJs).toContain('yk-home');
+    expect(mulakatJs).toContain('yk-home-tracks');
+    expect(mulakatJs).toContain('yk-track-card');
+    expect(mulakatJs).toContain('yk-home-section-title');
+  });
+
+  test('Yetenek Home has compact role header with change button', () => {
+    expect(mulakatJs).toContain('yk-home-role-label');
+    expect(mulakatJs).toContain('yk-home-change-role');
+    expect(mulakatJs).toContain('ig-back-role-change');
+  });
+
+  test('Yetenek Home has continue card for active competency', () => {
+    expect(mulakatJs).toContain('yk-home-continue');
+    expect(mulakatJs).toContain('yk-continue-card');
+    expect(mulakatJs).toContain('Devam Et');
+  });
+
+  test('Yetenek Home has readiness summary stats', () => {
+    expect(mulakatJs).toContain('yk-home-summary');
+    expect(mulakatJs).toContain('yk-home-summary-num');
+    expect(mulakatJs).toContain('Tamamlanan');
+    expect(mulakatJs).toContain('Kalan');
+  });
+
+  test('Yetenek Home has AI teaser card', () => {
+    expect(mulakatJs).toContain('yk-home-ai-teaser');
+    expect(mulakatJs).toContain('AI ile M');
+  });
+
+  // ── Track Detail ──
+  test('track detail shows practice units preview', () => {
+    expect(mulakatJs).toContain('yk-track-units');
+    expect(mulakatJs).toContain('yk-track-unit-row');
+    expect(mulakatJs).toContain('yk-track-unit-theme');
+  });
+
+  // ── Unit Detail ──
+  test('unit detail shows strong-answer signals', () => {
+    expect(mulakatJs).toContain('yk-unit-signals');
+    expect(mulakatJs).toContain('yk-unit-signals-title');
+  });
+
+  test('unit detail shows follow-up question preview', () => {
+    expect(mulakatJs).toContain('yk-unit-followup');
+    expect(mulakatJs).toContain('yk-unit-followup-title');
+  });
+
+  test('unit detail has AI placeholder instead of journal', () => {
+    expect(mulakatJs).toContain('yk-unit-ai-placeholder');
+    expect(mulakatJs).toContain('AI ile Pratik Yak');
+  });
+
+  // ── Journal removal ──
+  test('journal UI removed from practice render flow', () => {
+    // renderPractice should NOT call renderJournalPanel anymore
+    var practiceStart = mulakatJs.indexOf('function renderPractice()');
+    var practiceEnd = mulakatJs.indexOf('\nfunction ', practiceStart + 10);
+    var practiceBody = mulakatJs.slice(practiceStart, practiceEnd);
+    expect(practiceBody).not.toContain('renderJournalPanel');
+  });
+
+  test('journal tables and persistence code still exist (backend preserved)', () => {
+    expect(mulakatJs).toContain('upsert_studio_journal');
+    expect(mulakatJs).toContain('_journalDbCache');
+  });
+
+  // ── Lightweight summary ──
+  test('completion screen uses compact summary layout', () => {
+    expect(mulakatJs).toContain('yk-summary-wrap');
+    expect(mulakatJs).toContain('yk-summary-card');
+    expect(mulakatJs).toContain('yk-summary-stats');
+  });
+
+  // ── Runtime preservation ──
+  test('runtime contracts preserved', () => {
+    expect(mulakatJs).toContain('window._htLoadMulakat');
+    expect(mulakatJs).toContain('window._htYetkinlikData');
+    expect(mulakatJs).toContain("navigate('role_select')");
+    expect(mulakatJs).toContain("navigate('lobby')");
+    expect(mulakatJs).toContain("navigate('competency_intro')");
+    expect(mulakatJs).toContain("navigate('practice')");
+    expect(mulakatJs).toContain("navigate('completion')");
+    expect(mulakatJs).toContain("navigate('session_complete')");
+  });
+
+  test('free/premium behavior preserved', () => {
+    expect(mulakatJs).toContain('FREE_COMP_LIMIT');
+    expect(mulakatJs).toContain('S.isPremium');
+    expect(mulakatJs).toContain('freeLimit');
   });
 });

@@ -957,6 +957,75 @@ function injectCSS() {
   css += '.yk-chip-ai-mixed{color:#D97706;background:rgba(217,119,6,.08)}';
   css += '.yk-chip-ai-needs_work{color:#DC2626;background:rgba(220,38,38,.08)}';
 
+  /* Yetenek Home (learning portal) */
+  css += '.yk-home{animation:igFadeIn .3s ease}';
+  css += '.yk-home-role-chooser{max-width:420px;margin:20px auto;text-align:center;background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF);border-radius:16px;padding:28px 24px;box-shadow:0 2px 8px rgba(0,0,0,.06)}';
+  css += '.yk-home-role-title{font-family:"Bricolage Grotesque",sans-serif;font-size:18px;font-weight:700;color:var(--text-primary,#111);margin-bottom:6px}';
+  css += '.yk-home-role-desc{font-family:"Plus Jakarta Sans",sans-serif;font-size:13px;color:var(--text-muted,#6B7280);margin-bottom:16px;line-height:1.5}';
+  css += '.yk-home-role-row{display:flex;gap:10px;align-items:stretch;justify-content:center}';
+  css += '.yk-home-role-btn{flex-shrink:0;height:44px;padding:0 24px;border:none;border-radius:10px;background:var(--verm,#C94E28);color:#fff;font-family:"Plus Jakarta Sans",sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:opacity .2s;white-space:nowrap}';
+  css += '.yk-home-header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px;flex-wrap:wrap}';
+  css += '.yk-home-header-left{flex:1;min-width:0}';
+  css += '.yk-home-role-label{font-family:"Bricolage Grotesque",sans-serif;font-size:20px;font-weight:800;color:var(--text-primary,#111)}';
+  css += '.yk-home-comp-count{font-family:"DM Mono",monospace;font-size:11px;color:var(--text-muted,#6B7280);margin-top:2px}';
+  css += '.yk-home-change-role{font-family:"Plus Jakarta Sans",sans-serif;font-size:11px;font-weight:600;color:var(--verm,#C94E28);background:none;border:1px solid rgba(201,78,40,.2);border-radius:8px;padding:6px 14px;cursor:pointer;transition:all .2s;flex-shrink:0}';
+  css += '.yk-home-change-role:hover{background:rgba(201,78,40,.04)}';
+  css += '.yk-home-continue{background:rgba(201,78,40,.04);border:1px solid rgba(201,78,40,.12);border-radius:14px;padding:16px 20px;margin-bottom:16px;cursor:pointer;transition:all .25s}';
+  css += '.yk-home-continue:hover{background:rgba(201,78,40,.08);border-color:rgba(201,78,40,.2)}';
+  css += '.yk-home-continue-kicker{font-family:"DM Mono",monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--verm,#C94E28);margin-bottom:4px}';
+  css += '.yk-home-continue-title{font-family:"Bricolage Grotesque",sans-serif;font-size:15px;font-weight:700;color:var(--text-primary,#111);margin-bottom:4px}';
+  css += '.yk-home-continue-cta{font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;font-weight:700;color:var(--verm,#C94E28)}';
+  css += '.yk-home-summary{display:flex;gap:12px;margin-bottom:16px}';
+  css += '.yk-home-summary-item{flex:1;background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF);border-radius:12px;padding:14px 12px;text-align:center}';
+  css += '.yk-home-summary-num{display:block;font-family:"DM Mono",monospace;font-size:22px;font-weight:700;color:var(--text-primary,#111)}';
+  css += '.yk-home-summary-label{font-family:"Plus Jakarta Sans",sans-serif;font-size:10px;color:var(--text-muted,#6B7280)}';
+  css += '.yk-home-section-title{font-family:"Bricolage Grotesque",sans-serif;font-size:14px;font-weight:700;color:var(--text-primary,#111);margin-bottom:12px;letter-spacing:-.2px}';
+  css += '.yk-home-tracks{display:flex;flex-direction:column;gap:10px;margin-bottom:20px}';
+  css += '.yk-track-card{background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF);border-radius:14px;padding:16px 18px;cursor:pointer;transition:all .25s;box-shadow:0 2px 8px rgba(0,0,0,.04)}';
+  css += '.yk-track-card:hover{border-color:var(--verm,#C94E28);box-shadow:0 4px 16px rgba(0,0,0,.08);transform:translateY(-1px)}';
+  css += '.yk-track-locked{position:relative;overflow:hidden}';
+  css += '.yk-track-locked .yk-track-inner{filter:blur(4px);pointer-events:none}';
+  css += '.yk-track-done{opacity:.7}.yk-track-done:hover{opacity:.85}';
+  css += '.yk-track-top{display:flex;align-items:center;justify-content:space-between;gap:8px}';
+  css += '.yk-track-name{font-family:"Bricolage Grotesque",sans-serif;font-size:15px;font-weight:700;color:var(--text-primary,#111)}';
+  css += '.yk-track-badge-done{font-family:"DM Mono",monospace;font-size:12px;color:#059669;background:rgba(5,150,105,.08);padding:2px 8px;border-radius:20px}';
+  css += '.yk-track-kf{font-family:"DM Mono",monospace;font-size:10px;color:var(--text-muted,#6B7280);margin-top:2px;letter-spacing:.3px}';
+  css += '.yk-track-def{font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;color:var(--text-secondary,#4B5563);line-height:1.5;margin-top:6px}';
+  css += '.yk-track-meta{font-family:"DM Mono",monospace;font-size:10px;color:var(--text-muted,#6B7280);margin-top:6px}';
+  css += '.yk-home-ai-teaser{display:flex;align-items:center;gap:14px;padding:16px 20px;background:linear-gradient(135deg,rgba(30,45,94,.03) 0%,rgba(30,45,94,.06) 100%);border:1px solid rgba(30,45,94,.08);border-radius:14px}';
+  css += '.yk-home-ai-teaser-icon{width:36px;height:36px;border-radius:10px;background:rgba(30,45,94,.08);display:flex;align-items:center;justify-content:center;color:var(--navy,#1E2D5E);flex-shrink:0}';
+  css += '.yk-home-ai-teaser-text{flex:1;min-width:0}';
+  css += '.yk-home-ai-teaser-title{font-family:"Bricolage Grotesque",sans-serif;font-size:13px;font-weight:700;color:var(--text-primary,#111);margin-bottom:2px}';
+  css += '.yk-home-ai-teaser-desc{font-family:"Plus Jakarta Sans",sans-serif;font-size:11px;color:var(--text-muted,#6B7280);line-height:1.4}';
+  css += '.yk-home-ai-teaser-badge{font-family:"DM Mono",monospace;font-size:9px;font-weight:600;color:var(--text-muted,#6B7280);background:var(--bg-muted,#F7F6F4);border:1px solid var(--border-subtle,#E5E3DF);border-radius:20px;padding:4px 12px;flex-shrink:0}';
+  css += '@media(max-width:600px){.yk-home-summary{flex-wrap:wrap}.yk-home-summary-item{min-width:80px}}';
+
+  /* Track detail units */
+  css += '.yk-track-units{background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF);border-radius:14px;padding:16px 18px;margin-top:16px}';
+  css += '.yk-track-units-title{font-family:"Bricolage Grotesque",sans-serif;font-size:13px;font-weight:700;color:var(--text-primary,#111);margin-bottom:10px}';
+  css += '.yk-track-unit-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border-subtle,#E5E3DF)}';
+  css += '.yk-track-unit-row:last-of-type{border-bottom:none}';
+  css += '.yk-track-unit-num{font-family:"DM Mono",monospace;font-size:11px;font-weight:700;color:var(--verm,#C94E28);width:20px;text-align:center;flex-shrink:0}';
+  css += '.yk-track-unit-theme{font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;color:var(--text-secondary,#4B5563)}';
+  css += '.yk-track-unit-more{font-family:"DM Mono",monospace;font-size:10px;color:var(--text-muted,#6B7280);margin-top:8px;text-align:center}';
+
+  /* Unit detail — AI placeholder */
+  css += '.yk-unit-ai-placeholder{display:flex;align-items:center;gap:12px;padding:14px 18px;background:linear-gradient(135deg,rgba(30,45,94,.03) 0%,rgba(30,45,94,.06) 100%);border:1px solid rgba(30,45,94,.08);border-radius:12px;margin-top:16px}';
+  css += '.yk-unit-ai-placeholder-icon{width:32px;height:32px;border-radius:8px;background:rgba(30,45,94,.08);display:flex;align-items:center;justify-content:center;color:var(--navy,#1E2D5E);flex-shrink:0}';
+  css += '.yk-unit-ai-placeholder-text{flex:1;min-width:0}';
+  css += '.yk-unit-ai-placeholder-title{font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;font-weight:600;color:var(--text-primary,#111);margin-bottom:2px}';
+  css += '.yk-unit-ai-placeholder-desc{font-family:"Plus Jakarta Sans",sans-serif;font-size:10px;color:var(--text-muted,#6B7280)}';
+
+  /* Lightweight summary */
+  css += '.yk-summary-wrap{max-width:420px;margin:0 auto;text-align:center;animation:igFadeIn .3s ease}';
+  css += '.yk-summary-card{background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF);border-radius:16px;padding:32px 24px;box-shadow:0 2px 8px rgba(0,0,0,.06)}';
+  css += '.yk-summary-title{font-family:"Bricolage Grotesque",sans-serif;font-size:18px;font-weight:700;color:var(--text-primary,#111);margin-bottom:8px}';
+  css += '.yk-summary-desc{font-family:"Plus Jakarta Sans",sans-serif;font-size:13px;color:var(--text-muted,#6B7280);line-height:1.5;margin-bottom:16px}';
+  css += '.yk-summary-stats{display:flex;gap:16px;justify-content:center;margin-bottom:20px}';
+  css += '.yk-summary-stat{text-align:center}';
+  css += '.yk-summary-stat-num{font-family:"DM Mono",monospace;font-size:24px;font-weight:700;color:var(--text-primary,#111)}';
+  css += '.yk-summary-stat-label{font-family:"Plus Jakarta Sans",sans-serif;font-size:10px;color:var(--text-muted,#6B7280)}';
+
   /* Landing screen (star_intro — Studio landing) */
   css += '.ig-landing{animation:igFadeIn .3s ease}';
 
@@ -1301,29 +1370,25 @@ function renderRoleSelect() {
 
   html += '<div class="ig-nav-pill" id="ig-back-star">' + arrowLeftSVG + ' St\u00fcdyo</div>';
 
-  html += '<div class="g-hero"><div class="g-hero-inner"><div style="font-family:\'Bricolage Grotesque\',sans-serif;font-size:20px;font-weight:800;color:#fff;">Hedef Pozisyonunuzu Se\u00E7in</div></div></div>';
-
-  html += '<div style="max-width:480px;margin:24px auto;text-align:center">';
-  html += '<div class="ig-card ig-role-card">';
-  html += '<div class="ig-role-label">Rol\u00FCn\u00FCze \u00F6zel m\u00FClakat prati\u011Fi</div>';
-  html += '<div class="ig-role-desc">Hedef pozisyonunuzu se\u00E7in, o role ait yetkinlik bazl\u0131 sorularla pratik yap\u0131n.</div>';
+  /* Compact role chooser — first-time entry */
+  html += '<div class="yk-home-role-chooser">';
+  html += '<div class="yk-home-role-title">Hedef Pozisyonunu Se\u00e7</div>';
+  html += '<div class="yk-home-role-desc">Pozisyonuna \u00f6zel yetkinlik e\u011fitim plan\u0131 haz\u0131rlanacak.</div>';
 
   if (bridge) {
     var roleKeys = Object.keys(bridge.ROLE_COMP_MAP).sort(function(a,b){ return a.localeCompare(b,'tr'); });
-    html += '<div style="display:flex;gap:10px;align-items:stretch;justify-content:center;max-width:400px;margin:16px auto 0;">';
-    html += '<select class="ig-role-select" id="ig-role-dd" style="flex:1;min-width:0;margin:0;height:auto;padding:10px 36px 10px 14px;">';
-    html += '<option value="">Pozisyon se\u00E7in...</option>';
+    html += '<div class="yk-home-role-row">';
+    html += '<select class="ig-role-select" id="ig-role-dd">';
+    html += '<option value="">Pozisyon se\u00e7in\u2026</option>';
     for (var i = 0; i < roleKeys.length; i++) {
-      html += '<option value="' + roleKeys[i] + '">' + roleKeys[i] + '</option>';
+      html += '<option value="' + roleKeys[i] + '"' + (S.role === roleKeys[i] ? ' selected' : '') + '>' + roleKeys[i] + '</option>';
     }
     html += '</select>';
-    html += '<button type="button" id="ig-role-start" style="flex-shrink:0;height:44px;padding:0 24px;border:none;border-radius:10px;background:var(--verm,#C94E28);color:#fff;font-family:\'Plus Jakarta Sans\',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:opacity .2s;white-space:nowrap;">Ba\u015Fla</button>';
+    html += '<button type="button" id="ig-role-start" class="yk-home-role-btn">Ba\u015fla \u2192</button>';
     html += '</div>';
-  } else {
-    html += '<div class="ig-section-desc">Yetkinlik verileri y\u00FCklenirken bekleyin...</div>';
   }
+  html += '</div>';
 
-  html += '</div></div>';
   return html;
 }
 
@@ -1433,10 +1498,26 @@ function renderCompetencyIntro() {
   html += '</div>';
   html += '</div>';
 
+  /* Practice units preview */
+  var qs = flattenQuestions(code);
+  var unitCount = S.isPremium ? qs.length : Math.min(FREE_Q_PER_COMP, qs.length);
+  html += '<div class="yk-track-units">';
+  html += '<div class="yk-track-units-title">Pratik \u00dcniteleri (' + unitCount + ' soru)</div>';
+  for (var ui = 0; ui < Math.min(3, qs.length); ui++) {
+    html += '<div class="yk-track-unit-row">';
+    html += '<span class="yk-track-unit-num">' + (ui + 1) + '</span>';
+    html += '<span class="yk-track-unit-theme">' + (qs[ui].theme || '') + '</span>';
+    html += '</div>';
+  }
+  if (qs.length > 3) {
+    html += '<div class="yk-track-unit-more">+' + (qs.length - 3) + ' soru daha</div>';
+  }
+  html += '</div>';
+
   /* CTA row */
   html += '<div class="ig-intro-cta-row">';
-  html += '<button class="ig-btn ig-btn-swap" id="ig-intro-back" style="border:1px solid var(--border-subtle,#E5E3DF) !important">' + arrowLeftSVG + ' Yetkinliklere D\u00F6n\u00FCn</button>';
-  html += '<button class="ig-btn ig-btn-answered" id="ig-intro-start" style="padding:12px 28px;font-size:14px">\u0130lk Soruyu A\u00E7\u0131n \u2192</button>';
+  html += '<button class="ig-btn ig-btn-swap" id="ig-intro-back" style="border:1px solid var(--border-subtle,#E5E3DF) !important">' + arrowLeftSVG + ' \u00d6\u011frenme Plan\u0131</button>';
+  html += '<button class="ig-btn ig-btn-answered" id="ig-intro-start" style="padding:12px 28px;font-size:14px">Prati\u011fe Ba\u015fla \u2192</button>';
   html += '</div>';
 
   html += '</div>'; /* intro-wrap */
@@ -1449,7 +1530,7 @@ function renderCompetencyIntro() {
 
 function renderLobby() {
   var bridge = getBridge();
-  if (!bridge) return '<div class="ig-section-desc">Veri y\u00FCklenemedi.</div>';
+  if (!bridge) return '<div class="ig-section-desc">Veri y\u00fcklenemedi.</div>';
 
   var comps = S.comps;
   var freeLimit = S.isPremium ? comps.length : FREE_COMP_LIMIT;
@@ -1458,26 +1539,45 @@ function renderLobby() {
   var anchors = bridge.ANCHORS || {};
   var html = '';
 
-  html += '<div class="ig-nav-pill" id="ig-back-role">' + arrowLeftSVG + ' Pozisyon Se\u00E7imi</div>';
+  /* ── Yetenek Home ── */
+  html += '<div class="yk-home">';
 
-  html += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:12px">';
-  html += '<div style="font-family:\'Bricolage Grotesque\',sans-serif;font-size:20px;font-weight:800;color:var(--text-primary,#111)">' + S.role + '</div>';
-  html += '<div style="font-family:\'DM Mono\',monospace;font-size:12px;color:var(--text-muted,#6B7280);background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF);border-radius:20px;padding:4px 12px">' + comps.length + ' yetkinlik</div>';
+  /* Back + role header */
+  html += '<div class="ig-nav-pill" id="ig-back-role">' + arrowLeftSVG + ' St\u00fcdyo</div>';
+
+  html += '<div class="yk-home-header">';
+  html += '<div class="yk-home-header-left">';
+  html += '<div class="yk-home-role-label">' + S.role + '</div>';
+  html += '<div class="yk-home-comp-count">' + comps.length + ' yetkinlik \u00b7 ' + accessibleCount + ' eri\u015filebilir</div>';
+  html += '</div>';
+  html += '<button class="yk-home-change-role" id="ig-back-role-change">Rol De\u011fi\u015ftir</button>';
   html += '</div>';
 
-  /* Progress strip */
-  if (completedCount > 0 || accessibleCount > 1) {
-    var pct = accessibleCount > 0 ? Math.round((completedCount / accessibleCount) * 100) : 0;
-    html += '<div class="ig-progress-strip">';
-    html += '<div class="ig-progress-bar"><div class="ig-progress-fill" style="width:' + pct + '%"></div></div>';
-    html += '<div class="ig-progress-text">' + completedCount + ' / ' + accessibleCount + '</div>';
+  /* ── Continue card — if last active competency exists ── */
+  if (S.activeComp && S.completedComps.indexOf(S.activeComp) === -1) {
+    var contName = bridge.COMP_NAMES[S.activeComp] || S.activeComp;
+    html += '<div class="yk-home-continue" id="yk-continue-card" data-comp="' + S.activeComp + '" data-idx="' + S.activeCompIdx + '">';
+    html += '<div class="yk-home-continue-kicker">KALDIĞIN YERDEN DEVAM ET</div>';
+    html += '<div class="yk-home-continue-title">' + contName + '</div>';
+    html += '<div class="yk-home-continue-cta">Devam Et \u2192</div>';
     html += '</div>';
   }
+
+  /* ── Readiness summary ── */
+  html += '<div class="yk-home-summary">';
+  html += '<div class="yk-home-summary-item"><span class="yk-home-summary-num">' + completedCount + '</span><span class="yk-home-summary-label">Tamamlanan</span></div>';
+  html += '<div class="yk-home-summary-item"><span class="yk-home-summary-num">' + (accessibleCount - completedCount) + '</span><span class="yk-home-summary-label">Kalan</span></div>';
+  html += '<div class="yk-home-summary-item"><span class="yk-home-summary-num" id="yk-summary-journal">0</span><span class="yk-home-summary-label">G\u00fcnl\u00fck</span></div>';
+  html += '</div>';
 
   /* Evidence summary strip — hydrated async */
   html += '<div id="yk-evidence-summary" class="yk-evidence-summary" style="display:none;"></div>';
 
-  html += '<div class="ig-bento">';
+  /* ── Learning plan section title ── */
+  html += '<div class="yk-home-section-title">\u00d6\u011frenme Plan\u0131</div>';
+
+  /* ── Competency track cards ── */
+  html += '<div class="yk-home-tracks">';
   for (var i = 0; i < comps.length; i++) {
     var code = comps[i];
     var name = bridge.COMP_NAMES[code] || code;
@@ -1489,41 +1589,45 @@ function renderLobby() {
     var practiceCount = S.isPremium ? qCount : Math.min(FREE_Q_PER_COMP, qCount);
 
     if (isLocked) {
-      html += '<div class="ig-lobby-card ig-q-locked" style="animation-delay:' + (i * 0.06) + 's">';
-      html += '<div class="ig-q-inner">';
-      html += '<div class="ig-lobby-comp-name">' + name + '</div>';
-      html += '<div class="ig-lobby-comp-kf">' + kf + '</div>';
-      if (def) html += '<div class="ig-lobby-comp-def">' + def + '</div>';
-      html += '<div class="ig-lobby-comp-meta">' + qCount + ' soru</div>';
+      html += '<div class="yk-track-card yk-track-locked">';
+      html += '<div class="yk-track-inner">';
+      html += '<div class="yk-track-name">' + name + '</div>';
+      html += '<div class="yk-track-kf">' + kf + '</div>';
+      html += '<div class="yk-track-meta">' + qCount + ' soru</div>';
       html += '</div>';
       html += '<div class="ig-q-lock-overlay">';
       html += '<div class="ig-q-lock-icon">' + lockSVG + '</div>';
-      html += '<div class="ig-q-lock-text">\u00dccretsiz 2 yetkinlik hakk\u0131n\u0131 kulland\u0131n. Rol de\u011Fi\u015Ftirerek farkl\u0131 yetkinlikleri ke\u015Ffedebilirsin.</div>';
-      html += '<button class="ig-q-lock-cta">T\u00FCm Yetkinlikleri A\u00E7</button>';
+      html += '<div class="ig-q-lock-text">\u00dccretsiz limitine ula\u015ft\u0131n. Rol de\u011fi\u015ftirerek ke\u015ffet veya Premium ile t\u00fcm\u00fcne eri\u015f.</div>';
+      html += '<button class="ig-q-lock-cta">T\u00fcm Yetkinlikleri A\u00e7</button>';
       html += '</div>';
       html += '</div>';
     } else {
-      html += '<div class="ig-lobby-card' + (isCompleted ? ' ig-completed' : '') + '" data-comp="' + code + '" data-idx="' + i + '" style="animation-delay:' + (i * 0.06) + 's">';
-      html += '<div class="ig-lobby-comp-name">' + name + '</div>';
-      html += '<div class="ig-lobby-comp-kf">' + kf + '</div>';
-      if (def) html += '<div class="ig-lobby-comp-def">' + def + '</div>';
-      html += '<div class="ig-lobby-comp-meta">' + practiceCount + ' soru ile pratik yap\u0131n</div>';
-      var draftCount = countJournalDraftsForComp(code);
-      if (isCompleted) {
-        html += '<div class="ig-lobby-badge ig-lobby-badge-done">' + checkSVG + ' Tamamland\u0131</div>';
-      }
-      if (draftCount > 0) {
-        html += '<div class="ig-lobby-badge ig-lobby-badge-draft">' + penSVG + ' ' + draftCount + ' taslak</div>';
-      }
-      /* Evidence + rating area — hydrated async */
+      html += '<div class="yk-track-card' + (isCompleted ? ' yk-track-done' : '') + '" data-comp="' + code + '" data-idx="' + i + '">';
+      html += '<div class="yk-track-top">';
+      html += '<div class="yk-track-name">' + name + '</div>';
+      if (isCompleted) html += '<span class="yk-track-badge-done">\u2713</span>';
+      html += '</div>';
+      html += '<div class="yk-track-kf">' + kf + '</div>';
+      if (def) html += '<div class="yk-track-def">' + def + '</div>';
+      html += '<div class="yk-track-meta">' + practiceCount + ' soru</div>';
+      /* Evidence area — hydrated async */
       html += '<div class="yk-evidence" data-ev-comp="' + code + '"></div>';
       html += '</div>';
     }
   }
   html += '</div>';
 
-  /* Premium upsell area placeholder (existing logic follows below) */
+  /* ── AI teaser card ── */
+  html += '<div class="yk-home-ai-teaser">';
+  html += '<div class="yk-home-ai-teaser-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg></div>';
+  html += '<div class="yk-home-ai-teaser-text">';
+  html += '<div class="yk-home-ai-teaser-title">AI ile M\u00fclakat Prati\u011fi</div>';
+  html += '<div class="yk-home-ai-teaser-desc">Yap\u0131land\u0131r\u0131lm\u0131\u015f AI de\u011ferlendirmesiyle yan\u0131tlar\u0131n\u0131z\u0131n g\u00fc\u00e7l\u00fc ve zay\u0131f sinyallerini \u00f6\u011frenin.</div>';
+  html += '</div>';
+  html += '<div class="yk-home-ai-teaser-badge">\u00c7ok Yak\u0131nda</div>';
+  html += '</div>';
 
+  html += '</div>'; /* yk-home */
   return html;
 }
 
@@ -1611,8 +1715,33 @@ function renderPractice() {
 
   html += '</div>'; /* q-focus */
 
-  /* Journal (Gelişim Günlüğü) — below the question card */
-  html += renderJournalPanel();
+  /* ── Strong-answer signals from competency data ── */
+  var a = anchors[S.activeComp];
+  if (a && a.skilled && a.skilled.length > 0) {
+    html += '<div class="yk-unit-signals">';
+    html += '<div class="yk-unit-signals-title">' + checkSVG + ' G\u00fc\u00e7l\u00fc Yan\u0131tta Arananlar</div>';
+    for (var sii = 0; sii < Math.min(3, a.skilled.length); sii++) {
+      html += '<div class="yk-unit-signal-item">\u2022 ' + a.skilled[sii] + '</div>';
+    }
+    html += '</div>';
+  }
+
+  /* ── Follow-up questions preview ── */
+  if (S.dealt.length > 1 && S.currentQ < S.dealt.length - 1) {
+    html += '<div class="yk-unit-followup">';
+    html += '<div class="yk-unit-followup-title">Olas\u0131 Takip Sorusu</div>';
+    html += '<div class="yk-unit-followup-text">\u201c' + S.dealt[Math.min(S.currentQ + 1, S.dealt.length - 1)].text + '\u201d</div>';
+    html += '</div>';
+  }
+
+  /* ── AI practice placeholder (replaces journal) ── */
+  html += '<div class="yk-unit-ai-placeholder">';
+  html += '<div class="yk-unit-ai-placeholder-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg></div>';
+  html += '<div class="yk-unit-ai-placeholder-text">';
+  html += '<div class="yk-unit-ai-placeholder-title">AI ile Pratik Yak\u0131nda</div>';
+  html += '<div class="yk-unit-ai-placeholder-desc">Yan\u0131t\u0131n\u0131z\u0131 yaz\u0131n, AI ko\u00e7unuz g\u00fc\u00e7l\u00fc ve zay\u0131f sinyalleri de\u011ferlendirecek.</div>';
+  html += '</div>';
+  html += '</div>';
 
   html += '</div>'; /* practice-wrap */
   return html;
@@ -1776,27 +1905,26 @@ function renderCompletion() {
   var allAccessibleDone = S.completedComps.length >= accessibleComps;
   var html = '';
 
-  html += '<div class="ig-completion">';
-  html += '<div class="ig-completion-icon">' + checkSVG + '</div>';
-  html += '<div class="ig-completion-title">' + compName + ' Tamamland\u0131</div>';
-  html += '<div class="ig-completion-desc">' + S.answeredCount + ' soru yan\u0131tland\u0131' + (S.swapsUsed > 0 ? ', ' + S.swapsUsed + ' soru de\u011Fi\u015Ftirildi' : '') + '.</div>';
-  var compDrafts = countJournalDraftsForComp(S.activeComp);
-  var draftCopy = compDrafts > 0
-    ? 'Bu yetkinlik i\u00E7in ' + compDrafts + ' taslak yan\u0131t kaydettiniz \u2014 i\u015F g\u00F6r\u00FC\u015Fmesi \u00F6ncesi tekrar g\u00F6zden ge\u00E7irebilirsiniz.'
-    : 'Haz\u0131rl\u0131k yapmak fark yarat\u0131r \u2014 bu yetkinli\u011Fi pratik ederek bir ad\u0131m \u00F6ndesiniz.';
-  html += '<div style="font-family:\'Plus Jakarta Sans\',sans-serif;font-size:12px;color:var(--text-muted,#6B7280);line-height:1.5;max-width:360px;margin:0 auto 8px">' + draftCopy + '</div>';
+  html += '<div class="yk-summary-wrap">';
+  html += '<div class="yk-summary-card">';
+  html += '<div class="yk-summary-title">' + compName + '</div>';
+  html += '<div class="yk-summary-desc">' + S.answeredCount + ' soru incelendi. Bu yetkinli\u011fi pratik ederek bir ad\u0131m \u00f6ndesin.</div>';
 
-  html += '<div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-top:16px">';
-  html += '<button class="ig-btn ig-btn-swap" id="ig-restart-comp" style="border:1px solid var(--border-subtle,#E5E3DF) !important">Tekrar Pratik Yap\u0131n</button>';
+  html += '<div class="yk-summary-stats">';
+  html += '<div class="yk-summary-stat"><div class="yk-summary-stat-num">' + S.answeredCount + '</div><div class="yk-summary-stat-label">Soru</div></div>';
+  html += '<div class="yk-summary-stat"><div class="yk-summary-stat-num">' + S.completedComps.length + '</div><div class="yk-summary-stat-label">Yetkinlik</div></div>';
+  html += '</div>';
 
+  html += '<div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">';
   if (allAccessibleDone) {
-    html += '<button class="ig-btn ig-btn-answered" id="ig-session-complete">Oturumu Tamamla \u2192</button>';
+    html += '<button class="ig-btn ig-btn-answered" id="ig-session-complete">\u00d6\u011frenme Plan\u0131na D\u00f6n \u2192</button>';
   } else {
     html += '<button class="ig-btn ig-btn-answered" id="ig-back-lobby-comp">Sonraki Yetkinlik \u2192</button>';
   }
+  html += '<button class="ig-btn ig-btn-swap" id="ig-restart-comp" style="border:1px solid var(--border-subtle,#E5E3DF) !important">Tekrar \u0130ncele</button>';
   html += '</div>';
 
-  html += '</div>';
+  html += '</div></div>';
   return html;
 }
 
@@ -1811,50 +1939,31 @@ function renderSessionComplete() {
   var lockedCount = Math.max(0, S.comps.length - freeLimit);
   var html = '';
 
-  html += '<div class="ig-completion">';
-  html += '<div class="ig-completion-icon">' + trophySVG + '</div>';
-  html += '<div class="ig-completion-title">Tebrikler!</div>';
-  html += '<div class="ig-completion-desc"><strong>' + S.role + '</strong> pozisyonu i\u00E7in \u00FCcretsiz m\u00FClakat prati\u011Fini tamamlad\u0131n\u0131z.</div>';
+  html += '<div class="yk-summary-wrap">';
+  html += '<div class="yk-summary-card">';
+  html += '<div class="yk-summary-title">' + S.role + ' Haz\u0131rl\u0131\u011f\u0131</div>';
+  html += '<div class="yk-summary-desc">Eri\u015filebilir yetkinlikleri tamamlad\u0131n.</div>';
 
-  html += '<div class="ig-completion-stats">';
-  html += '<div class="ig-stat"><div class="ig-stat-num">' + S.completedComps.length + '</div><div class="ig-stat-label">Yetkinlik</div></div>';
-  html += '<div class="ig-stat"><div class="ig-stat-num">' + S.totalAnswered + '</div><div class="ig-stat-label">Yan\u0131tlanan</div></div>';
-  html += '<div class="ig-stat"><div class="ig-stat-num">' + S.totalSwaps + '</div><div class="ig-stat-label">De\u011Fi\u015Ftirilen</div></div>';
+  html += '<div class="yk-summary-stats">';
+  html += '<div class="yk-summary-stat"><div class="yk-summary-stat-num">' + S.completedComps.length + '</div><div class="yk-summary-stat-label">Yetkinlik</div></div>';
+  html += '<div class="yk-summary-stat"><div class="yk-summary-stat-num">' + S.totalAnswered + '</div><div class="yk-summary-stat-label">Soru</div></div>';
   html += '</div>';
 
-  /* Premium upsell — the main moment */
+  /* Premium upsell if locked competencies remain */
   if (!S.isPremium && lockedCount > 0) {
-    html += '<div style="margin-top:24px;text-align:center;background:var(--bg-muted,#F7F6F4);border:1px solid rgba(201,78,40,.15);border-radius:16px;padding:24px">';
-    html += '<div style="font-family:\'Bricolage Grotesque\',sans-serif;font-size:17px;font-weight:800;margin-bottom:4px">' + lockedCount + ' yetkinlik daha seni bekliyor</div>';
-    html += '<div style="font-family:\'Plus Jakarta Sans\',sans-serif;font-size:12px;color:var(--text-muted,#6B7280);margin-bottom:10px;line-height:1.5">Farkl\u0131 rolleri ke\u015Ffederek yeni yetkinlik \u00f6rnekleri g\u00f6rebilirsin. T\u00fcm yetkinliklere s\u0131n\u0131rs\u0131z eri\u015fim i\u00e7in:</div>';
-    html += '<div class="ig-section-desc" style="margin-bottom:10px"><strong>' + S.role + '</strong> m\u00FClakat\u0131nda de\u011Ferlendirilecek ' + S.comps.length + ' yetkinli\u011Fin tamam\u0131na haz\u0131rlan\u0131n.</div>';
-
-    /* Show up to 3 locked competency names as preview tags */
-    var lockedNames = [];
-    for (var li = freeLimit; li < S.comps.length && lockedNames.length < 3; li++) {
-      var ln = bridge ? (bridge.COMP_NAMES[S.comps[li]] || S.comps[li]) : S.comps[li];
-      lockedNames.push(ln);
-    }
-    if (lockedNames.length > 0) {
-      html += '<div class="ig-locked-preview">';
-      for (var lt = 0; lt < lockedNames.length; lt++) {
-        html += '<span class="ig-locked-tag">' + lockSVG + ' ' + lockedNames[lt] + '</span>';
-      }
-      if (lockedCount > 3) html += '<span class="ig-locked-tag">+' + (lockedCount - 3) + ' daha</span>';
-      html += '</div>';
-    }
-
-    html += '<div class="ig-section-desc" style="font-size:11px;margin-bottom:14px;color:var(--text-muted,#6B7280)">S\u0131n\u0131rs\u0131z soru de\u011Fi\u015Ftirme \u00B7 T\u00FCm yetkinlikler \u00B7 Geli\u015Fim G\u00FCnl\u00FC\u011F\u00FC \u00B7 AI Ko\u00E7luk (yak\u0131nda)</div>';
-    html += '<button class="ig-q-lock-cta" style="padding:10px 28px;font-size:14px">Premium\u2019a Ge\u00E7</button>';
+    html += '<div style="margin-top:16px;padding:16px;background:rgba(201,78,40,.04);border:1px solid rgba(201,78,40,.12);border-radius:12px;text-align:left">';
+    html += '<div style="font-family:\'Bricolage Grotesque\',sans-serif;font-size:14px;font-weight:700;margin-bottom:4px">' + lockedCount + ' yetkinlik daha seni bekliyor</div>';
+    html += '<div style="font-family:\'Plus Jakarta Sans\',sans-serif;font-size:11px;color:var(--text-muted,#6B7280);margin-bottom:10px;line-height:1.4">T\u00fcm yetkinliklere s\u0131n\u0131rs\u0131z eri\u015fim + AI ko\u00e7luk i\u00e7in:</div>';
+    html += '<button class="ig-q-lock-cta" style="padding:8px 20px;font-size:12px">Premium\u2019a Ge\u00e7</button>';
     html += '</div>';
   }
 
-  html += '<div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-top:20px">';
-  html += '<button class="ig-btn ig-btn-swap" id="ig-back-lobby-session" style="border:1px solid var(--border-subtle,#E5E3DF) !important">' + arrowLeftSVG + ' Yetkinliklere D\u00F6n\u00FCn</button>';
-  html += '<button class="ig-btn ig-btn-star" id="ig-new-session">Farkl\u0131 Rol Se\u00E7in</button>';
+  html += '<div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:16px">';
+  html += '<button class="ig-btn ig-btn-answered" id="ig-back-lobby-session">\u00d6\u011frenme Plan\u0131 \u2192</button>';
+  html += '<button class="ig-btn ig-btn-swap" id="ig-new-session" style="border:1px solid var(--border-subtle,#E5E3DF) !important">Farkl\u0131 Rol</button>';
   html += '</div>';
 
-  html += '</div>';
+  html += '</div></div>';
   return html;
 }
 
@@ -3332,15 +3441,28 @@ function startPractice(compCode, compIdx) {
 }
 
 function bindLobbyEvents() {
-  /* Back to role select */
+  /* Back to Studio landing */
   var backBtn = document.getElementById('ig-back-role');
-  if (backBtn) backBtn.addEventListener('click', function() { navigate('role_select'); });
+  if (backBtn) backBtn.addEventListener('click', function() { navigate('star_intro'); });
 
-  /* Comp card clicks — go to competency intro first */
-  var cards = document.querySelectorAll('.ig-lobby-card[data-comp]');
+  /* Change role button */
+  var changeRoleBtn = document.getElementById('ig-back-role-change');
+  if (changeRoleBtn) changeRoleBtn.addEventListener('click', function() { navigate('role_select'); });
+
+  /* Continue card */
+  var contCard = document.getElementById('yk-continue-card');
+  if (contCard) contCard.addEventListener('click', function() {
+    var code = this.getAttribute('data-comp');
+    var idx = parseInt(this.getAttribute('data-idx'), 10);
+    S.activeComp = code;
+    S.activeCompIdx = idx;
+    navigate('competency_intro');
+  });
+
+  /* Track card clicks → go to track detail */
+  var cards = document.querySelectorAll('.yk-track-card[data-comp]');
   cards.forEach(function(card) {
     card.addEventListener('click', function(e) {
-      /* Ignore clicks on rating toggle (handled separately) */
       if (e.target.closest && e.target.closest('.yk-rating-toggle')) return;
       var code = this.getAttribute('data-comp');
       var idx = parseInt(this.getAttribute('data-idx'), 10);
