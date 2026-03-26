@@ -195,6 +195,7 @@ interface Payload {
   current_panel?: string | null;
   page_path?: string | null;
   user_agent?: string | null;
+  resolution_message?: string | null;
 }
 
 function renderTemplate(
@@ -221,6 +222,8 @@ function renderTemplate(
       return supportTicketConfirmationTemplate(payload);
     case "support_ticket_internal_alert":
       return supportTicketInternalAlertTemplate(payload);
+    case "support_ticket_resolved":
+      return supportTicketResolvedTemplate(payload);
     default:
       throw new Error(`Unknown email_type: ${emailType}`);
   }
@@ -751,6 +754,66 @@ Dahili destek bildirimi - HelloTalent`;
 
   return {
     subject: `[Destek] ${p.ticket_no || ""} \u2014 ${p.subject || ""}`,
+    html,
+    text,
+  };
+}
+
+function supportTicketResolvedTemplate(p: Payload): EmailContent {
+  const name = esc(p.candidate_name);
+  const greeting = name ? `Merhaba ${name}!` : "Merhaba!";
+  const greetingPlain = p.candidate_name
+    ? `Merhaba ${p.candidate_name}!`
+    : "Merhaba!";
+  const ticketNo = esc(p.ticket_no);
+  const subjectEsc = esc(p.subject);
+  const resolutionMsg = esc(p.resolution_message);
+  const ctaUrl = "https://hellotalent.ai/profil.html#destek";
+
+  const html = emailWrapper(`
+${logoRow()}
+<tr><td style="padding:8px 32px 4px;text-align:center;">
+<span style="display:none;max-height:0;overflow:hidden;">Destek talebiniz \u00e7\u00f6z\u00fcld\u00fc \u2014 ${ticketNo}</span>
+<h1 style="margin:0;font-family:'Bricolage Grotesque',Georgia,serif;font-size:22px;color:${COLORS.navy};font-weight:700;">${greeting}</h1>
+</td></tr>
+<tr><td style="padding:16px 32px;font-size:15px;color:${COLORS.text};line-height:1.6;">
+<p style="margin:0 0 12px;">Destek talebiniz <strong>\u00e7\u00f6z\u00fcld\u00fc</strong> olarak i\u015faretlendi.</p>
+<table width="100%" cellpadding="0" cellspacing="0" style="background:${COLORS.bg};border:1px solid ${COLORS.border};border-radius:10px;margin-bottom:16px;">
+<tr><td style="padding:14px 16px;">
+<p style="margin:0 0 6px;font-size:13px;color:${COLORS.muted};">Talep Numaras\u0131</p>
+<p style="margin:0 0 12px;font-family:'DM Mono',monospace;font-size:16px;font-weight:700;color:${COLORS.verm};">${ticketNo}</p>
+<p style="margin:0 0 4px;font-size:13px;color:${COLORS.muted};">Konu</p>
+<p style="margin:0 0 12px;font-size:14px;font-weight:600;color:${COLORS.text};">${subjectEsc}</p>
+${resolutionMsg ? `<p style="margin:0 0 4px;font-size:13px;color:${COLORS.muted};">\u00c7\u00f6z\u00fcm</p>
+<p style="margin:0;font-size:14px;color:${COLORS.text};white-space:pre-wrap;">${resolutionMsg}</p>` : ""}
+</td></tr>
+</table>
+<p style="margin:0 0 8px;">Sorun devam ediyorsa Destek Merkezi\u2019nden <strong>Devam Ediyor</strong> butonuna t\u0131klayarak bize bildirebilirsin.</p>
+<p style="margin:0;font-size:13px;color:${COLORS.muted};">7 g\u00fcn i\u00e7inde yan\u0131t verilmezse talep otomatik olarak kapat\u0131lacakt\u0131r.</p>
+</td></tr>
+${ctaButton("Destek Merkezine Git", ctaUrl)}
+${footerRow()}
+`);
+
+  const text = `${greetingPlain}
+
+Destek talebiniz \u00e7\u00f6z\u00fcld\u00fc olarak i\u015faretlendi.
+
+Talep Numaras\u0131: ${p.ticket_no || ""}
+Konu: ${p.subject || ""}
+${p.resolution_message ? `\u00c7\u00f6z\u00fcm: ${p.resolution_message}` : ""}
+
+Sorun devam ediyorsa Destek Merkezi'nden "Devam Ediyor" butonuna t\u0131klayarak bize bildirebilirsin.
+7 g\u00fcn i\u00e7inde yan\u0131t verilmezse talep otomatik olarak kapat\u0131lacakt\u0131r.
+
+\u2192 Destek Merkezi: ${ctaUrl}
+
+---
+\u00a9 2026 HelloTalent
+Gizlilik: https://hellotalent.ai/gizlilik.html`;
+
+  return {
+    subject: `Destek Talebiniz \u00c7\u00f6z\u00fcld\u00fc \u2014 ${p.ticket_no || ""}`,
     html,
     text,
   };

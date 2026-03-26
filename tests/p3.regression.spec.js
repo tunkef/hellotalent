@@ -358,6 +358,22 @@ test.describe('Support Center — structural guards', () => {
     expect(profilDeskJs).toContain('ticketCategoryLabel(ticket)');
   });
 
+  test('category click triggers scroll to article list', () => {
+    expect(profilDeskJs).toContain('function scrollToArticleList(');
+    expect(profilDeskJs).toContain('function scrollToCategoryGrid(');
+    // Category click sets scroll flag before re-render
+    expect(profilDeskJs).toContain('_scrollAfterRender = !wasSelected');
+    // renderArticleList triggers scroll after render via the flag
+    expect(profilDeskJs).toContain('scrollToArticleList');
+  });
+
+  test('filtered article list has return-up button to category grid', () => {
+    expect(profilDeskJs).toContain('da-list-header-up');
+    expect(profilDeskJs).toContain('scrollToCategoryGrid()');
+    expect(profilDeskJs).toContain('Kategoriler');
+    expect(profilDeskJs).toContain('SVG_UP_ARROW');
+  });
+
   test('ui_topic integrity migration exists with compound CHECK and sanitized RPC', () => {
     var migSql = readFromRepo('supabase/migrations/20260326120000_support_ticket_ui_topic_integrity.sql');
 
@@ -392,5 +408,165 @@ test.describe('Support Center — structural guards', () => {
 
     // 6. Email payload uses sanitized v_ui_topic
     expect(migSql).toContain("COALESCE(v_ui_topic, '')");
+  });
+});
+
+// ═══════════════════════════════════════════════════════════════
+// Support Queue MVP — admin panel + closure workflow
+// ═══════════════════════════════════════════════════════════════
+test.describe('Support Queue MVP — structural guards', () => {
+  let adminHtml;
+  let adminSupportJs;
+  let profilDeskJs;
+  let migSql;
+  let emailSendTs;
+
+  test.beforeAll(() => {
+    adminHtml = readFromRepo('admin.html');
+    adminSupportJs = readFromRepo('admin-support.js');
+    profilDeskJs = readFromRepo('profil-destek.js');
+    migSql = readFromRepo('supabase/migrations/20260326140000_support_queue_mvp.sql');
+    emailSendTs = readFromRepo('supabase/functions/email-send/index.ts');
+  });
+
+  // ── Admin HTML integration ──
+  test('admin.html has support nav item, panel, script, and switchPanel hook', () => {
+    expect(adminHtml).toContain('data-panel="support"');
+    expect(adminHtml).toContain('Destek Talepleri');
+    expect(adminHtml).toContain('id="badge-support-open"');
+    expect(adminHtml).toContain('id="panel-support"');
+    expect(adminHtml).toContain('id="support-content"');
+    expect(adminHtml).toContain('admin-support.js');
+    expect(adminHtml).toContain("'support') window._htAdminLoadSupport");
+  });
+
+  // ── Admin module structure ──
+  test('admin-support.js uses IIFE with public loader', () => {
+    expect(adminSupportJs).toMatch(/^\(function\(\)\s*\{/m);
+    expect(adminSupportJs).toContain('window._htAdminLoadSupport');
+    expect(adminSupportJs).not.toMatch(/console\.log\(/);
+  });
+
+  test('admin-support.js has queue view with status tabs', () => {
+    expect(adminSupportJs).toContain('admin_get_support_queue');
+    expect(adminSupportJs).toContain('_currentFilter');
+    expect(adminSupportJs).toContain('acc-tab');
+  });
+
+  test('admin-support.js calls all admin RPCs', () => {
+    expect(adminSupportJs).toContain("'admin_claim_support_ticket'");
+    expect(adminSupportJs).toContain("'admin_resolve_support_ticket'");
+    expect(adminSupportJs).toContain("'admin_add_support_note'");
+    expect(adminSupportJs).toContain("'admin_close_support_ticket'");
+  });
+
+  test('admin-support.js respects ui_topic for category labels', () => {
+    expect(adminSupportJs).toContain('ticket.ui_topic');
+    expect(adminSupportJs).toContain('UI_CATEGORIES');
+  });
+
+  // ── Migration structure ──
+  test('migration adds lifecycle columns', () => {
+    expect(migSql).toContain('resolved_at timestamptz');
+    expect(migSql).toContain('closed_at timestamptz');
+    expect(migSql).toContain('assigned_admin_user_id uuid');
+    expect(migSql).toContain('REFERENCES admin_users(id)');
+  });
+
+  test('migration creates admin RLS policies for tickets and messages', () => {
+    expect(migSql).toContain('support_tickets_admin_read');
+    expect(migSql).toContain('stm_admin_read');
+    expect(migSql).toContain('is_admin()');
+  });
+
+  test('migration has all required RPCs', () => {
+    expect(migSql).toContain('admin_claim_support_ticket');
+    expect(migSql).toContain('admin_resolve_support_ticket');
+    expect(migSql).toContain('admin_add_support_note');
+    expect(migSql).toContain('admin_close_support_ticket');
+    expect(migSql).toContain('admin_get_support_queue');
+    expect(migSql).toContain('candidate_confirm_resolved');
+    expect(migSql).toContain('candidate_reopen_ticket');
+  });
+
+  test('admin_resolve_support_ticket implicitly claims open tickets', () => {
+    expect(migSql).toMatch(/status NOT IN \('open', 'in_review'\)/);
+    expect(migSql).toContain('COALESCE(assigned_admin_user_id, auth.uid())');
+  });
+
+  test('admin_resolve_support_ticket validates and sanitizes p_message server-side', () => {
+    // Must declare and use v_message, not raw p_message
+    expect(migSql).toContain('v_message text');
+    expect(migSql).toContain("v_message := btrim(COALESCE(p_message, ''))");
+    expect(migSql).toContain("v_message = ''");
+    expect(migSql).toContain('Cozum aciklamasi bos olamaz');
+    // Timeline insert must use v_message
+    var resolveBlock = migSql.slice(migSql.indexOf('admin_resolve_support_ticket'), migSql.indexOf('REVOKE EXECUTE ON FUNCTION admin_resolve_support_ticket'));
+    expect(resolveBlock).toContain("v_message, 'public'");
+    // Email payload must use v_message
+    expect(resolveBlock).toContain("'resolution_message', v_message");
+    // Must NOT use raw p_message in insert or payload
+    expect(resolveBlock).not.toContain("p_message, 'public'");
+    expect(resolveBlock).not.toContain("'resolution_message', p_message");
+  });
+
+  test('candidate RPCs enforce ownership and resolved-only guard', () => {
+    // Both candidate RPCs must check user_id = auth.uid() AND status = 'resolved'
+    var confirmBlock = migSql.slice(migSql.indexOf('candidate_confirm_resolved'));
+    expect(confirmBlock).toContain("status = 'resolved'");
+    expect(confirmBlock).toContain('user_id = auth.uid()');
+
+    var reopenBlock = migSql.slice(migSql.indexOf('candidate_reopen_ticket'));
+    expect(reopenBlock).toContain("status = 'resolved'");
+    expect(reopenBlock).toContain('user_id = auth.uid()');
+  });
+
+  test('auto-close function exists with 7-day threshold and cron schedule', () => {
+    expect(migSql).toContain('auto_close_resolved_tickets');
+    expect(migSql).toContain("interval '7 days'");
+    expect(migSql).toContain('cron.schedule');
+    expect(migSql).toContain('auto-close-resolved-tickets');
+  });
+
+  test('migration extends email_outbox CHECK for support_ticket_resolved', () => {
+    expect(migSql).toContain("'support_ticket_resolved'");
+    expect(migSql).toContain('email_outbox_email_type_check');
+  });
+
+  // ── Candidate UI ──
+  test('profil-destek.js shows action buttons only for resolved tickets', () => {
+    expect(profilDeskJs).toContain("ticket.status === 'resolved'");
+    expect(profilDeskJs).toContain("'candidate_confirm_resolved'");
+    expect(profilDeskJs).toContain("'candidate_reopen_ticket'");
+    // Button text uses unicode escapes in source: \u00C7\u00F6z\u00FCld\u00FC
+    expect(profilDeskJs).toContain('\\u00C7\\u00F6z\\u00FCld\\u00FC');
+    expect(profilDeskJs).toContain('Devam Ediyor');
+  });
+
+  test('waiting_on_candidate is not wired into candidate UI flow', () => {
+    // Should exist in labels but NOT in action button logic
+    expect(profilDeskJs).toContain("waiting_on_candidate");
+    // Must NOT have action buttons for waiting_on_candidate
+    expect(profilDeskJs).not.toContain("status === 'waiting_on_candidate'");
+  });
+
+  // ── Email template ──
+  test('email-send has support_ticket_resolved template', () => {
+    expect(emailSendTs).toContain('"support_ticket_resolved"');
+    expect(emailSendTs).toContain('supportTicketResolvedTemplate');
+    expect(emailSendTs).toContain('resolution_message');
+  });
+
+  test('resolved email greeting uses exclamation, not comma', () => {
+    // Extract only the resolved template function
+    var fnStart = emailSendTs.indexOf('function supportTicketResolvedTemplate');
+    var fnEnd = emailSendTs.indexOf('\nfunction ', fnStart + 10);
+    if (fnEnd === -1) fnEnd = emailSendTs.length;
+    var resolvedFn = emailSendTs.slice(fnStart, fnEnd);
+    // Must use ! not ,
+    expect(resolvedFn).toContain('Merhaba ${name}!');
+    expect(resolvedFn).toContain('"Merhaba!"');
+    expect(resolvedFn).not.toContain('Merhaba ${name},');
+    expect(resolvedFn).not.toContain('"Merhaba,"');
   });
 });

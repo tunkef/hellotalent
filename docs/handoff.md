@@ -1,5 +1,5 @@
 # hellotalent.ai — Technical Handoff Document
-> Son güncelleme: 26 Mart 2026 (Session 22 — Support Center Phase 1 + 1.1 complete, Destek Merkezi live end-to-end)
+> Son güncelleme: 26 Mart 2026 (Session 22b — Support Center Phase 1.2: Mesajlar/Teklifler split live end-to-end)
 > Bu doküman, projenin mevcut durumunu, tamamlanan işleri ve kalan backlog'u kapsar.
 > Yeni bir chat/session başlatırken bu dosyayı referans olarak kullanın.
 
@@ -630,6 +630,40 @@ profil.html: 3079 → 1532 satır (−50%). Kalan inline: 3 boot-critical micro-
 - [ ] Inbound email parsing
 - [ ] File/screenshot attachment on tickets
 - [ ] Support article search
+
+### Session 22b — 26 Mart 2026 (Support Center Phase 1.2 — Mesajlar / Özel Teklifler Split)
+
+**Mesajlar / Özel Teklifler split live and verified.**
+
+DB category `mesajlar_teklifler` remains unchanged. The split is implemented via a UI-layer category system (`UI_CATEGORIES`) and a persistent `ui_topic` column on `support_tickets`.
+
+**Migrations deployed:**
+- `20260326103000_support_articles_content_polish.sql` — deep article content rewrite (8 articles), product-truth alignment, markdown table→list fix
+- `20260326113000_support_ticket_ui_topic.sql` — `ui_topic text NULL` column + 7-param `create_support_ticket` RPC with `p_ui_topic`
+- `20260326120000_support_ticket_ui_topic_integrity.sql` — compound CHECK (`ui_topic` non-null only when `category = 'mesajlar_teklifler'`), RPC `v_ui_topic` server-side normalization, existing data sanitization
+
+**Frontend (`profil-destek.js`):**
+- 6 separate UI category cards (no merged "Mesajlar ve Teklifler")
+- `getUiCategory(article)` routes articles by slug (`SLUG_TO_UI_CAT`)
+- `uiCatToDbCat()` maps UI keys back to DB category for RPC
+- `ticketCategoryLabel(ticket)` prefers `ui_topic` for display, falls back for legacy rows
+- Ticket form shows 6 options; submit passes `p_ui_topic` alongside `p_category`
+- Bento category cards with icons, descriptions, article counts
+- Sticky breadcrumb bar in article detail
+- 42 Support Center structural guards in `tests/p3.regression.spec.js`
+
+**Commit:** `6d072d3`
+**Cache-bust:** `profil-destek.js?v=20260326e`
+
+**Live smoke verified (26 Mart 2026, post-deploy):**
+- ✅ No merged category card — Mesajlar and Özel Teklifler are separate cards
+- ✅ Mesajlar article grouped under Mesajlar, breadcrumb shows "Mesajlar", CTA preselects Mesajlar
+- ✅ Özel Teklifler article grouped under Özel Teklifler, breadcrumb shows "Özel Teklifler", CTA preselects Özel Teklifler
+- ✅ HT-000002 (Mesajlar) persists label after full page reload
+- ✅ HT-000003 (Özel Teklifler) persists label after full page reload
+- ✅ HT-000001 (legacy, pre-ui_topic) renders safely as "Hesap ve Giriş"
+- ✅ Subject hints distinct: messages → "Ör: İşveren mesajına yanıt veremiyorum", offers → "Ör: Teklif detayı açılmıyor"
+- ✅ DB integrity enforced: compound CHECK prevents `ui_topic` on non-merged categories; RPC normalizes via `v_ui_topic`
 
 ### Sonraki Adımlar
 - [x] ~~Migration 042 → competency tabloları~~ ✅ Deployed

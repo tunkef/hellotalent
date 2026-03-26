@@ -116,11 +116,31 @@ var SVG_CHEVRON = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" s
 var SVG_CHECK_CIRCLE = '<svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>';
 var SVG_EMPTY_CLIPBOARD = '<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="opacity:0.35;"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg>';
 var SVG_ARTICLE = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>';
+var SVG_UP_ARROW = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>';
 
 // ── STATE ────────────────────────────────────────
 
 var _selectedCategory = null;
 var _articleDetailMode = false;
+var _scrollAfterRender = false; // set true when category click should auto-scroll
+
+// ── SCROLL HELPERS ───────────────────────────────
+
+function scrollToArticleList() {
+  var el = document.getElementById('da-list-header');
+  if (!el) return;
+  var offset = 16;
+  var top = el.getBoundingClientRect().top + window.pageYOffset - offset;
+  window.scrollTo({ top: top, behavior: 'smooth' });
+}
+
+function scrollToCategoryGrid() {
+  var el = document.querySelector('.da-cat-grid');
+  if (!el) return;
+  var offset = 16;
+  var top = el.getBoundingClientRect().top + window.pageYOffset - offset;
+  window.scrollTo({ top: top, behavior: 'smooth' });
+}
 
 // ── CSS INJECTION ────────────────────────────────
 
@@ -158,7 +178,10 @@ function injectCSS() {
     '.da-cat-count { font-family:"DM Mono",monospace; font-size:11px; color:var(--text-muted, #6B7280); margin-top:auto; padding-top:4px; }',
 
     /* Article list — bento card style */
-    '.da-list-header { font-family:"Bricolage Grotesque",sans-serif; font-size:16px; font-weight:700; color:var(--text, #111); margin-bottom:12px; }',
+    '.da-list-header { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:12px; }',
+    '.da-list-header-title { font-family:"Bricolage Grotesque",sans-serif; font-size:16px; font-weight:700; color:var(--text, #111); }',
+    '.da-list-header-up { display:inline-flex; align-items:center; gap:5px; font-family:"Plus Jakarta Sans",sans-serif; font-size:12px; font-weight:600; color:var(--text-muted, #6B7280); background:none; border:none; cursor:pointer; padding:4px 8px; border-radius:6px; transition:all .15s; }',
+    '.da-list-header-up:hover { color:var(--verm, #C94E28); background:var(--verm-light, #F5EDE9); }',
     '.da-list { display:flex; flex-direction:column; gap:10px; }',
     '.da-item { background:var(--bg-surface, #fff); border:1px solid var(--border-subtle, #E5E3DF); border-radius:14px; padding:16px 18px; cursor:pointer; transition:all .25s; display:flex; align-items:center; gap:14px; box-shadow:0 2px 8px rgba(0,0,0,0.04); }',
     '.da-item:hover { border-color:var(--verm, #C94E28); box-shadow:0 4px 16px rgba(0,0,0,0.08); transform:translateY(-1px); }',
@@ -411,7 +434,9 @@ function renderArticlesSection() {
     card.appendChild(countSpan);
 
     card.addEventListener('click', function() {
-      _selectedCategory = (_selectedCategory === k) ? null : k;
+      var wasSelected = _selectedCategory === k;
+      _selectedCategory = wasSelected ? null : k;
+      _scrollAfterRender = !wasSelected; // scroll down when selecting, not when deselecting
       renderArticlesSection();
     });
     catGrid.appendChild(card);
@@ -492,9 +517,32 @@ function renderArticleList(articles) {
     : articles;
 
   if (headerEl) {
-    headerEl.textContent = _selectedCategory
+    while (headerEl.firstChild) headerEl.removeChild(headerEl.firstChild);
+
+    var titleSpan = document.createElement('span');
+    titleSpan.className = 'da-list-header-title';
+    titleSpan.textContent = _selectedCategory
       ? UI_CATEGORIES[_selectedCategory] || _selectedCategory
       : 'T\u00FCm Makaleler';
+    headerEl.appendChild(titleSpan);
+
+    // Show "Kategorilere Dön" button when a filter is active
+    if (_selectedCategory) {
+      var upBtn = document.createElement('button');
+      upBtn.className = 'da-list-header-up';
+      // Hardcoded SVG — safe for innerHTML
+      upBtn.innerHTML = SVG_UP_ARROW;
+      var upText = document.createTextNode(' Kategoriler');
+      upBtn.appendChild(upText);
+      upBtn.addEventListener('click', function() { scrollToCategoryGrid(); });
+      headerEl.appendChild(upBtn);
+    }
+
+    // Auto-scroll to article list after category selection
+    if (_scrollAfterRender) {
+      _scrollAfterRender = false;
+      setTimeout(scrollToArticleList, 80);
+    }
   }
 
   if (filtered.length === 0) {
@@ -1095,6 +1143,60 @@ function showTicketDetail(ticket) {
   msgsWrap.id = 'dtd-messages';
   msgsWrap.className = 'dtd-messages';
   wrap.appendChild(msgsWrap);
+
+  // ── Resolved-ticket action buttons ──
+  if (ticket.status === 'resolved') {
+    var resolvedArea = document.createElement('div');
+    resolvedArea.style.cssText = 'margin-top:20px;padding:18px;background:var(--bg-elevated, #F3F4F6);border-radius:12px;';
+
+    var resolvedHint = document.createElement('div');
+    resolvedHint.style.cssText = 'font-family:"Plus Jakarta Sans",sans-serif;font-size:13px;color:var(--text, #111);margin-bottom:14px;line-height:1.5;';
+    resolvedHint.textContent = 'Destek ekibi talebini \u00E7\u00F6z\u00FCld\u00FC olarak i\u015Faretledi. Sorun devam ediyorsa bize bildir.';
+    resolvedArea.appendChild(resolvedHint);
+
+    var resolvedActions = document.createElement('div');
+    resolvedActions.style.cssText = 'display:flex;gap:10px;flex-wrap:wrap;';
+
+    var confirmBtn = document.createElement('button');
+    confirmBtn.className = 'destek-btn';
+    confirmBtn.style.cssText = 'background:#059669;color:#fff;box-shadow:0 2px 8px rgba(5,150,105,0.2);';
+    confirmBtn.textContent = 'Sorun \u00C7\u00F6z\u00FCld\u00FC';
+    confirmBtn.addEventListener('click', function() {
+      confirmBtn.disabled = true;
+      supabase.rpc('candidate_confirm_resolved', { p_ticket_id: ticket.id })
+        .then(function(res) {
+          if (res.error) {
+            console.error('candidate_confirm_resolved error:', res.error);
+            confirmBtn.disabled = false;
+            return;
+          }
+          _tickets = null;
+          loadTickets();
+        });
+    });
+    resolvedActions.appendChild(confirmBtn);
+
+    var reopenBtn = document.createElement('button');
+    reopenBtn.className = 'destek-btn destek-btn-ghost';
+    reopenBtn.textContent = 'Devam Ediyor';
+    reopenBtn.addEventListener('click', function() {
+      reopenBtn.disabled = true;
+      supabase.rpc('candidate_reopen_ticket', { p_ticket_id: ticket.id })
+        .then(function(res) {
+          if (res.error) {
+            console.error('candidate_reopen_ticket error:', res.error);
+            reopenBtn.disabled = false;
+            return;
+          }
+          _tickets = null;
+          loadTickets();
+        });
+    });
+    resolvedActions.appendChild(reopenBtn);
+
+    resolvedArea.appendChild(resolvedActions);
+    wrap.appendChild(resolvedArea);
+  }
 
   sec.appendChild(wrap);
   loadTicketMessages(ticket.id, msgsWrap);

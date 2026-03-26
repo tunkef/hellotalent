@@ -348,6 +348,12 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
         <span class="nav-badge" id="badge-coach-pending" style="display:none;">0</span>
       </div>
 
+      <div class="nav-item" data-panel="support" onclick="switchPanel('support',this)">
+        <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span>
+        Destek Talepleri
+        <span class="nav-badge" id="badge-support-open" style="display:none;">0</span>
+      </div>
+
       <div class="nav-section-label">Yönetim</div>
 
       <div class="nav-item" data-panel="candidates" onclick="switchPanel('candidates',this)">
@@ -477,6 +483,20 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
       <div id="coach-content-area"></div>
     </div>
 
+    <!-- ═══ PANEL: DESTEK TALEPLERI ═══ -->
+    <div class="panel" id="panel-support">
+      <div class="panel-header">
+        <h2>Destek Talepleri</h2>
+        <button class="btn btn-sm" onclick="window._htAdminLoadSupport && window._htAdminLoadSupport(true)">Yenile</button>
+      </div>
+      <div id="support-content">
+        <div class="empty-state" style="padding:80px 20px;">
+          <div class="empty-state-icon">⏳</div>
+          <div class="empty-state-text" style="font-size:14px;color:var(--muted);">Yukleniyor...</div>
+        </div>
+      </div>
+    </div>
+
     <!-- ═══ PANEL: ADAYLAR ═══ -->
     <div class="panel" id="panel-candidates">
       <div class="panel-header">
@@ -560,6 +580,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
 <script src="admin-employers.js?v=1"></script>
 <script src="admin-coach-content.js?v=7"></script>
 <script src="admin-ops-health.js?v=1"></script>
+<script src="admin-support.js?v=1"></script>
 <!-- shared.js: Supabase config source of truth (no header/footer injected — no ht-header/ht-footer divs) -->
 <script src="/shared.js?v=20260322a"></script>
 <script>
@@ -738,6 +759,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
     if (name === 'employers') window._htAdminLoadEmployers && window._htAdminLoadEmployers();
     if (name === 'coach-content') window._htAdminLoadCoachContent && window._htAdminLoadCoachContent();
     if (name === 'ops-health') window._htAdminLoadOpsHealth && window._htAdminLoadOpsHealth();
+    if (name === 'support') window._htAdminLoadSupport && window._htAdminLoadSupport();
   };
 
   /* ── INIT ── */
