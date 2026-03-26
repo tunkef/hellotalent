@@ -206,3 +206,191 @@ test.describe('Sprint 4 — copy quality & accessibility', () => {
     expect(profilCss).toContain('.bento-card.locked');
   });
 });
+
+// ═══════════════════════════════════════════════════════════════
+// Support Center (Destek Merkezi) structural guards
+// ═══════════════════════════════════════════════════════════════
+test.describe('Support Center — structural guards', () => {
+  let profilDeskJs;
+  let profilHtml;
+
+  test.beforeAll(() => {
+    profilDeskJs = readFromRepo('profil-destek.js');
+    profilHtml = readFromRepo('profil.html');
+  });
+
+  test('support center uses IIFE pattern with lazy loader', () => {
+    expect(profilDeskJs).toMatch(/^\(function\(\)\s*\{/m);
+    expect(profilDeskJs).toContain('window._htLoadDestek');
+    expect(profilDeskJs).toContain("var _loaded = false");
+  });
+
+  test('profil.html has panel-destek shell and script tag', () => {
+    expect(profilHtml).toContain('id="panel-destek"');
+    expect(profilHtml).toContain('profil-destek.js');
+  });
+
+  test('no merged Mesajlar ve Teklifler category — must be separate UI categories', () => {
+    // The merged label must not appear anywhere as a UI category
+    expect(profilDeskJs).not.toContain("'Mesajlar ve Teklifler'");
+    expect(profilDeskJs).not.toContain("'Mesajlar ve Kampanyalar'");
+    // Separate UI categories must exist
+    expect(profilDeskJs).toMatch(/mesajlar:\s*'/);
+    expect(profilDeskJs).toMatch(/teklifler:\s*'/);
+  });
+
+  test('getUiCategory helper exists and routes articles by slug', () => {
+    expect(profilDeskJs).toContain('function getUiCategory(');
+    expect(profilDeskJs).toContain('SLUG_TO_UI_CAT');
+    expect(profilDeskJs).toContain("'mesajlarim-nasil-calisir'");
+  });
+
+  test('uiCatToDbCat maps UI keys back to DB category for ticket submit', () => {
+    expect(profilDeskJs).toContain('function uiCatToDbCat(');
+    expect(profilDeskJs).toContain("'mesajlar_teklifler'");
+    // submitTicket must call uiCatToDbCat before RPC
+    expect(profilDeskJs).toContain('uiCatToDbCat(catUiVal)');
+  });
+
+  test('ticket form iterates UI_CATEGORIES not merged CATEGORIES', () => {
+    expect(profilDeskJs).toContain('Object.keys(UI_CATEGORIES)');
+    // Must not iterate a merged CATEGORIES for dropdown
+    expect(profilDeskJs).not.toMatch(/Object\.keys\(CATEGORIES\)/);
+  });
+
+  test('article detail has breadcrumb bar for return navigation', () => {
+    expect(profilDeskJs).toContain('da-breadcrumb-bar');
+    expect(profilDeskJs).toContain('da-breadcrumb-back');
+    expect(profilDeskJs).toContain("Makalelere D");
+  });
+
+  test('article list uses bento-style category grid', () => {
+    expect(profilDeskJs).toContain('da-cat-grid');
+    expect(profilDeskJs).toContain('da-cat-card');
+    expect(profilDeskJs).toContain('CATEGORY_DESCRIPTIONS');
+  });
+
+  test('no console.log in support center code', () => {
+    // Only console.error allowed
+    expect(profilDeskJs).not.toMatch(/console\.log\(/);
+  });
+
+  test('hero follows bento spec with 24px radius', () => {
+    expect(profilDeskJs).toContain('border-radius:24px');
+    expect(profilDeskJs).toContain("font-weight:800");
+    expect(profilDeskJs).toContain("font-size:20px");
+  });
+
+  test('ticket creation uses RPC not direct insert', () => {
+    expect(profilDeskJs).toContain(".rpc('create_support_ticket'");
+    expect(profilDeskJs).not.toContain(".from('support_tickets').insert");
+  });
+
+  test('responsive breakpoint at 600px exists', () => {
+    expect(profilDeskJs).toContain('@media (max-width:600px)');
+    // iOS zoom prevention: 16px font-size on inputs
+    expect(profilDeskJs).toContain('font-size:16px');
+  });
+
+  test('article CTA prefill updates subject placeholder after setting category', () => {
+    // CTA sets UI category on dt-category, then refreshes subject hint
+    expect(profilDeskJs).toContain("catSel.value = artUiCat");
+    expect(profilDeskJs).toContain("SUBJECT_HINTS[artUiCat]");
+    expect(profilDeskJs).toContain("document.getElementById('dt-subject')");
+  });
+
+  test('no unsupported markdown table syntax in article migration', () => {
+    var migrationSql = readFromRepo('supabase/migrations/20260326103000_support_articles_content_polish.sql');
+    // Pipe-delimited table rows are not supported by renderSimpleMarkdown
+    var tableRowPattern = /\|\s*\w+.*\|\s*\w+.*\|/;
+    var lines = migrationSql.split('\n');
+    var tableLines = lines.filter(function(line) {
+      // Skip SQL comments and separator lines
+      if (line.trim().startsWith('--')) return false;
+      if (/^\s*\|[-:]+\|/.test(line)) return false;
+      return tableRowPattern.test(line);
+    });
+    expect(tableLines).toEqual([]);
+  });
+
+  test('article copy uses real UI labels (Teklifler/Özel Teklifler, not Kampanyalar panel)', () => {
+    var migrationSql = readFromRepo('supabase/migrations/20260326103000_support_articles_content_polish.sql');
+    expect(migrationSql).toContain('\u00D6zel Teklifler');
+    expect(migrationSql).toContain('Teklifler panel');
+    expect(migrationSql).not.toContain('Kampanyalar paneli');
+    expect(migrationSql).not.toMatch(/Kampanyalar.*paneline/);
+  });
+
+  test('separate subject hints for mesajlar and teklifler', () => {
+    // SUBJECT_HINTS must have distinct keys, not a merged key
+    expect(profilDeskJs).toMatch(/mesajlar:\s*'/);
+    expect(profilDeskJs).toMatch(/teklifler:\s*'/);
+    expect(profilDeskJs).not.toMatch(/mesajlar_teklifler:\s*'.*\u00D6r/);
+  });
+
+  test('ui_topic migration adds nullable column and updated RPC', () => {
+    var migSql = readFromRepo('supabase/migrations/20260326113000_support_ticket_ui_topic.sql');
+    // Column
+    expect(migSql).toContain('ADD COLUMN IF NOT EXISTS ui_topic text');
+    expect(migSql).toContain("ui_topic IN ('mesajlar', 'teklifler')");
+    // RPC has p_ui_topic parameter
+    expect(migSql).toContain('p_ui_topic text DEFAULT NULL');
+    // INSERT stores ui_topic
+    expect(migSql).toMatch(/INSERT INTO support_tickets[\s\S]*ui_topic/);
+    expect(migSql).toMatch(/VALUES[\s\S]*p_ui_topic/);
+  });
+
+  test('frontend passes p_ui_topic in RPC call', () => {
+    expect(profilDeskJs).toContain('p_ui_topic: uiTopic');
+    // uiTopic is computed from catUiVal when dbCat is mesajlar_teklifler
+    expect(profilDeskJs).toContain("dbCat === 'mesajlar_teklifler'");
+  });
+
+  test('ticket query selects ui_topic column', () => {
+    expect(profilDeskJs).toContain('ui_topic');
+    expect(profilDeskJs).toMatch(/\.select\([^)]*ui_topic/);
+  });
+
+  test('ticket display prefers ui_topic via ticketCategoryLabel', () => {
+    expect(profilDeskJs).toContain('function ticketCategoryLabel(');
+    expect(profilDeskJs).toContain('ticket.ui_topic');
+    expect(profilDeskJs).toContain('ticketCategoryLabel(t)');
+    expect(profilDeskJs).toContain('ticketCategoryLabel(ticket)');
+  });
+
+  test('ui_topic integrity migration exists with compound CHECK and sanitized RPC', () => {
+    var migSql = readFromRepo('supabase/migrations/20260326120000_support_ticket_ui_topic_integrity.sql');
+
+    // 1. Data sanitization before constraint tightening
+    expect(migSql).toContain("category <> 'mesajlar_teklifler'");
+    expect(migSql).toContain('SET ui_topic = NULL');
+
+    // 2. Compound CHECK — ui_topic only valid with mesajlar_teklifler
+    expect(migSql).toContain("category = 'mesajlar_teklifler'");
+    expect(migSql).toContain("ui_topic IN ('mesajlar', 'teklifler')");
+    // Must be a compound CHECK, not just value-only
+    expect(migSql).toMatch(/CHECK\s*\(\s*\n?\s*ui_topic IS NULL\s*\n?\s*OR\s*\(\s*\n?\s*category\s*=/);
+
+    // 3. RPC uses v_ui_topic local variable, not raw p_ui_topic in INSERT
+    expect(migSql).toContain('v_ui_topic text');
+    expect(migSql).toContain('v_ui_topic :=');
+    // INSERT must use v_ui_topic
+    expect(migSql).toMatch(/VALUES[\s\S]*v_ui_topic/);
+    // INSERT must NOT use raw p_ui_topic
+    var insertBlock = migSql.slice(migSql.indexOf('INSERT INTO support_tickets'));
+    var returningIdx = insertBlock.indexOf('RETURNING');
+    var insertValues = insertBlock.slice(0, returningIdx);
+    expect(insertValues).not.toMatch(/,\s*p_ui_topic\s*\n/);
+
+    // 4. RPC forces NULL for non-merged categories
+    expect(migSql).toContain("p_category <> 'mesajlar_teklifler'");
+    expect(migSql).toContain('v_ui_topic := NULL');
+
+    // 5. RPC rejects invalid values with exception
+    expect(migSql).toContain('RAISE EXCEPTION');
+    expect(migSql).toContain('Gecersiz ui_topic');
+
+    // 6. Email payload uses sanitized v_ui_topic
+    expect(migSql).toContain("COALESCE(v_ui_topic, '')");
+  });
+});
