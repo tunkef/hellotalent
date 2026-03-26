@@ -1,5 +1,5 @@
 # hellotalent.ai — Technical Handoff Document
-> Son güncelleme: 27 Mart 2026 (Session 34 — Premium entitlement: payment records, activation RPC, webhook, purchase flow, deployed)
+> Son güncelleme: 27 Mart 2026 (Session 35 — Yetenek IA reset: learning portal structure, journal UI removed, AI placeholder, deployed)
 > Bu doküman, projenin mevcut durumunu, tamamlanan işleri ve kalan backlog'u kapsar.
 > Yeni bir chat/session başlatırken bu dosyayı referans olarak kullanın.
 

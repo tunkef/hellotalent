@@ -1479,7 +1479,7 @@ test.describe('Yetenek IA reset — structural guards', () => {
 
   test('Yetenek Home has AI teaser card', () => {
     expect(mulakatJs).toContain('yk-home-ai-teaser');
-    expect(mulakatJs).toContain('AI ile M');
+    expect(mulakatJs).toContain('AI Ko');
   });
 
   // ── Track Detail ──
@@ -1502,7 +1502,7 @@ test.describe('Yetenek IA reset — structural guards', () => {
 
   test('unit detail has AI placeholder instead of journal', () => {
     expect(mulakatJs).toContain('yk-unit-ai-placeholder');
-    expect(mulakatJs).toContain('AI ile Pratik Yak');
+    expect(mulakatJs).toContain('AI Ko\\u00e7luk Yak');
   });
 
   // ── Journal removal ──
