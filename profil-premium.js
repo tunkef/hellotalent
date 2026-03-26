@@ -1,12 +1,15 @@
+/* global supabase, _loadedDBData */
 /**
  * profil-premium.js — Premium Features Panel for profil.html
- * Bento grid layout, feature showcase, subscription CTA.
+ * Bento grid layout, feature showcase, subscription CTA + purchase flow.
  * All content from hardcoded constants — no user input, no XSS risk.
  */
 (function(){
 'use strict';
 
 var _loaded = false;
+var PLAN_KEYS = ['aylik', 'yillik', 'kariyer'];
+var PLAN_AMOUNTS = { aylik: 14900, yillik: 11880, kariyer: 24900 }; /* kuruş cinsinden */
 
 /* ════════════════════════════════════════════════
    PREMIUM FEATURES DATA
@@ -162,16 +165,153 @@ function render() {
     html += '<div class="pm-plan-period">' + p.period + '</div>';
     if (p.annual) html += '<div class="pm-plan-annual" style="font-size:11px;color:var(--muted);margin-top:2px;">' + p.annual + '</div>';
     html += '<div class="pm-plan-desc">' + p.desc + '</div>';
-    html += '<button class="pm-plan-cta ' + (p.highlight ? 'verm' : 'outline') + '">' + (p.highlight ? 'Hemen Ba\u015Fla' : 'Se\u00E7') + '</button>';
+    html += '<button class="pm-plan-cta ' + (p.highlight ? 'verm' : 'outline') + '" data-plan="' + PLAN_KEYS[j] + '">' + (p.highlight ? 'Hemen Ba\u015Fla' : 'Se\u00E7') + '</button>';
     html += '</div>';
   }
   html += '</div>';
+
+  /* Purchase status area */
+  html += '<div id="pm-purchase-status" style="display:none;margin-top:16px;padding:16px 20px;border-radius:12px;font-family:\'Plus Jakarta Sans\',sans-serif;font-size:13px;line-height:1.5;text-align:center;"></div>';
+
+  /* Active premium banner (shown if already premium) */
+  html += '<div id="pm-active-banner" style="display:none;"></div>';
 
   html += '</div>';
 
   /* Safe: all content from hardcoded FEATURES/PLANS constants */
   panel.textContent = '';
   panel.insertAdjacentHTML('afterbegin', html);
+
+  /* Bind plan CTA clicks */
+  bindPlanEvents();
+
+  /* Check current premium status */
+  checkCurrentPremium();
+}
+
+function bindPlanEvents() {
+  var btns = document.querySelectorAll('.pm-plan-cta[data-plan]');
+  btns.forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var planKey = this.getAttribute('data-plan');
+      if (planKey) initiatePurchase(planKey, this);
+    });
+  });
+}
+
+async function checkCurrentPremium() {
+  if (typeof supabase === 'undefined') return;
+  try {
+    var res = await supabase.rpc('get_my_premium_status');
+    if (res.data && res.data.length > 0 && res.data[0].is_premium) {
+      var d = res.data[0];
+      var banner = document.getElementById('pm-active-banner');
+      if (banner) {
+        banner.style.display = 'block';
+        banner.style.cssText = 'display:block;margin-top:16px;padding:18px 20px;background:linear-gradient(135deg,#059669 0%,#047857 100%);border-radius:14px;color:#fff;text-align:center;';
+        var h = '<div style="font-family:\'Bricolage Grotesque\',sans-serif;font-size:16px;font-weight:700;margin-bottom:4px;">\u2713 Premium Aktif</div>';
+        h += '<div style="font-family:\'Plus Jakarta Sans\',sans-serif;font-size:12px;opacity:.8;">';
+        if (d.days_remaining > 0) h += d.days_remaining + ' g\u00fcn kald\u0131';
+        if (d.plan_key) h += ' \u00b7 ' + ({ aylik: 'Ayl\u0131k', yillik: 'Y\u0131ll\u0131k', kariyer: 'Kariyer' }[d.plan_key] || d.plan_key) + ' plan';
+        h += '</div>';
+        /* Safe: all content from hardcoded constants + RPC data that is not user-authored */
+        banner.textContent = '';
+        banner.insertAdjacentHTML('afterbegin', h);
+      }
+      /* Disable plan buttons */
+      var btns = document.querySelectorAll('.pm-plan-cta[data-plan]');
+      btns.forEach(function(b) { b.textContent = 'Aktif'; b.disabled = true; b.style.opacity = '.5'; });
+    }
+  } catch (e) { /* silent */ }
+}
+
+async function initiatePurchase(planKey, btn) {
+  if (typeof supabase === 'undefined') return;
+  var statusEl = document.getElementById('pm-purchase-status');
+
+  /* Disable all plan buttons during purchase */
+  var allBtns = document.querySelectorAll('.pm-plan-cta[data-plan]');
+  allBtns.forEach(function(b) { b.disabled = true; });
+  btn.textContent = '\u0130\u015Fleniyor\u2026';
+
+  try {
+    var amountCents = PLAN_AMOUNTS[planKey] || 14900;
+
+    /* Step 1: Create pending purchase record */
+    var res = await supabase.rpc('initiate_premium_purchase', {
+      p_plan_key: planKey,
+      p_amount_cents: amountCents
+    });
+
+    if (res.error) {
+      showPurchaseStatus('Hata: ' + res.error.message, 'error');
+      resetButtons();
+      return;
+    }
+
+    var purchaseId = res.data;
+
+    /* Step 2: In production, redirect to iyzico checkout with purchaseId.
+       For now, since iyzico credentials are not yet configured,
+       we activate directly via webhook for testing/demo. */
+    var webhookRes = await supabase.functions.invoke('premium-webhook', {
+      body: {
+        purchase_id: purchaseId,
+        provider_payment_id: 'demo_' + purchaseId + '_' + Date.now(),
+        provider_status: 'success'
+      }
+    });
+
+    if (webhookRes.error) {
+      showPurchaseStatus('\u00d6deme i\u015Flenemedi. L\u00fctfen tekrar deneyin.', 'error');
+      resetButtons();
+      return;
+    }
+
+    var result = webhookRes.data;
+    if (result && result.ok) {
+      /* Step 3: Refresh profile data to pick up new premium state */
+      await refreshPremiumState();
+      showPurchaseStatus('\u2713 Premium aktivasyonunuz tamamland\u0131! T\u00fcm \u00f6zellikler a\u00e7\u0131ld\u0131.', 'success');
+      checkCurrentPremium();
+    } else {
+      showPurchaseStatus('\u00d6deme do\u011frulanamad\u0131. L\u00fctfen destek ile ileti\u015fime ge\u00e7in.', 'error');
+      resetButtons();
+    }
+  } catch (e) {
+    console.error('premium purchase error:', e);
+    showPurchaseStatus('Beklenmeyen bir hata olu\u015ftu. L\u00fctfen tekrar deneyin.', 'error');
+    resetButtons();
+  }
+}
+
+function showPurchaseStatus(msg, type) {
+  var el = document.getElementById('pm-purchase-status');
+  if (!el) return;
+  el.style.display = 'block';
+  el.style.background = type === 'success' ? 'rgba(5,150,105,.08)' : 'rgba(220,38,38,.08)';
+  el.style.color = type === 'success' ? '#059669' : '#DC2626';
+  el.textContent = msg;
+}
+
+function resetButtons() {
+  var btns = document.querySelectorAll('.pm-plan-cta[data-plan]');
+  btns.forEach(function(b, i) {
+    b.disabled = false;
+    b.textContent = i === 1 ? 'Hemen Ba\u015fla' : 'Se\u00e7';
+  });
+}
+
+async function refreshPremiumState() {
+  if (typeof supabase === 'undefined') return;
+  try {
+    /* Re-fetch is_premium from candidates table */
+    var res = await supabase.from('candidates').select('is_premium, premium_until').maybeSingle();
+    if (res.data && typeof _loadedDBData !== 'undefined' && _loadedDBData && _loadedDBData.profile) {
+      _loadedDBData.profile.is_premium = res.data.is_premium === true;
+      _loadedDBData.profile.premium_until = res.data.premium_until;
+    }
+  } catch (e) { /* silent */ }
 }
 
 /* ════════════════════════════════════════════════

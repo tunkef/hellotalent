@@ -1347,3 +1347,95 @@ test.describe('Yetenek competency profile — structural guards', () => {
     expect(mulakatJs).toContain('AI: Karma');
   });
 });
+
+// Premium Entitlement Phase 1 — payment + activation
+// ═══════════════════════════════════════════════
+
+test.describe('Premium entitlement — structural guards', () => {
+  var migSql, webhookFn, premiumJs;
+
+  test.beforeAll(() => {
+    migSql = readFromRepo('supabase/migrations/20260327000000_premium_entitlement.sql');
+    webhookFn = readFromRepo('supabase/functions/premium-webhook/index.ts');
+    premiumJs = readFromRepo('profil-premium.js');
+  });
+
+  // ── Schema ──
+  test('migration creates candidate_premium_purchases table', () => {
+    expect(migSql).toContain('CREATE TABLE IF NOT EXISTS candidate_premium_purchases');
+    expect(migSql).toContain("'pending'");
+    expect(migSql).toContain("'completed'");
+    expect(migSql).toContain("'failed'");
+    expect(migSql).toContain("'aylik'");
+    expect(migSql).toContain("'yillik'");
+    expect(migSql).toContain("'kariyer'");
+  });
+
+  test('migration has activate_candidate_premium RPC', () => {
+    expect(migSql).toContain('activate_candidate_premium');
+    expect(migSql).toContain('is_premium = true');
+    expect(migSql).toContain('premium_until');
+    expect(migSql).toContain('SECURITY DEFINER');
+  });
+
+  test('activation RPC is idempotent and extends existing premium', () => {
+    var fnStart = migSql.indexOf('CREATE OR REPLACE FUNCTION activate_candidate_premium');
+    var fnEnd = migSql.indexOf('$$;', fnStart);
+    var fnBody = migSql.slice(fnStart, fnEnd);
+    expect(fnBody).toContain('v_current_until');
+    expect(fnBody).toContain('v_current_until > now()');
+  });
+
+  test('migration has initiate_premium_purchase RPC', () => {
+    expect(migSql).toContain('initiate_premium_purchase');
+    expect(migSql).toContain("'pending'");
+  });
+
+  test('migration has get_my_premium_status RPC', () => {
+    expect(migSql).toContain('get_my_premium_status');
+    expect(migSql).toContain('days_remaining');
+  });
+
+  // ── Webhook Edge Function ──
+  test('webhook validates payment and calls activation', () => {
+    expect(webhookFn).toContain('activate_candidate_premium');
+    expect(webhookFn).toContain('purchase_id');
+    expect(webhookFn).toContain('provider_payment_id');
+  });
+
+  test('webhook handles idempotent repeated calls', () => {
+    expect(webhookFn).toContain('Already activated');
+    expect(webhookFn).toContain("status === 'completed'");
+  });
+
+  test('webhook handles payment failure', () => {
+    expect(webhookFn).toContain('failure');
+    expect(webhookFn).toContain('failed');
+    expect(webhookFn).toContain('Payment failed');
+  });
+
+  // ── Frontend purchase flow ──
+  test('premium panel has plan CTA buttons with data-plan', () => {
+    expect(premiumJs).toContain('data-plan');
+    expect(premiumJs).toContain('PLAN_KEYS');
+    expect(premiumJs).toContain('PLAN_AMOUNTS');
+  });
+
+  test('purchase flow calls initiate_premium_purchase then webhook', () => {
+    expect(premiumJs).toContain('initiatePurchase');
+    expect(premiumJs).toContain('initiate_premium_purchase');
+    expect(premiumJs).toContain('premium-webhook');
+  });
+
+  test('profile refresh updates _loadedDBData after purchase', () => {
+    expect(premiumJs).toContain('refreshPremiumState');
+    expect(premiumJs).toContain('_loadedDBData');
+    expect(premiumJs).toContain('is_premium');
+  });
+
+  test('active premium banner shows for current premium users', () => {
+    expect(premiumJs).toContain('pm-active-banner');
+    expect(premiumJs).toContain('Premium Aktif');
+    expect(premiumJs).toContain('checkCurrentPremium');
+  });
+});

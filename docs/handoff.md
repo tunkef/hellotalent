@@ -1,5 +1,5 @@
 # hellotalent.ai — Technical Handoff Document
-> Son güncelleme: 26 Mart 2026 (Session 32 — Yetenek data source migration: DB-backed competency loading, rating RPCs, deployed)
+> Son güncelleme: 27 Mart 2026 (Session 33 — Yetenek competency profile: self-rating UI, evidence surface, overview RPC, deployed)
 > Bu doküman, projenin mevcut durumunu, tamamlanan işleri ve kalan backlog'u kapsar.
 > Yeni bir chat/session başlatırken bu dosyayı referans olarak kullanın.
 
