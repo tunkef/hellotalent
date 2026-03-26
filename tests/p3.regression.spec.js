@@ -1196,3 +1196,77 @@ test.describe('Studio Phase 5A — AI feedback structural guards', () => {
     expect(mulakatJs).not.toMatch(/console\.log\(/);
   });
 });
+
+// Yetenek Data Source Migration — DB-backed competency loading
+// ═══════════════════════════════════════════════
+
+test.describe('Yetenek data source migration — structural guards', () => {
+  var yetkinlikJs, migSql;
+
+  test.beforeAll(() => {
+    yetkinlikJs = readFromRepo('profil-yetkinlik.js');
+    migSql = readFromRepo('supabase/migrations/20260326270000_competency_rating_rpcs.sql');
+  });
+
+  // ── DB-backed loading ──
+  test('profil-yetkinlik.js has DB load function', () => {
+    expect(yetkinlikJs).toContain('loadCompetencyDataFromDb');
+    expect(yetkinlikJs).toContain('competency_definitions');
+    expect(yetkinlikJs).toContain('role_competency_map');
+  });
+
+  test('DB load reshapes into bridge contract fields', () => {
+    var fnStart = yetkinlikJs.indexOf('async function loadCompetencyDataFromDb');
+    var fnEnd = yetkinlikJs.indexOf('\n/* ', fnStart + 10);
+    var fnBody = yetkinlikJs.slice(fnStart, fnEnd);
+    expect(fnBody).toContain('dbAnchors');
+    expect(fnBody).toContain('dbCompNames');
+    expect(fnBody).toContain('dbCompKf');
+    expect(fnBody).toContain('dbRoleMap');
+    expect(fnBody).toContain('ANCHORS[');
+    expect(fnBody).toContain('COMP_NAMES[');
+    expect(fnBody).toContain('COMP_KF[');
+    expect(fnBody).toContain('ROLE_COMP_MAP[');
+  });
+
+  test('DB load is triggered from _htLoadYetkinlik', () => {
+    var loaderStart = yetkinlikJs.indexOf('window._htLoadYetkinlik');
+    var loaderEnd = yetkinlikJs.indexOf('};', loaderStart);
+    var loaderBody = yetkinlikJs.slice(loaderStart, loaderEnd);
+    expect(loaderBody).toContain('loadCompetencyDataFromDb');
+  });
+
+  test('hardcoded fallback data still exists', () => {
+    // ANCHORS, COMP_NAMES, COMP_KF, ROLE_COMP_MAP should still be defined as vars
+    expect(yetkinlikJs).toContain('var ANCHORS=');
+    expect(yetkinlikJs).toContain('var COMP_NAMES');
+    expect(yetkinlikJs).toContain('var COMP_KF');
+    expect(yetkinlikJs).toContain('var ROLE_COMP_MAP');
+  });
+
+  test('bridge contract re-exported after DB load', () => {
+    expect(yetkinlikJs).toContain("window._htYetkinlikData = { ANCHORS: ANCHORS, ROLE_COMP_MAP: ROLE_COMP_MAP, COMP_NAMES: COMP_NAMES, COMP_KF: COMP_KF, FREE_LIMIT: FREE_LIMIT }");
+  });
+
+  test('DB load handles failure gracefully', () => {
+    var fnStart = yetkinlikJs.indexOf('async function loadCompetencyDataFromDb');
+    var fnEnd = yetkinlikJs.indexOf('\n/* ', fnStart + 10);
+    var fnBody = yetkinlikJs.slice(fnStart, fnEnd);
+    expect(fnBody).toContain('catch');
+    expect(fnBody).toContain('console.error');
+    expect(fnBody).toContain('hardcoded fallback');
+  });
+
+  // ── Competency rating RPCs ──
+  test('migration has upsert_competency_rating RPC', () => {
+    expect(migSql).toContain('upsert_competency_rating');
+    expect(migSql).toContain("'strong'");
+    expect(migSql).toContain("'growing'");
+    expect(migSql).toContain('ON CONFLICT (candidate_id, competency_code)');
+  });
+
+  test('migration has get_my_competency_ratings RPC', () => {
+    expect(migSql).toContain('get_my_competency_ratings');
+    expect(migSql).toContain('candidate_competencies');
+  });
+});

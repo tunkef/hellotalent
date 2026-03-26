@@ -1,5 +1,5 @@
 # hellotalent.ai — Technical Handoff Document
-> Son güncelleme: 26 Mart 2026 (Session 29 — Studio Phase 5A: structured AI feedback for Yetenek journals, premium-gated)
+> Son güncelleme: 26 Mart 2026 (Session 31 — Studio Phase 5A Live Verification: premium gating E2E confirmed, OPENAI_API_KEY blocker documented)
 > Bu doküman, projenin mevcut durumunu, tamamlanan işleri ve kalan backlog'u kapsar.
 > Yeni bir chat/session başlatırken bu dosyayı referans olarak kullanın.
 
@@ -1163,7 +1163,79 @@ EDIT    docs/studio-foundation.md (Phase 5A status)
 - Yetenek badge issuance from AI feedback signals
 - AI feedback history / comparison across evaluations
 - Rich formatting in feedback cards (currently plain text)
-- Real premium subscription wiring (S.isPremium still hardcoded false)
+
+### Session 30 — 26 Mart 2026 (Studio Phase 5A Live — Hardening + Deploy)
+
+**Premium gating fix:**
+- `S.isPremium` now reads from `_loadedDBData.profile.is_premium` (real DB column from migration 014)
+- `profil-ui.js`: added `is_premium` and `premium_until` to profile mapping (was missing despite `SELECT *`)
+- Feature flag: `window._htStudioAiEnabled = true` overrides for controlled pre-subscription testing
+- Gating source chain: DB `candidates.is_premium` → `_loadedDBData.profile.is_premium` → `S.isPremium` → UI gate
+
+**AI feedback flow hardening:**
+- Duplicate click protection: `_aifRequestInFlight` guard prevents concurrent requests
+- Stale pending detection: before creating new request, checks for existing pending/processing feedback and resumes polling
+- `extractFeedback()` helper: safely handles both array and single-object RPC response shapes
+- Edge Function invoke failure: now caught with `.catch()` instead of silent fire-and-forget
+- Poll timeout increased to 45s (gpt-4o-mini typically <15s but network variance)
+- Failed state: shows error_message from DB if available, generic fallback otherwise
+- Button states: "Tekrar Dene" on failure (not the same text as initial), "Tekrar Değerlendir" on success
+- Existing feedback auto-load now also resumes polling for in-flight (pending/processing) feedback
+
+**Deploy completed:**
+- ✅ 5 Studio migrations deployed to Supabase (220000 → 230000 → 240000 → 250000 → 260000)
+- ✅ journal-feedback Edge Function deployed
+- ✅ Frontend commit `9fd204d` pushed to origin/main
+- ⚠️ `OPENAI_API_KEY` env var must be set on Supabase Edge Functions for live AI — check Dashboard → Functions → journal-feedback → Settings
+
+**Tests:** 274/274 pass. ESLint: 0 errors. Pre-commit hook passed.
+
+**Dosya Değişiklikleri:**
+```
+EDIT    profil-mulakatkocu.js (real premium wiring, hardened AI flow, extractFeedback, global declaration)
+EDIT    profil-ui.js (is_premium + premium_until in profile mapping)
+EDIT    profil.html (cache-bust 20260326y)
+EDIT    docs/handoff.md (Session 30)
+```
+
+**Remaining blocker for live AI:**
+- [ ] Set `OPENAI_API_KEY` env var: Supabase Dashboard → Edge Functions → journal-feedback → Settings → Environment Variables
+
+### Session 31 — 26 Mart 2026 (Studio Phase 5A Live Verification)
+
+**Live E2E smoke completed via Playwright browser automation.**
+
+DB infrastructure verified:
+- ✅ 8 seed modules in DB (4 performans + 4 bilgiler), status=published
+- ✅ 6 badge definitions in DB, status=active
+- ✅ All 10 Studio RPCs deployed and callable
+- ✅ `candidate_journal_feedback` table with 22 columns
+- ✅ `journal-feedback` Edge Function ACTIVE (v1)
+
+Candidate UX verified live (hellotalent.ai/profil.html):
+- ✅ Header nav: "Stüdyo" (not "Mülakat Koçu")
+- ✅ Genel panel: "Stüdyo'ya Git" CTA
+- ✅ Studio landing: 4 section cards, badge strip (6 locked), coach feed, STAR+T collapsible
+- ✅ Landing stats: "4 modül" on Performans and Bilgiler cards
+- ✅ Performans section: 4 DB-backed module cards render correctly (Ders pill, duration, title, summary)
+- ✅ Yetenek flow: role_select → lobby → competency_intro → practice — all screens working
+- ✅ Journal panel: STAR+T textareas, DB persistence intro text, auto-save indicator
+
+Premium gating verified live:
+- ✅ **Non-premium (is_premium=false)**: sees gate card "AI Koç değerlendirmesi Premium özelliğidir." + "Premium'a Geç". 2 competencies unlocked, limited swaps.
+- ✅ **Premium (is_premium=true)**: sees "AI ile Değerlendir" button. 9 competencies unlocked, 999 swaps. Gate card hidden.
+- ✅ DB column `candidates.is_premium` is the authoritative truth source — confirmed via live toggle test (set true → reload → button appears, set false → reload → gate appears)
+
+AI generation NOT tested live:
+- ❌ `OPENAI_API_KEY` not configured in Supabase secrets (not available in local environment)
+- This is the **only remaining blocker** for live AI feedback
+
+To complete AI setup, user must run:
+```
+npx supabase secrets set OPENAI_API_KEY=sk-... --project-ref cpwibefquojehjehtrog
+```
+
+**No code changes in this session — verification only.**
 
 ### Sonraki Adımlar
 - [x] ~~Migration 042 → competency tabloları~~ ✅ Deployed

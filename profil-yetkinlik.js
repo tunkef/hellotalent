@@ -1,4 +1,4 @@
-/* global _doSwitchPanel */
+/* global _doSwitchPanel, supabase */
 /**
  * profil-yetkinlik.js — Yetkinlik Wizard for profil.html
  * Ground-up rebuild: full-page reading, no drawer, no ratings.
@@ -75,6 +75,83 @@ var ROLE_COMP_MAP = {
 };
 
 var FREE_LIMIT = 2;
+
+/* ════════════════════════════════════════════════
+   DB-BACKED DATA LOADING
+   Fetches competency_definitions + role_competency_map from Supabase.
+   Reshapes into the same bridge contract (ANCHORS, ROLE_COMP_MAP, etc).
+   Hardcoded data above is kept as synchronous fallback.
+   ════════════════════════════════════════════════ */
+
+var _dbDataLoaded = false;
+
+async function loadCompetencyDataFromDb() {
+  if (_dbDataLoaded) return;
+  if (typeof supabase === 'undefined') return;
+  _dbDataLoaded = true;
+
+  try {
+    /* Parallel fetch: definitions + role mappings */
+    var defsP = supabase.from('competency_definitions')
+      .select('code, name_tr, name_en, definition, why_critical, skilled, less_skilled, highly_skilled, overused, retail_example, interview_question');
+    var mapsP = supabase.from('role_competency_map')
+      .select('role_name, competency_code, sort_order')
+      .order('sort_order', { ascending: true });
+
+    var results = await Promise.all([defsP, mapsP]);
+    var defsRes = results[0];
+    var mapsRes = results[1];
+
+    if (defsRes.error || !defsRes.data || defsRes.data.length === 0) return; /* keep hardcoded fallback */
+    if (mapsRes.error || !mapsRes.data) return;
+
+    /* Rebuild ANCHORS from DB */
+    var dbAnchors = {};
+    var dbCompNames = {};
+    var dbCompKf = {};
+    for (var i = 0; i < defsRes.data.length; i++) {
+      var d = defsRes.data[i];
+      dbCompNames[d.code] = d.name_tr;
+      dbCompKf[d.code] = d.name_en;
+      dbAnchors[d.code] = {
+        def: d.definition || '',
+        why: d.why_critical || '',
+        skilled: d.skilled || [],
+        lessskilled: d.less_skilled || [],
+        highlyskilled: d.highly_skilled || [],
+        overused: d.overused || [],
+        retail: d.retail_example ? [d.retail_example] : [],
+        interview: d.interview_question ? [d.interview_question] : []
+      };
+    }
+
+    /* Rebuild ROLE_COMP_MAP from DB */
+    var dbRoleMap = {};
+    for (var r = 0; r < mapsRes.data.length; r++) {
+      var m = mapsRes.data[r];
+      if (!dbRoleMap[m.role_name]) dbRoleMap[m.role_name] = [];
+      dbRoleMap[m.role_name].push(m.competency_code);
+    }
+
+    /* Upgrade in-place — this updates the bridge contract for downstream consumers */
+    var defKeys = Object.keys(dbAnchors);
+    for (var ai = 0; ai < defKeys.length; ai++) {
+      ANCHORS[defKeys[ai]] = dbAnchors[defKeys[ai]];
+      COMP_NAMES[defKeys[ai]] = dbCompNames[defKeys[ai]];
+      COMP_KF[defKeys[ai]] = dbCompKf[defKeys[ai]];
+    }
+    var roleKeys = Object.keys(dbRoleMap);
+    for (var ri = 0; ri < roleKeys.length; ri++) {
+      ROLE_COMP_MAP[roleKeys[ri]] = dbRoleMap[roleKeys[ri]];
+    }
+
+    /* Re-export bridge (same object references, but updated) */
+    window._htYetkinlikData = { ANCHORS: ANCHORS, ROLE_COMP_MAP: ROLE_COMP_MAP, COMP_NAMES: COMP_NAMES, COMP_KF: COMP_KF, FREE_LIMIT: FREE_LIMIT };
+  } catch (e) {
+    /* Silent fallback — hardcoded data remains active */
+    console.error('[yetkinlik] DB load failed, using hardcoded fallback:', e.message || e);
+  }
+}
 
 /* ════════════════════════════════════════════════
    STATE MANAGEMENT (clean, minimal)
@@ -649,8 +726,13 @@ window._htLoadYetkinlik = function() {
   if (_loaded) return;
   _loaded = true;
   injectCSS();
+
+  /* Async DB upgrade — non-blocking, hardcoded data available immediately */
+  loadCompetencyDataFromDb();
+
   var panel = document.getElementById('panel-yetkinlik');
   if (!panel) return;
+  /* Safe: only hardcoded constant content is rendered */
   panel.innerHTML = '<div id="yk-container"></div>';
   navigate('intro');
 };
