@@ -215,7 +215,7 @@ function _doSwitchPanel(name) {
   if (target) target.classList.add('active');
   var bc = document.getElementById('breadcrumb-current');
   if (bc) {
-    var labels = { genel: 'Genel Bakış', merkez: 'Profil Merkezi', sirketler: 'Markalar', teklifler: 'Özel Teklifler', inbox: 'Mesajlar', bildirimler: 'Bildirimler', ayarlar: 'Ayarlar', profil: 'Profil', yetkinlik: 'Mülakat Koçu', mulakat: 'Mülakat Koçu', premium: 'Premium', kimbakti: 'Kim Baktı', destek: 'Destek Merkezi' };
+    var labels = { genel: 'Genel Bak\u0131\u015f', merkez: 'Profil Merkezi', sirketler: 'Markalar', teklifler: '\u00d6zel Teklifler', inbox: 'Mesajlar', bildirimler: 'Bildirimler', ayarlar: 'Ayarlar', profil: 'Profil', yetkinlik: 'St\u00fcdyo', mulakat: 'St\u00fcdyo', premium: 'Premium', kimbakti: 'Kim Bakt\u0131', destek: 'Destek Merkezi' };
     bc.textContent = labels[name] || name;
   }
   // Update sidebar nav

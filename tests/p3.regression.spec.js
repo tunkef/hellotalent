@@ -752,3 +752,447 @@ test.describe('Messaging Email Phase 2 — structural guards', () => {
     expect(emailSendTs).toContain('Adaydan yan');
   });
 });
+
+// Studio Phase 2 — studio_modules + candidate_studio_progress
+// ═══════════════════════════════════════════════
+
+test.describe('Studio Phase 2 — structural guards', () => {
+  var migSql, adminStudioJs, mulakatJs, adminHtml;
+
+  test.beforeAll(() => {
+    migSql = readFromRepo('supabase/migrations/20260326220000_studio_modules.sql');
+    adminStudioJs = readFromRepo('admin-studio-modules.js');
+    mulakatJs = readFromRepo('profil-mulakatkocu.js');
+    adminHtml = readFromRepo('admin.html');
+  });
+
+  // ── Migration ──
+  test('migration creates studio_modules table with section CHECK', () => {
+    expect(migSql).toContain('CREATE TABLE IF NOT EXISTS studio_modules');
+    expect(migSql).toContain("'performans'");
+    expect(migSql).toContain("'bilgiler'");
+    expect(migSql).toContain('studio_modules_section_check');
+  });
+
+  test('migration creates candidate_studio_progress table', () => {
+    expect(migSql).toContain('CREATE TABLE IF NOT EXISTS candidate_studio_progress');
+    expect(migSql).toContain('UNIQUE (candidate_id, module_id)');
+    expect(migSql).toContain("'not_started'");
+    expect(migSql).toContain("'in_progress'");
+    expect(migSql).toContain("'completed'");
+  });
+
+  test('migration has admin CRUD RPCs', () => {
+    expect(migSql).toContain('admin_create_studio_module');
+    expect(migSql).toContain('admin_update_studio_module');
+    expect(migSql).toContain('admin_publish_studio_module');
+    expect(migSql).toContain('admin_archive_studio_module');
+  });
+
+  test('migration has candidate progress RPCs', () => {
+    expect(migSql).toContain('mark_studio_module_viewed');
+    expect(migSql).toContain('complete_studio_module');
+  });
+
+  test('migration has RLS for candidate read + admin all', () => {
+    expect(migSql).toContain('studio_modules_read_published');
+    expect(migSql).toContain('studio_modules_admin_all');
+    expect(migSql).toContain('csp_select_own');
+  });
+
+  // ── Admin UI ──
+  test('admin-studio-modules.js uses IIFE with public loader', () => {
+    expect(adminStudioJs).toContain('(function(){');
+    expect(adminStudioJs).toContain('window._htAdminLoadStudioModules');
+  });
+
+  test('admin.html has studio-modules nav, panel, script, and switchPanel hook', () => {
+    expect(adminHtml).toContain('data-panel="studio-modules"');
+    expect(adminHtml).toContain('id="panel-studio-modules"');
+    expect(adminHtml).toContain('id="studio-modules-content"');
+    expect(adminHtml).toContain('admin-studio-modules.js');
+    expect(adminHtml).toContain("'studio-modules') window._htAdminLoadStudioModules");
+  });
+
+  test('admin module has section filter and create/publish/archive actions', () => {
+    expect(adminStudioJs).toContain("'performans'");
+    expect(adminStudioJs).toContain("'bilgiler'");
+    expect(adminStudioJs).toContain('admin_create_studio_module');
+    expect(adminStudioJs).toContain('admin_publish_studio_module');
+    expect(adminStudioJs).toContain('admin_archive_studio_module');
+  });
+
+  // ── Candidate UI ──
+  test('profil-mulakatkocu.js has DB-backed studio section hydration', () => {
+    expect(mulakatJs).toContain('hydrateStudioSection');
+    expect(mulakatJs).toContain('studio_modules');
+    expect(mulakatJs).toContain('mark_studio_module_viewed');
+    expect(mulakatJs).toContain('complete_studio_module');
+  });
+
+  test('candidate Studio sections no longer use toast as primary action', () => {
+    // perfBtn and bilgiBtn should call hydrateStudioSection, not showStudioToast
+    var bindStart = mulakatJs.indexOf('function bindStarIntroEvents');
+    var bindEnd = mulakatJs.indexOf('function showStudioToast');
+    var bindBody = mulakatJs.slice(bindStart, bindEnd);
+    expect(bindBody).toContain("hydrateStudioSection('performans'");
+    expect(bindBody).toContain("hydrateStudioSection('bilgiler'");
+    expect(bindBody).not.toContain("showStudioToast('Performans");
+  });
+
+  test('no console.log in new Studio code', () => {
+    expect(adminStudioJs).not.toMatch(/console\.log\(/);
+  });
+});
+
+// Studio Phase 2b — Seed content + progress UX
+// ═══════════════════════════════════════════════
+
+test.describe('Studio Phase 2b — seed content + progress UX', () => {
+  var seedSql, mulakatJs;
+
+  test.beforeAll(() => {
+    seedSql = readFromRepo('supabase/migrations/20260326230000_studio_seed_content.sql');
+    mulakatJs = readFromRepo('profil-mulakatkocu.js');
+  });
+
+  // ── Seed content ──
+  test('seed migration inserts Performans modules', () => {
+    expect(seedSql).toContain("'performans'");
+    expect(seedSql).toContain("'ciro-sepet-donusum'");
+    expect(seedSql).toContain("'magaza-hedefleri-gunluk-operasyon'");
+    expect(seedSql).toContain("'kpi-dususu-yorumlama'");
+    expect(seedSql).toContain("'vaka-trafik-yuksek-satis-dusuk'");
+    expect(seedSql).toContain("'published'");
+  });
+
+  test('seed migration inserts Bilgiler modules', () => {
+    expect(seedSql).toContain("'bilgiler'");
+    expect(seedSql).toContain("'profil-guclu-hale-getirme'");
+    expect(seedSql).toContain("'teklifler-mesajlar-yonetimi'");
+    expect(seedSql).toContain("'gorunurluk-ayarlari'");
+    expect(seedSql).toContain("'studyodan-en-iyi-faydalanma'");
+  });
+
+  test('all seed modules have body_md content', () => {
+    // Every INSERT should have substantial body content
+    var bodyMatches = seedSql.match(/body_md/g);
+    // There should be no empty body_md fields
+    expect(seedSql).not.toContain("body_md, NULL,");
+  });
+
+  // ── Progress UX ──
+  test('candidate code has progress-aware section rendering', () => {
+    expect(mulakatJs).toContain('fetchStudioProgress');
+    expect(mulakatJs).toContain('_studioProgressCache');
+    expect(mulakatJs).toContain('candidate_studio_progress');
+    expect(mulakatJs).toContain('renderStudioSection');
+  });
+
+  test('module cards show completed and in-progress status pills', () => {
+    expect(mulakatJs).toContain('st-mod-status-done');
+    expect(mulakatJs).toContain('st-mod-status-ip');
+    expect(mulakatJs).toContain('st-mod-done');
+  });
+
+  test('continue-learning card renders for in-progress modules', () => {
+    expect(mulakatJs).toContain('st-continue-card');
+    expect(mulakatJs).toContain('KALDIĞIN YERDEN DEVAM ET');
+    expect(mulakatJs).toContain('Devam Et');
+  });
+
+  test('section progress stats shown in header', () => {
+    expect(mulakatJs).toContain('st-progress-pill');
+    expect(mulakatJs).toContain("tamamland\\u0131");
+  });
+
+  test('landing cards have async progress stat placeholders', () => {
+    expect(mulakatJs).toContain("id=\"st-stat-performans\"");
+    expect(mulakatJs).toContain("id=\"st-stat-bilgiler\"");
+    expect(mulakatJs).toContain('hydrateLandingStats');
+  });
+
+  test('progress cache invalidated on complete and back navigation', () => {
+    expect(mulakatJs).toContain('_studioProgressCache = null');
+  });
+});
+
+// Studio Phase 3 — Badge System
+// ═══════════════════════════════════════════════
+
+test.describe('Studio Phase 3 — badge system structural guards', () => {
+  var badgeSql, mulakatJs;
+
+  test.beforeAll(() => {
+    badgeSql = readFromRepo('supabase/migrations/20260326240000_badge_system.sql');
+    mulakatJs = readFromRepo('profil-mulakatkocu.js');
+  });
+
+  // ── Schema ──
+  test('migration creates badge_definitions with proper constraints', () => {
+    expect(badgeSql).toContain('CREATE TABLE IF NOT EXISTS badge_definitions');
+    expect(badgeSql).toContain('badge_definitions_category_check');
+    expect(badgeSql).toContain('badge_definitions_tier_check');
+    expect(badgeSql).toContain('badge_definitions_rule_type_check');
+    expect(badgeSql).toContain("'active'");
+    expect(badgeSql).toContain("'inactive'");
+  });
+
+  test('migration creates candidate_badges with unique constraint', () => {
+    expect(badgeSql).toContain('CREATE TABLE IF NOT EXISTS candidate_badges');
+    expect(badgeSql).toContain('UNIQUE (candidate_id, badge_id)');
+    expect(badgeSql).toContain('awarded_at');
+  });
+
+  // ── Issuance ──
+  test('migration has evaluate_candidate_badges RPC with idempotent awarding', () => {
+    expect(badgeSql).toContain('evaluate_candidate_badges');
+    expect(badgeSql).toContain('ON CONFLICT (candidate_id, badge_id) DO NOTHING');
+    expect(badgeSql).toContain('module_complete_count');
+    expect(badgeSql).toContain('section_complete');
+    expect(badgeSql).toContain('total_complete_count');
+  });
+
+  test('complete_studio_module triggers badge evaluation', () => {
+    // The updated complete_studio_module should call evaluate_candidate_badges
+    var fnStart = badgeSql.indexOf('CREATE OR REPLACE FUNCTION complete_studio_module');
+    var fnEnd = badgeSql.indexOf('$$;', fnStart);
+    var fnBody = badgeSql.slice(fnStart, fnEnd);
+    expect(fnBody).toContain('evaluate_candidate_badges');
+  });
+
+  // ── Seed definitions ──
+  test('migration seeds 6 badge definitions', () => {
+    expect(badgeSql).toContain("'studyo-ilk-adim'");
+    expect(badgeSql).toContain("'performans-baslangic'");
+    expect(badgeSql).toContain("'bilgiler-baslangic'");
+    expect(badgeSql).toContain("'studyo-disiplini'");
+    expect(badgeSql).toContain("'performans-temelleri'");
+    expect(badgeSql).toContain("'studyo-ustalik-yolu'");
+  });
+
+  test('badge definitions cover all three tiers', () => {
+    expect(badgeSql).toContain("'base'");
+    expect(badgeSql).toContain("'milestone'");
+    expect(badgeSql).toContain("'advanced'");
+  });
+
+  // ── RLS ──
+  test('RLS policies exist for badges', () => {
+    expect(badgeSql).toContain('badge_definitions_read_active');
+    expect(badgeSql).toContain('badge_definitions_admin_all');
+    expect(badgeSql).toContain('candidate_badges_select_own');
+  });
+
+  // ── Candidate UI ──
+  test('candidate Studio has badge strip with hydration', () => {
+    expect(mulakatJs).toContain('st-badge-strip');
+    expect(mulakatJs).toContain('hydrateBadgeStrip');
+    expect(mulakatJs).toContain('badge_definitions');
+    expect(mulakatJs).toContain('candidate_badges');
+  });
+
+  test('badge strip shows earned vs locked states', () => {
+    expect(mulakatJs).toContain('st-badge-earned');
+    expect(mulakatJs).toContain('st-badge-locked');
+    expect(mulakatJs).toContain('TIER_COLORS');
+  });
+
+  test('badge strip shows most recent earned badge', () => {
+    expect(mulakatJs).toContain('st-badge-recent');
+    expect(mulakatJs).toContain('SON KAZANILAN');
+  });
+
+  test('badge icons use hardcoded SVG constants only', () => {
+    expect(mulakatJs).toContain('BADGE_ICONS');
+    expect(mulakatJs).toContain("rocket:");
+    expect(mulakatJs).toContain("crown:");
+  });
+});
+
+// Studio Phase 4 — Journal persistence + Yetenek progress
+// ═══════════════════════════════════════════════
+
+test.describe('Studio Phase 4 — journal + yetenek persistence', () => {
+  var migSql, mulakatJs;
+
+  test.beforeAll(() => {
+    migSql = readFromRepo('supabase/migrations/20260326250000_journal_yetenek_progress.sql');
+    mulakatJs = readFromRepo('profil-mulakatkocu.js');
+  });
+
+  // ── Schema ──
+  test('migration creates candidate_studio_journals with STAR+T fields', () => {
+    expect(migSql).toContain('CREATE TABLE IF NOT EXISTS candidate_studio_journals');
+    expect(migSql).toContain('situation_text');
+    expect(migSql).toContain('task_text');
+    expect(migSql).toContain('action_text');
+    expect(migSql).toContain('result_text');
+    expect(migSql).toContain('takeaway_text');
+    expect(migSql).toContain('UNIQUE (candidate_id, competency_code, question_hash)');
+  });
+
+  test('migration creates candidate_yetenek_progress', () => {
+    expect(migSql).toContain('CREATE TABLE IF NOT EXISTS candidate_yetenek_progress');
+    expect(migSql).toContain('practice_count');
+    expect(migSql).toContain('questions_answered');
+    expect(migSql).toContain('UNIQUE (candidate_id, role_key, competency_code)');
+  });
+
+  test('migration has journal upsert + load RPCs', () => {
+    expect(migSql).toContain('upsert_studio_journal');
+    expect(migSql).toContain('get_my_journals');
+    expect(migSql).toContain('ON CONFLICT (candidate_id, competency_code, question_hash)');
+  });
+
+  test('migration has yetenek practice + completion RPCs', () => {
+    expect(migSql).toContain('record_yetenek_practice');
+    expect(migSql).toContain('complete_yetenek_competency');
+  });
+
+  test('migration has RLS for candidate-only access', () => {
+    expect(migSql).toContain('csj_select_own');
+    expect(migSql).toContain('cyp_select_own');
+  });
+
+  // ── Frontend integration ──
+  test('journal save uses DB alongside localStorage', () => {
+    expect(mulakatJs).toContain('upsert_studio_journal');
+    expect(mulakatJs).toContain('_journalDbCache');
+    expect(mulakatJs).toContain('journalCacheKey');
+  });
+
+  test('journal load checks DB cache before localStorage', () => {
+    // loadJournalDraft should check _journalDbCache first
+    var fnStart = mulakatJs.indexOf('function loadJournalDraft');
+    var fnEnd = mulakatJs.indexOf('\nfunction ', fnStart + 10);
+    var fnBody = mulakatJs.slice(fnStart, fnEnd);
+    expect(fnBody).toContain('_journalDbCache');
+    expect(fnBody).toContain('localStorage');
+  });
+
+  test('journal DB preload runs on panel init', () => {
+    expect(mulakatJs).toContain('preloadJournalsFromDb');
+    expect(mulakatJs).toContain("get_my_journals");
+  });
+
+  test('localStorage migration to DB runs once on preload', () => {
+    expect(mulakatJs).toContain('migrateLocalJournalsToDb');
+  });
+
+  test('competency completion records to yetenek_progress DB', () => {
+    expect(mulakatJs).toContain("complete_yetenek_competency");
+    expect(mulakatJs).toContain("p_role_key: S.role");
+    expect(mulakatJs).toContain("p_competency_code: S.activeComp");
+  });
+
+  test('journal save indicator says taslak kaydedildi', () => {
+    expect(mulakatJs).toContain('Taslak kaydedildi');
+  });
+});
+
+// Studio Phase 5A — AI Feedback Foundation
+// ═══════════════════════════════════════════════
+
+test.describe('Studio Phase 5A — AI feedback structural guards', () => {
+  var migSql, edgeFn, mulakatJs;
+
+  test.beforeAll(() => {
+    migSql = readFromRepo('supabase/migrations/20260326260000_journal_ai_feedback.sql');
+    edgeFn = readFromRepo('supabase/functions/journal-feedback/index.ts');
+    mulakatJs = readFromRepo('profil-mulakatkocu.js');
+  });
+
+  // ── Schema ──
+  test('migration creates candidate_journal_feedback with structured fields', () => {
+    expect(migSql).toContain('CREATE TABLE IF NOT EXISTS candidate_journal_feedback');
+    expect(migSql).toContain('overall_signal');
+    expect(migSql).toContain('strong_points');
+    expect(migSql).toContain('weak_points');
+    expect(migSql).toContain('star_review');
+    expect(migSql).toContain('improvement_actions');
+    expect(migSql).toContain('followup_questions');
+    expect(migSql).toContain('summary_text');
+  });
+
+  test('migration has request + complete + get RPCs', () => {
+    expect(migSql).toContain('request_journal_feedback');
+    expect(migSql).toContain('complete_journal_feedback');
+    expect(migSql).toContain('get_journal_feedback');
+  });
+
+  test('migration has proper status and signal constraints', () => {
+    expect(migSql).toContain("'pending'");
+    expect(migSql).toContain("'processing'");
+    expect(migSql).toContain("'completed'");
+    expect(migSql).toContain("'failed'");
+    expect(migSql).toContain("'strong'");
+    expect(migSql).toContain("'mixed'");
+    expect(migSql).toContain("'needs_work'");
+  });
+
+  test('request RPC saves journal before creating feedback', () => {
+    var fnStart = migSql.indexOf('CREATE OR REPLACE FUNCTION request_journal_feedback');
+    var fnEnd = migSql.indexOf('$$;', fnStart);
+    var fnBody = migSql.slice(fnStart, fnEnd);
+    expect(fnBody).toContain('upsert_studio_journal');
+  });
+
+  // ── Edge Function ──
+  test('edge function has structured OpenAI prompt', () => {
+    expect(edgeFn).toContain('STAR+T');
+    expect(edgeFn).toContain('overall_signal');
+    expect(edgeFn).toContain('strong_points');
+    expect(edgeFn).toContain('star_review');
+    expect(edgeFn).toContain('improvement_actions');
+    expect(edgeFn).toContain('followup_questions');
+  });
+
+  test('edge function uses structured JSON response format', () => {
+    expect(edgeFn).toContain('response_format');
+    expect(edgeFn).toContain('json_object');
+  });
+
+  test('edge function handles failures gracefully', () => {
+    expect(edgeFn).toContain('failed');
+    expect(edgeFn).toContain('error_message');
+    expect(edgeFn).toContain('OPENAI_API_KEY');
+  });
+
+  // ── Candidate UI ──
+  test('candidate journal has AI feedback button for premium', () => {
+    expect(mulakatJs).toContain('aif-request');
+    expect(mulakatJs).toContain('AI ile De');
+    expect(mulakatJs).toContain('requestAiFeedback');
+  });
+
+  test('non-premium users see gate instead of AI button', () => {
+    expect(mulakatJs).toContain('aif-gate');
+    expect(mulakatJs).toContain('Premium');
+    expect(mulakatJs).toContain('aif-gate-cta');
+  });
+
+  test('feedback rendering shows structured sections', () => {
+    expect(mulakatJs).toContain('renderAiFeedback');
+    expect(mulakatJs).toContain('aif-overall');
+    expect(mulakatJs).toContain('aif-signal');
+    expect(mulakatJs).toContain('aif-star-row');
+    expect(mulakatJs).toContain('AIF_SIGNAL_LABELS');
+    expect(mulakatJs).toContain('AIF_STAR_STATUS');
+  });
+
+  test('feedback polls for completion with timeout', () => {
+    expect(mulakatJs).toContain('pollForFeedback');
+    expect(mulakatJs).toContain('_aifPollTimer');
+    expect(mulakatJs).toContain('get_journal_feedback');
+  });
+
+  test('existing feedback loaded on practice screen render', () => {
+    expect(mulakatJs).toContain('loadExistingFeedback');
+  });
+
+  test('no console.log in AI feedback code', () => {
+    // Only console.error should exist
+    expect(mulakatJs).not.toMatch(/console\.log\(/);
+  });
+});

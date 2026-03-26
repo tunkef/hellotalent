@@ -1,7 +1,7 @@
-/* global supabase */
+/* global supabase, _loadedDBData */
 /**
- * profil-mulakatkocu.js — Mülakat Koçu (Interview Coaching) Panel
- * 7-screen Mülakat Koçu flow: star_intro → role_select → lobby → competency_intro → practice → completion → session_complete
+ * profil-mulakatkocu.js — Stüdyo (Studio) Panel
+ * Studio landing (star_intro) → Yetenek flow: role_select → lobby → competency_intro → practice → completion → session_complete
  * Depends on profil-yetkinlik.js bridge: window._htYetkinlikData
  * All innerHTML content comes from hardcoded constants — no user input, no XSS risk.
  */
@@ -433,10 +433,12 @@ function addRecentQuestion(text) {
 }
 
 /* ════════════════════════════════════════════════
-   JOURNAL (Gelişim Günlüğü) — localStorage persistence
+   JOURNAL (Gelişim Günlüğü) — DB-backed with localStorage write-through
    ════════════════════════════════════════════════ */
 
 var LS_JOURNAL_PREFIX = 'ht_journal_';
+var _journalDbCache = null; /* { compCode_qHash: {s,t,a,r,takeaway} } — loaded once per session */
+var _journalDbLoaded = false;
 
 function journalHash(str) {
   /* Simple deterministic hash for question text → short key */
@@ -452,29 +454,127 @@ function journalKey(compCode, qText) {
   return LS_JOURNAL_PREFIX + compCode + '_' + journalHash(qText);
 }
 
+function journalCacheKey(compCode, qHash) {
+  return compCode + '_' + qHash;
+}
+
+/* Preload all candidate journals from DB into _journalDbCache.
+   Also migrates any localStorage drafts that don't exist in DB yet. */
+async function preloadJournalsFromDb() {
+  if (_journalDbLoaded) return;
+  _journalDbLoaded = true;
+  _journalDbCache = {};
+
+  try {
+    var res = await supabase.rpc('get_my_journals');
+    if (!res.error && res.data) {
+      for (var i = 0; i < res.data.length; i++) {
+        var j = res.data[i];
+        var ck = journalCacheKey(j.competency_code, j.question_hash);
+        _journalDbCache[ck] = {
+          s: j.situation_text || '',
+          t: j.task_text || '',
+          a: j.action_text || '',
+          r: j.result_text || '',
+          takeaway: j.takeaway_text || ''
+        };
+      }
+    }
+
+    /* Migrate localStorage drafts → DB (once, if DB is empty for that key) */
+    migrateLocalJournalsToDb();
+  } catch (e) { /* silent — DB journals are best-effort upgrade */ }
+}
+
+function migrateLocalJournalsToDb() {
+  try {
+    for (var i = 0; i < localStorage.length; i++) {
+      var k = localStorage.key(i);
+      if (!k || k.indexOf(LS_JOURNAL_PREFIX) !== 0) continue;
+      var raw = localStorage.getItem(k);
+      if (!raw) continue;
+      var d = JSON.parse(raw);
+      if (!d || !d.comp || !d.qHash) continue;
+      if (!(d.s || d.t || d.a || d.r || d.takeaway)) continue;
+
+      var ck = journalCacheKey(d.comp, d.qHash);
+      if (_journalDbCache[ck]) continue; /* DB already has this draft — skip */
+
+      /* Fire-and-forget migration to DB */
+      _journalDbCache[ck] = { s: d.s || '', t: d.t || '', a: d.a || '', r: d.r || '', takeaway: d.takeaway || '' };
+      supabase.rpc('upsert_studio_journal', {
+        p_competency_code: d.comp,
+        p_question_hash: d.qHash,
+        p_situation: d.s || '',
+        p_task: d.t || '',
+        p_action: d.a || '',
+        p_result: d.r || '',
+        p_takeaway: d.takeaway || ''
+      }).then(function() {});
+    }
+  } catch (e) { /* silent */ }
+}
+
 function saveJournalDraft(compCode, qText, fields) {
+  var qHash = journalHash(qText);
+  var data = {
+    comp: compCode,
+    qHash: qHash,
+    s: fields.s || '',
+    t: fields.t || '',
+    a: fields.a || '',
+    r: fields.r || '',
+    takeaway: fields.takeaway || '',
+    savedAt: Date.now()
+  };
+  var hasContent = data.s || data.t || data.a || data.r || data.takeaway;
+
+  /* 1. localStorage — instant write-through buffer */
   try {
     var key = journalKey(compCode, qText);
-    var data = {
-      comp: compCode,
-      qHash: journalHash(qText),
-      s: fields.s || '',
-      t: fields.t || '',
-      a: fields.a || '',
-      r: fields.r || '',
-      takeaway: fields.takeaway || '',
-      savedAt: Date.now()
-    };
-    /* Save if content exists; remove entry if all fields cleared */
-    if (data.s || data.t || data.a || data.r || data.takeaway) {
+    if (hasContent) {
       localStorage.setItem(key, JSON.stringify(data));
     } else {
       localStorage.removeItem(key);
     }
   } catch(e) {}
+
+  /* 2. DB cache update */
+  var ck = journalCacheKey(compCode, qHash);
+  if (hasContent) {
+    _journalDbCache = _journalDbCache || {};
+    _journalDbCache[ck] = { s: data.s, t: data.t, a: data.a, r: data.r, takeaway: data.takeaway };
+  } else if (_journalDbCache) {
+    delete _journalDbCache[ck];
+  }
+
+  /* 3. Async DB save (fire-and-forget) */
+  if (typeof supabase !== 'undefined') {
+    supabase.rpc('upsert_studio_journal', {
+      p_competency_code: compCode,
+      p_question_hash: qHash,
+      p_question_text: qText,
+      p_role_key: S.role || null,
+      p_situation: data.s,
+      p_task: data.t,
+      p_action: data.a,
+      p_result: data.r,
+      p_takeaway: data.takeaway
+    }).then(function() {});
+  }
 }
 
 function loadJournalDraft(compCode, qText) {
+  var qHash = journalHash(qText);
+  var ck = journalCacheKey(compCode, qHash);
+
+  /* 1. Try DB cache first (cross-device truth) */
+  if (_journalDbCache && _journalDbCache[ck]) {
+    var db = _journalDbCache[ck];
+    return { s: db.s, t: db.t, a: db.a, r: db.r, takeaway: db.takeaway };
+  }
+
+  /* 2. Fallback to localStorage (local buffer / pre-migration) */
   try {
     var raw = localStorage.getItem(journalKey(compCode, qText));
     return raw ? JSON.parse(raw) : null;
@@ -483,15 +583,30 @@ function loadJournalDraft(compCode, qText) {
 
 function countJournalDraftsForComp(compCode) {
   var count = 0;
+
+  /* Count from DB cache if available */
+  if (_journalDbCache) {
+    var prefix = compCode + '_';
+    var keys = Object.keys(_journalDbCache);
+    for (var di = 0; di < keys.length; di++) {
+      if (keys[di].indexOf(prefix) === 0) {
+        var d = _journalDbCache[keys[di]];
+        if (d.s || d.t || d.a || d.r || d.takeaway) count++;
+      }
+    }
+    return count;
+  }
+
+  /* Fallback: localStorage scan */
   try {
-    var prefix = LS_JOURNAL_PREFIX + compCode + '_';
+    var lsPrefix = LS_JOURNAL_PREFIX + compCode + '_';
     for (var i = 0; i < localStorage.length; i++) {
       var k = localStorage.key(i);
-      if (k && k.indexOf(prefix) === 0) {
+      if (k && k.indexOf(lsPrefix) === 0) {
         var raw = localStorage.getItem(k);
         if (raw) {
-          var d = JSON.parse(raw);
-          if (d.s || d.t || d.a || d.r || d.takeaway) count++;
+          var ld = JSON.parse(raw);
+          if (ld.s || ld.t || ld.a || ld.r || ld.takeaway) count++;
         }
       }
     }
@@ -795,19 +910,94 @@ function injectCSS() {
   css += '.ig-journal-textarea::placeholder{color:var(--text-muted,#6B7280);font-style:italic}';
   css += '.ig-journal-saved{font-family:"DM Mono",monospace;font-size:10px;color:var(--text-muted,#6B7280);text-align:right;padding-top:4px;min-height:16px}';
   css += '.ig-journal-saved.visible{color:#2D8A56}';
-  css += '.ig-journal-ai-hint{margin-top:12px;padding:10px 14px;background:rgba(30,45,94,.04);border-radius:10px;font-family:"Plus Jakarta Sans",sans-serif;font-size:10px;color:var(--text-muted,#6B7280);line-height:1.5;text-align:center}';
+  /* AI Feedback area */
+  css += '.aif-area{margin-top:16px}';
+  css += '.aif-btn{display:inline-flex;align-items:center;gap:6px;font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;font-weight:700;color:#fff;background:linear-gradient(135deg,#2A3F7A 0%,#1E2D5E 100%);border:none;border-radius:10px;padding:10px 20px;cursor:pointer;transition:all .25s;box-shadow:0 2px 8px rgba(30,45,94,.2)}';
+  css += '.aif-btn:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(30,45,94,.3)}';
+  css += '.aif-btn:disabled{opacity:.6;cursor:not-allowed;transform:none}';
+  css += '.aif-btn svg{width:14px;height:14px}';
+  css += '.aif-gate{display:flex;align-items:center;gap:8px;padding:12px 16px;background:rgba(30,45,94,.04);border:1px solid rgba(30,45,94,.08);border-radius:10px;font-family:"Plus Jakarta Sans",sans-serif;font-size:11px;color:var(--text-muted,#6B7280)}';
+  css += '.aif-gate svg{flex-shrink:0;color:var(--navy,#1E2D5E);opacity:.4}';
+  css += '.aif-gate span{flex:1}';
+  css += '.aif-gate-cta{font-family:"Plus Jakarta Sans",sans-serif;font-size:11px;font-weight:700;color:var(--verm,#C94E28);background:none;border:none;cursor:pointer;padding:0;flex-shrink:0}';
+  /* Feedback result cards */
+  css += '.aif-card{background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF);border-radius:12px;padding:14px 16px;margin-top:10px}';
+  css += '.aif-overall{border-left:3px solid var(--navy,#1E2D5E)}';
+  css += '.aif-card-title{font-family:"Bricolage Grotesque",sans-serif;font-size:12px;font-weight:700;color:var(--text-primary,#111);margin-bottom:8px;letter-spacing:-.1px}';
+  css += '.aif-signal{display:inline-block;font-family:"DM Mono",monospace;font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px;margin-bottom:8px;letter-spacing:.3px}';
+  css += '.aif-summary{font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;color:var(--text-secondary,#4B5563);line-height:1.6}';
+  css += '.aif-list-item{display:flex;align-items:flex-start;gap:8px;font-family:"Plus Jakarta Sans",sans-serif;font-size:11px;color:var(--text-secondary,#4B5563);line-height:1.5;margin-bottom:6px}';
+  css += '.aif-bullet{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:5px}';
+  css += '.aif-star-row{display:flex;align-items:flex-start;gap:8px;margin-bottom:6px}';
+  css += '.aif-star-indicator{font-family:"DM Mono",monospace;font-size:12px;font-weight:700;width:16px;text-align:center;flex-shrink:0}';
+  css += '.aif-star-label{font-family:"Plus Jakarta Sans",sans-serif;font-size:11px;font-weight:600;color:var(--text-primary,#111)}';
+  css += '.aif-star-note{font-family:"Plus Jakarta Sans",sans-serif;font-size:11px;color:var(--text-muted,#6B7280)}';
 
   /* Lobby draft badge */
   css += '.ig-lobby-badge-draft{background:rgba(30,45,94,.08);color:var(--navy,#1E2D5E)}';
   css += '.ig-lobby-badge-draft svg{width:12px;height:12px}';
 
-  /* Landing screen (star_intro — Mülakat Koçu product landing) */
+  /* Landing screen (star_intro — Studio landing) */
   css += '.ig-landing{animation:igFadeIn .3s ease}';
 
-  /* Hero — navy gradient, full-width, editorial feel */
+  /* Hero — base (shared) */
   css += '.ig-landing-hero{background:linear-gradient(135deg,#2A3F7A 0%,#1E2D5E 50%,#162247 100%);border-radius:24px;padding:40px 32px 36px;color:#fff;text-align:center;margin-bottom:16px;position:relative;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.08),0 8px 20px rgba(0,0,0,.06)}';
   css += '.ig-landing-hero::before{content:"";position:absolute;top:-40%;right:-20%;width:60%;height:120%;background:radial-gradient(ellipse,rgba(201,78,40,.1) 0%,transparent 70%);pointer-events:none}';
   css += '.ig-landing-hero::after{content:"";position:absolute;bottom:-30%;left:-15%;width:50%;height:100%;background:radial-gradient(ellipse,rgba(30,45,94,.3) 0%,transparent 60%);pointer-events:none}';
+
+  /* Studio hero override — vermillion accent warmth */
+  css += '.st-hero{background:linear-gradient(135deg,#C94E28 0%,#b84420 40%,#a33d1c 100%)}';
+  css += '.st-hero::before{background:radial-gradient(ellipse,rgba(255,255,255,.08) 0%,transparent 70%)}';
+  css += '.st-hero::after{background:radial-gradient(ellipse,rgba(30,45,94,.15) 0%,transparent 60%)}';
+
+  /* Studio section cards */
+  css += '.st-section-card{cursor:pointer;transition:all .3s ease !important}';
+  css += '.st-section-card:hover{transform:translateY(-3px) !important;box-shadow:0 12px 32px rgba(0,0,0,.1) !important}';
+  css += '.st-section-kicker{font-family:"DM Mono",monospace;font-size:9px;letter-spacing:1.2px;text-transform:uppercase;color:var(--text-muted,#6B7280);margin-bottom:10px}';
+  css += '.st-section-cta{font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;font-weight:700;color:var(--verm,#C94E28);margin-top:14px;transition:letter-spacing .2s}';
+  css += '.st-section-card:hover .st-section-cta{letter-spacing:.3px}';
+  css += '.st-section-badge{display:inline-block;font-family:"DM Mono",monospace;font-size:10px;font-weight:600;letter-spacing:.5px;color:var(--text-muted,#6B7280);background:var(--bg-muted,#F7F6F4);border:1px solid var(--border-subtle,#E5E3DF);border-radius:20px;padding:4px 12px;margin-top:14px}';
+  css += '.st-perf{opacity:.85;transition:opacity .3s}.st-perf:hover{opacity:1}';
+  css += '.st-bilgi{opacity:.85;transition:opacity .3s}.st-bilgi:hover{opacity:1}';
+
+  /* Studio module cards */
+  css += '.st-module-area{margin-bottom:16px}';
+  css += '.st-mod-card{background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF);border-radius:16px;overflow:hidden;cursor:pointer;transition:all .3s ease;box-shadow:0 2px 8px rgba(0,0,0,.06);display:flex;flex-direction:column}';
+  css += '.st-mod-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.1)}';
+  css += '.st-mod-cover{height:140px;overflow:hidden;background:var(--bg-muted,#F7F6F4)}';
+  css += '.st-mod-cover img{width:100%;height:100%;object-fit:cover}';
+  css += '.st-mod-body{padding:16px 18px;flex:1;display:flex;flex-direction:column}';
+  css += '.st-mod-meta{display:flex;align-items:center;gap:8px;margin-bottom:8px}';
+  css += '.st-mod-type{font-family:"DM Mono",monospace;font-size:10px;font-weight:600;letter-spacing:.5px;color:var(--verm,#C94E28);background:rgba(201,78,40,.06);padding:3px 10px;border-radius:20px}';
+  css += '.st-mod-dur{font-family:"DM Mono",monospace;font-size:10px;color:var(--text-muted,#6B7280)}';
+  css += '.st-mod-title{font-family:"Bricolage Grotesque",sans-serif;font-size:14px;font-weight:700;color:var(--text-primary,#111);margin-bottom:4px;line-height:1.3}';
+  css += '.st-mod-summary{font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;color:var(--text-muted,#6B7280);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}';
+  css += '@media(max-width:900px){.st-mod-card[style*="span 2"]{grid-column:span 1}}';
+  css += '@media(max-width:600px){#st-module-area .st-mod-card{grid-column:span 1 !important}}';
+
+  /* Progress pills + continue card + completion state */
+  css += '.st-progress-pill{font-family:"DM Mono",monospace;font-size:10px;font-weight:600;color:var(--verm,#C94E28);background:rgba(201,78,40,.06);padding:3px 10px;border-radius:20px;letter-spacing:.3px}';
+  css += '.st-continue-card{display:flex;align-items:center;gap:12px;background:rgba(201,78,40,.04);border:1px solid rgba(201,78,40,.12);border-radius:14px;padding:14px 18px;margin-bottom:14px;cursor:pointer;transition:all .25s}';
+  css += '.st-continue-card:hover{background:rgba(201,78,40,.08);border-color:rgba(201,78,40,.2)}';
+  css += '.st-mod-done{opacity:.7;position:relative}';
+  css += '.st-mod-done:hover{opacity:.85}';
+  css += '.st-mod-status-done{font-family:"DM Mono",monospace;font-size:9px;font-weight:600;color:#059669;background:rgba(5,150,105,.08);padding:2px 8px;border-radius:20px;letter-spacing:.3px}';
+  css += '.st-mod-status-ip{font-family:"DM Mono",monospace;font-size:9px;font-weight:600;color:#D97706;background:rgba(217,119,6,.08);padding:2px 8px;border-radius:20px;letter-spacing:.3px}';
+  css += '.st-landing-stat{font-family:"DM Mono",monospace;font-size:10px;color:var(--text-muted,#6B7280);margin-top:8px}';
+
+  /* Badge strip */
+  css += '.st-badge-strip{margin-top:20px;animation:igFadeIn .3s ease}';
+  css += '.st-badge-header{display:flex;align-items:center;gap:8px;margin-bottom:10px}';
+  css += '.st-badge-header-title{font-family:"Bricolage Grotesque",sans-serif;font-size:14px;font-weight:700;color:var(--text-primary,#111);letter-spacing:-.2px}';
+  css += '.st-badge-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}';
+  css += '.st-badge-chip{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:20px;border:1px solid var(--border-subtle,#E5E3DF);background:var(--bg-surface,#fff);transition:all .2s;font-family:"Plus Jakarta Sans",sans-serif;font-size:11px;font-weight:600}';
+  css += '.st-badge-earned{box-shadow:0 2px 8px rgba(0,0,0,.04)}';
+  css += '.st-badge-locked{opacity:.4;filter:grayscale(.6)}';
+  css += '.st-badge-icon{display:flex;align-items:center;flex-shrink:0}';
+  css += '.st-badge-label{white-space:nowrap}';
+  css += '.st-badge-recent{background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF);border-radius:12px;padding:14px 18px;box-shadow:0 2px 8px rgba(0,0,0,.04)}';
+  css += '@media(max-width:600px){.st-badge-chip{font-size:10px;padding:5px 10px}}';
+
   css += '.ig-landing-badge{display:inline-flex;align-items:center;gap:6px;font-family:"DM Mono",monospace;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:16px}';
   css += '.ig-landing-badge::before,.ig-landing-badge::after{content:"";width:20px;height:1px;background:rgba(255,255,255,.2)}';
   css += '.ig-landing-title{font-family:"Bricolage Grotesque",sans-serif;font-size:32px;font-weight:800;letter-spacing:-.5px;margin-bottom:10px;line-height:1.1}';
@@ -978,50 +1168,72 @@ function renderStarDetail(idx) {
 }
 
 function renderStarIntro() {
-  var d = STAR_CONTENT;
   var html = '';
 
   html += '<div class="ig-landing">';
 
-  /* ── Hero card (outside grid, full-width, editorial) ── */
-  html += '<div class="ig-landing-hero">';
-  html += '<div class="ig-landing-badge">hellotalent.ai</div>';
-  html += '<div class="ig-landing-title">M\u00FClakat Ko\u00E7u</div>';
-  html += '<div class="ig-landing-subtitle">Yetkinlikleri \u00F6\u011Frenin, yetkinlik bazl\u0131 sorularla pratik yap\u0131n, yan\u0131t taslaklar\u0131n\u0131z\u0131 olu\u015Fturun.</div>';
-  html += '<button class="ig-landing-cta" id="ig-start-practice">Ko\u00E7lu\u011Fa Ba\u015Flay\u0131n <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>';
+  /* ══ STUDIO HERO — outside grid, vermillion accent, editorial ══ */
+  html += '<div class="ig-landing-hero st-hero">';
+  html += '<div class="ig-landing-badge">hellotalent st\u00fcdyo</div>';
+  html += '<div class="ig-landing-title">St\u00fcdyo</div>';
+  html += '<div class="ig-landing-subtitle">Kariyerinde \u00f6ne ge\u00e7mek i\u00e7in ger\u00e7ek beceriler kazan. Yetkinlik geli\u015ftir, uzmanlardan \u00f6\u011fren, performans\u0131n\u0131 anlat.</div>';
   html += '</div>';
 
-  /* ── Bento grid — asymmetric composition ── */
-  html += '<div class="ig-landing-grid">';
+  /* ══ STUDIO SECTION GRID — 4 sections, bento asymmetric ══ */
+  html += '<div class="ig-landing-grid st-grid">';
 
-  /* Row 1: Primary pillar (span 2) + proof stats (span 1) */
-  html += '<div class="ig-lcard span-2">';
-  html += '<div class="ig-lcard-icon verm">' + briefSVG + '</div>';
-  html += '<div class="ig-lcard-title">Yetkinli\u011Fi \u00D6\u011Frenin</div>';
-  html += '<div class="ig-lcard-desc">G\u00FC\u00E7l\u00FC sinyalleri, risk i\u015Faretlerini ve a\u015F\u0131r\u0131 kullan\u0131m tehlikelerini ke\u015Ffedin. M\u00FClakatta neyin arand\u0131\u011F\u0131n\u0131 anlay\u0131n.</div>';
+  /* ── 1. YETENEK (span 2) — primary section ── */
+  html += '<div class="ig-lcard span-2 st-section-card st-yetenek" id="st-go-yetenek">';
+  html += '<div class="st-section-kicker">ROL\u00dcNDE EN \u0130Y\u0130S\u0130 OL</div>';
+  html += '<div class="ig-lcard-icon verm"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>';
+  html += '<div class="ig-lcard-title" style="font-size:18px">Yetenek</div>';
+  html += '<div class="ig-lcard-desc">29 yetkinlik, 289 soru, geli\u015fim g\u00fcnl\u00fc\u011f\u00fc. Rol\u00fcne \u00f6zel yetkinlikleri ke\u015ffet, pratik yap, m\u00fclakat haz\u0131rl\u0131\u011f\u0131n\u0131 tamamla.</div>';
+  html += '<div class="st-section-cta">Yetkinliklere Ba\u015fla \u2192</div>';
   html += '</div>';
 
-  html += '<div class="ig-lcard ig-lcard-proof">';
-  html += '<div class="ig-proof-row"><div class="ig-proof-num">29</div><div class="ig-proof-label">yetkinlik</div></div>';
-  html += '<div class="ig-proof-row"><div class="ig-proof-num">289</div><div class="ig-proof-label">yetkinlik bazl\u0131 soru</div></div>';
-  html += '<div class="ig-proof-row"><div class="ig-proof-num">' + penSVG + '</div><div class="ig-proof-label">geli\u015Fim g\u00FCnl\u00FC\u011F\u00FC</div></div>';
+  /* ── 2. KOÇ (span 1) — coach library ── */
+  html += '<div class="ig-lcard st-section-card st-koc" id="st-go-koc">';
+  html += '<div class="st-section-kicker">UZMANLARDAN \u00d6\u011eREN</div>';
+  html += '<div class="ig-lcard-icon navy"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>';
+  html += '<div class="ig-lcard-title">Ko\u00e7</div>';
+  html += '<div class="ig-lcard-desc">Sekt\u00f6r uzmanlar\u0131ndan m\u00fclakat ipuclar\u0131, kariyer rehberleri ve yetkinlik analizleri.</div>';
+  html += '<div class="st-section-cta">Makalelere G\u00f6z At \u2192</div>';
   html += '</div>';
 
-  /* Row 2: Practice (span 1) + Journal (span 1) + STAR ref (span 1) */
-  html += '<div class="ig-lcard">';
-  html += '<div class="ig-lcard-icon navy">' + coachSVG + '</div>';
-  html += '<div class="ig-lcard-title">Sorular\u0131 \u00C7al\u0131\u015F\u0131n</div>';
-  html += '<div class="ig-lcard-desc">Rol\u00FCn\u00FCze \u00F6zel sorularla pratik yap\u0131n, ko\u00E7luk kartlar\u0131yla ne arand\u0131\u011F\u0131n\u0131 g\u00F6r\u00FCn.</div>';
+  /* ── 3. PERFORMANS (span 1) — DB-backed ── */
+  html += '<div class="ig-lcard st-section-card st-perf" id="st-go-perf">';
+  html += '<div class="st-section-kicker">RAKAMLARI \u00d6\u011eREN</div>';
+  html += '<div class="ig-lcard-icon" style="background:rgba(217,119,6,.08);color:#D97706"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg></div>';
+  html += '<div class="ig-lcard-title">Performans</div>';
+  html += '<div class="ig-lcard-desc">Ma\u011faza KPI\u2019lar\u0131, sat\u0131\u015f matemati\u011fi, LFL ve sepet analizleri. Rakamlar\u0131 anlayan terfi eder.</div>';
+  html += '<div class="st-landing-stat" id="st-stat-performans"></div>';
+  html += '<div class="st-section-cta">Ke\u015Ffet \u2192</div>';
   html += '</div>';
 
-  html += '<div class="ig-lcard">';
-  html += '<div class="ig-lcard-icon green">' + penSVG + '</div>';
-  html += '<div class="ig-lcard-title">G\u00FCnl\u00FC\u011F\u00FCn\u00FCz\u00FC Olu\u015Fturun</div>';
-  html += '<div class="ig-lcard-desc">STAR+T taslaklar\u0131n\u0131z\u0131 kaydedin, g\u00F6r\u00FC\u015Fmeye haz\u0131r gidin.</div>';
+  /* ── 4. HELLOTALENT'TEN BİLGİLER (span 2) — DB-backed ── */
+  html += '<div class="ig-lcard span-2 st-section-card st-bilgi" id="st-go-bilgi">';
+  html += '<div class="st-section-kicker">PLATFORMUNU TANIYORSUN, DE\u011e\u0130L M\u0130?</div>';
+  html += '<div class="ig-lcard-icon" style="background:rgba(5,150,105,.08);color:#059669"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg></div>';
+  html += '<div class="ig-lcard-title">HelloTalent\u2019ten Bilgiler</div>';
+  html += '<div class="ig-lcard-desc">Profilini nas\u0131l \u00f6ne \u00e7\u0131kar\u0131rs\u0131n? \u0130\u015fverenler neye bak\u0131yor? Platform\u0131 en verimli kullanan adaylar\u0131n s\u0131rlar\u0131.</div>';
+  html += '<div class="st-landing-stat" id="st-stat-bilgiler"></div>';
+  html += '<div class="st-section-cta">Ke\u015Ffet \u2192</div>';
   html += '</div>';
 
-  /* STAR reference — direct grid child, collapsible */
-  html += '<div class="ig-landing-star" id="ig-star-collapse">';
+  html += '</div>'; /* close st-grid */
+
+  /* ══ BADGE STRIP — async-hydrated after landing mount ══ */
+  html += '<div id="st-badge-strip" class="st-badge-strip" style="display:none;"></div>';
+
+  /* ══ STUDIO MODULE CONTENT AREA — hydrated on section card click ══ */
+  html += '<div id="st-module-area" class="st-module-area" style="display:none;"></div>';
+
+  /* ══ COACH FEED — hydrated async, now clearly inside Studio ══ */
+  html += '<div id="ig-coach-feed" class="ig-coach-feed" style="display:none;"></div>';
+
+  /* ══ STAR+T quick reference — collapsible at bottom ══ */
+  var d = STAR_CONTENT;
+  html += '<div class="ig-landing-star" id="ig-star-collapse" style="margin-top:12px">';
   html += '<div class="ig-landing-star-header" id="ig-star-toggle">';
   html += '<div class="ig-landing-star-badges">';
   html += '<div class="ig-landing-star-letter verm">S</div>';
@@ -1029,7 +1241,7 @@ function renderStarIntro() {
   html += '<div class="ig-landing-star-letter verm">A</div>';
   html += '<div class="ig-landing-star-letter navy">R</div>';
   html += '</div>';
-  html += '<div class="ig-landing-star-label">STAR+T Nedir?</div>';
+  html += '<div class="ig-landing-star-label">STAR+T Metodolojisi</div>';
   html += '<div class="ig-landing-star-arrow">\u25BE</div>';
   html += '</div>';
   html += '<div class="ig-landing-star-body">';
@@ -1055,17 +1267,7 @@ function renderStarIntro() {
   html += '</div>'; /* close ig-landing-star-body */
   html += '</div>'; /* close ig-landing-star */
 
-  html += '</div>'; /* close ig-landing-grid */
-
-  /* ── Coach feed placeholder (hydrated async in bindStarIntroEvents) ── */
-  html += '<div id="ig-coach-feed" class="ig-coach-feed" style="display:none;"></div>';
-
-  /* ── Returning user skip ── */
-  if (hasSeenStar()) {
-    html += '<div class="ig-landing-skip"><button class="ig-landing-skip-link" id="ig-skip-star">Devam edin \u2192</button></div>';
-  }
-
-  html += '</div>';
+  html += '</div>'; /* close ig-landing */
   return html;
 }
 
@@ -1077,7 +1279,7 @@ function renderRoleSelect() {
   var bridge = getBridge();
   var html = '';
 
-  html += '<div class="ig-nav-pill" id="ig-back-star">' + arrowLeftSVG + ' M\u00FClakat Ko\u00E7u</div>';
+  html += '<div class="ig-nav-pill" id="ig-back-star">' + arrowLeftSVG + ' St\u00fcdyo</div>';
 
   html += '<div class="g-hero"><div class="g-hero-inner"><div style="font-family:\'Bricolage Grotesque\',sans-serif;font-size:20px;font-weight:800;color:#fff;">Hedef Pozisyonunuzu Se\u00E7in</div></div></div>';
 
@@ -1146,7 +1348,7 @@ function renderCompetencyIntro() {
 
   /* Hero */
   html += '<div class="ig-intro-hero">';
-  html += '<div style="font-family:\'DM Mono\',monospace;font-size:10px;color:rgba(255,255,255,.5);letter-spacing:.5px;margin-bottom:6px;text-transform:uppercase">M\u00FClakat Ko\u00E7u</div>';
+  html += '<div style="font-family:\'DM Mono\',monospace;font-size:10px;color:rgba(255,255,255,.5);letter-spacing:.5px;margin-bottom:6px;text-transform:uppercase">St\u00fcdyo \u2014 Yetenek</div>';
   html += '<div class="ig-intro-comp-name">' + compName + '</div>';
   if (kf) html += '<div style="font-family:\'DM Mono\',monospace;font-size:10px;color:rgba(255,255,255,.4);letter-spacing:.4px;margin-bottom:8px">' + kf + '</div>';
   if (def) html += '<div class="ig-intro-comp-def">' + def + '</div>';
@@ -1273,7 +1475,7 @@ function renderLobby() {
       html += '</div>';
       html += '<div class="ig-q-lock-overlay">';
       html += '<div class="ig-q-lock-icon">' + lockSVG + '</div>';
-      html += '<div class="ig-q-lock-text">Bu yetkinli\u011Fe eri\u015Fmek i\u00E7in Premium\u2019a ge\u00E7in</div>';
+      html += '<div class="ig-q-lock-text">\u00dccretsiz 2 yetkinlik hakk\u0131n\u0131 kulland\u0131n. Rol de\u011Fi\u015Ftirerek farkl\u0131 yetkinlikleri ke\u015Ffedebilirsin.</div>';
       html += '<button class="ig-q-lock-cta">T\u00FCm Yetkinlikleri A\u00E7</button>';
       html += '</div>';
       html += '</div>';
@@ -1415,7 +1617,7 @@ function renderJournalPanel() {
   /* Body (only if open) */
   if (S.journalOpen) {
     html += '<div class="ig-journal-body">';
-    html += '<div class="ig-journal-intro">Bu soruya haz\u0131rlan\u0131rken deneyimlerinizi STAR+T yap\u0131s\u0131yla not edin. Notlar\u0131n\u0131z otomatik kaydedilir ve istedikten sonra tekrar g\u00F6zden ge\u00E7irebilirsiniz.</div>';
+    html += '<div class="ig-journal-intro">Bu soruya haz\u0131rlan\u0131rken deneyimlerinizi STAR+T yap\u0131s\u0131yla not edin. Notlar\u0131n\u0131z hesab\u0131n\u0131za kaydedilir ve farkl\u0131 cihazlardan eri\u015Febilirsiniz.</div>';
 
     var fields = [
       { key: 's', letter: 'S', label: 'Durum', color: 'verm', placeholder: 'Kar\u015F\u0131la\u015Ft\u0131\u011F\u0131n\u0131z durumu k\u0131saca tan\u0131mlay\u0131n...' },
@@ -1439,7 +1641,19 @@ function renderJournalPanel() {
 
     html += '<div class="ig-journal-saved" id="ig-journal-saved"></div>';
 
-    html += '<div class="ig-journal-ai-hint">Yak\u0131nda: Yapay zeka ko\u00E7unuz bu yan\u0131t\u0131 de\u011Ferlendirecek ve g\u00FC\u00E7l\u00FC / zay\u0131f sinyalleri belirleyecek.</div>';
+    /* ── AI Feedback area ── */
+    html += '<div class="aif-area" id="aif-area">';
+    if (S.isPremium) {
+      html += '<button class="aif-btn" id="aif-request"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg> AI ile De\u011Ferlendir</button>';
+    } else {
+      html += '<div class="aif-gate">';
+      html += '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>';
+      html += '<span>AI Ko\u00E7 de\u011Ferlendirmesi Premium \u00f6zelli\u011fidir.</span>';
+      html += '<button class="aif-gate-cta" onclick="if(typeof switchPanel===\'function\')switchPanel(\'premium\')">Premium\u2019a Ge\u00E7</button>';
+      html += '</div>';
+    }
+    html += '<div id="aif-result" style="display:none;"></div>';
+    html += '</div>';
 
     html += '</div>'; /* journal-body */
   }
@@ -1584,7 +1798,8 @@ function renderSessionComplete() {
   /* Premium upsell — the main moment */
   if (!S.isPremium && lockedCount > 0) {
     html += '<div style="margin-top:24px;text-align:center;background:var(--bg-muted,#F7F6F4);border:1px solid rgba(201,78,40,.15);border-radius:16px;padding:24px">';
-    html += '<div style="font-family:\'Bricolage Grotesque\',sans-serif;font-size:17px;font-weight:800;margin-bottom:8px">' + lockedCount + ' yetkinlik daha sizi bekliyor</div>';
+    html += '<div style="font-family:\'Bricolage Grotesque\',sans-serif;font-size:17px;font-weight:800;margin-bottom:4px">' + lockedCount + ' yetkinlik daha seni bekliyor</div>';
+    html += '<div style="font-family:\'Plus Jakarta Sans\',sans-serif;font-size:12px;color:var(--text-muted,#6B7280);margin-bottom:10px;line-height:1.5">Farkl\u0131 rolleri ke\u015Ffederek yeni yetkinlik \u00f6rnekleri g\u00f6rebilirsin. T\u00fcm yetkinliklere s\u0131n\u0131rs\u0131z eri\u015fim i\u00e7in:</div>';
     html += '<div class="ig-section-desc" style="margin-bottom:10px"><strong>' + S.role + '</strong> m\u00FClakat\u0131nda de\u011Ferlendirilecek ' + S.comps.length + ' yetkinli\u011Fin tamam\u0131na haz\u0131rlan\u0131n.</div>';
 
     /* Show up to 3 locked competency names as preview tags */
@@ -1725,11 +1940,11 @@ async function hydrateCoachFeed() {
     header.className = 'ig-coach-feed-header';
     var titleEl = document.createElement('div');
     titleEl.className = 'ig-coach-feed-title';
-    titleEl.textContent = 'Ko\u00E7lardan \u00D6\u011Fren';
+    titleEl.textContent = 'Ko\u00E7 \u2014 Uzmanlardan \u00D6\u011Fren';
     header.appendChild(titleEl);
     var subEl = document.createElement('div');
     subEl.className = 'ig-coach-feed-sub';
-    subEl.textContent = 'Deneyimli ko\u00E7lardan m\u00FClakat ve kariyer ipuclar\u0131';
+    subEl.textContent = 'Sekt\u00F6r uzmanlar\u0131ndan m\u00FClakat ipuclar\u0131, yetkinlik rehberleri ve kariyer \u00F6nerileri';
     header.appendChild(subEl);
     feedEl.appendChild(header);
 
@@ -2172,14 +2387,40 @@ function navigate(screen) {
    ════════════════════════════════════════════════ */
 
 function bindStarIntroEvents() {
-  /* Start coaching CTA */
-  var startBtn = document.getElementById('ig-start-practice');
-  if (startBtn) startBtn.addEventListener('click', function() {
+  /* ── Yetenek section card → go to role_select (competency practice flow) ── */
+  var yetBtn = document.getElementById('st-go-yetenek');
+  if (yetBtn) yetBtn.addEventListener('click', function() {
     markStarSeen();
     navigate('role_select');
   });
 
-  /* STAR collapsible toggle */
+  /* ── Koç section card → scroll to coach feed (which hydrates below) ── */
+  var kocBtn = document.getElementById('st-go-koc');
+  if (kocBtn) kocBtn.addEventListener('click', function() {
+    var feed = document.getElementById('ig-coach-feed');
+    if (feed && feed.style.display !== 'none') {
+      feed.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else {
+      /* Feed not loaded yet — force hydration then scroll */
+      hydrateCoachFeed();
+      setTimeout(function() {
+        var f = document.getElementById('ig-coach-feed');
+        if (f) f.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 400);
+    }
+  });
+
+  /* ── Performans + Bilgiler — DB-backed content sections ── */
+  var perfBtn = document.getElementById('st-go-perf');
+  if (perfBtn) perfBtn.addEventListener('click', function() {
+    hydrateStudioSection('performans', 'Performans');
+  });
+  var bilgiBtn = document.getElementById('st-go-bilgi');
+  if (bilgiBtn) bilgiBtn.addEventListener('click', function() {
+    hydrateStudioSection('bilgiler', 'HelloTalent\u2019ten Bilgiler');
+  });
+
+  /* ── STAR collapsible toggle ── */
   var starToggle = document.getElementById('ig-star-toggle');
   var starCollapse = document.getElementById('ig-star-collapse');
   if (starToggle && starCollapse) {
@@ -2188,14 +2429,830 @@ function bindStarIntroEvents() {
     });
   }
 
-  /* Skip link (returning users) */
-  var skipBtn = document.getElementById('ig-skip-star');
-  if (skipBtn) skipBtn.addEventListener('click', function() {
-    navigate('role_select');
-  });
-
-  /* Coach feed — async hydration after landing is mounted */
+  /* ── Coach feed — async hydration after landing is mounted ── */
   hydrateCoachFeed();
+
+  /* ── Landing card progress stats — async hydration ── */
+  hydrateLandingStats();
+
+  /* ── Badge strip — async hydration ── */
+  hydrateBadgeStrip();
+}
+
+async function hydrateLandingStats() {
+  try {
+    /* Fetch module counts per section + candidate progress in parallel */
+    var modRes = await supabase
+      .from('studio_modules')
+      .select('id, section')
+      .eq('status', 'published');
+
+    if (modRes.error || !modRes.data || modRes.data.length === 0) return;
+
+    var sectionModules = { performans: [], bilgiler: [] };
+    for (var i = 0; i < modRes.data.length; i++) {
+      var s = modRes.data[i].section;
+      if (sectionModules[s]) sectionModules[s].push(modRes.data[i].id);
+    }
+
+    var progress = await fetchStudioProgress();
+
+    var sections = ['performans', 'bilgiler'];
+    for (var si = 0; si < sections.length; si++) {
+      var sec = sections[si];
+      var mods = sectionModules[sec] || [];
+      if (mods.length === 0) continue;
+
+      var completed = 0;
+      var started = 0;
+      for (var mi = 0; mi < mods.length; mi++) {
+        var p = progress[mods[mi]];
+        if (p && p.status === 'completed') completed++;
+        else if (p && p.status === 'in_progress') started++;
+      }
+
+      var el = document.getElementById('st-stat-' + sec);
+      if (!el) continue;
+
+      if (completed === mods.length) {
+        el.textContent = '\u2713 T\u00fcm\u00fc tamamland\u0131';
+        el.style.color = '#059669';
+      } else if (completed > 0 || started > 0) {
+        el.textContent = completed + '/' + mods.length + ' tamamland\u0131' + (started > 0 ? ' \u00b7 ' + started + ' devam ediyor' : '');
+      } else {
+        el.textContent = mods.length + ' mod\u00fcl';
+      }
+    }
+  } catch (e) { /* silent — stats are best-effort enhancement */ }
+}
+
+/* ══ BADGE STRIP HYDRATION ══ */
+
+/* Hardcoded SVG icon constants — safe for innerHTML (same pattern as briefSVG, coachSVG etc) */
+var BADGE_ICONS = {
+  rocket: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/></svg>',
+  chart: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>',
+  lightbulb: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>',
+  target: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>',
+  trophy: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>',
+  crown: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7z"/><path d="M3 20h18"/></svg>'
+};
+
+var TIER_COLORS = {
+  base: { bg: 'rgba(201,78,40,.06)', border: 'rgba(201,78,40,.15)', text: '#C94E28' },
+  milestone: { bg: 'rgba(30,45,94,.06)', border: 'rgba(30,45,94,.15)', text: '#1E2D5E' },
+  advanced: { bg: 'rgba(217,119,6,.06)', border: 'rgba(217,119,6,.2)', text: '#92400E' }
+};
+
+async function hydrateBadgeStrip() {
+  var strip = document.getElementById('st-badge-strip');
+  if (!strip) return;
+
+  try {
+    /* Fetch definitions + earned badges in parallel */
+    var defsP = supabase
+      .from('badge_definitions')
+      .select('id, slug, title, description, icon_key, badge_tier, sort_order')
+      .eq('status', 'active')
+      .order('sort_order', { ascending: true });
+
+    var earnedP = supabase
+      .from('candidate_badges')
+      .select('badge_id, awarded_at');
+
+    var results = await Promise.all([defsP, earnedP]);
+    var defs = (results[0].error ? [] : results[0].data) || [];
+    var earned = (results[1].error ? [] : results[1].data) || [];
+
+    if (defs.length === 0) return;
+
+    var earnedMap = {};
+    for (var i = 0; i < earned.length; i++) {
+      earnedMap[earned[i].badge_id] = earned[i];
+    }
+    var earnedCount = earned.length;
+
+    strip.style.display = 'block';
+    while (strip.firstChild) strip.removeChild(strip.firstChild);
+
+    /* Header */
+    var header = document.createElement('div');
+    header.className = 'st-badge-header';
+    var headerTitle = document.createElement('span');
+    headerTitle.className = 'st-badge-header-title';
+    headerTitle.textContent = 'Rozetlerin';
+    header.appendChild(headerTitle);
+    if (earnedCount > 0) {
+      var headerCount = document.createElement('span');
+      headerCount.className = 'st-progress-pill';
+      headerCount.textContent = earnedCount + '/' + defs.length;
+      header.appendChild(headerCount);
+    }
+    strip.appendChild(header);
+
+    /* Badge chips row */
+    var chipRow = document.createElement('div');
+    chipRow.className = 'st-badge-row';
+
+    for (var d = 0; d < defs.length; d++) {
+      var def = defs[d];
+      var isEarned = !!earnedMap[def.id];
+      var tier = TIER_COLORS[def.badge_tier] || TIER_COLORS.base;
+
+      var chip = document.createElement('div');
+      chip.className = 'st-badge-chip' + (isEarned ? ' st-badge-earned' : ' st-badge-locked');
+      chip.title = def.title + (isEarned ? '' : ' (kilitli)');
+
+      if (isEarned) {
+        chip.style.background = tier.bg;
+        chip.style.borderColor = tier.border;
+        chip.style.color = tier.text;
+      }
+
+      /* Hardcoded SVG icon from BADGE_ICONS constant — safe for innerHTML */
+      var iconWrap = document.createElement('span');
+      iconWrap.className = 'st-badge-icon';
+      iconWrap.innerHTML = BADGE_ICONS[def.icon_key] || BADGE_ICONS.rocket;
+      chip.appendChild(iconWrap);
+
+      var label = document.createElement('span');
+      label.className = 'st-badge-label';
+      label.textContent = def.title;
+      chip.appendChild(label);
+
+      chipRow.appendChild(chip);
+    }
+    strip.appendChild(chipRow);
+
+    /* Most recent badge highlight */
+    if (earnedCount > 0) {
+      var sortedEarned = earned.slice().sort(function(a, b) {
+        return new Date(b.awarded_at) - new Date(a.awarded_at);
+      });
+      var mostRecent = sortedEarned[0];
+      var recentDef = null;
+      for (var rd = 0; rd < defs.length; rd++) {
+        if (defs[rd].id === mostRecent.badge_id) { recentDef = defs[rd]; break; }
+      }
+      if (recentDef) {
+        var recentCard = document.createElement('div');
+        recentCard.className = 'st-badge-recent';
+        var recentKicker = document.createElement('div');
+        recentKicker.style.cssText = 'font-family:"DM Mono",monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--verm,#C94E28);margin-bottom:4px;';
+        recentKicker.textContent = 'SON KAZANILAN';
+        recentCard.appendChild(recentKicker);
+        var recentTitle = document.createElement('div');
+        recentTitle.style.cssText = 'font-family:"Bricolage Grotesque",sans-serif;font-size:14px;font-weight:700;color:var(--text-primary,#111);margin-bottom:2px;';
+        recentTitle.textContent = recentDef.title;
+        recentCard.appendChild(recentTitle);
+        var recentDesc = document.createElement('div');
+        recentDesc.style.cssText = 'font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;color:var(--text-muted,#6B7280);line-height:1.4;';
+        recentDesc.textContent = recentDef.description;
+        recentCard.appendChild(recentDesc);
+        strip.appendChild(recentCard);
+      }
+    }
+  } catch (e) { /* silent — badges are best-effort */ }
+}
+
+/* Studio toast helper — ephemeral bottom notification */
+function showStudioToast(msg) {
+  var existing = document.getElementById('st-toast');
+  if (existing) existing.remove();
+  var toast = document.createElement('div');
+  toast.id = 'st-toast';
+  toast.textContent = msg;
+  toast.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--navy,#1E2D5E);color:#fff;font-family:"Plus Jakarta Sans",sans-serif;font-size:13px;font-weight:600;padding:12px 24px;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,.18);z-index:9999;animation:igFadeIn .25s ease;pointer-events:none';
+  document.body.appendChild(toast);
+  setTimeout(function() { if (toast.parentNode) toast.remove(); }, 2500);
+}
+
+/* ══ AI FEEDBACK — request, poll, render ══ */
+
+var _aifPollTimer = null;
+
+var _aifRequestInFlight = false; /* duplicate click guard */
+
+async function requestAiFeedback(compCode, qText, qHash) {
+  var btn = document.getElementById('aif-request');
+  var resultDiv = document.getElementById('aif-result');
+  if (!btn || !resultDiv) return;
+  if (_aifRequestInFlight) return; /* prevent double-click */
+
+  /* Collect current field values */
+  var fields = {};
+  var tas = document.querySelectorAll('.ig-journal-textarea');
+  tas.forEach(function(ta) { fields[ta.getAttribute('data-field')] = ta.value; });
+
+  var hasContent = fields.s || fields.t || fields.a || fields.r || fields.takeaway;
+  if (!hasContent) {
+    showStudioToast('De\u011ferlendirme i\u00e7in en az bir STAR+T alan\u0131n\u0131 doldurun.');
+    return;
+  }
+
+  /* Check for already-pending feedback first */
+  try {
+    var existRes = await supabase.rpc('get_journal_feedback', {
+      p_competency_code: compCode,
+      p_question_hash: qHash
+    });
+    var existFb = extractFeedback(existRes);
+    if (existFb && (existFb.status === 'pending' || existFb.status === 'processing')) {
+      /* Already in-flight — just poll for it */
+      btn.disabled = true;
+      btn.textContent = 'De\u011ferlendiriliyor\u2026';
+      resultDiv.style.display = 'none';
+      pollForFeedback(compCode, qHash, btn);
+      return;
+    }
+  } catch (e) { /* proceed to create new */ }
+
+  /* Show loading state */
+  _aifRequestInFlight = true;
+  btn.disabled = true;
+  btn.textContent = 'De\u011ferlendiriliyor\u2026';
+  resultDiv.style.display = 'none';
+
+  try {
+    /* Request feedback via RPC */
+    var res = await supabase.rpc('request_journal_feedback', {
+      p_competency_code: compCode,
+      p_question_hash: qHash,
+      p_question_text: qText,
+      p_role_key: S.role || null,
+      p_situation: fields.s || '',
+      p_task: fields.t || '',
+      p_action: fields.a || '',
+      p_result: fields.r || '',
+      p_takeaway: fields.takeaway || ''
+    });
+
+    if (res.error) {
+      _aifRequestInFlight = false;
+      btn.disabled = false;
+      btn.textContent = 'AI ile De\u011Ferlendir';
+      showStudioToast('De\u011ferlendirme ba\u015flat\u0131lamad\u0131. L\u00fctfen tekrar deneyin.');
+      return;
+    }
+
+    /* Invoke Edge Function to process — handle invoke failure gracefully */
+    supabase.functions.invoke('journal-feedback', { body: {} }).catch(function(e) {
+      console.error('journal-feedback invoke error:', e);
+    });
+
+    /* Poll for completion */
+    pollForFeedback(compCode, qHash, btn);
+  } catch (e) {
+    console.error('requestAiFeedback error:', e);
+    _aifRequestInFlight = false;
+    btn.disabled = false;
+    btn.textContent = 'AI ile De\u011Ferlendir';
+  }
+}
+
+/* Extract feedback from RPC result (handles both array and single-object shapes) */
+function extractFeedback(res) {
+  if (!res || res.error) return null;
+  if (Array.isArray(res.data) && res.data.length > 0) return res.data[0];
+  if (res.data && typeof res.data === 'object' && res.data.id) return res.data;
+  return null;
+}
+
+function pollForFeedback(compCode, qHash, btn) {
+  if (_aifPollTimer) clearInterval(_aifPollTimer);
+  var attempts = 0;
+  _aifPollTimer = setInterval(async function() {
+    attempts++;
+    if (attempts > 45) { /* 45 seconds max (gpt-4o-mini typically <15s) */
+      clearInterval(_aifPollTimer);
+      _aifPollTimer = null;
+      _aifRequestInFlight = false;
+      if (btn) { btn.disabled = false; btn.textContent = 'Tekrar Dene'; }
+      showStudioToast('De\u011ferlendirme zaman a\u015f\u0131m\u0131na u\u011frad\u0131. Tekrar deneyebilirsiniz.');
+      return;
+    }
+    try {
+      var res = await supabase.rpc('get_journal_feedback', {
+        p_competency_code: compCode,
+        p_question_hash: qHash
+      });
+      var fb = extractFeedback(res);
+      if (fb) {
+        if (fb.status === 'completed') {
+          clearInterval(_aifPollTimer);
+          _aifPollTimer = null;
+          _aifRequestInFlight = false;
+          if (btn) { btn.disabled = false; btn.textContent = 'Tekrar De\u011Ferlendir'; }
+          renderAiFeedback(fb);
+        } else if (fb.status === 'failed') {
+          clearInterval(_aifPollTimer);
+          _aifPollTimer = null;
+          _aifRequestInFlight = false;
+          if (btn) { btn.disabled = false; btn.textContent = 'Tekrar Dene'; }
+          var errMsg = fb.error_message ? ('Hata: ' + fb.error_message) : 'De\u011ferlendirme ba\u015far\u0131s\u0131z oldu.';
+          showStudioToast(errMsg);
+        }
+        /* pending/processing → keep polling */
+      }
+    } catch (e) { /* continue polling */ }
+  }, 1000);
+}
+
+async function loadExistingFeedback(compCode, qText) {
+  try {
+    var qHash = journalHash(qText);
+    var res = await supabase.rpc('get_journal_feedback', {
+      p_competency_code: compCode,
+      p_question_hash: qHash
+    });
+    var fb = extractFeedback(res);
+    if (fb && fb.status === 'completed') {
+      var btn = document.getElementById('aif-request');
+      if (btn) btn.textContent = 'Tekrar De\u011Ferlendir';
+      renderAiFeedback(fb);
+    } else if (fb && (fb.status === 'pending' || fb.status === 'processing')) {
+      /* Resume polling for in-flight feedback */
+      var btn2 = document.getElementById('aif-request');
+      if (btn2) { btn2.disabled = true; btn2.textContent = 'De\u011ferlendiriliyor\u2026'; }
+      pollForFeedback(compCode, qHash, btn2);
+    }
+  } catch (e) { /* silent */ }
+}
+
+var AIF_SIGNAL_LABELS = {
+  strong: { text: 'G\u00fc\u00e7l\u00fc', color: '#059669', bg: 'rgba(5,150,105,.08)' },
+  mixed: { text: 'Karma', color: '#D97706', bg: 'rgba(217,119,6,.08)' },
+  needs_work: { text: 'Geli\u015ftirilebilir', color: '#DC2626', bg: 'rgba(220,38,38,.08)' }
+};
+
+var AIF_STAR_STATUS = {
+  strong: { icon: '\u2713', color: '#059669' },
+  adequate: { icon: '\u2022', color: '#D97706' },
+  weak: { icon: '!', color: '#DC2626' },
+  missing: { icon: '\u2014', color: '#9CA3AF' }
+};
+
+function renderAiFeedback(fb) {
+  var resultDiv = document.getElementById('aif-result');
+  if (!resultDiv) return;
+  while (resultDiv.firstChild) resultDiv.removeChild(resultDiv.firstChild);
+  resultDiv.style.display = 'block';
+
+  /* ── Overall signal ── */
+  var sig = AIF_SIGNAL_LABELS[fb.overall_signal] || AIF_SIGNAL_LABELS.mixed;
+  var overallCard = document.createElement('div');
+  overallCard.className = 'aif-card aif-overall';
+  overallCard.style.borderLeftColor = sig.color;
+
+  var overallHeader = document.createElement('div');
+  overallHeader.className = 'aif-card-title';
+  overallHeader.textContent = 'Genel De\u011Ferlendirme';
+  overallCard.appendChild(overallHeader);
+
+  var sigPill = document.createElement('span');
+  sigPill.className = 'aif-signal';
+  sigPill.style.cssText = 'background:' + sig.bg + ';color:' + sig.color;
+  sigPill.textContent = sig.text;
+  if (fb.score_overall) sigPill.textContent += ' \u00b7 ' + fb.score_overall + '/100';
+  overallCard.appendChild(sigPill);
+
+  if (fb.summary_text) {
+    var sumEl = document.createElement('div');
+    sumEl.className = 'aif-summary';
+    sumEl.textContent = fb.summary_text;
+    overallCard.appendChild(sumEl);
+  }
+  resultDiv.appendChild(overallCard);
+
+  /* ── Strong points ── */
+  if (fb.strong_points && fb.strong_points.length > 0) {
+    resultDiv.appendChild(renderAifList('G\u00fc\u00e7l\u00fc Sinyaller', fb.strong_points, '#059669'));
+  }
+
+  /* ── Weak points ── */
+  if (fb.weak_points && fb.weak_points.length > 0) {
+    resultDiv.appendChild(renderAifList('Geli\u015ftirme Alanlar\u0131', fb.weak_points, '#DC2626'));
+  }
+
+  /* ── STAR+T section review ── */
+  if (fb.star_review) {
+    var starCard = document.createElement('div');
+    starCard.className = 'aif-card';
+    var starTitle = document.createElement('div');
+    starTitle.className = 'aif-card-title';
+    starTitle.textContent = 'STAR+T Analizi';
+    starCard.appendChild(starTitle);
+
+    var starFields = [
+      { key: 'situation', label: 'Durum (S)' },
+      { key: 'task', label: 'G\u00f6rev (T)' },
+      { key: 'action', label: 'Aksiyon (A)' },
+      { key: 'result', label: 'Sonu\u00e7 (R)' },
+      { key: 'takeaway', label: '\u00c7\u0131kar\u0131m (+T)' }
+    ];
+    for (var si = 0; si < starFields.length; si++) {
+      var sf = starFields[si];
+      var rev = fb.star_review[sf.key];
+      if (!rev) continue;
+      var st = AIF_STAR_STATUS[rev.status] || AIF_STAR_STATUS.adequate;
+      var row = document.createElement('div');
+      row.className = 'aif-star-row';
+      var indicator = document.createElement('span');
+      indicator.className = 'aif-star-indicator';
+      indicator.style.color = st.color;
+      indicator.textContent = st.icon;
+      row.appendChild(indicator);
+      var rowContent = document.createElement('div');
+      rowContent.style.cssText = 'flex:1;min-width:0;';
+      var rowLabel = document.createElement('span');
+      rowLabel.className = 'aif-star-label';
+      rowLabel.textContent = sf.label;
+      rowContent.appendChild(rowLabel);
+      if (rev.note) {
+        var rowNote = document.createElement('span');
+        rowNote.className = 'aif-star-note';
+        rowNote.textContent = ' \u2014 ' + rev.note;
+        rowContent.appendChild(rowNote);
+      }
+      row.appendChild(rowContent);
+      starCard.appendChild(row);
+    }
+    resultDiv.appendChild(starCard);
+  }
+
+  /* ── Improvement actions ── */
+  if (fb.improvement_actions && fb.improvement_actions.length > 0) {
+    resultDiv.appendChild(renderAifList('Cevab\u0131 G\u00fc\u00e7lendirmek \u0130\u00e7in', fb.improvement_actions, '#C94E28'));
+  }
+
+  /* ── Follow-up questions ── */
+  if (fb.followup_questions && fb.followup_questions.length > 0) {
+    resultDiv.appendChild(renderAifList('Olas\u0131 Takip Sorular\u0131', fb.followup_questions, '#1E2D5E'));
+  }
+}
+
+function renderAifList(title, items, accentColor) {
+  var card = document.createElement('div');
+  card.className = 'aif-card';
+  var cardTitle = document.createElement('div');
+  cardTitle.className = 'aif-card-title';
+  cardTitle.textContent = title;
+  card.appendChild(cardTitle);
+
+  for (var i = 0; i < items.length; i++) {
+    var item = document.createElement('div');
+    item.className = 'aif-list-item';
+    var bullet = document.createElement('span');
+    bullet.className = 'aif-bullet';
+    bullet.style.background = accentColor;
+    item.appendChild(bullet);
+    var text = document.createElement('span');
+    text.textContent = items[i];
+    item.appendChild(text);
+    card.appendChild(item);
+  }
+  return card;
+}
+
+/* ══ STUDIO MODULE SECTION HYDRATION ══ */
+
+var _studioModuleCache = {};  /* section → {modules: [], progress: {}, fetched: bool} */
+var _studioActiveSection = null;
+var _studioProgressCache = null; /* candidate_studio_progress rows, fetched once */
+
+async function fetchStudioProgress() {
+  if (_studioProgressCache) return _studioProgressCache;
+  try {
+    var res = await supabase
+      .from('candidate_studio_progress')
+      .select('module_id, status, progress_pct, last_viewed_at, completed_at');
+    if (!res.error && res.data) {
+      var map = {};
+      for (var i = 0; i < res.data.length; i++) {
+        map[res.data[i].module_id] = res.data[i];
+      }
+      _studioProgressCache = map;
+      return map;
+    }
+  } catch (e) { /* silent — progress is best-effort */ }
+  _studioProgressCache = {};
+  return {};
+}
+
+async function hydrateStudioSection(section, sectionLabel) {
+  var area = document.getElementById('st-module-area');
+  if (!area) return;
+
+  /* Toggle: if same section clicked again, collapse */
+  if (_studioActiveSection === section && area.style.display !== 'none') {
+    area.style.display = 'none';
+    _studioActiveSection = null;
+    return;
+  }
+  _studioActiveSection = section;
+  area.style.display = 'block';
+  area.style.cssText = 'display:block;animation:igFadeIn .25s ease;margin-top:20px;';
+
+  /* Clear + show loading */
+  while (area.firstChild) area.removeChild(area.firstChild);
+
+  var loadMsg = document.createElement('div');
+  loadMsg.style.cssText = 'text-align:center;padding:20px;color:var(--text-muted);font-size:13px;';
+  loadMsg.textContent = 'Y\u00fckleniyor\u2026';
+  area.appendChild(loadMsg);
+
+  /* Use cache if available */
+  if (_studioModuleCache[section] && _studioModuleCache[section].fetched) {
+    if (loadMsg.parentNode) loadMsg.remove();
+    renderStudioSection(area, _studioModuleCache[section].modules, _studioModuleCache[section].progress, section, sectionLabel);
+    setTimeout(function() { area.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 100);
+    return;
+  }
+
+  /* Fetch modules + progress in parallel */
+  try {
+    var modP = supabase
+      .from('studio_modules')
+      .select('id, section, module_type, slug, title, summary, cover_image_url, cover_image_alt, duration_minutes, cta_label, cta_url, body_md')
+      .eq('section', section)
+      .eq('status', 'published')
+      .order('sort_order', { ascending: true });
+
+    var progP = fetchStudioProgress();
+
+    var results = await Promise.all([modP, progP]);
+    if (loadMsg.parentNode) loadMsg.remove();
+
+    var modRes = results[0];
+    var progress = results[1] || {};
+    var modules = (modRes.error ? [] : modRes.data) || [];
+    if (modRes.error) console.error('studio_modules fetch error:', modRes.error);
+
+    _studioModuleCache[section] = { modules: modules, progress: progress, fetched: true };
+    renderStudioSection(area, modules, progress, section, sectionLabel);
+  } catch (e) {
+    if (loadMsg.parentNode) loadMsg.remove();
+    console.error('studio_modules fetch error:', e);
+    renderStudioSection(area, [], {}, section, sectionLabel);
+  }
+
+  setTimeout(function() { area.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 100);
+}
+
+function renderStudioSection(area, modules, progress, section, sectionLabel) {
+  /* ── Section header with title + stats + close ── */
+  var headerEl = document.createElement('div');
+  headerEl.style.cssText = 'display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px;';
+
+  var titleRow = document.createElement('div');
+  titleRow.style.cssText = 'display:flex;align-items:center;gap:10px;';
+  var titleEl = document.createElement('div');
+  titleEl.style.cssText = 'font-family:"Bricolage Grotesque",sans-serif;font-size:16px;font-weight:700;color:var(--text-primary,#111);letter-spacing:-.2px;';
+  titleEl.textContent = sectionLabel;
+  titleRow.appendChild(titleEl);
+
+  /* Progress stats pill */
+  if (modules.length > 0) {
+    var completedCount = 0;
+    var startedCount = 0;
+    for (var si = 0; si < modules.length; si++) {
+      var p = progress[modules[si].id];
+      if (p && p.status === 'completed') completedCount++;
+      else if (p && p.status === 'in_progress') startedCount++;
+    }
+    if (completedCount > 0 || startedCount > 0) {
+      var statsPill = document.createElement('span');
+      statsPill.className = 'st-progress-pill';
+      statsPill.textContent = completedCount + '/' + modules.length + ' tamamland\u0131';
+      titleRow.appendChild(statsPill);
+    }
+  }
+  headerEl.appendChild(titleRow);
+
+  var closeBtn = document.createElement('button');
+  closeBtn.style.cssText = 'font-family:"Plus Jakarta Sans",sans-serif;font-size:11px;font-weight:600;color:var(--text-muted,#6B7280);background:none;border:none;cursor:pointer;padding:4px 8px;';
+  closeBtn.textContent = 'Kapat \u00d7';
+  closeBtn.addEventListener('click', function() { area.style.display = 'none'; _studioActiveSection = null; });
+  headerEl.appendChild(closeBtn);
+  area.appendChild(headerEl);
+
+  /* ── Empty state ── */
+  if (modules.length === 0) {
+    var empty = document.createElement('div');
+    empty.style.cssText = 'background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF);border-radius:16px;padding:40px 24px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.04);';
+    var emptyIcon = document.createElement('div');
+    emptyIcon.style.cssText = 'font-size:32px;margin-bottom:12px;opacity:.4;';
+    emptyIcon.textContent = section === 'performans' ? '\uD83D\uDCC8' : '\uD83D\uDCA1';
+    empty.appendChild(emptyIcon);
+    var emptyTitle = document.createElement('div');
+    emptyTitle.style.cssText = 'font-family:"Bricolage Grotesque",sans-serif;font-size:15px;font-weight:700;color:var(--text-primary,#111);margin-bottom:6px;';
+    emptyTitle.textContent = section === 'performans' ? 'Performans mod\u00fclleri haz\u0131rlan\u0131yor' : 'Platform rehberleri haz\u0131rlan\u0131yor';
+    empty.appendChild(emptyTitle);
+    var emptyDesc = document.createElement('div');
+    emptyDesc.style.cssText = 'font-family:"Plus Jakarta Sans",sans-serif;font-size:13px;color:var(--text-muted,#6B7280);line-height:1.5;max-width:320px;margin:0 auto;';
+    emptyDesc.textContent = section === 'performans'
+      ? 'Ma\u011faza KPI\u2019lar\u0131, sat\u0131\u015f matemati\u011fi ve vaka \u00e7al\u0131\u015fmalar\u0131 \u00e7ok yak\u0131nda burada olacak.'
+      : 'Profilini \u00f6ne \u00e7\u0131karman ve platformu en verimli kullanman i\u00e7in rehberler haz\u0131rlan\u0131yor.';
+    empty.appendChild(emptyDesc);
+    area.appendChild(empty);
+    return;
+  }
+
+  /* ── Continue learning card ── */
+  var continueModule = null;
+  var latestViewed = null;
+  for (var ci = 0; ci < modules.length; ci++) {
+    var cp = progress[modules[ci].id];
+    if (cp && cp.status === 'in_progress' && cp.last_viewed_at) {
+      if (!latestViewed || cp.last_viewed_at > latestViewed) {
+        latestViewed = cp.last_viewed_at;
+        continueModule = modules[ci];
+      }
+    }
+  }
+  if (continueModule) {
+    var contCard = document.createElement('div');
+    contCard.className = 'st-continue-card';
+    contCard.addEventListener('click', function() { openStudioModule(continueModule); });
+
+    var contLeft = document.createElement('div');
+    contLeft.style.cssText = 'flex:1;min-width:0;';
+    var contKicker = document.createElement('div');
+    contKicker.style.cssText = 'font-family:"DM Mono",monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--verm,#C94E28);margin-bottom:4px;';
+    contKicker.textContent = 'KALDIĞIN YERDEN DEVAM ET';
+    contLeft.appendChild(contKicker);
+    var contTitle = document.createElement('div');
+    contTitle.style.cssText = 'font-family:"Bricolage Grotesque",sans-serif;font-size:14px;font-weight:700;color:var(--text-primary,#111);line-height:1.3;';
+    contTitle.textContent = continueModule.title;
+    contLeft.appendChild(contTitle);
+    contCard.appendChild(contLeft);
+
+    var contArrow = document.createElement('div');
+    contArrow.style.cssText = 'font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;font-weight:700;color:var(--verm,#C94E28);flex-shrink:0;';
+    contArrow.textContent = 'Devam Et \u2192';
+    contCard.appendChild(contArrow);
+    area.appendChild(contCard);
+  }
+
+  /* ── Module cards in bento grid ── */
+  var grid = document.createElement('div');
+  grid.style.cssText = 'display:grid;grid-template-columns:repeat(3,1fr);gap:14px;';
+
+  for (var i = 0; i < modules.length; i++) {
+    var m = modules[i];
+    var mp = progress[m.id];
+    var isCompleted = mp && mp.status === 'completed';
+    var isInProgress = mp && mp.status === 'in_progress';
+
+    var card = document.createElement('div');
+    card.className = 'st-mod-card' + (isCompleted ? ' st-mod-done' : '');
+    if (i === 0 && modules.length > 1) card.style.gridColumn = 'span 2';
+
+    /* Cover image */
+    if (m.cover_image_url) {
+      var coverEl = document.createElement('div');
+      coverEl.className = 'st-mod-cover';
+      var img = document.createElement('img');
+      img.src = m.cover_image_url;
+      img.alt = m.cover_image_alt || m.title;
+      img.loading = 'lazy';
+      coverEl.appendChild(img);
+      card.appendChild(coverEl);
+    }
+
+    var body = document.createElement('div');
+    body.className = 'st-mod-body';
+
+    /* Meta row: type + duration + status */
+    var meta = document.createElement('div');
+    meta.className = 'st-mod-meta';
+    var typeLabels = { article: 'Makale', video: 'Video', carousel: 'Rehber', lesson: 'Ders' };
+    var typePill = document.createElement('span');
+    typePill.className = 'st-mod-type';
+    typePill.textContent = typeLabels[m.module_type] || m.module_type;
+    meta.appendChild(typePill);
+    if (m.duration_minutes) {
+      var dur = document.createElement('span');
+      dur.className = 'st-mod-dur';
+      dur.textContent = m.duration_minutes + ' dk';
+      meta.appendChild(dur);
+    }
+    if (isCompleted) {
+      var donePill = document.createElement('span');
+      donePill.className = 'st-mod-status-done';
+      donePill.textContent = '\u2713 Tamamland\u0131';
+      meta.appendChild(donePill);
+    } else if (isInProgress) {
+      var ipPill = document.createElement('span');
+      ipPill.className = 'st-mod-status-ip';
+      ipPill.textContent = 'Devam Ediyor';
+      meta.appendChild(ipPill);
+    }
+    body.appendChild(meta);
+
+    var titleEl = document.createElement('div');
+    titleEl.className = 'st-mod-title';
+    titleEl.textContent = m.title;
+    body.appendChild(titleEl);
+
+    if (m.summary) {
+      var sumEl = document.createElement('div');
+      sumEl.className = 'st-mod-summary';
+      sumEl.textContent = m.summary;
+      body.appendChild(sumEl);
+    }
+
+    card.appendChild(body);
+    card.addEventListener('click', (function(mod) {
+      return function() { openStudioModule(mod); };
+    })(m));
+
+    grid.appendChild(card);
+  }
+  area.appendChild(grid);
+}
+
+function openStudioModule(mod) {
+  /* Mark as viewed (fire-and-forget) */
+  if (typeof supabase !== 'undefined') {
+    supabase.rpc('mark_studio_module_viewed', { p_module_id: mod.id }).then(function() {});
+  }
+
+  /* If module has CTA URL, open it */
+  if (mod.cta_url) {
+    window.open(mod.cta_url, '_blank', 'noopener');
+    return;
+  }
+
+  /* Otherwise show inline detail overlay */
+  var area = document.getElementById('st-module-area');
+  if (!area) return;
+
+  while (area.firstChild) area.removeChild(area.firstChild);
+
+  /* Back button */
+  var backBtn = document.createElement('button');
+  backBtn.style.cssText = 'font-family:"Plus Jakarta Sans",sans-serif;font-size:13px;font-weight:600;color:var(--verm,#C94E28);background:none;border:none;cursor:pointer;padding:6px 0;margin-bottom:12px;';
+  backBtn.textContent = '\u2190 Listeye D\u00f6n';
+  backBtn.addEventListener('click', function() {
+    _studioModuleCache[mod.section] = null; /* force re-fetch for freshness */
+    _studioProgressCache = null; /* force progress re-fetch */
+    _studioActiveSection = null; /* reset toggle so hydrate opens */
+    hydrateStudioSection(mod.section, mod.section === 'performans' ? 'Performans' : 'HelloTalent\u2019ten Bilgiler');
+  });
+  area.appendChild(backBtn);
+
+  /* Detail card */
+  var detail = document.createElement('div');
+  detail.style.cssText = 'background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF);border-radius:16px;padding:28px 24px;box-shadow:0 2px 8px rgba(0,0,0,.08),0 8px 20px rgba(0,0,0,.06);';
+
+  if (mod.cover_image_url) {
+    var covWrap = document.createElement('div');
+    covWrap.style.cssText = 'margin:-28px -24px 20px;border-radius:16px 16px 0 0;overflow:hidden;max-height:240px;';
+    var img = document.createElement('img');
+    img.src = mod.cover_image_url;
+    img.alt = mod.cover_image_alt || mod.title;
+    img.style.cssText = 'width:100%;height:auto;display:block;';
+    covWrap.appendChild(img);
+    detail.appendChild(covWrap);
+  }
+
+  var dTitle = document.createElement('div');
+  dTitle.style.cssText = 'font-family:"Bricolage Grotesque",sans-serif;font-size:20px;font-weight:800;color:var(--text-primary,#111);margin-bottom:16px;line-height:1.3;';
+  dTitle.textContent = mod.title;
+  detail.appendChild(dTitle);
+
+  if (mod.body_md) {
+    var dBody = document.createElement('div');
+    dBody.style.cssText = 'font-family:"Plus Jakarta Sans",sans-serif;font-size:14px;line-height:1.75;color:var(--text,#111);white-space:pre-wrap;';
+    dBody.textContent = mod.body_md;
+    detail.appendChild(dBody);
+  }
+
+  /* Mark complete button */
+  var completeRow = document.createElement('div');
+  completeRow.style.cssText = 'margin-top:24px;padding-top:16px;border-top:1px solid var(--border-subtle,#E5E3DF);';
+  var completeBtn = document.createElement('button');
+  completeBtn.style.cssText = 'font-family:"Plus Jakarta Sans",sans-serif;font-size:13px;font-weight:600;color:#fff;background:var(--verm,#C94E28);border:none;border-radius:10px;padding:10px 24px;cursor:pointer;transition:all .2s;box-shadow:0 2px 8px rgba(201,78,40,.2);';
+  completeBtn.textContent = 'Tamamlad\u0131m \u2713';
+  completeBtn.addEventListener('click', function() {
+    if (typeof supabase !== 'undefined') {
+      supabase.rpc('complete_studio_module', { p_module_id: mod.id }).then(function(res) {
+        if (!res.error) {
+          completeBtn.textContent = 'Tamamland\u0131 \u2713';
+          completeBtn.style.background = '#059669';
+          completeBtn.disabled = true;
+          _studioProgressCache = null; /* invalidate for next render */
+          _studioModuleCache[mod.section] = null;
+        }
+      });
+    }
+  });
+  completeRow.appendChild(completeBtn);
+  detail.appendChild(completeRow);
+
+  area.appendChild(detail);
+  area.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 function bindRoleSelectEvents() {
@@ -2360,7 +3417,7 @@ function bindPracticeEvents() {
         saveJournalDraft(S.activeComp, q.text, fields);
         var indicator = document.getElementById('ig-journal-saved');
         if (indicator) {
-          indicator.textContent = 'Kaydedildi';
+          indicator.textContent = 'Taslak kaydedildi';
           indicator.classList.add('visible');
           setTimeout(function() {
             if (indicator) {
@@ -2372,6 +3429,20 @@ function bindPracticeEvents() {
       }, 1500);
     });
   });
+
+  /* AI Feedback request */
+  var aifBtn = document.getElementById('aif-request');
+  if (aifBtn) aifBtn.addEventListener('click', function() {
+    var q = S.dealt && S.dealt[S.currentQ];
+    if (!q || !S.activeComp) return;
+    flushJournal();
+    requestAiFeedback(S.activeComp, q.text, journalHash(q.text));
+  });
+
+  /* Load existing feedback if available */
+  if (S.isPremium && S.dealt && S.dealt[S.currentQ]) {
+    loadExistingFeedback(S.activeComp, S.dealt[S.currentQ].text);
+  }
 
   /* Answered */
   var answeredBtn = document.getElementById('ig-answered');
@@ -2391,6 +3462,14 @@ function bindPracticeEvents() {
       S.totalSwaps += S.swapsUsed;
       if (S.completedComps.indexOf(S.activeComp) === -1) {
         S.completedComps.push(S.activeComp);
+      }
+      /* Record competency completion to DB (fire-and-forget) */
+      if (typeof supabase !== 'undefined' && S.role && S.activeComp) {
+        supabase.rpc('complete_yetenek_competency', {
+          p_role_key: S.role,
+          p_competency_code: S.activeComp,
+          p_questions_answered: S.answeredCount
+        }).then(function() {});
       }
       navigate('completion');
     }
@@ -2454,6 +3533,19 @@ window._htLoadMulakat = function() {
   if (!panel) return;
   /* Safe: only hardcoded constant content is rendered */
   panel.innerHTML = '<div id="ig-container"></div>';
+
+  /* Preload journals from DB (async, non-blocking) */
+  preloadJournalsFromDb();
+
+  /* Resolve premium truth from DB profile data.
+     Source: candidates.is_premium (migration 014) via _loadedDBData.profile.
+     Feature flag: window._htStudioAiEnabled overrides for controlled testing. */
+  if (typeof _loadedDBData !== 'undefined' && _loadedDBData && _loadedDBData.profile) {
+    S.isPremium = _loadedDBData.profile.is_premium === true;
+  }
+  if (typeof window._htStudioAiEnabled !== 'undefined' && window._htStudioAiEnabled === true) {
+    S.isPremium = true;
+  }
 
   /* Returning user: restore session or skip STAR intro */
   if (loadSession()) {

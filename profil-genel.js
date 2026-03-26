@@ -638,7 +638,7 @@
     hdrLeft.appendChild(txt('div', 'gh-feed-sub', 'Perakende kariyerinde \u00F6ne \u00E7\u0131kmak i\u00E7in uzman i\u00E7g\u00F6r\u00FCleri'));
     hdrInner.appendChild(hdrLeft);
     var hdrRight = el('div', 'gh-coach-header-right');
-    var practiceBtn = txt('button', 'gh-btn-primary', 'Bug\u00FCn 5 dk \u00E7al\u0131\u015F');
+    var practiceBtn = txt('button', 'gh-btn-primary', 'St\u00fcdyo\u2019ya Git');
     practiceBtn.type = 'button';
     practiceBtn.addEventListener('click', function() { switchPanel('mulakat'); });
     hdrRight.appendChild(practiceBtn);

@@ -67,7 +67,7 @@ function _htInitEvents() {
     { label: 'Bildirimler', panel: 'bildirimler', icon: '\uD83D\uDD14' },
     { label: 'Ayarlar', panel: 'ayarlar', icon: '\u2699\uFE0F' },
     { label: 'Profil D\u00FCzenle', panel: 'profil', icon: '\u270F\uFE0F' },
-    { label: 'M\u00FClakat Ko\u00E7u', panel: 'mulakat', icon: '\uD83D\uDCDA' },
+    { label: 'St\u00fcdyo', panel: 'mulakat', icon: '\uD83D\uDCDA' },
     { label: 'Destek Merkezi', panel: 'destek', icon: '\u2753' }
   ];
   var cmdkOverlay = document.getElementById('modal-cmdk');

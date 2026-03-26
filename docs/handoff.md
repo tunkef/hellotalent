@@ -1,5 +1,5 @@
 # hellotalent.ai — Technical Handoff Document
-> Son güncelleme: 26 Mart 2026 (Session 23 — Support 2B verified, Session 21 items closed, Messaging Email Phase 2, popup fix)
+> Son güncelleme: 26 Mart 2026 (Session 29 — Studio Phase 5A: structured AI feedback for Yetenek journals, premium-gated)
 > Bu doküman, projenin mevcut durumunu, tamamlanan işleri ve kalan backlog'u kapsar.
 > Yeni bir chat/session başlatırken bu dosyayı referans olarak kullanın.
 
@@ -827,6 +827,344 @@ EDIT    docs/handoff.md (Session 23 + Session 21 items closed)
 - [ ] Frontend push: `git push origin main`
 - [ ] Smoke: employer sends follow-up → candidate gets email; candidate replies → employer gets email
 
+### Session 24 — 26 Mart 2026 (Studio Phase 1 — Mülakat Koçu → Stüdyo Rebrand + 4-Section IA)
+
+**Ürün kararı:** "Mülakat Koçu" artık "Stüdyo" olarak adlandırılıyor. Adayın kariyer gelişim alanı.
+
+**Rebrand — tüm aday-yüzey giriş noktaları güncellendi:**
+- profil.html header nav: "Mülakat Koçu" → "Stüdyo"
+- profil.html sidebar nav: "Mülakat Koçu" → "Stüdyo"
+- profil-events.js Cmd+K palette: "Mülakat Koçu" → "Stüdyo"
+- profil-wizard.js breadcrumb labels: yetkinlik/mulakat → "Stüdyo"
+- profil-genel.js Genel panel CTA: "Bugün 5 dk çalış" → "Stüdyo'ya Git"
+- profil-mulakatkocu.js role_select back pill: "Mülakat Koçu" → "Stüdyo"
+- profil-mulakatkocu.js competency_intro badge: "Mülakat Koçu" → "Stüdyo — Yetenek"
+
+**Korunan runtime kontratları (DEĞİŞMEDİ):**
+- Panel key: `mulakat` (hash routing, switchPanel, data-panel)
+- Loader: `window._htLoadMulakat()` (profil-wizard.js lazy-load hook)
+- Data bridge: `window._htYetkinlikData` (profil-yetkinlik.js)
+- Screen states: `star_intro`, `role_select`, `lobby`, `competency_intro`, `practice`, `completion`, `session_complete`
+- CSS prefix: `.ig-` (mevcut), `.st-` (Studio eklenti)
+
+**Studio Landing (star_intro ekranı tamamen yeniden tasarlandı):**
+- Vermillion hero (navy'den geçiş) — "Stüdyo" başlığı, kariyer gelişim mottosu
+- 4-bölüm bento grid:
+  1. **Yetenek** (span 2): "Rolünde en iyisi ol" — 29 yetkinlik, 289 soru, yetkinlik pratiği. → role_select'e yönlendirir
+  2. **Koç** (span 1): "Uzmanlardan öğren" — makale akışı. → coach feed'e scroll eder
+  3. **Performans** (span 1): "Rakamları öğren" — KPI/satış matematiği. → "Çok Yakında" toast
+  4. **HelloTalent'ten Bilgiler** (span 2): "Platformunu tanıyorsun, değil mi?" — platform rehberleri. → "Çok Yakında" toast
+- STAR+T metodoloji referansı alt kısımda collapsible olarak korundu
+- Coach feed hydration mevcut şekilde çalışıyor (async, star_intro mount sonrası)
+
+**Yetenek bölümü reframe (Phase 3):**
+- Lobby premium gating kopyası iyileştirildi: "Ücretsiz 2 yetkinlik hakkını kullandın. Rol değiştirerek farklı yetkinlikleri keşfedebilirsin." (ölü duvar hissi yerine keşif teşviki)
+- Premium upsell: "Farklı rolleri keşfederek yeni yetkinlik örnekleri görebilirsin. Tüm yetkinliklere sınırsız erişim için:" + CTA
+- Mevcut FREE_COMP_LIMIT=2, FREE_Q_PER_COMP=3, FREE_SWAP_LIMIT=2 değişmedi
+
+**Koç bölümü reframe (Phase 4):**
+- Coach feed başlığı: "Koçlardan Öğren" → "Koç — Uzmanlardan Öğren"
+- Coach feed alt başlık güncellendi: "Sektör uzmanlarından mülakat ipuçları, yetkinlik rehberleri ve kariyer önerileri"
+
+**Scaffold bölümler (Phase 5):**
+- Performans: kart + ikon + açıklama + "Çok Yakında" badge. Tıklanınca toast.
+- HelloTalent'ten Bilgiler: kart + ikon + açıklama + "Çok Yakında" badge. Tıklanınca toast.
+
+**Teknik foundation doc:** `docs/studio-foundation.md` oluşturuldu — IA, runtime kontratları, gelecek veri modeli (studio_modules, badge_definitions, candidate_badges, candidate_studio_journals), rozet felsefesi, admin stratejisi, koç vs HT içerik altyapı önerisi.
+
+**Tests:** 164/164 pass. ESLint: 0 errors, 2 pre-existing warnings.
+
+**Cache-bust:** `profil-mulakatkocu.js?v=20260326s`
+
+**Dosya Değişiklikleri:**
+```
+EDIT    profil-mulakatkocu.js (Studio landing, rebrand, Yetenek gating copy, Koç title, nav pills)
+EDIT    profil.html (header/sidebar "Stüdyo", cache-bust)
+EDIT    profil-events.js (Cmd+K palette "Stüdyo")
+EDIT    profil-wizard.js (breadcrumb labels "Stüdyo")
+EDIT    profil-genel.js (Genel CTA "Stüdyo'ya Git")
+CREATE  docs/studio-foundation.md (technical foundation document)
+EDIT    docs/handoff.md (Session 24)
+```
+
+### Session 25 — 26 Mart 2026 (Studio Phase 2 — DB Infrastructure + Admin + Candidate Integration)
+
+**Migration `20260326220000_studio_modules.sql` created:**
+- `studio_modules` table: section (`performans`/`bilgiler`), module_type (`article`/`video`/`carousel`/`lesson`), slug, title, summary, body_md, cover_image_url/alt, duration_minutes, cta_label/url, sort_order, status (`draft`/`published`/`archived`), published_at, created_by
+- `candidate_studio_progress` table: candidate_id, module_id, status (`not_started`/`in_progress`/`completed`), progress_pct, last_viewed_at, completed_at, UNIQUE(candidate_id, module_id)
+- RLS: candidates read published modules + own progress only; admin full CRUD
+- Admin RPCs: `admin_create_studio_module`, `admin_update_studio_module` (jsonb patch), `admin_publish_studio_module`, `admin_archive_studio_module`
+- Candidate RPCs: `mark_studio_module_viewed` (upsert, sets in_progress), `complete_studio_module` (upsert, sets completed)
+- updated_at trigger on studio_modules
+
+**Admin UI (`admin-studio-modules.js` — NEW):**
+- IIFE pattern, public loader `window._htAdminLoadStudioModules`
+- List view: section filter tabs (Tümü/Performans/Bilgiler), table with sort order, title, section, type, status, date, edit/publish/archive actions
+- Editor view: 2-column grid form — section, type, title, slug, sort order, duration, CTA label, summary, body (markdown), cover URL, CTA URL
+- Create/save + save-and-publish actions
+- Integrated into admin.html: nav item in Moderasyon section, panel container, script tag, switchPanel hook
+
+**Candidate UI (profil-mulakatkocu.js — upgraded):**
+- Performans and Bilgiler section cards now DB-backed — clicking opens `st-module-area` with live content from `studio_modules`
+- Empty state: editorial message ("Performans modülleri hazırlanıyor" / "Platform rehberleri hazırlanıyor") when no published modules
+- Module cards: bento grid with cover image, type pill, duration, title, summary
+- Module detail: inline view with cover, title, body, "Tamamladım" button
+- Progress tracking: `mark_studio_module_viewed` on card click, `complete_studio_module` on "Tamamladım"
+- Section area is collapsible (click same section card to close)
+- Cache per section to avoid redundant fetches within session
+- "Çok Yakında" badges replaced with "Keşfet →" CTAs
+
+**Tests:** 186/186 pass. ESLint: 0 errors.
+
+**Cache-bust:** `profil-mulakatkocu.js?v=20260326t`
+
+**Dosya Değişiklikleri:**
+```
+CREATE  supabase/migrations/20260326220000_studio_modules.sql
+CREATE  admin-studio-modules.js
+EDIT    admin.html (nav item, panel, script tag, switchPanel hook)
+EDIT    profil-mulakatkocu.js (DB hydration for Performans/Bilgiler, module cards, detail view, progress RPCs)
+EDIT    profil.html (cache-bust)
+EDIT    tests/p3.regression.spec.js (+11 Studio Phase 2 structural guards)
+EDIT    docs/studio-foundation.md (Phase 2 status update)
+EDIT    docs/handoff.md (Session 25)
+```
+
+**Deploy çeklistesi (henüz yapılmadı):**
+- [ ] Migration `20260326220000_studio_modules.sql` → Supabase
+- [ ] Frontend push: `git push origin main`
+- [ ] Admin: create first test modules via Studio Modülleri panel
+
+**Kapsam dışı bırakılanlar (bilinçli):**
+- Badge sistemi (Phase 3)
+- Journal DB taşıma (Phase 4)
+- AI koçluk (Phase 5)
+- Video embed player (Phase 6)
+### Session 26 — 26 Mart 2026 (Studio Phase 2b — Seed Content + Progress UX)
+
+**Seed content migration `20260326230000_studio_seed_content.sql`:**
+- 4 Performans modülü (published):
+  1. `ciro-sepet-donusum` — Ciro, Sepet Ortalaması ve Dönüşüm Oranı (8 dk)
+  2. `magaza-hedefleri-gunluk-operasyon` — Mağaza Hedefleri ve Günlük Operasyon İlişkisi (6 dk)
+  3. `kpi-dususu-yorumlama` — KPI Düşüşünü Yorumlama: Nereden Başlanır (7 dk)
+  4. `vaka-trafik-yuksek-satis-dusuk` — Vaka Çalışması: Trafik Yüksek, Satış Düşük (10 dk)
+- 4 HelloTalent'ten Bilgiler modülü (published):
+  1. `profil-guclu-hale-getirme` — Profilinizi İşverenler İçin Güçlü Hale Getirin (5 dk)
+  2. `teklifler-mesajlar-yonetimi` — Teklifler ve Mesajlar Nasıl Yönetilir (4 dk)
+  3. `gorunurluk-ayarlari` — Görünürlük Ayarları Ne İşe Yarar (4 dk)
+  4. `studyodan-en-iyi-faydalanma` — Stüdyo'dan En İyi Nasıl Faydalanılır (5 dk)
+- Tüm içerikler gerçek, kullanılabilir, perakende odaklı Türkçe kopya
+
+**Progress-aware candidate UX (profil-mulakatkocu.js):**
+- `fetchStudioProgress()`: candidate_studio_progress tek seferlik fetch, session boyunca cache
+- `renderStudioSection()`: section header progress stats pill (X/Y tamamlandı)
+- Continue-learning card: "KALDIĞIN YERDEN DEVAM ET" — en son görüntülenen in-progress modülü gösterir
+- Module cards: "✓ Tamamlandı" (yeşil) ve "Devam Ediyor" (amber) status pill'leri
+- Completed cards dimmed (opacity .7) — tamamlanmamış modüller öne çıkar
+- Progress cache invalidated on: complete_studio_module, back navigation, section re-open
+
+**Landing card stats (async hydration):**
+- `hydrateLandingStats()`: bindStarIntroEvents'te coach feed ile birlikte çağrılır
+- Performans ve Bilgiler section card'larında mini stat göstergeleri: "2/4 tamamlandı · 1 devam ediyor" veya "✓ Tümü tamamlandı" veya "4 modül"
+- Stat'lar best-effort — hata durumunda sessizce boş kalır
+
+**Tests:** 204/204 pass. ESLint: 0 errors.
+
+**Cache-bust:** `profil-mulakatkocu.js?v=20260326u`
+
+**Dosya Değişiklikleri:**
+```
+CREATE  supabase/migrations/20260326230000_studio_seed_content.sql (8 seed modules)
+EDIT    profil-mulakatkocu.js (progress fetch, renderStudioSection, continue card, landing stats, progress CSS)
+EDIT    profil.html (cache-bust)
+EDIT    tests/p3.regression.spec.js (+9 Phase 2b structural guards)
+EDIT    docs/handoff.md (Session 26)
+```
+
+**Deploy çeklistesi (henüz yapılmadı):**
+- [ ] Migration `20260326230000_studio_seed_content.sql` → Supabase (requires Phase 2 schema migration first)
+- [ ] Frontend push: `git push origin main`
+
+**Kapsam dışı bırakılanlar (bilinçli):**
+- Badge sistemi (Phase 3)
+- Journal DB taşıma (Phase 4)
+- AI koçluk (Phase 5)
+- Video embed player (Phase 6)
+- Markdown rendering upgrade (body_md şu an pre-wrap text olarak gösteriliyor)
+- Cover image upload (modüller şu an URL ile referans veriyor)
+
+### Session 27 — 26 Mart 2026 (Studio Phase 3 — Badge System Foundation)
+
+**Migration `20260326240000_badge_system.sql`:**
+
+Schema:
+- `badge_definitions`: slug, title, description, category (`studio`/`performans`/`bilgiler`/`yetenek`), icon_key, badge_tier (`base`/`milestone`/`advanced`), rule_type (`module_complete_count`/`section_complete`/`total_complete_count`), rule_config jsonb, sort_order, status (`active`/`inactive`)
+- `candidate_badges`: candidate_id, badge_id, awarded_at, award_reason, metadata, UNIQUE(candidate_id, badge_id)
+- RLS: candidates read active definitions + own badges; admin full access on definitions
+
+Issuance:
+- `evaluate_candidate_badges(p_candidate_id)` RPC: iterates all active badge rules not yet awarded, evaluates against `candidate_studio_progress`, awards with `ON CONFLICT DO NOTHING` (idempotent, backfill-safe)
+- `complete_studio_module()` RPC updated: now calls `PERFORM evaluate_candidate_badges(v_candidate_id)` after marking completion
+- Three rule types: `module_complete_count` (N modules in specific section), `section_complete` (all published in section), `total_complete_count` (N modules regardless of section)
+
+**Seeded V1 badges (6):**
+| Badge | Tier | Rule | Trigger |
+|-------|------|------|---------|
+| İlk Adım | base | total_complete ≥ 1 | First module completed |
+| Performans Başlangıç | base | performans module ≥ 1 | First Performans module |
+| Platform Bilgisi | base | bilgiler module ≥ 1 | First Bilgiler module |
+| Stüdyo Disiplini | milestone | total_complete ≥ 3 | 3 modules completed |
+| KPI Uzmanı | advanced | section_complete performans | All Performans modules |
+| Ustalık Yolu | advanced | total_complete ≥ 8 | All 8 seeded modules |
+
+**Candidate badge surface (profil-mulakatkocu.js):**
+- Badge strip card between section grid and module content area
+- `hydrateBadgeStrip()`: async-hydrates on landing mount
+- Earned badges: colored chip with icon, tier-specific color scheme (vermillion base, navy milestone, amber advanced)
+- Locked badges: dimmed grayscale chips with title visible
+- "Son Kazanılan" card: most recently awarded badge with title + description
+- Header: "Rozetlerin" + earned/total count pill
+
+**Tests:** 226/226 pass. ESLint: 0 errors.
+**Cache-bust:** `profil-mulakatkocu.js?v=20260326v`
+
+**Dosya Değişiklikleri:**
+```
+CREATE  supabase/migrations/20260326240000_badge_system.sql
+EDIT    profil-mulakatkocu.js (badge strip HTML, hydrateBadgeStrip, BADGE_ICONS, TIER_COLORS, CSS)
+EDIT    profil.html (cache-bust)
+EDIT    tests/p3.regression.spec.js (+11 Phase 3 structural guards)
+EDIT    docs/handoff.md (Session 27)
+EDIT    docs/studio-foundation.md (Phase 3 status)
+```
+
+**Deploy çeklistesi:**
+- [ ] Migrations (Phase 2 schema → Phase 2b seed → Phase 3 badges) → Supabase (must deploy in order)
+- [ ] Frontend push
+
+**Kapsam dışı bırakılanlar (bilinçli):**
+- Yetenek practice badge (no reliable DB completion signal yet — `yetenek-ilk-pratik` deferred)
+- Badge CMS admin (definitions managed via migration for now)
+- Badge sharing/certificate
+- Badge notification emails
+- Journal DB persistence
+- AI coaching/scoring
+
+### Session 28 — 26 Mart 2026 (Studio Phase 4 — Journal Persistence + Yetenek Progress)
+
+**Migration `20260326250000_journal_yetenek_progress.sql`:**
+
+Tables:
+- `candidate_studio_journals`: STAR+T fields (situation/task/action/result/takeaway), candidate_id + competency_code + question_hash (unique), role_key, question_text, status (draft/completed), last_edited_at
+- `candidate_yetenek_progress`: candidate_id + role_key + competency_code (unique), status (started/practiced/completed), practice_count, questions_answered, last_practiced_at
+
+RPCs:
+- `upsert_studio_journal(...)`: idempotent upsert of STAR+T draft. Deletes row if all fields empty. SECURITY DEFINER.
+- `get_my_journals(p_competency_code)`: returns candidate's journals, optionally filtered by competency. STABLE read.
+- `record_yetenek_practice(p_role_key, p_competency_code, p_questions_answered)`: increments practice_count + questions_answered. Upsert with cumulative logic.
+- `complete_yetenek_competency(p_role_key, p_competency_code, p_questions_answered)`: marks competency as completed. Idempotent.
+
+RLS: candidates read/write own rows only on both tables.
+
+**Frontend journal integration (profil-mulakatkocu.js):**
+
+Architecture: localStorage as write-through buffer → async DB save behind it → DB cache on load.
+
+- `preloadJournalsFromDb()`: called on panel init, fetches all candidate journals via `get_my_journals()`, populates `_journalDbCache`. Runs `migrateLocalJournalsToDb()` once.
+- `migrateLocalJournalsToDb()`: scans localStorage for `ht_journal_*` keys, for any draft not yet in DB, fires async upsert (one-time migration).
+- `saveJournalDraft()`: writes to localStorage immediately (instant UX), updates `_journalDbCache`, fires async `upsert_studio_journal` RPC.
+- `loadJournalDraft()`: checks `_journalDbCache` first (cross-device truth), falls back to localStorage.
+- `countJournalDraftsForComp()`: counts from `_journalDbCache` first, falls back to localStorage scan.
+- Save indicator text: "Taslak kaydedildi"
+- Journal intro: "Notlarınız hesabınıza kaydedilir ve farklı cihazlardan erişebilirsiniz."
+
+**Yetenek practice recording:**
+- "Yanıtladım" button → when all dealt questions answered → fires `complete_yetenek_competency` RPC (fire-and-forget)
+- Records role_key, competency_code, questions_answered count
+
+**Tests:** 248/248 pass. ESLint: 0 errors.
+**Cache-bust:** `profil-mulakatkocu.js?v=20260326w`
+
+**Dosya Değişiklikleri:**
+```
+CREATE  supabase/migrations/20260326250000_journal_yetenek_progress.sql
+EDIT    profil-mulakatkocu.js (DB journal layer, preload, migration, practice recording, indicator text)
+EDIT    profil.html (cache-bust)
+EDIT    tests/p3.regression.spec.js (+11 Phase 4 structural guards)
+EDIT    docs/handoff.md (Session 28)
+EDIT    docs/studio-foundation.md (Phase 4 status)
+```
+
+**Kapsam dışı (bilinçli):**
+- AI feedback on journal drafts (Phase 5)
+- Yetenek badge issuance from practice progress (needs evaluate_candidate_badges extension)
+- Full journal review surface (Günlüğüm tab)
+- localStorage cleanup after confirmed DB migration
+
+### Session 29 — 26 Mart 2026 (Studio Phase 5A — Structured AI Feedback)
+
+**Migration `20260326260000_journal_ai_feedback.sql`:**
+- `candidate_journal_feedback` table: candidate_id, journal_id (FK), competency_code, question_hash, model_key, status (pending/processing/completed/failed), overall_signal (strong/mixed/needs_work), score_overall, strong_points (jsonb), weak_points (jsonb), star_review (jsonb with S/T/A/R/+T status+note), improvement_actions (jsonb), followup_questions (jsonb), summary_text, raw_response, error_message
+- `request_journal_feedback` RPC: saves journal first via upsert, creates pending feedback row, returns feedback_id
+- `complete_journal_feedback` RPC: Edge Function writes structured results back (service_role)
+- `get_journal_feedback` RPC: returns latest completed feedback for candidate + competency + question_hash
+- RLS: candidate reads own only
+
+**Edge Function `journal-feedback/index.ts` (NEW):**
+- Claims pending feedback rows, fetches journal from DB
+- Calls OpenAI (gpt-4o-mini) with structured Turkish prompt
+- Prompt evaluates: STAR+T structure, somutluk, sahiplenme, ölçülebilir sonuç, rol uyumu, çıkarım kalitesi
+- Forces `response_format: json_object` for reliable parsing
+- Persists structured result via `complete_journal_feedback` RPC
+- Graceful failure: marks as 'failed' with error_message if OpenAI unavailable or parse fails
+- Batch processing up to 5 per invocation
+
+**Candidate UI (profil-mulakatkocu.js):**
+- Premium users: "AI ile Değerlendir" button in journal panel, navy gradient styling
+- Non-premium users: gate card with "AI Koç değerlendirmesi Premium özelliğidir" + "Premium'a Geç" CTA
+- Loading: button disabled + "Değerlendiriliyor…" text
+- Polling: checks `get_journal_feedback` every 1s, 30s timeout, graceful failure toast
+- Result display: 6 structured card sections:
+  1. Genel Değerlendirme (signal pill + score + summary)
+  2. Güçlü Sinyaller (bullet list, green accent)
+  3. Geliştirme Alanları (bullet list, red accent)
+  4. STAR+T Analizi (row per field: ✓/•/!/— indicator + note)
+  5. Cevabı Güçlendirmek İçin (bullet list, vermillion accent)
+  6. Olası Takip Soruları (bullet list, navy accent)
+- Existing feedback auto-loaded on practice screen render
+- "Tekrar Değerlendir" button after first evaluation
+- Non-blocking: journal typing/saving/navigation all unaffected if AI fails
+
+**Premium gating:** AI feedback check uses `S.isPremium` (currently hardcoded false — awaits real subscription). Free users see gate card but can still use journal drafting fully.
+
+**Tests:** 274/274 pass. ESLint: 0 errors.
+**Cache-bust:** `profil-mulakatkocu.js?v=20260326x`
+
+**Dosya Değişiklikleri:**
+```
+CREATE  supabase/migrations/20260326260000_journal_ai_feedback.sql
+CREATE  supabase/functions/journal-feedback/index.ts
+EDIT    profil-mulakatkocu.js (AI feedback UI, request/poll/render, premium gate, CSS)
+EDIT    profil.html (cache-bust)
+EDIT    tests/p3.regression.spec.js (+13 Phase 5A structural guards)
+EDIT    docs/handoff.md (Session 29)
+EDIT    docs/studio-foundation.md (Phase 5A status)
+```
+
+**Deploy çeklistesi:**
+- [ ] Migration `20260326260000_journal_ai_feedback.sql` → Supabase
+- [ ] `journal-feedback` Edge Function deploy: `supabase functions deploy journal-feedback --project-ref cpwibefquojehjehtrog`
+- [ ] Set `OPENAI_API_KEY` env var on Supabase Edge Functions
+- [ ] Frontend push
+- [ ] Test: open journal → write STAR+T → click AI evaluate → verify structured feedback renders
+
+**Kapsam dışı (bilinçli):**
+- pg_cron scheduling for journal-feedback (currently invoked on-demand by client)
+- Yetenek badge issuance from AI feedback signals
+- AI feedback history / comparison across evaluations
+- Rich formatting in feedback cards (currently plain text)
+- Real premium subscription wiring (S.isPremium still hardcoded false)
+
 ### Sonraki Adımlar
 - [x] ~~Migration 042 → competency tabloları~~ ✅ Deployed
 - [x] ~~Mülakat Koçu unification (Yetkinlik + İş Görüşmeleri → tek ürün)~~ ✅ Session 7
@@ -835,10 +1173,13 @@ EDIT    docs/handoff.md (Session 23 + Session 21 items closed)
 - [x] ~~Deploy 046~~ ✅ Session 9 — no-op (production already had brand_name/company_name)
 - [x] ~~Deploy 047 → 048 → 049~~ ✅ Session 9 — FK columns + RPC + backfill deployed. Backfill: 3/3 exp company_id, 2/3 exp brand_id, 6/7 brand interest brand_id filled.
 - [x] ~~Push profil-ui.js + profil.html + ik.html to GitHub Pages~~ ✅ Session 9 — frontend published + smoke tested. FK resolution live: Zara→brand_id:1/company_id:10, Apple→brand_id:75/company_id:23. diller returns string[], languages returns object[], education uses egitim_seviye. No [object Object] regression.
-- [ ] Mülakat Koçu: Günlüğüm / journal review surface (taslakları gözden geçirme ekranı)
-- [ ] Mülakat Koçu: AI scoring / feedback on journal drafts
+- [x] ~~Stüdyo Phase 2: studio_modules + candidate_studio_progress + admin CRUD + candidate integration~~ ✅ Session 25
+- [x] ~~Stüdyo Phase 2b: İlk seed içerikler + progress UX + continue-learning~~ ✅ Session 26 — 8 modül seeded, progress rendering, landing stats
+- [x] ~~Stüdyo Phase 3: Rozet sistemi (badge_definitions + candidate_badges + issuance + UI)~~ ✅ Session 27 — 6 badges, DB-driven issuance, candidate badge strip
+- [x] ~~Stüdyo Phase 4: Journal DB persistence + Yetenek progress bridge~~ ✅ Session 28
+- [x] ~~Stüdyo Phase 5A: Structured AI feedback for Yetenek journals~~ ✅ Session 29 — schema, Edge Function, candidate UI, premium gate
+- [ ] Stüdyo Phase 5B: AI feedback iteration (history, comparison, badge coupling)
 - [ ] profil-yetkinlik.js → DB'den veri çekmeye geçiş (hardcoded ANCHORS → Supabase query)
-- [ ] candidate_competencies save/load entegrasyonu (aday yetkinlik rating'leri kalıcı)
 - [ ] İşveren kampanya wizard'ı (ik.html)
 - [ ] iyzico ödeme entegrasyonu
 - [x] ~~Email delivery worker~~ ✅ Phase 1 email infrastructure built (Session 11, migration 051)
