@@ -1004,7 +1004,28 @@ function injectCSS() {
   css += '.yk-home-ai-teaser-title{font-family:"Bricolage Grotesque",sans-serif;font-size:13px;font-weight:700;color:var(--text-primary,#111);margin-bottom:2px}';
   css += '.yk-home-ai-teaser-desc{font-family:"Plus Jakarta Sans",sans-serif;font-size:11px;color:var(--text-muted,#6B7280);line-height:1.4}';
   css += '.yk-home-ai-teaser-badge{font-family:"DM Mono",monospace;font-size:9px;font-weight:600;color:var(--text-muted,#6B7280);background:var(--bg-muted,#F7F6F4);border:1px solid var(--border-subtle,#E5E3DF);border-radius:20px;padding:4px 12px;flex-shrink:0}';
-  css += '@media(max-width:600px){.yk-home-summary{gap:8px}.yk-home-summary-item{min-width:70px;padding:10px 8px}.yk-home-summary-num{font-size:18px}.yk-home-header{flex-direction:column;align-items:flex-start;gap:8px}.yk-home-change-role{align-self:flex-start}.yk-home-ai-teaser{flex-direction:column;text-align:center;gap:10px}.yk-home-ai-teaser-badge{align-self:center}}';
+  /* Progress bar */
+  css += '.yk-progress-bar-wrap{margin-bottom:16px}';
+  css += '.yk-progress-bar{height:4px;background:var(--border-subtle,#E5E3DF);border-radius:2px;overflow:hidden;margin-bottom:4px}';
+  css += '.yk-progress-fill{height:100%;background:var(--verm,#C94E28);border-radius:2px;transition:width .4s ease}';
+  css += '.yk-progress-label{font-family:"DM Mono",monospace;font-size:10px;color:var(--text-muted,#6B7280);text-align:right}';
+  /* Track card arrow affordance */
+  css += '.yk-track-arrow{display:flex;align-items:center;gap:6px;flex-shrink:0}';
+  /* Locked summary block */
+  css += '.yk-locked-summary{background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF);border-radius:14px;padding:18px 20px;margin-top:16px;box-shadow:0 2px 8px rgba(0,0,0,.04)}';
+  css += '.yk-locked-summary-header{display:flex;align-items:flex-start;gap:12px;margin-bottom:10px}';
+  css += '.yk-locked-summary-icon{flex-shrink:0;width:32px;height:32px;background:linear-gradient(135deg,#2A3F7A 0%,#1E2D5E 100%);border-radius:8px;display:flex;align-items:center;justify-content:center}';
+  css += '.yk-locked-summary-icon svg{width:14px;height:14px;color:#fff}';
+  css += '.yk-locked-summary-text{flex:1;min-width:0}';
+  css += '.yk-locked-summary-title{font-family:"Bricolage Grotesque",sans-serif;font-size:14px;font-weight:700;color:var(--text-primary,#111);margin-bottom:6px}';
+  css += '.yk-locked-summary-names{display:flex;gap:6px;flex-wrap:wrap}';
+  css += '.yk-locked-tag{font-family:"Plus Jakarta Sans",sans-serif;font-size:10px;color:var(--text-muted,#6B7280);background:var(--bg-muted,#F7F6F4);border:1px solid var(--border-subtle,#E5E3DF);border-radius:20px;padding:3px 10px}';
+  css += '.yk-locked-tag-more{font-weight:600;color:var(--text-secondary,#4B5563)}';
+  css += '.yk-locked-summary-desc{font-family:"Plus Jakarta Sans",sans-serif;font-size:11px;color:var(--text-muted,#6B7280);line-height:1.4;margin-bottom:12px}';
+  css += '.yk-locked-cta{display:block;width:100%;text-align:center;padding:10px;font-size:13px}';
+  /* Rating button touch size improvement */
+  css += '.yk-rating-btn{min-height:28px;min-width:56px}';
+  css += '@media(max-width:600px){.yk-home-summary{gap:8px}.yk-home-summary-item{min-width:70px;padding:10px 8px}.yk-home-summary-num{font-size:18px}.yk-home-header{flex-direction:column;align-items:flex-start;gap:8px}.yk-home-change-role{align-self:flex-start}.yk-home-ai-teaser{flex-direction:column;text-align:center;gap:10px}.yk-home-ai-teaser-badge{align-self:center}.yk-rating-btn{min-height:32px;min-width:64px;font-size:11px}}';
 
   /* Track detail units */
   css += '.yk-track-units{background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF);border-radius:14px;padding:16px 18px;margin-top:16px}';
@@ -1580,6 +1601,7 @@ function renderLobby() {
   var freeLimit = S.isPremium ? comps.length : FREE_COMP_LIMIT;
   var completedCount = S.completedComps.length;
   var accessibleCount = Math.min(freeLimit, comps.length);
+  var lockedCount = Math.max(0, comps.length - freeLimit);
   var anchors = bridge.ANCHORS || {};
   var html = '';
 
@@ -1592,9 +1614,16 @@ function renderLobby() {
   html += '<div class="yk-home-header">';
   html += '<div class="yk-home-header-left">';
   html += '<div class="yk-home-role-label">' + S.role + '</div>';
-  html += '<div class="yk-home-comp-count">' + comps.length + ' yetkinlik \u00b7 ' + accessibleCount + ' eri\u015filebilir</div>';
+  html += '<div class="yk-home-comp-count">' + accessibleCount + ' yetkinlik eri\u015filebilir' + (lockedCount > 0 ? ' \u00b7 ' + lockedCount + ' kilitli' : '') + '</div>';
   html += '</div>';
   html += '<button class="yk-home-change-role" id="ig-back-role-change">Rol De\u011fi\u015ftir</button>';
+  html += '</div>';
+
+  /* ── Progress bar ── */
+  var pct = accessibleCount > 0 ? Math.round((completedCount / accessibleCount) * 100) : 0;
+  html += '<div class="yk-progress-bar-wrap">';
+  html += '<div class="yk-progress-bar"><div class="yk-progress-fill" style="width:' + pct + '%"></div></div>';
+  html += '<div class="yk-progress-label">' + completedCount + '/' + accessibleCount + ' tamamland\u0131</div>';
   html += '</div>';
 
   /* ── Continue card / Next step guidance ── */
@@ -1626,59 +1655,70 @@ function renderLobby() {
   /* Evidence summary strip — hydrated async */
   html += '<div id="yk-evidence-summary" class="yk-evidence-summary" style="display:none;"></div>';
 
-  /* ── Learning plan section title ── */
-  html += '<div class="yk-home-section-title">\u00d6\u011frenme Plan\u0131</div>';
-
-  /* ── Competency track cards ── */
-  html += '<div class="yk-home-tracks">';
-  for (var i = 0; i < comps.length; i++) {
-    var code = comps[i];
-    var name = bridge.COMP_NAMES[code] || code;
-    var kf = bridge.COMP_KF[code] || '';
-    var def = (anchors[code] && anchors[code].def) ? anchors[code].def : '';
-    var isLocked = i >= freeLimit;
-    var isCompleted = S.completedComps.indexOf(code) !== -1;
-    var qCount = flattenQuestions(code).length;
-    var practiceCount = S.isPremium ? qCount : Math.min(FREE_Q_PER_COMP, qCount);
-
-    if (isLocked) {
-      html += '<div class="yk-track-card yk-track-locked">';
-      html += '<div class="yk-track-inner">';
-      html += '<div class="yk-track-name">' + name + '</div>';
-      html += '<div class="yk-track-kf">' + kf + '</div>';
-      html += '<div class="yk-track-meta">' + qCount + ' soru</div>';
-      html += '</div>';
-      html += '<div class="ig-q-lock-overlay">';
-      html += '<div class="ig-q-lock-icon">' + lockSVG + '</div>';
-      html += '<div class="ig-q-lock-text">\u00dccretsiz limitine ula\u015ft\u0131n. Rol de\u011fi\u015ftirerek ke\u015ffet veya Premium ile t\u00fcm\u00fcne eri\u015f.</div>';
-      html += '<button class="ig-q-lock-cta">T\u00fcm Yetkinlikleri A\u00e7</button>';
-      html += '</div>';
-      html += '</div>';
-    } else {
-      html += '<div class="yk-track-card' + (isCompleted ? ' yk-track-done' : '') + '" data-comp="' + code + '" data-idx="' + i + '">';
-      html += '<div class="yk-track-top">';
-      html += '<div class="yk-track-name">' + name + '</div>';
-      if (isCompleted) html += '<span class="yk-track-badge-done">\u2713</span>';
-      html += '</div>';
-      html += '<div class="yk-track-kf">' + kf + '</div>';
-      if (def) html += '<div class="yk-track-def">' + def + '</div>';
-      html += '<div class="yk-track-meta">' + practiceCount + ' soru</div>';
-      /* Evidence area — hydrated async */
-      html += '<div class="yk-evidence" data-ev-comp="' + code + '"></div>';
-      html += '</div>';
-    }
-  }
-  html += '</div>';
-
-  /* ── AI teaser card ── */
+  /* ── AI teaser card — above learning plan for visibility ── */
   html += '<div class="yk-home-ai-teaser">';
   html += '<div class="yk-home-ai-teaser-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg></div>';
   html += '<div class="yk-home-ai-teaser-text">';
-  html += '<div class="yk-home-ai-teaser-title">AI Koçluk</div>';
+  html += '<div class="yk-home-ai-teaser-title">AI Ko\u00e7luk</div>';
   html += '<div class="yk-home-ai-teaser-desc">Yan\u0131tlar\u0131n\u0131z\u0131n g\u00fc\u00e7l\u00fc ve geli\u015ftirilmesi gereken y\u00f6nlerini yapay zeka ile ke\u015ffedin.</div>';
   html += '</div>';
   html += '<div class="yk-home-ai-teaser-badge">\u00c7ok Yak\u0131nda</div>';
   html += '</div>';
+
+  /* ── Learning plan section title ── */
+  html += '<div class="yk-home-section-title">\u00d6\u011frenme Plan\u0131</div>';
+
+  /* ── Unlocked competency track cards only ── */
+  html += '<div class="yk-home-tracks">';
+  for (var i = 0; i < comps.length; i++) {
+    var code = comps[i];
+    if (i >= freeLimit) continue; /* locked — handled below as collapsed summary */
+    var name = bridge.COMP_NAMES[code] || code;
+    var kf = bridge.COMP_KF[code] || '';
+    var def = (anchors[code] && anchors[code].def) ? anchors[code].def : '';
+    var isCompleted = S.completedComps.indexOf(code) !== -1;
+    var qCount = flattenQuestions(code).length;
+    var practiceCount = S.isPremium ? qCount : Math.min(FREE_Q_PER_COMP, qCount);
+
+    html += '<div class="yk-track-card' + (isCompleted ? ' yk-track-done' : '') + '" data-comp="' + code + '" data-idx="' + i + '">';
+    html += '<div class="yk-track-top">';
+    html += '<div class="yk-track-name">' + name + '</div>';
+    html += '<div class="yk-track-arrow">';
+    if (isCompleted) html += '<span class="yk-track-badge-done">\u2713</span>';
+    html += '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="opacity:.35"><polyline points="9 18 15 12 9 6"/></svg>';
+    html += '</div>';
+    html += '</div>';
+    html += '<div class="yk-track-kf">' + kf + '</div>';
+    if (def) html += '<div class="yk-track-def">' + def + '</div>';
+    html += '<div class="yk-track-meta">' + practiceCount + ' soru</div>';
+    html += '<div class="yk-evidence" data-ev-comp="' + code + '"></div>';
+    html += '</div>';
+  }
+  html += '</div>';
+
+  /* ── Locked competencies — collapsed summary ── */
+  if (lockedCount > 0) {
+    var lockedNames = [];
+    for (var li = freeLimit; li < comps.length && lockedNames.length < 3; li++) {
+      lockedNames.push(bridge.COMP_NAMES[comps[li]] || comps[li]);
+    }
+    html += '<div class="yk-locked-summary">';
+    html += '<div class="yk-locked-summary-header">';
+    html += '<div class="yk-locked-summary-icon">' + lockSVG + '</div>';
+    html += '<div class="yk-locked-summary-text">';
+    html += '<div class="yk-locked-summary-title">' + lockedCount + ' yetkinlik daha</div>';
+    html += '<div class="yk-locked-summary-names">';
+    for (var ni = 0; ni < lockedNames.length; ni++) {
+      html += '<span class="yk-locked-tag">' + lockedNames[ni] + '</span>';
+    }
+    if (lockedCount > 3) html += '<span class="yk-locked-tag yk-locked-tag-more">+' + (lockedCount - 3) + '</span>';
+    html += '</div>';
+    html += '</div>';
+    html += '</div>';
+    html += '<div class="yk-locked-summary-desc">Farkl\u0131 roller se\u00e7erek yeni yetkinlikleri ke\u015ffedebilir veya Premium ile t\u00fcm\u00fcne eri\u015febilirsin.</div>';
+    html += '<button class="ig-q-lock-cta yk-locked-cta">Premium ile T\u00fcm Yetkinlikleri A\u00e7</button>';
+    html += '</div>';
+  }
 
   html += '</div>'; /* yk-home */
   return html;

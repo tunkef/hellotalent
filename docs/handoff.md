@@ -1,5 +1,5 @@
 # hellotalent.ai — Technical Handoff Document
-> Son güncelleme: 27 Mart 2026 (Session 36 — Yetenek learning portal visual polish + copy cleanup, deployed)
+> Son güncelleme: 27 Mart 2026 (Session 37 — Yetenek Phase 1C: content depth, guidance, visual QA, live smoke verified)
 > Bu doküman, projenin mevcut durumunu, tamamlanan işleri ve kalan backlog'u kapsar.
 > Yeni bir chat/session başlatırken bu dosyayı referans olarak kullanın.
 
