@@ -1,5 +1,5 @@
 # hellotalent.ai — Technical Handoff Document
-> Son güncelleme: 27 Mart 2026 (Session 38 — Yetenek Phase 1D: home hierarchy, locked cleanup, progress bar, deployed)
+> Son güncelleme: 27 Mart 2026 (Session 40 — Documentation truth-sync: Yetenek portal live status, AI/premium/journal truth, blockers)
 > Bu doküman, projenin mevcut durumunu, tamamlanan işleri ve kalan backlog'u kapsar.
 > Yeni bir chat/session başlatırken bu dosyayı referans olarak kullanın.
 
@@ -1249,11 +1249,17 @@ npx supabase secrets set OPENAI_API_KEY=sk-... --project-ref cpwibefquojehjehtro
 - [x] ~~Stüdyo Phase 2b: İlk seed içerikler + progress UX + continue-learning~~ ✅ Session 26 — 8 modül seeded, progress rendering, landing stats
 - [x] ~~Stüdyo Phase 3: Rozet sistemi (badge_definitions + candidate_badges + issuance + UI)~~ ✅ Session 27 — 6 badges, DB-driven issuance, candidate badge strip
 - [x] ~~Stüdyo Phase 4: Journal DB persistence + Yetenek progress bridge~~ ✅ Session 28
-- [x] ~~Stüdyo Phase 5A: Structured AI feedback for Yetenek journals~~ ✅ Session 29 — schema, Edge Function, candidate UI, premium gate
-- [ ] Stüdyo Phase 5B: AI feedback iteration (history, comparison, badge coupling)
-- [ ] profil-yetkinlik.js → DB'den veri çekmeye geçiş (hardcoded ANCHORS → Supabase query)
+- [x] ~~Stüdyo Phase 5A: Structured AI feedback for Yetenek journals~~ ✅ Session 29 — schema, Edge Function, premium gate. AI aday yüzeyi sonradan kaldırıldı (journal UI removed).
+- [x] ~~profil-yetkinlik.js → DB'den veri çekmeye geçiş~~ ✅ Session 32 — DB-backed with hardcoded fallback
+- [x] ~~Yetenek competency profile: self-rating UI + evidence~~ ✅ Session 33 — overview RPC, lobby evidence hydration
+- [x] ~~Premium entitlement: payment records + activation + webhook~~ ✅ Session 34 — demo flow, is_premium truth wired
+- [x] ~~Yetenek IA reset: learning portal structure~~ ✅ Session 35 — journal UI removed, new screens
+- [x] ~~Yetenek Phase 1B-1D: polish + content depth + hierarchy + locked cleanup~~ ✅ Sessions 36-39 — live verified
+- [ ] Studio geneli polish (cross-section tutarlılık)
+- [ ] Gerçek iyzico checkout wiring (credentials + redirect + callback)
+- [ ] OPENAI_API_KEY yapılandırma + canlı AI doğrulama
+- [ ] Stüdyo Phase 5B: Yeni AI aday yüzeyi (unit-integrated, journal yerine)
 - [ ] İşveren kampanya wizard'ı (ik.html)
-- [ ] iyzico ödeme entegrasyonu
 - [x] ~~Email delivery worker~~ ✅ Phase 1 email infrastructure built (Session 11, migration 051)
 - [x] ~~Candidate reply flow + DM inbox~~ ✅ Session 13-14 — migrations 052-057 deployed, bi-directional threads, live-chat realtime, split-pane desktop UI. Authenticated E2E smoke pending.
 - [x] ~~Messaging email Phase 2: employer follow-up email trigger + employer notification on candidate reply~~ ✅ Session 23 — migration 20260326200000, triggers on employer_message_replies + candidate_message_replies, candidate_reply_notification template. Deploy pending.
