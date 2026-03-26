@@ -86,7 +86,7 @@ async function updateSupportBadge() {
   try {
     var res = await supa.from('support_tickets')
       .select('id', { count: 'exact', head: true })
-      .in('status', ['open', 'in_review']);
+      .in('status', ['open', 'in_review', 'waiting_on_candidate']);
     var badge = document.getElementById('badge-support-open');
     if (badge) {
       var count = res.count || 0;
@@ -107,6 +107,7 @@ async function renderQueue(container) {
   var filters = [
     { key: 'open', label: 'A\u00E7\u0131k' },
     { key: 'in_review', label: '\u0130nceleniyor' },
+    { key: 'waiting_on_candidate', label: 'Yan\u0131t Bekleniyor' },
     { key: 'resolved', label: '\u00C7\u00F6z\u00FCld\u00FC' },
     { key: 'closed', label: 'Kapal\u0131' },
     { key: 'all', label: 'T\u00FCm\u00FC' }
@@ -400,7 +401,7 @@ function renderActions(actionArea, parentContainer, ticket) {
     actionArea.appendChild(row1);
   }
 
-  if (ticket.status === 'in_review') {
+  if (ticket.status === 'in_review' || ticket.status === 'waiting_on_candidate') {
     // Public note
     var pubLabel = el('div');
     pubLabel.style.cssText = 'font-size:12px;font-weight:600;color:var(--text);margin-bottom:4px;';
@@ -412,6 +413,25 @@ function renderActions(actionArea, parentContainer, ticket) {
     pubInput.placeholder = '\u00C7\u00F6z\u00FCm veya yan\u0131t\u0131n\u0131z\u0131 yaz\u0131n\u2026';
     actionArea.appendChild(pubInput);
 
+    // "Set waiting" checkbox — only when currently in_review
+    var waitCheckWrap = null;
+    var waitCheck = null;
+    if (ticket.status === 'in_review') {
+      waitCheckWrap = el('div');
+      waitCheckWrap.style.cssText = 'display:flex;align-items:center;gap:6px;margin-bottom:10px;';
+      waitCheck = document.createElement('input');
+      waitCheck.type = 'checkbox';
+      waitCheck.id = 'support-set-waiting';
+      waitCheck.style.cssText = 'width:16px;height:16px;cursor:pointer;';
+      waitCheckWrap.appendChild(waitCheck);
+      var waitLabel = document.createElement('label');
+      waitLabel.setAttribute('for', 'support-set-waiting');
+      waitLabel.style.cssText = 'font-size:12px;color:var(--muted);cursor:pointer;';
+      waitLabel.textContent = 'Aday yan\u0131t\u0131 bekle (durumu "Yan\u0131t Bekleniyor" olarak de\u011Fi\u015Ftir)';
+      waitCheckWrap.appendChild(waitLabel);
+      actionArea.appendChild(waitCheckWrap);
+    }
+
     var row2 = el('div');
     row2.style.cssText = 'display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;';
 
@@ -419,7 +439,8 @@ function renderActions(actionArea, parentContainer, ticket) {
     sendPubBtn.addEventListener('click', function() {
       var text = pubInput.value.trim();
       if (!text) return;
-      doAddNote(ticket.id, text, 'public', parentContainer);
+      var setWaiting = waitCheck ? waitCheck.checked : false;
+      doAddNote(ticket.id, text, 'public', parentContainer, setWaiting);
     });
     row2.appendChild(sendPubBtn);
 
@@ -428,6 +449,14 @@ function renderActions(actionArea, parentContainer, ticket) {
     row2.appendChild(resolveBtn);
 
     actionArea.appendChild(row2);
+
+    // Waiting banner for waiting_on_candidate
+    if (ticket.status === 'waiting_on_candidate') {
+      var waitBanner = el('div');
+      waitBanner.style.cssText = 'padding:12px 16px;background:#DBEAFE;color:#1E40AF;border-radius:10px;font-size:13px;margin-bottom:12px;line-height:1.5;';
+      waitBanner.textContent = 'Aday yan\u0131t\u0131 bekleniyor. Aday yan\u0131t g\u00F6nderdi\u011Finde talep otomatik olarak \u0130nceleniyor durumuna ge\u00E7ecek.';
+      actionArea.appendChild(waitBanner);
+    }
 
     // Internal note
     var intLabel = el('div');
@@ -444,7 +473,7 @@ function renderActions(actionArea, parentContainer, ticket) {
     intBtn.addEventListener('click', function() {
       var text = intInput.value.trim();
       if (!text) return;
-      doAddNote(ticket.id, text, 'internal', parentContainer);
+      doAddNote(ticket.id, text, 'internal', parentContainer, false);
     });
     actionArea.appendChild(intBtn);
   }
@@ -501,20 +530,26 @@ async function doResolve(ticketId, container) {
   updateSupportBadge();
 }
 
-async function doAddNote(ticketId, body, visibility, container) {
+async function doAddNote(ticketId, body, visibility, container, setWaiting) {
   var supa = getSupa();
   var res = await supa.rpc('admin_add_support_note', {
     p_ticket_id: ticketId,
     p_body: body,
-    p_visibility: visibility
+    p_visibility: visibility,
+    p_set_waiting: setWaiting || false
   });
   if (res.error) {
     window.alert('Hata: ' + res.error.message);
     return;
   }
-  // Refresh timeline only
-  var timelineWrap = document.getElementById('support-timeline');
-  if (timelineWrap) await loadTimeline(ticketId, timelineWrap);
+  // If status changed (set_waiting), refresh entire detail; otherwise just timeline
+  if (setWaiting) {
+    await refreshDetailInPlace(ticketId, container);
+    updateSupportBadge();
+  } else {
+    var timelineWrap = document.getElementById('support-timeline');
+    if (timelineWrap) await loadTimeline(ticketId, timelineWrap);
+  }
 }
 
 async function doForceClose(ticketId, container) {

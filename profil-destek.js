@@ -1144,6 +1144,84 @@ function showTicketDetail(ticket) {
   msgsWrap.className = 'dtd-messages';
   wrap.appendChild(msgsWrap);
 
+  // ── Reply composer for active tickets ──
+  if (ticket.status === 'open' || ticket.status === 'in_review' || ticket.status === 'waiting_on_candidate') {
+    var replyArea = document.createElement('div');
+    replyArea.style.cssText = 'margin-top:20px;padding-top:16px;border-top:1px solid var(--border-subtle, #E5E3DF);';
+
+    var replyLabel = document.createElement('div');
+    replyLabel.style.cssText = 'font-family:"Plus Jakarta Sans",sans-serif;font-size:13px;font-weight:600;color:var(--text, #111);margin-bottom:6px;';
+    replyLabel.textContent = 'Yan\u0131t\u0131n\u0131z';
+    replyArea.appendChild(replyLabel);
+
+    if (ticket.status === 'waiting_on_candidate') {
+      var waitHint = document.createElement('div');
+      waitHint.style.cssText = 'font-size:12px;color:#2563EB;margin-bottom:8px;line-height:1.4;';
+      waitHint.textContent = 'Destek ekibi yan\u0131t\u0131n\u0131z\u0131 bekliyor.';
+      replyArea.appendChild(waitHint);
+    }
+
+    var replyTa = document.createElement('textarea');
+    replyTa.className = 'dt-textarea';
+    replyTa.style.minHeight = '80px';
+    replyTa.placeholder = 'Mesaj\u0131n\u0131z\u0131 yaz\u0131n\u2026';
+    replyArea.appendChild(replyTa);
+
+    var replyErr = document.createElement('div');
+    replyErr.style.cssText = 'color:#ef4444;font-size:12px;display:none;margin-bottom:6px;';
+    replyArea.appendChild(replyErr);
+
+    var replyBtn = document.createElement('button');
+    replyBtn.className = 'destek-btn destek-btn-verm';
+    replyBtn.textContent = 'Yan\u0131t G\u00F6nder';
+    replyBtn.addEventListener('click', function() {
+      var body = replyTa.value.trim();
+      if (!body) {
+        replyErr.textContent = 'L\u00FCtfen bir mesaj yaz.';
+        replyErr.style.display = 'block';
+        return;
+      }
+      if (body.length < 5) {
+        replyErr.textContent = 'Mesaj \u00E7ok k\u0131sa.';
+        replyErr.style.display = 'block';
+        return;
+      }
+      replyErr.style.display = 'none';
+      replyBtn.disabled = true;
+      replyBtn.textContent = 'G\u00F6nderiliyor\u2026';
+
+      supabase.rpc('candidate_reply_to_ticket', {
+        p_ticket_id: ticket.id,
+        p_body: body
+      }).then(function(res) {
+        if (res.error) {
+          console.error('candidate_reply_to_ticket error:', res.error);
+          replyErr.textContent = 'G\u00F6nderilemedi. L\u00FCtfen tekrar dene.';
+          replyErr.style.display = 'block';
+          replyBtn.disabled = false;
+          replyBtn.textContent = 'Yan\u0131t G\u00F6nder';
+          return;
+        }
+        // Refresh ticket detail to show new message and updated status
+        _tickets = null;
+        supabase
+          .from('support_tickets')
+          .select('id, ticket_no, category, ui_topic, subject, description, status, created_at, updated_at')
+          .eq('id', ticket.id)
+          .maybeSingle()
+          .then(function(tRes) {
+            if (tRes.data) {
+              showTicketDetail(tRes.data);
+            } else {
+              loadTickets();
+            }
+          });
+      });
+    });
+    replyArea.appendChild(replyBtn);
+    wrap.appendChild(replyArea);
+  }
+
   // ── Resolved-ticket action buttons ──
   if (ticket.status === 'resolved') {
     var resolvedArea = document.createElement('div');

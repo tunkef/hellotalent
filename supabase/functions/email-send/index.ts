@@ -196,6 +196,7 @@ interface Payload {
   page_path?: string | null;
   user_agent?: string | null;
   resolution_message?: string | null;
+  reply_body?: string | null;
 }
 
 function renderTemplate(
@@ -224,6 +225,14 @@ function renderTemplate(
       return supportTicketInternalAlertTemplate(payload);
     case "support_ticket_resolved":
       return supportTicketResolvedTemplate(payload);
+    case "support_ticket_admin_reply":
+      return supportTicketAdminReplyTemplate(payload);
+    case "support_ticket_candidate_reply":
+      return supportTicketCandidateReplyTemplate(payload);
+    case "support_ticket_auto_closed":
+      return supportTicketAutoClosedTemplate(payload);
+    case "candidate_reply_notification":
+      return candidateReplyNotificationTemplate(payload);
     default:
       throw new Error(`Unknown email_type: ${emailType}`);
   }
@@ -814,6 +823,235 @@ Gizlilik: https://hellotalent.ai/gizlilik.html`;
 
   return {
     subject: `Destek Talebiniz \u00c7\u00f6z\u00fcld\u00fc \u2014 ${p.ticket_no || ""}`,
+    html,
+    text,
+  };
+}
+
+// ─── Support Ticket Admin Reply (to candidate) ───────
+
+function supportTicketAdminReplyTemplate(p: Payload): EmailContent {
+  const name = esc(p.candidate_name);
+  const greeting = name ? `Merhaba ${name},` : "Merhaba,";
+  const greetingPlain = p.candidate_name
+    ? `Merhaba ${p.candidate_name},`
+    : "Merhaba,";
+  const ticketNo = esc(p.ticket_no);
+  const subjectEsc = esc(p.subject);
+  const replyBody = esc(p.reply_body);
+  const ctaUrl = "https://hellotalent.ai/profil.html#destek";
+
+  const html = emailWrapper(`
+${logoRow()}
+<tr><td style="padding:8px 32px 4px;text-align:center;">
+<span style="display:none;max-height:0;overflow:hidden;">Destek talebinize yan\u0131t geldi \u2014 ${ticketNo}</span>
+<h1 style="margin:0;font-family:'Bricolage Grotesque',Georgia,serif;font-size:22px;color:${COLORS.navy};font-weight:700;">${greeting}</h1>
+</td></tr>
+<tr><td style="padding:16px 32px;font-size:15px;color:${COLORS.text};line-height:1.6;">
+<p style="margin:0 0 12px;">Destek talebinize yan\u0131t geldi.</p>
+<table width="100%" cellpadding="0" cellspacing="0" style="background:${COLORS.bg};border:1px solid ${COLORS.border};border-radius:10px;margin-bottom:16px;">
+<tr><td style="padding:14px 16px;">
+<p style="margin:0 0 6px;font-size:13px;color:${COLORS.muted};">Talep</p>
+<p style="margin:0 0 12px;font-family:'DM Mono',monospace;font-size:14px;font-weight:700;color:${COLORS.verm};">${ticketNo} \u2014 ${subjectEsc}</p>
+<p style="margin:0 0 4px;font-size:13px;color:${COLORS.muted};">Destek Ekibi Yan\u0131t\u0131</p>
+<p style="margin:0;font-size:14px;color:${COLORS.text};white-space:pre-wrap;">${replyBody}</p>
+</td></tr>
+</table>
+<p style="margin:0;">Yan\u0131tlamak i\u00e7in Destek Merkezi\u2019nden talebini a\u00e7abilirsin.</p>
+</td></tr>
+${ctaButton("Destek Merkezine Git", ctaUrl)}
+${footerRow()}
+`);
+
+  const text = `${greetingPlain}
+
+Destek talebinize yan\u0131t geldi.
+
+Talep: ${p.ticket_no || ""} \u2014 ${p.subject || ""}
+
+Destek Ekibi Yan\u0131t\u0131:
+${p.reply_body || ""}
+
+Yan\u0131tlamak i\u00e7in Destek Merkezi'nden talebini a\u00e7abilirsin.
+
+\u2192 Destek Merkezi: ${ctaUrl}
+
+---
+\u00a9 2026 HelloTalent
+Gizlilik: https://hellotalent.ai/gizlilik.html`;
+
+  return {
+    subject: `Destek Talebinize Yan\u0131t \u2014 ${p.ticket_no || ""}`,
+    html,
+    text,
+  };
+}
+
+// ─── Support Ticket Candidate Reply (to support team) ─
+
+function supportTicketCandidateReplyTemplate(p: Payload): EmailContent {
+  const ticketNo = esc(p.ticket_no);
+  const candidateName = esc(p.candidate_name);
+  const subjectEsc = esc(p.subject);
+  const replyBody = esc(p.reply_body);
+
+  const html = emailWrapper(`
+${logoRow()}
+<tr><td style="padding:8px 32px 4px;">
+<h1 style="margin:0;font-family:'Bricolage Grotesque',Georgia,serif;font-size:20px;color:${COLORS.navy};font-weight:700;">Aday Yan\u0131t\u0131: ${ticketNo}</h1>
+</td></tr>
+<tr><td style="padding:16px 32px;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:${COLORS.bg};border:1px solid ${COLORS.border};border-radius:10px;">
+<tr><td style="padding:16px;">
+<table width="100%" cellpadding="0" cellspacing="0" style="font-size:13px;color:${COLORS.text};line-height:2;">
+<tr><td style="font-weight:700;color:${COLORS.muted};width:120px;vertical-align:top;">Talep No</td><td style="font-family:'DM Mono',monospace;color:${COLORS.verm};font-weight:700;">${ticketNo}</td></tr>
+<tr><td style="font-weight:700;color:${COLORS.muted};vertical-align:top;">Aday</td><td>${candidateName}</td></tr>
+<tr><td style="font-weight:700;color:${COLORS.muted};vertical-align:top;">Konu</td><td style="font-weight:600;">${subjectEsc}</td></tr>
+</table>
+</td></tr>
+</table>
+</td></tr>
+<tr><td style="padding:0 32px 16px;">
+<div style="background:${COLORS.white};border:1px solid ${COLORS.border};border-radius:10px;padding:16px;">
+<p style="margin:0 0 4px;font-size:11px;font-weight:700;color:${COLORS.muted};text-transform:uppercase;letter-spacing:0.5px;">Aday Yan\u0131t\u0131</p>
+<p style="margin:0;font-size:14px;color:${COLORS.text};line-height:1.6;white-space:pre-wrap;">${replyBody}</p>
+</div>
+</td></tr>
+${footerRow("Bu bir dahili destek bildirimidir.")}
+`);
+
+  const text = `Aday Yan\u0131t\u0131: ${p.ticket_no || ""}
+
+Talep No: ${p.ticket_no || ""}
+Aday: ${p.candidate_name || ""}
+Konu: ${p.subject || ""}
+
+Aday Yan\u0131t\u0131:
+${p.reply_body || ""}
+
+---
+Dahili destek bildirimi - HelloTalent`;
+
+  return {
+    subject: `[Destek] Aday Yan\u0131t\u0131 \u2014 ${p.ticket_no || ""} \u2014 ${p.subject || ""}`,
+    html,
+    text,
+  };
+}
+
+// ─── Support Ticket Auto-Closed (to candidate) ───────
+
+function supportTicketAutoClosedTemplate(p: Payload): EmailContent {
+  const name = esc(p.candidate_name);
+  const greeting = name ? `Merhaba ${name},` : "Merhaba,";
+  const greetingPlain = p.candidate_name
+    ? `Merhaba ${p.candidate_name},`
+    : "Merhaba,";
+  const ticketNo = esc(p.ticket_no);
+  const subjectEsc = esc(p.subject);
+  const ctaUrl = "https://hellotalent.ai/profil.html#destek";
+
+  const html = emailWrapper(`
+${logoRow()}
+<tr><td style="padding:8px 32px 4px;text-align:center;">
+<span style="display:none;max-height:0;overflow:hidden;">Destek talebiniz kapat\u0131ld\u0131 \u2014 ${ticketNo}</span>
+<h1 style="margin:0;font-family:'Bricolage Grotesque',Georgia,serif;font-size:22px;color:${COLORS.navy};font-weight:700;">${greeting}</h1>
+</td></tr>
+<tr><td style="padding:16px 32px;font-size:15px;color:${COLORS.text};line-height:1.6;">
+<p style="margin:0 0 12px;">Destek talebiniz 7 g\u00fcn i\u00e7inde yan\u0131t al\u0131nmad\u0131\u011f\u0131 i\u00e7in otomatik olarak kapat\u0131ld\u0131.</p>
+<table width="100%" cellpadding="0" cellspacing="0" style="background:${COLORS.bg};border:1px solid ${COLORS.border};border-radius:10px;margin-bottom:16px;">
+<tr><td style="padding:14px 16px;">
+<p style="margin:0 0 6px;font-size:13px;color:${COLORS.muted};">Talep</p>
+<p style="margin:0;font-family:'DM Mono',monospace;font-size:14px;font-weight:700;color:${COLORS.verm};">${ticketNo} \u2014 ${subjectEsc}</p>
+</td></tr>
+</table>
+<p style="margin:0;">Sorun devam ediyorsa Destek Merkezi\u2019nden yeni bir talep olu\u015fturabilirsin.</p>
+</td></tr>
+${ctaButton("Destek Merkezine Git", ctaUrl)}
+${footerRow()}
+`);
+
+  const text = `${greetingPlain}
+
+Destek talebiniz 7 g\u00fcn i\u00e7inde yan\u0131t al\u0131nmad\u0131\u011f\u0131 i\u00e7in otomatik olarak kapat\u0131ld\u0131.
+
+Talep: ${p.ticket_no || ""} \u2014 ${p.subject || ""}
+
+Sorun devam ediyorsa Destek Merkezi'nden yeni bir talep olu\u015fturabilirsin.
+
+\u2192 Destek Merkezi: ${ctaUrl}
+
+---
+\u00a9 2026 HelloTalent
+Gizlilik: https://hellotalent.ai/gizlilik.html`;
+
+  return {
+    subject: `Destek Talebiniz Kapat\u0131ld\u0131 \u2014 ${p.ticket_no || ""}`,
+    html,
+    text,
+  };
+}
+
+// ─── Candidate Reply Notification (to employer) ──────
+
+function candidateReplyNotificationTemplate(p: Payload): EmailContent {
+  const recipientNameEsc = esc(p.recipient_name);
+  const greeting = recipientNameEsc
+    ? `Merhaba ${recipientNameEsc},`
+    : "Merhaba,";
+  const greetingPlain = p.recipient_name
+    ? `Merhaba ${p.recipient_name},`
+    : "Merhaba,";
+  const ctaUrl = p.cta_url || "https://hellotalent.ai/giris.html?tab=ik";
+  const candidateName = p.candidate_name || "Aday";
+  const candidateNameEsc = esc(candidateName);
+  const preview = p.message_preview || "Yan\u0131t\u0131 g\u00f6r\u00fcnt\u00fclemek i\u00e7in giri\u015f yap\u0131n.";
+  const previewEsc = esc(preview);
+  const subjectEsc = esc(p.subject);
+  const timeStr = p.sent_at
+    ? `<span style="color:${COLORS.muted};font-size:13px;margin-left:8px;">${esc(p.sent_at)}</span>`
+    : "";
+
+  const html = emailWrapper(`
+${logoRow()}
+<tr><td style="padding:8px 32px 4px;text-align:center;">
+<span style="display:none;max-height:0;overflow:hidden;">Adaydan yan\u0131t geldi \u2014 ${subjectEsc}</span>
+<h1 style="margin:0;font-family:'Bricolage Grotesque',Georgia,serif;font-size:20px;color:${COLORS.navy};font-weight:700;">Adaydan yan\u0131t geldi</h1>
+</td></tr>
+<tr><td style="padding:16px 32px;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:${COLORS.bg};border:1px solid ${COLORS.border};border-radius:12px;">
+<tr><td style="padding:16px;">
+<p style="margin:0 0 4px;font-size:15px;font-weight:700;color:${COLORS.text};">${candidateNameEsc}${timeStr}</p>
+<p style="margin:0 0 8px;font-size:12px;color:${COLORS.muted};">Konu: ${subjectEsc}</p>
+<p style="margin:0;font-size:14px;color:${COLORS.text};line-height:1.5;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;">${previewEsc}</p>
+</td></tr>
+</table>
+</td></tr>
+<tr><td style="padding:4px 32px 8px;font-size:13px;color:${COLORS.muted};line-height:1.5;">
+Yan\u0131tlamak i\u00e7in \u0130K panelinize giri\u015f yap\u0131n.
+</td></tr>
+${ctaButton("Mesajlar\u0131 G\u00f6r\u00fcnt\u00fcle", ctaUrl)}
+${footerRow()}
+`);
+
+  const text = `${greetingPlain}
+
+Adaydan yan\u0131t geldi.
+
+${candidateName}${p.sent_at ? ` \u2014 ${p.sent_at}` : ""}
+Konu: ${p.subject || ""}
+${preview}
+
+Yan\u0131tlamak i\u00e7in \u0130K panelinize giri\u015f yap\u0131n.
+
+\u2192 Mesajlar\u0131 G\u00f6r\u00fcnt\u00fcle: ${ctaUrl}
+
+---
+\u00a9 2026 HelloTalent
+Gizlilik: https://hellotalent.ai/gizlilik.html`;
+
+  return {
+    subject: `${candidateName} yan\u0131t g\u00f6nderdi \u2014 ${p.subject || ""}`,
     html,
     text,
   };

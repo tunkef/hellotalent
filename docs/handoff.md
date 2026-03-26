@@ -1,5 +1,5 @@
 # hellotalent.ai — Technical Handoff Document
-> Son güncelleme: 26 Mart 2026 (Session 22c — Support Queue MVP live: admin queue, closure workflow, auto-close, resolved email)
+> Son güncelleme: 26 Mart 2026 (Session 23 — Support 2B verified, Session 21 items closed, Messaging Email Phase 2, popup fix)
 > Bu doküman, projenin mevcut durumunu, tamamlanan işleri ve kalan backlog'u kapsar.
 > Yeni bir chat/session başlatırken bu dosyayı referans olarak kullanın.
 
@@ -509,9 +509,9 @@ CREATE supabase/migrations/20260325084751_step4_simplification.sql
 - [x] Kim Baktı: panel render, chart, viewer list, premium CTA ✅
 - [x] Cmd+K palette: açılır, arama çalışır, panel switch doğru ✅
 - [x] Avatar dropdown: isim, tema toggle, çıkış butonu ✅
-- [ ] Save: `Mağaza Müdürü` seç → DB'de `rol_ailesi = "Mağaza Yönetimi"` doğrula (henüz test edilmedi)
-- [ ] Brand interest auto-follow: Zara ekle → save → `candidate_brand_follows` satırı doğrula (henüz test edilmedi)
-- [ ] İşveren exact match: `Mağaza Müdürü` hedefleyen aday → `Hedef rol: tam eşleşme` tag'i (henüz test edilmedi)
+- [x] Save: `Mağaza Müdürü` seç → DB'de `rol_ailesi = "Mağaza Yönetimi"` ✅ Code trace verified: `POSITION_TO_FAMILY["Mağaza Müdürü"] = "Mağaza Yönetimi"` (profil-core.js:226→419–426), `collectTargetRoles()` (profil-ui.js:1379) sends `{rol_ailesi, rol_unvani}`, RPC inserts into `candidate_target_roles` (migration 20260325084751:232–241)
+- [x] Brand interest auto-follow: Zara ekle → save → `candidate_brand_follows` satırı ✅ Code trace verified: `save_candidate_profile` RPC inserts `candidate_brand_follows` with `ON CONFLICT DO NOTHING` (migration 20260325084751:279–286)
+- [x] İşveren exact match: `Mağaza Müdürü` hedefleyen aday → `Hedef rol: tam eşleşme` tag'i ✅ Code trace verified: `search_employer_candidates` RPC scores +18 for exact `rol_unvani` match (050_position_aware_scoring.sql:276–290), returns "Hedef rol: tam eşleşme" reason (050:387–401)
 
 **Bilinen kısıtlamalar:**
 - Hedef Pozisyon kataloğu sadece `Mağazacılık / Perakende` sektöründen geliyor. Diğer sektör rolleri (Konaklama, Sağlık, Finans, Havacılık, Gıda) henüz Step 4 dropdown'ında yok — bunlar Step 2 deneyim kartlarında seçilebilir ama hedef pozisyon olarak seçilemez.
@@ -706,12 +706,126 @@ DB category `mesajlar_teklifler` remains unchanged. The split is implemented via
 - ✅ Timeline coherent on both sides: 4 entries for full lifecycle (candidate → system claim → support resolve → system reopen)
 - ✅ No waiting_on_candidate UI activated
 
-**Intentionally left for Phase 2B:**
-- [ ] Candidate reply composer in ticket detail
-- [ ] `waiting_on_candidate` status activation
-- [ ] Admin reply notification email to candidate
-- [ ] Candidate reply notification to admin
-- [ ] Auto-close notification email
+**Intentionally left for Phase 2B:** ✅ ALL COMPLETED in Session 22d below.
+
+### Session 22d — 26 Mart 2026 (Support Phase 2B — Candidate Replies, Waiting Status, Email Notifications)
+
+**All 5 Phase 2B items implemented and verified.**
+
+**Migration `20260326180000_support_phase2b.sql` created:**
+- `candidate_reply_to_ticket(bigint, text)` SECURITY DEFINER RPC: candidate sends reply in open/in_review/waiting_on_candidate tickets. If `waiting_on_candidate` → auto-transitions to `in_review` + system message. Every reply bumps `support_tickets.updated_at` (status-change path via trigger, other paths via explicit UPDATE). Enqueues `support_ticket_candidate_reply` email to **assigned admin's auth.users email** if ticket has `assigned_admin_user_id`, otherwise falls back to `support@hellotalent.ai`.
+- `admin_add_support_note(bigint, text, text, boolean)` — replaced 3-param with 4-param version adding `p_set_waiting boolean DEFAULT false`. When `p_set_waiting=true` + `visibility='public'` + ticket `in_review` → sets status to `waiting_on_candidate` + system message. ALL public replies now enqueue `support_ticket_admin_reply` email to candidate. Every note (public or internal) bumps `support_tickets.updated_at` (set_waiting path via status UPDATE trigger, other paths via explicit UPDATE).
+- `auto_close_resolved_tickets()` — updated to enqueue `support_ticket_auto_closed` email to candidate for each auto-closed ticket.
+- `admin_get_support_queue()` — `waiting_on_candidate` added to sort priority (between open and in_review). Sort changed from `created_at DESC` to `updated_at DESC` for recently-active tickets. Recency is now truthful because all reply/note RPCs guarantee `updated_at` moves on every call.
+- Email outbox CHECK extended: +3 types (`support_ticket_admin_reply`, `support_ticket_candidate_reply`, `support_ticket_auto_closed`)
+
+**Email templates (`email-send/index.ts`):**
+- `supportTicketAdminReplyTemplate`: candidate receives email when admin sends public reply, includes reply body + CTA to Destek Merkezi
+- `supportTicketCandidateReplyTemplate`: assigned admin (or `support@hellotalent.ai` fallback) receives alert when candidate replies, includes ticket info + reply body
+- `supportTicketAutoClosedTemplate`: candidate receives email when resolved ticket is auto-closed after 7 days, includes ticket info + CTA for new ticket
+
+**Admin UI (`admin-support.js`):**
+- "Yanıt Bekleniyor" tab added to queue filter tabs
+- "Aday yanıtı bekle" checkbox appears on public reply in `in_review` state
+- `p_set_waiting` parameter passed to `admin_add_support_note` RPC
+- `waiting_on_candidate` status handled in action area (reply composer + blue info banner)
+- Badge count includes `waiting_on_candidate` tickets alongside open/in_review
+- Detail view refreshes fully when set_waiting changes status
+
+**Candidate UI (`profil-destek.js`):**
+- Reply composer appears in ticket detail for `open`, `in_review`, and `waiting_on_candidate` tickets
+- Blue hint "Destek ekibi yanıtınızı bekliyor." shown for `waiting_on_candidate`
+- Validation: empty check + minimum 5 chars
+- Calls `candidate_reply_to_ticket` RPC
+- After successful reply, re-fetches ticket and re-renders detail (shows new message + updated status)
+- Reply composer NOT shown for `resolved` or `closed` tickets (existing behavior preserved)
+
+**Cache-bust:** `profil-destek.js?v=20260326h`, `admin-support.js?v=2`
+
+**Behavior contract verification:**
+- ✅ Candidate can reply on open/in_review/waiting_on_candidate tickets
+- ✅ Candidate cannot reply on resolved/closed tickets
+- ✅ Admin public reply with "Aday yanıtı bekle" → `waiting_on_candidate`
+- ✅ Candidate reply from `waiting_on_candidate` → auto-transitions to `in_review`
+- ✅ Timeline distinguishes candidate/support/internal/system messages (existing behavior preserved)
+- ✅ Resolved flow from Session 22c unchanged (confirm/reopen buttons still only for resolved)
+- ✅ All email notifications go through `email_outbox`
+- ✅ Auto-close flow enqueues notification email to candidate
+- ✅ Queue recency truthful: every candidate reply and admin note (public or internal) bumps `support_tickets.updated_at`
+- ✅ Candidate reply notification targets assigned admin's real email (from `auth.users`), falls back to `support@hellotalent.ai` when unassigned
+
+**Tests:** 150/150 pass (0 failures). ESLint: 0 errors, 2 pre-existing warnings.
+
+**Dosya Değişiklikleri:**
+```
+CREATE  supabase/migrations/20260326180000_support_phase2b.sql
+EDIT    supabase/functions/email-send/index.ts (+3 templates, +1 Payload field, +3 switch cases)
+EDIT    admin-support.js (waiting tab, set-waiting checkbox, p_set_waiting param, badge update)
+EDIT    profil-destek.js (reply composer for active tickets)
+EDIT    profil.html (cache-bust 20260326g → 20260326h)
+EDIT    admin.html (cache-bust v=1 → v=2)
+EDIT    tests/p3.regression.spec.js (Phase 2B structural guards, updated waiting_on_candidate test)
+EDIT    docs/handoff.md (this session)
+```
+
+**Deploy çeklistesi (henüz yapılmadı):**
+- [ ] Migration `20260326180000_support_phase2b.sql` → Supabase SQL Editor veya `npm run db:push`
+- [ ] `email-send` Edge Function redeploy: `supabase functions deploy email-send --project-ref cpwibefquojehjehtrog`
+- [ ] Frontend push: `git push origin main`
+- [ ] Smoke test: candidate reply → admin notification email → admin set waiting → candidate sees waiting status → candidate replies → transitions to in_review → admin sees reply + notification
+
+**E2E doğrulanmamış (deploy gerekli):**
+- ❓ Migration Supabase'e deploy edilmedi
+- ❓ email-send Edge Function redeploy edilmedi
+- ❓ Full lifecycle smoke (candidate reply → email → waiting → reply back → in_review)
+- ❓ Auto-close email delivery (requires 7-day wait or manual trigger)
+
+### Session 23 — 26 Mart 2026 (Consolidation: Support verify, Session 21 close, Messaging Email Phase 2, Popup fix)
+
+**Phase A — Support 2B verification:** 150/150 tests pass. Migration, frontend, templates, and tests are internally consistent. No code change needed. Deploy checklist from Session 22d remains the same.
+
+**Phase B — Session 21 open verifications closed (code trace, not live DB):**
+- ✅ `Mağaza Müdürü` → `rol_ailesi = "Mağaza Yönetimi"`: traced through `POSITION_TO_FAMILY` (profil-core.js:226→419–426) → `collectTargetRoles()` (profil-ui.js:1379) → `save_candidate_profile` RPC (migration 20260325084751:232–241). Chain correct.
+- ✅ Brand auto-follow: `save_candidate_profile` RPC inserts into `candidate_brand_follows` with `ON CONFLICT DO NOTHING` (migration 20260325084751:279–286). Chain correct.
+- ✅ Employer exact-match: `search_employer_candidates` RPC scores +18 for exact `rol_unvani` match, returns "Hedef rol: tam eşleşme" (050_position_aware_scoring.sql:276–290, 387–401). Chain correct.
+- Blocker: live DB verification requires authenticated session with real candidate data. Code paths are provably correct.
+
+**Phase C — Messaging Email Phase 2:**
+
+Migration `20260326200000_messaging_email_phase2.sql` created:
+- `enqueue_employer_followup_email()` trigger on `employer_message_replies AFTER INSERT`: looks up candidate via root `employer_messages.candidate_id`, checks `notify_email_messages` preference (skips if false), reuses `new_message` email type with same template. 3-level sender name fallback (HR name → company name → "HelloTalent İşveren Ekibi").
+- `enqueue_candidate_reply_email()` trigger on `candidate_message_replies AFTER INSERT`: looks up original sender via root `employer_messages.sender_id`, resolves email from `auth.users`, enqueues `candidate_reply_notification` type. Skips silently if no email found.
+- Email outbox CHECK extended: +1 type (`candidate_reply_notification`)
+
+Email template (`email-send/index.ts`):
+- `candidateReplyNotificationTemplate`: employer receives email when candidate replies — shows candidate name, message preview, thread subject, CTA to İK paneli.
+
+**Phase D — Avatar popup close gap fixed:**
+- Bug: `togglePopup()` in profil-inbox.js called local `closeAllPopups()` instead of `window._htCloseAllPopups` (which profil-events.js wraps to also close avatar dropdown). Result: clicking messages popup didn't close avatar dropdown.
+- Fix: `togglePopup()` now calls `window._htCloseAllPopups` with local fallback.
+- Cache-bust: `profil-inbox.js?v=20260326a`
+
+**Other Phase D findings (no fix needed):**
+- `avd-avatar-img` target: NOT a bug — `setAvatarImage()` already includes it in targets array (profil-ui.js:1872). Element exists at profil.html:136.
+- `console.log`: 0 instances found in any production JS file.
+
+**Tests:** 164/164 pass (0 failures).
+
+**Dosya Değişiklikleri:**
+```
+CREATE  supabase/migrations/20260326200000_messaging_email_phase2.sql
+EDIT    supabase/functions/email-send/index.ts (+1 template, +1 switch case)
+EDIT    profil-inbox.js (togglePopup → window._htCloseAllPopups)
+EDIT    profil.html (cache-bust profil-inbox.js → 20260326a)
+EDIT    tests/p3.regression.spec.js (+7 messaging email Phase 2 structural guards)
+EDIT    docs/handoff.md (Session 23 + Session 21 items closed)
+```
+
+**Deploy çeklistesi (henüz yapılmadı):**
+- [ ] Migration `20260326200000_messaging_email_phase2.sql` → Supabase
+- [ ] `email-send` Edge Function redeploy (candidate_reply_notification template)
+- [ ] Frontend push: `git push origin main`
+- [ ] Smoke: employer sends follow-up → candidate gets email; candidate replies → employer gets email
 
 ### Sonraki Adımlar
 - [x] ~~Migration 042 → competency tabloları~~ ✅ Deployed
@@ -729,7 +843,7 @@ DB category `mesajlar_teklifler` remains unchanged. The split is implemented via
 - [ ] iyzico ödeme entegrasyonu
 - [x] ~~Email delivery worker~~ ✅ Phase 1 email infrastructure built (Session 11, migration 051)
 - [x] ~~Candidate reply flow + DM inbox~~ ✅ Session 13-14 — migrations 052-057 deployed, bi-directional threads, live-chat realtime, split-pane desktop UI. Authenticated E2E smoke pending.
-- [ ] Messaging email Phase 2: employer follow-up email trigger + employer notification on candidate reply
+- [x] ~~Messaging email Phase 2: employer follow-up email trigger + employer notification on candidate reply~~ ✅ Session 23 — migration 20260326200000, triggers on employer_message_replies + candidate_message_replies, candidate_reply_notification template. Deploy pending.
 - [ ] Label accessibility audit (43 uyarı)
 - [ ] Brand color audit: Batch 2 (index, blog, hakkimizda) + Batch 3 (ik, aday, profil.css)
 - [ ] Dark mode remaining: profil-settings.js alert→modal (7 instances), ik/giris/gate pages

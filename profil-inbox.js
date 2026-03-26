@@ -782,7 +782,8 @@
     var popup = document.getElementById(popupId);
     if (!popup) return;
     var isOpen = popup.style.display !== 'none';
-    closeAllPopups();
+    // Use window._htCloseAllPopups (wraps avatar dropdown close from profil-events.js)
+    if (window._htCloseAllPopups) window._htCloseAllPopups(); else closeAllPopups();
     if (!isOpen) { popup.style.display = ''; if (loadFn) loadFn(); }
   }
 

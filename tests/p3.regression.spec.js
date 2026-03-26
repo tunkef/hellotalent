@@ -543,11 +543,12 @@ test.describe('Support Queue MVP — structural guards', () => {
     expect(profilDeskJs).toContain('Devam Ediyor');
   });
 
-  test('waiting_on_candidate is not wired into candidate UI flow', () => {
-    // Should exist in labels but NOT in action button logic
+  test('waiting_on_candidate is wired into candidate UI reply composer', () => {
     expect(profilDeskJs).toContain("waiting_on_candidate");
-    // Must NOT have action buttons for waiting_on_candidate
-    expect(profilDeskJs).not.toContain("status === 'waiting_on_candidate'");
+    // Phase 2B: reply composer shown for waiting_on_candidate
+    expect(profilDeskJs).toContain("status === 'waiting_on_candidate'");
+    // candidate_reply_to_ticket RPC wired
+    expect(profilDeskJs).toContain("'candidate_reply_to_ticket'");
   });
 
   // ── Email template ──
@@ -568,5 +569,186 @@ test.describe('Support Queue MVP — structural guards', () => {
     expect(resolvedFn).toContain('"Merhaba!"');
     expect(resolvedFn).not.toContain('Merhaba ${name},');
     expect(resolvedFn).not.toContain('"Merhaba,"');
+  });
+});
+
+// Support Phase 2B — candidate reply, waiting_on_candidate, email notifications
+// ═══════════════════════════════════════════════
+
+test.describe('Support Phase 2B — structural guards', () => {
+  var profilDeskJs, adminSupportJs, emailSendTs, migSql;
+
+  test.beforeAll(() => {
+    profilDeskJs = readFromRepo('profil-destek.js');
+    adminSupportJs = readFromRepo('admin-support.js');
+    emailSendTs = readFromRepo('supabase/functions/email-send/index.ts');
+    migSql = readFromRepo('supabase/migrations/20260326180000_support_phase2b.sql');
+  });
+
+  // ── Migration ──
+  test('migration creates candidate_reply_to_ticket RPC', () => {
+    expect(migSql).toContain('candidate_reply_to_ticket');
+    expect(migSql).toContain('SECURITY DEFINER');
+    expect(migSql).toContain("waiting_on_candidate");
+    expect(migSql).toContain("'in_review'");
+  });
+
+  test('migration updates admin_add_support_note with p_set_waiting', () => {
+    expect(migSql).toContain('p_set_waiting boolean DEFAULT false');
+    expect(migSql).toContain('support_ticket_admin_reply');
+  });
+
+  test('migration updates auto_close with email notification', () => {
+    expect(migSql).toContain('support_ticket_auto_closed');
+    expect(migSql).toContain('contact_email_snapshot');
+  });
+
+  test('migration extends email_outbox CHECK with 3 new types', () => {
+    expect(migSql).toContain("'support_ticket_admin_reply'");
+    expect(migSql).toContain("'support_ticket_candidate_reply'");
+    expect(migSql).toContain("'support_ticket_auto_closed'");
+  });
+
+  // ── Candidate UI ──
+  test('profil-destek.js has reply composer for active tickets', () => {
+    expect(profilDeskJs).toContain("candidate_reply_to_ticket");
+    expect(profilDeskJs).toContain("'open' || ticket.status === 'in_review' || ticket.status === 'waiting_on_candidate'");
+  });
+
+  test('profil-destek.js reply composer has validation', () => {
+    expect(profilDeskJs).toContain('Mesaj \\u00E7ok k\\u0131sa');
+    expect(profilDeskJs).toContain("replyBtn.disabled = true");
+  });
+
+  // ── Admin UI ──
+  test('admin-support.js has waiting_on_candidate filter tab', () => {
+    expect(adminSupportJs).toContain("key: 'waiting_on_candidate'");
+  });
+
+  test('admin-support.js passes p_set_waiting to RPC', () => {
+    expect(adminSupportJs).toContain('p_set_waiting');
+    expect(adminSupportJs).toContain('support-set-waiting');
+  });
+
+  test('admin-support.js badge counts include waiting_on_candidate', () => {
+    expect(adminSupportJs).toContain("'waiting_on_candidate'");
+  });
+
+  // ── Email templates ──
+  test('email-send has 3 new support templates', () => {
+    expect(emailSendTs).toContain('"support_ticket_admin_reply"');
+    expect(emailSendTs).toContain('"support_ticket_candidate_reply"');
+    expect(emailSendTs).toContain('"support_ticket_auto_closed"');
+    expect(emailSendTs).toContain('supportTicketAdminReplyTemplate');
+    expect(emailSendTs).toContain('supportTicketCandidateReplyTemplate');
+    expect(emailSendTs).toContain('supportTicketAutoClosedTemplate');
+  });
+
+  test('new email templates use reply_body payload field', () => {
+    expect(emailSendTs).toContain('reply_body');
+  });
+
+  // ── Queue recency truth ──
+  test('candidate_reply_to_ticket bumps updated_at on every reply path', () => {
+    // Both branches (waiting_on_candidate transition and else) must touch support_tickets
+    // The waiting path does UPDATE status → trigger bumps updated_at
+    // The else path does explicit UPDATE updated_at
+    var fnStart = migSql.indexOf('CREATE OR REPLACE FUNCTION candidate_reply_to_ticket');
+    var fnEnd = migSql.indexOf('$$;', fnStart);
+    var fnBody = migSql.slice(fnStart, fnEnd);
+    // Must have an ELSE branch that explicitly bumps updated_at
+    expect(fnBody).toContain('ELSE');
+    expect(fnBody).toContain('UPDATE support_tickets SET updated_at = now() WHERE id = p_ticket_id');
+  });
+
+  test('admin_add_support_note bumps updated_at on every note path', () => {
+    var fnStart = migSql.indexOf('CREATE OR REPLACE FUNCTION admin_add_support_note');
+    var fnEnd = migSql.indexOf('$$;', fnStart);
+    var fnBody = migSql.slice(fnStart, fnEnd);
+    // Must have an ELSE branch that explicitly bumps updated_at
+    expect(fnBody).toContain('ELSE');
+    expect(fnBody).toContain('UPDATE support_tickets SET updated_at = now() WHERE id = p_ticket_id');
+  });
+
+  // ── Assigned admin email targeting ──
+  test('candidate_reply_to_ticket resolves assigned admin email with fallback', () => {
+    var fnStart = migSql.indexOf('CREATE OR REPLACE FUNCTION candidate_reply_to_ticket');
+    var fnEnd = migSql.indexOf('$$;', fnStart);
+    var fnBody = migSql.slice(fnStart, fnEnd);
+    // Must read assigned_admin_user_id from ticket
+    expect(fnBody).toContain('assigned_admin_user_id');
+    // Must look up email from auth.users
+    expect(fnBody).toContain('auth.users');
+    expect(fnBody).toContain('v_recipient_email');
+    // Must have fallback to shared inbox
+    expect(fnBody).toContain("support@hellotalent.ai");
+  });
+
+  // ── Code quality ──
+  test('no console.log in Phase 2B code', () => {
+    var consoleLogPattern = /console\.log\(/;
+    // profil-destek.js and admin-support.js should only have console.error
+    expect(profilDeskJs).not.toMatch(consoleLogPattern);
+    expect(adminSupportJs).not.toMatch(consoleLogPattern);
+  });
+});
+
+// Messaging Email Phase 2 — employer follow-up + candidate reply notifications
+// ═══════════════════════════════════════════════
+
+test.describe('Messaging Email Phase 2 — structural guards', () => {
+  var migSql, emailSendTs;
+
+  test.beforeAll(() => {
+    migSql = readFromRepo('supabase/migrations/20260326200000_messaging_email_phase2.sql');
+    emailSendTs = readFromRepo('supabase/functions/email-send/index.ts');
+  });
+
+  // ── Migration ──
+  test('migration creates employer follow-up email trigger', () => {
+    expect(migSql).toContain('enqueue_employer_followup_email');
+    expect(migSql).toContain('trg_employer_followup_email');
+    expect(migSql).toContain('employer_message_replies');
+    expect(migSql).toContain('AFTER INSERT');
+  });
+
+  test('employer follow-up trigger checks candidate notify preference', () => {
+    expect(migSql).toContain('notify_email_messages');
+    expect(migSql).toContain("'skipped'");
+  });
+
+  test('employer follow-up trigger reuses new_message email type', () => {
+    var fnStart = migSql.indexOf('CREATE OR REPLACE FUNCTION enqueue_employer_followup_email');
+    var fnEnd = migSql.indexOf('$$;', fnStart);
+    var fnBody = migSql.slice(fnStart, fnEnd);
+    expect(fnBody).toContain("'new_message'");
+    expect(fnBody).toContain('new_message_followup:');
+  });
+
+  test('migration creates candidate reply email trigger', () => {
+    expect(migSql).toContain('enqueue_candidate_reply_email');
+    expect(migSql).toContain('trg_candidate_reply_email');
+    expect(migSql).toContain('candidate_message_replies');
+  });
+
+  test('candidate reply trigger resolves employer email from auth.users', () => {
+    var fnStart = migSql.indexOf('CREATE OR REPLACE FUNCTION enqueue_candidate_reply_email');
+    var fnEnd = migSql.indexOf('$$;', fnStart);
+    var fnBody = migSql.slice(fnStart, fnEnd);
+    expect(fnBody).toContain('auth.users');
+    expect(fnBody).toContain('v_sender_email');
+    expect(fnBody).toContain("'candidate_reply_notification'");
+  });
+
+  test('migration extends email_outbox CHECK with candidate_reply_notification', () => {
+    expect(migSql).toContain("'candidate_reply_notification'");
+    expect(migSql).toContain('email_outbox_email_type_check');
+  });
+
+  // ── Email template ──
+  test('email-send has candidate_reply_notification template', () => {
+    expect(emailSendTs).toContain('"candidate_reply_notification"');
+    expect(emailSendTs).toContain('candidateReplyNotificationTemplate');
+    expect(emailSendTs).toContain('Adaydan yan');
   });
 });
