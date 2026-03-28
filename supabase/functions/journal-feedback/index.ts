@@ -14,11 +14,20 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const OPENAI_API_KEY = Deno.env.get("OPENAI_API_KEY") || "";
-const MODEL = "gpt-4o-mini";
+const MODEL = Deno.env.get("OPENAI_MODEL") || "gpt-5-mini";
 const BATCH_SIZE = 5;
 
 Deno.serve(async (_req: Request) => {
   try {
+    // Extract optional self-reflection from request body
+    let selfReflection = "";
+    try {
+      const body = await _req.json();
+      if (body && typeof body.self_reflection === "string") {
+        selfReflection = body.self_reflection.trim();
+      }
+    } catch { /* no body or invalid JSON — proceed without */ }
+
     const supabase = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, {
       auth: { persistSession: false },
     });
@@ -80,6 +89,7 @@ Deno.serve(async (_req: Request) => {
           journal.action_text || "",
           journal.result_text || "",
           journal.takeaway_text || "",
+          selfReflection,
         );
 
         const aiResult = await callOpenAI(prompt);
@@ -153,7 +163,12 @@ function buildPrompt(
   action: string,
   result: string,
   takeaway: string,
+  selfReflection: string = "",
 ): string {
+  const selfReflectBlock = selfReflection
+    ? `\n\nADAYIN KENDİ DEĞERLENDİRMESİ:\n"${selfReflection}"\n(Bu değerlendirmeyi dikkate al. Adayın fark ettiği güçlü yanları teyit et veya gözden kaçırdığı noktaları belirt.)`
+    : "";
+
   return `Sen perakende sektöründe deneyimli bir mülakat koçusun. Bir adayın iş görüşmesi hazırlık yanıtını değerlendireceksin.
 
 BAĞLAM:
@@ -166,7 +181,7 @@ Durum (S): ${situation || "(Boş bırakılmış)"}
 Görev (T): ${task || "(Boş bırakılmış)"}
 Aksiyon (A): ${action || "(Boş bırakılmış)"}
 Sonuç (R): ${result || "(Boş bırakılmış)"}
-Çıkarım (+T): ${takeaway || "(Boş bırakılmış)"}
+Çıkarım (+T): ${takeaway || "(Boş bırakılmış)"}${selfReflectBlock}
 
 DEĞERLENDİRME KRİTERLERİ:
 1. Yapısal bütünlük: STAR+T formatına uyum
@@ -198,8 +213,16 @@ KURALLAR:
 - Türkçe yanıt ver
 - Yalnızca JSON döndür, açıklama ekleme
 - Boş bırakılan STAR+T alanları "missing" olarak değerlendir
-- Genel övgü yerine somut geri bildirim ver
-- Perakende sektörü bağlamında değerlendir`;
+- Perakende sektörü bağlamında değerlendir
+
+YAZIM TONU:
+- "Harika!", "Mükemmel!", "Muhteşem!" gibi boş övgüler KULLANMA
+- Somut referans ver: "Satış rakamlarını vermişsin, bu güçlü" gibi spesifik ol
+- "kapsamlı", "etkili", "güçlü" kelimelerini her cümlede tekrarlama
+- Kısa ve uzun cümleleri karıştır, tekdüze ritim kurma
+- "X, Y ve Z" üçlü kalıbını her listede kullanma — bazen ikili, bazen dörtlü grupla
+- Genel tavsiye yerine bu adayın bu cevabına özel geri bildirim ver
+- Eksik alanları "doldurmanız önerilir" gibi genel ifadelerle geçiştirme, ne yazılabileceğine dair somut örnek ver`;
 }
 
 // ═══════════════════════════════════════════════

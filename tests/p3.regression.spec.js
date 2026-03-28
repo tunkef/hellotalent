@@ -830,14 +830,14 @@ test.describe('Studio Phase 2 — structural guards', () => {
     expect(mulakatJs).toContain('complete_studio_module');
   });
 
-  test('candidate Studio sections no longer use toast as primary action', () => {
-    // perfBtn and bilgiBtn should call hydrateStudioSection, not showStudioToast
+  test('Performans and Bilgiler cards are passive with toast feedback (FAZ 0 delta)', () => {
+    // Cards now show "Çok Yakında" badge and toast on click instead of hydrating content
     var bindStart = mulakatJs.indexOf('function bindStarIntroEvents');
     var bindEnd = mulakatJs.indexOf('function showStudioToast');
     var bindBody = mulakatJs.slice(bindStart, bindEnd);
-    expect(bindBody).toContain("hydrateStudioSection('performans'");
-    expect(bindBody).toContain("hydrateStudioSection('bilgiler'");
-    expect(bindBody).not.toContain("showStudioToast('Performans");
+    expect(bindBody).toContain("showStudioToast");
+    expect(mulakatJs).toContain('st-passive');
+    expect(mulakatJs).toContain('st-coming-badge');
   });
 
   test('no console.log in new Studio code', () => {
@@ -906,10 +906,10 @@ test.describe('Studio Phase 2b — seed content + progress UX', () => {
     expect(mulakatJs).toContain("tamamland\\u0131");
   });
 
-  test('landing cards have async progress stat placeholders', () => {
-    expect(mulakatJs).toContain("id=\"st-stat-performans\"");
-    expect(mulakatJs).toContain("id=\"st-stat-bilgiler\"");
+  test('landing has async hydration functions and coming-soon badges', () => {
+    // Perf/Bilgi cards now have coming-soon badges instead of stat placeholders
     expect(mulakatJs).toContain('hydrateLandingStats');
+    expect(mulakatJs).toContain('st-coming-badge');
   });
 
   test('progress cache invalidated on complete and back navigation', () => {
@@ -1500,18 +1500,18 @@ test.describe('Yetenek IA reset — structural guards', () => {
     expect(mulakatJs).toContain('yk-unit-followup-title');
   });
 
-  test('unit detail has AI placeholder instead of journal', () => {
-    expect(mulakatJs).toContain('yk-unit-ai-placeholder');
-    expect(mulakatJs).toContain('AI Ko\\u00e7luk Yak');
-  });
-
-  // ── Journal removal ──
-  test('journal UI removed from practice render flow', () => {
-    // renderPractice should NOT call renderJournalPanel anymore
+  test('unit detail has journal panel with AI feedback (Phase 5B restore)', () => {
+    // Journal panel restored in practice render flow (FAZ 0.3)
     var practiceStart = mulakatJs.indexOf('function renderPractice()');
     var practiceEnd = mulakatJs.indexOf('\nfunction ', practiceStart + 10);
     var practiceBody = mulakatJs.slice(practiceStart, practiceEnd);
-    expect(practiceBody).not.toContain('renderJournalPanel');
+    expect(practiceBody).toContain('renderJournalPanel');
+  });
+
+  test('AI feedback uses freemium gate (first FREE_COMP_LIMIT comps free)', () => {
+    expect(mulakatJs).toContain('aiFree');
+    expect(mulakatJs).toContain('FREE_COMP_LIMIT');
+    expect(mulakatJs).toContain('aif-self-reflect');
   });
 
   test('journal tables and persistence code still exist (backend preserved)', () => {
@@ -1542,5 +1542,65 @@ test.describe('Yetenek IA reset — structural guards', () => {
     expect(mulakatJs).toContain('FREE_COMP_LIMIT');
     expect(mulakatJs).toContain('S.isPremium');
     expect(mulakatJs).toContain('freeLimit');
+  });
+});
+
+/* ═══════════════════════════════════════════
+   FAZ 4C — Content detail → practice bridge
+   ═══════════════════════════════════════════ */
+test.describe('FAZ 4C — detail → practice bridge', () => {
+  var mulakatJs;
+  test.beforeAll(() => {
+    mulakatJs = readFromRepo('profil-mulakatkocu.js');
+  });
+
+  test('reverse mapping objects exist', () => {
+    expect(mulakatJs).toContain('MODULE_SLUG_TO_COMP');
+    expect(mulakatJs).toContain('COACH_CAT_TO_COMP');
+  });
+
+  test('reverse mappings built from existing forward maps', () => {
+    expect(mulakatJs).toContain('COMP_TO_MODULE_SLUG');
+    expect(mulakatJs).toContain('COMP_TO_COACH_CATEGORY');
+  });
+
+  test('navigateToCompPractice function exists', () => {
+    expect(mulakatJs).toContain('function navigateToCompPractice');
+  });
+
+  test('buildPracticeBridgeCTA function exists', () => {
+    expect(mulakatJs).toContain('function buildPracticeBridgeCTA');
+  });
+
+  test('module detail has practice bridge CTA', () => {
+    expect(mulakatJs).toContain('MODULE_SLUG_TO_COMP[mod.slug]');
+    expect(mulakatJs).toContain('buildPracticeBridgeCTA(modCompCode');
+  });
+
+  test('coach detail has practice bridge CTA', () => {
+    expect(mulakatJs).toContain('COACH_CAT_TO_COMP[post.category]');
+    expect(mulakatJs).toContain('buildPracticeBridgeCTA(coachCompCode');
+  });
+
+  test('pendingComp mechanism in startSession', () => {
+    expect(mulakatJs).toContain('S.pendingComp');
+    expect(mulakatJs).toContain('pendingComp = null');
+  });
+
+  test('bridge CTA CSS class exists', () => {
+    expect(mulakatJs).toContain('.st-detail-bridge');
+  });
+
+  test('does not introduce new DB objects', () => {
+    /* FAZ 4C is frontend-only — no new RPCs or tables */
+    expect(mulakatJs).not.toContain('create_practice_bridge');
+    expect(mulakatJs).not.toContain('practice_bridge_table');
+  });
+
+  test('completion cross-links not broken (FAZ 4B preserved)', () => {
+    expect(mulakatJs).toContain('hydrateCompletionXlinks');
+    expect(mulakatJs).toContain('yk-completion-xlinks');
+    expect(mulakatJs).toContain('COMP_TO_COACH_CATEGORY');
+    expect(mulakatJs).toContain('COMP_TO_MODULE_SLUG');
   });
 });

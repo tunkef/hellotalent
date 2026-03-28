@@ -230,20 +230,20 @@ var INTERVIEW_QUESTIONS = {
    STAR TECHNIQUE CONTENT
    ════════════════════════════════════════════════ */
 var STAR_CONTENT = {
-  intro: 'İş görüşmesi bir performanstır. Hazırlık yapan aday, yapmayana karşı her zaman avantajlıdır. STAR tekniği ile deneyimlerinizi yapılandırılmış, etkileyici ve akılda kalıcı şekilde anlatmayı öğrenin.',
+  intro: 'Hazırlık yapan aday her zaman bir adım öndedir. STAR tekniği, deneyimlerinizi net ve tutarlı anlatmanızı sağlar \u2014 görüşmeci tam olarak ne yaptığınızı anlar.',
   what: {
     title: 'STAR Tekniği Nedir?',
-    desc: 'STAR, iş görüşmelerinde davranışsal soruları yapılandırılmış ve etkili biçimde yanıtlamak için kullanılan kanıtlanmış bir yöntemdir.',
+    desc: 'STAR, iş görüşmelerinde davranışsal soruları tutarlı ve somut yanıtlamak için kullanılan bir yöntemdir.',
     steps: [
       { letter: 'S', tr: 'Durum', en: 'Situation', desc: 'Karşılaştığınız durumu, zorluğu veya bağlamı tanımlayın. Görüşmeciyi sahneye çekin: neredeydiniz, ne oluyordu, neden önemliydi? Bağlamı kısa ama net tutun \u2014 bir veya iki cümle yeterlidir. Gereksiz detaylardan kaçının, sadece hikayenin anlaşılması için gerekli olan arka planı verin.' },
       { letter: 'T', tr: 'Görev', en: 'Task', desc: 'Bu durum içinde sizin spesifik sorumluluğunuzu veya hedefinizi açıklayın. Ekibin genel görevi değil, sizden beklenen çıktıyı netleştirin. Görüşmeci \u201Cbu kişinin rolü neydi?\u201D sorusuna net bir yanıt almalı. Tek cümle ideal, ancak karmaşık görevlerde iki cümleye uzayabilir.' },
-      { letter: 'A', tr: 'Aksiyon', en: 'Action', desc: 'Görevi başarmak için attığınız somut adımları detaylandırın. Hem teknik becerileri (analiz, planlama, uygulama) hem de kişisel becerileri (iletişim, ikna, liderlik) dengeli biçimde vurgulayın. \u201CBiz\u201D yerine \u201Cben\u201D kullanarak kendi katkınızı netleştirin. Neden o yaklaşımı seçtiğinizi ve alternatiflerden neden vazgeçtiğinizi kısaca açıklayın. Üç ila beş cümle ideal uzunluktur.' },
+      { letter: 'A', tr: 'Aksiyon', en: 'Action', desc: 'Görevi başarmak için attığınız somut adımları detaylandırın. Teknik ve kişisel becerilerinizi dengeli vurgulayın. \u201CBiz\u201D yerine \u201Cben\u201D kullanarak kendi katkınızı netleştirin. Neden o yaklaşımı seçtiğinizi kısaca açıklayın. Üç ila beş cümle ideal uzunluktur.' },
       { letter: 'R', tr: 'Sonuç', en: 'Result', desc: 'Eylemlerinizin yarattığı somut sonucu ve etkiyi paylaşın. Mümkünse sonuçları rakamlarla destekleyin: yüzdelik artış, süre tasarrufu, müşteri memnuniyet puanı. Başarı kadar başarısızlıktan öğrendikleriniz de değerlidir \u2014 önemli olan dersler çıkarmış olmanızdır. Bir veya iki cümle.' }
     ],
     takeaway: {
       tr: 'Çıkarım',
       en: 'Takeaway',
-      desc: 'Deneyimden ne öğrendiğinizi ve bu öğrenimin yeni rolde nasıl değer yaratacağını açıklayın. Bu ek adım, öz farkındalığınızı, gelişim odaklı yaklaşımınızı ve geçmiş deneyimleri geleceğe taşıma kapasitenizi gösterir. Görüşmeciyi \u201Cbu aday öğrenmeye açık ve gelişiyor\u201D sonucuna ulaştırır.'
+      desc: 'Deneyimden ne öğrendiğinizi ve bu öğrenimin yeni rolde nasıl işe yarayacağını açıklayın. Görüşmeci, geçmiş deneyimlerden ders çıkarıp çıkarmadığınızı anlamak ister. Bu adım \u201Cbu aday öğreniyor\u201D izlenimini bırakır.'
     }
   },
   example: {
@@ -255,10 +255,10 @@ var STAR_CONTENT = {
     takeaway: 'Bu deneyim bana üç kritik ders öğretti. Birincisi, bir satış sürecinde tüm karar vericileri ve etki alanlarını baştan haritalamak gerekiyor \u2014 tek kişiyle ilişki kurmak yetmiyor. İkincisi, her sunumumda artık ekip arkadaşlarım ve yöneticimle ön provalar yapıyorum; zayıf noktalarımı bulmamı ve itirazlara hazırlıklı olmamı sağlıyorlar. Üçüncüsü, başarının bireysel değil takım işi olduğunu içselleştirdim \u2014 lojistik, finans ve yönetim desteğini proaktif olarak dahil etmeyi öğrendim.'
   },
   benefits: [
-    'Düşüncelerinizi yapılandırır, ilgili ve etkili detaylara odaklanmanızı sağlar',
-    'Geçmiş başarılarınız ile gelecek iş sorumluluklarınız arasında doğrudan bağlantı kurar',
-    'Somut ve ölçülebilir sonuçlar sunma kapasitenizi gösterir',
-    'Öz farkındalık, duygusal zeka ve mesleki gelişimi ortaya koyar'
+    'Cevabınız dağılmaz \u2014 ne söyleyeceğinizi önceden bilirsiniz',
+    'Yaşadığınız deneyimi, başvurduğunuz pozisyonla doğrudan ilişkilendirirsiniz',
+    'Sonuçları rakamla desteklediğinizde görüşmeci somut bir resim görür',
+    'Hatalardan ne öğrendiğinizi gösterirsiniz \u2014 bu, gelişime açık olduğunuzun kanıtıdır'
   ],
   tips_do: [
     'Sorunun gerçekten bir STAR yanıtı gerektirip gerektirmediğini değerlendirin',
@@ -722,7 +722,7 @@ function injectCSS() {
   css += '.ig-star-cell{width:76px;height:76px;background:#fff;border:none;outline:none;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:all .25s ease;position:relative;box-shadow:0 2px 8px rgba(0,0,0,.06)}';
   css += '.ig-star-cell:hover{transform:scale(1.06)}';
   css += '.ig-star-cell .ig-sq-letter{font-family:"Bricolage Grotesque",sans-serif;font-size:30px;font-weight:900;letter-spacing:-1px;transition:all .25s;color:var(--verm,#C94E28)}';
-  css += '.ig-star-cell .ig-sq-label{font-family:"Plus Jakarta Sans",sans-serif;font-size:7.5px;font-weight:600;letter-spacing:.4px;text-transform:uppercase;transition:all .25s;margin-top:2px}';
+  css += '.ig-star-cell .ig-sq-label{font-family:"Plus Jakarta Sans",sans-serif;font-size:9px;font-weight:600;letter-spacing:.4px;text-transform:uppercase;transition:all .25s;margin-top:2px}';
   css += '.ig-sq-s{border-radius:60px 5px 5px 5px}.ig-sq-t{border-radius:5px 60px 5px 5px}.ig-sq-a{border-radius:5px 5px 5px 60px}.ig-sq-r{border-radius:5px 5px 60px 5px}';
   css += '.ig-star-cell.active{transform:scale(1.06);background:linear-gradient(135deg,#d4572f 0%,#b84420 100%);box-shadow:0 4px 16px rgba(0,0,0,.2),inset 0 1px 0 rgba(255,255,255,.15)}';
   css += '.ig-star-cell.active .ig-sq-letter{color:#fff}';
@@ -985,10 +985,57 @@ function injectCSS() {
   css += '.yk-track-card:hover{border-color:var(--verm,#C94E28);box-shadow:0 4px 16px rgba(0,0,0,.08);transform:translateY(-1px)}';
   css += '.yk-track-locked{position:relative;overflow:hidden}';
   css += '.yk-track-locked .yk-track-inner{filter:blur(4px);pointer-events:none}';
-  css += '.yk-track-done{opacity:.8}.yk-track-done:hover{opacity:.9}';
+  css += '.yk-track-done{border-left:3px solid var(--verm,#C94E28);opacity:.92}.yk-track-done:hover{opacity:1}';
   css += '.yk-track-top{display:flex;align-items:center;justify-content:space-between;gap:8px}';
   css += '.yk-track-name{font-family:"Bricolage Grotesque",sans-serif;font-size:15px;font-weight:700;color:var(--text-primary,#111)}';
   css += '.yk-track-badge-done{font-family:"DM Mono",monospace;font-size:12px;color:#059669;background:rgba(5,150,105,.08);padding:2px 8px;border-radius:20px}';
+  css += '.yk-track-done .yk-track-hover-hint{display:none;font-family:"Plus Jakarta Sans",sans-serif;font-size:10px;color:var(--verm,#C94E28);margin-top:6px}';
+  css += '.yk-track-done:hover .yk-track-hover-hint{display:block}';
+  /* Weekly activity summary */
+  css += '.yk-weekly-summary{display:flex;align-items:center;gap:10px;padding:12px 16px;background:rgba(30,45,94,.03);border:1px solid rgba(30,45,94,.06);border-radius:12px;margin-bottom:16px}';
+  css += '.yk-weekly-summary-icon{width:28px;height:28px;border-radius:8px;background:rgba(30,45,94,.08);display:flex;align-items:center;justify-content:center;color:var(--navy,#1E2D5E);flex-shrink:0}';
+  css += '.yk-weekly-summary-icon svg{width:14px;height:14px}';
+  css += '.yk-weekly-summary-text{font-family:"Plus Jakarta Sans",sans-serif;font-size:11px;color:var(--text-secondary,#4B5563);line-height:1.4}';
+  css += '.yk-weekly-summary-text strong{font-weight:600;color:var(--text-primary,#111)}';
+  /* Completion icon */
+  css += '.yk-summary-icon{width:56px;height:56px;background:rgba(201,78,40,.08);border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px}';
+  css += '.yk-summary-icon svg{width:28px;height:28px;color:var(--verm,#C94E28)}';
+  /* Button press micro-feedback */
+  css += '.ig-btn:active{transform:scale(.97);transition:transform .1s}';
+  /* Streak pill */
+  css += '.yk-streak-pill{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:20px;font-family:"DM Mono",monospace;font-size:12px;font-weight:600;margin-bottom:12px}';
+  css += '.yk-streak-active{background:rgba(201,78,40,.08);color:var(--verm,#C94E28)}';
+  css += '.yk-streak-zero{background:var(--bg-muted,#F7F6F4);color:var(--text-muted,#6B7280)}';
+  css += '.yk-streak-pill svg{width:14px;height:14px}';
+  /* Daily practice card */
+  css += '.yk-daily-card{display:flex;align-items:center;gap:14px;padding:14px 18px;background:linear-gradient(135deg,rgba(201,78,40,.03) 0%,rgba(201,78,40,.06) 100%);border:1px solid rgba(201,78,40,.1);border-radius:14px;margin-bottom:16px;cursor:pointer;transition:all .25s}';
+  css += '.yk-daily-card:hover{border-color:var(--verm,#C94E28);box-shadow:0 4px 16px rgba(0,0,0,.06);transform:translateY(-1px)}';
+  css += '.yk-daily-icon{width:36px;height:36px;border-radius:10px;background:rgba(201,78,40,.08);display:flex;align-items:center;justify-content:center;color:var(--verm,#C94E28);flex-shrink:0}';
+  css += '.yk-daily-icon svg{width:18px;height:18px}';
+  css += '.yk-daily-text{flex:1;min-width:0}';
+  css += '.yk-daily-kicker{font-family:"DM Mono",monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--verm,#C94E28);margin-bottom:2px}';
+  css += '.yk-daily-title{font-family:"Bricolage Grotesque",sans-serif;font-size:14px;font-weight:700;color:var(--text-primary,#111)}';
+  css += '.yk-daily-meta{font-family:"Plus Jakarta Sans",sans-serif;font-size:11px;color:var(--text-muted,#6B7280);margin-top:2px}';
+  css += '.yk-daily-cta{font-family:"DM Mono",monospace;font-size:11px;color:var(--verm,#C94E28);font-weight:600;flex-shrink:0}';
+  /* Completion cross-links */
+  css += '.yk-xlinks{display:flex;gap:10px;margin:16px 0;text-align:left}';
+  css += '@media(max-width:600px){.yk-xlinks{flex-direction:column}}';
+  css += '.yk-xlink{flex:1;display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:12px;border:1px solid var(--border-subtle,#E5E3DF);background:var(--bg-surface,#fff);cursor:pointer;transition:all .25s}';
+  css += '.yk-xlink:hover{border-color:var(--verm,#C94E28);box-shadow:0 4px 12px rgba(0,0,0,.06);transform:translateY(-1px)}';
+  css += '.yk-xlink-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}';
+  css += '.yk-xlink-icon.navy{background:rgba(30,45,94,.08);color:var(--navy,#1E2D5E)}';
+  css += '.yk-xlink-icon.verm{background:rgba(201,78,40,.08);color:var(--verm,#C94E28)}';
+  css += '.yk-xlink-icon svg{width:16px;height:16px}';
+  css += '.yk-xlink-text{flex:1;min-width:0}';
+  css += '.yk-xlink-label{font-family:"DM Mono",monospace;font-size:9px;letter-spacing:.8px;text-transform:uppercase;color:var(--text-muted,#6B7280);margin-bottom:2px}';
+  css += '.yk-xlink-title{font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;font-weight:600;color:var(--text-primary,#111);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}';
+  /* Detail → practice bridge (FAZ 4C) */
+  css += '.st-detail-bridge{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:12px;border:1px solid var(--border-subtle,#E5E3DF);background:var(--bg-surface,#fff);cursor:pointer;transition:all .25s;margin-top:16px}';
+  css += '.st-detail-bridge:hover{border-color:var(--verm,#C94E28);box-shadow:0 4px 12px rgba(0,0,0,.06);transform:translateY(-1px)}';
+  /* Personalized greeting */
+  css += '.yk-greeting{font-family:"Bricolage Grotesque",sans-serif;font-size:18px;font-weight:700;color:var(--text-primary,#111);margin-bottom:4px}';
+  /* Recommendation line */
+  css += '.yk-recommendation{font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;color:var(--text-secondary,#4B5563);line-height:1.5;margin-bottom:16px;padding:10px 14px;background:rgba(30,45,94,.03);border-radius:10px}';
   css += '.yk-track-kf{font-family:"DM Mono",monospace;font-size:10px;color:var(--text-muted,#6B7280);margin-top:2px;letter-spacing:.3px}';
   css += '.yk-track-def{font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;color:var(--text-secondary,#4B5563);line-height:1.5;margin-top:6px}';
   css += '.yk-track-meta{font-family:"DM Mono",monospace;font-size:10px;color:var(--text-muted,#6B7280);margin-top:6px}';
@@ -1006,9 +1053,15 @@ function injectCSS() {
   css += '.yk-home-ai-teaser-badge{font-family:"DM Mono",monospace;font-size:9px;font-weight:600;color:var(--text-muted,#6B7280);background:var(--bg-muted,#F7F6F4);border:1px solid var(--border-subtle,#E5E3DF);border-radius:20px;padding:4px 12px;flex-shrink:0}';
   /* Progress bar */
   css += '.yk-progress-bar-wrap{margin-bottom:16px}';
-  css += '.yk-progress-bar{height:4px;background:var(--border-subtle,#E5E3DF);border-radius:2px;overflow:hidden;margin-bottom:4px}';
-  css += '.yk-progress-fill{height:100%;background:var(--verm,#C94E28);border-radius:2px;transition:width .4s ease}';
-  css += '.yk-progress-label{font-family:"DM Mono",monospace;font-size:10px;color:var(--text-muted,#6B7280);text-align:right}';
+  css += '.yk-progress-bar{position:relative;height:6px;background:var(--border-subtle,#E5E3DF);border-radius:3px;overflow:hidden;margin-bottom:6px}';
+  css += '.yk-progress-fill{height:100%;background:var(--verm,#C94E28);border-radius:3px;transition:width .5s cubic-bezier(.4,0,.2,1)}';
+  css += '.yk-progress-fill.yk-progress-full{background:linear-gradient(90deg,var(--verm,#C94E28),#E8663D)}';
+  css += '.yk-progress-footer{display:flex;justify-content:space-between;align-items:center}';
+  css += '.yk-progress-label{font-family:"DM Mono",monospace;font-size:10px;color:var(--text-muted,#6B7280)}';
+  css += '.yk-progress-micro{font-family:"Plus Jakarta Sans",sans-serif;font-size:11px;color:var(--text-secondary,#4B5563);font-weight:500}';
+  css += '.yk-progress-micro.yk-progress-complete{color:#059669;font-weight:600}';
+  css += '.yk-progress-milestones{position:absolute;top:0;left:0;right:0;height:100%;pointer-events:none}';
+  css += '.yk-progress-ms{position:absolute;top:-1px;width:2px;height:8px;background:rgba(255,255,255,.7);border-radius:1px}';
   /* Track card arrow affordance */
   css += '.yk-track-arrow{display:flex;align-items:center;gap:6px;flex-shrink:0}';
   /* Locked summary block */
@@ -1099,8 +1152,12 @@ function injectCSS() {
   css += '.st-section-cta{font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;font-weight:700;color:var(--verm,#C94E28);margin-top:14px;transition:letter-spacing .2s}';
   css += '.st-section-card:hover .st-section-cta{letter-spacing:.3px}';
   css += '.st-section-badge{display:inline-block;font-family:"DM Mono",monospace;font-size:10px;font-weight:600;letter-spacing:.5px;color:var(--text-muted,#6B7280);background:var(--bg-muted,#F7F6F4);border:1px solid var(--border-subtle,#E5E3DF);border-radius:20px;padding:4px 12px;margin-top:14px}';
-  css += '.st-perf{opacity:.85;transition:opacity .3s}.st-perf:hover{opacity:1}';
-  css += '.st-bilgi{opacity:.85;transition:opacity .3s}.st-bilgi:hover{opacity:1}';
+  css += '.st-yetenek{border-left:3px solid var(--verm,#C94E28) !important}';
+  css += '.st-yetenek-cta-btn{display:inline-flex;align-items:center;gap:6px;font-family:"Plus Jakarta Sans",sans-serif;font-size:13px;font-weight:700;color:#fff;background:var(--verm,#C94E28);border:none;border-radius:10px;padding:10px 24px;cursor:pointer;transition:background .2s;margin-top:14px}';
+  css += '.st-yetenek-cta-btn:hover{background:#b84420}';
+  css += '.st-passive{opacity:.6;cursor:default !important}.st-passive:hover{transform:none !important;box-shadow:0 2px 8px rgba(0,0,0,.08),0 8px 20px rgba(0,0,0,.06) !important;opacity:.7}';
+  css += '.st-coming-badge{display:inline-block;font-family:"DM Mono",monospace;font-size:9px;font-weight:600;letter-spacing:.5px;color:var(--text-muted,#6B7280);background:rgba(107,114,128,.08);border:1px solid rgba(107,114,128,.15);border-radius:20px;padding:3px 10px;margin-top:8px}';
+  css += '@media(max-width:768px){.st-yetenek{background:#FFF5F2 !important}}';
 
   /* Studio module cards */
   css += '.st-module-area{margin-bottom:16px}';
@@ -1266,6 +1323,9 @@ function injectCSS() {
   css += '.ig-locked-tag svg{width:10px;height:10px;opacity:.5}';
 
   /* Responsive */
+  /* Accessibility — focus-visible for keyboard navigation */
+  css += '.ig-btn:focus-visible,.ig-nav-pill:focus-visible,.yk-track-card:focus-visible,.st-section-card:focus-visible,.ig-lobby-card:focus-visible,.ig-role-card:focus-visible,.ig-q-lock-cta:focus-visible,.aif-btn:focus-visible,.ig-journal-toggle:focus-visible,.yk-rating-btn:focus-visible{outline:2px solid var(--verm,#C94E28);outline-offset:2px}';
+
   css += '@media(max-width:768px){';
   css += '.ig-bento{grid-template-columns:1fr}';
   css += '.ig-bento-2{grid-column:1/-1}';
@@ -1329,8 +1389,8 @@ function renderStarIntro() {
   html += '<div class="st-section-kicker">ROL\u00dcNDE EN \u0130Y\u0130S\u0130 OL</div>';
   html += '<div class="ig-lcard-icon verm"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>';
   html += '<div class="ig-lcard-title" style="font-size:18px">Yetenek</div>';
-  html += '<div class="ig-lcard-desc">29 yetkinlik, 289 soru, geli\u015fim g\u00fcnl\u00fc\u011f\u00fc. Rol\u00fcne \u00f6zel yetkinlikleri ke\u015ffet, pratik yap, m\u00fclakat haz\u0131rl\u0131\u011f\u0131n\u0131 tamamla.</div>';
-  html += '<div class="st-section-cta">Yetkinliklere Ba\u015fla \u2192</div>';
+  html += '<div class="ig-lcard-desc">29 yetkinlik, 289 soru, AI de\u011ferlendirme. Rol\u00fcne \u00f6zel yetkinlikleri ke\u015ffet, pratik yap, m\u00fclakat haz\u0131rl\u0131\u011f\u0131n\u0131 tamamla.</div>';
+  html += '<button class="st-yetenek-cta-btn">Yetkinliklere Ba\u015fla \u2192</button>';
   html += '</div>';
 
   /* ── 2. KOÇ (span 1) — coach library ── */
@@ -1338,28 +1398,26 @@ function renderStarIntro() {
   html += '<div class="st-section-kicker">UZMANLARDAN \u00d6\u011eREN</div>';
   html += '<div class="ig-lcard-icon navy"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>';
   html += '<div class="ig-lcard-title">Ko\u00e7</div>';
-  html += '<div class="ig-lcard-desc">Sekt\u00f6r uzmanlar\u0131ndan m\u00fclakat ipuclar\u0131, kariyer rehberleri ve yetkinlik analizleri.</div>';
+  html += '<div class="ig-lcard-desc">Sekt\u00f6r uzmanlar\u0131n\u0131n yazd\u0131\u011f\u0131 m\u00fclakat ve kariyer makaleleri.</div>';
   html += '<div class="st-section-cta">Makalelere G\u00f6z At \u2192</div>';
   html += '</div>';
 
-  /* ── 3. PERFORMANS (span 1) — DB-backed ── */
-  html += '<div class="ig-lcard st-section-card st-perf" id="st-go-perf">';
+  /* ── 3. PERFORMANS (span 1) — passive until full launch ── */
+  html += '<div class="ig-lcard st-section-card st-perf st-passive" id="st-go-perf">';
   html += '<div class="st-section-kicker">RAKAMLARI \u00d6\u011eREN</div>';
   html += '<div class="ig-lcard-icon" style="background:rgba(217,119,6,.08);color:#D97706"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg></div>';
   html += '<div class="ig-lcard-title">Performans</div>';
-  html += '<div class="ig-lcard-desc">Ma\u011faza KPI\u2019lar\u0131, sat\u0131\u015f matemati\u011fi, LFL ve sepet analizleri. Rakamlar\u0131 anlayan terfi eder.</div>';
-  html += '<div class="st-landing-stat" id="st-stat-performans"></div>';
-  html += '<div class="st-section-cta">Ke\u015Ffet \u2192</div>';
+  html += '<div class="ig-lcard-desc">Ma\u011faza KPI\u2019lar\u0131, sat\u0131\u015f matemati\u011fi, LFL ve sepet analizleri.</div>';
+  html += '<div class="st-coming-badge">\u00c7ok Yak\u0131nda</div>';
   html += '</div>';
 
-  /* ── 4. HELLOTALENT'TEN BİLGİLER (span 2) — DB-backed ── */
-  html += '<div class="ig-lcard span-2 st-section-card st-bilgi" id="st-go-bilgi">';
-  html += '<div class="st-section-kicker">PLATFORMUNU TANIYORSUN, DE\u011e\u0130L M\u0130?</div>';
+  /* ── 4. HELLOTALENT'TEN BİLGİLER (span 2) — passive until full launch ── */
+  html += '<div class="ig-lcard span-2 st-section-card st-bilgi st-passive" id="st-go-bilgi">';
+  html += '<div class="st-section-kicker">PLATFORMUNU TANI</div>';
   html += '<div class="ig-lcard-icon" style="background:rgba(5,150,105,.08);color:#059669"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg></div>';
   html += '<div class="ig-lcard-title">HelloTalent\u2019ten Bilgiler</div>';
-  html += '<div class="ig-lcard-desc">Profilini nas\u0131l \u00f6ne \u00e7\u0131kar\u0131rs\u0131n? \u0130\u015fverenler neye bak\u0131yor? Platform\u0131 en verimli kullanan adaylar\u0131n s\u0131rlar\u0131.</div>';
-  html += '<div class="st-landing-stat" id="st-stat-bilgiler"></div>';
-  html += '<div class="st-section-cta">Ke\u015Ffet \u2192</div>';
+  html += '<div class="ig-lcard-desc">Profilini nas\u0131l \u00f6ne \u00e7\u0131kar\u0131rs\u0131n? \u0130\u015fverenler neye bak\u0131yor? Platform\u0131 en verimli kullanman\u0131n yollar\u0131.</div>';
+  html += '<div class="st-coming-badge">\u00c7ok Yak\u0131nda</div>';
   html += '</div>';
 
   html += '</div>'; /* close st-grid */
@@ -1376,7 +1434,7 @@ function renderStarIntro() {
   /* ══ STAR+T quick reference — collapsible at bottom ══ */
   var d = STAR_CONTENT;
   html += '<div class="ig-landing-star" id="ig-star-collapse" style="margin-top:12px">';
-  html += '<div class="ig-landing-star-header" id="ig-star-toggle">';
+  html += '<div class="ig-landing-star-header" id="ig-star-toggle" role="button" aria-expanded="false">';
   html += '<div class="ig-landing-star-badges">';
   html += '<div class="ig-landing-star-letter verm">S</div>';
   html += '<div class="ig-landing-star-letter navy">T</div>';
@@ -1467,7 +1525,7 @@ function truncateWhy(whyText) {
 
 function renderCompetencyIntro() {
   var bridge = getBridge();
-  if (!bridge) return '<div class="ig-section-desc">Veri y\u00FCklenemedi.</div>';
+  if (!bridge) return '<div class="ig-section-desc" role="alert">Veri y\u00FCklenemedi.</div>';
 
   var code = S.activeComp;
   var compName = bridge.COMP_NAMES[code] || code;
@@ -1506,7 +1564,7 @@ function renderCompetencyIntro() {
   /* Güçlü Sinyaller */
   if (a.skilled && a.skilled.length) {
     html += '<div class="ig-intro-signal-card">';
-    html += '<div class="ig-coach-header"><div class="ig-coach-dot ig-coach-dot-strong"></div><div class="ig-coach-label">G\u00FC\u00E7l\u00FC Sinyaller</div></div>';
+    html += '<div class="ig-coach-header"><div class="ig-coach-dot ig-coach-dot-strong" aria-label="G\u00FC\u00E7l\u00FC"></div><div class="ig-coach-label">G\u00FC\u00E7l\u00FC Sinyaller</div></div>';
     html += '<ul class="ig-coach-bullets">';
     for (var si = 0; si < Math.min(PREVIEW, a.skilled.length); si++) {
       html += '<li class="ig-coach-bullet">' + a.skilled[si] + '</li>';
@@ -1517,7 +1575,7 @@ function renderCompetencyIntro() {
   /* Risk Sinyalleri */
   if (a.lessskilled && a.lessskilled.length) {
     html += '<div class="ig-intro-signal-card">';
-    html += '<div class="ig-coach-header"><div class="ig-coach-dot ig-coach-dot-risk"></div><div class="ig-coach-label">Risk Sinyalleri</div></div>';
+    html += '<div class="ig-coach-header"><div class="ig-coach-dot ig-coach-dot-risk" aria-label="Risk"></div><div class="ig-coach-label">Risk Sinyalleri</div></div>';
     html += '<ul class="ig-coach-bullets">';
     for (var ri = 0; ri < Math.min(PREVIEW, a.lessskilled.length); ri++) {
       html += '<li class="ig-coach-bullet">' + a.lessskilled[ri] + '</li>';
@@ -1528,7 +1586,7 @@ function renderCompetencyIntro() {
   /* Aşırı Kullanım */
   if (a.overused && a.overused.length) {
     html += '<div class="ig-intro-signal-card ig-intro-signal-full">';
-    html += '<div class="ig-coach-header"><div class="ig-coach-dot ig-coach-dot-over"></div><div class="ig-coach-label">A\u015F\u0131r\u0131 Kullan\u0131m</div></div>';
+    html += '<div class="ig-coach-header"><div class="ig-coach-dot ig-coach-dot-over" aria-label="A\u015F\u0131r\u0131 kullan\u0131m"></div><div class="ig-coach-label">A\u015F\u0131r\u0131 Kullan\u0131m</div></div>';
     html += '<ul class="ig-coach-bullets">';
     for (var oi = 0; oi < Math.min(PREVIEW, a.overused.length); oi++) {
       html += '<li class="ig-coach-bullet">' + a.overused[oi] + '</li>';
@@ -1614,6 +1672,18 @@ function renderLobby() {
   /* Back + role header */
   html += '<div class="ig-nav-pill" id="ig-back-role">' + arrowLeftSVG + ' St\u00fcdyo</div>';
 
+  /* ── Personalized greeting ── */
+  var _userName = '';
+  try {
+    var _dbProfile = (typeof _loadedDBData !== 'undefined' && _loadedDBData && _loadedDBData.profile) ? _loadedDBData.profile : null;
+    if (_dbProfile && _dbProfile.full_name) {
+      _userName = _dbProfile.full_name.split(' ')[0];
+    }
+  } catch (e) { /* silent */ }
+  if (_userName) {
+    html += '<div class="yk-greeting">Ho\u015f geldin, ' + _userName + '</div>';
+  }
+
   html += '<div class="yk-home-header">';
   html += '<div class="yk-home-header-left">';
   html += '<div class="yk-home-role-label">' + S.role + '</div>';
@@ -1622,12 +1692,33 @@ function renderLobby() {
   html += '<button class="yk-home-change-role" id="ig-back-role-change">Rol De\u011fi\u015ftir</button>';
   html += '</div>';
 
-  /* ── Progress bar ── */
+  /* ── Progress bar with milestones ── */
   var pct = accessibleCount > 0 ? Math.round((completedCount / accessibleCount) * 100) : 0;
+  var microCopy = '';
+  if (pct >= 100) microCopy = '<span class="yk-progress-micro yk-progress-complete">\u2713 Tamamland\u0131</span>';
+  else if (pct >= 50) microCopy = '<span class="yk-progress-micro">Yar\u0131 yoldas\u0131n\u0131z.</span>';
   html += '<div class="yk-progress-bar-wrap">';
-  html += '<div class="yk-progress-bar"><div class="yk-progress-fill" style="width:' + pct + '%"></div></div>';
-  html += '<div class="yk-progress-label">' + completedCount + '/' + accessibleCount + ' tamamland\u0131</div>';
+  html += '<div class="yk-progress-bar">';
+  html += '<div class="yk-progress-fill' + (pct >= 100 ? ' yk-progress-full' : '') + '" style="width:' + pct + '%"></div>';
+  if (accessibleCount >= 4) {
+    html += '<div class="yk-progress-milestones">';
+    html += '<div class="yk-progress-ms" style="left:25%"></div>';
+    html += '<div class="yk-progress-ms" style="left:50%"></div>';
+    html += '<div class="yk-progress-ms" style="left:75%"></div>';
+    html += '</div>';
+  }
   html += '</div>';
+  html += '<div class="yk-progress-footer">';
+  html += '<div class="yk-progress-label">' + completedCount + '/' + accessibleCount + '</div>';
+  html += microCopy;
+  html += '</div>';
+  html += '</div>';
+
+  /* ── Streak pill — hydrated async, hidden by default ── */
+  html += '<div id="yk-streak-slot" style="display:none"></div>';
+
+  /* ── Daily practice card — hydrated async ── */
+  html += '<div id="yk-daily-slot" style="display:none"></div>';
 
   /* ── Continue card / Next step guidance ── */
   if (S.activeComp && S.completedComps.indexOf(S.activeComp) === -1) {
@@ -1663,19 +1754,45 @@ function renderLobby() {
   html += '<div class="yk-home-ai-teaser-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg></div>';
   html += '<div class="yk-home-ai-teaser-text">';
   html += '<div class="yk-home-ai-teaser-title">AI Ko\u00e7luk</div>';
-  html += '<div class="yk-home-ai-teaser-desc">Yan\u0131tlar\u0131n\u0131z\u0131n g\u00fc\u00e7l\u00fc ve geli\u015ftirilmesi gereken y\u00f6nlerini yapay zeka ile ke\u015ffedin.</div>';
+  html += '<div class="yk-home-ai-teaser-desc">Yan\u0131tlar\u0131n\u0131z\u0131 yaz\u0131n, AI ko\u00e7unuz g\u00fc\u00e7l\u00fc ve geli\u015ftirilmesi gereken y\u00f6nleri analiz etsin.</div>';
   html += '</div>';
-  html += '<div class="yk-home-ai-teaser-badge">\u00c7ok Yak\u0131nda</div>';
+  html += '<div class="yk-home-ai-teaser-badge" style="background:rgba(5,150,105,.08);color:#059669;border-color:rgba(5,150,105,.2)">Aktif</div>';
   html += '</div>';
+
+  /* ── Weekly activity summary ── */
+  var weekPracticed = S.totalAnswered || 0;
+  var weekComps = completedCount;
+  if (weekPracticed > 0 || weekComps > 0) {
+    html += '<div class="yk-weekly-summary">';
+    html += '<div class="yk-weekly-summary-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>';
+    var estMinutes = weekPracticed * 2;
+    html += '<div class="yk-weekly-summary-text"><strong>' + weekPracticed + '</strong> pratik \u00b7 <strong>~' + estMinutes + '</strong> dk \u00b7 <strong>' + weekComps + '</strong> yetkinlik</div>';
+    html += '</div>';
+  }
+
+  /* ── Personalized recommendation — hydrated async ── */
+  html += '<div id="yk-recommendation-slot" style="display:none"></div>';
 
   /* ── Learning plan section title ── */
   html += '<div class="yk-home-section-title">\u00d6\u011frenme Plan\u0131</div>';
 
-  /* ── Unlocked competency track cards only ── */
+  /* ── Unlocked competency track cards — sorted by priority ── */
+  /* Build accessible list, then sort: growing incomplete → other incomplete → completed */
+  var accessibleCompsArr = [];
+  for (var ai = 0; ai < comps.length; ai++) {
+    if (ai >= freeLimit) continue;
+    accessibleCompsArr.push({ code: comps[ai], origIdx: ai });
+  }
+  accessibleCompsArr.sort(function(a, b) {
+    var aDone = S.completedComps.indexOf(a.code) !== -1 ? 1 : 0;
+    var bDone = S.completedComps.indexOf(b.code) !== -1 ? 1 : 0;
+    return aDone - bDone; /* incomplete first, completed last */
+  });
+
   html += '<div class="yk-home-tracks">';
-  for (var i = 0; i < comps.length; i++) {
-    var code = comps[i];
-    if (i >= freeLimit) continue; /* locked — handled below as collapsed summary */
+  for (var i = 0; i < accessibleCompsArr.length; i++) {
+    var code = accessibleCompsArr[i].code;
+    var origIdx = accessibleCompsArr[i].origIdx;
     var name = bridge.COMP_NAMES[code] || code;
     var kf = bridge.COMP_KF[code] || '';
     var def = (anchors[code] && anchors[code].def) ? anchors[code].def : '';
@@ -1683,7 +1800,7 @@ function renderLobby() {
     var qCount = flattenQuestions(code).length;
     var practiceCount = S.isPremium ? qCount : Math.min(FREE_Q_PER_COMP, qCount);
 
-    html += '<div class="yk-track-card' + (isCompleted ? ' yk-track-done' : '') + '" data-comp="' + code + '" data-idx="' + i + '">';
+    html += '<div class="yk-track-card' + (isCompleted ? ' yk-track-done' : '') + '" data-comp="' + code + '" data-idx="' + origIdx + '">';
     html += '<div class="yk-track-top">';
     html += '<div class="yk-track-name">' + name + '</div>';
     html += '<div class="yk-track-arrow">';
@@ -1694,6 +1811,7 @@ function renderLobby() {
     html += '<div class="yk-track-kf">' + kf + '</div>';
     if (def) html += '<div class="yk-track-def">' + def + '</div>';
     html += '<div class="yk-track-meta">' + practiceCount + ' soru</div>';
+    if (isCompleted) html += '<div class="yk-track-hover-hint">Tekrar incele \u2192</div>';
     html += '<div class="yk-evidence" data-ev-comp="' + code + '"></div>';
     html += '</div>';
   }
@@ -1733,7 +1851,7 @@ function renderLobby() {
 
 function renderPractice() {
   var bridge = getBridge();
-  if (!bridge || !S.dealt.length) return '<div class="ig-section-desc">Soru bulunamad\u0131.</div>';
+  if (!bridge || !S.dealt.length) return '<div class="ig-section-desc" role="alert">Soru bulunamad\u0131. \u00D6\u011Frenme Plan\u0131na d\u00F6n\u00FCn.</div>';
 
   var compName = bridge.COMP_NAMES[S.activeComp] || S.activeComp;
   var anchors = bridge.ANCHORS || {};
@@ -1840,14 +1958,8 @@ function renderPractice() {
     html += '</div>';
   }
 
-  /* ── AI practice placeholder (replaces journal) ── */
-  html += '<div class="yk-unit-ai-placeholder">';
-  html += '<div class="yk-unit-ai-placeholder-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg></div>';
-  html += '<div class="yk-unit-ai-placeholder-text">';
-  html += '<div class="yk-unit-ai-placeholder-title">AI Ko\u00e7luk Yak\u0131nda</div>';
-  html += '<div class="yk-unit-ai-placeholder-desc">Bu soruya verdi\u011finiz yan\u0131t\u0131n g\u00fc\u00e7l\u00fc ve geli\u015ftirilmesi gereken y\u00f6nlerini yapay zeka ile analiz edin.</div>';
-  html += '</div>';
-  html += '</div>';
+  /* ── Journal panel (STAR+T input + AI feedback) — restored from Phase 5A ── */
+  html += renderJournalPanel();
 
   html += '</div>'; /* practice-wrap */
   return html;
@@ -1869,7 +1981,7 @@ function renderJournalPanel() {
   var html = '<div class="ig-journal-wrap">';
 
   /* Toggle bar */
-  html += '<button class="ig-journal-toggle' + (S.journalOpen ? ' active' : '') + '" id="ig-journal-toggle">';
+  html += '<button class="ig-journal-toggle' + (S.journalOpen ? ' active' : '') + '" id="ig-journal-toggle" aria-expanded="' + (S.journalOpen ? 'true' : 'false') + '">';
   html += journalSVG;
   html += '<div class="ig-journal-toggle-label">Geli\u015Fim G\u00FCnl\u00FC\u011F\u00FC' + (hasDraft && !S.journalOpen ? ' <span style="font-size:10px;font-weight:400;color:var(--text-muted,#6B7280)">(taslak var)</span>' : '') + '</div>';
   html += '<div class="ig-journal-toggle-hint">' + (S.journalOpen ? '' : 'Yan\u0131t\u0131n\u0131z\u0131 haz\u0131rlay\u0131n') + '</div>';
@@ -1903,14 +2015,35 @@ function renderJournalPanel() {
 
     html += '<div class="ig-journal-saved" id="ig-journal-saved"></div>';
 
-    /* ── AI Feedback area ── */
+    /* ── Self-reflection prompt (before AI feedback) ── */
+    html += '<div class="aif-self-reflect" style="margin-top:12px">';
+    html += '<label class="ig-journal-field-label" style="font-size:11px;color:var(--text-muted,#6B7280);margin-bottom:4px;display:block">Bu cevapta en g\u00fc\u00e7l\u00fc taraf\u0131n\u0131z ne oldu?</label>';
+    html += '<textarea class="ig-journal-textarea" id="aif-self-reflect-input" placeholder="K\u0131saca yaz\u0131n\u2026" rows="2" style="font-size:12px"></textarea>';
+    html += '</div>';
+
+    /* ── Rubrik g\u00f6r\u00fcn\u00fcrl\u00fc\u011f\u00fc ── */
+    html += '<div class="aif-rubric" style="margin-top:10px;padding:10px 14px;background:rgba(30,45,94,.03);border:1px solid rgba(30,45,94,.08);border-radius:10px;font-family:\'Plus Jakarta Sans\',sans-serif;font-size:11px;color:var(--text-muted,#6B7280);line-height:1.6">';
+    html += '<div style="font-weight:600;color:var(--text-primary,#111);margin-bottom:4px;font-size:11px">De\u011Ferlendirme Kriterleri</div>';
+    html += '<div style="display:flex;flex-wrap:wrap;gap:6px">';
+    html += '<span style="background:rgba(201,78,40,.06);padding:2px 8px;border-radius:6px;font-size:10px">STAR+T yap\u0131s\u0131</span>';
+    html += '<span style="background:rgba(201,78,40,.06);padding:2px 8px;border-radius:6px;font-size:10px">Somutluk</span>';
+    html += '<span style="background:rgba(201,78,40,.06);padding:2px 8px;border-radius:6px;font-size:10px">\u00d6l\u00e7\u00fclebilir sonu\u00e7</span>';
+    html += '<span style="background:rgba(201,78,40,.06);padding:2px 8px;border-radius:6px;font-size:10px">Rol uyumu</span>';
+    html += '<span style="background:rgba(201,78,40,.06);padding:2px 8px;border-radius:6px;font-size:10px">\u00d6\u011Frenim / \u00e7\u0131kar\u0131m</span>';
+    html += '</div>';
+    html += '</div>';
+
+    /* ── AI Feedback area — freemium: first FREE_COMP_LIMIT competencies free ── */
+    var compIdx = S.comps ? S.comps.indexOf(S.activeComp) : -1;
+    var aiFree = S.isPremium || (compIdx >= 0 && compIdx < FREE_COMP_LIMIT);
+
     html += '<div class="aif-area" id="aif-area">';
-    if (S.isPremium) {
+    if (aiFree) {
       html += '<button class="aif-btn" id="aif-request"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg> AI ile De\u011Ferlendir</button>';
     } else {
       html += '<div class="aif-gate">';
       html += '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>';
-      html += '<span>AI Ko\u00E7 de\u011Ferlendirmesi Premium \u00f6zelli\u011fidir.</span>';
+      html += '<span>AI de\u011Ferlendirme ilk ' + FREE_COMP_LIMIT + ' yetkinlikte \u00fccretsiz. T\u00fcm yetkinlikler i\u00e7in:</span>';
       html += '<button class="aif-gate-cta" onclick="if(typeof switchPanel===\'function\')switchPanel(\'premium\')">Premium\u2019a Ge\u00E7</button>';
       html += '</div>';
     }
@@ -1964,7 +2097,7 @@ function renderCoachPanel() {
   /* Güçlü Sinyaller */
   if (a.skilled && a.skilled.length) {
     html += '<div class="ig-coach-section">';
-    html += '<div class="ig-coach-header"><div class="ig-coach-dot ig-coach-dot-strong"></div><div class="ig-coach-label">G\u00FC\u00E7l\u00FC Sinyaller</div></div>';
+    html += '<div class="ig-coach-header"><div class="ig-coach-dot ig-coach-dot-strong" aria-label="G\u00FC\u00E7l\u00FC"></div><div class="ig-coach-label">G\u00FC\u00E7l\u00FC Sinyaller</div></div>';
     html += '<ul class="ig-coach-bullets">';
     for (var si = 0; si < Math.min(COACH_PREVIEW, a.skilled.length); si++) {
       html += '<li class="ig-coach-bullet">' + a.skilled[si] + '</li>';
@@ -1975,7 +2108,7 @@ function renderCoachPanel() {
   /* Risk Sinyalleri */
   if (a.lessskilled && a.lessskilled.length) {
     html += '<div class="ig-coach-section">';
-    html += '<div class="ig-coach-header"><div class="ig-coach-dot ig-coach-dot-risk"></div><div class="ig-coach-label">Risk Sinyalleri</div></div>';
+    html += '<div class="ig-coach-header"><div class="ig-coach-dot ig-coach-dot-risk" aria-label="Risk"></div><div class="ig-coach-label">Risk Sinyalleri</div></div>';
     html += '<ul class="ig-coach-bullets">';
     for (var ri = 0; ri < Math.min(COACH_PREVIEW, a.lessskilled.length); ri++) {
       html += '<li class="ig-coach-bullet">' + a.lessskilled[ri] + '</li>';
@@ -1986,7 +2119,7 @@ function renderCoachPanel() {
   /* Aşırı Kullanım */
   if (a.overused && a.overused.length) {
     html += '<div class="ig-coach-section">';
-    html += '<div class="ig-coach-header"><div class="ig-coach-dot ig-coach-dot-over"></div><div class="ig-coach-label">A\u015F\u0131r\u0131 Kullan\u0131m</div></div>';
+    html += '<div class="ig-coach-header"><div class="ig-coach-dot ig-coach-dot-over" aria-label="A\u015F\u0131r\u0131 kullan\u0131m"></div><div class="ig-coach-label">A\u015F\u0131r\u0131 Kullan\u0131m</div></div>';
     html += '<ul class="ig-coach-bullets">';
     for (var oi = 0; oi < Math.min(COACH_PREVIEW, a.overused.length); oi++) {
       html += '<li class="ig-coach-bullet">' + a.overused[oi] + '</li>';
@@ -2013,19 +2146,29 @@ function renderCompletion() {
 
   html += '<div class="yk-summary-wrap">';
   html += '<div class="yk-summary-card">';
-  html += '<div class="yk-summary-title">' + compName + ' Tamamland\u0131</div>';
-  html += '<div class="yk-summary-desc">' + S.answeredCount + ' soruyu inceleyerek bu yetkinli\u011fin temel de\u011ferlendirme \u00f6l\u00e7\u00fctlerini \u00f6\u011frendin.</div>';
+
+  /* Completion icon */
+  html += '<div class="yk-summary-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>';
+
+  html += '<div class="yk-summary-title">' + compName + ' tamamland\u0131</div>';
+  html += '<div class="yk-summary-desc">' + S.answeredCount + ' soruyu inceleyerek bu yetkinli\u011fin de\u011ferlendirme \u00f6l\u00e7\u00fctlerini \u00f6\u011frendin.</div>';
 
   html += '<div class="yk-summary-stats">';
   html += '<div class="yk-summary-stat"><div class="yk-summary-stat-num">' + S.answeredCount + '</div><div class="yk-summary-stat-label">Soru</div></div>';
-  html += '<div class="yk-summary-stat"><div class="yk-summary-stat-num">' + S.completedComps.length + '</div><div class="yk-summary-stat-label">Yetkinlik</div></div>';
+  html += '<div class="yk-summary-stat"><div class="yk-summary-stat-num">' + S.completedComps.length + '/' + Math.min(S.isPremium ? S.comps.length : FREE_COMP_LIMIT, S.comps.length) + '</div><div class="yk-summary-stat-label">Yetkinlik</div></div>';
   html += '</div>';
+
+  /* Badge slot — hydrated async after render */
+  html += '<div id="yk-completion-badge" style="display:none"></div>';
+
+  /* Cross-link slot — hydrated async after render */
+  html += '<div id="yk-completion-xlinks" style="display:none"></div>';
 
   html += '<div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">';
   if (allAccessibleDone) {
-    html += '<button class="ig-btn ig-btn-answered" id="ig-session-complete">\u00d6\u011frenme Plan\u0131na D\u00f6n \u2192</button>';
+    html += '<button class="ig-btn ig-btn-answered" id="ig-session-complete" style="padding:12px 28px;font-size:14px">\u00d6\u011frenme Plan\u0131na D\u00f6n \u2192</button>';
   } else {
-    html += '<button class="ig-btn ig-btn-answered" id="ig-back-lobby-comp">Sonraki Yetkinlik \u2192</button>';
+    html += '<button class="ig-btn ig-btn-answered" id="ig-back-lobby-comp" style="padding:12px 28px;font-size:14px">Sonraki Yetkinlik \u2192</button>';
   }
   html += '<button class="ig-btn ig-btn-swap" id="ig-restart-comp" style="border:1px solid var(--border-subtle,#E5E3DF) !important">Tekrar \u0130ncele</button>';
   html += '</div>';
@@ -2106,6 +2249,136 @@ var COACH_CATEGORY_KEYS = [
 function trLowerCoach(s) {
   if (!s) return '';
   return s.replace(/I/g, '\u0131').replace(/\u0130/g, 'i').toLowerCase();
+}
+
+/* ── Cross-link mappings: competency → coach category + module slug ── */
+/* Coach categories: best-fit mapping from 29 competencies to 6 coach categories */
+var COMP_TO_COACH_CATEGORY = {
+  cf:'yetkinlik_rehberi', ce:'yetkinlik_rehberi', it:'yetkinlik_rehberi', co:'yetkinlik_rehberi',
+  ao:'kariyer_gelisim_onerileri', ea:'kariyer_gelisim_onerileri', dr:'kariyer_gelisim_onerileri',
+  dw:'kariyer_gelisim_onerileri', bt:'kariyer_gelisim_onerileri', dt:'kariyer_gelisim_onerileri',
+  de:'kariyer_gelisim_onerileri', pa:'kariyer_gelisim_onerileri',
+  fa:'performans', sm:'performans', bi:'performans',
+  nl:'mulakat_ipucu', br:'mulakat_ipucu', sa:'mulakat_ipucu', cx:'mulakat_ipucu',
+  is:'yetkinlik_rehberi', mc:'yetkinlik_rehberi', ci:'yetkinlik_rehberi',
+  pe:'mulakat_ipucu', cu:'kariyer_gelisim_onerileri',
+  ts:'sektor_analizi', dq:'kariyer_gelisim_onerileri', op:'performans',
+  bs:'sektor_analizi', at:'kariyer_gelisim_onerileri'
+};
+/* Module slugs: competency → most relevant performans/bilgiler module */
+var COMP_TO_MODULE_SLUG = {
+  cf:'profil-guclu-hale-getirme', ce:'profil-guclu-hale-getirme',
+  dr:'magaza-hedefleri-gunluk-operasyon', ea:'magaza-hedefleri-gunluk-operasyon',
+  fa:'ciro-sepet-donusum', bi:'ciro-sepet-donusum', sm:'ciro-sepet-donusum',
+  op:'kpi-dususu-yorumlama', pa:'magaza-hedefleri-gunluk-operasyon',
+  dw:'vaka-trafik-yuksek-satis-dusuk', bt:'vaka-trafik-yuksek-satis-dusuk',
+  ts:'studyodan-en-iyi-faydalanma'
+};
+
+/* ── Reverse mappings: content → competency (FAZ 4C) ── */
+/* Built by inverting COMP_TO_MODULE_SLUG and COMP_TO_COACH_CATEGORY.
+   First match wins — deterministic, no DB needed. */
+var MODULE_SLUG_TO_COMP = (function() {
+  var m = {};
+  for (var k in COMP_TO_MODULE_SLUG) {
+    if (COMP_TO_MODULE_SLUG.hasOwnProperty(k)) {
+      var slug = COMP_TO_MODULE_SLUG[k];
+      if (!m[slug]) m[slug] = k;
+    }
+  }
+  return m;
+})();
+
+var COACH_CAT_TO_COMP = (function() {
+  var m = {};
+  for (var k in COMP_TO_COACH_CATEGORY) {
+    if (COMP_TO_COACH_CATEGORY.hasOwnProperty(k)) {
+      var cat = COMP_TO_COACH_CATEGORY[k];
+      if (!m[cat]) m[cat] = k;
+    }
+  }
+  return m;
+})();
+
+/* Navigate to competency practice from content detail (FAZ 4C).
+   If user has active role and comp is accessible → go directly to competency_intro.
+   Otherwise → role_select with pendingComp hint. */
+function navigateToCompPractice(compCode) {
+  var bridge = getBridge();
+  if (!bridge) { navigate('role_select'); return; }
+
+  if (S.role && bridge.ROLE_COMP_MAP[S.role]) {
+    var comps = bridge.ROLE_COMP_MAP[S.role];
+    var idx = -1;
+    for (var i = 0; i < comps.length; i++) {
+      if (comps[i] === compCode) { idx = i; break; }
+    }
+    if (idx !== -1) {
+      S.activeComp = compCode;
+      S.activeCompIdx = idx;
+      navigate('competency_intro');
+      return;
+    }
+  }
+  /* No role or comp not in current role's list → role_select with pending hint */
+  S.pendingComp = compCode;
+  navigate('role_select');
+}
+
+/* Build a practice bridge CTA card for content detail screens (FAZ 4C).
+   Returns DOM element or null if no mapping exists. */
+function buildPracticeBridgeCTA(compCode, headingText) {
+  var bridge = getBridge();
+  if (!bridge) return null;
+  var compName = bridge.COMP_NAMES[compCode] || null;
+  if (!compName) return null;
+
+  var wrap = document.createElement('div');
+  wrap.className = 'st-detail-bridge';
+
+  var icon = document.createElement('div');
+  icon.className = 'yk-xlink-icon verm';
+  /* safe — hardcoded SVG chevron, no user input */
+  var chevSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  chevSvg.setAttribute('viewBox', '0 0 24 24');
+  chevSvg.setAttribute('fill', 'none');
+  chevSvg.setAttribute('stroke', 'currentColor');
+  chevSvg.setAttribute('stroke-width', '2');
+  chevSvg.setAttribute('stroke-linecap', 'round');
+  chevSvg.setAttribute('stroke-linejoin', 'round');
+  var chevPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  chevPath.setAttribute('d', 'M9 18l6-6-6-6');
+  chevSvg.appendChild(chevPath);
+  icon.appendChild(chevSvg);
+
+  var text = document.createElement('div');
+  text.style.cssText = 'flex:1;min-width:0';
+
+  var heading = document.createElement('div');
+  heading.style.cssText = 'font-family:"Plus Jakarta Sans",sans-serif;font-size:13px;font-weight:600;color:var(--text-primary,#111);margin-bottom:2px';
+  heading.textContent = headingText;
+
+  var sub = document.createElement('div');
+  sub.style.cssText = 'font-family:"Plus Jakarta Sans",sans-serif;font-size:11px;color:var(--text-muted,#6B7280)';
+  sub.textContent = compName;
+
+  var cta = document.createElement('div');
+  cta.style.cssText = 'font-family:"DM Mono",monospace;font-size:11px;font-weight:600;color:var(--verm,#C94E28);flex-shrink:0;white-space:nowrap';
+  cta.textContent = 'Prati\u011Fe ge\u00E7 \u2192';
+
+  text.appendChild(heading);
+  text.appendChild(sub);
+  wrap.appendChild(icon);
+  wrap.appendChild(text);
+  wrap.appendChild(cta);
+
+  wrap.addEventListener('click', function() {
+    var overlay = document.getElementById('ig-coach-overlay');
+    if (overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay);
+    navigateToCompPractice(compCode);
+  });
+
+  return wrap;
 }
 
 /* Hardcoded SVG constants — safe for innerHTML */
@@ -2534,6 +2807,13 @@ function openCoachDetail(post, isLiked) {
     detail.appendChild(authorBlock);
   }
 
+  /* FAZ 4C — practice bridge: coach category → competency */
+  var coachCompCode = post.category ? COACH_CAT_TO_COMP[post.category] : null;
+  if (coachCompCode) {
+    var coachBridgeEl = buildPracticeBridgeCTA(coachCompCode, 'Bu konuda pratik yap');
+    if (coachBridgeEl) detail.appendChild(coachBridgeEl);
+  }
+
   var actionsEl = document.createElement('div');
   actionsEl.className = 'ig-coach-detail-actions';
 
@@ -2636,30 +2916,20 @@ function bindStarIntroEvents() {
     navigate('role_select');
   });
 
-  /* ── Koç section card → scroll to coach feed (which hydrates below) ── */
+  /* ── Koç section card → conditional on published content ── */
   var kocBtn = document.getElementById('st-go-koc');
-  if (kocBtn) kocBtn.addEventListener('click', function() {
-    var feed = document.getElementById('ig-coach-feed');
-    if (feed && feed.style.display !== 'none') {
-      feed.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    } else {
-      /* Feed not loaded yet — force hydration then scroll */
-      hydrateCoachFeed();
-      setTimeout(function() {
-        var f = document.getElementById('ig-coach-feed');
-        if (f) f.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 400);
-    }
-  });
+  /* Coach feed availability is resolved async after hydration */
 
-  /* ── Performans + Bilgiler — DB-backed content sections ── */
+  /* ── Performans + Bilgiler — passive, show "yakında" toast ── */
   var perfBtn = document.getElementById('st-go-perf');
-  if (perfBtn) perfBtn.addEventListener('click', function() {
-    hydrateStudioSection('performans', 'Performans');
+  if (perfBtn) perfBtn.addEventListener('click', function(e) {
+    e.stopPropagation();
+    showStudioToast('Performans b\u00f6l\u00fcm\u00fc \u00e7ok yak\u0131nda a\u00e7\u0131lacak.');
   });
   var bilgiBtn = document.getElementById('st-go-bilgi');
-  if (bilgiBtn) bilgiBtn.addEventListener('click', function() {
-    hydrateStudioSection('bilgiler', 'HelloTalent\u2019ten Bilgiler');
+  if (bilgiBtn) bilgiBtn.addEventListener('click', function(e) {
+    e.stopPropagation();
+    showStudioToast('Bu b\u00f6l\u00fcm \u00e7ok yak\u0131nda a\u00e7\u0131lacak.');
   });
 
   /* ── STAR collapsible toggle ── */
@@ -2667,12 +2937,34 @@ function bindStarIntroEvents() {
   var starCollapse = document.getElementById('ig-star-collapse');
   if (starToggle && starCollapse) {
     starToggle.addEventListener('click', function() {
-      starCollapse.classList.toggle('open');
+      var isOpen = starCollapse.classList.toggle('open');
+      starToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
     });
   }
 
-  /* ── Coach feed — async hydration after landing is mounted ── */
-  hydrateCoachFeed();
+  /* ── Coach feed — async hydration + card state update ── */
+  hydrateCoachFeed().then(function() {
+    var feed = document.getElementById('ig-coach-feed');
+    var hasContent = feed && feed.style.display !== 'none';
+    var kocCard = document.getElementById('st-go-koc');
+    if (kocCard) {
+      if (hasContent) {
+        /* Coach content exists — make card active + clickable */
+        kocCard.addEventListener('click', function() {
+          feed.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+      } else {
+        /* No published coach content — make passive */
+        kocCard.classList.add('st-passive');
+        var ctaEl = kocCard.querySelector('.st-section-cta');
+        if (ctaEl) { ctaEl.outerHTML = '<div class="st-coming-badge">\u00c7ok Yak\u0131nda</div>'; }
+        kocCard.addEventListener('click', function(e) {
+          e.stopPropagation();
+          showStudioToast('Ko\u00e7 i\u00e7erikleri \u00e7ok yak\u0131nda eklenecek.');
+        });
+      }
+    }
+  }).catch(function() {});
 
   /* ── Landing card progress stats — async hydration ── */
   hydrateLandingStats();
@@ -2937,8 +3229,14 @@ async function requestAiFeedback(compCode, qText, qHash) {
       return;
     }
 
-    /* Invoke Edge Function to process — handle invoke failure gracefully */
-    supabase.functions.invoke('journal-feedback', { body: {} }).catch(function(e) {
+    /* Collect self-reflection if provided */
+    var selfReflectEl = document.getElementById('aif-self-reflect-input');
+    var selfReflect = selfReflectEl ? selfReflectEl.value.trim() : '';
+
+    /* Invoke Edge Function to process — pass self-reflection as context */
+    supabase.functions.invoke('journal-feedback', {
+      body: { self_reflection: selfReflect }
+    }).catch(function(e) {
       console.error('journal-feedback invoke error:', e);
     });
 
@@ -3493,6 +3791,13 @@ function openStudioModule(mod) {
   completeRow.appendChild(completeBtn);
   detail.appendChild(completeRow);
 
+  /* FAZ 4C — practice bridge: module slug → competency */
+  var modCompCode = mod.slug ? MODULE_SLUG_TO_COMP[mod.slug] : null;
+  if (modCompCode) {
+    var bridgeEl = buildPracticeBridgeCTA(modCompCode, '\u015eimdi bunu m\u00FClakatta nas\u0131l anlat\u0131rs\u0131n?');
+    if (bridgeEl) detail.appendChild(bridgeEl);
+  }
+
   area.appendChild(detail);
   area.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
@@ -3529,6 +3834,22 @@ function startSession(role) {
   S.completedComps = [];
   S.totalAnswered = 0;
   S.totalSwaps = 0;
+
+  /* FAZ 4C — if pendingComp set from content detail, jump directly */
+  if (S.pendingComp) {
+    var pending = S.pendingComp;
+    S.pendingComp = null;
+    var pIdx = -1;
+    for (var pi = 0; pi < S.comps.length; pi++) {
+      if (S.comps[pi] === pending) { pIdx = pi; break; }
+    }
+    if (pIdx !== -1) {
+      S.activeComp = pending;
+      S.activeCompIdx = pIdx;
+      navigate('competency_intro');
+      return;
+    }
+  }
   navigate('lobby');
 }
 
@@ -3580,6 +3901,9 @@ function bindLobbyEvents() {
 
   /* Async evidence hydration */
   hydrateLobbyEvidence();
+
+  /* Async streak hydration */
+  hydrateStreakPill();
 }
 
 /* ══ LOBBY EVIDENCE HYDRATION ══ */
@@ -3646,6 +3970,186 @@ async function hydrateLobbyEvidence() {
       renderCardEvidence(el, code, ev);
     });
   } catch (e) { /* silent — evidence is best-effort */ }
+
+  /* After evidence loads, hydrate daily practice card and recommendation */
+  hydrateDailyPractice();
+  hydrateRecommendation(data);
+}
+
+/* ══ STREAK PILL HYDRATION ══ */
+
+var flameSVG = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 23c-4.97 0-9-3.58-9-8 0-3.07 2.25-6.2 4.5-8.5.42-.42 1.12-.13 1.1.46-.06 2.07.65 3.74 2.04 5.04.11.1.28.05.32-.09.3-1.09.87-2.1 1.68-2.89C14.48 7.2 15.5 4.5 15.5 2c0-.55.56-.88 1.02-.56C19.74 3.74 21 7.26 21 10.5c0 6.88-4.03 12.5-9 12.5z"/></svg>';
+
+async function hydrateStreakPill() {
+  var slot = document.getElementById('yk-streak-slot');
+  if (!slot || typeof supabase === 'undefined') return;
+  try {
+    var res = await supabase.rpc('get_my_streak_status');
+    if (res.error || !res.data) return;
+    var d = res.data;
+    var streak = d.current_streak || 0;
+    var alive = d.streak_alive;
+
+    slot.style.display = 'block';
+    var pill = document.createElement('div');
+    if (streak > 0 && alive) {
+      pill.className = 'yk-streak-pill yk-streak-active';
+      pill.innerHTML = flameSVG;
+      var txt = document.createElement('span');
+      txt.textContent = streak + ' g\u00fcn seri';
+      pill.appendChild(txt);
+    } else {
+      pill.className = 'yk-streak-pill yk-streak-zero';
+      var txt2 = document.createElement('span');
+      txt2.textContent = streak > 0 ? 'Seri k\u0131r\u0131ld\u0131' : 'Bug\u00fcn ba\u015fla';
+      pill.appendChild(txt2);
+    }
+    slot.appendChild(pill);
+  } catch (e) { /* silent — streak is best-effort */ }
+}
+
+/* ══ DAILY PRACTICE CARD HYDRATION ══ */
+
+function hydrateDailyPractice() {
+  var slot = document.getElementById('yk-daily-slot');
+  if (!slot || !_lobbyEvidenceCache) return;
+  var bridge = getBridge();
+  if (!bridge) return;
+
+  /* Priority: find a "growing" rated comp that is not yet completed */
+  var pick = null;
+  var pickIdx = -1;
+  for (var i = 0; i < S.comps.length; i++) {
+    var code = S.comps[i];
+    if (S.completedComps.indexOf(code) !== -1) continue;
+    var ev = _lobbyEvidenceCache[code];
+    if (ev && ev.self_rating === 'growing') {
+      pick = code; pickIdx = i; break;
+    }
+  }
+  /* Fallback: first incomplete comp */
+  if (!pick) {
+    for (var j = 0; j < S.comps.length; j++) {
+      if (S.completedComps.indexOf(S.comps[j]) === -1) {
+        pick = S.comps[j]; pickIdx = j; break;
+      }
+    }
+  }
+  if (!pick) return; /* all done — no daily card needed */
+
+  var name = bridge.COMP_NAMES[pick] || pick;
+  var qCount = flattenQuestions(pick).length;
+  var estMin = Math.max(3, Math.round(qCount * 2));
+
+  slot.style.display = 'block';
+  var card = document.createElement('div');
+  card.className = 'yk-daily-card';
+  card.setAttribute('data-comp', pick);
+  card.setAttribute('data-idx', String(pickIdx));
+
+  var iconDiv = document.createElement('div');
+  iconDiv.className = 'yk-daily-icon';
+  iconDiv.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>'; /* safe — hardcoded clock SVG */
+
+  var textDiv = document.createElement('div');
+  textDiv.className = 'yk-daily-text';
+
+  var kicker = document.createElement('div');
+  kicker.className = 'yk-daily-kicker';
+  kicker.textContent = 'BUG\u00dcNK\u00dc PRAT\u0130K';
+
+  var title = document.createElement('div');
+  title.className = 'yk-daily-title';
+  title.textContent = name;
+
+  var meta = document.createElement('div');
+  meta.className = 'yk-daily-meta';
+  meta.textContent = '~' + estMin + ' dk \u00b7 ' + qCount + ' soru';
+
+  textDiv.appendChild(kicker);
+  textDiv.appendChild(title);
+  textDiv.appendChild(meta);
+
+  var cta = document.createElement('div');
+  cta.className = 'yk-daily-cta';
+  cta.textContent = 'Ba\u015fla \u2192';
+
+  card.appendChild(iconDiv);
+  card.appendChild(textDiv);
+  card.appendChild(cta);
+  slot.appendChild(card);
+
+  card.addEventListener('click', function() {
+    var c = this.getAttribute('data-comp');
+    var idx = parseInt(this.getAttribute('data-idx'), 10);
+    S.activeComp = c;
+    S.activeCompIdx = idx;
+    navigate('competency_intro');
+  });
+}
+
+/* ══ RECOMMENDATION + GROWING-FIRST RE-SORT ══ */
+
+function hydrateRecommendation(evidenceData) {
+  var slot = document.getElementById('yk-recommendation-slot');
+  if (!slot) return;
+  var bridge = getBridge();
+  if (!bridge) return;
+
+  /* Find first growing incomplete comp */
+  var growingPick = null;
+  var allDone = true;
+  for (var i = 0; i < S.comps.length; i++) {
+    var code = S.comps[i];
+    if (S.completedComps.indexOf(code) !== -1) continue;
+    allDone = false;
+    var ev = _lobbyEvidenceCache ? _lobbyEvidenceCache[code] : null;
+    if (ev && ev.self_rating === 'growing' && !growingPick) {
+      growingPick = code;
+    }
+  }
+
+  if (allDone) {
+    slot.style.display = 'block';
+    var doneDiv = document.createElement('div');
+    doneDiv.className = 'yk-recommendation';
+    doneDiv.textContent = S.role + ' i\u00e7in t\u00fcm eri\u015filebilir yetkinlikleri tamamlad\u0131n. Farkl\u0131 bir rol deneyerek yeni yetkinlikler ke\u015ffedebilirsin.';
+    slot.appendChild(doneDiv);
+    return;
+  }
+
+  if (growingPick) {
+    var gName = bridge.COMP_NAMES[growingPick] || growingPick;
+    slot.style.display = 'block';
+    var recDiv = document.createElement('div');
+    recDiv.className = 'yk-recommendation';
+    recDiv.textContent = S.role + ' i\u00e7in bug\u00fcn ' + gName + ' \u00fczerinde \u00e7al\u0131\u015fmak iyi bir ba\u015flang\u0131\u00e7 olabilir.';
+    slot.appendChild(recDiv);
+  }
+
+  /* Re-sort track cards: move growing incomplete to top */
+  if (evidenceData && evidenceData.length > 0) {
+    var tracksContainer = document.querySelector('.yk-home-tracks');
+    if (!tracksContainer) return;
+    var cards = Array.prototype.slice.call(tracksContainer.querySelectorAll('.yk-track-card'));
+    if (cards.length < 2) return;
+
+    cards.sort(function(a, b) {
+      var aCode = a.getAttribute('data-comp');
+      var bCode = b.getAttribute('data-comp');
+      var aDone = a.classList.contains('yk-track-done') ? 2 : 0;
+      var bDone = b.classList.contains('yk-track-done') ? 2 : 0;
+      var aEv = _lobbyEvidenceCache ? _lobbyEvidenceCache[aCode] : null;
+      var bEv = _lobbyEvidenceCache ? _lobbyEvidenceCache[bCode] : null;
+      var aGrow = (!aDone && aEv && aEv.self_rating === 'growing') ? -1 : 0;
+      var bGrow = (!bDone && bEv && bEv.self_rating === 'growing') ? -1 : 0;
+      return (aDone + aGrow) - (bDone + bGrow);
+    });
+
+    for (var ci = 0; ci < cards.length; ci++) {
+      tracksContainer.appendChild(cards[ci]);
+    }
+  }
 }
 
 function renderCardEvidence(el, code, ev) {
@@ -3848,8 +4352,10 @@ function bindPracticeEvents() {
     requestAiFeedback(S.activeComp, q.text, journalHash(q.text));
   });
 
-  /* Load existing feedback if available */
-  if (S.isPremium && S.dealt && S.dealt[S.currentQ]) {
+  /* Load existing feedback if available — freemium: first FREE_COMP_LIMIT comps free */
+  var _compIdx = S.comps ? S.comps.indexOf(S.activeComp) : -1;
+  var _aiFreeHere = S.isPremium || (_compIdx >= 0 && _compIdx < FREE_COMP_LIMIT);
+  if (_aiFreeHere && S.dealt && S.dealt[S.currentQ]) {
     loadExistingFeedback(S.activeComp, S.dealt[S.currentQ].text);
   }
 
@@ -3879,6 +4385,8 @@ function bindPracticeEvents() {
           p_competency_code: S.activeComp,
           p_questions_answered: S.answeredCount
         }).then(function() {});
+        /* Update streak (fire-and-forget) */
+        supabase.rpc('update_candidate_streak').then(function() {});
       }
       navigate('completion');
     }
@@ -3899,6 +4407,139 @@ function bindCompletionEvents() {
   if (restartBtn) restartBtn.addEventListener('click', function() {
     startPractice(S.activeComp, S.activeCompIdx);
   });
+
+  /* Hydrate latest badge — best-effort, silent on failure */
+  hydrateCompletionBadge();
+
+  /* Hydrate cross-links — coach + module suggestions */
+  hydrateCompletionXlinks();
+}
+
+async function hydrateCompletionBadge() {
+  var slot = document.getElementById('yk-completion-badge');
+  if (!slot || typeof supabase === 'undefined') return;
+  try {
+    var res = await supabase
+      .from('candidate_badges')
+      .select('badge_id, awarded_at, badge_definitions(title, icon_key, badge_tier)')
+      .order('awarded_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (!res.data || !res.data.badge_definitions) return;
+    var b = res.data.badge_definitions;
+    var tier = TIER_COLORS[b.badge_tier] || TIER_COLORS.base;
+    /* BADGE_ICONS is a hardcoded constant containing only safe SVG strings — no user input, no XSS risk */
+    var icon = BADGE_ICONS[b.icon_key] || BADGE_ICONS.rocket;
+    slot.style.cssText = 'display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:12px;margin-bottom:16px;background:' + tier.bg + ';border:1px solid ' + tier.border;
+    var iconEl = document.createElement('span');
+    iconEl.style.cssText = 'display:flex;align-items:center;color:' + tier.text;
+    iconEl.innerHTML = icon; /* safe — BADGE_ICONS is hardcoded SVG, identical pattern to line 2898 */
+    var titleEl = document.createElement('span');
+    titleEl.style.cssText = 'font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;color:' + tier.text + ';font-weight:600';
+    titleEl.textContent = b.title;
+    var labelEl = document.createElement('span');
+    labelEl.style.cssText = 'font-family:"DM Mono",monospace;font-size:9px;color:' + tier.text + ';opacity:.7;margin-left:auto';
+    labelEl.textContent = 'SON ROZET';
+    slot.appendChild(iconEl);
+    slot.appendChild(titleEl);
+    slot.appendChild(labelEl);
+  } catch (e) { /* silent — badge display is best-effort */ }
+}
+
+function hydrateCompletionXlinks() {
+  var slot = document.getElementById('yk-completion-xlinks');
+  if (!slot || !S.activeComp) return;
+  var comp = S.activeComp;
+  var coachCat = COMP_TO_COACH_CATEGORY[comp] || null;
+  var modulSlug = COMP_TO_MODULE_SLUG[comp] || null;
+  if (!coachCat && !modulSlug) return;
+
+  var hasCoach = false;
+  var hasModule = false;
+  var wrap = document.createElement('div');
+  wrap.className = 'yk-xlinks';
+
+  /* Coach card — check if we have a published post in that category */
+  if (coachCat && _coachFeedPosts && _coachFeedPosts.length > 0) {
+    var matchPost = null;
+    for (var ci = 0; ci < _coachFeedPosts.length; ci++) {
+      if (_coachFeedPosts[ci].category === coachCat) { matchPost = _coachFeedPosts[ci]; break; }
+    }
+    if (matchPost) {
+      hasCoach = true;
+      var coachCard = document.createElement('div');
+      coachCard.className = 'yk-xlink';
+      coachCard.innerHTML = '<div class="yk-xlink-icon navy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>'; /* safe — hardcoded SVG */
+      var coachText = document.createElement('div');
+      coachText.className = 'yk-xlink-text';
+      var coachLabel = document.createElement('div');
+      coachLabel.className = 'yk-xlink-label';
+      coachLabel.textContent = 'UZMAN G\u00d6R\u00dc\u015e\u00dc';
+      var coachTitle = document.createElement('div');
+      coachTitle.className = 'yk-xlink-title';
+      coachTitle.textContent = matchPost.title;
+      coachText.appendChild(coachLabel);
+      coachText.appendChild(coachTitle);
+      coachCard.appendChild(coachText);
+      coachCard.addEventListener('click', (function(post) {
+        return function() {
+          /* Navigate to Studio landing, then open coach detail */
+          navigate('star_intro');
+          setTimeout(function() {
+            if (typeof openCoachDetail === 'function') {
+              var isLiked = false; /* default — like state re-resolved inside detail */
+              openCoachDetail(post, isLiked);
+            }
+          }, 350);
+        };
+      })(matchPost));
+      wrap.appendChild(coachCard);
+    }
+  }
+
+  /* Module card — check cached studio modules */
+  if (modulSlug) {
+    /* We don't have module cache readily available here, so fetch minimal data */
+    if (typeof supabase !== 'undefined') {
+      supabase
+        .from('studio_modules')
+        .select('id, title, slug, section, body_md, summary, duration_minutes, cover_image_url, cover_image_alt, cta_label, cta_url, module_type')
+        .eq('slug', modulSlug)
+        .eq('status', 'published')
+        .maybeSingle()
+        .then(function(res) {
+          if (!res.data) return;
+          var m = res.data;
+          hasModule = true;
+          var modCard = document.createElement('div');
+          modCard.className = 'yk-xlink';
+          modCard.innerHTML = '<div class="yk-xlink-icon verm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div>'; /* safe — hardcoded SVG */
+          var modText = document.createElement('div');
+          modText.className = 'yk-xlink-text';
+          var modLabel = document.createElement('div');
+          modLabel.className = 'yk-xlink-label';
+          modLabel.textContent = '\u0130LG\u0130L\u0130 E\u011e\u0130T\u0130M';
+          var modTitle = document.createElement('div');
+          modTitle.className = 'yk-xlink-title';
+          modTitle.textContent = m.title;
+          modText.appendChild(modLabel);
+          modText.appendChild(modTitle);
+          modCard.appendChild(modText);
+          modCard.addEventListener('click', function() {
+            navigate('star_intro');
+            setTimeout(function() {
+              if (typeof openStudioModule === 'function') openStudioModule(m);
+            }, 350);
+          });
+          wrap.appendChild(modCard);
+          slot.style.display = 'block';
+        });
+    }
+  }
+
+  /* Show slot if coach card was added synchronously */
+  if (hasCoach) slot.style.display = 'block';
+  slot.appendChild(wrap);
 }
 
 function bindSessionCompleteEvents() {
@@ -3941,7 +4582,8 @@ window._htLoadMulakat = function() {
   var panel = document.getElementById('panel-mulakat');
   if (!panel) return;
   /* Safe: only hardcoded constant content is rendered */
-  panel.innerHTML = '<div id="ig-container"></div>';
+  /* Safe: only hardcoded constant — no user input */
+  panel.innerHTML = '<div id="ig-container" aria-live="polite"></div>';
 
   /* Preload journals from DB (async, non-blocking) */
   preloadJournalsFromDb();

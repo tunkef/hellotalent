@@ -1,5 +1,5 @@
 # hellotalent.ai — Technical Handoff Document
-> Son güncelleme: 27 Mart 2026 (Session 40 — Documentation truth-sync: Yetenek portal live status, AI/premium/journal truth, blockers)
+> Son güncelleme: 28 Mart 2026 (Session 41-42 — FAZ 0-4C: content naturalization, AI feedback hardening, streak foundation, personalized lobby, cross-links, detail→practice bridge)
 > Bu doküman, projenin mevcut durumunu, tamamlanan işleri ve kalan backlog'u kapsar.
 > Yeni bir chat/session başlatırken bu dosyayı referans olarak kullanın.
 
@@ -1237,6 +1237,108 @@ npx supabase secrets set OPENAI_API_KEY=sk-... --project-ref cpwibefquojehjehtro
 
 **No code changes in this session — verification only.**
 
+### Session 41-42 — 27-28 Mart 2026 (FAZ 0-4C: Content Naturalization + AI Hardening + Streak + Personalization + Cross-Links + Detail→Practice)
+
+**FAZ 0 — Erişilebilirlik + AI Feedback Hardening**
+- Landing task-first: Stüdyo 4 bölüm kartı iş odaklı kopya ile yeniden yazıldı
+- AI Teaser badge: "Coming Soon" → "Active" (lobby AI koçluk teaser kartı)
+- `journal-feedback/index.ts`: model fallback `gpt-4o-mini` → `gpt-5-mini`
+- Self-reflection parametresi: request body'den `self_reflection` string extract ediliyor, prompt'a `ADAYIN KENDİ DEĞERLENDİRMESİ` bloğu olarak ekleniyor
+- `buildPrompt()` 9. parametre (`selfReflection`) eklendi
+- Prompt tone: "Harika!/Mükemmel!" boş övgüleri yasaklandı, spesifik referans zorunluluğu, üçlü kalıp ve tekdüze ritim yasağı eklendi
+- **Edge Function redeploy gerekli** — repo'daki değişiklikler canlıda henüz yok
+
+**FAZ 1 — Yetkinlik İçerik Doğallaştırma (29/29 yetkinlik)**
+- Tüm 29 yetkinliğin `skilled`, `lessskilled`, `highlyskilled`, `overused` dizileri doğallaştırıldı
+- ~460 madde düzenlendi: AI yazım kalıpları kırıldı, "biçimde/etkili/güçlü" tekrarları azaltıldı
+- Korn Ferry / SHL davranışsal anchor mantığı korundu, anlam değişikliği yok
+- Cümle ritmi çeşitlendirildi: kısa/orta karışım, noktalama doğal dağıtıldı
+
+**FAZ 1E — Stüdyo UI Metinleri + Seed Modül Temizliği**
+- `STAR_CONTENT` intro, benefits, Action step, takeaway açıklaması doğallaştırıldı
+- Üçlü kural kalıpları kırıldı, kaynaksız istatistikler temizlendi
+- Koç section alt başlığı sadeleştirildi
+- 8 seed modül title'ı Title Case → sentence case
+- `profil-guclu-hale-getirme` başlık + body + summary güncellendi
+- `vaka-trafik-yuksek-satis-dusuk` kaynaksız iddia temizlendi
+- `studyodan-en-iyi-faydalanma` son cümle pratik yönlendirmeye çekildi
+- **Migration:** `20260327010000_studio_copy_cleanup.sql` — 8 UPDATE (slug bazlı, idempotent)
+
+**FAZ 2.3 — Stüdyo İlerleme Görselleştirmesi**
+- Progress bar: 6px, milestone işaretleri (%25/50/75), %100 gradient, micro-copy ("Yarı yoldasınız." / "✓ Tamamlandı")
+- Tamamlanan kartlar: vermillion sol border, opacity .92→1 hover, "Tekrar incele →" hover hint
+- Completion ekranı: vermillion check ikon, X/Y yetkinlik sayacı, büyütülmüş CTA
+- Haftalık aktivite kartı: "X pratik · ~Ydk · Z yetkinlik" (estimate ~2dk/soru)
+- Completion badge: async en son kazanılan rozet gösterimi
+- Buton mikro-feedback: `:active{transform:scale(.97)}`
+
+**FAZ 2A — Streak DB Foundation**
+- **Migration:** `20260327020000_streak_foundation.sql`
+- Tablo: `candidate_streaks` (PK=candidate_id, current/longest streak, last_activity_date, freeze alanları)
+- RPC: `update_candidate_streak()` — bugün no-op, dün +1, eski reset 1, row yoksa oluştur
+- RPC: `get_my_streak_status()` — streak okuma + `streak_alive` boolean
+- RLS: sadece kendi kaydı, işveren erişimi yok
+- Freeze/geri kazan logic sonraki faza bırakıldı
+
+**FAZ 2B — Streak UI + Frontend Entegrasyonu**
+- Lobby streak widget: alev ikonu + "X gün seri" / "Seri kırıldı" / "Bugün başla"
+- Bugünkü Pratik kartı: growing yetkinlik öncelikli, ~Xdk · Y soru, tıkla → competency_intro
+- Activity sonrası streak update: competency completion anında fire-and-forget RPC çağrısı
+- Güvenli fallback: streak RPC yoksa/hata olursa UI gizli kalır
+
+**FAZ 4A — Kişiselleştirilmiş Lobby**
+- Karşılama: "Hoş geldin, [İsim]" (`_loadedDBData.profile.full_name` ilk isim)
+- Öneri: growing yetkinlik varsa "[Rol] için bugün [Yetkinlik] üzerinde çalışmak iyi bir başlangıç olabilir."
+- Öğrenme planı sıralaması: growing incomplete → other incomplete → completed (iki aşamalı: render-time + post-hydration DOM re-sort)
+- Tamamlanan kartlar altta ama tamamen görünür
+
+**FAZ 4B — Completion Çapraz Yönlendirme**
+- `COMP_TO_COACH_CATEGORY`: 29 yetkinlik → 6 koç kategorisi mapping
+- `COMP_TO_MODULE_SLUG`: anlamlı eşleşme olan yetkinlikler → modül slug mapping
+- Completion ekranında iki kart: "Uzman Görüşü" (koç post) + "İlgili Eğitim" (modül)
+- Coach: `_coachFeedPosts` cache'den ilk matching post, tıklayınca `openCoachDetail`
+- Modül: async slug-based fetch, tıklayınca `openStudioModule`
+- Eşleşme yoksa kart gizli
+
+**FAZ 4C — İçerik Detail → Yetkinlik Pratiği Yönlendirme (28 Mart 2026)**
+- Reverse mapping'ler: `MODULE_SLUG_TO_COMP` (module slug → competency code) ve `COACH_CAT_TO_COMP` (coach category → competency code) — mevcut forward map'lerin IIFE ile invert edilmesiyle oluşturuldu
+- `navigateToCompPractice(compCode)`: aktif role varsa ve comp erişilebilirse → doğrudan `competency_intro`, yoksa → `role_select` + `S.pendingComp` mekanizması
+- `buildPracticeBridgeCTA(compCode, headingText)`: paylaşılan DOM builder, yetkinlik adı + "Pratiğe geç →" CTA'sı
+- Module detail sonuna CTA: "Şimdi bunu mülakatta nasıl anlatırsın?" — slug mapping varsa görünür, yoksa gizli
+- Coach detail overlay sonuna CTA: "Bu konuda pratik yap" — category mapping varsa görünür, yoksa gizli
+- `S.pendingComp` in `startSession()`: role seçildikten sonra pending comp varsa doğrudan `competency_intro`'ya yönlendir, yoksa normal `lobby`
+- CSS: `.st-detail-bridge` — mevcut `.yk-xlink` ailesiyle uyumlu, secondary yüzey
+- Yeni DB nesnesi yok, yeni migration yok
+- Tests: +10 structural guard (×2 viewport = 20 test)
+
+**Dosya Değişiklikleri (Session 41-42 toplam):**
+```
+EDIT    profil-yetkinlik.js (29 yetkinlik × 4 dizi = ~460 madde doğallaştırma + 1 minor fix)
+EDIT    profil-mulakatkocu.js (FAZ 0: STAR_CONTENT copy; FAZ 1E: UI copy; FAZ 2.3: progress/completion; FAZ 2A-2B: streak; FAZ 4A: personalization; FAZ 4B: completion cross-links; FAZ 4C: detail→practice bridge + reverse mappings + pendingComp)
+EDIT    supabase/functions/journal-feedback/index.ts (gpt-5-mini fallback, self-reflection, prompt tone)
+EDIT    supabase/migrations/20260326230000_studio_seed_content.sql (lokal copy edits — remote'ta zaten eski hali, bu dosyayı db push atlar)
+CREATE  supabase/migrations/20260327010000_studio_copy_cleanup.sql (8 UPDATE, idempotent)
+CREATE  supabase/migrations/20260327020000_streak_foundation.sql (candidate_streaks DDL + 2 RPC)
+EDIT    tests/p3.regression.spec.js (+20 FAZ 4C structural guard)
+EDIT    docs/handoff.md (bu session)
+```
+
+**Deploy durumu (28 Mart 2026 itibarıyla):**
+- ⚠️ Frontend push bekliyor (profil-mulakatkocu.js, profil-yetkinlik.js, tests)
+- ⚠️ Migration 20260327010000 (copy cleanup) deploy bekliyor — `npm run db:push` ile
+- ⚠️ Migration 20260327020000 (streak foundation) deploy bekliyor — `npm run db:push` ile
+- ⚠️ journal-feedback Edge Function redeploy bekliyor — `supabase functions deploy journal-feedback --project-ref cpwibefquojehjehtrog`
+- ⚠️ OPENAI_API_KEY: secret set edildi, canlı AI smoke henüz doğrulanmadı
+
+**Graceful degradation zinciri:**
+- Migration 020000 deploy edilmezse → streak widget gizli kalır, lobby hâlâ çalışır
+- OPENAI_API_KEY yoksa → AI feedback "failed" durumunda kalır, journal yazma hâlâ çalışır
+- Coach post yoksa → feed boş, landing hâlâ çalışır
+- Module DB boşsa → editorial empty state, section tıklanabilir
+- Cross-link mapping yoksa → CTA gizli, completion/detail normal çalışır
+
+**Tests:** 382/382 pass (0 failures). ESLint: 0 errors, 11 pre-existing warnings.
+
 ### Sonraki Adımlar
 - [x] ~~Migration 042 → competency tabloları~~ ✅ Deployed
 - [x] ~~Mülakat Koçu unification (Yetkinlik + İş Görüşmeleri → tek ürün)~~ ✅ Session 7
@@ -1255,9 +1357,15 @@ npx supabase secrets set OPENAI_API_KEY=sk-... --project-ref cpwibefquojehjehtro
 - [x] ~~Premium entitlement: payment records + activation + webhook~~ ✅ Session 34 — demo flow, is_premium truth wired
 - [x] ~~Yetenek IA reset: learning portal structure~~ ✅ Session 35 — journal UI removed, new screens
 - [x] ~~Yetenek Phase 1B-1D: polish + content depth + hierarchy + locked cleanup~~ ✅ Sessions 36-39 — live verified
-- [ ] Studio geneli polish (cross-section tutarlılık)
+- [x] ~~Studio geneli polish (cross-section tutarlılık)~~ ✅ Session 41 — content naturalization, UX polish, personalization, cross-links
+- [x] ~~Streak DB foundation~~ ✅ Session 41 — migration 20260327020000, table + 2 RPCs
+- [x] ~~Detail → practice bridge (FAZ 4C)~~ ✅ Session 42 — reverse mappings, module/coach detail CTA, pendingComp
+- [x] ~~AI feedback hardening (FAZ 0)~~ ✅ Session 42 — gpt-5-mini, self-reflection, prompt tone naturalization
+- [ ] **DEPLOY**: `npm run db:push` (2 pending migration) + `supabase functions deploy journal-feedback` + `git push origin main`
+- [ ] **SMOKE**: Canlı doğrulama (streak widget, detail→practice, AI feedback E2E, kişiselleştirme)
+- [ ] Streak freeze/geri kazan mekaniği (FAZ 2C) — deploy + smoke sonrası
 - [ ] Gerçek iyzico checkout wiring (credentials + redirect + callback)
-- [ ] OPENAI_API_KEY yapılandırma + canlı AI doğrulama
+- [ ] OPENAI_API_KEY canlı AI E2E doğrulama (secret set edildi, smoke bekliyor)
 - [ ] Stüdyo Phase 5B: Yeni AI aday yüzeyi (unit-integrated, journal yerine)
 - [ ] İşveren kampanya wizard'ı (ik.html)
 - [x] ~~Email delivery worker~~ ✅ Phase 1 email infrastructure built (Session 11, migration 051)

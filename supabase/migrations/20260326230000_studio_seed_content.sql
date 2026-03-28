@@ -10,7 +10,7 @@
 INSERT INTO studio_modules (section, module_type, slug, title, summary, body_md, duration_minutes, sort_order, status, published_at)
 VALUES (
   'performans', 'lesson', 'ciro-sepet-donusum',
-  'Ciro, Sepet Ortalaması ve Dönüşüm Oranı',
+  'Ciro, sepet ortalaması ve dönüşüm oranı',
   'Perakendecinin üç temel metriğini anlayın. Bu sayıları okuyan, mağazasının hikayesini anlatır.',
   'Perakendede üç rakam her şeyi anlatır: ciro, sepet ortalaması ve dönüşüm oranı.
 
@@ -28,7 +28,7 @@ Bu üç metriği birlikte okuyun. Ciro düştüyse: sepet mi düştü, dönüş�
 ),
 (
   'performans', 'lesson', 'magaza-hedefleri-gunluk-operasyon',
-  'Mağaza Hedefleri ve Günlük Operasyon İlişkisi',
+  'Mağaza hedefleri ve günlük operasyon ilişkisi',
   'Aylık hedef nasıl günlük aksiyona dönüşür? Hedef takibini rutine dönüştürmenin pratik yolu.',
   'Aylık hedefiniz 500.000 TL. Bugün ne yapmanız gerekiyor?
 
@@ -47,7 +47,7 @@ Gün sonunda 3 dakika ayırın: hedef tuttu mu, neden tutmadı, yarın ne farkl�
 ),
 (
   'performans', 'lesson', 'kpi-dususu-yorumlama',
-  'KPI Düşüşünü Yorumlama: Nereden Başlanır',
+  'KPI düşüşünü yorumlama: nereden başlanır',
   'Satışlar düştüğünde panik değil analiz yapın. Doğru soruyu sormak, doğru aksiyonu başlatır.',
   'Satışlar düştüğünde ilk tepki genellikle "neden?" sorusudur. Ama doğru soru "nerede?" ile başlar.
 
@@ -69,12 +69,12 @@ Veriye duygusuz bakın. "İyi" veya "kötü" diye başlamayın, "ne değişti?" 
 ),
 (
   'performans', 'lesson', 'vaka-trafik-yuksek-satis-dusuk',
-  'Vaka Çalışması: Trafik Yüksek, Satış Düşük',
+  'Vaka: Trafik yüksek, satış düşük',
   'Mağazaya giren çok ama satış düşük. Bu senaryonun kök nedenlerini ve çözüm yollarını inceleyin.',
   'Senaryo: Mağazanızda haftalık giriş sayısı 2.400, ama satış adedi sadece 180. Dönüşüm oranı %7,5 — sektör ortalamasının yarısı.
 
 Olası Neden 1: Karşılama Eksikliği
-Müşteri girdi ama kimse ilgilenmedi. Araştırmalar, ilk 30 saniyede karşılanmayan müşterinin satın alma olasılığının %40 düştüğünü gösteriyor.
+Müşteri girdi ama kimse ilgilenmedi. Perakende sektöründe ilk 30 saniyede karşılanmayan müşterinin satın alma olasılığı belirgin şekilde düşer.
 
 Olası Neden 2: Ürün Bulunabilirliği
 Beden eksikleri, dağınık raflar veya fiyat etiketi eksikliği müşteriyi kaybettirir. Trafik yüksekse ürün hazırlığı kritiktir.
@@ -101,12 +101,12 @@ Aksiyon Planı
 INSERT INTO studio_modules (section, module_type, slug, title, summary, body_md, duration_minutes, sort_order, status, published_at)
 VALUES (
   'bilgiler', 'article', 'profil-guclu-hale-getirme',
-  'Profilinizi İşverenler İçin Güçlü Hale Getirin',
-  'İşverenler profilinize baktığında ne görüyor? İlk izlenimi güçlendirmenin 5 pratik adımı.',
-  'İşverenler HelloTalent''ta aday ararken profilinizi ortalama 12 saniye inceliyor. Bu sürede güçlü bir izlenim bırakmak için:
+  'Profilinizi İşverenlerin Gözünden Düzenleyin',
+  'İşverenler profilinize baktığında ne görüyor? İlk izlenimi iyileştirmenin 5 pratik adımı.',
+  'İşverenler bir adayın profilini çok kısa sürede tarar. Bu sürede fark yaratmak için:
 
 1. Fotoğrafınızı Ekleyin
-Fotoğraflı profiller %3 kat daha fazla görüntüleniyor. Profesyonel olmak zorunda değil, ama net ve güncel olmalı.
+Fotoğraflı profiller daha fazla görüntülenir. Profesyonel olmak zorunda değil, ama net ve güncel olmalı.
 
 2. Deneyimlerinizi Eksiksiz Yazın
 Her deneyim için: şirket, pozisyon, tarih aralığı ve kısa açıklama. "Mağaza Müdürü" yeterli değil — "12 kişilik ekiple aylık 800K ciro hedefini yönettim" çok daha etkili.
@@ -123,7 +123,7 @@ Ayarlar > Görünürlük bölümünden "Beni Öner" aktifken, işverenler sizi a
 ),
 (
   'bilgiler', 'article', 'teklifler-mesajlar-yonetimi',
-  'Teklifler ve Mesajlar Nasıl Yönetilir',
+  'Teklifler ve mesajlar nasıl yönetilir',
   'İşveren mesajlarına nasıl yanıt verilir, teklifler nasıl değerlendirilir, thread''ler nasıl çalışır.',
   'HelloTalent''ta işverenler size doğrudan mesaj gönderebilir. Bu mesajlar genellikle bir pozisyon teklifi veya ön görüşme davetidir.
 
@@ -145,7 +145,7 @@ Mesajlara 24 saat içinde yanıt veren adaylar, işverenler tarafından daha akt
 ),
 (
   'bilgiler', 'article', 'gorunurluk-ayarlari',
-  'Görünürlük Ayarları Ne İşe Yarar',
+  'Görünürlük ayarları ne işe yarar',
   'Profilinizi kim görebilir, "Beni Öner" ne yapar, mevcut işverenden gizlenme nasıl çalışır.',
   'HelloTalent''ta üç temel görünürlük kontrolünüz var:
 
@@ -164,7 +164,7 @@ Görünürlük ayarlarınız açık olsa bile, profil tamamlama oranınız %45 a
 ),
 (
   'bilgiler', 'article', 'studyodan-en-iyi-faydalanma',
-  'Stüdyo''dan En İyi Nasıl Faydalanılır',
+  'Stüdyo''dan en iyi nasıl faydalanılır',
   'Stüdyo''nun dört bölümünü tanıyın ve kariyer gelişiminiz için en verimli kullanma yollarını keşfedin.',
   'Stüdyo, HelloTalent''ın kariyer gelişim alanıdır. Dört bölümden oluşur ve her biri farklı bir ihtiyaca cevap verir.
 
@@ -180,6 +180,6 @@ Mağaza KPI''ları, satış matematiği, dönüşüm oranları. Bu bölüm, say�
 HelloTalent''ten Bilgiler — Platformu Tanı
 Profilinizi nasıl güçlendirirsiniz, mesajları nasıl yönetirsiniz, görünürlük ayarları ne işe yarar. Platformu verimli kullanmanız için.
 
-Öneri: Her hafta en az bir modülü tamamlayın. Düzenli öğrenme, mülakat anında fark yaratır.',
+Haftada bir modül tamamlamak bile mülakat hazırlığınızda somut fark yaratır.',
   5, 4, 'published', now()
 );
