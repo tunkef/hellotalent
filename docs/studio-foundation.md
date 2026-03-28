@@ -1,7 +1,7 @@
 # Stüdyo — Technical Foundation Document
 
 > Aday tarafındaki en derin değer alanı. Kariyer gelişimi, yetkinlik eğitimi, uzman içerikleri ve platform bilgisi.
-> Son güncelleme: 28 Mart 2026 (Session 42 — FAZ 0-4C tamamlandı, deploy bekliyor)
+> Son güncelleme: 28 Mart 2026 (Session 42 — FAZ 0-4C deployed, AI E2E live verified)
 
 ## Bilgi Mimarisi (Information Architecture)
 
@@ -58,15 +58,15 @@ Stüdyo (panel key: mulakat, loader: _htLoadMulakat)
 | Yetenek pratik kaydı | candidate_yetenek_progress | ✅ DB-backed — competency completion |
 | Self-rating | candidate_competencies | ✅ RPCs mevcut — lobby kartlarında toggle |
 | Kanıt yüzeyi | get_my_yetenek_overview RPC | ✅ Lobby'de evidence hydration |
-| AI feedback altyapısı | candidate_journal_feedback + Edge Function | ✅ Schema + RPC deployed. Edge Function: gpt-5-mini + self-reflection (redeploy bekliyor) |
-| AI feedback aday yüzeyi | Aday akışında aktif değil | ⏸ Journal UI kaldırıldı, AI yüzeyi beklemede |
+| AI feedback altyapısı | candidate_journal_feedback + Edge Function | ✅ Canlı — gpt-4.1-mini, self-reflection, error sanitization. E2E PASS 28 Mart 2026 |
+| AI feedback aday yüzeyi | Practice ekranında journal panel + AI buton | ✅ Canlı — "AI ile Değerlendir" → 6 bölüm feedback kartı. Premium gate çalışıyor |
 | Premium entitlement | candidate_premium_purchases + activate RPC + webhook | ✅ Demo flow deployed |
-| Streak sistemi | candidate_streaks + 2 RPC | ⏳ Migration hazır, deploy bekliyor. Frontend graceful fallback |
-| Kişiselleştirme | profil-mulakatkocu.js (lobby) | ✅ Karşılama + öneri + sıralama (push bekliyor) |
-| Completion cross-link | profil-mulakatkocu.js (FAZ 4B) | ✅ COMP_TO_COACH_CATEGORY + COMP_TO_MODULE_SLUG (push bekliyor) |
-| Detail → practice bridge | profil-mulakatkocu.js (FAZ 4C) | ✅ MODULE_SLUG_TO_COMP + COACH_CAT_TO_COMP + pendingComp (push bekliyor) |
-| Progress görselleştirme | profil-mulakatkocu.js (FAZ 2.3) | ✅ 6px bar, milestones, weekly summary, completion badge (push bekliyor) |
-| İçerik doğallaştırma | profil-yetkinlik.js + STAR_CONTENT | ✅ 29 yetkinlik + UI kopya (push bekliyor) |
+| Streak sistemi | candidate_streaks + 2 RPC | ✅ Canlı — migration deployed, streak widget görünür, güncelleniyor |
+| Kişiselleştirme | profil-mulakatkocu.js (lobby) | ✅ Karşılama + öneri + sıralama (canlı) |
+| Completion cross-link | profil-mulakatkocu.js (FAZ 4B) | ✅ COMP_TO_COACH_CATEGORY + COMP_TO_MODULE_SLUG (canlı) |
+| Detail → practice bridge | profil-mulakatkocu.js (FAZ 4C) | ✅ MODULE_SLUG_TO_COMP + COACH_CAT_TO_COMP + pendingComp (canlı) |
+| Progress görselleştirme | profil-mulakatkocu.js (FAZ 2.3) | ✅ 6px bar, milestones, weekly summary, completion badge (canlı) |
+| İçerik doğallaştırma | profil-yetkinlik.js + STAR_CONTENT | ✅ 29 yetkinlik + UI kopya (canlı) |
 
 ## Runtime Kontratları (Değiştirme!)
 
@@ -105,33 +105,35 @@ Stüdyo (panel key: mulakat, loader: _htLoadMulakat)
 - Self-rating toggle: Güçlü/Gelişiyor — DB-backed `candidate_competencies`
 - Evidence hydration: pratik sayısı, günlük sayısı, AI sinyal — `get_my_yetenek_overview` RPC
 
+## Çözülmüş Blocker'lar (28 Mart 2026)
+
+| Blocker | Çözüm |
+|---------|-------|
+| ~~OPENAI_API_KEY~~ | ✅ Set edildi, E2E PASS |
+| ~~journal-feedback redeploy~~ | ✅ Deployed — gpt-4.1-mini, error sanitization |
+| ~~2 pending migration~~ | ✅ 010000 + 020000 deployed via `npm run db:push` |
+| ~~Frontend push~~ | ✅ 4 commit pushed to origin/main |
+| ~~Model `gpt-5-mini` yok~~ | ✅ `gpt-4.1-mini` ile düzeltildi |
+| ~~Error toast key leak~~ | ✅ Edge Function + frontend guard sanitization |
+
 ## Mevcut Blocker'lar
 
 | Blocker | Durum | Çözüm |
 |---------|-------|-------|
-| OPENAI_API_KEY | Secret set edildi, canlı smoke bekliyor | AI feedback E2E doğrulama gerekli |
-| journal-feedback redeploy | Repo'da gpt-5-mini + self-reflection, canlıda eski versiyon | `supabase functions deploy journal-feedback --project-ref cpwibefquojehjehtrog` |
-| 2 pending migration | 20260327010000 + 20260327020000 | `npm run db:push` |
-| Frontend push | 6 dosya uncommitted | `git commit` + `git push origin main` |
 | iyzico API credentials | Yapılandırılmadı | Gerçek iyzico merchant credentials gerekli |
 | iyzico checkout redirect | Demo flow (webhook direkt çağrılıyor) | `initiatePurchase()` fonksiyonunda iyzico checkout'a yönlendirme |
-| AI aday yüzeyi | Journal UI kaldırıldı, yeni yüzey yok | Phase 5B'de yeni AI yüzeyi tasarımı gerekli |
 
 ## Sonraki Adımlar
 
-**Öncelik 1 — Deploy + Smoke (yeni feature önce bu tamamlanmalı):**
-1. `npm run db:push` — 2 pending migration (copy cleanup + streak foundation)
-2. `supabase functions deploy journal-feedback` — gpt-5-mini + self-reflection
-3. `git commit` + `git push origin main` — frontend (FAZ 0-4C tümü)
-4. Live smoke: streak widget, kişiselleştirme, detail→practice, AI feedback E2E, cross-links
+**~~Öncelik 1 — Deploy + Smoke~~** ✅ Tamamlandı 28 Mart 2026
 
-**Öncelik 2 — Feature geliştirme (deploy + smoke sonrası):**
-5. **Streak FAZ 2C**: freeze/geri kazan mekaniği
-6. **Gerçek iyzico checkout**: iyzico API credentials → checkout form → callback wiring
-7. **OPENAI_API_KEY canlı AI doğrulama**: secret set edildi, E2E smoke bekliyor
-8. **Studio Phase 5B**: Yeni AI aday yüzeyi tasarımı (journal yerine unit-integrated yaklaşım)
-9. **Studio Phase 6**: Video içerik altyapısı (embed player, admin upload, ilerleme tracking)
-10. **Badge genişletme**: Yetenek pratik badge'leri (evaluate_candidate_badges extension)
+**Sonraki Feature Geliştirme (sıra kullanıcı tercihine bağlı):**
+1. **Streak FAZ 2C**: freeze/geri kazan mekaniği
+2. **Gerçek iyzico checkout**: iyzico API credentials → checkout form → callback wiring
+3. **Studio Phase 5B**: Yeni AI aday yüzeyi tasarımı (journal yerine unit-integrated yaklaşım)
+4. **Studio Phase 6**: Video içerik altyapısı (embed player, admin upload, ilerleme tracking)
+5. **Badge genişletme**: Yetenek pratik badge'leri (evaluate_candidate_badges extension)
+6. **İşveren kampanya wizard'ı** (ik.html)
 
 ## Deployed Schema (tamamlanan)
 
@@ -144,7 +146,7 @@ Stüdyo (panel key: mulakat, loader: _htLoadMulakat)
 - `upsert_competency_rating` + `get_my_competency_ratings` RPCs (Session 32)
 - DB-backed competency loading in profil-yetkinlik.js (Session 32)
 
-## Pending Schema (deploy bekliyor)
+## Recently Deployed Schema (28 Mart 2026)
 
-- `20260327010000_studio_copy_cleanup.sql` — 8 UPDATE, module title/body sentence-case + kopya temizliği
-- `20260327020000_streak_foundation.sql` — `candidate_streaks` tablo + `update_candidate_streak` + `get_my_streak_status` RPCs
+- `20260327010000_studio_copy_cleanup.sql` — 8 UPDATE, module title/body sentence-case + kopya temizliği ✅
+- `20260327020000_streak_foundation.sql` — `candidate_streaks` tablo + `update_candidate_streak` + `get_my_streak_status` RPCs ✅

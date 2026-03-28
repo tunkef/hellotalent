@@ -1,5 +1,5 @@
 # hellotalent.ai — Technical Handoff Document
-> Son güncelleme: 28 Mart 2026 (Session 41-42 — FAZ 0-4C: content naturalization, AI feedback hardening, streak foundation, personalized lobby, cross-links, detail→practice bridge)
+> Son güncelleme: 28 Mart 2026 (Session 41-42 — FAZ 0-4C deployed + AI E2E live verified. Model: gpt-4.1-mini)
 > Bu doküman, projenin mevcut durumunu, tamamlanan işleri ve kalan backlog'u kapsar.
 > Yeni bir chat/session başlatırken bu dosyayı referans olarak kullanın.
 
@@ -1198,8 +1198,7 @@ EDIT    profil.html (cache-bust 20260326y)
 EDIT    docs/handoff.md (Session 30)
 ```
 
-**Remaining blocker for live AI:**
-- [ ] Set `OPENAI_API_KEY` env var: Supabase Dashboard → Edge Functions → journal-feedback → Settings → Environment Variables
+**~~Remaining blocker for live AI:~~** ✅ Resolved 28 Mart 2026 — OPENAI_API_KEY set edildi, model `gpt-4.1-mini`, canlı E2E PASS.
 
 ### Session 31 — 26 Mart 2026 (Studio Phase 5A Live Verification)
 
@@ -1226,14 +1225,7 @@ Premium gating verified live:
 - ✅ **Premium (is_premium=true)**: sees "AI ile Değerlendir" button. 9 competencies unlocked, 999 swaps. Gate card hidden.
 - ✅ DB column `candidates.is_premium` is the authoritative truth source — confirmed via live toggle test (set true → reload → button appears, set false → reload → gate appears)
 
-AI generation NOT tested live:
-- ❌ `OPENAI_API_KEY` not configured in Supabase secrets (not available in local environment)
-- This is the **only remaining blocker** for live AI feedback
-
-To complete AI setup, user must run:
-```
-npx supabase secrets set OPENAI_API_KEY=sk-... --project-ref cpwibefquojehjehtrog
-```
+~~AI generation NOT tested live~~ → ✅ **Resolved 28 Mart 2026.** OPENAI_API_KEY set edildi, model `gpt-4.1-mini` olarak düzeltildi, canlı E2E PASS (Karma · 70/100, 6 bölüm feedback kartı render edildi). Error handling sanitization uygulandı (API key sızıntısı engellendi).
 
 **No code changes in this session — verification only.**
 
@@ -1242,11 +1234,12 @@ npx supabase secrets set OPENAI_API_KEY=sk-... --project-ref cpwibefquojehjehtro
 **FAZ 0 — Erişilebilirlik + AI Feedback Hardening**
 - Landing task-first: Stüdyo 4 bölüm kartı iş odaklı kopya ile yeniden yazıldı
 - AI Teaser badge: "Coming Soon" → "Active" (lobby AI koçluk teaser kartı)
-- `journal-feedback/index.ts`: model fallback `gpt-4o-mini` → `gpt-5-mini`
+- `journal-feedback/index.ts`: model fallback `gpt-4o-mini` → `gpt-4.1-mini` (ara geçiş olarak `gpt-5-mini` hedeflendi, OpenAI'da mevcut olmadığı için `gpt-4.1-mini` ile düzeltildi)
 - Self-reflection parametresi: request body'den `self_reflection` string extract ediliyor, prompt'a `ADAYIN KENDİ DEĞERLENDİRMESİ` bloğu olarak ekleniyor
 - `buildPrompt()` 9. parametre (`selfReflection`) eklendi
 - Prompt tone: "Harika!/Mükemmel!" boş övgüleri yasaklandı, spesifik referans zorunluluğu, üçlü kalıp ve tekdüze ritim yasağı eklendi
-- **Edge Function redeploy gerekli** — repo'daki değişiklikler canlıda henüz yok
+- Error sanitization: OpenAI hata body'si artık kullanıcıya gösterilmiyor (API key sızıntısı engellendi). Safe Turkish error mesajları (401/429/404/generic). Frontend'de 120 char + `key` keyword guard eklendi.
+- ✅ Edge Function deployed, OPENAI_API_KEY set edildi, canlı E2E PASS (28 Mart 2026)
 
 **FAZ 1 — Yetkinlik İçerik Doğallaştırma (29/29 yetkinlik)**
 - Tüm 29 yetkinliğin `skilled`, `lessskilled`, `highlyskilled`, `overused` dizileri doğallaştırıldı
@@ -1315,7 +1308,7 @@ npx supabase secrets set OPENAI_API_KEY=sk-... --project-ref cpwibefquojehjehtro
 ```
 EDIT    profil-yetkinlik.js (29 yetkinlik × 4 dizi = ~460 madde doğallaştırma + 1 minor fix)
 EDIT    profil-mulakatkocu.js (FAZ 0: STAR_CONTENT copy; FAZ 1E: UI copy; FAZ 2.3: progress/completion; FAZ 2A-2B: streak; FAZ 4A: personalization; FAZ 4B: completion cross-links; FAZ 4C: detail→practice bridge + reverse mappings + pendingComp)
-EDIT    supabase/functions/journal-feedback/index.ts (gpt-5-mini fallback, self-reflection, prompt tone)
+EDIT    supabase/functions/journal-feedback/index.ts (gpt-4.1-mini fallback, self-reflection, prompt tone, error sanitization)
 EDIT    supabase/migrations/20260326230000_studio_seed_content.sql (lokal copy edits — remote'ta zaten eski hali, bu dosyayı db push atlar)
 CREATE  supabase/migrations/20260327010000_studio_copy_cleanup.sql (8 UPDATE, idempotent)
 CREATE  supabase/migrations/20260327020000_streak_foundation.sql (candidate_streaks DDL + 2 RPC)
@@ -1323,19 +1316,19 @@ EDIT    tests/p3.regression.spec.js (+20 FAZ 4C structural guard)
 EDIT    docs/handoff.md (bu session)
 ```
 
-**Deploy durumu (28 Mart 2026 itibarıyla):**
-- ⚠️ Frontend push bekliyor (profil-mulakatkocu.js, profil-yetkinlik.js, tests)
-- ⚠️ Migration 20260327010000 (copy cleanup) deploy bekliyor — `npm run db:push` ile
-- ⚠️ Migration 20260327020000 (streak foundation) deploy bekliyor — `npm run db:push` ile
-- ⚠️ journal-feedback Edge Function redeploy bekliyor — `supabase functions deploy journal-feedback --project-ref cpwibefquojehjehtrog`
-- ⚠️ OPENAI_API_KEY: secret set edildi, canlı AI smoke henüz doğrulanmadı
+**Deploy durumu (28 Mart 2026, tümü tamamlandı):**
+- ✅ Frontend push: `3ab78e3` + `8ae8027` (cache-bust) + `85b6dbf` (error sanitization) + `95ec74d` (model fix)
+- ✅ Migration 20260327010000 (copy cleanup) deployed via `npm run db:push`
+- ✅ Migration 20260327020000 (streak foundation) deployed via `npm run db:push`
+- ✅ journal-feedback Edge Function deployed (model: `gpt-4.1-mini`, sanitized errors)
+- ✅ OPENAI_API_KEY set edildi, canlı AI E2E PASS (Karma · 70/100, 6 bölüm feedback)
+- ✅ Error sanitization canlıda doğrulandı (API key leak engellendi)
 
-**Graceful degradation zinciri:**
-- Migration 020000 deploy edilmezse → streak widget gizli kalır, lobby hâlâ çalışır
-- OPENAI_API_KEY yoksa → AI feedback "failed" durumunda kalır, journal yazma hâlâ çalışır
+**Graceful degradation zinciri (mevcut ve çalışıyor):**
 - Coach post yoksa → feed boş, landing hâlâ çalışır
 - Module DB boşsa → editorial empty state, section tıklanabilir
 - Cross-link mapping yoksa → CTA gizli, completion/detail normal çalışır
+- AI model/key hatası olursa → safe Turkish toast + "Tekrar Dene" butonu, practice ekranı korunur
 
 **Tests:** 382/382 pass (0 failures). ESLint: 0 errors, 11 pre-existing warnings.
 
@@ -1360,12 +1353,12 @@ EDIT    docs/handoff.md (bu session)
 - [x] ~~Studio geneli polish (cross-section tutarlılık)~~ ✅ Session 41 — content naturalization, UX polish, personalization, cross-links
 - [x] ~~Streak DB foundation~~ ✅ Session 41 — migration 20260327020000, table + 2 RPCs
 - [x] ~~Detail → practice bridge (FAZ 4C)~~ ✅ Session 42 — reverse mappings, module/coach detail CTA, pendingComp
-- [x] ~~AI feedback hardening (FAZ 0)~~ ✅ Session 42 — gpt-5-mini, self-reflection, prompt tone naturalization
-- [ ] **DEPLOY**: `npm run db:push` (2 pending migration) + `supabase functions deploy journal-feedback` + `git push origin main`
-- [ ] **SMOKE**: Canlı doğrulama (streak widget, detail→practice, AI feedback E2E, kişiselleştirme)
-- [ ] Streak freeze/geri kazan mekaniği (FAZ 2C) — deploy + smoke sonrası
+- [x] ~~AI feedback hardening (FAZ 0)~~ ✅ Session 42 — gpt-4.1-mini, self-reflection, prompt tone, error sanitization
+- [x] ~~**DEPLOY**: migrations + Edge Function + frontend~~ ✅ 28 Mart 2026 — `3ab78e3`, `8ae8027`, `85b6dbf`, `95ec74d`
+- [x] ~~**SMOKE**: Canlı doğrulama~~ ✅ 28 Mart 2026 — streak widget, kişiselleştirme, detail→practice, AI E2E tümü PASS
+- [x] ~~OPENAI_API_KEY canlı AI E2E doğrulama~~ ✅ 28 Mart 2026 — key set, model düzeltme, E2E PASS
+- [ ] Streak freeze/geri kazan mekaniği (FAZ 2C)
 - [ ] Gerçek iyzico checkout wiring (credentials + redirect + callback)
-- [ ] OPENAI_API_KEY canlı AI E2E doğrulama (secret set edildi, smoke bekliyor)
 - [ ] Stüdyo Phase 5B: Yeni AI aday yüzeyi (unit-integrated, journal yerine)
 - [ ] İşveren kampanya wizard'ı (ik.html)
 - [x] ~~Email delivery worker~~ ✅ Phase 1 email infrastructure built (Session 11, migration 051)
