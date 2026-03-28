@@ -260,8 +260,13 @@ async function callOpenAI(prompt: string): Promise<FeedbackResult> {
   });
 
   if (!res.ok) {
-    const body = await res.text().catch(() => "");
-    throw new Error(`OpenAI ${res.status}: ${body}`);
+    const status = res.status;
+    // Sanitize: never expose raw API error body (may contain key fragments)
+    const safeMsg = status === 401 ? "API anahtari gecersiz."
+      : status === 429 ? "Istek limiti asildi. Lutfen bekleyin."
+      : status === 404 ? `Model bulunamadi: ${MODEL}`
+      : `OpenAI hatasi (${status})`;
+    throw new Error(safeMsg);
   }
 
   const data = await res.json();

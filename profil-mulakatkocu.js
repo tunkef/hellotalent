@@ -3289,8 +3289,9 @@ function pollForFeedback(compCode, qHash, btn) {
           _aifPollTimer = null;
           _aifRequestInFlight = false;
           if (btn) { btn.disabled = false; btn.textContent = 'Tekrar Dene'; }
-          var errMsg = fb.error_message ? ('Hata: ' + fb.error_message) : 'De\u011ferlendirme ba\u015far\u0131s\u0131z oldu.';
-          showStudioToast(errMsg);
+          var safeErr = fb.error_message && fb.error_message.length < 120 && fb.error_message.indexOf('key') === -1
+            ? fb.error_message : 'De\u011ferlendirme ba\u015far\u0131s\u0131z oldu.';
+          showStudioToast(safeErr + ' Tekrar deneyebilirsiniz.');
         }
         /* pending/processing → keep polling */
       }
