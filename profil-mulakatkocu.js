@@ -3271,7 +3271,7 @@ function pollForFeedback(compCode, qHash, btn) {
   var attempts = 0;
   _aifPollTimer = setInterval(async function() {
     attempts++;
-    if (attempts > 45) { /* 45 seconds max (gpt-4o-mini typically <15s) */
+    if (attempts > 75) { /* 75 seconds max — allows cron cycle (60s) + OpenAI processing */
       clearInterval(_aifPollTimer);
       _aifPollTimer = null;
       _aifRequestInFlight = false;
