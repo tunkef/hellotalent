@@ -1,5 +1,5 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 29 Mart 2026 | Session 43 | 514/553 test (27 fail — infra/public-page, core features saglam)
+> Son guncelleme: 29 Mart 2026 | Session 44 | 514/553 test (27 fail — infra/public-page, core 446/446 PASS)
 
 ## 1. Proje Ozeti
 
@@ -11,7 +11,7 @@ hellotalent.ai, Turkiye perakende sektorune ozel bir yetenek pazaryeri. Adaylar 
 - **Glassmorphic float header** — LinkedIn-style, 5 nav, avatar dropdown, dark mode toggle | `profil.html`
 - **Markalar paneli** — 96 marka flip-card grid, company/brand hierarchy | `profil-markalar.js`
 - **Yetkinlik sistemi** — 29 KF yetkinlik, 34 rol haritasi, bento grid, premium reading view | `profil-yetkinlik.js`
-- **Mulakat Kocu (Studio)** — STAR+T metodu, 6 ekranli flow, streak sistemi, spaced repetition | `profil-mulakatkocu.js`
+- **Mulakat Kocu (Studio)** — STAR+T metodu, 6 ekranli flow, streak, spaced repetition, ilk giris onboarding spotlight | `profil-mulakatkocu.js`
 - **AI feedback** — Edge Function (gpt-4.1-mini), pg_cron pipeline, hero kart + accordion UI | `supabase/functions/journal-feedback/`
 - **Streak sistemi** — gunluk seri, freeze/geri kazanim, review oneri | migration 20260327-28
 - **Employer onboarding (P3)** — tek/coklu marka, domain verify, team system | `ik.html`
@@ -68,21 +68,21 @@ hellotalent.ai, Turkiye perakende sektorune ozel bir yetenek pazaryeri. Adaylar 
 ## 4. DB Durumu
 
 - **Baseline:** `20260322000000_baseline.sql` (migration 001-064 arsivlendi)
-- **Son migration:** `20260328010000_streak_freeze_recovery.sql`
-- **Toplam migration (baseline sonrasi):** 32 dosya
+- **Son migration:** `20260329010000_studio_duration_fix.sql` (Supabase deploy bekliyor)
+- **Toplam migration (baseline sonrasi):** 33 dosya
 - **Key tablolar:** `candidates` (bigint id), `companies` (bigint), `brands` (bigint), `hr_profiles` (uuid→auth.users), `experiences`, `education`, `candidate_languages`, `certificates`, `candidate_target_roles`, `candidate_blocked_companies`, `employer_messages`, `candidate_message_replies`, `employer_message_replies`, `email_outbox`, `subscriptions`, `employer_daily_usage`, `competency_definitions`, `role_competency_map`, `candidate_competencies`, `candidate_streaks`, `coach_profiles`, `coach_posts`, `coach_post_likes`, `coach_invites`, `studio_modules`, `candidate_studio_progress`, `badge_definitions`, `candidate_badges`, `candidate_journals`, `support_articles`, `support_tickets`, `company_teams`, `company_invitations`
 
 ## 5. Aktif Backlog
 
-1. **Isveren kampanya wizard** — `ik.html` icinde planlanmis
-2. **Coach media V1 DB deploy** — `20260322142905_coach_media_fields.sql` henuz Supabase'e uygulanmadi
-3. **Badge genisletme** — Yetenek pratik badge'leri (evaluate_candidate_badges extension)
-4. **Smoke test fix** — 24 public page assertion guncellenmeli (header/footer, signup form, meta tags)
-5. **Auth setup fix** — test credential sorunu, 12 authenticated testi blokluyor
-6. **Label accessibility audit** — 43 uyari bekliyor
-7. **Brand color audit** — Batch 2 (index, blog, hakkimizda) + Batch 3 (ik, aday, profil.css)
-8. **Dark mode remaining** — profil-settings.js alert->modal (7 instance), ik/giris/gate sayfalari
-9. **P4 public pages** — icerik review + performance (Lighthouse, lazy-load, minification)
+1. **Studio duration migration deploy** — `20260329010000_studio_duration_fix.sql` Supabase'e uygulanmali (`npm run db:push`)
+2. **Isveren kampanya wizard** — `ik.html` icinde planlanmis
+3. **Coach media V1 DB deploy** — `20260322142905_coach_media_fields.sql` henuz Supabase'e uygulanmadi
+4. **Badge genisletme** — Yetenek pratik badge'leri (evaluate_candidate_badges extension)
+5. **Design system token migration** — token'lar tanimlandi, 267 hardcoded rgba() toplu migration bekliyor
+6. **Smoke test fix** — 24 public page assertion guncellenmeli (header/footer, signup form, meta tags)
+7. **Auth setup fix** — test credential sorunu, 12 authenticated testi blokluyor
+8. **Label accessibility audit** — 43 uyari bekliyor
+9. **Dark mode remaining** — profil-settings.js alert->modal (7 instance), ik/giris/gate sayfalari
 10. **iyzico/Stripe checkout** — schema hazir, merchant hesap + API key gerekli (**her zaman en son**)
 
 ## 6. Son 3 Session Ozeti
@@ -93,8 +93,17 @@ Icerik dogallastirma + streak temeli. 29 yetkinligin ~460 davranissal maddesi AI
 ### Session 42 (28 Mart)
 FAZ 2C streak freeze/geri kazanim mekanigi (migration 20260328010000). FAZ 4C detail->practice bridge: modul/koc detayindan yetkinlik pratigine CTA. AI feedback hardening: gpt-4.1-mini, self-reflection, error sanitization. Edge Function deploy + canli AI E2E PASS. 422/422 test.
 
-### Session 43 (29 Mart)
-FAZ 2C deploy (migration + frontend + canli smoke 4 state). FAZ 2D spaced repetition: needsReview(), review pill, daily pick onceligi. Phase 5B AI feedback redesign: hero kart + accordion progressive disclosure. AI pipeline fix: CORS + pg_cron + 75s poll. Canli E2E PASS. Test truth: 514 passed, 27 failed (infra/public-page), 12 did not run (auth cascade).
+### Session 43 (29 Mart — sabah)
+FAZ 2C deploy (migration + frontend + canli smoke 4 state). FAZ 2D spaced repetition: needsReview(), review pill, daily pick onceligi. Phase 5B AI feedback redesign: hero kart + accordion progressive disclosure. AI pipeline fix: CORS + pg_cron + 75s poll. Canli E2E PASS.
+
+### Session 44 (29 Mart — aksam)
+**4 mini sweep kapandi:**
+- Bos state: badge strip empty hint ("Pratik yaparak ilk rozetini kazanabilirsin")
+- Mobil practice: Hazirlik Notlari accordion (signal+weak+followup mobilede kapali, desktopda acik)
+- Design system: type scale (--text-xs..3xl), spacing scale (--space-1..12), vermillion contrast fix (--verm-text:#b84420, WCAG AA 5.47:1)
+- Onboarding: "Ilk Adimin" spotlight karti (ilk giris), "Gunde 5 dakika" hero subtitle, daily card "hizli" tag
+- Studio duration: 10dk modul→7dk (migration pending deploy)
+- 446/446 core test PASS. 3 commit pushed: `69cf6d4`, `327eb6e`, `1ca07c8`.
 
 ## 7. Kritik Kurallar (Quick Ref)
 
