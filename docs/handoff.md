@@ -1,5 +1,5 @@
 # hellotalent.ai — Technical Handoff Document
-> Son güncelleme: 28 Mart 2026 (Session 41-42 — FAZ 0-4C deployed + AI E2E live verified. Model: gpt-4.1-mini)
+> Son güncelleme: 28 Mart 2026 (Session 41-42 — FAZ 0-4C deployed + AI E2E live + FAZ 2C streak freeze/recovery)
 > Bu doküman, projenin mevcut durumunu, tamamlanan işleri ve kalan backlog'u kapsar.
 > Yeni bir chat/session başlatırken bu dosyayı referans olarak kullanın.
 
@@ -1279,6 +1279,28 @@ Premium gating verified live:
 - Activity sonrası streak update: competency completion anında fire-and-forget RPC çağrısı
 - Güvenli fallback: streak RPC yoksa/hata olursa UI gizli kalır
 
+**FAZ 2C — Streak Freeze / Geri Kazanım (28 Mart 2026)**
+- **Migration:** `20260328010000_streak_freeze_recovery.sql`
+- Yeni kolon: `last_broken_streak integer DEFAULT 0` — kırılma anında önceki seri değerini saklar
+- `update_candidate_streak()` genişletildi (CREATE OR REPLACE):
+  - Gap=2 + freeze>0 → freeze consume, seri korunur (+1)
+  - Gap=2 + freeze yok + last_broken>0 → recovery, eski seri ile devam (+1)
+  - Gap=2 + hiçbiri yok → seri kaydedilir (last_broken_streak), reset 1
+  - Gap>2 → hard reset 1, recovery temizlenir
+  - Response'a `frozen` ve `recovered` boolean eklendi
+- `get_my_streak_status()` genişletildi:
+  - `can_freeze`: gap=2 + freeze var + streak>0
+  - `can_recover`: gap=2 + freeze yok + last_broken>0
+  - `last_broken_streak`: eski seri değeri
+- Lobby streak pill güncellendi:
+  - Aktif + frozen today → navy: "X gün seri · freeze kullanıldı"
+  - can_freeze → navy: "Freeze hakkın var — bugün çalış ve seriyi koru"
+  - can_recover → amber: "Bugün çalış, seriyi geri kazan"
+  - Aktif + freeze hakkı varsa → pill altında hint: "1 freeze hakkın var"
+- CSS: `.yk-streak-frozen`, `.yk-streak-recover`, `.yk-streak-freeze-hint`
+- Tests: +8 structural guard (×2 viewport = 16 test)
+- Freeze hakkı yenilenmesi yok (MVP: 1 hak, tükenince biter)
+
 **FAZ 4A — Kişiselleştirilmiş Lobby**
 - Karşılama: "Hoş geldin, [İsim]" (`_loadedDBData.profile.full_name` ilk isim)
 - Öneri: growing yetkinlik varsa "[Rol] için bugün [Yetkinlik] üzerinde çalışmak iyi bir başlangıç olabilir."
@@ -1312,25 +1334,29 @@ EDIT    supabase/functions/journal-feedback/index.ts (gpt-4.1-mini fallback, sel
 EDIT    supabase/migrations/20260326230000_studio_seed_content.sql (lokal copy edits — remote'ta zaten eski hali, bu dosyayı db push atlar)
 CREATE  supabase/migrations/20260327010000_studio_copy_cleanup.sql (8 UPDATE, idempotent)
 CREATE  supabase/migrations/20260327020000_streak_foundation.sql (candidate_streaks DDL + 2 RPC)
-EDIT    tests/p3.regression.spec.js (+20 FAZ 4C structural guard)
+CREATE  supabase/migrations/20260328010000_streak_freeze_recovery.sql (last_broken_streak + enhanced RPCs)
+EDIT    tests/p3.regression.spec.js (+20 FAZ 4C + 16 FAZ 2C structural guards)
 EDIT    docs/handoff.md (bu session)
 ```
 
-**Deploy durumu (28 Mart 2026, tümü tamamlandı):**
+**Deploy durumu (28 Mart 2026):**
 - ✅ Frontend push: `3ab78e3` + `8ae8027` (cache-bust) + `85b6dbf` (error sanitization) + `95ec74d` (model fix)
-- ✅ Migration 20260327010000 (copy cleanup) deployed via `npm run db:push`
-- ✅ Migration 20260327020000 (streak foundation) deployed via `npm run db:push`
+- ✅ Migration 20260327010000 (copy cleanup) deployed
+- ✅ Migration 20260327020000 (streak foundation) deployed
 - ✅ journal-feedback Edge Function deployed (model: `gpt-4.1-mini`, sanitized errors)
-- ✅ OPENAI_API_KEY set edildi, canlı AI E2E PASS (Karma · 70/100, 6 bölüm feedback)
-- ✅ Error sanitization canlıda doğrulandı (API key leak engellendi)
+- ✅ OPENAI_API_KEY set edildi, canlı AI E2E PASS
+- ⚠️ Migration 20260328010000 (streak freeze/recovery) deploy bekliyor — `npm run db:push`
+- ⚠️ Frontend push bekliyor (FAZ 2C streak UI + tests) — `git push origin main`
+- ⚠️ profil.html cache-bust bekliyor (`profil-mulakatkocu.js?v=20260328c`)
 
 **Graceful degradation zinciri (mevcut ve çalışıyor):**
 - Coach post yoksa → feed boş, landing hâlâ çalışır
 - Module DB boşsa → editorial empty state, section tıklanabilir
 - Cross-link mapping yoksa → CTA gizli, completion/detail normal çalışır
 - AI model/key hatası olursa → safe Turkish toast + "Tekrar Dene" butonu, practice ekranı korunur
+- FAZ 2C migration deploy edilmezse → `can_freeze`/`can_recover` undefined → falsy → eski streak davranışı korunur
 
-**Tests:** 382/382 pass (0 failures). ESLint: 0 errors, 11 pre-existing warnings.
+**Tests:** 398/398 pass (0 failures). ESLint: 0 errors, 9 pre-existing warnings.
 
 ### Sonraki Adımlar
 - [x] ~~Migration 042 → competency tabloları~~ ✅ Deployed
@@ -1357,7 +1383,8 @@ EDIT    docs/handoff.md (bu session)
 - [x] ~~**DEPLOY**: migrations + Edge Function + frontend~~ ✅ 28 Mart 2026 — `3ab78e3`, `8ae8027`, `85b6dbf`, `95ec74d`
 - [x] ~~**SMOKE**: Canlı doğrulama~~ ✅ 28 Mart 2026 — streak widget, kişiselleştirme, detail→practice, AI E2E tümü PASS
 - [x] ~~OPENAI_API_KEY canlı AI E2E doğrulama~~ ✅ 28 Mart 2026 — key set, model düzeltme, E2E PASS
-- [ ] Streak freeze/geri kazan mekaniği (FAZ 2C)
+- [x] ~~Streak freeze/geri kazan mekaniği (FAZ 2C)~~ ✅ Session 42 — migration 20260328010000, enhanced RPCs, freeze/recovery UI
+- [ ] **DEPLOY FAZ 2C**: `npm run db:push` + `git push origin main` + cache-bust
 - [ ] Gerçek iyzico checkout wiring (credentials + redirect + callback)
 - [ ] Stüdyo Phase 5B: Yeni AI aday yüzeyi (unit-integrated, journal yerine)
 - [ ] İşveren kampanya wizard'ı (ik.html)

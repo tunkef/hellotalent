@@ -1604,3 +1604,57 @@ test.describe('FAZ 4C — detail → practice bridge', () => {
     expect(mulakatJs).toContain('COMP_TO_MODULE_SLUG');
   });
 });
+
+/* ═══════════════════════════════════════════
+   FAZ 2C — Streak freeze / recovery
+   ═══════════════════════════════════════════ */
+test.describe('FAZ 2C — streak freeze and recovery', () => {
+  var mulakatJs, migSql;
+  test.beforeAll(() => {
+    mulakatJs = readFromRepo('profil-mulakatkocu.js');
+    migSql = readFromRepo('supabase/migrations/20260328010000_streak_freeze_recovery.sql');
+  });
+
+  test('migration adds last_broken_streak column', () => {
+    expect(migSql).toContain('last_broken_streak');
+    expect(migSql).toContain('ADD COLUMN IF NOT EXISTS');
+  });
+
+  test('update_candidate_streak handles freeze consume', () => {
+    expect(migSql).toContain('streak_freezes_available > 0');
+    expect(migSql).toContain('streak_freezes_available - 1');
+  });
+
+  test('update_candidate_streak handles recovery', () => {
+    expect(migSql).toContain('last_broken_streak > 0');
+    expect(migSql).toContain('v_recovered');
+  });
+
+  test('get_my_streak_status returns can_freeze and can_recover', () => {
+    expect(migSql).toContain('can_freeze');
+    expect(migSql).toContain('can_recover');
+  });
+
+  test('frontend shows freeze state', () => {
+    expect(mulakatJs).toContain('can_freeze');
+    expect(mulakatJs).toContain('yk-streak-frozen');
+    expect(mulakatJs).toContain('freeze hakk');
+  });
+
+  test('frontend shows recovery state', () => {
+    expect(mulakatJs).toContain('can_recover');
+    expect(mulakatJs).toContain('yk-streak-recover');
+    expect(mulakatJs).toContain('geri kazan');
+  });
+
+  test('frontend shows freeze hint below active streak', () => {
+    expect(mulakatJs).toContain('yk-streak-freeze-hint');
+    expect(mulakatJs).toContain('freeze hakk');
+  });
+
+  test('streak foundation not broken', () => {
+    expect(mulakatJs).toContain('hydrateStreakPill');
+    expect(mulakatJs).toContain('update_candidate_streak');
+    expect(mulakatJs).toContain('get_my_streak_status');
+  });
+});

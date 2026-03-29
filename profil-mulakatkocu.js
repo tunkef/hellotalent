@@ -1007,6 +1007,9 @@ function injectCSS() {
   css += '.yk-streak-active{background:rgba(201,78,40,.08);color:var(--verm,#C94E28)}';
   css += '.yk-streak-zero{background:var(--bg-muted,#F7F6F4);color:var(--text-muted,#6B7280)}';
   css += '.yk-streak-pill svg{width:14px;height:14px}';
+  css += '.yk-streak-frozen{background:rgba(30,45,94,.06);color:var(--navy,#1E2D5E)}';
+  css += '.yk-streak-recover{background:rgba(217,119,6,.06);color:#D97706}';
+  css += '.yk-streak-freeze-hint{font-family:"Plus Jakarta Sans",sans-serif;font-size:10px;color:var(--text-muted,#6B7280);margin-bottom:8px}';
   /* Daily practice card */
   css += '.yk-daily-card{display:flex;align-items:center;gap:14px;padding:14px 18px;background:linear-gradient(135deg,rgba(201,78,40,.03) 0%,rgba(201,78,40,.06) 100%);border:1px solid rgba(201,78,40,.1);border-radius:14px;margin-bottom:16px;cursor:pointer;transition:all .25s}';
   css += '.yk-daily-card:hover{border-color:var(--verm,#C94E28);box-shadow:0 4px 16px rgba(0,0,0,.06);transform:translateY(-1px)}';
@@ -3990,22 +3993,50 @@ async function hydrateStreakPill() {
     var d = res.data;
     var streak = d.current_streak || 0;
     var alive = d.streak_alive;
+    var freezes = d.streak_freezes_available || 0;
+    var canFreeze = d.can_freeze || false;
+    var canRecover = d.can_recover || false;
+    var frozenToday = d.streak_frozen_today || false;
 
     slot.style.display = 'block';
+    while (slot.firstChild) slot.removeChild(slot.firstChild);
+
     var pill = document.createElement('div');
     if (streak > 0 && alive) {
       pill.className = 'yk-streak-pill yk-streak-active';
-      pill.innerHTML = flameSVG;
+      pill.innerHTML = flameSVG; /* safe — hardcoded SVG constant */
       var txt = document.createElement('span');
       txt.textContent = streak + ' g\u00fcn seri';
       pill.appendChild(txt);
+      if (frozenToday) {
+        txt.textContent += ' \u00b7 freeze kullan\u0131ld\u0131';
+        pill.className = 'yk-streak-pill yk-streak-frozen';
+      }
+    } else if (canFreeze) {
+      pill.className = 'yk-streak-pill yk-streak-frozen';
+      var txt3 = document.createElement('span');
+      txt3.textContent = 'Freeze hakk\u0131n var \u2014 bug\u00fcn \u00e7al\u0131\u015f ve seriyi koru';
+      pill.appendChild(txt3);
+    } else if (canRecover) {
+      pill.className = 'yk-streak-pill yk-streak-recover';
+      var txt4 = document.createElement('span');
+      txt4.textContent = 'Bug\u00fcn \u00e7al\u0131\u015f, seriyi geri kazan';
+      pill.appendChild(txt4);
     } else {
       pill.className = 'yk-streak-pill yk-streak-zero';
       var txt2 = document.createElement('span');
-      txt2.textContent = streak > 0 ? 'Seri k\u0131r\u0131ld\u0131' : 'Bug\u00fcn ba\u015fla';
+      txt2.textContent = 'Bug\u00fcn ba\u015fla';
       pill.appendChild(txt2);
     }
     slot.appendChild(pill);
+
+    /* Freeze hint below pill */
+    if (streak > 0 && alive && freezes > 0 && !frozenToday) {
+      var hint = document.createElement('div');
+      hint.className = 'yk-streak-freeze-hint';
+      hint.textContent = freezes + ' freeze hakk\u0131n var';
+      slot.appendChild(hint);
+    }
   } catch (e) { /* silent — streak is best-effort */ }
 }
 
