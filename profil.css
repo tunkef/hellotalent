@@ -8,6 +8,7 @@
   color-scheme: light;
   /* Brand / base palette */
   --verm:#C94E28;--verm-light:#F5EDE9;--verm-dark:#b84420;
+  --verm-text:#b84420; /* WCAG AA safe for <14px text on white (5.47:1) */
   --navy:#1E2D5E;--navy-light:#EEF0F7;--navy-deep:#162247;
   --gray:#F7F6F4;--text:#111111;
   --muted:#6B7280;--border:#E5E3DF;
@@ -25,6 +26,30 @@
   --font-weight-normal:400;
   --font-weight-medium:500;
 
+  /* Type scale */
+  --text-xs:10px;
+  --text-sm:11px;
+  --text-base:12px;
+  --text-md:13px;
+  --text-lg:14px;
+  --text-xl:16px;
+  --text-2xl:18px;
+  --text-3xl:20px;
+
+  /* Spacing scale */
+  --space-1:2px;
+  --space-2:4px;
+  --space-3:6px;
+  --space-4:8px;
+  --space-5:10px;
+  --space-6:12px;
+  --space-7:14px;
+  --space-8:16px;
+  --space-9:20px;
+  --space-10:24px;
+  --space-11:28px;
+  --space-12:32px;
+
   /* Light theme semantic tokens (default) */
   --bg-app:#ffffff;
   --bg-surface:#ffffff;
@@ -39,6 +64,8 @@
 
   --accent:var(--verm);
   --accent-soft:var(--verm-light);
+  --accent-text:var(--verm-text); /* For small text on light bg */
+  --accent-hover:var(--verm-dark);
   --success:var(--green);
   --success-soft:var(--green-light);
   --warning:#B45309;
@@ -228,7 +255,7 @@ select:focus-visible{
   font-size:14px;font-weight:800;color:#111;
 }
 .header-popup-link{
-  font-size:11px;font-weight:600;color:var(--verm);
+  font-size:11px;font-weight:600;color:var(--verm-text);
   cursor:pointer;text-decoration:none;
 }
 .header-popup-link:hover{text-decoration:underline;}
@@ -1776,12 +1803,12 @@ html[data-theme="dark"] .field-req{color:#F87171;}
   display: inline-block;
   padding: 4px 10px; border-radius: 8px;
   font-size: 12px; font-weight: 600;
-  background: rgba(201,78,40,0.08); color: var(--verm);
+  background: rgba(201,78,40,0.08); color: var(--verm-text);
   margin: 3px 3px 3px 0;
 }
 .mk-card-data .data-ok {
   font-size: 12px; font-weight: 600;
-  color: var(--verm);
+  color: var(--verm-text);
   background: rgba(201,78,40,0.08);
   padding: 3px 10px; border-radius: 6px;
   display: inline-block;

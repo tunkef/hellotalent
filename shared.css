@@ -9,6 +9,8 @@
 :root {
   --verm: #C94E28;
   --verm-light: #F5EDE9;
+  --verm-dark: #b84420;
+  --verm-text: #b84420; /* WCAG AA safe for <14px text on white (5.47:1) */
   --navy: #1E2D5E;
   --navy-light: #EEF0F7;
   --gray: #F7F6F4;
@@ -714,7 +716,7 @@ body {
 .rehber-tags { display: flex; gap: 5px; flex-wrap: wrap; }
 .rehber-tag { font-size: 10px; font-weight: 700; color: #374151; background: #F3F4F6; padding: 3px 9px; border-radius: 20px; }
 .rehber-cta-row { display: flex; align-items: center; justify-content: space-between; margin-top: 14px; padding-top: 14px; border-top: 1px solid #F3F4F6; }
-.rehber-read { font-size: 12px; font-weight: 700; color: var(--verm); cursor: pointer; background: none; border: none; font-family: 'Plus Jakarta Sans', sans-serif; }
+.rehber-read { font-size: 12px; font-weight: 700; color: var(--verm-text); cursor: pointer; background: none; border: none; font-family: 'Plus Jakarta Sans', sans-serif; }
 .rehber-min { font-size: 11px; color: #9CA3AF; font-weight: 600; }
 
 /* ══ FINAL CTA ══ */
