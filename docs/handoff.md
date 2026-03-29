@@ -1,5 +1,5 @@
 # hellotalent.ai — Technical Handoff Document
-> Son güncelleme: 29 Mart 2026 (Session 43 — FAZ 2C deployed + FAZ 2D spaced repetition review layer deployed)
+> Son güncelleme: 29 Mart 2026 (Session 43 — FAZ 2C/2D deployed + Phase 5B AI redesign + CORS/cron pipeline fix)
 > Bu doküman, projenin mevcut durumunu, tamamlanan işleri ve kalan backlog'u kapsar.
 > Yeni bir chat/session başlatırken bu dosyayı referans olarak kullanın.
 
@@ -1112,7 +1112,7 @@ EDIT    docs/studio-foundation.md (Phase 4 status)
 
 **Edge Function `journal-feedback/index.ts` (NEW):**
 - Claims pending feedback rows, fetches journal from DB
-- Calls OpenAI (gpt-4o-mini) with structured Turkish prompt
+- Calls OpenAI (gpt-4.1-mini) with structured Turkish prompt
 - Prompt evaluates: STAR+T structure, somutluk, sahiplenme, ölçülebilir sonuç, rol uyumu, çıkarım kalitesi
 - Forces `response_format: json_object` for reliable parsing
 - Persists structured result via `complete_journal_feedback` RPC
@@ -1123,14 +1123,10 @@ EDIT    docs/studio-foundation.md (Phase 4 status)
 - Premium users: "AI ile Değerlendir" button in journal panel, navy gradient styling
 - Non-premium users: gate card with "AI Koç değerlendirmesi Premium özelliğidir" + "Premium'a Geç" CTA
 - Loading: button disabled + "Değerlendiriliyor…" text
-- Polling: checks `get_journal_feedback` every 1s, 30s timeout, graceful failure toast
-- Result display: 6 structured card sections:
-  1. Genel Değerlendirme (signal pill + score + summary)
-  2. Güçlü Sinyaller (bullet list, green accent)
-  3. Geliştirme Alanları (bullet list, red accent)
-  4. STAR+T Analizi (row per field: ✓/•/!/— indicator + note)
-  5. Cevabı Güçlendirmek İçin (bullet list, vermillion accent)
-  6. Olası Takip Soruları (bullet list, navy accent)
+- Polling: checks `get_journal_feedback` every 1s, 75s timeout (pg_cron cycle + OpenAI processing), graceful failure toast
+- Result display: **Phase 5B progressive disclosure** (replaced 6 flat cards):
+  - Hero kart: signal pill + score + summary + top strong highlight + top weak highlight + sonraki 2 adım
+  - Detail accordions (`<details>`): STAR+T Analizi, Tüm Güçlü Sinyaller, Tüm Geliştirme Alanları, Olası Takip Soruları
 - Existing feedback auto-loaded on practice screen render
 - "Tekrar Değerlendir" button after first evaluation
 - Non-blocking: journal typing/saving/navigation all unaffected if AI fails
@@ -1151,15 +1147,16 @@ EDIT    docs/handoff.md (Session 29)
 EDIT    docs/studio-foundation.md (Phase 5A status)
 ```
 
-**Deploy çeklistesi:**
-- [ ] Migration `20260326260000_journal_ai_feedback.sql` → Supabase
-- [ ] `journal-feedback` Edge Function deploy: `supabase functions deploy journal-feedback --project-ref cpwibefquojehjehtrog`
-- [ ] Set `OPENAI_API_KEY` env var on Supabase Edge Functions
-- [ ] Frontend push
-- [ ] Test: open journal → write STAR+T → click AI evaluate → verify structured feedback renders
+**Deploy çeklistesi:** ✅ Tümü tamamlandı
+- [x] Migration `20260326260000_journal_ai_feedback.sql` → Supabase ✅
+- [x] `journal-feedback` Edge Function deploy ✅ (CORS headers + OPTIONS handler eklenmiş, 29 Mart 2026)
+- [x] `OPENAI_API_KEY` env var set ✅
+- [x] pg_cron `journal-feedback-processor` (every minute) ✅ 29 Mart 2026
+- [x] Frontend push ✅
+- [x] Live E2E: write STAR+T → AI evaluate → hero kart + accordion render ✅ 29 Mart 2026
 
 **Kapsam dışı (bilinçli):**
-- pg_cron scheduling for journal-feedback (currently invoked on-demand by client)
+- ~~pg_cron scheduling for journal-feedback~~ ✅ Eklendi 29 Mart 2026 — her dakika, `net.http_post` ile service_role key
 - Yetenek badge issuance from AI feedback signals
 - AI feedback history / comparison across evaluations
 - Rich formatting in feedback cards (currently plain text)
@@ -1176,8 +1173,8 @@ EDIT    docs/studio-foundation.md (Phase 5A status)
 - Duplicate click protection: `_aifRequestInFlight` guard prevents concurrent requests
 - Stale pending detection: before creating new request, checks for existing pending/processing feedback and resumes polling
 - `extractFeedback()` helper: safely handles both array and single-object RPC response shapes
-- Edge Function invoke failure: now caught with `.catch()` instead of silent fire-and-forget
-- Poll timeout increased to 45s (gpt-4o-mini typically <15s but network variance)
+- Edge Function invoke: fire-and-forget with silent `.catch()` — browser invoke may 401 (expected), pg_cron is reliable trigger
+- Poll timeout: 75s (pg_cron cycle 60s + OpenAI processing ~15s)
 - Failed state: shows error_message from DB if available, generic fallback otherwise
 - Button states: "Tekrar Dene" on failure (not the same text as initial), "Tekrar Değerlendir" on success
 - Existing feedback auto-load now also resumes polling for in-flight (pending/processing) feedback
@@ -1362,7 +1359,7 @@ EDIT    docs/handoff.md (bu session)
 
 **Tests:** 422/422 pass (0 failures). ESLint: 0 errors, pre-existing warnings.
 
-### Session 43 — 29 Mart 2026 (FAZ 2C Deploy + FAZ 2D Spaced Repetition Review Layer)
+### Session 43 — 29 Mart 2026 (FAZ 2C/2D Deploy + Phase 5B AI Redesign + CORS/Cron Pipeline Fix)
 
 **FAZ 2C Deploy (29 Mart 2026)**
 - Migration `20260328010000_streak_freeze_recovery.sql` Supabase'e deploy edildi (`npm run db:push`)
@@ -1386,15 +1383,42 @@ EDIT    docs/handoff.md (bu session)
 - Track kartlarında `yk-review-pill`: "Tazelemeyi düşün" — amber badge, completed + review-needing kartlarda
 - Yeni migration yok, yeni RPC yok — tamamen frontend-first, mevcut `get_my_yetenek_overview` RPC'den türetiliyor
 
+**Phase 5B — AI Feedback Progressive Disclosure Redesign (29 Mart 2026)**
+- Journal toggle: "Gelişim Günlüğü" → "Cevabını Hazırla", hint: "Notlarını al, AI ile değerlendir"
+- Journal intro sadeleştirildi
+- Rubrik bloğu kaldırıldı (gereksiz — AI zaten aynı kriterleri değerlendiriyor)
+- `renderAiFeedback()` tamamen yeniden yazıldı — progressive disclosure:
+  - Hero kart: sinyal pill + skor + summary + en güçlü sinyal (yeşil) + en kritik geliştirme (kırmızı) + sonraki 2 adım
+  - Detail accordion'lar (`<details>`): STAR+T Analizi, Tüm Güçlü Sinyaller, Tüm Geliştirme Alanları, Olası Takip Soruları
+- `renderAifListItem()` helper eklendi, eski `renderAifList()` kaldırıldı
+- STAR+T accordion boş body guard'ı eklendi
+- `word-break: break-word` mobil güvenliği eklendi
+- QA delta fix'leri uygulandı
+- **Yeni migration/RPC yok** — backend response shape değişmedi
+
+**AI Pipeline Fix (29 Mart 2026)**
+- Edge Function CORS: `Access-Control-Allow-Origin: *` + OPTIONS handler eklendi
+- Browser invoke: fire-and-forget, silent `.catch()` — `console.error` kaldırıldı
+- `pg_cron` job eklendi: `journal-feedback-processor` (every minute, `net.http_post` + service_role key)
+- Polling timeout: 45s → 75s (cron cycle 60s + OpenAI ~15s)
+- Canlı E2E PASS: STAR+T doldur → AI tıkla → "Değerlendiriliyor…" → cron tetikler → hero kart render → "Tekrar Değerlendir"
+- Teknik not: browser network tab'da `Failed to load resource: 401` görünebilir (Edge Function JWT verify) — kullanıcı akışını bozmaz, pg_cron reliable trigger
+
 **Dosya Değişiklikleri (Session 43 toplam):**
 ```
-EDIT    profil-mulakatkocu.js (FAZ 2C: +33 freeze/recovery UI; FAZ 2D: +70 needsReview, daily priority, recommendation, sort, review pill, CSS)
-EDIT    profil.html (cache-bust 20260328b → 20260329a → 20260329b)
-CREATE  supabase/migrations/20260328010000_streak_freeze_recovery.sql (FAZ 2C: last_broken_streak + enhanced RPCs)
-EDIT    tests/p3.regression.spec.js (FAZ 2C: +54 lines / 16 tests; FAZ 2D: +68 lines / 24 tests)
+EDIT    profil-mulakatkocu.js (FAZ 2C + FAZ 2D + Phase 5B redesign + silent invoke + 75s poll)
+EDIT    profil.html (cache-bust 20260328b → 20260329e)
+CREATE  supabase/migrations/20260328010000_streak_freeze_recovery.sql
+EDIT    supabase/functions/journal-feedback/index.ts (CORS headers + OPTIONS)
+EDIT    tests/p3.regression.spec.js (FAZ 2C + FAZ 2D + Phase 5B guards = 446 total)
 ```
 
-**Deploy:** `1e84edd` (FAZ 2C) + `fa7c87d` (FAZ 2D) → origin/main. Canlı smoke PASS.
+**Deploy:** `1e84edd` → `fa7c87d` → `afcfedb` → `00d764b` → `d88a144` → `f303499` → origin/main.
+**Edge Function:** redeployed with CORS fix.
+**pg_cron:** jobid=9 active.
+**Tests:** 446/446 PASS.
+**Cache-bust:** `?v=20260329e`.
+**Canlı AI E2E:** PASS (29 Mart 2026, gerçek AI response ile hero kart + accordion doğrulandı).
 
 ### Sonraki Adımlar
 - [x] ~~Migration 042 → competency tabloları~~ ✅ Deployed
@@ -1424,8 +1448,9 @@ EDIT    tests/p3.regression.spec.js (FAZ 2C: +54 lines / 16 tests; FAZ 2D: +68 l
 - [x] ~~Streak freeze/geri kazan mekaniği (FAZ 2C)~~ ✅ Session 42 — migration 20260328010000, enhanced RPCs, freeze/recovery UI
 - [x] ~~**DEPLOY FAZ 2C**: `npm run db:push` + `git push origin main` + cache-bust~~ ✅ 29 Mart 2026 — `1e84edd`, migration deployed, canlı smoke PASS
 - [x] ~~**FAZ 2D**: Spaced repetition review recommendation layer~~ ✅ 29 Mart 2026 — `fa7c87d`, needsReview + daily priority + review pill + sort, canlı smoke PASS
+- [x] ~~**Phase 5B**: AI feedback progressive disclosure redesign~~ ✅ 29 Mart 2026 — `afcfedb`, hero kart + accordion, canlı E2E PASS
+- [x] ~~**AI pipeline fix**: CORS + pg_cron + silent invoke + 75s poll~~ ✅ 29 Mart 2026 — `d88a144` + `f303499`
 - [ ] Gerçek iyzico checkout wiring (credentials + redirect + callback)
-- [ ] Stüdyo Phase 5B: Yeni AI aday yüzeyi (unit-integrated, journal yerine)
 - [ ] İşveren kampanya wizard'ı (ik.html)
 - [x] ~~Email delivery worker~~ ✅ Phase 1 email infrastructure built (Session 11, migration 051)
 - [x] ~~Candidate reply flow + DM inbox~~ ✅ Session 13-14 — migrations 052-057 deployed, bi-directional threads, live-chat realtime, split-pane desktop UI. Authenticated E2E smoke pending.

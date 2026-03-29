@@ -1,7 +1,7 @@
 # Stüdyo — Technical Foundation Document
 
 > Aday tarafındaki en derin değer alanı. Kariyer gelişimi, yetkinlik eğitimi, uzman içerikleri ve platform bilgisi.
-> Son güncelleme: 29 Mart 2026 (Session 43 — FAZ 2C deployed + FAZ 2D review recommendation layer deployed)
+> Son güncelleme: 29 Mart 2026 (Session 43 — FAZ 2C/2D + Phase 5B AI redesign + CORS/cron pipeline fix)
 
 ## Bilgi Mimarisi (Information Architecture)
 
@@ -58,8 +58,8 @@ Stüdyo (panel key: mulakat, loader: _htLoadMulakat)
 | Yetenek pratik kaydı | candidate_yetenek_progress | ✅ DB-backed — competency completion |
 | Self-rating | candidate_competencies | ✅ RPCs mevcut — lobby kartlarında toggle |
 | Kanıt yüzeyi | get_my_yetenek_overview RPC | ✅ Lobby'de evidence hydration |
-| AI feedback altyapısı | candidate_journal_feedback + Edge Function | ✅ Canlı — gpt-4.1-mini, self-reflection, error sanitization. E2E PASS 28 Mart 2026 |
-| AI feedback aday yüzeyi | Practice ekranında journal panel + AI buton | ✅ Canlı — "AI ile Değerlendir" → 6 bölüm feedback kartı. Premium gate çalışıyor |
+| AI feedback altyapısı | candidate_journal_feedback + Edge Function + pg_cron | ✅ Canlı — gpt-4.1-mini, CORS fix, pg_cron reliable trigger (every min), 75s poll timeout. E2E PASS 29 Mart 2026 |
+| AI feedback aday yüzeyi (Phase 5B) | Practice ekranında "Cevabını Hazırla" + AI buton | ✅ Canlı — progressive disclosure: hero kart + accordion'lar. Premium gate çalışıyor. Deployed 29 Mart 2026 |
 | Premium entitlement | candidate_premium_purchases + activate RPC + webhook | ✅ Demo flow deployed |
 | Streak sistemi | candidate_streaks + 2 RPC (enhanced) | ✅ Canlı — foundation + FAZ 2C freeze/recovery deployed (29 Mart 2026) |
 | Kişiselleştirme | profil-mulakatkocu.js (lobby) | ✅ Karşılama + öneri + sıralama (canlı) |
@@ -83,19 +83,20 @@ Stüdyo (panel key: mulakat, loader: _htLoadMulakat)
 - Cross-link mappings: `COMP_TO_COACH_CATEGORY`, `COMP_TO_MODULE_SLUG` (forward, FAZ 4B), `MODULE_SLUG_TO_COMP`, `COACH_CAT_TO_COMP` (reverse, FAZ 4C)
 - `S.pendingComp`: content detail → role_select → otomatik competency_intro yönlendirmesi (FAZ 4C)
 - `needsReview(code)`: completed comp review detection — growing / mixed / needs_work / 14d stale (FAZ 2D, `REVIEW_STALE_DAYS = 14`)
+- AI feedback pipeline: `request_journal_feedback` RPC → pending row → pg_cron (1min) → Edge Function (`journal-feedback`) → OpenAI → `complete_journal_feedback` RPC → polling → `renderAiFeedback()`. Browser invoke fire-and-forget (may 401, not critical)
 
 ## Yetenek Akış Değişiklikleri (Learning Portal Yeniden Yapılandırma)
 
 ### Kaldırılan
-- Gelişim Günlüğü (journal) textarea UI — aday akışından tamamen kaldırıldı
-- STAR+T çoklu alan yazma deneyimi — pratik ekranından çıkarıldı
-- AI değerlendirme butonu — pratik ekranından çıkarıldı (backend beklemeye alındı)
+- ~~Gelişim Günlüğü (journal) textarea UI~~ → Phase 5B ile "Cevabını Hazırla" olarak yeniden tasarlandı (29 Mart 2026)
+- STAR+T çoklu alan yazma deneyimi — "Cevabını Hazırla" panelinde korunuyor (Phase 5B)
+- ~~AI değerlendirme butonu — pratik ekranından çıkarıldı~~ → Phase 5B ile yeniden eklendi, progressive disclosure hero kart + accordion
 
 ### Korunan (backend)
 - `candidate_studio_journals` tablosu — DB'de duruyor, veri korunuyor
 - `upsert_studio_journal` / `get_my_journals` RPCs — çalışıyor
 - `candidate_journal_feedback` tablosu — schema deployed
-- `journal-feedback` Edge Function — deployed, ACTIVE
+- `journal-feedback` Edge Function — deployed, ACTIVE (CORS headers, pg_cron reliable trigger)
 - `request_journal_feedback` / `complete_journal_feedback` RPCs — çalışıyor
 - localStorage journal fallback — hâlâ mevcut
 
@@ -117,6 +118,9 @@ Stüdyo (panel key: mulakat, loader: _htLoadMulakat)
 | ~~Frontend push~~ | ✅ 4 commit pushed to origin/main |
 | ~~Model `gpt-5-mini` yok~~ | ✅ `gpt-4.1-mini` ile düzeltildi |
 | ~~Error toast key leak~~ | ✅ Edge Function + frontend guard sanitization |
+| ~~Browser CORS error~~ | ✅ Edge Function CORS headers + OPTIONS handler (29 Mart 2026) |
+| ~~Browser invoke 401~~ | ✅ pg_cron reliable trigger eklendi, browser invoke fire-and-forget (29 Mart 2026) |
+| ~~Poll timeout < cron cycle~~ | ✅ 45s → 75s (29 Mart 2026) |
 
 ## Mevcut Blocker'lar
 
@@ -132,9 +136,9 @@ Stüdyo (panel key: mulakat, loader: _htLoadMulakat)
 **Sonraki Feature Geliştirme (sıra kullanıcı tercihine bağlı):**
 1. ~~**Streak FAZ 2C**: freeze/geri kazan mekaniği~~ ✅ Deployed 29 Mart 2026 — `1e84edd`
 2. ~~**FAZ 2D**: Spaced repetition review recommendation layer~~ ✅ Deployed 29 Mart 2026 — `fa7c87d`
-3. **Gerçek iyzico checkout**: iyzico API credentials → checkout form → callback wiring
-3. **Studio Phase 5B**: Yeni AI aday yüzeyi tasarımı (journal yerine unit-integrated yaklaşım)
-4. **Studio Phase 6**: Video içerik altyapısı (embed player, admin upload, ilerleme tracking)
+3. ~~**Studio Phase 5B**: AI feedback progressive disclosure redesign~~ ✅ Deployed 29 Mart 2026 — `afcfedb` + CORS/cron fixes
+4. **Gerçek iyzico checkout**: iyzico API credentials → checkout form → callback wiring
+5. **Studio Phase 6**: Video içerik altyapısı (embed player, admin upload, ilerleme tracking)
 5. **Badge genişletme**: Yetenek pratik badge'leri (evaluate_candidate_badges extension)
 6. **İşveren kampanya wizard'ı** (ik.html)
 
