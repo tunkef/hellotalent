@@ -1230,6 +1230,14 @@ function injectCSS() {
   css += '.ig-landing-badge::before,.ig-landing-badge::after{content:"";width:20px;height:1px;background:rgba(255,255,255,.2)}';
   css += '.ig-landing-title{font-family:"Bricolage Grotesque",sans-serif;font-size:32px;font-weight:800;letter-spacing:-.5px;margin-bottom:10px;line-height:1.1}';
   css += '.ig-landing-subtitle{font-family:"Plus Jakarta Sans",sans-serif;font-size:14px;color:rgba(255,255,255,.65);line-height:1.6;max-width:380px;margin:0 auto 28px}';
+  css += '.st-onboard-spotlight{display:flex;align-items:center;gap:16px;background:linear-gradient(135deg,rgba(201,78,40,.06) 0%,rgba(201,78,40,.02) 100%);border:1.5px solid rgba(201,78,40,.15);border-radius:16px;padding:18px 20px;margin-bottom:20px;animation:igFadeIn .4s ease}';
+  css += '.st-onboard-icon{width:44px;height:44px;border-radius:12px;background:var(--verm,#C94E28);color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0}';
+  css += '.st-onboard-text{flex:1;min-width:0}';
+  css += '.st-onboard-title{font-family:"Bricolage Grotesque",sans-serif;font-size:15px;font-weight:700;color:var(--text-primary,#111);margin-bottom:3px}';
+  css += '.st-onboard-desc{font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;color:var(--text-muted,#6B7280);line-height:1.5}';
+  css += '.st-onboard-cta{font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;font-weight:700;color:#fff;background:var(--verm,#C94E28);border:none;border-radius:10px;padding:10px 20px;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all .2s}';
+  css += '.st-onboard-cta:hover{background:var(--verm-dark,#b84420);transform:translateY(-1px)}';
+  css += '@media(max-width:600px){.st-onboard-spotlight{flex-direction:column;text-align:center;gap:12px;padding:16px}.st-onboard-cta{width:100%}}';
   css += '.ig-landing-cta{display:inline-flex;align-items:center;gap:8px;font-family:"Plus Jakarta Sans",sans-serif;font-size:15px;font-weight:700;color:var(--navy,#1E2D5E);background:#fff;border:none;border-radius:12px;padding:14px 36px;cursor:pointer;transition:all .25s;box-shadow:0 4px 16px rgba(0,0,0,.15);position:relative;z-index:1}';
   css += '.ig-landing-cta:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,0,0,.2)}';
   css += '.ig-landing-cta svg{width:18px;height:18px}';
@@ -1407,8 +1415,20 @@ function renderStarIntro() {
   html += '<div class="ig-landing-hero st-hero">';
   html += '<div class="ig-landing-badge">hellotalent st\u00fcdyo</div>';
   html += '<div class="ig-landing-title">St\u00fcdyo</div>';
-  html += '<div class="ig-landing-subtitle">Kariyerinde \u00f6ne ge\u00e7mek i\u00e7in ger\u00e7ek beceriler kazan. Yetkinlik geli\u015ftir, uzmanlardan \u00f6\u011fren, performans\u0131n\u0131 anlat.</div>';
+  html += '<div class="ig-landing-subtitle">G\u00fcnde 5 dakika ile m\u00fclakat haz\u0131rl\u0131\u011f\u0131n\u0131 tamamla. Yetkinlik geli\u015ftir, uzmanlardan \u00f6\u011fren, performans\u0131n\u0131 anlat.</div>';
   html += '</div>';
+
+  /* ══ FIRST-TIME ONBOARDING SPOTLIGHT — only for new users ══ */
+  if (!hasSeenStar()) {
+    html += '<div class="st-onboard-spotlight">';
+    html += '<div class="st-onboard-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>';
+    html += '<div class="st-onboard-text">';
+    html += '<div class="st-onboard-title">\u0130lk Ad\u0131m\u0131n</div>';
+    html += '<div class="st-onboard-desc">Pozisyonunu se\u00e7, ilk yetkinli\u011fini 5 dakikada ke\u015ffet. Ger\u00e7ek m\u00fclakat sorular\u0131yla pratik yap.</div>';
+    html += '</div>';
+    html += '<button class="st-onboard-cta" id="st-onboard-start">Hemen Ba\u015fla \u2192</button>';
+    html += '</div>';
+  }
 
   /* ══ STUDIO SECTION GRID — 4 sections, bento asymmetric ══ */
   html += '<div class="ig-landing-grid st-grid">';
@@ -2940,6 +2960,13 @@ function navigate(screen) {
    ════════════════════════════════════════════════ */
 
 function bindStarIntroEvents() {
+  /* ── Onboarding spotlight CTA → go to role_select (first-time users) ── */
+  var onboardBtn = document.getElementById('st-onboard-start');
+  if (onboardBtn) onboardBtn.addEventListener('click', function() {
+    markStarSeen();
+    navigate('role_select');
+  });
+
   /* ── Yetenek section card → go to role_select (competency practice flow) ── */
   var yetBtn = document.getElementById('st-go-yetenek');
   if (yetBtn) yetBtn.addEventListener('click', function() {
@@ -4244,7 +4271,7 @@ function hydrateDailyPractice() {
 
   var meta = document.createElement('div');
   meta.className = 'yk-daily-meta';
-  meta.textContent = '~' + estMin + ' dk \u00b7 ' + qCount + ' soru';
+  meta.textContent = '~' + estMin + ' dk \u00b7 ' + qCount + ' soru' + (estMin <= 7 ? ' \u00b7 h\u0131zl\u0131' : '');
 
   textDiv.appendChild(kicker);
   textDiv.appendChild(title);
