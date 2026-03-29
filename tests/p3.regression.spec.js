@@ -1658,3 +1658,71 @@ test.describe('FAZ 2C — streak freeze and recovery', () => {
     expect(mulakatJs).toContain('get_my_streak_status');
   });
 });
+
+/*
+   FAZ 2D — Spaced repetition / review recommendation
+*/
+test.describe('FAZ 2D — review recommendation layer', () => {
+  let mulakatJs;
+  test.beforeAll(() => {
+    mulakatJs = readFromRepo('profil-mulakatkocu.js');
+  });
+
+  test('needsReview function exists', () => {
+    expect(mulakatJs).toContain('function needsReview(');
+  });
+
+  test('needsReview checks growing self_rating', () => {
+    expect(mulakatJs).toContain("self_rating === 'growing'");
+  });
+
+  test('needsReview checks AI feedback signals', () => {
+    expect(mulakatJs).toContain("feedback_signal === 'mixed'");
+    expect(mulakatJs).toContain("feedback_signal === 'needs_work'");
+  });
+
+  test('needsReview checks stale practice', () => {
+    expect(mulakatJs).toContain('REVIEW_STALE_DAYS');
+    expect(mulakatJs).toContain('last_practiced_at');
+  });
+
+  test('daily practice has review priority', () => {
+    expect(mulakatJs).toContain('isReviewPick');
+    expect(mulakatJs).toContain('TEKRAR PRAT');
+  });
+
+  test('recommendation shows review text', () => {
+    expect(mulakatJs).toContain('tekrar g');
+    expect(mulakatJs).toContain('z atmak faydal');
+  });
+
+  test('track cards get review pill', () => {
+    expect(mulakatJs).toContain('yk-review-pill');
+    expect(mulakatJs).toContain('Tazelemeyi d');
+  });
+
+  test('review pill CSS exists', () => {
+    expect(mulakatJs).toContain('.yk-review-pill{');
+  });
+
+  test('sort includes review priority', () => {
+    expect(mulakatJs).toContain('aReview');
+    expect(mulakatJs).toContain('bReview');
+  });
+
+  test('existing daily practice not broken', () => {
+    expect(mulakatJs).toContain('hydrateDailyPractice');
+    expect(mulakatJs).toContain('yk-daily-card');
+    expect(mulakatJs).toContain('yk-daily-kicker');
+  });
+
+  test('existing recommendation not broken', () => {
+    expect(mulakatJs).toContain('hydrateRecommendation');
+    expect(mulakatJs).toContain('yk-recommendation');
+  });
+
+  test('existing sort not broken (growing incomplete still prioritized)', () => {
+    expect(mulakatJs).toContain('aGrow');
+    expect(mulakatJs).toContain('bGrow');
+  });
+});

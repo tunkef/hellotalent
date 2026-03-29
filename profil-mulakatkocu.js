@@ -991,6 +991,7 @@ function injectCSS() {
   css += '.yk-track-badge-done{font-family:"DM Mono",monospace;font-size:12px;color:#059669;background:rgba(5,150,105,.08);padding:2px 8px;border-radius:20px}';
   css += '.yk-track-done .yk-track-hover-hint{display:none;font-family:"Plus Jakarta Sans",sans-serif;font-size:10px;color:var(--verm,#C94E28);margin-top:6px}';
   css += '.yk-track-done:hover .yk-track-hover-hint{display:block}';
+  css += '.yk-review-pill{display:inline-block;font-family:"DM Mono",monospace;font-size:9px;letter-spacing:.5px;color:#D97706;background:rgba(217,119,6,.08);border:1px solid rgba(217,119,6,.12);padding:2px 8px;border-radius:20px;margin-top:6px}';
   /* Weekly activity summary */
   css += '.yk-weekly-summary{display:flex;align-items:center;gap:10px;padding:12px 16px;background:rgba(30,45,94,.03);border:1px solid rgba(30,45,94,.06);border-radius:12px;margin-bottom:16px}';
   css += '.yk-weekly-summary-icon{width:28px;height:28px;border-radius:8px;background:rgba(30,45,94,.08);display:flex;align-items:center;justify-content:center;color:var(--navy,#1E2D5E);flex-shrink:0}';
@@ -4040,6 +4041,27 @@ async function hydrateStreakPill() {
   } catch (e) { /* silent — streak is best-effort */ }
 }
 
+/* ══ REVIEW-NEEDED DETECTION ══ */
+
+var REVIEW_STALE_DAYS = 14;
+
+function needsReview(code) {
+  if (!_lobbyEvidenceCache) return false;
+  var ev = _lobbyEvidenceCache[code];
+  if (!ev) return false;
+  var isCompleted = S.completedComps.indexOf(code) !== -1;
+  if (!isCompleted) return false;
+  /* Weak signal: growing self-rating or mixed/needs_work AI feedback */
+  if (ev.self_rating === 'growing') return true;
+  if (ev.feedback_signal === 'mixed' || ev.feedback_signal === 'needs_work') return true;
+  /* Stale: practiced but not recently */
+  if (ev.last_practiced_at) {
+    var daysSince = Math.floor((Date.now() - new Date(ev.last_practiced_at).getTime()) / 86400000);
+    if (daysSince >= REVIEW_STALE_DAYS) return true;
+  }
+  return false;
+}
+
 /* ══ DAILY PRACTICE CARD HYDRATION ══ */
 
 function hydrateDailyPractice() {
@@ -4048,18 +4070,27 @@ function hydrateDailyPractice() {
   var bridge = getBridge();
   if (!bridge) return;
 
-  /* Priority: find a "growing" rated comp that is not yet completed */
+  /* Priority 1: completed comp that needs review (weak signal or stale) */
   var pick = null;
   var pickIdx = -1;
-  for (var i = 0; i < S.comps.length; i++) {
-    var code = S.comps[i];
-    if (S.completedComps.indexOf(code) !== -1) continue;
-    var ev = _lobbyEvidenceCache[code];
-    if (ev && ev.self_rating === 'growing') {
-      pick = code; pickIdx = i; break;
+  var isReviewPick = false;
+  for (var ri = 0; ri < S.comps.length; ri++) {
+    if (needsReview(S.comps[ri])) {
+      pick = S.comps[ri]; pickIdx = ri; isReviewPick = true; break;
     }
   }
-  /* Fallback: first incomplete comp */
+  /* Priority 2: incomplete growing comp */
+  if (!pick) {
+    for (var i = 0; i < S.comps.length; i++) {
+      var code = S.comps[i];
+      if (S.completedComps.indexOf(code) !== -1) continue;
+      var ev = _lobbyEvidenceCache[code];
+      if (ev && ev.self_rating === 'growing') {
+        pick = code; pickIdx = i; break;
+      }
+    }
+  }
+  /* Priority 3: first incomplete comp */
   if (!pick) {
     for (var j = 0; j < S.comps.length; j++) {
       if (S.completedComps.indexOf(S.comps[j]) === -1) {
@@ -4067,7 +4098,7 @@ function hydrateDailyPractice() {
       }
     }
   }
-  if (!pick) return; /* all done — no daily card needed */
+  if (!pick) return; /* all done, no review needed — no daily card */
 
   var name = bridge.COMP_NAMES[pick] || pick;
   var qCount = flattenQuestions(pick).length;
@@ -4088,7 +4119,7 @@ function hydrateDailyPractice() {
 
   var kicker = document.createElement('div');
   kicker.className = 'yk-daily-kicker';
-  kicker.textContent = 'BUG\u00dcNK\u00dc PRAT\u0130K';
+  kicker.textContent = isReviewPick ? 'TEKRAR PRAT\u0130K' : 'BUG\u00dcNK\u00dc PRAT\u0130K';
 
   var title = document.createElement('div');
   title.className = 'yk-daily-title';
@@ -4128,11 +4159,13 @@ function hydrateRecommendation(evidenceData) {
   var bridge = getBridge();
   if (!bridge) return;
 
-  /* Find first growing incomplete comp */
+  /* Find first review-needing comp, then first growing incomplete */
+  var reviewPick = null;
   var growingPick = null;
   var allDone = true;
   for (var i = 0; i < S.comps.length; i++) {
     var code = S.comps[i];
+    if (!reviewPick && needsReview(code)) reviewPick = code;
     if (S.completedComps.indexOf(code) !== -1) continue;
     allDone = false;
     var ev = _lobbyEvidenceCache ? _lobbyEvidenceCache[code] : null;
@@ -4141,7 +4174,7 @@ function hydrateRecommendation(evidenceData) {
     }
   }
 
-  if (allDone) {
+  if (allDone && !reviewPick) {
     slot.style.display = 'block';
     var doneDiv = document.createElement('div');
     doneDiv.className = 'yk-recommendation';
@@ -4150,16 +4183,23 @@ function hydrateRecommendation(evidenceData) {
     return;
   }
 
-  if (growingPick) {
+  var recText = null;
+  if (reviewPick) {
+    var rName = bridge.COMP_NAMES[reviewPick] || reviewPick;
+    recText = rName + ' yetkinli\u011Fine tekrar g\u00f6z atmak faydal\u0131 olabilir.';
+  } else if (growingPick) {
     var gName = bridge.COMP_NAMES[growingPick] || growingPick;
+    recText = S.role + ' i\u00e7in bug\u00fcn ' + gName + ' \u00fczerinde \u00e7al\u0131\u015fmak iyi bir ba\u015flang\u0131\u00e7 olabilir.';
+  }
+  if (recText) {
     slot.style.display = 'block';
     var recDiv = document.createElement('div');
     recDiv.className = 'yk-recommendation';
-    recDiv.textContent = S.role + ' i\u00e7in bug\u00fcn ' + gName + ' \u00fczerinde \u00e7al\u0131\u015fmak iyi bir ba\u015flang\u0131\u00e7 olabilir.';
+    recDiv.textContent = recText;
     slot.appendChild(recDiv);
   }
 
-  /* Re-sort track cards: move growing incomplete to top */
+  /* Re-sort track cards: review-needing completed → growing incomplete → incomplete → clean completed */
   if (evidenceData && evidenceData.length > 0) {
     var tracksContainer = document.querySelector('.yk-home-tracks');
     if (!tracksContainer) return;
@@ -4175,11 +4215,25 @@ function hydrateRecommendation(evidenceData) {
       var bEv = _lobbyEvidenceCache ? _lobbyEvidenceCache[bCode] : null;
       var aGrow = (!aDone && aEv && aEv.self_rating === 'growing') ? -1 : 0;
       var bGrow = (!bDone && bEv && bEv.self_rating === 'growing') ? -1 : 0;
-      return (aDone + aGrow) - (bDone + bGrow);
+      /* Review-needing completed → promote above clean completed */
+      var aReview = (aDone && needsReview(aCode)) ? -1 : 0;
+      var bReview = (bDone && needsReview(bCode)) ? -1 : 0;
+      return (aDone + aGrow + aReview) - (bDone + bGrow + bReview);
     });
 
     for (var ci = 0; ci < cards.length; ci++) {
       tracksContainer.appendChild(cards[ci]);
+    }
+
+    /* Inject review pills on review-needing cards */
+    for (var pi = 0; pi < cards.length; pi++) {
+      var pCode = cards[pi].getAttribute('data-comp');
+      if (needsReview(pCode) && !cards[pi].querySelector('.yk-review-pill')) {
+        var pill = document.createElement('div');
+        pill.className = 'yk-review-pill';
+        pill.textContent = 'Tazelemeyi d\u00fc\u015f\u00fcn';
+        cards[pi].appendChild(pill);
+      }
     }
   }
 }
