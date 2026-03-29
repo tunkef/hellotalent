@@ -1,7 +1,7 @@
 # Stüdyo — Technical Foundation Document
 
 > Aday tarafındaki en derin değer alanı. Kariyer gelişimi, yetkinlik eğitimi, uzman içerikleri ve platform bilgisi.
-> Son güncelleme: 28 Mart 2026 (Session 42 — FAZ 0-4C deployed + AI E2E live + FAZ 2C freeze/recovery hazır)
+> Son güncelleme: 29 Mart 2026 (Session 43 — FAZ 2C deployed + FAZ 2D review recommendation layer deployed)
 
 ## Bilgi Mimarisi (Information Architecture)
 
@@ -14,12 +14,12 @@ Stüdyo (panel key: mulakat, loader: _htLoadMulakat)
 │   │   ├── Öneri satırı: growing yetkinlik odaklı (FAZ 4A)
 │   │   ├── Progress bar (6px, milestone işaretleri, micro-copy) (FAZ 2.3)
 │   │   ├── Streak widget + freeze/recovery (FAZ 2B + 2C)
-│   │   ├── Bugünkü Pratik kartı (growing yetkinlik öncelikli) (FAZ 2B)
+│   │   ├── Bugünkü Pratik kartı (review-needing → growing → incomplete öncelik) (FAZ 2B + 2D)
 │   │   ├── Haftalık aktivite kartı (FAZ 2.3)
 │   │   ├── Devam Et / Önerilen Başlangıç
 │   │   ├── Hazırlık Özeti (tamamlanan/kalan/pratik)
 │   │   ├── AI Koçluk teaser (badge: Active)
-│   │   ├── Erişilebilir yetkinlik kartları (self-rating + kanıt, growing→incomplete→completed sıralama)
+│   │   ├── Erişilebilir yetkinlik kartları (self-rating + kanıt + review pill, review-needing completed → growing → incomplete → clean completed sıralama) (FAZ 2D)
 │   │   └── Kilitli yetkinlikler (tek özet blok + Premium CTA)
 │   ├── Track Detail (competency_intro) — yetkinlik tanıtımı + ünite listesi
 │   ├── Unit Detail (practice) — soru + güçlü/zayıf sinyaller + takip sorusu + AI placeholder
@@ -61,8 +61,9 @@ Stüdyo (panel key: mulakat, loader: _htLoadMulakat)
 | AI feedback altyapısı | candidate_journal_feedback + Edge Function | ✅ Canlı — gpt-4.1-mini, self-reflection, error sanitization. E2E PASS 28 Mart 2026 |
 | AI feedback aday yüzeyi | Practice ekranında journal panel + AI buton | ✅ Canlı — "AI ile Değerlendir" → 6 bölüm feedback kartı. Premium gate çalışıyor |
 | Premium entitlement | candidate_premium_purchases + activate RPC + webhook | ✅ Demo flow deployed |
-| Streak sistemi | candidate_streaks + 2 RPC (enhanced) | ✅ Canlı — foundation deployed. FAZ 2C: freeze/recovery migration + UI hazır, deploy bekliyor |
+| Streak sistemi | candidate_streaks + 2 RPC (enhanced) | ✅ Canlı — foundation + FAZ 2C freeze/recovery deployed (29 Mart 2026) |
 | Kişiselleştirme | profil-mulakatkocu.js (lobby) | ✅ Karşılama + öneri + sıralama (canlı) |
+| Review recommendation | profil-mulakatkocu.js (FAZ 2D) | ✅ needsReview + review-aware daily/recommendation/sort + "Tazelemeyi düşün" pill (canlı, 29 Mart 2026) |
 | Completion cross-link | profil-mulakatkocu.js (FAZ 4B) | ✅ COMP_TO_COACH_CATEGORY + COMP_TO_MODULE_SLUG (canlı) |
 | Detail → practice bridge | profil-mulakatkocu.js (FAZ 4C) | ✅ MODULE_SLUG_TO_COMP + COACH_CAT_TO_COMP + pendingComp (canlı) |
 | Progress görselleştirme | profil-mulakatkocu.js (FAZ 2.3) | ✅ 6px bar, milestones, weekly summary, completion badge (canlı) |
@@ -81,6 +82,7 @@ Stüdyo (panel key: mulakat, loader: _htLoadMulakat)
 - DB persistence: `candidate_studio_journals` (STAR+T drafts), `candidate_yetenek_progress` (pratik kaydı), `candidate_streaks` (streak tracking)
 - Cross-link mappings: `COMP_TO_COACH_CATEGORY`, `COMP_TO_MODULE_SLUG` (forward, FAZ 4B), `MODULE_SLUG_TO_COMP`, `COACH_CAT_TO_COMP` (reverse, FAZ 4C)
 - `S.pendingComp`: content detail → role_select → otomatik competency_intro yönlendirmesi (FAZ 4C)
+- `needsReview(code)`: completed comp review detection — growing / mixed / needs_work / 14d stale (FAZ 2D, `REVIEW_STALE_DAYS = 14`)
 
 ## Yetenek Akış Değişiklikleri (Learning Portal Yeniden Yapılandırma)
 
@@ -128,8 +130,9 @@ Stüdyo (panel key: mulakat, loader: _htLoadMulakat)
 **~~Öncelik 1 — Deploy + Smoke~~** ✅ Tamamlandı 28 Mart 2026
 
 **Sonraki Feature Geliştirme (sıra kullanıcı tercihine bağlı):**
-1. ~~**Streak FAZ 2C**: freeze/geri kazan mekaniği~~ ✅ Tamamlandı — deploy bekliyor
-2. **Gerçek iyzico checkout**: iyzico API credentials → checkout form → callback wiring
+1. ~~**Streak FAZ 2C**: freeze/geri kazan mekaniği~~ ✅ Deployed 29 Mart 2026 — `1e84edd`
+2. ~~**FAZ 2D**: Spaced repetition review recommendation layer~~ ✅ Deployed 29 Mart 2026 — `fa7c87d`
+3. **Gerçek iyzico checkout**: iyzico API credentials → checkout form → callback wiring
 3. **Studio Phase 5B**: Yeni AI aday yüzeyi tasarımı (journal yerine unit-integrated yaklaşım)
 4. **Studio Phase 6**: Video içerik altyapısı (embed player, admin upload, ilerleme tracking)
 5. **Badge genişletme**: Yetenek pratik badge'leri (evaluate_candidate_badges extension)
@@ -151,6 +154,6 @@ Stüdyo (panel key: mulakat, loader: _htLoadMulakat)
 - `20260327010000_studio_copy_cleanup.sql` — 8 UPDATE, module title/body sentence-case + kopya temizliği ✅
 - `20260327020000_streak_foundation.sql` — `candidate_streaks` tablo + `update_candidate_streak` + `get_my_streak_status` RPCs ✅
 
-## Pending Schema (deploy bekliyor)
+## Recently Deployed Schema (29 Mart 2026)
 
-- `20260328010000_streak_freeze_recovery.sql` — `last_broken_streak` column + enhanced `update_candidate_streak` (freeze consume + recovery) + enhanced `get_my_streak_status` (can_freeze + can_recover)
+- `20260328010000_streak_freeze_recovery.sql` — `last_broken_streak` column + enhanced `update_candidate_streak` (freeze consume + recovery) + enhanced `get_my_streak_status` (can_freeze + can_recover) ✅

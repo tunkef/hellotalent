@@ -1,5 +1,5 @@
 # hellotalent.ai — Technical Handoff Document
-> Son güncelleme: 28 Mart 2026 (Session 41-42 — FAZ 0-4C deployed + AI E2E live + FAZ 2C streak freeze/recovery)
+> Son güncelleme: 29 Mart 2026 (Session 43 — FAZ 2C deployed + FAZ 2D spaced repetition review layer deployed)
 > Bu doküman, projenin mevcut durumunu, tamamlanan işleri ve kalan backlog'u kapsar.
 > Yeni bir chat/session başlatırken bu dosyayı referans olarak kullanın.
 
@@ -1345,18 +1345,56 @@ EDIT    docs/handoff.md (bu session)
 - ✅ Migration 20260327020000 (streak foundation) deployed
 - ✅ journal-feedback Edge Function deployed (model: `gpt-4.1-mini`, sanitized errors)
 - ✅ OPENAI_API_KEY set edildi, canlı AI E2E PASS
-- ⚠️ Migration 20260328010000 (streak freeze/recovery) deploy bekliyor — `npm run db:push`
-- ⚠️ Frontend push bekliyor (FAZ 2C streak UI + tests) — `git push origin main`
-- ⚠️ profil.html cache-bust bekliyor (`profil-mulakatkocu.js?v=20260328c`)
+
+**Deploy durumu (29 Mart 2026 — Session 43):**
+- ✅ Migration 20260328010000 (streak freeze/recovery) deployed — `npm run db:push`
+- ✅ FAZ 2C frontend push: `1e84edd` — freeze/recovery UI + cache-bust `?v=20260329a`
+- ✅ FAZ 2C canlı smoke PASS — tüm 4 streak state doğrulandı (active+hint, can_freeze, can_recover, frozen_today), mobil taşma yok
+- ✅ FAZ 2D frontend push: `fa7c87d` — review recommendation layer + cache-bust `?v=20260329b`
+- ✅ FAZ 2D canlı smoke PASS — TEKRAR PRATİK kicker, review recommendation copy, Tazelemeyi düşün pill, sort, mobil taşma yok
 
 **Graceful degradation zinciri (mevcut ve çalışıyor):**
 - Coach post yoksa → feed boş, landing hâlâ çalışır
 - Module DB boşsa → editorial empty state, section tıklanabilir
 - Cross-link mapping yoksa → CTA gizli, completion/detail normal çalışır
 - AI model/key hatası olursa → safe Turkish toast + "Tekrar Dene" butonu, practice ekranı korunur
-- FAZ 2C migration deploy edilmezse → `can_freeze`/`can_recover` undefined → falsy → eski streak davranışı korunur
+- Review-needing comp yoksa → daily practice eski davranışı korunur (growing → incomplete fallback)
 
-**Tests:** 398/398 pass (0 failures). ESLint: 0 errors, 9 pre-existing warnings.
+**Tests:** 422/422 pass (0 failures). ESLint: 0 errors, pre-existing warnings.
+
+### Session 43 — 29 Mart 2026 (FAZ 2C Deploy + FAZ 2D Spaced Repetition Review Layer)
+
+**FAZ 2C Deploy (29 Mart 2026)**
+- Migration `20260328010000_streak_freeze_recovery.sql` Supabase'e deploy edildi (`npm run db:push`)
+- Frontend push: `1e84edd` — freeze/recovery UI, 3 yeni CSS class, hydrateStreakPill genişletildi
+- profil.html cache-bust: `?v=20260329a`
+- Canlı smoke: 4 streak state doğrulandı (active+hint, can_freeze, can_recover, frozen_today)
+- Supabase RPC doğrulama: `update_candidate_streak()` ve `get_my_streak_status()` canlıda FAZ 2C logic ile çalışıyor
+- Mobil (390px) taşma yok
+
+**FAZ 2D — Spaced Repetition Review Recommendation Layer (29 Mart 2026)**
+- `needsReview(code)` fonksiyonu: completed yetkinliklerde 3 sinyal kontrolü
+  - `self_rating === 'growing'` → tekrar önerilir
+  - `feedback_signal === 'mixed' || 'needs_work'` → tekrar önerilir
+  - `last_practiced_at` 14+ gün önceyse → tekrar önerilir (stale threshold: `REVIEW_STALE_DAYS = 14`)
+- Daily practice pick önceliği güncellendi:
+  1. Completed + review-needing → "TEKRAR PRATİK" kicker
+  2. Incomplete + growing → "BUGÜNKÜ PRATİK" (mevcut)
+  3. Incomplete + herhangi → "BUGÜNKÜ PRATİK" (mevcut fallback)
+- Recommendation copy: review pick varsa → "[Yetkinlik] yetkinliğine tekrar göz atmak faydalı olabilir."
+- Learning plan sort güncellendi: review-needing completed kartlar clean completed üstüne çekilir
+- Track kartlarında `yk-review-pill`: "Tazelemeyi düşün" — amber badge, completed + review-needing kartlarda
+- Yeni migration yok, yeni RPC yok — tamamen frontend-first, mevcut `get_my_yetenek_overview` RPC'den türetiliyor
+
+**Dosya Değişiklikleri (Session 43 toplam):**
+```
+EDIT    profil-mulakatkocu.js (FAZ 2C: +33 freeze/recovery UI; FAZ 2D: +70 needsReview, daily priority, recommendation, sort, review pill, CSS)
+EDIT    profil.html (cache-bust 20260328b → 20260329a → 20260329b)
+CREATE  supabase/migrations/20260328010000_streak_freeze_recovery.sql (FAZ 2C: last_broken_streak + enhanced RPCs)
+EDIT    tests/p3.regression.spec.js (FAZ 2C: +54 lines / 16 tests; FAZ 2D: +68 lines / 24 tests)
+```
+
+**Deploy:** `1e84edd` (FAZ 2C) + `fa7c87d` (FAZ 2D) → origin/main. Canlı smoke PASS.
 
 ### Sonraki Adımlar
 - [x] ~~Migration 042 → competency tabloları~~ ✅ Deployed
@@ -1384,7 +1422,8 @@ EDIT    docs/handoff.md (bu session)
 - [x] ~~**SMOKE**: Canlı doğrulama~~ ✅ 28 Mart 2026 — streak widget, kişiselleştirme, detail→practice, AI E2E tümü PASS
 - [x] ~~OPENAI_API_KEY canlı AI E2E doğrulama~~ ✅ 28 Mart 2026 — key set, model düzeltme, E2E PASS
 - [x] ~~Streak freeze/geri kazan mekaniği (FAZ 2C)~~ ✅ Session 42 — migration 20260328010000, enhanced RPCs, freeze/recovery UI
-- [ ] **DEPLOY FAZ 2C**: `npm run db:push` + `git push origin main` + cache-bust
+- [x] ~~**DEPLOY FAZ 2C**: `npm run db:push` + `git push origin main` + cache-bust~~ ✅ 29 Mart 2026 — `1e84edd`, migration deployed, canlı smoke PASS
+- [x] ~~**FAZ 2D**: Spaced repetition review recommendation layer~~ ✅ 29 Mart 2026 — `fa7c87d`, needsReview + daily priority + review pill + sort, canlı smoke PASS
 - [ ] Gerçek iyzico checkout wiring (credentials + redirect + callback)
 - [ ] Stüdyo Phase 5B: Yeni AI aday yüzeyi (unit-integrated, journal yerine)
 - [ ] İşveren kampanya wizard'ı (ik.html)
