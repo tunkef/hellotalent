@@ -1,7 +1,7 @@
-# hellotalent.ai — Technical Handoff Document
-> Son güncelleme: 29 Mart 2026 (Session 43 — FAZ 2C/2D deployed + Phase 5B AI redesign + CORS/cron pipeline fix)
-> Bu doküman, projenin mevcut durumunu, tamamlanan işleri ve kalan backlog'u kapsar.
-> Yeni bir chat/session başlatırken bu dosyayı referans olarak kullanın.
+# hellotalent.ai — Session Log (Arşiv)
+> Son güncelleme: 29 Mart 2026 (Session 43 + test truth-sync)
+> Bu doküman session tarihçesidir. Günlük truth için `docs/CURRENT-STATE.md`, mimari için `docs/ARCHITECTURE.md` okuyun.
+> Test truth düzeltmesi (29 Mart 2026): Handoff'taki "446/446" iddiası stale. Gerçek: 514 passed, 27 failed (infra/public-page), 12 did not run. Core feature testleri sağlam.
 
 
 ---
@@ -2984,10 +2984,8 @@ cd /Users/peopleintk/Downloads/Hellotalent
 npx playwright test --reporter=list
 ```
 
-### Sonuç: 102/102 passing (18 Mart 2026) — ⚠️ STALE
-> **Current truth (29 Mart 2026):** 514 passed, 27 failed, 12 did not run. Bakınız `docs/CURRENT-STATE.md` ve `docs/ARCHITECTURE.md`.
-
-Smoke + dark mode + p3 regression tests — all passing (at that date).
+### Sonuç: 102/102 passing (18 Mart 2026)
+Smoke + dark mode + p3 regression tests — all passing.
 
 ### Config
 - baseURL: https://hellotalent.ai

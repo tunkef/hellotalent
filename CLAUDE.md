@@ -20,10 +20,12 @@
 - Always use .maybeSingle() not .single() for new user queries
 - UI language: Turkish throughout
 
-## Current State
-- See docs/handoff.md for full project state
-- P2 COMPLETE (all tasks #7-#10 done)
-- Next: P3 (Employer Onboarding & Team System)
+## Current State — Katmanlı Handoff Sistemi
+Her session başında SADECE `docs/CURRENT-STATE.md` oku (~3K token).
+- `docs/CURRENT-STATE.md` → Mevcut durum, dosya haritası, backlog, son 3 session
+- `docs/ARCHITECTURE.md` → Mimari, data contracts, pipeline'lar (feature yazarken oku)
+- `docs/SESSION-LOG.md` → Tüm session tarihçesi (~70K, sadece gerektiğinde grep/search)
+- `docs/handoff.md` → Legacy alias (SESSION-LOG ile aynı içerik)
 
 ## Context7
 Always use context7 when working with Supabase API, CSS, or any library docs.

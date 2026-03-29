@@ -1151,6 +1151,13 @@ function injectCSS() {
   css += '.yk-summary-stat{text-align:center}';
   css += '.yk-summary-stat-num{font-family:"DM Mono",monospace;font-size:24px;font-weight:700;color:var(--text-primary,#111)}';
   css += '.yk-summary-stat-label{font-family:"Plus Jakarta Sans",sans-serif;font-size:10px;color:var(--text-muted,#6B7280)}';
+  css += '.yk-prep-accordion{margin-top:16px}';
+  css += '.yk-prep-toggle{display:none;font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;font-weight:600;color:var(--text-muted,#6B7280);background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF);border-radius:10px;padding:10px 16px;cursor:pointer;width:100%;text-align:left;transition:all .2s}';
+  css += '.yk-prep-toggle:hover{color:var(--text-primary,#111);border-color:var(--text-muted,#6B7280)}';
+  css += '.yk-prep-toggle svg{width:12px;height:12px;transition:transform .2s;vertical-align:middle;margin-left:6px}';
+  css += '.yk-prep-toggle.open svg{transform:rotate(180deg)}';
+  css += '.yk-prep-body{transition:max-height .3s ease,opacity .2s ease;overflow:hidden}';
+  css += '@media(max-width:600px){.yk-prep-toggle{display:block}.yk-prep-body{max-height:0;opacity:0}.yk-prep-body.open{max-height:800px;opacity:1}}';
   css += '@media(max-width:600px){.yk-track-units{padding:12px 14px}.yk-track-unit-theme{font-size:11px}.ig-q-actions{flex-wrap:wrap;gap:6px}.ig-q-actions .ig-btn{font-size:11px;padding:8px 12px}.yk-unit-signals{padding:12px 14px}.yk-unit-signal-item{font-size:11px}.yk-unit-followup{padding:10px 14px}}';
 
   /* Landing screen (star_intro — Studio landing) */
@@ -1216,6 +1223,7 @@ function injectCSS() {
   css += '.st-badge-icon{display:flex;align-items:center;flex-shrink:0}';
   css += '.st-badge-label{white-space:nowrap}';
   css += '.st-badge-recent{background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF);border-radius:12px;padding:14px 18px;box-shadow:0 2px 8px rgba(0,0,0,.04)}';
+  css += '.st-badge-empty-hint{font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;color:var(--text-muted,#6B7280);padding:8px 0 4px}';
   css += '@media(max-width:600px){.st-badge-chip{font-size:10px;padding:5px 10px}}';
 
   css += '.ig-landing-badge{display:inline-flex;align-items:center;gap:6px;font-family:"DM Mono",monospace;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:16px}';
@@ -1950,8 +1958,17 @@ function renderPractice() {
 
   html += '</div>'; /* q-focus */
 
-  /* ── Strong-answer signals from competency data ── */
+  /* ── Preparation notes — collapsible on mobile ── */
   var a = anchors[S.activeComp];
+  var hasPrep = (a && a.skilled && a.skilled.length > 0) || (a && a.lessskilled && a.lessskilled.length > 0) || (S.dealt.length > 1 && S.currentQ < S.dealt.length - 1);
+  if (hasPrep) {
+    var chevronDown = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>';
+    html += '<div class="yk-prep-accordion">';
+    html += '<button class="yk-prep-toggle" id="yk-prep-toggle">Haz\u0131rl\u0131k Notlar\u0131' + chevronDown + '</button>';
+    html += '<div class="yk-prep-body" id="yk-prep-body">';
+  }
+
+  /* ── Strong-answer signals from competency data ── */
   if (a && a.skilled && a.skilled.length > 0) {
     html += '<div class="yk-unit-signals">';
     html += '<div class="yk-unit-signals-title">' + checkSVG + ' G\u00fc\u00e7l\u00fc Yan\u0131tta Arananlar</div>';
@@ -1977,6 +1994,11 @@ function renderPractice() {
     html += '<div class="yk-unit-followup-title">Olas\u0131 Takip Sorusu</div>';
     html += '<div class="yk-unit-followup-text">\u201c' + S.dealt[Math.min(S.currentQ + 1, S.dealt.length - 1)].text + '\u201d</div>';
     html += '</div>';
+  }
+
+  if (hasPrep) {
+    html += '</div>'; /* yk-prep-body */
+    html += '</div>'; /* yk-prep-accordion */
   }
 
   /* ── Journal panel (STAR+T input + AI feedback) — restored from Phase 5A ── */
@@ -3126,6 +3148,14 @@ async function hydrateBadgeStrip() {
       chipRow.appendChild(chip);
     }
     strip.appendChild(chipRow);
+
+    /* Empty hint when no badges earned yet */
+    if (earnedCount === 0) {
+      var emptyHint = document.createElement('div');
+      emptyHint.className = 'st-badge-empty-hint';
+      emptyHint.textContent = 'Pratik yaparak ilk rozetini kazanabilirsin.';
+      strip.appendChild(emptyHint);
+    }
 
     /* Most recent badge highlight */
     if (earnedCount > 0) {
@@ -4455,6 +4485,18 @@ function bindPracticeEvents() {
     S.coachOpen = !S.coachOpen;
     navigate('practice');
   });
+
+  /* Prep notes accordion toggle (mobile) */
+  var prepToggle = document.getElementById('yk-prep-toggle');
+  var prepBody = document.getElementById('yk-prep-body');
+  if (prepToggle && prepBody) {
+    prepToggle.addEventListener('click', function() {
+      var isOpen = prepBody.classList.toggle('open');
+      prepToggle.classList.toggle('open', isOpen);
+      prepToggle.textContent = isOpen ? 'Haz\u0131rl\u0131k Notlar\u0131n\u0131 Gizle' : 'Haz\u0131rl\u0131k Notlar\u0131';
+      prepToggle.innerHTML += '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>';
+    });
+  }
 
   /* Journal toggle */
   var journalBtn = document.getElementById('ig-journal-toggle');
