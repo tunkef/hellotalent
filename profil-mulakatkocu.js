@@ -3242,12 +3242,11 @@ async function requestAiFeedback(compCode, qText, qHash) {
     var selfReflectEl = document.getElementById('aif-self-reflect-input');
     var selfReflect = selfReflectEl ? selfReflectEl.value.trim() : '';
 
-    /* Invoke Edge Function to process — pass self-reflection as context */
+    /* Invoke Edge Function to process — fire-and-forget, failures are expected
+       (browser CORS / JWT may block response; pg_cron is the reliable trigger) */
     supabase.functions.invoke('journal-feedback', {
       body: { self_reflection: selfReflect }
-    }).catch(function(e) {
-      console.error('journal-feedback invoke error:', e);
-    });
+    }).catch(function() { /* silent — polling handles completion regardless */ });
 
     /* Poll for completion */
     pollForFeedback(compCode, qHash, btn);
