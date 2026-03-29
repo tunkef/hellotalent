@@ -925,13 +925,30 @@ function injectCSS() {
   css += '.aif-overall{border-left:3px solid var(--navy,#1E2D5E)}';
   css += '.aif-card-title{font-family:"Bricolage Grotesque",sans-serif;font-size:12px;font-weight:700;color:var(--text-primary,#111);margin-bottom:8px;letter-spacing:-.1px}';
   css += '.aif-signal{display:inline-block;font-family:"DM Mono",monospace;font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px;margin-bottom:8px;letter-spacing:.3px}';
-  css += '.aif-summary{font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;color:var(--text-secondary,#4B5563);line-height:1.6}';
+  css += '.aif-summary{font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;color:var(--text-secondary,#4B5563);line-height:1.6;word-break:break-word}';
   css += '.aif-list-item{display:flex;align-items:flex-start;gap:8px;font-family:"Plus Jakarta Sans",sans-serif;font-size:11px;color:var(--text-secondary,#4B5563);line-height:1.5;margin-bottom:6px}';
   css += '.aif-bullet{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:5px}';
   css += '.aif-star-row{display:flex;align-items:flex-start;gap:8px;margin-bottom:6px}';
   css += '.aif-star-indicator{font-family:"DM Mono",monospace;font-size:12px;font-weight:700;width:16px;text-align:center;flex-shrink:0}';
   css += '.aif-star-label{font-family:"Plus Jakarta Sans",sans-serif;font-size:11px;font-weight:600;color:var(--text-primary,#111)}';
   css += '.aif-star-note{font-family:"Plus Jakarta Sans",sans-serif;font-size:11px;color:var(--text-muted,#6B7280)}';
+  /* Phase 5B — progressive disclosure */
+  css += '.aif-hero{background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF);border-radius:14px;padding:18px 20px;margin-top:12px}';
+  css += '.aif-hero-header{display:flex;align-items:center;gap:10px;margin-bottom:10px}';
+  css += '.aif-hero-title{font-family:"Bricolage Grotesque",sans-serif;font-size:14px;font-weight:800;color:var(--text-primary,#111)}';
+  css += '.aif-hero-highlight{display:flex;align-items:flex-start;gap:8px;padding:10px 14px;border-radius:10px;margin-bottom:8px;font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;line-height:1.5;word-break:break-word}';
+  css += '.aif-hero-highlight.positive{background:rgba(5,150,105,.05);color:#065F46;border:1px solid rgba(5,150,105,.1)}';
+  css += '.aif-hero-highlight.negative{background:rgba(220,38,38,.04);color:#991B1B;border:1px solid rgba(220,38,38,.08)}';
+  css += '.aif-hero-highlight-icon{flex-shrink:0;font-size:14px;margin-top:1px}';
+  css += '.aif-next-steps{margin-top:12px;padding:12px 14px;background:rgba(201,78,40,.03);border:1px solid rgba(201,78,40,.08);border-radius:10px}';
+  css += '.aif-next-steps-title{font-family:"DM Mono",monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--verm,#C94E28);margin-bottom:8px}';
+  css += '.aif-details{margin-top:10px}';
+  css += '.aif-details summary{font-family:"Bricolage Grotesque",sans-serif;font-size:12px;font-weight:700;color:var(--navy,#1E2D5E);cursor:pointer;padding:10px 14px;background:rgba(30,45,94,.03);border:1px solid rgba(30,45,94,.06);border-radius:10px;list-style:none;display:flex;align-items:center;gap:6px}';
+  css += '.aif-details summary::-webkit-details-marker{display:none}';
+  css += '.aif-details summary::before{content:"\\25B6";font-size:8px;transition:transform .2s}';
+  css += '.aif-details[open] summary::before{transform:rotate(90deg)}';
+  css += '.aif-details[open] summary{border-radius:10px 10px 0 0;border-bottom-color:transparent}';
+  css += '.aif-details-body{padding:12px 14px;background:rgba(30,45,94,.02);border:1px solid rgba(30,45,94,.06);border-top:none;border-radius:0 0 10px 10px}';
 
   /* Lobby draft badge */
   css += '.ig-lobby-badge-draft{background:rgba(30,45,94,.08);color:var(--navy,#1E2D5E)}';
@@ -1987,15 +2004,15 @@ function renderJournalPanel() {
   /* Toggle bar */
   html += '<button class="ig-journal-toggle' + (S.journalOpen ? ' active' : '') + '" id="ig-journal-toggle" aria-expanded="' + (S.journalOpen ? 'true' : 'false') + '">';
   html += journalSVG;
-  html += '<div class="ig-journal-toggle-label">Geli\u015Fim G\u00FCnl\u00FC\u011F\u00FC' + (hasDraft && !S.journalOpen ? ' <span style="font-size:10px;font-weight:400;color:var(--text-muted,#6B7280)">(taslak var)</span>' : '') + '</div>';
-  html += '<div class="ig-journal-toggle-hint">' + (S.journalOpen ? '' : 'Yan\u0131t\u0131n\u0131z\u0131 haz\u0131rlay\u0131n') + '</div>';
+  html += '<div class="ig-journal-toggle-label">Cevab\u0131n\u0131 Haz\u0131rla' + (hasDraft && !S.journalOpen ? ' <span style="font-size:10px;font-weight:400;color:var(--text-muted,#6B7280)">(taslak var)</span>' : '') + '</div>';
+  html += '<div class="ig-journal-toggle-hint">' + (S.journalOpen ? '' : 'Notlar\u0131n\u0131 al, AI ile de\u011Ferlendir') + '</div>';
   html += '<div class="ig-journal-toggle-arrow">\u25BC</div>';
   html += '</button>';
 
   /* Body (only if open) */
   if (S.journalOpen) {
     html += '<div class="ig-journal-body">';
-    html += '<div class="ig-journal-intro">Bu soruya haz\u0131rlan\u0131rken deneyimlerinizi STAR+T yap\u0131s\u0131yla not edin. Notlar\u0131n\u0131z hesab\u0131n\u0131za kaydedilir ve farkl\u0131 cihazlardan eri\u015Febilirsiniz.</div>';
+    html += '<div class="ig-journal-intro">Deneyimini STAR+T yap\u0131s\u0131yla not et. Notlar\u0131n otomatik kaydedilir.</div>';
 
     var fields = [
       { key: 's', letter: 'S', label: 'Durum', color: 'verm', placeholder: 'Kar\u015F\u0131la\u015Ft\u0131\u011F\u0131n\u0131z durumu k\u0131saca tan\u0131mlay\u0131n...' },
@@ -2023,18 +2040,6 @@ function renderJournalPanel() {
     html += '<div class="aif-self-reflect" style="margin-top:12px">';
     html += '<label class="ig-journal-field-label" style="font-size:11px;color:var(--text-muted,#6B7280);margin-bottom:4px;display:block">Bu cevapta en g\u00fc\u00e7l\u00fc taraf\u0131n\u0131z ne oldu?</label>';
     html += '<textarea class="ig-journal-textarea" id="aif-self-reflect-input" placeholder="K\u0131saca yaz\u0131n\u2026" rows="2" style="font-size:12px"></textarea>';
-    html += '</div>';
-
-    /* ── Rubrik g\u00f6r\u00fcn\u00fcrl\u00fc\u011f\u00fc ── */
-    html += '<div class="aif-rubric" style="margin-top:10px;padding:10px 14px;background:rgba(30,45,94,.03);border:1px solid rgba(30,45,94,.08);border-radius:10px;font-family:\'Plus Jakarta Sans\',sans-serif;font-size:11px;color:var(--text-muted,#6B7280);line-height:1.6">';
-    html += '<div style="font-weight:600;color:var(--text-primary,#111);margin-bottom:4px;font-size:11px">De\u011Ferlendirme Kriterleri</div>';
-    html += '<div style="display:flex;flex-wrap:wrap;gap:6px">';
-    html += '<span style="background:rgba(201,78,40,.06);padding:2px 8px;border-radius:6px;font-size:10px">STAR+T yap\u0131s\u0131</span>';
-    html += '<span style="background:rgba(201,78,40,.06);padding:2px 8px;border-radius:6px;font-size:10px">Somutluk</span>';
-    html += '<span style="background:rgba(201,78,40,.06);padding:2px 8px;border-radius:6px;font-size:10px">\u00d6l\u00e7\u00fclebilir sonu\u00e7</span>';
-    html += '<span style="background:rgba(201,78,40,.06);padding:2px 8px;border-radius:6px;font-size:10px">Rol uyumu</span>';
-    html += '<span style="background:rgba(201,78,40,.06);padding:2px 8px;border-radius:6px;font-size:10px">\u00d6\u011Frenim / \u00e7\u0131kar\u0131m</span>';
-    html += '</div>';
     html += '</div>';
 
     /* ── AI Feedback area — freemium: first FREE_COMP_LIMIT competencies free ── */
@@ -3343,51 +3348,101 @@ function renderAiFeedback(fb) {
   while (resultDiv.firstChild) resultDiv.removeChild(resultDiv.firstChild);
   resultDiv.style.display = 'block';
 
-  /* ── Overall signal ── */
   var sig = AIF_SIGNAL_LABELS[fb.overall_signal] || AIF_SIGNAL_LABELS.mixed;
-  var overallCard = document.createElement('div');
-  overallCard.className = 'aif-card aif-overall';
-  overallCard.style.borderLeftColor = sig.color;
 
-  var overallHeader = document.createElement('div');
-  overallHeader.className = 'aif-card-title';
-  overallHeader.textContent = 'Genel De\u011Ferlendirme';
-  overallCard.appendChild(overallHeader);
+  /* ═══ HERO CARD — primary surface ═══ */
+  var hero = document.createElement('div');
+  hero.className = 'aif-hero';
+  hero.style.borderLeft = '3px solid ' + sig.color;
 
+  /* Header: title + signal pill */
+  var hdr = document.createElement('div');
+  hdr.className = 'aif-hero-header';
+  var hTitle = document.createElement('span');
+  hTitle.className = 'aif-hero-title';
+  hTitle.textContent = 'De\u011Ferlendirme';
+  hdr.appendChild(hTitle);
   var sigPill = document.createElement('span');
   sigPill.className = 'aif-signal';
   sigPill.style.cssText = 'background:' + sig.bg + ';color:' + sig.color;
   sigPill.textContent = sig.text;
   if (fb.score_overall) sigPill.textContent += ' \u00b7 ' + fb.score_overall + '/100';
-  overallCard.appendChild(sigPill);
+  hdr.appendChild(sigPill);
+  hero.appendChild(hdr);
 
+  /* Summary */
   if (fb.summary_text) {
     var sumEl = document.createElement('div');
     sumEl.className = 'aif-summary';
     sumEl.textContent = fb.summary_text;
-    overallCard.appendChild(sumEl);
+    hero.appendChild(sumEl);
   }
-  resultDiv.appendChild(overallCard);
 
-  /* ── Strong points ── */
+  /* Top highlight: best strong point */
   if (fb.strong_points && fb.strong_points.length > 0) {
-    resultDiv.appendChild(renderAifList('G\u00fc\u00e7l\u00fc Sinyaller', fb.strong_points, '#059669'));
+    var posHL = document.createElement('div');
+    posHL.className = 'aif-hero-highlight positive';
+    var posIcon = document.createElement('span');
+    posIcon.className = 'aif-hero-highlight-icon';
+    posIcon.textContent = '\u2713';
+    posHL.appendChild(posIcon);
+    var posText = document.createElement('span');
+    posText.textContent = fb.strong_points[0];
+    posHL.appendChild(posText);
+    hero.appendChild(posHL);
   }
 
-  /* ── Weak points ── */
+  /* Top highlight: most critical weak point */
   if (fb.weak_points && fb.weak_points.length > 0) {
-    resultDiv.appendChild(renderAifList('Geli\u015ftirme Alanlar\u0131', fb.weak_points, '#DC2626'));
+    var negHL = document.createElement('div');
+    negHL.className = 'aif-hero-highlight negative';
+    var negIcon = document.createElement('span');
+    negIcon.className = 'aif-hero-highlight-icon';
+    negIcon.textContent = '!';
+    negHL.appendChild(negIcon);
+    var negText = document.createElement('span');
+    negText.textContent = fb.weak_points[0];
+    negHL.appendChild(negText);
+    hero.appendChild(negHL);
   }
 
-  /* ── STAR+T section review ── */
-  if (fb.star_review) {
-    var starCard = document.createElement('div');
-    starCard.className = 'aif-card';
-    var starTitle = document.createElement('div');
-    starTitle.className = 'aif-card-title';
-    starTitle.textContent = 'STAR+T Analizi';
-    starCard.appendChild(starTitle);
+  /* Next steps — first 2 improvement actions */
+  if (fb.improvement_actions && fb.improvement_actions.length > 0) {
+    var nsBox = document.createElement('div');
+    nsBox.className = 'aif-next-steps';
+    var nsTitle = document.createElement('div');
+    nsTitle.className = 'aif-next-steps-title';
+    nsTitle.textContent = 'SONRAK\u0130 ADIMLAR';
+    nsBox.appendChild(nsTitle);
+    var nsLimit = Math.min(2, fb.improvement_actions.length);
+    for (var ni = 0; ni < nsLimit; ni++) {
+      var nsItem = document.createElement('div');
+      nsItem.className = 'aif-list-item';
+      var nsBullet = document.createElement('span');
+      nsBullet.className = 'aif-bullet';
+      nsBullet.style.background = '#C94E28';
+      nsItem.appendChild(nsBullet);
+      var nsText = document.createElement('span');
+      nsText.textContent = fb.improvement_actions[ni];
+      nsItem.appendChild(nsText);
+      nsBox.appendChild(nsItem);
+    }
+    hero.appendChild(nsBox);
+  }
 
+  resultDiv.appendChild(hero);
+
+  /* ═══ DETAIL ACCORDIONS — progressive disclosure ═══ */
+
+  /* STAR+T Analizi */
+  if (fb.star_review) {
+    var starDetails = document.createElement('details');
+    starDetails.className = 'aif-details';
+    var starSum = document.createElement('summary');
+    starSum.textContent = 'STAR+T Analizi';
+    starDetails.appendChild(starSum);
+    var starBody = document.createElement('div');
+    starBody.className = 'aif-details-body';
     var starFields = [
       { key: 'situation', label: 'Durum (S)' },
       { key: 'task', label: 'G\u00f6rev (T)' },
@@ -3420,44 +3475,77 @@ function renderAiFeedback(fb) {
         rowContent.appendChild(rowNote);
       }
       row.appendChild(rowContent);
-      starCard.appendChild(row);
+      starBody.appendChild(row);
     }
-    resultDiv.appendChild(starCard);
+    if (starBody.childNodes.length > 0) {
+      starDetails.appendChild(starBody);
+      resultDiv.appendChild(starDetails);
+    }
   }
 
-  /* ── Improvement actions ── */
-  if (fb.improvement_actions && fb.improvement_actions.length > 0) {
-    resultDiv.appendChild(renderAifList('Cevab\u0131 G\u00fc\u00e7lendirmek \u0130\u00e7in', fb.improvement_actions, '#C94E28'));
+  /* All strong points (if more than 1) */
+  if (fb.strong_points && fb.strong_points.length > 1) {
+    var spDetails = document.createElement('details');
+    spDetails.className = 'aif-details';
+    var spSum = document.createElement('summary');
+    spSum.textContent = 'T\u00fcm G\u00fc\u00e7l\u00fc Sinyaller (' + fb.strong_points.length + ')';
+    spDetails.appendChild(spSum);
+    var spBody = document.createElement('div');
+    spBody.className = 'aif-details-body';
+    for (var spi = 0; spi < fb.strong_points.length; spi++) {
+      spBody.appendChild(renderAifListItem(fb.strong_points[spi], '#059669'));
+    }
+    spDetails.appendChild(spBody);
+    resultDiv.appendChild(spDetails);
   }
 
-  /* ── Follow-up questions ── */
+  /* All weak points (if more than 1) */
+  if (fb.weak_points && fb.weak_points.length > 1) {
+    var wpDetails = document.createElement('details');
+    wpDetails.className = 'aif-details';
+    var wpSum = document.createElement('summary');
+    wpSum.textContent = 'T\u00fcm Geli\u015ftirme Alanlar\u0131 (' + fb.weak_points.length + ')';
+    wpDetails.appendChild(wpSum);
+    var wpBody = document.createElement('div');
+    wpBody.className = 'aif-details-body';
+    for (var wpi = 0; wpi < fb.weak_points.length; wpi++) {
+      wpBody.appendChild(renderAifListItem(fb.weak_points[wpi], '#DC2626'));
+    }
+    wpDetails.appendChild(wpBody);
+    resultDiv.appendChild(wpDetails);
+  }
+
+  /* Follow-up questions */
   if (fb.followup_questions && fb.followup_questions.length > 0) {
-    resultDiv.appendChild(renderAifList('Olas\u0131 Takip Sorular\u0131', fb.followup_questions, '#1E2D5E'));
+    var fqDetails = document.createElement('details');
+    fqDetails.className = 'aif-details';
+    var fqSum = document.createElement('summary');
+    fqSum.textContent = 'Olas\u0131 Takip Sorular\u0131 (' + fb.followup_questions.length + ')';
+    fqDetails.appendChild(fqSum);
+    var fqBody = document.createElement('div');
+    fqBody.className = 'aif-details-body';
+    for (var fqi = 0; fqi < fb.followup_questions.length; fqi++) {
+      fqBody.appendChild(renderAifListItem(fb.followup_questions[fqi], '#1E2D5E'));
+    }
+    fqDetails.appendChild(fqBody);
+    resultDiv.appendChild(fqDetails);
   }
 }
 
-function renderAifList(title, items, accentColor) {
-  var card = document.createElement('div');
-  card.className = 'aif-card';
-  var cardTitle = document.createElement('div');
-  cardTitle.className = 'aif-card-title';
-  cardTitle.textContent = title;
-  card.appendChild(cardTitle);
-
-  for (var i = 0; i < items.length; i++) {
-    var item = document.createElement('div');
-    item.className = 'aif-list-item';
-    var bullet = document.createElement('span');
-    bullet.className = 'aif-bullet';
-    bullet.style.background = accentColor;
-    item.appendChild(bullet);
-    var text = document.createElement('span');
-    text.textContent = items[i];
-    item.appendChild(text);
-    card.appendChild(item);
-  }
-  return card;
+function renderAifListItem(text, color) {
+  var item = document.createElement('div');
+  item.className = 'aif-list-item';
+  var bullet = document.createElement('span');
+  bullet.className = 'aif-bullet';
+  bullet.style.background = color;
+  item.appendChild(bullet);
+  var span = document.createElement('span');
+  span.textContent = text;
+  item.appendChild(span);
+  return item;
 }
+
+/* renderAifList removed in Phase 5B — replaced by renderAifListItem + progressive disclosure */
 
 /* ══ STUDIO MODULE SECTION HYDRATION ══ */
 

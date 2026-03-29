@@ -1726,3 +1726,79 @@ test.describe('FAZ 2D — review recommendation layer', () => {
     expect(mulakatJs).toContain('bGrow');
   });
 });
+
+/*
+   Phase 5B — AI feedback surface redesign
+*/
+test.describe('Phase 5B — AI feedback progressive disclosure', () => {
+  let mulakatJs;
+  test.beforeAll(() => {
+    mulakatJs = readFromRepo('profil-mulakatkocu.js');
+  });
+
+  test('journal toggle renamed to Cevabını Hazırla', () => {
+    expect(mulakatJs).toContain('Cevab');
+    expect(mulakatJs).toContain('Haz');
+    /* "Gelişim Günlüğü" remains in code comments but not in user-facing toggle */
+    expect(mulakatJs).toContain('ig-journal-toggle-label');
+  });
+
+  test('rubric block removed', () => {
+    expect(mulakatJs).not.toContain('aif-rubric');
+    expect(mulakatJs).not.toContain('Değerlendirme Kriterleri');
+  });
+
+  test('hero card exists', () => {
+    expect(mulakatJs).toContain('aif-hero');
+    expect(mulakatJs).toContain('aif-hero-header');
+    expect(mulakatJs).toContain('aif-hero-title');
+  });
+
+  test('hero highlights exist (positive and negative)', () => {
+    expect(mulakatJs).toContain('aif-hero-highlight positive');
+    expect(mulakatJs).toContain('aif-hero-highlight negative');
+  });
+
+  test('next steps section exists', () => {
+    expect(mulakatJs).toContain('aif-next-steps');
+    expect(mulakatJs).toContain('SONRAK');
+  });
+
+  test('progressive disclosure with details/summary', () => {
+    expect(mulakatJs).toContain('aif-details');
+    expect(mulakatJs).toContain('aif-details-body');
+    expect(mulakatJs).toContain("createElement('details')");
+    expect(mulakatJs).toContain("createElement('summary')");
+  });
+
+  test('STAR+T analysis in accordion', () => {
+    expect(mulakatJs).toContain('STAR+T Analizi');
+    expect(mulakatJs).toContain('aif-star-row');
+  });
+
+  test('renderAifListItem helper exists', () => {
+    expect(mulakatJs).toContain('function renderAifListItem(');
+  });
+
+  test('AI request/poll/retry flow preserved', () => {
+    expect(mulakatJs).toContain('requestAiFeedback');
+    expect(mulakatJs).toContain('pollForFeedback');
+    expect(mulakatJs).toContain('_aifRequestInFlight');
+    expect(mulakatJs).toContain('loadExistingFeedback');
+  });
+
+  test('premium gate preserved', () => {
+    expect(mulakatJs).toContain('aif-gate');
+    expect(mulakatJs).toContain('FREE_COMP_LIMIT');
+  });
+
+  test('self-reflection preserved', () => {
+    expect(mulakatJs).toContain('aif-self-reflect');
+    expect(mulakatJs).toContain('aif-self-reflect-input');
+  });
+
+  test('signal labels preserved', () => {
+    expect(mulakatJs).toContain('AIF_SIGNAL_LABELS');
+    expect(mulakatJs).toContain('AIF_STAR_STATUS');
+  });
+});
