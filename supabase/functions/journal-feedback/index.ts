@@ -17,7 +17,17 @@ const OPENAI_API_KEY = Deno.env.get("OPENAI_API_KEY") || "";
 const MODEL = Deno.env.get("OPENAI_MODEL") || "gpt-4.1-mini";
 const BATCH_SIZE = 5;
 
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+};
+
 Deno.serve(async (_req: Request) => {
+  if (_req.method === "OPTIONS") {
+    return new Response("ok", { headers: corsHeaders });
+  }
+
   try {
     // Extract optional self-reflection from request body
     let selfReflection = "";
@@ -131,7 +141,7 @@ Deno.serve(async (_req: Request) => {
 function jsonResponse(body: Record<string, unknown>, status = 200) {
   return new Response(JSON.stringify(body), {
     status,
-    headers: { "Content-Type": "application/json" },
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
   });
 }
 
