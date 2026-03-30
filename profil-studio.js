@@ -1423,8 +1423,31 @@ function injectCSS() {
 
   /* Lobby — full-width bento grid container */
   css += '.st-lobby{width:100%;animation:igFadeIn .25s ease}';
-  css += '.st-lobby .g-hero-inner{flex-direction:column;align-items:flex-start;gap:4px}';
-  css += '.st-lobby .g-hero{padding:22px 24px}';
+
+  /* Compact header — no hero card, clean LinkedIn Learning style */
+  css += '.st-header{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:12px;flex-wrap:wrap}';
+  css += '.st-header-left{flex:1;min-width:0}';
+  css += '.st-header-greeting{font-family:"Plus Jakarta Sans",sans-serif;font-size:13px;color:var(--text-muted,#6B7280);margin-bottom:2px}';
+  css += '.st-header-role{font-family:"Bricolage Grotesque",sans-serif;font-size:22px;font-weight:800;color:var(--text-primary,#111);line-height:1.2}';
+  css += '.st-header-meta{font-family:"Plus Jakarta Sans",sans-serif;font-size:13px;color:var(--text-muted,#6B7280);margin-top:4px}';
+  css += '.st-header-right{display:flex;align-items:center;gap:10px;flex-shrink:0;padding-top:4px}';
+  css += '.st-header-change-btn{background:none;border:1px solid var(--border-subtle,#E5E3DF);border-radius:8px;padding:6px 14px;font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;color:var(--text-secondary,#4B5563);cursor:pointer;transition:all .2s}';
+  css += '.st-header-change-btn:hover{border-color:var(--verm,#C94E28);color:var(--verm,#C94E28)}';
+
+  /* Progress strip */
+  css += '.st-progress-strip{display:flex;align-items:center;gap:12px;margin-bottom:20px}';
+  css += '.st-progress-bar{flex:1;height:6px;background:var(--border-subtle,#E5E3DF);border-radius:3px;overflow:hidden}';
+  css += '.st-progress-fill{height:100%;border-radius:3px;background:var(--verm,#C94E28);transition:width .4s ease}';
+  css += '.st-progress-label{font-family:"DM Mono",monospace;font-size:11px;color:var(--text-muted,#6B7280);flex-shrink:0}';
+
+  /* Role picker for first-time users */
+  css += '.st-role-picker{max-width:420px;margin:60px auto;text-align:center;background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF);border-radius:16px;padding:32px 24px;box-shadow:0 2px 8px rgba(0,0,0,.06)}';
+  css += '.st-role-picker-title{font-family:"Bricolage Grotesque",sans-serif;font-size:18px;font-weight:700;color:var(--text-primary,#111);margin-bottom:6px}';
+  css += '.st-role-picker-desc{font-family:"Plus Jakarta Sans",sans-serif;font-size:13px;color:var(--text-muted,#6B7280);margin-bottom:16px}';
+  css += '.st-role-picker-row{display:flex;gap:8px;align-items:center;justify-content:center}';
+  css += '.st-role-select{flex:1;height:44px;padding:0 36px 0 14px;border:1px solid var(--border-subtle,#E5E3DF);border-radius:10px;font-family:"Plus Jakarta Sans",sans-serif;font-size:14px;color:var(--text-primary,#111);background:var(--bg-surface,#fff);cursor:pointer;appearance:none;-webkit-appearance:none;box-sizing:border-box}';
+  css += '.st-role-start-btn{flex-shrink:0;height:44px;padding:0 24px;border:none;border-radius:10px;background:var(--verm,#C94E28);color:#fff;font-family:"Plus Jakarta Sans",sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:opacity .2s;white-space:nowrap}';
+  css += '.st-role-start-btn:hover{opacity:.9}';
 
   /* Course Detail — full-width tab structure */
   css += '.st-course-detail{width:100%;animation:igFadeIn .25s ease}';
@@ -1543,6 +1566,12 @@ function injectCSS() {
   css += 'html[data-theme="dark"] .st-tab-bar{border-color:rgba(255,255,255,.06)}';
   css += 'html[data-theme="dark"] .st-tab.active{color:var(--verm,#C94E28);border-bottom-color:var(--verm,#C94E28)}';
   css += 'html[data-theme="dark"] .st-bar-btn-ghost{background:var(--bg-elevated,#1F2937);border-color:rgba(255,255,255,.1) !important;color:var(--text-secondary,#D1D5DB)}';
+  css += 'html[data-theme="dark"] .st-header-role{color:var(--text-primary,#F9FAFB)}';
+  css += 'html[data-theme="dark"] .st-header-change-btn{border-color:rgba(255,255,255,.1);color:var(--text-muted,#9CA3AF)}';
+  css += 'html[data-theme="dark"] .st-progress-bar{background:rgba(255,255,255,.1)}';
+  css += 'html[data-theme="dark"] .st-role-picker{background:var(--bg-surface,#111827);border-color:rgba(255,255,255,.08)}';
+  css += 'html[data-theme="dark"] .st-role-picker-title{color:var(--text-primary,#F9FAFB)}';
+  css += 'html[data-theme="dark"] .st-role-select{background:var(--bg-elevated,#1F2937);border-color:rgba(255,255,255,.1);color:var(--text-primary,#F9FAFB)}';
   css += 'html[data-theme="dark"] .st-course-card{background:var(--bg-surface,#111827);border-color:rgba(255,255,255,.08)}';
   css += 'html[data-theme="dark"] .st-course-card.done{background:rgba(201,78,40,.05);border-color:rgba(201,78,40,.25)}';
   css += 'html[data-theme="dark"] .st-course-card-name{color:var(--text-primary,#F9FAFB)}';
@@ -1923,10 +1952,6 @@ function renderLobby() {
 
   html += '<div class="st-lobby">';
 
-  /* ══ HERO CARD — vermillion, outside grid ══ */
-  html += '<div class="g-hero">';
-  html += '<div class="g-hero-inner">';
-
   /* Personalized greeting */
   var _userName = '';
   try {
@@ -1937,47 +1962,46 @@ function renderLobby() {
   } catch (e) { /* silent */ }
 
   if (hasRole) {
-    /* ── Returning user: role + progress hero ── */
+    /* ══ COMPACT HEADER — LinkedIn Learning "My Learning" style ══ */
+    html += '<div class="st-header">';
+    html += '<div class="st-header-left">';
     if (_userName) {
-      html += '<div style="font-family:\'Plus Jakarta Sans\',sans-serif;font-size:13px;color:rgba(255,255,255,.7);margin-bottom:4px">Ho\u015f geldin, ' + _userName + '</div>';
+      html += '<div class="st-header-greeting">Ho\u015f geldin, ' + _userName + '</div>';
     }
-    html += '<div style="font-family:\'Bricolage Grotesque\',sans-serif;font-size:20px;font-weight:800;color:#fff">' + S.role + '</div>';
-    html += '<div style="font-family:\'Plus Jakarta Sans\',sans-serif;font-size:13px;color:rgba(255,255,255,.7);margin-top:4px">' + accessibleCount + ' yetkinlik' + (lockedCount > 0 ? ' \u00b7 ' + lockedCount + ' kilitli' : '') + '</div>';
+    html += '<div class="st-header-role">' + S.role + '</div>';
+    html += '<div class="st-header-meta">' + accessibleCount + ' yetkinlik' + (lockedCount > 0 ? ' \u00b7 ' + lockedCount + ' kilitli' : '') + '</div>';
+    html += '</div>';
+    html += '<div class="st-header-right">';
+    html += '<span id="yk-streak-slot"></span>';
+    html += '<button id="ig-back-role-change" class="st-header-change-btn">Rol De\u011fi\u015ftir</button>';
+    html += '</div>';
+    html += '</div>';
 
-    /* Progress bar */
+    /* Progress strip */
     var pct = accessibleCount > 0 ? Math.round((completedCount / accessibleCount) * 100) : 0;
-    html += '<div style="margin-top:12px;background:rgba(255,255,255,.15);border-radius:6px;height:8px;overflow:hidden">';
-    html += '<div style="height:100%;border-radius:6px;background:#fff;width:' + pct + '%;transition:width .4s ease"></div>';
+    html += '<div class="st-progress-strip">';
+    html += '<div class="st-progress-bar"><div class="st-progress-fill" style="width:' + pct + '%"></div></div>';
+    html += '<span class="st-progress-label">' + completedCount + '/' + accessibleCount + ' tamamland\u0131</span>';
     html += '</div>';
-    html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px">';
-    html += '<span style="font-family:\'DM Mono\',monospace;font-size:11px;color:rgba(255,255,255,.6)">' + completedCount + '/' + accessibleCount + ' tamamland\u0131</span>';
-
-    /* Streak pill slot */
-    html += '<span id="yk-streak-slot" style="display:none"></span>';
-    html += '</div>';
-
-    /* Rol Değiştir link */
-    html += '<div style="margin-top:10px"><button id="ig-back-role-change" style="background:none;border:none;color:rgba(255,255,255,.7);font-family:\'Plus Jakarta Sans\',sans-serif;font-size:12px;cursor:pointer;padding:0;text-decoration:underline">Rol De\u011fi\u015ftir</button></div>';
 
   } else {
-    /* ── First-time user: inline role picker in hero ── */
-    html += '<div style="font-family:\'Bricolage Grotesque\',sans-serif;font-size:20px;font-weight:800;color:#fff;margin-bottom:4px">St\u00fcdyo</div>';
-    html += '<div style="font-family:\'Plus Jakarta Sans\',sans-serif;font-size:13px;color:rgba(255,255,255,.75);margin-bottom:16px">Hedef pozisyonunu se\u00e7 ve yetkinlik e\u011fitim plan\u0131n\u0131 ke\u015ffet.</div>';
+    /* ══ FIRST-TIME — role picker card ══ */
+    html += '<div class="st-role-picker">';
+    html += '<div class="st-role-picker-title">Hedef Pozisyonunu Se\u00e7</div>';
+    html += '<div class="st-role-picker-desc">Pozisyonuna \u00f6zel yetkinlik e\u011fitim plan\u0131 haz\u0131rlanacak.</div>';
 
     var roleKeys = Object.keys(bridge.ROLE_COMP_MAP).sort(function(a,b){ return a.localeCompare(b,'tr'); });
-    html += '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">';
-    html += '<select id="ig-role-dd" style="flex:1;min-width:160px;padding:10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.1);color:#fff;font-family:\'Plus Jakarta Sans\',sans-serif;font-size:13px;outline:none">';
-    html += '<option value="" style="color:#333">Pozisyon se\u00e7in\u2026</option>';
+    html += '<div class="st-role-picker-row">';
+    html += '<select id="ig-role-dd" class="st-role-select">';
+    html += '<option value="">Pozisyon se\u00e7in\u2026</option>';
     for (var ri = 0; ri < roleKeys.length; ri++) {
-      html += '<option value="' + roleKeys[ri] + '" style="color:#333">' + roleKeys[ri] + '</option>';
+      html += '<option value="' + roleKeys[ri] + '">' + roleKeys[ri] + '</option>';
     }
     html += '</select>';
-    html += '<button id="ig-role-start" style="padding:10px 20px;border-radius:10px;border:none;background:#fff;color:var(--verm,#C94E28);font-family:\'Plus Jakarta Sans\',sans-serif;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap">Ba\u015fla \u2192</button>';
+    html += '<button id="ig-role-start" class="st-role-start-btn">Ba\u015fla \u2192</button>';
+    html += '</div>';
     html += '</div>';
   }
-
-  html += '</div>'; /* g-hero-inner */
-  html += '</div>'; /* g-hero */
 
   /* ══ BENTO GRID — competency course cards + STAR+T ref ══ */
   if (hasRole) {
