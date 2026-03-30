@@ -15,8 +15,8 @@ setup('authenticate candidate', async ({ page }) => {
   var password = process.env.HT_TEST_PASSWORD;
   if (!email || !password) {
     throw new Error(
-      'Missing HT_TEST_EMAIL / HT_TEST_PASSWORD env vars. ' +
-      'Set them before running E2E tests. See docs/handoff.md § E2E Testing.'
+      'BLOCKED: HT_TEST_EMAIL / HT_TEST_PASSWORD env vars not set. ' +
+      'Set them to run E2E auth tests. See docs/handoff.md § E2E Testing.'
     );
   }
 

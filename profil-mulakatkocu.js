@@ -979,7 +979,8 @@ function injectCSS() {
   css += '.yk-home-role-chooser{max-width:400px;margin:24px auto;text-align:center;background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF);border-radius:16px;padding:24px 20px;box-shadow:0 2px 8px rgba(0,0,0,.06)}';
   css += '.yk-home-role-title{font-family:"Bricolage Grotesque",sans-serif;font-size:16px;font-weight:700;color:var(--text-primary,#111);margin-bottom:4px}';
   css += '.yk-home-role-desc{font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;color:var(--text-muted,#6B7280);margin-bottom:14px;line-height:1.5}';
-  css += '.yk-home-role-row{display:flex;gap:8px;align-items:stretch;justify-content:center}';
+  css += '.yk-home-role-row{display:flex;gap:8px;align-items:center;justify-content:center}';
+  css += '.yk-home-role-row .ig-role-select{flex:1;margin:0;height:44px;padding:0 36px 0 14px;box-sizing:border-box}';
   css += '.yk-home-role-btn{flex-shrink:0;height:44px;padding:0 24px;border:none;border-radius:10px;background:var(--verm,#C94E28);color:#fff;font-family:"Plus Jakarta Sans",sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:opacity .2s;white-space:nowrap}';
   css += '.yk-home-header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px;flex-wrap:wrap}';
   css += '.yk-home-header-left{flex:1;min-width:0}';
@@ -3975,6 +3976,7 @@ function startSession(role) {
   var bridge = getBridge();
   if (!bridge) return;
   S.role = role;
+  try { localStorage.setItem('ht_studio_role', role); } catch(e) {}
   S.comps = bridge.ROLE_COMP_MAP[role] || [];
   S.activeComp = null;
   S.activeCompIdx = 0;
@@ -4800,6 +4802,7 @@ function bindSessionCompleteEvents() {
     /* Reset in-memory state first, then clear storage, then navigate.
        navigate() will saveSession() with the clean role_select state. */
     S.role = null;
+    try { localStorage.removeItem('ht_studio_role'); } catch(e) {}
     S.comps = [];
     S.activeComp = null;
     S.activeCompIdx = 0;
@@ -4867,7 +4870,15 @@ window._htLoadMulakat = function() {
 
   /* No session to restore — check if returning user */
   if (hasSeenStar()) {
-    navigate('role_select');
+    /* If user already has a saved role, skip role_select and go to lobby */
+    var savedRole = '';
+    try { savedRole = localStorage.getItem('ht_studio_role') || ''; } catch(e) {}
+    if (savedRole) {
+      S.role = savedRole;
+      navigate('lobby');
+    } else {
+      navigate('role_select');
+    }
   } else {
     navigate('star_intro');
   }

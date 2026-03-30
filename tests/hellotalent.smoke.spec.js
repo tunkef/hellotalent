@@ -2,10 +2,10 @@ const { test, expect } = require('@playwright/test');
 
 // Helper: set gate before every navigation
 async function withGate(page, path) {
-  await page.goto('https://hellotalent.ai/gate.html', { waitUntil: 'networkidle' });
+  await page.goto('/gate.html', { waitUntil: 'networkidle' });
   await page.waitForTimeout(500);
   await page.evaluate(() => sessionStorage.setItem('ht_gate', 'ok'));
-  await page.goto('https://hellotalent.ai' + path, { waitUntil: 'networkidle' });
+  await page.goto(path, { waitUntil: 'networkidle' });
   await page.waitForTimeout(1500);
 }
 
@@ -64,7 +64,12 @@ test.describe('Shared Chrome', () => {
 
 test('Brand fonts loaded', async ({ page }) => {
   await withGate(page, '/');
-  await page.waitForTimeout(3000);
+  await page.evaluate(async () => {
+    await Promise.all([
+      document.fonts.load('400 16px "Plus Jakarta Sans"'),
+      document.fonts.load('400 16px "Bricolage Grotesque"'),
+    ]);
+  });
   const ok = await page.evaluate(() =>
     document.fonts.check('16px "Plus Jakarta Sans"') &&
     document.fonts.check('16px "Bricolage Grotesque"')
@@ -107,8 +112,11 @@ test.describe('Aday Form', () => {
 });
 
 test('Gate sets sessionStorage', async ({ page }) => {
-  await page.goto('https://hellotalent.ai/gate.html', { waitUntil: 'networkidle' });
-  await page.waitForTimeout(1500);
+  await page.goto('/gate.html', { waitUntil: 'networkidle' });
+  await page.fill('#username', 'hellotalent');
+  await page.fill('#password', 'ht2026dev');
+  await page.click('.btn');
+  await page.waitForTimeout(800);
   const v = await page.evaluate(() => sessionStorage.getItem('ht_gate'));
   expect(v).toBe('ok');
 });

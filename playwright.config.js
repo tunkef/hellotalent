@@ -2,8 +2,13 @@ const { defineConfig } = require('@playwright/test');
 module.exports = defineConfig({
   testDir: './tests',
   timeout: 30000,
+  webServer: {
+    command: 'npx serve . -p 3000',
+    port: 3000,
+    reuseExistingServer: !process.env.CI,
+  },
   use: {
-    baseURL: 'https://hellotalent.ai',
+    baseURL: 'http://localhost:3000',
     screenshot: 'only-on-failure',
     viewport: { width: 390, height: 844 },
   },

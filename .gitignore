@@ -2,6 +2,7 @@
 !.claude/rules/
 !.claude/skills/
 .DS_Store
+tasks/
 EXECUTION_POLICY.md
 docs/plans/
 ref_components/

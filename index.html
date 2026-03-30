@@ -1450,10 +1450,10 @@ section#cv > div:first-child { padding: 52px 20px; }
             <!-- KAYIT FORMU -->
             <form id="candidate-form" onsubmit="submitCandidate(event)">
               <div class="form-stack">
-                <input class="f-input" type="text" id="reg-isim" placeholder="Adınız Soyadınız" required>
-                <input class="f-input" type="email" id="reg-email" placeholder="E-posta Adresiniz" required>
-                <input class="f-input" type="password" id="reg-sifre" placeholder="Şifre (min. 6 karakter)" required minlength="6">
-                <input class="f-input" type="tel" id="reg-telefon" placeholder="Cep Numarası">
+                <input class="f-input" type="text" id="reg-isim" placeholder="Adınız Soyadınız" aria-label="Ad Soyad" required>
+                <input class="f-input" type="email" id="reg-email" placeholder="E-posta Adresiniz" aria-label="E-posta Adresi" required>
+                <input class="f-input" type="password" id="reg-sifre" placeholder="Şifre (min. 6 karakter)" aria-label="Şifre" required minlength="6">
+                <input class="f-input" type="tel" id="reg-telefon" placeholder="Cep Numarası" aria-label="Cep Numarası">
                 <div class="kvkk-row">
                   <input type="checkbox" id="kvkk-c" required>
                   <label class="kvkk-text" for="kvkk-c">
@@ -1483,8 +1483,8 @@ section#cv > div:first-child { padding: 52px 20px; }
             <!-- GİRİŞ FORMU -->
             <form id="login-form" onsubmit="submitLogin(event)" style="display:none;">
               <div class="form-stack">
-                <input class="f-input" type="email" id="login-email" placeholder="E-posta Adresiniz" required>
-                <input class="f-input" type="password" id="login-sifre" placeholder="Şifreniz" required>
+                <input class="f-input" type="email" id="login-email" placeholder="E-posta Adresiniz" aria-label="E-posta Adresi" required>
+                <input class="f-input" type="password" id="login-sifre" placeholder="Şifreniz" aria-label="Şifre" required>
                 <button type="submit" class="btn-upload" style="background:var(--navy);">
                   Giriş Yap →
                 </button>
@@ -1654,10 +1654,10 @@ section#cv > div:first-child { padding: 52px 20px; }
             <form id="hr-form" onsubmit="submitHR(event)">
               <input type="text" name="_gotcha" style="display:none" tabindex="-1" autocomplete="off">
               <div class="form-stack">
-                <input class="f-input dark-input" type="text" name="isim" placeholder="Adınız Soyadınız" required>
-                <input class="f-input dark-input" type="text" name="sirket" placeholder="Şirket Adı" required>
-                <input class="f-input dark-input" type="tel" name="telefon" placeholder="Telefon Numarası" required>
-                <input class="f-input dark-input" type="email" name="email" placeholder="Kurumsal E-posta" required>
+                <input class="f-input dark-input" type="text" name="isim" placeholder="Adınız Soyadınız" aria-label="Ad Soyad" required>
+                <input class="f-input dark-input" type="text" name="sirket" placeholder="Şirket Adı" aria-label="Şirket Adı" required>
+                <input class="f-input dark-input" type="tel" name="telefon" placeholder="Telefon Numarası" aria-label="Telefon Numarası" required>
+                <input class="f-input dark-input" type="email" name="email" placeholder="Kurumsal E-posta" aria-label="Kurumsal E-posta" required>
                 <div class="kvkk-row">
                   <input type="checkbox" id="kvkk-hr" required style="border-color:rgba(255,255,255,0.2); background:transparent;">
                   <label class="kvkk-text light" for="kvkk-hr">
@@ -2349,24 +2349,24 @@ document.addEventListener('DOMContentLoaded', function() {
 
       <div class="hr-modal-row">
         <div class="hr-modal-field">
-          <label>Ad</label>
+          <label for="hm-ad">Ad</label>
           <input class="hr-modal-input" type="text" id="hm-ad" placeholder="Adınız" required>
         </div>
         <div class="hr-modal-field">
-          <label>Soyad</label>
+          <label for="hm-soyad">Soyad</label>
           <input class="hr-modal-input" type="text" id="hm-soyad" placeholder="Soyadınız" required>
         </div>
       </div>
       <div class="hr-modal-field">
-        <label>Şirket Adı</label>
+        <label for="hm-sirket">Şirket Adı</label>
         <input class="hr-modal-input" type="text" id="hm-sirket" placeholder="Şirket / Marka adı" required>
       </div>
       <div class="hr-modal-field">
-        <label>Kurumsal E-posta</label>
+        <label for="hm-email">Kurumsal E-posta</label>
         <input class="hr-modal-input" type="email" id="hm-email" placeholder="isim@sirket.com" required>
       </div>
       <div class="hr-modal-field">
-        <label>Şifre</label>
+        <label for="hm-sifre">Şifre</label>
         <input class="hr-modal-input" type="password" id="hm-sifre" placeholder="En az 8 karakter" required>
       </div>
 
