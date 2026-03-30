@@ -17,6 +17,30 @@
   --text: #111111;
   --muted: #6B7280;
   --border: #E5E3DF;
+
+  /* Type scale — global (mirrors profil.css, enables B-D slice migrations) */
+  --text-xs: 10px;
+  --text-sm: 11px;
+  --text-base: 12px;
+  --text-md: 13px;
+  --text-lg: 14px;
+  --text-xl: 16px;
+  --text-2xl: 18px;
+  --text-3xl: 20px;
+
+  /* Spacing scale — global */
+  --space-1: 2px;
+  --space-2: 4px;
+  --space-3: 6px;
+  --space-4: 8px;
+  --space-5: 10px;
+  --space-6: 12px;
+  --space-7: 14px;
+  --space-8: 16px;
+  --space-9: 20px;
+  --space-10: 24px;
+  --space-11: 28px;
+  --space-12: 32px;
 }
 html { scroll-behavior: smooth; overflow-x: hidden; }
 html.ht-scroll-lock { overflow: hidden; }
