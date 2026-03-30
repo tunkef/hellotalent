@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>hellotalent.ai</title>
 <meta name="robots" content="noindex, nofollow">
+<script>(function(){var k='ht_theme_preference',s;try{s=localStorage.getItem(k)}catch(e){}var d=(s==='dark'||(s!=='light'&&window.matchMedia&&window.matchMedia('(prefers-color-scheme:dark)').matches));document.documentElement.setAttribute('data-theme',d?'dark':'light');})()</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -139,6 +140,18 @@
     80%{transform:translateX(4px);}
   }
   .shake{animation:shake 0.4s ease;}
+
+  /* ── DARK MODE ── */
+  html[data-theme="dark"] body{background:#020617;}
+  html[data-theme="dark"] .card{background:#111827;box-shadow:0 24px 80px rgba(0,0,0,0.6);}
+  html[data-theme="dark"] .logo{color:#E5E7EB;}
+  html[data-theme="dark"] .subtitle{color:#9CA3AF;}
+  html[data-theme="dark"] .field label{color:#9CA3AF;}
+  html[data-theme="dark"] .field input{background:#020617;border-color:#374151;color:#F9FAFB;}
+  html[data-theme="dark"] .field input::placeholder{color:#4B5563;}
+  html[data-theme="dark"] .field input:focus{border-color:#6366F1;}
+  html[data-theme="dark"] .error{background:rgba(220,38,38,0.15);border-color:rgba(220,38,38,0.35);color:#FCA5A5;}
+  html[data-theme="dark"] .footer-note{color:#6B7280;}
 </style>
 </head>
 <body>
@@ -147,11 +160,11 @@
   <p class="subtitle">Bu alan geliştirme aşamasındadır.<br>Devam etmek için giriş yapınız.</p>
 
   <div class="field">
-    <label>Kullanıcı Adı</label>
+    <label for="username">Kullanıcı Adı</label>
     <input type="text" id="username" placeholder="kullanıcı adı" autocomplete="username" onkeydown="if(event.key==='Enter')tryLogin()">
   </div>
   <div class="field">
-    <label>Şifre</label>
+    <label for="password">Şifre</label>
     <input type="password" id="password" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')tryLogin()">
   </div>
 

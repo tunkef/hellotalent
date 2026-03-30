@@ -1,8 +1,59 @@
-/* global supabase, _loadedDBData, currentUser, refreshAfterSettingsSave, refreshVisibilitySummary, setThemePreference, syncActivelyLooking, syncBeniOner, syncHideFromEmployer, val */
+/* global supabase, _loadedDBData, currentUser, refreshAfterSettingsSave, refreshVisibilitySummary, setThemePreference, syncActivelyLooking, syncBeniOner, syncHideFromEmployer, val, _htAlert, _htConfirm */
 /* ═══════════════════════════════════════════════════════════════
    PROFIL-SETTINGS — Ayarlar panel logic
    Notification, contact, visibility, blocked companies, account mgmt
    ═══════════════════════════════════════════════════════════════ */
+
+// ── DARK-MODE AWARE MODAL HELPERS ──
+// Replaces native alert()/confirm() with CSS-token-aware modals
+(function(){
+  function _ensureModal(id, inner) {
+    var el = document.getElementById(id);
+    if (!el) {
+      el = document.createElement('div');
+      el.id = id;
+      el.className = 'modal-overlay';
+      el.innerHTML = inner;
+      document.body.appendChild(el);
+    }
+    return el;
+  }
+
+  window._htAlert = function(msg, cb) {
+    var el = _ensureModal('ht-modal-alert',
+      '<div class="modal" style="max-width:360px;">' +
+      '<div class="modal-title" id="ht-modal-alert-msg" style="font-size:var(--text-lg);margin-bottom:20px;line-height:1.5;white-space:pre-line;"></div>' +
+      '<button class="btn btn-primary" id="ht-modal-alert-ok" style="width:100%;padding:11px 0;">Tamam</button>' +
+      '</div>');
+    document.getElementById('ht-modal-alert-msg').textContent = msg;
+    el.classList.add('show');
+    document.getElementById('ht-modal-alert-ok').onclick = function() {
+      el.classList.remove('show');
+      if (typeof cb === 'function') cb();
+    };
+  };
+
+  window._htConfirm = function(msg, cbYes, cbNo) {
+    var el = _ensureModal('ht-modal-confirm',
+      '<div class="modal" style="max-width:400px;">' +
+      '<div class="modal-confirm-body">' +
+      '<div class="modal-confirm-title" id="ht-modal-confirm-msg" style="white-space:pre-line;"></div>' +
+      '<div class="modal-confirm-actions">' +
+      '<button class="btn btn-secondary" id="ht-modal-confirm-no">Vazgeç</button>' +
+      '<button class="btn btn-primary" id="ht-modal-confirm-yes">Evet, Devam Et</button>' +
+      '</div></div></div>');
+    document.getElementById('ht-modal-confirm-msg').textContent = msg;
+    el.classList.add('show');
+    document.getElementById('ht-modal-confirm-yes').onclick = function() {
+      el.classList.remove('show');
+      if (typeof cbYes === 'function') cbYes();
+    };
+    document.getElementById('ht-modal-confirm-no').onclick = function() {
+      el.classList.remove('show');
+      if (typeof cbNo === 'function') cbNo();
+    };
+  };
+})();
 
 // ── DELETION WARNING BANNER ──
 (function(){
@@ -26,21 +77,22 @@
 
     var cancelBtn = document.getElementById('btn-cancel-deletion-banner');
     if (cancelBtn) {
-      cancelBtn.addEventListener('click', async function(){
-        if (!confirm('Hesap silme işlemini iptal etmek istiyor musunuz? Hesabınız tekrar aktif olacak.')) return;
-        try {
-          var res = await supabase
-            .from('candidates')
-            .update({ account_status: 'active' })
-            .eq('user_id', currentUser.id);
-          if (res.error) throw res.error;
-          profile.account_status = 'active';
-          banner.style.display = 'none';
-          alert('Hesabınız tekrar aktif edildi!');
-          if (window._htShowAccountBanner) window._htShowAccountBanner('active');
-        } catch (e) {
-          alert('Hata: ' + (e.message || ''));
-        }
+      cancelBtn.addEventListener('click', function(){
+        _htConfirm('Hesap silme işlemini iptal etmek istiyor musunuz? Hesabınız tekrar aktif olacak.', async function(){
+          try {
+            var res = await supabase
+              .from('candidates')
+              .update({ account_status: 'active' })
+              .eq('user_id', currentUser.id);
+            if (res.error) throw res.error;
+            profile.account_status = 'active';
+            banner.style.display = 'none';
+            _htAlert('Hesabınız tekrar aktif edildi!');
+            if (window._htShowAccountBanner) window._htShowAccountBanner('active');
+          } catch (e) {
+            _htAlert('Hata: ' + (e.message || ''));
+          }
+        });
       });
     }
   }, 500);
@@ -534,18 +586,20 @@ document.addEventListener('DOMContentLoaded', function() {
         showBanner(newStatus);
         if (typeof refreshVisibilitySummary === 'function') refreshVisibilitySummary();
       } catch (e) {
-        alert('Hata: ' + (e.message || ''));
+        _htAlert('Hata: ' + (e.message || ''));
       }
     }
 
     freezeBtn.addEventListener('click', function(){
-      if (!confirm('Hesabınızı dondurmak istediğinize emin misiniz? Profiliniz işverenlere görünmez olacak.')) return;
-      changeStatus('frozen');
+      _htConfirm('Hesabınızı dondurmak istediğinize emin misiniz? Profiliniz işverenlere görünmez olacak.', function(){
+        changeStatus('frozen');
+      });
     });
 
     deleteBtn.addEventListener('click', function(){
-      if (!confirm('DİKKAT: Hesabınız 30 gün sonra kalıcı olarak silinecektir. Bu süre içinde giriş yaparak vazgeçebilirsiniz.\n\nDevam etmek istiyor musunuz?')) return;
-      changeStatus('pending_deletion');
+      _htConfirm('DİKKAT: Hesabınız 30 gün sonra kalıcı olarak silinecektir. Bu süre içinde giriş yaparak vazgeçebilirsiniz. Devam etmek istiyor musunuz?', function(){
+        changeStatus('pending_deletion');
+      });
     });
 
     window._htShowAccountBanner = showBanner;
@@ -601,20 +655,21 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     var btnSignoutAll = document.getElementById('btn-signout-all');
-    if(btnSignoutAll) btnSignoutAll.addEventListener('click', async function(){
+    if(btnSignoutAll) btnSignoutAll.addEventListener('click', function(){
       var msg = document.getElementById('signout-all-msg');
-      if(!confirm('Tüm cihazlardaki oturumlarınız kapatılacak. Emin misiniz?')) return;
-      btnSignoutAll.disabled = true;
-      btnSignoutAll.textContent = 'Çıkış yapılıyor...';
-      try {
-        var _res = await supabase.auth.signOut({ scope: 'global' });
-        if(_res.error) throw _res.error;
-        window.location.href = 'giris.html';
-      } catch(err) {
-        if(msg) { msg.style.color = 'var(--red)'; msg.textContent = 'Hata: ' + err.message; msg.style.display = 'block'; }
-        btnSignoutAll.disabled = false;
-        btnSignoutAll.textContent = 'Tüm Cihazlardan Çıkış Yap';
-      }
+      _htConfirm('Tüm cihazlardaki oturumlarınız kapatılacak. Emin misiniz?', async function(){
+        btnSignoutAll.disabled = true;
+        btnSignoutAll.textContent = 'Çıkış yapılıyor...';
+        try {
+          var _res = await supabase.auth.signOut({ scope: 'global' });
+          if(_res.error) throw _res.error;
+          window.location.href = 'giris.html';
+        } catch(err) {
+          if(msg) { msg.style.color = 'var(--red)'; msg.textContent = 'Hata: ' + err.message; msg.style.display = 'block'; }
+          btnSignoutAll.disabled = false;
+          btnSignoutAll.textContent = 'Tüm Cihazlardan Çıkış Yap';
+        }
+      });
     });
   })();
 

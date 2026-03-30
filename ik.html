@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>İK Paneli — hellotalent.ai</title>
 <meta name="robots" content="noindex">
+<script>(function(){var k='ht_theme_preference',s;try{s=localStorage.getItem(k)}catch(e){}var d=(s==='dark'||(s!=='light'&&window.matchMedia&&window.matchMedia('(prefers-color-scheme:dark)').matches));document.documentElement.setAttribute('data-theme',d?'dark':'light');})()</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -396,6 +397,77 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
 .acc-section{font-size:11px;font-weight:700;color:var(--navy);margin-top:14px;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px;}
 .acc-exp-item{font-size:11px;padding:6px 0;border-bottom:1px solid #f3f4f6;}
 .acc-exp-item:last-child{border-bottom:none;}
+
+/* ── DARK MODE ── */
+html[data-theme="dark"]{color-scheme:dark;--text:#F9FAFB;--muted:#9CA3AF;--border:#374151;--bg:#1F2937;}
+html[data-theme="dark"] body{background:#111827;color:#F9FAFB;}
+/* Topbar / mobile header */
+html[data-theme="dark"] .topbar,
+html[data-theme="dark"] .mobile-topbar,
+html[data-theme="dark"] .filter-sheet-header{background:#0F172A;border-color:#374151;}
+html[data-theme="dark"] .topbar-title{color:#F9FAFB;}
+html[data-theme="dark"] .topbar-btn{background:#1F2937;border-color:#374151;color:#D1D5DB;}
+html[data-theme="dark"] .topbar-btn:hover{background:#374151;}
+html[data-theme="dark"] .topbar-notif-dot{border-color:#0F172A;}
+html[data-theme="dark"] .topbar-plan{background:#1F2937;border-color:#374151;}
+/* Cards + panels */
+html[data-theme="dark"] .stat-card,
+html[data-theme="dark"] .filter-panel,
+html[data-theme="dark"] .candidate-card,
+html[data-theme="dark"] .candidates-toolbar,
+html[data-theme="dark"] .profil-card,
+html[data-theme="dark"] .empty-state,
+html[data-theme="dark"] .activity-card,
+html[data-theme="dark"] .poz-card,
+html[data-theme="dark"] .filter-sheet,
+html[data-theme="dark"] .acc-item{background:#111827;border-color:#374151;}
+html[data-theme="dark"] .profil-card-title{border-color:#374151;}
+/* Modal + drawer */
+html[data-theme="dark"] .modal{background:#111827;}
+html[data-theme="dark"] .modal-header{border-color:#374151;}
+html[data-theme="dark"] .modal-close{background:#1F2937;color:#9CA3AF;}
+html[data-theme="dark"] .modal-close:hover{background:#374151;}
+html[data-theme="dark"] .form-footer{border-color:#374151;}
+html[data-theme="dark"] .drawer,
+html[data-theme="dark"] .drawer-header{background:#111827;border-color:#374151;}
+html[data-theme="dark"] .drawer-close{background:#1F2937;color:#9CA3AF;}
+html[data-theme="dark"] .drawer-close:hover{background:#374151;}
+html[data-theme="dark"] .drawer-actions{border-color:#374151;}
+/* Buttons */
+html[data-theme="dark"] .btn-secondary{background:#1F2937;color:#E5E7EB;border-color:#374151;}
+html[data-theme="dark"] .btn-secondary:hover{background:#374151;border-color:#4B5563;}
+html[data-theme="dark"] .cc-fav-btn,
+html[data-theme="dark"] .cc-cv-btn{background:#1F2937;border-color:#374151;color:#D1D5DB;}
+html[data-theme="dark"] .cc-fav-btn:hover,
+html[data-theme="dark"] .cc-cv-btn:hover:not(.locked){border-color:#E5E7EB;color:#E5E7EB;}
+html[data-theme="dark"] .btn-filter-mobile{background:#1F2937;border-color:#374151;color:#E5E7EB;}
+html[data-theme="dark"] .btn-filter-mobile:hover{border-color:#E5E7EB;}
+/* Chips + inputs */
+html[data-theme="dark"] .chip{background:#1F2937;border-color:#374151;color:#9CA3AF;}
+html[data-theme="dark"] .chip:hover{border-color:#E5E7EB;color:#E5E7EB;}
+html[data-theme="dark"] .chip.selected{border-color:#E5E7EB;background:#E5E7EB;color:#111827;}
+html[data-theme="dark"] .filter-input,
+html[data-theme="dark"] .filter-select,
+html[data-theme="dark"] .form-input,
+html[data-theme="dark"] .form-select,
+html[data-theme="dark"] .sort-select,
+html[data-theme="dark"] .poz-select{background:#020617;border-color:#374151;color:#F9FAFB;}
+/* Accordion */
+html[data-theme="dark"] .acc-header:hover{background:#1F2937;}
+html[data-theme="dark"] .acc-body{border-color:#374151;}
+html[data-theme="dark"] .acc-exp-item{border-color:#374151;}
+/* Activity / lists */
+html[data-theme="dark"] .activity-header,
+html[data-theme="dark"] .activity-item{border-color:#374151;}
+html[data-theme="dark"] .activity-item:hover{background:#1F2937;}
+/* Settings toggles */
+html[data-theme="dark"] .toggle-row{border-color:#374151;}
+/* Poz tab + stats */
+html[data-theme="dark"] .poz-tab-bar{border-color:#374151;}
+html[data-theme="dark"] .poz-stats{border-color:#374151;}
+html[data-theme="dark"] .poz-chip{background:#1F2937;border-color:#374151;}
+/* Drawer info items */
+html[data-theme="dark"] .drawer-info-item{background:#1F2937;}
 </style>
 </head>
 <body>
@@ -652,7 +724,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
           </div>
 
           <div class="filter-group">
-            <span class="filter-label">Şehir</span>
+            <label class="filter-label" for="filter-sehir">Şehir</label>
             <select class="filter-select" id="filter-sehir" onchange="applyFilters()">
               <option value="">Tüm Şehirler</option>
               <option>İstanbul</option>
@@ -668,9 +740,9 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
           <div class="filter-group">
             <span class="filter-label">Deneyim (Yıl)</span>
             <div class="filter-range">
-              <input type="number" class="filter-input" id="filter-exp-min" placeholder="Min" min="0" max="30" style="width:70px;" onchange="applyFilters()">
+              <input type="number" class="filter-input" id="filter-exp-min" placeholder="Min" min="0" max="30" style="width:70px;" aria-label="Minimum deneyim yıl" onchange="applyFilters()">
               <span style="color:var(--muted);">—</span>
-              <input type="number" class="filter-input" id="filter-exp-max" placeholder="Max" min="0" max="30" style="width:70px;" onchange="applyFilters()">
+              <input type="number" class="filter-input" id="filter-exp-max" placeholder="Max" min="0" max="30" style="width:70px;" aria-label="Maksimum deneyim yıl" onchange="applyFilters()">
             </div>
           </div>
 
@@ -750,13 +822,13 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
             <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
               <div class="poz-selector">
                 Pozisyon:
-                <select class="poz-select" id="poz-match-select" onchange="applyFilters()">
+                <select class="poz-select" id="poz-match-select" aria-label="Pozisyona göre eşleştir" onchange="applyFilters()">
                   <option value="">Tümü (Genel Skor)</option>
                 </select>
               </div>
               <div class="candidates-sort">
                 Sırala:
-                <select class="sort-select" id="sort-select" onchange="applyFilters()">
+                <select class="sort-select" id="sort-select" aria-label="Adayları sırala" onchange="applyFilters()">
                   <option value="relevance">Önerilen</option>
                   <option value="newest">En Yeni</option>
                   <option value="exp_asc">Deneyim (Artan)</option>
@@ -896,11 +968,11 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
         <div class="profil-card">
           <div class="profil-card-title">🏢 Temel Bilgiler</div>
           <div class="form-field">
-            <label class="form-label" id="sc-sirket-label">Şirket / Marka Adı <span style="color:var(--verm)">*</span></label>
+            <label class="form-label" id="sc-sirket-label" for="sc-sirket">Şirket / Marka Adı <span style="color:var(--verm)">*</span></label>
             <input class="form-input" id="sc-sirket" placeholder="Örn: Zara Türkiye, Apple Premium Reseller..." oninput="updateSirketCompletion()">
           </div>
           <div class="form-field">
-            <label class="form-label">Sektör</label>
+            <label class="form-label" for="sc-sektor">Sektör</label>
             <select class="form-select" id="sc-sektor" onchange="updateSirketCompletion()">
               <option value="">Seç...</option>
               <option>Retail / Mağazacılık</option>
@@ -917,7 +989,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
             </select>
           </div>
           <div class="form-field">
-            <label class="form-label">Şirket Büyüklüğü</label>
+            <label class="form-label" for="sc-buyukluk">Şirket Büyüklüğü</label>
             <select class="form-select" id="sc-buyukluk" onchange="updateSirketCompletion()">
               <option value="">Seç...</option>
               <option>1–10 çalışan</option>
@@ -928,11 +1000,11 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
             </select>
           </div>
           <div class="form-field">
-            <label class="form-label">Web Sitesi</label>
+            <label class="form-label" for="sc-web">Web Sitesi</label>
             <input class="form-input" id="sc-web" placeholder="https://sirketiniz.com" oninput="updateSirketCompletion()">
           </div>
           <div class="form-field">
-            <label class="form-label">Mağaza Segmenti</label>
+            <label class="form-label" for="sc-segment">Mağaza Segmenti</label>
             <select class="form-select" id="sc-segment" onchange="updateSirketCompletion()">
               <option value="">Seç...</option>
               <option>Lüks</option>
@@ -950,19 +1022,19 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
         <div class="profil-card">
           <div class="profil-card-title">📞 İletişim & Konum</div>
           <div class="form-field">
-            <label class="form-label">Yetkili Ad Soyad <span style="color:var(--verm)">*</span></label>
+            <label class="form-label" for="sc-yetkili">Yetkili Ad Soyad <span style="color:var(--verm)">*</span></label>
             <input class="form-input" id="sc-yetkili" placeholder="İsim Soyisim" oninput="updateSirketCompletion()">
           </div>
           <div class="form-field">
-            <label class="form-label">İş E-postası</label>
+            <label class="form-label" for="sc-email">İş E-postası</label>
             <input class="form-input" id="sc-email" placeholder="ik@sirket.com" oninput="updateSirketCompletion()">
           </div>
           <div class="form-field">
-            <label class="form-label">Telefon</label>
+            <label class="form-label" for="sc-tel">Telefon</label>
             <input class="form-input" id="sc-tel" placeholder="0212 XXX XX XX" oninput="updateSirketCompletion()">
           </div>
           <div class="form-field">
-            <label class="form-label">Merkez Şehir</label>
+            <label class="form-label" for="sc-sehir">Merkez Şehir</label>
             <select class="form-select" id="sc-sehir" onchange="updateSirketCompletion()">
               <option value="">Seç...</option>
               <option>İstanbul</option><option>Ankara</option><option>İzmir</option>
@@ -972,7 +1044,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
             </select>
           </div>
           <div class="form-field">
-            <label class="form-label">Mağaza Sayısı</label>
+            <label class="form-label" for="sc-magaza-sayisi">Mağaza Sayısı</label>
             <select class="form-select" id="sc-magaza-sayisi" onchange="updateSirketCompletion()">
               <option value="">Seç...</option>
               <option>1 mağaza</option>
@@ -989,12 +1061,12 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
             <div style="grid-column:1/-1;">
               <div class="form-field">
-                <label class="form-label">Kısa Tanıtım <span style="color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0;">(adaylara görünür)</span></label>
+                <label class="form-label" for="sc-aciklama">Kısa Tanıtım <span style="color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0;">(adaylara görünür)</span></label>
                 <textarea class="form-input form-textarea" id="sc-aciklama" placeholder="Şirketinizi adaylara tanıtın — kültür, değerler, çalışma ortamı, yan haklar..." style="height:90px;" oninput="updateSirketCompletion()"></textarea>
               </div>
             </div>
             <div class="form-field">
-              <label class="form-label">Çalışma Saatleri</label>
+              <label class="form-label" for="sc-saat">Çalışma Saatleri</label>
               <select class="form-select" id="sc-saat">
                 <option value="">Seç...</option>
                 <option>Vardiyalı (09:00–18:00 / 14:00–23:00)</option>
@@ -1004,16 +1076,16 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
               </select>
             </div>
             <div class="form-field">
-              <label class="form-label">Sosyal Medya / LinkedIn</label>
+              <label class="form-label" for="sc-linkedin">Sosyal Medya / LinkedIn</label>
               <input class="form-input" id="sc-linkedin" placeholder="linkedin.com/company/...">
             </div>
             <div class="form-field">
-              <label class="form-label">Kariyer Sayfası URL</label>
+              <label class="form-label" for="sc-kariyer-url">Kariyer Sayfası URL</label>
               <input class="form-input" id="sc-kariyer-url" placeholder="https://kariyer.sirketiniz.com" oninput="updateSirketCompletion()">
             </div>
           </div>
           <div class="form-field" style="margin-top:4px;">
-            <label class="form-label">Aradığınız Genel Profil</label>
+            <label class="form-label" for="sc-profil">Aradığınız Genel Profil</label>
             <textarea class="form-input form-textarea" id="sc-profil" placeholder="Genel olarak ne tür adaylar arıyorsunuz? Öncelikli özellikler, beklentiler..." style="height:70px;"></textarea>
           </div>
         </div>
@@ -1027,7 +1099,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
         <div id="lokasyon-msg" role="status" aria-live="polite" style="display:none;margin-top:8px;padding:10px 14px;border-radius:8px;font-size:13px;font-weight:600;"></div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;">
           <div style="flex:1;min-width:140px;">
-            <label class="form-label" style="font-size:11px;">Şehir</label>
+            <label class="form-label" for="lok-sehir" style="font-size:11px;">Şehir</label>
             <select class="form-select" id="lok-sehir" style="font-size:13px;">
               <option value="">Seç...</option>
               <option>İstanbul</option><option>Ankara</option><option>İzmir</option>
@@ -1039,7 +1111,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
             </select>
           </div>
           <div style="flex:1;min-width:120px;">
-            <label class="form-label" style="font-size:11px;">Tür</label>
+            <label class="form-label" for="lok-tipi" style="font-size:11px;">Tür</label>
             <select class="form-select" id="lok-tipi" style="font-size:13px;">
               <option value="store">Mağaza</option>
               <option value="office">Ofis</option>
@@ -1048,7 +1120,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
             </select>
           </div>
           <div style="flex:1.5;min-width:160px;">
-            <label class="form-label" style="font-size:11px;">Adres (opsiyonel)</label>
+            <label class="form-label" for="lok-adres" style="font-size:11px;">Adres (opsiyonel)</label>
             <input class="form-input" id="lok-adres" placeholder="Cadde, mahalle..." style="font-size:13px;">
           </div>
           <button class="btn-primary" onclick="addLokasyon()" style="height:38px;min-width:90px;font-size:13px;">+ Ekle</button>
@@ -1102,8 +1174,8 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
       <div id="ekip-invite-section" style="background:white;border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:20px;">
         <div style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:15px;margin-bottom:12px;">Yeni Üye Davet Et</div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
-          <input class="form-input" type="email" id="ekip-invite-email" placeholder="E-posta adresi" style="flex:1;min-width:200px;">
-          <select class="form-input" id="ekip-invite-role" style="width:140px;">
+          <input class="form-input" type="email" id="ekip-invite-email" placeholder="E-posta adresi" aria-label="Davet edilecek e-posta adresi" style="flex:1;min-width:200px;">
+          <select class="form-input" id="ekip-invite-role" aria-label="Kullanıcı rolü" style="width:140px;">
             <option value="recruiter">Recruiter</option>
             <option value="viewer">Viewer</option>
             <option value="admin">Admin</option>
@@ -1156,7 +1228,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
           <div style="background:white;border:1px solid var(--border);border-radius:12px;padding:20px;">
             <div class="profil-card-title">Hesap Bilgileri</div>
             <div class="form-field">
-              <label class="form-label">E-posta</label>
+              <label class="form-label" for="ayar-email">E-posta</label>
               <div style="display:flex;align-items:center;gap:8px;">
                 <input class="form-input" id="ayar-email" readonly style="flex:1;background:var(--bg);color:var(--muted);">
                 <button class="btn-secondary btn-sm" type="button" id="btn-show-email-change-ik">Değiştir</button>
@@ -1164,14 +1236,14 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
             </div>
             <div id="email-change-section-ik" style="display:none;margin-top:8px;">
               <div class="form-field">
-                <label class="form-label">Yeni E-posta</label>
+                <label class="form-label" for="ik-new-email">Yeni E-posta</label>
                 <input class="form-input" type="email" id="ik-new-email" placeholder="Yeni e-posta adresi">
               </div>
               <button class="btn-secondary btn-sm" type="button" id="btn-change-email-ik">Doğrulama Gönder</button>
               <div id="ik-email-change-msg" style="font-size:12px;margin-top:8px;display:none;"></div>
             </div>
             <div class="form-field">
-              <label class="form-label">Yeni Şifre</label>
+              <label class="form-label" for="ayar-sifre">Yeni Şifre</label>
               <input class="form-input" type="password" id="ayar-sifre" placeholder="Değiştirmek için girin">
             </div>
             <button class="btn-secondary btn-sm" onclick="updatePassword()">Şifreyi Güncelle</button>
@@ -1238,27 +1310,27 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
   <div class="modal" style="max-width:520px;">
     <div class="modal-header">
       <span class="modal-title">✉️ Mesaj Gönder</span>
-      <button class="modal-close" onclick="closeMesajModal()">✕</button>
+      <button class="modal-close" onclick="closeMesajModal()" aria-label="Kapat">✕</button>
     </div>
     <div id="mesaj-recipient" style="font-size:13px;color:var(--muted);margin-bottom:12px;"></div>
     <div class="form-field" style="margin-bottom:10px;">
-      <label class="form-label">Şablon</label>
+      <label class="form-label" for="mesaj-template">Şablon</label>
       <select class="form-select" id="mesaj-template" onchange="applyMesajTemplate()">
         <option value="">Serbest mesaj yaz...</option>
       </select>
     </div>
     <div class="form-field" style="margin-bottom:10px;">
-      <label class="form-label">İlgili Pozisyon (opsiyonel)</label>
+      <label class="form-label" for="mesaj-pozisyon">İlgili Pozisyon (opsiyonel)</label>
       <select class="form-select" id="mesaj-pozisyon" onchange="applyMesajTemplate()">
         <option value="">Pozisyon seçin...</option>
       </select>
     </div>
     <div class="form-field" style="margin-bottom:10px;">
-      <label class="form-label">Konu *</label>
+      <label class="form-label" for="mesaj-konu">Konu *</label>
       <input class="form-input" id="mesaj-konu" placeholder="Mesaj konusu">
     </div>
     <div class="form-field" style="margin-bottom:12px;">
-      <label class="form-label">Mesaj *</label>
+      <label class="form-label" for="mesaj-body">Mesaj *</label>
       <textarea class="form-input form-textarea" id="mesaj-body" placeholder="Mesajınızı yazın..." style="height:140px;"></textarea>
     </div>
     <div style="display:flex;justify-content:flex-end;gap:8px;">
@@ -1276,15 +1348,15 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
   <div class="modal">
     <div class="modal-header">
       <span class="modal-title" id="poz-modal-title">Pozisyon Ekle</span>
-      <button class="modal-close" onclick="closePozModal()">✕</button>
+      <button class="modal-close" onclick="closePozModal()" aria-label="Kapat">✕</button>
     </div>
     <div class="form-row">
       <div class="form-field">
-        <label class="form-label">Pozisyon Adı *</label>
+        <label class="form-label" for="poz-ad">Pozisyon Adı *</label>
         <input class="form-input" id="poz-ad" placeholder="Örn: Store Manager">
       </div>
       <div class="form-field">
-        <label class="form-label">Şehir</label>
+        <label class="form-label" for="poz-sehir">Şehir</label>
         <select class="form-select" id="poz-sehir">
           <option value="">Seç...</option>
           <option>Türkiye Geneli</option>
@@ -1322,11 +1394,11 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
     </div>
     <div class="form-row">
       <div class="form-field">
-        <label class="form-label">Deneyim (Yıl)</label>
+        <label class="form-label" for="poz-exp">Deneyim (Yıl)</label>
         <input class="form-input" id="poz-exp" placeholder="Örn: 3-5">
       </div>
       <div class="form-field">
-        <label class="form-label">Segment</label>
+        <label class="form-label" for="poz-seg">Segment</label>
         <select class="form-select" id="poz-seg">
           <option>Lüks</option><option>Fast Fashion</option><option>Teknoloji</option>
           <option>Spor</option><option>Ev & Yaşam</option>
@@ -1334,11 +1406,11 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
       </div>
     </div>
     <div class="form-field">
-      <label class="form-label">Maaş Aralığı</label>
+      <label class="form-label" for="poz-maas">Maaş Aralığı</label>
       <input class="form-input" id="poz-maas" placeholder="Örn: 25.000 - 35.000 TL">
     </div>
     <div class="form-field">
-      <label class="form-label">Pozisyon Açıklaması</label>
+      <label class="form-label" for="poz-aciklama">Pozisyon Açıklaması</label>
       <textarea class="form-input form-textarea" id="poz-aciklama" placeholder="Görev tanımı, beklentiler..."></textarea>
     </div>
     <div class="form-footer" style="display:flex;gap:8px;flex-wrap:wrap;">

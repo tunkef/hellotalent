@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Giriş Yap — hellotalent.ai</title>
 <meta name="robots" content="noindex">
+<script>(function(){var k='ht_theme_preference',s;try{s=localStorage.getItem(k)}catch(e){}var d=(s==='dark'||(s!=='light'&&window.matchMedia&&window.matchMedia('(prefers-color-scheme:dark)').matches));document.documentElement.setAttribute('data-theme',d?'dark':'light');})()</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -268,6 +269,39 @@
   .rule-check { color: var(--muted); }
   .rule-check.pass { color: #16A34A; }
   .rule-check.pass::first-letter { content: ''; }
+
+  /* ── DARK MODE ── */
+  html[data-theme="dark"] {
+    --gray: #1F2937;
+    --text: #F9FAFB;
+    --muted: #9CA3AF;
+    --border: #374151;
+  }
+  html[data-theme="dark"] body { background: #050712; }
+  html[data-theme="dark"] .header { background: #0F172A; border-color: #374151; }
+  html[data-theme="dark"] .logo { color: #E5E7EB; }
+  html[data-theme="dark"] .back-link { color: #9CA3AF; }
+  html[data-theme="dark"] .back-link:hover { color: #E5E7EB; }
+  html[data-theme="dark"] .card { background: #111827; border-color: #374151; }
+  html[data-theme="dark"] .card-title { color: #F9FAFB; }
+  html[data-theme="dark"] .card-sub { color: #9CA3AF; }
+  html[data-theme="dark"] .field label { color: #D1D5DB; }
+  html[data-theme="dark"] .field input { background: #020617; border-color: #374151; color: #F9FAFB; }
+  html[data-theme="dark"] .field input::placeholder { color: #4B5563; }
+  html[data-theme="dark"] .field input:focus { border-color: #6B7280; }
+  html[data-theme="dark"] .field input.aday:focus { border-color: var(--verm); }
+  html[data-theme="dark"] .error-msg { background: rgba(220,38,38,0.15); border-color: rgba(220,38,38,0.3); color: #FCA5A5; }
+  html[data-theme="dark"] .divider { color: #9CA3AF; }
+  html[data-theme="dark"] .divider::before,
+  html[data-theme="dark"] .divider::after { background: #374151; }
+  html[data-theme="dark"] .register-link { color: #9CA3AF; }
+  html[data-theme="dark"] .footer { color: #6B7280; }
+  html[data-theme="dark"] #btn-google-login,
+  html[data-theme="dark"] #btn-linkedin-login { background: #1F2937 !important; border-color: #374151 !important; color: #F9FAFB !important; }
+  html[data-theme="dark"] #btn-google-login:hover,
+  html[data-theme="dark"] #btn-linkedin-login:hover { background: #374151 !important; }
+  html[data-theme="dark"] #forgot-password-overlay > div { background: #111827; }
+  html[data-theme="dark"] #forgot-email { background: #020617; border-color: #374151; color: #F9FAFB; }
 </style>
 </head>
 <body>
@@ -306,15 +340,15 @@
         <div class="error-msg" id="err-aday"></div>
 
         <div class="field">
-          <label>E-posta</label>
+          <label for="aday-email">E-posta</label>
           <input type="email" id="aday-email" class="aday" placeholder="ornek@email.com" autocomplete="email">
         </div>
         <div class="field">
-          <label>Şifre</label>
+          <label for="aday-sifre">Şifre</label>
           <input type="password" id="aday-sifre" class="aday" placeholder="••••••••" autocomplete="current-password">
         </div>
 
-        <button class="btn-submit btn-aday" onclick="loginAday()">
+        <button id="btn-aday-giris" class="btn-submit btn-aday" onclick="loginAday()">
           <span id="aday-btn-text">Giriş Yap →</span>
         </button>
 
@@ -350,11 +384,11 @@
         <div class="error-msg" id="err-aday-register"></div>
 
         <div class="field">
-          <label>E-posta</label>
+          <label for="aday-kayit-email">E-posta</label>
           <input type="email" id="aday-kayit-email" class="aday" placeholder="ornek@email.com" autocomplete="email">
         </div>
         <div class="field">
-          <label>Şifre</label>
+          <label for="aday-kayit-sifre">Şifre</label>
           <input type="password" id="aday-kayit-sifre" class="aday" placeholder="••••••••" autocomplete="new-password">
           <div class="password-strength" style="margin-top:6px;">
             <div style="display:flex;gap:4px;margin-bottom:4px;">
@@ -392,11 +426,11 @@
         <div class="error-msg" id="err-ik"></div>
 
         <div class="field">
-          <label>Kurumsal E-posta</label>
+          <label for="ik-email">Kurumsal E-posta</label>
           <input type="email" id="ik-email" placeholder="isim@sirket.com" autocomplete="email">
         </div>
         <div class="field">
-          <label>Şifre</label>
+          <label for="ik-sifre">Şifre</label>
           <input type="password" id="ik-sifre" placeholder="••••••••" autocomplete="current-password">
         </div>
 
@@ -426,23 +460,23 @@
         <div class="error-msg" id="err-ik-register"></div>
 
         <div class="field">
-          <label>Şirket Adı <span style="color:var(--verm);">*</span></label>
+          <label for="ik-kayit-sirket">Şirket Adı <span style="color:var(--verm);">*</span></label>
           <input type="text" id="ik-kayit-sirket" placeholder="Örn: Zara Türkiye, Boyner Grup..." autocomplete="organization">
         </div>
         <div class="field">
-          <label>Şirket Web Sitesi</label>
+          <label for="ik-kayit-web">Şirket Web Sitesi</label>
           <input type="url" id="ik-kayit-web" placeholder="https://sirketiniz.com" autocomplete="url">
           <div id="ik-domain-hint" style="display:none;font-size:var(--text-sm);margin-top:4px;padding:6px 10px;border-radius:6px;"></div>
         </div>
         <div class="field">
-          <label>Kurumsal E-posta <span style="color:var(--verm);">*</span></label>
+          <label for="ik-kayit-email">Kurumsal E-posta <span style="color:var(--verm);">*</span></label>
           <input type="email" id="ik-kayit-email" placeholder="isim@sirket.com" autocomplete="email">
           <div id="ik-email-domain-warning" style="display:none;font-size:var(--text-sm);margin-top:4px;padding:6px 10px;border-radius:6px;background:#FEF3C7;color:#92400E;border:1px solid #FDE68A;">
             ⚠️ Kişisel e-posta adresi tespit edildi. Kurumsal e-posta kullanmanızı öneriyoruz.
           </div>
         </div>
         <div class="field">
-          <label>Şifre</label>
+          <label for="ik-kayit-sifre">Şifre</label>
           <input type="password" id="ik-kayit-sifre" placeholder="••••••••" autocomplete="new-password">
           <div class="password-strength" style="margin-top:6px;">
             <div style="display:flex;gap:4px;margin-bottom:4px;">
@@ -482,9 +516,10 @@
   <div style="background:white;border-radius:16px;max-width:400px;width:100%;padding:24px;">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
       <h3 style="font-family:'Bricolage Grotesque',sans-serif;font-size:var(--text-2xl);font-weight:700;margin:0;color:var(--navy);">Şifremi Unuttum</h3>
-      <button id="btn-close-forgot" style="background:none;border:none;font-size:var(--text-3xl);cursor:pointer;color:var(--muted);">✕</button>
+      <button id="btn-close-forgot" aria-label="Kapat" style="background:none;border:none;font-size:var(--text-3xl);cursor:pointer;color:var(--muted);">✕</button>
     </div>
     <p style="font-size:var(--text-md);color:var(--muted);line-height:1.5;margin-bottom:16px;">E-posta adresinizi girin. Şifre sıfırlama bağlantısı göndereceğiz.</p>
+    <label for="forgot-email" style="display:block;font-size:var(--text-sm);font-weight:600;margin-bottom:6px;color:var(--text);">E-posta Adresi</label>
     <input type="email" id="forgot-email" class="form-input" placeholder="E-posta adresiniz" style="width:100%;margin-bottom:12px;padding:12px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:'Plus Jakarta Sans',sans-serif;font-size:var(--text-lg);">
     <button type="button" id="btn-send-reset" class="btn btn-primary" style="width:100%;padding:12px;border:none;border-radius:10px;font-family:'Plus Jakarta Sans',sans-serif;font-size:var(--text-lg);font-weight:600;background:var(--verm);color:white;cursor:pointer;">Sıfırlama Bağlantısı Gönder</button>
     <div id="forgot-msg" style="font-size:var(--text-base);margin-top:8px;display:none;text-align:center;"></div>
