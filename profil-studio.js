@@ -1963,6 +1963,17 @@ function renderLobby() {
 
   if (hasRole) {
     /* ══ COMPACT HEADER — LinkedIn Learning "My Learning" style ══ */
+
+    /* Back to Genel */
+    html += '<div class="ig-nav-pill" id="st-back-genel" style="margin-bottom:12px;cursor:pointer">' + arrowLeftSVG + ' Genel</div>';
+
+    /* Studio title strip */
+    html += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">';
+    html += '<div style="font-family:\'Bricolage Grotesque\',sans-serif;font-size:14px;font-weight:700;color:var(--verm,#C94E28)">St\u00fcdyo</div>';
+    html += '<div style="width:1px;height:14px;background:var(--border-subtle,#E5E3DF)"></div>';
+    html += '<div style="font-family:\'Plus Jakarta Sans\',sans-serif;font-size:13px;color:var(--text-muted,#6B7280)">Yetenek E\u011fitimi</div>';
+    html += '</div>';
+
     html += '<div class="st-header">';
     html += '<div class="st-header-left">';
     if (_userName) {
@@ -2023,7 +2034,7 @@ function renderLobby() {
     for (var ci = 0; ci < sortedComps.length; ci++) {
       var c = sortedComps[ci];
       var name = bridge.COMP_NAMES[c.code] || c.code;
-      var kf = bridge.COMP_KF[c.code] || '';
+      var _kf = bridge.COMP_KF[c.code] || ''; /* hidden — English KF codes not user-facing */
       var qCount = flattenQuestions(c.code).length;
       var practiceCount = S.isPremium ? qCount : Math.min(FREE_Q_PER_COMP, qCount);
       var estMin = Math.max(3, Math.round(practiceCount * 2.5));
@@ -2050,9 +2061,8 @@ function renderLobby() {
 
       html += '<div class="st-course-card' + (c.locked ? ' st-course-locked' : '') + '" data-comp="' + c.code + '" data-idx="' + c.origIdx + '" style="' + cardOpacity + 'cursor:' + (c.locked ? 'default' : 'pointer') + '">';
 
-      /* Card content */
+      /* Card content — KF code hidden (English, not user-facing) */
       html += '<div class="st-course-card-name">' + name + '</div>';
-      html += '<div class="st-course-card-kf">' + kf + '</div>';
 
       /* Mini progress bar (only for unlocked) */
       if (!c.locked) {
@@ -4384,6 +4394,12 @@ function startPractice(compCode, compIdx) {
 }
 
 function bindLobbyEvents() {
+  /* ── Back to Genel panel ── */
+  var backGenel = document.getElementById('st-back-genel');
+  if (backGenel) backGenel.addEventListener('click', function() {
+    if (typeof window.switchPanel === 'function') window.switchPanel('merkez');
+  });
+
   /* ── Role picker (first-time hero) ── */
   var dd = document.getElementById('ig-role-dd');
   var startBtn = document.getElementById('ig-role-start');
@@ -4558,10 +4574,8 @@ async function hydrateStreakPill() {
       txt4.textContent = 'Bug\u00fcn \u00e7al\u0131\u015f, seriyi geri kazan';
       pill.appendChild(txt4);
     } else {
-      pill.className = 'yk-streak-pill yk-streak-zero';
-      var txt2 = document.createElement('span');
-      txt2.textContent = 'Bug\u00fcn ba\u015fla';
-      pill.appendChild(txt2);
+      /* No streak, no freeze, no recover — hide pill entirely */
+      return;
     }
     slot.appendChild(pill);
 
