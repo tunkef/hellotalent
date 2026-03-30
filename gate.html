@@ -8,10 +8,21 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
+  :root {
+    --verm: #C94E28;
+    --verm-dark: #b84420;
+    --navy: #1E2D5E;
+    --muted: #6B7280;
+    --border: #E5E3DF;
+    --text: #111111;
+    --text-sm: 11px;
+    --text-md: 13px;
+    --text-lg: 14px;
+  }
   *{box-sizing:border-box;margin:0;padding:0;}
   body{
     font-family:'Plus Jakarta Sans',sans-serif;
-    background:#1E2D5E;
+    background:var(--navy);
     min-height:100vh;
     display:flex;
     align-items:center;
@@ -53,42 +64,42 @@
     font-family:'Bricolage Grotesque',sans-serif;
     font-weight:800;
     font-size:22px;
-    color:#1E2D5E;
+    color:var(--navy);
     margin-bottom:6px;
   }
-  .logo span{color:#C94E28;}
+  .logo span{color:var(--verm);}
   .subtitle{
-    font-size:13px;
-    color:#6B7280;
+    font-size:var(--text-md);
+    color:var(--muted);
     margin-bottom:32px;
     line-height:1.5;
   }
   .field{margin-bottom:16px;}
   .field label{
     display:block;
-    font-size:11px;
+    font-size:var(--text-sm);
     font-weight:700;
     text-transform:uppercase;
     letter-spacing:0.6px;
-    color:#6B7280;
+    color:var(--muted);
     margin-bottom:6px;
   }
   .field input{
     width:100%;
     padding:12px 14px;
-    border:1.5px solid #E5E3DF;
+    border:1.5px solid var(--border);
     border-radius:10px;
     font-family:'Plus Jakarta Sans',sans-serif;
-    font-size:14px;
-    color:#111;
+    font-size:var(--text-lg);
+    color:var(--text);
     outline:none;
     transition:border-color 0.2s;
   }
-  .field input:focus{border-color:#1E2D5E;}
+  .field input:focus{border-color:var(--navy);}
   .btn{
     width:100%;
     padding:14px;
-    background:#C94E28;
+    background:var(--verm);
     border:none;
     border-radius:10px;
     color:white;
@@ -99,7 +110,7 @@
     transition:all 0.2s;
     margin-top:8px;
   }
-  .btn:hover{background:#b84420;transform:translateY(-1px);}
+  .btn:hover{background:var(--verm-dark);transform:translateY(-1px);}
   .btn:active{transform:translateY(0);}
   .error{
     display:none;
@@ -108,7 +119,7 @@
     color:#DC2626;
     padding:10px 14px;
     border-radius:8px;
-    font-size:13px;
+    font-size:var(--text-md);
     margin-top:12px;
     text-align:center;
     font-weight:600;
@@ -116,7 +127,7 @@
   .error.show{display:block;}
   .footer-note{
     margin-top:20px;
-    font-size:11px;
+    font-size:var(--text-sm);
     color:#9CA3AF;
     text-align:center;
   }

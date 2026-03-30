@@ -26,6 +26,7 @@ html,body{overflow-x:hidden;}
   --yellow:#F59E0B;
   --red:#EF4444;
   --sidebar-w:240px;
+  --text-xs:10px;--text-sm:11px;--text-base:12px;--text-md:13px;--text-lg:14px;--text-2xl:18px;
 }
 body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
 
@@ -46,32 +47,32 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
 }
 .login-logo span{color:var(--verm);}
 .login-sub{
-  text-align:center;font-size:11px;color:var(--muted);
+  text-align:center;font-size:var(--text-sm);color:var(--muted);
   font-family:'DM Mono',monospace;letter-spacing:1px;
   margin-bottom:28px;
 }
 .login-card label{
-  display:block;font-size:12px;font-weight:600;
+  display:block;font-size:var(--text-base);font-weight:600;
   color:var(--text);margin-bottom:5px;margin-top:16px;
 }
 .login-card input[type="email"],
 .login-card input[type="password"]{
   width:100%;padding:10px 12px;border:1.5px solid var(--border);
-  border-radius:8px;font-size:14px;font-family:inherit;
+  border-radius:8px;font-size:var(--text-lg);font-family:inherit;
   transition:border-color 0.15s;
 }
 .login-card input:focus{outline:none;border-color:var(--navy);}
 .login-btn{
   width:100%;padding:12px;margin-top:24px;
   background:var(--navy);color:white;border:none;
-  border-radius:10px;font-size:14px;font-weight:700;
+  border-radius:10px;font-size:var(--text-lg);font-weight:700;
   font-family:inherit;cursor:pointer;transition:background 0.15s;
 }
 .login-btn:hover{background:var(--navy-dark);}
 .login-btn:disabled{opacity:0.5;cursor:not-allowed;}
 .login-error{
   margin-top:12px;padding:10px 12px;background:#FEF2F2;
-  color:var(--red);font-size:12px;border-radius:8px;
+  color:var(--red);font-size:var(--text-base);border-radius:8px;
   display:none;
 }
 
@@ -92,11 +93,11 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
 }
 .sidebar-logo-text{
   font-family:'Bricolage Grotesque',sans-serif;
-  font-weight:800;font-size:18px;color:white;letter-spacing:-0.5px;
+  font-weight:800;font-size:var(--text-2xl);color:white;letter-spacing:-0.5px;
 }
 .sidebar-logo-text span{color:var(--verm);}
 .sidebar-logo-sub{
-  font-size:10px;color:rgba(255,255,255,0.35);
+  font-size:var(--text-xs);color:rgba(255,255,255,0.35);
   font-family:'DM Mono',monospace;letter-spacing:1px;margin-top:2px;
 }
 .sidebar-nav{flex:1;padding:12px 10px;}
@@ -109,7 +110,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
   display:flex;align-items:center;gap:10px;
   padding:10px 12px;border-radius:9px;
   cursor:pointer;transition:all 0.15s;
-  color:rgba(255,255,255,0.55);font-size:13px;font-weight:600;
+  color:rgba(255,255,255,0.55);font-size:var(--text-md);font-weight:600;
   position:relative;margin-bottom:2px;
 }
 .nav-item:hover{background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.85);}
@@ -122,7 +123,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
 .nav-item.active .nav-icon,.nav-item:hover .nav-icon{opacity:1;}
 .nav-badge{
   margin-left:auto;background:var(--verm);color:white;
-  font-size:10px;font-weight:700;padding:2px 6px;border-radius:10px;
+  font-size:var(--text-xs);font-weight:700;padding:2px 6px;border-radius:10px;
 }
 .sidebar-bottom{padding:12px 10px 20px;border-top:1px solid rgba(255,255,255,0.08);}
 .sidebar-user{
@@ -133,14 +134,14 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
 .sidebar-avatar{
   width:32px;height:32px;border-radius:50%;background:var(--verm);
   display:flex;align-items:center;justify-content:center;
-  font-weight:800;font-size:12px;color:white;flex-shrink:0;
+  font-weight:800;font-size:var(--text-base);color:white;flex-shrink:0;
 }
 .sidebar-user-info{flex:1;min-width:0;}
 .sidebar-user-name{
-  font-size:12px;font-weight:700;color:white;
+  font-size:var(--text-base);font-weight:700;color:white;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
 }
-.sidebar-user-role{font-size:10px;color:rgba(255,255,255,0.4);font-family:'DM Mono',monospace;}
+.sidebar-user-role{font-size:var(--text-xs);color:rgba(255,255,255,0.4);font-family:'DM Mono',monospace;}
 
 /* ── MAIN CONTENT ── */
 .main-content{
@@ -161,12 +162,12 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
 /* ── CAMPAIGN TABLE ── */
 .admin-table{width:100%;border-collapse:collapse;background:var(--white);border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.06);}
 .admin-table th{
-  text-align:left;padding:12px 16px;font-size:11px;
+  text-align:left;padding:12px 16px;font-size:var(--text-sm);
   font-weight:700;text-transform:uppercase;letter-spacing:0.5px;
   color:var(--muted);background:#FAFAF8;border-bottom:1px solid var(--border);
 }
 .admin-table td{
-  padding:12px 16px;font-size:13px;border-bottom:1px solid var(--border);
+  padding:12px 16px;font-size:var(--text-md);border-bottom:1px solid var(--border);
   vertical-align:middle;
 }
 .admin-table tr:last-child td{border-bottom:none;}
@@ -175,14 +176,14 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
 /* ── STATUS PILLS ── */
 .status-pill{
   display:inline-block;padding:3px 10px;border-radius:20px;
-  font-size:11px;font-weight:700;
+  font-size:var(--text-sm);font-weight:700;
 }
 .status-pill.pending{background:#FEF3C7;color:#92400E;}
 .status-pill.approved{background:#D1FAE5;color:#065F46;}
 .status-pill.active{background:#DBEAFE;color:#1E40AF;}
 .status-pill.rejected{background:#FEE2E2;color:#991B1B;}
 .status-pill.revision{background:#FED7AA;color:#9A3412;}
-.status-pill.draft{background:#F3F4F6;color:#6B7280;}
+.status-pill.draft{background:#F3F4F6;color:var(--muted);}
 .status-pill.ended{background:#E5E7EB;color:#4B5563;}
 .status-pill.archived{background:#F3F4F6;color:#9CA3AF;}
 .status-pill.paused{background:#FCE7F3;color:#9D174D;}
@@ -190,7 +191,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
 /* ── BUTTONS ── */
 .btn{
   display:inline-flex;align-items:center;gap:6px;
-  padding:7px 14px;border-radius:8px;font-size:12px;
+  padding:7px 14px;border-radius:8px;font-size:var(--text-base);
   font-weight:600;font-family:inherit;cursor:pointer;
   border:1.5px solid var(--border);background:var(--white);
   color:var(--text);transition:all 0.15s;
@@ -200,7 +201,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
 .btn-primary:hover{background:var(--verm-hover);border-color:var(--verm-hover);}
 .btn-approve{background:var(--green);color:white;border-color:var(--green);}
 .btn-reject{background:var(--red);color:white;border-color:var(--red);}
-.btn-sm{padding:5px 10px;font-size:11px;}
+.btn-sm{padding:5px 10px;font-size:var(--text-sm);}
 
 /* ── STATS CARDS ── */
 .stats-grid{
@@ -211,7 +212,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
   background:var(--white);border-radius:12px;padding:20px;
   box-shadow:0 1px 3px rgba(0,0,0,0.06);
 }
-.stat-card-label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;}
+.stat-card-label{font-size:var(--text-sm);font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;}
 .stat-card-value{font-family:'DM Mono',monospace;font-size:28px;font-weight:500;margin-top:6px;color:var(--text);}
 
 /* ── EMPTY STATE ── */
@@ -219,7 +220,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
   text-align:center;padding:60px 20px;color:var(--muted);
 }
 .empty-state-icon{font-size:48px;margin-bottom:12px;opacity:0.3;}
-.empty-state-text{font-size:14px;}
+.empty-state-text{font-size:var(--text-lg);}
 
 /* ── UNAUTHORIZED ── */
 .unauthorized{
@@ -233,52 +234,52 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
 
 /* ── COACH CONTENT MODULE ── */
 .acc-tabs{display:flex;gap:4px;margin-bottom:20px;border-bottom:1px solid var(--border);padding-bottom:0;}
-.acc-tab{padding:10px 20px;border:none;background:none;font-size:13px;font-weight:600;font-family:inherit;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:all 0.15s;}
+.acc-tab{padding:10px 20px;border:none;background:none;font-size:var(--text-md);font-weight:600;font-family:inherit;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:all 0.15s;}
 .acc-tab.active{color:var(--verm);border-bottom-color:var(--verm);}
 .acc-tab:hover{color:var(--text);}
 .acc-content{min-height:200px;}
 .acc-invite-form{background:var(--white);border-radius:12px;padding:20px;margin-bottom:20px;box-shadow:0 1px 3px rgba(0,0,0,0.06);}
-.acc-form-title{font-family:'Bricolage Grotesque',sans-serif;font-size:14px;font-weight:700;margin-bottom:12px;}
+.acc-form-title{font-family:'Bricolage Grotesque',sans-serif;font-size:var(--text-lg);font-weight:700;margin-bottom:12px;}
 .acc-form-row{display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;}
 .acc-form-field{flex:1;min-width:160px;}
-.acc-form-field label{display:block;font-size:11px;font-weight:600;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.3px;}
-.acc-form-field input{width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-family:inherit;}
+.acc-form-field label{display:block;font-size:var(--text-sm);font-weight:600;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.3px;}
+.acc-form-field input{width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:8px;font-size:var(--text-md);font-family:inherit;}
 .acc-form-field input:focus{outline:none;border-color:var(--navy);}
 .acc-form-btn-wrap{flex:0 0 auto;}
-.acc-form-msg{margin-top:8px;font-size:12px;min-height:18px;}
+.acc-form-msg{margin-top:8px;font-size:var(--text-base);min-height:18px;}
 .acc-form-msg.success{color:var(--green);}
 .acc-form-msg.error{color:var(--red);}
-.acc-btn-sm{display:inline-block;padding:6px 12px;border:none;border-radius:7px;font-size:11px;font-weight:700;font-family:inherit;cursor:pointer;transition:all 0.15s;}
+.acc-btn-sm{display:inline-block;padding:6px 12px;border:none;border-radius:7px;font-size:var(--text-sm);font-weight:700;font-family:inherit;cursor:pointer;transition:all 0.15s;}
 .acc-btn-primary{background:var(--verm);color:white;}
 .acc-btn-primary:hover{background:var(--verm-hover);}
 .acc-btn-warning{background:var(--yellow);color:white;}
 .acc-btn-danger{background:var(--red);color:white;}
 .acc-btn-ghost{background:none;color:var(--muted);border:1px solid var(--border);}
 .acc-btn-ghost:hover{border-color:var(--text);color:var(--text);}
-.acc-badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;letter-spacing:0.3px;text-transform:uppercase;}
+.acc-badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:var(--text-xs);font-weight:700;letter-spacing:0.3px;text-transform:uppercase;}
 .acc-badge-pending{background:#FEF3C7;color:#92400E;}
 .acc-badge-accepted{background:#D1FAE5;color:#065F46;}
 .acc-badge-expired{background:#E5E7EB;color:#4B5563;}
 .acc-badge-revoked{background:#FEE2E2;color:#991B1B;}
-.acc-badge-draft{background:#F3F4F6;color:#6B7280;}
+.acc-badge-draft{background:#F3F4F6;color:var(--muted);}
 .acc-badge-submitted{background:#FEF3C7;color:#92400E;}
 .acc-badge-changes_requested{background:#FEE2E2;color:#991B1B;}
 .acc-badge-published{background:#D1FAE5;color:#065F46;}
 .acc-badge-archived{background:#E5E7EB;color:#4B5563;}
 .acc-badge-rejected{background:#FEE2E2;color:#991B1B;}
-.acc-empty{text-align:center;padding:40px 20px;color:var(--muted);font-size:13px;}
+.acc-empty{text-align:center;padding:40px 20px;color:var(--muted);font-size:var(--text-md);}
 .acc-filter-bar{display:flex;gap:6px;margin-bottom:16px;}
-.acc-filter-btn{padding:6px 14px;border:1px solid var(--border);border-radius:8px;background:var(--white);font-size:12px;font-weight:600;font-family:inherit;cursor:pointer;color:var(--muted);transition:all 0.15s;}
+.acc-filter-btn{padding:6px 14px;border:1px solid var(--border);border-radius:8px;background:var(--white);font-size:var(--text-base);font-weight:600;font-family:inherit;cursor:pointer;color:var(--muted);transition:all 0.15s;}
 .acc-filter-btn.active{background:var(--navy);color:white;border-color:var(--navy);}
 .acc-filter-btn:hover{border-color:var(--navy);}
 .acc-post-card{background:var(--white);border-radius:12px;padding:16px 20px;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,0.06);border:1px solid var(--border);}
 .acc-post-header{display:flex;align-items:center;gap:10px;margin-bottom:6px;}
 .acc-post-title{font-family:'Bricolage Grotesque',sans-serif;font-size:15px;font-weight:700;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.acc-post-meta{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);margin-bottom:8px;flex-wrap:wrap;}
+.acc-post-meta{display:flex;align-items:center;gap:6px;font-size:var(--text-base);color:var(--muted);margin-bottom:8px;flex-wrap:wrap;}
 .acc-post-sep{opacity:0.3;}
-.acc-post-excerpt{font-size:13px;color:var(--muted);line-height:1.5;margin-bottom:10px;}
+.acc-post-excerpt{font-size:var(--text-md);color:var(--muted);line-height:1.5;margin-bottom:10px;}
 .acc-post-actions{display:flex;gap:8px;flex-wrap:wrap;}
-.acc-post-body{margin-top:12px;padding:16px;background:var(--bg);border-radius:10px;font-size:13px;line-height:1.7;white-space:pre-wrap;max-height:400px;overflow-y:auto;}
+.acc-post-body{margin-top:12px;padding:16px;background:var(--bg);border-radius:10px;font-size:var(--text-md);line-height:1.7;white-space:pre-wrap;max-height:400px;overflow-y:auto;}
 
 /* ── RESPONSIVE ── */
 @media(max-width:768px){
@@ -506,7 +507,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
       <div id="support-content">
         <div class="empty-state" style="padding:80px 20px;">
           <div class="empty-state-icon">⏳</div>
-          <div class="empty-state-text" style="font-size:14px;color:var(--muted);">Yukleniyor...</div>
+          <div class="empty-state-text" style="font-size:var(--text-lg);color:var(--muted);">Yukleniyor...</div>
         </div>
       </div>
     </div>
@@ -544,8 +545,8 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
       </div>
       <div class="empty-state" style="padding:80px 20px;">
         <div class="empty-state-icon">📊</div>
-        <div class="empty-state-text" style="font-size:16px;font-weight:600;color:var(--text);margin-bottom:8px;">Yakında</div>
-        <div style="font-size:13px;color:var(--muted);">Bu bölüm bir sonraki güncellemede aktif olacak.</div>
+        <div class="empty-state-text" style="font-size:var(--text-xl);font-weight:600;color:var(--text);margin-bottom:8px;">Yakında</div>
+        <div style="font-size:var(--text-md);color:var(--muted);">Bu bölüm bir sonraki güncellemede aktif olacak.</div>
       </div>
     </div>
 
@@ -556,8 +557,8 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
       </div>
       <div class="empty-state" style="padding:80px 20px;">
         <div class="empty-state-icon">👥</div>
-        <div class="empty-state-text" style="font-size:16px;font-weight:600;color:var(--text);margin-bottom:8px;">Yakında</div>
-        <div style="font-size:13px;color:var(--muted);">Bu bölüm bir sonraki güncellemede aktif olacak.</div>
+        <div class="empty-state-text" style="font-size:var(--text-xl);font-weight:600;color:var(--text);margin-bottom:8px;">Yakında</div>
+        <div style="font-size:var(--text-md);color:var(--muted);">Bu bölüm bir sonraki güncellemede aktif olacak.</div>
       </div>
     </div>
 
@@ -570,7 +571,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
       <div id="ops-health-content">
         <div class="empty-state" style="padding:80px 20px;">
           <div class="empty-state-icon">⏳</div>
-          <div class="empty-state-text" style="font-size:14px;color:var(--muted);">Yukleniyor...</div>
+          <div class="empty-state-text" style="font-size:var(--text-lg);color:var(--muted);">Yukleniyor...</div>
         </div>
       </div>
     </div>

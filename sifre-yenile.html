@@ -10,18 +10,19 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   * { margin:0; padding:0; box-sizing:border-box; }
-  :root { --verm:#C94E28; --navy:#1E2D5E; --bg:#F7F6F4; --border:#E2E8F0; --muted:#64748B; --green:#16A34A; --red:#DC2626; }
+  :root { --verm:#C94E28; --navy:#1E2D5E; --bg:#F7F6F4; --border:#E2E8F0; --muted:#64748B; --green:#16A34A; --red:#DC2626;
+          --text-sm:11px; --text-base:12px; --text-md:13px; --text-lg:14px; --text-2xl:18px; }
   body { font-family:'Plus Jakarta Sans',sans-serif; background:var(--bg); min-height:100vh; display:flex; align-items:center; justify-content:center; padding:16px; }
   .card { background:white; border-radius:16px; padding:32px; max-width:400px; width:100%; box-shadow:0 4px 24px rgba(0,0,0,0.08); }
   .logo { font-family:'Bricolage Grotesque',sans-serif; font-size:24px; font-weight:800; color:var(--navy); text-align:center; margin-bottom:24px; }
   .logo span { color:var(--verm); }
-  .form-input { width:100%; padding:12px 14px; border:1.5px solid var(--border); border-radius:10px; font-family:inherit; font-size:13px; outline:none; transition:border-color 0.2s; }
+  .form-input { width:100%; padding:12px 14px; border:1.5px solid var(--border); border-radius:10px; font-family:inherit; font-size:var(--text-md); outline:none; transition:border-color 0.2s; }
   .form-input:focus { border-color:var(--verm); }
-  .form-label { display:block; font-size:12px; font-weight:600; color:var(--navy); margin-bottom:6px; }
-  .btn { width:100%; padding:14px; background:var(--verm); color:#fff; border:none; border-radius:10px; font-family:inherit; font-size:14px; font-weight:700; cursor:pointer; transition:background 0.2s; }
+  .form-label { display:block; font-size:var(--text-base); font-weight:600; color:var(--navy); margin-bottom:6px; }
+  .btn { width:100%; padding:14px; background:var(--verm); color:#fff; border:none; border-radius:10px; font-family:inherit; font-size:var(--text-lg); font-weight:700; cursor:pointer; transition:background 0.2s; }
   .btn:hover { background:#B8421F; }
   .btn:disabled { opacity:0.6; cursor:not-allowed; }
-  .rule-check { font-size:11px; color:var(--muted); }
+  .rule-check { font-size:var(--text-sm); color:var(--muted); }
   .rule-check.pass { color:var(--green); }
   .strength-bar { flex:1; height:3px; border-radius:2px; background:var(--border); transition:all 0.3s; }
 </style>
@@ -30,8 +31,8 @@
 
 <div class="card">
   <div class="logo">hello<span>talent</span>.ai</div>
-  <h2 style="font-size:18px;font-weight:700;color:var(--navy);text-align:center;margin-bottom:8px;">Yeni Şifre Belirleyin</h2>
-  <p style="font-size:13px;color:var(--muted);text-align:center;margin-bottom:24px;line-height:1.5;">Güvenliğiniz için güçlü bir şifre seçin.</p>
+  <h2 style="font-size:var(--text-2xl);font-weight:700;color:var(--navy);text-align:center;margin-bottom:8px;">Yeni Şifre Belirleyin</h2>
+  <p style="font-size:var(--text-md);color:var(--muted);text-align:center;margin-bottom:24px;line-height:1.5;">Güvenliğiniz için güçlü bir şifre seçin.</p>
 
   <div style="margin-bottom:16px;">
     <label class="form-label">Yeni Şifre</label>
@@ -42,8 +43,8 @@
         <div class="strength-bar"></div>
         <div class="strength-bar"></div>
       </div>
-      <div class="strength-label" style="font-size:11px;color:var(--muted);transition:all 0.3s;"></div>
-      <div style="font-size:11px;margin-top:4px;line-height:1.6;">
+      <div class="strength-label" style="font-size:var(--text-sm);color:var(--muted);transition:all 0.3s;"></div>
+      <div style="font-size:var(--text-sm);margin-top:4px;line-height:1.6;">
         <div class="rule-check" data-rule="length">○ En az 8 karakter</div>
         <div class="rule-check" data-rule="upper">○ Büyük harf (A-Z)</div>
         <div class="rule-check" data-rule="lower">○ Küçük harf (a-z)</div>
@@ -59,7 +60,7 @@
   </div>
 
   <button type="button" id="btn-reset-password" class="btn">Şifremi Güncelle</button>
-  <div id="reset-msg" style="font-size:12px;margin-top:12px;display:none;text-align:center;"></div>
+  <div id="reset-msg" style="font-size:var(--text-base);margin-top:12px;display:none;text-align:center;"></div>
 </div>
 
 <!-- shared.js: Supabase config source of truth (no header/footer injected — no ht-header/ht-footer divs) -->

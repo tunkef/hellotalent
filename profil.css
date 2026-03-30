@@ -201,7 +201,7 @@ select:focus-visible{
 .header-breadcrumb{display:none;align-items:center;gap:6px;margin-left:8px;}
 .breadcrumb-parent{font-size:var(--text-base);color:var(--muted);}
 .breadcrumb-sep{font-size:var(--text-xs);color:var(--border);}
-.breadcrumb-current{font-size:var(--text-base);color:var(--text);font-weight:600;}
+.breadcrumb-current{font-size:var(--text-base);color:var(--text-primary);font-weight:600;}
 .header-right{margin-left:auto;display:flex;align-items:center;gap:14px;}
 /* Search is now a nav icon (.hn-search-item) — old bar styles neutralized */
 .header-search-text{display:none;}
@@ -213,7 +213,7 @@ select:focus-visible{
   color:var(--muted);transition:all 0.2s;
   border:none;padding:0;font:inherit;-webkit-appearance:none;appearance:none;
 }
-.header-notif:hover{background:rgba(0,0,0,0.08);color:var(--text);}
+.header-notif:hover{background:rgba(0,0,0,0.08);color:var(--text-primary);}
 .header-notif-dot{
   position:absolute;top:4px;right:4px;width:7px;height:7px;
   background:var(--verm);border-radius:50%;border:1.5px solid #fff;
@@ -226,7 +226,7 @@ select:focus-visible{
   color:var(--muted);transition:all 0.2s;
   border:none;padding:0;font:inherit;-webkit-appearance:none;appearance:none;
 }
-.header-msg:hover{background:rgba(0,0,0,0.08);color:var(--text);}
+.header-msg:hover{background:rgba(0,0,0,0.08);color:var(--text-primary);}
 .header-msg-dot{
   position:absolute;top:4px;right:4px;width:7px;height:7px;
   background:var(--verm);border-radius:50%;border:1.5px solid #fff;
@@ -252,7 +252,7 @@ select:focus-visible{
 }
 .header-popup-title{
   font-family:'Bricolage Grotesque',sans-serif;
-  font-size:var(--text-lg);font-weight:800;color:var(--text);
+  font-size:var(--text-lg);font-weight:800;color:var(--text-primary);
 }
 .header-popup-link{
   font-size:var(--text-sm);font-weight:600;color:var(--verm-text);
@@ -282,7 +282,7 @@ select:focus-visible{
 }
 .header-popup-info{flex:1;min-width:0;}
 .header-popup-sender{
-  font-size:var(--text-base);font-weight:700;color:var(--text);
+  font-size:var(--text-base);font-weight:700;color:var(--text-primary);
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
 }
 .header-popup-preview{
