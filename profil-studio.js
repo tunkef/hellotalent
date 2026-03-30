@@ -291,7 +291,7 @@ var FREE_SWAP_LIMIT = 2;
    ════════════════════════════════════════════════ */
 var _loaded = false;
 var S = {
-  screen: 'star_intro',
+  screen: 'lobby',
   role: null,
   comps: [],
   isPremium: false,
@@ -1423,6 +1423,8 @@ function injectCSS() {
 
   /* Lobby — full-width bento grid container */
   css += '.st-lobby{width:100%;animation:igFadeIn .25s ease}';
+  css += '.st-lobby .g-hero-inner{flex-direction:column;align-items:flex-start;gap:4px}';
+  css += '.st-lobby .g-hero{padding:22px 24px}';
 
   /* Course Detail — full-width tab structure */
   css += '.st-course-detail{width:100%;animation:igFadeIn .25s ease}';
@@ -1607,125 +1609,7 @@ function renderStarDetail(idx) {
   return html;
 }
 
-/* renderStarIntro — DEPRECATED: collapsed into renderLobby() */
-function renderStarIntro() {
-  return renderLobby();
-}
-
-/* Original renderStarIntro preserved as _renderStarIntro_legacy for reference */
-function _renderStarIntro_legacy() {
-  var html = '';
-
-  html += '<div class="ig-landing">';
-
-  /* ══ STUDIO HERO — outside grid, vermillion accent, editorial ══ */
-  html += '<div class="ig-landing-hero st-hero">';
-  html += '<div class="ig-landing-badge">hellotalent st\u00fcdyo</div>';
-  html += '<div class="ig-landing-title">St\u00fcdyo</div>';
-  html += '<div class="ig-landing-subtitle">G\u00fcnde 5 dakika ile m\u00fclakat haz\u0131rl\u0131\u011f\u0131n\u0131 tamamla. Yetkinlik geli\u015ftir, uzmanlardan \u00f6\u011fren, performans\u0131n\u0131 anlat.</div>';
-  html += '</div>';
-
-  /* ══ FIRST-TIME ONBOARDING SPOTLIGHT — only for new users ══ */
-  if (!hasSeenStar()) {
-    html += '<div class="st-onboard-spotlight">';
-    html += '<div class="st-onboard-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>';
-    html += '<div class="st-onboard-text">';
-    html += '<div class="st-onboard-title">\u0130lk Ad\u0131m\u0131n</div>';
-    html += '<div class="st-onboard-desc">Pozisyonunu se\u00e7, ilk yetkinli\u011fini 5 dakikada ke\u015ffet. Ger\u00e7ek m\u00fclakat sorular\u0131yla pratik yap.</div>';
-    html += '</div>';
-    html += '<button class="st-onboard-cta" id="st-onboard-start">Hemen Ba\u015fla \u2192</button>';
-    html += '</div>';
-  }
-
-  /* ══ STUDIO SECTION GRID — 4 sections, bento asymmetric ══ */
-  html += '<div class="ig-landing-grid st-grid">';
-
-  /* ── 1. YETENEK (span 2) — primary section ── */
-  html += '<div class="ig-lcard span-2 st-section-card st-yetenek" id="st-go-yetenek">';
-  html += '<div class="st-section-kicker">ROL\u00dcNDE EN \u0130Y\u0130S\u0130 OL</div>';
-  html += '<div class="ig-lcard-icon verm"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>';
-  html += '<div class="ig-lcard-title" style="font-size:18px">Yetenek</div>';
-  html += '<div class="ig-lcard-desc">29 yetkinlik, 289 soru, AI de\u011ferlendirme. Rol\u00fcne \u00f6zel yetkinlikleri ke\u015ffet, pratik yap, m\u00fclakat haz\u0131rl\u0131\u011f\u0131n\u0131 tamamla.</div>';
-  html += '<button class="st-yetenek-cta-btn">Yetkinliklere Ba\u015fla \u2192</button>';
-  html += '</div>';
-
-  /* ── 2. KOÇ (span 1) — coach library ── */
-  html += '<div class="ig-lcard st-section-card st-koc" id="st-go-koc">';
-  html += '<div class="st-section-kicker">UZMANLARDAN \u00d6\u011eREN</div>';
-  html += '<div class="ig-lcard-icon navy"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>';
-  html += '<div class="ig-lcard-title">Ko\u00e7</div>';
-  html += '<div class="ig-lcard-desc">Sekt\u00f6r uzmanlar\u0131n\u0131n yazd\u0131\u011f\u0131 m\u00fclakat ve kariyer makaleleri.</div>';
-  html += '<div class="st-section-cta">Makalelere G\u00f6z At \u2192</div>';
-  html += '</div>';
-
-  /* ── 3. PERFORMANS (span 1) — passive until full launch ── */
-  html += '<div class="ig-lcard st-section-card st-perf st-passive" id="st-go-perf">';
-  html += '<div class="st-section-kicker">RAKAMLARI \u00d6\u011eREN</div>';
-  html += '<div class="ig-lcard-icon" style="background:rgba(217,119,6,.08);color:#D97706"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg></div>';
-  html += '<div class="ig-lcard-title">Performans</div>';
-  html += '<div class="ig-lcard-desc">Ma\u011faza KPI\u2019lar\u0131, sat\u0131\u015f matemati\u011fi, LFL ve sepet analizleri.</div>';
-  html += '<div class="st-coming-badge">\u00c7ok Yak\u0131nda</div>';
-  html += '</div>';
-
-  /* ── 4. HELLOTALENT'TEN BİLGİLER (span 2) — passive until full launch ── */
-  html += '<div class="ig-lcard span-2 st-section-card st-bilgi st-passive" id="st-go-bilgi">';
-  html += '<div class="st-section-kicker">PLATFORMUNU TANI</div>';
-  html += '<div class="ig-lcard-icon" style="background:rgba(5,150,105,.08);color:#059669"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg></div>';
-  html += '<div class="ig-lcard-title">HelloTalent\u2019ten Bilgiler</div>';
-  html += '<div class="ig-lcard-desc">Profilini nas\u0131l \u00f6ne \u00e7\u0131kar\u0131rs\u0131n? \u0130\u015fverenler neye bak\u0131yor? Platform\u0131 en verimli kullanman\u0131n yollar\u0131.</div>';
-  html += '<div class="st-coming-badge">\u00c7ok Yak\u0131nda</div>';
-  html += '</div>';
-
-  html += '</div>'; /* close st-grid */
-
-  /* ══ BADGE STRIP — async-hydrated after landing mount ══ */
-  html += '<div id="st-badge-strip" class="st-badge-strip" style="display:none;"></div>';
-
-  /* ══ STUDIO MODULE CONTENT AREA — hydrated on section card click ══ */
-  html += '<div id="st-module-area" class="st-module-area" style="display:none;"></div>';
-
-  /* ══ COACH FEED — hydrated async, now clearly inside Studio ══ */
-  html += '<div id="ig-coach-feed" class="ig-coach-feed" style="display:none;"></div>';
-
-  /* ══ STAR+T quick reference — collapsible at bottom ══ */
-  var d = STAR_CONTENT;
-  html += '<div class="ig-landing-star" id="ig-star-collapse" style="margin-top:12px">';
-  html += '<div class="ig-landing-star-header" id="ig-star-toggle" role="button" aria-expanded="false">';
-  html += '<div class="ig-landing-star-badges">';
-  html += '<div class="ig-landing-star-letter verm">S</div>';
-  html += '<div class="ig-landing-star-letter navy">T</div>';
-  html += '<div class="ig-landing-star-letter verm">A</div>';
-  html += '<div class="ig-landing-star-letter navy">R</div>';
-  html += '</div>';
-  html += '<div class="ig-landing-star-label">STAR+T Metodolojisi</div>';
-  html += '<div class="ig-landing-star-arrow">\u25BE</div>';
-  html += '</div>';
-  html += '<div class="ig-landing-star-body">';
-  html += '<div class="ig-landing-star-desc">' + d.what.desc + '</div>';
-  html += '<div class="ig-landing-star-grid">';
-  var stepColors = ['verm', 'navy', 'verm', 'navy'];
-  for (var i = 0; i < 4; i++) {
-    var step = d.what.steps[i];
-    html += '<div class="ig-landing-star-step">';
-    html += '<div class="ig-landing-star-step-letter ' + stepColors[i] + '">' + step.letter + '</div>';
-    html += '<div><div class="ig-landing-star-step-name">' + step.tr + '</div>';
-    var firstSentence = step.desc.split(/(?<=[.!?])\s+/)[0] || step.desc;
-    html += '<div class="ig-landing-star-step-text">' + firstSentence + '</div></div>';
-    html += '</div>';
-  }
-  html += '</div>';
-  html += '<div class="ig-landing-star-step" style="margin-top:10px">';
-  html += '<div class="ig-landing-star-step-letter navy">+T</div>';
-  html += '<div><div class="ig-landing-star-step-name">\u00C7\u0131kar\u0131m</div>';
-  var takeFirstSentence = d.what.takeaway.desc.split(/(?<=[.!?])\s+/)[0] || d.what.takeaway.desc;
-  html += '<div class="ig-landing-star-step-text">' + takeFirstSentence + '</div></div>';
-  html += '</div>';
-  html += '</div>'; /* close ig-landing-star-body */
-  html += '</div>'; /* close ig-landing-star */
-
-  html += '</div>'; /* close ig-landing */
-  return html;
-}
+/* renderStarIntro — REMOVED: star_intro screen eliminated in Studio redesign (30 Mart 2026) */
 
 /* ════════════════════════════════════════════════
    RENDER — ROLE SELECT (Screen 2)
@@ -5241,7 +5125,7 @@ function hydrateCompletionXlinks() {
       coachCard.addEventListener('click', (function(post) {
         return function() {
           /* Navigate to Studio landing, then open coach detail */
-          navigate('star_intro');
+          navigate('lobby');
           setTimeout(function() {
             if (typeof openCoachDetail === 'function') {
               var isLiked = false; /* default — like state re-resolved inside detail */
@@ -5283,7 +5167,7 @@ function hydrateCompletionXlinks() {
           modText.appendChild(modTitle);
           modCard.appendChild(modText);
           modCard.addEventListener('click', function() {
-            navigate('star_intro');
+            navigate('lobby');
             setTimeout(function() {
               if (typeof openStudioModule === 'function') openStudioModule(m);
             }, 350);
