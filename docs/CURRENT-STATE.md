@@ -1,5 +1,5 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 29 Mart 2026 | Session 44 | 514/553 test (27 fail — infra/public-page, core 446/446 PASS)
+> Son guncelleme: 30 Mart 2026 | Session 47 | 514 pass / 25 fail (pre-existing network/auth failures, core regression yok)
 
 ## 1. Proje Ozeti
 
@@ -78,20 +78,24 @@ hellotalent.ai, Turkiye perakende sektorune ozel bir yetenek pazaryeri. Adaylar 
 2. **Isveren kampanya wizard** — `ik.html` icinde planlanmis
 3. **Coach media V1 DB deploy** — `20260322142905_coach_media_fields.sql` henuz Supabase'e uygulanmadi
 4. **Badge genisletme** — Yetenek pratik badge'leri (evaluate_candidate_badges extension)
-5. **Design system token migration** — token'lar tanimlandi, 267 hardcoded rgba() toplu migration bekliyor
+5. **Design system token migration** — T05 audit + T06 Slice A + T07 Slice B TAMAMLANDI (Session 45-47). Slice B: `profil.css` 183 font-size + 35 hex renk → token, `shared.css` 80 font-size → token (commit 3cbbacc). Sonraki: Slice C (giris.html, gate.html, sifre-yenile.html, kucuk HTML'ler). Kalan borc: renk rgba orphan'lari (gutural analiz lazim), spacing token kullanimi C/D'de.
 6. **Smoke test fix** — 24 public page assertion guncellenmeli (header/footer, signup form, meta tags)
 7. **Auth setup fix** — test credential sorunu, 12 authenticated testi blokluyor
 8. **Label accessibility audit** — 43 uyari bekliyor
 9. **Dark mode remaining** — profil-settings.js alert->modal (7 instance), ik/giris/gate sayfalari
 10. **iyzico/Stripe checkout** — schema hazir, merchant hesap + API key gerekli (**her zaman en son**)
 
+## 5b. Sosyal Layer Audit Kararlari (Session 45 — 30 Mart)
+
+| # | Feature | Karar | Gerekce |
+|---|---------|-------|---------|
+| 41 | Kucuk Kohort Ligi | **DEFER** | Normalize skor yok, min 100+ aktif kullanici gerekli, kulturel shaming riski |
+| 42 | Sosyal Karsilastirma | **DEFER** | Veri granulerligi yetersiz (binary rating), min 50+ aktif pratikci gerekli |
+| 43 | Peer Practice | **DO NOT BUILD** | XL efor, video/realtime/moderation altyapisi yok, ayri urun seviyesi |
+
+**Sonuc:** T02/T03/T04 otomatik DEFERRED. Onkosula: 50+ aktif pratikci icin T42-lite (topluluk nabzi karti) yeniden degerlendirilir.
+
 ## 6. Son 3 Session Ozeti
-
-### Session 41 (27 Mart)
-Icerik dogallastirma + streak temeli. 29 yetkinligin ~460 davranissal maddesi AI kaliplari kaldirarak yeniden yazildi. Streak DB foundation (migration 20260327020000: candidate_streaks tablosu + 2 RPC). Lobby kisisellestirme: isimle karsilama, growing yetkinlik onerisi. 422/422 test.
-
-### Session 42 (28 Mart)
-FAZ 2C streak freeze/geri kazanim mekanigi (migration 20260328010000). FAZ 4C detail->practice bridge: modul/koc detayindan yetkinlik pratigine CTA. AI feedback hardening: gpt-4.1-mini, self-reflection, error sanitization. Edge Function deploy + canli AI E2E PASS. 422/422 test.
 
 ### Session 43 (29 Mart — sabah)
 FAZ 2C deploy (migration + frontend + canli smoke 4 state). FAZ 2D spaced repetition: needsReview(), review pill, daily pick onceligi. Phase 5B AI feedback redesign: hero kart + accordion progressive disclosure. AI pipeline fix: CORS + pg_cron + 75s poll. Canli E2E PASS.
@@ -104,6 +108,15 @@ FAZ 2C deploy (migration + frontend + canli smoke 4 state). FAZ 2D spaced repeti
 - Onboarding: "Ilk Adimin" spotlight karti (ilk giris), "Gunde 5 dakika" hero subtitle, daily card "hizli" tag
 - Studio duration: 10dk modul→7dk (migration pending deploy)
 - 446/446 core test PASS. 3 commit pushed: `69cf6d4`, `327eb6e`, `1ca07c8`.
+
+### Session 45 (30 Mart — sabah)
+**T01 Sosyal Layer Feasibility Audit:** 3 sosyal feature (kohort ligi, sosyal karsilastirma, peer practice) durust degerlendirildi. Hicbiri BUILD NOW almadi — veri yetersizligi, kullanici hacmi eksikligi, kulturel risk. T02/T03/T04 otomatik DEFERRED. Kod degisikligi yok, sadece analiz + dokumantasyon.
+
+### Session 46 (30 Mart — T06 Slice A)
+**Design token migration Slice A:** `--text-xs..3xl` (8 token) + `--space-1..12` (12 token) `shared.css :root`'a tasinmadi; eklendi (kopya, profil.css'de koyuldu). Butun B-D grup HTML dosyalari artik bu token'lara erisilebilir. 1 dosya degisti, 510 test gecti, regression yok. Commit: `fb579c7`.
+
+### Session 47 (30 Mart — T07 Slice B)
+**Design token migration Slice B:** `profil.css` 183 font-size literal (10px..20px) → `var(--text-*)`, 35 hex renk literal (#C94E28, #1E2D5E, #6B7280 vb.) → `var(--verm/verm-dark/navy/navy-deep/muted/gray/text)`. `shared.css` 80 font-size literal → `var(--text-*)`. Gradient stops da token'a donusturuldu. Token def'leri dokunulmadi (dairesel referans riski), `!important` rule'lari korundu. 514 test gecti, regression yok. Commit: `3cbbacc`.
 
 ## 7. Kritik Kurallar (Quick Ref)
 
