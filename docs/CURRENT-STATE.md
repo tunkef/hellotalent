@@ -1,5 +1,5 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 30 Mart 2026 | Session 47 | 514 pass / 25 fail (pre-existing network/auth failures, core regression yok)
+> Son guncelleme: 30 Mart 2026 | Session 50 | 24/24 dark-mode pass, badge migration deployed
 
 ## 1. Proje Ozeti
 
@@ -68,17 +68,17 @@ hellotalent.ai, Turkiye perakende sektorune ozel bir yetenek pazaryeri. Adaylar 
 ## 4. DB Durumu
 
 - **Baseline:** `20260322000000_baseline.sql` (migration 001-064 arsivlendi)
-- **Son migration:** `20260329010000_studio_duration_fix.sql` (Supabase deploy bekliyor)
-- **Toplam migration (baseline sonrasi):** 33 dosya
+- **Son migration:** `20260330010000_badge_extension.sql` (Supabase DEPLOYED)
+- **Toplam migration (baseline sonrasi):** 34 dosya
 - **Key tablolar:** `candidates` (bigint id), `companies` (bigint), `brands` (bigint), `hr_profiles` (uuid→auth.users), `experiences`, `education`, `candidate_languages`, `certificates`, `candidate_target_roles`, `candidate_blocked_companies`, `employer_messages`, `candidate_message_replies`, `employer_message_replies`, `email_outbox`, `subscriptions`, `employer_daily_usage`, `competency_definitions`, `role_competency_map`, `candidate_competencies`, `candidate_streaks`, `coach_profiles`, `coach_posts`, `coach_post_likes`, `coach_invites`, `studio_modules`, `candidate_studio_progress`, `badge_definitions`, `candidate_badges`, `candidate_journals`, `support_articles`, `support_tickets`, `company_teams`, `company_invitations`
 
 ## 5. Aktif Backlog
 
 1. **Studio duration migration deploy** — `20260329010000_studio_duration_fix.sql` Supabase'e uygulanmali (`npm run db:push`)
 2. **Isveren kampanya wizard** — `ik.html` icinde planlanmis
-3. **Coach media V1 DB deploy** — `20260322142905_coach_media_fields.sql` henuz Supabase'e uygulanmadi
-4. **Badge genisletme** — Yetenek pratik badge'leri (evaluate_candidate_badges extension)
-5. **Design system token migration** — T05 audit + T06 Slice A + T07 Slice B TAMAMLANDI (Session 45-47). Slice B: `profil.css` 183 font-size + 35 hex renk → token, `shared.css` 80 font-size → token (commit 3cbbacc). Sonraki: Slice C (giris.html, gate.html, sifre-yenile.html, kucuk HTML'ler). Kalan borc: renk rgba orphan'lari (gutural analiz lazim), spacing token kullanimi C/D'de.
+3. **Coach media V1 DB deploy** — `20260322142905_coach_media_fields.sql` ✅ TAMAMLANDI (Session 49, 30 Mart). `coach_posts.cover_image_url` + `cover_image_alt` kolonlari canli, nullable text.
+4. **Badge genisletme** — ✅ TAMAMLANDI (Session 50, 30 Mart). 9 yeni rozet (pratik 5/10/25/50, seri 7/30 gun, jurnal 1/5/10). 3 yeni rule_type (practice_total, streak_longest, journal_count). evaluate_candidate_badges genisletildi + record_yetenek_practice/update_candidate_streak/upsert_studio_journal hook'landi. 5 yeni ikon (flame, pen, medal, diamond, star). Migration: `20260330010000_badge_extension.sql`.
+5. **Design system token migration** — T05-T08 TAMAMLANDI (Slice A+B+C). Session 48 Slice C: 8 HTML dosyasi (giris, gate, sifre-yenile, coach-studio, admin, isveren, aday, index) — font-size + brand hex → token. profil.css T07 regression da duzeltildi (5x color:var(--text) → var(--text-primary)). Commit: `90b8fa9`. Kalan: Slice D (ik.html + profil.html — riskli, sadece style blok), Slice E (JS .style. track — defer), spacing token kullanimi D'de.
 6. **Smoke test fix** — 24 public page assertion guncellenmeli (header/footer, signup form, meta tags)
 7. **Auth setup fix** — test credential sorunu, 12 authenticated testi blokluyor
 8. **Label accessibility audit** — 43 uyari bekliyor
@@ -97,23 +97,11 @@ hellotalent.ai, Turkiye perakende sektorune ozel bir yetenek pazaryeri. Adaylar 
 
 ## 6. Son 3 Session Ozeti
 
-### Session 43 (29 Mart — sabah)
-FAZ 2C deploy (migration + frontend + canli smoke 4 state). FAZ 2D spaced repetition: needsReview(), review pill, daily pick onceligi. Phase 5B AI feedback redesign: hero kart + accordion progressive disclosure. AI pipeline fix: CORS + pg_cron + 75s poll. Canli E2E PASS.
+### Session 50 (30 Mart — T10 Badge Extension MVP)
+**Badge sistem genisletmesi:** 9 yeni rozet eklendi (6→15 toplam). 3 yeni rule_type: `practice_total` (yetenek pratik seansi SUM), `streak_longest` (en uzun seri candidate_streaks), `journal_count` (STAR+T gunluk sayisi). Pratik milestones: 5/10/25/50 seans. Seri milestones: 7/30 gun. Jurnal milestones: 1/5/10 kayit. `evaluate_candidate_badges()` RPC genisletildi, 3 ek RPC'ye hook eklendi: `record_yetenek_practice`, `update_candidate_streak`, `upsert_studio_journal`. Frontend'e 5 yeni ikon SVG: flame, pen, medal, diamond, star. 24/24 dark-mode test PASS. Migration `20260330010000_badge_extension.sql` Supabase'e deploy edildi.
 
-### Session 44 (29 Mart — aksam)
-**4 mini sweep kapandi:**
-- Bos state: badge strip empty hint ("Pratik yaparak ilk rozetini kazanabilirsin")
-- Mobil practice: Hazirlik Notlari accordion (signal+weak+followup mobilede kapali, desktopda acik)
-- Design system: type scale (--text-xs..3xl), spacing scale (--space-1..12), vermillion contrast fix (--verm-text:#b84420, WCAG AA 5.47:1)
-- Onboarding: "Ilk Adimin" spotlight karti (ilk giris), "Gunde 5 dakika" hero subtitle, daily card "hizli" tag
-- Studio duration: 10dk modul→7dk (migration pending deploy)
-- 446/446 core test PASS. 3 commit pushed: `69cf6d4`, `327eb6e`, `1ca07c8`.
-
-### Session 45 (30 Mart — sabah)
-**T01 Sosyal Layer Feasibility Audit:** 3 sosyal feature (kohort ligi, sosyal karsilastirma, peer practice) durust degerlendirildi. Hicbiri BUILD NOW almadi — veri yetersizligi, kullanici hacmi eksikligi, kulturel risk. T02/T03/T04 otomatik DEFERRED. Kod degisikligi yok, sadece analiz + dokumantasyon.
-
-### Session 46 (30 Mart — T06 Slice A)
-**Design token migration Slice A:** `--text-xs..3xl` (8 token) + `--space-1..12` (12 token) `shared.css :root`'a tasinmadi; eklendi (kopya, profil.css'de koyuldu). Butun B-D grup HTML dosyalari artik bu token'lara erisilebilir. 1 dosya degisti, 510 test gecti, regression yok. Commit: `fb579c7`.
+### Session 48 (30 Mart — T08 Slice C)
+**Design token migration Slice C:** 8 HTML dosyasi tamamen tokenize edildi. (1) gate/giris/sifre-yenile: font-size + brand hex → var(), lokal :root font token eklendi. (2) coach-studio/admin: font-size + muted color → var(), lokal :root font token eklendi. (3) isveren: font-size + #b84420/#C94E28 → var(--verm-dark/verm). (4) aday: 72 font-size + hover colors → token. (5) index: 114 font-size + brand hex → token (style block + inline HTML). Ayrica: profil.css T07 regression fix — 5x `color:var(--text)` → `color:var(--text-primary)` (dark mode semantics). 514 test gecti, 25 failure (pre-existing, ayni baseline). Commit: `90b8fa9`.
 
 ### Session 47 (30 Mart — T07 Slice B)
 **Design token migration Slice B:** `profil.css` 183 font-size literal (10px..20px) → `var(--text-*)`, 35 hex renk literal (#C94E28, #1E2D5E, #6B7280 vb.) → `var(--verm/verm-dark/navy/navy-deep/muted/gray/text)`. `shared.css` 80 font-size literal → `var(--text-*)`. Gradient stops da token'a donusturuldu. Token def'leri dokunulmadi (dairesel referans riski), `!important` rule'lari korundu. 514 test gecti, regression yok. Commit: `3cbbacc`.
