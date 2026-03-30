@@ -225,88 +225,28 @@ async function checkCurrentPremium() {
   } catch (e) { /* silent */ }
 }
 
-async function initiatePurchase(planKey, btn) {
-  if (typeof supabase === 'undefined') return;
-  var statusEl = document.getElementById('pm-purchase-status');
-
-  /* Disable all plan buttons during purchase */
-  var allBtns = document.querySelectorAll('.pm-plan-cta[data-plan]');
-  allBtns.forEach(function(b) { b.disabled = true; });
-  btn.textContent = '\u0130\u015Fleniyor\u2026';
-
-  try {
-    var amountCents = PLAN_AMOUNTS[planKey] || 14900;
-
-    /* Step 1: Create pending purchase record */
-    var res = await supabase.rpc('initiate_premium_purchase', {
-      p_plan_key: planKey,
-      p_amount_cents: amountCents
-    });
-
-    if (res.error) {
-      showPurchaseStatus('Hata: ' + res.error.message, 'error');
-      resetButtons();
-      return;
-    }
-
-    var purchaseId = res.data;
-
-    /* Step 2: In production, redirect to iyzico checkout with purchaseId.
-       For now, since iyzico credentials are not yet configured,
-       we activate directly via webhook for testing/demo. */
-    var webhookRes = await supabase.functions.invoke('premium-webhook', {
-      body: {
-        purchase_id: purchaseId,
-        provider_payment_id: 'demo_' + purchaseId + '_' + Date.now(),
-        provider_status: 'success'
-      }
-    });
-
-    if (webhookRes.error) {
-      showPurchaseStatus('\u00d6deme i\u015Flenemedi. L\u00fctfen tekrar deneyin.', 'error');
-      resetButtons();
-      return;
-    }
-
-    var result = webhookRes.data;
-    if (result && result.ok) {
-      /* Step 3: Refresh profile data to pick up new premium state */
-      await refreshPremiumState();
-      showPurchaseStatus('\u2713 Premium aktivasyonunuz tamamland\u0131! T\u00fcm \u00f6zellikler a\u00e7\u0131ld\u0131.', 'success');
-      checkCurrentPremium();
-    } else {
-      showPurchaseStatus('\u00d6deme do\u011frulanamad\u0131. L\u00fctfen destek ile ileti\u015fime ge\u00e7in.', 'error');
-      resetButtons();
-    }
-  } catch (e) {
-    console.error('premium purchase error:', e);
-    showPurchaseStatus('Beklenmeyen bir hata olu\u015ftu. L\u00fctfen tekrar deneyin.', 'error');
-    resetButtons();
-  }
+function initiatePurchase(planKey, btn) {
+  /* \u00d6deme sistemi hen\u00fcz aktif de\u011fil \u2014 iyzico entegrasyonu tamamlan\u0131nca a\u00e7\u0131lacak */
+  showPurchaseStatus('\u00c7ok Yak\u0131nda \u2014 \u00f6deme sistemi \u00e7ok yak\u0131nda aktif olacak.', 'info');
 }
 
 function showPurchaseStatus(msg, type) {
   var el = document.getElementById('pm-purchase-status');
   if (!el) return;
   el.style.display = 'block';
-  el.style.background = type === 'success' ? 'rgba(5,150,105,.08)' : 'rgba(220,38,38,.08)';
-  el.style.color = type === 'success' ? '#059669' : '#DC2626';
+  el.style.background = type === 'success' ? 'rgba(5,150,105,.08)' : type === 'info' ? 'rgba(30,45,94,.06)' : 'rgba(220,38,38,.08)';
+  el.style.color = type === 'success' ? '#059669' : type === 'info' ? 'var(--navy,#1E2D5E)' : '#DC2626';
   el.textContent = msg;
-}
-
-function resetButtons() {
-  var btns = document.querySelectorAll('.pm-plan-cta[data-plan]');
-  btns.forEach(function(b, i) {
-    b.disabled = false;
-    b.textContent = i === 1 ? 'Hemen Ba\u015fla' : 'Se\u00e7';
-  });
 }
 
 async function refreshPremiumState() {
   if (typeof supabase === 'undefined') return;
   try {
-    /* Re-fetch is_premium from candidates table */
-    var res = await supabase.from('candidates').select('is_premium, premium_until').maybeSingle();
+    var sessionRes = await supabase.auth.getSession();
+    var userId = sessionRes.data && sessionRes.data.session && sessionRes.data.session.user && sessionRes.data.session.user.id;
+    if (!userId) return;
+    /* Re-fetch is_premium from candidates table — explicit user_id filter as defense-in-depth */
+    var res = await supabase.from('candidates').select('is_premium, premium_until').eq('user_id', userId).maybeSingle();
     if (res.data && typeof _loadedDBData !== 'undefined' && _loadedDBData && _loadedDBData.profile) {
       _loadedDBData.profile.is_premium = res.data.is_premium === true;
       _loadedDBData.profile.premium_until = res.data.premium_until;

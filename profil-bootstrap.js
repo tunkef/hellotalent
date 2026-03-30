@@ -28,7 +28,6 @@ function reapplyDynamicFields() {
   // Step 4 selects + chips (options/chips created by initStep4)
   if (db.work_prefs) {
     var wp = db.work_prefs;
-    setVal('f-maas', wp.maas_beklenti);
     // Müsaitlik chips
     if (wp.musaitlik) {
       selectedMusaitlik = wp.musaitlik;

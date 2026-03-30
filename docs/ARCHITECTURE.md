@@ -22,7 +22,7 @@ Profil page (`profil.html`) script tag order — **position matters**:
 | 3 | `profil-data.js` | Reference data: `TUR_ILLER`, `BRAND_DB`, `SEKTOR_ROL_MAP` | profil-core.js |
 | 4 | `profil-ui.js` | Wizard core: step init/collect, save RPC, load, helpers (~1928 lines) | profil-core + data |
 | 5-9 | `profil-locations`, `profil-summary`, `profil-genel`, `profil-visibility`, `profil-preview`, `profil-cv` | Extracted domain modules | profil-ui |
-| 10-14 | `profil-markalar`, `profil-settings`, `profil-teklifler`, `profil-inbox`, `profil-yetkinlik`, `profil-mulakatkocu`, `profil-premium` | Feature modules | profil-ui |
+| 10-14 | `profil-markalar`, `profil-settings`, `profil-teklifler`, `profil-inbox`, `profil-yetkinlik`, `profil-studio`, `profil-premium` | Feature modules | profil-ui |
 | 15 | **`profil-wizard.js`** | Wizard state machine, validation, `switchPanel()`, mobile sidebar | profil-ui |
 | 16 | **`profil-draft.js`** | `setVal`, `saveDraft`, `loadDraft`, `clearDraft`, `applyDraft` | profil-wizard |
 | 17 | **`profil-helpers.js`** | `[data-panel]` delegation, `refreshAfterSettingsSave`, visibility helpers | profil-wizard |
@@ -38,7 +38,7 @@ Bold = Session 21 extraction. Order is critical: wizard -> draft -> helpers -> k
 
 - **Hash-based routing**: `#merkez`, `#ayarlar`, `#kimbakti`, `#mulakat`, etc.
 - **`switchPanel(panelKey)`**: defined in `profil-wizard.js`, called by helpers/events/genel/inbox + inline delegation.
-- **Lazy-load pattern**: feature modules expose `window._htLoadXxx()` loaders (e.g., `window._htLoadMulakat()`). `switchPanel` calls the loader on first visit, subsequent visits reuse cached DOM.
+- **Lazy-load pattern**: feature modules expose `window._htLoadXxx()` loaders (e.g., `window._htLoadStudio()`). `switchPanel` calls the loader on first visit, subsequent visits reuse cached DOM.
 - **Bootstrap sync**: `profil-bootstrap.js` sets `window._htBootstrapDone = true` and dispatches `ht:bootstrap-done` custom event. `profil-events.js` waits for this event before restoring hash from URL (fixes 300ms race condition).
 
 ---
@@ -52,8 +52,8 @@ Bold = Session 21 extraction. Order is critical: wizard -> draft -> helpers -> k
 | `switchPanel` | profil-wizard.js | profil-helpers, profil-events, profil-genel, profil-inbox, inline delegation |
 | `_htBootstrapDone` | profil-bootstrap.js | profil-events.js (hash restore gate) |
 | `ht:bootstrap-done` event | profil-bootstrap.js | profil-events.js (listener) |
-| `window._htLoadMulakat()` | profil-mulakatkocu.js | switchPanel lazy-load |
-| `window._htYetkinlikData` | profil-yetkinlik.js | profil-mulakatkocu.js (data bridge: ANCHORS, ROLE_COMP_MAP, COMP_NAMES, COMP_KF, FREE_LIMIT) |
+| `window._htLoadStudio()` | profil-studio.js | switchPanel lazy-load |
+| `window._htYetkinlikData` | profil-yetkinlik.js | profil-studio.js (data bridge: ANCHORS, ROLE_COMP_MAP, COMP_NAMES, COMP_KF, FREE_LIMIT) |
 | `window.syncBeniOner()` | profil-ui.js | profil-settings.js, profil.html |
 | `window.syncActivelyLooking()` | profil-ui.js | profil-settings.js |
 | `HT.getSupa()` | shared.js | all files |

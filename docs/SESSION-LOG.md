@@ -1,8 +1,23 @@
 # hellotalent.ai — Session Log (Arşiv)
-> Son güncelleme: 29 Mart 2026 (Session 43 + test truth-sync)
+> Son güncelleme: 30 Mart 2026 (Session 57 — Studio redesign S01-S06 smoke + deploy)
 > Bu doküman session tarihçesidir. Günlük truth için `docs/CURRENT-STATE.md`, mimari için `docs/ARCHITECTURE.md` okuyun.
-> Test truth düzeltmesi (29 Mart 2026): Handoff'taki "446/446" iddiası stale. Gerçek: 514 passed, 27 failed (infra/public-page), 12 did not run. Core feature testleri sağlam.
+> Test truth düzeltmesi (30 Mart 2026): p3 regression 446/446, full smoke 540 passed / 1 blocked (auth env vars) / 12 did not run (e2e chain — bilinen).
 
+---
+
+## Session 57 — 30 Mart 2026 (S07 Studio Redesign Smoke + Deploy + Docs Sync)
+
+**Studio redesign tamamlandi ve canliya alindi.** S01-S06 kapsami:
+- S01: `profil-mulakatkocu.js` → `profil-studio.js` yeniden adlandirma, global.d.ts + ARCHITECTURE.md guncelleme
+- S02: Studio panel CSS tam genislik layout
+- S03: Lobby yeniden tasarimi — inline rol secimi, returning user → lobby routing
+- S04: Kurs detay sayfasi — 3 sekme (Sorular / Seans / Notlar), kompakt hero
+- S05: Pratik odak modu — drawer sistemi (Bağlam / Notlar / Günlük), focus layout
+- S06: Completion + session_complete ekranlari focus mode ile hizalama, ← Öğrenme Planı back nav
+- S07: 446/446 + 540/553 smoke PASS, git push, deploy dogrulama
+
+**Testler:** p3 regression 446/446 PASS. Smoke 540 passed, 1 failed (auth env vars — pre-existing), 12 did not run.
+**Commit:** `feat: studio redesign — learning path, course detail, focus mode practice`
 
 ---
 

@@ -1,7 +1,7 @@
 /* global supabase, _loadedDBData */
 /**
- * profil-mulakatkocu.js — Stüdyo (Studio) Panel
- * Studio landing (star_intro) → Yetenek flow: role_select → lobby → competency_intro → practice → completion → session_complete
+ * profil-studio.js — Stüdyo (Studio) Panel
+ * Studio flow: lobby (learning path) → course_detail → practice → completion → session_complete
  * Depends on profil-yetkinlik.js bridge: window._htYetkinlikData
  * All innerHTML content comes from hardcoded constants — no user input, no XSS risk.
  */
@@ -304,13 +304,16 @@ var S = {
   starHintOpen: false,
   coachOpen: false,
   journalOpen: false,
+  drawerOpen: false,
+  drawerTab: 'star',
+  activeTab: 'overview',
   completedComps: [],
   totalAnswered: 0,
   totalSwaps: 0
 };
 
 function resetState() {
-  S.screen = 'star_intro';
+  S.screen = 'lobby';
   S.role = null;
   S.comps = [];
   S.isPremium = false;
@@ -320,9 +323,10 @@ function resetState() {
   S.currentQ = 0;
   S.swapsUsed = 0;
   S.answeredCount = 0;
-  S.starHintOpen = false;
-  S.coachOpen = false;
+  S.drawerOpen = false;
+  S.drawerTab = 'star';
   S.journalOpen = false;
+  S.activeTab = 'overview';
   S.completedComps = [];
   S.totalAnswered = 0;
   S.totalSwaps = 0;
@@ -635,6 +639,7 @@ function saveSession() {
       starHintOpen: S.starHintOpen,
       coachOpen: S.coachOpen,
       journalOpen: S.journalOpen,
+      activeTab: S.activeTab,
       completedComps: S.completedComps,
       totalAnswered: S.totalAnswered,
       totalSwaps: S.totalSwaps
@@ -661,6 +666,7 @@ function loadSession() {
     S.starHintOpen = data.starHintOpen || false;
     S.coachOpen = data.coachOpen || false;
     S.journalOpen = data.journalOpen || false;
+    S.activeTab = data.activeTab || 'overview';
     S.completedComps = data.completedComps || [];
     S.totalAnswered = data.totalAnswered || 0;
     S.totalSwaps = data.totalSwaps || 0;
@@ -868,7 +874,7 @@ function injectCSS() {
   css += '.ig-btn-coach.active{background:var(--verm,#C94E28);color:#fff}';
 
   /* Competency Intro screen */
-  css += '.ig-intro-wrap{max-width:640px;margin:0 auto;animation:igFadeIn .3s ease}';
+  css += '.ig-intro-wrap{max-width:100%;margin:0;animation:igFadeIn .3s ease}';
   css += '.ig-intro-hero{background:linear-gradient(135deg,#2A3F7A 0%,#1E2D5E 50%,#162247 100%);border-radius:24px;padding:28px 24px;margin-bottom:16px;color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.08),0 8px 20px rgba(0,0,0,.06)}';
   css += '.ig-intro-comp-name{font-family:"Bricolage Grotesque",sans-serif;font-size:22px;font-weight:800;margin-bottom:6px}';
   css += '.ig-intro-comp-def{font-family:"Plus Jakarta Sans",sans-serif;font-size:13px;color:rgba(255,255,255,.75);line-height:1.6}';
@@ -885,6 +891,33 @@ function injectCSS() {
   css += '.ig-intro-star-letters{display:flex;gap:6px;margin-top:12px}';
   css += '.ig-intro-star-badge{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:"Bricolage Grotesque",sans-serif;font-size:15px;font-weight:900;color:#fff}';
   css += '.ig-intro-cta-row{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}';
+
+  /* ── Course Detail — Tab Bar ── */
+  css += '.st-tab-bar{display:flex;gap:0;border-bottom:2px solid var(--border-subtle,#E5E3DF);margin-bottom:20px}';
+  css += '.st-tab{padding:10px 20px;font-family:"Plus Jakarta Sans",sans-serif;font-size:13px;font-weight:600;color:var(--text-muted,#6B7280);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .2s}';
+  css += '.st-tab:hover{color:var(--text-primary,#111)}';
+  css += '.st-tab.active{color:var(--verm,#C94E28);border-bottom-color:var(--verm,#C94E28)}';
+  css += '.st-tab-content{animation:igFadeIn .25s ease}';
+  /* Course detail — hero progress bar */
+  css += '.st-cd-progress{background:rgba(255,255,255,.15);border-radius:6px;height:6px;overflow:hidden;margin-top:10px;max-width:280px}';
+  css += '.st-cd-progress-fill{height:100%;border-radius:6px;background:#fff;transition:width .4s ease}';
+  /* Course detail — question list */
+  css += '.st-q-row{display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid var(--border-subtle,#E5E3DF)}';
+  css += '.st-q-row:last-child{border-bottom:none}';
+  css += '.st-q-num{font-family:"DM Mono",monospace;font-size:13px;font-weight:700;color:var(--verm,#C94E28);min-width:24px;text-align:right;padding-top:1px}';
+  css += '.st-q-body{flex:1;min-width:0}';
+  css += '.st-q-theme{font-family:"Plus Jakarta Sans",sans-serif;font-size:11px;font-weight:600;color:var(--text-muted,#6B7280);text-transform:uppercase;letter-spacing:.3px;margin-bottom:2px}';
+  css += '.st-q-text{font-family:"Plus Jakarta Sans",sans-serif;font-size:13px;color:var(--text-primary,#111);line-height:1.5}';
+  css += '.st-q-status{font-size:14px;min-width:20px;text-align:center;padding-top:1px}';
+  /* Course detail — notes tab empty state */
+  css += '.st-notes-empty{text-align:center;padding:40px 20px;color:var(--text-muted,#6B7280);font-family:"Plus Jakarta Sans",sans-serif;font-size:13px;line-height:1.7}';
+  /* Course detail — journal entry card in notes tab */
+  css += '.st-note-card{background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF);border-radius:16px;padding:16px 18px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.04)}';
+  css += '.st-note-q{font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;font-weight:600;color:var(--text-primary,#111);margin-bottom:8px}';
+  css += '.st-note-fields{display:grid;grid-template-columns:auto 1fr;gap:4px 10px;font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;color:var(--text-secondary,#4B5563)}';
+  css += '.st-note-badge{font-family:"DM Mono",monospace;font-size:11px;font-weight:700;color:#fff;width:22px;height:22px;border-radius:5px;display:flex;align-items:center;justify-content:center}';
+  css += '.st-note-feedback{margin-top:10px;padding-top:10px;border-top:1px solid var(--border-subtle,#E5E3DF);font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;color:var(--text-secondary,#4B5563)}';
+  css += '.st-note-feedback-label{font-weight:600;color:var(--navy,#1E2D5E);margin-bottom:4px}';
 
   /* Journal panel (practice screen) */
   css += '.ig-journal-wrap{margin-top:20px;animation:igFadeIn .3s ease}';
@@ -1143,15 +1176,18 @@ function injectCSS() {
   css += '.yk-unit-weak-item{font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;color:var(--text-secondary,#4B5563);line-height:1.6;margin-bottom:3px;display:flex;align-items:flex-start;gap:8px}';
   css += '.yk-unit-weak-item::before{content:"";width:5px;height:5px;border-radius:50%;background:#DC2626;flex-shrink:0;margin-top:7px}';
 
-  /* Lightweight summary */
-  css += '.yk-summary-wrap{max-width:420px;margin:0 auto;text-align:center;animation:igFadeIn .3s ease}';
-  css += '.yk-summary-card{background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF);border-radius:16px;padding:32px 24px;box-shadow:0 2px 8px rgba(0,0,0,.06)}';
-  css += '.yk-summary-title{font-family:"Bricolage Grotesque",sans-serif;font-size:18px;font-weight:700;color:var(--text-primary,#111);margin-bottom:8px}';
-  css += '.yk-summary-desc{font-family:"Plus Jakarta Sans",sans-serif;font-size:13px;color:var(--text-muted,#6B7280);line-height:1.5;margin-bottom:16px}';
-  css += '.yk-summary-stats{display:flex;gap:16px;justify-content:center;margin-bottom:20px}';
+  /* Summary screens — focus mode layout (matches practice background) */
+  css += '.yk-summary-wrap{width:100%;background:var(--bg-app,#F7F6F4);padding:40px 20px 56px;min-height:calc(100vh - 56px);box-sizing:border-box;animation:igFadeIn .25s ease}';
+  css += '.yk-summary-back{display:flex;align-items:center;gap:6px;font-family:"Plus Jakarta Sans",sans-serif;font-size:13px;font-weight:600;color:var(--text-muted,#6B7280);background:none;border:none;cursor:pointer;padding:0 0 24px;transition:color .15s;max-width:720px;margin:0 auto;width:100%}';
+  css += '.yk-summary-back:hover{color:var(--text-primary,#111)}';
+  css += '.yk-summary-back svg{width:14px;height:14px;flex-shrink:0}';
+  css += '.yk-summary-card{max-width:720px;margin:0 auto;background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF);border-radius:16px;padding:40px 36px;box-shadow:0 2px 8px rgba(0,0,0,.06),0 8px 20px rgba(0,0,0,.04);text-align:center}';
+  css += '.yk-summary-title{font-family:"Bricolage Grotesque",sans-serif;font-size:22px;font-weight:700;color:var(--text-primary,#111);margin-bottom:8px}';
+  css += '.yk-summary-desc{font-family:"Plus Jakarta Sans",sans-serif;font-size:14px;color:var(--text-muted,#6B7280);line-height:1.6;margin-bottom:20px}';
+  css += '.yk-summary-stats{display:flex;gap:24px;justify-content:center;margin-bottom:24px;padding:20px 0;border-top:1px solid var(--border-subtle,#E5E3DF);border-bottom:1px solid var(--border-subtle,#E5E3DF)}';
   css += '.yk-summary-stat{text-align:center}';
-  css += '.yk-summary-stat-num{font-family:"DM Mono",monospace;font-size:24px;font-weight:700;color:var(--text-primary,#111)}';
-  css += '.yk-summary-stat-label{font-family:"Plus Jakarta Sans",sans-serif;font-size:10px;color:var(--text-muted,#6B7280)}';
+  css += '.yk-summary-stat-num{font-family:"DM Mono",monospace;font-size:28px;font-weight:700;color:var(--text-primary,#111)}';
+  css += '.yk-summary-stat-label{font-family:"Plus Jakarta Sans",sans-serif;font-size:11px;color:var(--text-muted,#6B7280);margin-top:2px}';
   css += '.yk-prep-accordion{margin-top:16px}';
   css += '.yk-prep-toggle{display:none;font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;font-weight:600;color:var(--text-muted,#6B7280);background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF);border-radius:10px;padding:10px 16px;cursor:pointer;width:100%;text-align:left;transition:all .2s}';
   css += '.yk-prep-toggle:hover{color:var(--text-primary,#111);border-color:var(--text-muted,#6B7280)}';
@@ -1375,11 +1411,175 @@ function injectCSS() {
   css += '.ig-progress-strip{flex-wrap:wrap}';
   css += '.ig-intro-signals{grid-template-columns:1fr}';
   css += '.ig-intro-signal-full{grid-column:1/-1}';
+  css += '.st-tab{padding:10px 14px;font-size:12px}';
   css += '.ig-landing-grid{grid-template-columns:1fr}';
   css += '.ig-lcard.span-2{grid-column:1/-1}';
   css += '.ig-landing-star-grid{grid-template-columns:1fr}';
   css += '.ig-landing-title{font-size:24px}';
   css += '.ig-landing-hero{padding:28px 20px 24px;border-radius:16px}';
+  css += '}';
+
+  /* ── New Studio Screen Classes (S02 — full-width redesign) ── */
+
+  /* Lobby — full-width bento grid container */
+  css += '.st-lobby{width:100%;animation:igFadeIn .25s ease}';
+
+  /* Course Detail — full-width tab structure */
+  css += '.st-course-detail{width:100%;animation:igFadeIn .25s ease}';
+
+  /* Practice — focus mode, full width, open background */
+  css += '.st-practice{width:100%;background:var(--bg-app,#F7F6F4);padding:72px 16px 88px;min-height:calc(100vh - 56px);animation:igFadeIn .25s ease;box-sizing:border-box}';
+
+  /* Practice question card — centered, max 720px */
+  css += '.st-practice-card{max-width:720px;margin:0 auto;background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF);border-radius:16px;padding:32px 28px;box-shadow:0 2px 8px rgba(0,0,0,.08),0 8px 20px rgba(0,0,0,.06);animation:igFadeIn .3s ease}';
+
+  /* Top bar — fixed top (practice mode) */
+  css += '.st-top-bar{position:fixed;top:56px;left:0;right:0;z-index:80;background:var(--bg-surface,#fff);border-bottom:1px solid var(--border-subtle,#E5E3DF);padding:0 20px;height:52px;display:flex;align-items:center;gap:12px}';
+  css += '.st-top-bar-back{display:flex;align-items:center;gap:6px;font-family:"Plus Jakarta Sans",sans-serif;font-size:13px;font-weight:600;color:var(--text-secondary,#4B5563);background:none;border:none;cursor:pointer;padding:0;transition:color .15s;flex-shrink:0}';
+  css += '.st-top-bar-back:hover{color:var(--text-primary,#111)}';
+  css += '.st-top-bar-back svg{width:16px;height:16px}';
+  css += '.st-top-bar-progress{flex:1;display:flex;align-items:center;gap:10px;min-width:0}';
+  css += '.st-top-bar-bar{flex:1;height:4px;background:var(--border-subtle,#E5E3DF);border-radius:2px;overflow:hidden}';
+  css += '.st-top-bar-fill{height:100%;background:var(--verm,#C94E28);border-radius:2px;transition:width .4s ease}';
+  css += '.st-top-bar-count{font-family:"DM Mono",monospace;font-size:11px;color:var(--text-muted,#6B7280);white-space:nowrap;flex-shrink:0}';
+  css += '.st-top-bar-comp{font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;font-weight:600;color:var(--text-muted,#6B7280);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px}';
+  css += '.st-top-bar-skip{font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;font-weight:600;color:var(--text-muted,#6B7280);background:none;border:none;cursor:pointer;padding:0;flex-shrink:0;transition:color .15s}';
+  css += '.st-top-bar-skip:hover{color:var(--text-primary,#111)}';
+
+  /* Bottom bar — fixed action bar (practice mode) */
+  css += '.st-bottom-bar{position:fixed;bottom:0;left:0;right:0;z-index:80;background:var(--bg-surface,#fff);border-top:1px solid var(--border-subtle,#E5E3DF);padding:0 20px;height:68px;display:flex;align-items:center;gap:10px;justify-content:space-between}';
+  css += '.st-bottom-bar-left{display:flex;gap:8px;align-items:center}';
+  css += '.st-bottom-bar-right{display:flex;gap:8px;align-items:center}';
+  css += '.st-bar-btn{display:inline-flex;align-items:center;gap:6px;font-family:"Plus Jakarta Sans",sans-serif;font-size:13px;font-weight:600;border-radius:10px;padding:10px 18px;cursor:pointer;transition:all .2s;border:none}';
+  css += '.st-bar-btn svg{width:16px;height:16px}';
+  css += '.st-bar-btn-ghost{background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF) !important;color:var(--text-secondary,#4B5563)}';
+  css += '.st-bar-btn-ghost:hover{border-color:var(--text-muted,#6B7280) !important;color:var(--text-primary,#111)}';
+  css += '.st-bar-btn-primary{background:var(--verm,#C94E28);color:#fff}';
+  css += '.st-bar-btn-primary:hover{background:var(--verm-dark,#b84420)}';
+
+  /* Drawer — right-side slide-in panel */
+  css += '.st-drawer{position:fixed;top:108px;right:0;bottom:68px;width:360px;background:var(--bg-surface,#fff);border-left:1px solid var(--border-subtle,#E5E3DF);box-shadow:-4px 0 24px rgba(0,0,0,.08);transform:translateX(100%);transition:transform .3s ease;overflow-y:auto;padding:20px;z-index:70;box-sizing:border-box}';
+  css += '.st-drawer.open{transform:translateX(0)}';
+  css += '.st-drawer-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}';
+  css += '.st-drawer-title{font-family:"Bricolage Grotesque",sans-serif;font-size:14px;font-weight:700;color:var(--text-primary,#111)}';
+  css += '.st-drawer-close{width:28px;height:28px;border-radius:8px;border:1px solid var(--border-subtle,#E5E3DF);background:var(--bg-surface,#fff);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text-muted,#6B7280);transition:all .15s;flex-shrink:0}';
+  css += '.st-drawer-close:hover{border-color:var(--verm,#C94E28);color:var(--verm,#C94E28)}';
+  css += '.st-drawer-close svg{width:12px;height:12px}';
+
+  /* Drawer tabs (inside drawer header) */
+  css += '.st-drawer-tabs{display:flex;gap:0;flex:1;min-width:0}';
+  css += '.st-drawer-tab{font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;font-weight:600;color:var(--text-muted,#6B7280);background:none;border:none;border-bottom:2px solid transparent;padding:8px 14px;cursor:pointer;transition:all .2s;white-space:nowrap}';
+  css += '.st-drawer-tab:hover{color:var(--text-primary,#111)}';
+  css += '.st-drawer-tab.active{color:var(--verm,#C94E28);border-bottom-color:var(--verm,#C94E28)}';
+
+  /* Drawer body + sections */
+  css += '.st-drawer-body{padding-top:4px}';
+  css += '.st-drawer-section{margin-bottom:16px}';
+  css += '.st-drawer-section-title{font-family:"Bricolage Grotesque",sans-serif;font-size:13px;font-weight:700;color:var(--text-primary,#111);margin-bottom:8px;display:flex;align-items:center;gap:6px}';
+  css += '.st-drawer-section-title svg{width:14px;height:14px}';
+  css += '.st-drawer-section-desc{font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;color:var(--text-muted,#6B7280);line-height:1.5;margin-bottom:10px}';
+  css += '.st-drawer-empty{font-family:"Plus Jakarta Sans",sans-serif;font-size:13px;color:var(--text-muted,#6B7280);text-align:center;padding:24px 16px}';
+
+  /* Drawer backdrop */
+  css += '.st-drawer-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:65;animation:igFadeIn .2s ease}';
+
+  /* Journal drawer (separate from hint drawer) */
+  css += '.st-journal-drawer{position:fixed;top:108px;right:0;bottom:68px;width:400px;background:var(--bg-surface,#fff);border-left:1px solid var(--border-subtle,#E5E3DF);box-shadow:-4px 0 24px rgba(0,0,0,.08);transform:translateX(100%);transition:transform .3s ease;overflow-y:auto;padding:20px;z-index:72;box-sizing:border-box}';
+  css += '.st-journal-drawer.open{transform:translateX(0)}';
+
+  /* Bar button labels */
+  css += '.st-bar-label{display:inline}';
+
+  /* Practice question card overrides (focus mode — bigger text) */
+  css += '.st-practice-card .st-q-num{font-family:"DM Mono",monospace;font-size:12px;font-weight:600;color:var(--text-muted,#6B7280);text-align:left;min-width:auto;margin-bottom:12px}';
+  css += '.st-practice-card .st-q-theme{font-family:"DM Mono",monospace;font-size:11px;font-weight:600;color:var(--text-muted,#6B7280);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px}';
+  css += '.st-practice-card .st-q-text{font-family:"Plus Jakarta Sans",sans-serif;font-size:17px;font-weight:400;color:var(--text-primary,#111);line-height:1.6}';
+
+  /* Tab bar + tab content */
+  css += '.st-tab-bar{display:flex;gap:0;border-bottom:1px solid var(--border-subtle,#E5E3DF);margin-bottom:20px;overflow-x:auto;-webkit-overflow-scrolling:touch}';
+  css += '.st-tab-bar::-webkit-scrollbar{display:none}';
+  css += '.st-tab{font-family:"Plus Jakarta Sans",sans-serif;font-size:13px;font-weight:600;color:var(--text-muted,#6B7280);background:none;border:none;border-bottom:2px solid transparent;padding:12px 20px;cursor:pointer;transition:all .2s;white-space:nowrap;flex-shrink:0}';
+  css += '.st-tab:hover{color:var(--text-primary,#111)}';
+  css += '.st-tab.active{color:var(--verm,#C94E28);border-bottom-color:var(--verm,#C94E28)}';
+  css += '.st-tab-content{animation:igFadeIn .2s ease}';
+
+  /* Course card — yetkinlik kurs kartı (bento grid child) */
+  css += '.st-course-card{background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF);border-radius:16px;padding:20px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.08),0 8px 20px rgba(0,0,0,.06);transition:all .3s ease;animation:igSlideUp .35s ease both;display:flex;flex-direction:column;gap:10px}';
+  css += '.st-course-card:hover{box-shadow:0 8px 24px rgba(0,0,0,.06);transform:translateY(-2px);border-color:var(--verm,#C94E28)}';
+  css += '.st-course-card.done{border-color:rgba(201,78,40,.3);background:rgba(201,78,40,.02)}';
+  css += '.st-course-card.active-card{border-color:var(--verm,#C94E28);border-width:2px}';
+  css += '.st-course-card.locked{opacity:.55;cursor:default}';
+  css += '.st-course-card.locked:hover{transform:none;border-color:var(--border-subtle,#E5E3DF);box-shadow:0 2px 8px rgba(0,0,0,.08),0 8px 20px rgba(0,0,0,.06)}';
+  css += '.st-course-name{font-family:"Bricolage Grotesque",sans-serif;font-size:15px;font-weight:700;color:var(--text-primary,#111);line-height:1.25}';
+  css += '.st-course-kf{font-family:"DM Mono",monospace;font-size:10px;color:var(--text-muted,#6B7280);letter-spacing:.4px}';
+  css += '.st-course-progress-wrap{display:flex;flex-direction:column;gap:4px}';
+  css += '.st-course-progress-bar{height:4px;background:var(--border-subtle,#E5E3DF);border-radius:2px;overflow:hidden}';
+  css += '.st-course-progress-fill{height:100%;background:var(--verm,#C94E28);border-radius:2px;transition:width .4s ease}';
+  css += '.st-course-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:2px}';
+  css += '.st-course-dur{display:inline-flex;align-items:center;gap:4px;font-family:"DM Mono",monospace;font-size:10px;color:var(--text-muted,#6B7280)}';
+  css += '.st-course-dur svg{width:11px;height:11px}';
+  css += '.st-course-status{font-family:"DM Mono",monospace;font-size:9px;font-weight:600;letter-spacing:.3px;padding:2px 8px;border-radius:20px}';
+  css += '.st-course-status.done{color:#059669;background:rgba(5,150,105,.08)}';
+  css += '.st-course-status.active{color:var(--verm,#C94E28);background:rgba(201,78,40,.08)}';
+  css += '.st-course-status.locked{color:var(--text-muted,#6B7280);background:var(--bg-muted,#F7F6F4)}';
+
+  /* Lobby course card sub-elements */
+  css += '.st-course-card-name{font-family:"Bricolage Grotesque",sans-serif;font-size:14px;font-weight:700;color:var(--text-primary,#111);line-height:1.3}';
+  css += '.st-course-card-kf{font-family:"DM Mono",monospace;font-size:10px;color:var(--text-muted,#6B7280);letter-spacing:.4px;text-transform:uppercase}';
+  css += '.st-course-card-progress{height:4px;background:var(--border-subtle,#E5E3DF);border-radius:2px;overflow:hidden}';
+  css += '.st-course-card-progress-fill{height:100%;background:var(--verm,#C94E28);border-radius:2px;transition:width .4s ease}';
+  css += '.st-course-locked:hover{transform:none !important;border-color:var(--border-subtle,#E5E3DF) !important}';
+
+  /* Lobby bento responsive */
+  css += '@media(max-width:900px){.st-lobby [style*="grid-template-columns"]{grid-template-columns:repeat(2,1fr) !important}}';
+  css += '@media(max-width:600px){.st-lobby [style*="grid-template-columns"]{grid-template-columns:1fr !important}}';
+
+  /* Dark mode overrides for new Studio classes */
+  css += 'html[data-theme="dark"] .st-practice{background:var(--bg-elevated,#1F2937)}';
+  css += 'html[data-theme="dark"] .st-top-bar,html[data-theme="dark"] .st-bottom-bar{background:var(--bg-surface,#111827);border-color:rgba(255,255,255,.06)}';
+  css += 'html[data-theme="dark"] .st-drawer{background:var(--bg-surface,#111827);border-color:rgba(255,255,255,.06)}';
+  css += 'html[data-theme="dark"] .st-tab-bar{border-color:rgba(255,255,255,.06)}';
+  css += 'html[data-theme="dark"] .st-tab.active{color:var(--verm,#C94E28);border-bottom-color:var(--verm,#C94E28)}';
+  css += 'html[data-theme="dark"] .st-bar-btn-ghost{background:var(--bg-elevated,#1F2937);border-color:rgba(255,255,255,.1) !important;color:var(--text-secondary,#D1D5DB)}';
+  css += 'html[data-theme="dark"] .st-course-card{background:var(--bg-surface,#111827);border-color:rgba(255,255,255,.08)}';
+  css += 'html[data-theme="dark"] .st-course-card.done{background:rgba(201,78,40,.05);border-color:rgba(201,78,40,.25)}';
+  css += 'html[data-theme="dark"] .st-course-card-name{color:var(--text-primary,#F9FAFB)}';
+  css += 'html[data-theme="dark"] .st-course-card-progress{background:rgba(255,255,255,.1)}';
+  css += 'html[data-theme="dark"] .st-drawer-close{background:var(--bg-elevated,#1F2937);border-color:rgba(255,255,255,.08)}';
+  css += 'html[data-theme="dark"] .st-practice-card{background:var(--bg-surface,#111827);border-color:rgba(255,255,255,.08)}';
+  css += 'html[data-theme="dark"] .st-q-row{border-color:rgba(255,255,255,.06)}';
+  css += 'html[data-theme="dark"] .st-note-card{background:var(--bg-surface,#111827);border-color:rgba(255,255,255,.08)}';
+  css += 'html[data-theme="dark"] .st-note-feedback{border-color:rgba(255,255,255,.06)}';
+  css += 'html[data-theme="dark"] .st-drawer-tab{color:var(--text-muted,#9CA3AF)}';
+  css += 'html[data-theme="dark"] .st-drawer-tab.active{color:var(--verm,#C94E28);border-bottom-color:var(--verm,#C94E28)}';
+  css += 'html[data-theme="dark"] .st-drawer-section-title{color:var(--text-primary,#F9FAFB)}';
+  css += 'html[data-theme="dark"] .st-drawer-backdrop{background:rgba(0,0,0,.5)}';
+  css += 'html[data-theme="dark"] .st-journal-drawer{background:var(--bg-surface,#111827);border-color:rgba(255,255,255,.06)}';
+  css += 'html[data-theme="dark"] .st-practice-card .st-q-text{color:var(--text-primary,#F9FAFB)}';
+  css += 'html[data-theme="dark"] .yk-summary-wrap{background:var(--bg-elevated,#1F2937)}';
+  css += 'html[data-theme="dark"] .yk-summary-card{background:var(--bg-surface,#111827);border-color:rgba(255,255,255,.08)}';
+  css += 'html[data-theme="dark"] .yk-summary-back{color:rgba(255,255,255,.5)}';
+  css += 'html[data-theme="dark"] .yk-summary-back:hover{color:var(--text-primary,#F9FAFB)}';
+  css += 'html[data-theme="dark"] .yk-summary-stats{border-color:rgba(255,255,255,.06)}';
+  css += 'html[data-theme="dark"] .yk-summary-stat-num{color:var(--text-primary,#F9FAFB)}';
+
+  /* Responsive — new Studio classes */
+  css += '@media(max-width:768px){';
+  css += '.st-top-bar{padding:0 12px;height:48px}';
+  css += '.st-top-bar-comp{display:none}';
+  css += '.st-bottom-bar{padding:0 12px;height:62px}';
+  css += '.st-bar-btn{font-size:12px;padding:9px 14px}';
+  css += '.st-practice{padding:68px 12px 82px}';
+  css += '.st-practice-card{padding:24px 18px}';
+  css += '.st-drawer{width:100%;top:auto;right:0;left:0;bottom:62px;height:65vh;border-left:none;border-top:1px solid var(--border-subtle,#E5E3DF);border-radius:20px 20px 0 0;box-shadow:0 -4px 24px rgba(0,0,0,.12);transform:translateY(100%)}';
+  css += '.st-drawer.open{transform:translateY(0)}';
+  css += '.st-journal-drawer{width:100%;top:auto;right:0;left:0;bottom:62px;height:70vh;border-left:none;border-top:1px solid var(--border-subtle,#E5E3DF);border-radius:20px 20px 0 0;box-shadow:0 -4px 24px rgba(0,0,0,.12);transform:translateY(100%)}';
+  css += '.st-journal-drawer.open{transform:translateY(0)}';
+  css += '.st-practice-card .st-q-text{font-size:15px}';
+  css += '.st-bar-label{display:none}';
+  css += '.st-tab{font-size:12px;padding:10px 14px}';
+  css += '.yk-summary-wrap{padding:28px 12px 40px}';
+  css += '.yk-summary-card{padding:28px 20px}';
   css += '}';
 
   var el = document.createElement('style');
@@ -1407,7 +1607,13 @@ function renderStarDetail(idx) {
   return html;
 }
 
+/* renderStarIntro — DEPRECATED: collapsed into renderLobby() */
 function renderStarIntro() {
+  return renderLobby();
+}
+
+/* Original renderStarIntro preserved as _renderStarIntro_legacy for reference */
+function _renderStarIntro_legacy() {
   var html = '';
 
   html += '<div class="ig-landing">';
@@ -1525,32 +1731,9 @@ function renderStarIntro() {
    RENDER — ROLE SELECT (Screen 2)
    ════════════════════════════════════════════════ */
 
+/* renderRoleSelect — DEPRECATED: role selection is now inline in lobby hero */
 function renderRoleSelect() {
-  var bridge = getBridge();
-  var html = '';
-
-  html += '<div class="ig-nav-pill" id="ig-back-star">' + arrowLeftSVG + ' St\u00fcdyo</div>';
-
-  /* Compact role chooser — first-time entry */
-  html += '<div class="yk-home-role-chooser">';
-  html += '<div class="yk-home-role-title">Hedef Pozisyonunu Se\u00e7</div>';
-  html += '<div class="yk-home-role-desc">Pozisyonuna \u00f6zel yetkinlik e\u011fitim plan\u0131 haz\u0131rlanacak.</div>';
-
-  if (bridge) {
-    var roleKeys = Object.keys(bridge.ROLE_COMP_MAP).sort(function(a,b){ return a.localeCompare(b,'tr'); });
-    html += '<div class="yk-home-role-row">';
-    html += '<select class="ig-role-select" id="ig-role-dd">';
-    html += '<option value="">Pozisyon se\u00e7in\u2026</option>';
-    for (var i = 0; i < roleKeys.length; i++) {
-      html += '<option value="' + roleKeys[i] + '"' + (S.role === roleKeys[i] ? ' selected' : '') + '>' + roleKeys[i] + '</option>';
-    }
-    html += '</select>';
-    html += '<button type="button" id="ig-role-start" class="yk-home-role-btn">Ba\u015fla \u2192</button>';
-    html += '</div>';
-  }
-  html += '</div>';
-
-  return html;
+  return renderLobby();
 }
 
 /* ════════════════════════════════════════════════
@@ -1573,7 +1756,7 @@ function truncateWhy(whyText) {
   return result || sentences[0] || '';
 }
 
-function renderCompetencyIntro() {
+function renderCourseDetail() {
   var bridge = getBridge();
   if (!bridge) return '<div class="ig-section-desc" role="alert">Veri y\u00FCklenemedi.</div>';
 
@@ -1584,23 +1767,80 @@ function renderCompetencyIntro() {
   var a = anchors[code] || {};
   var def = a.def || '';
   var why = truncateWhy(a.why || '');
-  var PREVIEW = 2;
 
+  var qs = flattenQuestions(code);
+  var totalQ = qs.length;
+  var practiceQ = S.isPremium ? totalQ : Math.min(FREE_Q_PER_COMP, totalQ);
+  var estMin = Math.max(3, Math.round(practiceQ * 2.5));
+
+  /* Count completed questions from evidence cache */
+  var answeredCount = 0;
+  if (_lobbyEvidenceCache && _lobbyEvidenceCache[code]) {
+    var ev = _lobbyEvidenceCache[code];
+    if (ev.practice_status === 'completed') answeredCount = practiceQ;
+    else if (ev.practice_status !== 'none') answeredCount = Math.max(1, Math.round(practiceQ * 0.3));
+  }
+  if (S.completedComps.indexOf(code) !== -1) answeredCount = practiceQ;
+  var progressPct = practiceQ > 0 ? Math.round((answeredCount / practiceQ) * 100) : 0;
+
+  var tab = S.activeTab || 'overview';
   var html = '';
 
-  html += '<div class="ig-intro-wrap">';
+  html += '<div class="st-course-detail">';
 
-  html += '<div class="ig-nav-pill" id="ig-back-lobby-intro">' + arrowLeftSVG + ' \u00d6\u011frenme Plan\u0131</div>';
+  /* ── Back pill ── */
+  html += '<div class="ig-nav-pill" id="st-cd-back">' + arrowLeftSVG + ' \u00d6\u011frenme Plan\u0131</div>';
 
-  /* Hero */
-  html += '<div class="ig-intro-hero">';
-  html += '<div style="font-family:\'DM Mono\',monospace;font-size:10px;color:rgba(255,255,255,.5);letter-spacing:.5px;margin-bottom:6px;text-transform:uppercase">St\u00fcdyo \u2014 Yetenek</div>';
-  html += '<div class="ig-intro-comp-name">' + compName + '</div>';
-  if (kf) html += '<div style="font-family:\'DM Mono\',monospace;font-size:10px;color:rgba(255,255,255,.4);letter-spacing:.4px;margin-bottom:8px">' + kf + '</div>';
-  if (def) html += '<div class="ig-intro-comp-def">' + def + '</div>';
+  /* ══ COMPACT HERO — navy gradient ══ */
+  html += '<div class="ig-intro-hero" style="padding:22px 24px;margin-bottom:16px">';
+  html += '<div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px">';
+  html += '<div style="flex:1;min-width:200px">';
+  html += '<div class="ig-intro-comp-name" style="font-size:20px;margin-bottom:4px">' + compName + '</div>';
+  if (kf) html += '<div style="font-family:\'DM Mono\',monospace;font-size:10px;color:rgba(255,255,255,.4);letter-spacing:.4px">' + kf + '</div>';
+  html += '</div>';
+  html += '<button class="ig-btn ig-btn-answered" id="st-cd-start" style="padding:10px 22px;font-size:13px;white-space:nowrap">Prati\u011fe Ba\u015fla \u2192</button>';
+  html += '</div>';
+  /* Progress + duration row */
+  html += '<div style="display:flex;align-items:center;gap:16px;margin-top:12px;flex-wrap:wrap">';
+  html += '<span style="font-family:\'DM Mono\',monospace;font-size:11px;color:rgba(255,255,255,.6)">' + answeredCount + '/' + practiceQ + ' soru tamamland\u0131</span>';
+  html += '<span style="font-family:\'DM Mono\',monospace;font-size:11px;color:rgba(255,255,255,.4)">~' + estMin + ' dk</span>';
+  html += '</div>';
+  html += '<div class="st-cd-progress"><div class="st-cd-progress-fill" style="width:' + progressPct + '%"></div></div>';
+  html += '</div>'; /* hero */
+
+  /* ══ TAB BAR ══ */
+  html += '<div class="st-tab-bar">';
+  html += '<button class="st-tab' + (tab === 'overview' ? ' active' : '') + '" data-tab="overview">Genel Bak\u0131\u015f</button>';
+  html += '<button class="st-tab' + (tab === 'questions' ? ' active' : '') + '" data-tab="questions">Sorular</button>';
+  html += '<button class="st-tab' + (tab === 'notes' ? ' active' : '') + '" data-tab="notes">Notlar\u0131m</button>';
   html += '</div>';
 
-  /* Why this matters */
+  /* ══ TAB CONTENT ══ */
+  html += '<div class="st-tab-content">';
+
+  if (tab === 'overview') {
+    html += renderCourseOverviewTab(a, why, def);
+  } else if (tab === 'questions') {
+    html += renderCourseQuestionsTab(code, qs, practiceQ);
+  } else if (tab === 'notes') {
+    html += renderCourseNotesTab(code, qs);
+  }
+
+  html += '</div>'; /* tab-content */
+  html += '</div>'; /* st-course-detail */
+  return html;
+}
+
+/* ── Course Detail: Genel Bakış Tab ── */
+function renderCourseOverviewTab(a, why, def) {
+  var html = '';
+
+  /* Definition */
+  if (def) {
+    html += '<div style="font-family:\'Plus Jakarta Sans\',sans-serif;font-size:14px;color:var(--text-secondary,#4B5563);line-height:1.7;margin-bottom:16px">' + def + '</div>';
+  }
+
+  /* Why this matters — compact bento card */
   if (why) {
     html += '<div class="ig-intro-why">';
     html += '<div class="ig-intro-why-title">' + briefSVG + ' Neden \u00D6nemli?</div>';
@@ -1608,121 +1848,202 @@ function renderCompetencyIntro() {
     html += '</div>';
   }
 
-  /* Signal cards — 2x2 grid + overuse full-width */
-  html += '<div class="ig-intro-signals">';
+  /* Signal cards — 2 column grid, deduplicated */
+  var hasSignals = (a.skilled && a.skilled.length) || (a.lessskilled && a.lessskilled.length);
+  if (hasSignals) {
+    /* Build a seen-set to deduplicate signals across categories */
+    var seen = {};
+    html += '<div class="ig-intro-signals">';
 
-  /* Güçlü Sinyaller */
-  if (a.skilled && a.skilled.length) {
-    html += '<div class="ig-intro-signal-card">';
-    html += '<div class="ig-coach-header"><div class="ig-coach-dot ig-coach-dot-strong" aria-label="G\u00FC\u00E7l\u00FC"></div><div class="ig-coach-label">G\u00FC\u00E7l\u00FC Sinyaller</div></div>';
-    html += '<ul class="ig-coach-bullets">';
-    for (var si = 0; si < Math.min(PREVIEW, a.skilled.length); si++) {
-      html += '<li class="ig-coach-bullet">' + a.skilled[si] + '</li>';
+    /* Güçlü Sinyaller */
+    if (a.skilled && a.skilled.length) {
+      html += '<div class="ig-intro-signal-card">';
+      html += '<div class="ig-coach-header"><div class="ig-coach-dot ig-coach-dot-strong" aria-label="G\u00FC\u00E7l\u00FC"></div><div class="ig-coach-label">G\u00FC\u00E7l\u00FC Sinyaller</div></div>';
+      html += '<ul class="ig-coach-bullets">';
+      for (var si = 0; si < a.skilled.length; si++) {
+        if (!seen[a.skilled[si]]) {
+          seen[a.skilled[si]] = true;
+          html += '<li class="ig-coach-bullet">' + a.skilled[si] + '</li>';
+        }
+      }
+      html += '</ul></div>';
     }
-    html += '</ul></div>';
+
+    /* Risk Sinyalleri */
+    if (a.lessskilled && a.lessskilled.length) {
+      html += '<div class="ig-intro-signal-card">';
+      html += '<div class="ig-coach-header"><div class="ig-coach-dot ig-coach-dot-risk" aria-label="Risk"></div><div class="ig-coach-label">Risk Sinyalleri</div></div>';
+      html += '<ul class="ig-coach-bullets">';
+      for (var ri = 0; ri < a.lessskilled.length; ri++) {
+        if (!seen[a.lessskilled[ri]]) {
+          seen[a.lessskilled[ri]] = true;
+          html += '<li class="ig-coach-bullet">' + a.lessskilled[ri] + '</li>';
+        }
+      }
+      html += '</ul></div>';
+    }
+
+    html += '</div>'; /* signals grid */
   }
 
-  /* Risk Sinyalleri */
-  if (a.lessskilled && a.lessskilled.length) {
-    html += '<div class="ig-intro-signal-card">';
-    html += '<div class="ig-coach-header"><div class="ig-coach-dot ig-coach-dot-risk" aria-label="Risk"></div><div class="ig-coach-label">Risk Sinyalleri</div></div>';
-    html += '<ul class="ig-coach-bullets">';
-    for (var ri = 0; ri < Math.min(PREVIEW, a.lessskilled.length); ri++) {
-      html += '<li class="ig-coach-bullet">' + a.lessskilled[ri] + '</li>';
-    }
-    html += '</ul></div>';
-  }
-
-  /* Aşırı Kullanım */
+  /* Aşırı Kullanım — full-width if present */
   if (a.overused && a.overused.length) {
-    html += '<div class="ig-intro-signal-card ig-intro-signal-full">';
+    html += '<div class="ig-intro-signal-card ig-intro-signal-full" style="margin-bottom:16px;background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF);border-radius:16px;padding:16px 18px">';
     html += '<div class="ig-coach-header"><div class="ig-coach-dot ig-coach-dot-over" aria-label="A\u015F\u0131r\u0131 kullan\u0131m"></div><div class="ig-coach-label">A\u015F\u0131r\u0131 Kullan\u0131m</div></div>';
     html += '<ul class="ig-coach-bullets">';
-    for (var oi = 0; oi < Math.min(PREVIEW, a.overused.length); oi++) {
+    for (var oi = 0; oi < a.overused.length; oi++) {
       html += '<li class="ig-coach-bullet">' + a.overused[oi] + '</li>';
     }
     html += '</ul></div>';
   }
 
-  html += '</div>'; /* signals grid */
-
-  /* STAR+T coaching block */
-  html += '<div class="ig-intro-star-block">';
-  html += '<div class="ig-intro-star-title">' + starSVG + ' Yan\u0131t Yap\u0131s\u0131: STAR+T</div>';
-  html += '<div class="ig-intro-star-text">G\u00fc\u00e7l\u00fc bir yan\u0131t \u015fu yap\u0131y\u0131 izler: Durum (S), G\u00f6rev (T), Aksiyon (A), Sonu\u00e7 (R) ve \u00c7\u0131kar\u0131m (+T). Sorular\u0131 incelerken bu \u00e7er\u00e7eveyi akl\u0131n\u0131zda tutun.</div>';
-  html += '<div class="ig-intro-star-letters">';
-  var starColors = ['var(--verm,#C94E28)', 'var(--navy,#1E2D5E)', 'var(--verm,#C94E28)', 'var(--navy,#1E2D5E)', 'var(--navy,#1E2D5E)'];
-  var starLabels = ['S', 'T', 'A', 'R', '+T'];
+  /* STAR+T mini reference card — navy, compact */
+  html += '<div style="background:linear-gradient(135deg,#2A3F7A 0%,#1E2D5E 50%,#162247 100%);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:16px 20px;margin-bottom:16px;box-shadow:0 2px 8px rgba(0,0,0,.08)">';
+  html += '<div style="font-family:\'Bricolage Grotesque\',sans-serif;font-size:13px;font-weight:700;color:#fff;margin-bottom:8px;display:flex;align-items:center;gap:8px">' + starSVG + ' STAR+T Yan\u0131t Yap\u0131s\u0131</div>';
+  html += '<div style="font-family:\'Plus Jakarta Sans\',sans-serif;font-size:11px;color:rgba(255,255,255,.65);line-height:1.6;margin-bottom:10px">Durum (S) \u2192 G\u00f6rev (T) \u2192 Aksiyon (A) \u2192 Sonu\u00e7 (R) \u2192 \u00c7\u0131kar\u0131m (+T)</div>';
+  html += '<div style="display:flex;gap:5px">';
+  var _starC = ['var(--verm,#C94E28)', 'var(--navy,#1E2D5E)', 'var(--verm,#C94E28)', 'var(--navy,#1E2D5E)', 'var(--navy,#1E2D5E)'];
+  var _starL = ['S', 'T', 'A', 'R', '+T'];
   for (var sl = 0; sl < 5; sl++) {
-    html += '<div class="ig-intro-star-badge" style="background:' + starColors[sl] + '">' + starLabels[sl] + '</div>';
+    html += '<div style="width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-family:\'Bricolage Grotesque\',sans-serif;font-size:13px;font-weight:900;color:#fff;background:' + _starC[sl] + '">' + _starL[sl] + '</div>';
   }
-  html += '</div>';
-  html += '</div>';
+  html += '</div></div>';
 
-  /* ── What interviewers listen for (weak signals) ── */
-  if (a.lessskilled && a.lessskilled.length > PREVIEW) {
-    html += '<div class="yk-track-weak-block">';
-    html += '<div class="yk-track-weak-title">M\u00fclakatta Ka\u00e7\u0131n\u0131lmas\u0131 Gerekenler</div>';
-    for (var wi = 0; wi < Math.min(2, a.lessskilled.length); wi++) {
-      html += '<div class="yk-track-weak-item">' + a.lessskilled[wi] + '</div>';
+  /* Mülakatçılar Nelere Dikkat Eder — compact list */
+  if (a.lessskilled && a.lessskilled.length) {
+    html += '<div style="background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF);border-radius:16px;padding:16px 18px;box-shadow:0 2px 8px rgba(0,0,0,.04)">';
+    html += '<div style="font-family:\'Bricolage Grotesque\',sans-serif;font-size:13px;font-weight:700;color:var(--text-primary,#111);margin-bottom:8px">M\u00fclakat\u00e7\u0131lar Nelere Dikkat Eder</div>';
+    html += '<ul style="margin:0;padding-left:16px;list-style:none">';
+    for (var wi = 0; wi < a.lessskilled.length; wi++) {
+      html += '<li style="font-family:\'Plus Jakarta Sans\',sans-serif;font-size:12px;color:var(--text-secondary,#4B5563);line-height:1.6;padding:2px 0;display:flex;align-items:flex-start;gap:6px"><span style="color:var(--verm,#C94E28);font-weight:700;flex-shrink:0">\u2022</span>' + a.lessskilled[wi] + '</li>';
+    }
+    html += '</ul></div>';
+  }
+
+  return html;
+}
+
+/* ── Course Detail: Sorular Tab ── */
+function renderCourseQuestionsTab(code, qs, practiceQ) {
+  var html = '';
+  var lastTheme = '';
+
+  html += '<div style="background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF);border-radius:16px;padding:16px 18px;box-shadow:0 2px 8px rgba(0,0,0,.04)">';
+
+  for (var qi = 0; qi < qs.length; qi++) {
+    var q = qs[qi];
+    var isLocked = !S.isPremium && qi >= FREE_Q_PER_COMP;
+    var isDone = S.completedComps.indexOf(code) !== -1;
+
+    /* Status icon */
+    var statusIcon;
+    if (isLocked) {
+      statusIcon = '<span style="color:var(--text-muted,#6B7280);font-size:12px">\uD83D\uDD12</span>';
+    } else if (isDone) {
+      statusIcon = '<span style="color:#059669;font-size:14px">\u2713</span>';
+    } else {
+      statusIcon = '<span style="color:var(--text-muted,#6B7280);font-size:14px">\u25CB</span>';
+    }
+
+    /* Theme heading — only show when it changes */
+    var showTheme = q.theme && q.theme !== lastTheme;
+    if (showTheme) lastTheme = q.theme;
+
+    html += '<div class="st-q-row"' + (isLocked ? ' style="opacity:.5"' : '') + '>';
+    html += '<div class="st-q-num">' + (qi + 1) + '</div>';
+    html += '<div class="st-q-body">';
+    if (showTheme) {
+      html += '<div class="st-q-theme">' + q.theme + '</div>';
+    }
+    var preview = q.text ? q.text.substring(0, 80) : '';
+    html += '<div class="st-q-text">' + preview + (q.text && q.text.length > 80 ? '\u2026' : '') + '</div>';
+    html += '</div>';
+    html += '<div class="st-q-status">' + statusIcon + '</div>';
+    html += '</div>';
+  }
+
+  html += '</div>';
+  return html;
+}
+
+/* ── Course Detail: Notlarım Tab ── */
+function renderCourseNotesTab(code, qs) {
+  var html = '';
+  var hasAnyNote = false;
+
+  /* Collect journal entries for this competency */
+  var entries = [];
+  for (var qi = 0; qi < qs.length; qi++) {
+    var q = qs[qi];
+    var draft = loadJournalDraft(code, q.text);
+    if (draft && (draft.s || draft.t || draft.a || draft.r || draft.takeaway)) {
+      entries.push({ idx: qi, theme: q.theme, text: q.text, draft: draft });
+    }
+  }
+
+  if (entries.length === 0) {
+    html += '<div class="st-notes-empty">';
+    html += '<div style="font-size:32px;margin-bottom:12px;opacity:.4">\uD83D\uDCDD</div>';
+    html += 'Hen\u00fcz not yok. Pratik yapt\u0131k\u00e7a notlar\u0131n burada birikir.';
+    html += '</div>';
+    return html;
+  }
+
+  var starFields = [
+    { key: 's', letter: 'S', label: 'Durum', color: 'var(--verm,#C94E28)' },
+    { key: 't', letter: 'T', label: 'G\u00f6rev', color: 'var(--navy,#1E2D5E)' },
+    { key: 'a', letter: 'A', label: 'Aksiyon', color: 'var(--verm,#C94E28)' },
+    { key: 'r', letter: 'R', label: 'Sonu\u00e7', color: 'var(--navy,#1E2D5E)' },
+    { key: 'takeaway', letter: '+T', label: '\u00c7\u0131kar\u0131m', color: 'var(--navy,#1E2D5E)' }
+  ];
+
+  for (var ei = 0; ei < entries.length; ei++) {
+    var e = entries[ei];
+    html += '<div class="st-note-card">';
+    html += '<div class="st-note-q">Soru ' + (e.idx + 1) + ': ' + e.text.substring(0, 60) + (e.text.length > 60 ? '\u2026' : '') + '</div>';
+    html += '<div class="st-note-fields">';
+    for (var fi = 0; fi < starFields.length; fi++) {
+      var f = starFields[fi];
+      var val = e.draft[f.key] || '';
+      if (val) {
+        html += '<div class="st-note-badge" style="background:' + f.color + '">' + f.letter + '</div>';
+        html += '<div>' + escapeHtml(val) + '</div>';
+      }
     }
     html += '</div>';
-  }
-
-  /* Practice units preview */
-  var qs = flattenQuestions(code);
-  var unitCount = S.isPremium ? qs.length : Math.min(FREE_Q_PER_COMP, qs.length);
-  html += '<div class="yk-track-units">';
-  html += '<div class="yk-track-units-title">\u0130nceleme \u00dcniteleri</div>';
-  html += '<div class="yk-track-units-count">' + unitCount + ' soru ile haz\u0131rlan</div>';
-  for (var ui = 0; ui < Math.min(4, qs.length); ui++) {
-    html += '<div class="yk-track-unit-row">';
-    html += '<span class="yk-track-unit-num">' + (ui + 1) + '</span>';
-    html += '<div class="yk-track-unit-content">';
-    html += '<span class="yk-track-unit-theme">' + (qs[ui].theme || '') + '</span>';
-    var qPreview = qs[ui].text ? qs[ui].text.substring(0, 60) : '';
-    if (qPreview) html += '<span class="yk-track-unit-preview">' + qPreview + (qs[ui].text.length > 60 ? '\u2026' : '') + '</span>';
-    html += '</div>';
     html += '</div>';
   }
-  if (qs.length > 4) {
-    html += '<div class="yk-track-unit-more">+' + (qs.length - 4) + ' soru daha</div>';
-  }
-  html += '</div>';
 
-  /* CTA row */
-  html += '<div class="ig-intro-cta-row">';
-  html += '<button class="ig-btn ig-btn-swap" id="ig-intro-back" style="border:1px solid var(--border-subtle,#E5E3DF) !important">' + arrowLeftSVG + ' \u00d6\u011frenme Plan\u0131</button>';
-  html += '<button class="ig-btn ig-btn-answered" id="ig-intro-start" style="padding:12px 28px;font-size:14px">Prati\u011fe Ba\u015fla \u2192</button>';
-  html += '</div>';
+  /* AI feedback entries — loaded async, placeholder */
+  html += '<div id="st-notes-feedback-slot"></div>';
 
-  html += '</div>'; /* intro-wrap */
   return html;
 }
 
 /* ════════════════════════════════════════════════
-   RENDER — LOBBY (Screen 3)
+   RENDER — LOBBY (Learning Path — Bento Grid)
    ════════════════════════════════════════════════ */
 
 function renderLobby() {
   var bridge = getBridge();
   if (!bridge) return '<div class="ig-section-desc">Veri y\u00fcklenemedi.</div>';
 
+  var hasRole = !!S.role;
   var comps = S.comps;
   var freeLimit = S.isPremium ? comps.length : FREE_COMP_LIMIT;
   var completedCount = S.completedComps.length;
-  var accessibleCount = Math.min(freeLimit, comps.length);
-  var lockedCount = Math.max(0, comps.length - freeLimit);
+  var accessibleCount = hasRole ? Math.min(freeLimit, comps.length) : 0;
+  var lockedCount = hasRole ? Math.max(0, comps.length - freeLimit) : 0;
   var anchors = bridge.ANCHORS || {};
   var html = '';
 
-  /* ── Yetenek Home ── */
-  html += '<div class="yk-home">';
+  html += '<div class="st-lobby">';
 
-  /* Back + role header */
-  html += '<div class="ig-nav-pill" id="ig-back-role">' + arrowLeftSVG + ' St\u00fcdyo</div>';
+  /* ══ HERO CARD — vermillion, outside grid ══ */
+  html += '<div class="g-hero">';
+  html += '<div class="g-hero-inner">';
 
-  /* ── Personalized greeting ── */
+  /* Personalized greeting */
   var _userName = '';
   try {
     var _dbProfile = (typeof _loadedDBData !== 'undefined' && _loadedDBData && _loadedDBData.profile) ? _loadedDBData.profile : null;
@@ -1730,173 +2051,175 @@ function renderLobby() {
       _userName = _dbProfile.full_name.split(' ')[0];
     }
   } catch (e) { /* silent */ }
-  if (_userName) {
-    html += '<div class="yk-greeting">Ho\u015f geldin, ' + _userName + '</div>';
-  }
 
-  html += '<div class="yk-home-header">';
-  html += '<div class="yk-home-header-left">';
-  html += '<div class="yk-home-role-label">' + S.role + '</div>';
-  html += '<div class="yk-home-comp-count">' + accessibleCount + ' yetkinlik eri\u015filebilir' + (lockedCount > 0 ? ' \u00b7 ' + lockedCount + ' kilitli' : '') + '</div>';
-  html += '</div>';
-  html += '<button class="yk-home-change-role" id="ig-back-role-change">Rol De\u011fi\u015ftir</button>';
-  html += '</div>';
-
-  /* ── Progress bar with milestones ── */
-  var pct = accessibleCount > 0 ? Math.round((completedCount / accessibleCount) * 100) : 0;
-  var microCopy = '';
-  if (pct >= 100) microCopy = '<span class="yk-progress-micro yk-progress-complete">\u2713 Tamamland\u0131</span>';
-  else if (pct >= 50) microCopy = '<span class="yk-progress-micro">Yar\u0131 yoldas\u0131n\u0131z.</span>';
-  html += '<div class="yk-progress-bar-wrap">';
-  html += '<div class="yk-progress-bar">';
-  html += '<div class="yk-progress-fill' + (pct >= 100 ? ' yk-progress-full' : '') + '" style="width:' + pct + '%"></div>';
-  if (accessibleCount >= 4) {
-    html += '<div class="yk-progress-milestones">';
-    html += '<div class="yk-progress-ms" style="left:25%"></div>';
-    html += '<div class="yk-progress-ms" style="left:50%"></div>';
-    html += '<div class="yk-progress-ms" style="left:75%"></div>';
-    html += '</div>';
-  }
-  html += '</div>';
-  html += '<div class="yk-progress-footer">';
-  html += '<div class="yk-progress-label">' + completedCount + '/' + accessibleCount + '</div>';
-  html += microCopy;
-  html += '</div>';
-  html += '</div>';
-
-  /* ── Streak pill — hydrated async, hidden by default ── */
-  html += '<div id="yk-streak-slot" style="display:none"></div>';
-
-  /* ── Daily practice card — hydrated async ── */
-  html += '<div id="yk-daily-slot" style="display:none"></div>';
-
-  /* ── Continue card / Next step guidance ── */
-  if (S.activeComp && S.completedComps.indexOf(S.activeComp) === -1) {
-    var contName = bridge.COMP_NAMES[S.activeComp] || S.activeComp;
-    html += '<div class="yk-home-continue" id="yk-continue-card" data-comp="' + S.activeComp + '" data-idx="' + S.activeCompIdx + '">';
-    html += '<div class="yk-home-continue-kicker">KALDIĞIN YERDEN DEVAM ET</div>';
-    html += '<div class="yk-home-continue-title">' + contName + '</div>';
-    html += '<div class="yk-home-continue-cta">Devam Et \u2192</div>';
-    html += '</div>';
-  } else if (completedCount === 0 && comps.length > 0) {
-    /* First-time guidance */
-    var firstComp = comps[0];
-    var firstName = bridge.COMP_NAMES[firstComp] || firstComp;
-    html += '<div class="yk-home-next-step">';
-    html += '<div class="yk-home-next-kicker">\u00d6NER\u0130LEN BA\u015eLANGI\u00c7</div>';
-    html += '<div class="yk-home-next-title">' + firstName + ' ile ba\u015fla</div>';
-    html += '<div class="yk-home-next-desc">Bu yetkinlik ' + S.role + ' pozisyonu i\u00e7in \u00f6ncelikli de\u011ferlendirme alan\u0131d\u0131r.</div>';
-    html += '</div>';
-  }
-
-  /* ── Readiness summary ── */
-  html += '<div class="yk-home-summary">';
-  html += '<div class="yk-home-summary-item"><span class="yk-home-summary-num">' + completedCount + '</span><span class="yk-home-summary-label">Tamamlanan</span></div>';
-  html += '<div class="yk-home-summary-item"><span class="yk-home-summary-num">' + (accessibleCount - completedCount) + '</span><span class="yk-home-summary-label">Kalan</span></div>';
-  html += '<div class="yk-home-summary-item"><span class="yk-home-summary-num" id="yk-summary-practiced">0</span><span class="yk-home-summary-label">Pratik</span></div>';
-  html += '</div>';
-
-  /* Evidence summary strip — hydrated async */
-  html += '<div id="yk-evidence-summary" class="yk-evidence-summary" style="display:none;"></div>';
-
-  /* ── AI teaser card — above learning plan for visibility ── */
-  html += '<div class="yk-home-ai-teaser">';
-  html += '<div class="yk-home-ai-teaser-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg></div>';
-  html += '<div class="yk-home-ai-teaser-text">';
-  html += '<div class="yk-home-ai-teaser-title">AI Ko\u00e7luk</div>';
-  html += '<div class="yk-home-ai-teaser-desc">Yan\u0131tlar\u0131n\u0131z\u0131 yaz\u0131n, AI ko\u00e7unuz g\u00fc\u00e7l\u00fc ve geli\u015ftirilmesi gereken y\u00f6nleri analiz etsin.</div>';
-  html += '</div>';
-  html += '<div class="yk-home-ai-teaser-badge" style="background:rgba(5,150,105,.08);color:#059669;border-color:rgba(5,150,105,.2)">Aktif</div>';
-  html += '</div>';
-
-  /* ── Weekly activity summary ── */
-  var weekPracticed = S.totalAnswered || 0;
-  var weekComps = completedCount;
-  if (weekPracticed > 0 || weekComps > 0) {
-    html += '<div class="yk-weekly-summary">';
-    html += '<div class="yk-weekly-summary-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>';
-    var estMinutes = weekPracticed * 2;
-    html += '<div class="yk-weekly-summary-text"><strong>' + weekPracticed + '</strong> pratik \u00b7 <strong>~' + estMinutes + '</strong> dk \u00b7 <strong>' + weekComps + '</strong> yetkinlik</div>';
-    html += '</div>';
-  }
-
-  /* ── Personalized recommendation — hydrated async ── */
-  html += '<div id="yk-recommendation-slot" style="display:none"></div>';
-
-  /* ── Learning plan section title ── */
-  html += '<div class="yk-home-section-title">\u00d6\u011frenme Plan\u0131</div>';
-
-  /* ── Unlocked competency track cards — sorted by priority ── */
-  /* Build accessible list, then sort: growing incomplete → other incomplete → completed */
-  var accessibleCompsArr = [];
-  for (var ai = 0; ai < comps.length; ai++) {
-    if (ai >= freeLimit) continue;
-    accessibleCompsArr.push({ code: comps[ai], origIdx: ai });
-  }
-  accessibleCompsArr.sort(function(a, b) {
-    var aDone = S.completedComps.indexOf(a.code) !== -1 ? 1 : 0;
-    var bDone = S.completedComps.indexOf(b.code) !== -1 ? 1 : 0;
-    return aDone - bDone; /* incomplete first, completed last */
-  });
-
-  html += '<div class="yk-home-tracks">';
-  for (var i = 0; i < accessibleCompsArr.length; i++) {
-    var code = accessibleCompsArr[i].code;
-    var origIdx = accessibleCompsArr[i].origIdx;
-    var name = bridge.COMP_NAMES[code] || code;
-    var kf = bridge.COMP_KF[code] || '';
-    var def = (anchors[code] && anchors[code].def) ? anchors[code].def : '';
-    var isCompleted = S.completedComps.indexOf(code) !== -1;
-    var qCount = flattenQuestions(code).length;
-    var practiceCount = S.isPremium ? qCount : Math.min(FREE_Q_PER_COMP, qCount);
-
-    html += '<div class="yk-track-card' + (isCompleted ? ' yk-track-done' : '') + '" data-comp="' + code + '" data-idx="' + origIdx + '">';
-    html += '<div class="yk-track-top">';
-    html += '<div class="yk-track-name">' + name + '</div>';
-    html += '<div class="yk-track-arrow">';
-    if (isCompleted) html += '<span class="yk-track-badge-done">\u2713</span>';
-    html += '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="opacity:.35"><polyline points="9 18 15 12 9 6"/></svg>';
-    html += '</div>';
-    html += '</div>';
-    html += '<div class="yk-track-kf">' + kf + '</div>';
-    if (def) html += '<div class="yk-track-def">' + def + '</div>';
-    html += '<div class="yk-track-meta">' + practiceCount + ' soru</div>';
-    if (isCompleted) html += '<div class="yk-track-hover-hint">Tekrar incele \u2192</div>';
-    html += '<div class="yk-evidence" data-ev-comp="' + code + '"></div>';
-    html += '</div>';
-  }
-  html += '</div>';
-
-  /* ── Locked competencies — collapsed summary ── */
-  if (lockedCount > 0) {
-    var lockedNames = [];
-    for (var li = freeLimit; li < comps.length && lockedNames.length < 3; li++) {
-      lockedNames.push(bridge.COMP_NAMES[comps[li]] || comps[li]);
+  if (hasRole) {
+    /* ── Returning user: role + progress hero ── */
+    if (_userName) {
+      html += '<div style="font-family:\'Plus Jakarta Sans\',sans-serif;font-size:13px;color:rgba(255,255,255,.7);margin-bottom:4px">Ho\u015f geldin, ' + _userName + '</div>';
     }
-    html += '<div class="yk-locked-summary">';
-    html += '<div class="yk-locked-summary-header">';
-    html += '<div class="yk-locked-summary-icon">' + lockSVG + '</div>';
-    html += '<div class="yk-locked-summary-text">';
-    html += '<div class="yk-locked-summary-title">' + lockedCount + ' yetkinlik daha</div>';
-    html += '<div class="yk-locked-summary-names">';
-    for (var ni = 0; ni < lockedNames.length; ni++) {
-      html += '<span class="yk-locked-tag">' + lockedNames[ni] + '</span>';
+    html += '<div style="font-family:\'Bricolage Grotesque\',sans-serif;font-size:20px;font-weight:800;color:#fff">' + S.role + '</div>';
+    html += '<div style="font-family:\'Plus Jakarta Sans\',sans-serif;font-size:13px;color:rgba(255,255,255,.7);margin-top:4px">' + accessibleCount + ' yetkinlik' + (lockedCount > 0 ? ' \u00b7 ' + lockedCount + ' kilitli' : '') + '</div>';
+
+    /* Progress bar */
+    var pct = accessibleCount > 0 ? Math.round((completedCount / accessibleCount) * 100) : 0;
+    html += '<div style="margin-top:12px;background:rgba(255,255,255,.15);border-radius:6px;height:8px;overflow:hidden">';
+    html += '<div style="height:100%;border-radius:6px;background:#fff;width:' + pct + '%;transition:width .4s ease"></div>';
+    html += '</div>';
+    html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px">';
+    html += '<span style="font-family:\'DM Mono\',monospace;font-size:11px;color:rgba(255,255,255,.6)">' + completedCount + '/' + accessibleCount + ' tamamland\u0131</span>';
+
+    /* Streak pill slot */
+    html += '<span id="yk-streak-slot" style="display:none"></span>';
+    html += '</div>';
+
+    /* Rol Değiştir link */
+    html += '<div style="margin-top:10px"><button id="ig-back-role-change" style="background:none;border:none;color:rgba(255,255,255,.7);font-family:\'Plus Jakarta Sans\',sans-serif;font-size:12px;cursor:pointer;padding:0;text-decoration:underline">Rol De\u011fi\u015ftir</button></div>';
+
+  } else {
+    /* ── First-time user: inline role picker in hero ── */
+    html += '<div style="font-family:\'Bricolage Grotesque\',sans-serif;font-size:20px;font-weight:800;color:#fff;margin-bottom:4px">St\u00fcdyo</div>';
+    html += '<div style="font-family:\'Plus Jakarta Sans\',sans-serif;font-size:13px;color:rgba(255,255,255,.75);margin-bottom:16px">Hedef pozisyonunu se\u00e7 ve yetkinlik e\u011fitim plan\u0131n\u0131 ke\u015ffet.</div>';
+
+    var roleKeys = Object.keys(bridge.ROLE_COMP_MAP).sort(function(a,b){ return a.localeCompare(b,'tr'); });
+    html += '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">';
+    html += '<select id="ig-role-dd" style="flex:1;min-width:160px;padding:10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.1);color:#fff;font-family:\'Plus Jakarta Sans\',sans-serif;font-size:13px;outline:none">';
+    html += '<option value="" style="color:#333">Pozisyon se\u00e7in\u2026</option>';
+    for (var ri = 0; ri < roleKeys.length; ri++) {
+      html += '<option value="' + roleKeys[ri] + '" style="color:#333">' + roleKeys[ri] + '</option>';
     }
-    if (lockedCount > 3) html += '<span class="yk-locked-tag yk-locked-tag-more">+' + (lockedCount - 3) + '</span>';
-    html += '</div>';
-    html += '</div>';
-    html += '</div>';
-    html += '<div class="yk-locked-summary-desc">Farkl\u0131 roller se\u00e7erek yeni yetkinlikleri ke\u015ffedebilir veya Premium ile t\u00fcm\u00fcne eri\u015febilirsin.</div>';
-    html += '<button class="ig-q-lock-cta yk-locked-cta">Premium ile T\u00fcm Yetkinlikleri A\u00e7</button>';
+    html += '</select>';
+    html += '<button id="ig-role-start" style="padding:10px 20px;border-radius:10px;border:none;background:#fff;color:var(--verm,#C94E28);font-family:\'Plus Jakarta Sans\',sans-serif;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap">Ba\u015fla \u2192</button>';
     html += '</div>';
   }
 
-  html += '</div>'; /* yk-home */
+  html += '</div>'; /* g-hero-inner */
+  html += '</div>'; /* g-hero */
+
+  /* ══ BENTO GRID — competency course cards + STAR+T ref ══ */
+  if (hasRole) {
+
+    /* Build sorted card list: in-progress → not started → completed → locked */
+    var sortedComps = [];
+    for (var ai = 0; ai < comps.length; ai++) {
+      var _code = comps[ai];
+      var _isLocked = ai >= freeLimit;
+      var _isDone = S.completedComps.indexOf(_code) !== -1;
+      var _isActive = S.activeComp === _code && !_isDone;
+      var sortKey = _isLocked ? 3 : (_isDone ? 2 : (_isActive ? 0 : 1));
+      sortedComps.push({ code: _code, origIdx: ai, locked: _isLocked, done: _isDone, active: _isActive, sort: sortKey });
+    }
+    sortedComps.sort(function(a, b) { return a.sort - b.sort; });
+
+    html += '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px">';
+
+    for (var ci = 0; ci < sortedComps.length; ci++) {
+      var c = sortedComps[ci];
+      var name = bridge.COMP_NAMES[c.code] || c.code;
+      var kf = bridge.COMP_KF[c.code] || '';
+      var qCount = flattenQuestions(c.code).length;
+      var practiceCount = S.isPremium ? qCount : Math.min(FREE_Q_PER_COMP, qCount);
+      var estMin = Math.max(3, Math.round(practiceCount * 2.5));
+
+      /* Status */
+      var statusDot, statusText, cardOpacity;
+      if (c.locked) {
+        statusDot = '<span style="display:inline-block;width:8px;height:8px;margin-right:6px;vertical-align:middle">' + lockSVG + '</span>';
+        statusText = 'Premium';
+        cardOpacity = 'opacity:.55;';
+      } else if (c.done) {
+        statusDot = '<span style="color:#059669;margin-right:4px;font-size:13px">\u2713</span>';
+        statusText = 'Tamamland\u0131';
+        cardOpacity = 'opacity:.75;';
+      } else if (c.active) {
+        statusDot = '<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--verm,#C94E28);margin-right:6px;vertical-align:middle"></span>';
+        statusText = 'Devam Et';
+        cardOpacity = '';
+      } else {
+        statusDot = '<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--text-muted,#6B7280);margin-right:6px;vertical-align:middle"></span>';
+        statusText = 'Ba\u015fla';
+        cardOpacity = '';
+      }
+
+      html += '<div class="st-course-card' + (c.locked ? ' st-course-locked' : '') + '" data-comp="' + c.code + '" data-idx="' + c.origIdx + '" style="' + cardOpacity + 'cursor:' + (c.locked ? 'default' : 'pointer') + '">';
+
+      /* Card content */
+      html += '<div class="st-course-card-name">' + name + '</div>';
+      html += '<div class="st-course-card-kf">' + kf + '</div>';
+
+      /* Mini progress bar (only for unlocked) */
+      if (!c.locked) {
+        var answered = 0;
+        if (_lobbyEvidenceCache && _lobbyEvidenceCache[c.code]) {
+          var ev = _lobbyEvidenceCache[c.code];
+          if (ev.practice_status === 'completed') answered = practiceCount;
+          else if (ev.practice_status !== 'none') answered = Math.max(1, Math.round(practiceCount * 0.3));
+        }
+        if (c.done) answered = practiceCount;
+        var miniPct = practiceCount > 0 ? Math.round((answered / practiceCount) * 100) : 0;
+        html += '<div class="st-course-card-progress"><div class="st-course-card-progress-fill" style="width:' + miniPct + '%"></div></div>';
+      }
+
+      /* Duration badge + status */
+      html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">';
+      html += '<span style="font-family:\'Plus Jakarta Sans\',sans-serif;font-size:11px;color:var(--text-muted,#6B7280)">~' + estMin + ' dk</span>';
+      html += '<span style="font-family:\'Plus Jakarta Sans\',sans-serif;font-size:11px;display:flex;align-items:center">' + statusDot + statusText + '</span>';
+      html += '</div>';
+
+      /* Evidence slot — hydrated async */
+      if (!c.locked) {
+        html += '<div class="yk-evidence" data-ev-comp="' + c.code + '"></div>';
+      }
+
+      html += '</div>'; /* st-course-card */
+    }
+
+    /* ── STAR+T Reference Card (navy, span-1) ── */
+    html += '<div id="st-star-ref" style="grid-column:span 1;background:linear-gradient(135deg,#2A3F7A 0%,#1E2D5E 50%,#162247 100%);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:18px 20px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.08),0 8px 20px rgba(0,0,0,.06)">';
+    html += '<div style="font-family:\'Bricolage Grotesque\',sans-serif;font-size:14px;font-weight:700;color:#fff;margin-bottom:6px">STAR+T Metodolojisi</div>';
+    html += '<div style="font-family:\'Plus Jakarta Sans\',sans-serif;font-size:12px;color:rgba(255,255,255,.6)">T\u0131kla ve \u00f6\u011fren \u25BE</div>';
+    html += '<div id="st-star-ref-body" style="display:none;margin-top:12px">';
+    var d = STAR_CONTENT;
+    var stColors = ['#C94E28', '#1E2D5E', '#C94E28', '#1E2D5E'];
+    for (var si = 0; si < 4; si++) {
+      var step = d.what.steps[si];
+      html += '<div style="display:flex;gap:8px;align-items:flex-start;margin-bottom:8px">';
+      html += '<div style="min-width:24px;height:24px;border-radius:6px;background:' + stColors[si] + ';color:#fff;font-family:\'DM Mono\',monospace;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center">' + step.letter + '</div>';
+      html += '<div style="font-family:\'Plus Jakarta Sans\',sans-serif;font-size:12px;color:rgba(255,255,255,.8)"><strong>' + step.tr + ':</strong> ' + step.desc.split('.')[0] + '.</div>';
+      html += '</div>';
+    }
+    html += '<div style="display:flex;gap:8px;align-items:flex-start">';
+    html += '<div style="min-width:24px;height:24px;border-radius:6px;background:#1E2D5E;border:1px solid rgba(255,255,255,.2);color:#fff;font-family:\'DM Mono\',monospace;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center">+T</div>';
+    html += '<div style="font-family:\'Plus Jakarta Sans\',sans-serif;font-size:12px;color:rgba(255,255,255,.8)"><strong>\u00c7\u0131kar\u0131m:</strong> ' + d.what.takeaway.desc.split('.')[0] + '.</div>';
+    html += '</div>';
+    html += '</div>'; /* st-star-ref-body */
+    html += '</div>'; /* st-star-ref */
+
+    html += '</div>'; /* bento grid */
+
+    /* ── Locked competencies premium CTA ── */
+    if (lockedCount > 0) {
+      html += '<div style="margin-top:16px;padding:16px 20px;border-radius:16px;border:1px solid var(--border-subtle,#E5E3DF);background:var(--bg-surface,#fff);box-shadow:0 2px 8px rgba(0,0,0,.08)">';
+      html += '<div style="font-family:\'Bricolage Grotesque\',sans-serif;font-size:14px;font-weight:700;color:var(--text-primary,#111)">' + lockedCount + ' yetkinlik daha ke\u015ffet</div>';
+      html += '<div style="font-family:\'Plus Jakarta Sans\',sans-serif;font-size:12px;color:var(--text-muted,#6B7280);margin:6px 0 10px">Premium ile t\u00fcm yetkinliklere eri\u015f, s\u0131n\u0131rs\u0131z pratik yap.</div>';
+      html += '<button class="ig-q-lock-cta yk-locked-cta" style="font-size:12px;padding:8px 20px">Premium ile A\u00e7</button>';
+      html += '</div>';
+    }
+  }
+
+  /* ══ BADGE STRIP — async-hydrated ══ */
+  html += '<div id="st-badge-strip" class="st-badge-strip" style="display:none;margin-top:20px"></div>';
+
+  /* ══ COACH FEED — async-hydrated ══ */
+  html += '<div id="ig-coach-feed" class="ig-coach-feed" style="display:none"></div>';
+
+  html += '</div>'; /* st-lobby */
   return html;
 }
 
 /* ════════════════════════════════════════════════
-   RENDER — PRACTICE (Screen 4)
+   RENDER — PRACTICE (Screen 4) — Focus Mode
+   LinkedIn Learning-style immersive practice.
+   Top bar (sticky) + centered question card + bottom action bar + drawer.
    ════════════════════════════════════════════════ */
 
 function renderPractice() {
@@ -1904,60 +2227,34 @@ function renderPractice() {
   if (!bridge || !S.dealt.length) return '<div class="ig-section-desc" role="alert">Soru bulunamad\u0131. \u00D6\u011Frenme Plan\u0131na d\u00F6n\u00FCn.</div>';
 
   var compName = bridge.COMP_NAMES[S.activeComp] || S.activeComp;
-  var anchors = bridge.ANCHORS || {};
-  var compDef = (anchors[S.activeComp] && anchors[S.activeComp].def) ? anchors[S.activeComp].def : '';
   var q = S.dealt[S.currentQ];
   var maxSwaps = S.isPremium ? 999 : FREE_SWAP_LIMIT;
   var swapsLeft = Math.max(0, maxSwaps - S.swapsUsed);
-  var freeLimit = S.isPremium ? S.comps.length : FREE_COMP_LIMIT;
-  var accessibleCount = Math.min(freeLimit, S.comps.length);
-  /* Which accessible comp number is this? */
-  var compOrder = 0;
-  for (var ci = 0; ci < S.comps.length && ci < freeLimit; ci++) {
-    if (S.comps[ci] === S.activeComp) { compOrder = ci + 1; break; }
-  }
+  var progressPct = S.dealt.length > 0 ? Math.round(((S.currentQ) / S.dealt.length) * 100) : 0;
+
   var html = '';
 
-  html += '<div class="ig-practice-wrap">';
-
-  html += '<div class="ig-nav-pill" id="ig-back-lobby">' + arrowLeftSVG + ' \u00d6\u011frenme Plan\u0131</div>';
-
-  html += '<div class="ig-practice-header">';
-  html += '<div style="flex:1;min-width:0">';
-  html += '<div class="ig-practice-comp">' + compName + '</div>';
-  if (compDef) html += '<div class="ig-practice-def">' + compDef + '</div>';
+  /* ── TOP BAR (fixed, sticky) ── */
+  html += '<div class="st-top-bar" id="st-practice-top">';
+  html += '<button class="st-top-bar-back" id="ig-back-lobby">' + arrowLeftSVG + ' <span>Geri</span></button>';
+  html += '<div class="st-top-bar-progress">';
+  html += '<div class="st-top-bar-bar"><div class="st-top-bar-fill" style="width:' + progressPct + '%"></div></div>';
+  html += '<div class="st-top-bar-count">' + (S.currentQ + 1) + '/' + S.dealt.length + '</div>';
   html += '</div>';
-  html += '<div style="display:flex;gap:8px;align-items:center;flex-shrink:0">';
-  if (accessibleCount > 1) html += '<div class="ig-session-progress">Yetkinlik ' + compOrder + '/' + accessibleCount + '</div>';
-  html += '<div class="ig-practice-progress">' + (S.currentQ + 1) + ' / ' + S.dealt.length + '</div>';
-  html += '</div>';
-  html += '</div>';
-
-  /* Question card */
-  html += '<div class="ig-q-focus">';
-  html += '<div class="ig-q-theme">' + q.theme + '</div>';
-  html += '<div class="ig-q-text">\u201C' + q.text + '\u201D</div>';
-
-  /* Actions */
-  html += '<div class="ig-q-actions">';
-
-  /* Değiştir */
+  html += '<div class="st-top-bar-comp">' + compName + '</div>';
   if (swapsLeft > 0) {
-    html += '<button class="ig-btn ig-btn-swap" id="ig-swap">' + swapSVG + ' De\u011Fi\u015Ftir <span style="font-size:10px;opacity:.6">(' + swapsLeft + ')</span></button>';
-  } else {
-    html += '<button class="ig-btn ig-btn-swap disabled" disabled>' + swapSVG + ' De\u011Fi\u015Ftir</button>';
+    html += '<button class="st-top-bar-skip" id="ig-swap">' + swapSVG + ' Atla</button>';
   }
+  html += '</div>'; /* top bar */
 
-  /* STAR İpucu */
-  html += '<button class="ig-btn ig-btn-star' + (S.starHintOpen ? ' active' : '') + '" id="ig-star-hint">' + starSVG + ' Yan\u0131t Yap\u0131s\u0131</button>';
+  /* ── MAIN AREA (open background) ── */
+  html += '<div class="st-practice">';
 
-  /* Coaching toggle */
-  html += '<button class="ig-btn ig-btn-coach' + (S.coachOpen ? ' active' : '') + '" id="ig-coach-toggle">' + coachSVG + ' De\u011ferlendirme</button>';
-
-  /* Yanıtladım */
-  html += '<button class="ig-btn ig-btn-answered" id="ig-answered">' + checkSVG + ' \u0130nceledim, Sonraki</button>';
-
-  html += '</div>'; /* actions */
+  /* Question card — centered, max 720px */
+  html += '<div class="st-practice-card">';
+  html += '<div class="st-q-num">Soru ' + (S.currentQ + 1) + '/' + S.dealt.length + '</div>';
+  html += '<div class="st-q-theme">' + q.theme + '</div>';
+  html += '<div class="st-q-text">\u201C' + q.text + '\u201D</div>';
 
   /* Swap exhaustion premium nudge */
   if (!S.isPremium && swapsLeft === 0) {
@@ -1967,65 +2264,233 @@ function renderPractice() {
     html += '</div>';
   }
 
-  /* STAR hint panel (conditionally shown) */
-  if (S.starHintOpen) {
-    html += renderStarHintPanel();
+  html += '</div>'; /* practice-card */
+
+  html += '</div>'; /* st-practice */
+
+  /* ── BOTTOM ACTION BAR (fixed) ── */
+  html += '<div class="st-bottom-bar" id="st-practice-bottom">';
+  html += '<div class="st-bottom-bar-left">';
+  html += '<button class="st-bar-btn st-bar-btn-ghost" id="st-drawer-star" title="\u0130pucu">' + starSVG + ' <span class="st-bar-label">\u0130pucu</span></button>';
+  html += '<button class="st-bar-btn st-bar-btn-ghost" id="st-drawer-journal" title="Notlar\u0131m">' + journalSVG + ' <span class="st-bar-label">Notlar\u0131m</span></button>';
+  html += '</div>';
+  html += '<div class="st-bottom-bar-right">';
+  html += '<button class="st-bar-btn st-bar-btn-primary" id="ig-answered">' + checkSVG + ' Sonraki \u2192</button>';
+  html += '</div>';
+  html += '</div>'; /* bottom bar */
+
+  /* ── DRAWER (right side / bottom sheet mobile) ── */
+  html += '<div class="st-drawer' + (S.drawerOpen ? ' open' : '') + '" id="st-drawer">';
+  html += '<div class="st-drawer-header">';
+  html += '<div class="st-drawer-tabs">';
+  html += '<button class="st-drawer-tab' + (S.drawerTab === 'star' ? ' active' : '') + '" data-drawer-tab="star">STAR+T</button>';
+  html += '<button class="st-drawer-tab' + (S.drawerTab === 'signals' ? ' active' : '') + '" data-drawer-tab="signals">Sinyaller</button>';
+  html += '<button class="st-drawer-tab' + (S.drawerTab === 'notes' ? ' active' : '') + '" data-drawer-tab="notes">Ko\u00e7 Notlar\u0131</button>';
+  html += '</div>';
+  html += '<button class="st-drawer-close" id="st-drawer-close">' + closeSVG + '</button>';
+  html += '</div>';
+
+  /* Drawer tab content */
+  html += '<div class="st-drawer-body">';
+  if (S.drawerTab === 'star') {
+    html += renderDrawerStarTab();
+  } else if (S.drawerTab === 'signals') {
+    html += renderDrawerSignalsTab();
+  } else if (S.drawerTab === 'notes') {
+    html += renderDrawerNotesTab();
+  }
+  html += '</div>'; /* drawer-body */
+  html += '</div>'; /* drawer */
+
+  /* ── DRAWER BACKDROP (mobile) ── */
+  if (S.drawerOpen) {
+    html += '<div class="st-drawer-backdrop" id="st-drawer-backdrop"></div>';
   }
 
-  /* Coach panel (conditionally shown) */
-  if (S.coachOpen) {
-    html += renderCoachPanel();
+  /* ── JOURNAL PANEL — rendered inside drawer when journal tab active,
+       or as separate overlay triggered from bottom bar ── */
+  html += '<div class="st-journal-drawer' + (S.journalOpen ? ' open' : '') + '" id="st-journal-drawer">';
+  html += '<div class="st-drawer-header">';
+  html += '<div class="st-drawer-title">Cevab\u0131n\u0131 Haz\u0131rla</div>';
+  html += '<button class="st-drawer-close" id="st-journal-close">' + closeSVG + '</button>';
+  html += '</div>';
+  html += renderJournalDrawerContent();
+  html += '</div>'; /* journal drawer */
+
+  if (S.journalOpen) {
+    html += '<div class="st-drawer-backdrop st-journal-backdrop" id="st-journal-backdrop"></div>';
   }
 
-  html += '</div>'; /* q-focus */
+  return html;
+}
 
-  /* ── Preparation notes — collapsible on mobile ── */
+/* ── Drawer Tab: STAR+T İpuçları ── */
+function renderDrawerStarTab() {
+  var steps = STAR_CONTENT.what.steps;
+  var colors = ['verm', 'navy', 'verm', 'navy'];
+  var html = '';
+  html += '<div class="st-drawer-section">';
+  html += '<div class="st-drawer-section-title">Yan\u0131t Yap\u0131s\u0131: STAR+T</div>';
+  html += '<div class="st-drawer-section-desc">M\u00fclakat sorusunu bu yap\u0131yla cevapla:</div>';
+  for (var i = 0; i < steps.length; i++) {
+    html += '<div class="ig-star-hint-step">';
+    html += '<div class="ig-star-hint-letter ' + colors[i] + '">' + steps[i].letter + '</div>';
+    html += '<div class="ig-star-hint-desc"><strong>' + steps[i].tr + ':</strong> ' + steps[i].desc.split('.')[0] + '.</div>';
+    html += '</div>';
+  }
+  /* +T Takeaway */
+  html += '<div class="ig-star-hint-step">';
+  html += '<div class="ig-star-hint-letter navy">+T</div>';
+  html += '<div class="ig-star-hint-desc"><strong>\u00c7\u0131kar\u0131m:</strong> Bu deneyimden ne \u00f6\u011frendin?</div>';
+  html += '</div>';
+  html += '</div>';
+  return html;
+}
+
+/* ── Drawer Tab: Sinyaller (güçlü + risk) ── */
+function renderDrawerSignalsTab() {
+  var bridge = getBridge();
+  if (!bridge) return '';
+  var anchors = bridge.ANCHORS || {};
   var a = anchors[S.activeComp];
-  var hasPrep = (a && a.skilled && a.skilled.length > 0) || (a && a.lessskilled && a.lessskilled.length > 0) || (S.dealt.length > 1 && S.currentQ < S.dealt.length - 1);
-  if (hasPrep) {
-    var chevronDown = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>';
-    html += '<div class="yk-prep-accordion">';
-    html += '<button class="yk-prep-toggle" id="yk-prep-toggle">Haz\u0131rl\u0131k Notlar\u0131' + chevronDown + '</button>';
-    html += '<div class="yk-prep-body" id="yk-prep-body">';
+  if (!a) return '<div class="st-drawer-empty">Bu yetkinlik i\u00e7in sinyal verisi yok.</div>';
+
+  var html = '';
+
+  /* Güçlü Sinyaller */
+  if (a.skilled && a.skilled.length) {
+    html += '<div class="st-drawer-section">';
+    html += '<div class="ig-coach-header"><div class="ig-coach-dot ig-coach-dot-strong"></div><div class="ig-coach-label">G\u00fc\u00e7l\u00fc Sinyaller</div></div>';
+    html += '<ul class="ig-coach-bullets">';
+    for (var si = 0; si < a.skilled.length; si++) {
+      html += '<li class="ig-coach-bullet">' + a.skilled[si] + '</li>';
+    }
+    html += '</ul></div>';
   }
 
-  /* ── Strong-answer signals from competency data ── */
+  /* Risk Sinyalleri */
+  if (a.lessskilled && a.lessskilled.length) {
+    html += '<div class="st-drawer-section">';
+    html += '<div class="ig-coach-header"><div class="ig-coach-dot ig-coach-dot-risk"></div><div class="ig-coach-label">Risk Sinyalleri</div></div>';
+    html += '<ul class="ig-coach-bullets">';
+    for (var ri = 0; ri < a.lessskilled.length; ri++) {
+      html += '<li class="ig-coach-bullet">' + a.lessskilled[ri] + '</li>';
+    }
+    html += '</ul></div>';
+  }
+
+  /* Aşırı Kullanım */
+  if (a.overused && a.overused.length) {
+    html += '<div class="st-drawer-section">';
+    html += '<div class="ig-coach-header"><div class="ig-coach-dot ig-coach-dot-over"></div><div class="ig-coach-label">A\u015f\u0131r\u0131 Kullan\u0131m</div></div>';
+    html += '<ul class="ig-coach-bullets">';
+    for (var oi = 0; oi < a.overused.length; oi++) {
+      html += '<li class="ig-coach-bullet">' + a.overused[oi] + '</li>';
+    }
+    html += '</ul></div>';
+  }
+
+  return html;
+}
+
+/* ── Drawer Tab: Koç Notları (prep notes + follow-up) ── */
+function renderDrawerNotesTab() {
+  var bridge = getBridge();
+  if (!bridge) return '';
+  var anchors = bridge.ANCHORS || {};
+  var a = anchors[S.activeComp];
+  var html = '';
+
+  /* Strong-answer signals */
   if (a && a.skilled && a.skilled.length > 0) {
-    html += '<div class="yk-unit-signals">';
-    html += '<div class="yk-unit-signals-title">' + checkSVG + ' G\u00fc\u00e7l\u00fc Yan\u0131tta Arananlar</div>';
+    html += '<div class="st-drawer-section">';
+    html += '<div class="st-drawer-section-title">' + checkSVG + ' G\u00fc\u00e7l\u00fc Yan\u0131tta Arananlar</div>';
     for (var sii = 0; sii < Math.min(3, a.skilled.length); sii++) {
-      html += '<div class="yk-unit-signal-item">' + a.skilled[sii] + '</div>';
+      html += '<div style="font-family:\'Plus Jakarta Sans\',sans-serif;font-size:12px;color:var(--text-secondary,#4B5563);line-height:1.6;padding:4px 0;border-bottom:1px solid var(--border-subtle,#E5E3DF)">' + a.skilled[sii] + '</div>';
     }
     html += '</div>';
   }
 
-  /* ── Common weak signals ── */
+  /* Weak signals */
   if (a && a.lessskilled && a.lessskilled.length > 0) {
-    html += '<div class="yk-unit-weak">';
-    html += '<div class="yk-unit-weak-title">Yayg\u0131n Zay\u0131fl\u0131klar</div>';
+    html += '<div class="st-drawer-section">';
+    html += '<div class="st-drawer-section-title">Yayg\u0131n Zay\u0131fl\u0131klar</div>';
     for (var wii = 0; wii < Math.min(2, a.lessskilled.length); wii++) {
-      html += '<div class="yk-unit-weak-item">' + a.lessskilled[wii] + '</div>';
+      html += '<div style="font-family:\'Plus Jakarta Sans\',sans-serif;font-size:12px;color:var(--text-secondary,#4B5563);line-height:1.6;padding:4px 0;border-bottom:1px solid var(--border-subtle,#E5E3DF)">' + a.lessskilled[wii] + '</div>';
     }
     html += '</div>';
   }
 
-  /* ── Follow-up questions preview ── */
+  /* Follow-up question preview */
   if (S.dealt.length > 1 && S.currentQ < S.dealt.length - 1) {
-    html += '<div class="yk-unit-followup">';
-    html += '<div class="yk-unit-followup-title">Olas\u0131 Takip Sorusu</div>';
-    html += '<div class="yk-unit-followup-text">\u201c' + S.dealt[Math.min(S.currentQ + 1, S.dealt.length - 1)].text + '\u201d</div>';
+    html += '<div class="st-drawer-section">';
+    html += '<div class="st-drawer-section-title">Olas\u0131 Takip Sorusu</div>';
+    html += '<div style="font-family:\'Plus Jakarta Sans\',sans-serif;font-size:13px;color:var(--text-primary,#111);line-height:1.6;font-style:italic;padding:8px 12px;background:var(--bg-muted,#F7F6F4);border-radius:10px">';
+    html += '\u201c' + S.dealt[Math.min(S.currentQ + 1, S.dealt.length - 1)].text + '\u201d';
+    html += '</div></div>';
+  }
+
+  if (!html) html = '<div class="st-drawer-empty">Bu soru i\u00e7in ek not yok.</div>';
+  return html;
+}
+
+/* ── Journal Drawer Content (STAR+T input + AI feedback) ── */
+function renderJournalDrawerContent() {
+  if (!S.activeComp || !S.dealt || !S.dealt.length) return '';
+  var q = S.dealt[S.currentQ];
+  if (!q) return '';
+
+  var draft = loadJournalDraft(S.activeComp, q.text);
+
+  var html = '<div class="st-drawer-body">';
+  html += '<div style="font-family:\'Plus Jakarta Sans\',sans-serif;font-size:12px;color:var(--text-muted,#6B7280);line-height:1.5;margin-bottom:12px">Deneyimini STAR+T yap\u0131s\u0131yla not et. Notlar\u0131n otomatik kaydedilir.</div>';
+
+  var fields = [
+    { key: 's', letter: 'S', label: 'Durum', color: 'verm', placeholder: 'Kar\u015F\u0131la\u015Ft\u0131\u011F\u0131n\u0131z durumu k\u0131saca tan\u0131mlay\u0131n...' },
+    { key: 't', letter: 'T', label: 'G\u00F6rev', color: 'navy', placeholder: 'Sizden beklenen g\u00F6revi a\u00E7\u0131klay\u0131n...' },
+    { key: 'a', letter: 'A', label: 'Aksiyon', color: 'verm', placeholder: 'Att\u0131\u011F\u0131n\u0131z somut ad\u0131mlar\u0131 anlat\u0131n...' },
+    { key: 'r', letter: 'R', label: 'Sonu\u00E7', color: 'navy', placeholder: 'Sonucu ve etkisini payla\u015F\u0131n...' },
+    { key: 'takeaway', letter: '+T', label: '\u00C7\u0131kar\u0131m', color: 'navy', placeholder: 'Bu deneyimden ne \u00F6\u011Frendiniz?' }
+  ];
+
+  for (var fi = 0; fi < fields.length; fi++) {
+    var f = fields[fi];
+    var val = draft ? (draft[f.key] || '') : '';
+    html += '<div class="ig-journal-field">';
+    html += '<div class="ig-journal-field-header">';
+    html += '<div class="ig-journal-field-badge ' + f.color + '">' + f.letter + '</div>';
+    html += '<div class="ig-journal-field-label">' + f.label + '</div>';
+    html += '</div>';
+    html += '<textarea class="ig-journal-textarea" data-field="' + f.key + '" placeholder="' + f.placeholder + '" rows="3">' + escapeHtml(val) + '</textarea>';
     html += '</div>';
   }
 
-  if (hasPrep) {
-    html += '</div>'; /* yk-prep-body */
-    html += '</div>'; /* yk-prep-accordion */
+  html += '<div class="ig-journal-saved" id="ig-journal-saved"></div>';
+
+  /* Self-reflection prompt */
+  html += '<div class="aif-self-reflect" style="margin-top:12px">';
+  html += '<label class="ig-journal-field-label" style="font-size:11px;color:var(--text-muted,#6B7280);margin-bottom:4px;display:block">Bu cevapta en g\u00fc\u00e7l\u00fc taraf\u0131n\u0131z ne oldu?</label>';
+  html += '<textarea class="ig-journal-textarea" id="aif-self-reflect-input" placeholder="K\u0131saca yaz\u0131n\u2026" rows="2" style="font-size:12px"></textarea>';
+  html += '</div>';
+
+  /* AI Feedback area */
+  var compIdx = S.comps ? S.comps.indexOf(S.activeComp) : -1;
+  var aiFree = S.isPremium || (compIdx >= 0 && compIdx < FREE_COMP_LIMIT);
+
+  html += '<div class="aif-area" id="aif-area">';
+  if (aiFree) {
+    html += '<button class="aif-btn" id="aif-request"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg> AI ile De\u011Ferlendir</button>';
+  } else {
+    html += '<div class="aif-gate">';
+    html += '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>';
+    html += '<span>AI de\u011Ferlendirme ilk ' + FREE_COMP_LIMIT + ' yetkinlikte \u00fccretsiz. T\u00fcm yetkinlikler i\u00e7in:</span>';
+    html += '<button class="aif-gate-cta" onclick="if(typeof switchPanel===\'function\')switchPanel(\'premium\')">Premium\u2019a Ge\u00E7</button>';
+    html += '</div>';
   }
+  html += '<div id="aif-result" style="display:none;"></div>';
+  html += '</div>';
 
-  /* ── Journal panel (STAR+T input + AI feedback) — restored from Phase 5A ── */
-  html += renderJournalPanel();
-
-  html += '</div>'; /* practice-wrap */
+  html += '</div>'; /* drawer-body */
   return html;
 }
 
@@ -2197,6 +2662,7 @@ function renderCompletion() {
   var html = '';
 
   html += '<div class="yk-summary-wrap">';
+  html += '<button class="yk-summary-back" id="yk-comp-back">' + arrowLeftSVG + ' \u00d6\u011frenme Plan\u0131</button>';
   html += '<div class="yk-summary-card">';
 
   /* Completion icon */
@@ -2241,7 +2707,9 @@ function renderSessionComplete() {
   var html = '';
 
   html += '<div class="yk-summary-wrap">';
+  html += '<button class="yk-summary-back" id="yk-session-back">' + arrowLeftSVG + ' \u00d6\u011frenme Plan\u0131</button>';
   html += '<div class="yk-summary-card">';
+  html += '<div class="yk-summary-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>';
   html += '<div class="yk-summary-title">' + S.role + ' Haz\u0131rl\u0131\u011f\u0131n Tamam</div>';
   html += '<div class="yk-summary-desc">Eri\u015filebilir yetkinliklerin temel de\u011ferlendirme \u00f6l\u00e7\u00fctlerini \u00f6\u011frendin. Farkl\u0131 bir rol se\u00e7erek ba\u015fka yetkinlikleri ke\u015ffedebilirsin.</div>';
 
@@ -2261,7 +2729,7 @@ function renderSessionComplete() {
 
   html += '<div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:16px">';
   html += '<button class="ig-btn ig-btn-answered" id="ig-back-lobby-session">\u00d6\u011frenme Plan\u0131 \u2192</button>';
-  html += '<button class="ig-btn ig-btn-swap" id="ig-new-session" style="border:1px solid var(--border-subtle,#E5E3DF) !important">Farkl\u0131 Rol</button>';
+  html += '<button class="ig-btn ig-btn-swap" id="ig-new-session" style="border:1px solid var(--border-subtle,#E5E3DF) !important">Ba\u015fka Yetkinlik Se\u00e7</button>';
   html += '</div>';
 
   html += '</div></div>';
@@ -2353,7 +2821,7 @@ var COACH_CAT_TO_COMP = (function() {
 })();
 
 /* Navigate to competency practice from content detail (FAZ 4C).
-   If user has active role and comp is accessible → go directly to competency_intro.
+   If user has active role and comp is accessible → go directly to course_detail.
    Otherwise → role_select with pendingComp hint. */
 function navigateToCompPractice(compCode) {
   var bridge = getBridge();
@@ -2368,7 +2836,7 @@ function navigateToCompPractice(compCode) {
     if (idx !== -1) {
       S.activeComp = compCode;
       S.activeCompIdx = idx;
-      navigate('competency_intro');
+      navigate('course_detail');
       return;
     }
   }
@@ -2925,22 +3393,21 @@ function openCoachDetail(post, isLiked) {
 function navigate(screen) {
   var container = document.getElementById('ig-container');
   if (!container) return;
+
+  /* Legacy screens collapsed into lobby */
+  if (screen === 'star_intro' || screen === 'role_select') {
+    screen = 'lobby';
+  }
   S.screen = screen;
 
   /* All innerHTML content from hardcoded constants — safe from XSS */
-  if (screen === 'star_intro') {
+  if (screen === 'lobby') {
     _coachFeedLoaded = false; /* Reset so feed re-hydrates on return */
-    container.innerHTML = renderStarIntro();
-    bindStarIntroEvents();
-  } else if (screen === 'role_select') {
-    container.innerHTML = renderRoleSelect();
-    bindRoleSelectEvents();
-  } else if (screen === 'lobby') {
     container.innerHTML = renderLobby();
     bindLobbyEvents();
-  } else if (screen === 'competency_intro') {
-    container.innerHTML = renderCompetencyIntro();
-    bindCompetencyIntroEvents();
+  } else if (screen === 'course_detail') {
+    container.innerHTML = renderCourseDetail();
+    bindCourseDetailEvents();
   } else if (screen === 'practice') {
     container.innerHTML = renderPractice();
     bindPracticeEvents();
@@ -2960,26 +3427,25 @@ function navigate(screen) {
    EVENT BINDINGS
    ════════════════════════════════════════════════ */
 
-function bindStarIntroEvents() {
-  /* ── Onboarding spotlight CTA → go to role_select (first-time users) ── */
+/* bindStarIntroEvents — DEPRECATED: lobby events handle everything */
+function bindStarIntroEvents() { bindLobbyEvents(); }
+
+/* Original bindStarIntroEvents preserved as _bindStarIntroEvents_legacy */
+function _bindStarIntroEvents_legacy() {
   var onboardBtn = document.getElementById('st-onboard-start');
   if (onboardBtn) onboardBtn.addEventListener('click', function() {
     markStarSeen();
-    navigate('role_select');
+    navigate('lobby');
   });
 
-  /* ── Yetenek section card → go to role_select (competency practice flow) ── */
   var yetBtn = document.getElementById('st-go-yetenek');
   if (yetBtn) yetBtn.addEventListener('click', function() {
     markStarSeen();
-    navigate('role_select');
+    navigate('lobby');
   });
 
-  /* ── Koç section card → conditional on published content ── */
   var kocBtn = document.getElementById('st-go-koc');
-  /* Coach feed availability is resolved async after hydration */
 
-  /* ── Performans + Bilgiler — passive, show "yakında" toast ── */
   var perfBtn = document.getElementById('st-go-perf');
   if (perfBtn) perfBtn.addEventListener('click', function(e) {
     e.stopPropagation();
@@ -2991,7 +3457,6 @@ function bindStarIntroEvents() {
     showStudioToast('Bu b\u00f6l\u00fcm \u00e7ok yak\u0131nda a\u00e7\u0131lacak.');
   });
 
-  /* ── STAR collapsible toggle ── */
   var starToggle = document.getElementById('ig-star-toggle');
   var starCollapse = document.getElementById('ig-star-collapse');
   if (starToggle && starCollapse) {
@@ -3001,14 +3466,12 @@ function bindStarIntroEvents() {
     });
   }
 
-  /* ── Coach feed — async hydration + card state update ── */
   hydrateCoachFeed().then(function() {
     var feed = document.getElementById('ig-coach-feed');
     var hasContent = feed && feed.style.display !== 'none';
     var kocCard = document.getElementById('st-go-koc');
     if (kocCard) {
       if (hasContent) {
-        /* Coach content exists — make card active + clickable */
         kocCard.addEventListener('click', function() {
           feed.scrollIntoView({ behavior: 'smooth', block: 'start' });
         });
@@ -3957,20 +4420,8 @@ function openStudioModule(mod) {
   area.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
-function bindRoleSelectEvents() {
-  /* Back to STAR */
-  var backBtn = document.getElementById('ig-back-star');
-  if (backBtn) backBtn.addEventListener('click', function() { navigate('star_intro'); });
-
-  /* Role start */
-  var dd = document.getElementById('ig-role-dd');
-  var startBtn = document.getElementById('ig-role-start');
-  if (startBtn) startBtn.addEventListener('click', function() {
-    if (dd && dd.value) {
-      startSession(dd.value);
-    }
-  });
-}
+/* bindRoleSelectEvents — DEPRECATED: role picker now in lobby hero */
+function bindRoleSelectEvents() { bindLobbyEvents(); }
 
 function startSession(role) {
   var bridge = getBridge();
@@ -3984,8 +4435,8 @@ function startSession(role) {
   S.currentQ = 0;
   S.swapsUsed = 0;
   S.answeredCount = 0;
-  S.starHintOpen = false;
-  S.coachOpen = false;
+  S.drawerOpen = false;
+  S.drawerTab = 'star';
   S.journalOpen = false;
   S.completedComps = [];
   S.totalAnswered = 0;
@@ -4002,7 +4453,8 @@ function startSession(role) {
     if (pIdx !== -1) {
       S.activeComp = pending;
       S.activeCompIdx = pIdx;
-      navigate('competency_intro');
+      S.activeTab = 'overview';
+      navigate('course_detail');
       return;
     }
   }
@@ -4017,49 +4469,72 @@ function startPractice(compCode, compIdx) {
   S.currentQ = 0;
   S.swapsUsed = 0;
   S.answeredCount = 0;
-  S.starHintOpen = false;
-  S.coachOpen = false;
+  S.drawerOpen = false;
+  S.drawerTab = 'star';
   S.journalOpen = false;
   navigate('practice');
 }
 
 function bindLobbyEvents() {
-  /* Back to Studio landing */
-  var backBtn = document.getElementById('ig-back-role');
-  if (backBtn) backBtn.addEventListener('click', function() { navigate('star_intro'); });
-
-  /* Change role button */
-  var changeRoleBtn = document.getElementById('ig-back-role-change');
-  if (changeRoleBtn) changeRoleBtn.addEventListener('click', function() { navigate('role_select'); });
-
-  /* Continue card */
-  var contCard = document.getElementById('yk-continue-card');
-  if (contCard) contCard.addEventListener('click', function() {
-    var code = this.getAttribute('data-comp');
-    var idx = parseInt(this.getAttribute('data-idx'), 10);
-    S.activeComp = code;
-    S.activeCompIdx = idx;
-    navigate('competency_intro');
+  /* ── Role picker (first-time hero) ── */
+  var dd = document.getElementById('ig-role-dd');
+  var startBtn = document.getElementById('ig-role-start');
+  if (startBtn) startBtn.addEventListener('click', function() {
+    if (dd && dd.value) {
+      startSession(dd.value);
+    }
   });
 
-  /* Track card clicks → go to track detail */
-  var cards = document.querySelectorAll('.yk-track-card[data-comp]');
+  /* ── Change role (returning hero) ── */
+  var changeRoleBtn = document.getElementById('ig-back-role-change');
+  if (changeRoleBtn) changeRoleBtn.addEventListener('click', function() {
+    S.role = null;
+    S.comps = [];
+    try { localStorage.removeItem('ht_studio_role'); } catch(e) {}
+    navigate('lobby');
+  });
+
+  /* ── Course card clicks → course_detail ── */
+  var cards = document.querySelectorAll('.st-course-card[data-comp]');
   cards.forEach(function(card) {
-    card.addEventListener('click', function(e) {
-      if (e.target.closest && e.target.closest('.yk-rating-toggle')) return;
+    if (card.classList.contains('st-course-locked')) return;
+    card.addEventListener('click', function() {
       var code = this.getAttribute('data-comp');
       var idx = parseInt(this.getAttribute('data-idx'), 10);
       S.activeComp = code;
       S.activeCompIdx = idx;
-      navigate('competency_intro');
+      S.activeTab = 'overview';
+      navigate('course_detail');
     });
   });
 
-  /* Async evidence hydration */
-  hydrateLobbyEvidence();
+  /* ── Locked card click → premium nudge ── */
+  var lockedCards = document.querySelectorAll('.st-course-card.st-course-locked');
+  lockedCards.forEach(function(card) {
+    card.addEventListener('click', function(e) {
+      e.stopPropagation();
+      showStudioToast('Bu yetkinlik Premium ile a\u00e7\u0131l\u0131r.');
+    });
+  });
 
-  /* Async streak hydration */
-  hydrateStreakPill();
+  /* ── STAR+T reference card expand/collapse ── */
+  var starRef = document.getElementById('st-star-ref');
+  if (starRef) starRef.addEventListener('click', function() {
+    var body = document.getElementById('st-star-ref-body');
+    if (body) body.style.display = body.style.display === 'none' ? 'block' : 'none';
+  });
+
+  /* ── Coach feed hydration ── */
+  hydrateCoachFeed();
+
+  /* ── Badge strip hydration ── */
+  hydrateBadgeStrip();
+
+  /* ── Async evidence + streak hydration (only if role exists) ── */
+  if (S.role) {
+    hydrateLobbyEvidence();
+    hydrateStreakPill();
+  }
 }
 
 /* ══ LOBBY EVIDENCE HYDRATION ══ */
@@ -4298,7 +4773,7 @@ function hydrateDailyPractice() {
     var idx = parseInt(this.getAttribute('data-idx'), 10);
     S.activeComp = c;
     S.activeCompIdx = idx;
-    navigate('competency_intro');
+    navigate('course_detail');
   });
 }
 
@@ -4472,27 +4947,38 @@ function saveCompRating(code, rating, toggleWrap) {
   }).then(function() {});
 }
 
-function bindCompetencyIntroEvents() {
+function bindCourseDetailEvents() {
   /* Back to lobby */
-  var backBtn = document.getElementById('ig-back-lobby-intro');
-  if (backBtn) backBtn.addEventListener('click', function() { navigate('lobby'); });
+  var backBtn = document.getElementById('st-cd-back');
+  if (backBtn) backBtn.addEventListener('click', function() {
+    S.activeTab = 'overview';
+    navigate('lobby');
+  });
 
-  var backBtn2 = document.getElementById('ig-intro-back');
-  if (backBtn2) backBtn2.addEventListener('click', function() { navigate('lobby'); });
-
-  /* Start practice */
-  var startBtn = document.getElementById('ig-intro-start');
+  /* Start practice CTA */
+  var startBtn = document.getElementById('st-cd-start');
   if (startBtn) startBtn.addEventListener('click', function() {
     startPractice(S.activeComp, S.activeCompIdx);
+  });
+
+  /* Tab switching */
+  var tabs = document.querySelectorAll('.st-tab[data-tab]');
+  tabs.forEach(function(tab) {
+    tab.addEventListener('click', function() {
+      var target = this.getAttribute('data-tab');
+      if (target === S.activeTab) return;
+      S.activeTab = target;
+      navigate('course_detail');
+    });
   });
 }
 
 function bindPracticeEvents() {
-  /* Back to lobby */
+  /* Back to course detail (spec: ← Geri returns to course_detail) */
   var backBtn = document.getElementById('ig-back-lobby');
-  if (backBtn) backBtn.addEventListener('click', function() { flushJournal(); navigate('lobby'); });
+  if (backBtn) backBtn.addEventListener('click', function() { flushJournal(); navigate('course_detail'); });
 
-  /* Swap */
+  /* Swap (skip question) */
   var swapBtn = document.getElementById('ig-swap');
   if (swapBtn) swapBtn.addEventListener('click', function() {
     flushJournal();
@@ -4504,47 +4990,66 @@ function bindPracticeEvents() {
     }
   });
 
-  /* STAR hint toggle */
-  var starBtn = document.getElementById('ig-star-hint');
-  if (starBtn) starBtn.addEventListener('click', function() {
-    flushJournal();
-    S.starHintOpen = !S.starHintOpen;
+  /* ── Drawer: open with STAR+T tab ── */
+  var drawerStarBtn = document.getElementById('st-drawer-star');
+  if (drawerStarBtn) drawerStarBtn.addEventListener('click', function() {
+    S.drawerTab = 'star';
+    S.drawerOpen = true;
+    S.journalOpen = false;
     navigate('practice');
   });
 
-  /* Coach panel toggle */
-  var coachBtn = document.getElementById('ig-coach-toggle');
-  if (coachBtn) coachBtn.addEventListener('click', function() {
-    flushJournal();
-    S.coachOpen = !S.coachOpen;
-    navigate('practice');
-  });
-
-  /* Prep notes accordion toggle (mobile) */
-  var prepToggle = document.getElementById('yk-prep-toggle');
-  var prepBody = document.getElementById('yk-prep-body');
-  if (prepToggle && prepBody) {
-    prepToggle.addEventListener('click', function() {
-      var isOpen = prepBody.classList.toggle('open');
-      prepToggle.classList.toggle('open', isOpen);
-      prepToggle.textContent = isOpen ? 'Haz\u0131rl\u0131k Notlar\u0131n\u0131 Gizle' : 'Haz\u0131rl\u0131k Notlar\u0131';
-      prepToggle.innerHTML += '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>';
+  /* ── Drawer: tab switching ── */
+  var drawerTabs = document.querySelectorAll('.st-drawer-tab[data-drawer-tab]');
+  drawerTabs.forEach(function(tab) {
+    tab.addEventListener('click', function() {
+      var target = this.getAttribute('data-drawer-tab');
+      if (target === S.drawerTab) return;
+      S.drawerTab = target;
+      navigate('practice');
     });
-  }
+  });
 
-  /* Journal toggle */
-  var journalBtn = document.getElementById('ig-journal-toggle');
-  if (journalBtn) journalBtn.addEventListener('click', function() {
-    flushJournal();
-    S.journalOpen = !S.journalOpen;
+  /* ── Drawer: close ── */
+  var drawerCloseBtn = document.getElementById('st-drawer-close');
+  if (drawerCloseBtn) drawerCloseBtn.addEventListener('click', function() {
+    S.drawerOpen = false;
     navigate('practice');
-    /* Focus first textarea if opening */
-    if (S.journalOpen) {
-      setTimeout(function() {
-        var first = document.querySelector('.ig-journal-textarea');
-        if (first) first.focus();
-      }, 100);
-    }
+  });
+
+  /* ── Drawer: backdrop click closes ── */
+  var drawerBackdrop = document.getElementById('st-drawer-backdrop');
+  if (drawerBackdrop) drawerBackdrop.addEventListener('click', function() {
+    S.drawerOpen = false;
+    navigate('practice');
+  });
+
+  /* ── Journal drawer: open ── */
+  var journalOpenBtn = document.getElementById('st-drawer-journal');
+  if (journalOpenBtn) journalOpenBtn.addEventListener('click', function() {
+    S.journalOpen = true;
+    S.drawerOpen = false;
+    navigate('practice');
+    setTimeout(function() {
+      var first = document.querySelector('.ig-journal-textarea');
+      if (first) first.focus();
+    }, 100);
+  });
+
+  /* ── Journal drawer: close ── */
+  var journalCloseBtn = document.getElementById('st-journal-close');
+  if (journalCloseBtn) journalCloseBtn.addEventListener('click', function() {
+    flushJournal();
+    S.journalOpen = false;
+    navigate('practice');
+  });
+
+  /* ── Journal drawer: backdrop click closes ── */
+  var journalBackdrop = document.getElementById('st-journal-backdrop');
+  if (journalBackdrop) journalBackdrop.addEventListener('click', function() {
+    flushJournal();
+    S.journalOpen = false;
+    navigate('practice');
   });
 
   /* Flush journal — immediate save of current textarea values.
@@ -4608,15 +5113,14 @@ function bindPracticeEvents() {
     loadExistingFeedback(S.activeComp, S.dealt[S.currentQ].text);
   }
 
-  /* Answered */
+  /* Answered (next question or complete) */
   var answeredBtn = document.getElementById('ig-answered');
   if (answeredBtn) answeredBtn.addEventListener('click', function() {
     flushJournal();
     addRecentQuestion(S.dealt[S.currentQ].text);
     S.answeredCount++;
     S.totalAnswered++;
-    S.starHintOpen = false;
-    S.coachOpen = false;
+    S.drawerOpen = false;
     S.journalOpen = false;
 
     if (S.currentQ < S.dealt.length - 1) {
@@ -4647,9 +5151,13 @@ function bindCompletionEvents() {
   var backBtn = document.getElementById('ig-back-lobby-comp');
   if (backBtn) backBtn.addEventListener('click', function() { navigate('lobby'); });
 
-  /* Session complete */
+  /* Öğrenme Planına Dön — back to lobby */
   var sessionBtn = document.getElementById('ig-session-complete');
-  if (sessionBtn) sessionBtn.addEventListener('click', function() { navigate('session_complete'); });
+  if (sessionBtn) sessionBtn.addEventListener('click', function() { navigate('lobby'); });
+
+  /* Back nav at top */
+  var backNavBtn = document.getElementById('yk-comp-back');
+  if (backNavBtn) backNavBtn.addEventListener('click', function() { navigate('lobby'); });
 
   /* Restart same comp */
   var restartBtn = document.getElementById('ig-restart-comp');
@@ -4792,7 +5300,11 @@ function hydrateCompletionXlinks() {
 }
 
 function bindSessionCompleteEvents() {
-  /* Back to lobby */
+  /* Back nav at top */
+  var backNavBtn = document.getElementById('yk-session-back');
+  if (backNavBtn) backNavBtn.addEventListener('click', function() { navigate('lobby'); });
+
+  /* Back to lobby (primary CTA) */
   var backBtn = document.getElementById('ig-back-lobby-session');
   if (backBtn) backBtn.addEventListener('click', function() { navigate('lobby'); });
 
@@ -4810,14 +5322,14 @@ function bindSessionCompleteEvents() {
     S.currentQ = 0;
     S.swapsUsed = 0;
     S.answeredCount = 0;
-    S.starHintOpen = false;
-    S.coachOpen = false;
+    S.drawerOpen = false;
+    S.drawerTab = 'star';
     S.journalOpen = false;
     S.completedComps = [];
     S.totalAnswered = 0;
     S.totalSwaps = 0;
     clearSession();
-    navigate('role_select');
+    navigate('lobby');
   });
 }
 
@@ -4825,7 +5337,7 @@ function bindSessionCompleteEvents() {
    LAZY LOADER (called by profil.html _doSwitchPanel)
    ════════════════════════════════════════════════ */
 
-window._htLoadMulakat = function() {
+window._htLoadStudio = function() {
   if (_loaded) return;
   _loaded = true;
   injectCSS();
@@ -4848,19 +5360,16 @@ window._htLoadMulakat = function() {
     S.isPremium = true;
   }
 
-  /* Returning user: restore session or skip STAR intro */
+  /* Returning user: restore session */
   if (loadSession()) {
-    /* Restored in-progress session — validate screen is renderable */
-    var validScreens = ['star_intro', 'role_select', 'lobby', 'competency_intro', 'practice', 'completion', 'session_complete'];
+    var validScreens = ['lobby', 'course_detail', 'practice', 'completion', 'session_complete'];
     if (validScreens.indexOf(S.screen) !== -1) {
-      /* For competency_intro, verify we have activeComp */
-      if (S.screen === 'competency_intro' && !S.activeComp) {
-        navigate(S.role ? 'lobby' : 'role_select');
+      if (S.screen === 'course_detail' && !S.activeComp) {
+        navigate('lobby');
         return;
       }
-      /* For practice/completion, verify we have the data needed */
       if ((S.screen === 'practice' || S.screen === 'completion') && (!S.dealt || !S.dealt.length)) {
-        navigate(S.role ? 'lobby' : 'role_select');
+        navigate('lobby');
       } else {
         navigate(S.screen);
       }
@@ -4868,20 +5377,15 @@ window._htLoadMulakat = function() {
     }
   }
 
-  /* No session to restore — check if returning user */
-  if (hasSeenStar()) {
-    /* If user already has a saved role, skip role_select and go to lobby */
-    var savedRole = '';
-    try { savedRole = localStorage.getItem('ht_studio_role') || ''; } catch(e) {}
-    if (savedRole) {
-      S.role = savedRole;
-      navigate('lobby');
-    } else {
-      navigate('role_select');
-    }
-  } else {
-    navigate('star_intro');
+  /* No session — restore saved role if any, then go to lobby */
+  var savedRole = '';
+  try { savedRole = localStorage.getItem('ht_studio_role') || ''; } catch(e) {}
+  if (savedRole) {
+    S.role = savedRole;
+    var _b = getBridge();
+    if (_b) S.comps = _b.ROLE_COMP_MAP[savedRole] || [];
   }
+  navigate('lobby');
 };
 
 /* ── Teaser helper for Genel Bakis home surface ── */

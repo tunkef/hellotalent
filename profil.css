@@ -882,7 +882,7 @@ html[data-theme="dark"] .bento-card.premium {
 .ht-loading-screen{
   position:fixed;inset:0;z-index:9999;
   display:flex;align-items:center;justify-content:center;
-  background:var(--gray);
+  background:var(--bg-app);
   transition:opacity 0.5s ease,visibility 0.5s ease;
 }
 .ht-loading-screen.fade-out{opacity:0;visibility:hidden;pointer-events:none;}
@@ -898,7 +898,7 @@ html[data-theme="dark"] .bento-card.premium {
 .ht-loading-dots span:nth-child(4){animation-delay:0.36s;}
 .ht-loading-dots span:nth-child(5){animation-delay:0.48s;}
 @keyframes dotWave{0%,60%,100%{transform:translateY(0);opacity:0.3;}30%{transform:translateY(-10px);opacity:1;}}
-.ht-loading-tagline{font-family:'DM Mono',monospace;font-size:var(--text-sm);color:#8C8C8C;letter-spacing:0.5px;}
+.ht-loading-tagline{font-family:'DM Mono',monospace;font-size:var(--text-sm);color:var(--text-muted);letter-spacing:0.5px;}
 
 /* ── APP BODY ── */
 .app-body{margin-left:0;padding-top:calc(var(--header-h) + 16px);}
@@ -2474,50 +2474,6 @@ html[data-theme="dark"] .field-req{color:#F87171;}
     width: auto;
     top: 72px; /* below header (8px offset + 60px height + 4px gap) */
   }
-}
-
-/* ── Toggle Toast ── */
-.tg-toast {
-  position: fixed;
-  z-index: 8000;
-  background: var(--navy-deep, #162247);
-  color: rgba(255,255,255,0.9);
-  padding: 10px 16px;
-  border-radius: 10px;
-  font-size: var(--text-base);
-  font-weight: 500;
-  font-family: var(--font-body, 'Plus Jakarta Sans', sans-serif);
-  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  max-width: 320px;
-  opacity: 0;
-  transform: translateY(6px);
-  pointer-events: none;
-  transition: opacity 0.2s, transform 0.2s;
-}
-.tg-toast.visible {
-  opacity: 1;
-  transform: translateY(0);
-  pointer-events: auto;
-}
-.tg-toast-close {
-  background: rgba(255,255,255,0.1);
-  border: none;
-  color: rgba(255,255,255,0.5);
-  cursor: pointer;
-  width: 22px; height: 22px;
-  border-radius: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  transition: background 0.15s;
-}
-.tg-toast-close:hover {
-  background: rgba(255,255,255,0.2);
-  color: #fff;
 }
 
 /* ── Toggle Toast ── */

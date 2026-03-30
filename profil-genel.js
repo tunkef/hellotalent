@@ -408,7 +408,7 @@
     if (c) c.remove();
   }
 
-  /* Expose cover builders for profil-mulakatkocu.js (same page, safe) */
+  /* Expose cover builders for profil-studio.js (same page, safe) */
   window._htBuildCoachCover = buildCover;
   window._htBuildFallbackCover = buildFallbackCover;
   window._htBuildCoachAvatar = buildCoachAvatar;
@@ -792,7 +792,7 @@
     });
     actions.appendChild(openBtn);
 
-    if (post.related_role && typeof window._htLoadMulakat === 'function') {
+    if (post.related_role && typeof window._htLoadStudio === 'function') {
       var practiceBtn = txt('button', 'gh-btn-secondary', 'Bu konuyu \u015Fimdi \u00E7al\u0131\u015F');
       practiceBtn.type = 'button';
       practiceBtn.addEventListener('click', function(e) {

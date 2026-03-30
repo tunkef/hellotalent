@@ -202,26 +202,26 @@ function nullIfEmpty(v) {
 // REFERENCE DATA
 // ═══════════════════════════════════════════════════
 
-const AY_ISIMLERI = ['Ocak','Subat','Mart','Nisan','Mayis','Haziran','Temmuz','Agustos','Eylul','Ekim','Kasim','Aralik'];
+var AY_ISIMLERI = ['Ocak','Subat','Mart','Nisan','Mayis','Haziran','Temmuz','Agustos','Eylul','Ekim','Kasim','Aralik'];
 
-const EGITIM_SEVIYELERI = ['\u0130lkokul','Ortaokul','Lise','\u00d6n Lisans','Lisans','Y\u00fcksek Lisans','Doktora'];
+var EGITIM_SEVIYELERI = ['\u0130lkokul','Ortaokul','Lise','\u00d6n Lisans','Lisans','Y\u00fcksek Lisans','Doktora'];
 
-const DEPARTMANLAR = ['Ma\u011faza','B\u00f6lge Y\u00f6netimi','Genel Merkez','Visual Merchandising','Operasyon','\u0130nsan Kaynaklar\u0131','E\u011fitim','Pazarlama','E-Ticaret','Di\u011fer'];
+var DEPARTMANLAR = ['Ma\u011faza','B\u00f6lge Y\u00f6netimi','Genel Merkez','Visual Merchandising','Operasyon','\u0130nsan Kaynaklar\u0131','E\u011fitim','Pazarlama','E-Ticaret','Di\u011fer'];
 
-const SEGMENTLER = ['L\u00fcks','Premium','Orta Segment','Fast Fashion','Spor','Teknoloji','Kozmetik','Otomotiv','G\u0131da / Market','Ev / Ya\u015fam','Di\u011fer'];
+var SEGMENTLER = ['L\u00fcks','Premium','Orta Segment','Fast Fashion','Spor','Teknoloji','Kozmetik','Otomotiv','G\u0131da / Market','Ev / Ya\u015fam','Di\u011fer'];
 
-const ISTIHDAM_TIPLERI = ['Tam Zamanl\u0131','Yar\u0131 Zamanl\u0131','Sezonluk','Stajyer','S\u00f6zle\u015fmeli'];
+var ISTIHDAM_TIPLERI = ['Tam Zamanl\u0131','Yar\u0131 Zamanl\u0131','Sezonluk','Stajyer','S\u00f6zle\u015fmeli'];
 
-const CALISMA_TIPLERI = ['Tam Zamanl\u0131','Yar\u0131 Zamanl\u0131','Sezonluk','S\u00f6zle\u015fmeli'];
+var CALISMA_TIPLERI = ['Tam Zamanl\u0131','Yar\u0131 Zamanl\u0131','Sezonluk','S\u00f6zle\u015fmeli'];
 
 // KIDEM_SEVIYELERI removed (Decision 1 — derived later, not candidate-facing)
 // LOKASYON_TIPLERI removed (Decision 3 — implied by department)
 
-const TAKIM_BUYUKLUKLERI = ['Yok','1-5','6-15','16-30','30+'];
+var TAKIM_BUYUKLUKLERI = ['Yok','1-5','6-15','16-30','30+'];
 
-const AYRILMA_NEDENLERI = ['Terfi','\u0130stifa','Kariyer Ge\u00e7i\u015fi','\u0130\u015ften \u00c7\u0131kar\u0131lma','Kar\u015f\u0131l\u0131kl\u0131 Fesih','S\u00f6zle\u015fme Bitimi','Belirtmek \u0130stemiyorum'];
+var AYRILMA_NEDENLERI = ['Terfi','\u0130stifa','Kariyer Ge\u00e7i\u015fi','\u0130\u015ften \u00c7\u0131kar\u0131lma','Kar\u015f\u0131l\u0131kl\u0131 Fesih','S\u00f6zle\u015fme Bitimi','Belirtmek \u0130stemiyorum'];
 
-const SEKTOR_ROL_MAP = {
+var SEKTOR_ROL_MAP = {
   'Ma\u011fazac\u0131l\u0131k / Perakende': {
     'Ma\u011faza Y\u00f6netimi': [
       'Ma\u011faza M\u00fcd\u00fcr\u00fc',
@@ -398,9 +398,9 @@ const SEKTOR_ROL_MAP = {
   }
 };
 
-const ROL_AILELERI = Object.keys(SEKTOR_ROL_MAP['Ma\u011fazac\u0131l\u0131k / Perakende']);
+var ROL_AILELERI = Object.keys(SEKTOR_ROL_MAP['Ma\u011fazac\u0131l\u0131k / Perakende']);
 
-const MUSAITLIK_SECENEKLERI = ['Hemen','2 Hafta \u0130\u00e7inde','1 Ay \u0130\u00e7inde','2+ Ay \u0130\u00e7inde'];
+var MUSAITLIK_SECENEKLERI = ['Hemen','2 Hafta \u0130\u00e7inde','1 Ay \u0130\u00e7inde','2+ Ay \u0130\u00e7inde'];
 
 // Career type options — single-select, 2 options (lider removed; collapses into yukari)
 var CAREER_TYPE_OPTIONS = [
@@ -429,9 +429,7 @@ var POSITION_TO_FAMILY = {}; // rol_unvani → rol_ailesi reverse lookup
   RETAIL_POSITIONS.sort(function(a, b) { return trLower(a).localeCompare(trLower(b), 'tr'); });
 })();
 
-const MAAS_ARALIKLARI = ['','25000-30000','30000-35000','35000-45000','45000-60000','60000-80000','80000-100000','100000-150000','150000+'];
+var DIL_LISTESI = ['T\u00fcrk\u00e7e','\u0130ngilizce','Almanca','Frans\u0131zca','\u0130spanyolca','\u0130talyanca','Rus\u00e7a','Arap\u00e7a','\u00c7ince (Mandarin)','Japonca','Korece','Portekizce','Hollandaca','Leh\u00e7e','Ukraynaca','Fars\u00e7a','K\u00fcrt\u00e7e','Bulgar\u0131ca','Rumence','Macarca','\u00c7ek\u00e7e','\u0130sve\u00e7\u00e7e','Danca','Fince','Norve\u00e7\u00e7e','Yunanca','S\u0131rp\u00e7a','H\u0131rvat\u00e7a','Bo\u015fnak\u00e7a','G\u00fcrce','Arnavut\u00e7a','Di\u011fer'];
 
-const DIL_LISTESI = ['T\u00fcrk\u00e7e','\u0130ngilizce','Almanca','Frans\u0131zca','\u0130spanyolca','\u0130talyanca','Rus\u00e7a','Arap\u00e7a','\u00c7ince (Mandarin)','Japonca','Korece','Portekizce','Hollandaca','Leh\u00e7e','Ukraynaca','Fars\u00e7a','K\u00fcrt\u00e7e','Bulgar\u0131ca','Rumence','Macarca','\u00c7ek\u00e7e','\u0130sve\u00e7\u00e7e','Danca','Fince','Norve\u00e7\u00e7e','Yunanca','S\u0131rp\u00e7a','H\u0131rvat\u00e7a','Bo\u015fnak\u00e7a','G\u00fcrce','Arnavut\u00e7a','Di\u011fer'];
-
-const DIL_SEVIYELERI = ['A1 - Ba\u015flang\u0131\u00e7','A2 - Temel','B1 - Orta Alt\u0131','B2 - Orta','C1 - \u0130leri','C2 - \u00dcst \u0130leri','Anadil'];
+var DIL_SEVIYELERI = ['A1 - Ba\u015flang\u0131\u00e7','A2 - Temel','B1 - Orta Alt\u0131','B2 - Orta','C1 - \u0130leri','C2 - \u00dcst \u0130leri','Anadil'];
 

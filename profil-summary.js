@@ -183,7 +183,6 @@ function updateMerkezCards() {
   // ── Card 4: Tercihler & Lokasyon ──
   var hasCalisma = typeof selectedCalismaTipleri !== 'undefined' && selectedCalismaTipleri.length > 0;
   var hasMusaitlik = typeof selectedMusaitlik !== 'undefined' && !!selectedMusaitlik;
-  var hasMaas = !!val('f-maas');
   var hasTarget = (function() {
     var rows = document.querySelectorAll('#target-roles-container .dynamic-row');
     for (var _i = 0; _i < rows.length; _i++) {
@@ -217,8 +216,8 @@ function updateMerkezCards() {
     if (e4) e4.style.display = 'block';
   }
   var hasLocations = cityKeys.length > 0;
-  var filled4 = [hasCalisma, hasMusaitlik, hasMaas, hasTarget, hasCareer, hasLocations].filter(Boolean).length;
-  updateBentoRing(4, Math.round((filled4 / 6) * 100));
+  var filled4 = [hasCalisma, hasMusaitlik, hasTarget, hasCareer, hasLocations].filter(Boolean).length;
+  updateBentoRing(4, Math.round((filled4 / 5) * 100));
 
   // Update identity card
   updateMerkezIdentity();
@@ -433,7 +432,6 @@ function calculateProfileScore() {
   if (selectedCalismaTipleri.length > 0)           score += 6;
   if (selectedMusaitlik)                           score += 4;
   if (Object.keys(selectedLocations).length > 0)   score += 5;
-  if (val('f-maas'))                               score += 5;
 
   // ── E) Targeting / Intent — 15 points ──
   var _trRows = document.querySelectorAll('#target-roles-container .dynamic-row');
@@ -466,8 +464,6 @@ function getProfileScoreHints() {
     hints.push('Hedef pozisyon ekle \u2014 markalar seni daha kolay bulur');
   if (selectedCareerTypes.length === 0)
     hints.push('Kariyer y\u00f6nelimi se\u00e7 (Yukar\u0131 Terfi veya Yatay Ge\u00e7i\u015f)');
-  if (!val('f-maas'))
-    hints.push('Maas beklentini belirt');
   if (Object.keys(selectedLocations).length === 0)
     hints.push('Tercih ettigin sehirleri sec');
   if (!val('f-linkedin'))

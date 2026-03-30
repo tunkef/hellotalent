@@ -49,7 +49,7 @@ if (window.Sentry) {
 </script>
 <!-- PostHog: disabled — will be re-enabled with verified snippet -->
 <script>function ht_track() {}</script>
-<link rel="stylesheet" href="profil.css?v=20260319f">
+<link rel="stylesheet" href="profil.css?v=20260330a">
 </head>
 <body>
 
@@ -752,10 +752,10 @@ if (window.Sentry) {
           <label for="f-askerlik">Askerlik Durumu</label>
           <select id="f-askerlik">
             <option value="">Seç...</option>
-            <option value="Yapildi">Yapildi</option>
+            <option value="Yapildi">Yapıldı</option>
             <option value="Muaf">Muaf</option>
             <option value="Tecilli">Tecilli</option>
-            <option value="Yapilmadi">Yapilmadi</option>
+            <option value="Yapilmadi">Yapılmadı</option>
           </select>
         </div>
       </div>
@@ -847,16 +847,6 @@ if (window.Sentry) {
       <div class="card-title mb-4">Müsaitlik <span class="field-req">*</span></div>
       <p class="helper-text" style="font-size:13px;color:var(--muted);margin:0 0 12px 0;">Yeni bir işe ne kadar sürede başlayabilirsin?</p>
       <div class="chips-row" id="musaitlik-chips"></div>
-
-      <hr class="section-divider">
-
-      <!-- MAAS BEKLENTI -->
-      <div class="field" style="max-width:300px;">
-        <label for="f-maas">Maaş Beklentisi (TL/ay)</label>
-        <select id="f-maas">
-          <option value="">Seç...</option>
-        </select>
-      </div>
 
       <hr class="section-divider">
 
@@ -1117,7 +1107,7 @@ if (window.Sentry) {
     </div>
     <div class="field">
       <label for="settings-adsoyad">Ad Soyad</label>
-      <input type="text" id="settings-adsoyad" placeholder="Adiniz soyadiniz" maxlength="100">
+      <input type="text" id="settings-adsoyad" placeholder="Adınız soyadınız" maxlength="100">
     </div>
     <div class="field">
       <label for="settings-telefon">Telefon</label>
@@ -1367,7 +1357,7 @@ if (window.Sentry) {
   </div>
 </main>
 
-<div class="panel" id="panel-kimbakti">
+<div class="panel" id="panel-kimbakti" data-panel="kimbakti">
 
   <!-- Hero card -->
   <div class="g-hero">
@@ -1452,19 +1442,19 @@ if (window.Sentry) {
   </div>
 </div>
 
-<div class="panel" id="panel-mulakat">
-  <!-- Content is rendered by profil-mulakatkocu.js via window._htLoadMulakat() -->
+<div class="panel" id="panel-mulakat" data-panel="mulakat">
+  <!-- Content is rendered by profil-studio.js via window._htLoadStudio() -->
 </div>
 
-<div class="panel" id="panel-yetkinlik">
+<div class="panel" id="panel-yetkinlik" data-panel="yetkinlik">
   <!-- Content is rendered by profil-yetkinlik.js via window._htLoadYetkinlik() -->
 </div>
 
-<div class="panel" id="panel-destek">
+<div class="panel" id="panel-destek" data-panel="destek">
   <!-- Content is rendered by profil-destek.js via window._htLoadDestek() -->
 </div>
 
-<div class="panel" id="panel-premium">
+<div class="panel" id="panel-premium" data-panel="premium">
   <!-- Content is rendered by profil-premium.js via window._htLoadPremium() -->
 </div>
 
@@ -1490,30 +1480,30 @@ if (window.Sentry) {
   19. profil-bootstrap.js — auth, data hydration, step-init orchestration, career_goal prefill
   20. profil-events.js    — DOMContentLoaded event wiring, Cmd+K, avatar dropdown, page glue
 -->
-<script src="/shared.js?v=20260322a"></script>
-<script src="profil-core.js?v=20260325a"></script>
-<script src="profil-data.js?v=20260317d"></script>
-<script src="profil-ui.js?v=20260325a"></script>
-<script src="profil-locations.js?v=20260322a"></script>
-<script src="profil-summary.js?v=20260325a"></script>
-<script src="profil-genel.js?v=20260323b"></script>
-<script src="profil-visibility.js?v=20260322a"></script>
-<script src="profil-preview.js?v=20260325a"></script>
-<script src="profil-cv.js?v=20260322a"></script>
-<script src="profil-markalar.js?v=20260322g"></script>
-<script src="profil-settings.js?v=20260320d"></script>
-<script src="profil-teklifler.js?v=20260322g"></script>
-<script src="profil-inbox.js?v=20260326a"></script>
-<script src="profil-yetkinlik.js?v=20260328a"></script>
-<script src="profil-mulakatkocu.js?v=20260329g"></script>
-<script src="profil-premium.js?v=20260327a"></script>
-<script src="profil-destek.js?v=20260326h"></script>
-<script src="profil-wizard.js?v=20260325a"></script>
-<script src="profil-draft.js?v=20260325a"></script>
-<script src="profil-helpers.js?v=20260325a"></script>
-<script src="profil-kimbakti.js?v=20260325a"></script>
-<script src="profil-bootstrap.js?v=20260325a"></script>
-<script src="profil-events.js?v=20260325a"></script>
+<script src="shared.js?v=20260330a"></script>
+<script src="profil-core.js?v=20260330a"></script>
+<script src="profil-data.js?v=20260330a"></script>
+<script src="profil-ui.js?v=20260330a"></script>
+<script src="profil-locations.js?v=20260330a"></script>
+<script src="profil-summary.js?v=20260330a"></script>
+<script src="profil-genel.js?v=20260330a"></script>
+<script src="profil-visibility.js?v=20260330a"></script>
+<script src="profil-preview.js?v=20260330a"></script>
+<script src="profil-cv.js?v=20260330a"></script>
+<script src="profil-markalar.js?v=20260330a"></script>
+<script src="profil-settings.js?v=20260330a"></script>
+<script src="profil-teklifler.js?v=20260330a"></script>
+<script src="profil-inbox.js?v=20260330a"></script>
+<script src="profil-yetkinlik.js?v=20260330a"></script>
+<script src="profil-studio.js?v=20260330a"></script>
+<script src="profil-premium.js?v=20260330a"></script>
+<script src="profil-destek.js?v=20260330a"></script>
+<script src="profil-wizard.js?v=20260330a"></script>
+<script src="profil-draft.js?v=20260330a"></script>
+<script src="profil-helpers.js?v=20260330a"></script>
+<script src="profil-kimbakti.js?v=20260330a"></script>
+<script src="profil-bootstrap.js?v=20260330a"></script>
+<script src="profil-events.js?v=20260330a"></script>
 
 <!-- Inline helpers + [data-panel] delegation extracted to profil-helpers.js -->
 

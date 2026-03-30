@@ -179,7 +179,7 @@
           if (isPremium) {
             // Show company name + details
             var info = _makeEl('div', 'flex:1;min-width:0;');
-            var compName = (ev.companies && ev.companies.ad) ? ev.companies.ad : 'Bilinmeyen Şirket';
+            var compName = (ev.companies && ev.companies.company_name) ? ev.companies.company_name : 'Bilinmeyen Şirket';
             info.appendChild(_makeEl('div', 'font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;', compName));
             var detail = ev.position_ad_snapshot || '';
             var segLabel = ev.position_seg_snapshot || (ev.companies && ev.companies.segment) || '';
@@ -249,9 +249,9 @@
       } else {
         stats = { total_views: 12, unique_positions: 3, unique_companies: 3, last_viewed_at: new Date(now - 86400000).toISOString() };
         events = [
-          { viewed_at: new Date(now - 86400000).toISOString(), position_ad_snapshot: 'Store Manager', position_seg_snapshot: 'Lüks', companies: { ad: 'Zara', segment: 'Fast Fashion' } },
-          { viewed_at: new Date(now - 2 * 86400000).toISOString(), position_ad_snapshot: 'Sales Specialist', position_seg_snapshot: 'Premium', companies: { ad: 'Vakko', segment: 'Lüks' } },
-          { viewed_at: new Date(now - 3 * 86400000).toISOString(), position_ad_snapshot: 'Store Manager', position_seg_snapshot: 'Lüks', companies: { ad: 'Zara', segment: 'Fast Fashion' } }
+          { viewed_at: new Date(now - 86400000).toISOString(), position_ad_snapshot: 'Store Manager', position_seg_snapshot: 'Lüks', companies: { company_name: 'Zara', segment: 'Fast Fashion' } },
+          { viewed_at: new Date(now - 2 * 86400000).toISOString(), position_ad_snapshot: 'Sales Specialist', position_seg_snapshot: 'Premium', companies: { company_name: 'Vakko', segment: 'Lüks' } },
+          { viewed_at: new Date(now - 3 * 86400000).toISOString(), position_ad_snapshot: 'Store Manager', position_seg_snapshot: 'Lüks', companies: { company_name: 'Zara', segment: 'Fast Fashion' } }
         ];
         isPremium = true;
       }

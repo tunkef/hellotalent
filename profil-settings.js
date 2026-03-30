@@ -278,7 +278,7 @@ document.addEventListener('DOMContentLoaded', function() {
         var ceVal = document.getElementById('settings-contact-email').checked;
         var cpVal = document.getElementById('settings-contact-phone').checked;
         var cwVal = document.getElementById('settings-contact-whatsapp').checked;
-        var { error } = await supabase
+        var _contactPrefResult = await supabase
           .from('candidates')
           .update({
             contact_pref_email: ceVal,
@@ -286,6 +286,7 @@ document.addEventListener('DOMContentLoaded', function() {
             contact_pref_whatsapp: cwVal
           })
           .eq('user_id', currentUser.id);
+        var error = _contactPrefResult.error;
         if(error) throw error;
         // Sync in-memory cache
         if (window._loadedDBData && _loadedDBData.profile) {

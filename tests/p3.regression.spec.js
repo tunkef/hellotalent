@@ -762,7 +762,7 @@ test.describe('Studio Phase 2 — structural guards', () => {
   test.beforeAll(() => {
     migSql = readFromRepo('supabase/migrations/20260326220000_studio_modules.sql');
     adminStudioJs = readFromRepo('admin-studio-modules.js');
-    mulakatJs = readFromRepo('profil-mulakatkocu.js');
+    mulakatJs = readFromRepo('profil-studio.js');
     adminHtml = readFromRepo('admin.html');
   });
 
@@ -823,7 +823,7 @@ test.describe('Studio Phase 2 — structural guards', () => {
   });
 
   // ── Candidate UI ──
-  test('profil-mulakatkocu.js has DB-backed studio section hydration', () => {
+  test('profil-studio.js has DB-backed studio section hydration', () => {
     expect(mulakatJs).toContain('hydrateStudioSection');
     expect(mulakatJs).toContain('studio_modules');
     expect(mulakatJs).toContain('mark_studio_module_viewed');
@@ -853,7 +853,7 @@ test.describe('Studio Phase 2b — seed content + progress UX', () => {
 
   test.beforeAll(() => {
     seedSql = readFromRepo('supabase/migrations/20260326230000_studio_seed_content.sql');
-    mulakatJs = readFromRepo('profil-mulakatkocu.js');
+    mulakatJs = readFromRepo('profil-studio.js');
   });
 
   // ── Seed content ──
@@ -925,7 +925,7 @@ test.describe('Studio Phase 3 — badge system structural guards', () => {
 
   test.beforeAll(() => {
     badgeSql = readFromRepo('supabase/migrations/20260326240000_badge_system.sql');
-    mulakatJs = readFromRepo('profil-mulakatkocu.js');
+    mulakatJs = readFromRepo('profil-studio.js');
   });
 
   // ── Schema ──
@@ -1018,7 +1018,7 @@ test.describe('Studio Phase 4 — journal + yetenek persistence', () => {
 
   test.beforeAll(() => {
     migSql = readFromRepo('supabase/migrations/20260326250000_journal_yetenek_progress.sql');
-    mulakatJs = readFromRepo('profil-mulakatkocu.js');
+    mulakatJs = readFromRepo('profil-studio.js');
   });
 
   // ── Schema ──
@@ -1100,7 +1100,7 @@ test.describe('Studio Phase 5A — AI feedback structural guards', () => {
   test.beforeAll(() => {
     migSql = readFromRepo('supabase/migrations/20260326260000_journal_ai_feedback.sql');
     edgeFn = readFromRepo('supabase/functions/journal-feedback/index.ts');
-    mulakatJs = readFromRepo('profil-mulakatkocu.js');
+    mulakatJs = readFromRepo('profil-studio.js');
   });
 
   // ── Schema ──
@@ -1279,7 +1279,7 @@ test.describe('Yetenek competency profile — structural guards', () => {
 
   test.beforeAll(() => {
     overviewSql = readFromRepo('supabase/migrations/20260326280000_yetenek_overview_rpc.sql');
-    mulakatJs = readFromRepo('profil-mulakatkocu.js');
+    mulakatJs = readFromRepo('profil-studio.js');
   });
 
   // ── Overview RPC ──
@@ -1421,10 +1421,9 @@ test.describe('Premium entitlement — structural guards', () => {
     expect(premiumJs).toContain('PLAN_AMOUNTS');
   });
 
-  test('purchase flow calls initiate_premium_purchase then webhook', () => {
+  test('purchase flow calls initiatePurchase with Iyzico checkout', () => {
     expect(premiumJs).toContain('initiatePurchase');
-    expect(premiumJs).toContain('initiate_premium_purchase');
-    expect(premiumJs).toContain('premium-webhook');
+    expect(premiumJs).toContain('PLAN_KEYS');
   });
 
   test('profile refresh updates _loadedDBData after purchase', () => {
@@ -1447,39 +1446,38 @@ test.describe('Yetenek IA reset — structural guards', () => {
   var mulakatJs;
 
   test.beforeAll(() => {
-    mulakatJs = readFromRepo('profil-mulakatkocu.js');
+    mulakatJs = readFromRepo('profil-studio.js');
   });
 
   // ── Yetenek Home ──
-  test('lobby renders as Yetenek Home with learning plan', () => {
-    expect(mulakatJs).toContain('yk-home');
-    expect(mulakatJs).toContain('yk-home-tracks');
-    expect(mulakatJs).toContain('yk-track-card');
-    expect(mulakatJs).toContain('yk-home-section-title');
+  test('lobby renders as bento grid learning path', () => {
+    expect(mulakatJs).toContain('st-lobby');
+    expect(mulakatJs).toContain('g-hero');
+    expect(mulakatJs).toContain('st-course-card');
+    expect(mulakatJs).toContain('st-star-ref');
   });
 
-  test('Yetenek Home has compact role header with change button', () => {
-    expect(mulakatJs).toContain('yk-home-role-label');
-    expect(mulakatJs).toContain('yk-home-change-role');
+  test('Lobby hero has role display and change button', () => {
     expect(mulakatJs).toContain('ig-back-role-change');
+    expect(mulakatJs).toContain('Rol De');
   });
 
-  test('Yetenek Home has continue card for active competency', () => {
-    expect(mulakatJs).toContain('yk-home-continue');
-    expect(mulakatJs).toContain('yk-continue-card');
+  test('Lobby has bento grid course cards with status indicators', () => {
+    expect(mulakatJs).toContain('st-course-card');
+    expect(mulakatJs).toContain('st-course-card-name');
+    expect(mulakatJs).toContain('st-course-card-progress');
     expect(mulakatJs).toContain('Devam Et');
   });
 
-  test('Yetenek Home has readiness summary stats', () => {
-    expect(mulakatJs).toContain('yk-home-summary');
-    expect(mulakatJs).toContain('yk-home-summary-num');
-    expect(mulakatJs).toContain('Tamamlanan');
-    expect(mulakatJs).toContain('Kalan');
+  test('Lobby has inline role picker for first-time users', () => {
+    expect(mulakatJs).toContain('ig-role-dd');
+    expect(mulakatJs).toContain('ig-role-start');
+    expect(mulakatJs).toContain('Pozisyon se');
   });
 
-  test('Yetenek Home has AI teaser card', () => {
-    expect(mulakatJs).toContain('yk-home-ai-teaser');
-    expect(mulakatJs).toContain('AI Ko');
+  test('Lobby has STAR+T reference card', () => {
+    expect(mulakatJs).toContain('st-star-ref');
+    expect(mulakatJs).toContain('STAR+T Metodolojisi');
   });
 
   // ── Track Detail ──
@@ -1501,11 +1499,11 @@ test.describe('Yetenek IA reset — structural guards', () => {
   });
 
   test('unit detail has journal panel with AI feedback (Phase 5B restore)', () => {
-    // Journal panel restored in practice render flow (FAZ 0.3)
+    // Journal moved to drawer in S05 focus mode redesign
     var practiceStart = mulakatJs.indexOf('function renderPractice()');
     var practiceEnd = mulakatJs.indexOf('\nfunction ', practiceStart + 10);
     var practiceBody = mulakatJs.slice(practiceStart, practiceEnd);
-    expect(practiceBody).toContain('renderJournalPanel');
+    expect(practiceBody).toContain('renderJournalDrawerContent');
   });
 
   test('AI feedback uses freemium gate (first FREE_COMP_LIMIT comps free)', () => {
@@ -1528,14 +1526,16 @@ test.describe('Yetenek IA reset — structural guards', () => {
 
   // ── Runtime preservation ──
   test('runtime contracts preserved', () => {
-    expect(mulakatJs).toContain('window._htLoadMulakat');
+    expect(mulakatJs).toContain('window._htLoadStudio');
     expect(mulakatJs).toContain('window._htYetkinlikData');
     expect(mulakatJs).toContain("navigate('role_select')");
     expect(mulakatJs).toContain("navigate('lobby')");
-    expect(mulakatJs).toContain("navigate('competency_intro')");
+    expect(mulakatJs).toContain("navigate('course_detail')");
     expect(mulakatJs).toContain("navigate('practice')");
     expect(mulakatJs).toContain("navigate('completion')");
-    expect(mulakatJs).toContain("navigate('session_complete')");
+    /* session_complete screen still exists in navigate() handler but entry
+       point removed — completion now routes directly to lobby per S06 spec */
+    expect(mulakatJs).toContain("screen === 'session_complete'");
   });
 
   test('free/premium behavior preserved', () => {
@@ -1551,7 +1551,7 @@ test.describe('Yetenek IA reset — structural guards', () => {
 test.describe('FAZ 4C — detail → practice bridge', () => {
   var mulakatJs;
   test.beforeAll(() => {
-    mulakatJs = readFromRepo('profil-mulakatkocu.js');
+    mulakatJs = readFromRepo('profil-studio.js');
   });
 
   test('reverse mapping objects exist', () => {
@@ -1611,7 +1611,7 @@ test.describe('FAZ 4C — detail → practice bridge', () => {
 test.describe('FAZ 2C — streak freeze and recovery', () => {
   var mulakatJs, migSql;
   test.beforeAll(() => {
-    mulakatJs = readFromRepo('profil-mulakatkocu.js');
+    mulakatJs = readFromRepo('profil-studio.js');
     migSql = readFromRepo('supabase/migrations/20260328010000_streak_freeze_recovery.sql');
   });
 
@@ -1665,7 +1665,7 @@ test.describe('FAZ 2C — streak freeze and recovery', () => {
 test.describe('FAZ 2D — review recommendation layer', () => {
   let mulakatJs;
   test.beforeAll(() => {
-    mulakatJs = readFromRepo('profil-mulakatkocu.js');
+    mulakatJs = readFromRepo('profil-studio.js');
   });
 
   test('needsReview function exists', () => {
@@ -1733,7 +1733,7 @@ test.describe('FAZ 2D — review recommendation layer', () => {
 test.describe('Phase 5B — AI feedback progressive disclosure', () => {
   let mulakatJs;
   test.beforeAll(() => {
-    mulakatJs = readFromRepo('profil-mulakatkocu.js');
+    mulakatJs = readFromRepo('profil-studio.js');
   });
 
   test('journal toggle renamed to Cevabını Hazırla', () => {

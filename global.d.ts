@@ -153,7 +153,7 @@ interface Window {
   _htAdminUser: any;
   _htAdminLoadCoachContent: (() => void) | undefined;
   _htLoadYetkinlik: (() => void) | undefined;
-  _htLoadMulakat: (() => void) | undefined;
+  _htLoadStudio: (() => void) | undefined;
   _htYetkinlikData: any;
   HT: Record<string, any>;
   toggleLoginDropdown: (() => void) | undefined;

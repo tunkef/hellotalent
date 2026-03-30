@@ -1,5 +1,5 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 30 Mart 2026 | Session 55 | T15 dark mode remaining complete
+> Son guncelleme: 30 Mart 2026 | Session 57 | S07 smoke test + deploy + docs sync complete
 
 ## 1. Proje Ozeti
 
@@ -11,7 +11,7 @@ hellotalent.ai, Turkiye perakende sektorune ozel bir yetenek pazaryeri. Adaylar 
 - **Glassmorphic float header** — LinkedIn-style, 5 nav, avatar dropdown, dark mode toggle | `profil.html`
 - **Markalar paneli** — 96 marka flip-card grid, company/brand hierarchy | `profil-markalar.js`
 - **Yetkinlik sistemi** — 29 KF yetkinlik, 34 rol haritasi, bento grid, premium reading view | `profil-yetkinlik.js`
-- **Mulakat Kocu (Studio)** — STAR+T metodu, 6 ekranli flow, streak, spaced repetition, ilk giris onboarding spotlight | `profil-mulakatkocu.js`
+- **Mulakat Kocu (Studio)** — STAR+T metodu, lobby + kurs detay + odak modu + completion ekrani, streak, spaced repetition, inline rol secimi | `profil-studio.js`
 - **AI feedback** — Edge Function (gpt-4.1-mini), pg_cron pipeline, hero kart + accordion UI | `supabase/functions/journal-feedback/`
 - **Streak sistemi** — gunluk seri, freeze/geri kazanim, review oneri | migration 20260327-28
 - **Employer onboarding (P3)** — tek/coklu marka, domain verify, team system | `ik.html`
@@ -47,7 +47,7 @@ hellotalent.ai, Turkiye perakende sektorune ozel bir yetenek pazaryeri. Adaylar 
 | `profil-settings.js` | Ayarlar paneli, bildirim toggle'lari, hesap islemleri |
 | `profil-markalar.js` | Marka flip-card grid, _BRAND_COLORS, hover reveal |
 | `profil-yetkinlik.js` | 29 yetkinlik + 34 rol haritasi, wizard, bento reading view |
-| `profil-mulakatkocu.js` | Studio: STAR+T, streak, AI feedback, spaced repetition, modules |
+| `profil-studio.js` | Studio: STAR+T, streak, AI feedback, spaced repetition, modules |
 | `profil-inbox.js` | Mesaj kutusucandidatethread, reply, realtime subscription |
 | `profil-kimbakti.js` | Kim Bakti goruntuleme widget |
 | `profil-visibility.js` | Beni Oner toggle, is_active kontrol |
@@ -95,6 +95,12 @@ hellotalent.ai, Turkiye perakende sektorune ozel bir yetenek pazaryeri. Adaylar 
 **Sonuc:** T02/T03/T04 otomatik DEFERRED. Onkosula: 50+ aktif pratikci icin T42-lite (topluluk nabzi karti) yeniden degerlendirilir.
 
 ## 6. Son 3 Session Ozeti
+
+### Session 57 (30 Mart — S07 Studio Smoke Test + Deploy + Docs Sync)
+**Studio redesign (S01-S06) tum testlerle dogrulandi ve deploy edildi.** S01: profil-mulakatkocu.js → profil-studio.js yeniden adlandirma. S02: tam genislik panel CSS. S03: lobby yeniden tasarimi (inline rol secimi, returning user routing). S04: kurs detay sayfasi (3 sekmeli: sorular / seans / notlar). S05: pratik odak modu (drawer sistemi ile kontekst). S06: completion + session_complete ekrani focus mode ile hizalama. p3 regression: **446/446 PASS**. Full smoke: **540 passed, 1 blocked (auth env vars — bilinen), 12 did not run (e2e chain)**. Yeni regresyon yok. Commit: `feat: studio redesign — learning path, course detail, focus mode practice`.
+
+### Session 56 (30 Mart — S06 Completion + Session Complete Redesign)
+**Completion ve session_complete ekranları focus mode ile hizalandı.** `yk-summary-wrap`: `max-width:420px` → full-width, cream arka plan (`var(--bg-app)`), `min-height:calc(100vh-56px)`. `yk-summary-card`: `max-width:720px`, layered shadow, bento card stili. `yk-summary-stats`: border separator ile section hissi. Yeni `yk-summary-back` (← Öğrenme Planı) her iki ekrana eklendi. `ig-session-complete` → `navigate('lobby')` (artık session_complete'e gitmiyor). `renderSessionComplete()`: completion icon + `yk-session-back` back nav + "Başka Yetkinlik Seç" (eski "Farklı Rol"). Dark mode + mobile responsive. Badge/xlinks hydration korundu. Test: `navigate('session_complete')` assertion → `screen === 'session_complete'` handler check. 446/446 test PASS.
 
 ### Session 55 (30 Mart — T15 Dark Mode Remaining)
 **Dark mode backlog tamamen kapatıldı:** 4 dosya. `profil-settings.js`: 7 native `alert()`/`confirm()` → `_htAlert()`/`_htConfirm()` DOM modal'larına dönüştürüldü. Helper IIFE `.modal-overlay` + `.modal` + `.btn-primary/secondary` + `.modal-confirm-body` sınıflarını dinamik oluşturuyor; `profil.css` semantic tokenları (`--bg-surface`, `--text-primary` vb.) sayesinde dark mode'da otomatik çalışıyor. `gate.html`: theme-init `<script>` + `html[data-theme="dark"]` CSS (kart, input, hata). `giris.html`: theme-init + dark mode body/header/card/form/tab-toggle/Google-LinkedIn buton/forgot-modal. `ik.html`: theme-init + token override (`--text/muted/border/bg`) + topbar/stat-card/filter/candidate-card/modal/drawer/button/chip/input/accordion/activity explicit override'ları. 68/68 smoke pass.

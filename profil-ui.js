@@ -1,4 +1,4 @@
-/* global supabase, AYRILMA_NEDENLERI, AY_ISIMLERI, BOLUM_DB, BRAND_DB, CALISMA_TIPLERI, CAREER_TYPE_OPTIONS, CAREER_TYPE_ORDER, DIL_LISTESI, DIL_SEVIYELERI, EGITIM_SEVIYELERI, ILCELER, ISTIHDAM_TIPLERI, MAAS_ARALIKLARI, MUSAITLIK_SECENEKLERI, POSITION_TO_FAMILY, RETAIL_POSITIONS, ROL_AILELERI, SEGMENTLER, SEKTOR_ROL_MAP, STORAGE, TAKIM_BUYUKLUKLERI, TUR_ILLER, UNIVERSITE_DB */
+/* global supabase, AYRILMA_NEDENLERI, AY_ISIMLERI, BOLUM_DB, BRAND_DB, CALISMA_TIPLERI, CAREER_TYPE_OPTIONS, CAREER_TYPE_ORDER, DIL_LISTESI, DIL_SEVIYELERI, EGITIM_SEVIYELERI, ILCELER, ISTIHDAM_TIPLERI, MUSAITLIK_SECENEKLERI, POSITION_TO_FAMILY, RETAIL_POSITIONS, ROL_AILELERI, SEGMENTLER, SEKTOR_ROL_MAP, STORAGE, TAKIM_BUYUKLUKLERI, TUR_ILLER, UNIVERSITE_DB */
 /* global _ht_follows, _loadedDBData, applyAllVisibilityMirrorsFromProfile, calculateCompletion, canonicalizeRole, clearDraft, collectLocations, currentUser, getCurrentEmployerDisplayFromExperiences, ht_track, markWizardDirty, normalizeForDisplay, nullIfEmpty, refreshVisibilitySummary, selectedCareerTypes, syncAccountEmail, titleCaseTR, trLower, updateBrandFollowCounter, updateCompletionUI, updateDashboardSummary, updateMerkezCards, updateMerkezVisState, val, wizardDirty */
 // v20260320 ── BRAND/COMPANY ID LOOKUP ──
 // Populated at page load from Supabase; used by makeSmartBrandField + collectExperiences
@@ -1213,18 +1213,6 @@ function initStep4() {
     });
   }
 
-  // Maas select
-  var maasSelect = document.getElementById('f-maas');
-  if (maasSelect) {
-    MAAS_ARALIKLARI.forEach(function(m) {
-      if (!m) return;
-      var opt = document.createElement('option');
-      opt.value = m;
-      opt.textContent = m + ' TL';
-      maasSelect.appendChild(opt);
-    });
-  }
-
   // Segment chips
   var segContainer = document.getElementById('segment-chips');
   if (segContainer) {
@@ -1401,7 +1389,6 @@ function collectWorkPrefs() {
   return {
     musaitlik: nullIfEmpty(selectedMusaitlik),
     calisma_tipleri: selectedCalismaTipleri,
-    maas_beklenti: nullIfEmpty(val('f-maas')),
     tercih_segmentler: selectedSegmentler,
     career_goal: null,
     career_type: ct
@@ -1514,7 +1501,6 @@ async function saveProfileRPC(onComplete) {
   var p_work_prefs = {
     musaitlik: wp.musaitlik || null,
     calisma_tipleri: wp.calisma_tipleri || [],
-    maas_beklenti: wp.maas_beklenti || null,
     segmentler: wp.tercih_segmentler || [],
     career_goal: wp.career_goal || null,
     career_type: wp.career_type || null
@@ -1617,7 +1603,6 @@ async function saveProfileRPC(onComplete) {
       _loadedDBData.work_prefs = p_work_prefs ? {
         musaitlik: p_work_prefs.musaitlik,
         calisma_tipleri: p_work_prefs.calisma_tipleri || [],
-        maas_beklenti: p_work_prefs.maas_beklenti,
         tercih_segmentler: p_work_prefs.segmentler || [],
         career_goal: p_work_prefs.career_goal,
         career_type: p_work_prefs.career_type
@@ -1826,7 +1811,6 @@ async function loadProfileFromDB() {
     work_prefs: wpRes.data ? {
       musaitlik: wpRes.data.musaitlik,
       calisma_tipleri: wpRes.data.calisma_tipleri || [],
-      maas_beklenti: wpRes.data.maas_beklenti,
       tercih_segmentler: wpRes.data.segmentler || [],
       career_goal: wpRes.data.career_goal,
       career_type: wpRes.data.career_type

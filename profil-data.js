@@ -1,5 +1,5 @@
 // ── 81 IL VERISI ──
-const TUR_ILLER = {
+var TUR_ILLER = {
   'Marmara': ['\u0130stanbul','Bursa','Kocaeli','Sakarya','Tekirda\u011f','Edirne','K\u0131rklareli','Bal\u0131kesir','\u00c7anakkale','Yalova','Bilecik'],
   'Ege': ['\u0130zmir','Manisa','Ayd\u0131n','Denizli','Mu\u011fla','Afyonkarahisar','K\u00fctahya','U\u015fak'],
   '\u0130\u00e7 Anadolu': ['Ankara','Konya','Eski\u015fehir','Kayseri','Sivas','Yozgat','K\u0131r\u0131kkale','Aksaray','Ni\u011fde','Nev\u015fehir','K\u0131r\u015fehir','Karaman','\u00c7ank\u0131r\u0131'],
@@ -9,7 +9,7 @@ const TUR_ILLER = {
   'G\u00fcneydo\u011fu Anadolu': ['Gaziantep','Diyarbak\u0131r','\u015eanl\u0131urfa','Mardin','Batman','Siirt','\u015e\u0131rnak','Ad\u0131yaman','Kilis']
 };
 
-const ILCELER = {
+var ILCELER = {
   '\u0130stanbul':['Be\u015fikta\u015f','Beyo\u011flu','\u015ei\u015fli','Sar\u0131yer','Ka\u011f\u0131thane','Fatih','Ey\u00fcpsultan','Zeytinburnu','Bak\u0131rk\u00f6y','Bah\u00e7elievler','Ba\u011fc\u0131lar','G\u00fcng\u00f6ren','Esenler','Gaziosmanpa\u015fa','Sultangazi','Arnavutk\u00f6y','Ba\u015fak\u015fehir','Esenyurt','Avc\u0131lar','K\u00fc\u00e7\u00fck\u00e7ekmece','Bayrampa\u015fa','Kad\u0131k\u00f6y','Ata\u015fehir','\u00dcsk\u00fcdar','Maltepe','Kartal','Pendik','Tuzla','Sancaktepe','Sultanbeyli','\u00dcmraniye','\u00c7ekmeky','Beykoz','Adalar','Silivri','B\u00fcy\u00fck\u00e7ekmece','\u00c7atalca','\u015eile'],
   'Ankara':['\u00c7ankaya','Ke\u00e7i\u00f6ren','Yenimahalle','Mamak','Etimesgut','Alt\u0131nda\u011f','Sincan','Pursaklar','G\u00f6lba\u015f\u0131','Polatl\u0131','Kazan'],
   '\u0130zmir':['Konak','Kar\u015f\u0131yaka','Bornova','Bayrakl\u0131','Karaba\u011flar','Buca','\u00c7i\u011fli','Gaziemir','Bal\u00e7ova','Narl\u0131dere','G\u00fczelbah\u00e7e','Menemen','Alia\u011fa','Fo\u00e7a','Bergama','\u00d6demi\u015f','Tire','Torbal\u0131','Sel\u00e7uk'],

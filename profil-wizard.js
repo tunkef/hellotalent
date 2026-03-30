@@ -177,6 +177,7 @@ function clearStepErrors() {
 // ── PANEL SWITCHING ───────────────────────────────
 var wizardDirty = false;
 var pendingPanelSwitch = null;
+var _currentHistoryPanel = null;
 
 function markWizardDirty() { wizardDirty = true; }
 
@@ -200,13 +201,37 @@ function switchPanel(name) {
   // Normalize legacy panel aliases before switching
   var effectiveName = (name === 'yetkinlik') ? 'mulakat' : name;
   _doSwitchPanel(effectiveName);
-  // Persist active panel in URL hash
-  if (effectiveName && effectiveName !== 'genel') {
-    history.replaceState(null, '', '#' + effectiveName);
-  } else {
-    history.replaceState(null, '', window.location.pathname);
+  // Persist active panel in URL and push to history for back/forward support
+  var newUrl = (effectiveName && effectiveName !== 'genel') ? '#' + effectiveName : window.location.pathname;
+  if (_currentHistoryPanel === null) {
+    // First switch: anchor 'genel' as the origin state so back returns to it
+    history.replaceState({ panel: 'genel' }, '', window.location.pathname);
+    if (effectiveName !== 'genel') {
+      history.pushState({ panel: effectiveName }, '', newUrl);
+    }
+  } else if (effectiveName !== _currentHistoryPanel) {
+    history.pushState({ panel: effectiveName }, '', newUrl);
   }
+  _currentHistoryPanel = effectiveName;
 }
+
+// Back/forward: restore panel without adding another history entry
+window.addEventListener('popstate', function(e) {
+  var panel = e.state && e.state.panel;
+  if (!panel) return;
+  // Dirty guard: re-push current state to undo browser back, then show exit modal
+  var activePanel = document.querySelector('.panel.active');
+  if (activePanel && activePanel.id === 'panel-profil' && wizardDirty) {
+    var guardUrl = (_currentHistoryPanel && _currentHistoryPanel !== 'genel') ? '#' + _currentHistoryPanel : window.location.pathname;
+    history.pushState({ panel: _currentHistoryPanel }, '', guardUrl);
+    pendingPanelSwitch = panel;
+    var exitModal = document.getElementById('modal-wizard-exit');
+    if (exitModal) exitModal.classList.add('show');
+    return;
+  }
+  _currentHistoryPanel = panel;
+  _doSwitchPanel(panel);
+});
 
 function _doSwitchPanel(name) {
   wizardDirty = false;
@@ -250,7 +275,7 @@ function _doSwitchPanel(name) {
   if (name === 'inbox') { window._htLoadInbox && window._htLoadInbox(); }
   // Note: yetkinlik → mulakat normalization handled in switchPanel() before this is called
   // Lazy-load Mulakat panel on first visit (also load yetkinlik bridge data)
-  if (name === 'mulakat') { window._htLoadYetkinlik && window._htLoadYetkinlik(); window._htLoadMulakat && window._htLoadMulakat(); }
+  if (name === 'mulakat') { window._htLoadYetkinlik && window._htLoadYetkinlik(); window._htLoadStudio && window._htLoadStudio(); }
   // Lazy-load Premium panel on first visit
   if (name === 'premium') { window._htLoadPremium && window._htLoadPremium(); }
   // Lazy-load Bildirimler on first visit

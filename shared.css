@@ -47,7 +47,7 @@ html.ht-scroll-lock { overflow: hidden; }
 html.ht-scroll-lock body { overflow: hidden; touch-action: none; }
 body {
   font-family: 'Plus Jakarta Sans', sans-serif;
-  color: var(--text); background: #fff; overflow-x: hidden;
+  color: var(--text); background: var(--gray, #fff); overflow-x: hidden;
 }
 
 /* ══ HEADER ══ */

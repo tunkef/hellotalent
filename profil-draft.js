@@ -143,7 +143,6 @@ function applyDraft(draft) {
         btn.classList.toggle('checked', wp.calisma_tipleri.indexOf(btn.textContent) !== -1);
       });
     }
-    setVal('f-maas', wp.maas_beklenti);
     if (wp.tercih_segmentler && wp.tercih_segmentler.length > 0) {
       selectedSegmentler = wp.tercih_segmentler.slice();
       document.querySelectorAll('#segment-chips .chip').forEach(function(c) {

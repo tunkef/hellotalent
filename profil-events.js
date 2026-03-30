@@ -160,6 +160,9 @@ function _htInitEvents() {
 
   // ── Avatar dropdown ──
   (function() {
+    // One-time migration: remove stale key written by old theme toggle code
+    try { localStorage.removeItem('ht-theme'); } catch(e) {}
+
     var avatarBtn = document.getElementById('header-avatar-wrap');
     var dropdown = document.getElementById('avatar-dropdown');
     if (!avatarBtn || !dropdown) return;
@@ -203,7 +206,7 @@ function _htInitEvents() {
       themeCheckbox.addEventListener('change', function() {
         var newTheme = this.checked ? 'dark' : 'light';
         document.documentElement.setAttribute('data-theme', newTheme);
-        try { localStorage.setItem('ht-theme', newTheme); } catch(e) {}
+        if (typeof window.setThemePreference === 'function') window.setThemePreference(newTheme);
         if (window.syncThemeToggleButtons) window.syncThemeToggleButtons();
       });
       var observer = new MutationObserver(function() {
@@ -291,12 +294,12 @@ function _htInitEvents() {
       btnSaveExit.disabled = true;
       btnSaveExit.textContent = 'Kaydediliyor...';
       saveProfileRPC(function() {
-        btnSaveExit.disabled = false;
-        btnSaveExit.innerHTML = saveExitLabel;        wizardDirty = false;
+        wizardDirty = false;
         switchPanel('merkez');
-      }).catch(function() {
+      }).finally(function() {
         btnSaveExit.disabled = false;
-        btnSaveExit.innerHTML = saveExitLabel;      });
+        btnSaveExit.innerHTML = saveExitLabel;
+      });
     });
   }
 

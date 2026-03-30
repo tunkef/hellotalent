@@ -236,7 +236,7 @@ function generateCV() {
     doc.setFontSize(13);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(30, 45, 94);
-    doc.text('Egitim', M, Y);
+    doc.text('Eğitim', M, Y);
     Y += 2;
     doc.setDrawColor(30, 45, 94);
     doc.setLineWidth(0.5);
@@ -310,7 +310,7 @@ function generateCV() {
     doc.setFontSize(13);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(30, 45, 94);
-    doc.text('Ilgili Markalar', M, Y);
+    doc.text('İlgili Markalar', M, Y);
     Y += 2;
     doc.setDrawColor(30, 45, 94);
     doc.setLineWidth(0.5);
