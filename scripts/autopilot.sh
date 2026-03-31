@@ -58,6 +58,16 @@ is_running() {
   [ -f "$LOCK_FILE" ] && kill -0 "$(cat "$LOCK_FILE" 2>/dev/null)" 2>/dev/null
 }
 
+# ── Autonomous loop aktif mi kontrol ──
+_should_skip_pipeline() {
+  local loop_pid_file="${LOOP_PID_FILE:-.autonomous-loop.pid}"
+  if [ -f "$loop_pid_file" ] && kill -0 "$(cat "$loop_pid_file" 2>/dev/null)" 2>/dev/null; then
+    echo "autonomous-loop aktif, pipeline atlaniyor"
+    return 0
+  fi
+  return 1
+}
+
 # ── Ana izleme döngüsü ──
 watch_loop() {
   trap '' HUP
@@ -109,18 +119,22 @@ Pipeline basliyor..." 2>/dev/null || true
       # Lock al
       echo $$ > "$LOCK_FILE"
 
-      # Pipeline çalıştır
-      echo "$(date '+%H:%M:%S') Pipeline baslatiliyor..." >> "$LOG_FILE"
-      if ./scripts/orchestrator.sh run >> "$LOG_FILE" 2>&1; then
-        echo "$(date '+%H:%M:%S') Pipeline BASARILI" >> "$LOG_FILE"
-        notify "Asama $new_stage Tamamlandi" "Pipeline basariyla bitti. reviews/ klasorunu incele." "default" "white_check_mark"
-        [ -f "scripts/telegram-bot.sh" ] && ./scripts/telegram-bot.sh send "✅ *Asama $new_stage tamamlandi!*
-Pipeline basariyla bitti. Sonuclari /log ile gorebilirsin." 2>/dev/null || true
+      # Pipeline çalıştır (autonomous-loop aktifse atla)
+      if _should_skip_pipeline; then
+        echo "$(date '+%H:%M:%S') autonomous-loop aktif — pipeline delegated" >> "$LOG_FILE"
       else
-        echo "$(date '+%H:%M:%S') Pipeline HATA" >> "$LOG_FILE"
-        notify "HATA: Asama $new_stage" "Pipeline hataya dustu! Terminali kontrol et." "urgent" "x"
-        [ -f "scripts/telegram-bot.sh" ] && ./scripts/telegram-bot.sh send "❌ *HATA: Asama $new_stage*
+        echo "$(date '+%H:%M:%S') Pipeline baslatiliyor..." >> "$LOG_FILE"
+        if ./scripts/orchestrator.sh run >> "$LOG_FILE" 2>&1; then
+          echo "$(date '+%H:%M:%S') Pipeline BASARILI" >> "$LOG_FILE"
+          notify "Asama $new_stage Tamamlandi" "Pipeline basariyla bitti. reviews/ klasorunu incele." "default" "white_check_mark"
+          [ -f "scripts/telegram-bot.sh" ] && ./scripts/telegram-bot.sh send "✅ *Asama $new_stage tamamlandi!*
+Pipeline basariyla bitti. Sonuclari /log ile gorebilirsin." 2>/dev/null || true
+        else
+          echo "$(date '+%H:%M:%S') Pipeline HATA" >> "$LOG_FILE"
+          notify "HATA: Asama $new_stage" "Pipeline hataya dustu! Terminali kontrol et." "urgent" "x"
+          [ -f "scripts/telegram-bot.sh" ] && ./scripts/telegram-bot.sh send "❌ *HATA: Asama $new_stage*
 Pipeline hataya dustu! Terminali kontrol et." 2>/dev/null || true
+        fi
       fi
 
       # Lock bırak

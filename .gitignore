@@ -14,6 +14,9 @@ gemini-uat.log
 .telegram-bot.lock
 .telegram-bot.state
 .telegram-bot.session
+.autonomous-loop.state
+.autonomous-loop.pid
+.telegram-gate.offset
 EXECUTION_POLICY.md
 docs/plans/
 ref_components/

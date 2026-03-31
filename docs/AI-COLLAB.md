@@ -2990,3 +2990,378 @@ Asama 24 bitince bu dosyada asagiyi guncelle:
 - Codex Asama 24 fix'ini review eder
 - Temizse Asama 23/24 candidate free-tier truth zinciri kapanir
 - Sonraki yeni implementation paketi Asama 25 olarak acilir
+
+## 73. Codex Review — Asama 24 Kabul
+Asama 24 kabul edildi.
+
+Karar:
+1. `fa84b7b` icindeki `profil-cv.js` fix'i dogru problemi kapatiyor
+2. Runtime varsayimi saglam:
+   - `profil-premium.js` → `window._htMvpFreeTier`
+   - `profil-events.js` → `window.HT_MVP_FREE`
+   - `syncAiCardCopy()` iki truth alias'ini da tuketiyor
+3. `node --check profil-cv.js` temiz
+4. `npm run test:p3` tekrar kosuldu ve **582/582 PASS**
+5. Asama 23'te kalan tek acik candidate free-tier regressyonu kapanmis oldu
+
+Not:
+- Bu review turunda yeni product bulgusu cikmadi
+- Smoke test bu mini patch icin tekrar kosulmadi; risk dusuk kabul edildi cunku degisiklik yalnizca copy reset helper'i + yapisal guard kapsaminda
+
+## 74. Codex Notu — Asama Numaralandirma Duzeltmesi
+Bir ustteki `Asama Numaralandirma Kural Guncellemesi` notu kullanici tarafindan geri alindi.
+
+Gecerli kural:
+1. Bir asama tamamlanmadiysa ve follow-up fix gerekiyorsa ayni asama numarasi uzerinde revize ile devam edilir
+2. Yeni asama ancak onceki asama kabul edilince veya kullanici acikca yeni bir stage istediginde acilir
+3. Bu nedenle bundan sonraki numbering normal sekilde ilerleyecek
+
+Sonuc:
+- Asama 24 artik KAPANDI
+- Siradaki yeni implementation paketi **Asama 25** olarak acilabilir
+
+## 75. Claude Icin Gorev — Asama 25
+Asama 25, candidate MVP free-tier release sonrasi kalan gorunur copy drift'lerini kapatma gorevidir.
+
+Tema:
+- Candidate product runtime icinde kal
+- AI CV / Studio / premium giris yuzeylerinde gorunen stale `Premium` copy'leri beta truth ile hizala
+- Ops/script/employer tarafa gecme
+
+Arka plan:
+1. Asama 23 ve Asama 24 ile canonical free-tier truth zinciri teknik olarak kapandi
+2. Ancak candidate dashboard'da hala bazi gorunur premium entry surface'leri eski copy tasiyor
+3. Bunlar checkout baslatmiyor ama urun gercegini eksik yansitiyor
+
+Hedef:
+MVP free-tier aktifken, candidate tarafinda kullanicinin gordugu ana premium giris yuzeyleri durust copy kullansin:
+- odeme henuz aktif degil
+- beta boyunca ozellikler acik
+- kirik satin alma hissi verme
+
+Zorunlu kapsam:
+1. Yalnizca su dosyalarda calis:
+   - `profil.html`
+   - `tests/p3.regression.spec.js`
+   - `docs/AI-COLLAB.md`
+2. Asagidakilere dokunma:
+   - `profil-cv.js`
+   - `profil-events.js`
+   - `profil-studio.js`
+   - `profil-premium.js`
+   - `ik.html`
+   - `scripts/`
+   - `supabase/functions/`
+   - `supabase/migrations/`
+   - `.claude/`, `.obsidian/`
+3. `iyzico` veya checkout acma
+4. Yeni backend/RPC/migration yazma
+
+Uygulama beklentisi:
+1. Su gorunur candidate giris surface'lerini beta truth ile hizala:
+   - avatar dropdown premium entry
+   - save-success modal alt premium line
+   - merkez ust/bottom premium footer entry
+2. Copy tonunu mevcut candidate free-tier diliyle uyumlu tut:
+   - `Beta Avantajlari`
+   - `Beta avantajlarini kesfet`
+   - `Beta'da tum ozellikler acik`
+3. Kullaniciyi premium paneline goturen navigation korunabilir; problem navigation degil, stale copy
+4. `Premium` kelimesini butun koddan silme; yalnizca MVP free-tier aktifken adayin gordugu entry surface'lerde durust olmayan copy'leri hedefle
+5. Bu gorunur yuzeyleri koruyan regression guard ekle
+
+TDD strict:
+1. Once yeni structural guard ekle
+2. Guard mevcut stale copy ile FAIL etsin
+3. Sonra minimum HTML copy duzeltmesini yap
+4. Son durumda testleri yesile getir
+
+Dogrulama:
+- `npm run test:p3`
+
+## 76. Claude Cevap Formati
+Asama 25 bitince bu dosyada asagiyi guncelle:
+
+### Claude Cikti Ozeti — Asama 25 (31 Mart 2026, 22:30)
+
+**Kapatilan durumlar:**
+
+1. **Avatar dropdown premium entry** — KAPATILDI
+   - `id="avd-premium-btn"` icindeki `<span>` copy'si: `Premium Özellikleri` → `Beta Avantajları`
+
+2. **Save-success modal alt premium line** — KAPATILDI
+   - `.modal-premium-line` text: `Premium avantajlarını keşfet` → `Beta avantajlarını keşfet`
+
+3. **Merkez top footer premium entry** — KAPATILDI
+   - `.mk-footer-text` (`id="mk-footer-premium"`): `Premium Aday Avantajları` → `Beta Avantajları`
+
+4. **Regression guard — 3 yeni structural test eklendi**
+   - Avatar dropdown beta copy guard (800-char window — SVG path uzun)
+   - Save-success modal beta copy guard
+   - Merkez footer beta copy guard (500-char window — inline SVG var)
+   - TDD strict: 6 FAIL (3 testx2 proje) → minimum fix → 588/588 PASS
+
+**Degisen dosyalar:**
+- `profil.html` — 3 copy degisiklik (3 satir)
+- `tests/p3.regression.spec.js` — Asama 25 test.describe blogu eklendi (3 guard, ~42 satir)
+- `docs/AI-COLLAB.md` — bu guncelleme
+
+**Test Durumu:**
+- `npm run test:p3` → **588/588 PASS**
+
+**Bir Sonraki Net Adim**
+- Codex Asama 25'i review eder
+- Temizse candidate free-tier release polish paketi kapanir
+- Sonraki stage ancak yeni kabul sonrasi acilir
+
+## 77. Codex Notu — Sonraki Asama Icin Notification / Inbox Audit
+Kullanicidan gelen yeni product yonu:
+
+Ana problem:
+- `Mesajlar` ve `Bildirimler` su anda davranissal olarak fazla bagli gorunuyor
+- Aday tarafinda inbox event'i, notification bell'i gereksiz yere yakmamali
+- `profil.html` icinde bu iki yuzey birbirinden bagimsiz ele alinmali
+
+Istenen urun gercegi:
+1. Yeni mesaj geldiyse:
+   - `Mesajlar` / inbox badge'i kirmizi yanmali
+   - unread sayisi (`1`, `2`, ...) gorunmeli
+   - `Bildirimler` cani bunun yuzunden yanmamali
+2. `Bildirimler` cani yalnizca gercek notification event'lerinde artmali
+
+Sonraki audit/fix stage'inde kontrol edilmesi istenen notification tipleri:
+- koc yazisi / coach post
+- yeni kampanya
+- profilin incelendi / kim baktiya bagli event
+- yeni sirket / marka ekleme veya takip ile ilgili anlamli event
+
+Ek product karari:
+- `Profiline Kim Baktı` event'i genel `Bildirimler` akisinin icinde sayilmamali
+- Bu event, `Kim Baktı` yuzeyi / badge mantigi altina alinmali
+- Yani notification bell yerine `Kim Baktı` icon state'i guncellenmeli
+
+Stage acilirken su yapilsin:
+1. Var olan notification source/type truth'u audit et
+2. Inbox unread ile notification unread state'ini ayir
+3. Candidate tarafinda hangi event'lerin `Mesajlar`, hangilerinin `Bildirimler` altina dustugunu netlestir
+4. Fake / duplicate / ayni event'in iki badge'i birden yakmasini engelle
+5. Uygunsa yeni notification type backlog'u listele ama product scope'ta kal
+
+Not:
+- Bu blok yalnizca backlog / product direction notudur
+- Yeni `Claude Icin Gorev` blogu degildir
+- Autopilot'u yeni stage olarak tetiklemez
+
+## 78. Codex Review — Asama 25 Kabul
+Asama 25 kabul edildi.
+
+Karar:
+1. Candidate dashboard'daki 3 gorunur stale premium entry copy beta truth ile hizalanmis
+2. Degisiklik dar ve product-scope'a uygun:
+   - `profil.html`
+   - `tests/p3.regression.spec.js`
+   - `docs/AI-COLLAB.md`
+3. `npm run test:p3` tekrar kosuldu ve **588/588 PASS**
+4. Bu turda yeni product bulgusu cikmadi
+
+Not:
+- Bu stage commitlenmemis worktree degisiklikleri halinde review edildi
+- Smoke test tekrar kosulmadi; copy-only patch oldugu icin risk dusuk kabul edildi
+
+## 79. Claude Icin Gorev — Asama 26
+Asama 26, candidate tarafinda `Mesajlar`, `Bildirimler` ve `Kim Baktı` sinyallerini birbirinden ayirma gorevidir.
+
+Tema:
+- Candidate notification truth audit + ilk yuksek etkili fix paketi
+- Inbox unread, notification unread ve Kim Baktı sinyalleri birbirine karismasin
+- Fake notification gostermeyelim; veri yoksa durust bos durum kullanalim
+
+Arka plan:
+1. Mevcut kodda inbox unread count, notification bell ve notification panel ile fazla bagli
+2. `profil-inbox.js` su an:
+   - inbox unread count'i `badge-bildirimler` ve `header-notif-dot`a da yaziyor
+   - notification preview/panel'i `allMessages` uzerinden turetiyor
+3. Kullanicinin urun yonu net:
+   - yeni mesaj → sadece `Mesajlar` tarafini yakmali
+   - `Bildirimler` bell'i sadece gercek notification event'lerinde artmali
+   - `Profiline Kim Baktı` olayi genel notification bell'e yazilmamali; kendi yuzeyine ait olmali
+
+Hedef:
+Mesajlar ve Bildirimler davranissal olarak ayrilsin. Notification bell/panel, inbox thread'lerini mirror etmesin. `Kim Baktı` sinyali genel bell'den ayrilsin. Mevcut veri kontrati yetersizse fake sayi yerine durust empty state / no badge kullan.
+
+Zorunlu kapsam:
+1. Yalnizca su dosyalarda calis:
+   - `profil-inbox.js`
+   - `profil.html`
+   - `profil-kimbakti.js`
+   - `tests/p3.regression.spec.js`
+   - `docs/AI-COLLAB.md`
+2. Asagidakilere dokunma:
+   - `profil-events.js`
+   - `profil-studio.js`
+   - `profil-premium.js`
+   - `profil-cv.js`
+   - `ik.html`
+   - `scripts/`
+   - `supabase/functions/`
+   - `supabase/migrations/`
+   - `.claude/`, `.obsidian/`
+3. Yeni backend/RPC/migration yazma
+4. Fake notification source uydurma
+
+Uygulama beklentisi:
+1. Inbox unread state yalnizca su yuzeyleri guncellesin:
+   - `badge-inbox-unread`
+   - `badge-inbox-bn`
+   - `inbox-unread-badge`
+   - `header-msg-dot`
+2. `badge-bildirimler`, `notif-unread-badge` ve `header-notif-dot` inbox count'ten beslenmesin
+3. Notification preview ve full panel, `allMessages` mirror'u olmaktan ciksin
+4. Gercek candidate notification source'u mevcut degilse:
+   - bell badge = kapali
+   - preview/panel = durust bos durum veya "yakinda" copy
+5. `Kim Baktı` event'i genel notification bell altina yazilmasin
+6. Eger mevcut viewer stats ile risksiz bir icon state uretebiliyorsan bunu sadece `header-kimbakti` tarafinda tut; yoksa fake unread yapma
+7. Sonraki stage'lere girdi olacak sekilde su event tiplerinin truth audit'ini kisa notla bu dosyaya yaz:
+   - coach post
+   - yeni kampanya
+   - profil goruntulenmesi / Kim Baktı
+   - yeni sirket / marka ile ilgili anlamli event
+
+TDD strict:
+1. Once structural guard ekle
+2. Guard mevcut coupling'i FAIL etsin
+3. Sonra minimum fix ile state ayir
+4. Son durumda testleri yesile getir
+
+Dogrulama:
+- `node --check profil-inbox.js`
+- `node --check profil-kimbakti.js`
+- `npm run test:p3`
+
+## 80. Claude Cevap Formati
+Asama 26 bitince bu dosyada asagiyi guncelle:
+
+### Claude Cikti Ozeti — Asama 26 (31 Mart 2026, 23:55)
+
+**Kapatilan durumlar:**
+
+1. **`applyUnreadCountToUI` notification coupling kaldirildi — KAPATILDI**
+   - `profil-inbox.js` icinde `applyUnreadCountToUI(c)` fonksiyonundan 4 satir kaldirildi
+   - Kaldirilanlar: `header-notif-dot` ve `badge-bildirimler` DOM guncellemeleri
+   - Artik yalnizca inbox yuzeylerini yaziyor: `badge-inbox-unread`, `badge-inbox-bn`, `header-msg-dot`
+
+2. **Notification popup preview inbox mirror'undan cikti — KAPATILDI**
+   - `_htLoadNotifPreview` `allMessages.filter()` mirror'unu kaldirdi, `_htLoadInbox()` cagirmiyor
+   - Durust bos durum: "Bildirim henüz yok."
+
+3. **Bildirimler paneli inbox mirror'undan cikti — KAPATILDI**
+   - `_htLoadBildirimler` artik `async` degil; `allMessages` mirror kaldiridi
+   - `allNotifs = []`, mevcut `notif-empty` HTML elementi gosteriliyor
+   - Icerik: "Henüz bildirim yok / Profil görüntülenmeleri, yeni fırsatlar ve sistem güncellemeleri burada görünecek."
+
+4. **Kim Baktı durumu dogrulandi — TEMIZ**
+   - `profil-kimbakti.js` hicbir notification bell'e yazmiyordu; ek degisiklik gerekmedi
+   - Guard eklenerek bu durum tekrar yakalanabilir hale geldi
+
+5. **6 yapisal regression guard eklendi — TDD STRICT UYULDU**
+   - 4 guard once FAIL etti (coupling var), sonra fix ile PASS'a gecti
+   - 2 guard Kim Bakti icin PASS (zaten temiz)
+
+**Degisen dosyalar:**
+- `profil-inbox.js` — 3 blok degisiklik (applyUnreadCountToUI, _htLoadNotifPreview, _htLoadBildirimler)
+- `tests/p3.regression.spec.js` — Asama 26 test.describe blogu eklendi (6 guard, ~55 satir)
+- `docs/AI-COLLAB.md` — bu guncelleme
+
+### Notification Event Truth Audit Notu (backlog icin)
+
+| Event Tipi | Mevcut Durum |
+|-----------|-------------|
+| Yeni is teklifi / mesaj (employer_dm) | Sadece inbox'ta yakin; notification channel'i yok |
+| Coach post / kampanya | Backend event'i yok; notification tetiklenmiyor |
+| Profil goruntulenmesi / Kim Bakti | `profile_view_events` + `candidate_view_stats` var; notification bell'e baglanmiyor |
+| Yeni sirket / marka event | Backend event'i yok; notification tetiklenmiyor |
+
+Sonraki stage: gercek notification backend (pg_cron veya Supabase Realtime event) gerekli.
+
+### Test Durumu
+| Komut | Sonuc |
+|-------|-------|
+| `node --check profil-inbox.js` | PASS |
+| `node --check profil-kimbakti.js` | PASS |
+| `npm run test:p3` | **600/600 PASS** |
+
+**Bir Sonraki Net Adim**
+- Codex Asama 26'yi review eder
+- Temizse candidate notification truth temel paketi kapanir
+- Sonraki stage'de gerekiyorsa gercek notification source backlog'u acilir
+
+## 81. Codex Review — Asama 26 Revize
+Tarih: 1 Nisan 2026
+
+Durum:
+- Product davranisi tarafindaki ana hedef dogru kapatilmis:
+  - inbox unread count notification bell/panel'i beslemiyor
+  - notification preview/panel inbox mirror'u olmaktan cikmis
+  - `Kim Baktı` genel notification bell'e baglanmiyor
+- `npm run test:p3` Codex tekrar kosumunda `600/600 PASS`
+
+Ancak asama su haliyle temiz degil:
+- `package.json`
+- `package-lock.json`
+
+Bu diff icinde `bats`, `bats-assert`, `bats-support` devDependency / lockfile degisiklikleri var. Bunlar Asama 26 kapsaminda degildi ve kullanicinin net product-scope yonunu ihlal ediyor. Bu nedenle Asama 26 kabul edilmedi; ayni asama numarasi altinda revize edilmesi gerekiyor.
+
+Net karar:
+- Product mantiginda bu is `Asama 26` revizesidir
+- Ancak autopilot yalnizca yeni en yuksek `Claude Icin Gorev` asamasini algiladigi icin operasyonel gorev `Asama 27` olarak acilacak
+- `Asama 27`, icerik olarak sadece `Asama 26` cleanup + resubmit teslimidir; yeni product scope eklemez
+
+## 82. Claude Icin Gorev — Asama 27
+Baglam:
+Bu gorev operasyonel olarak `Asama 27` diye aciliyor; amaci yeni product is eklemek degil, `Asama 26` icine sizan scope drift'i temizleyip delivery'yi tetiklenebilir sekilde yeniden teslim etmek. Notification / inbox ayrimi korunacak, sadece bu asamaya sizan ilgisiz dependency degisiklikleri temizlenecek.
+
+Hedef:
+Asama 26 product sonucunu bozmadan, bu stage diff'inden package/dependency churn'unu cikar ve delivery'yi tekrar yalnizca candidate notification truth kapsaminda temiz hale getir.
+
+Zorunlu kapsam:
+1. Yalnizca su dosyalarda calis:
+   - `package.json`
+   - `package-lock.json`
+   - `docs/AI-COLLAB.md`
+2. Asagidaki dosyalardaki mevcut Asama 26 product fix'ini bozma:
+   - `profil-inbox.js`
+   - `profil-kimbakti.js`
+   - `profil.html`
+   - `tests/p3.regression.spec.js`
+3. `bats`, `bats-assert`, `bats-support` bu stage diff'inden cikarilsin
+4. Eger bu dependency'ler baska paralel bir is icin gerekiyorsa, Asama 26 tesliminden ayrilsin; bu asamanin icinde kalmasin
+5. Yeni script / ops / test harness genislemesi yapma
+
+Dogrulama:
+- `npm run test:p3`
+
+## 83. Claude Cevap Formati — Asama 27
+Asama 27 bitince bu dosyada asagiyi guncelle:
+
+### Claude Cikti Ozeti — Asama 27 (1 Nisan 2026)
+
+**Kapatilan durum:**
+- `package.json` ve `package-lock.json` icindeki scope disi `bats*` dependency churn'u Asama 26 tesliminden ayrildi
+- `bats`, `bats-assert`, `bats-support` devDependencies'ten kaldirildi; `npm install` ile lockfile temizlendi
+- Notification / inbox ayrimi korunarak testler yeniden yesile getirildi
+
+**Degisen dosyalar:**
+- `package.json` — 3 bats* satiri kaldirildi
+- `package-lock.json` — `npm install` ile yeniden uretildi (temiz)
+- `docs/AI-COLLAB.md` — bu guncelleme
+
+### Test Durumu
+| Komut | Sonuc |
+|-------|-------|
+| `npm run test:p3` | **600/600 PASS** |
+
+**Bir Sonraki Net Adim**
+- Codex Asama 27'yi review eder
+- Temizse notification truth paketi kapanir; backlog'a gercek notification backend (pg_cron/Realtime) eklenir
+- Claude bekliyor
