@@ -74,7 +74,11 @@ call_deepseek() {
   } > "$output_file"
 
   echo -e "${GREEN}Review tamamlandi:${NC} $output_file"
-  echo -e "Token: ${usage_in} input + ${usage_out} output | Maliyet: ~\$$(echo "scale=4; ($usage_in * 0.00000028) + ($usage_out * 0.00000042)" | bc)"
+  local cost=$(echo "scale=4; ($usage_in * 0.00000028) + ($usage_out * 0.00000042)" | bc)
+  echo -e "Token: ${usage_in} input + ${usage_out} output | Maliyet: ~\$$cost"
+
+  # Observability: metrik logla
+  [ -f "scripts/agent-metrics.sh" ] && ./scripts/agent-metrics.sh log deepseek "$usage_in" "$usage_out" "$cost" "$MODEL" 2>/dev/null || true
 }
 
 SYSTEM_REVIEW="Sen hellotalent.ai projesinin teknik denetcisisin. Turkiye perakende sektoru icin bir yetenek pazaryeri.

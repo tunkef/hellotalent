@@ -132,17 +132,52 @@ Pipeline hataya dustu! Terminali kontrol et." 2>/dev/null || true
   done
 }
 
+LAUNCHD_LABEL="ai.hellotalent.autopilot"
+PLIST_PATH="$HOME/Library/LaunchAgents/${LAUNCHD_LABEL}.plist"
+
+# ── launchd üzerinden mi çalışıyor kontrol ──
+is_launchd_active() {
+  launchctl list 2>/dev/null | grep -q "$LAUNCHD_LABEL"
+}
+
+get_launchd_pid() {
+  launchctl list 2>/dev/null | grep "$LAUNCHD_LABEL" | awk '{print $1}' | grep -v '^-$' || echo ""
+}
+
 case "${1:-help}" in
   start)
-    if [ -f "$PID_FILE" ] && kill -0 "$(cat "$PID_FILE")" 2>/dev/null; then
-      echo "Autopilot zaten çalışıyor (PID: $(cat "$PID_FILE"))"
-      exit 0
+    # Launchd plist varsa onu kullan (terminal-bagimsiz)
+    if [ -f "$PLIST_PATH" ]; then
+      if is_launchd_active; then
+        lpid=$(get_launchd_pid)
+        echo "Autopilot zaten çalışıyor (launchd, PID: ${lpid:-?})"
+        exit 0
+      fi
+      launchctl load "$PLIST_PATH" 2>/dev/null
+      sleep 1
+      if is_launchd_active; then
+        lpid=$(get_launchd_pid)
+        echo "✅ Autopilot başlatıldı (launchd, PID: ${lpid:-?})"
+      else
+        echo "⚠️ launchd load edildi ama servis henüz aktif değil. Log: $LOG_FILE"
+      fi
+    else
+      # Fallback: nohup + setsid (launchd kurulmamışsa veya FDA yoksa)
+      if [ -f "$PID_FILE" ] && kill -0 "$(cat "$PID_FILE")" 2>/dev/null; then
+        echo "Autopilot zaten çalışıyor (PID: $(cat "$PID_FILE"))"
+        exit 0
+      fi
+      echo "Autopilot başlatılıyor..."
+      # setsid: yeni session oluştur, terminal kapansa bile devam etsin
+      if command -v setsid &>/dev/null; then
+        setsid "$0" _watch >> "$LOG_FILE" 2>&1 &
+      else
+        nohup "$0" _watch >> "$LOG_FILE" 2>&1 &
+      fi
+      echo $! > "$PID_FILE"
+      disown $! 2>/dev/null || true
+      echo "Autopilot aktif (PID: $!)"
     fi
-
-    echo "Autopilot başlatılıyor..."
-    nohup "$0" _watch >> "$LOG_FILE" 2>&1 &
-    echo $! > "$PID_FILE"
-    echo "Autopilot aktif (PID: $!)"
     echo ""
     echo "  Codex AI-COLLAB.md'ye yeni aşama yazdığında pipeline otomatik çalışacak."
     echo "  Bitince telefonuna bildirim gelecek."
@@ -152,28 +187,43 @@ case "${1:-help}" in
     ;;
 
   stop)
-    if [ -f "$PID_FILE" ]; then
+    # Launchd varsa onu durdur
+    if [ -f "$PLIST_PATH" ] && is_launchd_active; then
+      launchctl unload "$PLIST_PATH" 2>/dev/null || true
+      echo "Autopilot durduruldu (launchd)."
+      notify "Autopilot Durdu" "Izleme kapandi." "low" "stop_sign"
+    elif [ -f "$PID_FILE" ]; then
       pid=$(cat "$PID_FILE")
       kill "$pid" 2>/dev/null || true
       pkill -P "$pid" 2>/dev/null || true
       rm -f "$PID_FILE" "$LOCK_FILE"
-      echo "Autopilot durduruldu."
+      echo "Autopilot durduruldu (nohup)."
       notify "Autopilot Durdu" "Izleme kapandi." "low" "stop_sign"
     else
       echo "Autopilot çalışmıyor."
     fi
-    # Orphan cleanup — stale watcher/fswatch processes leftover from prior runs
+    # Orphan cleanup
     pkill -f "fswatch -o docs/AI-COLLAB.md" 2>/dev/null || true
     pkill -f "scripts/autopilot.sh _watch" 2>/dev/null || true
+    rm -f "$PID_FILE" "$LOCK_FILE"
     ;;
 
   status)
-    if [ -f "$PID_FILE" ]; then
+    # Launchd check (öncelikli)
+    if [ -f "$PLIST_PATH" ] && is_launchd_active; then
+      lpid=$(get_launchd_pid)
+      echo "✅ Autopilot çalışıyor (launchd, PID: ${lpid:-service})"
+      echo "   Aktif aşama: $(cat "$STAGE_FILE" 2>/dev/null || echo "?")"
+      echo "   Pipeline: $(is_running && echo "ÇALIŞIYOR" || echo "bekliyor")"
+      echo "   Mod: launchd (terminal-bağımsız, crash-recovery aktif)"
+    # Nohup fallback check
+    elif [ -f "$PID_FILE" ]; then
       pid=$(cat "$PID_FILE")
       if kill -0 "$pid" 2>/dev/null; then
-        echo "✅ Autopilot çalışıyor (PID: $pid)"
+        echo "✅ Autopilot çalışıyor (nohup, PID: $pid)"
         echo "   Aktif aşama: $(cat "$STAGE_FILE" 2>/dev/null || echo "?")"
         echo "   Pipeline: $(is_running && echo "ÇALIŞIYOR" || echo "bekliyor")"
+        echo "   Mod: nohup (terminal bağımlı — kalıcılık için: ./scripts/setup-launchd.sh install)"
       else
         rm -f "$PID_FILE"
         echo "❌ Autopilot çalışmıyor (stale PID temizlendi)."

@@ -1,0 +1,29 @@
+{
+  "executor": "claude-cli",
+  "executors": {
+    "claude-cli": {
+      "model": "sonnet"
+    }
+  },
+  "concurrency": 3,
+  "agents": {
+    "security-scan": { "enabled": true },
+    "performance-check": { "enabled": true },
+    "general": { "enabled": true },
+    "database": { "enabled": true },
+    "bug-hunter": { "enabled": true },
+    "i18n": { "enabled": false },
+    "observability": { "enabled": false }
+  },
+  "excludePatterns": [
+    "*.min.js",
+    "*.min.css",
+    "node_modules/**",
+    "reviews/**",
+    "tasks/**",
+    "docs/SESSION-LOG.md",
+    "docs/handoff.md",
+    ".agents/**",
+    ".claude/**"
+  ]
+}

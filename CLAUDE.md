@@ -33,6 +33,14 @@ Bu projede çalışma modeli iki katmanlıdır:
 - Codex product, architecture, QA ve teknik strateji sahibidir.
 - Claude implementation team olarak çalışır.
 
+### SOLID Architecture Enforcement
+Kod yazarken şu kuralları uygula:
+- SRP: Her fonksiyon/modül tek iş yapsın. 50+ satır fonksiyon → parçala.
+- OCP: Yeni özellik eklerken mevcut fonksiyonu değiştirmek yerine genişlet.
+- LSP: Model/sağlayıcı değişiminde config dışında kod değişmesin.
+- ISP: Agent'lar sadece kendi tool'larını görsün, gereksiz bağımlılık ekleme.
+- DIP: Somut API yerine soyut kontrat kullan (ör: `create_ticket` vs `jira.api.post`).
+
 ### Source of Truth Sırası
 Her session başında şu sırayla oku:
 1. `docs/CURRENT-STATE.md`

@@ -18,6 +18,13 @@ cd "$(dirname "$0")/.."
 # Load env variables from .env.local if exists
 [ -f .env.local ] && set -a && . .env.local && set +a
 
+# ── SOLID: Merkezi model config (DIP — model swap tek yerden) ──
+CLAUDE_MODEL="${CLAUDE_HEADLESS_MODEL:-sonnet}"
+DEEPSEEK_MODEL="${DEEPSEEK_MODEL:-deepseek-reasoner}"
+GROQ_MODEL="${GROQ_MODEL:-meta-llama/llama-4-scout-17b-16e-instruct}"
+CEREBRAS_MODEL="${CEREBRAS_MODEL:-qwen-3-235b-a22b-instruct-2507}"
+GROK_MODEL="${GROK_MODEL:-grok-4-1-fast-reasoning}"
+
 # Renkler
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -205,6 +212,27 @@ step_review() {
       ./scripts/cerebras-review.sh deep "$changed" 2>&1 | tee -a "$LOG" || true
     fi
   fi
+
+  # Diffray multi-agent review (5 paralel uzman ajan)
+  if command -v diffray &>/dev/null; then
+    log "Diffray multi-agent review..."
+    if diffray review 2>&1 | tee -a "$LOG"; then
+      log "${GREEN}Diffray review tamamlandi${NC}"
+    else
+      log "${YELLOW}[INFRA WARNING] Diffray review basarisiz${NC}"
+      notify_telegram "⚠️ *[INFRA] Diffray review basarisiz*"
+    fi
+  fi
+
+  # Qodo test generation (TDD strict mode destegi)
+  if command -v qodo &>/dev/null; then
+    log "Qodo test analizi..."
+    local changed_js=$(git diff --name-only 2>/dev/null | grep '\.js$' | head -3 | tr '\n' ' ')
+    if [ -n "$changed_js" ]; then
+      qodo test $changed_js >> "$RESULTS_DIR/qodo-$TIMESTAMP.md" 2>&1 || true
+      log "${GREEN}Qodo analiz tamamlandi${NC}"
+    fi
+  fi
   log ""
 }
 
@@ -336,6 +364,16 @@ show_status() {
   # OpenRouter
   log "  ${CYAN}OpenRouter${NC} (Fallback — FREE)"
   log "    Script: $([ -f scripts/openrouter-fallback.sh ] && echo '✓ hazır' || echo '✗ yok')"
+
+  # Yeni agent'lar
+  log "  ${CYAN}SambaNova${NC} (Llama 405B — FREE)"
+  log "    Script: $([ -f scripts/sambanova-review.sh ] && echo '✓ hazır' || echo '✗ yok')"
+
+  log "  ${CYAN}Diffray${NC} (Multi-agent review — 5 ajan)"
+  log "    CLI: $(command -v diffray &>/dev/null && echo '✓ kurulu' || echo '✗ yok')"
+
+  log "  ${CYAN}Aider${NC} (Git-native AI commit)"
+  log "    CLI: $(command -v aider &>/dev/null && echo '✓ kurulu' || echo '✗ yok')"
 
   log ""
 

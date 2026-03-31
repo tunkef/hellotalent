@@ -63,7 +63,11 @@ call_grok() {
   } > "$output_file"
 
   echo -e "${GREEN}Tamamlandi:${NC} $output_file"
-  echo -e "Token: ${usage_in} in + ${usage_out} out | ~\$$(echo "scale=4; ($usage_in * 0.0000002) + ($usage_out * 0.0000005)" | bc)"
+  local cost=$(echo "scale=4; ($usage_in * 0.0000002) + ($usage_out * 0.0000005)" | bc)
+  echo -e "Token: ${usage_in} in + ${usage_out} out | ~\$$cost"
+
+  # Observability
+  [ -f "scripts/agent-metrics.sh" ] && ./scripts/agent-metrics.sh log grok "$usage_in" "$usage_out" "$cost" "$MODEL" 2>/dev/null || true
 }
 
 SYS_BRIEF="Sen hellotalent.ai projesinin context processor'isun.

@@ -14,6 +14,25 @@
 - `docs/CURRENT-STATE.md` urun truth'udur.
 - Bu dosya (`docs/AI-COLLAB.md`) canli calisma defteridir.
 
+## 1e. TDD Strict Mode
+
+Her product feature asamasinda test-first yaklasimiyla calisılir:
+1. Claude ONCE regression guard / test yazar
+2. Testler FAIL eder (henuz kod yok)
+3. Claude minimum kodu yazar, testler PASS olur
+4. Refactor + Diffray/DeepSeek review
+5. Temiz → commit
+
+Istisnalar: audit-only, docs-only, chore asamalari TDD gerektirmez.
+
+## 1f. Kalite Kapilari
+
+Her commit oncesi su pipeline calisir (orchestrator step 3):
+1. DeepSeek reasoner → code review + security audit ($0.01)
+2. Cerebras Qwen 235B → derin dosya analizi (FREE)
+3. Diffray 5 ajan → security-scan, bug-hunter, performance-check, database, general (Sonnet via claude-cli)
+Uc katman birbirini tamamlar: DeepSeek reasoning, Cerebras pattern, Diffray multi-perspective.
+
 ## 1c. Denetci Protokolu (DeepSeek)
 
 Rol: Her commit oncesi/sonrasi kodu review et. Bug, security, code quality raporla. Kod yazma.
@@ -2505,7 +2524,82 @@ Asama 19 bitince bu dosyada asagiyi guncelle:
 - profil.html, profil-*.js, ik.html, supabase/, tests/, docs/CURRENT-STATE.md
 - .agents/, .claude/, .obsidian/, reviews/, gemini-uat.log
 
+### Commit / Push
+- Commit: `e0c216b` — chore: add multi-agent orchestration pipeline
+- Push: `1abfbc4..e0c216b  main → main` ✅
+- Secret'lar `.env.local`'a tasindi (gitignore'da), script'ler env variable kullaniyor
+- GitHub Push Protection PASS
+
 ### Bir Sonraki Net Adim
 - Codex commit scope'unu review eder
 - Temizse bir sonraki product stage acilir
+- Claude bekliyor
+
+## 65. Claude Icin Gorev — Asama 20
+Autopilot runtime hardening + launchd support.
+
+### Claude Cikti Ozeti - Asama 20 (31 Mart 2026, 17:00)
+
+**Kapatilan durumlar:**
+
+1. **Autopilot launchd destegi eklendi**
+   - `scripts/setup-launchd.sh` install/uninstall/status komutlari
+   - `ai.hellotalent.autopilot` plist template'i otomatik uretiliyor
+   - KeepAlive + RunAtLoad + ThrottleInterval ile crash-recovery
+   - macOS FDA kisitlamasi tespit edildi — kullaniciya acik talimat veriliyor
+
+2. **Nohup fallback guclendi**
+   - `disown` eklendi — shell kapansa bile process ayakta kalir
+   - `setsid` destegi (varsa) — yeni session olusturur
+   - Launchd yoksa veya FDA eksikse otomatik nohup'a duser
+
+3. **Status komutu launchd-aware**
+   - Oncelik: launchd kontrol → nohup PID kontrol → kirmizi
+   - Mod bilgisi gosteriliyor: "launchd (terminal-bagimsiz)" veya "nohup (terminal baglimli)"
+   - Stale PID otomatik temizleniyor
+
+4. **Stop orphan-safe**
+   - Launchd → `launchctl unload`
+   - Nohup → `kill` + `pkill -P` + `pkill -f fswatch`
+   - Her iki modda da PID/lock dosyalari temizleniyor
+
+5. **Singleton guard korunuyor**
+   - Tek watcher instance, duplicate baslatma engelleniyor
+
+**Ek: Asama 19-20 arasi eklenen yeni yetenekler (Codex'e rapor):**
+
+| Yeni Eklenen | Tip | Maliyet |
+|---|---|---|
+| Diffray CLI | 5 paralel uzman ajan (security, bug, perf, db, general) | Ucretsiz |
+| Qodo CLI | Test uretimi + PR review | Ucretsiz tier |
+| Aider | Git-native AI commit (DeepSeek backend) | Mevcut DeepSeek key |
+| SambaNova | DeepSeek V3.2 review (Cerebras yedegi) | Ucretsiz |
+| Sequential Thinking MCP | Cok adimli reasoning | Ucretsiz |
+| Content Moderate | Taciz/spam/nefret filtresi (Edge Function, Haiku) | ~$0.0003/mod |
+| Courier | Web push + email bildirim (10K/ay) | Ucretsiz tier |
+| Agent Metrics | Token/maliyet observability (CSV dashboard) | Sifir |
+| SOLID Enforcement | CLAUDE.md'ye SRP/OCP/LSP/ISP/DIP kurallari | Sifir |
+| TDD Strict Mode | AI-COLLAB.md test-first zorunlulugu | Sifir |
+| 3 Katmanli Kalite Kapisi | DeepSeek + Cerebras + Diffray | Mevcut |
+
+**Toplam agent sayisi: 11 AI + 5 MCP + 3 kalite kapisi**
+**Gunluk maliyet: ~$0.15 | Yillik: ~$55**
+
+### Dogrulama
+
+| # | Komut | Sonuc |
+|---|-------|-------|
+| 1 | `bash -n scripts/autopilot.sh` | **PASS** |
+| 2 | `./scripts/autopilot.sh stop` | Temiz — orphan yok |
+| 3 | `./scripts/autopilot.sh start` | PID atandi |
+| 4 | `sleep 3 && status` | **✅ Yesil, Asama 19, bekliyor** |
+| 5 | Singleton watcher | **1** |
+| 6 | Stop + orphan | **0 process** |
+| 7 | launchd FDA notu | Kullaniciya acik talimat |
+
+### Bir Sonraki Net Adim
+- Codex Asama 20 review eder
+- FDA izni verilirse launchd aktif edilir (terminal-bagimsiz)
+- Simdilik nohup ile guveniir calisityor
+- Product stage'e donus hazirligi
 - Claude bekliyor
