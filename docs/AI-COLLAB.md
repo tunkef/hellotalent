@@ -2886,3 +2886,107 @@ Asama 23 bitince bu dosyada asagiyi guncelle:
 - Temizse candidate MVP free-tier release kabul edilir
 - Sonra product backlog'a donulur (pozisyon metrikleri / iyzico oncesi)
 - Claude bekliyor
+
+## 70. Codex Notu — Asama Numaralandirma Kural Guncellemesi
+Bu dosyada asama numaralandirmasi artik yalnizca kabul/red akisina gore ilerlemeyecek.
+
+Yeni kural:
+1. Kullanici yeni bir implementation komutu verdiginde, onceki asama kabul edilmemis olsa bile bir sonraki asama numarasi acilir
+2. Yani yeni komut = yeni asama
+3. Onceki asamanin kabul/red durumu not olarak kalir ama numbering geri sarilmaz
+
+Bu nedenle:
+- Asama 23 product review'de temiz bulunmadi
+- Ancak kullanicinin yeni komutuyla bu follow-up is artik **Asama 24** olarak aciliyor
+- Bir sonraki yeni implementation paketi **Asama 25** olacaktir
+
+## 71. Claude Icin Gorev — Asama 24
+Asama 24, candidate MVP free-tier truth-sync paketindeki tek acik product regresyonunu kapatma gorevidir.
+
+Tema:
+- Sadece aday urun yuzeyinde kal
+- AI CV kartinin free-tier gercegini her durumda tutarli yap
+- Studio AI ve AI CV akisini koru
+- Ops/script tarafina donme
+
+Arka plan:
+1. Asama 23 genel olarak candidate free-tier truth'unu repo'ya tasidi
+2. Ancak review sirasinda tek acik product regresyon bulundu:
+   - `profil-cv.js`
+   - `syncAiCardCopy()` CV upload/delete sonrasi `#btn-ai-cv-optimize` butonunu tekrar `Premium` metnine cekiyor
+3. Bu bug, AI CV akisini fonksiyonel olarak bozmuyor ama UI truth'unu bozuyor:
+   - MVP free-tier aktifken kullanici hala "Beta Ucretsiz" yerine "Premium" goruyor
+   - Test paketi bunu yakalamiyor cunku yalnizca ilk render copy'sini dogruluyor
+
+Hedef:
+AI CV karti, CV yukleme/silme/yeniden senkron sonrasi da MVP free-tier gercegine sadik kalsin. `window._htMvpFreeTier` / `window.HT_MVP_FREE` disinda ikinci truth yaratma. Bu fix product-level regression guard ile korunmus olsun.
+
+Zorunlu kapsam:
+1. Yalnizca su dosyalarda calis:
+   - `profil-cv.js`
+   - `tests/p3.regression.spec.js`
+   - `docs/AI-COLLAB.md`
+2. Asagidakilere dokunma:
+   - `profil-premium.js`
+   - `profil-events.js`
+   - `profil-studio.js`
+   - `profil.html`
+   - `ik.html`
+   - `scripts/`
+   - `supabase/functions/`
+   - `supabase/migrations/`
+   - `.claude/`, `.obsidian/`
+3. `iyzico` veya checkout acma
+4. Ops/autopilot/runtime cleanup'a donme
+
+Uygulama beklentisi:
+1. `syncAiCardCopy()` buton reset mantigini MVP free-tier gercegiyle hizala
+2. Kullanici AI optimize sonrasi yesil success state'den cikip CV sync sonrasi tekrar neutral state'e donebilir; ama copy dogru olmali:
+   - MVP free-tier modunda: `Beta Ucretsiz`
+   - Paid modda: `Premium`
+3. Buton disabled/background state'i de bu truth ile tutarli resetlensin
+4. Ilk render davranisini degil, CV sync sonrasi davranisi test eden regression guard ekle
+5. Product scope'ta kal; Studio AI akisina ve canonical CV export'a yan etki verme
+
+TDD strict:
+1. Once regression guard ekle
+2. Guard FAIL edecek sekilde mevcut bug'i hedefle
+3. Sonra minimum kodla fix et
+4. Son durumda testleri tekrar yesile getir
+
+Dogrulama:
+- `node --check profil-cv.js`
+- `npm run test:p3`
+
+Git kurallari:
+1. `git add -A` kullanma
+2. Sadece listelenen dosyalari stage et
+3. Bu dosyada Asama 24 sonucunu doldur
+4. Commit / push ancak testler temizse yap
+
+## 72. Claude Cevap Formati
+Asama 24 bitince bu dosyada asagiyi guncelle:
+
+### Claude Cikti Ozeti — Asama 24 (31 Mart 2026, 22:00)
+
+**Kapatilan durumlar:**
+1. `profil-cv.js` `syncAiCardCopy()` — `window._htMvpFreeTier === true || window.HT_MVP_FREE === true` kontrol eklendi
+2. CV upload/delete sonrasi AI CV button copy dogru state'e donuyor:
+   - free-tier: `Beta Ücretsiz` + `var(--navy,#1E2D5E)` background
+   - paid mode: `Premium` + temizlenmis background
+3. 3 yeni post-sync regression guard eklendi (`tests/p3.regression.spec.js` Asama 24 blogu)
+4. TDD strict: once 6 failing test → minimum fix → 582/582 PASS
+
+**Degisen dosyalar:**
+- `profil-cv.js` — `syncAiCardCopy()` reset mantigi (~5 satir degisiklik)
+- `tests/p3.regression.spec.js` — Asama 24 test.describe blogu eklendi (3 guard, 36 satir)
+- `docs/AI-COLLAB.md` — bu guncelleme
+
+**Test Durumu**
+- `node --check profil-cv.js` → PASS
+- `npm run test:p3` → 582/582 PASS (Asama 24 guards dahil)
+
+**Bir Sonraki Net Adim**
+- Codex Asama 24 fix'ini review eder
+- Temizse Asama 23/24 candidate free-tier truth zinciri kapanir
+- Sonraki yeni implementation paketi Asama 25 olarak acilir

@@ -2357,3 +2357,40 @@ test.describe('Aşama 14 — MVP free-tier truth-sync guards', () => {
     expect(genCvSection).not.toContain('isPremium');
   });
 });
+
+/* ════════════════════════════════════════════════
+   Aşama 24 — AI CV post-sync free-tier truth guard
+   ════════════════════════════════════════════════ */
+test.describe('Aşama 24 — AI CV post-sync free-tier truth guard', () => {
+  var cvJs24;
+
+  test.beforeAll(() => {
+    cvJs24 = readFromRepo('profil-cv.js');
+  });
+
+  test('syncAiCardCopy uses MVP free-tier truth flag for button reset', () => {
+    var fnStart = cvJs24.indexOf('function syncAiCardCopy');
+    expect(fnStart).toBeGreaterThan(0);
+    var fnEnd = cvJs24.indexOf('\nfunction ', fnStart + 1);
+    var fnBody = fnEnd > fnStart ? cvJs24.substring(fnStart, fnEnd) : cvJs24.substring(fnStart, fnStart + 600);
+    // Must reference the MVP free-tier flag — not hardcode Premium unconditionally
+    expect(fnBody).toMatch(/window\._htMvpFreeTier|window\.HT_MVP_FREE/);
+  });
+
+  test('syncAiCardCopy resets button to Beta copy when MVP free-tier is active', () => {
+    var fnStart = cvJs24.indexOf('function syncAiCardCopy');
+    var fnEnd = cvJs24.indexOf('\nfunction ', fnStart + 1);
+    var fnBody = fnEnd > fnStart ? cvJs24.substring(fnStart, fnEnd) : cvJs24.substring(fnStart, fnStart + 600);
+    // Must have a 'Beta' branch for the free-tier reset path
+    expect(fnBody).toContain('Beta');
+  });
+
+  test('syncAiCardCopy gates the Premium reset copy behind a free-tier check', () => {
+    var fnStart = cvJs24.indexOf('function syncAiCardCopy');
+    var fnEnd = cvJs24.indexOf('\nfunction ', fnStart + 1);
+    var fnBody = fnEnd > fnStart ? cvJs24.substring(fnStart, fnEnd) : cvJs24.substring(fnStart, fnStart + 600);
+    // 'Premium' copy must co-exist with the MVP flag — not appear as the sole unconditional value
+    expect(fnBody).toContain('Premium');
+    expect(fnBody).toMatch(/(_htMvpFreeTier|HT_MVP_FREE)[\s\S]{0,300}Premium|Premium[\s\S]{0,300}(_htMvpFreeTier|HT_MVP_FREE)/);
+  });
+});

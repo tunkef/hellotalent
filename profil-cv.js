@@ -52,12 +52,16 @@ function syncAiCardCopy(hasCv) {
       ? 'CV\'ni + profilini AI ile g\u00fc\u00e7lendir'
       : 'Profilini AI ile g\u00fc\u00e7lendir';
   }
-  /* Reset AI button state if it was in "Optimize Edildi" state */
+  /* Reset AI button state — honour MVP free-tier truth */
   var aiBtn = document.getElementById('btn-ai-cv-optimize');
-  if (aiBtn && aiBtn.textContent !== 'Premium') {
-    aiBtn.textContent = 'Premium';
-    aiBtn.style.background = '';
-    aiBtn.disabled = false;
+  if (aiBtn) {
+    var isMvpFree = window._htMvpFreeTier === true || window.HT_MVP_FREE === true;
+    var defaultCopy = isMvpFree ? 'Beta \u00dccretsiz' : 'Premium';
+    if (aiBtn.textContent !== defaultCopy) {
+      aiBtn.textContent = defaultCopy;
+      aiBtn.style.background = isMvpFree ? 'var(--navy,#1E2D5E)' : '';
+      aiBtn.disabled = false;
+    }
   }
 }
 
