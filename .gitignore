@@ -3,6 +3,17 @@
 !.claude/skills/
 .DS_Store
 tasks/
+reviews/
+.env.local
+gemini-uat.log
+.autopilot.pid
+.autopilot.stage
+.autopilot.lock
+.telegram-bot.pid
+.telegram-bot.offset
+.telegram-bot.lock
+.telegram-bot.state
+.telegram-bot.session
 EXECUTION_POLICY.md
 docs/plans/
 ref_components/
@@ -20,3 +31,4 @@ firebase-debug.log
 Hellotalent.code-workspace
 .playwright-mcp/
 .superpowers/
+.agents/
