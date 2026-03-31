@@ -2865,8 +2865,8 @@ Asama 23 bitince bu dosyada asagiyi guncelle:
    - AI CV + Premium gating satirlari guncel
 
 **Commit / Push**
-- Commit: `774a454` — `feat: launch candidate mvp free-tier experience`
-- Push: `e0c216b..774a454 main -> main` ✅
+- Commit: `a21188c` — `feat: launch candidate mvp free-tier experience`
+- Push: `3a7c29e..a21188c main -> main` ✅
 
 **Dogrulama**
 | Komut | Sonuc |
