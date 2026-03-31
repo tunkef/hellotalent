@@ -1888,7 +1888,8 @@ test.describe('Profil activation guards', () => {
   });
 
   test('CV template includes LinkedIn URL in contact line', () => {
-    expect(cvJs).toContain("if (linkedin) contact.push(linkedin)");
+    expect(cvJs).toContain('linkedin');
+    expect(cvJs).toContain('contactParts');
   });
 
   test('CV template includes target role for ATS', () => {
@@ -1904,6 +1905,236 @@ test.describe('Profil activation guards', () => {
   test('blocked companies JS wiring present', () => {
     expect(settingsJs).toContain('candidate_blocked_companies');
     expect(settingsJs).toContain('blocked-company-search');
+  });
+});
+
+/* ════════════════════════════════════════════════
+   CV canonical template guards (Asama 9)
+   ════════════════════════════════════════════════ */
+test.describe('CV canonical template guards', () => {
+  var cvJs2;
+
+  test.beforeAll(() => {
+    cvJs2 = readFromRepo('profil-cv.js');
+  });
+
+  test('normalizeCVData helper exists and is used by generateCV', () => {
+    expect(cvJs2).toContain('function normalizeCVData()');
+    expect(cvJs2).toContain('var d = normalizeCVData()');
+  });
+
+  test('single template — no style/theme selector or multiple layouts', () => {
+    expect(cvJs2).not.toMatch(/template\s*===|style\s*===|layout\s*===/);
+  });
+
+  test('ATS section order: header > summary > experience > education > languages > certificates', () => {
+    var summaryPos = cvJs2.indexOf('PROFESYONEL OZET');
+    var expPos = cvJs2.indexOf("'Deneyim'");
+    var eduPos = cvJs2.indexOf("'E\\u011Fitim'");
+    var langPos = cvJs2.indexOf("'Diller'");
+    var certPos = cvJs2.indexOf("'Sertifikalar'");
+    expect(summaryPos).toBeGreaterThan(0);
+    expect(expPos).toBeGreaterThan(summaryPos);
+    expect(eduPos).toBeGreaterThan(expPos);
+    expect(langPos).toBeGreaterThan(eduPos);
+    expect(certPos).toBeGreaterThan(langPos);
+  });
+
+  test('avatar photo is optional — try/catch guard', () => {
+    expect(cvJs2).toContain('d.avatarUrl');
+    expect(cvJs2).toContain('addImage');
+    expect(cvJs2).toMatch(/try\s*\{[^}]*addImage/);
+  });
+
+  test('footer branding is minimal hellotalent.ai only', () => {
+    expect(cvJs2).toContain("'hellotalent.ai'");
+    expect(cvJs2).not.toContain('HelloTalent Premium');
+  });
+
+  test('deterministic summary in normalizeCVData — no API dependency for canonical flow', () => {
+    expect(cvJs2).toContain('totalYears');
+    expect(cvJs2).toContain('latestRole');
+    /* normalizeCVData itself does not call any API */
+    var normalizeBlock = cvJs2.slice(cvJs2.indexOf('function normalizeCVData'), cvJs2.indexOf('function _cvSection'));
+    expect(normalizeBlock).not.toContain('fetch(');
+    expect(normalizeBlock).not.toContain('anthropic');
+  });
+
+  test('canonical and AI CTA are separate in UI', () => {
+    var profilHtml2 = readFromRepo('profil.html');
+    /* Canonical export button exists */
+    expect(profilHtml2).toContain('btn-generate-cv-merkez');
+    /* AI optimize button exists separately */
+    expect(profilHtml2).toContain('btn-ai-cv-optimize');
+    /* AI button does NOT have data-premium-cta (no longer hijacked by global premium delegation) */
+    var aiSection = profilHtml2.slice(profilHtml2.indexOf('btn-ai-cv-optimize'));
+    expect(aiSection.substring(0, 200)).not.toContain('data-premium-cta');
+  });
+});
+
+/* ════════════════════════════════════════════════
+   AI CV + Anthropic integration guards (Asama 10)
+   ════════════════════════════════════════════════ */
+test.describe('AI CV integration guards', () => {
+  var cvJs3, eventsJs, edgeFn;
+
+  test.beforeAll(() => {
+    cvJs3 = readFromRepo('profil-cv.js');
+    eventsJs = readFromRepo('profil-events.js');
+    edgeFn = readFromRepo('supabase/functions/cv-optimize/index.ts');
+  });
+
+  test('avatar embed uses fetch-to-dataURL, not direct URL', () => {
+    expect(cvJs3).toContain('fetchAvatarAsDataURL');
+    expect(cvJs3).toContain('canvas.toDataURL');
+    /* No direct d.avatarUrl in addImage */
+    expect(cvJs3).not.toMatch(/addImage\(d\.avatarUrl/);
+  });
+
+  test('requestCVOptimize function exists and calls Edge Function', () => {
+    expect(cvJs3).toContain('function requestCVOptimize');
+    expect(cvJs3).toContain('cv-optimize');
+  });
+
+  test('Anthropic API key is only in Edge Function, not in frontend', () => {
+    expect(cvJs3).not.toContain('ANTHROPIC');
+    expect(cvJs3).not.toContain('x-api-key');
+    expect(edgeFn).toContain('ANTHROPIC_API_KEY');
+    expect(edgeFn).toContain('x-api-key');
+  });
+
+  test('Edge Function enforces auth + premium gate', () => {
+    expect(edgeFn).toContain('getUser');
+    expect(edgeFn).toContain('is_premium');
+    expect(edgeFn).toContain('Premium required');
+  });
+
+  test('Edge Function output contract has summary + experienceRewrites', () => {
+    expect(edgeFn).toContain('summary');
+    expect(edgeFn).toContain('experienceRewrites');
+    expect(edgeFn).toContain('keywordSuggestions');
+  });
+
+  test('AI flow has loading + success + failure states in events', () => {
+    expect(eventsJs).toContain('Optimize ediliyor');
+    expect(eventsJs).toContain('Optimize Edildi');
+    expect(eventsJs).toContain('Tekrar Dene');
+  });
+
+  test('generateCV accepts optional aiOptimized parameter', () => {
+    expect(cvJs3).toContain('function generateCV(aiOptimized)');
+    expect(cvJs3).toContain('aiOptimized.summary');
+  });
+});
+
+/* ════════════════════════════════════════════════
+   Source CV ingestion guards (Asama 11)
+   ════════════════════════════════════════════════ */
+test.describe('Source CV ingestion guards', () => {
+  var cvJs4, eventsJs2, edgeFn2;
+
+  test.beforeAll(() => {
+    cvJs4 = readFromRepo('profil-cv.js');
+    eventsJs2 = readFromRepo('profil-events.js');
+    edgeFn2 = readFromRepo('supabase/functions/cv-optimize/index.ts');
+  });
+
+  test('Edge Function supports source CV ingestion', () => {
+    expect(edgeFn2).toContain('sourceCVText');
+    expect(edgeFn2).toContain('extractTextFromPDF');
+    expect(edgeFn2).toContain('extractTextFromDOCX');
+    expect(edgeFn2).toContain('cv_url');
+    expect(edgeFn2).toContain('cv_filename');
+  });
+
+  test('Edge Function reports sourceUsed in output', () => {
+    expect(edgeFn2).toContain('profile_only');
+    expect(edgeFn2).toContain('profile_and_cv');
+    expect(edgeFn2).toContain('profile_fallback');
+    expect(edgeFn2).toContain('sourceUsed');
+  });
+
+  test('Parse failure falls back to profile_only honestly', () => {
+    expect(edgeFn2).toContain('profile_fallback');
+    /* No "CV okundu" claim on parse failure */
+    expect(edgeFn2).not.toContain('CV successfully parsed');
+  });
+
+  test('experienceRewrites are applied in canonical PDF via expRewrites map', () => {
+    expect(cvJs4).toContain('expRewrites[ei]');
+    expect(cvJs4).toContain('rewrite.bullets');
+    expect(cvJs4).toContain('rewrite.headline');
+  });
+
+  test('normalizeCVData includes cvUrl and cvFilename', () => {
+    expect(cvJs4).toContain("cvUrl: profile.cv_url");
+    expect(cvJs4).toContain("cvFilename: profile.cv_filename");
+  });
+
+  test('UI shows source-aware feedback after AI optimize', () => {
+    expect(eventsJs2).toContain('sourceUsed');
+    expect(eventsJs2).toContain('profile_and_cv');
+    expect(eventsJs2).toContain('profile_fallback');
+  });
+
+  test('free CV export does not depend on AI', () => {
+    expect(cvJs4).toContain('function generateCV(aiOptimized)');
+    /* When called without param, expRewrites is empty object */
+    expect(cvJs4).toContain('var expRewrites = {}');
+  });
+});
+
+/* ════════════════════════════════════════════════
+   AI CV hardening guards (Asama 12)
+   ════════════════════════════════════════════════ */
+test.describe('AI CV hardening guards', () => {
+  var edgeFn3, cvJs5, currentState;
+
+  test.beforeAll(() => {
+    edgeFn3 = readFromRepo('supabase/functions/cv-optimize/index.ts');
+    cvJs5 = readFromRepo('profil-cv.js');
+    currentState = readFromRepo('docs/CURRENT-STATE.md');
+  });
+
+  test('DOCX parse uses real ZIP unzip via fflate', () => {
+    expect(edgeFn3).toContain('unzipSync');
+    expect(edgeFn3).toContain('fflate');
+    expect(edgeFn3).toContain('word/document.xml');
+    /* ZIP magic bytes verification */
+    expect(edgeFn3).toContain('0x50');
+    expect(edgeFn3).toContain('0x4B');
+  });
+
+  test('Edge Function reports parserUsed in output', () => {
+    expect(edgeFn3).toContain('parserUsed');
+    expect(edgeFn3).toContain('pdf_text');
+    expect(edgeFn3).toContain('docx_unzip');
+    expect(edgeFn3).toContain('doc_besteff');
+  });
+
+  test('CV upload/delete triggers AI card live sync', () => {
+    expect(cvJs5).toContain('syncAiCardCopy');
+    expect(cvJs5).toContain('syncAiCardCopy(true)');
+    expect(cvJs5).toContain('syncAiCardCopy(false)');
+  });
+
+  test('CURRENT-STATE includes AI CV feature', () => {
+    expect(currentState).toContain('AI CV Optimize');
+    expect(currentState).toContain('cv-optimize');
+    expect(currentState).toContain('Anthropic');
+  });
+
+  test('cv-optimize function exists in repo', () => {
+    expect(edgeFn3.length).toBeGreaterThan(1000);
+    expect(edgeFn3).toContain('ANTHROPIC_API_KEY');
+    expect(edgeFn3).toContain('Deno.serve');
+  });
+
+  test('upload/delete syncs _loadedDBData.profile CV fields in memory', () => {
+    expect(cvJs5).toContain('_loadedDBData.profile.cv_url = cvUrl');
+    expect(cvJs5).toContain('_loadedDBData.profile.cv_filename = file.name');
+    expect(cvJs5).toContain('_loadedDBData.profile.cv_url = null');
+    expect(cvJs5).toContain('_loadedDBData.profile.cv_filename = null');
   });
 });
 

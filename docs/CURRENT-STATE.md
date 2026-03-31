@@ -1,5 +1,5 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 31 Mart 2026 | Asama 8: Practice recovery + STAR cleanup
+> Son guncelleme: 31 Mart 2026 | Asama 12: AI CV hardening + release hygiene
 
 ## 1. Proje Ozeti
 
@@ -13,6 +13,7 @@ hellotalent.ai, Turkiye perakende sektorune ozel bir yetenek pazaryeri. Adaylar 
 - **Yetkinlik sistemi** — 29 KF yetkinlik, 34 rol haritasi, bento grid, premium reading view | `profil-yetkinlik.js`
 - **Mulakat Kocu (Studio)** — STAR+T metodu, lobby + kurs detay + odak modu (inline "Cevabını Hazırla" + AI değerlendirme) + completion ekranı, streak, spaced repetition, inline rol seçimi | `profil-studio.js`
 - **AI feedback** — Edge Function (gpt-4.1-mini), pg_cron pipeline, hero kart + accordion UI | `supabase/functions/journal-feedback/`
+- **AI CV Optimize** — Anthropic (claude-sonnet-4) Edge Function, canonical ATS template, source CV ingestion (PDF text + DOCX unzip + DOC best-effort), premium gated | `supabase/functions/cv-optimize/`, `profil-cv.js`
 - **Streak sistemi** — gunluk seri, freeze/geri kazanim, review oneri | migration 20260327-28
 - **Employer onboarding (P3)** — tek/coklu marka, company linking, kampanya wizard, team system live; domain verify planli, portfolio management sinirli | `ik.html`
 - **Bi-directional messaging** — employer DM, candidate reply, split-pane, realtime | `profil-inbox.js`

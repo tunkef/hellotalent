@@ -314,7 +314,52 @@ function _htInitEvents() {
   var btnGenCVDash = document.getElementById('btn-gen-cv');
   if (btnGenCVDash) btnGenCVDash.addEventListener('click', generateCV);
   var btnGenCVMerkez = document.getElementById('btn-generate-cv-merkez');
-  if (btnGenCVMerkez) btnGenCVMerkez.addEventListener('click', generateCV);
+  if (btnGenCVMerkez) btnGenCVMerkez.addEventListener('click', function() { generateCV(); });
+
+  // AI CV Optimize button (premium) — source-aware
+  var btnAiCV = document.getElementById('btn-ai-cv-optimize');
+  if (btnAiCV) {
+    /* Dynamic label based on CV availability */
+    var _db = typeof window._loadedDBData !== 'undefined' ? window._loadedDBData : null;
+    var hasUploadedCV = _db && _db.profile && _db.profile.cv_url;
+    var aiSubEl = btnAiCV.parentElement ? btnAiCV.parentElement.querySelector('.mk-ai-sub') : null;
+    if (aiSubEl) aiSubEl.textContent = hasUploadedCV ? 'CV\'ni + profilini AI ile g\u00fc\u00e7lendir' : 'Profilini AI ile g\u00fc\u00e7lendir';
+
+    btnAiCV.addEventListener('click', function() {
+      /* Premium gate */
+      var _dbClick = typeof window._loadedDBData !== 'undefined' ? window._loadedDBData : null;
+      var isPremium = _dbClick && _dbClick.profile && _dbClick.profile.is_premium === true;
+      if (!isPremium) {
+        if (typeof window.switchPanel === 'function') window.switchPanel('premium');
+        return;
+      }
+      /* AI flow */
+      btnAiCV.disabled = true;
+      btnAiCV.textContent = 'Optimize ediliyor\u2026';
+      var cvData = typeof window.normalizeCVData === 'function' ? window.normalizeCVData() : {};
+      window.requestCVOptimize(cvData).then(function(result) {
+        btnAiCV.disabled = false;
+        btnAiCV.textContent = 'Optimize Edildi \u2713';
+        btnAiCV.style.background = 'var(--green, #059669)';
+
+        /* Source feedback toast */
+        var sourceMsg = '';
+        if (result.sourceUsed === 'profile_and_cv') sourceMsg = 'Profil + y\u00fckl\u00fc CV kullan\u0131larak optimize edildi';
+        else if (result.sourceUsed === 'profile_fallback') sourceMsg = 'CV okunamad\u0131, profil verisiyle optimize edildi';
+        else sourceMsg = 'Profil verisiyle optimize edildi';
+        if (typeof window.showToast === 'function') window.showToast(sourceMsg, 'success');
+
+        /* Generate with AI-optimized content */
+        generateCV(result);
+      }).catch(function(err) {
+        btnAiCV.disabled = false;
+        btnAiCV.textContent = 'Tekrar Dene';
+        btnAiCV.style.background = 'var(--verm, #C94E28)';
+        console.error('[HT] AI CV optimize error:', err.message);
+        if (typeof window.showToast === 'function') window.showToast('AI optimizasyonu ba\u015far\u0131s\u0131z: ' + err.message, 'error');
+      });
+    });
+  }
 
   // Draft resume button
   var btnDraftResume = document.getElementById('btn-draft-resume');
