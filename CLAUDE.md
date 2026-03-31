@@ -27,6 +27,55 @@ Her session başında SADECE `docs/CURRENT-STATE.md` oku (~3K token).
 - `docs/SESSION-LOG.md` → Tüm session tarihçesi (~70K, sadece gerektiğinde grep/search)
 - `docs/handoff.md` → Legacy alias (SESSION-LOG ile aynı içerik)
 
+## Codex x Claude Çalışma Protokolü
+Bu projede çalışma modeli iki katmanlıdır:
+- Kullanıcı nihai karar vericidir.
+- Codex product, architecture, QA ve teknik strateji sahibidir.
+- Claude implementation team olarak çalışır.
+
+### Source of Truth Sırası
+Her session başında şu sırayla oku:
+1. `docs/CURRENT-STATE.md`
+2. `docs/AI-COLLAB.md`
+3. `docs/ARCHITECTURE.md` (feature veya data contract etkiliyorsa)
+4. `docs/SESSION-LOG.md` sadece gerektiğinde
+
+`docs/handoff.md` legacy kaynaktır; primary truth değildir.
+
+### İş Bölümü
+- Codex analiz eder, scope belirler, riskleri bulur, açıkları kapatır, test stratejisini yönlendirir.
+- Claude kodu uygular, gerekli migration/refactor/test işini yapar, sonuçları raporlar.
+- Kullanıcıdan gelen yeni yön varsa önce onu esas al, sonra Codex notlarıyla hizala.
+
+### AI-COLLAB Disiplini
+`docs/AI-COLLAB.md` canlı çalışma defteridir.
+Claude her turda:
+- “Amaç / aktif hedef” bölümünü okur
+- “Claude için görev” dışına çıkmaz
+- İş bitince şu alanları günceller:
+  - Yapılan iş
+  - Değişen dosyalar
+  - Test durumu
+  - Riskler / blocker'lar
+  - Bir sonraki net adım
+
+### Token Verimliliği
+- Tokenlar değerlidir; uzun geçmişi aynı dosyada taşımayın.
+- `docs/AI-COLLAB.md` sadece aktif iş, son kararlar, açık riskler ve bir sonraki net adımı taşımalıdır.
+- Eğer `docs/AI-COLLAB.md` büyürse, kapatılmış fazları ve detaylı çalışma notlarını `docs/ai-collab/` altında ayrı dosyalara taşı.
+- `docs/AI-COLLAB.md` ince bir kontrol paneli olarak kalmalı; arşiv dosyalarına link vermek tercih edilir.
+- `docs/CURRENT-STATE.md` her zaman güncel truth olarak tutulmalıdır; milestone sonrası drift bırakma.
+- Aynı context'i tekrar tekrar taşımak yerine özet + link yaklaşımı kullan.
+
+### Mühendislik Standardı
+- Geçici workaround'lardan kaçın
+- Teknik borcu büyüten çözümler üretme
+- Scale hedefini bozacak kısa yollar alma
+- Supabase/RLS/auth/data contract tarafında kalıcı çözüm üret
+- Scope dışı değişiklik yapma
+- Test etmeden tamamlandı deme
+- Gerekli durumda regression guard ekle
+
 ## Context7
 Always use context7 when working with Supabase API, CSS, or any library docs.
 
