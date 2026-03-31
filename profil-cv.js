@@ -160,17 +160,17 @@ function generateCV() {
   var doc = new jsPDF({ unit: 'mm', format: 'a4' });
   var W = 210, M = 18, cW = W - 2 * M, Y = 0;
 
-  // Header — navy bar
+  // ── ATS-friendly header — clean, parseable, minimal color ──
   doc.setFillColor(30, 45, 94);
-  doc.rect(0, 0, W, 42, 'F');
+  doc.rect(0, 0, W, 36, 'F');
   doc.setTextColor(255, 255, 255);
-  doc.setFontSize(20);
+  doc.setFontSize(18);
   doc.setFont('helvetica', 'bold');
   var isim = val('f-adsoyad') || 'Ad Soyad';
-  doc.text(isim, M, 20);
+  doc.text(isim, M, 16);
 
-  // Contact info
-  doc.setFontSize(11);
+  // Contact line — single row, ATS parseable
+  doc.setFontSize(10);
   doc.setFont('helvetica', 'normal');
   var tel = val('f-telefon');
   var email = currentUser ? currentUser.email : '';
@@ -178,12 +178,21 @@ function generateCV() {
   var contact = [];
   if (tel) contact.push(tel);
   if (email) contact.push(email);
-  if (contact.length) doc.text(contact.join(' | '), M, 28);
-
+  if (linkedin) contact.push(linkedin);
   var city = val('f-adresil');
-  if (city) doc.text(city, M, 35);
+  if (city) contact.push(city);
+  if (contact.length) doc.text(contact.join(' | '), M, 24);
 
-  Y = 50;
+  // Target role — ATS keyword optimization
+  var targetRoleSel = document.querySelector('#target-roles-container select[id$="-unvan"]');
+  var targetRole = targetRoleSel ? targetRoleSel.value : '';
+  if (targetRole) {
+    doc.setFontSize(10);
+    doc.setTextColor(200, 200, 220);
+    doc.text(targetRole, M, 32);
+  }
+
+  Y = 42;
   doc.setTextColor(0, 0, 0);
 
   // Experiences
@@ -323,10 +332,10 @@ function generateCV() {
     Y += 10;
   }
 
-  // Footer — hellotalent branding
-  doc.setFontSize(8);
-  doc.setTextColor(150, 150, 150);
-  doc.text('hellotalent.ai', W / 2, 290, { align: 'center' });
+  // Footer — minimal branding, ATS-safe
+  doc.setFontSize(7);
+  doc.setTextColor(180, 180, 180);
+  doc.text('hellotalent.ai ile olu\u015Fturuldu', W / 2, 290, { align: 'center' });
 
   doc.save((isim || 'CV').replace(/\s+/g, '_') + '_HelloTalent.pdf');
 }

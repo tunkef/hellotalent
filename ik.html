@@ -468,6 +468,18 @@ html[data-theme="dark"] .poz-stats{border-color:#374151;}
 html[data-theme="dark"] .poz-chip{background:#1F2937;border-color:#374151;}
 /* Drawer info items */
 html[data-theme="dark"] .drawer-info-item{background:#1F2937;}
+/* Mobile message split-pane: single-column with back nav */
+@media(max-width:768px){
+  #ik-msg-split{flex-direction:column;min-height:auto;}
+  #ik-msg-left{width:100% !important;min-width:0 !important;max-width:none !important;border-right:none !important;border-bottom:1px solid var(--border);}
+  #ik-msg-right{display:none;}
+  #ik-msg-right.ik-msg-active{display:flex;}
+  #ik-msg-left.ik-msg-hidden{display:none;}
+  .ik-msg-back-btn{display:flex !important;align-items:center;gap:6px;padding:8px 12px;border:none;background:none;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;color:var(--verm,#C94E28);cursor:pointer;}
+}
+@media(min-width:769px){
+  .ik-msg-back-btn{display:none !important;}
+}
 </style>
 </head>
 <body>
@@ -1207,10 +1219,10 @@ html[data-theme="dark"] .drawer-info-item{background:#1F2937;}
       </div>
       <div class="settings-grid">
         <div>
-          <!-- Plan kartı -->
+          <!-- Plan kartı — truth synced from _employerPlan -->
           <div class="plan-card" style="margin-bottom:16px;">
             <div class="plan-label">Mevcut Plan</div>
-            <div class="plan-name">Ücretsiz</div>
+            <div class="plan-name" id="settings-plan-name">\u00dccretsiz</div>
             <div class="plan-features">
               <div class="plan-feature"><span class="plan-feature-icon">✓</span> Aday önizleme (sınırlı)</div>
               <div class="plan-feature"><span class="plan-feature-icon">✓</span> 3 açık pozisyon</div>
@@ -1253,33 +1265,8 @@ html[data-theme="dark"] .drawer-info-item{background:#1F2937;}
 
         <div style="background:white;border:1px solid var(--border);border-radius:12px;padding:20px;">
           <div class="profil-card-title">Bildirim Tercihleri</div>
-          <div class="toggle-row">
-            <div class="toggle-info">
-              <h4>Yeni Aday Bildirimi</h4>
-              <p>Havuza yeni retail uzmanı eklendiğinde</p>
-            </div>
-            <button type="button" class="toggle on" aria-pressed="true" aria-label="Yeni aday bildirimi"></button>
-          </div>
-          <div class="toggle-row">
-            <div class="toggle-info">
-              <h4>Haftalık Özet</h4>
-              <p>Aday havuzu aktivite raporu</p>
-            </div>
-            <button type="button" class="toggle on" aria-pressed="true" aria-label="Haftalık özet"></button>
-          </div>
-          <div class="toggle-row">
-            <div class="toggle-info">
-              <h4>hellohunter Teklifleri</h4>
-              <p>Pozisyona özel aday önerileri</p>
-            </div>
-            <button type="button" class="toggle" aria-pressed="false" aria-label="hellohunter teklifleri"></button>
-          </div>
-          <div class="toggle-row">
-            <div class="toggle-info">
-              <h4>Ürün Güncellemeleri</h4>
-              <p>Yeni özellikler ve duyurular</p>
-            </div>
-            <button type="button" class="toggle on" aria-pressed="true" aria-label="Ürün güncellemeleri"></button>
+          <div style="padding:12px 16px;background:var(--bg-muted,#F7F6F4);border-radius:10px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;color:var(--text-muted,#6B7280);line-height:1.6;">
+            Bildirim tercihleri yak&#305;nda aktif olacak. &#350;u an t&#252;m bildirimleri al&#305;yorsunuz.
           </div>
 
           <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border);">
@@ -2276,12 +2263,17 @@ async function initApp(){
       // Load employer plan (fire-and-forget, defaults to demo)
       getSupa().rpc('get_employer_plan').then(function(planRes){
         if(planRes.data && !planRes.error) _employerPlan = planRes.data;
+        var planLabels = { 'demo': '\u00dccretsiz Plan', 'pro': '\u2B50 Pro Plan', 'enterprise': '\uD83C\uDFE2 Enterprise' };
+        var label = planLabels[_employerPlan] || '\u00dccretsiz Plan';
+        /* Sidebar plan label */
         var planEl = document.getElementById('sidebar-plan');
         if(planEl){
-          var planLabels = { 'demo': 'Ücretsiz Plan', 'pro': '⭐ Pro Plan', 'enterprise': '🏢 Enterprise' };
-          planEl.textContent = planLabels[_employerPlan] || 'Ücretsiz Plan';
+          planEl.textContent = label;
           if(_employerPlan !== 'demo') planEl.style.color = 'var(--verm)';
         }
+        /* Settings plan card — truth-sync */
+        var settingsPlan = document.getElementById('settings-plan-name');
+        if(settingsPlan) settingsPlan.textContent = label;
       }).catch(function(){ /* RPC not deployed yet — stay on demo */ });
       // Auto-sync auth email → hr_profiles.email if they differ
       if(prof.email && currentUser.email && prof.email !== currentUser.email){
@@ -2679,32 +2671,78 @@ function updateFavCount(){
   });
 }
 
-function renderFavoriler(){
+async function renderFavoriler(){
   var container = document.getElementById('favori-list');
   if(!container) return;
-  var favAdaylar = ADAYLAR.filter(function(a){ return favorites.indexOf(a.id) !== -1; });
   while(container.firstChild) container.removeChild(container.firstChild);
-  if(favAdaylar.length === 0){
+
+  if(favorites.length === 0){
     var emptyState = document.createElement('div');
     emptyState.className = 'empty-state';
     var emptyIcon = document.createElement('div');
     emptyIcon.className = 'empty-icon';
-    emptyIcon.textContent = '⭐';
+    emptyIcon.textContent = '\u2B50';
     emptyState.appendChild(emptyIcon);
     var emptyTitle = document.createElement('div');
     emptyTitle.className = 'empty-title';
-    emptyTitle.textContent = 'Henüz favori yok';
+    emptyTitle.textContent = 'Hen\u00fcz favori yok';
     emptyState.appendChild(emptyTitle);
     var emptySub = document.createElement('div');
     emptySub.className = 'empty-sub';
-    emptySub.textContent = 'Aday listesinden ★ ikonuna tıklayarak favorilere ekle';
+    emptySub.textContent = 'Aday listesinden \u2605 ikonuna t\u0131klayarak favorilere ekle';
     emptyState.appendChild(emptySub);
     container.appendChild(emptyState);
     return;
   }
+
+  /* Phase 1: show candidates already in ADAYLAR array */
+  var inMemory = ADAYLAR.filter(function(a){ return favorites.indexOf(a.id) !== -1; });
+  var inMemoryIds = inMemory.map(function(a){ return a.id; });
+  var missingIds = favorites.filter(function(id){ return inMemoryIds.indexOf(id) === -1; });
+
+  /* Phase 2: fetch missing favorites from DB with visibility rules */
+  if(missingIds.length > 0){
+    try {
+      var sb = getSupa();
+      var companyId = hrProfile ? hrProfile.company_id : null;
+      var res = await sb.rpc('search_employer_candidates', {
+        p_company_id: companyId || 0,
+        p_limit: missingIds.length,
+        p_offset: 0,
+        p_sort: 'recent'
+      });
+      if(!res.error && res.data && res.data.candidates){
+        /* Filter to only our missing favorite IDs + apply visibility rules:
+           RPC already enforces is_active, >=45%, blocked company, hide_from_current_employer */
+        var fetched = mapRPCtoADAYLAR(res.data.candidates);
+        var fetchedFavs = fetched.filter(function(c){ return missingIds.indexOf(c.id) !== -1; });
+        inMemory = inMemory.concat(fetchedFavs);
+      }
+    } catch(e) { /* silent — show what we have */ }
+  }
+
+  if(inMemory.length === 0){
+    var noMatch = document.createElement('div');
+    noMatch.className = 'empty-state';
+    var noIcon = document.createElement('div');
+    noIcon.className = 'empty-icon';
+    noIcon.textContent = '\u2B50';
+    noMatch.appendChild(noIcon);
+    var noTitle = document.createElement('div');
+    noTitle.className = 'empty-title';
+    noTitle.textContent = 'Favori adaylar g\u00f6r\u00fcnt\u00fclenemiyor';
+    noMatch.appendChild(noTitle);
+    var noSub = document.createElement('div');
+    noSub.className = 'empty-sub';
+    noSub.textContent = 'Favori adaylar\u0131n profilleri art\u0131k aktif olmayabilir';
+    noMatch.appendChild(noSub);
+    container.appendChild(noMatch);
+    return;
+  }
+
   var wrapper = document.createElement('div');
   wrapper.style.cssText = 'display:flex;flex-direction:column;gap:14px;';
-  favAdaylar.forEach(function(c){
+  inMemory.forEach(function(c){
     wrapper.appendChild(buildCandidateCard(c));
   });
   container.appendChild(wrapper);
@@ -3253,6 +3291,33 @@ function openSingleThreadModal(messageId, candidateName) {
   if (!rightPane) return;
   rightPane.textContent = '';
 
+  // Mobile: show right pane, hide left
+  var leftPane = document.getElementById('ik-msg-left');
+  if (window.innerWidth <= 768) {
+    if (leftPane) leftPane.classList.add('ik-msg-hidden');
+    rightPane.classList.add('ik-msg-active');
+  }
+
+  // Mobile back button
+  var backBtn = document.createElement('button');
+  backBtn.type = 'button';
+  backBtn.className = 'ik-msg-back-btn';
+  backBtn.textContent = '\u2190 Mesajlar';
+  backBtn.addEventListener('click', function() {
+    rightPane.classList.remove('ik-msg-active');
+    if (leftPane) leftPane.classList.remove('ik-msg-hidden');
+    rightPane.textContent = '';
+    var placeholder = document.getElementById('ik-thread-placeholder');
+    if (!placeholder) {
+      var ph = document.createElement('div');
+      ph.id = 'ik-thread-placeholder';
+      ph.style.cssText = 'display:flex;align-items:center;justify-content:center;flex:1;color:var(--muted);font-size:14px;padding:40px;';
+      ph.textContent = 'Bir konu\u015Fma se\u00E7in';
+      rightPane.appendChild(ph);
+    }
+  });
+  rightPane.appendChild(backBtn);
+
   // Header
   var header = document.createElement('div');
   header.style.cssText = 'display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--border);flex-shrink:0;';
@@ -3676,17 +3741,25 @@ function buildPozCard(p){
     card.appendChild(desc);
   }
 
-  // Stats
+  // Stats — truth-synced: show real data only if backend counter exists
   var stats = document.createElement('div'); stats.className = 'poz-stats';
-  var s1 = document.createElement('div'); s1.className = 'poz-stat';
-  var s1v = document.createElement('div'); s1v.className = 'poz-stat-val'; s1v.textContent = p.gorunum||0;
-  var s1l = document.createElement('div'); s1l.className = 'poz-stat-label'; s1l.textContent = 'Görüntüleme';
-  s1.appendChild(s1v); s1.appendChild(s1l);
-  var s2 = document.createElement('div'); s2.className = 'poz-stat';
-  var s2v = document.createElement('div'); s2v.className = 'poz-stat-val'; s2v.textContent = p.basvuru||0;
-  var s2l = document.createElement('div'); s2l.className = 'poz-stat-label'; s2l.textContent = 'Eşleşme';
-  s2.appendChild(s2v); s2.appendChild(s2l);
-  stats.appendChild(s1); stats.appendChild(s2);
+  var hasRealMetrics = (p.gorunum && p.gorunum > 0) || (p.basvuru && p.basvuru > 0);
+  if (hasRealMetrics) {
+    var s1 = document.createElement('div'); s1.className = 'poz-stat';
+    var s1v = document.createElement('div'); s1v.className = 'poz-stat-val'; s1v.textContent = p.gorunum || 0;
+    var s1l = document.createElement('div'); s1l.className = 'poz-stat-label'; s1l.textContent = 'G\u00f6r\u00fcnt\u00fcleme';
+    s1.appendChild(s1v); s1.appendChild(s1l);
+    var s2 = document.createElement('div'); s2.className = 'poz-stat';
+    var s2v = document.createElement('div'); s2v.className = 'poz-stat-val'; s2v.textContent = p.basvuru || 0;
+    var s2l = document.createElement('div'); s2l.className = 'poz-stat-label'; s2l.textContent = 'E\u015fle\u015fme';
+    s2.appendChild(s2v); s2.appendChild(s2l);
+    stats.appendChild(s1); stats.appendChild(s2);
+  } else {
+    var noData = document.createElement('div');
+    noData.style.cssText = 'font-family:"Plus Jakarta Sans",sans-serif;font-size:11px;color:var(--muted);padding:4px 0;';
+    noData.textContent = 'Metrikler yak\u0131nda aktif olacak';
+    stats.appendChild(noData);
+  }
   card.appendChild(stats);
 
   // Actions (tab-dependent)
@@ -4338,7 +4411,7 @@ async function loadTeamPanel(){
 
     if(inviteMsg) { inviteMsg.style.display = 'none'; }
 
-    var res = await supabase.rpc('get_employer_team_info');
+    var res = await getSupa().rpc('get_employer_team_info');
     if(res.error){
       if(listEl) listEl.textContent = 'Ekip bilgisi yüklenemedi.';
       console.error('[HT] get_employer_team_info error:', res.error.message);
@@ -4432,7 +4505,7 @@ async function loadPendingInvites(companyId){
     var listEl = document.getElementById('ekip-pending-list');
     if(!section || !listEl) return;
 
-    var res = await supabase
+    var res = await getSupa()
       .from('company_invitations')
       .select('id, email, invited_role, status, created_at')
       .eq('company_id', companyId)
@@ -4495,7 +4568,7 @@ async function sendTeamInvite(){
   if(msgEl) msgEl.style.display = 'none';
 
   try {
-    var res = await supabase.rpc('invite_team_member', { p_email: email, p_role: role });
+    var res = await getSupa().rpc('invite_team_member', { p_email: email, p_role: role });
 
     if(res.error){
       if(msgEl){
@@ -4538,18 +4611,9 @@ async function sendTeamInvite(){
   }
 }
 
-// ── AYARLAR: bildirim anahtarları (delegation — mobil / overlay sonrası daha güvenilir) ──
-(function(){
-  var panel = document.getElementById('panel-ayarlar');
-  if(!panel) return;
-  panel.addEventListener('click', function(e){
-    var btn = e.target && e.target.closest && e.target.closest('button.toggle');
-    if(!btn || !panel.contains(btn)) return;
-    e.preventDefault();
-    btn.classList.toggle('on');
-    btn.setAttribute('aria-pressed', btn.classList.contains('on') ? 'true' : 'false');
-  });
-})();
+/* Bildirim toggle'ları kaldırıldı — hr_profiles'da notify preference kolonu yok.
+   Dürüst "çok yakında" mesajı gösteriliyor. DB kontratı eklendiğinde
+   toggle UI + persistence buraya gelecek. */
 
 // ── EMPLOYER REALTIME: live-chat subscriptions (singleton) ──
 (function() {

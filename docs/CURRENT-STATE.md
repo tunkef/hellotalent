@@ -1,5 +1,5 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 30 Mart 2026 | Session 57 | S07 smoke test + deploy + docs sync complete
+> Son guncelleme: 31 Mart 2026 | Asama 8: Practice recovery + STAR cleanup
 
 ## 1. Proje Ozeti
 
@@ -11,10 +11,10 @@ hellotalent.ai, Turkiye perakende sektorune ozel bir yetenek pazaryeri. Adaylar 
 - **Glassmorphic float header** — LinkedIn-style, 5 nav, avatar dropdown, dark mode toggle | `profil.html`
 - **Markalar paneli** — 96 marka flip-card grid, company/brand hierarchy | `profil-markalar.js`
 - **Yetkinlik sistemi** — 29 KF yetkinlik, 34 rol haritasi, bento grid, premium reading view | `profil-yetkinlik.js`
-- **Mulakat Kocu (Studio)** — STAR+T metodu, lobby + kurs detay + odak modu + completion ekrani, streak, spaced repetition, inline rol secimi | `profil-studio.js`
+- **Mulakat Kocu (Studio)** — STAR+T metodu, lobby + kurs detay + odak modu (inline "Cevabını Hazırla" + AI değerlendirme) + completion ekranı, streak, spaced repetition, inline rol seçimi | `profil-studio.js`
 - **AI feedback** — Edge Function (gpt-4.1-mini), pg_cron pipeline, hero kart + accordion UI | `supabase/functions/journal-feedback/`
 - **Streak sistemi** — gunluk seri, freeze/geri kazanim, review oneri | migration 20260327-28
-- **Employer onboarding (P3)** — tek/coklu marka, domain verify, team system | `ik.html`
+- **Employer onboarding (P3)** — tek/coklu marka, company linking, kampanya wizard, team system live; domain verify planli, portfolio management sinirli | `ik.html`
 - **Bi-directional messaging** — employer DM, candidate reply, split-pane, realtime | `profil-inbox.js`
 - **Email infrastructure** — outbox pattern, Resend API, pg_cron, 3 template | Edge Functions
 - **Coach sistemi** — coach_invites, posts, likes, 6 kategori | `coach-studio.html`
@@ -82,7 +82,8 @@ hellotalent.ai, Turkiye perakende sektorune ozel bir yetenek pazaryeri. Adaylar 
 6. ~~**T13 — Smoke/Auth test hygiene**~~ — ✅ TAMAMLANDI (Session 53, 30 Mart). 25 fail → 1. Root cause: Cloudflare Access tum live sayfalari blokluyor, Playwright DOM'a erisemiyor. Fix: `playwright.config.js`'e `webServer` (npx serve -p 3000) + `baseURL: localhost:3000` eklendi. `hellotalent.smoke.spec.js` hardcoded `https://hellotalent.ai` → relative path. Gate testi form doldurma ile duzeltildi. Font testi `document.fonts.load()` ile duzeltildi. `giris.html` login button'a `id="btn-aday-giris"` eklendi. Auth setup BLOCKED: `HT_TEST_EMAIL` / `HT_TEST_PASSWORD` env var'lari set edilmeli — set edilince 12 e2e testi de calismaya hazir.
 7. ~~**T14 — Label accessibility audit**~~ — ✅ TAMAMLANDI (Session 54, 30 Mart). 4 dosya: `giris.html` (10 label for + 1 modal close aria-label + 1 forgot-email label), `gate.html` (2 label for), `index.html` (6 aria-label + 5 label for HR modal), `ik.html` (filter-sehir span→label, 2 range aria-label, 2 select aria-label, 2 modal-close aria-label, 26 form-label for attr, 2 team invite aria-label). 68/68 smoke pass.
 8. ~~**Dark mode remaining**~~ — ✅ TAMAMLANDI (Session 55, 30 Mart). `profil-settings.js` 7 alert()/confirm() → `_htAlert()`/`_htConfirm()` dark-mode-aware DOM modal'larına çevrildi. `gate.html` + `giris.html` + `ik.html`: theme-init script + `html[data-theme="dark"]` CSS eklendi. 68/68 smoke pass.
-9. **iyzico/Stripe checkout** — schema hazir, merchant hesap + API key gerekli (**her zaman en son**)
+9. **Pozisyon gorunum/esleme metrikleri** — backend counter/trigger gerekli, frontend truth-sync edildi (sahte 0 yerine "yakinda aktif" mesaji)
+10. **iyzico/Stripe checkout** — schema hazir, merchant hesap + API key gerekli (**her zaman en son**)
 
 ## 5b. Sosyal Layer Audit Kararlari (Session 45 — 30 Mart)
 
@@ -96,6 +97,9 @@ hellotalent.ai, Turkiye perakende sektorune ozel bir yetenek pazaryeri. Adaylar 
 
 ## 6. Son 3 Session Ozeti
 
+### Session 58 (31 Mart — Asama 8: Practice Recovery + STAR Cleanup)
+**Practice ekraninda journal/cevap yuzeyi inline olarak geri getirildi, STAR legacy kodu temizlendi.** (1) `renderJournalPanel()` soru kartinin hemen altina inline collapsible panel olarak eklendi — "Cevabini Hazirla" toggle'i ilk bakista discoverable. (2) Premium AI degerlendirme butonu inline panel icinde gorunur. (3) Journal drawer (`st-journal-drawer`) overlay kaldirildi, bottom bar "Cevabini Hazirla" olarak yeniden adlandirildi. (4) 5 legacy fonksiyon silindi: `renderStarDetail()`, `_bindStarIntroEvents_legacy()`, `hydrateLandingStats()`, `renderRoleSelect()`, `bindRoleSelectEvents()`. (5) STAR quad CSS (`ig-star-quad-card`, `ig-star-cell`, `ig-star-detail`, `ig-landing-title`, `ig-landing-subtitle`) temizlendi. (6) Tum backend kontratlari korundu: `saveJournalDraft`, `loadJournalDraft`, `upsert_studio_journal`, `get_my_journals`, `request_journal_feedback`, `get_journal_feedback`, `renderAiFeedback()`. p3 regression: **500/500 PASS**. Smoke: **68/68 PASS**.
+
 ### Session 57 (30 Mart — S07 Studio Smoke Test + Deploy + Docs Sync)
 **Studio redesign (S01-S06) tum testlerle dogrulandi ve deploy edildi.** S01: profil-mulakatkocu.js → profil-studio.js yeniden adlandirma. S02: tam genislik panel CSS. S03: lobby yeniden tasarimi (inline rol secimi, returning user routing). S04: kurs detay sayfasi (3 sekmeli: sorular / seans / notlar). S05: pratik odak modu (drawer sistemi ile kontekst). S06: completion + session_complete ekrani focus mode ile hizalama. p3 regression: **446/446 PASS**. Full smoke: **540 passed, 1 blocked (auth env vars — bilinen), 12 did not run (e2e chain)**. Yeni regresyon yok. Commit: `feat: studio redesign — learning path, course detail, focus mode practice`.
 
@@ -104,15 +108,6 @@ hellotalent.ai, Turkiye perakende sektorune ozel bir yetenek pazaryeri. Adaylar 
 
 ### Session 55 (30 Mart — T15 Dark Mode Remaining)
 **Dark mode backlog tamamen kapatıldı:** 4 dosya. `profil-settings.js`: 7 native `alert()`/`confirm()` → `_htAlert()`/`_htConfirm()` DOM modal'larına dönüştürüldü. Helper IIFE `.modal-overlay` + `.modal` + `.btn-primary/secondary` + `.modal-confirm-body` sınıflarını dinamik oluşturuyor; `profil.css` semantic tokenları (`--bg-surface`, `--text-primary` vb.) sayesinde dark mode'da otomatik çalışıyor. `gate.html`: theme-init `<script>` + `html[data-theme="dark"]` CSS (kart, input, hata). `giris.html`: theme-init + dark mode body/header/card/form/tab-toggle/Google-LinkedIn buton/forgot-modal. `ik.html`: theme-init + token override (`--text/muted/border/bg`) + topbar/stat-card/filter/candidate-card/modal/drawer/button/chip/input/accordion/activity explicit override'ları. 68/68 smoke pass.
-
-### Session 54 (30 Mart — T14 Label Accessibility Audit)
-**43 erişilebilirlik uyarısı kapatıldı:** 4 dosyada sistematik label fix. `giris.html`: tüm form label'larına `for` attr eklendi (10 adet), modal kapatma butonu `aria-label="Kapat"`, şifre sıfırlama modalında unlabelled input için `<label>` eklendi. `gate.html`: 2 label for. `index.html`: kayıt/login formlarında görünür label yerine `aria-label` (6 input), HR modal'daki 5 label'a `for` attr, dark section'da 4 input `aria-label`. `ik.html`: `filter-sehir` için `<span>` → `<label for>`, range inputlarına `aria-label`, sort/position select'lere `aria-label`, 2 modal close `aria-label`, 26 `form-label for` attr (onboarding sc-*, lokasyon, mesaj, pozisyon, ayarlar). Smoke: 68/68 PASS.
-
-### Session 53 (30 Mart — T13 Smoke/Auth Test Hygiene)
-**Smoke test 25→1 fail:** Root cause: Cloudflare Access tum live sayfaları Playwright'tan blokluyor. Fix 1: `playwright.config.js`'e `webServer: { command: 'npx serve . -p 3000', port: 3000 }` + `baseURL: 'http://localhost:3000'` eklendi. Fix 2: `hellotalent.smoke.spec.js` — `withGate()` hardcoded `https://hellotalent.ai` → relative path, Gate testi form doldurma akisiyla duzeltildi, Brand fonts testi `document.fonts.load()` bekleme ile duzeltildi. Fix 3: `giris.html` login button'a `id="btn-aday-giris"` eklendi (auth.setup.js selector duzeltmesi). Sonuc: 540 passed, 1 failed (auth.setup — BLOCKED: env var yok), 12 did not run (e2e bloke). Auth setup env var: `HT_TEST_EMAIL` + `HT_TEST_PASSWORD` set edilince 12 e2e testi de aktif olacak.
-
-### Session 52 (30 Mart — T12 Campaign Wizard DB)
-**Kampanya wizard DB tamamlama:** T11 audit "DB tamamen bos" dedi ama aslinda tablolar, enumlar, RLS, trigger ve bucket onceden deploy edilmisti. Schema dogrulamasi yapildi: `campaigns` (45 kolon, bigint GENERATED BY DEFAULT id, 5 enum type), `campaign_reviews` (uuid id, ON DELETE CASCADE), 5 RLS policy (employer select/insert/update + admin ALL + candidate read), `campaign-assets` bucket (public read, authenticated upload with company_id folder check). Eksik: employer DELETE policy (draft-only). Migration `20260330093056_campaign_wizard_backend.sql` bu tek policy'yi ekledi. 512/533 test PASS (21 fail pre-existing baseline — backlog 6-8). Wizard end-to-end DB-ready.
 
 ### Session 51 (30 Mart — T11 Campaign Wizard Audit)
 **Kampanya wizard truth audit:** `ik-kampanya.js` (1179 sat) ve `admin-campaigns.js` (231 sat) tamamen yazilmis, 6 adimli wizard, cover image upload, admin moderation, status lifecycle — hepsi hazir. Kritik bulgu: `campaigns` tablosu ve `campaign_reviews` tablosu hicbir migration'da yok. Storage bucket `campaign-assets` yok. Schema frontend'den reverse-engineer edildi. T12 tek is: 1 migration + 1 bucket. Bağımlılık yok (wizard plan-agnostic, package pricing '—'). Risk: switchPanel override pattern (son script tag — dusuk risk).

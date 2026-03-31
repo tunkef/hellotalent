@@ -499,10 +499,37 @@
     var track = el('div', 'gh-id-bar-track');
     var fill = el('div', 'gh-id-bar-fill');
     fill.style.width = pct + '%';
+    if (pct >= 45) fill.style.background = 'var(--green, #059669)';
     track.appendChild(fill);
     compRow.appendChild(track);
     compRow.appendChild(txt('span', 'gh-id-bar-pct', pct + '%'));
     card.appendChild(compRow);
+
+    /* Visibility readiness — %45 threshold indicator */
+    var readinessDiv = el('div', 'gh-id-readiness');
+    if (pct >= 45) {
+      readinessDiv.style.cssText = 'font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;color:var(--green,#059669);margin-top:6px;display:flex;align-items:center;gap:4px';
+      readinessDiv.textContent = '\u2713 Profilin i\u015fverenlere g\u00f6r\u00fcn\u00fcr';
+    } else {
+      readinessDiv.style.cssText = 'font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;color:var(--verm,#C94E28);margin-top:6px';
+      readinessDiv.textContent = '%' + (45 - pct) + ' daha tamamla \u2014 i\u015fverenler seni g\u00f6rebilsin';
+
+      /* Next steps hints */
+      var hints = typeof window.getProfileScoreHints === 'function' ? window.getProfileScoreHints() : [];
+      if (hints.length > 0) {
+        var hintList = el('div', 'gh-id-hints');
+        hintList.style.cssText = 'margin-top:8px;display:flex;flex-direction:column;gap:4px';
+        var maxHints = Math.min(3, hints.length);
+        for (var hi = 0; hi < maxHints; hi++) {
+          var hintItem = el('div', 'gh-id-hint');
+          hintItem.style.cssText = 'font-family:"Plus Jakarta Sans",sans-serif;font-size:11px;color:var(--text-muted,#6B7280);padding-left:12px;position:relative';
+          hintItem.textContent = '\u2022 ' + hints[hi];
+          hintList.appendChild(hintItem);
+        }
+        readinessDiv.appendChild(hintList);
+      }
+    }
+    card.appendChild(readinessDiv);
 
     /* Status badge — only Aktif İş Arıyor, only when true (glow handles Beni Öner) */
     var isLooking = profile.is_actively_looking === true;
@@ -512,8 +539,9 @@
       card.appendChild(badges);
     }
 
-    /* CTA */
-    var cta = txt('button', 'gh-id-cta', 'Profili D\u00FCzenle');
+    /* CTA — context-aware */
+    var ctaLabel = pct >= 45 ? 'Profili D\u00FCzenle' : 'Profili Tamamla';
+    var cta = txt('button', 'gh-id-cta', ctaLabel);
     cta.type = 'button';
     cta.addEventListener('click', function() { switchPanel('merkez'); });
     card.appendChild(cta);

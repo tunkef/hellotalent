@@ -1,15 +1,15 @@
 # Stüdyo — Technical Foundation Document
 
 > Aday tarafındaki en derin değer alanı. Kariyer gelişimi, yetkinlik eğitimi, uzman içerikleri ve platform bilgisi.
-> Son güncelleme: 29 Mart 2026 (Session 43 — FAZ 2C/2D + Phase 5B AI redesign + CORS/cron pipeline fix)
+> Son güncelleme: 31 Mart 2026 (Aşama 8 — practice recovery + STAR cleanup + S01-S06 redesign sync)
 
 ## Bilgi Mimarisi (Information Architecture)
 
 ```
-Stüdyo (panel key: mulakat, loader: _htLoadMulakat)
+Stüdyo (panel key: mulakat, loader: _htLoadStudio)
 ├── Yetenek (Learning Portal — mülakat hazırlık)
-│   ├── Compact rol seçici (role_select) — pendingComp desteği (FAZ 4C)
-│   ├── Yetenek Home (lobby) — öğrenme planı, ilerleme, kanıt
+│   ├── Inline rol seçici (lobby hero'da) — pendingComp desteği (FAZ 4C)
+│   ├── Yetenek Home (lobby) — bento grid öğrenme planı, ilerleme, kanıt
 │   │   ├── Kişiselleştirilmiş karşılama: "Hoş geldin, [İsim]" (FAZ 4A)
 │   │   ├── Öneri satırı: growing yetkinlik odaklı (FAZ 4A)
 │   │   ├── Progress bar (6px, milestone işaretleri, micro-copy) (FAZ 2.3)
@@ -19,10 +19,10 @@ Stüdyo (panel key: mulakat, loader: _htLoadMulakat)
 │   │   ├── Devam Et / Önerilen Başlangıç
 │   │   ├── Hazırlık Özeti (tamamlanan/kalan/pratik)
 │   │   ├── AI Koçluk teaser (badge: Active)
-│   │   ├── Erişilebilir yetkinlik kartları (self-rating + kanıt + review pill, review-needing completed → growing → incomplete → clean completed sıralama) (FAZ 2D)
+│   │   ├── Erişilebilir yetkinlik kartları (self-rating + kanıt + review pill) (FAZ 2D)
 │   │   └── Kilitli yetkinlikler (tek özet blok + Premium CTA)
-│   ├── Track Detail (competency_intro) — yetkinlik tanıtımı + ünite listesi
-│   ├── Unit Detail (practice) — soru + güçlü/zayıf sinyaller + takip sorusu + AI placeholder
+│   ├── Kurs Detay (course_detail) — compact hero + 3 sekmeli: Sorular / Seanslar / Notlarım
+│   ├── Pratik Odak Modu (practice) — focus mode: top bar + soru kartı + inline "Cevabını Hazırla" + AI değerlendirme + alt aksiyon bar + drawer (İpucu/Sinyaller/Koç Notları)
 │   ├── Tamamlama özeti (completion)
 │   │   ├── Completion badge (async son kazanılan rozet) (FAZ 2.3)
 │   │   └── Cross-link kartları: Uzman Görüşü + İlgili Eğitim (FAZ 4B)
@@ -41,43 +41,43 @@ Stüdyo (panel key: mulakat, loader: _htLoadMulakat)
     └── Modül detail + practice bridge CTA (FAZ 4C)
 ```
 
-## Mevcut Teknik Durum (FAZ 0-4C sonrası, 28 Mart 2026)
+## Mevcut Teknik Durum (Aşama 8 sonrası, 31 Mart 2026)
 
 | Bileşen | Dosya | Durum |
 |---------|-------|-------|
-| Studio landing | profil-mulakatkocu.js:renderStarIntro | ✅ 4 bölüm kartı + badge strip + task-first kopya |
-| Yetenek Learning Portal | profil-mulakatkocu.js (6-screen flow) | ✅ Öğrenme portalı yapısı |
+| Studio lobby | profil-studio.js:renderLobby | ✅ Bento grid öğrenme planı, inline rol seçimi, badge strip |
+| Yetenek Learning Portal | profil-studio.js (5-screen flow: lobby/course_detail/practice/completion/session_complete) | ✅ Focus mode redesign |
 | Yetkinlik verisi | profil-yetkinlik.js (DB-backed + hardcoded fallback) | ✅ 29 yetkinlik, DB-first, doğallaştırılmış kopya |
-| Koç akışı | profil-mulakatkocu.js (hydrateCoachFeed) | ✅ coach_posts DB |
-| Performans | profil-mulakatkocu.js (hydrateStudioSection) | ✅ DB-backed — 4 seed modül, sentence-case title |
-| HT Bilgiler | profil-mulakatkocu.js (hydrateStudioSection) | ✅ DB-backed — 4 seed modül, sentence-case title |
+| Koç akışı | profil-studio.js (hydrateCoachFeed) | ✅ coach_posts DB |
+| Performans | profil-studio.js (hydrateStudioSection) | ✅ DB-backed — 4 seed modül, sentence-case title |
+| HT Bilgiler | profil-studio.js (hydrateStudioSection) | ✅ DB-backed — 4 seed modül, sentence-case title |
 | Admin modül yönetimi | admin-studio-modules.js | ✅ CRUD: list/create/edit/publish/archive |
 | İlerleme takibi | candidate_studio_progress | ✅ DB-backed — mark_viewed/complete RPCs |
 | Rozet sistemi | badge_definitions + candidate_badges | ✅ 6 rozet, DB-driven issuance |
-| Journal kalıcılığı | candidate_studio_journals | ✅ DB-backed — UI aday akışından kaldırıldı |
+| Journal kalıcılığı | candidate_studio_journals | ✅ DB-backed — "Cevabını Hazırla" inline panel olarak practice ekranında |
 | Yetenek pratik kaydı | candidate_yetenek_progress | ✅ DB-backed — competency completion |
 | Self-rating | candidate_competencies | ✅ RPCs mevcut — lobby kartlarında toggle |
 | Kanıt yüzeyi | get_my_yetenek_overview RPC | ✅ Lobby'de evidence hydration |
 | AI feedback altyapısı | candidate_journal_feedback + Edge Function + pg_cron | ✅ Canlı — gpt-4.1-mini, CORS fix, pg_cron reliable trigger (every min), 75s poll timeout. E2E PASS 29 Mart 2026 |
-| AI feedback aday yüzeyi (Phase 5B) | Practice ekranında "Cevabını Hazırla" + AI buton | ✅ Canlı — progressive disclosure: hero kart + accordion'lar. Premium gate çalışıyor. Deployed 29 Mart 2026 |
+| AI feedback aday yüzeyi (Phase 5B → Aşama 8) | Practice ekranında inline "Cevabını Hazırla" panel + AI buton | ✅ Canlı — inline collapsible panel, AI değerlendirme discoverable. Premium gate çalışıyor. 31 Mart 2026 |
 | Premium entitlement | candidate_premium_purchases + activate RPC + webhook | ✅ Demo flow deployed |
 | Streak sistemi | candidate_streaks + 2 RPC (enhanced) | ✅ Canlı — foundation + FAZ 2C freeze/recovery deployed (29 Mart 2026) |
-| Kişiselleştirme | profil-mulakatkocu.js (lobby) | ✅ Karşılama + öneri + sıralama (canlı) |
-| Review recommendation | profil-mulakatkocu.js (FAZ 2D) | ✅ needsReview + review-aware daily/recommendation/sort + "Tazelemeyi düşün" pill (canlı, 29 Mart 2026) |
-| Completion cross-link | profil-mulakatkocu.js (FAZ 4B) | ✅ COMP_TO_COACH_CATEGORY + COMP_TO_MODULE_SLUG (canlı) |
-| Detail → practice bridge | profil-mulakatkocu.js (FAZ 4C) | ✅ MODULE_SLUG_TO_COMP + COACH_CAT_TO_COMP + pendingComp (canlı) |
-| Progress görselleştirme | profil-mulakatkocu.js (FAZ 2.3) | ✅ 6px bar, milestones, weekly summary, completion badge (canlı) |
+| Kişiselleştirme | profil-studio.js (lobby) | ✅ Karşılama + öneri + sıralama (canlı) |
+| Review recommendation | profil-studio.js (FAZ 2D) | ✅ needsReview + review-aware daily/recommendation/sort + "Tazelemeyi düşün" pill (canlı, 29 Mart 2026) |
+| Completion cross-link | profil-studio.js (FAZ 4B) | ✅ COMP_TO_COACH_CATEGORY + COMP_TO_MODULE_SLUG (canlı) |
+| Detail → practice bridge | profil-studio.js (FAZ 4C) | ✅ MODULE_SLUG_TO_COMP + COACH_CAT_TO_COMP + pendingComp (canlı) |
+| Progress görselleştirme | profil-studio.js (FAZ 2.3) | ✅ 6px bar, milestones, weekly summary, completion badge (canlı) |
 | İçerik doğallaştırma | profil-yetkinlik.js + STAR_CONTENT | ✅ 29 yetkinlik + UI kopya (canlı) |
 
 ## Runtime Kontratları (Değiştirme!)
 
 - Panel key: `mulakat` (profil.html, switchPanel, hash routing)
-- Loader: `window._htLoadMulakat()` (profil-wizard.js lazy-load)
-- Data bridge: `window._htYetkinlikData` (profil-yetkinlik.js → profil-mulakatkocu.js)
-- Genel teaser: `window._htGenelCoachTeaser()` (profil-mulakatkocu.js → profil-genel.js)
+- Loader: `window._htLoadStudio()` (profil-studio.js)
+- Data bridge: `window._htYetkinlikData` (profil-yetkinlik.js → profil-studio.js)
+- Genel teaser: `window._htGenelCoachTeaser()` (profil-studio.js → profil-genel.js)
 - Coach detail: `window.openCoachDetail()` (global, Genel panel çağırır)
 - CSS prefixes: `.ig-` (mevcut), `.st-` (Studio), `.yk-` (Yetenek Home/Track/Unit), `.aif-` (AI feedback)
-- Screen states: `star_intro` (Studio landing), `role_select`, `lobby` (Yetenek Home), `competency_intro` (Track Detail), `practice` (Unit Detail), `completion`, `session_complete`
+- Screen states: `lobby` (Yetenek Home), `course_detail` (Kurs Detay), `practice` (Odak Modu), `completion`, `session_complete` — eski `star_intro`/`role_select` lobby'ye yönlendirilir
 - Session persistence: `sessionStorage` (flow state), `localStorage` (star_seen, journal drafts — fallback)
 - DB persistence: `candidate_studio_journals` (STAR+T drafts), `candidate_yetenek_progress` (pratik kaydı), `candidate_streaks` (streak tracking)
 - Cross-link mappings: `COMP_TO_COACH_CATEGORY`, `COMP_TO_MODULE_SLUG` (forward, FAZ 4B), `MODULE_SLUG_TO_COMP`, `COACH_CAT_TO_COMP` (reverse, FAZ 4C)
@@ -88,9 +88,13 @@ Stüdyo (panel key: mulakat, loader: _htLoadMulakat)
 ## Yetenek Akış Değişiklikleri (Learning Portal Yeniden Yapılandırma)
 
 ### Kaldırılan
-- ~~Gelişim Günlüğü (journal) textarea UI~~ → Phase 5B ile "Cevabını Hazırla" olarak yeniden tasarlandı (29 Mart 2026)
-- STAR+T çoklu alan yazma deneyimi — "Cevabını Hazırla" panelinde korunuyor (Phase 5B)
-- ~~AI değerlendirme butonu — pratik ekranından çıkarıldı~~ → Phase 5B ile yeniden eklendi, progressive disclosure hero kart + accordion
+- ~~Gelişim Günlüğü (journal) textarea UI~~ → Aşama 8 ile "Cevabını Hazırla" inline collapsible panel olarak practice'e geri döndü (31 Mart 2026)
+- STAR+T çoklu alan yazma deneyimi — inline panel'de korunuyor (Aşama 8)
+- ~~AI değerlendirme butonu — pratik ekranından çıkarıldı~~ → Aşama 8 ile inline panel içinde discoverable (31 Mart 2026)
+- `renderStarDetail()` — STAR intro ekranı legacy kodu tamamen silindi (Aşama 8)
+- `_bindStarIntroEvents_legacy()`, `hydrateLandingStats()`, `renderRoleSelect()`, `bindRoleSelectEvents()` — tümü silindi (Aşama 8)
+- STAR quad CSS (`.ig-star-quad-card`, `.ig-star-cell`, `.ig-star-detail` vb.) — silindi (Aşama 8)
+- `.ig-landing-title`, `.ig-landing-subtitle` CSS — silindi (Aşama 8)
 
 ### Korunan (backend)
 - `candidate_studio_journals` tablosu — DB'de duruyor, veri korunuyor

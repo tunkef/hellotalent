@@ -721,36 +721,7 @@ function injectCSS() {
   css += '.ig-section-title{font-family:"Bricolage Grotesque",sans-serif;font-size:18px;font-weight:700;color:var(--text-primary,#111);margin-bottom:6px}';
   css += '.ig-section-desc{font-family:"Plus Jakarta Sans",sans-serif;font-size:13px;color:var(--text-muted,#6B7280);line-height:1.6}';
 
-  /* STAR Quad card */
-  css += '.ig-star-quad-card{display:flex;align-items:center;justify-content:center;padding:24px;background:#C94E28 !important;border:none !important}';
-  css += '.ig-star-quad{display:flex;flex-direction:column;gap:5px}';
-  css += '.ig-star-row{display:flex;gap:5px}';
-  css += '.ig-star-cell{width:76px;height:76px;background:#fff;border:none;outline:none;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:all .25s ease;position:relative;box-shadow:0 2px 8px rgba(0,0,0,.06)}';
-  css += '.ig-star-cell:hover{transform:scale(1.06)}';
-  css += '.ig-star-cell .ig-sq-letter{font-family:"Bricolage Grotesque",sans-serif;font-size:30px;font-weight:900;letter-spacing:-1px;transition:all .25s;color:var(--verm,#C94E28)}';
-  css += '.ig-star-cell .ig-sq-label{font-family:"Plus Jakarta Sans",sans-serif;font-size:9px;font-weight:600;letter-spacing:.4px;text-transform:uppercase;transition:all .25s;margin-top:2px}';
-  css += '.ig-sq-s{border-radius:60px 5px 5px 5px}.ig-sq-t{border-radius:5px 60px 5px 5px}.ig-sq-a{border-radius:5px 5px 5px 60px}.ig-sq-r{border-radius:5px 5px 60px 5px}';
-  css += '.ig-star-cell.active{transform:scale(1.06);background:linear-gradient(135deg,#d4572f 0%,#b84420 100%);box-shadow:0 4px 16px rgba(0,0,0,.2),inset 0 1px 0 rgba(255,255,255,.15)}';
-  css += '.ig-star-cell.active .ig-sq-letter{color:#fff}';
-
-  /* STAR Detail card */
-  css += '.ig-star-detail-card{display:flex;align-items:center;padding:24px 28px}';
-  css += '.ig-star-detail{animation:igFadeIn .2s ease}';
-  css += '.ig-star-detail-title{font-family:"Bricolage Grotesque",sans-serif;font-size:18px;font-weight:800;margin-bottom:8px}';
-  css += '.ig-star-detail-text{font-family:"Plus Jakarta Sans",sans-serif;font-size:13px;color:var(--text-secondary,#4B5563);line-height:1.7}';
-
-  /* Takeaway banner */
-  css += '.ig-takeaway-banner{background:linear-gradient(135deg,#2A3F7A 0%,#1E2D5E 50%,#162247 100%);border:none;color:#fff;display:flex;align-items:center;gap:16px;padding:16px 24px}';
-  css += '.ig-takeaway-badge{font-family:"Bricolage Grotesque",sans-serif;font-size:22px;font-weight:900;color:var(--verm,#C94E28);flex-shrink:0}';
-  css += '.ig-takeaway-body{flex:1;min-width:0}';
-  css += '.ig-takeaway-title{font-family:"Bricolage Grotesque",sans-serif;font-size:14px;font-weight:700;color:#fff;margin-bottom:2px}';
-  css += '.ig-takeaway-text{font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;color:rgba(255,255,255,.7);line-height:1.6}';
-
-  /* Benefits grid */
-  css += '.ig-benefits-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}';
-  css += '.ig-benefit-card{display:flex;align-items:flex-start;gap:12px;padding:20px}';
-  css += '.ig-benefit-num{flex-shrink:0;width:28px;height:28px;border-radius:8px;background:rgba(201,78,40,.08);color:var(--verm,#C94E28);font-family:"DM Mono",monospace;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center}';
-  css += '.ig-benefit-text{font-family:"Plus Jakarta Sans",sans-serif;font-size:13px;color:var(--text-secondary,#4B5563);line-height:1.6}';
+  /* STAR Quad + Detail + Takeaway + Benefits — REMOVED: Aşama 8 legacy cleanup (31 Mart 2026) */
 
   /* Role card */
   css += '.ig-role-card{background:linear-gradient(135deg,#2A3F7A 0%,#1E2D5E 50%,#162247 100%);border:1px solid rgba(255,255,255,.1) !important;border-radius:16px;padding:20px;text-align:center;transition:all .3s ease;cursor:pointer;display:flex;flex-direction:column;justify-content:center;color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.08),0 8px 20px rgba(0,0,0,.06)}';
@@ -1265,8 +1236,7 @@ function injectCSS() {
 
   css += '.ig-landing-badge{display:inline-flex;align-items:center;gap:6px;font-family:"DM Mono",monospace;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:16px}';
   css += '.ig-landing-badge::before,.ig-landing-badge::after{content:"";width:20px;height:1px;background:rgba(255,255,255,.2)}';
-  css += '.ig-landing-title{font-family:"Bricolage Grotesque",sans-serif;font-size:32px;font-weight:800;letter-spacing:-.5px;margin-bottom:10px;line-height:1.1}';
-  css += '.ig-landing-subtitle{font-family:"Plus Jakarta Sans",sans-serif;font-size:14px;color:rgba(255,255,255,.65);line-height:1.6;max-width:380px;margin:0 auto 28px}';
+  /* ig-landing-title + ig-landing-subtitle — REMOVED: Aşama 8 legacy cleanup */
   css += '.st-onboard-spotlight{display:flex;align-items:center;gap:16px;background:linear-gradient(135deg,rgba(201,78,40,.06) 0%,rgba(201,78,40,.02) 100%);border:1.5px solid rgba(201,78,40,.15);border-radius:16px;padding:18px 20px;margin-bottom:20px;animation:igFadeIn .4s ease}';
   css += '.st-onboard-icon{width:44px;height:44px;border-radius:12px;background:var(--verm,#C94E28);color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0}';
   css += '.st-onboard-text{flex:1;min-width:0}';
@@ -1403,8 +1373,7 @@ function injectCSS() {
   css += '@media(max-width:768px){';
   css += '.ig-bento{grid-template-columns:1fr}';
   css += '.ig-bento-2{grid-column:1/-1}';
-  css += '.ig-star-quad-card{padding:16px}';
-  css += '.ig-benefits-grid{grid-template-columns:1fr}';
+  /* ig-star-quad-card mobile — REMOVED: Aşama 8 */
   css += '.ig-q-focus{padding:24px 20px}';
   css += '.ig-q-text{font-size:15px}';
   css += '.ig-completion-stats{flex-direction:column;align-items:center}';
@@ -1415,7 +1384,7 @@ function injectCSS() {
   css += '.ig-landing-grid{grid-template-columns:1fr}';
   css += '.ig-lcard.span-2{grid-column:1/-1}';
   css += '.ig-landing-star-grid{grid-template-columns:1fr}';
-  css += '.ig-landing-title{font-size:24px}';
+  /* ig-landing-title mobile — REMOVED: Aşama 8 */
   css += '.ig-landing-hero{padding:28px 20px 24px;border-radius:16px}';
   css += '}';
 
@@ -1619,35 +1588,9 @@ function injectCSS() {
   document.head.appendChild(el);
 }
 
-/* ════════════════════════════════════════════════
-   RENDER — STAR INTRO (Screen 1)
-   All innerHTML from hardcoded STAR_CONTENT — no XSS.
-   ════════════════════════════════════════════════ */
-
-function renderStarDetail(idx) {
-  var d = STAR_CONTENT;
-  var step = idx < 4 ? d.what.steps[idx] : null;
-  var tr = step ? step.tr : d.what.takeaway.tr;
-  var en = step ? step.en : d.what.takeaway.en;
-  var desc = step ? step.desc : d.what.takeaway.desc;
-  var colors = ['var(--verm,#C94E28)', 'var(--navy,#1E2D5E)', 'var(--verm,#C94E28)', 'var(--navy,#1E2D5E)', 'var(--navy,#1E2D5E)'];
-  var html = '<div class="ig-star-detail">';
-  html += '<div class="ig-star-detail-title" style="color:' + colors[idx] + '">' + tr + ' <span style="font-style:italic;font-weight:400;font-size:13px;opacity:.5">(' + en + ')</span></div>';
-  html += '<div class="ig-star-detail-text">' + desc + '</div>';
-  html += '</div>';
-  return html;
-}
-
+/* renderStarDetail — REMOVED: legacy STAR intro eliminated in Aşama 8 cleanup (31 Mart 2026) */
 /* renderStarIntro — REMOVED: star_intro screen eliminated in Studio redesign (30 Mart 2026) */
-
-/* ════════════════════════════════════════════════
-   RENDER — ROLE SELECT (Screen 2)
-   ════════════════════════════════════════════════ */
-
-/* renderRoleSelect — DEPRECATED: role selection is now inline in lobby hero */
-function renderRoleSelect() {
-  return renderLobby();
-}
+/* renderRoleSelect — REMOVED: role selection is now inline in lobby hero (31 Mart 2026) */
 
 /* ════════════════════════════════════════════════
    RENDER — COMPETENCY INTRO (Screen 4)
@@ -2124,11 +2067,43 @@ function renderLobby() {
     }
   }
 
+  /* ══ EXPLORE SECTIONS — Performans + Bilgiler ══ */
+  html += '<div class="st-explore-sections" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:24px">';
+
+  /* Performans */
+  html += '<div class="st-section-entry" id="st-go-perf" style="background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF);border-radius:16px;padding:18px 20px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.06);transition:all .25s">';
+  html += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">';
+  html += '<div style="width:32px;height:32px;border-radius:8px;background:rgba(217,119,6,.08);color:#D97706;display:flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg></div>';
+  html += '<div style="font-family:\'Bricolage Grotesque\',sans-serif;font-size:14px;font-weight:700;color:var(--text-primary,#111)">Performans</div>';
+  html += '</div>';
+  html += '<div style="font-family:\'Plus Jakarta Sans\',sans-serif;font-size:12px;color:var(--text-muted,#6B7280);line-height:1.5">Ma\u011faza KPI\u2019lar\u0131, sat\u0131\u015f matemati\u011fi ve sepet analizleri.</div>';
+  html += '</div>';
+
+  /* HelloTalent Bilgileri */
+  html += '<div class="st-section-entry" id="st-go-bilgi" style="background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF);border-radius:16px;padding:18px 20px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.06);transition:all .25s">';
+  html += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">';
+  html += '<div style="width:32px;height:32px;border-radius:8px;background:rgba(5,150,105,.08);color:#059669;display:flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg></div>';
+  html += '<div style="font-family:\'Bricolage Grotesque\',sans-serif;font-size:14px;font-weight:700;color:var(--text-primary,#111)">HelloTalent Bilgileri</div>';
+  html += '</div>';
+  html += '<div style="font-family:\'Plus Jakarta Sans\',sans-serif;font-size:12px;color:var(--text-muted,#6B7280);line-height:1.5">Profilini \u00f6ne \u00e7\u0131kar, i\u015fverenlerin neye bakt\u0131\u011f\u0131n\u0131 \u00f6\u011fren.</div>';
+  html += '</div>';
+
+  html += '</div>'; /* st-explore-sections */
+
+  /* Module content area — hydrated by hydrateStudioSection */
+  html += '<div id="st-module-area" class="st-module-area" style="display:none"></div>';
+
   /* ══ BADGE STRIP — async-hydrated ══ */
   html += '<div id="st-badge-strip" class="st-badge-strip" style="display:none;margin-top:20px"></div>';
 
-  /* ══ COACH FEED — async-hydrated ══ */
+  /* ══ COACH FEED — with section header for discoverability ══ */
+  html += '<div style="margin-top:24px">';
+  html += '<div id="st-coach-header" style="display:none;font-family:\'Bricolage Grotesque\',sans-serif;font-size:14px;font-weight:700;color:var(--text-primary,#111);margin-bottom:12px;align-items:center;gap:8px">';
+  html += '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>';
+  html += ' Uzmanlardan \u00d6\u011fren';
+  html += '</div>';
   html += '<div id="ig-coach-feed" class="ig-coach-feed" style="display:none"></div>';
+  html += '</div>';
 
   html += '</div>'; /* st-lobby */
   return html;
@@ -2184,13 +2159,16 @@ function renderPractice() {
 
   html += '</div>'; /* practice-card */
 
+  /* ── INLINE JOURNAL PANEL — "Cevabını Hazırla" discoverable below question ── */
+  html += renderJournalPanel();
+
   html += '</div>'; /* st-practice */
 
   /* ── BOTTOM ACTION BAR (fixed) ── */
   html += '<div class="st-bottom-bar" id="st-practice-bottom">';
   html += '<div class="st-bottom-bar-left">';
   html += '<button class="st-bar-btn st-bar-btn-ghost" id="st-drawer-star" title="\u0130pucu">' + starSVG + ' <span class="st-bar-label">\u0130pucu</span></button>';
-  html += '<button class="st-bar-btn st-bar-btn-ghost" id="st-drawer-journal" title="Notlar\u0131m">' + journalSVG + ' <span class="st-bar-label">Notlar\u0131m</span></button>';
+  html += '<button class="st-bar-btn st-bar-btn-ghost" id="st-drawer-journal" title="Cevab\u0131n\u0131 Haz\u0131rla">' + journalSVG + ' <span class="st-bar-label">Cevab\u0131n\u0131 Haz\u0131rla</span></button>';
   html += '</div>';
   html += '<div class="st-bottom-bar-right">';
   html += '<button class="st-bar-btn st-bar-btn-primary" id="ig-answered">' + checkSVG + ' Sonraki \u2192</button>';
@@ -2225,19 +2203,7 @@ function renderPractice() {
     html += '<div class="st-drawer-backdrop" id="st-drawer-backdrop"></div>';
   }
 
-  /* ── JOURNAL PANEL — rendered inside drawer when journal tab active,
-       or as separate overlay triggered from bottom bar ── */
-  html += '<div class="st-journal-drawer' + (S.journalOpen ? ' open' : '') + '" id="st-journal-drawer">';
-  html += '<div class="st-drawer-header">';
-  html += '<div class="st-drawer-title">Cevab\u0131n\u0131 Haz\u0131rla</div>';
-  html += '<button class="st-drawer-close" id="st-journal-close">' + closeSVG + '</button>';
-  html += '</div>';
-  html += renderJournalDrawerContent();
-  html += '</div>'; /* journal drawer */
-
-  if (S.journalOpen) {
-    html += '<div class="st-drawer-backdrop st-journal-backdrop" id="st-journal-backdrop"></div>';
-  }
+  /* Journal drawer removed — journal is now inline below question card via renderJournalPanel() */
 
   return html;
 }
@@ -3348,117 +3314,7 @@ function navigate(screen) {
 /* bindStarIntroEvents — DEPRECATED: lobby events handle everything */
 function bindStarIntroEvents() { bindLobbyEvents(); }
 
-/* Original bindStarIntroEvents preserved as _bindStarIntroEvents_legacy */
-function _bindStarIntroEvents_legacy() {
-  var onboardBtn = document.getElementById('st-onboard-start');
-  if (onboardBtn) onboardBtn.addEventListener('click', function() {
-    markStarSeen();
-    navigate('lobby');
-  });
-
-  var yetBtn = document.getElementById('st-go-yetenek');
-  if (yetBtn) yetBtn.addEventListener('click', function() {
-    markStarSeen();
-    navigate('lobby');
-  });
-
-  var kocBtn = document.getElementById('st-go-koc');
-
-  var perfBtn = document.getElementById('st-go-perf');
-  if (perfBtn) perfBtn.addEventListener('click', function(e) {
-    e.stopPropagation();
-    showStudioToast('Performans b\u00f6l\u00fcm\u00fc \u00e7ok yak\u0131nda a\u00e7\u0131lacak.');
-  });
-  var bilgiBtn = document.getElementById('st-go-bilgi');
-  if (bilgiBtn) bilgiBtn.addEventListener('click', function(e) {
-    e.stopPropagation();
-    showStudioToast('Bu b\u00f6l\u00fcm \u00e7ok yak\u0131nda a\u00e7\u0131lacak.');
-  });
-
-  var starToggle = document.getElementById('ig-star-toggle');
-  var starCollapse = document.getElementById('ig-star-collapse');
-  if (starToggle && starCollapse) {
-    starToggle.addEventListener('click', function() {
-      var isOpen = starCollapse.classList.toggle('open');
-      starToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-    });
-  }
-
-  hydrateCoachFeed().then(function() {
-    var feed = document.getElementById('ig-coach-feed');
-    var hasContent = feed && feed.style.display !== 'none';
-    var kocCard = document.getElementById('st-go-koc');
-    if (kocCard) {
-      if (hasContent) {
-        kocCard.addEventListener('click', function() {
-          feed.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        });
-      } else {
-        /* No published coach content — make passive */
-        kocCard.classList.add('st-passive');
-        var ctaEl = kocCard.querySelector('.st-section-cta');
-        if (ctaEl) { ctaEl.outerHTML = '<div class="st-coming-badge">\u00c7ok Yak\u0131nda</div>'; }
-        kocCard.addEventListener('click', function(e) {
-          e.stopPropagation();
-          showStudioToast('Ko\u00e7 i\u00e7erikleri \u00e7ok yak\u0131nda eklenecek.');
-        });
-      }
-    }
-  }).catch(function() {});
-
-  /* ── Landing card progress stats — async hydration ── */
-  hydrateLandingStats();
-
-  /* ── Badge strip — async hydration ── */
-  hydrateBadgeStrip();
-}
-
-async function hydrateLandingStats() {
-  try {
-    /* Fetch module counts per section + candidate progress in parallel */
-    var modRes = await supabase
-      .from('studio_modules')
-      .select('id, section')
-      .eq('status', 'published');
-
-    if (modRes.error || !modRes.data || modRes.data.length === 0) return;
-
-    var sectionModules = { performans: [], bilgiler: [] };
-    for (var i = 0; i < modRes.data.length; i++) {
-      var s = modRes.data[i].section;
-      if (sectionModules[s]) sectionModules[s].push(modRes.data[i].id);
-    }
-
-    var progress = await fetchStudioProgress();
-
-    var sections = ['performans', 'bilgiler'];
-    for (var si = 0; si < sections.length; si++) {
-      var sec = sections[si];
-      var mods = sectionModules[sec] || [];
-      if (mods.length === 0) continue;
-
-      var completed = 0;
-      var started = 0;
-      for (var mi = 0; mi < mods.length; mi++) {
-        var p = progress[mods[mi]];
-        if (p && p.status === 'completed') completed++;
-        else if (p && p.status === 'in_progress') started++;
-      }
-
-      var el = document.getElementById('st-stat-' + sec);
-      if (!el) continue;
-
-      if (completed === mods.length) {
-        el.textContent = '\u2713 T\u00fcm\u00fc tamamland\u0131';
-        el.style.color = '#059669';
-      } else if (completed > 0 || started > 0) {
-        el.textContent = completed + '/' + mods.length + ' tamamland\u0131' + (started > 0 ? ' \u00b7 ' + started + ' devam ediyor' : '');
-      } else {
-        el.textContent = mods.length + ' mod\u00fcl';
-      }
-    }
-  } catch (e) { /* silent — stats are best-effort enhancement */ }
-}
+/* _bindStarIntroEvents_legacy + hydrateLandingStats — REMOVED: Aşama 8 cleanup (31 Mart 2026) */
 
 /* ══ BADGE STRIP HYDRATION ══ */
 
@@ -4338,8 +4194,7 @@ function openStudioModule(mod) {
   area.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
-/* bindRoleSelectEvents — DEPRECATED: role picker now in lobby hero */
-function bindRoleSelectEvents() { bindLobbyEvents(); }
+/* bindRoleSelectEvents — REMOVED: role picker now in lobby hero. Aşama 8 cleanup (31 Mart 2026) */
 
 function startSession(role) {
   var bridge = getBridge();
@@ -4448,8 +4303,27 @@ function bindLobbyEvents() {
     if (body) body.style.display = body.style.display === 'none' ? 'block' : 'none';
   });
 
+  /* ── Performans section entry ── */
+  var perfBtn = document.getElementById('st-go-perf');
+  if (perfBtn) perfBtn.addEventListener('click', function() {
+    hydrateStudioSection('performans', 'Performans');
+  });
+
+  /* ── Bilgiler section entry ── */
+  var bilgiBtn = document.getElementById('st-go-bilgi');
+  if (bilgiBtn) bilgiBtn.addEventListener('click', function() {
+    hydrateStudioSection('bilgiler', 'HelloTalent Bilgileri');
+  });
+
   /* ── Coach feed hydration ── */
-  hydrateCoachFeed();
+  hydrateCoachFeed().then(function() {
+    /* Show section header if feed loaded */
+    var coachHeader = document.getElementById('st-coach-header');
+    var coachFeed = document.getElementById('ig-coach-feed');
+    if (coachHeader && coachFeed && coachFeed.style.display !== 'none') {
+      coachHeader.style.display = 'flex';
+    }
+  }).catch(function() { /* silent */ });
 
   /* ── Badge strip hydration ── */
   hydrateBadgeStrip();
@@ -4893,6 +4767,109 @@ function bindCourseDetailEvents() {
       navigate('course_detail');
     });
   });
+
+  /* Hydrate AI feedback history in Notes tab */
+  if (S.activeTab === 'notes') {
+    hydrateNotesFeedback(S.activeComp);
+  }
+}
+
+/* ── AI Feedback History for Notes Tab ── */
+async function hydrateNotesFeedback(compCode) {
+  var slot = document.getElementById('st-notes-feedback-slot');
+  if (!slot || typeof supabase === 'undefined' || !compCode) return;
+
+  var qs = flattenQuestions(compCode);
+  if (!qs.length) return;
+
+  /* Collect all questions that have journal drafts */
+  var questionsWithNotes = [];
+  for (var i = 0; i < qs.length; i++) {
+    var draft = loadJournalDraft(compCode, qs[i].text);
+    if (draft && (draft.s || draft.t || draft.a || draft.r || draft.takeaway)) {
+      questionsWithNotes.push({ idx: i, q: qs[i], hash: journalHash(qs[i].text) });
+    }
+  }
+  if (!questionsWithNotes.length) return;
+
+  /* Fetch feedback for each question with notes */
+  var feedbackResults = [];
+  for (var fi = 0; fi < questionsWithNotes.length; fi++) {
+    try {
+      var res = await supabase.rpc('get_journal_feedback', {
+        p_competency_code: compCode,
+        p_question_hash: questionsWithNotes[fi].hash
+      });
+      var fb = extractFeedback(res);
+      if (fb && fb.status === 'completed') {
+        feedbackResults.push({ idx: questionsWithNotes[fi].idx, q: questionsWithNotes[fi].q, fb: fb });
+      }
+    } catch (e) { /* silent — best effort */ }
+  }
+
+  if (!feedbackResults.length) return;
+
+  /* Render feedback cards via safe DOM methods */
+  while (slot.firstChild) slot.removeChild(slot.firstChild);
+
+  var wrapper = document.createElement('div');
+  wrapper.style.marginTop = '20px';
+
+  var heading = document.createElement('div');
+  heading.style.cssText = 'font-family:"Bricolage Grotesque",sans-serif;font-size:14px;font-weight:700;color:var(--text-primary,#111);margin-bottom:12px';
+  heading.textContent = 'AI De\u011ferlendirme Ge\u00e7mi\u015fi';
+  wrapper.appendChild(heading);
+
+  for (var ri = 0; ri < feedbackResults.length; ri++) {
+    var r = feedbackResults[ri];
+    var signalLabel = AIF_SIGNAL_LABELS[r.fb.overall_signal] || AIF_SIGNAL_LABELS.mixed;
+
+    var card = document.createElement('div');
+    card.className = 'st-note-card st-note-feedback';
+    card.style.borderLeft = '3px solid ' + signalLabel.color;
+
+    /* Header row */
+    var headerRow = document.createElement('div');
+    headerRow.style.cssText = 'display:flex;justify-content:space-between;align-items:center;margin-bottom:8px';
+    var qLabel = document.createElement('div');
+    qLabel.className = 'st-note-q';
+    qLabel.textContent = 'Soru ' + (r.idx + 1);
+    var badge = document.createElement('span');
+    badge.style.cssText = 'font-family:"DM Mono",monospace;font-size:11px;padding:3px 8px;border-radius:6px;background:' + signalLabel.bg + ';color:' + signalLabel.color;
+    badge.textContent = signalLabel.text;
+    headerRow.appendChild(qLabel);
+    headerRow.appendChild(badge);
+    card.appendChild(headerRow);
+
+    /* STAR component ratings */
+    if (r.fb.star_status) {
+      var starRow = document.createElement('div');
+      starRow.style.cssText = 'display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px';
+      var starKeys = ['situation', 'task', 'action', 'result'];
+      var starLetters = ['S', 'T', 'A', 'R'];
+      for (var sk = 0; sk < starKeys.length; sk++) {
+        var status = r.fb.star_status[starKeys[sk]] || 'missing';
+        var sInfo = AIF_STAR_STATUS[status] || AIF_STAR_STATUS.missing;
+        var starBadge = document.createElement('span');
+        starBadge.style.cssText = 'font-family:"DM Mono",monospace;font-size:10px;padding:2px 6px;border-radius:4px;background:var(--bg-muted,#F7F6F4);color:' + sInfo.color;
+        starBadge.textContent = sInfo.icon + ' ' + starLetters[sk];
+        starRow.appendChild(starBadge);
+      }
+      card.appendChild(starRow);
+    }
+
+    /* Summary */
+    if (r.fb.summary) {
+      var summaryDiv = document.createElement('div');
+      summaryDiv.style.cssText = 'font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;color:var(--text-secondary,#4B5563);line-height:1.6';
+      summaryDiv.textContent = r.fb.summary;
+      card.appendChild(summaryDiv);
+    }
+
+    wrapper.appendChild(card);
+  }
+
+  slot.appendChild(wrapper);
 }
 
 function bindPracticeEvents() {
@@ -4946,32 +4923,34 @@ function bindPracticeEvents() {
     navigate('practice');
   });
 
-  /* ── Journal drawer: open ── */
+  /* ── Inline journal: bottom bar toggle (opens + scrolls) ── */
   var journalOpenBtn = document.getElementById('st-drawer-journal');
   if (journalOpenBtn) journalOpenBtn.addEventListener('click', function() {
-    S.journalOpen = true;
+    S.journalOpen = !S.journalOpen;
     S.drawerOpen = false;
     navigate('practice');
-    setTimeout(function() {
-      var first = document.querySelector('.ig-journal-textarea');
-      if (first) first.focus();
-    }, 100);
+    if (S.journalOpen) {
+      setTimeout(function() {
+        var wrap = document.querySelector('.ig-journal-wrap');
+        if (wrap) wrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        var first = document.querySelector('.ig-journal-textarea');
+        if (first) first.focus();
+      }, 100);
+    }
   });
 
-  /* ── Journal drawer: close ── */
-  var journalCloseBtn = document.getElementById('st-journal-close');
-  if (journalCloseBtn) journalCloseBtn.addEventListener('click', function() {
-    flushJournal();
-    S.journalOpen = false;
+  /* ── Inline journal: toggle button inside panel ── */
+  var journalToggle = document.getElementById('ig-journal-toggle');
+  if (journalToggle) journalToggle.addEventListener('click', function() {
+    if (S.journalOpen) flushJournal();
+    S.journalOpen = !S.journalOpen;
     navigate('practice');
-  });
-
-  /* ── Journal drawer: backdrop click closes ── */
-  var journalBackdrop = document.getElementById('st-journal-backdrop');
-  if (journalBackdrop) journalBackdrop.addEventListener('click', function() {
-    flushJournal();
-    S.journalOpen = false;
-    navigate('practice');
+    if (S.journalOpen) {
+      setTimeout(function() {
+        var first = document.querySelector('.ig-journal-textarea');
+        if (first) first.focus();
+      }, 100);
+    }
   });
 
   /* Flush journal — immediate save of current textarea values.

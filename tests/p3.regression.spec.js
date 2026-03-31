@@ -830,12 +830,12 @@ test.describe('Studio Phase 2 — structural guards', () => {
     expect(mulakatJs).toContain('complete_studio_module');
   });
 
-  test('Performans and Bilgiler cards are passive with toast feedback (FAZ 0 delta)', () => {
-    // Cards now show "Çok Yakında" badge and toast on click instead of hydrating content
-    var bindStart = mulakatJs.indexOf('function bindStarIntroEvents');
-    var bindEnd = mulakatJs.indexOf('function showStudioToast');
-    var bindBody = mulakatJs.slice(bindStart, bindEnd);
-    expect(bindBody).toContain("showStudioToast");
+  test('Performans and Bilgiler cards exist with hydration (lobby events)', () => {
+    // Cards handled in bindLobbyEvents — hydrateStudioSection calls
+    expect(mulakatJs).toContain('st-go-perf');
+    expect(mulakatJs).toContain('st-go-bilgi');
+    expect(mulakatJs).toContain("hydrateStudioSection('performans'");
+    expect(mulakatJs).toContain("hydrateStudioSection('bilgiler'");
     expect(mulakatJs).toContain('st-passive');
     expect(mulakatJs).toContain('st-coming-badge');
   });
@@ -1498,12 +1498,12 @@ test.describe('Yetenek IA reset — structural guards', () => {
     expect(mulakatJs).toContain('yk-unit-followup-title');
   });
 
-  test('unit detail has journal panel with AI feedback (Phase 5B restore)', () => {
-    // Journal moved to drawer in S05 focus mode redesign
+  test('unit detail has inline journal panel with AI feedback (Aşama 8 restore)', () => {
+    // Journal restored inline in practice via renderJournalPanel() — Aşama 8
     var practiceStart = mulakatJs.indexOf('function renderPractice()');
     var practiceEnd = mulakatJs.indexOf('\nfunction ', practiceStart + 10);
     var practiceBody = mulakatJs.slice(practiceStart, practiceEnd);
-    expect(practiceBody).toContain('renderJournalDrawerContent');
+    expect(practiceBody).toContain('renderJournalPanel()');
   });
 
   test('AI feedback uses freemium gate (first FREE_COMP_LIMIT comps free)', () => {
@@ -1800,5 +1800,241 @@ test.describe('Phase 5B — AI feedback progressive disclosure', () => {
   test('signal labels preserved', () => {
     expect(mulakatJs).toContain('AIF_SIGNAL_LABELS');
     expect(mulakatJs).toContain('AIF_STAR_STATUS');
+  });
+});
+
+/* ════════════════════════════════════════════════
+   Studio truth-sync regression guards (Asama 2)
+   ════════════════════════════════════════════════ */
+test.describe('Studio truth-sync guards', () => {
+  var studioJs;
+
+  test.beforeAll(() => {
+    studioJs = readFromRepo('profil-studio.js');
+  });
+
+  test('lobby renders Performans section entry point', () => {
+    expect(studioJs).toContain('st-go-perf');
+    expect(studioJs).toContain("hydrateStudioSection('performans'");
+  });
+
+  test('lobby renders Bilgiler section entry point', () => {
+    expect(studioJs).toContain('st-go-bilgi');
+    expect(studioJs).toContain("hydrateStudioSection('bilgiler'");
+  });
+
+  test('st-module-area div is present in lobby HTML', () => {
+    expect(studioJs).toContain("id=\"st-module-area\"");
+  });
+
+  test('coach feed has visible section header in lobby', () => {
+    expect(studioJs).toContain('st-coach-header');
+  });
+
+  test('hydrateNotesFeedback function exists and is called for notes tab', () => {
+    expect(studioJs).toContain('function hydrateNotesFeedback(');
+    expect(studioJs).toContain("hydrateNotesFeedback(S.activeComp)");
+  });
+
+  test('notes tab AI feedback renders via safe DOM methods', () => {
+    expect(studioJs).toContain('st-notes-feedback-slot');
+    expect(studioJs).toContain('AIF_SIGNAL_LABELS');
+    expect(studioJs).toContain('AIF_STAR_STATUS');
+  });
+
+  test('coach header starts hidden and only shows via JS after feed loads', () => {
+    /* HTML must set display:none as the LAST display value in inline style */
+    var headerMatch = studioJs.match(/id="st-coach-header"\s+style="([^"]*)"/);
+    expect(headerMatch).toBeTruthy();
+    var styleStr = headerMatch[1];
+    /* Extract all display values in order */
+    var displayValues = [];
+    styleStr.replace(/display\s*:\s*([^;]+)/g, function(_, val) { displayValues.push(val.trim()); });
+    /* Last display value must be none */
+    expect(displayValues[displayValues.length - 1]).toBe('none');
+  });
+
+  test('coach header is shown as flex only in JS callback after feed loads', () => {
+    expect(studioJs).toContain("coachHeader.style.display = 'flex'");
+    expect(studioJs).toContain("coachFeed.style.display !== 'none'");
+  });
+});
+
+/* ════════════════════════════════════════════════
+   Profil activation regression guards (Asama 4)
+   ════════════════════════════════════════════════ */
+test.describe('Profil activation guards', () => {
+  var genelJs, cvJs, profilHtml, settingsJs;
+
+  test.beforeAll(() => {
+    genelJs = readFromRepo('profil-genel.js');
+    cvJs = readFromRepo('profil-cv.js');
+    profilHtml = readFromRepo('profil.html');
+    settingsJs = readFromRepo('profil-settings.js');
+  });
+
+  test('completion bar shows %45 threshold readiness state', () => {
+    expect(genelJs).toContain('pct >= 45');
+    expect(genelJs).toContain('gh-id-readiness');
+  });
+
+  test('below threshold shows actionable hints from getProfileScoreHints', () => {
+    expect(genelJs).toContain('getProfileScoreHints');
+    expect(genelJs).toContain('gh-id-hints');
+  });
+
+  test('CV card does not claim AI optimization', () => {
+    expect(profilHtml).not.toContain('AI ile CV Optimize');
+  });
+
+  test('CV template includes LinkedIn URL in contact line', () => {
+    expect(cvJs).toContain("if (linkedin) contact.push(linkedin)");
+  });
+
+  test('CV template includes target role for ATS', () => {
+    expect(cvJs).toContain('target-roles-container');
+    expect(cvJs).toContain('targetRole');
+  });
+
+  test('blocked companies card is visible in settings', () => {
+    expect(profilHtml).toContain('id="settings-blocked-companies-card"');
+    expect(profilHtml).not.toMatch(/id="settings-blocked-companies-card"[^>]*display:\s*none/);
+  });
+
+  test('blocked companies JS wiring present', () => {
+    expect(settingsJs).toContain('candidate_blocked_companies');
+    expect(settingsJs).toContain('blocked-company-search');
+  });
+});
+
+/* ════════════════════════════════════════════════
+   IK critical fix regression guards (Asama 6)
+   ════════════════════════════════════════════════ */
+test.describe('IK critical fix guards', () => {
+  var ikHtml2;
+
+  test.beforeAll(() => {
+    ikHtml2 = readFromRepo('ik.html');
+  });
+
+  test('Ekip panel uses getSupa() not bare supabase global', () => {
+    /* loadTeamPanel, loadPendingInvites, sendTeamInvite must use getSupa() */
+    var teamSection = ikHtml2.slice(ikHtml2.indexOf('function loadTeamPanel'));
+    var ekipCode = teamSection.slice(0, teamSection.indexOf('// ── EMPLOYER REALTIME') > 0 ? teamSection.indexOf('// ── EMPLOYER REALTIME') : 3000);
+    expect(ekipCode).toContain('getSupa().rpc');
+    expect(ekipCode).toContain('getSupa()');
+    /* No bare supabase.rpc or supabase.from in Ekip functions */
+    var bareSupabase = ekipCode.match(/[^a-zA-Z]supabase\.(rpc|from)\(/g);
+    expect(bareSupabase).toBeFalsy();
+  });
+
+  test('Favoriler uses DB-backed loading not just ADAYLAR filter', () => {
+    expect(ikHtml2).toContain('async function renderFavoriler');
+    expect(ikHtml2).toContain('search_employer_candidates');
+    /* Must contain missing IDs logic */
+    expect(ikHtml2).toContain('missingIds');
+  });
+
+  test('Notification toggles replaced with honest coming-soon message', () => {
+    /* No fake toggle buttons in Bildirim Tercihleri */
+    expect(ikHtml2).not.toContain('aria-label="Yeni aday bildirimi"');
+    expect(ikHtml2).not.toContain('aria-label="Haftalık özet"');
+    /* Has honest message */
+    expect(ikHtml2).toContain('aktif olacak');
+  });
+});
+
+/* ════════════════════════════════════════════════
+   IK truth-sync + mobile polish guards (Asama 7)
+   ════════════════════════════════════════════════ */
+test.describe('IK truth-sync guards', () => {
+  var ikHtml3;
+
+  test.beforeAll(() => {
+    ikHtml3 = readFromRepo('ik.html');
+  });
+
+  test('Mesajlar mobile CSS: single-column below 768px', () => {
+    expect(ikHtml3).toContain('ik-msg-active');
+    expect(ikHtml3).toContain('ik-msg-hidden');
+    expect(ikHtml3).toContain('ik-msg-back-btn');
+  });
+
+  test('Mobile back button wired in thread render', () => {
+    expect(ikHtml3).toContain("'ik-msg-back-btn'");
+    expect(ikHtml3).toContain("classList.remove('ik-msg-active')");
+    expect(ikHtml3).toContain("classList.remove('ik-msg-hidden')");
+  });
+
+  test('Settings plan card is truth-synced from _employerPlan', () => {
+    expect(ikHtml3).toContain('settings-plan-name');
+    expect(ikHtml3).toContain("getElementById('settings-plan-name')");
+  });
+
+  test('Position metrics show honest state when no backend counter', () => {
+    expect(ikHtml3).toContain('hasRealMetrics');
+    expect(ikHtml3).toContain('aktif olacak');
+  });
+});
+
+/* ════════════════════════════════════════════════
+   Studio Aşama 8 — Practice recovery + STAR cleanup
+   ════════════════════════════════════════════════ */
+test.describe('Studio Aşama 8 — practice recovery + STAR cleanup', () => {
+  var studioJs;
+
+  test.beforeAll(() => {
+    studioJs = readFromRepo('profil-studio.js');
+  });
+
+  test('practice render includes inline journal/answer preparation surface', () => {
+    var practiceStart = studioJs.indexOf('function renderPractice()');
+    var practiceEnd = studioJs.indexOf('\nfunction ', practiceStart + 10);
+    var practiceBody = studioJs.slice(practiceStart, practiceEnd);
+    // Inline journal panel is rendered directly in practice, not behind a hidden drawer
+    expect(practiceBody).toContain('renderJournalPanel()');
+    // "Cevabını Hazırla" toggle is discoverable at first glance
+    expect(studioJs).toContain('ig-journal-toggle');
+    expect(studioJs).toContain('ig-journal-toggle-label');
+  });
+
+  test('AI button/gate is part of visible practice flow', () => {
+    // AI feedback button lives inside renderJournalPanel, visible when panel opens
+    expect(studioJs).toContain('aif-request');
+    expect(studioJs).toContain('aif-gate');
+    expect(studioJs).toContain('aif-area');
+    // Freemium gating preserved
+    expect(studioJs).toContain('aiFree');
+    expect(studioJs).toContain('FREE_COMP_LIMIT');
+  });
+
+  test('legacy giant STAR quad not in active render path', () => {
+    // renderStarDetail (STAR intro screen) removed
+    expect(studioJs).not.toContain('function renderStarDetail(');
+    // STAR quad CSS classes removed from active CSS
+    expect(studioJs).not.toMatch(/\.ig-star-quad-card\{/);
+    expect(studioJs).not.toMatch(/\.ig-star-quad\{/);
+    expect(studioJs).not.toMatch(/\.ig-star-cell\{/);
+    expect(studioJs).not.toMatch(/\.ig-star-detail\{/);
+    // Landing title/subtitle CSS removed
+    expect(studioJs).not.toMatch(/\.ig-landing-title\{/);
+    expect(studioJs).not.toMatch(/\.ig-landing-subtitle\{/);
+  });
+
+  test('notes/history surface not broken (course_detail Notlarım tab preserved)', () => {
+    expect(studioJs).toContain('hydrateNotesFeedback');
+    expect(studioJs).toContain('st-notes-feedback-slot');
+    expect(studioJs).toContain('get_my_journals');
+    expect(studioJs).toContain('renderAiFeedback');
+  });
+
+  test('journal backend contracts preserved', () => {
+    expect(studioJs).toContain('saveJournalDraft');
+    expect(studioJs).toContain('loadJournalDraft');
+    expect(studioJs).toContain('upsert_studio_journal');
+    expect(studioJs).toContain('get_my_journals');
+    expect(studioJs).toContain('request_journal_feedback');
+    expect(studioJs).toContain('get_journal_feedback');
+    expect(studioJs).toContain('renderAiFeedback');
   });
 });
