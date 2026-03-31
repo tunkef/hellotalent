@@ -80,7 +80,7 @@ PLIST
 
     # macOS sandbox kontrolu — 3 saniye bekle, exit code kontrol et
     sleep 3
-    local exit_status=$(launchctl list | grep "$LABEL" | awk '{print $2}')
+    exit_status=$(launchctl list | grep "$LABEL" | awk '{print $2}')
     if [ "$exit_status" = "126" ] || [ "$exit_status" = "1" ]; then
       echo "⚠️  macOS Full Disk Access gerekiyor!"
       echo ""
@@ -109,7 +109,7 @@ PLIST
 
   status)
     if launchctl list | grep -q "$LABEL"; then
-      local pid=$(launchctl list | grep "$LABEL" | awk '{print $1}')
+      pid=$(launchctl list | grep "$LABEL" | awk '{print $1}')
       echo "✅ launchd servisi aktif (PID: $pid)"
     else
       echo "❌ launchd servisi aktif degil."
