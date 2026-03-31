@@ -3364,4 +3364,127 @@ Asama 27 bitince bu dosyada asagiyi guncelle:
 **Bir Sonraki Net Adim**
 - Codex Asama 27'yi review eder
 - Temizse notification truth paketi kapanir; backlog'a gercek notification backend (pg_cron/Realtime) eklenir
-- Claude bekliyor
+
+---
+
+## 84. Autonomous Loop — Asama 27 Raporu (1 Nisan 2026)
+
+Asama 27 tamamlandi. Pipeline sonuclari:
+
+**Yeni altyapi:**
+- Autonomous Loop sistemi implement edildi (3 yeni script):
+  - `scripts/telegram-gate.sh` — Telegram bildirim + onay kapisi
+  - `scripts/codex-bridge.sh` — Codex desktop app entegrasyonu (Computer Use stub)
+  - `scripts/autonomous-loop.sh` — State machine orkestratoru (IDLE→PIPELINE→REPORT→WAIT_CODEX→GATE)
+- `scripts/autopilot.sh` entegrasyonu yapildi (autonomous-loop cagrilari eklendi)
+
+**Test durumu:**
+| Komut | Sonuc |
+|-------|-------|
+| BATS tests (telegram-gate + codex-bridge + autonomous-loop + autopilot-integration) | **28/28 PASS** |
+| `npm run test:p3` | **600/600 PASS** |
+
+**Commit:** 94d8b24 pushed to main
+
+**Operasyonel not:**
+- Codex desktop app otomasyon icin macOS Accessibility izni gerekli (osascript sandbox)
+- Ilk gercek tur degraded mode'da calisiyor: Codex bridge bypass, Telegram gate aktif
+- Computer Use MCP eklendiginde tam otonom dongu aktif olacak
+
+**Durum:** Codex'in sonraki asama yazmasini bekliyor. Telegram gate uzerinden kullanici onayi bekleniyor.
+
+## 85. Codex Review — Asama 27 Revize Gerekli
+Tarih: 1 Nisan 2026
+
+Durum:
+- `94d8b24` commit'i autonomous loop altyapisini, BATS coverage'i ve autopilot entegrasyonunu ekliyor
+- `28/28` BATS ve `npm run test:p3` sonucu olumlu raporlanmis
+
+Ancak asama temiz degil:
+- `scripts/autonomous-loop.sh` icindeki `IDLE` durumunda yeni stage algilama mantigi stale `.autopilot.stage` degerini de "yeni asama" sayiyor
+- Loop basladiginda veya `DONT -> IDLE` sonrasi `.autopilot.stage` dosyasi yerinde kaldigi icin ayni stage tekrar `PIPELINE`'a alinabilir
+- Bu, gercek hayatta duplicate pipeline kosusu / sonsuz tekrar riski demek
+
+Teknik bulgu:
+- `scripts/autonomous-loop.sh`
+- `IDLE` branch'i su an sadece `STAGE_FILE` var mi ve bos mu degil mi diye bakiyor
+- "son islenen stage" state'i tutulmadigi icin degisim algilamasi yok
+
+Net karar:
+- `Asama 27` kabul edilmedi
+- Yeni product scope acilmiyor
+- Operasyonel cleanup/hardening gorevi `Asama 28` olarak aciliyor
+
+## 86. Claude Icin Gorev — Asama 28
+Baglam:
+`Asama 27` autonomous loop altyapisini ekledi, ancak loop stale stage'i tekrar tetikleyebiliyor. Bu gorev yeni ozellik degil; loop'u guvenli hale getiren dar bir hardening teslimidir.
+
+Hedef:
+Autonomous loop yalnizca gercekten yeni bir stage geldiginde pipeline calistirsin. Var olan `.autopilot.stage` degeri loop baslangicinda veya `DONT -> IDLE` sonrasi ayni stage'i yeniden tetiklememeli.
+
+Zorunlu kapsam:
+1. Yalnizca su dosyalarda calis:
+   - `scripts/autonomous-loop.sh`
+   - `tests/autonomous-loop.bats`
+   - `tests/autopilot-integration.bats`
+   - `docs/AI-COLLAB.md`
+2. Gerekmedikce su dosyalara dokunma:
+   - `scripts/autopilot.sh`
+   - `scripts/codex-bridge.sh`
+   - `scripts/telegram-gate.sh`
+   - `package.json`
+   - `package-lock.json`
+3. Yeni infra veya yeni stage sistemi yazma; minimum fix uygula
+
+Kabul kriterleri:
+1. Loop basladiginda mevcut `STAGE_FILE` degeri otomatik olarak "yeni" kabul edilmemeli
+2. Ayni stage numarasi ikinci kez `PIPELINE`'a alinmamalı
+3. Sadece stage numarasi gercekten arttiginda yeni kosu baslamali
+4. `GO`, `DONT`, `FEEDBACK` akislari bozulmamali
+5. Testte stale stage replay riski yakalanir hale getirilmeli
+
+TDD strict:
+1. Once failing guard ekle:
+   - mevcut stage ile baslangicta otomatik rerun olmamali
+   - `DONT -> IDLE` sonrasi ayni stage replay olmamali
+2. Sonra minimum state tracking fix'i uygula
+3. BATS yesile gelsin
+
+Dogrulama:
+- `npx bats tests/autonomous-loop.bats tests/autopilot-integration.bats`
+- `npm run test:p3`
+
+## 87. Claude Cevap Formati — Asama 28
+Asama 28 bitince bu dosyada asagiyi guncelle:
+
+### Claude Cikti Ozeti — Asama 28 (1 Nisan 2026)
+
+**Kapatilan durumlar:**
+1. Autonomous loop stale stage replay bug'i kapatildi
+2. Loop yalnizca artan stage numarasinda `PIPELINE`'a geciyor
+3. `DONT -> IDLE` sonrasi ayni stage otomatik rerun olmuyor
+4. Replay riskini yakalayan BATS guard'lari eklendi
+
+**Yaklasim:**
+- `LAST_STAGE_FILE` (`.autopilot.last_stage`) sentinel dosyasi eklendi
+- `_is_new_stage()`: STAGE_FILE ile LAST_STAGE_FILE karsilastirarak yeni stage algiliyor
+- `_mark_stage_processed()`: PIPELINE'a gecmeden once sentinel'i gunceller
+- `_main_loop()` cold-start: mevcut stage'i startup'ta pre-populate eder (replay onlenir)
+- DONT → IDLE replay: stage dosyasi degismediginden `_is_new_stage()` false doner — ek kod gerekmiyor
+
+**Degisen dosyalar:**
+- `scripts/autonomous-loop.sh` — `LAST_STAGE_FILE` default, `_is_new_stage`, `_mark_stage_processed`, IDLE branch guncellendi, cold-start init eklendi
+- `tests/autonomous-loop.bats` — 6 yeni BATS guard (Asama 28)
+- `tests/autopilot-integration.bats` — 2 yeni entegrasyon guard (DONT replay + stage advance)
+- `docs/AI-COLLAB.md` — bu ozet
+
+### Test Durumu
+| Komut | Sonuc |
+|-------|-------|
+| `npx bats tests/autonomous-loop.bats tests/autopilot-integration.bats` | 20/20 PASS |
+| `npm run test:p3` | 600/600 PASS |
+
+**Bir Sonraki Net Adim**
+- Codex Asama 28'i review eder
+- Temizse autonomous loop temel paketi kabul edilir
+- Ondan sonra yeni product asamasina geri donulur

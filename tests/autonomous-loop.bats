@@ -89,3 +89,64 @@ EOF
   run _handle_gate_result "FEEDBACK:bunu birak coach fix et"
   assert_output --partial "bunu birak coach fix et"
 }
+
+# ── Asama 28: Stale Stage Replay Guard ───────────────────────────────────────
+
+@test "is_new_stage returns false when no stage file exists" {
+  source "$PROJECT_DIR/scripts/autonomous-loop.sh"
+  export STAGE_FILE="$TEST_TMP/.autopilot.stage"
+  export LAST_STAGE_FILE="$TEST_TMP/.autopilot.last_stage"
+  run _is_new_stage
+  assert_failure
+}
+
+@test "is_new_stage returns false when stage matches last processed stage" {
+  source "$PROJECT_DIR/scripts/autonomous-loop.sh"
+  export STAGE_FILE="$TEST_TMP/.autopilot.stage"
+  export LAST_STAGE_FILE="$TEST_TMP/.autopilot.last_stage"
+  echo "28" > "$STAGE_FILE"
+  echo "28" > "$LAST_STAGE_FILE"
+  run _is_new_stage
+  assert_failure
+}
+
+@test "is_new_stage returns true when stage changes from last processed" {
+  source "$PROJECT_DIR/scripts/autonomous-loop.sh"
+  export STAGE_FILE="$TEST_TMP/.autopilot.stage"
+  export LAST_STAGE_FILE="$TEST_TMP/.autopilot.last_stage"
+  echo "29" > "$STAGE_FILE"
+  echo "28" > "$LAST_STAGE_FILE"
+  run _is_new_stage
+  assert_success
+}
+
+@test "is_new_stage returns true when no last stage file exists" {
+  source "$PROJECT_DIR/scripts/autonomous-loop.sh"
+  export STAGE_FILE="$TEST_TMP/.autopilot.stage"
+  export LAST_STAGE_FILE="$TEST_TMP/.autopilot.last_stage"
+  echo "28" > "$STAGE_FILE"
+  # LAST_STAGE_FILE intentionally absent
+  run _is_new_stage
+  assert_success
+}
+
+@test "mark_stage_processed writes current stage to last stage file" {
+  source "$PROJECT_DIR/scripts/autonomous-loop.sh"
+  export STAGE_FILE="$TEST_TMP/.autopilot.stage"
+  export LAST_STAGE_FILE="$TEST_TMP/.autopilot.last_stage"
+  echo "28" > "$STAGE_FILE"
+  _mark_stage_processed
+  run cat "$LAST_STAGE_FILE"
+  assert_output "28"
+}
+
+@test "same stage does not trigger PIPELINE a second time after mark_stage_processed" {
+  source "$PROJECT_DIR/scripts/autonomous-loop.sh"
+  export STAGE_FILE="$TEST_TMP/.autopilot.stage"
+  export LAST_STAGE_FILE="$TEST_TMP/.autopilot.last_stage"
+  echo "28" > "$STAGE_FILE"
+  _mark_stage_processed
+  # Simulate DONT -> IDLE: stage file unchanged, last_stage now set
+  run _is_new_stage
+  assert_failure
+}

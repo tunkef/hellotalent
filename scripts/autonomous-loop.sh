@@ -10,6 +10,7 @@ LOOP_PID_FILE="${LOOP_PID_FILE:-.autonomous-loop.pid}"
 LOG_FILE="${LOG_FILE:-reviews/autonomous-loop.log}"
 COLLAB_FILE="${COLLAB_FILE:-docs/AI-COLLAB.md}"
 STAGE_FILE="${STAGE_FILE:-.autopilot.stage}"
+LAST_STAGE_FILE="${LAST_STAGE_FILE:-.autopilot.last_stage}"
 VALID_STATES="IDLE PIPELINE REPORT WAIT_CODEX GATE"
 
 # Ensure log directory exists
@@ -61,6 +62,37 @@ _extract_stage_summary() {
   # Extract text from the line matching "Asama <N>" up to (but not including) the next ## header
   # Use awk for macOS (BSD sed) compatibility
   awk "/Asama ${stage_no}/{found=1} found && /^## / && !/Asama ${stage_no}/{exit} found{print}" "$collab_file"
+}
+
+# ── Stage Change Detection ────────────────────────────────────────────────────
+# Returns 0 (true) only when STAGE_FILE contains a stage number that differs
+# from the last stage written to LAST_STAGE_FILE.  This prevents the loop from
+# re-entering PIPELINE for a stage it already dispatched (stale replay guard).
+_is_new_stage() {
+  if [ ! -f "$STAGE_FILE" ]; then
+    return 1
+  fi
+  local current_stage
+  current_stage=$(cat "$STAGE_FILE" 2>/dev/null || echo "")
+  if [ -z "$current_stage" ]; then
+    return 1
+  fi
+  local last_stage=""
+  if [ -f "$LAST_STAGE_FILE" ]; then
+    last_stage=$(cat "$LAST_STAGE_FILE" 2>/dev/null || echo "")
+  fi
+  if [ "$current_stage" = "$last_stage" ]; then
+    return 1
+  fi
+  return 0
+}
+
+# Record the current stage as processed so _is_new_stage will ignore it.
+_mark_stage_processed() {
+  local stage_no
+  stage_no=$(cat "$STAGE_FILE" 2>/dev/null || echo "")
+  echo "$stage_no" > "$LAST_STAGE_FILE"
+  _loop_log "Stage $stage_no marked as processed"
 }
 
 # ── Process Monitoring ───────────────────────────────────────────────────────
@@ -125,22 +157,30 @@ _main_loop() {
   local telegram_gate
   telegram_gate="$(dirname "${BASH_SOURCE[0]}")/telegram-gate.sh"
 
+  # Pre-populate LAST_STAGE_FILE with any existing stage so a cold-start with
+  # a stale .autopilot.stage does not immediately fire PIPELINE.
+  if [ -f "$STAGE_FILE" ]; then
+    local init_stage
+    init_stage=$(cat "$STAGE_FILE" 2>/dev/null || echo "")
+    if [ -n "$init_stage" ]; then
+      echo "$init_stage" > "$LAST_STAGE_FILE"
+      _loop_log "Cold-start: existing stage $init_stage pre-marked as processed (no replay)"
+    fi
+  fi
+
   while true; do
     local current_state
     current_state=$(_get_state)
 
     case "$current_state" in
       IDLE)
-        # Detect new stage from STAGE_FILE
-        if [ -f "$STAGE_FILE" ]; then
+        # Only enter PIPELINE when a genuinely new stage appears
+        if _is_new_stage; then
           local stage_no
           stage_no=$(cat "$STAGE_FILE" 2>/dev/null || echo "")
-          if [ -n "$stage_no" ]; then
-            _loop_log "New stage detected: $stage_no"
-            _set_state "PIPELINE"
-          else
-            sleep 5
-          fi
+          _loop_log "New stage detected: $stage_no"
+          _mark_stage_processed
+          _set_state "PIPELINE"
         else
           sleep 5
         fi
