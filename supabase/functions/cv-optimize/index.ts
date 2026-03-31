@@ -15,6 +15,9 @@ const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const ANTHROPIC_API_KEY = Deno.env.get("ANTHROPIC_API_KEY") || "";
 const MODEL = Deno.env.get("ANTHROPIC_MODEL") || "claude-sonnet-4-20250514";
+/* MVP free-tier: set MVP_FREE_TIER=true in Supabase Edge Function env to bypass is_premium check.
+   Flip to false (or remove) when iyzico/payment is ready. */
+const MVP_FREE_TIER = Deno.env.get("MVP_FREE_TIER") === "true";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -131,7 +134,8 @@ Deno.serve(async (req: Request) => {
 
     const { data: candidate } = await supabase.from("candidates")
       .select("is_premium, cv_url, cv_filename").eq("user_id", user.id).maybeSingle();
-    if (!candidate || candidate.is_premium !== true) {
+    /* Premium gate — bypassed during MVP free-tier beta */
+    if (!candidate || (!MVP_FREE_TIER && candidate.is_premium !== true)) {
       return new Response(JSON.stringify({ error: "Premium required" }),
         { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }

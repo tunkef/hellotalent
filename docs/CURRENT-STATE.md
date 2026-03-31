@@ -1,5 +1,5 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 31 Mart 2026 | Asama 12: AI CV hardening + release hygiene
+> Son guncelleme: 31 Mart 2026 | Asama 14: MVP free-tier truth-sync
 
 ## 1. Proje Ozeti
 
@@ -13,13 +13,13 @@ hellotalent.ai, Turkiye perakende sektorune ozel bir yetenek pazaryeri. Adaylar 
 - **Yetkinlik sistemi** — 29 KF yetkinlik, 34 rol haritasi, bento grid, premium reading view | `profil-yetkinlik.js`
 - **Mulakat Kocu (Studio)** — STAR+T metodu, lobby + kurs detay + odak modu (inline "Cevabını Hazırla" + AI değerlendirme) + completion ekranı, streak, spaced repetition, inline rol seçimi | `profil-studio.js`
 - **AI feedback** — Edge Function (gpt-4.1-mini), pg_cron pipeline, hero kart + accordion UI | `supabase/functions/journal-feedback/`
-- **AI CV Optimize** — Anthropic (claude-sonnet-4) Edge Function, canonical ATS template, source CV ingestion (PDF text + DOCX unzip + DOC best-effort), premium gated | `supabase/functions/cv-optimize/`, `profil-cv.js`
+- **AI CV Optimize** — Anthropic (claude-sonnet-4) Edge Function, canonical ATS template, source CV ingestion (PDF text + DOCX unzip + DOC best-effort), **MVP free-tier: tum adaylar beta boyunca ucretiz erisir** | `supabase/functions/cv-optimize/`, `profil-cv.js`
 - **Streak sistemi** — gunluk seri, freeze/geri kazanim, review oneri | migration 20260327-28
 - **Employer onboarding (P3)** — tek/coklu marka, company linking, kampanya wizard, team system live; domain verify planli, portfolio management sinirli | `ik.html`
 - **Bi-directional messaging** — employer DM, candidate reply, split-pane, realtime | `profil-inbox.js`
 - **Email infrastructure** — outbox pattern, Resend API, pg_cron, 3 template | Edge Functions
 - **Coach sistemi** — coach_invites, posts, likes, 6 kategori | `coach-studio.html`
-- **Premium gating** — subscription schema, demo flow, is_premium truth | `profil-premium.js`
+- **Premium gating** — subscription schema hazir, iyzico defer; **MVP_FREE_TIER=true: beta boyunca tum ozellikler ucretiz** | `profil-premium.js` (`window._htMvpFreeTier`, `window.HT_MVP_FREE`)
 - **Destek merkezi** — support_articles + tickets, 6 seed makale | `profil-destek.js`
 - **Ops Health dashboard** — admin panel, failed email tracking | `admin-ops-health.js`
 - **Kim Bakti** — header icon, goruntulenme sayaci | `profil-kimbakti.js`

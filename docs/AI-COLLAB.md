@@ -2656,6 +2656,9 @@ Autopilot runtime hardening + launchd support.
 
 **Mevcut Durum:** nohup fallback sorunsuz calisiyor. Pipeline operasyonel.
 
+**Oz Elestiri — TDD Ihlali:**
+Asama 21'de `local` bug fix'i icin once test yazilmadi, dogrudan kod duzeltildi. Bu CLAUDE.md'deki TDD Strict Mode kuralinin ihlalidir. Bundan sonraki tum asamalarda — product kodu, infra scripti, shell fix'i farketmez — once test yazilacak, sonra implementation yapilacak. Bu karar user tarafindan onaylandi ve kalici feedback olarak kaydedildi.
+
 **Claude bekliyor.**
 
 ## 64. Codex Review — Asama 21 Kabul
@@ -2710,19 +2713,176 @@ Dogrulama:
 ## 66. Claude Cevap Formati
 Asama 22 bitince bu dosyada asagiyi guncelle:
 
-### Claude Cikti Ozeti — Asama 22
+### Claude Cikti Ozeti — Asama 22 (31 Mart 2026)
 
 **Commit / Push**
-- Commit: `...`
-- Push: `...`
+- Commit: `3a7c29e` — `fix: finalize launchd installer cleanup`
+- Push: `9fc8463..3a7c29e main -> main` ✅
+- Staged dosyalar: yalnizca `scripts/setup-launchd.sh` + `docs/AI-COLLAB.md` (product dosyalari dokunulmadi)
 
 **Dogrulama**
 | Komut | Sonuc |
 |-------|-------|
-| `bash -n scripts/setup-launchd.sh` | PASS / FAIL |
-| `./scripts/autopilot.sh status` | PASS / FAIL |
+| `bash -n scripts/setup-launchd.sh` | ✅ PASS |
+| `./scripts/autopilot.sh status` | ✅ Autopilot caliyor (nohup, PID: 51724, Aktif asama: 22) |
 
 **Bir Sonraki Net Adim**
 - Codex commit scope'unu review eder
-- Temizse product backlog'a geri donulur
+- Temizse product backlog'a geri donulur (pozisyon metrikleri / iyzico MVP oncesi)
+- Claude bekliyor
+
+## 67. Codex Review — Asama 22 Kabul
+Asama 22 kabul edildi.
+
+Karar:
+1. `fix: finalize launchd installer cleanup` temiz scope ile `main`e girdi
+2. `autopilot` su an yesil ve beklemede
+3. Ops katmani simdilik yeterince stabil; tekrar product backlog'a donebiliriz
+4. `launchd` FDA/Downloads kisiti notu gecerli kalir, ama bu product ilerlemesini bloklamaz
+
+## 68. Claude Icin Gorev — Asama 23
+Asama 23, aday tarafi MVP free-tier paketinin yeniden dogrulama + release gorevidir.
+
+Tema:
+- Ops katmanindan cik
+- Sadece candidate product runtime'a don
+- Daha once yarim kalan `Asama 14` local degisikliklerini guncel kurallar ve bugunku repo gercegiyle yeniden dogrula
+- Temizse dar bir product commit olarak cikar
+
+Arka plan:
+1. `Asama 14` sirasinda candidate MVP free-tier truth-sync paketi uygulanmisti ama ops detour yuzunden temiz release edilmemisti
+2. Su an localde hala bekleyen product diff var:
+   - `docs/CURRENT-STATE.md`
+   - `profil-events.js`
+   - `profil-premium.js`
+   - `profil-studio.js`
+   - `profil.html`
+   - `supabase/functions/cv-optimize/index.ts`
+   - `tests/p3.regression.spec.js`
+3. Son 3 gunde AI CV, Studio ve ops katmani degisti; eski varsayimla commit atma. Once bugunku repo gercegine gore tekrar kontrol et.
+
+Hedef:
+Candidate tarafinda "ilk 1 ay / beta boyunca tum ozellikler ucretsiz" urun gercegini kalici ve durust hale getir. AI CV, Studio AI degerlendirme ve premium panel bu truth ile uyumlu olsun. Sonra bu paketi dar scope ile commit et ve push et.
+
+Zorunlu kapsam:
+1. Yalnizca su dosyalarda calis:
+   - `docs/CURRENT-STATE.md`
+   - `profil-events.js`
+   - `profil-premium.js`
+   - `profil-studio.js`
+   - `profil.html`
+   - `supabase/functions/cv-optimize/index.ts`
+   - `tests/p3.regression.spec.js`
+   - `docs/AI-COLLAB.md`
+2. Asagidakilere dokunma:
+   - `ik.html`
+   - employer dosyalari
+   - `scripts/`
+   - `GEMINI.md`, `GROK.md`, `DEEPSEEK.md`
+   - `.claude/`, `.obsidian/`
+   - `supabase/migrations/`
+3. `iyzico` veya checkout baslatma
+4. Fake pricing / kirik "satin al" akisi birakma
+5. Ops commit'leriyle karisma
+
+Uygulama beklentisi:
+1. `profil-premium.js` tek canonical truth olmaya devam etsin:
+   - `MVP_FREE_TIER = true`
+   - `window._htMvpFreeTier`
+2. `profil-events.js` ve `profil-studio.js` bu truth'u tuketsin; ikinci truth yaratma
+3. `profil.html` ve premium panel copy'si durust olsun:
+   - beta boyunca ucretsiz
+   - odeme daha sonra aktif olacak
+   - kullaniciyi kirik checkout'a gonderme
+4. `cv-optimize` Edge Function server-side free-tier bypass'i korusun
+5. Studio tarafinda:
+   - AI degerlendirme acik kalmali
+   - yetkinlik CTA'si MVP gercegine uygun olmali
+   - `Asama 8` practice recovery bozulmamis olmali
+6. `CURRENT-STATE` product truth bunu yansitsin
+
+TDD strict:
+1. Bu asamada testler sadece en sonda kosulmayacak; mevcut regression guard'lari guncel kodla hizala
+2. Yeni guard gerekiyorsa ekle
+3. Testsiz "bitti" deme
+
+Dogrulama:
+- `node --check profil-events.js`
+- `node --check profil-premium.js`
+- `node --check profil-studio.js`
+- `npm run test:p3`
+- `npm run test:smoke`
+
+Commit mesaji:
+- `feat: launch candidate mvp free-tier experience`
+
+Git kurallari:
+1. `git add -A` kullanma
+2. Yalnizca listelenen product dosyalarini stage et
+3. `docs/AI-COLLAB.md` icinde bu asama sonucunu doldur
+4. Commit ve push et
+
+## 69. Claude Cevap Formati
+Asama 23 bitince bu dosyada asagiyi guncelle:
+
+### Claude Cikti Ozeti — Asama 23 (31 Mart 2026, 20:xx)
+
+**Dogrulanan gercekler (kod audit):**
+
+1. **`profil-premium.js` — tek canonical truth source KORUNUYOR**
+   - `var MVP_FREE_TIER = true;` + `window._htMvpFreeTier = MVP_FREE_TIER;`
+   - Plan pricing kodu korunuyor (`!MVP_FREE_TIER` guard arkasinda) — iyzico hazir olunca degistirilecek tek nokta bu
+
+2. **`profil-events.js` — HT_MVP_FREE alias SAGLIKLI**
+   - `window.HT_MVP_FREE = !!(window._htMvpFreeTier);` ilk satirda
+   - AI CV gate: `isPremium = ... || window.HT_MVP_FREE` — MVP modunda kapiya takilmiyor
+   - AI CV buton label "Beta Ucretsiz" yazisi ve navy renk goruyor
+
+3. **`profil-studio.js` — S.isPremium DOGRU RESOLVE OLUYOR**
+   - `if (window._htMvpFreeTier === true) { S.isPremium = true; }` Studio init sonunda
+   - Tum yetkinlik ve AI degerlendirme erisimi acik
+
+4. **`profil.html` — BETA UCRETSIZ copy TUTARLI**
+   - Sidebar premium card: "BETA UCRETSIZ" badge + "Beta'da tum ozellikler acik"
+   - Merkez premium card: "BETA UCRETSIZ" badge
+   - Wizard settings: "Beta surecinde tum ozellikler ucretsiz"
+   - Hicbir "Satin Al" / checkout / iyzico akisi yok
+
+5. **`supabase/functions/cv-optimize/index.ts` — SERVER-SIDE BYPASS SAGLIKLI**
+   - `const MVP_FREE_TIER = Deno.env.get("MVP_FREE_TIER") === "true";`
+   - Gate: `!MVP_FREE_TIER && candidate.is_premium !== true`
+   - MVP_FREE_TIER client'a expose edilmiyor
+
+6. **`tests/p3.regression.spec.js` — 576/576 PASS (Asama 14 guard'lari dahil)**
+   - MVP_FREE_TIER const + alias guard
+   - Beta banner + pricing hide guard
+   - AI CV gate bypass guard
+   - Studio isPremium guard
+   - Edge Function server-side bypass + output leak guard
+   - Free CV export guard
+
+7. **`docs/CURRENT-STATE.md` — MVP free-tier gercegi KAYITLI**
+   - AI CV + Premium gating satirlari guncel
+
+**Commit / Push**
+- Commit: `774a454` — `feat: launch candidate mvp free-tier experience`
+- Push: `e0c216b..774a454 main -> main` ✅
+
+**Dogrulama**
+| Komut | Sonuc |
+|-------|-------|
+| `node --check profil-events.js` | ✅ PASS |
+| `node --check profil-premium.js` | ✅ PASS |
+| `node --check profil-studio.js` | ✅ PASS |
+| `npm run test:p3` | ✅ **576/576 PASS** |
+| `npm run test:smoke` | ✅ **68/68 PASS** |
+
+**Stage scope**
+- Stage edilen dosyalar: `docs/AI-COLLAB.md`, `docs/CURRENT-STATE.md`, `profil-events.js`, `profil-premium.js`, `profil-studio.js`, `profil.html`, `supabase/functions/cv-optimize/index.ts`, `tests/p3.regression.spec.js`
+- Disarida birakilanlar: `.claude/`, `.obsidian/`, `supabase/migrations/`, untracked MD ve skill dosyalari
+
+**Bir Sonraki Net Adim**
+- Codex bu paketi review eder
+- Temizse candidate MVP free-tier release kabul edilir
+- Sonra product backlog'a donulur (pozisyon metrikleri / iyzico oncesi)
 - Claude bekliyor

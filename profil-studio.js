@@ -1477,10 +1477,6 @@ function injectCSS() {
   /* Drawer backdrop */
   css += '.st-drawer-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:65;animation:igFadeIn .2s ease}';
 
-  /* Journal drawer (separate from hint drawer) */
-  css += '.st-journal-drawer{position:fixed;top:108px;right:0;bottom:68px;width:400px;background:var(--bg-surface,#fff);border-left:1px solid var(--border-subtle,#E5E3DF);box-shadow:-4px 0 24px rgba(0,0,0,.08);transform:translateX(100%);transition:transform .3s ease;overflow-y:auto;padding:20px;z-index:72;box-sizing:border-box}';
-  css += '.st-journal-drawer.open{transform:translateX(0)}';
-
   /* Bar button labels */
   css += '.st-bar-label{display:inline}';
 
@@ -1554,7 +1550,6 @@ function injectCSS() {
   css += 'html[data-theme="dark"] .st-drawer-tab.active{color:var(--verm,#C94E28);border-bottom-color:var(--verm,#C94E28)}';
   css += 'html[data-theme="dark"] .st-drawer-section-title{color:var(--text-primary,#F9FAFB)}';
   css += 'html[data-theme="dark"] .st-drawer-backdrop{background:rgba(0,0,0,.5)}';
-  css += 'html[data-theme="dark"] .st-journal-drawer{background:var(--bg-surface,#111827);border-color:rgba(255,255,255,.06)}';
   css += 'html[data-theme="dark"] .st-practice-card .st-q-text{color:var(--text-primary,#F9FAFB)}';
   css += 'html[data-theme="dark"] .yk-summary-wrap{background:var(--bg-elevated,#1F2937)}';
   css += 'html[data-theme="dark"] .yk-summary-card{background:var(--bg-surface,#111827);border-color:rgba(255,255,255,.08)}';
@@ -1573,8 +1568,6 @@ function injectCSS() {
   css += '.st-practice-card{padding:24px 18px}';
   css += '.st-drawer{width:100%;top:auto;right:0;left:0;bottom:62px;height:65vh;border-left:none;border-top:1px solid var(--border-subtle,#E5E3DF);border-radius:20px 20px 0 0;box-shadow:0 -4px 24px rgba(0,0,0,.12);transform:translateY(100%)}';
   css += '.st-drawer.open{transform:translateY(0)}';
-  css += '.st-journal-drawer{width:100%;top:auto;right:0;left:0;bottom:62px;height:70vh;border-left:none;border-top:1px solid var(--border-subtle,#E5E3DF);border-radius:20px 20px 0 0;box-shadow:0 -4px 24px rgba(0,0,0,.12);transform:translateY(100%)}';
-  css += '.st-journal-drawer.open{transform:translateY(0)}';
   css += '.st-practice-card .st-q-text{font-size:15px}';
   css += '.st-bar-label{display:none}';
   css += '.st-tab{font-size:12px;padding:10px 14px}';
@@ -2057,12 +2050,18 @@ function renderLobby() {
 
     html += '</div>'; /* bento grid */
 
-    /* ── Locked competencies premium CTA ── */
+    /* ── Locked competencies CTA ── */
     if (lockedCount > 0) {
       html += '<div style="margin-top:16px;padding:16px 20px;border-radius:16px;border:1px solid var(--border-subtle,#E5E3DF);background:var(--bg-surface,#fff);box-shadow:0 2px 8px rgba(0,0,0,.08)">';
-      html += '<div style="font-family:\'Bricolage Grotesque\',sans-serif;font-size:14px;font-weight:700;color:var(--text-primary,#111)">' + lockedCount + ' yetkinlik daha ke\u015ffet</div>';
-      html += '<div style="font-family:\'Plus Jakarta Sans\',sans-serif;font-size:12px;color:var(--text-muted,#6B7280);margin:6px 0 10px">Premium ile t\u00fcm yetkinliklere eri\u015f, s\u0131n\u0131rs\u0131z pratik yap.</div>';
-      html += '<button class="ig-q-lock-cta yk-locked-cta" style="font-size:12px;padding:8px 20px">Premium ile A\u00e7</button>';
+      if (window.HT_MVP_FREE) {
+        html += '<div style="font-family:\'Bricolage Grotesque\',sans-serif;font-size:14px;font-weight:700;color:var(--text-primary,#111)">' + lockedCount + ' yetkinlik daha seni bekliyor</div>';
+        html += '<div style="font-family:\'Plus Jakarta Sans\',sans-serif;font-size:12px;color:var(--text-muted,#6B7280);margin:6px 0 10px">Beta s\u00fcrecinde t\u00fcm yetkinlikler \u00fccretsiz a\u00e7\u0131k.</div>';
+        html += '<button class="ig-q-lock-cta yk-locked-cta" style="font-size:12px;padding:8px 20px;background:var(--navy,#1E2D5E)">T\u00fcm\u00fcn\u00fc Ke\u015ffet</button>';
+      } else {
+        html += '<div style="font-family:\'Bricolage Grotesque\',sans-serif;font-size:14px;font-weight:700;color:var(--text-primary,#111)">' + lockedCount + ' yetkinlik daha ke\u015ffet</div>';
+        html += '<div style="font-family:\'Plus Jakarta Sans\',sans-serif;font-size:12px;color:var(--text-muted,#6B7280);margin:6px 0 10px">Premium ile t\u00fcm yetkinliklere eri\u015f, s\u0131n\u0131rs\u0131z pratik yap.</div>';
+        html += '<button class="ig-q-lock-cta yk-locked-cta" style="font-size:12px;padding:8px 20px">Premium ile A\u00e7</button>';
+      }
       html += '</div>';
     }
   }
@@ -2318,65 +2317,6 @@ function renderDrawerNotesTab() {
   return html;
 }
 
-/* ── Journal Drawer Content (STAR+T input + AI feedback) ── */
-function renderJournalDrawerContent() {
-  if (!S.activeComp || !S.dealt || !S.dealt.length) return '';
-  var q = S.dealt[S.currentQ];
-  if (!q) return '';
-
-  var draft = loadJournalDraft(S.activeComp, q.text);
-
-  var html = '<div class="st-drawer-body">';
-  html += '<div style="font-family:\'Plus Jakarta Sans\',sans-serif;font-size:12px;color:var(--text-muted,#6B7280);line-height:1.5;margin-bottom:12px">Deneyimini STAR+T yap\u0131s\u0131yla not et. Notlar\u0131n otomatik kaydedilir.</div>';
-
-  var fields = [
-    { key: 's', letter: 'S', label: 'Durum', color: 'verm', placeholder: 'Kar\u015F\u0131la\u015Ft\u0131\u011F\u0131n\u0131z durumu k\u0131saca tan\u0131mlay\u0131n...' },
-    { key: 't', letter: 'T', label: 'G\u00F6rev', color: 'navy', placeholder: 'Sizden beklenen g\u00F6revi a\u00E7\u0131klay\u0131n...' },
-    { key: 'a', letter: 'A', label: 'Aksiyon', color: 'verm', placeholder: 'Att\u0131\u011F\u0131n\u0131z somut ad\u0131mlar\u0131 anlat\u0131n...' },
-    { key: 'r', letter: 'R', label: 'Sonu\u00E7', color: 'navy', placeholder: 'Sonucu ve etkisini payla\u015F\u0131n...' },
-    { key: 'takeaway', letter: '+T', label: '\u00C7\u0131kar\u0131m', color: 'navy', placeholder: 'Bu deneyimden ne \u00F6\u011Frendiniz?' }
-  ];
-
-  for (var fi = 0; fi < fields.length; fi++) {
-    var f = fields[fi];
-    var val = draft ? (draft[f.key] || '') : '';
-    html += '<div class="ig-journal-field">';
-    html += '<div class="ig-journal-field-header">';
-    html += '<div class="ig-journal-field-badge ' + f.color + '">' + f.letter + '</div>';
-    html += '<div class="ig-journal-field-label">' + f.label + '</div>';
-    html += '</div>';
-    html += '<textarea class="ig-journal-textarea" data-field="' + f.key + '" placeholder="' + f.placeholder + '" rows="3">' + escapeHtml(val) + '</textarea>';
-    html += '</div>';
-  }
-
-  html += '<div class="ig-journal-saved" id="ig-journal-saved"></div>';
-
-  /* Self-reflection prompt */
-  html += '<div class="aif-self-reflect" style="margin-top:12px">';
-  html += '<label class="ig-journal-field-label" style="font-size:11px;color:var(--text-muted,#6B7280);margin-bottom:4px;display:block">Bu cevapta en g\u00fc\u00e7l\u00fc taraf\u0131n\u0131z ne oldu?</label>';
-  html += '<textarea class="ig-journal-textarea" id="aif-self-reflect-input" placeholder="K\u0131saca yaz\u0131n\u2026" rows="2" style="font-size:12px"></textarea>';
-  html += '</div>';
-
-  /* AI Feedback area */
-  var compIdx = S.comps ? S.comps.indexOf(S.activeComp) : -1;
-  var aiFree = S.isPremium || (compIdx >= 0 && compIdx < FREE_COMP_LIMIT);
-
-  html += '<div class="aif-area" id="aif-area">';
-  if (aiFree) {
-    html += '<button class="aif-btn" id="aif-request"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg> AI ile De\u011Ferlendir</button>';
-  } else {
-    html += '<div class="aif-gate">';
-    html += '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>';
-    html += '<span>AI de\u011Ferlendirme ilk ' + FREE_COMP_LIMIT + ' yetkinlikte \u00fccretsiz. T\u00fcm yetkinlikler i\u00e7in:</span>';
-    html += '<button class="aif-gate-cta" onclick="if(typeof switchPanel===\'function\')switchPanel(\'premium\')">Premium\u2019a Ge\u00E7</button>';
-    html += '</div>';
-  }
-  html += '<div id="aif-result" style="display:none;"></div>';
-  html += '</div>';
-
-  html += '</div>'; /* drawer-body */
-  return html;
-}
 
 /* ════════════════════════════════════════════════
    RENDER — JOURNAL PANEL (Gelişim Günlüğü)
@@ -2461,75 +2401,6 @@ function renderJournalPanel() {
 function escapeHtml(str) {
   if (!str) return '';
   return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-}
-
-function renderStarHintPanel() {
-  var steps = STAR_CONTENT.what.steps;
-  var colors = ['verm', 'navy', 'verm', 'navy'];
-  var html = '<div class="ig-star-hint-panel">';
-  html += '<div class="ig-star-hint-title">Yan\u0131t Yap\u0131s\u0131: STAR+T</div>';
-  for (var i = 0; i < steps.length; i++) {
-    html += '<div class="ig-star-hint-step">';
-    html += '<div class="ig-star-hint-letter ' + colors[i] + '">' + steps[i].letter + '</div>';
-    html += '<div class="ig-star-hint-desc"><strong>' + steps[i].tr + ':</strong> ' + steps[i].desc.split('.')[0] + '.</div>';
-    html += '</div>';
-  }
-  html += '</div>';
-  return html;
-}
-
-/* ════════════════════════════════════════════════
-   RENDER — COACH PANEL (competency signals)
-   Uses ANCHORS[code].skilled / lessskilled / overused
-   ════════════════════════════════════════════════ */
-
-function renderCoachPanel() {
-  var bridge = getBridge();
-  if (!bridge) return '';
-  var anchors = bridge.ANCHORS || {};
-  var a = anchors[S.activeComp];
-  if (!a) return '';
-
-  var html = '<div class="ig-coach-panel">';
-  html += '<div class="ig-coach-intro">Bu soru, yaln\u0131zca ne yapt\u0131\u011F\u0131n\u0131z\u0131 de\u011Fil \u2014 nas\u0131l d\u00FC\u015F\u00FCnd\u00FC\u011F\u00FCn\u00FCz\u00FC de \u00F6l\u00E7er.</div>';
-
-  var COACH_PREVIEW = 2;
-
-  /* Güçlü Sinyaller */
-  if (a.skilled && a.skilled.length) {
-    html += '<div class="ig-coach-section">';
-    html += '<div class="ig-coach-header"><div class="ig-coach-dot ig-coach-dot-strong" aria-label="G\u00FC\u00E7l\u00FC"></div><div class="ig-coach-label">G\u00FC\u00E7l\u00FC Sinyaller</div></div>';
-    html += '<ul class="ig-coach-bullets">';
-    for (var si = 0; si < Math.min(COACH_PREVIEW, a.skilled.length); si++) {
-      html += '<li class="ig-coach-bullet">' + a.skilled[si] + '</li>';
-    }
-    html += '</ul></div>';
-  }
-
-  /* Risk Sinyalleri */
-  if (a.lessskilled && a.lessskilled.length) {
-    html += '<div class="ig-coach-section">';
-    html += '<div class="ig-coach-header"><div class="ig-coach-dot ig-coach-dot-risk" aria-label="Risk"></div><div class="ig-coach-label">Risk Sinyalleri</div></div>';
-    html += '<ul class="ig-coach-bullets">';
-    for (var ri = 0; ri < Math.min(COACH_PREVIEW, a.lessskilled.length); ri++) {
-      html += '<li class="ig-coach-bullet">' + a.lessskilled[ri] + '</li>';
-    }
-    html += '</ul></div>';
-  }
-
-  /* Aşırı Kullanım */
-  if (a.overused && a.overused.length) {
-    html += '<div class="ig-coach-section">';
-    html += '<div class="ig-coach-header"><div class="ig-coach-dot ig-coach-dot-over" aria-label="A\u015F\u0131r\u0131 kullan\u0131m"></div><div class="ig-coach-label">A\u015F\u0131r\u0131 Kullan\u0131m</div></div>';
-    html += '<ul class="ig-coach-bullets">';
-    for (var oi = 0; oi < Math.min(COACH_PREVIEW, a.overused.length); oi++) {
-      html += '<li class="ig-coach-bullet">' + a.overused[oi] + '</li>';
-    }
-    html += '</ul></div>';
-  }
-
-  html += '</div>';
-  return html;
 }
 
 /* ════════════════════════════════════════════════
@@ -5253,11 +5124,15 @@ window._htLoadStudio = function() {
 
   /* Resolve premium truth from DB profile data.
      Source: candidates.is_premium (migration 014) via _loadedDBData.profile.
-     Feature flag: window._htStudioAiEnabled overrides for controlled testing. */
+     Feature flag: window._htStudioAiEnabled overrides for controlled testing.
+     MVP flag: window._htMvpFreeTier = true → tüm özellikler beta süresince ücretsiz. */
   if (typeof _loadedDBData !== 'undefined' && _loadedDBData && _loadedDBData.profile) {
     S.isPremium = _loadedDBData.profile.is_premium === true;
   }
   if (typeof window._htStudioAiEnabled !== 'undefined' && window._htStudioAiEnabled === true) {
+    S.isPremium = true;
+  }
+  if (window._htMvpFreeTier === true) {
     S.isPremium = true;
   }
 

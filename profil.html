@@ -246,12 +246,12 @@ if (window.Sentry) {
       </label>
     </div>
   </div>
-  <div class="sidebar-premium-card">
-    <span class="sidebar-premium-badge">PREMIUM</span>
+  <div class="sidebar-premium-card" style="cursor:pointer;" data-panel="premium">
+    <span class="sidebar-premium-badge">BETA ÜCRETSİZ</span>
     <div class="toggle-row">
       <div class="toggle-info">
         <h4>Beni öne çıkar</h4>
-        <p>Premium ile ayrıcalıklar</p>
+        <p>Beta'da tüm özellikler açık</p>
       </div>
       <label class="toggle" style="pointer-events:none;opacity:0.5;">
         <input type="checkbox" id="toggle-active" disabled>
@@ -568,9 +568,9 @@ if (window.Sentry) {
 
     <!-- Premium Öne Çıkar (dark navy) → links to premium panel -->
     <div class="mk-card mk-premium-toggle-card" style="cursor:pointer;" id="mk-premium-card-link" data-panel="premium">
-      <span class="mk-premium-badge">PREMIUM</span>
+      <span class="mk-premium-badge">BETA ÜCRETSİZ</span>
       <span class="mk-premium-title">Beni Öne Çıkar</span>
-      <span class="mk-premium-desc">Profilini listelerin başına taşı</span>
+      <span class="mk-premium-desc">Beta'da tüm özellikler açık</span>
       <span class="mk-premium-desc" style="margin-top:8px;text-decoration:underline;opacity:.8;">Keşfet</span>
     </div>
 
@@ -944,13 +944,13 @@ if (window.Sentry) {
       <div class="wiz-setting-card wiz-setting-premium disabled-card">
         <div class="wiz-setting-head">
           <div class="wiz-setting-info">
-            <span class="wiz-premium-badge">PREMIUM</span>
+            <span class="wiz-premium-badge">BETA ÜCRETSİZ</span>
             <div class="wiz-setting-title">Beni Öne Çıkar</div>
-            <div class="wiz-setting-desc">Profilini listelerin başına taşı ve daha fazla işveren tarafından görün.</div>
+            <div class="wiz-setting-desc">Beta sürecinde tüm özellikler ücretsiz. Ödeme sistemi ilerleyen süreçte aktif olacak.</div>
           </div>
           <label class="toggle"><input type="checkbox" disabled><span class="toggle-slider"></span></label>
         </div>
-        <div class="wiz-premium-soon" style="cursor:pointer;text-decoration:underline;" data-premium-cta>Premium'u Keşfet</div>
+        <div class="wiz-premium-soon" style="cursor:pointer;text-decoration:underline;" data-panel="premium">Beta avantajlarını gör</div>
       </div>
 
     </div>
@@ -1146,8 +1146,8 @@ if (window.Sentry) {
   </div>
 
   <div class="card" style="margin-bottom:0;">
-    <div class="card-title">Premium Ayarları</div>
-    <div class="wiz-step-desc mt-4" style="cursor:pointer;" id="settings-premium-pitch" data-premium-cta>Premium avantajlarını keşfet — öne çıkan aday, detaylı analiz ve daha fazlası. <span style="color:var(--verm);font-weight:600;text-decoration:underline;">Planları İncele</span></div>
+    <div class="card-title">Beta Avantajları</div>
+    <div class="wiz-step-desc mt-4" style="cursor:pointer;" id="settings-premium-pitch" data-panel="premium">Beta sürecinde tüm özellikler ücretsiz açık — öne çıkan aday, AI değerlendirme, CV optimize ve daha fazlası. <span style="color:var(--verm);font-weight:600;text-decoration:underline;">Keşfet</span></div>
   </div>
 
   <div class="card ht-span-2" style="margin-bottom:0;">

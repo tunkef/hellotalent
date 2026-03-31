@@ -5,6 +5,14 @@
 // Must load AFTER profil-bootstrap.js (last external before this).
 // ═══════════════════════════════════════════════════
 
+// ── MVP Free-tier truth ──────────────────────────────────────────────────────
+// Canonical truth source: profil-premium.js (loads before this file) sets
+// window._htMvpFreeTier. We expose window.HT_MVP_FREE as a stable alias used
+// by profil-studio.js and other modules.
+// İyzico hazır olunca profil-premium.js'de MVP_FREE_TIER = false yapılır.
+// ────────────────────────────────────────────────────────────────────────────
+window.HT_MVP_FREE = !!(window._htMvpFreeTier);
+
 // DOMContentLoaded may have already fired by the time this file loads (position 20 in script order).
 // Use readyState check to handle both cases.
 function _htInitEvents() {
@@ -316,19 +324,24 @@ function _htInitEvents() {
   var btnGenCVMerkez = document.getElementById('btn-generate-cv-merkez');
   if (btnGenCVMerkez) btnGenCVMerkez.addEventListener('click', function() { generateCV(); });
 
-  // AI CV Optimize button (premium) — source-aware
+  // AI CV Optimize button — source-aware, MVP free-tier aware
   var btnAiCV = document.getElementById('btn-ai-cv-optimize');
   if (btnAiCV) {
-    /* Dynamic label based on CV availability */
+    /* Dynamic label based on CV availability and MVP free-tier state */
     var _db = typeof window._loadedDBData !== 'undefined' ? window._loadedDBData : null;
     var hasUploadedCV = _db && _db.profile && _db.profile.cv_url;
     var aiSubEl = btnAiCV.parentElement ? btnAiCV.parentElement.querySelector('.mk-ai-sub') : null;
     if (aiSubEl) aiSubEl.textContent = hasUploadedCV ? 'CV\'ni + profilini AI ile g\u00fc\u00e7lendir' : 'Profilini AI ile g\u00fc\u00e7lendir';
+    /* Update button label: MVP free-tier shows "Beta Ücretsiz", paid mode shows "Premium" */
+    if (window.HT_MVP_FREE && btnAiCV.textContent === 'Premium') {
+      btnAiCV.textContent = 'Beta \u00dccretsiz';
+      btnAiCV.style.background = 'var(--navy,#1E2D5E)';
+    }
 
     btnAiCV.addEventListener('click', function() {
-      /* Premium gate */
+      /* Premium gate — bypassed during MVP free-tier */
       var _dbClick = typeof window._loadedDBData !== 'undefined' ? window._loadedDBData : null;
-      var isPremium = _dbClick && _dbClick.profile && _dbClick.profile.is_premium === true;
+      var isPremium = (_dbClick && _dbClick.profile && _dbClick.profile.is_premium === true) || window.HT_MVP_FREE;
       if (!isPremium) {
         if (typeof window.switchPanel === 'function') window.switchPanel('premium');
         return;

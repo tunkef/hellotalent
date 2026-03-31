@@ -3,11 +3,22 @@
  * profil-premium.js — Premium Features Panel for profil.html
  * Bento grid layout, feature showcase, subscription CTA + purchase flow.
  * All content from hardcoded constants — no user input, no XSS risk.
+ *
+ * MVP_FREE_TIER: true → tüm premium özellikler beta boyunca ücretsiz açık.
+ * Ödeme sistemi hazır olunca MVP_FREE_TIER = false yapılır.
  */
 (function(){
 'use strict';
 
+/* ════════════════════════════════════════════════
+   MVP FREE-TIER TRUTH SOURCE
+   Tek kontrol noktası: burası false yapılınca ödeme sistemi devreye girer.
+   ════════════════════════════════════════════════ */
+var MVP_FREE_TIER = true;
+window._htMvpFreeTier = MVP_FREE_TIER;
+
 var _loaded = false;
+/* Plan constants — referenced by render when !MVP_FREE_TIER (iyzico ready) */
 var PLAN_KEYS = ['aylik', 'yillik', 'kariyer'];
 var PLAN_AMOUNTS = { aylik: 14900, yillik: 11880, kariyer: 24900 }; /* kuruş cinsinden */
 
@@ -135,13 +146,26 @@ function render() {
   html += '<div class="g-hero"><div class="g-hero-inner" style="justify-content:space-between;">';
   html += '<div style="font-family:\'Bricolage Grotesque\',sans-serif;font-size:20px;font-weight:800;color:#fff;display:flex;align-items:center;gap:10px;">';
   html += '<svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" style="color:#fff;"><path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5z"/><path d="M5 19a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-1H5v1z" opacity=".5"/></svg>';
-  html += 'Premium';
+  html += MVP_FREE_TIER ? 'Beta Avantajlar\u0131' : 'Premium';
   html += '</div></div></div>';
 
   html += '<div id="pm-container">';
 
+  if (MVP_FREE_TIER) {
+    /* ── MVP Free-Tier Banner ── */
+    html += '<div style="background:linear-gradient(135deg,#059669 0%,#047857 100%);border-radius:16px;padding:24px;margin-bottom:20px;color:#fff;text-align:center;">';
+    html += '<div style="font-family:\'DM Mono\',monospace;font-size:10px;font-weight:700;letter-spacing:1px;opacity:.8;margin-bottom:8px;">BETA \u00b7 \u00dcCRETSiZ</div>';
+    html += '<div style="font-family:\'Bricolage Grotesque\',sans-serif;font-size:18px;font-weight:800;margin-bottom:8px;">';
+    html += 'Beta d\u00f6neminde t\u00fcm \u00f6zellikler \u00fccretsiz';
+    html += '</div>';
+    html += '<div style="font-family:\'Plus Jakarta Sans\',sans-serif;font-size:13px;opacity:.85;line-height:1.6;">';
+    html += 'Hellotalent beta s\u00fcrecinde. A\u015fa\u011f\u0131daki t\u00fcm avantajlar\u0131 \u015fu an \u00fccretsiz kullanabilirsin. \u00d6deme sistemi ilerleyen s\u00fcre\u00e7te aktif olacak.';
+    html += '</div>';
+    html += '</div>';
+  }
+
   /* Features section */
-  html += '<div class="pm-section-title">Premium Avantajlar\u0131</div>';
+  html += '<div class="pm-section-title">' + (MVP_FREE_TIER ? 'Beta\'da A\u00e7\u0131k \u00d6zellikler' : 'Premium Avantajlar\u0131') + '</div>';
   html += '<div class="pm-bento">';
   for (var i = 0; i < FEATURES.length; i++) {
     var f = FEATURES[i];
@@ -149,31 +173,36 @@ function render() {
     html += '<div class="pm-feature-icon ' + f.color + '">' + f.icon + '</div>';
     html += '<div class="pm-feature-title">' + f.title + '</div>';
     html += '<div class="pm-feature-desc">' + f.desc + '</div>';
+    if (MVP_FREE_TIER) {
+      html += '<div style="margin-top:8px;display:inline-block;font-family:\'DM Mono\',monospace;font-size:9px;font-weight:700;padding:2px 8px;border-radius:4px;background:rgba(5,150,105,.1);color:#059669;">BETA \u00dcCRETSiZ</div>';
+    }
     html += '</div>';
   }
   html += '</div>';
 
-  /* Plans section */
-  html += '<div class="pm-section-title">Plan Se\u00E7</div>';
-  html += '<div class="pm-plans">';
-  for (var j = 0; j < PLANS.length; j++) {
-    var p = PLANS[j];
-    html += '<div class="pm-plan' + (p.highlight ? ' highlight' : '') + '">';
-    if (p.highlight) html += '<div class="pm-plan-badge">EN POP\u00DCLER</div>';
-    html += '<div class="pm-plan-name">' + p.name + '</div>';
-    html += '<div class="pm-plan-price">' + p.price + '<span> TL</span></div>';
-    html += '<div class="pm-plan-period">' + p.period + '</div>';
-    if (p.annual) html += '<div class="pm-plan-annual" style="font-size:11px;color:var(--muted);margin-top:2px;">' + p.annual + '</div>';
-    html += '<div class="pm-plan-desc">' + p.desc + '</div>';
-    html += '<button class="pm-plan-cta ' + (p.highlight ? 'verm' : 'outline') + '" data-plan="' + PLAN_KEYS[j] + '">' + (p.highlight ? 'Hemen Ba\u015Fla' : 'Se\u00E7') + '</button>';
+  if (!MVP_FREE_TIER) {
+    /* Plans section — only shown when paid mode is active */
+    html += '<div class="pm-section-title">Plan Se\u00E7</div>';
+    html += '<div class="pm-plans">';
+    for (var j = 0; j < PLANS.length; j++) {
+      var p = PLANS[j];
+      html += '<div class="pm-plan' + (p.highlight ? ' highlight' : '') + '">';
+      if (p.highlight) html += '<div class="pm-plan-badge">EN POP\u00DCLER</div>';
+      html += '<div class="pm-plan-name">' + p.name + '</div>';
+      html += '<div class="pm-plan-price">' + p.price + '<span> TL</span></div>';
+      html += '<div class="pm-plan-period">' + p.period + '</div>';
+      if (p.annual) html += '<div class="pm-plan-annual" style="font-size:11px;color:var(--muted);margin-top:2px;">' + p.annual + '</div>';
+      html += '<div class="pm-plan-desc">' + p.desc + '</div>';
+      html += '<button class="pm-plan-cta ' + (p.highlight ? 'verm' : 'outline') + '" data-plan="' + PLAN_KEYS[j] + '">' + (p.highlight ? 'Hemen Ba\u015Fla' : 'Se\u00E7') + '</button>';
+      html += '</div>';
+    }
     html += '</div>';
+
+    /* Purchase status area */
+    html += '<div id="pm-purchase-status" style="display:none;margin-top:16px;padding:16px 20px;border-radius:12px;font-family:\'Plus Jakarta Sans\',sans-serif;font-size:13px;line-height:1.5;text-align:center;"></div>';
   }
-  html += '</div>';
 
-  /* Purchase status area */
-  html += '<div id="pm-purchase-status" style="display:none;margin-top:16px;padding:16px 20px;border-radius:12px;font-family:\'Plus Jakarta Sans\',sans-serif;font-size:13px;line-height:1.5;text-align:center;"></div>';
-
-  /* Active premium banner (shown if already premium) */
+  /* Active premium banner (shown if already premium in paid mode) */
   html += '<div id="pm-active-banner" style="display:none;"></div>';
 
   html += '</div>';
@@ -182,11 +211,12 @@ function render() {
   panel.textContent = '';
   panel.insertAdjacentHTML('afterbegin', html);
 
-  /* Bind plan CTA clicks */
-  bindPlanEvents();
-
-  /* Check current premium status */
-  checkCurrentPremium();
+  if (!MVP_FREE_TIER) {
+    /* Bind plan CTA clicks */
+    bindPlanEvents();
+    /* Check current premium status */
+    checkCurrentPremium();
+  }
 }
 
 function bindPlanEvents() {

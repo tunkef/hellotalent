@@ -2269,3 +2269,91 @@ test.describe('Studio Aşama 8 — practice recovery + STAR cleanup', () => {
     expect(studioJs).toContain('renderAiFeedback');
   });
 });
+
+/* ════════════════════════════════════════════════
+   Aşama 14 — MVP Free-Tier Truth-Sync Guards
+   ════════════════════════════════════════════════ */
+test.describe('Aşama 14 — MVP free-tier truth-sync guards', () => {
+  var premiumJs, eventsJs, studioJs14, edgeFn14;
+
+  test.beforeAll(() => {
+    premiumJs  = readFromRepo('profil-premium.js');
+    eventsJs   = readFromRepo('profil-events.js');
+    studioJs14 = readFromRepo('profil-studio.js');
+    edgeFn14   = readFromRepo('supabase/functions/cv-optimize/index.ts');
+  });
+
+  // ── MVP free-tier truth source ──
+  test('MVP_FREE_TIER constant defined in profil-premium.js', () => {
+    expect(premiumJs).toContain('MVP_FREE_TIER');
+    expect(premiumJs).toContain('window._htMvpFreeTier');
+  });
+
+  test('MVP_FREE_TIER is currently set to true (beta period)', () => {
+    expect(premiumJs).toContain('var MVP_FREE_TIER = true');
+    expect(premiumJs).toContain('window._htMvpFreeTier = MVP_FREE_TIER');
+  });
+
+  // ── Premium panel truth ──
+  test('premium panel shows beta-free banner when MVP_FREE_TIER is true', () => {
+    expect(premiumJs).toContain('BETA');
+    /* Beta banner contains "Beta d" (lowercase — Turkish locale) */
+    expect(premiumJs).toContain('Beta d');
+    expect(premiumJs).toContain('beta');
+  });
+
+  test('premium panel hides pricing plans behind MVP_FREE_TIER check', () => {
+    // Plans section only rendered when !MVP_FREE_TIER
+    expect(premiumJs).toContain('if (!MVP_FREE_TIER)');
+  });
+
+  // ── AI CV gate ──
+  test('AI CV button gate bypasses premium when HT_MVP_FREE is set', () => {
+    // Events file exposes HT_MVP_FREE alias from _htMvpFreeTier
+    expect(eventsJs).toContain('window.HT_MVP_FREE');
+    // isPremium includes the MVP flag → gate only blocks when BOTH are falsy
+    expect(eventsJs).toContain('|| window.HT_MVP_FREE');
+    expect(eventsJs).toContain('if (!isPremium)');
+  });
+
+  test('AI CV button label updates to beta-free copy in MVP mode', () => {
+    expect(eventsJs).toContain('Beta');
+    expect(eventsJs).toContain('window.HT_MVP_FREE');
+  });
+
+  // ── Studio AI gate ──
+  test('Studio resolves isPremium=true when window._htMvpFreeTier is set', () => {
+    expect(studioJs14).toContain('window._htMvpFreeTier === true');
+    expect(studioJs14).toContain('S.isPremium = true');
+  });
+
+  // ── Edge Function ──
+  test('Edge Function has server-side MVP_FREE_TIER env check', () => {
+    expect(edgeFn14).toContain('MVP_FREE_TIER');
+    expect(edgeFn14).toContain('Deno.env.get("MVP_FREE_TIER")');
+  });
+
+  test('Edge Function premium gate respects MVP_FREE_TIER bypass', () => {
+    // Gate condition must allow MVP_FREE_TIER to bypass is_premium check
+    expect(edgeFn14).toMatch(/!MVP_FREE_TIER && candidate\.is_premium !== true/);
+  });
+
+  test('Edge Function does not expose MVP_FREE_TIER value to client response', () => {
+    // The MVP flag is used for auth only, not in the output object
+    var outputIdx = edgeFn14.indexOf('const output:');
+    expect(outputIdx).toBeGreaterThan(0);
+    var outputSection = edgeFn14.substring(outputIdx, outputIdx + 500);
+    expect(outputSection).not.toContain('MVP_FREE_TIER');
+  });
+
+  // ── Critical flow: free CV export not broken ──
+  test('free canonical CV generate action does not route through premium gate', () => {
+    // btn-generate-cv-merkez listener calls generateCV() directly, no premium check
+    var genCvIdx = eventsJs.indexOf("getElementById('btn-generate-cv-merkez')");
+    expect(genCvIdx).toBeGreaterThan(0);
+    /* Capture just the addEventListener callback, not any following comment */
+    var genCvSection = eventsJs.substring(genCvIdx, genCvIdx + 150);
+    expect(genCvSection).toContain('generateCV');
+    expect(genCvSection).not.toContain('isPremium');
+  });
+});
