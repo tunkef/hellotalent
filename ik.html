@@ -2861,9 +2861,11 @@ async function openDrawer(id){
     }
   }
 
-  // Fire-and-forget: log profile view event (once per candidate per session)
-  if (!_viewedCandidateIds.has(c.id)) {
-    _viewedCandidateIds.add(c.id);
+  // Fire-and-forget: log profile view event (once per candidate+context per session)
+  // Composite key: candidateId|positionId — generic and position-context views are separate events
+  var _viewDedupeKey = c.id + '|' + (_currentPozContext ? _currentPozContext.id : 'generic');
+  if (!_viewedCandidateIds.has(_viewDedupeKey)) {
+    _viewedCandidateIds.add(_viewDedupeKey);
     (async function() {
       try {
         var viewResult = await getSupa().from('profile_view_events').insert({
@@ -3915,7 +3917,10 @@ async function openPozDetay(id, e){
     var { data: pozResult, error: pozErr } = await getSupa().rpc('search_employer_candidates', pozRpcParams);
     if(pozErr) throw pozErr;
     var matched = mapRPCtoADAYLAR((pozResult && pozResult.candidates) || []);
-    document.getElementById('poz-detay-count-text').textContent = matched.length + ' eşleşen aday';
+    var pozTotal = (pozResult && pozResult.total != null) ? pozResult.total : matched.length;
+    var countLabel = pozTotal + ' eşleşen aday';
+    if(pozTotal > matched.length) countLabel += ' (ilk ' + matched.length + ' gösteriliyor)';
+    document.getElementById('poz-detay-count-text').textContent = countLabel;
     if(matched.length === 0){
       var empty = document.createElement('div'); empty.className = 'empty-state';
       var eIcon = document.createElement('div'); eIcon.className = 'empty-icon'; eIcon.textContent = '🔍';

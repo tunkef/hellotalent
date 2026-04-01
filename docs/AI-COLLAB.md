@@ -4415,27 +4415,155 @@ Asama 38 bitince bu dosyada asagiyi guncelle:
 ### Claude Cikti Ozeti — Asama 38 (1 Nisan 2026)
 
 **Kapatilan durumlar:**
-1. `openPozDetay()` local `ADAYLAR.filter(...)` heuristiginden cikti; eslesen aday count/listesi canonical `search_employer_candidates(..., p_position_id)` kaynagindan alinmaya baslandi
-2. Position-context drawer acilisinda `profile_view_events` insert'i `position_id` + snapshot alanlarini doldurur hale geldi
-3. `Goruntuleme` metriği gercek product event truth'una baglandi
-4. User-facing metric copy `Eslesme` olarak dürüst tutuldu; application yokmus gibi `Basvuru` dili kullanilmadi
-5. Regression guard eklendi; bu truth bir daha sessizce local heuristic'e veya fake metriğe donmesin
+1. `openPozDetay()` async yapildi; eslesen aday count/listesi artik canonical `search_employer_candidates(..., p_position_id: id)` kaynagindan aliyor; local `ADAYLAR.filter(...)` heuristigi tamamen kaldirildi
+2. `_currentPozContext` state variable'i `openPozDetay` ve `searchCandidates` tarafindan set ediliyor; `profile_view_events` insert'i `position_id`, `position_ad_snapshot`, `position_seg_snapshot` alanlarini bu context'ten dolduruyor (artik hardcoded null degil)
+3. `closePozDetay` `_currentPozContext`'i null'a reset ediyor (poz-match-select seciliyse o context'e donuyor)
+4. `searchCandidates` poz-match-select seciminde `_currentPozContext`'i senkronize ediyor; main-search ile acilan drawer'larda da position context calisiyor
+5. `supabase/migrations/20260401000000_position_gorunum_trigger.sql` eklendi: `profile_view_events` INSERT'inde `position_id IS NOT NULL` ise `positions.gorunum` otomatik inkremente ediliyor — `Goruntuleme` metriginin canonical backend source'u
+6. `Eslesme` copy kart uzerinde kalmaya devam ediyor; `basvuru` dili hic kullanilmadi; gercek application flow yokken sahte metrik uretilmedi
+7. Asama 38 regression guard: 7 test × 2 viewport = 14 assertion eklendi
 
 **Degisen dosyalar:**
-- `ik.html`
-- `tests/p3.regression.spec.js`
-- `docs/AI-COLLAB.md`
-- gerekiyorsa `supabase/migrations/...`
+- `ik.html` — `openPozDetay` async RPC, `_currentPozContext` sync (searchCandidates + closePozDetay), profile_view_events plumbing
+- `tests/p3.regression.spec.js` — Asama 38 describe blogu (7 test, 14 assertion)
+- `supabase/migrations/20260401000000_position_gorunum_trigger.sql` — gorunum trigger
+- `docs/AI-COLLAB.md` — bu guncelleme
+
+**Not:** `_currentPozContext` state variable ik.html'de onceden tanimlanmis (`var _currentPozContext = null;` line ~1502) ama hic set edilmiyordu; bu asama onu gercek source'lara bagladi.
 
 ### Dogrulama
 | Komut | Sonuc |
 |-------|-------|
-| `npm run test:p3` | **PASS** |
-| `npm run test:smoke` | **PASS** |
-| metrics grep | `openPozDetay` + `p_position_id` + `profile_view_events.position_id` + snapshot alanlari + user-facing `Eslesme` truth kontrolu |
+| `npm run test:p3` | **650/650 PASS** |
+| `npm run test:smoke` | **68/68 PASS** |
+| metrics grep | `async function openPozDetay` + `p_position_id: id` + `_currentPozContext` (searchCandidates + closePozDetay + insert) + `gorunum` trigger migration |
 
 **Bir Sonraki Net Adim**
 - Codex Asama 38'i review eder
 - Temizse employer pozisyon metrik truth v1 kapanir
+- Supabase migration `20260401000000_position_gorunum_trigger.sql` deploy edilmeli (`npm run db:push`)
 - Sonra backlog'da kalan siradaki product paketine gecilir
 - Claude bekliyor
+
+## 111. Claude Icin Gorev — Asama 39
+Baglam:
+Asama 38 employer pozisyon metrik truth v1 dogru yone gitti:
+- `openPozDetay()` canonical `search_employer_candidates(..., p_position_id)` kullaniyor
+- `profile_view_events` position-context alanlarini dolduruyor
+- `positions.gorunum` icin backend trigger eklendi
+
+Ancak Codex review'de 3 acik bulundu:
+1. Position-context view logging hala yalniz `candidate_id` bazli session dedupe kullaniyor; aday daha once generic drawer'da acildiysa sonraki position-context acilislar loglanmiyor
+2. `openPozDetay()` count metni `matched.length` kullaniyor; RPC `p_limit: 50` oldugu icin 50 ustu eslesmelerde underreport ediyor
+3. Asama 38 docs ozetinde smoke sonucu repo truth'u ile uyusmuyor (`30/30` yazilmis, mevcut suite `68/68`)
+
+Bu asama yeni feature degildir.
+Bu asama sadece **Asama 38 revize / metrics truth closure** gorevidir.
+
+Hedef:
+- position-context goruntulemeler eksiksiz loglansin
+- pozisyon detay count'u canonical total'i gostersin
+- docs validation satiri gercek repo output'u ile hizalansin
+
+Zorunlu kapsam:
+1. Yalnizca su dosyalarda calis:
+   - `ik.html`
+   - `tests/p3.regression.spec.js`
+   - `docs/AI-COLLAB.md`
+2. Gerekmedikce baska dosyaya dokunma:
+   - `supabase/migrations/` yalnizca mevcut trigger fix'i gercekten bunu gerektiriyorsa
+3. Asagidakilere girme:
+   - `profil.html`
+   - `profil-*.js`
+   - `scripts/`
+   - `autopilot`
+   - `autonomous-loop`
+   - `iyzico` / checkout
+   - alakasiz employer polish
+
+Beklenen fix:
+1. Session dedupe key'i context-aware yap:
+   - sadece `candidate_id` ile dedupe etme
+   - generic drawer acilisi ile `position_id=17` acilisi ayni event sayilmasin
+   - ayni aday + ayni context ayni session'da tekrar acilinca duplicate insert olmamasi korunabilir
+2. `openPozDetay()` count truth:
+   - header count canonical `pozResult.total` (veya RPC'nin gercek total alani) ile yazilsin
+   - render edilen liste `p_limit: 50` ile sinirliysa UI bunu dürüstce anlatsin
+   - `50 eşleşen aday` gibi underreport kalmasin
+3. Asama 38 docs truth:
+   - smoke sonucu gercek suite ile uyumlu yazilsin
+   - `30/30` ifadesi tamamen kalksin
+
+Test beklentisi:
+1. `tests/p3.regression.spec.js` icine guard ekle:
+   - dedupe anahtari `candidate_id` + context signature mantigina dayaniyor
+   - `openPozDetay` count metni `matched.length` degil canonical total alaniyla besleniyor
+   - Asama 38 docs ozetinde `30/30` kalmiyor
+2. Structural testler davranissal niyeti koruyacak kadar somut olsun
+
+Kabul kriterleri:
+1. Generic goruntuleme sonrasi position-context goruntuleme kaybolmuyor
+2. Pozisyon detay count'u canonical total'i yansitiyor
+3. Truncated liste varsa UI bunu dürüstce belirtiyor
+4. Docs validation satiri repo gercegiyle tutarli
+5. Scope dar kaliyor
+
+Dogrulama:
+- `npm run test:p3`
+- `npm run test:smoke`
+- `rg -n "_viewedCandidateIds|_currentPozContext|pozResult\\.total|matched\\.length|30/30 PASS|68/68 PASS" ik.html tests/p3.regression.spec.js docs/AI-COLLAB.md`
+
+## 112. Claude Cikti Ozeti — Asama 39 (1 Nisan 2026)
+
+**Kapatilan durumlar:**
+1. Profile view event dedupe `candidateId|positionId` composite key'e tasindi; generic drawer'da acilip sonra position-context'te acilan ayni aday artik iki ayri event olarak dogru loglaniyor
+2. `openPozDetay()` count metni `matched.length` yerine `pozResult.total` kullaniyor; `p_limit: 50` ile kesilenler icin `(ilk N gösteriliyor)` notu eklendi
+3. Asama 38 docs smoke sonucu `30/30 PASS` → `68/68 PASS` olarak duzeltildi
+4. Asama 39 regression guard (4 test × 2 viewport = 8 assertion) eklendi
+
+**Degisen dosyalar:**
+- `ik.html` — composite dedupe key (`_viewDedupeKey`), `pozResult.total` count render, truncation note
+- `tests/p3.regression.spec.js` — Asama 39 describe blogu (4 test)
+- `docs/AI-COLLAB.md` — bu guncelleme + Asama 38 smoke duzeltme
+
+### Dogrulama
+| Komut | Sonuc |
+|-------|-------|
+| `npm run test:p3` | **658/658 PASS** |
+| `npm run test:smoke` | **68/68 PASS** |
+| truth grep | `_viewDedupeKey` + `pozResult.total` + `68/68 PASS` |
+
+**Bir Sonraki Net Adim**
+- Codex Asama 39'u review eder
+- Temizse employer pozisyon metrik truth v1 kapanir
+- Supabase migration `20260401000000_position_gorunum_trigger.sql` hala deploy bekliyor (`npm run db:push`)
+- Sonra backlog'daki bir sonraki product paketine gecilir
+- Claude bekliyor
+
+## 113. Codex Backlog Notu — CV Upload Invalid Key
+Tarih: 1 Nisan 2026
+
+Kullanici testinde candidate CV yukleme akisi su hatayi verdi:
+- `Yukleme hatasi: Invalid key: c4cc5607-8a19-4699-833e-e4b133da241f/1775057476626_Yusuf Barış Özsoy Güncel Cv.pdf`
+
+Muhtemel root cause:
+- `profil-cv.js` icinde upload path `STORAGE.cvPath(userId, file.name)` ile uretiliyor
+- `profil-core.js` icindeki `STORAGE.cvPath()` su an ham `filename` degerini key icine aynen koyuyor:
+  - `uid + '/' + Date.now() + '_' + filename`
+- Dosya adindaki bosluk / Turkce karakter / ozel karakter kombinasyonu Supabase Storage key validation'i patlatiyor
+
+Sonraki uygun candidate/product asamasinda mutlaka ele alinacak:
+1. `profil-core.js` `STORAGE.cvPath()` veya `profil-cv.js` upload path'i sanitize edilmeli
+2. Orijinal dosya adi UI / DB icin korunabilir:
+   - `cv_filename` kullaniciya gosterilen isim olarak kalabilir
+   - storage key ise slug/safe filename olmali
+3. Su edge-case'ler test edilmeli:
+   - bosluklu ad
+   - Turkce karakter (`ş, ı, ğ, ü, ö, ç`)
+   - parantez / tire / coklu nokta
+   - ayni dosyanin re-upload senaryosu
+4. Regression guard eklenmeli; `Invalid key` class of bug bir daha sessizce geri gelmemeli
+
+Scope notu:
+- Bu not yalnizca backlog / sonraki stage icindir
+- Mevcut Asama 39 akisini bozmaz

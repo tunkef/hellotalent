@@ -2749,3 +2749,50 @@ test.describe('Asama 38 — Pozisyon Metrik Truth v1', () => {
     expect(mig38.toUpperCase()).toContain('TRIGGER');
   });
 });
+
+// ── Aşama 39 — Metrics Truth Closure ─────────────────────────────────────────
+test.describe('Asama 39 — Metrics Truth Closure', () => {
+  var ikHtml39;
+  var aiCollab;
+
+  test.beforeAll(() => {
+    ikHtml39 = readFromRepo('ik.html');
+    aiCollab = readFromRepo('docs/AI-COLLAB.md');
+  });
+
+  test('profile_view_events dedupe uses context-aware composite key (candidateId + contextId)', () => {
+    // Must contain composite key logic, not plain candidate-only set check
+    var dedupeSection = ikHtml39.indexOf('_viewDedupeKey');
+    expect(dedupeSection).toBeGreaterThan(0);
+    var snippet = ikHtml39.substring(dedupeSection, dedupeSection + 300);
+    expect(snippet).toContain('_currentPozContext');
+    expect(snippet).toContain('generic');
+    expect(snippet).toContain('_viewedCandidateIds.has(_viewDedupeKey)');
+    expect(snippet).toContain('_viewedCandidateIds.add(_viewDedupeKey)');
+  });
+
+  test('openPozDetay count uses pozResult.total (not matched.length)', () => {
+    var fnStart = ikHtml39.indexOf('async function openPozDetay');
+    expect(fnStart).toBeGreaterThan(0);
+    var fnBody = ikHtml39.substring(fnStart, fnStart + 3000);
+    // Must reference pozResult.total
+    expect(fnBody).toContain('pozResult.total');
+    // Must NOT use matched.length for the count label
+    expect(fnBody).not.toContain('matched.length + \' eşleşen aday\'');
+  });
+
+  test('openPozDetay shows truncation note when total exceeds rendered list', () => {
+    var fnStart = ikHtml39.indexOf('async function openPozDetay');
+    expect(fnStart).toBeGreaterThan(0);
+    var fnBody = ikHtml39.substring(fnStart, fnStart + 3000);
+    // Truncation note must be present
+    expect(fnBody).toContain('ilk ');
+    expect(fnBody).toContain('gösteriliyor');
+  });
+
+  test('AI-COLLAB.md Asama 38 smoke result shows 68/68 not 30/30', () => {
+    // 30/30 must not appear as a test result claim
+    expect(aiCollab).not.toContain('**30/30 PASS**');
+    expect(aiCollab).toContain('68/68 PASS');
+  });
+});
