@@ -142,10 +142,10 @@ Turkce yaz, kisa ve net ol."
 case "${1:-help}" in
   diff)
     echo -e "${YELLOW}Son commit diff review ediliyor...${NC}"
-    DIFF=$(git diff HEAD~1 --no-color 2>/dev/null || git diff --cached --no-color)
+    DIFF=$(git diff HEAD~1 --no-color 2>/dev/null || git diff --cached --no-color || true)
     if [ -z "$DIFF" ]; then
-      echo "Diff bulunamadi."
-      exit 1
+      echo -e "${GREEN}Diff bulunamadi — review gereksiz, atlanıyor.${NC}"
+      exit 0
     fi
     # Truncate if too long (100K char ~ 25K token)
     DIFF=$(echo "$DIFF" | head -c 100000)
@@ -167,10 +167,10 @@ case "${1:-help}" in
 
   security)
     echo -e "${YELLOW}Security audit calisiyor...${NC}"
-    FILES=$(git diff HEAD~1 --name-only 2>/dev/null | grep -E '\.(js|ts|html)$' || git diff --cached --name-only | grep -E '\.(js|ts|html)$')
+    FILES=$(git diff HEAD~1 --name-only 2>/dev/null | grep -E '\.(js|ts|html)$' || git diff --cached --name-only | grep -E '\.(js|ts|html)$' || true)
     if [ -z "$FILES" ]; then
-      echo "Degisen dosya bulunamadi."
-      exit 1
+      echo -e "${GREEN}Degisen JS/TS/HTML dosyasi yok — security audit gereksiz, atlanıyor.${NC}"
+      exit 0
     fi
     COMBINED=""
     while IFS= read -r f; do
