@@ -694,10 +694,6 @@
     if (bb) { bb.textContent = c > 9 ? '9+' : c; bb.style.display = c > 0 ? 'flex' : 'none'; }
     var md = document.getElementById('header-msg-dot');
     if (md) md.style.display = c > 0 ? '' : 'none';
-    var nd = document.getElementById('header-notif-dot');
-    if (nd) nd.style.display = c > 0 ? '' : 'none';
-    var nb = document.getElementById('badge-bildirimler');
-    if (nb) { nb.textContent = c > 99 ? '99+' : c; nb.style.display = c > 0 ? '' : 'none'; }
   }
 
   /* ═══ HEADER POPUP: Message preview (uses canonical allMessages) ═══ */
@@ -736,37 +732,15 @@
     });
   };
 
-  /* ═══ HEADER POPUP: Notification preview (uses canonical allMessages) ═══ */
-  window._htLoadNotifPreview = async function() {
+  /* ═══ HEADER POPUP: Notification preview ═══ */
+  window._htLoadNotifPreview = function() {
     var listEl = document.getElementById('popup-notif-list');
     if (!listEl) return;
-
-    // Always refresh canonical data when popup opens
-    await window._htLoadInbox();
-
     listEl.textContent = '';
-    var threads = allMessages.filter(function(m) { return m.status !== 'deleted'; }).slice(0, 5);
-    if (threads.length === 0) { var e = document.createElement('div'); e.className = 'header-popup-empty'; e.textContent = 'Bildirim yok.'; listEl.appendChild(e); return; }
-
-    threads.forEach(function(m) {
-      var u = m.is_unread;
-      var item = document.createElement('div'); item.className = 'header-popup-item' + (u ? ' unread' : '');
-      var icon = document.createElement('div'); icon.className = 'header-popup-icon'; icon.style.background = '#EEF2FF'; icon.textContent = '\uD83D\uDD14';
-      var info = document.createElement('div'); info.className = 'header-popup-info';
-      var sender = document.createElement('div'); sender.className = 'header-popup-sender'; sender.textContent = m.company_name || 'Bildirim';
-      var preview = document.createElement('div'); preview.className = 'header-popup-preview';
-      var npText = m.body || m.title || '';
-      if (m.latest_reply) { npText = m.latest_sender === 'candidate' ? 'Sen: ' + m.latest_reply.body : (m.company_name || '\u0130\u015Fveren') + ': ' + m.latest_reply.body; }
-      preview.textContent = npText.substring(0, 60);
-      info.appendChild(sender); info.appendChild(preview);
-      var right = document.createElement('div'); right.style.cssText = 'display:flex;flex-direction:column;align-items:flex-end;gap:4px;';
-      var time = document.createElement('div'); time.className = 'header-popup-time'; time.textContent = timeAgo(m.last_activity);
-      right.appendChild(time);
-      if (u) { var dot = document.createElement('div'); dot.className = 'header-popup-unread-dot'; right.appendChild(dot); }
-      item.appendChild(icon); item.appendChild(info); item.appendChild(right);
-      item.addEventListener('click', function() { closeAllPopups(); if (typeof switchPanel === 'function') switchPanel('bildirimler'); });
-      listEl.appendChild(item);
-    });
+    var e = document.createElement('div');
+    e.className = 'header-popup-empty';
+    e.textContent = 'Bildirim henüz yok.';
+    listEl.appendChild(e);
   };
 
   /* ═══════════════════════════════════════════════════════════════
@@ -835,45 +809,15 @@
     { key: 'sistem', label: 'Sistem' }
   ];
 
-  window._htLoadBildirimler = async function(filter) {
+  window._htLoadBildirimler = function() {
     var listEl = document.getElementById('notif-list');
     var emptyEl = document.getElementById('notif-empty');
-    var tabsEl = document.getElementById('notif-tabs');
     if (!listEl) return;
-
-    if (tabsEl && !tabsEl.hasChildNodes()) renderNotifTabs(tabsEl);
-
-    if (!notifLoaded) {
-      while (listEl.firstChild) listEl.removeChild(listEl.firstChild);
-      var ld = document.createElement('div');
-      ld.style.cssText = 'text-align:center;padding:40px;color:var(--text-muted,#6B7280);font-size:13px;';
-      ld.textContent = 'Bildirimler y\u00FCkleniyor...';
-      listEl.appendChild(ld);
-    }
-
-    // Always refresh canonical data when panel opens
-    await window._htLoadInbox();
-
-    allNotifs = allMessages.filter(function(m) { return m.status !== 'deleted'; }).map(function(m) {
-      var notifBody = m.body || m.title || '';
-      if (m.latest_reply) {
-        notifBody = m.latest_sender === 'candidate' ? 'Sen: ' + m.latest_reply.body : (m.company_name || '\u0130\u015Fveren') + ': ' + m.latest_reply.body;
-      }
-      return {
-        id: m.id,
-        notif_type: 'mesaj',
-        title: m.company_name ? m.company_name + ' mesaj g\u00F6nderdi' : 'Yeni mesaj',
-        body: notifBody,
-        status: m.status,
-        created_at: m.last_activity,
-        is_unread: m.is_unread,
-        company_name: m.company_name,
-        company_logo: m.company_logo
-      };
-    });
+    // No real notification backend yet — show honest empty state
+    allNotifs = [];
     notifLoaded = true;
-    if (filter) notifFilter = filter;
-    renderNotifs();
+    while (listEl.firstChild) listEl.removeChild(listEl.firstChild);
+    if (emptyEl) emptyEl.style.display = '';
     updateNotifPanelBadge();
   };
 

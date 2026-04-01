@@ -2359,6 +2359,44 @@ test.describe('Aşama 14 — MVP free-tier truth-sync guards', () => {
 });
 
 /* ════════════════════════════════════════════════
+   Aşama 25 — Candidate dashboard free-tier copy drift guard
+   ════════════════════════════════════════════════ */
+test.describe('Aşama 25 — Candidate dashboard free-tier copy drift', () => {
+  var profilHtml25;
+
+  test.beforeAll(() => {
+    profilHtml25 = readFromRepo('profil.html');
+  });
+
+  test('avatar dropdown premium button shows Beta Avantajları not Premium Özellikleri', () => {
+    // Locate the avatar-dropdown section by its unique button ID
+    // Window is 800 chars to accommodate the long inline SVG path before the <span>
+    var avdStart = profilHtml25.indexOf('id="avd-premium-btn"');
+    expect(avdStart).toBeGreaterThan(0);
+    var avdSnippet = profilHtml25.substring(avdStart, avdStart + 800);
+    expect(avdSnippet).toContain('Beta Avantajları');
+    expect(avdSnippet).not.toContain('Premium Özellikleri');
+  });
+
+  test('save-success modal premium line shows Beta avantajlarını keşfet not Premium avantajlarını keşfet', () => {
+    var modalStart = profilHtml25.indexOf('class="modal-premium-line"');
+    expect(modalStart).toBeGreaterThan(0);
+    var modalSnippet = profilHtml25.substring(modalStart, modalStart + 150);
+    expect(modalSnippet).toContain('Beta avantajlarını keşfet');
+    expect(modalSnippet).not.toContain('Premium avantajlarını keşfet');
+  });
+
+  test('merkez top footer premium entry shows Beta Avantajları not Premium Aday Avantajları', () => {
+    // Window is 500 chars to accommodate the inline SVG polygon before mk-footer-text
+    var footerStart = profilHtml25.indexOf('id="mk-footer-premium"');
+    expect(footerStart).toBeGreaterThan(0);
+    var footerSnippet = profilHtml25.substring(footerStart, footerStart + 500);
+    expect(footerSnippet).toContain('Beta Avantajları');
+    expect(footerSnippet).not.toContain('Premium Aday Avantajları');
+  });
+});
+
+/* ════════════════════════════════════════════════
    Aşama 24 — AI CV post-sync free-tier truth guard
    ════════════════════════════════════════════════ */
 test.describe('Aşama 24 — AI CV post-sync free-tier truth guard', () => {
@@ -2392,5 +2430,60 @@ test.describe('Aşama 24 — AI CV post-sync free-tier truth guard', () => {
     // 'Premium' copy must co-exist with the MVP flag — not appear as the sole unconditional value
     expect(fnBody).toContain('Premium');
     expect(fnBody).toMatch(/(_htMvpFreeTier|HT_MVP_FREE)[\s\S]{0,300}Premium|Premium[\s\S]{0,300}(_htMvpFreeTier|HT_MVP_FREE)/);
+  });
+});
+
+/* ════════════════════════════════════════════════
+   Aşama 26 — Inbox-notification decoupling guard
+   Inbox unread count must not feed notification bell/panel.
+   Bildirimler panel must not mirror inbox messages.
+   Kim Baktı must not feed general notification bell.
+   ════════════════════════════════════════════════ */
+test.describe('Aşama 26 — Inbox-notification decoupling', () => {
+  var inboxJs26;
+
+  test.beforeAll(() => {
+    inboxJs26 = readFromRepo('profil-inbox.js');
+  });
+
+  test('applyUnreadCountToUI does not write to header-notif-dot', () => {
+    var fnStart = inboxJs26.indexOf('function applyUnreadCountToUI');
+    expect(fnStart).toBeGreaterThan(0);
+    // 800 chars captures the full function (original 12-line version is ~700 chars)
+    var fnBody = inboxJs26.substring(fnStart, fnStart + 800);
+    expect(fnBody).not.toContain('header-notif-dot');
+  });
+
+  test('applyUnreadCountToUI does not write to badge-bildirimler', () => {
+    var fnStart = inboxJs26.indexOf('function applyUnreadCountToUI');
+    expect(fnStart).toBeGreaterThan(0);
+    var fnBody = inboxJs26.substring(fnStart, fnStart + 800);
+    expect(fnBody).not.toContain('badge-bildirimler');
+  });
+
+  test('notification popup preview does not mirror inbox allMessages', () => {
+    var fnStart = inboxJs26.indexOf('window._htLoadNotifPreview');
+    expect(fnStart).toBeGreaterThan(0);
+    // 1400 chars covers the original long function and the fixed short version
+    var fnBody = inboxJs26.substring(fnStart, fnStart + 1400);
+    expect(fnBody).not.toMatch(/allMessages\.filter|threads\s*=\s*allMessages/);
+  });
+
+  test('bildirimler panel load does not derive allNotifs from allMessages', () => {
+    var fnStart = inboxJs26.indexOf('window._htLoadBildirimler');
+    expect(fnStart).toBeGreaterThan(0);
+    // 1600 chars captures the mirroring line ~1000 chars into the original function
+    var fnBody = inboxJs26.substring(fnStart, fnStart + 1600);
+    expect(fnBody).not.toMatch(/allNotifs\s*=\s*allMessages/);
+  });
+
+  test('Kim Baktı viewer load does not feed header-notif-dot', () => {
+    var kbJs = readFromRepo('profil-kimbakti.js');
+    expect(kbJs).not.toContain('header-notif-dot');
+  });
+
+  test('Kim Baktı viewer load does not feed badge-bildirimler', () => {
+    var kbJs = readFromRepo('profil-kimbakti.js');
+    expect(kbJs).not.toContain('badge-bildirimler');
   });
 });
