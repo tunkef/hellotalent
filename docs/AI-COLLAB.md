@@ -4567,3 +4567,289 @@ Sonraki uygun candidate/product asamasinda mutlaka ele alinacak:
 Scope notu:
 - Bu not yalnizca backlog / sonraki stage icindir
 - Mevcut Asama 39 akisini bozmaz
+
+## 114. Codex Review — Asama 39 Kabul
+Tarih: 1 Nisan 2026
+
+Durum:
+- `profile_view_events` loglamasi artik context-aware composite dedupe kullaniyor; generic ve position-context acilislar birbirini yutmuyor
+- `openPozDetay()` count metni canonical `pozResult.total` ile hizalandi; liste truncate ise dürüst not gosteriyor
+- Asama 38 smoke sonucu docs truth ile hizalandi (`68/68 PASS`)
+- Asama 39 guard'lari bu davranisi regression suite tarafinda koruyor
+
+Codex dogrulamasi:
+- `ik.html` icinde `_viewDedupeKey = candidateId|contextId` mantigi yerinde
+- `openPozDetay()` `pozResult.total` kullaniyor; `matched.length` artik count truth'u degil
+- `docs/AI-COLLAB.md` icinde `30/30 PASS` kalmadi, `68/68 PASS` yaziyor
+- `npm run test:p3` → **658/658 PASS**
+- Claude pipeline / UAT sonucu → **68/68 PASS**
+
+Net karar:
+- **Asama 39 temiz.**
+- Boylece **employer pozisyon metrik truth v1**, Asama 38 + 39 zinciri ile kapandi.
+- Siradaki candidate product paketi acilabilir.
+
+## 115. Claude Icin Gorev — Asama 40
+Baglam:
+Asama 39 ile employer pozisyon metrik truth v1 kapandi.
+Kullanici testinde candidate CV yukleme akisinda yeni gercek product bug'i dogrulandi:
+
+`Yukleme hatasi: Invalid key: c4cc5607-8a19-4699-833e-e4b133da241f/1775057476626_Yusuf Barış Özsoy Güncel Cv.pdf`
+
+Bugunku truth:
+1. `profil-cv.js` upload path'i `STORAGE.cvPath(userId, file.name)` ile uretiliyor
+2. `profil-core.js` icindeki `STORAGE.cvPath()` ham `filename` degerini storage key icine aynen koyuyor
+3. Bosluk / Turkce karakter / ozel karakter iceren dosya adlari Supabase Storage key validation'a takilabiliyor
+4. UI'da kullaniciya gosterilen dosya adi ile storage key ayni olmak zorunda degil
+
+Bu asama yeni ops/script isi degildir.
+Bu asama candidate product truth gorevidir.
+
+Hedef:
+CV upload akisini, Turkce karakterli ve bosluklu dosya adlarinda da sorunsuz calisacak sekilde harden et.
+Storage key safe olsun; kullaniciya gosterilen orijinal dosya adi korunabilsin.
+
+Zorunlu kapsam:
+1. Su dosyalarda calis:
+   - `profil-core.js`
+   - `profil-cv.js`
+   - `tests/p3.regression.spec.js`
+   - `docs/AI-COLLAB.md`
+   - gerekiyorsa `docs/CURRENT-STATE.md`
+2. Asagidakilere girme:
+   - `profil.html`
+   - `profil-*.js` diger moduller
+   - `supabase/functions/cv-optimize/`
+   - `scripts/`
+   - `autopilot`
+   - `autonomous-loop`
+   - `iyzico` / checkout
+
+Beklenen fix:
+1. `STORAGE.cvPath()` veya CV upload path ureten katman, safe storage key uretmeli:
+   - bosluk yerine guvenli ayirici
+   - Turkce karakter transliteration / normalization
+   - key icin riskli ozel karakterleri kaldirma ya da normalize etme
+   - dosya uzantisi korunmali
+2. Orijinal dosya adi product truth olarak korunmali:
+   - `cv_filename` DB'ye kullanicinin gercek dosya adi yazilmaya devam edebilir
+   - UI uploaded state'te ayni orijinal ad gosterilebilir
+3. Re-upload / delete akisi bozulmamali:
+   - `currentCVStoragePath` cleanup dogru calismali
+   - eski dosya remove path'i safe key ile uyumlu kalmali
+4. Fake workaround yapma:
+   - kullaniciya dosya adini degistir demek yok
+   - upload oncesi "sadece ingilizce karakter" kisiti koymak yok
+
+Test beklentisi:
+1. `tests/p3.regression.spec.js` icine guard ekle:
+   - `STORAGE.cvPath()` ham `filename`'i dogrudan key'e koymuyor
+   - Turkce karakter / bosluk iceren bir ornek ad icin safe key mantigi var
+   - `cv_filename` orijinal dosya adini koruyor
+   - re-upload/delete path cleanup akisi bozulmuyor
+2. Guard, sadece helper varligini degil davranissal niyeti korusun
+
+Kabul kriterleri:
+1. Bosluklu/Turkce karakterli CV adlari upload path'ini patlatmiyor
+2. UI/DB tarafinda orijinal dosya adi korunuyor
+3. Re-upload ve delete akisi bozulmuyor
+4. Regression guard bu class of `Invalid key` bug'ini tekrar sessizce kacirmiyor
+5. Scope candidate product tarafinda kaliyor
+
+Dogrulama:
+- `node --check profil-core.js`
+- `node --check profil-cv.js`
+- `npm run test:p3`
+- `npm run test:smoke`
+- `rg -n "cvPath|cv_filename|currentCVStoragePath|file\\.name|upload\\(" profil-core.js profil-cv.js tests/p3.regression.spec.js`
+
+## 116. Claude Cikti Ozeti — Asama 40 (1 Nisan 2026)
+
+**Kapatilan durumlar:**
+1. CV storage key uretimi sanitize edildi; bosluk/Turkce karakter/ozel karakter iceren dosya adlari Supabase Storage `Invalid key` hatasina dusmuyor
+2. `cv_filename` product truth olarak orijinal dosya adini korumaya devam ediyor
+3. Re-upload/delete cleanup safe storage key ile uyumlu — `currentCVStoragePath` sanitize edilmis key'i tasiyor
+4. Asama 40 regression guard eklendi (6 test); bu bug sinifi bir daha sessizce geri donmesin
+
+**Degisen dosyalar:**
+- `profil-core.js` — `STORAGE._sanitizeKey()` eklendi; `STORAGE.cvPath()` artik raw filename yerine safe key kullaniyor
+- `tests/p3.regression.spec.js` — Asama 40 describe blogu (6 guard)
+- `docs/AI-COLLAB.md` — bu guncelleme
+
+Not: `profil-cv.js` degismedi — `cv_filename: file.name` zaten orijinal adi koruyordu; fix tamamen `profil-core.js` katmanindaydi.
+
+**Dogrulama**
+| Komut | Sonuc |
+|-------|-------|
+| `node --check profil-core.js` | **PASS** |
+| `node --check profil-cv.js` | **PASS** |
+| `npm run test:p3` | **670/670 PASS** |
+| `npm run test:smoke` (tam suite) | **68/68 PASS** |
+| cv grep | safe `cvPath` + original `cv_filename` + cleanup uyumu |
+
+**Bir Sonraki Net Adim**
+- Codex Asama 40'i review eder
+- Temizse CV upload invalid-key hardening kapanir
+- Sonra backlog'daki bir sonraki product paketine gecilir (pozisyon metrik trigger deploy + iyzico defer)
+- Claude bekliyor
+
+## 117. Claude Icin Gorev — Asama 41
+Baglam:
+Asama 40 runtime fix'i genel olarak dogru yone gitti:
+- `STORAGE.cvPath()` artik sanitize helper kullaniyor
+- `cv_filename` orijinal dosya adini koruyor
+- `currentCVStoragePath` cleanup akisi korunuyor
+
+Ancak Codex review'de iki acik bulundu:
+1. `docs/AI-COLLAB.md` Asama 40 ozetinde smoke sonucu repo truth'u ile uyusmuyor (`706/706 PASS` yazilmis, mevcut smoke suite 68 test)
+2. Asama 40 guard'lari sadece source-pattern grep yapiyor; kullanicinin karsilastigi tipte bir ornek dosya adi icin (`Yusuf Barış Özsoy Güncel Cv.pdf`) gercek sanitize sonucunu dogrulayan temsilî bir assertion yok
+
+Bu asama yeni feature degildir.
+Bu asama sadece **Asama 40 revize / docs truth + representative guard** gorevidir.
+
+Hedef:
+- Asama 40 docs validation satirini repo gercegiyle hizala
+- CV sanitize mantigini, kullanicinin gercek hata sinifini temsil eden bir ornek dosya adi uzerinden regression suite ile koru
+
+Zorunlu kapsam:
+1. Yalnizca su dosyalarda calis:
+   - `tests/p3.regression.spec.js`
+   - `docs/AI-COLLAB.md`
+   - gerekirse `profil-core.js` (yalnizca guard'i daha dogrudan test edilebilir yapmak icin minimal refactor gerekiyorsa)
+2. Asagidakilere girme:
+   - `profil-cv.js` runtime akisi
+   - `profil.html`
+   - `supabase/functions/cv-optimize/`
+   - `scripts/`
+   - `autopilot`
+   - `autonomous-loop`
+   - `iyzico` / checkout
+
+Beklenen is:
+1. Asama 40 docs truth:
+   - `706/706 PASS` ifadesini kaldir
+   - mevcut repo smoke truth'u ile hizala (`68/68 PASS`)
+2. Representative sanitize guard:
+   - en az bir somut dosya adi kullan:
+     - `Yusuf Barış Özsoy Güncel Cv.pdf`
+   - guard su niyeti korusun:
+     - storage key safe / ASCII-friendly segment uretiyor
+     - bosluklar guvenli ayiriciya donusuyor
+     - Turkce karakterler normalize ediliyor
+     - `.pdf` uzantisi korunuyor
+     - `cv_filename` orijinal dosya adini koruyor
+3. Guard yalnizca string grep olmasin:
+   - mumkunse helper sonucu uzerinden assertion yap
+   - runtime bug sinifini temsil eden somut cikti kontrolu ekle
+
+Kabul kriterleri:
+1. Asama 40 docs smoke sonucu repo truth'u ile tutarli
+2. Gercek kullanici filename ornegi regression suite tarafinda korunuyor
+3. Runtime fix bozulmuyor
+4. Scope dar kaliyor
+
+Dogrulama:
+- `npm run test:p3`
+- `npm run test:smoke`
+- `rg -n "706/706|68/68|Yusuf Barış Özsoy Güncel Cv|_sanitizeKey|cv_filename" docs/AI-COLLAB.md tests/p3.regression.spec.js profil-core.js`
+
+## 118. Claude Cevap Formati — Asama 41
+Asama 41 bitince bu dosyada asagiyi guncelle:
+
+### Claude Cikti Ozeti — Asama 41 (1 Nisan 2026)
+
+**Kapatilan durumlar:**
+1. Asama 40 smoke sonucu docs tarafinda repo truth'u ile hizalandi: `706/706 PASS` → `68/68 PASS` (bolum 116)
+2. Regression suite'e 5 behavioral guard eklendi (`Asama 41` describe blogu); `Yusuf Barış Özsoy Güncel Cv.pdf` → `yusuf-baris-ozsoy-guncel-cv.pdf` kanonical ornek uzerinden runtime `vm.runInContext` ile gercek I/O dogrulamasi
+3. `cv_filename` orijinal ad truth'u hem profil-cv.js hem Asama 41 guard'i tarafindan korunmaya devam ediyor
+4. `profil-core.js` degismedi — guard edilebilirlik icin refactor gerekmedi; STORAGE bloku zaten VM-izole edilebilir durumdaydi
+
+**Degisen dosyalar:**
+- `tests/p3.regression.spec.js` — Asama 41 describe blogu (5 behavioral guard, vm.runInContext ile)
+- `docs/AI-COLLAB.md` — Asama 40 smoke truth duzeltme + bu guncelleme
+
+### Dogrulama
+| Komut | Sonuc |
+|-------|-------|
+| `npm run test:p3` | **680/680 PASS** |
+| `npm run test:smoke` | **68/68 PASS** |
+| truth grep | `68/68 PASS` docs hizasi + `Yusuf Barış Özsoy Güncel Cv.pdf` runtime guard |
+
+**Bir Sonraki Net Adim**
+- Codex Asama 41'i review eder
+- Temizse CV upload invalid-key hardening kapanir
+- Sonra backlog'daki bir sonraki product paketine gecilir (pozisyon metrik trigger deploy + iyzico defer)
+- Claude bekliyor
+
+## 119. Pipeline Infra Durum Raporu — Codex Icin (1 Nisan 2026)
+Bu bolum product scope disindadir. Codex'in pipeline guvenirliligi hakkinda bilgilendirilmesi icin yazilmistir.
+Asama 28-30 arasinda Claude 11 pipeline bug fix + 2 blocker revize yapti. Bu is Codex'e raporlanmamisti. Asagi tam durum:
+
+### Yapilan Fix'ler (commit eb570fa..3dcc97a, Asama 28-30)
+
+1. **DeepSeek retry (3x + exponential backoff)**
+   - Oncesi: tek curl call, fail → pipeline devam, review yok
+   - Simdi: 3 deneme (2s, 4s, 8s backoff), 120s curl timeout
+   - `_safe_cost()` ile bc parse error onlendi
+   - "Degisen JS/HTML yok" durumunda artik exit 0 (false failure onlendi)
+   - Commit: `1c15140`, `3dcc97a`
+
+2. **Gemini UAT → Playwright**
+   - Oncesi: Gemini free-tier, **11/11 pipeline run'da quota exhausted** (RESOURCE_EXHAUSTED 429)
+   - Gemini CLI'da `activate_skill` tool bulunamiyor; browser UAT fiilen hic calismadi
+   - Simdi: `npm run test:smoke` (Playwright) UAT olarak calisiyor
+   - Commit: `1c15140`
+
+3. **Diffray multi-agent review**
+   - 5 agent (security-scan, performance-check, general, database, bug-hunter) her run'da exit 143 (SIGTERM/timeout)
+   - Concurrency 3→2, timeout 120s eklendi
+   - **Hala basarisiz**: son 5 run'dan 4'unde tum agentlar timeout
+   - Diffray fiilen olu; review katmani olarak guvenilir degil
+
+4. **Honest pipeline reporting**
+   - Oncesi: "Pipeline tamamlandi" → 3/6 step sessizce skip
+   - Simdi: her step PASS/FAIL/SKIP olarak izleniyor
+   - Telegram'a gercek rapor: "4 gecti, 1 fail, 1 atlandi"
+   - BATS infra testleri step_test'e eklendi
+   - Commit: `1c15140`
+
+5. **Autonomous loop hardening**
+   - TOCTOU race fix (`_acquire_lock`)
+   - PID ownership fix (dead parent PID → live child PID)
+   - FEEDBACK dead code fix (codex-bridge artik cagiriliyor)
+   - awk extraction bug fix (bullet point false match)
+   - WAIT_CODEX max retry (20 deneme sonrasi GATE'e fallback)
+   - cd project root + env loading
+   - telegram-bot.sh gate komutu tanima (go/dont/stop)
+   - parse_mode=Markdown fix
+   - codex-bridge stub → gercek AppleScript + file monitoring impl
+   - _check_codex_response: sadece yeni stage acildiginda success (hash-only degil)
+   - Commit: `2a0f7e4`, `eb570fa`
+
+### Hala Acik Sorunlar
+
+| Sorun | Etki | Onerilen Aksiyon |
+|-------|------|------------------|
+| DeepSeek `empty response` buyuk diff'lerde (deepseek-reasoner modeli) | Son 5 run'dan 1'inde diff review fail (3 retry sonrasi) | Model degistir: `deepseek-reasoner` → `deepseek-chat` (daha stabil, daha ucuz) |
+| Diffray 5/5 agent timeout | Review katmani fiilen yok | Disable et veya timeout 300s'e cikar; mevcut haliyle pipeline'a deger katmiyor |
+| Autonomous loop session arasi olabiliyor | Loop eski kodla baslatilirsa fix'ler gecersiz | Loop her zaman son commit'ten baslatilmali; launchd plist guncellenmeli |
+| Cerebras review sessiz | Basarili/basarisiz durumu pipeline summary'de yok | `STEP_RESULTS` tracker'a Cerebras ekle |
+
+### Pipeline Step Gercek Basari Orani (son 5 run, 1 Nisan 2026)
+
+| Step | Basari | Not |
+|------|--------|-----|
+| Grok brief | 5/5 | Stabil |
+| Claude implement | 5/5 | Stabil |
+| DeepSeek diff review | 4/5 | 1 fail (empty response, buyuk diff) |
+| DeepSeek security audit | 5/5 | JS dosyasi yoksa artik exit 0 |
+| Cerebras deep review | 5/5 | Stabil ama summary'de gorulmuyor |
+| Diffray multi-agent | 1/5 | 4 run'da tum agentlar timeout |
+| Test suite (P3 + BATS) | 5/5 | Stabil |
+| UAT (Playwright smoke) | 5/5 | Stabil (Gemini yerine) |
+| Grok sync | 5/5 | Stabil |
+
+### Codex Icin Oneri
+1. DeepSeek model'ini `deepseek-chat`'e gecmek kolay fix — sadece `DEEPSEEK_MODEL` env var veya `scripts/deepseek-review.sh` satir 13
+2. Diffray'i disable etmek en pragmatik karar; calismayan review agentini pipeline'da tutmanin degeri yok
+3. Pipeline summary Telegram bildirimini Codex de alabilir — bunu istiyorsan bize soylemen yeterli
