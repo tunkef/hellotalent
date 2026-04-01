@@ -2487,3 +2487,193 @@ test.describe('Aşama 26 — Inbox-notification decoupling', () => {
     expect(kbJs).not.toContain('badge-bildirimler');
   });
 });
+
+// ═══════════════════════════════════════════════════════════════
+// Aşama 35 — ik.html token-source guard
+// ik.html --text-* token'larını local :root'ta tanımlamadan kullanırsa
+// CSS var() sessizce çözümsüz kalır. Bu guard tanım-kullanım tutarlılığını
+// zorlar: kullanım varsa tanım da aynı dosyada bulunmalı.
+// ═══════════════════════════════════════════════════════════════
+test.describe('Aşama 35 — ik.html text-token source guard', () => {
+  var ikHtml;
+
+  test.beforeAll(() => {
+    ikHtml = readFromRepo('ik.html');
+  });
+
+  test('ik.html defines all --text-* tokens it uses in its own :root', () => {
+    var usedTokens = ['--text-xs', '--text-sm', '--text-base', '--text-md',
+                      '--text-lg', '--text-xl', '--text-2xl', '--text-3xl'];
+    var usesAnyToken = usedTokens.some(function(t) {
+      return ikHtml.indexOf('var(' + t + ')') !== -1;
+    });
+    // If ik.html uses any --text-* token, every token in the set must be defined in its :root.
+    if (usesAnyToken) {
+      usedTokens.forEach(function(t) {
+        expect(ikHtml).toContain(t + ':');
+      });
+    }
+  });
+
+  test('ik.html --text-* definitions are in a local :root block, not imported from shared.css', () => {
+    var rootStart = ikHtml.indexOf(':root');
+    expect(rootStart).toBeGreaterThanOrEqual(0);
+    var rootBlock = ikHtml.slice(rootStart, ikHtml.indexOf('}', rootStart) + 1);
+    expect(rootBlock).toContain('--text-xs:');
+    expect(rootBlock).toContain('--text-3xl:');
+  });
+});
+
+// ═══════════════════════════════════════════════════════════════
+// Aşama 36 — Candidate notification truth v1
+// Notification bell/panel reads from real product sources
+// (coach_posts, campaigns) — not inbox messages, not Kim Bakti.
+// Inbox (allMessages) and Kim Bakti (profile_view_events) stay
+// in their own channels and must not leak into the notification feed.
+// ═══════════════════════════════════════════════════════════════
+test.describe('Aşama 36 — candidate notification truth v1', () => {
+  var inboxJs36;
+
+  test.beforeAll(() => {
+    inboxJs36 = readFromRepo('profil-inbox.js');
+  });
+
+  test('_fetchNotifData async function exists in profil-inbox.js', () => {
+    expect(inboxJs36).toContain('async function _fetchNotifData');
+  });
+
+  test('_fetchNotifData queries coach_posts source', () => {
+    var fnStart = inboxJs36.indexOf('async function _fetchNotifData');
+    expect(fnStart).toBeGreaterThan(0);
+    var fnBody = inboxJs36.substring(fnStart, fnStart + 3000);
+    expect(fnBody).toContain('coach_posts');
+  });
+
+  test('_fetchNotifData queries campaigns source', () => {
+    var fnStart = inboxJs36.indexOf('async function _fetchNotifData');
+    expect(fnStart).toBeGreaterThan(0);
+    var fnBody = inboxJs36.substring(fnStart, fnStart + 3000);
+    expect(fnBody).toContain('campaigns');
+  });
+
+  test('_htLoadNotifPreview calls _fetchNotifData (not static stub)', () => {
+    var fnStart = inboxJs36.indexOf('window._htLoadNotifPreview');
+    expect(fnStart).toBeGreaterThan(0);
+    var fnBody = inboxJs36.substring(fnStart, fnStart + 1500);
+    expect(fnBody).toContain('_fetchNotifData');
+  });
+
+  test('_htLoadBildirimler calls _fetchNotifData (not static stub)', () => {
+    var fnStart = inboxJs36.indexOf('window._htLoadBildirimler');
+    expect(fnStart).toBeGreaterThan(0);
+    var fnBody = inboxJs36.substring(fnStart, fnStart + 1500);
+    expect(fnBody).toContain('_fetchNotifData');
+  });
+
+  test('_fetchNotifData does not reference profile_view_events (Kim Bakti channel)', () => {
+    var fnStart = inboxJs36.indexOf('async function _fetchNotifData');
+    expect(fnStart).toBeGreaterThan(0);
+    var fnBody = inboxJs36.substring(fnStart, fnStart + 3000);
+    expect(fnBody).not.toContain('profile_view_events');
+  });
+
+  test('_fetchNotifData does not reference candidate_view_stats (Kim Bakti channel)', () => {
+    var fnStart = inboxJs36.indexOf('async function _fetchNotifData');
+    expect(fnStart).toBeGreaterThan(0);
+    var fnBody = inboxJs36.substring(fnStart, fnStart + 3000);
+    expect(fnBody).not.toContain('candidate_view_stats');
+  });
+
+  test('_htLoadNotifPreview does not mirror allMessages (inbox channel)', () => {
+    var fnStart = inboxJs36.indexOf('window._htLoadNotifPreview');
+    expect(fnStart).toBeGreaterThan(0);
+    var fnBody = inboxJs36.substring(fnStart, fnStart + 1500);
+    expect(fnBody).not.toMatch(/allMessages/);
+  });
+
+  test('_applyNotifBellDot function exists and manages header-notif-dot', () => {
+    expect(inboxJs36).toContain('function _applyNotifBellDot');
+    var fnStart = inboxJs36.indexOf('function _applyNotifBellDot');
+    var fnBody = inboxJs36.substring(fnStart, fnStart + 500);
+    expect(fnBody).toContain('header-notif-dot');
+  });
+
+  test('_applyNotifBellDot manages badge-bildirimler', () => {
+    var fnStart = inboxJs36.indexOf('function _applyNotifBellDot');
+    expect(fnStart).toBeGreaterThan(0);
+    var fnBody = inboxJs36.substring(fnStart, fnStart + 500);
+    expect(fnBody).toContain('badge-bildirimler');
+  });
+});
+
+// ═══════════════════════════════════════════════════════════════
+// Aşama 37 — Notification unread-state truth fix
+// When _htLoadBildirimler() opens the panel it writes ht_notif_last_seen.
+// The in-memory allNotifs items must have is_unread cleared in the same
+// call — bell dot, panel badge, and Okunmamış filter must not show stale
+// unread indicators after the panel is opened.
+// ═══════════════════════════════════════════════════════════════
+test.describe('Aşama 37 — notification unread-state truth fix', () => {
+  var inboxJs37;
+
+  test.beforeAll(() => {
+    inboxJs37 = readFromRepo('profil-inbox.js');
+  });
+
+  test('_htLoadBildirimler writes ht_notif_last_seen', () => {
+    var fnStart = inboxJs37.indexOf('window._htLoadBildirimler');
+    expect(fnStart).toBeGreaterThan(0);
+    var fnBody = inboxJs37.substring(fnStart, fnStart + 2000);
+    expect(fnBody).toContain('ht_notif_last_seen');
+  });
+
+  test('_htLoadBildirimler clears is_unread on allNotifs after writing last_seen', () => {
+    var fnStart = inboxJs37.indexOf('window._htLoadBildirimler');
+    expect(fnStart).toBeGreaterThan(0);
+    var fnBody = inboxJs37.substring(fnStart, fnStart + 2000);
+    /* Must have a loop that sets is_unread = false on allNotifs items */
+    expect(fnBody).toContain('is_unread = false');
+    /* The loop must reference allNotifs (not a local copy) */
+    expect(fnBody).toMatch(/allNotifs\[/);
+  });
+
+  test('_htLoadBildirimler calls _applyNotifBellDot after clearing unread state', () => {
+    var fnStart = inboxJs37.indexOf('window._htLoadBildirimler');
+    expect(fnStart).toBeGreaterThan(0);
+    var fnBody = inboxJs37.substring(fnStart, fnStart + 2000);
+    var lastSeenPos = fnBody.indexOf('ht_notif_last_seen');
+    var clearPos = fnBody.indexOf('is_unread = false');
+    var bellDotPos = fnBody.indexOf('_applyNotifBellDot');
+    /* last_seen write → unread clear → bell dot update order */
+    expect(lastSeenPos).toBeGreaterThan(0);
+    expect(clearPos).toBeGreaterThan(lastSeenPos);
+    expect(bellDotPos).toBeGreaterThan(clearPos);
+  });
+
+  test('_htLoadBildirimler calls updateNotifPanelBadge after clearing unread state', () => {
+    var fnStart = inboxJs37.indexOf('window._htLoadBildirimler');
+    expect(fnStart).toBeGreaterThan(0);
+    var fnBody = inboxJs37.substring(fnStart, fnStart + 2000);
+    var clearPos = fnBody.indexOf('is_unread = false');
+    var badgePos = fnBody.indexOf('updateNotifPanelBadge');
+    expect(clearPos).toBeGreaterThan(0);
+    expect(badgePos).toBeGreaterThan(clearPos);
+  });
+
+  test('updateNotifPanelBadge reads is_unread from allNotifs', () => {
+    var fnStart = inboxJs37.indexOf('function updateNotifPanelBadge');
+    expect(fnStart).toBeGreaterThan(0);
+    var fnBody = inboxJs37.substring(fnStart, fnStart + 500);
+    expect(fnBody).toContain('allNotifs');
+    expect(fnBody).toContain('is_unread');
+    expect(fnBody).toContain('notif-unread-badge');
+  });
+
+  test('_applyNotifBellDot reads is_unread from allNotifs', () => {
+    var fnStart = inboxJs37.indexOf('function _applyNotifBellDot');
+    expect(fnStart).toBeGreaterThan(0);
+    var fnBody = inboxJs37.substring(fnStart, fnStart + 500);
+    expect(fnBody).toContain('allNotifs');
+    expect(fnBody).toContain('is_unread');
+  });
+});

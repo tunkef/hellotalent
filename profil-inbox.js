@@ -732,15 +732,40 @@
     });
   };
 
-  /* ═══ HEADER POPUP: Notification preview ═══ */
-  window._htLoadNotifPreview = function() {
+  /* ═══ HEADER POPUP: Notification preview (canonical source) ═══ */
+  window._htLoadNotifPreview = async function() {
     var listEl = document.getElementById('popup-notif-list');
     if (!listEl) return;
     listEl.textContent = '';
-    var e = document.createElement('div');
-    e.className = 'header-popup-empty';
-    e.textContent = 'Bildirim henüz yok.';
-    listEl.appendChild(e);
+    var items;
+    try { items = await _fetchNotifData(); } catch(e) { console.error('[notif] preview fetch error:', e); items = []; }
+    if (items.length === 0) {
+      var emptyDiv = document.createElement('div');
+      emptyDiv.className = 'header-popup-empty';
+      emptyDiv.textContent = 'Hen\u00FCz bildirim yok.';
+      listEl.appendChild(emptyDiv);
+      return;
+    }
+    items.slice(0, 5).forEach(function(notif) {
+      var item = document.createElement('div');
+      item.className = 'header-popup-item' + (notif.is_unread ? ' unread' : '');
+      var icon = document.createElement('div');
+      icon.className = 'header-popup-icon';
+      icon.style.background = notif.notif_type === 'koc' ? '#EEF2FF' : '#FEF7F5';
+      icon.textContent = notif.notif_type === 'koc' ? '\uD83C\uDF93' : '\uD83C\uDF81';
+      var info = document.createElement('div'); info.className = 'header-popup-info';
+      var titleEl = document.createElement('div'); titleEl.className = 'header-popup-sender'; titleEl.textContent = notif.title;
+      var preview = document.createElement('div'); preview.className = 'header-popup-preview'; preview.textContent = (notif.body || '').substring(0, 60);
+      info.appendChild(titleEl); info.appendChild(preview);
+      var right = document.createElement('div'); right.style.cssText = 'display:flex;flex-direction:column;align-items:flex-end;gap:4px;';
+      var time = document.createElement('div'); time.className = 'header-popup-time'; time.textContent = timeAgo(notif.created_at);
+      right.appendChild(time);
+      if (notif.is_unread) { var dot = document.createElement('div'); dot.className = 'header-popup-unread-dot'; right.appendChild(dot); }
+      item.appendChild(icon); item.appendChild(info); item.appendChild(right);
+      var targetPanel = notif.notif_type === 'koc' ? 'studio' : 'teklifler';
+      item.addEventListener('click', function() { closeAllPopups(); if (typeof switchPanel === 'function') switchPanel(targetPanel); });
+      listEl.appendChild(item);
+    });
   };
 
   /* ═══════════════════════════════════════════════════════════════
@@ -793,32 +818,136 @@
 
     // Preload badges after page settles
     setTimeout(preloadUnreadCount, 2500);
+    // Preload notification bell dot (non-blocking)
+    setTimeout(function() {
+      _fetchNotifData().then(function(items) { allNotifs = items; _applyNotifBellDot(); }).catch(function() {});
+    }, 3000);
   });
 
   /* ═══════════════════════════════════════════════════════════════
      BILDIRIMLER PANEL (full notification center)
+     Sources: coach_posts (published) + campaigns (active)
+     Inbox messages and Kim Bakti stay in their own channels.
      ═══════════════════════════════════════════════════════════════ */
   var notifLoaded = false;
   var allNotifs = [];
   var notifFilter = 'all';
 
+  /* Notification data cache — shared by popup preview and full panel */
+  var _notifCache = null;
+  var _notifCacheTsMs = 0;
+  var _notifFetchPromise = null;
+  var _NOTIF_TTL_MS = 5 * 60 * 1000; /* 5-minute TTL */
+
+  /**
+   * Fetch canonical notification data from real product sources.
+   * Returns array of notif objects: { id, notif_type, title, body, created_at, is_unread, company_logo }
+   * Caches for _NOTIF_TTL_MS. Safe to call from both preview and full panel.
+   */
+  async function _fetchNotifData() {
+    if (_notifFetchPromise) return _notifFetchPromise;
+    if (_notifCache !== null && (Date.now() - _notifCacheTsMs) < _NOTIF_TTL_MS) return _notifCache;
+    _notifFetchPromise = (async function() {
+      var supa = getSupa();
+      if (!supa) { _notifFetchPromise = null; return []; }
+      var lastSeen = null;
+      try { lastSeen = localStorage.getItem('ht_notif_last_seen'); } catch(e) {}
+      var results = [];
+      /* Source 1: Published coach posts */
+      try {
+        var postsRes = await supa
+          .from('coach_posts')
+          .select('id, title, excerpt, category, published_at')
+          .eq('status', 'published')
+          .order('published_at', { ascending: false })
+          .limit(10);
+        if (!postsRes.error && postsRes.data) {
+          postsRes.data.forEach(function(p) {
+            if (!p.published_at) return;
+            results.push({
+              id: 'koc_' + p.id,
+              notif_type: 'koc',
+              title: p.title || 'Ko\u00E7 i\u00E7eri\u011Fi',
+              body: p.excerpt || (p.category ? p.category + ' kategorisinde yeni i\u00E7erik' : 'Yeni ko\u00E7 i\u00E7eri\u011Fi'),
+              created_at: p.published_at,
+              is_unread: lastSeen ? (new Date(p.published_at) > new Date(lastSeen)) : true,
+              company_logo: null
+            });
+          });
+        }
+      } catch(e) { console.error('[notif] coach_posts fetch error:', e); }
+      /* Source 2: Active campaigns */
+      try {
+        var campRes = await supa
+          .from('campaigns')
+          .select('id, title, short_desc, start_date, created_at')
+          .eq('status', 'active')
+          .order('start_date', { ascending: false })
+          .limit(10);
+        if (!campRes.error && campRes.data) {
+          campRes.data.forEach(function(c) {
+            var dt = c.start_date || c.created_at;
+            if (!dt) return;
+            results.push({
+              id: 'kampanya_' + c.id,
+              notif_type: 'kampanya',
+              title: c.title || 'Yeni kampanya',
+              body: c.short_desc || 'Yeni kampanya mevcut',
+              created_at: dt,
+              is_unread: lastSeen ? (new Date(dt) > new Date(lastSeen)) : true,
+              company_logo: null
+            });
+          });
+        }
+      } catch(e) { console.error('[notif] campaigns fetch error:', e); }
+      /* Sort by date descending */
+      results.sort(function(a, b) { return new Date(b.created_at) - new Date(a.created_at); });
+      _notifCache = results;
+      _notifCacheTsMs = Date.now();
+      _notifFetchPromise = null;
+      return results;
+    })();
+    return _notifFetchPromise;
+  }
+
+  function _applyNotifBellDot() {
+    var unread = 0;
+    for (var i = 0; i < allNotifs.length; i++) { if (allNotifs[i].is_unread) unread++; }
+    var dot = document.getElementById('header-notif-dot');
+    if (dot) dot.style.display = unread > 0 ? '' : 'none';
+    var navBadge = document.getElementById('badge-bildirimler');
+    if (navBadge) { navBadge.textContent = unread > 9 ? '9+' : String(unread); navBadge.style.display = unread > 0 ? '' : 'none'; }
+  }
+
   var NOTIF_FILTERS = [
-    { key: 'all',    label: 'T\u00FCm\u00FC' },
-    { key: 'unread', label: 'Okunmam\u0131\u015F' },
-    { key: 'mesaj',  label: 'Mesajlar' },
-    { key: 'sistem', label: 'Sistem' }
+    { key: 'all',      label: 'T\u00FCm\u00FC' },
+    { key: 'unread',   label: 'Okunmam\u0131\u015F' },
+    { key: 'koc',      label: 'Ko\u00E7 \u0130\u00E7eri\u011Fi' },
+    { key: 'kampanya', label: 'Kampanyalar' }
   ];
 
-  window._htLoadBildirimler = function() {
+  window._htLoadBildirimler = async function() {
     var listEl = document.getElementById('notif-list');
     var emptyEl = document.getElementById('notif-empty');
+    var tabsEl = document.getElementById('notif-tabs');
     if (!listEl) return;
-    // No real notification backend yet — show honest empty state
-    allNotifs = [];
+    var items;
+    try { items = await _fetchNotifData(); } catch(e) { console.error('[notif] panel fetch error:', e); items = []; }
+    allNotifs = items;
     notifLoaded = true;
-    while (listEl.firstChild) listEl.removeChild(listEl.firstChild);
-    if (emptyEl) emptyEl.style.display = '';
+    /* Mark as seen — invalidate cache so next fetch re-evaluates is_unread */
+    try { localStorage.setItem('ht_notif_last_seen', new Date().toISOString()); } catch(e) {}
+    _notifCache = null;
+    /* Clear unread state on current items immediately — do not wait for cache refetch */
+    for (var i = 0; i < allNotifs.length; i++) { allNotifs[i].is_unread = false; }
+    /* Render filter tabs */
+    if (tabsEl) {
+      while (tabsEl.firstChild) tabsEl.removeChild(tabsEl.firstChild);
+      renderNotifTabs(tabsEl);
+    }
+    renderNotifs();
     updateNotifPanelBadge();
+    _applyNotifBellDot();
   };
 
   function renderNotifTabs(container) {
@@ -854,10 +983,10 @@
     var filtered;
     if (notifFilter === 'unread') {
       filtered = allNotifs.filter(function(n) { return n.is_unread; });
-    } else if (notifFilter === 'mesaj') {
-      filtered = allNotifs.filter(function(n) { return n.notif_type === 'mesaj'; });
-    } else if (notifFilter === 'sistem') {
-      filtered = allNotifs.filter(function(n) { return n.notif_type === 'sistem'; });
+    } else if (notifFilter === 'koc') {
+      filtered = allNotifs.filter(function(n) { return n.notif_type === 'koc'; });
+    } else if (notifFilter === 'kampanya') {
+      filtered = allNotifs.filter(function(n) { return n.notif_type === 'kampanya'; });
     } else {
       filtered = allNotifs;
     }
@@ -917,14 +1046,10 @@
     card.appendChild(row);
 
     card.addEventListener('click', function() {
-      if (notif.notif_type === 'mesaj' && isUnread) {
-        markAsRead(notif.id);
-        notif.status = 'read';
-        renderNotifs();
-        updateNotifPanelBadge();
-        preloadUnreadCount();
+      if (typeof switchPanel === 'function') {
+        if (notif.notif_type === 'koc') switchPanel('studio');
+        else if (notif.notif_type === 'kampanya') switchPanel('teklifler');
       }
-      if (typeof switchPanel === 'function') switchPanel('inbox');
     });
     card.addEventListener('mouseenter', function() { this.style.boxShadow = '0 2px 8px rgba(0,0,0,0.06)'; });
     card.addEventListener('mouseleave', function() { this.style.boxShadow = 'none'; });
