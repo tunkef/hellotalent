@@ -58,3 +58,97 @@ load 'test_helper'
   assert_failure
   assert_output --partial "TIMEOUT"
 }
+
+# ── Fix #2: Codex Bridge real implementation ──
+
+@test "send_to_codex uses osascript when available" {
+  source "$PROJECT_DIR/scripts/codex-bridge.sh"
+  export BRIDGE_LOG="$TEST_TMP/codex-bridge.log"
+  # Mock osascript
+  osascript() { echo "OSASCRIPT_CALLED"; return 0; }
+  export -f osascript
+  cliclick() { echo "CLICLICK_CALLED"; return 0; }
+  export -f cliclick
+  run _send_to_codex "test message"
+  assert_success
+  # Should NOT contain STUB anymore
+  run cat "$TEST_TMP/codex-bridge.log"
+  refute_output --partial "STUB"
+}
+
+@test "check_codex_response detects genuinely new stage" {
+  source "$PROJECT_DIR/scripts/codex-bridge.sh"
+  export BRIDGE_LOG="$TEST_TMP/codex-bridge.log"
+  export COLLAB_FILE="$TEST_TMP/collab.md"
+  export COLLAB_HASH_FILE="$TEST_TMP/.collab-hash"
+  export COLLAB_STAGE_FILE="$TEST_TMP/.collab-last-stage"
+
+  # Create initial file with stage 28
+  echo "## 86. Claude Icin Gorev — Asama 28" > "$COLLAB_FILE"
+  _snapshot_collab_state
+
+  # Codex adds a genuinely new stage 29
+  echo "## 88. Claude Icin Gorev — Asama 29" >> "$COLLAB_FILE"
+
+  run _check_codex_response
+  assert_success
+  assert_output --partial "29"
+}
+
+# ── Asama 29 Blocker 2: non-stage edits must NOT trigger success ──
+
+@test "check_codex_response ignores non-stage AI-COLLAB edits" {
+  source "$PROJECT_DIR/scripts/codex-bridge.sh"
+  export BRIDGE_LOG="$TEST_TMP/codex-bridge.log"
+  export COLLAB_FILE="$TEST_TMP/collab.md"
+  export COLLAB_HASH_FILE="$TEST_TMP/.collab-hash"
+  export COLLAB_STAGE_FILE="$TEST_TMP/.collab-last-stage"
+
+  # Initial state: stage 28 exists
+  echo "## 86. Claude Icin Gorev — Asama 28" > "$COLLAB_FILE"
+  _snapshot_collab_state
+
+  # Non-stage edit: review note added (hash changes, but no new stage)
+  echo "" >> "$COLLAB_FILE"
+  echo "## 87. Codex Review — Asama 28 Review" >> "$COLLAB_FILE"
+  echo "Durum: kabul edildi" >> "$COLLAB_FILE"
+
+  run _check_codex_response
+  assert_failure
+}
+
+@test "check_codex_response ignores remote mesaj blocks" {
+  source "$PROJECT_DIR/scripts/codex-bridge.sh"
+  export BRIDGE_LOG="$TEST_TMP/codex-bridge.log"
+  export COLLAB_FILE="$TEST_TMP/collab.md"
+  export COLLAB_HASH_FILE="$TEST_TMP/.collab-hash"
+  export COLLAB_STAGE_FILE="$TEST_TMP/.collab-last-stage"
+
+  echo "## 86. Claude Icin Gorev — Asama 28" > "$COLLAB_FILE"
+  _snapshot_collab_state
+
+  # Remote message added (not a new stage)
+  echo "" >> "$COLLAB_FILE"
+  echo "## Remote Mesaj - Codex (01 Apr 2026 02:15)" >> "$COLLAB_FILE"
+  echo "Mesaj: Coach panelde bug var" >> "$COLLAB_FILE"
+
+  run _check_codex_response
+  assert_failure
+}
+
+@test "check_codex_response ignores edits that keep same max stage number" {
+  source "$PROJECT_DIR/scripts/codex-bridge.sh"
+  export BRIDGE_LOG="$TEST_TMP/codex-bridge.log"
+  export COLLAB_FILE="$TEST_TMP/collab.md"
+  export COLLAB_HASH_FILE="$TEST_TMP/.collab-hash"
+  export COLLAB_STAGE_FILE="$TEST_TMP/.collab-last-stage"
+
+  echo "## 86. Claude Icin Gorev — Asama 28" > "$COLLAB_FILE"
+  _snapshot_collab_state
+
+  # Edit adds text but max stage stays 28
+  echo "Ek not: scope daraltildi" >> "$COLLAB_FILE"
+
+  run _check_codex_response
+  assert_failure
+}

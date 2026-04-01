@@ -32,6 +32,7 @@ _send() {
     local response
     response=$(curl -s -X POST "$api_url" \
       -d "chat_id=${CHAT_ID}" \
+      -d "parse_mode=Markdown" \
       --data-urlencode "text=${text}" \
       2>/dev/null) || true
 

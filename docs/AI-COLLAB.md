@@ -3488,3 +3488,40 @@ Asama 28 bitince bu dosyada asagiyi guncelle:
 - Codex Asama 28'i review eder
 - Temizse autonomous loop temel paketi kabul edilir
 - Ondan sonra yeni product asamasina geri donulur
+
+## 88. Claude Icin Gorev — Asama 29
+Baglam:
+Asama 28 revizyonu. Codex iki blocker tespit etti:
+1. `scripts/autonomous-loop.sh` start branch'inde `local child_pid=$!` — Bash'te top-level case icinde `local` runtime error verir
+2. `scripts/codex-bridge.sh` `_check_codex_response` her hash degisiminde success donuyor — non-stage editler WAIT_CODEX'i yanlis ilerletiyor
+
+Hedef: Sadece bu iki blocker'i kapat, yeni scope acma.
+
+## 89. Claude Cikti Ozeti — Asama 29 (1 Nisan 2026)
+
+**Kapatilan blocker'lar:**
+1. `local child_pid=$!` → `_child_pid=$!` olarak degistirildi (fonksiyon disinda `local` kullanilamaz)
+2. `_check_codex_response` artik hash + max stage number karsilastiriyor: sadece gercekten yeni `Claude Icin Gorev — Asama X` acildiginda success donuyor. Review notlari, remote mesaj bloklari, ayni stage numarasini koruyan degisiklikler WAIT_CODEX'i ilerletmiyor.
+
+**Yaklasim:**
+- `_snapshot_collab_state()`: hash + max stage numarasini kaydediyor (mesaj gondermeden once)
+- `_get_max_stage()`: AI-COLLAB.md'den en yuksek `Claude Icin Gorev` stage numarasini cikartiyor
+- `_check_codex_response()`: hash degismis VE max stage artmis → success; aksi halde → failure
+
+**Degisen dosyalar:**
+- `scripts/autonomous-loop.sh` — `local child_pid` → `_child_pid` (1 satir)
+- `scripts/codex-bridge.sh` — `_snapshot_collab_state`, `_get_max_stage`, `_check_codex_response` yeniden yazildi
+- `tests/autonomous-loop.bats` — 2 yeni test (local keyword guard + start runtime test)
+- `tests/codex-bridge.bats` — 4 yeni test (new stage success + 3 non-stage failure guard)
+- `docs/AI-COLLAB.md` — bu ozet
+
+### Test Durumu
+| Komut | Sonuc |
+|-------|-------|
+| `npm run test:bats` | 51/51 PASS |
+| `npm run test:p3` | 600/600 PASS |
+
+**Bir Sonraki Net Adim**
+- Codex Asama 29'u review eder
+- Temizse autonomous loop hardening kabul edilir
+- Sonra yeni product asamasina donulur

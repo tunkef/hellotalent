@@ -247,6 +247,12 @@ Not:
       handle_command "/start" ""
       ;;
 
+    go|dont|"don't"|stop)
+      # Gate commands — telegram-gate.sh handles these via its own polling.
+      # Do NOT reply "bilinmeyen komut"; silently acknowledge.
+      send_msg "🚦 Gate komutu alındı: $cmd"
+      ;;
+
     *)
       send_msg "❓ Bilinmeyen komut. /help yaz."
       ;;

@@ -10,6 +10,9 @@ BRIDGE_LOG="${BRIDGE_LOG:-reviews/codex-bridge.log}"
 CODEX_READ_TIMEOUT="${CODEX_READ_TIMEOUT:-600}"
 CODEX_READ_INTERVAL="${CODEX_READ_INTERVAL:-10}"
 CODEX_MAX_RETRIES=3
+COLLAB_FILE="${COLLAB_FILE:-docs/AI-COLLAB.md}"
+COLLAB_HASH_FILE="${COLLAB_HASH_FILE:-.collab-hash}"
+COLLAB_STAGE_FILE="${COLLAB_STAGE_FILE:-.collab-last-stage}"
 
 # ── Logging ──────────────────────────────────────────────────────────────────
 _bridge_log() {
@@ -72,15 +75,100 @@ _open_codex_app() {
 
 _send_to_codex() {
   local message="$1"
-  # Placeholder — override with Computer Use implementation at runtime
-  _bridge_log "STUB: _send_to_codex called with message length ${#message}"
+  _bridge_log "Sending message to Codex (length=${#message})"
+
+  # Snapshot AI-COLLAB.md state before sending so we can detect Codex's response
+  _snapshot_collab_state
+
+  # Activate Codex and type the message using AppleScript + cliclick
+  if command -v osascript &>/dev/null; then
+    osascript -e 'tell application "Codex" to activate' 2>/dev/null || true
+    sleep 1
+    # Click on Codex input area
+    if command -v cliclick &>/dev/null; then
+      cliclick c:1200,445 2>/dev/null || true
+      sleep 0.3
+      cliclick t:"$message" 2>/dev/null || true
+      sleep 0.3
+      # Press Return to submit
+      osascript -e 'tell application "System Events" to key code 36' 2>/dev/null || true
+      _bridge_log "Message sent to Codex via AppleScript+cliclick"
+    else
+      _bridge_log "cliclick not available, falling back to osascript keystroke"
+      osascript -e "tell application \"System Events\" to keystroke \"$message\"" 2>/dev/null || true
+      osascript -e 'tell application "System Events" to key code 36' 2>/dev/null || true
+      _bridge_log "Message sent to Codex via AppleScript keystroke"
+    fi
+  else
+    _bridge_log "osascript not available, cannot send to Codex"
+    return 1
+  fi
   return 0
 }
 
+_compute_hash() {
+  local file="$1"
+  if command -v md5 &>/dev/null; then
+    md5 -q "$file"
+  elif command -v md5sum &>/dev/null; then
+    md5sum "$file" | cut -d' ' -f1
+  else
+    wc -c < "$file" | tr -d ' '
+  fi
+}
+
+# Extract the highest "Claude Icin Gorev — Asama N" stage number from COLLAB_FILE
+_get_max_stage() {
+  local file="${1:-$COLLAB_FILE}"
+  grep -E '^## [0-9]+\. Claude Icin Gorev' "$file" 2>/dev/null \
+    | grep -oE 'A[sş]ama [0-9]+' | grep -oE '[0-9]+' | sort -n | tail -1 || echo "0"
+}
+
+# Snapshot current hash + max stage so _check_codex_response can detect genuinely new stages.
+_snapshot_collab_state() {
+  if [ -f "$COLLAB_FILE" ]; then
+    _compute_hash "$COLLAB_FILE" > "$COLLAB_HASH_FILE" 2>/dev/null || true
+    _get_max_stage "$COLLAB_FILE" > "$COLLAB_STAGE_FILE" 2>/dev/null || true
+  fi
+}
+
 _check_codex_response() {
-  # Placeholder — returns empty string by default
-  # Override with Computer Use implementation at runtime
+  # Detect a genuinely new "Claude Icin Gorev — Asama X" in AI-COLLAB.md.
+  # Non-stage edits (reviews, remote messages, same-stage notes) are ignored.
+  if [ ! -f "$COLLAB_FILE" ]; then
+    echo ""
+    return 1
+  fi
+
+  # Quick hash check — skip expensive grep if file unchanged
+  local current_hash
+  current_hash=$(_compute_hash "$COLLAB_FILE")
+  local stored_hash=""
+  if [ -f "$COLLAB_HASH_FILE" ]; then
+    stored_hash=$(cat "$COLLAB_HASH_FILE" 2>/dev/null || echo "")
+  fi
+  if [ "$current_hash" = "$stored_hash" ]; then
+    echo ""
+    return 1
+  fi
+
+  # File changed — check if max stage number actually increased
+  local current_max_stage
+  current_max_stage=$(_get_max_stage "$COLLAB_FILE")
+  local stored_max_stage="0"
+  if [ -f "$COLLAB_STAGE_FILE" ]; then
+    stored_max_stage=$(cat "$COLLAB_STAGE_FILE" 2>/dev/null || echo "0")
+  fi
+
+  if [ "$current_max_stage" -gt "$stored_max_stage" ] 2>/dev/null; then
+    _bridge_log "Codex response detected: new stage $current_max_stage (was $stored_max_stage)"
+    echo "$current_max_stage"
+    return 0
+  fi
+
+  # Hash changed but no new stage — non-stage edit, ignore
   echo ""
+  return 1
 }
 
 # ── Polling ──────────────────────────────────────────────────────────────────

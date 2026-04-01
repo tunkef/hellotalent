@@ -134,6 +134,25 @@ EOF
   assert_output "GO"
 }
 
+# ── Fix #1: telegram-bot.sh should not reply "bilinmeyen komut" for gate commands ──
+# (tested via telegram-bot behavior, not telegram-gate)
+
+# ── Fix #9: parse_mode=Markdown ──
+
+@test "send includes parse_mode=Markdown parameter" {
+  curl() {
+    echo "$@" >> "$TEST_TMP/curl-args.log"
+    echo '{"ok":true}'
+  }
+  export -f curl
+
+  source "$PROJECT_DIR/scripts/telegram-gate.sh"
+  _send "test *bold* message"
+
+  run grep "parse_mode" "$TEST_TMP/curl-args.log"
+  assert_success
+}
+
 @test "wait updates offset file after reading message" {
   curl() {
     if [[ "$*" == *"getUpdates"* ]]; then
