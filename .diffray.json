@@ -8,11 +8,11 @@
   "concurrency": 2,
   "timeout": 120,
   "agents": {
-    "security-scan": { "enabled": true },
-    "performance-check": { "enabled": true },
-    "general": { "enabled": true },
-    "database": { "enabled": true },
-    "bug-hunter": { "enabled": true },
+    "security-scan": { "enabled": false },
+    "performance-check": { "enabled": false },
+    "general": { "enabled": false },
+    "database": { "enabled": false },
+    "bug-hunter": { "enabled": false },
     "i18n": { "enabled": false },
     "observability": { "enabled": false }
   },

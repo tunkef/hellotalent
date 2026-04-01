@@ -212,13 +212,19 @@ step_review() {
   STEP_RESULTS="${STEP_RESULTS}DeepSeek:$([ "$deepseek_ok" = true ] && echo PASS || echo FAIL) "
 
   # Cerebras deep review (en çok değişen dosya)
+  local cerebras_ok=true
   if [ -f "scripts/cerebras-review.sh" ]; then
     local changed=$(git diff --name-only 2>/dev/null | grep '\.js$' | head -1)
     if [ -n "$changed" ] && [ -f "$changed" ]; then
       log "Cerebras derin review: $changed"
-      ./scripts/cerebras-review.sh deep "$changed" 2>&1 | tee -a "$LOG" || true
+      if ! ./scripts/cerebras-review.sh deep "$changed" 2>&1 | tee -a "$LOG"; then
+        cerebras_ok=false
+      fi
     fi
+  else
+    cerebras_ok=false
   fi
+  STEP_RESULTS="${STEP_RESULTS}Cerebras:$([ "$cerebras_ok" = true ] && echo PASS || echo FAIL) "
 
   # Diffray multi-agent review (5 paralel uzman ajan)
   if command -v diffray &>/dev/null; then

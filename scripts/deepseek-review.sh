@@ -7,14 +7,21 @@
 #   ./scripts/deepseek-review.sh stage         → AI-COLLAB.md + diff stage gate review
 
 set -euo pipefail
-cd "$(dirname "$0")/.."
+
+# Source guard: allow sourcing for unit tests without executing main
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+  _DEEPSEEK_MAIN=true
+  cd "$(dirname "$0")/.."
+else
+  _DEEPSEEK_MAIN=false
+fi
 
 API_KEY="${DEEPSEEK_API_KEY:?DEEPSEEK_API_KEY env variable gerekli.}"
-MODEL="deepseek-reasoner"
+MODEL="${DEEPSEEK_MODEL:-deepseek-chat}"
 API_URL="https://api.deepseek.com/v1/chat/completions"
 MAX_TOKENS=4096
 RESULTS_DIR="reviews"
-mkdir -p "$RESULTS_DIR"
+[ "$_DEEPSEEK_MAIN" = true ] && mkdir -p "$RESULTS_DIR"
 
 TIMESTAMP=$(date '+%Y%m%d-%H%M%S')
 
@@ -138,6 +145,8 @@ Kontrol et:
 4. Truth-sync yapilmis mi (CURRENT-STATE, docs)?
 5. Test sonuclari raporlanmis mi?
 Turkce yaz, kisa ve net ol."
+
+[ "$_DEEPSEEK_MAIN" = false ] && return 0
 
 case "${1:-help}" in
   diff)
