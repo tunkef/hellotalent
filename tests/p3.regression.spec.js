@@ -2677,3 +2677,75 @@ test.describe('Aşama 37 — notification unread-state truth fix', () => {
     expect(fnBody).toContain('is_unread');
   });
 });
+
+// ── Aşama 38 — Pozisyon Metrik Truth v1 ──────────────────────────────────────
+test.describe('Asama 38 — Pozisyon Metrik Truth v1', () => {
+  var ikHtml38;
+  var mig38;
+
+  test.beforeAll(() => {
+    ikHtml38 = readFromRepo('ik.html');
+    try { mig38 = readFromRepo('supabase/migrations/20260401000000_position_gorunum_trigger.sql'); } catch(e) { mig38 = ''; }
+  });
+
+  test('openPozDetay is async and uses search_employer_candidates RPC', () => {
+    var fnStart = ikHtml38.indexOf('async function openPozDetay');
+    expect(fnStart).toBeGreaterThan(0);
+    var fnBody = ikHtml38.substring(fnStart, fnStart + 2000);
+    expect(fnBody).toContain('search_employer_candidates');
+    expect(fnBody).toContain('p_position_id');
+  });
+
+  test('openPozDetay does NOT use local ADAYLAR.filter as canonical match source', () => {
+    var fnStart = ikHtml38.indexOf('async function openPozDetay');
+    expect(fnStart).toBeGreaterThan(0);
+    var fnBody = ikHtml38.substring(fnStart, fnStart + 2000);
+    // Local heuristic must not appear inside openPozDetay
+    expect(fnBody.indexOf('ADAYLAR.filter(')).toBe(-1);
+  });
+
+  test('openPozDetay sets _currentPozContext with id and ad', () => {
+    var fnStart = ikHtml38.indexOf('async function openPozDetay');
+    expect(fnStart).toBeGreaterThan(0);
+    var fnBody = ikHtml38.substring(fnStart, fnStart + 600);
+    expect(fnBody).toContain('_currentPozContext');
+    expect(fnBody).toContain('id: id');
+    expect(fnBody).toContain('ad: p.ad');
+  });
+
+  test('profile_view_events insert uses _currentPozContext for position fields', () => {
+    var insertIdx = ikHtml38.indexOf("from('profile_view_events').insert");
+    expect(insertIdx).toBeGreaterThan(0);
+    var insertSection = ikHtml38.substring(insertIdx, insertIdx + 400);
+    expect(insertSection).toContain('_currentPozContext');
+    expect(insertSection).toContain('position_id');
+    expect(insertSection).toContain('position_ad_snapshot');
+    expect(insertSection).toContain('position_seg_snapshot');
+    // Must NOT be hardcoded null for all three fields
+    expect(insertSection).not.toMatch(/position_id:\s*null[^?]/);
+  });
+
+  test('closePozDetay resets _currentPozContext', () => {
+    var fnStart = ikHtml38.indexOf('function closePozDetay');
+    expect(fnStart).toBeGreaterThan(0);
+    var fnBody = ikHtml38.substring(fnStart, fnStart + 600);
+    expect(fnBody).toContain('_currentPozContext');
+    expect(fnBody).toContain('null');
+  });
+
+  test('searchCandidates syncs _currentPozContext from poz-match-select', () => {
+    var fnStart = ikHtml38.indexOf('async function searchCandidates');
+    expect(fnStart).toBeGreaterThan(0);
+    var fnBody = ikHtml38.substring(fnStart, fnStart + 1600);
+    expect(fnBody).toContain('_currentPozContext');
+    expect(fnBody).toContain('selectedPozId');
+  });
+
+  test('migration exists with gorunum trigger on profile_view_events', () => {
+    expect(mig38.length).toBeGreaterThan(0);
+    expect(mig38).toContain('positions');
+    expect(mig38).toContain('gorunum');
+    expect(mig38).toContain('profile_view_events');
+    expect(mig38.toUpperCase()).toContain('TRIGGER');
+  });
+});
