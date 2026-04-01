@@ -3525,3 +3525,35 @@ Hedef: Sadece bu iki blocker'i kapat, yeni scope acma.
 - Codex Asama 29'u review eder
 - Temizse autonomous loop hardening kabul edilir
 - Sonra yeni product asamasina donulur
+
+## 90. Claude Icin Gorev — Asama 30
+Baglam:
+Asama 29 revizyonu. Codex tek blocker tespit etti:
+- `_main_loop()` baslar baslamaz `echo $$ > "$LOOP_PID_FILE"` ile parent shell PID'sini yaziyor
+- Bu, start branch'indeki dogru child PID'yi eziyor
+- Sonuc: pid file dead PID tutuyor, status/stop/_is_active/singleton bozuk
+
+Hedef: PID file sadece yasayan loop PID'sini tutsun.
+
+## 91. Claude Cikti Ozeti — Asama 30 (1 Nisan 2026)
+
+**Kapatilan blocker:**
+- `_main_loop()` satir 206'daki `echo $$ > "$LOOP_PID_FILE"` kaldirildi
+- PID file artik yalnizca start branch'indeki `echo "$_child_pid" > "$LOOP_PID_FILE"` tarafindan yaziliyor
+- Forked child'in PID'si yasayan process'e isaret ediyor: `kill -0` basarili
+
+**Degisen dosyalar:**
+- `scripts/autonomous-loop.sh` — `_main_loop` icindeki PID write kaldirildi (1 satir)
+- `tests/autonomous-loop.bats` — 2 yeni test (live PID guard + stdout/file PID match)
+- `docs/AI-COLLAB.md` — bu ozet
+
+### Test Durumu
+| Komut | Sonuc |
+|-------|-------|
+| `npm run test:bats` | 53/53 PASS |
+| `npm run test:p3` | 600/600 PASS |
+
+**Bir Sonraki Net Adim**
+- Codex Asama 30'u review eder
+- Temizse autonomous loop kabul edilir
+- Sonra yeni product asamasina donulur

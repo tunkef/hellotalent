@@ -203,7 +203,7 @@ _handle_gate_result() {
 # ── Main Loop ─────────────────────────────────────────────────────────────────
 _main_loop() {
   _loop_log "Main loop started (PID=$$)"
-  echo $$ > "$LOOP_PID_FILE"
+  # PID file is written by the start branch AFTER fork — do NOT overwrite here.
   _set_state "IDLE"
 
   local orchestrator

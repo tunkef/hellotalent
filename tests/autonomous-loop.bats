@@ -237,12 +237,13 @@ EOF
 }
 
 @test "start command runs without bash runtime error" {
-  # Verify the script parses and the start branch is syntactically valid
-  # by running bash -n (syntax check) and then executing start in a detached subshell
   run bash -n "$PROJECT_DIR/scripts/autonomous-loop.sh"
   assert_success
+}
 
-  # Also verify no 'local' at top-level in the case block (would error at runtime)
+# ── Asama 30 Blocker: PID file must hold live loop PID, not dead parent ──
+
+@test "start writes live loop PID to pid file — kill -0 succeeds" {
   run bash -c "
     cd '$PROJECT_DIR'
     export LOOP_PID_FILE='$TEST_TMP/.autonomous-loop.pid'
@@ -250,15 +251,41 @@ EOF
     export LOG_FILE='$TEST_TMP/loop.log'
     export STAGE_FILE='$TEST_TMP/.autopilot.stage'
     export LAST_STAGE_FILE='$TEST_TMP/.autopilot.last_stage'
-    # Start with immediate kill — nohup detaches from BATS fd inheritance
-    nohup bash scripts/autonomous-loop.sh start </dev/null >/dev/null 2>&1
-    sleep 0.5
+    nohup bash scripts/autonomous-loop.sh start </dev/null >$TEST_TMP/start-stdout.txt 2>&1
+    sleep 1
     pid=\$(cat '$TEST_TMP/.autonomous-loop.pid' 2>/dev/null || echo '')
-    [ -n \"\$pid\" ] && echo 'PID_WRITTEN' && kill \"\$pid\" 2>/dev/null
+    if [ -z \"\$pid\" ]; then echo 'NO_PID'; exit 1; fi
+    if ! kill -0 \"\$pid\" 2>/dev/null; then echo \"DEAD_PID:\$pid\"; exit 1; fi
+    echo \"LIVE_PID:\$pid\"
+    kill \"\$pid\" 2>/dev/null
     exit 0
   "
   assert_success
-  assert_output --partial "PID_WRITTEN"
+  assert_output --partial "LIVE_PID"
+}
+
+@test "start stdout PID matches pid file PID" {
+  run bash -c "
+    cd '$PROJECT_DIR'
+    export LOOP_PID_FILE='$TEST_TMP/.autonomous-loop.pid'
+    export STATE_FILE='$TEST_TMP/.autonomous-loop.state'
+    export LOG_FILE='$TEST_TMP/loop.log'
+    export STAGE_FILE='$TEST_TMP/.autopilot.stage'
+    export LAST_STAGE_FILE='$TEST_TMP/.autopilot.last_stage'
+    # Redirect start output to file (avoids fd inheritance hang with bg process)
+    bash scripts/autonomous-loop.sh start >$TEST_TMP/start-out.txt 2>&1 </dev/null
+    sleep 1
+    stdout_pid=\$(grep -oE 'PID=[0-9]+' '$TEST_TMP/start-out.txt' | grep -oE '[0-9]+')
+    file_pid=\$(cat '$TEST_TMP/.autonomous-loop.pid' 2>/dev/null || echo '')
+    if [ \"\$stdout_pid\" = \"\$file_pid\" ]; then
+      echo \"MATCH:\$file_pid\"
+    else
+      echo \"MISMATCH:stdout=\$stdout_pid file=\$file_pid\"
+    fi
+    kill \"\$file_pid\" 2>/dev/null || kill \"\$stdout_pid\" 2>/dev/null
+    exit 0
+  "
+  assert_output --partial "MATCH"
 }
 
 # ── Fix #4: FEEDBACK path calls codex-bridge ──
