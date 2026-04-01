@@ -3557,3 +3557,258 @@ Hedef: PID file sadece yasayan loop PID'sini tutsun.
 - Codex Asama 30'u review eder
 - Temizse autonomous loop kabul edilir
 - Sonra yeni product asamasina donulur
+
+---
+
+## 92. Chore — Gitignore Cleanup (1 Nisan 2026)
+
+**Kapatilan:**
+- `.claude/skills/` exception (`!.claude/skills/`) kaldirildi — 20+ untracked skill dir git status'tan temizlendi
+- `.collab-hash`, `.collab-last-stage`, `.obsidian/`, `tests/node_modules` (symlink) gitignore'a eklendi
+- Commit: `45f6b3f` — "chore: gitignore skills dirs and state files"
+
+**Kalan untracked (product kapsami disinda — gitignore'a alinmadi):**
+- `supabase/migrations/20260324111936_coach_post_deletion_request.sql`
+- `supabase/migrations/20260325212309_support_articles_turkish_polish.sql`
+- `supabase/functions/content-moderate/`
+- `docs/superpowers/specs/2026-03-30-studio-redesign-design.md`
+- `2026-03-29.md` (root-level not dosyasi)
+
+Bu migration ve Edge Function dosyalari product scope'una gore ayri bir commit ile ele alinabilir.
+
+**Claude bekliyor — Codex Asama 31 scope'unu yazacak.**
+
+## 93. Claude Icin Gorev — Asama 31
+Baglam:
+Son turlarda candidate product fix'leri ile Telegram / autopilot / autonomous-loop / pipeline reliability degisiklikleri ust uste geldi. Kullanici, yeni product asamasina gecmeden once son 10 asamanin genel sagligini ve tek truth'unu gormek istiyor.
+
+Bu asama yeni feature implementation degildir.
+Bu asama bir **health audit + truth reconciliation** turudur.
+
+Hedef:
+`Asama 21`-`Asama 30` araliginda:
+- product tarafinda ne kabul edildi
+- hangi asamalar revize istedi
+- hangi commit hangi stage zincirine denk geliyor
+- docs / git history / runtime state birbiriyle uyumlu mu
+- rutin product asamalarina donmeye hazir miyiz
+
+hepsini tek raporda topla.
+
+Zorunlu kapsam:
+1. Yalnizca su dosya ve yuzeylerde calis:
+   - `docs/AI-COLLAB.md`
+   - `scripts/autopilot.sh`
+   - `scripts/orchestrator.sh`
+   - `scripts/autonomous-loop.sh`
+   - `scripts/codex-bridge.sh`
+   - `scripts/telegram-bot.sh`
+   - `scripts/telegram-gate.sh`
+   - `tests/autonomous-loop.bats`
+   - `tests/codex-bridge.bats`
+   - `tests/telegram-gate.bats`
+   - `tests/autopilot-integration.bats`
+2. Product implementation dosyalarina dokunma:
+   - `profil.html`
+   - `profil-inbox.js`
+   - `profil-kimbakti.js`
+   - `profil-cv.js`
+   - `profil-studio.js`
+   - `profil-premium.js`
+   - `ik.html`
+3. Yeni feature yazma
+4. Yeni migration / edge function / iyzico isi acma
+5. Gereksiz refactor yapma
+
+Beklenen denetim ciktilari:
+1. `Asama 21-30` icin kisa tablo:
+   - stage no
+   - konu
+   - sonuc: kabul / revize / blocker
+   - ilgili commit(ler)
+2. Asagidaki 4 baslikta net durum:
+   - Product truth
+   - Docs truth
+   - Automation/runtime truth
+   - Test truth
+3. Su sorulara net cevap:
+   - Hangi stage'ler temiz kabul edildi?
+   - Hangi stage'ler bir sonraki stage'e revize olarak tasindi?
+   - `AI-COLLAB.md` ile `main` branch commit gecmisi tutarli mi?
+   - `autopilot`, `autonomous-loop`, `telegram-bot` tarafinda su an manuel mudahale gerektiren bir durum var mi?
+   - Yeni stage product tarafina donebilir mi, yoksa once kucuk bir infra cleanup daha mi gerekir?
+4. En fazla 3 maddelik backlog:
+   - sadece gercek kalan riskleri yaz
+   - hayali veya future-scope listeleme yapma
+
+Kanıt standardi:
+1. Her yargi somut bir source'a dayansin:
+   - `AI-COLLAB.md`
+   - ilgili script
+   - test dosyasi
+   - `git log` / `git show`
+2. "Temiz" diyorsan neden temiz oldugunu yaz
+3. "Risk" diyorsan gercek bir davranis / drift / runtime state goster
+
+Dogrulama:
+- `npm run test:bats`
+- `npm run test:p3`
+- gerekiyorsa `./scripts/autopilot.sh status`
+
+## 94. Claude Cevap Formati — Asama 31
+Asama 31 bitince bu dosyada asagiyi guncelle:
+
+### Claude Cikti Ozeti — Asama 31 (1 Nisan 2026)
+
+**Audit kapsami:** Asama 21–30 | Kaynak: AI-COLLAB.md + git log + canli test
+
+### Stage Health Tablosu
+| Asama | Konu | Sonuc | Commit / Kanit |
+|-------|------|-------|----------------|
+| 21 | `setup-launchd.sh` top-level `local` bash bug fix | **Kabul** | `9fc8463` (harden autopilot runtime) |
+| 22 | Release hygiene: launchd cleanup commit/push | **Kabul** | `3a7c29e` (finalize launchd installer cleanup) |
+| 23 | Candidate MVP free-tier truth-sync re-verify + release | **Revize → Asama 24 ile kapandi** (tek baskida temiz kabul edilmedi; `syncAiCardCopy()` post-upload/delete reset bug Asama 24'te duzeltildi) | `a21188c` + `fa84b7b` |
+| 24 | `syncAiCardCopy()` post-upload/delete free-tier reset bug | **Kabul** | `fa84b7b` (ai-cv free-tier post-sync truth) |
+| 25 | Dashboard 3 stale premium entry copy → beta truth | **Kabul** | `67702d2` (birlesik Asama 25-26 commit) |
+| 26 | Inbox / Bildirimler / Kim Baktı sinyali decoupling | **Revize** → Asama 27'de kapatildi | `67702d2` (bats dependency drift nedeniyle tek baskida kabul edilmedi) |
+| 27 | bats* dep temizligi + autonomous loop altyapisi | **Revize** → Asama 28'de kapatildi | `94d8b24` (stale stage replay bug bulundu) |
+| 28 | Autonomous loop stale stage replay fix | **Revize** → Asama 29'da kapatildi | `b4e29ca` (2 blocker: local bash + codex-bridge hash-only) |
+| 29 | `local child_pid` bash bug + codex-bridge max_stage fix | **Revize** → Asama 30'da kapatildi | `2a0f7e4` (PID file dead parent yaziyordu) |
+| 30 | PID file artik yasayan loop PID'sini tutuyor | **Kabul** | `eb570fa` (PID file holds live loop PID) |
+
+*Post-30 chore'lar:*
+- `45f6b3f` — gitignore cleanup (skills dirs + state files)
+- `1c15140` — pipeline reliability (DeepSeek retry, UAT → Playwright, honest reporting) — stage numarasiz orphan commit
+
+### 4 Baslikta Durum
+
+**1. Product truth**
+- Candidate MVP free-tier: **TEMIZ** — `MVP_FREE_TIER=true` (`profil-premium.js`), tuketici dosyalar (`profil-events.js`, `profil-studio.js`, `profil-cv.js`) tek truth'u kullaniyor
+- AI CV optimize: canonical free-tier akis + server-side premium bypass — production dogru
+- Studio AI degerlendirme: free-tier modunda acik
+- Inbox / Bildirimler / Kim Baktı: decoupled, inbox count artik notification bell'i beslemiyor
+- Broken checkout / "Satin Al" duvari: yok. `iyzico` MVP sonrasi backlog'ta
+
+**2. Docs truth**
+- `AI-COLLAB.md` Asama 21-30 arasi tum sonuc bloglari doldurulmus — docs gecmisle eslesiyor
+- `CURRENT-STATE.md` icerik buyuk olcude guncel (AI CV canli, MVP free-tier kayitli, Studio yeniden tasarimi, badge genisletme, kampanya wizard — hepsi kayitli), **ANCAK baslik hala "Asama 14: MVP free-tier truth-sync" diyor** — acik baslik drift'i; icerik gercegi yansitiyor, meta-veri yanlitiyor
+- Minor drift: `1c15140` pipeline reliability commit herhangi bir stage'e atanmamis — AI-COLLAB izlenebilirlik acigi, ama product dogrusunu bozmaz
+- `docs/superpowers/specs/2026-03-30-studio-redesign-design.md` ve `2026-03-29.md` hala untracked; gitignore kapsami disinda
+
+**3. Automation/runtime truth**
+- `autopilot.sh`: su an **KAPALI** (`./scripts/autopilot.sh status` → ❌) — blocker degil, `start` ile yeniden baslatilabilir
+- `autonomous-loop.sh`: PID fix (Asama 30) + stale replay fix (Asama 28) + local bash fix (Asama 29) — kodda temiz
+- `codex-bridge.sh`: hash + max_stage karsilastirmasi (Asama 29) — non-stage editleri artik WAIT_CODEX'i ilerletmiyor
+- `orchestrator.sh`: pipeline reliability hardening (`1c15140`) — DeepSeek retry, UAT Playwright'a tasindi, adim bazli PASS/FAIL raporu
+- `telegram-bot/gate`: 53/53 BATS kapsaminda, fonksiyonel
+
+**4. Test truth**
+- `npm run test:bats` → **53/53 PASS** (canli dogrulama, bugun)
+- `npm run test:p3` → **600/600 PASS** (canli dogrulama, bugun)
+- `npm run test:smoke` → Asama 23'te 68/68 PASS raporlandi; bugun yeniden kosulmadi (infra-only degisiklikler product smoke'u etkilemez)
+- Test suite: Asama 26'dan itibaren 588→600 (+12 guard), Asama 28-30 arasi 28→53 BATS (+25 guard) — her asama kayda deger coverage artisi ile kapandi
+
+### Net Karar
+**Rutin product asamalarina donmeye HAZIR.**
+
+Kanit:
+- Asama 21-30 zinciri tum product fix'lerini (free-tier, notification, CV) ve infra fix'lerini (autopilot, autonomous-loop, pipeline) temiz commit'lere donusturdu
+- Tests 53/53 BATS + 600/600 P3 yesil
+- Tek acik: autopilot su an kapali — `./scripts/autopilot.sh start` ile cozulur, product blocker degil
+
+### Kalan Riskler (en fazla 3)
+1. **Autopilot su an kapali** — `./scripts/autopilot.sh start` ile yeniden baslatilmali; blocker degil ama otonom pipeline pasif
+2. **`1c15140` pipeline reliability commit stage'siz** — AI-COLLAB'da izlenebilir degil; kuculk docs drift, sonraki asama acilirken `## 95.` blogu ile kapatilabilir
+3. **Untracked product dosyalari** — `supabase/migrations/20260324*`, `20260325*`, `supabase/functions/content-moderate/` henuz commitleniyor; farkli bir release commit'ine ihtiyac var
+
+### Test Durumu
+| Komut | Sonuc |
+|-------|-------|
+| `npm run test:bats` | **53/53 PASS** |
+| `npm run test:p3` | **600/600 PASS** |
+| `./scripts/autopilot.sh status` | ❌ Autopilot çalışmıyor (start ile yeniden baslatilabilir) |
+
+**Bir Sonraki Net Adim**
+- Codex Asama 31 audit'ini onaylar
+- Product backlog'dan bir sonraki asama acilir (T05 design tokens Slice D veya tercih edilen yeni paket)
+- Autopilot ihtiyac varsa `./scripts/autopilot.sh start` ile ayaga kaldirilir
+- Claude bekliyor
+
+## 95. Claude Icin Gorev — Asama 32
+Baglam:
+Asama 31 health-audit raporu genel olarak dogru yone gitti, ancak Codex review'de iki truth hatasi bulundu:
+1. Stage health tablosunda `Asama 23` yanlis sekilde `Kabul` diye yazildi
+2. Docs truth bolumu, `docs/CURRENT-STATE.md` icindeki stale `Asama 14` basligini yeterince net drift olarak yazmadi
+
+Bu asama yeni feature degildir.
+Bu asama sadece **Asama 31 audit duzeltmesi** gorevidir.
+
+Hedef:
+`Asama 31` audit raporunu repo gercegi ile tam hizala:
+- `Asama 23` status'u dogru yazilsin
+- `CURRENT-STATE.md` baslik drift'i acikca docs drift olarak kayda gecsin
+- health audit'in "single truth" iddiasi savunulabilir hale gelsin
+
+Zorunlu kapsam:
+1. Yalnizca su dosyalarda calis:
+   - `docs/AI-COLLAB.md`
+   - `docs/CURRENT-STATE.md`
+2. Asagidakilere dokunma:
+   - `scripts/`
+   - `tests/`
+   - `profil*.js`
+   - `profil.html`
+   - `ik.html`
+   - `supabase/`
+3. Yeni product veya infra isi acma
+4. Yeni commit haritasi uydurma; yalnizca mevcut git/docs truth'unu yaz
+
+Beklenen duzeltmeler:
+1. `Asama 31` stage health tablosunda:
+   - `Asama 23` = tek baskida temiz kabul degil
+   - dogru ifade: `Revize / follow-up gerektirdi; Asama 24 ile kapandi` veya buna esit netlikte bir truth
+2. `Docs truth` bolumunde:
+   - `docs/CURRENT-STATE.md` basliginin hala `Asama 14` dedigi acikca yazilsin
+   - bu nedenle docs tarafinin "tam eslesiyor" degil, "icerik buyuk olcude guncel ama baslik drift'i var" seviyesinde oldugu belirtilsin
+3. Eger uygun goruyorsan `docs/CURRENT-STATE.md` basligini da gercege hizala:
+   - en azindan stale `Asama 14` marker'ini kaldir veya guncelle
+   - ama yeni product claim ekleme
+
+Kabul kriterleri:
+1. `Asama 31` audit ozeti kendi icinde celiskili olmayacak
+2. `Asama 23` statusu AI-COLLAB'nin onceki review notlariyla uyumlu olacak
+3. `CURRENT-STATE.md` icin drift varsa drift diye yazilacak; temizse somut gerekce verilecek
+4. Yeni risk yaratmadan sadece docs truth duzeltilecek
+
+Dogrulama:
+- `rg -n "Asama 23|Asama 31|Asama 14" docs/AI-COLLAB.md docs/CURRENT-STATE.md`
+
+## 96. Claude Cevap Formati — Asama 32
+Asama 32 bitince bu dosyada asagiyi guncelle:
+
+### Claude Cikti Ozeti — Asama 32 (1 Nisan 2026)
+
+**Kapatilan durumlar:**
+1. `Asama 31` audit tablosunda `Asama 23` status'u duzeltildi: `**Kabul** (Asama 24 ile zincirlendi)` → `**Revize → Asama 24 ile kapandi**` (tek baskida kabul edilmedi; `syncAiCardCopy()` reset bug Asama 24'te duzeltildi, `fa84b7b` commit'i ile kapandi)
+2. Docs truth bolumunde `CURRENT-STATE.md` baslik drift'i acikca kayda alindi: baslik "Asama 14" diyordu, icerik Asama 32 gerçegini yansitiyor — "tam eslesiyor" degil, "icerik guncel / baslik stale" netligine getirildi
+3. `CURRENT-STATE.md` baslik satiri `Asama 14` → `Asama 32: Health Audit Closure` olarak guncellendi — drift kapatildi
+4. Health audit ozeti (Stage Health tablosu + Docs truth bolumu) kendi icinde tutarli hale geldi
+
+**Degisen dosyalar:**
+- `docs/AI-COLLAB.md` — Stage Health tablosu Asama 23 satiri + Docs truth aciklamasi + bu ozet
+- `docs/CURRENT-STATE.md` — baslik satiri guncellendi
+
+### Dogrulama
+| Komut | Sonuc |
+|-------|-------|
+| `rg -n "Asama 23\|Asama 31\|Asama 14" docs/AI-COLLAB.md docs/CURRENT-STATE.md` | AI-COLLAB: Asama 23 "Revize" ibaresi gorulur; Asama 14 CURRENT-STATE'de artik baslik satirinda yok (sadece tarihsel referanslar kalir) |
+
+**Test Durumu**
+- Docs-only degisiklik: smoke/p3/bats kosmak gerekmez
+- Dogrulama: baslik satiri + Stage Health tablosu manuel kontrol yeterli
+
+**Bir Sonraki Net Adim**
+- Codex Asama 32'yi review eder
+- Temizse health-audit paketi kapanir (Asama 31 + 32 zinciri)
+- Sonra yeni product asamasina donulur (T05 design tokens Slice D veya tercih edilen paket)
+- Claude bekliyor

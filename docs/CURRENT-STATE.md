@@ -1,5 +1,5 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 31 Mart 2026 | Asama 14: MVP free-tier truth-sync
+> Son guncelleme: 1 Nisan 2026 | Asama 32: Health Audit Closure (icerik guncel, baslik Asama 14'ten Asama 32'ye tasindi)
 
 ## 1. Proje Ozeti
 
