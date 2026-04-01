@@ -5,7 +5,8 @@
       "model": "sonnet"
     }
   },
-  "concurrency": 3,
+  "concurrency": 2,
+  "timeout": 120,
   "agents": {
     "security-scan": { "enabled": true },
     "performance-check": { "enabled": true },

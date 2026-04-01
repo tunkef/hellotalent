@@ -24,6 +24,18 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m'
 
+MAX_RETRIES="${DEEPSEEK_MAX_RETRIES:-3}"
+
+_safe_cost() {
+  # Safe bc calculation — returns "0" on parse error instead of crashing
+  local tokens_in="${1:-0}"
+  local tokens_out="${2:-0}"
+  # Validate inputs are numeric
+  if ! echo "$tokens_in" | grep -qE '^[0-9]+$'; then tokens_in=0; fi
+  if ! echo "$tokens_out" | grep -qE '^[0-9]+$'; then tokens_out=0; fi
+  echo "scale=4; ($tokens_in * 0.00000028) + ($tokens_out * 0.00000042)" | bc 2>/dev/null || echo "0"
+}
+
 call_deepseek() {
   local system_prompt="$1"
   local user_prompt="$2"
@@ -33,36 +45,54 @@ call_deepseek() {
   local sys_escaped=$(echo "$system_prompt" | jq -Rs .)
   local usr_escaped=$(echo "$user_prompt" | jq -Rs .)
 
-  local response=$(curl -s -X POST "$API_URL" \
-    -H "Content-Type: application/json" \
-    -H "Authorization: Bearer $API_KEY" \
-    -d "{
-      \"model\": \"$MODEL\",
-      \"messages\": [
-        {\"role\": \"system\", \"content\": $sys_escaped},
-        {\"role\": \"user\", \"content\": $usr_escaped}
-      ],
-      \"max_tokens\": $MAX_TOKENS,
-      \"temperature\": 0.1
-    }")
+  local attempt=0
+  local backoff=2
+  local response=""
+
+  while [ "$attempt" -lt "$MAX_RETRIES" ]; do
+    attempt=$((attempt + 1))
+
+    response=$(curl -s --max-time 120 -X POST "$API_URL" \
+      -H "Content-Type: application/json" \
+      -H "Authorization: Bearer $API_KEY" \
+      -d "{
+        \"model\": \"$MODEL\",
+        \"messages\": [
+          {\"role\": \"system\", \"content\": $sys_escaped},
+          {\"role\": \"user\", \"content\": $usr_escaped}
+        ],
+        \"max_tokens\": $MAX_TOKENS,
+        \"temperature\": 0.1
+      }") || response=""
+
+    local error=$(echo "$response" | jq -r '.error.message // empty' 2>/dev/null || echo "")
+    local content=$(echo "$response" | jq -r '.choices[0].message.content // empty' 2>/dev/null || echo "")
+
+    if [ -z "$error" ] && [ -n "$content" ]; then
+      break  # Success
+    fi
+
+    if [ "$attempt" -lt "$MAX_RETRIES" ]; then
+      echo -e "${YELLOW}DeepSeek attempt $attempt/$MAX_RETRIES failed: ${error:-empty response}. Retrying in ${backoff}s...${NC}"
+      sleep "$backoff"
+      backoff=$((backoff * 2))
+    else
+      echo -e "${RED}DeepSeek failed after $MAX_RETRIES attempts: ${error:-empty response}${NC}"
+      return 1
+    fi
+  done
 
   # Extract content
-  local content=$(echo "$response" | jq -r '.choices[0].message.content // empty')
-  local reasoning=$(echo "$response" | jq -r '.choices[0].message.reasoning_content // empty')
-  local usage_in=$(echo "$response" | jq -r '.usage.prompt_tokens // 0')
-  local usage_out=$(echo "$response" | jq -r '.usage.completion_tokens // 0')
-  local error=$(echo "$response" | jq -r '.error.message // empty')
-
-  if [ -n "$error" ]; then
-    echo -e "${RED}HATA: $error${NC}"
-    return 1
-  fi
+  local content=$(echo "$response" | jq -r '.choices[0].message.content // empty' 2>/dev/null || echo "")
+  local reasoning=$(echo "$response" | jq -r '.choices[0].message.reasoning_content // empty' 2>/dev/null || echo "")
+  local usage_in=$(echo "$response" | jq -r '.usage.prompt_tokens // 0' 2>/dev/null || echo "0")
+  local usage_out=$(echo "$response" | jq -r '.usage.completion_tokens // 0' 2>/dev/null || echo "0")
 
   # Write to file
   {
     echo "# DeepSeek Review — $TIMESTAMP"
     echo "Model: $MODEL | Input: ${usage_in} token | Output: ${usage_out} token"
-    echo "Maliyet: ~\$$(echo "scale=4; ($usage_in * 0.00000028) + ($usage_out * 0.00000042)" | bc)"
+    echo "Maliyet: ~\$$(  _safe_cost "$usage_in" "$usage_out")"
     echo ""
     if [ -n "$reasoning" ] && [ "$reasoning" != "null" ]; then
       echo "## Reasoning"
@@ -73,8 +103,8 @@ call_deepseek() {
     echo "$content"
   } > "$output_file"
 
-  echo -e "${GREEN}Review tamamlandi:${NC} $output_file"
-  local cost=$(echo "scale=4; ($usage_in * 0.00000028) + ($usage_out * 0.00000042)" | bc)
+  echo -e "${GREEN}Review tamamlandi (attempt $attempt/$MAX_RETRIES):${NC} $output_file"
+  local cost=$(_safe_cost "$usage_in" "$usage_out")
   echo -e "Token: ${usage_in} input + ${usage_out} output | Maliyet: ~\$$cost"
 
   # Observability: metrik logla

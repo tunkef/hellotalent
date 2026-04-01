@@ -39,6 +39,9 @@ mkdir -p "$RESULTS_DIR"
 TIMESTAMP=$(date '+%Y%m%d-%H%M%S')
 LOG="$RESULTS_DIR/orchestrator-$TIMESTAMP.log"
 
+# ── Step result tracker (honest reporting) ──
+STEP_RESULTS=""
+
 log() {
   echo -e "$1" | tee -a "$LOG"
 }
@@ -183,26 +186,30 @@ step_review() {
   log "${BOLD}🔍 STEP 3: DeepSeek Code Review${NC}"
   log ""
 
+  local deepseek_ok=true
   if [ -f "scripts/deepseek-review.sh" ]; then
-    # Diff review
-    log "Diff review..."
+    # Diff review (now has 3x retry with exponential backoff)
+    log "Diff review (max ${DEEPSEEK_MAX_RETRIES:-3} attempts)..."
     if ! ./scripts/deepseek-review.sh diff 2>&1 | tee -a "$LOG"; then
-      log "${YELLOW}[INFRA WARNING] DeepSeek diff review başarısız — API/ağ hatası olabilir. Ürün FAIL değil.${NC}"
-      notify_telegram "⚠️ *[INFRA] DeepSeek diff review basarisiz* — API hatasi, urun FAIL degil"
+      log "${YELLOW}[INFRA WARNING] DeepSeek diff review başarısız — tüm retry'lar tükendi.${NC}"
+      notify_telegram "⚠️ *[INFRA] DeepSeek diff review basarisiz* — 3 deneme sonrasi fail"
+      deepseek_ok=false
     fi
     log ""
 
-    # Security audit
-    log "Security audit..."
+    # Security audit (also has retry now)
+    log "Security audit (max ${DEEPSEEK_MAX_RETRIES:-3} attempts)..."
     if ! ./scripts/deepseek-review.sh security 2>&1 | tee -a "$LOG"; then
-      log "${YELLOW}[INFRA WARNING] DeepSeek security audit başarısız — API/ağ hatası. Ürün FAIL değil.${NC}"
-      notify_telegram "⚠️ *[INFRA] DeepSeek security audit basarisiz* — API hatasi, urun FAIL degil"
+      log "${YELLOW}[INFRA WARNING] DeepSeek security audit başarısız — tüm retry'lar tükendi.${NC}"
+      notify_telegram "⚠️ *[INFRA] DeepSeek security audit basarisiz* — 3 deneme sonrasi fail"
+      deepseek_ok=false
     fi
     log ""
   else
     log "${YELLOW}[INFRA WARNING] DeepSeek script bulunamadı, review atlanıyor.${NC}"
-    notify_telegram "⚠️ *[INFRA] DeepSeek script bulunamadi* — review atlandi, urun FAIL degil"
+    deepseek_ok=false
   fi
+  STEP_RESULTS="${STEP_RESULTS}DeepSeek:$([ "$deepseek_ok" = true ] && echo PASS || echo FAIL) "
 
   # Cerebras deep review (en çok değişen dosya)
   if [ -f "scripts/cerebras-review.sh" ]; then
@@ -215,13 +222,16 @@ step_review() {
 
   # Diffray multi-agent review (5 paralel uzman ajan)
   if command -v diffray &>/dev/null; then
-    log "Diffray multi-agent review..."
-    if diffray review 2>&1 | tee -a "$LOG"; then
+    log "Diffray multi-agent review (timeout: 120s per agent)..."
+    if DIFFRAY_AGENT_TIMEOUT=120 diffray review 2>&1 | tee -a "$LOG"; then
       log "${GREEN}Diffray review tamamlandi${NC}"
+      STEP_RESULTS="${STEP_RESULTS}Diffray:PASS "
     else
-      log "${YELLOW}[INFRA WARNING] Diffray review basarisiz${NC}"
-      notify_telegram "⚠️ *[INFRA] Diffray review basarisiz*"
+      log "${YELLOW}[INFRA WARNING] Diffray review basarisiz (timeout veya agent hatasi)${NC}"
+      STEP_RESULTS="${STEP_RESULTS}Diffray:FAIL "
     fi
+  else
+    STEP_RESULTS="${STEP_RESULTS}Diffray:SKIP "
   fi
 
   # Qodo test generation (TDD strict mode destegi)
@@ -244,67 +254,63 @@ step_test() {
   log "${BOLD}🧪 STEP 4: Test Suite${NC}"
   log ""
 
+  local tests_ok=true
+
   log "P3 regression testleri..."
   local p3_result=$(npm run test:p3 2>&1 | tail -1)
   log "  $p3_result"
   if echo "$p3_result" | grep -q "failed"; then
     notify_phone "HATA: P3 Test FAIL" "$p3_result" "urgent" "x"
     notify_telegram "❌ *Test FAIL:* $p3_result"
+    tests_ok=false
   fi
 
-  log "Smoke testleri..."
-  local smoke_result=$(npm run test:smoke 2>&1 | tail -1)
-  log "  $smoke_result"
-  if echo "$smoke_result" | grep -q "failed"; then
-    notify_phone "HATA: Smoke Test FAIL" "$smoke_result" "urgent" "x"
-    notify_telegram "❌ *Smoke FAIL:* $smoke_result"
+  log "BATS infra testleri..."
+  local bats_result=$(npm run test:bats 2>&1 | tail -1)
+  log "  $bats_result"
+  if echo "$bats_result" | grep -q "not ok"; then
+    notify_telegram "❌ *BATS FAIL:* $bats_result"
+    tests_ok=false
   fi
+
+  STEP_RESULTS="${STEP_RESULTS}Tests:$([ "$tests_ok" = true ] && echo PASS || echo FAIL) "
   log ""
 }
 
 # ═══════════════════════════════════════
-# STEP 5: GEMINI UAT
+# STEP 5: PLAYWRIGHT UAT (replaces Gemini free-tier which is permanently quota-exhausted)
 # ═══════════════════════════════════════
 step_uat() {
   divider
-  log "${BOLD}🌐 STEP 5: Gemini UAT${NC}"
+  log "${BOLD}🌐 STEP 5: Playwright UAT${NC}"
   log ""
 
   local uat_output="$RESULTS_DIR/uat-$TIMESTAMP.md"
-  if command -v gemini &>/dev/null; then
-    log "Gemini UAT başlatılıyor..."
-    local uat_prompt="GEMINI.md dosyasını oku. docs/AI-COLLAB.md'deki son aşamayı oku. Canlı siteyi https://hellotalent.ai test et. Bulgularını docs/AI-COLLAB.md'ye UAT Raporu olarak yaz. Kod değiştirme."
 
-    if gemini -p "$uat_prompt" > "$uat_output" 2>&1; then
-      # Exit 0 olsa da quota/infra hatası içerebilir
-      if grep -qiE 'QUOTA_EXHAUSTED|quota.*exceeded|rate.?limit|RESOURCE_EXHAUSTED' "$uat_output" 2>/dev/null; then
-        log "${YELLOW}[INFRA WARNING] Gemini quota/rate-limit — UAT koşamadı. Ürün FAIL değil.${NC}"
-        echo "[INFRA WARNING] Gemini quota/rate-limit — $(date '+%Y-%m-%d %H:%M')" >> "$uat_output"
-        notify_telegram "⚠️ *[INFRA] Gemini quota/rate-limit* — UAT atlandi, urun FAIL degil"
-      else
-        log "${GREEN}UAT tamamlandı:${NC} $uat_output"
-      fi
-    else
-      local uat_exit=$?
-      # Hata tipini sınıflandır — altyapı mı yoksa ürün testi mi?
-      if grep -qiE 'QUOTA_EXHAUSTED|quota.*exceeded|rate.?limit|RESOURCE_EXHAUSTED' "$uat_output" 2>/dev/null; then
-        log "${YELLOW}[INFRA WARNING] Gemini quota/rate-limit (kod: $uat_exit) — UAT atlandi.${NC}"
-        echo "[INFRA WARNING] Gemini quota/rate-limit — $(date '+%Y-%m-%d %H:%M')" >> "$uat_output"
-        notify_telegram "⚠️ *[INFRA] Gemini quota/rate-limit* — UAT atlandi, urun FAIL degil"
-      elif grep -qiE 'UNAUTHENTICATED|not authenticated|auth.*error|invalid.*key' "$uat_output" 2>/dev/null; then
-        log "${YELLOW}[INFRA WARNING] Gemini auth hatası (kod: $uat_exit) — UAT atlandı.${NC}"
-        echo "[INFRA WARNING] Gemini auth error — $(date '+%Y-%m-%d %H:%M')" >> "$uat_output"
-        notify_telegram "⚠️ *[INFRA] Gemini auth hatasi* — UAT atlandi, urun FAIL degil"
-      else
-        log "${YELLOW}[INFRA WARNING] Gemini UAT beklenmedik hata (kod: $uat_exit) — UAT atlandı.${NC}"
-        echo "[INFRA WARNING] Unexpected error code $uat_exit — $(date '+%Y-%m-%d %H:%M')" >> "$uat_output"
-        notify_telegram "⚠️ *[INFRA] Gemini UAT beklenmedik hata* (kod: $uat_exit) — urun FAIL degil"
-      fi
-    fi
+  # Run smoke tests as UAT — these hit the actual pages
+  log "Smoke testleri UAT olarak çalıştırılıyor..."
+  local smoke_result
+  smoke_result=$(npm run test:smoke 2>&1) || true
+  local smoke_summary=$(echo "$smoke_result" | tail -1)
+
+  {
+    echo "# UAT Report — $TIMESTAMP"
+    echo "Runner: Playwright smoke tests (replaced Gemini free-tier — permanent quota exhaustion)"
+    echo ""
+    echo "## Result"
+    echo "$smoke_summary"
+    echo ""
+    echo "## Detail"
+    echo "$smoke_result"
+  } > "$uat_output"
+
+  if echo "$smoke_summary" | grep -q "passed"; then
+    log "${GREEN}UAT (Playwright smoke) geçti:${NC} $smoke_summary"
+    STEP_RESULTS="${STEP_RESULTS:-}UAT:PASS "
   else
-    log "${YELLOW}[INFRA WARNING] Gemini CLI bulunamadı, UAT atlanıyor.${NC}"
-    echo "[INFRA WARNING] Gemini CLI kurulu degil — $(date '+%Y-%m-%d %H:%M')" > "$uat_output"
-    notify_telegram "⚠️ *[INFRA] Gemini CLI bulunamadi* — UAT atlandi, urun FAIL degil"
+    log "${RED}UAT (Playwright smoke) FAIL:${NC} $smoke_summary"
+    notify_telegram "❌ *UAT FAIL:* $smoke_summary"
+    STEP_RESULTS="${STEP_RESULTS:-}UAT:FAIL "
   fi
   log ""
 }
@@ -401,11 +407,30 @@ show_summary() {
   log "  Log: $LOG"
   log "  Sonuçlar: $RESULTS_DIR/"
   log ""
-  log "  Sıradaki adım:"
-  log "  1. ${CYAN}reviews/${NC} klasöründeki sonuçları incele"
-  log "  2. Kritik bulgu varsa düzelt"
-  log "  3. Codex masaüstüne dön, AI-COLLAB.md'yi göster"
-  log "  4. Codex yeni aşama yazarsa: ${BOLD}./scripts/orchestrator.sh run${NC}"
+
+  # Honest step-by-step report
+  log "  ${BOLD}Step Sonuçları:${NC}"
+  local pass_count=0
+  local fail_count=0
+  local skip_count=0
+  for entry in $STEP_RESULTS; do
+    local name="${entry%%:*}"
+    local result="${entry##*:}"
+    case "$result" in
+      PASS) log "    ${GREEN}✓${NC} $name"; pass_count=$((pass_count + 1)) ;;
+      FAIL) log "    ${RED}✗${NC} $name"; fail_count=$((fail_count + 1)) ;;
+      SKIP) log "    ${YELLOW}—${NC} $name (atlandı)"; skip_count=$((skip_count + 1)) ;;
+    esac
+  done
+  log ""
+  log "  Toplam: ${GREEN}$pass_count geçti${NC} / ${RED}$fail_count fail${NC} / ${YELLOW}$skip_count atlandı${NC}"
+
+  if [ "$fail_count" -gt 0 ]; then
+    notify_telegram "⚠️ *Pipeline tamamlandi:* $pass_count geçti, $fail_count FAIL, $skip_count atlandı — reviews/ incele"
+  else
+    notify_telegram "✅ *Pipeline tamamlandi:* $pass_count/$((pass_count + skip_count)) geçti ($skip_count atlandı)"
+  fi
+  log ""
   divider
 }
 
