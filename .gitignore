@@ -1,6 +1,5 @@
 .claude/*
 !.claude/rules/
-!.claude/skills/
 .DS_Store
 tasks/
 reviews/
@@ -17,6 +16,10 @@ gemini-uat.log
 .autonomous-loop.state
 .autonomous-loop.pid
 .telegram-gate.offset
+.collab-hash
+.collab-last-stage
+.obsidian/
+tests/node_modules
 EXECUTION_POLICY.md
 docs/plans/
 ref_components/
