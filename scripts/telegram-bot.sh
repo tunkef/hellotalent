@@ -305,13 +305,14 @@ $remaining"
           current_phase=$(state_read "phase")
         fi
 
+        # Approval keywords work in ANY state (state writes are unreliable due to race conditions)
+        local is_approval=false
+        if echo "$text" | grep -qiE '(tamam|ok|onayla|devam|evet|go|basla)'; then
+          is_approval=true
+        fi
+
         case "$current_phase" in
-          waiting_approval)
-            # Onay + feedback birlikte gelebilir: "Devam edelim. Ama X de ekle"
-            local is_approval=false
-            if echo "$text" | grep -qiE '(tamam|ok|onayla|devam|evet|go|basla)'; then
-              is_approval=true
-            fi
+          waiting_approval|implementing|idle|"")
 
             # Mesajda onaydan fazlası var mı? (feedback/ekleme)
             local word_count=$(echo "$text" | wc -w | tr -d ' ')
@@ -353,28 +354,14 @@ $plan_status"
                 send_msg "Gunun plani tamamlandi! Yeni gorev icin /stage veya mesaj yaz."
               fi
             else
-              send_msg "Mesajin alindi ve kaydedildi:
+              # Not an approval — save as feedback/note
+              state_set "pending_input" "$text"
+              send_msg "Mesajin kaydedildi:
 $text
 
-Onaylamak icin: tamam / devam / ok
-Degistirmek icin: mesajini yaz"
+Sonraki asamaya gecmek icin: tamam / devam / ok"
             fi
             ;;
-          implementing)
-            state_set "pending_input" "$text"
-            send_msg "Mesajin kaydedildi. Su an uygulama devam ediyor.
-Bitince bu notu dikkate alacagim:
-$text"
-            ;;
-          *)
-            # idle veya diger — yeni görev olarak kaydet
-            send_msg "Mesajin alindi ve kaydedildi:
-$text
-
-Bunu yeni gorev olarak islememi istersen: /stage komutu ile gonder
-Sadece not olarak birakmak istersen bir sey yapmana gerek yok."
-            ;;
-        esac
       fi
       ;;
   esac
