@@ -332,7 +332,38 @@ step_uat() {
 }
 
 # ═══════════════════════════════════════
-# STEP 6: GROK SYNC
+# STEP 6: CODEX REVIEW GATE (final QA)
+# ═══════════════════════════════════════
+step_codex_review() {
+  divider
+  log "${BOLD}🧠 STEP 6: Codex Review Gate${NC}"
+  log ""
+
+  if ! command -v codex &>/dev/null; then
+    log "${YELLOW}Codex CLI kurulu degil — review atlaniyor.${NC}"
+    STEP_RESULTS="${STEP_RESULTS}Codex:SKIP "
+    return
+  fi
+
+  local codex_output="$RESULTS_DIR/codex-review-$TIMESTAMP.md"
+
+  log "Codex review baslatiliyor (uncommitted changes)..."
+  if codex review --uncommitted > "$codex_output" 2>&1; then
+    log "${GREEN}Codex review tamamlandi${NC}"
+    STEP_RESULTS="${STEP_RESULTS}Codex:PASS "
+
+    # Review sonucunun ilk 500 karakterini logla
+    local preview=$(head -c 500 "$codex_output")
+    log "  Preview: $preview"
+  else
+    log "${YELLOW}Codex review basarisiz veya timeout${NC}"
+    STEP_RESULTS="${STEP_RESULTS}Codex:FAIL "
+  fi
+  log ""
+}
+
+# ═══════════════════════════════════════
+# STEP 7: GROK SYNC
 # ═══════════════════════════════════════
 step_sync() {
   divider
@@ -464,6 +495,7 @@ case "${1:-help}" in
     step_review
     step_test
     step_uat
+    step_codex_review
     step_sync
     show_summary
     notify_phone "Pipeline Tamamlandi" "Tum adimlar bitti. reviews/ klasorunu incele." "default" "white_check_mark"

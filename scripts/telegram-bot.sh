@@ -25,6 +25,10 @@ COLLAB_FILE="docs/AI-COLLAB.md"
 
 mkdir -p reviews
 
+# State machine
+source "$(dirname "$0")/state.sh" 2>/dev/null || true
+INBOX_FILE=".telegram-inbox"
+
 # ── Mesaj gönder ──
 send_msg() {
   local text="$1"
@@ -116,22 +120,25 @@ Komutlar:
 /help — Bu mesaj"
       ;;
 
-    /status)
-      local autopilot="❌ Kapalı"
+    /status|/durum)
+      local autopilot="Kapali"
       if [ -f ".autopilot.pid" ] && kill -0 "$(cat .autopilot.pid)" 2>/dev/null; then
-        autopilot="✅ Aktif (PID: $(cat .autopilot.pid))"
+        autopilot="Aktif"
       fi
-      local stage
-      stage=$(get_latest_stage)
-      local commit=$(git log --oneline -1 2>/dev/null || echo "?")
-      local changes=$(git diff --stat 2>/dev/null | tail -1 || echo "temiz")
+      local summary=""
+      if type state_summary &>/dev/null; then
+        summary=$(state_summary)
+      else
+        summary="Asama: $(get_latest_stage)
+Son commit: $(git log --oneline -1 2>/dev/null || echo '?')"
+      fi
 
-      send_msg "📊 *Pipeline Durumu*
+      send_msg "Pipeline Durumu
 
 Autopilot: $autopilot
-Aktif: $stage
-Son commit: \`$commit\`
-Değişiklik: $changes"
+$summary
+
+Komut olmadan mesaj yazarsan yeni yon/gorev olarak algilarim."
       ;;
 
     /run)
@@ -254,7 +261,52 @@ Not:
       ;;
 
     *)
-      send_msg "❓ Bilinmeyen komut. /help yaz."
+      # Free-text: komut olmayan mesajlar = yeni yön/görev/feedback
+      if [[ "$text" =~ ^/ ]]; then
+        send_msg "Bilinmeyen komut. /help yaz."
+      else
+        # Kullanıcı serbest metin yazdı — inbox'a yaz, state güncelle
+        local ts
+        ts=$(date '+%Y-%m-%d %H:%M')
+        echo "[$ts] $text" >> "$INBOX_FILE"
+        if type state_set &>/dev/null; then
+          state_set "pending_input" "$text"
+        fi
+
+        local current_phase=""
+        if type state_read &>/dev/null; then
+          current_phase=$(state_read "phase")
+        fi
+
+        case "$current_phase" in
+          waiting_approval)
+            # Onay bekleniyorsa mesajı "onayla" veya "değiştir" olarak yorumla
+            if echo "$text" | grep -qiE '^(tamam|ok|onayla|devam|evet|go|basla)'; then
+              state_set_phase "implementing"
+              send_msg "Onay alindi! Uygulama basliyor."
+            else
+              send_msg "Mesajin alindi. Plan guncellenecek:
+$text
+
+Onaylamak icin: tamam / devam / ok
+Degistirmek icin: mesajini yaz"
+            fi
+            ;;
+          implementing)
+            send_msg "Mesajin alindi. Su an uygulama devam ediyor.
+Bitince bu notu dikkate alacagim:
+$text"
+            ;;
+          *)
+            # idle veya diger — yeni görev olarak kaydet
+            send_msg "Mesajin alindi ve kaydedildi:
+$text
+
+Bunu yeni gorev olarak islememi istersen: /stage $text
+Sadece not olarak birakmak istersen bir sey yapmana gerek yok."
+            ;;
+        esac
+      fi
       ;;
   esac
 }

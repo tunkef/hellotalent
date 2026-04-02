@@ -26,6 +26,10 @@ NTFY_TOPIC="${NTFY_TOPIC:-hellotalent-tuna}"
 
 mkdir -p reviews
 
+# State machine
+source "$(dirname "$0")/state.sh" 2>/dev/null || true
+INBOX_FILE=".telegram-inbox"
+
 notify() {
   curl -s -o /dev/null \
     -H "Title: $1" \
@@ -119,21 +123,71 @@ Pipeline basliyor..." 2>/dev/null || true
       # Lock al
       echo $$ > "$LOCK_FILE"
 
+      # State güncelle
+      if type state_set_phase &>/dev/null; then
+        state_set_phase "implementing"
+        state_set_stage "$new_stage"
+      fi
+
+      # Kullanıcıdan bekleyen input var mı kontrol et
+      local pending=""
+      if [ -f "$INBOX_FILE" ]; then
+        pending=$(tail -3 "$INBOX_FILE" 2>/dev/null || true)
+      fi
+
       # Pipeline çalıştır (autonomous-loop aktifse atla)
       if _should_skip_pipeline; then
         echo "$(date '+%H:%M:%S') autonomous-loop aktif — pipeline delegated" >> "$LOG_FILE"
       else
         echo "$(date '+%H:%M:%S') Pipeline baslatiliyor..." >> "$LOG_FILE"
+
+        # Review aşamasını state'e yaz
+        if type state_set_phase &>/dev/null; then
+          state_set_phase "implementing"
+        fi
+
         if ./scripts/orchestrator.sh run >> "$LOG_FILE" 2>&1; then
           echo "$(date '+%H:%M:%S') Pipeline BASARILI" >> "$LOG_FILE"
-          notify "Asama $new_stage Tamamlandi" "Pipeline basariyla bitti. reviews/ klasorunu incele." "default" "white_check_mark"
-          [ -f "scripts/telegram-bot.sh" ] && ./scripts/telegram-bot.sh send "✅ *Asama $new_stage tamamlandi!*
-Pipeline basariyla bitti. Sonuclari /log ile gorebilirsin." 2>/dev/null || true
+
+          # State güncelle
+          if type state_set_phase &>/dev/null; then
+            state_set_phase "reporting"
+          fi
+
+          # Ürün odaklı rapor oluştur
+          local task_desc=""
+          task_desc=$(grep -A2 "Claude Icin Gorev.*Asama $new_stage" "$COLLAB" 2>/dev/null | tail -1 | sed 's/^[[:space:]]*//' || echo "")
+          local commit_msg=$(git log --oneline -1 2>/dev/null || echo "?")
+          local test_summary=""
+          test_summary=$(tail -5 "$LOG_FILE" | grep -oE '[0-9]+ gecti.*' || echo "testler tamamlandi")
+
+          notify "Asama $new_stage Tamamlandi" "Pipeline basariyla bitti." "default" "white_check_mark"
+          [ -f "scripts/telegram-bot.sh" ] && ./scripts/telegram-bot.sh send "Asama $new_stage tamamlandi
+
+Ne yapildi: ${task_desc:-Gorev tamamlandi}
+Son commit: $commit_msg
+Test: $test_summary
+
+Sonraki adimda ne yapmami istersin?
+Mesaj yaz veya /stage ile yeni gorev ver." 2>/dev/null || true
+
+          # Onay bekleme moduna geç
+          if type state_set_phase &>/dev/null; then
+            state_set_phase "waiting_approval"
+          fi
+
         else
           echo "$(date '+%H:%M:%S') Pipeline HATA" >> "$LOG_FILE"
-          notify "HATA: Asama $new_stage" "Pipeline hataya dustu! Terminali kontrol et." "urgent" "x"
-          [ -f "scripts/telegram-bot.sh" ] && ./scripts/telegram-bot.sh send "❌ *HATA: Asama $new_stage*
-Pipeline hataya dustu! Terminali kontrol et." 2>/dev/null || true
+
+          if type state_set_phase &>/dev/null; then
+            state_set_phase "idle"
+          fi
+
+          notify "HATA: Asama $new_stage" "Pipeline hataya dustu!" "urgent" "x"
+          [ -f "scripts/telegram-bot.sh" ] && ./scripts/telegram-bot.sh send "HATA: Asama $new_stage
+
+Pipeline hataya dustu. /log ile detay gorebilirsin.
+Terminali kontrol etmen gerekebilir." 2>/dev/null || true
         fi
       fi
 
