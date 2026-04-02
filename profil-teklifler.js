@@ -236,6 +236,7 @@
     var compName = c.company_name || (c.companies ? c.companies.company_name : '?');
     var html = '<div class="tk-card' + (locked ? ' tk-locked' : '') + '" data-campaign-id="' + c.id + '">';
     if (isDemo && !c.premium) html += '<span class="tk-demo-badge">\u00D6RNEK</span>';
+    if (c.premium && window._htMvpFreeTier) html += '<span class="tk-demo-badge" style="background:rgba(30,45,94,.08);color:var(--navy,#1E2D5E);">PREMIUM \u00b7 Beta Eri\u015Fimi</span>';
     html += '<div class="tk-card-cover">';
     if (c.cover_image_url) {
       html += '<img src="' + c.cover_image_url + '" alt="" loading="lazy">';
@@ -251,6 +252,9 @@
       html += '<div class="tk-promo"><span class="tk-promo-code">' + c.promo_code + '</span><button class="tk-promo-copy" data-code="' + c.promo_code + '">Kopyala</button></div>';
     }
     if (!locked) html += '<button class="tk-cta">' + (c.cta_label || 'Detaylar\u0131 G\u00F6r') + '</button>';
+    if (c.premium && window._htMvpFreeTier) {
+      html += '<div style="margin-top:8px;padding:6px 10px;background:rgba(30,45,94,.04);border-radius:6px;font-family:\'Plus Jakarta Sans\',sans-serif;font-size:10px;color:var(--muted,#6B7280);line-height:1.4;">Beta sonras\u0131 Premium hesaplar i\u00e7in ge\u00e7erli olacak</div>';
+    }
     html += '</div>';
     if (locked) {
       html += '<div class="tk-lock-overlay"><div class="tk-lock-icon">' + lockSVG + '</div>';
