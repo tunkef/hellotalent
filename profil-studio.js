@@ -3339,6 +3339,56 @@ async function hydrateBadgeStrip() {
         strip.appendChild(recentCard);
       }
     }
+    /* ══ EDUCATION PROGRESS CARD — next recommended competency ══ */
+    if (S.role && S.comps && S.comps.length > 0) {
+      var progressCard = document.createElement('div');
+      progressCard.style.cssText = 'margin-top:12px;padding:12px 14px;background:linear-gradient(135deg,rgba(201,78,40,.04) 0%,rgba(30,45,94,.03) 100%);border:1px solid var(--border-subtle,#E5E3DF);border-radius:10px;';
+
+      var completedComps = S.completedComps || [];
+      var totalComps = Math.min(S.isPremium ? S.comps.length : FREE_COMP_LIMIT, S.comps.length);
+      var pctDone = totalComps > 0 ? Math.round((completedComps.length / totalComps) * 100) : 0;
+
+      /* Progress bar */
+      var progBar = document.createElement('div');
+      progBar.style.cssText = 'height:6px;background:var(--border-subtle,#E5E3DF);border-radius:3px;margin-bottom:8px;overflow:hidden;';
+      var progFill = document.createElement('div');
+      progFill.style.cssText = 'height:100%;border-radius:3px;background:var(--verm,#C94E28);transition:width .4s;width:' + pctDone + '%;';
+      progBar.appendChild(progFill);
+      progressCard.appendChild(progBar);
+
+      /* Stats line */
+      var statsLine = document.createElement('div');
+      statsLine.style.cssText = 'font-family:"Plus Jakarta Sans",sans-serif;font-size:11px;color:var(--text-muted,#6B7280);margin-bottom:8px;';
+      statsLine.textContent = completedComps.length + '/' + totalComps + ' yetkinlik tamamland\u0131 (' + pctDone + '%)';
+      progressCard.appendChild(statsLine);
+
+      /* Next recommended competency */
+      var bridge = getBridge();
+      var nextComp = null;
+      for (var nc = 0; nc < S.comps.length && nc < totalComps; nc++) {
+        if (completedComps.indexOf(S.comps[nc]) === -1) { nextComp = S.comps[nc]; break; }
+      }
+      if (nextComp && bridge && bridge.COMP_NAMES) {
+        var nextBtn = document.createElement('button');
+        nextBtn.type = 'button';
+        nextBtn.style.cssText = 'width:100%;padding:8px;border-radius:8px;border:1px solid var(--verm,#C94E28);background:transparent;color:var(--verm,#C94E28);font-family:"Plus Jakarta Sans",sans-serif;font-size:11px;font-weight:700;cursor:pointer;transition:all .2s;';
+        nextBtn.textContent = '\u00d6nerilen: ' + (bridge.COMP_NAMES[nextComp] || nextComp) + ' \u2192';
+        nextBtn.addEventListener('click', function() {
+          navigate('course_detail', nextComp);
+        });
+        nextBtn.addEventListener('mouseenter', function() { this.style.background = 'var(--verm,#C94E28)'; this.style.color = '#fff'; });
+        nextBtn.addEventListener('mouseleave', function() { this.style.background = 'transparent'; this.style.color = 'var(--verm,#C94E28)'; });
+        progressCard.appendChild(nextBtn);
+      } else if (completedComps.length === totalComps && totalComps > 0) {
+        var doneMsg = document.createElement('div');
+        doneMsg.style.cssText = 'font-family:"Bricolage Grotesque",sans-serif;font-size:12px;font-weight:700;color:var(--verm,#C94E28);text-align:center;';
+        doneMsg.textContent = 'T\u00fcm yetkinlikleri tamamlad\u0131n! \ud83c\udf89';
+        progressCard.appendChild(doneMsg);
+      }
+
+      strip.appendChild(progressCard);
+    }
+
   } catch (e) { /* silent — badges are best-effort */ }
 }
 
