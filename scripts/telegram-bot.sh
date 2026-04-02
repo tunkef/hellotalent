@@ -105,19 +105,25 @@ handle_command() {
 
   case "$cmd" in
     /start)
-      send_msg "🚀 *HelloTalent Pipeline Bot*
+      send_msg "HelloTalent Pipeline Bot
 
-Komutlar:
-/status — Pipeline ve autopilot durumu
-/run — Pipeline'ı başlat
-/stop — Autopilot'u durdur
-/log — Son review sonuçları
-/brief — Grok briefing
-/review — DeepSeek code review
-/codex <mesaj> — Codex'e not bırak
-/stage <gorev> — Yeni Claude asamasi ac
-/agents — Tüm agent durumu
-/help — Bu mesaj"
+Gunluk Rituel:
+/plan — Gunun planini goster
+/kalan — Kalan asamalar
+/durum — Pipeline durumu
+
+Kontrol:
+/run — Pipeline'i baslat
+/stop — Durdur
+/log — Son review
+
+Yonetim:
+/stage <gorev> — Yeni asama ac
+/codex <mesaj> — Codex'e not birak
+/agents — Agent durumu
+/help — Bu mesaj
+
+Serbest mesaj yazarsan yon degisikligi olarak algilarim."
       ;;
 
     /status|/durum)
@@ -250,6 +256,27 @@ Not:
 - Degilse /run ile manuel baslatabilirsin"
       ;;
 
+    /plan)
+      if type plan_telegram_summary &>/dev/null; then
+        local plan_msg
+        plan_msg=$(plan_telegram_summary)
+        send_msg "$plan_msg"
+      else
+        send_msg "Plan sistemi yuklenmedi."
+      fi
+      ;;
+
+    /kalan)
+      if type plan_remaining &>/dev/null; then
+        local remaining
+        remaining=$(plan_remaining)
+        send_msg "Kalan Asamalar:
+$remaining"
+      else
+        send_msg "Plan sistemi yuklenmedi."
+      fi
+      ;;
+
     /help)
       handle_command "/start" ""
       ;;
@@ -280,12 +307,41 @@ Not:
 
         case "$current_phase" in
           waiting_approval)
-            # Onay bekleniyorsa mesajı "onayla" veya "değiştir" olarak yorumla
-            if echo "$text" | grep -qiE '^(tamam|ok|onayla|devam|evet|go|basla)'; then
-              state_set_phase "implementing"
-              send_msg "Onay alindi! Uygulama basliyor."
+            # Onay + feedback birlikte gelebilir: "Devam edelim. Ama X de ekle"
+            local is_approval=false
+            if echo "$text" | grep -qiE '(tamam|ok|onayla|devam|evet|go|basla)'; then
+              is_approval=true
+            fi
+
+            # Mesajda onaydan fazlası var mı? (feedback/ekleme)
+            local word_count=$(echo "$text" | wc -w | tr -d ' ')
+
+            if [ "$is_approval" = true ]; then
+              if [ "$word_count" -gt 2 ]; then
+                # Onay + feedback: ikisini de işle
+                state_set_phase "implementing"
+                state_set "pending_input" "$text"
+                send_msg "Onay alindi + notun kaydedildi:
+$text
+
+Uygulama basliyor, notunu dikkate alacagim."
+              else
+                # Sadece onay
+                state_set_phase "implementing"
+                send_msg "Onay alindi! Uygulama basliyor."
+              fi
+
+              # Plan'da sonraki aşamayı güncelle
+              if type plan_mark_done &>/dev/null; then
+                plan_mark_done
+                local remaining
+                remaining=$(plan_telegram_summary 2>/dev/null || true)
+                if [ -n "$remaining" ]; then
+                  send_msg "$remaining"
+                fi
+              fi
             else
-              send_msg "Mesajin alindi. Plan guncellenecek:
+              send_msg "Mesajin alindi ve kaydedildi:
 $text
 
 Onaylamak icin: tamam / devam / ok
@@ -293,7 +349,8 @@ Degistirmek icin: mesajini yaz"
             fi
             ;;
           implementing)
-            send_msg "Mesajin alindi. Su an uygulama devam ediyor.
+            state_set "pending_input" "$text"
+            send_msg "Mesajin kaydedildi. Su an uygulama devam ediyor.
 Bitince bu notu dikkate alacagim:
 $text"
             ;;
@@ -302,7 +359,7 @@ $text"
             send_msg "Mesajin alindi ve kaydedildi:
 $text
 
-Bunu yeni gorev olarak islememi istersen: /stage $text
+Bunu yeni gorev olarak islememi istersen: /stage komutu ile gonder
 Sadece not olarak birakmak istersen bir sey yapmana gerek yok."
             ;;
         esac
