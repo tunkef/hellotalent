@@ -1,5 +1,5 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 2 Nisan 2026 | Asama 54: Marka gorselleri entegrasyonu (31 marka, cover_image_url)
+> Son guncelleme: 2 Nisan 2026 | Asama 54: Marka gorselleri + CV ATS optimizasyonu (6 global standart)
 
 ## 1. Proje Ozeti
 

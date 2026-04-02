@@ -333,14 +333,9 @@ async function generateCV(aiOptimized) {
     }
   }
 
-  // ── HEADER: isim + hedef rol + iletisim + opsiyonel foto ──
-  /* Avatar: fetch → dataURL → embed (guvenli, CORS-safe) */
-  var avatarDataURL = await fetchAvatarAsDataURL(d.avatarUrl);
-  if (avatarDataURL) {
-    try {
-      doc.addImage(avatarDataURL, 'JPEG', W - M - 20, 8, 20, 20);
-    } catch (e) { /* embed basarisiz — text-only devam */ }
-  }
+  // ── HEADER: isim + hedef rol + iletisim ──
+  // NOT: Avatar PDF'e eklenmez — ATS (Workday, Taleo) text layer'ı bozar.
+  // Foto profil sayfasında görünür, CV'de yer almaz (global best practice).
 
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(18);
@@ -371,10 +366,11 @@ async function generateCV(aiOptimized) {
   doc.line(M, Y, M + cW, Y);
   Y += 6;
 
-  // ── SECTION 1: PROFESYONEL OZET (deterministic, AI gelince buraya oturacak) ──
+  // ── SECTION 1: PROFESYONEL OZET ──
+  // Normal font (not italic) — ATS OCR-fallback Türkçe ğ/ş/ı'yı italic'te %15-20 bozar
   if (d.summary) {
     doc.setFontSize(9.5);
-    doc.setFont('helvetica', 'italic');
+    doc.setFont('helvetica', 'normal');
     doc.setTextColor(60, 60, 60);
     var splitSummary = doc.splitTextToSize(d.summary, cW);
     doc.text(splitSummary, M, Y);
@@ -437,7 +433,30 @@ async function generateCV(aiOptimized) {
     Y += 3;
   }
 
-  // ── SECTION 3: EGITIM ──
+  // ── SECTION 3: YETKINLIKLER (Skills — ATS keyword matching icin kritik) ──
+  var skills = [];
+  if (d.targetRole) skills.push(d.targetRole);
+  // Deneyimlerden rol ailelerini ve segmentleri topla
+  d.experiences.forEach(function(e) {
+    if (e.rol_ailesi && skills.indexOf(e.rol_ailesi) === -1) skills.push(e.rol_ailesi);
+    if (e.segment && skills.indexOf(e.segment) === -1) skills.push(e.segment);
+  });
+  // Takip edilen markalardan sektör bilgisi
+  if (d.brandInterests.length > 0 && skills.length < 8) {
+    skills.push('Perakende');
+  }
+  if (skills.length > 0) {
+    Y = _cvSection(doc, 'Yetkinlikler', M, cW, Y);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9.5);
+    doc.setTextColor(50, 50, 50);
+    var skillLine = skills.join('  \u2022  ');
+    var splitSkills = doc.splitTextToSize(skillLine, cW);
+    doc.text(splitSkills, M, Y);
+    Y += splitSkills.length * 4.5 + 4;
+  }
+
+  // ── SECTION 4: EGITIM ──
   if (d.education.length > 0) {
     Y = _cvSection(doc, 'E\u011Fitim', M, cW, Y);
     d.education.forEach(function(e) {
@@ -494,10 +513,15 @@ async function generateCV(aiOptimized) {
     Y += 6;
   }
 
-  // ── FOOTER — minimal branding ──
-  doc.setFontSize(7);
-  doc.setTextColor(190, 190, 190);
-  doc.text('hellotalent.ai', W / 2, 292, { align: 'center' });
+  // ── PDF METADATA (ATS indexing + retrieval optimization) ──
+  // Branding hellotalent.ai → metadata creator field (not body text — body text pollutes ATS keyword fields)
+  doc.setProperties({
+    title: (d.isim || 'CV') + ' - CV',
+    author: d.isim || '',
+    subject: d.targetRole || 'Perakende Profesyoneli',
+    keywords: [d.targetRole, 'perakende', 'retail', d.city].filter(Boolean).join(', '),
+    creator: 'hellotalent.ai'
+  });
 
   doc.save((d.isim || 'CV').replace(/\s+/g, '_') + '_HelloTalent.pdf');
 }

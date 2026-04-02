@@ -1940,15 +1940,16 @@ test.describe('CV canonical template guards', () => {
     expect(certPos).toBeGreaterThan(langPos);
   });
 
-  test('avatar photo is optional — try/catch guard', () => {
-    expect(cvJs2).toContain('d.avatarUrl');
-    expect(cvJs2).toContain('addImage');
-    expect(cvJs2).toMatch(/try\s*\{[^}]*addImage/);
+  test('avatar photo NOT embedded in PDF — ATS text layer corruption risk', () => {
+    // Avatar removed from PDF per ATS best practice (Workday/Taleo corrupt adjacent text)
+    expect(cvJs2).not.toContain('addImage');
+    expect(cvJs2).toContain('Avatar PDF');
   });
 
-  test('footer branding is minimal hellotalent.ai only', () => {
+  test('branding in PDF metadata, not body text — ATS keyword pollution prevention', () => {
     expect(cvJs2).toContain("'hellotalent.ai'");
-    expect(cvJs2).not.toContain('HelloTalent Premium');
+    expect(cvJs2).toContain('setProperties');
+    expect(cvJs2).toContain('creator');
   });
 
   test('deterministic summary in normalizeCVData — no API dependency for canonical flow', () => {
