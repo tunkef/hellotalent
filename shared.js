@@ -32,7 +32,7 @@
 
   /* ── NAV HELPER ── */
   function navLink(label, href, key) {
-    var cls = 'nav-link' + (PAGE === key ? ' active' : '');
+    var cls = 'nav-link' + (PAGE === key ? ' active active-' + key : '');
     return '<a class="' + cls + '" href="' + href + '">' + label + '</a>';
   }
 
