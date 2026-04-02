@@ -327,10 +327,11 @@ $text"
               fi
 
               # Sonraki plan item'ı al ve AI-COLLAB'a yaz → autopilot tetiklenir
+              # Re-source state.sh to ensure plan functions are available
+              source "$(dirname "$0")/state.sh" 2>/dev/null || true
+
               local next_item=""
-              if type plan_current_item &>/dev/null; then
-                next_item=$(plan_current_item)
-              fi
+              next_item=$(plan_current_item 2>/dev/null || echo "")
 
               if [ -n "$next_item" ]; then
                 # Plan'dan sonraki aşamayı AI-COLLAB'a yaz
@@ -339,11 +340,14 @@ $text"
                 state_set_phase "implementing"
                 state_set_stage "$stage_num"
                 state_set_task "$next_item"
-                plan_mark_done
+                plan_mark_done 2>/dev/null || true
+
+                local plan_status
+                plan_status=$(plan_telegram_summary 2>/dev/null || echo "")
 
                 send_msg "Asama $stage_num basliyor: $next_item
 
-$(plan_telegram_summary 2>/dev/null || true)"
+$plan_status"
               else
                 state_set_phase "idle"
                 send_msg "Gunun plani tamamlandi! Yeni gorev icin /stage veya mesaj yaz."
