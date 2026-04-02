@@ -104,7 +104,7 @@ test('Gate page has correct structure', async ({ page }) => {
 test.describe('Mobile', () => {
   test.use({ viewport: { width: 390, height: 844 } });
   test('hamburger visible', async ({ page }) => {
-    await withGate(page, '/');
+    await withGate(page, '/aday.html');
     await expect(page.locator('.hamburger')).toBeVisible({ timeout: 10000 });
   });
   test('no horizontal scroll', async ({ page }) => {
