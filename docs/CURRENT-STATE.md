@@ -1,5 +1,5 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 2 Nisan 2026 | Asama 57: Teklifler sinirli erisim vurgusu
+> Son guncelleme: 2 Nisan 2026 | Asama 58: Mini egitim dashboard + rozet tooltip
 
 ## 1. Proje Ozeti
 

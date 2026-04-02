@@ -1230,6 +1230,13 @@ function injectCSS() {
   css += '.st-badge-locked{opacity:.4;filter:grayscale(.6)}';
   css += '.st-badge-icon{display:flex;align-items:center;flex-shrink:0}';
   css += '.st-badge-label{white-space:nowrap}';
+  /* Badge hover tooltip */
+  css += '.st-badge-chip{position:relative;cursor:default}';
+  css += '.st-badge-tooltip{display:none;position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:var(--navy,#1E2D5E);color:#fff;font-family:"Plus Jakarta Sans",sans-serif;font-size:11px;font-weight:500;padding:8px 12px;border-radius:8px;white-space:nowrap;z-index:20;box-shadow:0 4px 12px rgba(0,0,0,.15);pointer-events:none}';
+  css += '.st-badge-tooltip::after{content:"";position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:var(--navy,#1E2D5E)}';
+  css += '.st-badge-chip:hover .st-badge-tooltip{display:block}';
+  /* Mini dashboard compact style */
+  css += '.st-mini-dashboard{background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF);border-radius:14px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,.04)}';
   css += '.st-badge-recent{background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF);border-radius:12px;padding:14px 18px;box-shadow:0 2px 8px rgba(0,0,0,.04)}';
   css += '.st-badge-empty-hint{font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;color:var(--text-muted,#6B7280);padding:8px 0 4px}';
   css += '@media(max-width:600px){.st-badge-chip{font-size:10px;padding:5px 10px}}';
@@ -1931,6 +1938,9 @@ function renderLobby() {
     html += '<span class="st-progress-label">' + completedCount + '/' + accessibleCount + ' tamamland\u0131</span>';
     html += '</div>';
 
+    /* ══ MINI EDUCATION DASHBOARD — badges + progress in compact rail ══ */
+    html += '<div id="st-badge-strip" class="st-badge-strip st-mini-dashboard" style="display:none;margin-top:16px"></div>';
+
   } else {
     /* ══ FIRST-TIME — role picker card ══ */
     html += '<div class="st-role-picker">';
@@ -2092,8 +2102,7 @@ function renderLobby() {
   /* Module content area — hydrated by hydrateStudioSection */
   html += '<div id="st-module-area" class="st-module-area" style="display:none"></div>';
 
-  /* ══ BADGE STRIP — async-hydrated ══ */
-  html += '<div id="st-badge-strip" class="st-badge-strip" style="display:none;margin-top:20px"></div>';
+  /* Badge strip moved to mini dashboard above — this slot kept for backward compat */
 
   /* ══ COACH FEED — with section header for discoverability ══ */
   html += '<div style="margin-top:24px">';
@@ -3267,7 +3276,11 @@ async function hydrateBadgeStrip() {
 
       var chip = document.createElement('div');
       chip.className = 'st-badge-chip' + (isEarned ? ' st-badge-earned' : ' st-badge-locked');
-      chip.title = def.title + (isEarned ? '' : ' (kilitli)');
+      /* Hover tooltip — shows on mouseenter, hides on mouseleave (CSS-driven) */
+      var tooltip = document.createElement('div');
+      tooltip.className = 'st-badge-tooltip';
+      tooltip.textContent = def.description || def.title + (isEarned ? '' : ' (kilitli)');
+      chip.appendChild(tooltip);
 
       if (isEarned) {
         chip.style.background = tier.bg;
