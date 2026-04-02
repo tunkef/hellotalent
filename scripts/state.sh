@@ -43,8 +43,19 @@ state_set() {
   _ensure_state
   local key="$1"
   local value="$2"
-  local tmp="${STATE_FILE}.tmp"
+  local tmp="${STATE_FILE}.tmp.$$"
   jq --arg k "$key" --arg v "$value" '.[$k] = $v | .last_update = now' "$STATE_FILE" > "$tmp" && mv "$tmp" "$STATE_FILE"
+}
+
+# Lock wrapper for plan mutations (prevents race from duplicate Telegram messages)
+_plan_lock() {
+  local lockfile="${DAILY_PLAN_FILE}.lock"
+  if [ -f "$lockfile" ]; then
+    local lock_age=$(( $(date +%s) - $(stat -f%m "$lockfile" 2>/dev/null || echo 0) ))
+    [ "$lock_age" -lt 3 ] && return 1  # debounce: skip if locked within 3s
+  fi
+  touch "$lockfile"
+  return 0
 }
 
 state_set_phase() {
@@ -111,8 +122,10 @@ plan_current_item() {
 
 plan_mark_done() {
   [ -f "$DAILY_PLAN_FILE" ] || return
-  local tmp="${DAILY_PLAN_FILE}.tmp"
+  _plan_lock || return  # debounce duplicate calls
+  local tmp="${DAILY_PLAN_FILE}.tmp.$$"
   local current=$(plan_current_item)
+  [ -z "$current" ] && return  # no more items
   jq --arg item "$current" '
     .completed += [$item] |
     .current_index += 1
