@@ -30,6 +30,7 @@
 <title>hellotalent.ai — Türkiye'nin Retail Talent Marketplace'i</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script>(function(){var k='ht_theme_preference',s;try{s=localStorage.getItem(k)}catch(e){}var d=(s==='dark'||(s!=='light'&&window.matchMedia&&window.matchMedia('(prefers-color-scheme:dark)').matches));document.documentElement.setAttribute('data-theme',d?'dark':'light');})()</script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 html,body{height:100%;overflow:hidden;}
@@ -74,6 +75,25 @@ body{font-family:'Plus Jakarta Sans',sans-serif;}
   .gate-logo{top:20px;font-size:18px;}
   .gate-login{bottom:16px;font-size:13px;}
 }
+
+/* ══ DARK MODE ══ */
+html[data-theme="dark"] body{background:#050712;}
+html[data-theme="dark"] .gate-aday{background:#0C0F1A;border-right-color:#1F2937;}
+html[data-theme="dark"] .gate-aday:hover{background:#12162A;}
+html[data-theme="dark"] .gate-isveren{background:#0A0D18;}
+html[data-theme="dark"] .gate-isveren:hover{background:#0F1325;}
+html[data-theme="dark"] .gate-logo{color:#E5E7EB;}
+html[data-theme="dark"] .gate-logo em{color:#E8845C;}
+html[data-theme="dark"] .gate-sub{color:#9CA3AF;}
+html[data-theme="dark"] .gate-aday .gate-title{color:#E8845C;}
+html[data-theme="dark"] .gate-isveren .gate-title{color:#93A3D1;}
+html[data-theme="dark"] .gate-aday .gate-accent{background:#E8845C;}
+html[data-theme="dark"] .gate-isveren .gate-accent{background:#93A3D1;}
+html[data-theme="dark"] .gate-aday .gate-btn{background:#C94E28;}
+html[data-theme="dark"] .gate-isveren .gate-btn{background:#2D4080;}
+html[data-theme="dark"] .gate-isveren .gate-btn:hover{background:#3A519E;box-shadow:0 8px 24px rgba(45,64,128,0.4);}
+html[data-theme="dark"] .gate-login{color:#9CA3AF;}
+html[data-theme="dark"] .gate-login a{color:#93A3D1;}
 </style>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-54BCV5QYCZ"></script>
 <script>
