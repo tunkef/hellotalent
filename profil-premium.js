@@ -159,7 +159,7 @@ function render() {
     html += 'Beta d\u00f6neminde t\u00fcm \u00f6zellikler \u00fccretsiz';
     html += '</div>';
     html += '<div style="font-family:\'Plus Jakarta Sans\',sans-serif;font-size:13px;opacity:.85;line-height:1.6;">';
-    html += 'Hellotalent beta s\u00fcrecinde. A\u015fa\u011f\u0131daki t\u00fcm avantajlar\u0131 \u015fu an \u00fccretsiz kullanabilirsin. \u00d6deme sistemi ilerleyen s\u00fcre\u00e7te aktif olacak.';
+    html += 'Hellotalent beta s\u00fcrecinde. A\u015fa\u011f\u0131daki t\u00fcm avantajlar\u0131 3 ay boyunca \u00fccretsiz kullanabilirsin. AI \u00f6zellikleri (CV + De\u011ferlendirme) 1 deneme hakk\u0131 i\u00e7erir.';
     html += '</div>';
     html += '</div>';
   }
@@ -174,7 +174,7 @@ function render() {
     html += '<div class="pm-feature-title">' + f.title + '</div>';
     html += '<div class="pm-feature-desc">' + f.desc + '</div>';
     if (MVP_FREE_TIER) {
-      html += '<div style="margin-top:8px;display:inline-block;font-family:\'DM Mono\',monospace;font-size:9px;font-weight:700;padding:2px 8px;border-radius:4px;background:rgba(5,150,105,.1);color:#059669;">BETA \u00dcCRETSiZ</div>';
+      html += '<div style="margin-top:8px;display:inline-block;font-family:\'DM Mono\',monospace;font-size:9px;font-weight:700;padding:2px 8px;border-radius:4px;background:rgba(30,45,94,.08);color:var(--navy,#1E2D5E);">PREMIUM \u00b7 3 ay \u00fccretsiz</div>';
     }
     html += '</div>';
   }

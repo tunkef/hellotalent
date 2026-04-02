@@ -3353,6 +3353,14 @@ async function requestAiFeedback(compCode, qText, qHash) {
   if (!btn || !resultDiv) return;
   if (_aifRequestInFlight) return; /* prevent double-click */
 
+  /* Beta AI 1-use gate: ai_assessment_used check */
+  var _db = typeof window._loadedDBData !== 'undefined' ? window._loadedDBData : null;
+  var aiAssessmentUsed = _db && _db.profile && _db.profile.ai_assessment_used === true;
+  if (aiAssessmentUsed) {
+    showStudioToast('AI de\u011ferlendirme hakk\u0131n\u0131 kulland\u0131n. \u00c7ok yak\u0131nda tekrar kullanabileceksin!');
+    return;
+  }
+
   /* Collect current field values */
   var fields = {};
   var tas = document.querySelectorAll('.ig-journal-textarea');
@@ -3408,6 +3416,16 @@ async function requestAiFeedback(compCode, qText, qHash) {
       showStudioToast('De\u011ferlendirme ba\u015flat\u0131lamad\u0131. L\u00fctfen tekrar deneyin.');
       return;
     }
+
+    /* Mark ai_assessment_used = true in DB (beta 1-use gate) */
+    try {
+      var sess = await supabase.auth.getSession();
+      var uid = sess.data.session && sess.data.session.user && sess.data.session.user.id;
+      if (uid) {
+        await supabase.from('candidates').update({ ai_assessment_used: true }).eq('user_id', uid);
+        if (_db && _db.profile) _db.profile.ai_assessment_used = true;
+      }
+    } catch (e) { /* silent — tracking failure should not block feedback */ }
 
     /* Collect self-reflection if provided */
     var selfReflectEl = document.getElementById('aif-self-reflect-input');

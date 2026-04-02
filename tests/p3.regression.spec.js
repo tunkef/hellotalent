@@ -2796,3 +2796,227 @@ test.describe('Asama 39 — Metrics Truth Closure', () => {
     expect(aiCollab).toContain('68/68 PASS');
   });
 });
+
+/* ════════════════════════════════════════════════
+   Asama 40 — CV Upload Storage Key Harden
+   Guard: bosluk/Turkce char → safe Supabase key
+   cv_filename → orijinal ad korunur
+   ════════════════════════════════════════════════ */
+test.describe('Asama 40 — CV Upload Storage Key Harden', () => {
+  var coreJs;
+  var cvJs;
+
+  test.beforeAll(() => {
+    coreJs = readFromRepo('profil-core.js');
+    cvJs   = readFromRepo('profil-cv.js');
+  });
+
+  test('STORAGE._sanitizeKey helper is defined in profil-core.js', () => {
+    expect(coreJs).toContain('_sanitizeKey');
+    expect(coreJs).toMatch(/_sanitizeKey\s*:\s*function/);
+  });
+
+  test('_sanitizeKey transliterates Turkish characters (ş, ğ, ç present in map)', () => {
+    // Verify the trMap covers the six core Turkish chars
+    expect(coreJs).toContain("'ş':'s'");
+    expect(coreJs).toContain("'ğ':'g'");
+    expect(coreJs).toContain("'ç':'c'");
+    expect(coreJs).toContain("'ı':'i'");
+    expect(coreJs).toContain("'ü':'u'");
+    expect(coreJs).toContain("'ö':'o'");
+  });
+
+  test('_sanitizeKey replaces whitespace with safe separator', () => {
+    // Must contain a space→dash replacement
+    expect(coreJs).toMatch(/replace\(\/\\s\+\/g.*?'-'/);
+  });
+
+  test('STORAGE.cvPath calls _sanitizeKey (not raw filename)', () => {
+    // Must delegate to _sanitizeKey, not concatenate raw filename
+    expect(coreJs).toContain('_sanitizeKey(filename)');
+    // Raw `+ filename` pattern must NOT appear as the tail of the path string
+    expect(coreJs).not.toMatch(/'_'\s*\+\s*filename\s*;/);
+  });
+
+  test('cv_filename stores original file.name for UI and DB', () => {
+    // DB write must use the original name
+    expect(cvJs).toContain('cv_filename: file.name');
+    // In-memory sync must also use original name
+    expect(cvJs).toContain('_loadedDBData.profile.cv_filename = file.name');
+  });
+
+  test('re-upload cleanup uses currentCVStoragePath (safe key path)', () => {
+    // filePath (safe key) is assigned to currentCVStoragePath after upload
+    expect(cvJs).toContain('currentCVStoragePath = filePath');
+    // Delete flow removes by currentCVStoragePath (safe key)
+    expect(cvJs).toContain('remove([currentCVStoragePath])');
+  });
+});
+
+/* ════════════════════════════════════════════════
+   Asama 41 — _sanitizeKey Behavioral Assertions
+   Runtime dogrulama: grep-only deil, gercek I/O
+   Kanonical ornek: 'Yusuf Barış Özsoy Güncel Cv.pdf'
+   ════════════════════════════════════════════════ */
+test.describe('Asama 41 — _sanitizeKey behavioral assertions', () => {
+  var coreJs;
+  var cvJs;
+
+  // STORAGE nesnesini Node.js VM context'inde calistir; browser bağımlılığı yok
+  function loadStorage(src) {
+    var vm = require('vm');
+    var ctx = vm.createContext({ Date: Date });
+    // Kaynak dosyadan sadece STORAGE bloğunu çıkar (iki bölüm işareti arasındaki kısmı al)
+    var storageBlock = src
+      .split('// ── STORAGE CONSTANTS ──')[1]
+      .split('// ── THEME PREFERENCES')[0];
+    // 'var STORAGE = { ... };' ifadesini yeniden oluştur
+    var storageCode = 'var STORAGE' + storageBlock.split('var STORAGE')[1];
+    vm.runInContext(storageCode, ctx);
+    return ctx.STORAGE;
+  }
+
+  test.beforeAll(() => {
+    coreJs = readFromRepo('profil-core.js');
+    cvJs   = readFromRepo('profil-cv.js');
+  });
+
+  test('_sanitizeKey canonical: "Yusuf Barış Özsoy Güncel Cv.pdf" → "yusuf-baris-ozsoy-guncel-cv.pdf"', () => {
+    var STORAGE = loadStorage(coreJs);
+    var result = STORAGE._sanitizeKey('Yusuf Barış Özsoy Güncel Cv.pdf');
+    expect(result).toBe('yusuf-baris-ozsoy-guncel-cv.pdf');
+  });
+
+  test('_sanitizeKey: .pdf uzantisi korunur ve lowercase olur', () => {
+    var STORAGE = loadStorage(coreJs);
+    expect(STORAGE._sanitizeKey('Yusuf Barış Özsoy Güncel Cv.pdf')).toMatch(/\.pdf$/);
+    expect(STORAGE._sanitizeKey('DOSYA.PDF')).toMatch(/\.pdf$/);
+  });
+
+  test('_sanitizeKey: Turkce karakter icermez (sonuc ASCII-safe)', () => {
+    var STORAGE = loadStorage(coreJs);
+    var result = STORAGE._sanitizeKey('Yusuf Barış Özsoy Güncel Cv.pdf');
+    // Sonuc yalnizca a-z0-9, tire ve nokta icermeli
+    expect(result).toMatch(/^[a-z0-9._-]+$/);
+  });
+
+  test('STORAGE.cvPath output kanonik ornekte sanitized path ile biter (ham Turkce karakter icermez)', () => {
+    var STORAGE = loadStorage(coreJs);
+    var cvPath = STORAGE.cvPath('test-uuid', 'Yusuf Barış Özsoy Güncel Cv.pdf');
+    expect(cvPath).toMatch(/yusuf-baris-ozsoy-guncel-cv\.pdf$/);
+    // Ham Turkce karakter storage path'ine gecmemeli
+    expect(cvPath).not.toMatch(/Barış|Özsoy|ş|ö|ı|ğ|ü|ç/);
+  });
+
+  test('cv_filename DB yazimi ve bellek synci orijinal adi korur (sanitize edilmemis)', () => {
+    // Bu Asama 40 truth'unu Asama 41 scope'unda da sabitleyen davranissal guard
+    expect(cvJs).toContain('cv_filename: file.name');
+    expect(cvJs).toContain('_loadedDBData.profile.cv_filename = file.name');
+  });
+});
+
+/* ── Asama 45 — .single() Lint Guard (Yapısal Guard) ── */
+test.describe('Asama 45 — .single() lint guard yapisal dogrulama', () => {
+  var fs = require('fs');
+  var path = require('path');
+
+  var eslintConfigPath = path.join(__dirname, '..', 'eslint.config.js');
+  var eslintConfig;
+
+  test.beforeAll(() => {
+    eslintConfig = fs.readFileSync(eslintConfigPath, 'utf8');
+  });
+
+  test('eslint.config.js dosyasi mevcut ve okunabilir', () => {
+    expect(eslintConfig).toBeTruthy();
+    expect(eslintConfig.length).toBeGreaterThan(100);
+  });
+
+  test('no-restricted-syntax kurali eslint.config.js icinde tanimli', () => {
+    expect(eslintConfig).toContain('no-restricted-syntax');
+  });
+
+  test('.single() cagrisini bloklayan AST selector tanimli', () => {
+    expect(eslintConfig).toContain('callee.property.name="single"');
+  });
+
+  test('.maybeSingle() kullanimi teşvik eden mesaj mevcut', () => {
+    expect(eslintConfig).toContain('maybeSingle');
+  });
+
+  test('eslint.config.js icinde no-restricted-syntax error seviyesinde ayarli', () => {
+    // 'error' string'i no-restricted-syntax blogu icinde olmali
+    var noRestrictedBlock = eslintConfig
+      .split('no-restricted-syntax')[1] || '';
+    expect(noRestrictedBlock.substring(0, 50)).toContain('error');
+  });
+});
+
+// Beta Premium Gate — Asama 50
+// ═══════════════════════════════════════════════
+
+test.describe('Beta Premium Gate — AI 1-use limit + badge system', () => {
+  var premiumJs, cvJs, eventsJs, studioJs;
+
+  test.beforeAll(() => {
+    premiumJs = readFromRepo('profil-premium.js');
+    cvJs = readFromRepo('profil-cv.js');
+    eventsJs = readFromRepo('profil-events.js');
+    studioJs = readFromRepo('profil-studio.js');
+  });
+
+  // ── AI CV 1-use gate ──
+
+  test('AI CV flow checks ai_cv_used before proceeding', () => {
+    expect(eventsJs).toContain('ai_cv_used');
+  });
+
+  test('AI CV shows "hakkini kullandin" message after first use', () => {
+    // After successful AI CV, user should see a message that they used their free try
+    // Unicode: kulland\u0131n = kullandın
+    expect(eventsJs).toContain('kulland');
+  });
+
+  test('AI CV marks ai_cv_used=true after successful optimize', () => {
+    expect(eventsJs).toContain('ai_cv_used');
+    expect(eventsJs).toContain('update');
+  });
+
+  // ── AI Assessment 1-use gate ──
+
+  test('Studio AI feedback checks ai_assessment_used before proceeding', () => {
+    expect(studioJs).toContain('ai_assessment_used');
+  });
+
+  test('Studio AI shows limit message after first use', () => {
+    // Unicode: kulland\u0131n = kullandın
+    expect(studioJs).toContain('kulland');
+  });
+
+  // ── Premium badge system ──
+
+  test('Premium panel shows "3 ay ucretsiz" in beta mode', () => {
+    expect(premiumJs).toContain('3 ay');
+  });
+
+  test('Premium features labeled as Premium but free during beta', () => {
+    // Each feature card should indicate it is premium but currently free
+    expect(premiumJs).toContain('PREMIUM');
+    expect(premiumJs).toContain('cretsiz');
+  });
+
+  // ── Non-AI premium features fully open ──
+
+  test('MVP_FREE_TIER still true — non-AI premium features fully open', () => {
+    expect(premiumJs).toContain('MVP_FREE_TIER = true');
+  });
+
+  // ── Migration guard ──
+
+  test('migration for ai_cv_used and ai_assessment_used exists', () => {
+    var migDir = path.join(__dirname, '..', 'supabase', 'migrations');
+    var files = fs.readdirSync(migDir);
+    var betaGateMig = files.find(f => f.includes('beta_ai_usage'));
+    expect(betaGateMig).toBeTruthy();
+  });
+});

@@ -338,7 +338,7 @@ function _htInitEvents() {
       btnAiCV.style.background = 'var(--navy,#1E2D5E)';
     }
 
-    btnAiCV.addEventListener('click', function() {
+    btnAiCV.addEventListener('click', async function() {
       /* Premium gate — bypassed during MVP free-tier */
       var _dbClick = typeof window._loadedDBData !== 'undefined' ? window._loadedDBData : null;
       var isPremium = (_dbClick && _dbClick.profile && _dbClick.profile.is_premium === true) || window.HT_MVP_FREE;
@@ -346,14 +346,35 @@ function _htInitEvents() {
         if (typeof window.switchPanel === 'function') window.switchPanel('premium');
         return;
       }
+
+      /* Beta AI 1-use gate: ai_cv_used check */
+      var aiCvUsed = _dbClick && _dbClick.profile && _dbClick.profile.ai_cv_used === true;
+      if (aiCvUsed) {
+        if (typeof window.showToast === 'function') {
+          window.showToast('AI CV hakk\u0131n\u0131 kulland\u0131n. \u00c7ok yak\u0131nda tekrar kullanabileceksin!', 'info');
+        }
+        return;
+      }
+
       /* AI flow */
       btnAiCV.disabled = true;
       btnAiCV.textContent = 'Optimize ediliyor\u2026';
       var cvData = typeof window.normalizeCVData === 'function' ? window.normalizeCVData() : {};
-      window.requestCVOptimize(cvData).then(function(result) {
+      window.requestCVOptimize(cvData).then(async function(result) {
         btnAiCV.disabled = false;
         btnAiCV.textContent = 'Optimize Edildi \u2713';
         btnAiCV.style.background = 'var(--green, #059669)';
+
+        /* Mark ai_cv_used = true in DB */
+        try {
+          var supa = (typeof window.HT !== 'undefined' && window.HT.getSupa) ? window.HT.getSupa() : supabase;
+          var sess = await supa.auth.getSession();
+          var uid = sess.data.session && sess.data.session.user && sess.data.session.user.id;
+          if (uid) {
+            await supa.from('candidates').update({ ai_cv_used: true }).eq('user_id', uid);
+            if (_dbClick && _dbClick.profile) _dbClick.profile.ai_cv_used = true;
+          }
+        } catch (e) { /* silent — usage tracking failure should not block CV generation */ }
 
         /* Source feedback toast */
         var sourceMsg = '';
