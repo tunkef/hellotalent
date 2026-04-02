@@ -3188,7 +3188,7 @@ html[data-theme="dark"] .lok-modal #btn-lok-close:hover{
 /* All brands section — flip card grid */
 .all-brands-section{margin-top:8px;}
 /* Bento box brand grid — 4 columns, varied sizes */
-.brand-grid{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:130px;gap:14px;grid-auto-flow:dense;}
+.brand-grid{display:grid;grid-template-columns:repeat(3,1fr);grid-auto-rows:auto;gap:16px;grid-auto-flow:dense;}
 /* Bento rhythm — asymmetric pattern every 10 cards */
 .brand-grid>.flip-card:nth-child(10n+1){grid-column:span 2;grid-row:span 2;}
 .brand-grid>.flip-card:nth-child(10n+4){grid-column:span 1;grid-row:span 2;}
@@ -3241,6 +3241,32 @@ html[data-theme="dark"] .lok-modal #btn-lok-close:hover{
 
 @keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
 .flip-card{animation:fadeUp .45s ease both;}
+
+/* ═══ Brand Card v2 — Informative card with cover image ═══ */
+.brand-card-v2{border-radius:16px;overflow:hidden;background:var(--card-bg,#fff);border:1px solid var(--border-subtle,#E5E3DF);box-shadow:0 2px 12px rgba(0,0,0,.06);transition:all .35s;animation:fadeUp .45s ease both;cursor:default;}
+.brand-card-v2:hover{transform:translateY(-3px);box-shadow:0 12px 32px rgba(0,0,0,.12);}
+.bc2-cover{height:140px;position:relative;overflow:hidden;}
+.bc2-cover-initial{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-family:'Bricolage Grotesque',sans-serif;font-size:48px;font-weight:900;color:rgba(0,0,0,.06);}
+.bc2-segment{position:absolute;top:10px;right:10px;font-family:'DM Mono',monospace;font-size:10px;font-weight:700;padding:3px 8px;border-radius:6px;color:#fff;letter-spacing:.5px;}
+.bc2-body{padding:14px 16px 16px;}
+.bc2-header{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.bc2-logo{flex-shrink:0;}
+.bc2-logo .brand-logo-wrap{width:32px !important;height:32px !important;min-width:32px !important;min-height:32px !important;border-radius:8px;}
+.bc2-name{font-family:'Bricolage Grotesque',sans-serif;font-size:14px;font-weight:800;color:var(--text-primary,#111);line-height:1.2;}
+.bc2-hq{font-family:'Plus Jakarta Sans',sans-serif;font-size:11px;color:var(--text-muted,#6B7280);}
+.bc2-stats{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;}
+.bc2-stat{display:flex;align-items:center;gap:4px;font-family:'Plus Jakarta Sans',sans-serif;font-size:11px;color:var(--text-muted,#6B7280);background:var(--bg,#F7F6F4);padding:4px 8px;border-radius:6px;}
+.bc2-stat svg{color:var(--navy,#1E2D5E);opacity:.6;flex-shrink:0;}
+.bc2-follow{width:100%;padding:10px;border-radius:10px;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;border:1.5px solid var(--border-subtle,#E5E3DF);background:transparent;color:var(--text-primary,#111);transition:all .2s;display:flex;align-items:center;justify-content:center;gap:6px;}
+.bc2-follow:hover{border-color:var(--verm,#C94E28);color:var(--verm,#C94E28);}
+.bc2-follow.following{background:var(--navy,#1E2D5E);color:#fff;border-color:var(--navy,#1E2D5E);}
+.bc2-follow.following:hover{background:#2a3f7a;border-color:#2a3f7a;}
+.bc2-follow svg{flex-shrink:0;}
+
+/* v2 grid override — 3 columns, auto height */
+.brand-grid{grid-auto-rows:auto;}
+@media(max-width:600px){.brand-grid{grid-template-columns:repeat(2,1fr);}.brand-grid>.brand-card-v2:nth-child(n){grid-column:span 1;grid-row:span 1;}}
+@media(max-width:400px){.brand-grid{grid-template-columns:1fr;}}
 
 @media(max-width:600px){.search-filter-bar{flex-direction:column;}.segment-pills{gap:4px;}.markalar-page-header{flex-direction:column;align-items:flex-start;}}
 

@@ -271,19 +271,35 @@ function renderBrandGrid(query) {
     var logoFront = _brandLogoHtml(b, 76);
     var logoBack = _brandLogoHtml(b, 40);
 
-    html += '<div class="flip-card" onclick="this.classList.toggle(\'active\')" style="animation-delay:' + (i * 0.03) + 's;background:' + colors.backBg + ';">' +
-      '<div class="flip-card-inner">' +
-        '<div class="flip-front" style="background:' + _hexToRgba(colors.accent, 0.15) + ';">' +
-          '<div class="front-logo">' + logoFront + '</div>' +
-          '<div class="front-name">' + _escHtml(b.brand_name) + '</div>' +
-          (segLabel ? '<div class="front-segment" style="background:' + segColor + '">' + _escHtml(segLabel) + '</div>' : '') +
-          (storeText ? '<div class="front-stores">' + _escHtml(storeText) + '</div>' : '') +
-          '<span class="flip-hint">detaylar →</span>' +
+    /* ── Informative brand card v2 — cover image, stats, follow ── */
+    var coverUrl = b.cover_image_url || '';
+    var coverStyle = coverUrl
+      ? 'background-image:url(' + coverUrl + ');background-size:cover;background-position:center;'
+      : 'background:' + _hexToRgba(colors.accent, 0.12) + ';';
+    var employeeText = b.employee_count_tr ? b.employee_count_tr.toLocaleString('tr-TR') + ' çalışan' : '';
+    var logoSmall = _brandLogoHtml(b, 32);
+
+    html += '<div class="brand-card-v2" style="animation-delay:' + (i * 0.04) + 's;">' +
+      '<div class="bc2-cover" style="' + coverStyle + '">' +
+        (!coverUrl ? '<div class="bc2-cover-initial">' + _escHtml(b.brand_name[0]) + '</div>' : '') +
+        (segLabel ? '<span class="bc2-segment" style="background:' + segColor + '">' + _escHtml(segLabel) + '</span>' : '') +
+      '</div>' +
+      '<div class="bc2-body">' +
+        '<div class="bc2-header">' +
+          '<div class="bc2-logo">' + logoSmall + '</div>' +
+          '<div class="bc2-info">' +
+            '<div class="bc2-name">' + _escHtml(b.brand_name) + '</div>' +
+            (b.hq_city ? '<div class="bc2-hq">' + _escHtml(b.hq_city) + '</div>' : '') +
+          '</div>' +
         '</div>' +
-        '<div class="flip-back" style="background:' + colors.backBg + '">' +
-          '<div class="back-brand-name">' + _escHtml(b.brand_name) + '</div>' +
-          '<button type="button" class="back-follow-mini' + (isF ? ' following' : '') + '" data-brand-id="' + b.id + '" onclick="event.stopPropagation(); toggleBrandFollow(' + b.id + ',event)"><div class="tooltip-container"><span class="text"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 95 114" class="svgIcon"><rect fill="currentColor" rx="28.5" height="57" width="57" x="19"></rect><path fill="currentColor" d="M0 109.5C0 83.2665 21.2665 62 47.5 62V62C73.7335 62 95 83.2665 95 109.5V114H0V109.5Z"></path></svg>' + (isF ? 'Takipte' : 'Takip Et') + '</span></div></button>' +
+        '<div class="bc2-stats">' +
+          (storeText ? '<div class="bc2-stat"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>' + _escHtml(storeText) + '</div>' : '') +
+          (employeeText ? '<div class="bc2-stat"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>' + _escHtml(employeeText) + '</div>' : '') +
+          (cityText ? '<div class="bc2-stat"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>' + _escHtml(cityText) + '</div>' : '') +
         '</div>' +
+        '<button type="button" class="bc2-follow' + (isF ? ' following' : '') + '" data-brand-id="' + b.id + '" onclick="event.stopPropagation(); toggleBrandFollow(' + b.id + ',event)">' +
+          (isF ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6L9 17l-5-5"/></svg> Takipte' : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Takip Et') +
+        '</button>' +
       '</div>' +
     '</div>';
   }
