@@ -1,8 +1,8 @@
 {
-  "phase": "idle",
-  "stage": "49",
-  "task": "Autopilot v2 kurulumu",
+  "phase": "implementing",
+  "stage": "56",
+  "task": "Marka Kart v2 + Genel Entegrasyonu",
   "last_commit": "",
-  "last_update": 1775116184.001841,
-  "pending_input": ""
+  "last_update": 1775130420.81168,
+  "pending_input": "Devam"
 }

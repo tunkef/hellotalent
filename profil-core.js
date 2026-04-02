@@ -31,7 +31,26 @@ var STORAGE = {
   BUCKET: 'cvs',
   AVATAR_PREFIX: 'avatars/',
   avatarPath: function(uid, ext) { return 'avatars/' + uid + '.' + ext; },
-  cvPath: function(uid, filename) { return uid + '/' + Date.now() + '_' + filename; },
+  // Converts a raw filename into a Supabase Storage-safe key segment.
+  // Turkish chars are transliterated; spaces become dashes; special chars stripped.
+  // Original filename is NOT modified — callers preserve it separately (e.g. cv_filename).
+  _sanitizeKey: function(filename) {
+    var trMap = {
+      'ş':'s','Ş':'S','ı':'i','İ':'I','ğ':'g','Ğ':'G',
+      'ü':'u','Ü':'U','ö':'o','Ö':'O','ç':'c','Ç':'C'
+    };
+    var name = filename.replace(/[şŞıİğĞüÜöÖçÇ]/g, function(c) { return trMap[c] || c; });
+    var lastDot = name.lastIndexOf('.');
+    var base = lastDot > 0 ? name.substring(0, lastDot) : name;
+    var ext  = lastDot > 0 ? name.substring(lastDot).toLowerCase().replace(/[^a-z0-9.]/g, '') : '';
+    base = base.toLowerCase()
+               .replace(/\s+/g, '-')
+               .replace(/[^a-z0-9._-]/g, '')
+               .replace(/-+/g, '-')
+               .replace(/^-+|-+$/g, '') || 'cv';
+    return base + ext;
+  },
+  cvPath: function(uid, filename) { return uid + '/' + Date.now() + '_' + STORAGE._sanitizeKey(filename); },
   extractStoragePath: function(publicUrl) {
     var marker = '/' + STORAGE.BUCKET + '/';
     var idx = publicUrl.lastIndexOf(marker);

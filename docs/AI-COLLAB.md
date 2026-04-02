@@ -5638,3 +5638,29 @@ Kurallar:
 - Bitince `docs/AI-COLLAB.md` guncelle
 - Gerekli testleri calistir
 - Sonra bekle
+
+## Claude Icin Gorev - Asama 50
+Kaynak: Telegram / Kullanici
+Tarih: 02 Nis 2026 14:01
+
+Hedef:
+- Asama 55: Marka Kart Redesign v1
+
+Kurallar:
+- Scope disina cikma
+- Bitince `docs/AI-COLLAB.md` guncelle
+- Gerekli testleri calistir
+- Sonra bekle
+
+## Claude Icin Gorev - Asama 50
+Kaynak: Telegram / Kullanici
+Tarih: 02 Nis 2026 14:30
+
+Hedef:
+- Asama 56: Marka Kart Redesign v2 + Genel Entegrasyonu
+
+Kurallar:
+- Scope disina cikma
+- Bitince `docs/AI-COLLAB.md` guncelle
+- Gerekli testleri calistir
+- Sonra bekle

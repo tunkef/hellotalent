@@ -113,6 +113,36 @@ Bold = Session 21 extraction. Order is critical: wizard -> draft -> helpers -> k
 - Child table RLS: always checks parent candidate `is_active` + `profile_completed`
 - Coach: own rows + admin all + authenticated read published
 
+### RLS Zorunlu Kural — Yeni Tablolar
+
+Her `CREATE TABLE` icin pre-push hook (`check-rls-guard.sh`) su uc maddeyi zorlar:
+1. `ALTER TABLE ... ENABLE ROW LEVEL SECURITY`
+2. En az bir `CREATE POLICY`
+3. `GRANT` blogu (minimum yetki tanimlanmali)
+
+Template: `supabase/migrations/TEMPLATE.sql`
+
+### auth.users Direkt Query Yasagi
+
+`auth.users` tablosuna uygulama kodundan ve RLS politikalarindan **direkt query yazilmaz**.
+
+Zorunlu alternatifler:
+- `auth.uid()` — mevcut kullanicinin UUID'si
+- `auth.jwt() ->> 'role'` — JWT'deki rol bilgisi
+- `hr_profiles` / `candidates` join — profil tablosu uzerinden erisim
+
+Istisna: `service_role` ile calisilan Edge Function'lar (cron, email-send, vb.).
+
+Sebep: `auth` schema uygulama kodu tarafindan soyutlanmalidir. Direkt query Supabase ic kontrat degisimlerine karsi kirigan olur.
+
+### email_outbox — RLS Istisnasi
+
+`email_outbox` tablosu **service-role-only** bir tablodur:
+- Yalnizca Edge Function'lar (`email-send`, `email-reconcile`) ve RPC'ler `service_role` ile yazar.
+- `authenticated` role'u bu tabloya direkt erisemez; erisime gerek yoktur.
+- Bu nedenle `email_outbox` uzerinde `ENABLE ROW LEVEL SECURITY` **beklenmez** ve genel RLS kuralinin istisnasini olusturur.
+- `check-rls-guard.sh` hook'u `email_outbox` satirini `SKIP_RLS_CHECK` olmadan pass eder; bu tasarimsal bir karardır.
+
 ---
 
 ## 6. Design System
