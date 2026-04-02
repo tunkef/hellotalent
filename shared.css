@@ -96,7 +96,7 @@ body {
   white-space: nowrap; display: inline-flex; align-items: center;
 }
 .nav-link:hover { color: var(--text); background: var(--gray); }
-.nav-link.active { color: var(--navy); font-weight: 700; background: var(--gray); }
+.nav-link.active { color: var(--navy); font-weight: 700; background: none; }
 
 /* ══ KARİYER DROPDOWN ══ */
 .nav-dropdown { position: relative; display: inline-flex; align-items: center; }
