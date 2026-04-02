@@ -122,7 +122,14 @@ SQL
   assert_output --partial "bypassed"
 }
 
-# ── Senaryo 5: TEMPLATE.sql yapi dogrulamasi ─────────────────────────────────
+# ── Senaryo 5: TEMPLATE.sql guard tarafindan atlanmali ───────────────────────
+
+@test "rls-guard: TEMPLATE.sql is skipped by guard (not treated as real migration)" {
+  run bash "$SCRIPT" "$PROJECT_DIR/supabase/migrations/TEMPLATE.sql"
+  assert_success
+}
+
+# ── Senaryo 6: TEMPLATE.sql yapi dogrulamasi ─────────────────────────────────
 
 @test "template: TEMPLATE.sql dosyasi mevcut olmali" {
   run test -f "$PROJECT_DIR/supabase/migrations/TEMPLATE.sql"

@@ -56,6 +56,8 @@ FAILED=()
 for f in "${FILES[@]}"; do
   [ -z "$f" ] && continue
   [ -f "$f" ] || continue
+  # Skip template file — it has placeholder names, not real tables
+  [[ "$(basename "$f")" == "TEMPLATE.sql" ]] && continue
 
   content=$(cat "$f")
 
