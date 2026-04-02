@@ -319,26 +319,34 @@ $remaining"
             if [ "$is_approval" = true ]; then
               if [ "$word_count" -gt 2 ]; then
                 # Onay + feedback: ikisini de işle
-                state_set_phase "implementing"
                 state_set "pending_input" "$text"
                 send_msg "Onay alindi + notun kaydedildi:
-$text
-
-Uygulama basliyor, notunu dikkate alacagim."
+$text"
               else
-                # Sadece onay
-                state_set_phase "implementing"
-                send_msg "Onay alindi! Uygulama basliyor."
+                send_msg "Onay alindi!"
               fi
 
-              # Plan'da sonraki aşamayı güncelle
-              if type plan_mark_done &>/dev/null; then
+              # Sonraki plan item'ı al ve AI-COLLAB'a yaz → autopilot tetiklenir
+              local next_item=""
+              if type plan_current_item &>/dev/null; then
+                next_item=$(plan_current_item)
+              fi
+
+              if [ -n "$next_item" ]; then
+                # Plan'dan sonraki aşamayı AI-COLLAB'a yaz
+                local stage_num
+                stage_num=$(append_remote_stage "$next_item")
+                state_set_phase "implementing"
+                state_set_stage "$stage_num"
+                state_set_task "$next_item"
                 plan_mark_done
-                local remaining
-                remaining=$(plan_telegram_summary 2>/dev/null || true)
-                if [ -n "$remaining" ]; then
-                  send_msg "$remaining"
-                fi
+
+                send_msg "Asama $stage_num basliyor: $next_item
+
+$(plan_telegram_summary 2>/dev/null || true)"
+              else
+                state_set_phase "idle"
+                send_msg "Gunun plani tamamlandi! Yeni gorev icin /stage veya mesaj yaz."
               fi
             else
               send_msg "Mesajin alindi ve kaydedildi:
