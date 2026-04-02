@@ -1,5 +1,5 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 2 Nisan 2026 | Asama 61: Genel sayfa entegrasyonu — HT info left rail + center feed
+> Son guncelleme: 2 Nisan 2026 | Asama 63: Landing Page Redesign — Gate + Dual LP
 
 ## 1. Proje Ozeti
 
@@ -7,6 +7,9 @@ hellotalent.ai, Turkiye perakende sektorune ozel bir yetenek pazaryeri. Adaylar 
 
 ## 2. Canli Ozellikler
 
+- **Gate sayfasi (index.html)** — Tam ekran split landing: sol "Aday misin?" → aday.html, sag "Isveren misin?" → isveren.html (~110 satir, beyaz zemin) | `index.html`
+- **Aday landing (aday.html)** — LinkedIn tarzinda: Google signup CTA, pill ozellikler, 3 adim onboarding akisi, "Kimin icin?" bolumu (~476 satir) | `aday.html`
+- **Isveren landing (isveren.html)** — LinkedIn tarzinda: navy hero, lead form, marka pill'leri, alternating white/warm-gray bolumler (~586 satir) | `isveren.html`
 - **Aday profil wizard** — 4 adimli onboarding, deneyim/egitim/dil/sertifika/tercih | `profil-wizard.js`
 - **Glassmorphic float header** — LinkedIn-style, 5 nav, avatar dropdown, dark mode toggle | `profil.html`
 - **Markalar paneli** — 96 marka, informative card v2 (cover gorsel, magaza/calisan sayisi, takip butonu), 31 marka gorseli optimize, company/brand hierarchy | `profil-markalar.js`
@@ -31,8 +34,11 @@ hellotalent.ai, Turkiye perakende sektorune ozel bir yetenek pazaryeri. Adaylar 
 
 | Dosya | Gorev |
 |-------|-------|
-| `shared.js` | Supabase client init, ortak helper'lar, tek config noktasi |
-| `shared.css` | Design system tokenleri, ortak stiller |
+| `shared.js` | Supabase client init, ortak helper'lar, tek config noktasi; header nav sadeleştirildi (6 sayfa delinked: kariyer, pozisyonlar, yetkinlik, blog, hakkimizda, isalim-rotasi); footer 2 kolon: Platform + Yasal |
+| `shared.css` | Design system tokenleri, ortak stiller; 14 yeni LinkedIn-tipi tipografi tokeni eklendi (--heading-xl/lg/md/sm, --body-lg/md/sm, --lp-radius-*, --lp-section-pad, --lp-max-width, --warm-gray) |
+| `index.html` | Gate sayfasi — tam ekran split (aday/isveren secimi), ~110 satir |
+| `aday.html` | Aday landing — LinkedIn tarzinda, Google signup, pill features, 3 adim, "kimin icin" bolumu, ~476 satir |
+| `isveren.html` | Isveren landing — LinkedIn tarzinda, navy hero, lead form, marka pill'leri, ~586 satir |
 | `profil.html` | Ana aday sayfasi (~6300 satir), panel switch, header |
 | `profil.css` | Profil sayfa stilleri + dark mode |
 | `profil-core.js` | Auth guard, session init, panel routing |
@@ -64,7 +70,6 @@ hellotalent.ai, Turkiye perakende sektorune ozel bir yetenek pazaryeri. Adaylar 
 | `admin.html` | Admin paneli: aday/isveren/coach/ops/support/campaigns |
 | `admin-*.js` | Admin alt modulleri (7 dosya) |
 | `coach-studio.html` | Coach icerik olusturma arayuzu |
-| `index.html` | Homepage (daima bu, asla index_new.html) |
 
 ## 4. DB Durumu
 
@@ -75,7 +80,8 @@ hellotalent.ai, Turkiye perakende sektorune ozel bir yetenek pazaryeri. Adaylar 
 
 ## 5. Aktif Backlog
 
-1. ~~**Studio duration migration deploy**~~ — ✅ TAMAMLANDI (30 Mart). `20260329010000_studio_duration_fix.sql` deploy edildi.
+1. ~~**Landing Page Redesign**~~ — ✅ TAMAMLANDI (Session 63, 2 Nisan gece). index.html gate sayfasina donusturuldu (~110 satir). aday.html LinkedIn-tarzinda yeniden yazildi (~476 satir). isveren.html LinkedIn-tarzinda yeniden yazildi (~586 satir). shared.js header nav sadeleştirildi: kariyer, pozisyonlar, yetkinlik, blog, hakkimizda, isalim-rotasi **nav'dan kaldirildi** (HTML dosyalari hala mevcut, sadece nav linklerinden cikarildi). shared.css 14 yeni LP tipografi tokeni eklendi. 32/32 smoke test PASS. Commits: 679c4e2–391ac10.
+2. ~~**Studio duration migration deploy**~~ — ✅ TAMAMLANDI (30 Mart). `20260329010000_studio_duration_fix.sql` deploy edildi.
 2. ~~**T12 — Isveren kampanya wizard DB**~~ — ✅ TAMAMLANDI (Session 52, 30 Mart). Tablolar (`campaigns` 45 kolon + `campaign_reviews`), 5 enum type, RLS (6 policy: select/insert/update/delete employer + admin ALL), `campaign-assets` Storage bucket (public read, authenticated upload), `updated_at` trigger — hepsi canli. Eksik employer DELETE policy `20260330093056_campaign_wizard_backend.sql` ile eklendi. Frontend (`ik-kampanya.js` 1179 sat, `admin-campaigns.js` 231 sat) hazir. Wizard end-to-end calismaya hazir.
 3. **Coach media V1 DB deploy** — `20260322142905_coach_media_fields.sql` ✅ TAMAMLANDI (Session 49, 30 Mart). `coach_posts.cover_image_url` + `cover_image_alt` kolonlari canli, nullable text.
 4. **Badge genisletme** — ✅ TAMAMLANDI (Session 50, 30 Mart). 9 yeni rozet (pratik 5/10/25/50, seri 7/30 gun, jurnal 1/5/10). 3 yeni rule_type (practice_total, streak_longest, journal_count). evaluate_candidate_badges genisletildi + record_yetenek_practice/update_candidate_streak/upsert_studio_journal hook'landi. 5 yeni ikon (flame, pen, medal, diamond, star). Migration: `20260330010000_badge_extension.sql`.
@@ -98,32 +104,15 @@ hellotalent.ai, Turkiye perakende sektorune ozel bir yetenek pazaryeri. Adaylar 
 
 ## 6. Son 3 Session Ozeti
 
+### Session 63 (2 Nisan gece — Asama 63: Landing Page Redesign)
+**index.html monolitik ana sayfa → minimal gate sayfasina donusturuldu. aday.html ve isveren.html LinkedIn-tarzinda sifirdan yeniden yazildi.** (1) `index.html`: 2659 satirdan ~110 satire indirildi — tam ekran split tasarim, sol panel "Aday misin?" (aday.html'e), sag panel "Isveren misin?" (isveren.html'e). (2) `aday.html`: 1029 satirdan ~476 satire yeniden yazildi — buyuk baslik, Google ile kayit ol CTA, yatay pill ozellikler, 3 adimli onboarding ozeti, "Kimin icin?" alternating bolumler, warm-gray/white section pattern. (3) `isveren.html`: 620 satirdan ~586 satire yeniden yazildi — navy hero, lead capture formu, marka pill'leri, is ilanlari fiyatlandirma, destek seksiyon. (4) `shared.js` nav sadeleştirildi: 6 sayfa nav'dan kaldirildi (kariyer, pozisyonlar, yetkinlik, blog, hakkimizda, isalim-rotasi — dosyalar hala mevcut). Footer 2 kolona indirildi (Platform + Yasal). (5) `shared.css` 14 yeni LP tipografi tokeni eklendi. (6) Tasarim: LinkedIn-esinlenmeli — buyuk basliklar, beyaz alan, pill/chip pattern, alternating beyaz/warm-gray bolumler. Bento grid YOK. **32/32 smoke test PASS.** Commits: 679c4e2, 6cb4ad7, 6238fac, fd64505, 099f98b, 49e5019, 391ac10.
+
 ### Session 62 (2 Nisan — Asama 48-61: Beta Launch Paketi)
 **Tek gunde 12 asama tamamlandi.** (1) Tekrar eden hata guard'lari: ESLint .single() kuralı, truth-sync pre-commit hook, RLS pre-push guard, migration template. (2) Beta premium gate: AI CV + AI yetkinlik degerlendirme 1 hak/kullanici, non-AI premium full acik, "PREMIUM · 3 ay ucretsiz" badge. (3) Teklifler tab blur/gate kaldirildi, premium kartlarda beta erisim notu. (4) "Beni One Cikar" aktif (disabled kaldi). (5) CV template 6 ATS standardiyla optimize (avatar removed, metadata, skills section, normal font). (6) 31 marka gorseli optimize + brands.cover_image_url + informative card v2 redesign (cover, stats, takip). (7) Mini egitim dashboard: rozet strip → progress bar alti, hover tooltip, ilerleme karti + sonraki yetkinlik onerisi. (8) Hello Talent info karti Genel sayfaya eklendi (center feed + left rail compact). (9) Visual QA: 12 screenshot, kritik sorun yok. Pipeline infra: Codex plugin kuruldu (codex review gate), Supabase MCP OAuth baglandi, autopilot kaldirildi, Telegram bot daily ritual sistemi. **730 Playwright + 66 BATS test geciyor.**
 
 ### Session 58 (31 Mart — Asama 8: Practice Recovery + STAR Cleanup)
 **Practice ekraninda journal/cevap yuzeyi inline olarak geri getirildi, STAR legacy kodu temizlendi.** (1) `renderJournalPanel()` soru kartinin hemen altina inline collapsible panel olarak eklendi — "Cevabini Hazirla" toggle'i ilk bakista discoverable. (2) Premium AI degerlendirme butonu inline panel icinde gorunur. (3) Journal drawer (`st-journal-drawer`) overlay kaldirildi, bottom bar "Cevabini Hazirla" olarak yeniden adlandirildi. (4) 5 legacy fonksiyon silindi: `renderStarDetail()`, `_bindStarIntroEvents_legacy()`, `hydrateLandingStats()`, `renderRoleSelect()`, `bindRoleSelectEvents()`. (5) STAR quad CSS (`ig-star-quad-card`, `ig-star-cell`, `ig-star-detail`, `ig-landing-title`, `ig-landing-subtitle`) temizlendi. (6) Tum backend kontratlari korundu: `saveJournalDraft`, `loadJournalDraft`, `upsert_studio_journal`, `get_my_journals`, `request_journal_feedback`, `get_journal_feedback`, `renderAiFeedback()`. p3 regression: **500/500 PASS**. Smoke: **68/68 PASS**.
 
-### Session 57 (30 Mart — S07 Studio Smoke Test + Deploy + Docs Sync)
-**Studio redesign (S01-S06) tum testlerle dogrulandi ve deploy edildi.** S01: profil-mulakatkocu.js → profil-studio.js yeniden adlandirma. S02: tam genislik panel CSS. S03: lobby yeniden tasarimi (inline rol secimi, returning user routing). S04: kurs detay sayfasi (3 sekmeli: sorular / seans / notlar). S05: pratik odak modu (drawer sistemi ile kontekst). S06: completion + session_complete ekrani focus mode ile hizalama. p3 regression: **446/446 PASS**. Full smoke: **540 passed, 1 blocked (auth env vars — bilinen), 12 did not run (e2e chain)**. Yeni regresyon yok. Commit: `feat: studio redesign — learning path, course detail, focus mode practice`.
-
-### Session 56 (30 Mart — S06 Completion + Session Complete Redesign)
-**Completion ve session_complete ekranları focus mode ile hizalandı.** `yk-summary-wrap`: `max-width:420px` → full-width, cream arka plan (`var(--bg-app)`), `min-height:calc(100vh-56px)`. `yk-summary-card`: `max-width:720px`, layered shadow, bento card stili. `yk-summary-stats`: border separator ile section hissi. Yeni `yk-summary-back` (← Öğrenme Planı) her iki ekrana eklendi. `ig-session-complete` → `navigate('lobby')` (artık session_complete'e gitmiyor). `renderSessionComplete()`: completion icon + `yk-session-back` back nav + "Başka Yetkinlik Seç" (eski "Farklı Rol"). Dark mode + mobile responsive. Badge/xlinks hydration korundu. Test: `navigate('session_complete')` assertion → `screen === 'session_complete'` handler check. 446/446 test PASS.
-
-### Session 55 (30 Mart — T15 Dark Mode Remaining)
-**Dark mode backlog tamamen kapatıldı:** 4 dosya. `profil-settings.js`: 7 native `alert()`/`confirm()` → `_htAlert()`/`_htConfirm()` DOM modal'larına dönüştürüldü. Helper IIFE `.modal-overlay` + `.modal` + `.btn-primary/secondary` + `.modal-confirm-body` sınıflarını dinamik oluşturuyor; `profil.css` semantic tokenları (`--bg-surface`, `--text-primary` vb.) sayesinde dark mode'da otomatik çalışıyor. `gate.html`: theme-init `<script>` + `html[data-theme="dark"]` CSS (kart, input, hata). `giris.html`: theme-init + dark mode body/header/card/form/tab-toggle/Google-LinkedIn buton/forgot-modal. `ik.html`: theme-init + token override (`--text/muted/border/bg`) + topbar/stat-card/filter/candidate-card/modal/drawer/button/chip/input/accordion/activity explicit override'ları. 68/68 smoke pass.
-
-### Session 51 (30 Mart — T11 Campaign Wizard Audit)
-**Kampanya wizard truth audit:** `ik-kampanya.js` (1179 sat) ve `admin-campaigns.js` (231 sat) tamamen yazilmis, 6 adimli wizard, cover image upload, admin moderation, status lifecycle — hepsi hazir. Kritik bulgu: `campaigns` tablosu ve `campaign_reviews` tablosu hicbir migration'da yok. Storage bucket `campaign-assets` yok. Schema frontend'den reverse-engineer edildi. T12 tek is: 1 migration + 1 bucket. Bağımlılık yok (wizard plan-agnostic, package pricing '—'). Risk: switchPanel override pattern (son script tag — dusuk risk).
-
-### Session 50 (30 Mart — T10 Badge Extension MVP)
-**Badge sistem genisletmesi:** 9 yeni rozet eklendi (6→15 toplam). 3 yeni rule_type: `practice_total` (yetenek pratik seansi SUM), `streak_longest` (en uzun seri candidate_streaks), `journal_count` (STAR+T gunluk sayisi). Pratik milestones: 5/10/25/50 seans. Seri milestones: 7/30 gun. Jurnal milestones: 1/5/10 kayit. `evaluate_candidate_badges()` RPC genisletildi, 3 ek RPC'ye hook eklendi: `record_yetenek_practice`, `update_candidate_streak`, `upsert_studio_journal`. Frontend'e 5 yeni ikon SVG: flame, pen, medal, diamond, star. 24/24 dark-mode test PASS. Migration `20260330010000_badge_extension.sql` Supabase'e deploy edildi.
-
-### Session 48 (30 Mart — T08 Slice C)
-**Design token migration Slice C:** 8 HTML dosyasi tamamen tokenize edildi. (1) gate/giris/sifre-yenile: font-size + brand hex → var(), lokal :root font token eklendi. (2) coach-studio/admin: font-size + muted color → var(), lokal :root font token eklendi. (3) isveren: font-size + #b84420/#C94E28 → var(--verm-dark/verm). (4) aday: 72 font-size + hover colors → token. (5) index: 114 font-size + brand hex → token (style block + inline HTML). Ayrica: profil.css T07 regression fix — 5x `color:var(--text)` → `color:var(--text-primary)` (dark mode semantics). 514 test gecti, 25 failure (pre-existing, ayni baseline). Commit: `90b8fa9`.
-
-### Session 47 (30 Mart — T07 Slice B)
-**Design token migration Slice B:** `profil.css` 183 font-size literal (10px..20px) → `var(--text-*)`, 35 hex renk literal (#C94E28, #1E2D5E, #6B7280 vb.) → `var(--verm/verm-dark/navy/navy-deep/muted/gray/text)`. `shared.css` 80 font-size literal → `var(--text-*)`. Gradient stops da token'a donusturuldu. Token def'leri dokunulmadi (dairesel referans riski), `!important` rule'lari korundu. 514 test gecti, regression yok. Commit: `3cbbacc`.
 
 ## 7. Kritik Kurallar (Quick Ref)
 

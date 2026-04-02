@@ -6,10 +6,11 @@
 
 ## Mevcut Durum
 
-**Son tamamlanan:** Asama 61 (2 Nisan 2026)
-**Son commit:** d7a9a54 — Genel Sayfa Entegrasyonu
-**Test durumu:** 730 Playwright + 66 BATS PASS
+**Son tamamlanan:** Asama 63 (2 Nisan 2026 gece) — Landing Page Redesign
+**Son commit:** 391ac10 — Landing page redesign tamamlandi
+**Test durumu:** 32/32 smoke test PASS (post-redesign)
 **Beta Launch Paketi:** TAMAMLANDI (Asama 48-61)
+**Landing Page Redesign:** TAMAMLANDI (Asama 63)
 
 ## Tamamlanan Bloklar (2 Nisan 2026)
 
@@ -22,6 +23,7 @@
 | Teklifler Beta Vurgusu | 57 | ✅ Premium badge + beta notu |
 | Egitim Dashboard | 58-59 | ✅ Rozet tooltip, ilerleme karti |
 | HT Info Revizyon | 60-61 | ✅ Center feed + left rail compact |
+| Landing Page Redesign | 63 | ✅ Gate + dual LP (aday/isveren), LinkedIn-style, 32/32 smoke |
 
 ## Pipeline Infra (2 Nisan 2026)
 
@@ -41,8 +43,11 @@
 
 ## Bir Sonraki Adim
 
-Yarin sabah (3 Nisan) gunluk plan olusturulacak. Aday backlog'dan oncelikler:
+Landing page redesign tamamlandi. Olasilikli sonraki adimlar:
+- **Production push** — `git push origin main` → GitHub Pages deploy (LP + gate canli)
+- **Mobile polish** — aday.html / isveren.html responsive QA (390×844 viewport)
+- **profil.html landing entegrasyonu** — logged-in kullanici gate'i bypass etmeli; direct profil.html routing dogrulama
+- **Delinked sayfalar** — kariyer/pozisyonlar/yetkinlik/blog/hakkimizda/isalim-rotasi nav'dan kaldirildi; bu sayfalar kalici olarak mi silinecek yoksa ileriki fazda mi yenilenecek karar bekleniyor
 - Profil senaryo testleri (product readiness)
 - Pozisyon gorunum/esleme metrikleri
-- Cache-bust otomasyonu
-- profil-ui.js / profil-studio.js split (teknik borc)
+- iyzico entegrasyonu (her zaman en son)
