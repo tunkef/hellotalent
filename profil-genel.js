@@ -1295,6 +1295,7 @@
     left2.appendChild(buildIdentityCard(profile, experiences));
     left2.appendChild(buildViewersSummary());
     left2.appendChild(buildPremiumCTA());
+    left2.appendChild(buildHtInfoCompact());
     left2.appendChild(buildEduDashCard());
     layout2.appendChild(left2);
     layout2.appendChild(buildFeedSection());
@@ -1304,6 +1305,26 @@
     hydrateFeed();
     hydrateMarkaTeaserList();
     hydrateEduDash();
+  }
+
+  /* ── Compact HT Info for left rail ── */
+  function buildHtInfoCompact() {
+    var card = el('div', 'gh-rail-card gh-animate');
+    card.style.cursor = 'default';
+    card.appendChild(txt('div', 'gh-rail-title', 'hellotalent.ai'));
+    var desc = txt('div', '', 'Perakende sekt\u00f6r\u00fcne \u00f6zel yetenek platformu');
+    desc.style.cssText = 'font-family:"Plus Jakarta Sans",sans-serif;font-size:11px;color:var(--text-muted,#6B7280);line-height:1.5;margin-bottom:10px;';
+    card.appendChild(desc);
+    var pills = el('div', '');
+    pills.style.cssText = 'display:flex;flex-wrap:wrap;gap:6px;';
+    var tags = ['AI CV', 'Yetkinlik', '96 Marka', 'Analitik', 'Mesajla\u015fma'];
+    for (var ti = 0; ti < tags.length; ti++) {
+      var pill = txt('span', '', tags[ti]);
+      pill.style.cssText = 'font-family:"DM Mono",monospace;font-size:10px;padding:3px 8px;border-radius:20px;background:var(--bg,#F7F6F4);color:var(--text-muted,#6B7280);border:1px solid var(--border-subtle,#E5E3DF);';
+      pills.appendChild(pill);
+    }
+    card.appendChild(pills);
+    return card;
   }
 
   /* ═══════════════════════════════════════════════════
