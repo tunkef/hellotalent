@@ -1,5 +1,5 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 2 Nisan 2026 | Asama 55: Marka Kart Redesign v1 (cover gorsel, stats, takip butonu)
+> Son guncelleme: 2 Nisan 2026 | Asama 56: Marka Kart v2 + Genel teaser cover image entegrasyonu
 
 ## 1. Proje Ozeti
 

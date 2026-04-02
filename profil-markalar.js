@@ -480,7 +480,7 @@ window._htGetGenelBrandTeaser = async function() {
       else nf.push(_ht_brands[i]);
     }
     var picked = nf.concat(af).slice(0, 3).map(function(b) {
-      return { id: b.id, brand_name: b.brand_name, logo_url: b.logo_url, segment: b.segment };
+      return { id: b.id, brand_name: b.brand_name, logo_url: b.logo_url, segment: b.segment, cover_image_url: b.cover_image_url || '' };
     });
     return { items: picked, followedIds: followedIds, canToggleInline: !!_ht_candidate_id, empty: false };
   }
@@ -488,7 +488,7 @@ window._htGetGenelBrandTeaser = async function() {
   /* Fresh session — fetch brands + follows directly */
   try {
     var bRes = await supabase.from('brands')
-      .select('id, brand_name, logo_url, segment')
+      .select('id, brand_name, logo_url, segment, cover_image_url')
       .eq('is_active', true)
       .not('website_url', 'is', null)
       .order('is_featured', { ascending: false })

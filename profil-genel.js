@@ -995,7 +995,13 @@
       var row = el('div', 'gh-brand-item');
 
       var logo = el('div', 'gh-brand-logo');
-      if (b.logo_url) {
+      if (b.cover_image_url) {
+        var img = document.createElement('img');
+        img.src = b.cover_image_url;
+        img.alt = b.brand_name || '';
+        img.style.objectFit = 'cover';
+        logo.appendChild(img);
+      } else if (b.logo_url) {
         var img = document.createElement('img');
         img.src = b.logo_url;
         img.alt = b.brand_name || '';
