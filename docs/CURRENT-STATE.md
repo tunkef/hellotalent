@@ -9,9 +9,9 @@ hellotalent.ai, Turkiye perakende sektorune ozel bir yetenek pazaryeri. Adaylar 
 
 - **Aday profil wizard** — 4 adimli onboarding, deneyim/egitim/dil/sertifika/tercih | `profil-wizard.js`
 - **Glassmorphic float header** — LinkedIn-style, 5 nav, avatar dropdown, dark mode toggle | `profil.html`
-- **Markalar paneli** — 96 marka flip-card grid, company/brand hierarchy | `profil-markalar.js`
+- **Markalar paneli** — 96 marka, informative card v2 (cover gorsel, magaza/calisan sayisi, takip butonu), 31 marka gorseli optimize, company/brand hierarchy | `profil-markalar.js`
 - **Yetkinlik sistemi** — 29 KF yetkinlik, 34 rol haritasi, bento grid, premium reading view | `profil-yetkinlik.js`
-- **Mulakat Kocu (Studio)** — STAR+T metodu, lobby + kurs detay + odak modu (inline "Cevabını Hazırla" + AI değerlendirme) + completion ekranı, streak, spaced repetition, inline rol seçimi | `profil-studio.js`
+- **Mulakat Kocu (Studio)** — STAR+T metodu, lobby + kurs detay + odak modu + completion, streak, spaced repetition, inline rol secimi, **mini egitim dashboard (rozet tooltip + ilerleme karti + sonraki oneri CTA)**, AI degerlendirme (1 hak/beta) | `profil-studio.js`
 - **AI feedback** — Edge Function (gpt-4.1-mini), pg_cron pipeline, hero kart + accordion UI | `supabase/functions/journal-feedback/`
 - **AI CV Optimize** — Anthropic (claude-sonnet-4) Edge Function, canonical ATS template, source CV ingestion (PDF text + DOCX unzip + DOC best-effort), **Beta: 1 kullanim hakki/aday (ai_cv_used), hak bittikten sonra "cok yakinda" mesaji** | `supabase/functions/cv-optimize/`, `profil-cv.js`
 - **Streak sistemi** — gunluk seri, freeze/geri kazanim, review oneri | migration 20260327-28
@@ -19,7 +19,7 @@ hellotalent.ai, Turkiye perakende sektorune ozel bir yetenek pazaryeri. Adaylar 
 - **Bi-directional messaging** — employer DM, candidate reply, split-pane, realtime | `profil-inbox.js`
 - **Email infrastructure** — outbox pattern, Resend API, pg_cron, 3 template | Edge Functions
 - **Coach sistemi** — coach_invites, posts, likes, 6 kategori | `coach-studio.html`
-- **Premium gating** — subscription schema hazir, iyzico defer; **MVP_FREE_TIER=true: beta boyunca tum ozellikler ucretiz** | `profil-premium.js` (`window._htMvpFreeTier`, `window.HT_MVP_FREE`)
+- **Premium gating** — subscription schema hazir, iyzico defer; **MVP_FREE_TIER=true: beta 3 ay ucretsiz**. AI ozellikleri 1 hak/kullanici (ai_cv_used + ai_assessment_used). Tum badge'ler "PREMIUM · 3 ay ucretsiz". Beni One Cikar aktif. Teklifler tab acik (blur kaldirildi) + beta erisim notu | `profil-premium.js`, `profil-teklifler.js`
 - **Destek merkezi** — support_articles + tickets, 6 seed makale | `profil-destek.js`
 - **Ops Health dashboard** — admin panel, failed email tracking | `admin-ops-health.js`
 - **Kim Bakti** — header icon, goruntulenme sayaci | `profil-kimbakti.js`
@@ -43,7 +43,7 @@ hellotalent.ai, Turkiye perakende sektorune ozel bir yetenek pazaryeri. Adaylar 
 | `profil-helpers.js` | trLower, titleCaseTR, PRESERVE_CASE, normalize |
 | `profil-events.js` | Global event listeners, Cmd+K palette |
 | `profil-bootstrap.js` | Sayfa yuklendiginde calisacak init sequence |
-| `profil-genel.js` | Genel Bakis dashboard, bento grid kartlari |
+| `profil-genel.js` | Genel Bakis dashboard, HT info karti, brand teaser (cover gorsel), coach feed |
 | `profil-summary.js` | Profil ozet karti, completion bar |
 | `profil-settings.js` | Ayarlar paneli, bildirim toggle'lari, hesap islemleri |
 | `profil-markalar.js` | Marka flip-card grid, _BRAND_COLORS, hover reveal |
@@ -53,7 +53,7 @@ hellotalent.ai, Turkiye perakende sektorune ozel bir yetenek pazaryeri. Adaylar 
 | `profil-kimbakti.js` | Kim Bakti goruntuleme widget |
 | `profil-visibility.js` | Beni Oner toggle, is_active kontrol |
 | `profil-premium.js` | Premium gate, demo checkout, entitlement check |
-| `profil-teklifler.js` | Teklifler paneli (placeholder) |
+| `profil-teklifler.js` | Teklifler paneli (freemium/premium tab, beta erisim notu) |
 | `profil-locations.js` | Sehir/lokasyon secimi |
 | `profil-cv.js` | CV yukleme/indirme |
 | `profil-destek.js` | Destek merkezi, ticket olusturma |
@@ -69,8 +69,8 @@ hellotalent.ai, Turkiye perakende sektorune ozel bir yetenek pazaryeri. Adaylar 
 ## 4. DB Durumu
 
 - **Baseline:** `20260322000000_baseline.sql` (migration 001-064 arsivlendi)
-- **Son migration:** `20260330093056_campaign_wizard_backend.sql` (Supabase DEPLOYED)
-- **Toplam migration (baseline sonrasi):** 35 dosya
+- **Son migration:** `20260402130000_brand_cover_images.sql` (Supabase DEPLOYED)
+- **Toplam migration (baseline sonrasi):** 37+ dosya
 - **Key tablolar:** `candidates` (bigint id), `companies` (bigint), `brands` (bigint), `hr_profiles` (uuid→auth.users), `experiences`, `education`, `candidate_languages`, `certificates`, `candidate_target_roles`, `candidate_blocked_companies`, `employer_messages`, `candidate_message_replies`, `employer_message_replies`, `email_outbox`, `subscriptions`, `employer_daily_usage`, `competency_definitions`, `role_competency_map`, `candidate_competencies`, `candidate_streaks`, `coach_profiles`, `coach_posts`, `coach_post_likes`, `coach_invites`, `studio_modules`, `candidate_studio_progress`, `badge_definitions`, `candidate_badges`, `candidate_journals`, `support_articles`, `support_tickets`, `company_teams`, `company_invitations`, `campaigns` (bigint GENERATED BY DEFAULT id), `campaign_reviews` (uuid id)
 
 ## 5. Aktif Backlog
@@ -97,6 +97,9 @@ hellotalent.ai, Turkiye perakende sektorune ozel bir yetenek pazaryeri. Adaylar 
 **Sonuc:** T02/T03/T04 otomatik DEFERRED. Onkosula: 50+ aktif pratikci icin T42-lite (topluluk nabzi karti) yeniden degerlendirilir.
 
 ## 6. Son 3 Session Ozeti
+
+### Session 62 (2 Nisan — Asama 48-61: Beta Launch Paketi)
+**Tek gunde 12 asama tamamlandi.** (1) Tekrar eden hata guard'lari: ESLint .single() kuralı, truth-sync pre-commit hook, RLS pre-push guard, migration template. (2) Beta premium gate: AI CV + AI yetkinlik degerlendirme 1 hak/kullanici, non-AI premium full acik, "PREMIUM · 3 ay ucretsiz" badge. (3) Teklifler tab blur/gate kaldirildi, premium kartlarda beta erisim notu. (4) "Beni One Cikar" aktif (disabled kaldi). (5) CV template 6 ATS standardiyla optimize (avatar removed, metadata, skills section, normal font). (6) 31 marka gorseli optimize + brands.cover_image_url + informative card v2 redesign (cover, stats, takip). (7) Mini egitim dashboard: rozet strip → progress bar alti, hover tooltip, ilerleme karti + sonraki yetkinlik onerisi. (8) Hello Talent info karti Genel sayfaya eklendi (center feed + left rail compact). (9) Visual QA: 12 screenshot, kritik sorun yok. Pipeline infra: Codex plugin kuruldu (codex review gate), Supabase MCP OAuth baglandi, autopilot kaldirildi, Telegram bot daily ritual sistemi. **730 Playwright + 66 BATS test geciyor.**
 
 ### Session 58 (31 Mart — Asama 8: Practice Recovery + STAR Cleanup)
 **Practice ekraninda journal/cevap yuzeyi inline olarak geri getirildi, STAR legacy kodu temizlendi.** (1) `renderJournalPanel()` soru kartinin hemen altina inline collapsible panel olarak eklendi — "Cevabini Hazirla" toggle'i ilk bakista discoverable. (2) Premium AI degerlendirme butonu inline panel icinde gorunur. (3) Journal drawer (`st-journal-drawer`) overlay kaldirildi, bottom bar "Cevabini Hazirla" olarak yeniden adlandirildi. (4) 5 legacy fonksiyon silindi: `renderStarDetail()`, `_bindStarIntroEvents_legacy()`, `hydrateLandingStats()`, `renderRoleSelect()`, `bindRoleSelectEvents()`. (5) STAR quad CSS (`ig-star-quad-card`, `ig-star-cell`, `ig-star-detail`, `ig-landing-title`, `ig-landing-subtitle`) temizlendi. (6) Tum backend kontratlari korundu: `saveJournalDraft`, `loadJournalDraft`, `upsert_studio_journal`, `get_my_journals`, `request_journal_feedback`, `get_journal_feedback`, `renderAiFeedback()`. p3 regression: **500/500 PASS**. Smoke: **68/68 PASS**.
