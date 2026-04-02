@@ -70,7 +70,10 @@ Claude her turda:
 ### Token Verimliliği
 - Tokenlar değerlidir; uzun geçmişi aynı dosyada taşımayın.
 - `docs/AI-COLLAB.md` sadece aktif iş, son kararlar, açık riskler ve bir sonraki net adımı taşımalıdır.
-- Eğer `docs/AI-COLLAB.md` büyürse, kapatılmış fazları ve detaylı çalışma notlarını `docs/ai-collab/` altında ayrı dosyalara taşı.
+- `docs/AI-COLLAB.md` **5000 satır limitine** ulaşınca arşivle:
+  1. Mevcut dosyayı `docs/ai-collab/AI-COLLAB-archive-asama{X}-{Y}.md` olarak kopyala
+  2. Yeni temiz `AI-COLLAB.md` oluştur (sadece aktif durum + son blok özeti + açık riskler + sonraki adım)
+  3. Arşiv dosyasına link ver
 - `docs/AI-COLLAB.md` ince bir kontrol paneli olarak kalmalı; arşiv dosyalarına link vermek tercih edilir.
 - `docs/CURRENT-STATE.md` her zaman güncel truth olarak tutulmalıdır; milestone sonrası drift bırakma.
 - Aynı context'i tekrar tekrar taşımak yerine özet + link yaklaşımı kullan.
