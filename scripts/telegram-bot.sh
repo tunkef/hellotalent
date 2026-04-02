@@ -74,10 +74,15 @@ append_codex_note() {
 
 append_remote_stage() {
   local note="$1"
-  local next_stage
   local ts
-  next_stage=$(( $(get_latest_stage) + 1 ))
   ts=$(date '+%d %b %Y %H:%M')
+  # Extract real stage number from plan item (e.g. "Asama 58: foo" → 58)
+  local next_stage
+  next_stage=$(echo "$note" | grep -oE 'Asama [0-9]+' | grep -oE '[0-9]+' || echo "")
+  # Fallback: increment from AI-COLLAB if no number in plan item
+  if [ -z "$next_stage" ]; then
+    next_stage=$(( $(get_latest_stage) + 1 ))
+  fi
   {
     echo ""
     echo "## Claude Icin Gorev - Asama $next_stage"
