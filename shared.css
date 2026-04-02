@@ -41,6 +41,21 @@
   --space-10: 24px;
   --space-11: 28px;
   --space-12: 32px;
+
+  /* ══ Landing page typography (LinkedIn-style) ══ */
+  --heading-xl: clamp(36px, 5vw, 56px);
+  --heading-lg: clamp(28px, 3.5vw, 40px);
+  --heading-md: clamp(22px, 2.5vw, 32px);
+  --heading-sm: 20px;
+  --body-lg: 18px;
+  --body-md: 16px;
+  --body-sm: 14px;
+  --lp-radius-pill: 24px;
+  --lp-radius-btn: 28px;
+  --lp-radius-card: 16px;
+  --lp-section-pad: clamp(56px, 8vw, 96px) clamp(20px, 4vw, 48px);
+  --lp-max-width: 1120px;
+  --warm-gray: #F7F6F4;
 }
 html { scroll-behavior: smooth; overflow-x: hidden; }
 html.ht-scroll-lock { overflow: hidden; }
