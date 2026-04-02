@@ -102,6 +102,16 @@
     css += '.gh-premium-cta{display:block;width:100%;padding:9px 0;border:1px solid rgba(255,255,255,.2);border-radius:10px;background:transparent;color:#fff;font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;text-align:center}';
     css += '.gh-premium-cta:hover{background:rgba(255,255,255,.1)}';
 
+    /* ── Hello Talent Info Card ── */
+    css += '.gh-ht-info{background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF);border-radius:16px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,.08),0 8px 20px rgba(0,0,0,.06);margin-bottom:20px}';
+    css += '.gh-ht-info-kicker{font-family:"DM Mono",monospace;font-size:10px;font-weight:700;letter-spacing:1px;color:var(--verm,#C94E28);margin-bottom:8px}';
+    css += '.gh-ht-info-title{font-family:"Bricolage Grotesque",sans-serif;font-size:16px;font-weight:800;color:var(--text-primary,#111);margin-bottom:6px;line-height:1.3}';
+    css += '.gh-ht-info-desc{font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;color:var(--text-muted,#6B7280);line-height:1.6;margin-bottom:12px}';
+    css += '.gh-ht-info-features{list-style:none;padding:0;margin:0 0 14px}';
+    css += '.gh-ht-info-features li{font-family:"Plus Jakarta Sans",sans-serif;font-size:11px;color:var(--text-primary,#111);padding:6px 0;border-bottom:1px solid var(--border-subtle,#E5E3DF);display:flex;align-items:center;gap:8px}';
+    css += '.gh-ht-info-features li:last-child{border-bottom:none}';
+    css += '.gh-ht-info-features li svg{color:var(--verm,#C94E28);flex-shrink:0;width:14px;height:14px}';
+
     /* ── Feed header text (reused inside coach header card) ── */
     css += '.gh-feed-title{font-family:"Bricolage Grotesque",sans-serif;font-size:20px;font-weight:800;color:var(--text-primary,#111)}';
     css += '.gh-feed-sub{font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;color:var(--text-muted,#6B7280);margin-top:2px;line-height:1.4}';
@@ -239,6 +249,37 @@
     css += '.gh-coach-card-linkedin svg{width:14px;height:14px;fill:currentColor}';
     css += '.gh-coach-card-close{position:absolute;top:12px;right:12px;width:28px;height:28px;border:none;background:none;cursor:pointer;color:var(--muted,#6B7280);font-size:18px;display:flex;align-items:center;justify-content:center;border-radius:50%;transition:background .15s}';
     css += '.gh-coach-card-close:hover{background:var(--bg,#F7F6F4)}';
+
+    /* ── Mini Eğitim Dashboard card ── */
+    css += '.gh-edu-card{background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF);border-radius:16px;padding:18px 20px;box-shadow:0 2px 8px rgba(0,0,0,.08),0 8px 20px rgba(0,0,0,.06)}';
+    css += '.gh-edu-title{font-family:"Bricolage Grotesque",sans-serif;font-size:13px;font-weight:700;color:var(--text-primary,#111);margin-bottom:12px;display:flex;align-items:center;gap:6px}';
+    css += '.gh-edu-title-icon{width:16px;height:16px;flex-shrink:0;color:var(--verm,#C94E28)}';
+    css += '.gh-edu-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}';
+    css += '.gh-edu-stat{background:var(--bg,#F7F6F4);border-radius:10px;padding:8px 10px;display:flex;flex-direction:column;gap:2px}';
+    css += '.gh-edu-stat-header{display:flex;align-items:center;gap:5px}';
+    css += '.gh-edu-stat-icon{width:13px;height:13px;flex-shrink:0;color:var(--text-muted,#6B7280)}';
+    css += '.gh-edu-stat-val{font-family:"DM Mono",monospace;font-size:18px;font-weight:800;color:var(--text-primary,#111);line-height:1.1}';
+    css += '.gh-edu-stat-label{font-family:"Plus Jakarta Sans",sans-serif;font-size:10px;color:var(--text-muted,#6B7280);line-height:1.2}';
+    css += '.gh-edu-badges-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}';
+    css += '.gh-edu-badges-title{font-family:"Plus Jakarta Sans",sans-serif;font-size:11px;font-weight:600;color:var(--text-secondary,#4B5563)}';
+    css += '.gh-edu-badges-count{font-family:"DM Mono",monospace;font-size:10px;color:var(--text-muted,#6B7280)}';
+    css += '.gh-edu-badges-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-bottom:12px}';
+    css += '.gh-edu-badge{width:100%;aspect-ratio:1;border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:default;transition:transform .15s;position:relative}';
+    css += '.gh-edu-badge:hover{transform:scale(1.1);z-index:1}';
+    css += '.gh-edu-badge--earned{background:var(--verm-light,#F5EDE9);border:1px solid rgba(201,78,40,.2)}';
+    css += '.gh-edu-badge--earned.gh-edu-badge--milestone{background:rgba(30,45,94,.06);border:1px solid rgba(30,45,94,.15)}';
+    css += '.gh-edu-badge--earned.gh-edu-badge--advanced{background:rgba(217,119,6,.06);border:1px solid rgba(217,119,6,.2)}';
+    css += '.gh-edu-badge--locked{background:var(--bg,#F7F6F4);border:1px solid var(--border-subtle,#E5E3DF);opacity:.45}';
+    css += '.gh-edu-badge svg{width:14px;height:14px}';
+    css += '.gh-edu-badge--earned svg{color:var(--verm,#C94E28)}';
+    css += '.gh-edu-badge--earned.gh-edu-badge--milestone svg{color:var(--navy,#1E2D5E)}';
+    css += '.gh-edu-badge--earned.gh-edu-badge--advanced svg{color:#92400E}';
+    css += '.gh-edu-badge--locked svg{color:var(--text-muted,#6B7280)}';
+    /* Tooltip */
+    css += '.gh-edu-badge[title]:hover::after{content:attr(title);position:absolute;bottom:calc(100% + 4px);left:50%;transform:translateX(-50%);white-space:nowrap;font-family:"Plus Jakarta Sans",sans-serif;font-size:10px;background:rgba(17,17,17,.85);color:#fff;padding:3px 7px;border-radius:6px;pointer-events:none;z-index:10;max-width:140px;white-space:normal;text-align:center;line-height:1.3}';
+    css += '.gh-edu-cta{display:block;width:100%;padding:9px 0;border:none;border-radius:10px;background:var(--navy,#1E2D5E);color:#fff;font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:opacity .2s;text-align:center}';
+    css += '.gh-edu-cta:hover{opacity:.85}';
+    css += '.gh-edu-skeleton{background:var(--bg,#F7F6F4);border-radius:8px;height:14px;width:60%;margin-bottom:8px}';
 
     var styleEl = document.createElement('style');
     styleEl.id = 'gh-style';
@@ -656,6 +697,29 @@
   function buildFeedSection() {
     var section = el('div', 'gh-center');
 
+    /* ══ Hello Talent Info Card — platform bilgisi ══ */
+    var htInfo = el('div', 'gh-ht-info gh-animate');
+    htInfo.appendChild(txt('div', 'gh-ht-info-kicker', 'HELLOTALENT'));
+    htInfo.appendChild(txt('div', 'gh-ht-info-title', 'Perakende kariyerinde bir ad\u0131m \u00f6nde ol'));
+    htInfo.appendChild(txt('div', 'gh-ht-info-desc', 'T\u00fcrkiye\'nin perakende sekt\u00f6r\u00fcne \u00f6zel yetenek platformu. Profilini olu\u015ftur, yetkinliklerini geli\u015ftir, seni arayan i\u015fverenlerle ba\u011flant\u0131 kur.'));
+    var htFeatures = document.createElement('ul');
+    htFeatures.className = 'gh-ht-info-features';
+    var htItems = [
+      ['Yapay zeka destekli CV olu\u015fturucu \u2014 sekt\u00f6re \u00f6zel, ATS uyumlu', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>'],
+      ['29 yetkinlik, 289 m\u00fclakat sorusu \u2014 STAR+T metodu ile pratik', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>'],
+      ['96 marka, 61 holding \u2014 seni arayan i\u015fverenleri ke\u015ffet', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a4 4 0 0 0-8 0v2"/></svg>'],
+      ['Ki\u015fisel analitik \u2014 profilini kim inceledi, hangi sekt\u00f6rler ilgileniyor', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>'],
+      ['Do\u011frudan mesajla\u015fma \u2014 i\u015fverenle arac\u0131s\u0131z ileti\u015fim', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>']
+    ];
+    for (var hi = 0; hi < htItems.length; hi++) {
+      var li = document.createElement('li');
+      li.innerHTML = htItems[hi][1];
+      li.appendChild(document.createTextNode(' ' + htItems[hi][0]));
+      htFeatures.appendChild(li);
+    }
+    htInfo.appendChild(htFeatures);
+    section.appendChild(htInfo);
+
     /* Coach header card — editorial bento block */
     var hdr = el('div', 'gh-coach-header gh-animate');
     hdr.appendChild(el('div', 'gh-coach-header-stripe'));
@@ -897,6 +961,140 @@
   }
 
   /* ═══════════════════════════════════════════════════
+     MINI EĞİTİM DASHBOARD CARD
+     ═══════════════════════════════════════════════════ */
+
+  /* Hardcoded SVG icon for the card title (graduation cap) — safe for innerHTML */
+  var eduTitleSVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>';
+  /* Hardcoded stat icon SVGs — safe for innerHTML */
+  var eduFlameSVG  = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>';
+  var eduPenSVG    = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>';
+  var eduMedalSVG  = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.21 15 2.66 7.14a2 2 0 0 1 .13-2.2L4.4 2.8A2 2 0 0 1 6 2h12a2 2 0 0 1 1.6.8l1.6 2.14a2 2 0 0 1 .14 2.2L16.79 15"/><path d="M11 12 5.12 2.2"/><path d="m13 12 5.88-9.8"/><path d="M8 7h8"/><circle cx="12" cy="17" r="5"/><path d="M12 18v-2h-.5"/></svg>';
+  var eduTrophySVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>';
+
+  function buildEduDashCard() {
+    var card = el('div', 'gh-edu-card gh-animate');
+    card.id = 'gh-edu-shell';
+
+    /* Title */
+    var titleRow = el('div', 'gh-edu-title');
+    var titleIcon = elSVG('span', 'gh-edu-title-icon', eduTitleSVG);
+    titleRow.appendChild(titleIcon);
+    titleRow.appendChild(document.createTextNode('\u00d6\u011frenme \u0130lerlemen'));
+    card.appendChild(titleRow);
+
+    /* Skeleton placeholder while loading */
+    var skBody = el('div', '');
+    skBody.id = 'gh-edu-body';
+    var sk1 = el('div', 'gh-edu-skeleton'); sk1.style.width = '70%';
+    var sk2 = el('div', 'gh-edu-skeleton'); sk2.style.width = '50%';
+    skBody.appendChild(sk1);
+    skBody.appendChild(sk2);
+    card.appendChild(skBody);
+
+    return card;
+  }
+
+  async function hydrateEduDash() {
+    var shell = document.getElementById('gh-edu-shell');
+    if (!shell) return;
+    var body = document.getElementById('gh-edu-body');
+    if (!body) return;
+
+    try {
+      var res = await supabase.rpc('get_mini_education_dashboard');
+      if (res.error) {
+        console.error('hydrateEduDash RPC error:', res.error);
+        return;
+      }
+      var d = res.data;
+      if (!d || d.error) return;
+
+      /* Clear skeleton */
+      while (body.firstChild) body.removeChild(body.firstChild);
+
+      /* ── Stats 2×2 grid ── */
+      var statsGrid = el('div', 'gh-edu-stats');
+
+      var statDefs = [
+        { svgConst: eduFlameSVG,  val: d.streak_current || 0, label: 'G\u00fcnl\u00fck Seri' },
+        { svgConst: eduPenSVG,    val: d.journal_count  || 0, label: 'Not' },
+        { svgConst: eduMedalSVG,  val: d.practice_total || 0, label: 'Pratik Seans' },
+        { svgConst: eduTrophySVG, val: d.badge_count    || 0, label: 'Rozet' }
+      ];
+
+      for (var si = 0; si < statDefs.length; si++) {
+        var sd = statDefs[si];
+        var statEl = el('div', 'gh-edu-stat');
+        var hdr = el('div', 'gh-edu-stat-header');
+        /* Safe: svgConst is a hardcoded SVG string constant — no user data */
+        var iconEl = elSVG('span', 'gh-edu-stat-icon', sd.svgConst);
+        hdr.appendChild(iconEl);
+        statEl.appendChild(hdr);
+        statEl.appendChild(txt('div', 'gh-edu-stat-val', String(sd.val)));
+        statEl.appendChild(txt('div', 'gh-edu-stat-label', sd.label));
+        statsGrid.appendChild(statEl);
+      }
+      body.appendChild(statsGrid);
+
+      /* ── Badge gallery ── */
+      var gallery = d.badge_gallery || [];
+      if (gallery.length > 0) {
+        var badgesHdr = el('div', 'gh-edu-badges-header');
+        badgesHdr.appendChild(txt('span', 'gh-edu-badges-title', 'Rozetler'));
+        var earnedCount = gallery.filter(function(b) { return b.earned; }).length;
+        badgesHdr.appendChild(txt('span', 'gh-edu-badges-count', earnedCount + '/' + gallery.length));
+        body.appendChild(badgesHdr);
+
+        /* Expose to profil-summary.js renderer if available, else render inline */
+        if (typeof window._htRenderMiniRozetGalery === 'function') {
+          var gridContainer = el('div', 'gh-edu-badges-grid');
+          body.appendChild(gridContainer);
+          window._htRenderMiniRozetGalery(gridContainer, gallery);
+        } else {
+          var fallbackGrid = renderBadgeGalleryFallback(gallery);
+          body.appendChild(fallbackGrid);
+        }
+      }
+
+      /* ── Devam Et CTA ── */
+      var cta = el('button', 'gh-edu-cta');
+      cta.type = 'button';
+      cta.textContent = 'St\u00fcdy\u00f4\u2019ya Git \u2192';
+      cta.addEventListener('click', function() {
+        if (typeof switchPanel === 'function') switchPanel('studio');
+      });
+      body.appendChild(cta);
+
+    } catch (err) {
+      console.error('hydrateEduDash error:', err);
+    }
+  }
+
+  /* Fallback inline badge grid (used if profil-summary.js not yet loaded) */
+  function renderBadgeGalleryFallback(gallery) {
+    var grid = el('div', 'gh-edu-badges-grid');
+    /* BADGE_ICONS is a global defined in profil-studio.js (loaded after this file) */
+    /* Called at runtime (after panel activation) so profil-studio.js is always loaded */
+    var iconMap = (typeof window.BADGE_ICONS !== 'undefined' ? window.BADGE_ICONS : {});
+    for (var bi = 0; bi < gallery.length; bi++) {
+      var b = gallery[bi];
+      var tierCls = b.badge_tier === 'advanced' ? ' gh-edu-badge--advanced'
+                  : b.badge_tier === 'milestone' ? ' gh-edu-badge--milestone' : '';
+      var stateCls = b.earned ? ' gh-edu-badge--earned' + tierCls : ' gh-edu-badge--locked';
+      var chip = el('div', 'gh-edu-badge' + stateCls);
+      var tooltipParts = [b.title];
+      if (!b.earned) tooltipParts.push('(Kilitli)');
+      chip.title = tooltipParts.join(' ');
+      /* Safe: iconMap[b.icon_key] is from BADGE_ICONS — hardcoded SVG constants only, no user data */
+      var iconSvg = iconMap[b.icon_key] || iconMap['star'] || '';
+      if (iconSvg) chip.innerHTML = iconSvg;
+      grid.appendChild(chip);
+    }
+    return grid;
+  }
+
+  /* ═══════════════════════════════════════════════════
      RIGHT RAIL
      ═══════════════════════════════════════════════════ */
 
@@ -1002,7 +1200,7 @@
         img.style.objectFit = 'cover';
         logo.appendChild(img);
       } else if (b.logo_url) {
-        var img = document.createElement('img');
+        img = document.createElement('img');
         img.src = b.logo_url;
         img.alt = b.brand_name || '';
         logo.appendChild(img);
@@ -1097,6 +1295,7 @@
     left2.appendChild(buildIdentityCard(profile, experiences));
     left2.appendChild(buildViewersSummary());
     left2.appendChild(buildPremiumCTA());
+    left2.appendChild(buildEduDashCard());
     layout2.appendChild(left2);
     layout2.appendChild(buildFeedSection());
     layout2.appendChild(buildRightRail());
@@ -1104,6 +1303,7 @@
 
     hydrateFeed();
     hydrateMarkaTeaserList();
+    hydrateEduDash();
   }
 
   /* ═══════════════════════════════════════════════════

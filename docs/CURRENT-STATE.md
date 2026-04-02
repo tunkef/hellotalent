@@ -1,5 +1,5 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 2 Nisan 2026 | Asama 59: Egitim ilerleme karti + sonraki yetkinlik onerisi
+> Son guncelleme: 2 Nisan 2026 | Asama 60: Hello Talent info karti — Genel feed + urun tanitimi
 
 ## 1. Proje Ozeti
 
