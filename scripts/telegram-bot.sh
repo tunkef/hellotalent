@@ -362,6 +362,7 @@ $text
 Sonraki asamaya gecmek icin: tamam / devam / ok"
             fi
             ;;
+        esac
       fi
       ;;
   esac
