@@ -6,9 +6,9 @@
 
 ## Mevcut Durum
 
-**Son tamamlanan:** Asama 63 (2 Nisan 2026 gece) — Landing Page Redesign
-**Son commit:** 391ac10 — Landing page redesign tamamlandi
-**Test durumu:** 32/32 smoke test PASS (post-redesign)
+**Son tamamlanan:** Asama 63 (2 Nisan 2026 gece) — Landing Page Redesign + Dark Mode + Nav Polish
+**Son commit:** ba9e452 — P3 regression test fix (stale AI-COLLAB assertion)
+**Test durumu:** 365/365 P3 regression + 32/32 smoke = 397 test PASS
 **Beta Launch Paketi:** TAMAMLANDI (Asama 48-61)
 **Landing Page Redesign:** TAMAMLANDI (Asama 63)
 
@@ -23,7 +23,7 @@
 | Teklifler Beta Vurgusu | 57 | ✅ Premium badge + beta notu |
 | Egitim Dashboard | 58-59 | ✅ Rozet tooltip, ilerleme karti |
 | HT Info Revizyon | 60-61 | ✅ Center feed + left rail compact |
-| Landing Page Redesign | 63 | ✅ Gate + dual LP (aday/isveren), LinkedIn-style, 32/32 smoke |
+| Landing Page Redesign | 63 | ✅ Gate + dual LP (aday/isveren), LinkedIn-style, dark mode, nav brand colors, 397 test PASS |
 
 ## Pipeline Infra (2 Nisan 2026)
 
@@ -43,11 +43,12 @@
 
 ## Bir Sonraki Adim
 
-Landing page redesign tamamlandi. Olasilikli sonraki adimlar:
-- **Production push** — `git push origin main` → GitHub Pages deploy (LP + gate canli)
-- **Mobile polish** — aday.html / isveren.html responsive QA (390×844 viewport)
+Landing page redesign + dark mode + nav polish tamamlandi, production'da canli. Sonraki adimlar:
 - **profil.html landing entegrasyonu** — logged-in kullanici gate'i bypass etmeli; direct profil.html routing dogrulama
-- **Delinked sayfalar** — kariyer/pozisyonlar/yetkinlik/blog/hakkimizda/isalim-rotasi nav'dan kaldirildi; bu sayfalar kalici olarak mi silinecek yoksa ileriki fazda mi yenilenecek karar bekleniyor
+- **Delinked sayfalar karari** — kariyer/pozisyonlar/yetkinlik/blog/hakkimizda/isalim-rotasi nav'dan kaldirildi; kalici silme vs yenileme karari bekleniyor
+- **Lead form backend** — isveren.html lead formu simdilik client-side; Supabase'e kayit akisi eklenebilir
+- **Pozisyon gorunum/esleme metrikleri** — backend counter/trigger gerekli
+- **iyzico/Stripe checkout** — DEFER (beta 3 ay ucretsiz)
 - Profil senaryo testleri (product readiness)
 - Pozisyon gorunum/esleme metrikleri
 - iyzico entegrasyonu (her zaman en son)
