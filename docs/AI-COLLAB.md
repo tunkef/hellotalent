@@ -5625,3 +5625,16 @@ Kabul kriterleri:
 Dogrulama:
 - `npm run test:bats`
 - `rg -n "ENABLE ROW LEVEL SECURITY|CREATE POLICY|GRANT|email_outbox|auth\\.users|auth.uid|auth.jwt" supabase/migrations/TEMPLATE.sql docs/ARCHITECTURE.md tests/rls-guard.bats docs/AI-COLLAB.md`
+
+## Claude Icin Gorev - Asama 50
+Kaynak: Telegram / Kullanici
+Tarih: 02 Nis 2026 12:28
+
+Hedef:
+- Asama 51: Teklifler Panel Beta Revizyonu
+
+Kurallar:
+- Scope disina cikma
+- Bitince `docs/AI-COLLAB.md` guncelle
+- Gerekli testleri calistir
+- Sonra bekle

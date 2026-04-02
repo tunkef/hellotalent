@@ -15,7 +15,7 @@
   var currentTab = 'freemium';
   var currentFilter = 'all';
   var observedCards = new Set();
-  var _isPremiumUser = false;
+  var _isPremiumUser = (window._htMvpFreeTier === true);
 
   var TYPE_MAP = {
     offer: { label:'Teklif', color:'#059669', bg:'#ECFDF5' },
@@ -153,6 +153,14 @@
     var _allDemo = campaigns.length > 0 && campaigns.every(function(c) { return c.demo === true; });
 
     if (!isLocked) {
+      /* Beta notice for premium tab */
+      if (currentTab === 'premium' && window._htMvpFreeTier === true) {
+        html += '<div style="background:linear-gradient(135deg,rgba(30,45,94,.06) 0%,rgba(201,78,40,.04) 100%);border:1px solid var(--border-subtle,#E5E3DF);border-radius:12px;padding:14px 18px;margin-bottom:16px;display:flex;align-items:center;gap:12px;">';
+        html += '<div style="width:36px;height:36px;border-radius:10px;background:rgba(30,45,94,.08);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style="color:var(--navy,#1E2D5E);"><path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5z"/><path d="M5 19a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-1H5v1z" opacity=".5"/></svg></div>';
+        html += '<div><div style="font-family:\'Bricolage Grotesque\',sans-serif;font-size:13px;font-weight:700;color:var(--navy,#1E2D5E);margin-bottom:2px;">Premium Teklifler \u00b7 Beta Eri\u015Fimi</div>';
+        html += '<div style="font-family:\'Plus Jakarta Sans\',sans-serif;font-size:11px;color:var(--muted,#6B7280);line-height:1.4;">Bu teklifler 3 ay boyunca \u00fccretsiz eri\u015fime a\u00e7\u0131k. Beta sonras\u0131 Premium hesaplar i\u00e7in aktif olacak.</div>';
+        html += '</div></div>';
+      }
       /* Freemium: carousel + filters + bento */
       if (_allDemo) {
         html += '<div style="background:var(--bg,#F7F6F4);border:1px solid var(--border-subtle,#E5E3DF);border-radius:10px;padding:10px 14px;margin-bottom:16px;font-size:12px;color:var(--muted);line-height:1.5;">Markalar\u0131n kampanyalar\u0131 yak\u0131nda burada yay\u0131nlanacak. A\u015Fa\u011F\u0131daki kartlar \u00F6rnek i\u00E7eriktir.</div>';
