@@ -1,3 +1,8 @@
+---
+name: bento-grid-design
+description: Universal bento grid design system for hellotalent.ai dashboard layouts
+---
+
 # Bento Grid Design System — hellotalent.ai
 
 > Universal design skill for all dashboard layouts. Every new panel, card group, or content section MUST follow these rules.

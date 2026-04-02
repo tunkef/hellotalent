@@ -32,3 +32,19 @@
 ## RLS Policy Naming
 - Candidate CRUD: `{table}_select_own`, `{table}_insert_own`, etc.
 - Employer read: `{table}_employer_read`
+
+## Migration Zorunlu RLS Kuralı
+- Her `CREATE TABLE` içeren migration dosyası AYNI dosyada şunları içermelidir:
+  1. `ALTER TABLE {tablo} ENABLE ROW LEVEL SECURITY;`
+  2. En az bir `CREATE POLICY`
+  3. `GRANT ... TO authenticated;`
+- Template: `supabase/migrations/TEMPLATE.sql` — kopyalayıp kullan
+- İstisna: service_role-only tablolar (örn: email_outbox) — sebebi migration içinde yaz
+
+## auth.users Direkt Query YASAK
+- Policy içinde `SELECT ... FROM auth.users` KULLANMA
+- coach_invites'ta bu tuzağa düşüldü (migration 058 → 062 fix)
+- `auth.users` cross-reference → "permission denied for table users"
+- YANLIŞ: `(SELECT email FROM auth.users WHERE id = auth.uid())`
+- DOĞRU: `auth.jwt() ->> 'email'`
+- `auth.jwt()` her zaman güvenlidir, RLS bypass gerektirmez

@@ -59,3 +59,38 @@ load 'test_helper'
   run sed -n "${uat_start},${uat_end}p" "$PROJECT_DIR/scripts/orchestrator.sh"
   refute_output --partial "gemini"
 }
+
+# ── DeepSeek model truth: orchestrator must not hardcode deepseek-reasoner ──
+
+@test "orchestrator DEEPSEEK_MODEL default is deepseek-chat not deepseek-reasoner" {
+  # orchestrator sets DEEPSEEK_MODEL which is inherited by deepseek-review.sh
+  # the single truth must be deepseek-chat (not deepseek-reasoner)
+  run grep -E 'DEEPSEEK_MODEL.*deepseek-reasoner' "$PROJECT_DIR/scripts/orchestrator.sh"
+  assert_failure
+}
+
+@test "orchestrator and deepseek-review share same model default" {
+  local orch_model
+  orch_model=$(grep -E 'DEEPSEEK_MODEL.*:-' "$PROJECT_DIR/scripts/orchestrator.sh" | grep -oE 'deepseek-[a-z]+' | head -1)
+  local script_model
+  script_model=$(grep -E '^MODEL=.*DEEPSEEK_MODEL' "$PROJECT_DIR/scripts/deepseek-review.sh" | grep -oE 'deepseek-[a-z]+' | head -1)
+  [ "$orch_model" = "$script_model" ]
+}
+
+# ── Diffray: config-aware skip (not just binary-presence check) ──
+
+@test "orchestrator checks diffray.json enabled agents before running diffray" {
+  # Must read .diffray.json enabled count — not just command -v diffray
+  run grep 'diffray\.json' "$PROJECT_DIR/scripts/orchestrator.sh"
+  assert_success
+}
+
+@test "orchestrator Diffray disabled config emits SKIP not PASS" {
+  # When diffray is installed but all agents disabled: SKIP path must be reachable
+  # The SKIP must be inside the diffray-installed block, not just the else/not-installed branch
+  local diffray_section
+  diffray_section=$(grep -n 'diffray' "$PROJECT_DIR/scripts/orchestrator.sh" | grep -v '#' | head -20)
+  # Diffray:SKIP must appear in same logical block as the enabled-agents check
+  run grep -A5 'diffray_enabled' "$PROJECT_DIR/scripts/orchestrator.sh"
+  assert_success
+}

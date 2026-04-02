@@ -113,6 +113,18 @@ module.exports = [
         caughtErrors: 'none'          /* catch(e) with unused e is common in this codebase */
       }],
 
+      /* ── Supabase safety guards ── */
+      'no-restricted-syntax': [
+        'error',
+        {
+          /* Block .single() — always use .maybeSingle() instead.
+           * .single() throws when 0 rows returned (e.g. new users),
+           * silently corrupting auth flows. .maybeSingle() returns null safely. */
+          selector: 'CallExpression[callee.property.name="single"]',
+          message: "Supabase .single() yasak — .maybeSingle() kullan. (Yeni kullanici veya bos satir durumunda .single() hata firlatiyor.)"
+        }
+      ],
+
       /* ── Off (respect project conventions) ── */
       'no-var': 'off',           /* project uses var deliberately */
       'prefer-const': 'off',     /* not applicable — no const/let */

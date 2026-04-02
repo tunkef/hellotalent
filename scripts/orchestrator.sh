@@ -20,7 +20,7 @@ cd "$(dirname "$0")/.."
 
 # ── SOLID: Merkezi model config (DIP — model swap tek yerden) ──
 CLAUDE_MODEL="${CLAUDE_HEADLESS_MODEL:-sonnet}"
-DEEPSEEK_MODEL="${DEEPSEEK_MODEL:-deepseek-reasoner}"
+DEEPSEEK_MODEL="${DEEPSEEK_MODEL:-deepseek-chat}"
 GROQ_MODEL="${GROQ_MODEL:-meta-llama/llama-4-scout-17b-16e-instruct}"
 CEREBRAS_MODEL="${CEREBRAS_MODEL:-qwen-3-235b-a22b-instruct-2507}"
 GROK_MODEL="${GROK_MODEL:-grok-4-1-fast-reasoning}"
@@ -226,9 +226,14 @@ step_review() {
   fi
   STEP_RESULTS="${STEP_RESULTS}Cerebras:$([ "$cerebras_ok" = true ] && echo PASS || echo FAIL) "
 
-  # Diffray multi-agent review (5 paralel uzman ajan)
-  if command -v diffray &>/dev/null; then
-    log "Diffray multi-agent review (timeout: 120s per agent)..."
+  # Diffray multi-agent review — config-aware: only run if agents are enabled
+  local diffray_enabled=0
+  if [ -f ".diffray.json" ]; then
+    diffray_enabled=$(grep -c '"enabled": true' ".diffray.json" 2>/dev/null || echo "0")
+  fi
+
+  if command -v diffray &>/dev/null && [ "$diffray_enabled" -gt 0 ]; then
+    log "Diffray multi-agent review ($diffray_enabled agent(s), timeout: 120s per agent)..."
     if DIFFRAY_AGENT_TIMEOUT=120 diffray review 2>&1 | tee -a "$LOG"; then
       log "${GREEN}Diffray review tamamlandi${NC}"
       STEP_RESULTS="${STEP_RESULTS}Diffray:PASS "
@@ -237,6 +242,11 @@ step_review() {
       STEP_RESULTS="${STEP_RESULTS}Diffray:FAIL "
     fi
   else
+    if command -v diffray &>/dev/null; then
+      log "${YELLOW}Diffray kurulu ama tum agent'lar disabled (.diffray.json) — atlanıyor.${NC}"
+    else
+      log "${YELLOW}Diffray kurulu degil — atlanıyor.${NC}"
+    fi
     STEP_RESULTS="${STEP_RESULTS}Diffray:SKIP "
   fi
 

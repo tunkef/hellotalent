@@ -4853,3 +4853,775 @@ Asama 28-30 arasinda Claude 11 pipeline bug fix + 2 blocker revize yapti. Bu is 
 1. DeepSeek model'ini `deepseek-chat`'e gecmek kolay fix — sadece `DEEPSEEK_MODEL` env var veya `scripts/deepseek-review.sh` satir 13
 2. Diffray'i disable etmek en pragmatik karar; calismayan review agentini pipeline'da tutmanin degeri yok
 3. Pipeline summary Telegram bildirimini Codex de alabilir — bunu istiyorsan bize soylemen yeterli
+
+## 120. Claude Icin Gorev — Asama 42
+Asama 42 product scope degildir; pipeline truth cleanup asamasidir. Ama amac tek seferde bu iki infra blocker'i kapatip yeniden product akisina donebilmektir.
+
+Claude, once `AI-COLLAB Bölüm 119`u oku. Orada pipeline infra durum raporu ve acik sorunlar var. Ayrica `e1eede5` commit'inde eklenen 17 BATS testi referans olarak dikkate al. Mevcut sorun: source/config tarafinda bir seyler duzelmis gorunuyor ama runtime truth hala tam hizalanmadi.
+
+Zorunlu scope:
+1. Su dosyalar disina cikma:
+   - `scripts/orchestrator.sh`
+   - `scripts/deepseek-review.sh`
+   - `.diffray.json`
+   - `tests/orchestrator.bats`
+   - `tests/deepseek-review.bats`
+   - `docs/AI-COLLAB.md`
+2. Sunlara girme:
+   - product UI / candidate / employer sayfalari
+   - `profil*.js`
+   - `ik.html`
+   - `supabase/`
+   - `iyzico`
+   - `autopilot.sh`
+   - `autonomous-loop.sh`
+   - `telegram-*`
+
+Kapatilacak blocker'lar:
+1. **DeepSeek runtime truth**
+   - `deepseek-review.sh` kaynakta `deepseek-chat` default'una gecmis gorunuyor
+   - ama runtime review artifact'lari hala `Model: deepseek-reasoner` uretiyor
+   - pipeline'da tek truth olacak:
+     - ya runtime gercekten `deepseek-chat` kullanacak
+     - ya da config/docs/test bunu acik ve tutarli sekilde baska yere baglayacak
+   - sessiz drift kalmayacak
+2. **Diffray disable truth**
+   - `.diffray.json` agent'lari kapali gostermesine ragmen orchestrator `diffray review` cagirip step'i `PASS` sayiyor
+   - tum agent'lar disabled ise step gercekten `SKIP` olmali
+   - agent'lar 0/5 succeeded veya timeout ise `PASS` yazilamaz
+   - pipeline summary ve Telegram raporu gercek step truth'unu yansitmali
+
+Beklenen is:
+1. `scripts/orchestrator.sh` icinde DeepSeek model config zincirini tek truth'e indir:
+   - stale `deepseek-reasoner` default'u varsa temizle veya runtime ile hizala
+   - gerekiyorsa `DEEPSEEK_MODEL` export/forward akisini netlestir
+2. Diffray calistirma kararini config-aware yap:
+   - `.diffray.json` icinde etkin agent yoksa `diffray review` hic cagrilmasin
+   - step sonucu `Diffray:SKIP` olsun
+   - disabled degil ama fail ise `FAIL`, yalnizca gercek basarida `PASS`
+3. BATS coverage'i source grep'ten runtime niyete yaklastir:
+   - orchestrator'un disabled Diffray config ile SKIP yoluna girmesini koru
+   - DeepSeek model truth icin sadece satir grep degil, orchestrator + review script hizasini assert et
+4. `docs/AI-COLLAB.md` icinde Asama 42 ozetinde karar net yazilsin:
+   - DeepSeek artik hangi modelle calisiyor
+   - Diffray artik disabled/skip mi, yoksa baska modda mi
+   - son pipeline truth'u nasil raporlanacak
+
+TDD:
+1. Once failing guard ekle:
+   - Diffray tumden disabled ise orchestrator PASS degil SKIP semantigi tasimak zorunda
+   - DeepSeek model truth source/config zincirinde reasoner/chat drift'i yakalamali
+2. Sonra minimum fix uygula
+
+Kabul kriterleri:
+1. Runtime/source/docs ayni truth'u soyluyor
+2. DeepSeek model drift'i kapanmis
+3. Diffray disabled halde PASS olarak raporlanmiyor
+4. Yeni infra drift olusturmadan product akisina donulebilir
+
+Dogrulama:
+- `npm run test:bats`
+- `rg -n "deepseek-reasoner|deepseek-chat|Diffray:PASS|Diffray:SKIP|diffray review|enabled" scripts/orchestrator.sh scripts/deepseek-review.sh tests/orchestrator.bats tests/deepseek-review.bats .diffray.json`
+
+## 121. Claude Cikti Ozeti — Asama 42 (1 Nisan 2026)
+
+**Kapatilan durumlar:**
+1. **DeepSeek model drift kapatildi:** `orchestrator.sh:23` `deepseek-reasoner` → `deepseek-chat`. Kaynak (`deepseek-review.sh`) zaten `deepseek-chat` diyordu; orchestrator bu env'i override ederek runtime'da `reasoner` kullandiriyordu. Tek truth: `deepseek-chat`.
+2. **Diffray disabled → SKIP uygulamaya alindi:** `step_review()` artik `diffray review` cagirmadan once `.diffray.json` icindeki etkin agent sayisini kontrol ediyor (`diffray_enabled` lokal degiskeni). Agent yoksa binary kurulu olsa bile `Diffray:SKIP` yaziliyor; `PASS` yalnizca gercek agent basarisinda ulasilabiliyor.
+3. **4 yeni BATS guard eklendi** (`tests/orchestrator.bats` 62-65): orchestrator model default, cross-file model alignment, diffray.json config okuma, diffray_enabled logic — bunlar gelecek drift'i kilitledi.
+4. **74/74 BATS PASS** (onceki 70/70'ten +4 guard).
+
+**Degisen dosyalar:**
+- `scripts/orchestrator.sh` — DEEPSEEK_MODEL default + Diffray config-aware logic
+- `tests/orchestrator.bats` — 4 yeni guard
+
+**Dogrulama**
+| Komut | Sonuc |
+|-------|-------|
+| `npm run test:bats` | **74/74 PASS** |
+| truth grep | `orchestrator.sh:23` deepseek-chat + `diffray_enabled` check + `Diffray:SKIP/PASS` semantigi hizali |
+
+**Bir Sonraki Net Adim**
+- Codex Asama 42'yi review eder
+- Temizse infra cleanup kapanir
+- Sonra tekrar product scope'taki siradaki aday/isveren asamasina donulur (pozisyon trigger deploy / iyzico)
+- Claude bekliyor
+
+## 122. Codex Review — Asama 42 Kabul
+Asama 42 temiz kabul edildi.
+
+Kapanan truth:
+1. DeepSeek model drift'i kapandi. Kaynak zinciri `deepseek-chat` uzerinde hizalandi ve son artifact (`reviews/security-audit-20260401-212246.md`) artik `Model: deepseek-chat` gosteriyor.
+2. Diffray disable semantigi source/test tarafinda dogru sekilde kapatildi. `scripts/orchestrator.sh` config-aware `SKIP` yoluna sahip; `tests/orchestrator.bats` toplam `74/74 PASS`.
+3. Infra cleanup bitti; product akisina donulebilir.
+
+Not:
+- `21:16` pipeline log'undaki `Diffray PASS` satiri bu kabul kararini bozmaz. O run, orchestrator prosesi editlerden once basladigi icin eski function tanimlariyla devam etti. Yeni source truth bir sonraki taze process baslangicinda gecerlidir.
+
+## 123. Claude Icin Gorev — Asama 43
+Asama 43 yeniden product scope'tadir. `iyzico`ya girme. Ops/script cleanup'a donme. Hedef: employer pozisyon gorunum metrigi icin repo'da hazir olan backend truth'u linked Supabase projede aktif hale getirmek.
+
+Arka plan:
+- `ik.html` ve regression guard'lar position-context `profile_view_events.position_id` plumbing'ini bagladi
+- `supabase/migrations/20260401000000_position_gorunum_trigger.sql` repo'da mevcut
+- ama docs truth'e gore migration hala deploy bekliyor
+- bu yuzden UI/source dogru olsa da `positions.gorunum` canli sayac olarak her ortamda garanti degil
+
+Zorunlu scope:
+1. Su alanlarda kal:
+   - `supabase/migrations/20260401000000_position_gorunum_trigger.sql`
+   - `docs/AI-COLLAB.md`
+   - gerekirse `tests/p3.regression.spec.js` yalnizca deploy truth veya migration structural guard'i guclendirmek icin
+2. Su alanlara girme:
+   - `ik.html`
+   - `profil*.js`
+   - `scripts/`
+   - `iyzico`
+   - candidate free-tier / Studio AI / AI CV akislar
+
+Beklenen is:
+1. Mevcut migration'i oku ve linked proje durumunu kontrol et:
+   - `npm run db:status`
+2. `20260401000000_position_gorunum_trigger.sql` linked projede pending ise uygula:
+   - `npm run db:push`
+3. Push sonrasi tekrar dogrula:
+   - migration artik applied gorunmeli
+4. Eğer migration dosyasinda deploy'u riske atan idempotence veya null-safety sorunu gorursen minimum fix uygula; ama scope'u buyutme
+5. Docs truth'u guncelle:
+   - deploy edildi mi
+   - hangi komutlar calisti
+   - linked proje tarafinda pending/applied sonucu ne oldu
+
+Kabul kriterleri:
+1. `position_gorunum_trigger` migration truth'u "repo'da var ama deploy bekliyor" durumundan cikmis olmali
+2. `npm run db:status` sonucu docs'ta durustce kayitli olmali
+3. Bu stage product truth'u ilerletmeli; script/infra refactor'a sapmamalı
+4. `iyzico`ya hic girilmemeli
+
+Dogrulama:
+- `npm run db:status`
+- gerekiyorsa `npm run db:push`
+- tekrar `npm run db:status`
+- `rg -n "position_gorunum_trigger|increment_position_gorunum_on_view|trg_increment_position_gorunum" supabase/migrations/20260401000000_position_gorunum_trigger.sql docs/AI-COLLAB.md tests/p3.regression.spec.js`
+
+## 124. Claude Cevap Formati — Asama 43
+Asama 43 bitince bu dosyada asagiyi guncelle:
+
+### Claude Cikti Ozeti — Asama 43 (1 Nisan 2026)
+
+**Kapatilan durumlar:**
+1. `20260401000000_position_gorunum_trigger.sql` linked Supabase projede kontrol edildi — Remote sütunu bostu (pending).
+2. `npx supabase db push --linked` ile deploy edildi. NOTICE: trigger onceden var olmadigi icin DROP TRIGGER IF EXISTS normal sekilde geçti.
+3. Final `db:status` kontrolünde `20260401000000 | 20260401000000` eslesmesi dogrulandi — applied.
+4. `positions.gorunum` icin `trg_increment_position_gorunum` trigger artik linked projede canli.
+5. `iyzico`ya girilmedi; scope tamamen migration deploy ile sinirli kaldi.
+
+**Degisen dosyalar:**
+- `docs/AI-COLLAB.md` (bu guncelleme)
+- `supabase/migrations/20260401000000_position_gorunum_trigger.sql` (kod degisiklik yok — deploy only)
+
+### Dogrulama
+| Komut | Sonuc |
+|-------|-------|
+| `npm run db:status` (oncesi) | `20260401000000` — Local: mevcut, Remote: **bos (pending)** |
+| `npm run db:push` | `Applying migration 20260401000000_position_gorunum_trigger.sql... Finished supabase db push.` |
+| `npm run db:status` (sonrasi) | `20260401000000 \| 20260401000000` — **APPLIED** |
+
+**Hizalama kontrolu:**
+```
+rg "position_gorunum_trigger|increment_position_gorunum_on_view|trg_increment_position_gorunum"
+```
+- `supabase/migrations/20260401000000_position_gorunum_trigger.sql` → 5 eslesme (fonksiyon + trigger tanimi)
+- `tests/p3.regression.spec.js` → 1 eslesme (migration dosyasi structural guard)
+- `docs/AI-COLLAB.md` → bu ozet satirlari
+
+**Bir Sonraki Net Adim**
+- Codex Asama 43'u review eder
+- Temizse employer pozisyon gorunum metrigi canli truth'e tasinmis olur — `profile_view_events`'a her `position_id` iceren INSERT, `positions.gorunum`'u artirtiyor
+- Sonra product backlog'da bir sonraki aday/isveren paketine gecilir
+- Claude bekliyor
+
+## 125. Codex Review — Asama 43 Kabul
+Asama 43 product truth tarafinda temiz kabul edildi.
+
+Kapanan truth:
+1. Linked Supabase migration durumu yeniden dogrulandi. `npx supabase migration list --linked` ciktisinda `20260401000000 | 20260401000000` goruldu; `position_gorunum_trigger` remote'da applied.
+2. Migration scope'u product hedefte kaldi. `profile_view_events.position_id` dolu oldugunda `positions.gorunum` sayaci artiyor; `iyzico`, UI veya infra refactor'a sapma yok.
+3. Autopilot log'daki `22:00:40 Pipeline BASARILI` kaydi ile linked remote truth birbiriyle uyumlu.
+
+Not:
+- Bu shell'de `npm run db:status` global `supabase` binary bekledigi icin tekrar calismadi (`sh: supabase: command not found`). Kabul karari linked proje truth'u uzerinden `npx supabase migration list --linked` ile verildi.
+
+## 126. Claude Icin Gorev — Asama 44
+Asama 44 product scope'tadir. Hedef: CV upload runtime truth bug'ini kapat.
+
+Gercek kullanici hatasi:
+`Yukleme hatasi: Invalid key: .../1775057476626_Yusuf Barış Özsoy Güncel Cv.pdf`
+
+Dar scope:
+- `profil-core.js`
+- `profil-cv.js`
+- `tests/p3.regression.spec.js`
+- `docs/AI-COLLAB.md`
+
+Yap:
+1. CV storage key uretimini tek noktada guvenli hale getir:
+   - Turkce karakterler, bosluklar ve storage key'i bozan karakterler Supabase-safe hale gelsin
+   - dosya uzantisi korunsun
+   - storage path ham dosya adini kullanmasin
+2. UI/DB truth'unu koru:
+   - `cv_filename` kullaniciya gorunen ve DB'ye yazilan orijinal `file.name` olarak kalsin
+   - upload/delete/re-upload icin canonical storage key/path kullanilsin
+3. Delete ve re-upload akisinin mevcut CV'yi dogru path uzerinden temizledigini dogrula; yeni fix bu akisi bozmasin
+4. Regression guard ekle:
+   - kanonik vaka: `Yusuf Barış Özsoy Güncel Cv.pdf`
+   - uretilen storage key ASCII-safe olmali
+   - orijinal dosya adi korunmali
+   - delete/re-upload safe path truth'u ile calismali
+5. Kod bitince en az su dogrulamalari yap:
+   - `node --check profil-core.js`
+   - `node --check profil-cv.js`
+   - `npm run test:p3`
+
+Yapma:
+- `iyzico`
+- `supabase/migrations`
+- AI CV optimize / Anthropic akisi
+- ops/script/infra dosyalari
+- `docs/CURRENT-STATE.md`
+- `docs/SESSION-LOG.md`
+
+Kabul kriterleri:
+1. Turkce karakterli / bosluklu dosya adlari upload'da `Invalid key` hatasi uretmemeli
+2. Storage key safe olmali ama UI/DB tarafinda orijinal dosya adi korunmali
+3. Delete / re-upload akisi mevcut CV path truth'unu bozmamali
+4. Gercek bug sinifini kilitleyen regression guard eklenmis olmali
+
+Bitince `docs/AI-COLLAB.md` sonuna kisa ozet yaz:
+- kapanan durumlar
+- degisen dosyalar
+- test durumu
+- kalan risk veya bir sonraki net adim
+
+## 127. Codex Notu — Tekrar Eden Hata Raporu (2 Nisan 2026)
+Tuna tarafindan iletilen tekrar eden hata analizi karar girisi olarak kayda alindi. Bu not yeni implementation stage'i degildir; autopilot tetiklemez.
+
+Karar cercevesi:
+1. Asama 44 once product gate'ten gecsin. Gercek kullanici CV upload bug'i kapanmadan ops/devex cleanup'a gecilmez.
+2. Asama 44 review'unden hemen sonra Codex, asagidaki rapor maddelerini iki sepete ayirarak karar verir:
+   - kisa vadeli tekrar-onleme guard'lari
+   - ayri scope gerektiren mimari/ops paketleri
+
+Ilk degerlendirme:
+1. `.single()` → `.maybeSingle()` lint guard'i yuksek ROI, dusuk risk. Product akisina carpmadan ayri kucuk guard stage'i olabilir.
+2. Truth-sync enforcement mantikli, ama hook scope'u product disi oldugu icin CV runtime truth kapandiktan sonra ayrik karar gerektirir.
+3. RLS template / pre-push hook degerli, fakat migration/process tarafidir; product blocker olmadikca ayrik stage olarak ele alinmali.
+4. Agent health / circuit breaker tekrar faydali olabilir, ama Asama 42 yeni kapandigi icin hemen yeniden infra dongusune donulmez.
+5. `profil-ui.js` / `profil-studio.js` decomposition gercek risk. Ancak bu refactor ancak net product ihtiyaci veya ard arda regressions gorulurse acilacak buyuk stage'tir; varsayilan sonraki adim degildir.
+
+Asama 44 sonrasi karar onceligi:
+1. CV upload truth tamamen kapandiysa once kullaniciya degen product backlog kontrol edilir.
+2. Product truth temizse en kuvvetli aday kucuk tekrar-onleme guard paketi olur:
+   - `.single()` lint rule
+   - gerekiyorsa truth-sync enforcement
+3. Hook/template/circuit-breaker/refactor gibi daha genis isler otomatik acilmaz; Codex review karariyla tek tek stage'lenir.
+
+## 128. Claude Tamamlama Notu — Asama 44
+
+**Durum:** TAMAMLANDI — tum kabul kriterleri karsilandi.
+
+**Kapanan durumlar:**
+1. `Yusuf Barış Özsoy Güncel Cv.pdf` gibi Turkce/bosluklu dosya adlari artik `Invalid key` hatasi uretmiyor
+2. `STORAGE._sanitizeKey()` tek noktada (profil-core.js) Turkish chars → ASCII, spaces → dashes, unsafe chars stripped, ext preserved
+3. `STORAGE.cvPath()` raw filename degil sanitized key kullanıyor
+4. `cv_filename` DB/UI'de orijinal `file.name` olarak korunuyor (degistirilmedi)
+5. `currentCVStoragePath` delete/re-upload akisi safe path truth'u ile calisiyor
+
+**Degisen dosyalar:**
+- `profil-core.js` — `STORAGE._sanitizeKey()` + guncellenmus `cvPath()` (unstaged, onceki session)
+- `tests/p3.regression.spec.js` — Asama 40 + 41 regression guard bloklari (10 test, unstaged)
+
+**Test durumu:**
+- `node --check profil-core.js` → OK
+- `node --check profil-cv.js` → OK
+- `npm run test:p3` → 680/680 PASS
+
+**Kalan risk / sonraki adim:**
+- Commit/push bekliyor (Codex onayı bekleniyor)
+- `extractStoragePath()` helper DB'deki public URL'den path cikartabiliyor; delete akisi bu yolu da kullanabilir (mevcut `currentCVStoragePath` yeterli, ek risk yok)
+- Sonraki scope: Codex'in belirleyecegi bir sonraki asama
+
+## 129. Codex Review — Asama 44 Kabul
+Asama 44 temiz kabul edildi.
+
+Kapanan truth:
+1. CV upload runtime hatasinin kok nedeni kapandi. `STORAGE.cvPath()` artik ham dosya adini degil sanitize edilmis storage key segment'ini kullaniyor; `Yusuf Barış Özsoy Güncel Cv.pdf` sinifi Supabase `Invalid key` hatasi uretmeyecek.
+2. UI/DB truth korundu. `profil-cv.js` upload yazimi ve in-memory sync tarafinda `cv_filename: file.name` aynen devam ediyor; kullaniciya gorunen/orijinal dosya adi bozulmadi.
+3. Delete / re-upload akisi bozulmadi. Review sirasinda `profil-bootstrap.js` mevcut `cv_url` icin `currentCVStoragePath = STORAGE.extractStoragePath(...)` hydration'ini zaten yaptigi dogrulandi; mevcut CV silme akisi session sonrasi da canonical path ile calisiyor.
+4. Dogrulama temiz:
+   - `node --check profil-core.js` → PASS
+   - `node --check profil-cv.js` → PASS
+   - `npm run test:p3` → **680/680 PASS**
+
+Karar:
+- Product truth'ta acik blocker yok.
+- Tuna'nin tekrar eden hata raporu isleme alindi.
+- Bir sonraki stage olarak en dusuk riskli, en yuksek ROI guard secildi: `.single()` geri donusunu lint seviyesinde bloke etmek.
+
+## 130. Claude Icin Gorev — Asama 45
+Asama 45 product yuzeyine dokunmayan dar bir tekrar-onleme guard stage'idir. Tuna'nin raporundaki oncelik matrisinden yalnizca en kucuk/yuksek ROI madde alinmistir.
+
+Hedef:
+- Supabase `.single()` kullanimini root JS yuzeyinde commit-oncesi lint seviyesinde yasakla
+- `.maybeSingle()` kuralini soft dokumandan executable guard'a tası
+
+Dar scope:
+- `eslint.config.js`
+- `tests/p3.regression.spec.js`
+- `docs/AI-COLLAB.md`
+
+Yap:
+1. ESLint config'e `.single()` kullanimini bloklayan bir kural ekle:
+   - `CallExpression` seviyesinde `.single()` cagrisini yakalasin
+   - mesaj net olsun: `.maybeSingle()` kullan
+2. Kurali yapisal regression guard ile kilitle:
+   - `tests/p3.regression.spec.js` icinde ESLint config'te bu yasagin tanimli oldugunu dogrulayan dar bir blok ekle
+3. Mevcut `npm run lint` akisini bozma; yeni toolchain veya hook ekleme
+4. Stage sonunda sonucu `docs/AI-COLLAB.md` icine kisa ozet olarak yaz
+
+Yapma:
+- `.husky/pre-commit`
+- truth-sync hook
+- RLS template / pre-push hook
+- agent health / circuit breaker
+- `profil*.js`, `ik.html`, `supabase/`
+- `docs/CURRENT-STATE.md`
+- `docs/SESSION-LOG.md`
+- `iyzico`
+
+Kabul kriterleri:
+1. Root JS dosyalarinda yeni `.single()` kullanimi lint error vermeli
+2. `.maybeSingle()` kullanimi bloke edilmemeli
+3. `npm run lint` ve `npm run test:p3` temiz gecmeli
+4. Scope rapordaki madde #1 ile sinirli kalmali; infra paketine genislememeli
+
+Dogrulama:
+- `npm run lint`
+- `npm run test:p3`
+- `rg -n "single|maybeSingle|no-restricted-syntax" eslint.config.js tests/p3.regression.spec.js docs/AI-COLLAB.md`
+
+## 131. Claude Uygulama Ozeti — Asama 45 ✅
+
+**Tarih:** 2 Nisan 2026
+**Durum:** Tamamlandi
+
+### Yapilan Is
+- `eslint.config.js`: `no-restricted-syntax` kurali eklendi. AST selector `CallExpression[callee.property.name="single"]` ile `.single()` her kullanimda lint error uretir. Hata mesaji Turkce, `.maybeSingle()` kullanimi teşvik ediyor.
+- `tests/p3.regression.spec.js`: Yeni `describe` blogu eklendi — `Asama 45 — .single() lint guard yapisal dogrulama`. 5 yapısal test: config varligı, `no-restricted-syntax` varligi, AST selector dogrulama, `maybeSingle` mesaj varligi, `error` seviyesi.
+
+### Degisen Dosyalar
+- `eslint.config.js` — `no-restricted-syntax` kural blogu (Supabase safety guards bolumu)
+- `tests/p3.regression.spec.js` — Asama 45 describe blogu (5 test, 2 viewport = 10 kayit)
+
+### Test Durumu
+- `npm run lint`: 0 error, 51 warning (onceden mevcut uyarilar)
+- `npm run test:p3`: **690/690 PASS** (680 → 690, +10 yeni kayit)
+- `.single()` canli test: `profil-core.js` sonuna `.single()` enjekte edildi → lint error uretildi, geri alindi. ✅
+
+### Riskler / Blocker
+- Yok. Saf lint + yapısal guard, product yuzeyine dokunmadi.
+- Onceki uyarilar (no-unused-vars, no-redeclare) aynen korundu — bunlar zaten bilinen durumlar.
+
+### Bir Sonraki Net Adim
+- Commit: `chore: Asama 45 — single() lint guard + test (690/690 PASS)`
+- Sonraki stage: Codex onayina birakildi. Product backlog: pozisyon metrikleri v2 veya iyzico merchant key bekleniyor.
+
+## 132. Codex Review — Asama 45 Kabul
+Asama 45 temiz kabul edildi.
+
+Kapanan truth:
+1. `.single()` geri donusunu bloklayan guard artik executable durumda. [eslint.config.js](/Users/peopleintk/Downloads/Hellotalent/eslint.config.js) icindeki `no-restricted-syntax` kurali `.single()` cagrisini lint error'a ceviriyor.
+2. `.maybeSingle()` bloke edilmiyor. Dogrudan ESLint stdin dogrulamasinda:
+   - `/* global supabase */ ... .single()` → `no-restricted-syntax` error
+   - `/* global supabase */ ... .maybeSingle()` → PASS
+3. Stage scope'ta kalmis:
+   - product JS yüzeyine dokunmadi
+   - hook / infra / migration paketine genislemedi
+4. Dogrulama temiz:
+   - `npm run lint` → **0 error, 51 warning**
+   - `npm run test:p3` → **690/690 PASS**
+   - autopilot log → `00:55:24 Pipeline BASARILI`
+
+Karar:
+- Bu stage kabul.
+- Tuna raporundaki siradaki yuksek ROI maddeye gecilebilir.
+- Bir sonraki dar guard stage: truth-sync pre-commit enforcement.
+
+## 133. Claude Icin Gorev — Asama 46
+Asama 46 product feature degil; tekrar-onleme guard stage'idir. Tuna raporundaki madde #2 dar scope ile uygulanacak.
+
+Hedef:
+- Kritik product/data dosyalari staged oldugunda docs truth-sync zorunlulugu getir
+- `CURRENT-STATE.md` / `AI-COLLAB.md` unutkanligini commit-oncesi yakala
+
+Dar scope:
+- `.husky/pre-commit`
+- gerekirse yeni kucuk helper: `scripts/check-truth-sync.sh`
+- yeni test dosyasi: `tests/truth-sync-guard.bats`
+- `docs/AI-COLLAB.md`
+
+Yap:
+1. Pre-commit akisina truth-sync guard ekle:
+   - staged dosyalar icinde `profil*.js`, `ik.html`, `supabase/migrations/*` varsa
+   - staged dosyalar icinde en az biri de bulunmali:
+     - `docs/CURRENT-STATE.md`
+     - `docs/AI-COLLAB.md`
+2. Guard bypass destegi ekle:
+   - `SKIP_TRUTH_CHECK=1 git commit ...`
+3. Mevcut `lint-staged` akisini bozma:
+   - truth check PASS ise mevcut `npx lint-staged` akmaya devam etsin
+4. BATS regression guard ekle:
+   - trigger file var + docs yok → fail
+   - trigger file var + docs var → pass
+   - trigger file yok → pass
+   - `SKIP_TRUTH_CHECK=1` → pass/bypass
+5. Sonucu `docs/AI-COLLAB.md` sonuna kisa ozet olarak yaz
+
+Yapma:
+- `package.json`
+- `eslint.config.js`
+- product UI dosyalari
+- `supabase/` migration icerigi
+- agent health / circuit breaker
+- RLS template / pre-push
+- `docs/CURRENT-STATE.md`
+- `docs/SESSION-LOG.md`
+- `iyzico`
+
+Kabul kriterleri:
+1. Trigger dosyalari staged iken docs staged degilse pre-commit non-zero donmeli
+2. Docs staged ise pre-commit PASS vermeli
+3. `SKIP_TRUTH_CHECK=1` bypass'i calismali
+4. `npm run test:bats` temiz gecmeli
+5. Scope yalnizca truth-sync guard ile sinirli kalmali
+
+Dogrulama:
+- `npm run test:bats`
+- gerekirse dogrudan shell smoke:
+  - trigger staged, docs yok
+  - trigger + docs staged
+  - `SKIP_TRUTH_CHECK=1`
+
+## 134. Asama 46 — Sonuc (02 Nisan 2026)
+
+### Yapilan Is
+Truth-sync pre-commit guard eklendi. Product/data dosyalari staged oldugunda
+docs guncellenmemisse commit bloklanir.
+
+### Degisen Dosyalar
+- `scripts/check-truth-sync.sh` (yeni) — trigger/docs kontrol helper
+- `.husky/pre-commit` — truth-sync guard + lint-staged zinciri
+- `tests/truth-sync-guard.bats` (yeni) — 11 BATS testi (4 senaryo)
+
+### Test Durumu
+- `npm run test:bats` → **85/85 PASS** (11 yeni truth-sync testi dahil)
+- Mevcut testler bozulmadi
+
+### Trigger Dosyalar
+`profil*.js`, `ik.html`, `supabase/migrations/*`
+
+### Docs Gerekliligi (trigger varsa)
+`docs/CURRENT-STATE.md` veya `docs/AI-COLLAB.md`
+
+### Bypass
+`SKIP_TRUTH_CHECK=1 git commit ...`
+
+### Riskler / Blockerlar
+Yok. Guard dar scope ile sinirli kaldi.
+
+### Bir Sonraki Adim
+Commit `chore: Asama 46 — truth-sync pre-commit guard + BATS`
+Sonra Codex review → product backlog (pozisyon metrik v2 / iyzico).
+
+## 135. Codex Review — Asama 46 Red
+Asama 46 amacina yaklasti ama temiz kabul edilemez. Kritik bir davranis acik kaldi:
+
+1. `.husky/pre-commit` zinciri truth-sync failure durumunda guvenli sekilde short-circuit etmiyor.
+   - Mevcut dosya:
+     - satir 1: `./scripts/check-truth-sync.sh`
+     - satir 2: `npx lint-staged`
+   - Davranissal kontrol:
+     - truth-sync guard fail ettiginde hata kutusu yaziliyor
+     - buna ragmen `lint-staged` yine calisiyor (`lint-staged could not find any staged files` cikti)
+   - Bu, gercek commit aninda guard'in "bloklayici kaynak" olmasini zayiflatir. Shell zinciri ya `set -e` ya da `&&` ile sertlestirilmedigi icin ikinci komut yine tetikleniyor.
+
+Karar:
+- Stage red.
+- Ayni konuda dar bir follow-up gerekir.
+- Rapor maddesi #2 kapanmis sayilmaz; sadece ilk yarisi uygulanmis sayilir.
+
+Kisa ozet:
+- Bu asamada kullanici yuzeyinde bir degisiklik yoktu.
+- Amac "kod degisti ama docs guncellenmedi" unutkanligini commit aninda engellemekti.
+- Script yazildi ama hook zinciri henuz kesin bloklama semantigine ulasmadi.
+
+## 136. Claude Icin Gorev — Asama 47
+Asama 47 yalnizca Asama 46'daki eksik bloklama semantigini kapatir. Scope'u buyutme.
+
+Hedef:
+- Truth-sync guard fail ettiginde pre-commit zinciri aninda dursun
+- `lint-staged` guard fail iken hic calismasin
+
+Dar scope:
+- `.husky/pre-commit`
+- `tests/truth-sync-guard.bats`
+- `docs/AI-COLLAB.md`
+
+Yap:
+1. Pre-commit zincirini sertlestir:
+   - truth-sync guard fail ise script non-zero ile bitsin
+   - `lint-staged` bu durumda hic cagrilmasin
+2. Davranissal BATS guard ekle:
+   - mock truth-sync fail + mock lint-staged logger ile pre-commit calistir
+   - fail durumunda `lint-staged` cagrilmadigini dogrula
+   - pass durumunda `lint-staged` cagrildigini dogrula
+3. Mevcut `scripts/check-truth-sync.sh` mantigini degistirme; sorun zincir semantiginde ise sadece onu kapat
+4. Sonucu `docs/AI-COLLAB.md` sonuna kisa ozet olarak yaz
+
+Yapma:
+- yeni infra/stage acma
+- `package.json`
+- product dosyalari
+- RLS template / pre-push
+- agent health
+- `docs/CURRENT-STATE.md`
+- `docs/SESSION-LOG.md`
+- `iyzico`
+
+Kabul kriterleri:
+1. Truth-sync fail iken pre-commit non-zero donmeli
+2. Truth-sync fail iken `lint-staged` hic calismamali
+3. Truth-sync pass iken `lint-staged` normal akmali
+4. `npm run test:bats` temiz gecmeli
+5. Scope yalnizca pre-commit zincir semantigi ile sinirli kalmali
+
+Dogrulama:
+- `npm run test:bats`
+- gerekiyorsa dar shell smoke:
+  - fail path → no lint-staged execution
+  - pass path → lint-staged execution
+
+## 137. Asama 47 — Tamamlandi (2026-04-02)
+
+Yapilan:
+- `.husky/pre-commit` zinciri `&&` ile sertlestirildi (Husky v9 uyumlu, shebang + single-line)
+- `tests/truth-sync-guard.bats` 4 yeni senaryo eklendi (Senaryo 5: chain semantigi)
+  - fail path: truth-sync fail → pre-commit non-zero, lint-staged cagrilmadi
+  - pass path: truth-sync pass → pre-commit zero, lint-staged cagrildi
+
+Degisen dosyalar:
+- `.husky/pre-commit` (zincir fix)
+- `tests/truth-sync-guard.bats` (4 yeni test, 85→89)
+
+Test durumu:
+- `npm run test:bats` → **89/89 PASS**
+
+Riskler / blockerlar:
+- Yok
+
+Sonraki adim:
+- Commit: `chore: Asama 47 — pre-commit short-circuit fix + BATS chain tests`
+- Codex review → product backlog (pozisyon metrik v2)
+
+## 138. Codex Review — Asama 47 Kabul
+Asama 47 temiz kabul edildi.
+
+Kapanan truth:
+1. Pre-commit zinciri artik gercekten short-circuit ediyor. [pre-commit](/Users/peopleintk/Downloads/Hellotalent/.husky/pre-commit) `./scripts/check-truth-sync.sh && npx lint-staged` olarak sertlestirildi.
+2. Davranissal smoke dogrulamasi temiz:
+   - fail path: trigger dosya + docs yok → exit `1`, `lint-staged` log'u olusmadi
+   - pass path: trigger dosya + docs var → exit `0`, `lint-staged` cagrildi
+3. Test suite temiz:
+   - `npm run test:bats` → **89/89 PASS**
+   - autopilot log → `09:29:01 Pipeline BASARILI`
+
+Kisa ozet:
+- Bu asamada kullaniciya gorunen bir UI degisikligi yok.
+- Ekip tarafinda commit guvenligi sertlesti.
+- "Kod degisti ama docs guncellenmedi" guard'i artik gercekten commit'i kesebiliyor.
+
+Karar:
+- Truth-sync enforcement maddesi kapandi.
+- Tuna raporundaki siradaki yuksek ROI maddeye gecilebilir: RLS template + pre-push guard.
+
+## 139. Claude Icin Gorev — Asama 48
+Asama 48 dar bir tekrar-onleme / data-safety stage'idir. Tuna raporundaki madde #3 yalnizca minimum uygulanabilir guard paketi olarak alinacak.
+
+Hedef:
+- Yeni migration'larda `CREATE TABLE` yazilip RLS unutulmasin
+- Tam template/belge yerine once executable guard getir
+
+Dar scope:
+- `.husky/pre-push`
+- gerekirse yeni helper: `scripts/check-rls-guard.sh`
+- yeni test dosyasi: `tests/rls-guard.bats`
+- `docs/AI-COLLAB.md`
+
+Yap:
+1. Pre-push guard ekle:
+   - staged `supabase/migrations/*.sql` dosyalarinda `CREATE TABLE` varsa
+   - ayni migration iceriginde `ENABLE ROW LEVEL SECURITY` de aranacak
+   - yoksa push bloklanacak
+2. Minimum bypass destegi ekle:
+   - `SKIP_RLS_CHECK=1 git push ...`
+3. Mevcut repo akisina minimum mudahale et:
+   - package.json'a dokunma
+   - migration iceriklerini topluca refactor etme
+4. BATS guard ekle:
+   - `CREATE TABLE` + no `ENABLE ROW LEVEL SECURITY` → fail
+   - `CREATE TABLE` + `ENABLE ROW LEVEL SECURITY` → pass
+   - `CREATE TABLE` yok → pass
+   - `SKIP_RLS_CHECK=1` → bypass
+5. Sonucu `docs/AI-COLLAB.md` sonuna kisa ozet olarak yaz
+
+Yapma:
+- mevcut migration dosyalarini toplu duzeltme
+- `docs/CURRENT-STATE.md`
+- `docs/SESSION-LOG.md`
+- product UI dosyalari
+- agent health / circuit breaker
+- cache-busting / bundler
+- `iyzico`
+
+Kabul kriterleri:
+1. Yeni tablo olusturan migration'da RLS yoksa push non-zero donmeli
+2. RLS mevcutsa push pass vermeli
+3. `SKIP_RLS_CHECK=1` bypass'i calismali
+4. `npm run test:bats` temiz gecmeli
+5. Scope yalnizca dar RLS guard ile sinirli kalmali
+
+Dogrulama:
+- `npm run test:bats`
+- gerekirse dar shell smoke:
+  - create table, no rls
+  - create table + rls
+  - bypass
+
+## 140. Asama 48 — Tamamlandi (2026-04-02)
+
+### Yapilan is
+- `scripts/check-rls-guard.sh` — yeni migration dosyalarinda CREATE TABLE sayisi ile ENABLE ROW LEVEL SECURITY sayisini karsilastirir; eksik varsa push bloklar
+- `.husky/pre-push` — guard scripti cagirir (`./scripts/check-rls-guard.sh`)
+- `tests/rls-guard.bats` — 10 test: fail/pass/bypass + multi-table + lowercase/mixedcase + empty file + no git output
+
+### Degisen dosyalar
+- `scripts/check-rls-guard.sh` (yeni)
+- `.husky/pre-push` (yeni)
+- `tests/rls-guard.bats` (yeni)
+
+### Test durumu
+`npm run test:bats` → **99/99 PASS** (onceki 89 + 10 yeni rls-guard testi)
+
+### Teknik not
+Guard, CREATE TABLE ve ENABLE ROW LEVEL SECURITY occurrence sayilarini karsilastirir. Bu basit sayim heuristigi tek-dosya / cok-tablo senaryolarini yakalar; per-statement SQL parsing gerektirmez.
+
+### Riskler / Blocker
+Yok. Scope dar shell'de kaldi. Mevcut migration'lara dokunulmadi.
+
+### Sonraki adim
+Codex review → kabul sonrasi product (pozisyon metrik v2 / iyzico onboarding).
+
+## 141. Codex Review — Asama 48 Kabul
+Asama 48 temiz kabul edildi.
+
+Kapanan truth:
+1. Yeni migration'da tablo acilip RLS unutulursa push oncesi yakalanacak.
+   - [pre-push](/Users/peopleintk/Downloads/Hellotalent/.husky/pre-push) artik [check-rls-guard.sh](/Users/peopleintk/Downloads/Hellotalent/scripts/check-rls-guard.sh) cagiriyor.
+2. Davranissal smoke temiz:
+   - `CREATE TABLE` + no RLS → exit `1`
+   - `CREATE TABLE` + `ENABLE ROW LEVEL SECURITY` → exit `0`
+   - `SKIP_RLS_CHECK=1` → bypass
+3. Test suite temiz:
+   - `npm run test:bats` → **99/99 PASS**
+   - autopilot log → `09:29:01 Pipeline BASARILI`
+
+Kisa ozet:
+- Bu asamada kullaniciya gorunen bir UI degisikligi yok.
+- Ekip tarafinda veri-guvenligi guard'i eklendi.
+- "Yeni tablo acildi, RLS unutuldu" sinifi artik push oncesi yakalaniyor.
+
+## 142. Codex Notu — Tooling/Auth + 5 Pattern Karari
+Guncel durum:
+1. Codex plugin kurulu; local review akisi calisiyor.
+2. Supabase official plugin OAuth ile bagli; SQL / migration tarafinda auth artik blocker degil.
+3. Stripe gerekli degil; odeme dogrusu `iyzico`, bu yuzden Stripe plugin'i sonraki scope'a alinmayacak.
+4. Supabase/Stripe MCP auth warning'leri Codex log'unda blocker kabul edilmeyecek; mevcut sandbox/read-only akisinda zararli degil.
+
+5 pattern kararinin guncel durumu:
+1. `.single()` geri donus guard'i → **KAPANDI** (`Asama 45`)
+2. truth-sync pre-commit enforcement → **KAPANDI** (`Asama 47`)
+3. minimum RLS guard (new table → RLS zorunlu) → **KAPANDI** (`Asama 48`)
+4. RLS hardening'in kalan yarisi → **ACIK**
+   - migration template
+   - `email_outbox` service-role-only istisna dokumani
+   - `auth.users` direkt query yasagi / dogru auth query notu
+5. agent circuit breaker → **DEFER**
+   - infra artik stabil; ilk 3 guard kadar acil degil
+6. `profil-ui.js` / `profil-studio.js` decomposition → **DEFER**
+   - buyuk refactor; product sprint disi ayri program ister
+
+Karar:
+- Raporun ilk yuksek ROI 3 maddesi artik executable guard olarak alinmis durumda.
+- Sonraki dogru dar adim, RLS tarafinin dokumante/template yarimini kapatmak.
+- Ondan sonra product backlog'a donmek daha dogru; circuit breaker ve monolith split hemen acilmayacak.
+
+## 143. Claude Icin Gorev — Asama 49
+Asama 49 tekrar-onleme / data-contract hygiene stage'idir. Asama 48'in ardindan RLS tarafinin kalan dar parcasini kapat.
+
+Hedef:
+- Yeni migration yazimini template ile standardize et
+- `email_outbox` istisnasini ve `auth.users` query kuralini yazili truth'a tasi
+
+Dar scope:
+- `supabase/migrations/TEMPLATE.sql`
+- `docs/ARCHITECTURE.md`
+- `tests/rls-guard.bats`
+- `docs/AI-COLLAB.md`
+
+Yap:
+1. Yeni bir migration template ekle:
+   - `CREATE TABLE IF NOT EXISTS`
+   - `ALTER TABLE ... ENABLE ROW LEVEL SECURITY`
+   - en az bir `CREATE POLICY`
+   - `GRANT` placeholder/blogu
+2. Template icinde veya architecture doc'ta su kurali netlestir:
+   - `auth.users` tablosuna direkt query default pattern degildir
+   - mumkun oldugunda `auth.uid()` / `auth.jwt()` / mevcut profile table join pattern kullan
+3. `email_outbox` istisnasini dokumante et:
+   - service-role-only tablo oldugu
+   - bu nedenle genel RLS beklentisinin istisnasi oldugu
+4. Dar bir yapisal test ekle:
+   - template dosyasi zorunlu RLS/policy/grant isaretlerini icersin
+   - architecture doc `email_outbox` + `auth.users` kuralini icersin
+5. Sonucu `docs/AI-COLLAB.md` sonuna kisa ozet olarak yaz
+
+Yapma:
+- mevcut migration dosyalarini toplu degistirme
+- `.husky/` hook'larini yeniden elden gecirme
+- product UI dosyalari
+- circuit breaker
+- monolith split
+- `iyzico`
+- `docs/CURRENT-STATE.md`
+- `docs/SESSION-LOG.md`
+
+Kabul kriterleri:
+1. Migration template dosyasi mevcut olmali ve zorunlu RLS/policy iskeletini icermeli
+2. `email_outbox` istisnasi yazili truth'a girmeli
+3. `auth.users` direkt query tuzagi yazili rule olarak gecmeli
+4. `npm run test:bats` temiz gecmeli
+5. Scope yalnizca dar RLS hardening 2b ile sinirli kalmali
+
+Dogrulama:
+- `npm run test:bats`
+- `rg -n "ENABLE ROW LEVEL SECURITY|CREATE POLICY|GRANT|email_outbox|auth\\.users|auth.uid|auth.jwt" supabase/migrations/TEMPLATE.sql docs/ARCHITECTURE.md tests/rls-guard.bats docs/AI-COLLAB.md`

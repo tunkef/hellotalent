@@ -34,6 +34,12 @@
 - gate.html → sessionStorage gate for content pages
 - Legal pages (gizlilik, kvkk, kullanim-sartlari, cerez-politikasi): no gate
 
+## RLS Exceptions
+- `email_outbox`: RLS kasıtlı olarak OMITTED — sadece service_role (Edge Functions) erişir
+  - Candidate/employer doğrudan bu tabloya erişmez
+  - PostgREST üzerinden çağrılmaz, sadece backend worker kullanır
+  - Bu istisna dokümante edilmiştir; yeni istisnalar için Codex onayı gerekir
+
 ## Notification System
 - 4 boolean columns on candidates table
 - notify_email_messages + notify_email_jobs: active (default true)
