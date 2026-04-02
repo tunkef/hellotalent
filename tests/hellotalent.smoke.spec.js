@@ -1,12 +1,9 @@
 const { test, expect } = require('@playwright/test');
 
-// Helper: set gate before every navigation
+// Helper: navigate directly to target path (index.html IS the gate now)
 async function withGate(page, path) {
-  await page.goto('/gate.html', { waitUntil: 'networkidle' });
-  await page.waitForTimeout(500);
-  await page.evaluate(() => sessionStorage.setItem('ht_gate', 'ok'));
   await page.goto(path, { waitUntil: 'networkidle' });
-  await page.waitForTimeout(1500);
+  await page.waitForTimeout(1000);
 }
 
 const PAGES = [
@@ -52,7 +49,7 @@ test.describe('Console Errors', () => {
 });
 
 test.describe('Shared Chrome', () => {
-  for (const path of ['/', '/aday.html', '/isveren.html', '/kariyer.html']) {
+  for (const path of ['/aday.html', '/isveren.html', '/kariyer.html']) {
     test(path + ' has header+footer', async ({ page }) => {
       await withGate(page, path);
       await expect(page.locator('.site-header')).toBeVisible({ timeout: 10000 });
@@ -63,7 +60,7 @@ test.describe('Shared Chrome', () => {
 });
 
 test('Brand fonts loaded', async ({ page }) => {
-  await withGate(page, '/');
+  await withGate(page, '/aday.html');
   await page.evaluate(async () => {
     await Promise.all([
       document.fonts.load('400 16px "Plus Jakarta Sans"'),
@@ -77,48 +74,31 @@ test('Brand fonts loaded', async ({ page }) => {
   expect(ok).toBe(true);
 });
 
-test.describe('Aday Form', () => {
+test.describe('Aday LP', () => {
   test.beforeEach(async ({ page }) => {
     await withGate(page, '/aday.html');
   });
-  test('signup form visible', async ({ page }) => {
-    await expect(page.locator('#form-kayit')).toBeVisible({ timeout: 10000 });
+  test('Google signup button exists', async ({ page }) => {
+    await expect(page.locator('#btn-google-signup-aday')).toBeVisible({ timeout: 10000 });
   });
-  test('tab switch works', async ({ page }) => {
-    await page.click('#tab-giris');
-    await expect(page.locator('#form-giris')).toBeVisible();
-    await page.click('#tab-kayit');
-    await expect(page.locator('#form-kayit')).toBeVisible();
+  test('hero section is visible', async ({ page }) => {
+    await expect(page.locator('.lp-hero')).toBeVisible({ timeout: 10000 });
   });
-  test('phone has Turkish pattern', async ({ page }) => {
-    const p = await page.locator('#reg-telefon').getAttribute('pattern');
-    expect(p).toBe('0[0-9]{10}');
+  test('at least 5 pill elements exist', async ({ page }) => {
+    const count = await page.locator('.lp-pill').count();
+    expect(count).toBeGreaterThanOrEqual(5);
   });
-  test('inputs have aria-labels', async ({ page }) => {
-    for (const s of ['#reg-isim','#reg-email','#reg-sifre','#reg-telefon']) {
-      const a = await page.locator(s).getAttribute('aria-label');
-      expect(a).toBeTruthy();
-    }
-    await page.click('#tab-giris');
-    for (const s of ['#giris-email','#giris-sifre']) {
-      const a = await page.locator(s).getAttribute('aria-label');
-      expect(a).toBeTruthy();
-    }
-  });
-  test('brand marquee has will-change', async ({ page }) => {
-    const wc = await page.locator('.brands-track').evaluate(el => getComputedStyle(el).willChange);
-    expect(wc).toBe('transform');
+  test('exactly 3 step elements exist', async ({ page }) => {
+    const count = await page.locator('.lp-step').count();
+    expect(count).toBe(3);
   });
 });
 
-test('Gate sets sessionStorage', async ({ page }) => {
-  await page.goto('/gate.html', { waitUntil: 'networkidle' });
-  await page.fill('#username', 'hellotalent');
-  await page.fill('#password', 'ht2026dev');
-  await page.click('.btn');
-  await page.waitForTimeout(800);
-  const v = await page.evaluate(() => sessionStorage.getItem('ht_gate'));
-  expect(v).toBe('ok');
+test('Gate page has correct structure', async ({ page }) => {
+  await page.goto('/', { waitUntil: 'networkidle' });
+  await expect(page.locator('.gate')).toBeVisible({ timeout: 10000 });
+  const halves = await page.locator('.gate-half').count();
+  expect(halves).toBe(2);
 });
 
 test.describe('Mobile', () => {
