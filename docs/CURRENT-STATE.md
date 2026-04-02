@@ -1,5 +1,5 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 2 Nisan 2026 | Asama 50: Beta Premium Gate (AI 1-use limit + badge system)
+> Son guncelleme: 2 Nisan 2026 | Asama 54: Marka gorselleri entegrasyonu (31 marka, cover_image_url)
 
 ## 1. Proje Ozeti
 

@@ -152,7 +152,7 @@ async function loadSirketlerPanel() {
   }
 
   var brandsRes = await supabase.from('brands')
-    .select('id,brand_name,slug,logo_url,website_url,instagram_url,short_description,segment,store_count_tr,store_cities,hq_city,employee_count_tr,is_featured,company_id')
+    .select('id,brand_name,slug,logo_url,website_url,instagram_url,short_description,segment,store_count_tr,store_cities,hq_city,employee_count_tr,is_featured,company_id,cover_image_url')
     .not('website_url','is',null).eq('is_active',true).order('brand_name');
 
   var followsRes = _ht_candidate_id
