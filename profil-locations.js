@@ -90,15 +90,26 @@ function _buildCityDropdown() {
 
   container.appendChild(dd);
 
-  // Search filter
-  search.addEventListener('input', function() {
+  // Search filter — use keyup instead of input for broader compatibility
+  function _filterCityList() {
     var q = trLower(search.value.trim());
     var items = dd.querySelectorAll('.ms-item');
+    var visibleCount = 0;
     for (var i = 0; i < items.length; i++) {
-      var text = trLower(items[i].querySelector('span').textContent);
-      items[i].style.display = (!q || text.indexOf(q) !== -1) ? '' : 'none';
+      var span = items[i].querySelector('span');
+      if (!span) continue;
+      var text = trLower(span.textContent);
+      var show = !q || text.indexOf(q) !== -1;
+      items[i].style.display = show ? '' : 'none';
+      if (show) visibleCount++;
     }
-  });
+  }
+  search.addEventListener('input', _filterCityList);
+  search.addEventListener('keyup', _filterCityList);
+  search.addEventListener('paste', function() { setTimeout(_filterCityList, 50); });
+
+  // Also open dropdown when typing
+  search.addEventListener('focus', function() { dd.style.display = ''; });
 
   // Close on outside click
   document.addEventListener('click', function(e) {
@@ -134,12 +145,14 @@ function _buildDistrictDropdown() {
   dd.id = 'ms-district-list';
   container.appendChild(dd);
 
-  // Search filter
-  search.addEventListener('input', function() {
+  // Search filter — keyup + input + paste
+  function _filterDistrictList() {
     var q = trLower(search.value.trim());
     var items = dd.querySelectorAll('.ms-item');
     for (var i = 0; i < items.length; i++) {
-      var text = trLower(items[i].querySelector('span').textContent);
+      var span = items[i].querySelector('span');
+      if (!span) continue;
+      var text = trLower(span.textContent);
       items[i].style.display = (!q || text.indexOf(q) !== -1) ? '' : 'none';
     }
     var headers = dd.querySelectorAll('.ms-group-header');
@@ -152,7 +165,11 @@ function _buildDistrictDropdown() {
       }
       headers[h].style.display = (hasVisible || !q) ? '' : 'none';
     }
-  });
+  }
+  search.addEventListener('input', _filterDistrictList);
+  search.addEventListener('keyup', _filterDistrictList);
+  search.addEventListener('paste', function() { setTimeout(_filterDistrictList, 50); });
+  search.addEventListener('focus', function() { dd.style.display = ''; });
 
   // Close on outside click
   document.addEventListener('click', function(e) {
