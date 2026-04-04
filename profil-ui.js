@@ -1596,6 +1596,7 @@ async function saveProfileRPC(onComplete) {
           bitis_yil: e.bitis_yil != null ? String(e.bitis_yil) : '',
           devam_ediyor: e.devam_ediyor, ayrilma_nedeni: e.ayrilma_nedeni,
           basari_ozeti: e.basari_ozeti,
+          description: e.description || null,
           brand_id: e.brand_id || null,
           company_id: e.company_id || null
         };
