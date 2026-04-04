@@ -233,6 +233,8 @@ function renderTemplate(
       return supportTicketAutoClosedTemplate(payload);
     case "candidate_reply_notification":
       return candidateReplyNotificationTemplate(payload);
+    case "employer_lead_notification":
+      return employerLeadNotificationTemplate(payload);
     default:
       throw new Error(`Unknown email_type: ${emailType}`);
   }
@@ -1052,6 +1054,38 @@ Gizlilik: https://hellotalent.ai/gizlilik.html`;
 
   return {
     subject: `${candidateName} yan\u0131t g\u00f6nderdi \u2014 ${p.subject || ""}`,
+    html,
+    text,
+  };
+}
+
+// ─── Employer Lead Notification ──────────────────────
+function employerLeadNotificationTemplate(payload: Record<string, string>) {
+  const p = payload || {};
+  const name = esc(p.lead_name || "-");
+  const email = esc(p.lead_email || "-");
+  const company = esc(p.lead_company || "-");
+  const phone = esc(p.lead_phone || "-");
+  const teamSize = esc(p.lead_team_size || "-");
+
+  const html = `
+<div style="font-family:'Plus Jakarta Sans',Helvetica,Arial,sans-serif;max-width:520px;margin:0 auto;padding:32px 24px;">
+  <h2 style="font-family:'Bricolage Grotesque',sans-serif;color:#1E2D5E;margin:0 0 16px;">Yeni İşveren Lead</h2>
+  <table style="width:100%;border-collapse:collapse;">
+    <tr><td style="padding:8px 0;color:#6B7280;width:120px;">İsim</td><td style="padding:8px 0;font-weight:600;">${name}</td></tr>
+    <tr><td style="padding:8px 0;color:#6B7280;">E-posta</td><td style="padding:8px 0;"><a href="mailto:${email}" style="color:#C94E28;">${email}</a></td></tr>
+    <tr><td style="padding:8px 0;color:#6B7280;">Şirket</td><td style="padding:8px 0;font-weight:600;">${company}</td></tr>
+    <tr><td style="padding:8px 0;color:#6B7280;">Telefon</td><td style="padding:8px 0;">${phone}</td></tr>
+    <tr><td style="padding:8px 0;color:#6B7280;">Ekip</td><td style="padding:8px 0;">${teamSize}</td></tr>
+  </table>
+  <hr style="border:none;border-top:1px solid #E5E3DF;margin:24px 0;">
+  <p style="font-size:13px;color:#6B7280;">Bu lead hellotalent.ai işveren sayfasından geldi. Admin panelden takip edebilirsiniz.</p>
+</div>`;
+
+  const text = `Yeni İşveren Lead\nİsim: ${p.lead_name}\nE-posta: ${p.lead_email}\nŞirket: ${p.lead_company}\nTelefon: ${p.lead_phone}\nEkip: ${p.lead_team_size}`;
+
+  return {
+    subject: `Yeni Lead: ${p.lead_company || "İşveren"} — ${p.lead_name || ""}`,
     html,
     text,
   };
