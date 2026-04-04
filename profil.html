@@ -930,22 +930,18 @@ if (window.Sentry) {
     <div class="wiz-step-desc">Nerede ve nasıl çalışabileceğini belirt — işverenler seni daha doğru eşleştirsin.</div>
     <div id="step5-content">
 
-      <!-- LOCATION DROPDOWN SELECT -->
-      <div class="field-row">
-        <div class="field">
-          <label for="f-loc-il">Çalışmak İstediğin İl <span class="field-hint">· Birden fazla seçebilirsin</span></label>
-          <select id="f-loc-il">
-            <option value="">İl seç...</option>
-          </select>
-          <button type="button" id="btn-loc-add" class="btn btn-secondary btn-sm" style="margin-top:8px;">+ İl Ekle</button>
-        </div>
-        <div class="field" id="loc-ilce-field" style="display:none;">
-          <label for="f-loc-ilce">İlçe Tercihi <span class="field-hint">(opsiyonel)</span></label>
-          <select id="f-loc-ilce" multiple size="5" style="min-height:120px;">
-          </select>
-        </div>
+      <!-- LOCATION MULTI-SELECT -->
+      <div class="field">
+        <label>Çalışmak İstediğin İller <span class="field-hint">· Birden fazla seçebilirsin</span></label>
+        <div class="ms-container" id="ms-city"></div>
       </div>
-      <div id="selected-locations-display" style="margin-top:12px;"></div>
+
+      <div class="field" id="district-field" style="display:none;margin-top:16px;">
+        <label>İlçe Tercihleri <span class="field-hint">(opsiyonel)</span></label>
+        <div class="ms-container" id="ms-district"></div>
+      </div>
+
+      <div id="selected-locations-display" style="margin-top:16px;"></div>
 
       <hr class="section-divider">
 

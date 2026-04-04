@@ -69,8 +69,8 @@ function reapplyDynamicFields() {
     if (wp.notice_period) setVal('f-ihbar', wp.notice_period);
   }
 
-  // Step 5 location display (rendered by initStep5)
-  if (typeof renderSelectedLocations === 'function') renderSelectedLocations();
+  // Step 5 location display — re-init multi-select to sync checkboxes/chips
+  if (typeof initStep5 === 'function') initStep5();
 }
 
 // ── Career goal prefill ───────────────────────────
