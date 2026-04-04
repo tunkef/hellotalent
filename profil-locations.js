@@ -60,7 +60,11 @@ function _buildCityDropdown() {
   search.placeholder = 'İl ara...';
   search.setAttribute('autocomplete', 'off');
   searchWrap.appendChild(search);
-  searchWrap.addEventListener('click', function() { dd.style.display = ''; search.focus(); });
+  searchWrap.addEventListener('click', function() {
+    var _dd = container.querySelector('.ms-dropdown');
+    if (_dd) _dd.style.display = '';
+    search.focus();
+  });
   container.appendChild(searchWrap);
 
   _allCitiesSorted.forEach(function(city) {
@@ -93,15 +97,21 @@ function _buildCityDropdown() {
   // Search filter — use keyup instead of input for broader compatibility
   function _filterCityList() {
     var q = trLower(search.value.trim());
-    var items = dd.querySelectorAll('.ms-item');
-    var visibleCount = 0;
+    var _dd = container.querySelector('.ms-dropdown');
+    if (!_dd) return;
+    var items = _dd.querySelectorAll('.ms-item');
     for (var i = 0; i < items.length; i++) {
       var span = items[i].querySelector('span');
       if (!span) continue;
       var text = trLower(span.textContent);
       var show = !q || text.indexOf(q) !== -1;
-      items[i].style.display = show ? '' : 'none';
-      if (show) visibleCount++;
+      if (show) {
+        items[i].removeAttribute('hidden');
+        items[i].style.cssText = '';
+      } else {
+        items[i].setAttribute('hidden', '');
+        items[i].style.cssText = 'display:none !important';
+      }
     }
   }
   search.addEventListener('input', _filterCityList);
@@ -109,15 +119,21 @@ function _buildCityDropdown() {
   search.addEventListener('paste', function() { setTimeout(_filterCityList, 50); });
 
   // Also open dropdown when typing
-  search.addEventListener('focus', function() { dd.style.display = ''; });
+  search.addEventListener('focus', function() {
+    var _dd = container.querySelector('.ms-dropdown');
+    if (_dd) _dd.style.display = '';
+  });
 
   // Close on outside click
   document.addEventListener('click', function(e) {
     if (!container.contains(e.target)) {
-      dd.style.display = 'none';
-      search.value = '';
-      var items = dd.querySelectorAll('.ms-item');
-      for (var i = 0; i < items.length; i++) items[i].style.display = '';
+      var _dd = container.querySelector('.ms-dropdown');
+      if (_dd) {
+        _dd.style.display = 'none';
+        search.value = '';
+        var items = _dd.querySelectorAll('.ms-item');
+        for (var i = 0; i < items.length; i++) { items[i].removeAttribute('hidden'); items[i].style.cssText = ''; }
+      }
     }
   });
 }
@@ -141,45 +157,70 @@ function _buildDistrictDropdown() {
   search.placeholder = 'İlçe ara...';
   search.setAttribute('autocomplete', 'off');
   searchWrap.appendChild(search);
-  searchWrap.addEventListener('click', function() { dd.style.display = ''; search.focus(); });
+  searchWrap.addEventListener('click', function() {
+    var _dd = container.querySelector('.ms-dropdown');
+    if (_dd) _dd.style.display = '';
+    search.focus();
+  });
   container.appendChild(searchWrap);
   container.appendChild(dd);
 
   // Search filter — keyup + input + paste
-  function _filterDistrictList() {
+  var _filterDistrictList = function() {
     var q = trLower(search.value.trim());
-    var items = dd.querySelectorAll('.ms-item');
+    var _dd = container.querySelector('.ms-dropdown');
+    if (!_dd) return;
+    var items = _dd.querySelectorAll('.ms-item');
     for (var i = 0; i < items.length; i++) {
       var span = items[i].querySelector('span');
       if (!span) continue;
       var text = trLower(span.textContent);
-      items[i].style.display = (!q || text.indexOf(q) !== -1) ? '' : 'none';
+      var show = !q || text.indexOf(q) !== -1;
+      if (show) {
+        items[i].removeAttribute('hidden');
+        items[i].style.cssText = '';
+      } else {
+        items[i].setAttribute('hidden', '');
+        items[i].style.cssText = 'display:none !important';
+      }
     }
-    var headers = dd.querySelectorAll('.ms-group-header');
+    var headers = _dd.querySelectorAll('.ms-group-header');
     for (var h = 0; h < headers.length; h++) {
       var next = headers[h].nextElementSibling;
       var hasVisible = false;
       while (next && !next.classList.contains('ms-group-header')) {
-        if (next.style.display !== 'none') hasVisible = true;
+        if (!next.hasAttribute('hidden')) hasVisible = true;
         next = next.nextElementSibling;
       }
-      headers[h].style.display = (hasVisible || !q) ? '' : 'none';
+      if (hasVisible || !q) {
+        headers[h].removeAttribute('hidden');
+        headers[h].style.cssText = '';
+      } else {
+        headers[h].setAttribute('hidden', '');
+        headers[h].style.cssText = 'display:none !important';
+      }
     }
   }
   search.addEventListener('input', _filterDistrictList);
   search.addEventListener('keyup', _filterDistrictList);
   search.addEventListener('paste', function() { setTimeout(_filterDistrictList, 50); });
-  search.addEventListener('focus', function() { dd.style.display = ''; });
+  search.addEventListener('focus', function() {
+    var _dd = container.querySelector('.ms-dropdown');
+    if (_dd) _dd.style.display = '';
+  });
 
   // Close on outside click
   document.addEventListener('click', function(e) {
     if (!container.contains(e.target)) {
-      dd.style.display = 'none';
-      search.value = '';
-      var items = dd.querySelectorAll('.ms-item');
-      for (var i = 0; i < items.length; i++) items[i].style.display = '';
-      var headers = dd.querySelectorAll('.ms-group-header');
-      for (var h = 0; h < headers.length; h++) headers[h].style.display = '';
+      var _dd = container.querySelector('.ms-dropdown');
+      if (_dd) {
+        _dd.style.display = 'none';
+        search.value = '';
+        var items = _dd.querySelectorAll('.ms-item');
+        for (var i = 0; i < items.length; i++) { items[i].removeAttribute('hidden'); items[i].style.cssText = ''; }
+        var headers = _dd.querySelectorAll('.ms-group-header');
+        for (var h = 0; h < headers.length; h++) { headers[h].removeAttribute('hidden'); headers[h].style.cssText = ''; }
+      }
     }
   });
 
