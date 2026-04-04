@@ -418,10 +418,12 @@ function calculateProfileScore() {
     var takimWrap = document.getElementById(expCards[0].id + '-takim-wrap');
     var takimVisible = takimWrap && takimWrap.style.display !== 'none';
     if (takimVisible) {
-      if (val(firstId + 'takim')) score += 4;
+      if (val(firstId + 'takim')) score += 2;
     } else {
-      score += 4; // Field not relevant for this department — no penalty
+      score += 2; // Field not relevant for this department — no penalty
     }
+    // Description (iş tanımı) — high-value field for profile quality
+    if (val(firstId + 'desc')) score += 2;
   }
 
   // ── C) Education & Language — 15 points ──
@@ -503,3 +505,36 @@ function updateCompletionUI() {
   // Merkez completion/score now shown per-section in bento rings (no separate stat row).
   updateScoreUI();
 }
+
+// ═══════════════════════════════════════════════════
+// MINI ROZET GALERİSİ — Reusable badge grid renderer
+// Called by profil-genel.js Mini Eğitim Dashboard card.
+// gallery: array of {id, slug, title, description, icon_key, badge_tier, earned}
+// container: DOM element to render into (already in DOM)
+// Safe: BADGE_ICONS is a hardcoded SVG constant map — no user data via innerHTML
+// ═══════════════════════════════════════════════════
+
+window._htRenderMiniRozetGalery = function(container, gallery) {
+  if (!container || !gallery || !gallery.length) return;
+  while (container.firstChild) container.removeChild(container.firstChild);
+
+  /* BADGE_ICONS is global from profil-studio.js (loaded later, called at runtime) */
+  var iconMap = (typeof BADGE_ICONS !== 'undefined' ? BADGE_ICONS : {}); // eslint-disable-line no-undef
+
+  for (var i = 0; i < gallery.length; i++) {
+    var b = gallery[i];
+    var tierCls = b.badge_tier === 'advanced' ? ' gh-edu-badge--advanced'
+                : b.badge_tier === 'milestone' ? ' gh-edu-badge--milestone' : '';
+    var stateCls = b.earned ? (' gh-edu-badge--earned' + tierCls) : ' gh-edu-badge--locked';
+
+    var chip = document.createElement('div');
+    chip.className = 'gh-edu-badge' + stateCls;
+    chip.title = b.earned ? b.title : (b.title + ' (Kilitli)');
+
+    /* Safe: iconMap values are hardcoded SVG constants from BADGE_ICONS — no user data */
+    var svgStr = iconMap[b.icon_key] || iconMap['star'] || '';
+    if (svgStr) chip.innerHTML = svgStr;
+
+    container.appendChild(chip);
+  }
+};

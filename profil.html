@@ -719,18 +719,17 @@ if (window.Sentry) {
       <!-- CINSIYET + DOGUM YILI -->
       <div class="field-row">
         <div class="field">
-          <label for="f-cinsiyet">Cinsiyet</label>
+          <label for="f-cinsiyet">Cinsiyet <span class="field-hint">(opsiyonel)</span></label>
           <select id="f-cinsiyet">
-            <option value="">Seç...</option>
+            <option value="">Belirtmek istemiyorum</option>
             <option value="Kadın">Kadın</option>
             <option value="Erkek">Erkek</option>
-            <option value="Belirtmek istemiyorum">Belirtmek istemiyorum</option>
           </select>
         </div>
         <div class="field">
-          <label for="f-dogumyili">Doğum Yılı</label>
+          <label for="f-dogumyili">Doğum Yılı <span class="field-hint">(opsiyonel)</span></label>
           <select id="f-dogumyili">
-            <option value="">Seç...</option>
+            <option value="">Belirtmek istemiyorum</option>
           </select>
         </div>
       </div>
@@ -754,18 +753,17 @@ if (window.Sentry) {
       <!-- ENGEL DURUMU -->
       <div class="field-row">
         <div class="field">
-          <label for="f-engel">Engel Durumu</label>
+          <label for="f-engel">Engel Durumu <span class="field-hint">(opsiyonel)</span></label>
           <select id="f-engel">
-            <option value="">Seç...</option>
+            <option value="">Belirtmek istemiyorum</option>
             <option value="Yok">Yok</option>
             <option value="Var">Var</option>
-            <option value="Belirtmek istemiyorum">Belirtmek istemiyorum</option>
           </select>
         </div>
         <div class="field" id="field-askerlik" style="display:none;">
-          <label for="f-askerlik">Askerlik Durumu</label>
+          <label for="f-askerlik">Askerlik Durumu <span class="field-hint">(opsiyonel)</span></label>
           <select id="f-askerlik">
-            <option value="">Seç...</option>
+            <option value="">Belirtmek istemiyorum</option>
             <option value="Yapildi">Yapıldı</option>
             <option value="Muaf">Muaf</option>
             <option value="Tecilli">Tecilli</option>
@@ -867,6 +865,21 @@ if (window.Sentry) {
       <!-- SEGMENT TERCIHLERI -->
       <div class="card-title mb-12">Segment Tercihleri</div>
       <div class="chips-row" id="segment-chips"></div>
+
+      <hr class="section-divider">
+
+      <!-- SEYAHAT ISTEGI (Apple benchmark AKS-3) -->
+      <div class="field-row">
+        <div class="field">
+          <label for="f-seyahat">Seyahat İsteği <span class="field-hint">(opsiyonel)</span></label>
+          <select id="f-seyahat">
+            <option value="">Belirtmek istemiyorum</option>
+            <option value="evet">Evet, seyahat edebilirim</option>
+            <option value="kismen">Kısmen (sınırlı seyahat)</option>
+            <option value="hayir">Hayır, seyahat edemem</option>
+          </select>
+        </div>
+      </div>
 
       <hr class="section-divider">
 

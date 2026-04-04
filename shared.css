@@ -313,8 +313,14 @@ body {
   text-decoration: none; margin-bottom: 10px; transition: color 0.2s; font-weight: 500;
 }
 .footer-link:hover { color: white; }
+.footer-dei {
+  max-width: 1160px; margin: 32px auto 0;
+  font-size: var(--text-sm); color: rgba(255,255,255,0.45);
+  line-height: 1.6; text-align: center;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
 .footer-bottom {
-  max-width: 1160px; margin: 40px auto 0;
+  max-width: 1160px; margin: 24px auto 0;
   padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.1);
   display: flex; align-items: center; justify-content: space-between;
   gap: 16px; flex-wrap: wrap;

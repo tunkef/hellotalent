@@ -564,6 +564,25 @@ function addExperienceCard(data) {
   rowDetail.appendChild(takimWrap);
   card.appendChild(rowDetail);
 
+  // İş Tanımı textarea (Apple benchmark AKS-1)
+  var descWrap = document.createElement('div');
+  descWrap.className = 'field';
+  descWrap.style.marginTop = '4px';
+  var descLabel = document.createElement('label');
+  descLabel.htmlFor = cardId + '-desc';
+  descLabel.innerHTML = 'İş Tanımı <span class="field-hint">(opsiyonel)</span>';
+  var descTa = document.createElement('textarea');
+  descTa.id = cardId + '-desc';
+  descTa.className = 'form-input';
+  descTa.placeholder = 'Görev ve sorumluluklarınızı kısaca anlatın: ekip büyüklüğü, KPI hedefleri, özel projeler...';
+  descTa.rows = 3;
+  descTa.style.resize = 'vertical';
+  descTa.style.minHeight = '60px';
+  if (d.description) descTa.value = d.description;
+  descWrap.appendChild(descLabel);
+  descWrap.appendChild(descTa);
+  card.appendChild(descWrap);
+
   // Toggle bitis fields and ayrilma based on checkbox
   cb.addEventListener('change', function() {
     var bitisFields = card.querySelectorAll('.bitis-field');
@@ -922,6 +941,7 @@ function collectExperiences() {
       devam_ediyor: document.getElementById(prefix + 'devam') ? document.getElementById(prefix + 'devam').checked : false,
       ayrilma_nedeni: nullIfEmpty(val(prefix + 'ayrilma')),
       basari_ozeti: null,     // Decision 5: removed from wizard, always null
+      description: nullIfEmpty(val(prefix + 'desc')),
       company_id: resolvedCompanyId ? parseInt(resolvedCompanyId) : null,
       brand_id: resolvedBrandId ? parseInt(resolvedBrandId) : null
     });
@@ -1391,7 +1411,8 @@ function collectWorkPrefs() {
     calisma_tipleri: selectedCalismaTipleri,
     tercih_segmentler: selectedSegmentler,
     career_goal: null,
-    career_type: ct
+    career_type: ct,
+    travel_willingness: nullIfEmpty(val('f-seyahat'))
   };
 }
 
@@ -1605,7 +1626,8 @@ async function saveProfileRPC(onComplete) {
         calisma_tipleri: p_work_prefs.calisma_tipleri || [],
         tercih_segmentler: p_work_prefs.segmentler || [],
         career_goal: p_work_prefs.career_goal,
-        career_type: p_work_prefs.career_type
+        career_type: p_work_prefs.career_type,
+        travel_willingness: p_work_prefs.travel_willingness || null
       } : null;
       _loadedDBData.brand_interests = p_brand_interests.map(function(b) { return b.marka; });
       _loadedDBData.locations = p_locations.slice();
@@ -1792,6 +1814,7 @@ async function loadProfileFromDB() {
         bitis_yil: e.bitis_yil ? String(e.bitis_yil) : '',
         devam_ediyor: e.devam_ediyor, ayrilma_nedeni: e.ayrilma_nedeni,
         basari_ozeti: e.basari_ozeti,
+        description: e.description || null,
         brand_id: e.brand_id || null,
         company_id: e.company_id || null
       };
@@ -1813,7 +1836,8 @@ async function loadProfileFromDB() {
       calisma_tipleri: wpRes.data.calisma_tipleri || [],
       tercih_segmentler: wpRes.data.segmentler || [],
       career_goal: wpRes.data.career_goal,
-      career_type: wpRes.data.career_type
+      career_type: wpRes.data.career_type,
+      travel_willingness: wpRes.data.travel_willingness || null
     } : null,
     brand_interests: (biRes.data || []).map(function(b) { return b.marka; }),
     locations: (locRes.data || []).map(function(loc) {

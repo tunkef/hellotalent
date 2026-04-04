@@ -136,6 +136,7 @@
     '      </div>',
     '    </div>',
     '  </div>',
+    '  <div class="footer-dei">HelloTalent\'ta herkes eşittir. Perakende sektörünün gücü farklılıklarımızdan gelir. Tüm adaylara adil ve eşit bir şekilde davranmayı taahhüt ediyoruz.</div>',
     '  <div class="footer-bottom">',
     '    <span class="footer-copyright">© 2026 hellotalent.ai — Tüm hakları saklıdır.</span>',
     '    <div class="footer-legal">',
