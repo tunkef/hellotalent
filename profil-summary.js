@@ -56,6 +56,7 @@ function updateDashboardSummary(profile, experiences) {
 // ═══════════════════════════════════════════════════
 
 function updateMerkezCards() {
+  if (!_loadedDBData || !_loadedDBData.profile) return;
   // ── Card 1: Kişisel Bilgiler ──
   var name = val('f-adsoyad');
   var city = val('f-adresil');

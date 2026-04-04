@@ -78,6 +78,45 @@ function openProfilePreview() {
   }
   html += '</div></div></div>';
 
+  // ── İLETİŞİM BAR (horizontal, right after hero) ──
+  var _email = (typeof currentUser !== 'undefined' && currentUser && currentUser.email) ? currentUser.email : '';
+  var _phone = p.telefon || '';
+  if (_email || _phone) {
+    html += '<div style="display:flex;align-items:center;gap:16px;padding:10px 16px;background:var(--bg-elevated,#F7F6F4);border-radius:10px;margin:4px 0 8px;">';
+    if (showPersonalInfo) {
+      if (_email) {
+        html += '<div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text);">';
+        html += '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>';
+        html += _escHtml(_email);
+        html += '</div>';
+      }
+      if (_phone) {
+        html += '<div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text);">';
+        html += '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.81.36 1.6.69 2.36a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.76.33 1.55.56 2.36.69A2 2 0 0 1 22 16.92z"/></svg>';
+        html += _escHtml(_phone);
+        html += '</div>';
+      }
+    } else {
+      var _maskedEmail = '';
+      if (_email) { var _parts = _email.split('@'); if (_parts.length === 2) _maskedEmail = _parts[0].charAt(0) + '****@' + _parts[1]; }
+      var _maskedPhone = '';
+      if (_phone && _phone.length >= 6) _maskedPhone = _phone.substring(0, 3) + ' *** ** ' + _phone.substring(_phone.length - 2);
+      if (_maskedEmail) {
+        html += '<div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);">';
+        html += '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>';
+        html += _escHtml(_maskedEmail);
+        html += '</div>';
+      }
+      if (_maskedPhone) {
+        html += '<div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);">';
+        html += '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.81.36 1.6.69 2.36a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.76.33 1.55.56 2.36.69A2 2 0 0 1 22 16.92z"/></svg>';
+        html += _escHtml(_maskedPhone);
+        html += '</div>';
+      }
+    }
+    html += '</div>';
+  }
+
   // ── BIO ──
   var bioText = val ? val('f-bio') : '';
   if (bioText) {
@@ -241,47 +280,6 @@ function openProfilePreview() {
     html += '</div>';
   } else {
     html += '<div class="pp-empty">CV y\u00FCklenmemi\u015F</div>';
-  }
-  html += '</div>';
-
-  html += '<div class="pp-card pp-contact-card">';
-  html += '<div class="pp-card-title">\u0130LET\u0130\u015E\u0130M</div>';
-  var email = (typeof currentUser !== 'undefined' && currentUser && currentUser.email) ? currentUser.email : '';
-  var phone = p.telefon || '';
-
-  if (showPersonalInfo) {
-    // Beni \u00D6ner ON \u2014 show real contact info (as employer would see)
-    html += '<div class="pp-contact-row">';
-    html += '<div class="pp-contact-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>';
-    html += '<div class="pp-contact-text">' + _escHtml(email || '\u2014') + '</div>';
-    html += '</div>';
-    html += '<div class="pp-contact-row">';
-    html += '<div class="pp-contact-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.81.36 1.6.69 2.36a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.76.33 1.55.56 2.36.69A2 2 0 0 1 22 16.92z"/></svg></div>';
-    html += '<div class="pp-contact-text">' + _escHtml(phone || '\u2014') + '</div>';
-    html += '</div>';
-    html += '<div class="pp-contact-hint" style="color:var(--verm);">\u0130\u015Fverenler ileti\u015Fim bilgilerini g\u00F6rebilir</div>';
-  } else {
-    // Beni \u00D6ner OFF \u2014 masked contact
-    var maskedEmail = '';
-    if (email) {
-      var parts = email.split('@');
-      if (parts.length === 2) maskedEmail = parts[0].charAt(0) + '****@' + parts[1];
-    }
-    html += '<div class="pp-contact-row">';
-    html += '<div class="pp-contact-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>';
-    html += '<div class="pp-contact-text">' + _escHtml(maskedEmail || '\u2014') + '</div>';
-    html += '<span class="pp-contact-lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Gizli</span>';
-    html += '</div>';
-    var maskedPhone = '';
-    if (phone && phone.length >= 6) {
-      maskedPhone = phone.substring(0, 3) + ' *** ** ' + phone.substring(phone.length - 2);
-    }
-    html += '<div class="pp-contact-row">';
-    html += '<div class="pp-contact-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.81.36 1.6.69 2.36a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.76.33 1.55.56 2.36.69A2 2 0 0 1 22 16.92z"/></svg></div>';
-    html += '<div class="pp-contact-text">' + _escHtml(maskedPhone || '\u2014') + '</div>';
-    html += '<span class="pp-contact-lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Gizli</span>';
-    html += '</div>';
-    html += '<div class="pp-contact-hint">Beni \u00D6ner a\u00E7\u0131kken i\u015Fverenler bilgilerini g\u00F6rebilir</div>';
   }
   html += '</div>';
 

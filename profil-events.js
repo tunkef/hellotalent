@@ -1,4 +1,4 @@
-/* global _htCloseAllPopups:writable, _htPopulateAvatarDropdown:writable, _htRunStepInits, applyDraft, clearDraft, closeProfilePreview, closeTgToast, closeMobileSidebar, generateCV, ht_track, initThemeFromStorage, loadDraft, openProfilePreview, pendingPanelSwitch, renderSelectedCities, returnToPanel, saveProfileRPC, supabase, switchPanel, titleCaseTR, toggleMobileSidebar, wizBack, wizGoTo, wizNext, wizStep, wizardDirty */
+/* global _htCloseAllPopups:writable, _htPopulateAvatarDropdown:writable, _htRunStepInits, applyDraft, clearDraft, closeProfilePreview, closeTgToast, closeMobileSidebar, generateCV, ht_track, initThemeFromStorage, loadDraft, openProfilePreview, pendingPanelSwitch, renderSelectedLocations, returnToPanel, saveProfileRPC, supabase, switchPanel, titleCaseTR, toggleMobileSidebar, wizBack, wizGoTo, wizNext, wizStep, wizardDirty */
 // ═══════════════════════════════════════════════════
 // PROFIL EVENTS — DOMContentLoaded event wiring, page glue
 // Extracted from profil.html inline scripts.
@@ -459,7 +459,7 @@ function _htInitEvents() {
   var btnLokDone = document.getElementById('btn-lok-done');
   if (btnLokDone) btnLokDone.addEventListener('click', function() {
     document.getElementById('lok-modal-overlay').classList.remove('show');
-    renderSelectedCities();
+    if (typeof renderSelectedLocations === 'function') renderSelectedLocations();
   });
   var lokOverlay = document.getElementById('lok-modal-overlay');
   if (lokOverlay) lokOverlay.addEventListener('click', function(e) {

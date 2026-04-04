@@ -601,9 +601,15 @@ function addExperienceCard(data) {
   var descTransBtn = document.createElement('button');
   descTransBtn.type = 'button';
   descTransBtn.textContent = '\uD83E\uDD16 AI ile T\u00FCrk\u00E7eye \u00C7evir';
-  descTransBtn.style.cssText = 'border:none;background:none;color:var(--muted);font-size:12px;cursor:pointer;padding:4px 8px;border-radius:6px;transition:background .15s;';
+  descTransBtn.style.cssText = 'border:none;background:none;color:var(--muted);font-size:12px;cursor:pointer;padding:4px 8px;border-radius:6px;transition:background .15s;display:none;';
   descTransBtn.addEventListener('mouseenter', function() { descTransBtn.style.background = 'rgba(0,0,0,0.04)'; });
   descTransBtn.addEventListener('mouseleave', function() { descTransBtn.style.background = 'none'; });
+  // Show translate button only when English text detected
+  var _engPattern = /\b(the|and|with|for|team|management|experience|store|sales|customer|retail|manager|lead|drive|deliver)\b/i;
+  descTa.addEventListener('input', function() {
+    var txt = descTa.value || '';
+    descTransBtn.style.display = (_engPattern.test(txt) && txt.length > 20) ? '' : 'none';
+  });
   descTransBtn.addEventListener('click', function() {
     if (!descTa.value.trim()) {
       if (typeof window.showToast === 'function') window.showToast('\u00D6nce \u0130ngilizce metni yap\u0131\u015Ft\u0131r\u0131n', 'warn');

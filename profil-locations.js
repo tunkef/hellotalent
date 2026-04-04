@@ -1,10 +1,9 @@
 /* global ILCELER, TUR_ILLER, trLower, markWizardDirty */
 // ═══════════════════════════════════════════════════
-// profil-locations.js — Apple-style Search→Chip Location Picker
-// Search input with autocomplete → chip per city → expand for districts.
+// profil-locations.js — Dropdown-based Location Picker
+// Simple dropdown: select il → optionally select ilçes → add → chips below.
 // ═══════════════════════════════════════════════════
 
-var POPULAR_CITIES = ['İstanbul', 'Ankara', 'İzmir', 'Bursa', 'Antalya', 'Adana', 'Konya', 'Gaziantep', 'Mersin', 'Kayseri'];
 var selectedLocations = {}; // { cityName: [district1, district2, ...] }
 
 // Build flat sorted city list from TUR_ILLER
@@ -18,193 +17,122 @@ var _allCitiesSorted = [];
 })();
 
 function initStep5() {
-  // ── Search autocomplete ──
-  var searchInput = document.getElementById('f-city-search');
-  var sugList = document.getElementById('city-search-sug');
-  if (searchInput && sugList) {
-    searchInput.addEventListener('input', function() {
-      var q = trLower(searchInput.value);
-      sugList.innerHTML = '';
-      if (!q || q.length < 1) { sugList.style.display = 'none'; return; }
+  var ilSelect = document.getElementById('f-loc-il');
+  var ilceField = document.getElementById('loc-ilce-field');
+  var ilceSelect = document.getElementById('f-loc-ilce');
+  var addBtn = document.getElementById('btn-loc-add');
 
-      var matches = _allCitiesSorted.filter(function(city) {
-        return trLower(city).indexOf(q) !== -1 && !selectedLocations[city];
-      }).slice(0, 8);
+  if (!ilSelect) return;
 
-      if (matches.length === 0) {
-        sugList.style.display = 'none';
+  // Populate il dropdown alphabetically
+  _allCitiesSorted.forEach(function(city) {
+    var opt = document.createElement('option');
+    opt.value = city;
+    opt.textContent = city;
+    ilSelect.appendChild(opt);
+  });
+
+  // When il selected, populate ilçe multi-select
+  ilSelect.addEventListener('change', function() {
+    var city = ilSelect.value;
+    if (!city) {
+      if (ilceField) ilceField.style.display = 'none';
+      return;
+    }
+    var districts = ILCELER[city];
+    if (ilceSelect) {
+      ilceSelect.innerHTML = '';
+      if (districts && districts.length > 0) {
+        var sorted = districts.slice().sort(function(a, b) {
+          return trLower(a).localeCompare(trLower(b), 'tr');
+        });
+        sorted.forEach(function(d) {
+          var opt = document.createElement('option');
+          opt.value = d;
+          opt.textContent = d;
+          ilceSelect.appendChild(opt);
+        });
+        if (ilceField) ilceField.style.display = '';
+      } else {
+        if (ilceField) ilceField.style.display = 'none';
+      }
+    }
+  });
+
+  // "İl Ekle" button
+  if (addBtn) {
+    addBtn.addEventListener('click', function() {
+      var city = ilSelect.value;
+      if (!city) return;
+      if (selectedLocations[city]) {
+        // City already added — just reset
+        ilSelect.value = '';
+        if (ilceField) ilceField.style.display = 'none';
         return;
       }
 
-      matches.forEach(function(city) {
-        var item = document.createElement('div');
-        item.className = 'autocomplete-item';
-        item.textContent = city;
-        item.addEventListener('mousedown', function(e) {
-          e.preventDefault();
-          addCity(city);
-          searchInput.value = '';
-          sugList.style.display = 'none';
-          searchInput.focus();
-        });
-        sugList.appendChild(item);
-      });
-      sugList.style.display = '';
-    });
-
-    searchInput.addEventListener('blur', function() {
-      setTimeout(function() { sugList.style.display = 'none'; }, 200);
-    });
-
-    searchInput.addEventListener('focus', function() {
-      if (searchInput.value.length >= 1) searchInput.dispatchEvent(new Event('input'));
-    });
-  }
-
-  // ── Popular city chips (quick pick) ──
-  var popContainer = document.getElementById('popular-city-chips');
-  if (popContainer) {
-    POPULAR_CITIES.forEach(function(city) {
-      var chip = document.createElement('button');
-      chip.className = 'chip';
-      chip.type = 'button';
-      chip.textContent = city;
-      chip.addEventListener('click', function() {
-        if (selectedLocations[city]) {
-          delete selectedLocations[city];
-        } else {
-          addCity(city);
+      // Collect selected ilçes
+      var ilceler = [];
+      if (ilceSelect) {
+        var opts = ilceSelect.options;
+        for (var i = 0; i < opts.length; i++) {
+          if (opts[i].selected) ilceler.push(opts[i].value);
         }
-        updateCityChipStates();
-      });
-      popContainer.appendChild(chip);
+      }
+
+      selectedLocations[city] = ilceler;
+      renderSelectedLocations();
+
+      // Reset dropdowns
+      ilSelect.value = '';
+      if (ilceSelect) ilceSelect.innerHTML = '';
+      if (ilceField) ilceField.style.display = 'none';
+
+      if (typeof markWizardDirty === 'function') markWizardDirty();
     });
   }
+
+  // Render any pre-existing selections (from DB load)
+  renderSelectedLocations();
 }
 
-function addCity(city) {
-  if (selectedLocations[city]) return;
-  selectedLocations[city] = [];
-  renderSelectedCities();
-  updateCityChipStates();
-  if (typeof markWizardDirty === 'function') markWizardDirty();
-}
-
-function updateCityChipStates() {
-  // Update popular chips
-  var popChips = document.querySelectorAll('#popular-city-chips .chip');
-  popChips.forEach(function(chip) {
-    chip.classList.toggle('selected', !!selectedLocations[chip.textContent]);
-  });
-  // Update count badge
-  var countBadge = document.getElementById('loc-count-badge');
-  var count = Object.keys(selectedLocations).length;
-  if (countBadge) countBadge.textContent = count > 0 ? '(' + count + ' şehir)' : '';
-}
-
-function renderSelectedCities() {
-  var container = document.getElementById('selected-cities-container');
+function renderSelectedLocations() {
+  var container = document.getElementById('selected-locations-display');
   if (!container) return;
-  container.textContent = '';
+  container.innerHTML = '';
 
   var cities = Object.keys(selectedLocations);
-  if (cities.length === 0) {
-    var msg = document.createElement('p');
-    msg.id = 'no-city-msg';
-    msg.style.cssText = 'font-size:13px;color:var(--muted);';
-    msg.textContent = 'Henüz şehir seçilmedi. Yukarıdan şehir arayın veya popüler şehirlerden seçin.';
-    container.appendChild(msg);
-    updateCityChipStates();
-    return;
-  }
+  if (cities.length === 0) return;
 
   cities.sort(function(a, b) { return trLower(a).localeCompare(trLower(b), 'tr'); });
 
   cities.forEach(function(city) {
-    var card = document.createElement('div');
-    card.className = 'city-card';
+    var chip = document.createElement('span');
+    chip.style.cssText = 'display:inline-flex;align-items:center;gap:6px;padding:6px 12px;background:var(--bg-elevated,#F7F6F4);border:1px solid var(--border,#E5E3DF);border-radius:8px;font-size:13px;font-family:Plus Jakarta Sans,sans-serif;margin:4px 4px 4px 0;';
 
-    var header = document.createElement('div');
-    header.className = 'city-card-header';
-    var name = document.createElement('div');
-    name.className = 'city-card-name';
-    name.textContent = city;
-    var del = document.createElement('button');
-    del.className = 'city-card-del';
-    del.type = 'button';
-    del.textContent = '\u00D7';
-    del.addEventListener('click', function() {
-      delete selectedLocations[city];
-      renderSelectedCities();
-      updateCityChipStates();
-      if (typeof markWizardDirty === 'function') markWizardDirty();
-    });
-    header.appendChild(name);
-    header.appendChild(del);
-    card.appendChild(header);
-
-    // Districts — collapsible (Apple style: collapsed by default)
-    var districts = ILCELER[city];
-    if (districts && districts.length > 0) {
-      var selectedCount = (selectedLocations[city] || []).length;
-      var toggleBtn = document.createElement('button');
-      toggleBtn.type = 'button';
-      toggleBtn.style.cssText = 'background:none;border:none;font-family:Plus Jakarta Sans,sans-serif;font-size:12px;color:var(--verm);cursor:pointer;padding:4px 0;display:flex;align-items:center;gap:4px;';
-      toggleBtn.innerHTML = (selectedCount > 0 ? selectedCount + ' ilçe seçili · ' : '') + 'İlçe seç <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>';
-
-      var distContainer = document.createElement('div');
-      distContainer.className = 'city-card-districts';
-      distContainer.style.display = 'none';
-
-      toggleBtn.addEventListener('click', function() {
-        var open = distContainer.style.display === 'none';
-        distContainer.style.display = open ? '' : 'none';
-        var svg = toggleBtn.querySelector('svg');
-        if (svg) svg.style.transform = open ? 'rotate(180deg)' : '';
-      });
-
-      var sortedDistricts = districts.slice().sort(function(a, b) {
-        return trLower(a).localeCompare(trLower(b), 'tr');
-      });
-      sortedDistricts.forEach(function(d) {
-        var dChip = document.createElement('button');
-        dChip.className = 'district-chip';
-        dChip.type = 'button';
-        dChip.textContent = d;
-        if (selectedLocations[city] && selectedLocations[city].indexOf(d) !== -1) {
-          dChip.classList.add('selected');
-        }
-        dChip.addEventListener('click', function() {
-          dChip.classList.toggle('selected');
-          if (!selectedLocations[city]) selectedLocations[city] = [];
-          if (dChip.classList.contains('selected')) {
-            selectedLocations[city].push(d);
-          } else {
-            selectedLocations[city] = selectedLocations[city].filter(function(x) { return x !== d; });
-          }
-          // Update toggle label
-          var cnt = selectedLocations[city].length;
-          toggleBtn.innerHTML = (cnt > 0 ? cnt + ' ilçe seçili · ' : '') + 'İlçe seç <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="transform:rotate(180deg)"><polyline points="6 9 12 15 18 9"/></svg>';
-          if (typeof markWizardDirty === 'function') markWizardDirty();
-        });
-        distContainer.appendChild(dChip);
-      });
-
-      // Auto-expand if districts already selected
-      if (selectedCount > 0) {
-        distContainer.style.display = '';
-        var svg = toggleBtn.querySelector('svg');
-        if (svg) svg.style.transform = 'rotate(180deg)';
-      }
-
-      card.appendChild(toggleBtn);
-      card.appendChild(distContainer);
+    var ilceler = selectedLocations[city] || [];
+    var text = city;
+    if (ilceler.length > 0) {
+      text += ' (' + ilceler.join(', ') + ')';
     }
 
-    container.appendChild(card);
-  });
+    var textSpan = document.createElement('span');
+    textSpan.textContent = text;
+    chip.appendChild(textSpan);
 
-  updateCityChipStates();
+    var removeBtn = document.createElement('button');
+    removeBtn.type = 'button';
+    removeBtn.textContent = '\u00D7';
+    removeBtn.style.cssText = 'border:none;background:none;font-size:16px;cursor:pointer;color:var(--muted);padding:0 2px;line-height:1;';
+    removeBtn.addEventListener('click', function() {
+      delete selectedLocations[city];
+      renderSelectedLocations();
+      if (typeof markWizardDirty === 'function') markWizardDirty();
+    });
+    chip.appendChild(removeBtn);
+
+    container.appendChild(chip);
+  });
 }
 
 function collectLocations() {

@@ -786,6 +786,53 @@ if (window.Sentry) {
     <div class="wiz-step-desc">İş deneyimlerini ekle. Her deneyim, seni doğru markalarla eşleştirmemize yardımcı olur.</div>
     <div id="step2-content">
 
+      <!-- BIO / HAKKIMDA -->
+      <div class="card-title mb-4">Hakkımda <span class="field-hint">· İşverenler seni tanısın, öne çık</span></div>
+      <p style="font-size:var(--text-sm);color:var(--muted);margin:0 0 10px;line-height:1.6;">Perakende kariyerindeki güçlü yanlarını 2-3 cümleyle özetle. İşverenler profil kartında bu metni görür.</p>
+      <textarea id="f-bio" class="form-input" rows="5" style="resize:vertical;min-height:120px;font-size:15px;line-height:1.7;padding:16px 18px;width:100%;" placeholder="Örnek: 8 yıldır lüks perakendede mağaza yönetimi yapıyorum. 30+ kişilik ekipleri yönettim, yıllık 15M TL ciro hedeflerini sürekli aştım. Ekip kurma, müşteri deneyimi ve visual merchandising konularında uzmanım."></textarea>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px;">
+        <button type="button" id="btn-bio-translate" style="border:none;background:none;color:var(--muted);font-size:12px;cursor:pointer;padding:4px 8px;border-radius:6px;transition:background .15s;display:none;" onmouseenter="this.style.background='rgba(0,0,0,0.04)'" onmouseleave="this.style.background='none'">🤖 AI ile Türkçeye Çevir</button>
+        <span id="bio-char-count" style="font-size:11px;color:var(--muted);">0 / 500</span>
+      </div>
+      <script>
+      (function(){
+        var btn = document.getElementById('btn-bio-translate');
+        if (!btn) return;
+        btn.addEventListener('click', function() {
+          var ta = document.getElementById('f-bio');
+          if (!ta || !ta.value.trim()) {
+            if (typeof window.showToast === 'function') window.showToast('Önce İngilizce metni yapıştırın', 'warn');
+            return;
+          }
+          var origText = btn.textContent;
+          btn.textContent = 'Çevriliyor...';
+          btn.disabled = true;
+          try {
+            var supa = typeof HT !== 'undefined' && HT.getSupa ? HT.getSupa() : (typeof supabase !== 'undefined' ? supabase : null);
+            if (!supa || !supa.functions) throw new Error('no supa');
+            supa.functions.invoke('translate-text', { body: { text: ta.value, target_lang: 'tr' } }).then(function(res) {
+              if (res.error || !res.data) throw new Error('translate failed');
+              var parsed = typeof res.data === 'string' ? JSON.parse(res.data) : res.data;
+              if (parsed.translated) { ta.value = parsed.translated; ta.dispatchEvent(new Event('input')); }
+              else { throw new Error('no translated field'); }
+              btn.textContent = origText;
+              btn.disabled = false;
+            }).catch(function() {
+              if (typeof window.showToast === 'function') window.showToast('Çeviri şu an kullanılamıyor, lütfen daha sonra tekrar deneyin', 'error');
+              btn.textContent = origText;
+              btn.disabled = false;
+            });
+          } catch(e) {
+            if (typeof window.showToast === 'function') window.showToast('Çeviri şu an kullanılamıyor, lütfen daha sonra tekrar deneyin', 'error');
+            btn.textContent = origText;
+            btn.disabled = false;
+          }
+        });
+      })();
+      </script>
+
+      <hr class="section-divider">
+
       <!-- NO EXPERIENCE TOGGLE -->
       <label class="cb-wrap">
         <input type="checkbox" id="cb-no-experience">
@@ -803,7 +850,7 @@ if (window.Sentry) {
 
   <!-- WIZARD STEP 3: Eğitim -->
   <div class="wiz-step" id="wiz-step-3" data-step="3">
-    <div class="wiz-step-title">Eğitim, Diller, Sertifikalar <span style="font-size:12px;font-weight:400;color:var(--muted);">(Opsiyonel)</span></div>
+    <div class="wiz-step-title">Eğitim, Diller, Sertifikalar <span style="font-size:12px;font-weight:400;color:var(--verm);">(En az 1 eğitim gerekli)</span></div>
     <div class="wiz-step-desc">Eğitim geçmişini, bildiği dilleri ve sertifikalarını ekle.</div>
     <div id="step3-content">
 
@@ -883,26 +930,22 @@ if (window.Sentry) {
     <div class="wiz-step-desc">Nerede ve nasıl çalışabileceğini belirt — işverenler seni daha doğru eşleştirsin.</div>
     <div id="step5-content">
 
-      <!-- SEARCH → CHIP (Apple style) -->
-      <div class="field" style="position:relative;">
-        <label for="f-city-search">Şehir Ara</label>
-        <input type="text" id="f-city-search" placeholder="Şehir adı yazın..." autocomplete="off">
-        <div class="autocomplete-list" id="city-search-sug"></div>
-      </div>
-
-      <!-- POPULAR CITIES (quick pick) -->
-      <div style="margin-top:12px;">
-        <div style="font-size:var(--text-sm);color:var(--muted);margin-bottom:8px;">Popüler:</div>
-        <div class="chips-row" id="popular-city-chips"></div>
-      </div>
-
-      <!-- SELECTED CITIES + DISTRICTS -->
-      <div style="margin-top:16px;">
-        <div class="card-title mb-12">Seçili Lokasyonlar <span id="loc-count-badge" style="font-size:var(--text-sm);font-weight:400;color:var(--muted);"></span></div>
-        <div id="selected-cities-container">
-          <p style="font-size:13px;color:var(--muted);" id="no-city-msg">Henüz şehir seçilmedi. Yukarıdan şehir arayın veya popüler şehirlerden seçin.</p>
+      <!-- LOCATION DROPDOWN SELECT -->
+      <div class="field-row">
+        <div class="field">
+          <label for="f-loc-il">Çalışmak İstediğin İl <span class="field-hint">· Birden fazla seçebilirsin</span></label>
+          <select id="f-loc-il">
+            <option value="">İl seç...</option>
+          </select>
+          <button type="button" id="btn-loc-add" class="btn btn-secondary btn-sm" style="margin-top:8px;">+ İl Ekle</button>
+        </div>
+        <div class="field" id="loc-ilce-field" style="display:none;">
+          <label for="f-loc-ilce">İlçe Tercihi <span class="field-hint">(opsiyonel)</span></label>
+          <select id="f-loc-ilce" multiple size="5" style="min-height:120px;">
+          </select>
         </div>
       </div>
+      <div id="selected-locations-display" style="margin-top:12px;"></div>
 
       <hr class="section-divider">
 
@@ -946,10 +989,10 @@ if (window.Sentry) {
     </div>
   </div>
 
-  <!-- WIZARD STEP 6: CV + Hakkımda -->
+  <!-- WIZARD STEP 6: CV -->
   <div class="wiz-step" id="wiz-step-6" data-step="6">
-    <div class="wiz-step-title">CV & Hakkımda</div>
-    <div class="wiz-step-desc">Doldurduğun bilgiler işverenle eşleşmeni güçlendirir. CV'ni de yüklersen işverenler indirebilir.</div>
+    <div class="wiz-step-title">CV Yükle</div>
+    <div class="wiz-step-desc">CV'ni yüklersen işverenler indirip detaylı inceleyebilir.</div>
     <div id="step6-content">
 
       <!-- CV UPLOAD -->
@@ -970,52 +1013,6 @@ if (window.Sentry) {
         </div>
       </div>
 
-      <hr class="section-divider">
-
-      <!-- BIO / HAKKIMDA -->
-      <div class="card-title mb-4">Hakkımda <span class="field-hint">· İşverenler seni tanısın, öne çık</span></div>
-      <p style="font-size:var(--text-sm);color:var(--muted);margin:0 0 10px;line-height:1.6;">Perakende kariyerindeki güçlü yanlarını 2-3 cümleyle özetle. İşverenler profil kartında bu metni görür.</p>
-      <textarea id="f-bio" class="form-input" rows="7" style="resize:vertical;min-height:160px;font-size:15px;line-height:1.7;padding:16px 18px;" placeholder="Örnek: 8 yıldır lüks perakendede mağaza yönetimi yapıyorum. 30+ kişilik ekipleri yönettim, yıllık 15M TL ciro hedeflerini sürekli aştım. Ekip kurma, müşteri deneyimi ve visual merchandising konularında uzmanım."></textarea>
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px;">
-        <button type="button" id="btn-bio-translate" style="border:none;background:none;color:var(--muted);font-size:12px;cursor:pointer;padding:4px 8px;border-radius:6px;transition:background .15s;" onmouseenter="this.style.background='rgba(0,0,0,0.04)'" onmouseleave="this.style.background='none'">\uD83E\uDD16 AI ile T\u00FCrk\u00E7eye \u00C7evir</button>
-        <span id="bio-char-count" style="font-size:11px;color:var(--muted);">0 / 500</span>
-      </div>
-      <script>
-      (function(){
-        var btn = document.getElementById('btn-bio-translate');
-        if (!btn) return;
-        btn.addEventListener('click', function() {
-          var ta = document.getElementById('f-bio');
-          if (!ta || !ta.value.trim()) {
-            if (typeof window.showToast === 'function') window.showToast('\u00D6nce \u0130ngilizce metni yap\u0131\u015Ft\u0131r\u0131n', 'warn');
-            return;
-          }
-          var origText = btn.textContent;
-          btn.textContent = '\u00C7evriliyor...';
-          btn.disabled = true;
-          try {
-            var supa = typeof HT !== 'undefined' && HT.getSupa ? HT.getSupa() : (typeof supabase !== 'undefined' ? supabase : null);
-            if (!supa || !supa.functions) throw new Error('no supa');
-            supa.functions.invoke('translate-text', { body: { text: ta.value, target_lang: 'tr' } }).then(function(res) {
-              if (res.error || !res.data) throw new Error('translate failed');
-              var parsed = typeof res.data === 'string' ? JSON.parse(res.data) : res.data;
-              if (parsed.translated) { ta.value = parsed.translated; ta.dispatchEvent(new Event('input')); }
-              else { throw new Error('no translated field'); }
-              btn.textContent = origText;
-              btn.disabled = false;
-            }).catch(function() {
-              if (typeof window.showToast === 'function') window.showToast('\u00C7eviri \u015Fu an kullan\u0131lam\u0131yor, l\u00FCtfen daha sonra tekrar deneyin', 'error');
-              btn.textContent = origText;
-              btn.disabled = false;
-            });
-          } catch(e) {
-            if (typeof window.showToast === 'function') window.showToast('\u00C7eviri \u015Fu an kullan\u0131lam\u0131yor, l\u00FCtfen daha sonra tekrar deneyin', 'error');
-            btn.textContent = origText;
-            btn.disabled = false;
-          }
-        });
-      })();
-      </script>
 
     </div>
   </div>

@@ -1,4 +1,4 @@
-/* global addCertificateRow, addEducationRow, addExperienceCard, addLanguageRow, addTargetRoleRow, certCounter, collectCertificates, collectEducation, collectExperiences, collectLanguages, collectLocations, collectTargetRoles, collectWorkPrefs, eduCounter, expCounter, langCounter, monthIndexToName, populateIlceSelect, renderBrandInterestChips, renderSelectedCities, renderWizard, roleCounter, selectedBrandInterests, selectedCalismaTipleri, selectedCareerTypes, selectedLocations, selectedMusaitlik, selectedSegmentler, showCVEmpty, showCVUploaded, updateCityChipStates, val, wizStep */
+/* global addCertificateRow, addEducationRow, addExperienceCard, addLanguageRow, addTargetRoleRow, certCounter, collectCertificates, collectEducation, collectExperiences, collectLanguages, collectLocations, collectTargetRoles, collectWorkPrefs, eduCounter, expCounter, langCounter, monthIndexToName, populateIlceSelect, renderBrandInterestChips, renderSelectedLocations, renderWizard, roleCounter, selectedBrandInterests, selectedCalismaTipleri, selectedCareerTypes, selectedLocations, selectedMusaitlik, selectedSegmentler, showCVEmpty, showCVUploaded, val, wizStep */
 // ═══════════════════════════════════════════════════
 // PROFIL DRAFT — localStorage draft save/load/apply + setVal helper
 // Extracted from profil.html inline scripts.
@@ -179,8 +179,7 @@ function applyDraft(draft) {
     draft.locations.forEach(function(loc) {
       selectedLocations[loc.sehir] = loc.ilceler || [];
     });
-    renderSelectedCities();
-    updateCityChipStates();
+    if (typeof renderSelectedLocations === 'function') renderSelectedLocations();
   }
 
   // Navigate to saved step

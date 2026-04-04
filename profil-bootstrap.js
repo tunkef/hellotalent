@@ -1,4 +1,4 @@
-/* global _loadedDBData, _initBrandCompanyLookup, addTargetRoleRow, applyAllVisibilityMirrorsFromProfile, applyDraft, canonicalizeRole, currentCVStoragePath, currentUser, getProfilAuthSession, ht_track, initCVUpload, initStep1, initStep2, initStep3, initStep4, initStep5, initStep6, loadDraft, loadProfileFromDB, loadViewersCard, populateIlceSelect, RETAIL_POSITIONS, selectedCalismaTipleri, selectedCareerTypes, selectedMusaitlik, selectedSegmentler, setAvatarImage, setVal, showCVUploaded, STORAGE, supabase, syncAccountEmail, titleCaseTR, trLower, updateCityChipStates, updateCompletionUI, updateDashboardSummary, updateMerkezCards, uploadCV */
+/* global _loadedDBData, _initBrandCompanyLookup, addTargetRoleRow, applyAllVisibilityMirrorsFromProfile, applyDraft, canonicalizeRole, currentCVStoragePath, currentUser, getProfilAuthSession, ht_track, initCVUpload, initStep1, initStep2, initStep3, initStep4, initStep5, initStep6, loadDraft, loadProfileFromDB, loadViewersCard, populateIlceSelect, renderSelectedLocations, RETAIL_POSITIONS, selectedCalismaTipleri, selectedCareerTypes, selectedMusaitlik, selectedSegmentler, setAvatarImage, setVal, showCVUploaded, STORAGE, supabase, syncAccountEmail, titleCaseTR, trLower, updateCompletionUI, updateDashboardSummary, updateMerkezCards, uploadCV */
 // ═══════════════════════════════════════════════════
 // PROFIL BOOTSTRAP — auth, hydration, step-init orchestration
 // Extracted from profil.html inline scripts.
@@ -69,8 +69,8 @@ function reapplyDynamicFields() {
     if (wp.notice_period) setVal('f-ihbar', wp.notice_period);
   }
 
-  // Step 5 city chip visual state (chips created by initStep5)
-  updateCityChipStates();
+  // Step 5 location display (rendered by initStep5)
+  if (typeof renderSelectedLocations === 'function') renderSelectedLocations();
 }
 
 // ── Career goal prefill ───────────────────────────
@@ -321,11 +321,18 @@ function _htRunStepInits() {
   var bioTa = document.getElementById('f-bio');
   var bioCount = document.getElementById('bio-char-count');
   if (bioTa && bioCount) {
+    var _bioEngPattern = /\b(the|and|with|for|team|management|experience|store|sales|customer|retail|manager|lead|drive|deliver)\b/i;
+    var bioTransBtn = document.getElementById('btn-bio-translate');
     bioTa.addEventListener('input', function() {
       var len = bioTa.value.length;
       bioCount.textContent = len + ' / 500';
       bioCount.style.color = len > 500 ? 'var(--verm)' : 'var(--muted)';
       if (len > 500) bioTa.value = bioTa.value.substring(0, 500);
+      // Show translate button only when English text detected
+      if (bioTransBtn) {
+        var txt = bioTa.value || '';
+        bioTransBtn.style.display = (_bioEngPattern.test(txt) && txt.length > 20) ? '' : 'none';
+      }
     });
   }
 
@@ -344,6 +351,8 @@ function _htRunStepInits() {
   // Re-apply DB values to selects/chips that were just created by initStep1/4/5.
   // Covers the race where applyDraft ran before these options/chips existed.
   reapplyDynamicFields();
+  // Re-run merkez cards now that all form fields are populated from DB
+  updateMerkezCards();
   // Apply ?career_goal= prefill now that Step 4 rows exist
   _htApplyCareerGoalPrefill();
   if (typeof applyAllVisibilityMirrorsFromProfile === 'function' && _loadedDBData && _loadedDBData.profile) {
