@@ -15,10 +15,29 @@ var _allCitiesSorted = [];
   _allCitiesSorted = cities.sort(function(a, b) { return trLower(a).localeCompare(trLower(b), 'tr'); });
 })();
 
+var _step5Initialized = false;
 function initStep5() {
+  if (_step5Initialized) {
+    // Already built — just sync checkboxes with selectedLocations
+    _syncCityCheckboxes();
+    _rebuildDistrictList();
+    _toggleDistrictField();
+    renderSelectedLocations();
+    return;
+  }
+  _step5Initialized = true;
   _buildCityDropdown();
   _buildDistrictDropdown();
   renderSelectedLocations();
+}
+
+function _syncCityCheckboxes() {
+  var cityDD = document.getElementById('ms-city');
+  if (!cityDD) return;
+  var cbs = cityDD.querySelectorAll('.ms-item input[type=checkbox]');
+  for (var i = 0; i < cbs.length; i++) {
+    cbs[i].checked = selectedLocations[cbs[i].value] !== undefined;
+  }
 }
 
 // ── City Dropdown ──
