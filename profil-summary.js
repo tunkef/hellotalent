@@ -1,4 +1,4 @@
-/* global _escHtml, _loadedDBData, canonicalizeRole, currentUser, formatBrandDisplay, getCurrentEmployerDisplayFromExperiences, normalizeForDisplay, refreshVisibilitySummary, selectedCalismaTipleri, selectedCareerTypes, selectedLocations, selectedMusaitlik, updateMerkezVisState, val */
+/* global _escHtml, _loadedDBData, canonicalizeRole, currentUser, formatBrandDisplay, getCurrentEmployerDisplayFromExperiences, normalizeForDisplay, refreshVisibilitySummary, selectedCalismaTipleri, selectedCareerTypes, selectedLocations, selectedMusaitlik, selectedSegmentler, updateMerkezVisState, val, wizGoTo */
 // ═══════════════════════════════════════════════════
 // profil-summary.js — Dashboard Summary, Merkez Cards, Completion & Score
 // Extracted from profil-ui.js to reduce change-risk.
@@ -357,36 +357,60 @@ function updateMerkezIdentity() {
 // ═══════════════════════════════════════════════════
 
 function calculateCompletion() {
-  // Mirrors backend compute_candidate_profile_completion() exactly.
-  // Weights must stay in sync with migration 039.
   var score = 0;
 
-  // Identity (20 points)
-  if (val('f-adsoyad')) score += 10;       // full_name
-  if (val('f-telefon')) score += 5;        // telefon
-  if (val('f-adresil')) score += 5;        // adres_il
+  // ── A) Kişisel Bilgiler — 20 puan ──
+  if (val('f-adsoyad'))    score += 6;
+  if (val('f-telefon'))    score += 4;
+  if (val('f-adresil'))    score += 4;
+  if (val('f-adresilce'))  score += 3;
+  if (val('f-linkedin'))   score += 3;
 
-  // Contact (5 points)
-  if (val('f-linkedin')) score += 5;       // linkedin
-
-  // Experiences (25 points)
+  // ── B) Deneyim — 25 puan ──
   var cbNoExp = document.getElementById('cb-no-experience');
-  if (cbNoExp && cbNoExp.checked) { score += 25; }
-  else if (document.querySelectorAll('.exp-card').length > 0 && val(document.querySelector('.exp-card').id + '-sirket')) { score += 25; }
+  var expCards = document.querySelectorAll('.exp-card');
+  if (cbNoExp && cbNoExp.checked) {
+    score += 15; // no-exp path gets less than full experience
+  } else if (expCards.length > 0) {
+    var firstId = expCards[0].id + '-';
+    if (val(firstId + 'sirket'))  score += 5;
+    if (val(firstId + 'pozisyon')) score += 5;
+    if (val(firstId + 'basyil'))  score += 4;
+    if (val(firstId + 'sektor'))  score += 4;
+    if (val(firstId + 'segment')) score += 4;
+    if (val(firstId + 'desc'))    score += 3;
+  }
 
-  // Education (15 points)
-  if (document.querySelectorAll('#edu-rows-container .dynamic-row').length > 0) score += 15;
+  // ── C) Eğitim & Dil — 15 puan ──
+  var eduRows = document.querySelectorAll('#edu-rows-container .dynamic-row');
+  if (eduRows.length > 0) {
+    var firstEduSel = eduRows[0].querySelector('select');
+    if (firstEduSel && firstEduSel.value) score += 8; // seviye dolu
+    else score += 4; // satır var ama boş
+  }
+  if (document.querySelectorAll('#lang-rows-container .dynamic-row').length > 0) score += 7;
 
-  // Languages (10 points)
-  if (document.querySelectorAll('#lang-rows-container .dynamic-row').length > 0) score += 10;
+  // ── D) Tercihler — 25 puan ──
+  if (selectedCalismaTipleri && selectedCalismaTipleri.length > 0) score += 5;
+  if (selectedMusaitlik)                                          score += 4;
+  if (selectedSegmentler && selectedSegmentler.length > 0)        score += 4;
+  if (val('f-seyahat'))                                           score += 4;
+  if (val('f-vardiya'))                                           score += 4;
+  if (val('f-ihbar'))                                             score += 4;
 
-  // Work preferences (15 points)
-  if (selectedMusaitlik || selectedCalismaTipleri.length > 0) score += 15;
+  // ── E) Lokasyon — 7 puan ──
+  if (Object.keys(selectedLocations).length > 0) score += 7;
 
-  // Locations (10 points)
-  if (Object.keys(selectedLocations).length > 0) score += 10;
+  // ── F) Kariyer Hedefi — 8 puan ──
+  var _trRows = document.querySelectorAll('#target-roles-container .dynamic-row');
+  var _hasTarget = false;
+  for (var _i = 0; _i < _trRows.length; _i++) {
+    var _s = _trRows[_i].querySelector('select[id$="-unvan"]');
+    if (_s && _s.value) { _hasTarget = true; break; }
+  }
+  if (_hasTarget) score += 5;
+  if (selectedCareerTypes && selectedCareerTypes.length > 0) score += 3;
 
-  // Cap at 100
   return Math.min(score, 100);
 }
 
@@ -457,8 +481,37 @@ function getProfileScoreHints() {
   var expCards = document.querySelectorAll('.exp-card');
   var hasExp = (cbNoExp && cbNoExp.checked) || expCards.length > 0;
 
+  // ── Deneyim ──
   if (!hasExp)
-    hints.push('Deneyim bilgisi ekle veya deneyimsiz kutusunu isaretle');
+    hints.push({ step: 2, text: 'Deneyim bilgisi ekle veya "deneyimim yok" seç', points: 15 });
+  else if (expCards.length > 0) {
+    var fId = expCards[0].id + '-';
+    if (!val(fId + 'sektor')) hints.push({ step: 2, text: 'Deneyimine sektör ekle', points: 4 });
+    if (!val(fId + 'segment')) hints.push({ step: 2, text: 'Deneyimine segment ekle', points: 4 });
+    if (!val(fId + 'desc')) hints.push({ step: 2, text: 'İş tanımı yaz — işverenler seni daha kolay fark etsin', points: 3 });
+  }
+
+  // ── Eğitim ──
+  if (document.querySelectorAll('#edu-rows-container .dynamic-row').length === 0)
+    hints.push({ step: 3, text: 'Eğitim bilgisi ekle', points: 8 });
+
+  // ── Tercihler ──
+  if (!selectedCalismaTipleri || selectedCalismaTipleri.length === 0)
+    hints.push({ step: 4, text: 'Çalışma tipini seç (Tam Zamanlı, Yarı Zamanlı...)', points: 5 });
+  if (!selectedSegmentler || selectedSegmentler.length === 0)
+    hints.push({ step: 4, text: 'Segment tercihlerini seç — doğru markalarla eşleş', points: 4 });
+  if (!val('f-seyahat'))
+    hints.push({ step: 4, text: 'Seyahat isteğini belirt — bölge pozisyonlarında öne çık', points: 4 });
+  if (!val('f-vardiya'))
+    hints.push({ step: 4, text: 'Vardiya esnekliğini belirt — esnek adaylar daha çok ilgi görür', points: 4 });
+  if (!val('f-ihbar'))
+    hints.push({ step: 4, text: 'İhbar süresini belirt — hızlı başlayabilen adaylar tercih edilir', points: 4 });
+
+  // ── Lokasyon ──
+  if (Object.keys(selectedLocations).length === 0)
+    hints.push({ step: 5, text: 'Çalışmak istediğin şehirleri seç', points: 7 });
+
+  // ── Kariyer Hedefi ──
   var _hintRows = document.querySelectorAll('#target-roles-container .dynamic-row');
   var _hintHasTarget = false;
   for (var _hi = 0; _hi < _hintRows.length; _hi++) {
@@ -466,34 +519,64 @@ function getProfileScoreHints() {
     if (_hSel && _hSel.value) { _hintHasTarget = true; break; }
   }
   if (!_hintHasTarget)
-    hints.push('Hedef pozisyon ekle \u2014 markalar seni daha kolay bulur');
-  if (selectedCareerTypes.length === 0)
-    hints.push('Kariyer y\u00f6nelimi se\u00e7 (Yukar\u0131 Terfi veya Yatay Ge\u00e7i\u015f)');
-  if (Object.keys(selectedLocations).length === 0)
-    hints.push('Tercih ettigin sehirleri sec');
-  if (!val('f-linkedin'))
-    hints.push('LinkedIn profilini ekle');
-  if (selectedCalismaTipleri.length === 0)
-    hints.push('Calisma tipini sec');
+    hints.push({ step: 4, text: 'Hedef pozisyon ekle — markalar seni daha kolay bulsun', points: 5 });
+  if (!selectedCareerTypes || selectedCareerTypes.length === 0)
+    hints.push({ step: 4, text: 'Kariyer yönelimini seç (Yukarı Terfi veya Yatay Geçiş)', points: 3 });
 
-  // No-exp specific: nudge toward education/language depth
-  if (cbNoExp && cbNoExp.checked) {
-    if (document.querySelectorAll('#edu-rows-container .dynamic-row').length === 0)
-      hints.push('Egitim bilgisi ekle — deneyim olmadan egitim cok onemli');
-    if (document.querySelectorAll('#lang-rows-container .dynamic-row').length === 0)
-      hints.push('Dil bilgisi ekle — rakiplerinden one gec');
-  }
+  // ── Kişisel ──
+  if (!val('f-linkedin'))
+    hints.push({ step: 1, text: 'LinkedIn profilini ekle — işverenlere güven ver', points: 3 });
+  if (!val('f-adresilce'))
+    hints.push({ step: 1, text: 'İlçeni seç — doğru lokasyonla eşleşme artır', points: 3 });
+
+  // Sort by points descending (most impactful first)
+  hints.sort(function(a, b) { return b.points - a.points; });
 
   return hints;
 }
 
 function updateScoreUI() {
-  var sc = calculateProfileScore();
+  var pct = calculateCompletion();
   var hints = getProfileScoreHints();
-  // Merkez stat cards removed; score/completion now shown per-section in bento rings.
-  // calculateProfileScore/getProfileScoreHints kept for potential future use (e.g. genel panel).
-  void sc;
-  void hints;
+
+  // Render hints in Genel panel if container exists
+  var hintsContainer = document.getElementById('g-completion-hints');
+  if (hintsContainer) {
+    hintsContainer.innerHTML = '';
+    if (pct >= 100 || hints.length === 0) {
+      hintsContainer.style.display = 'none';
+      return;
+    }
+    hintsContainer.style.display = '';
+    var title = document.createElement('div');
+    title.style.cssText = 'font-family:Bricolage Grotesque,sans-serif;font-weight:700;font-size:14px;margin-bottom:8px;color:var(--text);';
+    title.textContent = 'Profilini güçlendir';
+    hintsContainer.appendChild(title);
+
+    var maxHints = Math.min(hints.length, 4);
+    for (var i = 0; i < maxHints; i++) {
+      var h = hints[i];
+      var row = document.createElement('div');
+      row.style.cssText = 'display:flex;align-items:center;gap:8px;padding:6px 0;font-size:13px;color:var(--muted);cursor:pointer;transition:color 0.2s;';
+      row.innerHTML = '<span style="color:var(--verm);font-weight:600;font-size:11px;min-width:28px;">+' + h.points + '</span>' + _escHtml(h.text);
+      row.dataset.step = String(h.step);
+      row.addEventListener('click', function() {
+        var step = parseInt(this.dataset.step);
+        var profilBtn = document.querySelector('button[data-panel="merkez"]') || document.querySelector('[data-panel="profil"]');
+        if (profilBtn) profilBtn.click();
+        setTimeout(function() { if (typeof wizGoTo === 'function') wizGoTo(step); }, 300);
+      });
+      row.addEventListener('mouseenter', function() { this.style.color = 'var(--text)'; });
+      row.addEventListener('mouseleave', function() { this.style.color = 'var(--muted)'; });
+      hintsContainer.appendChild(row);
+    }
+    if (hints.length > maxHints) {
+      var more = document.createElement('div');
+      more.style.cssText = 'font-size:12px;color:var(--muted);margin-top:4px;';
+      more.textContent = '+ ' + (hints.length - maxHints) + ' alan daha tamamlanabilir';
+      hintsContainer.appendChild(more);
+    }
+  }
 }
 
 function updateCompletionUI() {

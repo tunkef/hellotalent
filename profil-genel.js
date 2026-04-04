@@ -1,4 +1,4 @@
-/* global _loadedDBData, currentUser, supabase, switchPanel, calculateCompletion, val, canonicalizeRole, normalizeForDisplay, formatBrandDisplay */
+/* global _escHtml, _loadedDBData, currentUser, supabase, switchPanel, calculateCompletion, getProfileScoreHints, val, canonicalizeRole, normalizeForDisplay, formatBrandDisplay, wizGoTo */
 // ═══════════════════════════════════════════════════
 // profil-genel.js — Genel Bakis Home/Feed Surface
 // Renders the authenticated candidate home: left rail (identity,
@@ -548,23 +548,54 @@
 
     /* Visibility readiness — %45 threshold indicator */
     var readinessDiv = el('div', 'gh-id-readiness');
-    if (pct >= 45) {
+    if (pct >= 100) {
       readinessDiv.style.cssText = 'font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;color:var(--green,#059669);margin-top:6px;display:flex;align-items:center;gap:4px';
-      readinessDiv.textContent = '\u2713 Profilin i\u015fverenlere g\u00f6r\u00fcn\u00fcr';
+      readinessDiv.textContent = '\u2713 Profilin tam — i\u015fverenlere haz\u0131rs\u0131n!';
+    } else if (pct >= 45) {
+      readinessDiv.style.cssText = 'font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;color:var(--green,#059669);margin-top:6px';
+      readinessDiv.textContent = '\u2713 Profilin i\u015fverenlere g\u00f6r\u00fcn\u00fcr — daha da g\u00fc\u00e7lendir:';
+      /* Show improvement hints even above 45% */
+      var hints45 = typeof getProfileScoreHints === 'function' ? getProfileScoreHints() : [];
+      if (hints45.length > 0) {
+        var hintList45 = el('div', 'gh-id-hints');
+        hintList45.style.cssText = 'margin-top:6px;display:flex;flex-direction:column;gap:2px';
+        var max45 = Math.min(3, hints45.length);
+        for (var h45i = 0; h45i < max45; h45i++) {
+          var h45 = hints45[h45i];
+          var hint45 = el('div', 'gh-id-hint');
+          hint45.style.cssText = 'font-family:"Plus Jakarta Sans",sans-serif;font-size:11px;color:var(--text-muted,#6B7280);display:flex;align-items:center;gap:6px;cursor:pointer;padding:3px 0;';
+          hint45.innerHTML = '<span style="color:var(--verm);font-weight:600;font-size:10px;min-width:22px;">+' + h45.points + '</span>' + _escHtml(h45.text);
+          hint45.dataset.step = String(h45.step);
+          hint45.addEventListener('click', function() {
+            switchPanel('merkez');
+            var s = parseInt(this.dataset.step);
+            setTimeout(function() { if (typeof wizGoTo === 'function') wizGoTo(s); }, 300);
+          });
+          hintList45.appendChild(hint45);
+        }
+        readinessDiv.appendChild(hintList45);
+      }
     } else {
       readinessDiv.style.cssText = 'font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;color:var(--verm,#C94E28);margin-top:6px';
       readinessDiv.textContent = '%' + (45 - pct) + ' daha tamamla \u2014 i\u015fverenler seni g\u00f6rebilsin';
 
-      /* Next steps hints */
-      var hints = typeof window.getProfileScoreHints === 'function' ? window.getProfileScoreHints() : [];
+      /* Next steps hints — object format: {step, text, points} */
+      var hints = typeof getProfileScoreHints === 'function' ? getProfileScoreHints() : [];
       if (hints.length > 0) {
         var hintList = el('div', 'gh-id-hints');
-        hintList.style.cssText = 'margin-top:8px;display:flex;flex-direction:column;gap:4px';
+        hintList.style.cssText = 'margin-top:8px;display:flex;flex-direction:column;gap:2px';
         var maxHints = Math.min(3, hints.length);
         for (var hi = 0; hi < maxHints; hi++) {
+          var hObj = hints[hi];
           var hintItem = el('div', 'gh-id-hint');
-          hintItem.style.cssText = 'font-family:"Plus Jakarta Sans",sans-serif;font-size:11px;color:var(--text-muted,#6B7280);padding-left:12px;position:relative';
-          hintItem.textContent = '\u2022 ' + hints[hi];
+          hintItem.style.cssText = 'font-family:"Plus Jakarta Sans",sans-serif;font-size:11px;color:var(--text-muted,#6B7280);display:flex;align-items:center;gap:6px;cursor:pointer;padding:3px 0;';
+          hintItem.innerHTML = '<span style="color:var(--verm);font-weight:600;font-size:10px;min-width:22px;">+' + hObj.points + '</span>' + _escHtml(hObj.text);
+          hintItem.dataset.step = String(hObj.step);
+          hintItem.addEventListener('click', function() {
+            switchPanel('merkez');
+            var s = parseInt(this.dataset.step);
+            setTimeout(function() { if (typeof wizGoTo === 'function') wizGoTo(s); }, 300);
+          });
           hintList.appendChild(hintItem);
         }
         readinessDiv.appendChild(hintList);

@@ -1,4 +1,4 @@
-/* global _escHtml, _loadedDBData, CAREER_TYPE_LABELS, currentUser */
+/* global _escHtml, _loadedDBData, calculateCompletion, CAREER_TYPE_LABELS, currentUser */
 // ═══════════════════════════════════════════════════
 // profil-preview.js — Profile Preview Drawer
 // Extracted from profil-ui.js to reduce change-risk.
@@ -78,6 +78,19 @@ function openProfilePreview() {
   }
   html += '</div></div></div>';
 
+  // ── COMPLETION BADGE (işveren görür) ──
+  var ppPct = typeof calculateCompletion === 'function' ? calculateCompletion() : 0;
+  var ppColor = ppPct >= 80 ? 'var(--green,#059669)' : ppPct >= 45 ? 'var(--navy)' : 'var(--verm)';
+  html += '<div style="display:flex;align-items:center;gap:10px;padding:10px 16px;margin:-4px 0 8px;background:var(--bg-elevated,#F7F6F4);border-radius:10px;">';
+  html += '<div style="position:relative;width:36px;height:36px;">';
+  html += '<svg viewBox="0 0 36 36" style="transform:rotate(-90deg);"><circle cx="18" cy="18" r="15" fill="none" stroke="var(--border,#E5E3DF)" stroke-width="3"/>';
+  html += '<circle cx="18" cy="18" r="15" fill="none" stroke="' + ppColor + '" stroke-width="3" stroke-dasharray="' + (ppPct * 0.9425) + ' 94.25" stroke-linecap="round"/></svg>';
+  html += '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:DM Mono,monospace;font-size:9px;font-weight:600;color:' + ppColor + ';">' + ppPct + '</div></div>';
+  html += '<div><div style="font-family:Plus Jakarta Sans,sans-serif;font-size:12px;font-weight:600;color:var(--text);">Profil Doluluk</div>';
+  html += '<div style="font-family:Plus Jakarta Sans,sans-serif;font-size:11px;color:var(--muted);">';
+  html += ppPct >= 80 ? 'Güçlü profil — işverenler tarafından görülme şansın yüksek' : ppPct >= 45 ? 'İyi — birkaç alan daha tamamla, öne çık' : 'Profilini tamamla — işverenler seni görsün';
+  html += '</div></div></div>';
+
   // ── ROW 1: Deneyim + E\u011Fitim & Dil ──
   html += '<div class="pp-bento">';
 
@@ -108,6 +121,9 @@ function openProfilePreview() {
       if (e.kidem_seviyesi) details.push(e.kidem_seviyesi);
       if (details.length > 0) {
         html += '<div class="pp-exp-detail">' + _escHtml(details.join(' \u00B7 ')) + '</div>';
+      }
+      if (e.description) {
+        html += '<div style="font-size:11px;color:var(--muted);margin-top:4px;line-height:1.5;max-height:44px;overflow:hidden;">' + _escHtml(e.description) + '</div>';
       }
       html += '</div>';
       if (period) html += '<div class="pp-exp-period">' + _escHtml(period) + '</div>';
@@ -180,6 +196,9 @@ function openProfilePreview() {
           ? CAREER_TYPE_LABELS[wp.career_type] : wp.career_type;
         tags.push(_ctLabel);
       }
+      if (wp.travel_willingness) tags.push('\u2708 ' + wp.travel_willingness);
+      if (wp.shift_flexibility) tags.push('\u23F0 ' + wp.shift_flexibility);
+      if (wp.notice_period) tags.push('\u23F3 ' + wp.notice_period);
     }
     locs.forEach(function(loc) {
       if (loc.sehir) tags.push('\uD83D\uDCCD ' + loc.sehir);
