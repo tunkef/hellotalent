@@ -248,6 +248,14 @@ function initStep2() {
 }
 
 function addExperienceCard(data) {
+  // Auto-uncheck "no experience" when adding a card
+  var _cbNoExp = document.getElementById('cb-no-experience');
+  var _expSection = document.getElementById('experience-section');
+  if (_cbNoExp && _cbNoExp.checked) {
+    _cbNoExp.checked = false;
+    if (_expSection) _expSection.style.display = '';
+  }
+
   expCounter++;
   var cardId = 'exp-card-' + expCounter;
   var card = document.createElement('div');
@@ -280,6 +288,11 @@ function addExperienceCard(data) {
       var btn = c.querySelector('.exp-card-del');
       if (btn) btn.style.display = (remaining.length <= 1) ? 'none' : '';
     });
+    // Show "no experience" checkbox hint when all cards removed
+    if (remaining.length === 0) {
+      var _cbHint = document.getElementById('cb-no-experience');
+      if (_cbHint) _cbHint.closest('.cb-wrap').style.opacity = '1';
+    }
   });
   header.appendChild(delBtn);
   card.appendChild(header);
@@ -1504,7 +1517,8 @@ async function saveProfileRPC(onComplete) {
       : (_loadedDBData && _loadedDBData.profile && typeof _loadedDBData.profile.is_active === 'boolean'
           ? _loadedDBData.profile.is_active
           : true),
-    ilk_deneyim: document.getElementById('cb-no-experience') ? document.getElementById('cb-no-experience').checked : false
+    ilk_deneyim: document.getElementById('cb-no-experience') ? document.getElementById('cb-no-experience').checked : false,
+    profile_completed: true
   };
 
   // Assemble experiences
