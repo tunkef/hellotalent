@@ -225,20 +225,20 @@ var AY_ISIMLERI = ['Ocak','Subat','Mart','Nisan','Mayis','Haziran','Temmuz','Agu
 
 var EGITIM_SEVIYELERI = ['\u0130lkokul','Ortaokul','Lise','\u00d6n Lisans','Lisans','Y\u00fcksek Lisans','Doktora'];
 
-var DEPARTMANLAR = ['Ma\u011faza','B\u00f6lge Y\u00f6netimi','Genel Merkez','Visual Merchandising','Operasyon','\u0130nsan Kaynaklar\u0131','E\u011fitim','Pazarlama','E-Ticaret','Di\u011fer'];
+var DEPARTMANLAR = ['Bölge Yönetimi','E-Ticaret','Eğitim','Genel Merkez','İnsan Kaynakları','Mağaza','Operasyon','Pazarlama','Visual Merchandising','Diğer'];
 
-var SEGMENTLER = ['L\u00fcks','Premium','Orta Segment','Fast Fashion','Spor','Teknoloji','Kozmetik','Otomotiv','G\u0131da / Market','Ev / Ya\u015fam','Di\u011fer'];
+var SEGMENTLER = ['Ev / Yaşam','Fast Fashion','Gıda / Market','Kozmetik','Lüks','Orta Segment','Otomotiv','Premium','Spor','Teknoloji','Diğer'];
 
-var ISTIHDAM_TIPLERI = ['Tam Zamanl\u0131','Yar\u0131 Zamanl\u0131','Sezonluk','Stajyer','S\u00f6zle\u015fmeli'];
+var ISTIHDAM_TIPLERI = ['Sezonluk','Stajyer','Sözleşmeli','Tam Zamanlı','Yarı Zamanlı'];
 
-var CALISMA_TIPLERI = ['Tam Zamanl\u0131','Yar\u0131 Zamanl\u0131','Sezonluk','S\u00f6zle\u015fmeli'];
+var CALISMA_TIPLERI = ['Sezonluk','Sözleşmeli','Tam Zamanlı','Yarı Zamanlı'];
 
 // KIDEM_SEVIYELERI removed (Decision 1 — derived later, not candidate-facing)
 // LOKASYON_TIPLERI removed (Decision 3 — implied by department)
 
 var TAKIM_BUYUKLUKLERI = ['Yok','1-5','6-15','16-30','30+'];
 
-var AYRILMA_NEDENLERI = ['Terfi','\u0130stifa','Kariyer Ge\u00e7i\u015fi','\u0130\u015ften \u00c7\u0131kar\u0131lma','Kar\u015f\u0131l\u0131kl\u0131 Fesih','S\u00f6zle\u015fme Bitimi','Belirtmek \u0130stemiyorum'];
+var AYRILMA_NEDENLERI = ['İstifa','İşten Çıkarılma','Kariyer Geçişi','Karşılıklı Fesih','Sözleşme Bitimi','Terfi','Belirtmek İstemiyorum'];
 
 var SEKTOR_ROL_MAP = {
   'Ma\u011fazac\u0131l\u0131k / Perakende': {
@@ -448,7 +448,7 @@ var POSITION_TO_FAMILY = {}; // rol_unvani → rol_ailesi reverse lookup
   RETAIL_POSITIONS.sort(function(a, b) { return trLower(a).localeCompare(trLower(b), 'tr'); });
 })();
 
-var DIL_LISTESI = ['T\u00fcrk\u00e7e','\u0130ngilizce','Almanca','Frans\u0131zca','\u0130spanyolca','\u0130talyanca','Rus\u00e7a','Arap\u00e7a','\u00c7ince (Mandarin)','Japonca','Korece','Portekizce','Hollandaca','Leh\u00e7e','Ukraynaca','Fars\u00e7a','K\u00fcrt\u00e7e','Bulgar\u0131ca','Rumence','Macarca','\u00c7ek\u00e7e','\u0130sve\u00e7\u00e7e','Danca','Fince','Norve\u00e7\u00e7e','Yunanca','S\u0131rp\u00e7a','H\u0131rvat\u00e7a','Bo\u015fnak\u00e7a','G\u00fcrce','Arnavut\u00e7a','Di\u011fer'];
+var DIL_LISTESI = ['Türkçe','İngilizce','Almanca','Arapça','Arnavutça','Boşnakça','Bulgarca','Çekçe','Çince (Mandarin)','Danca','Farsça','Fince','Fransızca','Gürcüce','Hırvatça','Hollandaca','İspanyolca','İsveççe','İtalyanca','Japonca','Korece','Kürtçe','Lehçe','Macarca','Norveçce','Portekizce','Rumence','Rusça','Sırpça','Ukraynaca','Yunanca','Diğer'];
 
 var DIL_SEVIYELERI = ['A1 - Ba\u015flang\u0131\u00e7','A2 - Temel','B1 - Orta Alt\u0131','B2 - Orta','C1 - \u0130leri','C2 - \u00dcst \u0130leri','Anadil'];
 

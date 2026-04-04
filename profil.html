@@ -923,18 +923,25 @@ if (window.Sentry) {
     <div class="wiz-step-desc">Çalışmak istediğin şehirleri ve ilçeleri seç.</div>
     <div id="step5-content">
 
-      <!-- POPULAR CITIES -->
-      <div class="card-title mb-12">Popüler Şehirler</div>
-      <div class="chips-row" id="popular-city-chips"></div>
+      <!-- SEARCH → CHIP (Apple style) -->
+      <div class="field" style="position:relative;">
+        <label for="f-city-search">Şehir Ara</label>
+        <input type="text" id="f-city-search" placeholder="Şehir adı yazın..." autocomplete="off">
+        <div class="autocomplete-list" id="city-search-sug"></div>
+      </div>
 
-      <button class="btn btn-secondary btn-sm" id="btn-all-cities" type="button" style="margin-top:12px;">Tüm Şehirleri Gör</button>
+      <!-- POPULAR CITIES (quick pick) -->
+      <div style="margin-top:12px;">
+        <div style="font-size:var(--text-sm);color:var(--muted);margin-bottom:8px;">Popüler:</div>
+        <div class="chips-row" id="popular-city-chips"></div>
+      </div>
 
       <hr class="section-divider">
 
       <!-- SELECTED CITIES + DISTRICTS -->
-      <div class="card-title mb-12">Seçili Lokasyonlar</div>
+      <div class="card-title mb-12">Seçili Lokasyonlar <span id="loc-count-badge" style="font-size:var(--text-sm);font-weight:400;color:var(--muted);"></span></div>
       <div id="selected-cities-container">
-        <p style="font-size:13px;color:var(--muted);" id="no-city-msg">Henüz şehir seçilmedi. Yukarıdaki şehirlerden seçim yapın.</p>
+        <p style="font-size:13px;color:var(--muted);" id="no-city-msg">Henüz şehir seçilmedi. Yukarıdan şehir arayın veya popüler şehirlerden seçin.</p>
       </div>
 
     </div>

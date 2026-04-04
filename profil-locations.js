@@ -1,17 +1,67 @@
-/* global ILCELER, TUR_ILLER, trLower */
+/* global ILCELER, TUR_ILLER, trLower, markWizardDirty */
 // ═══════════════════════════════════════════════════
-// profil-locations.js — Location Modal & Selected Locations
-// Extracted from profil-ui.js to reduce change-risk.
-// Owns: selectedLocations state, city/district selection UI,
-// location modal, and collectLocations() for save payload.
-// Depends on: ILCELER + TUR_ILLER (profil-data.js), trLower (profil-core.js)
+// profil-locations.js — Apple-style Search→Chip Location Picker
+// Search input with autocomplete → chip per city → expand for districts.
 // ═══════════════════════════════════════════════════
 
-var POPULAR_CITIES = ['\u0130stanbul', 'Ankara', '\u0130zmir', 'Bursa', 'Antalya', 'Adana', 'Konya', 'Gaziantep', 'Mersin', 'Kayseri'];
+var POPULAR_CITIES = ['İstanbul', 'Ankara', 'İzmir', 'Bursa', 'Antalya', 'Adana', 'Konya', 'Gaziantep', 'Mersin', 'Kayseri'];
 var selectedLocations = {}; // { cityName: [district1, district2, ...] }
 
+// Build flat sorted city list from TUR_ILLER
+var _allCitiesSorted = [];
+(function() {
+  var cities = [];
+  Object.keys(TUR_ILLER).forEach(function(region) {
+    TUR_ILLER[region].forEach(function(city) { cities.push(city); });
+  });
+  _allCitiesSorted = cities.sort(function(a, b) { return trLower(a).localeCompare(trLower(b), 'tr'); });
+})();
+
 function initStep5() {
-  // Render popular city chips
+  // ── Search autocomplete ──
+  var searchInput = document.getElementById('f-city-search');
+  var sugList = document.getElementById('city-search-sug');
+  if (searchInput && sugList) {
+    searchInput.addEventListener('input', function() {
+      var q = trLower(searchInput.value);
+      sugList.innerHTML = '';
+      if (!q || q.length < 1) { sugList.style.display = 'none'; return; }
+
+      var matches = _allCitiesSorted.filter(function(city) {
+        return trLower(city).indexOf(q) !== -1 && !selectedLocations[city];
+      }).slice(0, 8);
+
+      if (matches.length === 0) {
+        sugList.style.display = 'none';
+        return;
+      }
+
+      matches.forEach(function(city) {
+        var item = document.createElement('div');
+        item.className = 'autocomplete-item';
+        item.textContent = city;
+        item.addEventListener('mousedown', function(e) {
+          e.preventDefault();
+          addCity(city);
+          searchInput.value = '';
+          sugList.style.display = 'none';
+          searchInput.focus();
+        });
+        sugList.appendChild(item);
+      });
+      sugList.style.display = '';
+    });
+
+    searchInput.addEventListener('blur', function() {
+      setTimeout(function() { sugList.style.display = 'none'; }, 200);
+    });
+
+    searchInput.addEventListener('focus', function() {
+      if (searchInput.value.length >= 1) searchInput.dispatchEvent(new Event('input'));
+    });
+  }
+
+  // ── Popular city chips (quick pick) ──
   var popContainer = document.getElementById('popular-city-chips');
   if (popContainer) {
     POPULAR_CITIES.forEach(function(city) {
@@ -20,48 +70,36 @@ function initStep5() {
       chip.type = 'button';
       chip.textContent = city;
       chip.addEventListener('click', function() {
-        toggleCitySelection(city);
+        if (selectedLocations[city]) {
+          delete selectedLocations[city];
+        } else {
+          addCity(city);
+        }
         updateCityChipStates();
       });
       popContainer.appendChild(chip);
     });
   }
-
-  // All cities button → open location modal
-  var btnAllCities = document.getElementById('btn-all-cities');
-  if (btnAllCities) btnAllCities.addEventListener('click', function() { openLocationModal(); });
 }
 
-function toggleCitySelection(city) {
-  if (selectedLocations[city]) {
-    delete selectedLocations[city];
-  } else {
-    selectedLocations[city] = [];
-  }
+function addCity(city) {
+  if (selectedLocations[city]) return;
+  selectedLocations[city] = [];
   renderSelectedCities();
+  updateCityChipStates();
+  if (typeof markWizardDirty === 'function') markWizardDirty();
 }
 
 function updateCityChipStates() {
   // Update popular chips
   var popChips = document.querySelectorAll('#popular-city-chips .chip');
   popChips.forEach(function(chip) {
-    if (selectedLocations[chip.textContent]) {
-      chip.classList.add('selected');
-    } else {
-      chip.classList.remove('selected');
-    }
+    chip.classList.toggle('selected', !!selectedLocations[chip.textContent]);
   });
-  // Update modal chips
-  var lokChips = document.querySelectorAll('#lok-body .lok-city');
-  lokChips.forEach(function(chip) {
-    if (selectedLocations[chip.textContent]) {
-      chip.classList.add('selected');
-    } else {
-      chip.classList.remove('selected');
-    }
-  });
-  var countEl = document.getElementById('lok-selected-count');
-  if (countEl) countEl.textContent = Object.keys(selectedLocations).length;
+  // Update count badge
+  var countBadge = document.getElementById('loc-count-badge');
+  var count = Object.keys(selectedLocations).length;
+  if (countBadge) countBadge.textContent = count > 0 ? '(' + count + ' şehir)' : '';
 }
 
 function renderSelectedCities() {
@@ -74,8 +112,9 @@ function renderSelectedCities() {
     var msg = document.createElement('p');
     msg.id = 'no-city-msg';
     msg.style.cssText = 'font-size:13px;color:var(--muted);';
-    msg.textContent = 'Henüz şehir seçilmedi. Yukarıdaki şehirlerden seçim yapın.';
+    msg.textContent = 'Henüz şehir seçilmedi. Yukarıdan şehir arayın veya popüler şehirlerden seçin.';
     container.appendChild(msg);
+    updateCityChipStates();
     return;
   }
 
@@ -98,6 +137,7 @@ function renderSelectedCities() {
       delete selectedLocations[city];
       renderSelectedCities();
       updateCityChipStates();
+      if (typeof markWizardDirty === 'function') markWizardDirty();
     });
     header.appendChild(name);
     header.appendChild(del);
@@ -108,7 +148,10 @@ function renderSelectedCities() {
     if (districts && districts.length > 0) {
       var distContainer = document.createElement('div');
       distContainer.className = 'city-card-districts';
-      districts.forEach(function(d) {
+      var sortedDistricts = districts.slice().sort(function(a, b) {
+        return trLower(a).localeCompare(trLower(b), 'tr');
+      });
+      sortedDistricts.forEach(function(d) {
         var dChip = document.createElement('button');
         dChip.className = 'district-chip';
         dChip.type = 'button';
@@ -124,6 +167,7 @@ function renderSelectedCities() {
           } else {
             selectedLocations[city] = selectedLocations[city].filter(function(x) { return x !== d; });
           }
+          if (typeof markWizardDirty === 'function') markWizardDirty();
         });
         distContainer.appendChild(dChip);
       });
@@ -140,59 +184,6 @@ function renderSelectedCities() {
 
   updateCityChipStates();
 }
-
-function openLocationModal() {
-  var lokBody = document.getElementById('lok-body');
-  if (!lokBody) return;
-  lokBody.textContent = '';
-
-  Object.keys(TUR_ILLER).forEach(function(region) {
-    var regionDiv = document.createElement('div');
-    regionDiv.className = 'lok-region';
-    var title = document.createElement('div');
-    title.className = 'lok-region-title';
-    title.textContent = region;
-    regionDiv.appendChild(title);
-
-    var grid = document.createElement('div');
-    grid.className = 'lok-city-grid';
-    TUR_ILLER[region].forEach(function(city) {
-      var chip = document.createElement('button');
-      chip.className = 'lok-city';
-      chip.type = 'button';
-      chip.textContent = city;
-      if (selectedLocations[city]) chip.classList.add('selected');
-      chip.addEventListener('click', function() {
-        toggleCitySelection(city);
-        chip.classList.toggle('selected');
-        updateCityChipStates();
-      });
-      grid.appendChild(chip);
-    });
-    regionDiv.appendChild(grid);
-    lokBody.appendChild(regionDiv);
-  });
-
-  // Search filter — bind once, remove previous handler to prevent accumulation
-  var searchInput = document.getElementById('lok-search-input');
-  if (searchInput) {
-    searchInput.value = '';
-    if (searchInput._htLokFilter) searchInput.removeEventListener('input', searchInput._htLokFilter);
-    searchInput._htLokFilter = function() {
-      var q = trLower(searchInput.value);
-      lokBody.querySelectorAll('.lok-city').forEach(function(chip) {
-        chip.style.display = trLower(chip.textContent).indexOf(q) !== -1 ? '' : 'none';
-      });
-    };
-    searchInput.addEventListener('input', searchInput._htLokFilter);
-  }
-
-  updateCityChipStates();
-  document.getElementById('lok-modal-overlay').classList.add('show');
-}
-
-// Location modal done button — just close and render
-// (already wired in event listeners section)
 
 function collectLocations() {
   var result = [];
