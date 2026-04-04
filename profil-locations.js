@@ -42,9 +42,8 @@ function _syncCityCheckboxes() {
 
 // ── City Dropdown ──
 function _buildCityDropdown() {
-  console.warn('[LOC] _buildCityDropdown called');
   var container = document.getElementById('ms-city');
-  if (!container) { console.warn('[LOC] ms-city NOT FOUND'); return; }
+  if (!container) return;
   container.innerHTML = '';
 
   // Dropdown list (created FIRST so click handler can reference it)
@@ -94,7 +93,6 @@ function _buildCityDropdown() {
   // Search filter — use keyup instead of input for broader compatibility
   function _filterCityList() {
     var q = trLower(search.value.trim());
-    console.warn('[LOC-FILTER] q="' + q + '" items=' + items.length);
     var items = dd.querySelectorAll('.ms-item');
     var visibleCount = 0;
     for (var i = 0; i < items.length; i++) {
