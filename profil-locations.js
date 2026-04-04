@@ -93,6 +93,7 @@ function _buildCityDropdown() {
   // Search filter — use keyup instead of input for broader compatibility
   function _filterCityList() {
     var q = trLower(search.value.trim());
+    console.warn('[LOC] filter city q="' + q + '" dd items=' + dd.querySelectorAll('.ms-item').length);
     var items = dd.querySelectorAll('.ms-item');
     var visibleCount = 0;
     for (var i = 0; i < items.length; i++) {
