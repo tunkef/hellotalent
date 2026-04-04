@@ -68,11 +68,13 @@ function _buildCityDropdown() {
   container.appendChild(searchWrap);
 
   _allCitiesSorted.forEach(function(city) {
-    var item = document.createElement('label');
+    var item = document.createElement('div');
     item.className = 'ms-item';
+    item.style.cssText = 'display:flex;align-items:center;gap:10px;padding:6px 12px;cursor:pointer;font-size:14px;border-bottom:1px solid rgba(0,0,0,0.04);';
     var cb = document.createElement('input');
     cb.type = 'checkbox';
     cb.value = city;
+    cb.style.cssText = 'width:16px;height:16px;flex-shrink:0;cursor:pointer;accent-color:#C94E28;';
     if (selectedLocations[city] !== undefined) cb.checked = true;
     cb.addEventListener('change', function() {
       if (cb.checked) {
@@ -87,8 +89,12 @@ function _buildCityDropdown() {
     });
     var span = document.createElement('span');
     span.textContent = city;
+    span.style.cssText = 'flex:1;pointer-events:none;';
     item.appendChild(cb);
     item.appendChild(span);
+    item.addEventListener('click', function(e) {
+      if (e.target !== cb) { cb.checked = !cb.checked; cb.dispatchEvent(new Event('change')); }
+    });
     dd.appendChild(item);
   });
 
@@ -249,12 +255,14 @@ function _rebuildDistrictList() {
     districts.slice().sort(function(a, b) {
       return trLower(a).localeCompare(trLower(b), 'tr');
     }).forEach(function(d) {
-      var item = document.createElement('label');
+      var item = document.createElement('div');
       item.className = 'ms-item';
+      item.style.cssText = 'display:flex;align-items:center;gap:10px;padding:6px 12px 6px 24px;cursor:pointer;font-size:14px;border-bottom:1px solid rgba(0,0,0,0.04);';
       var cb = document.createElement('input');
       cb.type = 'checkbox';
       cb.value = d;
       cb.dataset.city = city;
+      cb.style.cssText = 'width:16px;height:16px;flex-shrink:0;cursor:pointer;accent-color:#C94E28;';
       if (selectedLocations[city] && selectedLocations[city].indexOf(d) !== -1) cb.checked = true;
       cb.addEventListener('change', function() {
         if (!selectedLocations[city]) selectedLocations[city] = [];
@@ -269,8 +277,12 @@ function _rebuildDistrictList() {
       });
       var span = document.createElement('span');
       span.textContent = d;
+      span.style.cssText = 'flex:1;pointer-events:none;';
       item.appendChild(cb);
       item.appendChild(span);
+      item.addEventListener('click', function(e) {
+        if (e.target !== cb) { cb.checked = !cb.checked; cb.dispatchEvent(new Event('change')); }
+      });
       dd.appendChild(item);
     });
   });
