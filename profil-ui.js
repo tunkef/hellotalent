@@ -1637,6 +1637,7 @@ async function saveProfileRPC(onComplete) {
         shift_flexibility: p_work_prefs.shift_flexibility || null,
         notice_period: p_work_prefs.notice_period || null
       } : null;
+      _loadedDBData.target_roles = p_target_roles.slice();
       _loadedDBData.brand_interests = p_brand_interests.map(function(b) { return b.marka; });
       _loadedDBData.locations = p_locations.slice();
       // Sync brand follows if markalar panel was loaded (additive only)

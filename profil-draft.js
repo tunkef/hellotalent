@@ -163,6 +163,10 @@ function applyDraft(draft) {
         btn.classList.toggle('checked', selectedCareerTypes.indexOf(btn.dataset.value) !== -1);
       });
     }
+    // Travel, shift, notice restore from draft
+    if (wp.travel_willingness) setVal('f-seyahat', wp.travel_willingness);
+    if (wp.shift_flexibility) setVal('f-vardiya', wp.shift_flexibility);
+    if (wp.notice_period) setVal('f-ihbar', wp.notice_period);
   }
   if (draft.brand_interests && draft.brand_interests.length > 0) {
     selectedBrandInterests = draft.brand_interests.slice();

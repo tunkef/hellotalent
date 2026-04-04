@@ -431,9 +431,12 @@ function calculateProfileScore() {
   if (document.querySelectorAll('#lang-rows-container .dynamic-row').length > 0) score += 7;
 
   // ── D) Preferences — 20 points ──
-  if (selectedCalismaTipleri.length > 0)           score += 6;
+  if (selectedCalismaTipleri.length > 0)           score += 4;
   if (selectedMusaitlik)                           score += 4;
-  if (Object.keys(selectedLocations).length > 0)   score += 5;
+  if (Object.keys(selectedLocations).length > 0)   score += 4;
+  if (val('f-seyahat'))                            score += 3;
+  if (val('f-vardiya'))                            score += 3;
+  if (val('f-ihbar'))                              score += 2;
 
   // ── E) Targeting / Intent — 15 points ──
   var _trRows = document.querySelectorAll('#target-roles-container .dynamic-row');

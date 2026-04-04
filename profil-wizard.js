@@ -139,6 +139,13 @@ function validateEgitim() {
   var eduRows = document.querySelectorAll('#edu-rows-container .dynamic-row');
   if (eduRows.length === 0) {
     errors.push('En az bir eğitim bilgisi eklemelisin.');
+  } else {
+    // Check first row has at least seviye filled
+    var firstRow = eduRows[0];
+    var seviyeSelect = firstRow ? firstRow.querySelector('select') : null;
+    if (seviyeSelect && !seviyeSelect.value) {
+      errors.push('Eğitim seviyesi zorunludur.');
+    }
   }
   if (errors.length > 0) { showStepErrors(errors); return false; }
   return true;
