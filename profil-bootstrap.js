@@ -310,6 +310,18 @@ function _htRunStepInits() {
       if (wizInput) wizInput.value = '';
     });
   }
+  // Bio character counter
+  var bioTa = document.getElementById('f-bio');
+  var bioCount = document.getElementById('bio-char-count');
+  if (bioTa && bioCount) {
+    bioTa.addEventListener('input', function() {
+      var len = bioTa.value.length;
+      bioCount.textContent = len + ' / 500';
+      bioCount.style.color = len > 500 ? 'var(--verm)' : 'var(--muted)';
+      if (len > 500) bioTa.value = bioTa.value.substring(0, 500);
+    });
+  }
+
   // Restore CV state in wizard if already uploaded
   if (_loadedDBData && _loadedDBData.profile && _loadedDBData.profile.cv_filename) {
     var emptyZone = document.getElementById('wiz-cv-empty');

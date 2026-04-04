@@ -80,6 +80,8 @@ function updateMerkezCards() {
     if (phone) badges1.push('Telefon');
     if (linkedin) badges1.push('LinkedIn');
     if (badges1.length > 0) html1 += '<div>' + badges1.map(function(b) { return '<span class="data-ok">' + _escHtml(b) + '</span>'; }).join('') + '</div>';
+    var bioText = val('f-bio');
+    if (bioText) html1 += '<div style="font-size:12px;color:var(--muted);margin-top:6px;line-height:1.5;max-height:36px;overflow:hidden;font-style:italic;">"' + _escHtml(bioText.substring(0, 120)) + (bioText.length > 120 ? '...' : '') + '"</div>';
     p1.innerHTML = html1;
     p1.style.display = '';
     if (e1) e1.style.display = 'none';
@@ -379,57 +381,67 @@ function updateMerkezIdentity() {
 function calculateCompletion() {
   var score = 0;
 
-  // ── A) Kişisel Bilgiler — 20 puan ──
-  if (val('f-adsoyad'))    score += 6;
-  if (val('f-telefon'))    score += 4;
-  if (val('f-adresil'))    score += 4;
-  if (val('f-adresilce'))  score += 3;
-  if (val('f-linkedin'))   score += 3;
+  // ── A) Kişisel Bilgiler — 15 puan ──
+  if (val('f-adsoyad'))    score += 5;
+  if (val('f-telefon'))    score += 3;
+  if (val('f-adresil'))    score += 3;
+  if (val('f-adresilce'))  score += 2;
+  if (val('f-linkedin'))   score += 2;
 
-  // ── B) Deneyim — 25 puan ──
+  // ── B) Deneyim — 20 puan ──
   var cbNoExp = document.getElementById('cb-no-experience');
   var expCards = document.querySelectorAll('.exp-card');
   if (cbNoExp && cbNoExp.checked) {
-    score += 15; // no-exp path gets less than full experience
+    score += 10;
   } else if (expCards.length > 0) {
     var firstId = expCards[0].id + '-';
-    if (val(firstId + 'sirket'))  score += 5;
-    if (val(firstId + 'pozisyon')) score += 5;
-    if (val(firstId + 'basyil'))  score += 4;
-    if (val(firstId + 'sektor'))  score += 4;
-    if (val(firstId + 'segment')) score += 4;
+    if (val(firstId + 'sirket'))  score += 4;
+    if (val(firstId + 'pozisyon')) score += 4;
+    if (val(firstId + 'basyil'))  score += 3;
+    if (val(firstId + 'sektor'))  score += 3;
+    if (val(firstId + 'segment')) score += 3;
     if (val(firstId + 'desc'))    score += 3;
   }
 
-  // ── C) Eğitim & Dil — 15 puan ──
+  // ── C) Eğitim & Dil — 10 puan ──
   var eduRows = document.querySelectorAll('#edu-rows-container .dynamic-row');
   if (eduRows.length > 0) {
     var firstEduSel = eduRows[0].querySelector('select');
-    if (firstEduSel && firstEduSel.value) score += 8; // seviye dolu
-    else score += 4; // satır var ama boş
+    if (firstEduSel && firstEduSel.value) score += 6;
+    else score += 3;
   }
-  if (document.querySelectorAll('#lang-rows-container .dynamic-row').length > 0) score += 7;
+  if (document.querySelectorAll('#lang-rows-container .dynamic-row').length > 0) score += 4;
 
-  // ── D) Tercihler — 25 puan ──
-  if (selectedCalismaTipleri && selectedCalismaTipleri.length > 0) score += 5;
-  if (selectedMusaitlik)                                          score += 4;
-  if (selectedSegmentler && selectedSegmentler.length > 0)        score += 4;
-  if (val('f-seyahat'))                                           score += 4;
-  if (val('f-vardiya'))                                           score += 4;
-  if (val('f-ihbar'))                                             score += 4;
+  // ── D) Tercihler — 15 puan ──
+  if (selectedCalismaTipleri && selectedCalismaTipleri.length > 0) score += 3;
+  if (selectedMusaitlik)                                          score += 3;
+  if (selectedSegmentler && selectedSegmentler.length > 0)        score += 3;
+  if (val('f-seyahat'))                                           score += 2;
+  if (val('f-vardiya'))                                           score += 2;
+  if (val('f-ihbar'))                                             score += 2;
 
-  // ── E) Lokasyon — 7 puan ──
-  if (Object.keys(selectedLocations).length > 0) score += 7;
+  // ── E) Lokasyon — 5 puan ──
+  if (Object.keys(selectedLocations).length > 0) score += 5;
 
-  // ── F) Kariyer Hedefi — 8 puan ──
+  // ── F) CV & Hakkımda — 20 puan ──
+  var hasCv = _loadedDBData && _loadedDBData.profile && _loadedDBData.profile.cv_url;
+  if (!hasCv) {
+    // Check if wizard CV was just uploaded (file input has file)
+    var wizCvUploaded = document.getElementById('wiz-cv-uploaded');
+    if (wizCvUploaded && wizCvUploaded.style.display !== 'none') hasCv = true;
+  }
+  if (hasCv) score += 15;
+  if (val('f-bio')) score += 5;
+
+  // ── G) Kariyer Hedefi — 15 puan ──
   var _trRows = document.querySelectorAll('#target-roles-container .dynamic-row');
   var _hasTarget = false;
   for (var _i = 0; _i < _trRows.length; _i++) {
     var _s = _trRows[_i].querySelector('select[id$="-unvan"]');
     if (_s && _s.value) { _hasTarget = true; break; }
   }
-  if (_hasTarget) score += 5;
-  if (selectedCareerTypes && selectedCareerTypes.length > 0) score += 3;
+  if (_hasTarget) score += 10;
+  if (selectedCareerTypes && selectedCareerTypes.length > 0) score += 5;
 
   return Math.min(score, 100);
 }
@@ -547,7 +559,15 @@ function getProfileScoreHints() {
   if (!val('f-linkedin'))
     hints.push({ step: 1, text: 'LinkedIn profilini ekle — işverenlere güven ver', points: 3 });
   if (!val('f-adresilce'))
-    hints.push({ step: 1, text: 'İlçeni seç — doğru lokasyonla eşleşme artır', points: 3 });
+    hints.push({ step: 1, text: 'İlçeni seç — doğru lokasyonla eşleşme artır', points: 2 });
+
+  // ── CV & Hakkımda ──
+  var _hasCv = _loadedDBData && _loadedDBData.profile && _loadedDBData.profile.cv_url;
+  var _wizCvUp = document.getElementById('wiz-cv-uploaded');
+  if (!_hasCv && (!_wizCvUp || _wizCvUp.style.display === 'none'))
+    hints.push({ step: 6, text: 'CV yükle — işverenler detaylı inceleyebilsin', points: 15 });
+  if (!val('f-bio'))
+    hints.push({ step: 6, text: 'Hakkımda yaz — kendinizi 2-3 cümleyle tanıtın', points: 5 });
 
   // Sort by points descending (most impactful first)
   hints.sort(function(a, b) { return b.points - a.points; });

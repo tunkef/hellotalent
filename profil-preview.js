@@ -1,4 +1,4 @@
-/* global _escHtml, _loadedDBData, calculateCompletion, CAREER_TYPE_LABELS, currentUser */
+/* global _escHtml, _loadedDBData, calculateCompletion, CAREER_TYPE_LABELS, currentUser, val */
 // ═══════════════════════════════════════════════════
 // profil-preview.js — Profile Preview Drawer
 // Extracted from profil-ui.js to reduce change-risk.
@@ -77,6 +77,12 @@ function openProfilePreview() {
     html += '<span class="pp-status-badge active"><span class="dot"></span>Aktif i\u015F ar\u0131yor</span>';
   }
   html += '</div></div></div>';
+
+  // ── BIO ──
+  var bioText = val ? val('f-bio') : '';
+  if (bioText) {
+    html += '<div style="padding:12px 16px;margin:4px 0;background:var(--bg-elevated,#F7F6F4);border-radius:10px;font-family:Plus Jakarta Sans,sans-serif;font-size:13px;color:var(--text);line-height:1.7;font-style:italic;">"' + _escHtml(bioText) + '"</div>';
+  }
 
   // ── COMPLETION BADGE (işveren görür) ──
   var ppPct = typeof calculateCompletion === 'function' ? calculateCompletion() : 0;
