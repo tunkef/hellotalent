@@ -1577,6 +1577,12 @@ async function saveProfileRPC(onComplete) {
       throw err;
     }
 
+    // Save bio separately (lightweight RPC)
+    var bioVal = val('f-bio');
+    if (typeof bioVal === 'string') {
+      await supabase.rpc('update_candidate_bio', { p_bio: bioVal || null });
+    }
+
     // Success
     clearDraft();
     wizardDirty = false; // Reset dirty state so success modal → switchPanel won't trigger guard
@@ -1816,6 +1822,7 @@ async function loadProfileFromDB() {
       contact_pref_email: cand.contact_pref_email,
       contact_pref_phone: cand.contact_pref_phone,
       contact_pref_whatsapp: cand.contact_pref_whatsapp,
+      bio: cand.bio || null,
       account_status: cand.account_status || 'active',
       deletion_requested_at: cand.deletion_requested_at || null,
       is_premium: cand.is_premium === true,

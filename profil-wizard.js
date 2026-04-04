@@ -11,7 +11,7 @@
 
 // ── WIZARD STATE ──────────────────────────────────
 var wizStep = 1;
-var TOTAL_STEPS = 6;
+var TOTAL_STEPS = 7;
 
 function wizGoTo(step) {
   if (step < 1 || step > TOTAL_STEPS) return;
@@ -67,19 +67,20 @@ function renderWizard() {
   if (wizPanel) wizPanel.scrollTop = 0;
   window.scrollTo({top: 0, behavior: 'smooth'});
   // Refresh Step 6 employer state when entering that step
-  if (wizStep === 6) updateStep6HideState();
+  if (wizStep === 7) updateStep6HideState();
 }
 
 // ── STEP VALIDATION ───────────────────────────────
 function validateStep(step) {
   clearStepErrors();
-  if (step === 6) return true;
+  if (step === 7) return true;
   switch(step) {
     case 1: return validateKisisel();
     case 2: return validateKariyer();
     case 3: return validateEgitim();
     case 4: return validateTercihler();
     case 5: return validateLokasyon();
+    case 6: return true; // CV + Bio — opsiyonel
     default: return true;
   }
 }

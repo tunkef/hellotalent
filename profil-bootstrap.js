@@ -1,4 +1,4 @@
-/* global _loadedDBData, _initBrandCompanyLookup, addTargetRoleRow, applyAllVisibilityMirrorsFromProfile, applyDraft, canonicalizeRole, currentCVStoragePath, currentUser, getProfilAuthSession, ht_track, initCVUpload, initStep1, initStep2, initStep3, initStep4, initStep5, initStep6, loadDraft, loadProfileFromDB, loadViewersCard, populateIlceSelect, RETAIL_POSITIONS, selectedCalismaTipleri, selectedCareerTypes, selectedMusaitlik, selectedSegmentler, setAvatarImage, setVal, showCVUploaded, STORAGE, supabase, syncAccountEmail, titleCaseTR, trLower, updateCityChipStates, updateCompletionUI, updateDashboardSummary, updateMerkezCards */
+/* global _loadedDBData, _initBrandCompanyLookup, addTargetRoleRow, applyAllVisibilityMirrorsFromProfile, applyDraft, canonicalizeRole, currentCVStoragePath, currentUser, getProfilAuthSession, ht_track, initCVUpload, initStep1, initStep2, initStep3, initStep4, initStep5, initStep6, loadDraft, loadProfileFromDB, loadViewersCard, populateIlceSelect, RETAIL_POSITIONS, selectedCalismaTipleri, selectedCareerTypes, selectedMusaitlik, selectedSegmentler, setAvatarImage, setVal, showCVUploaded, STORAGE, supabase, syncAccountEmail, titleCaseTR, trLower, updateCityChipStates, updateCompletionUI, updateDashboardSummary, updateMerkezCards, uploadCV */
 // ═══════════════════════════════════════════════════
 // PROFIL BOOTSTRAP — auth, hydration, step-init orchestration
 // Extracted from profil.html inline scripts.
@@ -17,6 +17,7 @@ function reapplyDynamicFields() {
 
   // Step 1 selects (options created by initStep1)
   if (db.profile) {
+    if (db.profile.bio) setVal('f-bio', db.profile.bio);
     setVal('f-dogumyili', db.profile.dogum_yili);
     setVal('f-adresil', db.profile.adres_il);
     if (db.profile.adres_il) {
@@ -281,6 +282,44 @@ function _htRunStepInits() {
   initStep3();
   initStep4();
   initStep5();
+
+  // Step 6 CV upload wire-up (wizard CV input → existing uploadCV)
+  var wizCvInput = document.getElementById('wiz-cv-input');
+  if (wizCvInput) {
+    wizCvInput.addEventListener('change', function() {
+      if (wizCvInput.files[0] && typeof uploadCV === 'function') {
+        uploadCV(wizCvInput.files[0]);
+        // Update wizard CV zone visual
+        var emptyZone = document.getElementById('wiz-cv-empty');
+        var uploadedZone = document.getElementById('wiz-cv-uploaded');
+        var fnameEl = document.getElementById('wiz-cv-filename');
+        if (emptyZone) emptyZone.style.display = 'none';
+        if (uploadedZone) uploadedZone.style.display = '';
+        if (fnameEl) fnameEl.textContent = wizCvInput.files[0].name;
+      }
+    });
+  }
+  var wizCvRemove = document.getElementById('wiz-cv-remove');
+  if (wizCvRemove) {
+    wizCvRemove.addEventListener('click', function() {
+      var emptyZone = document.getElementById('wiz-cv-empty');
+      var uploadedZone = document.getElementById('wiz-cv-uploaded');
+      if (emptyZone) emptyZone.style.display = '';
+      if (uploadedZone) uploadedZone.style.display = 'none';
+      var wizInput = document.getElementById('wiz-cv-input');
+      if (wizInput) wizInput.value = '';
+    });
+  }
+  // Restore CV state in wizard if already uploaded
+  if (_loadedDBData && _loadedDBData.profile && _loadedDBData.profile.cv_filename) {
+    var emptyZone = document.getElementById('wiz-cv-empty');
+    var uploadedZone = document.getElementById('wiz-cv-uploaded');
+    var fnameEl = document.getElementById('wiz-cv-filename');
+    if (emptyZone) emptyZone.style.display = 'none';
+    if (uploadedZone) uploadedZone.style.display = '';
+    if (fnameEl) fnameEl.textContent = _loadedDBData.profile.cv_filename;
+  }
+
   initStep6();
 
   // Re-apply DB values to selects/chips that were just created by initStep1/4/5.

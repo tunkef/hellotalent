@@ -639,7 +639,7 @@ if (window.Sentry) {
 
   <!-- WIZARD PROGRESS BAR -->
   <div class="wiz-progress" id="wiz-progress" style="position:relative;">
-    <div class="wiz-progress-meta" id="wiz-progress-meta">Adım <span id="wiz-current-step">1</span> / 6</div>
+    <div class="wiz-progress-meta" id="wiz-progress-meta">Adım <span id="wiz-current-step">1</span> / 7</div>
     <div class="wiz-progress-step active" data-wstep="1">
       <div class="wiz-progress-circle"><span class="wiz-circle-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span></div>
       <div class="wiz-progress-label">Kişisel</div>
@@ -666,6 +666,11 @@ if (window.Sentry) {
     </div>
     <div class="wiz-progress-line" data-wline="5"></div>
     <div class="wiz-progress-step" data-wstep="6">
+      <div class="wiz-progress-circle"><span class="wiz-circle-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></span></div>
+      <div class="wiz-progress-label">CV</div>
+    </div>
+    <div class="wiz-progress-line" data-wline="6"></div>
+    <div class="wiz-progress-step" data-wstep="7">
       <div class="wiz-progress-circle"><span class="wiz-circle-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span></div>
       <div class="wiz-progress-label">Ayarlar</div>
     </div>
@@ -947,8 +952,41 @@ if (window.Sentry) {
     </div>
   </div>
 
-  <!-- WIZARD STEP 6: Profil Ayarları -->
+  <!-- WIZARD STEP 6: CV + Hakkımda -->
   <div class="wiz-step" id="wiz-step-6" data-step="6">
+    <div class="wiz-step-title">CV & Hakkımda</div>
+    <div class="wiz-step-desc">Doldurduğun bilgiler işverenle eşleşmeni güçlendirir. CV'ni de yüklersen işverenler indirebilir.</div>
+    <div id="step6-content">
+
+      <!-- CV UPLOAD -->
+      <div class="card-title mb-4">CV Yükle <span class="field-hint">· İşverenler CV'ni indirip detaylı inceleyebilir</span></div>
+      <div id="wiz-cv-zone" style="border:2px dashed var(--border);border-radius:12px;padding:24px;text-align:center;margin-bottom:16px;">
+        <div id="wiz-cv-empty">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.5" style="margin-bottom:8px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><polyline points="9 15 12 12 15 15"/></svg>
+          <div style="font-size:var(--text-sm);color:var(--muted);margin-bottom:8px;">PDF, DOC veya DOCX — maks. 5MB</div>
+          <label for="wiz-cv-input" class="btn btn-secondary btn-sm" style="cursor:pointer;">CV Seç</label>
+          <input type="file" id="wiz-cv-input" accept=".pdf,.doc,.docx" style="display:none;">
+        </div>
+        <div id="wiz-cv-uploaded" style="display:none;">
+          <div style="display:flex;align-items:center;gap:8px;justify-content:center;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--green,#059669)" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            <span id="wiz-cv-filename" style="font-weight:600;"></span>
+          </div>
+          <button type="button" id="wiz-cv-remove" class="btn btn-secondary btn-sm" style="margin-top:8px;">Değiştir</button>
+        </div>
+      </div>
+
+      <hr class="section-divider">
+
+      <!-- BIO / HAKKIMDA -->
+      <div class="card-title mb-4">Hakkımda <span class="field-hint">· Kendinizi 2-3 cümleyle tanıtın</span></div>
+      <textarea id="f-bio" class="form-input" rows="3" style="resize:vertical;min-height:60px;" placeholder="Perakende kariyerinizdeki güçlü yanlarınızı özetleyin. Örnek: 8 yıldır lüks perakendede mağaza yönetimi yapıyorum, ekip kurma ve müşteri deneyimi konularında uzmanım."></textarea>
+
+    </div>
+  </div>
+
+  <!-- WIZARD STEP 7: Profil Ayarları -->
+  <div class="wiz-step" id="wiz-step-7" data-step="7">
     <div class="wiz-step-title">Profil Ayarları</div>
     <div class="wiz-step-desc">Profilin işverenler tarafından nasıl görünsün?</div>
     <div class="wiz-settings-grid">
