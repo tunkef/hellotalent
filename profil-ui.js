@@ -1526,7 +1526,10 @@ async function saveProfileRPC(onComplete) {
     calisma_tipleri: wp.calisma_tipleri || [],
     segmentler: wp.tercih_segmentler || [],
     career_goal: wp.career_goal || null,
-    career_type: wp.career_type || null
+    career_type: wp.career_type || null,
+    travel_willingness: wp.travel_willingness || null,
+    shift_flexibility: wp.shift_flexibility || null,
+    notice_period: wp.notice_period || null
   };
 
   // Assemble brand interests
