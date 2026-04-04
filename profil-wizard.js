@@ -1,4 +1,4 @@
-/* global _loadedDBData, applyAllVisibilityMirrorsFromProfile, getCurrentEmployerDisplayFromExperiences, ht_track, loadSirketlerPanel, saveDraft, selectedMusaitlik, setVal, showTgToast, syncAccountEmail, updateCompletionUI, updateMerkezCards, updateStep6HideState, val */
+/* global _loadedDBData, applyAllVisibilityMirrorsFromProfile, getCurrentEmployerDisplayFromExperiences, ht_track, loadSirketlerPanel, saveDraft, selectedCalismaTipleri, selectedMusaitlik, selectedSegmentler, setVal, showTgToast, syncAccountEmail, updateCompletionUI, updateMerkezCards, updateStep6HideState, val */
 // ═══════════════════════════════════════════════════
 // PROFIL WIZARD — state machine, validation, panel switching, mobile sidebar
 // Extracted from profil.html inline scripts.
@@ -89,6 +89,7 @@ function validateKisisel() {
   if (!val('f-adsoyad')) errors.push('Ad Soyad zorunludur');
   if (!val('f-telefon')) errors.push('Telefon zorunludur');
   if (!val('f-adresil')) errors.push('Adres / İl zorunludur');
+  if (val('f-adresil') && !val('f-adresilce')) errors.push('İlçe zorunludur');
   // LinkedIn format validation (optional field, but if filled must be valid)
   var li = val('f-linkedin');
   if (li && !/^https?:\/\/(www\.)?linkedin\.com\/in\/.+/i.test(li)) {
@@ -100,6 +101,7 @@ function validateKisisel() {
     if (!val('f-adsoyad')) markFieldError('f-adsoyad');
     if (!val('f-telefon')) markFieldError('f-telefon');
     if (!val('f-adresil')) markFieldError('f-adresil');
+    if (val('f-adresil') && !val('f-adresilce')) markFieldError('f-adresilce');
     return false;
   }
   return true;
@@ -121,22 +123,42 @@ function validateKariyer() {
   cards.forEach(function(card, i) {
     var prefix = card.id + '-';
     var num = i + 1;
-    if (!val(prefix + 'sirket')) errors.push('Deneyim #' + num + ': \u015Eirket zorunludur');
+    if (!val(prefix + 'sirket')) errors.push('Deneyim #' + num + ': Şirket zorunludur');
     var pozSecVal = val(prefix + 'unvan-sec');
     var pozVal = (pozSecVal === '__custom__') ? val(prefix + 'unvan-custom') : (pozSecVal || val(prefix + 'unvan-custom'));
     if (!pozVal) errors.push('Deneyim #' + num + ': Pozisyon zorunludur');
-    if (!val(prefix + 'basyil')) errors.push('Deneyim #' + num + ': Ba\u015Flang\u0131\u00E7 y\u0131l\u0131 zorunludur');
+    if (!val(prefix + 'basyil')) errors.push('Deneyim #' + num + ': Başlangıç yılı zorunludur');
+    if (!val(prefix + 'sektor')) errors.push('Deneyim #' + num + ': Sektör zorunludur');
+    if (!val(prefix + 'segment')) errors.push('Deneyim #' + num + ': Segment zorunludur');
   });
   if (errors.length > 0) { showStepErrors(errors); return false; }
   return true;
 }
-function validateEgitim() { return true; }
+function validateEgitim() {
+  var errors = [];
+  var eduRows = document.querySelectorAll('#edu-rows-container .dynamic-row');
+  if (eduRows.length === 0) {
+    errors.push('En az bir eğitim bilgisi eklemelisin.');
+  }
+  if (errors.length > 0) { showStepErrors(errors); return false; }
+  return true;
+}
 function validateTercihler() {
   var errors = [];
+  if (typeof selectedCalismaTipleri === 'undefined' || !selectedCalismaTipleri || selectedCalismaTipleri.length === 0) {
+    errors.push('En az bir çalışma tipi seçmelisin (Tam Zamanlı, Yarı Zamanlı vb.)');
+    var ctChecks = document.getElementById('calisma-tipleri-checks');
+    if (ctChecks) ctChecks.classList.add('field-error');
+  }
   if (typeof selectedMusaitlik === 'undefined' || !selectedMusaitlik) {
     errors.push('Müsaitlik alanı zorunludur. Yeni bir işe ne kadar sürede başlayabileceğini seç.');
     var chipsRow = document.getElementById('musaitlik-chips');
     if (chipsRow) chipsRow.classList.add('field-error');
+  }
+  if (typeof selectedSegmentler === 'undefined' || !selectedSegmentler || selectedSegmentler.length === 0) {
+    errors.push('En az bir segment tercihi seçmelisin (Lüks, Fast Fashion vb.)');
+    var segChips = document.getElementById('segment-chips');
+    if (segChips) segChips.classList.add('field-error');
   }
   if (errors.length > 0) { showStepErrors(errors); return false; }
   return true;

@@ -1,5 +1,5 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 4 Nisan 2026 | Asama 64: KVKK + Apple Benchmark + DEI + Analytics + Riza + Lead Sistemi
+> Son guncelleme: 4 Nisan 2026 | Asama 64: KVKK + Apple Benchmark + DEI + Analytics + Riza + Lead + Zorunlu Alanlar
 
 ## 1. Proje Ozeti
 

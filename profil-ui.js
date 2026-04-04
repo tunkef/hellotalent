@@ -319,7 +319,7 @@ function addExperienceCard(data) {
 
   // Sektör (optional — controls rol ailesi and pozisyon cascades)
   var sektorOptions = Object.keys(typeof SEKTOR_ROL_MAP === 'object' ? SEKTOR_ROL_MAP : {});
-  var sektorWrap = makeSelectField('Sektör', cardId + '-sektor', sektorOptions, d.sektor, 'Sektör seçin...');
+  var sektorWrap = makeSelectField('Sektör <span class="field-req">*</span>', cardId + '-sektor', sektorOptions, d.sektor, 'Sektör seçin...');
   var sektorSelect = sektorWrap.querySelector('select');
 
   function clearSelectOptions(sel, placeholderText) {
@@ -558,7 +558,7 @@ function addExperienceCard(data) {
   // Row: Segment + Takım Büyüklüğü (additional details)
   var rowDetail = document.createElement('div');
   rowDetail.className = 'field-row';
-  rowDetail.appendChild(makeSelectField('Segment', cardId + '-segment', SEGMENTLER, d.segment, 'Segment seçiniz...'));
+  rowDetail.appendChild(makeSelectField('Segment <span class="field-req">*</span>', cardId + '-segment', SEGMENTLER, d.segment, 'Segment seçiniz...'));
   var takimWrap = makeSelectField('Takım Büyüklüğü', cardId + '-takim', TAKIM_BUYUKLUKLERI, d.takim_buyuklugu, 'Takım büyüklüğü seçiniz...');
   takimWrap.id = cardId + '-takim-wrap';
   rowDetail.appendChild(takimWrap);
@@ -971,7 +971,7 @@ function initStep3() {
   var eduC = document.getElementById('edu-rows-container');
   if (!eduC || eduC.children.length === 0) addEducationRow();
   var langC = document.getElementById('lang-rows-container');
-  if (!langC || langC.children.length === 0) addLanguageRow();
+  if (!langC || langC.children.length === 0) addLanguageRow({ dil: 'Türkçe', seviye: 'Anadil' });
 }
 
 function addEducationRow(data) {
