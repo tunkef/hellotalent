@@ -115,6 +115,20 @@
 
 ## Yapılacaklar Güncelleme Kuralı
 
+### Supabase Advisor Fix'leri (Acil Değil)
+
+| # | Görev | Detay | Öncelik |
+|---|-------|-------|---------|
+| SA1 | search_path fix (32 fonksiyon) | `ALTER FUNCTION ... SET search_path = public` — Security Advisor warning | Düşük |
+| SA2 | candidate_view_stats RLS policy ekle | RLS enabled ama policy yok — Security Advisor info | Düşük |
+| SA3 | FK index'ler (99 tablo) | Unindexed foreign keys — Performance Advisor info | 1000+ aday milestone |
+| SA4 | pg_cron campaign interval azalt | end_expired + activate_due her dakika → her saat | Düşük |
+| SA5 | bio'yu search RPC'ye ekle | İşverenler aday bio'sunu göremez — audit finding | Orta |
+
+---
+
+## Yapılacaklar Güncelleme Kuralı
+
 - Her görev tamamlandığında ☑ + tarih eklenir
 - Yeni görevler keşfedildikçe ilgili MVP bölümüne eklenir
 - Öncelik değişiklikleri karar defterine (K###) kayıt edilir
