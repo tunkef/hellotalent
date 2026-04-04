@@ -982,7 +982,46 @@ if (window.Sentry) {
       <div class="card-title mb-4">Hakkımda <span class="field-hint">· İşverenler seni tanısın, öne çık</span></div>
       <p style="font-size:var(--text-sm);color:var(--muted);margin:0 0 10px;line-height:1.6;">Perakende kariyerindeki güçlü yanlarını 2-3 cümleyle özetle. İşverenler profil kartında bu metni görür.</p>
       <textarea id="f-bio" class="form-input" rows="5" style="resize:vertical;min-height:100px;font-size:15px;line-height:1.7;padding:14px;" placeholder="Örnek: 8 yıldır lüks perakendede mağaza yönetimi yapıyorum. 30+ kişilik ekipleri yönettim, yıllık 15M TL ciro hedeflerini sürekli aştım. Ekip kurma, müşteri deneyimi ve visual merchandising konularında uzmanım."></textarea>
-      <div style="display:flex;justify-content:flex-end;margin-top:4px;"><span id="bio-char-count" style="font-size:11px;color:var(--muted);">0 / 500</span></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px;">
+        <button type="button" id="btn-bio-translate" style="border:none;background:none;color:var(--muted);font-size:12px;cursor:pointer;padding:4px 8px;border-radius:6px;transition:background .15s;" onmouseenter="this.style.background='rgba(0,0,0,0.04)'" onmouseleave="this.style.background='none'">\uD83E\uDD16 AI ile T\u00FCrk\u00E7eye \u00C7evir</button>
+        <span id="bio-char-count" style="font-size:11px;color:var(--muted);">0 / 500</span>
+      </div>
+      <script>
+      (function(){
+        var btn = document.getElementById('btn-bio-translate');
+        if (!btn) return;
+        btn.addEventListener('click', function() {
+          var ta = document.getElementById('f-bio');
+          if (!ta || !ta.value.trim()) {
+            if (typeof window.showToast === 'function') window.showToast('\u00D6nce \u0130ngilizce metni yap\u0131\u015Ft\u0131r\u0131n', 'warn');
+            return;
+          }
+          var origText = btn.textContent;
+          btn.textContent = '\u00C7evriliyor...';
+          btn.disabled = true;
+          try {
+            var supa = typeof HT !== 'undefined' && HT.getSupa ? HT.getSupa() : (typeof supabase !== 'undefined' ? supabase : null);
+            if (!supa || !supa.functions) throw new Error('no supa');
+            supa.functions.invoke('translate-text', { body: { text: ta.value, target_lang: 'tr' } }).then(function(res) {
+              if (res.error || !res.data) throw new Error('translate failed');
+              var parsed = typeof res.data === 'string' ? JSON.parse(res.data) : res.data;
+              if (parsed.translated) { ta.value = parsed.translated; ta.dispatchEvent(new Event('input')); }
+              else { throw new Error('no translated field'); }
+              btn.textContent = origText;
+              btn.disabled = false;
+            }).catch(function() {
+              if (typeof window.showToast === 'function') window.showToast('\u00C7eviri \u015Fu an kullan\u0131lam\u0131yor, l\u00FCtfen daha sonra tekrar deneyin', 'error');
+              btn.textContent = origText;
+              btn.disabled = false;
+            });
+          } catch(e) {
+            if (typeof window.showToast === 'function') window.showToast('\u00C7eviri \u015Fu an kullan\u0131lam\u0131yor, l\u00FCtfen daha sonra tekrar deneyin', 'error');
+            btn.textContent = origText;
+            btn.disabled = false;
+          }
+        });
+      })();
+      </script>
 
     </div>
   </div>
@@ -1021,7 +1060,7 @@ if (window.Sentry) {
           </div>
           <label class="toggle"><input type="checkbox" id="wiz-toggle-hide"><span class="toggle-slider"></span></label>
         </div>
-        <div class="wiz-setting-disabled-hint" id="wiz-hide-disabled-hint" style="display:none;">Şu an aktif bir işverende çalışmıyorsun. Yeni bir deneyim ekleyip "Halen burada çalışıyorum" seçersen bu ayar aktif olur.</div>
+        <div class="wiz-setting-disabled-hint" id="wiz-hide-disabled-hint">Şu an aktif bir işverende çalışmıyorsun. Yeni bir deneyim ekleyip "Halen burada çalışıyorum" seçersen bu ayar aktif olur.</div>
       </div>
 
       <div class="wiz-setting-card wiz-setting-premium">

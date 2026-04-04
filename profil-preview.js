@@ -97,11 +97,9 @@ function openProfilePreview() {
   html += ppPct >= 80 ? 'Güçlü profil — işverenler tarafından görülme şansın yüksek' : ppPct >= 45 ? 'İyi — birkaç alan daha tamamla, öne çık' : 'Profilini tamamla — işverenler seni görsün';
   html += '</div></div></div>';
 
-  // ── ROW 1: Deneyim + E\u011Fitim & Dil ──
+  // ── Deneyim (FULL WIDTH) ──
   html += '<div class="pp-bento">';
-
-  // Left: Deneyim
-  html += '<div class="pp-card accent-verm">';
+  html += '<div class="pp-card span-2 accent-verm">';
   html += '<div class="pp-card-title">Deneyim</div>';
   if (exps.length > 0) {
     exps.forEach(function(e) {
@@ -117,6 +115,7 @@ function openProfilePreview() {
         else if (e.bitis_yil) { period += ' \u2014 ' + (e.bitis_ay ? e.bitis_ay + ' ' : '') + e.bitis_yil; }
       }
       html += '<div class="pp-exp">';
+      html += '<div class="pp-exp-header">';
       html += '<div class="pp-exp-dot ' + (e.devam_ediyor ? 'active' : 'past') + '"></div>';
       html += '<div class="pp-exp-info">';
       html += '<div class="pp-exp-role">' + _escHtml(role) + '</div>';
@@ -128,11 +127,12 @@ function openProfilePreview() {
       if (details.length > 0) {
         html += '<div class="pp-exp-detail">' + _escHtml(details.join(' \u00B7 ')) + '</div>';
       }
-      if (e.description) {
-        html += '<div style="font-size:11px;color:var(--muted);margin-top:4px;line-height:1.5;max-height:44px;overflow:hidden;">' + _escHtml(e.description) + '</div>';
-      }
       html += '</div>';
       if (period) html += '<div class="pp-exp-period">' + _escHtml(period) + '</div>';
+      html += '</div>';
+      if (e.description) {
+        html += '<div class="pp-exp-desc">' + _escHtml(e.description) + '</div>';
+      }
       html += '</div>';
     });
   } else if (db.no_experience) {
@@ -141,9 +141,11 @@ function openProfilePreview() {
     html += '<div class="pp-empty">Hen\u00FCz eklenmedi</div>';
   }
   html += '</div>';
+  html += '</div>';
 
-  // Right: E\u011Fitim & Dil
-  html += '<div class="pp-card accent-green">';
+  // ── E\u011Fitim & Dil (separate full-width row) ──
+  html += '<div class="pp-bento">';
+  html += '<div class="pp-card span-2 accent-green">';
   html += '<div class="pp-card-title">E\u011Fitim & Dil</div>';
   if (edus.length > 0) {
     edus.forEach(function(e) {

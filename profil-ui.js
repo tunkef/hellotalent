@@ -361,7 +361,7 @@ function addExperienceCard(data) {
   function populateUnvanForAilesi(sektor, aile, selectedUnvan) {
     clearSelectOptions(unvanSelect, aile ? 'Unvan seçiniz...' : 'Önce rol ailesi seçin');
     unvanSelect.disabled = true;
-    unvanSelect.style.display = '';
+    unvanWrap.style.display = '';
     unvanCustomWrap.style.display = 'none';
 
     if (!sektor || !aile || !SEKTOR_ROL_MAP[sektor] || !SEKTOR_ROL_MAP[sektor][aile]) return;
@@ -384,7 +384,7 @@ function addExperienceCard(data) {
     if (selectedUnvan && !hasMatchInList) {
       customOpt.selected = true;
       // Show custom field with restored value
-      unvanSelect.style.display = 'none';
+      unvanWrap.style.display = 'none';
       unvanCustomWrap.style.display = '';
     }
     unvanSelect.appendChild(customOpt);
@@ -398,7 +398,7 @@ function addExperienceCard(data) {
       populateRolAilesiForSector(sektor, null);
       clearSelectOptions(unvanSelect, 'Önce rol ailesi seçin');
       unvanSelect.disabled = true;
-      unvanSelect.style.display = '';
+      unvanWrap.style.display = '';
       unvanCustomWrap.style.display = 'none';
     });
   }
@@ -414,10 +414,10 @@ function addExperienceCard(data) {
   if (unvanSelect) {
     unvanSelect.addEventListener('change', function() {
       if (unvanSelect.value === '__custom__') {
-        unvanSelect.style.display = 'none';
+        unvanWrap.style.display = 'none';
         unvanCustomWrap.style.display = '';
       } else {
-        unvanSelect.style.display = '';
+        unvanWrap.style.display = '';
         unvanCustomWrap.style.display = 'none';
       }
     });
@@ -470,7 +470,7 @@ function addExperienceCard(data) {
         }
         if (found) {
           unvanSelect.value = sug.unvan;
-          unvanSelect.style.display = '';
+          unvanWrap.style.display = '';
           unvanCustomWrap.style.display = 'none';
         }
       }
@@ -503,17 +503,7 @@ function addExperienceCard(data) {
   rowRole.appendChild(pozCol);
   card.appendChild(rowRole);
 
-  // Dates block: Start → (devam) → End
-  var dateBlock = document.createElement('div');
-  dateBlock.className = 'exp-date-block';
-
-  var startRow = document.createElement('div');
-  startRow.className = 'field-row exp-date-row exp-date-row-start';
-  startRow.appendChild(makeSelectField('Başlangıç Ay', cardId + '-basay', AY_ISIMLERI, d.baslangic_ay, 'Ay'));
-  startRow.appendChild(makeYearField('Başlangıç Yıl <span class=\"field-req\">*</span>', cardId + '-basyil', d.baslangic_yil));
-  dateBlock.appendChild(startRow);
-
-  // Checkbox: Halen burada çalışıyorum — only the control toggles, not the row
+  // Checkbox: Halen burada çalışıyorum — above date fields, right after Şirket/Sektör/Rol/Pozisyon
   var cbWrap = document.createElement('div');
   cbWrap.className = 'cb-wrap';
   var cb = document.createElement('input');
@@ -541,7 +531,17 @@ function addExperienceCard(data) {
   devamBadge.style.fontWeight = '600';
   devamBadge.style.color = 'var(--green)';
   cbWrap.appendChild(devamBadge);
-  dateBlock.appendChild(cbWrap);
+  card.appendChild(cbWrap);
+
+  // Dates block: Start → End
+  var dateBlock = document.createElement('div');
+  dateBlock.className = 'exp-date-block';
+
+  var startRow = document.createElement('div');
+  startRow.className = 'field-row exp-date-row exp-date-row-start';
+  startRow.appendChild(makeSelectField('Başlangıç Ay', cardId + '-basay', AY_ISIMLERI, d.baslangic_ay, 'Ay'));
+  startRow.appendChild(makeYearField('Başlangıç Yıl <span class=\"field-req\">*</span>', cardId + '-basyil', d.baslangic_yil));
+  dateBlock.appendChild(startRow);
 
   var endRow = document.createElement('div');
   endRow.className = 'field-row exp-date-row exp-date-row-end';
@@ -594,6 +594,50 @@ function addExperienceCard(data) {
   if (d.description) descTa.value = d.description;
   descWrap.appendChild(descLabel);
   descWrap.appendChild(descTa);
+
+  // "AI ile Türkçeye Çevir" button for description
+  var descTransBtnWrap = document.createElement('div');
+  descTransBtnWrap.style.cssText = 'display:flex;justify-content:flex-end;margin-top:4px;';
+  var descTransBtn = document.createElement('button');
+  descTransBtn.type = 'button';
+  descTransBtn.textContent = '\uD83E\uDD16 AI ile T\u00FCrk\u00E7eye \u00C7evir';
+  descTransBtn.style.cssText = 'border:none;background:none;color:var(--muted);font-size:12px;cursor:pointer;padding:4px 8px;border-radius:6px;transition:background .15s;';
+  descTransBtn.addEventListener('mouseenter', function() { descTransBtn.style.background = 'rgba(0,0,0,0.04)'; });
+  descTransBtn.addEventListener('mouseleave', function() { descTransBtn.style.background = 'none'; });
+  descTransBtn.addEventListener('click', function() {
+    if (!descTa.value.trim()) {
+      if (typeof window.showToast === 'function') window.showToast('\u00D6nce \u0130ngilizce metni yap\u0131\u015Ft\u0131r\u0131n', 'warn');
+      return;
+    }
+    var origText = descTransBtn.textContent;
+    descTransBtn.textContent = '\u00C7evriliyor...';
+    descTransBtn.disabled = true;
+    (function() {
+      try {
+        var supa = typeof supabase !== 'undefined' ? supabase : null;
+        if (!supa || !supa.functions) throw new Error('no supa');
+        supa.functions.invoke('translate-text', { body: { text: descTa.value, target_lang: 'tr' } }).then(function(res) {
+          if (res.error || !res.data) throw new Error('translate failed');
+          var parsed = typeof res.data === 'string' ? JSON.parse(res.data) : res.data;
+          if (parsed.translated) { descTa.value = parsed.translated; }
+          else { throw new Error('no translated field'); }
+          descTransBtn.textContent = origText;
+          descTransBtn.disabled = false;
+        }).catch(function() {
+          if (typeof window.showToast === 'function') window.showToast('\u00C7eviri \u015Fu an kullan\u0131lam\u0131yor, l\u00FCtfen daha sonra tekrar deneyin', 'error');
+          descTransBtn.textContent = origText;
+          descTransBtn.disabled = false;
+        });
+      } catch(e) {
+        if (typeof window.showToast === 'function') window.showToast('\u00C7eviri \u015Fu an kullan\u0131lam\u0131yor, l\u00FCtfen daha sonra tekrar deneyin', 'error');
+        descTransBtn.textContent = origText;
+        descTransBtn.disabled = false;
+      }
+    })();
+  });
+  descTransBtnWrap.appendChild(descTransBtn);
+  descWrap.appendChild(descTransBtnWrap);
+
   card.appendChild(descWrap);
 
   // Toggle bitis fields and ayrilma based on checkbox
@@ -1203,7 +1247,14 @@ var selectedBrandInterests = [];
 
 function initStep4() {
   var btnAddRole = document.getElementById('btn-add-role');
-  if (btnAddRole) btnAddRole.addEventListener('click', function() { addTargetRoleRow(); });
+  if (btnAddRole) btnAddRole.addEventListener('click', function() {
+    var roleC = document.getElementById('target-roles-container');
+    if (roleC && roleC.children.length >= 3) {
+      if (typeof window.showToast === 'function') window.showToast('En fazla 3 hedef pozisyon ekleyebilirsiniz.', 'warn');
+      return;
+    }
+    addTargetRoleRow();
+  });
   // Default first row — skip if applyDraft already restored data
   var roleC = document.getElementById('target-roles-container');
   if (!roleC || roleC.children.length === 0) addTargetRoleRow();
@@ -1281,7 +1332,7 @@ function initStep4() {
     });
   }
 
-  // Career type — single-select check-item buttons
+  // Career type — multi-select check-item buttons (toggle behavior)
   var ctypeContainer = document.getElementById('career-type-checks');
   if (ctypeContainer) {
     CAREER_TYPE_OPTIONS.forEach(function(opt) {
@@ -1292,14 +1343,13 @@ function initStep4() {
       btn.dataset.value = opt.value;
       if (selectedCareerTypes.indexOf(opt.value) !== -1) btn.classList.add('checked');
       btn.addEventListener('click', function() {
-        var wasChecked = btn.classList.contains('checked');
-        // Single-select: deselect all first
-        ctypeContainer.querySelectorAll('.check-item').forEach(function(b) { b.classList.remove('checked'); });
-        if (wasChecked) {
-          selectedCareerTypes = [];
+        btn.classList.toggle('checked');
+        if (btn.classList.contains('checked')) {
+          if (selectedCareerTypes.indexOf(opt.value) === -1) {
+            selectedCareerTypes.push(opt.value);
+          }
         } else {
-          btn.classList.add('checked');
-          selectedCareerTypes = [opt.value];
+          selectedCareerTypes = selectedCareerTypes.filter(function(v) { return v !== opt.value; });
         }
       });
       ctypeContainer.appendChild(btn);
@@ -1310,8 +1360,8 @@ function initStep4() {
 function addTargetRoleRow(data) {
   var container = document.getElementById('target-roles-container');
   if (!container) return;
-  // Limit to 5 target positions
-  if (container.children.length >= 5) return;
+  // Limit to 3 target positions
+  if (container.children.length >= 3) return;
   roleCounter++;
   var d = data || {};
   var rowId = 'role-' + roleCounter;
@@ -1417,8 +1467,8 @@ function collectTargetRoles() {
 }
 
 function collectWorkPrefs() {
-  // Career type: single-select (max 1 value)
-  var ct = selectedCareerTypes.length > 0 ? selectedCareerTypes[0] : null;
+  // Career type: multi-select (comma-joined)
+  var ct = selectedCareerTypes.length > 0 ? selectedCareerTypes.join(',') : null;
   return {
     musaitlik: nullIfEmpty(selectedMusaitlik),
     calisma_tipleri: selectedCalismaTipleri,
