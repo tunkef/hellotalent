@@ -104,8 +104,24 @@ hellotalent.ai, Turkiye perakende sektorune ozel bir yetenek pazaryeri. Adaylar 
 
 ## 6. Son 3 Session Ozeti
 
-### Session 64 (4 Nisan — Asama 64: KVKK Revizyonlari + Apple Benchmark + DEI)
-**KVKK revizyonlari, Apple benchmark profil iyilestirmeleri ve DEI beyani.** (1) KV1-KV3: cinsiyet, dogum yili, askerlik, engel durumu opsiyonel yapildi — default "Belirtmek istemiyorum", label'lara `(opsiyonel)` hint eklendi. (2) AP5 (AKS-1): deneyim kartina "Is Tanimi" textarea eklendi — `candidate_experiences.description` text nullable kolon + RPC guncellendi + profil puani +2. (3) AP6 (AKS-3): tercihler adimina "Seyahat Istegi" dropdown eklendi — `candidate_work_preferences.travel_willingness` text kolon + RPC + bootstrap restore. (4) LB7 (AKS-6): DEI beyani footer'a eklendi ("HelloTalent'ta herkes esittir..."). (5) KV4 dogrulandi: isveren filtresinde yas/cinsiyet zaten yoktu. 2 migration deployed: `20260404071617_add_experience_description.sql`, `20260404072037_add_travel_willingness.sql`.
+### Session 64 (4 Nisan — Asama 64: Mega Session — KVKK + Profil + Lead + Audit)
+**Tek session'da 25+ gorev, 12 commit, 7 migration.** Kategoriler:
+
+**KVKK Revizyonlari:** (1) KV1-KV3: cinsiyet, dogum yili, askerlik, engel durumu opsiyonel — default "Belirtmek istemiyorum". (2) KV4: isveren filtresinde yas/cinsiyet zaten yoktu. (3) LB5: giris.html'e KVKK riza checkbox + 18 yas beyani eklendi, buton disabled olmadan kayit yapilamaz, `privacy_consent_at` + `age_confirmed` user_metadata'ya kaydediliyor. (4) kullanim-sartlari.html'e yas beyani sorumlulugu maddesi eklendi.
+
+**Apple Benchmark Profil Iyilestirmeleri:** (5) AP5 (AKS-1): deneyim kartina "Is Tanimi" textarea — `candidate_experiences.description`. (6) AP6 (AKS-3): seyahat istegi dropdown. (7) AP3+AP4: vardiya esnekligi + ihbar suresi dropdown. (8) LB7 (AKS-6): DEI beyani footer.
+
+**Zorunlu Alanlar Guclendirme:** (9) Ilce zorunlu (Step 1). (10) Sektor + segment zorunlu (Step 2). (11) Calisma tipleri + segment tercihleri zorunlu (Step 4). (12) En az 1 egitim zorunlu (Step 3). (13) Turkce-Anadil default dil.
+
+**UX Iyilestirmeleri:** (14) Apple tarzi search→chip lokasyon secici (Step 5 redesign). (15) Tum dropdown'lar alfabetik siralandi. (16) Opsiyonel alanlara motivasyon hint'leri (KVKK alanlari "(opsiyonel)" kaldi, diger alanlar fayda odakli). (17) "Henuz is deneyimim yok" auto-toggle (kart eklenince kalkar, silinince geri gelir).
+
+**Altyapi:** (18) LB1: analytics_events tablosu + HT.trackEvent() + ht_track bridge. (19) LB2: Cloudflare Web Analytics zaten aktifti. (20) Isveren lead sistemi: employer_leads tablosu + submit_employer_lead RPC + email_outbox bildirimi + admin panelde Leads sekmesi (durum yonetimi + not).
+
+**Audit & Bugfix:** (21) Code review: p_work_prefs'e travel/shift/notice eksikti — fix. (22) Description cache eksikti — fix. (23) Full pipeline audit: draft restore eksik 3 alan — fix. (24) search_employer_candidates RPC'ye yeni alanlar eklendi (description, takim_buyuklugu, travel, shift, notice). (25) target_roles cache, bos egitim validation, profil puani rebalance, profile_completed flag — hepsi fix.
+
+**Kararlar:** K025a-f: pgvector DEFER, conversational koc DEFER, schema.org KISMI, GEO/FAQ YAKIN, AI ozetleme DEFER, Gemma 4 DEFER.
+
+**7 migration deployed:** add_experience_description, add_travel_willingness, add_shift_flexibility_notice_period, analytics_events, employer_leads, search_rpc_new_fields. **12 commit:** 5beac24→1741633.
 
 ### Session 63 (2 Nisan gece — Asama 63: Landing Page Redesign + Dark Mode + Nav Polish)
 **index.html monolitik ana sayfa → minimal gate sayfasina donusturuldu. aday.html ve isveren.html LinkedIn-tarzinda sifirdan yeniden yazildi. Dark mode + nav brand renkleri eklendi.** (1) `index.html`: 2659 → ~130 satir gate page (tam ekran split, sol aday/sag isveren). (2) `aday.html`: 1029 → ~520 satir LinkedIn-style LP (Google signup, pills, steps, "kimin icin"). (3) `isveren.html`: 620 → ~640 satir LinkedIn-style LP (navy hero, lead form, marka pills). (4) `shared.js` nav: 6 sayfa kaldirildi, footer 2 kolon. (5) `shared.css` 14 LP tokeni. (6) **Dark mode:** 3 sayfaya theme-init script + html[data-theme="dark"] overrides eklendi (system preference default). (7) **Nav brand colors:** active link aday=vermillion, isveren=navy. (8) P3 regression test fix (stale 68/68 → flexible regex). **397 test PASS** (365 P3 + 32 smoke). 12 commit: 679c4e2–ba9e452.
