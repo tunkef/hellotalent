@@ -265,7 +265,11 @@
 **Neden:** AI search motorlarında "perakende kariyer" sorgularında görünme. Coach yazıları = organik SEO (teori ödevi #6).
 **Tetikleyici:** İlk 3-5 coach blog yazısı yayınlandığında.
 
-### K025e — Mesajlaşmada AI Özetleme → DEFER (MVP 2 sonrası)
+### K025e — Gemma 4 Local AI (Embedding + WebGPU Koç + CV) → DEFER
+**Karar:** Tümü ertelendi. EmbeddingGemma local embedding için maliyet avantajı var ama veri/ölçek yok. WebGPU mülakat koçu hedef kitle cihazlarında çalışmaz. CV multimodal mevcut Claude Sonnet pipeline'dan düşük kalite.
+**Not:** Gemma 4 free tier — pgvector zamanı geldiğinde embedding provider olarak değerlendirilecek (OpenAI vs Gemma karşılaştırması).
+
+### K025f — Mesajlaşmada AI Özetleme → DEFER (MVP 2 sonrası)
 **Karar:** MVP 2 sonrasına ertelendi.
 **Neden:** Şu an mesaj trafiği yok. 100+ aktif mesaj konuşması olunca değerli.
 **Tetikleyici:** Aylık 100+ mesaj trafiği.

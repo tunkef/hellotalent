@@ -624,13 +624,45 @@ html[data-theme="dark"] .mobile-nav-divider{background:#1F2937;}
 (function(){
   var form = document.getElementById('employer-lead-form');
   if(!form) return;
-  form.addEventListener('submit', function(e){
+  var btn = form.querySelector('button[type="submit"]');
+
+  form.addEventListener('submit', async function(e){
     e.preventDefault();
-    form.innerHTML = '<div style="text-align:center;padding:40px 0;">'
-      + '<div style="font-size:40px;margin-bottom:16px;">✓</div>'
-      + '<div style="font-family:Bricolage Grotesque,sans-serif;font-weight:800;font-size:24px;margin-bottom:8px;letter-spacing:-0.5px;">Teşekkürler!</div>'
-      + '<div style="color:#6B7280;font-size:15px;line-height:1.6;">En kısa sürede size dönüş yapacağız.</div>'
-      + '</div>';
+    if(btn) { btn.disabled = true; btn.textContent = 'Gönderiliyor...'; }
+
+    var fd = new FormData(form);
+    try {
+      var sb = window.HT ? window.HT.getSupa() : null;
+      if(!sb) throw new Error('Bağlantı hatası');
+
+      var result = await sb.rpc('submit_employer_lead', {
+        p_name: fd.get('name') || '',
+        p_email: fd.get('email') || '',
+        p_company: fd.get('company') || '',
+        p_phone: fd.get('phone') || null,
+        p_team_size: fd.get('team_size') || null
+      });
+
+      if(result.error) throw result.error;
+
+      form.innerHTML = '<div style="text-align:center;padding:40px 0;">'
+        + '<div style="font-size:40px;margin-bottom:16px;">✓</div>'
+        + '<div style="font-family:Bricolage Grotesque,sans-serif;font-weight:800;font-size:24px;margin-bottom:8px;letter-spacing:-0.5px;">Teşekkürler!</div>'
+        + '<div style="color:#6B7280;font-size:15px;line-height:1.6;">En kısa sürede size dönüş yapacağız.</div>'
+        + '</div>';
+    } catch(ex) {
+      var errMsg = ex.message || 'Bir hata oluştu.';
+      if(errMsg.includes('zorunlu')) errMsg = 'Lütfen tüm zorunlu alanları doldurun.';
+      var errEl = form.querySelector('.lead-form-error');
+      if(!errEl) {
+        errEl = document.createElement('div');
+        errEl.className = 'lead-form-error';
+        errEl.style.cssText = 'color:#DC2626;font-size:14px;margin-top:8px;text-align:center;';
+        form.appendChild(errEl);
+      }
+      errEl.textContent = errMsg;
+      if(btn) { btn.disabled = false; btn.textContent = 'Gönder →'; }
+    }
   });
 })();
 </script>

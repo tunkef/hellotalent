@@ -372,6 +372,11 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
         İşverenler
       </div>
 
+      <div class="nav-item" data-panel="leads" onclick="switchPanel('leads',this)">
+        <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/><path d="M20 8v6M23 11h-6"/></svg></span>
+        Leads
+      </div>
+
       <div class="nav-section-label">Gelir</div>
 
       <div class="nav-item" data-panel="sales" onclick="switchPanel('sales',this)">
@@ -538,6 +543,30 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
       </div>
     </div>
 
+    <!-- ═══ PANEL: LEADS ═══ -->
+    <div class="panel" id="panel-leads">
+      <div class="panel-header">
+        <h2>İşveren Leads</h2>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <select id="leads-filter-status" style="padding:6px 10px;border:1px solid var(--border);border-radius:8px;font-size:var(--text-sm);">
+            <option value="">Tüm durumlar</option>
+            <option value="yeni">Yeni</option>
+            <option value="iletisime_gecildi">İletişime geçildi</option>
+            <option value="demo_gosterildi">Demo gösterildi</option>
+            <option value="kayit_oldu">Kayıt oldu</option>
+            <option value="reddedildi">Reddedildi</option>
+          </select>
+          <button class="btn-sm" onclick="window._htLoadLeads()" style="padding:6px 12px;background:var(--navy);color:white;border:none;border-radius:8px;cursor:pointer;font-size:var(--text-sm);">Yenile</button>
+        </div>
+      </div>
+      <div id="leads-content">
+        <div class="empty-state">
+          <div class="empty-state-icon">⏳</div>
+          <div class="empty-state-text">Yükleniyor...</div>
+        </div>
+      </div>
+    </div>
+
     <!-- ═══ PANEL: SATIŞLAR (YAKINDA) ═══ -->
     <div class="panel" id="panel-sales">
       <div class="panel-header">
@@ -593,6 +622,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
 <script src="admin-campaigns.js?v=1"></script>
 <script src="admin-candidates.js?v=1"></script>
 <script src="admin-employers.js?v=1"></script>
+<script src="admin-leads.js?v=1"></script>
 <script src="admin-coach-content.js?v=7"></script>
 <script src="admin-ops-health.js?v=1"></script>
 <script src="admin-support.js?v=2"></script>
