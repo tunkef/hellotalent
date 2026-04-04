@@ -143,11 +143,26 @@ function renderSelectedCities() {
     header.appendChild(del);
     card.appendChild(header);
 
-    // Districts
+    // Districts — collapsible (Apple style: collapsed by default)
     var districts = ILCELER[city];
     if (districts && districts.length > 0) {
+      var selectedCount = (selectedLocations[city] || []).length;
+      var toggleBtn = document.createElement('button');
+      toggleBtn.type = 'button';
+      toggleBtn.style.cssText = 'background:none;border:none;font-family:Plus Jakarta Sans,sans-serif;font-size:12px;color:var(--verm);cursor:pointer;padding:4px 0;display:flex;align-items:center;gap:4px;';
+      toggleBtn.innerHTML = (selectedCount > 0 ? selectedCount + ' ilçe seçili · ' : '') + 'İlçe seç <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>';
+
       var distContainer = document.createElement('div');
       distContainer.className = 'city-card-districts';
+      distContainer.style.display = 'none';
+
+      toggleBtn.addEventListener('click', function() {
+        var open = distContainer.style.display === 'none';
+        distContainer.style.display = open ? '' : 'none';
+        var svg = toggleBtn.querySelector('svg');
+        if (svg) svg.style.transform = open ? 'rotate(180deg)' : '';
+      });
+
       var sortedDistricts = districts.slice().sort(function(a, b) {
         return trLower(a).localeCompare(trLower(b), 'tr');
       });
@@ -167,16 +182,23 @@ function renderSelectedCities() {
           } else {
             selectedLocations[city] = selectedLocations[city].filter(function(x) { return x !== d; });
           }
+          // Update toggle label
+          var cnt = selectedLocations[city].length;
+          toggleBtn.innerHTML = (cnt > 0 ? cnt + ' ilçe seçili · ' : '') + 'İlçe seç <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="transform:rotate(180deg)"><polyline points="6 9 12 15 18 9"/></svg>';
           if (typeof markWizardDirty === 'function') markWizardDirty();
         });
         distContainer.appendChild(dChip);
       });
+
+      // Auto-expand if districts already selected
+      if (selectedCount > 0) {
+        distContainer.style.display = '';
+        var svg = toggleBtn.querySelector('svg');
+        if (svg) svg.style.transform = 'rotate(180deg)';
+      }
+
+      card.appendChild(toggleBtn);
       card.appendChild(distContainer);
-    } else {
-      var noDistrict = document.createElement('p');
-      noDistrict.style.cssText = 'font-size:12px;color:var(--muted);';
-      noDistrict.textContent = 'Bu il için ilçe seçimi mevcut değil.';
-      card.appendChild(noDistrict);
     }
 
     container.appendChild(card);
