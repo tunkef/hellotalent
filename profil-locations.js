@@ -42,9 +42,15 @@ function _syncCityCheckboxes() {
 
 // ── City Dropdown ──
 function _buildCityDropdown() {
+  console.warn('[LOC] _buildCityDropdown called');
   var container = document.getElementById('ms-city');
-  if (!container) return;
+  if (!container) { console.warn('[LOC] ms-city NOT FOUND'); return; }
   container.innerHTML = '';
+
+  // Dropdown list (created FIRST so click handler can reference it)
+  var dd = document.createElement('div');
+  dd.className = 'ms-dropdown';
+  dd.style.display = 'none';
 
   // Search input (NO chips inside)
   var searchWrap = document.createElement('div');
@@ -57,11 +63,6 @@ function _buildCityDropdown() {
   searchWrap.appendChild(search);
   searchWrap.addEventListener('click', function() { dd.style.display = ''; search.focus(); });
   container.appendChild(searchWrap);
-
-  // Dropdown list
-  var dd = document.createElement('div');
-  dd.className = 'ms-dropdown';
-  dd.style.display = 'none';
 
   _allCitiesSorted.forEach(function(city) {
     var item = document.createElement('label');
@@ -93,7 +94,7 @@ function _buildCityDropdown() {
   // Search filter — use keyup instead of input for broader compatibility
   function _filterCityList() {
     var q = trLower(search.value.trim());
-    console.warn('[LOC] filter city q="' + q + '" dd items=' + dd.querySelectorAll('.ms-item').length);
+    console.warn('[LOC-FILTER] q="' + q + '" items=' + items.length);
     var items = dd.querySelectorAll('.ms-item');
     var visibleCount = 0;
     for (var i = 0; i < items.length; i++) {
@@ -129,6 +130,11 @@ function _buildDistrictDropdown() {
   if (!container) return;
   container.innerHTML = '';
 
+  var dd = document.createElement('div');
+  dd.className = 'ms-dropdown';
+  dd.style.display = 'none';
+  dd.id = 'ms-district-list';
+
   var searchWrap = document.createElement('div');
   searchWrap.className = 'ms-input-wrap';
   var search = document.createElement('input');
@@ -139,11 +145,6 @@ function _buildDistrictDropdown() {
   searchWrap.appendChild(search);
   searchWrap.addEventListener('click', function() { dd.style.display = ''; search.focus(); });
   container.appendChild(searchWrap);
-
-  var dd = document.createElement('div');
-  dd.className = 'ms-dropdown';
-  dd.style.display = 'none';
-  dd.id = 'ms-district-list';
   container.appendChild(dd);
 
   // Search filter — keyup + input + paste
