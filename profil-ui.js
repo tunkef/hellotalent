@@ -1412,7 +1412,9 @@ function collectWorkPrefs() {
     tercih_segmentler: selectedSegmentler,
     career_goal: null,
     career_type: ct,
-    travel_willingness: nullIfEmpty(val('f-seyahat'))
+    travel_willingness: nullIfEmpty(val('f-seyahat')),
+    shift_flexibility: nullIfEmpty(val('f-vardiya')),
+    notice_period: nullIfEmpty(val('f-ihbar'))
   };
 }
 
@@ -1627,7 +1629,9 @@ async function saveProfileRPC(onComplete) {
         tercih_segmentler: p_work_prefs.segmentler || [],
         career_goal: p_work_prefs.career_goal,
         career_type: p_work_prefs.career_type,
-        travel_willingness: p_work_prefs.travel_willingness || null
+        travel_willingness: p_work_prefs.travel_willingness || null,
+        shift_flexibility: p_work_prefs.shift_flexibility || null,
+        notice_period: p_work_prefs.notice_period || null
       } : null;
       _loadedDBData.brand_interests = p_brand_interests.map(function(b) { return b.marka; });
       _loadedDBData.locations = p_locations.slice();
@@ -1837,7 +1841,9 @@ async function loadProfileFromDB() {
       tercih_segmentler: wpRes.data.segmentler || [],
       career_goal: wpRes.data.career_goal,
       career_type: wpRes.data.career_type,
-      travel_willingness: wpRes.data.travel_willingness || null
+      travel_willingness: wpRes.data.travel_willingness || null,
+      shift_flexibility: wpRes.data.shift_flexibility || null,
+      notice_period: wpRes.data.notice_period || null
     } : null,
     brand_interests: (biRes.data || []).map(function(b) { return b.marka; }),
     locations: (locRes.data || []).map(function(loc) {

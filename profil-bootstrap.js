@@ -62,10 +62,10 @@ function reapplyDynamicFields() {
         btn.classList.toggle('checked', selectedCareerTypes.indexOf(btn.dataset.value) !== -1);
       });
     }
-    // Travel willingness
-    if (wp.travel_willingness) {
-      setVal('f-seyahat', wp.travel_willingness);
-    }
+    // Travel, shift, notice
+    if (wp.travel_willingness) setVal('f-seyahat', wp.travel_willingness);
+    if (wp.shift_flexibility) setVal('f-vardiya', wp.shift_flexibility);
+    if (wp.notice_period) setVal('f-ihbar', wp.notice_period);
   }
 
   // Step 5 city chip visual state (chips created by initStep5)

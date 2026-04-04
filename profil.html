@@ -868,7 +868,7 @@ if (window.Sentry) {
 
       <hr class="section-divider">
 
-      <!-- SEYAHAT ISTEGI (Apple benchmark AKS-3) -->
+      <!-- SEYAHAT + VARDIYA + IHBAR -->
       <div class="field-row">
         <div class="field">
           <label for="f-seyahat">Seyahat İsteği <span class="field-hint">(opsiyonel)</span></label>
@@ -877,6 +877,29 @@ if (window.Sentry) {
             <option value="evet">Evet, seyahat edebilirim</option>
             <option value="kismen">Kısmen (sınırlı seyahat)</option>
             <option value="hayir">Hayır, seyahat edemem</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="f-vardiya">Vardiya Esnekliği <span class="field-hint">(opsiyonel)</span></label>
+          <select id="f-vardiya">
+            <option value="">Belirtmek istemiyorum</option>
+            <option value="sabit">Sabit mesai</option>
+            <option value="vardiyali">Vardiyalı çalışabilirim</option>
+            <option value="hafta_sonu">Hafta sonu çalışabilirim</option>
+            <option value="esnek">Tamamen esneğim</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label for="f-ihbar">İhbar Süresi <span class="field-hint">(opsiyonel)</span></label>
+          <select id="f-ihbar">
+            <option value="">Belirtmek istemiyorum</option>
+            <option value="yok">İhbar sürem yok</option>
+            <option value="2_hafta">2 hafta</option>
+            <option value="1_ay">1 ay</option>
+            <option value="2_ay">2 ay</option>
+            <option value="3_ay_plus">3 ay ve üzeri</option>
           </select>
         </div>
       </div>
