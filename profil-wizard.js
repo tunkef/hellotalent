@@ -158,11 +158,7 @@ function validateTercihler() {
     var ctChecks = document.getElementById('calisma-tipleri-checks');
     if (ctChecks) ctChecks.classList.add('field-error');
   }
-  if (typeof selectedMusaitlik === 'undefined' || !selectedMusaitlik) {
-    errors.push('Müsaitlik alanı zorunludur. Yeni bir işe ne kadar sürede başlayabileceğini seç.');
-    var chipsRow = document.getElementById('musaitlik-chips');
-    if (chipsRow) chipsRow.classList.add('field-error');
-  }
+  // Müsaitlik kaldırıldı — ihbar süresi aynı bilgiyi kapsıyor
   if (typeof selectedSegmentler === 'undefined' || !selectedSegmentler || selectedSegmentler.length === 0) {
     errors.push('En az bir segment tercihi seçmelisin (Lüks, Fast Fashion vb.)');
     var segChips = document.getElementById('segment-chips');

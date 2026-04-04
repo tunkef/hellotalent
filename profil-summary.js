@@ -195,7 +195,6 @@ function updateMerkezCards() {
 
   // ── Card 4: Tercihler & Lokasyon ──
   var hasCalisma = typeof selectedCalismaTipleri !== 'undefined' && selectedCalismaTipleri.length > 0;
-  var hasMusaitlik = typeof selectedMusaitlik !== 'undefined' && !!selectedMusaitlik;
   var hasTarget = (function() {
     var rows = document.querySelectorAll('#target-roles-container .dynamic-row');
     for (var _i = 0; _i < rows.length; _i++) {
@@ -211,7 +210,6 @@ function updateMerkezCards() {
   var e4 = document.getElementById('mk-empty-4');
   var pills4 = [];
   if (hasCalisma) selectedCalismaTipleri.forEach(function(t) { pills4.push(t); });
-  if (hasMusaitlik) pills4.push(selectedMusaitlik);
   if (hasTarget) pills4.push('Hedef pozisyon');
   if (hasCareer) pills4.push('Kariyer y\u00F6nelimi');
   if (hasSeyahat) pills4.push('Seyahat');
@@ -236,9 +234,9 @@ function updateMerkezCards() {
   var hasSeyahat = !!val('f-seyahat');
   var hasVardiya = !!val('f-vardiya');
   var hasIhbar = !!val('f-ihbar');
-  // 9 alan: çalışma, müsaitlik, hedef, kariyer, lokasyon, segment tercihi, seyahat, vardiya, ihbar
-  var total4 = 9;
-  var filled4 = [hasCalisma, hasMusaitlik, hasTarget, hasCareer, hasLocations, hasSegmentPref, hasSeyahat, hasVardiya, hasIhbar].filter(Boolean).length;
+  // 8 alan: çalışma, hedef, kariyer, lokasyon, segment tercihi, seyahat, vardiya, ihbar
+  var total4 = 8;
+  var filled4 = [hasCalisma, hasTarget, hasCareer, hasLocations, hasSegmentPref, hasSeyahat, hasVardiya, hasIhbar].filter(Boolean).length;
   updateBentoRing(4, Math.round((filled4 / total4) * 100));
 
   // Update identity card
@@ -412,13 +410,12 @@ function calculateCompletion() {
   }
   if (document.querySelectorAll('#lang-rows-container .dynamic-row').length > 0) score += 4;
 
-  // ── D) Tercihler — 15 puan ──
+  // ── D) Tercihler & Uygunluk — 15 puan ──
   if (selectedCalismaTipleri && selectedCalismaTipleri.length > 0) score += 3;
-  if (selectedMusaitlik)                                          score += 3;
   if (selectedSegmentler && selectedSegmentler.length > 0)        score += 3;
-  if (val('f-seyahat'))                                           score += 2;
-  if (val('f-vardiya'))                                           score += 2;
-  if (val('f-ihbar'))                                             score += 2;
+  if (val('f-seyahat'))                                           score += 3;
+  if (val('f-vardiya'))                                           score += 3;
+  if (val('f-ihbar'))                                             score += 3;
 
   // ── E) Lokasyon — 5 puan ──
   if (Object.keys(selectedLocations).length > 0) score += 5;

@@ -662,7 +662,7 @@ if (window.Sentry) {
     <div class="wiz-progress-line" data-wline="4"></div>
     <div class="wiz-progress-step" data-wstep="5">
       <div class="wiz-progress-circle"><span class="wiz-circle-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></span></div>
-      <div class="wiz-progress-label">Lokasyon</div>
+      <div class="wiz-progress-label">Uygunluk</div>
     </div>
     <div class="wiz-progress-line" data-wline="5"></div>
     <div class="wiz-progress-step" data-wstep="6">
@@ -860,20 +860,54 @@ if (window.Sentry) {
 
       <hr class="section-divider">
 
-      <!-- MUSAITLIK -->
-      <div class="card-title mb-4">Müsaitlik <span class="field-req">*</span></div>
-      <p class="helper-text" style="font-size:13px;color:var(--muted);margin:0 0 12px 0;">Yeni bir işe ne kadar sürede başlayabilirsin?</p>
-      <div class="chips-row" id="musaitlik-chips"></div>
-
-      <hr class="section-divider">
-
       <!-- SEGMENT TERCIHLERI -->
       <div class="card-title mb-12">Segment Tercihleri <span class="field-req">*</span></div>
       <div class="chips-row" id="segment-chips"></div>
 
       <hr class="section-divider">
 
-      <!-- SEYAHAT + VARDIYA + IHBAR -->
+      <!-- MARKA ILGI ALANLARI -->
+      <div class="card-title mb-12">İlgilendiğin Markalar</div>
+      <div class="field" style="position:relative;">
+        <input type="text" id="f-brand-interest" placeholder="Marka ara ve ekle..." autocomplete="off">
+        <div class="autocomplete-list" id="brand-interest-sug"></div>
+      </div>
+      <div class="chips-row mt-8" id="brand-interest-chips"></div>
+
+    </div>
+  </div>
+
+  <!-- WIZARD STEP 5: Lokasyon & Uygunluk -->
+  <div class="wiz-step" id="wiz-step-5" data-step="5">
+    <div class="wiz-step-title">Lokasyon & Uygunluk</div>
+    <div class="wiz-step-desc">Nerede ve nasıl çalışabileceğini belirt — işverenler seni daha doğru eşleştirsin.</div>
+    <div id="step5-content">
+
+      <!-- SEARCH → CHIP (Apple style) -->
+      <div class="field" style="position:relative;">
+        <label for="f-city-search">Şehir Ara</label>
+        <input type="text" id="f-city-search" placeholder="Şehir adı yazın..." autocomplete="off">
+        <div class="autocomplete-list" id="city-search-sug"></div>
+      </div>
+
+      <!-- POPULAR CITIES (quick pick) -->
+      <div style="margin-top:12px;">
+        <div style="font-size:var(--text-sm);color:var(--muted);margin-bottom:8px;">Popüler:</div>
+        <div class="chips-row" id="popular-city-chips"></div>
+      </div>
+
+      <!-- SELECTED CITIES + DISTRICTS -->
+      <div style="margin-top:16px;">
+        <div class="card-title mb-12">Seçili Lokasyonlar <span id="loc-count-badge" style="font-size:var(--text-sm);font-weight:400;color:var(--muted);"></span></div>
+        <div id="selected-cities-container">
+          <p style="font-size:13px;color:var(--muted);" id="no-city-msg">Henüz şehir seçilmedi. Yukarıdan şehir arayın veya popüler şehirlerden seçin.</p>
+        </div>
+      </div>
+
+      <hr class="section-divider">
+
+      <!-- UYGUNLUK: Seyahat + Vardiya + İhbar -->
+      <div class="card-title mb-4">Uygunluk</div>
       <div class="field-row">
         <div class="field">
           <label for="f-seyahat">Seyahat İsteği <span class="field-hint">· Bölge pozisyonlarında öne çıkarsın</span></label>
@@ -909,46 +943,6 @@ if (window.Sentry) {
         </div>
       </div>
 
-      <hr class="section-divider">
-
-      <!-- MARKA ILGI ALANLARI -->
-      <div class="card-title mb-12">İlgilendiğin Markalar</div>
-      <div class="field" style="position:relative;">
-        <input type="text" id="f-brand-interest" placeholder="Marka ara ve ekle..." autocomplete="off">
-        <div class="autocomplete-list" id="brand-interest-sug"></div>
-      </div>
-      <div class="chips-row mt-8" id="brand-interest-chips"></div>
-
-    </div>
-  </div>
-
-  <!-- WIZARD STEP 5: Lokasyon -->
-  <div class="wiz-step" id="wiz-step-5" data-step="5">
-    <div class="wiz-step-title">Lokasyon Tercihleri</div>
-    <div class="wiz-step-desc">Şehir tercihin, seni doğru pozisyonlarla eşleştirir. Çalışmak istediğin şehirleri seç.</div>
-    <div id="step5-content">
-
-      <!-- SEARCH → CHIP (Apple style) -->
-      <div class="field" style="position:relative;">
-        <label for="f-city-search">Şehir Ara</label>
-        <input type="text" id="f-city-search" placeholder="Şehir adı yazın..." autocomplete="off">
-        <div class="autocomplete-list" id="city-search-sug"></div>
-      </div>
-
-      <!-- POPULAR CITIES (quick pick) -->
-      <div style="margin-top:12px;">
-        <div style="font-size:var(--text-sm);color:var(--muted);margin-bottom:8px;">Popüler:</div>
-        <div class="chips-row" id="popular-city-chips"></div>
-      </div>
-
-      <hr class="section-divider">
-
-      <!-- SELECTED CITIES + DISTRICTS -->
-      <div class="card-title mb-12">Seçili Lokasyonlar <span id="loc-count-badge" style="font-size:var(--text-sm);font-weight:400;color:var(--muted);"></span></div>
-      <div id="selected-cities-container">
-        <p style="font-size:13px;color:var(--muted);" id="no-city-msg">Henüz şehir seçilmedi. Yukarıdan şehir arayın veya popüler şehirlerden seçin.</p>
-      </div>
-
     </div>
   </div>
 
@@ -981,7 +975,7 @@ if (window.Sentry) {
       <!-- BIO / HAKKIMDA -->
       <div class="card-title mb-4">Hakkımda <span class="field-hint">· İşverenler seni tanısın, öne çık</span></div>
       <p style="font-size:var(--text-sm);color:var(--muted);margin:0 0 10px;line-height:1.6;">Perakende kariyerindeki güçlü yanlarını 2-3 cümleyle özetle. İşverenler profil kartında bu metni görür.</p>
-      <textarea id="f-bio" class="form-input" rows="5" style="resize:vertical;min-height:100px;font-size:15px;line-height:1.7;padding:14px;" placeholder="Örnek: 8 yıldır lüks perakendede mağaza yönetimi yapıyorum. 30+ kişilik ekipleri yönettim, yıllık 15M TL ciro hedeflerini sürekli aştım. Ekip kurma, müşteri deneyimi ve visual merchandising konularında uzmanım."></textarea>
+      <textarea id="f-bio" class="form-input" rows="7" style="resize:vertical;min-height:160px;font-size:15px;line-height:1.7;padding:16px 18px;" placeholder="Örnek: 8 yıldır lüks perakendede mağaza yönetimi yapıyorum. 30+ kişilik ekipleri yönettim, yıllık 15M TL ciro hedeflerini sürekli aştım. Ekip kurma, müşteri deneyimi ve visual merchandising konularında uzmanım."></textarea>
       <div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px;">
         <button type="button" id="btn-bio-translate" style="border:none;background:none;color:var(--muted);font-size:12px;cursor:pointer;padding:4px 8px;border-radius:6px;transition:background .15s;" onmouseenter="this.style.background='rgba(0,0,0,0.04)'" onmouseleave="this.style.background='none'">\uD83E\uDD16 AI ile T\u00FCrk\u00E7eye \u00C7evir</button>
         <span id="bio-char-count" style="font-size:11px;color:var(--muted);">0 / 500</span>

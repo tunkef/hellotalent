@@ -190,6 +190,13 @@ function _htApplyCareerGoalPrefill() {
       try {
         currentCVStoragePath = STORAGE.extractStoragePath(dbData.profile.cv_url);
       } catch (e) {}
+      // Also update wizard CV zone (Step 6)
+      var wizEmpty = document.getElementById('wiz-cv-empty');
+      var wizUploaded = document.getElementById('wiz-cv-uploaded');
+      var wizFname = document.getElementById('wiz-cv-filename');
+      if (wizEmpty) wizEmpty.style.display = 'none';
+      if (wizUploaded) wizUploaded.style.display = '';
+      if (wizFname) wizFname.textContent = dbData.profile.cv_filename;
     }
     updateDashboardSummary(dbData.profile, dbData.experiences);
     if (typeof window._htLoadGenelHome === 'function') window._htLoadGenelHome();
