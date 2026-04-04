@@ -87,9 +87,10 @@ function updateMerkezCards() {
     if (p1) p1.style.display = 'none';
     if (e1) e1.style.display = 'block';
   }
-  var pct1 = Math.round((filledCount1 / 6) * 100);
-  pct1 = Math.round(pct1 / 10) * 10;
-  updateBentoRing(1, pct1);
+  // Granüler: ad, telefon, il, ilçe, linkedin = 5 temel alan
+  var total1 = 5;
+  var filled1 = [name, phone, city, val('f-adresilce'), linkedin].filter(Boolean).length;
+  updateBentoRing(1, Math.round((filled1 / total1) * 100));
 
   // ── Card 2: Deneyim ──
   var cbNoExp = document.getElementById('cb-no-experience');
@@ -100,7 +101,7 @@ function updateMerkezCards() {
   if (cbNoExp && cbNoExp.checked) {
     if (p2) { p2.innerHTML = '<span style="font-style:italic;color:#c4c4c4;">\u0130lk i\u015F deneyimini ar\u0131yor</span>'; p2.style.display = ''; }
     if (e2) e2.style.display = 'none';
-    updateBentoRing(2, 100);
+    updateBentoRing(2, 60); // no-exp path: partial credit
   } else if (expCards.length > 0) {
     var firstId = expCards[0].id + '-';
     var role = val(firstId + 'pozisyon');
@@ -114,7 +115,10 @@ function updateMerkezCards() {
     if (expCards.length > 1) html2 += '<div class="data-sub" style="opacity:0.6">+' + (expCards.length - 1) + ' deneyim daha</div>';
     if (p2) { p2.innerHTML = html2; p2.style.display = ''; }
     if (e2) e2.style.display = 'none';
-    updateBentoRing(2, 100);
+    // Granüler: sirket, pozisyon, yıl, sektör, segment, description = 6 alan
+    var exp2Total = 6;
+    var exp2Filled = [val(firstId + 'sirket'), role, startY, val(firstId + 'sektor'), val(firstId + 'segment'), val(firstId + 'desc')].filter(Boolean).length;
+    updateBentoRing(2, Math.round((exp2Filled / exp2Total) * 100));
   } else {
     if (p2) p2.style.display = 'none';
     if (e2) e2.style.display = 'block';
@@ -177,8 +181,15 @@ function updateMerkezCards() {
     if (p3) p3.style.display = 'none';
     if (e3) e3.style.display = 'block';
   }
-  var filled3 = [eduCount > 0, langCount > 0].filter(Boolean).length;
-  updateBentoRing(3, Math.round((filled3 / 2) * 100));
+  // Granüler: eğitim (seviye dolu), dil, sertifika = 3 alan, ağırlıklı
+  var score3 = 0;
+  if (eduCount > 0) {
+    var firstEduSev = document.querySelector('#edu-rows-container .dynamic-row select');
+    score3 += (firstEduSev && firstEduSev.value) ? 45 : 25;
+  }
+  if (langCount > 0) score3 += 40;
+  if (certCount > 0) score3 += 15;
+  updateBentoRing(3, Math.min(score3, 100));
 
   // ── Card 4: Tercihler & Lokasyon ──
   var hasCalisma = typeof selectedCalismaTipleri !== 'undefined' && selectedCalismaTipleri.length > 0;
@@ -201,6 +212,9 @@ function updateMerkezCards() {
   if (hasMusaitlik) pills4.push(selectedMusaitlik);
   if (hasTarget) pills4.push('Hedef pozisyon');
   if (hasCareer) pills4.push('Kariyer y\u00F6nelimi');
+  if (hasSeyahat) pills4.push('Seyahat');
+  if (hasVardiya) pills4.push('Vardiya');
+  if (hasIhbar) pills4.push('\u0130hbar');
   if (cityKeys.length > 0) {
     var showCities = cityKeys.slice(0, 4);
     showCities.forEach(function(c) { pills4.push(c); });
@@ -216,8 +230,14 @@ function updateMerkezCards() {
     if (e4) e4.style.display = 'block';
   }
   var hasLocations = cityKeys.length > 0;
-  var filled4 = [hasCalisma, hasMusaitlik, hasTarget, hasCareer, hasLocations].filter(Boolean).length;
-  updateBentoRing(4, Math.round((filled4 / 5) * 100));
+  var hasSegmentPref = typeof selectedSegmentler !== 'undefined' && selectedSegmentler.length > 0;
+  var hasSeyahat = !!val('f-seyahat');
+  var hasVardiya = !!val('f-vardiya');
+  var hasIhbar = !!val('f-ihbar');
+  // 9 alan: çalışma, müsaitlik, hedef, kariyer, lokasyon, segment tercihi, seyahat, vardiya, ihbar
+  var total4 = 9;
+  var filled4 = [hasCalisma, hasMusaitlik, hasTarget, hasCareer, hasLocations, hasSegmentPref, hasSeyahat, hasVardiya, hasIhbar].filter(Boolean).length;
+  updateBentoRing(4, Math.round((filled4 / total4) * 100));
 
   // Update identity card
   updateMerkezIdentity();
