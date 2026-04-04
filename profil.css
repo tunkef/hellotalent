@@ -3324,10 +3324,11 @@ html[data-theme="dark"] .back-follow-mini .tooltip-container{border-color:rgba(2
 .ms-chip button:hover{color:var(--navy);}
 .ms-dropdown{position:absolute;top:100%;left:0;right:0;margin-top:4px;background:var(--white,#fff);border:1px solid var(--border);border-radius:10px;box-shadow:0 4px 16px rgba(0,0,0,0.1);z-index:100;max-height:250px;overflow-y:auto;}
 .ms-list{padding:4px 0;}
-.ms-item{display:flex !important;flex-direction:row !important;align-items:center !important;gap:8px;padding:8px 12px;cursor:pointer;font-size:14px;font-family:'Plus Jakarta Sans',sans-serif;transition:background 0.15s;margin:0;}
+.ms-item{display:flex !important;flex-direction:row !important;align-items:center !important;gap:10px;padding:6px 12px;cursor:pointer;font-size:14px;font-family:'Plus Jakarta Sans',sans-serif;transition:background 0.15s;margin:0;border-bottom:1px solid rgba(0,0,0,0.04);}
+.ms-item:last-child{border-bottom:none;}
 .ms-item:hover{background:var(--bg-elevated,#F7F6F4);}
-.ms-item input[type=checkbox]{width:16px !important;height:16px !important;min-width:16px;accent-color:var(--verm);flex-shrink:0;cursor:pointer;margin:0;padding:0;position:static;opacity:1;appearance:checkbox;-webkit-appearance:checkbox;}
-.ms-item span{pointer-events:none;flex:1;}
+.ms-item input[type=checkbox]{width:16px !important;height:16px !important;min-width:16px !important;max-width:16px !important;min-height:16px !important;max-height:16px !important;accent-color:var(--verm);flex-shrink:0;cursor:pointer;margin:0 !important;padding:0 !important;position:static !important;opacity:1 !important;appearance:checkbox !important;-webkit-appearance:checkbox !important;}
+.ms-item span{pointer-events:none;flex:1;line-height:1.3;}
 .ms-group-header{padding:8px 12px;font-size:12px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:0.5px;border-bottom:1px solid var(--border);background:var(--bg-elevated,#F7F6F4);position:sticky;top:0;z-index:1;}
 .ms-selected-title{font-size:13px;font-weight:600;color:var(--text-secondary);margin-bottom:8px;font-family:'Plus Jakarta Sans',sans-serif;}
 .ms-selected-pills{display:flex;flex-wrap:wrap;gap:6px;}
