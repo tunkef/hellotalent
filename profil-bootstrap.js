@@ -323,17 +323,22 @@ function _htRunStepInits() {
   if (bioTa && bioCount) {
     var _bioEngPattern = /\b(the|and|with|for|team|management|experience|store|sales|customer|retail|manager|lead|drive|deliver)\b/i;
     var bioTransBtn = document.getElementById('btn-bio-translate');
-    bioTa.addEventListener('input', function() {
+    var _bioInputHandler = function() {
       var len = bioTa.value.length;
-      bioCount.textContent = len + ' / 500';
-      bioCount.style.color = len > 500 ? 'var(--verm)' : 'var(--muted)';
-      if (len > 500) bioTa.value = bioTa.value.substring(0, 500);
+      bioCount.textContent = len + ' / 1000';
+      bioCount.style.color = len > 1000 ? 'var(--verm)' : 'var(--muted)';
+      if (len > 1000) bioTa.value = bioTa.value.substring(0, 1000);
       // Show translate button only when English text detected
       if (bioTransBtn) {
         var txt = bioTa.value || '';
         bioTransBtn.style.display = (_bioEngPattern.test(txt) && txt.length > 20) ? '' : 'none';
       }
-    });
+    }
+    bioTa.addEventListener('input', _bioInputHandler);
+    bioTa.addEventListener('paste', function() { setTimeout(_bioInputHandler, 50); });
+    bioTa.addEventListener('change', _bioInputHandler);
+    // Run once on init in case bio was pre-filled from DB
+    if (bioTa.value) _bioInputHandler();
   }
 
   // Restore CV state in wizard if already uploaded
