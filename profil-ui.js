@@ -1637,6 +1637,7 @@ async function saveProfileRPC(onComplete) {
     var bioVal = val('f-bio');
     if (typeof bioVal === 'string') {
       await supabase.rpc('update_candidate_bio', { p_bio: bioVal || null });
+      if (_loadedDBData && _loadedDBData.profile) _loadedDBData.profile.bio = bioVal || null;
     }
 
     // Success

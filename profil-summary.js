@@ -207,6 +207,12 @@ function updateMerkezCards() {
   var hasCareer = typeof selectedCareerTypes !== 'undefined' && selectedCareerTypes.length > 0;
   var cityKeys = typeof selectedLocations !== 'undefined' ? Object.keys(selectedLocations) : [];
 
+  var hasLocations = cityKeys.length > 0;
+  var hasSegmentPref = typeof selectedSegmentler !== 'undefined' && selectedSegmentler.length > 0;
+  var hasSeyahat = !!val('f-seyahat');
+  var hasVardiya = !!val('f-vardiya');
+  var hasIhbar = !!val('f-ihbar');
+
   var p4 = document.getElementById('mk-preview-4');
   var e4 = document.getElementById('mk-empty-4');
   var pills4 = [];
@@ -230,11 +236,6 @@ function updateMerkezCards() {
     if (p4) p4.style.display = 'none';
     if (e4) e4.style.display = 'block';
   }
-  var hasLocations = cityKeys.length > 0;
-  var hasSegmentPref = typeof selectedSegmentler !== 'undefined' && selectedSegmentler.length > 0;
-  var hasSeyahat = !!val('f-seyahat');
-  var hasVardiya = !!val('f-vardiya');
-  var hasIhbar = !!val('f-ihbar');
   // 8 alan: çalışma, hedef, kariyer, lokasyon, segment tercihi, seyahat, vardiya, ihbar
   var total4 = 8;
   var filled4 = [hasCalisma, hasTarget, hasCareer, hasLocations, hasSegmentPref, hasSeyahat, hasVardiya, hasIhbar].filter(Boolean).length;

@@ -31,7 +31,8 @@ function saveDraft() {
       adres_il: val('f-adresil'),
       adres_ilce: val('f-adresilce'),
       engel_durumu: val('f-engel'),
-      askerlik_durumu: val('f-askerlik')
+      askerlik_durumu: val('f-askerlik'),
+      bio: val('f-bio')
     },
     no_experience: document.getElementById('cb-no-experience') ? document.getElementById('cb-no-experience').checked : false,
     experiences: collectExperiences().map(function(e) {
@@ -78,6 +79,7 @@ function applyDraft(draft) {
     setTimeout(function() { setVal('f-adresilce', draft.profile.adres_ilce); }, 50);
     setVal('f-engel', draft.profile.engel_durumu);
     setVal('f-askerlik', draft.profile.askerlik_durumu);
+    if (draft.profile.bio) setVal('f-bio', draft.profile.bio);
     // Show askerlik if cinsiyet=Erkek
     if (draft.profile.cinsiyet === 'Erkek') {
       var fa = document.getElementById('field-askerlik');
