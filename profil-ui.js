@@ -570,7 +570,7 @@ function addExperienceCard(data) {
   descWrap.style.marginTop = '4px';
   var descLabel = document.createElement('label');
   descLabel.htmlFor = cardId + '-desc';
-  descLabel.innerHTML = 'İş Tanımı <span class="field-hint">(opsiyonel)</span>';
+  descLabel.innerHTML = 'İş Tanımı <span class="field-hint">· Görevlerini anlat, işverenler seni daha kolay fark etsin</span>';
   var descTa = document.createElement('textarea');
   descTa.id = cardId + '-desc';
   descTa.className = 'form-input';
