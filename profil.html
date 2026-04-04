@@ -47,8 +47,8 @@ if (window.Sentry) {
   });
 }
 </script>
-<!-- PostHog: disabled — will be re-enabled with verified snippet -->
-<script>function ht_track() {}</script>
+<!-- Analytics: ht_track → HT.trackEvent bridge -->
+<script>function ht_track(name, data) { if (window.HT && window.HT.trackEvent) window.HT.trackEvent(name, data); }</script>
 <link rel="stylesheet" href="profil.css?v=20260330a">
 </head>
 <body>

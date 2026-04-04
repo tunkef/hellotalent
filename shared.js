@@ -230,6 +230,24 @@
       var open = links.classList.toggle('open');
       btn.classList.toggle('open', open);
     },
+
+    /* ── Analytics Event Tracking (LB1) ── */
+    trackEvent: function (eventName, eventData) {
+      try {
+        var sb = window.HT.getSupa();
+        if (!sb) return;
+        sb.auth.getUser().then(function (res) {
+          var userId = res && res.data && res.data.user ? res.data.user.id : null;
+          if (!userId) return;
+          sb.from('analytics_events').insert({
+            user_id: userId,
+            event_name: eventName,
+            event_data: eventData || {},
+            page: window.location.pathname
+          }).then(function () { /* fire and forget */ });
+        });
+      } catch (_e) { /* silent — analytics must never break UX */ }
+    },
   };
 
   /* ── go() global alias (geriye dönük uyumluluk) ── */

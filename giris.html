@@ -407,7 +407,12 @@
           </div>
         </div>
 
-        <button class="btn-submit btn-aday" type="button" id="btn-aday-kayit">Kayıt Ol →</button>
+        <label class="consent-label" style="display:flex;align-items:flex-start;gap:8px;margin:12px 0;font-size:var(--text-sm);color:var(--muted);line-height:1.5;cursor:pointer;">
+          <input type="checkbox" id="cb-aday-consent" style="margin-top:3px;flex-shrink:0;">
+          <span><a href="gizlilik.html" target="_blank" style="color:var(--verm);text-decoration:underline;">Gizlilik Politikası</a>'nı ve <a href="kullanim-sartlari.html" target="_blank" style="color:var(--verm);text-decoration:underline;">Kullanım Şartları</a>'nı okudum, kabul ediyorum.</span>
+        </label>
+
+        <button class="btn-submit btn-aday" type="button" id="btn-aday-kayit" disabled>Kayıt Ol →</button>
 
         <p class="register-link" style="margin-top:16px;">
           Zaten üye misin?
@@ -495,7 +500,12 @@
           </div>
         </div>
 
-        <button class="btn-submit btn-ik" type="button" id="btn-ik-kayit">Kayıt Ol →</button>
+        <label class="consent-label" style="display:flex;align-items:flex-start;gap:8px;margin:12px 0;font-size:var(--text-sm);color:var(--muted);line-height:1.5;cursor:pointer;">
+          <input type="checkbox" id="cb-ik-consent" style="margin-top:3px;flex-shrink:0;">
+          <span><a href="gizlilik.html" target="_blank" style="color:var(--navy);text-decoration:underline;">Gizlilik Politikası</a>'nı ve <a href="kullanim-sartlari.html" target="_blank" style="color:var(--navy);text-decoration:underline;">Kullanım Şartları</a>'nı okudum, kabul ediyorum.</span>
+        </label>
+
+        <button class="btn-submit btn-ik" type="button" id="btn-ik-kayit" disabled>Kayıt Ol →</button>
 
         <p class="register-link" style="margin-top:16px;">
           Zaten İK hesabınız var mı?
@@ -929,7 +939,7 @@ document.addEventListener('keydown', function(e) {
     btn.disabled = true;
     btn.textContent = 'Kaydediliyor...';
     try {
-      var r = await getSupa().auth.signUp({ email: email, password: sifre });
+      var r = await getSupa().auth.signUp({ email: email, password: sifre, options: { data: { privacy_consent_at: new Date().toISOString() } } });
       if(r.error) throw r.error;
       window.location.href = getCandidatePostAuthUrl();
     } catch(ex) {
@@ -940,7 +950,8 @@ document.addEventListener('keydown', function(e) {
       errEl.textContent = msg || 'Bir hata oluştu. Lütfen tekrar deneyiniz.';
       errEl.style.display = 'block';
     }
-    btn.disabled = false;
+    var cbConsent = document.getElementById('cb-aday-consent');
+    btn.disabled = cbConsent ? !cbConsent.checked : false;
     btn.textContent = 'Kayıt Ol →';
   });
 })();
@@ -1032,7 +1043,7 @@ document.addEventListener('keydown', function(e) {
       var r = await getSupa().auth.signUp({
         email: email,
         password: sifre,
-        options: { data: { role: 'employer' } }
+        options: { data: { role: 'employer', privacy_consent_at: new Date().toISOString() } }
       });
       if(r.error) throw r.error;
 
@@ -1056,8 +1067,25 @@ document.addEventListener('keydown', function(e) {
       errEl.textContent = msg || 'Bir hata oluştu. Lütfen tekrar deneyiniz.';
       errEl.style.display = 'block';
     }
-    btn.disabled = false;
+    var cbConsent = document.getElementById('cb-ik-consent');
+    btn.disabled = cbConsent ? !cbConsent.checked : false;
     btn.textContent = 'Kayıt Ol →';
+  });
+})();
+
+// ── CONSENT CHECKBOX → KAYIT BUTON TOGGLE ──
+(function(){
+  var pairs = [
+    { cb: 'cb-aday-consent', btn: 'btn-aday-kayit' },
+    { cb: 'cb-ik-consent', btn: 'btn-ik-kayit' }
+  ];
+  pairs.forEach(function(p) {
+    var cb = document.getElementById(p.cb);
+    var btn = document.getElementById(p.btn);
+    if (!cb || !btn) return;
+    cb.addEventListener('change', function() {
+      btn.disabled = !cb.checked;
+    });
   });
 })();
 </script>
