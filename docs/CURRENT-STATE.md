@@ -1,13 +1,28 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 5 Nisan 2026 | Asama 64: Mega Session — KVKK + Profil Wizard Redesign + Lead + Audit + Multi-Select Lokasyon
+> Son guncelleme: 6 Nisan 2026 | Asama 65: Gate Sayfasi Illustrasyon Redesign + AI Routing Policy
 
 ## 1. Proje Ozeti
 
 hellotalent.ai, Turkiye perakende sektorune ozel bir yetenek pazaryeri. Adaylar profil olusturup yetkinlik pratigi yapar, isverenler aday arar ve mesaj atar. Tech stack: vanilla HTML/CSS/JS (framework yok), Supabase (PostgreSQL + Auth + Storage + RLS + Edge Functions), GitHub Pages (custom domain). Repo: `github.com/tunkef/hellotalent`. P1-P3 tamamlandi, P4 planlanmis.
 
+## 1b. AI Routing Snapshot
+
+- Varsayilan operasyon modeli `free-cloud-first`.
+- Mevcut `8GB MacBook Air` uzerinde local LLM/Ollama operasyonel bulunmadi; bu cihaz icin iptal edildi. Daha guclu donanimda yeniden degerlendirilebilir.
+- `Playwright` tek UAT sahibidir; deploy sonrasi smoke, auth regression, candidate/employer kritik path ve bug reproduction burada kosar.
+- `Groq` hizli Q&A/explain/translate katmani olarak kullanilir.
+- `Cerebras` derin dosya review ve cross-file analiz katmanidir.
+- `DeepSeek` diff review, security audit ve stage gate denetcisidir.
+- `OpenRouter` ve `SambaNova` fallback havuzudur.
+- `Claude Sonnet` varsayilan implementation modelidir.
+- `Claude Opus` sadece escalation ile kullanilir; mimari trade-off, RLS/data contract ve belirsiz root-cause debugging gibi durumlara ayrilir.
+- `Claude Haiku` mekanik okuma/ozet/modelidir; kod sahibi degildir.
+- `Gemini` bugun operasyonel helper olarak bagli degildir; sadece status/health-check seviyesindedir. Ileride screenshot/log yorumlayici rolunde yeniden degerlendirilebilir.
+- `scripts/aider-commit.sh` bir commit-message draft araci degil; `AI-assisted edit + auto-commit flow` aracidir.
+
 ## 2. Canli Ozellikler
 
-- **Gate sayfasi (index.html)** — Tam ekran split landing: sol "Aday misin?" → aday.html, sag "Isveren misin?" → isveren.html (~110 satir, beyaz zemin) | `index.html`
+- **Gate sayfasi (index.html)** — Tam ekran split landing: sol aday / sag isveren, sirt-sirta illustrasyonlar (aday sag alt, isveren sol alt ayna), gradient arka planlar (vermillion warm / navy cool), hover radial glow + buton scale efekti, logo sol + giris yap sag ust (~140 satir) | `index.html`, `assets/gate/gate-aday.png`, `assets/gate/gate-isveren.svg`
 - **Aday landing (aday.html)** — LinkedIn tarzinda: Google signup CTA, pill ozellikler, 3 adim onboarding akisi, "Kimin icin?" bolumu (~476 satir) | `aday.html`
 - **Isveren landing (isveren.html)** — LinkedIn tarzinda: navy hero, lead form, marka pill'leri, alternating white/warm-gray bolumler (~586 satir) | `isveren.html`
 - **Aday profil wizard** — 4 adimli onboarding, deneyim/egitim/dil/sertifika/tercih | `profil-wizard.js`
@@ -104,6 +119,17 @@ hellotalent.ai, Turkiye perakende sektorune ozel bir yetenek pazaryeri. Adaylar 
 
 ## 6. Son 3 Session Ozeti
 
+### Session 65 (5-6 Nisan — Asama 65: Gate Illustrasyon Redesign + AI Routing Policy)
+**Gate sayfasi editorial illustrasyon redesign + free-cloud-first AI routing policy olusturuldu.**
+
+**Gate Sayfasi Redesign:** (1) Aday ve isveren tarafina editorial flat-vector illustrasyonlar eklendi (`assets/gate/`). (2) PNG arka plan Python flood-fill ile seffaflastirildi. (3) SVG arka plan dolgu path'leri kaldirildi (1 background rect + 14 buyuk #F5F5F0 + sol ust beyaz kose). (4) Sirt-sirta layout: aday gorseli sag alt, isveren gorseli sol alt + scaleX(-1) ayna. (5) Gradient arka planlar (vermillion warm / navy cool). (6) Hover efektleri: radial glow + buton scale + illustrasyon lift. (7) Logo sola, Giris Yap sag uste hizalandi. (8) Accent cizgileri ve buton oklari kaldirildi. (9) Yazi hizasi: aday sol, isveren sag. (10) Mobile responsive (768px + 380px breakpoint).
+
+**AI Routing Policy:** (11) Local Ollama denendi (phi4-mini, 8GB Air) — kalite + RAM + guvenilirlik fail → iptal. (12) Free-cloud-first routing policy olusturuldu ve CLAUDE.md'ye eklendi. (13) Claude model routing: Haiku=mekanik okuyucu, Sonnet=default muhendis, Opus=sadece escalation. (14) Gemini bugun operasyonel degil, gelecekte yorumlayici/extractor olarak degerlendirilebilir. (15) Playwright tek UAT sahibi olarak teyit edildi.
+
+**Kararlar:** K026: Local LLM mevcut 8GB Air icin iptal, daha guclu donanimda yeniden degerlendirilebilir. K027: Free-cloud-first varsayilan routing modeli.
+
+**3 commit:** c13e4e7→13b90ea.
+
 ### Session 64 (4-5 Nisan — Asama 64: Mega Session — 2 gun, ~35 commit, 8 migration)
 **Proje tarihinin en buyuk session'i.** Kategoriler:
 
@@ -134,9 +160,6 @@ hellotalent.ai, Turkiye perakende sektorune ozel bir yetenek pazaryeri. Adaylar 
 
 ### Session 62 (2 Nisan — Asama 48-61: Beta Launch Paketi)
 **Tek gunde 12 asama tamamlandi.** (1) Tekrar eden hata guard'lari: ESLint .single() kuralı, truth-sync pre-commit hook, RLS pre-push guard, migration template. (2) Beta premium gate: AI CV + AI yetkinlik degerlendirme 1 hak/kullanici, non-AI premium full acik, "PREMIUM · 3 ay ucretsiz" badge. (3) Teklifler tab blur/gate kaldirildi, premium kartlarda beta erisim notu. (4) "Beni One Cikar" aktif (disabled kaldi). (5) CV template 6 ATS standardiyla optimize (avatar removed, metadata, skills section, normal font). (6) 31 marka gorseli optimize + brands.cover_image_url + informative card v2 redesign (cover, stats, takip). (7) Mini egitim dashboard: rozet strip → progress bar alti, hover tooltip, ilerleme karti + sonraki yetkinlik onerisi. (8) Hello Talent info karti Genel sayfaya eklendi (center feed + left rail compact). (9) Visual QA: 12 screenshot, kritik sorun yok. Pipeline infra: Codex plugin kuruldu (codex review gate), Supabase MCP OAuth baglandi, autopilot kaldirildi, Telegram bot daily ritual sistemi. **730 Playwright + 66 BATS test geciyor.**
-
-### Session 58 (31 Mart — Asama 8: Practice Recovery + STAR Cleanup)
-**Practice ekraninda journal/cevap yuzeyi inline olarak geri getirildi, STAR legacy kodu temizlendi.** 5 legacy fonksiyon silindi, backend kontratlari korundu. **500/500 P3 + 68/68 smoke PASS.**
 
 
 ## 7. Kritik Kurallar (Quick Ref)
