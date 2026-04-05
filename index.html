@@ -37,11 +37,14 @@ html,body{height:100%;overflow:hidden;}
 body{font-family:'Plus Jakarta Sans',sans-serif;}
 
 .gate{display:flex;height:100vh;position:relative;}
-.gate-half{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 40px 72px;cursor:pointer;transition:flex 0.5s cubic-bezier(0.4,0,0.2,1),opacity 0.3s;text-decoration:none;gap:0;}
-.gate-half:hover{flex:1.15;}
+.gate-half{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:180px 40px 40px;cursor:pointer;transition:flex 0.5s cubic-bezier(0.4,0,0.2,1),opacity 0.3s;text-decoration:none;gap:0;position:relative;overflow:hidden;}
+.gate-half:hover{flex:1.12;}
 
-.gate-illust{width:200px;height:200px;object-fit:contain;margin-bottom:24px;transition:transform 0.5s cubic-bezier(0.4,0,0.2,1);pointer-events:none;filter:drop-shadow(0 8px 24px rgba(0,0,0,0.06));}
-.gate-half:hover .gate-illust{transform:scale(1.06) translateY(-4px);}
+.gate-illust{position:absolute;bottom:32px;width:440px;height:440px;object-fit:contain;pointer-events:none;filter:drop-shadow(0 8px 24px rgba(0,0,0,0.08));transition:transform 0.6s cubic-bezier(0.4,0,0.2,1);}
+.gate-aday .gate-illust{right:10px;}
+.gate-isveren .gate-illust{left:10px;transform:scaleX(-1);}
+.gate-aday:hover .gate-illust{transform:scale(1.04) translateY(-8px);}
+.gate-isveren:hover .gate-illust{transform:scaleX(-1) scale(1.04) translateY(-8px);}
 
 .gate-aday{background:linear-gradient(175deg,#FFF8F5 0%,#FCEEE7 50%,#F5DDD1 100%);border-right:1px solid rgba(201,78,40,0.1);position:relative;}
 .gate-aday::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 30% 80%,rgba(201,78,40,0.08) 0%,transparent 60%);opacity:0;transition:opacity 0.5s ease;pointer-events:none;}
@@ -56,14 +59,16 @@ body{font-family:'Plus Jakarta Sans',sans-serif;}
 .gate-logo em{font-style:normal;color:#C94E28;}
 
 
-.gate-title{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:clamp(28px,4vw,42px);letter-spacing:-1.5px;line-height:1.1;margin-bottom:12px;text-align:center;}
-.gate-aday .gate-title{color:#C94E28;}
-.gate-isveren .gate-title{color:#1E2D5E;}
-.gate-sub{font-size:16px;color:#6B7280;line-height:1.6;text-align:center;max-width:320px;margin-bottom:28px;}
+.gate-title{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:clamp(28px,4vw,42px);letter-spacing:-1.5px;line-height:1.1;margin-bottom:14px;position:relative;z-index:1;}
+.gate-aday .gate-title{color:#C94E28;text-align:left;align-self:flex-start;}
+.gate-isveren .gate-title{color:#1E2D5E;text-align:right;align-self:flex-end;}
+.gate-sub{font-size:16px;color:#6B7280;line-height:1.6;max-width:300px;margin-bottom:28px;position:relative;z-index:1;}
+.gate-aday .gate-sub{text-align:left;align-self:flex-start;}
+.gate-isveren .gate-sub{text-align:right;align-self:flex-end;}
 .gate-btn{padding:14px 40px;border-radius:28px;font-family:'Plus Jakarta Sans',sans-serif;font-size:16px;font-weight:700;border:none;cursor:pointer;transition:all 0.3s cubic-bezier(0.4,0,0.2,1);display:inline-flex;align-items:center;justify-content:center;color:white;position:relative;z-index:1;}
-.gate-aday .gate-btn{background:#C94E28;box-shadow:0 4px 12px rgba(201,78,40,0.15);}
+.gate-aday .gate-btn{background:#C94E28;box-shadow:0 4px 12px rgba(201,78,40,0.15);align-self:flex-start;}
 .gate-aday:hover .gate-btn{background:#b84420;transform:translateY(-3px) scale(1.04);box-shadow:0 12px 32px rgba(201,78,40,0.3);}
-.gate-isveren .gate-btn{background:#1E2D5E;box-shadow:0 4px 12px rgba(30,45,94,0.15);}
+.gate-isveren .gate-btn{background:#1E2D5E;box-shadow:0 4px 12px rgba(30,45,94,0.15);align-self:flex-end;}
 .gate-isveren:hover .gate-btn{background:#162248;transform:translateY(-3px) scale(1.04);box-shadow:0 12px 32px rgba(30,45,94,0.3);}
 
 .gate-login{position:absolute;top:36px;right:32px;font-size:14px;color:#6B7280;z-index:10;}
@@ -72,19 +77,23 @@ body{font-family:'Plus Jakarta Sans',sans-serif;}
 
 @media(max-width:768px){
   .gate{flex-direction:column;}
-  .gate-half{padding:20px 20px 24px;gap:0;}
+  .gate-half{padding:70px 24px 24px;align-items:flex-start;}
   .gate-half:hover{flex:1.05;}
-  .gate-illust{width:130px;height:130px;margin-bottom:12px;}
-  .gate-title{font-size:22px;margin-bottom:8px;}
-  .gate-sub{font-size:13px;max-width:260px;margin-bottom:16px;line-height:1.5;}
-  .gate-logo{top:16px;left:20px;font-size:17px;}
-  .gate-login{top:18px;right:20px;font-size:12px;}
+  .gate-illust{width:190px;height:190px;}
+  .gate-aday .gate-illust{right:5px;bottom:10px;}
+  .gate-isveren .gate-illust{left:5px;bottom:10px;}
+  .gate-aday .gate-title,.gate-aday .gate-sub,.gate-aday .gate-btn{align-self:flex-start;text-align:left;}
+  .gate-isveren .gate-title,.gate-isveren .gate-sub,.gate-isveren .gate-btn{align-self:flex-end;text-align:right;}
+  .gate-title{font-size:24px;margin-bottom:6px;}
+  .gate-sub{font-size:13px;max-width:200px;margin-bottom:14px;line-height:1.5;}
+  .gate-logo{top:14px;left:20px;font-size:17px;}
+  .gate-login{top:16px;right:16px;font-size:12px;}
   .gate-btn{padding:11px 24px;font-size:14px;}
 }
 @media(max-width:380px){
-  .gate-illust{width:100px;height:100px;margin-bottom:8px;}
-  .gate-title{font-size:20px;}
-  .gate-sub{font-size:12px;max-width:220px;margin-bottom:12px;}
+  .gate-illust{width:130px;height:130px;}
+  .gate-title{font-size:21px;}
+  .gate-sub{font-size:12px;max-width:170px;margin-bottom:10px;}
   .gate-btn{padding:10px 22px;font-size:13px;}
 }
 
