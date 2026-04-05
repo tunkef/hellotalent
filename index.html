@@ -37,61 +37,72 @@ html,body{height:100%;overflow:hidden;}
 body{font-family:'Plus Jakarta Sans',sans-serif;}
 
 .gate{display:flex;height:100vh;position:relative;}
-.gate-half{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px;cursor:pointer;transition:flex 0.5s cubic-bezier(0.4,0,0.2,1),opacity 0.3s;text-decoration:none;}
+.gate-half{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 40px 72px;cursor:pointer;transition:flex 0.5s cubic-bezier(0.4,0,0.2,1),opacity 0.3s;text-decoration:none;gap:0;}
 .gate-half:hover{flex:1.15;}
 
-.gate-aday{background:#FEFCFB;border-right:1px solid #F0EDE9;}
-.gate-aday:hover{background:#FDF8F5;}
-.gate-isveren{background:#FAFBFE;}
-.gate-isveren:hover{background:#F5F7FC;}
+.gate-illust{width:200px;height:200px;object-fit:contain;margin-bottom:24px;transition:transform 0.5s cubic-bezier(0.4,0,0.2,1);pointer-events:none;filter:drop-shadow(0 8px 24px rgba(0,0,0,0.06));}
+.gate-half:hover .gate-illust{transform:scale(1.06) translateY(-4px);}
 
-.gate-logo{position:absolute;top:32px;left:50%;transform:translateX(-50%);z-index:10;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px;color:#1E2D5E;text-decoration:none;letter-spacing:-0.5px;}
+.gate-aday{background:linear-gradient(175deg,#FFF8F5 0%,#FCEEE7 50%,#F5DDD1 100%);border-right:1px solid rgba(201,78,40,0.1);position:relative;}
+.gate-aday::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 30% 80%,rgba(201,78,40,0.08) 0%,transparent 60%);opacity:0;transition:opacity 0.5s ease;pointer-events:none;}
+.gate-aday:hover{background:linear-gradient(175deg,#FFF5F0 0%,#FAE4D8 50%,#F2CFC0 100%);}
+.gate-aday:hover::after{opacity:1;}
+.gate-isveren{background:linear-gradient(185deg,#F5F7FC 0%,#E8ECF7 50%,#D9DFEF 100%);position:relative;}
+.gate-isveren::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 70% 80%,rgba(30,45,94,0.08) 0%,transparent 60%);opacity:0;transition:opacity 0.5s ease;pointer-events:none;}
+.gate-isveren:hover{background:linear-gradient(185deg,#EFF2FA 0%,#DDE3F3 50%,#CDD5EA 100%);}
+.gate-isveren:hover::after{opacity:1;}
+
+.gate-logo{position:absolute;top:32px;left:32px;z-index:10;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px;color:#1E2D5E;text-decoration:none;letter-spacing:-0.5px;}
 .gate-logo em{font-style:normal;color:#C94E28;}
 
-.gate-accent{width:48px;height:4px;border-radius:2px;margin-bottom:24px;}
-.gate-aday .gate-accent{background:#C94E28;}
-.gate-isveren .gate-accent{background:#1E2D5E;}
 
 .gate-title{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:clamp(28px,4vw,42px);letter-spacing:-1.5px;line-height:1.1;margin-bottom:12px;text-align:center;}
 .gate-aday .gate-title{color:#C94E28;}
 .gate-isveren .gate-title{color:#1E2D5E;}
-.gate-sub{font-size:17px;color:#6B7280;line-height:1.7;text-align:center;max-width:340px;margin-bottom:32px;}
-.gate-btn{padding:14px 36px;border-radius:28px;font-family:'Plus Jakarta Sans',sans-serif;font-size:16px;font-weight:700;border:none;cursor:pointer;transition:all 0.2s;display:inline-flex;align-items:center;gap:8px;color:white;}
-.gate-aday .gate-btn{background:#C94E28;}
-.gate-aday .gate-btn:hover{background:#b84420;transform:translateY(-2px);box-shadow:0 8px 24px rgba(201,78,40,0.25);}
-.gate-isveren .gate-btn{background:#1E2D5E;}
-.gate-isveren .gate-btn:hover{background:#162248;transform:translateY(-2px);box-shadow:0 8px 24px rgba(30,45,94,0.25);}
+.gate-sub{font-size:16px;color:#6B7280;line-height:1.6;text-align:center;max-width:320px;margin-bottom:28px;}
+.gate-btn{padding:14px 40px;border-radius:28px;font-family:'Plus Jakarta Sans',sans-serif;font-size:16px;font-weight:700;border:none;cursor:pointer;transition:all 0.3s cubic-bezier(0.4,0,0.2,1);display:inline-flex;align-items:center;justify-content:center;color:white;position:relative;z-index:1;}
+.gate-aday .gate-btn{background:#C94E28;box-shadow:0 4px 12px rgba(201,78,40,0.15);}
+.gate-aday:hover .gate-btn{background:#b84420;transform:translateY(-3px) scale(1.04);box-shadow:0 12px 32px rgba(201,78,40,0.3);}
+.gate-isveren .gate-btn{background:#1E2D5E;box-shadow:0 4px 12px rgba(30,45,94,0.15);}
+.gate-isveren:hover .gate-btn{background:#162248;transform:translateY(-3px) scale(1.04);box-shadow:0 12px 32px rgba(30,45,94,0.3);}
 
-.gate-login{position:absolute;bottom:32px;left:50%;transform:translateX(-50%);font-size:14px;color:#6B7280;z-index:10;}
+.gate-login{position:absolute;top:36px;right:32px;font-size:14px;color:#6B7280;z-index:10;}
 .gate-login a{color:#1E2D5E;font-weight:600;text-decoration:none;}
 .gate-login a:hover{text-decoration:underline;}
 
 @media(max-width:768px){
   .gate{flex-direction:column;}
-  .gate-half{padding:32px 24px;}
+  .gate-half{padding:20px 20px 24px;gap:0;}
   .gate-half:hover{flex:1.05;}
-  .gate-title{font-size:28px;}
-  .gate-sub{font-size:15px;max-width:280px;}
-  .gate-logo{top:20px;font-size:18px;}
-  .gate-login{bottom:16px;font-size:13px;}
+  .gate-illust{width:130px;height:130px;margin-bottom:12px;}
+  .gate-title{font-size:22px;margin-bottom:8px;}
+  .gate-sub{font-size:13px;max-width:260px;margin-bottom:16px;line-height:1.5;}
+  .gate-logo{top:16px;left:20px;font-size:17px;}
+  .gate-login{top:18px;right:20px;font-size:12px;}
+  .gate-btn{padding:11px 24px;font-size:14px;}
+}
+@media(max-width:380px){
+  .gate-illust{width:100px;height:100px;margin-bottom:8px;}
+  .gate-title{font-size:20px;}
+  .gate-sub{font-size:12px;max-width:220px;margin-bottom:12px;}
+  .gate-btn{padding:10px 22px;font-size:13px;}
 }
 
 /* ══ DARK MODE ══ */
 html[data-theme="dark"] body{background:#050712;}
-html[data-theme="dark"] .gate-aday{background:#0C0F1A;border-right-color:#1F2937;}
-html[data-theme="dark"] .gate-aday:hover{background:#12162A;}
-html[data-theme="dark"] .gate-isveren{background:#0A0D18;}
-html[data-theme="dark"] .gate-isveren:hover{background:#0F1325;}
+html[data-theme="dark"] .gate-aday{background:linear-gradient(175deg,#140E0A 0%,#1A120D 50%,#201510 100%);border-right-color:#2A1F18;}
+html[data-theme="dark"] .gate-aday:hover{background:linear-gradient(175deg,#1A1310 0%,#211812 50%,#281D15 100%);}
+html[data-theme="dark"] .gate-isveren{background:linear-gradient(185deg,#0A0D18 0%,#0E1224 50%,#121830 100%);}
+html[data-theme="dark"] .gate-isveren:hover{background:linear-gradient(185deg,#0E1220 0%,#13182E 50%,#181F3A 100%);}
 html[data-theme="dark"] .gate-logo{color:#E5E7EB;}
 html[data-theme="dark"] .gate-logo em{color:#E8845C;}
 html[data-theme="dark"] .gate-sub{color:#9CA3AF;}
 html[data-theme="dark"] .gate-aday .gate-title{color:#E8845C;}
 html[data-theme="dark"] .gate-isveren .gate-title{color:#93A3D1;}
-html[data-theme="dark"] .gate-aday .gate-accent{background:#E8845C;}
-html[data-theme="dark"] .gate-isveren .gate-accent{background:#93A3D1;}
 html[data-theme="dark"] .gate-aday .gate-btn{background:#C94E28;}
 html[data-theme="dark"] .gate-isveren .gate-btn{background:#2D4080;}
 html[data-theme="dark"] .gate-isveren .gate-btn:hover{background:#3A519E;box-shadow:0 8px 24px rgba(45,64,128,0.4);}
+html[data-theme="dark"] .gate-illust{filter:drop-shadow(0 8px 24px rgba(0,0,0,0.3)) brightness(0.92);}
 html[data-theme="dark"] .gate-login{color:#9CA3AF;}
 html[data-theme="dark"] .gate-login a{color:#93A3D1;}
 </style>
@@ -109,17 +120,17 @@ html[data-theme="dark"] .gate-login a{color:#93A3D1;}
 
 <div class="gate">
   <a class="gate-half gate-aday" href="aday.html">
-    <div class="gate-accent"></div>
+    <img class="gate-illust" src="assets/gate/gate-aday.png" alt="Retail kariyer arayan aday illüstrasyonu" width="220" height="220">
     <div class="gate-title">Kariyer arıyorum</div>
     <div class="gate-sub">Profil oluştur, yetkinliklerini geliştir, retail markalarının seni bulmasını sağla.</div>
-    <div class="gate-btn">Adaylar İçin →</div>
+    <div class="gate-btn">Adaylar İçin</div>
   </a>
 
   <a class="gate-half gate-isveren" href="isveren.html">
-    <div class="gate-accent"></div>
+    <img class="gate-illust" src="assets/gate/gate-isveren.svg" alt="İşveren ve yetenek yönetimi illüstrasyonu" width="220" height="220">
     <div class="gate-title">Aday arıyorum</div>
     <div class="gate-sub">Hazır aday havuzuna eriş, doğru yetenekleri filtrele, hemen iletişime geç.</div>
-    <div class="gate-btn">İşverenler İçin →</div>
+    <div class="gate-btn">İşverenler İçin</div>
   </a>
 </div>
 
