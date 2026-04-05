@@ -1,5 +1,5 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 4 Nisan 2026 | Asama 64: KVKK + Apple Benchmark + DEI + Analytics + Lead + Zorunlu + Audit Fix
+> Son guncelleme: 5 Nisan 2026 | Asama 64: Mega Session — KVKK + Profil Wizard Redesign + Lead + Audit + Multi-Select Lokasyon
 
 ## 1. Proje Ozeti
 
@@ -104,8 +104,8 @@ hellotalent.ai, Turkiye perakende sektorune ozel bir yetenek pazaryeri. Adaylar 
 
 ## 6. Son 3 Session Ozeti
 
-### Session 64 (4 Nisan — Asama 64: Mega Session — KVKK + Profil + Lead + Audit)
-**Tek session'da 25+ gorev, 12 commit, 7 migration.** Kategoriler:
+### Session 64 (4-5 Nisan — Asama 64: Mega Session — 2 gun, ~35 commit, 8 migration)
+**Proje tarihinin en buyuk session'i.** Kategoriler:
 
 **KVKK Revizyonlari:** (1) KV1-KV3: cinsiyet, dogum yili, askerlik, engel durumu opsiyonel — default "Belirtmek istemiyorum". (2) KV4: isveren filtresinde yas/cinsiyet zaten yoktu. (3) LB5: giris.html'e KVKK riza checkbox + 18 yas beyani eklendi, buton disabled olmadan kayit yapilamaz, `privacy_consent_at` + `age_confirmed` user_metadata'ya kaydediliyor. (4) kullanim-sartlari.html'e yas beyani sorumlulugu maddesi eklendi.
 
@@ -121,7 +121,13 @@ hellotalent.ai, Turkiye perakende sektorune ozel bir yetenek pazaryeri. Adaylar 
 
 **Kararlar:** K025a-f: pgvector DEFER, conversational koc DEFER, schema.org KISMI, GEO/FAQ YAKIN, AI ozetleme DEFER, Gemma 4 DEFER.
 
-**7 migration deployed:** add_experience_description, add_travel_willingness, add_shift_flexibility_notice_period, analytics_events, employer_leads, search_rpc_new_fields. **12 commit:** 5beac24→1741633.
+**Wizard Redesign (5 Nisan devam):** (26) Wizard 6→7 step: CV & Hakkimda ayri step. (27) Hakkimda Step 2'ye tasindi (deneyimlerden once). (28) Musaitlik tamamen kaldirildi (ihbar suresi kapsiyor). (29) Seyahat/Vardiya/Ihbar → Step 5 "Lokasyon & Uygunluk". (30) Lokasyon: custom multi-select dropdown (checkbox listesi + arama filtresi + secilen lokasyonlar altta). (31) AI ile Turkceye Cevir: Claude Haiku Edge Function (translate-text), Ingilizce algilaninca buton gorunur. (32) Kariyer Yonelimi coklu secim. (33) Hedef pozisyon max 3 siniri. (34) "Halen burada calisiyorum" tarih ustune tasindi. (35) Profil tamamlama sistemi redesign: granüler 100p, CV 15p + Bio 5p, hint'ler tiklanabilir. (36) Profil onizleme: completion donut + bio + iletisim yatay bar + deneyim full-width. (37) Egitim "(En az 1 egitim gerekli)" label. (38) Bio 1000 karakter, font normalize. (39) Dropdown'lar alfabetik siralama (6 liste).
+
+**Altyapi & Fix (5 Nisan):** (40) employer_lead_notification email template eklendi + deploy. (41) admin_get_leads/admin_update_lead RPC: auth.users → auth.jwt() fix. (42) Supabase Advisor bulgulari yapilacaklara eklendi (SA1-SA5). (43) Var hoisting bug (seyahat/vardiya/ihbar pills), bio draft/cache fix.
+
+**Acik kalanlar (sonraki session):** Admin panel leads "Yukleniyor" — logout+login gerekli (JWT refresh). Google Search Console robots.txt — Cloudflare Access bypass rules. Lokasyon checkbox hizasi son polish.
+
+**8 migration, ~35 commit:** 5beac24→6b4f279.
 
 ### Session 63 (2 Nisan gece — Asama 63: Landing Page Redesign + Dark Mode + Nav Polish)
 **index.html monolitik ana sayfa → minimal gate sayfasina donusturuldu. aday.html ve isveren.html LinkedIn-tarzinda sifirdan yeniden yazildi. Dark mode + nav brand renkleri eklendi.** (1) `index.html`: 2659 → ~130 satir gate page (tam ekran split, sol aday/sag isveren). (2) `aday.html`: 1029 → ~520 satir LinkedIn-style LP (Google signup, pills, steps, "kimin icin"). (3) `isveren.html`: 620 → ~640 satir LinkedIn-style LP (navy hero, lead form, marka pills). (4) `shared.js` nav: 6 sayfa kaldirildi, footer 2 kolon. (5) `shared.css` 14 LP tokeni. (6) **Dark mode:** 3 sayfaya theme-init script + html[data-theme="dark"] overrides eklendi (system preference default). (7) **Nav brand colors:** active link aday=vermillion, isveren=navy. (8) P3 regression test fix (stale 68/68 → flexible regex). **397 test PASS** (365 P3 + 32 smoke). 12 commit: 679c4e2–ba9e452.
