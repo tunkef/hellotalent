@@ -2,8 +2,6 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<script>(function(){var k='ht_theme_preference',s;try{s=localStorage.getItem(k)}catch(e){}var d=(s==='dark'||(s!=='light'&&window.matchMedia&&window.matchMedia('(prefers-color-scheme:dark)').matches));document.documentElement.setAttribute('data-theme',d?'dark':'light');})()</script>
-<!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-54BCV5QYCZ"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -12,470 +10,302 @@
   gtag('config', 'G-54BCV5QYCZ');
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="hellotalent — Retail kariyerinde bir sonraki adım burada. Profil oluştur, markalar seni bulsun. CV zorunlu değil, tamamen ücretsiz.">
-<meta name="keywords" content="retail iş ilanları, mağaza yöneticisi kariyer, retail aday kayıt, store manager iş başvuru, hellotalent aday">
-<title>Adaylar İçin — hellotalent.ai | Retail Kariyer Platformu</title>
+<meta name="description" content="hellotalent — Retail kariyerinde bir sonraki adim burada. Profil olustur, markalar seni bulsun. CV zorunlu degil, tamamen ucretsiz.">
+<meta name="keywords" content="retail is ilanlari, magaza yoneticisi kariyer, retail aday kayit, store manager is basvuru, hellotalent aday">
+<title>Adaylar Icin — hellotalent.ai | Retail Kariyer Platformu</title>
 <link rel="canonical" href="https://hellotalent.ai/aday.html">
-
-<!-- Open Graph -->
-<meta property="og:title" content="Artık başvuru yok, markalar seni buluyor — hellotalent">
-<meta property="og:description" content="Retail kariyerinde bir sonraki adım burada. Profil oluştur, markalar seni bulsun. Tamamen ücretsiz.">
+<meta property="og:title" content="Artik basvuru yok, markalar seni buluyor — hellotalent">
+<meta property="og:description" content="Retail kariyerinde bir sonraki adim burada. Profil olustur, markalar seni bulsun. Tamamen ucretsiz.">
 <meta property="og:url" content="https://hellotalent.ai/aday.html">
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://hellotalent.ai/og-aday.png">
-
-<!-- Twitter -->
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Artık başvuru yok, markalar seni buluyor — hellotalent">
-<meta name="twitter:description" content="Retail kariyerinde bir sonraki adım burada. Profil oluştur, markalar seni bulsun.">
-
+<meta name="twitter:title" content="Artik basvuru yok, markalar seni buluyor — hellotalent">
+<meta name="twitter:description" content="Retail kariyerinde bir sonraki adim burada. Profil olustur, markalar seni bulsun.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/shared.css?v=20260402a">
+<link rel="stylesheet" href="/shared.css?v=20260407a">
 
 <style>
-/* ══ LANDING PAGE STYLES ══ */
+/* ══ ADAY LANDING — CLATU-ALIGNED ══ */
 
-/* Section base */
-.lp-section {
-  padding: var(--lp-section-pad);
+:root{
+  --bg-page:#F7F6F4;
+  --bg-section:#fff;
+  --bg-warm:#F5F1ED;
+  --verm:#C94E28;
+  --verm-dark:#A83D1E;
+  --navy:#1E2D5E;
+  --text-primary:#111;
+  --text-muted:rgba(0,0,0,0.5);
+  --border:#E5E3DF;
+  --font-d:'Bricolage Grotesque',sans-serif;
+  --font-b:'Plus Jakarta Sans',sans-serif;
+  --font-m:'DM Mono',monospace;
+  --radius:10px;
+  --max-w:1120px;
+  --pad:clamp(48px,8vw,96px) clamp(24px,5vw,48px);
 }
-.lp-inner {
-  max-width: var(--lp-max-width);
-  margin: 0 auto;
+
+@media(prefers-color-scheme:dark){
+  :root{
+    --bg-page:#0B0D17;
+    --bg-section:#0E1020;
+    --bg-warm:#0C0F1A;
+    --text-primary:#F0F0EE;
+    --text-muted:rgba(247,246,244,0.50);
+    --border:rgba(247,246,244,0.08);
+  }
 }
-.lp-bg-warm {
-  background: var(--warm-gray);
-}
-.lp-bg-white {
-  background: #fff;
-}
+
+body{background:var(--bg-page)}
+
+/* ── SECTIONS ── */
+.s{padding:var(--pad)}
+.s-inner{max-width:var(--max-w);margin:0 auto}
+.s-white{background:var(--bg-section)}
+.s-warm{background:var(--bg-warm)}
 
 /* ── HERO ── */
-.lp-hero {
-  background: #fff;
-  padding: var(--lp-section-pad);
-  padding-top: calc(64px + clamp(56px, 8vw, 96px));
+.hero{
+  background:var(--bg-section);
+  padding:var(--pad);
+  padding-top:calc(64px + clamp(48px,7vw,88px));
 }
-.lp-hero .lp-inner {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 64px;
-  align-items: center;
+.hero .s-inner{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:56px;
+  align-items:center;
 }
-.lp-hero-headline {
-  font-family: 'Bricolage Grotesque', sans-serif;
-  font-size: var(--heading-xl);
-  font-weight: 800;
-  letter-spacing: -2px;
-  line-height: 1.06;
-  color: var(--text);
-  margin-bottom: 20px;
+.hero-hl{
+  font-family:var(--font-d);
+  font-size:clamp(36px,5vw,58px);
+  font-weight:800;
+  letter-spacing:-2.5px;
+  line-height:1.04;
+  color:var(--text-primary);
+  margin-bottom:20px;
 }
-.lp-hero-sub {
-  font-size: var(--body-lg);
-  color: var(--muted);
-  line-height: 1.7;
-  max-width: 480px;
-  margin-bottom: 32px;
+.hero-sub{
+  font-family:var(--font-b);
+  font-size:15px;
+  color:var(--text-muted);
+  line-height:1.7;
+  max-width:460px;
+  margin-bottom:32px;
 }
-.lp-hero-btns {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-  margin-bottom: 28px;
+.hero-btns{
+  display:flex;gap:12px;flex-wrap:wrap;
+  margin-bottom:24px;
 }
-.lp-btn-google {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: #fff;
-  color: var(--text);
-  border: 1.5px solid var(--border);
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: var(--body-md);
-  font-weight: 600;
-  padding: 13px 24px;
-  border-radius: var(--lp-radius-btn);
-  cursor: pointer;
-  transition: all 0.2s;
-  text-decoration: none;
+.btn-g{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--bg-section);color:var(--text-primary);
+  border:1.5px solid var(--border);
+  font-family:var(--font-b);font-size:14px;font-weight:600;
+  padding:12px 24px;border-radius:var(--radius);
+  cursor:pointer;transition:border-color .2s,box-shadow .2s;
+  text-decoration:none;
 }
-.lp-btn-google:hover {
-  border-color: var(--muted);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+.btn-g:hover{border-color:var(--text-muted);box-shadow:0 2px 10px rgba(0,0,0,0.06)}
+.btn-p{
+  display:inline-flex;align-items:center;
+  background:var(--verm);color:#fff;border:none;
+  font-family:var(--font-b);font-size:14px;font-weight:700;
+  padding:13px 28px;border-radius:var(--radius);
+  cursor:pointer;transition:background .2s,transform .2s,box-shadow .2s;
+  text-decoration:none;
 }
-.lp-btn-primary {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: var(--verm);
-  color: #fff;
-  border: none;
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: var(--body-md);
-  font-weight: 700;
-  padding: 14px 28px;
-  border-radius: var(--lp-radius-btn);
-  cursor: pointer;
-  transition: all 0.2s;
-  text-decoration: none;
-}
-.lp-btn-primary:hover {
-  background: var(--verm-dark);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 16px rgba(201,78,40,0.25);
-}
-.lp-trust {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  flex-wrap: wrap;
-}
-.lp-trust-item {
-  font-size: var(--body-sm);
-  color: var(--muted);
-  font-weight: 500;
-}
-.lp-trust-item span {
-  color: #16a34a;
-  margin-right: 4px;
+.btn-p:hover{background:var(--verm-dark);transform:translateY(-2px);box-shadow:0 6px 20px rgba(201,78,40,0.2)}
+
+.trust{display:flex;gap:20px;flex-wrap:wrap}
+.trust span{
+  font-family:var(--font-b);font-size:13px;
+  color:var(--text-muted);font-weight:500;
 }
 
-/* Hero right — decorative */
-.lp-hero-visual {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 340px;
-  border-radius: var(--lp-radius-card);
-  background: linear-gradient(135deg, var(--warm-gray) 0%, #efe9e4 100%);
-  position: relative;
-  overflow: hidden;
+/* Hero visual — placeholder for incoming illustration */
+.hero-vis{
+  display:flex;align-items:center;justify-content:center;
+  min-height:320px;
+  border-radius:14px;
+  background:var(--bg-warm);
+  overflow:hidden;
 }
-.lp-hero-visual::before {
-  content: '';
-  position: absolute;
-  width: 200px;
-  height: 200px;
-  border-radius: 50%;
-  background: rgba(201,78,40,0.08);
-  top: 20%;
-  left: 15%;
-}
-.lp-hero-visual::after {
-  content: '';
-  position: absolute;
-  width: 140px;
-  height: 140px;
-  border-radius: 50%;
-  background: rgba(30,45,94,0.06);
-  bottom: 15%;
-  right: 20%;
+.hero-vis img{
+  width:100%;height:100%;
+  object-fit:cover;
+  border-radius:14px;
 }
 
-/* ── SPLIT LAYOUT (LinkedIn pattern) ── */
-.lp-split {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 64px;
-  align-items: start;
+/* ── SPLIT LAYOUT ── */
+.split{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:56px;align-items:start;
 }
-.lp-split-heading {
-  font-family: 'Bricolage Grotesque', sans-serif;
-  font-size: var(--heading-lg);
-  font-weight: 800;
-  letter-spacing: -1.5px;
-  line-height: 1.1;
-  color: var(--text);
+.split-hl{
+  font-family:var(--font-d);
+  font-size:clamp(28px,3.5vw,42px);
+  font-weight:800;letter-spacing:-1.5px;
+  line-height:1.1;color:var(--text-primary);
 }
-.lp-split-desc {
-  font-size: var(--body-lg);
-  color: var(--muted);
-  line-height: 1.7;
-  margin-top: 16px;
-  max-width: 420px;
+.split-desc{
+  font-size:15px;color:var(--text-muted);
+  line-height:1.7;margin-top:14px;max-width:420px;
 }
 
-/* ── FEATURES PILLS ── */
-.lp-pills {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
+/* ── FEATURE TAGS ── */
+.tags{display:flex;flex-wrap:wrap;gap:10px}
+.tag{
+  font-family:var(--font-b);font-size:13px;font-weight:600;
+  color:var(--text-primary);
+  padding:10px 18px;
+  border:1.5px solid var(--border);
+  border-radius:var(--radius);
+  background:var(--bg-section);
+  transition:border-color .25s,box-shadow .25s,transform .25s;
+  cursor:default;
 }
-.lp-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 12px 20px;
-  border: 1.5px solid var(--border);
-  border-radius: var(--lp-radius-pill);
-  font-size: var(--body-md);
-  font-weight: 600;
-  color: var(--text);
-  background: #fff;
-  transition: border-color 0.2s, box-shadow 0.2s;
-  cursor: default;
-}
-.lp-pill:hover {
-  border-color: var(--verm);
-  box-shadow: 0 2px 8px rgba(201,78,40,0.08);
+.tag:hover{
+  border-color:var(--verm);
+  box-shadow:0 2px 10px rgba(201,78,40,0.08);
+  transform:translateY(-1px);
 }
 
 /* ── STEPS ── */
-.lp-steps {
-  display: flex;
-  flex-direction: column;
-  gap: 36px;
+.steps{display:flex;flex-direction:column;gap:32px}
+.step{display:flex;gap:20px;align-items:flex-start}
+.step-n{
+  font-family:var(--font-m);font-size:24px;font-weight:400;
+  color:var(--border);line-height:1;min-width:40px;padding-top:3px;
 }
-.lp-step {
-  display: flex;
-  gap: 20px;
-  align-items: flex-start;
+.step-t{
+  font-family:var(--font-d);font-size:clamp(16px,1.8vw,20px);
+  font-weight:700;color:var(--text-primary);margin-bottom:5px;
 }
-.lp-step-num {
-  font-family: 'DM Mono', monospace;
-  font-size: 28px;
-  font-weight: 400;
-  color: var(--border);
-  line-height: 1;
-  min-width: 48px;
-  padding-top: 2px;
-}
-.lp-step-title {
-  font-family: 'Bricolage Grotesque', sans-serif;
-  font-size: var(--heading-sm);
-  font-weight: 700;
-  color: var(--text);
-  margin-bottom: 6px;
-}
-.lp-step-desc {
-  font-size: var(--body-md);
-  color: var(--muted);
-  line-height: 1.6;
-}
+.step-d{font-size:14px;color:var(--text-muted);line-height:1.6}
 
-/* ── KİM İÇİN ── */
-.lp-who-heading {
-  font-family: 'Bricolage Grotesque', sans-serif;
-  font-size: var(--heading-lg);
-  font-weight: 800;
-  letter-spacing: -1.5px;
-  color: var(--verm);
-  margin-bottom: 8px;
+/* ── KIM ICIN ── */
+.who-hl{
+  font-family:var(--font-d);
+  font-size:clamp(28px,3.5vw,42px);
+  font-weight:800;letter-spacing:-1.5px;
+  color:var(--verm);margin-bottom:6px;
 }
-.lp-who-sub {
-  font-size: var(--body-lg);
-  color: var(--muted);
-  margin-bottom: 36px;
+.who-sub{font-size:15px;color:var(--text-muted);margin-bottom:32px}
+.who-list{list-style:none;padding:0;max-width:560px}
+.who-list li{
+  font-family:var(--font-b);font-size:15px;font-weight:600;
+  color:var(--text-primary);
+  padding:14px 16px;border-radius:8px;
+  transition:background .2s;cursor:default;
 }
-.lp-who-list {
-  list-style: none;
-  padding: 0;
-  max-width: 560px;
-}
-.lp-who-list li {
-  font-size: var(--body-lg);
-  font-weight: 600;
-  color: var(--text);
-  padding: 16px 20px;
-  border-radius: 12px;
-  transition: background 0.2s;
-  cursor: default;
-}
-.lp-who-list li:hover {
-  background: rgba(201,78,40,0.04);
-}
-.lp-who-list li + li {
-  border-top: 1px solid var(--border);
-}
+.who-list li:hover{background:rgba(201,78,40,0.04)}
+.who-list li+li{border-top:1px solid var(--border)}
 
 /* ── FINAL CTA ── */
-.lp-final-cta {
-  text-align: center;
-  background: #fff;
+.cta-end{text-align:center;background:var(--bg-section)}
+.cta-hl{
+  font-family:var(--font-d);
+  font-size:clamp(28px,3.5vw,42px);
+  font-weight:800;letter-spacing:-1.5px;
+  color:var(--text-primary);margin-bottom:10px;
 }
-.lp-final-cta .lp-cta-heading {
-  font-family: 'Bricolage Grotesque', sans-serif;
-  font-size: var(--heading-lg);
-  font-weight: 800;
-  letter-spacing: -1.5px;
-  color: var(--text);
-  margin-bottom: 12px;
-}
-.lp-final-cta .lp-cta-sub {
-  font-size: var(--body-lg);
-  color: var(--muted);
-  margin-bottom: 32px;
-}
+.cta-sub{font-size:15px;color:var(--text-muted);margin-bottom:28px}
 
 /* ── RESPONSIVE ── */
-@media (max-width: 900px) {
-  .lp-hero .lp-inner {
-    grid-template-columns: 1fr;
-    gap: 40px;
-  }
-  .lp-hero-visual {
-    min-height: 200px;
-    order: -1;
-  }
-  .lp-split {
-    grid-template-columns: 1fr;
-    gap: 32px;
-  }
+@media(max-width:900px){
+  .hero .s-inner{grid-template-columns:1fr;gap:32px}
+  .hero-vis{min-height:220px;order:-1}
+  .split{grid-template-columns:1fr;gap:28px}
 }
-@media (max-width: 480px) {
-  .lp-hero-headline {
-    font-size: 32px;
-    letter-spacing: -1px;
-  }
-  .lp-hero-btns {
-    flex-direction: column;
-  }
-  .lp-btn-google,
-  .lp-btn-primary {
-    width: 100%;
-    justify-content: center;
-  }
-  .lp-trust {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
-  }
-  .lp-pill {
-    font-size: var(--body-sm);
-    padding: 10px 16px;
-  }
+@media(max-width:480px){
+  .hero-hl{font-size:30px;letter-spacing:-1px}
+  .hero-btns{flex-direction:column}
+  .btn-g,.btn-p{width:100%;justify-content:center}
+  .trust{flex-direction:column;gap:6px}
+  .tag{font-size:12px;padding:8px 14px}
 }
-
-/* ══ DARK MODE ══ */
-html[data-theme="dark"] body{background:#050712;color:#F9FAFB;}
-html[data-theme="dark"] .site-header{background:rgba(5,7,18,0.95);border-bottom-color:#1F2937;}
-html[data-theme="dark"] .header-logo{color:#E5E7EB;}
-html[data-theme="dark"] .nav-link{color:#9CA3AF;}
-html[data-theme="dark"] .nav-link:hover,.nav-link.active{color:#F9FAFB;}
-html[data-theme="dark"] .btn-nav-login{color:#E5E7EB;border-color:#374151;}
-html[data-theme="dark"] .lp-hero{background:#050712;}
-html[data-theme="dark"] .lp-hero-headline{color:#F9FAFB;}
-html[data-theme="dark"] .lp-hero-sub{color:#9CA3AF;}
-html[data-theme="dark"] .lp-btn-google{background:#111827;color:#E5E7EB;border-color:#374151;}
-html[data-theme="dark"] .lp-btn-google:hover{background:#1F2937;border-color:#6B7280;}
-html[data-theme="dark"] .lp-trust-row span{color:#6B7280;}
-html[data-theme="dark"] .lp-bg-warm{background:#0A0D18;}
-html[data-theme="dark"] .lp-section{border-color:#1F2937;}
-html[data-theme="dark"] .lp-split-left h2{color:#F9FAFB;}
-html[data-theme="dark"] .lp-split-left p{color:#9CA3AF;}
-html[data-theme="dark"] .lp-pill{background:#111827;border-color:#1F2937;color:#E5E7EB;}
-html[data-theme="dark"] .lp-pill:hover{border-color:#E8845C;box-shadow:0 2px 12px rgba(201,78,40,0.15);}
-html[data-theme="dark"] .lp-step-num{color:#374151;}
-html[data-theme="dark"] .lp-step strong{color:#F9FAFB;}
-html[data-theme="dark"] .lp-step p{color:#9CA3AF;}
-html[data-theme="dark"] .lp-section-title-accent{color:#E8845C;}
-html[data-theme="dark"] .lp-section-sub{color:#9CA3AF;}
-html[data-theme="dark"] .lp-who-item{background:#0A0D18;color:#E5E7EB;border-bottom-color:#1F2937;}
-html[data-theme="dark"] .lp-who-item:hover{background:#111827;}
-html[data-theme="dark"] .lp-final-cta h2{color:#F9FAFB;}
-html[data-theme="dark"] .lp-final-cta p{color:#9CA3AF;}
-html[data-theme="dark"] .lp-hero-visual{background:rgba(201,78,40,0.06);border-color:#1F2937;}
-html[data-theme="dark"] .site-footer{background:#050712;border-top-color:#1F2937;}
-html[data-theme="dark"] .footer-brand{color:#E5E7EB;}
-html[data-theme="dark"] .footer-tagline{color:#6B7280;}
-html[data-theme="dark"] .footer-col-title{color:#E5E7EB;}
-html[data-theme="dark"] .footer-link{color:#9CA3AF;}
-html[data-theme="dark"] .footer-link:hover{color:#F9FAFB;}
-html[data-theme="dark"] .footer-bottom{border-top-color:#1F2937;}
-html[data-theme="dark"] .footer-copyright{color:#6B7280;}
-html[data-theme="dark"] .footer-legal a{color:#6B7280;}
-html[data-theme="dark"] .login-modal-overlay{background:rgba(0,0,0,0.7);}
-html[data-theme="dark"] .login-modal{background:#111827;border-color:#374151;}
-html[data-theme="dark"] .login-modal-title{color:#F9FAFB;}
-html[data-theme="dark"] .login-modal-sub{color:#9CA3AF;}
-html[data-theme="dark"] .login-modal-card{background:#1F2937;border-color:#374151;}
-html[data-theme="dark"] .login-modal-card:hover{border-color:#6B7280;background:#283040;}
-html[data-theme="dark"] .lmc-title{color:#F9FAFB;}
-html[data-theme="dark"] .lmc-desc{color:#9CA3AF;}
-html[data-theme="dark"] .mobile-menu{background:#0A0D18;}
-html[data-theme="dark"] .mobile-nav-link{color:#E5E7EB;}
-html[data-theme="dark"] .mobile-nav-divider{background:#1F2937;}
 </style>
 </head>
 <body>
 
 <div id="ht-header"></div>
 
-<!-- ═══ 1. HERO ═══ -->
-<section class="lp-hero lp-bg-white">
-  <div class="lp-inner">
-    <div class="lp-hero-content">
-      <h1 class="lp-hero-headline">Artık başvuru yok,<br>markalar seni buluyor.</h1>
-      <p class="lp-hero-sub">Profilini oluştur, yetkinliklerini öne çıkar, mülakat pratiği yap. 96 retail markası arasında seni arayan işverenlere görünür ol.</p>
-
-      <div class="lp-hero-btns">
-        <button id="btn-google-signup-aday" class="lp-btn-google" type="button">
+<!-- 1. HERO -->
+<section class="hero s-white">
+  <div class="s-inner">
+    <div>
+      <h1 class="hero-hl">Artık başvuru yok,<br>markalar seni buluyor.</h1>
+      <p class="hero-sub">Profilini oluştur, yetkinliklerini öne çıkar, mülakat pratiği yap. 96 retail markası arasında seni arayan işverenlere görünür ol.</p>
+      <div class="hero-btns">
+        <button id="btn-google-signup-aday" class="btn-g" type="button">
           <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z"/><path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.997 8.997 0 000 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"/></svg>
           Google ile Üye Ol
         </button>
-        <a href="/giris.html" class="lp-btn-primary">E-posta ile Kayıt Ol</a>
+        <a href="/giris.html" class="btn-p">E-posta ile Kayıt Ol</a>
       </div>
-
-      <div class="lp-trust">
-        <span class="lp-trust-item">CV zorunlu değil</span>
-        <span class="lp-trust-item">Mevcut işverene görünmez</span>
-        <span class="lp-trust-item">Tamamen ücretsiz</span>
+      <div class="trust">
+        <span>CV zorunlu değil</span>
+        <span>Mevcut işverene görünmez</span>
+        <span>Tamamen ücretsiz</span>
       </div>
     </div>
-
-    <div class="lp-hero-visual" aria-hidden="true"></div>
+    <div class="hero-vis" aria-hidden="true">
+      <!-- Hero görseli buraya gelecek -->
+    </div>
   </div>
 </section>
 
-<!-- ═══ 2. FEATURES ═══ -->
-<section class="lp-section lp-bg-warm">
-  <div class="lp-inner">
-    <div class="lp-split">
+<!-- 2. FEATURES -->
+<section class="s s-warm">
+  <div class="s-inner">
+    <div class="split">
       <div>
-        <h2 class="lp-split-heading">Profilin senin vitrinin.</h2>
-        <p class="lp-split-desc">Deneyimlerini, yetkinliklerini ve kariyer hedeflerini tek bir yerde topla. AI destekli araçlarla kendini geliştir, markalara görünür ol.</p>
+        <h2 class="split-hl">Profilin senin vitrinin.</h2>
+        <p class="split-desc">Deneyimlerini, yetkinliklerini ve kariyer hedeflerini tek bir yerde topla. AI destekli araçlarla kendini geliştir, markalara görünür ol.</p>
       </div>
-      <div class="lp-pills">
-        <div class="lp-pill">Mülakat Koçu</div>
-        <div class="lp-pill">AI CV Optimize</div>
-        <div class="lp-pill">96 Marka Takibi</div>
-        <div class="lp-pill">Yetkinlik Pratiği</div>
-        <div class="lp-pill">Streak ve Rozet Sistemi</div>
-        <div class="lp-pill">Beni Öner Göstergesi</div>
+      <div class="tags">
+        <div class="tag">Mülakat Koçu</div>
+        <div class="tag">AI CV Optimize</div>
+        <div class="tag">96 Marka Takibi</div>
+        <div class="tag">Yetkinlik Pratiği</div>
+        <div class="tag">Streak ve Rozet Sistemi</div>
+        <div class="tag">Beni Öner Göstergesi</div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ═══ 3. NASIL ÇALIŞIR ═══ -->
-<section class="lp-section lp-bg-white">
-  <div class="lp-inner">
-    <div class="lp-split">
+<!-- 3. NASIL ÇALIŞIR -->
+<section class="s s-white">
+  <div class="s-inner">
+    <div class="split">
       <div>
-        <h2 class="lp-split-heading">Basit, hızlı, etkili.</h2>
+        <h2 class="split-hl">Basit, hızlı, etkili.</h2>
       </div>
-      <div class="lp-steps">
-        <div class="lp-step">
-          <span class="lp-step-num">01</span>
+      <div class="steps">
+        <div class="step">
+          <span class="step-n">01</span>
           <div>
-            <div class="lp-step-title">Profil Oluştur</div>
-            <p class="lp-step-desc">Deneyim, yetkinlik ve kariyer hedeflerini paylaş. CV zorunlu değil.</p>
+            <div class="step-t">Profil Oluştur</div>
+            <p class="step-d">Deneyim, yetkinlik ve kariyer hedeflerini paylaş. CV zorunlu değil.</p>
           </div>
         </div>
-        <div class="lp-step">
-          <span class="lp-step-num">02</span>
+        <div class="step">
+          <span class="step-n">02</span>
           <div>
-            <div class="lp-step-title">Kendini Geliştir</div>
-            <p class="lp-step-desc">Mülakat Koçu ile pratik yap, AI geri bildirim al, rozet topla.</p>
+            <div class="step-t">Kendini Geliştir</div>
+            <p class="step-d">Mülakat Koçu ile pratik yap, AI geri bildirim al, rozet topla.</p>
           </div>
         </div>
-        <div class="lp-step">
-          <span class="lp-step-num">03</span>
+        <div class="step">
+          <span class="step-n">03</span>
           <div>
-            <div class="lp-step-title">Markalar Seni Bulsun</div>
-            <p class="lp-step-desc">"Beni Öner" aç, profilini görünür yap, teklifler gelsin.</p>
+            <div class="step-t">Markalar Seni Bulsun</div>
+            <p class="step-d">"Beni Öner" aç, profilini görünür yap, teklifler gelsin.</p>
           </div>
         </div>
       </div>
@@ -483,12 +313,12 @@ html[data-theme="dark"] .mobile-nav-divider{background:#1F2937;}
   </div>
 </section>
 
-<!-- ═══ 4. KİM İÇİN ═══ -->
-<section class="lp-section lp-bg-warm">
-  <div class="lp-inner">
-    <h2 class="lp-who-heading">hellotalent kimin için?</h2>
-    <p class="lp-who-sub">Retail sektöründe kariyer yapan herkes.</p>
-    <ul class="lp-who-list">
+<!-- 4. KIM ICIN -->
+<section class="s s-warm">
+  <div class="s-inner">
+    <h2 class="who-hl">hellotalent kimin için?</h2>
+    <p class="who-sub">Retail sektöründe kariyer yapan herkes.</p>
+    <ul class="who-list">
       <li>Mağaza Müdürü &amp; Müdür Yardımcısı</li>
       <li>Bölge Yöneticisi &amp; Area Manager</li>
       <li>Satış Danışmanı &amp; Kasa Sorumlusu</li>
@@ -498,19 +328,18 @@ html[data-theme="dark"] .mobile-nav-divider{background:#1F2937;}
   </div>
 </section>
 
-<!-- ═══ 5. FINAL CTA ═══ -->
-<section class="lp-section lp-final-cta">
-  <div class="lp-inner">
-    <h2 class="lp-cta-heading">Kariyerinde bir sonraki adım burada.</h2>
-    <p class="lp-cta-sub">Profil oluştur, markalar seni bulsun.</p>
-    <a href="/giris.html" class="lp-btn-primary">Ücretsiz Profil Oluştur</a>
+<!-- 5. FINAL CTA -->
+<section class="s cta-end">
+  <div class="s-inner">
+    <h2 class="cta-hl">Kariyerinde bir sonraki adım burada.</h2>
+    <p class="cta-sub">Profil oluştur, markalar seni bulsun.</p>
+    <a href="/giris.html" class="btn-p">Ücretsiz Profil Oluştur</a>
   </div>
 </section>
 
-<!-- ═══ 6. FOOTER (shared.js) ═══ -->
 <div id="ht-footer"></div>
 
-<script src="/shared.js?v=20260402a"></script>
+<script src="/shared.js?v=20260407a"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 (function(){
