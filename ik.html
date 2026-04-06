@@ -2245,6 +2245,14 @@ async function initApp(){
     return;
   }
   currentUser = data.session.user;
+  // MFA enforcement: if user has TOTP enrolled but session is aal1, redirect to login
+  try {
+    var aalRes = await getSupa().auth.mfa.getAuthenticatorAssuranceLevel();
+    if (aalRes.data && aalRes.data.nextLevel === 'aal2' && aalRes.data.currentLevel === 'aal1') {
+      window.location.replace('giris.html?tab=ik');
+      return;
+    }
+  } catch (e) { /* MFA check failure should not block employer access */ }
 
   function scheduleHideAppLoading(){
     setTimeout(function(){

@@ -132,6 +132,17 @@ function _htApplyCareerGoalPrefill() {
     window.location.href = 'ik.html';
     return;
   }
+  // MFA enforcement: if user has TOTP enrolled but session is aal1, redirect to login for challenge
+  try {
+    var aalRes = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+    if (aalRes.data && aalRes.data.nextLevel === 'aal2' && aalRes.data.currentLevel === 'aal1') {
+      console.warn('[HT] MFA enrolled but not verified — redirecting to login for challenge');
+      window.location.href = 'giris.html';
+      return;
+    }
+  } catch (e) {
+    console.error('[HT] MFA AAL check failed:', e);
+  }
   // Sentry: set user context (id only — no PII)
   if (window.Sentry) Sentry.setUser({ id: currentUser.id });
 
