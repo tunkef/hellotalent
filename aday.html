@@ -203,18 +203,62 @@ body{background:var(--bg-page)}
   .bento-card.featured{background:rgba(201,78,40,0.08);border-color:rgba(201,78,40,0.15)}
 }
 
-/* ── STEPS ── */
-.steps{display:flex;flex-direction:column;gap:32px}
-.step{display:flex;gap:20px;align-items:flex-start}
+/* ── STEPS — card-based with illustrations ── */
+.steps-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:20px;
+  margin-top:40px;
+}
+.step-card{
+  background:var(--bg-section);
+  border-radius:14px;
+  padding:clamp(24px,2.5vw,32px);
+  border:1px solid var(--border);
+  transition:transform .35s cubic-bezier(0.16,1,0.3,1), box-shadow .35s ease, border-color .3s ease;
+  cursor:default;
+  position:relative;
+  overflow:hidden;
+}
+.step-card:hover{
+  transform:translateY(-4px);
+  box-shadow:0 12px 32px rgba(0,0,0,0.06);
+  border-color:var(--verm);
+}
+.step-card:hover .step-n{color:var(--verm);transform:scale(1.15)}
+.step-vis{
+  width:80px;height:auto;
+  margin-bottom:16px;
+  opacity:0.9;
+}
+.step-card:hover .step-vis{opacity:1}
 .step-n{
-  font-family:var(--font-m);font-size:24px;font-weight:400;
-  color:var(--border);line-height:1;min-width:40px;padding-top:3px;
+  font-family:var(--font-m);font-size:13px;font-weight:400;
+  color:var(--border);margin-bottom:10px;
+  display:inline-block;
+  transition:color .3s ease, transform .3s ease;
 }
 .step-t{
-  font-family:var(--font-d);font-size:clamp(16px,1.8vw,20px);
-  font-weight:700;color:var(--text-primary);margin-bottom:5px;
+  font-family:var(--font-d);font-size:clamp(17px,1.8vw,20px);
+  font-weight:700;color:var(--text-primary);margin-bottom:8px;
 }
-.step-d{font-size:14px;color:var(--text-muted);line-height:1.6}
+.step-d{font-size:13px;color:var(--text-muted);line-height:1.6}
+.step-usp{
+  display:inline-block;
+  font-family:var(--font-b);font-size:11px;font-weight:700;
+  color:var(--verm);
+  margin-top:12px;
+  padding:4px 10px;
+  border-radius:4px;
+  background:rgba(201,78,40,0.06);
+  letter-spacing:0.3px;
+}
+
+@media(prefers-color-scheme:dark){
+  .step-card{background:var(--bg-section);border-color:rgba(255,255,255,0.06)}
+  .step-card:hover{border-color:var(--verm);box-shadow:0 12px 32px rgba(201,78,40,0.08)}
+  .step-usp{background:rgba(201,78,40,0.12)}
+}
 
 /* ── KIM ICIN ── */
 .who-hl{
@@ -249,6 +293,7 @@ body{background:var(--bg-page)}
   .hero .s-inner{grid-template-columns:1fr;gap:32px}
   .hero-vis{min-height:220px;order:-1}
   .split{grid-template-columns:1fr;gap:28px}
+  .steps-grid{grid-template-columns:1fr}
   .bento{grid-template-columns:1fr 1fr}
   .bento-card.featured{grid-column:span 2}
 }
@@ -333,32 +378,29 @@ body{background:var(--bg-page)}
 <!-- 3. NASIL ÇALIŞIR -->
 <section class="s s-white">
   <div class="s-inner">
-    <div class="split">
-      <div>
-        <h2 class="split-hl">Basit, hızlı, etkili.</h2>
+    <h2 class="split-hl" style="text-align:center">Geleneksel iş aramayı unut.</h2>
+    <p class="split-desc" style="text-align:center;margin:10px auto 0;max-width:480px">Basit, hızlı, etkili.</p>
+    <div class="steps-grid">
+      <div class="step-card">
+        <img class="step-vis" src="assets/aday/step-01-profil.svg" alt="" width="80" height="78" loading="lazy">
+        <span class="step-n">01</span>
+        <div class="step-t">Profil Oluştur</div>
+        <p class="step-d">Deneyim, yetkinlik ve kariyer hedeflerini paylaş.</p>
+        <span class="step-usp">CV zorunlu değil</span>
       </div>
-      <div class="steps">
-        <div class="step">
-          <span class="step-n">01</span>
-          <div>
-            <div class="step-t">Profil Oluştur</div>
-            <p class="step-d">Deneyim, yetkinlik ve kariyer hedeflerini paylaş. CV zorunlu değil.</p>
-          </div>
-        </div>
-        <div class="step">
-          <span class="step-n">02</span>
-          <div>
-            <div class="step-t">Kendini Geliştir</div>
-            <p class="step-d">Mülakat Koçu ile pratik yap, AI geri bildirim al, rozet topla.</p>
-          </div>
-        </div>
-        <div class="step">
-          <span class="step-n">03</span>
-          <div>
-            <div class="step-t">Markalar Seni Bulsun</div>
-            <p class="step-d">"Beni Öner" aç, profilini görünür yap, teklifler gelsin.</p>
-          </div>
-        </div>
+      <div class="step-card">
+        <img class="step-vis" src="assets/aday/step-02-gelistir.svg" alt="" width="80" height="69" loading="lazy">
+        <span class="step-n">02</span>
+        <div class="step-t">Kendini Geliştir</div>
+        <p class="step-d">Mülakat Koçu ile pratik yap, AI geri bildirim al.</p>
+        <span class="step-usp">AI destekli</span>
+      </div>
+      <div class="step-card">
+        <img class="step-vis" src="assets/aday/step-03-markalar.svg" alt="" width="80" height="79" loading="lazy">
+        <span class="step-n">03</span>
+        <div class="step-t">Markalar Seni Bulsun</div>
+        <p class="step-d">"Beni Öner" aç, profilini görünür yap, teklifler gelsin.</p>
+        <span class="step-usp">Görünürlük kontrolü sende</span>
       </div>
     </div>
   </div>
