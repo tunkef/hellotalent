@@ -597,12 +597,12 @@ function getCandidatePostAuthUrl() {
 // ── OTURUM KONTROLÜ ──
 (async function() {
   // URL parametresine göre tab'ı aç
-  varurlParams = new URLSearchParams(window.location.search);
+  var urlParams = new URLSearchParams(window.location.search);
   if (urlParams.get('tab') === 'ik') {
     switchTab('ik');
   }
   var { data } = await getSupa().auth.getSession();
-  if (data.session) {
+  if (data.session && data.session.user) {
     // Zaten giriş yapmış → MFA kontrolü sonrası role'e göre yönlendir
     var role = data.session.user.user_metadata?.role;
     checkAndHandleMFA(role === 'employer' ? 'ik.html' : getCandidatePostAuthUrl());
@@ -1094,8 +1094,14 @@ document.addEventListener('keydown', function(e) {
 // Shows a modal overlay for TOTP code entry.
 
 async function checkAndHandleMFA(redirectUrl) {
-  var sb = typeof getSupa === 'function' ? getSupa() : null;
-  if (!sb) { window.location.href = redirectUrl; return; }
+  var sb;
+  try {
+    sb = typeof getSupa === 'function' ? getSupa() : null;
+  } catch (e) {
+    console.error('Supabase init failed:', e);
+    sb = null;
+  }
+  if (!sb) { console.error('Supabase instance not available for MFA check'); window.location.href = redirectUrl; return; }
 
   try {
     var aalRes = await sb.auth.mfa.getAuthenticatorAssuranceLevel();
