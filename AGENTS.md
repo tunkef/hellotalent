@@ -39,8 +39,13 @@
 ## Context7
 Always use context7 when working with Supabase API, CSS, or any library docs.
 
-## 🚨 CRITICAL AI DIRECTIVE (READ THIS FIRST)
-Before you write ANY HTML, CSS, or JS for a new feature, you MUST forcefully read and load these two files into your context:
-1. `.agents/skills/bento-grid-design/SKILL.md` -> Contains the EXACT HTML/CSS templates for Bento grids and cards. 
-2. `.agents/skills/hellotalent-dev/SKILL.md` -> Contains architecture and component rules.
-**DO NOT generate any UI code from scratch without reading the Bento Grid SKILL.md file first.**
+## Public-Site Design Truth
+- Public-site work uses Clatu-first visual direction, not legacy bento-grid/dashboard language.
+- Before writing new public-site HTML/CSS/JS, read:
+  1. `docs/design-illustration-brief.md`
+  2. `.agents/skills/hellotalent-dev/SKILL.md`
+  3. `.agents/skills/ai-seo/SKILL.md` when content is involved
+- `index.html`, `aday.html`, `isveren.html`, `giris.html` and other public-site pages must preserve business logic, not old layout patterns.
+- Default public-site direction: minimal, premium, editorial gate/composition with clear aday vs isveren separation and Clatu/Recraft-led visuals.
+- No emoji in public-site UI or supporting copy.
+- Do not use bento-grid as a required design system for public-site work. Legacy dashboard patterns must not constrain homepage or public-site redesign.

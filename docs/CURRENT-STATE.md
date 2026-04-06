@@ -1,5 +1,5 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 6 Nisan 2026 | Asama 67: Design System CSS Overhaul (Kademe 0-2)
+> Son guncelleme: 6 Nisan 2026 | Asama 68 + Public-Site Design/Content Protocol
 
 ## 1. Proje Ozeti
 
@@ -19,6 +19,17 @@ hellotalent.ai, Turkiye perakende sektorune ozel bir yetenek pazaryeri. Adaylar 
 - `Claude Haiku` mekanik okuma/ozet/modelidir; kod sahibi degildir.
 - `Gemini` bugun operasyonel helper olarak bagli degildir; sadece status/health-check seviyesindedir. Ileride screenshot/log yorumlayici rolunde yeniden degerlendirilebilir.
 - `scripts/aider-commit.sh` bir commit-message draft araci degil; `AI-assisted edit + auto-commit flow` aracidir.
+
+## 1c. Design & Content Operations Snapshot
+
+- Public-site tasarim akisi icin dis referans stack kuruldu: `Google Stitch MCP` (layout/mockup referansi), `21st.dev` (component/pattern referansi), `Pro UI UX Max` (stil/palette direction), `Recraft API` (illustration/asset generation).
+- Bu stack production code yazmaz; son implementasyon her zaman repo kurallarina uygun vanilla HTML/CSS/JS olarak elle uyarlanir.
+- Public-site style direction kilitlendi: editorial, premium, sicak, whitespace agirlikli, brand-led. Vermillion baskin, navy authority. Generic SaaS gorunumu, mor gradient, stock-LLM estetik ve siradan marketing page dili istenmiyor.
+- Illustration truth su an `docs/design-illustration-brief.md` icinde tutulur. Recraft ile uretilecek asset'ler burada tanimlanan karakter/stil sistemine uymak zorundadir. Aktif stil notlari: karakterlerde `Roundish flat` ana referans, `Vivid shapes` ikincil grafik destek, genis arka plan ve insansiz konseptlerde `Segmented Colors` referansi.
+- Ilk execution scope yalnizca public pages: `index.html`, `aday.html`, `isveren.html`, `giris.html` ve gerekirse yeniden aktif edilecek diger marketing/content sayfalari. Bu design/revision track'inde `profil.html`, `ik.html`, `admin.html`, `coach-studio.html` ve dashboard yuzeylerine dokunulmaz; kullanici acikca isterse istisna olur.
+- Content revizyon akisi `AI-SEO` + anti-AI-writing copy discipline ile yurur. Hedef sadece SEO degil; insan tarafinda ikna edici, LLM tarafinda extractable/citable, net ve guvenilir metinler uretmektir.
+- Public copy kurallari: Turkce, somut, proje-ozel, abartisiz, fabricated proof/stat/testimonial yok, bos hype yok, yapay ve jenerik AI tonu yok. Feature yerine outcome dili, ama her claim gercek veriye veya urun gercegine dayanir.
+- Siradaki ana is akisi: once `index.html` ve public-site sayfalarinin tasarim/revizyonu, paralelde site icindeki mevcut metinlerin HelloTalent positioning'ine gore temizlenmesi ve yeniden yazilmasi. Dashboard redesign bu fazin parcasi degildir.
 
 ## 2. Canli Ozellikler
 
@@ -116,7 +127,8 @@ hellotalent.ai, Turkiye perakende sektorune ozel bir yetenek pazaryeri. Adaylar 
 9. **Pozisyon gorunum/esleme metrikleri** — backend counter/trigger gerekli, frontend truth-sync edildi (sahte 0 yerine "yakinda aktif" mesaji)
 10. **iyzico/Stripe checkout** — schema hazir, merchant hesap + API key gerekli (**her zaman en son**)
 11. ~~**Supabase Advisor Fix'leri (SA1-SA5) + LB6 + 2FA**~~ — ✅ TAMAMLANDI (Session 66, 6 Nisan). SA1-SA5: search_path + FK index + cron + bio RPC. LB6: security_audit_log + haftalik RLS audit + security dashboard. 2FA: TOTP enrollment (ayarlar) + login challenge (giris.html). Code review fix'leri: Sonnet reviewer 6 sorun + DeepSeek 4 ek bulgu — hepsi duzeltildi. **820/833 Playwright test PASS** (12 auth = bilinen blocker, 1 setup = env var eksik).
-12. ~~**Design System CSS Overhaul (Kademe 0-3)**~~ — ✅ TAMAMLANDI (Session 67, 6 Nisan). profil.css → 7 modular CSS. ht- component class sistemi. Utility class'lar. Sidebar 4 grup + Kim Bakti/Yetkinlikler nav + bottom nav 5. item. **Kalan: Task 14 eski class alias temizligi** — dual-write'tan tek class'a gecis. Ayri session'da yapilacak. Class esleme tablosu ve adim-adim prompt CURRENT-STATE'te dokumante edildi.
+12. ~~**Design System CSS Overhaul (Kademe 0-3)**~~ — ✅ TAMAMLANDI (Session 67-68, 6 Nisan). profil.css → 7 modular CSS. ht- component class sistemi. Task 14: Eski class alias temizligi tamamlandi (chip/field/exp-card/modal/card/btn dual-write → tek ht- class). Task 15: Inline style temizligi (6 utility class, ~50 inline style → class). Kademe 3: Header nav sadelesti (3 item), bottom nav yeniden siralandi (Genel/Kesfet/Mesajlar/Teklifler/Profil). **820/820 Playwright test PASS.**
+13. **Public-site design + content revision protocol** — AKTIF sonraki calisma hatti. Scope once `index.html`, `aday.html`, `isveren.html`, `giris.html`. Dashboardlar (`profil.html`, `ik.html`, `admin.html`, `coach-studio.html`) bu track'te freeze. Design workflow: Stitch → 21st.dev → Pro UI UX Max → Recraft → repo implementasyonu. Content workflow: AI-SEO + anti-AI-writing copy discipline. Hedef: HelloTalent'a ozel, guvenilir, Turkish-first, AI-citation-friendly public copy ve daha rafine marketing UX.
 
 ## 5b. Sosyal Layer Audit Kararlari (Session 45 — 30 Mart)
 
@@ -130,6 +142,17 @@ hellotalent.ai, Turkiye perakende sektorune ozel bir yetenek pazaryeri. Adaylar 
 
 ## 6. Son 3 Session Ozeti
 
+### Session 68 (6 Nisan — Asama 68: Design System Full Migration — Task 14-15 + Kademe 3)
+**Dual-write'tan tek class migration'i tamamlandi. Inline style temizligi. Header/bottom nav sadelesti.**
+
+**Task 14 (Eski class alias temizligi):** (1) chip → ht-chip, selected → is-active (profil-ui/bootstrap/draft.js). (2) field → ht-input, field-error → has-error (profil-ui.js 6 factory, profil-wizard.js). (3) exp-card → #exp-cards-container > .ht-card (profil-ui/wizard/summary.js, components.css, merkezi.css). (4) modal-overlay → ht-modal__overlay, modal → ht-modal (profil.html 5 modal, profil-settings/events/inbox.js). (5) card/card-title/btn dual-write ~40 element temizlendi (profil.html). (6) CSS cleanup: .field, .btn (8 alias), .card, .card-title, .chip, .chip.selected, .field-error, .modal-overlay, .modal tanimlari components.css + merkezi.css'ten kaldirildi.
+
+**Task 15 (Inline style temizligi):** (7) 6 utility class eklendi: flex-row-8, is-disabled, ht-panel-heading, ht-panel-heading--flex, ht-hint, ht-sub-card. (8) ~50 inline style → class'a donusturuldu. (9) 24 kacirilmis field ht-input dual-write temizlendi.
+
+**Kademe 3 (Nav Restructure):** (10) Bottom nav yeniden siralandi: Genel → Kesfet (sirketler) → Mesajlar → Teklifler → Profil. Studyo bottom nav'dan cikarildi. (11) Header nav sadelesti: Teklifler + Studyo kaldirildi, Markalar → Kesfet yeniden adlandirildi. Header artik 3 item: Genel, Profil, Kesfet. (12) Task 16-19 (sidebar gruplari) onceki session'da implement edilmisti — dogrulandi.
+
+**15 dosya degisti. 820/820 test PASS. DeepSeek 0 kritik bulgu.**
+
 ### Session 67 (6 Nisan — Asama 67: Design System CSS Overhaul Kademe 0-3)
 **profil.css 3223 satir → 7 modular CSS dosyasina bolundu. ht- prefix'li component sinifi sistemi kuruldu. Sidebar ve bottom nav yeniden duzenlendi.**
 
@@ -141,7 +164,7 @@ hellotalent.ai, Turkiye perakende sektorune ozel bir yetenek pazaryeri. Adaylar 
 
 **Kademe 3 (Nav Restructure):** (13) Sidebar 4 gruba ayrildi: Profil, Kesfet, Iletisim, Hesap. (14) Kim Bakti + Yetkinlikler sidebar nav item'lari eklendi. (15) Bottom nav'a 5. item (Studyo) eklendi. (16) sidebar-nav-label first-child spacing duzeltildi.
 
-**Kalan:** Task 14 — eski class alias temizligi (dual-write → tek class migration). Ayri session'da yapilacak.
+**Task 14-15 + Kademe 3 finali:** Session 68'de tamamlandi. Design system migration %100 bitti.
 
 **820/820 Playwright test PASS.** DeepSeek + Codex gate review'lar gecti. 5 commit: 190b114→3845b40.
 
@@ -195,7 +218,11 @@ hellotalent.ai, Turkiye perakende sektorune ozel bir yetenek pazaryeri. Adaylar 
 - **UI dili: Turkce** — asla "roportaj", her zaman "mulakat" veya "is gorusmesi"
 - **Fontlar:** Bricolage Grotesque (baslik), Plus Jakarta Sans (body), DM Mono (data) — Inter/Roboto yasak
 - **Renkler:** Vermillion `#C94E28`, Navy `#1E2D5E`, BG `#F7F6F4` — mor gradient yasak
-- **Bento grid SKILL zorunlu:** UI kodu yazmadan once `.agents/skills/bento-grid-design/SKILL.md` oku
+- **Public-site first:** bir sonraki design/content fazinda oncelik `index.html`, `aday.html`, `isveren.html`, `giris.html`; dashboardlara kullanici istemeden dokunma
+- **Public-site design truth:** Clatu/Recraft protokolu aktif; business logic korunur ama eski layout referans alinmaz
+- **Gate truth:** `index.html` sade, premium, tek-ekran aday/isveren karar yuzeyi olmali; ekstra aciklayici baslik/emoji/pill/ok gimmick'leri kullanma
+- **No emoji:** public-site UI, badge, CTA, helper copy ve illustrasyon ustu etiketlerde emoji kullanma
+- **Content revizyon standardi:** AI-SEO + anti-AI-writing; yapay/jenerik copy, uydurma proof ve bos hype kullanma
 - **candidates.id = bigint**, hr_profiles.id = uuid, companies/brands.id = bigint
 - **console.log yasak** — sadece console.error/warn
 - **IIFE pattern:** yeni feature `(function(){ ... })();` ile sar, `window._htX` ile expose et
@@ -214,8 +241,11 @@ hellotalent.ai, Turkiye perakende sektorune ozel bir yetenek pazaryeri. Adaylar 
 | Deploy workflow | `.claude/rules/deploy-workflow.md` |
 | Supabase patterns | `.claude/rules/supabase-patterns.md` |
 | Turkce UI kurallari | `.claude/rules/turkish-ui.md` |
-| Bento grid tasarim | `.agents/skills/bento-grid-design/SKILL.md` |
+| Public-site design protocol | `docs/superpowers/specs/2026-04-06-design-gap-remediation-design.md` |
+| Clatu illustration truth | `docs/design-illustration-brief.md` |
 | Dev skill (mimari + component) | `.agents/skills/hellotalent-dev/SKILL.md` |
+| AI-SEO content discipline | `.agents/skills/ai-seo/SKILL.md` |
+| Copy discipline (anti-generic / no fabrication) | `.agents/skills/copywriting/SKILL.md` |
 | Data strategy + matching | `.agents/skills/hellotalent-dev/references/data-strategy.md` |
 | DB schema referansi | `docs/db-schema-reference.js` |
 | Migration arsivi (001-064) | `docs/migrations/` |

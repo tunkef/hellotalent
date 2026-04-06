@@ -106,8 +106,18 @@ Subagent (Agent tool) çağırırken iş tipine göre model seç:
 **Kural:** Default subagent modeli `sonnet`. Sadece plan/mimari/implementation/debug için `opus` kullan.
 **c-level-skills:** Sadece kullanıcı strateji/iş modeli/yatırım konusunda açıkça sorduğunda invoke et.
 
-## 🚨 CRITICAL AI DIRECTIVE (READ THIS FIRST)
-Before you write ANY HTML, CSS, or JS for a new feature, you MUST forcefully read and load these two files into your context:
-1. `.agents/skills/bento-grid-design/SKILL.md` -> Contains the EXACT HTML/CSS templates for Bento grids and cards. 
-2. `.agents/skills/hellotalent-dev/SKILL.md` -> Contains architecture and component rules.
-**DO NOT generate any UI code from scratch without reading the Bento Grid SKILL.md file first.**
+## Public-Site Design Truth
+Public-site work is no longer anchored to legacy bento-grid/dashboard language.
+
+Before writing new public-site HTML, CSS, or JS, read and align with:
+1. `docs/design-illustration-brief.md`
+2. `.agents/skills/hellotalent-dev/SKILL.md`
+3. `.agents/skills/ai-seo/SKILL.md` when content is part of the task
+
+Rules:
+- Preserve business logic, not the old homepage structure.
+- Public-site direction is Clatu-first: minimal, editorial, premium, illustration-aware.
+- `index.html` should default to a minimal aday/isveren decision gate with strong visual separation and no unnecessary explanatory clutter.
+- No emoji in public-site UI or supporting copy.
+- Do not use bento-grid as a required public-site design system.
+- Legacy dashboard/studio patterns may remain in their own surfaces, but they must not constrain homepage or public-site redesign.

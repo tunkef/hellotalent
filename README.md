@@ -76,7 +76,7 @@ Built deliberately without frameworks — vanilla HTML/CSS/JS served as static f
 
 ## Design
 
-Editorial luxury meets accessible warmth. Turkish-first UI. Bento grid layout system. Dark mode. Mobile-responsive down to 390px.
+Editorial luxury meets accessible warmth. Turkish-first UI. Clatu-led public-site direction. Minimal premium gate patterns where needed. Dark mode. Mobile-responsive down to 390px.
 
 ## Roadmap
 

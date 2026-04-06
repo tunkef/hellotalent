@@ -3,46 +3,30 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Perakende kariyerini tek profille yönet ya da sektöre özel aday havuzuna gir. HelloTalent, Türkiye perakende sektörünün yetenek platformu.">
-<meta name="keywords" content="perakende kariyer, retail iş ilanları, mağaza yöneticisi, perakende işe alım, hellotalent">
-<meta name="robots" content="index, follow">
-<link rel="canonical" href="https://hellotalent.ai/">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://hellotalent.ai/">
-<meta property="og:title" content="hellotalent.ai — Türkiye Perakende Sektörünün Yetenek Platformu">
-<meta property="og:description" content="Perakende kariyerini tek profille yönet ya da aday havuzuna gir.">
-<meta property="og:image" content="https://hellotalent.ai/og-image.png">
-<meta property="og:locale" content="tr_TR">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="hellotalent.ai — Türkiye Perakende Sektörünün Yetenek Platformu">
-<meta name="twitter:description" content="Perakende kariyerini tek profille yönet ya da aday havuzuna gir.">
-<meta name="twitter:image" content="https://hellotalent.ai/og-image.png">
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "WebSite",
-  "url": "https://hellotalent.ai",
-  "name": "hellotalent.ai",
-  "description": "Türkiye perakende sektörüne özel yetenek platformu",
-  "inLanguage": "tr-TR"
-}
-</script>
-<title>hellotalent.ai — Türkiye Perakende Sektörünün Yetenek Platformu</title>
+<meta name="robots" content="noindex">
+<title>hellotalent.ai — Gate Demo v2</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200;12..96,400;12..96,600;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
+/* ══════════════════════════════════════════
+   GATE DEMO v2
+   Clatu-first, editorial, premium
+   Gate logic preserved: left aday / right isveren
+   Center-divided decision surface, single screen
+   ══════════════════════════════════════════ */
+
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%}
+html,body{height:100%;overflow:hidden}
 body{
   font-family:'Plus Jakarta Sans',sans-serif;
   -webkit-font-smoothing:antialiased;
   text-rendering:optimizeLegibility;
   background:#0B0D17;
-  overflow-x:hidden;
 }
 
 :root{
   --verm:#C94E28;
+  --verm-soft:#E8845C;
   --navy:#1E2D5E;
   --cream:#F7F6F4;
   --cream-dim:rgba(247,246,244,0.55);
@@ -52,6 +36,7 @@ body{
   --expo:cubic-bezier(0.16,1,0.3,1);
 }
 
+/* ── HEADER ── */
 .hdr{
   position:absolute;top:0;left:0;right:0;
   display:flex;align-items:center;justify-content:space-between;
@@ -71,92 +56,86 @@ body{
 }
 .login:hover{color:var(--cream);border-color:rgba(247,246,244,0.2)}
 
+/* ── GATE GRID ── */
 .gate{
   display:flex;
   height:100vh;
-  height:100dvh;
   position:relative;
-}
-.gate::after{
-  content:'';
-  position:absolute;
-  top:8%;
-  bottom:8%;
-  left:50%;
-  width:1px;
-  background:linear-gradient(180deg,transparent,var(--cream-rule) 25%,var(--cream-rule) 75%,transparent);
-  z-index:10;
-  pointer-events:none;
 }
 
+/* Center rule — subtle, structural */
+.gate::after{
+  content:'';position:absolute;
+  top:8%;bottom:8%;left:50%;width:1px;
+  background:linear-gradient(180deg,transparent,var(--cream-rule) 25%,var(--cream-rule) 75%,transparent);
+  z-index:10;pointer-events:none;
+}
+
+/* ── ZONE (shared) ── */
 .zone{
-  flex:1;
-  position:relative;
-  overflow:hidden;
-  display:flex;
-  flex-direction:column;
+  flex:1;position:relative;overflow:hidden;
+  display:flex;flex-direction:column;
   justify-content:center;
-  text-decoration:none;
-  cursor:pointer;
+  text-decoration:none;cursor:pointer;
   transition:background .5s ease;
 }
 .zone:hover .ct{border-bottom-color:currentColor}
 .zone--a:hover .il{transform:translateY(-4px);opacity:1}
 .zone--i:hover .il{transform:scaleX(-1) translateY(-4px);opacity:1}
 
+/* ── ADAY ── */
 .zone--a{
   padding:0 clamp(32px,4.5vw,72px);
   background:linear-gradient(170deg,#100E16 0%,#0B0D17 100%);
 }
-.zone--a:hover{background:linear-gradient(170deg,#14111E 0%,#0D0F1B 100%)}
+.zone--a:hover{
+  background:linear-gradient(170deg,#14111E 0%,#0D0F1B 100%);
+}
 
+/* ── ISVEREN ── */
 .zone--i{
   padding:0 clamp(32px,4.5vw,72px);
-  align-items:flex-end;
-  text-align:right;
+  align-items:flex-end;text-align:right;
   background:linear-gradient(190deg,#0E1020 0%,#0B0D17 100%);
 }
-.zone--i:hover{background:linear-gradient(190deg,#121428 0%,#0D0F1B 100%)}
+.zone--i:hover{
+  background:linear-gradient(190deg,#121428 0%,#0D0F1B 100%);
+}
 
+/* ── EYEBROW ── */
 .ey{
-  font-family:var(--font-b);
-  font-size:10px;
-  font-weight:700;
-  letter-spacing:4px;
-  text-transform:uppercase;
+  font-family:var(--font-b);font-size:10px;font-weight:700;
+  letter-spacing:4px;text-transform:uppercase;
   margin-bottom:18px;
 }
 .zone--a .ey{color:rgba(201,78,40,0.55)}
 .zone--i .ey{color:rgba(107,130,196,0.50)}
 
+/* ── HEADING ── */
 .hd{
-  font-family:var(--font-d);
-  font-weight:800;
+  font-family:var(--font-d);font-weight:800;
   font-size:clamp(36px,5vw,62px);
-  line-height:0.93;
-  letter-spacing:-2.5px;
+  line-height:0.93;letter-spacing:-2.5px;
   color:var(--cream);
   margin-bottom:20px;
 }
 .hd .v{color:var(--verm)}
 .hd .n{color:#6B82C4}
 
+/* ── SUBTEXT ── */
 .sb{
-  font-size:14px;
-  line-height:1.7;
+  font-size:14px;line-height:1.7;
   color:var(--cream-dim);
   max-width:280px;
   margin-bottom:32px;
 }
 .zone--i .sb{margin-left:auto}
 
+/* ── CTA ── */
 .ct{
   display:inline-block;
-  font-family:var(--font-b);
-  font-size:13px;
-  font-weight:700;
-  letter-spacing:0.3px;
-  text-decoration:none;
+  font-family:var(--font-b);font-size:13px;font-weight:700;
+  letter-spacing:0.3px;text-decoration:none;
   padding-bottom:4px;
   border-bottom:2px solid transparent;
   transition:border-color .35s ease;
@@ -164,13 +143,12 @@ body{
 .zone--a .ct{color:var(--verm);border-bottom-color:rgba(201,78,40,0.2)}
 .zone--i .ct{color:#8B9CC5;border-bottom-color:rgba(139,156,197,0.15)}
 
+/* ── ILLUSTRATIONS ── */
 .il{
   position:absolute;
   width:clamp(240px,26vw,400px);
-  height:auto;
-  object-fit:contain;
-  pointer-events:none;
-  z-index:2;
+  height:auto;object-fit:contain;
+  pointer-events:none;z-index:2;
   transition:transform .7s var(--expo),opacity .5s ease;
   opacity:0.88;
 }
@@ -184,53 +162,39 @@ body{
   transform:scaleX(-1);
 }
 
+/* ── AMBIENT COLOR WASH ──
+   Very subtle radial tint per side.
+   Not a glow effect — a color temperature shift. */
 .zone--a::before{
-  content:'';
-  position:absolute;
-  bottom:0;
-  right:0;
-  width:60%;
-  height:50%;
+  content:'';position:absolute;
+  bottom:0;right:0;
+  width:60%;height:50%;
   background:radial-gradient(ellipse at 80% 100%,rgba(201,78,40,0.06),transparent 70%);
-  pointer-events:none;
-  z-index:0;
+  pointer-events:none;z-index:0;
 }
 .zone--i::before{
-  content:'';
-  position:absolute;
-  bottom:0;
-  left:0;
-  width:60%;
-  height:50%;
+  content:'';position:absolute;
+  bottom:0;left:0;
+  width:60%;height:50%;
   background:radial-gradient(ellipse at 20% 100%,rgba(30,45,94,0.08),transparent 70%);
-  pointer-events:none;
-  z-index:0;
+  pointer-events:none;z-index:0;
 }
 
+/* ── FOOTER ── */
 .ft{
-  position:absolute;
-  bottom:0;
-  left:0;
-  right:0;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:14px;
-  font-size:9px;
+  position:absolute;bottom:0;left:0;right:0;
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  padding:14px;font-size:9px;
   color:rgba(247,246,244,0.15);
-  letter-spacing:0.5px;
-  text-transform:uppercase;
+  letter-spacing:0.5px;text-transform:uppercase;
   z-index:20;
 }
-
+/* ── ENTRANCE ── */
 @keyframes up{
   from{opacity:0;transform:translateY(14px)}
   to{opacity:1;transform:translateY(0)}
 }
-@keyframes fi{
-  from{opacity:0}
-  to{opacity:1}
-}
+@keyframes fi{from{opacity:0}to{opacity:1}}
 @keyframes ilUp{
   from{opacity:0;transform:translateY(24px)}
   to{opacity:0.88;transform:translateY(0)}
@@ -254,15 +218,12 @@ body{
   .zone,.il{transition:none!important}
 }
 
+/* ══ TABLET ══ */
 @media(max-width:900px){
   .gate{flex-direction:column}
   .gate::after{
-    top:50%;
-    bottom:auto;
-    left:8%;
-    right:8%;
-    width:84%;
-    height:1px;
+    top:50%;bottom:auto;left:8%;right:8%;
+    width:84%;height:1px;
     background:linear-gradient(90deg,transparent,var(--cream-rule) 25%,var(--cream-rule) 75%,transparent);
   }
   .zone--i{align-items:flex-start;text-align:left}
@@ -273,12 +234,12 @@ body{
   .zone--i .il{left:auto;right:8px;transform:scaleX(-1)}
 }
 
+/* ══ MOBILE ══ */
 @media(max-width:600px){
   html,body{overflow:auto}
   .gate{height:auto;min-height:100vh;min-height:100dvh}
   .zone{
-    min-height:50vh;
-    min-height:50dvh;
+    min-height:50vh;min-height:50dvh;
     padding:0 24px;
     justify-content:flex-start;
     padding-top:clamp(76px,13vh,110px);
@@ -293,6 +254,7 @@ body{
   .ft{position:relative;padding:16px;font-size:8px}
 }
 
+/* ══ SMALL MOBILE ══ */
 @media(max-width:380px){
   .zone{min-height:48vh;padding-top:68px}
   .hd{font-size:24px;letter-spacing:-1px}
@@ -300,13 +262,6 @@ body{
   .sb{font-size:12px;max-width:220px}
 }
 </style>
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-54BCV5QYCZ"></script>
-<script>
-window.dataLayer=window.dataLayer||[];
-function gtag(){dataLayer.push(arguments);}
-gtag('js',new Date());
-gtag('config','G-54BCV5QYCZ');
-</script>
 </head>
 <body>
 
@@ -316,12 +271,13 @@ gtag('config','G-54BCV5QYCZ');
 </header>
 
 <main class="gate">
+
   <a class="zone zone--a" href="aday.html">
     <span class="ey">Adaylar</span>
     <h2 class="hd">Sonraki<br><span class="v">adımın</span><br>burada</h2>
     <p class="sb">Perakende kariyerini tek bir profille yönet. Sektördeki güçlü markalar seni bulsun.</p>
     <span class="ct">Profil oluştur</span>
-    <img class="il" src="assets/gate/gate-aday-final.svg" alt="Perakende sektöründe kariyer arayan aday" width="400" height="400" loading="eager">
+    <img class="il" src="../assets/gate/gate-aday-final.svg" alt="Perakende sektöründe kariyer arayan aday" width="400" height="400" loading="eager">
   </a>
 
   <a class="zone zone--i" href="isveren.html">
@@ -329,8 +285,9 @@ gtag('config','G-54BCV5QYCZ');
     <h2 class="hd">Doğru<br><span class="n">yeteneği</span><br>şimdi bul</h2>
     <p class="sb">Sektöre özel aday havuzuna eriş. Filtrele, incele, hemen iletişime geç.</p>
     <span class="ct">Aday havuzuna gir</span>
-    <img class="il" src="assets/gate/gate-isveren-final.svg" alt="Perakende sektöründe yetenek arayan işveren" width="400" height="400" loading="eager">
+    <img class="il" src="../assets/gate/gate-isveren-final.svg" alt="Perakende sektöründe yetenek arayan işveren" width="400" height="400" loading="eager">
   </a>
+
 </main>
 
 <footer class="ft">

@@ -2,6 +2,7 @@
 > Son güncelleme: 30 Mart 2026 (Session 57 — Studio redesign S01-S06 smoke + deploy)
 > Bu doküman session tarihçesidir. Günlük truth için `docs/CURRENT-STATE.md`, mimari için `docs/ARCHITECTURE.md` okuyun.
 > Test truth düzeltmesi (30 Mart 2026): p3 regression 446/446, full smoke 540 passed / 1 blocked (auth env vars) / 12 did not run (e2e chain — bilinen).
+> Eski public-site veya bento referanslari tarihsel kayittir; yeni public-site design truth olarak kullanmayin.
 
 ---
 

@@ -2,6 +2,7 @@
 > Son güncelleme: 29 Mart 2026 (Session 43 — FAZ 2C/2D deployed + Phase 5B AI redesign + CORS/cron pipeline fix)
 > Bu doküman, projenin mevcut durumunu, tamamlanan işleri ve kalan backlog'u kapsar.
 > Yeni bir chat/session başlatırken bu dosyayı referans olarak kullanın.
+> Public-site tasarim truth'u icin bu dosyayi source of truth kabul etmeyin; aktif public-site yonu `docs/CURRENT-STATE.md` ve `docs/design-illustration-brief.md` dosyalarindadir. Buradaki eski bento/dashboard notlari tarihsel kayittir.
 
 
 ---

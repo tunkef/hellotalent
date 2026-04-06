@@ -334,7 +334,7 @@
     <div id="form-aday">
       <!-- Aday Giriş (login) -->
       <div id="aday-login-box">
-        <h2 class="card-title">Tekrar hoş geldin 👋</h2>
+        <h2 class="card-title">Tekrar hoş geldin</h2>
         <p class="card-sub">Profilini güncellemek veya başvurularını takip etmek için giriş yap.</p>
 
         <div class="error-msg" id="err-aday"></div>
@@ -349,7 +349,7 @@
         </div>
 
         <button id="btn-aday-giris" class="btn-submit btn-aday" onclick="loginAday()">
-          <span id="aday-btn-text">Giriş Yap →</span>
+          <span id="aday-btn-text">Giriş Yap</span>
         </button>
 
         <div style="text-align:center;margin-top:8px;">
@@ -372,7 +372,7 @@
 
         <p class="register-link">
           Henüz üye değil misin?
-          <a href="#" class="aday-link" id="link-aday-show-register">Hemen kayıt ol →</a>
+          <a href="#" class="aday-link" id="link-aday-show-register">Hemen kayıt ol</a>
         </p>
       </div>
 
@@ -412,11 +412,11 @@
           <span>18 yaşını doldurduğumu onaylıyor, <a href="gizlilik.html" target="_blank" style="color:var(--verm);text-decoration:underline;">Gizlilik Politikası</a>'nı ve <a href="kullanim-sartlari.html" target="_blank" style="color:var(--verm);text-decoration:underline;">Kullanım Şartları</a>'nı okuduğumu kabul ediyorum.</span>
         </label>
 
-        <button class="btn-submit btn-aday" type="button" id="btn-aday-kayit" disabled>Kayıt Ol →</button>
+        <button class="btn-submit btn-aday" type="button" id="btn-aday-kayit" disabled>Kayıt Ol</button>
 
         <p class="register-link" style="margin-top:16px;">
           Zaten üye misin?
-          <a href="#" class="aday-link" id="link-aday-show-login">Giriş yap →</a>
+          <a href="#" class="aday-link" id="link-aday-show-login">Giriş yap</a>
         </p>
       </div>
     </div>
@@ -440,7 +440,7 @@
         </div>
 
         <button class="btn-submit btn-ik" onclick="loginIK()">
-          <span id="ik-btn-text">Giriş Yap →</span>
+          <span id="ik-btn-text">Giriş Yap</span>
         </button>
 
         <div style="text-align:center;margin-top:8px;">
@@ -453,7 +453,7 @@
           İK hesabı yok mu?
           <a href="#" class="ik-link" id="link-ik-show-register">Kayıt ol</a>
           <span style="color:var(--muted);"> · </span>
-          <a href="isveren.html#iletisim" class="ik-link">Demo talep et →</a>
+          <a href="isveren.html#iletisim" class="ik-link">Demo talep et</a>
         </p>
       </div>
 
@@ -477,7 +477,7 @@
           <label for="ik-kayit-email">Kurumsal E-posta <span style="color:var(--verm);">*</span></label>
           <input type="email" id="ik-kayit-email" placeholder="isim@sirket.com" autocomplete="email">
           <div id="ik-email-domain-warning" style="display:none;font-size:var(--text-sm);margin-top:4px;padding:6px 10px;border-radius:6px;background:#FEF3C7;color:#92400E;border:1px solid #FDE68A;">
-            ⚠️ Kişisel e-posta adresi tespit edildi. Kurumsal e-posta kullanmanızı öneriyoruz.
+            Kişisel e-posta adresi tespit edildi. Kurumsal e-posta kullanmanızı öneriyoruz.
           </div>
         </div>
         <div class="field">
@@ -505,11 +505,11 @@
           <span>18 yaşını doldurduğumu onaylıyor, <a href="gizlilik.html" target="_blank" style="color:var(--navy);text-decoration:underline;">Gizlilik Politikası</a>'nı ve <a href="kullanim-sartlari.html" target="_blank" style="color:var(--navy);text-decoration:underline;">Kullanım Şartları</a>'nı okuduğumu kabul ediyorum.</span>
         </label>
 
-        <button class="btn-submit btn-ik" type="button" id="btn-ik-kayit" disabled>Kayıt Ol →</button>
+        <button class="btn-submit btn-ik" type="button" id="btn-ik-kayit" disabled>Kayıt Ol</button>
 
         <p class="register-link" style="margin-top:16px;">
           Zaten İK hesabınız var mı?
-          <a href="#" class="ik-link" id="link-ik-show-login">Giriş yap →</a>
+          <a href="#" class="ik-link" id="link-ik-show-login">Giriş yap</a>
         </p>
       </div>
     </div>
@@ -562,7 +562,7 @@ function checkLoginCooldown(type, btn) {
         _loginCooldown[type] = null;
         _loginAttempts[type] = 0;
         btn.disabled = false;
-        btn.textContent = 'Giriş Yap →';
+        btn.textContent = 'Giriş Yap';
         btn.style.opacity = '1';
       } else {
         btn.textContent = 'Çok fazla deneme. ' + remaining + 's bekleyin';
@@ -603,7 +603,7 @@ function getCandidatePostAuthUrl() {
   }
   var { data } = await getSupa().auth.getSession();
   if (data.session && data.session.user) {
-    // Zaten giriş yapmış → MFA kontrolü sonrası role'e göre yönlendir
+    // Zaten giriş yapmış kullaniciyi MFA kontrolü sonrası role'e göre yönlendir
     var role = data.session.user.user_metadata?.role;
     checkAndHandleMFA(role === 'employer' ? 'ik.html' : getCandidatePostAuthUrl());
   }
@@ -658,7 +658,7 @@ async function loginAday() {
     if (checkLoginCooldown('aday', loginBtn)) return;
     errEl.textContent = 'E-posta veya şifre hatalı. Lütfen tekrar dene.';
     errEl.style.display = 'block';
-    btnText.textContent = 'Giriş Yap →';
+    btnText.textContent = 'Giriş Yap';
     return;
   }
 
@@ -670,7 +670,7 @@ async function loginAday() {
     await getSupa().auth.signOut();
     errEl.textContent = 'Bu hesap bir işveren hesabıdır. Lütfen İK Girişi sekmesini kullanın.';
     errEl.style.display = 'block';
-    btnText.textContent = 'Giriş Yap →';
+    btnText.textContent = 'Giriş Yap';
     return;
   }
   checkAndHandleMFA(getCandidatePostAuthUrl());
@@ -709,7 +709,7 @@ async function loginIK() {
     }
     errEl.textContent = msg;
     errEl.style.display = 'block';
-    btnText.textContent = 'Giriş Yap →';
+    btnText.textContent = 'Giriş Yap';
     return;
   }
 
@@ -721,7 +721,7 @@ async function loginIK() {
     await getSupa().auth.signOut();
     errEl.textContent = 'Bu hesap bir aday hesabıdır. İşveren girişi için şirket e-posta adresinizi kullanın.';
     errEl.style.display = 'block';
-    btnText.textContent = 'Giriş Yap →';
+    btnText.textContent = 'Giriş Yap';
     return;
   }
   checkAndHandleMFA('ik.html');
@@ -867,11 +867,11 @@ document.addEventListener('keydown', function(e) {
       if(checks[rule]) {
         el.classList.add('pass');
         var text = el.textContent;
-        if(text.charAt(0) !== '✓') el.textContent = '✓ ' + text.substring(2);
+        if(text.charAt(1) === ' ') el.textContent = text.substring(2);
       } else {
         el.classList.remove('pass');
         var text = el.textContent;
-        if(text.charAt(0) === '✓') el.textContent = '○ ' + text.substring(2);
+        if(text.charAt(1) !== ' ') el.textContent = '○ ' + text;
       }
     });
 
@@ -952,7 +952,7 @@ document.addEventListener('keydown', function(e) {
     }
     var cbConsent = document.getElementById('cb-aday-consent');
     btn.disabled = cbConsent ? !cbConsent.checked : false;
-    btn.textContent = 'Kayıt Ol →';
+    btn.textContent = 'Kayıt Ol';
   });
 })();
 
@@ -992,13 +992,13 @@ document.addEventListener('keydown', function(e) {
     // Match check
     var match = (emailDomain === webDomain) || emailDomain.endsWith('.' + webDomain) || webDomain.endsWith('.' + emailDomain);
     if(match){
-      domainHint.textContent = '✓ E-posta domaini şirket web sitesiyle eşleşiyor';
+      domainHint.textContent = 'E-posta domaini şirket web sitesiyle eşleşiyor';
       domainHint.style.background = '#F0FDF4';
       domainHint.style.color = '#16A34A';
       domainHint.style.borderColor = '#BBF7D0';
       domainHint.style.border = '1px solid #BBF7D0';
     } else {
-      domainHint.textContent = '⚠ E-posta domaini şirket web sitesiyle eşleşmiyor';
+      domainHint.textContent = 'E-posta domaini şirket web sitesiyle eşleşmiyor';
       domainHint.style.background = '#FEF3C7';
       domainHint.style.color = '#92400E';
       domainHint.style.borderColor = '#FDE68A';
@@ -1069,11 +1069,11 @@ document.addEventListener('keydown', function(e) {
     }
     var cbConsent = document.getElementById('cb-ik-consent');
     btn.disabled = cbConsent ? !cbConsent.checked : false;
-    btn.textContent = 'Kayıt Ol →';
+    btn.textContent = 'Kayıt Ol';
   });
 })();
 
-// ── CONSENT CHECKBOX → KAYIT BUTON TOGGLE ──
+// ── CONSENT CHECKBOX / KAYIT BUTON TOGGLE ──
 (function(){
   var pairs = [
     { cb: 'cb-aday-consent', btn: 'btn-aday-kayit' },
