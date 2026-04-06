@@ -236,19 +236,11 @@ body{background:var(--bg)}
   transition:transform .7s var(--expo),opacity .5s ease;
   opacity:0.9;
 }
-.zone--a .il{right:clamp(8px,3vw,48px);height:clamp(270px,48vh,430px)}
+.zone--a .il{right:clamp(8px,3vw,48px)}
 .zone--i .il{left:clamp(20px,4vw,56px)}
 .zone--a:hover .il{transform:translateY(-6px) scale(1.02);opacity:1}
 .zone--i:hover .il{transform:translateY(-6px) scale(1.02);opacity:1}
 
-/* ── FOOTER ── */
-.ft{
-  position:absolute;bottom:0;left:0;right:0;
-  display:flex;align-items:center;justify-content:center;
-  padding:14px;font-size:9px;
-  color:var(--ft);
-  letter-spacing:0.5px;text-transform:uppercase;z-index:20;
-}
 
 /* ── ANIMATIONS ── */
 @keyframes up{
@@ -267,10 +259,9 @@ body{background:var(--bg)}
 .ct{animation:up .55s ease-out .27s both}
 .il{animation:ilUp .8s var(--expo) .2s both}
 .hdr{animation:fi .4s ease-out .05s both}
-.ft{animation:fi .4s ease-out .4s both}
 
 @media(prefers-reduced-motion:reduce){
-  .ey,.hd,.sb,.ct,.il,.hdr,.ft{animation:none!important;opacity:1!important}
+  .ey,.hd,.sb,.ct,.il,.hdr{animation:none!important;opacity:1!important}
   .zone,.il{transition:none!important}
 }
 
@@ -306,7 +297,6 @@ body{background:var(--bg)}
   .hdr{padding:16px 18px}
   .logo{font-size:16px}
   .login{font-size:11px;padding:5px 12px}
-  .ft{position:relative;padding:16px;font-size:8px}
 }
 
 /* ══ SMALL MOBILE ══ */
@@ -350,9 +340,6 @@ gtag('config','G-54BCV5QYCZ');
   </a>
 </main>
 
-<footer class="ft">
-  <span>hellotalent.ai</span>
-</footer>
 
 </body>
 </html>
