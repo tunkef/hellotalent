@@ -133,21 +133,6 @@ body{background:var(--bg)}
   height:100vh;height:100dvh;
   position:relative;
 }
-.gate::before{
-  content:'';position:absolute;
-  top:0;bottom:0;left:50%;width:120px;
-  transform:translateX(-50%);
-  background:linear-gradient(90deg,transparent,var(--glow-a) 30%,var(--glow-i) 70%,transparent);
-  z-index:3;pointer-events:none;
-  opacity:0.5;
-  transition:opacity .6s ease;
-}
-.gate::after{
-  content:'';position:absolute;
-  top:12%;bottom:12%;left:50%;width:1px;
-  background:linear-gradient(180deg,transparent,var(--rule) 20%,var(--rule) 80%,transparent);
-  z-index:10;pointer-events:none;
-}
 
 /* ── ZONES ── */
 .zone{
