@@ -1,0 +1,168 @@
+/* ── DESIGN TOKENS ── */
+
+/* ═══ Layer 1: Primitives (raw values, never reference directly in rules) ═══ */
+:root {
+  color-scheme: light;
+  --color-vermillion: #C94E28;
+  --color-vermillion-light: #F5EDE9;
+  --color-vermillion-dark: #b84420;
+  --color-navy: #1E2D5E;
+  --color-navy-light: #EEF0F7;
+  --color-navy-deep: #162247;
+  --color-gray: #F7F6F4;
+  --color-green: #16a34a;
+  --color-green-light: #F0FDF4;
+  --color-green-border: #BBF7D0;
+  --color-red: #dc2626;
+  --color-red-light: #FEF2F2;
+  --color-text: #111111;
+  --color-muted: #6B7280;
+  --color-border: #E5E3DF;
+
+  /* Fonts */
+  --font-head: 'Bricolage Grotesque', sans-serif;
+  --font-body: 'Plus Jakarta Sans', sans-serif;
+  --font-mono: 'DM Mono', monospace;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+
+  /* Type scale */
+  --text-xs: 10px;
+  --text-sm: 11px;
+  --text-base: 12px;
+  --text-md: 13px;
+  --text-lg: 14px;
+  --text-xl: 16px;
+  --text-2xl: 18px;
+  --text-3xl: 20px;
+
+  /* Spacing scale */
+  --space-1: 2px;
+  --space-2: 4px;
+  --space-3: 6px;
+  --space-4: 8px;
+  --space-5: 10px;
+  --space-6: 12px;
+  --space-7: 14px;
+  --space-8: 16px;
+  --space-9: 20px;
+  --space-10: 24px;
+  --space-11: 28px;
+  --space-12: 32px;
+
+  /* Radius */
+  --radius: 10px;
+  --radius-sm: 7px;
+  --radius-lg: 14px;
+
+  /* Shadows */
+  --shadow: 0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md: 0 2px 8px rgba(0,0,0,0.07);
+  --shadow-lg: 0 4px 24px rgba(0,0,0,0.08);
+
+  /* Layout */
+  --sidebar-w: 240px;
+  --header-h: 60px;
+
+/* ═══ Layer 2: Semantic (meaning — reference these in CSS rules) ═══ */
+
+  /* Backwards compat aliases (keep until Kademe 2 migration completes) */
+  --verm: var(--color-vermillion);
+  --verm-light: var(--color-vermillion-light);
+  --verm-dark: var(--color-vermillion-dark);
+  --verm-text: var(--color-vermillion-dark);
+  --navy: var(--color-navy);
+  --navy-light: var(--color-navy-light);
+  --navy-deep: var(--color-navy-deep);
+  --gray: var(--color-gray);
+  --text: var(--color-text);
+  --muted: var(--color-muted);
+  --border: var(--color-border);
+  --green: var(--color-green);
+  --green-light: var(--color-green-light);
+  --green-border: var(--color-green-border);
+  --red: var(--color-red);
+  --red-light: var(--color-red-light);
+  --mono: var(--font-mono);
+
+  /* Surfaces */
+  --bg-app: #ffffff;
+  --bg-surface: #ffffff;
+  --bg-elevated: var(--color-gray);
+
+  /* Text */
+  --text-primary: var(--color-text);
+  --text-secondary: var(--color-navy);
+  --text-muted: var(--color-muted);
+
+  /* Borders */
+  --border-subtle: var(--color-border);
+  --border-strong: #D1D5DB;
+
+  /* Accent */
+  --accent: var(--color-vermillion);
+  --accent-soft: var(--color-vermillion-light);
+  --accent-text: var(--color-vermillion-dark);
+  --accent-hover: var(--color-vermillion-dark);
+
+  /* Status */
+  --success: var(--color-green);
+  --success-soft: var(--color-green-light);
+  --warning: #B45309;
+  --warning-soft: #FEF3C7;
+  --danger: var(--color-red);
+  --danger-soft: var(--color-red-light);
+
+  /* Controls */
+  --input-bg: #f3f3f5;
+  --toggle-off: #cbced4;
+  --focus-ring: rgba(0,0,0,0.1);
+
+/* ═══ Layer 3: Component (usage) ═══ */
+
+  --sidebar-bg: #ffffff;
+  --sidebar-border: var(--border-subtle);
+  --sidebar-accent: var(--color-gray);
+  --sidebar-accent-foreground: var(--text-primary);
+  --sidebar-primary: var(--color-vermillion);
+  --sidebar-primary-foreground: #ffffff;
+  --ring: var(--focus-ring);
+}
+
+/* ═══ Dark Mode — Semantic overrides ═══ */
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --bg-app: #050712;
+  --bg-surface: #111827;
+  --bg-elevated: #1F2937;
+
+  --text-primary: #F9FAFB;
+  --text-secondary: #E5E7EB;
+  --text-muted: #9CA3AF;
+
+  --border-subtle: #1F2937;
+  --border-strong: #374151;
+
+  --accent-soft: #2D1810;
+  --success-soft: #0D2818;
+  --warning: #F97316;
+  --warning-soft: #2D1A0A;
+  --danger-soft: #2D0A0A;
+
+  --input-bg: #020617;
+  --toggle-off: #4B5563;
+  --focus-ring: rgba(96,165,250,0.6);
+
+  --navy-deep: #0F1729;
+  --navy: #7B93C4;
+  --navy-light: rgba(123,147,196,0.12);
+  --muted: #9CA3AF;
+
+  --sidebar-bg: #020617;
+  --sidebar-border: var(--border-subtle);
+  --sidebar-accent: #0B1120;
+  --sidebar-accent-foreground: var(--text-primary);
+  --sidebar-primary: var(--color-vermillion);
+  --sidebar-primary-foreground: #ffffff;
+  --ring: var(--focus-ring);
+}

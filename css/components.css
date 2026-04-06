@@ -1,0 +1,283 @@
+/* ── FORM FIELDS ── */
+.field{margin-bottom:16px;}
+.field label{display:block;font-size:var(--text-base);font-weight:var(--font-weight-medium);color:var(--text-secondary);margin-bottom:5px;}
+.field-hint{font-size:var(--text-sm);color:var(--text-muted);margin-top:3px;line-height:1.4;}
+.field input,.field select,.field textarea{
+  width:100%;padding:10px 12px;min-height:36px;border:1px solid var(--border-subtle);border-radius:var(--radius);
+  font-family:inherit;font-size:var(--text-lg);font-weight:var(--font-weight-normal);color:var(--text-primary);
+  background:var(--input-bg);transition:border-color 0.2s,box-shadow 0.15s;outline:none;
+}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--accent);}
+.field input:focus-visible,.field select:focus-visible,.field textarea:focus-visible{box-shadow:0 0 0 2px var(--ring);}
+.field input:disabled{background:var(--bg-elevated);color:var(--text-muted);cursor:not-allowed;}
+.field textarea{resize:vertical;min-height:80px;}
+.field select{cursor:pointer;appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 12px center;padding-right:32px;
+}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.field-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+/* Experience row: right cell contains Pozisyon (select or custom); avoid grid overflow */
+.exp-poz-col{min-width:0;}
+.field-error input,.field-error select,.field-error textarea{border-color:var(--verm) !important;}
+.field-error label{color:var(--verm) !important;}
+
+/* ── BUTTONS ── */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  padding:10px 20px;border-radius:var(--radius-sm);font-family:inherit;
+  font-size:var(--text-md);font-weight:var(--font-weight-medium);cursor:pointer;transition:all 0.15s;border:none;
+  outline:none;
+}
+.btn:focus-visible{box-shadow:0 0 0 2px var(--ring);}
+.btn-primary{background:var(--verm);color:white;}
+.btn-primary:hover{background:var(--verm-dark);}
+.btn-secondary{background:var(--bg-elevated);color:var(--text-primary);border:1px solid var(--border-subtle);}
+.btn-secondary:hover{background:var(--border);}
+.btn-ghost{background:none;color:var(--text-muted);}
+.btn-ghost:hover{color:var(--text-primary);background:var(--bg-elevated);}
+.btn-navy{background:var(--navy);color:white;}
+.btn-navy:hover{opacity:0.9;}
+.btn-danger{background:var(--red);color:white;}
+.btn-sm{padding:7px 14px;font-size:var(--text-base);}
+.btn-lg{padding:12px 28px;font-size:15px;}
+
+/* Wizard: unified action buttons — all use dashed border style */
+#panel-profil #btn-add-exp,
+#panel-profil #btn-add-edu,
+#panel-profil #btn-add-role,
+#panel-profil #btn-add-lang,
+#panel-profil #btn-add-cert,
+#panel-profil #btn-all-cities{
+  display:inline-flex;align-items:center;gap:5px;
+  border-radius:var(--radius);
+  padding:9px 18px;
+  font-size:var(--text-md);
+  font-weight:600;
+  border:1.5px dashed var(--border-strong);
+  background:transparent;
+  color:var(--text-muted);
+  cursor:pointer;
+  transition:all 0.15s;
+}
+#panel-profil #btn-add-exp:hover,
+#panel-profil #btn-add-edu:hover,
+#panel-profil #btn-add-role:hover,
+#panel-profil #btn-add-lang:hover,
+#panel-profil #btn-add-cert:hover,
+#panel-profil #btn-all-cities:hover{
+  border-color:var(--accent);
+  color:var(--accent);
+  background:rgba(201,78,40,0.06);
+}
+
+/* ── CARDS ── */
+.card{
+  background:var(--bg-surface);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);
+  padding:24px;margin-bottom:16px;
+  box-shadow:0 2px 8px rgba(0,0,0,0.08), 0 8px 20px rgba(0,0,0,0.06);
+}
+.card-title{
+  font-family:'Bricolage Grotesque',sans-serif;font-size:15px;font-weight:700;
+  color:var(--text-secondary);margin-bottom:12px;display:flex;align-items:center;gap:8px;
+}
+
+/* ── EXPERIENCE CARDS ── */
+.exp-card{
+  background:transparent;border:none;border-radius:0;
+  padding:16px 0;margin-bottom:12px;position:relative;
+  border-bottom:1px solid var(--border-subtle);
+}
+.exp-card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+.exp-card-title{font-size:var(--text-lg);font-weight:700;color:var(--text-secondary);}
+
+/* Date block within experience card — aligned with field rows */
+.exp-date-block{
+  margin-top:14px;
+}
+html[data-theme="dark"] .exp-date-block{}
+.exp-date-block .exp-date-row{margin:0;}
+.exp-date-row + .cb-wrap{margin-top:10px;}
+.cb-wrap + .exp-date-row{margin-top:10px;}
+
+/* Single visual group: no inner panel — checkbox row is presentational only */
+.exp-date-block .cb-wrap{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:6px 0;
+  cursor:default;
+}
+.exp-date-block .cb-wrap .cb-control-label{
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+  cursor:pointer;
+  padding:2px 0;
+  user-select:none;
+}
+.exp-date-block .exp-devam-badge{
+  margin-left:auto;
+}
+/* Full-width field below date block (e.g. Ayrılma Nedeni) */
+.exp-card > .ayrilma-field{
+  margin-top:14px;
+}
+
+/* ── Animated Delete Button (shared) ── */
+.exp-card-del,
+.btn-del-row {
+  width: 30px;
+  height: 30px;
+  border-radius: 10px;
+  background: rgba(220, 38, 38, 0.06);
+  border: 1.5px solid rgba(220, 38, 38, 0.12);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  color: var(--red, #dc2626);
+  transition: all 0.3s;
+  flex-shrink: 0;
+}
+.btn-del-row {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+}
+.dynamic-row .btn-del-row {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+}
+.exp-card-del svg,
+.btn-del-row svg {
+  width: 14px;
+  height: 14px;
+  transition: transform 0.3s;
+}
+.exp-card-del:hover,
+.btn-del-row:hover {
+  background: var(--red, #dc2626);
+  border-color: var(--red, #dc2626);
+  color: #fff;
+}
+.exp-card-del:hover svg,
+.btn-del-row:hover svg {
+  transform: rotate(-10deg);
+}
+.exp-card-del:active,
+.btn-del-row:active {
+  transform: scale(0.9);
+}
+
+/* ── DYNAMIC ROWS (edu, lang, cert) ── */
+.dyn-row{
+  display:flex;align-items:center;gap:8px;padding:10px;
+  background:var(--bg-elevated);border:1px solid var(--border-subtle);border-radius:var(--radius-sm);
+  margin-bottom:8px;
+}
+.dyn-row select,.dyn-row input{
+  flex:1;padding:8px 10px;border:1px solid var(--border-subtle);border-radius:var(--radius-sm);
+  font-family:inherit;font-size:var(--text-md);background:var(--input-bg);color:var(--text-primary);
+}
+.dyn-row select{padding-right:28px;}
+.dyn-row-del{
+  width:28px;height:28px;border:1px solid var(--border-subtle);border-radius:var(--radius-sm);
+  background:var(--bg-surface);cursor:pointer;display:flex;align-items:center;justify-content:center;
+  color:var(--text-muted);font-size:var(--text-xl);flex-shrink:0;
+}
+.dyn-row-del:hover{background:var(--red-light);color:var(--red);border-color:var(--red);}
+.btn-add-row{
+  display:inline-flex;align-items:center;gap:5px;padding:8px 14px;
+  border:1.5px dashed var(--border);border-radius:var(--radius-sm);
+  background:none;font-family:inherit;font-size:var(--text-base);font-weight:600;
+  color:var(--text-muted);cursor:pointer;transition:all 0.15s;
+}
+.btn-add-row:hover{border-color:var(--verm);color:var(--verm);background:var(--verm-light);}
+
+/* ── CHIPS ── */
+.chip-group{display:flex;flex-wrap:wrap;gap:8px;}
+.chip{
+  padding:8px 16px;border:1.5px solid var(--border-subtle);border-radius:999px;
+  font-size:var(--text-md);font-weight:500;cursor:pointer;transition:all 0.2s;
+  background:var(--bg-surface);color:var(--text-primary);user-select:none;
+}
+.chip:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-soft);}
+.chip.selected{background:var(--accent);color:white;border-color:var(--accent);}
+
+/* ── CHECK ITEMS (multi-select) ── */
+.check-group{display:flex;flex-wrap:wrap;gap:8px;}
+.check-item{
+  padding:8px 16px;border:1.5px solid var(--border-subtle);border-radius:999px;
+  font-size:var(--text-md);font-weight:500;cursor:pointer;transition:all 0.2s;
+  background:var(--bg-surface);color:var(--text-primary);user-select:none;
+}
+.check-item:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-soft);}
+.check-item.checked{background:var(--accent);color:white;border-color:var(--accent);}
+
+/* ── TAGS ── */
+.tag-wrap{
+  display:flex;flex-wrap:wrap;gap:6px;padding:8px;min-height:42px;
+  border:1.5px solid var(--border-subtle);border-radius:var(--radius-sm);
+  background:var(--bg-surface);align-items:center;
+}
+.tag{
+  display:inline-flex;align-items:center;gap:4px;padding:4px 10px;
+  background:var(--navy-light);color:var(--navy);border-radius:4px;
+  font-size:var(--text-base);font-weight:600;
+}
+.tag-del{
+  border:none;background:none;cursor:pointer;color:var(--navy);
+  font-size:var(--text-lg);padding:0 2px;opacity:0.6;
+}
+.tag-del:hover{opacity:1;}
+.tag-input{
+  border:none!important;outline:none;font-family:inherit;font-size:var(--text-md);
+  flex:1;min-width:100px;padding:4px 0;
+}
+
+/* ── AUTOCOMPLETE ── */
+.ac-wrap{position:relative;width:100%;}
+.ac-list,.autocomplete-list{
+  display:none;position:absolute;top:100%;left:0;right:0;z-index:50;
+  background:var(--bg-surface);border:1.5px solid var(--border-subtle);border-radius:var(--radius-sm);
+  max-height:220px;overflow-y:auto;box-shadow:var(--shadow-lg);
+}
+.ac-list.show{display:block;}
+.ac-item,.autocomplete-item{
+  padding:10px 12px;cursor:pointer;font-size:var(--text-md);display:flex;
+  align-items:center;justify-content:space-between;transition:background 0.1s;
+}
+.ac-item:hover,.autocomplete-item:hover{background:var(--bg-elevated);}
+.ac-item-sub{font-size:var(--text-sm);color:var(--text-muted);}
+
+/* ── DYNAMIC ROWS (JS uses .dynamic-row) ── */
+.dynamic-row{
+  padding: 12px 44px 12px 0;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--border-subtle);
+  margin-bottom: 0;
+  position: relative;
+}
+
+/* ── CHIPS ROW ── */
+.chips-row{display:flex;flex-wrap:wrap;gap:8px;}
+#panel-profil .chips-row{gap:10px;}
+
+/* ── FIELD REQUIRED MARKER ── */
+.field-req{color:var(--red);font-weight:700;}
+html[data-theme="dark"] .field-req{color:#F87171;}
+
+/* ── FIELD ERROR ── */
+.field-error{border-color:var(--red)!important;}
+
+/* ── MODAL PREMIUM LINE (kept for success modal) ── */
+.modal-premium-line{
+  font-size:var(--text-sm);color:var(--text-muted);font-style:italic;margin-top:16px;
+  padding-top:14px;border-top:1px solid var(--border-subtle);letter-spacing:0.01em;
+}
+
