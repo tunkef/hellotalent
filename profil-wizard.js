@@ -110,7 +110,7 @@ function validateKisisel() {
 
 function markFieldError(id) {
   var el = document.getElementById(id);
-  if (el) el.classList.add('field-error');
+  if (el) el.classList.add('field-error', 'has-error');
 }
 function validateKariyer() {
   var cbNoExp = document.getElementById('cb-no-experience');
@@ -156,13 +156,13 @@ function validateTercihler() {
   if (typeof selectedCalismaTipleri === 'undefined' || !selectedCalismaTipleri || selectedCalismaTipleri.length === 0) {
     errors.push('En az bir çalışma tipi seçmelisin (Tam Zamanlı, Yarı Zamanlı vb.)');
     var ctChecks = document.getElementById('calisma-tipleri-checks');
-    if (ctChecks) ctChecks.classList.add('field-error');
+    if (ctChecks) ctChecks.classList.add('field-error', 'has-error');
   }
   // Müsaitlik kaldırıldı — ihbar süresi aynı bilgiyi kapsıyor
   if (typeof selectedSegmentler === 'undefined' || !selectedSegmentler || selectedSegmentler.length === 0) {
     errors.push('En az bir segment tercihi seçmelisin (Lüks, Fast Fashion vb.)');
     var segChips = document.getElementById('segment-chips');
-    if (segChips) segChips.classList.add('field-error');
+    if (segChips) segChips.classList.add('field-error', 'has-error');
   }
   if (errors.length > 0) { showStepErrors(errors); return false; }
   return true;
@@ -196,7 +196,7 @@ function clearStepErrors() {
   var box = document.getElementById('step-errors-box');
   if (box) box.remove();
   document.querySelectorAll('.field-error').forEach(function(el) {
-    el.classList.remove('field-error');
+    el.classList.remove('field-error', 'has-error');
   });
 }
 

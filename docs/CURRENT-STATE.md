@@ -1,5 +1,5 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 6 Nisan 2026 | Asama 66: Supabase Advisor Fixes (SA1-SA5)
+> Son guncelleme: 6 Nisan 2026 | Asama 67: Design System CSS Overhaul (Kademe 0-2)
 
 ## 1. Proje Ozeti
 
@@ -43,7 +43,8 @@ hellotalent.ai, Turkiye perakende sektorune ozel bir yetenek pazaryeri. Adaylar 
 - **Security monitoring** — security_audit_log tablosu, haftalik RLS audit cron (Pazar 4am), get_security_dashboard() admin RPC | `20260406100135_lb6_security_monitoring.sql`
 - **Iki adimli dogrulama (2FA/TOTP)** — Supabase MFA API, profil ayarlarinda etkinlestir/kapat, giris sirasinda challenge modal, Google/LinkedIn OAuth dahil tum login akislarinda | `profil-settings.js`, `giris.html`
 - **Kim Bakti** — header icon, goruntulenme sayaci | `profil-kimbakti.js`
-- **Dark mode** — profil.css 7-faz hardening, 24+ test | `profil.css`
+- **Dark mode** — 7-faz hardening, 24+ test | `css/tokens.css`, `css/layout.css`
+- **Design system CSS overhaul** — profil.css (3223 sat) → 7 modular CSS dosyasina bolundu, 3-katmanli token sistemi (primitive/semantic/component), ht- prefix'li component class'lari (ht-btn, ht-card, ht-chip, ht-input, ht-modal, ht-toast, ht-toggle), dual-write migration (eski class'lar korunarak yeni class'lar eklendi), JS factory fonksiyonlari guncellendi | `css/`, `profil-ui.js`, `profil-wizard.js`, `profil-settings.js`, `profil-bootstrap.js`, `profil-draft.js`
 - **Beni Oner** — aday gorunurluk toggle, avatar yesil glow | `profil-visibility.js`
 - **Profile completion scoring** — >=45% threshold, sync trigger | migration 035-036
 
@@ -57,7 +58,13 @@ hellotalent.ai, Turkiye perakende sektorune ozel bir yetenek pazaryeri. Adaylar 
 | `aday.html` | Aday landing — LinkedIn tarzinda, Google signup, pill features, 3 adim, "kimin icin" bolumu, ~476 satir |
 | `isveren.html` | Isveren landing — LinkedIn tarzinda, navy hero, lead form, marka pill'leri, ~586 satir |
 | `profil.html` | Ana aday sayfasi (~6300 satir), panel switch, header |
-| `profil.css` | Profil sayfa stilleri + dark mode |
+| `css/tokens.css` | 3-katmanli design token sistemi (primitive → semantic → component) + dark mode overrides |
+| `css/layout.css` | Reset, header, sidebar, theme toggle, loading, panels, bottom nav |
+| `css/components.css` | Forms, buttons (ht-btn 8 varyant), cards (ht-card), chips (ht-chip), inputs (ht-input), modals (ht-modal), toasts |
+| `css/wizard.css` | Wizard progress bar, steps, form gruplama |
+| `css/panels/genel-bakis.css` | Genel Bakis paneli stilleri |
+| `css/panels/merkezi.css` | Merkezi panel (profil formlari) stilleri |
+| `css/panels/sirketler.css` | Sirketler paneli stilleri |
 | `profil-core.js` | Auth guard, session init, panel routing |
 | `profil-data.js` | DB CRUD (save_candidate_profile RPC), veri yukle/kaydet |
 | `profil-ui.js` | DOM helpers, avatar, delete confirm, panel render (~1870 satir) |
@@ -121,6 +128,15 @@ hellotalent.ai, Turkiye perakende sektorune ozel bir yetenek pazaryeri. Adaylar 
 **Sonuc:** T02/T03/T04 otomatik DEFERRED. Onkosula: 50+ aktif pratikci icin T42-lite (topluluk nabzi karti) yeniden degerlendirilir.
 
 ## 6. Son 3 Session Ozeti
+
+### Session 67 (6 Nisan — Asama 67: Design System CSS Overhaul Kademe 0-2)
+**profil.css 3223 satir → 7 modular CSS dosyasina bolundu. ht- prefix'li component sinifi sistemi kuruldu.**
+
+**Kademe 0 (Tokens):** (1) `css/tokens.css` olusturuldu — 3 katmanli token mimarisi (primitive → semantic → component). (2) Dark mode overrides hex ile tanimlandi. (3) Geri-uyum aliasları (--verm, --navy vb.) korundu.
+
+**Kademe 1 (CSS Split):** (4) `profil.css` (3223 sat) → `css/layout.css` (789), `css/components.css` (428), `css/wizard.css` (132), `css/panels/genel-bakis.css` (149), `css/panels/merkezi.css` (1668), `css/panels/sirketler.css` (193). (5) `profil.css` silindi. (6) `profil.html` CSS link'leri guncellendi. (7) `shared.css` 12 spacing duplicate temizlendi. (8) Dark mode + p3 regression testleri guncellendi (split CSS okuma).
+
+**Kademe 2 (Component Classes + Dual-Write):** (9) `css/components.css`'e ht-btn (8 varyant + sm/lg + is-loading), ht-card (4 varyant), ht-chip (is-active state), ht-input (has-error), ht-modal, ht-toast, ht-toggle eklendi. (10) Task 13A: profil.html'de 141 dual-write class eklendi (eski class korunarak yeni ht- class eklendi). (11) Task 13B: JS factory fonksiyonlari (profil-ui.js 7x field→ht-input, chip→ht-chip, exp-card→ht-card; profil-settings.js modal-overlay→ht-modal; profil-wizard.js field-error→has-error; profil-bootstrap.js + profil-draft.js selected→is-active sync). (12) DeepSeek review + Codex gate review 6/6 PASS. **820/820 Playwright test PASS.**
 
 ### Session 65 (5-6 Nisan — Asama 65: Gate Illustrasyon Redesign + AI Routing Policy)
 **Gate sayfasi editorial illustrasyon redesign + free-cloud-first AI routing policy olusturuldu.**

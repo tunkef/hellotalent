@@ -12,7 +12,7 @@
     if (!el) {
       el = document.createElement('div');
       el.id = id;
-      el.className = 'modal-overlay';
+      el.className = 'modal-overlay ht-modal';
       el.innerHTML = inner;
       document.body.appendChild(el);
     }

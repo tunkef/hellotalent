@@ -259,7 +259,7 @@ function addExperienceCard(data) {
   expCounter++;
   var cardId = 'exp-card-' + expCounter;
   var card = document.createElement('div');
-  card.className = 'exp-card';
+  card.className = 'exp-card ht-card';
   card.id = cardId;
   card.dataset.expId = expCounter;
 
@@ -579,7 +579,7 @@ function addExperienceCard(data) {
 
   // İş Tanımı textarea (Apple benchmark AKS-1)
   var descWrap = document.createElement('div');
-  descWrap.className = 'field';
+  descWrap.className = 'field ht-input';
   descWrap.style.marginTop = '4px';
   var descLabel = document.createElement('label');
   descLabel.htmlFor = cardId + '-desc';
@@ -725,7 +725,7 @@ function attachDeleteConfirm(btn, onConfirm) {
 
 function makeField(type, labelText, id, placeholder, value) {
   var wrap = document.createElement('div');
-  wrap.className = 'field';
+  wrap.className = 'field ht-input';
   var lbl = document.createElement('label');
   lbl.innerHTML = labelText;
   var input = document.createElement('input');
@@ -740,7 +740,7 @@ function makeField(type, labelText, id, placeholder, value) {
 
 function makeSelectField(labelText, id, options, selectedVal, placeholderText) {
   var wrap = document.createElement('div');
-  wrap.className = 'field';
+  wrap.className = 'field ht-input';
   var lbl = document.createElement('label');
   lbl.innerHTML = labelText;
   var sel = document.createElement('select');
@@ -763,7 +763,7 @@ function makeSelectField(labelText, id, options, selectedVal, placeholderText) {
 
 function makeYearField(labelText, id, selectedVal) {
   var wrap = document.createElement('div');
-  wrap.className = 'field';
+  wrap.className = 'field ht-input';
   var lbl = document.createElement('label');
   lbl.innerHTML = labelText;
   var sel = document.createElement('select');
@@ -798,7 +798,7 @@ function formatBrandDisplay(brandName, companyName) {
 // Stores selected brand data in hidden data attributes for split at save time.
 function makeSmartBrandField(id, data, required) {
   var wrap = document.createElement('div');
-  wrap.className = 'field';
+  wrap.className = 'field ht-input';
   wrap.style.position = 'relative';
   var lbl = document.createElement('label');
   lbl.innerHTML = required ? 'Şirket / Marka <span class="field-req">*</span>' : 'Şirket / Marka';
@@ -1155,7 +1155,7 @@ function addCertificateRow(data) {
 // Autocomplete field for okul/bolum
 function makeAutoField(labelText, id, dataList, value) {
   var wrap = document.createElement('div');
-  wrap.className = 'field';
+  wrap.className = 'field ht-input';
   wrap.style.position = 'relative';
   var lbl = document.createElement('label');
   lbl.textContent = labelText;
@@ -1270,12 +1270,12 @@ function initStep4() {
   if (musaitlikContainer) {
     MUSAITLIK_SECENEKLERI.forEach(function(m) {
       var chip = document.createElement('button');
-      chip.className = 'chip';
+      chip.className = 'chip ht-chip';
       chip.type = 'button';
       chip.textContent = m;
       chip.addEventListener('click', function() {
-        musaitlikContainer.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('selected'); });
-        chip.classList.add('selected');
+        musaitlikContainer.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('selected', 'is-active'); });
+        chip.classList.add('selected', 'is-active');
         selectedMusaitlik = m;
       });
       musaitlikContainer.appendChild(chip);
@@ -1308,11 +1308,12 @@ function initStep4() {
   if (segContainer) {
     SEGMENTLER.forEach(function(s) {
       var chip = document.createElement('button');
-      chip.className = 'chip';
+      chip.className = 'chip ht-chip';
       chip.type = 'button';
       chip.textContent = s;
       chip.addEventListener('click', function() {
         chip.classList.toggle('selected');
+        chip.classList.toggle('is-active');
         if (chip.classList.contains('selected')) {
           selectedSegmentler.push(s);
         } else {

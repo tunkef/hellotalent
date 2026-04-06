@@ -34,6 +34,7 @@ function reapplyDynamicFields() {
       selectedMusaitlik = wp.musaitlik;
       document.querySelectorAll('#musaitlik-chips .chip').forEach(function(c) {
         c.classList.toggle('selected', c.textContent === wp.musaitlik);
+        c.classList.toggle('is-active', c.textContent === wp.musaitlik);
       });
     }
     // Calisma tipleri check-item buttons
@@ -47,6 +48,7 @@ function reapplyDynamicFields() {
     if (wp.tercih_segmentler && wp.tercih_segmentler.length > 0) {
       document.querySelectorAll('#segment-chips .chip').forEach(function(c) {
         c.classList.toggle('selected', wp.tercih_segmentler.indexOf(c.textContent) !== -1);
+        c.classList.toggle('is-active', wp.tercih_segmentler.indexOf(c.textContent) !== -1);
       });
     }
     // Career type check-item buttons

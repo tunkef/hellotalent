@@ -137,6 +137,7 @@ function applyDraft(draft) {
       selectedMusaitlik = wp.musaitlik;
       document.querySelectorAll('#musaitlik-chips .chip').forEach(function(c) {
         c.classList.toggle('selected', c.textContent === wp.musaitlik);
+        c.classList.toggle('is-active', c.textContent === wp.musaitlik);
       });
     }
     if (wp.calisma_tipleri && wp.calisma_tipleri.length > 0) {
@@ -149,6 +150,7 @@ function applyDraft(draft) {
       selectedSegmentler = wp.tercih_segmentler.slice();
       document.querySelectorAll('#segment-chips .chip').forEach(function(c) {
         c.classList.toggle('selected', wp.tercih_segmentler.indexOf(c.textContent) !== -1);
+        c.classList.toggle('is-active', wp.tercih_segmentler.indexOf(c.textContent) !== -1);
       });
     }
     // Career type single-select restore (legacy tolerance: lider→yukari)
