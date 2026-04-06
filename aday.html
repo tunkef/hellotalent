@@ -390,7 +390,7 @@ body{background:var(--bg-page)}
 
 <div id="ht-footer"></div>
 
-<script src="/shared.js?v=20260407a"></script>
+<script src="/shared.js?v=20260407b"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 (function(){
@@ -401,6 +401,24 @@ body{background:var(--bg-page)}
   if(btn && sb) btn.addEventListener('click', function(){
     sb.auth.signInWithOAuth({provider:'google',options:{redirectTo:location.origin+'/profil.html'}});
   });
+
+  /* Override header login — skip popup, smooth redirect to giris.html aday tab */
+  setTimeout(function(){
+    var loginBtn = document.querySelector('.btn-nav-login');
+    if(!loginBtn) return;
+    var clone = loginBtn.cloneNode(true);
+    loginBtn.parentNode.replaceChild(clone, loginBtn);
+    clone.textContent = 'Giriş Yap';
+    clone.addEventListener('click', function(e){
+      e.preventDefault();
+      e.stopPropagation();
+      document.body.style.transition = 'opacity 0.4s ease';
+      document.body.style.opacity = '0';
+      setTimeout(function(){
+        window.location.href = '/giris.html?tab=aday';
+      }, 400);
+    });
+  }, 200);
 })();
 </script>
 </body>
