@@ -597,11 +597,11 @@ function getCandidatePostAuthUrl() {
 // ── OTURUM KONTROLÜ ──
 (async function() {
   // URL parametresine göre tab'ı aç
-  const urlParams = new URLSearchParams(window.location.search);
+  varurlParams = new URLSearchParams(window.location.search);
   if (urlParams.get('tab') === 'ik') {
     switchTab('ik');
   }
-  const { data } = await getSupa().auth.getSession();
+  var { data } = await getSupa().auth.getSession();
   if (data.session) {
     // Zaten giriş yapmış → MFA kontrolü sonrası role'e göre yönlendir
     var role = data.session.user.user_metadata?.role;
@@ -611,10 +611,10 @@ function getCandidatePostAuthUrl() {
 
 // ── TAB SWITCH ──
 function switchTab(tab) {
-  const adayForm = document.getElementById('form-aday');
-  const ikForm = document.getElementById('form-ik');
-  const adayBtn = document.getElementById('tab-aday');
-  const ikBtn = document.getElementById('tab-ik');
+  varadayForm = document.getElementById('form-aday');
+  varikForm = document.getElementById('form-ik');
+  varadayBtn = document.getElementById('tab-aday');
+  varikBtn = document.getElementById('tab-ik');
 
   if (tab === 'aday') {
     adayForm.style.display = 'block';
@@ -633,10 +633,10 @@ function switchTab(tab) {
 
 // ── ADAY GİRİŞ ──
 async function loginAday() {
-  const email = document.getElementById('aday-email').value.trim();
-  const sifre = document.getElementById('aday-sifre').value;
-  const errEl = document.getElementById('err-aday');
-  const btnText = document.getElementById('aday-btn-text');
+  varemail = document.getElementById('aday-email').value.trim();
+  varsifre = document.getElementById('aday-sifre').value;
+  varerrEl = document.getElementById('err-aday');
+  varbtnText = document.getElementById('aday-btn-text');
   var loginBtn = btnText.closest('button');
 
   errEl.style.display = 'none';
@@ -651,7 +651,7 @@ async function loginAday() {
 
   btnText.innerHTML = '<div class="loading-spinner"></div>';
 
-  const { data, error } = await getSupa().auth.signInWithPassword({ email, password: sifre });
+  var { data, error } = await getSupa().auth.signInWithPassword({ email, password: sifre });
 
   if (error) {
     _loginAttempts.aday++;
@@ -678,10 +678,10 @@ async function loginAday() {
 
 // ── IK GİRİŞ ──
 async function loginIK() {
-  const email = document.getElementById('ik-email').value.trim();
-  const sifre = document.getElementById('ik-sifre').value;
-  const errEl = document.getElementById('err-ik');
-  const btnText = document.getElementById('ik-btn-text');
+  varemail = document.getElementById('ik-email').value.trim();
+  varsifre = document.getElementById('ik-sifre').value;
+  varerrEl = document.getElementById('err-ik');
+  varbtnText = document.getElementById('ik-btn-text');
   var loginBtn = btnText.closest('button');
 
   errEl.style.display = 'none';
@@ -696,7 +696,7 @@ async function loginIK() {
 
   btnText.innerHTML = '<div class="loading-spinner"></div>';
 
-  const { data, error } = await getSupa().auth.signInWithPassword({ email, password: sifre });
+  var { data, error } = await getSupa().auth.signInWithPassword({ email, password: sifre });
 
   if (error) {
     _loginAttempts.ik++;
@@ -730,7 +730,7 @@ async function loginIK() {
 // Enter key desteği
 document.addEventListener('keydown', function(e) {
   if (e.key === 'Enter') {
-    const adayForm = document.getElementById('form-aday');
+    varadayForm = document.getElementById('form-aday');
     if (adayForm.style.display !== 'none') {
       loginAday();
     } else {
@@ -1108,7 +1108,7 @@ async function checkAndHandleMFA(redirectUrl) {
       window.location.href = redirectUrl;
     }
   } catch (e) {
-    // On any error, proceed to redirect (don't block login)
+    console.error('MFA AAL check failed:', e);
     window.location.href = redirectUrl;
   }
 }
@@ -1157,7 +1157,7 @@ function showMfaChallengeModal(redirectUrl) {
   };
 
   verifyBtn.onclick = async function() {
-    var code = (codeInput.value || '').trim();
+    var code = (codeInput.value || '').trim().replace(/\s/g, '');
     if (!code || code.length !== 6 || !/^\d{6}$/.test(code)) {
       msgEl.textContent = '6 haneli sayısal kod girin.';
       msgEl.style.color = 'var(--verm,#C94E28)';

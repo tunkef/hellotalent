@@ -13,14 +13,20 @@
 -- Reschedule by unschedule + schedule (cron.schedule with same name
 -- does NOT update in all pg_cron versions; unschedule + re-add is safe).
 
-SELECT cron.unschedule('activate-campaigns');
+DO $$ BEGIN
+  PERFORM cron.unschedule('activate-campaigns');
+EXCEPTION WHEN OTHERS THEN NULL;
+END $$;
 SELECT cron.schedule(
   'activate-campaigns',
   '0 * * * *',
   'SELECT activate_due_campaigns()'
 );
 
-SELECT cron.unschedule('end-campaigns');
+DO $$ BEGIN
+  PERFORM cron.unschedule('end-campaigns');
+EXCEPTION WHEN OTHERS THEN NULL;
+END $$;
 SELECT cron.schedule(
   'end-campaigns',
   '0 * * * *',

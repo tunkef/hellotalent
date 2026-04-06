@@ -637,7 +637,7 @@ document.addEventListener('DOMContentLoaded', function() {
       try {
         var res = await supabase.auth.mfa.listFactors();
         if (res.error) throw res.error;
-        var factors = res.data;
+        var factors = res.data || {};
         var activeTOTP = (factors.totp || []).filter(function(f){ return f.status === 'verified'; });
         if (activeTOTP.length > 0) {
           showState('enabled');
@@ -728,28 +728,61 @@ document.addEventListener('DOMContentLoaded', function() {
       showState('disabled');
     });
 
-    // Disable MFA
+    // Disable MFA — requires TOTP code verification before unenrolling
     if (btnDisable) btnDisable.addEventListener('click', function(){
-      _htConfirm('İki adımlı doğrulamayı kapatmak istediğinize emin misiniz? Hesabınızın güvenliği azalacaktır.', async function(){
-        btnDisable.disabled = true;
-        btnDisable.textContent = 'Kapatılıyor...';
+      _htConfirm('İki adımlı doğrulamayı kapatmak için mevcut doğrulama kodunuzu girmeniz gerekecek. Devam etmek istiyor musunuz?', async function(){
+        // Prompt for current TOTP code before disabling
+        var codePromptHtml =
+          '<div style="margin-bottom:12px;font-size:13px;">Güvenlik için uygulamadaki 6 haneli kodu girin:</div>' +
+          '<input type="text" id="mfa-disable-code" maxlength="6" placeholder="000000" style="width:120px;text-align:center;font-size:18px;letter-spacing:6px;font-family:DM Mono,monospace;margin-bottom:12px;padding:8px;border:2px solid var(--border);border-radius:8px;">' +
+          '<div id="mfa-disable-code-msg" style="display:none;font-size:12px;margin-top:4px;"></div>';
         var msg = document.getElementById('mfa-disable-msg');
-        try {
-          var res = await supabase.auth.mfa.listFactors();
-          if (res.error) throw res.error;
-          var activeTOTP = (res.data.totp || []).filter(function(f){ return f.status === 'verified'; });
-          for (var i = 0; i < activeTOTP.length; i++) {
-            var uRes = await supabase.auth.mfa.unenroll({ factorId: activeTOTP[i].id });
-            if (uRes.error) throw uRes.error;
+        if (msg) { msg.innerHTML = codePromptHtml; msg.style.color = ''; msg.style.display = 'block'; }
+
+        // Replace button temporarily with verify+disable action
+        btnDisable.textContent = 'Kodu Doğrula ve Kapat';
+        btnDisable.onclick = async function(){
+          var code = (document.getElementById('mfa-disable-code').value || '').trim();
+          var codeMsg = document.getElementById('mfa-disable-code-msg');
+          if (!code || code.length !== 6 || !/^\d{6}$/.test(code)) {
+            if (codeMsg) { codeMsg.textContent = '6 haneli sayısal kod girin.'; codeMsg.style.color = 'var(--red)'; codeMsg.style.display = 'block'; }
+            return;
           }
-          showState('disabled');
-          _htAlert('İki adımlı doğrulama kapatıldı.');
-        } catch (e) {
-          if (msg) { msg.textContent = 'Hata: ' + (e.message || ''); msg.style.color = 'var(--red)'; msg.style.display = 'block'; }
-        } finally {
-          btnDisable.disabled = false;
-          btnDisable.textContent = 'İki Adımlı Doğrulamayı Kapat';
-        }
+          btnDisable.disabled = true;
+          btnDisable.textContent = 'Doğrulanıyor...';
+          try {
+            var res = await supabase.auth.mfa.listFactors();
+            if (res.error) throw res.error;
+            var activeTOTP = (res.data.totp || []).filter(function(f){ return f.status === 'verified'; });
+            if (activeTOTP.length === 0) throw new Error('Aktif faktör bulunamadı.');
+
+            // Verify the code first — proves user has the authenticator
+            var verifyRes = await supabase.auth.mfa.challengeAndVerify({
+              factorId: activeTOTP[0].id,
+              code: code
+            });
+            if (verifyRes.error) throw verifyRes.error;
+
+            // Code verified — now unenroll all factors
+            for (var i = 0; i < activeTOTP.length; i++) {
+              var uRes = await supabase.auth.mfa.unenroll({ factorId: activeTOTP[i].id });
+              if (uRes.error) throw uRes.error;
+            }
+            showState('disabled');
+            if (msg) { msg.innerHTML = ''; msg.style.display = 'none'; }
+            _htAlert('İki adımlı doğrulama kapatıldı.');
+          } catch (e) {
+            var errText = (e.message || '').toLowerCase();
+            if (codeMsg) {
+              codeMsg.textContent = errText.indexOf('invalid') > -1 ? 'Kod geçersiz. Tekrar deneyin.' : 'Hata: ' + (e.message || '');
+              codeMsg.style.color = 'var(--red)';
+              codeMsg.style.display = 'block';
+            }
+          } finally {
+            btnDisable.disabled = false;
+            btnDisable.textContent = 'Kodu Doğrula ve Kapat';
+          }
+        };
       });
     });
   })();

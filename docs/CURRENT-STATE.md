@@ -108,7 +108,7 @@ hellotalent.ai, Turkiye perakende sektorune ozel bir yetenek pazaryeri. Adaylar 
 8. ~~**Dark mode remaining**~~ — ✅ TAMAMLANDI (Session 55, 30 Mart). `profil-settings.js` 7 alert()/confirm() → `_htAlert()`/`_htConfirm()` dark-mode-aware DOM modal'larına çevrildi. `gate.html` + `giris.html` + `ik.html`: theme-init script + `html[data-theme="dark"]` CSS eklendi. 68/68 smoke pass.
 9. **Pozisyon gorunum/esleme metrikleri** — backend counter/trigger gerekli, frontend truth-sync edildi (sahte 0 yerine "yakinda aktif" mesaji)
 10. **iyzico/Stripe checkout** — schema hazir, merchant hesap + API key gerekli (**her zaman en son**)
-11. ~~**Supabase Advisor Fix'leri (SA1-SA5)**~~ — ✅ TAMAMLANDI (Session 66, 6 Nisan). SA1: 8 pre-baseline fonksiyona `SET search_path = public` eklendi. SA2: Gecersiz (candidate_view_stats tablosu mevcut degil). SA3: 7 FK index eklendi (campaign_clicks/redemptions/reviews, inbox_messages, email_jobs). SA4: Campaign cron interval */5 → saatlik (activate + end), archive daily degismedi + 3 campaign fonksiyona search_path eklendi. SA5: `bio` alani `search_employer_candidates` RPC output'una eklendi. Migration: `20260406093548_supabase_advisor_fixes.sql`.
+11. ~~**Supabase Advisor Fix'leri (SA1-SA5) + LB6 + 2FA**~~ — ✅ TAMAMLANDI (Session 66, 6 Nisan). SA1-SA5: search_path + FK index + cron + bio RPC. LB6: security_audit_log + haftalik RLS audit + security dashboard. 2FA: TOTP enrollment (ayarlar) + login challenge (giris.html). Code review fix'leri: Sonnet reviewer 6 sorun + DeepSeek 4 ek bulgu — hepsi duzeltildi. **820/833 Playwright test PASS** (12 auth = bilinen blocker, 1 setup = env var eksik).
 
 ## 5b. Sosyal Layer Audit Kararlari (Session 45 — 30 Mart)
 

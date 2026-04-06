@@ -60,8 +60,7 @@ BEGIN
     AND c.relkind = 'r'
     AND NOT c.relrowsecurity
     AND c.relname NOT IN (
-      'schema_migrations', 'spatial_ref_sys',
-      'security_audit_log'  -- intentionally no user writes
+      'schema_migrations', 'spatial_ref_sys'
     );
 
   -- Find tables with RLS enabled but zero policies
@@ -167,11 +166,17 @@ BEGIN
     'frozen_accounts', (SELECT count(*) FROM candidates WHERE account_status = 'frozen'),
     'pending_deletion', (SELECT count(*) FROM candidates WHERE account_status = 'pending_deletion'),
     'signups_last_7d', (
-      SELECT count(*) FROM auth.users
+      SELECT count(*) FROM candidates
+      WHERE created_at >= now() - interval '7 days'
+    ) + (
+      SELECT count(*) FROM hr_profiles
       WHERE created_at >= now() - interval '7 days'
     ),
     'signups_last_30d', (
-      SELECT count(*) FROM auth.users
+      SELECT count(*) FROM candidates
+      WHERE created_at >= now() - interval '30 days'
+    ) + (
+      SELECT count(*) FROM hr_profiles
       WHERE created_at >= now() - interval '30 days'
     )
   ) INTO v_auth_stats;
