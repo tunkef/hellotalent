@@ -165,6 +165,14 @@ body{
   object-fit:contain;
   pointer-events:none;
   z-index:5;
+  -webkit-mask-image:
+    linear-gradient(to top, black 60%, transparent 100%),
+    linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
+  -webkit-mask-composite: destination-in;
+  mask-image:
+    linear-gradient(to top, black 60%, transparent 100%),
+    linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
+  mask-composite: intersect;
 }
 
 /* ── AMBIENT WASH ── */
