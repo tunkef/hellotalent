@@ -95,7 +95,8 @@ body{
   overflow:hidden;
   display:flex;
   flex-direction:column;
-  justify-content:center;
+  justify-content:flex-start;
+  padding-top:clamp(120px,18vh,200px);
   text-decoration:none;
   cursor:pointer;
   transition:background .5s ease;
@@ -186,7 +187,7 @@ body{
 
 .il{
   position:absolute;
-  width:clamp(300px,34vw,520px);
+  width:clamp(340px,40vw,600px);
   height:auto;
   object-fit:contain;
   pointer-events:none;
@@ -288,7 +289,7 @@ body{
   .zone--i{align-items:flex-start;text-align:left}
   .zone--i .sb{margin-left:0}
   .hd{font-size:clamp(32px,7vw,46px);letter-spacing:-2px}
-  .il{width:clamp(200px,36vw,300px)}
+  .il{width:clamp(220px,42vw,340px)}
   .zone--a .il{right:8px}
   .zone--i .il{left:auto;right:8px;transform:scaleX(-1)}
 }
