@@ -10,11 +10,14 @@ function readFromRepo(relPath) {
 test.describe('Dark mode system — profil.html', function () {
   var profilHtml;
   var profilCss;
+  var tokensCss;
   var profilCoreJs;
 
   test.beforeAll(function () {
     profilHtml = readFromRepo('profil.html');
     profilCss = readFromRepo('profil.css');
+    // Tokens may live in css/tokens.css (Kademe 0+) or inline in profil.css (legacy)
+    try { tokensCss = readFromRepo('css/tokens.css'); } catch (e) { tokensCss = ''; }
     profilCoreJs = readFromRepo('profil-core.js');
   });
 
@@ -39,17 +42,21 @@ test.describe('Dark mode system — profil.html', function () {
     expect(profilCoreJs).toContain('meta-theme-color');
   });
 
-  // 3. color-scheme CSS property set
+  // 3. color-scheme CSS property set (tokens.css or profil.css)
   test('CSS color-scheme property in :root and dark', function () {
-    expect(profilCss).toContain('color-scheme: light');
-    expect(profilCss).toContain('color-scheme: dark');
+    var allCss = profilCss + tokensCss;
+    expect(allCss).toContain('color-scheme: light');
+    expect(allCss).toContain('color-scheme: dark');
   });
 
-  // 4. data-theme="dark" token block exists with key tokens
+  // 4. data-theme="dark" token block exists with key tokens (tokens.css or profil.css)
   test('dark theme token block defines critical semantic tokens', function () {
-    var darkBlock = profilCss.substring(
-      profilCss.indexOf('html[data-theme="dark"]'),
-      profilCss.indexOf('}', profilCss.indexOf('html[data-theme="dark"]') + 50) + 1
+    // Check tokens.css first (Kademe 0+), fall back to profil.css (legacy)
+    var src = tokensCss || profilCss;
+    var darkIdx = src.indexOf('html[data-theme="dark"]');
+    var darkBlock = src.substring(
+      darkIdx,
+      src.indexOf('}', darkIdx + 50) + 1
     );
     expect(darkBlock).toContain('--bg-app:');
     expect(darkBlock).toContain('--bg-surface:');
@@ -112,10 +119,11 @@ test.describe('Dark mode system — profil.html', function () {
     expect(matches.length).toBe(0);
   });
 
-  // 10. Dark contrast: navy override exists for dark theme
+  // 10. Dark contrast: navy override exists for dark theme (tokens.css or profil.css)
   test('dark theme overrides --navy for sufficient contrast', function () {
-    var darkBlock = profilCss.substring(
-      profilCss.indexOf('html[data-theme="dark"]')
+    var allCss = profilCss + tokensCss;
+    var darkBlock = allCss.substring(
+      allCss.indexOf('html[data-theme="dark"]')
     );
     // Navy should be remapped to lighter value in dark theme
     expect(darkBlock).toContain('--navy:');
