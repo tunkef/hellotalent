@@ -16,7 +16,7 @@
 | LB3 | KVKK avukat görüşmesi | Tuna'nın avukat arkadaşıyla toplantı | ☐ |
 | LB4 | Aydınlatma metni güncelleme | gizlilik.html, avukat çıktısına göre | ☐ |
 | LB5 | Açık rıza mekanizması | giris.html'e KVKK + 18 yaş checkbox, privacy_consent_at + age_confirmed user_metadata | ☑ 4 Nisan 2026 |
-| LB6 | Güvenlik monitoring | Supabase alerting + haftalık RLS audit | ☐ |
+| LB6 | Güvenlik monitoring | security_audit_log + run_rls_audit() + weekly cron + get_security_dashboard() + 2FA (TOTP) | ☑ 6 Nisan 2026 |
 | LB7 | DEI beyanı footer'a ekle | shared.js footer — "HelloTalent'ta herkes eşittir..." | ☑ 4 Nisan 2026 |
 
 ### Aday Profil İyileştirmeleri (Tier 1)
@@ -119,11 +119,11 @@
 
 | # | Görev | Detay | Öncelik |
 |---|-------|-------|---------|
-| SA1 | search_path fix (32 fonksiyon) | `ALTER FUNCTION ... SET search_path = public` — Security Advisor warning | Düşük |
-| SA2 | candidate_view_stats RLS policy ekle | RLS enabled ama policy yok — Security Advisor info | Düşük |
-| SA3 | FK index'ler (99 tablo) | Unindexed foreign keys — Performance Advisor info | 1000+ aday milestone |
-| SA4 | pg_cron campaign interval azalt | end_expired + activate_due her dakika → her saat | Düşük |
-| SA5 | bio'yu search RPC'ye ekle | İşverenler aday bio'sunu göremez — audit finding | Orta |
+| SA1 | search_path fix (8 fonksiyon) | `ALTER FUNCTION ... SET search_path = public` — Security Advisor warning | ☑ 6 Nisan 2026 |
+| SA2 | candidate_view_stats RLS policy ekle | Tablo mevcut değil — geçersiz görev | ☑ N/A (tablo yok) |
+| SA3 | FK index'ler (7 kolon) | campaign_clicks/redemptions/reviews, inbox_messages, email_jobs | ☑ 6 Nisan 2026 |
+| SA4 | pg_cron campaign interval azalt | activate/end: */5 → saatlik, archive: daily (degismedi) | ☑ 6 Nisan 2026 |
+| SA5 | bio'yu search RPC'ye ekle | candidates.bio → search_employer_candidates output | ☑ 6 Nisan 2026 |
 
 ---
 
@@ -136,5 +136,5 @@
 
 ---
 
-*Son güncelleme: 4 Nisan 2026*
+*Son güncelleme: 6 Nisan 2026*
 *İlişkili: [[mvp-roadmap]], [[veri-modeli-analiz]], [[feature-map]], [[karar-defteri]]*

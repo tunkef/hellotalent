@@ -300,4 +300,15 @@
 
 ---
 
-*Son güncelleme: 3 Nisan 2026*
+## K028 — Mobil Uygulama Stratejisi: 2 Fazlı Yaklaşım
+**Tarih:** 6 Nisan 2026
+**Karar veren:** Tuna
+**Karar:** Faz 1: Capacitor ile mevcut vanilla JS'i sararak App Store'a çık (2-4 hafta). Faz 2: Product-market fit kanıtlandıktan sonra React Native + Expo (mobil) + Next.js (web) rewrite.
+**Neden:** iOS PWA kısıtlamaları (push, background sync, storage) marketplace için yetersiz. Hemen React rewrite yapmak 3-6 ay + $10-30K maliyet — MVP 1 bitmeden ve gelir akışı yokken stratejik değil.
+**Elenen alternatifler:** Flutter (Dart öğrenme eğrisi + kötü web SEO), Tauri Mobile (olgunlaşmamış ekosistem), Sadece PWA (iOS kısıtlamaları)
+**Faz 2 tetikleyici:** Segment başına 50+ aday + işveren dönüşüm testi + gelir akışı aktif + WebView performans şikayeti
+**Detay:** [[mobil-strateji-analiz]]
+
+---
+
+*Son güncelleme: 6 Nisan 2026*

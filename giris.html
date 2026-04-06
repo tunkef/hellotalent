@@ -603,9 +603,9 @@ function getCandidatePostAuthUrl() {
   }
   const { data } = await getSupa().auth.getSession();
   if (data.session) {
-    // Zaten giriş yapmış → role'e göre yönlendir
+    // Zaten giriş yapmış → MFA kontrolü sonrası role'e göre yönlendir
     var role = data.session.user.user_metadata?.role;
-    window.location.href = role === 'employer' ? 'ik.html' : getCandidatePostAuthUrl();
+    checkAndHandleMFA(role === 'employer' ? 'ik.html' : getCandidatePostAuthUrl());
   }
 })();
 
@@ -673,7 +673,7 @@ async function loginAday() {
     btnText.textContent = 'Giriş Yap →';
     return;
   }
-  window.location.href = getCandidatePostAuthUrl();
+  checkAndHandleMFA(getCandidatePostAuthUrl());
 }
 
 // ── IK GİRİŞ ──
@@ -724,7 +724,7 @@ async function loginIK() {
     btnText.textContent = 'Giriş Yap →';
     return;
   }
-  window.location.href = 'ik.html';
+  checkAndHandleMFA('ik.html');
 }
 
 // Enter key desteği
@@ -1088,6 +1088,125 @@ document.addEventListener('keydown', function(e) {
     });
   });
 })();
+
+// ── MFA CHALLENGE (İki Adımlı Doğrulama) ──
+// Called after successful login if user has MFA enrolled.
+// Shows a modal overlay for TOTP code entry.
+
+async function checkAndHandleMFA(redirectUrl) {
+  var sb = typeof getSupa === 'function' ? getSupa() : null;
+  if (!sb) { window.location.href = redirectUrl; return; }
+
+  try {
+    var aalRes = await sb.auth.mfa.getAuthenticatorAssuranceLevel();
+    if (aalRes.error) { window.location.href = redirectUrl; return; }
+
+    // If user has MFA enrolled (nextLevel is aal2) but current session is aal1
+    if (aalRes.data.nextLevel === 'aal2' && aalRes.data.currentLevel === 'aal1') {
+      showMfaChallengeModal(redirectUrl);
+    } else {
+      window.location.href = redirectUrl;
+    }
+  } catch (e) {
+    // On any error, proceed to redirect (don't block login)
+    window.location.href = redirectUrl;
+  }
+}
+
+function showMfaChallengeModal(redirectUrl) {
+  var sb = typeof getSupa === 'function' ? getSupa() : null;
+
+  // Create modal if not exists
+  var overlay = document.getElementById('mfa-challenge-overlay');
+  if (!overlay) {
+    overlay = document.createElement('div');
+    overlay.id = 'mfa-challenge-overlay';
+    overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;padding:20px;';
+    overlay.innerHTML =
+      '<div style="background:var(--bg,#F7F6F4);border-radius:16px;padding:32px;max-width:380px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,0.3);">' +
+        '<div style="text-align:center;margin-bottom:20px;">' +
+          '<div style="font-size:32px;margin-bottom:8px;">🔐</div>' +
+          '<h2 style="font-family:Bricolage Grotesque,sans-serif;font-size:20px;margin:0 0 4px;">İki Adımlı Doğrulama</h2>' +
+          '<p style="font-size:13px;color:var(--muted,#6B7280);margin:0;">Doğrulama uygulamanızdaki 6 haneli kodu girin.</p>' +
+        '</div>' +
+        '<div style="margin-bottom:16px;">' +
+          '<input type="text" id="mfa-challenge-code" maxlength="6" placeholder="000000" autocomplete="one-time-code" inputmode="numeric" ' +
+            'style="width:100%;text-align:center;font-size:24px;letter-spacing:8px;padding:12px;border:2px solid var(--border,#E5E7EB);border-radius:8px;font-family:DM Mono,monospace;box-sizing:border-box;">' +
+        '</div>' +
+        '<button id="btn-mfa-challenge-verify" style="width:100%;padding:12px;background:var(--verm,#C94E28);color:white;border:none;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer;font-family:Plus Jakarta Sans,sans-serif;">Doğrula</button>' +
+        '<div id="mfa-challenge-msg" style="display:none;margin-top:12px;font-size:13px;text-align:center;"></div>' +
+        '<button id="btn-mfa-challenge-signout" style="width:100%;margin-top:12px;padding:8px;background:none;border:none;color:var(--muted,#6B7280);font-size:12px;cursor:pointer;text-decoration:underline;">Farklı hesapla giriş yap</button>' +
+      '</div>';
+    document.body.appendChild(overlay);
+  } else {
+    overlay.style.display = 'flex';
+  }
+
+  var codeInput = document.getElementById('mfa-challenge-code');
+  var verifyBtn = document.getElementById('btn-mfa-challenge-verify');
+  var msgEl = document.getElementById('mfa-challenge-msg');
+  var signoutBtn = document.getElementById('btn-mfa-challenge-signout');
+
+  codeInput.value = '';
+  codeInput.focus();
+  msgEl.style.display = 'none';
+
+  // Enter key support
+  codeInput.onkeydown = function(e) {
+    if (e.key === 'Enter') verifyBtn.click();
+  };
+
+  verifyBtn.onclick = async function() {
+    var code = (codeInput.value || '').trim();
+    if (!code || code.length !== 6 || !/^\d{6}$/.test(code)) {
+      msgEl.textContent = '6 haneli sayısal kod girin.';
+      msgEl.style.color = 'var(--verm,#C94E28)';
+      msgEl.style.display = 'block';
+      return;
+    }
+    verifyBtn.disabled = true;
+    verifyBtn.textContent = 'Doğrulanıyor...';
+    msgEl.style.display = 'none';
+
+    try {
+      // Get the TOTP factor
+      var factorsRes = await sb.auth.mfa.listFactors();
+      if (factorsRes.error) throw factorsRes.error;
+      var activeTOTP = (factorsRes.data.totp || []).filter(function(f){ return f.status === 'verified'; });
+      if (activeTOTP.length === 0) throw new Error('Kayıtlı doğrulama faktörü bulunamadı.');
+
+      var factorId = activeTOTP[0].id;
+      var verifyRes = await sb.auth.mfa.challengeAndVerify({
+        factorId: factorId,
+        code: code
+      });
+      if (verifyRes.error) throw verifyRes.error;
+
+      // MFA verified — redirect
+      window.location.href = redirectUrl;
+    } catch (e) {
+      var errMsg = (e.message || '').toLowerCase();
+      if (errMsg.indexOf('invalid') > -1 || errMsg.indexOf('expired') > -1) {
+        msgEl.textContent = 'Kod geçersiz veya süresi dolmuş. Tekrar deneyin.';
+      } else {
+        msgEl.textContent = 'Hata: ' + (e.message || 'Doğrulama başarısız.');
+      }
+      msgEl.style.color = 'var(--verm,#C94E28)';
+      msgEl.style.display = 'block';
+      codeInput.value = '';
+      codeInput.focus();
+    } finally {
+      verifyBtn.disabled = false;
+      verifyBtn.textContent = 'Doğrula';
+    }
+  };
+
+  signoutBtn.onclick = async function() {
+    await sb.auth.signOut();
+    overlay.style.display = 'none';
+    window.location.reload();
+  };
+}
 </script>
 </body>
 </html>

@@ -1254,6 +1254,56 @@ if (window.Sentry) {
     <div id="pw-msg" class="field-msg"></div>
   </div>
 
+  <!-- ── İki Adımlı Doğrulama (2FA / TOTP) ── -->
+  <div class="card" style="margin-bottom:0;">
+    <div class="card-title">İki Adımlı Doğrulama</div>
+    <div class="wiz-step-desc" style="margin-bottom:12px;">Hesabınızı ek bir güvenlik katmanıyla koruyun. Google Authenticator veya benzeri bir uygulama kullanarak giriş yapın.</div>
+
+    <div id="mfa-status-area">
+      <div id="mfa-loading" style="font-size:13px;color:var(--muted);">Yükleniyor...</div>
+    </div>
+
+    <!-- 2FA Disabled State -->
+    <div id="mfa-disabled-state" style="display:none;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+        <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#EF4444;"></span>
+        <span style="font-size:13px;font-weight:600;color:var(--text-primary);">İki adımlı doğrulama kapalı</span>
+      </div>
+      <button class="btn btn-primary btn-sm" id="btn-mfa-enable">İki Adımlı Doğrulamayı Etkinleştir</button>
+    </div>
+
+    <!-- 2FA Enrollment (QR Code) -->
+    <div id="mfa-enroll-state" style="display:none;">
+      <div style="margin-bottom:12px;">
+        <p style="font-size:13px;margin-bottom:8px;font-weight:600;">1. QR kodu telefonunuzdaki uygulama ile tarayın:</p>
+        <div id="mfa-qr-container" style="text-align:center;padding:16px;background:white;border-radius:8px;border:1px solid var(--border);display:inline-block;"></div>
+      </div>
+      <div style="margin-bottom:12px;">
+        <p style="font-size:13px;margin-bottom:4px;color:var(--muted);">Tarayamıyor musunuz? Bu kodu manuel girin:</p>
+        <code id="mfa-secret-code" style="font-size:12px;letter-spacing:2px;background:var(--gray);padding:6px 12px;border-radius:4px;user-select:all;"></code>
+      </div>
+      <div style="margin-bottom:12px;">
+        <p style="font-size:13px;margin-bottom:8px;font-weight:600;">2. Uygulamadaki 6 haneli kodu girin:</p>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <input type="text" id="mfa-verify-code" maxlength="6" placeholder="000000" style="width:120px;text-align:center;font-size:18px;letter-spacing:6px;font-family:'DM Mono',monospace;">
+          <button class="btn btn-primary btn-sm" id="btn-mfa-verify">Doğrula</button>
+        </div>
+      </div>
+      <button class="btn btn-secondary btn-sm" id="btn-mfa-cancel-enroll" style="margin-top:4px;">Vazgeç</button>
+      <div id="mfa-enroll-msg" class="field-msg"></div>
+    </div>
+
+    <!-- 2FA Enabled State -->
+    <div id="mfa-enabled-state" style="display:none;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+        <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#22C55E;"></span>
+        <span style="font-size:13px;font-weight:600;color:var(--text-primary);">İki adımlı doğrulama aktif</span>
+      </div>
+      <button class="btn btn-secondary btn-sm" id="btn-mfa-disable" style="color:var(--verm);border-color:var(--verm);">İki Adımlı Doğrulamayı Kapat</button>
+      <div id="mfa-disable-msg" class="field-msg"></div>
+    </div>
+  </div>
+
   <div class="card" style="margin-bottom:0;">
     <div class="card-title">Beta Avantajları</div>
     <div class="wiz-step-desc mt-4" style="cursor:pointer;" id="settings-premium-pitch" data-panel="premium">Beta sürecinde tüm özellikler ücretsiz açık — öne çıkan aday, AI değerlendirme, CV optimize ve daha fazlası. <span style="color:var(--verm);font-weight:600;text-decoration:underline;">Keşfet</span></div>

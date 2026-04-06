@@ -612,6 +612,148 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 500);
   })();
 
+  // ── İKİ ADIMLI DOĞRULAMA (MFA / TOTP) ──
+  (function(){
+    var loading     = document.getElementById('mfa-loading');
+    var disabledSt  = document.getElementById('mfa-disabled-state');
+    var enrollSt    = document.getElementById('mfa-enroll-state');
+    var enabledSt   = document.getElementById('mfa-enabled-state');
+    var btnEnable   = document.getElementById('btn-mfa-enable');
+    var btnVerify   = document.getElementById('btn-mfa-verify');
+    var btnCancel   = document.getElementById('btn-mfa-cancel-enroll');
+    var btnDisable  = document.getElementById('btn-mfa-disable');
+    if (!loading) return;
+
+    var pendingFactorId = null;
+
+    function showState(state) {
+      loading.style.display    = state === 'loading'  ? '' : 'none';
+      disabledSt.style.display = state === 'disabled' ? '' : 'none';
+      enrollSt.style.display   = state === 'enroll'   ? '' : 'none';
+      enabledSt.style.display  = state === 'enabled'  ? '' : 'none';
+    }
+
+    async function checkMfaStatus() {
+      try {
+        var res = await supabase.auth.mfa.listFactors();
+        if (res.error) throw res.error;
+        var factors = res.data;
+        var activeTOTP = (factors.totp || []).filter(function(f){ return f.status === 'verified'; });
+        if (activeTOTP.length > 0) {
+          showState('enabled');
+        } else {
+          showState('disabled');
+        }
+      } catch (e) {
+        console.error('MFA status check error:', e);
+        showState('disabled');
+      }
+    }
+
+    checkMfaStatus();
+
+    // Enable: start enrollment
+    if (btnEnable) btnEnable.addEventListener('click', async function(){
+      btnEnable.disabled = true;
+      btnEnable.textContent = 'Hazırlanıyor...';
+      try {
+        var res = await supabase.auth.mfa.enroll({ factorType: 'totp', friendlyName: 'HelloTalent' });
+        if (res.error) throw res.error;
+        pendingFactorId = res.data.id;
+
+        // Show QR code
+        var qrContainer = document.getElementById('mfa-qr-container');
+        qrContainer.innerHTML = '<img src="' + res.data.totp.qr_code + '" alt="QR Kod" style="width:200px;height:200px;">';
+
+        // Show secret for manual entry
+        var secretEl = document.getElementById('mfa-secret-code');
+        secretEl.textContent = res.data.totp.secret;
+
+        showState('enroll');
+      } catch (e) {
+        _htAlert('Hata: ' + (e.message || 'İki adımlı doğrulama başlatılamadı.'));
+      } finally {
+        btnEnable.disabled = false;
+        btnEnable.textContent = 'İki Adımlı Doğrulamayı Etkinleştir';
+      }
+    });
+
+    // Verify enrollment code
+    if (btnVerify) btnVerify.addEventListener('click', async function(){
+      var code = (document.getElementById('mfa-verify-code').value || '').trim();
+      var msg = document.getElementById('mfa-enroll-msg');
+      if (!code || code.length !== 6 || !/^\d{6}$/.test(code)) {
+        if (msg) { msg.textContent = '6 haneli sayısal kod girin.'; msg.style.color = 'var(--red)'; msg.style.display = 'block'; }
+        return;
+      }
+      if (!pendingFactorId) {
+        if (msg) { msg.textContent = 'Hata: Kayıt işlemi bulunamadı. Tekrar deneyin.'; msg.style.color = 'var(--red)'; msg.style.display = 'block'; }
+        return;
+      }
+      btnVerify.disabled = true;
+      btnVerify.textContent = 'Doğrulanıyor...';
+      if (msg) msg.style.display = 'none';
+      try {
+        var res = await supabase.auth.mfa.challengeAndVerify({
+          factorId: pendingFactorId,
+          code: code
+        });
+        if (res.error) throw res.error;
+        pendingFactorId = null;
+        showState('enabled');
+        _htAlert('İki adımlı doğrulama başarıyla etkinleştirildi!');
+      } catch (e) {
+        if (msg) {
+          msg.textContent = e.message && e.message.indexOf('invalid') > -1
+            ? 'Kod geçersiz. Uygulamadaki güncel kodu kontrol edin.'
+            : 'Hata: ' + (e.message || 'Doğrulama başarısız.');
+          msg.style.color = 'var(--red)';
+          msg.style.display = 'block';
+        }
+      } finally {
+        btnVerify.disabled = false;
+        btnVerify.textContent = 'Doğrula';
+      }
+    });
+
+    // Cancel enrollment — unenroll pending factor
+    if (btnCancel) btnCancel.addEventListener('click', async function(){
+      if (pendingFactorId) {
+        try { await supabase.auth.mfa.unenroll({ factorId: pendingFactorId }); } catch(e) { /* ignore */ }
+        pendingFactorId = null;
+      }
+      document.getElementById('mfa-verify-code').value = '';
+      var msg = document.getElementById('mfa-enroll-msg');
+      if (msg) msg.style.display = 'none';
+      showState('disabled');
+    });
+
+    // Disable MFA
+    if (btnDisable) btnDisable.addEventListener('click', function(){
+      _htConfirm('İki adımlı doğrulamayı kapatmak istediğinize emin misiniz? Hesabınızın güvenliği azalacaktır.', async function(){
+        btnDisable.disabled = true;
+        btnDisable.textContent = 'Kapatılıyor...';
+        var msg = document.getElementById('mfa-disable-msg');
+        try {
+          var res = await supabase.auth.mfa.listFactors();
+          if (res.error) throw res.error;
+          var activeTOTP = (res.data.totp || []).filter(function(f){ return f.status === 'verified'; });
+          for (var i = 0; i < activeTOTP.length; i++) {
+            var uRes = await supabase.auth.mfa.unenroll({ factorId: activeTOTP[i].id });
+            if (uRes.error) throw uRes.error;
+          }
+          showState('disabled');
+          _htAlert('İki adımlı doğrulama kapatıldı.');
+        } catch (e) {
+          if (msg) { msg.textContent = 'Hata: ' + (e.message || ''); msg.style.color = 'var(--red)'; msg.style.display = 'block'; }
+        } finally {
+          btnDisable.disabled = false;
+          btnDisable.textContent = 'İki Adımlı Doğrulamayı Kapat';
+        }
+      });
+    });
+  })();
+
   // Sign out (settings)
   var btnSignoutSettings = document.getElementById('btn-signout-settings');
   if (btnSignoutSettings) btnSignoutSettings.addEventListener('click', async function() {
