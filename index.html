@@ -151,19 +151,38 @@ body{
 }
 .zone--i .sb{margin-left:auto}
 
-.ct{
+.ct.btn{
   display:inline-block;
   font-family:var(--font-b);
   font-size:13px;
   font-weight:700;
   letter-spacing:0.3px;
   text-decoration:none;
-  padding-bottom:4px;
-  border-bottom:2px solid transparent;
-  transition:border-color .35s ease;
+  padding:10px 28px;
+  border-radius:6px;
+  border:1.5px solid transparent;
+  transition:background .3s ease, border-color .3s ease, color .3s ease;
 }
-.zone--a .ct{color:var(--verm);border-bottom-color:rgba(201,78,40,0.2)}
-.zone--i .ct{color:#8B9CC5;border-bottom-color:rgba(139,156,197,0.15)}
+.zone--a .ct.btn{
+  color:var(--cream);
+  background:var(--verm);
+  border-color:var(--verm);
+}
+.zone--a:hover .ct.btn{
+  background:transparent;
+  color:var(--verm);
+  border-color:var(--verm);
+}
+.zone--i .ct.btn{
+  color:var(--cream);
+  background:var(--navy);
+  border-color:var(--navy);
+}
+.zone--i:hover .ct.btn{
+  background:transparent;
+  color:#8B9CC5;
+  border-color:#8B9CC5;
+}
 
 .il{
   position:absolute;
@@ -319,17 +338,17 @@ gtag('config','G-54BCV5QYCZ');
 <main class="gate">
   <a class="zone zone--a" href="aday.html">
     <span class="ey">Adaylar</span>
-    <h2 class="hd">Sonraki<br><span class="v">adımın</span><br>burada</h2>
+    <h2 class="hd"><span class="v">İş</span><br>Arıyorum</h2>
     <p class="sb">Perakende kariyerini tek bir profille yönet. Sektördeki güçlü markalar seni bulsun.</p>
-    <span class="ct">Profil oluştur</span>
+    <span class="ct btn">Profil oluştur</span>
     <img class="il" src="assets/gate/gate-aday-final.svg" alt="Perakende sektöründe kariyer arayan aday" width="400" height="400" loading="eager">
   </a>
 
   <a class="zone zone--i" href="isveren.html">
     <span class="ey">İşverenler</span>
-    <h2 class="hd">Doğru<br><span class="n">yeteneği</span><br>şimdi bul</h2>
+    <h2 class="hd"><span class="n">Yetenek</span><br>Arıyorum</h2>
     <p class="sb">Sektöre özel aday havuzuna eriş. Filtrele, incele, hemen iletişime geç.</p>
-    <span class="ct">Aday havuzuna gir</span>
+    <span class="ct btn">Üye ol</span>
     <img class="il" src="assets/gate/gate-isveren-final.svg" alt="Perakende sektöründe yetenek arayan işveren" width="400" height="400" loading="eager">
   </a>
 </main>
