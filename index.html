@@ -193,6 +193,21 @@ body{background:var(--bg)}
 .zone--i .ct.btn{color:var(--btn-i-hc);background:transparent;border-color:var(--btn-i-hborder)}
 .zone--i:hover .ct.btn{background:var(--btn-i-bg);color:var(--btn-i-c);border-color:var(--btn-i-bg)}
 
+/* ── ILLUSTRATIONS ── */
+.il{
+  position:absolute;
+  bottom:-4px;
+  width:clamp(280px,32vw,460px);
+  height:auto;object-fit:contain;
+  pointer-events:none;z-index:2;
+  transition:transform .7s var(--expo),opacity .5s ease;
+  opacity:0.9;
+}
+.zone--a .il{right:clamp(0px,2vw,40px)}
+.zone--i .il{left:clamp(16px,3vw,48px)}
+.zone--a:hover .il{transform:translateY(-4px);opacity:1}
+.zone--i:hover .il{transform:translateY(-4px);opacity:1}
+
 /* ── FOOTER ── */
 .ft{
   position:absolute;bottom:0;left:0;right:0;
@@ -208,17 +223,22 @@ body{background:var(--bg)}
   to{opacity:1;transform:translateY(0)}
 }
 @keyframes fi{from{opacity:0}to{opacity:1}}
+@keyframes ilUp{
+  from{opacity:0;transform:translateY(24px)}
+  to{opacity:0.9;transform:translateY(0)}
+}
 
 .ey{animation:up .55s ease-out .06s both}
 .hd{animation:up .55s ease-out .13s both}
 .sb{animation:up .55s ease-out .20s both}
 .ct{animation:up .55s ease-out .27s both}
+.il{animation:ilUp .8s var(--expo) .2s both}
 .hdr{animation:fi .4s ease-out .05s both}
 .ft{animation:fi .4s ease-out .4s both}
 
 @media(prefers-reduced-motion:reduce){
-  .ey,.hd,.sb,.ct,.hdr,.ft{animation:none!important;opacity:1!important}
-  .zone{transition:none!important}
+  .ey,.hd,.sb,.ct,.il,.hdr,.ft{animation:none!important;opacity:1!important}
+  .zone,.il{transition:none!important}
 }
 
 /* ══ TABLET ══ */
@@ -232,6 +252,9 @@ body{background:var(--bg)}
   .zone--i{align-items:flex-start;text-align:left}
   .zone--i .sb{margin-left:0}
   .hd{font-size:clamp(32px,7vw,46px);letter-spacing:-2px}
+  .il{width:clamp(200px,34vw,280px)}
+  .zone--a .il{right:8px}
+  .zone--i .il{left:auto;right:8px}
 }
 
 /* ══ MOBILE ══ */
@@ -246,6 +269,7 @@ body{background:var(--bg)}
   .hd{font-size:clamp(28px,8.5vw,40px);letter-spacing:-1.5px;margin-bottom:14px}
   .ey{margin-bottom:12px;font-size:9px;letter-spacing:3px}
   .sb{font-size:13px;max-width:260px;margin-bottom:22px}
+  .il{width:clamp(160px,42vw,220px);bottom:0}
   .hdr{padding:16px 18px}
   .logo{font-size:16px}
   .login{font-size:11px;padding:5px 12px}
@@ -257,6 +281,7 @@ body{background:var(--bg)}
   .zone{min-height:48vh}
   .hd{font-size:24px;letter-spacing:-1px}
   .sb{font-size:12px;max-width:220px}
+  .il{width:clamp(130px,38vw,180px)}
 }
 </style>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-54BCV5QYCZ"></script>
@@ -280,6 +305,7 @@ gtag('config','G-54BCV5QYCZ');
     <h2 class="hd"><span class="v">İş</span><br>Arıyorum</h2>
     <p class="sb">Perakende kariyerini tek bir profille yönet. Sektördeki güçlü markalar seni bulsun.</p>
     <span class="ct btn">Profil oluştur</span>
+    <img class="il" src="assets/gate/gate-aday-final.svg" alt="Perakende sektöründe kariyer arayan aday" width="460" height="460" loading="eager">
   </a>
 
   <a class="zone zone--i" href="isveren.html">
@@ -287,6 +313,7 @@ gtag('config','G-54BCV5QYCZ');
     <h2 class="hd"><span class="n">Yetenek</span><br>Arıyorum</h2>
     <p class="sb">Sektöre özel aday havuzuna eriş. Filtrele, incele, hemen iletişime geç.</p>
     <span class="ct btn">Üye ol</span>
+    <img class="il" src="assets/gate/gate-isveren-final.svg" alt="Perakende sektöründe yetenek arayan işveren" width="460" height="460" loading="eager">
   </a>
 </main>
 
