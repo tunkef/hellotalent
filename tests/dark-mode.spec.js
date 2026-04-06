@@ -15,9 +15,23 @@ test.describe('Dark mode system — profil.html', function () {
 
   test.beforeAll(function () {
     profilHtml = readFromRepo('profil.html');
-    profilCss = readFromRepo('profil.css');
-    // Tokens may live in css/tokens.css (Kademe 0+) or inline in profil.css (legacy)
-    try { tokensCss = readFromRepo('css/tokens.css'); } catch (e) { tokensCss = ''; }
+    // Kademe 1: CSS is split across multiple files. Concatenate all for test assertions.
+    var cssFiles = [
+      'profil.css',
+      'css/tokens.css',
+      'css/layout.css',
+      'css/components.css',
+      'css/wizard.css',
+      'css/panels/genel-bakis.css',
+      'css/panels/merkezi.css',
+      'css/panels/sirketler.css'
+    ];
+    profilCss = '';
+    cssFiles.forEach(function (f) {
+      try { profilCss += readFromRepo(f); } catch (e) { /* file may not exist yet */ }
+    });
+    tokensCss = '';
+    try { tokensCss = readFromRepo('css/tokens.css'); } catch (e) {}
     profilCoreJs = readFromRepo('profil-core.js');
   });
 

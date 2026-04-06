@@ -132,7 +132,10 @@ test.describe('Sprint 4 — copy quality & accessibility', () => {
 
   test.beforeAll(() => {
     profilHtml = readFromRepo('profil.html');
-    profilCss = readFromRepo('profil.css');
+    // Kademe 1: CSS split across files — concatenate all
+    profilCss = ['profil.css','css/tokens.css','css/layout.css','css/components.css','css/wizard.css',
+      'css/panels/genel-bakis.css','css/panels/merkezi.css','css/panels/sirketler.css'
+    ].map(function(f){ try { return readFromRepo(f); } catch(e) { return ''; } }).join('\n');
     profilUiJs = readFromRepo('profil-ui.js');
     profilSettingsJs = readFromRepo('profil-settings.js');
   });
