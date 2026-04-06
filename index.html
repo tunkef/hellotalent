@@ -32,7 +32,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200;12..96,400;12..96,600;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;overflow:hidden}
+html{height:100%}
+body{min-height:100%}
+@media(min-width:901px){body{height:100%;overflow:hidden}}
 body{
   font-family:'Plus Jakarta Sans',sans-serif;
   -webkit-font-smoothing:antialiased;
@@ -227,14 +229,14 @@ body{background:var(--bg)}
 .il{
   position:absolute;
   bottom:-4px;
-  height:clamp(260px,46vh,410px);
+  height:clamp(220px,38vh,360px);
   width:auto;object-fit:contain;
-  pointer-events:none;z-index:2;
+  pointer-events:none;z-index:1;
   transition:transform .7s var(--expo),opacity .5s ease;
-  opacity:0.9;
+  opacity:0.85;
 }
-.zone--a .il{right:clamp(8px,3vw,48px);height:clamp(280px,50vh,440px)}
-.zone--i .il{left:clamp(20px,4vw,56px)}
+.zone--a .il{right:clamp(0px,1vw,24px);height:clamp(240px,42vh,380px)}
+.zone--i .il{left:clamp(8px,2vw,32px)}
 .zone--a:hover .il{transform:translateY(-10px) scale(1.04);opacity:1}
 .zone--i:hover .il{transform:translateY(-10px) scale(1.04);opacity:1}
 
@@ -262,14 +264,20 @@ body{background:var(--bg)}
   .zone,.il{transition:none!important}
 }
 
+/* ══ NARROW DESKTOP (901-1100px) ══ */
+@media(max-width:1100px) and (min-width:901px){
+  .il{height:clamp(180px,32vh,280px)}
+  .zone--a .il{height:clamp(200px,36vh,300px)}
+  .hd{font-size:clamp(36px,4.5vw,52px)}
+}
+
 /* ══ TABLET (≤900px) ══ */
 @media(max-width:900px){
   html,body{overflow:auto}
   .gate{
     flex-direction:column;
-    height:auto;min-height:100vh;min-height:100dvh;
+    height:auto;
   }
-  /* Disable flex expansion on touch */
   .gate:has(.zone--a:hover) .zone--a,
   .gate:has(.zone--a:hover) .zone--i,
   .gate:has(.zone--i:hover) .zone--i,
@@ -277,55 +285,43 @@ body{background:var(--bg)}
 
   .zone{
     flex:none;
+    overflow:visible;
     min-height:auto;
-    padding:clamp(80px,10vh,110px) clamp(28px,5vw,48px) clamp(32px,4vh,56px);
+    padding:clamp(72px,8vh,100px) clamp(28px,5vw,48px) clamp(24px,3vh,40px);
     justify-content:flex-start;
   }
   .zone--i{
     align-items:flex-start;text-align:left;
-    padding-top:clamp(32px,4vh,56px);
-    padding-bottom:clamp(40px,6vh,80px);
+    padding-top:clamp(28px,3vh,40px);
+    padding-bottom:clamp(32px,4vh,56px);
   }
   .zone--i .sb{margin-left:0}
-
   .hd{font-size:clamp(34px,8vw,50px);letter-spacing:-2px}
 
-  /* Illustrations: pull out of absolute, flow naturally */
   .il{
     position:relative;
     bottom:auto;right:auto;left:auto;
     height:auto;
-    width:clamp(220px,50vw,320px);
-    margin-top:24px;
+    width:clamp(240px,45vw,360px);
+    margin-top:20px;
     align-self:center;
+    opacity:0.9;
   }
-  .zone--a .il{
-    height:auto;
-    width:clamp(220px,50vw,320px);
-    right:auto;
-  }
-  .zone--i .il{
-    width:clamp(220px,50vw,320px);
-    right:auto;left:auto;
-    align-self:center;
-  }
-
+  .zone--a .il{height:auto;width:clamp(240px,45vw,360px);right:auto}
+  .zone--i .il{width:clamp(240px,45vw,360px);right:auto;left:auto;align-self:center}
   .ct.btn{padding:12px 32px;font-size:14px}
 }
 
 /* ══ MOBILE (≤600px) ══ */
 @media(max-width:600px){
-  .zone{padding:64px 24px 24px}
-  .zone--i{padding:24px 24px 48px}
-
+  .zone{padding:60px 24px 20px}
+  .zone--i{padding:20px 24px 36px}
   .hd{font-size:clamp(30px,9vw,42px);letter-spacing:-1.5px;margin-bottom:14px}
   .ey{margin-bottom:10px;font-size:9px;letter-spacing:3px}
-  .sb{font-size:13px;max-width:none;margin-bottom:20px}
-
-  .il{width:clamp(180px,48vw,260px);margin-top:20px}
-  .zone--a .il{width:clamp(180px,48vw,260px)}
-  .zone--i .il{width:clamp(180px,48vw,260px)}
-
+  .sb{font-size:13px;max-width:none;margin-bottom:18px}
+  .il{width:min(220px,52vw);margin-top:16px}
+  .zone--a .il{width:min(220px,52vw)}
+  .zone--i .il{width:min(220px,52vw)}
   .hdr{padding:16px 18px}
   .logo{font-size:16px}
   .login{font-size:11px;padding:6px 14px}
@@ -334,12 +330,12 @@ body{background:var(--bg)}
 
 /* ══ SMALL MOBILE (≤380px) ══ */
 @media(max-width:380px){
-  .zone{padding:56px 20px 20px}
-  .zone--i{padding:20px 20px 40px}
+  .zone{padding:52px 20px 16px}
+  .zone--i{padding:16px 20px 28px}
   .hd{font-size:26px;letter-spacing:-1px}
-  .sb{font-size:12px;max-width:220px}
-  .il{width:clamp(150px,44vw,210px);margin-top:16px}
-  .zone--a .il{width:clamp(150px,44vw,210px)}
+  .sb{font-size:12px}
+  .il{width:min(180px,48vw);margin-top:14px}
+  .zone--a .il{width:min(180px,48vw)}
 }
 </style>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-54BCV5QYCZ"></script>
@@ -370,7 +366,7 @@ gtag('config','G-54BCV5QYCZ');
     <span class="ey">İşverenler</span>
     <h2 class="hd"><span class="n">Yetenek</span><br>Arıyorum</h2>
     <p class="sb">Sektöre özel aday havuzuna eriş. Filtrele, incele, hemen iletişime geç.</p>
-    <span class="ct btn">Üye ol</span>
+    <span class="ct btn">Ekibini kur</span>
     <img class="il" src="assets/gate/gate-isveren-final.svg" alt="Perakende sektöründe yetenek arayan işveren" width="460" height="460" loading="eager">
   </a>
 </main>
