@@ -259,16 +259,44 @@ body{background:var(--bg-page)}
   font-weight:800;letter-spacing:-1.5px;
   color:var(--verm);margin-bottom:6px;
 }
-.who-sub{font-size:15px;color:var(--text-muted);margin-bottom:32px}
-.who-list{list-style:none;padding:0;max-width:560px}
-.who-list li{
-  font-family:var(--font-b);font-size:15px;font-weight:600;
-  color:var(--text-primary);
-  padding:14px 16px;border-radius:8px;
-  transition:background .2s;cursor:default;
+.who-sub{font-size:15px;color:var(--text-muted);margin-bottom:28px}
+.who-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:14px;
+  margin-bottom:28px;
 }
-.who-list li:hover{background:rgba(201,78,40,0.04)}
-.who-list li+li{border-top:1px solid var(--border)}
+.who-card{
+  background:var(--bg-section);
+  border-radius:12px;
+  padding:20px;
+  border:1px solid var(--border);
+  transition:transform .3s cubic-bezier(0.16,1,0.3,1), box-shadow .3s ease, border-color .3s ease;
+  cursor:default;
+}
+.who-card:hover{
+  transform:translateY(-2px);
+  box-shadow:0 8px 24px rgba(0,0,0,0.05);
+  border-color:var(--verm);
+}
+.who-card-t{
+  font-family:var(--font-d);font-size:15px;
+  font-weight:700;color:var(--text-primary);margin-bottom:6px;
+}
+.who-card-d{
+  font-size:13px;color:var(--text-muted);line-height:1.5;
+}
+.who-summary{
+  font-family:var(--font-b);font-size:14px;
+  color:var(--text-muted);line-height:1.7;
+  max-width:640px;
+  font-style:italic;
+}
+
+@media(prefers-color-scheme:dark){
+  .who-card{background:var(--bg-section);border-color:rgba(255,255,255,0.06)}
+  .who-card:hover{border-color:var(--verm)}
+}
 
 /* ── FINAL CTA ── */
 .cta-end{text-align:center;background:var(--bg-section)}
@@ -288,6 +316,7 @@ body{background:var(--bg-page)}
   .bento{grid-template-columns:1fr 1fr}
   .bento-card.featured{grid-column:span 2}
   .steps-row{grid-template-columns:1fr}
+  .who-grid{grid-template-columns:1fr}
 }
 @media(max-width:480px){
   .bento{grid-template-columns:1fr 1fr}
@@ -408,14 +437,22 @@ body{background:var(--bg-page)}
 <section class="s s-warm">
   <div class="s-inner">
     <h2 class="who-hl">hellotalent kimin için?</h2>
-    <p class="who-sub">Retail sektöründe kariyer yapan herkes.</p>
-    <ul class="who-list">
-      <li>Mağaza Müdürü &amp; Müdür Yardımcısı</li>
-      <li>Bölge Yöneticisi &amp; Area Manager</li>
-      <li>Satış Danışmanı &amp; Kasa Sorumlusu</li>
-      <li>Visual Merchandiser &amp; Depo Sorumlusu</li>
-      <li>E-ticaret &amp; Omnichannel Uzmanı</li>
-    </ul>
+    <p class="who-sub">Kariyerinin hangi aşamasında olursan ol.</p>
+    <div class="who-grid">
+      <div class="who-card">
+        <div class="who-card-t">Mağaza Ekipleri</div>
+        <p class="who-card-d">Satıştan kasaya, depodan görsele tüm operasyon.</p>
+      </div>
+      <div class="who-card">
+        <div class="who-card-t">Yönetim Kadrosu</div>
+        <p class="who-card-d">Mağaza yöneticilerinden bölge müdürlerine tüm liderler.</p>
+      </div>
+      <div class="who-card">
+        <div class="who-card-t">Merkez ve Dijital</div>
+        <p class="who-card-d">E-ticaret, omnichannel ve operasyon uzmanları.</p>
+      </div>
+    </div>
+    <p class="who-summary">Mağaza katından bölge yönetimine kadar, perakende sektörünün tüm profesyonellerini tek çatıda topluyoruz.</p>
   </div>
 </section>
 
