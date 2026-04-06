@@ -204,17 +204,17 @@ body{background:var(--bg-page)}
 }
 
 /* ── STEPS — card-based with illustrations ── */
-.steps-grid{
-  display:flex;
-  flex-direction:column;
-  gap:12px;
+.steps-row{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:16px;
 }
 .step-card{
   background:var(--bg-section);
   border-radius:12px;
-  padding:16px 18px;
+  padding:20px;
   border:1px solid var(--border);
-  display:flex;align-items:center;gap:14px;
+  display:flex;flex-direction:column;gap:12px;
   transition:transform .3s cubic-bezier(0.16,1,0.3,1), box-shadow .3s ease, border-color .3s ease;
   cursor:default;
 }
@@ -287,6 +287,7 @@ body{background:var(--bg-page)}
   .split{grid-template-columns:1fr;gap:28px}
   .bento{grid-template-columns:1fr 1fr}
   .bento-card.featured{grid-column:span 2}
+  .steps-row{grid-template-columns:1fr}
 }
 @media(max-width:480px){
   .bento{grid-template-columns:1fr 1fr}
@@ -369,38 +370,34 @@ body{background:var(--bg-page)}
 <!-- 3. NASIL ÇALIŞIR -->
 <section class="s s-white">
   <div class="s-inner">
-    <div class="split">
-      <div>
-        <h2 class="split-hl">Geleneksel iş aramayı unut.</h2>
-        <p class="split-desc">Basit, hızlı, etkili.</p>
+    <h2 class="split-hl">Geleneksel iş aramayı unut.</h2>
+    <p class="split-desc" style="margin-bottom:32px">Basit, hızlı, etkili.</p>
+    <div class="steps-row">
+      <div class="step-card">
+        <img class="step-vis" src="assets/aday/step-01-profil.svg" alt="" width="48" height="48" loading="lazy">
+        <div class="step-body">
+          <span class="step-n">01</span>
+          <div class="step-t">Profil Oluştur</div>
+          <p class="step-d">Deneyim, yetkinlik ve kariyer hedeflerini paylaş.</p>
+          <span class="step-usp">CV zorunlu değil</span>
+        </div>
       </div>
-      <div class="steps-grid">
-        <div class="step-card">
-          <img class="step-vis" src="assets/aday/step-01-profil.svg" alt="" width="48" height="48" loading="lazy">
-          <div class="step-body">
-            <span class="step-n">01</span>
-            <div class="step-t">Profil Oluştur</div>
-            <p class="step-d">Deneyim, yetkinlik ve kariyer hedeflerini paylaş.</p>
-            <span class="step-usp">CV zorunlu değil</span>
-          </div>
+      <div class="step-card">
+        <img class="step-vis" src="assets/aday/step-02-gelistir.svg" alt="" width="48" height="48" loading="lazy">
+        <div class="step-body">
+          <span class="step-n">02</span>
+          <div class="step-t">Kendini Geliştir</div>
+          <p class="step-d">Mülakat Koçu ile pratik yap, AI geri bildirim al.</p>
+          <span class="step-usp">AI destekli</span>
         </div>
-        <div class="step-card">
-          <img class="step-vis" src="assets/aday/step-02-gelistir.svg" alt="" width="48" height="48" loading="lazy">
-          <div class="step-body">
-            <span class="step-n">02</span>
-            <div class="step-t">Kendini Geliştir</div>
-            <p class="step-d">Mülakat Koçu ile pratik yap, AI geri bildirim al.</p>
-            <span class="step-usp">AI destekli</span>
-          </div>
-        </div>
-        <div class="step-card">
-          <img class="step-vis" src="assets/aday/step-03-markalar.svg" alt="" width="48" height="48" loading="lazy">
-          <div class="step-body">
-            <span class="step-n">03</span>
-            <div class="step-t">Markalar Seni Bulsun</div>
-            <p class="step-d">"Beni Öner" aç, profilini görünür yap.</p>
-            <span class="step-usp">Kontrol sende</span>
-          </div>
+      </div>
+      <div class="step-card">
+        <img class="step-vis" src="assets/aday/step-03-markalar.svg" alt="" width="48" height="48" loading="lazy">
+        <div class="step-body">
+          <span class="step-n">03</span>
+          <div class="step-t">Markalar Seni Bulsun</div>
+          <p class="step-d">"Beni Öner" aç, profilini görünür yap.</p>
+          <span class="step-usp">Kontrol sende</span>
         </div>
       </div>
     </div>
