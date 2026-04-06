@@ -22,27 +22,68 @@
 .field-error input,.field-error select,.field-error textarea{border-color:var(--verm) !important;}
 .field-error label{color:var(--verm) !important;}
 
-/* ── BUTTONS ── */
+/* ═══ HT-BTN — BEM-lite button system ═══ */
+
+/* Block: base button */
+.ht-btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  padding:10px 20px;border-radius:var(--radius-sm);font-family:inherit;
+  font-size:var(--text-md);font-weight:var(--font-weight-medium);
+  cursor:pointer;transition:all 0.15s;border:none;outline:none;
+  text-decoration:none;line-height:1.4;
+}
+.ht-btn:focus-visible{box-shadow:0 0 0 2px var(--focus-ring);}
+.ht-btn:disabled{opacity:0.5;cursor:not-allowed;pointer-events:none;}
+
+/* Variants */
+.ht-btn--primary{background:var(--accent);color:white;}
+.ht-btn--primary:hover{background:var(--accent-hover);}
+.ht-btn--secondary{background:var(--bg-elevated);color:var(--text-primary);border:1px solid var(--border-subtle);}
+.ht-btn--secondary:hover{background:var(--border-subtle);}
+.ht-btn--ghost{background:none;color:var(--text-muted);}
+.ht-btn--ghost:hover{color:var(--text-primary);background:var(--bg-elevated);}
+.ht-btn--navy{background:var(--navy);color:white;}
+.ht-btn--navy:hover{opacity:0.9;}
+.ht-btn--danger{background:var(--danger);color:white;}
+.ht-btn--danger:hover{background:#b91c1c;}
+.ht-btn--icon{width:34px;height:34px;padding:0;border-radius:var(--radius-sm);background:var(--bg-surface);border:1px solid var(--border-subtle);color:var(--text-muted);}
+.ht-btn--icon:hover{background:var(--bg-elevated);color:var(--text-primary);}
+.ht-btn--pill{border-radius:999px;padding:8px 20px;}
+.ht-btn--dashed{
+  border:1.5px dashed var(--border-strong);background:transparent;color:var(--text-muted);
+  font-weight:600;border-radius:var(--radius);padding:9px 18px;
+}
+.ht-btn--dashed:hover{border-color:var(--accent);color:var(--accent);background:rgba(201,78,40,0.06);}
+
+/* Sizes */
+.ht-btn--sm{padding:7px 14px;font-size:var(--text-base);}
+.ht-btn--lg{padding:12px 28px;font-size:15px;}
+
+/* State */
+.ht-btn.is-loading{pointer-events:none;opacity:0.7;}
+
+/* ── Legacy aliases (keep until Kademe 2 Task 14) ── */
 .btn{
   display:inline-flex;align-items:center;justify-content:center;gap:6px;
   padding:10px 20px;border-radius:var(--radius-sm);font-family:inherit;
   font-size:var(--text-md);font-weight:var(--font-weight-medium);cursor:pointer;transition:all 0.15s;border:none;
   outline:none;
 }
-.btn:focus-visible{box-shadow:0 0 0 2px var(--ring);}
-.btn-primary{background:var(--verm);color:white;}
-.btn-primary:hover{background:var(--verm-dark);}
+.btn:focus-visible{box-shadow:0 0 0 2px var(--focus-ring);}
+.btn-primary{background:var(--accent);color:white;}
+.btn-primary:hover{background:var(--accent-hover);}
 .btn-secondary{background:var(--bg-elevated);color:var(--text-primary);border:1px solid var(--border-subtle);}
-.btn-secondary:hover{background:var(--border);}
+.btn-secondary:hover{background:var(--border-subtle);}
 .btn-ghost{background:none;color:var(--text-muted);}
 .btn-ghost:hover{color:var(--text-primary);background:var(--bg-elevated);}
 .btn-navy{background:var(--navy);color:white;}
 .btn-navy:hover{opacity:0.9;}
-.btn-danger{background:var(--red);color:white;}
+.btn-danger{background:var(--danger);color:white;}
 .btn-sm{padding:7px 14px;font-size:var(--text-base);}
 .btn-lg{padding:12px 28px;font-size:15px;}
 
-/* Wizard: unified action buttons — all use dashed border style */
+/* Wizard dashed buttons — now use ht-btn--dashed class.
+   Legacy ID selectors kept until HTML migrated (Task 13). */
 #panel-profil #btn-add-exp,
 #panel-profil #btn-add-edu,
 #panel-profil #btn-add-role,
