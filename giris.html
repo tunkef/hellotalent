@@ -611,10 +611,10 @@ function getCandidatePostAuthUrl() {
 
 // ── TAB SWITCH ──
 function switchTab(tab) {
-  varadayForm = document.getElementById('form-aday');
-  varikForm = document.getElementById('form-ik');
-  varadayBtn = document.getElementById('tab-aday');
-  varikBtn = document.getElementById('tab-ik');
+  var adayForm = document.getElementById('form-aday');
+  var ikForm = document.getElementById('form-ik');
+  var adayBtn = document.getElementById('tab-aday');
+  var ikBtn = document.getElementById('tab-ik');
 
   if (tab === 'aday') {
     adayForm.style.display = 'block';
@@ -633,10 +633,10 @@ function switchTab(tab) {
 
 // ── ADAY GİRİŞ ──
 async function loginAday() {
-  varemail = document.getElementById('aday-email').value.trim();
-  varsifre = document.getElementById('aday-sifre').value;
-  varerrEl = document.getElementById('err-aday');
-  varbtnText = document.getElementById('aday-btn-text');
+  var email = document.getElementById('aday-email').value.trim();
+  var sifre = document.getElementById('aday-sifre').value;
+  var errEl = document.getElementById('err-aday');
+  var btnText = document.getElementById('aday-btn-text');
   var loginBtn = btnText.closest('button');
 
   errEl.style.display = 'none';
@@ -678,10 +678,10 @@ async function loginAday() {
 
 // ── IK GİRİŞ ──
 async function loginIK() {
-  varemail = document.getElementById('ik-email').value.trim();
-  varsifre = document.getElementById('ik-sifre').value;
-  varerrEl = document.getElementById('err-ik');
-  varbtnText = document.getElementById('ik-btn-text');
+  var email = document.getElementById('ik-email').value.trim();
+  var sifre = document.getElementById('ik-sifre').value;
+  var errEl = document.getElementById('err-ik');
+  var btnText = document.getElementById('ik-btn-text');
   var loginBtn = btnText.closest('button');
 
   errEl.style.display = 'none';
@@ -730,7 +730,7 @@ async function loginIK() {
 // Enter key desteği
 document.addEventListener('keydown', function(e) {
   if (e.key === 'Enter') {
-    varadayForm = document.getElementById('form-aday');
+    var adayForm = document.getElementById('form-aday');
     if (adayForm.style.display !== 'none') {
       loginAday();
     } else {

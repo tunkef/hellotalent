@@ -48,6 +48,11 @@ DECLARE
   v_tables_rls_no_policy jsonb;
   v_result jsonb;
 BEGIN
+  -- Admin guard — only admins or pg_cron (no auth context) can run this
+  IF auth.uid() IS NOT NULL AND NOT EXISTS (SELECT 1 FROM admin_users WHERE id = auth.uid()) THEN
+    RAISE EXCEPTION 'Unauthorized: admin access required';
+  END IF;
+
   -- Find public tables with RLS disabled
   SELECT COALESCE(jsonb_agg(jsonb_build_object(
     'table', c.relname,
@@ -109,6 +114,10 @@ $$;
 -- ┌─────────────────────────────────────────────────────────────┐
 -- │ 3. Weekly RLS audit cron job                                │
 -- └─────────────────────────────────────────────────────────────┘
+
+-- Revoke public execute — only postgres (pg_cron) and admin can call
+REVOKE EXECUTE ON FUNCTION run_rls_audit() FROM public, anon, authenticated;
+GRANT EXECUTE ON FUNCTION run_rls_audit() TO postgres;
 
 -- Runs every Sunday at 4am UTC
 SELECT cron.schedule(
