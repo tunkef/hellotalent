@@ -2383,7 +2383,7 @@ test.describe('Aşama 25 — Candidate dashboard free-tier copy drift', () => {
   });
 
   test('save-success modal premium line shows Beta avantajlarını keşfet not Premium avantajlarını keşfet', () => {
-    var modalStart = profilHtml25.indexOf('class="modal-premium-line"');
+    var modalStart = profilHtml25.indexOf('modal-premium-line');
     expect(modalStart).toBeGreaterThan(0);
     var modalSnippet = profilHtml25.substring(modalStart, modalStart + 150);
     expect(modalSnippet).toContain('Beta avantajlarını keşfet');

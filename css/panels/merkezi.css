@@ -407,7 +407,7 @@
   background: linear-gradient(135deg, #2A3F7A 0%, var(--navy) 50%, var(--navy-deep) 100%) !important;
   box-shadow: 0 4px 16px rgba(0,0,0,0.12) !important;
   border: 1px solid rgba(255,255,255,0.1) !important;
-  cursor: default;
+  cursor: pointer;
   border-radius: 24px;
   display: flex;
   flex-direction: column;
@@ -478,6 +478,7 @@
 
 /* Reusable 3-col bento grid for panels (Ayarlar, Kim Baktı) */
 .ht-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.ht-grid-3 > .card { margin-bottom: 0; }
 .ht-grid-3 > .ht-span-2 { grid-column: span 2; }
 @media (max-width: 768px) {
   .ht-grid-3 { grid-template-columns: 1fr; }
