@@ -116,6 +116,7 @@ hellotalent.ai, Turkiye perakende sektorune ozel bir yetenek pazaryeri. Adaylar 
 9. **Pozisyon gorunum/esleme metrikleri** — backend counter/trigger gerekli, frontend truth-sync edildi (sahte 0 yerine "yakinda aktif" mesaji)
 10. **iyzico/Stripe checkout** — schema hazir, merchant hesap + API key gerekli (**her zaman en son**)
 11. ~~**Supabase Advisor Fix'leri (SA1-SA5) + LB6 + 2FA**~~ — ✅ TAMAMLANDI (Session 66, 6 Nisan). SA1-SA5: search_path + FK index + cron + bio RPC. LB6: security_audit_log + haftalik RLS audit + security dashboard. 2FA: TOTP enrollment (ayarlar) + login challenge (giris.html). Code review fix'leri: Sonnet reviewer 6 sorun + DeepSeek 4 ek bulgu — hepsi duzeltildi. **820/833 Playwright test PASS** (12 auth = bilinen blocker, 1 setup = env var eksik).
+12. ~~**Design System CSS Overhaul (Kademe 0-3)**~~ — ✅ TAMAMLANDI (Session 67, 6 Nisan). profil.css → 7 modular CSS. ht- component class sistemi. Utility class'lar. Sidebar 4 grup + Kim Bakti/Yetkinlikler nav + bottom nav 5. item. **Kalan: Task 14 eski class alias temizligi** — dual-write'tan tek class'a gecis. Ayri session'da yapilacak. Class esleme tablosu ve adim-adim prompt CURRENT-STATE'te dokumante edildi.
 
 ## 5b. Sosyal Layer Audit Kararlari (Session 45 — 30 Mart)
 
@@ -129,14 +130,20 @@ hellotalent.ai, Turkiye perakende sektorune ozel bir yetenek pazaryeri. Adaylar 
 
 ## 6. Son 3 Session Ozeti
 
-### Session 67 (6 Nisan — Asama 67: Design System CSS Overhaul Kademe 0-2)
-**profil.css 3223 satir → 7 modular CSS dosyasina bolundu. ht- prefix'li component sinifi sistemi kuruldu.**
+### Session 67 (6 Nisan — Asama 67: Design System CSS Overhaul Kademe 0-3)
+**profil.css 3223 satir → 7 modular CSS dosyasina bolundu. ht- prefix'li component sinifi sistemi kuruldu. Sidebar ve bottom nav yeniden duzenlendi.**
 
 **Kademe 0 (Tokens):** (1) `css/tokens.css` olusturuldu — 3 katmanli token mimarisi (primitive → semantic → component). (2) Dark mode overrides hex ile tanimlandi. (3) Geri-uyum aliasları (--verm, --navy vb.) korundu.
 
 **Kademe 1 (CSS Split):** (4) `profil.css` (3223 sat) → `css/layout.css` (789), `css/components.css` (428), `css/wizard.css` (132), `css/panels/genel-bakis.css` (149), `css/panels/merkezi.css` (1668), `css/panels/sirketler.css` (193). (5) `profil.css` silindi. (6) `profil.html` CSS link'leri guncellendi. (7) `shared.css` 12 spacing duplicate temizlendi. (8) Dark mode + p3 regression testleri guncellendi (split CSS okuma).
 
-**Kademe 2 (Component Classes + Dual-Write):** (9) `css/components.css`'e ht-btn (8 varyant + sm/lg + is-loading), ht-card (4 varyant), ht-chip (is-active state), ht-input (has-error), ht-modal, ht-toast, ht-toggle eklendi. (10) Task 13A: profil.html'de 141 dual-write class eklendi (eski class korunarak yeni ht- class eklendi). (11) Task 13B: JS factory fonksiyonlari (profil-ui.js 7x field→ht-input, chip→ht-chip, exp-card→ht-card; profil-settings.js modal-overlay→ht-modal; profil-wizard.js field-error→has-error; profil-bootstrap.js + profil-draft.js selected→is-active sync). (12) DeepSeek review + Codex gate review 6/6 PASS. **820/820 Playwright test PASS.**
+**Kademe 2 (Component Classes + Dual-Write + Utility):** (9) `css/components.css`'e ht-btn (8 varyant + sm/lg + is-loading), ht-card (4 varyant), ht-chip (is-active state), ht-input (has-error), ht-modal, ht-toast, ht-toggle eklendi. (10) Task 13A: profil.html'de 141 dual-write class eklendi (eski class korunarak yeni ht- class eklendi). (11) Task 13B: JS factory fonksiyonlari (profil-ui.js 7x field→ht-input, chip→ht-chip, exp-card→ht-card; profil-settings.js modal-overlay→ht-modal; profil-wizard.js field-error→has-error; profil-bootstrap.js + profil-draft.js selected→is-active sync). (12) Task 15: Utility class'lar eklendi (d-flex, flex-wrap, gap-*, mb-*, pos-rel, pointer vb.), 17 inline margin-bottom:0 → CSS kurali, 5 gereksiz g-hero-inner inline style kaldirildi, mk-premium-toggle-card cursor fix.
+
+**Kademe 3 (Nav Restructure):** (13) Sidebar 4 gruba ayrildi: Profil, Kesfet, Iletisim, Hesap. (14) Kim Bakti + Yetkinlikler sidebar nav item'lari eklendi. (15) Bottom nav'a 5. item (Studyo) eklendi. (16) sidebar-nav-label first-child spacing duzeltildi.
+
+**Kalan:** Task 14 — eski class alias temizligi (dual-write → tek class migration). Ayri session'da yapilacak.
+
+**820/820 Playwright test PASS.** DeepSeek + Codex gate review'lar gecti. 5 commit: 190b114→3845b40.
 
 ### Session 65 (5-6 Nisan — Asama 65: Gate Illustrasyon Redesign + AI Routing Policy)
 **Gate sayfasi editorial illustrasyon redesign + free-cloud-first AI routing policy olusturuldu.**
