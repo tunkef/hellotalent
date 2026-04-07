@@ -282,6 +282,7 @@ body {
   display: flex; align-items: flex-start; justify-content: space-between; gap: 48px;
 }
 .footer-brand-col { flex-shrink: 0; }
+.footer-nav { flex-shrink: 0; }
 .footer-brand {
   font-family: 'Bricolage Grotesque', sans-serif;
   font-size: 26px; font-weight: 800; color: white; letter-spacing: -0.5px;
