@@ -197,11 +197,11 @@ body{background:var(--bg-page)}
 }
 
 /* ── KIM ICIN ── */
-.who-row{display:flex;gap:12px;flex-wrap:wrap}
+.who-row{display:flex;flex-direction:column;gap:10px}
 .who-chip{
   display:flex;align-items:center;gap:10px;
-  background:var(--bg-section);border-radius:10px;padding:14px 20px;
-  border:1px solid var(--border);flex:1;min-width:200px;
+  background:var(--bg-section);border-radius:10px;padding:12px 16px;
+  border:1px solid var(--border);
   transition:border-color .2s;
 }
 .who-chip:hover{border-color:var(--navy)}
@@ -275,8 +275,7 @@ body{background:var(--bg-page)}
   .hero-vis{min-height:220px}
   .split{grid-template-columns:1fr;gap:28px}
   .steps-row{grid-template-columns:1fr}
-  .who-row{flex-direction:column}
-  .who-chip{min-width:0}
+  .who-vis{min-height:220px}
 }
 @media(max-width:480px){
   .hero-hl{font-size:30px;letter-spacing:-1px}
@@ -385,24 +384,28 @@ body{background:var(--bg-page)}
 <!-- 4. KIM ICIN -->
 <section class="s s-warm">
   <div class="s-inner">
-    <h2 class="split-hl"><span style="color:var(--navy)">hello</span><span style="color:var(--verm)">talent</span> her ölçekte retail işvereni için.</h2>
-    <p class="split-desc" style="margin-bottom:28px">Yetenek avını otomatiğe bağlayan markaların ortak adresi. Tek mağazadan global zincirlere kadar, retail dinamikleri için tasarlandı.</p>
-    <div class="who-row">
-      <div class="who-chip">
-        <div class="who-chip-t">Markalar</div>
-        <span class="who-label">Hızlı Eşleşme</span>
+    <div class="split" style="align-items:center">
+      <div>
+        <h2 class="split-hl"><span style="color:var(--navy)">hello</span><span style="color:var(--verm)">talent</span> her ölçekte retail işvereni için.</h2>
+        <p class="split-desc" style="margin-bottom:20px">Yetenek avını otomatiğe bağlayan markaların ortak adresi. Tek mağazadan global zincirlere kadar, retail dinamikleri için tasarlandı.</p>
+        <div class="who-row">
+          <div class="who-chip">
+            <div class="who-chip-t">Markalar</div>
+            <span class="who-label">Hızlı Eşleşme</span>
+          </div>
+          <div class="who-chip">
+            <div class="who-chip-t">Grup Şirketler</div>
+            <span class="who-label">Takım Sistemi</span>
+          </div>
+          <div class="who-chip">
+            <div class="who-chip-t">Danışmanlıklar</div>
+            <span class="who-label">Filtrelenmiş Havuz</span>
+          </div>
+        </div>
       </div>
-      <div class="who-chip">
-        <div class="who-chip-t">Grup Şirketler</div>
-        <span class="who-label">Takım Sistemi</span>
+      <div class="who-vis">
+        <img src="assets/isveren/cta-scene.webp" alt="Retail ekibi ofiste birlikte çalışırken" width="1536" height="878" loading="lazy">
       </div>
-      <div class="who-chip">
-        <div class="who-chip-t">Danışmanlıklar</div>
-        <span class="who-label">Filtrelenmiş Havuz</span>
-      </div>
-    </div>
-    <div class="who-vis" style="margin-top:32px">
-      <img src="assets/isveren/cta-scene.webp" alt="Retail ekibi ofiste birlikte çalışırken" width="1536" height="878" loading="lazy">
     </div>
   </div>
 </section>
