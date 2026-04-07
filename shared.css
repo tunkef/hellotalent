@@ -64,10 +64,6 @@ body {
   padding: 0 32px; gap: 0;
   transition: height 0.3s ease, background 0.3s ease;
 }
-@media(prefers-color-scheme:dark){
-  .site-header{background:rgba(11,13,23,0.75);border-bottom-color:rgba(255,255,255,0.06)}
-  .header-logo{color:#F0F0EE}
-}
 .header-logo {
   font-family: 'Bricolage Grotesque', sans-serif;
   font-size: var(--text-3xl); font-weight: 800; color: var(--navy);
@@ -75,6 +71,13 @@ body {
   flex-shrink: 0; cursor: pointer;
 }
 .header-logo span { color: var(--verm); }
+@media(prefers-color-scheme:dark){
+  .site-header{background:rgba(11,13,23,0.75);border-bottom-color:rgba(255,255,255,0.06)}
+  .header-logo{color:#F0F0EE}
+  .nav-link{color:rgba(240,240,238,0.5)}
+  .nav-link:hover{color:#F0F0EE;background:rgba(255,255,255,0.06)}
+  .btn-nav-login{border-color:rgba(255,255,255,0.15)}
+}
 
 /* ══ NAV ══ */
 .header-nav {
