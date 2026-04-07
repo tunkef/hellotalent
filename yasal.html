@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="hellotalent.ai yasal bilgiler — Gizlilik Politikası, Kullanım Şartları, KVKK Aydınlatma Metni ve Çerez Politikası.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://hellotalent.ai/yasal.html">
+<title>Yasal Bilgiler — hellotalent.ai</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200;12..96,400;12..96,600;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css?v=20260407y">
+<style>
+.yasal-hero{
+  background:var(--navy);color:#fff;
+  padding:clamp(100px,12vh,140px) 24px clamp(40px,5vh,60px);
+  text-align:center;
+}
+.yasal-hero h1{
+  font-family:'Bricolage Grotesque',sans-serif;
+  font-size:clamp(32px,5vw,48px);font-weight:800;
+  letter-spacing:-1.5px;margin-bottom:8px;
+}
+.yasal-hero p{
+  font-size:15px;color:rgba(255,255,255,0.55);
+  font-family:'Plus Jakarta Sans',sans-serif;
+}
+
+/* ── TABS ── */
+.yasal-tabs{
+  display:flex;gap:8px;justify-content:center;flex-wrap:wrap;
+  max-width:800px;margin:-24px auto 0;position:relative;z-index:2;
+  padding:0 16px;
+}
+.yasal-tab{
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:13px;font-weight:600;
+  padding:12px 20px;border-radius:8px;
+  border:1px solid var(--border);
+  background:var(--bg-section);color:var(--text-secondary);
+  cursor:pointer;transition:all 0.2s;
+}
+.yasal-tab:hover{border-color:var(--navy);color:var(--navy)}
+.yasal-tab.active{
+  background:var(--navy);color:#fff;border-color:var(--navy);
+}
+
+/* ── CONTENT ── */
+.yasal-content{
+  max-width:800px;margin:40px auto;
+  padding:0 24px clamp(48px,8vw,96px);
+}
+.yasal-panel{display:none}
+.yasal-panel.active{display:block}
+
+.yasal-content h2{
+  font-family:'Bricolage Grotesque',sans-serif;
+  font-size:20px;font-weight:700;
+  color:var(--text-primary);margin:32px 0 12px;
+  letter-spacing:-0.5px;
+}
+.yasal-content p{
+  font-size:14px;line-height:1.8;
+  color:var(--text-secondary);margin-bottom:12px;
+}
+.yasal-content ul{
+  padding-left:20px;margin-bottom:16px;
+}
+.yasal-content li{
+  font-size:14px;line-height:1.8;
+  color:var(--text-secondary);margin-bottom:4px;
+}
+.yasal-content a{color:var(--verm);text-decoration:none}
+.yasal-content a:hover{text-decoration:underline}
+.yasal-content .legal-date{
+  font-size:12px;color:var(--text-muted);
+  margin-bottom:24px;font-style:italic;
+}
+.yasal-content strong{color:var(--text-primary)}
+
+/* ── KVKK infobox ── */
+.kvkk-infobox{
+  background:rgba(30,45,94,0.05);border:1px solid rgba(30,45,94,0.1);
+  border-radius:10px;padding:20px;margin-bottom:24px;
+}
+.kvkk-infobox p{margin:0;font-size:13px;line-height:1.7}
+
+/* ── Tables ── */
+.kvkk-table{
+  width:100%;border-collapse:collapse;margin:16px 0 24px;
+  font-size:13px;
+}
+.kvkk-table th{
+  background:var(--navy);color:#fff;
+  padding:10px 14px;text-align:left;font-weight:600;
+}
+.kvkk-table td{
+  padding:10px 14px;border-bottom:1px solid var(--border);
+  color:var(--text-secondary);
+}
+.kvkk-table code{
+  font-family:'DM Mono',monospace;font-size:12px;
+  background:rgba(0,0,0,0.04);padding:2px 6px;border-radius:3px;
+}
+
+/* ── Rights grid ── */
+.rights-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:12px;
+  margin:16px 0 24px;
+}
+.right-item{
+  display:flex;gap:12px;align-items:flex-start;
+  padding:14px;border-radius:8px;border:1px solid var(--border);
+  background:var(--bg-section);
+}
+.right-num{
+  width:28px;height:28px;min-width:28px;border-radius:50%;
+  background:var(--navy);color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:700;
+}
+.right-text{font-size:13px;line-height:1.5;color:var(--text-secondary)}
+.right-text strong{display:block;color:var(--text-primary);margin-bottom:2px}
+
+/* ── Cookie cards ── */
+.cookie-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0 24px}
+.cookie-card{border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.cookie-card-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 16px;background:var(--bg-section);
+}
+.cookie-card-name{font-size:13px;font-weight:700;color:var(--text-primary)}
+.cookie-badge{font-size:10px;font-weight:700;padding:3px 8px;border-radius:4px}
+.badge-req{background:var(--navy);color:#fff}
+.badge-opt{background:rgba(201,78,40,0.1);color:var(--verm)}
+.cookie-card-body{padding:12px 16px}
+.cookie-card-body p{font-size:13px;margin-bottom:6px}
+.cookie-detail{font-size:12px;color:var(--text-muted)}
+
+/* ── Pref toggles ── */
+.pref-section{
+  border:1px solid var(--border);border-radius:10px;
+  padding:20px;margin:16px 0 24px;
+}
+.pref-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 0;border-bottom:1px solid var(--border);
+}
+.pref-row:last-of-type{border-bottom:none}
+.pref-label{flex:1}
+.pref-label strong{font-size:13px;display:block;color:var(--text-primary)}
+.pref-label span{font-size:12px;color:var(--text-muted)}
+.toggle{position:relative;display:inline-block;width:44px;height:24px}
+.toggle input{opacity:0;width:0;height:0}
+.toggle-slider{
+  position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;
+  background:var(--border);transition:.3s;border-radius:24px;
+}
+.toggle-slider:before{
+  content:'';position:absolute;height:18px;width:18px;left:3px;bottom:3px;
+  background:#fff;transition:.3s;border-radius:50%;
+}
+.toggle input:checked+.toggle-slider{background:var(--navy)}
+.toggle input:checked+.toggle-slider:before{transform:translateX(20px)}
+.toggle input:disabled+.toggle-slider{opacity:0.5;cursor:not-allowed}
+.pref-save-btn{
+  display:block;width:100%;margin-top:16px;padding:12px;
+  border:none;border-radius:8px;
+  background:var(--navy);color:#fff;
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:14px;font-weight:700;cursor:pointer;
+  transition:background 0.2s;
+}
+.pref-save-btn:hover{background:#152247}
+
+/* ── Dark mode ── */
+@media(prefers-color-scheme:dark){
+  .kvkk-infobox{background:rgba(255,255,255,0.04);border-color:rgba(255,255,255,0.08)}
+  .kvkk-table th{background:rgba(255,255,255,0.1)}
+  .kvkk-table td{border-color:rgba(255,255,255,0.06)}
+  .kvkk-table code{background:rgba(255,255,255,0.08)}
+  .right-item{background:rgba(255,255,255,0.03);border-color:rgba(255,255,255,0.06)}
+  .cookie-card{border-color:rgba(255,255,255,0.06)}
+  .cookie-card-head{background:rgba(255,255,255,0.03)}
+  .pref-section{border-color:rgba(255,255,255,0.06)}
+  .pref-row{border-color:rgba(255,255,255,0.06)}
+  .yasal-tab{background:rgba(255,255,255,0.04);border-color:rgba(255,255,255,0.08);color:rgba(255,255,255,0.6)}
+  .yasal-tab:hover{border-color:rgba(255,255,255,0.3);color:#fff}
+  .yasal-tab.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+}
+
+/* ── Responsive ── */
+@media(max-width:600px){
+  .yasal-tabs{gap:6px}
+  .yasal-tab{font-size:12px;padding:10px 14px}
+  .rights-grid{grid-template-columns:1fr}
+  .cookie-grid{grid-template-columns:1fr}
+  .kvkk-table{font-size:12px}
+  .kvkk-table th,.kvkk-table td{padding:8px 10px}
+}
+</style>
+</head>
+<body>
+
+<div id="ht-header"></div>
+
+<section class="yasal-hero">
+  <h1>Yasal Bilgiler</h1>
+  <p>hellotalent.ai yasal metinleri ve politikaları</p>
+</section>
+
+<div class="yasal-tabs">
+  <button class="yasal-tab active" data-tab="gizlilik">Gizlilik Politikasi</button>
+  <button class="yasal-tab" data-tab="kullanim">Kullanim Sartlari</button>
+  <button class="yasal-tab" data-tab="kvkk">KVKK Aydinlatma</button>
+  <button class="yasal-tab" data-tab="cerez">Cerez Politikasi</button>
+</div>
+
+<div class="yasal-content">
+
+  <!-- ═══ GİZLİLİK POLİTİKASI ═══ -->
+  <div class="yasal-panel active" id="panel-gizlilik">
+    <p class="legal-date">Son guncelleme: Mart 2025</p>
+
+    <h2>1. Genel Bakis</h2>
+    <p>hellotalent.ai olarak kullanicilarimizin gizliligine buyuk onem veriyoruz. Bu politika, platformumuzu kullandiginizda hangi verileri topladigimizi, bu verileri nasil kullandigimizi ve haklarinizin neler oldugunu aciklamaktadir.</p>
+
+    <h2>2. Topladigimiz Veriler</h2>
+    <p>Platformumuzu kullandiginizda asagidaki bilgileri toplayabiliriz:</p>
+    <ul>
+      <li>Ad, soyad, e-posta adresi gibi iletisim bilgileri</li>
+      <li>Kariyer gecmisi, calisma deneyimi, beceriler</li>
+      <li>Yuklediginiz CV ve profil gorseli</li>
+      <li>Platform kullanim verileri (sayfa goruntumeleri, tiklamalar)</li>
+      <li>Cihaz ve tarayici bilgileri (IP adresi, tarayici turu)</li>
+    </ul>
+
+    <h2>3. Verilerin Kullanim Amaci</h2>
+    <p>Topladigimiz veriler yalnizca su amaclarla kullanilir:</p>
+    <ul>
+      <li>Aday ve isveren eslestirmesi saglamak</li>
+      <li>Hesabinizi olusturmak ve yonetmek</li>
+      <li>Size ozel kariyer onerileri sunmak</li>
+      <li>Hizmet kalitesini iyilestirmek</li>
+      <li>Yasal yukumlulukleri yerine getirmek</li>
+    </ul>
+
+    <h2>4. Ucuncu Taraflarla Paylasim</h2>
+    <p>Kisisel verilerinizi izniniz olmadan ucuncu taraflara satmiyor veya kiralamiyoruz. Verileriniz yalnizca su durumlarda paylasilabilir:</p>
+    <ul>
+      <li>Platform uzerinden eslestirildginiz isverenlerle (acik rizanizla)</li>
+      <li>Hizmet saglayicilarimizla (Supabase, Formspree gibi altyapi ortaklari)</li>
+      <li>Yasal zorunluluk halinde ilgili mercilerle</li>
+    </ul>
+
+    <h2>5. Veri Guvenligi</h2>
+    <p>Verilerinizi korumak icin endustri standardi guvenlik onlemleri uyguluyoruz. Verileriniz sifreli baglantilar (HTTPS) uzerinden iletilir ve guvenli sunucularda saklanir. Bununla birlikte, internet uzerinden hicbir veri iletiminin %100 guvenli olmadigini hatirlatmak isteriz.</p>
+
+    <h2>6. Cerezler (Cookies)</h2>
+    <p>Platformumuz oturum yonetimi ve analitik amacli cerezler kullanir. Tarayici ayarlarinizdan cerezleri devre disi birakabilirsiniz; ancak bu durumda bazi ozellikler calismayabilir. Google Analytics araciyla anonim kullanim verileri toplanmaktadir.</p>
+
+    <h2>7. Haklariniz</h2>
+    <p>KVKK (Kisisel Verilerin Korunmasi Kanunu) kapsaminda asagidaki haklara sahipsiniz:</p>
+    <ul>
+      <li>Verilerinize erisim talep etme</li>
+      <li>Yanlis verilerin duzeltilmesini isteme</li>
+      <li>Verilerinizin silinmesini talep etme ("unutulma hakki")</li>
+      <li>Veri islemeye itiraz etme</li>
+      <li>Veri tasinabilirligi talep etme</li>
+    </ul>
+    <p>Bu haklarinizi kullanmak icin <a href="mailto:info@hellotalent.ai">info@hellotalent.ai</a> adresine e-posta gonderebilirsiniz.</p>
+
+    <h2>8. Veri Saklama Suresi</h2>
+    <p>Verileriniz, hesabinizin aktif oldugu sure boyunca ve hesabinizi silmenizden itibaren 1 yil sureyle saklanir. Yasal zorunluluklar kapsamindaki veriler mevzuatin ongordu sureler boyunca tutulabilir.</p>
+
+    <h2>9. Cocuklarin Gizliligi</h2>
+    <p>Platformumuz 18 yas altindaki kisilere yonelik degildir ve bu kisilerden bilerek veri toplamiyoruz.</p>
+
+    <h2>10. Politika Degisiklikleri</h2>
+    <p>Bu politikayi zaman zaman guncelleyebiliriz. Onemli degisikliklerde kayitli e-posta adresinize bildirim gondeririz. Guncel politikaya her zaman bu sayfadan ulasabilirsiniz.</p>
+
+    <h2>11. Iletisim</h2>
+    <p>Gizlilik politikamiz hakkinda sorulariniz icin:<br>
+    <a href="mailto:info@hellotalent.ai">info@hellotalent.ai</a><br>
+    Fahrettin Kerim Gokay Cad. No:40, Kadikoy, Istanbul</p>
+  </div>
+
+  <!-- ═══ KULLANIM ŞARTLARI ═══ -->
+  <div class="yasal-panel" id="panel-kullanim">
+    <p class="legal-date">Son guncelleme: Mart 2025</p>
+
+    <h2>1. Kabul</h2>
+    <p>hellotalent.ai platformunu kullanarak bu kullanim sartlarini kabul etmis sayilirsiniz. Sartlari kabul etmiyorsaniz platformu kullanmayi birakiniz.</p>
+
+    <h2>2. Platform Nedir?</h2>
+    <p>hellotalent.ai, Turkiye'deki retail (perakende) sektoru calisanlarini ve isverenlerini bir araya getiren bir yetenek (talent) platformudur. Platform uzerinden aday profilleri olusturulabilir, isverenler aday havuzuna erisebilir.</p>
+
+    <h2>3. Hesap Olusturma</h2>
+    <ul>
+      <li>Kayit icin 18 yasini doldurmus olmaniz gerekmektedir.</li>
+      <li>Verdiginiz bilgilerin dogru ve guncel oldugunu taahhut edersiniz.</li>
+      <li>Hesap guvenliginden siz sorumlusunuz.</li>
+      <li>Bir kisi yalnizca bir hesap olusturabilir.</li>
+    </ul>
+
+    <h2>4. Kullanici Yukumlulukleri</h2>
+    <p>Platform kullanicilari sunlari yapmayi kabul eder:</p>
+    <ul>
+      <li>Gercek ve dogru bilgi paylasmak</li>
+      <li>Baskalarin haklarina saygi gostermek</li>
+      <li>Platformu yalnizca mesru amaclarla kullanmak</li>
+      <li>Spam, yaniltici icerik veya kotu amacli yazilim yaymamak</li>
+      <li>Sistemlere yetkisiz erisim girisiminde bulunmamak</li>
+    </ul>
+
+    <h2>5. Icerik ve Fikri Mulkiyet</h2>
+    <p>Platforma yuklediginiz iceriklerin (CV, profil bilgisi vb.) size ait oldugunu ve ucuncu taraflarin haklarini ihlal etmedigini beyan edersiniz. hellotalent.ai markasi, logosu ve icerikleri telif hakkiyla korunmaktadir; izinsiz kullanilamaz.</p>
+
+    <h2>6. Gizlilik</h2>
+    <p>Kisisel verilerinizin nasil islendigi hakkinda Gizlilik Politikamizi incelemenizi oneririz.</p>
+
+    <h2>7. Sorumluluk Sinirlamasi</h2>
+    <p>hellotalent.ai, platform uzerinden gerceklesen is gorusmeleri, ise alim kararlari veya is iliskilerinin sonuclarindan dogan zararlardan sorumlu degildir. Platform yalnizca aday ve isveren arasindaki iletisimi kolaylastirir.</p>
+
+    <h2>8. Hesap Iptali</h2>
+    <p>Istediginiz zaman hesabinizi silme hakkina sahipsiniz. Sartlari ihlal ettiginiz tespit edilirse hesabiniz onceden bildirim yapilmaksizin askiya alinabilir veya iptal edilebilir.</p>
+
+    <h2>9. Degisiklikler</h2>
+    <p>Kullanim sartlarini herhangi bir zamanda guncelleme hakkimiz saklidir. Onemli degisiklikler e-posta yoluyla bildirilir.</p>
+
+    <h2>10. Uygulanacak Hukuk</h2>
+    <p>Bu sartlar Turk Hukuku'na tabidir. Uyusmazliklarda Istanbul Mahkemeleri ve Icra Daireleri yetkilidir.</p>
+
+    <h2>11. Iletisim</h2>
+    <p>Kullanim sartlari hakkinda sorulariniz icin:<br>
+    <a href="mailto:info@hellotalent.ai">info@hellotalent.ai</a></p>
+  </div>
+
+  <!-- ═══ KVKK AYDINLATMA ═══ -->
+  <div class="yasal-panel" id="panel-kvkk">
+    <p class="legal-date">Yururluk tarihi: Mart 2025 &middot; Surum: 1.0</p>
+
+    <div class="kvkk-infobox">
+      <p><strong>Veri Sorumlusu:</strong> hellotalent.ai (Peoplein Insan Kaynaklari Danismanlik Ltd. Sti.)<br>
+      Fahrettin Kerim Gokay Cad. No:40, Zuhtupasa Mah., Kadikoy, Istanbul 34724<br>
+      <strong>Iletisim:</strong> <a href="mailto:info@hellotalent.ai">info@hellotalent.ai</a></p>
+    </div>
+
+    <h2>1. Aydinlatma Metninin Amaci</h2>
+    <p>Bu metin, 6698 sayili Kisisel Verilerin Korunmasi Kanunu'nun ("KVKK") 10. maddesi ve ilgili mevzuat uyarinca, hellotalent.ai platformunu kullanan kisilerin kisisel verilerinin hangi amaclarla, hangi hukuki dayanaklara dayanilarak islendigini ve veri sahiplerinin haklarini aciklamak amaciyla hazirlanmistir.</p>
+
+    <h2>2. Islenen Kisisel Veriler</h2>
+    <table class="kvkk-table">
+      <thead>
+        <tr><th>Veri Kategorisi</th><th>Ornek Veriler</th><th>Ilgili Kisi</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>Kimlik Verileri</strong></td><td>Ad, soyad</td><td>Aday, Isveren</td></tr>
+        <tr><td><strong>Iletisim Verileri</strong></td><td>E-posta adresi, telefon numarasi</td><td>Aday, Isveren</td></tr>
+        <tr><td><strong>Mesleki Deneyim Verileri</strong></td><td>Calisma gecmisi, pozisyon, sektor deneyimi, beceriler</td><td>Aday</td></tr>
+        <tr><td><strong>Ozgecmis (CV) Icerigi</strong></td><td>Yuklenen CV dosyasi ve icerigi</td><td>Aday</td></tr>
+        <tr><td><strong>Sirket/Kurum Verileri</strong></td><td>Sirket adi, sektor, calisan sayisi</td><td>Isveren</td></tr>
+        <tr><td><strong>Islem Guvenligi Verileri</strong></td><td>IP adresi, oturum bilgileri, log kayitlari</td><td>Aday, Isveren</td></tr>
+        <tr><td><strong>Pazarlama & Analitik Verileri</strong></td><td>Sayfa goruntumeleri, tiklama davranislari (anonim)</td><td>Tum kullanicilar</td></tr>
+      </tbody>
+    </table>
+
+    <h2>3. Kisisel Verilerin Islenme Amaclari</h2>
+    <ul>
+      <li>Platform uyeligi olusturulmasi ve hesap yonetimi</li>
+      <li>Aday profili ile isveren taleplerinin eslestirilmesi</li>
+      <li>Isveren ve aday arasindaki iletisimin kolaylastirilmasi</li>
+      <li>Kullanici deneyiminin kisisellestirilmesi ve iyilestirilmesi</li>
+      <li>Platform guvenligi ve dolandiricilik onleme</li>
+      <li>Yasal yukumluluklerin yerine getirilmesi</li>
+      <li>Istatistik ve analiz calismalari (anonimlesitirilmis)</li>
+      <li>Ticari elektronik ileti gonderimi (acik riza ile)</li>
+    </ul>
+
+    <h2>4. Hukuki Dayanaklar</h2>
+    <p>Kisisel verileriniz KVKK md. 5 ve md. 6 kapsaminda asagidaki hukuki dayanaklara gore islenmektedir:</p>
+    <ul>
+      <li><strong>Sozlesmenin kurulmasi veya ifasi (md. 5/2-c):</strong> Uyelik ve eslestirme hizmetleri icin</li>
+      <li><strong>Veri sorumlusunun mesru menfaati (md. 5/2-f):</strong> Guvenlik, analiz ve platform gelistirme icin</li>
+      <li><strong>Acik riza (md. 5/1):</strong> Pazarlama iletisimi ve istege bagli veri paylasimi icin</li>
+      <li><strong>Kanuni yukumluluk (md. 5/2-c):</strong> Vergi, denetim ve diger yasal zorunluluklar icin</li>
+    </ul>
+
+    <h2>5. Kisisel Verilerin Aktarilmasi</h2>
+    <ul>
+      <li><strong>Isverenler:</strong> Aday-isveren eslestirmesi kapsaminda, acik rizanizla</li>
+      <li><strong>Altyapi hizmet saglayicilari:</strong> Supabase, Formspree, Netlify/GitHub — hizmet kapamiyla sinirli</li>
+      <li><strong>Google Analytics:</strong> Anonim kullanim istatistikleri icin</li>
+      <li><strong>Yetkili kamu kurum ve kuruluslari:</strong> Yasal zorunluluk halinde</li>
+    </ul>
+
+    <h2>6. Kisisel Verilerin Saklanma Suresi</h2>
+    <table class="kvkk-table">
+      <thead>
+        <tr><th>Veri Turu</th><th>Saklama Suresi</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Uyelik ve profil verileri</td><td>Hesap aktif oldugu surece + 1 yil</td></tr>
+        <tr><td>Iletisim formu kayitlari</td><td>3 yil</td></tr>
+        <tr><td>Islem ve log kayitlari</td><td>2 yil</td></tr>
+        <tr><td>Ticari elektronik ileti kayitlari</td><td>3 yil (yasal zorunluluk)</td></tr>
+        <tr><td>Analitik veriler</td><td>14 ay (Google Analytics varsayilani)</td></tr>
+      </tbody>
+    </table>
+
+    <h2>7. Veri Sahibi Olarak Haklariniz (KVKK md. 11)</h2>
+    <div class="rights-grid">
+      <div class="right-item"><div class="right-num">1</div><div class="right-text"><strong>Bilgi Edinme</strong>Kisisel verilerinizin islenip islenmedigini ogrenme</div></div>
+      <div class="right-item"><div class="right-num">2</div><div class="right-text"><strong>Erisim</strong>Islenen verileriniz hakkinda bilgi talep etme</div></div>
+      <div class="right-item"><div class="right-num">3</div><div class="right-text"><strong>Duzeltme</strong>Eksik veya yanlis verilerin duzeltilmesini isteme</div></div>
+      <div class="right-item"><div class="right-num">4</div><div class="right-text"><strong>Silme / Unutulma</strong>Yasal sartlar cercevesinde verilerinizin silinmesini talep etme</div></div>
+      <div class="right-item"><div class="right-num">5</div><div class="right-text"><strong>Islemeye Itiraz</strong>Otomatik sistemler dahil veri islemeye itiraz etme</div></div>
+      <div class="right-item"><div class="right-num">6</div><div class="right-text"><strong>Zararin Giderilmesi</strong>Kanuna aykiri isleme nedeniyle olusan zararin tazminini talep etme</div></div>
+      <div class="right-item"><div class="right-num">7</div><div class="right-text"><strong>Aktarimin Kisitlanmasi</strong>Ucuncu kisilere aktarima iliskin bildirim isteme</div></div>
+      <div class="right-item"><div class="right-num">8</div><div class="right-text"><strong>Rizayi Geri Cekme</strong>Rizaya dayali islemlerde rizanizi her zaman geri alma</div></div>
+    </div>
+
+    <h2>8. Basvuru Yontemi</h2>
+    <p>KVKK md. 11 kapsamindaki haklarinizi kullanmak icin <a href="mailto:info@hellotalent.ai">info@hellotalent.ai</a> adresine e-posta ile veya asagidaki adrese yazili olarak basvurabilirsiniz:</p>
+    <p><strong>hellotalent.ai — Peoplein Insan Kaynaklari Danismanlik Ltd. Sti.</strong><br>
+    Fahrettin Kerim Gokay Cad. No:40, Zuhtupasa Mah., Kadikoy, Istanbul 34724</p>
+    <p>Basvurulariniz en gec <strong>30 gun</strong> icinde yanitlanacaktir.</p>
+    <p>KVK Kurulu'na sikayet hakkiniz her zaman saklidir: <a href="https://www.kvkk.gov.tr" target="_blank" rel="noopener">www.kvkk.gov.tr</a></p>
+  </div>
+
+  <!-- ═══ ÇEREZ POLİTİKASI ═══ -->
+  <div class="yasal-panel" id="panel-cerez">
+    <p class="legal-date">Son guncelleme: Mart 2025 &middot; Surum: 1.0</p>
+
+    <h2>1. Cerez Nedir?</h2>
+    <p>Cerezler (cookie), bir web sitesini ziyaret ettiginizde tarayiciniz tarafindan cihaziniza kaydedilen kucuk metin dosyalaridir. Cerezler, site tercihlerinizi hatirlamak, oturumunuzu yonetmek ve kullanim aliskanliklarini analiz etmek gibi amaclarla kullanilir.</p>
+    <p>hellotalent.ai, Turkiye'deki 6698 sayili KVKK ve Elektronik Ticaretin Duzenlenmesi Hakkinda Kanun cercevesinde cerez kullanimini yonetmektedir.</p>
+
+    <h2>2. Kullandigimiz Cerez Turleri</h2>
+    <div class="cookie-grid">
+      <div class="cookie-card">
+        <div class="cookie-card-head">
+          <span class="cookie-card-name">Zorunlu Cerezler</span>
+          <span class="cookie-badge badge-req">Her zaman aktif</span>
+        </div>
+        <div class="cookie-card-body">
+          <p>Platformun temel islevleri icin zorunludur. Oturum yonetimi, guvenlik dogrulamasi ve sayfa gezintisi bu cerezler olmadan calismaz.</p>
+          <p class="cookie-detail">Ornekler: sb-auth-token, XSRF-TOKEN</p>
+          <p class="cookie-detail">Saklama suresi: Oturum suresi veya max 1 yil</p>
+        </div>
+      </div>
+      <div class="cookie-card">
+        <div class="cookie-card-head">
+          <span class="cookie-card-name">Analitik Cerezler</span>
+          <span class="cookie-badge badge-opt">Opsiyonel</span>
+        </div>
+        <div class="cookie-card-body">
+          <p>Platformun nasil kullanildigini anlamamiza yardimci olur. Anonim veriler toplanir.</p>
+          <p class="cookie-detail">Saglayici: Google Analytics 4 (GA4)</p>
+          <p class="cookie-detail">Cerezler: _ga, _ga_XXXXXXX, _gid</p>
+          <p class="cookie-detail">Saklama suresi: 2 yila kadar</p>
+        </div>
+      </div>
+      <div class="cookie-card">
+        <div class="cookie-card-head">
+          <span class="cookie-card-name">Islevsellik Cerezleri</span>
+          <span class="cookie-badge badge-opt">Opsiyonel</span>
+        </div>
+        <div class="cookie-card-body">
+          <p>Tercihlerinizi (dil, sekme durumu, form alanlari vb.) hatirlamak icin kullanilir.</p>
+          <p class="cookie-detail">Ornekler: ht_tab_pref, ht_form_state</p>
+          <p class="cookie-detail">Saklama suresi: 30 gune kadar</p>
+        </div>
+      </div>
+      <div class="cookie-card">
+        <div class="cookie-card-head">
+          <span class="cookie-card-name">Pazarlama Cerezleri</span>
+          <span class="cookie-badge badge-opt">Opsiyonel</span>
+        </div>
+        <div class="cookie-card-body">
+          <p>Su an aktif olarak kullanilmamaktadir. Ileride entegre edilirse bu bolum guncellenecektir.</p>
+          <p class="cookie-detail">Mevcut durum: Devre disi</p>
+        </div>
+      </div>
+    </div>
+
+    <h2>3. Detayli Cerez Listesi</h2>
+    <table class="kvkk-table">
+      <thead>
+        <tr><th>Cerez Adi</th><th>Saglayici</th><th>Amac</th><th>Sure</th><th>Tur</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>sb-*-auth-token</code></td><td>Supabase</td><td>Kullanici oturum yonetimi</td><td>1 yil</td><td>Zorunlu</td></tr>
+        <tr><td><code>_ga</code></td><td>Google Analytics</td><td>Kullanici oturumu tanimlama</td><td>2 yil</td><td>Analitik</td></tr>
+        <tr><td><code>_ga_XXXXXXX</code></td><td>Google Analytics</td><td>GA4 oturum durumu</td><td>2 yil</td><td>Analitik</td></tr>
+        <tr><td><code>_gid</code></td><td>Google Analytics</td><td>24 saatlik kullanici tanimlama</td><td>24 saat</td><td>Analitik</td></tr>
+        <tr><td><code>ht_cookie_consent</code></td><td>hellotalent.ai</td><td>Cerez tercih kaydi</td><td>1 yil</td><td>Zorunlu</td></tr>
+      </tbody>
+    </table>
+
+    <h2>4. Cerez Tercihlerinizi Yonetin</h2>
+    <p>Zorunlu cerezler disindaki tum cerezleri asagidan yonetebilirsiniz:</p>
+    <div class="pref-section">
+      <div class="pref-row">
+        <div class="pref-label">
+          <strong>Zorunlu Cerezler</strong>
+          <span>Platformun calismasi icin gereklidir, devre disi birakilamaz.</span>
+        </div>
+        <label class="toggle"><input type="checkbox" checked disabled><span class="toggle-slider"></span></label>
+      </div>
+      <div class="pref-row">
+        <div class="pref-label">
+          <strong>Analitik Cerezler</strong>
+          <span>Google Analytics ile anonim kullanim istatistikleri.</span>
+        </div>
+        <label class="toggle"><input type="checkbox" id="toggle-analytics" checked><span class="toggle-slider"></span></label>
+      </div>
+      <div class="pref-row">
+        <div class="pref-label">
+          <strong>Islevsellik Cerezleri</strong>
+          <span>Tercihlerinizi ve form durumunuzu hatirlar.</span>
+        </div>
+        <label class="toggle"><input type="checkbox" id="toggle-functional" checked><span class="toggle-slider"></span></label>
+      </div>
+      <button class="pref-save-btn" id="btn-save-prefs">Tercihleri Kaydet</button>
+    </div>
+
+    <h2>5. Tarayici Uzerinden Cerez Yonetimi</h2>
+    <p>Tarayici ayarlarinizdan tum cerezleri engelleyebilir veya silebilirsiniz:</p>
+    <ul>
+      <li><a href="https://support.google.com/chrome/answer/95647" target="_blank" rel="noopener">Google Chrome</a></li>
+      <li><a href="https://support.mozilla.org/tr/kb/cerezler" target="_blank" rel="noopener">Mozilla Firefox</a></li>
+      <li><a href="https://support.apple.com/tr-tr/guide/safari/sfri11471/mac" target="_blank" rel="noopener">Safari</a></li>
+      <li><a href="https://support.microsoft.com/tr-tr/windows/microsoft-edge-de-cerezleri-yonetme" target="_blank" rel="noopener">Microsoft Edge</a></li>
+    </ul>
+
+    <h2>6. Politika Guncellemeleri</h2>
+    <p>Bu politikayi teknoloji veya mevzuat degisikliklerine bagli olarak guncelleyebiliriz. Guncel versiyona her zaman bu sayfadan ulasabilirsiniz.</p>
+
+    <h2>7. Iletisim</h2>
+    <p>Cerez politikamiz hakkinda sorulariniz icin:<br>
+    <a href="mailto:info@hellotalent.ai">info@hellotalent.ai</a></p>
+  </div>
+
+</div>
+
+<div id="ht-footer"></div>
+
+<script src="shared.js?v=20260407y"></script>
+<script>
+(function(){
+  var tabs = document.querySelectorAll('.yasal-tab');
+  var panels = document.querySelectorAll('.yasal-panel');
+
+  tabs.forEach(function(tab){
+    tab.addEventListener('click', function(){
+      tabs.forEach(function(t){ t.classList.remove('active'); });
+      panels.forEach(function(p){ p.classList.remove('active'); });
+      tab.classList.add('active');
+      var panel = document.getElementById('panel-' + tab.getAttribute('data-tab'));
+      if(panel) panel.classList.add('active');
+      window.scrollTo({top: 0, behavior: 'smooth'});
+    });
+  });
+
+  /* URL hash support */
+  var hash = window.location.hash.replace('#','');
+  if(hash){
+    var target = document.querySelector('[data-tab="'+hash+'"]');
+    if(target) target.click();
+  }
+
+  /* Cookie pref save */
+  var saveBtn = document.getElementById('btn-save-prefs');
+  if(saveBtn){
+    saveBtn.addEventListener('click', function(){
+      var prefs = {
+        analytics: document.getElementById('toggle-analytics').checked,
+        functional: document.getElementById('toggle-functional').checked
+      };
+      try{ sessionStorage.setItem('ht_cookie_prefs', JSON.stringify(prefs)); }catch(e){}
+      saveBtn.textContent = 'Kaydedildi!';
+      saveBtn.style.background = '#2d7d46';
+      setTimeout(function(){ saveBtn.textContent = 'Tercihleri Kaydet'; saveBtn.style.background = ''; }, 2000);
+    });
+  }
+})();
+</script>
+</body>
+</html>
