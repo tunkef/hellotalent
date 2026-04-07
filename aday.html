@@ -237,8 +237,8 @@ body{background:var(--bg-page)}
 }
 .step-body{flex:1}
 .step-n{
-  font-family:var(--font-m);font-size:10px;font-weight:400;
-  color:var(--border);display:block;margin-bottom:8px;
+  font-family:var(--font-m);font-size:10px;font-weight:600;
+  color:var(--verm);display:block;margin-bottom:8px;
 }
 .step-card:hover .step-n{color:var(--verm)}
 .step-t{
@@ -338,6 +338,10 @@ body{background:var(--bg-page)}
 }
 @media(max-width:480px){
   .bento{grid-template-columns:1fr 1fr}
+  .bento-icon{width:26px;height:26px;min-width:26px;border-radius:6px}
+  .bento-icon svg{width:14px;height:14px}
+  .bento-title{font-size:11px}
+  .bento-card{padding:10px 12px;gap:8px}
   .hero-hl{font-size:30px;letter-spacing:-1px}
   .hero-btns{flex-direction:column}
   .btn-g,.btn-p{width:100%;justify-content:center}
