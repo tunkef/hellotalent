@@ -868,7 +868,7 @@ body {
   .hamburger:hover{background:rgba(255,255,255,0.06)}
   .hamburger.open{background:rgba(255,255,255,0.08)}
   .btn-nav-login{border-color:rgba(255,255,255,0.15);color:#F0F0EE}
-  .mobile-menu{background:rgba(11,13,23,0.95);border-bottom-color:rgba(255,255,255,0.06);box-shadow:0 8px 24px rgba(0,0,0,0.3)}
+  .mobile-menu{background:#0B0D17;border-bottom-color:rgba(255,255,255,0.06);box-shadow:0 8px 24px rgba(0,0,0,0.5)}
   .mobile-nav-link{color:#F0F0EE}
   .mobile-nav-link:hover{background:rgba(255,255,255,0.06)}
   .mobile-nav-link.active{color:var(--verm);background:rgba(201,78,40,0.1)}
