@@ -125,10 +125,21 @@ body{background:var(--bg-page)}
 }
 .btn-p:hover{background:var(--verm-dark);transform:translateY(-2px);box-shadow:0 6px 20px rgba(201,78,40,0.2)}
 
-.trust{display:flex;gap:20px;flex-wrap:wrap}
+.trust{display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin-top:28px;padding-top:20px;border-top:1px solid var(--border)}
+.trust-label{
+  font-family:var(--font-d);font-size:11px;font-weight:600;
+  color:var(--verm);letter-spacing:0.5px;text-transform:uppercase;
+  margin-right:4px;
+}
 .trust span{
-  font-family:var(--font-b);font-size:13px;
+  font-family:var(--font-b);font-size:12px;
   color:var(--text-muted);font-weight:500;
+  display:inline-flex;align-items:center;gap:6px;
+}
+.trust span::before{
+  content:'';display:inline-block;
+  width:5px;height:5px;border-radius:50%;
+  background:var(--verm);opacity:0.5;
 }
 
 /* Hero visual — placeholder for incoming illustration */
@@ -346,7 +357,8 @@ body{background:var(--bg-page)}
   .hero-hl{font-size:30px;letter-spacing:-1px}
   .hero-btns{flex-direction:column}
   .btn-g,.btn-p{width:100%;justify-content:center}
-  .trust{flex-direction:row;gap:8px;flex-wrap:wrap;justify-content:center}
+  .trust{flex-direction:row;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:20px;padding-top:16px}
+  .trust-label{display:none}
   .tag{font-size:12px;padding:8px 14px}
 }
 </style>
@@ -369,6 +381,7 @@ body{background:var(--bg-page)}
         <a href="/giris.html" class="btn-p">E-posta ile Kayıt Ol</a>
       </div>
       <div class="trust">
+        <span class="trust-label">hellotalent</span>
         <span>Akıllı Profil</span>
         <span>Görünmez Mod</span>
         <span>Sınırsız Kullanım</span>
