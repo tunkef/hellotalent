@@ -199,6 +199,7 @@ body{background:var(--bg-page)}
 /* ── KIM ICIN ── */
 .who-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:28px}
 .who-card{
+  position:relative;
   background:var(--bg-section);border-radius:12px;padding:20px;
   border:1px solid var(--border);
   transition:transform .3s cubic-bezier(0.16,1,0.3,1), box-shadow .3s ease, border-color .3s ease;
@@ -208,7 +209,7 @@ body{background:var(--bg-page)}
 .who-card-t{font-family:var(--font-d);font-size:15px;font-weight:700;color:var(--text-primary);margin-bottom:6px}
 .who-card-d{font-size:13px;color:var(--text-muted);line-height:1.5}
 .who-label{
-  display:inline-block;margin-bottom:8px;
+  position:absolute;top:14px;right:14px;
   font-family:var(--font-b);font-size:10px;font-weight:700;
   color:var(--navy);padding:3px 8px;border-radius:4px;
   background:rgba(30,45,94,0.06);letter-spacing:0.3px;
