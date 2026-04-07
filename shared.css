@@ -340,11 +340,14 @@ body {
     font-size: 18px; flex: none; text-align: center;
   }
   .btn-nav-login { padding: 6px 14px; font-size: 11px; border-radius: 6px; }
-  .site-footer { padding: 40px 24px 28px; }
-  .footer-top { flex-direction: column; align-items: center; text-align: center; }
-  .footer-social { justify-content: center; }
-  .footer-brand { font-size: 28px; }
-  .footer-nav { gap: 20px; }
+  .site-footer { padding: 32px 24px 24px; }
+  .footer-top { flex-direction: column; align-items: center; text-align: center; gap: 20px; }
+  .footer-brand-col { text-align: center; }
+  .footer-nav { flex-direction: row; flex-wrap: wrap; justify-content: center; gap: 6px 16px; }
+  .footer-social { margin-left: 0; justify-content: center; }
+  .footer-brand { font-size: 24px; }
+  .footer-bottom { flex-direction: column; align-items: center; text-align: center; gap: 12px; }
+  .footer-dei { text-align: center; }
   /* Hero grids → single col */
   .hero-inner { grid-template-columns: 1fr !important; gap: 32px !important; }
   .hero-title { font-size: 36px !important; }
@@ -380,12 +383,9 @@ body {
   .mobile-menu { top: 56px; max-height: calc(100vh - 56px); }
   /* Login modal: zaten overlay, responsive gerekmez */
   /* Footer single col — mobile UX */
-  .site-footer { padding: 32px 20px 24px; }
-  .footer-top { flex-direction: column; align-items: center; text-align: center; gap: 16px; }
-  .footer-social { justify-content: center; }
-  .footer-brand { font-size: 24px; }
-  .footer-nav { gap: 16px; margin-top: 24px; }
-  .footer-nav .footer-link { font-size: var(--text-base); }
+  .site-footer { padding: 28px 16px 20px; }
+  .footer-brand { font-size: 22px; }
+  .footer-nav .footer-link { font-size: var(--text-sm); }
   /* Touch targets */
   .mobile-nav-link { padding: 14px 16px; min-height: 44px; font-size: 15px; }
   .mobile-cta-btn { min-height: 48px; font-size: var(--text-lg); padding: 14px; }
@@ -439,12 +439,11 @@ body {
   .header-logo { font-size: 17px; }
   .btn-nav-login { padding: 5px 10px; font-size: var(--text-sm); gap: 4px; }
   .btn-nav-login svg { width: 10px; height: 10px; }
-  .site-footer { padding: 28px 16px 20px; }
-  .footer-brand { font-size: 22px; }
-  .footer-tagline { font-size: var(--text-base); }
+  .site-footer { padding: 24px 16px 16px; }
+  .footer-brand { font-size: 20px; }
+  .footer-tagline { font-size: var(--text-sm); }
   .footer-copyright { font-size: var(--text-sm); }
-  .footer-nav { gap: 12px; }
-  .footer-nav .footer-link { font-size: var(--text-sm); }
+  .footer-dei { font-size: 11px; }
   /* Hero tighter */
   .hero-title { font-size: 28px !important; letter-spacing: -1px !important; }
   /* Sections tighter */
