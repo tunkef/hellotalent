@@ -345,7 +345,7 @@ body {
     font-size: var(--text-2xl); flex: none; text-align: center;
   }
   .btn-nav-login { padding: 6px 12px; font-size: var(--text-base); }
-  .footer-inner { grid-template-columns: 1fr 1fr; gap: 28px; }
+  .footer-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
   .site-footer { padding: 40px 24px 28px; }
   .footer-brand { font-size: var(--text-3xl); }
   .footer-bottom { gap: 12px; }
@@ -385,7 +385,7 @@ body {
   /* Login modal: zaten overlay, responsive gerekmez */
   /* Footer single col — mobile UX */
   .site-footer { padding: 40px 24px 28px; }
-  .footer-inner { grid-template-columns: 1fr; gap: 28px; text-align: center; }
+  .footer-inner { display: grid; grid-template-columns: 1fr; gap: 28px; text-align: center; }
   .footer-inner > div:first-child { margin-bottom: 8px; }
   .footer-brand { font-size: 22px; }
   .footer-tagline { margin-top: 8px; }
