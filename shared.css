@@ -71,22 +71,7 @@ body {
   flex-shrink: 0; cursor: pointer;
 }
 .header-logo span { color: var(--verm); }
-@media(prefers-color-scheme:dark){
-  .site-header{background:rgba(11,13,23,0.8);border-bottom-color:rgba(255,255,255,0.06)}
-  .header-logo{color:#F0F0EE}
-  .nav-link{color:rgba(240,240,238,0.5)}
-  .nav-link:hover{color:#F0F0EE;background:rgba(255,255,255,0.06)}
-  .hamburger span{background:#F0F0EE}
-  .hamburger:hover{background:rgba(255,255,255,0.06)}
-  .hamburger.open{background:rgba(255,255,255,0.08)}
-  .btn-nav-login{border-color:rgba(255,255,255,0.15);color:#F0F0EE}
-  .mobile-menu{background:rgba(11,13,23,0.95);border-bottom-color:rgba(255,255,255,0.06);box-shadow:0 8px 24px rgba(0,0,0,0.3)}
-  .mobile-nav-link{color:#F0F0EE}
-  .mobile-nav-link:hover{background:rgba(255,255,255,0.06)}
-  .mobile-nav-link.active{color:var(--verm);background:rgba(201,78,40,0.1)}
-  .mobile-nav-divider{background:rgba(255,255,255,0.08)}
-  .mobile-nav-sub{color:rgba(240,240,238,0.5)}
-}
+/* dark mode header rules moved to end of file for cascade priority */
 
 /* ══ NAV ══ */
 .header-nav {
@@ -885,4 +870,23 @@ body {
   text-decoration: none;
 }
 .auth-success-btn:hover { background: #b84420; }
+
+/* ══ DARK MODE — HEADER & MOBILE MENU ══
+   Placed at end of file for cascade priority over component definitions */
+@media(prefers-color-scheme:dark){
+  .site-header{background:rgba(11,13,23,0.8);border-bottom-color:rgba(255,255,255,0.06)}
+  .header-logo{color:#F0F0EE}
+  .nav-link{color:rgba(240,240,238,0.5)}
+  .nav-link:hover{color:#F0F0EE;background:rgba(255,255,255,0.06)}
+  .hamburger span{background:#F0F0EE}
+  .hamburger:hover{background:rgba(255,255,255,0.06)}
+  .hamburger.open{background:rgba(255,255,255,0.08)}
+  .btn-nav-login{border-color:rgba(255,255,255,0.15);color:#F0F0EE}
+  .mobile-menu{background:rgba(11,13,23,0.95);border-bottom-color:rgba(255,255,255,0.06);box-shadow:0 8px 24px rgba(0,0,0,0.3)}
+  .mobile-nav-link{color:#F0F0EE}
+  .mobile-nav-link:hover{background:rgba(255,255,255,0.06)}
+  .mobile-nav-link.active{color:var(--verm);background:rgba(201,78,40,0.1)}
+  .mobile-nav-divider{background:rgba(255,255,255,0.08)}
+  .mobile-nav-sub{color:rgba(240,240,238,0.5)}
+}
 
