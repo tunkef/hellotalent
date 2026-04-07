@@ -2,8 +2,6 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<script>(function(){var k='ht_theme_preference',s;try{s=localStorage.getItem(k)}catch(e){}var d=(s==='dark'||(s!=='light'&&window.matchMedia&&window.matchMedia('(prefers-color-scheme:dark)').matches));document.documentElement.setAttribute('data-theme',d?'dark':'light');})()</script>
-<!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-54BCV5QYCZ"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -12,621 +10,360 @@
   gtag('config', 'G-54BCV5QYCZ');
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="hellotalent — Retail sektöründe doğru yeteneği bulmanın kısa yolu. Yetkinlik bazlı eşleştirme, filtrelenmiş aday havuzu, 48 saat ortalama yanıt süresi.">
-<meta name="keywords" content="retail işe alım, mağaza müdürü bulma, retail aday havuzu, işveren platformu, hellotalent işveren">
-<title>İşverenler İçin — hellotalent.ai | Retail Yetenek Platformu</title>
+<meta name="description" content="hellotalent — Retail sektorunde dogru yetenegi bulmanin kisa yolu. Yetkinlik bazli eslestirme, filtrelenmis aday havuzu.">
+<meta name="keywords" content="retail ise alim, magaza muduru bulma, retail aday havuzu, isveren platformu, hellotalent isveren">
+<title>Isverenler Icin — hellotalent.ai | Retail Yetenek Platformu</title>
 <link rel="canonical" href="https://hellotalent.ai/isveren.html">
-
-<!-- Open Graph -->
-<meta property="og:title" content="Artık ilan yönetmiyorsun, adaylar hazır — hellotalent">
-<meta property="og:description" content="Retail sektöründe doğru yeteneği bulmanın kısa yolu. Yetkinlik bazlı eşleştirme, filtrelenmiş aday havuzu.">
+<meta property="og:title" content="Artik ilan yonetmiyorsun, adaylar hazir — hellotalent">
+<meta property="og:description" content="Retail sektorunde dogru yetenegi bulmanin kisa yolu.">
 <meta property="og:url" content="https://hellotalent.ai/isveren.html">
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://hellotalent.ai/og-isveren.png">
-
-<!-- Twitter -->
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Artık ilan yönetmiyorsun, adaylar hazır — hellotalent">
-<meta name="twitter:description" content="Retail sektöründe doğru yeteneği bulmanın kısa yolu. Yetkinlik bazlı eşleştirme, filtrelenmiş aday havuzu.">
-
+<meta name="twitter:title" content="Artik ilan yonetmiyorsun, adaylar hazir — hellotalent">
+<meta name="twitter:description" content="Retail sektorunde dogru yetenegi bulmanin kisa yolu.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/shared.css?v=20260407b">
+<link rel="stylesheet" href="/shared.css?v=20260407c">
 
 <style>
-/* Hide nav links — page itself is the destination */
+/* ══ ISVEREN LANDING — CLATU-ALIGNED, NAVY THEME ══ */
+
+/* Hide nav + navy login */
 .header-nav{display:none!important}
-/* Navy login button for isveren */
 .btn-nav-login{background:#1E2D5E!important;border-color:#1E2D5E!important;color:#fff!important}
 .btn-nav-login:hover{background:#162044!important;border-color:#162044!important}
 
-/* ══ LANDING PAGE STYLES — İŞVEREN (NAVY VARIANT) ══ */
-
-/* Section base */
-.lp-section {
-  padding: var(--lp-section-pad);
-}
-.lp-inner {
-  max-width: var(--lp-max-width);
-  margin: 0 auto;
-}
-.lp-bg-warm {
-  background: var(--warm-gray);
-}
-
-/* ── HERO (Navy dark) ── */
-.lp-hero-navy {
-  background: #1E2D5E;
-  padding: calc(64px + clamp(56px, 8vw, 96px)) clamp(20px, 4vw, 48px) clamp(56px, 8vw, 96px);
-}
-.lp-hero-navy .lp-inner {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 64px;
-  align-items: center;
-}
-.lp-hero-navy .lp-hero-text h1 {
-  font-family: 'Bricolage Grotesque', sans-serif;
-  font-size: var(--heading-xl);
-  font-weight: 800;
-  letter-spacing: -2px;
-  line-height: 1.06;
-  color: white;
-  margin-bottom: 20px;
-}
-.lp-hero-navy .lp-hero-text p {
-  font-size: var(--body-lg);
-  color: rgba(255,255,255,0.7);
-  line-height: 1.7;
-  max-width: 480px;
-  margin-bottom: 32px;
-}
-.lp-hero-btns {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-  margin-bottom: 28px;
+:root{
+  --bg-page:#F7F6F4;
+  --bg-section:#fff;
+  --bg-warm:#F0F1F7;
+  --verm:#C94E28;
+  --navy:#1E2D5E;
+  --navy-dark:#162044;
+  --text-primary:#111;
+  --text-muted:rgba(0,0,0,0.5);
+  --border:#E5E3DF;
+  --font-d:'Bricolage Grotesque',sans-serif;
+  --font-b:'Plus Jakarta Sans',sans-serif;
+  --font-m:'DM Mono',monospace;
+  --radius:10px;
+  --max-w:1120px;
+  --pad:clamp(48px,8vw,96px) clamp(24px,5vw,48px);
 }
 
-/* Buttons */
-.lp-btn-primary {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: var(--verm);
-  color: #fff;
-  border: none;
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: var(--body-md);
-  font-weight: 700;
-  padding: 14px 28px;
-  border-radius: var(--lp-radius-btn);
-  cursor: pointer;
-  transition: all 0.2s;
-  text-decoration: none;
-}
-.lp-btn-primary:hover {
-  background: var(--verm-dark);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 16px rgba(201,78,40,0.25);
-}
-.lp-btn-outline-navy {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 14px 28px;
-  background: transparent;
-  color: white;
-  border: 1.5px solid rgba(255,255,255,0.3);
-  border-radius: 28px;
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 16px;
-  font-weight: 700;
-  cursor: pointer;
-  text-decoration: none;
-  transition: all 0.2s;
-}
-.lp-btn-outline-navy:hover {
-  border-color: rgba(255,255,255,0.6);
-  background: rgba(255,255,255,0.05);
-}
-.lp-btn-navy {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: #1E2D5E;
-  color: white;
-  border: none;
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: var(--body-md);
-  font-weight: 700;
-  padding: 14px 28px;
-  border-radius: var(--lp-radius-btn);
-  cursor: pointer;
-  transition: all 0.2s;
-  text-decoration: none;
-  width: 100%;
-  justify-content: center;
-}
-.lp-btn-navy:hover {
-  background: #162248;
-  transform: translateY(-1px);
+@media(prefers-color-scheme:dark){
+  :root{
+    --bg-page:#0B0D17;
+    --bg-section:#0E1020;
+    --bg-warm:#0C0F1A;
+    --text-primary:#F0F0EE;
+    --text-muted:rgba(247,246,244,0.50);
+    --border:rgba(247,246,244,0.08);
+  }
 }
 
-/* Stats row */
-.lp-stats-row {
-  display: flex;
-  gap: 32px;
-  margin-top: 24px;
-  flex-wrap: wrap;
+body{background:var(--bg-page)}
+
+/* ── SECTIONS ── */
+.s{padding:var(--pad)}
+.s-inner{max-width:var(--max-w);margin:0 auto}
+.s-white{background:var(--bg-section)}
+.s-warm{background:var(--bg-warm)}
+
+/* ── HERO (Navy) ── */
+.hero{
+  background:var(--navy);
+  padding:var(--pad);
+  padding-top:calc(64px + clamp(48px,7vw,88px));
 }
-.lp-stat strong {
-  display: block;
-  font-family: 'Bricolage Grotesque', sans-serif;
-  font-weight: 800;
-  font-size: 28px;
-  color: white;
-  letter-spacing: -1px;
+.hero .s-inner{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:56px;
+  align-items:center;
 }
-.lp-stat span {
-  font-size: 13px;
-  color: rgba(255,255,255,0.45);
-  font-weight: 600;
+.hero-hl{
+  font-family:var(--font-d);
+  font-size:clamp(36px,5vw,58px);
+  font-weight:800;
+  letter-spacing:-2.5px;
+  line-height:1.04;
+  color:#fff;
+  margin-bottom:20px;
+}
+.hero-sub{
+  font-family:var(--font-b);
+  font-size:15px;
+  color:rgba(255,255,255,0.65);
+  line-height:1.7;
+  max-width:460px;
+  margin-bottom:32px;
+}
+.hero-btns{display:flex;gap:12px;flex-wrap:wrap}
+.btn-p{
+  display:inline-flex;align-items:center;
+  background:var(--verm);color:#fff;border:none;
+  font-family:var(--font-b);font-size:14px;font-weight:700;
+  padding:13px 28px;border-radius:var(--radius);
+  cursor:pointer;transition:background .2s,transform .2s,box-shadow .2s;
+  text-decoration:none;
+}
+.btn-p:hover{background:#A83D1E;transform:translateY(-2px);box-shadow:0 6px 20px rgba(201,78,40,0.25)}
+.btn-o{
+  display:inline-flex;align-items:center;
+  background:transparent;color:#fff;
+  border:1.5px solid rgba(255,255,255,0.3);
+  font-family:var(--font-b);font-size:14px;font-weight:600;
+  padding:12px 24px;border-radius:var(--radius);
+  cursor:pointer;transition:border-color .2s,background .2s;
+  text-decoration:none;
+}
+.btn-o:hover{border-color:rgba(255,255,255,0.6);background:rgba(255,255,255,0.05)}
+
+/* Hero visual */
+.hero-vis{
+  display:flex;align-items:center;justify-content:center;
+  min-height:320px;
+  border-radius:14px;
+  background:rgba(255,255,255,0.04);
+  overflow:hidden;
+}
+.hero-vis img{width:100%;height:100%;object-fit:cover;border-radius:14px}
+
+/* ── SPLIT LAYOUT ── */
+.split{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:56px;align-items:start;
+}
+.split-hl{
+  font-family:var(--font-d);
+  font-size:clamp(28px,3.5vw,42px);
+  font-weight:800;letter-spacing:-1.5px;
+  line-height:1.1;color:var(--text-primary);
+}
+.split-desc{
+  font-size:15px;color:var(--text-muted);
+  line-height:1.7;margin-top:14px;max-width:420px;
 }
 
-/* Hero decorative right */
-.lp-hero-visual-navy {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 340px;
-  border-radius: var(--lp-radius-card);
-  background: rgba(255,255,255,0.04);
-  position: relative;
-  overflow: hidden;
+/* ── MINI BENTO (Navy accent) ── */
+.bento{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.bento-card{
+  padding:14px 16px;border-radius:10px;
+  background:rgba(255,255,255,0.6);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  border:1px solid rgba(255,255,255,0.35);
+  cursor:default;display:flex;align-items:center;gap:10px;
+  transition:transform .3s cubic-bezier(0.16,1,0.3,1), box-shadow .3s ease;
 }
-.lp-hero-visual-navy::before {
-  content: '';
-  position: absolute;
-  width: 200px;
-  height: 200px;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.04);
-  top: 20%;
-  left: 15%;
+.bento-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.05)}
+.bento-card.featured{grid-column:span 2;background:rgba(30,45,94,0.06);border-color:rgba(30,45,94,0.12)}
+.bento-card.featured:hover{box-shadow:0 8px 24px rgba(30,45,94,0.08)}
+.bento-icon{
+  width:32px;height:32px;min-width:32px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
 }
-.lp-hero-visual-navy::after {
-  content: '';
-  position: absolute;
-  width: 140px;
-  height: 140px;
-  border-radius: 50%;
-  background: rgba(201,78,40,0.08);
-  bottom: 15%;
-  right: 20%;
-}
+.bento-icon.ic-navy{background:rgba(30,45,94,0.10);color:var(--navy)}
+.bento-icon.ic-verm{background:rgba(201,78,40,0.10);color:var(--verm)}
+.bento-title{font-family:var(--font-b);font-size:13px;font-weight:700;color:var(--text-primary)}
 
-/* ── SPLIT LAYOUT (LinkedIn pattern) ── */
-.lp-split {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 64px;
-  align-items: start;
-}
-.lp-split-heading {
-  font-family: 'Bricolage Grotesque', sans-serif;
-  font-size: var(--heading-lg);
-  font-weight: 800;
-  letter-spacing: -1.5px;
-  line-height: 1.1;
-  color: var(--text);
-}
-.lp-split-desc {
-  font-size: var(--body-lg);
-  color: var(--muted);
-  line-height: 1.7;
-  margin-top: 16px;
-  max-width: 420px;
-}
-
-/* ── FEATURES PILLS ── */
-.lp-pills {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-.lp-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 12px 20px;
-  border: 1.5px solid var(--border);
-  border-radius: var(--lp-radius-pill);
-  font-size: var(--body-md);
-  font-weight: 600;
-  color: var(--text);
-  background: #fff;
-  transition: border-color 0.2s, box-shadow 0.2s;
-  cursor: default;
-}
-.lp-pill:hover {
-  border-color: var(--navy);
-  box-shadow: 0 2px 8px rgba(30,45,94,0.08);
+@media(prefers-color-scheme:dark){
+  .bento-card{background:rgba(255,255,255,0.04);border-color:rgba(255,255,255,0.06)}
+  .bento-card.featured{background:rgba(30,45,94,0.12);border-color:rgba(30,45,94,0.18)}
 }
 
 /* ── STEPS ── */
-.lp-steps {
-  display: flex;
-  flex-direction: column;
-  gap: 36px;
+.steps-row{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.step-card{
+  background:var(--bg-section);border-radius:12px;padding:20px;
+  border:1px solid var(--border);
+  display:flex;align-items:center;gap:18px;
+  transition:transform .3s cubic-bezier(0.16,1,0.3,1), box-shadow .3s ease, border-color .3s ease;
+  cursor:default;text-align:left;
 }
-.lp-step {
-  display: flex;
-  gap: 20px;
-  align-items: flex-start;
-}
-.lp-step-num {
-  font-family: 'DM Mono', monospace;
-  font-size: 28px;
-  font-weight: 400;
-  color: var(--border);
-  line-height: 1;
-  min-width: 48px;
-  padding-top: 2px;
-}
-.lp-step-title {
-  font-family: 'Bricolage Grotesque', sans-serif;
-  font-size: var(--heading-sm);
-  font-weight: 700;
-  color: var(--text);
-  margin-bottom: 6px;
-}
-.lp-step-desc {
-  font-size: var(--body-md);
-  color: var(--muted);
-  line-height: 1.6;
-}
+.step-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.05);border-color:var(--navy)}
+.step-body{flex:1}
+.step-n{font-family:var(--font-m);font-size:10px;font-weight:400;color:var(--border);display:block;margin-bottom:3px}
+.step-card:hover .step-n{color:var(--navy)}
+.step-t{font-family:var(--font-d);font-size:14px;font-weight:700;color:var(--text-primary);margin-bottom:3px}
+.step-d{font-size:12px;color:var(--text-muted);line-height:1.5}
 
-/* ── TRUST BRANDS ── */
-.lp-trust-heading {
-  font-family: 'Bricolage Grotesque', sans-serif;
-  font-size: var(--heading-lg);
-  font-weight: 800;
-  letter-spacing: -1.5px;
-  line-height: 1.1;
-  color: var(--text);
-  text-align: center;
-  margin-bottom: 36px;
-}
-.lp-brand-pills {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  justify-content: center;
-  max-width: 720px;
-  margin: 0 auto;
-}
-.lp-brand-pill {
-  padding: 10px 18px;
-  border: 1.5px solid var(--border);
-  border-radius: var(--lp-radius-pill);
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: var(--body-sm);
-  font-weight: 600;
-  color: var(--text);
-  background: #fff;
-  cursor: default;
-  transition: border-color 0.2s;
-}
-.lp-brand-pill:hover {
-  border-color: var(--navy);
+@media(prefers-color-scheme:dark){
+  .step-card{background:var(--bg-section);border-color:rgba(255,255,255,0.06)}
+  .step-card:hover{border-color:var(--navy);box-shadow:0 8px 24px rgba(30,45,94,0.08)}
 }
 
 /* ── LEAD FORM ── */
-.lp-form-card {
-  background: white;
-  border: 1.5px solid #E5E3DF;
-  border-radius: 16px;
-  padding: 32px;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+.form-card{
+  background:var(--bg-section);border:1.5px solid var(--border);
+  border-radius:14px;padding:28px;
 }
-.lp-form-title {
-  font-family: 'Bricolage Grotesque', sans-serif;
-  font-weight: 800;
-  font-size: 22px;
-  letter-spacing: -0.5px;
-  margin-bottom: 20px;
+.form-title{
+  font-family:var(--font-d);font-weight:800;font-size:20px;
+  letter-spacing:-0.5px;margin-bottom:18px;color:var(--text-primary);
 }
-.lp-input {
-  width: 100%;
-  padding: 12px 16px;
-  border: 1.5px solid #E5E3DF;
-  border-radius: 10px;
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 15px;
-  color: #111;
-  outline: none;
-  margin-bottom: 12px;
-  transition: border-color 0.15s;
-  background: white;
-  -webkit-appearance: none;
+.form-input{
+  width:100%;padding:11px 14px;border:1.5px solid var(--border);
+  border-radius:8px;font-family:var(--font-b);font-size:14px;
+  color:var(--text-primary);outline:none;margin-bottom:10px;
+  transition:border-color .15s;background:var(--bg-section);
 }
-.lp-input:focus {
-  border-color: #1E2D5E;
+.form-input:focus{border-color:var(--navy)}
+.btn-navy{
+  display:inline-flex;align-items:center;justify-content:center;
+  background:var(--navy);color:#fff;border:none;width:100%;
+  font-family:var(--font-b);font-size:14px;font-weight:700;
+  padding:12px 24px;border-radius:var(--radius);
+  cursor:pointer;transition:background .2s,transform .2s;
 }
-select.lp-input {
-  cursor: pointer;
-}
-.lp-form-note {
-  font-size: 12px;
-  color: #6B7280;
-  margin-top: 12px;
-  text-align: center;
-}
-.lp-benefits-list {
-  list-style: none;
-  padding: 0;
-  margin-top: 20px;
-}
-.lp-benefits-list li {
-  font-size: var(--body-md);
-  font-weight: 600;
-  color: var(--text);
-  padding: 8px 0;
-}
-.lp-benefits-list li span {
-  color: #16a34a;
-  margin-right: 8px;
+.btn-navy:hover{background:var(--navy-dark);transform:translateY(-1px)}
+.form-note{font-size:11px;color:var(--text-muted);margin-top:10px;text-align:center}
+
+@media(prefers-color-scheme:dark){
+  .form-card{background:var(--bg-section);border-color:rgba(255,255,255,0.08)}
+  .form-input{background:var(--bg-page);border-color:rgba(255,255,255,0.08);color:var(--text-primary)}
 }
 
 /* ── RESPONSIVE ── */
-@media (max-width: 900px) {
-  .lp-hero-navy .lp-inner {
-    grid-template-columns: 1fr;
-    gap: 40px;
-  }
-  .lp-hero-visual-navy {
-    min-height: 200px;
-    order: -1;
-  }
-  .lp-split {
-    grid-template-columns: 1fr;
-    gap: 32px;
-  }
+@media(max-width:900px){
+  .hero .s-inner{grid-template-columns:1fr;gap:32px}
+  .hero-vis{min-height:220px;order:-1}
+  .split{grid-template-columns:1fr;gap:28px}
+  .steps-row{grid-template-columns:1fr}
 }
-@media (max-width: 480px) {
-  .lp-hero-navy .lp-hero-text h1 {
-    font-size: 32px;
-    letter-spacing: -1px;
-  }
-  .lp-hero-btns {
-    flex-direction: column;
-  }
-  .lp-btn-primary,
-  .lp-btn-outline-navy {
-    width: 100%;
-    justify-content: center;
-  }
-  .lp-stats-row {
-    gap: 20px;
-  }
-  .lp-pill {
-    font-size: var(--body-sm);
-    padding: 10px 16px;
-  }
-  .lp-form-card {
-    padding: 24px 20px;
-  }
+@media(max-width:480px){
+  .hero-hl{font-size:30px;letter-spacing:-1px}
+  .hero-btns{flex-direction:column}
+  .btn-p,.btn-o{width:100%;justify-content:center}
+  .bento{grid-template-columns:1fr 1fr}
+  .bento-card.featured{grid-column:span 2}
 }
-
-/* ══ DARK MODE ══ */
-html[data-theme="dark"] body{background:#050712;color:#F9FAFB;}
-html[data-theme="dark"] .site-header{background:rgba(5,7,18,0.95);border-bottom-color:#1F2937;}
-html[data-theme="dark"] .header-logo{color:#E5E7EB;}
-html[data-theme="dark"] .nav-link{color:#9CA3AF;}
-html[data-theme="dark"] .nav-link:hover,html[data-theme="dark"] .nav-link.active{color:#F9FAFB;}
-html[data-theme="dark"] .btn-nav-login{color:#E5E7EB;border-color:#374151;}
-/* Hero already navy — just refine borders */
-html[data-theme="dark"] .lp-hero-navy{background:#0F172A;}
-html[data-theme="dark"] .lp-hero-visual-navy{border-color:rgba(255,255,255,0.06);}
-html[data-theme="dark"] .lp-btn-outline-navy{border-color:rgba(255,255,255,0.2);}
-html[data-theme="dark"] .lp-bg-warm{background:#0A0D18;}
-html[data-theme="dark"] .lp-split-left h2{color:#F9FAFB;}
-html[data-theme="dark"] .lp-split-left p{color:#9CA3AF;}
-html[data-theme="dark"] .lp-pill{background:#111827;border-color:#1F2937;color:#E5E7EB;}
-html[data-theme="dark"] .lp-pill:hover{border-color:#93A3D1;box-shadow:0 2px 12px rgba(30,45,94,0.2);}
-html[data-theme="dark"] .lp-step-num{color:#374151;}
-html[data-theme="dark"] .lp-step strong{color:#F9FAFB;}
-html[data-theme="dark"] .lp-step p{color:#9CA3AF;}
-html[data-theme="dark"] .lp-section-title{color:#F9FAFB;}
-html[data-theme="dark"] .lp-brand-pills .lp-pill{background:#111827;border-color:#1F2937;color:#9CA3AF;}
-html[data-theme="dark"] .lp-brand-pills .lp-pill:hover{color:#E5E7EB;border-color:#374151;}
-html[data-theme="dark"] .lp-form-card{background:#111827;border-color:#1F2937;box-shadow:0 4px 24px rgba(0,0,0,0.3);}
-html[data-theme="dark"] .lp-form-title{color:#F9FAFB;}
-html[data-theme="dark"] .lp-input{background:#020617;border-color:#374151;color:#F9FAFB;}
-html[data-theme="dark"] .lp-input::placeholder{color:#4B5563;}
-html[data-theme="dark"] .lp-input:focus{border-color:#6B7280;}
-html[data-theme="dark"] select.lp-input{background:#020617;color:#F9FAFB;}
-html[data-theme="dark"] .lp-form-note{color:#6B7280;}
-html[data-theme="dark"] .lp-cb{color:#9CA3AF;}
-html[data-theme="dark"] .site-footer{background:#050712;border-top-color:#1F2937;}
-html[data-theme="dark"] .footer-brand{color:#E5E7EB;}
-html[data-theme="dark"] .footer-tagline{color:#6B7280;}
-html[data-theme="dark"] .footer-col-title{color:#E5E7EB;}
-html[data-theme="dark"] .footer-link{color:#9CA3AF;}
-html[data-theme="dark"] .footer-link:hover{color:#F9FAFB;}
-html[data-theme="dark"] .footer-bottom{border-top-color:#1F2937;}
-html[data-theme="dark"] .footer-copyright{color:#6B7280;}
-html[data-theme="dark"] .footer-legal a{color:#6B7280;}
-html[data-theme="dark"] .login-modal-overlay{background:rgba(0,0,0,0.7);}
-html[data-theme="dark"] .login-modal{background:#111827;border-color:#374151;}
-html[data-theme="dark"] .login-modal-title{color:#F9FAFB;}
-html[data-theme="dark"] .login-modal-sub{color:#9CA3AF;}
-html[data-theme="dark"] .login-modal-card{background:#1F2937;border-color:#374151;}
-html[data-theme="dark"] .login-modal-card:hover{border-color:#6B7280;background:#283040;}
-html[data-theme="dark"] .lmc-title{color:#F9FAFB;}
-html[data-theme="dark"] .lmc-desc{color:#9CA3AF;}
-html[data-theme="dark"] .mobile-menu{background:#0A0D18;}
-html[data-theme="dark"] .mobile-nav-link{color:#E5E7EB;}
-html[data-theme="dark"] .mobile-nav-divider{background:#1F2937;}
 </style>
 </head>
 <body>
 
 <div id="ht-header"></div>
 
-<!-- ═══ 1. HERO (Navy dark) ═══ -->
-<section class="lp-hero-navy">
-  <div class="lp-inner">
-    <div class="lp-hero-text">
-      <h1>Artık ilan yönetmiyorsun,<br>adaylar hazır.</h1>
-      <p>Filtrelenmiş aday havuzu, yetkinlik bazlı eşleştirme, 48 saat ortalama yanıt süresi. Retail ekibiniz için doğru yeteneği hızla bulun.</p>
-
-      <div class="lp-hero-btns">
-        <a href="#lead-form" class="lp-btn-primary">Aramıza Katıl</a>
-        <a href="/giris.html?tab=ik" class="lp-btn-outline-navy">Giriş Yap</a>
-      </div>
-
-      <div class="lp-stats-row">
-        <div class="lp-stat">
-          <strong>2.800+</strong>
-          <span>Aktif Aday</span>
-        </div>
-        <div class="lp-stat">
-          <strong>96</strong>
-          <span>Marka</span>
-        </div>
-        <div class="lp-stat">
-          <strong>48sa</strong>
-          <span>Ort. Yanıt</span>
-        </div>
+<!-- 1. HERO -->
+<section class="hero">
+  <div class="s-inner">
+    <div>
+      <h1 class="hero-hl">Artık ilan yönetmiyorsun,<br>adaylar hazır.</h1>
+      <p class="hero-sub">Pozisyona özel filtreleme, yetkinlik bazlı eşleştirme ve direkt iletişim. Retail ekibiniz için doğru yeteneği hızla bulun.</p>
+      <div class="hero-btns">
+        <a href="#lead-form" class="btn-p">Ekibini Kur</a>
+        <a href="/giris.html?tab=ik" class="btn-o">Giriş Yap</a>
       </div>
     </div>
-
-    <div class="lp-hero-visual-navy" aria-hidden="true"></div>
-  </div>
-</section>
-
-<!-- ═══ 2. FEATURES ═══ -->
-<section class="lp-section lp-bg-warm">
-  <div class="lp-inner">
-    <div class="lp-split">
-      <div>
-        <h2 class="lp-split-heading">Doğru yeteneği bulmanın kısa yolu.</h2>
-        <p class="lp-split-desc">Pozisyona özel filtreleme, yetkinlik bazlı eşleştirme ve direkt iletişim araçlarıyla işe alım sürecinizi hızlandırın.</p>
-      </div>
-      <div class="lp-pills">
-        <div class="lp-pill">Pozisyona Özel Filtreleme</div>
-        <div class="lp-pill">Direkt Mesajlaşma</div>
-        <div class="lp-pill">Yetkinlik Bazlı Eşleştirme</div>
-        <div class="lp-pill">Kampanya Yönetimi</div>
-        <div class="lp-pill">Takım ve Davet Sistemi</div>
-        <div class="lp-pill">Performans Dashboard</div>
-      </div>
+    <div class="hero-vis" aria-hidden="true">
+      <!-- Hero görseli buraya gelecek -->
     </div>
   </div>
 </section>
 
-<!-- ═══ 3. NASIL ÇALIŞIR ═══ -->
-<section class="lp-section">
-  <div class="lp-inner">
-    <div class="lp-split">
+<!-- 2. FEATURES -->
+<section class="s s-warm">
+  <div class="s-inner">
+    <div class="split">
       <div>
-        <h2 class="lp-split-heading">Nasıl çalışır?</h2>
+        <h2 class="split-hl">Doğru yeteneği bulmanın kısa yolu.</h2>
+        <p class="split-desc">Pozisyona özel filtreleme, yetkinlik bazlı eşleştirme ve direkt iletişim araçlarıyla işe alım sürecinizi hızlandırın.</p>
       </div>
-      <div class="lp-steps">
-        <div class="lp-step">
-          <span class="lp-step-num">01</span>
-          <div>
-            <div class="lp-step-title">Pozisyonu Tanımla</div>
-            <p class="lp-step-desc">Hangi pozisyon, hangi şehir, hangi segment? Filtreleri seç.</p>
-          </div>
+      <div class="bento">
+        <div class="bento-card featured">
+          <div class="bento-icon ic-navy"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+          <div class="bento-title">Aday Havuzu</div>
         </div>
-        <div class="lp-step">
-          <span class="lp-step-num">02</span>
-          <div>
-            <div class="lp-step-title">Adayları İncele</div>
-            <p class="lp-step-desc">Yetkinlik bazlı eşleştirilmiş profillerden en uygun adayları gör.</p>
-          </div>
+        <div class="bento-card">
+          <div class="bento-icon ic-navy"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+          <div class="bento-title">Direkt Mesaj</div>
         </div>
-        <div class="lp-step">
-          <span class="lp-step-num">03</span>
-          <div>
-            <div class="lp-step-title">İletişime Geç</div>
-            <p class="lp-step-desc">Direkt mesaj at, mülakat planla, takımınla paylaş.</p>
-          </div>
+        <div class="bento-card">
+          <div class="bento-icon ic-verm"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/></svg></div>
+          <div class="bento-title">Yetkinlik Eşleştirme</div>
+        </div>
+        <div class="bento-card">
+          <div class="bento-icon ic-navy"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/></svg></div>
+          <div class="bento-title">Kampanya Yönetimi</div>
+        </div>
+        <div class="bento-card">
+          <div class="bento-icon ic-verm"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+          <div class="bento-title">Takım Sistemi</div>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ═══ 4. TRUST / BRANDS ═══ -->
-<section class="lp-section lp-bg-warm">
-  <div class="lp-inner">
-    <h2 class="lp-trust-heading">Türkiye'nin önde gelen retail markaları platformda.</h2>
-    <div class="lp-brand-pills">
-      <span class="lp-brand-pill">Zara</span>
-      <span class="lp-brand-pill">H&amp;M</span>
-      <span class="lp-brand-pill">Nike</span>
-      <span class="lp-brand-pill">Adidas</span>
-      <span class="lp-brand-pill">Sephora</span>
-      <span class="lp-brand-pill">Mavi</span>
-      <span class="lp-brand-pill">LC Waikiki</span>
-      <span class="lp-brand-pill">Koton</span>
-      <span class="lp-brand-pill">Boyner</span>
-      <span class="lp-brand-pill">DeFacto</span>
-      <span class="lp-brand-pill">Massimo Dutti</span>
-      <span class="lp-brand-pill">Vakko</span>
-      <span class="lp-brand-pill">Network</span>
-      <span class="lp-brand-pill">Desa</span>
-      <span class="lp-brand-pill">English Home</span>
+<!-- 3. NASIL ÇALIŞIR -->
+<section class="s s-white">
+  <div class="s-inner">
+    <h2 class="split-hl">İşe alımı hızlandırın.</h2>
+    <p class="split-desc" style="margin-bottom:32px">Basit, hızlı, etkili.</p>
+    <div class="steps-row">
+      <div class="step-card">
+        <div class="step-body">
+          <span class="step-n">01</span>
+          <div class="step-t">Pozisyonu Tanımla</div>
+          <p class="step-d">Hangi pozisyon, hangi şehir, hangi segment? Filtreleri seç.</p>
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="step-body">
+          <span class="step-n">02</span>
+          <div class="step-t">Adayları İncele</div>
+          <p class="step-d">Yetkinlik bazlı eşleştirilmiş profillerden en uygunları gör.</p>
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="step-body">
+          <span class="step-n">03</span>
+          <div class="step-t">İletişime Geç</div>
+          <p class="step-d">Direkt mesaj at, mülakat planla, takımınla paylaş.</p>
+        </div>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- ═══ 5. LEAD FORM ═══ -->
-<section class="lp-section" id="lead-form">
-  <div class="lp-inner">
-    <div class="lp-split">
+<!-- 4. LEAD FORM -->
+<section class="s s-warm" id="lead-form">
+  <div class="s-inner">
+    <div class="split">
       <div>
-        <h2 class="lp-split-heading">Retail ekibinizi güçlendirin.</h2>
-        <p class="lp-split-desc">Platformumuzu keşfedin, aday havuzuna anında erişin. Size özel demo planlayalım.</p>
-        <ul class="lp-benefits-list">
-          <li>Ücretsiz demo</li>
-          <li>Kurumsal e-posta ile kayıt</li>
-          <li>Aday havuzuna anında erişim</li>
-        </ul>
+        <h2 class="split-hl">Retail ekibinizi güçlendirin.</h2>
+        <p class="split-desc">Platformumuzu keşfedin, aday havuzuna anında erişin. Size özel demo planlayalım.</p>
       </div>
       <div>
-        <div class="lp-form-card">
-          <div class="lp-form-title">İletişime Geçin</div>
+        <div class="form-card">
+          <div class="form-title">İletişime Geçin</div>
           <form id="employer-lead-form">
-            <input type="text" class="lp-input" name="name" placeholder="Adınız Soyadınız" required>
-            <input type="email" class="lp-input" name="email" placeholder="Kurumsal E-posta" required>
-            <input type="text" class="lp-input" name="company" placeholder="Şirket Adı" required>
-            <input type="tel" class="lp-input" name="phone" placeholder="Telefon (opsiyonel)">
-            <select class="lp-input" name="team_size">
+            <input type="text" class="form-input" name="name" placeholder="Adınız Soyadınız" required>
+            <input type="email" class="form-input" name="email" placeholder="Kurumsal E-posta" required>
+            <input type="text" class="form-input" name="company" placeholder="Şirket Adı" required>
+            <input type="tel" class="form-input" name="phone" placeholder="Telefon (opsiyonel)">
+            <select class="form-input" name="team_size">
               <option value="" disabled selected>Kaç kişilik ekibiniz var?</option>
               <option value="1-10">1-10</option>
               <option value="11-50">11-50</option>
               <option value="51-200">51-200</option>
               <option value="200+">200+</option>
             </select>
-            <button type="submit" class="lp-btn-navy">Gönder</button>
+            <button type="submit" class="btn-navy">Gönder</button>
           </form>
-          <p class="lp-form-note">Bilgileriniz gizli tutulur.</p>
+          <p class="form-note">Bilgileriniz gizli tutulur.</p>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ═══ 6. FOOTER (shared.js) ═══ -->
 <div id="ht-footer"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="/shared.js?v=20260402a"></script>
+<script src="/shared.js?v=20260407c"></script>
 <script>
 (function(){
   var form = document.getElementById('employer-lead-form');
@@ -670,6 +407,22 @@ html[data-theme="dark"] .mobile-nav-divider{background:#1F2937;}
       if(btn) { btn.disabled = false; btn.textContent = 'Gönder'; }
     }
   });
+
+  /* Override header login — skip popup, smooth redirect */
+  setTimeout(function(){
+    var loginBtn = document.querySelector('.btn-nav-login');
+    if(!loginBtn) return;
+    var clone = loginBtn.cloneNode(true);
+    loginBtn.parentNode.replaceChild(clone, loginBtn);
+    clone.textContent = 'Giriş Yap';
+    clone.addEventListener('click', function(e){
+      e.preventDefault();
+      e.stopPropagation();
+      document.body.style.transition = 'opacity 0.4s ease';
+      document.body.style.opacity = '0';
+      setTimeout(function(){ window.location.href = '/giris.html?tab=ik'; }, 400);
+    });
+  }, 200);
 })();
 </script>
 </body>
