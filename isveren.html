@@ -185,6 +185,10 @@ body{background:var(--bg-page)}
 }
 .step-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.05);border-color:var(--navy)}
 .step-body{flex:1}
+.step-vis{
+  width:72px;height:72px;min-width:72px;
+  object-fit:contain;order:1;margin-left:auto;
+}
 .step-n{font-family:var(--font-m);font-size:10px;font-weight:400;color:var(--border);display:block;margin-bottom:3px}
 .step-card:hover .step-n{color:var(--navy)}
 .step-t{font-family:var(--font-d);font-size:14px;font-weight:700;color:var(--text-primary);margin-bottom:3px}
@@ -313,6 +317,7 @@ body{background:var(--bg-page)}
           <div class="step-t">Pozisyonu Tanımla</div>
           <p class="step-d">Hangi pozisyon, hangi şehir, hangi segment? Filtreleri seç.</p>
         </div>
+        <img class="step-vis" src="assets/isveren/step-01.svg" alt="" loading="lazy">
       </div>
       <div class="step-card">
         <div class="step-body">
@@ -320,6 +325,7 @@ body{background:var(--bg-page)}
           <div class="step-t">Adayları İncele</div>
           <p class="step-d">Yetkinlik bazlı eşleştirilmiş profillerden en uygunları gör.</p>
         </div>
+        <img class="step-vis" src="assets/isveren/step-02.svg" alt="" loading="lazy">
       </div>
       <div class="step-card">
         <div class="step-body">
@@ -327,6 +333,7 @@ body{background:var(--bg-page)}
           <div class="step-t">İletişime Geç</div>
           <p class="step-d">Direkt mesaj at, mülakat planla, takımınla paylaş.</p>
         </div>
+        <img class="step-vis" src="assets/isveren/step-03.svg" alt="" loading="lazy">
       </div>
     </div>
   </div>
