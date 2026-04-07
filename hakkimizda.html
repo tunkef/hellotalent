@@ -6,26 +6,162 @@
 <meta name="description" content="hellotalent hakkında — Türkiye perakende sektörüne özel yetenek platformu.">
 <title>Hakkımızda — hellotalent.ai</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/shared.css?v=20260407c">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/shared.css?v=20260407d">
 <style>
-:root{--bg:#F7F6F4;--text:#111;--muted:rgba(0,0,0,0.5)}
-@media(prefers-color-scheme:dark){:root{--bg:#0B0D17;--text:#F0F0EE;--muted:rgba(247,246,244,0.5)}}
-body{background:var(--bg);font-family:'Plus Jakarta Sans',sans-serif}
-.page{max-width:720px;margin:0 auto;padding:calc(64px + 48px) 24px 80px}
-.page h1{font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(32px,5vw,48px);font-weight:800;letter-spacing:-2px;color:var(--text);margin-bottom:24px}
-.page p{font-size:16px;line-height:1.8;color:var(--muted);margin-bottom:20px}
+:root{
+  --bg-page:#F7F6F4;
+  --bg-section:#fff;
+  --bg-warm:#F5F1ED;
+  --verm:#C94E28;
+  --navy:#1E2D5E;
+  --text-primary:#111;
+  --text-muted:rgba(0,0,0,0.5);
+  --border:#E5E3DF;
+  --font-d:'Bricolage Grotesque',sans-serif;
+  --font-b:'Plus Jakarta Sans',sans-serif;
+  --font-m:'DM Mono',monospace;
+  --radius:10px;
+  --max-w:1120px;
+  --pad:clamp(48px,8vw,96px) clamp(24px,5vw,48px);
+}
+@media(prefers-color-scheme:dark){:root{
+  --bg-page:#0B0D17;
+  --bg-section:#12141F;
+  --bg-warm:#141625;
+  --text-primary:#F0F0EE;
+  --text-muted:rgba(247,246,244,0.5);
+  --border:rgba(255,255,255,0.08);
+}}
+body{background:var(--bg-page);font-family:var(--font-b)}
+
+/* ── SECTIONS ── */
+.s{padding:var(--pad)}
+.s-inner{max-width:var(--max-w);margin:0 auto}
+.s-white{background:var(--bg-section)}
+.s-warm{background:var(--bg-warm)}
+
+/* ── HERO ── */
+.hero{padding:clamp(64px,10vw,120px) clamp(24px,5vw,48px) clamp(48px,8vw,80px);background:var(--bg-section)}
+.hero .s-inner{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center}
+.hero-hl{
+  font-family:var(--font-d);font-size:clamp(32px,4.5vw,48px);
+  font-weight:800;letter-spacing:-2px;color:var(--text-primary);
+  line-height:1.1;margin-bottom:16px;
+}
+.hero-sub{font-size:16px;line-height:1.8;color:var(--text-muted);max-width:480px}
+.hero-vis{position:relative;border-radius:16px;overflow:hidden;min-height:280px}
+.hero-vis img{width:100%;height:100%;object-fit:cover;display:block;border-radius:16px}
+
+/* ── SPLIT ── */
+.split{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start}
+.split-hl{
+  font-family:var(--font-d);font-size:clamp(24px,3vw,36px);
+  font-weight:800;letter-spacing:-1.5px;color:var(--text-primary);margin-bottom:12px;
+}
+.split-desc{font-size:15px;line-height:1.8;color:var(--text-muted)}
+
+/* ── VALUES ── */
+.values-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.value-card{
+  background:var(--bg-section);border-radius:12px;padding:24px;
+  border:1px solid var(--border);
+  transition:transform .3s cubic-bezier(0.16,1,0.3,1), box-shadow .3s ease, border-color .3s ease;
+}
+.value-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.05);border-color:var(--verm)}
+.value-icon{
+  width:36px;height:36px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:12px;color:#fff;
+}
+.ic-verm{background:var(--verm)}
+.ic-navy{background:var(--navy)}
+.value-t{font-family:var(--font-d);font-size:15px;font-weight:700;color:var(--text-primary);margin-bottom:6px}
+.value-d{font-size:13px;color:var(--text-muted);line-height:1.5}
+
+@media(prefers-color-scheme:dark){
+  .value-card{background:var(--bg-section);border-color:rgba(255,255,255,0.06)}
+  .value-card:hover{border-color:var(--verm)}
+}
+
+/* ── CTA SCENE ── */
+.cta-img{
+  width:100vw;
+  margin-left:calc(-50vw + 50%);
+  margin-bottom:0;
+  display:block;
+  object-fit:cover;
+}
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  .hero .s-inner{grid-template-columns:1fr;gap:32px}
+  .hero-vis{min-height:220px;order:-1}
+  .split{grid-template-columns:1fr;gap:28px}
+  .values-grid{grid-template-columns:1fr}
+}
 </style>
 </head>
 <body>
 <div id="ht-header"></div>
-<div class="page">
-  <h1>Hakkımızda</h1>
-  <p>hellotalent, Türkiye perakende sektörüne özel bir yetenek platformudur. Amacımız adayları ve işverenleri geleneksel ilan süreçlerinden kurtararak, yetkinlik bazlı akıllı eşleştirme ile buluşturmaktır.</p>
-  <p>Mağaza katından bölge yönetimine kadar perakende sektörünün tüm profesyonellerini tek çatıda topluyoruz. Adaylar profillerini oluşturup yapay zeka destekli araçlarla kendilerini geliştirirken, işverenler kriterlerine en uygun yeteneklere sessiz ve hızlı şekilde ulaşır.</p>
-  <p>İlan yayınlama dönemini kapatıyoruz. Eşleşme bazlı, gizlilik odaklı ve sektöre özel bir işe alım deneyimi sunuyoruz.</p>
-</div>
+
+<!-- 1. HERO -->
+<section class="hero">
+  <div class="s-inner">
+    <div>
+      <h1 class="hero-hl">Perakende sektörüne özel<br>yetenek platformu.</h1>
+      <p class="hero-sub">Adayları ve işverenleri geleneksel ilan süreçlerinden kurtararak, yetkinlik bazlı akıllı eşleştirme ile buluşturuyoruz.</p>
+    </div>
+    <div class="hero-vis">
+      <img src="assets/aday/cta-scene.webp" alt="Perakende ekibi birlikte çalışırken" width="1344" height="768" loading="eager">
+    </div>
+  </div>
+</section>
+
+<!-- 2. MISYON -->
+<section class="s s-warm">
+  <div class="s-inner">
+    <div class="split">
+      <div>
+        <h2 class="split-hl">İlan yayınlama dönemini kapatıyoruz.</h2>
+        <p class="split-desc">Mağaza katından bölge yönetimine kadar perakende sektörünün tüm profesyonellerini tek çatıda topluyoruz. Adaylar profillerini oluşturup yapay zeka destekli araçlarla kendilerini geliştirirken, işverenler kriterlerine en uygun yeteneklere sessiz ve hızlı şekilde ulaşır.</p>
+      </div>
+      <div>
+        <h2 class="split-hl">Eşleşme bazlı, gizlilik odaklı.</h2>
+        <p class="split-desc">Sektöre özel bir işe alım deneyimi sunuyoruz. Adaylar görünmez modda kalabilir, işverenler yalnızca kriterlere uyan yetenekleri görür. Her iki taraf da kontrol sahibi.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 3. DEĞERLER -->
+<section class="s s-white">
+  <div class="s-inner">
+    <h2 class="split-hl" style="margin-bottom:24px">Bizi farklı kılan.</h2>
+    <div class="values-grid">
+      <div class="value-card">
+        <div class="value-icon ic-verm"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/></svg></div>
+        <div class="value-t">Sektöre Özel</div>
+        <p class="value-d">Genel iş ilanı platformu değiliz. Sadece perakende sektörünün dinamiklerini anlayan, ona özel çözümler sunuyoruz.</p>
+      </div>
+      <div class="value-card">
+        <div class="value-icon ic-navy"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></div>
+        <div class="value-t">Gizlilik Odaklı</div>
+        <p class="value-d">Adaylar kimliklerini koruyarak profil oluşturur. İşverenler sessiz arama yapar. Her iki taraf da kontrol sahibi.</p>
+      </div>
+      <div class="value-card">
+        <div class="value-icon ic-verm"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+        <div class="value-t">Yetkinlik Bazlı</div>
+        <p class="value-d">Unvan değil, yetkinlik. Adaylar gerçek becerilerini öne çıkarır, işverenler gerçek uyumu görür.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SCENE -->
+<img class="cta-img" src="assets/isveren/cta-scene.webp" alt="Retail ofiste ekip çalışması" width="1536" height="878" loading="lazy">
+
 <div id="ht-footer"></div>
-<script src="/shared.js?v=20260407c"></script>
+<script src="/shared.js?v=20260407d"></script>
 </body>
 </html>
