@@ -74,7 +74,8 @@ body{
   --ft:rgba(0,0,0,0.2);
   --font-d:'Bricolage Grotesque',sans-serif;
   --font-b:'Plus Jakarta Sans',sans-serif;
-  --expo:cubic-bezier(0.16,1,0.3,1);
+  --expo:cubic-bezier(0.25,0.46,0.45,0.94);
+  --expo-soft:cubic-bezier(0.4,0,0.2,1);
 }
 body{background:var(--bg)}
 
@@ -143,13 +144,13 @@ body{background:var(--bg)}
   display:flex;flex-direction:column;
   justify-content:center;
   text-decoration:none;cursor:pointer;
-  transition:flex .55s var(--expo), background .5s ease;
+  transition:flex 1s ease, background .8s ease, opacity .6s ease;
 }
-/* Hovered zone expands, sibling recedes */
-.gate:has(.zone--a:hover) .zone--a{flex:1.2}
-.gate:has(.zone--a:hover) .zone--i{flex:0.8}
-.gate:has(.zone--i:hover) .zone--i{flex:1.2}
-.gate:has(.zone--i:hover) .zone--a{flex:0.8}
+/* Hovered zone expands gently, sibling fades back */
+.gate:has(.zone--a:hover) .zone--a{flex:1.06}
+.gate:has(.zone--a:hover) .zone--i{flex:0.94;opacity:0.7}
+.gate:has(.zone--i:hover) .zone--i{flex:1.06}
+.gate:has(.zone--i:hover) .zone--a{flex:0.94;opacity:0.7}
 
 .zone--a{
   padding:0 clamp(32px,4.5vw,72px);
@@ -157,7 +158,7 @@ body{background:var(--bg)}
   background:
     radial-gradient(ellipse 70% 50% at 80% 85%, var(--glow-a), transparent),
     var(--bg-a);
-  transition:background .5s ease;
+  transition:background .8s ease;
 }
 .zone--a:hover{
   background:
@@ -172,7 +173,7 @@ body{background:var(--bg)}
   background:
     radial-gradient(ellipse 70% 50% at 20% 85%, var(--glow-i), transparent),
     var(--bg-i);
-  transition:background .5s ease;
+  transition:background .8s ease;
 }
 .zone--i:hover{
   background:
@@ -185,11 +186,11 @@ body{background:var(--bg)}
 .ey{
   font-family:var(--font-b);font-size:10px;font-weight:700;
   letter-spacing:4px;text-transform:uppercase;margin-bottom:18px;
-  transition:letter-spacing .5s var(--expo), opacity .4s ease;
+  transition:letter-spacing .8s ease, opacity .6s ease;
 }
 .zone--a .ey{color:var(--ey-a)}
 .zone--i .ey{color:var(--ey-i)}
-.zone:hover .ey{letter-spacing:6px;opacity:1}
+.zone:hover .ey{letter-spacing:5px;opacity:1}
 
 /* ── HEADING ── */
 .hd{
@@ -197,21 +198,22 @@ body{background:var(--bg)}
   font-size:clamp(40px,5.5vw,68px);
   line-height:0.93;letter-spacing:-2.5px;
   color:var(--text-head);margin-bottom:20px;
-  transition:transform .5s var(--expo);
+  transition:opacity .6s ease;
+  opacity:0.92;
 }
 .hd .v{color:var(--verm)}
 .hd .n{color:var(--hd-n)}
-.zone:hover .hd{transform:translateY(-3px)}
+.zone:hover .hd{opacity:1}
 
 /* ── SUBTEXT ── */
 .sb{
   font-size:14px;line-height:1.7;
   color:var(--text-dim);max-width:280px;margin-bottom:32px;
-  transition:opacity .4s ease, transform .5s var(--expo);
-  opacity:0.8;
+  transition:opacity .6s ease;
+  opacity:0.65;
 }
 .zone--i .sb{margin-left:auto}
-.zone:hover .sb{opacity:1;transform:translateY(-2px)}
+.zone:hover .sb{opacity:1}
 
 /* ── CTA BUTTON ── */
 .ct.btn{
@@ -219,12 +221,13 @@ body{background:var(--bg)}
   font-size:13px;font-weight:700;letter-spacing:0.3px;
   text-decoration:none;padding:10px 28px;
   border-radius:6px;border:1.5px solid transparent;
-  transition:background .3s ease, border-color .3s ease, color .3s ease, transform .4s var(--expo), box-shadow .4s ease;
+  transition:background .5s ease, border-color .5s ease, color .5s ease, box-shadow .5s ease, opacity .5s ease;
+  opacity:0.85;
 }
 .zone--a .ct.btn{color:var(--verm);background:transparent;border-color:var(--verm)}
-.zone--a:hover .ct.btn{background:var(--verm);color:#fff;border-color:var(--verm);transform:translateY(-3px);box-shadow:0 6px 20px rgba(201,78,40,0.25)}
+.zone--a:hover .ct.btn{background:var(--verm);color:#fff;border-color:var(--verm);opacity:1;box-shadow:0 4px 16px rgba(201,78,40,0.15)}
 .zone--i .ct.btn{color:var(--btn-i-hc);background:transparent;border-color:var(--btn-i-hborder)}
-.zone--i:hover .ct.btn{background:var(--btn-i-bg);color:var(--btn-i-c);border-color:var(--btn-i-bg);transform:translateY(-3px);box-shadow:0 6px 20px rgba(30,45,94,0.25)}
+.zone--i:hover .ct.btn{background:var(--btn-i-bg);color:var(--btn-i-c);border-color:var(--btn-i-bg);opacity:1;box-shadow:0 4px 16px rgba(30,45,94,0.15)}
 
 /* ── ILLUSTRATIONS ── */
 .il{
@@ -233,32 +236,33 @@ body{background:var(--bg)}
   height:clamp(220px,38vh,360px);
   width:auto;object-fit:contain;
   pointer-events:none;z-index:1;
-  transition:transform .7s var(--expo),opacity .5s ease;
-  opacity:0.85;
+  transition:opacity .8s ease;
+  opacity:0.75;
 }
 .zone--a .il{right:clamp(0px,1vw,24px);height:clamp(240px,42vh,380px)}
 .zone--i .il{left:clamp(8px,2vw,32px)}
-.zone--a:hover .il{transform:translateY(-10px) scale(1.04);opacity:1}
-.zone--i:hover .il{transform:translateY(-10px) scale(1.04);opacity:1}
+@media(min-width:901px){.zone--i .il{transform:scaleX(-1)}}
+.zone--a:hover .il{opacity:1}
+.zone--i:hover .il{opacity:1}
 
 
 /* ── ANIMATIONS ── */
-@keyframes up{
-  from{opacity:0;transform:translateY(14px)}
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(6px)}
   to{opacity:1;transform:translateY(0)}
 }
 @keyframes fi{from{opacity:0}to{opacity:1}}
-@keyframes ilUp{
-  from{opacity:0;transform:translateY(24px)}
-  to{opacity:0.9;transform:translateY(0)}
+@keyframes ilFade{
+  from{opacity:0}
+  to{opacity:0.75}
 }
 
-.ey{animation:up .55s ease-out .06s both}
-.hd{animation:up .55s ease-out .13s both}
-.sb{animation:up .55s ease-out .20s both}
-.ct{animation:up .55s ease-out .27s both}
-.il{animation:ilUp .8s var(--expo) .2s both}
-.hdr{animation:fi .4s ease-out .05s both}
+.ey{animation:fadeUp .9s ease .1s both}
+.hd{animation:fadeUp .9s ease .2s both}
+.sb{animation:fadeUp .9s ease .3s both}
+.ct{animation:fadeUp .9s ease .4s both}
+.il{animation:ilFade 1.2s ease .3s both}
+.hdr{animation:fi .6s ease .05s both}
 
 @media(prefers-reduced-motion:reduce){
   .ey,.hd,.sb,.ct,.il,.hdr{animation:none!important;opacity:1!important}
