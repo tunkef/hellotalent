@@ -6,11 +6,12 @@
 
 ## Mevcut Durum
 
-**Son tamamlanan:** Asama 63 (2 Nisan 2026 gece) — Landing Page Redesign + Dark Mode + Nav Polish
-**Son commit:** ba9e452 — P3 regression test fix (stale AI-COLLAB assertion)
-**Test durumu:** 365/365 P3 regression + 32/32 smoke = 397 test PASS
+**Son tamamlanan:** Asama 69 (7 Nisan 2026) — Public-Site Complete Redesign
+**Son commit:** b222bd7 — dark mode header cascade fix
+**Test durumu:** 196/196 QA visual audit PASS (4 viewport x light/dark x 5 sayfa)
 **Beta Launch Paketi:** TAMAMLANDI (Asama 48-61)
 **Landing Page Redesign:** TAMAMLANDI (Asama 63)
+**Public-Site Redesign:** TAMAMLANDI (Asama 69)
 
 ## Tamamlanan Bloklar (2 Nisan 2026)
 
@@ -24,6 +25,7 @@
 | Egitim Dashboard | 58-59 | ✅ Rozet tooltip, ilerleme karti |
 | HT Info Revizyon | 60-61 | ✅ Center feed + left rail compact |
 | Landing Page Redesign | 63 | ✅ Gate + dual LP (aday/isveren), LinkedIn-style, dark mode, nav brand colors, 397 test PASS |
+| Public-Site Redesign | 69 | ✅ 5 sayfa Clatu-first editorial: index/aday/isveren/hakkimizda/iletisim. Premium copy (Gemini UAT), dark mode, glassmorphism header, login redirect, QA 196 PASS |
 
 ## Pipeline Infra (2 Nisan 2026)
 
@@ -43,12 +45,10 @@
 
 ## Bir Sonraki Adim
 
-Landing page redesign + dark mode + nav polish tamamlandi, production'da canli. Sonraki adimlar:
-- **profil.html landing entegrasyonu** — logged-in kullanici gate'i bypass etmeli; direct profil.html routing dogrulama
-- **Delinked sayfalar karari** — kariyer/pozisyonlar/yetkinlik/blog/hakkimizda/isalim-rotasi nav'dan kaldirildi; kalici silme vs yenileme karari bekleniyor
-- **Lead form backend** — isveren.html lead formu simdilik client-side; Supabase'e kayit akisi eklenebilir
+Public-site redesign tamamlandi (5 sayfa), production'da canli. Sonraki adimlar:
+- **Yasal sayfalar dark mode** — gizlilik/kvkk/kullanim-sartlari/cerez dark mode desteği yok, editorial yapisi mevcut (navy hero + legal body), gorsel gerekmez
+- **Lead form backend** — isveren.html lead formu Supabase RPC ile calisiyor (submit_employer_lead), email notification pipeline eklenebilir
+- **Delinked sayfalar karari** — kariyer/pozisyonlar/yetkinlik/blog/isalim-rotasi nav'dan kaldirildi; kalici silme vs yenileme karari bekleniyor
+- **profil.html landing entegrasyonu** — logged-in kullanici gate'i bypass etmeli
 - **Pozisyon gorunum/esleme metrikleri** — backend counter/trigger gerekli
 - **iyzico/Stripe checkout** — DEFER (beta 3 ay ucretsiz)
-- Profil senaryo testleri (product readiness)
-- Pozisyon gorunum/esleme metrikleri
-- iyzico entegrasyonu (her zaman en son)

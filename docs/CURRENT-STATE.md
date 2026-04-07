@@ -1,5 +1,5 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 6 Nisan 2026 | Asama 68 + Public-Site Design/Content Protocol
+> Son guncelleme: 7 Nisan 2026 | Asama 69 — Public-Site Redesign Complete
 
 ## 1. Proje Ozeti
 
@@ -33,9 +33,11 @@ hellotalent.ai, Turkiye perakende sektorune ozel bir yetenek pazaryeri. Adaylar 
 
 ## 2. Canli Ozellikler
 
-- **Gate sayfasi (index.html)** — Tam ekran split landing: sol aday / sag isveren, sirt-sirta illustrasyonlar (aday sag alt, isveren sol alt ayna), gradient arka planlar (vermillion warm / navy cool), hover radial glow + buton scale efekti, logo sol + giris yap sag ust (~140 satir) | `index.html`, `assets/gate/gate-aday.png`, `assets/gate/gate-isveren.svg`
-- **Aday landing (aday.html)** — LinkedIn tarzinda: Google signup CTA, pill ozellikler, 3 adim onboarding akisi, "Kimin icin?" bolumu (~476 satir) | `aday.html`
-- **Isveren landing (isveren.html)** — LinkedIn tarzinda: navy hero, lead form, marka pill'leri, alternating white/warm-gray bolumler (~586 satir) | `isveren.html`
+- **Gate sayfasi (index.html)** — Clatu-first split gate: 2 zone (Is Ariyorum / Yetenek Ariyorum), flex expansion hover (60/40 ratio), radial gradient glow, SVG illustrasyonlar (gate-aday-final.svg, gate-isveren-final.svg), prefers-color-scheme dark mode, responsive (vertical stack <=900px, illustrations right-aligned mobile) | `index.html`, `assets/gate/`
+- **Aday landing (aday.html)** — Clatu editorial: hero (Google signup + trust pills), features split + mini bento (6 kart), 3 step cards (SVG illustrations, dark mode bg), "Kimin icin?" 3 kategori, final CTA + edge-to-edge scene, login popup bypass (direkt giris.html?tab=aday), vermillion login button | `aday.html`, `assets/aday/`
+- **Isveren landing (isveren.html)** — Navy theme: hero + CTA, features bento (6 kart, featured Uyumlu Eslestirme), 3 step cards, "Kimin icin?" (Markalar/Grup/Danismanlik), lead form (CRO copy: "Demoyu Planla", "Ucretsiz Demoyu Baslatin"), edge-to-edge scene, "hellohunter" logo easter egg, navy login button, login popup bypass (direkt giris.html?tab=ik) | `isveren.html`, `assets/isveren/`
+- **Hakkimizda (hakkimizda.html)** — Premium editorial: vizyoner hero ("Retail dunyasinda bag kurma bicimini degistiriyoruz"), quiet luxury mission section (kusursuz eslesme + diskresyon), value cards (3 SVG illustrations: Retail Ekosistemi, Kor Eslestirme, Yetkinlik), CTA (Profil Olustur + Demo Talep Et), edge-to-edge scene | `hakkimizda.html`, `assets/hakkimizda/`
+- **Iletisim (iletisim.html)** — Premium contact: hero + illustration, 3 contact cards (Genel/Kesfetmeye Baslayin/Stratejik Ortaklik), HQ split section (adres + email + 4 sosyal ikon + Google Maps embed + lokasyon karti overlay), CTA ("Tanisma Randevusu Al"), edge-to-edge retail street scene | `iletisim.html`, `assets/iletisim/`
 - **Aday profil wizard** — 4 adimli onboarding, deneyim/egitim/dil/sertifika/tercih | `profil-wizard.js`
 - **Glassmorphic float header** — LinkedIn-style, 5 nav, avatar dropdown, dark mode toggle | `profil.html`
 - **Markalar paneli** — 96 marka, informative card v2 (cover gorsel, magaza/calisan sayisi, takip butonu), 31 marka gorseli optimize, company/brand hierarchy | `profil-markalar.js`
@@ -63,11 +65,13 @@ hellotalent.ai, Turkiye perakende sektorune ozel bir yetenek pazaryeri. Adaylar 
 
 | Dosya | Gorev |
 |-------|-------|
-| `shared.js` | Supabase client init, ortak helper'lar, tek config noktasi; header nav sadeleştirildi (6 sayfa delinked: kariyer, pozisyonlar, yetkinlik, blog, hakkimizda, isalim-rotasi); footer 2 kolon: Platform + Yasal |
-| `shared.css` | Design system tokenleri, ortak stiller; 14 yeni LinkedIn-tipi tipografi tokeni eklendi (--heading-xl/lg/md/sm, --body-lg/md/sm, --lp-radius-*, --lp-section-pad, --lp-max-width, --warm-gray) |
-| `index.html` | Gate sayfasi — tam ekran split (aday/isveren secimi), ~110 satir |
-| `aday.html` | Aday landing — LinkedIn tarzinda, Google signup, pill features, 3 adim, "kimin icin" bolumu, ~476 satir |
-| `isveren.html` | Isveren landing — LinkedIn tarzinda, navy hero, lead form, marka pill'leri, ~586 satir |
+| `shared.js` | Supabase client init, header/footer inject, page-aware login redirect (aday→giris?tab=aday, isveren→giris?tab=ik, digerleri→giris.html), hamburger menu (Adaylar/Isverenler/Hakkimizda/Iletisim), footer: Platform + Yasal + 4 sosyal (X/TikTok/IG/LinkedIn) |
+| `shared.css` | Design system tokenleri, glassmorphism header (blur 16px, dark mode semi-transparent), mobile menu dark mode, footer grid fix, LP tokenleri |
+| `index.html` | Gate sayfasi — Clatu split (flex expansion hover), SVG illustrations, ~280 satir |
+| `aday.html` | Aday landing — Clatu editorial, hero+bento+steps+who+CTA, ~520 satir |
+| `isveren.html` | Isveren landing — navy theme, hero+bento+steps+who+lead form, ~510 satir |
+| `hakkimizda.html` | Hakkimizda — premium editorial, hero+mission+values+CTA, ~230 satir |
+| `iletisim.html` | Iletisim — contact cards+HQ split+map+scene, ~260 satir |
 | `profil.html` | Ana aday sayfasi (~6300 satir), panel switch, header |
 | `css/tokens.css` | 3-katmanli design token sistemi (primitive → semantic → component) + dark mode overrides |
 | `css/layout.css` | Reset, header, sidebar, theme toggle, loading, panels, bottom nav |
@@ -128,7 +132,7 @@ hellotalent.ai, Turkiye perakende sektorune ozel bir yetenek pazaryeri. Adaylar 
 10. **iyzico/Stripe checkout** — schema hazir, merchant hesap + API key gerekli (**her zaman en son**)
 11. ~~**Supabase Advisor Fix'leri (SA1-SA5) + LB6 + 2FA**~~ — ✅ TAMAMLANDI (Session 66, 6 Nisan). SA1-SA5: search_path + FK index + cron + bio RPC. LB6: security_audit_log + haftalik RLS audit + security dashboard. 2FA: TOTP enrollment (ayarlar) + login challenge (giris.html). Code review fix'leri: Sonnet reviewer 6 sorun + DeepSeek 4 ek bulgu — hepsi duzeltildi. **820/833 Playwright test PASS** (12 auth = bilinen blocker, 1 setup = env var eksik).
 12. ~~**Design System CSS Overhaul (Kademe 0-3)**~~ — ✅ TAMAMLANDI (Session 67-68, 6 Nisan). profil.css → 7 modular CSS. ht- component class sistemi. Task 14: Eski class alias temizligi tamamlandi (chip/field/exp-card/modal/card/btn dual-write → tek ht- class). Task 15: Inline style temizligi (6 utility class, ~50 inline style → class). Kademe 3: Header nav sadelesti (3 item), bottom nav yeniden siralandi (Genel/Kesfet/Mesajlar/Teklifler/Profil). **820/820 Playwright test PASS.**
-13. **Public-site design + content revision protocol** — AKTIF sonraki calisma hatti. Scope once `index.html`, `aday.html`, `isveren.html`, `giris.html`. Dashboardlar (`profil.html`, `ik.html`, `admin.html`, `coach-studio.html`) bu track'te freeze. Design workflow: Stitch → 21st.dev → Pro UI UX Max → Recraft → repo implementasyonu. Content workflow: AI-SEO + anti-AI-writing copy discipline. Hedef: HelloTalent'a ozel, guvenilir, Turkish-first, AI-citation-friendly public copy ve daha rafine marketing UX.
+13. ~~**Public-site design + content revision**~~ — ✅ TAMAMLANDI (Session 69, 7 Nisan). 5 public sayfa tamamen yeniden tasarlandi (index, aday, isveren, hakkimizda, iletisim). Clatu-first editorial design sistemi: Bricolage Grotesque + Plus Jakarta Sans, Vermillion dominant, Navy authority. prefers-color-scheme dark mode tum sayfalarda. Glassmorphism header (blur, dark mode). Login popup kaldirildi (direkt page-aware redirect). Hamburger menu: Adaylar/Isverenler/Hakkimizda/Iletisim. Gemini UAT geribildirim dongusu ile premium copy iterasyonlari (quiet luxury, CRO, diskresyon). 196/196 Playwright QA test PASS. Footer mobile grid fix. Responsive 4 viewport (390/768/1024/1440). Edge-to-edge scene gorselleri (WebP optimize). Google Maps embed (iletisim). "hellohunter" logo easter egg (isveren). Commits: 57aadcf–b222bd7 (~30 commit).
 
 ## 5b. Sosyal Layer Audit Kararlari (Session 45 — 30 Mart)
 
@@ -141,6 +145,17 @@ hellotalent.ai, Turkiye perakende sektorune ozel bir yetenek pazaryeri. Adaylar 
 **Sonuc:** T02/T03/T04 otomatik DEFERRED. Onkosula: 50+ aktif pratikci icin T42-lite (topluluk nabzi karti) yeniden degerlendirilir.
 
 ## 6. Son 3 Session Ozeti
+
+### Session 69 (7 Nisan — Asama 69: Public-Site Complete Redesign)
+**5 public sayfa Clatu-first editorial tasarimla tamamen yeniden yazildi. Premium copy iterasyonlari. Dark mode. QA.**
+
+**Sayfalar:** (1) `isveren.html` lead form CRO copy guncelleme (Demoyu Planla, Ucretsiz Demoyu Baslatin, sektore ozel dropdown) + edge-to-edge cta-scene gorsel. (2) `hakkimizda.html` sifirdan: vizyoner hero, quiet luxury mission split (kusursuz eslesme + diskresyon), value cards (3 SVG illustration), premium tags, CTA. (3) `iletisim.html` sifirdan: hero + 3 contact card + HQ split section (adres/email/4 sosyal ikon + Google Maps embed + lokasyon karti) + retail street scene.
+
+**Shared infrastructure:** Login popup tamamen kaldirildi → page-aware direkt redirect (aday→giris?tab=aday, isveren→giris?tab=ik, diger→giris.html). Hamburger menu: Hakkimizda + Iletisim eklendi, Giris Yap cikarildi. Header: glassmorphism (blur 16px), dark mode (semi-transparent dark bg, beyaz hamburger/logo/links). Footer: mobile grid fix (display:flex→grid). Cache-bust: shared.css v=20260407g, shared.js v=20260407f.
+
+**QA:** 3 paralel Playwright agent (196 test, 4 viewport x light/dark). 3 sorun bulundu ve fixlendi: footer mobile overflow, who-summary nowrap, gate illustration clip. Responsive: hero order (baslik once, gorsel sonra), cta-img max-height + object-fit:cover, gate illustrations right-aligned mobile. Step SVG dark mode bg. Trust items ortalanmis mobile.
+
+**~30 commit. 5 dosya + shared.css + shared.js + 8 asset (WebP + SVG).**
 
 ### Session 68 (6 Nisan — Asama 68: Design System Full Migration — Task 14-15 + Kademe 3)
 **Dual-write'tan tek class migration'i tamamlandi. Inline style temizligi. Header/bottom nav sadelesti.**
