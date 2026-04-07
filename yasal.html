@@ -11,6 +11,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200;12..96,400;12..96,600;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="shared.css?v=20260407y">
 <style>
+/* Hide aday/isveren nav links on legal page */
+.header-nav{display:none!important}
+
 .yasal-hero{
   background:var(--navy);color:#fff;
   padding:clamp(100px,12vh,140px) 24px clamp(40px,5vh,60px);
@@ -29,20 +32,20 @@
 /* ── TABS ── */
 .yasal-tabs{
   display:flex;gap:8px;justify-content:center;flex-wrap:wrap;
-  max-width:800px;margin:-24px auto 0;position:relative;z-index:2;
-  padding:0 16px;
+  max-width:800px;margin:0 auto;
+  padding:24px 16px 0;
 }
 .yasal-tab{
   font-family:'Plus Jakarta Sans',sans-serif;
   font-size:13px;font-weight:600;
   padding:12px 20px;border-radius:8px;
-  border:1px solid var(--border);
-  background:var(--bg-section);color:var(--text-secondary);
+  border:1.5px solid rgba(255,255,255,0.25);
+  background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.7);
   cursor:pointer;transition:all 0.2s;
 }
-.yasal-tab:hover{border-color:var(--navy);color:var(--navy)}
+.yasal-tab:hover{border-color:rgba(255,255,255,0.5);color:#fff}
 .yasal-tab.active{
-  background:var(--navy);color:#fff;border-color:var(--navy);
+  background:#fff;color:var(--navy);border-color:#fff;
 }
 
 /* ── CONTENT ── */
@@ -184,9 +187,7 @@
   .cookie-card-head{background:rgba(255,255,255,0.03)}
   .pref-section{border-color:rgba(255,255,255,0.06)}
   .pref-row{border-color:rgba(255,255,255,0.06)}
-  .yasal-tab{background:rgba(255,255,255,0.04);border-color:rgba(255,255,255,0.08);color:rgba(255,255,255,0.6)}
-  .yasal-tab:hover{border-color:rgba(255,255,255,0.3);color:#fff}
-  .yasal-tab.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+  .yasal-tab.active{background:rgba(255,255,255,0.15);color:#fff;border-color:rgba(255,255,255,0.3)}
 }
 
 /* ── Responsive ── */
@@ -207,14 +208,13 @@
 <section class="yasal-hero">
   <h1>Yasal Bilgiler</h1>
   <p>hellotalent.ai yasal metinleri ve politikaları</p>
+  <div class="yasal-tabs">
+    <button class="yasal-tab active" data-tab="gizlilik">Gizlilik Politikasi</button>
+    <button class="yasal-tab" data-tab="kullanim">Kullanim Sartlari</button>
+    <button class="yasal-tab" data-tab="kvkk">KVKK Aydinlatma</button>
+    <button class="yasal-tab" data-tab="cerez">Cerez Politikasi</button>
+  </div>
 </section>
-
-<div class="yasal-tabs">
-  <button class="yasal-tab active" data-tab="gizlilik">Gizlilik Politikasi</button>
-  <button class="yasal-tab" data-tab="kullanim">Kullanim Sartlari</button>
-  <button class="yasal-tab" data-tab="kvkk">KVKK Aydinlatma</button>
-  <button class="yasal-tab" data-tab="cerez">Cerez Politikasi</button>
-</div>
 
 <div class="yasal-content">
 
