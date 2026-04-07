@@ -217,9 +217,10 @@ body{background:var(--bg-page)}
   border-radius:12px;
   padding:20px;
   border:1px solid var(--border);
-  display:flex;flex-direction:column;gap:12px;
+  display:flex;align-items:center;gap:18px;
   transition:transform .3s cubic-bezier(0.16,1,0.3,1), box-shadow .3s ease, border-color .3s ease;
   cursor:default;
+  text-align:left;
 }
 .step-card:hover{
   transform:translateY(-2px);
@@ -227,8 +228,10 @@ body{background:var(--bg-page)}
   border-color:var(--verm);
 }
 .step-vis{
-  width:48px;height:48px;min-width:48px;
+  width:72px;height:72px;min-width:72px;
   object-fit:contain;
+  order:1;
+  margin-left:auto;
 }
 .step-body{flex:1}
 .step-n{
@@ -416,31 +419,28 @@ body{background:var(--bg-page)}
     <p class="split-desc" style="margin-bottom:32px">Basit, hızlı, etkili.</p>
     <div class="steps-row">
       <div class="step-card">
-        <img class="step-vis" src="assets/aday/step-01-profil.svg" alt="" width="48" height="48" loading="lazy">
         <div class="step-body">
           <span class="step-n">01</span>
           <div class="step-t">Profil Oluştur</div>
           <p class="step-d">Deneyim, yetkinlik ve kariyer hedeflerini paylaş.</p>
-          <span class="step-usp">CV zorunlu değil</span>
         </div>
+        <img class="step-vis" src="assets/aday/step-01-profil.svg" alt="" loading="lazy">
       </div>
       <div class="step-card">
-        <img class="step-vis" src="assets/aday/step-02-gelistir.svg" alt="" width="48" height="48" loading="lazy">
         <div class="step-body">
           <span class="step-n">02</span>
           <div class="step-t">Kendini Geliştir</div>
           <p class="step-d">Mülakat Koçu ile pratik yap, AI geri bildirim al.</p>
-          <span class="step-usp">AI destekli</span>
         </div>
+        <img class="step-vis" src="assets/aday/step-02-gelistir.svg" alt="" loading="lazy">
       </div>
       <div class="step-card">
-        <img class="step-vis" src="assets/aday/step-03-markalar.svg" alt="" width="48" height="48" loading="lazy">
         <div class="step-body">
           <span class="step-n">03</span>
           <div class="step-t">Markalar Seni Bulsun</div>
           <p class="step-d">"Beni Öner" aç, profilini görünür yap.</p>
-          <span class="step-usp">Kontrol sende</span>
         </div>
+        <img class="step-vis" src="assets/aday/step-03-markalar.svg" alt="" loading="lazy">
       </div>
     </div>
   </div>
