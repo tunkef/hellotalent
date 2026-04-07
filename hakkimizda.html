@@ -123,15 +123,11 @@ body{background:var(--bg-page);font-family:var(--font-b)}
   display:inline-flex;align-items:center;justify-content:center;
   padding:12px 28px;border-radius:var(--radius);
   font-family:var(--font-b);font-size:14px;font-weight:700;
-  background:transparent;color:var(--navy);text-decoration:none;
+  background:var(--navy);color:#fff;text-decoration:none;
   border:1.5px solid var(--navy);
-  transition:background .2s,transform .2s,color .2s;
+  transition:background .2s,transform .2s;
 }
-.btn-navy-o:hover{background:var(--navy);color:#fff;transform:translateY(-1px)}
-@media(prefers-color-scheme:dark){
-  .btn-navy-o{color:var(--text-primary);border-color:rgba(255,255,255,0.2)}
-  .btn-navy-o:hover{background:rgba(255,255,255,0.1);color:var(--text-primary)}
-}
+.btn-navy-o:hover{background:#162044;transform:translateY(-1px)}
 
 /* ── CTA SCENE ── */
 .cta-img{
@@ -197,8 +193,8 @@ body{background:var(--bg-page);font-family:var(--font-b)}
 <div class="section-cta">
   <p class="section-cta-text">Perakendede yeni nesil işe alım standardı.</p>
   <div class="section-cta-btns">
-    <a href="/isveren.html#lead-form" class="btn-verm">Demo Talep Et</a>
-    <a href="/aday.html" class="btn-navy-o">Profil Oluştur</a>
+    <a href="/aday.html" class="btn-verm">Profil Oluştur</a>
+    <a href="/isveren.html#lead-form" class="btn-navy-o">Demo Talep Et</a>
   </div>
 </div>
 
