@@ -197,7 +197,10 @@ body{background:var(--bg-page)}
 }
 
 /* ── KIM ICIN ── */
-.who-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:28px}
+.who-split{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center}
+.who-stack{display:flex;flex-direction:column;gap:12px}
+.who-vis{border-radius:14px;overflow:hidden}
+.who-vis img{width:100%;height:100%;object-fit:cover;display:block;border-radius:14px}
 .who-card{
   position:relative;
   background:var(--bg-section);border-radius:12px;padding:20px;
@@ -275,7 +278,8 @@ body{background:var(--bg-page)}
   .hero-vis{min-height:220px}
   .split{grid-template-columns:1fr;gap:28px}
   .steps-row{grid-template-columns:1fr}
-  .who-grid{grid-template-columns:1fr}
+  .who-split{grid-template-columns:1fr;gap:32px}
+  .who-vis{min-height:220px}
 }
 @media(max-width:480px){
   .hero-hl{font-size:30px;letter-spacing:-1px}
@@ -384,23 +388,30 @@ body{background:var(--bg-page)}
 <!-- 4. KIM ICIN -->
 <section class="s s-warm">
   <div class="s-inner">
-    <h2 class="split-hl"><span style="color:var(--navy)">hello</span><span style="color:var(--verm)">talent</span> her ölçekte retail işvereni için.</h2>
-    <p class="split-desc" style="margin-bottom:28px">Yetenek avını otomatiğe bağlayan markaların ortak adresi. Tek mağazadan global zincirlere kadar, retail dinamikleri için tasarlandı.</p>
-    <div class="who-grid">
-      <div class="who-card">
-        <span class="who-label">Hızlı Eşleşme</span>
-        <div class="who-card-t">Markalar</div>
-        <p class="who-card-d">Kendi mağaza ağını yöneten, ekibini doğrudan yeteneklerle eşleşerek sessiz ve hızlı kurmak isteyen markalar.</p>
+    <div class="who-split">
+      <div>
+        <h2 class="split-hl"><span style="color:var(--navy)">hello</span><span style="color:var(--verm)">talent</span> her ölçekte retail işvereni için.</h2>
+        <p class="split-desc" style="margin-bottom:24px">Yetenek avını otomatiğe bağlayan markaların ortak adresi. Tek mağazadan global zincirlere kadar, retail dinamikleri için tasarlandı.</p>
+        <div class="who-stack">
+          <div class="who-card">
+            <span class="who-label">Hızlı Eşleşme</span>
+            <div class="who-card-t">Markalar</div>
+            <p class="who-card-d">Kendi mağaza ağını yöneten, ekibini doğrudan yeteneklerle eşleşerek sessiz ve hızlı kurmak isteyen markalar.</p>
+          </div>
+          <div class="who-card">
+            <span class="who-label">Takım Sistemi</span>
+            <div class="who-card-t">Grup Şirketler</div>
+            <p class="who-card-d">Çoklu marka portföyünü tek merkezden yöneten, merkezi aday havuzu ve operasyonel verimlilik arayan yapılar.</p>
+          </div>
+          <div class="who-card">
+            <span class="who-label">Filtrelenmiş Havuz</span>
+            <div class="who-card-t">Danışmanlıklar</div>
+            <p class="who-card-d">Müşterileri adına en doğru adaylara nokta atışı ulaşmak ve süreci hızlandırmak isteyen İK profesyonelleri.</p>
+          </div>
+        </div>
       </div>
-      <div class="who-card">
-        <span class="who-label">Takım Sistemi</span>
-        <div class="who-card-t">Grup Şirketler</div>
-        <p class="who-card-d">Çoklu marka portföyünü tek merkezden yöneten, merkezi aday havuzu ve operasyonel verimlilik arayan yapılar.</p>
-      </div>
-      <div class="who-card">
-        <span class="who-label">Filtrelenmiş Havuz</span>
-        <div class="who-card-t">Danışmanlıklar</div>
-        <p class="who-card-d">Müşterileri adına en doğru adaylara nokta atışı ulaşmak ve süreci hızlandırmak isteyen İK profesyonelleri.</p>
+      <div class="who-vis">
+        <img src="assets/isveren/cta-scene.webp" alt="Retail ekibi ofiste birlikte çalışırken" width="1536" height="878" loading="lazy">
       </div>
     </div>
   </div>
@@ -437,8 +448,6 @@ body{background:var(--bg-page)}
     </div>
   </div>
 </section>
-
-<img class="cta-img" src="assets/isveren/cta-scene.webp" alt="Retail ekibi ofiste birlikte çalışırken" width="1536" height="878" loading="lazy">
 
 <div id="ht-footer"></div>
 
