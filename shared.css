@@ -72,11 +72,13 @@ body {
 }
 .header-logo span { color: var(--verm); }
 @media(prefers-color-scheme:dark){
-  .site-header{background:rgba(11,13,23,0.75);border-bottom-color:rgba(255,255,255,0.06)}
+  .site-header{background:rgba(11,13,23,0.8);border-bottom-color:rgba(255,255,255,0.06)}
   .header-logo{color:#F0F0EE}
   .nav-link{color:rgba(240,240,238,0.5)}
   .nav-link:hover{color:#F0F0EE;background:rgba(255,255,255,0.06)}
-  .btn-nav-login{border-color:rgba(255,255,255,0.15)}
+  .hamburger span{background:#F0F0EE}
+  .hamburger:hover{background:rgba(255,255,255,0.06)}
+  .btn-nav-login{border-color:rgba(255,255,255,0.15);color:#F0F0EE}
 }
 
 /* ══ NAV ══ */
