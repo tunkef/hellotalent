@@ -84,6 +84,50 @@ body{background:var(--bg-page);font-family:var(--font-b)}
   .value-card:hover{border-color:var(--verm)}
 }
 
+/* ── TAGS ── */
+.tag-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+.tag{
+  font-family:var(--font-m);font-size:11px;letter-spacing:0.5px;
+  padding:6px 12px;border-radius:6px;
+  background:var(--bg-section);border:1px solid var(--border);
+  color:var(--text-muted);
+}
+@media(prefers-color-scheme:dark){
+  .tag{background:rgba(255,255,255,0.04);border-color:rgba(255,255,255,0.08)}
+}
+
+/* ── SECTION CTA ── */
+.section-cta{
+  text-align:center;padding:clamp(32px,5vw,48px) clamp(24px,5vw,48px);
+  background:var(--bg-warm);
+}
+.section-cta-text{
+  font-size:15px;color:var(--text-muted);margin-bottom:20px;
+  font-style:italic;
+}
+.section-cta-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.btn-verm{
+  display:inline-flex;align-items:center;justify-content:center;
+  padding:12px 28px;border-radius:var(--radius);
+  font-family:var(--font-b);font-size:14px;font-weight:700;
+  background:var(--verm);color:#fff;text-decoration:none;
+  transition:background .2s,transform .2s;
+}
+.btn-verm:hover{background:#A83D1E;transform:translateY(-1px)}
+.btn-navy-o{
+  display:inline-flex;align-items:center;justify-content:center;
+  padding:12px 28px;border-radius:var(--radius);
+  font-family:var(--font-b);font-size:14px;font-weight:700;
+  background:transparent;color:var(--navy);text-decoration:none;
+  border:1.5px solid var(--navy);
+  transition:background .2s,transform .2s,color .2s;
+}
+.btn-navy-o:hover{background:var(--navy);color:#fff;transform:translateY(-1px)}
+@media(prefers-color-scheme:dark){
+  .btn-navy-o{color:var(--text-primary);border-color:rgba(255,255,255,0.2)}
+  .btn-navy-o:hover{background:rgba(255,255,255,0.1);color:var(--text-primary)}
+}
+
 /* ── CTA SCENE ── */
 .cta-img{
   width:100vw;
@@ -123,16 +167,36 @@ body{background:var(--bg-page);font-family:var(--font-b)}
   <div class="s-inner">
     <div class="split">
       <div>
-        <h2 class="split-hl">İlan yayınlama dönemini kapatıyoruz.</h2>
-        <p class="split-desc">Mağaza katından bölge yönetimine kadar perakende sektörünün tüm profesyonellerini tek çatıda topluyoruz. Adaylar profillerini oluşturup yapay zeka destekli araçlarla kendilerini geliştirirken, işverenler kriterlerine en uygun yeteneklere sessiz ve hızlı şekilde ulaşır.</p>
+        <h2 class="split-hl">İlan verme devri bitti, akıllı eşleşme başladı.</h2>
+        <p class="split-desc">Retail operasyonunuzu yavaşlatan ilan süreçlerini geride bırakın. hellotalent, binlerce aday arasından sadece kriterlerinize uyan yetenekleri karşınıza çıkarır. Siz ilan yönetmekle vakit kaybetmeyin, ekibinizi büyütmeye odaklanın.</p>
+        <p class="split-desc" style="margin-top:12px;font-size:13px;font-style:italic;opacity:0.8">Mağaza katından genel merkeze, tüm retail kadroları tek panelde.</p>
+        <div class="tag-row">
+          <span class="tag">Sıfır İlan Maliyeti</span>
+          <span class="tag">Otomatik Filtreleme</span>
+          <span class="tag">Hızlı Geri Bildirim</span>
+        </div>
       </div>
       <div>
-        <h2 class="split-hl">Eşleşme bazlı, gizlilik odaklı.</h2>
-        <p class="split-desc">Sektöre özel bir işe alım deneyimi sunuyoruz. Adaylar görünmez modda kalabilir, işverenler yalnızca kriterlere uyan yetenekleri görür. Her iki taraf da kontrol sahibi.</p>
+        <h2 class="split-hl">Görünmez modla, en iyi yeteneklere sessizce ulaşın.</h2>
+        <p class="split-desc">Sektörün en yetkin isimleri her zaman aktif iş arayışında değildir. hellotalent'ın gizlilik odaklı yapısı sayesinde, adaylar "görünmez" modda kalırken siz onlara sessizce ulaşabilirsiniz. Kaliteli aday havuzuna erişim artık çok daha seçici ve güvenli.</p>
+        <div class="tag-row">
+          <span class="tag">Pasif Aday Erişimi</span>
+          <span class="tag">%100 Veri Gizliliği</span>
+          <span class="tag">Yüksek Uyum Skoru</span>
+        </div>
       </div>
     </div>
   </div>
 </section>
+
+<!-- 2.5 SECTION CTA -->
+<div class="section-cta">
+  <p class="section-cta-text">Geleneksel yöntemleri terk etmenin vakti geldi.</p>
+  <div class="section-cta-btns">
+    <a href="/isveren.html#lead-form" class="btn-verm">Demo Talep Et</a>
+    <a href="/aday.html" class="btn-navy-o">Profil Oluştur</a>
+  </div>
+</div>
 
 <!-- 3. DEĞERLER -->
 <section class="s s-white">
