@@ -97,7 +97,7 @@ function updateMerkezCards() {
 
   // ── Card 2: Deneyim ──
   var cbNoExp = document.getElementById('cb-no-experience');
-  var expCards = document.querySelectorAll('.exp-card');
+  var expCards = document.querySelectorAll('#exp-cards-container > .ht-card');
   var p2 = document.getElementById('mk-preview-2');
   var e2 = document.getElementById('mk-empty-2');
 
@@ -305,7 +305,7 @@ function updateMerkezIdentity() {
   // Role + Company from latest experience
   var roleEl = document.getElementById('merkez-role');
   var companyEl = document.getElementById('merkez-company');
-  var expCards = document.querySelectorAll('.exp-card');
+  var expCards = document.querySelectorAll('#exp-cards-container > .ht-card');
   var cbNoExp = document.getElementById('cb-no-experience');
   var hasCurrentEmployer = getCurrentEmployerDisplayFromExperiences(_loadedDBData ? _loadedDBData.experiences : null);
 
@@ -390,7 +390,7 @@ function calculateCompletion() {
 
   // ── B) Deneyim — 20 puan ──
   var cbNoExp = document.getElementById('cb-no-experience');
-  var expCards = document.querySelectorAll('.exp-card');
+  var expCards = document.querySelectorAll('#exp-cards-container > .ht-card');
   if (cbNoExp && cbNoExp.checked) {
     score += 10;
   } else if (expCards.length > 0) {
@@ -459,7 +459,7 @@ function calculateProfileScore() {
 
   // ── B) Experience — 35 points ──
   var cbNoExp = document.getElementById('cb-no-experience');
-  var expCards = document.querySelectorAll('.exp-card');
+  var expCards = document.querySelectorAll('#exp-cards-container > .ht-card');
   if (cbNoExp && cbNoExp.checked) {
     // No-experience path: fair flat award (max achievable ~85/100)
     score += 20;
@@ -509,7 +509,7 @@ function calculateProfileScore() {
 function getProfileScoreHints() {
   var hints = [];
   var cbNoExp = document.getElementById('cb-no-experience');
-  var expCards = document.querySelectorAll('.exp-card');
+  var expCards = document.querySelectorAll('#exp-cards-container > .ht-card');
   var hasExp = (cbNoExp && cbNoExp.checked) || expCards.length > 0;
 
   // ── Deneyim ──

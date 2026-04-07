@@ -454,7 +454,7 @@
 }
 
 /* Wizard save-exit button (outline, secondary) */
-.btn-save-exit {
+.ht-btn--save-exit {
   display: inline-flex; align-items: center; gap: 6px;
   padding: 8px 14px;
   background: transparent;
@@ -465,7 +465,7 @@
   cursor: pointer;
   transition: all 0.15s;
 }
-.btn-save-exit:hover {
+.ht-btn--save-exit:hover {
   background: var(--green-light);
 }
 
@@ -478,7 +478,7 @@
 
 /* Reusable 3-col bento grid for panels (Ayarlar, Kim Baktı) */
 .ht-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-.ht-grid-3 > .card { margin-bottom: 0; }
+.ht-grid-3 > .ht-card { margin-bottom: 0; }
 .ht-grid-3 > .ht-span-2 { grid-column: span 2; }
 @media (max-width: 768px) {
   .ht-grid-3 { grid-template-columns: 1fr; }
@@ -1041,17 +1041,7 @@
 .modal-confirm-desc{font-size:var(--text-base);color:var(--text-muted);margin-bottom:20px;line-height:1.5;}
 .modal-confirm-actions{display:flex;gap:10px;justify-content:center;}
 
-/* ── MODALS ── */
-.modal-overlay{
-  display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);
-  z-index:900;align-items:center;justify-content:center;
-}
-.modal-overlay.show{display:flex;}
-.modal{
-  background:var(--bg-surface);border-radius:var(--radius-lg);padding:36px 32px 28px;
-  max-width:400px;width:90%;max-height:90vh;overflow-y:auto;
-  box-shadow:0 8px 32px rgba(0,0,0,0.12);text-align:center;
-}
+/* ── MODAL SUB-ELEMENTS ── */
 .modal-icon{
   width:40px;height:40px;border-radius:50%;background:var(--success-soft);
   color:var(--success);display:flex;align-items:center;justify-content:center;
@@ -1064,7 +1054,7 @@
 .modal-desc{font-size:var(--text-md);color:var(--text-muted);margin-bottom:24px;line-height:1.5;}
 
 /* Success modal (wizard completion) — celebratory, premium */
-#modal-success .modal{
+#modal-success .ht-modal{
   padding:40px 32px 32px;
   box-shadow:0 8px 32px rgba(0,0,0,0.12),0 0 0 1px var(--border-subtle),0 0 48px rgba(22,163,74,0.12);
 }
@@ -1422,7 +1412,7 @@
   .wiz-step-title{font-size:var(--text-2xl);}
   .field-row{grid-template-columns:1fr;}
   .field-row-3{grid-template-columns:1fr;}
-  .exp-card{padding:12px;}
+  #exp-cards-container > .ht-card{padding:12px;}
   /* v3 Genel Bakış mobile */
   .g-hero-inner{flex-direction:column;align-items:flex-start;gap:10px;}
   .g-hero-right{width:100%;justify-content:space-between;}
@@ -1448,8 +1438,8 @@
 }
 /* Dark mode: wizard premium surfaces */
 html[data-theme="dark"] #panel-profil .wiz-step .wiz-step-desc{border-bottom-color:var(--border-subtle);}
-html[data-theme="dark"] #panel-profil .card,
-html[data-theme="dark"] #panel-profil .exp-card,
+html[data-theme="dark"] #panel-profil .ht-card,
+html[data-theme="dark"] #panel-profil #exp-cards-container > .ht-card,
 html[data-theme="dark"] #panel-profil .dyn-row{
   background:var(--bg-elevated);
   border-color:var(--border-subtle);
@@ -1463,9 +1453,9 @@ html[data-theme="dark"] #panel-profil .dynamic-row{
 }
 
 /* ═══ Dark mode polish: Eğitim, Tercihler, Lokasyon only (steps 3–5) ═══ */
-html[data-theme="dark"] #wiz-step-3 .card-title,
-html[data-theme="dark"] #wiz-step-4 .card-title,
-html[data-theme="dark"] #wiz-step-5 .card-title{
+html[data-theme="dark"] #wiz-step-3 .ht-card__title,
+html[data-theme="dark"] #wiz-step-4 .ht-card__title,
+html[data-theme="dark"] #wiz-step-5 .ht-card__title{
   color:#E5E7EB;
 }
 html[data-theme="dark"] #wiz-step-3 .helper-text,

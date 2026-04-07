@@ -150,7 +150,7 @@ function _htInitEvents() {
       else openCmdk();
     }
     if (e.key === 'Escape') {
-      var openModals = document.querySelectorAll('.modal-overlay.show, .lok-modal-overlay.show');
+      var openModals = document.querySelectorAll('.ht-modal__overlay.show, .lok-modal-overlay.show');
       for (var i = 0; i < openModals.length; i++) {
         openModals[i].classList.remove('show');
       }
@@ -268,7 +268,7 @@ function _htInitEvents() {
       e.preventDefault();
       e.stopPropagation();
       if (typeof switchPanel === 'function') switchPanel('premium');
-      var premOv = premiumHost.closest('.modal-overlay');
+      var premOv = premiumHost.closest('.ht-modal__overlay');
       if (premOv) premOv.style.display = 'none';
       return;
     }

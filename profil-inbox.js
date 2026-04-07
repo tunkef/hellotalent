@@ -811,7 +811,7 @@
     // Escape closes header popups (only when no modal is open)
     document.addEventListener('keydown', function(e) {
       if (e.key === 'Escape') {
-        var hasModal = document.querySelector('.modal-overlay.show') || document.getElementById('inbox-expanded');
+        var hasModal = document.querySelector('.ht-modal__overlay.show') || document.getElementById('inbox-expanded');
         if (!hasModal) closeAllPopups();
       }
     });

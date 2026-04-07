@@ -12,7 +12,7 @@
     if (!el) {
       el = document.createElement('div');
       el.id = id;
-      el.className = 'modal-overlay ht-modal';
+      el.className = 'ht-modal__overlay';
       el.innerHTML = inner;
       document.body.appendChild(el);
     }
@@ -21,9 +21,9 @@
 
   window._htAlert = function(msg, cb) {
     var el = _ensureModal('ht-modal-alert',
-      '<div class="modal" style="max-width:360px;">' +
-      '<div class="modal-title" id="ht-modal-alert-msg" style="font-size:var(--text-lg);margin-bottom:20px;line-height:1.5;white-space:pre-line;"></div>' +
-      '<button class="btn btn-primary" id="ht-modal-alert-ok" style="width:100%;padding:11px 0;">Tamam</button>' +
+      '<div class="ht-modal" style="max-width:360px;">' +
+      '<div class="ht-modal__title" id="ht-modal-alert-msg" style="font-size:var(--text-lg);margin-bottom:20px;line-height:1.5;white-space:pre-line;"></div>' +
+      '<button class="ht-btn ht-btn--primary" id="ht-modal-alert-ok" style="width:100%;padding:11px 0;">Tamam</button>' +
       '</div>');
     document.getElementById('ht-modal-alert-msg').textContent = msg;
     el.classList.add('show');
@@ -35,12 +35,12 @@
 
   window._htConfirm = function(msg, cbYes, cbNo) {
     var el = _ensureModal('ht-modal-confirm',
-      '<div class="modal" style="max-width:400px;">' +
+      '<div class="ht-modal" style="max-width:400px;">' +
       '<div class="modal-confirm-body">' +
       '<div class="modal-confirm-title" id="ht-modal-confirm-msg" style="white-space:pre-line;"></div>' +
       '<div class="modal-confirm-actions">' +
-      '<button class="btn btn-secondary" id="ht-modal-confirm-no">Vazgeç</button>' +
-      '<button class="btn btn-primary" id="ht-modal-confirm-yes">Evet, Devam Et</button>' +
+      '<button class="ht-btn ht-btn--secondary" id="ht-modal-confirm-no">Vazgeç</button>' +
+      '<button class="ht-btn ht-btn--primary" id="ht-modal-confirm-yes">Evet, Devam Et</button>' +
       '</div></div></div>');
     document.getElementById('ht-modal-confirm-msg').textContent = msg;
     el.classList.add('show');

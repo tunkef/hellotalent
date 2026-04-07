@@ -259,7 +259,7 @@ function addExperienceCard(data) {
   expCounter++;
   var cardId = 'exp-card-' + expCounter;
   var card = document.createElement('div');
-  card.className = 'exp-card ht-card';
+  card.className = 'ht-card';
   card.id = cardId;
   card.dataset.expId = expCounter;
 
@@ -283,7 +283,7 @@ function addExperienceCard(data) {
   attachDeleteConfirm(delBtn, function() {
     card.remove();
     if (typeof markWizardDirty === 'function') markWizardDirty();
-    var remaining = document.querySelectorAll('.exp-card');
+    var remaining = document.querySelectorAll('#exp-cards-container > .ht-card');
     remaining.forEach(function(c, idx) {
       var btn = c.querySelector('.exp-card-del');
       if (btn) btn.style.display = (remaining.length <= 1) ? 'none' : '';
@@ -579,7 +579,7 @@ function addExperienceCard(data) {
 
   // İş Tanımı textarea (Apple benchmark AKS-1)
   var descWrap = document.createElement('div');
-  descWrap.className = 'field ht-input';
+  descWrap.className = 'ht-input';
   descWrap.style.marginTop = '4px';
   var descLabel = document.createElement('label');
   descLabel.htmlFor = cardId + '-desc';
@@ -725,7 +725,7 @@ function attachDeleteConfirm(btn, onConfirm) {
 
 function makeField(type, labelText, id, placeholder, value) {
   var wrap = document.createElement('div');
-  wrap.className = 'field ht-input';
+  wrap.className = 'ht-input';
   var lbl = document.createElement('label');
   lbl.innerHTML = labelText;
   var input = document.createElement('input');
@@ -740,7 +740,7 @@ function makeField(type, labelText, id, placeholder, value) {
 
 function makeSelectField(labelText, id, options, selectedVal, placeholderText) {
   var wrap = document.createElement('div');
-  wrap.className = 'field ht-input';
+  wrap.className = 'ht-input';
   var lbl = document.createElement('label');
   lbl.innerHTML = labelText;
   var sel = document.createElement('select');
@@ -763,7 +763,7 @@ function makeSelectField(labelText, id, options, selectedVal, placeholderText) {
 
 function makeYearField(labelText, id, selectedVal) {
   var wrap = document.createElement('div');
-  wrap.className = 'field ht-input';
+  wrap.className = 'ht-input';
   var lbl = document.createElement('label');
   lbl.innerHTML = labelText;
   var sel = document.createElement('select');
@@ -798,7 +798,7 @@ function formatBrandDisplay(brandName, companyName) {
 // Stores selected brand data in hidden data attributes for split at save time.
 function makeSmartBrandField(id, data, required) {
   var wrap = document.createElement('div');
-  wrap.className = 'field ht-input';
+  wrap.className = 'ht-input';
   wrap.style.position = 'relative';
   var lbl = document.createElement('label');
   lbl.innerHTML = required ? 'Şirket / Marka <span class="field-req">*</span>' : 'Şirket / Marka';
@@ -949,7 +949,7 @@ function monthIndexToName(idx) {
 }
 
 function collectExperiences() {
-  var cards = document.querySelectorAll('.exp-card');
+  var cards = document.querySelectorAll('#exp-cards-container > .ht-card');
   var result = [];
   cards.forEach(function(card) {
     var prefix = card.id + '-';
@@ -1155,7 +1155,7 @@ function addCertificateRow(data) {
 // Autocomplete field for okul/bolum
 function makeAutoField(labelText, id, dataList, value) {
   var wrap = document.createElement('div');
-  wrap.className = 'field ht-input';
+  wrap.className = 'ht-input';
   wrap.style.position = 'relative';
   var lbl = document.createElement('label');
   lbl.textContent = labelText;
@@ -1270,12 +1270,12 @@ function initStep4() {
   if (musaitlikContainer) {
     MUSAITLIK_SECENEKLERI.forEach(function(m) {
       var chip = document.createElement('button');
-      chip.className = 'chip ht-chip';
+      chip.className = 'ht-chip';
       chip.type = 'button';
       chip.textContent = m;
       chip.addEventListener('click', function() {
-        musaitlikContainer.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('selected', 'is-active'); });
-        chip.classList.add('selected', 'is-active');
+        musaitlikContainer.querySelectorAll('.ht-chip').forEach(function(c) { c.classList.remove('is-active'); });
+        chip.classList.add('is-active');
         selectedMusaitlik = m;
       });
       musaitlikContainer.appendChild(chip);
@@ -1308,13 +1308,12 @@ function initStep4() {
   if (segContainer) {
     SEGMENTLER.forEach(function(s) {
       var chip = document.createElement('button');
-      chip.className = 'chip ht-chip';
+      chip.className = 'ht-chip';
       chip.type = 'button';
       chip.textContent = s;
       chip.addEventListener('click', function() {
-        chip.classList.toggle('selected');
         chip.classList.toggle('is-active');
-        if (chip.classList.contains('selected')) {
+        if (chip.classList.contains('is-active')) {
           selectedSegmentler.push(s);
         } else {
           selectedSegmentler = selectedSegmentler.filter(function(x) { return x !== s; });
@@ -1509,7 +1508,7 @@ function updateStep6HideState() {
   var hasCurrent = false;
   var cbNoExp = document.getElementById('cb-no-experience');
   if (!cbNoExp || !cbNoExp.checked) {
-    var expCards = document.querySelectorAll('.exp-card');
+    var expCards = document.querySelectorAll('#exp-cards-container > .ht-card');
     for (var i = 0; i < expCards.length; i++) {
       var devamCb = expCards[i].querySelector('[id$="-devam"]');
       if (devamCb && devamCb.checked) { hasCurrent = true; break; }
