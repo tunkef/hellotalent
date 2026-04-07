@@ -83,6 +83,54 @@ body{background:var(--bg-page);font-family:var(--font-b)}
 }
 .split-desc{font-size:15px;line-height:1.8;color:var(--text-muted)}
 
+/* ── HQ SECTION ── */
+.hq{background:var(--bg-section)}
+.hq .s-inner{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start}
+.hq-hl{
+  font-family:var(--font-d);font-size:clamp(24px,3vw,34px);
+  font-weight:600;letter-spacing:-0.5px;color:var(--text-primary);margin-bottom:14px;
+}
+.hq-sub{font-size:15px;line-height:1.9;color:var(--text-muted);margin-bottom:28px}
+.hq-info{display:flex;flex-direction:column;gap:20px}
+.hq-item{display:flex;gap:14px;align-items:flex-start}
+.hq-item-icon{
+  width:36px;height:36px;border-radius:8px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;background:var(--navy);
+}
+.hq-item-label{font-family:var(--font-b);font-size:11px;font-weight:600;letter-spacing:0.5px;color:var(--text-muted);text-transform:uppercase;margin-bottom:2px}
+.hq-item-value{font-size:14px;color:var(--text-primary);line-height:1.5}
+.hq-item-value a{color:var(--verm);text-decoration:none;font-weight:600}
+.hq-item-value a:hover{text-decoration:underline}
+.hq-cta{margin-top:28px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.btn-verm{
+  display:inline-flex;align-items:center;justify-content:center;
+  padding:12px 28px;border-radius:var(--radius);
+  font-family:var(--font-b);font-size:14px;font-weight:700;
+  background:var(--verm);color:#fff;text-decoration:none;
+  transition:background .2s,transform .2s;
+}
+.btn-verm:hover{background:#A83D1E;transform:translateY(-1px)}
+.hq-micro{font-size:11px;color:var(--text-muted);opacity:0.8}
+.hq-map{
+  border-radius:16px;overflow:hidden;min-height:380px;
+  border:1px solid var(--border);position:relative;
+}
+.hq-map iframe{width:100%;height:100%;min-height:380px;border:0;display:block}
+.hq-map-card{
+  position:absolute;bottom:16px;left:16px;
+  background:rgba(255,255,255,0.95);backdrop-filter:blur(8px);
+  border-radius:10px;padding:14px 18px;
+  box-shadow:0 4px 16px rgba(0,0,0,0.1);
+}
+.hq-map-card-t{font-family:var(--font-d);font-size:13px;font-weight:700;color:var(--text-primary);margin-bottom:2px}
+.hq-map-card-d{font-size:11px;color:var(--text-muted)}
+
+@media(prefers-color-scheme:dark){
+  .hq-map{border-color:rgba(255,255,255,0.08)}
+  .hq-map-card{background:rgba(18,20,31,0.9)}
+}
+
 /* ── CTA SCENE ── */
 .cta-img{
   width:100vw;
@@ -97,6 +145,9 @@ body{background:var(--bg-page);font-family:var(--font-b)}
   .hero .s-inner{grid-template-columns:1fr;gap:32px}
   .hero-vis{min-height:220px;order:-1}
   .contact-grid{grid-template-columns:1fr}
+  .hq .s-inner{grid-template-columns:1fr;gap:32px}
+  .hq-map{min-height:280px}
+  .hq-map iframe{min-height:280px}
 }
 </style>
 </head>
@@ -136,6 +187,50 @@ body{background:var(--bg-page);font-family:var(--font-b)}
         <div class="contact-icon"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
         <div class="contact-t">Stratejik Ortaklık</div>
         <p class="contact-d">Medya, sponsorluk veya sektörel iş birliği fırsatları için:<br><a href="mailto:info@hellotalent.ai">info@hellotalent.ai</a></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 3. HQ & HARITA -->
+<section class="s hq">
+  <div class="s-inner">
+    <div>
+      <h2 class="hq-hl">Retail'in geleceğini yerinde konuşalım.</h2>
+      <p class="hq-sub">Akıllı eşleşme teknolojimizle tanışmak veya operasyonel süreçlerinizi nasıl dijitalleştirebileceğimizi öğrenmek için her zaman bekleriz. Bir kahve eşliğinde yeni nesil yetenek stratejinizi planlayalım.</p>
+      <div class="hq-info">
+        <div class="hq-item">
+          <div class="hq-item-icon"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></div>
+          <div>
+            <div class="hq-item-label">Genel Merkez</div>
+            <div class="hq-item-value">Istanbul, Turkiye</div>
+          </div>
+        </div>
+        <div class="hq-item">
+          <div class="hq-item-icon" style="background:var(--verm)"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></div>
+          <div>
+            <div class="hq-item-label">Hızlı Erişim</div>
+            <div class="hq-item-value"><a href="mailto:info@hellotalent.ai">info@hellotalent.ai</a></div>
+          </div>
+        </div>
+        <div class="hq-item">
+          <div class="hq-item-icon"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92Z"/></svg></div>
+          <div>
+            <div class="hq-item-label">Sosyal</div>
+            <div class="hq-item-value"><a href="https://x.com/hellotalent" target="_blank">@hellotalent</a></div>
+          </div>
+        </div>
+      </div>
+      <div class="hq-cta">
+        <a href="/isveren.html#lead-form" class="btn-verm">Tanışma Randevusu Al</a>
+        <span class="hq-micro">24 saat içinde dönüş sağlıyoruz.</span>
+      </div>
+    </div>
+    <div class="hq-map">
+      <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d96347.54693588124!2d28.89178!3d41.0082!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14caa7040068086b%3A0xe1ccfe98bc01b0d0!2zxLBzdGFuYnVs!5e0!3m2!1str!2str!4v1" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+      <div class="hq-map-card">
+        <div class="hq-map-card-t">hellotalent HQ</div>
+        <div class="hq-map-card-d">Istanbul, Turkiye</div>
       </div>
     </div>
   </div>
