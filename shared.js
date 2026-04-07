@@ -94,8 +94,6 @@
     '<div class="mobile-menu" id="mobile-menu">',
     mobileLink('Adaylar İçin',    'aday.html',    'aday'),
     mobileLink('İşverenler İçin', 'isveren.html', 'isveren'),
-    '  <div class="mobile-nav-divider"></div>',
-    mobileLink('Giriş Yap', 'javascript:HT.toggleLogin()', null, 'mobile-nav-login'),
     '</div>',
   ].join('\n');
 
