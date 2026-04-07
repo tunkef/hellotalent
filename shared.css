@@ -275,7 +275,7 @@ body {
 /* ══ FOOTER ══ */
 .site-footer {
   background: var(--navy); color: white;
-  padding: 56px 48px 32px;
+  padding: 36px 48px 24px;
 }
 .footer-top {
   max-width: 1160px; margin: 0 auto;
@@ -283,7 +283,7 @@ body {
 }
 .footer-brand {
   font-family: 'Bricolage Grotesque', sans-serif;
-  font-size: 32px; font-weight: 800; color: white; letter-spacing: -1px;
+  font-size: 26px; font-weight: 800; color: white; letter-spacing: -0.5px;
 }
 .footer-brand span { color: var(--verm); }
 .footer-tagline { font-size: var(--text-md); color: rgba(255,255,255,0.5); margin-top: 8px; line-height: 1.5; }
@@ -296,7 +296,7 @@ body {
 }
 .social-link:hover { border-color: rgba(255,255,255,0.5); color: white; background: rgba(255,255,255,0.08); }
 .footer-nav {
-  max-width: 1160px; margin: 32px auto 0;
+  max-width: 1160px; margin: 20px auto 0;
   display: flex; gap: 32px; justify-content: center; flex-wrap: wrap;
 }
 .footer-nav .footer-link {
@@ -305,14 +305,14 @@ body {
 }
 .footer-nav .footer-link:hover { color: white; }
 .footer-dei {
-  max-width: 1160px; margin: 32px auto 0;
+  max-width: 1160px; margin: 16px auto 0;
   font-size: var(--text-sm); color: rgba(255,255,255,0.45);
   line-height: 1.6; text-align: center;
   font-family: 'Plus Jakarta Sans', sans-serif;
 }
 .footer-bottom {
-  max-width: 1160px; margin: 24px auto 0;
-  padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.1);
+  max-width: 1160px; margin: 16px auto 0;
+  padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.1);
   text-align: center;
 }
 .footer-copyright { font-size: var(--text-base); color: rgba(255,255,255,0.35); }
