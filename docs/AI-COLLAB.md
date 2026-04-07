@@ -6,12 +6,13 @@
 
 ## Mevcut Durum
 
-**Son tamamlanan:** Asama 69 (7 Nisan 2026) — Public-Site Complete Redesign
-**Son commit:** b222bd7 — dark mode header cascade fix
-**Test durumu:** 196/196 QA visual audit PASS (4 viewport x light/dark x 5 sayfa)
+**Son tamamlanan:** Asama 70 (7 Nisan 2026) — Public-Site UX Polish + Footer Redesign + yasal.html
+**Son commit:** 5a5cf33 — scene image object-position
+**Test durumu:** QA visual audit PASS (responsive + dark mode)
 **Beta Launch Paketi:** TAMAMLANDI (Asama 48-61)
 **Landing Page Redesign:** TAMAMLANDI (Asama 63)
 **Public-Site Redesign:** TAMAMLANDI (Asama 69)
+**UX Polish + Footer + Yasal:** TAMAMLANDI (Asama 70)
 
 ## Tamamlanan Bloklar (2 Nisan 2026)
 
@@ -26,6 +27,7 @@
 | HT Info Revizyon | 60-61 | ✅ Center feed + left rail compact |
 | Landing Page Redesign | 63 | ✅ Gate + dual LP (aday/isveren), LinkedIn-style, dark mode, nav brand colors, 397 test PASS |
 | Public-Site Redesign | 69 | ✅ 5 sayfa Clatu-first editorial: index/aday/isveren/hakkimizda/iletisim. Premium copy (Gemini UAT), dark mode, glassmorphism header, login redirect, QA 196 PASS |
+| UX Polish + Footer + Yasal | 70 | ✅ Gate smooth fade animasyonlar, footer 3-kolon redesign, yasal.html (4-tab tek sayfa), bento/step kart normalizasyonu, CTA split layout, mobil responsive polish, dark mode fixes |
 
 ## Pipeline Infra (2 Nisan 2026)
 
@@ -45,10 +47,10 @@
 
 ## Bir Sonraki Adim
 
-Public-site redesign tamamlandi (5 sayfa), production'da canli. Sonraki adimlar:
-- **Yasal sayfalar dark mode** — gizlilik/kvkk/kullanim-sartlari/cerez dark mode desteği yok, editorial yapisi mevcut (navy hero + legal body), gorsel gerekmez
+Asama 70 tamamlandi — UX polish, footer redesign, yasal.html. Sonraki adimlar:
 - **Lead form backend** — isveren.html lead formu Supabase RPC ile calisiyor (submit_employer_lead), email notification pipeline eklenebilir
 - **Delinked sayfalar karari** — kariyer/pozisyonlar/yetkinlik/blog/isalim-rotasi nav'dan kaldirildi; kalici silme vs yenileme karari bekleniyor
 - **profil.html landing entegrasyonu** — logged-in kullanici gate'i bypass etmeli
 - **Pozisyon gorunum/esleme metrikleri** — backend counter/trigger gerekli
 - **iyzico/Stripe checkout** — DEFER (beta 3 ay ucretsiz)
+- **Eski yasal sayfalar temizligi** — gizlilik.html, kvkk.html, kullanim-sartlari.html, cerez-politikasi.html artik yasal.html'e birlesti; eski dosyalar redirect veya silinebilir

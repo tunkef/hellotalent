@@ -1,5 +1,5 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 7 Nisan 2026 | Asama 69 — Public-Site Redesign Complete
+> Son guncelleme: 7 Nisan 2026 | Asama 70 — UX Polish + Footer Redesign + yasal.html
 
 ## 1. Proje Ozeti
 
@@ -33,11 +33,12 @@ hellotalent.ai, Turkiye perakende sektorune ozel bir yetenek pazaryeri. Adaylar 
 
 ## 2. Canli Ozellikler
 
-- **Gate sayfasi (index.html)** — Clatu-first split gate: 2 zone (Is Ariyorum / Yetenek Ariyorum), flex expansion hover (60/40 ratio), radial gradient glow, SVG illustrasyonlar (gate-aday-final.svg, gate-isveren-final.svg), prefers-color-scheme dark mode, responsive (vertical stack <=900px, illustrations right-aligned mobile) | `index.html`, `assets/gate/`
-- **Aday landing (aday.html)** — Clatu editorial: hero (Google signup + trust pills), features split + mini bento (6 kart), 3 step cards (SVG illustrations, dark mode bg), "Kimin icin?" 3 kategori, final CTA + edge-to-edge scene, login popup bypass (direkt giris.html?tab=aday), vermillion login button | `aday.html`, `assets/aday/`
-- **Isveren landing (isveren.html)** — Navy theme: hero + CTA, features bento (6 kart, featured Uyumlu Eslestirme), 3 step cards, "Kimin icin?" (Markalar/Grup/Danismanlik), lead form (CRO copy: "Demoyu Planla", "Ucretsiz Demoyu Baslatin"), edge-to-edge scene, "hellohunter" logo easter egg, navy login button, login popup bypass (direkt giris.html?tab=ik) | `isveren.html`, `assets/isveren/`
-- **Hakkimizda (hakkimizda.html)** — Premium editorial: vizyoner hero ("Retail dunyasinda bag kurma bicimini degistiriyoruz"), quiet luxury mission section (kusursuz eslesme + diskresyon), value cards (3 SVG illustrations: Retail Ekosistemi, Kor Eslestirme, Yetkinlik), CTA (Profil Olustur + Demo Talep Et), edge-to-edge scene | `hakkimizda.html`, `assets/hakkimizda/`
-- **Iletisim (iletisim.html)** — Premium contact: hero + illustration, 3 contact cards (Genel/Kesfetmeye Baslayin/Stratejik Ortaklik), HQ split section (adres + email + 4 sosyal ikon + Google Maps embed + lokasyon karti overlay), CTA ("Tanisma Randevusu Al"), edge-to-edge retail street scene | `iletisim.html`, `assets/iletisim/`
+- **Gate sayfasi (index.html)** — Clatu-first split gate: 2 zone (Is Ariyorum / Yetenek Ariyorum), smooth fade animasyonlar (opacity-first, minimal hareket), isveren illustration desktop mirror, SVG illustrasyonlar, prefers-color-scheme dark mode, responsive | `index.html`, `assets/gate/`
+- **Aday landing (aday.html)** — Clatu editorial: hero (trust pills + Google signup + E-posta), features split + mini bento (6 esit kart), 3 step cards (vermillion numaralar, SVG illustrations), "Kimin icin?" 3 kategori, final CTA split layout (metin sol + gorsel sag), login popup bypass | `aday.html`, `assets/aday/`
+- **Isveren landing (isveren.html)** — Navy theme: hero tek CTA (Yetenekleri Kesfet → lead form), features bento (6 esit kart, kompakt mobil), 3 step cards (ferah spacing), "Kimin icin?" split layout (3 minimal chip + gorsel sag), lead form (CRO copy), navy login button | `isveren.html`, `assets/isveren/`
+- **Hakkimizda (hakkimizda.html)** — Premium editorial: vizyoner hero, quiet luxury mission split (kusursuz eslesme + diskresyon + tag'ler + kolon-hizali CTA butonlari), value cards (3 SVG), contained rounded scene gorsel | `hakkimizda.html`, `assets/hakkimizda/`
+- **Iletisim (iletisim.html)** — Premium contact: hero + illustration, 3 contact cards (Mail Gonder/Demo Talep Et butonlari, yuvarlak ikonlar), HQ section (sadeles metin + adres + randevu CTA + kare sosyal ikonlar + Google Maps), contained rounded scene gorsel | `iletisim.html`, `assets/iletisim/`
+- **Yasal (yasal.html)** — Tek sayfada 4 yasal metin: Gizlilik Politikasi, Kullanim Sartlari, KVKK Aydinlatma, Cerez Politikasi. Navy hero + tab butonlari, icerik degisiyor. URL hash destegi (#kvkk). Cerez tercihleri toggle. Dark mode. | `yasal.html`
 - **Aday profil wizard** — 4 adimli onboarding, deneyim/egitim/dil/sertifika/tercih | `profil-wizard.js`
 - **Glassmorphic float header** — LinkedIn-style, 5 nav, avatar dropdown, dark mode toggle | `profil.html`
 - **Markalar paneli** — 96 marka, informative card v2 (cover gorsel, magaza/calisan sayisi, takip butonu), 31 marka gorseli optimize, company/brand hierarchy | `profil-markalar.js`
@@ -65,8 +66,9 @@ hellotalent.ai, Turkiye perakende sektorune ozel bir yetenek pazaryeri. Adaylar 
 
 | Dosya | Gorev |
 |-------|-------|
-| `shared.js` | Supabase client init, header/footer inject, page-aware login redirect (aday→giris?tab=aday, isveren→giris?tab=ik, digerleri→giris.html), hamburger menu (Adaylar/Isverenler/Hakkimizda/Iletisim), footer: Platform + Yasal + 4 sosyal (X/TikTok/IG/LinkedIn) |
-| `shared.css` | Design system tokenleri, glassmorphism header (blur 16px, dark mode semi-transparent), mobile menu dark mode, footer grid fix, LP tokenleri |
+| `shared.js` | Supabase client init, header/footer inject, page-aware login redirect, hamburger menu (Adaylar/Isverenler/Hakkimizda/Iletisim), footer: 3-kolon (brand+nav sol, sosyal sag), copyright+DEI alt satir |
+| `shared.css` | Design system tokenleri, glassmorphism header, mobile menu (opak dark bg), footer 3-kolon grid + kompakt mobil, LP tokenleri |
+| `yasal.html` | 4-tab yasal bilgiler sayfasi (gizlilik/kullanim/kvkk/cerez), navy hero, dark mode, ~570 satir |
 | `index.html` | Gate sayfasi — Clatu split (flex expansion hover), SVG illustrations, ~280 satir |
 | `aday.html` | Aday landing — Clatu editorial, hero+bento+steps+who+CTA, ~520 satir |
 | `isveren.html` | Isveren landing — navy theme, hero+bento+steps+who+lead form, ~510 satir |
@@ -145,6 +147,27 @@ hellotalent.ai, Turkiye perakende sektorune ozel bir yetenek pazaryeri. Adaylar 
 **Sonuc:** T02/T03/T04 otomatik DEFERRED. Onkosula: 50+ aktif pratikci icin T42-lite (topluluk nabzi karti) yeniden degerlendirilir.
 
 ## 6. Son 3 Session Ozeti
+
+### Session 70 (7 Nisan — Asama 70: UX Polish + Footer Redesign + yasal.html)
+**Tum public sayfalarda UX polish, footer tamamen yeniden tasarlandi, yasal.html olusturuldu.**
+
+**Gate (index.html):** Smooth fade animasyonlar (expo-out → ease, opacity-first, hareket minimuma indirildi). Isveren illustrasyon desktop'ta mirror (scaleX(-1)).
+
+**Aday (aday.html):** Trust pill'ler altmetne tasindi (border-bottom divider, max-width:360px). Bento kartlar normallesti (Studyo featured kaldirildi, 6 esit kart). Step kart spacing ferahlatildi (padding 24px, numara-baslik 8px). Step numaralari vermillion. "Kimin icin" summary altmetne birlesti. CTA section → hero-style split layout (metin sol, gorsel sag). Mobilde bento ikon/yazi kucultuldu.
+
+**Isveren (isveren.html):** "Isveren Girisi" butonu kaldirildi → sadece "Yetenekleri Kesfet" (lead forma scroll). Bento featured kaldirildi (6 esit kart). Step spacing ferahlatildi. "Kimin icin" → split layout: 3 minimal chip (yan yana) + gorsel sag. Lead form baslik buyutuldu (24px), form notu jenerik yapildi. "hellohunter" easter egg kaldirildi. Full-bleed footer gorseli kaldirildi.
+
+**Hakkimizda (hakkimizda.html):** Mission tag'ler neutral stil. CTA butonlari split kolonlarina hizalandi (Profil Olustur sol, Demo Talep Et sag). Values footer metni "Bizi farkli kilan" altmetnine tasindi. Scene gorsel contained + rounded (object-position: right 30%, responsive clamp max-height).
+
+**Iletisim (iletisim.html):** Contact card'larda mailto butonlari (Mail Gonder/Demo Talep Et). Ikonlar yuvarlak (border-radius:50%). HQ section sadelesti (adres/email text paragraf, CTA hemen altinda). Sosyal ikonlar kare (footer ile tutarli). "24 saat donus" metni kaldirildi. Scene gorsel contained + rounded.
+
+**Yasal (yasal.html — YENI):** 4 yasal sayfa tek sayfada birlesti. Navy hero + 4 tab butonu (Gizlilik/Kullanim/KVKK/Cerez). Tab tiklayinca icerik degisiyor. URL hash destegi. Cerez tercihleri toggle UI. Kapsamli dark mode. Header nav gizli.
+
+**Footer (shared.js + shared.css):** Tamamen yeniden tasarlandi. 3 kolon: brand+tagline+nav (sol), bosluk, sosyal ikonlar (sag). Nav linkler dikey: Adaylar/Isverenler/Hakkimizda/Iletisim/Yasal Bilgiler. Alt satir: copyright (sol) + DEI (sag). Kompakt (padding azaltildi, logo 26px). Mobil: hepsi ortali, nav yatay wrap, sosyal ortali, copyright+DEI alt alta. Mobil menu opak dark bg.
+
+**Cache:** Tum sayfalarda v=20260407z olarak birlesti.
+
+**~35 commit. 8 dosya (aday/isveren/hakkimizda/iletisim/yasal/index/shared.js/shared.css).**
 
 ### Session 69 (7 Nisan — Asama 69: Public-Site Complete Redesign)
 **5 public sayfa Clatu-first editorial tasarimla tamamen yeniden yazildi. Premium copy iterasyonlari. Dark mode. QA.**
