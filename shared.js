@@ -196,12 +196,21 @@
     },
 
     toggleLogin: function () {
-      var overlay = document.getElementById('login-modal-overlay');
-      var btn = document.getElementById('login-btn');
-      if (!overlay) return;
-      var open = overlay.classList.toggle('open');
-      if (btn) btn.setAttribute('aria-expanded', String(open));
-      document.body.style.overflow = open ? 'hidden' : '';
+      /* Page-aware direct redirect — no popup */
+      if (PAGE === 'aday') {
+        document.body.style.transition = 'opacity 0.4s ease';
+        document.body.style.opacity = '0';
+        setTimeout(function(){ window.location.href = '/giris.html?tab=aday'; }, 400);
+        return;
+      }
+      if (PAGE === 'isveren') {
+        document.body.style.transition = 'opacity 0.4s ease';
+        document.body.style.opacity = '0';
+        setTimeout(function(){ window.location.href = '/giris.html?tab=ik'; }, 400);
+        return;
+      }
+      /* Other pages: direct to giris.html (no popup) */
+      window.location.href = '/giris.html';
     },
 
     toggleMenu: function () {
