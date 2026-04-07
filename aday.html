@@ -24,7 +24,7 @@
 <meta name="twitter:description" content="Retail kariyerinde bir sonraki adim burada. Profil olustur, markalar seni bulsun.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/shared.css?v=20260407b">
+<link rel="stylesheet" href="/shared.css?v=20260407e">
 
 <style>
 /* ══ ADAY LANDING — CLATU-ALIGNED ══ */
@@ -321,13 +321,15 @@ body{background:var(--bg-page)}
   margin-left:calc(-50vw + 50%);
   margin-bottom:calc(-1 * clamp(48px,8vw,96px));
   display:block;
+  height:auto;
+  max-height:clamp(200px,40vw,500px);
   object-fit:cover;
 }
 
 /* ── RESPONSIVE ── */
 @media(max-width:900px){
   .hero .s-inner{grid-template-columns:1fr;gap:32px}
-  .hero-vis{min-height:220px;order:-1}
+  .hero-vis{min-height:220px}
   .split{grid-template-columns:1fr;gap:28px}
   .bento{grid-template-columns:1fr 1fr}
   .bento-card.featured{grid-column:span 2}
