@@ -56,10 +56,10 @@ body{background:var(--bg-page);font-family:var(--font-b)}
 /* ── SPLIT ── */
 .split{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start}
 .split-hl{
-  font-family:var(--font-d);font-size:clamp(24px,3vw,36px);
-  font-weight:800;letter-spacing:-1.5px;color:var(--text-primary);margin-bottom:12px;
+  font-family:var(--font-d);font-size:clamp(24px,3vw,34px);
+  font-weight:600;letter-spacing:-0.5px;color:var(--text-primary);margin-bottom:14px;
 }
-.split-desc{font-size:15px;line-height:1.8;color:var(--text-muted)}
+.split-desc{font-size:15px;line-height:1.9;color:var(--text-muted)}
 
 /* ── VALUES ── */
 .values-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
@@ -90,10 +90,10 @@ body{background:var(--bg-page);font-family:var(--font-b)}
 }
 
 /* ── TAGS ── */
-.tag-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+.tag-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
 .tag{
-  font-family:var(--font-m);font-size:11px;letter-spacing:0.5px;
-  padding:6px 12px;border-radius:6px;
+  font-family:var(--font-b);font-size:11px;font-weight:500;letter-spacing:0.3px;
+  padding:7px 14px;border-radius:20px;
   background:var(--bg-section);border:1px solid var(--border);
   color:var(--text-muted);
 }
@@ -103,12 +103,12 @@ body{background:var(--bg-page);font-family:var(--font-b)}
 
 /* ── SECTION CTA ── */
 .section-cta{
-  text-align:center;padding:clamp(32px,5vw,48px) clamp(24px,5vw,48px);
+  text-align:center;padding:clamp(48px,7vw,72px) clamp(24px,5vw,48px);
   background:var(--bg-warm);
 }
 .section-cta-text{
-  font-size:15px;color:var(--text-muted);margin-bottom:20px;
-  font-style:italic;
+  font-family:var(--font-d);font-size:16px;font-weight:600;
+  letter-spacing:-0.3px;color:var(--text-primary);margin-bottom:24px;
 }
 .section-cta-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
 .btn-verm{
@@ -168,26 +168,25 @@ body{background:var(--bg-page);font-family:var(--font-b)}
 </section>
 
 <!-- 2. MISYON -->
-<section class="s s-warm">
+<section class="s s-warm" style="padding-top:clamp(64px,10vw,112px);padding-bottom:clamp(64px,10vw,112px)">
   <div class="s-inner">
-    <div class="split">
+    <div class="split" style="gap:64px">
       <div>
-        <h2 class="split-hl">İlan verme devri bitti, akıllı eşleşme başladı.</h2>
-        <p class="split-desc">Retail operasyonunuzu yavaşlatan ilan süreçlerini geride bırakın. hellotalent, binlerce aday arasından sadece kriterlerinize uyan yetenekleri karşınıza çıkarır. Siz ilan yönetmekle vakit kaybetmeyin, ekibinizi büyütmeye odaklanın.</p>
-        <p class="split-desc" style="margin-top:12px;font-size:13px;font-style:italic;opacity:0.8">Mağaza katından genel merkeze, tüm retail kadroları tek panelde.</p>
+        <h2 class="split-hl">İlan kalabalığından, seçkin eşleşmelere.</h2>
+        <p class="split-desc">Retail operasyonunuzu yavaşlatan geleneksel yöntemleri bir kenara bırakın. hellotalent, markanızın DNA'sına ve kriterlerinize en uygun yetenekleri, yapay zeka kürasyonuyla doğrudan karşınıza çıkarır.</p>
         <div class="tag-row">
-          <span class="tag">Sıfır İlan Maliyeti</span>
-          <span class="tag">Otomatik Filtreleme</span>
-          <span class="tag">Hızlı Geri Bildirim</span>
+          <span class="tag">Akıllı Filtreleme</span>
+          <span class="tag">Sıfır Operasyonel Yük</span>
+          <span class="tag">Hızlı Karar Mekanizması</span>
         </div>
       </div>
       <div>
-        <h2 class="split-hl">Görünmez modla, en iyi yeteneklere sessizce ulaşın.</h2>
-        <p class="split-desc">Sektörün en yetkin isimleri her zaman aktif iş arayışında değildir. hellotalent'ın gizlilik odaklı yapısı sayesinde, adaylar "görünmez" modda kalırken siz onlara sessizce ulaşabilirsiniz. Kaliteli aday havuzuna erişim artık çok daha seçici ve güvenli.</p>
+        <h2 class="split-hl">Seçkin yeteneklere, tam diskresyonla ulaşın.</h2>
+        <p class="split-desc">En iyi profesyoneller her zaman ilanlara bakmaz. Gizlilik odaklı eşleşme sistemimizle, pasif aday havuzuna radara yakalanmadan erişin; sessiz ve prestijli bir işe alım süreci yönetin.</p>
         <div class="tag-row">
-          <span class="tag">Pasif Aday Erişimi</span>
-          <span class="tag">%100 Veri Gizliliği</span>
-          <span class="tag">Yüksek Uyum Skoru</span>
+          <span class="tag">Üst Düzey Gizlilik</span>
+          <span class="tag">Pasif Yetenek Erişimi</span>
+          <span class="tag">Uyum Odaklı Seçki</span>
         </div>
       </div>
     </div>
@@ -196,7 +195,7 @@ body{background:var(--bg-page);font-family:var(--font-b)}
 
 <!-- 2.5 SECTION CTA -->
 <div class="section-cta">
-  <p class="section-cta-text">Geleneksel yöntemleri terk etmenin vakti geldi.</p>
+  <p class="section-cta-text">Perakendede yeni nesil işe alım standardı.</p>
   <div class="section-cta-btns">
     <a href="/isveren.html#lead-form" class="btn-verm">Demo Talep Et</a>
     <a href="/aday.html" class="btn-navy-o">Profil Oluştur</a>
