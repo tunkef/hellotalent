@@ -488,8 +488,12 @@ body{background:var(--bg-page)}
     }
   });
 
-  /* Override header login — skip popup, smooth redirect */
+  /* Override header logo — hellohunter easter egg for isveren */
   setTimeout(function(){
+    var logo = document.querySelector('.header-logo');
+    if(logo) { logo.innerHTML = 'hello<span>hunter</span>'; }
+
+    /* Override header login — skip popup, smooth redirect */
     var loginBtn = document.querySelector('.btn-nav-login');
     if(!loginBtn) return;
     var clone = loginBtn.cloneNode(true);
