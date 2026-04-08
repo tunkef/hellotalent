@@ -6,400 +6,617 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://browser.sentry-cdn.com https://www.googletagmanager.com https://www.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://cpwibefquojehjehtrog.supabase.co https://*.googleusercontent.com; connect-src 'self' https://cpwibefquojehjehtrog.supabase.co https://*.google-analytics.com https://*.sentry.io; object-src 'none'; base-uri 'self'; frame-ancestors 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Perakende kariyerini tek profille yönet ya da sektöre özel aday havuzuna gir. HelloTalent, Türkiye perakende sektörünün yetenek platformu.">
-<meta name="keywords" content="perakende kariyer, retail iş ilanları, mağaza yöneticisi, perakende işe alım, hellotalent">
+<meta name="description" content="Perakende kariyerini tek profille yonet ya da sektore ozel aday havuzuna eris. HelloTalent, Turkiye perakende sektorunun yetenek platformu.">
+<meta name="keywords" content="perakende kariyer, retail is ilanlari, magaza yoneticisi, perakende ise alim, hellotalent">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://hellotalent.ai/">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://hellotalent.ai/">
-<meta property="og:title" content="hellotalent.ai — Türkiye Perakende Sektörünün Yetenek Platformu">
-<meta property="og:description" content="Perakende kariyerini tek profille yönet ya da aday havuzuna gir.">
+<meta property="og:title" content="hellotalent.ai — Turkiye Perakende Sektorunun Yetenek Platformu">
+<meta property="og:description" content="Perakende sektorundeki adaylar ve isveren sirketler burada bulusuyor.">
 <meta property="og:image" content="https://hellotalent.ai/og-image.png">
 <meta property="og:locale" content="tr_TR">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="hellotalent.ai — Türkiye Perakende Sektörünün Yetenek Platformu">
-<meta name="twitter:description" content="Perakende kariyerini tek profille yönet ya da aday havuzuna gir.">
+<meta name="twitter:title" content="hellotalent.ai — Turkiye Perakende Sektorunun Yetenek Platformu">
+<meta name="twitter:description" content="Perakende sektorundeki adaylar ve isveren sirketler burada bulusuyor.">
 <meta name="twitter:image" content="https://hellotalent.ai/og-image.png">
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "WebSite",
-  "url": "https://hellotalent.ai",
-  "name": "hellotalent.ai",
-  "description": "Türkiye perakende sektörüne özel yetenek platformu",
-  "inLanguage": "tr-TR"
-}
-</script>
-<title>hellotalent.ai — Türkiye Perakende Sektörünün Yetenek Platformu</title>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","url":"https://hellotalent.ai","name":"hellotalent.ai","description":"Turkiye perakende sektorune ozel yetenek platformu","inLanguage":"tr-TR"}</script>
+<title>hellotalent.ai — Turkiye Perakende Sektorunun Yetenek Platformu</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-html{height:100%}
-body{min-height:100%}
-@media(min-width:901px){body{height:100%;overflow:hidden}}
-body{
-  font-family:'Plus Jakarta Sans',sans-serif;
-  -webkit-font-smoothing:antialiased;
-  text-rendering:optimizeLegibility;
-  overflow-x:hidden;
-}
+/* ══ UNIFIED LP — CLATU-ALIGNED ══ */
+/* CSS birebir aday.html + isveren.html Clatu pattern'lerinden alinmistir */
 
-/* ── LIGHT (default) ── */
 :root{
-  --bg:#F7F6F4;
-  --bg-a:#FBF9F7;
-  --bg-a-h:#F9F5F1;
-  --bg-i:#F5F6FB;
-  --bg-i-h:#EEF0F8;
-  --glow-a:rgba(201,78,40,0.07);
-  --glow-i:rgba(30,45,94,0.06);
-  --glow-a-h:rgba(201,78,40,0.13);
-  --glow-i-h:rgba(30,45,94,0.11);
+  --bg-page:#F7F6F4;
+  --bg-section:#fff;
+  --bg-warm:#F5F1ED;
+  --bg-warm-k:#F0F1F7;
   --verm:#C94E28;
+  --verm-dark:#A83D1E;
   --navy:#1E2D5E;
-  --text:#F7F6F4;
-  --text-head:#1A1A1A;
-  --text-dim:rgba(0,0,0,0.45);
-  --rule:rgba(0,0,0,0.06);
-  --ey-a:rgba(201,78,40,0.6);
-  --ey-i:rgba(30,45,94,0.5);
-  --hd-n:#1E2D5E;
-  --login-c:var(--navy);
-  --login-bc:rgba(30,45,94,0.2);
-  --login-hc:var(--navy);
-  --login-hbg:var(--navy);
-  --login-htxt:#fff;
-  --btn-i-bg:var(--navy);
-  --btn-i-c:#fff;
-  --btn-i-hc:var(--navy);
-  --btn-i-hborder:var(--navy);
-  --ft:rgba(0,0,0,0.2);
+  --navy-dark:#162044;
+  --text-primary:#111;
+  --text-muted:rgba(0,0,0,0.5);
+  --border:#E5E3DF;
   --font-d:'Bricolage Grotesque',sans-serif;
   --font-b:'Plus Jakarta Sans',sans-serif;
-  --expo:cubic-bezier(0.25,0.46,0.45,0.94);
-  --expo-soft:cubic-bezier(0.4,0,0.2,1);
+  --font-m:'DM Mono',monospace;
+  --radius:10px;
+  --max-w:1120px;
+  --pad:clamp(48px,8vw,96px) clamp(24px,5vw,48px);
 }
-body{background:var(--bg)}
 
-/* ── DARK (system) ── */
 @media(prefers-color-scheme:dark){
   :root{
-    --bg:#0B0D17;
-    --bg-a:#0C0E18;
-    --bg-a-h:#100E1A;
-    --bg-i:#0C0E1A;
-    --bg-i-h:#0E1022;
-    --glow-a:rgba(201,78,40,0.08);
-    --glow-i:rgba(60,80,160,0.08);
-    --glow-a-h:rgba(201,78,40,0.16);
-    --glow-i-h:rgba(60,80,160,0.15);
-    --text-head:var(--text);
-    --text-dim:rgba(247,246,244,0.50);
-    --rule:rgba(247,246,244,0.07);
-    --ey-a:rgba(201,78,40,0.55);
-    --ey-i:rgba(107,130,196,0.50);
-    --hd-n:#6B82C4;
-    --login-c:rgba(247,246,244,0.55);
-    --login-bc:rgba(247,246,244,0.07);
-    --login-hc:#F7F6F4;
-    --login-hbg:transparent;
-    --login-htxt:#F7F6F4;
-    --btn-i-bg:var(--navy);
-    --btn-i-c:#F7F6F4;
-    --btn-i-hc:#8B9CC5;
-    --btn-i-hborder:#8B9CC5;
-    --ft:rgba(247,246,244,0.15);
+    --bg-page:#0B0D17;--bg-section:#0E1020;--bg-warm:#0C0F1A;--bg-warm-k:#0C0F1A;
+    --text-primary:#F0F0EE;--text-muted:rgba(247,246,244,0.50);--border:rgba(247,246,244,0.08);
   }
 }
 
-/* ── HEADER ── */
-.hdr{
-  position:absolute;top:0;left:0;right:0;
-  height:64px;
-  display:flex;align-items:center;justify-content:space-between;
-  padding:0 32px;
-  z-index:30;
-}
-.logo{
-  font-family:var(--font-d);font-weight:800;font-size:22px;
-  color:var(--text-head);text-decoration:none;letter-spacing:-0.5px;
-}
-.logo em{font-style:normal;color:var(--verm)}
-.login{
-  font-size:12px;font-weight:600;color:#fff;
-  text-decoration:none;padding:7px 18px;border-radius:5px;
-  border:1.5px solid var(--verm);background:var(--verm);
-  transition:background .3s,transform .3s,box-shadow .3s;
-}
-.login:hover{background:#A83D1E;border-color:#A83D1E;transform:translateY(-1px);box-shadow:0 4px 12px rgba(201,78,40,0.2)}
+body{background:var(--bg-page);font-family:var(--font-b);color:var(--text-primary);-webkit-font-smoothing:antialiased;overflow-x:hidden;margin:0}
 
-/* ── GATE ── */
-.gate{
-  display:flex;
-  height:100vh;height:100dvh;
-  position:relative;
+/* ── HEADER (inline — bu sayfa kendi header'ini kullanir) ── */
+.lp-hdr{position:sticky;top:0;z-index:100;background:rgba(247,246,244,.88);backdrop-filter:blur(16px) saturate(1.8);-webkit-backdrop-filter:blur(16px) saturate(1.8);border-bottom:1px solid var(--border);padding:0 clamp(16px,4vw,48px);height:64px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.lp-hdr-left{display:flex;align-items:center;gap:28px}
+.lp-logo{font-family:var(--font-d);font-size:20px;font-weight:800;color:var(--navy);text-decoration:none;letter-spacing:-.5px}
+.lp-logo em{font-style:normal;color:var(--verm)}
+.seg-toggle{display:flex;background:var(--bg-section);border:1px solid var(--border);border-radius:24px;padding:3px;gap:2px}
+.seg-btn{font-family:var(--font-b);font-size:13px;font-weight:600;padding:7px 20px;border:none;border-radius:24px;cursor:pointer;transition:all .25s;background:transparent;color:var(--text-muted)}
+.seg-btn.active[data-seg="adaylar"]{background:var(--verm);color:#fff;box-shadow:0 2px 8px rgba(201,78,40,.15)}
+.seg-btn.active[data-seg="kurumsal"]{background:var(--navy);color:#fff;box-shadow:0 2px 8px rgba(30,45,94,.15)}
+.lp-hdr-right{display:flex;align-items:center;gap:20px}
+.lp-hdr-link{font-family:var(--font-b);font-size:13px;font-weight:500;color:var(--text-muted);text-decoration:none;transition:color .2s}
+.lp-hdr-link:hover{color:var(--text-primary)}
+.lp-hdr-cta{font-family:var(--font-b);font-size:13px;font-weight:700;color:#fff;background:var(--navy);border:none;border-radius:var(--radius);padding:9px 22px;cursor:pointer;transition:all .2s;text-decoration:none}
+.lp-hdr-cta:hover{background:var(--navy-dark);transform:translateY(-1px)}
+
+@media(prefers-color-scheme:dark){
+  .lp-hdr{background:rgba(11,13,23,.88)}
+  .seg-toggle{background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.08)}
 }
 
-/* ── ZONES ── */
-.zone{
-  flex:1;position:relative;overflow:hidden;
-  display:flex;flex-direction:column;
-  justify-content:center;
-  text-decoration:none;cursor:pointer;
-  transition:flex 1s ease, background .8s ease, opacity .6s ease;
-}
-/* Hovered zone expands gently, sibling fades back */
-.gate:has(.zone--a:hover) .zone--a{flex:1.06}
-.gate:has(.zone--a:hover) .zone--i{flex:0.94;opacity:0.7}
-.gate:has(.zone--i:hover) .zone--i{flex:1.06}
-.gate:has(.zone--i:hover) .zone--a{flex:0.94;opacity:0.7}
+/* ── SECTIONS (aday.html pattern birebir) ── */
+.s{padding:var(--pad)}
+.s-inner{max-width:var(--max-w);margin:0 auto}
+.s-white{background:var(--bg-section)}
+.s-warm{background:var(--bg-warm)}
+.s-warm-k{background:var(--bg-warm-k)}
 
-.zone--a{
-  padding:0 clamp(32px,4.5vw,72px);
-  align-items:flex-start;
-  background:
-    radial-gradient(ellipse 70% 50% at 80% 85%, var(--glow-a), transparent),
-    var(--bg-a);
-  transition:background .8s ease;
-}
-.zone--a:hover{
-  background:
-    radial-gradient(ellipse 70% 50% at 80% 85%, var(--glow-a-h), transparent),
-    radial-gradient(ellipse 40% 30% at 30% 30%, var(--glow-a), transparent),
-    var(--bg-a-h);
-}
+/* ── HERO (aday.html pattern) ── */
+.hero{padding:var(--pad);padding-top:clamp(48px,7vw,88px)}
+.hero .s-inner{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center}
+.hero-hl{font-family:var(--font-d);font-size:clamp(36px,5vw,58px);font-weight:800;letter-spacing:-2.5px;line-height:1.04;color:var(--text-primary);margin-bottom:20px}
+.hero-sub{font-family:var(--font-b);font-size:15px;color:var(--text-muted);line-height:1.7;max-width:460px;margin-bottom:32px}
+.hero-btns{display:flex;gap:12px;flex-wrap:wrap;margin-top:20px}
+.hero-vis{display:flex;align-items:center;justify-content:center;min-height:320px;border-radius:14px;overflow:hidden;background:var(--bg-warm)}
+.hero-vis img{width:100%;height:100%;object-fit:cover;border-radius:14px}
 
-.zone--i{
-  padding:0 clamp(32px,4.5vw,72px);
-  align-items:flex-end;text-align:right;
-  background:
-    radial-gradient(ellipse 70% 50% at 20% 85%, var(--glow-i), transparent),
-    var(--bg-i);
-  transition:background .8s ease;
-}
-.zone--i:hover{
-  background:
-    radial-gradient(ellipse 70% 50% at 20% 85%, var(--glow-i-h), transparent),
-    radial-gradient(ellipse 40% 30% at 70% 30%, var(--glow-i), transparent),
-    var(--bg-i-h);
-}
+/* Navy hero variant (isveren.html pattern) */
+.hero-navy{background:var(--navy)}
+.hero-navy .hero-hl{color:#fff}
+.hero-navy .hero-sub{color:rgba(255,255,255,0.65)}
+.hero-navy .hero-vis{background:rgba(255,255,255,0.04)}
 
-/* ── EYEBROW ── */
-.ey{
-  font-family:var(--font-b);font-size:10px;font-weight:700;
-  letter-spacing:4px;text-transform:uppercase;margin-bottom:18px;
-  transition:letter-spacing .8s ease, opacity .6s ease;
-}
-.zone--a .ey{color:var(--ey-a)}
-.zone--i .ey{color:var(--ey-i)}
-.zone:hover .ey{letter-spacing:5px;opacity:1}
+/* Trust row — aday.html pattern (NOT a badge/pill) */
+.trust{display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin-top:20px;padding-bottom:20px;border-bottom:1px solid var(--border);max-width:360px}
+.trust span{font-family:var(--font-b);font-size:12px;color:var(--text-muted);font-weight:500;display:inline-flex;align-items:center;gap:6px}
+.trust span::before{content:'';display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--verm);opacity:0.5}
 
-/* ── HEADING ── */
-.hd{
-  font-family:var(--font-d);font-weight:800;
-  font-size:clamp(40px,5.5vw,68px);
-  line-height:0.93;letter-spacing:-2.5px;
-  color:var(--text-head);margin-bottom:20px;
-  transition:opacity .6s ease;
-  opacity:0.92;
-}
-.hd .v{color:var(--verm)}
-.hd .n{color:var(--hd-n)}
-.zone:hover .hd{opacity:1}
+/* ── BUTTONS (aday + isveren patterns) ── */
+.btn-p{display:inline-flex;align-items:center;background:var(--verm);color:#fff;border:none;font-family:var(--font-b);font-size:14px;font-weight:700;padding:13px 28px;border-radius:var(--radius);cursor:pointer;transition:background .2s,transform .2s,box-shadow .2s;text-decoration:none}
+.btn-p:hover{background:var(--verm-dark);transform:translateY(-2px);box-shadow:0 6px 20px rgba(201,78,40,0.2)}
+.btn-g{display:inline-flex;align-items:center;gap:8px;background:var(--bg-section);color:var(--text-primary);border:1.5px solid var(--border);font-family:var(--font-b);font-size:14px;font-weight:600;padding:12px 24px;border-radius:var(--radius);cursor:pointer;transition:border-color .2s,box-shadow .2s;text-decoration:none}
+.btn-g:hover{border-color:var(--text-muted);box-shadow:0 2px 10px rgba(0,0,0,0.06)}
+.btn-o{display:inline-flex;align-items:center;background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,0.3);font-family:var(--font-b);font-size:14px;font-weight:600;padding:12px 24px;border-radius:var(--radius);cursor:pointer;transition:border-color .2s,background .2s;text-decoration:none}
+.btn-o:hover{border-color:rgba(255,255,255,0.6);background:rgba(255,255,255,0.05)}
+.btn-navy{display:inline-flex;align-items:center;justify-content:center;background:var(--navy);color:#fff;border:none;width:100%;font-family:var(--font-b);font-size:14px;font-weight:700;padding:12px 24px;border-radius:var(--radius);cursor:pointer;transition:background .2s,transform .2s}
+.btn-navy:hover{background:var(--navy-dark);transform:translateY(-1px)}
 
-/* ── SUBTEXT ── */
-.sb{
-  font-size:14px;line-height:1.7;
-  color:var(--text-dim);max-width:280px;margin-bottom:32px;
-  transition:opacity .6s ease;
-  opacity:0.65;
-}
-.zone--i .sb{margin-left:auto}
-.zone:hover .sb{opacity:1}
+/* ── SPLIT + BENTO (aday.html pattern birebir) ── */
+.split{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:start}
+.split-hl{font-family:var(--font-d);font-size:clamp(28px,3.5vw,42px);font-weight:800;letter-spacing:-1.5px;line-height:1.1;color:var(--text-primary)}
+.split-desc{font-size:15px;color:var(--text-muted);line-height:1.7;margin-top:14px;max-width:420px}
+.bento{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.bento-card{padding:14px 16px;border-radius:10px;background:rgba(255,255,255,0.6);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.35);cursor:default;display:flex;align-items:center;gap:10px;transition:transform .3s cubic-bezier(0.16,1,0.3,1), box-shadow .3s ease}
+.bento-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.05)}
+.bento-icon{width:32px;height:32px;min-width:32px;border-radius:8px;display:flex;align-items:center;justify-content:center}
+.bento-icon.ic-verm{background:rgba(201,78,40,0.10);color:var(--verm)}
+.bento-icon.ic-navy{background:rgba(30,45,94,0.10);color:var(--navy)}
+.bento-title{font-family:var(--font-b);font-size:13px;font-weight:700;color:var(--text-primary)}
+.bento-desc{font-size:11px;color:var(--text-muted);line-height:1.4;margin-top:3px}
 
-/* ── CTA BUTTON ── */
-.ct.btn{
-  display:inline-block;font-family:var(--font-b);
-  font-size:13px;font-weight:700;letter-spacing:0.3px;
-  text-decoration:none;padding:10px 28px;
-  border-radius:6px;border:1.5px solid transparent;
-  transition:background .5s ease, border-color .5s ease, color .5s ease, box-shadow .5s ease, opacity .5s ease;
-  opacity:0.85;
-}
-.zone--a .ct.btn{color:var(--verm);background:transparent;border-color:var(--verm)}
-.zone--a:hover .ct.btn{background:var(--verm);color:#fff;border-color:var(--verm);opacity:1;box-shadow:0 4px 16px rgba(201,78,40,0.15)}
-.zone--i .ct.btn{color:var(--btn-i-hc);background:transparent;border-color:var(--btn-i-hborder)}
-.zone--i:hover .ct.btn{background:var(--btn-i-bg);color:var(--btn-i-c);border-color:var(--btn-i-bg);opacity:1;box-shadow:0 4px 16px rgba(30,45,94,0.15)}
+@media(prefers-color-scheme:dark){.bento-card{background:rgba(255,255,255,0.04);border-color:rgba(255,255,255,0.06)}}
 
-/* ── ILLUSTRATIONS ── */
-.il{
-  position:absolute;
-  bottom:0;
-  height:clamp(220px,38vh,360px);
-  width:auto;object-fit:contain;
-  pointer-events:none;z-index:1;
-  transition:opacity .8s ease;
-  opacity:0.75;
-}
-.zone--a .il{right:clamp(0px,1vw,24px);height:clamp(240px,42vh,380px)}
-.zone--i .il{left:clamp(8px,2vw,32px)}
-@media(min-width:901px){.zone--i .il{transform:scaleX(-1)}}
-.zone--a:hover .il{opacity:1}
-.zone--i:hover .il{opacity:1}
+/* ── STEPS (aday + isveren pattern) ── */
+.steps-row{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.step-card{background:var(--bg-section);border-radius:12px;padding:24px;border:1px solid var(--border);display:flex;align-items:center;gap:20px;transition:transform .3s cubic-bezier(0.16,1,0.3,1), box-shadow .3s ease, border-color .3s ease;cursor:default;text-align:left}
+.step-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.05);border-color:var(--verm)}
+.step-card-navy:hover{border-color:var(--navy)}
+.step-body{flex:1}
+.step-vis{width:72px;height:72px;min-width:72px;object-fit:contain;order:1;margin-left:auto;border-radius:12px;padding:8px;background:transparent}
+.step-n{font-family:var(--font-m);font-size:10px;font-weight:600;color:var(--verm);display:block;margin-bottom:8px}
+.step-card-navy .step-n{color:var(--verm)}
+.step-card-navy:hover .step-n{color:var(--navy)}
+.step-t{font-family:var(--font-d);font-size:14px;font-weight:700;color:var(--text-primary);margin-bottom:6px}
+.step-d{font-size:12px;color:var(--text-muted);line-height:1.6}
 
-
-/* ── ANIMATIONS ── */
-@keyframes fadeUp{
-  from{opacity:0;transform:translateY(6px)}
-  to{opacity:1;transform:translateY(0)}
-}
-@keyframes fi{from{opacity:0}to{opacity:1}}
-@keyframes ilFade{
-  from{opacity:0}
-  to{opacity:0.75}
+@media(prefers-color-scheme:dark){
+  .step-card{background:var(--bg-section);border-color:rgba(255,255,255,0.06)}
+  .step-card:hover{border-color:var(--verm);box-shadow:0 8px 24px rgba(201,78,40,0.08)}
 }
 
-.ey{animation:fadeUp .9s ease .1s both}
-.hd{animation:fadeUp .9s ease .2s both}
-.sb{animation:fadeUp .9s ease .3s both}
-.ct{animation:fadeUp .9s ease .4s both}
-.il{animation:ilFade 1.2s ease .3s both}
-.hdr{animation:fi .6s ease .05s both}
+/* ── KIM ICIN — aday variant ── */
+.who-hl{font-family:var(--font-d);font-size:clamp(28px,3.5vw,42px);font-weight:800;letter-spacing:-1.5px;color:var(--text-primary);margin-bottom:6px}
+.who-sub{font-size:15px;color:var(--text-muted);margin-bottom:28px}
+.who-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:28px}
+.who-card{background:var(--bg-section);border-radius:12px;padding:20px;border:1px solid var(--border);transition:transform .3s cubic-bezier(0.16,1,0.3,1), box-shadow .3s ease, border-color .3s ease;cursor:default}
+.who-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.05);border-color:var(--verm)}
+.who-card-t{font-family:var(--font-d);font-size:15px;font-weight:700;color:var(--text-primary);margin-bottom:6px}
+.who-card-d{font-size:13px;color:var(--text-muted);line-height:1.5}
 
-@media(prefers-reduced-motion:reduce){
-  .ey,.hd,.sb,.ct,.il,.hdr{animation:none!important;opacity:1!important}
-  .zone,.il{transition:none!important}
+/* ── KIM ICIN — isveren variant (chips) ── */
+.who-row{display:flex;gap:8px;flex-wrap:wrap}
+.who-chip{background:var(--bg-section);border-radius:8px;padding:10px 18px;border:1px solid var(--border);transition:border-color .2s}
+.who-chip:hover{border-color:var(--navy)}
+.who-chip-t{font-family:var(--font-b);font-size:13px;font-weight:600;color:var(--text-primary)}
+.who-vis{border-radius:14px;overflow:hidden}
+.who-vis img{width:100%;height:auto;max-height:400px;object-fit:cover;object-position:center bottom;display:block;border-radius:14px}
+
+/* ── FINAL CTA — aday variant ── */
+.cta-end{background:var(--bg-section)}
+.cta-end .s-inner{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center}
+.cta-hl{font-family:var(--font-d);font-size:clamp(28px,3.5vw,42px);font-weight:800;letter-spacing:-1.5px;color:var(--text-primary);margin-bottom:10px}
+.cta-sub{font-size:15px;color:var(--text-muted);margin-bottom:24px;line-height:1.6}
+.cta-btns{display:flex;gap:12px;flex-wrap:wrap}
+.cta-vis{border-radius:14px;overflow:hidden;background:var(--bg-warm)}
+.cta-vis img{width:100%;height:100%;object-fit:cover;display:block;border-radius:14px}
+
+/* ── LEAD FORM — isveren pattern ── */
+.form-card{background:var(--bg-section);border:1.5px solid var(--border);border-radius:14px;padding:28px}
+.form-title{font-family:var(--font-d);font-weight:800;font-size:24px;letter-spacing:-0.5px;margin-bottom:18px;color:var(--text-primary)}
+.form-input{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:var(--font-b);font-size:14px;color:var(--text-primary);outline:none;margin-bottom:10px;transition:border-color .15s;background:var(--bg-section)}
+.form-input:focus{border-color:var(--navy)}
+.form-note{font-size:11px;color:var(--text-muted);margin-top:10px;text-align:center}
+
+@media(prefers-color-scheme:dark){
+  .form-card{background:var(--bg-section);border-color:rgba(255,255,255,0.08)}
+  .form-input{background:var(--bg-page);border-color:rgba(255,255,255,0.08)}
+  .who-card{background:var(--bg-section);border-color:rgba(255,255,255,0.06)}
+  .who-card:hover{border-color:var(--verm)}
+  .who-chip{background:rgba(255,255,255,0.04);border-color:rgba(255,255,255,0.06)}
 }
 
-/* ══ NARROW DESKTOP (901-1100px) ══ */
-@media(max-width:1100px) and (min-width:901px){
-  .il{height:clamp(180px,32vh,280px)}
-  .zone--a .il{height:clamp(200px,36vh,300px)}
-  .hd{font-size:clamp(36px,4.5vw,52px)}
-}
+/* ── BRAND STRIP (kurumsal social proof) ── */
+.brand-section{padding:clamp(32px,5vw,48px) clamp(24px,5vw,48px);text-align:center;background:var(--bg-section);border-bottom:1px solid var(--border)}
+.brand-section-label{font-family:var(--font-b);font-size:12px;font-weight:500;color:var(--text-muted);margin-bottom:16px}
+.brand-logos{display:flex;gap:clamp(20px,3vw,36px);justify-content:center;flex-wrap:wrap;align-items:center}
+.brand-logos span{font-family:var(--font-d);font-size:15px;font-weight:700;color:var(--text-primary);opacity:.25;white-space:nowrap;transition:opacity .2s}
+.brand-logos span:hover{opacity:.5}
 
-/* ══ TABLET (≤900px) ══ */
+/* ── SEGMENT TRANSITION ── */
+.seg-content{transition:opacity .3s ease}
+.seg-content.hiding{opacity:0}
+
+/* ── RESPONSIVE ── */
 @media(max-width:900px){
-  html,body{overflow:auto}
-  .gate{
-    flex-direction:column;
-    height:auto;
-  }
-  .gate:has(.zone--a:hover) .zone--a,
-  .gate:has(.zone--a:hover) .zone--i,
-  .gate:has(.zone--i:hover) .zone--i,
-  .gate:has(.zone--i:hover) .zone--a{flex:1}
-
-  .zone{
-    flex:none;
-    overflow:visible;
-    min-height:auto;
-    padding:clamp(72px,8vh,100px) clamp(28px,5vw,48px) clamp(24px,3vh,40px);
-    justify-content:flex-start;
-  }
-  .zone--i{
-    align-items:flex-start;text-align:left;
-    padding-top:clamp(28px,3vh,40px);
-    padding-bottom:clamp(32px,4vh,56px);
-  }
-  .zone--i .sb{margin-left:0}
-  .hd{font-size:clamp(34px,8vw,50px);letter-spacing:-2px}
-
-  .il{
-    position:relative;
-    bottom:auto;right:auto;left:auto;
-    height:auto;
-    width:clamp(240px,45vw,360px);
-    margin-top:20px;
-    align-self:flex-end;
-    opacity:0.9;
-  }
-  .zone--a .il{height:auto;width:clamp(240px,45vw,360px);right:auto;align-self:flex-end}
-  .zone--i .il{width:clamp(240px,45vw,360px);right:auto;left:auto;align-self:flex-end}
-  .ct.btn{padding:12px 32px;font-size:14px}
+  .hero .s-inner{grid-template-columns:1fr;gap:32px}
+  .hero-vis{min-height:220px}
+  .cta-end .s-inner{grid-template-columns:1fr;gap:32px}
+  .cta-vis{min-height:220px}
+  .split{grid-template-columns:1fr;gap:28px}
+  .bento{grid-template-columns:1fr 1fr}
+  .steps-row{grid-template-columns:1fr}
+  .who-grid{grid-template-columns:1fr}
+  .who-vis{min-height:220px}
+  .lp-hdr-right .lp-hdr-link{display:none}
 }
-
-/* ══ MOBILE (≤600px) ══ */
-@media(max-width:600px){
-  .zone{padding:60px 24px 20px}
-  .zone--i{padding:20px 24px 36px}
-  .hd{font-size:clamp(30px,9vw,42px);letter-spacing:-1.5px;margin-bottom:14px}
-  .ey{margin-bottom:10px;font-size:9px;letter-spacing:3px}
-  .sb{font-size:13px;max-width:none;margin-bottom:18px}
-  .il{width:min(220px,52vw);margin-top:16px;align-self:flex-end}
-  .zone--a .il{width:min(220px,52vw);align-self:flex-end}
-  .zone--i .il{width:min(220px,52vw)}
-  .hdr{padding:16px 18px}
-  .logo{font-size:16px}
-  .login{font-size:11px;padding:6px 14px}
-  .ct.btn{padding:11px 28px;font-size:13px}
-}
-
-/* ══ SMALL MOBILE (≤380px) ══ */
-@media(max-width:380px){
-  .zone{padding:52px 20px 16px}
-  .zone--i{padding:16px 20px 28px}
-  .hd{font-size:26px;letter-spacing:-1px}
-  .sb{font-size:12px}
-  .il{width:min(180px,48vw);margin-top:14px}
-  .zone--a .il{width:min(180px,48vw)}
+@media(max-width:480px){
+  .hero-hl{font-size:30px;letter-spacing:-1px}
+  .hero-btns{flex-direction:column}
+  .btn-g,.btn-p,.btn-o{width:100%;justify-content:center}
+  .bento{grid-template-columns:1fr 1fr}
+  .bento-icon{width:26px;height:26px;min-width:26px;border-radius:6px}
+  .bento-icon svg{width:14px;height:14px}
+  .bento-title{font-size:11px}
+  .bento-desc{font-size:10px}
+  .bento-card{padding:10px 12px;gap:8px}
+  .trust{flex-direction:row;gap:8px;flex-wrap:wrap;justify-content:flex-start;margin-top:16px;padding-bottom:16px}
+  .seg-btn{font-size:12px;padding:6px 14px}
 }
 </style>
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-54BCV5QYCZ"></script>
-<script>
-window.dataLayer=window.dataLayer||[];
-function gtag(){dataLayer.push(arguments);}
-gtag('js',new Date());
-gtag('config','G-54BCV5QYCZ');
-</script>
+<!-- Logged-in redirect -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 (function(){
-  var sb = supabase.createClient(
-    'https://cpwibefquojehjehtrog.supabase.co',
-    'sb_publishable_POUtNwJyjAAheukwYP5hmA_TKKjphwa'
-  );
+  var sb = supabase.createClient('https://cpwibefquojehjehtrog.supabase.co','sb_publishable_POUtNwJyjAAheukwYP5hmA_TKKjphwa');
   sb.auth.getSession().then(function(res){
     var s = res.data && res.data.session;
     if(s && s.user){
       var role = (s.user.user_metadata || {}).role;
       window.location.replace(role === 'employer' ? 'ik.html' : 'profil.html');
-    } else {
-      document.body.style.opacity = '1';
+    } else { document.body.style.opacity = '1'; }
+  }).catch(function(){ document.body.style.opacity = '1'; });
+})();
+</script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-54BCV5QYCZ"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-54BCV5QYCZ');</script>
+</head>
+<body style="opacity:0;transition:opacity .3s ease">
+
+<!-- ═══ HEADER ═══ -->
+<header class="lp-hdr">
+  <div class="lp-hdr-left">
+    <a class="lp-logo" href="index.html">hello<em>talent</em></a>
+    <div class="seg-toggle">
+      <button class="seg-btn active" data-seg="adaylar" onclick="switchSeg('adaylar')">Adaylar</button>
+      <button class="seg-btn" data-seg="kurumsal" onclick="switchSeg('kurumsal')">Kurumsal</button>
+    </div>
+  </div>
+  <div class="lp-hdr-right">
+    <a class="lp-hdr-link" href="hakkimizda.html">Hakkimizda</a>
+    <a class="lp-hdr-link" href="iletisim.html">Iletisim</a>
+    <a class="lp-hdr-cta" href="giris.html">Giris Yap</a>
+  </div>
+</header>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- ADAYLAR SEGMENT                        -->
+<!-- ═══════════════════════════════════════ -->
+<div id="seg-adaylar" class="seg-content">
+
+<!-- HERO -->
+<section class="hero s-white">
+  <div class="s-inner">
+    <div>
+      <h1 class="hero-hl">Artik basvuru yok,<br>markalar seni buluyor.</h1>
+      <p class="hero-sub">Profilini olustur, yetkinliklerini one cikar ve mulakat pratigiyle kendini gelistir. Perakende sektorunun oncu markalari arasinda seni arayan dogru isverene guvenle ulas.</p>
+      <div class="trust">
+        <span>Akilli Profil</span>
+        <span>Gorunmez Mod</span>
+        <span>Tamamen Ucretsiz</span>
+      </div>
+      <div class="hero-btns">
+        <button class="btn-g" onclick="window.location.href='/giris.html?tab=aday'">
+          <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z"/><path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.997 8.997 0 000 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"/></svg>
+          Google ile Uye Ol
+        </button>
+        <a href="/giris.html?tab=aday" class="btn-p">Ucretsiz Hesap Olustur</a>
+      </div>
+    </div>
+    <div class="hero-vis">
+      <img src="assets/aday/hero-aday.webp" alt="Perakende sektorunde kariyer arayan aday" width="1400" height="1083" loading="eager">
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="s s-warm">
+  <div class="s-inner">
+    <div class="split">
+      <div>
+        <h2 class="split-hl">Sadece bir CV degil, senin hikayen.</h2>
+        <p class="split-desc">Deneyimlerini ve hedeflerini statik belgelerden kurtar. Yapay zeka destekli araclarimizla guclu yanlarini kesfet, mulakatlarda fark yarat.</p>
+      </div>
+      <div class="bento">
+        <div class="bento-card">
+          <div class="bento-icon ic-verm"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/></svg></div>
+          <div><div class="bento-title">AI CV Optimize</div><div class="bento-desc">ATS uyumlu CV, yapay zeka destekli</div></div>
+        </div>
+        <div class="bento-card">
+          <div class="bento-icon ic-navy"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+          <div><div class="bento-title">Markalar</div><div class="bento-desc">96 perakende markasini takip et</div></div>
+        </div>
+        <div class="bento-card">
+          <div class="bento-icon ic-verm"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg></div>
+          <div><div class="bento-title">Yetkinlik Pratigi</div><div class="bento-desc">STAR+T metoduyla mulakat hazirlik</div></div>
+        </div>
+        <div class="bento-card">
+          <div class="bento-icon ic-navy"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+          <div><div class="bento-title">Firsatlar</div><div class="bento-desc">Sana uygun pozisyonlardan haberdar ol</div></div>
+        </div>
+        <div class="bento-card">
+          <div class="bento-icon ic-verm"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+          <div><div class="bento-title">Beni Oner</div><div class="bento-desc">Gorunurlugunuzu kontrol edin</div></div>
+        </div>
+        <div class="bento-card">
+          <div class="bento-icon ic-navy"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div>
+          <div><div class="bento-title">Studio</div><div class="bento-desc">Yetkinlik egitimi ve AI degerlendirme</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STEPS -->
+<section class="s s-white">
+  <div class="s-inner">
+    <h2 class="split-hl" style="margin-bottom:6px">Uc adimda basla.</h2>
+    <p class="split-desc" style="margin-bottom:32px">Hizli, kolay, ucretsiz.</p>
+    <div class="steps-row">
+      <div class="step-card">
+        <div class="step-body">
+          <span class="step-n">01</span>
+          <div class="step-t">Profil Olustur</div>
+          <p class="step-d">Deneyim, egitim ve tercihlerini ekle. Sadece 2 dakika suruyor, CV zorunlu degil.</p>
+        </div>
+        <img class="step-vis" src="assets/aday/step-01-profil.svg" alt="" width="72" height="72" loading="lazy">
+      </div>
+      <div class="step-card">
+        <div class="step-body">
+          <span class="step-n">02</span>
+          <div class="step-t">Kendini Gelistir</div>
+          <p class="step-d">Yetkinlik pratigi yap, CV'ni optimize et, mulakatlara hazirlan.</p>
+        </div>
+        <img class="step-vis" src="assets/aday/step-02-gelistir.svg" alt="" width="72" height="72" loading="lazy">
+      </div>
+      <div class="step-card">
+        <div class="step-body">
+          <span class="step-n">03</span>
+          <div class="step-t">Markalar Seni Bulsun</div>
+          <p class="step-d">Profilin hazir. Sektordeki isverenler seni kesfetsin ve sana mesaj gondersin.</p>
+        </div>
+        <img class="step-vis" src="assets/aday/step-03-markalar.svg" alt="" width="72" height="72" loading="lazy">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- KIM ICIN -->
+<section class="s s-warm">
+  <div class="s-inner">
+    <h2 class="who-hl">Kimin icin?</h2>
+    <p class="who-sub">Perakende sektorundeki her seviyeden profesyonel icin.</p>
+    <div class="who-grid">
+      <div class="who-card">
+        <div class="who-card-t">Magaza Ekipleri</div>
+        <div class="who-card-d">Satis danismani, kasiyer, depo sorumlusu, reyon yoneticisi.</div>
+      </div>
+      <div class="who-card">
+        <div class="who-card-t">Yonetim Kadrosu</div>
+        <div class="who-card-d">Magaza muduru, bolge yoneticisi, area manager, satis muduru.</div>
+      </div>
+      <div class="who-card">
+        <div class="who-card-t">Merkez ve Dijital</div>
+        <div class="who-card-d">VM, egitim, IK, CRM, dijital pazarlama, e-ticaret.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="cta-end s">
+  <div class="s-inner">
+    <div>
+      <h2 class="cta-hl">Perakende kariyerinde bir sonraki adim.</h2>
+      <p class="cta-sub">Sadece 2 dakikani alir. CV zorunlu degil. Tamamen ucretsiz.</p>
+      <div class="cta-btns">
+        <button class="btn-g" onclick="window.location.href='/giris.html?tab=aday'">
+          <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z"/><path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.997 8.997 0 000 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"/></svg>
+          Google ile Uye Ol
+        </button>
+        <a href="/giris.html?tab=aday" class="btn-p">Ucretsiz Hesap Olustur</a>
+      </div>
+    </div>
+    <div class="cta-vis">
+      <img src="assets/aday/cta-scene.webp" alt="Perakende sektorunde kariyer" width="1344" height="768" loading="lazy">
+    </div>
+  </div>
+</section>
+
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- KURUMSAL SEGMENT                       -->
+<!-- ═══════════════════════════════════════ -->
+<div id="seg-kurumsal" class="seg-content" style="display:none">
+
+<!-- HERO (navy) -->
+<section class="hero hero-navy">
+  <div class="s-inner">
+    <div>
+      <h1 class="hero-hl">Ilanlarin arasinda kaybolmayin,<br>dogru yetenge hemen ulasin.</h1>
+      <p class="hero-sub">Retail dunyasina ozel filtreleme ve yetkinlik bazli eslestirme ile ekibinizi kurmak hic bu kadar hizli olmamisti.</p>
+      <div class="hero-btns">
+        <a href="#lead-form" class="btn-p">Yetenekleri Kesfet</a>
+        <a href="#k-steps" class="btn-o">Nasil Calisiyor?</a>
+      </div>
+    </div>
+    <div class="hero-vis">
+      <img src="assets/isveren/hero-isveren.webp" alt="Perakende sektorunde yetenek arayan isveren" width="1400" height="1021" loading="eager">
+    </div>
+  </div>
+</section>
+
+<!-- BRAND SOCIAL PROOF -->
+<div class="brand-section">
+  <div class="brand-section-label">Bu markalarda deneyimli adaylar platformumuzda</div>
+  <div class="brand-logos">
+    <span>Zara</span><span>LC Waikiki</span><span>Boyner</span><span>Sephora</span><span>Mango</span><span>Koton</span><span>Vakko</span><span>Beymen</span><span>H&M</span><span>Nike</span>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section class="s s-warm-k">
+  <div class="s-inner">
+    <div class="split">
+      <div>
+        <h2 class="split-hl">Ilan yayinlamayin, eslesin.</h2>
+        <p class="split-desc">Kriterlerinizi belirleyin, gerisini algoritmaya birakin. Sadece sizin sectiginiz kriterlere uyan adaylarla eslesin.</p>
+      </div>
+      <div class="bento">
+        <div class="bento-card">
+          <div class="bento-icon ic-navy"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+          <div><div class="bento-title">Canli Yetenek Havuzu</div><div class="bento-desc">Aktif adaylari filtreleyin, inceleyin</div></div>
+        </div>
+        <div class="bento-card">
+          <div class="bento-icon ic-navy"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></div>
+          <div><div class="bento-title">Gorunmez Pozisyonlar</div><div class="bento-desc">Gizli arama, rakipleriniz gormesin</div></div>
+        </div>
+        <div class="bento-card">
+          <div class="bento-icon ic-navy"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+          <div><div class="bento-title">Direkt Mesaj</div><div class="bento-desc">Adaylarla dogrudan iletisime gecin</div></div>
+        </div>
+        <div class="bento-card">
+          <div class="bento-icon ic-navy"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/></svg></div>
+          <div><div class="bento-title">Isveren Markasi</div><div class="bento-desc">Sirketinizi tanitin, adaylar takip etsin</div></div>
+        </div>
+        <div class="bento-card">
+          <div class="bento-icon ic-navy"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/></svg></div>
+          <div><div class="bento-title">Uyumlu Eslestirme</div><div class="bento-desc">Yetkinlik bazli aday skorlama</div></div>
+        </div>
+        <div class="bento-card">
+          <div class="bento-icon ic-navy"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+          <div><div class="bento-title">Sirket Ici Is Birligi</div><div class="bento-desc">HR ekibinizi davet edin, birlikte karar verin</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STEPS -->
+<section class="s s-white" id="k-steps">
+  <div class="s-inner">
+    <h2 class="split-hl" style="margin-bottom:6px">Ilan verme donemini kapatiyoruz.</h2>
+    <p class="split-desc" style="margin-bottom:32px">Basit, hizli, etkili.</p>
+    <div class="steps-row">
+      <div class="step-card step-card-navy">
+        <div class="step-body">
+          <span class="step-n">01</span>
+          <div class="step-t">Kriterlerini Belirle</div>
+          <p class="step-d">Hangi rol, hangi sehir, hangi yetkinlikler? Beklentilerini filtrelerle sec, ilan yayinlama zahmetine girmeden sureci baslat.</p>
+        </div>
+        <img class="step-vis" src="assets/isveren/step-01.svg" alt="" width="72" height="72" loading="lazy">
+      </div>
+      <div class="step-card step-card-navy">
+        <div class="step-body">
+          <span class="step-n">02</span>
+          <div class="step-t">Akilli Eslesmeleri Gor</div>
+          <p class="step-d">Sadece belirledigin kriterlere en uygun adaylari listele. Yapay zeka destekli eslestirme puanlariyla en dogru yetenge odaklan.</p>
+        </div>
+        <img class="step-vis" src="assets/isveren/step-02.svg" alt="" width="72" height="72" loading="lazy">
+      </div>
+      <div class="step-card step-card-navy">
+        <div class="step-body">
+          <span class="step-n">03</span>
+          <div class="step-t">Dogrudan Baglan</div>
+          <p class="step-d">En iyi adaylara direkt mesaj gonder, mulakatini planla ve ekibinle paylas.</p>
+        </div>
+        <img class="step-vis" src="assets/isveren/step-03.svg" alt="" width="72" height="72" loading="lazy">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- KIM ICIN -->
+<section class="s s-warm-k">
+  <div class="s-inner">
+    <div class="split" style="align-items:center">
+      <div>
+        <h2 class="split-hl"><span style="color:var(--navy)">hello</span><span style="color:var(--verm)">talent</span> her olcekte retail isvereni icin.</h2>
+        <p class="split-desc" style="margin-bottom:20px">Yetenek avini otomatige baglayan markalarin ortak adresi.</p>
+        <div class="who-row">
+          <div class="who-chip"><div class="who-chip-t">Markalar</div></div>
+          <div class="who-chip"><div class="who-chip-t">Grup Sirketler</div></div>
+          <div class="who-chip"><div class="who-chip-t">Danismanliklar</div></div>
+        </div>
+      </div>
+      <div class="who-vis">
+        <img src="assets/isveren/cta-scene.webp" alt="Retail ekibi ofiste birlikte calisiyor" width="1536" height="878" loading="lazy">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LEAD FORM -->
+<section class="s s-white" id="lead-form">
+  <div class="s-inner">
+    <div class="split" style="align-items:start">
+      <div>
+        <h2 class="split-hl">Retail operasyonunuzu en dogru yeteneklerle buyutun.</h2>
+        <p class="split-desc">Ilan yayinlama zahmetinden kurtulun, yetkinlik bazli eslestirmeyle dogru adaylara aninda ulasin.</p>
+      </div>
+      <div>
+        <div class="form-card">
+          <div class="form-title">Ucretsiz Demoyu Baslatin</div>
+          <form id="employer-lead-form">
+            <input type="text" class="form-input" name="name" placeholder="Adiniz Soyadiniz" required>
+            <input type="email" class="form-input" name="email" placeholder="Kurumsal E-posta" required>
+            <input type="text" class="form-input" name="company" placeholder="Sirket Adi" required>
+            <input type="tel" class="form-input" name="phone" placeholder="Telefon (size daha hizli ulasmamiz icin)">
+            <select class="form-input" name="team_size">
+              <option value="" disabled selected>Kac magazaniz var?</option>
+              <option value="1-10">1-10</option>
+              <option value="11-50">11-50</option>
+              <option value="51-200">51-200</option>
+              <option value="200+">200+</option>
+            </select>
+            <button type="submit" class="btn-navy" id="btn-lead-submit">Demoyu Planla</button>
+          </form>
+          <p class="form-note">Sadece 2 dakikanizi alir. Ekibimiz sizinle iletisime gececek.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div>
+
+<!-- ═══ FOOTER ═══ -->
+<div id="ht-footer"></div>
+
+<!-- ═══ SCRIPTS ═══ -->
+<script src="shared.js?v=20260409a"></script>
+<script>
+/* ── Segment Toggle ── */
+function switchSeg(seg) {
+  var a = document.getElementById('seg-adaylar');
+  var k = document.getElementById('seg-kurumsal');
+  document.querySelectorAll('.seg-btn').forEach(function(b){ b.classList.toggle('active', b.dataset.seg === seg); });
+  var hiding = seg === 'adaylar' ? k : a;
+  var showing = seg === 'adaylar' ? a : k;
+  hiding.classList.add('hiding');
+  setTimeout(function(){
+    hiding.style.display = 'none'; hiding.classList.remove('hiding');
+    showing.style.display = 'block'; showing.style.opacity = '0';
+    requestAnimationFrame(function(){ showing.style.transition = 'opacity .3s ease'; showing.style.opacity = '1'; });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, 300);
+  history.replaceState(null, '', '#' + seg);
+}
+(function(){ var h = window.location.hash.replace('#',''); if (h === 'kurumsal') switchSeg('kurumsal'); })();
+
+/* ── Lead Form Submit (isveren.html pattern birebir) ── */
+(function(){
+  var form = document.getElementById('employer-lead-form');
+  if(!form) return;
+  var btn = document.getElementById('btn-lead-submit');
+  form.addEventListener('submit', async function(e){
+    e.preventDefault();
+    if(btn){ btn.disabled = true; btn.textContent = 'Gonderiliyor...'; }
+    var fd = new FormData(form);
+    try {
+      var sb = window.HT ? window.HT.getSupa() : null;
+      if(!sb) throw new Error('Baglanti hatasi');
+      var result = await sb.rpc('submit_employer_lead', {
+        p_name: fd.get('name') || '', p_email: fd.get('email') || '',
+        p_company: fd.get('company') || '', p_phone: fd.get('phone') || null,
+        p_team_size: fd.get('team_size') || null
+      });
+      if(result.error) throw result.error;
+      form.innerHTML = '<div style="text-align:center;padding:40px 0"><div style="font-family:var(--font-d);font-weight:800;font-size:24px;margin-bottom:8px;letter-spacing:-.5px">Tesekkurler</div><div style="color:var(--text-muted);font-size:15px;line-height:1.6">Size en uygun saati belirlemek icin 24 saat icinde donus yapacagiz.</div></div>';
+    } catch(ex){
+      var errMsg = (ex && ex.message) || 'Bir hata olustu.';
+      if(errMsg.indexOf('zorunlu') !== -1) errMsg = 'Lutfen tum zorunlu alanlari doldurun.';
+      var errEl = form.querySelector('.lead-form-error');
+      if(!errEl){ errEl = document.createElement('div'); errEl.className = 'lead-form-error'; errEl.style.cssText = 'color:#DC2626;font-size:14px;margin-top:8px;text-align:center'; form.appendChild(errEl); }
+      errEl.textContent = errMsg;
+      if(btn){ btn.disabled = false; btn.textContent = 'Demoyu Planla'; }
     }
-  }).catch(function(){
-    document.body.style.opacity = '1';
   });
 })();
 </script>
-</head>
-<body style="opacity:0;transition:opacity 0.3s ease">
-
-<header class="hdr">
-  <a class="logo" href="index.html">hello<em>talent</em></a>
-  <a class="login" href="giris.html">Giriş Yap</a>
-</header>
-
-<main class="gate">
-  <a class="zone zone--a" href="aday.html">
-    <span class="ey">Adaylar</span>
-    <h2 class="hd"><span class="v">İş</span><br>Arıyorum</h2>
-    <p class="sb">Perakende kariyerini tek bir profille yönet. Sektördeki güçlü markalar seni bulsun.</p>
-    <span class="ct btn">Profil oluştur</span>
-    <img class="il" src="assets/gate/gate-aday-final.svg" alt="Perakende sektöründe kariyer arayan aday" width="460" height="460" loading="eager">
-  </a>
-
-  <a class="zone zone--i" href="isveren.html">
-    <span class="ey">İşverenler</span>
-    <h2 class="hd"><span class="n">Yetenek</span><br>Arıyorum</h2>
-    <p class="sb">Sektöre özel aday havuzuna eriş. Filtrele, incele, hemen iletişime geç.</p>
-    <span class="ct btn">Ekibini kur</span>
-    <img class="il" src="assets/gate/gate-isveren-final.svg" alt="Perakende sektöründe yetenek arayan işveren" width="460" height="460" loading="eager">
-  </a>
-</main>
-
-
 </body>
 </html>
