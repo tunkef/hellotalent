@@ -735,7 +735,7 @@ document.addEventListener('keydown', function(e) {
   if (e.key === 'Escape') {
     var overlay = document.getElementById('forgot-password-overlay');
     if (overlay && overlay.style.display === 'flex') {
-      overlay.style.display = 'none';
+      closeForgot();
     }
     return;
   }
@@ -755,12 +755,30 @@ document.addEventListener('keydown', function(e) {
   var btnClose = document.getElementById('btn-close-forgot');
   var btnSend = document.getElementById('btn-send-reset');
 
+  var _forgotTrapCleanup = null;
+  function _forgotFocusTrap(el) {
+    var sel = 'button:not([disabled]),input:not([disabled]),[tabindex]:not([tabindex="-1"])';
+    function handleTab(e) {
+      if (e.key !== 'Tab') return;
+      var f = Array.prototype.slice.call(el.querySelectorAll(sel)).filter(function(x){return x.offsetParent!==null;});
+      if (!f.length) return;
+      if (e.shiftKey && document.activeElement === f[0]) { e.preventDefault(); f[f.length-1].focus(); }
+      else if (!e.shiftKey && document.activeElement === f[f.length-1]) { e.preventDefault(); f[0].focus(); }
+    }
+    el.addEventListener('keydown', handleTab);
+    return function() { el.removeEventListener('keydown', handleTab); };
+  }
   function openForgot() {
     if(overlay) overlay.style.display = 'flex';
     var msg = document.getElementById('forgot-msg');
     if(msg) msg.style.display = 'none';
     var input = document.getElementById('forgot-email');
     if(input) { input.value = ''; input.focus(); }
+    _forgotTrapCleanup = _forgotFocusTrap(overlay);
+  }
+  function closeForgot() {
+    if(overlay) overlay.style.display = 'none';
+    if(_forgotTrapCleanup) { _forgotTrapCleanup(); _forgotTrapCleanup = null; }
   }
 
   var btnAday = document.getElementById('btn-forgot-password-aday');
@@ -769,8 +787,8 @@ document.addEventListener('keydown', function(e) {
   var btnIK = document.getElementById('btn-forgot-password-ik');
   if(btnIK) btnIK.addEventListener('click', function(e){ e.preventDefault(); openForgot(); });
 
-  if(btnClose) btnClose.addEventListener('click', function(){ if(overlay) overlay.style.display = 'none'; });
-  if(overlay) overlay.addEventListener('click', function(e){ if(e.target === overlay) overlay.style.display = 'none'; });
+  if(btnClose) btnClose.addEventListener('click', closeForgot);
+  if(overlay) overlay.addEventListener('click', function(e){ if(e.target === overlay) closeForgot(); });
 
   if(btnSend) btnSend.addEventListener('click', async function(){
     var email = (document.getElementById('forgot-email').value || '').trim();

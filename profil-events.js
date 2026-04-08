@@ -13,6 +13,29 @@
 // ────────────────────────────────────────────────────────────────────────────
 window.HT_MVP_FREE = !!(window._htMvpFreeTier);
 
+// ── Focus Trap Utility ──────────────────────────────
+// Traps Tab focus inside a modal overlay while it's visible.
+// Call on modal open, returns cleanup function for modal close.
+function _htFocusTrap(overlayEl) {
+  if (!overlayEl) return function() {};
+  var focusableSelector = 'button:not([disabled]),input:not([disabled]),textarea:not([disabled]),select:not([disabled]),a[href],[tabindex]:not([tabindex="-1"])';
+  function handleTab(e) {
+    if (e.key !== 'Tab') return;
+    var focusable = Array.prototype.slice.call(overlayEl.querySelectorAll(focusableSelector)).filter(function(el) { return el.offsetParent !== null; });
+    if (focusable.length === 0) return;
+    var first = focusable[0];
+    var last = focusable[focusable.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  }
+  overlayEl.addEventListener('keydown', handleTab);
+  // Auto-focus first focusable
+  var firstFocusable = overlayEl.querySelector(focusableSelector);
+  if (firstFocusable) setTimeout(function() { firstFocusable.focus(); }, 50);
+  return function() { overlayEl.removeEventListener('keydown', handleTab); };
+}
+window._htFocusTrap = _htFocusTrap;
+
 // DOMContentLoaded may have already fired by the time this file loads (position 20 in script order).
 // Use readyState check to handle both cases.
 function _htInitEvents() {
@@ -141,6 +164,23 @@ function _htInitEvents() {
       if (e.target === cmdkOverlay) closeCmdk();
     });
   }
+
+  // Focus trap: auto-attach to modals when .show class is added
+  var _trapCleanups = {};
+  document.querySelectorAll('.ht-modal__overlay, .lok-modal-overlay').forEach(function(modal) {
+    var obs = new MutationObserver(function(mutations) {
+      for (var m = 0; m < mutations.length; m++) {
+        if (mutations[m].attributeName !== 'class') continue;
+        var id = modal.id || 'anon';
+        if (modal.classList.contains('show')) {
+          if (!_trapCleanups[id]) _trapCleanups[id] = _htFocusTrap(modal);
+        } else {
+          if (_trapCleanups[id]) { _trapCleanups[id](); _trapCleanups[id] = null; }
+        }
+      }
+    });
+    obs.observe(modal, { attributes: true, attributeFilter: ['class'] });
+  });
 
   // Keyboard shortcut: Cmd+K / Ctrl+K + ESC closes modals
   document.addEventListener('keydown', function(e) {

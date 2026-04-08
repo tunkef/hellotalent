@@ -1494,6 +1494,25 @@ function getSupa(){
   return HT.getSupa();
 }
 
+// ── Focus Trap Utility ──
+var _ikTrapCleanups = {};
+function _ikFocusTrap(overlayEl) {
+  if (!overlayEl) return function() {};
+  var sel = 'button:not([disabled]),input:not([disabled]),textarea:not([disabled]),select:not([disabled]),a[href],[tabindex]:not([tabindex="-1"])';
+  function handleTab(e) {
+    if (e.key !== 'Tab') return;
+    var focusable = Array.prototype.slice.call(overlayEl.querySelectorAll(sel)).filter(function(el) { return el.offsetParent !== null; });
+    if (focusable.length === 0) return;
+    var first = focusable[0]; var last = focusable[focusable.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  }
+  overlayEl.addEventListener('keydown', handleTab);
+  var ff = overlayEl.querySelector(sel);
+  if (ff) setTimeout(function() { ff.focus(); }, 50);
+  return function() { overlayEl.removeEventListener('keydown', handleTab); };
+}
+
 // ── STATE ──
 var currentUser = null;
 var hrProfile = {};
@@ -3079,11 +3098,14 @@ async function openMesajModal(candidateId, candidateName){
     }catch(e){}
   }
 
-  document.getElementById('mesaj-modal-overlay').classList.add('show');
+  var _mesajOv = document.getElementById('mesaj-modal-overlay');
+  _mesajOv.classList.add('show');
+  _ikTrapCleanups.mesaj = _ikFocusTrap(_mesajOv);
 }
 
 function closeMesajModal(){
   document.getElementById('mesaj-modal-overlay').classList.remove('show');
+  if (_ikTrapCleanups.mesaj) { _ikTrapCleanups.mesaj(); _ikTrapCleanups.mesaj = null; }
   _mesajCandidateId = null;
 }
 
@@ -3585,7 +3607,9 @@ function openPozModal(){
   ['poz-ad','poz-exp','poz-maas','poz-aciklama'].forEach(function(fid){ document.getElementById(fid).value=''; });
   var selects = ['poz-sehir','poz-seg'];
   selects.forEach(function(fid){ document.getElementById(fid).selectedIndex = 0; });
-  document.getElementById('poz-modal-overlay').classList.add('show');
+  var _pozOv = document.getElementById('poz-modal-overlay');
+  _pozOv.classList.add('show');
+  _ikTrapCleanups.poz = _ikFocusTrap(_pozOv);
 }
 
 function openPozForEdit(id){
@@ -3613,7 +3637,9 @@ function openPozForEdit(id){
       segSel.selectedIndex = j; break;
     }
   }
-  document.getElementById('poz-modal-overlay').classList.add('show');
+  var _pozOv2 = document.getElementById('poz-modal-overlay');
+  _pozOv2.classList.add('show');
+  _ikTrapCleanups.poz = _ikFocusTrap(_pozOv2);
 }
 
 async function editPozClose(){
@@ -3626,6 +3652,7 @@ async function editPozClose(){
 function closePozModal(){
   _editingPozId = null;
   document.getElementById('poz-modal-overlay').classList.remove('show');
+  if (_ikTrapCleanups.poz) { _ikTrapCleanups.poz(); _ikTrapCleanups.poz = null; }
 }
 
 function switchPozTab(tab){
@@ -3912,7 +3939,9 @@ async function openPozDetay(id, e){
   document.getElementById('poz-detay-count-text').textContent = 'Adaylar yükleniyor...';
   var liste = document.getElementById('poz-detay-liste');
   liste.textContent = '';
-  document.getElementById('poz-detay-overlay').classList.add('show');
+  var _pdOv = document.getElementById('poz-detay-overlay');
+  _pdOv.classList.add('show');
+  _ikTrapCleanups.pozDetay = _ikFocusTrap(_pdOv);
   document.body.style.overflow='hidden';
   // Canonical source: search_employer_candidates RPC ile p_position_id
   try {
@@ -4091,6 +4120,7 @@ function buildAccordionItem(c){
 
 function closePozDetay(){
   document.getElementById('poz-detay-overlay').classList.remove('show');
+  if (_ikTrapCleanups.pozDetay) { _ikTrapCleanups.pozDetay(); _ikTrapCleanups.pozDetay = null; }
   document.body.style.overflow='';
   // Restore context to main search selection if any; otherwise clear
   var pms = document.getElementById('poz-match-select');
@@ -4437,8 +4467,8 @@ async function updatePassword(){
 })();
 
 // ── UPGRADE MODAL ──
-function showUpgradeModal(){ document.getElementById('upgrade-modal-overlay').classList.add('show'); }
-function closeUpgradeModal(){ document.getElementById('upgrade-modal-overlay').classList.remove('show'); }
+function showUpgradeModal(){ var ov=document.getElementById('upgrade-modal-overlay'); ov.classList.add('show'); _ikTrapCleanups.upgrade=_ikFocusTrap(ov); }
+function closeUpgradeModal(){ document.getElementById('upgrade-modal-overlay').classList.remove('show'); if(_ikTrapCleanups.upgrade){_ikTrapCleanups.upgrade();_ikTrapCleanups.upgrade=null;} }
 
 // Overlay click to close
 ['upgrade-modal-overlay','poz-detay-overlay'].forEach(function(id){
