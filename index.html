@@ -60,9 +60,11 @@ body{background:var(--bg-page);font-family:var(--font-b);color:var(--text-primar
 
 /* ── HEADER (inline — bu sayfa kendi header'ini kullanir) ── */
 .lp-hdr{position:sticky;top:0;z-index:100;background:rgba(247,246,244,.88);backdrop-filter:blur(16px) saturate(1.8);-webkit-backdrop-filter:blur(16px) saturate(1.8);border-bottom:1px solid var(--border);padding:0 clamp(16px,4vw,48px);height:64px;display:flex;align-items:center;justify-content:space-between;gap:16px}
-.lp-hdr-left{display:flex;align-items:center;gap:28px}
+.lp-hdr-left{display:flex;align-items:center}
+.lp-hdr-center{position:absolute;left:50%;transform:translateX(-50%)}
 .lp-logo{font-family:var(--font-d);font-size:20px;font-weight:800;color:var(--navy);text-decoration:none;letter-spacing:-.5px}
 .lp-logo em{font-style:normal;color:var(--verm)}
+@media(prefers-color-scheme:dark){.lp-logo{color:#fff}}
 .seg-toggle{display:flex;background:var(--bg-section);border:1px solid var(--border);border-radius:24px;padding:3px;gap:2px}
 .seg-btn{font-family:var(--font-b);font-size:13px;font-weight:600;padding:7px 20px;border:none;border-radius:24px;cursor:pointer;transition:all .25s;background:transparent;color:var(--text-muted)}
 .seg-btn.active[data-seg="adaylar"]{background:var(--verm);color:#fff;box-shadow:0 2px 8px rgba(201,78,40,.15)}
@@ -211,7 +213,7 @@ body{background:var(--bg-page);font-family:var(--font-b);color:var(--text-primar
   .steps-row{grid-template-columns:1fr}
   .who-grid{grid-template-columns:1fr}
   .who-vis{min-height:220px}
-  .lp-hdr-right .lp-hdr-link{display:none}
+  .lp-hdr-center{position:static;transform:none}
 }
 @media(max-width:480px){
   .hero-hl{font-size:30px;letter-spacing:-1px}
@@ -250,14 +252,14 @@ body{background:var(--bg-page);font-family:var(--font-b);color:var(--text-primar
 <header class="lp-hdr">
   <div class="lp-hdr-left">
     <a class="lp-logo" href="index.html">hello<em>talent</em></a>
+  </div>
+  <div class="lp-hdr-center">
     <div class="seg-toggle">
       <button class="seg-btn active" data-seg="adaylar" onclick="switchSeg('adaylar')">Adaylar</button>
       <button class="seg-btn" data-seg="kurumsal" onclick="switchSeg('kurumsal')">Kurumsal</button>
     </div>
   </div>
   <div class="lp-hdr-right">
-    <a class="lp-hdr-link" href="hakkimizda.html">Hakkimizda</a>
-    <a class="lp-hdr-link" href="iletisim.html">Iletisim</a>
     <a class="lp-hdr-cta" href="giris.html">Giris Yap</a>
   </div>
 </header>
