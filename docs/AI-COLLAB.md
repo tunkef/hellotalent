@@ -6,14 +6,15 @@
 
 ## Mevcut Durum
 
-**Son tamamlanan:** Asama 71 (8 Nisan 2026) — Page Cleanup + K029 Full Audit (3 katman) + Security Hardening (5 fix)
-**Son commit:** 3a27138 — security: critical PII protection + auth hardening
-**Test durumu:** Smoke test guncellendi, ESLint PASS, 2 migration deploy edildi
+**Son tamamlanan:** Asama 72 (9 Nisan 2026) — Unified Landing Page (Gate kaldirildi, Adaylar/Kurumsal toggle)
+**Son commit:** 7322676 — fix: swap kurumsal kim-icin and steps order
+**Test durumu:** P3 testleri guncellendi (studio CSS + CV path), CI fix push edildi
 **Beta Launch Paketi:** TAMAMLANDI (Asama 48-61)
 **Landing Page Redesign:** TAMAMLANDI (Asama 63)
 **Public-Site Redesign:** TAMAMLANDI (Asama 69)
 **UX Polish + Footer + Yasal:** TAMAMLANDI (Asama 70)
 **Page Cleanup + K029 + Security:** TAMAMLANDI (Asama 71)
+**Unified Landing Page:** DEVAM EDIYOR (Asama 72)
 
 ## Tamamlanan Bloklar
 
@@ -82,8 +83,19 @@
 
 ## Bir Sonraki Adim
 
-- **Tasarim isleri** — kullanici ile belirlenecek
-- **Pozisyon gorunum/esleme metrikleri** — DEFER (backend counter/trigger gerekli)
+**Asama 72 — Unified Landing Page (DEVAM EDIYOR):**
+- index.html: Gate kaldirildi, tek LP, Adaylar/Kurumsal segment toggle
+- Clatu-aligned CSS (aday.html + isveren.html pattern'lerinden birebir)
+- Kurumsal: navy hero + sektor bazli brand social proof (3 kategori) + features + kim icin + steps + lead form
+- Aday: hero + trust row + split bento + steps + kim icin + CTA
+- Dark mode, responsive, logged-in redirect, lead form RPC korundu
+
+**Kalan isler (Asama 72):**
+- shared.js header guncelleme (segment toggle diger sayfalarla tutarlilik)
+- aday.html + isveren.html → redirect (meta refresh)
+- Tasarim polish: dark mode ince ayarlar, mobil test, copy review
+- P3 CI testleri yesile donmesi bekleniyor
+
+**Sonraki asamalar:**
+- **Pozisyon gorunum/esleme metrikleri** — DEFER
 - **iyzico/Stripe checkout** — DEFER (beta 3 ay ucretsiz)
-- **K029 Katman 2 kalan isler** — injectCSS buyuk fonksiyon bolme (profil-studio.js hala 890 satirlik stub iceriyor, CSS extract edildi ama fonksiyon bolme yapilmadi)
-- **K029 Katman 3 kalan isler** — Supabase JS defer/async, profil.html script loading optimizasyonu

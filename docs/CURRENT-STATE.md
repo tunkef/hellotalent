@@ -1,5 +1,5 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 8 Nisan 2026 | Asama 71 — Page Cleanup + K029 Full Audit (3 Katman) + Security Hardening (5 fix) + cvs bucket private
+> Son guncelleme: 9 Nisan 2026 | Asama 72 — Unified Landing Page (Gate kaldirildi, Adaylar/Kurumsal toggle) + K029 + Security Hardening
 
 ## 1. Proje Ozeti
 
@@ -66,6 +66,7 @@ hellotalent.ai, Turkiye perakende sektorune ozel bir yetenek pazaryeri. Adaylar 
 - **K029 Security Audit** — 3 katmanli (security/code-quality/a11y-perf), 50+ fix, 10 agent parallel audit | K029
 - **Security hardening** — CV signed URLs (private bucket), employer PII strip (RPC wrapper), CSP header, X-Frame-Options, CORS restrict, password policy, hr_profiles INSERT guard, is_employer() onboarding check, input validation (telefon/email/sifre), modal focus trap, noopener | Asama 71
 - **Studio CSS extraction** — profil-studio.js injectCSS (890 satir) → css/studio.css ayri dosya | `css/studio.css`
+- **Unified Landing Page** — Gate kaldirildi, tek LP: Adaylar/Kurumsal segment toggle (bunq referans), Clatu-aligned CSS, sektor bazli brand social proof, navy kurumsal hero, lead form RPC | `index.html`
 
 ## 3. Dosya Haritasi
 
