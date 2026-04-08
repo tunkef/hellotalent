@@ -273,8 +273,10 @@ function renderBrandGrid(query) {
 
     /* ── Informative brand card v2 — cover image, stats, follow ── */
     var coverUrl = b.cover_image_url || '';
-    var coverStyle = coverUrl
-      ? 'background-image:url(' + coverUrl + ');background-size:cover;background-position:center;'
+    if (coverUrl && !/^https?:\/\//i.test(coverUrl)) coverUrl = '';
+    var safeCoverUrl = coverUrl ? _escHtml(coverUrl.replace(/['"()]/g, '')) : '';
+    var coverStyle = safeCoverUrl
+      ? 'background-image:url(' + safeCoverUrl + ');background-size:cover;background-position:center;'
       : 'background:' + _hexToRgba(colors.accent, 0.12) + ';';
     var employeeText = b.employee_count_tr ? b.employee_count_tr.toLocaleString('tr-TR') + ' çalışan' : '';
     var logoSmall = _brandLogoHtml(b, 32);

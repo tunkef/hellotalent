@@ -89,6 +89,10 @@ function validateKisisel() {
   var errors = [];
   if (!val('f-adsoyad')) errors.push('Ad Soyad zorunludur');
   if (!val('f-telefon')) errors.push('Telefon zorunludur');
+  else if (!/^(\+90|0)?5[0-9]{9}$/.test(val('f-telefon').replace(/\s/g, ''))) {
+    errors.push('Geçerli bir cep telefonu numarası girin (05XX XXX XX XX)');
+    markFieldError('f-telefon');
+  }
   if (!val('f-adresil')) errors.push('Adres / İl zorunludur');
   if (val('f-adresil') && !val('f-adresilce')) errors.push('İlçe zorunludur');
   // LinkedIn format validation (optional field, but if filled must be valid)

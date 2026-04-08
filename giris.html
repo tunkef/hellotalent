@@ -2,6 +2,8 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
+<meta http-equiv="X-Frame-Options" content="DENY">
+<meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Giriş Yap — hellotalent.ai</title>
 <meta name="robots" content="noindex">
@@ -409,7 +411,7 @@
 
         <label class="consent-label" style="display:flex;align-items:flex-start;gap:8px;margin:12px 0;font-size:var(--text-sm);color:var(--muted);line-height:1.5;cursor:pointer;">
           <input type="checkbox" id="cb-aday-consent" style="margin-top:3px;flex-shrink:0;">
-          <span>18 yaşını doldurduğumu onaylıyor, <a href="yasal.html#gizlilik" target="_blank" style="color:var(--verm);text-decoration:underline;">Gizlilik Politikası</a>'nı ve <a href="yasal.html#kullanim" target="_blank" style="color:var(--verm);text-decoration:underline;">Kullanım Şartları</a>'nı okuduğumu kabul ediyorum.</span>
+          <span>18 yaşını doldurduğumu onaylıyor, <a href="yasal.html#gizlilik" target="_blank" rel="noopener noreferrer" style="color:var(--verm);text-decoration:underline;">Gizlilik Politikası</a>'nı ve <a href="yasal.html#kullanim" target="_blank" rel="noopener noreferrer" style="color:var(--verm);text-decoration:underline;">Kullanım Şartları</a>'nı okuduğumu kabul ediyorum.</span>
         </label>
 
         <button class="btn-submit btn-aday" type="button" id="btn-aday-kayit" disabled>Kayıt Ol</button>
@@ -502,7 +504,7 @@
 
         <label class="consent-label" style="display:flex;align-items:flex-start;gap:8px;margin:12px 0;font-size:var(--text-sm);color:var(--muted);line-height:1.5;cursor:pointer;">
           <input type="checkbox" id="cb-ik-consent" style="margin-top:3px;flex-shrink:0;">
-          <span>18 yaşını doldurduğumu onaylıyor, <a href="yasal.html#gizlilik" target="_blank" style="color:var(--navy);text-decoration:underline;">Gizlilik Politikası</a>'nı ve <a href="yasal.html#kullanim" target="_blank" style="color:var(--navy);text-decoration:underline;">Kullanım Şartları</a>'nı okuduğumu kabul ediyorum.</span>
+          <span>18 yaşını doldurduğumu onaylıyor, <a href="yasal.html#gizlilik" target="_blank" rel="noopener noreferrer" style="color:var(--navy);text-decoration:underline;">Gizlilik Politikası</a>'nı ve <a href="yasal.html#kullanim" target="_blank" rel="noopener noreferrer" style="color:var(--navy);text-decoration:underline;">Kullanım Şartları</a>'nı okuduğumu kabul ediyorum.</span>
         </label>
 
         <button class="btn-submit btn-ik" type="button" id="btn-ik-kayit" disabled>Kayıt Ol</button>
@@ -766,7 +768,7 @@ document.addEventListener('keydown', function(e) {
     var email = (document.getElementById('forgot-email').value || '').trim();
     var msg = document.getElementById('forgot-msg');
 
-    if(!email || !email.includes('@')) {
+    if(!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       if(msg) { msg.textContent = 'Geçerli bir e-posta adresi girin.'; msg.style.color = 'var(--red, #DC2626)'; msg.style.display = 'block'; }
       return;
     }

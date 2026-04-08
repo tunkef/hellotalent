@@ -2,6 +2,8 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
+<meta http-equiv="X-Frame-Options" content="DENY">
+<meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Koç Studio — hellotalent.ai</title>
 <meta name="robots" content="noindex, nofollow">
@@ -497,7 +499,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
     meta.className = 'cs-profile-meta';
     if (p.sector_background) meta.appendChild(makeTag(p.sector_background));
     if (p.experience_years) meta.appendChild(makeTag(p.experience_years + ' y\u0131l deneyim'));
-    if (p.linkedin_url) { var li = makeTag('LinkedIn'); li.style.cursor = 'pointer'; li.style.color = 'var(--navy)'; li.addEventListener('click', function() { window.open(p.linkedin_url, '_blank'); }); meta.appendChild(li); }
+    if (p.linkedin_url) { var li = makeTag('LinkedIn'); li.style.cursor = 'pointer'; li.style.color = 'var(--navy)'; li.addEventListener('click', function() { window.open(p.linkedin_url, '_blank', 'noopener,noreferrer'); }); meta.appendChild(li); }
     info.appendChild(meta);
     var editBtn = document.createElement('button');
     editBtn.className = 'cs-profile-edit-btn';
@@ -1159,11 +1161,11 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
     var shareUrl = 'https://hellotalent.ai';
     var shareText = buildShareText(post);
     /* WhatsApp — supports text+link natively */
-    bar.appendChild(makeShareBtn('WhatsApp', function() { window.open('https://wa.me/?text=' + encodeURIComponent(shareText + '\n\n' + shareUrl), '_blank'); }));
+    bar.appendChild(makeShareBtn('WhatsApp', function() { window.open('https://wa.me/?text=' + encodeURIComponent(shareText + '\n\n' + shareUrl), '_blank', 'noopener,noreferrer'); }));
     /* LinkedIn — sharing API only supports URL; text must be copied separately */
     bar.appendChild(makeShareBtn('LinkedIn', function() { window.open('https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent(shareUrl), '_blank'); copyToClipboard(shareText); }));
     /* Facebook */
-    bar.appendChild(makeShareBtn('Facebook', function() { window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(shareUrl), '_blank'); }));
+    bar.appendChild(makeShareBtn('Facebook', function() { window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(shareUrl), '_blank', 'noopener,noreferrer'); }));
     /* Copy share text */
     bar.appendChild(makeShareBtn('Metni Kopyala', function() { copyToClipboard(shareText + '\n\n' + shareUrl); }));
     return bar;

@@ -1920,9 +1920,9 @@ function renderLobby() {
     html += '<div class="st-header">';
     html += '<div class="st-header-left">';
     if (_userName) {
-      html += '<div class="st-header-greeting">Ho\u015f geldin, ' + _userName + '</div>';
+      html += '<div class="st-header-greeting">Ho\u015f geldin, ' + escapeHtml(_userName) + '</div>';
     }
-    html += '<div class="st-header-role">' + S.role + '</div>';
+    html += '<div class="st-header-role">' + escapeHtml(S.role) + '</div>';
     html += '<div class="st-header-meta">' + accessibleCount + ' yetkinlik' + (lockedCount > 0 ? ' \u00b7 ' + lockedCount + ' kilitli' : '') + '</div>';
     html += '</div>';
     html += '<div class="st-header-right">';

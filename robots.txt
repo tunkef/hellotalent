@@ -4,5 +4,8 @@ Disallow: /gate.html
 Disallow: /giris.html
 Disallow: /profil.html
 Disallow: /ik.html
+Disallow: /admin.html
+Disallow: /sifre-yenile.html
+Disallow: /coach-studio.html
 
 Sitemap: https://hellotalent.ai/sitemap.xml

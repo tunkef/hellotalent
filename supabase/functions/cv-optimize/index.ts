@@ -20,7 +20,7 @@ const MODEL = Deno.env.get("ANTHROPIC_MODEL") || "claude-sonnet-4-20250514";
 const MVP_FREE_TIER = Deno.env.get("MVP_FREE_TIER") === "true";
 
 const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Origin": "https://hellotalent.ai",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };

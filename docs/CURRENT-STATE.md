@@ -1,5 +1,5 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 7 Nisan 2026 | Asama 70 — UX Polish + Footer Redesign + yasal.html
+> Son guncelleme: 8 Nisan 2026 | Asama 70 — UX Polish + Footer Redesign + yasal.html + Agent Skills Upgrade
 
 ## 1. Proje Ozeti
 
@@ -135,6 +135,8 @@ hellotalent.ai, Turkiye perakende sektorune ozel bir yetenek pazaryeri. Adaylar 
 11. ~~**Supabase Advisor Fix'leri (SA1-SA5) + LB6 + 2FA**~~ — ✅ TAMAMLANDI (Session 66, 6 Nisan). SA1-SA5: search_path + FK index + cron + bio RPC. LB6: security_audit_log + haftalik RLS audit + security dashboard. 2FA: TOTP enrollment (ayarlar) + login challenge (giris.html). Code review fix'leri: Sonnet reviewer 6 sorun + DeepSeek 4 ek bulgu — hepsi duzeltildi. **820/833 Playwright test PASS** (12 auth = bilinen blocker, 1 setup = env var eksik).
 12. ~~**Design System CSS Overhaul (Kademe 0-3)**~~ — ✅ TAMAMLANDI (Session 67-68, 6 Nisan). profil.css → 7 modular CSS. ht- component class sistemi. Task 14: Eski class alias temizligi tamamlandi (chip/field/exp-card/modal/card/btn dual-write → tek ht- class). Task 15: Inline style temizligi (6 utility class, ~50 inline style → class). Kademe 3: Header nav sadelesti (3 item), bottom nav yeniden siralandi (Genel/Kesfet/Mesajlar/Teklifler/Profil). **820/820 Playwright test PASS.**
 13. ~~**Public-site design + content revision**~~ — ✅ TAMAMLANDI (Session 69, 7 Nisan). 5 public sayfa tamamen yeniden tasarlandi (index, aday, isveren, hakkimizda, iletisim). Clatu-first editorial design sistemi: Bricolage Grotesque + Plus Jakarta Sans, Vermillion dominant, Navy authority. prefers-color-scheme dark mode tum sayfalarda. Glassmorphism header (blur, dark mode). Login popup kaldirildi (direkt page-aware redirect). Hamburger menu: Adaylar/Isverenler/Hakkimizda/Iletisim. Gemini UAT geribildirim dongusu ile premium copy iterasyonlari (quiet luxury, CRO, diskresyon). 196/196 Playwright QA test PASS. Footer mobile grid fix. Responsive 4 viewport (390/768/1024/1440). Edge-to-edge scene gorselleri (WebP optimize). Google Maps embed (iletisim). "hellohunter" logo easter egg (isveren). Commits: 57aadcf–b222bd7 (~30 commit).
+
+14. **Agent Skills Upgrade + Hedefli Audit (K029)** — 8 Nisan 2026. 12 yeni engineering/design skill kuruldu (Addy Osmani/Google + Supabase official + secici Impeccable). 38 total skill. 3 katmanli hedefli audit planlanmis: Katman 1 Security Sweep (AU1-AU6, blocker), Katman 2 Code Simplification (AU7-AU11, MVP 2 oncesi), Katman 3 A11y+Performance (AU12-AU18, incremental). Detay: `vault/02-urun/yapilacaklar.md` ve `vault/06-kararlar/karar-defteri.md#K029`.
 
 ## 5b. Sosyal Layer Audit Kararlari (Session 45 — 30 Mart)
 

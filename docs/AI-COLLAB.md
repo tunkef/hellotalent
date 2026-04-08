@@ -6,13 +6,14 @@
 
 ## Mevcut Durum
 
-**Son tamamlanan:** Asama 70 (7 Nisan 2026) — Public-Site UX Polish + Footer Redesign + yasal.html
-**Son commit:** 5a5cf33 — scene image object-position
-**Test durumu:** QA visual audit PASS (responsive + dark mode)
+**Son tamamlanan:** Asama 71 (8 Nisan 2026) — Page Cleanup + Gate Redirect + K029 Security Audit Layer 1
+**Son commit:** (pending push)
+**Test durumu:** Smoke test guncellendi (silinen sayfalar cikarildi)
 **Beta Launch Paketi:** TAMAMLANDI (Asama 48-61)
 **Landing Page Redesign:** TAMAMLANDI (Asama 63)
 **Public-Site Redesign:** TAMAMLANDI (Asama 69)
 **UX Polish + Footer + Yasal:** TAMAMLANDI (Asama 70)
+**Page Cleanup + Security Audit:** TAMAMLANDI (Asama 71)
 
 ## Tamamlanan Bloklar (2 Nisan 2026)
 
@@ -28,6 +29,7 @@
 | Landing Page Redesign | 63 | ✅ Gate + dual LP (aday/isveren), LinkedIn-style, dark mode, nav brand colors, 397 test PASS |
 | Public-Site Redesign | 69 | ✅ 5 sayfa Clatu-first editorial: index/aday/isveren/hakkimizda/iletisim. Premium copy (Gemini UAT), dark mode, glassmorphism header, login redirect, QA 196 PASS |
 | UX Polish + Footer + Yasal | 70 | ✅ Gate smooth fade animasyonlar, footer 3-kolon redesign, yasal.html (4-tab tek sayfa), bento/step kart normalizasyonu, CTA split layout, mobil responsive polish, dark mode fixes |
+| Page Cleanup + Security Audit | 71 | ✅ 9 orphan sayfa silindi, gate logged-in redirect, email template polish, K029 Katman 1 (10 fix: XSS, clickjacking, CORS, input validation, PII logging, noopener) |
 
 ## Pipeline Infra (2 Nisan 2026)
 
@@ -47,10 +49,10 @@
 
 ## Bir Sonraki Adim
 
-Asama 70 tamamlandi — UX polish, footer redesign, yasal.html. Sonraki adimlar:
-- **Lead form backend** — isveren.html lead formu Supabase RPC ile calisiyor (submit_employer_lead), email notification pipeline eklenebilir
-- **Delinked sayfalar karari** — kariyer/pozisyonlar/yetkinlik/blog/isalim-rotasi nav'dan kaldirildi; kalici silme vs yenileme karari bekleniyor
-- **profil.html landing entegrasyonu** — logged-in kullanici gate'i bypass etmeli
-- **Pozisyon gorunum/esleme metrikleri** — backend counter/trigger gerekli
+Asama 71 tamamlandi. Sonraki adimlar:
+- **K029 Katman 2** — Code Simplification Pass (AU7-AU11): buyuk fonksiyon tespiti, deep nesting, dead code, naming, duplicate logic
+- **K029 Katman 3** — A11y + Performance (AU12-AU18): Lighthouse, ARIA, keyboard nav, font/image opt, Core Web Vitals
+- **Edge Functions deploy** — CORS fix'leri icin `supabase functions deploy` gerekli
+- **Pozisyon gorunum/esleme metrikleri** — DEFER (backend counter/trigger gerekli)
 - **iyzico/Stripe checkout** — DEFER (beta 3 ay ucretsiz)
-- **Eski yasal sayfalar temizligi** — gizlilik.html, kvkk.html, kullanim-sartlari.html, cerez-politikasi.html artik yasal.html'e birlesti; eski dosyalar redirect veya silinebilir
+- **Tasarim isleri** — kullanici ile belirlenecek

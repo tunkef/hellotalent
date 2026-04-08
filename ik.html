@@ -2,6 +2,8 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
+<meta http-equiv="X-Frame-Options" content="DENY">
+<meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>İK Paneli — hellotalent.ai</title>
 <meta name="robots" content="noindex">
@@ -1322,11 +1324,11 @@ html[data-theme="dark"] .drawer-info-item{background:#1F2937;}
     </div>
     <div class="form-field" style="margin-bottom:10px;">
       <label class="form-label" for="mesaj-konu">Konu *</label>
-      <input class="form-input" id="mesaj-konu" placeholder="Mesaj konusu">
+      <input class="form-input" id="mesaj-konu" placeholder="Mesaj konusu" maxlength="200">
     </div>
     <div class="form-field" style="margin-bottom:12px;">
       <label class="form-label" for="mesaj-body">Mesaj *</label>
-      <textarea class="form-input form-textarea" id="mesaj-body" placeholder="Mesajınızı yazın..." style="height:140px;"></textarea>
+      <textarea class="form-input form-textarea" id="mesaj-body" placeholder="Mesajınızı yazın..." style="height:140px;" maxlength="5000"></textarea>
     </div>
     <div style="display:flex;justify-content:flex-end;gap:8px;">
       <button class="btn-secondary btn-sm" onclick="closeMesajModal()">Vazgeç</button>
@@ -1390,7 +1392,7 @@ html[data-theme="dark"] .drawer-info-item{background:#1F2937;}
     <div class="form-row">
       <div class="form-field">
         <label class="form-label" for="poz-exp">Deneyim (Yıl)</label>
-        <input class="form-input" id="poz-exp" placeholder="Örn: 3-5">
+        <input class="form-input" id="poz-exp" placeholder="Örn: 3-5" maxlength="20">
       </div>
       <div class="form-field">
         <label class="form-label" for="poz-seg">Segment</label>
@@ -1402,7 +1404,7 @@ html[data-theme="dark"] .drawer-info-item{background:#1F2937;}
     </div>
     <div class="form-field">
       <label class="form-label" for="poz-maas">Maaş Aralığı</label>
-      <input class="form-input" id="poz-maas" placeholder="Örn: 25.000 - 35.000 TL">
+      <input class="form-input" id="poz-maas" placeholder="Örn: 25.000 - 35.000 TL" maxlength="50">
     </div>
     <div class="form-field">
       <label class="form-label" for="poz-aciklama">Pozisyon Açıklaması</label>
@@ -2365,7 +2367,7 @@ async function initApp(){
   updateFavCount();
 
   } catch(e) {
-    console.error('initApp:', e);
+    console.error('initApp:', e.message || String(e));
   } finally {
     scheduleHideAppLoading();
   }
@@ -3148,7 +3150,7 @@ async function sendMesaj(){
     document.getElementById('mesaj-send-text').textContent = 'Gönder';
     setTimeout(function(){ closeMesajModal(); }, 1500);
   }catch(e){
-    console.error('sendMesaj exception:', e);
+    console.error('sendMesaj exception:', e.message || String(e));
     document.getElementById('mesaj-send-text').textContent = 'Gönder';
   }
 }
@@ -4381,6 +4383,9 @@ async function removeLokasyon(id){
 async function updatePassword(){
   var sifre = document.getElementById('ayar-sifre').value;
   if(!sifre || sifre.length < 8){ alert('Şifre en az 8 karakter olmalı.'); return; }
+  if(!/[A-Z]/.test(sifre) || !/[a-z]/.test(sifre) || !/[0-9]/.test(sifre) || !/[!@#$%._\-]/.test(sifre)){
+    alert('Şifre en az 1 büyük harf, 1 küçük harf, 1 rakam ve 1 özel karakter içermelidir.'); return;
+  }
   var {error} = await getSupa().auth.updateUser({password: sifre});
   var msg = document.getElementById('pw-msg');
   if(error){ msg.textContent='Hata: '+error.message; msg.style.color='var(--red)'; }
@@ -4403,7 +4408,7 @@ async function updatePassword(){
     var newEmail = (document.getElementById('ik-new-email').value || '').trim();
     var msgEl = document.getElementById('ik-email-change-msg');
 
-    if(!newEmail || !newEmail.includes('@')){
+    if(!newEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newEmail)){
       if(msgEl){ msgEl.textContent = 'Geçerli bir e-posta adresi girin.'; msgEl.style.color = 'var(--red)'; msgEl.style.display = 'block'; }
       return;
     }
@@ -4611,7 +4616,7 @@ async function sendTeamInvite(){
   var email = (emailInput ? emailInput.value : '').trim();
   var role = roleSelect ? roleSelect.value : 'recruiter';
 
-  if(!email || !email.includes('@')){
+  if(!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
     if(msgEl){
       msgEl.textContent = 'Geçerli bir e-posta adresi girin.';
       msgEl.style.color = 'var(--verm)';

@@ -107,7 +107,7 @@
         .order('created_at', { ascending: false });
 
       if (res.error) {
-        console.error('Load coaches error:', res.error);
+        console.error('Load coaches error:', res.error.message);
         container.textContent = 'Yukleme hatasi';
         return;
       }
@@ -309,7 +309,7 @@
         .update({ is_active: !currentActive })
         .eq('id', coachId);
       if (res.error) {
-        console.error('Toggle coach error:', res.error);
+        console.error('Toggle coach error:', res.error.message);
         return;
       }
       loadCoaches(container);
@@ -679,7 +679,7 @@
 
     try {
       var res = await supa.from('coach_posts').update(updates).eq('id', postId);
-      if (res.error) { console.error('Update post error:', res.error); return; }
+      if (res.error) { console.error('Update post error:', res.error.message); return; }
 
       /* Clear deletion_requested_at on archive — separate update, best effort (column may not exist pre-migration) */
       if (_clearDeletionOnArchive) {

@@ -174,7 +174,7 @@ function showCVUploaded(cvUrl, date) {
         nameEl.style.cursor = 'pointer';
         nameEl.style.color = 'var(--verm)';
         nameEl.style.textDecoration = 'underline';
-        nameEl.onclick = function() { window.open(cvUrl, '_blank'); };
+        nameEl.onclick = function() { window.open(cvUrl, '_blank', 'noopener,noreferrer'); };
       }
     }
     if (dateEl) dateEl.textContent = date ? date.toLocaleDateString('tr-TR') : '';

@@ -162,7 +162,12 @@ document.addEventListener('DOMContentLoaded', function() {
     var fullName = (document.getElementById('settings-adsoyad') && document.getElementById('settings-adsoyad').value) || '';
     var phone = (document.getElementById('settings-telefon') && document.getElementById('settings-telefon').value) || '';
     fullName = fullName.trim();
+    phone = phone.replace(/\s/g, '');
     var msgEl = document.getElementById('settings-account-msg');
+    if (phone && !/^(\+90|0)?5[0-9]{9}$/.test(phone)) {
+      if (msgEl) { msgEl.textContent = 'Geçerli bir cep telefonu numarası girin (05XX XXX XX XX).'; msgEl.style.color = 'var(--red)'; msgEl.style.display = 'block'; }
+      return;
+    }
     if (!fullName) {
       if (msgEl) { msgEl.textContent = 'Ad Soyad zorunludur.'; msgEl.style.color = 'var(--red)'; msgEl.style.display = 'block'; }
       return;
@@ -663,7 +668,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Show QR code
         var qrContainer = document.getElementById('mfa-qr-container');
-        qrContainer.innerHTML = '<img src="' + res.data.totp.qr_code + '" alt="QR Kod" style="width:200px;height:200px;">';
+        var qrImg = document.createElement('img');
+        qrImg.src = res.data.totp.qr_code;
+        qrImg.alt = 'QR Kod';
+        qrImg.style.cssText = 'width:200px;height:200px;';
+        qrContainer.textContent = '';
+        qrContainer.appendChild(qrImg);
 
         // Show secret for manual entry
         var secretEl = document.getElementById('mfa-secret-code');

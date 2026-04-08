@@ -1782,7 +1782,7 @@ async function loadProfileFromDB() {
       level: 'error', tags: { flow: 'profile-restore' },
       extra: { code: candRes.error.code, message: candRes.error.message }
     });
-    console.warn('[HT] loadProfileFromDB: candidates query failed', candRes.error);
+    console.warn('[HT] loadProfileFromDB: candidates query failed', candRes.error?.message);
     return null;
   }
   var cand = candRes.data;

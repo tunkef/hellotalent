@@ -18,7 +18,7 @@ const MODEL = Deno.env.get("OPENAI_MODEL") || "gpt-4.1-mini";
 const BATCH_SIZE = 5;
 
 const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Origin": "https://hellotalent.ai",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
