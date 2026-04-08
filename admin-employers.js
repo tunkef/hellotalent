@@ -4,48 +4,9 @@
 
   var loaded = false;
 
-  /* ── BUILD STAT CARD ── */
-  function buildStatCard(label, value, emoji, extra) {
-    var card = document.createElement('div');
-    card.className = 'stat-card';
-
-    var labelDiv = document.createElement('div');
-    labelDiv.className = 'stat-card-label';
-    labelDiv.textContent = (emoji ? emoji + ' ' : '') + label;
-    card.appendChild(labelDiv);
-
-    var valueDiv = document.createElement('div');
-    valueDiv.className = 'stat-card-value';
-    valueDiv.textContent = value;
-    card.appendChild(valueDiv);
-
-    if (extra) {
-      var extraDiv = document.createElement('div');
-      extraDiv.style.cssText = 'font-size:11px;color:var(--muted);margin-top:4px;';
-      extraDiv.textContent = extra;
-      card.appendChild(extraDiv);
-    }
-
-    return card;
-  }
-
-  /* ── BUILD ROW ── */
-  function buildRow(cards) {
-    var grid = document.createElement('div');
-    grid.className = 'stats-grid';
-    for (var i = 0; i < cards.length; i++) {
-      grid.appendChild(cards[i]);
-    }
-    return grid;
-  }
-
-  /* ── BUILD SECTION LABEL ── */
-  function buildSectionLabel(text) {
-    var label = document.createElement('div');
-    label.style.cssText = 'font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin:24px 0 12px;';
-    label.textContent = text;
-    return label;
-  }
+  var buildStatCard = window._htAdminBuildStatCard;
+  var buildRow = window._htAdminBuildRow;
+  var buildSectionLabel = window._htAdminBuildSectionLabel;
 
   /* ── BUILD RECENT REGISTRATIONS TABLE ── */
   function buildRecentTable(employers) {
