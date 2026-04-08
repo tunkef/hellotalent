@@ -1,5 +1,5 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 8 Nisan 2026 | Asama 70 — UX Polish + Footer Redesign + yasal.html + Agent Skills Upgrade
+> Son guncelleme: 8 Nisan 2026 | Asama 71 — Page Cleanup + K029 Full Audit (3 Katman) + Security Hardening (5 fix) + cvs bucket private
 
 ## 1. Proje Ozeti
 
@@ -61,6 +61,11 @@ hellotalent.ai, Turkiye perakende sektorune ozel bir yetenek pazaryeri. Adaylar 
 - **Design system CSS overhaul** — profil.css (3223 sat) → 7 modular CSS dosyasina bolundu, 3-katmanli token sistemi (primitive/semantic/component), ht- prefix'li component class'lari (ht-btn, ht-card, ht-chip, ht-input, ht-modal, ht-toast, ht-toggle), dual-write migration (eski class'lar korunarak yeni class'lar eklendi), JS factory fonksiyonlari guncellendi | `css/`, `profil-ui.js`, `profil-wizard.js`, `profil-settings.js`, `profil-bootstrap.js`, `profil-draft.js`
 - **Beni Oner** — aday gorunurluk toggle, avatar yesil glow | `profil-visibility.js`
 - **Profile completion scoring** — >=45% threshold, sync trigger | migration 035-036
+- **Gate logged-in redirect** — aday→profil.html, isveren→ik.html, session check | `index.html`
+- **Yasal birlestirme** — 4 eski yasal sayfa (gizlilik/kvkk/kullanim/cerez) yasal.html'e birlesti, eski dosyalar silindi | `yasal.html`
+- **K029 Security Audit** — 3 katmanli (security/code-quality/a11y-perf), 50+ fix, 10 agent parallel audit | K029
+- **Security hardening** — CV signed URLs (private bucket), employer PII strip (RPC wrapper), CSP header, X-Frame-Options, CORS restrict, password policy, hr_profiles INSERT guard, is_employer() onboarding check, input validation (telefon/email/sifre), modal focus trap, noopener | Asama 71
+- **Studio CSS extraction** — profil-studio.js injectCSS (890 satir) → css/studio.css ayri dosya | `css/studio.css`
 
 ## 3. Dosya Haritasi
 

@@ -78,6 +78,46 @@
 
 ---
 
+## Agent Skills Audit — MVP 2 Hazırlığı (K029)
+
+> 11 yeni engineering skill kurulumu sonrası hedefli kod denetimi. Full audit değil — 3 katmanlı, verimli.
+> Karar: [[karar-defteri#K029]]
+
+### Katman 1 — Security Sweep (Kritik — Blocker)
+
+| # | Görev | Detay | Dosyalar | Durum |
+|---|-------|-------|----------|-------|
+| AU1 | innerHTML taraması | 1 CRITICAL (XSS full_name), 3 HIGH fix | profil-studio.js, profil-markalar.js, profil-settings.js, profil-destek.js | ☑ 8 Nisan 2026 |
+| AU2 | PII logging kontrolü | 7 raw error → .message fix | admin-coach-content.js, profil-ui.js, ik.html | ☑ 8 Nisan 2026 |
+| AU3 | RLS gap analizi | 30+ tablo RLS aktif, ~39 GRANT eksik (functional risk yok) | Supabase | ☑ 8 Nisan 2026 |
+| AU4 | Input validation audit | Telefon GSM regex, email regex, sifre strength, maxlength | profil-wizard.js, profil-settings.js, giris.html, ik.html | ☑ 8 Nisan 2026 |
+| AU5 | service_role exposure | Client-side PASS, dev dosyalarda key rotation onerisi | Tum HTML/JS | ☑ 8 Nisan 2026 |
+| AU6 | Security headers | X-Frame-Options + CSP + Referrer-Policy 13 HTML, CORS restrict 4 Edge Function | Tum sayfalar + Edge Functions | ☑ 8 Nisan 2026 |
+
+### Katman 2 — Code Simplification Pass (Yüksek — MVP 2 Öncesi)
+
+| # | Görev | Detay | Dosyalar | Durum |
+|---|-------|-------|----------|-------|
+| AU7 | Büyük fonksiyon tespiti | Top 15 fonksiyon raporlandi (en buyuk: injectCSS 890 sat → css/studio.css'e extract edildi) | profil-studio.js | ☑ 8 Nisan 2026 |
+| AU8 | Deep nesting düzeltme | 9 bulgu raporlandi (max seviye 9). Audit tamamlandi, fix'ler gelecek sprint'te | profil-settings.js, profil-destek.js | ☑ 8 Nisan 2026 (audit) |
+| AU9 | Dead code temizliği | _loadStart, 14-var DOM snapshot, experiences[] silindi | profil-bootstrap.js, profil-ui.js | ☑ 8 Nisan 2026 |
+| AU10 | Naming tutarlılığı | 10 bulgu raporlandi. Audit tamamlandi, rename'ler gelecek sprint'te | profil-ui.js, ik.html, profil-genel.js | ☑ 8 Nisan 2026 (audit) |
+| AU11 | Duplicate logic tespiti | work_prefs 35-satir dedup (_applyWorkPrefs), admin builder 3x dedup (shared helpers) | profil-draft.js, profil-bootstrap.js, admin-*.js | ☑ 8 Nisan 2026 |
+
+### Katman 3 — A11y + Performance (Orta — MVP 2 Sırasında İncremental)
+
+| # | Görev | Detay | Dosyalar | Durum |
+|---|-------|-------|----------|-------|
+| AU12 | Lighthouse baseline tahmini | Font/image/script/CSS analizi tamamlandi | Tum sayfalar | ☑ 8 Nisan 2026 (audit) |
+| AU13 | ARIA labels ekleme | 5 modal'a role=dialog+aria-modal, 3 close buton'a aria-label, sidebar tabindex+role | ik.html, giris.html, profil.html | ☑ 8 Nisan 2026 |
+| AU14 | Keyboard navigation | Modal focus trap (profil/ik/giris), Escape handler, sidebar keyboard | profil-events.js, ik.html, giris.html | ☑ 8 Nisan 2026 |
+| AU15 | Font loading optimizasyonu | fonts.gstatic.com preconnect 13 HTML, gereksiz weight'ler kaldirildi (Bricolage 200, DM Mono 300) | Tum HTML | ☑ 8 Nisan 2026 |
+| AU16 | Image optimization | 9 SVG'ye width/height eklendi, 3 unused gate asset silindi (386KB), SVGO denendi (zaten optimize) | aday/isveren/hakkimizda.html, assets/gate/ | ☑ 8 Nisan 2026 |
+| AU17 | Supabase query optimization | select('*') → explicit columns (ik.html), limit() 4 sorguya eklendi, N+1 yok | ik.html, admin-coach-content.js | ☑ 8 Nisan 2026 |
+| AU18 | Core Web Vitals risk analizi | INP fix (400ms→50ms setTimeout), CLS fix (SVG dimensions). Tam Lighthouse olcumu gelecek sprint | shared.js, isveren.html | ☑ 8 Nisan 2026 (kismi) |
+
+---
+
 ## MVP 2 — İşveren Aktivasyonu
 
 ### Aday Profil İyileştirmeleri (Tier 2)
@@ -136,5 +176,5 @@
 
 ---
 
-*Son güncelleme: 6 Nisan 2026*
+*Son güncelleme: 8 Nisan 2026*
 *İlişkili: [[mvp-roadmap]], [[veri-modeli-analiz]], [[feature-map]], [[karar-defteri]]*
