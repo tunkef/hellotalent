@@ -350,8 +350,28 @@ function gtag(){dataLayer.push(arguments);}
 gtag('js',new Date());
 gtag('config','G-54BCV5QYCZ');
 </script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(function(){
+  var sb = supabase.createClient(
+    'https://cpwibefquojehjehtrog.supabase.co',
+    'sb_publishable_POUtNwJyjAAheukwYP5hmA_TKKjphwa'
+  );
+  sb.auth.getSession().then(function(res){
+    var s = res.data && res.data.session;
+    if(s && s.user){
+      var role = (s.user.user_metadata || {}).role;
+      window.location.replace(role === 'employer' ? 'ik.html' : 'profil.html');
+    } else {
+      document.body.style.opacity = '1';
+    }
+  }).catch(function(){
+    document.body.style.opacity = '1';
+  });
+})();
+</script>
 </head>
-<body>
+<body style="opacity:0;transition:opacity 0.3s ease">
 
 <header class="hdr">
   <a class="logo" href="index.html">hello<em>talent</em></a>

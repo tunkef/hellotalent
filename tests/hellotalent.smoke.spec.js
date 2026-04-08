@@ -10,17 +10,9 @@ const PAGES = [
   { name: 'Homepage', path: '/' },
   { name: 'Aday', path: '/aday.html' },
   { name: 'Isveren', path: '/isveren.html' },
-  { name: 'Kariyer', path: '/kariyer.html' },
-  { name: 'Pozisyonlar', path: '/pozisyonlar.html' },
-  { name: 'Yetkinlik', path: '/yetkinlik.html' },
-  { name: 'Blog', path: '/blog.html' },
   { name: 'Hakkimizda', path: '/hakkimizda.html' },
   { name: 'Iletisim', path: '/iletisim.html' },
-  { name: 'Isalim', path: '/isalim-rotasi.html' },
-  { name: 'Gizlilik', path: '/gizlilik.html' },
-  { name: 'KVKK', path: '/kvkk.html' },
-  { name: 'Kullanim', path: '/kullanim-sartlari.html' },
-  { name: 'Cerez', path: '/cerez-politikasi.html' },
+  { name: 'Yasal', path: '/yasal.html' },
 ];
 
 test.describe('Page Load', () => {
@@ -49,7 +41,7 @@ test.describe('Console Errors', () => {
 });
 
 test.describe('Shared Chrome', () => {
-  for (const path of ['/aday.html', '/isveren.html', '/kariyer.html']) {
+  for (const path of ['/aday.html', '/isveren.html']) {
     test(path + ' has header+footer', async ({ page }) => {
       await withGate(page, path);
       await expect(page.locator('.site-header')).toBeVisible({ timeout: 10000 });
@@ -108,7 +100,7 @@ test.describe('Mobile', () => {
     await expect(page.locator('.hamburger')).toBeVisible({ timeout: 10000 });
   });
   test('no horizontal scroll', async ({ page }) => {
-    for (const p of ['/aday.html', '/kariyer.html']) {
+    for (const p of ['/aday.html', '/isveren.html']) {
       await withGate(page, p);
       const hs = await page.evaluate(() =>
         document.documentElement.scrollWidth > document.documentElement.clientWidth
@@ -129,7 +121,7 @@ test.describe('SEO', () => {
 });
 
 test('No roportaj anywhere', async ({ page }) => {
-  for (const p of ['/', '/aday.html', '/kariyer.html', '/isveren.html']) {
+  for (const p of ['/', '/aday.html', '/isveren.html']) {
     await withGate(page, p);
     const t = await page.textContent('body');
     expect(t.toLowerCase()).not.toContain('röportaj');

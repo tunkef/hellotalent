@@ -185,6 +185,12 @@ interface Payload {
   status?: string | null;
   admin_note?: string | null;
   studio_url?: string | null;
+  // Employer lead fields
+  lead_name?: string | null;
+  lead_email?: string | null;
+  lead_company?: string | null;
+  lead_phone?: string | null;
+  lead_team_size?: string | null;
   // Support ticket fields
   candidate_name?: string | null;
   candidate_email?: string | null;
@@ -1060,27 +1066,32 @@ Gizlilik: https://hellotalent.ai/gizlilik.html`;
 }
 
 // ─── Employer Lead Notification ──────────────────────
-function employerLeadNotificationTemplate(payload: Record<string, string>) {
-  const p = payload || {};
+function employerLeadNotificationTemplate(p: Payload): EmailContent {
   const name = esc(p.lead_name || "-");
   const email = esc(p.lead_email || "-");
   const company = esc(p.lead_company || "-");
   const phone = esc(p.lead_phone || "-");
   const teamSize = esc(p.lead_team_size || "-");
 
-  const html = `
-<div style="font-family:'Plus Jakarta Sans',Helvetica,Arial,sans-serif;max-width:520px;margin:0 auto;padding:32px 24px;">
-  <h2 style="font-family:'Bricolage Grotesque',sans-serif;color:#1E2D5E;margin:0 0 16px;">Yeni İşveren Lead</h2>
-  <table style="width:100%;border-collapse:collapse;">
-    <tr><td style="padding:8px 0;color:#6B7280;width:120px;">İsim</td><td style="padding:8px 0;font-weight:600;">${name}</td></tr>
-    <tr><td style="padding:8px 0;color:#6B7280;">E-posta</td><td style="padding:8px 0;"><a href="mailto:${email}" style="color:#C94E28;">${email}</a></td></tr>
-    <tr><td style="padding:8px 0;color:#6B7280;">Şirket</td><td style="padding:8px 0;font-weight:600;">${company}</td></tr>
-    <tr><td style="padding:8px 0;color:#6B7280;">Telefon</td><td style="padding:8px 0;">${phone}</td></tr>
-    <tr><td style="padding:8px 0;color:#6B7280;">Ekip</td><td style="padding:8px 0;">${teamSize}</td></tr>
-  </table>
-  <hr style="border:none;border-top:1px solid #E5E3DF;margin:24px 0;">
-  <p style="font-size:13px;color:#6B7280;">Bu lead hellotalent.ai işveren sayfasından geldi. Admin panelden takip edebilirsiniz.</p>
-</div>`;
+  const html = emailWrapper(`
+${logoRow()}
+<tr><td style="padding:8px 32px 4px;">
+<h1 style="margin:0;font-family:'Bricolage Grotesque',Georgia,serif;font-size:22px;color:${COLORS.navy};font-weight:700;">Yeni İşveren Lead</h1>
+</td></tr>
+<tr><td style="padding:16px 32px;font-size:15px;color:${COLORS.text};line-height:1.6;">
+<table style="width:100%;border-collapse:collapse;">
+  <tr><td style="padding:8px 0;color:${COLORS.muted};width:120px;">İsim</td><td style="padding:8px 0;font-weight:600;">${name}</td></tr>
+  <tr><td style="padding:8px 0;color:${COLORS.muted};">E-posta</td><td style="padding:8px 0;"><a href="mailto:${email}" style="color:${COLORS.verm};">${email}</a></td></tr>
+  <tr><td style="padding:8px 0;color:${COLORS.muted};">Şirket</td><td style="padding:8px 0;font-weight:600;">${company}</td></tr>
+  <tr><td style="padding:8px 0;color:${COLORS.muted};">Telefon</td><td style="padding:8px 0;">${phone}</td></tr>
+  <tr><td style="padding:8px 0;color:${COLORS.muted};">Ekip</td><td style="padding:8px 0;">${teamSize}</td></tr>
+</table>
+</td></tr>
+<tr><td style="padding:8px 32px 24px;font-size:13px;color:${COLORS.muted};line-height:1.5;">
+Bu lead hellotalent.ai işveren sayfasından geldi. Admin panelden takip edebilirsiniz.
+</td></tr>
+${footerRow()}
+`);
 
   const text = `Yeni İşveren Lead\nİsim: ${p.lead_name}\nE-posta: ${p.lead_email}\nŞirket: ${p.lead_company}\nTelefon: ${p.lead_phone}\nEkip: ${p.lead_team_size}`;
 
