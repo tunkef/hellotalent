@@ -92,12 +92,12 @@ async function uploadCV(file) {
     var uploadRes = await supabase.storage.from(STORAGE.BUCKET).upload(filePath, file, { upsert: true });
     if (uploadRes.error) throw uploadRes.error;
 
-    var urlData = supabase.storage.from(STORAGE.BUCKET).getPublicUrl(filePath);
-    var cvUrl = urlData.data.publicUrl;
+    // Store path (not public URL) — signed URL generated on demand
+    var cvStoragePath = filePath;
 
-    // Update DB and check for errors
+    // Update DB with storage path instead of public URL
     var dbRes = await supabase.from('candidates').update({
-      cv_url: cvUrl, cv_filename: file.name, cv_uploaded_at: new Date().toISOString()
+      cv_url: cvStoragePath, cv_filename: file.name, cv_uploaded_at: new Date().toISOString()
     }).eq('user_id', userId);
     if (dbRes.error) {
       // Rollback: remove uploaded file since DB failed
@@ -105,14 +105,17 @@ async function uploadCV(file) {
       throw dbRes.error;
     }
 
-    currentCVStoragePath = filePath;
-    /* In-memory truth sync — ayni oturumda normalizeCVData() guncel source kullansin */
+    currentCVStoragePath = cvStoragePath;
+    /* In-memory truth sync */
     if (typeof _loadedDBData !== 'undefined' && _loadedDBData && _loadedDBData.profile) {
-      _loadedDBData.profile.cv_url = cvUrl;
+      _loadedDBData.profile.cv_url = cvStoragePath;
       _loadedDBData.profile.cv_filename = file.name;
       _loadedDBData.profile.cv_uploaded_at = new Date().toISOString();
     }
-    showCVUploaded(cvUrl, new Date());
+    // Generate signed URL for display (1 hour expiry)
+    var signedRes = await supabase.storage.from(STORAGE.BUCKET).createSignedUrl(cvStoragePath, 3600);
+    var displayUrl = (signedRes.data && signedRes.data.signedUrl) || '';
+    showCVUploaded(displayUrl, new Date());
     syncAiCardCopy(true);
     ht_track('cv_upload_success', { file_type: ext });
     showToast('CV y\u00fcklendi \u2713', 'success');

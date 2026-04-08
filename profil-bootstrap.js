@@ -143,7 +143,14 @@ function _htApplyCareerGoalPrefill() {
   if (btnPreview) btnPreview.style.display = (dbData && dbData.profile) ? 'inline-flex' : 'none';
   if (dbData) {
     applyDraft(dbData); // reuse applyDraft to populate all fields
-    if (dbData.profile && dbData.profile.avatar_url) setAvatarImage(dbData.profile.avatar_url);
+    if (dbData.profile && dbData.profile.avatar_url) {
+      var _avPath = dbData.profile.avatar_url;
+      if (_avPath.indexOf('http') === 0) {
+        try { _avPath = STORAGE.extractStoragePath(_avPath) || _avPath; } catch (_e2) {}
+      }
+      var _avSigned = await supabase.storage.from(STORAGE.BUCKET).createSignedUrl(_avPath, 3600);
+      setAvatarImage((_avSigned.data && _avSigned.data.signedUrl) || '');
+    }
     if (dbData.profile && dbData.profile.full_name) {
       var n = dbData.profile.full_name;
       var displayName = typeof titleCaseTR === 'function' ? titleCaseTR(n) : n;
@@ -157,11 +164,16 @@ function _htApplyCareerGoalPrefill() {
     }
     // Load CV state if exists
     if (dbData.profile.cv_url && dbData.profile.cv_filename) {
-      showCVUploaded(dbData.profile.cv_url, new Date(dbData.profile.cv_uploaded_at || Date.now()));
-      // Reconstruct storage path from URL for cleanup tracking
-      try {
-        currentCVStoragePath = STORAGE.extractStoragePath(dbData.profile.cv_url);
-      } catch (e) {}
+      // cv_url is now a storage path — generate signed URL for display
+      var _cvPath = dbData.profile.cv_url;
+      // Handle legacy full URLs: extract path if needed
+      if (_cvPath.indexOf('http') === 0) {
+        try { _cvPath = STORAGE.extractStoragePath(_cvPath) || _cvPath; } catch (_e) {}
+      }
+      currentCVStoragePath = _cvPath;
+      var _cvSignedRes = await supabase.storage.from(STORAGE.BUCKET).createSignedUrl(_cvPath, 3600);
+      var _cvDisplayUrl = (_cvSignedRes.data && _cvSignedRes.data.signedUrl) || '';
+      showCVUploaded(_cvDisplayUrl, new Date(dbData.profile.cv_uploaded_at || Date.now()));
       // Also update wizard CV zone (Step 6)
       var wizEmpty = document.getElementById('wiz-cv-empty');
       var wizUploaded = document.getElementById('wiz-cv-uploaded');

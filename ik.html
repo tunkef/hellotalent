@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta http-equiv="X-Frame-Options" content="DENY">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://browser.sentry-cdn.com https://www.googletagmanager.com https://www.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://cpwibefquojehjehtrog.supabase.co https://*.googleusercontent.com; connect-src 'self' https://cpwibefquojehjehtrog.supabase.co https://*.google-analytics.com https://*.sentry.io; object-src 'none'; base-uri 'self'; frame-ancestors 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>İK Paneli — hellotalent.ai</title>
@@ -2130,7 +2131,7 @@ function mapRPCtoADAYLAR(candidates){
       diller: (c.diller || []).filter(Boolean),
       tel: c.telefon || '',
       telMasked: maskPhone(c.telefon),
-      email: c.email || '',
+      email: '', // PII stripped by server — no raw email in client
       emailMasked: maskEmail(c.email),
       brand: derivedSirket || ((exp0 && (exp0.marka || exp0.sirket)) ? (exp0.marka || exp0.sirket) : ''),
       maas: c.maas_beklenti ? c.maas_beklenti + ' TL' : '',
@@ -2976,8 +2977,8 @@ async function openDrawer(id){
   ]);
 
   makeInfoGrid('İletişim', [
-    {label:'Telefon', value:c.tel},
-    {label:'E-posta', value:c.email}
+    {label:'Telefon', value:c.telMasked || '—'},
+    {label:'E-posta', value:c.emailMasked || '—'}
   ]);
 
   // Actions
@@ -4077,7 +4078,7 @@ function buildAccordionItem(c){
   var secContact = document.createElement('div'); secContact.className = 'acc-section'; secContact.textContent = 'İletişim';
   body.appendChild(secContact);
   var contactGrid = document.createElement('div'); contactGrid.className = 'acc-grid';
-  [['Telefon', c.tel], ['E-posta', c.email]].forEach(function(f){
+  [['Telefon', c.telMasked || '—'], ['E-posta', c.emailMasked || '—']].forEach(function(f){
     var field = document.createElement('div'); field.className = 'acc-field';
     var label = document.createElement('div'); label.className = 'acc-field-label'; label.textContent = f[0];
     var val = document.createElement('div'); val.className = 'acc-field-val'; val.textContent = f[1];

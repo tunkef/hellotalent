@@ -208,10 +208,11 @@ async function handleAvatarUpload(input) {
     var res = await supabase.storage.from(STORAGE.BUCKET).upload(path, file, { upsert: true });
     if (res.error) throw res.error;
 
-    var urlRes = supabase.storage.from(STORAGE.BUCKET).getPublicUrl(path);
-    var cleanUrl = urlRes.data.publicUrl;
-    await supabase.from('candidates').upsert({ user_id: currentUser.id, avatar_url: cleanUrl }, { onConflict: 'user_id' });
-    setAvatarImage(cleanUrl + '?t=' + Date.now());
+    // Store path, not public URL — signed URL for display
+    await supabase.from('candidates').upsert({ user_id: currentUser.id, avatar_url: path }, { onConflict: 'user_id' });
+    var _avSignedRes = await supabase.storage.from(STORAGE.BUCKET).createSignedUrl(path, 3600);
+    var _avDisplayUrl = (_avSignedRes.data && _avSignedRes.data.signedUrl) || '';
+    setAvatarImage(_avDisplayUrl);
     ht_track('avatar_upload_success');
     if (btnText) btnText.textContent = 'Güncellendi!';
     setTimeout(function() { if (btnText) btnText.textContent = 'Fotoğraf Yükle'; }, 2000);
