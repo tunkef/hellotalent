@@ -1813,7 +1813,7 @@ test.describe('Studio truth-sync guards', () => {
   var studioJs;
 
   test.beforeAll(() => {
-    studioJs = readFromRepo('profil-studio.js');
+    studioJs = readFromRepo('profil-studio.js') + '\n' + readFromRepo('css/studio.css');
   });
 
   test('lobby renders Performans section entry point', () => {
@@ -2135,7 +2135,7 @@ test.describe('AI CV hardening guards', () => {
   });
 
   test('upload/delete syncs _loadedDBData.profile CV fields in memory', () => {
-    expect(cvJs5).toContain('_loadedDBData.profile.cv_url = cvUrl');
+    expect(cvJs5).toContain('_loadedDBData.profile.cv_url = cvStoragePath');
     expect(cvJs5).toContain('_loadedDBData.profile.cv_filename = file.name');
     expect(cvJs5).toContain('_loadedDBData.profile.cv_url = null');
     expect(cvJs5).toContain('_loadedDBData.profile.cv_filename = null');
@@ -2219,7 +2219,7 @@ test.describe('Studio Aşama 8 — practice recovery + STAR cleanup', () => {
   var studioJs;
 
   test.beforeAll(() => {
-    studioJs = readFromRepo('profil-studio.js');
+    studioJs = readFromRepo('profil-studio.js') + '\n' + readFromRepo('css/studio.css');
   });
 
   test('practice render includes inline journal/answer preparation surface', () => {
@@ -2852,7 +2852,7 @@ test.describe('Asama 40 — CV Upload Storage Key Harden', () => {
 
   test('re-upload cleanup uses currentCVStoragePath (safe key path)', () => {
     // filePath (safe key) is assigned to currentCVStoragePath after upload
-    expect(cvJs).toContain('currentCVStoragePath = filePath');
+    expect(cvJs).toContain('currentCVStoragePath = cvStoragePath');
     // Delete flow removes by currentCVStoragePath (safe key)
     expect(cvJs).toContain('remove([currentCVStoragePath])');
   });
@@ -2967,7 +2967,7 @@ test.describe('Beta Premium Gate — AI 1-use limit + badge system', () => {
     premiumJs = readFromRepo('profil-premium.js');
     cvJs = readFromRepo('profil-cv.js');
     eventsJs = readFromRepo('profil-events.js');
-    studioJs = readFromRepo('profil-studio.js');
+    studioJs = readFromRepo('profil-studio.js') + '\n' + readFromRepo('css/studio.css');
   });
 
   // ── AI CV 1-use gate ──
