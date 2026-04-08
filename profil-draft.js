@@ -1,4 +1,4 @@
-/* global addCertificateRow, addEducationRow, addExperienceCard, addLanguageRow, addTargetRoleRow, certCounter, collectCertificates, collectEducation, collectExperiences, collectLanguages, collectLocations, collectTargetRoles, collectWorkPrefs, eduCounter, expCounter, initStep5, langCounter, monthIndexToName, populateIlceSelect, renderBrandInterestChips, renderSelectedLocations, renderWizard, roleCounter, selectedBrandInterests, selectedCalismaTipleri, selectedCareerTypes, selectedLocations, selectedMusaitlik, selectedSegmentler, showCVEmpty, showCVUploaded, val, wizStep */
+/* global _applyWorkPrefs, addCertificateRow, addEducationRow, addExperienceCard, addLanguageRow, addTargetRoleRow, certCounter, collectCertificates, collectEducation, collectExperiences, collectLanguages, collectLocations, collectTargetRoles, collectWorkPrefs, eduCounter, expCounter, initStep5, langCounter, monthIndexToName, populateIlceSelect, renderBrandInterestChips, renderSelectedLocations, renderWizard, roleCounter, selectedBrandInterests, selectedCalismaTipleri, selectedCareerTypes, selectedLocations, selectedMusaitlik, selectedSegmentler, showCVEmpty, showCVUploaded, val, wizStep */
 // ═══════════════════════════════════════════════════
 // PROFIL DRAFT — localStorage draft save/load/apply + setVal helper
 // Extracted from profil.html inline scripts.
@@ -132,43 +132,7 @@ function applyDraft(draft) {
     draft.target_roles.forEach(function(r) { addTargetRoleRow(r); });
   }
   if (draft.work_prefs) {
-    var wp = draft.work_prefs;
-    if (wp.musaitlik) {
-      selectedMusaitlik = wp.musaitlik;
-      document.querySelectorAll('#musaitlik-chips .ht-chip').forEach(function(c) {
-        c.classList.toggle('is-active', c.textContent === wp.musaitlik);
-      });
-    }
-    if (wp.calisma_tipleri && wp.calisma_tipleri.length > 0) {
-      selectedCalismaTipleri = wp.calisma_tipleri.slice();
-      document.querySelectorAll('#calisma-tipleri-checks .check-item').forEach(function(btn) {
-        btn.classList.toggle('checked', wp.calisma_tipleri.indexOf(btn.textContent) !== -1);
-      });
-    }
-    if (wp.tercih_segmentler && wp.tercih_segmentler.length > 0) {
-      selectedSegmentler = wp.tercih_segmentler.slice();
-      document.querySelectorAll('#segment-chips .ht-chip').forEach(function(c) {
-        c.classList.toggle('is-active', wp.tercih_segmentler.indexOf(c.textContent) !== -1);
-      });
-    }
-    // Career type single-select restore (legacy tolerance: lider→yukari)
-    if (wp.career_type) {
-      var types = typeof wp.career_type === 'string' ? wp.career_type.split(',') : [];
-      // Legacy normalization: lider→yukari, single-select
-      var _ctNorm = null;
-      for (var _cti = 0; _cti < types.length; _cti++) {
-        if (types[_cti] === 'yukari' || types[_cti] === 'lider') { _ctNorm = 'yukari'; break; }
-        if (types[_cti] === 'yatay') { _ctNorm = 'yatay'; }
-      }
-      selectedCareerTypes = _ctNorm ? [_ctNorm] : [];
-      document.querySelectorAll('#career-type-checks .check-item').forEach(function(btn) {
-        btn.classList.toggle('checked', selectedCareerTypes.indexOf(btn.dataset.value) !== -1);
-      });
-    }
-    // Travel, shift, notice restore from draft
-    if (wp.travel_willingness) setVal('f-seyahat', wp.travel_willingness);
-    if (wp.shift_flexibility) setVal('f-vardiya', wp.shift_flexibility);
-    if (wp.notice_period) setVal('f-ihbar', wp.notice_period);
+    _applyWorkPrefs(draft.work_prefs);
   }
   if (draft.brand_interests && draft.brand_interests.length > 0) {
     selectedBrandInterests = draft.brand_interests.slice();

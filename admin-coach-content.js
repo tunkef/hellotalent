@@ -104,7 +104,8 @@
       /* Fetch coach profiles with invite email via invite_id FK */
       var res = await supa.from('coach_profiles')
         .select('*, coach_invites(email)')
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false })
+        .limit(50);
 
       if (res.error) {
         console.error('Load coaches error:', res.error.message);
@@ -122,7 +123,8 @@
         var postsRes = await supa.from('coach_posts')
           .select('coach_id, status, updated_at')
           .in('coach_id', coachIds)
-          .order('updated_at', { ascending: false });
+          .order('updated_at', { ascending: false })
+          .limit(200);
         if (postsRes.data) {
           for (var ci = 0; ci < postsRes.data.length; ci++) {
             var row = postsRes.data[ci];
@@ -329,7 +331,8 @@
     try {
       var res = await supa.from('coach_invites')
         .select('*')
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false })
+        .limit(50);
 
       while (container.firstChild) container.removeChild(container.firstChild);
 
@@ -507,7 +510,7 @@
     try {
       /* Defensive two-tier query: deletion_requested_at may not exist pre-migration */
       var selectCols = '*, deletion_requested_at, coach_profiles(display_name, title, avatar_url, bio_short, sector_background, experience_years)';
-      var query = supa.from('coach_posts').select(selectCols).order('updated_at', { ascending: false });
+      var query = supa.from('coach_posts').select(selectCols).order('updated_at', { ascending: false }).limit(100);
 
       if (_postsFilter === 'submitted') {
         query = query.in('status', ['submitted', 'changes_requested']);

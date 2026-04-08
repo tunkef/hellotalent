@@ -1,5 +1,5 @@
 /* global supabase, AYRILMA_NEDENLERI, AY_ISIMLERI, BOLUM_DB, BRAND_DB, CALISMA_TIPLERI, CAREER_TYPE_OPTIONS, CAREER_TYPE_ORDER, DIL_LISTESI, DIL_SEVIYELERI, EGITIM_SEVIYELERI, ILCELER, ISTIHDAM_TIPLERI, MUSAITLIK_SECENEKLERI, POSITION_TO_FAMILY, RETAIL_POSITIONS, ROL_AILELERI, SEGMENTLER, SEKTOR_ROL_MAP, STORAGE, TAKIM_BUYUKLUKLERI, TUR_ILLER, UNIVERSITE_DB */
-/* global _ht_follows, _loadedDBData, applyAllVisibilityMirrorsFromProfile, calculateCompletion, canonicalizeRole, clearDraft, collectLocations, currentUser, getCurrentEmployerDisplayFromExperiences, ht_track, markWizardDirty, normalizeForDisplay, nullIfEmpty, refreshVisibilitySummary, selectedCareerTypes, syncAccountEmail, titleCaseTR, trLower, updateBrandFollowCounter, updateCompletionUI, updateDashboardSummary, updateMerkezCards, updateMerkezVisState, val, wizardDirty */
+/* global _ht_follows, _loadedDBData, applyAllVisibilityMirrorsFromProfile, calculateCompletion, canonicalizeRole, clearDraft, collectLocations, currentUser, getCurrentEmployerDisplayFromExperiences, ht_track, markWizardDirty, normalizeForDisplay, nullIfEmpty, refreshVisibilitySummary, selectedCalismaTipleri, selectedCareerTypes, selectedMusaitlik, selectedSegmentler, setVal, syncAccountEmail, titleCaseTR, trLower, updateBrandFollowCounter, updateCompletionUI, updateDashboardSummary, updateMerkezCards, updateMerkezVisState, val, wizardDirty */
 // v20260320 ── BRAND/COMPANY ID LOOKUP ──
 // Populated at page load from Supabase; used by makeSmartBrandField + collectExperiences
 var _brandIdLookup = {};   // trLower(brand_name) → { brand_id, company_id }
@@ -228,7 +228,6 @@ async function handleAvatarUpload(input) {
 // ═══════════════════════════════════════════════════
 
 var expCounter = 0;
-var experiences = []; // in-memory array of experience data
 
 function initStep2() {
   var btnAdd = document.getElementById('btn-add-exp');
@@ -1937,6 +1936,48 @@ async function loadProfileFromDB() {
     })
   };
 }
+
+// ═══════════════════════════════════════════════════
+// SHARED: Work preferences restore (used by draft + bootstrap)
+// ═══════════════════════════════════════════════════
+
+function _applyWorkPrefs(wp) {
+  if (!wp) return;
+  if (wp.musaitlik) {
+    selectedMusaitlik = wp.musaitlik;
+    document.querySelectorAll('#musaitlik-chips .ht-chip').forEach(function(c) {
+      c.classList.toggle('is-active', c.textContent === wp.musaitlik);
+    });
+  }
+  if (wp.calisma_tipleri && wp.calisma_tipleri.length > 0) {
+    selectedCalismaTipleri = wp.calisma_tipleri.slice();
+    document.querySelectorAll('#calisma-tipleri-checks .check-item').forEach(function(btn) {
+      btn.classList.toggle('checked', wp.calisma_tipleri.indexOf(btn.textContent) !== -1);
+    });
+  }
+  if (wp.tercih_segmentler && wp.tercih_segmentler.length > 0) {
+    selectedSegmentler = wp.tercih_segmentler.slice();
+    document.querySelectorAll('#segment-chips .ht-chip').forEach(function(c) {
+      c.classList.toggle('is-active', wp.tercih_segmentler.indexOf(c.textContent) !== -1);
+    });
+  }
+  if (wp.career_type) {
+    var types = typeof wp.career_type === 'string' ? wp.career_type.split(',') : [];
+    var _ctNorm = null;
+    for (var _cti = 0; _cti < types.length; _cti++) {
+      if (types[_cti] === 'yukari' || types[_cti] === 'lider') { _ctNorm = 'yukari'; break; }
+      if (types[_cti] === 'yatay') { _ctNorm = 'yatay'; }
+    }
+    selectedCareerTypes = _ctNorm ? [_ctNorm] : [];
+    document.querySelectorAll('#career-type-checks .check-item').forEach(function(btn) {
+      btn.classList.toggle('checked', selectedCareerTypes.indexOf(btn.dataset.value) !== -1);
+    });
+  }
+  if (wp.travel_willingness) setVal('f-seyahat', wp.travel_willingness);
+  if (wp.shift_flexibility) setVal('f-vardiya', wp.shift_flexibility);
+  if (wp.notice_period) setVal('f-ihbar', wp.notice_period);
+}
+window._applyWorkPrefs = _applyWorkPrefs;
 
 // ═══════════════════════════════════════════════════
 // Completion & score moved to profil-summary.js

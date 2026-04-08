@@ -181,13 +181,13 @@
       if (PAGE === 'aday') {
         document.body.style.transition = 'opacity 0.4s ease';
         document.body.style.opacity = '0';
-        setTimeout(function(){ window.location.href = '/giris.html?tab=aday'; }, 400);
+        setTimeout(function(){ window.location.href = '/giris.html?tab=aday'; }, 50);
         return;
       }
       if (PAGE === 'isveren') {
         document.body.style.transition = 'opacity 0.4s ease';
         document.body.style.opacity = '0';
-        setTimeout(function(){ window.location.href = '/giris.html?tab=ik'; }, 400);
+        setTimeout(function(){ window.location.href = '/giris.html?tab=ik'; }, 50);
         return;
       }
       /* Other pages: direct to giris.html (no popup) */

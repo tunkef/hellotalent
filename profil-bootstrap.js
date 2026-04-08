@@ -1,4 +1,4 @@
-/* global _loadedDBData, _initBrandCompanyLookup, addTargetRoleRow, applyAllVisibilityMirrorsFromProfile, applyDraft, canonicalizeRole, currentCVStoragePath, currentUser, getProfilAuthSession, ht_track, initCVUpload, initStep1, initStep2, initStep3, initStep4, initStep5, initStep6, loadDraft, loadProfileFromDB, loadViewersCard, populateIlceSelect, renderSelectedLocations, RETAIL_POSITIONS, selectedCalismaTipleri, selectedCareerTypes, selectedMusaitlik, selectedSegmentler, setAvatarImage, setVal, showCVUploaded, STORAGE, supabase, syncAccountEmail, titleCaseTR, trLower, updateCompletionUI, updateDashboardSummary, updateMerkezCards, uploadCV */
+/* global _applyWorkPrefs, _loadedDBData, _initBrandCompanyLookup, addTargetRoleRow, applyAllVisibilityMirrorsFromProfile, applyDraft, canonicalizeRole, currentCVStoragePath, currentUser, getProfilAuthSession, ht_track, initCVUpload, initStep1, initStep2, initStep3, initStep4, initStep5, initStep6, loadDraft, loadProfileFromDB, loadViewersCard, populateIlceSelect, renderSelectedLocations, RETAIL_POSITIONS, selectedCalismaTipleri, selectedCareerTypes, selectedMusaitlik, selectedSegmentler, setAvatarImage, setVal, showCVUploaded, STORAGE, supabase, syncAccountEmail, titleCaseTR, trLower, updateCompletionUI, updateDashboardSummary, updateMerkezCards, uploadCV */
 // ═══════════════════════════════════════════════════
 // PROFIL BOOTSTRAP — auth, hydration, step-init orchestration
 // Extracted from profil.html inline scripts.
@@ -28,45 +28,7 @@ function reapplyDynamicFields() {
 
   // Step 4 selects + chips (options/chips created by initStep4)
   if (db.work_prefs) {
-    var wp = db.work_prefs;
-    // Müsaitlik chips
-    if (wp.musaitlik) {
-      selectedMusaitlik = wp.musaitlik;
-      document.querySelectorAll('#musaitlik-chips .ht-chip').forEach(function(c) {
-        c.classList.toggle('is-active', c.textContent === wp.musaitlik);
-      });
-    }
-    // Calisma tipleri check-item buttons
-    if (wp.calisma_tipleri && wp.calisma_tipleri.length > 0) {
-      selectedCalismaTipleri = wp.calisma_tipleri.slice();
-      document.querySelectorAll('#calisma-tipleri-checks .check-item').forEach(function(btn) {
-        btn.classList.toggle('checked', wp.calisma_tipleri.indexOf(btn.textContent) !== -1);
-      });
-    }
-    // Segment chips
-    if (wp.tercih_segmentler && wp.tercih_segmentler.length > 0) {
-      document.querySelectorAll('#segment-chips .ht-chip').forEach(function(c) {
-        c.classList.toggle('is-active', wp.tercih_segmentler.indexOf(c.textContent) !== -1);
-      });
-    }
-    // Career type check-item buttons
-    if (wp.career_type) {
-      var types = typeof wp.career_type === 'string' ? wp.career_type.split(',') : [];
-      // Legacy normalization: lider→yukari, single-select
-      var _ctNorm = null;
-      for (var _cti = 0; _cti < types.length; _cti++) {
-        if (types[_cti] === 'yukari' || types[_cti] === 'lider') { _ctNorm = 'yukari'; break; }
-        if (types[_cti] === 'yatay') { _ctNorm = 'yatay'; }
-      }
-      selectedCareerTypes = _ctNorm ? [_ctNorm] : [];
-      document.querySelectorAll('#career-type-checks .check-item').forEach(function(btn) {
-        btn.classList.toggle('checked', selectedCareerTypes.indexOf(btn.dataset.value) !== -1);
-      });
-    }
-    // Travel, shift, notice
-    if (wp.travel_willingness) setVal('f-seyahat', wp.travel_willingness);
-    if (wp.shift_flexibility) setVal('f-vardiya', wp.shift_flexibility);
-    if (wp.notice_period) setVal('f-ihbar', wp.notice_period);
+    _applyWorkPrefs(db.work_prefs);
   }
 
   // Step 5 location display — re-init multi-select to sync checkboxes/chips
@@ -117,7 +79,6 @@ function _htApplyCareerGoalPrefill() {
 
 // ── Auth + data bootstrap ─────────────────────────
 (async function() {
-  var _loadStart = Date.now();
   console.time('[HT] total-load'); // eslint-disable-line no-console
   var sessionRes = await getProfilAuthSession();
   if (!sessionRes.data.session) {
@@ -221,32 +182,6 @@ function _htApplyCareerGoalPrefill() {
         await supabase.from('candidates').update({ email: currentUser.email }).eq('user_id', currentUser.id);
       }
     }
-    // ── Final DOM state snapshot ──
-    setTimeout(function() {
-      var ec = document.getElementById('exp-cards-container');
-      var lc = document.getElementById('lang-rows-container');
-      var edc = document.getElementById('edu-rows-container');
-      var activePanel = document.querySelector('.panel.active');
-      if (ec && ec.children.length) {
-        var c = ec.children[0];
-        var s = c.querySelector('input[id$="-sirket"]');
-        var p = c.querySelector('input[id$="-pozisyon"]');
-        var dep = c.querySelector('select[id$="-departman"]');
-        var seg = c.querySelector('select[id$="-segment"]');
-        var ist = c.querySelector('select[id$="-istihdam"]');
-        var bay = c.querySelector('select[id$="-basay"]');
-      }
-      if (lc && lc.children.length) {
-        var lr = lc.children[0];
-        var dil = lr.querySelector('select[id$="-dil"]');
-        var sev = lr.querySelector('select[id$="-seviye"]');
-      }
-      if (edc && edc.children.length) {
-        var er = edc.children[0];
-        var sev2 = er.querySelector('select[id$="-seviye"]');
-        var okul = er.querySelector('input[id$="-okul"]');
-      }
-    }, 500);
   } else {
     // No DB data — check for draft
     var draft = loadDraft();

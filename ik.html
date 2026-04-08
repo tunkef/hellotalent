@@ -9,6 +9,7 @@
 <meta name="robots" content="noindex">
 <script>(function(){var k='ht_theme_preference',s;try{s=localStorage.getItem(k)}catch(e){}var d=(s==='dark'||(s!=='light'&&window.matchMedia&&window.matchMedia('(prefers-color-scheme:dark)').matches));document.documentElement.setAttribute('data-theme',d?'dark':'light');})()</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
@@ -528,47 +529,47 @@ html[data-theme="dark"] .drawer-info-item{background:#1F2937;}
       <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
       Genel Bakış
     </div>
-    <div class="nav-item" data-panel="search" onclick="switchPanel('search',this)">
+    <div class="nav-item" data-panel="search" tabindex="0" role="button" onclick="switchPanel('search',this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();switchPanel('search',this)}">
       <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       Aday Ara
     </div>
-    <div class="nav-item" data-panel="pozisyonlar" onclick="switchPanel('pozisyonlar',this)">
+    <div class="nav-item" data-panel="pozisyonlar" tabindex="0" role="button" onclick="switchPanel('pozisyonlar',this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();switchPanel('pozisyonlar',this)}">
       <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
       Açık Pozisyonlar
       <span class="nav-badge" id="nav-poz-count">3</span>
     </div>
-    <div class="nav-item" data-panel="favoriler" onclick="switchPanel('favoriler',this)">
+    <div class="nav-item" data-panel="favoriler" tabindex="0" role="button" onclick="switchPanel('favoriler',this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();switchPanel('favoriler',this)}">
       <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
       Favoriler
       <span class="nav-badge" id="nav-fav-count" style="display:none">0</span>
     </div>
-    <div class="nav-item" data-panel="takipciler" onclick="switchPanel('takipciler',this)">
+    <div class="nav-item" data-panel="takipciler" tabindex="0" role="button" onclick="switchPanel('takipciler',this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();switchPanel('takipciler',this)}">
       <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><polyline points="17 11 19 13 23 9"/></svg>
       Takipçiler
       <span class="nav-badge" id="nav-follower-count" style="display:none">0</span>
     </div>
-    <div class="nav-item" data-panel="mesajlar" onclick="switchPanel('mesajlar',this)">
+    <div class="nav-item" data-panel="mesajlar" tabindex="0" role="button" onclick="switchPanel('mesajlar',this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();switchPanel('mesajlar',this)}">
       <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
       Mesajlar
       <span class="nav-badge" id="nav-mesaj-count" style="display:none">0</span>
     </div>
     <div class="nav-section-label">Kampanya</div>
-    <div class="nav-item" data-panel="kampanyalar" onclick="switchPanel('kampanyalar',this)">
+    <div class="nav-item" data-panel="kampanyalar" tabindex="0" role="button" onclick="switchPanel('kampanyalar',this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();switchPanel('kampanyalar',this)}">
       <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
       Kampanyalar
       <span class="nav-badge" id="badge-kampanya-pending" style="display:none;">0</span>
     </div>
 
     <div class="nav-section-label">Hesap</div>
-    <div class="nav-item" data-panel="sirket" onclick="switchPanel('sirket',this)">
+    <div class="nav-item" data-panel="sirket" tabindex="0" role="button" onclick="switchPanel('sirket',this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();switchPanel('sirket',this)}">
       <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
       Şirket Profili
     </div>
-    <div class="nav-item" data-panel="ekip" onclick="switchPanel('ekip',this)">
+    <div class="nav-item" data-panel="ekip" tabindex="0" role="button" onclick="switchPanel('ekip',this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();switchPanel('ekip',this)}">
       <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
       Ekip
     </div>
-    <div class="nav-item" data-panel="ayarlar" onclick="switchPanel('ayarlar',this)">
+    <div class="nav-item" data-panel="ayarlar" tabindex="0" role="button" onclick="switchPanel('ayarlar',this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();switchPanel('ayarlar',this)}">
       <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
       Ayarlar
     </div>
@@ -1297,13 +1298,13 @@ html[data-theme="dark"] .drawer-info-item{background:#1F2937;}
 <div class="drawer" id="candidate-drawer">
   <div class="drawer-header">
     <span style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:14px;">Aday Detayı</span>
-    <button class="drawer-close" onclick="closeDrawer()">✕</button>
+    <button class="drawer-close" onclick="closeDrawer()" aria-label="Kapat">✕</button>
   </div>
   <div class="drawer-body" id="drawer-body"></div>
 </div>
 
 <!-- MESAJ GÖNDER MODAL -->
-<div class="modal-overlay" id="mesaj-modal-overlay">
+<div class="modal-overlay" id="mesaj-modal-overlay" role="dialog" aria-modal="true" aria-label="Mesaj gönder">
   <div class="modal" style="max-width:520px;">
     <div class="modal-header">
       <span class="modal-title">✉️ Mesaj Gönder</span>
@@ -1341,7 +1342,7 @@ html[data-theme="dark"] .drawer-info-item{background:#1F2937;}
 </div>
 
 <!-- POZİSYON MODAL -->
-<div class="modal-overlay" id="poz-modal-overlay">
+<div class="modal-overlay" id="poz-modal-overlay" role="dialog" aria-modal="true" aria-label="Pozisyon düzenle">
   <div class="modal">
     <div class="modal-header">
       <span class="modal-title" id="poz-modal-title">Pozisyon Ekle</span>
@@ -1423,14 +1424,14 @@ html[data-theme="dark"] .drawer-info-item{background:#1F2937;}
 <!-- UPGRADE MODAL -->
 
     <!-- ═══ POZİSYON DETAY MODAL ═══ -->
-    <div class="modal-overlay" id="poz-detay-overlay">
+    <div class="modal-overlay" id="poz-detay-overlay" role="dialog" aria-modal="true" aria-label="Pozisyon detayı">
       <div class="modal" style="width:860px;max-width:96vw;max-height:90vh;display:flex;flex-direction:column;padding:0;overflow:hidden;">
         <div class="modal-header" style="padding:20px 24px;flex-shrink:0;">
           <div>
             <h3 class="modal-title" id="poz-detay-baslik">Pozisyon Adayları</h3>
             <div style="font-size:12px;color:var(--muted);margin-top:3px;" id="poz-detay-alt"></div>
           </div>
-          <button class="modal-close" onclick="closePozDetay()">✕</button>
+          <button class="modal-close" onclick="closePozDetay()" aria-label="Kapat">✕</button>
         </div>
         <div id="poz-detay-kriterler" style="padding:10px 24px;background:#EFF6FF;border-bottom:1px solid #BFDBFE;font-size:12px;color:#1D4ED8;flex-shrink:0;display:flex;align-items:center;gap:8px;">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
@@ -1446,11 +1447,11 @@ html[data-theme="dark"] .drawer-info-item{background:#1F2937;}
         </div>
       </div>
     </div>
-<div class="modal-overlay" id="upgrade-modal-overlay">
+<div class="modal-overlay" id="upgrade-modal-overlay" role="dialog" aria-modal="true" aria-label="Plan yükselt">
   <div class="modal">
     <div class="modal-header">
       <span class="modal-title">⚡ Premium'a Geç</span>
-      <button class="modal-close" onclick="closeUpgradeModal()">✕</button>
+      <button class="modal-close" onclick="closeUpgradeModal()" aria-label="Kapat">✕</button>
     </div>
     <div style="text-align:center;padding:8px 0 20px;">
       <div style="display:inline-flex;align-items:center;gap:6px;background:#FEF3C7;border:1.5px solid #FDE68A;border-radius:20px;padding:5px 14px;margin-bottom:16px;">
@@ -1993,7 +1994,7 @@ async function loadPositionsFromDB(){
   try {
     var {data, error} = await getSupa()
       .from('positions')
-      .select('*')
+      .select('id, ad, segment, aile, unvan, sehir, istihdam, exp, maas, aciklama, status, created_at')
       .eq('hr_profile_id', currentUser.id)
       .order('created_at', {ascending: false})
       .limit(100);
@@ -2284,7 +2285,7 @@ async function initApp(){
 
   // Supabase'den hr_profiles çek
   try{
-    var {data:prof} = await getSupa().from('hr_profiles').select('*').eq('id',currentUser.id).maybeSingle();
+    var {data:prof} = await getSupa().from('hr_profiles').select('id, ad, soyad, email, telefon, company_id, employer_role, avatar_url, onboarding_completed').eq('id',currentUser.id).maybeSingle();
     if(prof){
       hrProfile = prof;
       // Load employer plan (fire-and-forget, defaults to demo)

@@ -6,8 +6,8 @@
 
 ## Mevcut Durum
 
-**Son tamamlanan:** Asama 71 (8 Nisan 2026) — Page Cleanup + Gate Redirect + K029 Security Audit Layer 1
-**Son commit:** (pending push)
+**Son tamamlanan:** Asama 71 (8 Nisan 2026) — Page Cleanup + Gate Redirect + K029 Full Audit (Layer 1-2-3)
+**Son commit:** 82cd2cb (Layer 1) + pending (Layer 2-3)
 **Test durumu:** Smoke test guncellendi (silinen sayfalar cikarildi)
 **Beta Launch Paketi:** TAMAMLANDI (Asama 48-61)
 **Landing Page Redesign:** TAMAMLANDI (Asama 63)
