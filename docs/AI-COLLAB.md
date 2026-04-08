@@ -91,10 +91,14 @@
 - Dark mode, responsive, logged-in redirect, lead form RPC korundu
 
 **Kalan isler (Asama 72):**
-- shared.js header guncelleme (segment toggle diger sayfalarla tutarlilik)
-- aday.html + isveren.html → redirect (meta refresh)
-- Tasarim polish: dark mode ince ayarlar, mobil test, copy review
-- P3 CI testleri yesile donmesi bekleniyor
+
+| # | Gorev | Durum |
+|---|-------|-------|
+| ULP-2 | shared.js header — nav link'leri guncelle (Adaylar Icin/Isverenler Icin → index.html) | Bekliyor |
+| ULP-3 | aday.html + isveren.html → meta refresh redirect + sitemap + smoke test | Bekliyor |
+| ULP-4 | Tasarim polish — dark mode ince ayar, mobil 390x844 test, copy review | Bekliyor |
+| ULP-5 | P3 CI testleri yesile dondur (studio CSS + CV path fix'leri push edildi, sonuc bekleniyor) | Bekliyor |
+| ULP-6 | Temizlik — index-gate-backup.html sil, .firecrawl/ gitignore, mockup dosyalari temizle | Bekliyor |
 
 **Sonraki asamalar:**
 - **Pozisyon gorunum/esleme metrikleri** — DEFER
