@@ -691,6 +691,79 @@ function validateKurumsalForm() {
   webInput.addEventListener('input', checkDomainMatch);
   emailInput.addEventListener('input', checkDomainMatch);
 })();
+
+// ── ADAY SIGNUP ──
+(function() {
+  var btn = document.getElementById('btn-aday-kayit');
+  btn.addEventListener('click', async function() {
+    var errEl = document.getElementById('err-aday-register');
+    errEl.style.display = 'none';
+    var fullName = document.getElementById('aday-adsoyad').value.trim();
+    var email = document.getElementById('aday-email').value.trim().toLowerCase();
+    var phone = document.getElementById('aday-telefon').value.replace(/\D/g, '');
+    var password = document.getElementById('aday-sifre').value;
+    btn.disabled = true; btn.textContent = 'Kayit yapiliyor...';
+    try {
+      var result = await getSupa().auth.signUp({
+        email: email, password: password,
+        options: { data: { full_name: fullName, phone: phone, privacy_consent_at: new Date().toISOString(), kvkk_explicit_consent_at: new Date().toISOString(), age_confirmed: true } }
+      });
+      if (result.error) throw result.error;
+      if (result.data.user && result.data.user.identities && result.data.user.identities.length === 0) {
+        errEl.textContent = 'Bu e-posta adresi zaten kayitli. Giris yapin veya farkli bir e-posta deneyin.';
+        errEl.style.display = 'block'; btn.disabled = false; btn.textContent = 'Kayit Ol'; return;
+      }
+      window.location.href = 'profil.html';
+    } catch (err) {
+      errEl.textContent = 'Hata: ' + (err.message || 'Bilinmeyen hata');
+      errEl.style.display = 'block'; btn.disabled = false; btn.textContent = 'Kayit Ol';
+    }
+  });
+})();
+
+// ── KURUMSAL SIGNUP ──
+(function() {
+  var btn = document.getElementById('btn-k-kayit');
+  btn.addEventListener('click', async function() {
+    var errEl = document.getElementById('err-kurumsal-register');
+    errEl.style.display = 'none';
+    var fullName = document.getElementById('k-adsoyad').value.trim();
+    var sirket = document.getElementById('k-sirket').value.trim();
+    var website = document.getElementById('k-web').value.trim();
+    var email = document.getElementById('k-email').value.trim().toLowerCase();
+    var phone = document.getElementById('k-telefon').value.replace(/\D/g, '');
+    var password = document.getElementById('k-sifre').value;
+    btn.disabled = true; btn.textContent = 'Kayit yapiliyor...';
+    try {
+      var result = await getSupa().auth.signUp({
+        email: email, password: password,
+        options: { data: { role: 'employer', full_name: fullName, company_name: sirket, company_website: website, phone: phone, privacy_consent_at: new Date().toISOString(), kvkk_explicit_consent_at: new Date().toISOString(), age_confirmed: true } }
+      });
+      if (result.error) throw result.error;
+      if (result.data.user && result.data.user.identities && result.data.user.identities.length === 0) {
+        errEl.textContent = 'Bu e-posta adresi zaten kayitli.';
+        errEl.style.display = 'block'; btn.disabled = false; btn.textContent = 'Kayit Ol'; return;
+      }
+      try { await getSupa().rpc('register_employer', { p_email: email, p_sirket: sirket, p_website: website || null }); } catch (rpcErr) { console.warn('register_employer RPC basarisiz:', rpcErr.message); }
+      window.location.href = 'demo-dashboard-ik.html';
+    } catch (err) {
+      errEl.textContent = 'Hata: ' + (err.message || 'Bilinmeyen hata');
+      errEl.style.display = 'block'; btn.disabled = false; btn.textContent = 'Kayit Ol';
+    }
+  });
+})();
+
+// ── OAUTH (aday only) ──
+(function() {
+  var googleBtn = document.getElementById('btn-google-signup');
+  var linkedinBtn = document.getElementById('btn-linkedin-signup');
+  if (googleBtn) googleBtn.addEventListener('click', async function() {
+    await getSupa().auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.origin + '/profil.html' } });
+  });
+  if (linkedinBtn) linkedinBtn.addEventListener('click', async function() {
+    await getSupa().auth.signInWithOAuth({ provider: 'linkedin_oidc', options: { redirectTo: window.location.origin + '/profil.html' } });
+  });
+})();
 </script>
 </body>
 </html>
