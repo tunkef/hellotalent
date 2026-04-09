@@ -229,7 +229,10 @@ body{background:var(--bg-page);font-family:var(--font-b);color:var(--text-primar
   .steps-row{grid-template-columns:1fr}
   .who-grid{grid-template-columns:1fr}
   .who-vis{min-height:220px}
-  .lp-hdr-center{position:static;transform:none}
+  .lp-hdr{height:auto;flex-wrap:wrap;padding-top:12px;padding-bottom:12px}
+  .lp-hdr-left{order:1}
+  .lp-hdr-right{order:2;margin-left:auto}
+  .lp-hdr-center{order:3;position:static;transform:none;width:100%;display:flex;justify-content:center;margin-top:10px}
 }
 @media(max-width:480px){
   .hero-hl{font-size:30px;letter-spacing:-1px}
