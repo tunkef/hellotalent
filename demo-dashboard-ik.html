@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-Frame-Options" content="DENY">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://cpwibefquojehjehtrog.supabase.co; object-src 'none'; base-uri 'self'; frame-ancestors 'none'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Demo Panel — hellotalent</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root { --navy:#1E2D5E; --verm:#C94E28; --bg:#F7F6F4; --text:#111; --muted:#6B7280; --border:#E5E3DF; }
+* { box-sizing:border-box; margin:0; padding:0; }
+body { font-family:'Plus Jakarta Sans',sans-serif; background:var(--bg); min-height:100vh; }
+.demo-header { display:flex; align-items:center; justify-content:space-between; padding:16px 24px; background:white; border-bottom:1px solid var(--border); }
+.demo-logo { font-family:'Bricolage Grotesque',sans-serif; font-weight:800; font-size:18px; color:var(--navy); text-decoration:none; }
+.demo-logo span { color:var(--verm); }
+.demo-badge { background:var(--verm); color:white; font-size:11px; font-weight:700; padding:3px 10px; border-radius:20px; margin-left:10px; }
+.demo-logout { font-size:13px; color:var(--muted); cursor:pointer; background:none; border:1px solid var(--border); padding:8px 16px; border-radius:8px; font-family:inherit; transition:all .2s; }
+.demo-logout:hover { border-color:var(--navy); color:var(--navy); }
+.demo-hero { text-align:center; padding:60px 24px 40px; }
+.demo-hero h1 { font-family:'Bricolage Grotesque',sans-serif; font-size:28px; font-weight:800; color:var(--navy); margin-bottom:12px; }
+.demo-hero p { font-size:15px; color:var(--muted); max-width:480px; margin:0 auto; line-height:1.6; }
+.demo-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:16px; max-width:960px; margin:0 auto; padding:0 24px 40px; }
+.demo-card { background:white; border:1px solid var(--border); border-radius:12px; padding:20px; position:relative; }
+.demo-card::after { content:'DEMO'; position:absolute; top:12px; right:12px; background:var(--border); color:var(--muted); font-size:10px; font-weight:700; padding:2px 8px; border-radius:4px; }
+.demo-card h3 { font-size:15px; font-weight:700; color:var(--text); margin-bottom:4px; }
+.demo-card p { font-size:13px; color:var(--muted); line-height:1.5; }
+.demo-card .tag { display:inline-block; font-size:11px; padding:3px 8px; border-radius:4px; margin-top:8px; margin-right:4px; background:var(--bg); color:var(--muted); border:1px solid var(--border); }
+.demo-cta { text-align:center; padding:20px 24px 60px; }
+.demo-cta a { display:inline-block; padding:14px 32px; background:var(--navy); color:white; border-radius:10px; font-weight:700; font-size:15px; text-decoration:none; transition:all .2s; }
+.demo-cta a:hover { transform:translateY(-1px); box-shadow:0 4px 12px rgba(30,45,94,.2); }
+.demo-cta p { font-size:13px; color:var(--muted); margin-top:12px; }
+</style>
+</head>
+<body>
+
+<header class="demo-header">
+  <div style="display:flex;align-items:center;">
+    <a href="index.html" class="demo-logo">hello<span>talent</span></a>
+    <span class="demo-badge">DEMO</span>
+  </div>
+  <button class="demo-logout" id="btn-logout">Cikis Yap</button>
+</header>
+
+<section class="demo-hero">
+  <h1>Demo Paneline Hos Geldiniz</h1>
+  <p>Asagida ornek aday profilleri gorebilirsiniz. Gercek aday havuzuna erismek ve eslesme motorumuzu deneyimlemek icin bizimle iletisime gecin.</p>
+</section>
+
+<div class="demo-grid">
+  <div class="demo-card">
+    <h3>Ayse K.</h3>
+    <p>8 yil perakende deneyimi. Magaza muduru, luks segmentte uzmanlasmis.</p>
+    <span class="tag">Luks</span><span class="tag">Magaza Muduru</span><span class="tag">Istanbul</span>
+  </div>
+  <div class="demo-card">
+    <h3>Mehmet T.</h3>
+    <p>5 yil fast fashion. Bolge sorumlusu, 12 magaza yonetimi deneyimi.</p>
+    <span class="tag">Fast Fashion</span><span class="tag">Bolge Sorumlusu</span><span class="tag">Ankara</span>
+  </div>
+  <div class="demo-card">
+    <h3>Zeynep A.</h3>
+    <p>3 yil kozmetik perakende. Satis danismani, egitim sertifikali.</p>
+    <span class="tag">Kozmetik</span><span class="tag">Satis Danismani</span><span class="tag">Izmir</span>
+  </div>
+  <div class="demo-card">
+    <h3>Can B.</h3>
+    <p>6 yil spor perakende. Depo ve lojistik operasyon yoneticisi.</p>
+    <span class="tag">Spor</span><span class="tag">Operasyon</span><span class="tag">Bursa</span>
+  </div>
+</div>
+
+<div class="demo-cta">
+  <a href="iletisim.html">Gercek Adaylara Erisin</a>
+  <p>Ekibimiz sizinle iletisime gececek ve sirketinize ozel bir demo hazirlayacak.</p>
+</div>
+
+<script src="/shared.js?v=20260409b"></script>
+<script>
+// Auth guard — only employers can see this page
+(async function() {
+  var supa = HT.getSupa();
+  var result = await supa.auth.getSession();
+  if (!result.data.session) { window.location.href = 'giris.html?tab=kurumsal'; return; }
+  var role = result.data.session.user.user_metadata && result.data.session.user.user_metadata.role;
+  if (role !== 'employer') { window.location.href = 'profil.html'; return; }
+})();
+
+// Logout
+document.getElementById('btn-logout').addEventListener('click', async function() {
+  await HT.getSupa().auth.signOut();
+  window.location.href = 'index.html';
+});
+</script>
+</body>
+</html>
