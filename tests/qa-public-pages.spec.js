@@ -218,7 +218,7 @@ test.describe('segment toggle', () => {
     await page.goto(`${BASE}/index.html`, { waitUntil: 'networkidle' });
     await expect(page.locator('#seg-adaylar')).toBeVisible();
 
-    await page.click('.seg-btn[data-seg="kurumsal"]');
+    await page.click('.seg-btn[data-seg="kurumsal"]:visible');
     await page.waitForTimeout(500);
 
     await expect(page.locator('#seg-kurumsal')).toBeVisible();
@@ -230,7 +230,7 @@ test.describe('segment toggle', () => {
     await page.waitForTimeout(500);
     await expect(page.locator('#seg-kurumsal')).toBeVisible();
 
-    await page.click('.seg-btn[data-seg="adaylar"]');
+    await page.click('.seg-btn[data-seg="adaylar"]:visible');
     await page.waitForTimeout(500);
 
     await expect(page.locator('#seg-adaylar')).toBeVisible();

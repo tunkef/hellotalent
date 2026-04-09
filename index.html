@@ -63,7 +63,7 @@ body{background:var(--bg-page);font-family:var(--font-b);color:var(--text-primar
 /* ── HEADER (inline — bu sayfa kendi header'ini kullanir) ── */
 .lp-hdr{position:sticky;top:0;z-index:100;background:rgba(247,246,244,.88);backdrop-filter:blur(16px) saturate(1.8);-webkit-backdrop-filter:blur(16px) saturate(1.8);border-bottom:1px solid var(--border);padding:0 clamp(16px,4vw,48px);height:64px;display:flex;align-items:center;justify-content:space-between;gap:16px}
 .lp-hdr-left{display:flex;align-items:center}
-.seg-toggle-bar{display:flex;justify-content:center;padding:14px 0 10px;position:sticky;top:64px;z-index:99;background:transparent}
+.seg-toggle-wrap{display:flex;justify-content:center;padding:0 0 clamp(16px,3vw,28px)}
 .lp-logo{font-family:var(--font-d);font-size:20px;font-weight:800;color:var(--navy);text-decoration:none;letter-spacing:-.5px}
 .lp-logo em{font-style:normal;color:var(--verm)}
 @media(prefers-color-scheme:dark){.lp-logo{color:#fff}}
@@ -79,7 +79,6 @@ body{background:var(--bg-page);font-family:var(--font-b);color:var(--text-primar
 
 @media(prefers-color-scheme:dark){
   .lp-hdr{background:rgba(11,13,23,.88)}
-  .seg-toggle-bar{background:transparent}
   .seg-toggle{background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.08)}
   .seg-btn{color:rgba(240,240,238,.7)}
   .brand-tag{color:rgba(240,240,238,.7);border-color:rgba(255,255,255,.1)}
@@ -233,13 +232,15 @@ body{background:var(--bg-page);font-family:var(--font-b);color:var(--text-primar
   .who-vis{min-height:220px}
 }
 @media(orientation:landscape) and (max-height:500px){
-  .hero .s-inner{grid-template-columns:1fr 1fr;gap:32px}
-  .hero-vis{display:none}
-  .hero{padding-top:24px;padding-bottom:24px}
-  .hero-hl{font-size:26px;letter-spacing:-1px;margin-bottom:12px}
-  .hero-sub{font-size:13px;margin-bottom:12px;max-width:none}
-  .hero-btns{margin-top:12px}
-  .seg-toggle-bar{padding:8px 0 4px}
+  .hero .s-inner{grid-template-columns:1fr auto;gap:24px}
+  .hero-vis{min-height:auto;max-width:200px}
+  .hero-vis img{max-height:200px;object-fit:contain}
+  .hero{padding-top:20px;padding-bottom:20px}
+  .hero-hl{font-size:24px;letter-spacing:-1px;margin-bottom:8px}
+  .hero-sub{font-size:13px;margin-bottom:8px;max-width:none}
+  .hero-btns{margin-top:8px}
+  .hero-btns .btn-g,.hero-btns .btn-p,.hero-btns .btn-o{padding:10px 16px;font-size:13px}
+  .seg-toggle-wrap{padding:0 0 12px}
 }
 @media(max-width:480px){
   .hero-hl{font-size:30px;letter-spacing:-1px}
@@ -285,13 +286,6 @@ body{background:var(--bg-page);font-family:var(--font-b);color:var(--text-primar
   </div>
 </header>
 
-<div class="seg-toggle-bar">
-  <div class="seg-toggle">
-    <button class="seg-btn active" data-seg="adaylar" onclick="switchSeg('adaylar')">Adaylar</button>
-    <button class="seg-btn" data-seg="kurumsal" onclick="switchSeg('kurumsal')">Kurumsal</button>
-  </div>
-</div>
-
 <!-- ═══════════════════════════════════════ -->
 <!-- ADAYLAR SEGMENT                        -->
 <!-- ═══════════════════════════════════════ -->
@@ -299,6 +293,12 @@ body{background:var(--bg-page);font-family:var(--font-b);color:var(--text-primar
 
 <!-- HERO -->
 <section class="hero s-white">
+  <div class="seg-toggle-wrap">
+    <div class="seg-toggle">
+      <button class="seg-btn active" data-seg="adaylar" onclick="switchSeg('adaylar')">Adaylar</button>
+      <button class="seg-btn" data-seg="kurumsal" onclick="switchSeg('kurumsal')">Kurumsal</button>
+    </div>
+  </div>
   <div class="s-inner">
     <div>
       <h1 class="hero-hl">Artık başvuru yok,<br>markalar seni buluyor.</h1>
@@ -445,6 +445,12 @@ body{background:var(--bg-page);font-family:var(--font-b);color:var(--text-primar
 
 <!-- HERO (navy) -->
 <section class="hero hero-navy">
+  <div class="seg-toggle-wrap">
+    <div class="seg-toggle">
+      <button class="seg-btn" data-seg="adaylar" onclick="switchSeg('adaylar')">Adaylar</button>
+      <button class="seg-btn active" data-seg="kurumsal" onclick="switchSeg('kurumsal')">Kurumsal</button>
+    </div>
+  </div>
   <div class="s-inner">
     <div>
       <h1 class="hero-hl">İlanların arasında kaybolmayın,<br>doğru yeteneğe hemen ulaşın.</h1>

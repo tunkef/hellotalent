@@ -26,11 +26,11 @@ for (var vp of viewports) {
 
     // 2. Segment toggle exists
     test('segment toggle with two buttons', async ({ page }) => {
-      var toggle = page.locator('.seg-toggle');
+      var toggle = page.locator('.seg-toggle').first();
       await expect(toggle).toBeVisible();
 
-      var adayBtn = page.locator('.seg-btn[data-seg="adaylar"]');
-      var kurumsalBtn = page.locator('.seg-btn[data-seg="kurumsal"]');
+      var adayBtn = page.locator('.seg-btn[data-seg="adaylar"]').first();
+      var kurumsalBtn = page.locator('.seg-btn[data-seg="kurumsal"]').first();
       await expect(adayBtn).toBeVisible();
       await expect(kurumsalBtn).toBeVisible();
 
@@ -46,13 +46,13 @@ for (var vp of viewports) {
 
     // 4. Segment switch works
     test('segment toggle switches content', async ({ page }) => {
-      await page.click('.seg-btn[data-seg="kurumsal"]');
+      await page.click('.seg-btn[data-seg="kurumsal"]:visible');
       await page.waitForTimeout(500);
       await expect(page.locator('#seg-kurumsal')).toBeVisible();
       await expect(page.locator('#seg-adaylar')).toBeHidden();
 
       // Switch back
-      await page.click('.seg-btn[data-seg="adaylar"]');
+      await page.click('.seg-btn[data-seg="adaylar"]:visible');
       await page.waitForTimeout(500);
       await expect(page.locator('#seg-adaylar')).toBeVisible();
       await expect(page.locator('#seg-kurumsal')).toBeHidden();
@@ -93,7 +93,7 @@ for (var vp of viewports) {
     // 8. Hash-based routing
     test('hash #kurumsal loads kurumsal segment', async ({ page }) => {
       // Click the Kurumsal toggle button instead of hash nav (more reliable)
-      await page.click('.seg-btn[data-seg="kurumsal"]');
+      await page.click('.seg-btn[data-seg="kurumsal"]:visible');
       await page.waitForTimeout(500);
       await expect(page.locator('#seg-kurumsal')).toBeVisible();
       await expect(page.locator('#seg-adaylar')).toBeHidden();
@@ -106,7 +106,7 @@ for (var vp of viewports) {
       await expect(page.locator('#seg-adaylar .hero-hl')).toBeVisible();
 
       // Switch to kurumsal
-      await page.click('.seg-btn[data-seg="kurumsal"]');
+      await page.click('.seg-btn[data-seg="kurumsal"]:visible');
       await page.waitForTimeout(500);
       await expect(page.locator('#seg-kurumsal .hero')).toBeVisible();
       await expect(page.locator('#seg-kurumsal .hero-hl')).toBeVisible();
