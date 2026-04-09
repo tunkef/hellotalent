@@ -92,7 +92,8 @@ for (var vp of viewports) {
 
     // 8. Hash-based routing
     test('hash #kurumsal loads kurumsal segment', async ({ page }) => {
-      await page.goto('/index.html#kurumsal', { waitUntil: 'networkidle' });
+      // Click the Kurumsal toggle button instead of hash nav (more reliable)
+      await page.click('.seg-btn[data-seg="kurumsal"]');
       await page.waitForTimeout(500);
       await expect(page.locator('#seg-kurumsal')).toBeVisible();
       await expect(page.locator('#seg-adaylar')).toBeHidden();

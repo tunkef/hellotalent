@@ -3,7 +3,7 @@ module.exports = defineConfig({
   testDir: './tests',
   timeout: 30000,
   webServer: {
-    command: 'npx serve . -p 3000',
+    command: 'python3 -m http.server 3000 --directory .',
     port: 3000,
     reuseExistingServer: !process.env.CI,
   },

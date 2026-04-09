@@ -76,13 +76,12 @@ for (const vp of VIEWPORTS) {
       }
     });
 
-    test('lead form visible', async ({ page }) => {
+    test('kurumsal CTA section visible', async ({ page }) => {
       await gotoSegment(page, 'kurumsal');
-      const form = page.locator('#employer-lead-form');
-      await expect(form).toBeVisible();
-      await expect(page.locator('input[name="name"]')).toBeVisible();
-      await expect(page.locator('input[name="email"]')).toBeVisible();
-      await expect(page.locator('input[name="company"]')).toBeVisible();
+      var cta = page.locator('#lead-form');
+      await expect(cta).toBeVisible();
+      var link = page.locator('#lead-form a[href="uye-ol.html?tab=kurumsal"]');
+      await expect(link).toBeVisible();
     });
 
     test('footer visible', async ({ page }) => {

@@ -99,6 +99,22 @@
 
 **Test durumu:** 1218 PASS / 3 fail (bilinen: auth env var eksik)
 
+**Asama 73 — Auth Pages Split: TAMAMLANDI (9 Nisan 2026)**
+
+**Yapilan isler:**
+| # | Gorev | Durum |
+|---|-------|-------|
+| T1-2 | uye-ol.html olusturuldu (aday + kurumsal kayit formlari) | ✅ |
+| T3-4 | JS: tab switch, validation, phone format, strength, signUp, OAuth | ✅ |
+| T5 | demo-dashboard-ik.html kurumsal demo placeholder | ✅ |
+| T6 | giris.html: kayit formlari cikarildi, IK→Kurumsal, logo .ai kaldirildi | ✅ |
+| T7 | shared.js login modal + index.html CTA'lari uye-ol.html'e | ✅ |
+| T8 | profil-bootstrap: employer→demo routing, wizard pre-fill (full_name+phone) | ✅ |
+| T9-10 | sitemap, auth-pages testleri (32 yeni), cache-bust, full test | ✅ |
+
+**Yeni dosyalar:** uye-ol.html, demo-dashboard-ik.html, tests/auth-pages.spec.js
+**Test durumu:** 1250/1253 PASS (3 bilinen: auth env + dark-mode)
+
 **Sonraki asamalar:**
 - **Pozisyon gorunum/esleme metrikleri** — DEFER
 - **iyzico/Stripe checkout** — DEFER (beta 3 ay ucretsiz)
