@@ -63,7 +63,7 @@ body{background:var(--bg-page);font-family:var(--font-b);color:var(--text-primar
 /* ── HEADER (inline — bu sayfa kendi header'ini kullanir) ── */
 .lp-hdr{position:sticky;top:0;z-index:100;background:rgba(247,246,244,.88);backdrop-filter:blur(16px) saturate(1.8);-webkit-backdrop-filter:blur(16px) saturate(1.8);border-bottom:1px solid var(--border);padding:0 clamp(16px,4vw,48px);height:64px;display:flex;align-items:center;justify-content:space-between;gap:16px}
 .lp-hdr-left{display:flex;align-items:center}
-.seg-toggle-wrap{display:flex;justify-content:center;padding:0 0 clamp(16px,3vw,28px)}
+.seg-toggle-wrap{display:flex;justify-content:center;padding:clamp(20px,4vw,36px) 0}
 .lp-logo{font-family:var(--font-d);font-size:20px;font-weight:800;color:var(--navy);text-decoration:none;letter-spacing:-.5px}
 .lp-logo em{font-style:normal;color:var(--verm)}
 @media(prefers-color-scheme:dark){.lp-logo{color:#fff}}
@@ -232,15 +232,16 @@ body{background:var(--bg-page);font-family:var(--font-b);color:var(--text-primar
   .who-vis{min-height:220px}
 }
 @media(orientation:landscape) and (max-height:500px){
-  .hero .s-inner{grid-template-columns:1fr auto;gap:24px}
-  .hero-vis{min-height:auto;max-width:200px}
-  .hero-vis img{max-height:200px;object-fit:contain}
-  .hero{padding-top:20px;padding-bottom:20px}
-  .hero-hl{font-size:24px;letter-spacing:-1px;margin-bottom:8px}
-  .hero-sub{font-size:13px;margin-bottom:8px;max-width:none}
-  .hero-btns{margin-top:8px}
-  .hero-btns .btn-g,.hero-btns .btn-p,.hero-btns .btn-o{padding:10px 16px;font-size:13px}
-  .seg-toggle-wrap{padding:0 0 12px}
+  .hero .s-inner{grid-template-columns:1fr;gap:16px}
+  .hero-vis{min-height:auto;max-height:180px}
+  .hero-vis img{max-height:180px;object-fit:contain}
+  .hero{padding-top:12px;padding-bottom:12px}
+  .hero-hl{font-size:22px;letter-spacing:-1px;margin-bottom:6px}
+  .hero-sub{font-size:12px;margin-bottom:6px;max-width:none}
+  .hero-btns{margin-top:6px;gap:8px}
+  .hero-btns .btn-g,.hero-btns .btn-p,.hero-btns .btn-o{padding:8px 16px;font-size:12px}
+  .seg-toggle-wrap{padding:10px 0}
+  .trust span{font-size:11px}
 }
 @media(max-width:480px){
   .hero-hl{font-size:30px;letter-spacing:-1px}
