@@ -57,6 +57,14 @@
 | CR3 | Lead notları | Her lead'e inline not ekleme | admin-leads.js | ☑ 4 Nisan 2026 |
 | CR4 | Segment dağılım dashboard | Aday segmentlerinin pie/bar chart görünümü | admin.html | ☐ |
 
+### Passkey / Biometric Auth
+
+| # | Görev | Detay | Dosyalar | Durum |
+|---|-------|-------|----------|-------|
+| PK1 | WebAuthn/Passkey entegrasyonu | Supabase WebAuthn API, credential registration + login flow | giris.html, uye-ol.html, profil-settings.js | ☐ |
+| PK2 | Biometric prompt (Face ID / parmak izi) | navigator.credentials API, platform authenticator, mobil + tablet + desktop | giris.html | ☐ |
+| PK3 | Passkey yönetim UI | Profil ayarlarında kayıtlı passkey listesi, ekle/sil | profil-settings.js | ☐ |
+
 ### Newsletter
 
 | # | Görev | Detay | Dosyalar | Durum |
