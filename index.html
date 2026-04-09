@@ -63,7 +63,8 @@ body{background:var(--bg-page);font-family:var(--font-b);color:var(--text-primar
 /* ── HEADER (inline — bu sayfa kendi header'ini kullanir) ── */
 .lp-hdr{position:sticky;top:0;z-index:100;background:rgba(247,246,244,.88);backdrop-filter:blur(16px) saturate(1.8);-webkit-backdrop-filter:blur(16px) saturate(1.8);border-bottom:1px solid var(--border);padding:0 clamp(16px,4vw,48px);height:64px;display:flex;align-items:center;justify-content:space-between;gap:16px}
 .lp-hdr-left{display:flex;align-items:center}
-.seg-toggle-wrap{display:flex;justify-content:center;padding:clamp(20px,4vw,36px) 0}
+.lp-hdr-center{position:absolute;left:50%;transform:translateX(-50%)}
+.seg-toggle-wrap{display:none;justify-content:center;padding:clamp(20px,4vw,36px) 0}
 .lp-logo{font-family:var(--font-d);font-size:20px;font-weight:800;color:var(--navy);text-decoration:none;letter-spacing:-.5px}
 .lp-logo em{font-style:normal;color:var(--verm)}
 @media(prefers-color-scheme:dark){.lp-logo{color:#fff}}
@@ -230,6 +231,13 @@ body{background:var(--bg-page);font-family:var(--font-b);color:var(--text-primar
   .steps-row{grid-template-columns:1fr}
   .who-grid{grid-template-columns:1fr}
   .who-vis{min-height:220px}
+  .lp-hdr-center{display:none}
+  .seg-toggle-wrap{display:flex}
+  .hero{padding-top:0}
+  .hero .s-inner{text-align:center}
+  .hero-sub{margin-left:auto;margin-right:auto}
+  .hero-btns{justify-content:center}
+  .trust{justify-content:center}
 }
 @media(orientation:landscape) and (max-height:500px){
   .hero .s-inner{grid-template-columns:1fr;gap:16px}
@@ -280,6 +288,12 @@ body{background:var(--bg-page);font-family:var(--font-b);color:var(--text-primar
 <header class="lp-hdr">
   <div class="lp-hdr-left">
     <a class="lp-logo" href="index.html">hello<em>talent</em></a>
+  </div>
+  <div class="lp-hdr-center">
+    <div class="seg-toggle">
+      <button class="seg-btn active" data-seg="adaylar" onclick="switchSeg('adaylar')">Adaylar</button>
+      <button class="seg-btn" data-seg="kurumsal" onclick="switchSeg('kurumsal')">Kurumsal</button>
+    </div>
   </div>
   <div class="lp-hdr-right">
     <a class="lp-hdr-cta" href="giris.html">Giriş Yap</a>
