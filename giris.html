@@ -549,8 +549,6 @@ async function loginAday() {
   var btnText = document.getElementById('aday-btn-text');
   var loginBtn = btnText.closest('button');
   var remember = document.getElementById('cb-remember-aday').checked;
-  try { localStorage.setItem('ht_remember_me', remember ? 'true' : 'false'); } catch(e) {}
-  window._htSupa = null; // always re-init with correct storage // force re-init with localStorage
 
   errEl.style.display = 'none';
 
@@ -597,8 +595,6 @@ async function loginIK() {
   var btnText = document.getElementById('ik-btn-text');
   var loginBtn = btnText.closest('button');
   var remember = document.getElementById('cb-remember-ik').checked;
-  try { localStorage.setItem('ht_remember_me', remember ? 'true' : 'false'); } catch(e) {}
-  window._htSupa = null; // always re-init with correct storage
 
   errEl.style.display = 'none';
 

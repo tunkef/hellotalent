@@ -186,11 +186,7 @@
     getSupa: function () {
       if (!window._htSupa) {
         if (typeof supabase === 'undefined') { console.warn('Supabase CDN not loaded'); return null; }
-        var rememberMe = true;
-        try { var rmVal = localStorage.getItem('ht_remember_me'); if (rmVal === 'false') rememberMe = false; } catch(e) {}
-        window._htSupa = supabase.createClient(HT_SUPA_URL, HT_SUPA_KEY, {
-          auth: { storage: rememberMe ? localStorage : sessionStorage, persistSession: true }
-        });
+        window._htSupa = supabase.createClient(HT_SUPA_URL, HT_SUPA_KEY);
       }
       return window._htSupa;
     },
