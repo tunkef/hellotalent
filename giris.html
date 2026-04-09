@@ -352,13 +352,16 @@
           <input type="password" id="aday-sifre" class="aday" placeholder="••••••••" autocomplete="current-password">
         </div>
 
+        <div style="display:flex;align-items:center;justify-content:space-between;margin:4px 0 12px;">
+          <label style="display:flex;align-items:center;gap:6px;font-size:var(--text-base);color:var(--muted);cursor:pointer;">
+            <input type="checkbox" id="cb-remember-aday" style="flex-shrink:0;"> Beni Hatirla
+          </label>
+          <a href="#" id="btn-forgot-password-aday" style="font-size:var(--text-base);color:var(--verm);text-decoration:none;">Sifremi Unuttum</a>
+        </div>
+
         <button id="btn-aday-giris" class="btn-submit btn-aday" onclick="loginAday()">
           <span id="aday-btn-text">Giriş Yap</span>
         </button>
-
-        <div style="text-align:center;margin-top:8px;">
-          <a href="#" id="btn-forgot-password-aday" style="font-size:var(--text-base);color:var(--verm);text-decoration:none;">Şifremi Unuttum</a>
-        </div>
 
         <div style="display:flex;align-items:center;gap:12px;margin:16px 0;">
           <div style="flex:1;height:1px;background:var(--border);"></div>
@@ -400,13 +403,16 @@
           <input type="password" id="ik-sifre" placeholder="••••••••" autocomplete="current-password">
         </div>
 
+        <div style="display:flex;align-items:center;justify-content:space-between;margin:4px 0 12px;">
+          <label style="display:flex;align-items:center;gap:6px;font-size:var(--text-base);color:var(--muted);cursor:pointer;">
+            <input type="checkbox" id="cb-remember-ik" style="flex-shrink:0;"> Beni Hatirla
+          </label>
+          <a href="#" id="btn-forgot-password-ik" style="font-size:var(--text-base);color:var(--verm);text-decoration:none;">Sifremi Unuttum</a>
+        </div>
+
         <button class="btn-submit btn-ik" onclick="loginIK()">
           <span id="ik-btn-text">Giriş Yap</span>
         </button>
-
-        <div style="text-align:center;margin-top:8px;">
-          <a href="#" id="btn-forgot-password-ik" style="font-size:var(--text-base);color:var(--verm);text-decoration:none;">Şifremi Unuttum</a>
-        </div>
 
         <div class="divider">veya</div>
 
@@ -542,6 +548,9 @@ async function loginAday() {
   var errEl = document.getElementById('err-aday');
   var btnText = document.getElementById('aday-btn-text');
   var loginBtn = btnText.closest('button');
+  var remember = document.getElementById('cb-remember-aday').checked;
+  try { localStorage.setItem('ht_remember_me', remember ? 'true' : 'false'); } catch(e) {}
+  if (remember) { window._htSupa = null; } // force re-init with localStorage
 
   errEl.style.display = 'none';
 
@@ -587,6 +596,9 @@ async function loginIK() {
   var errEl = document.getElementById('err-ik');
   var btnText = document.getElementById('ik-btn-text');
   var loginBtn = btnText.closest('button');
+  var remember = document.getElementById('cb-remember-ik').checked;
+  try { localStorage.setItem('ht_remember_me', remember ? 'true' : 'false'); } catch(e) {}
+  if (remember) { window._htSupa = null; }
 
   errEl.style.display = 'none';
 
