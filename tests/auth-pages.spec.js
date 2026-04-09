@@ -55,7 +55,7 @@ test.describe('uye-ol.html', function() {
     await page.fill('#aday-sifre', 'Test1234!');
     await page.fill('#aday-sifre-tekrar', 'Test1234!');
     await expect(page.locator('#aday-match-hint')).toBeVisible();
-    await expect(page.locator('#aday-match-hint')).toContainText('eslesiyor');
+    await expect(page.locator('#aday-match-hint')).toContainText('eşleşiyor');
   });
 
   test('aday OAuth buttons visible', async function({ page }) {
