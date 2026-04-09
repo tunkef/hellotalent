@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta http-equiv="X-Frame-Options" content="DENY">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://browser.sentry-cdn.com https://www.googletagmanager.com https://www.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://cpwibefquojehjehtrog.supabase.co https://*.googleusercontent.com; connect-src 'self' https://cpwibefquojehjehtrog.supabase.co https://*.google-analytics.com https://*.sentry.io; object-src 'none'; base-uri 'self'; frame-ancestors 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://browser.sentry-cdn.com https://www.googletagmanager.com https://www.google.com https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://cpwibefquojehjehtrog.supabase.co https://*.googleusercontent.com; frame-src https://challenges.cloudflare.com; connect-src 'self' https://cpwibefquojehjehtrog.supabase.co https://*.google-analytics.com https://*.sentry.io; object-src 'none'; base-uri 'self'; frame-ancestors 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Üye Ol — hellotalent</title>
@@ -13,6 +13,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@400&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 <style>
   :root {
     --verm: #C94E28;
@@ -292,6 +293,7 @@
   .field-error { color: #DC2626; font-size: var(--text-sm); margin-top: 4px; }
   .match-ok { color: #16A34A; }
   .match-fail { color: #DC2626; }
+  .ht-hp { position:absolute;left:-9999px;top:-9999px;opacity:0;height:0;width:0;overflow:hidden;tabindex:-1; }
 
   .consent-label {
     display: flex;
@@ -428,6 +430,9 @@
         <span><a href="yasal.html#kvkk" target="_blank" rel="noopener noreferrer" style="color:var(--verm);text-decoration:underline;">KVKK Aydınlatma Metni</a>'ni okudum, kişisel verilerimin işlenmesine açık rıza veriyorum.</span>
       </label>
 
+      <div class="ht-hp" aria-hidden="true"><input type="text" id="aday-hp" tabindex="-1" autocomplete="off"></div>
+      <div id="cf-turnstile-aday" class="cf-turnstile" data-sitekey="0x4AAAAAAACnXMwLam1UbsPrn" data-size="invisible" data-callback="onTurnstileAday"></div>
+
       <button class="btn-submit btn-aday" type="button" id="btn-aday-kayit" disabled>Kayıt Ol</button>
 
       <div class="divider">veya</div>
@@ -519,6 +524,9 @@
         <input type="checkbox" id="cb-k-kvkk">
         <span><a href="yasal.html#kvkk" target="_blank" rel="noopener noreferrer" style="color:var(--navy);text-decoration:underline;">KVKK Aydınlatma Metni</a>'ni okudum, kişisel verilerimin işlenmesine açık rıza veriyorum.</span>
       </label>
+
+      <div class="ht-hp" aria-hidden="true"><input type="text" id="k-hp" tabindex="-1" autocomplete="off"></div>
+      <div id="cf-turnstile-k" class="cf-turnstile" data-sitekey="0x4AAAAAAACnXMwLam1UbsPrn" data-size="invisible" data-callback="onTurnstileK"></div>
 
       <button class="btn-submit btn-ik" type="button" id="btn-k-kayit" disabled>Kayıt Ol</button>
 
@@ -713,6 +721,11 @@ function validateKurumsalForm() {
   emailInput.addEventListener('input', checkDomainMatch);
 })();
 
+// ── TURNSTILE TOKEN STORAGE ──
+var _turnstileToken = { aday: '', kurumsal: '' };
+function onTurnstileAday(token) { _turnstileToken.aday = token; }
+function onTurnstileK(token) { _turnstileToken.kurumsal = token; }
+
 // ── REGISTRATION RATE LIMIT (3 attempts / 5 min) ──
 var _regAttempts = 0;
 var _regCooldown = null;
@@ -745,6 +758,8 @@ function checkRegCooldown(btn) {
 (function() {
   var btn = document.getElementById('btn-aday-kayit');
   btn.addEventListener('click', async function() {
+    if (document.getElementById('aday-hp').value) return; // honeypot
+    if (!_turnstileToken.aday) { turnstile.execute('#cf-turnstile-aday'); return; } // trigger invisible challenge
     if (checkRegCooldown(btn)) return;
     _regAttempts++;
     var errEl = document.getElementById('err-aday-register');
@@ -755,6 +770,14 @@ function checkRegCooldown(btn) {
     var password = document.getElementById('aday-sifre').value;
     btn.disabled = true; btn.textContent = 'Kayıt yapılıyor...';
     try {
+      // Turnstile server-side verify
+      var tvRes = await fetch(HT.SUPA_URL + '/functions/v1/verify-turnstile', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: _turnstileToken.aday })
+      });
+      var tvData = await tvRes.json();
+      if (!tvData.success) { errEl.textContent = 'Güvenlik doğrulaması başarısız. Sayfayı yenileyip tekrar deneyin.'; errEl.style.display = 'block'; btn.disabled = false; btn.textContent = 'Kayıt Ol'; return; }
+
       var result = await getSupa().auth.signUp({
         email: email, password: password,
         options: { data: { full_name: fullName, phone: phone, privacy_consent_at: new Date().toISOString(), kvkk_explicit_consent_at: new Date().toISOString(), age_confirmed: true } }
@@ -776,6 +799,8 @@ function checkRegCooldown(btn) {
 (function() {
   var btn = document.getElementById('btn-k-kayit');
   btn.addEventListener('click', async function() {
+    if (document.getElementById('k-hp').value) return; // honeypot
+    if (!_turnstileToken.kurumsal) { turnstile.execute('#cf-turnstile-k'); return; }
     if (checkRegCooldown(btn)) return;
     _regAttempts++;
     var errEl = document.getElementById('err-kurumsal-register');
@@ -788,6 +813,14 @@ function checkRegCooldown(btn) {
     var password = document.getElementById('k-sifre').value;
     btn.disabled = true; btn.textContent = 'Kayıt yapılıyor...';
     try {
+      // Turnstile server-side verify
+      var tvRes = await fetch(HT.SUPA_URL + '/functions/v1/verify-turnstile', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: _turnstileToken.kurumsal })
+      });
+      var tvData = await tvRes.json();
+      if (!tvData.success) { errEl.textContent = 'Güvenlik doğrulaması başarısız. Sayfayı yenileyip tekrar deneyin.'; errEl.style.display = 'block'; btn.disabled = false; btn.textContent = 'Kayıt Ol'; return; }
+
       var result = await getSupa().auth.signUp({
         email: email, password: password,
         options: { data: { role: 'employer', full_name: fullName, company_name: sirket, company_website: website, phone: phone, privacy_consent_at: new Date().toISOString(), kvkk_explicit_consent_at: new Date().toISOString(), age_confirmed: true } }
