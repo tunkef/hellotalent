@@ -62,7 +62,7 @@ body{background:var(--bg-page);font-family:var(--font-b);color:var(--text-primar
 /* ── HEADER (inline — bu sayfa kendi header'ini kullanir) ── */
 .lp-hdr{position:sticky;top:0;z-index:100;background:rgba(247,246,244,.88);backdrop-filter:blur(16px) saturate(1.8);-webkit-backdrop-filter:blur(16px) saturate(1.8);border-bottom:1px solid var(--border);padding:0 clamp(16px,4vw,48px);height:64px;display:flex;align-items:center;justify-content:space-between;gap:16px}
 .lp-hdr-left{display:flex;align-items:center}
-.lp-hdr-center{position:absolute;left:50%;transform:translateX(-50%)}
+.seg-toggle-bar{display:flex;justify-content:center;padding:14px 0 10px;position:sticky;top:64px;z-index:99;background:rgba(247,246,244,.88);backdrop-filter:blur(16px) saturate(1.8);-webkit-backdrop-filter:blur(16px) saturate(1.8)}
 .lp-logo{font-family:var(--font-d);font-size:20px;font-weight:800;color:var(--navy);text-decoration:none;letter-spacing:-.5px}
 .lp-logo em{font-style:normal;color:var(--verm)}
 @media(prefers-color-scheme:dark){.lp-logo{color:#fff}}
@@ -78,6 +78,7 @@ body{background:var(--bg-page);font-family:var(--font-b);color:var(--text-primar
 
 @media(prefers-color-scheme:dark){
   .lp-hdr{background:rgba(11,13,23,.88)}
+  .seg-toggle-bar{background:rgba(11,13,23,.88)}
   .seg-toggle{background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.08)}
   .seg-btn{color:rgba(240,240,238,.7)}
   .brand-tag{color:rgba(240,240,238,.7);border-color:rgba(255,255,255,.1)}
@@ -229,10 +230,6 @@ body{background:var(--bg-page);font-family:var(--font-b);color:var(--text-primar
   .steps-row{grid-template-columns:1fr}
   .who-grid{grid-template-columns:1fr}
   .who-vis{min-height:220px}
-  .lp-hdr{height:auto;flex-wrap:wrap;padding-top:12px;padding-bottom:12px}
-  .lp-hdr-left{order:1}
-  .lp-hdr-right{order:2;margin-left:auto}
-  .lp-hdr-center{order:3;position:static;transform:none;width:100%;display:flex;justify-content:center;margin-top:10px}
 }
 @media(max-width:480px){
   .hero-hl{font-size:30px;letter-spacing:-1px}
@@ -272,16 +269,18 @@ body{background:var(--bg-page);font-family:var(--font-b);color:var(--text-primar
   <div class="lp-hdr-left">
     <a class="lp-logo" href="index.html">hello<em>talent</em></a>
   </div>
-  <div class="lp-hdr-center">
-    <div class="seg-toggle">
-      <button class="seg-btn active" data-seg="adaylar" onclick="switchSeg('adaylar')">Adaylar</button>
-      <button class="seg-btn" data-seg="kurumsal" onclick="switchSeg('kurumsal')">Kurumsal</button>
-    </div>
-  </div>
   <div class="lp-hdr-right">
-    <a class="lp-hdr-cta" href="giris.html">Giris Yap</a>
+    <a class="lp-hdr-link" href="giris.html">Giriş Yap</a>
+    <a class="lp-hdr-cta" href="uye-ol.html">Üye Ol</a>
   </div>
 </header>
+
+<div class="seg-toggle-bar">
+  <div class="seg-toggle">
+    <button class="seg-btn active" data-seg="adaylar" onclick="switchSeg('adaylar')">Adaylar</button>
+    <button class="seg-btn" data-seg="kurumsal" onclick="switchSeg('kurumsal')">Kurumsal</button>
+  </div>
+</div>
 
 <!-- ═══════════════════════════════════════ -->
 <!-- ADAYLAR SEGMENT                        -->
