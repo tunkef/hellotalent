@@ -90,7 +90,7 @@ function _htApplyCareerGoalPrefill() {
   currentUser = sessionRes.data.session.user;
   // Role guard: employer should not access candidate dashboard
   if (currentUser.user_metadata && currentUser.user_metadata.role === 'employer') {
-    window.location.href = 'ik.html';
+    window.location.href = 'demo-dashboard-ik.html';
     return;
   }
   // MFA enforcement: if user has TOTP enrolled but session is aal1, redirect to login for challenge
@@ -115,6 +115,25 @@ function _htApplyCareerGoalPrefill() {
 
   // Set name from metadata
   var metaName = (currentUser.user_metadata && (currentUser.user_metadata.full_name || currentUser.user_metadata.name)) || '';
+
+  // Pre-fill wizard ad soyad from user_metadata (if field exists and is empty)
+  var nameField = document.getElementById('f-adsoyad');
+  if (nameField && !nameField.value && metaName) {
+    nameField.value = metaName;
+  }
+
+  // Pre-fill wizard telefon from user_metadata
+  var metaPhone = (currentUser.user_metadata && currentUser.user_metadata.phone) || '';
+  var phoneField = document.getElementById('f-telefon');
+  if (phoneField && !phoneField.value && metaPhone) {
+    var d = metaPhone.replace(/\D/g, '');
+    if (d.length === 11) {
+      phoneField.value = d.slice(0,4) + ' ' + d.slice(4,7) + ' ' + d.slice(7,9) + ' ' + d.slice(9,11);
+    } else {
+      phoneField.value = metaPhone;
+    }
+  }
+
   var fallbackName = metaName || email.split('@')[0];
   var nameEl = document.getElementById('sidebar-user-name');
   if (nameEl) nameEl.textContent = fallbackName;
