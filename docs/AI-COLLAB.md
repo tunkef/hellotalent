@@ -6,9 +6,9 @@
 
 ## Mevcut Durum
 
-**Son tamamlanan:** Asama 72 (9 Nisan 2026) — Unified Landing Page TAMAMLANDI (ULP-1 thru ULP-6)
-**Son commit:** Henuz commit edilmedi — ULP-2/3/4/5/6 tamamlandi
-**Test durumu:** 1218/1221 PASS (3 bilinen auth env var eksik)
+**Son tamamlanan:** Asama 73+ (9 Nisan 2026) — ULP + Auth Split + Security Hardening + Mobil UX + Critical Bug Fix
+**Son commit:** feef0ac — hr_profiles.onboarding_completed fix
+**Test durumu:** 1250/1253 PASS (3 bilinen: auth env + dark-mode)
 **Beta Launch Paketi:** TAMAMLANDI (Asama 48-61)
 **Landing Page Redesign:** TAMAMLANDI (Asama 63)
 **Public-Site Redesign:** TAMAMLANDI (Asama 69)
@@ -84,7 +84,9 @@
 | KVKK consent audit log (server-side timestamp) | ✅ GUVENDE |
 | Registration rate limit (3/5dk) | ✅ GUVENDE |
 | Password reset cooldown (60s) | ✅ GUVENDE |
-| Remember-me storage isolation | ✅ GUVENDE |
+| Remember-me storage isolation | ⚠️ Checkbox mevcut ama inaktif (localStorage default) |
+| Bot korumasi (Turnstile + honeypot) | ✅ GUVENDE |
+| hr_profiles.onboarding_completed | ✅ DUZELTILDI (eksik kolon eklendi) |
 
 ## Bir Sonraki Adim
 
@@ -119,6 +121,42 @@
 
 **Yeni dosyalar:** uye-ol.html, demo-dashboard-ik.html, tests/auth-pages.spec.js
 **Test durumu:** 1250/1253 PASS (3 bilinen: auth env + dark-mode)
+
+**Asama 73b — Security Hardening + Bot Protection (9 Nisan 2026)**
+
+| # | Gorev | Durum |
+|---|-------|-------|
+| SEC-1 | role → app_metadata (2 DB trigger + backfill + 8 dosya) | ✅ |
+| SEC-2 | Registration rate limit (3/5dk) | ✅ |
+| SEC-3 | KVKK consent_log tablosu + server-side trigger | ✅ |
+| SEC-4 | ik.html app_metadata role check | ✅ |
+| SEC-5 | Remember-me race condition fix (simdilik devre disi) | ✅ |
+| SEC-6 | Password reset 60s cooldown | ✅ |
+| BOT | Cloudflare Turnstile (invisible) + honeypot + Edge Function | ✅ |
+
+**Asama 73c — Mobil UX + Landing Page Polish (9 Nisan 2026)**
+
+| # | Gorev | Durum |
+|---|-------|-------|
+| MX-1 | Mobil header 2 satir → toggle hero icine gomulu | ✅ |
+| MX-2 | Desktop toggle header'da, mobil hero'da (responsive split) | ✅ |
+| MX-3 | Landscape hero kompakt + gorsel kucultme | ✅ |
+| MX-4 | Sticky header fix (overflow-x:clip) | ✅ |
+| MX-5 | Adaylar brand social proof section | ✅ |
+| MX-6 | Kurumsal CTA gorsel (mulakat illustrasyon) | ✅ |
+| MX-7 | Section renk alternani (beyaz/warm) | ✅ |
+| MX-8 | "Kimler icin?" label | ✅ |
+
+**Critical Bug Fix (9 Nisan 2026)**
+- `hr_profiles.onboarding_completed` eksik kolon → `is_employer()` RLS kiriliyordu → tum candidates SELECT 400 → profil yuklenemiyordu. Kolon eklendi, mevcut employer'lar true set edildi.
+
+**Acil Fix (Sonraki Session):**
+
+| # | Gorev | Detay |
+|---|-------|-------|
+| F1 | Avatar signed URL tutarsizligi | profil-preview, ik.html, coach feed'de public URL → signed URL'ye gecmeli |
+| F2 | "Beni Hatirla" checkbox | Ya calistir ya kaldir — su an inaktif |
+| F3 | CSP connect-src eksikleri | wss://, jsdelivr, cloudflare connect-src'ye eklenmeli |
 
 **Sonraki asamalar:**
 - **Pozisyon gorunum/esleme metrikleri** — DEFER
