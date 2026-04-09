@@ -860,6 +860,7 @@ body {
 /* ══ DARK MODE — HEADER & MOBILE MENU ══
    Placed at end of file for cascade priority over component definitions */
 @media(prefers-color-scheme:dark){
+  :root{--text:#F0F0EE;--muted:rgba(240,240,238,0.5);--gray:#181A24;--border:rgba(255,255,255,0.08)}
   .site-header{background:rgba(11,13,23,0.8);border-bottom-color:rgba(255,255,255,0.06)}
   .header-logo{color:#F0F0EE}
   .nav-link{color:rgba(240,240,238,0.5)}

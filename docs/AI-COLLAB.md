@@ -6,15 +6,15 @@
 
 ## Mevcut Durum
 
-**Son tamamlanan:** Asama 72 (9 Nisan 2026) — Unified Landing Page (Gate kaldirildi, Adaylar/Kurumsal toggle)
-**Son commit:** 7322676 — fix: swap kurumsal kim-icin and steps order
-**Test durumu:** P3 testleri guncellendi (studio CSS + CV path), CI fix push edildi
+**Son tamamlanan:** Asama 72 (9 Nisan 2026) — Unified Landing Page TAMAMLANDI (ULP-1 thru ULP-6)
+**Son commit:** Henuz commit edilmedi — ULP-2/3/4/5/6 tamamlandi
+**Test durumu:** 1218/1221 PASS (3 bilinen auth env var eksik)
 **Beta Launch Paketi:** TAMAMLANDI (Asama 48-61)
 **Landing Page Redesign:** TAMAMLANDI (Asama 63)
 **Public-Site Redesign:** TAMAMLANDI (Asama 69)
 **UX Polish + Footer + Yasal:** TAMAMLANDI (Asama 70)
 **Page Cleanup + K029 + Security:** TAMAMLANDI (Asama 71)
-**Unified Landing Page:** DEVAM EDIYOR (Asama 72)
+**Unified Landing Page:** TAMAMLANDI (Asama 72)
 
 ## Tamamlanan Bloklar
 
@@ -83,22 +83,21 @@
 
 ## Bir Sonraki Adim
 
-**Asama 72 — Unified Landing Page (DEVAM EDIYOR):**
-- index.html: Gate kaldirildi, tek LP, Adaylar/Kurumsal segment toggle
-- Clatu-aligned CSS (aday.html + isveren.html pattern'lerinden birebir)
-- Kurumsal: navy hero + sektor bazli brand social proof (3 kategori) + features + kim icin + steps + lead form
-- Aday: hero + trust row + split bento + steps + kim icin + CTA
-- Dark mode, responsive, logged-in redirect, lead form RPC korundu
+**Asama 72 — Unified Landing Page: TAMAMLANDI (9 Nisan 2026)**
 
-**Kalan isler (Asama 72):**
-
+**Yapilan isler:**
 | # | Gorev | Durum |
 |---|-------|-------|
-| ULP-2 | shared.js header — nav link'leri guncelle (Adaylar Icin/Isverenler Icin → index.html) | Bekliyor |
-| ULP-3 | aday.html + isveren.html → meta refresh redirect + sitemap + smoke test | Bekliyor |
-| ULP-4 | Tasarim polish — dark mode ince ayar, mobil 390x844 test, copy review | Bekliyor |
-| ULP-5 | P3 CI testleri yesile dondur (studio CSS + CV path fix'leri push edildi, sonuc bekleniyor) | Bekliyor |
-| ULP-6 | Temizlik — index-gate-backup.html sil, .firecrawl/ gitignore, mockup dosyalari temizle | Bekliyor |
+| ULP-1 | index.html: Gate → tek LP, Adaylar/Kurumsal segment toggle (bunq referans) | ✅ |
+| ULP-2 | shared.js header/footer/mobile nav → index.html#adaylar / #kurumsal, SPA-like hash nav | ✅ |
+| ULP-3 | aday.html + isveren.html → 3-katmanli redirect (meta+canonical+JS), sitemap, 4 test dosyasi adapte | ✅ |
+| ULP-4 | Sub-page link guncelleme (hakkimizda/iletisim/giris), copy review | ✅ |
+| ULP-5 | Test port tutarsizliklari fix (8888/3001→relative), selector scope, 1218/1221 PASS (3 bilinen auth) | ✅ |
+| ULP-6 | 7 mockup + backup sil, .gitignore (.firecrawl/, qa-screenshots/), cache-bust birlestir | ✅ |
+
+**Degisen dosyalar:** shared.js, index.html, aday.html (redirect), isveren.html (redirect), hakkimizda.html, iletisim.html, giris.html, sitemap.xml, .gitignore, 4 test dosyasi (smoke/qa-public-pages/gate-qa/responsive-qa)
+
+**Test durumu:** 1218 PASS / 3 fail (bilinen: auth env var eksik)
 
 **Sonraki asamalar:**
 - **Pozisyon gorunum/esleme metrikleri** — DEFER

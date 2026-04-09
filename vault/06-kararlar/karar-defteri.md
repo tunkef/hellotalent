@@ -286,6 +286,8 @@
 
 ---
 
+---
+
 ## Karar Ekleme Şablonu
 
 ```markdown
@@ -311,4 +313,18 @@
 
 ---
 
-*Son güncelleme: 6 Nisan 2026*
+## K029 — Agent Skills Audit: 3 Katmanlı Hedefli Kod Denetimi
+**Tarih:** 8 Nisan 2026
+**Karar veren:** Tuna + Claude
+**Karar:** 11 yeni engineering skill (Addy Osmani / Google + Supabase official) kurulumu sonrası, MVP 2'ye geçmeden önce 3 katmanlı hedefli audit yapılacak. Full line-by-line audit yapılmayacak — hedefli ve verimli.
+**Neden:** Yeni skill'ler (security-hardening, code-simplification, performance-optimization, frontend-engineering, supabase-mastery vb.) daha yüksek standartlar getiriyor. Mevcut kod bu standartlara göre hiç denetlenmedi. Özellikle profil.html (6300+ satır) risk taşıyor. Design remediation (6 Nisan) yapısal temizlik yaptı ama security/a11y/performance açısından audit yapılmadı.
+**Uygulama:** 3 katmanlı hedefli audit:
+- **Katman 1 — Security Sweep (Kritik, ~30dk):** innerHTML kullanımı, PII logging, RLS gap'leri, service_role exposure, input validation eksikleri. Blocker bulunursa hemen fix.
+- **Katman 2 — Code Simplification Pass (Yüksek, MVP 2 öncesi, ~1-2 saat):** profil.html'de 50+ satırlık fonksiyonlar, 3+ seviye nesting, dead code, Chesterton's Fence prensibiyle inceleme.
+- **Katman 3 — A11y + Performance (Orta, MVP 2 sırasında incremental, ~2-3 saat):** Lighthouse baseline, ARIA labels, keyboard navigation, Core Web Vitals ölçüm, font/image optimization.
+**Kapsam:** Öncelik profil.html (en büyük ve en karmaşık dosya), sonra ik.html, shared.js, giris.html.
+**Alternatif:** Full audit (tüm dosyalar, satır satır) — reddedildi, çünkü design remediation zaten yapısal temizlik yaptı, MVP 2 öncesinde zaman kaybı olur. Hiç audit yapmamak — reddedildi, yeni standartlar uygulanmadan MVP 2'ye geçmek teknik borç biriktirir.
+
+---
+
+*Son güncelleme: 8 Nisan 2026*

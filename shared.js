@@ -16,12 +16,16 @@
 
   /* ── ACTIVE PAGE DETECTION ── */
   var path = window.location.pathname.replace(/\/$/, '') || '/';
+  var hash = window.location.hash.replace('#', '');
   var PAGE = 'home';
+  var IS_HOME = (path === '/' || path === '/index' || path === '/index.html');
   var pageMap = {
     '/aday': 'aday', '/aday.html': 'aday',
     '/isveren': 'isveren', '/isveren.html': 'isveren',
   };
   if (pageMap[path]) PAGE = pageMap[path];
+  if (IS_HOME && hash === 'kurumsal') PAGE = 'kurumsal';
+  if (IS_HOME && hash === 'adaylar') PAGE = 'aday';
 
   /* ── SVG ICONS ── */
   var CHEVRON = '<svg class="dd-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>';
@@ -31,6 +35,15 @@
   }
 
   /* ── NAV HELPER ── */
+  function segHref(seg) {
+    if (IS_HOME) return 'javascript:void(0)';
+    return 'index.html#' + seg;
+  }
+  function segClick(seg, closeMenu) {
+    if (!IS_HOME) return '';
+    var extra = closeMenu ? 'HT.toggleMenu();' : '';
+    return ' onclick="' + extra + 'if(typeof switchSeg===\'function\')switchSeg(\'' + seg + '\')"';
+  }
   function navLink(label, href, key) {
     var cls = 'nav-link' + (PAGE === key ? ' active active-' + key : '');
     return '<a class="' + cls + '" href="' + href + '">' + label + '</a>';
@@ -54,8 +67,8 @@
     '  </button>',
     '  <a class="header-logo" href="index.html">hello<span>talent</span></a>',
     '  <nav class="header-nav">',
-    navLink('Adaylar İçin', 'aday.html', 'aday'),
-    navLink('İşverenler İçin', 'isveren.html', 'isveren'),
+    '<a class="nav-link' + (PAGE === 'aday' ? ' active active-aday' : '') + '" href="' + segHref('adaylar') + '"' + segClick('adaylar') + '>Adaylar İçin</a>',
+    '<a class="nav-link' + (PAGE === 'kurumsal' || PAGE === 'isveren' ? ' active active-isveren' : '') + '" href="' + segHref('kurumsal') + '"' + segClick('kurumsal') + '>İşverenler İçin</a>',
     '  </nav>',
     '  <div class="header-actions">',
     '    <button class="btn-nav-login" id="login-btn" onclick="HT.toggleLogin()" aria-expanded="false" aria-haspopup="true">',
@@ -92,8 +105,8 @@
     '</div>',
     /* Mobile menu — simplified, no dropdowns */
     '<div class="mobile-menu" id="mobile-menu">',
-    mobileLink('Adaylar İçin',    'aday.html',    'aday'),
-    mobileLink('İşverenler İçin', 'isveren.html', 'isveren'),
+    '<a class="mobile-nav-link' + (PAGE === 'aday' ? ' active' : '') + '" href="' + segHref('adaylar') + '"' + segClick('adaylar', true) + '>Adaylar İçin</a>',
+    '<a class="mobile-nav-link' + (PAGE === 'kurumsal' || PAGE === 'isveren' ? ' active' : '') + '" href="' + segHref('kurumsal') + '"' + segClick('kurumsal', true) + '>İşverenler İçin</a>',
     '  <div class="mobile-nav-divider"></div>',
     mobileLink('Hakkımızda', 'hakkimizda.html', null),
     mobileLink('İletişim',   'iletisim.html',   null),
@@ -109,8 +122,8 @@
     '      <div class="footer-tagline">Türkiye\'nin retail talent marketplace\'i.<br>Doğru yetenek, doğru marka.</div>',
     '    </div>',
     '    <nav class="footer-nav">',
-    '      <a class="footer-link" href="aday.html">Adaylar İçin</a>',
-    '      <a class="footer-link" href="isveren.html">İşverenler İçin</a>',
+    '      <a class="footer-link" href="index.html#adaylar">Adaylar İçin</a>',
+    '      <a class="footer-link" href="index.html#kurumsal">İşverenler İçin</a>',
     '      <a class="footer-link" href="hakkimizda.html">Hakkımızda</a>',
     '      <a class="footer-link" href="iletisim.html">İletişim</a>',
     '      <a class="footer-link" href="yasal.html">Yasal Bilgiler</a>',

@@ -38,3 +38,5 @@ Hellotalent.code-workspace
 .playwright-mcp/
 .superpowers/
 .agents/
+.firecrawl/
+qa-screenshots/
