@@ -573,7 +573,7 @@ function switchTab(tab) {
 (async function() {
   var s = await getSupa().auth.getSession();
   if (s.data.session && s.data.session.user) {
-    var role = s.data.session.user.user_metadata && s.data.session.user.user_metadata.role;
+    var role = s.data.session.user.app_metadata && s.data.session.user.app_metadata.role;
     window.location.href = role === 'employer' ? 'demo-dashboard-ik.html' : 'profil.html';
   }
 })();
@@ -713,10 +713,40 @@ function validateKurumsalForm() {
   emailInput.addEventListener('input', checkDomainMatch);
 })();
 
+// ── REGISTRATION RATE LIMIT (3 attempts / 5 min) ──
+var _regAttempts = 0;
+var _regCooldown = null;
+function checkRegCooldown(btn) {
+  if (_regAttempts >= 3) {
+    if (_regCooldown) return true;
+    var remaining = 300;
+    btn.disabled = true;
+    btn.textContent = 'Çok fazla deneme. ' + remaining + 's bekleyin';
+    btn.style.opacity = '0.6';
+    _regCooldown = setInterval(function() {
+      remaining--;
+      if (remaining <= 0) {
+        clearInterval(_regCooldown);
+        _regCooldown = null;
+        _regAttempts = 0;
+        btn.disabled = false;
+        btn.textContent = 'Kayıt Ol';
+        btn.style.opacity = '1';
+      } else {
+        btn.textContent = 'Çok fazla deneme. ' + remaining + 's bekleyin';
+      }
+    }, 1000);
+    return true;
+  }
+  return false;
+}
+
 // ── ADAY SIGNUP ──
 (function() {
   var btn = document.getElementById('btn-aday-kayit');
   btn.addEventListener('click', async function() {
+    if (checkRegCooldown(btn)) return;
+    _regAttempts++;
     var errEl = document.getElementById('err-aday-register');
     errEl.style.display = 'none';
     var fullName = document.getElementById('aday-adsoyad').value.trim();
@@ -746,6 +776,8 @@ function validateKurumsalForm() {
 (function() {
   var btn = document.getElementById('btn-k-kayit');
   btn.addEventListener('click', async function() {
+    if (checkRegCooldown(btn)) return;
+    _regAttempts++;
     var errEl = document.getElementById('err-kurumsal-register');
     errEl.style.display = 'none';
     var fullName = document.getElementById('k-adsoyad').value.trim();

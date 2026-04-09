@@ -63,7 +63,7 @@
 2. Playwright smoke flaky — Cloudflare Access arkasinda, local server ile test ediliyor
 3. iyzico entegrasyonu — DEFER (beta 3 ay boyunca ucretsiz)
 
-## Guvenlik Durumu (8 Nisan 2026)
+## Guvenlik Durumu (9 Nisan 2026)
 
 | Alan | Durum |
 |------|-------|
@@ -80,6 +80,11 @@
 | is_employer() onboarding check | ✅ GUVENDE |
 | CSRF (JWT mimari) | ✅ GUVENDE |
 | SQL injection (parametrize) | ✅ GUVENDE |
+| Role tampering (app_metadata + guard trigger) | ✅ GUVENDE |
+| KVKK consent audit log (server-side timestamp) | ✅ GUVENDE |
+| Registration rate limit (3/5dk) | ✅ GUVENDE |
+| Password reset cooldown (60s) | ✅ GUVENDE |
+| Remember-me storage isolation | ✅ GUVENDE |
 
 ## Bir Sonraki Adim
 

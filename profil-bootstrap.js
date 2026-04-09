@@ -89,7 +89,7 @@ function _htApplyCareerGoalPrefill() {
   }
   currentUser = sessionRes.data.session.user;
   // Role guard: employer should not access candidate dashboard
-  if (currentUser.user_metadata && currentUser.user_metadata.role === 'employer') {
+  if (currentUser.app_metadata && currentUser.app_metadata.role === 'employer') {
     window.location.href = 'demo-dashboard-ik.html';
     return;
   }

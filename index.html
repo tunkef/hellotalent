@@ -253,7 +253,7 @@ body{background:var(--bg-page);font-family:var(--font-b);color:var(--text-primar
   sb.auth.getSession().then(function(res){
     var s = res.data && res.data.session;
     if(s && s.user){
-      var role = (s.user.user_metadata || {}).role;
+      var role = (s.user.app_metadata || s.user.user_metadata || {}).role;
       window.location.replace(role === 'employer' ? 'ik.html' : 'profil.html');
     } else { document.body.style.opacity = '1'; }
   }).catch(function(){ document.body.style.opacity = '1'; });

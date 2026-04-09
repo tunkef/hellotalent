@@ -514,7 +514,7 @@ function getCandidatePostAuthUrl() {
   var { data } = await getSupa().auth.getSession();
   if (data.session && data.session.user) {
     // Zaten giriş yapmış kullaniciyi MFA kontrolü sonrası role'e göre yönlendir
-    var role = data.session.user.user_metadata?.role;
+    var role = data.session.user.app_metadata?.role;
     checkAndHandleMFA(role === 'employer' ? 'demo-dashboard-ik.html' : getCandidatePostAuthUrl());
   }
 })();
@@ -550,7 +550,7 @@ async function loginAday() {
   var loginBtn = btnText.closest('button');
   var remember = document.getElementById('cb-remember-aday').checked;
   try { localStorage.setItem('ht_remember_me', remember ? 'true' : 'false'); } catch(e) {}
-  if (remember) { window._htSupa = null; } // force re-init with localStorage
+  window._htSupa = null; // always re-init with correct storage // force re-init with localStorage
 
   errEl.style.display = 'none';
 
@@ -578,7 +578,7 @@ async function loginAday() {
   _loginAttempts.aday = 0;
 
   // Role check: employer accounts cannot login from candidate tab
-  var userRole = data.user?.user_metadata?.role;
+  var userRole = data.user?.app_metadata?.role;
   if (userRole === 'employer') {
     await getSupa().auth.signOut();
     errEl.textContent = 'Bu hesap bir işveren hesabıdır. Lütfen İK Girişi sekmesini kullanın.';
@@ -598,7 +598,7 @@ async function loginIK() {
   var loginBtn = btnText.closest('button');
   var remember = document.getElementById('cb-remember-ik').checked;
   try { localStorage.setItem('ht_remember_me', remember ? 'true' : 'false'); } catch(e) {}
-  if (remember) { window._htSupa = null; }
+  window._htSupa = null; // always re-init with correct storage
 
   errEl.style.display = 'none';
 
@@ -632,7 +632,7 @@ async function loginIK() {
   _loginAttempts.ik = 0;
 
   // Role check: candidate accounts cannot login from employer tab
-  var userRole = data.user?.user_metadata?.role;
+  var userRole = data.user?.app_metadata?.role;
   if (userRole !== 'employer') {
     await getSupa().auth.signOut();
     errEl.textContent = 'Bu hesap bir aday hesabıdır. İşveren girişi için şirket e-posta adresinizi kullanın.';
@@ -724,13 +724,26 @@ document.addEventListener('keydown', function(e) {
 
     if(error) {
       if(msg) { msg.textContent = error.message; msg.style.color = 'var(--red, #DC2626)'; msg.style.display = 'block'; }
+      btnSend.disabled = false;
+      btnSend.textContent = 'Sıfırlama Bağlantısı Gönder';
     } else {
       if(msg) { msg.textContent = 'Şifre sıfırlama bağlantısı gönderildi! E-posta gelen kutunuzu kontrol edin.'; msg.style.color = 'var(--green, #16A34A)'; msg.style.display = 'block'; }
       document.getElementById('forgot-email').value = '';
+      // 60s cooldown after successful send
+      var cd = 60;
+      btnSend.disabled = true;
+      btnSend.textContent = 'Tekrar göndermek için ' + cd + 's bekleyin';
+      var cdTimer = setInterval(function() {
+        cd--;
+        if (cd <= 0) {
+          clearInterval(cdTimer);
+          btnSend.disabled = false;
+          btnSend.textContent = 'Sıfırlama Bağlantısı Gönder';
+        } else {
+          btnSend.textContent = 'Tekrar göndermek için ' + cd + 's bekleyin';
+        }
+      }, 1000);
     }
-
-    btnSend.disabled = false;
-    btnSend.textContent = 'Sıfırlama Bağlantısı Gönder';
   });
 })();
 
