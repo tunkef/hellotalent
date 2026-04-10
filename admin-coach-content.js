@@ -210,10 +210,12 @@
         avatarEl.style.cssText = 'width:32px;height:32px;border-radius:50%;overflow:hidden;background:var(--navy-light,#EEF0F7);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--navy,#1E2D5E);';
         if (coach.avatar_url) {
           var avatarImg = document.createElement('img');
-          avatarImg.src = coach.avatar_url;
           avatarImg.alt = '';
           avatarImg.style.cssText = 'width:100%;height:100%;object-fit:cover;';
           avatarEl.appendChild(avatarImg);
+          window.HT.signStorageUrl(coach.avatar_url).then(function(url) {
+            if (url) avatarImg.src = url;
+          });
         } else {
           avatarEl.textContent = (coach.display_name || '?').charAt(0).toUpperCase();
         }
@@ -583,10 +585,12 @@
     var cp = post.coach_profiles;
     if (cp && cp.avatar_url) {
       var avatarImg = document.createElement('img');
-      avatarImg.src = cp.avatar_url;
       avatarImg.alt = '';
       avatarImg.style.cssText = 'width:20px;height:20px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:4px;';
       meta.appendChild(avatarImg);
+      window.HT.signStorageUrl(cp.avatar_url).then(function(url) {
+        if (url) avatarImg.src = url;
+      });
     }
     var coachName = (cp && cp.display_name) || 'Bilinmeyen Koc';
     meta.appendChild(el('span', '', coachName));

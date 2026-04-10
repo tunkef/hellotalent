@@ -25,3 +25,20 @@ test.describe('F1 — coach-studio avatar', () => {
     expect(scriptContent).not.toContain('.getPublicUrl(');
   });
 });
+
+test.describe('F1 — coach avatar signing', () => {
+  test('profil-genel.js uses signStorageUrl for coach avatars', async ({ page }) => {
+    await page.goto(`${BASE}/profil.html`, { waitUntil: 'networkidle' });
+    var content = await page.evaluate(() => fetch('profil-genel.js').then(function(r) { return r.text(); }));
+    expect(content).toContain('signStorageUrl');
+    // Should not have direct assignment pattern: img.src = cp.avatar_url
+    var hasDirectAssign = /img\.src\s*=\s*cp\.avatar_url/.test(content);
+    expect(hasDirectAssign).toBe(false);
+  });
+
+  test('admin-coach-content.js uses signStorageUrl', async ({ page }) => {
+    await page.goto(`${BASE}/admin.html`, { waitUntil: 'networkidle' });
+    var content = await page.evaluate(() => fetch('admin-coach-content.js').then(function(r) { return r.text(); }));
+    expect(content).toContain('signStorageUrl');
+  });
+});
