@@ -6,9 +6,9 @@
 
 ## Mevcut Durum
 
-**Son tamamlanan:** Asama 74 (10 Nisan 2026) — F1/F2/F3 Critical Fixes
-**Son commit:** feef0ac — hr_profiles.onboarding_completed fix
-**Test durumu:** 1250/1253 PASS (3 bilinen: auth env + dark-mode)
+**Son tamamlanan:** Asama 74 (10 Nisan 2026) — F1/F2/F3 Critical Fixes + Hotfix
+**Son commit:** 4b52925 — brand logos signed URL + cover image relative path fix
+**Test durumu:** 28/28 F1/F2/F3 PASS, 325/336 regression (11 pre-existing)
 **Beta Launch Paketi:** TAMAMLANDI (Asama 48-61)
 **Landing Page Redesign:** TAMAMLANDI (Asama 63)
 **Public-Site Redesign:** TAMAMLANDI (Asama 69)
@@ -166,9 +166,16 @@
 | F3-3 | CSP: Google Maps frame-src added (iletisim.html) | ✅ |
 | F3-4 | CSP: Dead Sentry entries removed from 12 non-Sentry pages | ✅ |
 
-**Degisen dosyalar:** shared.js, coach-studio.html, profil-genel.js, admin-coach-content.js, ik.html, profil-preview.js, giris.html, 13 HTML (CSP), 1 migration, 1 test dosyasi
+**Degisen dosyalar:** shared.js, coach-studio.html, profil-genel.js, admin-coach-content.js, ik.html, profil-preview.js, giris.html, profil-markalar.js, 13 HTML (CSP), 1 migration, 1 test dosyasi
 **Test durumu:** 28/28 F1/F2/F3 tests PASS, 325/336 regression (11 pre-existing fail)
 **Yeni dosyalar:** tests/f1-f2-f3-fixes.spec.js, supabase/migrations/20260410165047_fix_coach_avatar_urls.sql
+
+**Hotfix (10 Nisan 2026, post-deploy):**
+| # | Gorev | Durum |
+|---|-------|-------|
+| HF-1 | signStorageUrl legacy full URL handling (prefix strip) | ✅ |
+| HF-2 | Brand cover image: relative path regex engeli kaldirildi (line 276) | ✅ |
+| HF-3 | Brand logos: batch signing eklendi (signStorageUrls) | ✅ |
 
 **Acil fix yok**
 
