@@ -169,6 +169,26 @@ async function loadSirketlerPanel() {
   _ht_brands = brandsRes.data || [];
   _ht_follows = new Set((followsRes.data || []).map(function(f) { return f.brand_id; }));
 
+  // Sign brand logos from private cvs bucket (strip full URL to path first)
+  var _logoPathMap = {};
+  var _logoPaths = [];
+  _ht_brands.forEach(function(b) {
+    if (b.logo_url && b.logo_url.indexOf('/cvs/') !== -1) {
+      var idx = b.logo_url.lastIndexOf('/cvs/');
+      var path = b.logo_url.substring(idx + 5);
+      _logoPathMap[b.id] = path;
+      _logoPaths.push(path);
+    }
+  });
+  if (_logoPaths.length > 0) {
+    var _signedMap = await window.HT.signStorageUrls(_logoPaths);
+    _ht_brands.forEach(function(b) {
+      if (_logoPathMap[b.id] && _signedMap[_logoPathMap[b.id]]) {
+        b.logo_url = _signedMap[_logoPathMap[b.id]];
+      }
+    });
+  }
+
   // Bento sort: vibrant brands at hero positions (1,4,5,8,9,11,14,15,18,19...)
   _ht_brands.sort(function(a, b) {
     return (a.brand_name || '').localeCompare(b.brand_name || '', 'tr');
@@ -273,7 +293,6 @@ function renderBrandGrid(query) {
 
     /* ── Informative brand card v2 — cover image, stats, follow ── */
     var coverUrl = b.cover_image_url || '';
-    if (coverUrl && !/^https?:\/\//i.test(coverUrl)) coverUrl = '';
     var safeCoverUrl = coverUrl ? _escHtml(coverUrl.replace(/['"()]/g, '')) : '';
     var coverStyle = safeCoverUrl
       ? 'background-image:url(' + safeCoverUrl + ');background-size:cover;background-position:center;'
