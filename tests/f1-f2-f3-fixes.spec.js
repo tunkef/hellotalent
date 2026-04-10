@@ -14,3 +14,14 @@ test.describe('F1 — Avatar Signed URL', () => {
     expect(hasFn).toBe(true);
   });
 });
+
+test.describe('F1 — coach-studio avatar', () => {
+  test('coach-studio.html does not call getPublicUrl', async ({ page }) => {
+    await page.goto(`${BASE}/coach-studio.html`, { waitUntil: 'networkidle' });
+    var scriptContent = await page.evaluate(() => {
+      var scripts = Array.from(document.querySelectorAll('script'));
+      return scripts.map(function(s) { return s.textContent; }).join('\n');
+    });
+    expect(scriptContent).not.toContain('.getPublicUrl(');
+  });
+});
