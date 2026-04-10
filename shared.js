@@ -193,6 +193,13 @@
 
     signStorageUrl: async function(storagePath, expiresIn) {
       if (!storagePath) return '';
+      // Handle legacy full URLs: strip prefix to extract storage path
+      if (storagePath.indexOf('http') === 0) {
+        var marker = '/cvs/';
+        var idx = storagePath.lastIndexOf(marker);
+        if (idx !== -1) storagePath = storagePath.substring(idx + marker.length);
+        else return ''; // not a cvs bucket URL
+      }
       var supa = window.HT.getSupa();
       if (!supa) return '';
       var res = await supa.storage.from('cvs').createSignedUrl(storagePath, expiresIn || 3600);
