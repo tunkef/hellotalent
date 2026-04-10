@@ -60,3 +60,31 @@ test.describe('F1 — employer + preview avatar', () => {
     expect(content).toContain('signStorageUrl');
   });
 });
+
+test.describe('F2 — Beni Hatirla removal', () => {
+  test('giris.html has no remember-me checkbox', async ({ page }) => {
+    await page.goto(`${BASE}/giris.html`, { waitUntil: 'networkidle' });
+    var adayCheckbox = await page.$('#cb-remember-aday');
+    var ikCheckbox = await page.$('#cb-remember-ik');
+    expect(adayCheckbox).toBeNull();
+    expect(ikCheckbox).toBeNull();
+  });
+
+  test('giris.html JS has no dead remember variable', async ({ page }) => {
+    await page.goto(`${BASE}/giris.html`, { waitUntil: 'networkidle' });
+    var scriptContent = await page.evaluate(() => {
+      var scripts = Array.from(document.querySelectorAll('script'));
+      return scripts.map(function(s) { return s.textContent; }).join('\n');
+    });
+    expect(scriptContent).not.toContain('cb-remember-aday');
+    expect(scriptContent).not.toContain('cb-remember-ik');
+  });
+
+  test('Sifremi Unuttum links still exist', async ({ page }) => {
+    await page.goto(`${BASE}/giris.html`, { waitUntil: 'networkidle' });
+    var adayLink = await page.$('#btn-forgot-password-aday');
+    var ikLink = await page.$('#btn-forgot-password-ik');
+    expect(adayLink).not.toBeNull();
+    expect(ikLink).not.toBeNull();
+  });
+});
