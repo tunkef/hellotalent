@@ -88,3 +88,46 @@ test.describe('F2 — Beni Hatirla removal', () => {
     expect(ikLink).not.toBeNull();
   });
 });
+
+test.describe('F3 — CSP fixes', () => {
+  test('profil.html CSP includes wss:// and Sentry ingest', async ({ page }) => {
+    await page.goto(`${BASE}/profil.html`, { waitUntil: 'networkidle' });
+    var csp = await page.evaluate(() => {
+      var meta = document.querySelector('meta[http-equiv="Content-Security-Policy"]');
+      return meta ? meta.content : '';
+    });
+    expect(csp).toContain('wss://cpwibefquojehjehtrog.supabase.co');
+    expect(csp).toContain('o4511026567118848.ingest.de.sentry.io');
+  });
+
+  test('iletisim.html CSP includes frame-src for Google Maps', async ({ page }) => {
+    await page.goto(`${BASE}/iletisim.html`, { waitUntil: 'networkidle' });
+    var csp = await page.evaluate(() => {
+      var meta = document.querySelector('meta[http-equiv="Content-Security-Policy"]');
+      return meta ? meta.content : '';
+    });
+    expect(csp).toContain('frame-src https://www.google.com');
+  });
+
+  test('giris.html CSP has wss:// but no Sentry CDN', async ({ page }) => {
+    await page.goto(`${BASE}/giris.html`, { waitUntil: 'networkidle' });
+    var csp = await page.evaluate(() => {
+      var meta = document.querySelector('meta[http-equiv="Content-Security-Policy"]');
+      return meta ? meta.content : '';
+    });
+    expect(csp).toContain('wss://cpwibefquojehjehtrog.supabase.co');
+    expect(csp).not.toContain('browser.sentry-cdn.com');
+  });
+
+  test('all Supabase pages have wss:// in connect-src', async ({ page }) => {
+    var pages = ['index.html', 'admin.html', 'ik.html', 'coach-studio.html', 'uye-ol.html'];
+    for (var p of pages) {
+      await page.goto(`${BASE}/${p}`, { waitUntil: 'networkidle' });
+      var csp = await page.evaluate(() => {
+        var meta = document.querySelector('meta[http-equiv="Content-Security-Policy"]');
+        return meta ? meta.content : '';
+      });
+      expect(csp, p + ' missing wss://').toContain('wss://cpwibefquojehjehtrog.supabase.co');
+    }
+  });
+});
