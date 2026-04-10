@@ -42,3 +42,21 @@ test.describe('F1 — coach avatar signing', () => {
     expect(content).toContain('signStorageUrl');
   });
 });
+
+test.describe('F1 — employer + preview avatar', () => {
+  test('ik.html does not use raw avatar_url as img.src', async ({ page }) => {
+    await page.goto(`${BASE}/ik.html`, { waitUntil: 'networkidle' });
+    var scriptContent = await page.evaluate(() => {
+      var scripts = Array.from(document.querySelectorAll('script'));
+      return scripts.map(function(s) { return s.textContent; }).join('\n');
+    });
+    var hasRawAssign = /img\.src\s*=\s*cand\.avatar_url/.test(scriptContent);
+    expect(hasRawAssign).toBe(false);
+  });
+
+  test('profil-preview.js uses signStorageUrl', async ({ page }) => {
+    await page.goto(`${BASE}/profil.html`, { waitUntil: 'networkidle' });
+    var content = await page.evaluate(() => fetch('profil-preview.js').then(function(r) { return r.text(); }));
+    expect(content).toContain('signStorageUrl');
+  });
+});
