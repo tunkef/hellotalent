@@ -1,5 +1,5 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 9 Nisan 2026 | Asama 73+ — Auth Split + Security Hardening + Bot Protection + Mobil UX + Critical Fix
+> Son guncelleme: 10 Nisan 2026 | Asama 74 — F1/F2/F3 Critical Fixes
 
 ## 1. Proje Ozeti
 
@@ -72,6 +72,8 @@ hellotalent.ai, Turkiye perakende sektorune ozel bir yetenek pazaryeri. Adaylar 
 - **Bot Protection** — 3 katman: Cloudflare Turnstile (invisible) + honeypot field + server-side Edge Function verify. Registration rate limit (3/5dk). Password reset cooldown (60s) | `uye-ol.html`, `supabase/functions/verify-turnstile/`
 - **Role Tampering Guard** — user_metadata.role → app_metadata.role (DB trigger: signup sync + update guard). Tum client-side role check'leri app_metadata'dan | 3 DB trigger, 8 dosya
 - **KVKK Consent Audit Log** — consent_log tablosu, server-side timestamp, auto-insert trigger on signup, RLS korunmali | `consent_log` tablosu
+- **Avatar signed URL sistemi** — Tum avatar/cover gorselleri private bucket signed URL ile yukleniyor, HT.signStorageUrl helper | shared.js, coach-studio, ik, profil-preview, profil-genel, admin-coach-content
+- **CSP tightening** — wss:// realtime, Sentry ingest fix, Google Maps frame-src, dead Sentry entry cleanup | Tum 13 HTML
 
 ## 3. Dosya Haritasi
 

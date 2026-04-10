@@ -353,10 +353,12 @@
     var avatar = el('div', 'gh-coach-avatar' + (extraClass ? ' ' + extraClass : ''));
     if (cp && cp.avatar_url) {
       var img = document.createElement('img');
-      img.src = cp.avatar_url;
       img.alt = '';
       img.loading = 'lazy';
       avatar.appendChild(img);
+      window.HT.signStorageUrl(cp.avatar_url).then(function(url) {
+        if (url) img.src = url;
+      });
     } else {
       var name = (cp && cp.display_name) || '?';
       avatar.textContent = name.charAt(0).toUpperCase();
@@ -400,9 +402,11 @@
     avatarDiv.className = 'gh-coach-card-avatar';
     if (cp.avatar_url) {
       var aImg = document.createElement('img');
-      aImg.src = cp.avatar_url;
       aImg.alt = '';
       avatarDiv.appendChild(aImg);
+      window.HT.signStorageUrl(cp.avatar_url).then(function(url) {
+        if (url) aImg.src = url;
+      });
     } else {
       avatarDiv.textContent = (cp.display_name || '?').charAt(0).toUpperCase();
     }
@@ -488,9 +492,11 @@
     var avatarUrl = profile.avatar_url || null;
     if (avatarUrl) {
       var img = document.createElement('img');
-      img.src = avatarUrl;
       img.alt = '';
       avatar.appendChild(img);
+      window.HT.signStorageUrl(avatarUrl).then(function(url) {
+        if (url) img.src = url;
+      });
     } else {
       var fullName = profile.full_name || '';
       var initials = fullName.split(/\s+/).map(function(w) { return w.charAt(0).toUpperCase(); }).join('').substring(0, 2);

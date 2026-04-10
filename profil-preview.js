@@ -9,7 +9,7 @@
 // Note: innerHTML usage is intentional — all user data is escaped via _escHtml()
 // ═══════════════════════════════════════════════════
 
-function openProfilePreview() {
+async function openProfilePreview() {
   var db = _loadedDBData;
   if (!db || !db.profile) return;
   var p = db.profile;
@@ -30,8 +30,11 @@ function openProfilePreview() {
 
   // ── HERO CARD ──
   var initials = (p.full_name || '').split(/\s+/).map(function(w) { return w.charAt(0); }).join('').substring(0, 2).toUpperCase() || '?';
-  var avatarInner = showPersonalInfo && p.avatar_url
-    ? '<img src="' + _escHtml(p.avatar_url) + '" alt="">'
+  var _signedAvatarUrl = (showPersonalInfo && p.avatar_url)
+    ? await window.HT.signStorageUrl(p.avatar_url)
+    : '';
+  var avatarInner = _signedAvatarUrl
+    ? '<img src="' + _escHtml(_signedAvatarUrl) + '" alt="">'
     : (showPersonalInfo ? initials : '?');
 
   var currentRole = '', currentCompany = '';

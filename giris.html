@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta http-equiv="X-Frame-Options" content="DENY">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://browser.sentry-cdn.com https://www.googletagmanager.com https://www.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://cpwibefquojehjehtrog.supabase.co https://*.googleusercontent.com; connect-src 'self' https://cpwibefquojehjehtrog.supabase.co https://*.google-analytics.com https://*.sentry.io; object-src 'none'; base-uri 'self'; frame-ancestors 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://www.googletagmanager.com https://www.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://cpwibefquojehjehtrog.supabase.co https://*.googleusercontent.com; connect-src 'self' https://cpwibefquojehjehtrog.supabase.co wss://cpwibefquojehjehtrog.supabase.co https://*.google-analytics.com; object-src 'none'; base-uri 'self'; frame-ancestors 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Giriş Yap — hellotalent</title>
@@ -352,10 +352,7 @@
           <input type="password" id="aday-sifre" class="aday" placeholder="••••••••" autocomplete="current-password">
         </div>
 
-        <div style="display:flex;align-items:center;justify-content:space-between;margin:4px 0 12px;">
-          <label style="display:flex;align-items:center;gap:6px;font-size:var(--text-base);color:var(--muted);cursor:pointer;">
-            <input type="checkbox" id="cb-remember-aday" style="flex-shrink:0;"> Beni Hatırla
-          </label>
+        <div style="text-align:right;margin:4px 0 12px;">
           <a href="#" id="btn-forgot-password-aday" style="font-size:var(--text-base);color:var(--verm);text-decoration:none;">Şifremi Unuttum</a>
         </div>
 
@@ -403,10 +400,7 @@
           <input type="password" id="ik-sifre" placeholder="••••••••" autocomplete="current-password">
         </div>
 
-        <div style="display:flex;align-items:center;justify-content:space-between;margin:4px 0 12px;">
-          <label style="display:flex;align-items:center;gap:6px;font-size:var(--text-base);color:var(--muted);cursor:pointer;">
-            <input type="checkbox" id="cb-remember-ik" style="flex-shrink:0;"> Beni Hatırla
-          </label>
+        <div style="text-align:right;margin:4px 0 12px;">
           <a href="#" id="btn-forgot-password-ik" style="font-size:var(--text-base);color:var(--verm);text-decoration:none;">Şifremi Unuttum</a>
         </div>
 
@@ -548,8 +542,6 @@ async function loginAday() {
   var errEl = document.getElementById('err-aday');
   var btnText = document.getElementById('aday-btn-text');
   var loginBtn = btnText.closest('button');
-  var remember = document.getElementById('cb-remember-aday').checked;
-
   errEl.style.display = 'none';
 
   if (!email || !sifre) {
@@ -594,8 +586,6 @@ async function loginIK() {
   var errEl = document.getElementById('err-ik');
   var btnText = document.getElementById('ik-btn-text');
   var loginBtn = btnText.closest('button');
-  var remember = document.getElementById('cb-remember-ik').checked;
-
   errEl.style.display = 'none';
 
   if (!email || !sifre) {

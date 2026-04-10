@@ -191,6 +191,28 @@
       return window._htSupa;
     },
 
+    signStorageUrl: async function(storagePath, expiresIn) {
+      if (!storagePath) return '';
+      var supa = window.HT.getSupa();
+      if (!supa) return '';
+      var res = await supa.storage.from('cvs').createSignedUrl(storagePath, expiresIn || 3600);
+      return (res.data && res.data.signedUrl) || '';
+    },
+
+    signStorageUrls: async function(paths, expiresIn) {
+      var map = {};
+      if (!paths || paths.length === 0) return map;
+      var supa = window.HT.getSupa();
+      if (!supa) return map;
+      var res = await supa.storage.from('cvs').createSignedUrls(paths, expiresIn || 3600);
+      if (res.data) {
+        res.data.forEach(function(item) {
+          if (item.signedUrl && !item.error) map[item.path] = item.signedUrl;
+        });
+      }
+      return map;
+    },
+
     toggleLogin: function () {
       /* Page-aware direct redirect — no popup */
       if (PAGE === 'aday') {

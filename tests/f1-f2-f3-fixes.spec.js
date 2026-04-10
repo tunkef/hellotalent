@@ -1,0 +1,132 @@
+const { test, expect } = require('@playwright/test');
+const BASE = 'http://localhost:3000';
+
+test.describe('F1 — Avatar Signed URL', () => {
+  test('shared.js exposes HT.signStorageUrl function', async ({ page }) => {
+    await page.goto(`${BASE}/giris.html`, { waitUntil: 'networkidle' });
+    var hasFn = await page.evaluate(() => typeof window.HT !== 'undefined' && typeof window.HT.signStorageUrl === 'function');
+    expect(hasFn).toBe(true);
+  });
+
+  test('shared.js exposes HT.signStorageUrls function', async ({ page }) => {
+    await page.goto(`${BASE}/giris.html`, { waitUntil: 'networkidle' });
+    var hasFn = await page.evaluate(() => typeof window.HT !== 'undefined' && typeof window.HT.signStorageUrls === 'function');
+    expect(hasFn).toBe(true);
+  });
+});
+
+test.describe('F1 — coach-studio avatar', () => {
+  test('coach-studio.html does not call getPublicUrl', async ({ page }) => {
+    await page.goto(`${BASE}/coach-studio.html`, { waitUntil: 'networkidle' });
+    var scriptContent = await page.evaluate(() => {
+      var scripts = Array.from(document.querySelectorAll('script'));
+      return scripts.map(function(s) { return s.textContent; }).join('\n');
+    });
+    expect(scriptContent).not.toContain('.getPublicUrl(');
+  });
+});
+
+test.describe('F1 — coach avatar signing', () => {
+  test('profil-genel.js uses signStorageUrl for coach avatars', async ({ page }) => {
+    await page.goto(`${BASE}/profil.html`, { waitUntil: 'networkidle' });
+    var content = await page.evaluate(() => fetch('profil-genel.js').then(function(r) { return r.text(); }));
+    expect(content).toContain('signStorageUrl');
+    // Should not have direct assignment pattern: img.src = cp.avatar_url
+    var hasDirectAssign = /img\.src\s*=\s*cp\.avatar_url/.test(content);
+    expect(hasDirectAssign).toBe(false);
+  });
+
+  test('admin-coach-content.js uses signStorageUrl', async ({ page }) => {
+    await page.goto(`${BASE}/admin.html`, { waitUntil: 'networkidle' });
+    var content = await page.evaluate(() => fetch('admin-coach-content.js').then(function(r) { return r.text(); }));
+    expect(content).toContain('signStorageUrl');
+  });
+});
+
+test.describe('F1 — employer + preview avatar', () => {
+  test('ik.html does not use raw avatar_url as img.src', async ({ page }) => {
+    await page.goto(`${BASE}/ik.html`, { waitUntil: 'networkidle' });
+    var scriptContent = await page.evaluate(() => {
+      var scripts = Array.from(document.querySelectorAll('script'));
+      return scripts.map(function(s) { return s.textContent; }).join('\n');
+    });
+    var hasRawAssign = /img\.src\s*=\s*cand\.avatar_url/.test(scriptContent);
+    expect(hasRawAssign).toBe(false);
+  });
+
+  test('profil-preview.js uses signStorageUrl', async ({ page }) => {
+    await page.goto(`${BASE}/profil.html`, { waitUntil: 'networkidle' });
+    var content = await page.evaluate(() => fetch('profil-preview.js').then(function(r) { return r.text(); }));
+    expect(content).toContain('signStorageUrl');
+  });
+});
+
+test.describe('F2 — Beni Hatirla removal', () => {
+  test('giris.html has no remember-me checkbox', async ({ page }) => {
+    await page.goto(`${BASE}/giris.html`, { waitUntil: 'networkidle' });
+    var adayCheckbox = await page.$('#cb-remember-aday');
+    var ikCheckbox = await page.$('#cb-remember-ik');
+    expect(adayCheckbox).toBeNull();
+    expect(ikCheckbox).toBeNull();
+  });
+
+  test('giris.html JS has no dead remember variable', async ({ page }) => {
+    await page.goto(`${BASE}/giris.html`, { waitUntil: 'networkidle' });
+    var scriptContent = await page.evaluate(() => {
+      var scripts = Array.from(document.querySelectorAll('script'));
+      return scripts.map(function(s) { return s.textContent; }).join('\n');
+    });
+    expect(scriptContent).not.toContain('cb-remember-aday');
+    expect(scriptContent).not.toContain('cb-remember-ik');
+  });
+
+  test('Sifremi Unuttum links still exist', async ({ page }) => {
+    await page.goto(`${BASE}/giris.html`, { waitUntil: 'networkidle' });
+    var adayLink = await page.$('#btn-forgot-password-aday');
+    var ikLink = await page.$('#btn-forgot-password-ik');
+    expect(adayLink).not.toBeNull();
+    expect(ikLink).not.toBeNull();
+  });
+});
+
+test.describe('F3 — CSP fixes', () => {
+  test('profil.html CSP includes wss:// and Sentry ingest', async ({ request }) => {
+    // Use API request to avoid auth redirect stripping the CSP
+    var response = await request.get(`${BASE}/profil.html`);
+    var html = await response.text();
+    expect(html).toContain('wss://cpwibefquojehjehtrog.supabase.co');
+    expect(html).toContain('o4511026567118848.ingest.de.sentry.io');
+    expect(html).toContain('browser.sentry-cdn.com');
+  });
+
+  test('iletisim.html CSP includes frame-src for Google Maps', async ({ page }) => {
+    await page.goto(`${BASE}/iletisim.html`, { waitUntil: 'networkidle' });
+    var csp = await page.evaluate(() => {
+      var meta = document.querySelector('meta[http-equiv="Content-Security-Policy"]');
+      return meta ? meta.content : '';
+    });
+    expect(csp).toContain('frame-src https://www.google.com');
+  });
+
+  test('giris.html CSP has wss:// but no Sentry CDN', async ({ page }) => {
+    await page.goto(`${BASE}/giris.html`, { waitUntil: 'networkidle' });
+    var csp = await page.evaluate(() => {
+      var meta = document.querySelector('meta[http-equiv="Content-Security-Policy"]');
+      return meta ? meta.content : '';
+    });
+    expect(csp).toContain('wss://cpwibefquojehjehtrog.supabase.co');
+    expect(csp).not.toContain('browser.sentry-cdn.com');
+  });
+
+  test('all Supabase pages have wss:// in connect-src', async ({ page }) => {
+    var pages = ['index.html', 'admin.html', 'ik.html', 'coach-studio.html', 'uye-ol.html'];
+    for (var p of pages) {
+      await page.goto(`${BASE}/${p}`, { waitUntil: 'networkidle' });
+      var csp = await page.evaluate(() => {
+        var meta = document.querySelector('meta[http-equiv="Content-Security-Policy"]');
+        return meta ? meta.content : '';
+      });
+      expect(csp, p + ' missing wss://').toContain('wss://cpwibefquojehjehtrog.supabase.co');
+    }
+  });
+});

@@ -6,7 +6,7 @@
 
 ## Mevcut Durum
 
-**Son tamamlanan:** Asama 73+ (9 Nisan 2026) — ULP + Auth Split + Security Hardening + Mobil UX + Critical Bug Fix
+**Son tamamlanan:** Asama 74 (10 Nisan 2026) — F1/F2/F3 Critical Fixes
 **Son commit:** feef0ac — hr_profiles.onboarding_completed fix
 **Test durumu:** 1250/1253 PASS (3 bilinen: auth env + dark-mode)
 **Beta Launch Paketi:** TAMAMLANDI (Asama 48-61)
@@ -84,7 +84,7 @@
 | KVKK consent audit log (server-side timestamp) | ✅ GUVENDE |
 | Registration rate limit (3/5dk) | ✅ GUVENDE |
 | Password reset cooldown (60s) | ✅ GUVENDE |
-| Remember-me storage isolation | ⚠️ Checkbox mevcut ama inaktif (localStorage default) |
+| Remember-me storage isolation | ✅ Checkbox kaldirildi (dead code temizlendi) |
 | Bot korumasi (Turnstile + honeypot) | ✅ GUVENDE |
 | hr_profiles.onboarding_completed | ✅ DUZELTILDI (eksik kolon eklendi) |
 
@@ -150,13 +150,27 @@
 **Critical Bug Fix (9 Nisan 2026)**
 - `hr_profiles.onboarding_completed` eksik kolon → `is_employer()` RLS kiriliyordu → tum candidates SELECT 400 → profil yuklenemiyordu. Kolon eklendi, mevcut employer'lar true set edildi.
 
-**Acil Fix (Sonraki Session):**
+**Asama 74 — F1/F2/F3 Critical Fixes (10 Nisan 2026)**
 
-| # | Gorev | Detay |
+| # | Gorev | Durum |
 |---|-------|-------|
-| F1 | Avatar signed URL tutarsizligi | profil-preview, ik.html, coach feed'de public URL → signed URL'ye gecmeli |
-| F2 | "Beni Hatirla" checkbox | Ya calistir ya kaldir — su an inaktif |
-| F3 | CSP connect-src eksikleri | wss://, jsdelivr, cloudflare connect-src'ye eklenmeli |
+| F1-1 | signStorageUrl + signStorageUrls helper (shared.js) | ✅ |
+| F1-2 | coach-studio avatar/cover: getPublicUrl → path + signStorageUrl | ✅ |
+| F1-3 | Coach avatar rendering signed (profil-genel + admin-coach-content) | ✅ |
+| F1-4 | ik.html candidate avatar signed | ✅ |
+| F1-5 | profil-preview.js avatar signed | ✅ |
+| F1-6 | DB migration: strip broken full URLs to storage paths | ✅ |
+| F2 | "Beni Hatirla" checkbox removed (dead code) | ✅ |
+| F3-1 | CSP: wss:// added to connect-src (13 pages) | ✅ |
+| F3-2 | CSP: Sentry ingest domain fixed (profil.html) | ✅ |
+| F3-3 | CSP: Google Maps frame-src added (iletisim.html) | ✅ |
+| F3-4 | CSP: Dead Sentry entries removed from 12 non-Sentry pages | ✅ |
+
+**Degisen dosyalar:** shared.js, coach-studio.html, profil-genel.js, admin-coach-content.js, ik.html, profil-preview.js, giris.html, 13 HTML (CSP), 1 migration, 1 test dosyasi
+**Test durumu:** 28/28 F1/F2/F3 tests PASS, 325/336 regression (11 pre-existing fail)
+**Yeni dosyalar:** tests/f1-f2-f3-fixes.spec.js, supabase/migrations/20260410165047_fix_coach_avatar_urls.sql
+
+**Acil fix yok**
 
 **Sonraki asamalar:**
 - **Pozisyon gorunum/esleme metrikleri** — DEFER

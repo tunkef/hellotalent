@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta http-equiv="X-Frame-Options" content="DENY">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://browser.sentry-cdn.com https://www.googletagmanager.com https://www.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://cpwibefquojehjehtrog.supabase.co https://*.googleusercontent.com; connect-src 'self' https://cpwibefquojehjehtrog.supabase.co https://*.google-analytics.com https://*.sentry.io; object-src 'none'; base-uri 'self'; frame-ancestors 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://www.googletagmanager.com https://www.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://cpwibefquojehjehtrog.supabase.co https://*.googleusercontent.com; connect-src 'self' https://cpwibefquojehjehtrog.supabase.co wss://cpwibefquojehjehtrog.supabase.co https://*.google-analytics.com; object-src 'none'; base-uri 'self'; frame-ancestors 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Koç Studio — hellotalent.ai</title>
@@ -616,13 +616,12 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
       showMsg(msgEl, 'Y\u00fckleniyor...', 'info');
       var upRes = await _supa.storage.from('cvs').upload(path, file, { upsert: true, cacheControl: '3600', contentType: file.type });
       if (upRes.error) { showMsg(msgEl, 'Y\u00fckleme hatas\u0131: ' + upRes.error.message, 'error'); return; }
-      var publicUrl = _supa.storage.from('cvs').getPublicUrl(path).data.publicUrl;
-      var cleanUrl = publicUrl.split('?')[0];
-      var dbRes = await _supa.from('coach_profiles').update({ avatar_url: cleanUrl }).eq('id', _coachProfile.id);
+      var dbRes = await _supa.from('coach_profiles').update({ avatar_url: path }).eq('id', _coachProfile.id);
       if (dbRes.error) { showMsg(msgEl, 'Kay\u0131t hatas\u0131: ' + dbRes.error.message, 'error'); return; }
-      _coachProfile.avatar_url = cleanUrl;
+      _coachProfile.avatar_url = path;
+      var signedUrl = await window.HT.signStorageUrl(path);
       var preview = document.getElementById('cs-avatar-preview');
-      if (preview) preview.src = cleanUrl + '?t=' + Date.now();
+      if (preview) preview.src = signedUrl;
       showMsg(msgEl, 'Profil foto\u011fraf\u0131 g\u00fcncellendi.', 'success');
       renderProfileCard();
     } catch (e) { console.error('Avatar upload error:', e); showMsg(msgEl, 'Y\u00fckleme hatas\u0131.', 'error'); }
@@ -985,9 +984,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
       showMsg(msgEl, 'Kapak y\u00fckleniyor...', 'info');
       var upRes = await _supa.storage.from('cvs').upload(path, file, { upsert: true, cacheControl: '3600', contentType: file.type });
       if (upRes.error) { showMsg(msgEl, 'Y\u00fckleme hatas\u0131: ' + upRes.error.message, 'error'); return false; }
-      var publicUrl = _supa.storage.from('cvs').getPublicUrl(path).data.publicUrl;
-      var cleanUrl = publicUrl.split('?')[0];
-      var dbRes = await _supa.from('coach_posts').update({ cover_image_url: cleanUrl }).eq('id', postId);
+      var dbRes = await _supa.from('coach_posts').update({ cover_image_url: path }).eq('id', postId);
       if (dbRes.error) { showMsg(msgEl, 'Kay\u0131t hatas\u0131: ' + dbRes.error.message, 'error'); return false; }
       _pendingCoverFile = null; return true;
     } catch (e) { console.error('Cover upload error:', e); showMsg(msgEl, 'Y\u00fckleme hatas\u0131.', 'error'); return false; }
