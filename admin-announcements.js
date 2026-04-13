@@ -176,7 +176,11 @@
     head.appendChild(txt('h3', '', existingRow ? 'Duyuruyu D\u00FCzenle' : 'Yeni Duyuru'));
     var closeBtn = txt('button', 'ht-composer__close', '\u00D7');
     closeBtn.type = 'button';
-    closeBtn.addEventListener('click', function () { modal.remove(); });
+    closeBtn.addEventListener('click', function () {
+      /* K030 FAZ C: prevent Object URL memory leak on X close */
+      cleanupObjectUrls(queuedMedia);
+      modal.remove();
+    });
     head.appendChild(closeBtn);
     panel.appendChild(head);
 
