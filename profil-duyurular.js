@@ -30,6 +30,38 @@
   var LIKE_DEBOUNCE_MS = 300;
   var likeTimers = {};
 
+  /* K030 FAZ C ext: view tracking — one fire-and-forget RPC per session per post */
+  var trackedViews = {};
+  var viewObserver = null;
+
+  function ensureViewObserver() {
+    if (viewObserver || typeof window.IntersectionObserver === 'undefined') return viewObserver;
+    viewObserver = new window.IntersectionObserver(function (entries) {
+      for (var i = 0; i < entries.length; i++) {
+        var entry = entries[i];
+        if (!entry.isIntersecting) continue;
+        var node = entry.target;
+        var id = node.getAttribute('data-announcement-id');
+        if (!id || id === 'preview' || trackedViews[id]) {
+          viewObserver.unobserve(node);
+          continue;
+        }
+        trackedViews[id] = true;
+        viewObserver.unobserve(node);
+        var supa = (typeof supabase !== 'undefined') ? supabase : (window.HT && window.HT.getSupa && window.HT.getSupa());
+        if (!supa) continue;
+        try {
+          supa.rpc('track_announcement_view', { p_announcement_id: id })
+            .then(function (res) {
+              if (res && res.error) console.warn('[duyuru] track_announcement_view rpc error:', res.error.message);
+            })
+            .catch(function (err) { console.warn('[duyuru] track view failed:', err && err.message); });
+        } catch (e) { /* ignore */ }
+      }
+    }, { threshold: 0.5 });
+    return viewObserver;
+  }
+
   /* ── Turkish relative date ───────────────────────────────────── */
   function trRelativeDate(dateStr) {
     if (!dateStr) return '';
@@ -108,17 +140,23 @@
       var m = mediaItems[i];
       var slide = el('div', 'ht-duyuru__carousel-slide');
       var signed = m && m.storage_path ? (signedMap[m.storage_path] || '') : '';
+      /* K030 FAZ C ext: focal point — 0..1 fractional, default center */
+      var fx = (m && typeof m.focal_x === 'number') ? m.focal_x : 0.5;
+      var fy = (m && typeof m.focal_y === 'number') ? m.focal_y : 0.5;
+      var objectPosition = (fx * 100).toFixed(1) + '% ' + (fy * 100).toFixed(1) + '%';
       if (m && m.media_type === 'video') {
         var v = document.createElement('video');
         v.src = signed;
         v.controls = true;
         v.preload = 'metadata';
+        v.style.objectPosition = objectPosition;
         slide.appendChild(v);
       } else {
         var img = document.createElement('img');
         img.src = signed;
         img.alt = (m && m.alt_text) || '';
         img.loading = 'lazy';
+        img.style.objectPosition = objectPosition;
         slide.appendChild(img);
       }
       track.appendChild(slide);
@@ -351,10 +389,18 @@
       } else {
         var feed = el('div', 'ht-duyuru__feed');
         var signedMap = await collectSignedMap(posts);
+        var cards = [];
         for (var i = 0; i < posts.length; i++) {
-          feed.appendChild(buildCard(posts[i], signedMap));
+          var c = buildCard(posts[i], signedMap);
+          feed.appendChild(c);
+          cards.push(c);
         }
         containerEl.appendChild(feed);
+        /* K030 FAZ C ext: observe cards for view analytics tracking (threshold 0.5) */
+        var obs = ensureViewObserver();
+        if (obs) {
+          for (var ci = 0; ci < cards.length; ci++) obs.observe(cards[ci]);
+        }
       }
 
       // Mark as seen

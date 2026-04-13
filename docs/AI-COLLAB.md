@@ -18,6 +18,7 @@
 - Cache-bust bumped to `?v=20260413f` for profil.html + admin.html FAZ C assets.
 - Frontend: profil-duyurular (IntersectionObserver threshold 0.5 + objectPosition), admin-announcements (view_count col + click focal dot + save payload).
 - Tests: new assertions in tests/faz-c-duyurular.spec.js.
+- profil-duyurular.js updated with view tracking observer + focal objectPosition.
 
 ## 2026-04-13 — K030 FAZ C Post-Push CTO Verdict
 
