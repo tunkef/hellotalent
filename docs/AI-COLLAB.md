@@ -20,6 +20,7 @@
 - Tests: new assertions in tests/faz-c-duyurular.spec.js.
 - profil-duyurular.js updated with view tracking observer + focal objectPosition.
 - admin-announcements.js view_count col + click-to-focal dot + focal in insert + preview.
+- css/duyurular.css: .ht-composer__focal-dot + [data-has-focal] outline styles.
 
 ## 2026-04-13 — K030 FAZ C Post-Push CTO Verdict
 
