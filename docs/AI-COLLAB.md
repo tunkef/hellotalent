@@ -19,6 +19,7 @@
 - Frontend: profil-duyurular (IntersectionObserver threshold 0.5 + objectPosition), admin-announcements (view_count col + click focal dot + save payload).
 - Tests: new assertions in tests/faz-c-duyurular.spec.js.
 - profil-duyurular.js updated with view tracking observer + focal objectPosition.
+- admin-announcements.js view_count col + click-to-focal dot + focal in insert + preview.
 
 ## 2026-04-13 — K030 FAZ C Post-Push CTO Verdict
 

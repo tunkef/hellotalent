@@ -92,7 +92,7 @@
     var table = el('table', 'ht-ann-admin__table');
     var thead = el('thead', '');
     var trh = el('tr', '');
-    ['Ba\u015Fl\u0131k', 'Kategori', 'Yay\u0131n', 'Durum', 'Sabit', 'Be\u011Feni', 'Eylemler'].forEach(function (h) {
+    ['Ba\u015Fl\u0131k', 'Kategori', 'Yay\u0131n', 'Durum', 'Sabit', 'Be\u011Feni', 'G\u00F6r\u00FCntulenme', 'Eylemler'].forEach(function (h) {
       trh.appendChild(txt('th', '', h));
     });
     thead.appendChild(trh);
@@ -109,6 +109,7 @@
       var pinnedNow = r.pinned_until && new Date(r.pinned_until) > new Date();
       tr.appendChild(txt('td', '', pinnedNow ? 'Evet' : '-'));
       tr.appendChild(txt('td', '', String(r.like_count || 0)));
+      tr.appendChild(txt('td', '', String(r.view_count || 0)));
 
       var actions = el('td', '');
       var edit = txt('button', 'ht-ann-admin__action', 'D\u00FCzenle');
@@ -260,7 +261,9 @@
           storagePath: null,
           mediaType: isVideo ? 'video' : 'image',
           uploaded: false,
-          failed: false
+          failed: false,
+          focal_x: 0.5,
+          focal_y: 0.5
         };
         queuedMedia.push(item);
         appendThumb(mediaRow, item, queuedMedia, updatePreview);
@@ -343,7 +346,14 @@
     function updatePreview() {
       if (typeof window._htRenderDuyuruPreviewCard !== 'function') return;
       var fakeMedia = queuedMedia.map(function (m, idx) {
-        return { storage_path: m.tempId, media_type: m.mediaType, order_index: idx, alt_text: '' };
+        return {
+          storage_path: m.tempId,
+          media_type: m.mediaType,
+          order_index: idx,
+          alt_text: '',
+          focal_x: typeof m.focal_x === 'number' ? m.focal_x : 0.5,
+          focal_y: typeof m.focal_y === 'number' ? m.focal_y : 0.5
+        };
       });
       /* Link is stored as a media row (media_type='link') in the schema. */
       if (linkInput.value) {
@@ -457,7 +467,9 @@
             announcement_id: postId,
             storage_path: path,
             media_type: m.mediaType,
-            order_index: mi
+            order_index: mi,
+            focal_x: typeof m.focal_x === 'number' ? m.focal_x : 0.5,
+            focal_y: typeof m.focal_y === 'number' ? m.focal_y : 0.5
           });
           if (insMedia.error) console.error('[ann] media row insert failed:', insMedia.error.message);
         }
@@ -477,6 +489,10 @@
   function appendThumb(row, item, queue, onChange) {
     var thumb = el('div', 'ht-composer__media-thumb');
     thumb.setAttribute('data-temp-id', item.tempId);
+    /* K030 FAZ C ext: focal point defaults — center (0.5, 0.5) */
+    if (typeof item.focal_x !== 'number') item.focal_x = 0.5;
+    if (typeof item.focal_y !== 'number') item.focal_y = 0.5;
+
     if (item.mediaType === 'video') {
       var v = document.createElement('video');
       v.src = item.objectUrl;
@@ -487,9 +503,43 @@
       img.src = item.objectUrl;
       thumb.appendChild(img);
     }
+
+    /* Focal indicator dot (image only — click to set center of crop) */
+    var focalDot = null;
+    if (item.mediaType === 'image') {
+      focalDot = el('span', 'ht-composer__focal-dot');
+      thumb.appendChild(focalDot);
+      thumb.setAttribute('data-has-focal', '1');
+      thumb.style.cursor = 'crosshair';
+      thumb.title = 'G\u00F6rseli kadrajlamak i\u00E7in merkeze t\u0131kla';
+
+      var updateDot = function () {
+        if (!focalDot) return;
+        focalDot.style.left = (item.focal_x * 100).toFixed(1) + '%';
+        focalDot.style.top = (item.focal_y * 100).toFixed(1) + '%';
+      };
+      updateDot();
+
+      thumb.addEventListener('click', function (ev) {
+        /* Ignore clicks on the remove button */
+        if (ev.target && ev.target.classList && ev.target.classList.contains('ht-composer__media-remove')) return;
+        var rect = thumb.getBoundingClientRect();
+        if (!rect.width || !rect.height) return;
+        var x = (ev.clientX - rect.left) / rect.width;
+        var y = (ev.clientY - rect.top) / rect.height;
+        if (x < 0) x = 0; else if (x > 1) x = 1;
+        if (y < 0) y = 0; else if (y > 1) y = 1;
+        item.focal_x = Math.round(x * 1000) / 1000;
+        item.focal_y = Math.round(y * 1000) / 1000;
+        updateDot();
+        if (typeof onChange === 'function') onChange();
+      });
+    }
+
     var remove = txt('button', 'ht-composer__media-remove', '\u00D7');
     remove.type = 'button';
-    remove.addEventListener('click', function () {
+    remove.addEventListener('click', function (ev) {
+      ev.stopPropagation();
       URL.revokeObjectURL(item.objectUrl);
       var idx = queue.indexOf(item);
       if (idx > -1) queue.splice(idx, 1);
