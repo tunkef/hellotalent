@@ -1151,3 +1151,112 @@
   }
 
 })();
+
+/* ═══════════════════════════════════════════════════════════════
+   K030 FAZ C — Bildirim ↔ Duyuru segment toggle (inline in #panel-bildirimler)
+   data-segment="bildirim-duyuru" drives the tab state.
+   Reads/writes sessionStorage key `ht_bildirim_tab`.
+   Mounts full duyuru feed into [data-mount="duyuru-full-feed"] on first activation.
+   Calls get_unread_announcement_count RPC on load for badge.
+   =============================================================== */
+(function () {
+  'use strict';
+
+  var STORAGE_KEY = 'ht_bildirim_tab';
+  var SEEN_KEY = 'ht_last_duyuru_seen';
+
+  function getSupa() {
+    if (typeof supabase !== 'undefined') return supabase;
+    if (window.HT && typeof window.HT.getSupa === 'function') return window.HT.getSupa();
+    return null;
+  }
+
+  function activateTab(root, key) {
+    var buttons = root.querySelectorAll('.ht-segment[data-segment="bildirim-duyuru"] button');
+    for (var i = 0; i < buttons.length; i++) {
+      var isActive = buttons[i].getAttribute('data-tab') === key;
+      buttons[i].classList.toggle('is-active', isActive);
+      buttons[i].setAttribute('aria-selected', isActive ? 'true' : 'false');
+    }
+    var contents = root.querySelectorAll('[data-tab-content]');
+    for (var j = 0; j < contents.length; j++) {
+      var matches = contents[j].getAttribute('data-tab-content') === key;
+      if (matches) contents[j].removeAttribute('hidden');
+      else contents[j].setAttribute('hidden', '');
+    }
+    try { sessionStorage.setItem(STORAGE_KEY, key); } catch (e) { /* ignore */ }
+
+    if (key === 'duyuru') {
+      var mount = root.querySelector('[data-mount="duyuru-full-feed"]');
+      if (mount && !mount.dataset.loaded && typeof window._htLoadDuyuruFeed === 'function') {
+        window._htLoadDuyuruFeed(mount, { limit: 50, offset: 0, infinite: true });
+        mount.dataset.loaded = '1';
+      }
+      try { localStorage.setItem(SEEN_KEY, new Date().toISOString()); } catch (e) { /* ignore */ }
+      // Clear badge
+      var badge = root.querySelector('[data-duyuru-badge]');
+      if (badge) { badge.textContent = '0'; badge.setAttribute('hidden', ''); }
+    }
+  }
+
+  function bindSegment() {
+    var panel = document.getElementById('panel-bildirimler');
+    if (!panel) return;
+    var seg = panel.querySelector('.ht-segment[data-segment="bildirim-duyuru"]');
+    if (!seg || seg.dataset.bound) return;
+    seg.dataset.bound = '1';
+
+    var buttons = seg.querySelectorAll('button');
+    for (var i = 0; i < buttons.length; i++) {
+      buttons[i].addEventListener('click', function (ev) {
+        var key = ev.currentTarget.getAttribute('data-tab');
+        activateTab(panel, key);
+      });
+    }
+
+    // Restore saved tab
+    var saved = null;
+    try { saved = sessionStorage.getItem(STORAGE_KEY); } catch (e) { /* ignore */ }
+    activateTab(panel, saved === 'duyuru' ? 'duyuru' : 'bildirim');
+  }
+
+  async function loadUnreadCount() {
+    var panel = document.getElementById('panel-bildirimler');
+    if (!panel) return;
+    var badge = panel.querySelector('[data-duyuru-badge]');
+    if (!badge) return;
+    var supa = getSupa();
+    if (!supa) return;
+
+    var since = null;
+    try { since = localStorage.getItem(SEEN_KEY); } catch (e) { /* ignore */ }
+
+    try {
+      var res = await supa.rpc('get_unread_announcement_count', { p_since: since || null });
+      if (res.error) {
+        console.warn('[duyuru] unread count RPC failed:', res.error.message);
+        return;
+      }
+      var count = typeof res.data === 'number' ? res.data : (res.data && res.data.count) || 0;
+      if (count > 0) {
+        badge.textContent = count > 99 ? '99+' : String(count);
+        badge.removeAttribute('hidden');
+      } else {
+        badge.setAttribute('hidden', '');
+      }
+    } catch (e) {
+      console.warn('[duyuru] unread count error:', e && e.message);
+    }
+  }
+
+  function init() {
+    bindSegment();
+    loadUnreadCount();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
