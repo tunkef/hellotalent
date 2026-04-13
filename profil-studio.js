@@ -2228,9 +2228,14 @@ function openCoachDetail(post, isLiked) {
     detail.appendChild(authorBlock);
   }
 
-  /* FAZ 4C — practice bridge: coach category → competency */
+  /* FAZ 4C — practice bridge: coach category → competency
+   * K030 FAZ B: practice bridge CTAs gated while window._HT_STUDIO_FROZEN === true.
+   * Three appendChild sites below (FAZ 4C bridge, related_role bridge, general
+   * "Koçluğa Başlayın" bridge) are wrapped in the freeze flag. Like button
+   * (line ~2248) stays untouched so users can still react to posts. Flip
+   * window._HT_STUDIO_FROZEN = false in shared.js to unfreeze. */
   var coachCompCode = post.category ? COACH_CAT_TO_COMP[post.category] : null;
-  if (coachCompCode) {
+  if (coachCompCode && !window._HT_STUDIO_FROZEN) {
     var coachBridgeEl = buildPracticeBridgeCTA(coachCompCode, 'Bu konuda pratik yap');
     if (coachBridgeEl) detail.appendChild(coachBridgeEl);
   }
@@ -2247,34 +2252,37 @@ function openCoachDetail(post, isLiked) {
   });
   actionsEl.appendChild(likeBtn);
 
-  /* Practice bridge CTA — role-based or general fallback */
-  var bridge = getBridge();
-  if (post.related_role && bridge && bridge.ROLE_COMP_MAP && bridge.ROLE_COMP_MAP[post.related_role]) {
-    /* related_role is valid ROLE_COMP_MAP key → direct session start */
-    var bridgeBtn = document.createElement('button');
-    bridgeBtn.className = 'ig-coach-detail-bridge';
-    bridgeBtn.textContent = 'Bu konuyu \u015Fimdi \u00E7al\u0131\u015F';
-    var arrowSpan = document.createElement('span');
-    arrowSpan.innerHTML = arrowRightSVG;
-    bridgeBtn.appendChild(arrowSpan);
-    bridgeBtn.addEventListener('click', function() {
-      overlay.parentNode.removeChild(overlay);
-      startSession(post.related_role);
-    });
-    actionsEl.appendChild(bridgeBtn);
-  } else {
-    /* No specific role → general coaching entry */
-    var bridgeBtn2 = document.createElement('button');
-    bridgeBtn2.className = 'ig-coach-detail-bridge';
-    bridgeBtn2.textContent = 'Ko\u00E7lu\u011Fa Ba\u015Flay\u0131n';
-    var arrowSpan2 = document.createElement('span');
-    arrowSpan2.innerHTML = arrowRightSVG;
-    bridgeBtn2.appendChild(arrowSpan2);
-    bridgeBtn2.addEventListener('click', function() {
-      overlay.parentNode.removeChild(overlay);
-      navigate('role_select');
-    });
-    actionsEl.appendChild(bridgeBtn2);
+  /* Practice bridge CTA — role-based or general fallback
+   * K030 FAZ B: both bridge appendChild sites gated by freeze flag. */
+  if (!window._HT_STUDIO_FROZEN) {
+    var bridge = getBridge();
+    if (post.related_role && bridge && bridge.ROLE_COMP_MAP && bridge.ROLE_COMP_MAP[post.related_role]) {
+      /* related_role is valid ROLE_COMP_MAP key → direct session start */
+      var bridgeBtn = document.createElement('button');
+      bridgeBtn.className = 'ig-coach-detail-bridge';
+      bridgeBtn.textContent = 'Bu konuyu \u015Fimdi \u00E7al\u0131\u015F';
+      var arrowSpan = document.createElement('span');
+      arrowSpan.innerHTML = arrowRightSVG;
+      bridgeBtn.appendChild(arrowSpan);
+      bridgeBtn.addEventListener('click', function() {
+        overlay.parentNode.removeChild(overlay);
+        startSession(post.related_role);
+      });
+      actionsEl.appendChild(bridgeBtn);
+    } else {
+      /* No specific role → general coaching entry */
+      var bridgeBtn2 = document.createElement('button');
+      bridgeBtn2.className = 'ig-coach-detail-bridge';
+      bridgeBtn2.textContent = 'Ko\u00E7lu\u011Fa Ba\u015Flay\u0131n';
+      var arrowSpan2 = document.createElement('span');
+      arrowSpan2.innerHTML = arrowRightSVG;
+      bridgeBtn2.appendChild(arrowSpan2);
+      bridgeBtn2.addEventListener('click', function() {
+        overlay.parentNode.removeChild(overlay);
+        navigate('role_select');
+      });
+      actionsEl.appendChild(bridgeBtn2);
+    }
   }
 
   detail.appendChild(actionsEl);
