@@ -1,0 +1,129 @@
+/* K030 FAZ B — panel-soon.css
+ * Styles for the Stüdyo "Yakında" placeholder grid.
+ * Tokens only. BEM-lite double underscore. Dark mode + reduced motion aware.
+ */
+
+.ht-soon {
+  display: block;
+  padding: 24px 0 48px;
+  max-width: 1040px;
+  margin: 0 auto;
+}
+
+.ht-soon__header {
+  text-align: left;
+  margin-bottom: 28px;
+}
+
+.ht-soon__chip {
+  display: inline-block;
+  background: var(--accent);
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 999px;
+  margin-bottom: 14px;
+}
+
+.ht-soon__heading {
+  font-family: var(--font-head);
+  font-size: 32px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 10px 0;
+  line-height: 1.15;
+}
+
+.ht-soon__lead {
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.55;
+  color: var(--text-secondary, var(--muted));
+  max-width: 640px;
+  margin: 0;
+}
+
+.ht-soon__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.ht-soon__card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 22px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border, rgba(0, 0, 0, 0.08));
+  border-radius: 14px;
+  cursor: default;
+  outline: none;
+  transition: transform 220ms ease, border-color 220ms ease;
+}
+
+.ht-soon__card:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent-soft, var(--accent));
+}
+
+.ht-soon__icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent-soft, rgba(201, 78, 40, 0.08));
+  color: var(--accent);
+}
+
+.ht-soon__title {
+  font-family: var(--font-head);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+  line-height: 1.3;
+}
+
+.ht-soon__desc {
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-secondary, var(--muted));
+  margin: 0;
+}
+
+html[data-theme='dark'] .ht-soon__card {
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+html[data-theme='dark'] .ht-soon__icon {
+  background: rgba(201, 78, 40, 0.16);
+}
+
+@media (max-width: 480px) {
+  .ht-soon__grid {
+    grid-template-columns: 1fr;
+  }
+  .ht-soon__heading {
+    font-size: 26px;
+  }
+  .ht-soon__lead {
+    font-size: 15px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ht-soon__card {
+    transition: none;
+  }
+  .ht-soon__card:hover {
+    transform: none;
+  }
+}
