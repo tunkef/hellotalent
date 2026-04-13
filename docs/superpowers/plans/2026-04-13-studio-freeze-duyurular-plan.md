@@ -391,7 +391,7 @@ The full final-form code for `panel-soon.js` and `css/panel-soon.css` is in the 
 
 ## ⚠⚠ CODEX STAGE-GATE OVERRIDE (2026-04-13)
 
-Codex reviewed the refined plan and **BLOCKED** FAZ B execution until 4 additional edits ship. Apply these on top of the refinement notes above.
+Codex reviewed the refined plan and **BLOCKED** FAZ B execution until 5 additional edits (RE-1..RE-5) ship. Apply these on top of the refinement notes above.
 
 ### Codex's 5 question answers (binding)
 
@@ -413,17 +413,23 @@ At `profil-wizard.js:308`, the freeze guard must replace BOTH `_htLoadStudio()` 
 
 Add a new task **B3.6** (or B3a, name your discretion) covering these surfaces in `profil-genel.js`:
 
-- `profil-genel.js:770-776` — Coach feed header "Stüdyo'ya Git" + "Tümünü Gör" buttons → conditional render: hide both when `STUDIO_FROZEN === true`
+- `profil-genel.js:770-776` — Coach feed header "Stüdyo'ya Git" + "Tümünü Gör" buttons → conditional render: hide both when `window._HT_STUDIO_FROZEN === true`
 - `profil-genel.js:924-930` — Coach card "Bu konuyu şimdi çalış" practice CTA → hide when frozen
 - `profil-genel.js:991-997` — `openArticleInCoach()` calls `switchPanel('mulakat')` + `openCoachDetail()`. Replace with `openCoachDetail()` only (no switchPanel). The detail overlay still opens, just without forcing Studio panel switch.
 
-Implementation pattern: introduce a single source-of-truth `var STUDIO_FROZEN = true;` constant at the top of `profil-genel.js` IIFE (or in shared.js) and gate the CTA appendChild calls with `if (!STUDIO_FROZEN) { ... }`. When unfreezing, flip one constant.
+**Freeze flag contract (binding for RE-2 AND RE-3):**
+
+- **Flag name:** `window._HT_STUDIO_FROZEN` — exactly this identifier, no aliases.
+- **Defined in:** `shared.js` (top of file, before any IIFE), as `window._HT_STUDIO_FROZEN = true;` so both `profil-genel.js` and `profil-studio.js` IIFEs read the same global.
+- **Why shared.js:** Loaded by every page (profil.html + admin.html), single source of truth, reversible by flipping one line on unfreeze.
+- **Read pattern:** `if (!window._HT_STUDIO_FROZEN) { /* append CTA */ }` — gate appendChild calls, never gate the function definitions themselves.
+- **Do not** introduce a second flag inside profil-studio.js. RE-2 and RE-3 share this single flag.
 
 **RE-3: New task — neutralize Studio coach detail overlay CTAs**
 
 Add a new task **B3.7** covering `profil-studio.js:2232-2276`. Even though `profil-studio.js` is dormant via FAZ A FROZEN banner, `window.openCoachDetail` is still exported and called from `profil-genel.js:995`. The coach detail overlay it opens contains **two practice bridge CTAs** ("Bu konuyu şimdi çalış" / "Koçluğa Başlayın") that route into Studio practice flow.
 
-Edit pattern: inside the overlay builder at line 2232+, gate the bridge button block with `if (window._HT_STUDIO_FROZEN) { /* skip CTA */ }` or simply remove the `actionsEl.appendChild(bridgeBtn)` lines guarded by the same `STUDIO_FROZEN` flag from RE-2. The like button stays.
+Edit pattern: inside the overlay builder at line 2232+, gate every `actionsEl.appendChild(bridgeBtn*)` call (lines 2264, 2277) with `if (!window._HT_STUDIO_FROZEN) { ... }` — the SAME `window._HT_STUDIO_FROZEN` flag defined in shared.js per the RE-2 freeze flag contract. Also gate the FAZ 4C `coachBridgeEl` appendChild at line 2235. The like button at line 2248 stays unconditional.
 
 This edit is INSIDE profil-studio.js but is a single-flag conditional, not a logic change. It does NOT violate the "freeze, don't modify" principle because the gate is reversible (flip the flag → CTAs return).
 
@@ -435,10 +441,7 @@ This edit is INSIDE profil-studio.js but is a single-flag conditional, not a log
 **RE-5: Alias UX + cache-bust hygiene**
 
 - `profil-wizard.js:273` breadcrumb label → "Stüdyo - Yakinda" (per Q5)
-- `profil-wizard.js:277-280` activation logic → currently activates only `data-panel="mulakat"`; `#nav-yetkinlik` never stays active after alias normalization. Decide UX:
-  - **Option A:** Activate both `#nav-mulakat` and `#nav-yetkinlik` when on the soon panel (visual consistency)
-  - **Option B:** Hide `#nav-yetkinlik` entirely during freeze (one nav entry instead of two chipped)
-  - Codex did not pick — implementer chooses based on minimal-change principle. Default: Option A (activate both).
+- `profil-wizard.js:277-280` activation logic → currently activates only `data-panel="mulakat"`; `#nav-yetkinlik` never stays active after alias normalization. **DECISION (binding): Option A** — activate both `#nav-mulakat` and `#nav-yetkinlik` when the soon panel is shown. Update the activation block to add active class to both selectors. Rationale: minimal change (no DOM removal), both nav entries retain visual presence with chip + active state, unfreeze path unchanged. Option B (hiding `#nav-yetkinlik`) is REJECTED to avoid layout jump and to preserve audit trail of dual nav entries.
 - All touched files in `profil.html:56-63, 1671-1694` and any new asset (panel-soon.js, css/panel-soon.css) need `?v=` query string bump. Use `?v=20260413a` or current convention.
 
 ### Codex's additional gaps (for awareness)
@@ -449,12 +452,14 @@ This edit is INSIDE profil-studio.js but is a single-flag conditional, not a log
 
 ### FAZ B execution gate
 
-**Status:** BLOCKED until RE-1 through RE-5 are reflected in the task bodies below AND Codex re-reviews.
+**Authority:** This CODEX OVERRIDE section (RE-1..RE-5 + freeze flag contract + Option A binding) is **authoritative** for FAZ B execution. The original B1-B10 task bodies below are kept as **audit trail only** — where the override and a task body conflict, the override wins. Implementer reads this section first, then references task bodies for surrounding context (file paths, commit messages, test patterns).
+
+**Status:** BLOCKED until Codex re-reviews this updated override section.
 
 **Sequence:**
-1. Update task bodies (or apply edits inline during exec)
+1. Plan update committed and pushed (DONE on commit 837f2bf and successor)
 2. Re-dispatch Codex stage-gate
-3. On approval → FAZ B exec subagent dispatch with the corrected plan
+3. On approval → FAZ B exec subagent dispatch following the override contract verbatim
 
 ---
 

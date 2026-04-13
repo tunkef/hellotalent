@@ -6,9 +6,37 @@
 
 ## Mevcut Durum
 
-**Aktif is:** K030 FAZ A APPROVED (canli) + FAZ B plan NEEDS-CHANGES (Codex blocked)
-**Sonraki:** Plan duzeltmeleri uygulaniyor (4 zorunlu edit) → Codex re-approval → FAZ B exec
-**Son commit:** 49f744c (FAZ B refinement notes)
+## 2026-04-13 — K030 Codex Re-Review (post-RE-1..RE-5)
+
+### Verdict: NEEDS-CHANGES
+
+### RE-1..RE-5 status
+- RE-1 (B4 stop both loaders): ✓ — Override targets both loaders; `Task B3` below still points at `profil.html switchPanel`.
+- RE-2 (B3.6 Genel coach CTAs): ✓ — Override covers header CTAs, card CTA, and `openArticleInCoach()` route.
+- RE-3 (B3.7 Studio coach detail CTAs): ✓ — Override covers both overlay practice CTAs at `profil-studio.js:2232-2276`.
+- RE-4 (B6/B7 fixes): ✓ — Override fixes selector and test direction; lower examples remain stale.
+- RE-5 (alias UX + cache-bust): ✗ — Default Option A is not bound; cache-bust steps stay implicit.
+
+### Remaining gaps (if any)
+- Change `plan:394` from `4 additional edits` to `5 additional edits`.
+- Rewrite `Task B3` to patch `profil-wizard.js:308`, not `profil.html switchPanel`.
+- Add concrete `B3.6` and `B3.7` task bodies below the override.
+- Rewrite `Task B6` examples to `.nav-item[data-panel="studio-modules"]`.
+- Rewrite `Task B7` as source-content tests; remove `loginAs*` and `[data-tab="studio"]`.
+- Bind RE-5 to Option A explicitly: activate `#nav-mulakat` and `#nav-yetkinlik`.
+- Pick one freeze flag: `window._HT_STUDIO_FROZEN = true` across both files.
+- Change `B1` sample `<h1>` to `<h2>` to match binding Q2.
+- Add explicit `?v=` bump steps for all touched assets.
+
+### GO / BLOCKED
+BLOCKED
+
+### Recommended FAZ B exec order (if GO)
+1. N/A — blocked pending plan cleanup.
+
+**Aktif is:** K030 FAZ A APPROVED (canli) + FAZ B plan NEEDS-CHANGES (override landed, exec blocked)
+**Sonraki:** Plan cleanup (B1/B3/B6/B7 + flag/RE-5 bind) → Codex re-review → FAZ B exec
+**Son commit:** 837f2bf (CODEX STAGE-GATE OVERRIDE)
 **Spec:** docs/superpowers/specs/2026-04-13-studio-freeze-duyurular-design.md
 **Plan:** docs/superpowers/plans/2026-04-13-studio-freeze-duyurular-plan.md
 
