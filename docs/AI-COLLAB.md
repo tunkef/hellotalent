@@ -6,8 +6,35 @@
 
 ## Mevcut Durum
 
-**Aktif is:** K030 FAZ B hotfix 2 — hellotalent.ai pill card kaldirildi (Tuna UAT round 2)
-**Sonraki:** push → FAZ C baslangic (admin duyurular + migration + feed)
+**Aktif is:** K030 FAZ C plan review tamam (CTO by-pass, Codex sessiz), plan edit ediliyor
+**Sonraki:** Plan CODEX OVERRIDE-C section eklenip exec subagent dispatch
+**Son commit:** 2386d87 (FAZ B hotfix 2)
+
+## 2026-04-13 — K030 FAZ C Plan Review (CTO direct — Codex dispatch returned empty 3rd time)
+
+**10 live-repo checks:**
+1. db:new + db:push OK
+2. get_my_candidate_id() exists in migrations (streak_foundation et al)
+3. **is_admin() already exists** — docs/migrations/014:332-338 pattern: EXISTS (SELECT 1 FROM admin_users WHERE id = auth.uid()). Plan's auth.jwt/hr_profiles assumption wrong — FAZ C must NOT redefine
+4. signStorageUrl/signStorageUrls in shared.js:200,215
+5. admin_users table exists (used in lb6_security_monitoring, zero_tech_debt, support phase)
+6. Bildirimler panel is INLINE in profil.html:1198 (#panel-bildirimler has notif-tabs/notif-list/notif-empty)
+7. Admin tab pattern: .nav-item[data-panel="X"] onclick="switchPanel('X',this)"
+8. Coach feed mount: buildFeedSection() in profil-genel.js, add frozen else branch
+9. CSP already allows cdn.jsdelivr.net — marked+DOMPurify CDN scripts work
+10. coach_posts fully isolated, FAZ C creates parallel ht_announcements* tables
+
+**Required plan edits:**
+- is_admin not redefined, existing helper used
+- Storage policies SQL block dropped (apply via dashboard/ad-hoc)
+- marked/DOMPurify added to profil.html head
+- Bildirimler toggle inline in profil.html, not separate file
+- Feed mount via buildFeedSection frozen branch
+- Admin tab data-panel="announcements" + switchPanel dispatcher
+- Cache-bust ?v=20260413b
+- Source-content tests only
+
+**Verdict:** READY-TO-EXEC after plan edit.
 
 ## 2026-04-13 — K030 FAZ B UAT Hotfix
 Tuna dashboard UAT'inde 3 bulgu:

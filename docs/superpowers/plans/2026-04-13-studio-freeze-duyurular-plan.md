@@ -1190,6 +1190,101 @@ git commit -m "docs(ai-collab): K030 FAZ B checkpoint"
 
 ---
 
+## ⚠⚠ CODEX OVERRIDE-C — FAZ C PRE-EXEC (2026-04-13, CTO-direct)
+
+Plan review verified against live repo (commit 2386d87). FAZ B done + 2 hotfixes canlı. Apply these corrections before implementing C1-C14.
+
+### Live-repo verified facts
+
+| Check | Result |
+|---|---|
+| `npm run db:new` / `db:push` scripts | ✓ exist (package.json) |
+| `get_my_candidate_id()` helper | ✓ exists (used in streak_foundation et al) |
+| `is_admin()` helper | ✓ **ALREADY EXISTS** — `docs/migrations/014_ozel_teklifler_schema.sql:332-338` |
+| `is_admin()` actual pattern | `EXISTS (SELECT 1 FROM admin_users WHERE id = auth.uid())` |
+| `admin_users` table | ✓ exists (used in lb6_security_monitoring, zero_tech_debt_aal2, support_phase2b) |
+| `signStorageUrl` / `signStorageUrls` | ✓ `shared.js:200, 215` |
+| Bildirimler panel location | INLINE in `profil.html:1198` (`#panel-bildirimler`), NOT a separate file |
+| Bildirimler panel containers | `#notif-tabs`, `#notif-list`, `#notif-empty`, `#notif-unread-badge` |
+| Admin tab pattern | `<div class="nav-item" data-panel="X" onclick="switchPanel('X',this)">` |
+| CSP | Already allows `cdn.jsdelivr.net` in `script-src` (profil.html:6) |
+| Coach feed mount location | `profil-genel.js` `buildFeedSection()` — currently wrapped in `if (!window._HT_STUDIO_FROZEN)` guard |
+| coach_posts isolation | Clean — FAZ C creates parallel `ht_announcements*` tables |
+
+### Binding decisions
+
+1. **is_admin() — DO NOT REDEFINE.** Use the existing helper. Migration C1 must not include `CREATE OR REPLACE FUNCTION is_admin()`. RLS policies just call `is_admin()` directly. The plan's earlier `auth.jwt() ->> 'role' = 'admin'` / `hr_profiles.employer_role` fallback is WRONG for this repo.
+
+2. **Storage policies — skip the SQL `DO $$ INSERT INTO storage.policies` block.** Storage policies in this repo are applied via Supabase dashboard / ad-hoc SQL, not via migration. The FAZ C migration file creates ONLY: tables + indexes + RLS policies + RPCs + trigger. Storage policy application becomes a **separate deployment step** documented in the shipping notes (apply via Supabase dashboard after the migration lands).
+
+3. **`marked` + `DOMPurify` — add to `profil.html` `<head>`.** CSP already allows cdn.jsdelivr.net. Tags:
+   ```html
+   <script src="https://cdn.jsdelivr.net/npm/marked@11/marked.min.js"></script>
+   <script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
+   ```
+   Place before `profil-duyurular.js` script tag. No CSP update needed.
+
+4. **Bildirimler toggle — INLINE in `profil.html:1198` `#panel-bildirimler`.** No separate file. Add the `<div class="ht-segment" data-segment="bildirim-duyuru">` markup INSIDE the existing panel-bildirimler main element, above `#notif-tabs`. Add a new `<div data-tab-content="duyuru" hidden><div data-mount="duyuru-full-feed"></div></div>` below the existing `#notif-empty`. The toggle JS goes in a new small IIFE inside `profil-inbox.js` OR a new `profil-duyurular-tab.js` — implementer's choice. Prefer extending `profil-inbox.js` to keep related code together (single-responsibility of the bildirimler surface).
+
+5. **Feed mount in Genel Bakış — add frozen branch to `buildFeedSection()` in `profil-genel.js`.** Current state: `if (!window._HT_STUDIO_FROZEN)` wraps the coach header + feed container. Add an `else` branch (or separate `if (window._HT_STUDIO_FROZEN)`) that appends a new `<section class="ht-duyuru-feed-section" data-mount="duyuru-feed"></section>` to the same `section` element. The duyuru feed client mounts inside this node.
+
+6. **Admin tab — new nav-item after existing admin surfaces.** Insert after `data-panel="coach-content"` (admin.html:350) since it's conceptually adjacent. Mark-up:
+   ```html
+   <div class="nav-item" data-panel="announcements" onclick="switchPanel('announcements',this)">
+     <span class="nav-icon"><svg>...</svg></span>
+     Duyurular
+   </div>
+   ```
+   Add a `<main class="panel" id="panel-announcements" data-panel="announcements">` section that contains an `<div id="ann-root"></div>`. Add `<script src="admin-announcements.js?v=20260413b"></script>` before `</body>`. Register `announcements` in the admin.html `switchPanel` dispatcher (line ~847) so it calls `window._htAdminAnnouncements.mount(root)` on first activation.
+
+7. **Cache-bust — `?v=20260413b`** for all new FAZ C assets (profil-duyurular.js, css/duyurular.css, admin-announcements.js). Also bump profil-genel.js (touched), profil.html links if any touched.
+
+8. **Test approach — source-content only** like FAZ A/B. RLS integration tests requiring auth env vars are SKIPPED unless HT_TEST_EMAIL/PASSWORD are configured. The E2E flow test is optional / skip if env missing.
+
+### Migration C1 final schema (corrected)
+
+Remove the `CREATE OR REPLACE FUNCTION is_admin()` block entirely. Remove the `DO $$ storage.policies INSERT $$` block entirely. Keep everything else (3 tables, indexes, RLS policies, trigger, 3 RPCs, GRANTs).
+
+### Execution sequence (binding)
+
+**Subagent A — backend migration (blocks all frontend):**
+- C1 migration file (no is_admin definition, no storage.policies block)
+- C2 apply migration + verify
+- C3 RLS integration test — SKIP if env not set (source-content smoke only)
+
+**Subagent B — frontend feed + admin composer (after Subagent A done):**
+- C4 profil-duyurular.js
+- C5 css/duyurular.css
+- C6 profil.html wiring (marked/DOMPurify + duyurular assets + cache-bust)
+- C7 profil-genel.js buildFeedSection frozen branch
+- C8 admin-announcements.js composer
+- C9 admin.html new Duyurular tab + switchPanel registration
+- C10 bildirimler inline toggle in profil.html + profil-inbox.js
+- C11 source-content test suite
+- C12 E2E flow test — SKIP runtime if env missing
+- C13 UAT checklist update
+- C14 docs + AI-COLLAB + CURRENT-STATE
+
+**Post-deploy:**
+- Apply storage policies via Supabase dashboard (admin write under announcements/, authenticated signed read). Document in AI-COLLAB.
+
+### Risks
+
+- Coach `coach_posts` backend dormant but table stays; ensure FAZ C feed never queries coach_*
+- Admin composer storage upload needs dashboard policy in place BEFORE admins try to post
+- marked@11 API compatibility; pin version explicitly
+- `profil-inbox.js` is an existing file with its own IIFE; toggle JS must not break existing notif rendering
+
+### Binding answer to admin-side HT bilgi yayınlama
+
+Tuna's UAT complaint about "admin HT bilgi yayınlama bölümü yok" is addressed by **Task C8 + C9**. The new `admin-announcements.js` is the LinkedIn-style composer (text + multi-image carousel + video + link + live preview). It lands in admin.html as a new Duyurular tab.
+
+### Verdict: READY-TO-EXEC
+
+Dispatch 2 sequential Opus subagents. Subagent A = backend migration. Subagent B = frontend + composer (after A done).
+
+---
+
 ### Task C1: Write the migration SQL — schema + helper
 
 **Files:**
