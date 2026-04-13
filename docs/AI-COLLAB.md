@@ -6,16 +6,18 @@
 
 ## Mevcut Durum
 
-**Aktif is:** K030 FAZ A (Coach/Studio decouple) — commit ediliyor
-**Sonraki:** A4 test guard, A5 checkpoint, 24h gozlem, FAZ B freeze
+**Aktif is:** K030 FAZ A TAMAMLANDI — push ve 24h gozlem bekliyor
+**Sonraki:** push origin main → 24h gozlem → FAZ B freeze
 **Spec:** docs/superpowers/specs/2026-04-13-studio-freeze-duyurular-design.md
 **Plan:** docs/superpowers/plans/2026-04-13-studio-freeze-duyurular-plan.md
 
-## 2026-04-13 — K030 FAZ A baslangic
+## 2026-04-13 — K030 FAZ A TAMAMLANDI
 - profil-studio.js: file-top FROZEN banner + cross-link maps dormant + _htGenelCoachTeaser noop stub
+- tests/faz-a-decouple.spec.js — 5 kaynak-icerik test (desktop+mobile = 10 pass)
 - User-visible degisiklik: YOK (intermediate state)
-- Risk: 0 (runtime path degismedi, dead-code stub)
-- Next: A4 regression guard test, commit, push, 24h gozlem
+- Risk: 0 (runtime path degismedi, dead-code stub, orijinal kod korundu)
+- Commit: b67dfd9 (A1-A3), next commit (A4 test + A5 checkpoint)
+- Next: push → 24h gozlem → FAZ B (panel-soon.js + switchPanel guard)
 
 **Son tamamlanan:** Asama 74 (10 Nisan 2026) — F1/F2/F3 Critical Fixes + Hotfix
 **Son commit:** 4b52925 — brand logos signed URL + cover image relative path fix
