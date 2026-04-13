@@ -6,10 +6,18 @@
 
 ## Mevcut Durum
 
-**Aktif is:** K030 FAZ C COMPLETE — CTO post-push verdict APPROVE, Tuna UAT bekliyor
+**Aktif is:** K030 FAZ C extension IN PROGRESS — view analytics + focal point control
 **Sonraki:** Storage policy (Tuna manuel dashboard) → Admin + candidate UAT → FAZ D
-**Son commit:** 3a8ec7e (Object URL cleanup hotfix). FAZ C zinciri a16addd..3a8ec7e = 11 commit
-**DeepSeek:** 2 false positive + 1 gerçek fix uygulandı. Regression: 1317 PASS, 0 yeni fail.
+**Son commit:** 8919839 (FAZ C hotfix 3). Extension migration 20260413202813 applied + repaired.
+**DeepSeek:** Parent will run review on extension chain. Migration verified via pg_ queries (7 objects).
+
+## 2026-04-13 — K030 FAZ C Extension (views + focal)
+
+- Migration `20260413202813_ht_ann_views_focal.sql` applied directly + history repaired.
+- Adds: `ht_announcement_views`, `view_count`, `track_announcement_view()`, `focal_x/focal_y`, updated `get_announcements_feed`.
+- Cache-bust bumped to `?v=20260413f` for profil.html + admin.html FAZ C assets.
+- Frontend: profil-duyurular (IntersectionObserver threshold 0.5 + objectPosition), admin-announcements (view_count col + click focal dot + save payload).
+- Tests: new assertions in tests/faz-c-duyurular.spec.js.
 
 ## 2026-04-13 — K030 FAZ C Post-Push CTO Verdict
 
