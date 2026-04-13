@@ -327,4 +327,23 @@
 
 ---
 
-*Son güncelleme: 8 Nisan 2026*
+## K030 — Stüdyo + Koç Dondurma + Duyurular Feed Sistemi
+**Tarih:** 13 Nisan 2026
+**Karar veren:** Tuna + Claude
+**Karar:** Stüdyo paneli "yakında" grid ile dondurulur (4 kart: mülakat demoları, yetkinlik bazlı çalışma, mülakat teknikleri, mağaza bilgileri). Koç UI kapatılır, backend + DB dormant kalır. Yerine admin-driven "HelloTalent'ten Bilgiler" duyuru feed sistemi kurulur: `ht_announcements` tablo ailesi, LinkedIn-style composer (text + multi-image carousel + video + link + live preview), Genel Bakış paneli feed mount + mevcut bildirimler paneline toggle ("Bildirimler | Duyurular").
+**Neden:** Stüdyo karmaşık ve tamamlanmamış, MVP 1 kritik yolu değil. Koç uzun süre pasif kalacak ama yapı korunacak. Admin adaylara hızlı haber kanalı istiyor (şirket girişleri, feature ipuçları, platform rehberi). "HT'ten Bilgiler" kavramı Stüdyo alt sekmesiydi, yeni feed'e taşınıyor ve Koç mantığıyla işliyor (tarih + like + media + yazı).
+**Uygulama:** 3 ardışık PR:
+- **FAZ A Decouple:** Koç ↔ Stüdyo ayrımı (cross-link map'ler dormant, `_htGenelCoachTeaser` boşalt, `openCoachDetail` stub). Minimal, güvenli.
+- **FAZ B Freeze:** `profil.html` switchPanel guard, `panel-soon.js` + CSS, sidebar/bottom nav "Yakında" chip, `coach-studio.html` noindex + redirect, admin.html Studio tab disable, `profil-studio.js` FROZEN banner.
+- **FAZ C Duyurular:** Yeni migration (3 tablo + RLS + RPC + trigger + storage policy), `profil-duyurular.js` feed client, `admin-announcements.js` composer, Bildirimler sayfası toggle.
+**Prensipler:** Asla silme — kod + DB + data korunur. Unfreeze path her adımda dokümante. Regression sıfır (820 test suite). Vanilla JS pattern korunur.
+**Elenen alternatifler:**
+- Clean Archive (dosya taşıma) — merge riski, rollback büyür
+- Feature Flag + Lazy Load — vanilla/IIFE/Safari `var` guard pattern'iyle çelişir
+- Tam silme — "asla silme" prensibi ihlali
+- Koç'u başka yere taşıma — scope patlar, ayrı iş olarak ertelendi
+**Detay:** [[../../docs/superpowers/specs/2026-04-13-studio-freeze-duyurular-design]]
+
+---
+
+*Son güncelleme: 13 Nisan 2026*

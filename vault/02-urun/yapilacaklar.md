@@ -126,6 +126,42 @@
 
 ---
 
+## D — Duyurular & Stüdyo Freeze (K030)
+
+**Referans:** [../06-kararlar/karar-defteri.md#K030](../06-kararlar/karar-defteri.md) · [spec](../../docs/superpowers/specs/2026-04-13-studio-freeze-duyurular-design.md)
+
+**Prensip:** Asla silme, dondur. Unfreeze path dokümante. 3 ardışık PR.
+
+| # | Faz | Görev | Detay | Durum |
+|---|-----|-------|-------|-------|
+| D1  | A | profil-studio.js cross-link dormant banner | COMP_TO_COACH_CATEGORY ve 3 map'in üstüne FROZEN yorum | ☐ |
+| D2  | A | _htGenelCoachTeaser boşalt | Stub, backward-compat | ☐ |
+| D3  | A | openCoachDetail stub | console.warn, no-op | ☐ |
+| D4  | A | tests/faz-a-decouple.spec.js | Regression guard: teaser yok, studio hâlâ açılır (intermediate) | ☐ |
+| D5  | B | panel-soon.js + css/panel-soon.css | 4 kart yakında grid, a11y, dark mode, mobile | ☐ |
+| D6  | B | profil.html switchPanel('mulakat') guard | _htRenderPanelSoon mount | ☐ |
+| D7  | B | Sidebar + bottom nav "Yakında" chip | ht-chip--soon variant | ☐ |
+| D8  | B | coach-studio.html noindex + redirect | meta + JS redirect profil.html#mulakat | ☐ |
+| D9  | B | admin.html Studio tab disable | Tab disabled + chip, script tag kalır | ☐ |
+| D10 | B | profil-studio.js FROZEN banner | Dosya başı yorum + unfreeze adımları | ☐ |
+| D11 | B | tests/faz-b-freeze.spec.js | Grid render, tıklanamaz, chip, dark/mobile, a11y | ☐ |
+| D12 | C | Migration ht_announcements | 3 tablo + index + RLS + RPC + trigger + is_admin() helper | ☐ |
+| D13 | C | Storage policy cvs/announcements/ prefix | Admin write, authenticated signed read | ☐ |
+| D14 | C | profil-duyurular.js | Feed render + like + carousel + markdown sanitize | ☐ |
+| D15 | C | css/duyurular.css | Card + carousel + composer modal | ☐ |
+| D16 | C | profil-genel.js feed mount | _htGenelMountDuyuruFeed → _htLoadDuyuruFeed | ☐ |
+| D17 | C | Bildirimler paneli toggle | Segment "Bildirimler | Duyurular", sessionStorage, unread badge | ☐ |
+| D18 | C | admin.html + admin-announcements.js | LinkedIn-style composer (text + multi-image + video + link + preview) | ☐ |
+| D19 | C | Test suite (unit + integration + e2e) | 80/15/5 piramit, RLS matrix, E2E admin→candidate flow | ☐ |
+| D20 | DOC | docs/studio-foundation.md FROZEN + unfreeze | Unfreeze 10 adım | ☐ |
+| D21 | DOC | vault K030 entry (bu işlem sırasında) | karar-defteri.md + bu satır | ☐ |
+| D22 | DOC | docs/uat/studio-freeze-uat.md | Gemini UAT manuel checklist (22 item) | ☐ |
+
+**Sıra:** FAZ A → canlı 24h → FAZ B → canlı 24h → FAZ C (migration önce → frontend)
+**Rollback:** L0-L6 seviye tablosu spec'te tanımlı.
+
+---
+
 ## MVP 2 — İşveren Aktivasyonu
 
 ### Aday Profil İyileştirmeleri (Tier 2)
