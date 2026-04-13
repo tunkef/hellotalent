@@ -6,9 +6,64 @@
 
 ## Mevcut Durum
 
-**Aktif is:** K030 FAZ C plan review tamam (CTO by-pass, Codex sessiz), plan edit ediliyor
-**Sonraki:** Plan CODEX OVERRIDE-C section eklenip exec subagent dispatch
-**Son commit:** 2386d87 (FAZ B hotfix 2)
+**Aktif is:** K030 FAZ C Subagent A (backend migration) tamamlandi, Subagent B (frontend) sirada
+**Sonraki:** Subagent B dispatch — profil-duyurular.js + admin-announcements.js + mount points
+**Son commit:** (bu commit) — ht_announcements migration + RLS + RPCs
+
+## 2026-04-13 — K030 FAZ C Subagent A (backend migration) tamamlandi
+
+**Dosyalar:**
+- `supabase/migrations/20260413191504_ht_announcements.sql` (sha256: c26f161c92a6fb08278a257302de9bfd5a8c82bc6f65b9cf0ec2a58c60e36d72)
+- `supabase/migrations/ROLLBACK_ht_announcements.sql` (emergency, not auto-applied)
+
+**Olusan DB objeleri:**
+- Tables: ht_announcements, ht_announcement_media, ht_announcement_likes (3/3 RLS=true)
+- RPCs: get_announcements_feed(int,int), toggle_announcement_like(uuid), get_unread_announcement_count(timestamptz)
+- Trigger fn: sync_ht_ann_like_count (AFTER INSERT/DELETE on likes)
+- Policies: 8 (1 select_active + 3 admin CRUD own + 2 media + 2 likes own)
+- Helpers kullanildi: is_admin() (baseline), get_my_candidate_id() (baseline) — REDEFINE YOK
+
+**Apply yolu:** `supabase db push --linked` kuyrukta 3 drifted legacy migration (consent_log policy already exists vs.) yuzunden bloke oldu. Migration dosyasi dogrudan `supabase db query -f` ile basarili uygulandi, ardindan `migration repair --status applied 20260413191504` ile history isaretlendi. **Pre-existing drift Subagent A kapsaminda degil**, parent'a raporlandi.
+
+**Verify (live DB):**
+- pg_tables: 3/3 ht_announcement* mevcut
+- pg_class.relrowsecurity: 3/3 true
+- pg_proc: 4/4 fonksiyon mevcut
+- pg_policies: 8/8 policy mevcut
+
+**Storage policy TODO (Tuna — Supabase dashboard > Storage > cvs bucket > Policies):**
+
+```sql
+CREATE POLICY "ht_ann_storage_admin_write"
+  ON storage.objects FOR INSERT TO authenticated
+  WITH CHECK (
+    bucket_id = 'cvs'
+    AND name LIKE 'announcements/' || auth.uid()::text || '/%'
+    AND is_admin()
+  );
+
+CREATE POLICY "ht_ann_storage_admin_update"
+  ON storage.objects FOR UPDATE TO authenticated
+  USING (
+    bucket_id = 'cvs'
+    AND name LIKE 'announcements/' || auth.uid()::text || '/%'
+    AND is_admin()
+  );
+
+CREATE POLICY "ht_ann_storage_admin_delete"
+  ON storage.objects FOR DELETE TO authenticated
+  USING (
+    bucket_id = 'cvs'
+    AND name LIKE 'announcements/' || auth.uid()::text || '/%'
+    AND is_admin()
+  );
+-- cvs bucket private: read icin signStorageUrl yetiyor, ek SELECT policy gerekmez.
+```
+
+**Sonraki net adim:** Subagent B (frontend) — profil-duyurular.js feed, admin-announcements.js composer, profil-genel.js mount, profil.html + admin.html head updates (marked + DOMPurify CDN).
+
+**Riskler / blocker:**
+- [PARENT ACTION] 3 pre-existing drifted migration (20260409131000, 20260409160000, 20260410165047) `supabase db push` icin bloke; repair veya idempotent fix gerek. Bizim scope disi.
 
 ## 2026-04-13 — K030 FAZ C Plan Review (CTO direct — Codex dispatch returned empty 3rd time)
 
