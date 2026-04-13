@@ -504,37 +504,9 @@
       thumb.appendChild(img);
     }
 
-    /* Focal indicator dot (image only — click to set center of crop) */
-    var focalDot = null;
-    if (item.mediaType === 'image') {
-      focalDot = el('span', 'ht-composer__focal-dot');
-      thumb.appendChild(focalDot);
-      thumb.setAttribute('data-has-focal', '1');
-      thumb.style.cursor = 'crosshair';
-      thumb.title = 'G\u00F6rseli kadrajlamak i\u00E7in merkeze t\u0131kla';
-
-      var updateDot = function () {
-        if (!focalDot) return;
-        focalDot.style.left = (item.focal_x * 100).toFixed(1) + '%';
-        focalDot.style.top = (item.focal_y * 100).toFixed(1) + '%';
-      };
-      updateDot();
-
-      thumb.addEventListener('click', function (ev) {
-        /* Ignore clicks on the remove button */
-        if (ev.target && ev.target.classList && ev.target.classList.contains('ht-composer__media-remove')) return;
-        var rect = thumb.getBoundingClientRect();
-        if (!rect.width || !rect.height) return;
-        var x = (ev.clientX - rect.left) / rect.width;
-        var y = (ev.clientY - rect.top) / rect.height;
-        if (x < 0) x = 0; else if (x > 1) x = 1;
-        if (y < 0) y = 0; else if (y > 1) y = 1;
-        item.focal_x = Math.round(x * 1000) / 1000;
-        item.focal_y = Math.round(y * 1000) / 1000;
-        updateDot();
-        if (typeof onChange === 'function') onChange();
-      });
-    }
+    /* K030 FAZ C final: focal click UX removed. Feed uses object-fit:contain
+     * (full image, neutral letterbox) so per-image focal selection is unnecessary.
+     * focal_x/focal_y DB columns stay at 0.5 default for backward compat. */
 
     var remove = txt('button', 'ht-composer__media-remove', '\u00D7');
     remove.type = 'button';

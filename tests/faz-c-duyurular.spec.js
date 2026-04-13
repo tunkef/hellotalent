@@ -62,8 +62,8 @@ test.describe('K030 FAZ C — HT Duyurular (source checks)', () => {
     var body = await fetchText(request, baseURL, '/profil.html');
     expect(body).toContain('marked@11/marked.min.js');
     expect(body).toContain('dompurify@3/dist/purify.min.js');
-    expect(body).toContain('css/duyurular.css?v=20260413f');
-    expect(body).toContain('profil-duyurular.js?v=20260413f');
+    expect(body).toContain('css/duyurular.css?v=20260413i');
+    expect(body).toContain('profil-duyurular.js?v=20260413i');
     // Segment markup in #panel-bildirimler
     expect(body).toContain('data-segment="bildirim-duyuru"');
     expect(body).toContain('data-tab-content="bildirim"');
@@ -83,9 +83,9 @@ test.describe('K030 FAZ C — HT Duyurular (source checks)', () => {
     var body = await fetchText(request, baseURL, '/admin.html');
     expect(body).toMatch(/data-panel="announcements"/);
     expect(body).toContain('id="panel-announcements"');
-    expect(body).toContain('admin-announcements.js?v=20260413f');
-    expect(body).toContain('profil-duyurular.js?v=20260413f');
-    expect(body).toContain('css/duyurular.css?v=20260413f');
+    expect(body).toContain('admin-announcements.js?v=20260413i');
+    expect(body).toContain('profil-duyurular.js?v=20260413i');
+    expect(body).toContain('css/duyurular.css?v=20260413i');
     // switchPanel dispatcher branch
     expect(body).toMatch(/name === 'announcements'[\s\S]{0,200}_htAdminAnnouncements/);
     // Ann-root mount target
@@ -101,30 +101,32 @@ test.describe('K030 FAZ C — HT Duyurular (source checks)', () => {
     expect(body).toContain('ht_bildirim_tab');
   });
 
-  /* ── K030 FAZ C extension: view analytics + focal point ───────── */
+  /* ── K030 FAZ C extension: view analytics (focal click removed, contain fits) ── */
   test('profil-duyurular.js tracks views via IntersectionObserver + RPC', async ({ request, baseURL }) => {
     var body = await fetchText(request, baseURL, '/profil-duyurular.js');
     expect(body).toContain('track_announcement_view');
     expect(body).toContain('IntersectionObserver');
     expect(body).toContain('threshold: 0.5');
-    expect(body).toContain('focal_x');
-    expect(body).toContain('focal_y');
-    expect(body).toContain('objectPosition');
+    /* Final decision: object-fit:contain fit-on-screen, no per-image focal.
+     * focal_x/focal_y DB columns stay for backward compat but frontend does
+     * not compute objectPosition from them. */
   });
 
-  test('admin-announcements.js has view_count column + focal click payload', async ({ request, baseURL }) => {
+  test('admin-announcements.js has view_count column + focal backward-compat defaults', async ({ request, baseURL }) => {
     var body = await fetchText(request, baseURL, '/admin-announcements.js');
     expect(body).toContain('G\\u00F6r\\u00FCnt\\u00FClenme');
     expect(body).toContain('r.view_count');
+    /* Focal click UX removed — final decision: contain-fit in feed.
+     * Defaults (0.5, 0.5) stay in queuedMedia + insert payload for backward
+     * compat with existing DB columns. */
     expect(body).toContain('focal_x');
     expect(body).toContain('focal_y');
-    expect(body).toContain('ht-composer__focal-dot');
   });
 
-  test('css/duyurular.css defines focal-dot indicator', async ({ request, baseURL }) => {
+  test('feed carousel uses object-fit contain (fit-on-screen)', async ({ request, baseURL }) => {
     var body = await fetchText(request, baseURL, '/css/duyurular.css');
-    expect(body).toContain('.ht-composer__focal-dot');
-    expect(body).toContain('data-has-focal');
+    // Full image, no crop, neutral bg fills letterbox padding
+    expect(body).toMatch(/\.ht-duyuru__carousel-slide[\s\S]{0,500}object-fit:\s*contain/);
   });
 
   test('migration 20260413202813 defines views table + focal cols + RPC', async ({ request, baseURL }) => {

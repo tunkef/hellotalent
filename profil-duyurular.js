@@ -144,23 +144,19 @@
       var m = mediaItems[i];
       var slide = el('div', 'ht-duyuru__carousel-slide');
       var signed = m && m.storage_path ? (signedMap[m.storage_path] || '') : '';
-      /* K030 FAZ C ext: focal point — 0..1 fractional, default center */
-      var fx = (m && typeof m.focal_x === 'number') ? m.focal_x : 0.5;
-      var fy = (m && typeof m.focal_y === 'number') ? m.focal_y : 0.5;
-      var objectPosition = (fx * 100).toFixed(1) + '% ' + (fy * 100).toFixed(1) + '%';
+      /* K030 FAZ C final: object-fit:contain via CSS — no JS focal set.
+       * focal_x/focal_y DB columns kept dormant for backward compat. */
       if (m && m.media_type === 'video') {
         var v = document.createElement('video');
         v.src = signed;
         v.controls = true;
         v.preload = 'metadata';
-        v.style.objectPosition = objectPosition;
         slide.appendChild(v);
       } else {
         var img = document.createElement('img');
         img.src = signed;
         img.alt = (m && m.alt_text) || '';
         img.loading = 'lazy';
-        img.style.objectPosition = objectPosition;
         slide.appendChild(img);
       }
       track.appendChild(slide);

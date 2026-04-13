@@ -610,3 +610,12 @@ BLOCKED — fix B4 loader removal, Genel coach CTA paths, B6/B7 stale task bodie
 - window._htRefreshDuyuruUnread exposed for manual refresh
 - Cache-bust ?v=20260413h
 
+
+## 2026-04-13 — K030 FAZ C final: object-fit:contain feed rendering
+- css/duyurular.css carousel slide: object-fit:contain + neutral bg, full image, no crop
+- profil-duyurular.js buildCarousel: removed dynamic objectPosition (focal_x/y no longer read)
+- admin-announcements.js: focal click UX removed from appendThumb (kept focal_x/y 0.5 defaults for DB backward compat)
+- Cache-bust ?v=20260413i
+- Cropper.js editor approach reverted (unpushed commits discarded) in favor of simpler contain
+- 58/58 FAZ A+B+C spec PASS
+
