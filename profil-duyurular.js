@@ -144,7 +144,7 @@
       var m = mediaItems[i];
       var slide = el('div', 'ht-duyuru__carousel-slide');
       var signed = m && m.storage_path ? (signedMap[m.storage_path] || '') : '';
-      /* K030 FAZ C final: object-fit:contain via CSS — no JS focal set.
+      /* K030 FAZ C final: natural aspect via CSS — no focal objectPosition.
        * focal_x/focal_y DB columns kept dormant for backward compat. */
       if (m && m.media_type === 'video') {
         var v = document.createElement('video');

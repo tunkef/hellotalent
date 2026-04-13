@@ -261,9 +261,7 @@
           storagePath: null,
           mediaType: isVideo ? 'video' : 'image',
           uploaded: false,
-          failed: false,
-          focal_x: 0.5,
-          focal_y: 0.5
+          failed: false
         };
         queuedMedia.push(item);
         appendThumb(mediaRow, item, queuedMedia, updatePreview);
@@ -350,9 +348,7 @@
           storage_path: m.tempId,
           media_type: m.mediaType,
           order_index: idx,
-          alt_text: '',
-          focal_x: typeof m.focal_x === 'number' ? m.focal_x : 0.5,
-          focal_y: typeof m.focal_y === 'number' ? m.focal_y : 0.5
+          alt_text: ''
         };
       });
       /* Link is stored as a media row (media_type='link') in the schema. */
@@ -467,9 +463,8 @@
             announcement_id: postId,
             storage_path: path,
             media_type: m.mediaType,
-            order_index: mi,
-            focal_x: typeof m.focal_x === 'number' ? m.focal_x : 0.5,
-            focal_y: typeof m.focal_y === 'number' ? m.focal_y : 0.5
+            order_index: mi
+            /* focal_x/focal_y use DB DEFAULT 0.5 — columns kept for backward compat */
           });
           if (insMedia.error) console.error('[ann] media row insert failed:', insMedia.error.message);
         }
@@ -489,9 +484,6 @@
   function appendThumb(row, item, queue, onChange) {
     var thumb = el('div', 'ht-composer__media-thumb');
     thumb.setAttribute('data-temp-id', item.tempId);
-    /* K030 FAZ C ext: focal point defaults — center (0.5, 0.5) */
-    if (typeof item.focal_x !== 'number') item.focal_x = 0.5;
-    if (typeof item.focal_y !== 'number') item.focal_y = 0.5;
 
     if (item.mediaType === 'video') {
       var v = document.createElement('video');
@@ -504,9 +496,9 @@
       thumb.appendChild(img);
     }
 
-    /* K030 FAZ C final: focal click UX removed. Feed uses object-fit:contain
-     * (full image, neutral letterbox) so per-image focal selection is unnecessary.
-     * focal_x/focal_y DB columns stay at 0.5 default for backward compat. */
+    /* K030 FAZ C final: focal click UX removed. Feed renders each image at
+     * its natural aspect ratio (max-height 640px). focal_x/focal_y DB columns
+     * stay as dormant backward-compat data (DEFAULT 0.5). */
 
     var remove = txt('button', 'ht-composer__media-remove', '\u00D7');
     remove.type = 'button';

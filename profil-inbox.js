@@ -1497,14 +1497,23 @@
     return state;
   };
 
+  /* K030 FAZ C cleanup: track pollId so it can be cleared on page unload
+   * to keep memory tidy during dev (SPA-like panel switching keeps the
+   * same page, but page close / back-forward cache should release it). */
+  var _bellPollId = null;
+
   function init() {
     bindSegment();
     loadUnreadCount();
-    /* Periodic poll every 60s so new admin posts surface without page reload */
-    setInterval(function () {
+    if (_bellPollId !== null) { clearInterval(_bellPollId); }
+    _bellPollId = setInterval(function () {
       try { loadUnreadCount(); } catch (e) { /* ignore */ }
     }, 60 * 1000);
   }
+
+  window.addEventListener('pagehide', function () {
+    if (_bellPollId !== null) { clearInterval(_bellPollId); _bellPollId = null; }
+  });
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);

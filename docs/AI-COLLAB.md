@@ -667,3 +667,12 @@ BLOCKED — fix B4 loader removal, Genel coach CTA paths, B6/B7 stale task bodie
 - Verified: npx supabase db push --dry-run --linked → 'Remote database is up to date'
 - db:push now unblocked for future migrations
 
+
+## 2026-04-14 — K030 FAZ C tech debt cleanup
+- Storage policies: 20260413214500_ht_ann_storage_policies.sql — admin INSERT/UPDATE/DELETE on cvs bucket under announcements/ prefix, applied + repaired (admin composer media upload now unblocked)
+- Dead focal code removed: css/duyurular.css .ht-composer__focal-dot + [data-has-focal], admin-announcements.js focal_x/y payload/defaults cleanup (DB DEFAULT 0.5 handles backward compat)
+- profil-studio.js FAZ A banner: corrected claim about bottom-nav chip (Stüdyo entry yok bottom nav'da)
+- profil-inbox.js 60s bell poll: _bellPollId tracked + clearInterval on pagehide
+- Cache-bust ?v=20260414a
+- 754/754 (24 FAZ C + 730 p3) PASS
+
