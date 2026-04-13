@@ -6,6 +6,12 @@
 
 ## Mevcut Durum
 
+**Aktif is:** K030 FAZ A APPROVED + FAZ B plan 3. round Codex review bekliyor
+**Sonraki:** Codex re-dispatch (commit 06a52db sonrasi) → onay → FAZ B exec
+**Son commit:** 06a52db (RE wording fixes: count, freeze flag binding, Option A, override authority)
+**Spec:** docs/superpowers/specs/2026-04-13-studio-freeze-duyurular-design.md
+**Plan:** docs/superpowers/plans/2026-04-13-studio-freeze-duyurular-plan.md
+
 ## 2026-04-13 — K030 Codex Re-Review (post-RE-1..RE-5)
 
 ### Verdict: NEEDS-CHANGES
