@@ -767,14 +767,18 @@
     hdrLeft.appendChild(txt('div', 'gh-feed-sub', 'Perakende kariyerinde \u00F6ne \u00E7\u0131kmak i\u00E7in uzman i\u00E7g\u00F6r\u00FCleri'));
     hdrInner.appendChild(hdrLeft);
     var hdrRight = el('div', 'gh-coach-header-right');
-    var practiceBtn = txt('button', 'gh-btn-primary', 'St\u00fcdyo\u2019ya Git');
-    practiceBtn.type = 'button';
-    practiceBtn.addEventListener('click', function() { switchPanel('mulakat'); });
-    hdrRight.appendChild(practiceBtn);
-    var seeAll = txt('button', 'gh-feed-seeall', 'T\u00FCm\u00FCn\u00FC G\u00F6r \u2192');
-    seeAll.type = 'button';
-    seeAll.addEventListener('click', function() { switchPanel('mulakat'); });
-    hdrRight.appendChild(seeAll);
+    /* K030 FAZ B: freeze Studio CTAs while window._HT_STUDIO_FROZEN === true.
+     * Header card still renders; only the action buttons are suppressed. */
+    if (!window._HT_STUDIO_FROZEN) {
+      var practiceBtn = txt('button', 'gh-btn-primary', 'St\u00fcdyo\u2019ya Git');
+      practiceBtn.type = 'button';
+      practiceBtn.addEventListener('click', function() { switchPanel('mulakat'); });
+      hdrRight.appendChild(practiceBtn);
+      var seeAll = txt('button', 'gh-feed-seeall', 'T\u00FCm\u00FCn\u00FC G\u00F6r \u2192');
+      seeAll.type = 'button';
+      seeAll.addEventListener('click', function() { switchPanel('mulakat'); });
+      hdrRight.appendChild(seeAll);
+    }
     hdrInner.appendChild(hdrRight);
     hdr.appendChild(hdrInner);
     section.appendChild(hdr);
@@ -921,7 +925,8 @@
     });
     actions.appendChild(openBtn);
 
-    if (post.related_role && typeof window._htLoadStudio === 'function') {
+    /* K030 FAZ B: suppress "Bu konuyu şimdi çalış" CTA during Studio freeze. */
+    if (!window._HT_STUDIO_FROZEN && post.related_role && typeof window._htLoadStudio === 'function') {
       var practiceBtn = txt('button', 'gh-btn-secondary', 'Bu konuyu \u015Fimdi \u00E7al\u0131\u015F');
       practiceBtn.type = 'button';
       practiceBtn.addEventListener('click', function(e) {
@@ -989,12 +994,12 @@
   }
 
   function openArticleInCoach(post) {
-    switchPanel('mulakat');
-    setTimeout(function() {
-      if (typeof window.openCoachDetail === 'function') {
-        window.openCoachDetail(post, false);
-      }
-    }, 500);
+    /* K030 FAZ B: do NOT force-switch to Studio panel during freeze.
+     * Detail overlay can still open in-place; practice CTAs inside the overlay
+     * are gated separately in profil-studio.js. */
+    if (typeof window.openCoachDetail === 'function') {
+      window.openCoachDetail(post, false);
+    }
   }
 
   /* ═══════════════════════════════════════════════════
