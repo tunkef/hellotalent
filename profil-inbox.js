@@ -1230,10 +1230,10 @@
   }
 
   async function loadUnreadCount() {
-    var panel = document.getElementById('panel-bildirimler');
-    if (!panel) return;
-    var badge = panel.querySelector('[data-duyuru-badge]');
-    if (!badge) return;
+    /* K030 FAZ C hotfix 2: always fetch + publish unread count to the header
+     * bell dot, even when #panel-bildirimler hasn't been opened yet. The
+     * segment badge is optional — if it's not in the DOM we still update
+     * the global + bell. Previous version early-returned when panel missing. */
     var supa = getSupa();
     if (!supa) return;
 
@@ -1247,23 +1247,41 @@
         return;
       }
       var count = typeof res.data === 'number' ? res.data : (res.data && res.data.count) || 0;
-      if (count > 0) {
-        badge.textContent = count > 99 ? '99+' : String(count);
-        badge.removeAttribute('hidden');
-      } else {
-        badge.setAttribute('hidden', '');
+
+      /* Segment badge (in-panel) — update if present */
+      var panel = document.getElementById('panel-bildirimler');
+      var badge = panel && panel.querySelector('[data-duyuru-badge]');
+      if (badge) {
+        if (count > 0) {
+          badge.textContent = count > 99 ? '99+' : String(count);
+          badge.removeAttribute('hidden');
+        } else {
+          badge.setAttribute('hidden', '');
+        }
       }
-      /* K030 FAZ C hotfix: publish duyuru unread to global + refresh header bell dot */
+
+      /* Global + header bell dot — always updated */
       window._htDuyuruUnreadCount = count;
-      if (typeof window._htApplyNotifBellDot === 'function') window._htApplyNotifBellDot();
+      if (typeof window._htApplyNotifBellDot === 'function') {
+        window._htApplyNotifBellDot();
+      }
     } catch (e) {
       console.warn('[duyuru] unread count error:', e && e.message);
     }
   }
 
+  /* K030 FAZ C hotfix 2: expose for manual refresh from other modules
+   * and for a periodic poll every 60s so new admin posts surface without
+   * a full page reload. */
+  window._htRefreshDuyuruUnread = loadUnreadCount;
+
   function init() {
     bindSegment();
     loadUnreadCount();
+    /* Periodic poll every 60s so new admin posts surface without page reload */
+    setInterval(function () {
+      try { loadUnreadCount(); } catch (e) { /* ignore */ }
+    }, 60 * 1000);
   }
 
   if (document.readyState === 'loading') {

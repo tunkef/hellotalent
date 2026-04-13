@@ -603,3 +603,10 @@ BLOCKED — fix B4 loader removal, Genel coach CTA paths, B6/B7 stale task bodie
 - profil-duyurular.js IntersectionObserver: require entry.intersectionRatio >= 0.5 alongside isIntersecting to prevent initial-callback fire on <50% visibility
 - Cache-bust ?v=20260413g
 
+
+## 2026-04-13 — K030 FAZ C bildirim hotfix 2
+- loadUnreadCount() now runs even without panel-bildirimler DOM (was early-returning)
+- 60s poll added so new admin posts surface without page reload
+- window._htRefreshDuyuruUnread exposed for manual refresh
+- Cache-bust ?v=20260413h
+
