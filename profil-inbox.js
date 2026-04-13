@@ -1253,6 +1253,26 @@
     return 0;
   }
 
+  /* K030 FAZ C hotfix 6: one-shot stale SEEN_KEY purge.
+   * Earlier versions of profil-duyurular.js set SEEN_KEY=now on every
+   * feed render, marking ALL existing posts as seen. That persistent
+   * localStorage value still blocks the header bell for anyone who
+   * loaded the page before the fix. Version flag triggers a one-time
+   * removal so clients get a fresh baseline (all active posts count
+   * as unread until the user opens the Duyurular tab). */
+  var SEEN_VERSION_KEY = 'ht_duyuru_seen_v';
+  var CURRENT_SEEN_VERSION = '2';
+  (function purgeStaleSeen() {
+    try {
+      var v = localStorage.getItem(SEEN_VERSION_KEY);
+      if (v !== CURRENT_SEEN_VERSION) {
+        localStorage.removeItem(SEEN_KEY);
+        localStorage.setItem(SEEN_VERSION_KEY, CURRENT_SEEN_VERSION);
+        console.warn('[duyuru] SEEN_KEY purged (stale v' + (v || '0') + ' → v' + CURRENT_SEEN_VERSION + ')');
+      }
+    } catch (e) { /* ignore */ }
+  })();
+
   async function loadUnreadCount() {
     /* K030 FAZ C hotfix 5: always fetch + publish unread count; defensive parse;
      * verbose debug log accessible via window._htDebugBell. */

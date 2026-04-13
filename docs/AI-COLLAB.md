@@ -634,3 +634,9 @@ BLOCKED — fix B4 loader removal, Genel coach CTA paths, B6/B7 stale task bodie
 - window._htDebugBell: manual diagnostic from DevTools console
 - Cache-bust ?v=20260413k
 
+
+## 2026-04-14 — K030 FAZ C hotfix 6: stale SEEN_KEY purge
+- profil-inbox.js: one-shot localStorage purge via SEEN_VERSION_KEY ('ht_duyuru_seen_v'='2'). Clients with a stale ht_last_duyuru_seen from earlier buggy loadDuyuruFeed renders get a fresh baseline. Bell dot now surfaces all active posts on next fetch until user explicitly opens Duyurular tab.
+- Debug: _htDebugBell showed SEEN_KEY stuck at past timestamp, RPC returning data:0 correctly (all posts were published BEFORE that timestamp).
+- Cache-bust ?v=20260413l
+
