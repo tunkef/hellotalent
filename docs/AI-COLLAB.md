@@ -6,10 +6,39 @@
 
 ## Mevcut Durum
 
-**Aktif is:** K030 FAZ C Subagent B (frontend feed + admin composer) devam ediyor
-**Sonraki:** B1..B10 adimlari sirasiyla, sonra DeepSeek review + push parent'a birakildi
-**B progress:** B1..B8 (source-content tests yazildi) tamam
-**Son commit:** a16addd — ht_announcements migration + RLS + RPCs
+**Aktif is:** K030 FAZ C Subagent B tamamlandi, DeepSeek + full regression + push parent'a birakildi
+**Sonraki:** Parent (Claude) — DeepSeek review scripts/deepseek-review.sh + push origin main + Codex gate
+**Son commit (FAZ C Subagent B):** B1..B10 serisi (bkz bolum asagisi)
+**Onceki ana commit:** a16addd — ht_announcements migration + RLS + RPCs
+
+## 2026-04-13 — K030 FAZ C Subagent B (frontend + composer) tamamlandi
+
+**Dosyalar (yeni + degisen):**
+- `profil.html` (B1, B4, B7) — CDN deps, duyurular.css, profil-duyurular.js, segment markup in #panel-bildirimler
+- `css/duyurular.css` (B2) — 684 satir, BEM-lite `ht-duyuru__*` + `ht-composer__*` + `ht-segment`, dark mode + mobile + reduced-motion
+- `profil-duyurular.js` (B3) — 377 satir, _htLoadDuyuruFeed + _htRenderDuyuruPreviewCard, marked+DOMPurify sanitize, carousel, like debounce
+- `profil-genel.js` (B4) — _HT_STUDIO_FROZEN branch in buildFeedSection + hydrateDuyuruFeed dispatcher
+- `admin-announcements.js` (B5) — 498 satir, composer modal + list + storage upload `announcements/{admin}/{post}/{uuid}.ext`
+- `admin.html` (B6) — Duyurular nav-item, panel-announcements main, script/style wiring, switchPanel dispatcher registration
+- `profil-inbox.js` (B7) — bildirim<->duyuru segment toggle IIFE, sessionStorage, get_unread_announcement_count RPC + badge
+- `tests/faz-c-duyurular.spec.js` (B8) — 7 source-content tests (mobile + desktop = 14 cases)
+
+**Test sonucu:** 50 passed (FAZ A + B + C, mobile + desktop), 3.4s, 0 failed.
+
+**Commit hashes (bu seri):** c376af5 B1, 65ba3ce B2, 7fe214b B3, 7d208bb B4, 9e5d009 B5, e210d8c B6, f992c96 B7, 121ff0b B8. B10 bu commit.
+
+**Acik riskler:**
+- Storage policy Supabase dashboard'da henuz uygulanmadi (Tuna TODO, Subagent A notuna gore bekleniyor). Admin composer media upload FAZ C dashboard'a policy yazilana kadar RLS blocked kalabilir — expected.
+- `get_unread_announcement_count` RPC bir scalar bigint donduruyor (varsayim); RPC return tipi farkliysa badge count parse dusebilir — runtime UAT gerekli.
+- Marked + DOMPurify CDN yukleme basarisizligina karsi profil-duyurular.js plain-text fallback yapar, ancak pratikte CSP script-src cdn.jsdelivr.net'e izin veriyor.
+- Admin listesinde `ht_announcement_media` ile join yapmiyor — list ekraninda media thumb yok (istenmedi). Feed tarafi RPC uzerinden media ile birlikte donuyor.
+
+**Tuna UAT / Gemini UAT beklenen adimlari:**
+1. Supabase dashboard > Storage > cvs > Policies — Subagent A'nin yazdigi SQL'i uygula
+2. /profil.html'de donmus studio -> Genel Bakis'a git, Duyurular feed mount oluyor mu?
+3. /profil.html#bildirimler -> segment Duyurular butonuna tikla, full feed geliyor mu + badge temizleniyor mu?
+4. /admin.html -> Duyurular tab -> Yeni duyuru -> markdown + image + publish (storage policy gerek)
+
 
 ## 2026-04-13 — K030 FAZ C Subagent A (backend migration) tamamlandi
 
