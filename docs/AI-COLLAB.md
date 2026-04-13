@@ -6,9 +6,29 @@
 
 ## Mevcut Durum
 
-**Aktif is:** K030 FAZ A push bekliyor (DeepSeek review uygulandi, regression temiz)
-**Sonraki:** push origin main → 24h gozlem → FAZ B freeze
+**Aktif is:** K030 FAZ A push edildi (5 commit, GitHub Pages canli) + FAZ B plan refined
+**Sonraki:** Codex stage-gate review FAZ A → onay → FAZ B exec subagent dispatch
 **Codex rapor:** FAZ A detaylari asagida — onay sonrasi FAZ B basla
+**Plan refinement:** docs/superpowers/plans/2026-04-13-studio-freeze-duyurular-plan.md icine FAZ B REFINEMENT NOTES bolumu eklendi (8 kritik bulgu + final-form tokens)
+
+## 2026-04-13 — FAZ B Plan Refinement (subagent x2)
+- **Subagent #1 (code-architect, opus):** B1-B10 audit. 8 kritik bulgu:
+  - switchPanel profil-wizard.js'te (B4 hedef hatali)
+  - bottom nav phantom (B5 no-op)
+  - #nav-yetkinlik mulakat'a alias (B3.5 yeni task)
+  - B9 zaten yapildi (FAZ A FROZEN banner)
+  - B5 noindex/robots zaten present (sadece redirect kaldi)
+  - test helpers yok (source-content fallback)
+  - admin scoped chip style gerek
+  - dispatcher line 847 guard
+- **Subagent #2 (code-architect, opus):** panel-soon.js + css final-form kod.
+  - Semantic tokens (--bg-surface, --text-primary, --accent vb)
+  - BEM-lite double-underscore (.ht-soon__card)
+  - DOM createElement (innerHTML yok)
+  - tabindex=-1 non-interactive
+  - Reduced-motion gated
+- Plan dosyasi guncellendi: REFINEMENT NOTES section eklendi (line 311+)
+- Original B1-B10 task body'leri korundu (audit trail) ama notes override eder
 
 ## 2026-04-13 — K030 FAZ A Codex Brief
 **Yapilan is:**

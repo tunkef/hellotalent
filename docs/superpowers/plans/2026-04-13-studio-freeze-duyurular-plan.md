@@ -318,6 +318,77 @@ git commit -m "docs(ai-collab): K030 FAZ A checkpoint"
 
 ---
 
+## ⚠ FAZ B REFINEMENT NOTES (2026-04-13, post-FAZ-A)
+
+Two Opus subagents audited FAZ B against the live repo. Apply these corrections **before** executing tasks below:
+
+### Critical path corrections
+
+1. **`switchPanel` lives in `profil-wizard.js`, not `profil.html`.** Original B4 had wrong file. Correct location: `profil-wizard.js:308` (mulakat lazy-load hook). Dispatcher: `_doSwitchPanel` at `profil-wizard.js:266`.
+2. **Bottom nav has NO Stüdyo entry.** B5's "bottom nav chip" subtask is a no-op. Drop it. Only sidebar gets the chip.
+3. **`#nav-yetkinlik` (profil.html:222-225) aliases to `mulakat`** via normalization at `profil-wizard.js:232`. Both sidebar entries land on panel-mulakat. **Both must get the "Yakında" chip**, otherwise UX is inconsistent. Add B3.5 task.
+4. **B9 (profil-studio.js FROZEN banner) is already done** in FAZ A (`profil-studio.js:1-15`). Drop B9 as an action; convert to a regression assertion in B7.
+5. **B5 (coach-studio.html noindex)**: `noindex` meta + robots.txt `Disallow` are **already in place**. Only the `<script>` redirect remains. Reduce scope.
+6. **B7 test helpers** (`loginAsCandidate`, `loginAsAdmin`) **do not exist**. Use FAZ A source-content fetch pattern (see `tests/faz-a-decouple.spec.js`).
+
+### Confirmed file:line refs
+
+| File | Refs |
+|---|---|
+| profil.html sidebar Stüdyo | `218-221` (`#nav-mulakat`) |
+| profil.html sidebar Yetkinlik (alias) | `222-225` (`#nav-yetkinlik`) |
+| profil.html panel-mulakat shell | `1633-1635` |
+| profil.html script load region | `1671+` |
+| profil-wizard.js `switchPanel` | `223` |
+| profil-wizard.js dispatcher | `266` |
+| profil-wizard.js mulakat normalization | `232` |
+| profil-wizard.js mulakat hook | `308` |
+| profil-wizard.js breadcrumb label | `273` |
+| admin.html studio nav-item | `356-359` |
+| admin.html panel-studio-modules | `501-507` |
+| admin.html studio script tag | `667` |
+| admin.html switchPanel hook | `847` |
+| coach-studio.html noindex (already present) | `10` |
+| coach-studio.html script insertion | `15-16` |
+| `.ht-chip` (existing) | `css/components.css:291-303` |
+| `.is-disabled` (existing) | `css/layout.css:42` |
+| robots.txt coach-studio Disallow (already present) | `9` |
+| FAZ A FROZEN banner | `profil-studio.js:1-15` |
+| `_htLoadStudio` definition | `profil-studio.js:4330` |
+| `_htLoadStudio` only caller | `profil-wizard.js:308` |
+
+### Token + style upgrades (subagent #2 — design draft)
+
+The plan's original B1/B2 used hardcoded hex + literal font-family + single-underscore class names. **Override** with:
+
+- **BEM-lite double-underscore:** `.ht-soon__card`, `.ht-soon__chip`, `.ht-soon__icon`, `.ht-soon__title`, `.ht-soon__desc`, `.ht-soon__heading`, `.ht-soon__lead`
+- **Semantic tokens only:** `var(--bg-surface)`, `var(--text-primary)`, `var(--text-secondary)`, `var(--text-muted)`, `var(--border-subtle)`, `var(--border-strong)`, `var(--accent)`, `var(--accent-soft)`, `var(--accent-text)`, `var(--navy)`, `var(--navy-light)`, `var(--font-head)`, `var(--font-body)`, `var(--font-mono)`, `var(--text-xs)`..`var(--text-3xl)`, `var(--radius-lg)`
+- **DOM construction:** `document.createElement` + `textContent` only (no `innerHTML` for content per `.claude/rules/code-quality.md`)
+- **Inline SVG via createElementNS** (namespaced), no emoji icons
+- **Cards `tabindex="-1"`** so visible-but-non-focusable, keyboard nav skips
+- **Reduced-motion gated transitions:** `@media (prefers-reduced-motion: reduce)` opt-out
+- **Mobile breakpoint:** `@media (max-width: 480px)` (480 not 390 — matches existing pattern)
+
+The full final-form code for `panel-soon.js` and `css/panel-soon.css` is in the subagent #2 output transcript at `/private/tmp/claude-501/-Users-peopleintk/46bd335e-3a3a-4378-be19-2c6821dd3aec/tasks/aaf61afb0742920db.output` — implementer should copy that code into B1/B2 instead of the older hardcoded version below.
+
+### Task ordering tweaks
+
+1. **B9 → drop** (replace with assertion in B7)
+2. **B3:** purely script/link tag inserts in profil.html (no switchPanel surgery)
+3. **B4:** target `profil-wizard.js:308`, NOT profil.html
+4. **B3.5 (NEW):** chip on `#nav-yetkinlik` alongside `#nav-mulakat`
+5. **B5:** drop bottom nav, sidebar only, both nav items
+6. **B6:** before B5 if you want fail-fast; otherwise current order. Add admin-scoped chip CSS.
+7. **B7:** runs LAST so all source-content checks hit final state in one CI run
+8. **B8:** single edit — only the `<script>` redirect
+
+### Sources
+
+- Refinement report: subagent #1 transcript `ac9e9c2b8070c5449.output`
+- Design draft: subagent #2 transcript `aaf61afb0742920db.output`
+
+---
+
 ### Task B1: Create `panel-soon.js`
 
 **Files:**
