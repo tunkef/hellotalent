@@ -640,3 +640,10 @@ BLOCKED — fix B4 loader removal, Genel coach CTA paths, B6/B7 stale task bodie
 - Debug: _htDebugBell showed SEEN_KEY stuck at past timestamp, RPC returning data:0 correctly (all posts were published BEFORE that timestamp).
 - Cache-bust ?v=20260413l
 
+
+## 2026-04-14 — K030 FAZ C hotfix 7: activateTab isUserAction flag
+- activateTab(root, key, isUserAction) — SEEN_KEY + badge reset + bell refresh only on explicit click
+- Silent restore (sessionStorage) no longer flushes SEEN_KEY
+- Bump SEEN_VERSION_KEY v3 to re-purge stale values from hotfix 6 path
+- Cache-bust ?v=20260413m
+

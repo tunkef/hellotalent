@@ -1177,7 +1177,9 @@
     return null;
   }
 
-  function activateTab(root, key) {
+  /* K030 FAZ C hotfix 7: activateTab now separates "user intent click" from
+   * silent restore. Only explicit clicks flush SEEN_KEY and reset the bell. */
+  function activateTab(root, key, isUserAction) {
     var buttons = root.querySelectorAll('.ht-segment[data-segment="bildirim-duyuru"] button');
     for (var i = 0; i < buttons.length; i++) {
       var isActive = buttons[i].getAttribute('data-tab') === key;
@@ -1198,13 +1200,16 @@
         window._htLoadDuyuruFeed(mount, { limit: 50, offset: 0, infinite: true });
         mount.dataset.loaded = '1';
       }
-      try { localStorage.setItem(SEEN_KEY, new Date().toISOString()); } catch (e) { /* ignore */ }
-      // Clear badge
-      var badge = root.querySelector('[data-duyuru-badge]');
-      if (badge) { badge.textContent = '0'; badge.setAttribute('hidden', ''); }
-      /* K030 FAZ C hotfix: reset duyuru unread global + refresh header bell dot */
-      window._htDuyuruUnreadCount = 0;
-      if (typeof window._htApplyNotifBellDot === 'function') window._htApplyNotifBellDot();
+      /* K030 FAZ C hotfix 7: mark as seen only on explicit user click.
+       * Silent restore must NOT flush SEEN_KEY, otherwise every page load
+       * resets unread and the header bell never accumulates. */
+      if (isUserAction === true) {
+        try { localStorage.setItem(SEEN_KEY, new Date().toISOString()); } catch (e) { /* ignore */ }
+        var badge = root.querySelector('[data-duyuru-badge]');
+        if (badge) { badge.textContent = '0'; badge.setAttribute('hidden', ''); }
+        window._htDuyuruUnreadCount = 0;
+        if (typeof window._htApplyNotifBellDot === 'function') window._htApplyNotifBellDot();
+      }
     }
   }
 
@@ -1219,14 +1224,14 @@
     for (var i = 0; i < buttons.length; i++) {
       buttons[i].addEventListener('click', function (ev) {
         var key = ev.currentTarget.getAttribute('data-tab');
-        activateTab(panel, key);
+        activateTab(panel, key, true);
       });
     }
 
-    // Restore saved tab
+    // Restore saved tab — isUserAction=false so SEEN_KEY stays intact
     var saved = null;
     try { saved = sessionStorage.getItem(STORAGE_KEY); } catch (e) { /* ignore */ }
-    activateTab(panel, saved === 'duyuru' ? 'duyuru' : 'bildirim');
+    activateTab(panel, saved === 'duyuru' ? 'duyuru' : 'bildirim', false);
   }
 
   /* K030 FAZ C hotfix 5: defensive parse for the unread count RPC.
@@ -1261,7 +1266,7 @@
    * removal so clients get a fresh baseline (all active posts count
    * as unread until the user opens the Duyurular tab). */
   var SEEN_VERSION_KEY = 'ht_duyuru_seen_v';
-  var CURRENT_SEEN_VERSION = '2';
+  var CURRENT_SEEN_VERSION = '3';
   (function purgeStaleSeen() {
     try {
       var v = localStorage.getItem(SEEN_VERSION_KEY);
