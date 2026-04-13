@@ -92,7 +92,7 @@
     var table = el('table', 'ht-ann-admin__table');
     var thead = el('thead', '');
     var trh = el('tr', '');
-    ['Ba\u015Fl\u0131k', 'Kategori', 'Yay\u0131n', 'Durum', 'Sabit', 'Be\u011Feni', 'G\u00F6r\u00FCntulenme', 'Eylemler'].forEach(function (h) {
+    ['Ba\u015Fl\u0131k', 'Kategori', 'Yay\u0131n', 'Durum', 'Sabit', 'Be\u011Feni', 'G\u00F6r\u00FCnt\u00FClenme', 'Eylemler'].forEach(function (h) {
       trh.appendChild(txt('th', '', h));
     });
     thead.appendChild(trh);

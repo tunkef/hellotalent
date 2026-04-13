@@ -62,8 +62,8 @@ test.describe('K030 FAZ C — HT Duyurular (source checks)', () => {
     var body = await fetchText(request, baseURL, '/profil.html');
     expect(body).toContain('marked@11/marked.min.js');
     expect(body).toContain('dompurify@3/dist/purify.min.js');
-    expect(body).toContain('css/duyurular.css?v=20260413b');
-    expect(body).toContain('profil-duyurular.js?v=20260413b');
+    expect(body).toContain('css/duyurular.css?v=20260413f');
+    expect(body).toContain('profil-duyurular.js?v=20260413f');
     // Segment markup in #panel-bildirimler
     expect(body).toContain('data-segment="bildirim-duyuru"');
     expect(body).toContain('data-tab-content="bildirim"');
@@ -83,9 +83,9 @@ test.describe('K030 FAZ C — HT Duyurular (source checks)', () => {
     var body = await fetchText(request, baseURL, '/admin.html');
     expect(body).toMatch(/data-panel="announcements"/);
     expect(body).toContain('id="panel-announcements"');
-    expect(body).toContain('admin-announcements.js?v=20260413b');
-    expect(body).toContain('profil-duyurular.js?v=20260413b');
-    expect(body).toContain('css/duyurular.css?v=20260413b');
+    expect(body).toContain('admin-announcements.js?v=20260413f');
+    expect(body).toContain('profil-duyurular.js?v=20260413f');
+    expect(body).toContain('css/duyurular.css?v=20260413f');
     // switchPanel dispatcher branch
     expect(body).toMatch(/name === 'announcements'[\s\S]{0,200}_htAdminAnnouncements/);
     // Ann-root mount target
@@ -99,5 +99,41 @@ test.describe('K030 FAZ C — HT Duyurular (source checks)', () => {
     expect(body).toContain('_htLoadDuyuruFeed');
     expect(body).toContain('ht_last_duyuru_seen');
     expect(body).toContain('ht_bildirim_tab');
+  });
+
+  /* ── K030 FAZ C extension: view analytics + focal point ───────── */
+  test('profil-duyurular.js tracks views via IntersectionObserver + RPC', async ({ request, baseURL }) => {
+    var body = await fetchText(request, baseURL, '/profil-duyurular.js');
+    expect(body).toContain('track_announcement_view');
+    expect(body).toContain('IntersectionObserver');
+    expect(body).toContain('threshold: 0.5');
+    expect(body).toContain('focal_x');
+    expect(body).toContain('focal_y');
+    expect(body).toContain('objectPosition');
+  });
+
+  test('admin-announcements.js has view_count column + focal click payload', async ({ request, baseURL }) => {
+    var body = await fetchText(request, baseURL, '/admin-announcements.js');
+    expect(body).toContain('G\\u00F6r\\u00FCnt\\u00FClenme');
+    expect(body).toContain('r.view_count');
+    expect(body).toContain('focal_x');
+    expect(body).toContain('focal_y');
+    expect(body).toContain('ht-composer__focal-dot');
+  });
+
+  test('css/duyurular.css defines focal-dot indicator', async ({ request, baseURL }) => {
+    var body = await fetchText(request, baseURL, '/css/duyurular.css');
+    expect(body).toContain('.ht-composer__focal-dot');
+    expect(body).toContain('data-has-focal');
+  });
+
+  test('migration 20260413202813 defines views table + focal cols + RPC', async ({ request, baseURL }) => {
+    var body = await fetchText(request, baseURL, '/supabase/migrations/20260413202813_ht_ann_views_focal.sql');
+    expect(body).toContain('ht_announcement_views');
+    expect(body).toContain('track_announcement_view');
+    expect(body).toContain('view_count');
+    expect(body).toContain('focal_x');
+    expect(body).toContain('focal_y');
+    expect(body).toContain('get_announcements_feed');
   });
 });
