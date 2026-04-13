@@ -6,11 +6,65 @@
 
 ## Mevcut Durum
 
-**Aktif is:** K030 FAZ A APPROVED + FAZ B plan 3. round Codex review bekliyor
-**Sonraki:** Codex re-dispatch (commit 06a52db sonrasi) → onay → FAZ B exec
-**Son commit:** 06a52db (RE wording fixes: count, freeze flag binding, Option A, override authority)
+**Aktif is:** K030 FAZ B exec tamamlandi, DeepSeek + regression bekliyor
+**Sonraki:** DeepSeek review → full regression → push
+**Son commit:** 866ba88 (FAZ B step 9 fix — 18/18 source-content tests yesil)
 **Spec:** docs/superpowers/specs/2026-04-13-studio-freeze-duyurular-design.md
 **Plan:** docs/superpowers/plans/2026-04-13-studio-freeze-duyurular-plan.md
+
+## 2026-04-13 — K030 FAZ B exec tamamlandi
+
+### Degisen dosyalar
+- `shared.js` — freeze flag `window._HT_STUDIO_FROZEN = true` (top, pre-IIFE)
+- `panel-soon.js` (yeni) — `_htRenderPanelSoon(rootEl)` + 4 kart + inline SVG
+- `css/panel-soon.css` (yeni) — BEM-lite, dark mode, mobile, reduced-motion
+- `profil-wizard.js` — freeze mount @ `mulakat`, dual-nav active, breadcrumb `Stüdyo - Yakinda`
+- `profil-genel.js` — 3 CTA gated (header practiceBtn+seeAll, card practiceBtn, openArticleInCoach panel switch removed)
+- `profil-studio.js` — 3 bridge appendChild sites gated (FAZ 4C bridge, related_role bridge, general bridge); like button intact
+- `profil.html` — panel-soon.css/js wire, `ht-chip--soon` on nav-mulakat + nav-yetkinlik, `?v=20260413a` on shared/profil-studio/profil-genel/profil-wizard/components.css/panel-soon
+- `css/components.css` — `.ht-chip--soon` variant
+- `admin.html` — studio-modules `is-disabled` + `aria-disabled` + chip + switchPanel early-return
+- `coach-studio.html` — top-level redirect script to `profil.html#mulakat`
+- `tests/faz-b-freeze.spec.js` (yeni) — 9 source-content testi
+
+### Test durumu
+- `npx playwright test tests/faz-b-freeze.spec.js --reporter=list` → **18/18 passed** (9 test × desktop+mobile projects), 876ms
+- FAZ A source-content guard intact (FROZEN banner + stub).
+
+### Riskler / acik noktalar
+- `docs/AI-COLLAB.md` pre-existing uncommitted edit bu commit oncesinde vardi; FAZ B exec'e dokunulmadi (korundu).
+- `profil-genel.js` `openArticleInCoach()` icinde `setTimeout` + `switchPanel('mulakat')` cagrisi **kaliciyen kaldirildi** (unfreeze'de de panel switch yapilmayacak). Plan'in direktifi boyleydi — unfreeze'de tekrar degerlendirilmeli.
+- Runtime smoke henuz kosulmadi (source-content tests yesil, DOM render Tuna/Claude tarafindan dogrulanmali).
+- `panel-soon.js` tabindex=-1 yaptigi icin cards klavye fokuslanamiyor; bu freeze donemi icin kasitli.
+- Prod push yapilmadi (parent yapacak).
+
+### Bir sonraki net adim
+1. DeepSeek review (`scripts/deepseek-review.sh`).
+2. Full `npx playwright test --reporter=list` regression.
+3. Push `origin main` (parent yetkisiyle).
+
+## 2026-04-13 — K030 Codex Re-Review ROUND 3 (post-wording-fixes)
+
+### Verdict: APPROVE
+
+### Wording fix status
+- A (count 5): ✓ — `5 additional edits` yaziyor.
+- B (freeze flag binding): ✓ — Tek flag, `shared.js` tanimi, alias yok.
+- C (RE-5 Option A): ✓ — Option A binding acik, Option B reddedilmis.
+- D (override authority): ✓ — Override authoritative, task bodies audit trail only.
+
+### Remaining gaps (if any)
+- Yok.
+
+### Go/no-go for FAZ B execution
+GO
+
+### If GO, recommended exec sequence
+1. `shared.js`e `window._HT_STUDIO_FROZEN = true;` ekleyin.
+2. `profil-wizard.js:273,277-280,308` freeze mount ve dual-nav active durumunu uygulayin.
+3. `profil-genel.js`te B3.6 CTA gizleme ve route duzeltmesini yapin.
+4. `profil-studio.js:2235,2264,2277` appendChild cagrilarini freeze flag ile gate edin.
+5. `profil.html` asset `?v=` bump ve B6/B7 test duzeltmelerini tamamlayin.
 
 ## 2026-04-13 — K030 Codex Re-Review (post-RE-1..RE-5)
 

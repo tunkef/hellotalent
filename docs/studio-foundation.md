@@ -165,3 +165,21 @@ Stüdyo (panel key: mulakat, loader: _htLoadStudio)
 ## Recently Deployed Schema (29 Mart 2026)
 
 - `20260328010000_streak_freeze_recovery.sql` — `last_broken_streak` column + enhanced `update_candidate_streak` (freeze consume + recovery) + enhanced `get_my_streak_status` (can_freeze + can_recover) ✅
+
+## K030 FAZ B — Studio Freeze Unfreeze Adımlari (2026-04-13)
+
+Studio şu anda `window._HT_STUDIO_FROZEN = true` flag'i ile `shared.js` içinde donduruldu.
+`profil.html#mulakat` panelinde `panel-soon.js` "Yakında" grid'i render ediliyor.
+
+Unfreeze için:
+1. `shared.js` içindeki `window._HT_STUDIO_FROZEN = true;` satırını `false` yap.
+2. `profil-wizard.js:273` breadcrumb otomatik olarak `Stüdyo`'ya dönüyor (label ternary).
+3. `profil-genel.js` coach→Studio CTAs (header practiceBtn/seeAll, card practiceBtn) geri render olacak.
+4. `profil-studio.js` coach detail overlay'deki 3 bridge CTA tekrar görünecek.
+5. `admin.html` Studio Modülleri tab'ı tekrar tıklanabilir olacak. `is-disabled` class'ını + `ht-chip--soon` span'ini el ile kaldır.
+6. `profil.html` sidebar'daki `.ht-chip--soon` span'lerini `#nav-mulakat` ve `#nav-yetkinlik` üzerinden kaldır.
+7. `coach-studio.html` redirect script'ini (head'deki K030 FAZ B block) kaldır.
+8. `tests/faz-b-freeze.spec.js` source-content test'lerini sil veya freeze expectation'larını çevir.
+9. FAZ A `profil-studio.js` FROZEN banner'ını + `_htGenelCoachTeaser` stub'ını gözden geçir; gerçek implementasyon geri getirilecekse ayrı bir Unfreeze faz'ı aç.
+
+Not: `profil-genel.js` `openArticleInCoach()` içindeki `switchPanel('mulakat')` çağrısı FAZ B'de kalıcı olarak kaldırıldı — unfreeze'de gerekirse manuel geri ekleme gerekir.
