@@ -339,12 +339,21 @@
     modal.appendChild(panel);
     document.body.appendChild(modal);
 
-    // Live preview updates
+    // Live preview updates — match real ht_announcements schema
     function updatePreview() {
       if (typeof window._htRenderDuyuruPreviewCard !== 'function') return;
       var fakeMedia = queuedMedia.map(function (m, idx) {
         return { storage_path: m.tempId, media_type: m.mediaType, order_index: idx, alt_text: '' };
       });
+      /* Link is stored as a media row (media_type='link') in the schema. */
+      if (linkInput.value) {
+        fakeMedia.push({
+          media_type: 'link',
+          external_url: linkInput.value,
+          alt_text: linkTitleInput.value || '',
+          order_index: fakeMedia.length
+        });
+      }
       var objectUrlMap = {};
       queuedMedia.forEach(function (m) { objectUrlMap[m.tempId] = m.objectUrl; });
       var fakePost = {
@@ -352,11 +361,10 @@
         title: titleInput.value,
         body_md: bodyTA.value,
         category: catSelect.value,
-        is_pinned: pinInput.checked,
+        /* Schema: pinned_until timestamptz — ISO string when pinned, null otherwise */
+        pinned_until: pinInput.checked ? new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() : null,
         published_at: new Date().toISOString(),
         media: fakeMedia,
-        link_url: linkInput.value,
-        link_title: linkTitleInput.value,
         cta_url: ctaInput.value,
         cta_label: ctaLbInput.value,
         like_count: (existingRow && existingRow.like_count) || 0,

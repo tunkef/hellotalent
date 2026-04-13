@@ -575,3 +575,9 @@ BLOCKED — fix B4 loader removal, Genel coach CTA paths, B6/B7 stale task bodie
 - profil-inbox.js: duyuru unread count header bell + sidebar badge'e yansitiliyor
 - profil.html cache-bust bump
 
+
+## 2026-04-13 — K030 FAZ C preview schema hotfix
+- profil-duyurular.js buildCard() uses pinned_until (not is_pinned), filters link media rows
+- admin-announcements.js updatePreview fakePost matches real schema
+- Cache bump ?v=20260413e
+

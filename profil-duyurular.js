@@ -219,14 +219,16 @@
 
   /* ── Card renderer ───────────────────────────────────────────── */
   function buildCard(post, signedMap) {
-    var card = el('article', 'ht-duyuru__card' + (post.is_pinned ? ' ht-duyuru__card--pinned' : ''));
+    /* K030 FAZ C schema: pinned_until timestamptz (NOT is_pinned bool). */
+    var isPinned = post.pinned_until && new Date(post.pinned_until) > new Date();
+    var card = el('article', 'ht-duyuru__card' + (isPinned ? ' ht-duyuru__card--pinned' : ''));
     card.setAttribute('data-announcement-id', post.id || '');
 
     /* Head — chip + pin + date */
     var head = el('div', 'ht-duyuru__card-head');
     var chipCls = 'ht-duyuru__chip ht-duyuru__chip--' + (post.category || 'genel');
     head.appendChild(txt('span', chipCls, CATEGORY_LABELS[post.category] || 'Genel'));
-    if (post.is_pinned) head.appendChild(txt('span', 'ht-duyuru__pin', 'Sabitlendi'));
+    if (isPinned) head.appendChild(txt('span', 'ht-duyuru__pin', 'Sabitlendi'));
     head.appendChild(txt('span', 'ht-duyuru__date', trRelativeDate(post.published_at || post.created_at)));
     card.appendChild(head);
 
@@ -241,20 +243,34 @@
       card.appendChild(body);
     }
 
-    /* Carousel */
-    var carousel = buildCarousel(post.media || [], signedMap || {});
+    /* K030 FAZ C schema: filter media into visual (image/video) for carousel,
+     * links for link preview cards (media_type='link' with external_url). */
+    var allMedia = post.media || [];
+    var visualMedia = [];
+    var linkMedia = [];
+    for (var mi = 0; mi < allMedia.length; mi++) {
+      var mm = allMedia[mi];
+      if (mm && mm.media_type === 'link') linkMedia.push(mm);
+      else if (mm) visualMedia.push(mm);
+    }
+
+    /* Carousel — images + videos only */
+    var carousel = buildCarousel(visualMedia, signedMap || {});
     if (carousel) card.appendChild(carousel);
 
-    /* Link preview */
-    if (post.link_url) {
+    /* Link preview cards — one per link media row */
+    for (var li = 0; li < linkMedia.length; li++) {
+      var lm = linkMedia[li];
+      var url = lm.external_url;
+      if (!url) continue;
       var linkCard = document.createElement('a');
       linkCard.className = 'ht-duyuru__link-preview';
-      linkCard.href = post.link_url;
+      linkCard.href = url;
       linkCard.target = '_blank';
       linkCard.rel = 'noopener noreferrer';
       var linkBody = el('div', '');
-      linkBody.appendChild(txt('div', 'ht-duyuru__link-preview-title', post.link_title || post.link_url));
-      linkBody.appendChild(txt('div', 'ht-duyuru__link-preview-url', post.link_url));
+      linkBody.appendChild(txt('div', 'ht-duyuru__link-preview-title', lm.alt_text || url));
+      linkBody.appendChild(txt('div', 'ht-duyuru__link-preview-url', url));
       linkCard.appendChild(linkBody);
       card.appendChild(linkCard);
     }
