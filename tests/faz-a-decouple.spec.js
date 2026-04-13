@@ -8,12 +8,12 @@
 var { test, expect } = require('@playwright/test');
 
 test.describe('K030 FAZ A — Coach/Studio decouple (source checks)', () => {
-  async function getStudioJs(request, baseURL) {
+  var getStudioJs = async function (request, baseURL) {
     var url = (baseURL || 'http://localhost:8080') + '/profil-studio.js';
     var res = await request.get(url);
     expect(res.ok()).toBeTruthy();
     return await res.text();
-  }
+  };
 
   test('profil-studio.js has file-top FROZEN banner with unfreeze steps', async ({ request, baseURL }) => {
     var body = await getStudioJs(request, baseURL);
@@ -29,8 +29,9 @@ test.describe('K030 FAZ A — Coach/Studio decouple (source checks)', () => {
 
   test('_htGenelCoachTeaser stub returns empty posts + likedSet', async ({ request, baseURL }) => {
     var body = await getStudioJs(request, baseURL);
-    // noop stub literal must be present
-    expect(body).toMatch(/window\._htGenelCoachTeaser\s*=\s*function\s*\(\)\s*\{\s*return\s*\{\s*posts:\s*\[\]\s*,\s*likedSet:\s*\{\}\s*\}/);
+    expect(body).toContain('window._htGenelCoachTeaser = function()');
+    expect(body).toContain('return { posts: [], likedSet: {} }');
+    expect(body).toContain('FROZEN 2026-04-13 (K030): dead-code stub');
   });
 
   test('openCoachDetail export still present (FAZ A keeps Genel feed working)', async ({ request, baseURL }) => {

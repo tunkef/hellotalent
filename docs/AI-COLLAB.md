@@ -6,8 +6,34 @@
 
 ## Mevcut Durum
 
-**Aktif is:** K030 FAZ A TAMAMLANDI — push ve 24h gozlem bekliyor
+**Aktif is:** K030 FAZ A push bekliyor (DeepSeek review uygulandi, regression temiz)
 **Sonraki:** push origin main → 24h gozlem → FAZ B freeze
+**Codex rapor:** FAZ A detaylari asagida — onay sonrasi FAZ B basla
+
+## 2026-04-13 — K030 FAZ A Codex Brief
+**Yapilan is:**
+- profil-studio.js: file-top FROZEN banner + cross-link maps dormant banner + _htGenelCoachTeaser noop stub
+- tests/faz-a-decouple.spec.js: 5 kaynak-icerik test (10 pass, desktop+mobile)
+- DeepSeek review: 0 kritik, 0 yuksek, 2 orta + 3 dusuk → 2 orta fix uygulandi (var pattern + toContain assertions)
+- Full regression: 1277 pass, 14 fail (HEPSI pre-existing, studio/coach disi), 0 K030 kaynakli
+
+**Degisen dosyalar:**
+- profil-studio.js (+28 -4 satir, logic yok, sadece comment banner + stub literali)
+- tests/faz-a-decouple.spec.js (+48 yeni)
+- docs/AI-COLLAB.md (bu dosya)
+
+**Test durumu:**
+- K030 FAZ A suite: 10/10 PASS
+- Full regression: 1277 PASS, 14 pre-existing fail (auth.setup env, dark-mode pre-paint, LP segment toggle, kurumsal brand viewport'lari)
+- 0 yeni regresyon
+
+**Riskler / blocker'lar:**
+- Yok. Runtime path degismedi. User-visible degisiklik YOK.
+- Intermediate state: Studio paneli hala acilir, Koc feed Genel'de hala calisir.
+
+**Sonraki net adim:**
+- Codex onayiyla push → GitHub Pages deploy → 24h gozlem
+- Gozlem sonrasi FAZ B: panel-soon.js + switchPanel guard + sidebar/bottom nav chip + coach-studio.html noindex
 **Spec:** docs/superpowers/specs/2026-04-13-studio-freeze-duyurular-design.md
 **Plan:** docs/superpowers/plans/2026-04-13-studio-freeze-duyurular-plan.md
 
