@@ -270,23 +270,32 @@ function _doSwitchPanel(name) {
   if (target) target.classList.add('active');
   var bc = document.getElementById('breadcrumb-current');
   if (bc) {
-    var labels = { genel: 'Genel Bak\u0131\u015f', merkez: 'Profil Merkezi', sirketler: 'Markalar', teklifler: '\u00d6zel Teklifler', inbox: 'Mesajlar', bildirimler: 'Bildirimler', ayarlar: 'Ayarlar', profil: 'Profil', yetkinlik: 'St\u00fcdyo', mulakat: 'St\u00fcdyo', premium: 'Premium', kimbakti: 'Kim Bakt\u0131', destek: 'Destek Merkezi' };
+    var _studioLabel = (window._HT_STUDIO_FROZEN === true) ? 'St\u00fcdyo - Yakinda' : 'St\u00fcdyo';
+    var labels = { genel: 'Genel Bak\u0131\u015f', merkez: 'Profil Merkezi', sirketler: 'Markalar', teklifler: '\u00d6zel Teklifler', inbox: 'Mesajlar', bildirimler: 'Bildirimler', ayarlar: 'Ayarlar', profil: 'Profil', yetkinlik: _studioLabel, mulakat: _studioLabel, premium: 'Premium', kimbakti: 'Kim Bakt\u0131', destek: 'Destek Merkezi' };
     bc.textContent = labels[name] || name;
+  }
+  // K030 FAZ B: when frozen and mulakat panel is active, activate BOTH
+  // #nav-mulakat AND #nav-yetkinlik aliases (Option A binding).
+  var _frozenDualNav = (window._HT_STUDIO_FROZEN === true && name === 'mulakat');
+  function _navMatch(btn) {
+    if (btn.dataset.panel === name) return true;
+    if (_frozenDualNav && btn.dataset.panel === 'yetkinlik') return true;
+    return false;
   }
   // Update sidebar nav
   document.querySelectorAll('.sidebar-nav .nav-item').forEach(function(btn) {
     btn.classList.remove('active');
-    if (btn.dataset.panel === name) btn.classList.add('active');
+    if (_navMatch(btn)) btn.classList.add('active');
   });
   // Update header nav
   document.querySelectorAll('.header-nav .hn-item').forEach(function(btn) {
     btn.classList.remove('active');
-    if (btn.dataset.panel === name) btn.classList.add('active');
+    if (_navMatch(btn)) btn.classList.add('active');
   });
   // Update bottom nav
   document.querySelectorAll('.bn-item').forEach(function(btn) {
     btn.classList.remove('active');
-    if (btn.dataset.panel === name) btn.classList.add('active');
+    if (_navMatch(btn)) btn.classList.add('active');
   });
   // Refresh Genel home when returning to it (picks up profile/settings changes)
   if (name === 'genel') { window._htRefreshGenelHome && window._htRefreshGenelHome(); }
@@ -305,7 +314,20 @@ function _doSwitchPanel(name) {
   if (name === 'inbox') { window._htLoadInbox && window._htLoadInbox(); }
   // Note: yetkinlik → mulakat normalization handled in switchPanel() before this is called
   // Lazy-load Mulakat panel on first visit (also load yetkinlik bridge data)
-  if (name === 'mulakat') { window._htLoadYetkinlik && window._htLoadYetkinlik(); window._htLoadStudio && window._htLoadStudio(); }
+  if (name === 'mulakat') {
+    // K030 FAZ B: when frozen, render the "Yakında" placeholder inside #panel-mulakat
+    // and SKIP both Studio and Yetkinlik loaders. Flip window._HT_STUDIO_FROZEN = false
+    // in shared.js to unfreeze.
+    if (window._HT_STUDIO_FROZEN === true) {
+      var soonRoot = document.getElementById('panel-mulakat');
+      if (soonRoot && typeof window._htRenderPanelSoon === 'function') {
+        window._htRenderPanelSoon(soonRoot);
+      }
+      return;
+    }
+    window._htLoadYetkinlik && window._htLoadYetkinlik();
+    window._htLoadStudio && window._htLoadStudio();
+  }
   // Lazy-load Premium panel on first visit
   if (name === 'premium') { window._htLoadPremium && window._htLoadPremium(); }
   // Lazy-load Bildirimler on first visit
