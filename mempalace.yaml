@@ -1,0 +1,85 @@
+wing: hellotalent
+rooms:
+- name: tasks
+  description: Files from tasks/
+  keywords:
+  - tasks
+  - tasks
+- name: css
+  description: Files from css/
+  keywords:
+  - css
+  - css
+- name: testing
+  description: Files from tests/
+  keywords:
+  - testing
+  - tests
+- name: documentation
+  description: Files from docs/
+  keywords:
+  - documentation
+  - docs
+- name: playwright
+  description: Files from playwright/
+  keywords:
+  - playwright
+  - playwright
+- name: supabase
+  description: Files from supabase/
+  keywords:
+  - supabase
+  - supabase
+- name: ref_styles
+  description: Files from ref_styles/
+  keywords:
+  - ref_styles
+  - ref_styles
+- name: scripts
+  description: Files from scripts/
+  keywords:
+  - scripts
+  - scripts
+- name: ref_guidelines
+  description: Files from ref_guidelines/
+  keywords:
+  - ref_guidelines
+  - ref_guidelines
+- name: qa_screenshots
+  description: Files from qa-screenshots/
+  keywords:
+  - qa_screenshots
+  - qa-screenshots
+- name: test_results
+  description: Files from test-results/
+  keywords:
+  - test_results
+  - test-results
+- name: design
+  description: Files from assets/
+  keywords:
+  - design
+  - assets
+- name: vault
+  description: Files from vault/
+  keywords:
+  - vault
+  - vault
+- name: ref_components
+  description: Files from ref_components/
+  keywords:
+  - ref_components
+  - ref_components
+- name: reviews
+  description: Files from reviews/
+  keywords:
+  - reviews
+  - reviews
+- name: frontend
+  description: Files from ui/
+  keywords:
+  - frontend
+  - ui
+- name: general
+  description: Files that don't fit other rooms
+  keywords: []

@@ -42,6 +42,14 @@ LOG="$RESULTS_DIR/orchestrator-$TIMESTAMP.log"
 # ── Step result tracker (honest reporting) ──
 STEP_RESULTS=""
 
+# ── MemPalace wake-up (session başı bellek yükle) ──
+mempalace_wakeup() {
+  if command -v mempalace &>/dev/null; then
+    log "MemPalace wake-up (hellotalent wing)..."
+    mempalace wake-up --wing hellotalent 2>/dev/null | tee -a "$LOG" || true
+  fi
+}
+
 log() {
   echo -e "$1" | tee -a "$LOG"
 }
@@ -472,6 +480,7 @@ case "${1:-help}" in
     log "${BOLD}🚀 HelloTalent AI Pipeline — Tam Çalıştırma${NC}"
     log "Başlangıç: $(date '+%Y-%m-%d %H:%M')"
     divider
+    mempalace_wakeup
     step_brief
     step_implement
     step_review

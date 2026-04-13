@@ -175,6 +175,30 @@
 
 ---
 
+## Agent Altyapı Geliştirmeleri
+
+### MemPalace — Kalıcı AI Bellek Sistemi (SK)
+
+> MemPalace: 96.6% LongMemEval doğruluğu, local/offline, ChromaDB + SQLite. 19 MCP tool.
+> Tüm kararlar (K001-K029), RLS pattern'ler, data contract'lar kalıcı hafızaya alınır.
+> Session başında agent context sıfırdan yüklenmez — MemPalace'den çeker.
+
+| # | Görev | Detay | Dosyalar | Durum |
+|---|-------|-------|----------|-------|
+| SK1 | MemPalace kurulum | `pip install mempalace`, `mempalace init .`, Claude MCP kaydı | `mempalace.yaml`, `entities.json` | ☑ 13 Nisan 2026 |
+| SK2 | Proje mine (ilk indeksleme) | 302 dosya, 17 room, 8270 drawer (vault/docs/scripts/supabase/frontend) | `~/.mempalace/palace/` | ☑ 13 Nisan 2026 |
+| SK3 | Identity dosyası oluştur | `~/.mempalace/identity.txt` — proje bağlamı L0 olarak yüklenir | `identity.txt` | ☑ 13 Nisan 2026 |
+| SK4 | Orchestrator entegrasyonu | Session başında `mempalace wake-up --wing hellotalent` otomatik | `scripts/orchestrator.sh` | ☑ 13 Nisan 2026 |
+| SK5 | Vault kararlarını mine et | K001-K029 + yapilacaklar.md semantic search'e kazandır | `vault/` | ☐ (mine içinde) |
+
+### Telegram Temizliği
+
+| # | Görev | Detay | Durum |
+|---|-------|-------|-------|
+| TG1 | Telegram sistemi kaldırma | telegram-bot.sh, telegram-gate.sh, tests, env vars, tüm çağrılar | ☑ 13 Nisan 2026 |
+
+---
+
 ## Yapılacaklar Güncelleme Kuralı
 
 - Her görev tamamlandığında ☑ + tarih eklenir
@@ -184,5 +208,5 @@
 
 ---
 
-*Son güncelleme: 8 Nisan 2026*
+*Son güncelleme: 13 Nisan 2026*
 *İlişkili: [[mvp-roadmap]], [[veri-modeli-analiz]], [[feature-map]], [[karar-defteri]]*
