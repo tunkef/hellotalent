@@ -110,11 +110,6 @@ watch_loop() {
       echo "$(date '+%H:%M:%S') === YENI ASAMA: $new_stage ===" >> "$LOG_FILE"
 
       notify "Yeni Asama Algilandi: $new_stage" "Pipeline basliyor..." "default" "gear"
-      # Telegram bildirimi
-      if [ -f "scripts/telegram-bot.sh" ]; then
-        ./scripts/telegram-bot.sh send "⚙️ *Codex yeni gorev verdi: Asama $new_stage*
-Pipeline basliyor..." 2>/dev/null || true
-      fi
 
       # Lock al
       echo $$ > "$LOCK_FILE"
@@ -127,13 +122,9 @@ Pipeline basliyor..." 2>/dev/null || true
         if ./scripts/orchestrator.sh run >> "$LOG_FILE" 2>&1; then
           echo "$(date '+%H:%M:%S') Pipeline BASARILI" >> "$LOG_FILE"
           notify "Asama $new_stage Tamamlandi" "Pipeline basariyla bitti. reviews/ klasorunu incele." "default" "white_check_mark"
-          [ -f "scripts/telegram-bot.sh" ] && ./scripts/telegram-bot.sh send "✅ *Asama $new_stage tamamlandi!*
-Pipeline basariyla bitti. Sonuclari /log ile gorebilirsin." 2>/dev/null || true
         else
           echo "$(date '+%H:%M:%S') Pipeline HATA" >> "$LOG_FILE"
           notify "HATA: Asama $new_stage" "Pipeline hataya dustu! Terminali kontrol et." "urgent" "x"
-          [ -f "scripts/telegram-bot.sh" ] && ./scripts/telegram-bot.sh send "❌ *HATA: Asama $new_stage*
-Pipeline hataya dustu! Terminali kontrol et." 2>/dev/null || true
         fi
       fi
 

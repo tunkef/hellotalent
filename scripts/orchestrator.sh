@@ -70,11 +70,6 @@ notify_mac() {
   osascript -e "display notification \"$2\" with title \"$1\" sound name \"Glass\"" 2>/dev/null || true
 }
 
-# ── Telegram bildirimi ──
-notify_telegram() {
-  [ -f "scripts/telegram-bot.sh" ] && ./scripts/telegram-bot.sh send "$1" 2>/dev/null || true
-}
-
 # ── Son aşamayı AI-COLLAB.md'den oku ──
 # Sadece "## N. Claude Icin Gorev" görev başlıklarını okur.
 # Özet, review veya eski referanslar aktif aşama sayılmaz.
@@ -106,8 +101,6 @@ step_brief() {
         log ""
         log "${GREEN}Brief hazır:${NC} $brief_file"
       fi
-    else
-      notify_telegram "⚠️ *Grok brief basarisiz* — API hatasi olabilir, devam ediliyor"
     fi
   else
     log "${YELLOW}Grok script bulunamadı, brief atlanıyor.${NC}"
@@ -172,7 +165,6 @@ step_implement() {
     log "${RED}Syntax hatası var — pipeline durduruluyor.${NC}"
     notify_phone "HATA: Syntax Hatasi" "Pipeline durdu! Syntax hatasi var, terminali kontrol et." "urgent" "x"
     notify_mac "HelloTalent HATA" "Syntax hatasi — pipeline durdu!"
-    notify_telegram "❌ *Claude: Syntax hatasi!* Pipeline durdu."
     return 1
   fi
   log ""
@@ -192,7 +184,6 @@ step_review() {
     log "Diff review (max ${DEEPSEEK_MAX_RETRIES:-3} attempts)..."
     if ! ./scripts/deepseek-review.sh diff 2>&1 | tee -a "$LOG"; then
       log "${YELLOW}[INFRA WARNING] DeepSeek diff review başarısız — tüm retry'lar tükendi.${NC}"
-      notify_telegram "⚠️ *[INFRA] DeepSeek diff review basarisiz* — 3 deneme sonrasi fail"
       deepseek_ok=false
     fi
     log ""
@@ -201,7 +192,6 @@ step_review() {
     log "Security audit (max ${DEEPSEEK_MAX_RETRIES:-3} attempts)..."
     if ! ./scripts/deepseek-review.sh security 2>&1 | tee -a "$LOG"; then
       log "${YELLOW}[INFRA WARNING] DeepSeek security audit başarısız — tüm retry'lar tükendi.${NC}"
-      notify_telegram "⚠️ *[INFRA] DeepSeek security audit basarisiz* — 3 deneme sonrasi fail"
       deepseek_ok=false
     fi
     log ""
@@ -277,7 +267,6 @@ step_test() {
   log "  $p3_result"
   if echo "$p3_result" | grep -q "failed"; then
     notify_phone "HATA: P3 Test FAIL" "$p3_result" "urgent" "x"
-    notify_telegram "❌ *Test FAIL:* $p3_result"
     tests_ok=false
   fi
 
@@ -285,7 +274,6 @@ step_test() {
   local bats_result=$(npm run test:bats 2>&1 | tail -1)
   log "  $bats_result"
   if echo "$bats_result" | grep -q "not ok"; then
-    notify_telegram "❌ *BATS FAIL:* $bats_result"
     tests_ok=false
   fi
 
@@ -325,7 +313,6 @@ step_uat() {
     STEP_RESULTS="${STEP_RESULTS:-}UAT:PASS "
   else
     log "${RED}UAT (Playwright smoke) FAIL:${NC} $smoke_summary"
-    notify_telegram "❌ *UAT FAIL:* $smoke_summary"
     STEP_RESULTS="${STEP_RESULTS:-}UAT:FAIL "
   fi
   log ""
@@ -472,11 +459,6 @@ show_summary() {
   log ""
   log "  Toplam: ${GREEN}$pass_count geçti${NC} / ${RED}$fail_count fail${NC} / ${YELLOW}$skip_count atlandı${NC}"
 
-  if [ "$fail_count" -gt 0 ]; then
-    notify_telegram "⚠️ *Pipeline tamamlandi:* $pass_count geçti, $fail_count FAIL, $skip_count atlandı — reviews/ incele"
-  else
-    notify_telegram "✅ *Pipeline tamamlandi:* $pass_count/$((pass_count + skip_count)) geçti ($skip_count atlandı)"
-  fi
   log ""
   divider
 }

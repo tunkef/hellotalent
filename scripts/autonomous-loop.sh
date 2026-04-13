@@ -155,18 +155,6 @@ _dispatch_feedback() {
   _send_feedback_to_codex "$feedback_text"
 }
 
-# ── Telegram Notify ───────────────────────────────────────────────────────────
-_notify_telegram() {
-  local msg="${1:-}"
-  local telegram_script
-  telegram_script="$(dirname "${BASH_SOURCE[0]}")/telegram-bot.sh"
-  if [ -x "$telegram_script" ]; then
-    "$telegram_script" send "$msg" 2>/dev/null || true
-  else
-    _loop_log "telegram-bot.sh not available, skipping notify"
-  fi
-}
-
 # ── Wait Retry Counter ────────────────────────────────────────────────────────
 WAIT_RETRY_COUNT=0
 
@@ -210,8 +198,6 @@ _main_loop() {
   orchestrator="$(dirname "${BASH_SOURCE[0]}")/orchestrator.sh"
   local codex_bridge
   codex_bridge="$(dirname "${BASH_SOURCE[0]}")/codex-bridge.sh"
-  local telegram_gate
-  telegram_gate="$(dirname "${BASH_SOURCE[0]}")/telegram-gate.sh"
 
   # Pre-populate LAST_STAGE_FILE with any existing stage so a cold-start with
   # a stale .autopilot.stage does not immediately fire PIPELINE.
@@ -306,47 +292,8 @@ _main_loop() {
         ;;
 
       GATE)
-        _loop_log "Running Telegram gate"
-        local stage_no=""
-        if [ -f "$STAGE_FILE" ]; then
-          stage_no=$(cat "$STAGE_FILE" 2>/dev/null || echo "")
-        fi
-        local summary_file
-        summary_file="$(mktemp)"
-        _extract_stage_summary "$COLLAB_FILE" "$stage_no" > "$summary_file" 2>/dev/null || echo "Stage $stage_no" > "$summary_file"
-
-        if [ -x "$telegram_gate" ]; then
-          "$telegram_gate" notify "$stage_no" "$summary_file" 2>>"$LOG_FILE" || true
-          local gate_result
-          gate_result=$("$telegram_gate" wait 2>>"$LOG_FILE" || echo "DONT")
-          rm -f "$summary_file"
-
-          case "$gate_result" in
-            GO)
-              _handle_gate_result "GO"
-              _set_state "PIPELINE"
-              ;;
-            DONT)
-              _handle_gate_result "DONT"
-              # DONT already sets state to IDLE via _handle_gate_result
-              ;;
-            FEEDBACK:*)
-              local feedback
-              feedback=$(_handle_gate_result "$gate_result")
-              _loop_log "Sending feedback to Codex: $feedback"
-              _dispatch_feedback "$feedback"
-              _set_state "WAIT_CODEX"
-              ;;
-            *)
-              _loop_log "Unknown gate result: $gate_result, stopping"
-              _set_state "IDLE"
-              ;;
-          esac
-        else
-          _loop_log "telegram-gate.sh not found, defaulting to DONT"
-          rm -f "$summary_file"
-          _set_state "IDLE"
-        fi
+        _loop_log "GATE: pipeline tamamlandi, IDLE'a donuluyor (manuel devam gerekli)"
+        _set_state "IDLE"
         ;;
 
       *)
@@ -380,7 +327,6 @@ if [ "${BASH_SOURCE[0]}" = "$0" ]; then
         stop_pid=$(cat "$LOOP_PID_FILE" 2>/dev/null || echo "")
         kill "$stop_pid" 2>/dev/null || true
         rm -f "$LOOP_PID_FILE" "$STATE_FILE"
-        _notify_telegram "autonomous-loop stopped"
         echo "autonomous-loop stopped (PID=$stop_pid)"
       else
         echo "autonomous-loop is not running"

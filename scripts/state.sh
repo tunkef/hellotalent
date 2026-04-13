@@ -8,7 +8,7 @@
 #   state_set "implementing"     → durumu güncelle
 #   state_set_stage 50           → aşama numarasını güncelle
 #   state_set_task "Employer onboarding"  → aktif görevi güncelle
-#   state_summary                → Telegram'a gönderilecek özet
+#   state_summary                → Durum özeti
 
 STATE_FILE="${STATE_FILE:-.state.json}"
 
@@ -143,7 +143,7 @@ plan_remaining() {
   jq -r '.completed[] | "[x] \(.)"' "$DAILY_PLAN_FILE" 2>/dev/null || true
 }
 
-plan_telegram_summary() {
+plan_summary() {
   if [ ! -f "$DAILY_PLAN_FILE" ]; then echo "Gunluk plan henuz olusturulmadi."; return; fi
   local date_str=$(jq -r '.date' "$DAILY_PLAN_FILE")
   local total=$(jq -r '.items | length' "$DAILY_PLAN_FILE")

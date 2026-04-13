@@ -59,9 +59,8 @@
 
 ## Acik Riskler / Blocker
 
-1. Telegram bot race condition — duplicate "devam" mesajlari (debounce eklendi ama tam cozmedi)
-2. Playwright smoke flaky — Cloudflare Access arkasinda, local server ile test ediliyor
-3. iyzico entegrasyonu — DEFER (beta 3 ay boyunca ucretsiz)
+1. Playwright smoke flaky — Cloudflare Access arkasinda, local server ile test ediliyor
+2. iyzico entegrasyonu — DEFER (beta 3 ay boyunca ucretsiz)
 
 ## Guvenlik Durumu (9 Nisan 2026)
 

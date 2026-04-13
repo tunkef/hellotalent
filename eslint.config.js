@@ -18,6 +18,7 @@ module.exports = [
       'docs/**',
       '*.min.js',
       'playwright.config.js',
+      'playwright-*.config.js',
       'eslint.config.js'
     ]
   },

@@ -67,7 +67,13 @@ Claude her turda:
   - Riskler / blocker'lar
   - Bir sonraki net adım
 
-### Token Verimliliği
+### Token Verimliliği — Caveman Mode (Otomatik)
+- Bu projede caveman skill otomatik aktiftir. Her session caveman full modunda başlar.
+- Kısa, öz, teknik doğruluğu koruyan cevaplar ver. Filler/hedging/pleasantries yok.
+- Açıklama yerine aksiyon. "Dosyayı okudum ve şunu gördüm..." yerine direkt bulguyu yaz.
+- Insight blokları, uzun tablolar, eğitici açıklamalar YAPMA — sadece Tuna isterse.
+- Kod blokları ve güvenlik uyarıları normal kalır.
+- Tuna "detaylı anlat" veya "normal mode" derse caveman'i kapat.
 - Tokenlar değerlidir; uzun geçmişi aynı dosyada taşımayın.
 - `docs/AI-COLLAB.md` sadece aktif iş, son kararlar, açık riskler ve bir sonraki net adımı taşımalıdır.
 - `docs/AI-COLLAB.md` **5000 satır limitine** ulaşınca arşivle:
@@ -86,6 +92,23 @@ Claude her turda:
 - Scope dışı değişiklik yapma
 - Test etmeden tamamlandı deme
 - Gerekli durumda regression guard ekle
+
+## Ultraplan Hatirlatma
+
+Kullanici asagidaki kosullardan birini karsilayan bir is istediginde `/ultraplan` onerisi yap:
+
+- 5+ dosyayi etkileyen yeni bir faz veya feature baslangici
+- Mimari karar gerektiren is (yeni tablo, yeni RLS politikasi, yeni Edge Function, yeni API kontrati)
+- Backlog'daki "Yuksek Oncelik" maddelerinden birine baslanacaksa (Iyzico, Isveren P3, Kampanya Wizardi)
+- Kullanici "planla", "nasil yapalim", "nereden baslayalim" gibi planlama sinyali verdiyse
+
+Hatirlatma formati:
+```
+Bu is buyuk gorunuyor ([sebep]). `/ultraplan` ile bulutta detayli plan olusturabilirsin — terminalin serbest kalir.
+```
+
+Kullanici "gerek yok" veya "normal plan yeter" derse ISRAR ETME.
+Kucuk isler icin (bug fix, CSS duzeltme, tek dosya degisiklik) ONERME.
 
 ## Context7
 Always use context7 when working with Supabase API, CSS, or any library docs.
