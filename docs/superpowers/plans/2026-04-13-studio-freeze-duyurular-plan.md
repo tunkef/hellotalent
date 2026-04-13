@@ -389,6 +389,75 @@ The full final-form code for `panel-soon.js` and `css/panel-soon.css` is in the 
 
 ---
 
+## ⚠⚠ CODEX STAGE-GATE OVERRIDE (2026-04-13)
+
+Codex reviewed the refined plan and **BLOCKED** FAZ B execution until 4 additional edits ship. Apply these on top of the refinement notes above.
+
+### Codex's 5 question answers (binding)
+
+| Q | Decision |
+|---|---|
+| **Q1** Mount point | Render **inside** `#panel-mulakat` (not new sibling). `profil-wizard.js:269-270` already targets that shell |
+| **Q2** Heading level | `<h2>` — `profil.html` has no outer `<h1>`, panel titles are sectional |
+| **Q3** Cache-bust | YES, `?v=YYYYMMDDx` pattern. See `profil.html:56-63, 1671-1694`. Bump for every touched/new asset |
+| **Q4** Yetkinlik bridge | **Freeze the route** at `profil-wizard.js:308` (stop `_htLoadYetkinlik`), but **keep the bridge export** at `profil-yetkinlik.js:740-741` |
+| **Q5** Breadcrumb label | **Change** `profil-wizard.js:273` "Stüdyo" → "Stüdyo - Yakinda" while frozen |
+
+### Codex required edits (blocking)
+
+**RE-1: B4 must stop BOTH loaders**
+
+At `profil-wizard.js:308`, the freeze guard must replace BOTH `_htLoadStudio()` AND `_htLoadYetkinlik()` with the `_htRenderPanelSoon` mount. Original B4 only mentions Studio. Both functions are called from the same hook because of the alias normalization at line 232.
+
+**RE-2: New task — neutralize Genel coach→Studio CTAs**
+
+Add a new task **B3.6** (or B3a, name your discretion) covering these surfaces in `profil-genel.js`:
+
+- `profil-genel.js:770-776` — Coach feed header "Stüdyo'ya Git" + "Tümünü Gör" buttons → conditional render: hide both when `STUDIO_FROZEN === true`
+- `profil-genel.js:924-930` — Coach card "Bu konuyu şimdi çalış" practice CTA → hide when frozen
+- `profil-genel.js:991-997` — `openArticleInCoach()` calls `switchPanel('mulakat')` + `openCoachDetail()`. Replace with `openCoachDetail()` only (no switchPanel). The detail overlay still opens, just without forcing Studio panel switch.
+
+Implementation pattern: introduce a single source-of-truth `var STUDIO_FROZEN = true;` constant at the top of `profil-genel.js` IIFE (or in shared.js) and gate the CTA appendChild calls with `if (!STUDIO_FROZEN) { ... }`. When unfreezing, flip one constant.
+
+**RE-3: New task — neutralize Studio coach detail overlay CTAs**
+
+Add a new task **B3.7** covering `profil-studio.js:2232-2276`. Even though `profil-studio.js` is dormant via FAZ A FROZEN banner, `window.openCoachDetail` is still exported and called from `profil-genel.js:995`. The coach detail overlay it opens contains **two practice bridge CTAs** ("Bu konuyu şimdi çalış" / "Koçluğa Başlayın") that route into Studio practice flow.
+
+Edit pattern: inside the overlay builder at line 2232+, gate the bridge button block with `if (window._HT_STUDIO_FROZEN) { /* skip CTA */ }` or simply remove the `actionsEl.appendChild(bridgeBtn)` lines guarded by the same `STUDIO_FROZEN` flag from RE-2. The like button stays.
+
+This edit is INSIDE profil-studio.js but is a single-flag conditional, not a logic change. It does NOT violate the "freeze, don't modify" principle because the gate is reversible (flip the flag → CTAs return).
+
+**RE-4: B6/B7 selector + test fixes**
+
+- B6 admin selector is wrong: use `.nav-item[data-panel="studio-modules"]`, NOT `data-tab="studio"`. Confirmed by `admin.html:356-359`
+- B7 still has stale references to `loginAsCandidate` / `loginAsAdmin`. **Re-write entirely** as source-content fetch tests mirroring `tests/faz-a-decouple.spec.js` pattern. NO runtime auth-gated tests in B7.
+
+**RE-5: Alias UX + cache-bust hygiene**
+
+- `profil-wizard.js:273` breadcrumb label → "Stüdyo - Yakinda" (per Q5)
+- `profil-wizard.js:277-280` activation logic → currently activates only `data-panel="mulakat"`; `#nav-yetkinlik` never stays active after alias normalization. Decide UX:
+  - **Option A:** Activate both `#nav-mulakat` and `#nav-yetkinlik` when on the soon panel (visual consistency)
+  - **Option B:** Hide `#nav-yetkinlik` entirely during freeze (one nav entry instead of two chipped)
+  - Codex did not pick — implementer chooses based on minimal-change principle. Default: Option A (activate both).
+- All touched files in `profil.html:56-63, 1671-1694` and any new asset (panel-soon.js, css/panel-soon.css) need `?v=` query string bump. Use `?v=20260413a` or current convention.
+
+### Codex's additional gaps (for awareness)
+
+- `profil-wizard.js:277-280` activation only flags `mulakat` — `nav-yetkinlik` won't get the active-state styling. RE-5 Option A handles this.
+- Versioned assets at `profil.html:56-63, 1671-1694` use `?v=YYYYMMDDx`. Forgetting the bump = stale CSS for users on revisit.
+- profil-studio.js comment line 9 mentions a "bottom-nav chip" that doesn't actually exist in markup. Original FAZ A banner is wrong about this. Consider correcting the FAZ A banner during FAZ B (low priority).
+
+### FAZ B execution gate
+
+**Status:** BLOCKED until RE-1 through RE-5 are reflected in the task bodies below AND Codex re-reviews.
+
+**Sequence:**
+1. Update task bodies (or apply edits inline during exec)
+2. Re-dispatch Codex stage-gate
+3. On approval → FAZ B exec subagent dispatch with the corrected plan
+
+---
+
 ### Task B1: Create `panel-soon.js`
 
 **Files:**

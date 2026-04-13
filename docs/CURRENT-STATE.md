@@ -1,5 +1,6 @@
 # hellotalent.ai — Current State
 > Son guncelleme: 10 Nisan 2026 | Asama 74 — F1/F2/F3 Critical Fixes
+> Aktif Odak: K030 FAZ B - Studio freeze refinement close-out ve exec prep (FAZ A onayli, stage-gate fixleri bekliyor)
 
 ## 1. Proje Ozeti
 

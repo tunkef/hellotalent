@@ -6,6 +6,50 @@
 
 ## Mevcut Durum
 
+**Aktif is:** K030 FAZ A APPROVED (canli) + FAZ B plan NEEDS-CHANGES (Codex blocked)
+**Sonraki:** Plan duzeltmeleri uygulaniyor (4 zorunlu edit) → Codex re-approval → FAZ B exec
+**Son commit:** 49f744c (FAZ B refinement notes)
+**Spec:** docs/superpowers/specs/2026-04-13-studio-freeze-duyurular-design.md
+**Plan:** docs/superpowers/plans/2026-04-13-studio-freeze-duyurular-plan.md
+
+## 2026-04-13 — K030 Codex Stage-Gate Verdict (FAZ A + FAZ B plan)
+
+### FAZ A verdict: APPROVE
+- `b67dfd9`, `91398ea`, `320feb5` only touch claimed files and scopes.
+- `profil-studio.js:1-15,1668-1674,4386-4388` are comment/stub-only; no in-repo `_htGenelCoachTeaser` caller found.
+- `profil-wizard.js:308` is unchanged; FAZ A leaves end-user DOM/network paths untouched.
+- `tests/faz-a-decouple.spec.js` exists; local run blocked by `playwright.config.js:4-9` webServer bind permission.
+- `profil-studio.js:1-15,1668-1674` banners are static comments; no re-freeze guard flag or early return exists.
+
+### FAZ B plan refinement verdict: NEEDS-CHANGES
+- `REFINEMENT NOTES` refs match live repo: `profil.html`, `profil-wizard.js`, `admin.html`, `coach-studio.html`, CSS refs.
+- B9 drop, B3.5 add, B5 reduce are correct against `profil.html:218-225,402-419`.
+- `profil-wizard.js:308` still calls `_htLoadYetkinlik`; B4 must stop both loaders, not only Studio.
+- `profil-genel.js:770-776,924-930,991-997` keeps live coach-to-Studio routes; FAZ B plan does not neutralize them.
+- B6/B7 bodies stay stale: `data-tab="studio"` and missing auth helpers contradict `admin.html:356-359` and notes.
+
+### Answers to 5 open questions
+- **Q1 (mount point):** Replace/mount inside `#panel-mulakat`; `profil-wizard.js:269-270` targets that shell, so a new sibling panel is wrong.
+- **Q2 (heading level):** `h2`; `profil.html` has no `<h1>`, and panel titles are sectional surfaces (`profil.html:1102,1144,1160,1224,1553`).
+- **Q3 (cache-bust):** Yes; `profil.html:56-63,1671-1694` uses `?v=YYYYMMDDx` on CSS and JS tags.
+- **Q4 (yetkinlik bridge):** Freeze the route, keep the bridge export; stop `_htLoadYetkinlik` at `profil-wizard.js:308`, keep `profil-yetkinlik.js:740-741`.
+- **Q5 (breadcrumb label):** Change; `profil-wizard.js:273` should say `Stüdyo - Yakinda` while the panel is frozen.
+
+### Additional gaps Claude missed (if any)
+- `profil-wizard.js:277-280` activates only `data-panel="mulakat"`; `#nav-yetkinlik` never stays active after alias normalization.
+- `profil-studio.js:2232-2276` detail overlay still exposes live practice CTA paths after freeze.
+- `profil.html:56-63,1671-1694` versioned assets mean touched files/new assets need fresh `?v=` bumps.
+- `profil-studio.js:9` says bottom-nav chip exists, but `profil.html:402-419` has no Studio bottom nav.
+
+### Go/no-go for FAZ B execution
+BLOCKED — fix B4 loader removal, Genel coach CTA paths, B6/B7 stale task bodies, and cache-bust/alias UX first.
+
+### Required edits before FAZ B
+1. Rewrite B4 around `profil-wizard.js:308` to render the soon state and remove both `_htLoadStudio` and `_htLoadYetkinlik`.
+2. Add a FAZ B task for `profil-genel.js:770-776,924-930,991-997` and `profil-studio.js:2232-2276` CTA/detail freeze handling.
+3. Replace B6/B7 stale examples with `admin.html:356-359` `.nav-item[data-panel="studio-modules"]` and source-content tests, not `data-tab` or missing auth helpers.
+4. Define alias UX and shipping hygiene: update `profil-wizard.js:273,277-280` and bump touched/new asset `?v=` values in `profil.html`.
+
 **Aktif is:** K030 FAZ A push edildi (5 commit, GitHub Pages canli) + FAZ B plan refined
 **Sonraki:** Codex stage-gate review FAZ A → onay → FAZ B exec subagent dispatch
 **Codex rapor:** FAZ A detaylari asagida — onay sonrasi FAZ B basla
