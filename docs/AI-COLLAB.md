@@ -6,9 +6,12 @@
 
 ## Mevcut Durum
 
-**Aktif is:** K030 FAZ B exec tamamlandi, DeepSeek + regression bekliyor
-**Sonraki:** DeepSeek review → full regression → push
-**Son commit:** 866ba88 (FAZ B step 9 fix — 18/18 source-content tests yesil)
+**Aktif is:** K030 FAZ B PUSHED (f4a93e6) — Codex post-push stage-gate bekliyor
+**Sonraki:** Codex gate → 24h gozlem → FAZ C (duyurular feed migration)
+**Son commit:** f4a93e6 (sub-10px fix) — 12 commit FAZ B serisi canlida
+**FAZ B ozet:** 13 dosya (+591/-56), 1293/1293 regression PASS, 18/18 FAZ B test PASS
+**DeepSeek:** 0 blocker (1 false positive icon mapping)
+**Runtime smoke:** YOK (subagent browser yok, Gemini UAT'a birakildi)
 **Spec:** docs/superpowers/specs/2026-04-13-studio-freeze-duyurular-design.md
 **Plan:** docs/superpowers/plans/2026-04-13-studio-freeze-duyurular-plan.md
 
