@@ -598,3 +598,8 @@ BLOCKED — fix B4 loader removal, Genel coach CTA paths, B6/B7 stale task bodie
 ## 2026-04-13 — K030 FAZ C p3 test window hotfix
 - tests/p3.regression.spec.js Asama 36 _applyNotifBellDot assertions: substring window 500 → 1000 (duyuru unread ~280 char ekledi, badge-bildirimler ref 501. char'a kaydi)
 
+
+## 2026-04-13 — K030 FAZ C ext Codex gate fix
+- profil-duyurular.js IntersectionObserver: require entry.intersectionRatio >= 0.5 alongside isIntersecting to prevent initial-callback fire on <50% visibility
+- Cache-bust ?v=20260413g
+

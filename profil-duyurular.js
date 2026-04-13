@@ -39,7 +39,11 @@
     viewObserver = new window.IntersectionObserver(function (entries) {
       for (var i = 0; i < entries.length; i++) {
         var entry = entries[i];
+        /* K030 FAZ C Codex gate fix: require both flags — threshold 0.5 alone
+         * fires on the initial callback even when the ratio is below 0.5.
+         * Explicit ratio check makes "seen" mean ≥50% actually visible. */
         if (!entry.isIntersecting) continue;
+        if (typeof entry.intersectionRatio === 'number' && entry.intersectionRatio < 0.5) continue;
         var node = entry.target;
         var id = node.getAttribute('data-announcement-id');
         if (!id || id === 'preview' || trackedViews[id]) {
