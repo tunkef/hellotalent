@@ -6,10 +6,42 @@
 
 ## Mevcut Durum
 
-**Aktif is:** K030 FAZ C Subagent B tamamlandi, DeepSeek + full regression + push parent'a birakildi
-**Sonraki:** Parent (Claude) — DeepSeek review scripts/deepseek-review.sh + push origin main + Codex gate
-**Son commit (FAZ C Subagent B):** B1..B10 serisi (bkz bolum asagisi)
-**Onceki ana commit:** a16addd — ht_announcements migration + RLS + RPCs
+**Aktif is:** K030 FAZ C COMPLETE — CTO post-push verdict APPROVE, Tuna UAT bekliyor
+**Sonraki:** Storage policy (Tuna manuel dashboard) → Admin + candidate UAT → FAZ D
+**Son commit:** 3a8ec7e (Object URL cleanup hotfix). FAZ C zinciri a16addd..3a8ec7e = 11 commit
+**DeepSeek:** 2 false positive + 1 gerçek fix uygulandı. Regression: 1317 PASS, 0 yeni fail.
+
+## 2026-04-13 — K030 FAZ C Post-Push CTO Verdict
+
+**Codex subagent** ~50dk stuck kaldı (LLM wait, 14s CPU), kill edildi. CTO direkt 12 spot-check.
+
+### Verdict: APPROVE
+
+### 12/12 ✓
+1. Migration shape — is_admin REFERENCED değil REDEFINED, 0 storage.policies block
+2. CSP + CDN — cdn.jsdelivr.net allowed, marked+purify+duyurular.css yüklü
+3. profil.html wiring — ?v=20260413b cache-bust
+4. Bildirimler segment markup present
+5. profil-duyurular.js API + DOMPurify.sanitize
+6. profil-genel.js _HT_STUDIO_FROZEN branch + data-mount="duyuru-feed"
+7. admin-announcements.js storage path + cleanupObjectUrls X close (hotfix 3a8ec7e)
+8. admin.html Duyurular tab + dispatcher
+9. profil-inbox.js bildirim-duyuru toggle + RPC
+10. Tests source-only (9 fetchText, 0 loginAs)
+11. css/duyurular.css 104 BEM-lite + 4 dark-mode
+12. Object URL cleanup X close guard confirmed
+
+### Outstanding (non-blocking)
+- Storage policy SQL (Tuna manuel dashboard) — media upload gate
+- Drifted legacy migrations (3, task #21)
+- Runtime smoke: Tuna + Gemini UAT pending
+
+### UAT sequence
+1. Supabase dashboard → Storage → cvs → Policies → 3 SQL uygula
+2. Admin → Duyurular → Yeni post (title+body+2 görsel+link+CTA) → Yayınla
+3. Candidate → Genel Bakış feed → like → carousel
+4. Bildirimler → Duyurular toggle → unread badge
+5. Dark mode + mobile 390px visual
 
 ## 2026-04-13 — K030 FAZ C Subagent B (frontend + composer) tamamlandi
 
