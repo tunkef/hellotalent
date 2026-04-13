@@ -301,6 +301,12 @@ html[data-theme="dark"] .field-req{color:#F87171;}
   color:inherit;line-height:1;
 }
 .ht-chip--removable .ht-chip__close:hover{opacity:1;}
+/* K030 FAZ B — nav "Yakında" pill for sidebar buttons (Studio/Yetkinlik) */
+.ht-chip--soon{
+  background:var(--accent);color:#fff;font-size:9px;font-weight:600;
+  padding:2px 6px;margin-left:6px;border-radius:999px;letter-spacing:0.02em;
+  border:none;vertical-align:middle;text-transform:uppercase;line-height:1.4;
+}
 
 /* ═══ HT-INPUT (form field wrapper) ═══ */
 .ht-input{margin-bottom:16px;}
