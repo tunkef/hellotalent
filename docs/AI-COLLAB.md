@@ -705,3 +705,28 @@ BLOCKED — fix B4 loader removal, Genel coach CTA paths, B6/B7 stale task bodie
 - Cache-bust ?v=20260414a
 - 754/754 (24 FAZ C + 730 p3) PASS
 
+
+## 2026-04-14 — K031 Codex Post-Push Gate (CTO override)
+
+### Codex verdict: NEEDS-CHANGES (BOTH FINDINGS FALSE POSITIVE)
+
+**Finding 1:** Toggle ID mismatch 'merkez-toggle-hide-from-current-employer' vs shipped 'merkez-hide-from-current-employer'.
+**Root cause:** CTO brief typo. git show HEAD~1:profil.html confirms the original ID was 'merkez-hide-from-current-employer' (without -toggle-). Subagent correctly preserved actual contract. All JS handlers (profil-ui.js:1533, profil-visibility.js:183/229, profil-settings.js:157) resolve against the real ID.
+**Verdict:** Contract preserved, false positive.
+
+**Finding 2:** Class '.mk-identity-strip' not shipped (as '.mk-identity-wrap').
+**Root cause:** Design doc naming vs shipped implementation naming drift. Zero JS/HTML/test references to '.mk-identity-strip'. Stylistic rename only.
+**Verdict:** No functional impact, false positive.
+
+### CTO override: APPROVE
+
+- All 5 binding decisions applied
+- All contract IDs verified preserved
+- DeepSeek 0 blocker
+- Full regression 744/0 PASS
+- p3 K031 describe block 7 new assertions
+- Tuna UAT pending (visual verification)
+
+### Memory update
+Next brief writing → verify preserved IDs directly via grep before listing them. Brief typos become contract drift illusions.
+
