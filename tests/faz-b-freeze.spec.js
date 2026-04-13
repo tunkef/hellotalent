@@ -56,7 +56,8 @@ test.describe('K030 FAZ B — Studio freeze (source checks)', () => {
     var body = await fetchText(request, baseURL, '/profil-wizard.js');
     expect(body).toContain('_HT_STUDIO_FROZEN');
     expect(body).toContain('_htRenderPanelSoon');
-    expect(body).toContain('St\u00fcdyo - Yakinda');
+    // Source uses literal \u00fc escape, not actual character
+    expect(body).toContain('St\\u00fcdyo - Yakinda');
   });
 
   test('profil-genel.js gates coach→Studio CTAs with freeze flag', async ({ request, baseURL }) => {
@@ -90,7 +91,8 @@ test.describe('K030 FAZ B — Studio freeze (source checks)', () => {
 
   test('admin.html studio-modules tab disabled + switchPanel guard', async ({ request, baseURL }) => {
     var body = await fetchText(request, baseURL, '/admin.html');
-    expect(body).toMatch(/data-panel="studio-modules"[^>]*is-disabled/);
+    // is-disabled class sits on the same <div> as data-panel="studio-modules"
+    expect(body).toMatch(/<div[^>]*is-disabled[^>]*data-panel="studio-modules"|<div[^>]*data-panel="studio-modules"[^>]*is-disabled/);
     expect(body).toContain('aria-disabled="true"');
     // switchPanel early return for freeze flag
     expect(body).toMatch(/studio-modules[\s\S]{0,200}_HT_STUDIO_FROZEN/);
