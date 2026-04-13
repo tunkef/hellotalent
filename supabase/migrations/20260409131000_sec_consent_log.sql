@@ -12,6 +12,11 @@ CREATE TABLE IF NOT EXISTS public.consent_log (
 );
 
 ALTER TABLE public.consent_log ENABLE ROW LEVEL SECURITY;
+-- Idempotency guard: migration was originally applied manually via ad-hoc
+-- SQL; without DROP IF EXISTS, replaying via `db:push` failed with
+-- "policy consent_log_select_own already exists" and blocked all future
+-- migrations (task #21). Repaired 2026-04-14 via migration repair.
+DROP POLICY IF EXISTS consent_log_select_own ON public.consent_log;
 CREATE POLICY consent_log_select_own ON public.consent_log FOR SELECT USING (auth.uid() = user_id);
 GRANT SELECT ON public.consent_log TO authenticated;
 CREATE INDEX IF NOT EXISTS idx_consent_log_user_id ON public.consent_log(user_id);

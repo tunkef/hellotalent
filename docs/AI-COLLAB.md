@@ -659,3 +659,11 @@ BLOCKED — fix B4 loader removal, Genel coach CTA paths, B6/B7 stale task bodie
 - css/layout.css .header-popup-seg-dot font-size 9px → 10px (p3 sub-10 regression guard)
 - Box proportional: 16px → 18px
 
+
+## 2026-04-14 — Task #21: Drifted legacy migrations repaired
+- supabase migration repair --status applied for 20260409131000, 20260409160000, 20260410165047 (all marked applied in supabase_migrations.schema_migrations)
+- 20260409131000_sec_consent_log.sql: added DROP POLICY IF EXISTS for consent_log_select_own (idempotency guard — original non-idempotent CREATE POLICY blocked future db:push)
+- Other two migrations already idempotent (ADD COLUMN IF NOT EXISTS, regex_replace UPDATE)
+- Verified: npx supabase db push --dry-run --linked → 'Remote database is up to date'
+- db:push now unblocked for future migrations
+
