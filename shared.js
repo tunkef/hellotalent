@@ -1,4 +1,10 @@
 /* global supabase */
+
+/* K030 FAZ B: Studio freeze flag — single source of truth.
+ * Read by profil-genel.js, profil-studio.js, profil-wizard.js.
+ * Flip to false to unfreeze. */
+window._HT_STUDIO_FROZEN = true;
+
 /* ════════════════════════════════════════════════════
    HELLOTALENT — SHARED JS
    Çalışma mantığı:
