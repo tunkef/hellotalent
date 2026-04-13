@@ -40,8 +40,11 @@
   }
 
   function getSupa() {
-    if (typeof supabase !== 'undefined') return supabase;
+    /* Admin.html: real client exposed as window._htAdminSupa (from shared.js HT.getSupa()).
+     * Global `supabase` in admin context is the CDN namespace (createClient only), NOT a client. */
+    if (window._htAdminSupa && window._htAdminSupa.auth) return window._htAdminSupa;
     if (window.HT && typeof window.HT.getSupa === 'function') return window.HT.getSupa();
+    if (typeof supabase !== 'undefined' && supabase && supabase.auth) return supabase;
     return null;
   }
 
