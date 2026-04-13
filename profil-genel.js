@@ -795,7 +795,23 @@
       section.appendChild(feedContainer);
     }
 
+    /* K030 FAZ C: when Studio frozen, mount HT Duyurular feed instead of coach feed */
+    if (window._HT_STUDIO_FROZEN === true) {
+      var duyuruMount = document.createElement('section');
+      duyuruMount.className = 'ht-duyuru-feed-section';
+      duyuruMount.setAttribute('data-mount', 'duyuru-feed');
+      section.appendChild(duyuruMount);
+    }
+
     return section;
+  }
+
+  /* K030 FAZ C: hydrate HT Duyurular feed when frozen */
+  function hydrateDuyuruFeed() {
+    if (window._HT_STUDIO_FROZEN !== true) return;
+    if (typeof window._htLoadDuyuruFeed !== 'function') return;
+    var mount = document.querySelector('[data-mount="duyuru-feed"]');
+    if (mount) window._htLoadDuyuruFeed(mount, { limit: 10, offset: 0 });
   }
 
   /* Select string with cover image fields (requires migration 20260322142905) */
@@ -1374,6 +1390,7 @@
       shell.appendChild(layout);
       hydrateFeed();
       hydrateMarkaTeaserList();
+      hydrateDuyuruFeed();
       return;
     }
 
@@ -1392,6 +1409,7 @@
     hydrateFeed();
     hydrateMarkaTeaserList();
     hydrateEduDash();
+    hydrateDuyuruFeed();
   }
 
   /* ── Compact HT Info for left rail ── */
