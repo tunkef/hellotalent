@@ -105,8 +105,9 @@
       tr.appendChild(txt('td', '', r.title || '(ba\u015Fl\u0131ks\u0131z)'));
       tr.appendChild(txt('td', '', r.category || 'genel'));
       tr.appendChild(txt('td', '', r.published_at ? new Date(r.published_at).toLocaleDateString('tr-TR') : '-'));
-      tr.appendChild(txt('td', '', r.status || 'draft'));
-      tr.appendChild(txt('td', '', r.is_pinned ? 'Evet' : '-'));
+      tr.appendChild(txt('td', '', r.is_active ? 'Yay\u0131nda' : 'Arsiv'));
+      var pinnedNow = r.pinned_until && new Date(r.pinned_until) > new Date();
+      tr.appendChild(txt('td', '', pinnedNow ? 'Evet' : '-'));
       tr.appendChild(txt('td', '', String(r.like_count || 0)));
 
       var actions = el('td', '');
@@ -117,7 +118,7 @@
       })(r);
       actions.appendChild(edit);
 
-      var arch = txt('button', 'ht-ann-admin__action', r.status === 'archived' ? 'Aktifle\u015Ftir' : 'Ar\u015Fivle');
+      var arch = txt('button', 'ht-ann-admin__action', r.is_active ? 'Ar\u015Fivle' : 'Aktifle\u015Ftir');
       arch.type = 'button';
       (function (row) {
         arch.addEventListener('click', function () { toggleArchive(row); });
@@ -143,8 +144,7 @@
   async function toggleArchive(row) {
     var supa = getSupa();
     if (!supa) return;
-    var next = row.status === 'archived' ? 'published' : 'archived';
-    var res = await supa.from('ht_announcements').update({ status: next }).eq('id', row.id);
+    var res = await supa.from('ht_announcements').update({ is_active: !row.is_active }).eq('id', row.id);
     if (res.error) {
       console.error('[ann] archive toggle failed:', res.error.message);
       window.alert('G\u00FCncellenemedi: ' + res.error.message);
@@ -392,30 +392,42 @@
         var adminId = userRes && userRes.data && userRes.data.user && userRes.data.user.id;
         if (!adminId) throw new Error('Admin kimli\u011Fi al\u0131namad\u0131');
 
+        /* K030 FAZ C hotfix: payload must match actual schema
+         * ht_announcements has: admin_id, title, body_md, category, cta_url,
+         * cta_label, pinned_until (timestamptz), is_active (bool), published_at.
+         * Links go to ht_announcement_media with media_type='link'. */
         var payload = {
           title: titleInput.value.trim(),
           category: catSelect.value,
           body_md: bodyTA.value,
-          status: targetStatus,
-          is_pinned: pinInput.checked,
-          link_url: linkInput.value || null,
-          link_title: linkTitleInput.value || null,
+          is_active: targetStatus === 'published',
+          pinned_until: pinInput.checked ? new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() : null,
           cta_url: ctaInput.value || null,
           cta_label: ctaLbInput.value || null
         };
 
         var postId;
         if (existingRow && existingRow.id) {
-          payload.id = existingRow.id;
           var upd = await supa.from('ht_announcements').update(payload).eq('id', existingRow.id).select().maybeSingle();
           if (upd.error) throw upd.error;
           postId = existingRow.id;
         } else {
-          payload.author_id = adminId;
+          payload.admin_id = adminId;
           if (targetStatus === 'published') payload.published_at = new Date().toISOString();
           var ins = await supa.from('ht_announcements').insert(payload).select().maybeSingle();
           if (ins.error) throw ins.error;
           postId = ins.data && ins.data.id;
+        }
+
+        /* Link as media row (if provided) */
+        if (linkInput.value) {
+          var linkRow = await supa.from('ht_announcement_media').insert({
+            announcement_id: postId,
+            media_type: 'link',
+            external_url: linkInput.value,
+            order_index: queuedMedia.length
+          });
+          if (linkRow.error) console.warn('[ann] link insert failed:', linkRow.error.message);
         }
 
         // Upload queued media that are not yet uploaded
@@ -491,8 +503,9 @@
     if (!containerEl) return;
     while (containerEl.firstChild) containerEl.removeChild(containerEl.firstChild);
 
+    /* K030 FAZ C hotfix: admin.html zaten <h2>Duyurular</h2> rendering yapiyor,
+     * ayni basligi toolbar'da tekrarlamiyoruz (duplicate heading fix). */
     var toolbar = el('div', 'ht-ann-admin__toolbar');
-    toolbar.appendChild(txt('h3', '', 'Duyurular'));
     var newBtn = txt('button', 'ht-composer__btn ht-composer__btn--primary', 'Yeni duyuru');
     newBtn.type = 'button';
     newBtn.addEventListener('click', function () { openComposer(null); });
