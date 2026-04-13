@@ -570,3 +570,8 @@ BLOCKED — fix B4 loader removal, Genel coach CTA paths, B6/B7 stale task bodie
 **Sonraki asamalar:**
 - **Pozisyon gorunum/esleme metrikleri** — DEFER
 - **iyzico/Stripe checkout** — DEFER (beta 3 ay ucretsiz)
+
+## 2026-04-13 — K030 FAZ C bildirim bell dot hotfix
+- profil-inbox.js: duyuru unread count header bell + sidebar badge'e yansitiliyor
+- profil.html cache-bust bump
+

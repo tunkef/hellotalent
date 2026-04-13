@@ -913,11 +913,17 @@
   function _applyNotifBellDot() {
     var unread = 0;
     for (var i = 0; i < allNotifs.length; i++) { if (allNotifs[i].is_unread) unread++; }
+    /* K030 FAZ C hotfix: duyuru unread count also contributes to header bell dot */
+    var duyuruUnread = (typeof window._htDuyuruUnreadCount === 'number') ? window._htDuyuruUnreadCount : 0;
+    var total = unread + duyuruUnread;
     var dot = document.getElementById('header-notif-dot');
-    if (dot) dot.style.display = unread > 0 ? '' : 'none';
+    if (dot) dot.style.display = total > 0 ? '' : 'none';
     var navBadge = document.getElementById('badge-bildirimler');
-    if (navBadge) { navBadge.textContent = unread > 9 ? '9+' : String(unread); navBadge.style.display = unread > 0 ? '' : 'none'; }
+    if (navBadge) { navBadge.textContent = total > 9 ? '9+' : String(total); navBadge.style.display = total > 0 ? '' : 'none'; }
   }
+  /* Expose for segment toggle IIFE (profil-inbox.js bottom) — allows duyuru count
+   * updates to bubble into the header bell dot + sidebar badge. */
+  window._htApplyNotifBellDot = _applyNotifBellDot;
 
   var NOTIF_FILTERS = [
     { key: 'all',      label: 'T\u00FCm\u00FC' },
@@ -1196,6 +1202,9 @@
       // Clear badge
       var badge = root.querySelector('[data-duyuru-badge]');
       if (badge) { badge.textContent = '0'; badge.setAttribute('hidden', ''); }
+      /* K030 FAZ C hotfix: reset duyuru unread global + refresh header bell dot */
+      window._htDuyuruUnreadCount = 0;
+      if (typeof window._htApplyNotifBellDot === 'function') window._htApplyNotifBellDot();
     }
   }
 
@@ -1244,6 +1253,9 @@
       } else {
         badge.setAttribute('hidden', '');
       }
+      /* K030 FAZ C hotfix: publish duyuru unread to global + refresh header bell dot */
+      window._htDuyuruUnreadCount = count;
+      if (typeof window._htApplyNotifBellDot === 'function') window._htApplyNotifBellDot();
     } catch (e) {
       console.warn('[duyuru] unread count error:', e && e.message);
     }
