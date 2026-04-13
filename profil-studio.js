@@ -1,3 +1,18 @@
+/* ============================================================
+ * FROZEN — 2026-04-13 (K030)
+ * File preserved in dormant state. No runtime execution after
+ * FAZ B (profil.html switchPanel('mulakat') no longer calls
+ * _htLoadStudio). Structure kept for unfreeze path.
+ *
+ * Unfreeze steps (see docs/studio-foundation.md):
+ *   1. profil.html switchPanel('mulakat') → restore _htLoadStudio
+ *   2. Sidebar + bottom nav "Yakında" chip kaldır
+ *   3. admin.html Studio tab enable
+ *   4. panel-soon.js mount kaldır
+ *   5. profil-genel.js coach feed restore (git blame pre-K030)
+ *
+ * DO NOT DELETE — structural preservation required.
+ * ============================================================ */
 /* global supabase, _loadedDBData */
 /**
  * profil-studio.js — Stüdyo (Studio) Panel
@@ -1649,6 +1664,15 @@ function trLowerCoach(s) {
 }
 
 /* ── Cross-link mappings: competency → coach category + module slug ── */
+/* ============================================================
+ * FROZEN 2026-04-13 (K030) — Cross-link maps dormant.
+ * Reason: Studio paused, Koç backend-only. These maps correlate
+ *   competencies ↔ coach categories ↔ studio module slugs and
+ *   are consumed by hydrateCoachFeed / renderCompletion /
+ *   recommendation logic below. All consumers become dormant
+ *   together when FAZ B freezes _htLoadStudio.
+ * DO NOT MODIFY until unfreeze. See docs/studio-foundation.md.
+ * ============================================================ */
 /* Coach categories: best-fit mapping from 29 competencies to 6 coach categories */
 var COMP_TO_COACH_CATEGORY = {
   cf:'yetkinlik_rehberi', ce:'yetkinlik_rehberi', it:'yetkinlik_rehberi', co:'yetkinlik_rehberi',
@@ -4359,10 +4383,9 @@ window._htLoadStudio = function() {
 };
 
 /* ── Teaser helper for Genel Bakis home surface ── */
-/* Returns cached coach posts + liked set for read-only feed teaser */
-window._htGenelCoachTeaser = function() {
-  return { posts: _coachFeedPosts || [], likedSet: _coachLikedSet || {} };
-};
+/* FROZEN 2026-04-13 (K030): dead-code stub, no callers in repo.
+ * Kept as backward-compat in case external shell expects it. */
+window._htGenelCoachTeaser = function() { return { posts: [], likedSet: {} }; };
 
 /* Expose openCoachDetail so Genel home can trigger article detail */
 window.openCoachDetail = openCoachDetail;
