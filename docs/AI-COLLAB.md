@@ -6,10 +6,39 @@
 
 ## Mevcut Durum
 
-**Aktif is:** K030 FAZ C extension IN PROGRESS — view analytics + focal point control
-**Sonraki:** Storage policy (Tuna manuel dashboard) → Admin + candidate UAT → FAZ D
-**Son commit:** 8919839 (FAZ C hotfix 3). Extension migration 20260413202813 applied + repaired.
-**DeepSeek:** Parent will run review on extension chain. Migration verified via pg_ queries (7 objects).
+**Aktif is:** K031 Profil Merkezi editorial redesign — exec tamamlandi (branch: `feat/k031-profil-merkezi-redesign`)
+**Sonraki:** parent push + Codex post-push gate + GH Pages visual QA (desktop 1440 + mobile 390)
+**Son commit:** (bu oturumda) feat(merkezi): K031 Profil Merkezi editorial redesign
+**DeepSeek:** SKIPPED — DEEPSEEK_API_KEY env not set; parent runs review if policy requires.
+
+## 2026-04-14 — K031 Profil Merkezi exec tamamlandi
+
+- `css/panels/merkezi.css` rewritten 1659 → 566 satir (editorial: identity strip + topline pulse + 1px spine + CV zarf).
+- `profil.html` `#panel-merkez` markup re-ordered (lines 453-633). Legacy bento block silindi.
+- Tum korunmasi gereken ID'ler preserved:
+  - `data-step="1..4"`, `mk-preview-1..4`, `mk-empty-1..4`
+  - `merkez-toggle-visibility`, `merkez-toggle-active`, `merkez-hide-from-current-employer`, `merkez-hide-row`
+  - `cv-upload-area`, `cv-file-input`, `cv-drop-zone`, `cv-uploaded-state`, `cv-uploaded-name`, `cv-uploaded-date`, `btn-cv-select`, `btn-cv-reupload`, `btn-cv-delete`
+  - `btn-generate-cv-merkez`, `btn-ai-cv-optimize`, `btn-preview-profile`, `mk-premium-card-link`
+  - `merkez-identity`, `merkez-avatar`, `merkez-name`, `merkez-role`, `merkez-company`, `merkez-city-text`, `merkez-exp-text`
+  - YENI: `merkez-avatar-ring`, `mk-pulse-ring`, `mk-percent-number`, `mk-percent-caption`
+- JS rebind:
+  - `profil-summary.js` `updateBentoRing` artik spine `is-complete` classini yazar + 4 section ortalamasini topline `--mk-pulse-progress` + `mk-percent-number` + `mk-percent-caption` alanlarina aktarir. Per-card bar DOM kaldirildi.
+  - `profil-visibility.js` `updateVisState` artik `.mk-avatar-ring.is-active` classini `merkez-toggle-visibility` state'inden toggle ediyor (Tuna decision 4 — avatar yesil working ring korundu).
+  - `profil-events.js` spine click handler `.mk-card[data-step]` → `#panel-merkez [data-step]` olarak rebind edildi. `.mk-edit-btn` handler'i kaldirildi (pencil artik sirf visual).
+  - `profil-cv.js` `showCVUploaded`/`showCVEmpty` yeni CV row yapisinda `cv-drop-actions` ve `cv-uploaded-actions` action cluster'larini da toggle ediyor.
+- AI Optimize Et: ayri satir `.mk-zarf__row--ai`, "Beta · Ucretsiz" chip-button (Tuna decision 3).
+- Stagger fadeUp 280ms + 40/80/140/220/260/320ms delays, ring fill sweep 600ms, `prefers-reduced-motion` fallback.
+- Dark mode: semantic tokens carry; `html[data-theme='dark']` block'u zarf card bg + tick box-shadow + avatar bg icin targeted tweak yapiyor.
+- Cache-bust: `merkezi.css?v=20260406a` → `?v=20260414b`.
+- p3 regression legacy guard'lari guncellendi:
+  - `.mk-card[data-step]` semantic-buttons guard → `.mk-spine__item[data-step]` guard.
+  - `mk-bento-grid` presence assertion kaldirildi.
+  - `mk-footer-premium` copy guard → `mk-premium-card-link` zarf row copy guard ("Beni One Cikar · 3 ay ucretsiz beta").
+- NEW `K031 — Profil Merkezi editorial redesign` describe block: 7 test (CSS component classes, legacy class removal, markup structure, preserved IDs, cache-bust, JS rebind, avatar-ring class toggle).
+- Full regression: **744 passed / 0 failed** (mobile + desktop, 3.4s). Hic failure yok.
+- DeepSeek review: SKIPPED — `DEEPSEEK_API_KEY` env not set in this session. Parent should run if policy requires.
+- Sonraki: parent push + Codex post-push gate + GH Pages visual QA.
 
 ## 2026-04-13 — K030 FAZ C Extension (views + focal)
 

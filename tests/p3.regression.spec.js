@@ -190,12 +190,12 @@ test.describe('Sprint 4 — copy quality & accessibility', () => {
     expect(profilHtml).toMatch(/<button[^>]*class="header-notif"/);
   });
 
-  test('mk-cards are semantic buttons with data-step', () => {
-    var mkButtons = profilHtml.match(/<button[^>]*class="mk-card[^"]*"[^>]*data-step="/g) || [];
-    expect(mkButtons.length).toBe(4);
-    // No inline onclick on mk-cards
-    var mkOnclick = profilHtml.match(/mk-card[^>]*onclick=/g) || [];
-    expect(mkOnclick.length).toBe(0);
+  test('K031 merkez spine items are semantic buttons with data-step', () => {
+    var spineButtons = profilHtml.match(/<button[^>]*class="mk-spine__item[^"]*"[^>]*data-step="/g) || [];
+    expect(spineButtons.length).toBe(4);
+    // No inline onclick on spine items
+    var spineOnclick = profilHtml.match(/mk-spine__item[^>]*onclick=/g) || [];
+    expect(spineOnclick.length).toBe(0);
   });
 
   test('CSS has no font-size below 10px', () => {
@@ -203,8 +203,7 @@ test.describe('Sprint 4 — copy quality & accessibility', () => {
     expect(subTenMatches).toEqual([]);
   });
 
-  test('bento grid and locked-card styling exist (locked class optional in HTML)', () => {
-    expect(profilHtml).toContain('class="mk-bento-grid"');
+  test('K031 locked-card styling still exists (locked class optional in HTML)', () => {
     // .locked may be used for future/disabled tiles; rule must stay for when markup uses it
     expect(profilCss).toContain('.bento-card.locked');
   });
@@ -2390,13 +2389,13 @@ test.describe('Aşama 25 — Candidate dashboard free-tier copy drift', () => {
     expect(modalSnippet).not.toContain('Premium avantajlarını keşfet');
   });
 
-  test('merkez top footer premium entry shows Beta Avantajları not Premium Aday Avantajları', () => {
-    // Window is 500 chars to accommodate the inline SVG polygon before mk-footer-text
-    var footerStart = profilHtml25.indexOf('id="mk-footer-premium"');
-    expect(footerStart).toBeGreaterThan(0);
-    var footerSnippet = profilHtml25.substring(footerStart, footerStart + 500);
-    expect(footerSnippet).toContain('Beta Avantajları');
-    expect(footerSnippet).not.toContain('Premium Aday Avantajları');
+  test('K031 merkez premium zarf row shows "Beni Öne Çıkar · 3 ay ücretsiz beta" copy', () => {
+    var premStart = profilHtml25.indexOf('id="mk-premium-card-link"');
+    expect(premStart).toBeGreaterThan(0);
+    var premSnippet = profilHtml25.substring(premStart, premStart + 800);
+    expect(premSnippet).toContain('Beni Öne Çıkar');
+    expect(premSnippet).toContain('3 ay ücretsiz beta');
+    expect(premSnippet).not.toContain('Premium Aday Avantajları');
   });
 });
 
@@ -3114,3 +3113,123 @@ test.describe('Asama 58 — Mini Eğitim Dashboard guards', () => {
     expect(genelJs).not.toContain('innerHTML = d.');
   });
 });
+
+// ═══════════════════════════════════════════════════════════════
+// K031 — Profil Merkezi editorial redesign
+// ═══════════════════════════════════════════════════════════════
+test.describe('K031 — Profil Merkezi editorial redesign', () => {
+  let profilHtml;
+  let merkeziCss;
+  let summaryJs;
+  let visibilityJs;
+
+  test.beforeAll(() => {
+    profilHtml    = readFromRepo('profil.html');
+    merkeziCss    = readFromRepo('css/panels/merkezi.css');
+    summaryJs     = readFromRepo('profil-summary.js');
+    visibilityJs  = readFromRepo('profil-visibility.js');
+  });
+
+  test('merkezi.css ships the K031 component classes', () => {
+    expect(merkeziCss).toContain('.mk-identity-wrap');
+    expect(merkeziCss).toContain('.mk-avatar-ring');
+    expect(merkeziCss).toContain('.mk-pulse');
+    expect(merkeziCss).toContain('.mk-spine');
+    expect(merkeziCss).toContain('.mk-spine__tick');
+    expect(merkeziCss).toContain('.mk-spine__item');
+    expect(merkeziCss).toContain('.mk-zarf');
+    expect(merkeziCss).toContain('.mk-zarf__card');
+    expect(merkeziCss).toContain('.mk-zarf__row--premium');
+    expect(merkeziCss).toContain('.mk-zarf__row--ai');
+    expect(merkeziCss).toContain('.mk-signature');
+    expect(merkeziCss).toContain('@keyframes mkFadeUp');
+    expect(merkeziCss).toContain('@keyframes mkRingFill');
+    expect(merkeziCss).toContain('prefers-reduced-motion');
+  });
+
+  test('merkezi.css no longer contains legacy bento/card classes', () => {
+    expect(merkeziCss).not.toContain('.mk-bento-grid');
+    expect(merkeziCss).not.toContain('.mk-card-icon');
+    expect(merkeziCss).not.toContain('.mk-card-status');
+    expect(merkeziCss).not.toContain('.mk-premium-toggle-card');
+    expect(merkeziCss).not.toContain('.mk-cv-grid-card');
+    expect(merkeziCss).not.toContain('.mk-ai-grid-card');
+    expect(merkeziCss).not.toContain('.mk-footer-premium');
+  });
+
+  test('panel-merkez markup uses K031 editorial structure', () => {
+    var start = profilHtml.indexOf('id="panel-merkez"');
+    expect(start).toBeGreaterThan(0);
+    var end = profilHtml.indexOf('</main>', start);
+    var region = profilHtml.substring(start, end);
+
+    expect(region).toContain('class="mk-identity-wrap"');
+    expect(region).toContain('class="mk-avatar-ring"');
+    expect(region).toContain('class="mk-pulse__ring"');
+    expect(region).toContain('class="mk-spine"');
+    expect(region.match(/class="mk-spine__item"/g) || []).toHaveLength(4);
+    expect(region).toContain('class="mk-zarf"');
+    expect(region).toContain('class="mk-signature"');
+    expect(region).toContain('CV ve görünürlüğün');
+    expect(region).toContain('HelloTalent · Beta');
+  });
+
+  test('panel-merkez preserves all required IDs + handler contracts', () => {
+    var start = profilHtml.indexOf('id="panel-merkez"');
+    var end = profilHtml.indexOf('</main>', start);
+    var region = profilHtml.substring(start, end);
+
+    // Wizard step contracts
+    for (var s = 1; s <= 4; s++) {
+      expect(region).toContain('data-step="' + s + '"');
+      expect(region).toContain('id="mk-preview-' + s + '"');
+      expect(region).toContain('id="mk-empty-' + s + '"');
+    }
+    // Visibility + CV + premium + AI
+    expect(region).toContain('id="merkez-toggle-visibility"');
+    expect(region).toContain('id="merkez-toggle-active"');
+    expect(region).toContain('id="merkez-hide-from-current-employer"');
+    expect(region).toContain('id="merkez-hide-row"');
+    expect(region).toContain('id="cv-upload-area"');
+    expect(region).toContain('id="cv-file-input"');
+    expect(region).toContain('id="cv-drop-zone"');
+    expect(region).toContain('id="cv-uploaded-state"');
+    expect(region).toContain('id="cv-uploaded-name"');
+    expect(region).toContain('id="cv-uploaded-date"');
+    expect(region).toContain('id="btn-cv-select"');
+    expect(region).toContain('id="btn-cv-reupload"');
+    expect(region).toContain('id="btn-cv-delete"');
+    expect(region).toContain('id="btn-generate-cv-merkez"');
+    expect(region).toContain('id="btn-ai-cv-optimize"');
+    expect(region).toContain('id="btn-preview-profile"');
+    expect(region).toContain('id="mk-premium-card-link"');
+    // Identity + topline pulse hooks used by profil-summary.js
+    expect(region).toContain('id="merkez-identity"');
+    expect(region).toContain('id="merkez-avatar-ring"');
+    expect(region).toContain('id="merkez-avatar"');
+    expect(region).toContain('id="merkez-name"');
+    expect(region).toContain('id="mk-pulse-ring"');
+    expect(region).toContain('id="mk-percent-number"');
+    expect(region).toContain('id="mk-percent-caption"');
+  });
+
+  test('merkezi.css is referenced with K031 cache-bust token', () => {
+    expect(profilHtml).toContain('css/panels/merkezi.css?v=20260414b');
+  });
+
+  test('profil-summary.updateBentoRing drives topline pulse + spine tick', () => {
+    expect(summaryJs).toContain('mk-pulse-ring');
+    expect(summaryJs).toContain('mk-percent-number');
+    expect(summaryJs).toContain('mk-percent-caption');
+    expect(summaryJs).toContain('is-complete');
+    expect(summaryJs).toContain('--mk-pulse-progress');
+    // Legacy per-card bar DOM construction removed
+    expect(summaryJs).not.toContain("className = 'mk-bar-fill'");
+  });
+
+  test('profil-visibility toggles avatar-ring is-active class from Beni Öner state', () => {
+    expect(visibilityJs).toContain('merkez-avatar-ring');
+    expect(visibilityJs).toContain("classList.toggle('is-active'");
+  });
+});
+

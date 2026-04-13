@@ -245,34 +245,39 @@ function updateMerkezCards() {
   updateMerkezIdentity();
 }
 
-function updateBentoRing(step, pct) {
-  var container = document.getElementById('mk-ring-' + step);
-  if (!container) return;
+// K031: per-section progress feeds (a) the spine tick is-complete state
+// for the matching mk-spine__item, and (b) the topline pulse ring which
+// shows the 4-section aggregate ( N/4 tamam + % ).
+var _mkSectionPct = { 1: 0, 2: 0, 3: 0, 4: 0 };
 
-  if (pct >= 100) {
-    while (container.firstChild) container.removeChild(container.firstChild);
-    container.classList.add('complete');
-    var done = document.createElement('div');
-    done.className = 'ring-done';
-    var track = document.createElement('div');
-    track.className = 'mk-bar-track';
-    var barFill = document.createElement('div');
-    barFill.className = 'mk-bar-fill';
-    barFill.style.width = '100%';
-    track.appendChild(barFill);
-    var label = document.createElement('span');
-    label.className = 'mk-bar-pct';
-    label.textContent = '\u2713';
-    done.appendChild(track);
-    done.appendChild(label);
-    container.appendChild(done);
-    return;
+function updateBentoRing(step, pct) {
+  var safePct = Math.max(0, Math.min(100, pct | 0));
+  _mkSectionPct[step] = safePct;
+
+  var item = document.getElementById('mk-item-' + step);
+  if (item) {
+    // Binary tick: filled when 100%, dashed otherwise.
+    if (safePct >= 100) item.classList.add('is-complete');
+    else item.classList.remove('is-complete');
   }
 
-  var fill = container.querySelector('.mk-bar-fill');
-  var label = container.querySelector('.mk-bar-pct');
-  if (fill) fill.style.width = Math.min(pct, 100) + '%';
-  if (label) label.textContent = pct + '%';
+  // Topline pulse aggregate
+  var completed = 0;
+  var sum = 0;
+  for (var s = 1; s <= 4; s++) {
+    sum += _mkSectionPct[s] || 0;
+    if ((_mkSectionPct[s] || 0) >= 100) completed++;
+  }
+  var avg = Math.round(sum / 4);
+
+  var ring = document.getElementById('mk-pulse-ring');
+  if (ring) ring.style.setProperty('--mk-pulse-progress', (avg / 100).toFixed(3));
+
+  var pctEl = document.getElementById('mk-percent-number');
+  if (pctEl) pctEl.textContent = '%' + avg;
+
+  var capEl = document.getElementById('mk-percent-caption');
+  if (capEl) capEl.textContent = completed + '/4 tamam';
 }
 
 

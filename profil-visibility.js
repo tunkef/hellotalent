@@ -72,6 +72,10 @@ function closeTgToast() {
     var hideCell = document.getElementById('merkez-hide-row');
     if (hideCell) hideCell.classList.toggle('disabled', !isOn);
 
+    // K031: avatar glowing "working" ring follows Beni Öner toggle
+    var avatarRing = document.getElementById('merkez-avatar-ring');
+    if (avatarRing) avatarRing.classList.toggle('is-active', isOn);
+
     var sidebarDesc = document.getElementById('sidebar-benioner-desc');
     if (sidebarDesc) {
       sidebarDesc.textContent = isOn ? 'Profilin ve CV\'n işverenlerle paylaşılır' : 'Profilin ve CV\'n işverenlerle paylaşılmaz';

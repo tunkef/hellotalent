@@ -1,0 +1,670 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1600">
+<title>HelloTalent — Profil Merkezi Redesign (K031 Mockup)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#F7F6F4;
+    --ink:#0a0a0a;
+    --navy:#1E2D5E;
+    --navy-light:#EEF0F7;
+    --muted:#6B7280;
+    --border:#E5E3DF;
+    --verm:#C94E28;
+    --verm-soft:rgba(201,78,40,.08);
+    --f-head:'Bricolage Grotesque',system-ui,sans-serif;
+    --f-body:'Plus Jakarta Sans',system-ui,sans-serif;
+    --f-mono:'DM Mono',ui-monospace,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--cream);
+    color:var(--ink);
+    font-family:var(--f-body);
+    font-size:14px;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+    padding:48px 32px 64px;
+  }
+  .page-head{
+    max-width:1920px;margin:0 auto 40px;
+    display:flex;flex-direction:column;gap:6px;
+  }
+  .page-head .tag{
+    font-family:var(--f-mono);font-size:11px;font-weight:500;
+    text-transform:uppercase;letter-spacing:.14em;color:var(--muted);
+  }
+  .page-head h1{
+    font-family:var(--f-head);font-weight:700;font-size:26px;
+    margin:0;color:var(--ink);letter-spacing:-.01em;
+  }
+  .previews{
+    max-width:1920px;margin:0 auto;
+    display:flex;gap:48px;align-items:flex-start;justify-content:center;
+    flex-wrap:wrap;
+  }
+  .preview-label{
+    font-family:var(--f-mono);font-size:10px;font-weight:500;
+    text-transform:uppercase;letter-spacing:.18em;color:var(--muted);
+    margin-bottom:12px;padding-left:4px;
+  }
+
+  /* ── Desktop browser frame ── */
+  .frame-desktop{width:1440px;max-width:100%}
+  .browser{
+    background:var(--cream);
+    border:1px solid var(--border);
+    border-radius:14px;
+    overflow:hidden;
+    box-shadow:0 30px 80px -40px rgba(10,10,10,.25),0 2px 8px rgba(10,10,10,.04);
+  }
+  .browser__chrome{
+    height:38px;background:#EDECE8;border-bottom:1px solid var(--border);
+    display:flex;align-items:center;padding:0 16px;gap:8px;
+  }
+  .browser__dot{width:11px;height:11px;border-radius:50%;background:#D9D7D2}
+  .browser__dot:nth-child(1){background:#E8806F}
+  .browser__dot:nth-child(2){background:#E8C46F}
+  .browser__dot:nth-child(3){background:#7FB88F}
+  .browser__url{
+    margin-left:16px;flex:1;max-width:420px;
+    background:var(--cream);border:1px solid var(--border);
+    border-radius:8px;height:22px;
+    display:flex;align-items:center;padding:0 10px;
+    font-family:var(--f-mono);font-size:10px;color:var(--muted);
+  }
+  .browser__body{padding:56px 80px 64px}
+
+  /* ── Mobile device frame ── */
+  .frame-mobile{width:420px}
+  .device{
+    width:414px;height:868px;
+    background:#111;
+    border-radius:54px;
+    padding:12px;
+    box-shadow:0 40px 80px -30px rgba(10,10,10,.3),0 2px 8px rgba(10,10,10,.06);
+    position:relative;
+  }
+  .device__screen{
+    width:100%;height:100%;
+    background:var(--cream);
+    border-radius:42px;
+    overflow:hidden;overflow-y:auto;
+    position:relative;
+  }
+  .device__notch{
+    position:absolute;top:12px;left:50%;transform:translateX(-50%);
+    width:120px;height:28px;background:#111;border-radius:18px;z-index:3;
+  }
+  .device__screen::-webkit-scrollbar{display:none}
+  .mobile-inner{padding:60px 20px 32px}
+
+  /* ═════════ PROFIL MERKEZI COMPONENTS ═════════ */
+
+  .mk{
+    animation:fadeUp .5s ease-out both;
+  }
+  .mk > * + *{margin-top:0}
+
+  /* Identity strip */
+  .mk-identity{
+    display:flex;align-items:center;gap:20px;
+    animation:fadeUp .5s ease-out both;
+  }
+  .mk-avatar{
+    width:56px;height:56px;border-radius:50%;
+    background:var(--navy-light);
+    display:flex;align-items:center;justify-content:center;
+    font-family:var(--f-head);font-weight:800;font-size:20px;
+    color:var(--navy);letter-spacing:.02em;
+    flex-shrink:0;
+  }
+  .mk-identity__text{flex:1;min-width:0}
+  .mk-identity__name{
+    font-family:var(--f-head);font-weight:700;font-size:28px;
+    color:var(--ink);letter-spacing:-.015em;line-height:1.1;margin:0 0 6px;
+  }
+  .mk-identity__meta{
+    font-family:var(--f-body);font-size:13px;font-weight:500;
+    color:var(--muted);line-height:1.4;
+  }
+  .mk-identity__meta em{
+    font-style:normal;color:var(--navy);font-weight:600;
+  }
+
+  /* Topline pulse */
+  .mk-pulse{
+    display:flex;flex-direction:column;align-items:center;gap:6px;
+    flex-shrink:0;
+  }
+  .mk-pulse__ring{
+    width:64px;height:64px;position:relative;
+  }
+  .mk-pulse__ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+  .mk-pulse__pct{
+    position:absolute;inset:0;
+    display:flex;align-items:center;justify-content:center;
+    font-family:var(--f-head);font-weight:700;font-size:17px;
+    color:var(--navy);letter-spacing:-.01em;
+  }
+  .mk-pulse__caption{
+    font-family:var(--f-mono);font-size:10px;font-weight:500;
+    text-transform:uppercase;letter-spacing:.12em;color:var(--muted);
+    white-space:nowrap;
+  }
+
+  .mk-rule{
+    border:0;border-top:1px solid var(--border);
+    margin:32px 0;
+  }
+
+  /* Section heading row */
+  .mk-sectionhead{
+    display:flex;align-items:center;justify-content:space-between;
+    margin-bottom:24px;
+    animation:fadeUp .5s ease-out both;animation-delay:.08s;
+  }
+  .mk-sectionhead h2{
+    font-family:var(--f-head);font-weight:700;font-size:20px;
+    color:var(--ink);margin:0;letter-spacing:-.01em;
+  }
+
+  /* Ghost button */
+  .btn-ghost{
+    display:inline-flex;align-items:center;gap:8px;
+    height:38px;padding:0 16px;
+    background:transparent;
+    border:1px solid var(--border);
+    border-radius:12px;
+    font-family:var(--f-body);font-size:13px;font-weight:600;
+    color:var(--navy);
+    cursor:pointer;
+    transition:background .16s ease,border-color .16s ease;
+  }
+  .btn-ghost:hover{background:var(--verm-soft);border-color:var(--verm)}
+  .btn-ghost svg{width:14px;height:14px}
+
+  /* Spine */
+  .mk-spine{
+    position:relative;
+    padding-left:56px;
+    animation:fadeUp .5s ease-out both;animation-delay:.16s;
+  }
+  .mk-spine::before{
+    content:"";position:absolute;left:32px;top:8px;bottom:8px;
+    width:1px;background:var(--navy);opacity:.35;
+  }
+  .mk-spine__item{
+    position:relative;
+    padding:4px 40px 4px 0;
+  }
+  .mk-spine__item + .mk-spine__item{margin-top:24px}
+  .mk-spine__tick{
+    position:absolute;left:-32px;top:7px;
+    width:10px;height:10px;border-radius:50%;
+    background:var(--verm);
+    transform:translateX(-4px);
+  }
+  .mk-spine__item--incomplete .mk-spine__tick{
+    background:transparent;
+    border:1.5px dashed var(--muted);
+  }
+  .mk-spine__label{
+    font-family:var(--f-mono);font-size:11px;font-weight:500;
+    text-transform:uppercase;letter-spacing:.14em;
+    color:var(--muted);margin-bottom:6px;
+  }
+  .mk-spine__preview{
+    font-family:var(--f-body);font-size:15px;font-weight:600;
+    color:var(--navy);line-height:1.4;
+  }
+  .mk-spine__sub{
+    font-family:var(--f-body);font-size:13px;font-weight:500;
+    color:var(--muted);line-height:1.45;margin-top:4px;
+  }
+  .mk-spine__sub--alert{color:var(--verm);font-weight:600}
+  .mk-spine__edit{
+    position:absolute;top:0;right:0;
+    width:32px;height:32px;border-radius:8px;
+    display:flex;align-items:center;justify-content:center;
+    color:var(--muted);
+    opacity:.45;
+    transition:opacity .16s ease,background .16s ease,color .16s ease;
+  }
+  .mk-spine__item:hover .mk-spine__edit{opacity:1;background:var(--verm-soft);color:var(--verm)}
+  .mk-spine__edit svg{width:14px;height:14px}
+
+  /* Zarf */
+  .mk-zarf{
+    animation:fadeUp .5s ease-out both;animation-delay:.24s;
+  }
+  .mk-zarf__label{
+    font-family:var(--f-mono);font-size:11px;font-weight:500;
+    text-transform:uppercase;letter-spacing:.14em;
+    color:var(--muted);margin-bottom:20px;
+  }
+  .mk-zarf__card{
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:4px 20px;
+    background:var(--cream);
+  }
+  .mk-zarf__row{
+    display:flex;align-items:center;gap:16px;
+    padding:18px 0;
+  }
+  .mk-zarf__row + .mk-zarf__row{
+    border-top:1px dashed var(--border);
+  }
+  .mk-zarf__icon{
+    width:32px;height:32px;border-radius:10px;
+    display:flex;align-items:center;justify-content:center;
+    color:var(--navy);flex-shrink:0;
+  }
+  .mk-zarf__icon svg{width:16px;height:16px}
+  .mk-zarf__main{flex:1;min-width:0}
+  .mk-zarf__title{
+    font-family:var(--f-body);font-size:14px;font-weight:600;color:var(--ink);
+  }
+  .mk-zarf__sub{
+    font-family:var(--f-mono);font-size:11px;font-weight:400;
+    color:var(--muted);margin-top:2px;
+  }
+  .mk-zarf__actions{display:flex;gap:6px;flex-shrink:0}
+  .btn-mini{
+    height:30px;padding:0 12px;
+    background:transparent;border:1px solid var(--border);border-radius:9px;
+    font-family:var(--f-body);font-size:12px;font-weight:600;color:var(--navy);
+    cursor:pointer;transition:all .16s ease;
+  }
+  .btn-mini:hover{border-color:var(--verm);color:var(--verm);background:var(--verm-soft)}
+  .btn-mini--danger:hover{border-color:var(--verm);color:var(--verm)}
+
+  /* Premium row */
+  .mk-zarf__row--premium{cursor:pointer;transition:background .16s ease;margin:0 -20px;padding:18px 20px}
+  .mk-zarf__row--premium:hover{background:var(--verm-soft)}
+  .mk-zarf__row--premium .mk-zarf__icon{color:var(--verm)}
+  .mk-zarf__row--premium .mk-zarf__title{color:var(--verm)}
+  .mk-zarf__row--premium .mk-zarf__sub{color:var(--muted)}
+  .mk-zarf__chev{color:var(--verm);display:flex;align-items:center}
+  .mk-zarf__chev svg{width:16px;height:16px}
+
+  /* Toggle */
+  .mk-toggle{
+    display:flex;align-items:center;justify-content:space-between;gap:12px;
+    padding:10px 0;
+  }
+  .mk-toggle + .mk-toggle{border-top:1px dashed var(--border)}
+  .mk-toggle__label{
+    font-family:var(--f-body);font-size:14px;font-weight:500;color:var(--ink);
+  }
+  .mk-toggle__sw{
+    width:40px;height:22px;border-radius:999px;
+    background:#cbced4;position:relative;flex-shrink:0;
+    transition:background .18s ease;
+  }
+  .mk-toggle__sw::after{
+    content:"";position:absolute;top:2px;left:2px;
+    width:18px;height:18px;border-radius:50%;background:#fff;
+    box-shadow:0 1px 3px rgba(0,0,0,.2);
+    transition:left .18s ease;
+  }
+  .mk-toggle__sw--on{background:#16a34a}
+  .mk-toggle__sw--on::after{left:20px}
+
+  /* Signature */
+  .mk-sig{
+    margin-top:40px;
+    font-family:var(--f-mono);font-size:10px;font-weight:400;
+    font-style:italic;color:var(--muted);
+    text-align:center;letter-spacing:.08em;
+  }
+
+  /* Content column */
+  .mk-col{max-width:880px;margin:0 auto}
+  .mk-identity-wrap{
+    display:flex;align-items:center;justify-content:space-between;gap:32px;
+  }
+
+  /* ─── Mobile adjustments ─── */
+  .mobile .mk-col{max-width:100%}
+  .mobile .mk-identity-wrap{
+    flex-direction:column;align-items:flex-start;gap:20px;
+  }
+  .mobile .mk-identity{width:100%}
+  .mobile .mk-pulse{flex-direction:row;align-items:center;gap:12px;align-self:stretch}
+  .mobile .mk-pulse__ring{width:52px;height:52px}
+  .mobile .mk-pulse__pct{font-size:15px}
+  .mobile .mk-identity__name{font-size:22px}
+  .mobile .mk-sectionhead{flex-direction:column;align-items:stretch;gap:12px}
+  .mobile .mk-sectionhead .btn-ghost{justify-content:center;width:100%}
+  .mobile .mk-spine{padding-left:24px}
+  .mobile .mk-spine::before{left:8px}
+  .mobile .mk-spine__tick{left:-16px}
+  .mobile .mk-spine__item{padding-right:32px}
+  .mobile .mk-rule{margin:28px 0}
+  .mobile .mk-zarf__card{padding:4px 16px}
+  .mobile .mk-zarf__row{flex-wrap:wrap;gap:12px}
+  .mobile .mk-zarf__actions{width:100%;padding-left:48px}
+  .mobile .mk-zarf__row--premium{margin:0 -16px;padding:18px 16px}
+
+  /* ─── Motion ─── */
+  @keyframes fadeUp{
+    from{opacity:0;transform:translateY(8px)}
+    to{opacity:1;transform:none}
+  }
+  @media (prefers-reduced-motion: reduce){
+    *,*::before,*::after{animation:none!important;transition:none!important}
+  }
+
+  .foot{
+    max-width:1920px;margin:56px auto 0;text-align:center;
+    font-family:var(--f-mono);font-size:11px;color:var(--muted);
+    font-style:italic;
+  }
+
+  @media (max-width:1700px){
+    .previews{gap:32px}
+    .browser__body{padding:48px 48px 56px}
+  }
+</style>
+</head>
+<body>
+
+<header class="page-head">
+  <div class="tag">K031 · Profil Merkezi · Proposal · 2026-04-14</div>
+  <h1>HelloTalent — Profil Merkezi Redesign</h1>
+</header>
+
+<main class="previews">
+
+  <!-- ═══════════ DESKTOP PREVIEW ═══════════ -->
+  <section class="frame-desktop">
+    <div class="preview-label">Desktop · 1440</div>
+    <div class="browser">
+      <div class="browser__chrome">
+        <span class="browser__dot"></span>
+        <span class="browser__dot"></span>
+        <span class="browser__dot"></span>
+        <div class="browser__url">hellotalent.ai/profil.html#panel-merkez</div>
+      </div>
+      <div class="browser__body">
+        <div class="mk mk-col">
+
+          <!-- Identity + Pulse -->
+          <div class="mk-identity-wrap">
+            <div class="mk-identity">
+              <div class="mk-avatar">TK</div>
+              <div class="mk-identity__text">
+                <h1 class="mk-identity__name">Tuna Kefeli</h1>
+                <div class="mk-identity__meta">Şu an çalışmıyor · <em>İstanbul</em> · 5 yıl deneyim</div>
+              </div>
+            </div>
+            <div class="mk-pulse">
+              <div class="mk-pulse__ring">
+                <svg viewBox="0 0 64 64">
+                  <circle cx="32" cy="32" r="28" fill="none" stroke="#E5E3DF" stroke-width="4"/>
+                  <circle cx="32" cy="32" r="28" fill="none" stroke="#1E2D5E" stroke-width="4" stroke-linecap="round"
+                          stroke-dasharray="175.93" stroke-dashoffset="47.5"/>
+                </svg>
+                <div class="mk-pulse__pct">%73</div>
+              </div>
+              <div class="mk-pulse__caption">3/4 tamam</div>
+            </div>
+          </div>
+
+          <hr class="mk-rule">
+
+          <!-- Profilin section header -->
+          <div class="mk-sectionhead">
+            <h2>Profilin</h2>
+            <button class="btn-ghost">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              Profilimi Önizle
+            </button>
+          </div>
+
+          <!-- Spine -->
+          <div class="mk-spine">
+            <div class="mk-spine__item">
+              <div class="mk-spine__tick"></div>
+              <div class="mk-spine__label">Kişisel</div>
+              <div class="mk-spine__preview">Tuna Kefeli · İstanbul · 1992 · Erkek</div>
+              <div class="mk-spine__sub">Telefon · LinkedIn</div>
+              <div class="mk-spine__edit">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>
+              </div>
+            </div>
+            <div class="mk-spine__item">
+              <div class="mk-spine__tick"></div>
+              <div class="mk-spine__label">Deneyim</div>
+              <div class="mk-spine__preview">Chanel — 2023 · Devam</div>
+              <div class="mk-spine__sub">+4 deneyim daha · 8 yıl toplam</div>
+              <div class="mk-spine__edit">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>
+              </div>
+            </div>
+            <div class="mk-spine__item">
+              <div class="mk-spine__tick"></div>
+              <div class="mk-spine__label">Eğitim &amp; Dil</div>
+              <div class="mk-spine__preview">İstanbul Üniversitesi · İşletme</div>
+              <div class="mk-spine__sub">TR (Anadil) · EN (C2) · RU (C2) · 1 sertifika</div>
+              <div class="mk-spine__edit">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>
+              </div>
+            </div>
+            <div class="mk-spine__item mk-spine__item--incomplete">
+              <div class="mk-spine__tick"></div>
+              <div class="mk-spine__label">Tercihler &amp; Lokasyon</div>
+              <div class="mk-spine__preview">Tam zamanlı · İstanbul</div>
+              <div class="mk-spine__sub mk-spine__sub--alert">Hedef pozisyon eksik</div>
+              <div class="mk-spine__edit">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>
+              </div>
+            </div>
+          </div>
+
+          <hr class="mk-rule">
+
+          <!-- Zarf -->
+          <div class="mk-zarf">
+            <div class="mk-zarf__label">CV ve görünürlüğün</div>
+            <div class="mk-zarf__card">
+
+              <div class="mk-zarf__row">
+                <div class="mk-zarf__icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h5"/></svg>
+                </div>
+                <div class="mk-zarf__main">
+                  <div class="mk-zarf__title">tuna_kefeli.pdf</div>
+                  <div class="mk-zarf__sub">04.04.2026 · 312 KB</div>
+                </div>
+                <div class="mk-zarf__actions">
+                  <button class="btn-mini">İndir</button>
+                  <button class="btn-mini">Değiştir</button>
+                  <button class="btn-mini btn-mini--danger">Sil</button>
+                </div>
+              </div>
+
+              <div class="mk-zarf__row mk-zarf__row--premium">
+                <div class="mk-zarf__icon">
+                  <svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"><path d="M12 2l2.9 6.9L22 10l-5.5 4.8L18 22l-6-3.5L6 22l1.5-7.2L2 10l7.1-1.1z"/></svg>
+                </div>
+                <div class="mk-zarf__main">
+                  <div class="mk-zarf__title">Beni Öne Çıkar</div>
+                  <div class="mk-zarf__sub">3 ay ücretsiz beta</div>
+                </div>
+                <div class="mk-zarf__chev">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                </div>
+              </div>
+
+              <div class="mk-zarf__row">
+                <div class="mk-zarf__main">
+                  <div class="mk-toggle">
+                    <div class="mk-toggle__label">Beni Öner</div>
+                    <div class="mk-toggle__sw mk-toggle__sw--on"></div>
+                  </div>
+                  <div class="mk-toggle">
+                    <div class="mk-toggle__label">Aktif İş Arama</div>
+                    <div class="mk-toggle__sw mk-toggle__sw--on"></div>
+                  </div>
+                  <div class="mk-toggle">
+                    <div class="mk-toggle__label">İşverenim Görmesin</div>
+                    <div class="mk-toggle__sw"></div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <div class="mk-sig">HelloTalent · Beta</div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ MOBILE PREVIEW ═══════════ -->
+  <section class="frame-mobile">
+    <div class="preview-label">Mobile · 390</div>
+    <div class="device">
+      <div class="device__notch"></div>
+      <div class="device__screen">
+        <div class="mobile-inner mobile">
+          <div class="mk mk-col">
+
+            <div class="mk-identity-wrap">
+              <div class="mk-identity">
+                <div class="mk-avatar">TK</div>
+                <div class="mk-identity__text">
+                  <h1 class="mk-identity__name">Tuna Kefeli</h1>
+                  <div class="mk-identity__meta">Şu an çalışmıyor · <em>İstanbul</em> · 5 yıl</div>
+                </div>
+              </div>
+              <div class="mk-pulse">
+                <div class="mk-pulse__ring">
+                  <svg viewBox="0 0 64 64">
+                    <circle cx="32" cy="32" r="28" fill="none" stroke="#E5E3DF" stroke-width="4"/>
+                    <circle cx="32" cy="32" r="28" fill="none" stroke="#1E2D5E" stroke-width="4" stroke-linecap="round"
+                            stroke-dasharray="175.93" stroke-dashoffset="47.5"/>
+                  </svg>
+                  <div class="mk-pulse__pct">%73</div>
+                </div>
+                <div class="mk-pulse__caption">3/4 tamam</div>
+              </div>
+            </div>
+
+            <hr class="mk-rule">
+
+            <div class="mk-sectionhead">
+              <h2>Profilin</h2>
+              <button class="btn-ghost">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                Profilimi Önizle
+              </button>
+            </div>
+
+            <div class="mk-spine">
+              <div class="mk-spine__item">
+                <div class="mk-spine__tick"></div>
+                <div class="mk-spine__label">Kişisel</div>
+                <div class="mk-spine__preview">Tuna Kefeli · İstanbul · 1992</div>
+                <div class="mk-spine__sub">Telefon · LinkedIn</div>
+              </div>
+              <div class="mk-spine__item">
+                <div class="mk-spine__tick"></div>
+                <div class="mk-spine__label">Deneyim</div>
+                <div class="mk-spine__preview">Chanel — 2023 · Devam</div>
+                <div class="mk-spine__sub">+4 deneyim · 8 yıl</div>
+              </div>
+              <div class="mk-spine__item">
+                <div class="mk-spine__tick"></div>
+                <div class="mk-spine__label">Eğitim &amp; Dil</div>
+                <div class="mk-spine__preview">İstanbul Üniversitesi · İşletme</div>
+                <div class="mk-spine__sub">TR · EN C2 · RU C2 · 1 sertifika</div>
+              </div>
+              <div class="mk-spine__item mk-spine__item--incomplete">
+                <div class="mk-spine__tick"></div>
+                <div class="mk-spine__label">Tercihler &amp; Lokasyon</div>
+                <div class="mk-spine__preview">Tam zamanlı · İstanbul</div>
+                <div class="mk-spine__sub mk-spine__sub--alert">Hedef pozisyon eksik</div>
+              </div>
+            </div>
+
+            <hr class="mk-rule">
+
+            <div class="mk-zarf">
+              <div class="mk-zarf__label">CV ve görünürlüğün</div>
+              <div class="mk-zarf__card">
+
+                <div class="mk-zarf__row">
+                  <div class="mk-zarf__icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h5"/></svg>
+                  </div>
+                  <div class="mk-zarf__main">
+                    <div class="mk-zarf__title">tuna_kefeli.pdf</div>
+                    <div class="mk-zarf__sub">04.04.2026 · 312 KB</div>
+                  </div>
+                  <div class="mk-zarf__actions">
+                    <button class="btn-mini">İndir</button>
+                    <button class="btn-mini">Değiştir</button>
+                    <button class="btn-mini btn-mini--danger">Sil</button>
+                  </div>
+                </div>
+
+                <div class="mk-zarf__row mk-zarf__row--premium">
+                  <div class="mk-zarf__icon">
+                    <svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"><path d="M12 2l2.9 6.9L22 10l-5.5 4.8L18 22l-6-3.5L6 22l1.5-7.2L2 10l7.1-1.1z"/></svg>
+                  </div>
+                  <div class="mk-zarf__main">
+                    <div class="mk-zarf__title">Beni Öne Çıkar</div>
+                    <div class="mk-zarf__sub">3 ay ücretsiz beta</div>
+                  </div>
+                  <div class="mk-zarf__chev">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                  </div>
+                </div>
+
+                <div class="mk-zarf__row">
+                  <div class="mk-zarf__main">
+                    <div class="mk-toggle">
+                      <div class="mk-toggle__label">Beni Öner</div>
+                      <div class="mk-toggle__sw mk-toggle__sw--on"></div>
+                    </div>
+                    <div class="mk-toggle">
+                      <div class="mk-toggle__label">Aktif İş Arama</div>
+                      <div class="mk-toggle__sw mk-toggle__sw--on"></div>
+                    </div>
+                    <div class="mk-toggle">
+                      <div class="mk-toggle__label">İşverenim Görmesin</div>
+                      <div class="mk-toggle__sw"></div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <div class="mk-sig">HelloTalent · Beta</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="foot">
+  Static mockup — kararlaştırılan layout. Onaylandıktan sonra <code>css/panels/merkezi.css</code> + <code>#panel-merkez</code> markup rewrite edilir.
+</footer>
+
+</body>
+</html>

@@ -57,24 +57,14 @@ function _htInitEvents() {
   var kbBtn = document.getElementById('header-kimbakti');
   if (kbBtn) kbBtn.addEventListener('click', function() { switchPanel('kimbakti'); });
 
-  // mk-card clicks — card itself OR edit button inside it
-  document.querySelectorAll('.mk-card[data-step]').forEach(function(card) {
+  // K031: Merkez spine item clicks — button itself opens the wizard step.
+  // Preserves the `data-step="1..4"` contract from the bento era.
+  document.querySelectorAll('#panel-merkez [data-step]').forEach(function(card) {
     card.addEventListener('click', function(e) {
       e.preventDefault();
       e.stopPropagation();
-      var step = parseInt(this.dataset.step);
+      var step = parseInt(this.dataset.step, 10);
       if (step) window.editSection(step);
-    });
-  });
-  document.querySelectorAll('.mk-edit-btn').forEach(function(btn) {
-    btn.addEventListener('click', function(e) {
-      e.preventDefault();
-      e.stopPropagation();
-      var card = this.closest('.mk-card[data-step]');
-      if (card) {
-        var step = parseInt(card.dataset.step);
-        if (step) window.editSection(step);
-      }
     });
   });
 

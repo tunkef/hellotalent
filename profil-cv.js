@@ -162,7 +162,11 @@ async function deleteCV() {
 function showCVUploaded(cvUrl, date) {
   var dropZone = document.getElementById('cv-drop-zone');
   var uploaded = document.getElementById('cv-uploaded-state');
+  var dropActions = document.getElementById('cv-drop-actions');
+  var uploadedActions = document.getElementById('cv-uploaded-actions');
   if (dropZone) dropZone.style.display = 'none';
+  if (dropActions) dropActions.style.display = 'none';
+  if (uploadedActions) uploadedActions.style.display = 'flex';
   if (uploaded) {
     uploaded.style.display = 'flex';
     var nameEl = document.getElementById('cv-uploaded-name');
@@ -187,8 +191,12 @@ function showCVUploaded(cvUrl, date) {
 function showCVEmpty() {
   var dropZone = document.getElementById('cv-drop-zone');
   var uploaded = document.getElementById('cv-uploaded-state');
+  var dropActions = document.getElementById('cv-drop-actions');
+  var uploadedActions = document.getElementById('cv-uploaded-actions');
   if (dropZone) dropZone.style.display = '';
+  if (dropActions) dropActions.style.display = 'flex';
   if (uploaded) uploaded.style.display = 'none';
+  if (uploadedActions) uploadedActions.style.display = 'none';
 }
 
 // ═══════════════════════════════════════════════════
