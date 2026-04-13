@@ -732,6 +732,78 @@
     });
   };
 
+  /* K030 FAZ C: drawer duyuru mini-feed preview (last 5 announcements) */
+  var CATEGORY_LABELS = { feature:'Yenilik', sirket:'Şirket', ipucu:'İpucu', genel:'Genel' };
+  function trRelativeDate(ts) {
+    if (!ts) return '';
+    var d = new Date(ts);
+    if (isNaN(d.getTime())) return '';
+    var diffSec = Math.floor((Date.now() - d.getTime()) / 1000);
+    if (diffSec < 60) return 'az önce';
+    if (diffSec < 3600) return Math.floor(diffSec / 60) + ' dk';
+    if (diffSec < 86400) return Math.floor(diffSec / 3600) + ' sa';
+    if (diffSec < 604800) return Math.floor(diffSec / 86400) + ' gün';
+    return d.toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' });
+  }
+
+  window._htLoadDuyuruPreview = async function () {
+    var listEl = document.getElementById('popup-duyuru-list');
+    if (!listEl) return;
+    var supa = getSupa();
+    if (!supa) return;
+    listEl.innerHTML = '';
+    var loading = document.createElement('div');
+    loading.className = 'header-popup-empty';
+    loading.textContent = 'Yükleniyor...';
+    listEl.appendChild(loading);
+    try {
+      var res = await supa.rpc('get_announcements_feed', { p_limit: 5, p_offset: 0 });
+      if (res.error) { loading.textContent = 'Yüklenemedi.'; return; }
+      var rows = res.data || [];
+      listEl.innerHTML = '';
+      if (rows.length === 0) {
+        var empty = document.createElement('div');
+        empty.className = 'header-popup-empty';
+        empty.textContent = 'Henüz duyuru yok.';
+        listEl.appendChild(empty);
+        return;
+      }
+      rows.forEach(function (post) {
+        var item = document.createElement('div');
+        item.className = 'header-popup-item header-popup-item--duyuru';
+        var meta = document.createElement('div');
+        meta.className = 'header-popup-duyuru-meta';
+        var chip = document.createElement('span');
+        chip.className = 'header-popup-duyuru-chip';
+        chip.textContent = CATEGORY_LABELS[post.category] || 'Genel';
+        meta.appendChild(chip);
+        var time = document.createElement('div');
+        time.className = 'header-popup-time';
+        time.textContent = trRelativeDate(post.published_at);
+        meta.appendChild(time);
+        item.appendChild(meta);
+        var title = document.createElement('div');
+        title.className = 'header-popup-duyuru-title';
+        title.textContent = post.title || '(başlıksız)';
+        item.appendChild(title);
+        if (post.body_md) {
+          var body = document.createElement('div');
+          body.className = 'header-popup-duyuru-body';
+          body.textContent = String(post.body_md).replace(/[#*_`>]/g, '').substring(0, 160);
+          item.appendChild(body);
+        }
+        item.addEventListener('click', function () {
+          closeAllPopups();
+          try { sessionStorage.setItem('ht_bildirim_tab', 'duyuru'); } catch (e) { /* ignore */ }
+          if (typeof switchPanel === 'function') switchPanel('bildirimler');
+        });
+        listEl.appendChild(item);
+      });
+    } catch (e) {
+      loading.textContent = 'Hata: ' + (e && e.message);
+    }
+  };
+
   /* ═══ HEADER POPUP: Notification preview (canonical source) ═══ */
   window._htLoadNotifPreview = async function() {
     var listEl = document.getElementById('popup-notif-list');
@@ -791,7 +863,61 @@
     if (msgBtn) msgBtn.addEventListener('click', function(e) { e.stopPropagation(); togglePopup('popup-messages', window._htLoadMsgPreview); });
 
     var notifBtn = document.getElementById('header-notif');
-    if (notifBtn) notifBtn.addEventListener('click', function(e) { e.stopPropagation(); togglePopup('popup-notifications', window._htLoadNotifPreview); });
+    if (notifBtn) notifBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      togglePopup('popup-notifications', function () {
+        /* Preload both panels in parallel; segment tab controls visibility */
+        if (typeof window._htLoadNotifPreview === 'function') window._htLoadNotifPreview();
+        if (typeof window._htLoadDuyuruPreview === 'function') window._htLoadDuyuruPreview();
+      });
+    });
+
+    /* K030 FAZ C: drawer segment tab handler (Bildirimler ↔ Duyurular) */
+    var drawerSeg = document.querySelector('.header-popup-seg[data-drawer-seg]');
+    if (drawerSeg) {
+      var drawerBtns = drawerSeg.querySelectorAll('button[data-drawer-tab]');
+      for (var di = 0; di < drawerBtns.length; di++) {
+        drawerBtns[di].addEventListener('click', function (ev) {
+          ev.stopPropagation();
+          var tab = ev.currentTarget.getAttribute('data-drawer-tab');
+          for (var bi = 0; bi < drawerBtns.length; bi++) {
+            var active = drawerBtns[bi].getAttribute('data-drawer-tab') === tab;
+            drawerBtns[bi].classList.toggle('is-active', active);
+            drawerBtns[bi].setAttribute('aria-selected', active ? 'true' : 'false');
+          }
+          var bildirimList = document.getElementById('popup-notif-list');
+          var duyuruList = document.getElementById('popup-duyuru-list');
+          if (bildirimList) bildirimList.hidden = (tab !== 'bildirim');
+          if (duyuruList) duyuruList.hidden = (tab !== 'duyuru');
+          /* Active tab badge cleared when user looks at it */
+          if (tab === 'duyuru') {
+            var badge = drawerSeg.querySelector('[data-drawer-badge="duyuru"]');
+            if (badge) { badge.hidden = true; badge.textContent = ''; }
+            /* Duyuru tab click = explicit seen intent */
+            try { localStorage.setItem('ht_last_duyuru_seen', new Date().toISOString()); } catch (e) { /* ignore */ }
+            window._htDuyuruUnreadCount = 0;
+            if (typeof window._htApplyNotifBellDot === 'function') window._htApplyNotifBellDot();
+          }
+        });
+      }
+    }
+
+    /* K030 FAZ C: drawer badge refresh hook — called whenever unread state changes */
+    window._htApplyDrawerBadges = function () {
+      var bBadge = document.querySelector('.header-popup-seg [data-drawer-badge="bildirim"]');
+      var dBadge = document.querySelector('.header-popup-seg [data-drawer-badge="duyuru"]');
+      if (bBadge) {
+        var bCount = 0;
+        for (var ni = 0; ni < allNotifs.length; ni++) if (allNotifs[ni].is_unread) bCount++;
+        if (bCount > 0) { bBadge.textContent = bCount > 9 ? '9+' : String(bCount); bBadge.hidden = false; }
+        else { bBadge.hidden = true; bBadge.textContent = ''; }
+      }
+      if (dBadge) {
+        var dCount = (typeof window._htDuyuruUnreadCount === 'number') ? window._htDuyuruUnreadCount : 0;
+        if (dCount > 0) { dBadge.textContent = dCount > 9 ? '9+' : String(dCount); dBadge.hidden = false; }
+        else { dBadge.hidden = true; dBadge.textContent = ''; }
+      }
+    };
 
     var kbBtn = document.getElementById('header-kimbakti');
     if (kbBtn) kbBtn.addEventListener('click', function() { if (typeof switchPanel === 'function') switchPanel('kimbakti'); });
@@ -800,7 +926,15 @@
     if (seeAllMsg) seeAllMsg.addEventListener('click', function(e) { e.preventDefault(); closeAllPopups(); if (typeof switchPanel === 'function') switchPanel('inbox'); });
 
     var seeAllNotif = document.getElementById('popup-notif-see-all');
-    if (seeAllNotif) seeAllNotif.addEventListener('click', function(e) { e.preventDefault(); closeAllPopups(); if (typeof switchPanel === 'function') switchPanel('bildirimler'); });
+    if (seeAllNotif) seeAllNotif.addEventListener('click', function(e) {
+      e.preventDefault();
+      /* Route to the panel with the tab that's currently active in the drawer */
+      var activeBtn = document.querySelector('.header-popup-seg[data-drawer-seg] button.is-active');
+      var targetTab = activeBtn && activeBtn.getAttribute('data-drawer-tab') === 'duyuru' ? 'duyuru' : 'bildirim';
+      try { sessionStorage.setItem('ht_bildirim_tab', targetTab); } catch (err) { /* ignore */ }
+      closeAllPopups();
+      if (typeof switchPanel === 'function') switchPanel('bildirimler');
+    });
 
     // Outside click closes popups
     document.addEventListener('click', function(e) {
@@ -920,6 +1054,8 @@
     if (dot) dot.style.display = total > 0 ? '' : 'none';
     var navBadge = document.getElementById('badge-bildirimler');
     if (navBadge) { navBadge.textContent = total > 9 ? '9+' : String(total); navBadge.style.display = total > 0 ? '' : 'none'; }
+    /* K030 FAZ C: refresh drawer segment badges too */
+    if (typeof window._htApplyDrawerBadges === 'function') window._htApplyDrawerBadges();
   }
   /* Expose for segment toggle IIFE (profil-inbox.js bottom) — allows duyuru count
    * updates to bubble into the header bell dot + sidebar badge. */

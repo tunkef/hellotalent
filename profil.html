@@ -65,7 +65,7 @@ if (window.Sentry) {
 <link rel="stylesheet" href="css/panels/merkezi.css?v=20260406a">
 <link rel="stylesheet" href="css/panels/sirketler.css?v=20260406a">
 <link rel="stylesheet" href="css/panel-soon.css?v=20260413a">
-<link rel="stylesheet" href="css/duyurular.css?v=20260413m">
+<link rel="stylesheet" href="css/duyurular.css?v=20260413n">
 </head>
 <body>
 
@@ -120,13 +120,26 @@ if (window.Sentry) {
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
         <span class="header-notif-dot" id="header-notif-dot" style="display:none;"></span>
       </button>
-      <!-- Bildirim Popup -->
+      <!-- Bildirim Popup (K030 FAZ C: dual tab segment — Bildirimler + Duyurular) -->
       <div class="header-popup" id="popup-notifications" style="display:none;">
         <div class="header-popup-head">
-          <span class="header-popup-title">Bildirimler</span>
+          <span class="header-popup-title" id="popup-notif-title">Bildirimler</span>
           <a class="header-popup-link" id="popup-notif-see-all">Tümünü Gör →</a>
         </div>
-        <div class="header-popup-body" id="popup-notif-list">
+        <div class="header-popup-seg" data-drawer-seg role="tablist">
+          <button type="button" class="is-active" data-drawer-tab="bildirim" role="tab" aria-selected="true">
+            Bildirimler
+            <span class="header-popup-seg-dot" data-drawer-badge="bildirim" hidden></span>
+          </button>
+          <button type="button" data-drawer-tab="duyuru" role="tab" aria-selected="false">
+            Duyurular
+            <span class="header-popup-seg-dot" data-drawer-badge="duyuru" hidden></span>
+          </button>
+        </div>
+        <div class="header-popup-body" id="popup-notif-list" data-drawer-content="bildirim">
+          <div class="header-popup-empty">Yükleniyor...</div>
+        </div>
+        <div class="header-popup-body" id="popup-duyuru-list" data-drawer-content="duyuru" hidden>
           <div class="header-popup-empty">Yükleniyor...</div>
         </div>
       </div>
@@ -1703,11 +1716,11 @@ if (window.Sentry) {
 <script src="profil-markalar.js?v=20260404b"></script>
 <script src="profil-settings.js?v=20260404b"></script>
 <script src="profil-teklifler.js?v=20260404b"></script>
-<script src="profil-inbox.js?v=20260413m"></script>
+<script src="profil-inbox.js?v=20260413n"></script>
 <script src="profil-yetkinlik.js?v=20260404b"></script>
 <script src="profil-studio.js?v=20260413a"></script>
 <script src="panel-soon.js?v=20260413a"></script>
-<script src="profil-duyurular.js?v=20260413m"></script>
+<script src="profil-duyurular.js?v=20260413n"></script>
 <script src="profil-premium.js?v=20260404b"></script>
 <script src="profil-destek.js?v=20260404b"></script>
 <script src="profil-wizard.js?v=20260413a"></script>

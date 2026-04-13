@@ -647,3 +647,10 @@ BLOCKED — fix B4 loader removal, Genel coach CTA paths, B6/B7 stale task bodie
 - Bump SEEN_VERSION_KEY v3 to re-purge stale values from hotfix 6 path
 - Cache-bust ?v=20260413m
 
+
+## 2026-04-14 — K030 FAZ C drawer dual tab (Bildirimler + Duyurular)
+- profil.html header drawer: segment markup (2 tab + dot badges) + 2 body containers
+- css/layout.css .header-popup-seg + .header-popup-item--duyuru compact card
+- profil-inbox.js: _htLoadDuyuruPreview (last 5), segment click handler, _htApplyDrawerBadges, Tümünü Gör routing (active tab → sessionStorage), bell dot calls drawer badge refresh
+- Cache-bust ?v=20260413n
+

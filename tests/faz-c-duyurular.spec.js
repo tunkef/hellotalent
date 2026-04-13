@@ -62,8 +62,8 @@ test.describe('K030 FAZ C — HT Duyurular (source checks)', () => {
     var body = await fetchText(request, baseURL, '/profil.html');
     expect(body).toContain('marked@11/marked.min.js');
     expect(body).toContain('dompurify@3/dist/purify.min.js');
-    expect(body).toContain('css/duyurular.css?v=20260413m');
-    expect(body).toContain('profil-duyurular.js?v=20260413m');
+    expect(body).toContain('css/duyurular.css?v=20260413n');
+    expect(body).toContain('profil-duyurular.js?v=20260413n');
     // Segment markup in #panel-bildirimler
     expect(body).toContain('data-segment="bildirim-duyuru"');
     expect(body).toContain('data-tab-content="bildirim"');
@@ -83,9 +83,9 @@ test.describe('K030 FAZ C — HT Duyurular (source checks)', () => {
     var body = await fetchText(request, baseURL, '/admin.html');
     expect(body).toMatch(/data-panel="announcements"/);
     expect(body).toContain('id="panel-announcements"');
-    expect(body).toContain('admin-announcements.js?v=20260413m');
-    expect(body).toContain('profil-duyurular.js?v=20260413m');
-    expect(body).toContain('css/duyurular.css?v=20260413m');
+    expect(body).toContain('admin-announcements.js?v=20260413n');
+    expect(body).toContain('profil-duyurular.js?v=20260413n');
+    expect(body).toContain('css/duyurular.css?v=20260413n');
     // switchPanel dispatcher branch
     expect(body).toMatch(/name === 'announcements'[\s\S]{0,200}_htAdminAnnouncements/);
     // Ann-root mount target
