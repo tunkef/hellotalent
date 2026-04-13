@@ -21,7 +21,7 @@
     { value: 'ipucu',   label: '\u0130pucu' }
   ];
 
-  var MAX_IMG_BYTES = 10 * 1024 * 1024;
+  var MAX_IMG_BYTES = 5 * 1024 * 1024;   /* 5MB — Tuna UAT ayarlamasi */
   var MAX_VIDEO_BYTES = 50 * 1024 * 1024;
   var MAX_TITLE = 200;
   var MAX_BODY  = 8000;
@@ -240,10 +240,16 @@
       var files = Array.from(mediaInput.files || []);
       for (var f = 0; f < files.length; f++) {
         var file = files[f];
+        var isImage = file.type && file.type.indexOf('image/') === 0;
         var isVideo = file.type && file.type.indexOf('video/') === 0;
+        if (!isImage && !isVideo) {
+          window.alert('Desteklenmeyen format: ' + file.name + ' (sadece gorsel veya video)');
+          continue;
+        }
         var maxBytes = isVideo ? MAX_VIDEO_BYTES : MAX_IMG_BYTES;
         if (file.size > maxBytes) {
-          window.alert('Dosya \u00E7ok b\u00FCy\u00FCk: ' + file.name);
+          var limitMb = isVideo ? '50MB' : '5MB';
+          window.alert('Dosya cok buyuk: ' + file.name + ' (max ' + limitMb + ')');
           continue;
         }
         var objectUrl = URL.createObjectURL(file);
