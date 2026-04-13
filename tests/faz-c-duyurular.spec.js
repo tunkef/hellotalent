@@ -62,8 +62,8 @@ test.describe('K030 FAZ C — HT Duyurular (source checks)', () => {
     var body = await fetchText(request, baseURL, '/profil.html');
     expect(body).toContain('marked@11/marked.min.js');
     expect(body).toContain('dompurify@3/dist/purify.min.js');
-    expect(body).toContain('css/duyurular.css?v=20260413i');
-    expect(body).toContain('profil-duyurular.js?v=20260413i');
+    expect(body).toContain('css/duyurular.css?v=20260413j');
+    expect(body).toContain('profil-duyurular.js?v=20260413j');
     // Segment markup in #panel-bildirimler
     expect(body).toContain('data-segment="bildirim-duyuru"');
     expect(body).toContain('data-tab-content="bildirim"');
@@ -83,9 +83,9 @@ test.describe('K030 FAZ C — HT Duyurular (source checks)', () => {
     var body = await fetchText(request, baseURL, '/admin.html');
     expect(body).toMatch(/data-panel="announcements"/);
     expect(body).toContain('id="panel-announcements"');
-    expect(body).toContain('admin-announcements.js?v=20260413i');
-    expect(body).toContain('profil-duyurular.js?v=20260413i');
-    expect(body).toContain('css/duyurular.css?v=20260413i');
+    expect(body).toContain('admin-announcements.js?v=20260413j');
+    expect(body).toContain('profil-duyurular.js?v=20260413j');
+    expect(body).toContain('css/duyurular.css?v=20260413j');
     // switchPanel dispatcher branch
     expect(body).toMatch(/name === 'announcements'[\s\S]{0,200}_htAdminAnnouncements/);
     // Ann-root mount target
@@ -123,10 +123,20 @@ test.describe('K030 FAZ C — HT Duyurular (source checks)', () => {
     expect(body).toContain('focal_y');
   });
 
-  test('feed carousel uses object-fit contain (fit-on-screen)', async ({ request, baseURL }) => {
+  test('feed carousel uses natural aspect (max-height bound)', async ({ request, baseURL }) => {
     var body = await fetchText(request, baseURL, '/css/duyurular.css');
-    // Full image, no crop, neutral bg fills letterbox padding
-    expect(body).toMatch(/\.ht-duyuru__carousel-slide[\s\S]{0,500}object-fit:\s*contain/);
+    // K030 FAZ C hotfix 4: no fixed aspect-ratio, slide adapts to image shape
+    expect(body).toMatch(/\.ht-duyuru__carousel-slide[\s\S]{0,600}max-height/);
+    expect(body).not.toMatch(/\.ht-duyuru__carousel-slide[\s\S]{0,400}aspect-ratio:\s*16/);
+  });
+
+  test('CSP allows blob: for img + media (composer preview)', async ({ request, baseURL }) => {
+    var admin = await fetchText(request, baseURL, '/admin.html');
+    var profil = await fetchText(request, baseURL, '/profil.html');
+    expect(admin).toMatch(/img-src[^;]*blob:/);
+    expect(admin).toMatch(/media-src[^;]*blob:/);
+    expect(profil).toMatch(/img-src[^;]*blob:/);
+    expect(profil).toMatch(/media-src[^;]*blob:/);
   });
 
   test('migration 20260413202813 defines views table + focal cols + RPC', async ({ request, baseURL }) => {

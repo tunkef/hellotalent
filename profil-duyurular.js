@@ -403,8 +403,11 @@
         }
       }
 
-      // Mark as seen
-      try { localStorage.setItem('ht_last_duyuru_seen', new Date().toISOString()); } catch (e) { /* ignore */ }
+      /* K030 FAZ C hotfix 4: DO NOT set ht_last_duyuru_seen on initial feed
+       * render. If we did, loading Genel Bakış would mark everything as
+       * seen, and new admin posts published AFTER page load would never
+       * trigger the header bell badge. SEEN_KEY is set only when user
+       * explicitly opens the "Duyurular" tab in profil-inbox.js. */
 
     } catch (e) {
       console.error('[duyuru] feed load failed:', e && e.message);

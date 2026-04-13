@@ -619,3 +619,11 @@ BLOCKED — fix B4 loader removal, Genel coach CTA paths, B6/B7 stale task bodie
 - Cropper.js editor approach reverted (unpushed commits discarded) in favor of simpler contain
 - 58/58 FAZ A+B+C spec PASS
 
+
+## 2026-04-14 — K030 FAZ C hotfix 4: CSP blob + SEEN_KEY + natural aspect
+- CSP img-src + media-src blob: eklendi (admin.html + profil.html) — composer preview 4x tekrar eden root cause
+- profil-duyurular.js loadDuyuruFeed SEEN_KEY update kaldirildi — header bell badge artik yeni post'larda tetikleniyor, SEEN_KEY sadece activateTab('duyuru')'da set ediliyor
+- css/duyurular.css .ht-duyuru__carousel-slide fixed 16:9 aspect-ratio kaldirildi, natural aspect + max-height 640px, slide gorselin sekline gore bicimleniyor
+- Cache-bust ?v=20260413j
+- Test: 24 FAZ C + 730 p3 = 754 PASS
+

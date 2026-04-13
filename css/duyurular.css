@@ -178,22 +178,24 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  /* K030 FAZ C final: neutral bg fills letterbox/pillarbox padding when the
-   * image aspect ratio doesn't match 16:9. Full image always visible, no crop. */
+  /* K030 FAZ C hotfix 4: no fixed aspect — slide adapts to the image's
+   * natural shape. Bounded by carousel max-height so very tall portraits
+   * don't break feed rhythm. Neutral bg kept in case of letterbox edge. */
   background: var(--bg, #F7F6F4);
-  aspect-ratio: 16 / 9;
   overflow: hidden;
+  min-height: 200px;
+  max-height: 640px;
 }
 
 .ht-duyuru__carousel-slide img,
 .ht-duyuru__carousel-slide video {
+  display: block;
   max-width: 100%;
-  max-height: 100%;
+  max-height: 640px;
   width: auto;
   height: auto;
-  /* K030 FAZ C final: contain (not cover) — full image, no crop. */
-  object-fit: contain;
-  display: block;
+  /* K030 FAZ C hotfix 4: natural aspect — image shapes the slide,
+   * object-fit is unnecessary when dimensions are auto/auto. */
 }
 
 .ht-duyuru__carousel-prev,
