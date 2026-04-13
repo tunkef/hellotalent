@@ -6,8 +6,8 @@
 
 ## Mevcut Durum
 
-**Aktif is:** K030 FAZ B HOTFIX (UAT bulgulari) — edu dash + coach card + yakinda rail teaser
-**Sonraki:** hotfix push → yeni gozlem → FAZ C
+**Aktif is:** K030 FAZ B hotfix 2 — hellotalent.ai pill card kaldirildi (Tuna UAT round 2)
+**Sonraki:** push → FAZ C baslangic (admin duyurular + migration + feed)
 
 ## 2026-04-13 — K030 FAZ B UAT Hotfix
 Tuna dashboard UAT'inde 3 bulgu:

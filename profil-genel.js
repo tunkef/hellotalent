@@ -1382,7 +1382,7 @@
     left2.appendChild(buildIdentityCard(profile, experiences));
     left2.appendChild(buildViewersSummary());
     left2.appendChild(buildPremiumCTA());
-    left2.appendChild(buildHtInfoCompact());
+    /* K030 FAZ B hotfix 2: hellotalent.ai compact pill card removed from rail (2026-04-13, Tuna UAT) */
     left2.appendChild(buildEduDashCard());
     layout2.appendChild(left2);
     layout2.appendChild(buildFeedSection());

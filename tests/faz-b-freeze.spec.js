@@ -128,4 +128,11 @@ test.describe('K030 FAZ B — Studio freeze (source checks)', () => {
     expect(body).toContain('.gh-edu-soon-desc');
     expect(body).toContain('.gh-edu-soon-hint');
   });
+
+  test('hellotalent.ai compact pill card is NOT mounted on left rail', async ({ request, baseURL }) => {
+    var body = await fetchText(request, baseURL, '/profil-genel.js');
+    // The builder function stays (audit trail) but mount point removed
+    expect(body).toContain('function buildHtInfoCompact');
+    expect(body).not.toMatch(/left2\.appendChild\(buildHtInfoCompact\(\)\)/);
+  });
 });
