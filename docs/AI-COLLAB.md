@@ -6,9 +6,9 @@
 
 ## Mevcut Durum
 
-**Aktif is:** K030 FAZ C Subagent A (backend migration) tamamlandi, Subagent B (frontend) sirada
-**Sonraki:** Subagent B dispatch — profil-duyurular.js + admin-announcements.js + mount points
-**Son commit:** (bu commit) — ht_announcements migration + RLS + RPCs
+**Aktif is:** K030 FAZ C Subagent B (frontend feed + admin composer) devam ediyor
+**Sonraki:** B1..B10 adimlari sirasiyla, sonra DeepSeek review + push parent'a birakildi
+**Son commit:** a16addd — ht_announcements migration + RLS + RPCs
 
 ## 2026-04-13 — K030 FAZ C Subagent A (backend migration) tamamlandi
 
