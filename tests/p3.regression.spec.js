@@ -2598,14 +2598,16 @@ test.describe('Aşama 36 — candidate notification truth v1', () => {
   test('_applyNotifBellDot function exists and manages header-notif-dot', () => {
     expect(inboxJs36).toContain('function _applyNotifBellDot');
     var fnStart = inboxJs36.indexOf('function _applyNotifBellDot');
-    var fnBody = inboxJs36.substring(fnStart, fnStart + 500);
+    /* K030 FAZ C: window bumped 500 → 1000 after duyuru unread count
+     * integration added ~280 chars before the navBadge reference. */
+    var fnBody = inboxJs36.substring(fnStart, fnStart + 1000);
     expect(fnBody).toContain('header-notif-dot');
   });
 
   test('_applyNotifBellDot manages badge-bildirimler', () => {
     var fnStart = inboxJs36.indexOf('function _applyNotifBellDot');
     expect(fnStart).toBeGreaterThan(0);
-    var fnBody = inboxJs36.substring(fnStart, fnStart + 500);
+    var fnBody = inboxJs36.substring(fnStart, fnStart + 1000);
     expect(fnBody).toContain('badge-bildirimler');
   });
 });

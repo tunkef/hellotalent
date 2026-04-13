@@ -581,3 +581,7 @@ BLOCKED — fix B4 loader removal, Genel coach CTA paths, B6/B7 stale task bodie
 - admin-announcements.js updatePreview fakePost matches real schema
 - Cache bump ?v=20260413e
 
+
+## 2026-04-13 — K030 FAZ C p3 test window hotfix
+- tests/p3.regression.spec.js Asama 36 _applyNotifBellDot assertions: substring window 500 → 1000 (duyuru unread ~280 char ekledi, badge-bildirimler ref 501. char'a kaydi)
+
