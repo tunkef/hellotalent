@@ -280,6 +280,12 @@
     css += '.gh-edu-cta{display:block;width:100%;padding:9px 0;border:none;border-radius:10px;background:var(--navy,#1E2D5E);color:#fff;font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:opacity .2s;text-align:center}';
     css += '.gh-edu-cta:hover{opacity:.85}';
     css += '.gh-edu-skeleton{background:var(--bg,#F7F6F4);border-radius:8px;height:14px;width:60%;margin-bottom:8px}';
+    /* K030 FAZ B — Stüdyo yakında teaser inside edu dash rail slot */
+    css += '.gh-edu-soon-list{display:flex;flex-direction:column;gap:10px;margin-top:10px}';
+    css += '.gh-edu-soon-row{padding:10px 12px;background:var(--bg,#F7F6F4);border:1px solid var(--border-subtle,#E5E3DF);border-radius:10px}';
+    css += '.gh-edu-soon-title{font-family:"Bricolage Grotesque",sans-serif;font-size:12px;font-weight:700;color:var(--text-primary,#111);margin-bottom:2px}';
+    css += '.gh-edu-soon-desc{font-family:"Plus Jakarta Sans",sans-serif;font-size:11px;color:var(--text-muted,#6B7280);line-height:1.4}';
+    css += '.gh-edu-soon-hint{margin-top:12px;padding:10px;border-top:1px dashed var(--border-subtle,#E5E3DF);font-family:"Plus Jakarta Sans",sans-serif;font-size:11px;color:var(--text-muted,#6B7280);text-align:center;line-height:1.45}';
 
     var styleEl = document.createElement('style');
     styleEl.id = 'gh-style';
@@ -757,19 +763,20 @@
     htInfo.appendChild(htFeatures);
     section.appendChild(htInfo);
 
-    /* Coach header card — editorial bento block */
-    var hdr = el('div', 'gh-coach-header gh-animate');
-    hdr.appendChild(el('div', 'gh-coach-header-stripe'));
-    var hdrInner = el('div', 'gh-coach-header-inner');
-    var hdrLeft = el('div', 'gh-coach-header-left');
-    hdrLeft.appendChild(txt('div', 'gh-coach-kicker', 'ED\u0130T\u00D6R SE\u00C7K\u0130S\u0130'));
-    hdrLeft.appendChild(txt('div', 'gh-feed-title', 'Ko\u00E7lardan \u00D6\u011Fren'));
-    hdrLeft.appendChild(txt('div', 'gh-feed-sub', 'Perakende kariyerinde \u00F6ne \u00E7\u0131kmak i\u00E7in uzman i\u00E7g\u00F6r\u00FCleri'));
-    hdrInner.appendChild(hdrLeft);
-    var hdrRight = el('div', 'gh-coach-header-right');
-    /* K030 FAZ B: freeze Studio CTAs while window._HT_STUDIO_FROZEN === true.
-     * Header card still renders; only the action buttons are suppressed. */
-    if (!window._HT_STUDIO_FROZEN) {
+    /* K030 FAZ B: hide the entire "Koçlardan Öğren" editor pick block while
+     * Studio is frozen. Coach backend stays dormant; feed returns in FAZ C
+     * as the HT Duyurular feed. */
+    if (window._HT_STUDIO_FROZEN !== true) {
+      /* Coach header card — editorial bento block */
+      var hdr = el('div', 'gh-coach-header gh-animate');
+      hdr.appendChild(el('div', 'gh-coach-header-stripe'));
+      var hdrInner = el('div', 'gh-coach-header-inner');
+      var hdrLeft = el('div', 'gh-coach-header-left');
+      hdrLeft.appendChild(txt('div', 'gh-coach-kicker', 'ED\u0130T\u00D6R SE\u00C7K\u0130S\u0130'));
+      hdrLeft.appendChild(txt('div', 'gh-feed-title', 'Ko\u00E7lardan \u00D6\u011Fren'));
+      hdrLeft.appendChild(txt('div', 'gh-feed-sub', 'Perakende kariyerinde \u00F6ne \u00E7\u0131kmak i\u00E7in uzman i\u00E7g\u00F6r\u00FCleri'));
+      hdrInner.appendChild(hdrLeft);
+      var hdrRight = el('div', 'gh-coach-header-right');
       var practiceBtn = txt('button', 'gh-btn-primary', 'St\u00fcdyo\u2019ya Git');
       practiceBtn.type = 'button';
       practiceBtn.addEventListener('click', function() { switchPanel('mulakat'); });
@@ -778,15 +785,15 @@
       seeAll.type = 'button';
       seeAll.addEventListener('click', function() { switchPanel('mulakat'); });
       hdrRight.appendChild(seeAll);
-    }
-    hdrInner.appendChild(hdrRight);
-    hdr.appendChild(hdrInner);
-    section.appendChild(hdr);
+      hdrInner.appendChild(hdrRight);
+      hdr.appendChild(hdrInner);
+      section.appendChild(hdr);
 
-    /* Feed body — will be hydrated with article cards */
-    var feedContainer = el('div', 'gh-feed-body');
-    feedContainer.id = 'gh-feed-container';
-    section.appendChild(feedContainer);
+      /* Feed body — will be hydrated with article cards */
+      var feedContainer = el('div', 'gh-feed-body');
+      feedContainer.id = 'gh-feed-container';
+      section.appendChild(feedContainer);
+    }
 
     return section;
   }
@@ -1018,20 +1025,30 @@
     var card = el('div', 'gh-edu-card gh-animate');
     card.id = 'gh-edu-shell';
 
-    /* Title */
+    /* Title — K030 FAZ B: swap to "Stüdyo" + Yakında chip during freeze */
     var titleRow = el('div', 'gh-edu-title');
     var titleIcon = elSVG('span', 'gh-edu-title-icon', eduTitleSVG);
     titleRow.appendChild(titleIcon);
-    titleRow.appendChild(document.createTextNode('\u00d6\u011frenme \u0130lerlemen'));
+    if (window._HT_STUDIO_FROZEN === true) {
+      titleRow.appendChild(document.createTextNode('St\u00fcdyo'));
+      var soonChip = el('span', 'ht-chip ht-chip--soon');
+      soonChip.textContent = 'Yak\u0131nda';
+      titleRow.appendChild(soonChip);
+    } else {
+      titleRow.appendChild(document.createTextNode('\u00d6\u011frenme \u0130lerlemen'));
+    }
     card.appendChild(titleRow);
 
-    /* Skeleton placeholder while loading */
+    /* Body container */
     var skBody = el('div', '');
     skBody.id = 'gh-edu-body';
-    var sk1 = el('div', 'gh-edu-skeleton'); sk1.style.width = '70%';
-    var sk2 = el('div', 'gh-edu-skeleton'); sk2.style.width = '50%';
-    skBody.appendChild(sk1);
-    skBody.appendChild(sk2);
+    if (window._HT_STUDIO_FROZEN !== true) {
+      /* Skeleton placeholder while hydration runs */
+      var sk1 = el('div', 'gh-edu-skeleton'); sk1.style.width = '70%';
+      var sk2 = el('div', 'gh-edu-skeleton'); sk2.style.width = '50%';
+      skBody.appendChild(sk1);
+      skBody.appendChild(sk2);
+    }
     card.appendChild(skBody);
 
     return card;
@@ -1042,6 +1059,34 @@
     if (!shell) return;
     var body = document.getElementById('gh-edu-body');
     if (!body) return;
+
+    /* K030 FAZ B: when Studio is frozen, render a 4-item "Yakında" teaser
+     * instead of hydrating stats + rozetler + CTA. No RPC call. */
+    if (window._HT_STUDIO_FROZEN === true) {
+      while (body.firstChild) body.removeChild(body.firstChild);
+      var soonItems = [
+        { t: 'M\u00fclakat demolar\u0131', d: 'Ger\u00e7ek senaryolar, ger\u00e7ek sorular.' },
+        { t: 'Yetkinlik bazl\u0131 \u00e7al\u0131\u015fma', d: 'G\u00fc\u00e7l\u00fc ve geli\u015fime a\u00e7\u0131k y\u00f6nleri ay\u0131r\u0131n.' },
+        { t: 'M\u00fclakat teknikleri', d: 'STAR yap\u0131s\u0131, soru tipleri, haz\u0131rl\u0131k.' },
+        { t: 'Ma\u011faza bilgileri', d: 'Perakende sekt\u00f6r\u00fc i\u00e7g\u00f6r\u00fcleri.' }
+      ];
+      var soonList = el('div', 'gh-edu-soon-list');
+      for (var ssi = 0; ssi < soonItems.length; ssi++) {
+        var row = el('div', 'gh-edu-soon-row');
+        var rt = el('div', 'gh-edu-soon-title');
+        rt.textContent = soonItems[ssi].t;
+        var rd = el('div', 'gh-edu-soon-desc');
+        rd.textContent = soonItems[ssi].d;
+        row.appendChild(rt);
+        row.appendChild(rd);
+        soonList.appendChild(row);
+      }
+      body.appendChild(soonList);
+      var hint = el('div', 'gh-edu-soon-hint');
+      hint.textContent = 'St\u00fcdyo kar\u0131yer geli\u015fimi i\u00e7in haz\u0131rlan\u0131yor. Yak\u0131nda burada olacak.';
+      body.appendChild(hint);
+      return;
+    }
 
     try {
       var res = await supabase.rpc('get_mini_education_dashboard');

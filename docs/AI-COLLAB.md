@@ -6,8 +6,25 @@
 
 ## Mevcut Durum
 
-**Aktif is:** K030 FAZ B APPROVED post-push (Codex gate GO). 24h gozlem basliyor.
-**Sonraki:** 24h gozlem + Gemini UAT runtime smoke → FAZ C (migration + duyurular feed)
+**Aktif is:** K030 FAZ B HOTFIX (UAT bulgulari) — edu dash + coach card + yakinda rail teaser
+**Sonraki:** hotfix push → yeni gozlem → FAZ C
+
+## 2026-04-13 — K030 FAZ B UAT Hotfix
+Tuna dashboard UAT'inde 3 bulgu:
+1. "St\u00fcdyo'ya Git" butonu edu dash karti icinde hala gorunuyor (profil-genel.js:1105, ayri render site)
+2. Rozet strip ("Rozetler 2/15") ve Stats 2x2 grid freeze sirasinda hala render ediliyor
+3. "Ko\u00e7lardan \u00d6\u011fren" editor pick karti bos gorunuyor (buttons kaldirildi ama header duruyor)
+4. Raylarda "St\u00fcdyo yakinda" info karti yok
+
+Fix:
+- `buildEduDashCard()` frozen durumda title'i "St\u00fcdyo" + ht-chip--soon olarak swap
+- `hydrateEduDash()` frozen durumda RPC call atlatir, 4 ogelik yakinda teaser (M\u00fclakat demolari/Yetkinlik/Teknikler/Ma\u011faza) + hint metni render
+- Ko\u00e7 feed header karti + feed container tamamen freeze guard icine alindi (gh-coach-header + gh-feed-container)
+- 3 yeni CSS rule: .gh-edu-soon-list, .gh-edu-soon-row, .gh-edu-soon-title/desc/hint
+- tests/faz-b-freeze.spec.js'e 3 yeni test (edu teaser, coach gate, CSS)
+
+Test: 24/24 FAZ B spec PASS, 748/748 p3 regression PASS.
+Admin HT bilgi yayinlama bolumu FAZ C kapsaminda (henuz baslamadi) — ayri explained.
 **Son commit:** f4a93e6 (sub-10px fix) — 12 commit FAZ B serisi canlida
 **FAZ B ozet:** 13 dosya (+591/-56), 1293/1293 regression PASS, 18/18 FAZ B test PASS
 **DeepSeek:** 0 blocker (1 false positive icon mapping)

@@ -104,4 +104,28 @@ test.describe('K030 FAZ B — Studio freeze (source checks)', () => {
     expect(body).toContain('name="robots"');
     expect(body).toContain('noindex');
   });
+
+  /* ── Hotfix 2026-04-13: post-UAT bugs ── */
+
+  test('edu dash title + body render Yakında teaser when frozen', async ({ request, baseURL }) => {
+    var body = await fetchText(request, baseURL, '/profil-genel.js');
+    expect(body).toMatch(/buildEduDashCard[\s\S]{0,800}ht-chip--soon/);
+    expect(body).toContain('gh-edu-soon-list');
+    expect(body).toContain('gh-edu-soon-hint');
+    expect(body).toMatch(/hydrateEduDash[\s\S]{0,800}_HT_STUDIO_FROZEN/);
+  });
+
+  test('coach editor pick header card wrapped in freeze guard', async ({ request, baseURL }) => {
+    var body = await fetchText(request, baseURL, '/profil-genel.js');
+    expect(body).toMatch(/_HT_STUDIO_FROZEN[\s\S]{0,200}gh-coach-header/);
+  });
+
+  test('edu dash yakında teaser CSS present', async ({ request, baseURL }) => {
+    var body = await fetchText(request, baseURL, '/profil-genel.js');
+    expect(body).toContain('.gh-edu-soon-list');
+    expect(body).toContain('.gh-edu-soon-row');
+    expect(body).toContain('.gh-edu-soon-title');
+    expect(body).toContain('.gh-edu-soon-desc');
+    expect(body).toContain('.gh-edu-soon-hint');
+  });
 });
