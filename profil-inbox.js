@@ -1229,13 +1229,35 @@
     activateTab(panel, saved === 'duyuru' ? 'duyuru' : 'bildirim');
   }
 
+  /* K030 FAZ C hotfix 5: defensive parse for the unread count RPC.
+   * Supabase PostgREST can return an int scalar as `res.data` number OR
+   * wrap it in an array `[n]` OR in an object `{count:n}` depending on the
+   * function return type + client version. Handle all cases safely. */
+  function parseUnreadCount(data) {
+    if (data === null || typeof data === 'undefined') return 0;
+    if (typeof data === 'number') return data;
+    if (typeof data === 'string') {
+      var n = parseInt(data, 10);
+      return isNaN(n) ? 0 : n;
+    }
+    if (Array.isArray(data)) {
+      if (data.length === 0) return 0;
+      return parseUnreadCount(data[0]);
+    }
+    if (typeof data === 'object') {
+      if (typeof data.count !== 'undefined') return parseUnreadCount(data.count);
+      if (typeof data.get_unread_announcement_count !== 'undefined') {
+        return parseUnreadCount(data.get_unread_announcement_count);
+      }
+    }
+    return 0;
+  }
+
   async function loadUnreadCount() {
-    /* K030 FAZ C hotfix 2: always fetch + publish unread count to the header
-     * bell dot, even when #panel-bildirimler hasn't been opened yet. The
-     * segment badge is optional — if it's not in the DOM we still update
-     * the global + bell. Previous version early-returned when panel missing. */
+    /* K030 FAZ C hotfix 5: always fetch + publish unread count; defensive parse;
+     * verbose debug log accessible via window._htDebugBell. */
     var supa = getSupa();
-    if (!supa) return;
+    if (!supa) { console.warn('[duyuru] loadUnreadCount: supa client unavailable'); return; }
 
     var since = null;
     try { since = localStorage.getItem(SEEN_KEY); } catch (e) { /* ignore */ }
@@ -1243,10 +1265,12 @@
     try {
       var res = await supa.rpc('get_unread_announcement_count', { p_since: since || null });
       if (res.error) {
-        console.warn('[duyuru] unread count RPC failed:', res.error.message);
+        console.warn('[duyuru] unread count RPC failed:', res.error.message, res.error);
         return;
       }
-      var count = typeof res.data === 'number' ? res.data : (res.data && res.data.count) || 0;
+
+      var count = parseUnreadCount(res.data);
+      console.warn('[duyuru] unread count RPC → data:', res.data, 'parsed:', count, 'since:', since);
 
       /* Segment badge (in-panel) — update if present */
       var panel = document.getElementById('panel-bildirimler');
@@ -1264,9 +1288,11 @@
       window._htDuyuruUnreadCount = count;
       if (typeof window._htApplyNotifBellDot === 'function') {
         window._htApplyNotifBellDot();
+      } else {
+        console.warn('[duyuru] _htApplyNotifBellDot missing — header dot won\u0027t refresh');
       }
     } catch (e) {
-      console.warn('[duyuru] unread count error:', e && e.message);
+      console.warn('[duyuru] unread count error:', e && e.message, e);
     }
   }
 
@@ -1274,6 +1300,41 @@
    * and for a periodic poll every 60s so new admin posts surface without
    * a full page reload. */
   window._htRefreshDuyuruUnread = loadUnreadCount;
+
+  /* K030 FAZ C hotfix 5: diagnostic helper — call from DevTools console
+   * to dump live bell dot state + manually re-fetch the unread count. */
+  window._htDebugBell = async function () {
+    var supa = getSupa();
+    var since = null;
+    try { since = localStorage.getItem(SEEN_KEY); } catch (e) { /* ignore */ }
+    var state = {
+      supa: supa ? 'ok' : 'missing',
+      SEEN_KEY: since || '(null)',
+      _htDuyuruUnreadCount: window._htDuyuruUnreadCount,
+      _htApplyNotifBellDot: typeof window._htApplyNotifBellDot,
+      headerDotEl: document.getElementById('header-notif-dot'),
+      headerDotDisplay: (function () {
+        var el = document.getElementById('header-notif-dot');
+        return el ? (el.style.display || 'default') : 'not-found';
+      })(),
+      navBadgeEl: document.getElementById('badge-bildirimler'),
+      navBadgeText: (function () {
+        var el = document.getElementById('badge-bildirimler');
+        return el ? el.textContent : 'not-found';
+      })()
+    };
+    console.warn('[duyuru:debug] Bell state:', state);
+    if (supa) {
+      try {
+        var r = await supa.rpc('get_unread_announcement_count', { p_since: since || null });
+        console.warn('[duyuru:debug] RPC raw response:', r);
+        console.warn('[duyuru:debug] Parsed count:', parseUnreadCount(r && r.data));
+      } catch (e) {
+        console.error('[duyuru:debug] RPC throw:', e);
+      }
+    }
+    return state;
+  };
 
   function init() {
     bindSegment();

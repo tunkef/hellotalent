@@ -627,3 +627,10 @@ BLOCKED — fix B4 loader removal, Genel coach CTA paths, B6/B7 stale task bodie
 - Cache-bust ?v=20260413j
 - Test: 24 FAZ C + 730 p3 = 754 PASS
 
+
+## 2026-04-14 — K030 FAZ C hotfix 5: bell dot defensive parse + debug helper
+- profil-inbox.js parseUnreadCount: scalar/array/object/string/null tam handle
+- loadUnreadCount verbose console.info logging: RPC raw data + parsed count + since value
+- window._htDebugBell: manual diagnostic from DevTools console
+- Cache-bust ?v=20260413k
+
