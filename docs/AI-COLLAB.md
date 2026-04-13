@@ -654,3 +654,8 @@ BLOCKED — fix B4 loader removal, Genel coach CTA paths, B6/B7 stale task bodie
 - profil-inbox.js: _htLoadDuyuruPreview (last 5), segment click handler, _htApplyDrawerBadges, Tümünü Gör routing (active tab → sessionStorage), bell dot calls drawer badge refresh
 - Cache-bust ?v=20260413n
 
+
+## 2026-04-14 — p3 regression hotfix: drawer dot 9→10px
+- css/layout.css .header-popup-seg-dot font-size 9px → 10px (p3 sub-10 regression guard)
+- Box proportional: 16px → 18px
+
