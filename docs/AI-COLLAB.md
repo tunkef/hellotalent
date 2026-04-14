@@ -47,7 +47,7 @@ Panel-by-panel:
 - [x] inbox.css tokenize (~64 hex), 874/0
 - [x] bildirimler.css tokenize (~54 hex), 874/0
 - [x] kimbakti.css tokenize (~62 hex), 874/0
-- [ ] genel-bakis
+- [x] genel-bakis.css tokenize (~18 hex), 874/0
 - [ ] sirketler drift
 - [ ] merkezi drift
 - [ ] layout sweep
