@@ -43,7 +43,7 @@ Panel-by-panel:
 ### Progress log
 - [x] tokens.css editorial set + NightAudit guard test (commit 684ff5f)
 - [x] ayarlar.css tokenize (~140 hex → var(--editorial-*)), 874/0
-- [ ] destek
+- [x] destek.css tokenize (~106 hex), 874/0
 - [ ] inbox
 - [ ] bildirimler
 - [ ] kimbakti
