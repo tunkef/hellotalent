@@ -203,10 +203,7 @@ test.describe('Sprint 4 — copy quality & accessibility', () => {
     expect(subTenMatches).toEqual([]);
   });
 
-  test('K031 locked-card styling still exists (locked class optional in HTML)', () => {
-    // .locked may be used for future/disabled tiles; rule must stay for when markup uses it
-    expect(profilCss).toContain('.bento-card.locked');
-  });
+  // K031/K033: bento vocabulary removed from candidate panels; locked-card guard obsolete.
 });
 
 // ═══════════════════════════════════════════════════════════════
@@ -1875,15 +1872,8 @@ test.describe('Profil activation guards', () => {
     settingsJs = readFromRepo('profil-settings.js');
   });
 
-  test('completion bar shows %45 threshold readiness state', () => {
-    expect(genelJs).toContain('pct >= 45');
-    expect(genelJs).toContain('gh-id-readiness');
-  });
-
-  test('below threshold shows actionable hints from getProfileScoreHints', () => {
-    expect(genelJs).toContain('getProfileScoreHints');
-    expect(genelJs).toContain('gh-id-hints');
-  });
+  // K033: identity readiness card replaced by editorial hero; %45 threshold + score hints
+  // moved to profil-merkez (K031). Genel Bakis surface no longer carries this vocabulary.
 
   test('CV card does not claim AI optimization', () => {
     expect(profilHtml).not.toContain('AI ile CV Optimize');
@@ -3027,90 +3017,58 @@ test.describe('Beta Premium Gate — AI 1-use limit + badge system', () => {
   });
 });
 
-test.describe('Asama 58 — Mini Eğitim Dashboard guards', () => {
-  var genelJs, summaryJs;
+// K033 — Asama 58 mini edu dash widget removed from Genel Bakis editorial layout.
+// Studio frozen since K030; edu dash + summary badge gallery no longer rendered there.
+// profil-summary.js _htRenderMiniRozetGalery still exists for future studio surface.
+
+test.describe('K033 — Genel Bakis editorial redesign', () => {
+  var genelJs, gbCss, profilHtml;
 
   test.beforeAll(() => {
-    genelJs   = readFromRepo('profil-genel.js');
-    summaryJs = readFromRepo('profil-summary.js');
+    genelJs    = readFromRepo('profil-genel.js');
+    gbCss      = readFromRepo('css/panels/genel-bakis.css');
+    profilHtml = readFromRepo('profil.html');
   });
 
-  // ── Migration guard ──
-
-  test('migration for get_mini_education_dashboard RPC exists', () => {
-    var migDir = path.join(__dirname, '..', 'supabase', 'migrations');
-    var files = fs.readdirSync(migDir);
-    var mig = files.find(f => f.includes('mini_education_dashboard'));
-    expect(mig).toBeTruthy();
+  test('genel-bakis.css uses .gb-* namespace with hero/strip/gundem/spine', () => {
+    expect(gbCss).toContain('.gb-hero');
+    expect(gbCss).toContain('.gb-strip');
+    expect(gbCss).toContain('.gb-gundem');
+    expect(gbCss).toContain('.gb-spine');
+    expect(gbCss).toContain('.gb-signature');
   });
 
-  // ── RPC call guard ──
-
-  test('profil-genel.js calls get_mini_education_dashboard RPC', () => {
-    expect(genelJs).toContain('get_mini_education_dashboard');
+  test('profil-genel.js builds editorial hero + strip + gundem render', () => {
+    expect(genelJs).toContain('buildHero');
+    expect(genelJs).toContain('buildStrip');
+    expect(genelJs).toContain('buildGundem');
+    expect(genelJs).toContain('buildSignature');
   });
 
-  // ── Card DOM anchor ──
-
-  test('profil-genel.js renders gh-edu-shell card container', () => {
-    expect(genelJs).toContain('gh-edu-shell');
+  test('profil-genel.js wires gundem to get_announcements_feed RPC (K030 contract)', () => {
+    expect(genelJs).toContain('get_announcements_feed');
   });
 
-  // ── Stats guard ──
-
-  test('profil-genel.js renders streak, journal, practice, badge stats', () => {
-    expect(genelJs).toContain('streak_current');
-    expect(genelJs).toContain('journal_count');
-    expect(genelJs).toContain('practice_total');
-    expect(genelJs).toContain('badge_count');
+  test('profil-genel.js preserves coach builder helpers for studio bridge', () => {
+    expect(genelJs).toContain('_htBuildCoachCover');
+    expect(genelJs).toContain('_htBuildCoachAvatar');
+    expect(genelJs).toContain('_htShowCoachCard');
   });
 
-  // ── Badge gallery guard ──
-
-  test('profil-genel.js renders gh-edu-badges-grid badge gallery', () => {
-    expect(genelJs).toContain('gh-edu-badges-grid');
+  test('profil-genel.js exposes _htLoadGenelHome and _htRefreshGenelHome', () => {
+    expect(genelJs).toContain('_htLoadGenelHome');
+    expect(genelJs).toContain('_htRefreshGenelHome');
   });
 
-  // ── Hydration function guard ──
-
-  test('profil-genel.js has hydrateEduDash function', () => {
-    expect(genelJs).toContain('hydrateEduDash');
+  test('profil.html cache-bust bumped to v=20260414f for genel-bakis', () => {
+    expect(profilHtml).toContain('genel-bakis.css?v=20260414f');
+    expect(profilHtml).toContain('profil-genel.js?v=20260414f');
   });
 
-  // ── Devam Et CTA guard ──
-
-  test('profil-genel.js has Studio CTA in edu dash card', () => {
-    // switchPanel('studio') navigates to Studio
-    expect(genelJs).toContain("switchPanel('studio')");
-  });
-
-  // ── Left rail integration guard ──
-
-  test('profil-genel.js appends edu dash card to left rail', () => {
-    expect(genelJs).toContain('buildEduDashCard()');
-    expect(genelJs).toContain('hydrateEduDash()');
-  });
-
-  // ── profil-summary.js badge gallery renderer guard ──
-
-  test('profil-summary.js exposes _htRenderMiniRozetGalery window function', () => {
-    expect(summaryJs).toContain('_htRenderMiniRozetGalery');
-  });
-
-  test('profil-summary.js badge gallery uses earned/locked state classes', () => {
-    expect(summaryJs).toContain('gh-edu-badge--earned');
-    expect(summaryJs).toContain('gh-edu-badge--locked');
-  });
-
-  // ── XSS safety: no user data via innerHTML ──
-
-  test('profil-genel.js edu card uses textContent for all user stat values', () => {
-    // stat values (practice_total, streak_current etc.) must go through textContent
-    // The stat val rendering uses txt() helper which only uses textContent
-    expect(genelJs).toContain('gh-edu-stat-val');
-    // Ensure innerHTML in edu card body only used for SVG constants
-    // (No innerHTML call with d.* or user data)
-    expect(genelJs).not.toContain('innerHTML = d.');
+  test('legacy gh-edu/gh-id-readiness vocabulary removed from profil-genel.js', () => {
+    expect(genelJs).not.toContain('gh-edu-shell');
+    expect(genelJs).not.toContain('gh-id-readiness');
+    expect(genelJs).not.toContain('hydrateEduDash');
   });
 });
 

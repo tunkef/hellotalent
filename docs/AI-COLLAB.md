@@ -25,7 +25,7 @@
 
 **DeepSeek (working diff):** APPROVE. No console.log, no emoji, no top-level const/let/arrow, XSS textContent safe, namespace clean, panel switching preserved.
 
-**Test:** node --check OK. Playwright PENDING (post-push parent calistiracak).
+**Test:** node --check OK. Playwright **744 passed / 0 failed** (post-push hotfix: stale Asama 58 mini edu guards + K031 locked-card + gh-id-readiness/getProfileScoreHints guards K033 vocabulary'siyle degistirildi).
 
 ## 2026-04-14 — K032 Profil Onizleme drawer exec tamamlandi
 
