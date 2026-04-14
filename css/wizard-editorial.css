@@ -77,7 +77,10 @@
   box-shadow: none !important;
   background-image: none !important;
 }
-/* K057: location/multiselect search inputs flat — no inner frame */
+/* K057+K059: location/multiselect search — single hairline frame, no inner double */
+#panel-profil .ms-container {
+  background: transparent !important;
+}
 #panel-profil .ms-input-wrap {
   background: transparent !important;
   border: 1px solid var(--wz-hairline) !important;
@@ -86,6 +89,15 @@
 }
 #panel-profil .ms-input-wrap:focus-within {
   border-color: var(--wz-navy) !important;
+}
+#panel-profil .ms-input-wrap .ms-search,
+#panel-profil .ms-search {
+  background: transparent !important;
+  border: 0 !important;
+  outline: none !important;
+  box-shadow: none !important;
+  padding: 4px 0 !important;
+  width: 100% !important;
 }
 /* K057+K059: segment / calisma trustpills — less rounded */
 #panel-profil .check-item,
