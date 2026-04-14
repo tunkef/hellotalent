@@ -1,0 +1,922 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>K032 · Profil Önizleme · Proposal · 2026-04-14</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --cream: #F7F6F4;
+    --page-bg: #EDEAE5;
+    --navy: #1E2D5E;
+    --navy-deep: #162247;
+    --verm: #C94E28;
+    --verm-soft: #F5EDE9;
+    --text-primary: #111111;
+    --text-secondary: #1E2D5E;
+    --text-muted: #6B7280;
+    --border-subtle: #E5E3DF;
+
+    --font-head: 'Bricolage Grotesque', sans-serif;
+    --font-body: 'Plus Jakarta Sans', sans-serif;
+    --font-mono: 'DM Mono', monospace;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: var(--font-body);
+    color: var(--text-primary);
+    background: var(--page-bg);
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+    padding: 48px 24px 96px;
+  }
+
+  /* ─── Page chrome / mockup frame ─── */
+  .mockup-chrome {
+    max-width: 560px;
+    margin: 0 auto 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+  .mockup-chrome .mc-dot {
+    display: inline-block;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--verm);
+    margin-right: 8px;
+    vertical-align: middle;
+  }
+
+  /* ─── Drawer container ─── */
+  .pp {
+    max-width: 560px;
+    margin: 0 auto;
+    background: var(--cream);
+    border-radius: 20px;
+    border: 1px solid var(--border-subtle);
+    box-shadow: 0 30px 80px -20px rgba(22, 34, 71, 0.25), 0 8px 24px rgba(22, 34, 71, 0.08);
+    overflow: hidden;
+    min-height: 880px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ─── Drawer header (navy bar) ─── */
+  .pp-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 18px 24px;
+    background: var(--navy-deep);
+    color: #F2F1EE;
+  }
+  .pp-head__icon {
+    width: 32px; height: 32px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.06);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #D9D6CE;
+    flex-shrink: 0;
+  }
+  .pp-head__icon svg { width: 16px; height: 16px; }
+  .pp-head__title {
+    flex: 1;
+    min-width: 0;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: #EFEDE6;
+  }
+  .pp-head__title em {
+    display: block;
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: 15px;
+    font-style: normal;
+    color: #FFFFFF;
+    letter-spacing: -0.005em;
+    text-transform: none;
+    margin-top: 3px;
+  }
+  .pp-head__close {
+    width: 34px; height: 34px;
+    border-radius: 10px;
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.14);
+    color: #EFEDE6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background 160ms ease, border-color 160ms ease;
+  }
+  .pp-head__close:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.28); }
+  .pp-head__close svg { width: 14px; height: 14px; }
+
+  /* ─── Drawer body (cream) ─── */
+  .pp-body {
+    flex: 1;
+    padding: 32px 28px 28px;
+    background: var(--cream);
+  }
+
+  /* Stagger */
+  .pp-body > * { opacity: 0; transform: translateY(8px); animation: ppFadeUp 280ms ease-out forwards; }
+  .pp-body > .pp-identity    { animation-delay: 0ms; }
+  .pp-body > .pp-rule--1     { animation-delay: 60ms; }
+  .pp-body > .pp-bio         { animation-delay: 120ms; }
+  .pp-body > .pp-rule--2     { animation-delay: 180ms; }
+  .pp-body > .pp-experience  { animation-delay: 240ms; }
+  .pp-body > .pp-rule--3     { animation-delay: 300ms; }
+  .pp-body > .pp-edu         { animation-delay: 360ms; }
+  .pp-body > .pp-rule--4     { animation-delay: 420ms; }
+  .pp-body > .pp-prefs       { animation-delay: 480ms; }
+  .pp-body > .pp-rule--5     { animation-delay: 540ms; }
+  .pp-body > .pp-cv          { animation-delay: 600ms; }
+  .pp-body > .pp-sign        { animation-delay: 680ms; }
+
+  @keyframes ppFadeUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ─── Hairlines ─── */
+  .pp-rule {
+    border: 0;
+    border-top: 1px solid var(--border-subtle);
+    margin: 28px 0;
+  }
+
+  /* ─── Section label (mono uppercase) ─── */
+  .pp-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--text-muted);
+    margin-bottom: 18px;
+  }
+
+  /* ─── Identity row ─── */
+  .pp-identity {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+  }
+  .pp-avatar {
+    width: 72px; height: 72px;
+    border-radius: 50%;
+    background: #EEF0F7;
+    color: var(--navy);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-head);
+    font-weight: 800;
+    font-size: 26px;
+    letter-spacing: 0.02em;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .pp-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+
+  .pp-ident__text { flex: 1; min-width: 0; }
+  .pp-ident__name {
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: 26px;
+    line-height: 1.1;
+    letter-spacing: -0.015em;
+    margin: 0 0 6px;
+    color: var(--text-primary);
+  }
+  .pp-ident__role {
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-muted);
+    line-height: 1.5;
+    margin: 0;
+  }
+  .pp-ident__role em {
+    font-style: normal;
+    font-weight: 600;
+    color: var(--text-secondary);
+  }
+  .pp-ident__role .dot { opacity: 0.4; margin: 0 4px; }
+
+  .pp-ident__status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 10px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--verm);
+  }
+  .pp-ident__status::before {
+    content: "";
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--verm);
+    box-shadow: 0 0 0 3px var(--verm-soft);
+  }
+
+  /* Pulse / score ring */
+  .pp-pulse {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+  .pp-pulse__ring { position: relative; width: 56px; height: 56px; }
+  .pp-pulse__ring svg {
+    width: 100%; height: 100%;
+    transform: rotate(-90deg);
+    overflow: visible;
+  }
+  .pp-pulse__ring circle.track { stroke: var(--border-subtle); }
+  .pp-pulse__ring circle.fill {
+    stroke: var(--text-secondary);
+    stroke-linecap: round;
+    stroke-dasharray: 150.8;
+    stroke-dashoffset: calc(150.8 * (1 - 0.96));
+    animation: ppRingFill 680ms ease-out;
+  }
+  @keyframes ppRingFill {
+    from { stroke-dashoffset: 150.8; }
+  }
+  .pp-pulse__pct {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--text-secondary);
+    letter-spacing: -0.01em;
+  }
+  .pp-pulse__cap {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--text-muted);
+  }
+
+  /* Contact inline row */
+  .pp-contact {
+    margin-top: 14px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 20px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 400;
+    color: var(--text-muted);
+    letter-spacing: 0.02em;
+  }
+  .pp-contact span {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .pp-contact svg { width: 12px; height: 12px; color: var(--text-secondary); opacity: 0.8; }
+
+  .pp-ident__block { flex: 1; min-width: 0; }
+  .pp-ident__completion {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px dashed var(--border-subtle);
+  }
+  .pp-ident__completion .cap {
+    font-family: var(--font-body);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-muted);
+    line-height: 1.45;
+    flex: 1;
+  }
+
+  /* ─── Bio ─── */
+  .pp-bio__quote {
+    font-family: var(--font-head);
+    font-weight: 500;
+    font-style: italic;
+    font-size: 16px;
+    line-height: 1.55;
+    color: var(--text-secondary);
+    letter-spacing: -0.005em;
+    margin: 0;
+    padding-left: 14px;
+    border-left: 1px solid var(--text-secondary);
+  }
+
+  /* ─── Show more / less clamp pattern ─── */
+  .pp-clamp {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+  }
+  .pp-clamp--3 { -webkit-line-clamp: 3; }
+  .pp-clamp--2 { -webkit-line-clamp: 2; }
+  .pp-clamp.is-expanded {
+    -webkit-line-clamp: unset;
+    display: block;
+  }
+  .pp-toggle {
+    margin-top: 6px;
+    padding: 0;
+    background: none;
+    border: none;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .pp-toggle:hover { opacity: 0.75; }
+  .pp-toggle::after {
+    content: "↓";
+    font-size: 11px;
+    transition: transform 0.2s ease;
+  }
+  .pp-toggle.is-expanded::after { transform: rotate(180deg); }
+  .pp-bio .pp-toggle { margin-left: 14px; }
+
+  /* ─── Experience spine ─── */
+  .pp-exp {
+    position: relative;
+    padding-left: 24px;
+  }
+  .pp-exp::before {
+    content: "";
+    position: absolute;
+    left: 5px;
+    top: 6px;
+    bottom: 6px;
+    width: 1px;
+    background: var(--text-secondary);
+    opacity: 0.28;
+  }
+  .pp-exp__item {
+    position: relative;
+    padding: 0 0 20px;
+  }
+  .pp-exp__item + .pp-exp__item {
+    padding-top: 20px;
+    border-top: 1px solid var(--border-subtle);
+  }
+  .pp-exp__item:last-child { padding-bottom: 0; }
+  .pp-exp__item::before {
+    content: "";
+    position: absolute;
+    left: -22px;
+    top: 8px;
+    width: 9px; height: 9px;
+    border-radius: 50%;
+    background: var(--verm);
+    box-shadow: 0 0 0 3px var(--cream);
+  }
+  .pp-exp__item--muted::before {
+    background: transparent;
+    border: 1.5px dashed var(--text-muted);
+  }
+  .pp-exp__item.is-top-gap { padding-top: 0; }
+
+  .pp-exp__role {
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: 17px;
+    line-height: 1.25;
+    color: var(--text-primary);
+    letter-spacing: -0.005em;
+    margin: 0 0 3px;
+  }
+  .pp-exp__role em {
+    font-style: normal;
+    color: var(--text-secondary);
+  }
+  .pp-exp__meta {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 10px;
+    margin-bottom: 10px;
+  }
+  .pp-exp__meta .sep { opacity: 0.4; }
+  .pp-exp__desc {
+    font-family: var(--font-body);
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--text-primary);
+    margin: 0;
+  }
+  .pp-exp__item--muted .pp-exp__role {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-secondary);
+  }
+  .pp-exp__earlier {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+
+  /* ─── Education / language block ─── */
+  .pp-kv {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  .pp-kv__row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 16px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+  .pp-kv__row:first-child { padding-top: 0; }
+  .pp-kv__row:last-child { border-bottom: 0; padding-bottom: 0; }
+  .pp-kv__k {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--text-muted);
+    flex-shrink: 0;
+    min-width: 140px;
+  }
+  .pp-kv__v {
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-primary);
+    text-align: right;
+    line-height: 1.5;
+  }
+  .pp-kv__v em {
+    font-style: normal;
+    color: var(--text-secondary);
+    font-weight: 600;
+  }
+  .pp-kv__v .sub {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 400;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-top: 2px;
+  }
+
+  /* Two-col split for edu/lang */
+  .pp-split {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .pp-split__h {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--text-secondary);
+    margin: 0 0 10px;
+  }
+  .pp-split__list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .pp-split__list li {
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border-subtle);
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-primary);
+    line-height: 1.45;
+  }
+  .pp-split__list li:last-child { border-bottom: 0; }
+  .pp-split__list li .sub {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 400;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-top: 2px;
+  }
+
+  /* ─── CV row ─── */
+  .pp-cv__row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    border: 1px solid var(--border-subtle);
+    border-radius: 12px;
+    background: transparent;
+  }
+  .pp-cv__icon {
+    width: 34px; height: 34px;
+    border-radius: 9px;
+    background: #EEF0F7;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .pp-cv__icon svg { width: 16px; height: 16px; }
+  .pp-cv__main { flex: 1; min-width: 0; }
+  .pp-cv__name {
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    line-height: 1.35;
+  }
+  .pp-cv__sub {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 400;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-top: 2px;
+  }
+  .pp-cv__chev {
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+  }
+  .pp-cv__chev svg { width: 14px; height: 14px; }
+
+  /* ─── Signature footer ─── */
+  .pp-sign {
+    margin-top: 32px;
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-style: italic;
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+  }
+
+  /* ─── Reduced motion ─── */
+  @media (prefers-reduced-motion: reduce) {
+    .pp-body > *,
+    .pp-pulse__ring circle.fill {
+      animation: none !important;
+      transition: none !important;
+      opacity: 1 !important;
+      transform: none !important;
+    }
+  }
+
+  /* ─── Mobile ─── */
+  @media (max-width: 560px) {
+    body { padding: 16px 0 48px; }
+    .mockup-chrome { padding: 0 16px; max-width: 100%; }
+    .pp {
+      max-width: 100%;
+      border-radius: 0;
+      border-left: 0;
+      border-right: 0;
+      min-height: 100vh;
+    }
+    .pp-body { padding: 24px 20px 24px; }
+    .pp-identity { flex-wrap: wrap; }
+    .pp-pulse { order: -1; margin-left: auto; }
+    .pp-kv__row { flex-direction: column; align-items: flex-start; gap: 4px; }
+    .pp-kv__v { text-align: left; }
+    .pp-kv__k { min-width: 0; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="mockup-chrome">
+    <span><span class="mc-dot"></span>K032 · Profil Önizleme · Proposal</span>
+    <span>2026-04-14</span>
+  </div>
+
+  <section class="pp" role="dialog" aria-label="Profil Önizleme">
+
+    <!-- Navy header bar -->
+    <header class="pp-head">
+      <div class="pp-head__icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/>
+          <circle cx="12" cy="12" r="3"/>
+        </svg>
+      </div>
+      <div class="pp-head__title">
+        K032 · Önizleme
+        <em>İşverenlerin gördüğü profil</em>
+      </div>
+      <button class="pp-head__close" type="button" aria-label="Kapat">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6 6l12 12M18 6 6 18"/>
+        </svg>
+      </button>
+    </header>
+
+    <!-- Drawer body -->
+    <div class="pp-body">
+
+      <!-- Identity -->
+      <div class="pp-identity">
+        <div class="pp-avatar" aria-hidden="true">
+          <img src="https://i.pravatar.cc/200?img=12" alt="" onerror="this.style.display='none';this.parentNode.textContent='TK';" />
+        </div>
+        <div class="pp-ident__block">
+          <div style="display:flex; align-items:flex-start; gap:16px;">
+            <div class="pp-ident__text">
+              <h1 class="pp-ident__name">Tuna Kefeli</h1>
+              <p class="pp-ident__role">
+                <em>Mağaza Müdürü</em>
+                <span class="dot">·</span> Chanel
+                <span class="dot">·</span> İstanbul
+                <span class="dot">·</span> 10 yıl deneyim
+              </p>
+              <div class="pp-ident__status">Aktif iş arıyor</div>
+            </div>
+            <div class="pp-pulse" aria-label="Profil tamamlanma 96 / 100">
+              <div class="pp-pulse__ring">
+                <svg viewBox="0 0 56 56">
+                  <circle class="track" cx="28" cy="28" r="24" fill="none" stroke-width="2.5"/>
+                  <circle class="fill"  cx="28" cy="28" r="24" fill="none" stroke-width="2.5"/>
+                </svg>
+                <div class="pp-pulse__pct">96</div>
+              </div>
+              <div class="pp-pulse__cap">/ 100</div>
+            </div>
+          </div>
+
+          <div class="pp-contact">
+            <span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16v12H4z"/><path d="m4 7 8 6 8-6"/></svg>
+              kefelituna@gmail.com
+            </span>
+            <span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.8 12.8 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.8 12.8 0 0 0 2.81.7A2 2 0 0 1 22 16.92Z"/></svg>
+              +90 536 239 5857
+            </span>
+          </div>
+
+          <div class="pp-ident__completion">
+            <div class="cap">Güçlü profil — işverenler tarafından görülme şansın yüksek.</div>
+          </div>
+        </div>
+      </div>
+
+      <hr class="pp-rule pp-rule--1" />
+
+      <!-- Bio -->
+      <section class="pp-bio">
+        <div class="pp-label">Özet</div>
+        <p class="pp-bio__quote pp-clamp pp-clamp--3">Apple, Prada ve Chanel'de lüks perakende alanında güçlü bir temele sahip olup, operasyonel liderliği girişimcilik çevikliği ile birleştiriyorum. Peoplein'in kurucusu olarak, 14 şehirde 21 Apple dağıtıcı mağazası için ekip kurulması ve Lululemon ile BMW Group için insan kaynakları edinimini desteklemeyi içeren büyük ölçekli işe alım projelerini yönettim. Girişimi devrettikten sonra, Mağaza Müdürü veya Perakende Alan Müdürü olarak yetenekler geliştirme ve operasyonlar konusundaki bu eşsiz 360 derece perspektifi kullanmayı amaçlayarak küresel kurumsal sektöre dönüş yapmak istiyorum.</p>
+        <button type="button" class="pp-toggle" data-pp-toggle>Devamını oku</button>
+      </section>
+
+      <hr class="pp-rule pp-rule--2" />
+
+      <!-- Experience -->
+      <section class="pp-experience">
+        <div class="pp-label">Deneyim</div>
+        <div class="pp-exp">
+
+          <article class="pp-exp__item is-top-gap">
+            <h3 class="pp-exp__role">Mağaza Müdürü <em>· Chanel</em></h3>
+            <div class="pp-exp__meta">
+              <span>Mağaza Yönetimi</span><span class="sep">·</span>
+              <span>Tam Zamanlı</span><span class="sep">·</span>
+              <span>Ağu 2023 — Tem 2024</span>
+            </div>
+            <p class="pp-exp__desc pp-clamp pp-clamp--2">İstinyePark Flagship mağazasının yönetiminde ortak sorumluluk üstlenerek, 50'den fazla tam zamanlı çalışan (Satış, Operasyon, Kasa) ile oluşturulan disiplinler arası ekibi yönetti ve yüksek marka standartlarını sağladı.</p>
+            <button type="button" class="pp-toggle" data-pp-toggle>Devamını oku</button>
+          </article>
+
+          <article class="pp-exp__item">
+            <h3 class="pp-exp__role">Mağaza Müdür Yardımcısı <em>· Prada</em></h3>
+            <div class="pp-exp__meta">
+              <span>Mağaza Yönetimi</span><span class="sep">·</span>
+              <span>Tam Zamanlı</span><span class="sep">·</span>
+              <span>Eki 2022 — Ağu 2023</span>
+            </div>
+            <p class="pp-exp__desc pp-clamp pp-clamp--2">Prestijli Nişantaşı ana mağazasında 18 Sales Associate'ten oluşan yüksek performanslı bir ekibi yönetti, hızlı tempolu sokak perakendeciliği ortamında çeviklik kültürünü geliştirdi.</p>
+            <button type="button" class="pp-toggle" data-pp-toggle>Devamını oku</button>
+          </article>
+
+          <article class="pp-exp__item">
+            <h3 class="pp-exp__role">Operasyon Müdürü <em>· Apple</em></h3>
+            <div class="pp-exp__meta">
+              <span>Mağaza Operasyonu</span><span class="sep">·</span>
+              <span>Tam Zamanlı</span><span class="sep">·</span>
+              <span>Ağu 2018 — Eki 2022</span>
+            </div>
+            <p class="pp-exp__desc pp-clamp pp-clamp--2">Akasya lokasyonunda tutarlı başarılar sunmasının ardından, üst yönetim tarafından Bağdat Caddesi Flagship NSO'nun operasyonel kurulumuna liderlik etmek için özel olarak seçildi.</p>
+            <button type="button" class="pp-toggle" data-pp-toggle>Devamını oku</button>
+          </article>
+
+          <article class="pp-exp__item pp-exp__item--muted">
+            <h3 class="pp-exp__role">Kaynak Planlama Analisti · Apple</h3>
+            <div class="pp-exp__meta">
+              <span>Mağaza Yönetimi</span><span class="sep">·</span>
+              <span>Ağu 2017 — Ağu 2018</span>
+            </div>
+          </article>
+
+          <article class="pp-exp__item pp-exp__item--muted">
+            <h3 class="pp-exp__role">Teknik Uzman · Apple</h3>
+            <div class="pp-exp__meta">
+              <span>Mağaza Operasyonu</span><span class="sep">·</span>
+              <span>Ağu 2014 — Ağu 2017</span>
+            </div>
+          </article>
+
+        </div>
+      </section>
+
+      <hr class="pp-rule pp-rule--3" />
+
+      <!-- Education + Languages -->
+      <section class="pp-edu">
+        <div class="pp-label">Eğitim &amp; Dil</div>
+        <div class="pp-split">
+          <div>
+            <div class="pp-split__h">Eğitim</div>
+            <ul class="pp-split__list">
+              <li>
+                İstanbul Üniversitesi — Lisans, İşletme
+                <span class="sub">2015</span>
+              </li>
+              <li>
+                İstanbul Üniversitesi — İnsan Kaynakları
+                <span class="sub">2017</span>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <div class="pp-split__h">Diller</div>
+            <ul class="pp-split__list">
+              <li>Türkçe <span class="sub">Anadil</span></li>
+              <li>İngilizce <span class="sub">C2 — Üst İleri</span></li>
+              <li>Rusça <span class="sub">C2 — Üst İleri</span></li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <hr class="pp-rule pp-rule--4" />
+
+      <!-- Preferences -->
+      <section class="pp-prefs">
+        <div class="pp-label">Tercihler &amp; Lokasyon</div>
+        <div class="pp-kv">
+          <div class="pp-kv__row">
+            <div class="pp-kv__k">Çalışma Şekli</div>
+            <div class="pp-kv__v">Tam zamanlı</div>
+          </div>
+          <div class="pp-kv__row">
+            <div class="pp-kv__k">Başlangıç</div>
+            <div class="pp-kv__v"><em>Hemen</em></div>
+          </div>
+          <div class="pp-kv__row">
+            <div class="pp-kv__k">Pozisyon İhtiyacı</div>
+            <div class="pp-kv__v">Yukarı terfi</div>
+          </div>
+          <div class="pp-kv__row">
+            <div class="pp-kv__k">Seyahat</div>
+            <div class="pp-kv__v">Esnek</div>
+          </div>
+          <div class="pp-kv__row">
+            <div class="pp-kv__k">Vardiya</div>
+            <div class="pp-kv__v">Esnek</div>
+          </div>
+          <div class="pp-kv__row">
+            <div class="pp-kv__k">İhbar Süresi</div>
+            <div class="pp-kv__v">Yok</div>
+          </div>
+          <div class="pp-kv__row">
+            <div class="pp-kv__k">Lokasyon</div>
+            <div class="pp-kv__v"><em>İstanbul</em></div>
+          </div>
+          <div class="pp-kv__row">
+            <div class="pp-kv__k">Sevdiği Segmentler</div>
+            <div class="pp-kv__v">Premium · Lüks · Teknoloji · Otomotiv · Fast Fashion · Spor</div>
+          </div>
+          <div class="pp-kv__row">
+            <div class="pp-kv__k">Marka Tercihleri</div>
+            <div class="pp-kv__v"><em>Hermes</em> · <em>Cartier</em></div>
+          </div>
+        </div>
+      </section>
+
+      <hr class="pp-rule pp-rule--5" />
+
+      <!-- CV -->
+      <section class="pp-cv">
+        <div class="pp-label">Özgeçmiş</div>
+        <div class="pp-cv__row">
+          <div class="pp-cv__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <path d="M14 2v6h6"/>
+              <path d="M8 13h8M8 17h8M8 9h2"/>
+            </svg>
+          </div>
+          <div class="pp-cv__main">
+            <div class="pp-cv__name">Tuna Kefeli Resume.pdf</div>
+            <div class="pp-cv__sub">04.04.2026</div>
+          </div>
+          <div class="pp-cv__chev" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m9 18 6-6-6-6"/>
+            </svg>
+          </div>
+        </div>
+      </section>
+
+      <!-- Signature -->
+      <div class="pp-sign">HelloTalent · Beta</div>
+
+    </div>
+  </section>
+
+<script>
+  // K032: Show more / less toggle for clamped text blocks
+  (function(){
+    var toggles = document.querySelectorAll('[data-pp-toggle]');
+    toggles.forEach(function(btn){
+      var clamp = btn.previousElementSibling;
+      if (!clamp || !clamp.classList.contains('pp-clamp')) return;
+      // Auto-hide button if content not overflowing
+      requestAnimationFrame(function(){
+        if (clamp.scrollHeight <= clamp.clientHeight + 2) {
+          btn.style.display = 'none';
+        }
+      });
+      btn.addEventListener('click', function(){
+        var expanded = clamp.classList.toggle('is-expanded');
+        btn.classList.toggle('is-expanded', expanded);
+        btn.textContent = expanded ? 'Daha az göster' : 'Devamını oku';
+      });
+    });
+  })();
+</script>
+</body>
+</html>

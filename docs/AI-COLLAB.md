@@ -6,10 +6,22 @@
 
 ## Mevcut Durum
 
-**Aktif is:** K031 Profil Merkezi editorial redesign — exec tamamlandi (branch: `feat/k031-profil-merkezi-redesign`)
-**Sonraki:** parent push + Codex post-push gate + GH Pages visual QA (desktop 1440 + mobile 390)
-**Son commit:** (bu oturumda) feat(merkezi): K031 Profil Merkezi editorial redesign
-**DeepSeek:** SKIPPED — DEEPSEEK_API_KEY env not set; parent runs review if policy requires.
+**Aktif is:** K032 Profil Onizleme drawer editorial redesign — exec tamamlandi
+**Sonraki:** parent DeepSeek review + push + Codex post-push gate + GH Pages visual QA (desktop 1440 + mobile 390)
+**Son commit:** (pending) feat(profil-preview): K032 editorial drawer redesign
+**DeepSeek:** parent runs review if policy requires.
+
+## 2026-04-14 — K032 Profil Onizleme drawer exec tamamlandi
+
+- `css/profil-extras.css` `.pp-*` bloku yeniden yazildi. Legacy bento/tag/hero/contact-card/status-badge/footer tamami silindi, K032 vocabulary eklendi: `.pp-identity`, `.pp-ident__block/__top/__text/__name/__role/__status/__completion`, `.pp-pulse` (ring + pct + cap), `.pp-contact`, `.pp-bio__quote`, `.pp-clamp` + `--2`/`--3` + `.pp-toggle` (show-more pattern), `.pp-exp` spine + `.pp-exp__item` (+ `--muted` + `.is-top-gap`) + `__role`/`__meta`/`__desc`, `.pp-kv` + `__row/__k/__v`, `.pp-split` + `__h/__list`, `.pp-cv__row/__icon/__main/__name/__sub/__chev`, `.pp-sign`, `.pp-label`, `.pp-rule` hairlines. `prefers-reduced-motion` ve `@media (max-width: 480px)` full-bleed blogu eklendi. `.header-popup` responsive rule preserved (non-pp, legacy). Pp blok satir sayisi: ~262 -> ~471 (legacy sisme sinif tree cikti + yeni semantik geldi, ama duplicate classlar ve gereksiz kutu shadow'lari gitti).
+- `profil-preview.js` tamamen IIFE olarak yeniden yazildi (3 fonksiyon ihracat + bolunmus builder'lar: `buildIdentity/buildBio/buildExperience/buildEduLang/buildPrefs/buildCV`). Tum kullanici verisi `createElement` + `textContent` ile basiliyor, innerHTML sadece **static SVG** icin owned elementlerde (SVG_MAIL/PHONE/DOC/CHEV/RING) kullaniliyor. Show-more toggle `wireToggles(root)` mount sonrasi `requestAnimationFrame` icinde cagirilir; clamp target `scrollHeight <= clientHeight + 2` ise `.is-hidden` ile gizlenir, tiklandiginda `.pp-clamp.is-expanded` + `.pp-toggle.is-expanded` + buton metni `Devamini oku` <-> `Daha az goster`. Bio 3-line clamp, deneyim aciklamalari 2-line clamp. Ilk 3 deneyim tam kart + tick + description, kalan deneyimler `--muted` dashed-ring. Tercihler/lokasyon emoji pill yerine `pp-kv` typographic key-value satirlari, marka tercihleri inline `Hermes · Cartier`, emoji yok. CV quiet bordered row + doc icon + chevron. `HelloTalent · Beta` DM Mono italic signature.
+- `profil.html` drawer shell (#pp-overlay, #pp-drawer, .pp-header, #btn-close-preview, #pp-content, #btn-preview-profile) DOKUNULMADI. Cache-bust: `profil-preview.js?v=20260404b` -> `?v=20260414e`, `css/profil-extras.css?v=20260414d` -> `?v=20260414e`.
+- `tests/p3.regression.spec.js`: yeni `K032 — Profil Onizleme drawer editorial redesign` describe block (6 test): K032 clamp/toggle/exp/kv/split/cv/sign vocabulary + rescued drawer shell; legacy bento/tag/hero/contact-card/status-badge silindi guard; preview.js data-pp-toggle + clamp + toggle wiring + scrollHeight auto-hide check; legacy pp-tag/pp-bento/pp-hero-card/pp-status-badge yok guard; drawer contract ID'leri (#pp-overlay/#pp-drawer/#pp-content/#btn-close-preview/#btn-preview-profile); cache-bust `?v=20260414e` match.
+- Contract grep dogrulamasi:
+  - `#pp-overlay`, `#pp-drawer`, `#pp-content`, `#btn-close-preview` -> profil.html lines 1701-1710
+  - `#btn-preview-profile` -> profil.html line 500 + profil-events.js line 74 + profil-bootstrap.js line 161
+  - `window.openProfilePreview` / `window.closeProfilePreview` -> profil-events.js lines 75-77 bag
+- Full regression: **758 passed / 0 failed** (baseline 746 + 12 yeni K032 test = 758), 4.4s. Sifir failure.
 
 ## 2026-04-14 — K031 Profil Merkezi exec tamamlandi
 

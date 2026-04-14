@@ -3237,3 +3237,81 @@ test.describe('K031 — Profil Merkezi editorial redesign', () => {
   });
 });
 
+// ═══════════════════════════════════════════════════════════════
+// K032 — Profil Önizleme drawer editorial redesign
+// ═══════════════════════════════════════════════════════════════
+test.describe('K032 — Profil Önizleme drawer editorial redesign', () => {
+  let profilHtml;
+  let extrasCss;
+  let previewJs;
+
+  test.beforeAll(() => {
+    profilHtml = readFromRepo('profil.html');
+    extrasCss  = readFromRepo('css/profil-extras.css');
+    previewJs  = readFromRepo('profil-preview.js');
+  });
+
+  test('profil-extras.css ships the K032 show-more clamp + toggle vocabulary', () => {
+    expect(extrasCss).toContain('.pp-clamp');
+    expect(extrasCss).toContain('.pp-clamp--3');
+    expect(extrasCss).toContain('.pp-clamp--2');
+    expect(extrasCss).toContain('.pp-toggle');
+    expect(extrasCss).toContain('.pp-toggle.is-expanded');
+    expect(extrasCss).toContain('.pp-exp__item');
+    expect(extrasCss).toContain('.pp-kv__row');
+    expect(extrasCss).toContain('.pp-split__list');
+    expect(extrasCss).toContain('.pp-cv__row');
+    expect(extrasCss).toContain('.pp-sign');
+    expect(extrasCss).toContain('prefers-reduced-motion');
+    // Rescued drawer shell selectors still exist
+    expect(extrasCss).toContain('.pp-overlay');
+    expect(extrasCss).toContain('.pp-drawer');
+    expect(extrasCss).toContain('.pp-header');
+    expect(extrasCss).toContain('.pp-body');
+  });
+
+  test('profil-extras.css no longer contains legacy bento/tag/hero drawer classes', () => {
+    expect(extrasCss).not.toContain('.pp-bento');
+    expect(extrasCss).not.toContain('.pp-tag');
+    expect(extrasCss).not.toContain('.pp-hero-card');
+    expect(extrasCss).not.toContain('.pp-contact-card');
+    expect(extrasCss).not.toContain('.pp-status-badge');
+  });
+
+  test('profil-preview.js wires K032 show-more toggles and emits K032 markup', () => {
+    expect(previewJs).toContain('data-pp-toggle');
+    expect(previewJs).toContain('pp-clamp--3');
+    expect(previewJs).toContain('pp-clamp--2');
+    expect(previewJs).toContain('pp-exp__item');
+    expect(previewJs).toContain('pp-kv');
+    expect(previewJs).toContain('pp-split');
+    expect(previewJs).toContain("'Devam\\u0131n\\u0131 oku'");
+    expect(previewJs).toContain("'Daha az g\\u00F6ster'");
+    expect(previewJs).toContain('pp-sign');
+    expect(previewJs).toContain('HelloTalent \\u00B7 Beta');
+    // Auto-hide check from the mockup
+    expect(previewJs).toContain('scrollHeight');
+    expect(previewJs).toContain('clientHeight');
+  });
+
+  test('profil-preview.js drops legacy pp-tag / pp-bento markup builder', () => {
+    expect(previewJs).not.toContain('pp-tag');
+    expect(previewJs).not.toContain('pp-bento');
+    expect(previewJs).not.toContain('pp-hero-card');
+    expect(previewJs).not.toContain('pp-status-badge');
+  });
+
+  test('profil.html preserves drawer contract IDs required by event handlers', () => {
+    expect(profilHtml).toContain('id="pp-overlay"');
+    expect(profilHtml).toContain('id="pp-drawer"');
+    expect(profilHtml).toContain('id="pp-content"');
+    expect(profilHtml).toContain('id="btn-close-preview"');
+    expect(profilHtml).toContain('id="btn-preview-profile"');
+  });
+
+  test('profil.html uses K032 cache-bust for preview JS + extras CSS', () => {
+    expect(profilHtml).toMatch(/profil-preview\.js\?v=20260414e/);
+    expect(profilHtml).toMatch(/css\/profil-extras\.css\?v=20260414e/);
+  });
+});
+
