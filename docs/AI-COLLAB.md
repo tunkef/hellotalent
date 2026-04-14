@@ -730,3 +730,12 @@ BLOCKED — fix B4 loader removal, Genel coach CTA paths, B6/B7 stale task bodie
 ### Memory update
 Next brief writing → verify preserved IDs directly via grep before listing them. Brief typos become contract drift illusions.
 
+
+## 2026-04-14 — K031 hotfix 1: rescue cross-cutting styles
+- K031 subagent treated css/panels/merkezi.css as merkezi-only and dropped 955 lines of cross-cutting styles that historically lived there: pp-overlay/pp-drawer (profile preview drawer), lok-modal (location picker), tg-toast (toggle toast), modal-check (success animations), avatar-upload, custom-check, wiz-step internals, ht-btn--save-exit, ht-grid-3.
+- Created css/profil-extras.css (970 lines) — rescued the deleted blocks verbatim from git HEAD~2.
+- profil.html: added css/profil-extras.css link + cache-bump merkezi.css and profil-extras.css to ?v=20260414c.
+- p3.regression.spec.js: cache-bust assertion regex now matches any 20260414[a-z]; added profil-extras.css load assertion.
+- 746/746 PASS.
+- Resolves: 'Profilim Önizle' raw text dump, location modal sarkan element top-left, avatar upload styling, toggle toast, modal animations, wizard step internals.
+

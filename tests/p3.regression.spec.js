@@ -3214,7 +3214,11 @@ test.describe('K031 — Profil Merkezi editorial redesign', () => {
   });
 
   test('merkezi.css is referenced with K031 cache-bust token', () => {
-    expect(profilHtml).toContain('css/panels/merkezi.css?v=20260414b');
+    expect(profilHtml).toMatch(/css\/panels\/merkezi\.css\?v=20260414[a-z]/);
+  });
+
+  test('K031 hotfix: profil-extras.css loaded for rescued cross-cutting styles', () => {
+    expect(profilHtml).toMatch(/css\/profil-extras\.css\?v=20260414[a-z]/);
   });
 
   test('profil-summary.updateBentoRing drives topline pulse + spine tick', () => {
