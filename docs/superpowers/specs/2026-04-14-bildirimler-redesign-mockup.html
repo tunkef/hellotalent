@@ -1,0 +1,495 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>HelloTalent — Bildirimler Redesign Mockup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --cream:#F7F6F4;
+    --cream-outer:#EFEDE8;
+    --cream-deep:#F1EFEA;
+    --navy:#1E2D5E;
+    --vermillion:#C94E28;
+    --hairline:#E5E3DF;
+    --muted:#6B6A66;
+    --display:'Bricolage Grotesque', Georgia, serif;
+    --body:'Plus Jakarta Sans', system-ui, sans-serif;
+    --mono:'DM Mono', ui-monospace, monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--cream-outer);
+    color:var(--navy);
+    font-family:var(--body);
+    font-size:15px;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+  }
+  .page{
+    background:var(--cream);
+    max-width:1200px;
+    margin:32px auto;
+    padding:clamp(28px,4vw,56px) clamp(20px,3vw,32px) 72px;
+    border:1px solid var(--hairline);
+    border-radius:18px;
+  }
+  .mono{
+    font-family:var(--mono);
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:0.08em;
+    color:var(--muted);
+    font-style:normal;
+  }
+  .mono.italic{font-style:italic}
+  .mono.navy{color:var(--navy)}
+  .mono.vermillion{color:var(--vermillion)}
+
+  /* ====== HERO ====== */
+  .hero{
+    background:var(--cream);
+    border:1px solid var(--hairline);
+    border-radius:14px;
+    padding:clamp(28px,4vw,44px);
+    opacity:0;
+    transform:translateY(12px);
+    animation:fadeUp 600ms ease-out forwards;
+  }
+  .hero .eyebrow{display:inline-block;margin-bottom:4px}
+  .hero h1{
+    font-family:var(--display);
+    color:var(--vermillion);
+    font-size:clamp(34px,5vw,40px);
+    line-height:1.02;
+    letter-spacing:-0.02em;
+    font-weight:600;
+    margin:14px 0 14px;
+  }
+  .hero p.sub{
+    font-size:14px;
+    color:var(--muted);
+    max-width:64ch;
+    margin:0 0 28px;
+  }
+  .hero .meta{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    padding-top:18px;
+    border-top:1px solid var(--hairline);
+  }
+  .hero .meta span{white-space:nowrap}
+  .hero .meta .sep{color:var(--hairline)}
+
+  /* ====== MODE SEGMENT ====== */
+  .modes{
+    margin-top:28px;
+    padding-bottom:14px;
+    border-bottom:1px solid var(--hairline);
+    opacity:0;
+    transform:translateY(12px);
+    animation:fadeUp 600ms ease-out 80ms forwards;
+  }
+  .modes ul{
+    list-style:none;margin:0;padding:0;
+    display:flex;align-items:center;gap:18px;
+  }
+  .modes li a{
+    font-family:var(--mono);
+    font-size:12px;
+    text-transform:uppercase;
+    letter-spacing:0.08em;
+    color:var(--muted);
+    text-decoration:none;
+    padding-bottom:8px;
+    border-bottom:2px solid transparent;
+    display:inline-flex;align-items:center;gap:8px;
+  }
+  .modes li a .count{
+    color:var(--muted);
+    font-size:11px;
+  }
+  .modes li.active a{
+    color:var(--vermillion);
+    border-bottom-color:var(--vermillion);
+  }
+  .modes li.active a .count{color:var(--vermillion)}
+  .modes li.sep{color:var(--hairline);font-family:var(--mono);font-size:12px}
+  .modes li a:focus-visible{outline:2px solid var(--vermillion);outline-offset:3px;border-radius:2px}
+
+  /* ====== SUB FILTERS ====== */
+  .filters{
+    margin-top:24px;
+    padding-bottom:12px;
+    border-bottom:1px solid var(--hairline);
+    opacity:0;
+    transform:translateY(12px);
+    animation:fadeUp 600ms ease-out 160ms forwards;
+  }
+  .filters ul{list-style:none;margin:0;padding:0;display:flex;align-items:center;gap:14px}
+  .filters li a{
+    font-family:var(--mono);
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:0.08em;
+    color:var(--muted);
+    text-decoration:none;
+    padding-bottom:6px;
+    border-bottom:2px solid transparent;
+  }
+  .filters li.active a{color:var(--vermillion);border-bottom-color:var(--vermillion)}
+  .filters li.dot{color:var(--hairline);font-family:var(--mono);font-size:11px}
+  .filters li a:focus-visible{outline:2px solid var(--vermillion);outline-offset:3px;border-radius:2px}
+
+  /* ====== NOTIFICATION LIST ====== */
+  .notif-list{
+    list-style:none;margin:24px 0 0;padding:0;
+    opacity:0;
+    transform:translateY(12px);
+    animation:fadeUp 600ms ease-out 240ms forwards;
+  }
+  .notif{
+    display:grid;
+    grid-template-columns:44px 1fr auto;
+    gap:16px;
+    align-items:flex-start;
+    padding:18px 12px;
+    border-bottom:1px solid var(--hairline);
+    position:relative;
+    transition:background 180ms ease;
+    text-decoration:none;
+    color:inherit;
+    cursor:pointer;
+  }
+  .notif:first-child{border-top:1px solid var(--hairline)}
+  .notif:hover{background:var(--cream-deep)}
+  .notif.unread{background:rgba(201,78,40,0.04)}
+  .notif:focus-visible{outline:2px solid var(--vermillion);outline-offset:-2px;border-radius:4px}
+  .notif-icon{
+    width:32px;height:32px;border-radius:50%;
+    border:1px solid var(--navy);
+    display:flex;align-items:center;justify-content:center;
+    color:var(--navy);
+    background:var(--cream);
+    position:relative;
+    flex-shrink:0;
+    margin-top:2px;
+  }
+  .notif-icon svg{width:14px;height:14px;stroke:var(--navy);fill:none;stroke-width:1.6}
+  .notif.unread .notif-icon::after{
+    content:"";
+    position:absolute;
+    top:-1px;right:-1px;
+    width:6px;height:6px;border-radius:50%;
+    background:var(--vermillion);
+    border:1px solid var(--cream);
+  }
+  .notif-body{min-width:0}
+  .notif-title{
+    font-family:var(--body);
+    font-size:14px;
+    font-weight:600;
+    color:var(--navy);
+    margin:0 0 4px;
+    line-height:1.3;
+  }
+  .notif-desc{
+    font-size:13px;
+    color:var(--muted);
+    line-height:1.45;
+    margin:0;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+  .notif-time{
+    font-family:var(--mono);
+    font-size:10px;
+    font-style:italic;
+    text-transform:uppercase;
+    letter-spacing:0.08em;
+    color:var(--muted);
+    white-space:nowrap;
+    padding-top:4px;
+  }
+
+  /* ====== TAB PREVIEW SEPARATOR ====== */
+  .tab-preview-sep{
+    margin-top:72px;
+    padding-top:40px;
+    border-top:1px dashed var(--hairline);
+    text-align:center;
+  }
+  .tab-preview-sep span{
+    display:inline-block;
+    padding:0 16px;
+    background:var(--cream);
+    transform:translateY(-50px);
+  }
+
+  /* ====== DUYURULAR FEED ====== */
+  .duyurular{
+    list-style:none;margin:24px 0 0;padding:0;
+  }
+  .duyuru{
+    padding:32px 0;
+    border-bottom:1px solid var(--hairline);
+  }
+  .duyuru:first-child{border-top:1px solid var(--hairline)}
+  .duyuru .cap{display:block;margin-bottom:12px}
+  .duyuru h3{
+    font-family:var(--display);
+    font-size:22px;
+    font-weight:600;
+    color:var(--navy);
+    margin:0 0 10px;
+    line-height:1.2;
+    letter-spacing:-0.01em;
+  }
+  .duyuru p{
+    margin:0 0 18px;
+    font-size:14px;
+    color:var(--muted);
+    line-height:1.55;
+    max-width:64ch;
+    display:-webkit-box;
+    -webkit-line-clamp:3;
+    -webkit-box-orient:vertical;
+    overflow:hidden;
+  }
+  .duyuru .thumb{
+    max-width:640px;
+    border:1px solid var(--hairline);
+    border-radius:12px;
+    background:#fff;
+    padding:28px;
+    margin:0 0 18px;
+    display:flex;align-items:center;justify-content:center;
+    min-height:200px;
+  }
+  .duyuru .thumb .placeholder{
+    font-family:var(--mono);
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:0.08em;
+    color:var(--muted);
+  }
+  .duyuru a.readmore{
+    font-family:var(--mono);
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:0.08em;
+    color:var(--vermillion);
+    text-decoration:none;
+    border-bottom:1px solid transparent;
+  }
+  .duyuru a.readmore:hover{border-bottom-color:var(--vermillion)}
+  .duyuru a.readmore:focus-visible{outline:2px solid var(--vermillion);outline-offset:3px;border-radius:2px}
+
+  /* ====== SIGNATURE ====== */
+  .signature{
+    margin-top:72px;
+    padding-top:24px;
+    border-top:1px solid var(--hairline);
+    display:flex;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:12px;
+  }
+
+  /* ====== ANIMATIONS ====== */
+  @keyframes fadeUp{
+    to{opacity:1;transform:translateY(0)}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .hero,.modes,.filters,.notif-list,*{
+      animation:none !important;
+      transition:none !important;
+      opacity:1 !important;
+      transform:none !important;
+    }
+  }
+
+  @media (max-width:640px){
+    .hero h1{font-size:32px}
+    .notif{grid-template-columns:32px 1fr;gap:12px}
+    .notif-time{grid-column:2;padding-top:0;margin-top:6px}
+  }
+</style>
+</head>
+<body>
+<main class="page" role="main">
+
+  <!-- ============ HERO ============ -->
+  <section class="hero" aria-labelledby="bildirimler-title">
+    <span class="mono italic eyebrow">HELLOTALENT · ADAY PANELİ</span>
+    <h1 id="bildirimler-title">Bildirimler</h1>
+    <p class="sub">Profilini ilgilendiren her şey burada — yeni teklifler, profil görüntülemeleri, sistem güncellemeleri ve HelloTalent duyuruları.</p>
+    <div class="meta">
+      <span class="mono navy">3 OKUNMAMIŞ</span>
+      <span class="mono sep">·</span>
+      <span class="mono">11 BU HAFTA</span>
+      <span class="mono sep">·</span>
+      <span class="mono italic">SON: 2 SAAT ÖNCE</span>
+    </div>
+  </section>
+
+  <!-- ============ MODE SEGMENT ============ -->
+  <nav class="modes" aria-label="Bildirim modu">
+    <ul>
+      <li class="active"><a href="#bildirimler" aria-current="page">BİLDİRİMLER <span class="count">· 3</span></a></li>
+      <li class="sep">·</li>
+      <li><a href="#duyurular">DUYURULAR <span class="count">· 2</span></a></li>
+    </ul>
+  </nav>
+
+  <!-- ============ BİLDİRİMLER TAB ============ -->
+  <section aria-labelledby="bildirimler-title">
+
+    <!-- sub filters -->
+    <nav class="filters" aria-label="Bildirim filtreleri">
+      <ul>
+        <li class="active"><a href="#all" aria-current="true">TÜMÜ</a></li>
+        <li class="dot">·</li>
+        <li><a href="#teklif">TEKLİFLER</a></li>
+        <li class="dot">·</li>
+        <li><a href="#goruntulenme">GÖRÜNTÜLENME</a></li>
+        <li class="dot">·</li>
+        <li><a href="#sistem">SİSTEM</a></li>
+      </ul>
+    </nav>
+
+    <!-- notification list -->
+    <ul class="notif-list" role="list" aria-live="polite" aria-label="Bildirim listesi">
+
+      <li>
+        <a class="notif unread" href="#n1" role="listitem">
+          <div class="notif-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M4 7h16v12H4z"/><path d="M4 7l8 6 8-6"/></svg>
+          </div>
+          <div class="notif-body">
+            <p class="notif-title">Yeni teklif: Hermès — Mağaza Müdürü</p>
+            <p class="notif-desc">Lüks segment, İstanbul</p>
+          </div>
+          <div class="notif-time">2 SAAT ÖNCE</div>
+        </a>
+      </li>
+
+      <li>
+        <a class="notif unread" href="#n2" role="listitem">
+          <div class="notif-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/></svg>
+          </div>
+          <div class="notif-body">
+            <p class="notif-title">Profilin görüntülendi</p>
+            <p class="notif-desc">Bir şirket profilini inceledi</p>
+          </div>
+          <div class="notif-time">5 SAAT ÖNCE</div>
+        </a>
+      </li>
+
+      <li>
+        <a class="notif unread" href="#n3" role="listitem">
+          <div class="notif-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M4 5h16v11H7l-3 3z"/></svg>
+          </div>
+          <div class="notif-body">
+            <p class="notif-title">Apple Türkiye sana mesaj gönderdi</p>
+            <p class="notif-desc">Eğitim Uzmanı pozisyonu için</p>
+          </div>
+          <div class="notif-time">1 GÜN ÖNCE</div>
+        </a>
+      </li>
+
+      <li>
+        <a class="notif" href="#n4" role="listitem">
+          <div class="notif-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+          </div>
+          <div class="notif-body">
+            <p class="notif-title">Profil tamamlanma %96</p>
+            <p class="notif-desc">Eksiklerini tamamla, daha fazla işverene görün</p>
+          </div>
+          <div class="notif-time">2 GÜN ÖNCE</div>
+        </a>
+      </li>
+
+      <li>
+        <a class="notif" href="#n5" role="listitem">
+          <div class="notif-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M12 3l2.5 5 5.5.8-4 3.9.9 5.5L12 15.6 7.1 18.2 8 12.7 4 8.8 9.5 8z"/></svg>
+          </div>
+          <div class="notif-body">
+            <p class="notif-title">Beymen markasını takibe aldın</p>
+            <p class="notif-desc">Yeni ilanlarından haberdar olacaksın</p>
+          </div>
+          <div class="notif-time">3 GÜN ÖNCE</div>
+        </a>
+      </li>
+
+      <li>
+        <a class="notif" href="#n6" role="listitem">
+          <div class="notif-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M12 2v4M12 18v4M2 12h4M18 12h4M5 5l3 3M16 16l3 3M5 19l3-3M16 8l3-3"/></svg>
+          </div>
+          <div class="notif-body">
+            <p class="notif-title">Sistem güncellemesi</p>
+            <p class="notif-desc">Profil önizleme tasarımı yenilendi</p>
+          </div>
+          <div class="notif-time">5 GÜN ÖNCE</div>
+        </a>
+      </li>
+
+    </ul>
+  </section>
+
+  <!-- ============ TAB PREVIEW SEPARATOR ============ -->
+  <div class="tab-preview-sep" aria-hidden="true">
+    <span class="mono italic">DUYURULAR TAB — ALTERNATİF GÖRÜNÜM</span>
+  </div>
+
+  <!-- ============ DUYURULAR TAB (PREVIEW) ============ -->
+  <section aria-labelledby="duyurular-title">
+    <h2 id="duyurular-title" class="mono navy" style="margin:0 0 4px">DUYURULAR FEED</h2>
+    <ul class="duyurular" role="list">
+
+      <li class="duyuru">
+        <span class="mono italic cap">HELLOTALENT'TEN BİLGİLER · 14 NİSAN · 2 DK OKUMA</span>
+        <h3>Profil tasarımı yenilendi</h3>
+        <p>Aday tarafında editorial vocabulary tamamlandı. Mesajlar, profil merkezi, genel bakış ve şirketler artık yeni tasarım dilini kullanıyor. Bildirimler de bu hafta aynı dile geçiyor — tek bir tutarlı okuma deneyimi.</p>
+        <div class="thumb" role="img" aria-label="Yeni tasarım görseli"><span class="placeholder">GÖRSEL · 640×320</span></div>
+        <a class="readmore" href="#d1">DEVAMINI OKU →</a>
+      </li>
+
+      <li class="duyuru">
+        <span class="mono italic cap">MÜLAKAT İPUCU · 12 NİSAN · 3 DK OKUMA</span>
+        <h3>Mağaza müdürü mülakatında ilk 5 dakika</h3>
+        <p>İlk izlenimin niye kritik olduğunu, hangi sorulara hazır olman gerektiğini ve markaya özel hazırlık yapmanın yollarını açıklıyoruz. Perakende mülakatlarında fark yaratan küçük ama güçlü detaylar.</p>
+        <a class="readmore" href="#d2">DEVAMINI OKU →</a>
+      </li>
+
+      <li class="duyuru">
+        <span class="mono italic cap">ŞİRKET HABERLERİ · 10 NİSAN · 1 DK OKUMA</span>
+        <h3>Golden Goose Türkiye yeni mağaza açıyor</h3>
+        <p>Lüks segment markası İstanbul'da Bağdat Caddesi'nde yeni flagship mağazasını duyurdu. İK ekibi yeni ekip arıyor — mağaza müdürü, satış danışmanı ve visual merchandiser pozisyonları açık.</p>
+        <a class="readmore" href="#d3">DEVAMINI OKU →</a>
+      </li>
+
+    </ul>
+  </section>
+
+  <!-- ============ SIGNATURE ============ -->
+  <footer class="signature">
+    <span class="mono italic">HELLOTALENT · BİLDİRİMLER REDESIGN · K064 CANDIDATE</span>
+    <span class="mono">MOCKUP · 2026-04-14</span>
+  </footer>
+
+</main>
+</body>
+</html>

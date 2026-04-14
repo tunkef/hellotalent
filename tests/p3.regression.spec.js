@@ -3790,7 +3790,7 @@ test.describe('K063 — Inbox editorial redesign', () => {
 
   test('profil.html loads versioned inbox.css and bumped profil-inbox.js', () => {
     expect(profilHtml063).toContain('css/panels/inbox.css?v=20260414aa');
-    expect(profilHtml063).toContain('profil-inbox.js?v=20260414aa');
+    expect(profilHtml063).toContain('profil-inbox.js?v=20260414ab');
   });
 
   test('inbox.css contains the K063 vocabulary and reduced-motion block', () => {
@@ -3815,6 +3815,70 @@ test.describe('K063 — Inbox editorial redesign', () => {
     expect(inboxJs063).toContain('ib-thread');
     expect(inboxJs063).toContain('ib-composer');
     expect(inboxJs063).not.toMatch(/console\.log/);
+  });
+});
+
+/* ═══════════════════════════════════════════════════════════════════════
+   K064 — Bildirimler editorial redesign
+   Source of truth: docs/superpowers/specs/2026-04-14-bildirimler-redesign-mockup.html
+   ═══════════════════════════════════════════════════════════════════════ */
+test.describe('K064 — Bildirimler editorial redesign', () => {
+  let profilHtml064;
+  let bildirimlerCss064;
+  let inboxJs064;
+
+  test.beforeAll(() => {
+    profilHtml064 = readFromRepo('profil.html');
+    bildirimlerCss064 = readFromRepo('css/panels/bildirimler.css');
+    inboxJs064 = readFromRepo('profil-inbox.js');
+  });
+
+  test('profil.html carries K064 editorial vocabulary on bildirimler panel', () => {
+    expect(profilHtml064).toContain('class="bd-root"');
+    expect(profilHtml064).toContain('class="bd-card bd-card--hero"');
+    expect(profilHtml064).toContain('class="bd-headline"');
+    expect(profilHtml064).toContain('class="bd-mode ht-segment"');
+    expect(profilHtml064).toContain('class="bd-list"');
+  });
+
+  test('profil.html preserves JS-targeted bildirim IDs and exposes new meta IDs', () => {
+    expect(profilHtml064).toContain('id="notif-unread-badge"');
+    expect(profilHtml064).toContain('id="notif-tabs"');
+    expect(profilHtml064).toContain('id="notif-list"');
+    expect(profilHtml064).toContain('id="notif-empty"');
+    expect(profilHtml064).toContain('id="notif-week-count"');
+    expect(profilHtml064).toContain('id="notif-last-time"');
+    expect(profilHtml064).toContain('data-segment="bildirim-duyuru"');
+    expect(profilHtml064).toContain('data-tab="bildirim"');
+    expect(profilHtml064).toContain('data-tab="duyuru"');
+    expect(profilHtml064).toContain('data-tab-content="bildirim"');
+    expect(profilHtml064).toContain('data-tab-content="duyuru"');
+    expect(profilHtml064).toContain('data-mount="duyuru-full-feed"');
+    expect(profilHtml064).toContain('data-duyuru-badge');
+  });
+
+  test('profil.html loads versioned bildirimler.css and bumped profil-inbox.js', () => {
+    expect(profilHtml064).toContain('css/panels/bildirimler.css?v=20260414aa');
+    expect(profilHtml064).toContain('profil-inbox.js?v=20260414ab');
+  });
+
+  test('bildirimler.css contains the K064 vocabulary and reduced-motion block', () => {
+    expect(bildirimlerCss064).toContain('.bd-root');
+    expect(bildirimlerCss064).toContain('.bd-card');
+    expect(bildirimlerCss064).toContain('.bd-headline');
+    expect(bildirimlerCss064).toContain('.bd-mode');
+    expect(bildirimlerCss064).toContain('.bd-row');
+    expect(bildirimlerCss064).toContain('prefers-reduced-motion');
+  });
+
+  test('profil-inbox.js emits K064 bildirim class vocabulary and has no console.log', () => {
+    expect(inboxJs064).toContain('bd-row');
+    expect(inboxJs064).toContain('bd-icon');
+    expect(inboxJs064).toContain('bd-title');
+    expect(inboxJs064).toContain('bd-desc');
+    expect(inboxJs064).toContain('bd-time');
+    expect(inboxJs064).toContain('bd-subfilter__btn');
+    expect(inboxJs064).not.toMatch(/console\.log/);
   });
 });
 

@@ -68,6 +68,7 @@ if (window.Sentry) {
 <link rel="stylesheet" href="css/panels/sirketler.css?v=20260414n">
 <link rel="stylesheet" href="css/panels/kimbakti.css?v=20260414ac">
 <link rel="stylesheet" href="css/panels/inbox.css?v=20260414aa">
+<link rel="stylesheet" href="css/panels/bildirimler.css?v=20260414aa">
 <link rel="stylesheet" href="css/panel-soon.css?v=20260413a">
 <link rel="stylesheet" href="css/duyurular.css?v=20260414a">
 </head>
@@ -1245,43 +1246,50 @@ if (window.Sentry) {
   </div>
 </main>
 
-<!-- ═══ PANEL: BİLDİRİMLER ═══ -->
+<!-- ═══ PANEL: BİLDİRİMLER ═══ K064 editorial redesign -->
 <main class="panel" id="panel-bildirimler" data-panel="bildirimler">
-  <!-- Hero card -->
-  <div class="g-hero">
-    <div class="g-hero-inner">
-      <div class="ht-panel-heading ht-panel-heading--flex">
-        Bildirimler
-        <span id="notif-unread-badge" class="badge-verm"></span>
+  <div class="bd-root">
+
+    <article class="bd-card bd-card--hero">
+      <h1 class="bd-headline">Bildirimler</h1>
+      <p class="bd-subline">Profilini ilgilendiren her şey burada — yeni teklifler, profil görüntülemeleri, sistem güncellemeleri ve HelloTalent duyuruları.</p>
+      <div class="bd-meta-row">
+        <span class="bd-mono">
+          <strong id="notif-unread-badge">0</strong> OKUNMAMIŞ ·
+          <span id="notif-week-count">0</span> BU HAFTA ·
+          SON: <span id="notif-last-time">—</span>
+        </span>
+      </div>
+    </article>
+
+    <nav class="bd-mode ht-segment" data-segment="bildirim-duyuru" role="tablist" aria-label="Bildirim modu">
+      <button type="button" class="bd-mode__btn is-active" data-tab="bildirim" role="tab" aria-selected="true">
+        BİLDİRİMLER
+        <span class="bd-mode__count" data-bildirim-count>0</span>
+      </button>
+      <span class="bd-mode__sep" aria-hidden="true">·</span>
+      <button type="button" class="bd-mode__btn" data-tab="duyuru" role="tab" aria-selected="false">
+        DUYURULAR
+        <span class="bd-mode__count ht-segment__badge" data-duyuru-badge hidden>0</span>
+      </button>
+    </nav>
+
+    <div data-tab-content="bildirim">
+      <nav class="bd-subfilter" id="notif-tabs" role="tablist" aria-label="Bildirim filtreleri"></nav>
+
+      <div class="bd-list" id="notif-list" role="list" aria-live="polite"></div>
+
+      <div class="bd-empty" id="notif-empty" hidden>
+        <div class="empty-title">Henüz bildirim yok</div>
+        <div class="sub-text">Profil görüntülenmeleri, yeni fırsatlar ve sistem güncellemeleri burada görünecek.</div>
       </div>
     </div>
-  </div>
 
-  <!-- K030 FAZ C: Bildirim ↔ Duyuru segment toggle -->
-  <div class="ht-segment" data-segment="bildirim-duyuru" role="tablist">
-    <button type="button" class="is-active" data-tab="bildirim" role="tab" aria-selected="true">Bildirimler</button>
-    <button type="button" data-tab="duyuru" role="tab" aria-selected="false">
-      Duyurular
-      <span class="ht-segment__badge" data-duyuru-badge hidden>0</span>
-    </button>
-  </div>
-
-  <div data-tab-content="bildirim">
-    <!-- Notification filter tabs -->
-    <div id="notif-tabs" class="tag-row" style="border:1px solid var(--border-subtle,#E5E3DF);border-radius:16px;padding:12px 16px;background:var(--bg-surface,#fff);margin-bottom:16px;"></div>
-
-    <!-- Notification list -->
-    <div id="notif-list" style="display:flex;flex-direction:column;gap:8px;"></div>
-
-    <!-- Empty state -->
-    <div id="notif-empty" class="empty-state" style="border:1px solid var(--border-subtle,#E5E3DF);border-radius:16px;padding:40px 24px;background:var(--bg-surface,#fff);">
-      <div class="empty-title">Henüz bildirim yok</div>
-      <div class="sub-text">Profil görüntülenmeleri, yeni fırsatlar ve sistem güncellemeleri burada görünecek.</div>
+    <div data-tab-content="duyuru" hidden>
+      <div class="bd-card bd-card--feed" data-mount="duyuru-full-feed"></div>
     </div>
-  </div>
 
-  <div data-tab-content="duyuru" hidden>
-    <div data-mount="duyuru-full-feed"></div>
+    <footer class="bd-signature">— hellotalent —</footer>
   </div>
 </main>
 
@@ -1773,7 +1781,7 @@ if (window.Sentry) {
 <script src="profil-markalar.js?v=20260414m"></script>
 <script src="profil-settings.js?v=20260404b"></script>
 <script src="profil-teklifler.js?v=20260404b"></script>
-<script src="profil-inbox.js?v=20260414aa"></script>
+<script src="profil-inbox.js?v=20260414ab"></script>
 <script src="profil-yetkinlik.js?v=20260404b"></script>
 <script src="profil-studio.js?v=20260413a"></script>
 <script src="panel-soon.js?v=20260413a"></script>
