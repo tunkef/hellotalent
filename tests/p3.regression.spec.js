@@ -274,10 +274,14 @@ test.describe('Support Center — structural guards', () => {
     expect(profilDeskJs).not.toMatch(/console\.log\(/);
   });
 
-  test('hero follows bento spec with 24px radius', () => {
-    expect(profilDeskJs).toContain('border-radius:24px');
-    expect(profilDeskJs).toContain("font-weight:800");
-    expect(profilDeskJs).toContain("font-size:20px");
+  test('K066 Faz A: hero styling now lives in css/panels/destek.css', () => {
+    /* Inline injectCSS body deleted (was unreachable post-K066). External
+       css/panels/destek.css owns the hero styling — vermillion Bricolage
+       editorial pattern. profil-destek.js's injectCSS is a no-op. */
+    expect(profilDeskJs).toContain('K066 Faz A');
+    var destekCss = readFromRepo('css/panels/destek.css');
+    expect(destekCss).toContain('.destek-hero');
+    expect(destekCss).toContain('border-radius:14px');
   });
 
   test('ticket creation uses RPC not direct insert', () => {
@@ -285,10 +289,11 @@ test.describe('Support Center — structural guards', () => {
     expect(profilDeskJs).not.toContain(".from('support_tickets').insert");
   });
 
-  test('responsive breakpoint at 600px exists', () => {
-    expect(profilDeskJs).toContain('@media (max-width:600px)');
-    // iOS zoom prevention: 16px font-size on inputs
-    expect(profilDeskJs).toContain('font-size:16px');
+  test('K066 Faz A: responsive breakpoint moved to css/panels/destek.css', () => {
+    /* Mobile CSS now external (post-K066). Verify destek.css has a
+       responsive media query for the bento and form. */
+    var destekCss = readFromRepo('css/panels/destek.css');
+    expect(destekCss).toMatch(/@media\s*\(max-width:\s*720px/);
   });
 
   test('article CTA prefill updates subject placeholder after setting category', () => {
