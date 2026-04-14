@@ -17,10 +17,9 @@ function wizGoTo(step) {
   if (step < 1 || step > TOTAL_STEPS) return;
   // Validate current step before moving forward
   if (step > wizStep && !validateStep(wizStep)) return;
-  // Save draft on forward move
+  // Save draft on forward move (silent — no toast)
   if (step > wizStep) {
     saveDraft();
-    if (typeof showTgToast === 'function') showTgToast('Taslak kaydedildi', null);
   }
   wizStep = step;
   renderWizard();

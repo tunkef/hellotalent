@@ -77,6 +77,36 @@
   box-shadow: none !important;
   background-image: none !important;
 }
+/* K057: location/multiselect search inputs flat — no inner frame */
+#panel-profil .ms-input-wrap {
+  background: transparent !important;
+  border: 1px solid var(--wz-hairline) !important;
+  border-radius: 8px !important;
+  box-shadow: none !important;
+}
+#panel-profil .ms-input-wrap:focus-within {
+  border-color: var(--wz-navy) !important;
+}
+/* K057: segment / calisma trustpills — less rounded, match other buttons */
+#panel-profil .check-item {
+  border-radius: 10px !important;
+  padding: 9px 16px !important;
+}
+/* K057: wizard footer button height parity — Geri / Kaydet ve Çık / İleri uniform */
+#panel-profil .wiz-nav .ht-btn {
+  height: 44px !important;
+  padding: 0 22px !important;
+  font-size: 14px !important;
+  border-radius: 10px !important;
+}
+#panel-profil .wiz-nav .ht-btn--save-exit {
+  height: 44px !important;
+  padding: 0 22px !important;
+  font-size: 14px !important;
+  border-radius: 10px !important;
+  border-width: 1px !important;
+}
+#panel-profil .wiz-nav .ht-btn svg { width: 16px; height: 16px; }
 /* K056: align toggle vertically center to the WHOLE info column */
 #panel-profil .wiz-setting-card .wiz-setting-head {
   display: flex !important;
