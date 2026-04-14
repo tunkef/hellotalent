@@ -115,7 +115,12 @@ function updateMerkezCards() {
     updateBentoRing(2, 60); // no-exp path: partial credit
   } else if (expCards.length > 0) {
     var firstId = expCards[0].id + '-';
-    var role = val(firstId + 'pozisyon');
+    // K048: pozisyon select id = `{cardId}-unvan`. If user chose
+    // "+ Kendi pozisyonunu yaz" (value=__custom__), the actual text
+    // sits in `{cardId}-unvan-custom`. Try the custom field first,
+    // then fall back to the select value.
+    var role = val(firstId + 'unvan-custom') || val(firstId + 'unvan');
+    if (role === '__custom__') role = '';
     var company = document.getElementById(firstId + 'sirket');
     var compVal = company ? (company.dataset.resolvedMarka || company.value || '') : '';
     var startY = val(firstId + 'basyil');
@@ -133,7 +138,7 @@ function updateMerkezCards() {
     // K046: essential = sirket + pozisyon + yıl. Bu üçü doluysa is-complete.
     var exp2Essential = !!compVal && !!role && !!startY;
     var exp2Total = 6;
-    var exp2Filled = [val(firstId + 'sirket'), role, startY, val(firstId + 'sektor'), val(firstId + 'segment'), val(firstId + 'desc')].filter(Boolean).length;
+    var exp2Filled = [val(firstId + 'sirket'), role, startY, val(firstId + 'sektor'), val(firstId + 'segment'), val(firstId + 'aciklama')].filter(Boolean).length;
     var miss2 = [];
     if (!compVal) miss2.push('Şirket');
     if (!role) miss2.push('Pozisyon');
