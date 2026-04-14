@@ -7,7 +7,7 @@
 
 ## Mevcut Durum
 
-**Aktif is:** K037 Brand card Variant E color flood hover + hotfixes — exec + DeepSeek APPROVE
+**Aktif is:** K037 hotfix round 2 — top rule remove + logo visibility + followed chips normalize
 **Sonraki:** push main + Tuna smoke
 **Son commit:** (pending) feat(sirketler): K037 Variant E color flood hover + logo/search hotfix
 **DeepSeek:** APPROVE

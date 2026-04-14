@@ -3415,7 +3415,7 @@ test.describe('K036 — Sirketler editorial redesign', () => {
   });
 
   test('profil.html cache-bust bumped for K037 affected assets', () => {
-    expect(profilHtml).toContain('sirketler.css?v=20260414j');
+    expect(profilHtml).toContain('sirketler.css?v=20260414k');
     expect(profilHtml).toContain('profil-markalar.js?v=20260414j');
     expect(profilHtml).toContain('genel-bakis.css?v=20260414i');
   });
@@ -3440,8 +3440,8 @@ test.describe('K037 — Sirketler brand card color flood hover', () => {
     expect(sirketlerCss).toContain('.sk-card.sk-brand:hover');
     expect(sirketlerCss).toContain('.sk-card.sk-brand:focus-within');
     expect(sirketlerCss).toContain('.sk-card.sk-brand:focus-visible');
-    expect(sirketlerCss).toContain('brightness(0) invert(1)');
     expect(sirketlerCss).toContain('prefers-reduced-motion');
+    expect(sirketlerCss).not.toContain('brightness(0) invert(1)');
   });
 
   test('profil-markalar.js exposes brand accent helper and seed map', () => {
@@ -3467,7 +3467,7 @@ test.describe('K037 — Sirketler brand card color flood hover', () => {
   });
 
   test('profil.html bumps cache-bust to v=20260414j for K037 assets', () => {
-    expect(profilHtml).toContain('sirketler.css?v=20260414j');
+    expect(profilHtml).toContain('sirketler.css?v=20260414k');
     expect(profilHtml).toContain('profil-markalar.js?v=20260414j');
   });
 });

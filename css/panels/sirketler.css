@@ -143,20 +143,22 @@
   width:56px;
   height:56px;
   border-radius:8px;
-  box-shadow:0 0 0 1px #C94E28;
+  background:#ffffff;
+  border:1px solid #E5E3DF;
   display:flex;
   align-items:center;
   justify-content:center;
   font-family:'Bricolage Grotesque',serif;
   font-weight:700;
   font-size:18px;
-  color:#fff;
+  color:#1E2D5E;
   overflow:hidden;
-  transition:box-shadow 200ms ease;
+  transition:border-color 200ms ease;
   position:relative;
+  padding:8px;
 }
-.sk-followed__chip:hover .sk-followed__chip-logo{box-shadow:0 0 0 2px #C94E28;}
-.sk-followed__chip-logo img{max-width:72%;max-height:72%;width:auto;height:auto;object-fit:contain;display:block;}
+.sk-followed__chip:hover .sk-followed__chip-logo{border-color:#C94E28;}
+.sk-followed__chip-logo img{max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;display:block;}
 .sk-followed__chip-name{
   font-family:'Plus Jakarta Sans',sans-serif;
   font-size:11px;
@@ -276,18 +278,6 @@
   transition:background-color 260ms ease-out, border-color 260ms ease-out, color 260ms ease-out;
   animation:skFadeUp 600ms ease-out forwards;
 }
-.sk-card.sk-brand::before{
-  content:"";
-  position:absolute;
-  left:24px;
-  right:24px;
-  top:0;
-  height:1px;
-  background:#C94E28;
-  opacity:0;
-  transition:opacity 260ms ease-out;
-  pointer-events:none;
-}
 .sk-card.sk-brand:hover,
 .sk-card.sk-brand:focus-within,
 .sk-card.sk-brand:focus-visible{
@@ -299,9 +289,6 @@
   outline:2px solid #C94E28;
   outline-offset:3px;
 }
-.sk-card.sk-brand:hover::before,
-.sk-card.sk-brand:focus-within::before,
-.sk-card.sk-brand:focus-visible::before{opacity:1;}
 .sk-card.sk-brand:hover .sk-brand__name,
 .sk-card.sk-brand:focus-within .sk-brand__name,
 .sk-card.sk-brand:focus-visible .sk-brand__name,
@@ -329,7 +316,7 @@
 .sk-card.sk-brand:hover .sk-brand__logo img,
 .sk-card.sk-brand:focus-within .sk-brand__logo img,
 .sk-card.sk-brand:focus-visible .sk-brand__logo img{
-  filter:brightness(0) invert(1);
+  filter:none;
 }
 .sk-card.sk-brand:hover .sk-brand__logo--initial,
 .sk-card.sk-brand:focus-within .sk-brand__logo--initial,
@@ -371,7 +358,6 @@
 .sk-card.sk-brand--featured:focus-visible::after{color:#ffffff;}
 @media (prefers-reduced-motion:reduce){
   .sk-card.sk-brand,
-  .sk-card.sk-brand::before,
   .sk-card.sk-brand .sk-brand__name,
   .sk-card.sk-brand .sk-brand__meta,
   .sk-card.sk-brand .sk-brand__desc,
