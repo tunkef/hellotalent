@@ -178,6 +178,11 @@
   border-top: 1px solid var(--border-subtle);
   margin: 32px 0;
 }
+/* K041: top rule no longer needed inside body card (separator was for old single-frame layout) */
+.mk-card--body > .mk-rule--top { display: none; }
+.mk-card--body > .mk-sectionhead:first-child,
+.mk-card--body > .mk-rule--top + .mk-sectionhead { margin-top: 0; }
+.mk-card--body { padding-top: 28px; }
 
 /* ─── Section head ─── */
 .mk-sectionhead {
@@ -200,21 +205,22 @@
   align-items: center;
   gap: 8px;
   height: 38px;
-  padding: 0 16px;
-  background: transparent;
-  border: 1px solid var(--border-subtle);
+  padding: 0 18px;
+  background: var(--verm);
+  border: 1px solid var(--verm);
   border-radius: 12px;
   font-family: var(--font-body);
   font-size: 13px;
   font-weight: 600;
-  color: var(--text-secondary);
+  color: #ffffff;
   cursor: pointer;
-  transition: background 160ms ease, border-color 160ms ease, color 160ms ease;
+  transition: background 160ms ease, border-color 160ms ease, transform 160ms ease;
 }
 .mk-btn-ghost:hover {
-  background: var(--accent-soft);
-  border-color: var(--accent);
-  color: var(--accent-text);
+  background: #b3411f;
+  border-color: #b3411f;
+  color: #ffffff;
+  transform: translateY(-1px);
 }
 .mk-btn-ghost svg { width: 14px; height: 14px; }
 
