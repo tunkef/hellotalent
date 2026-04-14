@@ -326,10 +326,7 @@
     requestAnimationFrame(function() { ringWrap.classList.add('is-armed'); });
     metaRight.appendChild(ringWrap);
 
-    var editBtn = txt('button', 'gb-ghost-btn', 'Profili D\u00FCzenle');
-    editBtn.type = 'button';
-    editBtn.addEventListener('click', function() { switchPanel('merkez'); });
-    metaRight.appendChild(editBtn);
+    /* K052: Profili Düzenle button removed from genel hero per Tuna feedback */
 
     grid.appendChild(metaRight);
     hero.appendChild(grid);

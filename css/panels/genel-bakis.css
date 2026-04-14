@@ -93,12 +93,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: var(--font-mono);
-  font-size: 12px;
+  font-family: var(--font-body);
+  font-size: 14px;
   font-weight: 700;
-  letter-spacing: 0.04em;
+  letter-spacing: 0;
   color: var(--color-navy);
-  font-weight: 500;
 }
 .gb-ring-track { stroke: var(--border-subtle); }
 .gb-ring-progress {
@@ -326,7 +325,7 @@
   margin: 4px 0 32px;
   padding: 16px 22px;
   border: 1px solid var(--color-vermillion);
-  border-radius: 2px;
+  border-radius: 14px;
   display: flex;
   align-items: center;
   justify-content: space-between;
