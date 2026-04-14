@@ -21,8 +21,8 @@
    ════════════════════════════════════════════════════════════════ */
 
 :root {
-  --editorial-max-w: 1120px;
-  --editorial-pad-x: clamp(24px, 5vw, 48px);
+  --editorial-max-w: 1200px;
+  --editorial-pad-x: clamp(20px, 3vw, 32px);
 }
 
 

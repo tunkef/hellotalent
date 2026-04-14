@@ -3138,7 +3138,7 @@ test.describe('K033/K034 — Genel Bakis editorial redesign', () => {
     expect(profilHtml).toContain('profil-genel.js?v=20260414h');
     expect(profilHtml).toContain('merkezi.css?v=20260414i');
     /* profil-extras.css tokens unchanged — stays at v=20260414g */
-    expect(profilHtml).toContain('profil-extras.css?v=20260414g');
+    expect(profilHtml).toContain('profil-extras.css?v=20260414h');
   });
 
   test('legacy gh-edu/gh-id-readiness vocabulary removed from profil-genel.js', () => {
@@ -3345,8 +3345,8 @@ test.describe('K032 — Profil Önizleme drawer editorial redesign', () => {
 
   test('profil.html uses K032 cache-bust for preview JS + extras CSS', () => {
     expect(profilHtml).toMatch(/profil-preview\.js\?v=20260414e/);
-    /* K034 bumped profil-extras.css to ?v=20260414g (added editorial tokens) */
-    expect(profilHtml).toMatch(/css\/profil-extras\.css\?v=20260414g/);
+    /* K040 bumped profil-extras.css to ?v=20260414h (editorial tokens widened) */
+    expect(profilHtml).toMatch(/css\/profil-extras\.css\?v=20260414h/);
   });
 });
 
@@ -3415,7 +3415,7 @@ test.describe('K036 — Sirketler editorial redesign', () => {
   });
 
   test('profil.html cache-bust bumped for K037 affected assets', () => {
-    expect(profilHtml).toContain('sirketler.css?v=20260414l');
+    expect(profilHtml).toContain('sirketler.css?v=20260414m');
     expect(profilHtml).toContain('profil-markalar.js?v=20260414m');
     expect(profilHtml).toContain('genel-bakis.css?v=20260414k');
   });
@@ -3467,7 +3467,7 @@ test.describe('K037 — Sirketler brand card color flood hover', () => {
   });
 
   test('profil.html bumps cache-bust to v=20260414j for K037 assets', () => {
-    expect(profilHtml).toContain('sirketler.css?v=20260414l');
+    expect(profilHtml).toContain('sirketler.css?v=20260414m');
     expect(profilHtml).toContain('profil-markalar.js?v=20260414m');
   });
 });
