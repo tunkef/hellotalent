@@ -6,10 +6,26 @@
 
 ## Mevcut Durum
 
-**Aktif is:** K032 Profil Onizleme drawer editorial redesign — exec tamamlandi
-**Sonraki:** parent DeepSeek review + push + Codex post-push gate + GH Pages visual QA (desktop 1440 + mobile 390)
-**Son commit:** (pending) feat(profil-preview): K032 editorial drawer redesign
-**DeepSeek:** parent runs review if policy requires.
+**Aktif is:** K033 Genel Bakis editorial redesign — exec + DeepSeek APPROVE, push hazir
+**Sonraki:** push main + Codex post-push gate + GH Pages visual QA
+**Son commit:** (pending) feat(genel-bakis): K033 editorial redesign
+**DeepSeek:** APPROVE (working diff direct API review)
+
+## 2026-04-14 — K033 Genel Bakis editorial redesign (exec)
+
+- `css/panels/genel-bakis.css` 149 -> ~410 satir, full rewrite. `.gb-*` namespace: identity-row, hero (Bricolage headline + ghost edit btn), hero-ring (SVG sweep 800ms), hero-bakanlar (bottom-left hairline minimal mono row), strip (3 col grid 14px radius), strip-cell, gundem, spine (1px navy + tick circles), spine-item, item-meta/headline/excerpt/link, premium-cta (in-flow vermillion), signature. Stagger fadeUp 600ms 80ms.
+- `profil-genel.js` 1451 -> ~595 satir. Legacy 3-rail layout silindi. Coach builder helpers (buildCover, buildCoachAvatar, showCoachCard) studio bridge icin korundu. IIFE, `var` only. Tum `window._ht*` exports preserved.
+- `profil.html` cache-bust `?v=20260414e` -> `?v=20260414f` (genel-bakis.css + profil-genel.js).
+
+**Wiring:** Profili Duzenle->merkez | Bakanlar->kimbakti (count: candidate_view_stats.total_views) | Markalar->sirketler (_htGetGenelBrandTeaser) | Studyo->mulakat (K030 frozen) | **Firsatlar**->STUB console.warn + "0 yeni" static (campaigns RPC yok, K034 backlog) | Gundem->`get_announcements_feed` RPC (K030 sozlesmesi) | Devamini oku->bildirimler hub | Premium CTA (item 2-3 arasi)->premium panel.
+
+**Schema verify:** `supabase/migrations/20260413202813_ht_ann_views_focal.sql` get_announcements_feed signature (title/body_md/category/published_at) confirmed. `candidate_view_stats.total_views` reused. Hayali kolon yok.
+
+**Riskler:** Firsatlar campaigns wiring eksik (K034 backlog, console.warn dokumante) | Bakanlar mockup "BUGUN" -> production "N kisi profilini izledi" (data total) | Gundem per-post deep link yok | `.g-hero` / `.bento-*` dead orphan rule'lar profil-extras.css/layout.css'te (silinmedi, cross-panel kullanim yok, out of scope).
+
+**DeepSeek (working diff):** APPROVE. No console.log, no emoji, no top-level const/let/arrow, XSS textContent safe, namespace clean, panel switching preserved.
+
+**Test:** node --check OK. Playwright PENDING (post-push parent calistiracak).
 
 ## 2026-04-14 — K032 Profil Onizleme drawer exec tamamlandi
 
