@@ -76,7 +76,7 @@
     var s = supa();
     if (!s) return Promise.reject(new Error('Supabase client yok'));
     return s.from('brands')
-      .select('*, companies(id,company_name)')
+      .select('*, companies!brands_company_id_fkey(id,company_name)')
       .is('archived_at', null)
       .order('brand_name', { ascending: true })
       .then(function (res) {
@@ -101,7 +101,7 @@
   function fetchArchivedBrands() {
     var s = supa();
     return s.from('brands')
-      .select('*, companies(id,company_name)')
+      .select('*, companies!brands_company_id_fkey(id,company_name)')
       .not('archived_at', 'is', null)
       .order('archived_at', { ascending: false })
       .then(function (res) {
