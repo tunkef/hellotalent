@@ -24,6 +24,121 @@
 
 /* ── Hide legacy icon-strip progress (JS still updates it for state) ── */
 #panel-profil #wiz-progress { display: none !important; }
+/* K050: hide top "PROFİL WİZARDI" caption — redundant with rail */
+#panel-profil .wz-caption { display: none !important; }
+/* K050: flat input fields — no fill bg, only hairline border */
+#panel-profil .wiz-step input[type="text"],
+#panel-profil .wiz-step input[type="tel"],
+#panel-profil .wiz-step input[type="email"],
+#panel-profil .wiz-step input[type="search"],
+#panel-profil .wiz-step input[type="number"],
+#panel-profil .wiz-step input[type="url"],
+#panel-profil .wiz-step input[type="date"],
+#panel-profil .wiz-step select,
+#panel-profil .wiz-step textarea {
+  background: transparent !important;
+  border: 1px solid var(--wz-hairline) !important;
+  border-radius: 8px !important;
+  box-shadow: none !important;
+}
+#panel-profil .wiz-step input:focus,
+#panel-profil .wiz-step select:focus,
+#panel-profil .wiz-step textarea:focus {
+  border-color: var(--wz-navy) !important;
+  outline: none !important;
+}
+/* K050: premium card in wizard step 7 — cream + hairline editorial */
+#panel-profil .wiz-setting-card {
+  background: var(--wz-cream) !important;
+  border: 1px solid var(--wz-hairline) !important;
+  border-radius: 14px !important;
+  padding: 24px 28px !important;
+  box-shadow: none !important;
+}
+#panel-profil .wiz-setting-card .wiz-setting-title {
+  color: var(--wz-navy) !important;
+  font-family: var(--wz-display) !important;
+  font-weight: 500 !important;
+  font-size: 18px !important;
+}
+#panel-profil .wiz-setting-card .wiz-setting-desc {
+  color: var(--wz-muted) !important;
+  font-family: var(--wz-body) !important;
+  font-size: 13px !important;
+  margin-top: 4px !important;
+}
+#panel-profil .wiz-setting-card .wiz-premium-badge {
+  display: inline-block;
+  font-family: var(--wz-mono) !important;
+  font-style: italic;
+  font-size: 11px !important;
+  letter-spacing: 0.08em !important;
+  text-transform: uppercase;
+  color: var(--wz-vermillion) !important;
+  background: transparent !important;
+  border: 0 !important;
+  padding: 0 0 6px !important;
+}
+#panel-profil .wiz-setting-card .wiz-premium-soon {
+  font-family: var(--wz-mono) !important;
+  font-style: italic;
+  font-size: 11px !important;
+  letter-spacing: 0.06em !important;
+  color: var(--wz-vermillion) !important;
+  margin-top: 14px !important;
+}
+
+/* K050: success modal editorial (#modal-success) */
+#modal-success .ht-modal {
+  background: var(--wz-cream, #F7F6F4) !important;
+  border: 1px solid var(--wz-hairline, #E5E3DF) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 24px 48px rgba(30,45,94,0.14) !important;
+  padding: 32px 32px 28px !important;
+}
+#modal-success .modal-icon-success {
+  background: transparent !important;
+  border: 1.5px solid var(--wz-vermillion, #C94E28) !important;
+  width: 64px !important;
+  height: 64px !important;
+  border-radius: 50% !important;
+}
+#modal-success .modal-icon-success svg circle,
+#modal-success .modal-icon-success svg polyline {
+  stroke: var(--wz-vermillion, #C94E28) !important;
+}
+#modal-success .modal-title {
+  font-family: var(--wz-display, "Bricolage Grotesque", serif) !important;
+  font-weight: 500 !important;
+  font-size: 26px !important;
+  color: var(--wz-navy, #1E2D5E) !important;
+  letter-spacing: -0.01em !important;
+  margin-top: 18px !important;
+}
+#modal-success .modal-desc {
+  font-family: var(--wz-body, "Plus Jakarta Sans", sans-serif) !important;
+  font-size: 14px !important;
+  color: var(--wz-muted, #6B6A66) !important;
+  line-height: 1.55 !important;
+  margin: 8px 0 22px !important;
+}
+#modal-success #btn-success-ok {
+  background: var(--wz-vermillion, #C94E28) !important;
+  border: 1px solid var(--wz-vermillion, #C94E28) !important;
+  color: #fff !important;
+  border-radius: 12px !important;
+  font-family: var(--wz-body, "Plus Jakarta Sans", sans-serif) !important;
+  font-weight: 600 !important;
+}
+#modal-success .modal-premium-line {
+  font-family: var(--wz-mono, "DM Mono", monospace) !important;
+  font-style: italic;
+  font-size: 11px !important;
+  color: var(--wz-muted, #6B6A66) !important;
+  margin-top: 16px !important;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
 
 /* ── Panel shell: flat editorial canvas ── */
 main.panel#panel-profil {
@@ -98,13 +213,15 @@ main.panel#panel-profil {
   transition: right 280ms ease;
 }
 
-/* ── Grid ── */
+/* ── Grid (K050: rail moved to LEFT) ── */
 #panel-profil .wz-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.4fr) 280px;
+  grid-template-columns: 240px minmax(0, 1fr);
   gap: clamp(28px, 4vw, 56px);
   align-items: start;
 }
+#panel-profil .wz-rail { order: 1; }
+#panel-profil .wz-main { order: 2; }
 #panel-profil .wz-main {
   min-width: 0;
   opacity: 0;
@@ -249,22 +366,24 @@ main.panel#panel-profil {
   margin-bottom: 20px;
 }
 
-/* ── Experience cards (dynamic) ── */
+/* ── Experience cards (K050: flat, no card frame — Apple style) ── */
 #panel-profil #exp-cards-container > .ht-card {
-  background: var(--wz-cream);
-  border: 1px solid var(--wz-hairline);
-  border-radius: 14px;
-  padding: clamp(22px, 2.6vw, 32px);
-  margin-bottom: 24px;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  border-bottom: 1px solid var(--wz-hairline);
+  padding: 28px 0;
+  margin-bottom: 0;
   box-shadow: none;
 }
+#panel-profil #exp-cards-container > .ht-card:last-child { border-bottom: 0; }
 #panel-profil #exp-cards-container > .ht-card .exp-card-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 22px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid var(--wz-hairline);
+  margin-bottom: 18px;
+  padding-bottom: 0;
+  border-bottom: 0;
 }
 #panel-profil #exp-cards-container > .ht-card .exp-card-title {
   font-family: var(--wz-mono);

@@ -465,12 +465,15 @@ function calculateCompletion() {
     score += 10;
   } else if (expCards.length > 0) {
     var firstId = expCards[0].id + '-';
-    if (val(firstId + 'sirket'))  score += 4;
-    if (val(firstId + 'pozisyon')) score += 4;
-    if (val(firstId + 'basyil'))  score += 3;
-    if (val(firstId + 'sektor'))  score += 3;
-    if (val(firstId + 'segment')) score += 3;
-    if (val(firstId + 'desc'))    score += 3;
+    // K050: pozisyon select id is `unvan` (custom variant `unvan-custom`)
+    var _ucal = val(firstId + 'unvan-custom') || val(firstId + 'unvan');
+    if (_ucal === '__custom__') _ucal = '';
+    if (val(firstId + 'sirket'))    score += 4;
+    if (_ucal)                      score += 4;
+    if (val(firstId + 'basyil'))    score += 3;
+    if (val(firstId + 'sektor'))    score += 3;
+    if (val(firstId + 'segment'))   score += 3;
+    if (val(firstId + 'aciklama'))  score += 3;
   }
 
   // ── C) Eğitim & Dil — 10 puan ──
@@ -535,8 +538,11 @@ function calculateProfileScore() {
     score += 20;
   } else if (expCards.length > 0) {
     var firstId = expCards[0].id + '-';
+    // K050: pozisyon select id is `unvan` (custom variant `unvan-custom`)
+    var _uscore = val(firstId + 'unvan-custom') || val(firstId + 'unvan');
+    if (_uscore === '__custom__') _uscore = '';
     score += 10;                                    // at least one card
-    if (val(firstId + 'pozisyon')) score += 8;       // latest position
+    if (_uscore)                   score += 8;       // latest position
     if (val(firstId + 'sirket'))   score += 8;       // latest company
     if (val(firstId + 'basyil'))   score += 5;       // start date present
     // Team size: score if visible and filled; if field hidden for this department, no penalty
@@ -548,7 +554,7 @@ function calculateProfileScore() {
       score += 2; // Field not relevant for this department — no penalty
     }
     // Description (iş tanımı) — high-value field for profile quality
-    if (val(firstId + 'desc')) score += 2;
+    if (val(firstId + 'aciklama')) score += 2;
   }
 
   // ── C) Education & Language — 15 points ──
