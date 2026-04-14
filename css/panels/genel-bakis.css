@@ -31,8 +31,7 @@
   display: flex;
   flex-direction: column;
   gap: 24px;
-  max-width: var(--editorial-max-w);
-  margin: 0 auto;
+  max-width: inherit;
 }
 .gb-root > * { opacity: 0; transform: translateY(12px); animation: gbFadeUp 600ms ease-out forwards; }
 .gb-root > .gb-card--hero { animation-delay: 0ms; }
@@ -44,10 +43,10 @@
   background: var(--color-cream, #F7F6F4);
   border: 1px solid var(--border-subtle, #E5E3DF);
   border-radius: 14px;
-  padding: 32px 36px;
+  padding: 32px;
 }
-.gb-card--hero   { padding: 28px 36px; }
-.gb-card--gundem { padding: 32px 36px; }
+.gb-card--hero   { padding: 28px 32px; }
+.gb-card--gundem { padding: 32px; }
 .gb-card--rail   { padding: 24px; }
 
 @keyframes gbFadeUp {
