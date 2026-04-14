@@ -3746,7 +3746,8 @@ test.describe('K060 — Kim Baktı editorial redesign', () => {
     expect(kimbaktiCss).toContain('.kb-viewers-list');
     expect(kimbaktiCss).toContain('.kb-premium-btn');
     expect(kimbaktiCss).toContain('prefers-reduced-motion');
-    expect(kimbaktiCss).toContain('var(--color-vermillion');
+    // K067-NightAudit: primitive var(--color-vermillion) replaced with editorial token.
+    expect(kimbaktiCss).toContain('var(--editorial-vermillion)');
   });
 
   test('profil-kimbakti.js emits K060 class vocabulary', () => {

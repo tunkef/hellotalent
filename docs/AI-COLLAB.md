@@ -40,6 +40,16 @@ Panel-by-panel:
 5. Visual verification via Playwright on profil.html (logged-out CSS still renders).
 6. Test gate: `npx playwright test tests/p3.regression.spec.js` after each commit.
 
+### Root cause found mid-execution (2026-04-15)
+Live visual inspection revealed kimbakti numeric counters + genel-bakis
+titles still rendered navy `#1E2D5E` in dark even after tokenization.
+Root cause: many rules used `var(--color-navy, var(--editorial-ink))`
+where `--color-navy` is a Layer 1 primitive and never overridden in the
+dark block, so the editorial fallback never kicked in. Fix: replace all
+primitive var refs (`--color-navy`, `--color-vermillion`, `--color-cream`)
+in panels with `--editorial-*` semantic tokens. 34 refs fixed in kimbakti,
+33 in genel-bakis. Follow-up commit after all panel tokenize commits.
+
 ### Progress log
 - [x] tokens.css editorial set + NightAudit guard test (commit 684ff5f)
 - [x] ayarlar.css tokenize (~140 hex → var(--editorial-*)), 874/0
