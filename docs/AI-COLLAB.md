@@ -7,7 +7,7 @@
 
 ## Mevcut Durum
 
-**Aktif is:** K037 hotfix round 2 — top rule remove + logo visibility + followed chips normalize
+**Aktif is:** K037 hotfix round 3 — followed chip inline bg override removed (white bg + contain logolar)
 **Sonraki:** push main + Tuna smoke
 **Son commit:** (pending) feat(sirketler): K037 Variant E color flood hover + logo/search hotfix
 **DeepSeek:** APPROVE

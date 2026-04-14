@@ -539,7 +539,6 @@ function renderFollowedStrip() {
 
     var logo = document.createElement('div');
     logo.className = 'sk-followed__chip-logo';
-    logo.style.background = _avatarColor(b.brand_name);
     var url = _brandLogoUrl(b);
     if (url) {
       var img2 = document.createElement('img');
