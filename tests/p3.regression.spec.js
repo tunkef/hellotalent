@@ -3021,28 +3021,65 @@ test.describe('Beta Premium Gate — AI 1-use limit + badge system', () => {
 // Studio frozen since K030; edu dash + summary badge gallery no longer rendered there.
 // profil-summary.js _htRenderMiniRozetGalery still exists for future studio surface.
 
-test.describe('K033 — Genel Bakis editorial redesign', () => {
-  var genelJs, gbCss, profilHtml;
+test.describe('K033/K034 — Genel Bakis editorial redesign', () => {
+  var genelJs, gbCss, mkCss, extrasCss, profilHtml;
 
   test.beforeAll(() => {
     genelJs    = readFromRepo('profil-genel.js');
     gbCss      = readFromRepo('css/panels/genel-bakis.css');
+    mkCss      = readFromRepo('css/panels/merkezi.css');
+    extrasCss  = readFromRepo('css/profil-extras.css');
     profilHtml = readFromRepo('profil.html');
   });
 
-  test('genel-bakis.css uses .gb-* namespace with hero/strip/gundem/spine', () => {
+  test('genel-bakis.css uses .gb-* namespace with hero/gundem/spine', () => {
     expect(gbCss).toContain('.gb-hero');
-    expect(gbCss).toContain('.gb-strip');
     expect(gbCss).toContain('.gb-gundem');
     expect(gbCss).toContain('.gb-spine');
     expect(gbCss).toContain('.gb-signature');
   });
 
-  test('profil-genel.js builds editorial hero + strip + gundem render', () => {
+  test('K034: genel-bakis.css ships 2-col grid + right rail + inline expand', () => {
+    expect(gbCss).toContain('.gb-grid');
+    expect(gbCss).toContain('.gb-rail');
+    expect(gbCss).toContain('.gb-rail-cell');
+    expect(gbCss).toContain('.gb-item__toggle');
+    expect(gbCss).toContain('.gb-item.is-expanded');
+  });
+
+  test('K034: editorial width token defined in profil-extras.css', () => {
+    expect(extrasCss).toContain('--editorial-max-w');
+    expect(extrasCss).toContain('1120px');
+    expect(extrasCss).toContain('--editorial-pad-x');
+  });
+
+  test('K034: genel-bakis.css and merkezi.css both consume editorial token', () => {
+    expect(gbCss).toContain('var(--editorial-max-w)');
+    expect(gbCss).toContain('var(--editorial-pad-x)');
+    expect(mkCss).toContain('var(--editorial-max-w)');
+    expect(mkCss).toContain('var(--editorial-pad-x)');
+  });
+
+  test('profil-genel.js builds editorial hero + rail + gundem render', () => {
     expect(genelJs).toContain('buildHero');
-    expect(genelJs).toContain('buildStrip');
+    expect(genelJs).toContain('buildRail');
     expect(genelJs).toContain('buildGundem');
     expect(genelJs).toContain('buildSignature');
+    expect(genelJs).toContain('buildGundemItem');
+    expect(genelJs).toContain('wireGundemToggles');
+  });
+
+  test('K034: profil-genel.js hardcodes Merhaba greeting (no time-of-day branching)', () => {
+    expect(genelJs).toContain('Merhaba');
+    expect(genelJs).not.toContain('G\\u00FCnayd\\u0131n');
+    expect(genelJs).not.toContain('\u0130yi ak\u015Famlar');
+    expect(genelJs).not.toContain('\u0130yi geceler');
+  });
+
+  test('K034: gündem toggles use data-gb-toggle attribute and do NOT navigate bildirimler', () => {
+    expect(genelJs).toContain('data-gb-toggle');
+    /* Inline expand replaced the old switchPanel('bildirimler') jump. */
+    expect(genelJs).not.toContain("switchPanel('bildirimler')");
   });
 
   test('profil-genel.js wires gundem to get_announcements_feed RPC (K030 contract)', () => {
@@ -3060,9 +3097,11 @@ test.describe('K033 — Genel Bakis editorial redesign', () => {
     expect(genelJs).toContain('_htRefreshGenelHome');
   });
 
-  test('profil.html cache-bust bumped to v=20260414f for genel-bakis', () => {
-    expect(profilHtml).toContain('genel-bakis.css?v=20260414f');
-    expect(profilHtml).toContain('profil-genel.js?v=20260414f');
+  test('K034: profil.html cache-bust bumped to v=20260414g', () => {
+    expect(profilHtml).toContain('genel-bakis.css?v=20260414g');
+    expect(profilHtml).toContain('profil-genel.js?v=20260414g');
+    expect(profilHtml).toContain('merkezi.css?v=20260414g');
+    expect(profilHtml).toContain('profil-extras.css?v=20260414g');
   });
 
   test('legacy gh-edu/gh-id-readiness vocabulary removed from profil-genel.js', () => {
@@ -3269,7 +3308,8 @@ test.describe('K032 — Profil Önizleme drawer editorial redesign', () => {
 
   test('profil.html uses K032 cache-bust for preview JS + extras CSS', () => {
     expect(profilHtml).toMatch(/profil-preview\.js\?v=20260414e/);
-    expect(profilHtml).toMatch(/css\/profil-extras\.css\?v=20260414e/);
+    /* K034 bumped profil-extras.css to ?v=20260414g (added editorial tokens) */
+    expect(profilHtml).toMatch(/css\/profil-extras\.css\?v=20260414g/);
   });
 });
 

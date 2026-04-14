@@ -1,6 +1,6 @@
 /* global _escHtml, _loadedDBData, currentUser, supabase, switchPanel, calculateCompletion, normalizeForDisplay, canonicalizeRole, formatBrandDisplay */
 // ═══════════════════════════════════════════════════
-// profil-genel.js — Genel Bakış Editorial Home (K033)
+// profil-genel.js — Genel Bakış Editorial Home (K034)
 // Renders the candidate dashboard home: hero block (date + ring +
 // greeting + edit + bakanlar row), manşet strip (3 cards), gündem
 // rail (announcements feed + premium in-flow CTA), signature.
@@ -269,56 +269,64 @@
   function buildHero(profile, experiences) {
     var hero = el('section', 'gb-hero');
 
-    /* Top row: date + ring */
+    /* ─ Meta row: date (left) · ring + edit button stacked (right) ─ */
     var top = el('div', 'gb-hero-top');
     top.appendChild(txt('div', 'gb-mono gb-mono--muted', formatTodayCaption()));
+
+    var metaRight = el('div', 'gb-hero-meta-right');
 
     var pct = typeof calculateCompletion === 'function' ? calculateCompletion() : 0;
     if (pct < 0) pct = 0;
     if (pct > 100) pct = 100;
     var ringWrap = el('div', 'gb-ring-wrap');
     ringWrap.setAttribute('aria-label', 'Profil tamamlanma y\u00FCzde ' + pct);
-    /* Safe: hardcoded SVG with numeric pct interpolation only */
     var circumference = 201.06;
     var targetOffset = (circumference - (circumference * pct / 100)).toFixed(2);
     ringWrap.style.setProperty('--gb-ring-target', targetOffset);
+    /* Safe: hardcoded SVG, no user data */
     var ringSVG = '<svg width="72" height="72" viewBox="0 0 72 72">' +
       '<circle class="gb-ring-track" cx="36" cy="36" r="32" fill="none" stroke-width="3"/>' +
       '<circle class="gb-ring-progress" cx="36" cy="36" r="32" fill="none" stroke-width="3" stroke-linecap="round"/>' +
       '</svg>';
-    ringWrap.innerHTML = ringSVG; /* safe: hardcoded SVG, no user data */
+    ringWrap.innerHTML = ringSVG;
     var ringLabel = txt('div', 'gb-ring-label', '%' + pct);
     ringWrap.appendChild(ringLabel);
-    /* Arm the ring sweep on next frame so the transition fires. */
     requestAnimationFrame(function() { ringWrap.classList.add('is-armed'); });
-    top.appendChild(ringWrap);
-    hero.appendChild(top);
+    metaRight.appendChild(ringWrap);
 
-    /* Headline: greeting + first name */
-    var name = firstName(profile && profile.full_name);
-    var greetingText = name ? ('G\u00FCnayd\u0131n, ' + name) : 'Ho\u015F geldin';
-    hero.appendChild(txt('h1', 'gb-hero-headline', greetingText));
-
-    /* Row: subline + ghost edit button */
-    var row = el('div', 'gb-hero-row');
-    row.appendChild(txt('div', 'gb-hero-subline', buildSubline(profile, experiences)));
     var editBtn = txt('button', 'gb-ghost-btn', 'Profili D\u00FCzenle');
     editBtn.type = 'button';
     editBtn.addEventListener('click', function() { switchPanel('merkez'); });
-    row.appendChild(editBtn);
-    hero.appendChild(row);
+    metaRight.appendChild(editBtn);
 
-    /* Bakanlar bottom row */
+    top.appendChild(metaRight);
+    hero.appendChild(top);
+
+    /* ─ Text block: greeting + subline + bakanlar (left-aligned) ─ */
+    var textBlock = el('div', 'gb-hero-text');
+
+    var name = firstName(profile && profile.full_name);
+    /* K034: hardcoded "Merhaba" — no time-of-day branching */
+    var greetingText = name ? ('Merhaba, ' + name) : 'Merhaba';
+    textBlock.appendChild(txt('h1', 'gb-hero-headline', greetingText));
+
+    textBlock.appendChild(txt('div', 'gb-hero-subline', buildSubline(profile, experiences)));
+
+    /* Bakanlar row — vermillion arrow always */
     var bakanlar = el('div', 'gb-hero-bakanlar');
     var bakanlarBtn = document.createElement('button');
     bakanlarBtn.type = 'button';
     var countSpan = txt('span', 'gb-bakanlar-count', '0 K\u0130\u015E\u0130');
     bakanlarBtn.appendChild(countSpan);
     bakanlarBtn.appendChild(document.createTextNode(' '));
-    bakanlarBtn.appendChild(txt('span', '', 'profilini izledi \u2192'));
+    bakanlarBtn.appendChild(txt('span', '', 'profilini izledi'));
+    bakanlarBtn.appendChild(document.createTextNode(' '));
+    bakanlarBtn.appendChild(txt('span', 'gb-bakanlar-arrow', '\u2192'));
     bakanlarBtn.addEventListener('click', function() { switchPanel('kimbakti'); });
     bakanlar.appendChild(bakanlarBtn);
-    hero.appendChild(bakanlar);
+    textBlock.appendChild(bakanlar);
+
+    hero.appendChild(textBlock);
 
     /* Async hydrate viewer count */
     hydrateBakanlarCount(bakanlar, countSpan);
@@ -350,58 +358,59 @@
   }
 
   /* ═══════════════════════════════════════════════════
-     MANŞET STRIP (Fırsatlar / Markalar / Stüdyo)
+     RIGHT RAIL (Fırsatlar / Markalar / Stüdyo) — K034
+     Stacked vertically, sticky beside gündem.
      ═══════════════════════════════════════════════════ */
 
-  function buildStrip() {
-    var strip = el('section', 'gb-strip');
+  function buildRail() {
+    var rail = el('aside', 'gb-rail');
 
-    /* Fırsatlar — brand campaigns (NOT teklifler/messages).
-       TODO(K034+): wire to candidate-facing campaigns RPC once panel ships.
-       For now: static 0, click logs a warning and stays put. */
-    strip.appendChild(buildStripCell({
+    /* Fırsatlar — brand campaigns stub.
+       DO NOT navigate (stays warn-only until K034+ backlog wires campaigns RPC). */
+    rail.appendChild(buildRailCell({
       label: 'F\u0131rsatlar',
       value: '0 yeni',
-      link: 'Kampanyalar\u0131 g\u00F6r \u2192',
+      link: 'Kampanyalar\u0131 g\u00F6r',
       onClick: function() {
         console.warn('[gb] F\u0131rsatlar campaigns panel not yet wired (K034 backlog).');
       },
-      cellClass: 'gb-strip-cell--firsatlar'
+      cellClass: 'gb-rail-cell--firsatlar'
     }));
 
     /* Markalar — wires to sirketler panel */
-    var markaCell = buildStripCell({
+    var markaCell = buildRailCell({
       label: 'Markalar',
       value: '0 takip',
-      link: 'Ke\u015Ffet \u2192',
+      link: 'Ke\u015Ffet',
       onClick: function() { switchPanel('sirketler'); },
-      cellClass: 'gb-strip-cell--markalar'
+      cellClass: 'gb-rail-cell--markalar'
     });
-    strip.appendChild(markaCell);
+    rail.appendChild(markaCell);
 
-    /* Stüdyo — frozen, click navigates to mulakat panel where panel-soon
-       renders the "Yakında" surface (K030 contract). */
-    strip.appendChild(buildStripCell({
+    /* Stüdyo — frozen, navigates to mulakat panel (K030 contract preserved). */
+    rail.appendChild(buildRailCell({
       label: 'St\u00FCdyo',
       value: 'Yak\u0131nda',
-      link: 'Haberdar ol \u2192',
+      link: 'Haberdar ol',
       onClick: function() { switchPanel('mulakat'); },
-      cellClass: 'gb-strip-cell--studio'
+      cellClass: 'gb-rail-cell--studio'
     }));
 
-    /* Async hydrate marka follow count */
     hydrateMarkaCount(markaCell);
 
-    return strip;
+    return rail;
   }
 
-  function buildStripCell(opts) {
+  function buildRailCell(opts) {
     var cell = document.createElement('button');
     cell.type = 'button';
-    cell.className = 'gb-strip-cell ' + (opts.cellClass || '');
-    cell.appendChild(txt('div', 'gb-mono gb-strip-label', opts.label));
-    cell.appendChild(txt('div', 'gb-strip-value', opts.value));
-    cell.appendChild(txt('div', 'gb-strip-link', opts.link));
+    cell.className = 'gb-rail-cell ' + (opts.cellClass || '');
+    cell.appendChild(txt('div', 'gb-mono gb-rail-label', opts.label));
+    cell.appendChild(txt('div', 'gb-rail-value', opts.value));
+    var linkWrap = el('div', 'gb-rail-link');
+    linkWrap.appendChild(document.createTextNode(opts.link + ' '));
+    linkWrap.appendChild(txt('span', 'gb-rail-arrow', '\u2192'));
+    cell.appendChild(linkWrap);
     if (opts.onClick) cell.addEventListener('click', opts.onClick);
     return cell;
   }
@@ -412,8 +421,9 @@
       var payload = await window._htGetGenelBrandTeaser();
       var n = 0;
       if (payload && payload.followedIds) n = Object.keys(payload.followedIds).length;
-      var valueEl = cell.querySelector('.gb-strip-value');
+      var valueEl = cell.querySelector('.gb-rail-value');
       if (valueEl) valueEl.textContent = n + ' takip';
+      if (n > 0) cell.classList.add('has-count');
     } catch (e) {
       console.warn('[HT] gb marka count:', e && e.message);
     }
@@ -453,8 +463,12 @@
     return cta;
   }
 
-  function buildSpineItem(post, animClass) {
-    var article = el('article', 'gb-spine-item ' + (animClass || ''));
+  /* Build a gündem item. K034: inline expand — "Devamını oku" toggles
+     .is-expanded on the article, revealing full body_md. No navigation
+     to bildirimler panel. body_md rendered via text nodes + <br>, never
+     innerHTML. */
+  function buildGundemItem(post, animClass) {
+    var article = el('article', 'gb-item ' + (animClass || ''));
 
     var sourceLabel = COACH_CAT_LABELS[post.category] || (post.category ? String(post.category) : 'HelloTalent');
     var dateLabel = formatItemDate(post.published_at);
@@ -462,29 +476,62 @@
     var metaParts = [sourceLabel];
     if (dateLabel) metaParts.push(dateLabel);
     metaParts.push(minutes + ' dk okuma');
-    article.appendChild(txt('div', 'gb-mono gb-item-meta', metaParts.join(' \u00B7 ')));
+    article.appendChild(txt('div', 'gb-mono gb-item__meta', metaParts.join(' \u00B7 ')));
 
-    article.appendChild(txt('h3', 'gb-item-headline', post.title || ''));
+    article.appendChild(txt('h3', 'gb-item__headline', post.title || ''));
+
+    var rawBody = post.body_md ? String(post.body_md) : '';
+    var hasBody = rawBody.trim().length > 0;
 
     var excerpt = '';
-    if (post.body_md) {
-      excerpt = String(post.body_md).replace(/[#*_>`\-]+/g, '').replace(/\s+/g, ' ').trim();
+    if (hasBody) {
+      excerpt = rawBody.replace(/[#*_>`\-]+/g, '').replace(/\s+/g, ' ').trim();
       if (excerpt.length > 220) excerpt = excerpt.substring(0, 218) + '\u2026';
     }
-    if (excerpt) article.appendChild(txt('p', 'gb-item-excerpt', excerpt));
+    if (excerpt) article.appendChild(txt('p', 'gb-item__excerpt', excerpt));
 
-    var link = document.createElement('button');
-    link.type = 'button';
-    link.className = 'gb-item-link';
-    link.textContent = 'Devam\u0131n\u0131 oku \u2192';
-    link.addEventListener('click', function() {
-      /* Open the duyurular surface so the user can read the full post.
-         The duyurular tab lives inside the inbox panel hub. */
-      switchPanel('bildirimler');
-    });
-    article.appendChild(link);
+    /* Full body — strip markdown markers only, preserve newlines as <br>.
+       Safe: we build DOM nodes, never innerHTML with user text. */
+    if (hasBody) {
+      var bodyEl = el('div', 'gb-item__body');
+      var cleanBody = rawBody.replace(/[#*_>`]+/g, '');
+      var lines = cleanBody.split(/\r?\n/);
+      for (var li = 0; li < lines.length; li++) {
+        if (li > 0) bodyEl.appendChild(document.createElement('br'));
+        bodyEl.appendChild(document.createTextNode(lines[li]));
+      }
+      article.appendChild(bodyEl);
+
+      /* Toggle button — text swaps, arrow rotates via .is-expanded on parent */
+      var toggle = document.createElement('button');
+      toggle.type = 'button';
+      toggle.className = 'gb-item__toggle';
+      toggle.setAttribute('data-gb-toggle', '1');
+      var toggleLabel = txt('span', 'gb-item__toggle-label', 'Devam\u0131n\u0131 oku');
+      var toggleArrow = txt('span', 'gb-item__arrow', '\u2192');
+      toggle.appendChild(toggleLabel);
+      toggle.appendChild(toggleArrow);
+      article.appendChild(toggle);
+    }
 
     return article;
+  }
+
+  /* K034: wire inline expand toggles. Runs after mount via rAF. */
+  function wireGundemToggles(root) {
+    if (!root) return;
+    var toggles = root.querySelectorAll('[data-gb-toggle]');
+    for (var i = 0; i < toggles.length; i++) {
+      (function(btn) {
+        btn.addEventListener('click', function() {
+          var item = btn.closest('.gb-item');
+          if (!item) return;
+          var expanded = item.classList.toggle('is-expanded');
+          var label = btn.querySelector('.gb-item__toggle-label');
+          if (label) label.textContent = expanded ? 'Daha az g\u00F6ster' : 'Devam\u0131n\u0131 oku';
+        });
+      })(toggles[i]);
+    }
   }
 
   async function hydrateGundem() {
@@ -519,13 +566,16 @@
       var animClasses = ['gb-anim-1', 'gb-anim-2', 'gb-anim-3'];
       for (var i = 0; i < posts.length && i < 5; i++) {
         var animCls = i < 3 ? animClasses[i] : '';
-        spine.appendChild(buildSpineItem(posts[i], animCls));
+        spine.appendChild(buildGundemItem(posts[i], animCls));
         /* Insert premium CTA between item 2 and item 3 (after index 1) */
         if (i === 1) spine.appendChild(buildPremiumCTA());
       }
 
       /* If we never reached index 1 (only 1 post), still surface premium CTA */
       if (posts.length < 2) spine.appendChild(buildPremiumCTA());
+
+      /* Wire inline gündem expand toggles after DOM is painted. */
+      requestAnimationFrame(function() { wireGundemToggles(spine); });
     } catch (e) {
       console.warn('[gb] gündem load failed:', e && e.message);
       while (spine.firstChild) spine.removeChild(spine.firstChild);
@@ -569,8 +619,13 @@
 
     var root = el('div', 'gb-root');
     root.appendChild(buildHero(profile || {}, experiences));
-    root.appendChild(buildStrip());
-    root.appendChild(buildGundem());
+
+    /* K034 layout: 2-column grid — gündem (left) + right rail (sticky) */
+    var grid = el('div', 'gb-grid');
+    grid.appendChild(buildGundem());
+    grid.appendChild(buildRail());
+    root.appendChild(grid);
+
     root.appendChild(buildSignature());
     shell.appendChild(root);
 

@@ -7,9 +7,10 @@
    ═══════════════════════════════════════════════════════════════ */
 
 #panel-merkez {
-  max-width: 880px;
+  /* K034: widened to editorial max; tokens live in css/profil-extras.css */
+  max-width: var(--editorial-max-w);
   margin: 0 auto;
-  padding: 32px 28px 40px;
+  padding: 32px var(--editorial-pad-x) 40px;
   /* K031 hotfix 2: outer frame matches header card softness */
   background: var(--color-gray);
   color: var(--text-primary);

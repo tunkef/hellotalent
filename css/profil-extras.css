@@ -11,7 +11,20 @@
    Loaded in profil.html alongside merkezi.css. Future cleanup may
    split this further (one file per component), but for now it
    restores parity with pre-K031 behavior.
+
+   K034 (2026-04-14): editorial width tokens. Shared by
+   css/panels/genel-bakis.css and css/panels/merkezi.css so both
+   candidate home + merkez match the public-site editorial width
+   (index.html --max-w: 1120px, --pad clamp(24,5vw,48)). Placed
+   here because there is no shared.css in the profil bundle; this
+   file is already the cross-cutting bucket loaded before panels.
    ════════════════════════════════════════════════════════════════ */
+
+:root {
+  --editorial-max-w: 1120px;
+  --editorial-pad-x: clamp(24px, 5vw, 48px);
+}
+
 
 
 /* Wizard save-exit button (outline, secondary) */

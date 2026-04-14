@@ -6,10 +6,26 @@
 
 ## Mevcut Durum
 
-**Aktif is:** K033 Genel Bakis editorial redesign — exec + DeepSeek APPROVE, push hazir
-**Sonraki:** push main + Codex post-push gate + GH Pages visual QA
-**Son commit:** (pending) feat(genel-bakis): K033 editorial redesign
-**DeepSeek:** APPROVE (working diff direct API review)
+**Aktif is:** K034 Genel+Merkez genislik & ritim revizyonu — exec + DeepSeek APPROVE, push hazir
+**Sonraki:** push main + GH Pages visual QA + Tuna smoke
+**Son commit:** (pending) feat(genel+merkez): K034 width unify + rhythm + sticky rail + inline expand
+**DeepSeek:** APPROVE
+
+## 2026-04-14 — K034 Genel+Merkez genislik & ritim (exec)
+
+- `css/profil-extras.css` `--editorial-max-w: 1120px` + `--editorial-pad-x: clamp(24px,5vw,48px)` token (index.html referansi). shared.css yok, profil-extras cross-cutting bucket.
+- `css/panels/genel-bakis.css` (~285 satir delta): hero ritmi sikilastirildi (top 36, headline mb 12, subline mb 22), `.gb-hero-meta-right` (ring + edit btn stacked sag ust), `.gb-grid` 1fr/280px gap 48, `.gb-rail` sticky top 24 flex col, `.gb-rail-cell` (Strip vertical), `.gb-item__body/__toggle` inline expand `.is-expanded` rotate. Vermillion accent boost: bakanlar arrow, rail link arrow, item toggle arrow, premium CTA border + label + arrow. 900px col collapse, 540px stack.
+- `css/panels/merkezi.css` (5 satir): `#panel-merkez` max-width + padding-x `var(--editorial-*)`. Ic ritim dokunulmadi.
+- `profil-genel.js` (~189 satir delta): `buildHero` 2-row (meta-row stacked sag + text-block sol), greeting **HARDCODED `Merhaba, {firstName}`** (Gunaydin/Iyi aksamlar/Iyi geceler yok). `buildStrip` -> `buildRail`. `buildSpineItem` -> `buildGundemItem` (body_md text+`<br>` XSS-safe, data-gb-toggle), `wireGundemToggles` rAF-wired, body_md bossa toggle hide. `switchPanel('bildirimler')` gundem'den kaldirildi. Coach helpers + `_ht*` exports + `_HT_STUDIO_FROZEN` korundu.
+- `profil.html` cache-bust v=20260414f -> g (genel-bakis.css, merkezi.css, profil-extras.css, profil-genel.js).
+- `tests/p3.regression.spec.js` K033 -> K033/K034 describe, 13 yeni guard (`.gb-grid`/`.gb-rail`/`.gb-rail-cell`/`.gb-item__toggle`/`.gb-item.is-expanded`, `--editorial-max-w` token, `1120px`, var() referanslar her iki CSS'te, `buildRail`/`buildGundemItem`/`wireGundemToggles`, hardcoded "Merhaba", Gunaydin/Iyi aksamlar/Iyi geceler yok guard, `data-gb-toggle`, no bildirimler nav, cache-bust v=g x4).
+- `docs/superpowers/specs/2026-04-14-genel-bakis-mockup.html` K034 reference olarak yeniden yazildi.
+
+**Test:** **754 passed / 0 failed**, 3.2s. node --check OK.
+
+**DeepSeek (working diff):** APPROVE. Editorial width unification temiz, hero ritmi tightened, inline expand wired, greeting hardcoded, K030 contract preserved, _HT_STUDIO_FROZEN intact, no console.log, no emoji, no top-level const/let/arrow, namespace clean, business logic preserved.
+
+**Riskler:** Yok. Firsatlar rail card hala warn-only stub (K034+ backlog).
 
 ## 2026-04-14 — K033 Genel Bakis editorial redesign (exec)
 

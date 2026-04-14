@@ -3,206 +3,137 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HelloTalent — Genel Bakış</title>
+<title>HelloTalent — Genel Bakış (K034)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=DM+Mono:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=DM+Mono:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
 <style>
   :root {
     --cream: #F7F6F4;
-    --cream-deep: #EFEDE8;
     --navy: #1E2D5E;
     --vermillion: #C94E28;
     --hairline: #E5E3DF;
     --muted: #6B6A66;
+    --editorial-max-w: 1120px;
+    --editorial-pad-x: clamp(24px, 5vw, 48px);
   }
-
   * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  html, body {
-    background: var(--cream-deep);
-    color: var(--navy);
-    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    text-rendering: optimizeLegibility;
+  body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background: var(--cream);
+    color: #111;
+    min-height: 100vh;
+    padding: 40px 0;
   }
-
-  .frame {
-    max-width: 960px;
-    margin: 40px auto;
+  .wrap {
+    max-width: var(--editorial-max-w);
+    margin: 0 auto;
+    padding: 36px var(--editorial-pad-x) 56px;
     background: var(--cream);
     border: 1px solid var(--hairline);
     border-radius: 20px;
-    padding: 56px 64px 48px;
   }
-
   .mono {
-    font-family: 'DM Mono', 'Courier New', monospace;
+    font-family: 'DM Mono', monospace;
     font-size: 11px;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--navy);
   }
+  .mono--muted { color: var(--muted); }
 
-  .mono-muted { color: var(--muted); }
-
-  /* HERO */
-  .hero {
-    opacity: 0;
-    animation: fadeUp 600ms ease-out 0ms forwards;
-  }
-
+  /* Hero */
   .hero-top {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: 36px;
+    margin-bottom: 20px;
   }
-
-  .ring-wrap {
+  .hero-meta-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 14px;
+  }
+  .ring {
+    width: 72px; height: 72px;
+    border-radius: 50%;
+    border: 3px solid var(--hairline);
     position: relative;
-    width: 72px;
-    height: 72px;
-  }
-  .ring-wrap svg {
-    transform: rotate(-90deg);
-  }
-  .ring-wrap .ring-label {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: flex; align-items: center; justify-content: center;
     font-family: 'DM Mono', monospace;
+    color: var(--navy);
     font-size: 12px;
-    letter-spacing: 0.04em;
-    color: var(--navy);
-    font-weight: 500;
   }
-
-  .hero-headline {
-    font-family: 'Bricolage Grotesque', serif;
-    font-size: 48px;
-    font-weight: 500;
-    line-height: 1.05;
-    color: var(--navy);
-    letter-spacing: -0.01em;
-    margin-bottom: 14px;
+  .ring::before {
+    content: '';
+    position: absolute;
+    inset: -3px;
+    border-radius: 50%;
+    border: 3px solid transparent;
+    border-top-color: var(--vermillion);
+    border-right-color: var(--vermillion);
+    transform: rotate(135deg);
   }
-
-  .hero-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 24px;
-    margin-bottom: 40px;
-  }
-
-  .hero-subline {
-    font-size: 16px;
-    color: var(--muted);
-    font-weight: 400;
-  }
-
   .ghost-btn {
-    display: inline-block;
     border: 1px solid var(--navy);
     background: transparent;
     color: var(--navy);
-    padding: 12px 18px;
+    padding: 10px 16px;
     border-radius: 999px;
     font-family: 'DM Mono', monospace;
     font-size: 11px;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    text-decoration: none;
-    cursor: pointer;
-    transition: background 200ms ease, color 200ms ease;
-  }
-  .ghost-btn:hover {
-    background: var(--navy);
-    color: var(--cream);
-  }
-
-  .hero-viewers {
-    border-top: 1px solid var(--hairline);
-    padding-top: 18px;
-    margin-top: 8px;
-  }
-  .hero-viewers a {
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    color: var(--navy);
-    font-family: 'DM Mono', monospace;
-    font-size: 11px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    transition: opacity 200ms ease;
-  }
-  .hero-viewers a:hover { opacity: 0.65; }
-  .hero-viewers .count { color: var(--navy); }
-  .hero-viewers.has-views .count { color: var(--vermillion); }
-
-  /* STRIP */
-  .strip {
-    margin-top: 56px;
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    border: 1px solid var(--hairline);
-    border-radius: 14px;
-    overflow: hidden;
-    opacity: 0;
-    animation: fadeUp 600ms ease-out 80ms forwards;
-  }
-
-  .strip-cell {
-    padding: 24px;
-    min-height: 120px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    border-right: 1px solid var(--hairline);
-    transition: background 200ms ease;
     cursor: pointer;
   }
-  .strip-cell:last-child { border-right: none; }
-  .strip-cell:hover { background: rgba(30, 45, 94, 0.025); }
-
-  .strip-cell .label {
-    color: var(--muted);
-  }
-  .strip-cell .value {
-    font-family: 'Bricolage Grotesque', serif;
-    font-size: 22px;
+  .headline {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 48px;
     font-weight: 500;
+    line-height: 1.05;
     color: var(--navy);
-    line-height: 1.2;
-    margin: 12px 0 16px;
+    margin: 0 0 12px;
+    letter-spacing: -0.01em;
   }
-  .strip-cell .link {
-    color: var(--navy);
-    text-decoration: none;
+  .subline {
+    font-size: 16px;
+    color: var(--muted);
+    margin-bottom: 22px;
+  }
+  .bakanlar {
+    border-top: 1px solid var(--hairline);
+    padding-top: 16px;
+    margin-top: 4px;
+  }
+  .bakanlar button {
     font-family: 'DM Mono', monospace;
     font-size: 11px;
     letter-spacing: 0.08em;
     text-transform: uppercase;
+    color: var(--navy);
+    background: none;
+    border: none;
+    cursor: pointer;
   }
-  .strip-cell .link:hover { color: var(--vermillion); }
+  .bakanlar .arrow { color: var(--vermillion); }
 
-  /* GUNDEM SECTION */
-  .gundem {
-    margin-top: 72px;
+  /* Grid */
+  .grid {
+    margin-top: 48px;
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    gap: 48px;
+    align-items: start;
   }
 
-  .section-header {
+  .gundem-header {
     border-top: 1px solid var(--hairline);
     position: relative;
     padding-top: 18px;
-    margin-bottom: 40px;
+    margin-bottom: 36px;
   }
-  .section-header .mono {
+  .gundem-header .mono {
     background: var(--cream);
     padding-right: 14px;
     position: relative;
@@ -210,285 +141,260 @@
     display: inline-block;
   }
 
-  .rail {
-    position: relative;
-    padding-left: 36px;
-  }
-  .rail::before {
-    content: "";
+  .spine { position: relative; padding-left: 36px; }
+  .spine::before {
+    content: '';
     position: absolute;
-    left: 5px;
-    top: 6px;
-    bottom: 6px;
+    left: 5px; top: 6px; bottom: 6px;
     width: 1px;
     background: var(--navy);
   }
-
-  .duyuru {
+  .item {
     position: relative;
-    padding-bottom: 36px;
+    padding-bottom: 32px;
   }
-  .duyuru::before {
-    content: "";
+  .item::before {
+    content: '';
     position: absolute;
-    left: -34px;
-    top: 6px;
-    width: 11px;
-    height: 11px;
+    left: -34px; top: 6px;
+    width: 11px; height: 11px;
     border-radius: 50%;
     background: var(--navy);
     border: 2px solid var(--cream);
     box-sizing: content-box;
     margin-left: -1px;
   }
-  .duyuru .meta {
+  .item-meta {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
     color: var(--muted);
     margin-bottom: 10px;
   }
-  .duyuru h3 {
-    font-family: 'Bricolage Grotesque', serif;
+  .item-headline {
+    font-family: 'Bricolage Grotesque', sans-serif;
     font-size: 22px;
     font-weight: 500;
     line-height: 1.25;
     color: var(--navy);
-    margin-bottom: 10px;
-    letter-spacing: -0.005em;
+    margin: 0 0 10px;
   }
-  .duyuru p {
+  .item-excerpt {
     font-size: 14px;
     line-height: 1.55;
     color: var(--muted);
-    margin-bottom: 12px;
+    margin: 0 0 12px;
     max-width: 640px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
-  .duyuru .read {
+  .item-body {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #111;
+    max-width: 640px;
+    margin: 0 0 14px;
+  }
+  .item-toggle {
     font-family: 'DM Mono', monospace;
     font-size: 11px;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--navy);
-    text-decoration: none;
+    background: none;
+    border: none;
+    cursor: pointer;
   }
-  .duyuru .read:hover { color: var(--vermillion); }
+  .item-toggle .arrow {
+    color: var(--vermillion);
+    display: inline-block;
+  }
+  .item-toggle.expanded .arrow { transform: rotate(90deg); }
 
-  .duyuru.anim-1 { opacity: 0; animation: fadeUp 600ms ease-out 160ms forwards; }
-  .duyuru.anim-2 { opacity: 0; animation: fadeUp 600ms ease-out 240ms forwards; }
-  .duyuru.anim-3 { opacity: 0; animation: fadeUp 600ms ease-out 320ms forwards; }
-
-  /* PREMIUM in-flow CTA */
-  .premium-cta {
-    position: relative;
-    margin: 4px 0 36px;
+  /* Premium CTA */
+  .premium {
+    margin: 4px 0 32px;
     padding: 16px 22px;
-    border: 1px solid var(--hairline);
-    border-radius: 2px;
+    border: 1px solid var(--vermillion);
     display: flex;
-    align-items: center;
     justify-content: space-between;
+    align-items: center;
     gap: 18px;
-    background: var(--cream);
-    text-decoration: none;
+    background: none;
+    cursor: pointer;
+    width: 100%;
   }
-  .premium-cta::before {
-    content: "";
-    position: absolute;
-    left: -34px;
-    top: 22px;
-    width: 11px;
-    height: 11px;
-    border-radius: 50%;
-    background: var(--cream);
-    border: 1px solid var(--navy);
-    box-sizing: content-box;
-    margin-left: -1px;
-  }
-  .premium-cta .label {
+  .premium-label {
     font-family: 'DM Mono', monospace;
     font-size: 11px;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--vermillion);
   }
-  .premium-cta .body {
-    flex: 1;
+  .premium-body {
     font-size: 14px;
     color: var(--navy);
     text-align: right;
+    flex: 1;
   }
-  .premium-cta .body .arrow { color: var(--vermillion); margin-left: 4px; }
-  .premium-cta:hover { background: rgba(201, 78, 40, 0.03); }
+  .premium-arrow { color: var(--vermillion); }
 
-  /* SIGNATURE FOOTER */
+  /* Right rail */
+  .rail {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    position: sticky;
+    top: 24px;
+  }
+  .rail-cell {
+    padding: 20px;
+    min-height: 110px;
+    border: 1px solid var(--hairline);
+    border-radius: 14px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background: transparent;
+    text-align: left;
+    cursor: pointer;
+    width: 100%;
+  }
+  .rail-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .rail-value {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 20px;
+    font-weight: 500;
+    color: var(--navy);
+    margin: 10px 0 12px;
+  }
+  .rail-value.has-count { color: var(--vermillion); }
+  .rail-link {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--navy);
+  }
+  .rail-link .arrow { color: var(--vermillion); }
+
   .signature {
-    margin-top: 80px;
+    margin-top: 64px;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 18px;
   }
-  .signature .line {
-    flex: 1;
-    max-width: 180px;
-    height: 1px;
-    background: var(--hairline);
-  }
-  .signature .mark {
+  .sig-line { flex: 1; max-width: 180px; height: 1px; background: var(--hairline); }
+  .sig-mark {
     font-family: 'DM Mono', monospace;
     font-style: italic;
     font-size: 13px;
     color: var(--muted);
-    letter-spacing: 0.04em;
-    text-transform: lowercase;
   }
 
-  /* ANIMATIONS */
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(12px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  @keyframes ringSweep {
-    from { stroke-dashoffset: 201.06; }
-    to   { stroke-dashoffset: 8.04; }
-  }
-  .ring-progress {
-    stroke-dasharray: 201.06;
-    stroke-dashoffset: 201.06;
-    animation: ringSweep 800ms ease-out 200ms forwards;
-  }
-
-  /* RESPONSIVE */
-  @media (max-width: 720px) {
-    .frame {
-      margin: 16px;
-      padding: 32px 22px 32px;
-      border-radius: 14px;
-    }
-    .hero-headline { font-size: 34px; }
-    .hero-row {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 18px;
-    }
-    .strip { grid-template-columns: 1fr; }
-    .strip-cell {
-      border-right: none;
-      border-bottom: 1px solid var(--hairline);
-    }
-    .strip-cell:last-child { border-bottom: none; }
-    .rail { padding-left: 28px; }
-    .premium-cta {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 8px;
-    }
-    .premium-cta .body { text-align: left; }
+  @media (max-width: 900px) {
+    .grid { grid-template-columns: 1fr; gap: 40px; }
+    .rail { position: static; flex-direction: row; }
+    .rail-cell { flex: 1; }
   }
 </style>
 </head>
 <body>
-
-<div class="frame">
-
-  <!-- HERO -->
-  <section class="hero">
-    <div class="hero-top">
-      <div class="mono mono-muted">14 Nİsan 2026, Salı</div>
-      <div class="ring-wrap" aria-label="Profil tamamlanma yüzde 96">
-        <svg width="72" height="72" viewBox="0 0 72 72">
-          <circle cx="36" cy="36" r="32" fill="none" stroke="#E5E3DF" stroke-width="3"/>
-          <circle class="ring-progress" cx="36" cy="36" r="32" fill="none" stroke="#C94E28" stroke-width="3" stroke-linecap="round"/>
-        </svg>
-        <div class="ring-label">%96</div>
+  <main class="wrap">
+    <!-- HERO: date (left) · ring + edit button stacked (right) · greeting · subline · bakanlar -->
+    <section>
+      <div class="hero-top">
+        <div class="mono mono--muted">14 Nisan 2026, Salı</div>
+        <div class="hero-meta-right">
+          <div class="ring">%96</div>
+          <button class="ghost-btn">Profili Düzenle</button>
+        </div>
       </div>
+      <h1 class="headline">Merhaba, Tuna</h1>
+      <div class="subline">Retail Strategy Lead · LVMH · İstanbul</div>
+      <div class="bakanlar">
+        <button type="button"><span>12 KİŞİ</span> profilini izledi <span class="arrow">→</span></button>
+      </div>
+    </section>
+
+    <!-- 2-COL GRID: gündem (left) · sticky rail (right) -->
+    <div class="grid">
+      <section>
+        <div class="gundem-header"><span class="mono">Gündem</span></div>
+        <div class="spine">
+          <article class="item">
+            <div class="item-meta">Mülakat İpucu · 14 Nisan · 3 dk okuma</div>
+            <h3 class="item-headline">STAR yönteminin ötesi: retail yöneticileri nasıl ayrışır</h3>
+            <p class="item-excerpt">Behavioral mülakatta çoğu aday STAR'ı bilir; ama üst düzey retail rollerde fark "Result" kısmının sayılaştırılmasında…</p>
+            <button class="item-toggle">Devamını oku <span class="arrow">→</span></button>
+          </article>
+
+          <!-- Inline expanded example -->
+          <article class="item">
+            <div class="item-meta">Yetkinlik Rehberi · 13 Nisan · 5 dk okuma</div>
+            <h3 class="item-headline">"Strategic mindset" yetkinliğini nasıl gösterirsin?</h3>
+            <div class="item-body">
+              Strategic mindset, retail yöneticileri için en çok sorulan ama en kötü cevaplanan yetkinliklerden biri.
+              <br><br>
+              1. Trend ve veri okuma becerisini somut bir örnekle bağla (ör: kategoride SKU rasyonalizasyonu kararı).
+              <br>
+              2. Kısa vadeli satış baskısı ile uzun vadeli marka değeri arasındaki trade-off'u nasıl yönettiğini anlat.
+              <br>
+              3. Rakiplerin hamlesine değil, müşterinin yarınki ihtiyacına göre karar verdiğin bir anı paylaş.
+              <br><br>
+              Dikkat: "big picture bakarım" klişesinden uzak dur. Büyük resmi tarif etmek, büyük resmi yönetmek değildir.
+            </div>
+            <button class="item-toggle expanded">Daha az göster <span class="arrow">→</span></button>
+          </article>
+
+          <button class="premium">
+            <span class="premium-label">— Premium —</span>
+            <span class="premium-body">Beni Öner aktif · görünürlüğünü artır <span class="premium-arrow">→</span></span>
+          </button>
+
+          <article class="item">
+            <div class="item-meta">Kariyer Gelişim · 12 Nisan · 4 dk okuma</div>
+            <h3 class="item-headline">Linkedin'de retail recruiter'ın dikkatini çekmek</h3>
+            <p class="item-excerpt">İlk 3 saniye headline'da bitiyor; pozisyon değil, etki yaz. Rakamları başa al, jargonu at…</p>
+            <button class="item-toggle">Devamını oku <span class="arrow">→</span></button>
+          </article>
+        </div>
+      </section>
+
+      <aside class="rail">
+        <button class="rail-cell">
+          <div class="rail-label">Fırsatlar</div>
+          <div class="rail-value">0 yeni</div>
+          <div class="rail-link">Kampanyaları gör <span class="arrow">→</span></div>
+        </button>
+        <button class="rail-cell">
+          <div class="rail-label">Markalar</div>
+          <div class="rail-value has-count">8 takip</div>
+          <div class="rail-link">Keşfet <span class="arrow">→</span></div>
+        </button>
+        <button class="rail-cell">
+          <div class="rail-label">Stüdyo</div>
+          <div class="rail-value">Yakında</div>
+          <div class="rail-link">Haberdar ol <span class="arrow">→</span></div>
+        </button>
+      </aside>
     </div>
 
-    <h1 class="hero-headline">Günaydın, Tuna</h1>
-
-    <div class="hero-row">
-      <div class="hero-subline">Mağaza Müdürü &middot; Chanel &middot; İstanbul</div>
-      <a href="#" class="ghost-btn">Profili Düzenle</a>
-    </div>
-
-    <div class="hero-viewers">
-      <a href="#">
-        <span class="count">0 Kİşİ</span>
-        <span>bugün profilini izledi &rarr;</span>
-      </a>
-    </div>
-  </section>
-
-  <!-- MANSET STRIP -->
-  <section class="strip">
-    <div class="strip-cell">
-      <div class="mono label">Fırsatlar</div>
-      <div class="value">0 yeni</div>
-      <a href="#" class="link">Kampanyaları gör &rarr;</a>
-    </div>
-    <div class="strip-cell">
-      <div class="mono label">Markalar</div>
-      <div class="value">0 takip</div>
-      <a href="#" class="link">Keşfet &rarr;</a>
-    </div>
-    <div class="strip-cell">
-      <div class="mono label">Stüdyo</div>
-      <div class="value">Yakında</div>
-      <a href="#" class="link">Haberdar ol &rarr;</a>
-    </div>
-  </section>
-
-  <!-- GUNDEM -->
-  <section class="gundem">
-    <div class="section-header">
-      <span class="mono">Gündem</span>
-    </div>
-
-    <div class="rail">
-
-      <article class="duyuru anim-1">
-        <div class="mono meta">HelloTalent'ten Bİlgİler &middot; 14 Nİsan &middot; 4 dk okuma</div>
-        <h3>Mağazada müşteri deneyimini yeniden tasarlamak: 2026 saha notları</h3>
-        <p>Lüks perakendede dokunma noktaları artık sadece ürünle değil, satış danışmanının zamanlamasıyla şekilleniyor. Saha ekiplerinden derlediğimiz dört temel pratiği özetledik.</p>
-        <a href="#" class="read">Devamını oku &rarr;</a>
-      </article>
-
-      <article class="duyuru anim-2">
-        <div class="mono meta">Mülakat Rehberİ &middot; 12 Nİsan &middot; 6 dk okuma</div>
-        <h3>Mülakatta "neden ayrıldın" sorusuna verilebilecek en sakin cevap</h3>
-        <p>İşe alım yöneticilerinin yarısından fazlası bu soruyu güven testi olarak kullanıyor. Hazırlık değil, çerçeveleme meselesi. Üç cümlelik bir yapı öneriyoruz.</p>
-        <a href="#" class="read">Devamını oku &rarr;</a>
-      </article>
-
-      <a href="#" class="premium-cta">
-        <span class="label">— Premium —</span>
-        <span class="body">Beni Öner aktif &middot; görünürlüğünü artır <span class="arrow">&rarr;</span></span>
-      </a>
-
-      <article class="duyuru anim-3">
-        <div class="mono meta">Vİtrİn &amp; Vİsual &middot; 10 Nİsan &middot; 3 dk okuma</div>
-        <h3>İlkbahar vitrinlerinde renk: az ile çok söylemek</h3>
-        <p>Avrupa'nın önde gelen markaları bu sezon paletini daralttı. Beş vitrinden çıkardığımız ortak prensipleri ve mağazanıza nasıl uyarlayabileceğinizi anlattık.</p>
-        <a href="#" class="read">Devamını oku &rarr;</a>
-      </article>
-
-      <article class="duyuru">
-        <div class="mono meta">Sektör &middot; 08 Nİsan &middot; 5 dk okuma</div>
-        <h3>Türkiye perakende raporu: 2026 ilk çeyrek talep eğilimleri</h3>
-        <p>İstanbul ve Ankara AVM'lerinde ortalama sepet büyüklüğü yüzde dokuz arttı; satış danışmanı pozisyonlarında ise rotasyon hızlandı. Rakamların ardındaki hikâye burada.</p>
-        <a href="#" class="read">Devamını oku &rarr;</a>
-      </article>
-
-    </div>
-  </section>
-
-  <!-- SIGNATURE FOOTER -->
-  <footer class="signature">
-    <div class="line"></div>
-    <div class="mark"><em>— hellotalent —</em></div>
-    <div class="line"></div>
-  </footer>
-
-</div>
-
+    <footer class="signature">
+      <div class="sig-line"></div>
+      <div class="sig-mark"><em>— hellotalent —</em></div>
+      <div class="sig-line"></div>
+    </footer>
+  </main>
 </body>
 </html>
