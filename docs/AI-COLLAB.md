@@ -7,7 +7,8 @@
 
 ## Mevcut Durum
 
-**Aktif is:** K037 hotfix round 3 — followed chip inline bg override removed (white bg + contain logolar)
+**Aktif is:** K038 Faz 1 — Admin brand/company CRUD migration deployed. Faz 2 sıra (image editor).
+**Faz 1 durum:** Migration 20260414180000 applied. 6 RPC (admin_upsert/archive/restore brand+company), brands+companies audit/archive kolonları, brand-assets public bucket + 4 storage policy. Onceki:
 **Sonraki:** push main + Tuna smoke
 **Son commit:** (pending) feat(sirketler): K037 Variant E color flood hover + logo/search hotfix
 **DeepSeek:** APPROVE
