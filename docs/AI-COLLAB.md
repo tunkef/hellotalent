@@ -739,3 +739,9 @@ Next brief writing → verify preserved IDs directly via grep before listing the
 - 746/746 PASS.
 - Resolves: 'Profilim Önizle' raw text dump, location modal sarkan element top-left, avatar upload styling, toggle toast, modal animations, wizard step internals.
 
+
+## 2026-04-14 — K031 hotfix 2: rounded outer frame
+- #panel-merkez border-radius: 20px (14px mobile), border 1px subtle
+- Padding bumped 24/20 → 32/28 (24/18 mobile) for breathing room
+- Cache-bust ?v=20260414d
+

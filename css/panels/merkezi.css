@@ -9,10 +9,20 @@
 #panel-merkez {
   max-width: 880px;
   margin: 0 auto;
-  padding: 24px 20px 40px;
+  padding: 32px 28px 40px;
+  /* K031 hotfix 2: outer frame matches header card softness */
   background: var(--color-gray);
   color: var(--text-primary);
   font-family: var(--font-body);
+  border-radius: 20px;
+  border: 1px solid var(--border-subtle);
+}
+
+@media (max-width: 480px) {
+  #panel-merkez {
+    border-radius: 14px;
+    padding: 24px 18px 32px;
+  }
 }
 
 /* ─── Root stagger container ─── */
