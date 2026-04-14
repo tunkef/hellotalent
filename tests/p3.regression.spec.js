@@ -3882,3 +3882,47 @@ test.describe('K064 — Bildirimler editorial redesign', () => {
   });
 });
 
+/* ═══════════════════════════════════════════════════════════════════════
+   K066 Faz A — Destek editorial CSS override
+   CSS-only refactor of #panel-destek using K031-K065 vocabulary.
+   ═══════════════════════════════════════════════════════════════════════ */
+test.describe('K066 — Destek editorial CSS override', () => {
+  let profilHtml066;
+  let destekCss066;
+  let destekJs066;
+
+  test.beforeAll(() => {
+    profilHtml066 = readFromRepo('profil.html');
+    destekCss066 = readFromRepo('css/panels/destek.css');
+    destekJs066 = readFromRepo('profil-destek.js');
+  });
+
+  test('profil.html links K066 destek.css and bumps profil-destek.js cache-bust', () => {
+    expect(profilHtml066).toContain('css/panels/destek.css?v=20260414aa');
+    expect(profilHtml066).toContain('profil-destek.js?v=20260414aa');
+  });
+
+  test('destek.css contains the editorial vocabulary and reduced-motion block', () => {
+    expect(destekCss066).toContain('#panel-destek');
+    expect(destekCss066).toContain('.destek-wrap');
+    expect(destekCss066).toContain('.destek-hero');
+    expect(destekCss066).toContain('.destek-tab');
+    expect(destekCss066).toContain('.da-cat-card');
+    expect(destekCss066).toContain('.dt-form');
+    expect(destekCss066).toContain('.dtl-item');
+    expect(destekCss066).toContain('.dtd-wrap');
+    expect(destekCss066).toContain('prefers-reduced-motion');
+  });
+
+  test('profil-destek.js injectCSS is a no-op with K066 Faz A marker', () => {
+    expect(destekJs066).toContain('function injectCSS');
+    expect(destekJs066).toContain('K066 Faz A');
+    // the early return must be before any style element creation inside the live path
+    const fnStart = destekJs066.indexOf('function injectCSS');
+    const markerIdx = destekJs066.indexOf('K066 Faz A', fnStart);
+    const returnIdx = destekJs066.indexOf('return;', markerIdx);
+    expect(returnIdx).toBeGreaterThan(-1);
+    expect(returnIdx - fnStart).toBeLessThan(200);
+  });
+});
+

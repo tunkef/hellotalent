@@ -10,7 +10,7 @@
 **Aktif is:** K038 Faz 1 — Admin brand/company CRUD migration deployed. Faz 2 sıra (image editor).
 **Faz 1 durum:** Migration applied, 6 RPC + bucket + policies canlı.
 **Faz 2 durum:** Cropper.js vendor + image editor component + demo, 790/0.
-**K064 durum:** Bildirimler editorial redesign canlı (bildirimler.css 330 satır, bd-* vocab, vermillion hero, ht-segment compat). 854/0.
+**K066 Faz A durum:** Destek paneli CSS-only editorial override (destek.css 886 satır, injectCSS no-op, JS template dokunulmadı). 860/0.
 
 **Faz 3 durum:** admin Markalar paneli + drawer canlı, 798/0.
 **K038 TAMAM** (admin brand CRUD + image editor canlı).
