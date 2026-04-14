@@ -3683,3 +3683,72 @@ test.describe('K049 — Wizard editorial redesign', () => {
   });
 });
 
+test.describe('K060 — Kim Baktı editorial redesign', () => {
+  let profilHtml;
+  let kimbaktiCss;
+  let kimbaktiJs;
+
+  test.beforeAll(() => {
+    profilHtml = readFromRepo('profil.html');
+    kimbaktiCss = readFromRepo('css/panels/kimbakti.css');
+    kimbaktiJs = readFromRepo('profil-kimbakti.js');
+  });
+
+  test('profil.html contains the new kb editorial wrappers', () => {
+    expect(profilHtml).toContain('class="kb-root"');
+    expect(profilHtml).toContain('class="kb-card kb-card--hero"');
+    expect(profilHtml).toContain('class="kb-headline"');
+    expect(profilHtml).toContain('class="kb-stats"');
+    expect(profilHtml).toContain('class="kb-grid"');
+    expect(profilHtml).toContain('class="kb-signature"');
+  });
+
+  test('profil.html preserves all JS-dependent ids after K060 redesign', () => {
+    var ids = [
+      'id="kb-total"',
+      'id="kb-hero"',
+      'id="kb-trend"',
+      'id="kb-last-viewed"',
+      'id="kb-chart"',
+      'id="kb-segments"',
+      'id="kb-seg-bars"',
+      'id="kb-viewers"',
+      'id="kb-viewers-lock"',
+      'id="kb-viewer-list"',
+      'id="kb-conversion"',
+      'id="kb-conversion-body"',
+      'id="kb-premium-cta"',
+      'id="kb-empty"',
+      'id="kb-empty-pct"',
+      'id="kb-skeleton"'
+    ];
+    ids.forEach(function(id) { expect(profilHtml).toContain(id); });
+    expect(profilHtml).toContain('class="kb-premium-btn"');
+  });
+
+  test('profil.html links css/panels/kimbakti.css with K060 cache-bust', () => {
+    expect(profilHtml).toContain('css/panels/kimbakti.css?v=20260414aa');
+    expect(profilHtml).toContain('profil-kimbakti.js?v=20260414aa');
+  });
+
+  test('kimbakti.css contains the K060 vocabulary and reduced-motion block', () => {
+    expect(kimbaktiCss).toContain('.kb-root');
+    expect(kimbaktiCss).toContain('.kb-card');
+    expect(kimbaktiCss).toContain('.kb-headline');
+    expect(kimbaktiCss).toContain('.kb-stats');
+    expect(kimbaktiCss).toContain('.kb-chart');
+    expect(kimbaktiCss).toContain('.kb-segments');
+    expect(kimbaktiCss).toContain('.kb-viewers-list');
+    expect(kimbaktiCss).toContain('.kb-premium-btn');
+    expect(kimbaktiCss).toContain('prefers-reduced-motion');
+    expect(kimbaktiCss).toContain('var(--color-vermillion');
+  });
+
+  test('profil-kimbakti.js emits K060 class vocabulary', () => {
+    expect(kimbaktiJs).toContain('kb-day');
+    expect(kimbaktiJs).toContain('kb-segment-row');
+    expect(kimbaktiJs).toContain('kb-viewer-row');
+    expect(kimbaktiJs).not.toMatch(/console\.log/);
+  });
+});
+

@@ -66,6 +66,7 @@ if (window.Sentry) {
 <link rel="stylesheet" href="css/panels/merkezi.css?v=20260414x">
 <link rel="stylesheet" href="css/profil-extras.css?v=20260414h">
 <link rel="stylesheet" href="css/panels/sirketler.css?v=20260414n">
+<link rel="stylesheet" href="css/panels/kimbakti.css?v=20260414aa">
 <link rel="stylesheet" href="css/panel-soon.css?v=20260413a">
 <link rel="stylesheet" href="css/duyurular.css?v=20260414a">
 </head>
@@ -1612,90 +1613,114 @@ if (window.Sentry) {
   </div>
 </main>
 
-<div class="panel" id="panel-kimbakti" data-panel="kimbakti">
+<main class="panel" id="panel-kimbakti" data-panel="kimbakti">
+  <div class="kb-root">
 
-  <!-- Hero card -->
-  <div class="g-hero">
-    <div class="g-hero-inner">
-      <div class="ht-panel-heading">Profiline Kim Baktı</div>
-      <div id="kb-total" style="font-size:32px;font-weight:800;color:#fff;font-family:'DM Mono',monospace;line-height:1;">—</div>
-    </div>
-  </div>
+    <!-- 1. HERO -->
+    <article class="kb-card kb-card--hero" aria-labelledby="kb-hero-h">
+      <span class="kb-mono kb-mono--muted">Profiline Bakanlar / Kim Baktı</span>
+      <h1 class="kb-headline" id="kb-hero-h">Seni kim izliyor?</h1>
+      <p class="kb-subline">Profilin son 7 günde <strong id="kb-total">—</strong> kez görüntülendi. İK ekipleri, head-hunterlar ve şirket sayfalarından gelen bakışlar.</p>
+    </article>
 
-  <!-- Bento grid -->
-  <div class="ht-grid-3">
-
-    <!-- Stat card (span 1) -->
-    <div class="ht-card" id="kb-hero" style="position:relative;overflow:hidden;">
-      <div style="font-family:'Bricolage Grotesque',sans-serif;font-size:14px;font-weight:700;color:var(--text-primary,#111);margin-bottom:8px;">Son 7 Gün</div>
-      <div id="kb-trend" style="font-size:12px;display:none;"></div>
-      <div id="kb-last-viewed" style="font-size:11px;color:var(--muted);margin-top:8px;display:none;"></div>
-    </div>
-
-    <!-- Chart card (span 2) -->
-    <div class="ht-card ht-span-2">
-      <div style="font-family:'Bricolage Grotesque',sans-serif;font-size:13px;font-weight:700;color:var(--text-primary,#111);margin-bottom:12px;">Haftalık Görüntülenme</div>
-      <div id="kb-chart" style="display:flex;align-items:flex-end;gap:6px;height:80px;width:100%;justify-content:space-around;"></div>
-    </div>
-
-    <!-- Segment breakdown (span 1) -->
-    <div class="ht-card" id="kb-segments" style="display:none;">
-      <div class="ht-card__title">Segment Dağılımı</div>
-      <div id="kb-seg-bars" style="display:flex;flex-direction:column;gap:10px;margin-top:8px;"></div>
-    </div>
-
-    <!-- Company / viewer list (span 2) -->
-    <div class="ht-card ht-span-2" id="kb-viewers" style="display:none;">
-      <div class="ht-card__title" style="display:flex;align-items:center;justify-content:space-between;">
-        <span>Kimler İnceledi</span>
-        <span id="kb-viewers-lock" style="display:none;">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-        </span>
-      </div>
-      <div id="kb-viewer-list" style="display:flex;flex-direction:column;gap:0;margin-top:8px;"></div>
-    </div>
-
-    <!-- Conversion stat (span 1, premium only) -->
-    <div class="ht-card" id="kb-conversion" style="display:none;">
-      <div class="ht-card__title">Dönüşüm</div>
-      <div id="kb-conversion-body" class="mt-8"></div>
-    </div>
-
-    <!-- Premium CTA (span full) -->
-    <div class="ht-card" id="kb-premium-cta" style="grid-column:1/-1;display:none;background:linear-gradient(135deg,#2A3F7A 0%,#1E2D5E 50%,#162247 100%);border:1px solid rgba(255,255,255,0.1);">
-      <div class="d-flex items-center gap-12">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-        <div>
-          <div style="font-size:14px;font-weight:700;color:#fff;">Seni inceleyen firmaları gör</div>
-          <div style="font-size:12px;color:rgba(255,255,255,0.7);margin-top:2px;">Şirket adlarını, açık pozisyonları ve hangi segmentlerin seni incelediğini öğren.</div>
+    <!-- 2. STATS STRIP -->
+    <article class="kb-card kb-card--stats" id="kb-hero" aria-label="Haftalık özet">
+      <div class="kb-stats">
+        <div class="kb-stat">
+          <span class="kb-stat-num" data-kb-stat="total">—</span>
+          <span class="kb-mono kb-mono--muted">Görüntülenme · 7 Gün</span>
+        </div>
+        <div class="kb-stat">
+          <span class="kb-stat-num" data-kb-stat="trend">—</span>
+          <span class="kb-mono kb-mono--muted">Haftalık Değişim</span>
+        </div>
+        <div class="kb-stat">
+          <span class="kb-stat-num" data-kb-stat="unique">—</span>
+          <span class="kb-mono kb-mono--muted">Tekil Ziyaretçi</span>
+        </div>
+        <div class="kb-stat">
+          <span class="kb-stat-num" data-kb-stat="segments">—</span>
+          <span class="kb-mono kb-mono--muted">Segment Çeşidi</span>
         </div>
       </div>
-      <button type="button" class="kb-premium-btn" style="margin-top:12px;width:100%;padding:10px;background:var(--verm);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;">Premium ile Kilidi Aç</button>
+      <div id="kb-trend" hidden></div>
+      <div id="kb-last-viewed" hidden></div>
+    </article>
+
+    <!-- 3. 2-COL: CHART + SEGMENTS -->
+    <div class="kb-grid">
+
+      <article class="kb-card kb-card--chart" aria-label="Haftalık görüntülenme">
+        <div class="kb-card__head">
+          <h2 class="kb-card__title">Haftalık görüntülenme</h2>
+          <span class="kb-mono kb-mono--muted">Son 7 Gün</span>
+        </div>
+        <div class="kb-chart" id="kb-chart" role="img" aria-label="Haftalık görüntülenme grafiği"></div>
+      </article>
+
+      <article class="kb-card kb-card--segments" id="kb-segments" aria-label="Segment dağılımı" hidden>
+        <div class="kb-card__head">
+          <h2 class="kb-card__title">Segment dağılımı</h2>
+          <span class="kb-mono kb-mono--muted">Bakan segmentler</span>
+        </div>
+        <div class="kb-segments" id="kb-seg-bars"></div>
+      </article>
+
     </div>
 
-  </div>
+    <!-- 4. KIMLER INCELEDI -->
+    <article class="kb-card kb-card--viewers" id="kb-viewers" aria-labelledby="kb-viewers-h" hidden>
+      <div class="kb-card__head">
+        <h2 class="kb-card__title" id="kb-viewers-h">Kimler inceledi</h2>
+        <span id="kb-viewers-lock" hidden aria-hidden="true">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        </span>
+      </div>
+      <div class="kb-viewers-list" id="kb-viewer-list"></div>
+    </article>
 
-  <!-- Empty state -->
-  <div id="kb-empty" style="display:none;text-align:center;padding:40px 24px;border:1px solid var(--border-subtle,#E5E3DF);border-radius:16px;background:var(--bg-surface,#fff);margin-top:16px;box-shadow:0 2px 8px rgba(0,0,0,0.08),0 8px 20px rgba(0,0,0,0.06);">
-    <div style="font-size:15px;font-weight:600;color:var(--text);margin-bottom:6px;">Henüz görüntüleme yok</div>
-    <div style="font-size:13px;color:var(--muted);line-height:1.5;max-width:320px;margin:0 auto;">Profilini güçlendir — tamamlanma oranın yükseldikçe işverenler seni daha kolay bulur.</div>
-    <div id="kb-empty-pct" style="font-size:12px;color:var(--muted);margin-top:8px;"></div>
-    <button type="button" data-panel="merkez" style="margin-top:14px;padding:8px 20px;background:var(--verm);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;">Profili Güçlendir</button>
-  </div>
+    <!-- 5. CONVERSION (premium only) -->
+    <article class="kb-card kb-card--conversion" id="kb-conversion" hidden>
+      <span class="kb-mono">Dönüşüm</span>
+      <div id="kb-conversion-body"></div>
+    </article>
 
-  <!-- Loading skeleton -->
-  <div id="kb-skeleton" style="display:flex;flex-direction:column;gap:12px;">
-    <div class="ht-card">
-      <div style="height:48px;width:80px;background:var(--border);border-radius:8px;animation:pulse 1.5s infinite;"></div>
-      <div style="height:14px;width:160px;background:var(--border);border-radius:6px;margin-top:8px;animation:pulse 1.5s infinite;"></div>
+    <!-- 6. PREMIUM CTA -->
+    <article class="kb-card kb-card--premium" id="kb-premium-cta" aria-labelledby="kb-premium-h" hidden>
+      <span class="kb-mono kb-premium-mono">Premium</span>
+      <h2 class="kb-premium-headline" id="kb-premium-h">Bakışların ardındaki isimleri gör</h2>
+      <p class="kb-premium-desc">Şirket adlarını, açık pozisyonları ve hangi segmentlerin seni incelediğini öğren. Profiline kimlerin daha sık baktığını ve dönüşüm fırsatlarını yakala.</p>
+      <button type="button" class="kb-premium-btn">Premium'u Aç</button>
+      <div class="kb-mono kb-premium-foot">Beta süresince ücretsiz</div>
+    </article>
+
+    <!-- 7. EMPTY STATE -->
+    <article class="kb-card kb-card--empty" id="kb-empty" hidden>
+      <span class="kb-mono kb-mono--muted">Henüz görüntüleme yok</span>
+      <h2 class="kb-headline">Profilini güçlendir</h2>
+      <p class="kb-subline">Tamamlanma oranın yükseldikçe işverenler seni daha kolay bulur.</p>
+      <div id="kb-empty-pct" class="kb-mono-i"></div>
+      <button type="button" class="kb-empty-btn" data-panel="merkez">Profili Güçlendir</button>
+    </article>
+
+    <!-- 8. LOADING SKELETON -->
+    <div id="kb-skeleton">
+      <div class="kb-card">
+        <div class="kb-skel-line"></div>
+        <div class="kb-skel-line"></div>
+        <div class="kb-skel-line"></div>
+      </div>
+      <div class="kb-card">
+        <div class="kb-skel-line"></div>
+        <div class="kb-skel-line"></div>
+      </div>
     </div>
-    <div class="ht-card">
-      <div style="height:14px;width:120px;background:var(--border);border-radius:6px;animation:pulse 1.5s infinite;"></div>
-      <div style="height:24px;width:100%;background:var(--border);border-radius:6px;margin-top:12px;animation:pulse 1.5s infinite;"></div>
-      <div style="height:24px;width:75%;background:var(--border);border-radius:6px;margin-top:8px;animation:pulse 1.5s infinite;"></div>
-    </div>
+
+    <!-- 9. SIGNATURE -->
+    <footer class="kb-signature">— hellotalent —</footer>
+
   </div>
-</div>
+</main>
 
 <div class="panel" id="panel-mulakat" data-panel="mulakat">
   <!-- Content is rendered by profil-studio.js via window._htLoadStudio() -->
@@ -1758,7 +1783,7 @@ if (window.Sentry) {
 <script src="profil-wizard.js?v=20260414aa"></script>
 <script src="profil-draft.js?v=20260404b"></script>
 <script src="profil-helpers.js?v=20260404b"></script>
-<script src="profil-kimbakti.js?v=20260404b"></script>
+<script src="profil-kimbakti.js?v=20260414aa"></script>
 <script src="profil-bootstrap.js?v=20260404b"></script>
 <script src="profil-events.js?v=20260414v"></script>
 

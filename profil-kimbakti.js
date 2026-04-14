@@ -1,12 +1,15 @@
 /* global calculateCompletion, supabase */
 // ═══════════════════════════════════════════════════
-// PROFIL KIM BAKTI — Panel + Lab Card
+// PROFIL KIM BAKTI — K060 editorial redesign
 // Extracted from profil.html inline scripts.
 // Depends on: profil-core.js (supabase).
 // Exposes: window.loadViewersCard (called from profil-bootstrap.js).
+// Markup contract: see css/panels/kimbakti.css + profil.html #panel-kimbakti
 // ═══════════════════════════════════════════════════
 (function() {
   var _viewersLoaded = false;
+
+  var DAY_LABELS_TR = ['Pz', 'Pt', 'Sa', 'Ça', 'Pe', 'Cu', 'Ct'];
 
   function _relativeTimeTR(dateStr) {
     if (!dateStr) return '';
@@ -28,203 +31,247 @@
     return Math.floor(diffM / 12) + ' yıl önce';
   }
 
-  function _makeEl(tag, styles, text) {
+  function _el(tag, cls, text) {
     var el = document.createElement(tag);
-    if (styles) el.style.cssText = styles;
-    if (text) el.textContent = text;
+    if (cls) el.className = cls;
+    if (text !== undefined && text !== null) el.textContent = text;
     return el;
   }
 
-  // Update the lab bento card with a compact summary
+  // Update the lab bento card with a compact summary (unchanged contract).
   function _updateLabSummary(labBody, stats) {
     if (!labBody) return;
     while (labBody.firstChild) labBody.removeChild(labBody.firstChild);
     var total = (stats && stats.total_views) ? stats.total_views : 0;
-    var row = _makeEl('div', 'display:flex;align-items:baseline;gap:6px;');
-    row.appendChild(_makeEl('span', 'font-size:24px;font-weight:800;color:var(--text);font-family:\'DM Mono\',monospace;line-height:1;', String(total)));
-    row.appendChild(_makeEl('span', 'font-size:11px;color:var(--muted);', 'görüntülenme'));
+    var row = document.createElement('div');
+    row.style.cssText = 'display:flex;align-items:baseline;gap:6px;';
+    var num = document.createElement('span');
+    num.style.cssText = 'font-size:24px;font-weight:800;color:var(--text);font-family:\'DM Mono\',monospace;line-height:1;';
+    num.textContent = String(total);
+    var label = document.createElement('span');
+    label.style.cssText = 'font-size:11px;color:var(--muted);';
+    label.textContent = 'görüntülenme';
+    row.appendChild(num);
+    row.appendChild(label);
     labBody.appendChild(row);
     if (stats && stats.last_viewed_at) {
-      labBody.appendChild(_makeEl('div', 'font-size:11px;color:var(--muted);margin-top:4px;', 'Son: ' + _relativeTimeTR(stats.last_viewed_at)));
+      var last = document.createElement('div');
+      last.style.cssText = 'font-size:11px;color:var(--muted);margin-top:4px;';
+      last.textContent = 'Son: ' + _relativeTimeTR(stats.last_viewed_at);
+      labBody.appendChild(last);
     }
   }
 
-  // ── Render the rich Kim Baktı panel ──
-  function _renderPanel(stats, events, isPremium) {
-    var skeleton = document.getElementById('kb-skeleton');
-    var empty = document.getElementById('kb-empty');
-    var hero = document.getElementById('kb-hero');
-    var segCard = document.getElementById('kb-segments');
-    var viewersCard = document.getElementById('kb-viewers');
-    var ctaCard = document.getElementById('kb-premium-cta');
-    var convCard = document.getElementById('kb-conversion');
+  function _setStat(name, value) {
+    var nodes = document.querySelectorAll('[data-kb-stat="' + name + '"]');
+    for (var i = 0; i < nodes.length; i++) {
+      nodes[i].textContent = value;
+    }
+  }
 
-    if (skeleton) skeleton.style.display = 'none';
-    if (empty) empty.style.display = 'none';
-    if (hero) hero.style.display = 'block';
+  // ── Render chart as editorial hairline chart ──
+  function _renderChart(chartEl, events) {
+    if (!chartEl) return;
+    while (chartEl.firstChild) chartEl.removeChild(chartEl.firstChild);
 
-    // Normalize stats for 0-view case
-    if (!stats) stats = { total_views: 0, unique_positions: 0, unique_companies: 0, last_viewed_at: null };
-
-    // Hero total
-    var totalEl = document.getElementById('kb-total');
-    if (totalEl) totalEl.textContent = String(stats.total_views);
-
-    // Last viewed
-    var lastEl = document.getElementById('kb-last-viewed');
-    if (lastEl && stats.last_viewed_at) {
-      lastEl.textContent = 'Son görüntülenme: ' + _relativeTimeTR(stats.last_viewed_at);
-      lastEl.style.display = 'block';
+    var dayBuckets = [];
+    var now = new Date();
+    for (var d = 6; d >= 0; d--) {
+      var dt = new Date(now);
+      dt.setDate(dt.getDate() - d);
+      dayBuckets.push({ key: dt.toISOString().slice(0, 10), date: dt, count: 0 });
     }
 
-    // Mini bar chart — always render (shows empty bars if no events)
-    var chartEl = document.getElementById('kb-chart');
-    if (chartEl) {
-      var dayBuckets = {};
-      var now = new Date();
-      for (var d = 6; d >= 0; d--) {
-        var dt = new Date(now);
-        dt.setDate(dt.getDate() - d);
-        dayBuckets[dt.toISOString().slice(0, 10)] = 0;
+    events.forEach(function(ev) {
+      if (!ev.viewed_at) return;
+      var key = new Date(ev.viewed_at).toISOString().slice(0, 10);
+      for (var j = 0; j < dayBuckets.length; j++) {
+        if (dayBuckets[j].key === key) { dayBuckets[j].count++; break; }
       }
-      events.forEach(function(ev) {
-        if (ev.viewed_at) {
-          var key = new Date(ev.viewed_at).toISOString().slice(0, 10);
-          if (dayBuckets.hasOwnProperty(key)) dayBuckets[key]++;
-        }
-      });
-      var vals = Object.values(dayBuckets);
-      var maxVal = Math.max.apply(null, vals) || 1;
-      var dayNames = ['Pz', 'Pt', 'Sa', 'Ça', 'Pe', 'Cu', 'Ct'];
-      while (chartEl.firstChild) chartEl.removeChild(chartEl.firstChild);
-      Object.keys(dayBuckets).forEach(function(key) {
-        var v = dayBuckets[key];
-        var h = Math.max(4, Math.round((v / maxVal) * 48));
-        var col = _makeEl('div', 'display:flex;flex-direction:column;align-items:center;gap:2px;');
-        var bar = _makeEl('div', 'width:14px;height:' + h + 'px;background:var(--verm);border-radius:3px;opacity:' + (v > 0 ? '1' : '0.2') + ';transition:height 0.3s ease;');
-        var label = _makeEl('div', 'font-size:9px;color:var(--muted);', dayNames[new Date(key).getDay()]);
-        col.appendChild(bar);
-        col.appendChild(label);
-        chartEl.appendChild(col);
-      });
-    }
+    });
 
-    // Segment breakdown
+    var maxVal = 0;
+    dayBuckets.forEach(function(b) { if (b.count > maxVal) maxVal = b.count; });
+    if (maxVal === 0) maxVal = 1;
+
+    dayBuckets.forEach(function(bucket, idx) {
+      var isToday = idx === dayBuckets.length - 1;
+      var day = _el('div', 'kb-day' + (isToday ? ' is-today' : ''));
+
+      var h = Math.max(8, Math.round((bucket.count / maxVal) * 100));
+      var line = _el('div', 'kb-day-line');
+      line.style.height = h + '%';
+
+      var dot = _el('span', 'kb-day-dot');
+      var count = _el('span', 'kb-day-count', String(bucket.count));
+      line.appendChild(dot);
+      line.appendChild(count);
+
+      var label = _el('span', 'kb-day-label', DAY_LABELS_TR[bucket.date.getDay()] + (isToday ? ' · Bugün' : ''));
+
+      day.appendChild(line);
+      day.appendChild(label);
+      chartEl.appendChild(day);
+    });
+  }
+
+  // ── Render segment distribution ──
+  function _renderSegments(segBars, events) {
+    if (!segBars) return;
+    while (segBars.firstChild) segBars.removeChild(segBars.firstChild);
+
     var segMap = {};
     events.forEach(function(ev) {
       var s = ev.position_seg_snapshot || (ev.companies && ev.companies.segment) || '';
       if (s) segMap[s] = (segMap[s] || 0) + 1;
     });
     var segKeys = Object.keys(segMap);
+    if (segKeys.length === 0) return 0;
+
+    var segTotal = events.length || 1;
+    segKeys.sort(function(a, b) { return segMap[b] - segMap[a]; });
+    segKeys.forEach(function(name) {
+      var pct = Math.round((segMap[name] / segTotal) * 100);
+      var row = _el('div', 'kb-segment-row');
+      row.appendChild(_el('span', 'kb-segment-label', name));
+
+      var bar = _el('span', 'kb-segment-bar');
+      var fill = _el('span', 'kb-segment-fill');
+      fill.style.setProperty('--w', pct + '%');
+      bar.appendChild(fill);
+      row.appendChild(bar);
+
+      row.appendChild(_el('span', 'kb-segment-pct', pct + '%'));
+      segBars.appendChild(row);
+    });
+    return segKeys.length;
+  }
+
+  // ── Render viewers list ──
+  function _renderViewers(listEl, events, isPremium) {
+    if (!listEl) return;
+    while (listEl.firstChild) listEl.removeChild(listEl.firstChild);
+
+    if (events.length === 0) {
+      var empty = _el('div', 'kb-mono kb-mono--muted');
+      empty.style.cssText = 'padding:12px 0;';
+      empty.textContent = 'Profilini inceleyenler burada listelenecek.';
+      listEl.appendChild(empty);
+      if (typeof calculateCompletion === 'function') {
+        var pct = calculateCompletion();
+        if (pct < 100) {
+          var hint = _el('div', 'kb-mono-i');
+          hint.style.cssText = 'padding:4px 0 8px;color:var(--color-vermillion,#C94E28);';
+          hint.textContent = 'Profilin %' + pct + ' tamamlandı — güçlendirdikçe daha fazla işveren seni görür.';
+          listEl.appendChild(hint);
+        }
+      }
+      return;
+    }
+
+    events.forEach(function(ev) {
+      var row = _el('div', 'kb-viewer-row');
+
+      var segLabel = ev.position_seg_snapshot || (ev.companies && ev.companies.segment) || '';
+      var compName = (ev.companies && ev.companies.company_name) ? ev.companies.company_name : '';
+      var timeAgo = ev.viewed_at ? _relativeTimeTR(ev.viewed_at) : '';
+
+      if (isPremium && compName) {
+        var initial = compName.charAt(0).toUpperCase();
+        var avatar = _el('div', 'kb-viewer-avatar is-unlocked', initial);
+        row.appendChild(avatar);
+
+        var info = _el('div', '');
+        info.appendChild(_el('div', 'kb-viewer-name', compName));
+        var subBits = [];
+        if (ev.position_ad_snapshot) subBits.push(ev.position_ad_snapshot);
+        if (segLabel) subBits.push(segLabel);
+        if (timeAgo) subBits.push(timeAgo);
+        if (subBits.length) info.appendChild(_el('div', 'kb-viewer-sub', subBits.join(' · ')));
+        row.appendChild(info);
+
+        var right = _el('div', 'kb-viewer-right', '→');
+        right.setAttribute('aria-label', 'Detay');
+        row.appendChild(right);
+      } else {
+        var avatarL = _el('div', 'kb-viewer-avatar is-locked', '—');
+        avatarL.setAttribute('aria-hidden', 'true');
+        row.appendChild(avatarL);
+
+        var infoL = _el('div', '');
+        var lockedLabel = segLabel ? ('Bir ' + segLabel.toLowerCase() + ' markası') : 'Bir işveren';
+        infoL.appendChild(_el('div', 'kb-viewer-name is-locked', lockedLabel));
+        var subParts = [];
+        if (timeAgo) subParts.push(timeAgo);
+        subParts.push('Kilitli');
+        infoL.appendChild(_el('div', 'kb-viewer-sub', subParts.join(' · ')));
+        row.appendChild(infoL);
+
+        var rightL = _el('div', 'kb-viewer-right is-locked', '◌');
+        rightL.setAttribute('aria-label', 'Kilitli');
+        row.appendChild(rightL);
+      }
+
+      listEl.appendChild(row);
+    });
+  }
+
+  // ── Render the rich Kim Baktı panel ──
+  function _renderPanel(stats, events, isPremium) {
+    var skeleton = document.getElementById('kb-skeleton');
+    var empty = document.getElementById('kb-empty');
+    var segCard = document.getElementById('kb-segments');
+    var viewersCard = document.getElementById('kb-viewers');
+    var ctaCard = document.getElementById('kb-premium-cta');
+    var convCard = document.getElementById('kb-conversion');
+
+    if (skeleton) skeleton.hidden = true;
+    if (empty) empty.hidden = true;
+
+    if (!stats) stats = { total_views: 0, unique_positions: 0, unique_companies: 0, last_viewed_at: null };
+
+    // Hero total
+    var totalEl = document.getElementById('kb-total');
+    if (totalEl) totalEl.textContent = String(stats.total_views || 0);
+
+    // Stats strip
+    _setStat('total', String(stats.total_views || 0));
+    _setStat('unique', String(stats.unique_companies || 0));
+
+    // Trend: stats may not expose week-over-week yet — derive a simple placeholder.
+    var trendEl = document.getElementById('kb-trend');
+    if (trendEl) trendEl.textContent = '';
+    _setStat('trend', '—');
+
+    // Last viewed
+    var lastEl = document.getElementById('kb-last-viewed');
+    if (lastEl && stats.last_viewed_at) {
+      lastEl.textContent = 'Son görüntülenme: ' + _relativeTimeTR(stats.last_viewed_at);
+    }
+
+    // Chart
+    _renderChart(document.getElementById('kb-chart'), events);
+
+    // Segments
+    var segBars = document.getElementById('kb-seg-bars');
+    var segCount = _renderSegments(segBars, events);
     if (segCard) {
-      segCard.style.display = 'block';
-      var segBars = document.getElementById('kb-seg-bars');
-      if (segBars) {
-        while (segBars.firstChild) segBars.removeChild(segBars.firstChild);
-        if (segKeys.length === 0) {
-          segBars.appendChild(_makeEl('div', 'font-size:12px;color:var(--muted);padding:8px 0;', 'Görüntülenme oldukça segment dağılımı burada görünecek.'));
-        } else {
-          var segTotal = events.length;
-          var segColors = { 'Lüks': 'var(--navy)', 'Premium': 'var(--verm)', 'Fast Fashion': '#2D8C5A', 'Spor': '#3B82F6' };
-          segKeys.sort(function(a, b) { return segMap[b] - segMap[a]; });
-          segKeys.forEach(function(name) {
-            var pct = Math.round((segMap[name] / segTotal) * 100);
-            var row = _makeEl('div', '');
-            var top = _makeEl('div', 'display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;');
-            top.appendChild(_makeEl('span', 'font-size:12px;font-weight:600;color:var(--text);', name));
-            top.appendChild(_makeEl('span', 'font-size:12px;color:var(--muted);font-family:\'DM Mono\',monospace;', pct + '%'));
-            var track = _makeEl('div', 'height:6px;background:var(--border);border-radius:3px;overflow:hidden;');
-            var fill = _makeEl('div', 'height:100%;width:' + pct + '%;background:' + (segColors[name] || 'var(--navy)') + ';border-radius:3px;transition:width 0.5s ease;');
-            track.appendChild(fill);
-            row.appendChild(top);
-            row.appendChild(track);
-            segBars.appendChild(row);
-          });
-        }
-      }
+      if (segCount > 0) { segCard.hidden = false; }
+      else { segCard.hidden = true; }
     }
+    _setStat('segments', String(segCount || 0));
 
-    // Viewer list — always show
-    if (viewersCard) {
-      viewersCard.style.display = 'block';
-      var listEl = document.getElementById('kb-viewer-list');
-      var lockEl = document.getElementById('kb-viewers-lock');
-      if (listEl) {
-        while (listEl.firstChild) listEl.removeChild(listEl.firstChild);
-        if (events.length === 0) {
-          listEl.appendChild(_makeEl('div', 'font-size:12px;color:var(--muted);padding:12px 0;', 'Profilini inceleyenler burada listelenecek.'));
-          // Show completion hint to motivate profile improvement
-          if (typeof calculateCompletion === 'function') {
-            var _pct = calculateCompletion();
-            if (_pct < 100) {
-              listEl.appendChild(_makeEl('div', 'font-size:11px;color:var(--verm);padding:0 0 8px;', 'Profilin %' + _pct + ' tamamlandı — güçlendirdikçe daha fazla işveren seni görür.'));
-            }
-          }
-        }
-        events.forEach(function(ev, idx) {
-          var row = _makeEl('div', 'display:flex;align-items:center;gap:10px;padding:10px 0;' + (idx < events.length - 1 ? 'border-bottom:1px solid var(--border);' : ''));
-
-          // Avatar placeholder
-          var avatar = _makeEl('div', 'width:36px;height:36px;border-radius:50%;background:var(--navy-light,#EEF0F7);display:flex;align-items:center;justify-content:center;flex-shrink:0;');
-          var avatarIcon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-          avatarIcon.setAttribute('width', '16'); avatarIcon.setAttribute('height', '16'); avatarIcon.setAttribute('viewBox', '0 0 24 24');
-          avatarIcon.setAttribute('fill', 'none'); avatarIcon.setAttribute('stroke', 'var(--navy)'); avatarIcon.setAttribute('stroke-width', '2');
-          var aPath1 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-          aPath1.setAttribute('d', 'M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2');
-          var aCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-          aCircle.setAttribute('cx', '12'); aCircle.setAttribute('cy', '7'); aCircle.setAttribute('r', '4');
-          avatarIcon.appendChild(aPath1); avatarIcon.appendChild(aCircle);
-          avatar.appendChild(avatarIcon);
-
-          if (isPremium) {
-            // Show company name + details
-            var info = _makeEl('div', 'flex:1;min-width:0;');
-            var compName = (ev.companies && ev.companies.company_name) ? ev.companies.company_name : 'Bilinmeyen Şirket';
-            info.appendChild(_makeEl('div', 'font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;', compName));
-            var detail = ev.position_ad_snapshot || '';
-            var segLabel = ev.position_seg_snapshot || (ev.companies && ev.companies.segment) || '';
-            var sub = (detail ? detail : '') + (detail && segLabel ? ' · ' : '') + segLabel;
-            if (sub) info.appendChild(_makeEl('div', 'font-size:11px;color:var(--muted);margin-top:1px;', sub));
-            if (ev.viewed_at) info.appendChild(_makeEl('div', 'font-size:10px;color:var(--muted);margin-top:2px;', _relativeTimeTR(ev.viewed_at)));
-            row.appendChild(avatar);
-            row.appendChild(info);
-          } else {
-            // Blurred — freemium teaser
-            avatar.style.filter = 'blur(4px)';
-            avatar.style.opacity = '0.6';
-            var info = _makeEl('div', 'flex:1;min-width:0;');
-            var blurName = _makeEl('div', 'font-size:13px;font-weight:600;color:var(--text);filter:blur(5px);user-select:none;', '\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588');
-            info.appendChild(blurName);
-            var segLabel = ev.position_seg_snapshot || (ev.companies && ev.companies.segment) || '';
-            if (segLabel) info.appendChild(_makeEl('div', 'font-size:11px;color:var(--muted);margin-top:2px;', segLabel));
-            if (ev.viewed_at) info.appendChild(_makeEl('div', 'font-size:10px;color:var(--muted);margin-top:2px;', _relativeTimeTR(ev.viewed_at)));
-            row.appendChild(avatar);
-            row.appendChild(info);
-            // Lock icon
-            var lock = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-            lock.setAttribute('width', '14'); lock.setAttribute('height', '14'); lock.setAttribute('viewBox', '0 0 24 24');
-            lock.setAttribute('fill', 'none'); lock.setAttribute('stroke', 'var(--muted)'); lock.setAttribute('stroke-width', '2');
-            lock.setAttribute('stroke-linecap', 'round'); lock.setAttribute('stroke-linejoin', 'round');
-            lock.style.cssText = 'flex-shrink:0;';
-            var lr = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-            lr.setAttribute('x', '3'); lr.setAttribute('y', '11'); lr.setAttribute('width', '18'); lr.setAttribute('height', '11'); lr.setAttribute('rx', '2'); lr.setAttribute('ry', '2');
-            var lp = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-            lp.setAttribute('d', 'M7 11V7a5 5 0 0 1 10 0v4');
-            lock.appendChild(lr); lock.appendChild(lp);
-            row.appendChild(lock);
-          }
-          listEl.appendChild(row);
-        });
-        if (!isPremium && lockEl) lockEl.style.display = 'inline';
-      }
-    }
+    // Viewers
+    if (viewersCard) viewersCard.hidden = false;
+    _renderViewers(document.getElementById('kb-viewer-list'), events, isPremium);
+    var lockEl = document.getElementById('kb-viewers-lock');
+    if (lockEl) lockEl.hidden = isPremium;
 
     // Premium CTA (freemium only)
-    if (ctaCard) ctaCard.style.display = isPremium ? 'none' : 'block';
+    if (ctaCard) ctaCard.hidden = !!isPremium;
 
-    // Conversion stat — hidden until real messaging analytics data exists.
-    // No placeholder card shown; re-enable when backend provides conversion metrics.
-    if (convCard) convCard.style.display = 'none';
+    // Conversion — hidden until real messaging analytics exist.
+    if (convCard) convCard.hidden = true;
   }
 
   window.loadViewersCard = async function(candidateId) {
@@ -278,11 +325,10 @@
     } catch (err) {
       console.warn('[HT] Kim Baktı load failed:', err.message);
       var skeleton = document.getElementById('kb-skeleton');
-      if (skeleton) skeleton.style.display = 'none';
+      if (skeleton) skeleton.hidden = true;
       var empty = document.getElementById('kb-empty');
       if (empty) {
-        empty.style.display = 'block';
-        // Populate completion hint in error empty state
+        empty.hidden = false;
         var _emptyPct = document.getElementById('kb-empty-pct');
         if (_emptyPct && typeof calculateCompletion === 'function') {
           var _p = calculateCompletion();

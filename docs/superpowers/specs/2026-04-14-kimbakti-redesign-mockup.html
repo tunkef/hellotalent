@@ -1,0 +1,604 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Kim Baktı — Editorial Visibility Report</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700&family=Plus+Jakarta+Sans:wght@400;500;600&family=DM+Mono:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --cream: #F7F6F4;
+    --cream-dark: #EFEDE8;
+    --navy: #1E2D5E;
+    --vermillion: #C94E28;
+    --hairline: #E5E3DF;
+    --muted: #6B6A66;
+    --ink: #1E2D5E;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--cream-dark);
+    color: var(--ink);
+    font-family: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+    font-size: 15px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  .wrap {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 64px clamp(20px, 3vw, 32px);
+  }
+  .stack { display: flex; flex-direction: column; gap: 24px; }
+
+  /* Cards */
+  .kb-card {
+    background: var(--cream);
+    border: 1px solid var(--hairline);
+    border-radius: 14px;
+    padding: clamp(24px, 3vw, 32px);
+    opacity: 0;
+    transform: translateY(12px);
+    animation: fadeUp 600ms ease-out forwards;
+  }
+  .kb-card:nth-child(1) { animation-delay: 0ms; }
+  .kb-card:nth-child(2) { animation-delay: 80ms; }
+  .kb-card:nth-child(3) { animation-delay: 160ms; }
+  .kb-card:nth-child(4) { animation-delay: 240ms; }
+  .kb-card:nth-child(5) { animation-delay: 320ms; }
+  .kb-card:nth-child(6) { animation-delay: 400ms; }
+
+  @keyframes fadeUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Typography primitives */
+  .mono {
+    font-family: "DM Mono", ui-monospace, monospace;
+    text-transform: uppercase;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    font-weight: 500;
+  }
+  .mono-i {
+    font-family: "DM Mono", ui-monospace, monospace;
+    font-style: italic;
+    font-size: 12px;
+    letter-spacing: 0.02em;
+    color: var(--muted);
+  }
+  .display {
+    font-family: "Bricolage Grotesque", serif;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    color: var(--navy);
+    line-height: 1.05;
+    margin: 0;
+  }
+
+  /* Hero */
+  .hero .mono { display: block; margin-bottom: 18px; }
+  .hero h1 {
+    font-family: "Bricolage Grotesque", serif;
+    font-weight: 600;
+    font-size: clamp(38px, 5.2vw, 64px);
+    line-height: 1.02;
+    letter-spacing: -0.02em;
+    color: var(--navy);
+    margin: 0 0 22px;
+    max-width: 18ch;
+  }
+  .hero p {
+    max-width: 62ch;
+    font-size: 17px;
+    line-height: 1.55;
+    color: var(--muted);
+    margin: 0;
+  }
+  .hero p b { color: var(--navy); font-weight: 600; }
+  .hero .accent { color: var(--vermillion); font-weight: 600; }
+
+  /* Stats strip */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+  }
+  .stat {
+    padding: 4px 28px;
+    border-left: 1px solid var(--hairline);
+  }
+  .stat:first-child { border-left: 0; padding-left: 0; }
+  .stat:last-child { padding-right: 0; }
+  .stat .num {
+    font-family: "Bricolage Grotesque", serif;
+    font-weight: 600;
+    font-size: clamp(40px, 4vw, 52px);
+    line-height: 1;
+    letter-spacing: -0.02em;
+    color: var(--navy);
+    display: block;
+    margin-bottom: 12px;
+  }
+  .stat .num.pos { color: var(--vermillion); }
+  .stat .num.pos::before { content: "+"; }
+  .stat .num .pct { font-size: 0.55em; color: var(--muted); margin-left: 2px; }
+
+  /* 2-col grid */
+  .split {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 24px;
+  }
+
+  /* Weekly chart card */
+  .card-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 28px;
+  }
+  .card-head h2 {
+    font-family: "Bricolage Grotesque", serif;
+    font-weight: 600;
+    font-size: 22px;
+    letter-spacing: -0.01em;
+    color: var(--navy);
+    margin: 0;
+  }
+  .chart {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    align-items: end;
+    height: 220px;
+    gap: 0;
+    position: relative;
+    padding-bottom: 36px;
+    border-bottom: 1px solid var(--hairline);
+  }
+  .chart .day {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    height: 100%;
+    position: relative;
+  }
+  .chart .line {
+    width: 1px;
+    background: var(--navy);
+    position: relative;
+    transform-origin: bottom;
+    animation: rise 560ms ease-out forwards;
+    opacity: 0;
+  }
+  .chart .day:nth-child(1) .line { animation-delay: 200ms; }
+  .chart .day:nth-child(2) .line { animation-delay: 260ms; }
+  .chart .day:nth-child(3) .line { animation-delay: 320ms; }
+  .chart .day:nth-child(4) .line { animation-delay: 380ms; }
+  .chart .day:nth-child(5) .line { animation-delay: 440ms; }
+  .chart .day:nth-child(6) .line { animation-delay: 500ms; }
+  .chart .day:nth-child(7) .line { animation-delay: 560ms; }
+  @keyframes rise {
+    from { transform: scaleY(0); opacity: 0; }
+    to { transform: scaleY(1); opacity: 1; }
+  }
+  .chart .dot {
+    width: 9px; height: 9px; border-radius: 50%;
+    background: var(--cream);
+    border: 1.5px solid var(--navy);
+    position: absolute;
+    top: -4px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  .chart .count {
+    position: absolute;
+    top: -28px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: "DM Mono", monospace;
+    font-size: 12px;
+    color: var(--navy);
+    font-weight: 500;
+  }
+  .chart .label {
+    position: absolute;
+    bottom: -26px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: "DM Mono", monospace;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .chart .day.today .line { background: var(--vermillion); width: 2px; }
+  .chart .day.today .dot { border-color: var(--vermillion); background: var(--vermillion); }
+  .chart .day.today .count { color: var(--vermillion); font-weight: 600; }
+  .chart .day.today .label { color: var(--vermillion); }
+
+  .chart-foot {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+
+  /* Segment dağılımı */
+  .segments { display: flex; flex-direction: column; gap: 18px; }
+  .seg-row {
+    display: grid;
+    grid-template-columns: 120px 1fr 48px;
+    align-items: center;
+    gap: 18px;
+  }
+  .seg-label {
+    font-family: "DM Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--navy);
+    font-weight: 500;
+  }
+  .seg-bar {
+    height: 6px;
+    background: var(--hairline);
+    position: relative;
+    border-radius: 1px;
+    overflow: hidden;
+  }
+  .seg-bar .fill {
+    position: absolute; top: 0; left: 0; height: 100%;
+    background: var(--vermillion);
+    width: 0;
+    animation: fill 900ms ease-out forwards;
+  }
+  .seg-row:nth-child(1) .fill { animation-delay: 500ms; --w: 42%; }
+  .seg-row:nth-child(2) .fill { animation-delay: 600ms; --w: 28%; }
+  .seg-row:nth-child(3) .fill { animation-delay: 700ms; --w: 18%; }
+  .seg-row:nth-child(4) .fill { animation-delay: 800ms; --w: 12%; }
+  @keyframes fill { to { width: var(--w); } }
+  .seg-pct {
+    font-family: "DM Mono", monospace;
+    font-size: 13px;
+    color: var(--navy);
+    text-align: right;
+    font-weight: 500;
+  }
+
+  /* Kimler inceledi */
+  .viewers { display: flex; flex-direction: column; }
+  .viewer {
+    display: grid;
+    grid-template-columns: 52px 1fr auto;
+    align-items: center;
+    gap: 20px;
+    padding: 22px 0;
+    border-bottom: 1px solid var(--hairline);
+  }
+  .viewer:last-child { border-bottom: 0; padding-bottom: 0; }
+  .viewer:first-child { padding-top: 0; }
+  .avatar {
+    width: 44px; height: 44px; border-radius: 50%;
+    border: 1px solid var(--hairline);
+    display: flex; align-items: center; justify-content: center;
+    background: var(--cream);
+    color: var(--muted);
+    font-family: "Bricolage Grotesque", serif;
+    font-size: 15px;
+    font-weight: 600;
+  }
+  .avatar.locked { border-style: dashed; border-color: var(--hairline); }
+  .avatar.unlocked { border-color: var(--navy); background: var(--navy); color: var(--cream); }
+  .v-name {
+    font-family: "Bricolage Grotesque", serif;
+    font-size: 18px;
+    color: var(--navy);
+    font-weight: 500;
+    line-height: 1.3;
+  }
+  .v-name.locked {
+    font-family: "DM Mono", monospace;
+    font-style: italic;
+    font-size: 15px;
+    color: var(--muted);
+    font-weight: 400;
+  }
+  .v-sub {
+    font-family: "DM Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+  .v-right {
+    font-family: "Bricolage Grotesque", serif;
+    font-size: 22px;
+    color: var(--vermillion);
+    line-height: 1;
+  }
+  .v-right.locked { color: var(--muted); font-size: 16px; }
+
+  /* Premium unlock */
+  .premium {
+    border: 1px solid var(--vermillion);
+    display: grid;
+    grid-template-columns: 1.2fr auto;
+    gap: 40px;
+    align-items: center;
+  }
+  .premium .mono { color: var(--vermillion); margin-bottom: 14px; display: block; }
+  .premium h2 {
+    font-family: "Bricolage Grotesque", serif;
+    font-weight: 600;
+    font-size: clamp(28px, 3.2vw, 38px);
+    letter-spacing: -0.015em;
+    color: var(--navy);
+    margin: 0 0 16px;
+    max-width: 20ch;
+    line-height: 1.05;
+  }
+  .premium p {
+    color: var(--muted);
+    font-size: 15px;
+    max-width: 54ch;
+    margin: 0 0 18px;
+    line-height: 1.55;
+  }
+  .premium .foot { font-family: "DM Mono", monospace; font-style: italic; font-size: 12px; color: var(--muted); }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--vermillion);
+    color: var(--cream);
+    padding: 16px 28px;
+    border-radius: 999px;
+    border: 0;
+    font-family: "Plus Jakarta Sans", sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    letter-spacing: 0.01em;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 160ms ease;
+  }
+  .btn:hover { background: #B44524; }
+  .btn:focus-visible { outline: 2px solid var(--vermillion); outline-offset: 3px; }
+  .btn .arrow { font-family: "Bricolage Grotesque", serif; font-size: 18px; line-height: 1; }
+
+  /* Signature */
+  .sig {
+    margin-top: 40px;
+    padding-top: 24px;
+    border-top: 1px solid var(--hairline);
+    text-align: center;
+    font-family: "DM Mono", monospace;
+    font-style: italic;
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+  }
+
+  /* Focus */
+  a:focus-visible, button:focus-visible {
+    outline: 2px solid var(--vermillion);
+    outline-offset: 2px;
+  }
+
+  /* Responsive */
+  @media (max-width: 900px) {
+    .split { grid-template-columns: 1fr; }
+    .stats { grid-template-columns: repeat(2, 1fr); gap: 28px 0; }
+    .stat { padding: 4px 20px; }
+    .stat:nth-child(3) { border-left: 0; padding-left: 0; }
+    .premium { grid-template-columns: 1fr; gap: 24px; }
+    .viewer { grid-template-columns: 44px 1fr auto; gap: 16px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+    }
+    .kb-card { opacity: 1; transform: none; }
+    .chart .line { opacity: 1; transform: scaleY(1); }
+    .seg-bar .fill { width: var(--w); }
+  }
+</style>
+</head>
+<body>
+  <main class="wrap">
+    <div class="stack">
+
+      <!-- 1. HERO -->
+      <section class="kb-card hero" aria-labelledby="hero-h">
+        <span class="mono">Profiline Bakanlar / Kim Baktı</span>
+        <h1 id="hero-h">Seni kim izliyor?</h1>
+        <p>Profilin son 7 günde <b>18 kez</b> görüntülendi. İK ekipleri, head-hunterlar ve şirket sayfalarından gelen bakışlar — <span class="accent">bu hafta %24 daha fazla</span> göz üstünde.</p>
+      </section>
+
+      <!-- 2. STATS STRIP -->
+      <section class="kb-card" aria-label="Haftalık özet">
+        <div class="stats">
+          <div class="stat">
+            <span class="num">18</span>
+            <span class="mono">Görüntülenme · 7 Gün</span>
+          </div>
+          <div class="stat">
+            <span class="num pos">24<span class="pct">%</span></span>
+            <span class="mono">Haftalık Değişim</span>
+          </div>
+          <div class="stat">
+            <span class="num">12</span>
+            <span class="mono">Tekil Ziyaretçi</span>
+          </div>
+          <div class="stat">
+            <span class="num">4</span>
+            <span class="mono">Segment Çeşidi</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. 2-COL: CHART + SEGMENTS -->
+      <section class="kb-card" aria-label="Haftalık detay">
+        <div class="split">
+
+          <!-- Chart column -->
+          <div>
+            <div class="card-head">
+              <h2>Haftalık görüntülenme</h2>
+              <span class="mono">14 Nis · Son 7 Gün</span>
+            </div>
+            <div class="chart" role="img" aria-label="Haftalık görüntülenme grafiği: Çarşamba 3, Perşembe 5, Cuma 2, Cumartesi 4, Pazar 1, Pazartesi 2, Salı 1 (bugün)">
+              <div class="day">
+                <div class="line" style="height: 60%"><span class="dot"></span><span class="count">3</span></div>
+                <span class="label">Ça</span>
+              </div>
+              <div class="day">
+                <div class="line" style="height: 100%"><span class="dot"></span><span class="count">5</span></div>
+                <span class="label">Pe</span>
+              </div>
+              <div class="day">
+                <div class="line" style="height: 40%"><span class="dot"></span><span class="count">2</span></div>
+                <span class="label">Cu</span>
+              </div>
+              <div class="day">
+                <div class="line" style="height: 80%"><span class="dot"></span><span class="count">4</span></div>
+                <span class="label">Ct</span>
+              </div>
+              <div class="day">
+                <div class="line" style="height: 20%"><span class="dot"></span><span class="count">1</span></div>
+                <span class="label">Pz</span>
+              </div>
+              <div class="day">
+                <div class="line" style="height: 40%"><span class="dot"></span><span class="count">2</span></div>
+                <span class="label">Pt</span>
+              </div>
+              <div class="day today">
+                <div class="line" style="height: 20%"><span class="dot"></span><span class="count">1</span></div>
+                <span class="label">Sa · Bugün</span>
+              </div>
+            </div>
+            <div class="chart-foot">
+              <span class="mono-i">Çarşambadan beri 18 bakış toplandı.</span>
+              <span class="mono">Pik: Pe · 5</span>
+            </div>
+          </div>
+
+          <!-- Segments column -->
+          <div>
+            <div class="card-head">
+              <h2>Segment dağılımı</h2>
+              <span class="mono">4 Segment</span>
+            </div>
+            <div class="segments">
+              <div class="seg-row">
+                <span class="seg-label">Lüks</span>
+                <span class="seg-bar" aria-hidden="true"><span class="fill"></span></span>
+                <span class="seg-pct">42%</span>
+              </div>
+              <div class="seg-row">
+                <span class="seg-label">Premium</span>
+                <span class="seg-bar" aria-hidden="true"><span class="fill"></span></span>
+                <span class="seg-pct">28%</span>
+              </div>
+              <div class="seg-row">
+                <span class="seg-label">Fast Fashion</span>
+                <span class="seg-bar" aria-hidden="true"><span class="fill"></span></span>
+                <span class="seg-pct">18%</span>
+              </div>
+              <div class="seg-row">
+                <span class="seg-label">Tech</span>
+                <span class="seg-bar" aria-hidden="true"><span class="fill"></span></span>
+                <span class="seg-pct">12%</span>
+              </div>
+            </div>
+            <p class="mono-i" style="margin-top: 24px;">Lüks segment bu hafta en çok bakan. Premium markalar ikinci.</p>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- 4. KIMLER INCELEDI -->
+      <section class="kb-card" aria-labelledby="viewers-h">
+        <div class="card-head">
+          <h2 id="viewers-h">Kimler inceledi</h2>
+          <span class="mono">5 Bakış · Premium ile İsimler Açılır</span>
+        </div>
+        <div class="viewers">
+
+          <div class="viewer">
+            <div class="avatar locked" aria-hidden="true">—</div>
+            <div>
+              <div class="v-name locked">Bir lüks segment markası</div>
+              <div class="v-sub">2 Saat Önce · Kilitli</div>
+            </div>
+            <div class="v-right locked" aria-label="Kilitli">◌</div>
+          </div>
+
+          <div class="viewer">
+            <div class="avatar unlocked" aria-hidden="true">H</div>
+            <div>
+              <div class="v-name">Hermès İK ekibi</div>
+              <div class="v-sub">Mağaza Müdürü · 5 Saat Önce</div>
+            </div>
+            <div class="v-right" aria-label="Detay">→</div>
+          </div>
+
+          <div class="viewer">
+            <div class="avatar locked" aria-hidden="true">—</div>
+            <div>
+              <div class="v-name locked">Bir teknoloji perakendesi</div>
+              <div class="v-sub">1 Gün Önce · Kilitli</div>
+            </div>
+            <div class="v-right locked" aria-label="Kilitli">◌</div>
+          </div>
+
+          <div class="viewer">
+            <div class="avatar locked" aria-hidden="true">—</div>
+            <div>
+              <div class="v-name locked">Bir hızlı moda markası</div>
+              <div class="v-sub">1 Gün Önce · Kilitli</div>
+            </div>
+            <div class="v-right locked" aria-label="Kilitli">◌</div>
+          </div>
+
+          <div class="viewer">
+            <div class="avatar unlocked" aria-hidden="true">A</div>
+            <div>
+              <div class="v-name">Apple Türkiye</div>
+              <div class="v-sub">Eğitim Uzmanı · 2 Gün Önce</div>
+            </div>
+            <div class="v-right" aria-label="Detay">→</div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- 5. PREMIUM UNLOCK -->
+      <section class="kb-card premium" aria-labelledby="prem-h">
+        <div>
+          <span class="mono">Premium</span>
+          <h2 id="prem-h">Bakışların ardındaki isimleri gör</h2>
+          <p>Hangi markanın, hangi pozisyon için, ne zaman profiline baktığını tek tek gör. İK ekibi, head-hunter ya da mağaza müdürü — kimliğiyle birlikte. Haftalık rapor e-posta kutuna düşer; kaçırdığın fırsat kalmaz.</p>
+          <span class="foot">Beta süresince ücretsiz</span>
+        </div>
+        <a class="btn" href="#" role="button">Premium'u Aç <span class="arrow" aria-hidden="true">→</span></a>
+      </section>
+
+      <!-- 6. SIGNATURE -->
+      <div class="sig">— hellotalent —</div>
+
+    </div>
+  </main>
+</body>
+</html>
