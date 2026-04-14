@@ -45,7 +45,7 @@ Panel-by-panel:
 - [x] ayarlar.css tokenize (~140 hex → var(--editorial-*)), 874/0
 - [x] destek.css tokenize (~106 hex), 874/0
 - [x] inbox.css tokenize (~64 hex), 874/0
-- [ ] bildirimler
+- [x] bildirimler.css tokenize (~54 hex), 874/0
 - [ ] kimbakti
 - [ ] genel-bakis
 - [ ] sirketler drift

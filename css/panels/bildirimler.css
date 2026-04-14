@@ -1,8 +1,8 @@
 /* ═══════════════════════════════════════════════════════════════════════
    K064 — Bildirimler editorial redesign
    Source of truth: docs/superpowers/specs/2026-04-14-bildirimler-redesign-mockup.html
-   Vocabulary locked (K031–K063): cream #F7F6F4, navy #1E2D5E,
-   vermillion #C94E28, hairline #E5E3DF, muted #6B6A66.
+   Vocabulary locked (K031–K063): cream var(--editorial-bg), navy var(--editorial-ink),
+   vermillion var(--editorial-vermillion), hairline var(--editorial-hairline), muted var(--editorial-ink-muted).
    Fonts: Bricolage Grotesque + Plus Jakarta Sans + DM Mono italic.
    ═══════════════════════════════════════════════════════════════════════ */
 
@@ -22,13 +22,13 @@
   flex-direction: column;
   gap: 24px;
   font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
-  color: #1E2D5E;
+  color: var(--editorial-ink);
 }
 
 /* ====== BASE CARD ====== */
 .bd-card {
-  background: #F7F6F4;
-  border: 1px solid #E5E3DF;
+  background: var(--editorial-bg);
+  border: 1px solid var(--editorial-hairline);
   border-radius: 14px;
   padding: clamp(24px, 3vw, 32px);
   opacity: 0;
@@ -46,29 +46,29 @@
   line-height: 1.02;
   letter-spacing: -0.02em;
   font-weight: 600;
-  color: #C94E28;
+  color: var(--editorial-vermillion);
   margin: 0 0 14px;
 }
 .bd-card--hero .bd-subline {
   font-size: 14px;
-  color: #6B6A66;
+  color: var(--editorial-ink-muted);
   max-width: 64ch;
   line-height: 1.55;
   margin: 0 0 24px;
 }
 .bd-meta-row {
   padding-top: 18px;
-  border-top: 1px solid #E5E3DF;
+  border-top: 1px solid var(--editorial-hairline);
 }
 .bd-mono {
   font-family: 'DM Mono', ui-monospace, monospace;
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: #6B6A66;
+  color: var(--editorial-ink-muted);
   font-style: normal;
 }
-.bd-mono strong { color: #1E2D5E; font-weight: 500; }
+.bd-mono strong { color: var(--editorial-ink); font-weight: 500; }
 
 /* ====== MODE SEGMENT (TOC pattern, bildirim · duyuru) ====== */
 .bd-mode {
@@ -76,7 +76,7 @@
   align-items: center;
   gap: 18px;
   padding: 0 4px 14px;
-  border-bottom: 1px solid #E5E3DF;
+  border-bottom: 1px solid var(--editorial-hairline);
   background: transparent;
   opacity: 0;
   transform: translateY(12px);
@@ -87,7 +87,7 @@
   font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: #6B6A66;
+  color: var(--editorial-ink-muted);
   background: transparent;
   border: 0;
   padding: 0 0 8px;
@@ -99,25 +99,25 @@
   font-style: italic;
 }
 .bd-mode__btn:focus-visible {
-  outline: 2px solid #C94E28;
+  outline: 2px solid var(--editorial-vermillion);
   outline-offset: 3px;
   border-radius: 2px;
 }
 .bd-mode__btn.is-active {
-  color: #C94E28;
-  border-bottom-color: #C94E28;
+  color: var(--editorial-vermillion);
+  border-bottom-color: var(--editorial-vermillion);
 }
 .bd-mode__count {
   font-family: 'DM Mono', ui-monospace, monospace;
   font-size: 11px;
-  color: #6B6A66;
+  color: var(--editorial-ink-muted);
   font-style: italic;
 }
-.bd-mode__btn.is-active .bd-mode__count { color: #C94E28; }
+.bd-mode__btn.is-active .bd-mode__count { color: var(--editorial-vermillion); }
 .bd-mode__sep {
   font-family: 'DM Mono', ui-monospace, monospace;
   font-size: 12px;
-  color: #E5E3DF;
+  color: var(--editorial-hairline);
 }
 
 /* ====== SUB FILTERS (TÜMÜ · TEKLİFLER · ...) ====== */
@@ -127,7 +127,7 @@
   flex-wrap: wrap;
   gap: 14px;
   padding: 0 4px 12px;
-  border-bottom: 1px solid #E5E3DF;
+  border-bottom: 1px solid var(--editorial-hairline);
   margin: 0;
   opacity: 0;
   transform: translateY(12px);
@@ -138,7 +138,7 @@
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: #6B6A66;
+  color: var(--editorial-ink-muted);
   background: transparent;
   border: 0;
   padding: 0 0 6px;
@@ -147,13 +147,13 @@
   font-style: italic;
 }
 .bd-subfilter__btn:focus-visible {
-  outline: 2px solid #C94E28;
+  outline: 2px solid var(--editorial-vermillion);
   outline-offset: 3px;
   border-radius: 2px;
 }
 .bd-subfilter__btn.is-active {
-  color: #C94E28;
-  border-bottom-color: #C94E28;
+  color: var(--editorial-vermillion);
+  border-bottom-color: var(--editorial-vermillion);
 }
 
 /* ====== NOTIFICATION LIST (flat, no card frame) ====== */
@@ -173,18 +173,18 @@
   gap: 16px;
   align-items: flex-start;
   padding: 18px 12px;
-  border-bottom: 1px solid #E5E3DF;
+  border-bottom: 1px solid var(--editorial-hairline);
   position: relative;
   transition: background 180ms ease;
   cursor: pointer;
   color: inherit;
   text-decoration: none;
 }
-.bd-row:first-child { border-top: 1px solid #E5E3DF; }
-.bd-row:hover { background: #F1EFEA; }
+.bd-row:first-child { border-top: 1px solid var(--editorial-hairline); }
+.bd-row:hover { background: var(--editorial-card-elev); }
 .bd-row.is-unread { background: rgba(201, 78, 40, 0.04); }
 .bd-row:focus-visible {
-  outline: 2px solid #C94E28;
+  outline: 2px solid var(--editorial-vermillion);
   outline-offset: -2px;
   border-radius: 4px;
 }
@@ -192,12 +192,12 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  border: 1px solid #1E2D5E;
-  background: #F7F6F4;
+  border: 1px solid var(--editorial-ink);
+  background: var(--editorial-bg);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #1E2D5E;
+  color: var(--editorial-ink);
   font-size: 14px;
   position: relative;
   flex-shrink: 0;
@@ -208,7 +208,7 @@
 .bd-icon svg {
   width: 14px;
   height: 14px;
-  stroke: #1E2D5E;
+  stroke: var(--editorial-ink);
   fill: none;
   stroke-width: 1.6;
 }
@@ -220,22 +220,22 @@
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #C94E28;
-  border: 1px solid #F7F6F4;
+  background: var(--editorial-vermillion);
+  border: 1px solid var(--editorial-bg);
 }
 .bd-content { min-width: 0; display: flex; flex-direction: column; gap: 4px; }
 .bd-title {
   font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
   font-size: 14px;
   font-weight: 600;
-  color: #1E2D5E;
+  color: var(--editorial-ink);
   line-height: 1.3;
   margin: 0;
 }
 .bd-desc {
   font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
   font-size: 13px;
-  color: #6B6A66;
+  color: var(--editorial-ink-muted);
   line-height: 1.45;
   margin: 0;
   overflow: hidden;
@@ -248,7 +248,7 @@
   font-style: italic;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: #6B6A66;
+  color: var(--editorial-ink-muted);
   white-space: nowrap;
   padding-top: 4px;
 }
@@ -262,22 +262,22 @@
   flex-direction: column;
   gap: 10px;
   padding: 24px 0;
-  border-bottom: 1px solid #E5E3DF;
+  border-bottom: 1px solid var(--editorial-hairline);
 }
-.bd-duyuru-item:first-child { border-top: 1px solid #E5E3DF; }
+.bd-duyuru-item:first-child { border-top: 1px solid var(--editorial-hairline); }
 .bd-duyuru-meta {
   font-family: 'DM Mono', ui-monospace, monospace;
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: #6B6A66;
+  color: var(--editorial-ink-muted);
   font-style: italic;
 }
 .bd-duyuru-title {
   font-family: 'Bricolage Grotesque', Georgia, serif;
   font-size: 22px;
   font-weight: 600;
-  color: #1E2D5E;
+  color: var(--editorial-ink);
   line-height: 1.2;
   letter-spacing: -0.01em;
   margin: 0;
@@ -285,7 +285,7 @@
 .bd-duyuru-body {
   font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
   font-size: 14px;
-  color: #6B6A66;
+  color: var(--editorial-ink-muted);
   line-height: 1.55;
   max-width: 64ch;
   margin: 0;
@@ -296,9 +296,9 @@
 }
 .bd-duyuru-media {
   max-width: 640px;
-  border: 1px solid #E5E3DF;
+  border: 1px solid var(--editorial-hairline);
   border-radius: 12px;
-  background: #fff;
+  background: var(--editorial-card);
   padding: 0;
   overflow: hidden;
 }
@@ -308,15 +308,15 @@
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: #C94E28;
+  color: var(--editorial-vermillion);
   text-decoration: none;
   font-style: italic;
   border-bottom: 1px solid transparent;
   align-self: flex-start;
 }
-.bd-duyuru-link:hover { border-bottom-color: #C94E28; }
+.bd-duyuru-link:hover { border-bottom-color: var(--editorial-vermillion); }
 .bd-duyuru-link:focus-visible {
-  outline: 2px solid #C94E28;
+  outline: 2px solid var(--editorial-vermillion);
   outline-offset: 3px;
   border-radius: 2px;
 }
@@ -327,13 +327,13 @@
   text-align: left;
   font-family: 'DM Mono', ui-monospace, monospace;
   font-style: italic;
-  color: #6B6A66;
+  color: var(--editorial-ink-muted);
 }
 .bd-empty .empty-title {
   font-family: 'Bricolage Grotesque', Georgia, serif;
   font-size: 20px;
   font-style: normal;
-  color: #1E2D5E;
+  color: var(--editorial-ink);
   margin: 0 0 8px;
   letter-spacing: -0.01em;
 }
@@ -341,7 +341,7 @@
   font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
   font-size: 14px;
   font-style: normal;
-  color: #6B6A66;
+  color: var(--editorial-ink-muted);
   line-height: 1.55;
 }
 
@@ -349,14 +349,14 @@
 .bd-signature {
   margin-top: 48px;
   padding-top: 24px;
-  border-top: 1px solid #E5E3DF;
+  border-top: 1px solid var(--editorial-hairline);
   text-align: center;
   font-family: 'DM Mono', ui-monospace, monospace;
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   font-style: italic;
-  color: #6B6A66;
+  color: var(--editorial-ink-muted);
 }
 
 /* ====== ANIMATIONS ====== */
