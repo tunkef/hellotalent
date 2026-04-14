@@ -252,12 +252,17 @@
     // Chart
     _renderChart(document.getElementById('kb-chart'), events);
 
-    // Segments
+    // Segments — always show card (with empty placeholder when count=0)
     var segBars = document.getElementById('kb-seg-bars');
     var segCount = _renderSegments(segBars, events);
     if (segCard) {
-      if (segCount > 0) { segCard.hidden = false; }
-      else { segCard.hidden = true; }
+      segCard.hidden = false;
+      if (segCount === 0 && segBars && !segBars.firstChild) {
+        var emptyRow = document.createElement('div');
+        emptyRow.className = 'kb-segments-empty';
+        emptyRow.textContent = 'Henüz segment verisi yok. Görüntülenmeler arttıkça hangi segmentlerin sana ilgi gösterdiğini burada göreceksin.';
+        segBars.appendChild(emptyRow);
+      }
     }
     _setStat('segments', String(segCount || 0));
 

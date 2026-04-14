@@ -107,11 +107,26 @@
   gap: 0;
 }
 .kb-stat {
-  padding: 4px 28px;
+  padding: 4px 0;
   border-left: 1px solid var(--border-subtle, #E5E3DF);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 }
-.kb-stat:first-child { border-left: 0; padding-left: 0; }
-.kb-stat:last-child { padding-right: 0; }
+.kb-stat:first-child { border-left: 0; }
+/* K061: enforce [hidden] across kimbakti panel (kb-card display:flex was beating it) */
+#panel-kimbakti [hidden] { display: none !important; }
+/* K061: segments empty state placeholder */
+.kb-segments-empty {
+  font-family: var(--font-body, "Plus Jakarta Sans", sans-serif);
+  font-size: 13px;
+  color: var(--text-muted, #6B6A66);
+  font-style: italic;
+  line-height: 1.55;
+  padding: 8px 0;
+}
 .kb-stat-num {
   font-family: var(--font-display, "Bricolage Grotesque", serif);
   font-weight: 600;
