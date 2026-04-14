@@ -44,7 +44,7 @@ Panel-by-panel:
 - [x] tokens.css editorial set + NightAudit guard test (commit 684ff5f)
 - [x] ayarlar.css tokenize (~140 hex → var(--editorial-*)), 874/0
 - [x] destek.css tokenize (~106 hex), 874/0
-- [ ] inbox
+- [x] inbox.css tokenize (~64 hex), 874/0
 - [ ] bildirimler
 - [ ] kimbakti
 - [ ] genel-bakis
