@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>HelloTalent · Header Variant A — Editorial Masthead</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600&family=DM+Mono:ital,wght@0,400;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #F7F6F4;
+    --navy: #1E2D5E;
+    --vermillion: #C94E28;
+    --hairline: #E5E3DF;
+    --muted: #6B6A66;
+    --editorial-max-w: 1120px;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--cream);
+    color: var(--navy);
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a { color: inherit; text-decoration: none; }
+
+  /* ---------- Masthead ---------- */
+  .masthead {
+    background: var(--cream);
+    border-bottom: 1px solid var(--hairline);
+    width: 100%;
+  }
+  .masthead__row {
+    max-width: var(--editorial-max-w);
+    margin: 0 auto;
+    padding: 0 clamp(24px, 5vw, 48px);
+    height: 72px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+  }
+
+  /* Logo */
+  .logo {
+    font-family: 'Bricolage Grotesque', serif;
+    font-weight: 500;
+    font-size: 22px;
+    color: var(--navy);
+    letter-spacing: -0.01em;
+    display: inline-flex;
+    align-items: baseline;
+  }
+  .logo__dot {
+    color: var(--vermillion);
+    margin-left: 1px;
+  }
+
+  /* Nav — absolutely centered */
+  .nav {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    display: inline-flex;
+    gap: 36px;
+    align-items: center;
+  }
+  .nav__item {
+    font-family: 'DM Mono', ui-monospace, monospace;
+    font-style: italic;
+    font-weight: 400;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--navy);
+    padding: 6px 0;
+    position: relative;
+    transition: opacity 0.15s ease;
+  }
+  .nav__item:hover { opacity: 0.7; }
+  .nav__item--active {
+    color: var(--vermillion);
+  }
+  .nav__item--active::after {
+    content: "";
+    position: absolute;
+    left: 0; right: 0;
+    bottom: -4px;
+    height: 2px;
+    background: var(--vermillion);
+  }
+
+  /* Right actions */
+  .actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .action {
+    width: 32px;
+    height: 32px;
+    border-radius: 999px;
+    border: 1px solid var(--hairline);
+    background: transparent;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--navy);
+    font-family: 'DM Mono', ui-monospace, monospace;
+    font-size: 13px;
+    cursor: pointer;
+    position: relative;
+    transition: border-color 0.15s ease, color 0.15s ease;
+  }
+  .action:hover { border-color: var(--navy); }
+  .action__glyph { line-height: 1; }
+  .action__dot {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    width: 6px;
+    height: 6px;
+    border-radius: 999px;
+    background: var(--vermillion);
+  }
+
+  .avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 999px;
+    border: 2px solid var(--hairline);
+    margin-left: 4px;
+    background: #EAE7E1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'DM Mono', ui-monospace, monospace;
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    color: var(--navy);
+    text-transform: uppercase;
+    overflow: hidden;
+  }
+  .avatar--open {
+    border-color: var(--vermillion);
+  }
+
+  /* ---------- Preview body ---------- */
+  .stage {
+    max-width: var(--editorial-max-w);
+    margin: 0 auto;
+    padding: 0 clamp(24px, 5vw, 48px);
+  }
+
+  .hero {
+    min-height: 60vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 80px 0 64px;
+    border-bottom: 1px solid var(--hairline);
+  }
+  .caption {
+    font-family: 'DM Mono', ui-monospace, monospace;
+    font-style: italic;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 24px;
+  }
+  .caption__bullet {
+    color: var(--vermillion);
+    margin: 0 6px;
+  }
+  .headline {
+    font-family: 'Bricolage Grotesque', serif;
+    font-weight: 500;
+    font-size: clamp(36px, 5.6vw, 64px);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    color: var(--navy);
+    max-width: 820px;
+    margin: 0 0 28px;
+  }
+  .lede {
+    max-width: 620px;
+    color: var(--muted);
+    font-size: 16px;
+    line-height: 1.7;
+    margin: 0 auto;
+  }
+  .lede p { margin: 0 0 6px; }
+
+  .tricaps {
+    margin-top: 56px;
+    display: inline-flex;
+    gap: 8px;
+    align-items: center;
+    font-family: 'DM Mono', ui-monospace, monospace;
+    font-style: italic;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--navy);
+  }
+  .tricaps span { color: var(--navy); }
+  .tricaps .sep { color: var(--vermillion); }
+
+  /* Second render */
+  .variant-note {
+    max-width: var(--editorial-max-w);
+    margin: 0 auto;
+    padding: 48px clamp(24px, 5vw, 48px) 16px;
+    font-family: 'DM Mono', ui-monospace, monospace;
+    font-style: italic;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .variant-note .sep { color: var(--vermillion); margin: 0 6px; }
+
+  .footer-caption {
+    max-width: var(--editorial-max-w);
+    margin: 0 auto;
+    padding: 32px clamp(24px, 5vw, 48px) 80px;
+    font-family: 'DM Mono', ui-monospace, monospace;
+    font-style: italic;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    border-top: 1px solid var(--hairline);
+    margin-top: 48px;
+  }
+
+  /* Responsive */
+  @media (max-width: 900px) {
+    .masthead__row {
+      height: auto;
+      flex-wrap: wrap;
+      padding-top: 18px;
+      padding-bottom: 18px;
+      gap: 16px;
+    }
+    .nav {
+      position: static;
+      transform: none;
+      order: 3;
+      width: 100%;
+      overflow-x: auto;
+      gap: 24px;
+      padding-bottom: 4px;
+      scrollbar-width: none;
+    }
+    .nav::-webkit-scrollbar { display: none; }
+    .actions { order: 2; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- ============== MASTHEAD — ACTIVE: GENEL ============== -->
+  <header class="masthead" aria-label="HelloTalent masthead, genel aktif">
+    <div class="masthead__row">
+      <a href="#" class="logo" aria-label="HelloTalent anasayfa">
+        hellotalent<span class="logo__dot">.</span>
+      </a>
+
+      <nav class="nav" aria-label="Ana gezinme">
+        <a href="#" class="nav__item nav__item--active" aria-current="page">Genel</a>
+        <a href="#" class="nav__item">Profil</a>
+        <a href="#" class="nav__item">Keşfet</a>
+      </nav>
+
+      <div class="actions">
+        <button class="action" type="button" aria-label="Önizleme">
+          <span class="action__glyph">◉</span>
+        </button>
+        <button class="action" type="button" aria-label="Mesajlar">
+          <span class="action__glyph">✉</span>
+        </button>
+        <button class="action" type="button" aria-label="Bildirimler, okunmamış var">
+          <span class="action__glyph">▲</span>
+          <span class="action__dot" aria-hidden="true"></span>
+        </button>
+        <span class="avatar avatar--open" aria-label="Profil, Beni Öner açık">TK</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============== HERO ============== -->
+  <main class="stage">
+    <section class="hero">
+      <div class="caption">
+        Variant A <span class="caption__bullet">/</span> Editorial Masthead
+      </div>
+      <h1 class="headline">Tek satır, gazete mührü gibi sakin</h1>
+      <div class="lede">
+        <p>Tipografik gezinme; renk yerine ritim taşıyor.</p>
+        <p>Vermillion sadece aktif sekmede, bildirim noktasında ve Beni Öner halkasında görünür.</p>
+        <p>Mono büyük harf kadansı, SaaS araç çubuğu değil; başyazı manşeti okuması veriyor.</p>
+      </div>
+
+      <div class="tricaps" aria-hidden="true">
+        <span>Mono Nav</span>
+        <span class="sep">•</span>
+        <span>Typographic Actions</span>
+        <span class="sep">•</span>
+        <span>Hairline Rhythm</span>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============== SECOND RENDER — PROFIL ACTIVE ============== -->
+  <div class="variant-note">
+    İkinci Render <span class="sep">/</span> Aktif Sekme: Profil
+  </div>
+
+  <header class="masthead" aria-label="HelloTalent masthead, profil aktif">
+    <div class="masthead__row">
+      <a href="#" class="logo" aria-label="HelloTalent anasayfa">
+        hellotalent<span class="logo__dot">.</span>
+      </a>
+
+      <nav class="nav" aria-label="Ana gezinme">
+        <a href="#" class="nav__item">Genel</a>
+        <a href="#" class="nav__item nav__item--active" aria-current="page">Profil</a>
+        <a href="#" class="nav__item">Keşfet</a>
+      </nav>
+
+      <div class="actions">
+        <button class="action" type="button" aria-label="Önizleme">
+          <span class="action__glyph">◉</span>
+        </button>
+        <button class="action" type="button" aria-label="Mesajlar">
+          <span class="action__glyph">✉</span>
+        </button>
+        <button class="action" type="button" aria-label="Bildirimler">
+          <span class="action__glyph">▲</span>
+        </button>
+        <span class="avatar" aria-label="Profil">TK</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="footer-caption">
+    Underline sağa kayar <span class="sep">/</span> Vermillion yalnız aktif sekmede konuşur
+  </div>
+
+</body>
+</html>

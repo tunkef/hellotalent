@@ -3547,3 +3547,80 @@ test.describe('K038 Faz 3 — Admin Markalar panel', () => {
   });
 });
 
+test.describe('K039 — Header Variant C inline segment', () => {
+  let profilHtml;
+  let layoutCss;
+
+  test.beforeAll(() => {
+    profilHtml = readFromRepo('profil.html');
+    layoutCss = readFromRepo('css/layout.css');
+  });
+
+  test('profil.html preserves all required header IDs', () => {
+    const requiredIds = [
+      'btn-logo-home','header-nav','header-kimbakti',
+      'header-msg-wrap','header-msg','header-msg-dot',
+      'popup-messages','popup-msg-list','popup-msg-see-all',
+      'header-notif-wrap','header-notif','header-notif-dot',
+      'popup-notifications','popup-notif-list','popup-notif-title',
+      'popup-notif-see-all','popup-duyuru-list',
+      'header-avatar-wrap-outer','header-avatar-wrap','user-avatar-header',
+      'avatar-dropdown','avd-avatar-img','avd-user-name',
+      'avd-settings-btn','avd-premium-btn','avd-logout-btn','avd-theme-checkbox'
+    ];
+    for (const id of requiredIds) {
+      expect(profilHtml).toContain('id="' + id + '"');
+    }
+  });
+
+  test('profil.html preserves nav data-panel hooks', () => {
+    expect(profilHtml).toContain('data-panel="genel"');
+    expect(profilHtml).toContain('data-panel="merkez"');
+    expect(profilHtml).toContain('data-panel="sirketler"');
+  });
+
+  test('profil.html preserves K030 drawer tab data attributes', () => {
+    expect(profilHtml).toContain('data-drawer-tab="bildirim"');
+    expect(profilHtml).toContain('data-drawer-tab="duyuru"');
+    expect(profilHtml).toContain('data-drawer-content="bildirim"');
+    expect(profilHtml).toContain('data-drawer-content="duyuru"');
+    expect(profilHtml).toContain('data-drawer-badge="bildirim"');
+    expect(profilHtml).toContain('data-drawer-badge="duyuru"');
+  });
+
+  test('hn-item nav buttons no longer contain inline SVG (icons removed)', () => {
+    const re = /class="hn-item[^"]*"[^>]*>[\s\S]{0,200}?<svg/;
+    expect(profilHtml).not.toMatch(re);
+  });
+
+  test('layout.css .header rule is flat (no backdrop-filter, no box-shadow)', () => {
+    const headerRuleMatch = layoutCss.match(/\.header\{[^}]*\}/);
+    expect(headerRuleMatch).toBeTruthy();
+    const rule = headerRuleMatch[0];
+    expect(rule).not.toContain('backdrop-filter');
+    expect(rule).toContain('border-bottom:1px solid #E5E3DF');
+    expect(rule).toContain('box-shadow:none');
+    expect(rule).toContain('background:#F7F6F4');
+  });
+
+  test('layout.css .hn-item uses mono uppercase letter-spacing', () => {
+    const hnItemMatch = layoutCss.match(/\.hn-item\{[^}]*\}/);
+    expect(hnItemMatch).toBeTruthy();
+    const rule = hnItemMatch[0];
+    expect(rule).toContain('letter-spacing');
+    expect(rule).toContain('text-transform:uppercase');
+    expect(rule).toContain('DM Mono');
+  });
+
+  test('profil.html cache-busts layout.css to v=20260414n', () => {
+    expect(profilHtml).toContain('css/layout.css?v=20260414n');
+  });
+
+  test('profil.html has interpunct separators and action labels', () => {
+    expect(profilHtml).toContain('class="hn-sep"');
+    expect(profilHtml).toContain('class="hn-action-label">GÖZ');
+    expect(profilHtml).toContain('class="hn-action-label">MS');
+    expect(profilHtml).toContain('class="hn-action-label">BL');
+  });
+});
+

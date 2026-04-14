@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>HelloTalent — Header Variant C / Inline Segment Row</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600&family=DM+Mono:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#F7F6F4;
+    --navy:#1E2D5E;
+    --vermillion:#C94E28;
+    --hairline:#E5E3DF;
+    --muted:#6B6A66;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--cream);color:var(--navy);font-family:'Plus Jakarta Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  a{color:inherit;text-decoration:none}
+
+  /* ---------- HEADER ---------- */
+  .ht-header{
+    background:var(--cream);
+    border-bottom:1px solid var(--hairline);
+    width:100%;
+  }
+  .ht-header__inner{
+    max-width:1120px;
+    margin:0 auto;
+    padding:0 clamp(24px,5vw,48px);
+    height:64px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:24px;
+  }
+
+  /* logo */
+  .ht-logo{
+    font-family:'Bricolage Grotesque',serif;
+    font-weight:500;
+    font-size:22px;
+    color:var(--navy);
+    letter-spacing:-0.01em;
+    display:inline-flex;
+    align-items:baseline;
+    line-height:1;
+    flex:0 0 auto;
+  }
+  .ht-logo::after{
+    content:"";
+    display:inline-block;
+    width:5px;height:5px;border-radius:50%;
+    background:var(--vermillion);
+    margin-left:3px;
+    transform:translateY(-1px);
+  }
+
+  /* center segment nav */
+  .ht-nav{
+    font-family:'DM Mono',monospace;
+    font-size:12px;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    color:var(--navy);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex:1 1 auto;
+    white-space:nowrap;
+  }
+  .ht-nav .seg{
+    position:relative;
+    padding:6px 0;
+    cursor:pointer;
+    transition:opacity .15s ease,color .15s ease;
+  }
+  .ht-nav .seg:hover{opacity:.65}
+  .ht-nav .seg.is-active{
+    color:var(--vermillion);
+  }
+  .ht-nav .seg.is-active::after{
+    content:"";
+    position:absolute;
+    left:0;right:0;
+    bottom:-2px;
+    height:2px;
+    background:var(--vermillion);
+  }
+  .ht-nav .sep{
+    color:var(--muted);
+    padding:0 14px;
+    user-select:none;
+  }
+
+  /* right actions */
+  .ht-actions{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    flex:0 0 auto;
+  }
+  .ht-actions__group{
+    display:flex;
+    align-items:center;
+    gap:4px;
+  }
+  .ht-act{
+    font-family:'DM Mono',monospace;
+    font-size:11px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--navy);
+    padding:8px;
+    min-width:32px;
+    height:32px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    background:transparent;
+    border:none;
+    cursor:pointer;
+    position:relative;
+    transition:color .15s ease;
+  }
+  .ht-act:hover{color:var(--vermillion)}
+  .ht-act .dot{
+    position:absolute;
+    top:5px;
+    right:4px;
+    width:5px;height:5px;
+    border-radius:50%;
+    background:var(--vermillion);
+  }
+  .ht-avatar{
+    width:36px;height:36px;
+    border-radius:50%;
+    border:1px solid var(--hairline);
+    background:#EDEAE3;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    font-family:'DM Mono',monospace;
+    font-size:11px;
+    letter-spacing:0.06em;
+    color:var(--navy);
+    cursor:pointer;
+    flex:0 0 auto;
+  }
+  .ht-avatar.is-open{
+    border:1.5px solid var(--vermillion);
+  }
+
+  /* ---------- PAGE BODY ---------- */
+  .wrap{
+    max-width:1120px;
+    margin:0 auto;
+    padding:clamp(48px,8vw,96px) clamp(24px,5vw,48px);
+    min-height:60vh;
+  }
+  .mono-caption{
+    font-family:'DM Mono',monospace;
+    font-style:italic;
+    font-size:11px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--muted);
+    margin-bottom:20px;
+  }
+  h1.display{
+    font-family:'Bricolage Grotesque',serif;
+    font-weight:500;
+    font-size:clamp(38px,5.6vw,68px);
+    line-height:1.02;
+    letter-spacing:-0.02em;
+    color:var(--navy);
+    max-width:16ch;
+    margin-bottom:28px;
+  }
+  .desc{
+    font-family:'Plus Jakarta Sans',sans-serif;
+    font-size:16px;
+    line-height:1.55;
+    color:var(--navy);
+    max-width:58ch;
+    margin-bottom:40px;
+  }
+  .desc p + p{margin-top:8px}
+  .tri{
+    font-family:'DM Mono',monospace;
+    font-size:11px;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    color:var(--muted);
+    padding-top:28px;
+    border-top:1px solid var(--hairline);
+    max-width:720px;
+  }
+  .tri span{color:var(--navy)}
+  .tri .bullet{color:var(--muted);padding:0 10px}
+
+  .section-divider{
+    max-width:1120px;
+    margin:0 auto;
+    padding:0 clamp(24px,5vw,48px);
+  }
+  .section-divider__inner{
+    border-top:1px dashed var(--hairline);
+    padding-top:48px;
+    margin-top:24px;
+  }
+  .variant-label{
+    font-family:'DM Mono',monospace;
+    font-style:italic;
+    font-size:11px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--muted);
+    max-width:1120px;
+    margin:0 auto;
+    padding:0 clamp(24px,5vw,48px) 12px;
+  }
+
+  /* responsive */
+  @media (max-width:900px){
+    .ht-header__inner{gap:16px;height:auto;padding-top:12px;padding-bottom:12px;flex-wrap:wrap}
+    .ht-nav{order:3;flex-basis:100%;justify-content:flex-start;overflow-x:auto}
+    .ht-nav .sep{padding:0 10px}
+    .ht-logo{font-size:20px}
+  }
+</style>
+</head>
+<body>
+
+  <!-- ========== HEADER RENDER 1 — GENEL ACTIVE ========== -->
+  <div class="variant-label">Render 01 — Genel aktif</div>
+  <header class="ht-header">
+    <div class="ht-header__inner">
+      <a class="ht-logo" href="#">hellotalent</a>
+
+      <nav class="ht-nav" aria-label="Ana bölümler">
+        <span class="seg is-active">Genel</span>
+        <span class="sep">·</span>
+        <span class="seg">Profil</span>
+        <span class="sep">·</span>
+        <span class="seg">Keşfet</span>
+      </nav>
+
+      <div class="ht-actions">
+        <div class="ht-actions__group">
+          <button class="ht-act" title="Önizleme">ÖZ</button>
+          <button class="ht-act" title="Mesajlar">MS</button>
+          <button class="ht-act" title="Bildirimler">
+            BL<span class="dot" aria-hidden="true"></span>
+          </button>
+          <button class="ht-act" title="Ayarlar">AY</button>
+        </div>
+        <a class="ht-avatar is-open" title="Beni Öner açık">TK</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ========== PAGE BODY ========== -->
+  <main class="wrap">
+    <div class="mono-caption">Variant C / Inline Segment Row</div>
+
+    <h1 class="display">Tek satır, sırt sırta tipografi.</h1>
+
+    <div class="desc">
+      <p>Sirketler sayfasındaki segment TOC deseni header'a taşındı: interpunct ile ayrılan mono etiketler, ikon yok, çerçeve yok, sadece tipografi.</p>
+      <p>Sağdaki aksiyonlar küçük iki harfli mono kısaltmalara indi — ÖZ, MS, BL, AY — daire yok, buton yok, sessiz metin.</p>
+      <p>Bütün header'da vermillion yalnızca dört yerde konuşur: logo noktası, aktif segment altı, okunmamış bildirim noktası ve Beni Öner açıkken avatar halkası.</p>
+    </div>
+
+    <div class="tri">
+      <span>Interpunct Nav</span><span class="bullet">•</span><span>Text Actions</span><span class="bullet">•</span><span>Zero Icons</span>
+    </div>
+  </main>
+
+  <!-- ========== HEADER RENDER 2 — PROFIL ACTIVE ========== -->
+  <div class="section-divider"><div class="section-divider__inner"></div></div>
+  <div class="variant-label">Render 02 — Profil aktif (altçizgi kayıyor)</div>
+  <header class="ht-header">
+    <div class="ht-header__inner">
+      <a class="ht-logo" href="#">hellotalent</a>
+
+      <nav class="ht-nav" aria-label="Ana bölümler">
+        <span class="seg">Genel</span>
+        <span class="sep">·</span>
+        <span class="seg is-active">Profil</span>
+        <span class="sep">·</span>
+        <span class="seg">Keşfet</span>
+      </nav>
+
+      <div class="ht-actions">
+        <div class="ht-actions__group">
+          <button class="ht-act" title="Önizleme">ÖZ</button>
+          <button class="ht-act" title="Mesajlar">MS</button>
+          <button class="ht-act" title="Bildirimler">BL</button>
+          <button class="ht-act" title="Ayarlar">AY</button>
+        </div>
+        <a class="ht-avatar" title="Profil menüsü">TK</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap" style="min-height:20vh">
+    <div class="mono-caption">Render 02 notu</div>
+    <p class="desc">Aynı header, farklı aktif segment. Altçizgi sola kaymaz — etiketin altına yapışır. Avatar halkası kapalı, bildirim noktası yok. Sessiz mod.</p>
+  </main>
+
+</body>
+</html>
