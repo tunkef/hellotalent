@@ -3502,3 +3502,48 @@ test.describe('K038 Faz 2 — Image editor vendor + component', () => {
   });
 });
 
+test.describe('K038 Faz 3 — Admin Markalar panel', () => {
+  test('admin.html wires markalar panel markup + assets', () => {
+    const html = readFromRepo('admin.html');
+    expect(html).toContain('id="panel-brands"');
+    expect(html).toContain('id="adm-brand-drawer"');
+    expect(html).toContain('data-brands-tab="brands"');
+    expect(html).toContain('data-brands-tab="companies"');
+    expect(html).toContain('data-brands-tab="archive"');
+    expect(html).toContain('id="adm-brands-add-btn"');
+    expect(html).toContain('id="adm-brands-search"');
+    expect(html).toContain('js/admin/admin-markalar.js');
+    expect(html).toContain('css/admin/markalar.css');
+    expect(html).toContain('vendor/cropperjs-1.6.2/cropper.min.js');
+    expect(html).toContain("data-panel=\"brands\"");
+  });
+
+  test('admin-markalar.js references all six admin RPCs and image editor API', () => {
+    const src = readFromRepo('js/admin/admin-markalar.js');
+    expect(src).toContain('admin_upsert_brand');
+    expect(src).toContain('admin_upsert_company');
+    expect(src).toContain('admin_archive_brand');
+    expect(src).toContain('admin_archive_company');
+    expect(src).toContain('admin_restore_brand');
+    expect(src).toContain('admin_restore_company');
+    expect(src).toContain('htImageEditor.open');
+    expect(src).toContain('htImageEditor.upload');
+    expect(src).toContain('_htAdminSupa');
+  });
+
+  test('admin-markalar.js uses brand-assets bucket paths (logos/ + covers/)', () => {
+    const src = readFromRepo('js/admin/admin-markalar.js');
+    expect(src).toContain("'logos'");
+    expect(src).toContain("'covers'");
+    expect(src).toMatch(/logos\//);
+    expect(src).toMatch(/covers\//);
+  });
+
+  test('markalar.css defines drawer + tabs + primary button classes', () => {
+    const css = readFromRepo('css/admin/markalar.css');
+    expect(css).toContain('.adm-drawer');
+    expect(css).toContain('.adm-brands-tabs');
+    expect(css).toContain('.adm-btn--primary');
+  });
+});
+

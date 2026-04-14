@@ -9,8 +9,9 @@
 
 **Aktif is:** K038 Faz 1 — Admin brand/company CRUD migration deployed. Faz 2 sıra (image editor).
 **Faz 1 durum:** Migration applied, 6 RPC + bucket + policies canlı.
-**Faz 2 durum:** Cropper.js 1.6.2 vendor, `js/admin/admin-image-editor.js` + `css/admin/image-editor.css` + demo HTML. `window.htImageEditor.open/upload`. WebP primary + JPEG fallback, 5MB validation, Turkish UI. 790/0 yeşil.
-**Sonraki:** Faz 3 admin panel UI. Onceki:
+**Faz 2 durum:** Cropper.js vendor + image editor component + demo, 790/0.
+**Faz 3 durum:** admin.html Markalar paneli + drawer + sidebar entry, js/admin/admin-markalar.js (682 satır, IIFE var), css/admin/markalar.css (202 satır). 6 RPC + htImageEditor kullanıyor. 798/0 yeşil. K030 Duyurular korundu.
+**Sonraki:** Faz 4 candidate accent_color + archive filter. Onceki:
 **Sonraki:** push main + Tuna smoke
 **Son commit:** (pending) feat(sirketler): K037 Variant E color flood hover + logo/search hotfix
 **DeepSeek:** APPROVE
