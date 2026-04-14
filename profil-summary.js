@@ -138,7 +138,7 @@ function updateMerkezCards() {
     // K046: essential = sirket + pozisyon + yıl. Bu üçü doluysa is-complete.
     var exp2Essential = !!compVal && !!role && !!startY;
     var exp2Total = 6;
-    var exp2Filled = [val(firstId + 'sirket'), role, startY, val(firstId + 'sektor'), val(firstId + 'segment'), val(firstId + 'aciklama')].filter(Boolean).length;
+    var exp2Filled = [val(firstId + 'sirket'), role, startY, val(firstId + 'sektor'), val(firstId + 'segment'), val(firstId + 'desc')].filter(Boolean).length;
     var miss2 = [];
     if (!compVal) miss2.push('Şirket');
     if (!role) miss2.push('Pozisyon');
@@ -471,7 +471,7 @@ function calculateCompletion() {
     if (val(firstId + 'basyil'))    score += 3;
     if (val(firstId + 'sektor'))    score += 3;
     if (val(firstId + 'segment'))   score += 3;
-    if (val(firstId + 'aciklama'))  score += 3;
+    if (val(firstId + 'desc'))      score += 3;
   }
 
   // ── C) Eğitim & Dil — 10 puan ──
@@ -552,7 +552,7 @@ function calculateProfileScore() {
       score += 2; // Field not relevant for this department — no penalty
     }
     // Description (iş tanımı) — high-value field for profile quality
-    if (val(firstId + 'aciklama')) score += 2;
+    if (val(firstId + 'desc')) score += 2;
   }
 
   // ── C) Education & Language — 15 points ──
