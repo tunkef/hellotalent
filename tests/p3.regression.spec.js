@@ -3136,7 +3136,7 @@ test.describe('K033/K034 — Genel Bakis editorial redesign', () => {
     /* K036 bumped genel-bakis.css to ?v=20260414i (margin fix + K036 rollout) */
     expect(profilHtml).toContain('genel-bakis.css?v=20260414k');
     expect(profilHtml).toContain('profil-genel.js?v=20260414h');
-    expect(profilHtml).toContain('merkezi.css?v=20260414l');
+    expect(profilHtml).toContain('merkezi.css?v=20260414m');
     /* profil-extras.css tokens unchanged — stays at v=20260414g */
     expect(profilHtml).toContain('profil-extras.css?v=20260414h');
   });
@@ -3202,9 +3202,10 @@ test.describe('K031 — Profil Merkezi editorial redesign', () => {
     expect(region).toContain('class="mk-pulse__ring"');
     expect(region).toContain('class="mk-spine"');
     expect(region.match(/class="mk-spine__item"/g) || []).toHaveLength(4);
-    expect(region).toContain('class="mk-zarf"');
+    /* K042: mk-zarf wrapper replaced with mk-card--visibility + mk-card--cv */
+    expect(region).toContain('mk-card--visibility');
+    expect(region).toContain('mk-card--cv');
     expect(region).toContain('class="mk-signature"');
-    expect(region).toContain('CV ve görünürlüğün');
     expect(region).toContain('HelloTalent · Beta');
   });
 

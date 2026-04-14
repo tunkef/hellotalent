@@ -62,7 +62,7 @@ if (window.Sentry) {
 <link rel="stylesheet" href="css/wizard.css?v=20260406a">
 <link rel="stylesheet" href="css/studio.css?v=20260408a">
 <link rel="stylesheet" href="css/panels/genel-bakis.css?v=20260414k">
-<link rel="stylesheet" href="css/panels/merkezi.css?v=20260414l">
+<link rel="stylesheet" href="css/panels/merkezi.css?v=20260414m">
 <link rel="stylesheet" href="css/profil-extras.css?v=20260414h">
 <link rel="stylesheet" href="css/panels/sirketler.css?v=20260414m">
 <link rel="stylesheet" href="css/panel-soon.css?v=20260413a">
@@ -552,87 +552,76 @@ if (window.Sentry) {
 
     </div>
 
-    <hr class="mk-rule mk-rule--mid">
-
-    <!-- CV ve görünürlüğün zarf -->
-    <div class="mk-zarf">
-      <div class="mk-zarf__label">CV ve görünürlüğün</div>
-      <div class="mk-zarf__card">
-
-        <!-- CV row (shares #cv-upload-area for drop handler) -->
-        <div class="mk-zarf__row" id="cv-upload-area">
-          <div class="mk-zarf__icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h5"/></svg>
-          </div>
-          <!-- Empty state (no CV yet) -->
-          <div class="mk-zarf__main" id="cv-drop-zone">
-            <input type="file" id="cv-file-input" accept=".pdf,.doc,.docx" style="display:none;">
-            <div class="mk-zarf__title">CV Yükle</div>
-            <div class="mk-zarf__sub">PDF, DOC veya DOCX · Maks 5 MB</div>
-          </div>
-          <div class="mk-zarf__actions" id="cv-drop-actions">
-            <button type="button" class="mk-btn-mini mk-btn-mini--primary" id="btn-cv-select">Dosya Seç</button>
-          </div>
-
-          <!-- Uploaded state (same row, hidden until a CV exists) -->
-          <div class="mk-zarf__main" id="cv-uploaded-state" style="display:none;">
-            <div class="mk-zarf__title" id="cv-uploaded-name">tuna_kefeli.pdf</div>
-            <div class="mk-zarf__sub" id="cv-uploaded-date"></div>
-          </div>
-          <div class="mk-zarf__actions" id="cv-uploaded-actions" style="display:none;">
-            <button type="button" class="mk-btn-mini mk-btn-mini--primary" id="btn-generate-cv-merkez">İndir</button>
-            <button type="button" class="mk-btn-mini" id="btn-cv-reupload">Değiştir</button>
-            <button type="button" class="mk-btn-mini mk-btn-mini--danger" id="btn-cv-delete">Sil</button>
-          </div>
-        </div>
-
-        <!-- Premium row (keeps mk-premium-card-link + data-panel handler) -->
-        <div class="mk-zarf__row mk-zarf__row--premium pointer" id="mk-premium-card-link" data-panel="premium">
-          <div class="mk-zarf__icon">
-            <svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"><path d="M12 2l2.9 6.9L22 10l-5.5 4.8L18 22l-6-3.5L6 22l1.5-7.2L2 10l7.1-1.1z"/></svg>
-          </div>
-          <div class="mk-zarf__main">
-            <div class="mk-zarf__title">Beni Öne Çıkar</div>
-            <div class="mk-zarf__sub">3 ay ücretsiz beta</div>
-          </div>
-          <div class="mk-zarf__chev" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-          </div>
-        </div>
-
-        <!-- AI Optimize Et — separate row (Tuna decision 3) -->
-        <div class="mk-zarf__row mk-zarf__row--ai">
-          <div class="mk-zarf__icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
-          </div>
-          <div class="mk-zarf__main">
-            <div class="mk-zarf__title">AI ile Optimize Et</div>
-            <div class="mk-zarf__sub mk-ai-sub">Profilini AI ile güçlendir</div>
-          </div>
-          <button type="button" class="mk-zarf__ai-btn" id="btn-ai-cv-optimize">Beta · Ücretsiz</button>
-        </div>
-
-        <!-- Privacy toggles row -->
-        <div class="mk-zarf__row mk-zarf__row--privacy">
-          <div class="mk-toggle">
-            <span class="mk-toggle__label">Beni Öner</span>
-            <label class="toggle ht-toggle"><input type="checkbox" id="merkez-toggle-visibility" checked><span class="toggle-slider"></span></label>
-          </div>
-          <div class="mk-toggle">
-            <span class="mk-toggle__label">Aktif İş Arama</span>
-            <label class="toggle ht-toggle"><input type="checkbox" id="merkez-toggle-active"><span class="toggle-slider"></span></label>
-          </div>
-          <div class="mk-toggle" id="merkez-hide-row">
-            <span class="mk-toggle__label">İşverenim Görmesin</span>
-            <label class="toggle ht-toggle"><input type="checkbox" id="merkez-hide-from-current-employer"><span class="toggle-slider"></span></label>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
     </section>
     <!-- /K041 body card -->
+
+    <!-- K042: Visibility card (premium + privacy toggles) -->
+    <section class="mk-card mk-card--visibility">
+      <div class="mk-zarf__row mk-zarf__row--premium pointer" id="mk-premium-card-link" data-panel="premium">
+        <div class="mk-zarf__icon">
+          <svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"><path d="M12 2l2.9 6.9L22 10l-5.5 4.8L18 22l-6-3.5L6 22l1.5-7.2L2 10l7.1-1.1z"/></svg>
+        </div>
+        <div class="mk-zarf__main">
+          <div class="mk-zarf__title">Beni Öne Çıkar</div>
+          <div class="mk-zarf__sub">3 ay ücretsiz beta</div>
+        </div>
+        <div class="mk-zarf__chev" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+      </div>
+
+      <div class="mk-zarf__row mk-zarf__row--privacy">
+        <div class="mk-toggle">
+          <span class="mk-toggle__label">Beni Öner</span>
+          <label class="toggle ht-toggle"><input type="checkbox" id="merkez-toggle-visibility" checked><span class="toggle-slider"></span></label>
+        </div>
+        <div class="mk-toggle">
+          <span class="mk-toggle__label">Aktif İş Arama</span>
+          <label class="toggle ht-toggle"><input type="checkbox" id="merkez-toggle-active"><span class="toggle-slider"></span></label>
+        </div>
+        <div class="mk-toggle" id="merkez-hide-row">
+          <span class="mk-toggle__label">İşverenim Görmesin</span>
+          <label class="toggle ht-toggle"><input type="checkbox" id="merkez-hide-from-current-employer"><span class="toggle-slider"></span></label>
+        </div>
+      </div>
+    </section>
+
+    <!-- K042: CV card (CV row + AI optimize at bottom) -->
+    <section class="mk-card mk-card--cv">
+      <div class="mk-zarf__row" id="cv-upload-area">
+        <div class="mk-zarf__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h5"/></svg>
+        </div>
+        <div class="mk-zarf__main" id="cv-drop-zone">
+          <input type="file" id="cv-file-input" accept=".pdf,.doc,.docx" style="display:none;">
+          <div class="mk-zarf__title">CV Yükle</div>
+          <div class="mk-zarf__sub">PDF, DOC veya DOCX · Maks 5 MB</div>
+        </div>
+        <div class="mk-zarf__actions" id="cv-drop-actions">
+          <button type="button" class="mk-btn-mini mk-btn-mini--primary" id="btn-cv-select">Dosya Seç</button>
+        </div>
+        <div class="mk-zarf__main" id="cv-uploaded-state" style="display:none;">
+          <div class="mk-zarf__title" id="cv-uploaded-name">tuna_kefeli.pdf</div>
+          <div class="mk-zarf__sub" id="cv-uploaded-date"></div>
+        </div>
+        <div class="mk-zarf__actions" id="cv-uploaded-actions" style="display:none;">
+          <button type="button" class="mk-btn-mini mk-btn-mini--primary" id="btn-generate-cv-merkez">İndir</button>
+          <button type="button" class="mk-btn-mini" id="btn-cv-reupload">Değiştir</button>
+          <button type="button" class="mk-btn-mini mk-btn-mini--danger" id="btn-cv-delete">Sil</button>
+        </div>
+      </div>
+
+      <div class="mk-zarf__row mk-zarf__row--ai">
+        <div class="mk-zarf__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+        </div>
+        <div class="mk-zarf__main">
+          <div class="mk-zarf__title">AI ile Optimize Et</div>
+          <div class="mk-zarf__sub mk-ai-sub">Profilini AI ile güçlendir</div>
+        </div>
+        <button type="button" class="mk-zarf__ai-btn" id="btn-ai-cv-optimize">Beta · Ücretsiz</button>
+      </div>
+    </section>
 
     <div class="mk-signature">HelloTalent · Beta</div>
 

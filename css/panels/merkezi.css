@@ -24,6 +24,12 @@
 }
 .mk-card--hero{padding:28px 32px;}
 .mk-card--body{padding:32px;}
+.mk-card--visibility{padding:8px 32px;}
+.mk-card--cv{padding:8px 32px;}
+.mk-card--visibility .mk-zarf__row,
+.mk-card--cv .mk-zarf__row{border:0;}
+.mk-card--visibility .mk-zarf__row + .mk-zarf__row,
+.mk-card--cv .mk-zarf__row + .mk-zarf__row{border-top:1px solid var(--border-subtle);}
 .mk-root{display:flex;flex-direction:column;gap:24px;}
 @media (max-width:480px){
   #panel-merkez{border-radius:14px;padding:24px 18px 32px;}
@@ -31,9 +37,11 @@
 
 /* K041: Root is flex column gap 24, children are gb-style cards */
 .mk-root > * { opacity: 0; transform: translateY(8px); animation: mkFadeUp 280ms ease-out forwards; }
-.mk-root > .mk-card--hero   { animation-delay: 0ms; }
-.mk-root > .mk-card--body   { animation-delay: 140ms; }
-.mk-root > .mk-signature    { animation-delay: 320ms; }
+.mk-root > .mk-card--hero       { animation-delay: 0ms; }
+.mk-root > .mk-card--body       { animation-delay: 140ms; }
+.mk-root > .mk-card--visibility { animation-delay: 220ms; }
+.mk-root > .mk-card--cv         { animation-delay: 280ms; }
+.mk-root > .mk-signature        { animation-delay: 360ms; }
 
 @keyframes mkFadeUp {
   from { opacity: 0; transform: translateY(8px); }
