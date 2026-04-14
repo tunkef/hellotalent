@@ -36,18 +36,20 @@
 .mk-card--visibility .mk-zarf__row--premium .mk-zarf__icon svg{width:18px;height:18px;}
 .mk-card--visibility .mk-zarf__row--premium .mk-zarf__main{order:1;flex:1;}
 .mk-card--visibility .mk-zarf__row--privacy{display:flex;flex-direction:column;}
-.mk-card--visibility .mk-toggle{display:flex;flex-direction:row;align-items:center;justify-content:space-between;gap:10px;padding:0 24px;min-height:54px;border:0;}
+.mk-card--visibility .mk-toggle{display:flex;flex-direction:row;align-items:center;justify-content:space-between;gap:10px;padding:18px 24px;border:0;line-height:1;}
 .mk-card--visibility .mk-toggle + .mk-toggle{border-top:1px solid var(--border-subtle);}
-.mk-card--visibility .mk-toggle__label{font-size:13px;font-weight:600;color:var(--text-primary);}
-/* CV card (rail): vertical inside each row — title/desc top, actions below */
-.mk-card--cv .mk-zarf__row{border:0;padding:20px 24px;display:flex;flex-direction:column;align-items:stretch;gap:14px;}
+.mk-card--visibility .mk-toggle__label{font-size:13px;font-weight:600;color:var(--text-primary);line-height:1;display:inline-flex;align-items:center;}
+.mk-card--visibility .mk-toggle .toggle{display:inline-flex;align-items:center;}
+/* CV card (rail) */
+.mk-card--cv .mk-zarf__row{border:0;padding:20px 24px;display:flex;flex-direction:column;align-items:stretch;gap:12px;}
 .mk-card--cv .mk-zarf__row + .mk-zarf__row{border-top:1px solid var(--border-subtle);}
 .mk-card--cv .mk-zarf__icon{display:none;}
 .mk-card--cv .mk-zarf__main{flex:initial;}
 .mk-card--cv .mk-zarf__title{font-size:14px;}
 .mk-card--cv .mk-zarf__actions{display:flex;flex-direction:row;gap:6px;flex-wrap:wrap;}
-.mk-card--cv .mk-zarf__row--ai{flex-direction:column;align-items:stretch;}
-.mk-card--cv .mk-zarf__row--ai .mk-btn-ghost{align-self:flex-start;}
+/* AI row: horizontal — title left, button right */
+.mk-card--cv .mk-zarf__row--ai{flex-direction:row;align-items:center;justify-content:space-between;gap:14px;}
+.mk-card--cv .mk-zarf__row--ai .mk-zarf__main{flex:1;}
 @media (max-width:900px){
   .mk-grid{grid-template-columns:1fr;}
 }
@@ -190,13 +192,8 @@
   letter-spacing: -.01em;
 }
 .mk-pulse__caption {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: .12em;
-  color: var(--text-muted);
-  white-space: nowrap;
+  /* K046: caption hidden — ring %X is enough */
+  display: none;
 }
 
 /* ─── Hairline rules ─── */
@@ -370,9 +367,32 @@
   font-weight: 500;
   letter-spacing: 0.04em;
   color: var(--text-muted);
-  opacity: 0.7;
+  opacity: 0.85;
   margin-top: 4px;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  cursor: default;
 }
+.mk-spine__preview .data-more--toggle {
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  color: var(--accent);
+  opacity: 1;
+}
+.mk-spine__preview .data-more--toggle:hover { opacity: 0.7; }
+.mk-spine__preview .data-more--toggle.is-open::after { content: ' \2191'; }
+.mk-spine__preview .data-more--toggle:not(.is-open)::after { content: ' \2193'; }
+.mk-spine__preview .data-more__list {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.mk-spine__preview .data-more__item .data-line { font-size: 14px; }
 .mk-spine__preview .data-pill,
 .mk-spine__preview .data-ok {
   font-family: var(--font-mono);

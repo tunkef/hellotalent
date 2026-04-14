@@ -112,16 +112,38 @@ function updateMerkezCards() {
     var compVal = company ? (company.dataset.resolvedMarka || company.value || '') : '';
     var startY = val(firstId + 'basyil');
     var html2 = '';
-    if (role) html2 += '<div class="data-line">' + _escHtml(role) + '</div>';
-    if (compVal) html2 += '<div class="data-sub">' + _escHtml(compVal) + '</div>';
+    var primary2 = compVal || role;
+    var secondary2 = (compVal && role) ? role : '';
+    if (primary2) html2 += '<div class="data-line">' + _escHtml(primary2) + '</div>';
+    if (secondary2) html2 += '<div class="data-sub">' + _escHtml(secondary2) + '</div>';
     if (startY) html2 += '<div class="data-mono">' + _escHtml(startY) + ' \u2014 Devam</div>';
-    if (expCards.length > 1) html2 += '<div class="data-more">+' + (expCards.length - 1) + ' deneyim daha</div>';
+    if (expCards.length > 1) {
+      var moreList2 = '';
+      for (var ci = 1; ci < expCards.length; ci++) {
+        var fid2 = expCards[ci].id + '-';
+        var rr = val(fid2 + 'pozisyon');
+        var cc = document.getElementById(fid2 + 'sirket');
+        var ccVal = cc ? (cc.dataset.resolvedMarka || cc.value || '') : '';
+        var sy2 = val(fid2 + 'basyil');
+        var primMore = ccVal || rr;
+        if (primMore) {
+          moreList2 += '<div class="data-more__item">';
+          moreList2 += '<div class="data-line">' + _escHtml(primMore) + '</div>';
+          if (rr && ccVal) moreList2 += '<div class="data-sub">' + _escHtml(rr) + '</div>';
+          if (sy2) moreList2 += '<div class="data-mono">' + _escHtml(sy2) + ' \u2014 Devam</div>';
+          moreList2 += '</div>';
+        }
+      }
+      html2 += '<button type="button" class="data-more data-more--toggle" data-spine-expand>+' + (expCards.length - 1) + ' deneyim daha</button>';
+      html2 += '<div class="data-more__list" hidden>' + moreList2 + '</div>';
+    }
     if (p2) { p2.innerHTML = html2; p2.style.display = ''; }
     if (e2) e2.style.display = 'none';
-    // Granüler: sirket, pozisyon, yıl, sektör, segment, description = 6 alan
+    // K046: essential = sirket + pozisyon + yıl. Bu üçü doluysa is-complete.
+    var exp2Essential = !!compVal && !!role && !!startY;
     var exp2Total = 6;
     var exp2Filled = [val(firstId + 'sirket'), role, startY, val(firstId + 'sektor'), val(firstId + 'segment'), val(firstId + 'desc')].filter(Boolean).length;
-    updateBentoRing(2, Math.round((exp2Filled / exp2Total) * 100));
+    updateBentoRing(2, exp2Essential ? 100 : Math.round((exp2Filled / exp2Total) * 100));
   } else {
     if (p2) p2.style.display = 'none';
     if (e2) e2.style.display = 'block';

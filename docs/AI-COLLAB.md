@@ -10,7 +10,7 @@
 **Aktif is:** K038 Faz 1 — Admin brand/company CRUD migration deployed. Faz 2 sıra (image editor).
 **Faz 1 durum:** Migration applied, 6 RPC + bucket + policies canlı.
 **Faz 2 durum:** Cropper.js vendor + image editor component + demo, 790/0.
-**K045 durum:** Profil Merkezi spine tipografi temizliği + premium toggle (is_premium) + CV row temizlik + AI button copy.
+**K045+ durum:** Spine tipografi (Chanel data-line promote), +N more inline expand, AI row horizontal, toggle alignment.
 
 **Faz 3 durum:** admin Markalar paneli + drawer canlı, 798/0.
 **K038 TAMAM** (admin brand CRUD + image editor canlı).

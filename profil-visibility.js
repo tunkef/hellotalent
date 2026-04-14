@@ -304,8 +304,6 @@ function closeTgToast() {
             premiumToggle.checked = !newVal;
             if (_loadedDBData && _loadedDBData.profile) _loadedDBData.profile.is_premium = !newVal;
             showTgToast('Hata: Tercih kaydedilemedi. Lütfen tekrar deneyin.', null);
-          } else {
-            showTgToast(newVal ? 'Profilin öne çıkarıldı.' : 'Öne çıkarma kapatıldı.', premiumToggle.closest('.mk-toggle'));
           }
         });
     });
