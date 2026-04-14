@@ -57,28 +57,9 @@ function _htInitEvents() {
   var kbBtn = document.getElementById('header-kimbakti');
   if (kbBtn) kbBtn.addEventListener('click', function() { switchPanel('kimbakti'); });
 
-  // K031: Merkez spine item clicks — pencil edit icon opens the wizard step.
-  // K046: clicks on the +N more toggle expand the list inline (don't navigate).
+  // K031: Merkez spine item clicks — button itself opens the wizard step.
   document.querySelectorAll('#panel-merkez [data-step]').forEach(function(card) {
     card.addEventListener('click', function(e) {
-      var t = e.target;
-      // K046: inline expand buttons stop propagation
-      if (t && t.closest && t.closest('[data-spine-expand]')) {
-        e.preventDefault();
-        e.stopPropagation();
-        var btn = t.closest('[data-spine-expand]');
-        var list = btn.parentNode.querySelector('.data-more__list');
-        if (list) {
-          var open = list.hasAttribute('hidden');
-          if (open) list.removeAttribute('hidden'); else list.setAttribute('hidden', '');
-          btn.classList.toggle('is-open', open);
-        }
-        return;
-      }
-      // K046: only the pencil edit icon opens the wizard
-      if (!t || !t.closest || !t.closest('.mk-spine__edit')) {
-        return;
-      }
       e.preventDefault();
       e.stopPropagation();
       var step = parseInt(this.dataset.step, 10);

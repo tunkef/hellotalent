@@ -41,12 +41,13 @@
 .mk-card--visibility .mk-toggle__label{font-size:13px;font-weight:600;color:var(--text-primary);line-height:1;display:inline-flex;align-items:center;}
 .mk-card--visibility .mk-toggle .toggle{display:inline-flex;align-items:center;}
 /* CV card (rail) */
-.mk-card--cv .mk-zarf__row{border:0;padding:20px 24px;display:flex;flex-direction:column;align-items:stretch;gap:12px;}
+.mk-card--cv .mk-zarf__row{border:0;padding:20px 24px;display:flex;flex-direction:row;align-items:center;justify-content:space-between;gap:14px;}
 .mk-card--cv .mk-zarf__row + .mk-zarf__row{border-top:1px solid var(--border-subtle);}
 .mk-card--cv .mk-zarf__icon{display:none;}
-.mk-card--cv .mk-zarf__main{flex:initial;}
+.mk-card--cv .mk-zarf__main{flex:1;min-width:0;}
 .mk-card--cv .mk-zarf__title{font-size:14px;}
-.mk-card--cv .mk-zarf__actions{display:flex;flex-direction:row;gap:6px;flex-wrap:wrap;}
+.mk-card--cv .mk-zarf__sub{margin-top:2px;}
+.mk-card--cv .mk-zarf__actions{display:flex;flex-direction:row;gap:6px;flex-wrap:wrap;flex:0 0 auto;}
 /* AI row: horizontal — title left, button right */
 .mk-card--cv .mk-zarf__row--ai{flex-direction:row;align-items:center;justify-content:space-between;gap:14px;}
 .mk-card--cv .mk-zarf__row--ai .mk-zarf__main{flex:1;}
@@ -309,6 +310,19 @@
   letter-spacing: .14em;
   color: var(--text-muted);
   margin-bottom: 6px;
+}
+.mk-spine__label__pct {
+  color: var(--text-muted);
+  font-weight: 600;
+}
+.mk-spine__label__missing-key {
+  color: var(--accent);
+  font-weight: 600;
+}
+.mk-spine__label__missing-val {
+  color: var(--text-muted);
+  text-transform: none;
+  letter-spacing: 0.04em;
 }
 .mk-spine__preview {
   font-family: var(--font-body);

@@ -92,7 +92,15 @@ function updateMerkezCards() {
   }
   // Granüler: ad, telefon, il, ilçe, linkedin = 5 temel alan
   var total1 = 5;
-  var filled1 = [name, phone, city, val('f-adresilce'), linkedin].filter(Boolean).length;
+  var ilceVal = val('f-adresilce');
+  var filled1 = [name, phone, city, ilceVal, linkedin].filter(Boolean).length;
+  var miss1 = [];
+  if (!name) miss1.push('Ad Soyad');
+  if (!phone) miss1.push('Telefon');
+  if (!city) miss1.push('İl');
+  if (!ilceVal) miss1.push('İlçe');
+  if (!linkedin) miss1.push('LinkedIn');
+  setSectionMissing(1, miss1);
   updateBentoRing(1, Math.round((filled1 / total1) * 100));
 
   // ── Card 2: Deneyim ──
@@ -118,24 +126,7 @@ function updateMerkezCards() {
     if (secondary2) html2 += '<div class="data-sub">' + _escHtml(secondary2) + '</div>';
     if (startY) html2 += '<div class="data-mono">' + _escHtml(startY) + ' \u2014 Devam</div>';
     if (expCards.length > 1) {
-      var moreList2 = '';
-      for (var ci = 1; ci < expCards.length; ci++) {
-        var fid2 = expCards[ci].id + '-';
-        var rr = val(fid2 + 'pozisyon');
-        var cc = document.getElementById(fid2 + 'sirket');
-        var ccVal = cc ? (cc.dataset.resolvedMarka || cc.value || '') : '';
-        var sy2 = val(fid2 + 'basyil');
-        var primMore = ccVal || rr;
-        if (primMore) {
-          moreList2 += '<div class="data-more__item">';
-          moreList2 += '<div class="data-line">' + _escHtml(primMore) + '</div>';
-          if (rr && ccVal) moreList2 += '<div class="data-sub">' + _escHtml(rr) + '</div>';
-          if (sy2) moreList2 += '<div class="data-mono">' + _escHtml(sy2) + ' \u2014 Devam</div>';
-          moreList2 += '</div>';
-        }
-      }
-      html2 += '<button type="button" class="data-more data-more--toggle" data-spine-expand>+' + (expCards.length - 1) + ' deneyim daha</button>';
-      html2 += '<div class="data-more__list" hidden>' + moreList2 + '</div>';
+      html2 += '<div class="data-more">+' + (expCards.length - 1) + ' deneyim daha</div>';
     }
     if (p2) { p2.innerHTML = html2; p2.style.display = ''; }
     if (e2) e2.style.display = 'none';
@@ -143,6 +134,11 @@ function updateMerkezCards() {
     var exp2Essential = !!compVal && !!role && !!startY;
     var exp2Total = 6;
     var exp2Filled = [val(firstId + 'sirket'), role, startY, val(firstId + 'sektor'), val(firstId + 'segment'), val(firstId + 'desc')].filter(Boolean).length;
+    var miss2 = [];
+    if (!compVal) miss2.push('Şirket');
+    if (!role) miss2.push('Pozisyon');
+    if (!startY) miss2.push('Yıl');
+    setSectionMissing(2, miss2);
     updateBentoRing(2, exp2Essential ? 100 : Math.round((exp2Filled / exp2Total) * 100));
   } else {
     if (p2) p2.style.display = 'none';
@@ -214,6 +210,11 @@ function updateMerkezCards() {
   }
   if (langCount > 0) score3 += 40;
   if (certCount > 0) score3 += 15;
+  var miss3 = [];
+  if (eduCount === 0) miss3.push('Eğitim');
+  if (langCount === 0) miss3.push('Dil');
+  if (certCount === 0) miss3.push('Sertifika');
+  setSectionMissing(3, miss3);
   updateBentoRing(3, Math.min(score3, 100));
 
   // ── Card 4: Tercihler & Lokasyon ──
@@ -261,6 +262,16 @@ function updateMerkezCards() {
   // 8 alan: çalışma, hedef, kariyer, lokasyon, segment tercihi, seyahat, vardiya, ihbar
   var total4 = 8;
   var filled4 = [hasCalisma, hasTarget, hasCareer, hasLocations, hasSegmentPref, hasSeyahat, hasVardiya, hasIhbar].filter(Boolean).length;
+  var miss4 = [];
+  if (!hasCalisma) miss4.push('Çalışma');
+  if (!hasTarget) miss4.push('Hedef Pozisyon');
+  if (!hasCareer) miss4.push('Kariyer Yönelimi');
+  if (!hasLocations) miss4.push('Lokasyon');
+  if (!hasSegmentPref) miss4.push('Segment');
+  if (!hasSeyahat) miss4.push('Seyahat');
+  if (!hasVardiya) miss4.push('Vardiya');
+  if (!hasIhbar) miss4.push('İhbar');
+  setSectionMissing(4, miss4);
   updateBentoRing(4, Math.round((filled4 / total4) * 100));
 
   // Update identity card
@@ -271,6 +282,32 @@ function updateMerkezCards() {
 // for the matching mk-spine__item, and (b) the topline pulse ring which
 // shows the 4-section aggregate ( N/4 tamam + % ).
 var _mkSectionPct = { 1: 0, 2: 0, 3: 0, 4: 0 };
+var _mkSectionMissing = { 1: [], 2: [], 3: [], 4: [] };
+var _mkSectionBaseLabel = { 1: 'Kişisel', 2: 'Deneyim', 3: 'Eğitim & Dil', 4: 'Tercihler & Lokasyon' };
+
+// K047: Option B — show pct + missing fields inline on the spine label
+function setSectionMissing(step, missingArr) {
+  _mkSectionMissing[step] = missingArr || [];
+}
+
+function _renderSpineLabel(step) {
+  var labelEl = document.querySelector('#mk-item-' + step + ' .mk-spine__label');
+  if (!labelEl) return;
+  var pct = _mkSectionPct[step] || 0;
+  var base = _mkSectionBaseLabel[step] || '';
+  if (pct >= 100) {
+    labelEl.textContent = base;
+    return;
+  }
+  var missing = _mkSectionMissing[step] || [];
+  var missingHtml = '';
+  if (missing.length) {
+    var shown = missing.slice(0, 2).map(function(s) { return _escHtml(s); }).join(', ');
+    if (missing.length > 2) shown += ' +' + (missing.length - 2);
+    missingHtml = ' \u00B7 <span class="mk-spine__label__missing-key">EKSİK:</span> <span class="mk-spine__label__missing-val">' + shown + '</span>';
+  }
+  labelEl.innerHTML = _escHtml(base) + ' \u00B7 <span class="mk-spine__label__pct">%' + pct + '</span>' + missingHtml;
+}
 
 function updateBentoRing(step, pct) {
   var safePct = Math.max(0, Math.min(100, pct | 0));
@@ -282,6 +319,7 @@ function updateBentoRing(step, pct) {
     if (safePct >= 100) item.classList.add('is-complete');
     else item.classList.remove('is-complete');
   }
+  _renderSpineLabel(step);
 
   // Topline pulse aggregate
   var completed = 0;
