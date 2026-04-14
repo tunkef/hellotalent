@@ -36,7 +36,7 @@
 .mk-card--visibility .mk-zarf__row--premium .mk-zarf__icon svg{width:18px;height:18px;}
 .mk-card--visibility .mk-zarf__row--premium .mk-zarf__main{order:1;flex:1;}
 .mk-card--visibility .mk-zarf__row--privacy{display:flex;flex-direction:column;}
-.mk-card--visibility .mk-toggle{display:flex;flex-direction:row;align-items:center;justify-content:space-between;gap:10px;padding:14px 24px;border:0;}
+.mk-card--visibility .mk-toggle{display:flex;flex-direction:row;align-items:center;justify-content:space-between;gap:10px;padding:0 24px;min-height:54px;border:0;}
 .mk-card--visibility .mk-toggle + .mk-toggle{border-top:1px solid var(--border-subtle);}
 .mk-card--visibility .mk-toggle__label{font-size:13px;font-weight:600;color:var(--text-primary);}
 /* CV card (rail): vertical inside each row — title/desc top, actions below */
@@ -299,8 +299,8 @@
   box-shadow: 0 0 0 3px var(--color-gray);
 }
 .mk-spine__item:not(.is-complete) .mk-spine__tick {
-  background: transparent;
-  border: 1.5px dashed var(--text-muted);
+  background: var(--color-gray);
+  border: 1.5px solid var(--accent);
   box-shadow: 0 0 0 3px var(--color-gray);
 }
 
@@ -329,40 +329,63 @@
   font-style: italic;
 }
 
-/* Preview data-line / data-sub / data-pill (produced by profil-summary.js innerHTML) */
+/* K045: Spine preview typography — single coherent hierarchy, no pills */
+.mk-spine__preview { line-height: 1.55; }
 .mk-spine__preview .data-line {
   font-family: var(--font-body);
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 600;
   color: var(--text-primary);
-  line-height: 1.5;
+  margin: 0;
 }
 .mk-spine__preview .data-sub {
   font-family: var(--font-body);
-  font-size: 12px;
-  font-weight: 500;
+  font-size: 13px;
+  font-weight: 400;
   color: var(--text-muted);
-  margin-top: 2px;
+  margin-top: 4px;
 }
-.mk-spine__preview .data-pill {
-  display: inline-block;
-  padding: 2px 8px;
-  margin: 2px 4px 2px 0;
-  border: 1px solid var(--border-subtle);
-  border-radius: 999px;
+.mk-spine__preview .data-mono {
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 500;
-  color: var(--text-secondary);
-  background: transparent;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-top: 6px;
 }
-.mk-spine__preview .data-ok {
-  display: inline-block;
-  padding: 1px 6px;
-  margin: 2px 4px 2px 0;
+.mk-spine__preview .data-bio {
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 400;
+  font-style: italic;
+  color: var(--text-muted);
+  line-height: 1.55;
+  margin-top: 8px;
+  max-width: 640px;
+}
+.mk-spine__preview .data-more {
   font-family: var(--font-mono);
-  font-size: 10px;
-  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  opacity: 0.7;
+  margin-top: 4px;
+}
+.mk-spine__preview .data-pill,
+.mk-spine__preview .data-ok {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  background: transparent;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  display: inline;
 }
 
 /* Pencil edit affordance */

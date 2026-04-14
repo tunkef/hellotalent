@@ -80,9 +80,9 @@ function updateMerkezCards() {
     var badges1 = [];
     if (phone) badges1.push('Telefon');
     if (linkedin) badges1.push('LinkedIn');
-    if (badges1.length > 0) html1 += '<div>' + badges1.map(function(b) { return '<span class="data-ok">' + _escHtml(b) + '</span>'; }).join('') + '</div>';
+    if (badges1.length > 0) html1 += '<div class="data-mono">' + badges1.map(_escHtml).join(' \u00B7 ') + '</div>';
     var bioText = val('f-bio');
-    if (bioText) html1 += '<div style="font-size:12px;color:var(--muted);margin-top:6px;line-height:1.5;max-height:36px;overflow:hidden;font-style:italic;">"' + _escHtml(bioText.substring(0, 120)) + (bioText.length > 120 ? '...' : '') + '"</div>';
+    if (bioText) html1 += '<div class="data-bio">\u201C' + _escHtml(bioText.substring(0, 140)) + (bioText.length > 140 ? '\u2026' : '') + '\u201D</div>';
     p1.innerHTML = html1;
     p1.style.display = '';
     if (e1) e1.style.display = 'none';
@@ -114,8 +114,8 @@ function updateMerkezCards() {
     var html2 = '';
     if (role) html2 += '<div class="data-line">' + _escHtml(role) + '</div>';
     if (compVal) html2 += '<div class="data-sub">' + _escHtml(compVal) + '</div>';
-    if (startY) html2 += '<div class="data-sub" style="font-family:\'DM Mono\',monospace;font-size:10px;">' + _escHtml(startY) + ' \u2014 Devam</div>';
-    if (expCards.length > 1) html2 += '<div class="data-sub" style="opacity:0.6">+' + (expCards.length - 1) + ' deneyim daha</div>';
+    if (startY) html2 += '<div class="data-mono">' + _escHtml(startY) + ' \u2014 Devam</div>';
+    if (expCards.length > 1) html2 += '<div class="data-more">+' + (expCards.length - 1) + ' deneyim daha</div>';
     if (p2) { p2.innerHTML = html2; p2.style.display = ''; }
     if (e2) e2.style.display = 'none';
     // Granüler: sirket, pozisyon, yıl, sektör, segment, description = 6 alan
@@ -174,9 +174,9 @@ function updateMerkezCards() {
       }
     });
     if (langPills.length > 0) {
-      html3 += '<div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px">' + langPills.map(function(l) { return '<span class="data-pill">' + _escHtml(l) + '</span>'; }).join('') + '</div>';
+      html3 += '<div class="data-mono">' + langPills.map(_escHtml).join(' \u00B7 ') + '</div>';
     }
-    if (certCount > 0) html3 += '<div class="data-sub">' + certCount + ' sertifika</div>';
+    if (certCount > 0) html3 += '<div class="data-more">' + certCount + ' sertifika</div>';
     p3.innerHTML = html3;
     p3.style.display = '';
     if (e3) e3.style.display = 'none';
@@ -229,7 +229,7 @@ function updateMerkezCards() {
   }
 
   if (pills4.length > 0 && p4) {
-    p4.innerHTML = pills4.map(function(t) { return '<span class="data-pill">' + _escHtml(String(t)) + '</span>'; }).join('');
+    p4.innerHTML = '<div class="data-mono">' + pills4.map(function(t) { return _escHtml(String(t)); }).join(' \u00B7 ') + '</div>';
     p4.style.display = '';
     if (e4) e4.style.display = 'none';
   } else {

@@ -2379,13 +2379,12 @@ test.describe('Aşama 25 — Candidate dashboard free-tier copy drift', () => {
     expect(modalSnippet).not.toContain('Premium avantajlarını keşfet');
   });
 
-  test('K031 merkez premium zarf row shows "Beni Öne Çıkar · 3 ay ücretsiz beta" copy', () => {
-    var premStart = profilHtml25.indexOf('id="mk-premium-card-link"');
+  test('K045 merkez premium toggle replaces zarf row, label "Beni Öne Çıkar"', () => {
+    var premStart = profilHtml25.indexOf('id="merkez-toggle-premium"');
     expect(premStart).toBeGreaterThan(0);
-    var premSnippet = profilHtml25.substring(premStart, premStart + 800);
+    var premSnippet = profilHtml25.substring(Math.max(0, premStart - 200), premStart + 200);
     expect(premSnippet).toContain('Beni Öne Çıkar');
-    expect(premSnippet).toContain('3 ay ücretsiz beta');
-    expect(premSnippet).not.toContain('Premium Aday Avantajları');
+    expect(profilHtml25).not.toContain('Premium Aday Avantajları');
   });
 });
 
@@ -3136,7 +3135,7 @@ test.describe('K033/K034 — Genel Bakis editorial redesign', () => {
     /* K036 bumped genel-bakis.css to ?v=20260414i (margin fix + K036 rollout) */
     expect(profilHtml).toContain('genel-bakis.css?v=20260414k');
     expect(profilHtml).toContain('profil-genel.js?v=20260414h');
-    expect(profilHtml).toContain('merkezi.css?v=20260414r');
+    expect(profilHtml).toContain('merkezi.css?v=20260414s');
     /* profil-extras.css tokens unchanged — stays at v=20260414g */
     expect(profilHtml).toContain('profil-extras.css?v=20260414h');
   });
@@ -3237,7 +3236,8 @@ test.describe('K031 — Profil Merkezi editorial redesign', () => {
     expect(region).toContain('id="btn-generate-cv-merkez"');
     expect(region).toContain('id="btn-ai-cv-optimize"');
     expect(region).toContain('id="btn-preview-profile"');
-    expect(region).toContain('id="mk-premium-card-link"');
+    /* K045: premium card-link replaced by merkez-toggle-premium */
+    expect(region).toContain('id="merkez-toggle-premium"');
     // Identity + topline pulse hooks used by profil-summary.js
     expect(region).toContain('id="merkez-identity"');
     expect(region).toContain('id="merkez-avatar-ring"');

@@ -285,6 +285,32 @@ function closeTgToast() {
     updateVisState();
   }
 
+  // K045: Premium toggle (Beni Öne Çıkar) — wires to candidates.is_premium
+  var premiumToggle = document.getElementById('merkez-toggle-premium');
+  if (premiumToggle) {
+    if (_loadedDBData && _loadedDBData.profile && _loadedDBData.profile.is_premium) {
+      premiumToggle.checked = true;
+    }
+    premiumToggle.addEventListener('change', function() {
+      var newVal = premiumToggle.checked;
+      if (_loadedDBData && _loadedDBData.profile) _loadedDBData.profile.is_premium = newVal;
+      if (typeof supabase === 'undefined' || typeof currentUser === 'undefined' || !currentUser) return;
+      supabase.from('candidates')
+        .update({ is_premium: newVal })
+        .eq('user_id', currentUser.id)
+        .then(function(res) {
+          if (res.error) {
+            console.error('[HT] beni-one-cikar save failed', res.error);
+            premiumToggle.checked = !newVal;
+            if (_loadedDBData && _loadedDBData.profile) _loadedDBData.profile.is_premium = !newVal;
+            showTgToast('Hata: Tercih kaydedilemedi. Lütfen tekrar deneyin.', null);
+          } else {
+            showTgToast(newVal ? 'Profilin öne çıkarıldı.' : 'Öne çıkarma kapatıldı.', premiumToggle.closest('.mk-toggle'));
+          }
+        });
+    });
+  }
+
   var sidebarToggle = document.getElementById('sidebar-toggle-benioner');
   if (sidebarToggle) {
     sidebarToggle.addEventListener('change', function() {

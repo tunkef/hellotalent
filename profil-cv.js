@@ -168,7 +168,7 @@ function showCVUploaded(cvUrl, date) {
   if (dropActions) dropActions.style.display = 'none';
   if (uploadedActions) uploadedActions.style.display = 'flex';
   if (uploaded) {
-    uploaded.style.display = 'flex';
+    uploaded.style.display = 'block';
     var nameEl = document.getElementById('cv-uploaded-name');
     var dateEl = document.getElementById('cv-uploaded-date');
     if (nameEl) {
