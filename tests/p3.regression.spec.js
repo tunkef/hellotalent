@@ -3976,6 +3976,21 @@ test.describe('K067 — Ayarlar editorial CSS override', () => {
     expect(ayarlarCss067).toContain('prefers-reduced-motion');
   });
 
+  test('K067-NightAudit: tokens.css defines editorial dark palette', () => {
+    var tokensCss = readFromRepo('css/tokens.css');
+    expect(tokensCss).toContain('--editorial-bg');
+    expect(tokensCss).toContain('--editorial-card');
+    expect(tokensCss).toContain('--editorial-hairline');
+    expect(tokensCss).toContain('--editorial-ink');
+    expect(tokensCss).toContain('--editorial-ink-muted');
+    expect(tokensCss).toContain('--editorial-vermillion');
+    // dark block must override the editorial set
+    var darkBlockMatch = tokensCss.match(/html\[data-theme="dark"\]\s*\{[\s\S]*?\n\}/);
+    expect(darkBlockMatch).toBeTruthy();
+    expect(darkBlockMatch[0]).toContain('--editorial-bg');
+    expect(darkBlockMatch[0]).toContain('--editorial-vermillion');
+  });
+
   test('ayarlar.css defines the ayr-* editorial vocabulary', () => {
     expect(ayarlarCss067).toContain('.ayr-root');
     expect(ayarlarCss067).toContain('.ayr-hero');

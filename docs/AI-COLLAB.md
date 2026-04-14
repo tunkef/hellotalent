@@ -1,5 +1,61 @@
 # HelloTalent AI-COLLAB — Aktif Calisma Defteri
 
+## K067-NightAudit — 2026-04-15 (Claude night shift)
+
+**Goal:** Unified dark-mode parity across K031–K067 candidate profile editorial panels. Tuna asleep, executing autonomously.
+
+### Audit findings
+
+Token state (`css/tokens.css`):
+- Existing dark block at line 133 covers `--bg-app/-surface/-elevated`, text, borders, status, sidebar. Solid foundation.
+- Zero editorial-specific tokens. Cream/navy/vermillion/hairline/muted live as raw hex inside each panel CSS.
+
+Hex histogram across `css/panels/*.css` (518 hex literals total):
+- 110× `#6B6A66` muted text
+- 107× `#C94E28` vermillion
+- 103× `#1E2D5E` navy ink
+- 102× `#E5E3DF` hairline
+-  45× `#F7F6F4` cream surface
+-  40× white family (`#FFFFFF`/`#ffffff`/`#fff`)
+-   ~20× elev/hover/disabled (`#F0EEE8`, `#EEECE8`, `#F1EFEA`)
+-   ~10× vermillion deep (`#A83F1E`, `#b3411f`, `#B44524`, `#b84420`)
+
+Panel-by-panel:
+- `ayarlar.css` (1047 lines, 129 hex) — K067, **zero** dark rules. Highest priority.
+- `destek.css` (886, 103 hex) — K066, zero dark rules.
+- `inbox.css` (539, 62 hex) — K063, zero dark rules.
+- `bildirimler.css` (394, 51 hex) — K064, zero dark rules.
+- `kimbakti.css` (497, 59 hex) — K060, zero dark rules.
+- `genel-bakis.css` (505, 18 hex) — zero dark rules.
+- `sirketler.css` (586, 83 hex) — partial: 9 `data-theme="dark"` rules, drift vs new tokens.
+- `merkezi.css` (754, 13 hex) — partial: 6 dark rules, mostly tokenized already.
+- `layout.css` (1023, 60 dark rules) — shell (header/sidebar/avatar-dropdown/popups). Needs sweep for token alignment.
+- `components.css` — 2 dark rules. Negligible.
+
+### Strategy
+1. Add `--editorial-*` semantic token set in `tokens.css` (light + dark) — DONE this commit.
+2. Per panel: bulk replace_all the 5 unambiguous editorial colors → `var(--editorial-*)`. Manual for whites + vermillion-deep variants.
+3. No new `html[data-theme="dark"]` rules in panel files. Tokens cascade.
+4. Shell sweep on `layout.css`: align hardcoded `#0B1120`/`#1F2937` with editorial set where it makes sense.
+5. Visual verification via Playwright on profil.html (logged-out CSS still renders).
+6. Test gate: `npx playwright test tests/p3.regression.spec.js` after each commit.
+
+### Commit plan
+1. `feat(tokens): editorial dark palette for candidate profile` (this)
+2. `feat(ayarlar): dark mode parity — tokenize editorial palette`
+3. `feat(destek): ...`
+4. `feat(inbox): ...`
+5. `feat(bildirimler): ...`
+6. `feat(kimbakti): ...`
+7. `feat(genel-bakis): ...`
+8. `fix(sirketler): dark mode token drift cleanup`
+9. `fix(merkezi): dark mode token drift cleanup`
+10. `fix(layout): dark mode token sweep`
+
+Push after each. WIP commits if anything blocks.
+
+
+
 > Bu dosya yalnizca aktif is, son kararlar, acik riskler ve bir sonraki net adimi tasir.
 > Kapanmis asamalar: `docs/ai-collab/AI-COLLAB-archive-asama1-61.md`
 > Dosya buyudugunde (500+ satir) yeni arsiv dosyasina tasinir.

@@ -127,6 +127,24 @@
   --sidebar-primary: var(--color-vermillion);
   --sidebar-primary-foreground: #ffffff;
   --ring: var(--focus-ring);
+
+  /* ═══ Editorial palette (K031–K067 candidate profile panels) ═══
+     Used by ayarlar / destek / inbox / bildirimler / kimbakti /
+     genel-bakis / sirketler / merkezi. Light values reproduce the
+     cream/navy/vermillion vocabulary; dark mode overrides below. */
+  --editorial-bg:              #F7F6F4; /* panel surface */
+  --editorial-card:            #FFFFFF; /* card / input bg */
+  --editorial-card-elev:       #F0EEE8; /* raised / disabled / hover */
+  --editorial-hairline:        #E5E3DF; /* 1px subtle border */
+  --editorial-hairline-strong: #D8D5CF; /* emphasized border */
+  --editorial-ink:             #1E2D5E; /* primary text (navy) */
+  --editorial-ink-strong:      #0F1729; /* deep ink for hero */
+  --editorial-ink-muted:       #6B6A66; /* secondary text */
+  --editorial-vermillion:      #C94E28; /* accent */
+  --editorial-vermillion-soft: #F5EDE9; /* tinted accent bg */
+  --editorial-vermillion-deep: #A83F1E; /* hover / pressed */
+  --editorial-shadow:          0 1px 3px rgba(30,45,94,0.06);
+  --editorial-shadow-md:       0 4px 18px rgba(30,45,94,0.08);
 }
 
 /* ═══ Dark Mode — Semantic overrides ═══ */
@@ -165,4 +183,19 @@ html[data-theme="dark"] {
   --sidebar-primary: var(--color-vermillion);
   --sidebar-primary-foreground: #ffffff;
   --ring: var(--focus-ring);
+
+  /* Editorial palette — dark mode (intentional, not pure black) */
+  --editorial-bg:              #0B0F1C;
+  --editorial-card:            #111827;
+  --editorial-card-elev:       #1A2233;
+  --editorial-hairline:        #1F2937;
+  --editorial-hairline-strong: #2D3748;
+  --editorial-ink:             #F9FAFB;
+  --editorial-ink-strong:      #FFFFFF;
+  --editorial-ink-muted:       #9CA3AF;
+  --editorial-vermillion:      #E8845C;  /* warm + lightened, K031 avd-talent-badge precedent */
+  --editorial-vermillion-soft: rgba(232,132,92,0.12);
+  --editorial-vermillion-deep: #F06A3C;  /* hover/pressed in dark */
+  --editorial-shadow:          0 1px 3px rgba(0,0,0,0.4);
+  --editorial-shadow-md:       0 4px 18px rgba(0,0,0,0.5);
 }
