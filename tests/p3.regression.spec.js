@@ -3941,10 +3941,10 @@ test.describe('K067 — Ayarlar editorial CSS override', () => {
   });
 
   test('profil.html links K067 ayarlar.css', () => {
-    expect(profilHtml067).toContain('css/panels/ayarlar.css?v=20260415aa');
+    expect(profilHtml067).toContain('css/panels/ayarlar.css?v=20260415bb');
   });
 
-  test('ayarlar.css scopes everything under #panel-ayarlar and uses editorial palette', () => {
+  test('ayarlar.css uses editorial palette and namespaced vocabulary', () => {
     expect(ayarlarCss067).toContain('K067 Faz A');
     expect(ayarlarCss067).toContain('#panel-ayarlar');
     expect(ayarlarCss067).toContain('#F7F6F4');
@@ -3955,13 +3955,52 @@ test.describe('K067 — Ayarlar editorial CSS override', () => {
     expect(ayarlarCss067).toContain('prefers-reduced-motion');
   });
 
-  test('ayarlar.css overrides the critical shared components inside panel scope', () => {
-    expect(ayarlarCss067).toContain('#panel-ayarlar .ht-card');
-    expect(ayarlarCss067).toContain('#panel-ayarlar .ht-card__title');
-    expect(ayarlarCss067).toContain('#panel-ayarlar .ht-btn');
-    expect(ayarlarCss067).toContain('#panel-ayarlar .ht-toggle');
-    expect(ayarlarCss067).toContain('#panel-ayarlar #mfa-qr-container');
-    expect(ayarlarCss067).toContain('#account-wizard-overlay');
+  test('ayarlar.css defines the ayr-* editorial vocabulary', () => {
+    expect(ayarlarCss067).toContain('.ayr-root');
+    expect(ayarlarCss067).toContain('.ayr-hero');
+    expect(ayarlarCss067).toContain('.ayr-toc');
+    expect(ayarlarCss067).toContain('.ayr-section');
+    expect(ayarlarCss067).toContain('.ayr-card');
+    expect(ayarlarCss067).toContain('.ayr-grid-2');
+    expect(ayarlarCss067).toContain('.ayr-field');
+    expect(ayarlarCss067).toContain('.ayr-btn');
+    expect(ayarlarCss067).toContain('.ayr-toggle');
+    expect(ayarlarCss067).toContain('.ayr-modal');
+  });
+
+  test('profil.html ayarlar panel uses ayr-* sections and preserves all critical ids', () => {
+    expect(profilHtml067).toContain('class="ayr-root"');
+    expect(profilHtml067).toContain('id="ayr-s-hesap"');
+    expect(profilHtml067).toContain('id="ayr-s-guvenlik"');
+    expect(profilHtml067).toContain('id="ayr-s-gizlilik"');
+    expect(profilHtml067).toContain('id="ayr-s-bildirim"');
+    expect(profilHtml067).toContain('id="ayr-s-gorunum"');
+    expect(profilHtml067).toContain('id="ayr-s-tehlike"');
+    // critical auth/mfa/settings ids MUST be preserved
+    var mustKeepIds = [
+      'settings-email', 'settings-new-email', 'settings-adsoyad', 'settings-telefon',
+      'btn-settings-account-save', 'btn-show-email-change', 'btn-change-email',
+      'settings-new-pw', 'settings-confirm-pw', 'btn-change-pw',
+      'mfa-status-area', 'mfa-loading', 'mfa-disabled-state', 'mfa-enroll-state',
+      'mfa-enabled-state', 'mfa-qr-container', 'mfa-secret-code', 'mfa-verify-code',
+      'btn-mfa-enable', 'btn-mfa-verify', 'btn-mfa-cancel-enroll', 'btn-mfa-disable',
+      'settings-visibility-active', 'settings-actively-looking',
+      'settings-hide-from-current-employer', 'settings-benioner-hint',
+      'settings-notify-email-messages', 'settings-notify-email-jobs',
+      'settings-notify-sms', 'settings-notify-push', 'btn-save-notifications',
+      'settings-contact-email', 'settings-contact-phone', 'settings-contact-whatsapp',
+      'btn-save-contact-prefs', 'blocked-company-search', 'blocked-company-dropdown',
+      'blocked-companies-list', 'blocked-companies-empty',
+      'settings-theme-card', 'settings-account-management-card',
+      'btn-open-account-wizard', 'settings-session-management-card',
+      'session-device-info', 'session-login-time', 'btn-signout-all',
+      'btn-signout-settings', 'account-wizard-overlay', 'btn-close-account-wizard',
+      'btn-download-data', 'btn-freeze-account', 'btn-delete-account',
+      'settings-premium-pitch'
+    ];
+    mustKeepIds.forEach(function(id) {
+      expect(profilHtml067).toContain('id="' + id + '"');
+    });
   });
 });
 

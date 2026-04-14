@@ -70,7 +70,7 @@ if (window.Sentry) {
 <link rel="stylesheet" href="css/panels/inbox.css?v=20260414aa">
 <link rel="stylesheet" href="css/panels/bildirimler.css?v=20260414aa">
 <link rel="stylesheet" href="css/panels/destek.css?v=20260414aa">
-<link rel="stylesheet" href="css/panels/ayarlar.css?v=20260415aa">
+<link rel="stylesheet" href="css/panels/ayarlar.css?v=20260415bb">
 <link rel="stylesheet" href="css/panel-soon.css?v=20260413a">
 <link rel="stylesheet" href="css/duyurular.css?v=20260414a">
 </head>
@@ -1297,330 +1297,402 @@ if (window.Sentry) {
 
 <!-- ═══ PANEL: AYARLAR ═══ -->
 <main class="panel" id="panel-ayarlar" data-panel="ayarlar">
-  <!-- Hero card -->
-  <div class="g-hero">
-    <div class="g-hero-inner">
-      <div class="ht-panel-heading">Hesap Ayarları</div>
-    </div>
-  </div>
-  <div class="ht-grid-3">
+  <div class="ayr-root">
 
-  <div class="ht-card ht-span-2">
-    <div class="ht-card__title">Hesap Bilgileri</div>
-    <div class="ht-input">
-      <label for="settings-email">E-posta</label>
-      <div class="flex-row-8">
-        <input type="email" id="settings-email" disabled class="flex-1">
-        <button type="button" class="ht-btn ht-btn--secondary ht-btn--sm" id="btn-show-email-change">Değiştir</button>
+    <!-- HERO -->
+    <header class="ayr-hero">
+      <p class="ayr-kicker">HESAP · GÜVENLIK · GIZLILIK</p>
+      <h1 class="ayr-headline">Hesap ayarları</h1>
+      <p class="ayr-subline">Kimlik, güvenlik, bildirimler ve hesap yönetimini tek yerden yönet.</p>
+    </header>
+
+    <!-- SECTION TOC (scroll anchors) -->
+    <nav class="ayr-toc" aria-label="Ayarlar bölümleri">
+      <a href="#ayr-s-hesap" class="ayr-toc__tab">Hesap</a>
+      <a href="#ayr-s-guvenlik" class="ayr-toc__tab">Güvenlik</a>
+      <a href="#ayr-s-gizlilik" class="ayr-toc__tab">Gizlilik</a>
+      <a href="#ayr-s-bildirim" class="ayr-toc__tab">Bildirim</a>
+      <a href="#ayr-s-gorunum" class="ayr-toc__tab">Görünüm</a>
+      <a href="#ayr-s-tehlike" class="ayr-toc__tab">Hesap yönetimi</a>
+    </nav>
+
+    <!-- ═════ SECTION: HESAP ═════ -->
+    <section class="ayr-section" id="ayr-s-hesap">
+      <div class="ayr-section__head">
+        <span class="ayr-section__num">01</span>
+        <h2 class="ayr-section__title">Hesap</h2>
+        <span class="ayr-section__desc">Giriş bilgilerin ve temel profil alanların.</span>
       </div>
-    </div>
-    <div id="email-change-section" style="display:none;margin-top:8px;">
-      <div class="ht-input">
-        <label for="settings-new-email">Yeni E-posta</label>
-        <input type="email" id="settings-new-email" placeholder="Yeni e-posta adresi">
-      </div>
-      <button type="button" class="ht-btn ht-btn--primary ht-btn--sm" id="btn-change-email">Doğrulama Gönder</button>
-      <div id="email-change-msg" class="field-msg"></div>
-    </div>
-    <div class="ht-input">
-      <label for="settings-adsoyad">Ad Soyad</label>
-      <input type="text" id="settings-adsoyad" placeholder="Adınız soyadınız" maxlength="100">
-    </div>
-    <div class="ht-input">
-      <label for="settings-telefon">Telefon</label>
-      <input type="tel" id="settings-telefon" placeholder="0555 123 4567" maxlength="20">
-    </div>
-    <button class="ht-btn ht-btn--primary ht-btn--sm" id="btn-settings-account-save">Kaydet</button>
-    <div id="settings-account-msg" class="field-msg"></div>
-  </div>
 
-  <div class="ht-card">
-    <div class="ht-card__title">Şifre Değiştir</div>
-    <div class="ht-input">
-      <label for="settings-new-pw">Yeni Şifre</label>
-      <input type="password" id="settings-new-pw" placeholder="En az 6 karakter">
-    </div>
-    <div class="ht-input">
-      <label for="settings-confirm-pw">Yeni Şifre (Tekrar)</label>
-      <input type="password" id="settings-confirm-pw" placeholder="Şifreyi tekrarlayın">
-    </div>
-    <button class="ht-btn ht-btn--primary ht-btn--sm" id="btn-change-pw">Şifreyi Güncelle</button>
-    <div id="pw-msg" class="field-msg"></div>
-  </div>
+      <div class="ayr-card ayr-card--wide" id="settings-account-info-card">
+        <div class="ayr-field">
+          <label for="settings-email">E-posta</label>
+          <div class="ayr-field__row">
+            <input type="email" id="settings-email" disabled>
+            <button type="button" class="ayr-btn ayr-btn--ghost" id="btn-show-email-change">Değiştir</button>
+          </div>
+        </div>
+        <div id="email-change-section" class="ayr-subfield" style="display:none;">
+          <div class="ayr-field">
+            <label for="settings-new-email">Yeni e-posta</label>
+            <input type="email" id="settings-new-email" placeholder="Yeni e-posta adresi">
+          </div>
+          <button type="button" class="ayr-btn ayr-btn--primary" id="btn-change-email">Doğrulama gönder</button>
+          <div id="email-change-msg" class="ayr-msg"></div>
+        </div>
 
-  <!-- ── İki Adımlı Doğrulama (2FA / TOTP) ── -->
-  <div class="ht-card">
-    <div class="ht-card__title">İki Adımlı Doğrulama</div>
-    <div class="wiz-step-desc mb-12">Hesabınızı ek bir güvenlik katmanıyla koruyun. Google Authenticator veya benzeri bir uygulama kullanarak giriş yapın.</div>
+        <div class="ayr-field-row">
+          <div class="ayr-field">
+            <label for="settings-adsoyad">Ad soyad</label>
+            <input type="text" id="settings-adsoyad" placeholder="Adınız soyadınız" maxlength="100">
+          </div>
+          <div class="ayr-field">
+            <label for="settings-telefon">Telefon</label>
+            <input type="tel" id="settings-telefon" placeholder="0555 123 4567" maxlength="20">
+          </div>
+        </div>
 
-    <div id="mfa-status-area">
-      <div id="mfa-loading" style="font-size:13px;color:var(--muted);">Yükleniyor...</div>
-    </div>
-
-    <!-- 2FA Disabled State -->
-    <div id="mfa-disabled-state" style="display:none;">
-      <div class="flex-row-8 mb-12">
-        <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#EF4444;"></span>
-        <span style="font-size:13px;font-weight:600;color:var(--text-primary);">İki adımlı doğrulama kapalı</span>
-      </div>
-      <button class="ht-btn ht-btn--primary ht-btn--sm" id="btn-mfa-enable">İki Adımlı Doğrulamayı Etkinleştir</button>
-    </div>
-
-    <!-- 2FA Enrollment (QR Code) -->
-    <div id="mfa-enroll-state" style="display:none;">
-      <div class="mb-12">
-        <p style="font-size:13px;margin-bottom:8px;font-weight:600;">1. QR kodu telefonunuzdaki uygulama ile tarayın:</p>
-        <div id="mfa-qr-container" style="text-align:center;padding:16px;background:#fff;border-radius:8px;border:1px solid var(--border);display:inline-block;"><!-- QR kodu her zaman beyaz arka plan - okunabilirlik için --></div>
-      </div>
-      <div class="mb-12">
-        <p style="font-size:13px;margin-bottom:4px;color:var(--muted);">Tarayamıyor musunuz? Bu kodu manuel girin:</p>
-        <code id="mfa-secret-code" style="font-size:12px;letter-spacing:2px;background:var(--gray);padding:6px 12px;border-radius:4px;user-select:all;"></code>
-      </div>
-      <div class="mb-12">
-        <p style="font-size:13px;margin-bottom:8px;font-weight:600;">2. Uygulamadaki 6 haneli kodu girin:</p>
-        <div style="display:flex;gap:8px;align-items:center;">
-          <input type="text" id="mfa-verify-code" maxlength="6" placeholder="000000" style="width:120px;text-align:center;font-size:18px;letter-spacing:6px;font-family:'DM Mono',monospace;">
-          <button class="ht-btn ht-btn--primary ht-btn--sm" id="btn-mfa-verify">Doğrula</button>
+        <div class="ayr-card__foot">
+          <button class="ayr-btn ayr-btn--primary" id="btn-settings-account-save">Kaydet</button>
+          <div id="settings-account-msg" class="ayr-msg"></div>
         </div>
       </div>
-      <button class="ht-btn ht-btn--secondary ht-btn--sm" id="btn-mfa-cancel-enroll" style="margin-top:4px;">Vazgeç</button>
-      <div id="mfa-enroll-msg" class="field-msg"></div>
-    </div>
+    </section>
 
-    <!-- 2FA Enabled State -->
-    <div id="mfa-enabled-state" style="display:none;">
-      <div class="flex-row-8 mb-12">
-        <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#22C55E;"></span>
-        <span style="font-size:13px;font-weight:600;color:var(--text-primary);">İki adımlı doğrulama aktif</span>
+    <!-- ═════ SECTION: GÜVENLIK ═════ -->
+    <section class="ayr-section" id="ayr-s-guvenlik">
+      <div class="ayr-section__head">
+        <span class="ayr-section__num">02</span>
+        <h2 class="ayr-section__title">Güvenlik</h2>
+        <span class="ayr-section__desc">Şifre ve iki adımlı doğrulama.</span>
       </div>
-      <button class="ht-btn ht-btn--secondary ht-btn--sm" id="btn-mfa-disable" style="color:var(--verm);border-color:var(--verm);">İki Adımlı Doğrulamayı Kapat</button>
-      <div id="mfa-disable-msg" class="field-msg"></div>
-    </div>
-  </div>
 
-  <div class="ht-card">
-    <div class="ht-card__title">Beta Avantajları</div>
-    <div class="wiz-step-desc mt-4 pointer" id="settings-premium-pitch" data-panel="premium">Beta sürecinde tüm özellikler ücretsiz açık — öne çıkan aday, AI değerlendirme, CV optimize ve daha fazlası. <span style="color:var(--verm);font-weight:600;text-decoration:underline;">Keşfet</span></div>
-  </div>
+      <div class="ayr-grid-2">
+        <div class="ayr-card">
+          <div class="ayr-card__title">Şifre değiştir</div>
+          <div class="ayr-field">
+            <label for="settings-new-pw">Yeni şifre</label>
+            <input type="password" id="settings-new-pw" placeholder="En az 6 karakter">
+          </div>
+          <div class="ayr-field">
+            <label for="settings-confirm-pw">Yeni şifre (tekrar)</label>
+            <input type="password" id="settings-confirm-pw" placeholder="Şifreyi tekrarlayın">
+          </div>
+          <div class="ayr-card__foot">
+            <button class="ayr-btn ayr-btn--primary" id="btn-change-pw">Şifreyi güncelle</button>
+            <div id="pw-msg" class="ayr-msg"></div>
+          </div>
+        </div>
 
-  <div class="ht-card ht-span-2">
-    <div class="ht-card__title">Gizlilik ve Görünürlük</div>
-    <div class="ht-input flex-row-12">
-      <label class="toggle ht-toggle">
-        <input type="checkbox" id="settings-visibility-active" checked>
-        <span class="toggle-slider"></span>
-      </label>
-      <label for="settings-visibility-active" class="link-action">Beni Öner</label>
-    </div>
-    <p id="settings-benioner-hint" style="font-size:11px;margin:4px 0 0 0;">Profilin ve CV'n işverenlerle paylaşılır</p>
-    <div class="ht-input flex-row-12">
-      <label class="toggle ht-toggle">
-        <input type="checkbox" id="settings-actively-looking">
-        <span class="toggle-slider"></span>
-      </label>
-      <div>
-        <label for="settings-actively-looking" class="link-action">Aktif İş Arıyorum</label>
-        <p class="hint-text">Bu ayar açıkken profilinde "Aktif Arıyor" rozeti görünür ve işverenler seni öncelikli olarak görür.</p>
+        <div class="ayr-card">
+          <div class="ayr-card__title">İki adımlı doğrulama</div>
+          <p class="ayr-lede">Hesabını ek bir güvenlik katmanıyla koru. Google Authenticator veya benzeri bir uygulama kullanarak giriş yap.</p>
+
+          <div id="mfa-status-area">
+            <div id="mfa-loading" class="ayr-status ayr-status--muted">Yükleniyor...</div>
+          </div>
+
+          <div id="mfa-disabled-state" style="display:none;">
+            <div class="ayr-status ayr-status--off">
+              <span class="ayr-status__dot"></span>
+              <span class="ayr-status__label">İki adımlı doğrulama kapalı</span>
+            </div>
+            <button class="ayr-btn ayr-btn--primary" id="btn-mfa-enable">Etkinleştir</button>
+          </div>
+
+          <div id="mfa-enroll-state" style="display:none;">
+            <p class="ayr-step">1. QR kodu uygulama ile tara</p>
+            <div id="mfa-qr-container"></div>
+            <p class="ayr-step">Tarayamıyorsan bu kodu manuel gir:</p>
+            <code id="mfa-secret-code"></code>
+            <p class="ayr-step">2. Uygulamadaki 6 haneli kodu gir</p>
+            <div class="ayr-field__row">
+              <input type="text" id="mfa-verify-code" maxlength="6" placeholder="000000">
+              <button class="ayr-btn ayr-btn--primary" id="btn-mfa-verify">Doğrula</button>
+            </div>
+            <button class="ayr-btn ayr-btn--ghost ayr-btn--sm" id="btn-mfa-cancel-enroll">Vazgeç</button>
+            <div id="mfa-enroll-msg" class="ayr-msg"></div>
+          </div>
+
+          <div id="mfa-enabled-state" style="display:none;">
+            <div class="ayr-status ayr-status--on">
+              <span class="ayr-status__dot"></span>
+              <span class="ayr-status__label">İki adımlı doğrulama aktif</span>
+            </div>
+            <button class="ayr-btn ayr-btn--danger-ghost" id="btn-mfa-disable">Kapat</button>
+            <div id="mfa-disable-msg" class="ayr-msg"></div>
+          </div>
+        </div>
       </div>
-    </div>
-    <div id="actively-looking-msg" class="field-msg"></div>
-    <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border);"></div>
-    <div class="ht-input flex-row-12">
-      <label class="toggle ht-toggle">
-        <input type="checkbox" id="settings-hide-from-current-employer">
-        <span class="toggle-slider"></span>
-      </label>
-      <label for="settings-hide-from-current-employer" class="link-action">Mevcut işveren seni görmesin</label>
-    </div>
-    <div id="settings-hide-hint" style="display:none;font-size:11px;color:var(--muted);margin-top:4px;">
-      Bu ayarı kullanmak için Deneyimler alanında mevcut işverenini belirt.
-    </div>
-  </div>
+    </section>
 
-  <div class="ht-card" id="settings-notifications-card">
-    <div class="ht-card__title">Bildirim Tercihleri</div>
-    <div class="wiz-step-desc mt-4">Hangi bildirimleri almak istediğini seç.</div>
-
-    <div class="ht-input flex-row-12">
-      <label class="toggle ht-toggle">
-        <input type="checkbox" id="settings-notify-email-messages" checked>
-        <span class="toggle-slider"></span>
-      </label>
-      <div>
-        <label for="settings-notify-email-messages" class="link-action">İşveren Mesajları</label>
-        <p class="hint-text">İşverenlerden gelen mesajlar için e-posta bildirimi al.</p>
+    <!-- ═════ SECTION: GIZLILIK ═════ -->
+    <section class="ayr-section" id="ayr-s-gizlilik">
+      <div class="ayr-section__head">
+        <span class="ayr-section__num">03</span>
+        <h2 class="ayr-section__title">Gizlilik</h2>
+        <span class="ayr-section__desc">Profilini kim görsün, kim görmesin.</span>
       </div>
-    </div>
 
-    <div class="ht-input flex-row-12">
-      <label class="toggle ht-toggle">
-        <input type="checkbox" id="settings-notify-email-jobs" checked>
-        <span class="toggle-slider"></span>
-      </label>
-      <div>
-        <label for="settings-notify-email-jobs" class="link-action">Yeni İş İlanları</label>
-        <p class="hint-text">Profinine uygun yeni ilanlar yayınlandığında bildirim al.</p>
+      <div class="ayr-card ayr-card--wide">
+        <div class="ayr-card__title">Görünürlük</div>
+
+        <div class="ayr-toggle-row">
+          <label class="ayr-toggle">
+            <input type="checkbox" id="settings-visibility-active" checked>
+            <span class="ayr-toggle__track"></span>
+          </label>
+          <div class="ayr-toggle__body">
+            <label for="settings-visibility-active" class="ayr-toggle__title">Beni öner</label>
+            <p id="settings-benioner-hint" class="ayr-toggle__desc">Profilin ve CV'n işverenlerle paylaşılır.</p>
+          </div>
+        </div>
+
+        <div class="ayr-toggle-row">
+          <label class="ayr-toggle">
+            <input type="checkbox" id="settings-actively-looking">
+            <span class="ayr-toggle__track"></span>
+          </label>
+          <div class="ayr-toggle__body">
+            <label for="settings-actively-looking" class="ayr-toggle__title">Aktif iş arıyorum</label>
+            <p class="ayr-toggle__desc">Profilinde "Aktif Arıyor" rozeti görünür, işverenler seni öncelikli görür.</p>
+          </div>
+        </div>
+        <div id="actively-looking-msg" class="ayr-msg"></div>
+
+        <div class="ayr-toggle-row">
+          <label class="ayr-toggle">
+            <input type="checkbox" id="settings-hide-from-current-employer">
+            <span class="ayr-toggle__track"></span>
+          </label>
+          <div class="ayr-toggle__body">
+            <label for="settings-hide-from-current-employer" class="ayr-toggle__title">Mevcut işveren seni görmesin</label>
+            <p id="settings-hide-hint" class="ayr-toggle__desc" style="display:none;">Bu ayarı kullanmak için Deneyimler alanında mevcut işverenini belirt.</p>
+          </div>
+        </div>
       </div>
-    </div>
 
-    <div class="ht-input flex-row-12 is-disabled">
-      <label class="toggle ht-toggle">
-        <input type="checkbox" id="settings-notify-sms" disabled>
-        <span class="toggle-slider"></span>
-      </label>
-      <div>
-        <label class="link-action">SMS Bildirimleri <span class="mini-badge">Premium</span></label>
-        <p class="hint-text">Kritik güncellemeler için SMS bildirimi.</p>
+      <div class="ayr-grid-2">
+        <div class="ayr-card" id="settings-contact-prefs-card">
+          <div class="ayr-card__title">İletişim tercihleri</div>
+          <p class="ayr-lede">İşverenler sana hangi kanallardan ulaşabilsin?</p>
+
+          <div class="ayr-toggle-row">
+            <label class="ayr-toggle">
+              <input type="checkbox" id="settings-contact-email" checked>
+              <span class="ayr-toggle__track"></span>
+            </label>
+            <div class="ayr-toggle__body">
+              <label for="settings-contact-email" class="ayr-toggle__title">E-posta</label>
+              <p class="ayr-toggle__desc">İşverenler e-posta adresin üzerinden iletişime geçebilir.</p>
+            </div>
+          </div>
+
+          <div class="ayr-toggle-row">
+            <label class="ayr-toggle">
+              <input type="checkbox" id="settings-contact-phone">
+              <span class="ayr-toggle__track"></span>
+            </label>
+            <div class="ayr-toggle__body">
+              <label for="settings-contact-phone" class="ayr-toggle__title">Telefon</label>
+              <p class="ayr-toggle__desc">İşverenler telefon numaran üzerinden arayabilir.</p>
+            </div>
+          </div>
+
+          <div class="ayr-toggle-row">
+            <label class="ayr-toggle">
+              <input type="checkbox" id="settings-contact-whatsapp">
+              <span class="ayr-toggle__track"></span>
+            </label>
+            <div class="ayr-toggle__body">
+              <label for="settings-contact-whatsapp" class="ayr-toggle__title">WhatsApp</label>
+              <p class="ayr-toggle__desc">İşverenler WhatsApp üzerinden mesaj gönderebilir.</p>
+            </div>
+          </div>
+
+          <div class="ayr-card__foot">
+            <button class="ayr-btn ayr-btn--primary" id="btn-save-contact-prefs">Tercihleri kaydet</button>
+            <div id="contact-prefs-msg" class="ayr-msg"></div>
+          </div>
+        </div>
+
+        <div class="ayr-card" id="settings-blocked-companies-card">
+          <div class="ayr-card__title">Engellenen şirketler</div>
+          <p class="ayr-lede">Profilini görmesini istemediğin şirketleri ekle. Bu şirketlerin İK ekipleri seni aday havuzunda göremez.</p>
+
+          <div class="ayr-field ayr-field--search">
+            <label for="blocked-company-search">Şirket ara ve ekle</label>
+            <input type="text" id="blocked-company-search" placeholder="Şirket adı yazın..." autocomplete="off">
+            <div id="blocked-company-dropdown" style="display:none;"></div>
+          </div>
+
+          <div id="blocked-companies-list"></div>
+          <div id="blocked-companies-empty" class="ayr-empty">Henüz engellenen şirket yok.</div>
+          <div id="blocked-msg" class="ayr-msg"></div>
+        </div>
       </div>
-    </div>
+    </section>
 
-    <div class="ht-input flex-row-12 is-disabled">
-      <label class="toggle ht-toggle">
-        <input type="checkbox" id="settings-notify-push" disabled>
-        <span class="toggle-slider"></span>
-      </label>
-      <div>
-        <label class="link-action">Push Bildirimleri <span class="mini-badge">Premium</span></label>
-        <p class="hint-text">Anlık bildirimler doğrudan tarayıcına.</p>
+    <!-- ═════ SECTION: BILDIRIM ═════ -->
+    <section class="ayr-section" id="ayr-s-bildirim">
+      <div class="ayr-section__head">
+        <span class="ayr-section__num">04</span>
+        <h2 class="ayr-section__title">Bildirim</h2>
+        <span class="ayr-section__desc">Hangi bildirimleri nerede alacaksın.</span>
       </div>
-    </div>
 
-    <button class="ht-btn ht-btn--primary ht-btn--sm mt-16" id="btn-save-notifications">Bildirim Tercihlerini Kaydet</button>
-    <div id="notifications-msg" class="field-msg"></div>
-  </div>
+      <div class="ayr-card ayr-card--wide" id="settings-notifications-card">
+        <div class="ayr-card__title">Bildirim tercihleri</div>
 
-  <div class="ht-card" id="settings-contact-prefs-card">
-    <div class="ht-card__title">İletişim Tercihleri</div>
-    <div class="wiz-step-desc mt-4">İşverenler sana hangi kanallardan ulaşabilsin?</div>
+        <div class="ayr-toggle-row">
+          <label class="ayr-toggle">
+            <input type="checkbox" id="settings-notify-email-messages" checked>
+            <span class="ayr-toggle__track"></span>
+          </label>
+          <div class="ayr-toggle__body">
+            <label for="settings-notify-email-messages" class="ayr-toggle__title">İşveren mesajları</label>
+            <p class="ayr-toggle__desc">İşverenlerden gelen mesajlar için e-posta bildirimi al.</p>
+          </div>
+        </div>
 
-    <div class="ht-input flex-row-12">
-      <label class="toggle ht-toggle">
-        <input type="checkbox" id="settings-contact-email" checked>
-        <span class="toggle-slider"></span>
-      </label>
-      <div>
-        <label for="settings-contact-email" class="link-action">E-posta</label>
-        <p class="hint-text">İşverenler e-posta adresin üzerinden iletişime geçebilir.</p>
+        <div class="ayr-toggle-row">
+          <label class="ayr-toggle">
+            <input type="checkbox" id="settings-notify-email-jobs" checked>
+            <span class="ayr-toggle__track"></span>
+          </label>
+          <div class="ayr-toggle__body">
+            <label for="settings-notify-email-jobs" class="ayr-toggle__title">Yeni iş ilanları</label>
+            <p class="ayr-toggle__desc">Profiline uygun yeni ilanlar yayınlandığında bildirim al.</p>
+          </div>
+        </div>
+
+        <div class="ayr-toggle-row ayr-toggle-row--locked">
+          <label class="ayr-toggle">
+            <input type="checkbox" id="settings-notify-sms" disabled>
+            <span class="ayr-toggle__track"></span>
+          </label>
+          <div class="ayr-toggle__body">
+            <span class="ayr-toggle__title">SMS bildirimleri <span class="ayr-badge">Premium</span></span>
+            <p class="ayr-toggle__desc">Kritik güncellemeler için SMS bildirimi.</p>
+          </div>
+        </div>
+
+        <div class="ayr-toggle-row ayr-toggle-row--locked">
+          <label class="ayr-toggle">
+            <input type="checkbox" id="settings-notify-push" disabled>
+            <span class="ayr-toggle__track"></span>
+          </label>
+          <div class="ayr-toggle__body">
+            <span class="ayr-toggle__title">Push bildirimleri <span class="ayr-badge">Premium</span></span>
+            <p class="ayr-toggle__desc">Anlık bildirimler doğrudan tarayıcına.</p>
+          </div>
+        </div>
+
+        <div class="ayr-card__foot">
+          <button class="ayr-btn ayr-btn--primary" id="btn-save-notifications">Tercihleri kaydet</button>
+          <div id="notifications-msg" class="ayr-msg"></div>
+        </div>
       </div>
-    </div>
+    </section>
 
-    <div class="ht-input flex-row-12">
-      <label class="toggle ht-toggle">
-        <input type="checkbox" id="settings-contact-phone">
-        <span class="toggle-slider"></span>
-      </label>
-      <div>
-        <label for="settings-contact-phone" class="link-action">Telefon</label>
-        <p class="hint-text">İşverenler telefon numaran üzerinden arayabilir.</p>
+    <!-- ═════ SECTION: GÖRÜNÜM + BETA ═════ -->
+    <section class="ayr-section" id="ayr-s-gorunum">
+      <div class="ayr-section__head">
+        <span class="ayr-section__num">05</span>
+        <h2 class="ayr-section__title">Görünüm</h2>
+        <span class="ayr-section__desc">Tema ve beta avantajları.</span>
       </div>
-    </div>
 
-    <div class="ht-input flex-row-12">
-      <label class="toggle ht-toggle">
-        <input type="checkbox" id="settings-contact-whatsapp">
-        <span class="toggle-slider"></span>
-      </label>
-      <div>
-        <label for="settings-contact-whatsapp" class="link-action">WhatsApp</label>
-        <p class="hint-text">İşverenler WhatsApp üzerinden mesaj gönderebilir.</p>
+      <div class="ayr-grid-2">
+        <div class="ayr-card ayr-card--theme" id="settings-theme-card">
+          <div>
+            <div class="ayr-card__title">Tema</div>
+            <p class="ayr-lede">Açık ve koyu mod arasında geçiş yap.</p>
+          </div>
+          <button type="button" class="theme-toggle-btn theme-toggle-lg ayr-theme-btn" title="Tema değiştir" aria-label="Tema değiştir (açık / koyu mod)">
+            <span class="theme-icon sun"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg></span>
+            <span class="theme-icon moon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></span>
+          </button>
+        </div>
+
+        <div class="ayr-card ayr-card--beta">
+          <div class="ayr-card__title">Beta avantajları</div>
+          <p class="ayr-lede pointer" id="settings-premium-pitch" data-panel="premium">Beta sürecinde tüm özellikler ücretsiz açık — öne çıkan aday, AI değerlendirme, CV optimize ve daha fazlası. <span class="ayr-link">Keşfet</span></p>
+        </div>
       </div>
-    </div>
+    </section>
 
-    <button class="ht-btn ht-btn--primary ht-btn--sm mt-16" id="btn-save-contact-prefs">İletişim Tercihlerini Kaydet</button>
-    <div id="contact-prefs-msg" class="field-msg"></div>
-  </div>
+    <!-- ═════ SECTION: HESAP YÖNETİMİ ═════ -->
+    <section class="ayr-section ayr-section--danger" id="ayr-s-tehlike">
+      <div class="ayr-section__head">
+        <span class="ayr-section__num ayr-section__num--danger">06</span>
+        <h2 class="ayr-section__title">Hesap yönetimi</h2>
+        <span class="ayr-section__desc">Oturum, dondurma ve silme. Dikkatli ol.</span>
+      </div>
 
-  <div class="ht-card" style="grid-column:1/-1;" id="settings-blocked-companies-card">
-    <div class="ht-card__title">Engellenen Şirketler</div>
-    <div class="wiz-step-desc mt-4">Profilinizi görmesini istemediğiniz şirketleri ekleyin. Bu şirketlerin İK ekipleri sizi aday havuzunda göremez.</div>
+      <div class="ayr-grid-2">
+        <div class="ayr-card" id="settings-session-management-card">
+          <div class="ayr-card__title">Oturum yönetimi</div>
+          <p class="ayr-lede">Mevcut oturumunu ve diğer cihazlarındaki oturumları buradan yönet.</p>
 
-    <div class="ht-input" style="margin-top:12px;position:relative;">
-      <label for="blocked-company-search" style="font-weight:500;">Şirket Ara ve Ekle</label>
-      <input type="text" id="blocked-company-search" placeholder="Şirket adı yazın..." autocomplete="off" class="mt-4">
-      <div id="blocked-company-dropdown" style="display:none;position:absolute;top:100%;left:0;right:0;background:var(--bg-surface,#fff);border:1px solid var(--border-subtle);border-radius:8px;max-height:160px;overflow-y:auto;z-index:10;box-shadow:0 4px 12px rgba(0,0,0,0.1);"></div>
-    </div>
+          <div class="ayr-session">
+            <p class="ayr-session__label">Mevcut oturum</p>
+            <p id="session-device-info" class="ayr-session__meta"></p>
+            <p id="session-login-time" class="ayr-session__meta"></p>
+          </div>
 
-    <div id="blocked-companies-list" style="margin-top:12px;display:flex;flex-direction:column;gap:8px;"></div>
-    <div id="blocked-companies-empty" style="font-size:12px;color:var(--muted);margin-top:8px;">Henüz engellenen şirket yok.</div>
-    <div id="blocked-msg" class="field-msg"></div>
-  </div>
+          <button class="ayr-btn ayr-btn--danger-ghost" id="btn-signout-all">Tüm cihazlardan çıkış yap</button>
+          <p class="ayr-fineprint">Bu işlem tüm cihazlarındaki oturumlarını sonlandırır. Tekrar giriş yapman gerekecek.</p>
+          <div id="signout-all-msg" class="ayr-msg"></div>
+        </div>
 
-  <div class="ht-card settings-theme-card" id="settings-theme-card">
-    <div>
-      <div class="settings-theme-title">Görünüm</div>
-      <div class="settings-theme-desc">Açık ve koyu mod</div>
-    </div>
-    <div class="d-flex items-center gap-12">
-      <button type="button" class="theme-toggle-btn theme-toggle-lg" title="Tema değiştir" aria-label="Tema değiştir (açık / koyu mod)">
-        <span class="theme-icon sun"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg></span>
-        <span class="theme-icon moon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></span>
-      </button>
-    </div>
-  </div>
+        <div class="ayr-card ayr-card--danger" id="settings-account-management-card">
+          <div class="ayr-card__title ayr-card__title--danger">Hesap yönetimi</div>
+          <div id="account-status-banner" class="ayr-banner" style="display:none;"></div>
+          <p class="ayr-lede">Hesabını dondurmak, silmek veya verilerini indirmek için hesap yönetimi sihirbazını kullan.</p>
+          <button class="ayr-btn ayr-btn--danger" id="btn-open-account-wizard">Hesap yönetimini aç</button>
+        </div>
+      </div>
 
-  <div class="ht-card ht-span-2" id="settings-account-management-card">
-    <div class="ht-card__title">Hesap Yönetimi</div>
-    <div id="account-status-banner" style="display:none;padding:12px;border-radius:8px;margin-bottom:12px;font-size:13px;"></div>
-    <p style="font-size:13px;color:var(--muted);line-height:1.5;">Hesabını dondurmak, silmek veya verilerini indirmek için hesap yönetimi sihirbazını kullan.</p>
-    <button class="ht-btn ht-btn--secondary ht-btn--sm" id="btn-open-account-wizard" style="margin-top:12px;width:100%;">Hesap Yönetimini Aç</button>
-  </div>
+      <div class="ayr-footer">
+        <button class="ayr-btn ayr-btn--ghost" id="btn-signout-settings">Çıkış yap</button>
+      </div>
+    </section>
 
-  <div class="ht-card" id="settings-session-management-card">
-    <div class="ht-card__title">Oturum Yönetimi</div>
-    <p style="font-size:13px;color:var(--muted);line-height:1.5;margin-top:4px;">Mevcut oturumun ve diğer cihazlarındaki oturumları buradan yönetebilirsin.</p>
+  </div><!-- /.ayr-root -->
 
-    <div style="margin-top:12px;padding:12px;border:1px solid var(--border);border-radius:10px;background:var(--bg);">
-      <div style="font-weight:600;font-size:13px;margin-bottom:4px;">Mevcut Oturum</div>
-      <div id="session-device-info" style="font-size:12px;color:var(--muted);"></div>
-      <div id="session-login-time" style="font-size:12px;color:var(--muted);margin-top:2px;"></div>
-    </div>
-
-    <button class="ht-btn ht-btn--secondary ht-btn--sm" id="btn-signout-all" style="margin-top:12px;width:100%;color:#92400E;border-color:#FCD34D;">
-      Tüm Cihazlardan Çıkış Yap
-    </button>
-    <p style="font-size:11px;color:var(--muted);margin-top:4px;line-height:1.4;">Bu işlem tüm cihazlarındaki oturumlarını sonlandırır. Tekrar giriş yapman gerekecek.</p>
-    <div id="signout-all-msg" class="field-msg"></div>
-  </div>
-
-  </div><!-- /settings bento grid -->
-
-  <div id="account-wizard-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);backdrop-filter:blur(3px);z-index:1000;align-items:center;justify-content:center;padding:16px;">
-    <div style="background:var(--bg-surface,#fff);border-radius:16px;max-width:480px;width:100%;max-height:90vh;overflow-y:auto;padding:24px;">
-      <div class="d-flex jc-between items-center mb-16">
-        <h3 style="font-family:'Bricolage Grotesque',sans-serif;font-size:18px;font-weight:700;margin:0;">Hesap Yönetimi</h3>
-        <button id="btn-close-account-wizard" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted);">✕</button>
+  <!-- ═════ ACCOUNT WIZARD MODAL ═════ -->
+  <div id="account-wizard-overlay" class="ayr-modal" style="display:none;">
+    <div class="ayr-modal__card">
+      <div class="ayr-modal__head">
+        <h3 class="ayr-modal__title">Hesap yönetimi</h3>
+        <button id="btn-close-account-wizard" class="ayr-modal__close" aria-label="Kapat">×</button>
       </div>
 
       <div id="account-wizard-step-1">
-        <p style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:20px;">
-          Aşağıdaki seçeneklerden birini kullanarak hesabını yönetebilirsin. Lütfen dikkatli ol — bazı işlemler geri alınamaz.
-        </p>
+        <p class="ayr-modal__lede">Aşağıdaki seçeneklerden birini kullanarak hesabını yönetebilirsin. Lütfen dikkatli ol — bazı işlemler geri alınamaz.</p>
 
-        <div id="wizard-download-section" style="padding:16px;border:1px solid var(--border);border-radius:12px;margin-bottom:12px;">
-          <div class="item-label">📥 Verilerimi İndir</div>
-          <p class="section-desc">KVKK md.11 kapsamında tüm kişisel verilerini JSON formatında indirebilirsin.</p>
-          <button class="ht-btn ht-btn--secondary ht-btn--sm" id="btn-download-data" style="width:100%;">Verilerimi İndir</button>
-          <div id="download-data-msg" class="field-msg"></div>
+        <div id="wizard-download-section" class="ayr-modal__row">
+          <div class="ayr-modal__row-title">Verilerimi indir</div>
+          <p class="ayr-modal__row-desc">KVKK md.11 kapsamında tüm kişisel verilerini JSON formatında indirebilirsin.</p>
+          <button class="ayr-btn ayr-btn--ghost ayr-btn--block" id="btn-download-data">Verilerimi indir</button>
+          <div id="download-data-msg" class="ayr-msg"></div>
         </div>
 
-        <div style="padding:16px;border:1px solid var(--border);border-radius:12px;margin-bottom:12px;">
-          <div class="item-label">⏸️ Hesabımı Dondur</div>
-          <p class="section-desc">Hesabını geçici olarak dondurabilirsin. Bu süre zarfında profilin işverenlere görünmez olur ancak verilerin korunur. İstediğin zaman tekrar aktif edebilirsin.</p>
-          <button class="ht-btn ht-btn--secondary ht-btn--sm" id="btn-freeze-account" style="width:100%;color:#92400E;border-color:#FCD34D;">Hesabımı Dondur</button>
+        <div class="ayr-modal__row">
+          <div class="ayr-modal__row-title">Hesabımı dondur</div>
+          <p class="ayr-modal__row-desc">Hesabını geçici olarak dondurabilirsin. Bu süre zarfında profilin işverenlere görünmez olur ancak verilerin korunur. İstediğin zaman tekrar aktif edebilirsin.</p>
+          <button class="ayr-btn ayr-btn--danger-ghost ayr-btn--block" id="btn-freeze-account">Hesabımı dondur</button>
         </div>
 
-        <div style="padding:16px;border:1px solid #FEE2E2;border-radius:12px;background:#FFF5F5;">
-          <div style="font-weight:600;font-size:14px;margin-bottom:4px;color:#991B1B;">🗑️ Hesabımı Kalıcı Olarak Sil</div>
-          <p style="font-size:12px;color:#991B1B;margin-bottom:4px;line-height:1.5;">Bu işlem geri alınamaz. Hesabın 30 gün boyunca askıya alınır, bu süre içinde vazgeçebilirsin.</p>
-          <p class="section-desc">30 gün sonra tüm verilerin — profilin, deneyimlerin, belgelerin ve tercihlerin — kalıcı olarak silinir (KVKK md.11). Bu işlemi onaylamadan önce verilerini indirmeni şiddetle tavsiye ederiz.</p>
-          <button class="ht-btn ht-btn--sm" id="btn-delete-account" style="width:100%;background:#DC2626;color:#fff;border:none;">Hesabımı Sil</button>
+        <div class="ayr-modal__row ayr-modal__row--danger">
+          <div class="ayr-modal__row-title ayr-modal__row-title--danger">Hesabımı kalıcı olarak sil</div>
+          <p class="ayr-modal__row-desc">Bu işlem geri alınamaz. Hesabın 30 gün boyunca askıya alınır, bu süre içinde vazgeçebilirsin.</p>
+          <p class="ayr-modal__row-desc">30 gün sonra tüm verilerin — profilin, deneyimlerin, belgelerin ve tercihlerin — kalıcı olarak silinir (KVKK md.11). Bu işlemi onaylamadan önce verilerini indirmeni şiddetle tavsiye ederiz.</p>
+          <button class="ayr-btn ayr-btn--danger ayr-btn--block" id="btn-delete-account">Hesabımı sil</button>
         </div>
       </div>
     </div>
-  </div>
-
-  <div style="margin-top:24px;display:flex;gap:12px;">
-    <button class="ht-btn ht-btn--secondary" id="btn-signout-settings">Çıkış Yap</button>
   </div>
 </main>
 
