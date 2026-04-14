@@ -3132,7 +3132,7 @@ test.describe('K033/K034 — Genel Bakis editorial redesign', () => {
   });
 
   test('K051: profil.html cache-bust bumped to v=20260414y for genel/merkez/profil-genel', () => {
-    expect(profilHtml).toContain('genel-bakis.css?v=20260414m');
+    expect(profilHtml).toContain('genel-bakis.css?v=20260414n');
     expect(profilHtml).toContain('profil-genel.js?v=20260414z');
     expect(profilHtml).toContain('merkezi.css?v=20260414v');
     expect(profilHtml).toContain('profil-extras.css?v=20260414h');
@@ -3416,7 +3416,7 @@ test.describe('K036 — Sirketler editorial redesign', () => {
   test('profil.html cache-bust bumped for K037 affected assets', () => {
     expect(profilHtml).toContain('sirketler.css?v=20260414m');
     expect(profilHtml).toContain('profil-markalar.js?v=20260414m');
-    expect(profilHtml).toContain('genel-bakis.css?v=20260414m');
+    expect(profilHtml).toContain('genel-bakis.css?v=20260414n');
   });
 });
 

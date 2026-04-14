@@ -256,7 +256,7 @@
   border-radius: 12px;
   overflow: hidden;
   max-width: 640px;
-  background: var(--color-cream, #F7F6F4);
+  background: #ffffff;
 }
 .gb-item__media img,
 .gb-item__media video {
@@ -264,7 +264,7 @@
   width: 100%;
   max-height: 360px;
   object-fit: contain;
-  background: var(--color-cream, #F7F6F4);
+  background: #ffffff;
 }
 .gb-item__excerpt {
   font-size: 14px;
