@@ -1,0 +1,530 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>HelloTalent — Mesajların / Inbox Redesign Mockup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --cream:#F7F6F4;
+    --cream-outer:#EFEDE8;
+    --cream-deep:#F1EFEA;
+    --navy:#1E2D5E;
+    --vermillion:#C94E28;
+    --hairline:#E5E3DF;
+    --muted:#6B6A66;
+    --shadow: 0 24px 48px rgba(30,45,94,0.14);
+    --display:'Bricolage Grotesque', Georgia, serif;
+    --body:'Plus Jakarta Sans', system-ui, sans-serif;
+    --mono:'DM Mono', ui-monospace, monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--cream-outer);
+    color:var(--navy);
+    font-family:var(--body);
+    font-size:15px;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+  }
+  .page{
+    background:var(--cream);
+    max-width:1200px;
+    margin:32px auto;
+    padding:clamp(28px,4vw,56px) clamp(20px,3vw,32px) 72px;
+    border:1px solid var(--hairline);
+    border-radius:18px;
+  }
+  .mono{
+    font-family:var(--mono);
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:0.08em;
+    color:var(--muted);
+    font-style:normal;
+  }
+  .mono.italic{font-style:italic}
+  .mono.navy{color:var(--navy)}
+  .mono.vermillion{color:var(--vermillion)}
+
+  /* ====== HERO ====== */
+  .hero{
+    background:var(--cream);
+    border:1px solid var(--hairline);
+    border-radius:14px;
+    padding:clamp(28px,4vw,44px);
+    opacity:0;
+    transform:translateY(12px);
+    animation:fadeUp 600ms ease-out forwards;
+  }
+  .hero h1{
+    font-family:var(--display);
+    color:var(--vermillion);
+    font-size:clamp(34px,5vw,40px);
+    line-height:1.02;
+    letter-spacing:-0.02em;
+    font-weight:600;
+    margin:14px 0 14px;
+  }
+  .hero p.sub{
+    font-size:14px;
+    color:var(--muted);
+    max-width:58ch;
+    margin:0 0 28px;
+  }
+  .hero .meta{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    padding-top:18px;
+    border-top:1px solid var(--hairline);
+  }
+  .hero .meta span{white-space:nowrap}
+  .hero .meta .sep{color:var(--hairline)}
+
+  /* ====== FILTER STRIP ====== */
+  .filters{
+    margin-top:28px;
+    padding-bottom:14px;
+    border-bottom:1px solid var(--hairline);
+    overflow-x:auto;
+    scrollbar-width:none;
+    opacity:0;
+    transform:translateY(12px);
+    animation:fadeUp 600ms ease-out 80ms forwards;
+  }
+  .filters::-webkit-scrollbar{display:none}
+  .filters ul{
+    list-style:none;
+    margin:0;
+    padding:0;
+    display:flex;
+    align-items:center;
+    gap:14px;
+    white-space:nowrap;
+  }
+  .filters li a{
+    font-family:var(--mono);
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:0.08em;
+    color:var(--muted);
+    text-decoration:none;
+    padding-bottom:6px;
+    border-bottom:2px solid transparent;
+    display:inline-block;
+  }
+  .filters li.active a{
+    color:var(--vermillion);
+    border-bottom-color:var(--vermillion);
+  }
+  .filters li.dot{color:var(--hairline);font-family:var(--mono);font-size:11px}
+  .filters li a:focus-visible{outline:2px solid var(--vermillion);outline-offset:3px;border-radius:2px}
+
+  /* ====== SPLIT ====== */
+  .split{
+    margin-top:28px;
+    display:grid;
+    grid-template-columns: 1fr 1.4fr;
+    gap:24px;
+    position:relative;
+    opacity:0;
+    transform:translateY(12px);
+    animation:fadeUp 600ms ease-out 160ms forwards;
+  }
+  .split::before{
+    content:"";
+    position:absolute;
+    top:8px;bottom:8px;
+    left:calc( (100% / 2.4) * 1 + 0px );
+    width:1px;background:var(--hairline);
+    display:none;
+  }
+  .pane-list{min-width:0}
+  .pane-thread{
+    min-width:0;
+    border-left:1px solid var(--hairline);
+    padding-left:28px;
+  }
+
+  /* ====== CONVERSATION LIST ====== */
+  .convo-list{list-style:none;margin:0;padding:0}
+  .convo{
+    display:grid;
+    grid-template-columns:44px 1fr auto;
+    gap:14px;
+    align-items:flex-start;
+    padding:18px 12px 18px 12px;
+    border-bottom:1px solid var(--hairline);
+    cursor:pointer;
+    position:relative;
+    transition:background 180ms ease;
+    text-decoration:none;
+    color:inherit;
+  }
+  .convo:first-child{border-top:1px solid var(--hairline)}
+  .convo:hover{background:var(--cream-deep)}
+  .convo.unread{background:rgba(201,78,40,0.04)}
+  .convo.active{
+    background:rgba(201,78,40,0.07);
+    box-shadow: inset 2px 0 0 var(--vermillion);
+  }
+  .convo:focus-visible{outline:2px solid var(--vermillion);outline-offset:-2px;border-radius:4px}
+  .avatar{
+    width:44px;height:44px;border-radius:50%;
+    border:1px solid var(--navy);
+    display:flex;align-items:center;justify-content:center;
+    color:var(--navy);
+    font-family:var(--display);
+    font-weight:600;
+    font-size:18px;
+    background:var(--cream);
+    position:relative;
+    flex-shrink:0;
+  }
+  .convo.unread .avatar::after{
+    content:"";
+    position:absolute;
+    top:-1px;right:-1px;
+    width:6px;height:6px;border-radius:50%;
+    background:var(--vermillion);
+  }
+  .convo-body{min-width:0}
+  .convo-name{
+    font-family:var(--body);
+    font-size:14px;
+    font-weight:600;
+    color:var(--navy);
+    margin:0 0 4px;
+    line-height:1.3;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+  .convo-preview{
+    font-size:13px;
+    color:var(--muted);
+    line-height:1.45;
+    margin:0;
+    display:-webkit-box;
+    -webkit-line-clamp:2;
+    -webkit-box-orient:vertical;
+    overflow:hidden;
+  }
+  .convo-time{
+    font-family:var(--mono);
+    font-size:10px;
+    font-style:italic;
+    text-transform:uppercase;
+    letter-spacing:0.08em;
+    color:var(--muted);
+    white-space:nowrap;
+    padding-top:2px;
+  }
+
+  /* ====== ACTIVE THREAD ====== */
+  .thread-head{
+    display:flex;
+    align-items:flex-start;
+    gap:18px;
+    padding-bottom:22px;
+    border-bottom:1px solid var(--hairline);
+    position:relative;
+  }
+  .thread-head .avatar.lg{width:56px;height:56px;font-size:22px}
+  .thread-brand{flex:1;min-width:0}
+  .thread-brand h2{
+    font-family:var(--display);
+    font-size:22px;
+    font-weight:600;
+    color:var(--navy);
+    margin:4px 0 6px;
+    line-height:1.15;
+    letter-spacing:-0.01em;
+  }
+  .close-btn{
+    width:32px;height:32px;
+    border:1px solid var(--hairline);
+    background:var(--cream);
+    border-radius:50%;
+    color:var(--muted);
+    cursor:pointer;
+    font-size:16px;
+    line-height:1;
+    display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;
+  }
+  .close-btn:hover{color:var(--navy);border-color:var(--navy)}
+  .close-btn:focus-visible{outline:2px solid var(--vermillion);outline-offset:2px}
+
+  .thread-messages{padding:28px 0 8px}
+  .msg{margin-bottom:28px}
+  .msg .cap{
+    display:block;
+    margin-bottom:8px;
+  }
+  .msg p{
+    margin:0;
+    font-size:15px;
+    line-height:1.6;
+    color:var(--navy);
+  }
+  .msg.in p{
+    padding-bottom:18px;
+    border-bottom:1px solid var(--hairline);
+  }
+  .msg.out{
+    text-align:right;
+    padding-left:20%;
+  }
+  .msg.out .bubble{
+    display:inline-block;
+    text-align:left;
+    border-left:2px solid var(--vermillion);
+    padding:4px 0 4px 16px;
+  }
+  .msg.out .cap{text-align:right}
+  .msg.out p{color:var(--navy)}
+  .msg.out .stamp{
+    display:block;
+    margin-top:6px;
+    text-align:right;
+  }
+
+  /* ====== COMPOSER ====== */
+  .composer-wrap{margin-top:18px;padding-top:22px;border-top:1px solid var(--hairline)}
+  .composer-wrap .cap{display:block;margin-bottom:10px}
+  .composer{
+    display:grid;
+    grid-template-columns:1fr auto;
+    gap:14px;
+    align-items:flex-end;
+  }
+  .composer textarea{
+    width:100%;
+    background:var(--cream);
+    border:1px solid var(--hairline);
+    border-radius:14px;
+    padding:14px 16px;
+    font-family:var(--body);
+    font-size:14px;
+    color:var(--navy);
+    resize:vertical;
+    min-height:108px;
+    line-height:1.5;
+  }
+  .composer textarea:focus{outline:2px solid var(--vermillion);outline-offset:1px;border-color:var(--vermillion)}
+  .btn-send{
+    background:var(--vermillion);
+    color:#fff;
+    border:none;
+    height:44px;
+    padding:0 22px;
+    border-radius:10px;
+    font-family:var(--body);
+    font-weight:600;
+    font-size:14px;
+    letter-spacing:0.01em;
+    cursor:pointer;
+  }
+  .btn-send:hover{filter:brightness(1.05)}
+  .btn-send:focus-visible{outline:2px solid var(--navy);outline-offset:3px}
+
+  /* ====== SIGNATURE ====== */
+  .sig{
+    margin-top:64px;
+    padding-top:28px;
+    border-top:1px solid var(--hairline);
+    text-align:center;
+  }
+
+  /* ====== RESPONSIVE ====== */
+  @media (max-width:900px){
+    .split{grid-template-columns:1fr;gap:0}
+    .pane-thread{
+      border-left:none;
+      padding-left:0;
+      margin-top:32px;
+      padding-top:24px;
+      border-top:1px solid var(--hairline);
+    }
+    .msg.out{padding-left:0}
+  }
+
+  @keyframes fadeUp{
+    from{opacity:0;transform:translateY(12px)}
+    to{opacity:1;transform:translateY(0)}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation:none !important;transition:none !important}
+    .hero,.filters,.split{opacity:1;transform:none}
+  }
+</style>
+</head>
+<body>
+  <main class="page" role="main">
+
+    <!-- ============ HERO ============ -->
+    <section class="hero" aria-labelledby="inbox-title">
+      <span class="mono" aria-hidden="true">MESAJ MERKEZI · K063</span>
+      <h1 id="inbox-title">Mesajların</h1>
+      <p class="sub">İK ekiplerinden, head-hunterlardan ve takip ettiğin markalardan gelen mesajlar. Sakin bir konuk defteri gibi — kim ne yazmış, ne zaman yazmış, sırayla.</p>
+      <div class="meta mono" aria-label="Özet">
+        <span>2 OKUNMAMIŞ</span><span class="sep">·</span>
+        <span>5 TOPLAM</span><span class="sep">·</span>
+        <span>SON: 26 MAR · 14:32</span>
+      </div>
+    </section>
+
+    <!-- ============ FILTER STRIP ============ -->
+    <nav class="filters" aria-label="Mesaj filtreleri">
+      <ul>
+        <li class="active"><a href="#" aria-current="true">Tümü</a></li>
+        <li class="dot" aria-hidden="true">·</li>
+        <li><a href="#">Okunmamış</a></li>
+        <li class="dot" aria-hidden="true">·</li>
+        <li><a href="#">Yeni Teklifler</a></li>
+        <li class="dot" aria-hidden="true">·</li>
+        <li><a href="#">Markalar</a></li>
+        <li class="dot" aria-hidden="true">·</li>
+        <li><a href="#">Arşiv</a></li>
+      </ul>
+    </nav>
+
+    <!-- ============ SPLIT ============ -->
+    <div class="split">
+
+      <!-- ----- LEFT: CONVERSATION LIST ----- -->
+      <section class="pane-list" aria-labelledby="list-head">
+        <h2 id="list-head" class="mono navy" style="margin:4px 0 6px">Gelenler</h2>
+        <ul class="convo-list" role="list">
+
+          <li>
+            <a href="#" class="convo unread active" role="listitem" aria-current="true">
+              <span class="avatar" aria-hidden="true">H</span>
+              <span class="convo-body">
+                <p class="convo-name">Hermès İK Türkiye</p>
+                <p class="convo-preview">Mağaza Müdürü pozisyonu için randevu önermek istiyoruz.</p>
+              </span>
+              <span class="convo-time">26 MAR</span>
+            </a>
+          </li>
+
+          <li>
+            <a href="#" class="convo unread" role="listitem">
+              <span class="avatar" aria-hidden="true">C</span>
+              <span class="convo-body">
+                <p class="convo-name">Chanel Recruitment</p>
+                <p class="convo-preview">Profilinizi inceledik, görüşmek isteriz.</p>
+              </span>
+              <span class="convo-time">25 MAR</span>
+            </a>
+          </li>
+
+          <li>
+            <a href="#" class="convo" role="listitem">
+              <span class="avatar" aria-hidden="true">A</span>
+              <span class="convo-body">
+                <p class="convo-name">Apple Türkiye İK</p>
+                <p class="convo-preview">Eğitim Uzmanı pozisyonu hakkında bilgi alabilir miyim?</p>
+              </span>
+              <span class="convo-time">22 MAR</span>
+            </a>
+          </li>
+
+          <li>
+            <a href="#" class="convo" role="listitem">
+              <span class="avatar" aria-hidden="true">B</span>
+              <span class="convo-body">
+                <p class="convo-name">Beymen Kariyer</p>
+                <p class="convo-preview">Mağazacılık alanında yeni rolümüz açıldı.</p>
+              </span>
+              <span class="convo-time">18 MAR</span>
+            </a>
+          </li>
+
+          <li>
+            <a href="#" class="convo" role="listitem">
+              <span class="avatar" aria-hidden="true">Z</span>
+              <span class="convo-body">
+                <p class="convo-name">Zara İK</p>
+                <p class="convo-preview">Operasyon Müdürü için ön görüşme talebi.</p>
+              </span>
+              <span class="convo-time">14 MAR</span>
+            </a>
+          </li>
+
+        </ul>
+      </section>
+
+      <!-- ----- RIGHT: ACTIVE THREAD ----- -->
+      <section class="pane-thread" aria-labelledby="thread-head">
+
+        <div class="thread-head">
+          <span class="avatar lg" aria-hidden="true">H</span>
+          <div class="thread-brand">
+            <span class="mono vermillion" aria-hidden="true">MAĞAZA MÜDÜRÜ POZİSYONU İÇİN</span>
+            <h2 id="thread-head">Hermès İK Türkiye</h2>
+            <span class="mono italic">İSTİNYEPARK · İSTANBUL</span>
+          </div>
+          <button class="close-btn" aria-label="Konuşmayı kapat">×</button>
+        </div>
+
+        <div class="thread-messages">
+
+          <!-- msg 1 incoming -->
+          <article class="msg in">
+            <span class="cap mono italic">HERMÈS İK · 12 SAAT ÖNCE</span>
+            <p>Merhaba Tuna, profilini inceledik. İstinyePark mağazamızda Mağaza Müdürü pozisyonu için seni görüşmeye davet ediyoruz.</p>
+          </article>
+
+          <!-- msg 2 outgoing -->
+          <article class="msg out">
+            <span class="cap mono italic">SEN · 10 SAAT ÖNCE</span>
+            <div class="bubble">
+              <p>Merhaba, ilgi gösterdiğiniz için teşekkürler. Hangi tarih sizin için uygun?</p>
+            </div>
+          </article>
+
+          <!-- msg 3 incoming -->
+          <article class="msg in">
+            <span class="cap mono italic">HERMÈS İK · 4 SAAT ÖNCE</span>
+            <p>20 Nisan Salı 14:00 nasıl?</p>
+          </article>
+
+          <!-- msg 4 outgoing -->
+          <article class="msg out">
+            <span class="cap mono italic">SEN · 2 SAAT ÖNCE</span>
+            <div class="bubble">
+              <p>Tarih uygun, teşekkür ederim.</p>
+            </div>
+          </article>
+
+        </div>
+
+        <!-- composer -->
+        <div class="composer-wrap">
+          <span class="cap mono italic">YANITIN İŞVERENE ANINDA İLETİLİR</span>
+          <form class="composer" onsubmit="event.preventDefault()">
+            <textarea aria-label="Mesajını yaz" placeholder="Mesajını yaz…" rows="4"></textarea>
+            <button type="submit" class="btn-send">Gönder</button>
+          </form>
+        </div>
+
+      </section>
+    </div>
+
+    <!-- ============ SIGNATURE ============ -->
+    <footer class="sig">
+      <span class="mono italic">— hellotalent —</span>
+    </footer>
+
+  </main>
+</body>
+</html>

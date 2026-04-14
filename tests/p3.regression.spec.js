@@ -3752,3 +3752,69 @@ test.describe('K060 — Kim Baktı editorial redesign', () => {
   });
 });
 
+/* ═══════════════════════════════════════════════════════════════════════
+   K063 — Inbox editorial redesign
+   Source of truth: docs/superpowers/specs/2026-04-14-inbox-redesign-mockup.html
+   ═══════════════════════════════════════════════════════════════════════ */
+test.describe('K063 — Inbox editorial redesign', () => {
+  let profilHtml063;
+  let inboxCss063;
+  let inboxJs063;
+
+  test.beforeAll(() => {
+    profilHtml063 = readFromRepo('profil.html');
+    inboxCss063 = readFromRepo('css/panels/inbox.css');
+    inboxJs063 = readFromRepo('profil-inbox.js');
+  });
+
+  test('profil.html carries K063 editorial vocabulary on inbox panel', () => {
+    expect(profilHtml063).toContain('class="ib-root"');
+    expect(profilHtml063).toContain('class="ib-card ib-card--hero"');
+    expect(profilHtml063).toContain('class="ib-headline"');
+    expect(profilHtml063).toContain('class="ib-filter"');
+    expect(profilHtml063).toContain('class="ib-split"');
+  });
+
+  test('profil.html preserves JS-targeted inbox IDs and exposes new meta IDs', () => {
+    expect(profilHtml063).toContain('id="inbox-list"');
+    expect(profilHtml063).toContain('id="inbox-tabs"');
+    expect(profilHtml063).toContain('id="inbox-empty"');
+    expect(profilHtml063).toContain('id="inbox-right-pane"');
+    expect(profilHtml063).toContain('id="inbox-left-pane"');
+    expect(profilHtml063).toContain('id="inbox-split"');
+    expect(profilHtml063).toContain('id="inbox-thread-placeholder"');
+    expect(profilHtml063).toContain('id="inbox-unread-badge"');
+    expect(profilHtml063).toContain('id="inbox-total"');
+    expect(profilHtml063).toContain('id="inbox-last-time"');
+  });
+
+  test('profil.html loads versioned inbox.css and bumped profil-inbox.js', () => {
+    expect(profilHtml063).toContain('css/panels/inbox.css?v=20260414aa');
+    expect(profilHtml063).toContain('profil-inbox.js?v=20260414aa');
+  });
+
+  test('inbox.css contains the K063 vocabulary and reduced-motion block', () => {
+    expect(inboxCss063).toContain('.ib-root');
+    expect(inboxCss063).toContain('.ib-card');
+    expect(inboxCss063).toContain('.ib-headline');
+    expect(inboxCss063).toContain('.ib-filter');
+    expect(inboxCss063).toContain('.ib-split');
+    expect(inboxCss063).toContain('.ib-row');
+    expect(inboxCss063).toContain('.ib-thread');
+    expect(inboxCss063).toContain('.ib-composer');
+    expect(inboxCss063).toContain('prefers-reduced-motion');
+  });
+
+  test('profil-inbox.js emits K063 class vocabulary and has no console.log', () => {
+    expect(inboxJs063).toContain('ib-row');
+    expect(inboxJs063).toContain('ib-avatar');
+    expect(inboxJs063).toContain('ib-sender');
+    expect(inboxJs063).toContain('ib-preview');
+    expect(inboxJs063).toContain('ib-time');
+    expect(inboxJs063).toContain('ib-tab');
+    expect(inboxJs063).toContain('ib-thread');
+    expect(inboxJs063).toContain('ib-composer');
+    expect(inboxJs063).not.toMatch(/console\.log/);
+  });
+});
+

@@ -35,6 +35,19 @@
     return d.getDate() + ' ' + TR_MONTHS[d.getMonth()];
   }
 
+  function formatRowTime(dateStr) {
+    if (!dateStr) return '';
+    var d = new Date(dateStr);
+    if (isNaN(d.getTime())) return '';
+    var now = new Date();
+    var sameDay = d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth() && d.getDate() === now.getDate();
+    if (sameDay) {
+      var h = d.getHours(), m = d.getMinutes();
+      return (h < 10 ? '0' : '') + h + ':' + (m < 10 ? '0' : '') + m;
+    }
+    return d.getDate() + ' ' + TR_MONTHS[d.getMonth()].toUpperCase();
+  }
+
   function bubbleTime(dateStr) {
     if (!dateStr) return '';
     var d = new Date(dateStr);
@@ -123,28 +136,31 @@
     }
   };
 
-  /* ═══ RENDER FILTER TABS ═══ */
+  /* ═══ RENDER FILTER TABS (K063 editorial) ═══ */
   function renderFilterTabs(container) {
-    FILTERS.forEach(function(f) {
+    while (container.firstChild) container.removeChild(container.firstChild);
+    FILTERS.forEach(function(f, idx) {
+      if (idx > 0) {
+        var sep = document.createElement('span');
+        sep.className = 'ib-tab-sep';
+        sep.setAttribute('aria-hidden', 'true');
+        sep.textContent = '\u00B7';
+        container.appendChild(sep);
+      }
       var btn = document.createElement('button');
       btn.type = 'button';
-      btn.textContent = f.label;
+      btn.className = 'ib-tab' + (f.key === currentFilter ? ' is-active' : '');
       btn.dataset.filter = f.key;
-      var isDel = f.key === 'deleted';
-      var isActive = f.key === currentFilter;
-      btn.style.cssText = 'padding:6px 14px;border-radius:20px;border:1px solid var(--border-subtle,#E5E3DF);background:' +
-        (isActive ? (isDel ? '#DC2626' : 'var(--navy,#1E2D5E)') : 'var(--bg-surface,white)') + ';color:' +
-        (isActive ? 'white' : (isDel ? '#DC2626' : 'var(--text-primary,#111)')) +
-        ';font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s;' +
-        (isDel ? 'margin-left:auto;' : '');
+      btn.setAttribute('role', 'tab');
+      btn.setAttribute('aria-selected', f.key === currentFilter ? 'true' : 'false');
+      btn.textContent = f.label;
       btn.addEventListener('click', function() {
         currentFilter = f.key;
-        var tabs = container.querySelectorAll('button');
+        var tabs = container.querySelectorAll('button.ib-tab');
         for (var i = 0; i < tabs.length; i++) {
-          var a = tabs[i].dataset.filter === currentFilter;
-          var d = tabs[i].dataset.filter === 'deleted';
-          tabs[i].style.background = a ? (d ? '#DC2626' : 'var(--navy,#1E2D5E)') : 'var(--bg-surface,white)';
-          tabs[i].style.color = a ? 'white' : (d ? '#DC2626' : 'var(--text-primary,#111)');
+          var active = tabs[i].dataset.filter === currentFilter;
+          tabs[i].classList.toggle('is-active', active);
+          tabs[i].setAttribute('aria-selected', active ? 'true' : 'false');
         }
         renderMessages();
       });
@@ -184,11 +200,11 @@
           if (et) et.textContent = 'Hen\u00FCz mesaj\u0131n yok';
           if (ed) ed.textContent = '\u0130\u015Fveren mesajlar\u0131 burada g\u00F6r\u00FCnecek';
         }
-        emptyEl.style.display = '';
+        emptyEl.hidden = false;
       }
       return;
     }
-    if (emptyEl) emptyEl.style.display = 'none';
+    if (emptyEl) emptyEl.hidden = true;
 
     filtered.forEach(function(msg) { listEl.appendChild(buildConversationRow(msg)); });
 
@@ -211,7 +227,8 @@
           if (rightPane) {
             rightPane.textContent = '';
             var ph = document.createElement('div');
-            ph.style.cssText = 'display:flex;align-items:center;justify-content:center;flex:1;color:var(--text-muted,#6B7280);font-size:14px;padding:40px;';
+            ph.className = 'ib-thread-empty';
+            ph.id = 'inbox-thread-placeholder';
             ph.textContent = 'Bir konu\u015Fma se\u00E7in';
             rightPane.appendChild(ph);
           }
@@ -226,89 +243,71 @@
   function buildConversationRow(msg) {
     var isUnread = msg.is_unread && msg.status !== 'deleted';
     var isDeleted = msg.status === 'deleted';
+    var isActive = activeThreadMsgId && activeThreadMsgId == msg.id;
     var hasReply = msg.latest_reply !== null;
 
     var row = document.createElement('div');
     row.dataset.msgId = msg.id;
-    row.style.cssText = 'display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;cursor:pointer;transition:all .15s;background:' +
-      (isUnread ? 'rgba(201,78,40,0.04)' : 'var(--bg-surface,white)') + ';';
+    row.className = 'ib-row' + (isUnread ? ' is-unread' : '') + (isActive ? ' is-active' : '');
+    row.setAttribute('role', 'listitem');
 
     // Avatar
     var avatar = document.createElement('div');
-    avatar.style.cssText = 'width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;background:var(--bg,#F7F6F4);overflow:hidden;';
+    avatar.className = 'ib-avatar';
+    avatar.setAttribute('aria-hidden', 'true');
     if (msg.company_logo) {
       var img = document.createElement('img');
       img.src = msg.company_logo;
       img.alt = '';
-      img.style.cssText = 'width:100%;height:100%;object-fit:cover;';
       avatar.appendChild(img);
     } else {
-      avatar.textContent = '\uD83C\uDFE2';
+      var initial = (msg.company_name || '\u0130').charAt(0).toUpperCase();
+      avatar.textContent = initial;
     }
     row.appendChild(avatar);
 
-    // Content
-    var content = document.createElement('div');
-    content.style.cssText = 'flex:1;min-width:0;';
-    var topRow = document.createElement('div');
-    topRow.style.cssText = 'display:flex;align-items:center;justify-content:space-between;margin-bottom:2px;';
-    var nameEl = document.createElement('span');
-    nameEl.style.cssText = 'font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;' +
-      (isUnread ? 'font-weight:700;' : 'font-weight:500;') + 'color:var(--text-primary,#111);';
+    // Meta (sender + preview)
+    var meta = document.createElement('div');
+    meta.className = 'ib-meta';
+    var nameEl = document.createElement('p');
+    nameEl.className = 'ib-sender';
     nameEl.textContent = msg.company_name || '\u0130\u015Fveren';
-    topRow.appendChild(nameEl);
+    meta.appendChild(nameEl);
 
-    var timeEl = document.createElement('span');
-    timeEl.style.cssText = 'font-size:11px;white-space:nowrap;flex-shrink:0;margin-left:8px;' +
-      (isUnread ? 'color:var(--verm,#C94E28);font-weight:600;' : 'color:var(--text-muted,#6B7280);');
-    timeEl.textContent = timeAgo(msg.last_activity);
-    topRow.appendChild(timeEl);
-    content.appendChild(topRow);
-
-    var previewEl = document.createElement('div');
-    previewEl.style.cssText = 'font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1.3;' +
-      (isUnread ? 'color:var(--text-primary,#111);font-weight:500;' : 'color:var(--text-muted,#6B7280);');
-    var previewText = msg.body || msg.title;
+    var previewEl = document.createElement('p');
+    previewEl.className = 'ib-preview';
+    var previewText = msg.body || msg.title || '';
     if (hasReply) {
       previewText = msg.latest_sender === 'candidate' ? ('Sen: ' + msg.latest_reply.body) : (msg.company_name || '\u0130\u015Fveren') + ': ' + msg.latest_reply.body;
     }
     previewEl.textContent = previewText;
-    content.appendChild(previewEl);
-    row.appendChild(content);
+    meta.appendChild(previewEl);
+    row.appendChild(meta);
 
-    // Right side
+    // Right column (time + actions)
     var rightCol = document.createElement('div');
-    rightCol.style.cssText = 'display:flex;align-items:center;gap:6px;flex-shrink:0;';
+    rightCol.className = 'ib-row-actions';
+    var timeEl = document.createElement('span');
+    timeEl.className = 'ib-time';
+    timeEl.textContent = formatRowTime(msg.last_activity);
+    rightCol.appendChild(timeEl);
+
     if (isDeleted) {
       var restoreBtn = document.createElement('button');
       restoreBtn.type = 'button';
+      restoreBtn.className = 'ib-row-btn';
       restoreBtn.textContent = 'Geri Al';
-      restoreBtn.style.cssText = 'padding:4px 10px;border-radius:8px;border:1px solid var(--border-subtle,#E5E3DF);background:var(--bg-surface,white);color:var(--navy,#1E2D5E);font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;';
       restoreBtn.addEventListener('click', function(e) { e.stopPropagation(); restoreMessage(msg.id); });
       rightCol.appendChild(restoreBtn);
     } else {
-      if (isUnread) {
-        var dot = document.createElement('div');
-        dot.style.cssText = 'width:8px;height:8px;border-radius:50%;background:var(--verm,#C94E28);';
-        rightCol.appendChild(dot);
-      }
       var trashBtn = document.createElement('button');
       trashBtn.type = 'button';
+      trashBtn.className = 'ib-row-trash';
       trashBtn.title = 'Sil';
-      var _isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-      trashBtn.style.cssText = 'padding:2px 4px;border:none;background:none;color:var(--text-muted,#6B7280);font-size:14px;cursor:pointer;transition:opacity .15s;line-height:1;' + (_isTouchDevice ? 'opacity:0.5;' : 'opacity:0;');
-      trashBtn.textContent = '\uD83D\uDDD1\uFE0F';
+      trashBtn.setAttribute('aria-label', 'Sil');
+      trashBtn.textContent = '\u00D7';
       trashBtn.addEventListener('click', function(e) { e.stopPropagation(); softDeleteMessage(msg.id); });
       rightCol.appendChild(trashBtn);
-      row.addEventListener('mouseenter', function() {
-        row.style.background = isUnread ? 'rgba(201,78,40,0.07)' : 'var(--bg,#F7F6F4)';
-        trashBtn.style.opacity = '1';
-      });
-      row.addEventListener('mouseleave', function() {
-        row.style.background = isUnread ? 'rgba(201,78,40,0.04)' : 'var(--bg-surface,white)';
-        if (!_isTouchDevice) trashBtn.style.opacity = '0';
-        else trashBtn.style.opacity = '0.5';
-      });
     }
     row.appendChild(rightCol);
 
@@ -337,10 +336,9 @@
     activeThreadMsgId = msg.id;
 
     // Highlight active row in list
-    var rows = document.querySelectorAll('#inbox-list > div');
+    var rows = document.querySelectorAll('#inbox-list > .ib-row');
     for (var r = 0; r < rows.length; r++) {
-      rows[r].style.background = rows[r].dataset.msgId == msg.id
-        ? 'rgba(201,78,40,0.08)' : '';
+      rows[r].classList.toggle('is-active', rows[r].dataset.msgId == msg.id);
     }
 
     if (isDesktop()) {
@@ -351,67 +349,106 @@
   }
 
   function buildThreadContent(msg, container) {
+    // Thread wrapper
+    var thread = document.createElement('div');
+    thread.className = 'ib-thread';
+
     // Header
     var header = document.createElement('div');
-    header.style.cssText = 'display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--border-subtle,#E5E3DF);flex-shrink:0;';
+    header.className = 'ib-thread-head';
 
     var avi = document.createElement('div');
-    avi.style.cssText = 'width:32px;height:32px;border-radius:50%;overflow:hidden;flex-shrink:0;background:var(--bg,#F7F6F4);display:flex;align-items:center;justify-content:center;font-size:14px;';
+    avi.className = 'ib-avatar ib-avatar--lg';
+    avi.setAttribute('aria-hidden', 'true');
     if (msg.company_logo) {
       var aviImg = document.createElement('img');
       aviImg.src = msg.company_logo;
-      aviImg.style.cssText = 'width:100%;height:100%;object-fit:cover;';
+      aviImg.alt = '';
       avi.appendChild(aviImg);
-    } else { avi.textContent = '\uD83C\uDFE2'; }
+    } else {
+      avi.textContent = (msg.company_name || '\u0130').charAt(0).toUpperCase();
+    }
     header.appendChild(avi);
 
     var hInfo = document.createElement('div');
-    hInfo.style.cssText = 'flex:1;min-width:0;';
-    var hName = document.createElement('div');
-    hName.style.cssText = 'font-size:14px;font-weight:700;color:var(--text-primary,#111);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;';
+    hInfo.className = 'ib-thread-brand';
+    if (msg.title) {
+      var hEyebrow = document.createElement('span');
+      hEyebrow.className = 'ib-thread-eyebrow';
+      hEyebrow.textContent = msg.title;
+      hInfo.appendChild(hEyebrow);
+    }
+    var hName = document.createElement('h2');
+    hName.className = 'ib-thread-title';
     hName.textContent = msg.company_name || '\u0130\u015Fveren';
     hInfo.appendChild(hName);
-    var hSubject = document.createElement('div');
-    hSubject.style.cssText = 'font-size:11px;color:var(--text-muted,#6B7280);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;';
-    hSubject.textContent = msg.title;
-    hInfo.appendChild(hSubject);
     header.appendChild(hInfo);
-    container.appendChild(header);
+
+    var closeBtn = document.createElement('button');
+    closeBtn.type = 'button';
+    closeBtn.className = 'ib-close';
+    closeBtn.setAttribute('aria-label', 'Konu\u015Fmay\u0131 kapat');
+    closeBtn.textContent = '\u00D7';
+    closeBtn.addEventListener('click', function() {
+      activeThreadMsgId = null;
+      var rows = document.querySelectorAll('#inbox-list > .ib-row');
+      for (var r = 0; r < rows.length; r++) rows[r].classList.remove('is-active');
+      var rp = document.getElementById('inbox-right-pane');
+      if (rp) {
+        rp.textContent = '';
+        var ph = document.createElement('div');
+        ph.className = 'ib-thread-empty';
+        ph.id = 'inbox-thread-placeholder';
+        ph.textContent = 'Bir konu\u015Fma se\u00E7in';
+        rp.appendChild(ph);
+      }
+    });
+    header.appendChild(closeBtn);
+    thread.appendChild(header);
 
     // Messages area
     var msgArea = document.createElement('div');
     msgArea.id = 'thread-messages';
-    msgArea.style.cssText = 'flex:1;overflow-y:auto;padding:12px 16px;display:flex;flex-direction:column;gap:4px;';
+    msgArea.className = 'ib-thread-body';
     var threadLoading = document.createElement('div');
-    threadLoading.style.cssText = 'text-align:center;padding:24px;color:var(--text-muted,#6B7280);font-size:13px;';
-    threadLoading.textContent = 'Y\u00FCkleniyor...';
+    threadLoading.className = 'ib-daysep';
+    threadLoading.textContent = 'Y\u00FCkleniyor\u2026';
     msgArea.appendChild(threadLoading);
-    container.appendChild(msgArea);
+    thread.appendChild(msgArea);
 
     // Composer
-    var composer = document.createElement('div');
-    composer.style.cssText = 'display:flex;align-items:flex-end;gap:8px;padding:10px 14px;border-top:1px solid var(--border-subtle,#E5E3DF);flex-shrink:0;background:var(--bg-surface,white);position:sticky;bottom:0;z-index:1;';
+    var composerWrap = document.createElement('div');
+    composerWrap.className = 'ib-composer-wrap';
+    var cap = document.createElement('span');
+    cap.className = 'ib-composer-cap';
+    cap.textContent = 'YANITIN \u0130\u015EVERENE ANINDA \u0130LET\u0130L\u0130R';
+    composerWrap.appendChild(cap);
+
+    var composer = document.createElement('form');
+    composer.className = 'ib-composer';
+    composer.addEventListener('submit', function(e) { e.preventDefault(); });
+
     var textarea = document.createElement('textarea');
-    textarea.placeholder = 'Yan\u0131t yaz...';
+    textarea.placeholder = 'Mesaj\u0131n\u0131 yaz\u2026';
     textarea.maxLength = 5000;
-    textarea.rows = 1;
-    textarea.style.cssText = 'flex:1;border:1px solid var(--border-subtle,#E5E3DF);border-radius:20px;padding:10px 14px;font-size:14px;font-family:\'Plus Jakarta Sans\',sans-serif;line-height:1.4;resize:none;box-sizing:border-box;color:var(--text-primary,#111);background:var(--bg,#F7F6F4);max-height:100px;overflow-y:auto;';
-    textarea.addEventListener('input', function() { this.style.height = 'auto'; this.style.height = Math.min(this.scrollHeight, 100) + 'px'; });
+    textarea.rows = 4;
+    textarea.setAttribute('aria-label', 'Mesaj\u0131n\u0131 yaz');
     composer.appendChild(textarea);
 
     var sendBtn = document.createElement('button');
-    sendBtn.type = 'button';
-    sendBtn.style.cssText = 'width:36px;height:36px;border-radius:50%;border:none;background:var(--verm,#C94E28);color:white;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .15s;';
-    sendBtn.textContent = '\u27A4';
-    sendBtn.addEventListener('mouseenter', function() { this.style.background = '#b84420'; });
-    sendBtn.addEventListener('mouseleave', function() { this.style.background = 'var(--verm,#C94E28)'; });
+    sendBtn.type = 'submit';
+    sendBtn.className = 'ib-send';
+    sendBtn.textContent = 'G\u00F6nder';
     composer.appendChild(sendBtn);
-    container.appendChild(composer);
+    composerWrap.appendChild(composer);
 
     var statusMsg = document.createElement('div');
     statusMsg.id = 'thread-status-msg';
-    statusMsg.style.cssText = 'display:none;padding:6px 14px;font-size:12px;font-weight:600;text-align:center;';
-    container.appendChild(statusMsg);
+    statusMsg.className = 'ib-status';
+    composerWrap.appendChild(statusMsg);
+
+    thread.appendChild(composerWrap);
+    container.appendChild(thread);
 
     loadThread(msg.id, msgArea, msg);
     sendBtn.addEventListener('click', function() { sendReply(msg.id, textarea, sendBtn, statusMsg, msgArea, msg); });
@@ -498,43 +535,42 @@
         // Date separator
         if (!lastDate || !isSameDay(lastDate, item.created_at)) {
           var sep = document.createElement('div');
-          sep.style.cssText = 'text-align:center;padding:8px 0;';
-          var sepLabel = document.createElement('span');
-          sepLabel.style.cssText = 'font-size:11px;color:var(--text-muted,#6B7280);background:var(--bg-surface,white);padding:2px 12px;border-radius:10px;font-weight:500;';
-          sepLabel.textContent = dateSeparatorLabel(item.created_at);
-          sep.appendChild(sepLabel);
+          sep.className = 'ib-daysep';
+          sep.textContent = dateSeparatorLabel(item.created_at);
           container.appendChild(sep);
           lastDate = item.created_at;
         }
 
         var isEmp = item.sender === 'employer';
-        var bubble = document.createElement('div');
-        bubble.style.cssText = 'max-width:80%;padding:10px 14px;border-radius:16px;position:relative;' +
-          (isEmp
-            ? 'align-self:flex-start;background:var(--bg,#F7F6F4);border-bottom-left-radius:4px;'
-            : 'align-self:flex-end;background:var(--verm,#C94E28);color:white;border-bottom-right-radius:4px;');
+        var msgEl = document.createElement('article');
+        msgEl.className = 'ib-msg ' + (isEmp ? 'ib-msg--in' : 'ib-msg--out');
 
-        var bodyEl = document.createElement('div');
-        bodyEl.style.cssText = 'font-size:14px;line-height:1.5;white-space:pre-wrap;word-break:break-word;';
-        bodyEl.textContent = item.body;
-        bubble.appendChild(bodyEl);
+        var cap = document.createElement('span');
+        cap.className = 'ib-cap';
+        var who = isEmp ? ((msg.company_name || '\u0130\u015EVEREN').toUpperCase()) : 'SEN';
+        cap.textContent = who + ' \u00B7 ' + timeAgo(item.created_at).toUpperCase();
+        msgEl.appendChild(cap);
 
-        var timeWrap = document.createElement('div');
-        timeWrap.style.cssText = 'display:flex;align-items:center;justify-content:flex-end;gap:4px;margin-top:4px;';
-        var timeSpan = document.createElement('span');
-        timeSpan.style.cssText = 'font-size:10px;' + (isEmp ? 'color:var(--text-muted,#6B7280);' : 'color:rgba(255,255,255,0.7);');
-        timeSpan.textContent = bubbleTime(item.created_at);
-        timeWrap.appendChild(timeSpan);
-        bubble.appendChild(timeWrap);
-        container.appendChild(bubble);
-
-        // Read receipt — only on last candidate reply
-        if (!isEmp && lastCandidateReply && item.item_id === lastCandidateReply.item_id) {
-          var receipt = document.createElement('div');
-          receipt.style.cssText = 'align-self:flex-end;font-size:10px;color:var(--text-muted,#6B7280);margin-top:1px;padding-right:2px;';
-          receipt.textContent = item.read_at ? 'G\u00F6r\u00FCld\u00FC' : '\u0130letildi';
-          container.appendChild(receipt);
+        if (isEmp) {
+          var pIn = document.createElement('p');
+          pIn.textContent = item.body;
+          msgEl.appendChild(pIn);
+        } else {
+          var bubble = document.createElement('div');
+          bubble.className = 'ib-bubble';
+          var pOut = document.createElement('p');
+          pOut.textContent = item.body;
+          bubble.appendChild(pOut);
+          msgEl.appendChild(bubble);
+          // Read receipt — only on last candidate reply
+          if (lastCandidateReply && item.item_id === lastCandidateReply.item_id) {
+            var stamp = document.createElement('span');
+            stamp.className = 'ib-stamp';
+            stamp.textContent = item.read_at ? 'G\u00D6R\u00DCLD\u00DC' : '\u0130LET\u0130LD\u0130';
+            msgEl.appendChild(stamp);
+          }
         }
+        container.appendChild(msgEl);
       }
       container.scrollTop = container.scrollHeight;
     } catch (err) {
@@ -542,26 +578,28 @@
     }
   }
 
-  /* ═══ APPEND BUBBLE (for optimistic + realtime) ═══ */
+  /* ═══ APPEND MESSAGE (for optimistic + realtime) ═══ */
   function appendBubble(container, text, sender, time) {
     var isEmp = sender === 'employer';
-    var bubble = document.createElement('div');
-    bubble.style.cssText = 'max-width:80%;padding:10px 14px;border-radius:16px;position:relative;' +
-      (isEmp
-        ? 'align-self:flex-start;background:var(--bg,#F7F6F4);border-bottom-left-radius:4px;'
-        : 'align-self:flex-end;background:var(--verm,#C94E28);color:white;border-bottom-right-radius:4px;');
-    var bodyEl = document.createElement('div');
-    bodyEl.style.cssText = 'font-size:14px;line-height:1.5;white-space:pre-wrap;word-break:break-word;';
-    bodyEl.textContent = text;
-    bubble.appendChild(bodyEl);
-    var timeWrap = document.createElement('div');
-    timeWrap.style.cssText = 'display:flex;align-items:center;justify-content:flex-end;gap:4px;margin-top:4px;';
-    var timeSpan = document.createElement('span');
-    timeSpan.style.cssText = 'font-size:10px;' + (isEmp ? 'color:var(--text-muted,#6B7280);' : 'color:rgba(255,255,255,0.7);');
-    timeSpan.textContent = time || bubbleTime(new Date().toISOString());
-    timeWrap.appendChild(timeSpan);
-    bubble.appendChild(timeWrap);
-    container.appendChild(bubble);
+    var msgEl = document.createElement('article');
+    msgEl.className = 'ib-msg ' + (isEmp ? 'ib-msg--in' : 'ib-msg--out');
+    var cap = document.createElement('span');
+    cap.className = 'ib-cap';
+    cap.textContent = (isEmp ? '\u0130\u015EVEREN' : 'SEN') + ' \u00B7 ' + (time || 'AZ \u00D6NCE');
+    msgEl.appendChild(cap);
+    if (isEmp) {
+      var pIn = document.createElement('p');
+      pIn.textContent = text;
+      msgEl.appendChild(pIn);
+    } else {
+      var bubble = document.createElement('div');
+      bubble.className = 'ib-bubble';
+      var pOut = document.createElement('p');
+      pOut.textContent = text;
+      bubble.appendChild(pOut);
+      msgEl.appendChild(bubble);
+    }
+    container.appendChild(msgEl);
   }
 
   function isNearBottom(el) {
@@ -584,8 +622,9 @@
     appendBubble(msgArea, body, 'candidate');
     // Add optimistic receipt
     var optReceipt = document.createElement('div');
-    optReceipt.style.cssText = 'align-self:flex-end;font-size:10px;color:var(--text-muted,#6B7280);margin-top:1px;padding-right:2px;';
-    optReceipt.textContent = 'G\u00F6nderiliyor...';
+    optReceipt.className = 'ib-stamp';
+    optReceipt.style.textAlign = 'right';
+    optReceipt.textContent = 'G\u00D6NDER\u0130L\u0130YOR\u2026';
     optReceipt.id = 'opt-receipt';
     msgArea.appendChild(optReceipt);
     if (wasNearBottom) scrollToBottom(msgArea);
@@ -604,7 +643,7 @@
         if (or) { or.textContent = 'Hata! Tekrar deneyin.'; or.style.color = '#DC2626'; }
         return;
       }
-      if (or) or.textContent = '\u0130letildi';
+      if (or) or.textContent = '\u0130LET\u0130LD\u0130';
       // Update local preview
       for (var i = 0; i < allMessages.length; i++) {
         if (allMessages[i].id === messageId) {
@@ -660,15 +699,35 @@
   /* ═══ UNREAD BADGES ═══ */
   function updateUnreadBadges() {
     var c = 0;
+    var total = 0;
+    var lastTs = null;
     for (var i = 0; i < allMessages.length; i++) {
-      if (allMessages[i].status !== 'deleted' && allMessages[i].is_unread) c++;
+      var m = allMessages[i];
+      if (m.status === 'deleted') continue;
+      total++;
+      if (m.is_unread) c++;
+      if (m.last_activity && (!lastTs || new Date(m.last_activity) > new Date(lastTs))) lastTs = m.last_activity;
     }
     var sb = document.getElementById('badge-inbox-unread');
     if (sb) { sb.textContent = c > 99 ? '99+' : c; sb.style.display = c > 0 ? '' : 'none'; }
     var bb = document.getElementById('badge-inbox-bn');
     if (bb) { bb.textContent = c > 9 ? '9+' : c; bb.style.display = c > 0 ? 'flex' : 'none'; }
     var pb = document.getElementById('inbox-unread-badge');
-    if (pb) { pb.textContent = c + ' okunmam\u0131\u015F'; pb.style.display = c > 0 ? '' : 'none'; }
+    if (pb) { pb.textContent = String(c); }
+    var tb = document.getElementById('inbox-total');
+    if (tb) { tb.textContent = String(total); }
+    var lb = document.getElementById('inbox-last-time');
+    if (lb) {
+      if (lastTs) {
+        var d = new Date(lastTs);
+        var day = d.getDate();
+        var mon = TR_MONTHS[d.getMonth()].toUpperCase();
+        var hh = d.getHours(); var mm = d.getMinutes();
+        lb.textContent = day + ' ' + mon + ' \u00B7 ' + (hh < 10 ? '0' : '') + hh + ':' + (mm < 10 ? '0' : '') + mm;
+      } else {
+        lb.textContent = '\u2014';
+      }
+    }
   }
 
   /* ═══ PRELOAD UNREAD COUNT (canonical — uses server RPC) ═══ */

@@ -67,6 +67,7 @@ if (window.Sentry) {
 <link rel="stylesheet" href="css/profil-extras.css?v=20260414h">
 <link rel="stylesheet" href="css/panels/sirketler.css?v=20260414n">
 <link rel="stylesheet" href="css/panels/kimbakti.css?v=20260414ac">
+<link rel="stylesheet" href="css/panels/inbox.css?v=20260414aa">
 <link rel="stylesheet" href="css/panel-soon.css?v=20260413a">
 <link rel="stylesheet" href="css/duyurular.css?v=20260414a">
 </head>
@@ -1205,43 +1206,43 @@ if (window.Sentry) {
   <div id="teklifler-root"></div>
 </main>
 
-<!-- ═══ PANEL: MESAJLAR (Unified Inbox) ═══ -->
+<!-- ═══ PANEL: MESAJLAR (K063 Editorial Inbox) ═══ -->
 <main class="panel" id="panel-inbox" data-panel="inbox">
-  <!-- Hero card -->
-  <div class="g-hero">
-    <div class="g-hero-inner">
-      <div class="ht-panel-heading ht-panel-heading--flex">
-        Mesajlar
-        <span id="inbox-unread-badge" class="badge-verm"></span>
-      </div>
-    </div>
-  </div>
+  <div class="ib-root">
 
-  <!-- Split-pane container: list left, thread right on desktop -->
-  <div id="inbox-split" style="display:flex;gap:0;min-height:70vh;border:1px solid var(--border-subtle,#E5E3DF);border-radius:16px;overflow:hidden;background:var(--bg-surface,#fff);">
-    <!-- Left pane: thread list -->
-    <div id="inbox-left-pane" style="width:340px;min-width:280px;max-width:400px;border-right:1px solid var(--border-subtle,#E5E3DF);display:flex;flex-direction:column;overflow:hidden;">
-      <div id="inbox-tabs" class="tag-row" style="padding:12px 14px;border-bottom:1px solid var(--border-subtle,#E5E3DF);flex-shrink:0;"></div>
-      <div id="inbox-list" style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:2px;padding:6px;"></div>
-      <div id="inbox-empty" style="display:none;text-align:center;padding:40px 20px;">
-        <div class="empty-title">Henüz mesajın yok</div>
-        <div class="sub-text">İşveren mesajları burada görünecek</div>
+    <article class="ib-card ib-card--hero" aria-labelledby="inbox-title">
+      <span class="ib-eyebrow" aria-hidden="true">MESAJ MERKEZİ · K063</span>
+      <h1 class="ib-headline" id="inbox-title">Mesajların</h1>
+      <p class="ib-subline">İK ekiplerinden, head-hunterlardan ve takip ettiğin markalardan gelen mesajlar. Sakin bir konuk defteri gibi — kim ne yazmış, ne zaman yazmış, sırayla.</p>
+      <div class="ib-meta-row" aria-label="Özet">
+        <span class="ib-mono">
+          <strong id="inbox-unread-badge">0</strong> OKUNMAMIŞ
+        </span>
+        <span class="ib-mono" aria-hidden="true">·</span>
+        <span class="ib-mono"><strong id="inbox-total">0</strong> TOPLAM</span>
+        <span class="ib-mono" aria-hidden="true">·</span>
+        <span class="ib-mono">SON: <strong id="inbox-last-time">—</strong></span>
       </div>
+    </article>
+
+    <nav class="ib-filter" id="inbox-tabs" role="tablist" aria-label="Mesaj filtreleri"></nav>
+
+    <div class="ib-split" id="inbox-split">
+      <section class="ib-pane ib-pane--list" id="inbox-left-pane" aria-label="Gelenler">
+        <div class="ib-list" id="inbox-list" role="list"></div>
+        <div class="ib-empty" id="inbox-empty" hidden>
+          <div class="empty-title">Henüz mesajın yok</div>
+          <div class="sub-text">İşveren mesajları burada görünecek</div>
+        </div>
+      </section>
+
+      <section class="ib-pane ib-pane--thread" id="inbox-right-pane" aria-label="Aktif konuşma">
+        <div class="ib-thread-empty" id="inbox-thread-placeholder">Bir konuşma seçin</div>
+      </section>
     </div>
-    <!-- Right pane: active thread (desktop inline, mobile overlay) -->
-    <div id="inbox-right-pane" style="flex:1;display:flex;flex-direction:column;min-width:0;">
-      <div id="inbox-thread-placeholder" style="display:flex;align-items:center;justify-content:center;flex:1;color:var(--text-muted,#6B7280);font-size:14px;padding:40px;">
-        Bir konuşma seçin
-      </div>
-    </div>
+
+    <footer class="ib-signature">— hellotalent —</footer>
   </div>
-  <style>
-    @media (max-width: 768px) {
-      #inbox-split { flex-direction: column; min-height: auto; border: none; border-radius: 0; }
-      #inbox-left-pane { width: 100% !important; max-width: none !important; min-width: 0 !important; border-right: none !important; border-bottom: 1px solid var(--border-subtle,#E5E3DF); }
-      #inbox-right-pane { display: none !important; }
-    }
-  </style>
 </main>
 
 <!-- ═══ PANEL: BİLDİRİMLER ═══ -->
@@ -1772,7 +1773,7 @@ if (window.Sentry) {
 <script src="profil-markalar.js?v=20260414m"></script>
 <script src="profil-settings.js?v=20260404b"></script>
 <script src="profil-teklifler.js?v=20260404b"></script>
-<script src="profil-inbox.js?v=20260414a"></script>
+<script src="profil-inbox.js?v=20260414aa"></script>
 <script src="profil-yetkinlik.js?v=20260404b"></script>
 <script src="profil-studio.js?v=20260413a"></script>
 <script src="panel-soon.js?v=20260413a"></script>
