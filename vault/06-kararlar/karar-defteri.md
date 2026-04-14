@@ -346,4 +346,49 @@
 
 ---
 
-*Son güncelleme: 13 Nisan 2026*
+## K031 — Kim Baktı Backend Audit + Açık Backlog
+**Tarih:** 14 Nisan 2026
+**Karar veren:** Tuna + Claude
+**Karar:** Profiline Bakanlar (Kim Baktı) panelinin frontend'i K060 ile editorial vocabulary'e taşındı. Backend audit'i yapıldı; veri katmanı kısmen hazır, kısmi eksik. Eksikler P0/P1/P2 olarak işaretlenip vault backlog'a alındı. Önce P0 maddeler kapatılmadan premium gate açılmaz.
+
+### Frontend yapısı (HAZIR — K060)
+- `css/panels/kimbakti.css` (420 satır, .kb-* vocab)
+- `profil-kimbakti.js` rewritten — DOM template emitters editorial classes
+- Tüm 16 ID korundu (kb-total, kb-chart, kb-segments, kb-seg-bars, kb-viewers, kb-viewer-list, kb-viewers-lock, kb-conversion, kb-conversion-body, kb-premium-cta, kb-empty, kb-empty-pct, kb-skeleton, kb-hero, kb-trend, kb-last-viewed)
+- `loadViewersCard()` contract korundu, `supabase.from('candidate_view_stats')` + `.from('profile_view_events').select('*, companies(company_name, segment)')` çağrıları yapıyor
+
+### Backend gerçek durumu
+- ✅ EXISTS (live): `candidates.is_premium`, `candidates.premium_until` (`20260327000000_premium_entitlement.sql`)
+- ⚠️ PARTIAL: `candidate_view_stats` tablosu — `docs/migrations/040_profile_view_tracking.sql`'de tanımlı ama `supabase/migrations/`'a promote edilmemiş. `20260406093548_supabase_advisor_fixes.sql` "SA2: SKIPPED — candidate_view_stats table does not exist" diyor.
+- ⚠️ PARTIAL: `profile_view_events` tablosu — aynı arşiv migration'da, live DB'de yok büyük ihtimalle.
+- ❌ MISSING: `companies.segment` kolonu — segment `brands` tablosunda, `companies`'te yok. `select('*, companies(segment)')` join'i her satırda silently null döner.
+- ❌ MISSING: `is_premium` flag wire — `loadViewersCard()` her zaman hardcoded `var isPremium = false`. `_loadedDBData.profile.is_premium`'a bağlanmıyor. Premium aktif olsa bile panel locked kalır.
+- ❌ MISSING: `track_profile_view` RPC yok. Yazma yolu `ik.html`'den direct `.insert()` — table yoksa silent fail.
+- ❌ MISSING: Week-over-week trend backend. `_setStat('trend', '—')` placeholder.
+
+### Backlog (öncelik sırasıyla)
+
+**[P0] PVT-1** — `docs/migrations/040_profile_view_tracking.sql`'i `supabase/migrations/YYYYMMDDHHMMSS_promote_view_tracking.sql` olarak promote et + `npm run db:push` + live'da `profile_view_events` ve `candidate_view_stats` varlığını verify et. Aksi halde her aday "0 görüntülenme" görür kalıcı olarak.
+
+**[P0] PVT-2** — `companies.segment` join hatası fix. Seçenekler:
+- (a) Join'i kaldır, segment'i `position_seg_snapshot`'tan oku (zaten event satırında)
+- (b) Insert sırasında employer'ın `hr_profiles.company_id → companies → brands` chain'inden segment çek ve `position_seg_snapshot`'a yaz
+- (c) `companies.segment` kolonu ekleyen migration yaz (gerçeği `brands.segment` yansıtmıyor — önerilmez)
+
+Önerilen: **(a)** — event satırından oku, join'i sil. Minimal değişiklik, semantik doğru.
+
+**[P1] PVT-3** — `is_premium` flag wire. `profil-bootstrap.js`'te `loadViewersCard(cid)` çağrısına ikinci arg olarak `_loadedDBData.profile.is_premium` veya `kimbakti.js` içinde `_loadedDBData`'dan oku. Premium gate aktivasyonu için zorunlu.
+
+**[P1] PVT-4** — `pve_employer_insert` RLS policy live'da çalışıyor mu doğrula. Migration 040'taki policy `EXISTS (SELECT 1 FROM hr_profiles WHERE id = auth.uid())` kontrolü — `ik.html` session bunu satisfies ediyor mu test et. Yoksa insert'ler 401/42501 ile fail eder.
+
+**[P2] PVT-5** — `position_seg_snapshot` reliable populate. Şu an sadece employer drawer açtığında position context varsa yazılıyor. Generic profile views null kalıyor → segment chart çoğu kullanıcıda boş. Insert sırasında `hr_profiles → companies → brands.segment` chain'inden derive et.
+
+**[P2] PVT-6** — Week-over-week trend backend. `candidate_view_stats`'a `views_last_week` + `views_prev_week` kolonları veya nightly cron RPC. UI `kb-trend` cell'i şu anda "—" placeholder gösteriyor.
+
+**Neden bu sıra:** P0 olmadan panel her durumda 0 gösterir → kullanıcı beta'da güveni kaybeder. P1 olmadan premium subscription geliştirilse de panel açılmaz. P2'ler nice-to-have, MVP critical path değil.
+
+**Detay:** [[../../docs/superpowers/specs/2026-04-14-kimbakti-redesign-mockup]] (frontend mockup), audit 14 Nisan session'ında.
+
+---
+
+*Son güncelleme: 14 Nisan 2026*
