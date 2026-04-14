@@ -3726,9 +3726,9 @@ test.describe('K060 — Kim Baktı editorial redesign', () => {
     expect(profilHtml).toContain('class="kb-premium-btn"');
   });
 
-  test('profil.html links css/panels/kimbakti.css with K060 cache-bust', () => {
-    expect(profilHtml).toContain('css/panels/kimbakti.css?v=20260414aa');
-    expect(profilHtml).toContain('profil-kimbakti.js?v=20260414aa');
+  test('profil.html links css/panels/kimbakti.css with K060+ cache-bust', () => {
+    expect(profilHtml).toContain('css/panels/kimbakti.css?v=20260414ab');
+    expect(profilHtml).toContain('profil-kimbakti.js?v=20260414ab');
   });
 
   test('kimbakti.css contains the K060 vocabulary and reduced-motion block', () => {
