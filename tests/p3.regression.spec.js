@@ -3089,10 +3089,10 @@ test.describe('K033/K034 — Genel Bakis editorial redesign', () => {
   });
 
   test('K034: genel-bakis.css and merkezi.css both consume editorial token', () => {
-    expect(gbCss).toContain('var(--editorial-max-w)');
-    expect(gbCss).toContain('var(--editorial-pad-x)');
-    expect(mkCss).toContain('var(--editorial-max-w)');
-    expect(mkCss).toContain('var(--editorial-pad-x)');
+    expect(gbCss).toContain('var(--editorial-max-w');
+    expect(gbCss).toContain('var(--editorial-pad-x');
+    expect(mkCss).toContain('var(--editorial-max-w');
+    expect(mkCss).toContain('var(--editorial-pad-x');
   });
 
   test('profil-genel.js builds editorial hero + rail + gundem render', () => {
@@ -3134,9 +3134,9 @@ test.describe('K033/K034 — Genel Bakis editorial redesign', () => {
 
   test('K035: profil.html cache-bust bumped to v=20260414h for genel/merkez/profil-genel', () => {
     /* K036 bumped genel-bakis.css to ?v=20260414i (margin fix + K036 rollout) */
-    expect(profilHtml).toContain('genel-bakis.css?v=20260414j');
+    expect(profilHtml).toContain('genel-bakis.css?v=20260414k');
     expect(profilHtml).toContain('profil-genel.js?v=20260414h');
-    expect(profilHtml).toContain('merkezi.css?v=20260414h');
+    expect(profilHtml).toContain('merkezi.css?v=20260414i');
     /* profil-extras.css tokens unchanged — stays at v=20260414g */
     expect(profilHtml).toContain('profil-extras.css?v=20260414g');
   });
@@ -3417,7 +3417,7 @@ test.describe('K036 — Sirketler editorial redesign', () => {
   test('profil.html cache-bust bumped for K037 affected assets', () => {
     expect(profilHtml).toContain('sirketler.css?v=20260414l');
     expect(profilHtml).toContain('profil-markalar.js?v=20260414m');
-    expect(profilHtml).toContain('genel-bakis.css?v=20260414j');
+    expect(profilHtml).toContain('genel-bakis.css?v=20260414k');
   });
 });
 

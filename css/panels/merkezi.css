@@ -6,24 +6,18 @@
    Tokens only. Dark mode via semantic tokens (html[data-theme='dark']).
    ═══════════════════════════════════════════════════════════════ */
 
-#panel-merkez {
-  /* K034: widened to editorial max; tokens live in css/profil-extras.css */
-  max-width: var(--editorial-max-w);
-  margin: 0 auto;
-  padding: 32px var(--editorial-pad-x) 40px;
-  /* K031 hotfix 2: outer frame matches header card softness */
-  background: var(--color-gray);
-  color: var(--text-primary);
-  font-family: var(--font-body);
-  border-radius: 20px;
-  border: 1px solid var(--border-subtle);
+#panel-merkez{
+  max-width:var(--editorial-max-w,1120px);
+  margin:0 auto;
+  padding:32px var(--editorial-pad-x,clamp(24px,5vw,48px)) 48px;
+  background:var(--color-gray);
+  color:var(--text-primary);
+  font-family:var(--font-body);
+  border-radius:20px;
+  border:1px solid var(--border-subtle);
 }
-
-@media (max-width: 480px) {
-  #panel-merkez {
-    border-radius: 14px;
-    padding: 24px 18px 32px;
-  }
+@media (max-width:480px){
+  #panel-merkez{border-radius:14px;padding:24px 18px 32px;}
 }
 
 /* ─── Root stagger container ─── */

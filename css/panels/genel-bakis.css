@@ -9,21 +9,18 @@
    --editorial-pad-x (defined in css/profil-extras.css).
    ═══════════════════════════════════════════════════════════════ */
 
-#panel-genel {
-  max-width: var(--editorial-max-w);
-  margin: 0 auto;
-  padding: 32px var(--editorial-pad-x) 48px;
-  background: transparent;
-  color: var(--text-primary);
-  font-family: var(--font-body);
-  border: 0;
-  border-radius: 0;
+#panel-genel{
+  max-width:var(--editorial-max-w,1120px);
+  margin:0 auto;
+  padding:32px var(--editorial-pad-x,clamp(24px,5vw,48px)) 48px;
+  background:transparent;
+  color:var(--text-primary);
+  font-family:var(--font-body);
+  border:0;
+  border-radius:0;
 }
-
-@media (max-width: 480px) {
-  #panel-genel {
-    padding: 24px 18px 32px;
-  }
+@media (max-width:480px){
+  #panel-genel{padding:24px 18px 32px;}
 }
 
 /* ─── Root ─── */
