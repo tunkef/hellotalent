@@ -1,0 +1,727 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>HelloTalent — Markalar (Şirketler)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --cream: #F7F6F4;
+    --cream-darker: #EFEDE8;
+    --navy: #1E2D5E;
+    --vermillion: #C94E28;
+    --hairline: #E5E3DF;
+    --muted: #6B6A66;
+    --editorial-max-w: 1120px;
+    --radius: 14px;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--cream-darker);
+    color: var(--navy);
+    font-family: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+    font-size: 16px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  .wrap {
+    max-width: var(--editorial-max-w);
+    margin: 0 auto;
+    padding: 48px clamp(24px, 5vw, 48px);
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  /* --- Typography primitives --- */
+  .mono {
+    font-family: "DM Mono", ui-monospace, monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 500;
+  }
+  .mono.navy { color: var(--navy); }
+  .mono.vermillion { color: var(--vermillion); }
+  .mono-italic {
+    font-family: "DM Mono", ui-monospace, monospace;
+    font-style: italic;
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+  }
+  .display {
+    font-family: "Bricolage Grotesque", serif;
+    font-weight: 600;
+    color: var(--navy);
+    letter-spacing: -0.02em;
+    line-height: 1.08;
+  }
+
+  /* --- Card frame (K035) --- */
+  .card {
+    background: var(--cream);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius);
+    padding: 36px;
+    opacity: 0;
+    transform: translateY(12px);
+    animation: rise 600ms ease-out forwards;
+  }
+  .card.pad-24 { padding: 24px 28px; }
+
+  @keyframes rise {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* --- Hero --- */
+  .sk-hero .hero-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 28px;
+  }
+  .sk-hero h1.display {
+    font-size: 40px;
+    margin: 0 0 14px 0;
+    max-width: 720px;
+  }
+  .sk-hero .sub {
+    font-size: 16px;
+    color: var(--muted);
+    max-width: 540px;
+    margin: 0 0 32px 0;
+    line-height: 1.6;
+  }
+  .why-strip {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding-top: 24px;
+    border-top: 1px solid var(--hairline);
+    flex-wrap: wrap;
+  }
+  .why-strip .dot {
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: var(--hairline);
+  }
+  .why-strip .mono { color: var(--navy); }
+
+  /* --- Followed strip --- */
+  .sk-followed .header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 20px;
+  }
+  .sk-followed .header-row .left { display: flex; gap: 10px; align-items: baseline; }
+  .sk-followed .count {
+    font-family: "DM Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--vermillion);
+    font-weight: 500;
+  }
+  .see-all {
+    font-family: "DM Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--navy);
+    text-decoration: none;
+    border: none;
+    background: none;
+    cursor: pointer;
+  }
+  .see-all .arrow { color: var(--vermillion); margin-left: 4px; }
+
+  .followed-row {
+    display: flex;
+    gap: 22px;
+    overflow-x: auto;
+    padding-bottom: 6px;
+    scrollbar-width: thin;
+  }
+  .followed-row::-webkit-scrollbar { height: 4px; }
+  .followed-row::-webkit-scrollbar-thumb { background: var(--hairline); border-radius: 2px; }
+
+  .followed-item {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+  }
+  .followed-logo {
+    width: 56px;
+    height: 56px;
+    border-radius: 8px;
+    box-shadow: 0 0 0 1px var(--vermillion);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: "Bricolage Grotesque", serif;
+    font-weight: 700;
+    font-size: 18px;
+    color: white;
+    transition: box-shadow 200ms ease, transform 200ms ease;
+    position: relative;
+  }
+  .followed-item:hover .followed-logo {
+    box-shadow: 0 0 0 2px var(--vermillion);
+  }
+  .followed-item:hover .followed-logo::after {
+    content: "→";
+    position: absolute;
+    inset: 0;
+    background: rgba(201, 78, 40, 0.88);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    border-radius: 8px;
+    font-size: 22px;
+  }
+  .followed-name {
+    font-size: 11px;
+    color: var(--navy);
+    font-weight: 500;
+    letter-spacing: 0.01em;
+  }
+
+  /* --- Filter card --- */
+  .sk-filter { display: flex; flex-direction: column; gap: 18px; }
+  .search-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--hairline);
+    border-radius: 8px;
+    padding: 0 16px;
+    height: 48px;
+    background: var(--cream);
+    transition: border-color 180ms ease;
+  }
+  .search-wrap:focus-within { border-color: var(--navy); }
+  .search-wrap .glyph {
+    font-family: "DM Mono", monospace;
+    font-size: 18px;
+    color: var(--muted);
+    margin-right: 12px;
+  }
+  .search-wrap input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-family: "DM Mono", monospace;
+    font-size: 13px;
+    color: var(--navy);
+  }
+  .search-wrap input::placeholder {
+    color: var(--muted);
+    font-family: "DM Mono", monospace;
+  }
+
+  .segments {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 0;
+    align-items: center;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .segments::-webkit-scrollbar { display: none; }
+  .segments .seg {
+    font-family: "DM Mono", monospace;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 6px 14px;
+    cursor: pointer;
+    border: none;
+    background: none;
+    position: relative;
+    white-space: nowrap;
+  }
+  .segments .seg.active {
+    color: var(--navy);
+  }
+  .segments .seg.active::after {
+    content: "";
+    position: absolute;
+    left: 14px;
+    right: 14px;
+    bottom: 2px;
+    height: 2px;
+    background: var(--vermillion);
+  }
+  .segments .divider {
+    color: var(--hairline);
+    font-family: "DM Mono", monospace;
+    font-size: 14px;
+  }
+
+  /* --- Brand grid --- */
+  .sk-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 20px;
+  }
+  .sk-card {
+    background: var(--cream);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius);
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    position: relative;
+    transition: border-color 220ms ease;
+    opacity: 0;
+    transform: translateY(10px);
+    animation: rise 600ms ease-out forwards;
+  }
+  .sk-card:hover {
+    border-color: rgba(30, 45, 94, 0.4);
+  }
+  .sk-card .featured {
+    position: absolute;
+    top: 20px;
+    right: 24px;
+    font-family: "DM Mono", monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--vermillion);
+    font-weight: 500;
+  }
+
+  .brand-head {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    padding-right: 80px;
+  }
+  .brand-logo {
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+    border-radius: 6px;
+    border: 1px solid var(--hairline);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: "Bricolage Grotesque", serif;
+    font-weight: 700;
+    font-size: 17px;
+    color: white;
+  }
+  .brand-name {
+    font-family: "Bricolage Grotesque", serif;
+    font-weight: 600;
+    font-size: 22px;
+    color: var(--navy);
+    line-height: 1.15;
+    margin: 0 0 4px 0;
+    letter-spacing: -0.01em;
+  }
+  .brand-meta {
+    font-family: "DM Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .brand-desc {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.55;
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .brand-stats {
+    display: flex;
+    gap: 10px;
+    font-family: "DM Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--navy);
+    flex-wrap: wrap;
+  }
+  .brand-stats .sep { color: var(--hairline); }
+
+  .brand-parent {
+    font-family: "DM Mono", monospace;
+    font-style: italic;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.02em;
+  }
+
+  .follow-btn {
+    width: 100%;
+    padding: 13px 16px;
+    background: transparent;
+    border: 1px solid var(--navy);
+    border-radius: 8px;
+    font-family: "DM Mono", monospace;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--navy);
+    cursor: pointer;
+    transition: background 220ms ease, color 220ms ease, border-color 220ms ease;
+    margin-top: auto;
+  }
+  .follow-btn:hover {
+    background: rgba(30, 45, 94, 0.04);
+  }
+  .follow-btn.active {
+    background: var(--vermillion);
+    border-color: var(--vermillion);
+    color: white;
+  }
+
+  /* --- Why card --- */
+  .sk-why .body {
+    font-size: 15px;
+    color: var(--navy);
+    line-height: 1.65;
+    max-width: 720px;
+    margin: 18px 0 0 0;
+  }
+  .sk-why .body strong {
+    color: var(--vermillion);
+    font-weight: 600;
+  }
+
+  /* --- Signature --- */
+  .signature {
+    text-align: center;
+    font-family: "DM Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: lowercase;
+    color: var(--muted);
+    padding: 20px 0 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    opacity: 0;
+    transform: translateY(10px);
+    animation: rise 600ms ease-out forwards;
+  }
+  .signature::before, .signature::after {
+    content: "";
+    flex: 0 0 80px;
+    height: 1px;
+    background: var(--hairline);
+  }
+
+  /* --- Stagger delays --- */
+  .delay-1 { animation-delay: 0ms; }
+  .delay-2 { animation-delay: 80ms; }
+  .delay-3 { animation-delay: 160ms; }
+  .delay-4 { animation-delay: 240ms; }
+  .delay-5 { animation-delay: 320ms; }
+  .delay-6 { animation-delay: 400ms; }
+  .delay-7 { animation-delay: 480ms; }
+  .delay-g1 { animation-delay: 260ms; }
+  .delay-g2 { animation-delay: 320ms; }
+  .delay-g3 { animation-delay: 380ms; }
+  .delay-g4 { animation-delay: 440ms; }
+  .delay-g5 { animation-delay: 500ms; }
+  .delay-g6 { animation-delay: 560ms; }
+  .delay-g7 { animation-delay: 620ms; }
+  .delay-g8 { animation-delay: 680ms; }
+  .delay-g9 { animation-delay: 740ms; }
+  .delay-why { animation-delay: 820ms; }
+  .delay-sig { animation-delay: 900ms; }
+
+  /* --- Responsive --- */
+  @media (max-width: 1023px) {
+    .sk-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 719px) {
+    .wrap { padding: 32px 20px; }
+    .card { padding: 28px 22px; }
+    .sk-hero h1.display { font-size: 32px; }
+    .sk-hero .hero-top { flex-direction: column; align-items: flex-start; gap: 8px; }
+    .sk-grid { grid-template-columns: 1fr; }
+    .why-strip { gap: 12px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- 1. HERO -->
+  <section class="card sk-hero delay-1">
+    <div class="hero-top">
+      <span class="mono">Markalar</span>
+      <span class="mono navy">15 takip · 96 marka</span>
+    </div>
+    <h1 class="display">Çalışmak istediğin markaları seç</h1>
+    <p class="sub">Takip ettiğin markalar ilgini gösterir. İK ekipleri eşleşmeleri buradan kuruyor — listenin uzunluğu, motivasyonun aynası.</p>
+    <div class="why-strip">
+      <span class="mono">Eşleşme Sinyali</span>
+      <span class="dot"></span>
+      <span class="mono">HR'ın Gördüğü</span>
+      <span class="dot"></span>
+      <span class="mono">Kariyer Rotan</span>
+    </div>
+  </section>
+
+  <!-- 2. FOLLOWED STRIP -->
+  <section class="card sk-followed delay-2">
+    <div class="header-row">
+      <div class="left">
+        <span class="mono">Takip Ettiklerin</span>
+        <span class="count">15</span>
+      </div>
+      <button class="see-all" onclick="openBrandFollowsPopup && openBrandFollowsPopup()">Hepsini gör <span class="arrow">→</span></button>
+    </div>
+    <div class="followed-row">
+      <div class="followed-item"><div class="followed-logo" style="background:#1a1a1a;">H</div><div class="followed-name">Hermès</div></div>
+      <div class="followed-item"><div class="followed-logo" style="background:#000;">C</div><div class="followed-name">Chanel</div></div>
+      <div class="followed-item"><div class="followed-logo" style="background:#222;">Z</div><div class="followed-name">Zara</div></div>
+      <div class="followed-item"><div class="followed-logo" style="background:#d4a857;">LV</div><div class="followed-name">Louis Vuitton</div></div>
+      <div class="followed-item"><div class="followed-logo" style="background:#8e3a3a;">SE</div><div class="followed-name">Sephora</div></div>
+      <div class="followed-item"><div class="followed-logo" style="background:#2b4c2e;">L</div><div class="followed-name">Lacoste</div></div>
+      <div class="followed-item"><div class="followed-logo" style="background:#d6001c;">MA</div><div class="followed-name">MAC</div></div>
+      <div class="followed-item"><div class="followed-logo" style="background:#111;">AP</div><div class="followed-name">Apple</div></div>
+      <div class="followed-item"><div class="followed-logo" style="background:#1b3a8a;">BO</div><div class="followed-name">Boyner</div></div>
+      <div class="followed-item"><div class="followed-logo" style="background:#c8102e;">NK</div><div class="followed-name">Nike</div></div>
+      <div class="followed-item"><div class="followed-logo" style="background:#0c2340;">MS</div><div class="followed-name">M&amp;S</div></div>
+      <div class="followed-item"><div class="followed-logo" style="background:#6a1b9a;">GU</div><div class="followed-name">Gucci</div></div>
+    </div>
+  </section>
+
+  <!-- 3. FILTER -->
+  <section class="card pad-24 sk-filter delay-3">
+    <div class="search-wrap">
+      <span class="glyph">⌕</span>
+      <input type="text" placeholder="marka ara…" />
+    </div>
+    <div class="segments">
+      <button class="seg active">Tümü</button>
+      <span class="divider">·</span>
+      <button class="seg">Luxury</button>
+      <span class="divider">·</span>
+      <button class="seg">Premium</button>
+      <span class="divider">·</span>
+      <button class="seg">Moda</button>
+      <span class="divider">·</span>
+      <button class="seg">Sport</button>
+      <span class="divider">·</span>
+      <button class="seg">Beauty</button>
+      <span class="divider">·</span>
+      <button class="seg">Tech</button>
+    </div>
+  </section>
+
+  <!-- 4. GRID -->
+  <div class="sk-grid">
+
+    <article class="sk-card delay-g1">
+      <span class="featured">Öne Çıkan</span>
+      <div class="brand-head">
+        <div class="brand-logo" style="background:#1a1a1a;">H</div>
+        <div>
+          <h3 class="brand-name">Hermès</h3>
+          <div class="brand-meta">Luxury · İstanbul</div>
+        </div>
+      </div>
+      <p class="brand-desc">Paris merkezli lüks moda evi. El işçiliğine saygı, zanaat kültürü ve uzun kariyer yolları ile tanınır. Türkiye'de Nişantaşı ve Zorlu butikleriyle büyüyor.</p>
+      <div class="brand-stats">
+        <span>3 Mağaza</span><span class="sep">·</span><span>1 Şehir</span><span class="sep">·</span><span>220 Kişi</span>
+      </div>
+      <div class="brand-parent">Hermès International grubu</div>
+      <button class="follow-btn active">Takip Ediyorsun ✓</button>
+    </article>
+
+    <article class="sk-card delay-g2">
+      <span class="featured">Öne Çıkan</span>
+      <div class="brand-head">
+        <div class="brand-logo" style="background:#000;">C</div>
+        <div>
+          <h3 class="brand-name">Chanel</h3>
+          <div class="brand-meta">Luxury · İstanbul</div>
+        </div>
+      </div>
+      <p class="brand-desc">Klasikle modern arasında duran köklü moda evi. Satış danışmanlarında ürün bilgisinden çok müşteri ilişkisi kültürü arıyor.</p>
+      <div class="brand-stats">
+        <span>2 Mağaza</span><span class="sep">·</span><span>1 Şehir</span><span class="sep">·</span><span>140 Kişi</span>
+      </div>
+      <div class="brand-parent">Chanel SA</div>
+      <button class="follow-btn active">Takip Ediyorsun ✓</button>
+    </article>
+
+    <article class="sk-card delay-g3">
+      <div class="brand-head">
+        <div class="brand-logo" style="background:#222;">Z</div>
+        <div>
+          <h3 class="brand-name">Zara</h3>
+          <div class="brand-meta">Moda · 14 Şehir</div>
+        </div>
+      </div>
+      <p class="brand-desc">Hızlı moda devi. Türkiye'de en büyük operasyonlardan biri; mağaza müdürü kariyer rotası hızlı ilerliyor, iç rotasyon yaygın.</p>
+      <div class="brand-stats">
+        <span>87 Mağaza</span><span class="sep">·</span><span>14 Şehir</span><span class="sep">·</span><span>3.2K Kişi</span>
+      </div>
+      <div class="brand-parent">İnditex grubu</div>
+      <button class="follow-btn active">Takip Ediyorsun ✓</button>
+    </article>
+
+    <article class="sk-card delay-g4">
+      <div class="brand-head">
+        <div class="brand-logo" style="background:#ff7a00;">B</div>
+        <div>
+          <h3 class="brand-name">Bershka</h3>
+          <div class="brand-meta">Moda · 9 Şehir</div>
+        </div>
+      </div>
+      <p class="brand-desc">Gençlere yönelik sokak modası zinciri. Part-time ve tam zamanlı rollerde esnek vardiya, yoğun sezon primleri ile tanınıyor.</p>
+      <div class="brand-stats">
+        <span>42 Mağaza</span><span class="sep">·</span><span>9 Şehir</span><span class="sep">·</span><span>1.1K Kişi</span>
+      </div>
+      <div class="brand-parent">İnditex grubu</div>
+      <button class="follow-btn">Takip Et</button>
+    </article>
+
+    <article class="sk-card delay-g5">
+      <span class="featured">Öne Çıkan</span>
+      <div class="brand-head">
+        <div class="brand-logo" style="background:#8e3a3a;">SE</div>
+        <div>
+          <h3 class="brand-name">Sephora</h3>
+          <div class="brand-meta">Beauty · 12 Şehir</div>
+        </div>
+      </div>
+      <p class="brand-desc">Dünyanın en büyük makyaj ve kozmetik zinciri. Beauty advisor rotasında ürün eğitimine bütçe ayırıyor, ürün testi kültürü güçlü.</p>
+      <div class="brand-stats">
+        <span>38 Mağaza</span><span class="sep">·</span><span>12 Şehir</span><span class="sep">·</span><span>950 Kişi</span>
+      </div>
+      <div class="brand-parent">LVMH grubu</div>
+      <button class="follow-btn active">Takip Ediyorsun ✓</button>
+    </article>
+
+    <article class="sk-card delay-g6">
+      <div class="brand-head">
+        <div class="brand-logo" style="background:#d6001c;">MA</div>
+        <div>
+          <h3 class="brand-name">MAC Cosmetics</h3>
+          <div class="brand-meta">Beauty · 7 Şehir</div>
+        </div>
+      </div>
+      <p class="brand-desc">Profesyonel makyaj sanatçıları için kurulmuş marka. Ekipler sertifikalı makyaj sanatçılarından oluşuyor, sezonluk etkinlik kültürü yüksek.</p>
+      <div class="brand-stats">
+        <span>24 Mağaza</span><span class="sep">·</span><span>7 Şehir</span><span class="sep">·</span><span>420 Kişi</span>
+      </div>
+      <div class="brand-parent">Estée Lauder Companies</div>
+      <button class="follow-btn active">Takip Ediyorsun ✓</button>
+    </article>
+
+    <article class="sk-card delay-g7">
+      <div class="brand-head">
+        <div class="brand-logo" style="background:#e8480b;">LC</div>
+        <div>
+          <h3 class="brand-name">LC Waikiki</h3>
+          <div class="brand-meta">Moda · 68 Şehir</div>
+        </div>
+      </div>
+      <p class="brand-desc">Türkiye merkezli, 50'den fazla ülkede operasyon yürüten moda zinciri. İç terfi oranı yüksek, mağaza müdürlüğüne en kısa yol burada.</p>
+      <div class="brand-stats">
+        <span>612 Mağaza</span><span class="sep">·</span><span>68 Şehir</span><span class="sep">·</span><span>18K Kişi</span>
+      </div>
+      <div class="brand-parent">LC Waikiki Mağazacılık</div>
+      <button class="follow-btn">Takip Et</button>
+    </article>
+
+    <article class="sk-card delay-g8">
+      <div class="brand-head">
+        <div class="brand-logo" style="background:#c8102e;">NK</div>
+        <div>
+          <h3 class="brand-name">Nike</h3>
+          <div class="brand-meta">Sport · 11 Şehir</div>
+        </div>
+      </div>
+      <p class="brand-desc">Spor ürünlerinde global lider. Athlete rolünde ürün bilgisi ve koçluk eğitimleri sunuyor; sezonluk kampanyalarda performans primi var.</p>
+      <div class="brand-stats">
+        <span>31 Mağaza</span><span class="sep">·</span><span>11 Şehir</span><span class="sep">·</span><span>780 Kişi</span>
+      </div>
+      <div class="brand-parent">Nike Inc.</div>
+      <button class="follow-btn active">Takip Ediyorsun ✓</button>
+    </article>
+
+    <article class="sk-card delay-g9">
+      <span class="featured">Öne Çıkan</span>
+      <div class="brand-head">
+        <div class="brand-logo" style="background:#111;">AP</div>
+        <div>
+          <h3 class="brand-name">Apple Store</h3>
+          <div class="brand-meta">Tech · 2 Şehir</div>
+        </div>
+      </div>
+      <p class="brand-desc">Apple'ın resmi perakende deneyimi. Specialist rolünde teknik bilgi değil, müşteri empatisi ölçülüyor. Türkiye'de Zorlu ve Bağdat Caddesi lokasyonları.</p>
+      <div class="brand-stats">
+        <span>2 Mağaza</span><span class="sep">·</span><span>1 Şehir</span><span class="sep">·</span><span>180 Kişi</span>
+      </div>
+      <div class="brand-parent">Apple Inc.</div>
+      <button class="follow-btn">Takip Et</button>
+    </article>
+
+  </div>
+
+  <!-- 5. WHY CARD -->
+  <section class="card sk-why delay-why">
+    <span class="mono">Neden Takip?</span>
+    <p class="body">
+      Bir markayı takip etmek, İK ekibine "beni burada görüyorum" demektir. Eşleşme algoritmamız, takip ettiğin markaların <strong>aday önceliklerine</strong> bakar — profilin onların listesinde yukarı çıkar. Listenin gerçekçi olması, doğru tekliflere <strong>kapı açar</strong>.
+    </p>
+  </section>
+
+  <!-- 6. SIGNATURE -->
+  <div class="signature delay-sig">hellotalent</div>
+
+</div>
+
+<script>
+  // Tiny demo: follow button toggle with transition
+  document.querySelectorAll('.follow-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const active = btn.classList.toggle('active');
+      btn.textContent = active ? 'Takip Ediyorsun ✓' : 'Takip Et';
+    });
+  });
+  // Segment switch
+  document.querySelectorAll('.segments .seg').forEach(seg => {
+    seg.addEventListener('click', () => {
+      document.querySelectorAll('.segments .seg').forEach(s => s.classList.remove('active'));
+      seg.classList.add('active');
+    });
+  });
+</script>
+</body>
+</html>

@@ -38,6 +38,8 @@ var _SEGMENTS = [
   { key: 'tech', label: 'TECH' }
 ];
 var _ht_active_segment = null;
+var _ht_company_map = {};
+var _ht_companies_warned = false;
 
 var _BRAND_COLORS = {
   'Louis Vuitton': { frontBg: '', backBg: '#4D3022', accent: '#4D3022' },
@@ -161,13 +163,38 @@ async function loadSirketlerPanel() {
 
   if (brandsRes.error) {
     console.error('[HT] loadBrandsPanel failed', brandsRes.error);
-    document.getElementById('brand-grid').innerHTML = '<div class="brand-loading">Veriler yüklenemedi.</div>';
+    document.getElementById('brand-grid').innerHTML = '<div class="sk-grid__empty">Veriler yüklenemedi.</div>';
     _ht_sirketler_loaded = false;
     return;
   }
 
   _ht_brands = brandsRes.data || [];
   _ht_follows = new Set((followsRes.data || []).map(function(f) { return f.brand_id; }));
+
+  // Fetch parent company names (two-stage: brands.company_id -> companies.company_name)
+  var _companyIds = [];
+  var _seenCompany = {};
+  for (var _ci = 0; _ci < _ht_brands.length; _ci++) {
+    var _cid = _ht_brands[_ci].company_id;
+    if (_cid != null && !_seenCompany[_cid]) {
+      _seenCompany[_cid] = true;
+      _companyIds.push(_cid);
+    }
+  }
+  if (_companyIds.length > 0) {
+    try {
+      var _coRes = await supabase.from('companies').select('id,company_name').in('id', _companyIds);
+      if (_coRes.error) {
+        if (!_ht_companies_warned) { console.warn('[HT] companies join failed, parent labels disabled', _coRes.error); _ht_companies_warned = true; }
+      } else if (_coRes.data) {
+        for (var _coi = 0; _coi < _coRes.data.length; _coi++) {
+          _ht_company_map[_coRes.data[_coi].id] = _coRes.data[_coi].company_name || '';
+        }
+      }
+    } catch (_coErr) {
+      if (!_ht_companies_warned) { console.warn('[HT] companies fetch threw, parent labels disabled', _coErr); _ht_companies_warned = true; }
+    }
+  }
 
   // Sign brand logos from private cvs bucket (strip full URL to path first)
   var _logoPathMap = {};
@@ -210,17 +237,18 @@ async function loadSirketlerPanel() {
   _ht_visible_count = 12;
   renderSegmentPills();
   renderBrandGrid('');
+  renderFollowedStrip();
   updateBrandFollowCounter();
 
   var si = document.getElementById('brand-search');
-  si.addEventListener('input', function() {
+  if (si) si.addEventListener('input', function() {
     var val = si.value.trim();
     if (!val) _ht_visible_count = 12;
     renderBrandGrid(si.value);
   });
 
-  var counterBtn = document.getElementById('brand-follow-counter-btn');
-  if (counterBtn) counterBtn.addEventListener('click', openBrandFollowsPopup);
+  var seeAllBtn = document.getElementById('sk-followed-all');
+  if (seeAllBtn) seeAllBtn.addEventListener('click', openBrandFollowsPopup);
   var popupClose = document.getElementById('brand-follows-popup-close');
   if (popupClose) popupClose.addEventListener('click', closeBrandFollowsPopup);
   var popupOverlay = document.getElementById('brand-follows-popup-overlay');
@@ -230,7 +258,7 @@ async function loadSirketlerPanel() {
 var _ht_page_size = 12;
 var _ht_visible_count = 12;
 
-// ── Segment pills ──
+// ── Segment pills (K036 editorial text-links with vermillion underline) ──
 function renderSegmentPills() {
   var container = document.getElementById('segment-pills');
   if (!container) return;
@@ -238,23 +266,26 @@ function renderSegmentPills() {
   for (var i = 0; i < _SEGMENTS.length; i++) {
     var s = _SEGMENTS[i];
     var isActive = _ht_active_segment === s.key;
-    html += '<div class="seg-pill' + (isActive ? ' active' : '') + '" data-segment="' + (s.key === null ? '' : _escHtml(s.key)) + '">' + _escHtml(s.label) + '</div>';
+    if (i > 0) html += '<span class="sk-filter__seg-sep" aria-hidden="true">·</span>';
+    html += '<button type="button" class="sk-filter__seg-item' + (isActive ? ' is-active' : '') + '" data-segment="' + (s.key === null ? '' : _escHtml(s.key)) + '">' + _escHtml(s.label) + '</button>';
   }
   container.innerHTML = html;
-  container.querySelectorAll('.seg-pill').forEach(function(pill) {
+  container.querySelectorAll('.sk-filter__seg-item').forEach(function(pill) {
     pill.addEventListener('click', function() {
       var seg = pill.getAttribute('data-segment') || null;
       _ht_active_segment = seg;
       if (!seg) _ht_visible_count = 12;
       renderSegmentPills();
-      renderBrandGrid(document.getElementById('brand-search').value);
+      var si = document.getElementById('brand-search');
+      renderBrandGrid(si ? si.value : '');
     });
   });
 }
 
-// ── Flip card grid ──
+// ── Brand grid (K036 editorial sk-brand cards) ──
 function renderBrandGrid(query) {
   var container = document.getElementById('brand-grid');
+  if (!container) return;
   if (!_ht_brands) { container.innerHTML = ''; return; }
 
   var q = trLower((query || '').trim());
@@ -266,79 +297,176 @@ function renderBrandGrid(query) {
   }
 
   if (list.length === 0) {
-    container.innerHTML = '<div class="brand-loading">' + (q || _ht_active_segment ? 'Sonuç bulunamadı.' : 'Henüz marka verisi yok.') + '</div>';
+    container.innerHTML = '<div class="sk-grid__empty">' + (q || _ht_active_segment ? 'Sonuç bulunamadı.' : 'Henüz marka verisi yok.') + '</div>';
     return;
   }
 
-  var usePagination = !q && !_ht_active_segment;
-  var visible = usePagination ? Math.min(_ht_visible_count, list.length) : list.length;
-  var showLoadMore = usePagination && list.length > _ht_visible_count && visible < list.length;
-  var remaining = list.length - visible;
+  // Render all filtered results (grid paginates visually via auto-fill)
+  container.innerHTML = '';
+  var frag = document.createDocumentFragment();
 
-  var html = '';
-  for (var i = 0; i < visible; i++) {
+  for (var i = 0; i < list.length; i++) {
     var b = list[i];
-    var isF = _ht_follows.has(b.id);
-    var colors = _brandColors(b.brand_name);
-    var segLabel = (_SEGMENT_TR[b.segment] || (b.segment || '')).toUpperCase();
-    var segColor = _segmentAccentColor(b.segment);
-    var storeText = b.store_count_tr != null && b.store_count_tr !== '' ? b.store_count_tr + ' mağaza' : '';
-    var cityText = '';
-    if (b.store_cities && b.store_cities.length > 0) {
-      cityText = b.store_cities.slice(0, 3).join(', ');
-      if (b.store_cities.length > 3) cityText += '...';
+    frag.appendChild(_buildBrandCard(b, i));
+  }
+
+  container.appendChild(frag);
+}
+
+function _buildBrandCard(b, idx) {
+  var isF = _ht_follows.has(b.id);
+  var card = document.createElement('article');
+  card.className = 'sk-card sk-brand' + (b.is_featured ? ' sk-brand--featured' : '');
+  card.style.animationDelay = (Math.min(idx, 8) * 60) + 'ms';
+
+  // Top row: logo + name/meta
+  var top = document.createElement('div');
+  top.className = 'sk-brand__top';
+
+  var logoWrap = document.createElement('div');
+  logoWrap.className = 'sk-brand__logo';
+  var logoUrl = _brandLogoUrl(b);
+  if (logoUrl) {
+    var img = document.createElement('img');
+    img.alt = b.brand_name || '';
+    img.src = logoUrl;
+    img.setAttribute('data-initial', (b.brand_name || '?').charAt(0).toUpperCase());
+    img.setAttribute('data-color', _avatarColor(b.brand_name));
+    img.setAttribute('onerror', 'window._htBrandLogoError(this)');
+    logoWrap.appendChild(img);
+  } else {
+    logoWrap.classList.add('sk-brand__logo--initial');
+    logoWrap.style.background = _avatarColor(b.brand_name);
+    logoWrap.textContent = (b.brand_name || '?').charAt(0).toUpperCase();
+  }
+  top.appendChild(logoWrap);
+
+  var nameCol = document.createElement('div');
+  var h3 = document.createElement('h3');
+  h3.className = 'sk-brand__name';
+  h3.textContent = b.brand_name || '';
+  nameCol.appendChild(h3);
+
+  var meta = document.createElement('div');
+  meta.className = 'sk-brand__meta';
+  var segLabel = _SEGMENT_TR[b.segment] || (b.segment ? b.segment.toUpperCase() : '');
+  var locLabel = '';
+  if (b.hq_city) {
+    locLabel = b.hq_city;
+  } else if (b.store_cities && b.store_cities.length > 0) {
+    locLabel = b.store_cities.length + ' şehir';
+  }
+  meta.textContent = [segLabel, locLabel].filter(Boolean).join(' · ');
+  nameCol.appendChild(meta);
+  top.appendChild(nameCol);
+  card.appendChild(top);
+
+  // Description
+  if (b.short_description) {
+    var desc = document.createElement('p');
+    desc.className = 'sk-brand__desc';
+    desc.textContent = b.short_description;
+    card.appendChild(desc);
+  }
+
+  // Stats row
+  var stats = document.createElement('div');
+  stats.className = 'sk-brand__stats';
+  var statParts = [];
+  if (b.store_count_tr != null && b.store_count_tr !== '') statParts.push(b.store_count_tr + ' Mağaza');
+  if (b.store_cities && b.store_cities.length > 0) statParts.push(b.store_cities.length + ' Şehir');
+  if (b.employee_count_tr) {
+    var emp = b.employee_count_tr >= 1000
+      ? (Math.round(b.employee_count_tr / 100) / 10) + 'K'
+      : b.employee_count_tr.toLocaleString('tr-TR');
+    statParts.push(emp + ' Kişi');
+  }
+  if (statParts.length === 0) {
+    stats.textContent = '\u00a0';
+  } else {
+    for (var si2 = 0; si2 < statParts.length; si2++) {
+      if (si2 > 0) {
+        var sep = document.createElement('span');
+        sep.className = 'sk-brand__stats-sep';
+        sep.textContent = '·';
+        stats.appendChild(sep);
+      }
+      var sp = document.createElement('span');
+      sp.textContent = statParts[si2];
+      stats.appendChild(sp);
     }
-    var logoFront = _brandLogoHtml(b, 76);
-    var logoBack = _brandLogoHtml(b, 40);
-
-    /* ── Informative brand card v2 — cover image, stats, follow ── */
-    var coverUrl = b.cover_image_url || '';
-    var safeCoverUrl = coverUrl ? _escHtml(coverUrl.replace(/['"()]/g, '')) : '';
-    var coverStyle = safeCoverUrl
-      ? 'background-image:url(' + safeCoverUrl + ');background-size:cover;background-position:center;'
-      : 'background:' + _hexToRgba(colors.accent, 0.12) + ';';
-    var employeeText = b.employee_count_tr ? b.employee_count_tr.toLocaleString('tr-TR') + ' çalışan' : '';
-    var logoSmall = _brandLogoHtml(b, 32);
-
-    html += '<div class="brand-card-v2" style="animation-delay:' + (i * 0.04) + 's;">' +
-      '<div class="bc2-cover" style="' + coverStyle + '">' +
-        (!coverUrl ? '<div class="bc2-cover-initial">' + _escHtml(b.brand_name[0]) + '</div>' : '') +
-        (segLabel ? '<span class="bc2-segment" style="background:' + segColor + '">' + _escHtml(segLabel) + '</span>' : '') +
-      '</div>' +
-      '<div class="bc2-body">' +
-        '<div class="bc2-header">' +
-          '<div class="bc2-logo">' + logoSmall + '</div>' +
-          '<div class="bc2-info">' +
-            '<div class="bc2-name">' + _escHtml(b.brand_name) + '</div>' +
-            (b.hq_city ? '<div class="bc2-hq">' + _escHtml(b.hq_city) + '</div>' : '') +
-          '</div>' +
-        '</div>' +
-        '<div class="bc2-stats">' +
-          (storeText ? '<div class="bc2-stat"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>' + _escHtml(storeText) + '</div>' : '') +
-          (employeeText ? '<div class="bc2-stat"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>' + _escHtml(employeeText) + '</div>' : '') +
-          (cityText ? '<div class="bc2-stat"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>' + _escHtml(cityText) + '</div>' : '') +
-        '</div>' +
-        '<button type="button" class="bc2-follow' + (isF ? ' following' : '') + '" data-brand-id="' + b.id + '" onclick="event.stopPropagation(); toggleBrandFollow(' + b.id + ',event)">' +
-          (isF ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6L9 17l-5-5"/></svg> Takipte' : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Takip Et') +
-        '</button>' +
-      '</div>' +
-    '</div>';
   }
+  card.appendChild(stats);
 
-  if (showLoadMore) {
-    html += '<button type="button" class="brand-load-more" id="brand-load-more">' +
-      '<span class="plus-icon">+</span>' +
-      '<span class="load-more-text">Daha fazla göster (' + remaining + ')</span>' +
-    '</button>';
+  // Parent group label (mono italic)
+  var group = document.createElement('div');
+  group.className = 'sk-brand__group';
+  var groupName = (b.company_id != null && _ht_company_map[b.company_id]) ? _ht_company_map[b.company_id] : '';
+  group.textContent = groupName ? (groupName + ' grubu') : '';
+  card.appendChild(group);
+
+  // Follow button
+  var btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'sk-brand__follow' + (isF ? ' is-following' : '');
+  btn.setAttribute('data-brand-id', b.id);
+  btn.setAttribute('onclick', 'toggleBrandFollow(' + b.id + ',event)');
+  btn.textContent = isF ? 'TAKİP EDİYORSUN ✓' : 'TAKİP ET';
+  card.appendChild(btn);
+
+  return card;
+}
+
+// ── Followed horizontal strip ──
+function renderFollowedStrip() {
+  var card = document.getElementById('sk-followed-card');
+  var row = document.getElementById('sk-followed-row');
+  if (!card || !row) return;
+
+  var followed = _ht_brands ? _ht_brands.filter(function(b) { return _ht_follows.has(b.id); }) : [];
+
+  if (followed.length === 0) {
+    card.setAttribute('hidden', '');
+    row.innerHTML = '';
+    return;
   }
+  card.removeAttribute('hidden');
 
-  container.innerHTML = html;
+  var frag = document.createDocumentFragment();
+  var limit = Math.min(followed.length, 12);
+  for (var i = 0; i < limit; i++) {
+    var b = followed[i];
+    var chip = document.createElement('button');
+    chip.type = 'button';
+    chip.className = 'sk-followed__chip';
+    chip.setAttribute('data-brand-id', b.id);
+    chip.setAttribute('onclick', 'openBrandFollowsPopup()');
 
-  var loadMoreBtn = document.getElementById('brand-load-more');
-  if (loadMoreBtn) loadMoreBtn.addEventListener('click', function() {
-    _ht_visible_count += _ht_page_size;
-    renderBrandGrid(document.getElementById('brand-search').value);
-  });
+    var logo = document.createElement('div');
+    logo.className = 'sk-followed__chip-logo';
+    logo.style.background = _avatarColor(b.brand_name);
+    var url = _brandLogoUrl(b);
+    if (url) {
+      var img2 = document.createElement('img');
+      img2.src = url;
+      img2.alt = b.brand_name || '';
+      img2.setAttribute('data-initial', (b.brand_name || '?').charAt(0).toUpperCase());
+      img2.setAttribute('data-color', _avatarColor(b.brand_name));
+      img2.setAttribute('onerror', 'window._htBrandLogoError(this)');
+      logo.appendChild(img2);
+    } else {
+      logo.textContent = (b.brand_name || '?').charAt(0).toUpperCase();
+    }
+    chip.appendChild(logo);
+
+    var nm = document.createElement('span');
+    nm.className = 'sk-followed__chip-name';
+    nm.textContent = b.brand_name || '';
+    chip.appendChild(nm);
+    frag.appendChild(chip);
+  }
+  row.innerHTML = '';
+  row.appendChild(frag);
 }
 
 // ── Follow / Unfollow ──
@@ -354,6 +482,7 @@ async function toggleBrandFollow(brandId, event) {
 
   _updateAllFollowBtns(brandId);
   updateBrandFollowCounter();
+  renderFollowedStrip();
   refreshBrandFollowsPopupList();
 
   var res;
@@ -370,6 +499,7 @@ async function toggleBrandFollow(brandId, event) {
     if (wasFollowed) { _ht_follows.add(brandId); } else { _ht_follows.delete(brandId); }
     _updateAllFollowBtns(brandId);
     updateBrandFollowCounter();
+    renderFollowedStrip();
     refreshBrandFollowsPopupList();
     _showBrandToast('Bir hata oluştu. Tekrar deneyin.');
   }
@@ -378,26 +508,25 @@ async function toggleBrandFollow(brandId, event) {
 
 function _updateAllFollowBtns(brandId) {
   var isF = _ht_follows.has(brandId);
-  // Card buttons
-  // Flip card back follow button
-  var backBtns = document.querySelectorAll('.back-follow-mini[data-brand-id="' + brandId + '"]');
-  for (var j = 0; j < backBtns.length; j++) {
-    var _svgIcon = '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 95 114" class="svgIcon"><rect fill="currentColor" rx="28.5" height="57" width="57" x="19"></rect><path fill="currentColor" d="M0 109.5C0 83.2665 21.2665 62 47.5 62V62C73.7335 62 95 83.2665 95 109.5V114H0V109.5Z"></path></svg>';
-    backBtns[j].innerHTML = '<div class="tooltip-container"><span class="text">' + _svgIcon + (isF ? 'Takipte' : 'Takip Et') + '</span></div>';
-    if (isF) backBtns[j].classList.add('following'); else backBtns[j].classList.remove('following');
+  var btns = document.querySelectorAll('.sk-brand__follow[data-brand-id="' + brandId + '"]');
+  for (var j = 0; j < btns.length; j++) {
+    if (isF) btns[j].classList.add('is-following'); else btns[j].classList.remove('is-following');
+    btns[j].textContent = isF ? 'TAKİP EDİYORSUN ✓' : 'TAKİP ET';
   }
 }
 
-// ── Follow counter button ──
+// ── Hero counters + legacy badge sync ──
 function updateBrandFollowCounter() {
-  var btn = document.getElementById('brand-follow-counter-btn');
-  var numEl = document.getElementById('brand-follow-count-num');
   var n = _ht_follows ? _ht_follows.size : 0;
-  if (numEl) numEl.textContent = n;
-  if (btn) {
-    btn.style.display = n > 0 ? 'inline-flex' : 'none';
-    btn.style.opacity = '1';
-  }
+  var total = _ht_brands ? _ht_brands.length : 0;
+
+  var followedCount = document.getElementById('sk-followed-count');
+  if (followedCount) followedCount.textContent = n;
+  var followedCount2 = document.getElementById('sk-followed-count2');
+  if (followedCount2) followedCount2.textContent = n;
+  var totalCount = document.getElementById('sk-total-count');
+  if (totalCount) totalCount.textContent = total;
+
   var badge = document.getElementById('sirket-follow-count');
   if (badge) {
     var countText = badge.querySelector('.badge-count-text');
@@ -408,6 +537,7 @@ function updateBrandFollowCounter() {
 }
 
 function updateMarkalaBgDots() {
+  // K036: legacy .bg-markalar surface removed; no-op but kept for export stability.
   var container = document.querySelector('.bg-markalar');
   if (!container) return;
   var ids = Array.from(_ht_follows || []).slice(0, 4);

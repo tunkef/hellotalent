@@ -20,9 +20,9 @@
   border-radius: 0;
 }
 
-@media (max-width: 720px) {
+@media (max-width: 480px) {
   #panel-genel {
-    padding: 24px 20px 36px;
+    padding: 24px 18px 32px;
   }
 }
 

@@ -7,10 +7,26 @@
 
 ## Mevcut Durum
 
-**Aktif is:** K035 Genel 3-card restructure + Merkez ring sync — exec + DeepSeek APPROVE
+**Aktif is:** K036 Sirketler editorial redesign + Genel margin fix — exec + DeepSeek APPROVE
 **Sonraki:** push main + Tuna smoke
-**Son commit:** (pending) feat(genel+merkez): K035 3-card restructure + ring sync
+**Son commit:** (pending) feat(sirketler): K036 editorial redesign + Genel margin alignment
 **DeepSeek:** APPROVE
+
+## 2026-04-14 — K036 Sirketler editorial redesign (exec)
+
+- `css/panels/sirketler.css` full rewrite, `.sk-*` namespace. Legacy `.flip-*`/`.bc2-*`/`.brand-card-v2` tamamen silindi. Cards: hero / followed strip / filter / grid / why / signature. Popup + `.ms-*` location helper'ları korundu (`.brand-logo-wrap` popup için minimal restyle).
+- `profil.html` `#panel-sirketler` markup yeni K036 yapisi. Popup overlay korundu. ID kontratlari: brand-search, segment-pills, brand-grid, brand-follows-popup-* preserved. Yeni ID'ler: sk-followed-count/2, sk-total-count, sk-followed-card/all/row.
+- `profil-markalar.js` render katmani rewrite (`_buildBrandCard` + `renderFollowedStrip`). **Tum `window._ht*` exports korundu** (loadSirketlerPanel, toggleBrandFollow, open/closeBrandFollowsPopup, updateMarkalaBgDots, _htBrandLogoError, _htBrandFollowReady, _htGetGenelBrandTeaser). companies join eklendi (two-stage query, `company_name` kolonu, fallback warn). `updateMarkalaBgDots` safe no-op (legacy .bg-markalar yok). `_htGetGenelBrandTeaser` shape DEGISMEDI → Genel Bakis rail kirilmadi.
+- **Margin bug fix**: `css/panels/genel-bakis.css` 720px override (padding 24/20) silindi → 480px breakpoint pattern (token-driven yukarida), Merkez ile birebir hizali.
+- `profil.html` cache-bust h→i: sirketler.css, profil-markalar.js, genel-bakis.css.
+- `tests/p3.regression.spec.js` K036 describe + 6 guard. K035 cache-bust assertion bumped.
+
+**Test:** **774 passed / 0 failed** (762 + 12 yeni K036). node --check OK.
+**DeepSeek:** APPROVE.
+
+**Riskler:** brands.company_id FK migration yok → two-stage query. Marka sayisi buyurse +1 round-trip kabul edilebilir.
+
+## 2026-04-14 — K035 Genel 3-card restructure + Merkez ring sync (exec)
 
 ## 2026-04-14 — K035 Genel 3-card restructure + Merkez ring sync (exec)
 

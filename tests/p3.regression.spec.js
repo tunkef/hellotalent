@@ -3133,7 +3133,8 @@ test.describe('K033/K034 — Genel Bakis editorial redesign', () => {
   });
 
   test('K035: profil.html cache-bust bumped to v=20260414h for genel/merkez/profil-genel', () => {
-    expect(profilHtml).toContain('genel-bakis.css?v=20260414h');
+    /* K036 bumped genel-bakis.css to ?v=20260414i (margin fix + K036 rollout) */
+    expect(profilHtml).toContain('genel-bakis.css?v=20260414i');
     expect(profilHtml).toContain('profil-genel.js?v=20260414h');
     expect(profilHtml).toContain('merkezi.css?v=20260414h');
     /* profil-extras.css tokens unchanged — stays at v=20260414g */
@@ -3346,6 +3347,77 @@ test.describe('K032 — Profil Önizleme drawer editorial redesign', () => {
     expect(profilHtml).toMatch(/profil-preview\.js\?v=20260414e/);
     /* K034 bumped profil-extras.css to ?v=20260414g (added editorial tokens) */
     expect(profilHtml).toMatch(/css\/profil-extras\.css\?v=20260414g/);
+  });
+});
+
+// ═══════════════════════════════════════════════════════════════
+// K036 — Sirketler editorial redesign
+// ═══════════════════════════════════════════════════════════════
+test.describe('K036 — Sirketler editorial redesign', () => {
+  let profilHtml;
+  let sirketlerCss;
+  let markalarJs;
+
+  test.beforeAll(() => {
+    profilHtml = readFromRepo('profil.html');
+    sirketlerCss = readFromRepo('css/panels/sirketler.css');
+    markalarJs = readFromRepo('profil-markalar.js');
+  });
+
+  test('sirketler.css ships K036 sk-* vocabulary', () => {
+    expect(sirketlerCss).toContain('.sk-card');
+    expect(sirketlerCss).toContain('.sk-card--hero');
+    expect(sirketlerCss).toContain('.sk-card--followed');
+    expect(sirketlerCss).toContain('.sk-card--filter');
+    expect(sirketlerCss).toContain('.sk-card--why');
+    expect(sirketlerCss).toContain('.sk-grid');
+    expect(sirketlerCss).toContain('.sk-brand');
+    expect(sirketlerCss).toContain('.sk-brand__follow');
+    expect(sirketlerCss).toContain('.sk-followed__chip');
+    expect(sirketlerCss).toContain('.sk-filter__seg');
+    expect(sirketlerCss).toContain('--editorial-max-w');
+  });
+
+  test('profil.html panel uses K036 sk-* IDs and copy', () => {
+    expect(profilHtml).toContain('id="sk-followed-count"');
+    expect(profilHtml).toContain('id="sk-followed-count2"');
+    expect(profilHtml).toContain('id="sk-followed-card"');
+    expect(profilHtml).toContain('id="sk-followed-all"');
+    expect(profilHtml).toContain('id="sk-followed-row"');
+    expect(profilHtml).toContain('id="sk-total-count"');
+    expect(profilHtml).toContain('Çalışmak istediğin markaları seç');
+    expect(profilHtml).toContain('EŞLEŞME SİNYALİ');
+    expect(profilHtml).toContain('NEDEN TAKİP?');
+  });
+
+  test('profil.html preserves wired IDs required by profil-markalar.js handlers', () => {
+    expect(profilHtml).toContain('id="brand-search"');
+    expect(profilHtml).toContain('id="segment-pills"');
+    expect(profilHtml).toContain('id="brand-grid"');
+    expect(profilHtml).toContain('id="brand-follows-popup-overlay"');
+  });
+
+  test('profil-markalar.js exports preserved after K036 rewrite', () => {
+    expect(markalarJs).toContain('window.loadSirketlerPanel');
+    expect(markalarJs).toContain('window.toggleBrandFollow');
+    expect(markalarJs).toContain('window.openBrandFollowsPopup');
+    expect(markalarJs).toContain('window.closeBrandFollowsPopup');
+    expect(markalarJs).toContain('window.updateMarkalaBgDots');
+    expect(markalarJs).toContain('window._htBrandLogoError');
+    expect(markalarJs).toContain('window._htBrandFollowReady');
+    expect(markalarJs).toContain('window._htGetGenelBrandTeaser');
+  });
+
+  test('profil-markalar.js drops legacy flip/bc2/brand-card-v2 vocabulary', () => {
+    expect(markalarJs).not.toContain('flip-card');
+    expect(markalarJs).not.toContain('bc2-');
+    expect(markalarJs).not.toContain('brand-card-v2');
+  });
+
+  test('profil.html cache-bust bumped to v=20260414i for K036 affected assets', () => {
+    expect(profilHtml).toContain('sirketler.css?v=20260414i');
+    expect(profilHtml).toContain('profil-markalar.js?v=20260414i');
+    expect(profilHtml).toContain('genel-bakis.css?v=20260414i');
   });
 });
 

@@ -61,10 +61,10 @@ if (window.Sentry) {
 <link rel="stylesheet" href="css/components.css?v=20260413a">
 <link rel="stylesheet" href="css/wizard.css?v=20260406a">
 <link rel="stylesheet" href="css/studio.css?v=20260408a">
-<link rel="stylesheet" href="css/panels/genel-bakis.css?v=20260414h">
+<link rel="stylesheet" href="css/panels/genel-bakis.css?v=20260414i">
 <link rel="stylesheet" href="css/panels/merkezi.css?v=20260414h">
 <link rel="stylesheet" href="css/profil-extras.css?v=20260414g">
-<link rel="stylesheet" href="css/panels/sirketler.css?v=20260406a">
+<link rel="stylesheet" href="css/panels/sirketler.css?v=20260414i">
 <link rel="stylesheet" href="css/panel-soon.css?v=20260413a">
 <link rel="stylesheet" href="css/duyurular.css?v=20260414a">
 </head>
@@ -1079,34 +1079,55 @@ if (window.Sentry) {
 
 </main>
 
-<!-- ═══ PANEL: MARKALAR (Editorial: featured + segment pills + grid) ═══ -->
-<main class="panel" id="panel-sirketler" data-panel="sirketler">
-  <!-- Hero card -->
-  <div class="g-hero markalar-hero">
-    <div class="g-hero-inner">
-      <div class="ht-panel-heading">Markalar</div>
-      <button type="button" class="brand-follow-counter" id="brand-follow-counter-btn" style="display:none;" aria-label="Takip ettiklerin">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-        Takip Ettiklerin
-        <span class="count" id="brand-follow-count-num">0</span>
-      </button>
-    </div>
-  </div>
+<!-- ═══ PANEL: MARKALAR (K036 Editorial redesign) ═══ -->
+<main id="panel-sirketler" class="panel" data-panel="sirketler">
+  <div class="sk-root">
+    <article class="sk-card sk-card--hero">
+      <div class="sk-hero__topmeta">
+        <span class="mono">MARKALAR</span>
+        <span class="mono mono--muted"><span id="sk-followed-count">0</span> TAKİP · <span id="sk-total-count">0</span> MARKA</span>
+      </div>
+      <h1 class="sk-hero__headline">Çalışmak istediğin markaları seç</h1>
+      <p class="sk-hero__subline">Takip ettiğin markalar ilgini gösterir. İK ekipleri eşleşmeleri buradan kuruyor — listenin uzunluğu, motivasyonun aynası.</p>
+      <div class="sk-hero__strip">
+        <span class="mono">EŞLEŞME SİNYALİ</span>
+        <span class="sk-hero__sep">•</span>
+        <span class="mono">HR'IN GÖRDÜĞÜ</span>
+        <span class="sk-hero__sep">•</span>
+        <span class="mono">KARİYER ROTAN</span>
+      </div>
+    </article>
 
-  <!-- Search + Segment Pills -->
-  <div class="search-filter-bar" style="border:1px solid var(--border-subtle,#E5E3DF);border-radius:16px;padding:14px 16px;background:var(--bg-surface,#fff);">
-    <div class="brand-search-wrap">
-      <svg class="brand-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      <input type="text" id="brand-search" placeholder="Marka ara..." autocomplete="off">
-    </div>
-    <div class="segment-pills" id="segment-pills"></div>
-  </div>
+    <article class="sk-card sk-card--followed" id="sk-followed-card" hidden>
+      <div class="sk-followed__head">
+        <span class="mono">TAKİP ETTİKLERİN <span class="sk-followed__count" id="sk-followed-count2">0</span></span>
+        <button type="button" class="sk-followed__all" id="sk-followed-all">HEPSİNİ GÖR →</button>
+      </div>
+      <div class="sk-followed__row" id="sk-followed-row"></div>
+    </article>
 
-  <!-- Brand flip cards -->
-  <div class="all-brands-section">
-    <div id="brand-grid" class="brand-grid">
-      <div class="brand-loading">Yükleniyor...</div>
-    </div>
+    <article class="sk-card sk-card--filter">
+      <div class="sk-filter__search-wrap">
+        <span class="sk-filter__icon" aria-hidden="true">⌕</span>
+        <input id="brand-search" type="search" class="sk-filter__search" placeholder="marka ara…" autocomplete="off">
+      </div>
+      <nav class="sk-filter__seg" id="segment-pills" aria-label="Marka segmenti"></nav>
+    </article>
+
+    <section class="sk-grid" id="brand-grid" aria-live="polite">
+      <div class="sk-grid__loading">Yükleniyor…</div>
+    </section>
+
+    <article class="sk-card sk-card--why">
+      <span class="mono sk-why__label">NEDEN TAKİP?</span>
+      <p class="sk-why__body">Bir markayı takip etmek, İK ekibine "beni burada görüyorum" demektir. Eşleşme algoritmamız, takip ettiğin markaların <strong class="sk-why__accent">aday önceliklerine</strong> bakar. Listenin gerçekçi olması, doğru tekliflere <strong class="sk-why__accent">kapı açar</strong>.</p>
+    </article>
+
+    <footer class="sk-signature">
+      <span class="sk-signature__line"></span>
+      <span class="sk-signature__mark">— hellotalent —</span>
+      <span class="sk-signature__line"></span>
+    </footer>
   </div>
 </main>
 
@@ -1678,7 +1699,7 @@ if (window.Sentry) {
 <script src="profil-visibility.js?v=20260404b"></script>
 <script src="profil-preview.js?v=20260414e"></script>
 <script src="profil-cv.js?v=20260404b"></script>
-<script src="profil-markalar.js?v=20260404b"></script>
+<script src="profil-markalar.js?v=20260414i"></script>
 <script src="profil-settings.js?v=20260404b"></script>
 <script src="profil-teklifler.js?v=20260404b"></script>
 <script src="profil-inbox.js?v=20260414a"></script>
