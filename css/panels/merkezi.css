@@ -24,7 +24,8 @@
 }
 .mk-card--hero{padding:28px 32px;}
 .mk-card--body{padding:32px;}
-.mk-card--visibility{padding:0;display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;align-items:stretch;}
+.mk-card--visibility{padding:0;display:grid;grid-template-columns:1fr 1fr 1fr 1fr;align-items:stretch;}
+.mk-card--visibility .mk-zarf__chev{display:none;}
 .mk-card--cv{padding:0;display:grid;grid-template-columns:1fr 1fr;align-items:stretch;}
 .mk-card--cv .mk-zarf__row{border:0;padding:20px 24px;}
 .mk-card--cv > * + *{border-left:1px solid var(--border-subtle);}
