@@ -8,27 +8,31 @@
 
 #panel-merkez{
   max-width:var(--editorial-max-w,1200px);
-  margin:32px auto 0;
+  margin:0 auto;
   padding:32px var(--editorial-pad-x,clamp(20px,3vw,32px)) 48px;
-  background:var(--color-gray);
+  background:transparent;
   color:var(--text-primary);
   font-family:var(--font-body);
-  border-radius:20px;
-  border:1px solid var(--border-subtle);
+  border:0;
+  border-radius:0;
 }
+.mk-card{
+  background:var(--color-cream,#F7F6F4);
+  border:1px solid var(--border-subtle);
+  border-radius:14px;
+  padding:32px;
+}
+.mk-card--hero{padding:28px 32px;}
+.mk-card--body{padding:32px;}
+.mk-root{display:flex;flex-direction:column;gap:24px;}
 @media (max-width:480px){
   #panel-merkez{border-radius:14px;padding:24px 18px 32px;}
 }
 
-/* ─── Root stagger container ─── */
-.mk-root { display: block; }
+/* K041: Root is flex column gap 24, children are gb-style cards */
 .mk-root > * { opacity: 0; transform: translateY(8px); animation: mkFadeUp 280ms ease-out forwards; }
-.mk-root > .mk-identity-wrap { animation-delay: 0ms; }
-.mk-root > .mk-rule--top    { animation-delay: 40ms; }
-.mk-root > .mk-sectionhead  { animation-delay: 80ms; }
-.mk-root > .mk-spine        { animation-delay: 140ms; }
-.mk-root > .mk-rule--mid    { animation-delay: 220ms; }
-.mk-root > .mk-zarf         { animation-delay: 260ms; }
+.mk-root > .mk-card--hero   { animation-delay: 0ms; }
+.mk-root > .mk-card--body   { animation-delay: 140ms; }
 .mk-root > .mk-signature    { animation-delay: 320ms; }
 
 @keyframes mkFadeUp {
