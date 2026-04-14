@@ -91,13 +91,18 @@
   border-color: var(--wz-navy) !important;
 }
 #panel-profil .ms-input-wrap .ms-search,
-#panel-profil .ms-search {
+#panel-profil .ms-search,
+#panel-profil .ht-input .ms-search,
+#panel-profil .ht-input input.ms-search {
   background: transparent !important;
+  background-color: transparent !important;
   border: 0 !important;
+  border-radius: 0 !important;
   outline: none !important;
   box-shadow: none !important;
   padding: 4px 0 !important;
   width: 100% !important;
+  min-height: 0 !important;
 }
 /* K057+K059: segment / calisma trustpills — less rounded */
 #panel-profil .check-item,
