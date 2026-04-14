@@ -3931,3 +3931,37 @@ test.describe('K066 — Destek editorial CSS override', () => {
   });
 });
 
+test.describe('K067 — Ayarlar editorial CSS override', () => {
+  let profilHtml067;
+  let ayarlarCss067;
+
+  test.beforeAll(() => {
+    profilHtml067 = readFromRepo('profil.html');
+    ayarlarCss067 = readFromRepo('css/panels/ayarlar.css');
+  });
+
+  test('profil.html links K067 ayarlar.css', () => {
+    expect(profilHtml067).toContain('css/panels/ayarlar.css?v=20260415aa');
+  });
+
+  test('ayarlar.css scopes everything under #panel-ayarlar and uses editorial palette', () => {
+    expect(ayarlarCss067).toContain('K067 Faz A');
+    expect(ayarlarCss067).toContain('#panel-ayarlar');
+    expect(ayarlarCss067).toContain('#F7F6F4');
+    expect(ayarlarCss067).toContain('#C94E28');
+    expect(ayarlarCss067).toContain('#E5E3DF');
+    expect(ayarlarCss067).toContain('Bricolage Grotesque');
+    expect(ayarlarCss067).toContain('DM Mono');
+    expect(ayarlarCss067).toContain('prefers-reduced-motion');
+  });
+
+  test('ayarlar.css overrides the critical shared components inside panel scope', () => {
+    expect(ayarlarCss067).toContain('#panel-ayarlar .ht-card');
+    expect(ayarlarCss067).toContain('#panel-ayarlar .ht-card__title');
+    expect(ayarlarCss067).toContain('#panel-ayarlar .ht-btn');
+    expect(ayarlarCss067).toContain('#panel-ayarlar .ht-toggle');
+    expect(ayarlarCss067).toContain('#panel-ayarlar #mfa-qr-container');
+    expect(ayarlarCss067).toContain('#account-wizard-overlay');
+  });
+});
+
