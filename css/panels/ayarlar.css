@@ -741,33 +741,92 @@
 }
 
 /* ════════════════════════════════════════════════════════════════
-   THEME CARD
+   THEME TRI-STATE SEGMENT (Faz C)
    ════════════════════════════════════════════════════════════════ */
-#panel-ayarlar .ayr-card--theme {
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px;
+#panel-ayarlar .ayr-theme-seg {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 4px;
 }
-#panel-ayarlar .ayr-card--theme > div:first-child {
-  flex: 1;
-}
-#panel-ayarlar .ayr-theme-btn {
-  width: 52px;
-  height: 52px;
-  border-radius: 14px;
-  border: 1px solid #E5E3DF;
+
+#panel-ayarlar .ayr-theme-seg__opt {
+  appearance: none;
   background: #FFFFFF;
-  color: #1E2D5E;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  border: 1px solid #E5E3DF;
+  border-radius: 14px;
+  padding: 16px 14px;
   cursor: pointer;
-  flex-shrink: 0;
-  transition: border-color 160ms ease;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  min-height: 72px;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  color: #1E2D5E;
+  transition: border-color 160ms ease, background 160ms ease, transform 120ms ease;
+  text-align: left;
 }
-#panel-ayarlar .ayr-theme-btn:hover {
+
+#panel-ayarlar .ayr-theme-seg__opt:hover {
+  border-color: #1E2D5E;
+  transform: translateY(-1px);
+}
+
+#panel-ayarlar .ayr-theme-seg__opt.is-active {
+  background: #C94E28;
   border-color: #C94E28;
+  color: #F7F6F4;
+}
+
+#panel-ayarlar .ayr-theme-seg__label {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1.1;
+}
+
+#panel-ayarlar .ayr-theme-seg__hint {
+  font-family: 'DM Mono', ui-monospace, monospace;
+  font-style: italic;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #6B6A66;
+  line-height: 1.2;
+}
+
+#panel-ayarlar .ayr-theme-seg__opt.is-active .ayr-theme-seg__hint {
+  color: #F7F6F4;
+  opacity: 0.8;
+}
+
+@media (max-width: 520px) {
+  #panel-ayarlar .ayr-theme-seg {
+    grid-template-columns: 1fr;
+  }
+  #panel-ayarlar .ayr-theme-seg__opt {
+    min-height: 56px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+/* ════════════════════════════════════════════════════════════════
+   TOC ACTIVE STATE (Faz B scroll-spy)
+   ════════════════════════════════════════════════════════════════ */
+#panel-ayarlar .ayr-toc__tab.is-active {
+  color: #C94E28;
+}
+#panel-ayarlar .ayr-toc__tab.is-active::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 18px;
+  bottom: -1px;
+  height: 2px;
+  background: #C94E28;
 }
 
 /* ════════════════════════════════════════════════════════════════

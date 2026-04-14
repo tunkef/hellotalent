@@ -3940,8 +3940,29 @@ test.describe('K067 — Ayarlar editorial CSS override', () => {
     ayarlarCss067 = readFromRepo('css/panels/ayarlar.css');
   });
 
-  test('profil.html links K067 ayarlar.css', () => {
-    expect(profilHtml067).toContain('css/panels/ayarlar.css?v=20260415bb');
+  test('profil.html links K067 ayarlar.css and ayarlar.js', () => {
+    expect(profilHtml067).toContain('css/panels/ayarlar.css?v=20260415cc');
+    expect(profilHtml067).toContain('profil-ayarlar.js?v=20260415aa');
+  });
+
+  test('K067 Faz B+C: profil-ayarlar.js ships scroll-spy and tri-state theme', () => {
+    var ayarJs = readFromRepo('profil-ayarlar.js');
+    expect(ayarJs).toContain('IntersectionObserver');
+    expect(ayarJs).toContain('.ayr-toc__tab');
+    expect(ayarJs).toContain('ayr-theme-seg__opt');
+    expect(ayarJs).toContain('setThemePreference');
+    expect(ayarJs).toContain('ht_theme_preference');
+    expect(ayarJs).not.toMatch(/console\.log\(/);
+  });
+
+  test('K067 Faz C: theme card ships as tri-state segment with system default', () => {
+    expect(profilHtml067).toContain('ayr-theme-seg');
+    expect(profilHtml067).toContain('data-theme-pref="system"');
+    expect(profilHtml067).toContain('data-theme-pref="light"');
+    expect(profilHtml067).toContain('data-theme-pref="dark"');
+    var ayarlarCss067b = readFromRepo('css/panels/ayarlar.css');
+    expect(ayarlarCss067b).toContain('.ayr-theme-seg__opt');
+    expect(ayarlarCss067b).toContain('.ayr-theme-seg__opt.is-active');
   });
 
   test('ayarlar.css uses editorial palette and namespaced vocabulary', () => {

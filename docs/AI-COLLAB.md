@@ -11,6 +11,7 @@
 **Faz 1 durum:** Migration applied, 6 RPC + bucket + policies canlı.
 **Faz 2 durum:** Cropper.js vendor + image editor component + demo, 790/0.
 **K066 Faz A durum:** Destek paneli CSS-only editorial override (destek.css 886 satır, injectCSS no-op, JS template dokunulmadı). 860/0.
+**K067 durum:** Ayarlar paneli editorial rewrite — 6 section stack (Hesap / Güvenlik / Gizlilik / Bildirim / Görünüm / Hesap Yönetimi), .ayr-* namespace, scroll-spy TOC, tri-state tema (Sistem varsayılan, prefers-color-scheme), profil-ayarlar.js yeni IIFE (scroll-spy + theme segment). 50+ kritik id korundu. 872/0.
 
 **Faz 3 durum:** admin Markalar paneli + drawer canlı, 798/0.
 **K038 TAMAM** (admin brand CRUD + image editor canlı).

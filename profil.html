@@ -70,7 +70,7 @@ if (window.Sentry) {
 <link rel="stylesheet" href="css/panels/inbox.css?v=20260414aa">
 <link rel="stylesheet" href="css/panels/bildirimler.css?v=20260414aa">
 <link rel="stylesheet" href="css/panels/destek.css?v=20260414aa">
-<link rel="stylesheet" href="css/panels/ayarlar.css?v=20260415bb">
+<link rel="stylesheet" href="css/panels/ayarlar.css?v=20260415cc">
 <link rel="stylesheet" href="css/panel-soon.css?v=20260413a">
 <link rel="stylesheet" href="css/duyurular.css?v=20260414a">
 </head>
@@ -1604,15 +1604,23 @@ if (window.Sentry) {
       </div>
 
       <div class="ayr-grid-2">
-        <div class="ayr-card ayr-card--theme" id="settings-theme-card">
-          <div>
-            <div class="ayr-card__title">Tema</div>
-            <p class="ayr-lede">Açık ve koyu mod arasında geçiş yap.</p>
+        <div class="ayr-card" id="settings-theme-card">
+          <div class="ayr-card__title">Tema</div>
+          <p class="ayr-lede">Varsayılan olarak cihazının ayarıyla uyumlu gelir. İstersen elle de seçebilirsin.</p>
+          <div class="ayr-theme-seg" role="radiogroup" aria-label="Tema seçimi">
+            <button type="button" class="ayr-theme-seg__opt" data-theme-pref="system" role="radio" aria-checked="true">
+              <span class="ayr-theme-seg__label">Sistem</span>
+              <span class="ayr-theme-seg__hint">Cihazla uyumlu</span>
+            </button>
+            <button type="button" class="ayr-theme-seg__opt" data-theme-pref="light" role="radio" aria-checked="false">
+              <span class="ayr-theme-seg__label">Açık</span>
+              <span class="ayr-theme-seg__hint">Her zaman aydınlık</span>
+            </button>
+            <button type="button" class="ayr-theme-seg__opt" data-theme-pref="dark" role="radio" aria-checked="false">
+              <span class="ayr-theme-seg__label">Koyu</span>
+              <span class="ayr-theme-seg__hint">Her zaman karanlık</span>
+            </button>
           </div>
-          <button type="button" class="theme-toggle-btn theme-toggle-lg ayr-theme-btn" title="Tema değiştir" aria-label="Tema değiştir (açık / koyu mod)">
-            <span class="theme-icon sun"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg></span>
-            <span class="theme-icon moon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></span>
-          </button>
         </div>
 
         <div class="ayr-card ayr-card--beta">
@@ -1862,6 +1870,7 @@ if (window.Sentry) {
 <script src="profil-duyurular.js?v=20260414a"></script>
 <script src="profil-premium.js?v=20260404b"></script>
 <script src="profil-destek.js?v=20260414aa"></script>
+<script src="profil-ayarlar.js?v=20260415aa"></script>
 <script src="profil-wizard.js?v=20260414aa"></script>
 <script src="profil-draft.js?v=20260404b"></script>
 <script src="profil-helpers.js?v=20260404b"></script>
