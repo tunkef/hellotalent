@@ -7,9 +7,9 @@
    ═══════════════════════════════════════════════════════════════ */
 
 #panel-merkez{
-  max-width:var(--editorial-max-w,1120px);
-  margin:0 auto;
-  padding:32px var(--editorial-pad-x,clamp(24px,5vw,48px)) 48px;
+  max-width:var(--editorial-max-w,1200px);
+  margin:32px auto 0;
+  padding:32px var(--editorial-pad-x,clamp(20px,3vw,32px)) 48px;
   background:var(--color-gray);
   color:var(--text-primary);
   font-family:var(--font-body);
