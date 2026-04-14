@@ -283,7 +283,7 @@
 
     var name = firstName(profile && profile.full_name);
     /* K034: hardcoded "Merhaba" — no time-of-day branching */
-    var greetingText = name ? ('Merhaba, ' + name) : 'Merhaba';
+    var greetingText = name ? ('Merhaba ' + name) : 'Merhaba';
     textBlock.appendChild(txt('h1', 'gb-hero-headline', greetingText));
 
     textBlock.appendChild(txt('div', 'gb-hero-subline', buildSubline(profile, experiences)));

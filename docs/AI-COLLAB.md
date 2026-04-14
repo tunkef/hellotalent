@@ -10,7 +10,7 @@
 **Aktif is:** K038 Faz 1 — Admin brand/company CRUD migration deployed. Faz 2 sıra (image editor).
 **Faz 1 durum:** Migration applied, 6 RPC + bucket + policies canlı.
 **Faz 2 durum:** Cropper.js vendor + image editor component + demo, 790/0.
-**K053 durum:** desc field id revert (K048/K050'de yanlış 'aciklama'ya çevrilmişti, gerçek field 'desc'). %97 → %100 dönecek.
+**K055 durum:** Greeting "Merhaba, Tuna" → "Merhaba Tuna" (virgül silindi).
 
 **Faz 3 durum:** admin Markalar paneli + drawer canlı, 798/0.
 **K038 TAMAM** (admin brand CRUD + image editor canlı).

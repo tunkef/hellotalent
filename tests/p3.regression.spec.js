@@ -3133,7 +3133,7 @@ test.describe('K033/K034 — Genel Bakis editorial redesign', () => {
 
   test('K051: profil.html cache-bust bumped to v=20260414y for genel/merkez/profil-genel', () => {
     expect(profilHtml).toContain('genel-bakis.css?v=20260414o');
-    expect(profilHtml).toContain('profil-genel.js?v=20260414z');
+    expect(profilHtml).toContain('profil-genel.js?v=20260414aa');
     expect(profilHtml).toContain('merkezi.css?v=20260414w');
     expect(profilHtml).toContain('profil-extras.css?v=20260414h');
   });
