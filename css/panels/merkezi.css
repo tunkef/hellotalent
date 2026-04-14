@@ -30,15 +30,24 @@
 .mk-rail .mk-card{padding:0;}
 /* Visibility (rail): vertical stack — premium row + 3 toggles */
 .mk-card--visibility .mk-zarf__chev{display:none;}
-.mk-card--visibility .mk-zarf__row--premium{margin:0;padding:20px 24px;display:flex;align-items:center;gap:14px;cursor:pointer;background:transparent;border-radius:14px 14px 0 0;border-bottom:1px solid var(--border-subtle);}
+.mk-card--visibility .mk-zarf__row--premium{margin:0;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;gap:14px;cursor:pointer;background:transparent;border-radius:14px 14px 0 0;border-bottom:1px solid var(--border-subtle);}
 .mk-card--visibility .mk-zarf__row--premium:hover{background:var(--accent-soft);}
+.mk-card--visibility .mk-zarf__row--premium .mk-zarf__icon{order:2;width:auto;height:auto;color:var(--accent);}
+.mk-card--visibility .mk-zarf__row--premium .mk-zarf__icon svg{width:18px;height:18px;}
+.mk-card--visibility .mk-zarf__row--premium .mk-zarf__main{order:1;flex:1;}
 .mk-card--visibility .mk-zarf__row--privacy{display:flex;flex-direction:column;}
-.mk-card--visibility .mk-toggle{display:flex;flex-direction:row;align-items:center;justify-content:space-between;gap:10px;padding:16px 24px;border:0;}
+.mk-card--visibility .mk-toggle{display:flex;flex-direction:row;align-items:center;justify-content:space-between;gap:10px;padding:14px 24px;border:0;}
 .mk-card--visibility .mk-toggle + .mk-toggle{border-top:1px solid var(--border-subtle);}
 .mk-card--visibility .mk-toggle__label{font-size:13px;font-weight:600;color:var(--text-primary);}
-/* CV card (rail): vertical stack — CV row + AI optimize */
-.mk-card--cv .mk-zarf__row{border:0;padding:20px 24px;}
+/* CV card (rail): vertical inside each row — title/desc top, actions below */
+.mk-card--cv .mk-zarf__row{border:0;padding:20px 24px;display:flex;flex-direction:column;align-items:stretch;gap:14px;}
 .mk-card--cv .mk-zarf__row + .mk-zarf__row{border-top:1px solid var(--border-subtle);}
+.mk-card--cv .mk-zarf__icon{display:none;}
+.mk-card--cv .mk-zarf__main{flex:initial;}
+.mk-card--cv .mk-zarf__title{font-size:14px;}
+.mk-card--cv .mk-zarf__actions{display:flex;flex-direction:row;gap:6px;flex-wrap:wrap;}
+.mk-card--cv .mk-zarf__row--ai{flex-direction:column;align-items:stretch;}
+.mk-card--cv .mk-zarf__row--ai .mk-btn-ghost{align-self:flex-start;}
 @media (max-width:900px){
   .mk-grid{grid-template-columns:1fr;}
 }
