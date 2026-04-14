@@ -77,6 +77,25 @@
   box-shadow: none !important;
   background-image: none !important;
 }
+/* K056: align toggle vertically center to the WHOLE info column */
+#panel-profil .wiz-setting-card .wiz-setting-head {
+  display: flex !important;
+  align-items: center !important;
+  gap: 24px !important;
+}
+#panel-profil .wiz-setting-card .wiz-setting-info { flex: 1; min-width: 0; }
+#panel-profil .wiz-setting-card .wiz-setting-info > * + * { margin-top: 4px; }
+#panel-profil .wiz-setting-card .toggle.ht-toggle { flex: 0 0 auto; align-self: center; }
+/* Disabled hint paragraph: separated by hairline below the head row */
+#panel-profil .wiz-setting-card .wiz-setting-disabled-hint {
+  margin-top: 16px !important;
+  padding-top: 16px !important;
+  border-top: 1px solid var(--wz-hairline) !important;
+  font-style: italic !important;
+  font-size: 12px !important;
+  color: var(--wz-muted) !important;
+  line-height: 1.5 !important;
+}
 #panel-profil .wiz-setting-card .wiz-setting-title {
   color: var(--wz-navy) !important;
   font-family: var(--wz-display) !important;
