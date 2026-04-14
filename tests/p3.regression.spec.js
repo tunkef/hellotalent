@@ -3624,3 +3624,64 @@ test.describe('K039 — Header Variant C inline segment', () => {
   });
 });
 
+test.describe('K049 — Wizard editorial redesign', () => {
+  let profilHtml;
+  let wizardEditorialCss;
+  let profilWizardJs;
+
+  test.beforeAll(() => {
+    profilHtml = readFromRepo('profil.html');
+    wizardEditorialCss = readFromRepo('css/wizard-editorial.css');
+    profilWizardJs = readFromRepo('profil-wizard.js');
+  });
+
+  test('profil.html contains the new editorial wizard wrappers', () => {
+    expect(profilHtml).toContain('class="wz-grid"');
+    expect(profilHtml).toContain('class="wz-main"');
+    expect(profilHtml).toContain('class="wz-rail"');
+    expect(profilHtml).toContain('class="wz-header"');
+    expect(profilHtml).toContain('id="wz-step-num"');
+    expect(profilHtml).toContain('id="wz-step-pct"');
+    expect(profilHtml).toContain('id="wz-progress-bar"');
+    expect(profilHtml).toContain('data-wzrail-step="1"');
+    expect(profilHtml).toContain('data-wzrail-step="7"');
+  });
+
+  test('profil.html preserves critical wizard ids after redesign', () => {
+    expect(profilHtml).toContain('id="panel-profil"');
+    expect(profilHtml).toContain('id="wiz-progress"');
+    expect(profilHtml).toContain('id="wiz-step-1"');
+    expect(profilHtml).toContain('id="wiz-step-7"');
+    expect(profilHtml).toContain('id="wiz-nav"');
+    expect(profilHtml).toContain('id="f-adsoyad"');
+    expect(profilHtml).toContain('id="exp-cards-container"');
+    expect(profilHtml).toContain('id="cb-no-experience"');
+    expect(profilHtml).toContain('id="btn-wiz-next"');
+    expect(profilHtml).toContain('id="btn-wiz-back"');
+  });
+
+  test('profil.html links the new wizard-editorial.css after wizard.css', () => {
+    const wIdx = profilHtml.indexOf('css/wizard.css');
+    const wEditIdx = profilHtml.indexOf('css/wizard-editorial.css');
+    expect(wIdx).toBeGreaterThan(-1);
+    expect(wEditIdx).toBeGreaterThan(wIdx);
+  });
+
+  test('wizard-editorial.css contains editorial vocabulary and reduced-motion block', () => {
+    expect(wizardEditorialCss).toContain('.wz-grid');
+    expect(wizardEditorialCss).toContain('.wz-rail');
+    expect(wizardEditorialCss).toContain('.wz-card');
+    expect(wizardEditorialCss).toContain('.wz-header');
+    expect(wizardEditorialCss).toContain('.wz-spine');
+    expect(wizardEditorialCss).toContain('#exp-cards-container');
+    expect(wizardEditorialCss).toContain('prefers-reduced-motion');
+  });
+
+  test('profil-wizard.js extends renderWizard with editorial chrome update', () => {
+    expect(profilWizardJs).toContain('updateEditorialChrome');
+    expect(profilWizardJs).toContain('data-wzrail-step');
+    expect(profilWizardJs).toContain('wz-step-num');
+    expect(profilWizardJs).toContain('wz-progress-bar');
+  });
+});
+

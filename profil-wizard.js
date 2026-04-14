@@ -62,6 +62,8 @@ function renderWizard() {
   if (btnComplete) btnComplete.style.display = wizStep === TOTAL_STEPS ? '' : 'none';
   var progStep = document.getElementById('wiz-current-step');
   if (progStep) progStep.textContent = wizStep;
+  // K049 editorial chrome: header meta + progress bar + right-rail spine
+  updateEditorialChrome();
   // Scroll to top of wizard
   var wizPanel = document.getElementById('panel-profil');
   if (wizPanel) wizPanel.scrollTop = 0;
@@ -69,6 +71,69 @@ function renderWizard() {
   // Refresh Step 6 employer state when entering that step
   if (wizStep === 7) updateStep6HideState();
 }
+
+// ── K049 EDITORIAL CHROME ─────────────────────────
+// Updates the new editorial header (step num, label, pct, progress bar) and
+// the right-rail spine states. Runs after renderWizard() advances wizStep.
+var WZ_STEP_LABELS = ['Kişisel Bilgiler', 'Kariyer / Deneyimler', 'Eğitim, Diller, Sertifikalar', 'Tercihlerim', 'Lokasyon & Uygunluk', 'CV Yükle', 'Profil Ayarları'];
+
+function updateEditorialChrome() {
+  var total = TOTAL_STEPS;
+  var pad = function(n) { return (n < 10 ? '0' : '') + n; };
+  var pct = Math.round((wizStep / total) * 100);
+
+  var stepNum = document.getElementById('wz-step-num');
+  if (stepNum) stepNum.textContent = pad(wizStep) + ' / ' + pad(total);
+
+  var stepLabel = document.getElementById('wz-step-label');
+  if (stepLabel) stepLabel.textContent = WZ_STEP_LABELS[wizStep - 1] || '';
+
+  var stepPct = document.getElementById('wz-step-pct');
+  if (stepPct) stepPct.textContent = '%' + pct;
+
+  var railPct = document.getElementById('wz-rail-pct');
+  if (railPct) railPct.textContent = '%' + pct;
+
+  var bar = document.getElementById('wz-progress-bar');
+  if (bar) {
+    bar.style.setProperty('--wz-progress', pct + '%');
+    bar.setAttribute('aria-valuenow', String(pct));
+  }
+
+  var railItems = document.querySelectorAll('.wz-spine-item[data-wzrail-step]');
+  railItems.forEach(function(el) {
+    var s = parseInt(el.getAttribute('data-wzrail-step'), 10);
+    el.classList.remove('is-current', 'is-complete');
+    el.removeAttribute('aria-current');
+    if (s === wizStep) {
+      el.classList.add('is-current');
+      el.setAttribute('aria-current', 'step');
+    } else if (s < wizStep) {
+      el.classList.add('is-complete');
+    }
+  });
+}
+
+// Wire rail step clicks once on script load (buttons are server-rendered)
+(function wireWzRail() {
+  if (typeof document === 'undefined') return;
+  var bind = function() {
+    var items = document.querySelectorAll('.wz-spine-item[data-wzrail-step]');
+    items.forEach(function(el) {
+      if (el.__wzBound) return;
+      el.__wzBound = true;
+      el.addEventListener('click', function() {
+        var s = parseInt(el.getAttribute('data-wzrail-step'), 10);
+        if (!isNaN(s)) wizGoTo(s);
+      });
+    });
+  };
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', bind);
+  } else {
+    bind();
+  }
+})();
 
 // ── STEP VALIDATION ───────────────────────────────
 function validateStep(step) {

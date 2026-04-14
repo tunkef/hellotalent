@@ -1,0 +1,369 @@
+/* ═══ K049 WIZARD EDITORIAL REDESIGN ═══
+   Source of truth: docs/superpowers/specs/2026-04-14-wizard-redesign-mockup.html
+   Loaded AFTER wizard.css — overrides the legacy cream card chrome with the
+   editorial layout: header + progress bar + 2-col grid + vertical spine rail.
+   Presentation only. All existing ids, data-attributes and JS handlers preserved.
+*/
+
+:root {
+  --wz-hairline: #E5E3DF;
+  --wz-hairline-strong: #D8D5CE;
+  --wz-cream: #F7F6F4;
+  --wz-cream-deep: #EFEDE8;
+  --wz-navy: #1E2D5E;
+  --wz-navy-ink: #151F42;
+  --wz-vermillion: #C94E28;
+  --wz-muted: #6B6A66;
+  --wz-muted-2: #8A8984;
+  --wz-mono: "DM Mono", ui-monospace, Menlo, monospace;
+  --wz-display: "Bricolage Grotesque", Georgia, serif;
+  --wz-body: "Plus Jakarta Sans", system-ui, -apple-system, Segoe UI, sans-serif;
+  --editorial-max-w: 1200px;
+  --editorial-pad-x: clamp(20px, 3vw, 32px);
+}
+
+/* ── Hide legacy icon-strip progress (JS still updates it for state) ── */
+#panel-profil #wiz-progress { display: none !important; }
+
+/* ── Panel shell: flat editorial canvas ── */
+main.panel#panel-profil {
+  max-width: var(--editorial-max-w);
+  margin: 0 auto;
+  padding: 32px var(--editorial-pad-x) 48px;
+  background: transparent;
+  box-shadow: none;
+  border-radius: 0;
+}
+
+/* ── Header ── */
+#panel-profil .wz-header {
+  margin-bottom: clamp(28px, 3.5vw, 40px);
+  opacity: 0;
+  transform: translateY(12px);
+  animation: wzFadeUp 600ms ease-out forwards;
+}
+#panel-profil .wz-caption {
+  font-family: var(--wz-mono);
+  font-style: italic;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--wz-vermillion);
+  margin: 0 0 14px;
+}
+#panel-profil .wz-headline {
+  font-family: var(--wz-display);
+  font-weight: 500;
+  font-size: clamp(32px, 5vw, 56px);
+  line-height: 1.03;
+  letter-spacing: -0.025em;
+  color: var(--wz-navy);
+  margin: 0 0 18px;
+  max-width: 18ch;
+}
+#panel-profil .wz-progress-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 24px;
+  margin-top: 14px;
+  flex-wrap: wrap;
+}
+#panel-profil .wz-progress-meta {
+  font-family: var(--wz-mono);
+  font-style: italic;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--wz-muted);
+}
+#panel-profil .wz-progress-meta b {
+  color: var(--wz-navy);
+  font-weight: 500;
+}
+#panel-profil .wz-progress-bar {
+  margin-top: 14px;
+  height: 2px;
+  width: 100%;
+  background: var(--wz-hairline);
+  position: relative;
+  overflow: hidden;
+}
+#panel-profil .wz-progress-bar::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  right: calc(100% - var(--wz-progress, 14%));
+  background: var(--wz-vermillion);
+  transition: right 280ms ease;
+}
+
+/* ── Grid ── */
+#panel-profil .wz-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) 280px;
+  gap: clamp(28px, 4vw, 56px);
+  align-items: start;
+}
+#panel-profil .wz-main {
+  min-width: 0;
+  opacity: 0;
+  transform: translateY(12px);
+  animation: wzFadeUp 600ms ease-out 80ms forwards;
+}
+
+/* ── Right rail (spine) ── */
+#panel-profil .wz-rail {
+  position: sticky;
+  top: 24px;
+  align-self: start;
+  opacity: 0;
+  transform: translateY(12px);
+  animation: wzFadeUp 600ms ease-out 160ms forwards;
+}
+#panel-profil .wz-rail-caption {
+  font-family: var(--wz-mono);
+  font-style: italic;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--wz-muted);
+  margin: 0 0 22px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--wz-hairline);
+}
+#panel-profil .wz-spine {
+  position: relative;
+  padding-left: 28px;
+}
+#panel-profil .wz-spine::before {
+  content: "";
+  position: absolute;
+  left: 7px;
+  top: 6px;
+  bottom: 6px;
+  width: 1px;
+  background: var(--wz-navy);
+  opacity: 0.35;
+}
+#panel-profil .wz-spine-item {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 11px 0;
+  position: relative;
+  background: transparent;
+  border: 0;
+  width: 100%;
+  text-align: left;
+  font-family: var(--wz-mono);
+  font-style: italic;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--wz-muted);
+  cursor: pointer;
+  transition: color 160ms ease;
+}
+#panel-profil .wz-spine-item:hover { color: var(--wz-navy); }
+#panel-profil .wz-spine-dot {
+  position: absolute;
+  left: -28px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: var(--wz-cream);
+  border: 1px solid var(--wz-hairline-strong);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+#panel-profil .wz-spine-dot svg { display: none; }
+#panel-profil .wz-spine-item .wz-spine-num {
+  color: var(--wz-muted-2);
+  margin-right: 10px;
+  font-weight: 500;
+}
+#panel-profil .wz-spine-item.is-complete { color: var(--wz-navy); }
+#panel-profil .wz-spine-item.is-complete .wz-spine-dot {
+  background: var(--wz-vermillion);
+  border-color: var(--wz-vermillion);
+}
+#panel-profil .wz-spine-item.is-complete .wz-spine-dot svg { display: block; }
+#panel-profil .wz-spine-item.is-current { color: var(--wz-vermillion); }
+#panel-profil .wz-spine-item.is-current .wz-spine-num { color: var(--wz-vermillion); }
+#panel-profil .wz-spine-item.is-current .wz-spine-dot {
+  background: var(--wz-cream);
+  border: 1.5px solid var(--wz-vermillion);
+  animation: wzPulse 2s ease-in-out infinite;
+}
+#panel-profil .wz-rail-footer {
+  margin-top: 22px;
+  padding-top: 16px;
+  border-top: 1px solid var(--wz-hairline);
+  font-family: var(--wz-mono);
+  font-style: italic;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--wz-muted);
+}
+#panel-profil .wz-rail-footer b { color: var(--wz-vermillion); font-weight: 500; }
+
+/* ── Step content: strip the legacy cream card shell ── */
+#panel-profil .wiz-step {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  padding: 0;
+  max-width: none;
+  margin: 0;
+}
+#panel-profil .wiz-step .wiz-step-title {
+  font-family: var(--wz-display);
+  font-weight: 500;
+  font-size: 28px;
+  letter-spacing: -0.015em;
+  color: var(--wz-navy);
+  margin: 0 0 8px;
+  border: 0;
+}
+#panel-profil .wiz-step .wiz-step-desc {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--wz-muted);
+  margin: 0 0 22px;
+  padding-bottom: 22px;
+  border-bottom: 1px solid var(--wz-hairline);
+  max-width: 58ch;
+}
+
+/* Optional sub-card wrapper for grouped sections inside a step */
+#panel-profil .wz-card {
+  background: var(--wz-cream);
+  border: 1px solid var(--wz-hairline);
+  border-radius: 14px;
+  padding: clamp(22px, 2.6vw, 32px);
+  margin-bottom: 20px;
+}
+
+/* ── Experience cards (dynamic) ── */
+#panel-profil #exp-cards-container > .ht-card {
+  background: var(--wz-cream);
+  border: 1px solid var(--wz-hairline);
+  border-radius: 14px;
+  padding: clamp(22px, 2.6vw, 32px);
+  margin-bottom: 24px;
+  box-shadow: none;
+}
+#panel-profil #exp-cards-container > .ht-card .exp-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 22px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--wz-hairline);
+}
+#panel-profil #exp-cards-container > .ht-card .exp-card-title {
+  font-family: var(--wz-mono);
+  font-style: italic;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--wz-vermillion);
+}
+#panel-profil #exp-cards-container > .ht-card .exp-card-del {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid var(--wz-hairline);
+  background: transparent;
+  color: var(--wz-muted);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 160ms ease;
+  cursor: pointer;
+}
+#panel-profil #exp-cards-container > .ht-card .exp-card-del:hover {
+  border-color: var(--wz-vermillion);
+  color: var(--wz-vermillion);
+}
+#panel-profil #exp-cards-container > .ht-card .exp-card-del svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* ── Footer nav: clean flex w/ hairline divider ── */
+#panel-profil .wiz-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  max-width: none;
+  margin: 40px 0 0;
+  padding-top: 24px;
+  border-top: 1px solid var(--wz-hairline);
+}
+#panel-profil .wiz-nav .wiz-nav-spacer { flex: 1; }
+
+/* ── Animations ── */
+@keyframes wzFadeUp {
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes wzPulse {
+  0%, 100% { opacity: 1; transform: translateY(-50%) scale(1); }
+  50% { opacity: 0.7; transform: translateY(-50%) scale(0.92); }
+}
+
+/* ── Mobile ── */
+@media (max-width: 900px) {
+  #panel-profil .wz-grid {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+  #panel-profil .wz-rail {
+    position: static;
+    order: -1;
+    display: flex;
+    overflow-x: auto;
+    gap: 18px;
+    padding: 12px 0 16px;
+    margin: 0 0 8px;
+    border-bottom: 1px solid var(--wz-hairline);
+    scrollbar-width: none;
+  }
+  #panel-profil .wz-rail::-webkit-scrollbar { display: none; }
+  #panel-profil .wz-rail-caption,
+  #panel-profil .wz-rail-footer { display: none; }
+  #panel-profil .wz-spine {
+    display: flex;
+    padding-left: 0;
+    gap: 18px;
+  }
+  #panel-profil .wz-spine::before { display: none; }
+  #panel-profil .wz-spine-item {
+    flex: 0 0 auto;
+    padding: 6px 0;
+    white-space: nowrap;
+  }
+  #panel-profil .wz-spine-dot { display: none; }
+  #panel-profil .wz-headline {
+    font-size: clamp(28px, 8vw, 40px);
+  }
+}
+
+/* ── Reduced motion ── */
+@media (prefers-reduced-motion: reduce) {
+  #panel-profil .wz-header,
+  #panel-profil .wz-main,
+  #panel-profil .wz-rail {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+  #panel-profil .wz-spine-item.is-current .wz-spine-dot { animation: none; }
+  #panel-profil .wz-progress-bar::after { transition: none; }
+}

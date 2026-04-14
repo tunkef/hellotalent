@@ -1,0 +1,914 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>HelloTalent · Profil Wizardı · K031–K048 Redesign Mockup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --cream: #F7F6F4;
+    --cream-deep: #EFEDE8;
+    --navy: #1E2D5E;
+    --navy-ink: #151F42;
+    --vermillion: #C94E28;
+    --vermillion-soft: #E0673F;
+    --hairline: #E5E3DF;
+    --hairline-strong: #D8D5CE;
+    --muted: #6B6A66;
+    --muted-2: #8A8984;
+    --white: #FFFFFF;
+    --radius-card: 14px;
+    --radius-input: 10px;
+    --radius-btn: 8px;
+    --max-w: 1200px;
+    --px: clamp(20px, 3vw, 32px);
+    --display: "Bricolage Grotesque", Georgia, serif;
+    --body: "Plus Jakarta Sans", system-ui, -apple-system, Segoe UI, sans-serif;
+    --mono: "DM Mono", ui-monospace, Menlo, monospace;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: var(--body);
+    color: var(--navy-ink);
+    background: var(--cream-deep);
+    -webkit-font-smoothing: antialiased;
+    font-size: 15px;
+    line-height: 1.55;
+  }
+  a { color: inherit; }
+  button { font-family: inherit; cursor: pointer; }
+
+  /* ---------- Shell ---------- */
+  .wz-shell {
+    max-width: var(--max-w);
+    margin: 0 auto;
+    padding: clamp(28px, 4vw, 56px) var(--px) 80px;
+    background: var(--cream);
+    border-left: 1px solid var(--hairline);
+    border-right: 1px solid var(--hairline);
+    min-height: 100vh;
+  }
+
+  /* ---------- Top bar ---------- */
+  .wz-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--hairline);
+    margin-bottom: clamp(28px, 4vw, 48px);
+  }
+  .wz-brand {
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: 20px;
+    letter-spacing: -0.01em;
+    color: var(--navy);
+  }
+  .wz-brand b { color: var(--vermillion); font-weight: 600; }
+  .wz-topbar-meta {
+    font-family: var(--mono);
+    font-style: italic;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* ---------- Header ---------- */
+  .wz-header { margin-bottom: clamp(32px, 4vw, 56px); }
+  .wz-caption {
+    font-family: var(--mono);
+    font-style: italic;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--vermillion);
+    margin: 0 0 14px;
+  }
+  .wz-headline {
+    font-family: var(--display);
+    font-weight: 500;
+    font-size: clamp(40px, 5.6vw, 64px);
+    line-height: 1.02;
+    letter-spacing: -0.025em;
+    color: var(--navy);
+    margin: 0 0 22px;
+    max-width: 18ch;
+  }
+  .wz-progress-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 24px;
+    margin-top: 18px;
+  }
+  .wz-progress-meta {
+    font-family: var(--mono);
+    font-style: italic;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .wz-progress-meta b {
+    color: var(--navy);
+    font-weight: 500;
+  }
+  .wz-progress-bar {
+    margin-top: 14px;
+    height: 2px;
+    width: 100%;
+    background: var(--hairline);
+    position: relative;
+    overflow: hidden;
+  }
+  .wz-progress-bar::after {
+    content: "";
+    position: absolute;
+    inset: 0 72% 0 0;
+    background: var(--vermillion);
+  }
+
+  /* ---------- Grid ---------- */
+  .wz-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) 280px;
+    gap: clamp(32px, 5vw, 72px);
+    align-items: start;
+  }
+
+  /* ---------- Left col ---------- */
+  .wz-main { min-width: 0; }
+
+  .wz-section-title {
+    font-family: var(--display);
+    font-weight: 500;
+    font-size: 28px;
+    letter-spacing: -0.015em;
+    color: var(--navy);
+    margin: 0 0 8px;
+  }
+  .wz-section-sub {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--muted);
+    margin: 0 0 22px;
+    max-width: 58ch;
+  }
+  .wz-divider {
+    height: 1px;
+    background: var(--hairline);
+    margin: 22px 0 26px;
+    border: 0;
+  }
+
+  /* checkbox row */
+  .wz-check-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-input);
+    margin-bottom: 28px;
+    background: var(--cream);
+  }
+  .wz-check {
+    width: 16px;
+    height: 16px;
+    border: 1px solid var(--hairline-strong);
+    border-radius: 3px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    background: var(--white);
+  }
+  .wz-check svg { opacity: 0; }
+  .wz-check-row.is-on .wz-check {
+    border-color: var(--vermillion);
+    background: var(--vermillion);
+  }
+  .wz-check-row.is-on .wz-check svg { opacity: 1; }
+  .wz-check-row label {
+    font-size: 14px;
+    color: var(--navy-ink);
+    cursor: pointer;
+    user-select: none;
+  }
+
+  /* ---------- Experience cards ---------- */
+  .wz-exp-card {
+    background: var(--cream);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-card);
+    padding: clamp(22px, 2.6vw, 32px);
+    margin-bottom: 20px;
+    position: relative;
+  }
+  .wz-exp-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 22px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--hairline);
+  }
+  .wz-exp-index {
+    font-family: var(--mono);
+    font-style: italic;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--vermillion);
+  }
+  .wz-exp-title {
+    font-family: var(--display);
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--navy);
+    margin-left: 10px;
+    letter-spacing: -0.01em;
+  }
+  .wz-exp-del {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 1px solid var(--hairline);
+    background: transparent;
+    color: var(--muted);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    line-height: 1;
+    transition: all 160ms ease;
+  }
+  .wz-exp-del:hover {
+    border-color: var(--vermillion);
+    color: var(--vermillion);
+  }
+
+  /* field grid */
+  .wz-field-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 22px 24px;
+  }
+  .wz-field { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+  .wz-field.full { grid-column: 1 / -1; }
+  .wz-label {
+    font-family: var(--mono);
+    font-style: italic;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .wz-label .req { color: var(--vermillion); margin-left: 3px; }
+  .wz-input,
+  .wz-select {
+    font-family: var(--body);
+    font-size: 15px;
+    color: var(--navy-ink);
+    background: transparent;
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-input);
+    padding: 12px 14px;
+    width: 100%;
+    outline: none;
+    transition: border-color 160ms ease;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+  .wz-input:hover, .wz-select:hover { border-color: var(--hairline-strong); }
+  .wz-input:focus-visible, .wz-select:focus-visible {
+    border-color: var(--vermillion);
+    outline: 2px solid var(--vermillion);
+    outline-offset: 2px;
+  }
+  .wz-select {
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none'><path d='M3 4.5L6 7.5L9 4.5' stroke='%236B6A66' stroke-width='1.25' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 38px;
+  }
+  .wz-helper {
+    font-size: 12px;
+    color: var(--muted-2);
+  }
+
+  /* two-col date inline */
+  .wz-inline-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  /* Toggle */
+  .wz-toggle-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0;
+  }
+  .wz-toggle {
+    position: relative;
+    width: 36px;
+    height: 20px;
+    border: 1px solid var(--hairline-strong);
+    border-radius: 999px;
+    background: var(--white);
+    flex-shrink: 0;
+    cursor: pointer;
+    transition: all 180ms ease;
+  }
+  .wz-toggle::after {
+    content: "";
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 14px;
+    height: 14px;
+    background: var(--muted);
+    border-radius: 50%;
+    transition: all 180ms ease;
+  }
+  .wz-toggle.is-on { background: var(--vermillion); border-color: var(--vermillion); }
+  .wz-toggle.is-on::after { left: 18px; background: var(--white); }
+  .wz-toggle-label {
+    font-size: 14px;
+    color: var(--navy-ink);
+    user-select: none;
+  }
+
+  /* Add exp button */
+  .wz-add-exp {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 22px;
+    background: transparent;
+    border: 1px solid var(--navy);
+    border-radius: var(--radius-btn);
+    color: var(--navy);
+    font-family: var(--mono);
+    font-size: 11px;
+    font-style: italic;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-top: 8px;
+    transition: all 160ms ease;
+  }
+  .wz-add-exp:hover {
+    background: var(--navy);
+    color: var(--cream);
+  }
+
+  /* Footer nav */
+  .wz-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-top: 40px;
+    padding-top: 24px;
+    border-top: 1px solid var(--hairline);
+  }
+  .wz-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 26px;
+    border-radius: var(--radius-btn);
+    font-family: var(--mono);
+    font-size: 11px;
+    font-style: italic;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border: 1px solid transparent;
+    transition: all 160ms ease;
+  }
+  .wz-btn-ghost {
+    background: transparent;
+    color: var(--navy);
+    border-color: var(--navy);
+  }
+  .wz-btn-ghost:hover { background: var(--navy); color: var(--cream); }
+  .wz-btn-primary {
+    background: var(--vermillion);
+    color: var(--white);
+    border-color: var(--vermillion);
+  }
+  .wz-btn-primary:hover {
+    background: var(--navy);
+    border-color: var(--navy);
+  }
+  .wz-btn:focus-visible {
+    outline: 2px solid var(--vermillion);
+    outline-offset: 3px;
+  }
+
+  /* ---------- Right rail ---------- */
+  .wz-rail {
+    position: sticky;
+    top: 32px;
+    align-self: start;
+  }
+  .wz-rail-caption {
+    font-family: var(--mono);
+    font-style: italic;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 0 0 22px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--hairline);
+  }
+  .wz-spine {
+    position: relative;
+    padding-left: 28px;
+  }
+  .wz-spine::before {
+    content: "";
+    position: absolute;
+    left: 7px;
+    top: 6px;
+    bottom: 6px;
+    width: 1px;
+    background: var(--navy);
+    opacity: 0.35;
+  }
+  .wz-spine-item {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    padding: 11px 0;
+    position: relative;
+    background: transparent;
+    border: 0;
+    width: 100%;
+    text-align: left;
+    font-family: var(--mono);
+    font-style: italic;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    cursor: pointer;
+    transition: color 160ms ease;
+  }
+  .wz-spine-item:hover { color: var(--navy); }
+  .wz-spine-dot {
+    position: absolute;
+    left: -28px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: var(--cream);
+    border: 1px solid var(--hairline-strong);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .wz-spine-item .wz-spine-num {
+    color: var(--muted-2);
+    margin-right: 10px;
+    font-weight: 500;
+  }
+
+  /* states */
+  .wz-spine-item.is-done { color: var(--navy); }
+  .wz-spine-item.is-done .wz-spine-dot {
+    background: var(--vermillion);
+    border-color: var(--vermillion);
+  }
+  .wz-spine-item.is-done .wz-spine-dot svg { display: block; }
+  .wz-spine-dot svg { display: none; }
+
+  .wz-spine-item.is-current { color: var(--vermillion); }
+  .wz-spine-item.is-current .wz-spine-num { color: var(--vermillion); }
+  .wz-spine-item.is-current .wz-spine-dot {
+    background: var(--cream);
+    border: 1.5px solid var(--vermillion);
+    animation: wzPulse 2s ease-in-out infinite;
+  }
+  @keyframes wzPulse {
+    0%, 100% { opacity: 1; transform: translateY(-50%) scale(1); }
+    50% { opacity: 0.7; transform: translateY(-50%) scale(0.92); }
+  }
+
+  .wz-rail-footer {
+    margin-top: 22px;
+    padding-top: 16px;
+    border-top: 1px solid var(--hairline);
+    font-family: var(--mono);
+    font-style: italic;
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+  }
+  .wz-rail-footer b { color: var(--vermillion); font-weight: 500; }
+
+  /* ---------- Stagger fade-up ---------- */
+  .fade-up {
+    opacity: 0;
+    transform: translateY(12px);
+    animation: fadeUp 600ms ease-out forwards;
+  }
+  .fade-up.d1 { animation-delay: 80ms; }
+  .fade-up.d2 { animation-delay: 160ms; }
+  .fade-up.d3 { animation-delay: 240ms; }
+  @keyframes fadeUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ---------- Mobile ---------- */
+  .wz-mobile-rail { display: none; }
+  @media (max-width: 900px) {
+    .wz-grid { grid-template-columns: 1fr; gap: 32px; }
+    .wz-rail { display: none; }
+    .wz-field-grid { grid-template-columns: 1fr; gap: 20px; }
+    .wz-mobile-rail {
+      display: flex;
+      gap: 18px;
+      overflow-x: auto;
+      padding: 14px 2px 16px;
+      margin: 0 calc(-1 * var(--px)) 28px;
+      padding-left: var(--px);
+      padding-right: var(--px);
+      border-bottom: 1px solid var(--hairline);
+      scrollbar-width: none;
+    }
+    .wz-mobile-rail::-webkit-scrollbar { display: none; }
+    .wz-mobile-rail-item {
+      flex: 0 0 auto;
+      font-family: var(--mono);
+      font-style: italic;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+    .wz-mobile-rail-item.is-current { color: var(--vermillion); }
+    .wz-mobile-rail-item.is-done { color: var(--navy); }
+    .wz-headline { font-size: clamp(32px, 8vw, 44px); }
+    .wz-footer { flex-direction: row; }
+    .wz-btn { padding: 12px 18px; font-size: 10px; }
+  }
+
+  /* ---------- Reduced motion ---------- */
+  @media (prefers-reduced-motion: reduce) {
+    .fade-up { animation: none; opacity: 1; transform: none; }
+    .wz-spine-item.is-current .wz-spine-dot { animation: none; }
+    * { transition: none !important; }
+  }
+
+  /* Focus visible everywhere */
+  :focus-visible {
+    outline: 2px solid var(--vermillion);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+</style>
+</head>
+<body>
+  <main class="wz-shell">
+
+    <!-- Topbar -->
+    <div class="wz-topbar">
+      <div class="wz-brand">Hello<b>Talent</b></div>
+      <div class="wz-topbar-meta">K031–K048 · Wizard Mockup · 2026-04-14</div>
+    </div>
+
+    <!-- Mobile rail -->
+    <nav class="wz-mobile-rail" aria-label="Wizard adımları (mobil)">
+      <span class="wz-mobile-rail-item is-done">1 · KİŞİSEL</span>
+      <span class="wz-mobile-rail-item is-current">2 · KARİYER</span>
+      <span class="wz-mobile-rail-item">3 · EĞİTİM</span>
+      <span class="wz-mobile-rail-item">4 · TERCİHLER</span>
+      <span class="wz-mobile-rail-item">5 · UYGUNLUK</span>
+      <span class="wz-mobile-rail-item">6 · CV</span>
+      <span class="wz-mobile-rail-item">7 · TAMAMLA</span>
+    </nav>
+
+    <!-- Header -->
+    <header class="wz-header fade-up">
+      <p class="wz-caption">Profil Wizardı</p>
+      <h1 class="wz-headline">Profilini tamamla.</h1>
+      <div class="wz-progress-row">
+        <span class="wz-progress-meta">Adım <b>02 / 07</b> · Kariyer ve Deneyimler</span>
+        <span class="wz-progress-meta"><b>%28</b> tamamlandı</span>
+      </div>
+      <div class="wz-progress-bar" role="progressbar" aria-valuenow="28" aria-valuemin="0" aria-valuemax="100" aria-label="Profil tamamlanma"></div>
+    </header>
+
+    <!-- Grid -->
+    <div class="wz-grid">
+
+      <!-- LEFT -->
+      <section class="wz-main fade-up d1" aria-labelledby="step-title">
+        <h2 id="step-title" class="wz-section-title">Kariyer ve Deneyimler</h2>
+        <p class="wz-section-sub">
+          İş deneyimlerini ekle. Her deneyim, seni doğru markalarla eşleştirmemize yardımcı olur.
+          En az bir tam zamanlı pozisyon öneriyoruz.
+        </p>
+        <hr class="wz-divider" />
+
+        <!-- Checkbox -->
+        <div class="wz-check-row" role="checkbox" aria-checked="false" tabindex="0">
+          <span class="wz-check" aria-hidden="true">
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+              <path d="M1.5 5L4 7.5L8.5 2.5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+          <label>Henüz iş deneyimim yok — öğrenci / yeni mezun olarak ilerlemek istiyorum.</label>
+        </div>
+
+        <!-- EXP CARD 1 : CHANEL -->
+        <article class="wz-exp-card">
+          <header class="wz-exp-head">
+            <div>
+              <span class="wz-exp-index">Deneyim #01</span>
+              <span class="wz-exp-title">Chanel · Flagship İstanbul</span>
+            </div>
+            <button type="button" class="wz-exp-del" aria-label="Deneyimi sil">×</button>
+          </header>
+
+          <div class="wz-field-grid">
+            <div class="wz-field">
+              <span class="wz-label">Şirket / Marka<span class="req">*</span></span>
+              <input class="wz-input" type="text" value="Chanel" />
+            </div>
+            <div class="wz-field">
+              <span class="wz-label">Sektör<span class="req">*</span></span>
+              <select class="wz-select">
+                <option>Lüks Moda & Aksesuar</option>
+                <option>Kozmetik & Güzellik</option>
+                <option>Perakende</option>
+              </select>
+            </div>
+
+            <div class="wz-field">
+              <span class="wz-label">Rol Ailesi</span>
+              <select class="wz-select">
+                <option>Mağaza Liderliği</option>
+                <option>Client Advisor</option>
+                <option>Visual Merchandising</option>
+              </select>
+            </div>
+            <div class="wz-field">
+              <span class="wz-label">Pozisyon<span class="req">*</span></span>
+              <input class="wz-input" type="text" value="Boutique Manager" />
+            </div>
+
+            <div class="wz-field full">
+              <div class="wz-toggle-row">
+                <span class="wz-toggle" role="switch" aria-checked="false" tabindex="0"></span>
+                <span class="wz-toggle-label">Halen burada çalışıyorum</span>
+              </div>
+            </div>
+
+            <div class="wz-field">
+              <span class="wz-label">Başlangıç</span>
+              <div class="wz-inline-2">
+                <select class="wz-select"><option>Mart</option></select>
+                <select class="wz-select"><option>2021</option></select>
+              </div>
+            </div>
+            <div class="wz-field">
+              <span class="wz-label">Bitiş</span>
+              <div class="wz-inline-2">
+                <select class="wz-select"><option>Ocak</option></select>
+                <select class="wz-select"><option>2025</option></select>
+              </div>
+            </div>
+
+            <div class="wz-field">
+              <span class="wz-label">İstihdam Tipi</span>
+              <select class="wz-select">
+                <option>Tam Zamanlı</option>
+                <option>Yarı Zamanlı</option>
+                <option>Proje Bazlı</option>
+              </select>
+            </div>
+            <div class="wz-field">
+              <span class="wz-label">Şehir</span>
+              <input class="wz-input" type="text" value="İstanbul" />
+            </div>
+
+            <div class="wz-field">
+              <span class="wz-label">Segment</span>
+              <select class="wz-select">
+                <option>Lüks</option>
+                <option>Premium</option>
+                <option>Mass</option>
+              </select>
+            </div>
+            <div class="wz-field">
+              <span class="wz-label">Takım Büyüklüğü</span>
+              <select class="wz-select">
+                <option>12–20 kişi</option>
+                <option>5–11 kişi</option>
+                <option>20+ kişi</option>
+              </select>
+            </div>
+
+            <div class="wz-field full">
+              <span class="wz-label">Ayrılma Nedeni</span>
+              <input class="wz-input" type="text" value="Yeni bir sektörde liderlik fırsatı" />
+              <span class="wz-helper">Bu bilgi sadece işe alım ekibiyle paylaşılır, markalara gösterilmez.</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- EXP CARD 2 : APPLE -->
+        <article class="wz-exp-card">
+          <header class="wz-exp-head">
+            <div>
+              <span class="wz-exp-index">Deneyim #02</span>
+              <span class="wz-exp-title">Apple · Zorlu Center</span>
+            </div>
+            <button type="button" class="wz-exp-del" aria-label="Deneyimi sil">×</button>
+          </header>
+
+          <div class="wz-field-grid">
+            <div class="wz-field">
+              <span class="wz-label">Şirket / Marka<span class="req">*</span></span>
+              <input class="wz-input" type="text" value="Apple" />
+            </div>
+            <div class="wz-field">
+              <span class="wz-label">Sektör<span class="req">*</span></span>
+              <select class="wz-select">
+                <option>Tech & Consumer Electronics</option>
+                <option>Perakende</option>
+              </select>
+            </div>
+
+            <div class="wz-field">
+              <span class="wz-label">Rol Ailesi</span>
+              <select class="wz-select">
+                <option>Mağaza Liderliği</option>
+                <option>Specialist</option>
+                <option>Genius</option>
+              </select>
+            </div>
+            <div class="wz-field">
+              <span class="wz-label">Pozisyon<span class="req">*</span></span>
+              <input class="wz-input" type="text" value="Store Leader" />
+            </div>
+
+            <div class="wz-field full">
+              <div class="wz-toggle-row">
+                <span class="wz-toggle is-on" role="switch" aria-checked="true" tabindex="0"></span>
+                <span class="wz-toggle-label">Halen burada çalışıyorum</span>
+              </div>
+            </div>
+
+            <div class="wz-field">
+              <span class="wz-label">Başlangıç</span>
+              <div class="wz-inline-2">
+                <select class="wz-select"><option>Şubat</option></select>
+                <select class="wz-select"><option>2025</option></select>
+              </div>
+            </div>
+            <div class="wz-field">
+              <span class="wz-label">İstihdam Tipi</span>
+              <select class="wz-select">
+                <option>Tam Zamanlı</option>
+              </select>
+            </div>
+
+            <div class="wz-field">
+              <span class="wz-label">Şehir</span>
+              <input class="wz-input" type="text" value="İstanbul" />
+            </div>
+            <div class="wz-field">
+              <span class="wz-label">Segment</span>
+              <select class="wz-select">
+                <option>Tech</option>
+                <option>Premium</option>
+              </select>
+            </div>
+
+            <div class="wz-field">
+              <span class="wz-label">Takım Büyüklüğü</span>
+              <select class="wz-select">
+                <option>40+ kişi</option>
+                <option>20–40 kişi</option>
+              </select>
+            </div>
+            <div class="wz-field">
+              <span class="wz-label">Raporlama</span>
+              <input class="wz-input" type="text" value="Market Leader" />
+            </div>
+          </div>
+        </article>
+
+        <!-- Add exp -->
+        <button type="button" class="wz-add-exp">+ Deneyim ekle</button>
+
+        <!-- Footer nav -->
+        <nav class="wz-footer" aria-label="Adım gezinme">
+          <button type="button" class="wz-btn wz-btn-ghost">← Geri</button>
+          <button type="button" class="wz-btn wz-btn-primary">İleri →</button>
+        </nav>
+      </section>
+
+      <!-- RIGHT RAIL -->
+      <aside class="wz-rail fade-up d2" aria-label="Wizard adımları">
+        <p class="wz-rail-caption">Adımlar</p>
+
+        <div class="wz-spine" role="list">
+          <button class="wz-spine-item is-done" role="listitem" aria-label="Adım 1: Kişisel, tamamlandı">
+            <span class="wz-spine-dot">
+              <svg width="9" height="9" viewBox="0 0 10 10" fill="none" aria-hidden="true">
+                <path d="M1.5 5L4 7.5L8.5 2.5" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+            <span class="wz-spine-num">01</span> Kişisel
+          </button>
+
+          <button class="wz-spine-item is-current" role="listitem" aria-current="step" aria-label="Adım 2: Kariyer, aktif">
+            <span class="wz-spine-dot"></span>
+            <span class="wz-spine-num">02</span> Kariyer
+          </button>
+
+          <button class="wz-spine-item" role="listitem">
+            <span class="wz-spine-dot"></span>
+            <span class="wz-spine-num">03</span> Eğitim
+          </button>
+
+          <button class="wz-spine-item" role="listitem">
+            <span class="wz-spine-dot"></span>
+            <span class="wz-spine-num">04</span> Tercihler
+          </button>
+
+          <button class="wz-spine-item" role="listitem">
+            <span class="wz-spine-dot"></span>
+            <span class="wz-spine-num">05</span> Uygunluk
+          </button>
+
+          <button class="wz-spine-item" role="listitem">
+            <span class="wz-spine-dot"></span>
+            <span class="wz-spine-num">06</span> CV
+          </button>
+
+          <button class="wz-spine-item" role="listitem">
+            <span class="wz-spine-dot"></span>
+            <span class="wz-spine-num">07</span> Tamamla
+          </button>
+        </div>
+
+        <p class="wz-rail-footer">Şu ana kadar <b>%28</b> tamamlandı</p>
+      </aside>
+    </div>
+  </main>
+
+  <script>
+    // Checkbox toggle
+    document.querySelectorAll('.wz-check-row').forEach(row => {
+      const toggle = () => {
+        const on = row.classList.toggle('is-on');
+        row.setAttribute('aria-checked', on ? 'true' : 'false');
+      };
+      row.addEventListener('click', toggle);
+      row.addEventListener('keydown', e => {
+        if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); toggle(); }
+      });
+    });
+
+    // Switch toggles
+    document.querySelectorAll('.wz-toggle').forEach(t => {
+      const flip = () => {
+        const on = t.classList.toggle('is-on');
+        t.setAttribute('aria-checked', on ? 'true' : 'false');
+      };
+      t.addEventListener('click', flip);
+      t.addEventListener('keydown', e => {
+        if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); flip(); }
+      });
+    });
+
+    // Spine click -> set current
+    const spineItems = document.querySelectorAll('.wz-spine-item');
+    spineItems.forEach((item, idx) => {
+      item.addEventListener('click', () => {
+        spineItems.forEach(i => { i.classList.remove('is-current'); i.removeAttribute('aria-current'); });
+        item.classList.add('is-current');
+        item.setAttribute('aria-current', 'step');
+      });
+    });
+  </script>
+</body>
+</html>

@@ -60,6 +60,7 @@ if (window.Sentry) {
 <link rel="stylesheet" href="css/layout.css?v=20260414p">
 <link rel="stylesheet" href="css/components.css?v=20260413a">
 <link rel="stylesheet" href="css/wizard.css?v=20260414w">
+<link rel="stylesheet" href="css/wizard-editorial.css?v=20260414w">
 <link rel="stylesheet" href="css/studio.css?v=20260408a">
 <link rel="stylesheet" href="css/panels/genel-bakis.css?v=20260414k">
 <link rel="stylesheet" href="css/panels/merkezi.css?v=20260414v">
@@ -627,7 +628,22 @@ if (window.Sentry) {
 <!-- ═══ PANEL: PROFIL (WIZARD) ═══ -->
 <main class="panel" id="panel-profil" data-panel="profil">
 
-  <!-- WIZARD PROGRESS BAR -->
+  <!-- K049 editorial grid: wz-main (left content) + wz-rail (right spine) -->
+  <div class="wz-grid">
+  <section class="wz-main">
+
+  <!-- EDITORIAL HEADER (K049) -->
+  <header class="wz-header">
+    <p class="wz-caption">Profil Wizardı</p>
+    <h1 class="wz-headline">Profilini tamamla.</h1>
+    <div class="wz-progress-row">
+      <span class="wz-progress-meta">Adım <b id="wz-step-num">01 / 07</b> · <span id="wz-step-label">Kişisel Bilgiler</span></span>
+      <span class="wz-progress-meta"><b id="wz-step-pct">%14</b> tamamlandı</span>
+    </div>
+    <div class="wz-progress-bar" id="wz-progress-bar" role="progressbar" aria-valuenow="14" aria-valuemin="0" aria-valuemax="100" aria-label="Profil tamamlanma"></div>
+  </header>
+
+  <!-- LEGACY WIZARD PROGRESS BAR (hidden via CSS; JS still updates state) -->
   <div class="wiz-progress pos-rel" id="wiz-progress">
     <div class="wiz-progress-meta" id="wiz-progress-meta">Adım <span id="wiz-current-step">1</span> / 7</div>
     <div class="wiz-progress-step active" data-wstep="1">
@@ -1066,6 +1082,46 @@ if (window.Sentry) {
     <button class="ht-btn ht-btn--primary" id="btn-wiz-next">İleri</button>
     <button class="ht-btn ht-btn--navy ht-btn--lg" id="btn-wiz-complete" style="display:none;">Tamamla</button>
   </div>
+
+  </section><!-- /.wz-main -->
+
+  <!-- K049 RIGHT RAIL (editorial spine) -->
+  <aside class="wz-rail" aria-label="Wizard adımları">
+    <p class="wz-rail-caption">Adımlar</p>
+    <div class="wz-spine" role="list">
+      <button type="button" class="wz-spine-item is-current" role="listitem" data-wzrail-step="1" aria-current="step">
+        <span class="wz-spine-dot"><svg width="9" height="9" viewBox="0 0 10 10" fill="none" aria-hidden="true"><path d="M1.5 5L4 7.5L8.5 2.5" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span class="wz-spine-num">01</span> Kişisel
+      </button>
+      <button type="button" class="wz-spine-item" role="listitem" data-wzrail-step="2">
+        <span class="wz-spine-dot"><svg width="9" height="9" viewBox="0 0 10 10" fill="none" aria-hidden="true"><path d="M1.5 5L4 7.5L8.5 2.5" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span class="wz-spine-num">02</span> Kariyer
+      </button>
+      <button type="button" class="wz-spine-item" role="listitem" data-wzrail-step="3">
+        <span class="wz-spine-dot"><svg width="9" height="9" viewBox="0 0 10 10" fill="none" aria-hidden="true"><path d="M1.5 5L4 7.5L8.5 2.5" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span class="wz-spine-num">03</span> Eğitim
+      </button>
+      <button type="button" class="wz-spine-item" role="listitem" data-wzrail-step="4">
+        <span class="wz-spine-dot"><svg width="9" height="9" viewBox="0 0 10 10" fill="none" aria-hidden="true"><path d="M1.5 5L4 7.5L8.5 2.5" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span class="wz-spine-num">04</span> Tercihler
+      </button>
+      <button type="button" class="wz-spine-item" role="listitem" data-wzrail-step="5">
+        <span class="wz-spine-dot"><svg width="9" height="9" viewBox="0 0 10 10" fill="none" aria-hidden="true"><path d="M1.5 5L4 7.5L8.5 2.5" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span class="wz-spine-num">05</span> Uygunluk
+      </button>
+      <button type="button" class="wz-spine-item" role="listitem" data-wzrail-step="6">
+        <span class="wz-spine-dot"><svg width="9" height="9" viewBox="0 0 10 10" fill="none" aria-hidden="true"><path d="M1.5 5L4 7.5L8.5 2.5" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span class="wz-spine-num">06</span> CV
+      </button>
+      <button type="button" class="wz-spine-item" role="listitem" data-wzrail-step="7">
+        <span class="wz-spine-dot"><svg width="9" height="9" viewBox="0 0 10 10" fill="none" aria-hidden="true"><path d="M1.5 5L4 7.5L8.5 2.5" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span class="wz-spine-num">07</span> Ayarlar
+      </button>
+    </div>
+    <p class="wz-rail-footer">Şu ana kadar <b id="wz-rail-pct">%14</b> tamamlandı</p>
+  </aside>
+
+  </div><!-- /.wz-grid -->
 
 </main>
 
@@ -1699,7 +1755,7 @@ if (window.Sentry) {
 <script src="profil-duyurular.js?v=20260414a"></script>
 <script src="profil-premium.js?v=20260404b"></script>
 <script src="profil-destek.js?v=20260404b"></script>
-<script src="profil-wizard.js?v=20260413a"></script>
+<script src="profil-wizard.js?v=20260414w"></script>
 <script src="profil-draft.js?v=20260404b"></script>
 <script src="profil-helpers.js?v=20260404b"></script>
 <script src="profil-kimbakti.js?v=20260404b"></script>

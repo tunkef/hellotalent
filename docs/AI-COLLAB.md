@@ -10,7 +10,7 @@
 **Aktif is:** K038 Faz 1 — Admin brand/company CRUD migration deployed. Faz 2 sıra (image editor).
 **Faz 1 durum:** Migration applied, 6 RPC + bucket + policies canlı.
 **Faz 2 durum:** Cropper.js vendor + image editor component + demo, 790/0.
-**K048 durum:** Pozisyon field id bug fix — profil-summary.js -unvan'a bakacak (önceden -pozisyon yanlıştı), custom unvan support eklendi.
+**K049 durum:** Wizard editorial redesign canlı. wizard-editorial.css yeni katman, profil.html wz-grid wrapper + 7-item rail, profil-wizard.js updateEditorialChrome + rail click. 824/0.
 
 **Faz 3 durum:** admin Markalar paneli + drawer canlı, 798/0.
 **K038 TAMAM** (admin brand CRUD + image editor canlı).
