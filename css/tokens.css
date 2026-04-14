@@ -143,6 +143,7 @@
   --editorial-vermillion:      #C94E28; /* accent */
   --editorial-vermillion-soft: #F5EDE9; /* tinted accent bg */
   --editorial-vermillion-deep: #A83F1E; /* hover / pressed */
+  --editorial-on-vermillion:   #FFFFFF; /* text color on vermillion fills */
   --editorial-shadow:          0 1px 3px rgba(30,45,94,0.06);
   --editorial-shadow-md:       0 4px 18px rgba(30,45,94,0.08);
 }
@@ -196,6 +197,7 @@ html[data-theme="dark"] {
   --editorial-vermillion:      #E8845C;  /* warm + lightened, K031 avd-talent-badge precedent */
   --editorial-vermillion-soft: rgba(232,132,92,0.12);
   --editorial-vermillion-deep: #F06A3C;  /* hover/pressed in dark */
+  --editorial-on-vermillion:   #FFFFFF;
   --editorial-shadow:          0 1px 3px rgba(0,0,0,0.4);
   --editorial-shadow-md:       0 4px 18px rgba(0,0,0,0.5);
 }

@@ -40,6 +40,18 @@ Panel-by-panel:
 5. Visual verification via Playwright on profil.html (logged-out CSS still renders).
 6. Test gate: `npx playwright test tests/p3.regression.spec.js` after each commit.
 
+### Progress log
+- [x] tokens.css editorial set + NightAudit guard test (commit 684ff5f)
+- [x] ayarlar.css tokenize (~140 hex → var(--editorial-*)), 874/0
+- [ ] destek
+- [ ] inbox
+- [ ] bildirimler
+- [ ] kimbakti
+- [ ] genel-bakis
+- [ ] sirketler drift
+- [ ] merkezi drift
+- [ ] layout sweep
+
 ### Commit plan
 1. `feat(tokens): editorial dark palette for candidate profile` (this)
 2. `feat(ayarlar): dark mode parity — tokenize editorial palette`

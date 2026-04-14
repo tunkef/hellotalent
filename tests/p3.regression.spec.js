@@ -3968,9 +3968,18 @@ test.describe('K067 — Ayarlar editorial CSS override', () => {
   test('ayarlar.css uses editorial palette and namespaced vocabulary', () => {
     expect(ayarlarCss067).toContain('K067 Faz A');
     expect(ayarlarCss067).toContain('#panel-ayarlar');
-    expect(ayarlarCss067).toContain('#F7F6F4');
-    expect(ayarlarCss067).toContain('#C94E28');
-    expect(ayarlarCss067).toContain('#E5E3DF');
+    // K067-NightAudit (2026-04-15): editorial palette tokenized for dark-mode parity.
+    expect(ayarlarCss067).toContain('var(--editorial-bg)');
+    expect(ayarlarCss067).toContain('var(--editorial-vermillion)');
+    expect(ayarlarCss067).toContain('var(--editorial-hairline)');
+    expect(ayarlarCss067).toContain('var(--editorial-ink)');
+    expect(ayarlarCss067).toContain('var(--editorial-ink-muted)');
+    // raw cream/navy/vermillion hex must NOT live in the panel anymore
+    expect(ayarlarCss067).not.toMatch(/#F7F6F4/i);
+    expect(ayarlarCss067).not.toMatch(/#C94E28/i);
+    expect(ayarlarCss067).not.toMatch(/#1E2D5E/i);
+    expect(ayarlarCss067).not.toMatch(/#E5E3DF/i);
+    expect(ayarlarCss067).not.toMatch(/#6B6A66/i);
     expect(ayarlarCss067).toContain('Bricolage Grotesque');
     expect(ayarlarCss067).toContain('DM Mono');
     expect(ayarlarCss067).toContain('prefers-reduced-motion');
