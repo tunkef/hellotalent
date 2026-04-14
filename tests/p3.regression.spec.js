@@ -3612,15 +3612,14 @@ test.describe('K039 — Header Variant C inline segment', () => {
     expect(rule).toContain('DM Mono');
   });
 
-  test('profil.html cache-busts layout.css to v=20260414n', () => {
-    expect(profilHtml).toContain('css/layout.css?v=20260414n');
+  test('profil.html cache-busts layout.css to v=20260414o', () => {
+    expect(profilHtml).toContain('css/layout.css?v=20260414o');
   });
 
-  test('profil.html has interpunct separators and action labels', () => {
+  test('profil.html has interpunct separators and action icons', () => {
     expect(profilHtml).toContain('class="hn-sep"');
-    expect(profilHtml).toContain('class="hn-action-label">GÖZ');
-    expect(profilHtml).toContain('class="hn-action-label">MS');
-    expect(profilHtml).toContain('class="hn-action-label">BL');
+    var actionIconCount = (profilHtml.match(/class="hn-action-icon"/g) || []).length;
+    expect(actionIconCount).toBeGreaterThanOrEqual(3);
   });
 });
 

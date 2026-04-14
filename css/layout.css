@@ -116,6 +116,11 @@ select:focus-visible{
   text-transform:uppercase;
   color:inherit;line-height:1;
 }
+.hn-action-icon{
+  display:block;
+  color:inherit;
+  transition:color 200ms ease;
+}
 .header-notif-dot,
 .header-msg-dot{
   position:absolute;top:4px;right:2px;
