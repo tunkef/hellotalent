@@ -26,6 +26,26 @@
 #panel-profil #wiz-progress { display: none !important; }
 /* K050: hide top "PROFİL WİZARDI" caption — redundant with rail */
 #panel-profil .wz-caption { display: none !important; }
+/* K051: rail content aligned with main title baseline */
+#panel-profil .wz-rail { padding-top: 64px; }
+@media (max-width: 900px) {
+  #panel-profil .wz-rail { padding-top: 0; }
+}
+/* K051: Hide "Tüm premium avantajları gör" link inside wizard step 7 — keeps users in flow */
+#panel-profil .wiz-premium-soon { display: none !important; }
+/* K051: premium toggle slider in wizard — match standard ht-toggle vermillion */
+#panel-profil .wiz-setting-premium .toggle-slider {
+  background: #d8d8d8 !important;
+}
+#panel-profil .wiz-setting-premium .toggle-slider::before {
+  background: #ffffff !important;
+}
+#panel-profil .wiz-setting-premium input:checked + .toggle-slider {
+  background: #C94E28 !important;
+}
+#panel-profil .wiz-setting-premium input:checked + .toggle-slider::before {
+  background: #ffffff !important;
+}
 /* K050: flat input fields — no fill bg, only hairline border */
 #panel-profil .wiz-step input[type="text"],
 #panel-profil .wiz-step input[type="tel"],
@@ -48,12 +68,14 @@
   outline: none !important;
 }
 /* K050: premium card in wizard step 7 — cream + hairline editorial */
-#panel-profil .wiz-setting-card {
+#panel-profil .wiz-setting-card,
+#panel-profil .wiz-setting-card.wiz-setting-premium {
   background: var(--wz-cream) !important;
   border: 1px solid var(--wz-hairline) !important;
   border-radius: 14px !important;
   padding: 24px 28px !important;
   box-shadow: none !important;
+  background-image: none !important;
 }
 #panel-profil .wiz-setting-card .wiz-setting-title {
   color: var(--wz-navy) !important;

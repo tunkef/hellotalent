@@ -95,6 +95,7 @@
   justify-content: center;
   font-family: var(--font-mono);
   font-size: 12px;
+  font-weight: 700;
   letter-spacing: 0.04em;
   color: var(--color-navy);
   font-weight: 500;
@@ -249,6 +250,22 @@
   color: var(--color-navy);
   margin: 0 0 10px;
   letter-spacing: -0.005em;
+}
+.gb-item__media {
+  margin: 12px 0 14px;
+  border: 1px solid var(--border-subtle, #E5E3DF);
+  border-radius: 12px;
+  overflow: hidden;
+  max-width: 640px;
+  background: var(--color-cream, #F7F6F4);
+}
+.gb-item__media img,
+.gb-item__media video {
+  display: block;
+  width: 100%;
+  max-height: 360px;
+  object-fit: contain;
+  background: var(--color-cream, #F7F6F4);
 }
 .gb-item__excerpt {
   font-size: 14px;

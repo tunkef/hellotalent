@@ -476,7 +476,7 @@
      .is-expanded on the article, revealing full body_md. No navigation
      to bildirimler panel. body_md rendered via text nodes + <br>, never
      innerHTML. */
-  function buildGundemItem(post, animClass) {
+  function buildGundemItem(post, animClass, signedMap) {
     var article = el('article', 'gb-item ' + (animClass || ''));
 
     var sourceLabel = COACH_CAT_LABELS[post.category] || (post.category ? String(post.category) : 'HelloTalent');
@@ -488,6 +488,36 @@
     article.appendChild(txt('div', 'gb-mono gb-item__meta', metaParts.join(' \u00B7 ')));
 
     article.appendChild(txt('h3', 'gb-item__headline', post.title || ''));
+
+    /* K051: render first image media as a thumbnail */
+    var media = post.media || [];
+    if (media.length > 0 && signedMap) {
+      for (var mi = 0; mi < media.length; mi++) {
+        var m = media[mi];
+        if (!m) continue;
+        var isVideo = m.media_type === 'video';
+        var src = '';
+        if (m.external_url) src = m.external_url;
+        else if (m.storage_path && signedMap[m.storage_path]) src = signedMap[m.storage_path];
+        if (!src) continue;
+        var fig = el('figure', 'gb-item__media');
+        if (isVideo) {
+          var vid = document.createElement('video');
+          vid.src = src;
+          vid.controls = true;
+          vid.preload = 'metadata';
+          fig.appendChild(vid);
+        } else {
+          var img = document.createElement('img');
+          img.src = src;
+          img.alt = post.title || '';
+          img.loading = 'lazy';
+          fig.appendChild(img);
+        }
+        article.appendChild(fig);
+        break;
+      }
+    }
 
     var rawBody = post.body_md ? String(post.body_md) : '';
     var hasBody = rawBody.trim().length > 0;
@@ -572,10 +602,24 @@
         return;
       }
 
+      /* K051: collect all media storage_paths and batch-sign once */
+      var mediaPaths = [];
+      for (var pi = 0; pi < posts.length && pi < 5; pi++) {
+        var pmedia = posts[pi].media || [];
+        for (var mj = 0; mj < pmedia.length; mj++) {
+          if (pmedia[mj] && pmedia[mj].storage_path) mediaPaths.push(pmedia[mj].storage_path);
+        }
+      }
+      var signedMap = {};
+      if (mediaPaths.length && window.HT && typeof window.HT.signStorageUrls === 'function') {
+        try { signedMap = await window.HT.signStorageUrls(mediaPaths, 3600); }
+        catch (e) { console.warn('[gb] sign media failed:', e && e.message); }
+      }
+
       var animClasses = ['gb-anim-1', 'gb-anim-2', 'gb-anim-3'];
       for (var i = 0; i < posts.length && i < 5; i++) {
         var animCls = i < 3 ? animClasses[i] : '';
-        spine.appendChild(buildGundemItem(posts[i], animCls));
+        spine.appendChild(buildGundemItem(posts[i], animCls, signedMap));
         /* Insert premium CTA between item 2 and item 3 (after index 1) */
         if (i === 1) spine.appendChild(buildPremiumCTA());
       }

@@ -326,20 +326,18 @@ function updateBentoRing(step, pct) {
   }
   _renderSpineLabel(step);
 
-  // Topline pulse aggregate
+  // K050: single source of truth — calculateCompletion (same as Genel/Preview)
   var completed = 0;
-  var sum = 0;
   for (var s = 1; s <= 4; s++) {
-    sum += _mkSectionPct[s] || 0;
     if ((_mkSectionPct[s] || 0) >= 100) completed++;
   }
-  var avg = Math.round(sum / 4);
+  var pctVal = (typeof calculateCompletion === 'function') ? calculateCompletion() : 0;
 
   var ring = document.getElementById('mk-pulse-ring');
-  if (ring) ring.style.setProperty('--mk-pulse-progress', (avg / 100).toFixed(3));
+  if (ring) ring.style.setProperty('--mk-pulse-progress', (pctVal / 100).toFixed(3));
 
   var pctEl = document.getElementById('mk-percent-number');
-  if (pctEl) pctEl.textContent = '%' + avg;
+  if (pctEl) pctEl.textContent = '%' + pctVal;
 
   var capEl = document.getElementById('mk-percent-caption');
   if (capEl) capEl.textContent = completed + '/4 tamam';
