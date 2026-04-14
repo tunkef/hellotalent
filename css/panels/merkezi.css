@@ -127,8 +127,8 @@
 }
 .mk-pulse__ring {
   position: relative;
-  width: 64px;
-  height: 64px;
+  width: 72px;
+  height: 72px;
 }
 .mk-pulse__ring svg {
   width: 100%;
@@ -139,16 +139,18 @@
 .mk-pulse__ring svg circle.mk-pulse__track {
   stroke: var(--border-subtle);
 }
+/* K035: sync with Genel Bakış hero ring — vermillion sweep, r=32,
+   stroke-width 3, dasharray 201.06, 800ms ease-out transition. */
 .mk-pulse__ring svg circle.mk-pulse__fill {
-  stroke: var(--text-secondary);
+  stroke: var(--color-vermillion);
   stroke-linecap: round;
-  stroke-dasharray: 175.93;
-  stroke-dashoffset: calc(175.93 * (1 - var(--mk-pulse-progress, 0)));
-  animation: mkRingFill 600ms ease-out;
-  transition: stroke-dashoffset 480ms ease-out;
+  stroke-dasharray: 201.06;
+  stroke-dashoffset: calc(201.06 * (1 - var(--mk-pulse-progress, 0)));
+  animation: mkRingFill 800ms ease-out 200ms backwards;
+  transition: stroke-dashoffset 800ms ease-out 200ms;
 }
 @keyframes mkRingFill {
-  from { stroke-dashoffset: 175.93; }
+  from { stroke-dashoffset: 201.06; }
 }
 .mk-pulse__pct {
   position: absolute;
@@ -586,7 +588,7 @@
     align-items: center;
     gap: 12px;
   }
-  .mk-pulse__ring { width: 52px; height: 52px; }
+  .mk-pulse__ring { width: 56px; height: 56px; }
   .mk-pulse__pct { font-size: 15px; }
   .mk-identity__name { font-size: 22px; }
   .mk-rule { margin: 28px 0; }

@@ -3047,6 +3047,41 @@ test.describe('K033/K034 — Genel Bakis editorial redesign', () => {
     expect(gbCss).toContain('.gb-item.is-expanded');
   });
 
+  test('K035: genel-bakis.css ships 3-card surfaces (hero + gundem + rail)', () => {
+    expect(gbCss).toContain('.gb-card');
+    expect(gbCss).toContain('.gb-card--hero');
+    expect(gbCss).toContain('.gb-card--gundem');
+    expect(gbCss).toContain('.gb-card--rail');
+    expect(gbCss).toContain('.gb-hero-grid');
+    expect(gbCss).toContain('.gb-hero-date');
+  });
+
+  test('K035: profil-genel.js wraps hero/gundem/rail in gb-card surfaces', () => {
+    expect(genelJs).toContain('gb-card gb-card--hero');
+    expect(genelJs).toContain('gb-card gb-card--gundem');
+    expect(genelJs).toContain('gb-card gb-card--rail');
+    expect(genelJs).toContain('gb-hero-grid');
+    expect(genelJs).toContain('gb-hero-date');
+  });
+
+  test('K035: profil.html mk-pulse ring synced with Genel Bakis (r=32, stroke-width 3)', () => {
+    /* Isolate the mk-pulse ring markup so we do not collide with the
+       gb-ring SVG elsewhere on the page. */
+    var start = profilHtml.indexOf('id="mk-pulse-ring"');
+    expect(start).toBeGreaterThan(-1);
+    var region = profilHtml.substring(start, start + 600);
+    expect(region).toContain('viewBox="0 0 72 72"');
+    expect(region).toContain('r="32"');
+    expect(region).toContain('stroke-width="3"');
+  });
+
+  test('K035: merkezi.css mk-pulse__fill uses vermillion sweep', () => {
+    var fillBlock = mkCss.substring(mkCss.indexOf('.mk-pulse__ring svg circle.mk-pulse__fill'));
+    fillBlock = fillBlock.substring(0, 400);
+    expect(fillBlock).toContain('var(--color-vermillion)');
+    expect(fillBlock).toContain('201.06');
+  });
+
   test('K034: editorial width token defined in profil-extras.css', () => {
     expect(extrasCss).toContain('--editorial-max-w');
     expect(extrasCss).toContain('1120px');
@@ -3097,10 +3132,11 @@ test.describe('K033/K034 — Genel Bakis editorial redesign', () => {
     expect(genelJs).toContain('_htRefreshGenelHome');
   });
 
-  test('K034: profil.html cache-bust bumped to v=20260414g', () => {
-    expect(profilHtml).toContain('genel-bakis.css?v=20260414g');
-    expect(profilHtml).toContain('profil-genel.js?v=20260414g');
-    expect(profilHtml).toContain('merkezi.css?v=20260414g');
+  test('K035: profil.html cache-bust bumped to v=20260414h for genel/merkez/profil-genel', () => {
+    expect(profilHtml).toContain('genel-bakis.css?v=20260414h');
+    expect(profilHtml).toContain('profil-genel.js?v=20260414h');
+    expect(profilHtml).toContain('merkezi.css?v=20260414h');
+    /* profil-extras.css tokens unchanged — stays at v=20260414g */
     expect(profilHtml).toContain('profil-extras.css?v=20260414g');
   });
 

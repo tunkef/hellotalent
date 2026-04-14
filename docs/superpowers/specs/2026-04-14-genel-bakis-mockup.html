@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HelloTalent — Genel Bakış (K034)</title>
+<title>HelloTalent — Genel Bakış (K035)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=DM+Mono:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
@@ -20,19 +20,31 @@
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
     font-family: 'Plus Jakarta Sans', sans-serif;
-    background: var(--cream);
+    background: #EEEDEA;
     color: #111;
     min-height: 100vh;
     padding: 40px 0;
   }
+
+  /* K035: no outer frame. Root is a flex column of 3 cards + signature. */
   .wrap {
     max-width: var(--editorial-max-w);
     margin: 0 auto;
-    padding: 36px var(--editorial-pad-x) 56px;
+    padding: 32px var(--editorial-pad-x) 48px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .card {
     background: var(--cream);
     border: 1px solid var(--hairline);
-    border-radius: 20px;
+    border-radius: 14px;
+    padding: 32px 36px;
   }
+  .card--hero   { padding: 28px 36px; }
+  .card--rail   { padding: 24px; }
+
   .mono {
     font-family: 'DM Mono', monospace;
     font-size: 11px;
@@ -40,93 +52,76 @@
     text-transform: uppercase;
     color: var(--navy);
   }
-  .mono--muted { color: var(--muted); }
+  .mono-muted { color: var(--muted); }
 
-  /* Hero */
-  .hero-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 20px;
+  /* ─── Hero card ─── */
+  .hero-date { display: block; margin-bottom: 18px; }
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 32px;
+    align-items: start;
   }
-  .hero-meta-right {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 14px;
-  }
-  .ring {
-    width: 72px; height: 72px;
-    border-radius: 50%;
-    border: 3px solid var(--hairline);
-    position: relative;
-    display: flex; align-items: center; justify-content: center;
-    font-family: 'DM Mono', monospace;
-    color: var(--navy);
-    font-size: 12px;
-  }
-  .ring::before {
-    content: '';
-    position: absolute;
-    inset: -3px;
-    border-radius: 50%;
-    border: 3px solid transparent;
-    border-top-color: var(--vermillion);
-    border-right-color: var(--vermillion);
-    transform: rotate(135deg);
-  }
-  .ghost-btn {
-    border: 1px solid var(--navy);
-    background: transparent;
-    color: var(--navy);
-    padding: 10px 16px;
-    border-radius: 999px;
-    font-family: 'DM Mono', monospace;
-    font-size: 11px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    cursor: pointer;
-  }
-  .headline {
+  .hero-headline {
     font-family: 'Bricolage Grotesque', sans-serif;
-    font-size: 48px;
+    font-size: 46px;
     font-weight: 500;
     line-height: 1.05;
     color: var(--navy);
-    margin: 0 0 12px;
     letter-spacing: -0.01em;
+    margin: 0 0 10px;
   }
-  .subline {
+  .hero-subline {
     font-size: 16px;
     color: var(--muted);
-    margin-bottom: 22px;
+    margin: 0 0 16px;
   }
-  .bakanlar {
+  .hero-bakanlar {
     border-top: 1px solid var(--hairline);
     padding-top: 16px;
     margin-top: 4px;
   }
-  .bakanlar button {
+  .hero-bakanlar button {
+    background: none; border: 0; padding: 0; cursor: pointer;
     font-family: 'DM Mono', monospace;
-    font-size: 11px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
+    font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
     color: var(--navy);
-    background: none;
-    border: none;
-    cursor: pointer;
+    display: inline-flex; align-items: center; gap: 8px;
   }
-  .bakanlar .arrow { color: var(--vermillion); }
+  .hero-bakanlar .arrow { color: var(--vermillion); }
 
-  /* Grid */
+  .hero-meta-right {
+    display: flex; flex-direction: column; align-items: flex-end; gap: 14px;
+  }
+  .ring-wrap { position: relative; width: 72px; height: 72px; }
+  .ring-wrap svg { transform: rotate(-90deg); }
+  .ring-track { stroke: var(--hairline); fill: none; }
+  .ring-fill {
+    stroke: var(--vermillion); fill: none; stroke-linecap: round;
+    stroke-dasharray: 201.06;
+    stroke-dashoffset: 20.11; /* 90% */
+  }
+  .ring-label {
+    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px; color: var(--navy); letter-spacing: 0.04em; font-weight: 500;
+  }
+  .ghost-btn {
+    border: 1px solid var(--navy); background: transparent; color: var(--navy);
+    padding: 10px 16px; border-radius: 999px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer;
+  }
+
+  /* ─── 2-col grid: gündem card + rail card ─── */
   .grid {
-    margin-top: 48px;
     display: grid;
-    grid-template-columns: 1fr 280px;
-    gap: 48px;
+    grid-template-columns: 1fr 296px;
+    gap: 24px;
     align-items: start;
   }
 
+  /* ─── Gündem card ─── */
   .gundem-header {
     border-top: 1px solid var(--hairline);
     position: relative;
@@ -140,261 +135,204 @@
     top: -26px;
     display: inline-block;
   }
-
   .spine { position: relative; padding-left: 36px; }
   .spine::before {
-    content: '';
-    position: absolute;
-    left: 5px; top: 6px; bottom: 6px;
-    width: 1px;
-    background: var(--navy);
+    content: ""; position: absolute; left: 5px; top: 6px; bottom: 6px;
+    width: 1px; background: var(--navy);
   }
-  .item {
-    position: relative;
-    padding-bottom: 32px;
-  }
+  .item { position: relative; padding-bottom: 32px; }
   .item::before {
-    content: '';
-    position: absolute;
-    left: -34px; top: 6px;
-    width: 11px; height: 11px;
-    border-radius: 50%;
-    background: var(--navy);
-    border: 2px solid var(--cream);
-    box-sizing: content-box;
-    margin-left: -1px;
+    content: ""; position: absolute; left: -34px; top: 6px;
+    width: 11px; height: 11px; border-radius: 50%;
+    background: var(--navy); border: 2px solid var(--cream);
+    box-sizing: content-box; margin-left: -1px;
   }
-  .item-meta {
-    font-family: 'DM Mono', monospace;
-    font-size: 11px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 10px;
-  }
+  .item-meta { color: var(--muted); margin-bottom: 10px; }
   .item-headline {
     font-family: 'Bricolage Grotesque', sans-serif;
-    font-size: 22px;
-    font-weight: 500;
-    line-height: 1.25;
-    color: var(--navy);
-    margin: 0 0 10px;
+    font-size: 22px; font-weight: 500; line-height: 1.25;
+    color: var(--navy); margin: 0 0 10px;
   }
   .item-excerpt {
-    font-size: 14px;
-    line-height: 1.55;
-    color: var(--muted);
-    margin: 0 0 12px;
-    max-width: 640px;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-  .item-body {
-    font-size: 14px;
-    line-height: 1.6;
-    color: #111;
-    max-width: 640px;
-    margin: 0 0 14px;
+    font-size: 14px; line-height: 1.55; color: var(--muted);
+    margin: 0 0 12px; max-width: 640px;
   }
   .item-toggle {
     font-family: 'DM Mono', monospace;
-    font-size: 11px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--navy);
-    background: none;
-    border: none;
-    cursor: pointer;
+    font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+    background: none; border: 0; padding: 0; color: var(--navy); cursor: pointer;
+    display: inline-flex; align-items: center; gap: 6px;
   }
-  .item-toggle .arrow {
-    color: var(--vermillion);
-    display: inline-block;
-  }
-  .item-toggle.expanded .arrow { transform: rotate(90deg); }
+  .item-toggle .arrow { color: var(--vermillion); }
 
-  /* Premium CTA */
-  .premium {
-    margin: 4px 0 32px;
+  .premium-cta {
+    position: relative; margin: 4px 0 32px;
     padding: 16px 22px;
     border: 1px solid var(--vermillion);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 18px;
-    background: none;
-    cursor: pointer;
-    width: 100%;
+    display: flex; align-items: center; justify-content: space-between; gap: 18px;
+    background: var(--cream);
   }
-  .premium-label {
+  .premium-cta::before {
+    content: ""; position: absolute; left: -34px; top: 22px;
+    width: 11px; height: 11px; border-radius: 50%;
+    background: var(--cream); border: 1px solid var(--vermillion);
+    box-sizing: content-box; margin-left: -1px;
+  }
+  .premium-cta .label {
     font-family: 'DM Mono', monospace;
-    font-size: 11px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
+    font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
     color: var(--vermillion);
   }
-  .premium-body {
-    font-size: 14px;
-    color: var(--navy);
-    text-align: right;
-    flex: 1;
+  .premium-cta .body {
+    flex: 1; font-size: 14px; color: var(--navy); text-align: right;
   }
-  .premium-arrow { color: var(--vermillion); }
+  .premium-cta .arrow { color: var(--vermillion); margin-left: 4px; }
 
-  /* Right rail */
-  .rail {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-    position: sticky;
-    top: 24px;
-  }
+  /* ─── Rail card ─── */
+  .rail { display: flex; flex-direction: column; }
   .rail-cell {
-    padding: 20px;
-    min-height: 110px;
-    border: 1px solid var(--hairline);
-    border-radius: 14px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    background: transparent;
-    text-align: left;
-    cursor: pointer;
-    width: 100%;
+    padding: 18px 4px;
+    min-height: 96px;
+    display: flex; flex-direction: column; justify-content: space-between;
+    border: 0; background: none; text-align: left;
+    font: inherit; color: inherit; cursor: pointer; width: 100%;
   }
-  .rail-label {
-    font-family: 'DM Mono', monospace;
-    font-size: 11px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--muted);
-  }
+  .rail-cell + .rail-cell { border-top: 1px solid var(--hairline); }
+  .rail-cell:first-child { padding-top: 4px; }
+  .rail-cell:last-child  { padding-bottom: 4px; }
+  .rail-label { color: var(--muted); }
   .rail-value {
     font-family: 'Bricolage Grotesque', sans-serif;
-    font-size: 20px;
-    font-weight: 500;
-    color: var(--navy);
-    margin: 10px 0 12px;
+    font-size: 20px; font-weight: 500; color: var(--navy);
+    line-height: 1.2; margin: 10px 0 12px;
   }
-  .rail-value.has-count { color: var(--vermillion); }
+  .rail-cell.has-count .rail-value { color: var(--vermillion); }
   .rail-link {
     font-family: 'DM Mono', monospace;
-    font-size: 11px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
+    font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
     color: var(--navy);
   }
   .rail-link .arrow { color: var(--vermillion); }
 
+  /* ─── Signature (outside cards) ─── */
   .signature {
-    margin-top: 64px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 18px;
+    display: flex; align-items: center; justify-content: center; gap: 18px;
+    margin-top: 0;
   }
   .sig-line { flex: 1; max-width: 180px; height: 1px; background: var(--hairline); }
   .sig-mark {
     font-family: 'DM Mono', monospace;
-    font-style: italic;
-    font-size: 13px;
-    color: var(--muted);
+    font-style: italic; font-size: 13px; color: var(--muted);
+    letter-spacing: 0.04em; text-transform: lowercase;
   }
 
   @media (max-width: 900px) {
-    .grid { grid-template-columns: 1fr; gap: 40px; }
-    .rail { position: static; flex-direction: row; }
-    .rail-cell { flex: 1; }
+    .grid { grid-template-columns: 1fr; gap: 24px; }
+  }
+  @media (max-width: 720px) {
+    .card, .card--hero { padding: 24px 22px; }
+    .card--rail { padding: 20px 22px; }
+    .hero-headline { font-size: 34px; }
+    .hero-grid { grid-template-columns: 1fr; gap: 20px; }
+    .hero-meta-right { align-items: flex-start; flex-direction: row; gap: 18px; }
   }
 </style>
 </head>
 <body>
-  <main class="wrap">
-    <!-- HERO: date (left) · ring + edit button stacked (right) · greeting · subline · bakanlar -->
-    <section>
-      <div class="hero-top">
-        <div class="mono mono--muted">14 Nisan 2026, Salı</div>
+  <div class="wrap">
+
+    <!-- HERO CARD -->
+    <article class="card card--hero">
+      <div class="mono mono-muted hero-date">14 NİSAN 2026, SALI</div>
+      <div class="hero-grid">
+        <div class="hero-text">
+          <h1 class="hero-headline">Merhaba, Tuna</h1>
+          <p class="hero-subline">Mağaza Müdürü · Chanel · İstanbul</p>
+          <div class="hero-bakanlar">
+            <button type="button">
+              <span>12 KİŞİ</span>
+              <span style="text-transform:none;letter-spacing:0;">profilini izledi</span>
+              <span class="arrow">→</span>
+            </button>
+          </div>
+        </div>
         <div class="hero-meta-right">
-          <div class="ring">%96</div>
-          <button class="ghost-btn">Profili Düzenle</button>
+          <div class="ring-wrap" aria-label="Profil tamamlanma yüzde 90">
+            <svg width="72" height="72" viewBox="0 0 72 72">
+              <circle class="ring-track" cx="36" cy="36" r="32" stroke-width="3"/>
+              <circle class="ring-fill"  cx="36" cy="36" r="32" stroke-width="3" stroke-linecap="round"/>
+            </svg>
+            <div class="ring-label">%90</div>
+          </div>
+          <button class="ghost-btn" type="button">Profili Düzenle</button>
         </div>
       </div>
-      <h1 class="headline">Merhaba, Tuna</h1>
-      <div class="subline">Retail Strategy Lead · LVMH · İstanbul</div>
-      <div class="bakanlar">
-        <button type="button"><span>12 KİŞİ</span> profilini izledi <span class="arrow">→</span></button>
-      </div>
-    </section>
+    </article>
 
-    <!-- 2-COL GRID: gündem (left) · sticky rail (right) -->
+    <!-- GRID: GÜNDEM CARD + RAIL CARD -->
     <div class="grid">
-      <section>
-        <div class="gundem-header"><span class="mono">Gündem</span></div>
+
+      <!-- GÜNDEM CARD -->
+      <section class="card card--gundem">
+        <div class="gundem-header">
+          <span class="mono">Gündem</span>
+        </div>
         <div class="spine">
           <article class="item">
-            <div class="item-meta">Mülakat İpucu · 14 Nisan · 3 dk okuma</div>
-            <h3 class="item-headline">STAR yönteminin ötesi: retail yöneticileri nasıl ayrışır</h3>
-            <p class="item-excerpt">Behavioral mülakatta çoğu aday STAR'ı bilir; ama üst düzey retail rollerde fark "Result" kısmının sayılaştırılmasında…</p>
-            <button class="item-toggle">Devamını oku <span class="arrow">→</span></button>
+            <div class="mono item-meta">Mülakat İpucu · 14 Nisan · 3 dk okuma</div>
+            <h3 class="item-headline">Perakende yöneticisi mülakatında ilk 10 dakika</h3>
+            <p class="item-excerpt">Görüşmenin ilk 10 dakikası karar verici değerlendirmenin yarısını taşır. İçeriği önce marka bilgisiyle çerçevele, rakam ver, sonra dinle…</p>
+            <button class="item-toggle" type="button"><span>Devamını oku</span><span class="arrow">→</span></button>
           </article>
-
-          <!-- Inline expanded example -->
           <article class="item">
-            <div class="item-meta">Yetkinlik Rehberi · 13 Nisan · 5 dk okuma</div>
-            <h3 class="item-headline">"Strategic mindset" yetkinliğini nasıl gösterirsin?</h3>
-            <div class="item-body">
-              Strategic mindset, retail yöneticileri için en çok sorulan ama en kötü cevaplanan yetkinliklerden biri.
-              <br><br>
-              1. Trend ve veri okuma becerisini somut bir örnekle bağla (ör: kategoride SKU rasyonalizasyonu kararı).
-              <br>
-              2. Kısa vadeli satış baskısı ile uzun vadeli marka değeri arasındaki trade-off'u nasıl yönettiğini anlat.
-              <br>
-              3. Rakiplerin hamlesine değil, müşterinin yarınki ihtiyacına göre karar verdiğin bir anı paylaş.
-              <br><br>
-              Dikkat: "big picture bakarım" klişesinden uzak dur. Büyük resmi tarif etmek, büyük resmi yönetmek değildir.
-            </div>
-            <button class="item-toggle expanded">Daha az göster <span class="arrow">→</span></button>
+            <div class="mono item-meta">Yetkinlik Rehberi · 12 Nisan · 4 dk okuma</div>
+            <h3 class="item-headline">Müşteri deneyimi liderliğinde üç ölçüt</h3>
+            <p class="item-excerpt">NPS, conversion ve trafiği tek başına okumak eksik bırakır. Üçünü birlikte kullanmak yöneticinin gerçek katkısını gösterir…</p>
+            <button class="item-toggle" type="button"><span>Devamını oku</span><span class="arrow">→</span></button>
           </article>
 
-          <button class="premium">
-            <span class="premium-label">— Premium —</span>
-            <span class="premium-body">Beni Öner aktif · görünürlüğünü artır <span class="premium-arrow">→</span></span>
+          <button class="premium-cta" type="button">
+            <span class="label">— Premium —</span>
+            <span class="body">Beni Öner aktif · görünürlüğünü artır <span class="arrow">→</span></span>
           </button>
 
           <article class="item">
-            <div class="item-meta">Kariyer Gelişim · 12 Nisan · 4 dk okuma</div>
-            <h3 class="item-headline">Linkedin'de retail recruiter'ın dikkatini çekmek</h3>
-            <p class="item-excerpt">İlk 3 saniye headline'da bitiyor; pozisyon değil, etki yaz. Rakamları başa al, jargonu at…</p>
-            <button class="item-toggle">Devamını oku <span class="arrow">→</span></button>
+            <div class="mono item-meta">Kariyer Gelişim · 10 Nisan · 2 dk okuma</div>
+            <h3 class="item-headline">Sektör değişimi düşünenler için 1 sayfalık plan</h3>
+            <p class="item-excerpt">Perakendeden FMCG'ye, lüksten high-street'e geçerken transferable yetkinliklerini tek sayfada anlatmanın yolu…</p>
+            <button class="item-toggle" type="button"><span>Devamını oku</span><span class="arrow">→</span></button>
           </article>
         </div>
       </section>
 
-      <aside class="rail">
-        <button class="rail-cell">
-          <div class="rail-label">Fırsatlar</div>
+      <!-- RAIL CARD (3 cells, hairline dividers inside card) -->
+      <aside class="card card--rail rail">
+        <button class="rail-cell" type="button">
+          <div class="mono rail-label">Fırsatlar</div>
           <div class="rail-value">0 yeni</div>
           <div class="rail-link">Kampanyaları gör <span class="arrow">→</span></div>
         </button>
-        <button class="rail-cell">
-          <div class="rail-label">Markalar</div>
-          <div class="rail-value has-count">8 takip</div>
+        <button class="rail-cell has-count" type="button">
+          <div class="mono rail-label">Markalar</div>
+          <div class="rail-value">8 takip</div>
           <div class="rail-link">Keşfet <span class="arrow">→</span></div>
         </button>
-        <button class="rail-cell">
-          <div class="rail-label">Stüdyo</div>
+        <button class="rail-cell" type="button">
+          <div class="mono rail-label">Stüdyo</div>
           <div class="rail-value">Yakında</div>
           <div class="rail-link">Haberdar ol <span class="arrow">→</span></div>
         </button>
       </aside>
+
     </div>
 
+    <!-- SIGNATURE (outside all cards) -->
     <footer class="signature">
       <div class="sig-line"></div>
       <div class="sig-mark"><em>— hellotalent —</em></div>
       <div class="sig-line"></div>
     </footer>
-  </main>
+
+  </div>
 </body>
 </html>

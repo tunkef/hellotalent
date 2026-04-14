@@ -4,12 +4,25 @@
 > Kapanmis asamalar: `docs/ai-collab/AI-COLLAB-archive-asama1-61.md`
 > Dosya buyudugunde (500+ satir) yeni arsiv dosyasina tasinir.
 
+
 ## Mevcut Durum
 
-**Aktif is:** K034 Genel+Merkez genislik & ritim revizyonu — exec + DeepSeek APPROVE, push hazir
-**Sonraki:** push main + GH Pages visual QA + Tuna smoke
-**Son commit:** (pending) feat(genel+merkez): K034 width unify + rhythm + sticky rail + inline expand
+**Aktif is:** K035 Genel 3-card restructure + Merkez ring sync — exec + DeepSeek APPROVE
+**Sonraki:** push main + Tuna smoke
+**Son commit:** (pending) feat(genel+merkez): K035 3-card restructure + ring sync
 **DeepSeek:** APPROVE
+
+## 2026-04-14 — K035 Genel 3-card restructure + Merkez ring sync (exec)
+
+- `css/panels/genel-bakis.css`: outer frame `#panel-genel` transparent (border/radius kalktı). `.gb-card` base + `--hero/--gundem/--rail` modifier (cream bg, hairline border, 14px radius). `.gb-root` flex column gap 24. Hero `.gb-hero-date` full-width row + `.gb-hero-grid` 2-col internal (text sol / ring+btn sağ). Rail per-cell border kalktı, hairline divider içeride. sticky `.gb-card--rail`'a taşındı. 720px hero grid single col.
+- `css/panels/merkezi.css`: `.mk-pulse__ring` 64→72px. `.mk-pulse__fill` stroke `--text-secondary` → `--color-vermillion`, dasharray 175.93→201.06, 800ms ease-out 200ms sweep, enter 600→800ms. r=32 sw=3 Genel ile birebir.
+- `profil.html`: ring SVG viewBox/r/sw güncel, `id=mk-pulse-ring` korundu (profil-summary.js driver sağlam). Cache-bust g→h (genel-bakis, merkezi, profil-genel).
+- `profil-genel.js`: `buildHero` 3-card layout, `buildGundem`/`buildRail` `<section/aside class="gb-card …">`. Hardcoded "Merhaba" intact. Tüm `_ht*` exports + RPC + `_HT_STUDIO_FROZEN` korundu.
+- `tests/p3.regression.spec.js`: 4 yeni K035 guard (3-card CSS, gb-card JS wrap, mk-pulse r=32/sw=3, mk-pulse__fill vermillion + 201.06). Cache-bust h.
+- `docs/superpowers/specs/2026-04-14-genel-bakis-mockup.html` 3-card layout için yeniden yazıldı.
+
+**Test:** **762 passed / 0 failed** (754 + 8 yeni K035). node --check OK.
+**DeepSeek:** APPROVE.
 
 ## 2026-04-14 — K034 Genel+Merkez genislik & ritim (exec)
 

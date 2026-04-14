@@ -267,12 +267,44 @@
      ═══════════════════════════════════════════════════ */
 
   function buildHero(profile, experiences) {
-    var hero = el('section', 'gb-hero');
+    /* K035: hero is now an <article class="gb-card gb-card--hero">.
+       Top row = mono date (full width). Below = 2-col grid: text left,
+       ring + edit button right. */
+    var hero = el('article', 'gb-card gb-card--hero');
 
-    /* ─ Meta row: date (left) · ring + edit button stacked (right) ─ */
-    var top = el('div', 'gb-hero-top');
-    top.appendChild(txt('div', 'gb-mono gb-mono--muted', formatTodayCaption()));
+    /* ─ Date row (full-width, top) ─ */
+    hero.appendChild(txt('div', 'gb-mono gb-mono--muted gb-hero-date', formatTodayCaption()));
 
+    /* ─ 2-col internal grid ─ */
+    var grid = el('div', 'gb-hero-grid');
+
+    /* Left column: greeting + subline + bakanlar */
+    var textBlock = el('div', 'gb-hero-text');
+
+    var name = firstName(profile && profile.full_name);
+    /* K034: hardcoded "Merhaba" — no time-of-day branching */
+    var greetingText = name ? ('Merhaba, ' + name) : 'Merhaba';
+    textBlock.appendChild(txt('h1', 'gb-hero-headline', greetingText));
+
+    textBlock.appendChild(txt('div', 'gb-hero-subline', buildSubline(profile, experiences)));
+
+    /* Bakanlar row — vermillion arrow always */
+    var bakanlar = el('div', 'gb-hero-bakanlar');
+    var bakanlarBtn = document.createElement('button');
+    bakanlarBtn.type = 'button';
+    var countSpan = txt('span', 'gb-bakanlar-count', '0 K\u0130\u015E\u0130');
+    bakanlarBtn.appendChild(countSpan);
+    bakanlarBtn.appendChild(document.createTextNode(' '));
+    bakanlarBtn.appendChild(txt('span', '', 'profilini izledi'));
+    bakanlarBtn.appendChild(document.createTextNode(' '));
+    bakanlarBtn.appendChild(txt('span', 'gb-bakanlar-arrow', '\u2192'));
+    bakanlarBtn.addEventListener('click', function() { switchPanel('kimbakti'); });
+    bakanlar.appendChild(bakanlarBtn);
+    textBlock.appendChild(bakanlar);
+
+    grid.appendChild(textBlock);
+
+    /* Right column: ring + edit button stacked */
     var metaRight = el('div', 'gb-hero-meta-right');
 
     var pct = typeof calculateCompletion === 'function' ? calculateCompletion() : 0;
@@ -299,34 +331,8 @@
     editBtn.addEventListener('click', function() { switchPanel('merkez'); });
     metaRight.appendChild(editBtn);
 
-    top.appendChild(metaRight);
-    hero.appendChild(top);
-
-    /* ─ Text block: greeting + subline + bakanlar (left-aligned) ─ */
-    var textBlock = el('div', 'gb-hero-text');
-
-    var name = firstName(profile && profile.full_name);
-    /* K034: hardcoded "Merhaba" — no time-of-day branching */
-    var greetingText = name ? ('Merhaba, ' + name) : 'Merhaba';
-    textBlock.appendChild(txt('h1', 'gb-hero-headline', greetingText));
-
-    textBlock.appendChild(txt('div', 'gb-hero-subline', buildSubline(profile, experiences)));
-
-    /* Bakanlar row — vermillion arrow always */
-    var bakanlar = el('div', 'gb-hero-bakanlar');
-    var bakanlarBtn = document.createElement('button');
-    bakanlarBtn.type = 'button';
-    var countSpan = txt('span', 'gb-bakanlar-count', '0 K\u0130\u015E\u0130');
-    bakanlarBtn.appendChild(countSpan);
-    bakanlarBtn.appendChild(document.createTextNode(' '));
-    bakanlarBtn.appendChild(txt('span', '', 'profilini izledi'));
-    bakanlarBtn.appendChild(document.createTextNode(' '));
-    bakanlarBtn.appendChild(txt('span', 'gb-bakanlar-arrow', '\u2192'));
-    bakanlarBtn.addEventListener('click', function() { switchPanel('kimbakti'); });
-    bakanlar.appendChild(bakanlarBtn);
-    textBlock.appendChild(bakanlar);
-
-    hero.appendChild(textBlock);
+    grid.appendChild(metaRight);
+    hero.appendChild(grid);
 
     /* Async hydrate viewer count */
     hydrateBakanlarCount(bakanlar, countSpan);
@@ -363,7 +369,9 @@
      ═══════════════════════════════════════════════════ */
 
   function buildRail() {
-    var rail = el('aside', 'gb-rail');
+    /* K035: rail wrapped in .gb-card--rail surface; cells sit inside
+       the card with hairline dividers, no per-cell borders. */
+    var rail = el('aside', 'gb-card gb-card--rail gb-rail');
 
     /* Fırsatlar — brand campaigns stub.
        DO NOT navigate (stays warn-only until K034+ backlog wires campaigns RPC). */
@@ -434,7 +442,8 @@
      ═══════════════════════════════════════════════════ */
 
   function buildGundem() {
-    var section = el('section', 'gb-gundem');
+    /* K035: gündem wrapped in .gb-card--gundem surface */
+    var section = el('section', 'gb-card gb-card--gundem gb-gundem');
 
     var header = el('div', 'gb-gundem-header');
     header.appendChild(txt('span', 'gb-mono', 'G\u00FCndem'));

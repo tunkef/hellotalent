@@ -1,42 +1,54 @@
 /* ═══════════════════════════════════════════════════════════════
-   K034 — Genel Bakış (editorial redesign, 2026-04-14)
-   Widens to editorial max (1120px), tightens hero vertical rhythm,
-   introduces 2-column layout (gündem rail + sticky right rail with
-   3 mini cards), and adds inline "Devamını oku" expand for gündem
-   items. Vermillion accents boosted on arrows, links and CTA.
-   Backend contract preserved by profil-genel.js.
-   Uses shared tokens: --editorial-max-w, --editorial-pad-x
-   (defined in css/profil-extras.css).
+   K035 — Genel Bakış (3-card editorial, 2026-04-14)
+   Removes outer frame, introduces 3 separate .gb-card surfaces:
+   hero card, gündem card, rail card. Hero is a 2-col grid inside
+   its card (text left, ring + edit button right). Rail card wraps
+   the 3 mini cells with hairline dividers (no per-cell borders).
+   Vermillion accents preserved. Backend contract preserved by
+   profil-genel.js. Uses shared tokens: --editorial-max-w,
+   --editorial-pad-x (defined in css/profil-extras.css).
    ═══════════════════════════════════════════════════════════════ */
 
 #panel-genel {
   max-width: var(--editorial-max-w);
   margin: 0 auto;
-  padding: 36px var(--editorial-pad-x) 56px;
-  background: var(--color-gray);
+  padding: 32px var(--editorial-pad-x) 48px;
+  background: transparent;
   color: var(--text-primary);
   font-family: var(--font-body);
-  border-radius: 20px;
-  border: 1px solid var(--border-subtle);
+  border: 0;
+  border-radius: 0;
 }
 
 @media (max-width: 720px) {
   #panel-genel {
-    border-radius: 14px;
-    padding: 28px 20px 40px;
+    padding: 24px 20px 36px;
   }
 }
 
 /* ─── Root ─── */
 .gb-root {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
   max-width: var(--editorial-max-w);
   margin: 0 auto;
 }
 .gb-root > * { opacity: 0; transform: translateY(12px); animation: gbFadeUp 600ms ease-out forwards; }
-.gb-root > .gb-hero     { animation-delay: 0ms; }
-.gb-root > .gb-grid     { animation-delay: 140ms; }
-.gb-root > .gb-signature{ animation-delay: 320ms; }
+.gb-root > .gb-card--hero { animation-delay: 0ms; }
+.gb-root > .gb-grid       { animation-delay: 140ms; }
+.gb-root > .gb-signature  { animation-delay: 320ms; }
+
+/* ─── Card base ─── */
+.gb-card {
+  background: var(--color-cream, #F7F6F4);
+  border: 1px solid var(--border-subtle, #E5E3DF);
+  border-radius: 14px;
+  padding: 32px 36px;
+}
+.gb-card--hero   { padding: 28px 36px; }
+.gb-card--gundem { padding: 32px 36px; }
+.gb-card--rail   { padding: 24px; }
 
 @keyframes gbFadeUp {
   from { opacity: 0; transform: translateY(12px); }
@@ -54,15 +66,16 @@
 .gb-mono--muted { color: var(--text-muted, #6B6A66); }
 
 /* ═══ HERO ═══ */
-.gb-hero { display: block; }
+.gb-hero-date {
+  display: block;
+  margin-bottom: 18px;
+}
 
-/* Meta row: date (left) · ring + edit button stacked (right) */
-.gb-hero-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 24px;
-  margin-bottom: 20px;
+.gb-hero-grid {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 32px;
+  align-items: start;
 }
 
 .gb-hero-meta-right {
@@ -105,12 +118,12 @@
 
 .gb-hero-headline {
   font-family: var(--font-head);
-  font-size: 48px;
+  font-size: 46px;
   font-weight: 500;
   line-height: 1.05;
   color: var(--color-navy);
   letter-spacing: -0.01em;
-  margin: 0 0 12px;
+  margin: 0 0 10px;
 }
 
 .gb-hero-subline {
@@ -118,7 +131,7 @@
   color: var(--text-muted, #6B6A66);
   font-weight: 400;
   font-family: var(--font-body);
-  margin-bottom: 22px;
+  margin: 0 0 16px;
 }
 
 .gb-ghost-btn {
@@ -139,7 +152,7 @@
 .gb-ghost-btn:hover,
 .gb-ghost-btn:focus-visible {
   background: var(--color-navy);
-  color: var(--color-gray);
+  color: var(--color-cream, #F7F6F4);
   outline: none;
 }
 
@@ -170,12 +183,12 @@
 .gb-hero-bakanlar.has-views .gb-bakanlar-count { color: var(--color-vermillion); }
 .gb-hero-bakanlar .gb-bakanlar-arrow { color: var(--color-vermillion); }
 
-/* ═══ 2-COL GRID: gündem (left) + right rail ═══ */
+/* ═══ 2-COL GRID: gündem card (left) + rail card (right) ═══ */
 .gb-grid {
-  margin-top: 48px;
+  margin-top: 0;
   display: grid;
-  grid-template-columns: 1fr 280px;
-  gap: 48px;
+  grid-template-columns: 1fr 296px;
+  gap: 24px;
   align-items: start;
 }
 
@@ -189,7 +202,7 @@
   margin-bottom: 36px;
 }
 .gb-gundem-header .gb-mono {
-  background: var(--color-gray);
+  background: var(--color-cream, #F7F6F4);
   padding-right: 14px;
   position: relative;
   top: -26px;
@@ -224,7 +237,7 @@
   height: 11px;
   border-radius: 50%;
   background: var(--color-navy);
-  border: 2px solid var(--color-gray);
+  border: 2px solid var(--color-cream, #F7F6F4);
   box-sizing: content-box;
   margin-left: -1px;
 }
@@ -305,7 +318,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 18px;
-  background: var(--color-gray);
+  background: var(--color-cream, #F7F6F4);
   text-decoration: none;
   cursor: pointer;
   font: inherit;
@@ -324,7 +337,7 @@
   width: 11px;
   height: 11px;
   border-radius: 50%;
-  background: var(--color-gray);
+  background: var(--color-cream, #F7F6F4);
   border: 1px solid var(--color-vermillion);
   box-sizing: content-box;
   margin-left: -1px;
@@ -349,37 +362,44 @@
   outline: none;
 }
 
-/* ═══ RIGHT RAIL (sticky) ═══ */
+/* ═══ RAIL CARD (sticky wrapper holds 3 cells with hairline dividers) ═══ */
+.gb-card--rail {
+  position: sticky;
+  top: 24px;
+  display: flex;
+  flex-direction: column;
+}
 .gb-rail {
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  position: sticky;
-  top: 24px;
 }
 
 .gb-rail-cell {
-  padding: 20px;
-  min-height: 110px;
+  padding: 18px 4px;
+  min-height: 96px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  border: 1px solid var(--border-subtle);
-  border-radius: 14px;
+  border: 0;
+  border-radius: 0;
   background: none;
   text-align: left;
   font: inherit;
   color: inherit;
   cursor: pointer;
-  transition: background 200ms ease, border-color 200ms ease;
+  transition: background 200ms ease;
   -webkit-appearance: none;
   appearance: none;
   width: 100%;
 }
+.gb-rail-cell + .gb-rail-cell {
+  border-top: 1px solid var(--border-subtle, #E5E3DF);
+}
+.gb-rail-cell:first-child { padding-top: 4px; }
+.gb-rail-cell:last-child  { padding-bottom: 4px; }
 .gb-rail-cell:hover,
 .gb-rail-cell:focus-visible {
   background: rgba(30, 45, 94, 0.025);
-  border-color: var(--color-navy);
   outline: none;
 }
 
@@ -406,7 +426,7 @@
 
 /* ═══ SIGNATURE ═══ */
 .gb-signature {
-  margin-top: 64px;
+  margin-top: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -439,21 +459,22 @@
 @media (max-width: 900px) {
   .gb-grid {
     grid-template-columns: 1fr;
-    gap: 40px;
+    gap: 24px;
   }
-  .gb-rail {
+  .gb-card--rail {
     position: static;
-    flex-direction: row;
-    gap: 12px;
+    top: auto;
   }
-  .gb-rail-cell { flex: 1; }
 }
 
 @media (max-width: 720px) {
+  .gb-card,
+  .gb-card--hero,
+  .gb-card--gundem { padding: 24px 22px; }
+  .gb-card--rail   { padding: 20px 22px; }
   .gb-hero-headline { font-size: 34px; }
-  .gb-hero-top {
-    flex-direction: column;
-    align-items: flex-start;
+  .gb-hero-grid {
+    grid-template-columns: 1fr;
     gap: 20px;
   }
   .gb-hero-meta-right {
@@ -468,11 +489,5 @@
     gap: 8px;
   }
   .gb-premium-cta .gb-premium-body { text-align: left; }
-  .gb-grid { margin-top: 36px; }
-  .gb-signature { margin-top: 48px; }
-}
-
-@media (max-width: 540px) {
-  .gb-rail { flex-direction: column; }
-  .gb-rail-cell { flex: 0 0 auto; }
+  .gb-signature { margin-top: 16px; }
 }
