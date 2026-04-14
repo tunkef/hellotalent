@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>K038 Faz 2 — Image Editor Demo</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../../../vendor/cropperjs-1.6.2/cropper.min.css" />
+  <link rel="stylesheet" href="../../../css/admin/image-editor.css" />
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      background: #F7F6F4;
+      color: #1E2D5E;
+      margin: 0;
+      padding: 48px 24px;
+      min-height: 100vh;
+    }
+    .wrap {
+      max-width: 640px;
+      margin: 0 auto;
+      background: #fff;
+      border: 1px solid rgba(30, 45, 94, 0.2);
+      border-radius: 12px;
+      padding: 32px;
+    }
+    h1 {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 28px;
+      margin: 0 0 8px;
+    }
+    p.muted { color: rgba(30, 45, 94, 0.7); margin: 0 0 24px; font-size: 14px; }
+    .row { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
+    label.lbl {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #1E2D5E;
+    }
+    input[type="file"] {
+      padding: 12px;
+      border: 1px dashed rgba(30, 45, 94, 0.4);
+      border-radius: 8px;
+      background: #F7F6F4;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .seg { display: flex; gap: 8px; }
+    .seg button {
+      flex: 1;
+      padding: 10px 14px;
+      border: 1px solid rgba(30, 45, 94, 0.3);
+      background: #fff;
+      color: #1E2D5E;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .seg button.active {
+      background: #1E2D5E;
+      color: #fff;
+      border-color: #1E2D5E;
+    }
+    .cta {
+      width: 100%;
+      padding: 14px 24px;
+      background: #C94E28;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      margin-top: 12px;
+    }
+    .cta:disabled { opacity: 0.5; cursor: not-allowed; }
+    .preview {
+      margin-top: 24px;
+      padding: 16px;
+      border: 1px solid rgba(30, 45, 94, 0.2);
+      border-radius: 8px;
+      background: #F7F6F4;
+      text-align: center;
+    }
+    .preview img { max-width: 100%; border-radius: 6px; }
+    .preview .meta { font-family: 'DM Mono', monospace; font-size: 11px; color: rgba(30, 45, 94, 0.7); margin-top: 8px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Görsel Editörü Demo</h1>
+    <p class="muted">K038 Faz 2 — Cropper.js 1.6.2 tabanlı editör önizlemesi. Logo 1:1, kapak 16:9.</p>
+
+    <div class="row">
+      <label class="lbl" for="file">Dosya</label>
+      <input id="file" type="file" accept="image/jpeg,image/png,image/webp" />
+    </div>
+
+    <div class="row">
+      <label class="lbl">Oran</label>
+      <div class="seg" id="seg">
+        <button type="button" data-mode="logo" class="active">Logo 1:1 (1024)</button>
+        <button type="button" data-mode="cover">Kapak 16:9 (1600×900)</button>
+      </div>
+    </div>
+
+    <button class="cta" id="open" disabled>Editörü Aç</button>
+
+    <div id="preview" class="preview" style="display:none;">
+      <img id="prev-img" alt="" />
+      <div class="meta" id="prev-meta"></div>
+    </div>
+  </div>
+
+  <script src="../../../vendor/cropperjs-1.6.2/cropper.min.js"></script>
+  <script src="../../../js/admin/admin-image-editor.js"></script>
+  <script>
+    (function () {
+      var fileInput = document.getElementById('file');
+      var openBtn = document.getElementById('open');
+      var seg = document.getElementById('seg');
+      var mode = 'logo';
+      var chosen = null;
+
+      seg.addEventListener('click', function (ev) {
+        var t = ev.target;
+        if (t && t.dataset && t.dataset.mode) {
+          mode = t.dataset.mode;
+          var btns = seg.querySelectorAll('button');
+          for (var i = 0; i < btns.length; i++) btns[i].classList.remove('active');
+          t.classList.add('active');
+        }
+      });
+
+      fileInput.addEventListener('change', function () {
+        chosen = fileInput.files && fileInput.files[0];
+        openBtn.disabled = !chosen;
+      });
+
+      openBtn.addEventListener('click', function () {
+        if (!chosen) return;
+        var opts = mode === 'cover'
+          ? { aspectRatio: 16 / 9, outputWidth: 1600, outputHeight: 900 }
+          : { aspectRatio: 1, outputWidth: 1024, outputHeight: 1024 };
+        window.htImageEditor.open({
+          file: chosen,
+          aspectRatio: opts.aspectRatio,
+          outputWidth: opts.outputWidth,
+          outputHeight: opts.outputHeight,
+          outputFormat: 'webp',
+          quality: 0.9,
+          onSave: function (blob, dataUrl) {
+            var p = document.getElementById('preview');
+            var img = document.getElementById('prev-img');
+            var meta = document.getElementById('prev-meta');
+            img.src = dataUrl;
+            meta.textContent = mode + ' · ' + (blob.size / 1024).toFixed(1) + ' KB · ' + blob.type;
+            p.style.display = 'block';
+          },
+          onCancel: function () {}
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

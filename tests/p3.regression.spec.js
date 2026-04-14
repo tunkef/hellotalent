@@ -3472,3 +3472,33 @@ test.describe('K037 — Sirketler brand card color flood hover', () => {
   });
 });
 
+test.describe('K038 Faz 2 — Image editor vendor + component', () => {
+  test('vendor/cropperjs-1.6.2 files exist', () => {
+    const js = path.join(__dirname, '..', 'vendor', 'cropperjs-1.6.2', 'cropper.min.js');
+    const css = path.join(__dirname, '..', 'vendor', 'cropperjs-1.6.2', 'cropper.min.css');
+    const lic = path.join(__dirname, '..', 'vendor', 'cropperjs-1.6.2', 'LICENSE');
+    expect(fs.existsSync(js)).toBe(true);
+    expect(fs.existsSync(css)).toBe(true);
+    expect(fs.existsSync(lic)).toBe(true);
+    const jsStat = fs.statSync(js);
+    expect(jsStat.size).toBeGreaterThan(20000);
+    expect(jsStat.size).toBeLessThan(80000);
+  });
+
+  test('admin-image-editor.js exposes htImageEditor API', () => {
+    const src = readFromRepo('js/admin/admin-image-editor.js');
+    expect(src).toContain('window.htImageEditor');
+    expect(src).toContain('function htImageEditor');
+    expect(src).toContain('getCroppedCanvas');
+    expect(src).toContain('image/webp');
+    expect(src).toContain('5 * 1024 * 1024');
+  });
+
+  test('admin image editor CSS defines modal + save classes', () => {
+    const css = readFromRepo('css/admin/image-editor.css');
+    expect(css).toContain('.hied-overlay');
+    expect(css).toContain('.hied-panel');
+    expect(css).toContain('.hied-save');
+  });
+});
+

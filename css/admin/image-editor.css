@@ -1,0 +1,270 @@
+/* HelloTalent Admin Image Editor — K038 Faz 2
+ * Modal, cropper canvas, sidebar tools, footer actions.
+ * Palette: white bg, navy borders/text, vermillion primary CTA.
+ */
+
+.hied-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 20, 40, 0.62);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 99990;
+  padding: 24px;
+  animation: hied-fade-in 0.2s ease-out;
+}
+
+@keyframes hied-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.hied-panel {
+  background: #ffffff;
+  border: 1px solid #1E2D5E;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 1100px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 24px 64px rgba(15, 20, 40, 0.32);
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  color: #1E2D5E;
+}
+
+.hied-panel__header {
+  padding: 18px 24px;
+  border-bottom: 1px solid rgba(30, 45, 94, 0.18);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+.hied-panel__title {
+  margin: 0;
+  font-family: 'Bricolage Grotesque', 'Plus Jakarta Sans', sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  color: #1E2D5E;
+  letter-spacing: -0.01em;
+}
+
+.hied-panel__close {
+  background: transparent;
+  border: none;
+  font-size: 28px;
+  line-height: 1;
+  color: #1E2D5E;
+  cursor: pointer;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  padding: 0;
+  transition: background 0.15s;
+}
+
+.hied-panel__close:hover {
+  background: rgba(30, 45, 94, 0.08);
+}
+
+.hied-panel__body {
+  display: flex;
+  flex-direction: row;
+  flex: 1 1 auto;
+  overflow: hidden;
+  min-height: 400px;
+}
+
+.hied-canvas-wrap {
+  flex: 1 1 auto;
+  background: #111;
+  min-width: 0;
+  min-height: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.hied-canvas-wrap .hied-img {
+  display: block;
+  max-width: 100%;
+}
+
+.hied-sidebar {
+  width: 300px;
+  flex-shrink: 0;
+  padding: 24px;
+  border-left: 1px solid rgba(30, 45, 94, 0.18);
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  overflow-y: auto;
+}
+
+.hied-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.hied-label {
+  font-family: 'DM Mono', 'Menlo', monospace;
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #1E2D5E;
+}
+
+.hied-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 4px;
+  background: #F7F6F4;
+  border: 1px solid rgba(30, 45, 94, 0.24);
+  border-radius: 999px;
+  outline: none;
+  cursor: pointer;
+}
+
+.hied-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #C94E28;
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 0 1px rgba(30, 45, 94, 0.4);
+  cursor: pointer;
+}
+
+.hied-slider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #C94E28;
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 0 1px rgba(30, 45, 94, 0.4);
+  cursor: pointer;
+}
+
+.hied-tool-row {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+}
+
+.hied-tool-btn {
+  width: 40px;
+  height: 40px;
+  border: 1px solid rgba(30, 45, 94, 0.32);
+  background: #ffffff;
+  color: #1E2D5E;
+  border-radius: 8px;
+  font-size: 18px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, color 0.15s;
+  font-family: inherit;
+}
+
+.hied-tool-btn:hover {
+  background: #1E2D5E;
+  color: #ffffff;
+}
+
+.hied-panel__footer {
+  padding: 18px 24px;
+  border-top: 1px solid rgba(30, 45, 94, 0.18);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-shrink: 0;
+  background: #ffffff;
+}
+
+.hied-cancel {
+  background: #ffffff;
+  color: #1E2D5E;
+  border: 1px solid #1E2D5E;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.hied-cancel:hover {
+  background: rgba(30, 45, 94, 0.08);
+}
+
+.hied-save {
+  background: #C94E28;
+  color: #ffffff;
+  border: 1px solid #C94E28;
+  border-radius: 8px;
+  padding: 10px 24px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.hied-save:hover {
+  background: #B03E1C;
+  border-color: #B03E1C;
+}
+
+@media (max-width: 900px) {
+  .hied-overlay {
+    padding: 0;
+  }
+  .hied-panel {
+    max-width: 100%;
+    max-height: 100vh;
+    height: 100vh;
+    border-radius: 0;
+    border: none;
+  }
+  .hied-panel__body {
+    flex-direction: column;
+  }
+  .hied-sidebar {
+    width: 100%;
+    border-left: none;
+    border-top: 1px solid rgba(30, 45, 94, 0.18);
+    flex-direction: row;
+    gap: 16px;
+    padding: 16px;
+    overflow-x: auto;
+  }
+  .hied-section {
+    min-width: 160px;
+    flex-shrink: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hied-overlay {
+    animation: none;
+  }
+  .hied-tool-btn,
+  .hied-cancel,
+  .hied-save,
+  .hied-panel__close {
+    transition: none;
+  }
+}
