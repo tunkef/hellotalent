@@ -281,7 +281,7 @@ test.describe('Support Center — structural guards', () => {
     expect(profilDeskJs).toContain('K066 Faz A');
     var destekCss = readFromRepo('css/panels/destek.css');
     expect(destekCss).toContain('.destek-hero');
-    expect(destekCss).toContain('border-radius:14px');
+    expect(destekCss).toContain('border-radius: 14px');
   });
 
   test('ticket creation uses RPC not direct insert', () => {
