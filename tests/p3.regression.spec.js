@@ -3137,9 +3137,9 @@ test.describe('K033/K034 — Genel Bakis editorial redesign', () => {
   });
 
   test('K051: profil.html cache-bust bumped to v=20260414y for genel/merkez/profil-genel', () => {
-    expect(profilHtml).toContain('genel-bakis.css?v=20260414o');
+    expect(profilHtml).toContain('genel-bakis.css?v=20260415nd');
     expect(profilHtml).toContain('profil-genel.js?v=20260414aa');
-    expect(profilHtml).toContain('merkezi.css?v=20260414x');
+    expect(profilHtml).toContain('merkezi.css?v=20260415nd');
     expect(profilHtml).toContain('profil-extras.css?v=20260414h');
   });
 
@@ -3252,7 +3252,7 @@ test.describe('K031 — Profil Merkezi editorial redesign', () => {
   });
 
   test('merkezi.css is referenced with K031 cache-bust token', () => {
-    expect(profilHtml).toMatch(/css\/panels\/merkezi\.css\?v=20260414[a-z]/);
+    expect(profilHtml).toMatch(/css\/panels\/merkezi\.css\?v=2026041[45][a-z]/);
   });
 
   test('K031 hotfix: profil-extras.css loaded for rescued cross-cutting styles', () => {
@@ -3419,9 +3419,9 @@ test.describe('K036 — Sirketler editorial redesign', () => {
   });
 
   test('profil.html cache-bust bumped for K037 affected assets', () => {
-    expect(profilHtml).toContain('sirketler.css?v=20260414n');
+    expect(profilHtml).toContain('sirketler.css?v=20260415nd');
     expect(profilHtml).toContain('profil-markalar.js?v=20260414m');
-    expect(profilHtml).toContain('genel-bakis.css?v=20260414o');
+    expect(profilHtml).toContain('genel-bakis.css?v=20260415nd');
   });
 });
 
@@ -3471,7 +3471,7 @@ test.describe('K037 — Sirketler brand card color flood hover', () => {
   });
 
   test('profil.html bumps cache-bust to v=20260414j for K037 assets', () => {
-    expect(profilHtml).toContain('sirketler.css?v=20260414n');
+    expect(profilHtml).toContain('sirketler.css?v=20260415nd');
     expect(profilHtml).toContain('profil-markalar.js?v=20260414m');
   });
 });
@@ -3732,7 +3732,7 @@ test.describe('K060 — Kim Baktı editorial redesign', () => {
   });
 
   test('profil.html links css/panels/kimbakti.css with K060+ cache-bust', () => {
-    expect(profilHtml).toContain('css/panels/kimbakti.css?v=20260414ac');
+    expect(profilHtml).toContain('css/panels/kimbakti.css?v=20260415nd');
     expect(profilHtml).toContain('profil-kimbakti.js?v=20260414ab');
   });
 
@@ -3794,7 +3794,7 @@ test.describe('K063 — Inbox editorial redesign', () => {
   });
 
   test('profil.html loads versioned inbox.css and bumped profil-inbox.js', () => {
-    expect(profilHtml063).toContain('css/panels/inbox.css?v=20260414aa');
+    expect(profilHtml063).toContain('css/panels/inbox.css?v=20260415nd');
     expect(profilHtml063).toContain('profil-inbox.js?v=20260414ab');
   });
 
@@ -3863,7 +3863,7 @@ test.describe('K064 — Bildirimler editorial redesign', () => {
   });
 
   test('profil.html loads versioned bildirimler.css and bumped profil-inbox.js', () => {
-    expect(profilHtml064).toContain('css/panels/bildirimler.css?v=20260414aa');
+    expect(profilHtml064).toContain('css/panels/bildirimler.css?v=20260415nd');
     expect(profilHtml064).toContain('profil-inbox.js?v=20260414ab');
   });
 
@@ -3903,7 +3903,7 @@ test.describe('K066 — Destek editorial CSS override', () => {
   });
 
   test('profil.html links K066 destek.css and bumps profil-destek.js cache-bust', () => {
-    expect(profilHtml066).toContain('css/panels/destek.css?v=20260414aa');
+    expect(profilHtml066).toContain('css/panels/destek.css?v=20260415nd');
     expect(profilHtml066).toContain('profil-destek.js?v=20260414aa');
   });
 
@@ -3941,7 +3941,7 @@ test.describe('K067 — Ayarlar editorial CSS override', () => {
   });
 
   test('profil.html links K067 ayarlar.css and ayarlar.js', () => {
-    expect(profilHtml067).toContain('css/panels/ayarlar.css?v=20260415cc');
+    expect(profilHtml067).toContain('css/panels/ayarlar.css?v=20260415nd');
     expect(profilHtml067).toContain('profil-ayarlar.js?v=20260415aa');
   });
 
