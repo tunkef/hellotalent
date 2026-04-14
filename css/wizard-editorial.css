@@ -87,8 +87,9 @@
 #panel-profil .ms-input-wrap:focus-within {
   border-color: var(--wz-navy) !important;
 }
-/* K057: segment / calisma trustpills — less rounded, match other buttons */
-#panel-profil .check-item {
+/* K057+K059: segment / calisma trustpills — less rounded */
+#panel-profil .check-item,
+#panel-profil .ht-chip {
   border-radius: 10px !important;
   padding: 9px 16px !important;
 }
