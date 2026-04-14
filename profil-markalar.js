@@ -247,8 +247,8 @@ async function loadSirketlerPanel() {
   }
 
   var brandsRes = await supabase.from('brands')
-    .select('id,brand_name,slug,logo_url,website_url,instagram_url,short_description,segment,store_count_tr,store_cities,hq_city,employee_count_tr,is_featured,company_id,cover_image_url')
-    .not('website_url','is',null).eq('is_active',true).order('brand_name');
+    .select('id,brand_name,slug,logo_url,website_url,instagram_url,short_description,segment,store_count_tr,store_cities,hq_city,employee_count_tr,is_featured,company_id,cover_image_url,accent_color')
+    .not('website_url','is',null).eq('is_active',true).is('archived_at', null).order('brand_name');
 
   var followsRes = _ht_candidate_id
     ? await supabase.from('candidate_brand_follows').select('brand_id').eq('candidate_id', _ht_candidate_id)
@@ -412,7 +412,7 @@ function _buildBrandCard(b, idx) {
   card.className = 'sk-card sk-brand' + (b.is_featured ? ' sk-brand--featured' : '');
   card.style.animationDelay = (Math.min(idx, 8) * 60) + 'ms';
   card.setAttribute('tabindex', '0');
-  card.style.setProperty('--sk-brand-accent', getBrandAccentColor(b.brand_name));
+  card.style.setProperty('--sk-brand-accent', b.accent_color || getBrandAccentColor(b.brand_name));
 
   // Top row: logo + name/meta
   var top = document.createElement('div');
@@ -733,8 +733,9 @@ window._htGetGenelBrandTeaser = async function() {
   /* Fresh session — fetch brands + follows directly */
   try {
     var bRes = await supabase.from('brands')
-      .select('id, brand_name, logo_url, segment, cover_image_url')
+      .select('id, brand_name, logo_url, segment, cover_image_url, accent_color')
       .eq('is_active', true)
+      .is('archived_at', null)
       .not('website_url', 'is', null)
       .order('is_featured', { ascending: false })
       .limit(20);

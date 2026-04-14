@@ -10,8 +10,10 @@
 **Aktif is:** K038 Faz 1 — Admin brand/company CRUD migration deployed. Faz 2 sıra (image editor).
 **Faz 1 durum:** Migration applied, 6 RPC + bucket + policies canlı.
 **Faz 2 durum:** Cropper.js vendor + image editor component + demo, 790/0.
-**Faz 3 durum:** admin.html Markalar paneli + drawer + sidebar entry, js/admin/admin-markalar.js (682 satır, IIFE var), css/admin/markalar.css (202 satır). 6 RPC + htImageEditor kullanıyor. 798/0 yeşil. K030 Duyurular korundu.
-**Sonraki:** Faz 4 candidate accent_color + archive filter. Onceki:
+**Faz 3 durum:** admin Markalar paneli + drawer canlı, 798/0.
+**Faz 4 durum:** profil-markalar.js iki brand fetch query'si `accent_color` SELECT'e + `.is('archived_at', null)` filter. Card render `b.accent_color || getBrandAccentColor()` fallback. Cache-bust m. 798/0.
+**K038 TAMAM:** 5 fazın 4'ü deployed. Faz 5 (smoke) Tuna eline.
+**Sonraki:** Tuna admin smoke test (login + add brand + crop logo + save + candidate panelinde gör). Onceki:
 **Sonraki:** push main + Tuna smoke
 **Son commit:** (pending) feat(sirketler): K037 Variant E color flood hover + logo/search hotfix
 **DeepSeek:** APPROVE
