@@ -3612,8 +3612,8 @@ test.describe('K039 — Header Variant C inline segment', () => {
     expect(rule).toContain('DM Mono');
   });
 
-  test('profil.html cache-busts layout.css to v=20260414o', () => {
-    expect(profilHtml).toContain('css/layout.css?v=20260414o');
+  test('profil.html cache-busts layout.css to v=20260414p', () => {
+    expect(profilHtml).toContain('css/layout.css?v=20260414p');
   });
 
   test('profil.html has interpunct separators and action icons', () => {

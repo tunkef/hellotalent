@@ -69,21 +69,15 @@ select:focus-visible{
 }
 .logo{
   font-family:'Bricolage Grotesque',serif;
-  font-size:22px;font-weight:500;
+  font-size:22px;font-weight:800;
   color:var(--navy);text-decoration:none;
-  letter-spacing:-0.01em;line-height:1;
+  letter-spacing:-0.02em;line-height:1;
   background:none;border:none;padding:0;cursor:pointer;outline:none;
   display:inline-flex;align-items:baseline;flex:0 0 auto;
   text-transform:lowercase;
 }
-.logo::after{
-  content:"";display:inline-block;
-  width:5px;height:5px;border-radius:50%;
-  background:var(--verm);
-  margin-left:3px;transform:translateY(-1px);
-}
 .logo:focus-visible{box-shadow:0 0 0 2px rgba(201,78,40,0.3);}
-.logo span{color:var(--navy);}
+.logo span{color:var(--verm);}
 .logo .logo-dot{display:none;}
 .header-breadcrumb{display:none !important;}
 .breadcrumb-parent{font-size:var(--text-base);color:var(--muted);}
