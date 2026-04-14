@@ -233,6 +233,19 @@
 |---|-------|-------|-------|
 | TG1 | Telegram sistemi kaldırma | telegram-bot.sh, telegram-gate.sh, tests, env vars, tüm çağrılar | ☑ 13 Nisan 2026 |
 
+### Profile View Tracking — Kim Baktı Backend (K031 audit)
+
+> Bağlam: K060'ta Profiline Bakanlar paneli editorial vocabulary'ye taşındı (`css/panels/kimbakti.css` + `profil-kimbakti.js` rewrite). Backend audit eksikleri ortaya çıkardı. **P0 maddeler kapatılmadan premium subscription gate açılmaz.**
+
+| # | Görev | Öncelik | Detay | Dosyalar | Durum |
+|---|-------|---------|-------|----------|-------|
+| PVT-1 | Migration 040 promote | **P0** | `docs/migrations/040_profile_view_tracking.sql` → `supabase/migrations/YYYYMMDDHHMMSS_promote_view_tracking.sql`. `npm run db:push` + live verify (`profile_view_events`, `candidate_view_stats` tablo + trigger + RLS). Aksi halde her aday kalıcı 0 görüntülenme. | `supabase/migrations/`, `docs/migrations/040_profile_view_tracking.sql` | ☐ |
+| PVT-2 | companies.segment join hatası | **P0** | `profil-kimbakti.js` `select('*, companies(company_name, segment)')` — `companies`'te `segment` kolonu yok (segment `brands`'ta). Önerilen: join'i kaldır, `position_seg_snapshot` event satırından oku. | `profil-kimbakti.js` | ☐ |
+| PVT-3 | is_premium flag wire | P1 | `loadViewersCard()` hardcoded `var isPremium = false`. `_loadedDBData.profile.is_premium`'a bağla. Premium gate aktivasyonu için zorunlu. | `profil-kimbakti.js`, `profil-bootstrap.js` | ☐ |
+| PVT-4 | pve_employer_insert RLS doğrula | P1 | Migration 040 RLS policy `EXISTS (... hr_profiles WHERE id = auth.uid())`. `ik.html` session bunu satisfies ediyor mu test et. Yoksa insert'ler 401/42501 ile fail. | `supabase/migrations/`, `ik.html` | ☐ |
+| PVT-5 | position_seg_snapshot reliable populate | P2 | Şu an sadece position context varsa yazılıyor. Generic views null → segment chart boş. Insert sırasında `hr_profiles → companies → brands.segment` chain'inden derive et. | `ik.html`, `supabase/migrations/` | ☐ |
+| PVT-6 | Week-over-week trend backend | P2 | `candidate_view_stats`'a `views_last_week` + `views_prev_week` kolonları VEYA nightly cron RPC. UI `kb-trend` cell'i şu anda "—" placeholder. | `supabase/migrations/`, `profil-kimbakti.js` | ☐ |
+
 ---
 
 ## Yapılacaklar Güncelleme Kuralı
@@ -244,5 +257,5 @@
 
 ---
 
-*Son güncelleme: 13 Nisan 2026*
+*Son güncelleme: 14 Nisan 2026 (PVT-1..6 Kim Baktı backend backlog eklendi — K031)*
 *İlişkili: [[mvp-roadmap]], [[veri-modeli-analiz]], [[feature-map]], [[karar-defteri]]*
