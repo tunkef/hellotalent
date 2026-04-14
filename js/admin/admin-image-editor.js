@@ -238,17 +238,28 @@
     function doSave() {
       if (!cropper) return;
       try {
-        var canvas = cropper.getCroppedCanvas({
+        var srcCanvas = cropper.getCroppedCanvas({
           width: outW,
           height: outH,
           imageSmoothingEnabled: true,
           imageSmoothingQuality: 'high',
           fillColor: '#ffffff'
         });
-        if (!canvas) {
+        if (!srcCanvas) {
           showToast('Kırpılmış görsel oluşturulamadı');
           return;
         }
+        // Manual white-flatten: Cropper.fillColor is ignored for alpha
+        // formats (WebP/PNG). Compose a fresh canvas with explicit white
+        // bg, then draw the cropped output on top so transparent areas
+        // become baked white. Brand logo boxes always render solid.
+        var canvas = document.createElement('canvas');
+        canvas.width = outW;
+        canvas.height = outH;
+        var ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, outW, outH);
+        ctx.drawImage(srcCanvas, 0, 0, outW, outH);
         var dataUrl = canvas.toDataURL(outMime, quality);
         canvas.toBlob(function (blob) {
           if (!blob) {
