@@ -1,5 +1,77 @@
 # HelloTalent AI-COLLAB — Aktif Calisma Defteri
 
+## Sabah raporu — 2026-04-15 (K067-NightAudit)
+
+**TL;DR:** Dark mode candidate profil panelleri icin calisti. 8 panel + tokens.css tokenize edildi. Kimbakti'deki asil bug (Layer 1 primitive var'lardan dark mode bypass) bulundu ve kapatildi. Live'da dogrulandi. 874/0 yesil.
+
+### Yapilan is
+- `css/tokens.css`: editorial palette tokens eklendi (light + dark). `--editorial-bg/card/card-elev/hairline/hairline-strong/ink/ink-strong/ink-muted/vermillion/vermillion-soft/vermillion-deep/on-vermillion/shadow/shadow-md`. Dark: deep navy #0B0F1C, card #111827, warm vermillion #E8845C (K031 avd-talent-badge precedent).
+- 8 panel tokenize edildi: ayarlar, destek, inbox, bildirimler, kimbakti, genel-bakis, sirketler, merkezi. ~500+ raw hex → `var(--editorial-*)`.
+- **Root cause catch:** Canli gorsel check sirasinda kimbakti sayilari hala navy cikti. Sorun: panel'ler `var(--color-navy, var(--editorial-ink))` kullaniyordu. `--color-navy` Layer 1 primitive; dark block onu override etmiyor → fallback olu. 67 primitive ref (kimbakti 34 + genel-bakis 33) → `--editorial-*` semantiklere cekildi.
+- Cache-bust `20260415nd` → `20260415ne` (ikinci bump primitive fix icin). 9 test assertion lockstep guncellendi.
+- NightAudit regression guard eklendi: `tokens.css` hem light hem dark bloklarinda `--editorial-bg` / `--editorial-vermillion` icermeli.
+- Light mode regression check: kimbakti light mode = K060 original editorial (sifir drift).
+
+### Commit / push
+```
+684ff5f  feat(tokens): editorial dark palette for candidate profile
+f0a26fe  feat(ayarlar): dark mode parity — tokenize editorial palette
+5d260b2  feat(destek): dark mode parity — tokenize editorial palette
+cb2b3b5  feat(inbox): dark mode parity — tokenize editorial palette
+e5fb624  feat(bildirimler): dark mode parity — tokenize editorial palette
+d0469cc  feat(kimbakti): dark mode parity — tokenize editorial palette
+90d8b14  feat(genel-bakis): dark mode parity — tokenize editorial palette
+c757665  fix(sirketler): dark mode token drift cleanup
+a1d50d5  fix(merkezi): dark mode token drift cleanup
+1da829b  chore: bump panel cache-busts to 20260415nd
+b0151f9  fix(panels): stop routing dark-mode colors through Layer 1 primitives
+f8e676d  chore: bump cache-bust to 20260415ne
+```
+12 commit, hepsi main'e push edildi. Her commit bagimsiz; revert edilebilir.
+
+### Test durumu
+**874 / 0 yesil** (baseline + 1 yeni NightAudit guard). Her commit oncesi ve sonrasi full regression. Kimse kirilmadi.
+
+### Gorsel dogrulama (Playwright MCP)
+`/Users/peopleintk/darkaudit/` klasorunde 13 screenshot:
+- `before-*.png` — live BEFORE state (old hardcoded palette, before my push):
+  - `before-01-genel-dark.png`
+  - `before-02-ayarlar-dark.png`
+  - `before-03-destek-dark.png`
+  - `before-04-sirketler-dark.png`
+  - `before-05-kimbakti-dark.png`  ← burada sayilar navy olarak **okunamiyordu**
+  - `before-06-inbox-dark.png`
+  - `before-07-bildirimler-dark.png`
+- `after-*.png` — live AFTER state (post-deploy):
+  - `after-01-kimbakti-dark.png`  ← sayilar beyaz, titles beyaz, full readability
+  - `after-02-ayarlar-dark.png`
+  - `after-03-destek-dark.png`
+  - `after-04-sirketler-dark.png`
+  - `after-05-inbox-dark.png`
+  - `after-06-bildirimler-dark.png`
+  - `after-07-kimbakti-light.png`  ← light mode regression check (zero drift vs K060)
+
+Playwright live check logged in session kullandi (CF Access + Supabase auth). Hard-refresh (ctrl+shift+R) yapinca Tuna aynisini gorecek.
+
+### Acik riskler / bilincli atlananlar
+1. **layout.css shell sweep yapilmadi.** Layout.css zaten 60 dark rule ile header/sidebar/popup/avatar-dropdown kapsiyor. Ek sweep yapmak K039 header test'indeki raw-hex assertion'lari kirma riski tasiyor, ve marjinal gain sagliyor. `docs/AI-COLLAB.md` backlog'a alindi.
+2. **sirketler.css `.ms-*` popup dark rules** (multi-select helper) icinde 5 raw hex var. `var(--bg-surface, #1a1a2e)` gibi fallback pozisyonunda — harmless. Ileride layout sweep ile alinacak.
+3. **Ayarlar panelindeki en alttaki "Çıkış yap" button** layout.css `.avd-logout` scope'unda — orasi dokunulmadi (scope disi).
+4. **profil-ayarlar.js theme segment UI**: tri-state (Sistem / Aydinlik / Koyu) zaten K067 Faz C'de vardi, ayni sekilde calisiyor. Segment yeni tokenlerle daha iyi okunuyor.
+
+### Tuna icin kontrol listesi
+1. `https://hellotalent.ai/profil.html` → hard refresh (cmd+shift+R) → ayarlardan **Görünüm → Koyu** sec.
+2. Kimbakti (Merkezi altinda), Sirketler, Destek, Ayarlar, Inbox, Bildirimler, Genel Bakis panellerini sirayla gezerek bak. Her sayinin, baslik textin, buttonin okunabilir oldugunu dogrula.
+3. `/Users/peopleintk/darkaudit/` klasorundeki after-* goruntulerini browse et.
+4. Geri light'a gec — `K060`/`K063`/`K064`/`K066`/`K067` gorsel original'le ayni mi?
+5. Mobilde (390x844) ayni pass — yeni token'lar responsive breakpoint'lerde de kristal gorunmeli ama Playwright test mobile project de yesil, buyuk risk yok.
+6. Eger darkta vermillion tonu (#E8845C) yumuk geldiyse, `css/tokens.css`'deki dark bloktaki `--editorial-vermillion` degerini #F06A3C'a tasi — tek satir fix.
+
+### Onemli not — gelecek panel eklerken
+Primitive var (`var(--color-navy, ...)`) KULLANMA. Dogrudan `var(--editorial-ink)` kullan. Aksi halde dark mode bypass yeniden olusur. Lint/eslint rule olarak ekleyebiliriz (backlog).
+
+---
+
 ## K067-NightAudit — 2026-04-15 (Claude night shift)
 
 **Goal:** Unified dark-mode parity across K031–K067 candidate profile editorial panels. Tuna asleep, executing autonomously.
@@ -60,7 +132,9 @@ in panels with `--editorial-*` semantic tokens. 34 refs fixed in kimbakti,
 - [x] genel-bakis.css tokenize (~18 hex), 874/0
 - [x] sirketler.css tokenize (~78 hex), 874/0. Note: K037 hover state uses --editorial-on-vermillion for white-on-flood text (logos + hover labels stay white in dark too — intentional). 5 hex remain inside .ms-* dark rules as var() fallbacks; harmless, will revisit during shell sweep.
 - [x] merkezi.css drift fix — editorial palette, toggle slider tokenized, dark block keeps semantic tokens. 874/0
-- [ ] layout sweep
+- [x] primitive-var follow-up (kimbakti 34 refs + genel-bakis 33 refs) — unblocks dark mode for elements that used to bypass semantic layer. 874/0
+- [x] cache-bust bumps 20260415nd → 20260415ne so browsers pull fresh panel CSS on hard refresh.
+- [ ] layout.css shell sweep — SKIPPED. Layout.css already ships 60 dark rules covering header/sidebar/popups/avatar-dropdown. Further sweep risks breaking asserted raw-hex in `.header` rule (K039 test) and yields marginal value. Flagged for a future pass.
 
 ### Commit plan
 1. `feat(tokens): editorial dark palette for candidate profile` (this)
