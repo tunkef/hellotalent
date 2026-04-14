@@ -49,7 +49,7 @@ Panel-by-panel:
 - [x] kimbakti.css tokenize (~62 hex), 874/0
 - [x] genel-bakis.css tokenize (~18 hex), 874/0
 - [x] sirketler.css tokenize (~78 hex), 874/0. Note: K037 hover state uses --editorial-on-vermillion for white-on-flood text (logos + hover labels stay white in dark too — intentional). 5 hex remain inside .ms-* dark rules as var() fallbacks; harmless, will revisit during shell sweep.
-- [ ] merkezi drift
+- [x] merkezi.css drift fix — editorial palette, toggle slider tokenized, dark block keeps semantic tokens. 874/0
 - [ ] layout sweep
 
 ### Commit plan

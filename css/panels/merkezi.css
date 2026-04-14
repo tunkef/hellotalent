@@ -17,7 +17,7 @@
   border-radius:0;
 }
 .mk-card{
-  background:var(--color-cream,#F7F6F4);
+  background:var(--editorial-bg);
   border:1px solid var(--border-subtle);
   border-radius:14px;
   padding:32px;
@@ -55,7 +55,7 @@
   font-family:var(--font-body);
   font-size:14px;
   font-weight:500;
-  color:#1a1a1a;
+  color:var(--editorial-ink);
   line-height:1;
   letter-spacing:-0.005em;
   flex:1;
@@ -261,20 +261,20 @@
   gap: 8px;
   height: 38px;
   padding: 0 18px;
-  background: var(--verm);
-  border: 1px solid var(--verm);
+  background: var(--editorial-vermillion);
+  border: 1px solid var(--editorial-vermillion);
   border-radius: 12px;
   font-family: var(--font-body);
   font-size: 13px;
   font-weight: 600;
-  color: #ffffff;
+  color: var(--editorial-on-vermillion);
   cursor: pointer;
   transition: background 160ms ease, border-color 160ms ease, transform 160ms ease;
 }
 .mk-btn-ghost:hover {
-  background: #b3411f;
-  border-color: #b3411f;
-  color: #ffffff;
+  background: var(--editorial-vermillion-deep);
+  border-color: var(--editorial-vermillion-deep);
+  color: var(--editorial-on-vermillion);
   transform: translateY(-1px);
 }
 .mk-btn-ghost svg { width: 14px; height: 14px; }
@@ -552,13 +552,13 @@
 }
 .mk-btn-mini--primary {
   background: var(--text-secondary);
-  color: #fff;
+  color: var(--editorial-on-vermillion);
   border-color: var(--text-secondary);
 }
 .mk-btn-mini--primary:hover {
   background: var(--color-navy-deep);
   border-color: var(--color-navy-deep);
-  color: #fff;
+  color: var(--editorial-on-vermillion);
 }
 .mk-btn-mini--danger:hover {
   border-color: var(--accent);
@@ -654,7 +654,7 @@
   width: 40px;
   height: 22px;
   border-radius: 999px;
-  background: #cbced4;
+  background: var(--toggle-off);
   position: relative;
   transition: background 180ms ease;
 }
@@ -666,12 +666,12 @@
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: #fff;
+  background: var(--editorial-on-vermillion);
   box-shadow: 0 1px 3px rgba(0,0,0,.2);
   transition: left 180ms ease;
 }
 .mk-toggle .toggle input[type="checkbox"]:checked + .toggle-slider {
-  background: #16a34a;
+  background: var(--success);
 }
 .mk-toggle .toggle input[type="checkbox"]:checked + .toggle-slider::after {
   left: 20px;
@@ -740,7 +740,7 @@ html[data-theme='dark'] #panel-merkez {
 }
 html[data-theme='dark'] .mk-avatar {
   background: rgba(238, 240, 247, .08);
-  color: #E5E7EB;
+  color: var(--text-secondary);
 }
 html[data-theme='dark'] .mk-zarf__card {
   background: var(--bg-surface);
