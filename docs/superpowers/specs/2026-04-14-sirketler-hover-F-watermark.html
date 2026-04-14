@@ -1,0 +1,398 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Şirketler · Hover Variant F · Watermark Stamp</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=DM+Mono:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0B1B33;
+    --navy-soft: rgba(11, 27, 51, 0.72);
+    --navy-mute: rgba(11, 27, 51, 0.56);
+    --navy-line: rgba(11, 27, 51, 0.4);
+    --vermillion: #C94E28;
+    --cream: #F7F6F4;
+    --page: #EFEDE8;
+    --hair: #E5E3DF;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--page);
+    color: var(--navy);
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  .wrap {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 64px clamp(24px, 5vw, 48px);
+  }
+  .mono {
+    font-family: 'DM Mono', ui-monospace, monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--navy-mute);
+  }
+  .mono.italic { font-style: italic; text-transform: none; letter-spacing: 0.04em; }
+  .eyebrow {
+    display: inline-block;
+    color: var(--vermillion);
+    margin-bottom: 20px;
+  }
+  h1.headline {
+    font-family: 'Bricolage Grotesque', serif;
+    font-weight: 700;
+    font-size: clamp(32px, 4.5vw, 52px);
+    line-height: 1.04;
+    letter-spacing: -0.02em;
+    margin: 0 0 18px;
+    color: var(--navy);
+    max-width: 22ch;
+  }
+  p.sub {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 400;
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--navy-soft);
+    max-width: 62ch;
+    margin: 0 0 22px;
+  }
+  .tri {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+    align-items: center;
+    margin-bottom: 40px;
+  }
+  .tri .mono { color: var(--navy); }
+  .navstrip {
+    border-top: 1px solid var(--hair);
+    border-bottom: 1px solid var(--hair);
+    padding: 14px 0;
+    margin-bottom: 40px;
+    display: flex;
+    justify-content: center;
+  }
+  .navstrip .mono { color: var(--navy-mute); }
+  .navstrip .mono b { color: var(--navy); font-weight: 400; border-bottom: 1px solid var(--vermillion); padding-bottom: 2px; }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 20px;
+  }
+
+  .card {
+    position: relative;
+    background: var(--cream);
+    border: 1px solid var(--hair);
+    border-radius: 14px;
+    padding: 24px;
+    overflow: hidden;
+    transition: border-color 340ms ease-out, background 340ms ease-out;
+    display: flex;
+    flex-direction: column;
+    min-height: 340px;
+  }
+  .card:focus-visible { outline: 2px solid var(--vermillion); outline-offset: 3px; }
+
+  /* Watermark */
+  .stamp {
+    position: absolute;
+    right: -8px;
+    top: 50%;
+    transform: translate(16px, -50%);
+    font-family: 'Bricolage Grotesque', serif;
+    font-weight: 700;
+    font-size: 240px;
+    line-height: 1;
+    color: var(--vermillion);
+    opacity: 0;
+    pointer-events: none;
+    user-select: none;
+    transition: opacity 340ms ease-out, transform 340ms ease-out;
+    z-index: 0;
+    letter-spacing: -0.04em;
+    white-space: nowrap;
+  }
+  .card.featured .stamp {
+    right: auto;
+    left: -8px;
+    top: auto;
+    bottom: -40px;
+    transform: translate(-16px, 0);
+  }
+  .card:hover .stamp,
+  .card:focus-within .stamp {
+    opacity: 0.08;
+    transform: translate(0, -50%);
+  }
+  .card.featured:hover .stamp,
+  .card.featured:focus-within .stamp {
+    transform: translate(0, 0);
+  }
+  .card:hover,
+  .card:focus-within {
+    border-color: var(--navy-line);
+  }
+
+  /* Content above watermark */
+  .card > *:not(.stamp) { position: relative; z-index: 1; }
+
+  .featured-tag {
+    position: absolute;
+    top: 16px;
+    right: 20px;
+    color: var(--vermillion);
+    z-index: 2;
+  }
+
+  .logo {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Bricolage Grotesque', serif;
+    font-weight: 700;
+    font-size: 20px;
+    color: #fff;
+    margin-bottom: 16px;
+    letter-spacing: -0.02em;
+  }
+  .logo.chanel { background: #000; }
+  .logo.zara { background: #000; }
+  .logo.nike { background: #111; }
+  .logo.sephora { background: #1A1A1A; }
+  .logo.hermes { background: #F37021; }
+  .logo.apple { background: #1D1D1F; }
+
+  .brand {
+    font-family: 'Bricolage Grotesque', serif;
+    font-weight: 500;
+    font-size: 22px;
+    line-height: 1.15;
+    color: var(--navy);
+    margin: 0 0 6px;
+    letter-spacing: -0.01em;
+  }
+  .segment { margin-bottom: 14px; }
+  .desc {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--navy-soft);
+    margin: 0 0 16px;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .stats {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--navy);
+    margin: 0 0 10px;
+  }
+  .stats span + span::before { content: " · "; color: var(--navy-mute); }
+  .parent {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-style: italic;
+    color: var(--navy-mute);
+    margin: 0 0 18px;
+    letter-spacing: 0.02em;
+  }
+
+  .spacer { flex: 1; }
+
+  .btn-wrap { position: relative; }
+  .btn {
+    width: 100%;
+    display: block;
+    text-align: center;
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    cursor: pointer;
+    background: transparent;
+    color: var(--navy);
+    border: 1px solid var(--navy-line);
+    transition: border-color 200ms ease-out, background 200ms ease-out;
+  }
+  .btn.follow-on {
+    background: var(--vermillion);
+    color: #fff;
+    border-color: var(--vermillion);
+  }
+  .card:hover .btn:not(.follow-on) { border-color: var(--navy); }
+  .btn:focus-visible { outline: 2px solid var(--vermillion); outline-offset: 3px; }
+  .btn-rule {
+    display: block;
+    height: 1px;
+    background: var(--vermillion);
+    opacity: 0;
+    margin-top: 8px;
+    transition: opacity 340ms ease-out;
+  }
+  .card:hover .btn-rule { opacity: 0.6; }
+
+  footer.pagefoot {
+    margin-top: 56px;
+    padding-top: 24px;
+    border-top: 1px solid var(--hair);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .stamp { transition: opacity 340ms ease-out; transform: translate(0, -50%) !important; }
+    .card.featured .stamp { transform: translate(0, 0) !important; }
+  }
+</style>
+</head>
+<body>
+  <main class="wrap">
+    <span class="mono eyebrow">VARIANT F / WATERMARK STAMP</span>
+    <h1 class="headline">Hover ettiğinde gazete mührü gibi damgalanır</h1>
+    <p class="sub">Her marka kendi harfini veya önemli sayısını watermark olarak açar. Metin yerinde kalır, arka plan gazete editöryel mührü hissi verir.</p>
+    <div class="tri">
+      <span class="mono">GLYPH REVEAL</span>
+      <span class="mono" style="color: var(--navy-mute);">•</span>
+      <span class="mono">EDITORIAL STAMP</span>
+      <span class="mono" style="color: var(--navy-mute);">•</span>
+      <span class="mono">NO PHOTO</span>
+    </div>
+
+    <div class="navstrip">
+      <span class="mono">&lt; E / COLOR FLOOD &nbsp;|&nbsp; <b>F / WATERMARK STAMP</b> &nbsp;|&nbsp; G / PROGRESSIVE REVEAL &gt;</span>
+    </div>
+
+    <section class="grid" aria-label="Şirketler">
+
+      <!-- 1. Chanel -->
+      <article class="card featured" role="article" tabindex="0">
+        <span aria-hidden="true" class="stamp">C</span>
+        <span class="mono featured-tag">ÖNE ÇIKAN</span>
+        <div class="logo chanel">C</div>
+        <h2 class="brand">Chanel</h2>
+        <p class="mono segment">LÜKS · İSTANBUL</p>
+        <p class="desc">Nişantaşı ve Zorlu butiklerinde moda danışmanı, VIC ilişkileri ve private client deneyimi üzerine eğitim veriyor. Sessiz lüks kodlarına sadık.</p>
+        <p class="stats"><span>12 MAĞAZA</span><span>142 ÇALIŞAN</span><span>1910 KURULUŞ</span></p>
+        <p class="parent">Chanel SA · bağımsız aile şirketi</p>
+        <div class="spacer"></div>
+        <div class="btn-wrap">
+          <button class="btn" type="button">Takip Et</button>
+          <span class="btn-rule" aria-hidden="true"></span>
+        </div>
+      </article>
+
+      <!-- 2. Zara -->
+      <article class="card" role="article" tabindex="0">
+        <span aria-hidden="true" class="stamp">Z</span>
+        <div class="logo zara">Z</div>
+        <h2 class="brand">Zara</h2>
+        <p class="mono segment">MODA · İSTANBUL</p>
+        <p class="desc">Hızlı moda operasyonunun kalbi. Mağaza müdürlüğü, VM koçluğu ve stok rotasyon pilot programlarıyla genç yeteneği büyütüyor.</p>
+        <p class="stats"><span>64 MAĞAZA</span><span>2.1K ÇALIŞAN</span><span>1975 KURULUŞ</span></p>
+        <p class="parent">İnditex grubu</p>
+        <div class="spacer"></div>
+        <div class="btn-wrap">
+          <button class="btn follow-on" type="button">Takip Ediyorsun ✓</button>
+          <span class="btn-rule" aria-hidden="true"></span>
+        </div>
+      </article>
+
+      <!-- 3. Nike -->
+      <article class="card featured" role="article" tabindex="0">
+        <span aria-hidden="true" class="stamp">87</span>
+        <span class="mono featured-tag">ÖNE ÇIKAN</span>
+        <div class="logo nike">N</div>
+        <h2 class="brand">Nike</h2>
+        <p class="mono segment">SPOR · İSTANBUL</p>
+        <p class="desc">Run club, training ve sneaker storytelling deneyimleri için atlet ruhlu ekipler arıyor. Flagship Bağdat Caddesi'nde açıldı, kadro büyüyor.</p>
+        <p class="stats"><span>87 MAĞAZA</span><span>1.3K ÇALIŞAN</span><span>1964 KURULUŞ</span></p>
+        <p class="parent">Nike Inc.</p>
+        <div class="spacer"></div>
+        <div class="btn-wrap">
+          <button class="btn" type="button">Takip Et</button>
+          <span class="btn-rule" aria-hidden="true"></span>
+        </div>
+      </article>
+
+      <!-- 4. Sephora -->
+      <article class="card" role="article" tabindex="0">
+        <span aria-hidden="true" class="stamp">S</span>
+        <div class="logo sephora">S</div>
+        <h2 class="brand">Sephora</h2>
+        <p class="mono segment">GÜZELLİK · İSTANBUL</p>
+        <p class="desc">Beauty advisor, skincare uzmanı ve fragrance storytelling kadrosu. Cilt analizi ve makyaj deneyim servisleriyle danışmanlığı öne çıkarıyor.</p>
+        <p class="stats"><span>38 MAĞAZA</span><span>620 ÇALIŞAN</span><span>1970 KURULUŞ</span></p>
+        <p class="parent">LVMH grubu</p>
+        <div class="spacer"></div>
+        <div class="btn-wrap">
+          <button class="btn follow-on" type="button">Takip Ediyorsun ✓</button>
+          <span class="btn-rule" aria-hidden="true"></span>
+        </div>
+      </article>
+
+      <!-- 5. Hermès -->
+      <article class="card featured" role="article" tabindex="0">
+        <span aria-hidden="true" class="stamp">1837</span>
+        <span class="mono featured-tag">ÖNE ÇIKAN</span>
+        <div class="logo hermes">H</div>
+        <h2 class="brand">Hermès</h2>
+        <p class="mono segment">LÜKS · İSTANBUL</p>
+        <p class="desc">Abdi İpekçi mağazasında ürün uzmanlığı, deri zanaatı bilgisi ve özel sipariş takibi. Yavaş, disiplinli ve koleksiyoner odaklı hizmet.</p>
+        <p class="stats"><span>3 MAĞAZA</span><span>58 ÇALIŞAN</span><span>1837 KURULUŞ</span></p>
+        <p class="parent">Hermès International · aile kontrolü</p>
+        <div class="spacer"></div>
+        <div class="btn-wrap">
+          <button class="btn" type="button">Takip Et</button>
+          <span class="btn-rule" aria-hidden="true"></span>
+        </div>
+      </article>
+
+      <!-- 6. Apple Store -->
+      <article class="card" role="article" tabindex="0">
+        <span aria-hidden="true" class="stamp">A</span>
+        <div class="logo apple">A</div>
+        <h2 class="brand">Apple Store</h2>
+        <p class="mono segment">TEKNOLOJİ · İSTANBUL</p>
+        <p class="desc">Zorlu, Bağdat ve Akasya mağazalarında Specialist, Creative ve Genius rolleri için yetenek arıyor. Today at Apple oturumları için eğitmen pozisyonları açık.</p>
+        <p class="stats"><span>4 MAĞAZA</span><span>410 ÇALIŞAN</span><span>2001 KURULUŞ</span></p>
+        <p class="parent">Apple Inc.</p>
+        <div class="spacer"></div>
+        <div class="btn-wrap">
+          <button class="btn" type="button">Takip Et</button>
+          <span class="btn-rule" aria-hidden="true"></span>
+        </div>
+      </article>
+
+    </section>
+
+    <footer class="pagefoot">
+      <span class="mono">HELLOTALENT · ŞİRKETLER · VARIANT F</span>
+      <span class="mono italic">mockup — 2026-04-14</span>
+    </footer>
+  </main>
+</body>
+</html>

@@ -1,0 +1,532 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Brand Card Hover Prototype — HelloTalent</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=DM+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #EFEDE8;
+    --cream: #F7F6F4;
+    --navy: #1E2D5E;
+    --navy-soft: rgba(30, 45, 94, 0.6);
+    --muted: #6B6A66;
+    --hairline: #E5E3DF;
+    --vermillion: #C94E28;
+    --white: #FFFFFF;
+    --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+    --dur: 280ms;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--navy);
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    font-feature-settings: "ss01", "cv11";
+  }
+
+  .page {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 64px 48px 96px;
+  }
+
+  /* ---------- Intro ---------- */
+  .intro {
+    border-top: 1px solid var(--hairline);
+    border-bottom: 1px solid var(--hairline);
+    padding: 40px 0 44px;
+    margin-bottom: 48px;
+  }
+  .mono {
+    font-family: 'DM Mono', ui-monospace, monospace;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .intro .kicker { color: var(--vermillion); }
+  .intro h1 {
+    font-family: 'Bricolage Grotesque', serif;
+    font-weight: 600;
+    font-size: clamp(36px, 5vw, 56px);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    color: var(--navy);
+    margin: 18px 0 20px;
+    max-width: 18ch;
+  }
+  .intro p {
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--muted);
+    max-width: 64ch;
+    margin: 0 0 22px;
+  }
+  .intro .captions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 14px;
+    align-items: center;
+  }
+  .intro .captions span { color: var(--navy); }
+  .intro .captions em {
+    font-style: normal;
+    color: var(--muted);
+  }
+
+  /* ---------- Grid ---------- */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 20px;
+  }
+
+  /* ---------- Card ---------- */
+  .card {
+    position: relative;
+    isolation: isolate;
+    border-radius: 14px;
+    padding: 24px;
+    background: var(--cream);
+    border: 1px solid var(--hairline);
+    color: var(--navy);
+    overflow: hidden;
+    cursor: pointer;
+    transform: perspective(1200px) rotateY(0deg) translateY(0);
+    transition:
+      transform var(--dur) var(--ease),
+      border-color var(--dur) var(--ease),
+      background-color var(--dur) var(--ease);
+    min-height: 360px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* cover layer */
+  .card .cover {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    opacity: 0;
+    transition: opacity var(--dur) var(--ease);
+    pointer-events: none;
+  }
+  .card .cover::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(0deg, rgba(30,45,94,0.85) 0%, rgba(30,45,94,0.35) 55%, rgba(30,45,94,0) 100%);
+  }
+
+  /* top vermillion rule */
+  .card::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: var(--vermillion);
+    opacity: 0;
+    transition: opacity var(--dur) var(--ease);
+    z-index: 3;
+  }
+
+  .card .content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    flex: 1;
+  }
+
+  /* header row */
+  .card .head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .logo {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    display: grid;
+    place-items: center;
+    font-family: 'Bricolage Grotesque', serif;
+    font-weight: 700;
+    font-size: 18px;
+    color: #fff;
+    letter-spacing: 0.02em;
+    transition: transform var(--dur) var(--ease);
+    will-change: transform;
+    flex-shrink: 0;
+  }
+  .featured {
+    color: var(--vermillion);
+    transition: transform var(--dur) var(--ease);
+  }
+
+  .brand-name {
+    font-family: 'Bricolage Grotesque', serif;
+    font-weight: 600;
+    font-size: 22px;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    color: var(--navy);
+    margin: 0;
+    transition: color var(--dur) var(--ease);
+  }
+  .sub-line {
+    margin-top: 6px;
+    display: block;
+    color: var(--muted);
+    transition: color var(--dur) var(--ease);
+  }
+
+  .description {
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--muted);
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    transition: color var(--dur) var(--ease);
+  }
+
+  .stats {
+    color: var(--muted);
+    transition: color var(--dur) var(--ease);
+  }
+  .stats span + span::before {
+    content: " · ";
+    color: inherit;
+    opacity: 0.6;
+    padding: 0 2px;
+  }
+
+  .parent {
+    font-family: 'DM Mono', ui-monospace, monospace;
+    font-size: 11px;
+    font-style: italic;
+    text-transform: none;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+    transition: color var(--dur) var(--ease);
+  }
+
+  .spacer { flex: 1; }
+
+  /* CTA */
+  .cta-wrap {
+    position: relative;
+    z-index: 2;
+    margin-top: 4px;
+  }
+  .cta {
+    position: relative;
+    width: 100%;
+    display: block;
+    border: 1px solid var(--navy);
+    background: transparent;
+    color: var(--navy);
+    font-family: 'DM Mono', ui-monospace, monospace;
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 14px 16px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition:
+      color var(--dur) var(--ease),
+      background-color var(--dur) var(--ease),
+      border-color var(--dur) var(--ease);
+  }
+  .cta-bar {
+    position: absolute;
+    left: 0; right: 0; bottom: -6px;
+    height: 2px;
+    background: var(--vermillion);
+    transform-origin: left center;
+    transform: scaleX(0);
+    transition: transform 320ms var(--ease) 40ms;
+  }
+
+  /* ---------- HOVER STATE ---------- */
+  @media (hover: hover) {
+    .card:hover {
+      border-color: rgba(30, 45, 94, 0.6);
+      background: transparent;
+      transform: perspective(1200px) rotateY(-0.8deg) translateY(-2px);
+    }
+    .card:hover::before { opacity: 1; }
+    .card:hover .cover { opacity: 1; }
+    .card:hover .brand-name,
+    .card:hover .description,
+    .card:hover .stats,
+    .card:hover .parent,
+    .card:hover .sub-line {
+      color: #fff;
+    }
+    .card:hover .logo {
+      transform: translate(-4px, -4px) scale(1.04);
+    }
+    .card:hover .featured {
+      transform: translate(-2px, 2px);
+    }
+    .card:hover .cta {
+      border-color: #fff;
+      color: #fff;
+    }
+    .card:hover .cta-bar { transform: scaleX(1); }
+  }
+
+  /* Following state (default visual) */
+  .card.is-following .cta {
+    background: var(--vermillion);
+    border-color: var(--vermillion);
+    color: #fff;
+  }
+  .card.is-following .cta-bar { display: none; }
+  @media (hover: hover) {
+    .card.is-following:hover .cta {
+      background: var(--vermillion);
+      border-color: #fff;
+      color: #fff;
+      animation: pulseBorder 1.6s ease-in-out infinite;
+    }
+  }
+  @keyframes pulseBorder {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(255,255,255,0.0); border-color: rgba(255,255,255,0.85); }
+    50%      { box-shadow: 0 0 0 3px rgba(255,255,255,0.12); border-color: rgba(255,255,255,1); }
+  }
+
+  /* Focus-visible ring */
+  .card:focus-visible,
+  .cta:focus-visible {
+    outline: 2px solid var(--vermillion);
+    outline-offset: 3px;
+  }
+
+  /* Apple Store: cover is light, keep readable */
+  .card[data-brand="apple"] .cover::after {
+    background: linear-gradient(0deg, rgba(30,45,94,0.92) 0%, rgba(30,45,94,0.55) 55%, rgba(30,45,94,0.1) 100%);
+  }
+
+  /* ---------- Brand covers ---------- */
+  .cover.chanel  { background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #0a0a0a 100%); }
+  .cover.zara    { background: linear-gradient(135deg, #d4a574 0%, #8b6f47 100%); }
+  .cover.nike    { background: linear-gradient(135deg, #ff6b35 0%, #1e2d5e 100%); }
+  .cover.sephora { background: linear-gradient(135deg, #1a1a1a 0%, #8b0000 100%); }
+  .cover.hermes  { background: linear-gradient(135deg, #ff6b35 0%, #8b4513 100%); }
+  .cover.apple   { background: linear-gradient(135deg, #f5f5f7 0%, #86868b 100%); }
+
+  .logo.chanel   { background: #0a0a0a; }
+  .logo.zara     { background: #1a1a1a; }
+  .logo.nike     { background: #111; }
+  .logo.sephora  { background: #000; }
+  .logo.hermes   { background: #d95600; }
+  .logo.apple    { background: #1d1d1f; }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .card,
+    .logo,
+    .featured,
+    .cta-bar {
+      transition-duration: 200ms;
+    }
+    .card:hover {
+      transform: none;
+    }
+    .card:hover .logo { transform: none; }
+    .card:hover .featured { transform: none; }
+    .card:hover .cta-bar { transform: scaleX(0); }
+  }
+
+  /* footer note */
+  .foot {
+    margin-top: 56px;
+    padding-top: 28px;
+    border-top: 1px solid var(--hairline);
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+</style>
+</head>
+<body>
+  <main class="page">
+    <section class="intro">
+      <div class="mono"><span class="kicker">BRAND CARD</span> &nbsp;/&nbsp; HOVER PROTOTYPE &nbsp;/&nbsp; K036+</div>
+      <h1>Hover ediyorsun, marka canlanıyor</h1>
+      <p>Default kart restraint. Hover'da arka planda markanın dünyası açılır, vermillion sweep TAKİP ET çağrısını vurgular. A + C kombinasyonu: cover reveal + parallax micro-motion.</p>
+      <div class="captions mono">
+        <span>COVER REVEAL</span><em>•</em>
+        <span>PARALLAX MICRO-MOTION</span><em>•</em>
+        <span>VERMILLION SWEEP</span>
+      </div>
+    </section>
+
+    <section class="grid" aria-label="Brand cards">
+
+      <!-- 1. Chanel -->
+      <article class="card" data-brand="chanel" tabindex="0">
+        <div class="cover chanel" aria-hidden="true"></div>
+        <div class="content">
+          <div class="head">
+            <div class="logo chanel">CH</div>
+            <div class="mono featured">ÖNE ÇIKAN</div>
+          </div>
+          <div>
+            <h2 class="brand-name">Chanel</h2>
+            <div class="mono sub-line">LÜKS · İSTANBUL</div>
+          </div>
+          <p class="description">Couture'ün kodlarını perakendede yaşatan ev. Nişantaşı ve Zorlu butiklerinde beauty advisor ve fashion consultant rolleri için yetenek arıyor.</p>
+          <div class="mono stats">
+            <span>1909 kuruluş</span><span>3 butik</span><span>47 açık rol</span>
+          </div>
+          <div class="parent">LVMH bağımsız rakibi · Wertheimer ailesi</div>
+          <div class="spacer"></div>
+        </div>
+        <div class="cta-wrap">
+          <button class="cta" type="button">TAKİP ET<span class="cta-bar"></span></button>
+        </div>
+      </article>
+
+      <!-- 2. Zara -->
+      <article class="card is-following" data-brand="zara" tabindex="0">
+        <div class="cover zara" aria-hidden="true"></div>
+        <div class="content">
+          <div class="head">
+            <div class="logo zara">ZA</div>
+          </div>
+          <div>
+            <h2 class="brand-name">Zara</h2>
+            <div class="mono sub-line">MODA · İSTANBUL</div>
+          </div>
+          <p class="description">Hızlı modanın küresel öncüsü. Mağaza müdürü, visual merchandiser ve stylist kadroları için Türkiye genelinde aktif alım sürüyor.</p>
+          <div class="mono stats">
+            <span>1975 kuruluş</span><span>62 mağaza</span><span>128 açık rol</span>
+          </div>
+          <div class="parent">Inditex grubu · Arteixo merkezli</div>
+          <div class="spacer"></div>
+        </div>
+        <div class="cta-wrap">
+          <button class="cta" type="button">TAKİP EDİYORSUN ✓</button>
+        </div>
+      </article>
+
+      <!-- 3. Nike -->
+      <article class="card" data-brand="nike" tabindex="0">
+        <div class="cover nike" aria-hidden="true"></div>
+        <div class="content">
+          <div class="head">
+            <div class="logo nike">NK</div>
+            <div class="mono featured">ÖNE ÇIKAN</div>
+          </div>
+          <div>
+            <h2 class="brand-name">Nike</h2>
+            <div class="mono sub-line">SPOR · İSTANBUL</div>
+          </div>
+          <p class="description">Sporun kültürle kesiştiği yerdeki global güç. İstinyePark ve Kanyon flagship mağazaları koç, atlet danışman ve digital retail rolleri için ekibini büyütüyor.</p>
+          <div class="mono stats">
+            <span>1964 kuruluş</span><span>14 mağaza</span><span>63 açık rol</span>
+          </div>
+          <div class="parent">NIKE Inc. · Oregon merkezli</div>
+          <div class="spacer"></div>
+        </div>
+        <div class="cta-wrap">
+          <button class="cta" type="button">TAKİP ET<span class="cta-bar"></span></button>
+        </div>
+      </article>
+
+      <!-- 4. Sephora -->
+      <article class="card is-following" data-brand="sephora" tabindex="0">
+        <div class="cover sephora" aria-hidden="true"></div>
+        <div class="content">
+          <div class="head">
+            <div class="logo sephora">SE</div>
+          </div>
+          <div>
+            <h2 class="brand-name">Sephora</h2>
+            <div class="mono sub-line">GÜZELLİK · İSTANBUL</div>
+          </div>
+          <p class="description">Güzellik deneyiminin laboratuvarı. Beauty advisor, eğitmen ve skincare uzmanı pozisyonları için sertifikalı yetenekleri çağırıyor.</p>
+          <div class="mono stats">
+            <span>1970 kuruluş</span><span>28 mağaza</span><span>54 açık rol</span>
+          </div>
+          <div class="parent">LVMH grubu · Paris merkezli</div>
+          <div class="spacer"></div>
+        </div>
+        <div class="cta-wrap">
+          <button class="cta" type="button">TAKİP EDİYORSUN ✓</button>
+        </div>
+      </article>
+
+      <!-- 5. Hermès -->
+      <article class="card" data-brand="hermes" tabindex="0">
+        <div class="cover hermes" aria-hidden="true"></div>
+        <div class="content">
+          <div class="head">
+            <div class="logo hermes">HE</div>
+            <div class="mono featured">ÖNE ÇIKAN</div>
+          </div>
+          <div>
+            <h2 class="brand-name">Hermès</h2>
+            <div class="mono sub-line">LÜKS · İSTANBUL</div>
+          </div>
+          <p class="description">El işçiliğinin zamansız evi. Abdi İpekçi mağazasında müşteri ilişkileri ve leather care uzmanı rolleri için uzun vadeli kariyer kapısı açık.</p>
+          <div class="mono stats">
+            <span>1837 kuruluş</span><span>2 butik</span><span>19 açık rol</span>
+          </div>
+          <div class="parent">Hermès International · Dumas ailesi</div>
+          <div class="spacer"></div>
+        </div>
+        <div class="cta-wrap">
+          <button class="cta" type="button">TAKİP ET<span class="cta-bar"></span></button>
+        </div>
+      </article>
+
+      <!-- 6. Apple Store -->
+      <article class="card" data-brand="apple" tabindex="0">
+        <div class="cover apple" aria-hidden="true"></div>
+        <div class="content">
+          <div class="head">
+            <div class="logo apple">AP</div>
+          </div>
+          <div>
+            <h2 class="brand-name">Apple Store</h2>
+            <div class="mono sub-line">TEKNOLOJİ · İSTANBUL</div>
+          </div>
+          <p class="description">Perakendenin sessiz devrimcisi. Zorlu ve Bağdat Caddesi mağazaları specialist, genius ve creative pro pozisyonları için başvuru topluyor.</p>
+          <div class="mono stats">
+            <span>2001 kuruluş</span><span>2 mağaza</span><span>31 açık rol</span>
+          </div>
+          <div class="parent">Apple Inc. · Cupertino merkezli</div>
+          <div class="spacer"></div>
+        </div>
+        <div class="cta-wrap">
+          <button class="cta" type="button">TAKİP ET<span class="cta-bar"></span></button>
+        </div>
+      </article>
+
+    </section>
+
+    <footer class="foot mono">
+      <span>PROTOTYPE · DEMO ONLY</span>
+      <span>A + C COMBINATION · 280MS EASE-OUT</span>
+      <span>HELLOTALENT / 2026-04-14</span>
+    </footer>
+  </main>
+</body>
+</html>

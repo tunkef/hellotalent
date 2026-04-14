@@ -76,6 +76,99 @@ var _BRAND_COLORS = {
   'Koton': { frontBg: '', backBg: '#3A2F4A', accent: '#3A2F4A' }
 };
 
+// ── K037: Variant E — Color Flood brand accent map ──
+// Seed of ~30 Turkish retail brands → single dominant flat accent color.
+// Unknown brands fall through to a deterministic HSL hash (muted dark).
+var BRAND_ACCENT_COLORS = {
+  'Chanel':           '#0a0a0a',
+  'Hermes':           '#b8571a',
+  'Hermès':           '#b8571a',
+  'Zara':             '#2c3e66',
+  'Bershka':          '#3b1f5e',
+  'Pull & Bear':      '#2f4f3a',
+  'Pull&Bear':        '#2f4f3a',
+  'Nike':             '#ff6b35',
+  'Adidas':           '#1a3c34',
+  'Sephora':          '#1a1a1a',
+  'MAC':              '#5c1a2a',
+  'LC Waikiki':       '#1f4294',
+  'Beymen':           '#4a3728',
+  'Boyner':           '#00aeef',
+  'Koton':            '#3a2f4a',
+  'Defacto':          '#c8102e',
+  'DeFacto':          '#c8102e',
+  'Mavi':             '#002b5c',
+  "Colin's":          '#1d3f72',
+  'Colins':           '#1d3f72',
+  'Apple Store':      '#1d1d1f',
+  'Apple':            '#1d1d1f',
+  'Dior':             '#2c2c3a',
+  'Gucci':            '#006633',
+  'Louis Vuitton':    '#4d3022',
+  'Prada':            '#1a1a2e',
+  'Cartier':          '#b11f24',
+  'Tiffany':          '#0abab5',
+  'Tiffany & Co.':    '#0abab5',
+  'Tom Ford':         '#1b1b1b',
+  'Estee Lauder':     '#2b2420',
+  'Estée Lauder':     '#2b2420',
+  'Yves Saint Laurent':'#1b1b1b',
+  'YSL':              '#1b1b1b',
+  'Burberry':         '#61452a',
+  'Michael Kors':     '#1c1c1c',
+  'Tommy Hilfiger':   '#041e42',
+  'Calvin Klein':     '#0e0e0e'
+};
+
+function _hashHueFromName(name) {
+  var h = 0;
+  var s = name || '';
+  for (var i = 0; i < s.length; i++) {
+    h = (h * 31 + s.charCodeAt(i)) >>> 0;
+  }
+  return h % 360;
+}
+function _hslToHex(hDeg, sPct, lPct) {
+  var h = hDeg / 360;
+  var s = sPct / 100;
+  var l = lPct / 100;
+  var r, g, b;
+  if (s === 0) {
+    r = g = b = l;
+  } else {
+    var hue2rgb = function(p, q, t) {
+      if (t < 0) t += 1;
+      if (t > 1) t -= 1;
+      if (t < 1/6) return p + (q - p) * 6 * t;
+      if (t < 1/2) return q;
+      if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+      return p;
+    };
+    var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+    var p = 2 * l - q;
+    r = hue2rgb(p, q, h + 1/3);
+    g = hue2rgb(p, q, h);
+    b = hue2rgb(p, q, h - 1/3);
+  }
+  var toHex = function(x) {
+    var hex = Math.round(x * 255).toString(16);
+    return hex.length === 1 ? '0' + hex : hex;
+  };
+  return '#' + toHex(r) + toHex(g) + toHex(b);
+}
+function getBrandAccentColor(name) {
+  if (!name) return '#1E2D5E';
+  if (BRAND_ACCENT_COLORS[name]) return BRAND_ACCENT_COLORS[name];
+  var lower = name.toLocaleLowerCase('tr');
+  var keys = Object.keys(BRAND_ACCENT_COLORS);
+  for (var i = 0; i < keys.length; i++) {
+    if (keys[i].toLocaleLowerCase('tr') === lower) return BRAND_ACCENT_COLORS[keys[i]];
+  }
+  var hue = _hashHueFromName(name);
+  return _hslToHex(hue, 35, 25);
+}
+window._htGetBrandAccentColor = getBrandAccentColor;
+
 function _hexToRgba(hex, alpha) {
   hex = hex.replace('#', '');
   if (hex.length === 3) hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
@@ -318,6 +411,8 @@ function _buildBrandCard(b, idx) {
   var card = document.createElement('article');
   card.className = 'sk-card sk-brand' + (b.is_featured ? ' sk-brand--featured' : '');
   card.style.animationDelay = (Math.min(idx, 8) * 60) + 'ms';
+  card.setAttribute('tabindex', '0');
+  card.style.setProperty('--sk-brand-accent', getBrandAccentColor(b.brand_name));
 
   // Top row: logo + name/meta
   var top = document.createElement('div');

@@ -156,7 +156,7 @@
   position:relative;
 }
 .sk-followed__chip:hover .sk-followed__chip-logo{box-shadow:0 0 0 2px #C94E28;}
-.sk-followed__chip-logo img{width:100%;height:100%;object-fit:cover;}
+.sk-followed__chip-logo img{max-width:72%;max-height:72%;width:auto;height:auto;object-fit:contain;display:block;}
 .sk-followed__chip-name{
   font-family:'Plus Jakarta Sans',sans-serif;
   font-size:11px;
@@ -193,8 +193,19 @@
   font-family:'DM Mono',monospace;
   font-size:13px;
   color:#1E2D5E;
+  -webkit-appearance:none;
+  appearance:none;
+  box-shadow:none;
+  border-radius:0;
+  padding:0;
+  margin:0;
 }
 .sk-filter__search::placeholder{color:#6B6A66;font-family:'DM Mono',monospace;}
+.sk-filter__search::-webkit-search-decoration,
+.sk-filter__search::-webkit-search-cancel-button,
+.sk-filter__search::-webkit-search-results-button,
+.sk-filter__search::-webkit-search-results-decoration{-webkit-appearance:none;display:none;}
+.sk-filter__search:focus{outline:none;box-shadow:none;}
 
 .sk-filter__seg{
   display:flex;
@@ -253,17 +264,95 @@
   color:#6B6A66;
 }
 
-/* ── Brand card ── */
+/* ── Brand card (K037: Variant E — Color Flood hover) ── */
 .sk-card.sk-brand{
+  --sk-brand-accent:#1E2D5E;
   padding:24px;
   display:flex;
   flex-direction:column;
   gap:16px;
   position:relative;
-  transition:border-color 220ms ease;
+  isolation:isolate;
+  transition:background-color 260ms ease-out, border-color 260ms ease-out, color 260ms ease-out;
   animation:skFadeUp 600ms ease-out forwards;
 }
-.sk-card.sk-brand:hover{border-color:rgba(30,45,94,0.4);}
+.sk-card.sk-brand::before{
+  content:"";
+  position:absolute;
+  left:24px;
+  right:24px;
+  top:0;
+  height:1px;
+  background:#C94E28;
+  opacity:0;
+  transition:opacity 260ms ease-out;
+  pointer-events:none;
+}
+.sk-card.sk-brand:hover,
+.sk-card.sk-brand:focus-within,
+.sk-card.sk-brand:focus-visible{
+  background-color:var(--sk-brand-accent);
+  border-color:var(--sk-brand-accent);
+  color:#ffffff;
+}
+.sk-card.sk-brand:focus-visible{
+  outline:2px solid #C94E28;
+  outline-offset:3px;
+}
+.sk-card.sk-brand:hover::before,
+.sk-card.sk-brand:focus-within::before,
+.sk-card.sk-brand:focus-visible::before{opacity:1;}
+.sk-card.sk-brand:hover .sk-brand__name,
+.sk-card.sk-brand:focus-within .sk-brand__name,
+.sk-card.sk-brand:focus-visible .sk-brand__name,
+.sk-card.sk-brand:hover .sk-brand__meta,
+.sk-card.sk-brand:focus-within .sk-brand__meta,
+.sk-card.sk-brand:focus-visible .sk-brand__meta,
+.sk-card.sk-brand:hover .sk-brand__desc,
+.sk-card.sk-brand:focus-within .sk-brand__desc,
+.sk-card.sk-brand:focus-visible .sk-brand__desc,
+.sk-card.sk-brand:hover .sk-brand__stats,
+.sk-card.sk-brand:focus-within .sk-brand__stats,
+.sk-card.sk-brand:focus-visible .sk-brand__stats,
+.sk-card.sk-brand:hover .sk-brand__group,
+.sk-card.sk-brand:focus-within .sk-brand__group,
+.sk-card.sk-brand:focus-visible .sk-brand__group{color:#ffffff;}
+.sk-card.sk-brand:hover .sk-brand__stats-sep,
+.sk-card.sk-brand:focus-within .sk-brand__stats-sep,
+.sk-card.sk-brand:focus-visible .sk-brand__stats-sep{color:rgba(255,255,255,0.4);}
+.sk-card.sk-brand:hover .sk-brand__logo,
+.sk-card.sk-brand:focus-within .sk-brand__logo,
+.sk-card.sk-brand:focus-visible .sk-brand__logo{
+  background:#ffffff;
+  border-color:#ffffff;
+}
+.sk-card.sk-brand:hover .sk-brand__logo img,
+.sk-card.sk-brand:focus-within .sk-brand__logo img,
+.sk-card.sk-brand:focus-visible .sk-brand__logo img{
+  filter:brightness(0) invert(1);
+}
+.sk-card.sk-brand:hover .sk-brand__logo--initial,
+.sk-card.sk-brand:focus-within .sk-brand__logo--initial,
+.sk-card.sk-brand:focus-visible .sk-brand__logo--initial{
+  color:var(--sk-brand-accent);
+  background:#ffffff !important;
+}
+.sk-card.sk-brand:hover .sk-brand__follow,
+.sk-card.sk-brand:focus-within .sk-brand__follow,
+.sk-card.sk-brand:focus-visible .sk-brand__follow{
+  background:transparent;
+  border-color:#ffffff;
+  color:#ffffff;
+}
+.sk-card.sk-brand:hover .sk-brand__follow.is-following,
+.sk-card.sk-brand:focus-within .sk-brand__follow.is-following,
+.sk-card.sk-brand:focus-visible .sk-brand__follow.is-following{
+  background:#C94E28;
+  border-color:#C94E28;
+  color:#ffffff;
+  outline:1px solid #ffffff;
+  outline-offset:-2px;
+}
 .sk-brand--featured::after{
   content:"ÖNE ÇIKAN";
   position:absolute;
@@ -275,6 +364,25 @@
   text-transform:uppercase;
   color:#C94E28;
   font-weight:500;
+  transition:color 260ms ease-out;
+}
+.sk-card.sk-brand--featured:hover::after,
+.sk-card.sk-brand--featured:focus-within::after,
+.sk-card.sk-brand--featured:focus-visible::after{color:#ffffff;}
+@media (prefers-reduced-motion:reduce){
+  .sk-card.sk-brand,
+  .sk-card.sk-brand::before,
+  .sk-card.sk-brand .sk-brand__name,
+  .sk-card.sk-brand .sk-brand__meta,
+  .sk-card.sk-brand .sk-brand__desc,
+  .sk-card.sk-brand .sk-brand__stats,
+  .sk-card.sk-brand .sk-brand__group,
+  .sk-card.sk-brand .sk-brand__logo,
+  .sk-card.sk-brand .sk-brand__logo img,
+  .sk-card.sk-brand .sk-brand__follow,
+  .sk-brand--featured::after{
+    transition:none !important;
+  }
 }
 .sk-brand__top{
   display:flex;

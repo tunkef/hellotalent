@@ -1,0 +1,473 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Variant G · Progressive Reveal — HelloTalent</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700&family=DM+Mono:ital,wght@0,400;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --cream: #EFEDE8;
+    --card: #FBFAF6;
+    --navy: #0F1E3D;
+    --navy-soft: #2A3857;
+    --muted: #7A7668;
+    --hair: rgba(15, 30, 61, 0.14);
+    --hair-strong: rgba(15, 30, 61, 0.32);
+    --vermillion: #D9452B;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--cream);
+    color: var(--navy);
+    font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+    font-feature-settings: "ss01", "cv11";
+  }
+  .wrap {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 64px clamp(24px, 5vw, 48px);
+  }
+
+  /* Header */
+  .mono {
+    font-family: 'DM Mono', ui-monospace, monospace;
+    font-style: italic;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .eyebrow { margin: 0 0 22px; color: var(--vermillion); font-style: normal; }
+  h1 {
+    font-family: 'Bricolage Grotesque', serif;
+    font-weight: 500;
+    font-size: clamp(36px, 5.2vw, 58px);
+    line-height: 1.04;
+    letter-spacing: -0.02em;
+    margin: 0 0 20px;
+    max-width: 820px;
+    color: var(--navy);
+  }
+  .lede {
+    font-weight: 300;
+    font-size: 17px;
+    line-height: 1.55;
+    max-width: 680px;
+    color: var(--navy-soft);
+    margin: 0 0 26px;
+  }
+  .tri-row {
+    display: flex;
+    gap: 22px;
+    flex-wrap: wrap;
+    margin-bottom: 40px;
+  }
+  .tri-row span { font-style: normal; }
+  .tri-row .dot { color: var(--hair-strong); }
+
+  .nav-strip {
+    border-top: 1px solid var(--hair);
+    border-bottom: 1px solid var(--hair);
+    padding: 14px 0;
+    margin-bottom: 48px;
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    font-family: 'DM Mono', monospace;
+    font-style: italic;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .nav-strip .active { color: var(--vermillion); }
+  .nav-strip .sep { color: var(--hair-strong); }
+
+  /* Grid */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 20px;
+  }
+
+  /* Card */
+  .card {
+    position: relative;
+    background: var(--card);
+    border: 1px solid var(--hair);
+    border-radius: 2px;
+    padding: 26px 26px 24px;
+    min-height: 320px;
+    display: flex;
+    flex-direction: column;
+    transition: border-color 220ms ease-out, background 220ms ease-out;
+    outline: none;
+  }
+  .card:hover,
+  .card:focus-visible {
+    border-color: var(--hair-strong);
+    background: #FDFCF9;
+  }
+  .card:focus-visible {
+    outline: 2px solid var(--vermillion);
+    outline-offset: 3px;
+  }
+
+  /* Featured caption — always visible */
+  .featured-tag {
+    position: absolute;
+    top: 26px;
+    right: 26px;
+    font-family: 'DM Mono', monospace;
+    font-style: italic;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--vermillion);
+  }
+
+  /* Default visible block (logo + name + segment) */
+  .head {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 14px;
+  }
+  .logo {
+    width: 48px;
+    height: 48px;
+    flex: none;
+    display: grid;
+    place-items: center;
+    font-family: 'Bricolage Grotesque', serif;
+    font-weight: 700;
+    font-size: 18px;
+    letter-spacing: -0.02em;
+    border-radius: 2px;
+    color: #fff;
+  }
+  .logo.chanel   { background: #0b0b0b; }
+  .logo.zara     { background: #111; }
+  .logo.nike     { background: #0F1E3D; }
+  .logo.sephora  { background: #111; color: #fff; }
+  .logo.hermes   { background: #E85A0C; }
+  .logo.apple    { background: #1d1d1f; }
+
+  .name-block { flex: 1 1 auto; min-width: 0; padding-top: 2px; }
+  .name {
+    font-family: 'Bricolage Grotesque', serif;
+    font-weight: 500;
+    font-size: 22px;
+    line-height: 1.1;
+    letter-spacing: -0.015em;
+    margin: 0 0 6px;
+    color: var(--navy);
+  }
+  .segment {
+    font-family: 'DM Mono', monospace;
+    font-style: italic;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* Revealed elements */
+  .rule {
+    height: 1px;
+    background: var(--hair-strong);
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform 120ms ease-in;
+    margin: 4px 0 16px;
+  }
+  .rule-bottom {
+    margin: auto 0 16px;
+  }
+  .desc {
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: var(--navy-soft);
+    font-weight: 400;
+    margin: 0 0 18px;
+    opacity: 0;
+    transform: translateY(-6px);
+    transition: opacity 120ms ease-in, transform 120ms ease-in;
+  }
+  .stats {
+    font-family: 'DM Mono', monospace;
+    font-style: normal;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--navy);
+    margin: 0 0 12px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    opacity: 0;
+    transform: translateY(-6px);
+    transition: opacity 120ms ease-in, transform 120ms ease-in;
+  }
+  .stats .sep { color: var(--hair-strong); }
+  .parent {
+    font-family: 'DM Mono', monospace;
+    font-style: italic;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 0 0 18px;
+    opacity: 0;
+    transform: translateY(-6px);
+    transition: opacity 120ms ease-in, transform 120ms ease-in;
+  }
+  .follow-btn {
+    appearance: none;
+    border: 1px solid var(--navy);
+    background: transparent;
+    color: var(--navy);
+    font-family: 'DM Mono', monospace;
+    font-style: italic;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 13px 16px;
+    width: 100%;
+    cursor: pointer;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 120ms ease-in, transform 120ms ease-in, background 180ms, color 180ms;
+    pointer-events: none;
+  }
+  .card.following .follow-btn {
+    background: var(--vermillion);
+    border-color: var(--vermillion);
+    color: #fff;
+  }
+  .follow-btn .check {
+    display: inline-block;
+    margin-left: 6px;
+    opacity: 0;
+  }
+  .card.following .follow-btn .check { opacity: 1; }
+
+  /* HOVER / FOCUS — progressive reveal */
+  .card:hover .rule-top,
+  .card:focus-visible .rule-top {
+    transform: scaleX(1);
+    transition: transform 220ms ease-out 0ms;
+  }
+  .card:hover .desc,
+  .card:focus-visible .desc {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 260ms ease-out 80ms, transform 260ms ease-out 80ms;
+  }
+  .card:hover .stats,
+  .card:focus-visible .stats {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 260ms ease-out 180ms, transform 260ms ease-out 180ms;
+  }
+  .card:hover .parent,
+  .card:focus-visible .parent {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 220ms ease-out 260ms, transform 220ms ease-out 260ms;
+  }
+  .card:hover .rule-bottom,
+  .card:focus-visible .rule-bottom {
+    transform: scaleX(1);
+    transition: transform 220ms ease-out 320ms;
+  }
+  .card:hover .follow-btn,
+  .card:focus-visible .follow-btn {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+    transition: opacity 260ms ease-out 380ms, transform 260ms ease-out 380ms, background 180ms, color 180ms;
+  }
+  .card.following:hover .follow-btn .check,
+  .card.following:focus-visible .follow-btn .check {
+    animation: pulse 1400ms ease-in-out 680ms infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.55; transform: scale(1.18); }
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .rule, .desc, .stats, .parent, .follow-btn { transition: none !important; animation: none !important; }
+    .card:hover .rule-top, .card:focus-visible .rule-top,
+    .card:hover .rule-bottom, .card:focus-visible .rule-bottom { transform: scaleX(1); transition: none; }
+    .card:hover .desc, .card:focus-visible .desc,
+    .card:hover .stats, .card:focus-visible .stats,
+    .card:hover .parent, .card:focus-visible .parent,
+    .card:hover .follow-btn, .card:focus-visible .follow-btn {
+      opacity: 1; transform: none; transition: none; pointer-events: auto;
+    }
+    .card.following .follow-btn .check { animation: none; }
+  }
+
+  footer {
+    margin-top: 64px;
+    padding-top: 20px;
+    border-top: 1px solid var(--hair);
+    font-family: 'DM Mono', monospace;
+    font-style: italic;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+</style>
+</head>
+<body>
+  <main class="wrap">
+    <p class="mono eyebrow">Variant G / Progressive Reveal</p>
+    <h1>Sakin kart. Hover edince açılır.</h1>
+    <p class="lede">
+      Default kart minimal: logo, isim, segment. Hover'da hairlines çizilir, metin yukarıdan aşağıya sırayla açılır. Bilgi yoğunluğu kontrollü — ilk bakış sessiz, ilgilenen kullanıcıya veri verir.
+    </p>
+    <p class="mono tri-row">
+      <span>Sequenced Reveal</span><span class="dot">•</span>
+      <span>Editorial Scroll</span><span class="dot">•</span>
+      <span>Zero Overlay</span>
+    </p>
+
+    <nav class="nav-strip" aria-label="Hover variant navigation">
+      <span>&lt; E / Color Flood</span>
+      <span class="sep">|</span>
+      <span>F / Watermark Stamp</span>
+      <span class="sep">|</span>
+      <span class="active">G / Progressive Reveal &gt;</span>
+    </nav>
+
+    <section class="grid">
+
+      <!-- 1. Chanel -->
+      <article class="card" tabindex="0">
+        <span class="featured-tag">Öne Çıkan</span>
+        <div class="head">
+          <div class="logo chanel">CC</div>
+          <div class="name-block">
+            <h2 class="name">Chanel</h2>
+            <div class="segment">Lüks · İstanbul</div>
+          </div>
+        </div>
+        <div class="rule rule-top" aria-hidden="true"></div>
+        <p class="desc">Nişantaşı ve İstinye Park butikleri için ileri seviye müşteri ilişkileri ve ürün bilgisine sahip danışmanlar arıyor. Eğitim programı Paris merkezli yürütülüyor.</p>
+        <p class="stats"><span>4 Butik</span><span class="sep">·</span><span>86 Rol</span><span class="sep">·</span><span>12 Yıl TR</span></p>
+        <p class="parent">Grup · Chanel SAS</p>
+        <div class="rule rule-bottom" aria-hidden="true"></div>
+        <button class="follow-btn" type="button">Takip Et</button>
+      </article>
+
+      <!-- 2. Zara -->
+      <article class="card following" tabindex="0">
+        <div class="head">
+          <div class="logo zara">Z</div>
+          <div class="name-block">
+            <h2 class="name">Zara</h2>
+            <div class="segment">Moda · İstanbul</div>
+          </div>
+        </div>
+        <div class="rule rule-top" aria-hidden="true"></div>
+        <p class="desc">Türkiye genelinde 42 mağaza. Mağaza müdürü ve vizyon merçandayzer rollerinde sürekli açılış. Inditex kariyer yapısı hızlı iç terfi sağlıyor.</p>
+        <p class="stats"><span>42 Mağaza</span><span class="sep">·</span><span>340 Rol</span><span class="sep">·</span><span>23 Yıl TR</span></p>
+        <p class="parent">Grup · Inditex</p>
+        <div class="rule rule-bottom" aria-hidden="true"></div>
+        <button class="follow-btn" type="button">Takip Ediyorsun<span class="check">✓</span></button>
+      </article>
+
+      <!-- 3. Nike -->
+      <article class="card" tabindex="0">
+        <span class="featured-tag">Öne Çıkan</span>
+        <div class="head">
+          <div class="logo nike">N</div>
+          <div class="name-block">
+            <h2 class="name">Nike</h2>
+            <div class="segment">Spor · İstanbul</div>
+          </div>
+        </div>
+        <div class="rule rule-top" aria-hidden="true"></div>
+        <p class="desc">Nike Istanbul House of Innovation için koçluk odaklı satış ekibi kuruyor. Atletik geçmiş ve topluluk iletişimi öncelikli aranıyor.</p>
+        <p class="stats"><span>18 Mağaza</span><span class="sep">·</span><span>112 Rol</span><span class="sep">·</span><span>19 Yıl TR</span></p>
+        <p class="parent">Grup · Nike Inc.</p>
+        <div class="rule rule-bottom" aria-hidden="true"></div>
+        <button class="follow-btn" type="button">Takip Et</button>
+      </article>
+
+      <!-- 4. Sephora -->
+      <article class="card following" tabindex="0">
+        <div class="head">
+          <div class="logo sephora">S</div>
+          <div class="name-block">
+            <h2 class="name">Sephora</h2>
+            <div class="segment">Güzellik · İstanbul</div>
+          </div>
+        </div>
+        <div class="rule rule-top" aria-hidden="true"></div>
+        <p class="desc">Beauty advisor ve skincare uzmanı kadrosu için sürekli alım. LVMH Retail Akademi sertifikası sunuluyor. Zorlu, Akasya ve Kanyon öncelikli.</p>
+        <p class="stats"><span>29 Mağaza</span><span class="sep">·</span><span>178 Rol</span><span class="sep">·</span><span>11 Yıl TR</span></p>
+        <p class="parent">Grup · LVMH</p>
+        <div class="rule rule-bottom" aria-hidden="true"></div>
+        <button class="follow-btn" type="button">Takip Ediyorsun<span class="check">✓</span></button>
+      </article>
+
+      <!-- 5. Hermès -->
+      <article class="card" tabindex="0">
+        <span class="featured-tag">Öne Çıkan</span>
+        <div class="head">
+          <div class="logo hermes">H</div>
+          <div class="name-block">
+            <h2 class="name">Hermès</h2>
+            <div class="segment">Lüks · İstanbul</div>
+          </div>
+        </div>
+        <div class="rule rule-top" aria-hidden="true"></div>
+        <p class="desc">Abdi İpekçi mağazası için deri ürünler ve ipek departmanlarında kıdemli danışman. Fransızca ya da İngilizce akıcı konuşma şart.</p>
+        <p class="stats"><span>2 Butik</span><span class="sep">·</span><span>24 Rol</span><span class="sep">·</span><span>17 Yıl TR</span></p>
+        <p class="parent">Grup · Hermès International</p>
+        <div class="rule rule-bottom" aria-hidden="true"></div>
+        <button class="follow-btn" type="button">Takip Et</button>
+      </article>
+
+      <!-- 6. Apple Store -->
+      <article class="card" tabindex="0">
+        <div class="head">
+          <div class="logo apple">&#63743;</div>
+          <div class="name-block">
+            <h2 class="name">Apple Store</h2>
+            <div class="segment">Teknoloji · İstanbul</div>
+          </div>
+        </div>
+        <div class="rule rule-top" aria-hidden="true"></div>
+        <p class="desc">Zorlu ve Bağdat Caddesi mağazaları Specialist, Genius ve Creative Pro rollerinde alım yapıyor. Apple Eğitim Kampı iki haftada bir başlıyor.</p>
+        <p class="stats"><span>2 Mağaza</span><span class="sep">·</span><span>68 Rol</span><span class="sep">·</span><span>8 Yıl TR</span></p>
+        <p class="parent">Grup · Apple Inc.</p>
+        <div class="rule rule-bottom" aria-hidden="true"></div>
+        <button class="follow-btn" type="button">Takip Et</button>
+      </article>
+
+    </section>
+
+    <footer>
+      <span>HelloTalent · Şirketler · Hover Studies</span>
+      <span>G / Progressive Reveal · 2026-04-14</span>
+    </footer>
+  </main>
+</body>
+</html>

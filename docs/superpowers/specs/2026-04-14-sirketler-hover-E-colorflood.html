@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Şirketler · Hover E / Color Flood · HelloTalent Mockup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;600&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=DM+Mono:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#F7F6F4;
+    --page:#EFEDE8;
+    --ink:#141414;
+    --ink-soft:#5a5a57;
+    --line:#E5E3DF;
+    --vermillion:#C94E28;
+    --white:#ffffff;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--page);color:var(--ink);font-family:"Plus Jakarta Sans",system-ui,sans-serif;font-weight:400;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+  .wrap{max-width:1120px;margin:0 auto;padding:64px clamp(24px,5vw,48px)}
+
+  .mono{font-family:"DM Mono",ui-monospace,monospace;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-soft)}
+  .mono-italic{font-family:"DM Mono",ui-monospace,monospace;font-size:11px;font-style:italic;color:var(--ink-soft)}
+
+  /* Header */
+  header.intro{border-top:1px solid var(--line);padding-top:28px;margin-bottom:44px}
+  header.intro .eyebrow{margin-bottom:22px}
+  header.intro h1{font-family:"Bricolage Grotesque",serif;font-weight:500;font-size:clamp(34px,4.6vw,54px);line-height:1.04;letter-spacing:-0.015em;max-width:18ch;margin-bottom:18px}
+  header.intro p.sub{font-size:16px;line-height:1.55;color:#3a3a38;max-width:54ch;font-weight:300}
+  header.intro .tricap{margin-top:22px;color:var(--ink)}
+  header.intro .tricap span{margin-right:14px}
+
+  /* Variant nav strip */
+  nav.variants{border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:14px 0;margin-bottom:40px;display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap}
+  nav.variants .cur{color:var(--vermillion)}
+  nav.variants .dim{color:#9a9893}
+
+  /* Grid */
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px}
+
+  /* Card */
+  .card{
+    --flood:#0a0a0a;
+    position:relative;
+    background:var(--cream);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:24px;
+    display:flex;flex-direction:column;gap:16px;
+    color:var(--ink);
+    transition:background 260ms ease-out, border-color 260ms ease-out, color 260ms ease-out;
+    isolation:isolate;
+  }
+  .card::before{
+    content:"";
+    position:absolute;inset:0 24px auto 24px;top:0;height:1px;
+    background:var(--line);
+    transition:background 260ms ease-out;
+  }
+  .card:hover,
+  .card:focus-within,
+  .card:focus-visible{
+    background:var(--flood);
+    border-color:color-mix(in srgb, var(--flood) 60%, transparent);
+    color:var(--white);
+  }
+  .card:hover::before,
+  .card:focus-within::before,
+  .card:focus-visible::before{background:var(--vermillion)}
+
+  .card:focus-visible{outline:2px solid var(--vermillion);outline-offset:3px}
+
+  /* Featured caption */
+  .feat{position:absolute;top:18px;right:20px;font-family:"DM Mono",ui-monospace,monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--vermillion);transition:color 260ms ease-out}
+  .card:hover .feat,
+  .card:focus-within .feat,
+  .card:focus-visible .feat{color:var(--white)}
+
+  /* Head row */
+  .head{display:flex;align-items:center;gap:14px;padding-top:6px}
+  .logo{
+    width:48px;height:48px;border-radius:10px;
+    background:var(--flood);color:var(--white);
+    display:grid;place-items:center;
+    font-family:"Bricolage Grotesque",serif;font-weight:600;font-size:20px;
+    transition:background 260ms ease-out, color 260ms ease-out;
+    flex:0 0 auto;
+  }
+  .card:hover .logo,
+  .card:focus-within .logo,
+  .card:focus-visible .logo{background:var(--white);color:var(--flood)}
+
+  .name{font-family:"Bricolage Grotesque",serif;font-weight:500;font-size:22px;line-height:1.1;letter-spacing:-0.01em}
+  .segcity{margin-top:4px;font-family:"DM Mono",ui-monospace,monospace;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-soft);transition:color 260ms ease-out}
+  .card:hover .segcity,
+  .card:focus-within .segcity,
+  .card:focus-visible .segcity{color:rgba(255,255,255,0.72)}
+
+  .desc{font-size:14px;line-height:1.55;color:#4a4a47;font-weight:300;transition:color 260ms ease-out}
+  .card:hover .desc,
+  .card:focus-within .desc,
+  .card:focus-visible .desc{color:rgba(255,255,255,0.82)}
+
+  .stats{font-family:"DM Mono",ui-monospace,monospace;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink);transition:color 260ms ease-out}
+  .card:hover .stats,
+  .card:focus-within .stats,
+  .card:focus-visible .stats{color:var(--white)}
+
+  .parent{font-family:"DM Mono",ui-monospace,monospace;font-size:11px;font-style:italic;color:var(--ink-soft);transition:color 260ms ease-out}
+  .card:hover .parent,
+  .card:focus-within .parent,
+  .card:focus-visible .parent{color:rgba(255,255,255,0.68)}
+
+  .divider{height:1px;background:var(--line);transition:background 260ms ease-out}
+  .card:hover .divider,
+  .card:focus-within .divider,
+  .card:focus-visible .divider{background:rgba(255,255,255,0.22)}
+
+  /* Button */
+  .btn{
+    margin-top:4px;
+    display:block;width:100%;
+    padding:12px 16px;border-radius:10px;
+    font-family:"Plus Jakarta Sans",sans-serif;font-weight:500;font-size:13px;letter-spacing:0.02em;
+    background:transparent;color:var(--ink);
+    border:1px solid var(--ink);
+    cursor:pointer;
+    transition:background 260ms ease-out, color 260ms ease-out, border-color 260ms ease-out, box-shadow 260ms ease-out;
+  }
+  .card:hover .btn,
+  .card:focus-within .btn,
+  .card:focus-visible .btn{border-color:var(--white);color:var(--white)}
+
+  .btn.following{
+    background:var(--vermillion);
+    border-color:var(--vermillion);
+    color:var(--white);
+  }
+  .card:hover .btn.following,
+  .card:focus-within .btn.following,
+  .card:focus-visible .btn.following{
+    background:var(--vermillion);
+    border-color:var(--vermillion);
+    box-shadow:0 0 0 1px var(--white) inset;
+    animation:pulse 1.6s ease-in-out infinite;
+  }
+  @keyframes pulse{
+    0%,100%{box-shadow:0 0 0 1px rgba(255,255,255,1) inset}
+    50%{box-shadow:0 0 0 1px rgba(255,255,255,0.55) inset}
+  }
+  .btn:focus-visible{outline:2px solid var(--vermillion);outline-offset:3px}
+
+  /* Flood colors per card */
+  .card.chanel  {--flood:#0a0a0a}
+  .card.zara    {--flood:#2c3e66}
+  .card.nike    {--flood:#ff6b35}
+  .card.sephora {--flood:#1a1a1a}
+  .card.hermes  {--flood:#b8571a}
+  .card.apple   {--flood:#1d1d1f}
+
+  /* Footer caption */
+  footer.foot{margin-top:56px;padding-top:22px;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap}
+
+  @media (prefers-reduced-motion: reduce){
+    .card,.card *,.btn,.logo,.feat,.segcity,.desc,.stats,.parent,.divider,.card::before{transition:none !important;animation:none !important}
+  }
+</style>
+</head>
+<body>
+<main class="wrap">
+
+  <header class="intro">
+    <div class="mono eyebrow">VARIANT E / COLOR FLOOD</div>
+    <h1>Her marka kendi rengiyle konuşur</h1>
+    <p class="sub">Hover'da kart markanın tek accent rengine doluyor. Yazı beyaza dönüyor, logo tersine geçiyor, kenar incelip markaya bürünüyor. Grafik, hızlı, hiç fotoğraf yok.</p>
+    <div class="mono tricap"><span>SOLID COLOR</span>·<span style="margin-left:14px">TYPE INVERSION</span>·<span style="margin-left:14px">ZERO PHOTO</span></div>
+  </header>
+
+  <nav class="variants mono">
+    <span class="cur">&lt; E / COLOR FLOOD</span>
+    <span class="dim">F / WATERMARK STAMP</span>
+    <span class="dim">G / PROGRESSIVE REVEAL &gt;</span>
+  </nav>
+
+  <section class="grid" aria-label="Marka kartları">
+
+    <article class="card chanel" role="article" tabindex="0" aria-label="Chanel markasını takip et">
+      <span class="feat">ÖNE ÇIKAN</span>
+      <div class="head">
+        <div class="logo" aria-hidden="true">C</div>
+        <div>
+          <div class="name">Chanel</div>
+          <div class="segcity">LÜKS · İSTANBUL</div>
+        </div>
+      </div>
+      <p class="desc">Butik satış danışmanı, güzellik uzmanı ve VIP client advisor rolleri için Chanel'in Türkiye ekibini yakından tanı. Sessiz lüksün kodları, sahada nasıl konuşuluyor.</p>
+      <div class="stats">6 MAĞAZA · 3 ŞEHİR · 240 KİŞİ</div>
+      <div class="parent">Chanel SA grubu</div>
+      <div class="divider"></div>
+      <button class="btn" type="button" aria-label="Chanel'i takip et">TAKİP ET</button>
+    </article>
+
+    <article class="card zara" role="article" tabindex="0" aria-label="Zara markasını takip ediyorsun">
+      <div class="head">
+        <div class="logo" aria-hidden="true">Z</div>
+        <div>
+          <div class="name">Zara</div>
+          <div class="segcity">MODA · İSTANBUL</div>
+        </div>
+      </div>
+      <p class="desc">Hızlı moda perakendeciliğinin ritmini sahada öğren. Mağaza müdürü, visual merchandiser ve bölge sorumlusu hatları için kariyer adımları burada şekilleniyor.</p>
+      <div class="stats">87 MAĞAZA · 12 ŞEHİR · 1.4K KİŞİ</div>
+      <div class="parent">Inditex grubu</div>
+      <div class="divider"></div>
+      <button class="btn following" type="button" aria-label="Zara takibini bırak">TAKİP EDİYORSUN ✓</button>
+    </article>
+
+    <article class="card nike" role="article" tabindex="0" aria-label="Nike markasını takip et">
+      <span class="feat">ÖNE ÇIKAN</span>
+      <div class="head">
+        <div class="logo" aria-hidden="true">N</div>
+        <div>
+          <div class="name">Nike</div>
+          <div class="segcity">SPOR · İSTANBUL</div>
+        </div>
+      </div>
+      <p class="desc">Koşu, basketbol ve training kategorilerinde athlete danışmanlığı yapan ekip. Ürün bilgisi, topluluk yönetimi ve etkinlik operasyonu sahada iç içe.</p>
+      <div class="stats">19 MAĞAZA · 7 ŞEHİR · 520 KİŞİ</div>
+      <div class="parent">Nike Inc. direkt operasyon</div>
+      <div class="divider"></div>
+      <button class="btn" type="button" aria-label="Nike'ı takip et">TAKİP ET</button>
+    </article>
+
+    <article class="card sephora" role="article" tabindex="0" aria-label="Sephora markasını takip ediyorsun">
+      <div class="head">
+        <div class="logo" aria-hidden="true">S</div>
+        <div>
+          <div class="name">Sephora</div>
+          <div class="segcity">GÜZELLİK · İSTANBUL</div>
+        </div>
+      </div>
+      <p class="desc">Beauty advisor, skincare uzmanı ve fragrance consultant pozisyonları için parfüm ve makyaj dünyasının en geniş oyun alanı. Eğitim yoğun, sahne sıcak.</p>
+      <div class="stats">34 MAĞAZA · 9 ŞEHİR · 780 KİŞİ</div>
+      <div class="parent">LVMH grubu</div>
+      <div class="divider"></div>
+      <button class="btn following" type="button" aria-label="Sephora takibini bırak">TAKİP EDİYORSUN ✓</button>
+    </article>
+
+    <article class="card hermes" role="article" tabindex="0" aria-label="Hermès markasını takip et">
+      <span class="feat">ÖNE ÇIKAN</span>
+      <div class="head">
+        <div class="logo" aria-hidden="true">H</div>
+        <div>
+          <div class="name">Hermès</div>
+          <div class="segcity">LÜKS · İSTANBUL</div>
+        </div>
+      </div>
+      <p class="desc">Deri, ipek ve saatçilik hatlarında client advisor yetiştiren Hermès Türkiye ekibi. Zanaat bilgisi ve uzun soluklu müşteri ilişkisi işin merkezinde.</p>
+      <div class="stats">2 MAĞAZA · 1 ŞEHİR · 85 KİŞİ</div>
+      <div class="parent">Hermès International</div>
+      <div class="divider"></div>
+      <button class="btn" type="button" aria-label="Hermès'i takip et">TAKİP ET</button>
+    </article>
+
+    <article class="card apple" role="article" tabindex="0" aria-label="Apple Store markasını takip et">
+      <div class="head">
+        <div class="logo" aria-hidden="true">A</div>
+        <div>
+          <div class="name">Apple Store</div>
+          <div class="segcity">TEKNOLOJİ · İSTANBUL</div>
+        </div>
+      </div>
+      <p class="desc">Specialist, Genius ve Creative Pro rollerinin Türkiye'deki resmi operasyonu. Müşteri deneyimi, teknik destek ve topluluk eğitimi aynı zeminde buluşuyor.</p>
+      <div class="stats">3 MAĞAZA · 1 ŞEHİR · 310 KİŞİ</div>
+      <div class="parent">Apple Inc. direkt operasyon</div>
+      <div class="divider"></div>
+      <button class="btn" type="button" aria-label="Apple Store'u takip et">TAKİP ET</button>
+    </article>
+
+  </section>
+
+  <footer class="foot">
+    <div class="mono">HELLOTALENT · ŞİRKETLER · HOVER VARIANT E</div>
+    <div class="mono-italic">mockup / 2026-04-14</div>
+  </footer>
+
+</main>
+</body>
+</html>

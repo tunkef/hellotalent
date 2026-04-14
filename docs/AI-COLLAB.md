@@ -7,10 +7,26 @@
 
 ## Mevcut Durum
 
-**Aktif is:** K036 Sirketler editorial redesign + Genel margin fix — exec + DeepSeek APPROVE
+**Aktif is:** K037 Brand card Variant E color flood hover + hotfixes — exec + DeepSeek APPROVE
 **Sonraki:** push main + Tuna smoke
-**Son commit:** (pending) feat(sirketler): K036 editorial redesign + Genel margin alignment
+**Son commit:** (pending) feat(sirketler): K037 Variant E color flood hover + logo/search hotfix
 **DeepSeek:** APPROVE
+
+## 2026-04-14 — K037 Sirketler Variant E color flood hover (exec)
+
+- `.sk-brand` cards: hover/focus-within/focus-visible → background `--sk-brand-accent` flood, text beyaz, logo bg beyaz + img `brightness(0) invert(1)`, initial fallback marka rengine döner, follow btn beyaz outline, is-following btn vermillion fill + 1px inset beyaz outline, top-edge 1px vermillion hairline ::before fade-in, ÖNE ÇIKAN caption beyaza döner. Transition 260ms ease-out. `prefers-reduced-motion` kapatır. `:focus-visible` 2px vermillion outline ring. Card `tabindex=0`.
+- `profil-markalar.js`: `BRAND_ACCENT_COLORS` seed ~30 TR retail marka → hex map (Option B ship). `getBrandAccentColor()` case-insensitive match → HSL hash fallback `hsl(hash%360, 35%, 25%)` deterministic muted dark. `window._htGetBrandAccentColor` export eklendi. `_buildBrandCard` kart element'ine `style.setProperty('--sk-brand-accent', ...)` yazıyor.
+- **Hotfix 1**: `.sk-followed__chip-logo img` `object-fit: cover` → `contain` + `max-width/height 72%` (logo crop bug fix — Gucci/Cartier/Beymen taşıyordu).
+- **Hotfix 2**: `.sk-filter__search` `-webkit-appearance: none` + `::-webkit-search-*` decoration kill (Safari native search pill double-border bug fix).
+- `profil.html` cache-bust i→j (sirketler.css, profil-markalar.js).
+- `tests/p3.regression.spec.js` K037 describe (5 test × 2 project = 10 assertion).
+
+**Test:** **784 passed / 0 failed** (774 + 10 K037). node --check OK.
+**DeepSeek:** APPROVE.
+
+**Riskler:** Multi-color logolar `brightness(0) invert(1)` ile düzleşebilir → per-brand `mix-blend-mode: difference` fallback backlog. Brand color mapping JS map; uzun vadede `brands.accent_color` DB kolonu (Option A) backlog.
+
+## 2026-04-14 — K036 Sirketler editorial redesign (exec)
 
 ## 2026-04-14 — K036 Sirketler editorial redesign (exec)
 

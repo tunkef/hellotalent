@@ -3414,10 +3414,61 @@ test.describe('K036 — Sirketler editorial redesign', () => {
     expect(markalarJs).not.toContain('brand-card-v2');
   });
 
-  test('profil.html cache-bust bumped to v=20260414i for K036 affected assets', () => {
-    expect(profilHtml).toContain('sirketler.css?v=20260414i');
-    expect(profilHtml).toContain('profil-markalar.js?v=20260414i');
+  test('profil.html cache-bust bumped for K037 affected assets', () => {
+    expect(profilHtml).toContain('sirketler.css?v=20260414j');
+    expect(profilHtml).toContain('profil-markalar.js?v=20260414j');
     expect(profilHtml).toContain('genel-bakis.css?v=20260414i');
+  });
+});
+
+// ═══════════════════════════════════════════════════════════════
+// K037 — Sirketler brand card hover (Variant E — Color Flood) + hotfixes
+// ═══════════════════════════════════════════════════════════════
+test.describe('K037 — Sirketler brand card color flood hover', () => {
+  let profilHtml;
+  let sirketlerCss;
+  let markalarJs;
+
+  test.beforeAll(() => {
+    profilHtml = readFromRepo('profil.html');
+    sirketlerCss = readFromRepo('css/panels/sirketler.css');
+    markalarJs = readFromRepo('profil-markalar.js');
+  });
+
+  test('sirketler.css ships K037 color-flood hover vocabulary', () => {
+    expect(sirketlerCss).toContain('--sk-brand-accent');
+    expect(sirketlerCss).toContain('.sk-card.sk-brand:hover');
+    expect(sirketlerCss).toContain('.sk-card.sk-brand:focus-within');
+    expect(sirketlerCss).toContain('.sk-card.sk-brand:focus-visible');
+    expect(sirketlerCss).toContain('brightness(0) invert(1)');
+    expect(sirketlerCss).toContain('prefers-reduced-motion');
+  });
+
+  test('profil-markalar.js exposes brand accent helper and seed map', () => {
+    expect(markalarJs).toContain('BRAND_ACCENT_COLORS');
+    expect(markalarJs).toContain('function getBrandAccentColor');
+    expect(markalarJs).toContain('window._htGetBrandAccentColor');
+    expect(markalarJs).toContain("card.style.setProperty('--sk-brand-accent'");
+  });
+
+  test('sirketler.css keeps logo contain hotfix for followed chips', () => {
+    // The chip logo img block must use object-fit:contain, not cover
+    const chipBlockMatch = sirketlerCss.match(/\.sk-followed__chip-logo img\{[^}]*\}/);
+    expect(chipBlockMatch).not.toBeNull();
+    expect(chipBlockMatch[0]).toContain('object-fit:contain');
+    expect(chipBlockMatch[0]).not.toContain('object-fit:cover');
+  });
+
+  test('sirketler.css keeps search appearance-reset hotfix', () => {
+    const searchBlockMatch = sirketlerCss.match(/\.sk-filter__search\{[^}]*\}/);
+    expect(searchBlockMatch).not.toBeNull();
+    expect(searchBlockMatch[0]).toContain('-webkit-appearance:none');
+    expect(searchBlockMatch[0]).toContain('appearance:none');
+  });
+
+  test('profil.html bumps cache-bust to v=20260414j for K037 assets', () => {
+    expect(profilHtml).toContain('sirketler.css?v=20260414j');
+    expect(profilHtml).toContain('profil-markalar.js?v=20260414j');
   });
 });
 
