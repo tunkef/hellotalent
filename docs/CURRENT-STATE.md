@@ -1,6 +1,6 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 10 Nisan 2026 | Asama 74 — F1/F2/F3 Critical Fixes
-> Aktif Odak: K030 FAZ B - Studio freeze refinement close-out ve exec prep (FAZ A onayli, stage-gate fixleri bekliyor)
+> Son guncelleme: 15 Nisan 2026 | Asama 76 — Editorial dashboard sweep + dark mode + inbox viewport
+> Aktif Odak: Candidate profil panelleri K067-K071c editorial + dark mode redesign tamamlandi. Sirada: K032 runtime Playwright smoke backlog ve Kim Bakti backend PVT-1..6 sprint (vault karar defterinde).
 
 ## 1. Proje Ozeti
 
@@ -168,6 +168,76 @@ hellotalent.ai, Turkiye perakende sektorune ozel bir yetenek pazaryeri. Adaylar 
 **Sonuc:** T02/T03/T04 otomatik DEFERRED. Onkosula: 50+ aktif pratikci icin T42-lite (topluluk nabzi karti) yeniden degerlendirilir.
 
 ## 6. Son 3 Session Ozeti
+
+### Session 76 (15 Nisan — Asama 76: K067-K071c — Ayarlar/Premium/Inbox editorial + Dark mode feedback + Dashboard link audit)
+
+**Aday profil panellerinde tam editorial sweep + dark mode parity + inbox LinkedIn-style yeniden yazimi + dashboard link audit + regression guard infra. Tek gunde ~30 commit, ~14 saat sureli session.**
+
+**K067 — Ayarlar paneli editorial rewrite** (3 faz):
+- Faz A: `css/panels/ayarlar.css` (~800 satir) + `profil.html` panel-ayarlar HTML tamamen yeniden yazildi. Bento `.ht-grid-3` yerine 6 editorial section stack (01 Hesap / 02 Guvenlik / 03 Gizlilik / 04 Bildirim / 05 Gorunum / 06 Hesap Yonetimi). `.ayr-*` namespace. Sirketler TOC pattern scroll-nav. 50+ kritik settings id korundu (profil-settings.js handler sifir dokunuldu).
+- Faz B: `profil-ayarlar.js` yeni IIFE (~150 satir) — IntersectionObserver scroll-spy TOC + smooth-scroll hash nav.
+- Faz C: Tema karti tri-state segment (Sistem / Acik / Koyu). Default Sistem — `prefers-color-scheme` dinliyor, storage event + matchMedia change listener senkron. Mevcut `setThemePreference()` tri-state infra'si zaten vardi, sadece UI eklendi.
+
+**K068 + K068b — Dark mode feedback loop**:
+- Tuna 6 darkmode geribildirimi + 4 ek geribildirim verdi. Hepsi uygulandi.
+- `css/wizard-editorial.css` sonuna dark block — `--wz-*` token remap + success modal + step inputs + ms-selected-title/pill + MFA + wizard cards.
+- `css/profil-extras.css` — `#exp-cards-container > .ht-card` dark rule duzlestirildi (Kariyer step Diller gibi flat frame-less), pp-drawer (profil onizleme) tam dark block.
+- `css/layout.css` header popup body + seg + duyuru chip/title/body dark unified; `.header-msg`/`.header-notif`/`#header-kimbakti` transparent bg (rgba-white frame kaldirildi); `.mk-card--hero` dark border+bg kaldirildi.
+- `profil-extras.css` chip/check-item checked state → solid `--editorial-vermillion` fill (eskiden `--accent-soft` transparent outline).
+- `profil-locations.js` inline `--navy`/`--text`/`--muted` → `--editorial-*` token.
+- Cache-bust `20260415k068` → `20260415k068b`.
+
+**K068b hotfix (commit 4f31ff7)**: Profil-locations.js script tag `></script>` kapanisi cache-bust edit'inde dustu. HTML parser tum alt scriptleri open-tag'e gomdu → `ReferenceError: updateDashboardSummary/updateMerkezCards` → login broken. Tek satir fix.
+
+**Prevention infra (commit 311f03e)**:
+- `scripts/check-html-tags.sh` (POSIX sh, BSD+GNU compat) — 6 HTML entry icin `<script>` open/close count esitligi + orphan `<script src>` satir tarama. `.husky/pre-commit`'e bagli.
+- `tests/p3.regression.spec.js` +24 test (6 entry × 2 guard).
+- `vault/06-kararlar/karar-defteri.md` K032 — runtime Playwright smoke suite backlog entry.
+
+**K069 — Premium paneli editorial redesign**:
+- `css/panels/premium.css` (~360 satir) — `.prem-*` namespace. Bento asymmetric → 2-col symmetric. Hero (Bricolage vermillion 56 + mono kicker + hairline), beta strip (left-border accent), 6 feature kart (cream+hairline, 40px hairline icon box, mono italic kicker, Bricolage title), 3 plan kart (vermillion highlight center, DM Mono 44px price, 44px CTA).
+- `profil-premium.js` `injectCSS()` no-op K069 marker, `render()` yeniden yazildi, `checkCurrentPremium()` + `showPurchaseStatus()` .prem-active/.prem-status class'larina cekildi. MVP_FREE_TIER + FEATURES/PLANS + RPC contract + ids korundu.
+- Cache-bust `20260415k069`.
+
+**K070 — Inbox viewport-locked 2-pane (LinkedIn-style)**:
+- `#panel-inbox` `height:calc(100vh - --header-h,64px)`, flex column, overflow hidden.
+- Hero kompakt flat editorial strip (bg/border kaldirildi, padding kisaltildi, headline 26-32px).
+- `.ib-split` flex:1, overflow hidden, 280-340px fixed list + 1fr thread.
+- `.ib-list` internal scroll + 6px vermillion scrollbar (K070b).
+- `.ib-thread-body` internal scroll + 6px vermillion scrollbar.
+- Composer flex-none, textarea resize none, min 68 max 140px.
+- K070c: Mesaj balonlari — isveren navy bubble (bottom-left tail), aday vermillion bubble (bottom-right tail), max-width 76%.
+- K070d: `profil-inbox.js` loadThread + appendBubble — gelen mesajlar da `.ib-bubble` ile wrap ediliyor (eskiden `<p>` direkt emit idi, bubble hic uygulanmiyordu).
+- Cache-bust `20260415k070` → `20260415k071c`.
+
+**K071 — Dashboard link audit (4 bug fix)**:
+1. `header-kimbakti` double-binding temizlendi (profil-events.js + profil-inbox.js her ikisi bind ediyordu → `history.pushState` iki kayit → back button iki tik). K071b'de `__htKbBound` idempotent flag ile belt-and-suspenders.
+2. Bildirim drawer `'studio'` dead panel name duzeltildi — `panel-studio` yok, valid isim `mulakat`. Routing table: `{koc:mulakat, is_teklifi:teklifler, teklif:teklifler, mesaj:inbox, default:bildirimler}`.
+3. Mesaj drawer preview item `m.id` kaybediyordu → `window._htPendingInboxThreadId` closure ile yakalandi, `_htLoadInbox()` tail'de otomatik `openThread()`.
+4. Notif routing fallback `teklifler` → `bildirimler`.
+
+**K071c CRITICAL — Inbox display override regression (commit 7994862)**:
+- K070 `#panel-inbox { display:flex }` unconditional — default `.panel { display:none }` + `.panel.active { display:block }` toggle sistemini override etti. Panel-inbox her zaman gorunur kaldi, `calc(100vh - header)` viewport kapladi, ust panelleri gizledi.
+- Sonuc: gov, bildirim, avatar menu tiklayinca hedef panel aktive oldu ama altindaki panel-inbox ustunu kapadi → "her tik mesajlara atiyor" algisi.
+- Fix: display:flex + height + overflow sadece `#panel-inbox.active` iken. `!important` eklenerek `.panel.active { display:block }` override edildi.
+
+**Commits (kronolojik):** 298952a (p3 fix) → 4d1a5cc (K067 Faz A) → 9a3946b (K067 rewrite) → 98db418 (K067 Faz B+C) → 97e9e34 (K068) → a8d3801 (K068b) → 4f31ff7 (hotfix) → 311f03e (html tag guard) → 22a64ef (K069) → 368db79 (K070) → 99d0425 (K070b) → 5e2c8fb (K070c) → 6f47aab (K070d) → b7422dd (K071) → 7994862 (K071c).
+
+**Test:** 910/0 yesil. HTML tag guard aktif (pre-commit + regression). Test sayisi asama 70 sonunda 868 idi → asama 76 sonunda 910 (+42 K069+K067+K068+K071 guard + 24 HTML structural integrity).
+
+**Yeni dosyalar:**
+- `css/panels/ayarlar.css` (K067)
+- `css/panels/premium.css` (K069)
+- `profil-ayarlar.js` (K067 Faz B+C)
+- `scripts/check-html-tags.sh` (prevention)
+
+**Acik riskler / backlog:**
+- K032 Runtime Playwright smoke suite (vault karar defterinde) — localhost serve + pageerror listener. Auth mock/session injection gerekli.
+- Kim Bakti backend PVT-1..6 (vault karar defterinde K031) — migration 040 promote + companies.segment join fix + is_premium wire + RLS verify. Tuna sabah darkmode sprint'i icin defer etti.
+- `panel-yetkinlik` orphan div (switchPanel her yetkinlik'i mulakat'a normalize ediyor). Temizlik.
+- `#avd-premium-btn` data-panel eksik, custom handler var; unify edilebilir.
+
+**Insight:** K068b hotfix sinifi hata (cache-bust edit kapanis tag dusurme) K032 smoke suite'i hizlandirdi. HTML tag guard + regression test kombinasyonu static katman, runtime smoke semantic katman. Iki katman bir arada: sembolik (missing function) + yapi (tag unclosed) + kontrat (test suite) hepsini yakaliyor.
 
 ### Session 70 (7 Nisan — Asama 70: UX Polish + Footer Redesign + yasal.html)
 **Tum public sayfalarda UX polish, footer tamamen yeniden tasarlandi, yasal.html olusturuldu.**

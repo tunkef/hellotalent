@@ -1,5 +1,32 @@
 # HelloTalent AI-COLLAB — Aktif Calisma Defteri
 
+## Session 76 kapanis ozeti (2026-04-15 gece → 16 Nisan)
+
+**Aktif is:** K067-K071c editorial + dark mode + inbox + audit fixes TAMAM. 30+ commit push edildi. Test 910/0 yesil. HTML tag guard + regression aktif (K068b hotfix sonrasi).
+
+**Sabah devam noktasi:** Kim Bakti backend PVT-1..6 sprint (vault karar defterinde K031) veya K032 runtime Playwright smoke suite (auth gate bypass + pageerror listener). Ikisi de defer'di, sprint acilinca ilk is.
+
+**Acik risk:** Yok — bilinen bug yok, son push 7994862 stable.
+
+**Tuna icin:** https://hellotalent.ai/profil.html hard refresh → Ayarlar Gorunum Koyu ile tum panelleri gez. Inbox LinkedIn tarzi viewport-lock, mesaj bubble'lar navy/vermillion, scrollbar vermillion. Premium paneli editorial 2-col grid. Ayarlar 6 section + tri-state tema. Dashboard link'leri duzgun routing yapiyor.
+
+---
+
+## K071 + K071c — Dashboard link audit + inbox display regression (2026-04-15 gece)
+
+**K071 fix'leri (commit b7422dd):**
+1. `header-kimbakti` double-binding temizlendi. profil-events.js + profil-inbox.js her ikisi bind ediyordu. Kaldirildi, sonra K071b'de `__htKbBound` idempotent flag ile belt-and-suspenders ikisine de koyuldu (biri once gelirse flag set, digeri skip).
+2. Bildirim drawer `'studio'` dead panel name duzeltildi. Routing table: `{koc:mulakat, is_teklifi:teklifler, teklif:teklifler, mesaj:inbox, message:inbox}`, default `bildirimler`.
+3. Mesaj drawer preview `m.id` kaybediyordu. `window._htPendingInboxThreadId` closure + `_htLoadInbox()` tail auto-open.
+4. Notif fallback `teklifler` → `bildirimler`.
+
+**K071c CRITICAL (commit 7994862):**
+- Bug: K070 `#panel-inbox { display:flex }` unconditional `.panel { display:none }` / `.panel.active { display:block }` toggle sistemini override etmisti. Panel-inbox her zaman visible, `calc(100vh - header)` kapladigindan ust panelleri gizliyordu. Her header icon tiklamasi hedef panele route ediyordu ama ustune panel-inbox cikiyor → kullanici "mesajlara atiyor" algisi.
+- Fix: display:flex + height + overflow sadece `#panel-inbox.active` iken. `!important` eklendi.
+- Cache-bust `inbox.css?v=20260415k071c`, `profil-inbox.js?v=20260415k071c`.
+
+---
+
 ## K070 — Inbox viewport-locked 2-pane (2026-04-15)
 
 **Durum:** LinkedIn tarzi — sayfa scroll etmiyor, her pane icerde scroll ediyor.
