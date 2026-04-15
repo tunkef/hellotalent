@@ -877,11 +877,17 @@ html[data-theme="dark"] .logo{color:var(--verm);}
 html[data-theme="dark"] .logo span{color:#E5E7EB;}
 html[data-theme="dark"] .logo .logo-dot{color:var(--muted);}
 html[data-theme="dark"] .header-notif,
-html[data-theme="dark"] .header-msg{
-  background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.5);
+html[data-theme="dark"] .header-msg,
+html[data-theme="dark"] #header-kimbakti{
+  background:transparent;
+  color:rgba(255,255,255,0.65);
 }
 html[data-theme="dark"] .header-notif:hover,
-html[data-theme="dark"] .header-msg:hover{background:rgba(255,255,255,0.1);color:#fff;}
+html[data-theme="dark"] .header-msg:hover,
+html[data-theme="dark"] #header-kimbakti:hover{
+  background:transparent;
+  color:var(--editorial-vermillion,#E8845C);
+}
 html[data-theme="dark"] .header-notif-dot,
 html[data-theme="dark"] .header-msg-dot{border-color:rgba(17,24,39,0.78);}
 html[data-theme="dark"] .header-avatar{border-color:rgba(255,255,255,0.12);}

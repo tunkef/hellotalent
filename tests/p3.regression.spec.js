@@ -3139,8 +3139,8 @@ test.describe('K033/K034 — Genel Bakis editorial redesign', () => {
   test('K051: profil.html cache-bust bumped to v=20260414y for genel/merkez/profil-genel', () => {
     expect(profilHtml).toContain('genel-bakis.css?v=20260415ne');
     expect(profilHtml).toContain('profil-genel.js?v=20260414aa');
-    expect(profilHtml).toContain('merkezi.css?v=20260415ne');
-    expect(profilHtml).toContain('profil-extras.css?v=20260415k068');
+    expect(profilHtml).toContain('merkezi.css?v=20260415k068b');
+    expect(profilHtml).toContain('profil-extras.css?v=20260415k068b');
   });
 
   test('legacy gh-edu/gh-id-readiness vocabulary removed from profil-genel.js', () => {
@@ -3616,8 +3616,8 @@ test.describe('K039 — Header Variant C inline segment', () => {
     expect(rule).toContain('DM Mono');
   });
 
-  test('profil.html cache-busts layout.css to v=20260415k068', () => {
-    expect(profilHtml).toContain('css/layout.css?v=20260415k068');
+  test('profil.html cache-busts layout.css to v=20260415k068b', () => {
+    expect(profilHtml).toContain('css/layout.css?v=20260415k068b');
   });
 
   test('profil.html has interpunct separators and action icons', () => {

@@ -1,5 +1,18 @@
 # HelloTalent AI-COLLAB — Aktif Calisma Defteri
 
+## K068b — Dark mode 2. tur (2026-04-15)
+
+**Durum:** 4 ek darkmode geribildirimi verildi, hepsi uygulandi.
+
+- `.header-msg` / `.header-notif` / `#header-kimbakti` dark background transparent (onceden rgba-white frame veriyordu).
+- `.chip.selected` / `.check-item.checked` dark → `--editorial-vermillion` solid fill + beyaz text (eskiden `--accent-soft` transparent outline idi).
+- `.mk-card--hero` dark → border+bg drop (merkezi hero frame-less kaldi, cunku dark `--editorial-bg` vs `--border-subtle` kontrasti cok yuksekti).
+- `profil-locations.js` inline renkler `--editorial-ink` / `--editorial-ink-muted` / `--editorial-card-elev` token'larina cekildi (seçilen lokasyon text readable).
+
+Cache-bust `20260415k068b`. 874/0 yesil.
+
+---
+
 ## K068 — Dark mode feedback loop (2026-04-15)
 
 **Durum:** Tuna sabah 6 darkmode geribildirimi verdi. Hepsi tek commit ile uygulandi.

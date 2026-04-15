@@ -752,3 +752,9 @@ html[data-theme='dark'] .mk-btn-mini--primary {
   background: var(--accent);
   border-color: var(--accent);
 }
+/* K068: hero card frame-less in dark — mk-card--hero bg matches page,
+   border would read as visible stroke against --editorial-bg. Drop it. */
+html[data-theme="dark"] .mk-card--hero{
+  background: transparent;
+  border: 0;
+}

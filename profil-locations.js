@@ -304,7 +304,7 @@ function renderSelectedLocations() {
   if (cities.length === 0) return;
 
   var title = document.createElement('div');
-  title.style.cssText = 'font-family:Bricolage Grotesque,sans-serif;font-weight:700;font-size:14px;color:var(--navy);margin-bottom:8px;';
+  title.style.cssText = 'font-family:Bricolage Grotesque,sans-serif;font-weight:700;font-size:14px;color:var(--editorial-ink,#1E2D5E);margin-bottom:8px;';
   title.textContent = 'Seçilen Lokasyonlar';
   container.appendChild(title);
 
@@ -312,25 +312,25 @@ function renderSelectedLocations() {
 
   cities.forEach(function(city) {
     var row = document.createElement('div');
-    row.style.cssText = 'display:flex;align-items:flex-start;gap:8px;padding:8px 12px;background:var(--bg-elevated,#F7F6F4);border-radius:8px;margin-bottom:6px;';
+    row.style.cssText = 'display:flex;align-items:flex-start;gap:8px;padding:8px 12px;background:var(--editorial-card-elev,#F7F6F4);border:1px solid var(--editorial-hairline,#E5E3DF);border-radius:8px;margin-bottom:6px;';
 
     var left = document.createElement('div');
     left.style.cssText = 'flex:1;min-width:0;';
 
     var cityName = document.createElement('div');
-    cityName.style.cssText = 'font-weight:600;font-size:14px;color:var(--text);';
+    cityName.style.cssText = 'font-weight:600;font-size:14px;color:var(--editorial-ink,#1E2D5E);';
     cityName.textContent = city;
     left.appendChild(cityName);
 
     var ilceler = selectedLocations[city] || [];
     if (ilceler.length > 0) {
       var distText = document.createElement('div');
-      distText.style.cssText = 'font-size:12px;color:var(--muted);margin-top:2px;';
+      distText.style.cssText = 'font-size:12px;color:var(--editorial-ink-muted,#6B6A66);margin-top:2px;';
       distText.textContent = ilceler.join(', ');
       left.appendChild(distText);
     } else {
       var allText = document.createElement('div');
-      allText.style.cssText = 'font-size:12px;color:var(--muted);margin-top:2px;font-style:italic;';
+      allText.style.cssText = 'font-size:12px;color:var(--editorial-ink-muted,#6B6A66);margin-top:2px;font-style:italic;';
       allText.textContent = 'Tüm ilçeler';
       left.appendChild(allText);
     }

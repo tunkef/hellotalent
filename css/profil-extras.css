@@ -1184,10 +1184,13 @@ html[data-theme="dark"] #wiz-step-4 .check-item:hover{
   color:var(--accent);
 }
 html[data-theme="dark"] #wiz-step-4 .chip.selected,
-html[data-theme="dark"] #wiz-step-4 .check-item.checked{
-  background:var(--accent-soft);
-  border-color:var(--accent);
-  color:#fff;
+html[data-theme="dark"] #wiz-step-4 .check-item.checked,
+html[data-theme="dark"] #panel-profil .chip.selected,
+html[data-theme="dark"] #panel-profil .check-item.checked,
+html[data-theme="dark"] #panel-profil .ht-chip.is-active{
+  background:var(--editorial-vermillion,#C94E28) !important;
+  border-color:var(--editorial-vermillion,#C94E28) !important;
+  color:#FFFFFF !important;
 }
 html[data-theme="dark"] #wiz-step-4 #f-brand-interest::placeholder{
   color:#9CA3AF;
