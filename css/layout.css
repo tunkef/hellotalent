@@ -336,20 +336,57 @@ select:focus-visible{
   margin-top:8px;
 }
 
-/* ── Dark mode popup ── */
+/* ── Dark mode popup (K068 unified) ── */
 html[data-theme="dark"] .header-popup{
-  background:var(--bg-elevated,#1F2937);
+  background:var(--editorial-card,#111827);
+  border-color:var(--editorial-hairline-strong,#2D3748);
   box-shadow:0 4px 6px rgba(0,0,0,0.3),0 20px 40px rgba(0,0,0,0.4),0 0 0 1px rgba(255,255,255,0.06);
 }
-html[data-theme="dark"] .header-popup-head{border-bottom-color:rgba(255,255,255,0.06);}
-html[data-theme="dark"] .header-popup-title{color:#E5E7EB;}
-html[data-theme="dark"] .header-popup-sender{color:#E5E7EB;}
-html[data-theme="dark"] .header-popup-preview{color:#9CA3AF;}
+html[data-theme="dark"] .header-popup-head{
+  background:var(--editorial-card-elev,#1A2233);
+  border-bottom-color:var(--editorial-hairline,#1F2937);
+}
+html[data-theme="dark"] .header-popup-body{
+  background:var(--editorial-card,#111827);
+}
+html[data-theme="dark"] .header-popup-seg{
+  background:var(--editorial-card,#111827);
+  border-bottom-color:var(--editorial-hairline,#1F2937);
+}
+html[data-theme="dark"] .header-popup-seg button{
+  color:var(--editorial-ink-muted,#9CA3AF);
+}
+html[data-theme="dark"] .header-popup-seg button:hover{
+  color:var(--editorial-ink,#F9FAFB);
+}
+html[data-theme="dark"] .header-popup-seg button.is-active{
+  color:var(--editorial-vermillion,#E8845C);
+}
+html[data-theme="dark"] .header-popup-seg button.is-active::after{
+  background:var(--editorial-vermillion,#E8845C);
+}
+html[data-theme="dark"] .header-popup-title{color:var(--editorial-ink-muted,#9CA3AF);}
+html[data-theme="dark"] .header-popup-sender{color:var(--editorial-ink,#F9FAFB);}
+html[data-theme="dark"] .header-popup-preview{color:var(--editorial-ink-muted,#9CA3AF);}
+html[data-theme="dark"] .header-popup-time{color:var(--editorial-ink-muted,#9CA3AF);}
+html[data-theme="dark"] .header-popup-item{
+  border-bottom-color:var(--editorial-hairline,#1F2937);
+  background:transparent;
+}
 html[data-theme="dark"] .header-popup-item:hover{background:rgba(255,255,255,0.04);}
 html[data-theme="dark"] .header-popup-item.unread{background:rgba(201,78,40,0.08);}
-html[data-theme="dark"] .header-popup-item{border-bottom-color:rgba(255,255,255,0.04);}
-html[data-theme="dark"] .header-popup-empty{color:var(--muted);}
-html[data-theme="dark"] .header-msg-dot{border-color:var(--bg-elevated,#1F2937);}
+html[data-theme="dark"] .header-popup-item.unread:hover{background:rgba(201,78,40,0.12);}
+html[data-theme="dark"] .header-popup-icon{
+  background:var(--editorial-card-elev,#1A2233);
+  border-color:var(--editorial-hairline-strong,#2D3748);
+  color:var(--editorial-ink,#F9FAFB);
+}
+html[data-theme="dark"] .header-popup-duyuru-title{color:var(--editorial-ink,#F9FAFB);}
+html[data-theme="dark"] .header-popup-duyuru-body{color:var(--editorial-ink-muted,#9CA3AF);}
+html[data-theme="dark"] .header-popup-duyuru-chip{color:var(--editorial-vermillion,#E8845C);}
+html[data-theme="dark"] .header-popup-empty{color:var(--editorial-ink-muted,#9CA3AF);}
+html[data-theme="dark"] .header-popup-link{color:var(--editorial-vermillion,#E8845C);}
+html[data-theme="dark"] .header-msg-dot{border-color:var(--editorial-card,#111827);}
 
 /* ── Avatar button — Variant C (36px circle, navy hairline, vermillion ring when beni öner active) ── */
 .header-avatar-btn{

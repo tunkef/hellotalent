@@ -1,5 +1,26 @@
 # HelloTalent AI-COLLAB — Aktif Calisma Defteri
 
+## K068 — Dark mode feedback loop (2026-04-15)
+
+**Durum:** Tuna sabah 6 darkmode geribildirimi verdi. Hepsi tek commit ile uygulandi.
+
+### Fixler
+- **wizard-editorial.css**: dark mode block — `--wz-*` token remap (hairline/cream/navy/muted → `--editorial-*`). Targeted hex override: wiz-setting-card bg, wz-card bg, step inputs color/border, ms-input-wrap border, ms-search text, ms-selected-title/pill colors, success modal (#modal-success) full dark (bg/border/title/desc/btn/icon stroke), wiz-step-desc border + colors.
+- **profil-extras.css**: 
+  1. `#exp-cards-container > .ht-card` dark rule flatten — transparent/no-bg/no-border (sadece hairline divider), Kariyer step Diller step gibi frame-less gorunuyor.
+  2. pp-drawer (profil onizleme) tam dark block — pp-drawer bg, pp-body bg/color, pp-rule hairline, pp-label muted, pp-identity text, pp-bio__quote color+border, pp-experience/edu/prefs text, pp-cv__row card bg+border, chev/sub muted.
+- **layout.css**: header popup dark unified — .header-popup-body, .header-popup-seg, seg buttons, seg active ::after, duyuru-title/body/chip, popup-icon, popup-link, popup-time. Avatar dropdown zaten dark idi.
+- Cache-bust `20260415k068` (layout.css + wizard-editorial.css + profil-extras.css).
+
+### Test
+- 874/0 yesil. 4 stale cache-bust guard guncellendi.
+
+### Açık riskler
+- Live visual verify Tuna'nin hard refresh'ine bagli.
+- Wizard exp-cards "frame kalkmasi" fix dark mode'a ozel — light mode zaten dogruydu.
+
+---
+
 ## Sabah raporu — 2026-04-15 (K067-NightAudit)
 
 **TL;DR:** Dark mode candidate profil panelleri icin calisti. 8 panel + tokens.css tokenize edildi. Kimbakti'deki asil bug (Layer 1 primitive var'lardan dark mode bypass) bulundu ve kapatildi. Live'da dogrulandi. 874/0 yesil.

@@ -3140,7 +3140,7 @@ test.describe('K033/K034 — Genel Bakis editorial redesign', () => {
     expect(profilHtml).toContain('genel-bakis.css?v=20260415ne');
     expect(profilHtml).toContain('profil-genel.js?v=20260414aa');
     expect(profilHtml).toContain('merkezi.css?v=20260415ne');
-    expect(profilHtml).toContain('profil-extras.css?v=20260414h');
+    expect(profilHtml).toContain('profil-extras.css?v=20260415k068');
   });
 
   test('legacy gh-edu/gh-id-readiness vocabulary removed from profil-genel.js', () => {
@@ -3256,7 +3256,7 @@ test.describe('K031 — Profil Merkezi editorial redesign', () => {
   });
 
   test('K031 hotfix: profil-extras.css loaded for rescued cross-cutting styles', () => {
-    expect(profilHtml).toMatch(/css\/profil-extras\.css\?v=20260414[a-z]/);
+    expect(profilHtml).toMatch(/css\/profil-extras\.css\?v=2026041[45][a-z0-9]+/);
   });
 
   test('profil-summary.updateBentoRing drives topline pulse + spine tick', () => {
@@ -3349,8 +3349,8 @@ test.describe('K032 — Profil Önizleme drawer editorial redesign', () => {
 
   test('profil.html uses K032 cache-bust for preview JS + extras CSS', () => {
     expect(profilHtml).toMatch(/profil-preview\.js\?v=20260414e/);
-    /* K040 bumped profil-extras.css to ?v=20260414h (editorial tokens widened) */
-    expect(profilHtml).toMatch(/css\/profil-extras\.css\?v=20260414h/);
+    /* K068 bumped profil-extras.css to ?v=20260415k068 (pp-drawer dark mode) */
+    expect(profilHtml).toMatch(/css\/profil-extras\.css\?v=20260415k068/);
   });
 });
 
@@ -3616,8 +3616,8 @@ test.describe('K039 — Header Variant C inline segment', () => {
     expect(rule).toContain('DM Mono');
   });
 
-  test('profil.html cache-busts layout.css to v=20260414r', () => {
-    expect(profilHtml).toContain('css/layout.css?v=20260414r');
+  test('profil.html cache-busts layout.css to v=20260415k068', () => {
+    expect(profilHtml).toContain('css/layout.css?v=20260415k068');
   });
 
   test('profil.html has interpunct separators and action icons', () => {

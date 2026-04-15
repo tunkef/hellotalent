@@ -1117,11 +1117,22 @@
 /* Dark mode: wizard premium surfaces */
 html[data-theme="dark"] #panel-profil .wiz-step .wiz-step-desc{border-bottom-color:var(--border-subtle);}
 html[data-theme="dark"] #panel-profil .ht-card,
-html[data-theme="dark"] #panel-profil #exp-cards-container > .ht-card,
 html[data-theme="dark"] #panel-profil .dyn-row{
   background:var(--bg-elevated);
   border-color:var(--border-subtle);
   box-shadow:0 0 0 1px rgba(255,255,255,0.04);
+}
+/* K068: experience cards in wizard Kariyer step stay FLAT like Diller section.
+   No frame, no fill — only hairline divider between cards. Match light mode. */
+html[data-theme="dark"] #panel-profil #exp-cards-container > .ht-card{
+  background:transparent !important;
+  border:0 !important;
+  border-bottom:1px solid var(--editorial-hairline, #1F2937) !important;
+  box-shadow:none !important;
+  padding:28px 0 !important;
+}
+html[data-theme="dark"] #panel-profil #exp-cards-container > .ht-card:last-child{
+  border-bottom:0 !important;
 }
 /* Wizard outer row/card surfaces (Eğitim, Diller, Sertifikalar, Hedef Pozisyonlar) — match Kariyer step */
 html[data-theme="dark"] #panel-profil .dynamic-row{
@@ -1334,4 +1345,93 @@ html[data-theme="dark"] .lok-modal #btn-lok-close:hover{
   box-shadow:0 0 0 3px rgba(201,78,40,0.25);
 }
 .lok-modal #btn-lok-done{border-radius:var(--radius-sm);}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   K068 — PROFIL ÖNİZLEME DRAWER (pp-*) DARK MODE PARITY
+   The pp-drawer (işverenlerin gördüğü profil) was previously cream-locked.
+   This block tokenizes the body + headings + rules + sub-sections so dark
+   mode renders as an intentional editorial dark surface.
+   ═══════════════════════════════════════════════════════════════════════ */
+html[data-theme="dark"] .pp-drawer {
+  background: var(--editorial-card, #111827) !important;
+  box-shadow: -40px 0 80px rgba(0, 0, 0, 0.6) !important;
+}
+html[data-theme="dark"] .pp-overlay {
+  background: rgba(0, 0, 0, 0.6);
+}
+html[data-theme="dark"] .pp-body {
+  background: var(--editorial-card, #111827) !important;
+  color: var(--editorial-ink, #F9FAFB) !important;
+}
+html[data-theme="dark"] .pp-body::-webkit-scrollbar-thumb {
+  background: var(--editorial-hairline-strong, #2D3748);
+}
+/* Rules (hairline dividers) */
+html[data-theme="dark"] .pp-rule {
+  background: var(--editorial-hairline, #1F2937) !important;
+}
+/* Section labels (mono italic UPPERCASE) */
+html[data-theme="dark"] .pp-label {
+  color: var(--editorial-ink-muted, #9CA3AF) !important;
+}
+/* Identity: name, role, meta */
+html[data-theme="dark"] .pp-identity,
+html[data-theme="dark"] .pp-identity * {
+  color: var(--editorial-ink, #F9FAFB);
+}
+html[data-theme="dark"] .pp-identity .pp-avatar {
+  border-color: var(--editorial-hairline-strong, #2D3748);
+}
+/* Bio quote */
+html[data-theme="dark"] .pp-bio__quote {
+  color: var(--editorial-ink, #F9FAFB) !important;
+  border-left-color: var(--editorial-vermillion, #E8845C) !important;
+}
+/* Experience items */
+html[data-theme="dark"] .pp-experience,
+html[data-theme="dark"] .pp-experience *,
+html[data-theme="dark"] .pp-edu,
+html[data-theme="dark"] .pp-edu *,
+html[data-theme="dark"] .pp-prefs,
+html[data-theme="dark"] .pp-prefs * {
+  color: var(--editorial-ink, #F9FAFB);
+}
+/* Muted meta inside blocks — row descriptions */
+html[data-theme="dark"] .pp-body [class*="__desc"],
+html[data-theme="dark"] .pp-body [class*="__meta"],
+html[data-theme="dark"] .pp-body [class*="__sub"],
+html[data-theme="dark"] .pp-body .pp-muted {
+  color: var(--editorial-ink-muted, #9CA3AF) !important;
+}
+/* Vermillion highlights (DEVAMINI OKU, links, dots) stay warm */
+html[data-theme="dark"] .pp-body [class*="__read-more"],
+html[data-theme="dark"] .pp-body .pp-readmore,
+html[data-theme="dark"] .pp-body .pp-link,
+html[data-theme="dark"] .pp-body [style*="C94E28"],
+html[data-theme="dark"] .pp-experience-dot,
+html[data-theme="dark"] .pp-status-dot,
+html[data-theme="dark"] .pp-body [class*="__brand"] {
+  color: var(--editorial-vermillion, #E8845C) !important;
+}
+/* CV row card */
+html[data-theme="dark"] .pp-cv__row {
+  background: var(--editorial-card-elev, #1A2233) !important;
+  border-color: var(--editorial-hairline, #1F2937) !important;
+}
+html[data-theme="dark"] .pp-cv__row:hover {
+  border-color: var(--editorial-vermillion, #E8845C) !important;
+}
+html[data-theme="dark"] .pp-cv__icon {
+  background: var(--editorial-card, #111827) !important;
+  color: var(--editorial-vermillion, #E8845C) !important;
+}
+html[data-theme="dark"] .pp-cv__name {
+  color: var(--editorial-ink, #F9FAFB) !important;
+}
+html[data-theme="dark"] .pp-cv__sub {
+  color: var(--editorial-ink-muted, #9CA3AF) !important;
+}
+html[data-theme="dark"] .pp-cv__chev {
+  color: var(--editorial-ink-muted, #9CA3AF) !important;
+}
 

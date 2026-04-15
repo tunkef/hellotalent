@@ -575,3 +575,127 @@ main.panel#panel-profil {
   #panel-profil .wz-spine-item.is-current .wz-spine-dot { animation: none; }
   #panel-profil .wz-progress-bar::after { transition: none; }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   K068 — DARK MODE PARITY
+   Remap --wz-* tokens inside dark theme so the wizard editorial layout
+   swaps in-place. Targeted hex overrides follow for rules that hardcoded
+   cream palette values.
+   ═══════════════════════════════════════════════════════════════════════ */
+html[data-theme="dark"] {
+  --wz-hairline: var(--editorial-hairline, #1F2937);
+  --wz-hairline-strong: var(--editorial-hairline-strong, #2D3748);
+  --wz-cream: var(--editorial-card, #111827);
+  --wz-cream-deep: var(--editorial-card-elev, #1A2233);
+  --wz-navy: var(--editorial-ink, #F9FAFB);
+  --wz-navy-ink: var(--editorial-ink, #F9FAFB);
+  --wz-vermillion: var(--editorial-vermillion, #E8845C);
+  --wz-muted: var(--editorial-ink-muted, #9CA3AF);
+  --wz-muted-2: #6B7280;
+}
+
+/* Hardcoded hex overrides — wiz-setting-card + wz-card + exp frame */
+html[data-theme="dark"] #panel-profil .wiz-setting-card,
+html[data-theme="dark"] #panel-profil .wiz-setting-card.wiz-setting-premium,
+html[data-theme="dark"] #panel-profil .wz-card {
+  background: var(--editorial-card, #111827) !important;
+  border-color: var(--editorial-hairline, #1F2937) !important;
+}
+
+/* Wizard step inputs: transparent fill, hairline border adapts */
+html[data-theme="dark"] #panel-profil .wiz-step input[type="text"],
+html[data-theme="dark"] #panel-profil .wiz-step input[type="tel"],
+html[data-theme="dark"] #panel-profil .wiz-step input[type="email"],
+html[data-theme="dark"] #panel-profil .wiz-step input[type="search"],
+html[data-theme="dark"] #panel-profil .wiz-step input[type="number"],
+html[data-theme="dark"] #panel-profil .wiz-step input[type="url"],
+html[data-theme="dark"] #panel-profil .wiz-step input[type="date"],
+html[data-theme="dark"] #panel-profil .wiz-step select,
+html[data-theme="dark"] #panel-profil .wiz-step textarea {
+  color: var(--editorial-ink, #F9FAFB) !important;
+  border-color: var(--editorial-hairline-strong, #2D3748) !important;
+}
+html[data-theme="dark"] #panel-profil .wiz-step input::placeholder,
+html[data-theme="dark"] #panel-profil .wiz-step textarea::placeholder {
+  color: var(--editorial-ink-muted, #9CA3AF) !important;
+  opacity: 0.6;
+}
+html[data-theme="dark"] #panel-profil .wiz-step select option {
+  background: var(--editorial-card, #111827);
+  color: var(--editorial-ink, #F9FAFB);
+}
+
+/* Multi-select (location) frame + chips */
+html[data-theme="dark"] #panel-profil .ms-input-wrap {
+  border-color: var(--editorial-hairline-strong, #2D3748) !important;
+}
+html[data-theme="dark"] #panel-profil .ms-search {
+  color: var(--editorial-ink, #F9FAFB) !important;
+}
+html[data-theme="dark"] .ms-selected-title {
+  color: var(--editorial-ink, #F9FAFB) !important;
+}
+html[data-theme="dark"] .ms-selected-pill {
+  background: var(--editorial-card, #111827) !important;
+  border-color: var(--editorial-hairline, #1F2937) !important;
+  color: var(--editorial-ink, #F9FAFB) !important;
+}
+html[data-theme="dark"] .ms-selected-pill button {
+  color: var(--editorial-ink-muted, #9CA3AF) !important;
+}
+
+/* Rail spine + headline */
+html[data-theme="dark"] #panel-profil .wz-headline,
+html[data-theme="dark"] #panel-profil .wz-progress-meta b,
+html[data-theme="dark"] #panel-profil .wz-spine-item.is-current {
+  color: var(--editorial-ink, #F9FAFB);
+}
+html[data-theme="dark"] #panel-profil .wz-progress-bar {
+  background: var(--editorial-hairline, #1F2937);
+}
+
+/* Success modal — cream card → editorial dark card */
+html[data-theme="dark"] #modal-success .ht-modal {
+  background: var(--editorial-card, #111827) !important;
+  border-color: var(--editorial-hairline-strong, #2D3748) !important;
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.48) !important;
+}
+html[data-theme="dark"] #modal-success .modal-icon-success {
+  border-color: var(--editorial-vermillion, #E8845C) !important;
+}
+html[data-theme="dark"] #modal-success .modal-icon-success svg circle,
+html[data-theme="dark"] #modal-success .modal-icon-success svg polyline {
+  stroke: var(--editorial-vermillion, #E8845C) !important;
+}
+html[data-theme="dark"] #modal-success .modal-title {
+  color: var(--editorial-ink, #F9FAFB) !important;
+}
+html[data-theme="dark"] #modal-success .modal-desc {
+  color: var(--editorial-ink-muted, #9CA3AF) !important;
+}
+html[data-theme="dark"] #modal-success #btn-success-ok {
+  background: var(--editorial-vermillion, #E8845C) !important;
+  border-color: var(--editorial-vermillion, #E8845C) !important;
+  color: var(--editorial-on-vermillion, #0B0F1C) !important;
+}
+html[data-theme="dark"] #modal-success .modal-premium-line {
+  color: var(--editorial-ink-muted, #9CA3AF) !important;
+}
+/* Modal border-top above the premium CTA (hairline) */
+html[data-theme="dark"] #modal-success .modal-premium-line {
+  border-top-color: var(--editorial-hairline, #1F2937) !important;
+}
+
+/* Wiz-step heading border */
+html[data-theme="dark"] #panel-profil .wiz-step .wiz-step-desc {
+  border-bottom-color: var(--editorial-hairline, #1F2937) !important;
+  color: var(--editorial-ink-muted, #9CA3AF) !important;
+}
+html[data-theme="dark"] #panel-profil .wiz-step .wiz-step-title {
+  color: var(--editorial-ink, #F9FAFB) !important;
+}
+
+/* Wizard nav footer hairline */
+html[data-theme="dark"] #panel-profil .wiz-nav {
+  border-top-color: var(--editorial-hairline, #1F2937) !important;
+}
