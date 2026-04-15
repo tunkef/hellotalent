@@ -1,5 +1,18 @@
 # HelloTalent AI-COLLAB — Aktif Calisma Defteri
 
+## K069 — Premium paneli editorial redesign (2026-04-15)
+
+**Durum:** CSS-only panel file + DOM emitter rewrite. Bento → editorial 2-col symmetric. Token-based, dark mode zero-config.
+
+- `css/panels/premium.css` (yeni, ~360 satir) — .prem-* namespace. Hero (Bricolage vermillion 56px + mono kicker + muted subline + hairline), beta-strip (left-border vermillion accent + mono UPPERCASE label), section head (01 num + Bricolage title + muted desc + hairline), feature grid (2-col symmetric, cream+hairline cards, icon 40px hairline box, mono italic "UCRETSIZ · 3 AY" kicker, Bricolage 20px title, muted desc), plan grid (paid mode, 3-col, vermillion highlight center, DM Mono 44px price, 44px CTA parity, badge top-offset on card edge), active banner (vermillion dot + Bricolage title + mono meta), status card.
+- `profil-premium.js` — `injectCSS()` no-op K069 marker. `render()` yeniden yazildi: eski `.pm-bento` + `.g-hero` gradient emit kaldirildi, `.prem-*` editorial DOM yayinliyor. `checkCurrentPremium()` helper .prem-active__* vocab'a cekildi. `showPurchaseStatus()` inline style temizlendi. Hardcoded FEATURES + PLANS + RPC contract + MVP_FREE_TIER sabitleri korundu.
+- `profil.html` — premium.css `?v=20260415k069` linklendi (ayarlar.css'den sonra). profil-premium.js cache-bust `20260415k069`.
+- Regression suite → K069 describe block (5 test × 2 project = 10 assertion) + 1 eski Premium entitlement guard K069 text'ine adapte edildi.
+
+Test: 908/0 yesil.
+
+---
+
 ## K068b — Dark mode 2. tur (2026-04-15)
 
 **Durum:** 4 ek darkmode geribildirimi verildi, hepsi uygulandi.

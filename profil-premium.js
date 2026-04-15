@@ -73,63 +73,13 @@ var PLANS = [
 
 /* ════════════════════════════════════════════════
    CSS
+   K069: external css/panels/premium.css owns styling.
+   injectCSS() is a no-op marker — kept for shape compat.
    ════════════════════════════════════════════════ */
 
 function injectCSS() {
-  if (document.getElementById('pm-style')) return;
-  var css = '';
-
-  css += '#pm-container{max-width:100%;padding:0 0 40px}';
-
-  /* Feature cards */
-  css += '.pm-feature{background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF);border-radius:16px;padding:22px;box-shadow:0 2px 8px rgba(0,0,0,.08),0 8px 20px rgba(0,0,0,.06);transition:all .25s;animation:pmSlideUp .35s ease both}';
-  css += '.pm-feature:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.1)}';
-  css += '.pm-feature-icon{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:12px}';
-  css += '.pm-feature-icon.verm{background:rgba(201,78,40,.08);color:var(--verm,#C94E28)}';
-  css += '.pm-feature-icon.navy{background:rgba(30,45,94,.08);color:var(--navy,#1E2D5E)}';
-  css += '.pm-feature-icon svg{width:22px;height:22px}';
-  css += '.pm-feature-title{font-family:"Bricolage Grotesque",sans-serif;font-size:15px;font-weight:700;color:var(--text-primary,#111);margin-bottom:4px}';
-  css += '.pm-feature-desc{font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;color:var(--text-muted,#6B7280);line-height:1.5}';
-
-  /* Bento grid */
-  css += '.pm-bento{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:20px}';
-  css += '.pm-bento .pm-feature:nth-child(1){grid-column:span 2}';
-  css += '.pm-bento .pm-feature:nth-child(4){grid-column:span 2}';
-
-  /* Plans section */
-  css += '.pm-plans{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:8px}';
-  css += '.pm-plan{background:var(--bg-surface,#fff);border:1px solid var(--border-subtle,#E5E3DF);border-radius:16px;padding:24px;box-shadow:0 2px 8px rgba(0,0,0,.08),0 8px 20px rgba(0,0,0,.06);text-align:center;transition:all .25s;animation:pmSlideUp .35s ease both}';
-  css += '.pm-plan:hover{transform:translateY(-2px)}';
-  css += '.pm-plan.highlight{background:linear-gradient(135deg,#2A3F7A 0%,#1E2D5E 50%,#162247 100%);border:1px solid rgba(255,255,255,.1);color:#fff}';
-  css += '.pm-plan-badge{display:inline-block;font-family:"DM Mono",monospace;font-size:9px;font-weight:700;padding:2px 10px;border-radius:4px;background:var(--verm,#C94E28);color:#fff;letter-spacing:.5px;margin-bottom:12px}';
-  css += '.pm-plan-name{font-family:"Bricolage Grotesque",sans-serif;font-size:14px;font-weight:700;margin-bottom:8px}';
-  css += '.pm-plan-price{font-family:"DM Mono",monospace;font-size:32px;font-weight:800;line-height:1}';
-  css += '.pm-plan-price span{font-size:14px;font-weight:400;opacity:.6}';
-  css += '.pm-plan-period{font-family:"Plus Jakarta Sans",sans-serif;font-size:11px;color:var(--text-muted,#6B7280);margin-top:4px}';
-  css += '.pm-plan.highlight .pm-plan-period{color:rgba(255,255,255,.6)}';
-  css += '.pm-plan-desc{font-family:"Plus Jakarta Sans",sans-serif;font-size:11px;color:var(--text-muted,#6B7280);line-height:1.4;margin-top:12px}';
-  css += '.pm-plan.highlight .pm-plan-desc{color:rgba(255,255,255,.7)}';
-  css += '.pm-plan-cta{display:block;width:100%;margin-top:16px;padding:10px;border-radius:8px;font-family:"Plus Jakarta Sans",sans-serif;font-size:13px;font-weight:700;cursor:pointer;border:none;transition:opacity .15s}';
-  css += '.pm-plan-cta.verm{background:var(--verm,#C94E28);color:#fff}';
-  css += '.pm-plan-cta.outline{background:transparent;color:var(--text-primary,#111);border:1.5px solid var(--border-subtle,#E5E3DF)}';
-  css += '.pm-plan.highlight .pm-plan-cta.outline{color:#fff;border-color:rgba(255,255,255,.3)}';
-  css += '.pm-plan-cta:hover{opacity:.85}';
-
-  /* Section titles */
-  css += '.pm-section-title{font-family:"Bricolage Grotesque",sans-serif;font-size:16px;font-weight:800;color:var(--text-primary,#111);margin-bottom:12px}';
-
-  /* Animation */
-  css += '@keyframes pmSlideUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}';
-  css += '.pm-bento .pm-feature:nth-child(1){animation-delay:0s}.pm-bento .pm-feature:nth-child(2){animation-delay:.05s}.pm-bento .pm-feature:nth-child(3){animation-delay:.1s}.pm-bento .pm-feature:nth-child(4){animation-delay:.15s}.pm-bento .pm-feature:nth-child(5){animation-delay:.2s}.pm-bento .pm-feature:nth-child(6){animation-delay:.25s}';
-  css += '.pm-plans .pm-plan:nth-child(1){animation-delay:.1s}.pm-plans .pm-plan:nth-child(2){animation-delay:.15s}.pm-plans .pm-plan:nth-child(3){animation-delay:.2s}';
-
-  /* Responsive */
-  css += '@media(max-width:768px){.pm-bento{grid-template-columns:1fr}.pm-bento .pm-feature:nth-child(1),.pm-bento .pm-feature:nth-child(4){grid-column:span 1}.pm-plans{grid-template-columns:1fr}}';
-
-  var el = document.createElement('style');
-  el.id = 'pm-style';
-  el.textContent = css;
-  document.head.appendChild(el);
+  // K069: external css/panels/premium.css owns styling now.
+  return;
 }
 
 /* ════════════════════════════════════════════════
@@ -142,68 +92,84 @@ function render() {
 
   var html = '';
 
-  /* Hero */
-  html += '<div class="g-hero"><div class="g-hero-inner" style="justify-content:space-between;">';
-  html += '<div style="font-family:\'Bricolage Grotesque\',sans-serif;font-size:20px;font-weight:800;color:#fff;display:flex;align-items:center;gap:10px;">';
-  html += '<svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" style="color:#fff;"><path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5z"/><path d="M5 19a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-1H5v1z" opacity=".5"/></svg>';
-  html += MVP_FREE_TIER ? 'Beta Avantajlar\u0131' : 'Premium';
-  html += '</div></div></div>';
+  html += '<div class="prem-root">';
 
-  html += '<div id="pm-container">';
+  /* ── HERO ── */
+  html += '<header class="prem-hero">';
+  html += '<p class="prem-kicker">' + (MVP_FREE_TIER ? 'BETA \u00B7 PREMIUM \u00B7 3 AY' : 'PREMIUM') + '</p>';
+  html += '<h1 class="prem-headline">' + (MVP_FREE_TIER ? 'Beta avantajlar\u0131' : 'Premium avantajlar') + '</h1>';
+  html += '<p class="prem-subline">' + (MVP_FREE_TIER
+    ? 'Hellotalent beta s\u00FCrecinde. A\u015Fa\u011F\u0131daki t\u00FCm avantajlar 3 ay boyunca \u00FCcretsiz a\u00E7\u0131k. AI \u00F6zellikleri (CV + De\u011Ferlendirme) 1 deneme hakk\u0131 i\u00E7erir.'
+    : '\u0130\u015Fveren aramalar\u0131nda \u00F6ne \u00E7\u0131k, detayl\u0131 analitik g\u00F6r, AI CV olu\u015Ftur, s\u0131n\u0131rs\u0131z m\u00FClakat sorusuna eri\u015F.') + '</p>';
+  html += '</header>';
 
+  /* ── BETA STRIP (free tier only) ── */
   if (MVP_FREE_TIER) {
-    /* ── MVP Free-Tier Banner ── */
-    html += '<div style="background:linear-gradient(135deg,#059669 0%,#047857 100%);border-radius:16px;padding:24px;margin-bottom:20px;color:#fff;text-align:center;">';
-    html += '<div style="font-family:\'DM Mono\',monospace;font-size:10px;font-weight:700;letter-spacing:1px;opacity:.8;margin-bottom:8px;">BETA \u00b7 \u00dcCRETSiZ</div>';
-    html += '<div style="font-family:\'Bricolage Grotesque\',sans-serif;font-size:18px;font-weight:800;margin-bottom:8px;">';
-    html += 'Beta d\u00f6neminde t\u00fcm \u00f6zellikler \u00fccretsiz';
-    html += '</div>';
-    html += '<div style="font-family:\'Plus Jakarta Sans\',sans-serif;font-size:13px;opacity:.85;line-height:1.6;">';
-    html += 'Hellotalent beta s\u00fcrecinde. A\u015fa\u011f\u0131daki t\u00fcm avantajlar\u0131 3 ay boyunca \u00fccretsiz kullanabilirsin. AI \u00f6zellikleri (CV + De\u011ferlendirme) 1 deneme hakk\u0131 i\u00e7erir.';
-    html += '</div>';
+    html += '<div class="prem-beta-strip" role="note">';
+    html += '<span class="prem-beta-strip__label">BETA \u00B7 \u00DCCRETSIZ</span>';
+    html += '<p class="prem-beta-strip__text">Beta d\u00F6nemi boyunca \u00F6deme al\u0131nm\u0131yor. Premium a\u00E7\u0131l\u0131nca haber verece\u011Fiz; o zamana kadar her \u015Fey senin.</p>';
     html += '</div>';
   }
 
-  /* Features section */
-  html += '<div class="pm-section-title">' + (MVP_FREE_TIER ? 'Beta\'da A\u00e7\u0131k \u00d6zellikler' : 'Premium Avantajlar\u0131') + '</div>';
-  html += '<div class="pm-bento">';
-  for (var i = 0; i < FEATURES.length; i++) {
-    var f = FEATURES[i];
-    html += '<div class="pm-feature">';
-    html += '<div class="pm-feature-icon ' + f.color + '">' + f.icon + '</div>';
-    html += '<div class="pm-feature-title">' + f.title + '</div>';
-    html += '<div class="pm-feature-desc">' + f.desc + '</div>';
-    if (MVP_FREE_TIER) {
-      html += '<div style="margin-top:8px;display:inline-block;font-family:\'DM Mono\',monospace;font-size:9px;font-weight:700;padding:2px 8px;border-radius:4px;background:rgba(30,45,94,.08);color:var(--navy,#1E2D5E);">PREMIUM \u00b7 3 ay \u00fccretsiz</div>';
-    }
-    html += '</div>';
-  }
+  /* ── FEATURES SECTION ── */
+  html += '<section class="prem-section" id="prem-s-features">';
+  html += '<div class="prem-section__head">';
+  html += '<span class="prem-section__num">01</span>';
+  html += '<h2 class="prem-section__title">' + (MVP_FREE_TIER ? 'Beta\u2019da a\u00E7\u0131k \u00F6zellikler' : 'Premium avantajlar\u0131') + '</h2>';
+  html += '<span class="prem-section__desc">Profilini \u00F6ne \u00E7\u0131karan, m\u00FClakatlara haz\u0131rlayan ve kariyerini h\u0131zland\u0131ran alt\u0131 avantaj.</span>';
   html += '</div>';
 
+  html += '<div class="prem-features">';
+  for (var i = 0; i < FEATURES.length; i++) {
+    var f = FEATURES[i];
+    var iconCls = f.color === 'verm' ? ' is-verm' : '';
+    html += '<article class="prem-feature">';
+    html += '<div class="prem-feature__row">';
+    html += '<div class="prem-feature__icon' + iconCls + '">' + f.icon + '</div>';
+    if (MVP_FREE_TIER) {
+      html += '<span class="prem-feature__kicker is-free">\u00DCCRETSIZ \u00B7 3 AY</span>';
+    } else {
+      html += '<span class="prem-feature__kicker">PREMIUM</span>';
+    }
+    html += '</div>';
+    html += '<h3 class="prem-feature__title">' + f.title + '</h3>';
+    html += '<p class="prem-feature__desc">' + f.desc + '</p>';
+    html += '</article>';
+  }
+  html += '</div>';
+  html += '</section>';
+
   if (!MVP_FREE_TIER) {
-    /* Plans section — only shown when paid mode is active */
-    html += '<div class="pm-section-title">Plan Se\u00E7</div>';
-    html += '<div class="pm-plans">';
+    /* ── PLANS SECTION — only in paid mode ── */
+    html += '<section class="prem-section" id="prem-s-plans">';
+    html += '<div class="prem-section__head">';
+    html += '<span class="prem-section__num">02</span>';
+    html += '<h2 class="prem-section__title">Plan se\u00E7</h2>';
+    html += '<span class="prem-section__desc">Esnek ayl\u0131k, tasarruflu y\u0131ll\u0131k ya da i\u015F arama d\u00F6nemine \u00F6zel 3 ayl\u0131k kariyer plan\u0131.</span>';
+    html += '</div>';
+
+    html += '<div class="prem-plans">';
     for (var j = 0; j < PLANS.length; j++) {
       var p = PLANS[j];
-      html += '<div class="pm-plan' + (p.highlight ? ' highlight' : '') + '">';
-      if (p.highlight) html += '<div class="pm-plan-badge">EN POP\u00DCLER</div>';
-      html += '<div class="pm-plan-name">' + p.name + '</div>';
-      html += '<div class="pm-plan-price">' + p.price + '<span> TL</span></div>';
-      html += '<div class="pm-plan-period">' + p.period + '</div>';
-      if (p.annual) html += '<div class="pm-plan-annual" style="font-size:11px;color:var(--muted);margin-top:2px;">' + p.annual + '</div>';
-      html += '<div class="pm-plan-desc">' + p.desc + '</div>';
-      html += '<button class="pm-plan-cta ' + (p.highlight ? 'verm' : 'outline') + '" data-plan="' + PLAN_KEYS[j] + '">' + (p.highlight ? 'Hemen Ba\u015Fla' : 'Se\u00E7') + '</button>';
-      html += '</div>';
+      html += '<article class="prem-plan' + (p.highlight ? ' prem-plan--highlight' : '') + '">';
+      if (p.highlight) html += '<span class="prem-plan__badge">EN POP\u00DCLER</span>';
+      html += '<p class="prem-plan__name">' + p.name + '</p>';
+      html += '<p class="prem-plan__price">' + p.price + '<span class="prem-plan__price-unit">TL</span></p>';
+      html += '<p class="prem-plan__period">' + p.period + '</p>';
+      if (p.annual) html += '<p class="prem-plan__annual">' + p.annual + '</p>';
+      html += '<p class="prem-plan__desc">' + p.desc + '</p>';
+      html += '<button class="prem-plan__cta" data-plan="' + PLAN_KEYS[j] + '" type="button">' + (p.highlight ? 'Hemen ba\u015Fla' : 'Plan\u0131 se\u00E7') + '</button>';
+      html += '</article>';
     }
     html += '</div>';
 
-    /* Purchase status area */
-    html += '<div id="pm-purchase-status" style="display:none;margin-top:16px;padding:16px 20px;border-radius:12px;font-family:\'Plus Jakarta Sans\',sans-serif;font-size:13px;line-height:1.5;text-align:center;"></div>';
+    /* Purchase status + active banner placeholders */
+    html += '<div id="pm-purchase-status" class="prem-status" hidden></div>';
+    html += '</section>';
   }
 
-  /* Active premium banner (shown if already premium in paid mode) */
-  html += '<div id="pm-active-banner" style="display:none;"></div>';
+  /* Active premium banner — hidden until RPC confirms */
+  html += '<div id="pm-active-banner" class="prem-active" hidden></div>';
 
   html += '</div>';
 
@@ -212,9 +178,7 @@ function render() {
   panel.insertAdjacentHTML('afterbegin', html);
 
   if (!MVP_FREE_TIER) {
-    /* Bind plan CTA clicks */
     bindPlanEvents();
-    /* Check current premium status */
     checkCurrentPremium();
   }
 }
@@ -237,20 +201,22 @@ async function checkCurrentPremium() {
       var d = res.data[0];
       var banner = document.getElementById('pm-active-banner');
       if (banner) {
-        banner.style.display = 'block';
-        banner.style.cssText = 'display:block;margin-top:16px;padding:18px 20px;background:linear-gradient(135deg,#059669 0%,#047857 100%);border-radius:14px;color:#fff;text-align:center;';
-        var h = '<div style="font-family:\'Bricolage Grotesque\',sans-serif;font-size:16px;font-weight:700;margin-bottom:4px;">\u2713 Premium Aktif</div>';
-        h += '<div style="font-family:\'Plus Jakarta Sans\',sans-serif;font-size:12px;opacity:.8;">';
-        if (d.days_remaining > 0) h += d.days_remaining + ' g\u00fcn kald\u0131';
-        if (d.plan_key) h += ' \u00b7 ' + ({ aylik: 'Ayl\u0131k', yillik: 'Y\u0131ll\u0131k', kariyer: 'Kariyer' }[d.plan_key] || d.plan_key) + ' plan';
+        banner.hidden = false;
+        var h = '<span class="prem-active__dot" aria-hidden="true"></span>';
+        h += '<div class="prem-active__body">';
+        h += '<p class="prem-active__title">Premium aktif</p>';
+        var meta = '';
+        if (d.days_remaining > 0) meta += d.days_remaining + ' G\u00DCN KALDI';
+        if (d.plan_key) meta += (meta ? ' \u00B7 ' : '') + ({ aylik: 'AYLIK', yillik: 'YILLIK', kariyer: 'KARIYER' }[d.plan_key] || d.plan_key.toUpperCase()) + ' PLAN';
+        h += '<p class="prem-active__meta">' + (meta || 'AKT\u0130F') + '</p>';
         h += '</div>';
         /* Safe: all content from hardcoded constants + RPC data that is not user-authored */
         banner.textContent = '';
         banner.insertAdjacentHTML('afterbegin', h);
       }
       /* Disable plan buttons */
-      var btns = document.querySelectorAll('.pm-plan-cta[data-plan]');
-      btns.forEach(function(b) { b.textContent = 'Aktif'; b.disabled = true; b.style.opacity = '.5'; });
+      var btns = document.querySelectorAll('.prem-plan__cta[data-plan]');
+      btns.forEach(function(b) { b.textContent = 'Aktif'; b.disabled = true; });
     }
   } catch (e) { /* silent */ }
 }
@@ -260,12 +226,10 @@ function initiatePurchase(planKey, btn) {
   showPurchaseStatus('\u00c7ok Yak\u0131nda \u2014 \u00f6deme sistemi \u00e7ok yak\u0131nda aktif olacak.', 'info');
 }
 
-function showPurchaseStatus(msg, type) {
+function showPurchaseStatus(msg, _type) {
   var el = document.getElementById('pm-purchase-status');
   if (!el) return;
-  el.style.display = 'block';
-  el.style.background = type === 'success' ? 'rgba(5,150,105,.08)' : type === 'info' ? 'rgba(30,45,94,.06)' : 'rgba(220,38,38,.08)';
-  el.style.color = type === 'success' ? '#059669' : type === 'info' ? 'var(--navy,#1E2D5E)' : '#DC2626';
+  el.hidden = false;
   el.textContent = msg;
 }
 

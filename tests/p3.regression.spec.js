@@ -1438,7 +1438,8 @@ test.describe('Premium entitlement — structural guards', () => {
 
   test('active premium banner shows for current premium users', () => {
     expect(premiumJs).toContain('pm-active-banner');
-    expect(premiumJs).toContain('Premium Aktif');
+    // K069: editorial rewrite — title moved to .prem-active__title with lowercase "Premium aktif"
+    expect(premiumJs).toContain('Premium aktif');
     expect(premiumJs).toContain('checkCurrentPremium');
   });
 });
@@ -4047,6 +4048,82 @@ test.describe('K067 — Ayarlar editorial CSS override', () => {
     mustKeepIds.forEach(function(id) {
       expect(profilHtml067).toContain('id="' + id + '"');
     });
+  });
+});
+
+/* ═══════════════════════════════════════════════════════════════════════
+   K069 — Premium panel editorial redesign
+   CSS-only external stylesheet + DOM emitter rewrite with .prem-* vocab.
+   ═══════════════════════════════════════════════════════════════════════ */
+test.describe('K069 — Premium panel editorial redesign', () => {
+  let profilHtml069;
+  let premiumCss069;
+  let premiumJs069;
+
+  test.beforeAll(() => {
+    profilHtml069 = readFromRepo('profil.html');
+    premiumCss069 = readFromRepo('css/panels/premium.css');
+    premiumJs069  = readFromRepo('profil-premium.js');
+  });
+
+  test('profil.html links premium.css and bumps profil-premium.js cache-bust', () => {
+    expect(profilHtml069).toContain('css/panels/premium.css?v=20260415k069');
+    expect(profilHtml069).toContain('profil-premium.js?v=20260415k069');
+  });
+
+  test('premium.css ships the editorial .prem-* vocabulary', () => {
+    expect(premiumCss069).toContain('K069');
+    expect(premiumCss069).toContain('#panel-premium');
+    expect(premiumCss069).toContain('.prem-root');
+    expect(premiumCss069).toContain('.prem-hero');
+    expect(premiumCss069).toContain('.prem-headline');
+    expect(premiumCss069).toContain('.prem-section');
+    expect(premiumCss069).toContain('.prem-features');
+    expect(premiumCss069).toContain('.prem-feature');
+    expect(premiumCss069).toContain('.prem-plan');
+    expect(premiumCss069).toContain('.prem-active');
+    expect(premiumCss069).toContain('--editorial-card');
+    expect(premiumCss069).toContain('--editorial-vermillion');
+    expect(premiumCss069).toContain('prefers-reduced-motion');
+  });
+
+  test('profil-premium.js injectCSS is a no-op with K069 marker', () => {
+    expect(premiumJs069).toContain('function injectCSS');
+    expect(premiumJs069).toContain('K069');
+    var fnStart = premiumJs069.indexOf('function injectCSS');
+    var markerIdx = premiumJs069.indexOf('K069', fnStart);
+    var returnIdx = premiumJs069.indexOf('return;', markerIdx);
+    expect(returnIdx).toBeGreaterThan(-1);
+    expect(returnIdx - fnStart).toBeLessThan(220);
+  });
+
+  test('profil-premium.js emits editorial .prem-* DOM vocabulary', () => {
+    expect(premiumJs069).toContain('prem-root');
+    expect(premiumJs069).toContain('prem-hero');
+    expect(premiumJs069).toContain('prem-kicker');
+    expect(premiumJs069).toContain('prem-headline');
+    expect(premiumJs069).toContain('prem-features');
+    expect(premiumJs069).toContain('prem-feature');
+    expect(premiumJs069).toContain('prem-feature__title');
+    expect(premiumJs069).toContain('prem-feature__desc');
+    expect(premiumJs069).toContain('prem-plan');
+    expect(premiumJs069).toContain('prem-plan__cta');
+    expect(premiumJs069).toContain('prem-active');
+    // legacy bento/.pm-* emission removed
+    expect(premiumJs069).not.toContain('class="pm-bento"');
+    expect(premiumJs069).not.toContain('class="pm-feature"');
+    expect(premiumJs069).not.toContain("class='pm-bento'");
+    expect(premiumJs069).not.toContain('g-hero-inner');
+    // no console.log in production
+    expect(premiumJs069).not.toMatch(/console\.log\(/);
+  });
+
+  test('profil-premium.js preserves critical ids + RPC contract', () => {
+    expect(premiumJs069).toContain("id=\"pm-active-banner\"");
+    expect(premiumJs069).toContain("id=\"pm-purchase-status\"");
+    expect(premiumJs069).toContain("'get_my_premium_status'");
+    expect(premiumJs069).toContain('MVP_FREE_TIER');
+    expect(premiumJs069).toContain('window._htLoadPremium');
   });
 });
 
