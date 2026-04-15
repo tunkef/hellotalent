@@ -53,9 +53,13 @@ function _htInitEvents() {
   var logoBtn = document.getElementById('btn-logo-home');
   if (logoBtn) logoBtn.addEventListener('click', function() { switchPanel('genel'); });
 
-  // Kim Baktı header icon (no data-panel attr)
+  // Kim Baktı header icon (no data-panel attr). K071b: guarded so
+  // profil-inbox.js safety-net doesn't double-bind.
   var kbBtn = document.getElementById('header-kimbakti');
-  if (kbBtn) kbBtn.addEventListener('click', function() { switchPanel('kimbakti'); });
+  if (kbBtn && !kbBtn.__htKbBound) {
+    kbBtn.__htKbBound = true;
+    kbBtn.addEventListener('click', function() { switchPanel('kimbakti'); });
+  }
 
   // K031: Merkez spine item clicks — button itself opens the wizard step.
   document.querySelectorAll('#panel-merkez [data-step]').forEach(function(card) {

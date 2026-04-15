@@ -995,8 +995,18 @@
       }
     };
 
-    /* K071: header-kimbakti click is bound once in profil-events.js.
-       Duplicate binding here removed to avoid history.pushState doubling. */
+    /* K071b: re-add kimbakti binding here as a safety net. If
+       profil-events.js bindings miss (init order, DCL race), this
+       ensures the button still routes. switchPanel is idempotent:
+       back-to-back calls with the same name just re-activate the
+       already-active panel. pushState dedupe is handled inside it. */
+    var kbBtn = document.getElementById('header-kimbakti');
+    if (kbBtn && !kbBtn.__htKbBound) {
+      kbBtn.__htKbBound = true;
+      kbBtn.addEventListener('click', function() {
+        if (typeof switchPanel === 'function') switchPanel('kimbakti');
+      });
+    }
 
     var seeAllMsg = document.getElementById('popup-msg-see-all');
     if (seeAllMsg) seeAllMsg.addEventListener('click', function(e) { e.preventDefault(); closeAllPopups(); if (typeof switchPanel === 'function') switchPanel('inbox'); });

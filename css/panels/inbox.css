@@ -11,6 +11,10 @@
    Hero + filter flex-none, split flex:1 overflow:hidden.
    List + thread each scroll internally.
    ═══════════════════════════════════════════════════════════ */
+/* K071c: only override display when panel is active. Otherwise the
+   default .panel { display:none } stays in force. Previous version
+   hardcoded display:flex which left #panel-inbox visible even when
+   switchPanel routed elsewhere → every click appeared to "open" inbox. */
 #panel-inbox{
   max-width:var(--editorial-max-w,1200px);
   margin:0 auto;
@@ -18,10 +22,12 @@
   background:transparent;
   border:0;
   border-radius:0;
-  height:calc(100vh - var(--header-h, 64px));
-  display:flex;
-  flex-direction:column;
   box-sizing:border-box;
+}
+#panel-inbox.active{
+  display:flex !important;
+  flex-direction:column;
+  height:calc(100vh - var(--header-h, 64px));
   overflow:hidden;
 }
 
