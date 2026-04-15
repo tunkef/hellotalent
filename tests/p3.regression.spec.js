@@ -3796,7 +3796,7 @@ test.describe('K063 — Inbox editorial redesign', () => {
   });
 
   test('profil.html loads versioned inbox.css and bumped profil-inbox.js', () => {
-    expect(profilHtml063).toContain('css/panels/inbox.css?v=20260415k070');
+    expect(profilHtml063).toContain('css/panels/inbox.css?v=20260415k070b');
     expect(profilHtml063).toContain('profil-inbox.js?v=20260414ab');
   });
 
