@@ -5,13 +5,24 @@
    Preserves all IDs consumed by profil-inbox.js
    ═══════════════════════════════════════════════════════════ */
 
+/* ═══════════════════════════════════════════════════════════
+   K070 — Viewport-locked 2-pane layout (LinkedIn-inspired)
+   #panel-inbox becomes a fixed-height flex column.
+   Hero + filter flex-none, split flex:1 overflow:hidden.
+   List + thread each scroll internally.
+   ═══════════════════════════════════════════════════════════ */
 #panel-inbox{
   max-width:var(--editorial-max-w,1200px);
   margin:0 auto;
-  padding:32px var(--editorial-pad-x,clamp(20px,3vw,32px)) 48px;
+  padding:24px var(--editorial-pad-x,clamp(20px,3vw,32px)) 24px;
   background:transparent;
   border:0;
   border-radius:0;
+  height:calc(100vh - var(--header-h, 64px));
+  display:flex;
+  flex-direction:column;
+  box-sizing:border-box;
+  overflow:hidden;
 }
 
 #panel-inbox [hidden]{display:none !important;}
@@ -19,16 +30,18 @@
 .ib-root{
   display:flex;
   flex-direction:column;
-  gap:24px;
+  gap:16px;
   max-width:inherit;
+  min-height:0;
+  flex:1;
 }
 
-/* ── Shared card frame ── */
+/* ── Shared card frame (legacy — now mainly signature) ── */
 .ib-card{
   background:var(--editorial-bg);
   border:1px solid var(--editorial-hairline);
   border-radius:14px;
-  padding:32px;
+  padding:28px;
   opacity:0;
   transform:translateY(12px);
   animation:ibFadeUp 600ms ease-out forwards;
@@ -38,9 +51,14 @@
   to{opacity:1;transform:translateY(0);}
 }
 
-/* ── Hero ── */
+/* ── Hero: compact flat editorial strip (no big card frame) ── */
 .ib-card--hero{
-  padding:clamp(28px,4vw,44px);
+  flex-shrink:0;
+  background:transparent;
+  border:0;
+  border-bottom:1px solid var(--editorial-hairline);
+  border-radius:0;
+  padding:4px 0 18px;
 }
 .ib-card--hero .ib-eyebrow{
   font-family:'DM Mono',ui-monospace,monospace;
@@ -49,31 +67,31 @@
   letter-spacing:0.08em;
   color:var(--editorial-ink-muted);
   display:block;
-  margin-bottom:14px;
+  margin-bottom:10px;
 }
 .ib-headline{
   font-family:'Bricolage Grotesque',Georgia,serif;
   color:var(--editorial-vermillion);
-  font-size:clamp(34px,5vw,40px);
-  line-height:1.02;
+  font-size:clamp(26px,3.2vw,32px);
+  line-height:1.05;
   letter-spacing:-0.02em;
-  font-weight:600;
-  margin:0 0 14px;
+  font-weight:500;
+  margin:0 0 8px;
 }
 .ib-subline{
   font-family:'Plus Jakarta Sans',system-ui,sans-serif;
-  font-size:14px;
+  font-size:13px;
   color:var(--editorial-ink-muted);
   max-width:58ch;
-  margin:0 0 28px;
-  line-height:1.55;
+  margin:0 0 14px;
+  line-height:1.5;
 }
 .ib-meta-row{
-  padding-top:18px;
-  border-top:1px solid var(--editorial-hairline);
+  padding-top:0;
+  border-top:0;
   display:flex;
   flex-wrap:wrap;
-  gap:10px;
+  gap:14px;
 }
 .ib-mono{
   font-family:'DM Mono',ui-monospace,monospace;
@@ -87,7 +105,8 @@
 
 /* ── Filter strip ── */
 .ib-filter{
-  padding:0 0 14px;
+  flex-shrink:0;
+  padding:2px 0 12px;
   border-bottom:1px solid var(--editorial-hairline);
   overflow-x:auto;
   scrollbar-width:none;
@@ -128,37 +147,62 @@
   user-select:none;
 }
 
-/* ── Split ── */
+/* ── Split: viewport-locked 2-pane grid ── */
 .ib-split{
   display:grid;
-  grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);
-  gap:24px;
+  grid-template-columns:minmax(280px,340px) minmax(0,1fr);
+  gap:0;
+  flex:1;
+  min-height:0;
+  overflow:hidden;
   opacity:0;
   transform:translateY(12px);
   animation:ibFadeUp 600ms ease-out 160ms forwards;
 }
-.ib-pane{min-width:0;}
+.ib-pane{
+  min-width:0;
+  min-height:0;
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+}
+.ib-pane--list{
+  border-right:1px solid var(--editorial-hairline);
+  padding-right:0;
+}
 .ib-pane--thread{
-  border-left:1px solid var(--editorial-hairline);
+  border-left:0;
   padding-left:28px;
   display:flex;
   flex-direction:column;
+  min-height:0;
+  overflow:hidden;
 }
 
-/* ── Conversation list ── */
+/* ── Conversation list: internal scroll ── */
 .ib-list{
   list-style:none;
   margin:0;
-  padding:0;
+  padding:0 14px 0 0;
   display:flex;
   flex-direction:column;
+  overflow-y:auto;
+  overflow-x:hidden;
+  flex:1;
+  min-height:0;
+  scrollbar-width:thin;
+  scrollbar-color:var(--editorial-hairline) transparent;
 }
+.ib-list::-webkit-scrollbar{width:6px;}
+.ib-list::-webkit-scrollbar-track{background:transparent;}
+.ib-list::-webkit-scrollbar-thumb{background:var(--editorial-hairline);border-radius:3px;}
+.ib-list::-webkit-scrollbar-thumb:hover{background:var(--editorial-ink-muted);}
 .ib-row{
   display:grid;
   grid-template-columns:44px 1fr auto;
-  gap:14px;
+  gap:12px;
   align-items:flex-start;
-  padding:18px 12px;
+  padding:14px 12px;
   border-bottom:1px solid var(--editorial-hairline);
   cursor:pointer;
   position:relative;
@@ -318,12 +362,14 @@
   flex-direction:column;
   min-height:0;
   flex:1;
+  overflow:hidden;
 }
 .ib-thread-head{
+  flex-shrink:0;
   display:flex;
   align-items:flex-start;
   gap:18px;
-  padding-bottom:22px;
+  padding-bottom:16px;
   border-bottom:1px solid var(--editorial-hairline);
 }
 .ib-thread-brand{flex:1;min-width:0;}
@@ -371,12 +417,19 @@
 .ib-thread-body{
   display:flex;
   flex-direction:column;
-  gap:22px;
-  padding:28px 0 8px;
+  gap:18px;
+  padding:20px 14px 14px 0;
   overflow-y:auto;
+  overflow-x:hidden;
   min-height:0;
   flex:1;
+  scrollbar-width:thin;
+  scrollbar-color:var(--editorial-hairline) transparent;
 }
+.ib-thread-body::-webkit-scrollbar{width:6px;}
+.ib-thread-body::-webkit-scrollbar-track{background:transparent;}
+.ib-thread-body::-webkit-scrollbar-thumb{background:var(--editorial-hairline);border-radius:3px;}
+.ib-thread-body::-webkit-scrollbar-thumb:hover{background:var(--editorial-ink-muted);}
 
 .ib-daysep{
   text-align:center;
@@ -437,8 +490,9 @@
 
 /* ── Composer ── */
 .ib-composer-wrap{
-  margin-top:18px;
-  padding-top:22px;
+  flex-shrink:0;
+  margin-top:0;
+  padding-top:16px;
   border-top:1px solid var(--editorial-hairline);
 }
 .ib-composer-cap{
@@ -462,12 +516,13 @@
   background:var(--editorial-bg);
   border:1px solid var(--editorial-hairline);
   border-radius:14px;
-  padding:14px 16px;
+  padding:12px 16px;
   font-family:'Plus Jakarta Sans',system-ui,sans-serif;
   font-size:14px;
   color:var(--editorial-ink);
-  resize:vertical;
-  min-height:108px;
+  resize:none;
+  min-height:68px;
+  max-height:140px;
   line-height:1.5;
   box-sizing:border-box;
 }
@@ -500,8 +555,9 @@
   color:var(--editorial-ink-muted);
 }
 
-/* ── Signature ── */
+/* ── Signature — hidden in viewport-locked layout ── */
 .ib-signature{
+  display:none;
   margin-top:24px;
   padding-top:28px;
   border-top:1px solid var(--editorial-hairline);
@@ -514,21 +570,40 @@
   color:var(--editorial-ink-muted);
 }
 
-/* ── Responsive ── */
+/* ── Responsive ──
+   Mobile: stack panes, let the inner panel body scroll naturally. */
 @media (max-width:900px){
-  .ib-split{grid-template-columns:1fr;gap:0;}
+  #panel-inbox{
+    height:auto;
+    overflow:visible;
+    padding:20px 16px 32px;
+  }
+  .ib-split{
+    grid-template-columns:1fr;
+    gap:0;
+    flex:none;
+    overflow:visible;
+  }
+  .ib-pane{overflow:visible;}
+  .ib-pane--list{
+    border-right:0;
+    border-bottom:1px solid var(--editorial-hairline);
+    padding-bottom:16px;
+    margin-bottom:16px;
+    max-height:50vh;
+  }
+  .ib-list{padding-right:0;max-height:50vh;}
   .ib-pane--thread{
-    border-left:none;
+    border-left:0;
     padding-left:0;
-    margin-top:32px;
-    padding-top:24px;
-    border-top:1px solid var(--editorial-hairline);
+    overflow:visible;
+  }
+  .ib-thread{overflow:visible;}
+  .ib-thread-body{
+    max-height:60vh;
+    padding-right:6px;
   }
   .ib-msg--out{padding-left:0;}
-}
-@media (max-width:768px){
-  #panel-inbox{padding:24px 18px 32px;}
-  .ib-card{padding:24px;}
 }
 
 @media (prefers-reduced-motion: reduce){

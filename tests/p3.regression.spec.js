@@ -3796,8 +3796,22 @@ test.describe('K063 — Inbox editorial redesign', () => {
   });
 
   test('profil.html loads versioned inbox.css and bumped profil-inbox.js', () => {
-    expect(profilHtml063).toContain('css/panels/inbox.css?v=20260415ne');
+    expect(profilHtml063).toContain('css/panels/inbox.css?v=20260415k070');
     expect(profilHtml063).toContain('profil-inbox.js?v=20260414ab');
+  });
+
+  test('K070: inbox panel is viewport-locked with internally scrolling panes', () => {
+    var inboxCssK070 = readFromRepo('css/panels/inbox.css');
+    expect(inboxCssK070).toContain('K070');
+    expect(inboxCssK070).toContain('height:calc(100vh');
+    // split fills remaining space with overflow hidden
+    expect(inboxCssK070).toMatch(/\.ib-split\b[^}]*overflow:hidden/);
+    // list scrolls internally
+    expect(inboxCssK070).toMatch(/\.ib-list\b[^}]*overflow-y:auto/);
+    // thread body keeps its internal scroll
+    expect(inboxCssK070).toMatch(/\.ib-thread-body\b[^}]*overflow-y:auto/);
+    // hero is compact (no card frame in the new layout)
+    expect(inboxCssK070).toMatch(/\.ib-card--hero\b[^}]*background:transparent/);
   });
 
   test('inbox.css contains the K063 vocabulary and reduced-motion block', () => {

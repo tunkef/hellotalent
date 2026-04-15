@@ -1,5 +1,23 @@
 # HelloTalent AI-COLLAB — Aktif Calisma Defteri
 
+## K070 — Inbox viewport-locked 2-pane (2026-04-15)
+
+**Durum:** LinkedIn tarzi — sayfa scroll etmiyor, her pane icerde scroll ediyor.
+
+- `#panel-inbox` `height:calc(100vh - var(--header-h,64px))`, flex column, overflow hidden.
+- Hero kompakt flat editorial strip (bg/border kaldirildi, padding kisaltildi, headline 26-32px).
+- `.ib-split` flex:1, overflow hidden, 280-340px fixed list + 1fr thread.
+- `.ib-list` overflow-y:auto (ince 6px custom scrollbar hairline renk).
+- `.ib-thread-body` overflow-y:auto + inner composer flex-none sticky bottom.
+- Row padding 18->14px (daha cok satir sigiyor).
+- Signature block gizlendi (viewport-locked'da yer yok).
+- Mobile (<=900px): geri duz akis, her pane max-height:50-60vh, sayfa scroll eder.
+- Regression: height:calc(100vh, split overflow:hidden, list/thread-body overflow-y:auto, hero transparent bg guard eklendi.
+
+Cache-bust `20260415k070`. 910/0 yesil.
+
+---
+
 ## K069 — Premium paneli editorial redesign (2026-04-15)
 
 **Durum:** CSS-only panel file + DOM emitter rewrite. Bento → editorial 2-col symmetric. Token-based, dark mode zero-config.
