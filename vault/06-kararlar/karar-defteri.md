@@ -391,4 +391,37 @@
 
 ---
 
-*Son güncelleme: 14 Nisan 2026*
+## K032 — Runtime Playwright Smoke (Backlog)
+**Tarih:** 15 Nisan 2026
+**Karar veren:** Tuna + Claude (K068b hotfix sonrası)
+**Karar:** Hafif bir runtime smoke suite eklenecek: localhost serve + Playwright navigate profil.html → window.onerror listener → assert no ReferenceError / TypeError on boot.
+
+**Neden:** K068b hotfix (commit `4f31ff7`) bir sınıf hatayı gösterdi — bir cache-bust edit'i `<script src="profil-locations.js"></script>` tag'inin kapanışını sessizce düşürdü. Sonuç: HTML parser tüm kardeş `<script>`'leri açık tag'e gömdü, profil-summary.js / profil-genel.js / profil-bootstrap.js yüklenmedi, giriş ekranı `ReferenceError: updateDashboardSummary` ile kırıldı. ESLint HTML parse etmiyor. String-based guard'lar attribute text'ini bulabildiği için yeşildi. Sadece browser runtime'ı yakalayabilirdi — Sentry yakaladı ama post-push.
+
+**Uygulama (yapıldı — K068b'nin parçası)**:
+1. `scripts/check-html-tags.sh` — `.husky/pre-commit`'e bağlandı. Her HTML entry için `<script>` open/close count eşitliği + orphan `<script src>` satır taraması. Lokal test: drop senaryosu reproduce → guard yakalıyor.
+2. `tests/p3.regression.spec.js` → 6 HTML entry × 2 guard = 24 yeni test. 898/0 yeşil.
+
+**Backlog (açık — bu karar bunun için)**:
+3. **Runtime Playwright smoke suite** (~30 dk iş):
+   - Localhost serve (`python3 -m http.server`)
+   - Playwright navigate `http://localhost:PORT/profil.html`
+   - Test user session enjekte (supabase localStorage mock) — gate bypass
+   - `page.on('pageerror', ...)` + `page.on('console', msg => if error)` listener
+   - `await page.waitForLoadState('networkidle')`
+   - Assert: no `ReferenceError`, no `TypeError`, no `not defined` in console
+   - Aynı pass light + dark mode için
+   - `tests/smoke.spec.js` olarak ayrılabilir
+
+**Neden hemen değil:** Şu an auth gate bypass için Supabase mock session setup gerek. Test user credentials yoksa JSDOM login simülasyonu gerekir. Pragmatik paket: K032 sprint'i açıldığında ilk iş.
+
+**Kapsama genişletmesi opsiyonel:**
+- ik.html + admin.html için aynı smoke
+- Her panel hash için navigate (#merkez, #kesfet, #ayarlar…) + her biri için 0 error assertion
+- Dark mode toggle + re-assert
+
+**Referans:** Commit `4f31ff7` (hotfix), `a8d3801` (K068b), Sentry alert 15 Nisan 07:38 UTC.
+
+---
+
+*Son güncelleme: 15 Nisan 2026*

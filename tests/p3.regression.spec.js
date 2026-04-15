@@ -4050,3 +4050,61 @@ test.describe('K067 — Ayarlar editorial CSS override', () => {
   });
 });
 
+/* ═══════════════════════════════════════════════════════════════════════
+   K068b — HTML structural integrity guard
+   Catches the class of bugs where a cache-bust edit silently drops the
+   closing </script> (or </link>) of an asset tag. When the browser parser
+   hits an unclosed <script>, every subsequent sibling gets swallowed into
+   the open tag, so nothing below it loads. ESLint cannot see this; regular
+   string-based guards cannot see this. This block enforces structural
+   symmetry: open-tag count == close-tag count for every static HTML entry.
+   Precedent: hotfix commit 4f31ff7 — profil-locations.js closing tag drop
+   killed profil-summary.js / profil-genel.js / profil-bootstrap.js chain.
+   ═══════════════════════════════════════════════════════════════════════ */
+test.describe('HTML structural integrity — script/link tag close guard', () => {
+  var HTML_ENTRIES = [
+    'profil.html',
+    'ik.html',
+    'admin.html',
+    'index.html',
+    'giris.html',
+    'uye-ol.html'
+  ];
+
+  HTML_ENTRIES.forEach(function(entry) {
+    test(entry + ' has balanced <script> open/close tags', () => {
+      var html;
+      try {
+        html = readFromRepo(entry);
+      } catch (e) {
+        // optional files — skip silently if missing
+        return;
+      }
+      var openMatches = html.match(/<script[\s>]/g) || [];
+      var closeMatches = html.match(/<\/script>/g) || [];
+      expect(openMatches.length).toBe(closeMatches.length);
+    });
+
+    test(entry + ' has no orphan <script src="..."> line without </script>', () => {
+      var html;
+      try {
+        html = readFromRepo(entry);
+      } catch (e) {
+        return;
+      }
+      var lines = html.split('\n');
+      var violations = [];
+      for (var i = 0; i < lines.length; i++) {
+        var line = lines[i];
+        if (!/<script\s[^>]*src=/.test(line)) continue;
+        // same line close is fine
+        if (/<\/script>/.test(line)) continue;
+        // next line close is fine
+        if (i + 1 < lines.length && /<\/script>/.test(lines[i + 1])) continue;
+        violations.push('line ' + (i + 1) + ': ' + line.trim());
+      }
+      expect(violations).toEqual([]);
+    });
+  });
+});
+
