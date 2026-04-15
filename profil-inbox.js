@@ -551,24 +551,18 @@
         cap.textContent = who + ' \u00B7 ' + timeAgo(item.created_at).toUpperCase();
         msgEl.appendChild(cap);
 
-        if (isEmp) {
-          var pIn = document.createElement('p');
-          pIn.textContent = item.body;
-          msgEl.appendChild(pIn);
-        } else {
-          var bubble = document.createElement('div');
-          bubble.className = 'ib-bubble';
-          var pOut = document.createElement('p');
-          pOut.textContent = item.body;
-          bubble.appendChild(pOut);
-          msgEl.appendChild(bubble);
-          // Read receipt — only on last candidate reply
-          if (lastCandidateReply && item.item_id === lastCandidateReply.item_id) {
-            var stamp = document.createElement('span');
-            stamp.className = 'ib-stamp';
-            stamp.textContent = item.read_at ? 'G\u00D6R\u00DCLD\u00DC' : '\u0130LET\u0130LD\u0130';
-            msgEl.appendChild(stamp);
-          }
+        var bubble = document.createElement('div');
+        bubble.className = 'ib-bubble';
+        var pBody = document.createElement('p');
+        pBody.textContent = item.body;
+        bubble.appendChild(pBody);
+        msgEl.appendChild(bubble);
+        // Read receipt — only on last candidate reply
+        if (!isEmp && lastCandidateReply && item.item_id === lastCandidateReply.item_id) {
+          var stamp = document.createElement('span');
+          stamp.className = 'ib-stamp';
+          stamp.textContent = item.read_at ? 'G\u00D6R\u00DCLD\u00DC' : '\u0130LET\u0130LD\u0130';
+          msgEl.appendChild(stamp);
         }
         container.appendChild(msgEl);
       }
@@ -587,18 +581,12 @@
     cap.className = 'ib-cap';
     cap.textContent = (isEmp ? '\u0130\u015EVEREN' : 'SEN') + ' \u00B7 ' + (time || 'AZ \u00D6NCE');
     msgEl.appendChild(cap);
-    if (isEmp) {
-      var pIn = document.createElement('p');
-      pIn.textContent = text;
-      msgEl.appendChild(pIn);
-    } else {
-      var bubble = document.createElement('div');
-      bubble.className = 'ib-bubble';
-      var pOut = document.createElement('p');
-      pOut.textContent = text;
-      bubble.appendChild(pOut);
-      msgEl.appendChild(bubble);
-    }
+    var bubble = document.createElement('div');
+    bubble.className = 'ib-bubble';
+    var pBody = document.createElement('p');
+    pBody.textContent = text;
+    bubble.appendChild(pBody);
+    msgEl.appendChild(bubble);
     container.appendChild(msgEl);
   }
 
