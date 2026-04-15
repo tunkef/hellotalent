@@ -3797,7 +3797,7 @@ test.describe('K063 — Inbox editorial redesign', () => {
 
   test('profil.html loads versioned inbox.css and bumped profil-inbox.js', () => {
     expect(profilHtml063).toContain('css/panels/inbox.css?v=20260415k070c');
-    expect(profilHtml063).toContain('profil-inbox.js?v=20260415k070d');
+    expect(profilHtml063).toContain('profil-inbox.js?v=20260415k071');
   });
 
   test('K070: inbox panel is viewport-locked with internally scrolling panes', () => {
@@ -3880,7 +3880,7 @@ test.describe('K064 — Bildirimler editorial redesign', () => {
 
   test('profil.html loads versioned bildirimler.css and bumped profil-inbox.js', () => {
     expect(profilHtml064).toContain('css/panels/bildirimler.css?v=20260415ne');
-    expect(profilHtml064).toContain('profil-inbox.js?v=20260415k070d');
+    expect(profilHtml064).toContain('profil-inbox.js?v=20260415k071');
   });
 
   test('bildirimler.css contains the K064 vocabulary and reduced-motion block', () => {

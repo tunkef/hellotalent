@@ -131,6 +131,18 @@
       if (filter) currentFilter = filter;
       renderMessages();
       updateUnreadBadges();
+      /* K071: drawer preview click sets window._htPendingInboxThreadId.
+         If that thread is in the current filtered set, auto-open it. */
+      if (window._htPendingInboxThreadId) {
+        var pendingId = window._htPendingInboxThreadId;
+        window._htPendingInboxThreadId = null;
+        for (var pi = 0; pi < allMessages.length; pi++) {
+          if (allMessages[pi].id === pendingId && allMessages[pi].status !== 'deleted') {
+            openThread(allMessages[pi]);
+            break;
+          }
+        }
+      }
     } catch (err) {
       console.error('Inbox load exception:', err);
     }
@@ -774,7 +786,14 @@
       right.appendChild(time);
       if (u) { var dot = document.createElement('div'); dot.className = 'header-popup-unread-dot'; right.appendChild(dot); }
       item.appendChild(icon); item.appendChild(info); item.appendChild(right);
-      item.addEventListener('click', function() { closeAllPopups(); if (typeof switchPanel === 'function') switchPanel('inbox'); });
+      /* K071: capture thread id so switching to #inbox auto-opens it. */
+      (function(threadId){
+        item.addEventListener('click', function() {
+          closeAllPopups();
+          window._htPendingInboxThreadId = threadId;
+          if (typeof switchPanel === 'function') switchPanel('inbox');
+        });
+      })(m.id);
       listEl.appendChild(item);
     });
   };
@@ -881,7 +900,17 @@
       right.appendChild(time);
       if (notif.is_unread) { var dot = document.createElement('div'); dot.className = 'header-popup-unread-dot'; right.appendChild(dot); }
       item.appendChild(icon); item.appendChild(info); item.appendChild(right);
-      var targetPanel = notif.notif_type === 'koc' ? 'studio' : 'teklifler';
+      /* K071: type-based routing table. 'studio' was a dead name.
+         Default routes to #bildirimler (full notif list) unless the type
+         has a specific destination. */
+      var NOTIF_ROUTING = {
+        koc: 'mulakat',
+        is_teklifi: 'teklifler',
+        teklif: 'teklifler',
+        mesaj: 'inbox',
+        message: 'inbox'
+      };
+      var targetPanel = NOTIF_ROUTING[notif.notif_type] || 'bildirimler';
       item.addEventListener('click', function() { closeAllPopups(); if (typeof switchPanel === 'function') switchPanel(targetPanel); });
       listEl.appendChild(item);
     });
@@ -966,8 +995,8 @@
       }
     };
 
-    var kbBtn = document.getElementById('header-kimbakti');
-    if (kbBtn) kbBtn.addEventListener('click', function() { if (typeof switchPanel === 'function') switchPanel('kimbakti'); });
+    /* K071: header-kimbakti click is bound once in profil-events.js.
+       Duplicate binding here removed to avoid history.pushState doubling. */
 
     var seeAllMsg = document.getElementById('popup-msg-see-all');
     if (seeAllMsg) seeAllMsg.addEventListener('click', function(e) { e.preventDefault(); closeAllPopups(); if (typeof switchPanel === 'function') switchPanel('inbox'); });
