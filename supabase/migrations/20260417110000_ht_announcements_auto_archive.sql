@@ -38,13 +38,17 @@ BEGIN
   WHERE is_active = true
     AND published_at IS NOT NULL
     AND published_at < (now() - interval '60 days')
-    AND (pinned_until IS NULL OR pinned_until < now());
+    /* `<=` (not `<`) so a row whose pinned_until equals now() exact
+     * also archives — otherwise it sits forever in a never-active /
+     * never-archive limbo. */
+    AND (pinned_until IS NULL OR pinned_until <= now());
   GET DIAGNOSTICS v_affected = ROW_COUNT;
   RETURN v_affected;
 END;
 $$;
 
-GRANT EXECUTE ON FUNCTION public.archive_stale_announcements() TO service_role;
+/* pg_cron worker runs as the cron superuser; explicit GRANT not
+ * required. SECURITY DEFINER is enough for the in-DB call. */
 
 -- Remove any previously-scheduled version so re-run is safe.
 DO $$

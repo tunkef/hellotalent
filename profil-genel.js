@@ -642,6 +642,10 @@
         moreBtn.className = 'gb-more-btn';
         moreBtn.textContent = 'Daha fazla g\u00F6ster';
         moreBtn.addEventListener('click', function () {
+          /* Deep-link to the duyuru tab inside bildirimler panel.
+           * profil-inbox.js bindSegment() restores from this key. */
+          try { sessionStorage.setItem('ht_bildirim_tab', 'duyuru'); }
+          catch (e) { /* ignore */ }
           switchPanel('bildirimler');
         });
         spine.appendChild(moreBtn);

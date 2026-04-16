@@ -3119,13 +3119,15 @@ test.describe('K033/K034 — Genel Bakis editorial redesign', () => {
   test('K034: gündem toggles use data-gb-toggle attribute for inline expand', () => {
     expect(genelJs).toContain('data-gb-toggle');
     /* Inline expand replaced the "Devamını oku" switchPanel jump.
-     * NOTE: "Daha fazla göster" paginated CTA at feed tail still routes
-     * to bildirimler panel — that's the MVP pagination entry (Tuna
-     * 2026-04-17). Toggles themselves must stay inline. */
-    var toggleBlock = genelJs.match(/wireGundemToggles[\s\S]*?function wireGundemToggles[\s\S]*?\n\s{2}\}/);
-    if (toggleBlock) {
-      expect(toggleBlock[0]).not.toContain("switchPanel('bildirimler')");
-    }
+     * Locate the wireGundemToggles function body and assert no
+     * bildirimler navigation inside it. (Daha fazla göster CTA outside
+     * this function intentionally routes to bildirimler — Tuna karari.) */
+    var startIdx = genelJs.indexOf('function wireGundemToggles');
+    expect(startIdx).toBeGreaterThan(-1);
+    /* Crude but adequate: scan ~2KB after the function start for the
+     * forbidden call. Function body is well under that size. */
+    var slice = genelJs.substring(startIdx, startIdx + 2000);
+    expect(slice).not.toContain("switchPanel('bildirimler')");
   });
 
   test('profil-genel.js wires gundem to get_announcements_feed RPC (K030 contract)', () => {

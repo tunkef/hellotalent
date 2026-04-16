@@ -1,5 +1,11 @@
 # HelloTalent AI-COLLAB — Aktif Calisma Defteri
 
+## 2026-04-17 — Gundem feed fixes Codex review pass (deep link + edge + grant)
+
+Codex pass review: HIGH (deep link), MEDIUM (pinned_until equality), MEDIUM (test regex dead), LOW (gereksiz grant). Hepsi uygulandi. 480/480 yesil.
+
+---
+
 ## 2026-04-17 — Gundem feed fixes (title overflow + 10-post limit + 60d auto-archive)
 
 Tuna UAT 3 madde:
