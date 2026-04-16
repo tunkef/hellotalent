@@ -1,5 +1,17 @@
 # HelloTalent AI-COLLAB — Aktif Calisma Defteri
 
+## 2026-04-16 — Teklifler → Firsatlar FAZ A (rename + routing)
+
+**Durum:** FAZ A rename tamamlandi (commit afd0b75 + Codex review fix commit). `profil-teklifler.js` → `profil-firsatlar.js`, panel id + data-panel + nav + badge + root + count-badge hepsi firsatlar prefix. UI labels "Teklifler"/"Ozel Teklifler" → "Firsatlar". Backward-compat alias switchPanel + popstate + hash restore (eski #teklifler bookmark'lar calisir). Genel Bakis rail dead link fix (switchPanel('firsatlar')). Notif routing 'kampanya'/'teklif'/'is_teklifi' → firsatlar.
+
+**DB enum dokunulmadi:** 'mesajlar_teklifler' destek kategorisi enum intact; UI_CATEGORIES.teklifler key korunur label 'Firsatlar'. Ayri migration backlog (FAZ A disi scope).
+
+**Codex K034 review:** 3 FAIL (kampanya notif routing, Premium context tutarsizligi, hash bookmark alias) ikinci commit'te kapandi. 455/455 p3.regression yesil.
+
+**Sirada:** FAZ B spec — profil-firsatlar.js tam rewrite (editorial design, premium gate removal, campaigns RPC wiring, store_opening/brand_story kart tipleri). FAZ C icerik zenginlestirme (discount/event types, admin composer polish) — ayri sprint.
+
+---
+
 ## Session 76 kapanis ozeti (2026-04-15 gece → 16 Nisan)
 
 **Aktif is:** K067-K071c editorial + dark mode + inbox + audit fixes TAMAM. 30+ commit push edildi. Test 910/0 yesil. HTML tag guard + regression aktif (K068b hotfix sonrasi).

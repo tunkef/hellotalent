@@ -907,6 +907,7 @@
         koc: 'mulakat',
         is_teklifi: 'firsatlar',
         teklif: 'firsatlar',
+        kampanya: 'firsatlar',
         mesaj: 'inbox',
         message: 'inbox'
       };

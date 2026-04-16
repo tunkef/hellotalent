@@ -120,8 +120,8 @@
     if (!root) return;
     var html = '';
     html += '<div class="tk-toggle-bar">';
-    html += '<button class="tk-toggle-btn' + (currentTab === 'freemium' ? ' active' : '') + '" data-tab="freemium">Herkese A\u00E7\u0131k Teklifler</button>';
-    html += '<button class="tk-toggle-btn' + (currentTab === 'premium' ? ' active' : '') + '" data-tab="premium">' + crownSVG + ' Premium Teklifler</button>';
+    html += '<button class="tk-toggle-btn' + (currentTab === 'freemium' ? ' active' : '') + '" data-tab="freemium">T\u00FCm F\u0131rsatlar</button>';
+    html += '<button class="tk-toggle-btn' + (currentTab === 'premium' ? ' active' : '') + '" data-tab="premium">' + crownSVG + ' Premium F\u0131rsatlar</button>';
     html += '</div>';
     html += '<div id="tk-tab-content"></div>';
     root.textContent = '';
@@ -157,8 +157,8 @@
       if (currentTab === 'premium' && window._htMvpFreeTier === true) {
         html += '<div style="background:linear-gradient(135deg,rgba(30,45,94,.06) 0%,rgba(201,78,40,.04) 100%);border:1px solid var(--border-subtle,#E5E3DF);border-radius:12px;padding:14px 18px;margin-bottom:16px;display:flex;align-items:center;gap:12px;">';
         html += '<div style="width:36px;height:36px;border-radius:10px;background:rgba(30,45,94,.08);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style="color:var(--navy,#1E2D5E);"><path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5z"/><path d="M5 19a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-1H5v1z" opacity=".5"/></svg></div>';
-        html += '<div><div style="font-family:\'Bricolage Grotesque\',sans-serif;font-size:13px;font-weight:700;color:var(--navy,#1E2D5E);margin-bottom:2px;">Premium Teklifler \u00b7 Beta Eri\u015Fimi</div>';
-        html += '<div style="font-family:\'Plus Jakarta Sans\',sans-serif;font-size:11px;color:var(--muted,#6B7280);line-height:1.4;">Bu teklifler 3 ay boyunca \u00fccretsiz eri\u015fime a\u00e7\u0131k. Beta sonras\u0131 Premium hesaplar i\u00e7in aktif olacak.</div>';
+        html += '<div><div style="font-family:\'Bricolage Grotesque\',sans-serif;font-size:13px;font-weight:700;color:var(--navy,#1E2D5E);margin-bottom:2px;">Premium F\u0131rsatlar \u00b7 Beta Eri\u015Fimi</div>';
+        html += '<div style="font-family:\'Plus Jakarta Sans\',sans-serif;font-size:11px;color:var(--muted,#6B7280);line-height:1.4;">Bu f\u0131rsatlar 3 ay boyunca \u00fccretsiz eri\u015fime a\u00e7\u0131k. Beta sonras\u0131 Premium hesaplar i\u00e7in aktif olacak.</div>';
         html += '</div></div>';
       }
       /* Freemium: carousel + filters + bento */
@@ -205,7 +205,7 @@
       html += '<div class="tk-gate-float" id="tk-gate-float">';
       html += '<svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor" style="color:var(--verm,#C94E28);margin-bottom:12px;"><path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5z"/><path d="M5 19a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-1H5v1z" opacity=".5"/></svg>';
       html += '<div class="tk-gate-title">S\u0131n\u0131rs\u0131z Eri\u015Fim</div>';
-      html += '<div class="tk-gate-desc">Premium ile t\u00FCm f\u0131rsatlara, \u00F6zel tekliflere ve ayr\u0131cal\u0131klara s\u0131n\u0131rs\u0131z eri\u015F.</div>';
+      html += '<div class="tk-gate-desc">Premium ile t\u00FCm f\u0131rsatlara, \u00F6zel duyurulara ve ayr\u0131cal\u0131klara s\u0131n\u0131rs\u0131z eri\u015F.</div>';
       html += '<button class="tk-gate-cta" data-panel="premium">Premium\u2019u Ke\u015Ffet</button>';
       html += '</div>';
     }
@@ -274,7 +274,7 @@
     var campaigns = getCampaignsForTab();
     var filters = [
       { key:'all', label:'T\u00FCm\u00FC' },
-      { key:'offer', label:'Teklifler' },
+      { key:'offer', label:'\u0130ndirim' },
       { key:'employer_branding', label:'\u0130\u015Fveren Markas\u0131' },
       { key:'hiring_boost', label:'\u0130\u015Fe Al\u0131m' }
     ];

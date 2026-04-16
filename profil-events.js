@@ -502,6 +502,10 @@ function _htInitEvents() {
   // ── Hash restore — must run AFTER _htRunStepInits and all wiring ──
   // Waits for bootstrap-done so async data load doesn't override the panel.
   var hashPanel = window.location.hash.replace('#', '');
+  // Normalize legacy hash aliases before the DOM existence check so old
+  // bookmarks (#teklifler, #yetkinlik) survive the K030+ renames.
+  if (hashPanel === 'teklifler') hashPanel = 'firsatlar';
+  if (hashPanel === 'yetkinlik') hashPanel = 'mulakat';
   if (hashPanel && document.getElementById('panel-' + hashPanel)) {
     var _applyHash = function() { switchPanel(hashPanel); };
     if (window._htBootstrapDone) {

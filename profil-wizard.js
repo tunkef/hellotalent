@@ -327,6 +327,9 @@ window.addEventListener('popstate', function(e) {
     if (exitModal) exitModal.classList.add('show');
     return;
   }
+  // Normalize legacy state payloads (pre-rename bookmarks / open tabs).
+  if (panel === 'teklifler') panel = 'firsatlar';
+  if (panel === 'yetkinlik') panel = 'mulakat';
   _currentHistoryPanel = panel;
   _doSwitchPanel(panel);
 });
