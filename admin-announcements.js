@@ -597,6 +597,13 @@
 
         var postId;
         if (existingRow && existingRow.id) {
+          /* First publish of an existing draft — stamp published_at so
+           * feed sort and "az once" labels are accurate (Codex K034
+           * FAZ D review Medium). Subsequent edits preserve the
+           * original publish moment. */
+          if (targetStatus === 'published' && !existingRow.published_at) {
+            payload.published_at = new Date().toISOString();
+          }
           var upd = await supa.from('ht_announcements').update(payload).eq('id', existingRow.id).select().maybeSingle();
           if (upd.error) throw upd.error;
           postId = existingRow.id;

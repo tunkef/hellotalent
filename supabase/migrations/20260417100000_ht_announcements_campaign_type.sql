@@ -27,10 +27,24 @@ BEGIN;
 
 -- 1. Schema
 ALTER TABLE public.ht_announcements
-  ADD COLUMN IF NOT EXISTS campaign_type text
-    CHECK (campaign_type IS NULL OR campaign_type IN (
-      'offer', 'employer_branding', 'store_opening', 'brand_story'
-    ));
+  ADD COLUMN IF NOT EXISTS campaign_type text;
+
+-- Separate ADD CONSTRAINT so a pre-existing column picks up the CHECK
+-- on migration rerun (ADD COLUMN IF NOT EXISTS ... CHECK would skip it
+-- when the column is already present).
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint
+    WHERE conname = 'ht_announcements_campaign_type_check'
+  ) THEN
+    ALTER TABLE public.ht_announcements
+      ADD CONSTRAINT ht_announcements_campaign_type_check
+      CHECK (campaign_type IS NULL OR campaign_type IN (
+        'offer', 'employer_branding', 'store_opening', 'brand_story'
+      ));
+  END IF;
+END$$;
 
 COMMENT ON COLUMN public.ht_announcements.campaign_type IS
   'FAZ D: when not null, the announcement is also surfaced in panel-firsatlar with the matching type badge. null = duyuru only.';
@@ -39,6 +53,19 @@ COMMENT ON COLUMN public.ht_announcements.campaign_type IS
 CREATE INDEX IF NOT EXISTS idx_ht_ann_campaign_type
   ON public.ht_announcements(campaign_type, published_at DESC)
   WHERE campaign_type IS NOT NULL AND is_active = true;
+
+-- 3. Candidate read policy on announcement media (cvs bucket).
+-- ht_ann_storage_admin_* (20260413214500) only covered admin write.
+-- Candidate signStorageUrls() needs SELECT on storage.objects for the
+-- announcements/ prefix. Without this, signed URLs come back empty
+-- and panel-firsatlar renders without covers for admin-authored rows.
+DROP POLICY IF EXISTS ht_ann_storage_candidate_read ON storage.objects;
+CREATE POLICY ht_ann_storage_candidate_read
+  ON storage.objects FOR SELECT TO authenticated
+  USING (
+    bucket_id = 'cvs'
+    AND (storage.foldername(name))[1] = 'announcements'
+  );
 
 -- 3. Update get_announcements_feed RPC (return campaign_type in row)
 DROP FUNCTION IF EXISTS get_announcements_feed(int, int);

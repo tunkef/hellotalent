@@ -1,5 +1,16 @@
 # HelloTalent AI-COLLAB — Aktif Calisma Defteri
 
+## 2026-04-17 — FAZ D Codex review fixes (idempotent CHECK + candidate SELECT policy + publish_at)
+
+**Durum:** Codex 2 valid FAIL + 1 Medium. Hepsi uygulandi:
+- Migration CHECK constraint DO block ile idempotent rerun-safe.
+- Candidate storage SELECT policy eklendi (ht_ann_storage_candidate_read) — private cvs bucket'ta announcements/ prefix'i icin signStorageUrls calisir.
+- Admin draft → publish update'te published_at set edilir (sadece ilk publish).
+
+Defansif: audience filter (public design), behavioral tests (K032 backlog).
+
+---
+
 ## 2026-04-17 — Firsatlar FAZ D (admin publish via duyuru composer + dual-source panel)
 
 **Durum:** Admin artik kendi firsatlarini mevcut duyuru composer'indan yayinlayabiliyor, ayri wizard yok. `ht_announcements` tablosuna `campaign_type` kolonu (nullable, 4 allowed value). Null = sadece duyuru, set = hem duyuru feed'de hem panel-firsatlar'da gorunur.
