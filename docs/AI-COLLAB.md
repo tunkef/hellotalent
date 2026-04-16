@@ -1,5 +1,11 @@
 # HelloTalent AI-COLLAB — Aktif Calisma Defteri
 
+## 2026-04-17 — Bildirimler hero refresh fix (Codex pass)
+
+Codex HIGH bulgusu: loadUnreadCount RPC complete sonrasi 'duyuru' tab aktif iken hero stale kaliyordu. Fix: sessionStorage check + _htUpdateBildirimHeroForMode('duyuru') re-render. LOW: dead [data-duyuru-badge] selector temizlendi.
+
+---
+
 ## 2026-04-17 — Bildirimler segment sadelesme (Tuna A — hero tek otorite)
 
 Toggle yanindaki sayaclar (`data-bildirim-count`, `data-duyuru-badge`) DOM'dan kaldirildi. Hero meta strip aktif moda gore degisir:

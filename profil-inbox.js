@@ -1586,17 +1586,9 @@
       var count = parseUnreadCount(res.data);
       console.warn('[duyuru] unread count RPC → data:', res.data, 'parsed:', count, 'since:', since);
 
-      /* Segment badge (in-panel) — update if present */
-      var panel = document.getElementById('panel-bildirimler');
-      var badge = panel && panel.querySelector('[data-duyuru-badge]');
-      if (badge) {
-        if (count > 0) {
-          badge.textContent = count > 99 ? '99+' : String(count);
-          badge.removeAttribute('hidden');
-        } else {
-          badge.setAttribute('hidden', '');
-        }
-      }
+      /* Tuna 2026-04-17: data-duyuru-badge DOM'dan silindi (toggle
+       * sayaclari yok). Segment badge guncelleme dead path olarak
+       * kaldirildi. Hero meta strip aktif moda gore refresh edilir. */
 
       /* Global + header bell dot — always updated */
       window._htDuyuruUnreadCount = count;
@@ -1605,6 +1597,16 @@
       } else {
         console.warn('[duyuru] _htApplyNotifBellDot missing — header dot won\u0027t refresh');
       }
+
+      /* Codex review HIGH (2026-04-17): hero meta strip aktif tab
+       * 'duyuru' ise async unread refresh sonrasi yeniden render
+       * edilmeli — yoksa RPC tamamlanana kadar stale 0 kalir. */
+      try {
+        var savedTab = sessionStorage.getItem('ht_bildirim_tab');
+        if (savedTab === 'duyuru' && typeof window._htUpdateBildirimHeroForMode === 'function') {
+          window._htUpdateBildirimHeroForMode('duyuru');
+        }
+      } catch (e2) { /* sessionStorage erisilemez — sessizce gec */ }
     } catch (e) {
       console.warn('[duyuru] unread count error:', e && e.message, e);
     }
