@@ -19,7 +19,15 @@
 
   /* ── SAFE DOM TABLE BUILDER ── */
   function buildCampaignTable(campaigns, showActions) {
-    var typeMap = { offer: 'Teklif', employer_branding: 'Marka', hiring_boost: 'İşe Alım' };
+    /* FAZ C: store_opening + brand_story eklendi; hiring_boost label'i
+     * mevcut veriler icin korundu ama wizard'da create edilmez. */
+    var typeMap = {
+      offer: 'Teklif',
+      employer_branding: 'Marka',
+      hiring_boost: 'İşe Alım',
+      store_opening: 'Yeni Mağaza',
+      brand_story: 'Marka Haberi'
+    };
     var statusMap = {
       draft: ['Taslak', 'draft'], pending_review: ['Beklemede', 'pending'],
       approved: ['Onaylı', 'approved'], active: ['Aktif', 'active'],

@@ -19,12 +19,18 @@
   var _root = null;
   var _allCampaigns = [];
 
-  var ALLOWED_TYPES = ['offer', 'employer_branding'];
+  /* FAZ C — extended types.
+   * 'hiring_boost' still excluded (iş ilanı yasak — Tuna karari).
+   * New types 'store_opening' + 'brand_story' added via migration
+   * 20260416120000_firsatlar_campaign_types.sql. */
+  var ALLOWED_TYPES = ['offer', 'employer_branding', 'store_opening', 'brand_story'];
 
   /* Type metadata — label + accent modifier. */
   var TYPE_META = {
-    offer:              { label: '\u0130NDIRIM',       mod: 'frs-card--offer' },
-    employer_branding:  { label: 'MARKA H\u0130K\u00C2YES\u0130', mod: 'frs-card--branding' }
+    offer:              { label: '\u0130ND\u0130R\u0130M',           mod: 'frs-card--offer' },
+    employer_branding:  { label: 'MARKA H\u0130K\u00C2YES\u0130', mod: 'frs-card--branding' },
+    store_opening:      { label: 'YEN\u0130 MA\u011EAZA',          mod: 'frs-card--opening' },
+    brand_story:        { label: 'MARKA HABER\u0130',              mod: 'frs-card--story' }
   };
 
   /* Demo fallback shown when DB returns 0 campaigns. Purely illustrative
@@ -68,10 +74,22 @@
     },
     {
       id: 'demo-4',
-      title: 'Yeni Ma\u011Faza A\u00E7\u0131l\u0131\u015F\u0131',
+      title: 'Yeni Ma\u011Faza A\u00E7\u0131l\u0131\u015F\u0131 — Ni\u015Fanta\u015F\u0131',
       short_desc: '\u0130stanbul Ni\u015Fanta\u015F\u0131\'nda yeni flagship ma\u011Faza. Bizi takip et, a\u00E7\u0131l\u0131\u015F kampanyas\u0131ndan haberdar ol.',
-      campaign_type: 'employer_branding',
+      campaign_type: 'store_opening',
       company_name: 'Beymen',
+      promo_code: null,
+      cta_label: 'Markay\u0131 Takip Et',
+      cta_url: null,
+      cover_image_url: null,
+      demo: true
+    },
+    {
+      id: 'demo-5',
+      title: 'E\u015Fle\u015Fmelerde \u00D6ne \u00C7\u0131kmak \u0130\u00E7in Bizi Takip Et',
+      short_desc: 'Koton ailesi b\u00FCy\u00FCyor. Adaylar takip ettiklerinde e\u015Fle\u015Fme algoritmam\u0131zda daha \u00F6n s\u0131rada yer al\u0131yor.',
+      campaign_type: 'brand_story',
+      company_name: 'Koton',
       promo_code: null,
       cta_label: 'Markay\u0131 Takip Et',
       cta_url: null,

@@ -20,8 +20,17 @@
   };
   var SEGMENT_KEYS = Object.keys(SEGMENT_MAP);
 
-  /* ── TYPE LABELS ── */
-  var TYPE_MAP = { offer:'Teklif', employer_branding:'İşveren Markası', hiring_boost:'İşe Alım Boost' };
+  /* ── TYPE LABELS ──
+   * FAZ C: 'hiring_boost' wizard'dan kaldirildi (is ilani yasak) ama
+   * label map'te kalir — mevcut hiring_boost kampanyalari admin'de
+   * gosterilirken kirilmadan label verir. */
+  var TYPE_MAP = {
+    offer: 'Teklif',
+    employer_branding: 'İşveren Markası',
+    hiring_boost: 'İşe Alım Boost',
+    store_opening: 'Yeni Mağaza',
+    brand_story: 'Marka Haberi'
+  };
 
   /* ── STATUS LABELS ── */
   var STATUS_MAP = {
@@ -389,14 +398,17 @@
     h.textContent = 'Kampanya Türü Seçin';
     container.appendChild(h);
 
+    /* FAZ C: hiring_boost kaldirildi (is ilani yasak). store_opening +
+     * brand_story eklendi. İkon/emoji kullanilmaz — Tuna design kurali. */
     var types = [
-      { key:'offer', icon:'🎁', label:'Özel Teklif', desc:'İndirim, promosyon kodu veya özel fırsat sunun' },
-      { key:'employer_branding', icon:'🏢', label:'İşveren Markası', desc:'Şirket kültürünüzü ve değerlerinizi tanıtın' },
-      { key:'hiring_boost', icon:'🚀', label:'İşe Alım Boost', desc:'Açık pozisyonlarınızı öne çıkarın' }
+      { key:'offer', label:'Özel Teklif', desc:'İndirim, promosyon kodu veya özel fırsat sunun' },
+      { key:'employer_branding', label:'İşveren Markası', desc:'Şirket kültürünüzü ve değerlerinizi tanıtın' },
+      { key:'store_opening', label:'Yeni Mağaza', desc:'Yeni mağaza açılışı veya lokasyon duyurusu' },
+      { key:'brand_story', label:'Marka Haberi', desc:'Adaylara markayı hatırlatın, takipçi kazanın' }
     ];
 
     var grid = document.createElement('div');
-    grid.style.cssText = 'display:grid;grid-template-columns:repeat(3,1fr);gap:12px;';
+    grid.style.cssText = 'display:grid;grid-template-columns:repeat(2,1fr);gap:12px;';
 
     for (var i = 0; i < types.length; i++) {
       (function(t) {
@@ -410,13 +422,10 @@
         card.addEventListener('mouseover', function(){ if(wizardData.campaign_type !== t.key) card.style.borderColor='var(--navy)'; });
         card.addEventListener('mouseout', function(){ if(wizardData.campaign_type !== t.key) card.style.borderColor='var(--border)'; });
 
-        var iconDiv = document.createElement('div');
-        iconDiv.style.cssText = 'font-size:32px;margin-bottom:8px;';
-        iconDiv.textContent = t.icon;
-        card.appendChild(iconDiv);
-
+        /* FAZ C: icon div kaldirildi (emoji yasak). Card simdi sadece
+         * typography-led — label + desc. */
         var lbl = document.createElement('div');
-        lbl.style.cssText = 'font-weight:700;font-size:14px;margin-bottom:4px;';
+        lbl.style.cssText = 'font-weight:700;font-size:15px;margin-bottom:6px;';
         lbl.textContent = t.label;
         card.appendChild(lbl);
 

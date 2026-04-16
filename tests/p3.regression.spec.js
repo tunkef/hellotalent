@@ -4195,11 +4195,14 @@ test.describe('K034 FAZ B — Firsatlar editorial redesign', () => {
     expect(firsatlarJs).not.toContain('currentTab');
   });
 
-  test('profil-firsatlar.js filters campaign types to offer + employer_branding', () => {
+  test('profil-firsatlar.js filters campaign types (FAZ C: 4 types, hiring_boost excluded)', () => {
     expect(firsatlarJs).toContain('ALLOWED_TYPES');
     expect(firsatlarJs).toContain("'offer'");
     expect(firsatlarJs).toContain("'employer_branding'");
-    expect(firsatlarJs).not.toMatch(/ALLOWED_TYPES.*hiring_boost/s);
+    expect(firsatlarJs).toContain("'store_opening'");
+    expect(firsatlarJs).toContain("'brand_story'");
+    /* hiring_boost must NOT appear in the allowed list. */
+    expect(firsatlarJs).not.toMatch(/ALLOWED_TYPES\s*=\s*\[[^\]]*hiring_boost/);
     /* Query builder must apply the in() filter. */
     expect(firsatlarJs).toContain('.in(');
     expect(firsatlarJs).toContain('ALLOWED_TYPES');
@@ -4216,6 +4219,66 @@ test.describe('K034 FAZ B — Firsatlar editorial redesign', () => {
     /* Guard: no innerHTML with campaign fields; safe-by-construction DOM. */
     expect(firsatlarJs).not.toMatch(/innerHTML\s*=/);
     expect(firsatlarJs).not.toMatch(/insertAdjacentHTML/);
+  });
+});
+
+/* ═══════════════════════════════════════════════════════════════════════
+   K034 FAZ C — Firsatlar campaign_type extension
+   Adds 'store_opening' + 'brand_story' enum values, extends UI type
+   metadata, surfaces the new types in ik-kampanya.js wizard (dropping
+   hiring_boost — iş ilanı yasak), and updates admin-campaigns label map.
+   ═══════════════════════════════════════════════════════════════════════ */
+test.describe('K034 FAZ C — Firsatlar campaign_type extension', () => {
+  var fs = require('fs');
+  var path = require('path');
+  var ROOT_FAZC = path.join(__dirname, '..');
+  var migrationFazC = fs.readFileSync(
+    path.join(ROOT_FAZC, 'supabase/migrations/20260416120000_firsatlar_campaign_types.sql'),
+    'utf8'
+  );
+  var firsatlarJsFazC = fs.readFileSync(path.join(ROOT_FAZC, 'profil-firsatlar.js'), 'utf8');
+  var firsatlarCssFazC = fs.readFileSync(path.join(ROOT_FAZC, 'css/panels/firsatlar.css'), 'utf8');
+  var ikKampanyaJs = fs.readFileSync(path.join(ROOT_FAZC, 'ik-kampanya.js'), 'utf8');
+  var adminCampaignsJs = fs.readFileSync(path.join(ROOT_FAZC, 'admin-campaigns.js'), 'utf8');
+
+  test('migration adds store_opening + brand_story to campaign_type enum', () => {
+    expect(migrationFazC).toMatch(/ALTER TYPE[\s\S]*campaign_type[\s\S]*ADD VALUE[\s\S]*store_opening/);
+    expect(migrationFazC).toMatch(/ALTER TYPE[\s\S]*campaign_type[\s\S]*ADD VALUE[\s\S]*brand_story/);
+    expect(migrationFazC).toContain('IF NOT EXISTS');
+  });
+
+  test('profil-firsatlar.js TYPE_META includes all 4 rendered types', () => {
+    expect(firsatlarJsFazC).toContain('offer:');
+    expect(firsatlarJsFazC).toContain('employer_branding:');
+    expect(firsatlarJsFazC).toContain('store_opening:');
+    expect(firsatlarJsFazC).toContain('brand_story:');
+    expect(firsatlarJsFazC).toContain('frs-card--opening');
+    expect(firsatlarJsFazC).toContain('frs-card--story');
+  });
+
+  test('firsatlar.css defines accent modifiers for new types', () => {
+    expect(firsatlarCssFazC).toContain('.frs-card--opening');
+    expect(firsatlarCssFazC).toContain('.frs-card--story');
+  });
+
+  test('ik-kampanya.js wizard offers store_opening + brand_story, drops hiring_boost', () => {
+    /* TYPE_MAP still contains hiring_boost (legacy labels for existing
+     * campaigns) but the wizard `types` array must NOT list it. */
+    expect(ikKampanyaJs).toContain("key:'store_opening'");
+    expect(ikKampanyaJs).toContain("key:'brand_story'");
+    /* Wizard array — verify hiring_boost is not in the selectable types. */
+    var typesMatch = ikKampanyaJs.match(/var types\s*=\s*\[([\s\S]*?)\];/);
+    expect(typesMatch).toBeTruthy();
+    expect(typesMatch[1]).not.toContain("key:'hiring_boost'");
+    /* Emoji removed from type cards per design rule. */
+    expect(typesMatch[1]).not.toContain('icon:');
+  });
+
+  test('admin-campaigns.js typeMap labels new types for admin list view', () => {
+    expect(adminCampaignsJs).toContain('store_opening:');
+    expect(adminCampaignsJs).toContain('brand_story:');
+    /* hiring_boost label preserved for backward compat display. */
+    expect(adminCampaignsJs).toContain('hiring_boost:');
   });
 });
 

@@ -127,8 +127,14 @@
 .frs-card--offer::before {
   background: var(--editorial-vermillion, #C94E28);
 }
-.frs-card--branding::before {
+.frs-card--branding::before,
+.frs-card--story::before {
   background: var(--editorial-ink, #1E2D5E);
+}
+/* Store opening uses a lighter accent to distinguish from generic
+ * employer branding — physical retail event, not a marketing story. */
+.frs-card--opening::before {
+  background: var(--editorial-vermillion-soft, #E89478);
 }
 
 /* ── Cover ── */
@@ -306,10 +312,14 @@
 .frs-card__cta:hover {
   background: var(--editorial-vermillion-deep, #A23E1F);
 }
-.frs-card--branding .frs-card__cta {
+.frs-card--branding .frs-card__cta,
+.frs-card--story .frs-card__cta,
+.frs-card--opening .frs-card__cta {
   background: var(--editorial-ink, #1E2D5E);
 }
-.frs-card--branding .frs-card__cta:hover {
+.frs-card--branding .frs-card__cta:hover,
+.frs-card--story .frs-card__cta:hover,
+.frs-card--opening .frs-card__cta:hover {
   background: var(--editorial-ink-strong, #0E1A3C);
 }
 
