@@ -408,32 +408,6 @@
 }
 
 /* ════════════════════════════════════════════════════════════════
-   ERROR STATE
-   ════════════════════════════════════════════════════════════════ */
-.frs-error {
-  padding: 32px;
-  text-align: center;
-  background: var(--editorial-card, #F7F6F4);
-  border: 1px solid var(--editorial-hairline, #E5E3DF);
-  border-radius: 14px;
-  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
-  font-size: 14px;
-  color: var(--editorial-ink-muted, #6B6A66);
-}
-.frs-error__retry {
-  display: inline-block;
-  margin-top: 12px;
-  padding: 8px 16px;
-  background: var(--editorial-ink, #1E2D5E);
-  color: #fff;
-  border: 0;
-  border-radius: 6px;
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-/* ════════════════════════════════════════════════════════════════
    Animations
    ════════════════════════════════════════════════════════════════ */
 @keyframes frsFadeUp {

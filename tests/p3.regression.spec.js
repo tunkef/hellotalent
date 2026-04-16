@@ -4203,9 +4203,10 @@ test.describe('K034 FAZ B — Firsatlar editorial redesign', () => {
     expect(firsatlarJs).toContain("'brand_story'");
     /* hiring_boost must NOT appear in the allowed list. */
     expect(firsatlarJs).not.toMatch(/ALLOWED_TYPES\s*=\s*\[[^\]]*hiring_boost/);
-    /* Query builder must apply the in() filter. */
-    expect(firsatlarJs).toContain('.in(');
-    expect(firsatlarJs).toContain('ALLOWED_TYPES');
+    /* Filter enforced client-side via filterAllowed() — avoids PG enum
+     * cast error during staged migration rollout. */
+    expect(firsatlarJs).toContain('filterAllowed');
+    expect(firsatlarJs).toContain('ALLOWED_TYPES.indexOf');
   });
 
   test('profil-firsatlar.js preserves critical DOM ids and public entry', () => {
@@ -4279,6 +4280,26 @@ test.describe('K034 FAZ C — Firsatlar campaign_type extension', () => {
     expect(adminCampaignsJs).toContain('brand_story:');
     /* hiring_boost label preserved for backward compat display. */
     expect(adminCampaignsJs).toContain('hiring_boost:');
+  });
+
+  test('profil-firsatlar.js has no demo fallback array (Tuna: fake yok)', () => {
+    expect(firsatlarJsFazC).not.toMatch(/DEMO_CAMPAIGNS\s*=/);
+    expect(firsatlarJsFazC).not.toMatch(/isDemoMode/);
+  });
+
+  test('profil-firsatlar.js surfaces empty state even on fetch error', () => {
+    /* Error UI removed — silent fallback to buildEmpty. */
+    expect(firsatlarJsFazC).not.toMatch(/function\s+buildError/);
+    expect(firsatlarJsFazC).not.toContain('frs-error__retry');
+    expect(firsatlarJsFazC).toContain('render empty');
+  });
+
+  test('profil-genel.js rail cell uses "Fırsatları gör" label', () => {
+    var genelJs = fs.readFileSync(path.join(ROOT_FAZC, 'profil-genel.js'), 'utf8');
+    /* The cell should not say "Kampanyaları gör" — Tuna karari: panel
+     * ismi Fırsatlar, tutarli olsun. */
+    expect(genelJs).toContain('F\\u0131rsatlar\\u0131 g\\u00F6r');
+    expect(genelJs).not.toMatch(/link:\s*'Kampanyalar\\u0131 g\\u00F6r'/);
   });
 });
 

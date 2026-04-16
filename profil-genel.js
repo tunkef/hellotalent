@@ -376,7 +376,7 @@
     rail.appendChild(buildRailCell({
       label: 'F\u0131rsatlar',
       value: '0 yeni',
-      link: 'Kampanyalar\u0131 g\u00F6r',
+      link: 'F\u0131rsatlar\u0131 g\u00F6r',
       onClick: function() { switchPanel('firsatlar'); },
       cellClass: 'gb-rail-cell--firsatlar'
     }));

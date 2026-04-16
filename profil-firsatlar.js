@@ -23,7 +23,12 @@
   /* FAZ C — extended types.
    * 'hiring_boost' still excluded (iş ilanı yasak — Tuna karari).
    * New types 'store_opening' + 'brand_story' added via migration
-   * 20260416120000_firsatlar_campaign_types.sql. */
+   * 20260416120000_firsatlar_campaign_types.sql.
+   *
+   * NOT: Filter client-side yapilir (.in() degil). Sebep: migration
+   * kademeli deploy oluyor; DB'de henuz olmayan enum value icin .in()
+   * PostgreSQL'de "invalid input value for enum" hatasi atar. Client-side
+   * filter her iki durumda da guvenli. */
   var ALLOWED_TYPES = ['offer', 'employer_branding', 'store_opening', 'brand_story'];
 
   /* Type metadata — label + accent modifier. */
@@ -33,71 +38,6 @@
     store_opening:      { label: 'YEN\u0130 MA\u011EAZA',          mod: 'frs-card--opening' },
     brand_story:        { label: 'MARKA HABER\u0130',              mod: 'frs-card--story' }
   };
-
-  /* Demo fallback shown when DB returns 0 campaigns. Purely illustrative
-   * — FAZ C migration will seed real store_opening/brand_story content. */
-  var DEMO_CAMPAIGNS = [
-    {
-      id: 'demo-1',
-      title: '%20 \u0130ndirim Kuponu',
-      short_desc: 'hellotalent adaylar\u0131na \u00F6zel online ve ma\u011Faza al\u0131\u015Fveri\u015Flerinde ge\u00E7erli indirim kodu.',
-      campaign_type: 'offer',
-      company_name: 'Zara',
-      promo_code: 'HT2026ZARA',
-      cta_label: 'Kodu Kullan',
-      cta_url: null,
-      cover_image_url: null,
-      demo: true
-    },
-    {
-      id: 'demo-2',
-      title: 'Bizimle Tan\u0131\u015F\u0131n',
-      short_desc: 'T\u00FCrkiye\u2019nin lider l\u00FCks perakende grubunu yak\u0131ndan tan\u0131y\u0131n. K\u00FClt\u00FCr\u00FCm\u00FCz ve kariyer f\u0131rsatlar\u0131m\u0131z.',
-      campaign_type: 'employer_branding',
-      company_name: 'Vakko',
-      promo_code: null,
-      cta_label: 'Marka Sayfas\u0131',
-      cta_url: null,
-      cover_image_url: null,
-      demo: true
-    },
-    {
-      id: 'demo-3',
-      title: 'Sezon Sonu F\u0131rsat\u0131',
-      short_desc: 'Se\u00E7ili \u00FCr\u00FCnlerde %30\u2019a varan indirim. Yaln\u0131zca hellotalent adaylar\u0131na \u00F6zel.',
-      campaign_type: 'offer',
-      company_name: 'Mavi',
-      promo_code: 'HTMAVI30',
-      cta_label: 'Al\u0131\u015Fveri\u015Fe Ba\u015Fla',
-      cta_url: null,
-      cover_image_url: null,
-      demo: true
-    },
-    {
-      id: 'demo-4',
-      title: 'Yeni Ma\u011Faza A\u00E7\u0131l\u0131\u015F\u0131 — Ni\u015Fanta\u015F\u0131',
-      short_desc: '\u0130stanbul Ni\u015Fanta\u015F\u0131\'nda yeni flagship ma\u011Faza. Bizi takip et, a\u00E7\u0131l\u0131\u015F kampanyas\u0131ndan haberdar ol.',
-      campaign_type: 'store_opening',
-      company_name: 'Beymen',
-      promo_code: null,
-      cta_label: 'Markay\u0131 Takip Et',
-      cta_url: null,
-      cover_image_url: null,
-      demo: true
-    },
-    {
-      id: 'demo-5',
-      title: 'E\u015Fle\u015Fmelerde \u00D6ne \u00C7\u0131kmak \u0130\u00E7in Bizi Takip Et',
-      short_desc: 'Koton ailesi b\u00FCy\u00FCyor. Adaylar takip ettiklerinde e\u015Fle\u015Fme algoritmam\u0131zda daha \u00F6n s\u0131rada yer al\u0131yor.',
-      campaign_type: 'brand_story',
-      company_name: 'Koton',
-      promo_code: null,
-      cta_label: 'Markay\u0131 Takip Et',
-      cta_url: null,
-      cover_image_url: null,
-      demo: true
-    }
-  ];
 
   /* ── DOM helpers ───────────────────────────────── */
   function el(tag, cls) {
@@ -144,16 +84,9 @@
     return wrap;
   }
 
-  function buildError(onRetry) {
-    var wrap = el('div', 'frs-error');
-    wrap.appendChild(txt('div', '', 'F\u0131rsatlar \u015Fu an y\u00FCklenemedi.'));
-    var btn = txt('button', 'frs-error__retry', 'Tekrar dene');
-    btn.type = 'button';
-    btn.addEventListener('click', onRetry);
-    wrap.appendChild(btn);
-    return wrap;
-  }
-
+  /* Fetch errors fall back to the same empty state as "no campaigns" —
+   * Tuna karari: fake demo yok, error UI de yok; tek kullanici-facing
+   * durum empty state. Log console'a dusulur debug icin. */
   function buildEmpty() {
     var wrap = el('div', 'frs-empty');
     wrap.appendChild(txt('h3', 'frs-empty__title', 'Hen\u00FCz f\u0131rsat yok'));
@@ -189,9 +122,6 @@
     }
     var typeBadge = txt('span', 'frs-card__type-badge', type.label);
     cover.appendChild(typeBadge);
-    if (c.demo === true) {
-      cover.appendChild(txt('span', 'frs-card__demo-badge', '\u00D6RNEK'));
-    }
     card.appendChild(cover);
 
     /* Body */
@@ -280,19 +210,17 @@
 
   /* ── Telemetry ─────────────────────────────────── */
   function trackClick(c) {
-    if (typeof ht_track !== 'function' || !c || c.demo) return;
+    if (typeof ht_track !== 'function' || !c) return;
     try { ht_track('firsat_click', { campaign_id: c.id, type: c.campaign_type }); }
     catch (e) { /* ignore */ }
   }
 
   function trackImpressionBatch(campaigns) {
-    if (typeof ht_track !== 'function') return;
-    var real = campaigns.filter(function (c) { return !c.demo; });
-    if (real.length === 0) return;
+    if (typeof ht_track !== 'function' || !campaigns.length) return;
     try {
       ht_track('firsatlar_impression_batch', {
-        count: real.length,
-        ids: real.map(function (c) { return c.id; })
+        count: campaigns.length,
+        ids: campaigns.map(function (c) { return c.id; })
       });
     } catch (e) { /* ignore */ }
   }
@@ -326,11 +254,19 @@
   async function fetchCampaigns() {
     if (typeof supabase === 'undefined' || !supabase.from) return { data: [], error: new Error('supabase unavailable') };
     var sel = 'id, title, short_desc, full_desc, campaign_type, cover_image_url, cta_label, cta_url, promo_code, start_date, end_date, company_id, brand_id, companies(company_name, logo_url)';
+    /* Client-side type filter (see ALLOWED_TYPES comment) — avoids
+     * PostgreSQL enum cast error when migration partially deployed. */
     return supabase.from('campaigns')
       .select(sel)
       .eq('status', 'active')
-      .in('campaign_type', ALLOWED_TYPES)
       .order('start_date', { ascending: false });
+  }
+
+  function filterAllowed(rows) {
+    if (!Array.isArray(rows)) return [];
+    return rows.filter(function (c) {
+      return c && ALLOWED_TYPES.indexOf(c.campaign_type) !== -1;
+    });
   }
 
   /* ── Main render pipeline ──────────────────────── */
@@ -359,38 +295,15 @@
     /* Drop skeleton */
     if (skeletonHost.parentNode) skeletonHost.parentNode.removeChild(skeletonHost);
 
+    /* Fetch error → silent empty state (Tuna karari: error UI yok,
+     * fake veri yok). Log console'a debug icin. */
     if (res.error) {
-      console.warn('[firsatlar] fetch error:', res.error.message);
-      shell.appendChild(buildError(function () {
-        _loaded = false;
-        window._htLoadFirsatlar();
-      }));
-      return;
+      console.warn('[firsatlar] fetch error (render empty):', res.error.message);
     }
 
-    var real = Array.isArray(res.data) ? res.data : [];
-    _allCampaigns = real;
-
-    var campaigns;
-    var isDemoMode = false;
-    if (real.length === 0) {
-      campaigns = DEMO_CAMPAIGNS.slice();
-      isDemoMode = true;
-    } else {
-      campaigns = real;
-    }
-
-    /* Meta stripe above grid (real count — exclude demo) */
-    shell.appendChild(buildMeta(real));
-
-    if (isDemoMode) {
-      /* Demo notice (same semantic as old panel). */
-      var note = el('div', 'frs-meta');
-      note.style.borderBottom = 'none';
-      note.style.fontStyle = 'italic';
-      note.appendChild(document.createTextNode('Markalar\u0131n f\u0131rsatlar\u0131 yak\u0131nda burada yay\u0131nlanacak. A\u015Fa\u011F\u0131daki kartlar \u00F6rnektir.'));
-      shell.appendChild(note);
-    }
+    var rows = (res && !res.error && Array.isArray(res.data)) ? res.data : [];
+    var campaigns = filterAllowed(rows);
+    _allCampaigns = campaigns;
 
     if (campaigns.length === 0) {
       shell.appendChild(buildEmpty());
@@ -398,8 +311,9 @@
       return;
     }
 
+    shell.appendChild(buildMeta(campaigns));
     shell.appendChild(renderGrid(campaigns));
-    updateCountBadges(real.length);
+    updateCountBadges(campaigns.length);
     trackImpressionBatch(campaigns);
   }
 

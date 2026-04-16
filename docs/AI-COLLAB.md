@@ -1,5 +1,17 @@
 # HelloTalent AI-COLLAB — Aktif Calisma Defteri
 
+## 2026-04-17 — Firsatlar UAT hotfix (demo fallback + error state kaldirildi)
+
+**Durum:** Tuna canli UAT geribildirim uygulandi.
+- Firsat yoksa fake kart gosterme: DEMO_CAMPAIGNS + isDemoMode silindi.
+- Error state çirkin (dark mode button contrast bozuk) + kullaniciya hata göstermeye gerek yok: buildError silindi, error durumunda sessizce empty state rendering (console.warn log).
+- Rail cell "Kampanyalari gor" → "Firsatlari gor" (panel ismiyle tutarli).
+- Bonus fix: PG enum cast race (.in partial migration deploy'da crash atiyordu) — client-side filter (filterAllowed) kullaniliyor. Migration deploy durumundan bagimsiz guvenli.
+
+**Sirada:** Migration `20260416120000_firsatlar_campaign_types.sql` Supabase dashboard'a deploy edilmeli. Sonra admin → kampanyalar wizard'da 4 tip secilebilir + aday panelinde real veri gorunur. Migration deploy ayri manual adim.
+
+---
+
 ## 2026-04-16 — Firsatlar FAZ B + C (editorial rewrite + enum extension)
 
 **Durum:** FAZ B + C tamamlandi (commit'ler c0a22e6 + 2085bd3 + stale header fix, Codex 4 gate: hepsi PASS).
