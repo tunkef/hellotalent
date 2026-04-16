@@ -6,6 +6,10 @@
  *   - 4 campaign types rendered: offer, employer_branding, store_opening,
  *     brand_story. 'hiring_boost' filtered out (iş ilanı değil — Tuna
  *     karari). See migration 20260416120000_firsatlar_campaign_types.sql.
+ *   - Dual data source (FAZ D): campaigns table (employer-authored,
+ *     status=active, approval-gated) + ht_announcements with
+ *     campaign_type not null (admin-authored, via duyuru composer).
+ *     Migration 20260417100000 adds campaign_type column + RPC.
  *   - No demo/fake content. Empty DB or fetch error → empty state
  *     (Tuna karari 2026-04-17 UAT).
  *   - Editorial vocabulary: .frs-* (see css/panels/firsatlar.css).
@@ -185,8 +189,10 @@
       btn.textContent = ctaLabel;
       btn.addEventListener('click', function () {
         trackClick(c);
-        /* Branding → navigate to Sirketler panel if company known. */
-        if (c.campaign_type === 'employer_branding' && typeof switchPanel === 'function') {
+        /* Branding → navigate to Sirketler panel if this is an employer
+         * campaign with a real company. Admin-authored announcements
+         * (source='announcement') have no company so we skip. */
+        if (c.campaign_type === 'employer_branding' && c.source !== 'announcement' && typeof switchPanel === 'function') {
           switchPanel('sirketler');
         }
       });
@@ -263,6 +269,62 @@
       .order('start_date', { ascending: false });
   }
 
+  /* FAZ D — Admin-authored fırsatlar published via duyuru composer.
+   * RPC returns announcement rows with campaign_type not null; we
+   * normalize them into the same card shape as campaigns. */
+  async function fetchFirsatAnnouncements() {
+    if (typeof supabase === 'undefined' || !supabase.rpc) return { data: [], error: new Error('supabase unavailable') };
+    return supabase.rpc('get_firsat_announcements');
+  }
+
+  /* Batch-sign storage paths for announcement media (private cvs bucket). */
+  async function signAnnMedia(rows) {
+    var paths = [];
+    for (var i = 0; i < rows.length; i++) {
+      var media = rows[i].media || [];
+      for (var j = 0; j < media.length; j++) {
+        if (media[j] && media[j].storage_path) paths.push(media[j].storage_path);
+      }
+    }
+    if (paths.length === 0) return {};
+    if (!(window.HT && typeof window.HT.signStorageUrls === 'function')) return {};
+    try { return await window.HT.signStorageUrls(paths, 3600); }
+    catch (e) { console.warn('[firsatlar] ann media sign failed:', e && e.message); return {}; }
+  }
+
+  /* Normalize announcement row → campaign-card shape. First image media
+   * becomes cover_image_url; admin has no brand/company concept so we
+   * label as HelloTalent. */
+  function normalizeAnnouncement(ann, signedMap) {
+    var coverUrl = null;
+    var media = ann.media || [];
+    for (var i = 0; i < media.length; i++) {
+      var m = media[i];
+      if (m && m.media_type === 'image' && m.storage_path && signedMap[m.storage_path]) {
+        coverUrl = signedMap[m.storage_path];
+        break;
+      }
+    }
+    /* Strip markdown noise for card preview. */
+    var raw = ann.body_md ? String(ann.body_md) : '';
+    var desc = raw.replace(/[#*_>`\-]+/g, '').replace(/\s+/g, ' ').trim();
+    if (desc.length > 200) desc = desc.substring(0, 198) + '\u2026';
+    return {
+      id: 'ann_' + ann.id,
+      source: 'announcement',
+      title: ann.title,
+      short_desc: desc,
+      campaign_type: ann.campaign_type,
+      cover_image_url: coverUrl,
+      cta_label: ann.cta_label || null,
+      cta_url: ann.cta_url || null,
+      promo_code: null,
+      company_name: 'HelloTalent',
+      companies: null,
+      start_date: ann.published_at
+    };
+  }
+
   function filterAllowed(rows) {
     if (!Array.isArray(rows)) return [];
     return rows.filter(function (c) {
@@ -285,37 +347,59 @@
     shell.appendChild(skeletonHost);
     _root.appendChild(shell);
 
-    var res;
+    /* FAZ D: dual-source fetch in parallel —
+     *   - campaigns (employer-authored, approved)
+     *   - ht_announcements with campaign_type set (admin-authored) */
+    var campaignRes, annRes;
     try {
-      res = await fetchCampaigns();
+      var pair = await Promise.all([fetchCampaigns(), fetchFirsatAnnouncements()]);
+      campaignRes = pair[0];
+      annRes = pair[1];
     } catch (e) {
-      console.error('[firsatlar] fetch threw:', e && e.message);
-      res = { data: [], error: e };
+      console.error('[firsatlar] dual fetch threw:', e && e.message);
+      campaignRes = { data: [], error: e };
+      annRes = { data: [], error: e };
     }
 
     /* Drop skeleton */
     if (skeletonHost.parentNode) skeletonHost.parentNode.removeChild(skeletonHost);
 
-    /* Fetch error → silent empty state (Tuna karari: error UI yok,
-     * fake veri yok). Log console'a debug icin. */
-    if (res.error) {
-      console.warn('[firsatlar] fetch error (render empty):', res.error.message);
-    }
+    /* Silent empty on any error (Tuna karari: error UI yok). */
+    if (campaignRes.error) console.warn('[firsatlar] campaigns error:', campaignRes.error.message);
+    if (annRes.error) console.warn('[firsatlar] announcements error:', annRes.error.message);
 
-    var rows = (res && !res.error && Array.isArray(res.data)) ? res.data : [];
-    var campaigns = filterAllowed(rows);
-    _allCampaigns = campaigns;
+    var campaignRows = (campaignRes && !campaignRes.error && Array.isArray(campaignRes.data)) ? campaignRes.data : [];
+    var campaigns = filterAllowed(campaignRows);
 
-    if (campaigns.length === 0) {
+    var annRows = (annRes && !annRes.error && Array.isArray(annRes.data)) ? annRes.data : [];
+    /* Announcements already filtered by RPC (campaign_type not null +
+     * is_active) but apply ALLOWED_TYPES guard client-side too. */
+    annRows = filterAllowed(annRows);
+
+    var signedMap = annRows.length > 0 ? await signAnnMedia(annRows) : {};
+    var normalizedAnns = annRows.map(function (a) { return normalizeAnnouncement(a, signedMap); });
+
+    /* Merge + sort newest first. campaigns use start_date, announcements
+     * use published_at normalized to same field. */
+    var merged = campaigns.concat(normalizedAnns);
+    merged.sort(function (a, b) {
+      var da = a.start_date ? new Date(a.start_date).getTime() : 0;
+      var db = b.start_date ? new Date(b.start_date).getTime() : 0;
+      return db - da;
+    });
+
+    _allCampaigns = merged;
+
+    if (merged.length === 0) {
       shell.appendChild(buildEmpty());
       updateCountBadges(0);
       return;
     }
 
-    shell.appendChild(buildMeta(campaigns));
-    shell.appendChild(renderGrid(campaigns));
-    updateCountBadges(campaigns.length);
-    trackImpressionBatch(campaigns);
+    shell.appendChild(buildMeta(merged));
+    shell.appendChild(renderGrid(merged));
+    updateCountBadges(merged.length);
+    trackImpressionBatch(merged);
   }
 
   /* ── Public entry — panel-firsatlar lazy-loader ──

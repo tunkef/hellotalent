@@ -21,6 +21,17 @@
     { value: 'ipucu',   label: '\u0130pucu' }
   ];
 
+  /* FAZ D — optional fırsat type. When set, the announcement is also
+   * surfaced in panel-firsatlar with a type badge; null leaves it as a
+   * plain announcement. Migration 20260417100000 added the column. */
+  var CAMPAIGN_TYPES = [
+    { value: '',                  label: 'Yok (sadece duyuru)' },
+    { value: 'offer',             label: '\u0130ndirim' },
+    { value: 'employer_branding', label: 'Marka Hik\u00E2yesi' },
+    { value: 'store_opening',     label: 'Yeni Ma\u011Faza' },
+    { value: 'brand_story',       label: 'Marka Haberi' }
+  ];
+
   var MAX_IMG_BYTES = 5 * 1024 * 1024;   /* 5MB — Tuna UAT ayarlamasi */
   var MAX_VIDEO_BYTES = 50 * 1024 * 1024;
   var MAX_TITLE = 200;
@@ -213,6 +224,21 @@
     }
     catLabel.appendChild(catSelect);
     form.appendChild(catLabel);
+
+    /* FAZ D: campaign_type — null default (yok). Setting it publishes
+     * the entry to panel-firsatlar as well. */
+    var campTypeLabel = txt('label', '', 'F\u0131rsat Tipi');
+    var campTypeSelect = document.createElement('select');
+    var existingCamp = existingRow && existingRow.campaign_type ? existingRow.campaign_type : '';
+    for (var k = 0; k < CAMPAIGN_TYPES.length; k++) {
+      var cOpt = document.createElement('option');
+      cOpt.value = CAMPAIGN_TYPES[k].value;
+      cOpt.textContent = CAMPAIGN_TYPES[k].label;
+      if (existingCamp === cOpt.value) cOpt.selected = true;
+      campTypeSelect.appendChild(cOpt);
+    }
+    campTypeLabel.appendChild(campTypeSelect);
+    form.appendChild(campTypeLabel);
 
     var bodyLabel = txt('label', '', '\u0130\u00E7erik (markdown)');
     var bodyTA = document.createElement('textarea');
@@ -435,6 +461,7 @@
         title: titleInput.value,
         body_md: bodyTA.value,
         category: catSelect.value,
+        campaign_type: campTypeSelect.value || null,
         /* Schema: pinned_until timestamptz — ISO string when pinned, null otherwise */
         pinned_until: pinInput.checked ? new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() : null,
         published_at: new Date().toISOString(),
@@ -447,6 +474,7 @@
       window._htRenderDuyuruPreviewCard(fakePost, objectUrlMap, previewHost);
     }
 
+    campTypeSelect.addEventListener('change', updatePreview);
     titleInput.addEventListener('input', updatePreview);
     bodyTA.addEventListener('input', updatePreview);
     catSelect.addEventListener('change', updatePreview);
@@ -559,6 +587,7 @@
         var payload = {
           title: titleInput.value.trim(),
           category: catSelect.value,
+          campaign_type: campTypeSelect.value || null,
           body_md: bodyTA.value,
           is_active: targetStatus === 'published',
           pinned_until: pinInput.checked ? new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() : null,

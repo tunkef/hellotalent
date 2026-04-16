@@ -1,5 +1,19 @@
 # HelloTalent AI-COLLAB — Aktif Calisma Defteri
 
+## 2026-04-17 — Firsatlar FAZ D (admin publish via duyuru composer + dual-source panel)
+
+**Durum:** Admin artik kendi firsatlarini mevcut duyuru composer'indan yayinlayabiliyor, ayri wizard yok. `ht_announcements` tablosuna `campaign_type` kolonu (nullable, 4 allowed value). Null = sadece duyuru, set = hem duyuru feed'de hem panel-firsatlar'da gorunur.
+
+**Degisenler:**
+- Migration 20260417100000: campaign_type column + CHECK + partial index + get_firsat_announcements RPC + get_announcements_feed RPC signature update (campaign_type return).
+- admin-announcements.js: CAMPAIGN_TYPES dropdown ("Firsat Tipi" field), composer save payload campaign_type dahil, preview campaign_type ile guncel.
+- profil-firsatlar.js: Dual-source Promise.all (campaigns + get_firsat_announcements RPC). normalizeAnnouncement() ht_announcements row'unu card shape'ine cevirir. Media private bucket → HT.signStorageUrls. Admin-authored card source='announcement' → company navigation skip.
+- Tests: 480/480 yesil (9 yeni K034 FAZ D assertion).
+
+**Sirada:** Migration 20260417100000 + 20260416120000 Supabase dashboard'dan deploy edilmeli. Sonra admin → duyurular → yeni duyuru → Firsat Tipi seç → Yayinla. Aday tarafinda hem gundem feed'de hem panel-firsatlar'da goruntulenir.
+
+---
+
 ## 2026-04-17 — Firsatlar UAT hotfix cleanup (dead CSS + stale comment)
 
 **Durum:** Codex review 2 valid minor: `.frs-card__demo-badge` dead CSS silindi, header yorum guncellendi.

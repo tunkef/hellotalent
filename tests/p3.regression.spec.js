@@ -4291,7 +4291,9 @@ test.describe('K034 FAZ C — Firsatlar campaign_type extension', () => {
     /* Error UI removed — silent fallback to buildEmpty. */
     expect(firsatlarJsFazC).not.toMatch(/function\s+buildError/);
     expect(firsatlarJsFazC).not.toContain('frs-error__retry');
-    expect(firsatlarJsFazC).toContain('render empty');
+    /* On error we console.warn and still call buildEmpty(). */
+    expect(firsatlarJsFazC).toMatch(/console\.warn\(\s*'\[firsatlar\]/);
+    expect(firsatlarJsFazC).toContain('buildEmpty()');
   });
 
   test('profil-genel.js rail cell uses "Fırsatları gör" label', () => {
@@ -4300,6 +4302,80 @@ test.describe('K034 FAZ C — Firsatlar campaign_type extension', () => {
      * ismi Fırsatlar, tutarli olsun. */
     expect(genelJs).toContain('F\\u0131rsatlar\\u0131 g\\u00F6r');
     expect(genelJs).not.toMatch(/link:\s*'Kampanyalar\\u0131 g\\u00F6r'/);
+  });
+});
+
+/* ═══════════════════════════════════════════════════════════════════════
+   K034 FAZ D — Admin Fırsat via Duyuru Composer + Dual-Source Panel
+   Admin publishes fırsat content through the existing duyuru composer
+   (campaign_type optional field). Panel-firsatlar fetches both
+   employer campaigns AND admin-authored announcements and renders them
+   together. Migration 20260417100000 adds the column + RPC.
+   ═══════════════════════════════════════════════════════════════════════ */
+test.describe('K034 FAZ D — Admin fırsat via duyuru composer', () => {
+  var fs = require('fs');
+  var path = require('path');
+  var ROOT_FAZD = path.join(__dirname, '..');
+  var migrationFazD = fs.readFileSync(
+    path.join(ROOT_FAZD, 'supabase/migrations/20260417100000_ht_announcements_campaign_type.sql'),
+    'utf8'
+  );
+  var adminAnnJs = fs.readFileSync(path.join(ROOT_FAZD, 'admin-announcements.js'), 'utf8');
+  var firsatlarJsFazD = fs.readFileSync(path.join(ROOT_FAZD, 'profil-firsatlar.js'), 'utf8');
+
+  test('migration adds campaign_type column with CHECK constraint', () => {
+    expect(migrationFazD).toMatch(/ht_announcements[\s\S]*ADD COLUMN IF NOT EXISTS campaign_type/);
+    expect(migrationFazD).toContain("CHECK (campaign_type IS NULL OR campaign_type IN (");
+    expect(migrationFazD).toContain("'offer'");
+    expect(migrationFazD).toContain("'employer_branding'");
+    expect(migrationFazD).toContain("'store_opening'");
+    expect(migrationFazD).toContain("'brand_story'");
+  });
+
+  test('migration creates get_firsat_announcements RPC + updated feed RPC', () => {
+    expect(migrationFazD).toContain('FUNCTION get_firsat_announcements()');
+    expect(migrationFazD).toContain('FUNCTION get_announcements_feed(');
+    /* Feed RPC must return campaign_type now. */
+    expect(migrationFazD).toMatch(/campaign_type\s+text[,\s]/);
+  });
+
+  test('migration adds partial index for fırsat lookup', () => {
+    expect(migrationFazD).toContain('idx_ht_ann_campaign_type');
+    expect(migrationFazD).toContain('WHERE campaign_type IS NOT NULL');
+  });
+
+  test('admin-announcements.js exposes CAMPAIGN_TYPES dropdown', () => {
+    expect(adminAnnJs).toContain('CAMPAIGN_TYPES');
+    expect(adminAnnJs).toContain("'offer'");
+    expect(adminAnnJs).toContain("'employer_branding'");
+    expect(adminAnnJs).toContain("'store_opening'");
+    expect(adminAnnJs).toContain("'brand_story'");
+    expect(adminAnnJs).toContain('F\\u0131rsat Tipi');
+  });
+
+  test('admin-announcements.js save payload includes campaign_type', () => {
+    expect(adminAnnJs).toMatch(/campaign_type:\s*campTypeSelect\.value/);
+  });
+
+  test('profil-firsatlar.js fetches dual source (campaigns + announcements)', () => {
+    expect(firsatlarJsFazD).toContain('fetchFirsatAnnouncements');
+    expect(firsatlarJsFazD).toContain("supabase.rpc('get_firsat_announcements'");
+    expect(firsatlarJsFazD).toContain('Promise.all');
+  });
+
+  test('profil-firsatlar.js normalizes announcement rows into card shape', () => {
+    expect(firsatlarJsFazD).toContain('normalizeAnnouncement');
+    expect(firsatlarJsFazD).toContain("source: 'announcement'");
+    expect(firsatlarJsFazD).toContain("company_name: 'HelloTalent'");
+  });
+
+  test('profil-firsatlar.js signs announcement media for private bucket', () => {
+    expect(firsatlarJsFazD).toContain('signAnnMedia');
+    expect(firsatlarJsFazD).toContain('HT.signStorageUrls');
+  });
+
+  test('profil-firsatlar.js skips company navigation for admin-source cards', () => {
+    expect(firsatlarJsFazD).toContain("c.source !== 'announcement'");
   });
 });
 
