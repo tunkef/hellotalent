@@ -114,7 +114,8 @@ hellotalent.ai, Turkiye perakende sektorune ozel bir yetenek pazaryeri. Adaylar 
 | `profil-kimbakti.js` | Kim Bakti goruntuleme widget |
 | `profil-visibility.js` | Beni Oner toggle, is_active kontrol |
 | `profil-premium.js` | Premium gate, demo checkout, entitlement check |
-| `profil-firsatlar.js` | Firsatlar paneli (FAZ A rename, eski teklifler — FAZ B'de tam rewrite: editorial design + premium gate removal + campaigns RPC wiring) |
+| `profil-firsatlar.js` | Firsatlar paneli editorial rewrite (FAZ B): .frs-* namespace DOM emitter, premium gate kaldirildi, campaigns RPC filtered to ('offer','employer_branding'). Demo fallback DB bos ise. textContent-only (no innerHTML user data). |
+| `css/panels/firsatlar.css` | Firsatlar FAZ B editorial stylesheet — .frs-* vocabulary, K069 premium pattern turevi, dark mode via --editorial-* tokens. |
 | `profil-locations.js` | Sehir/lokasyon secimi |
 | `profil-cv.js` | CV yukleme/indirme |
 | `profil-destek.js` | Destek merkezi, ticket olusturma |

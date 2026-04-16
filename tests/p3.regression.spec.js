@@ -4142,6 +4142,84 @@ test.describe('K069 — Premium panel editorial redesign', () => {
 });
 
 /* ═══════════════════════════════════════════════════════════════════════
+   K034 FAZ B — Firsatlar editorial rewrite
+   Rename + redesign of the former Teklifler panel. Premium gate removed
+   for MVP per Tuna karari — only freemium view. Campaign types filtered
+   to ('offer', 'employer_branding'); 'hiring_boost' (iş ilanı) excluded.
+   ═══════════════════════════════════════════════════════════════════════ */
+test.describe('K034 FAZ B — Firsatlar editorial redesign', () => {
+  var fs = require('fs');
+  var path = require('path');
+  var ROOT_FAZB = path.join(__dirname, '..');
+  var firsatlarCss = fs.readFileSync(path.join(ROOT_FAZB, 'css/panels/firsatlar.css'), 'utf8');
+  var firsatlarJs = fs.readFileSync(path.join(ROOT_FAZB, 'profil-firsatlar.js'), 'utf8');
+  var profilHtmlFazB = fs.readFileSync(path.join(ROOT_FAZB, 'profil.html'), 'utf8');
+
+  test('profil.html links firsatlar.css and bumped profil-firsatlar.js', () => {
+    expect(profilHtmlFazB).toMatch(/css\/panels\/firsatlar\.css\?v=\d{8}[a-z0-9]*/);
+    expect(profilHtmlFazB).toMatch(/profil-firsatlar\.js\?v=\d{8}[a-z0-9]*/);
+  });
+
+  test('firsatlar.css ships the editorial .frs-* vocabulary', () => {
+    expect(firsatlarCss).toContain('.frs-root');
+    expect(firsatlarCss).toContain('.frs-hero');
+    expect(firsatlarCss).toContain('.frs-headline');
+    expect(firsatlarCss).toContain('.frs-grid');
+    expect(firsatlarCss).toContain('.frs-card');
+    expect(firsatlarCss).toContain('.frs-card--offer');
+    expect(firsatlarCss).toContain('.frs-card--branding');
+    expect(firsatlarCss).toContain('.frs-card__promo');
+    expect(firsatlarCss).toContain('.frs-empty');
+    expect(firsatlarCss).toContain('.frs-skeleton');
+  });
+
+  test('firsatlar.css uses editorial palette tokens', () => {
+    expect(firsatlarCss).toContain('--editorial-vermillion');
+    expect(firsatlarCss).toContain('--editorial-hairline');
+    expect(firsatlarCss).toContain('--editorial-ink');
+  });
+
+  test('profil-firsatlar.js emits editorial .frs-* DOM vocabulary', () => {
+    expect(firsatlarJs).toContain("'frs-root'");
+    expect(firsatlarJs).toContain("'frs-hero'");
+    expect(firsatlarJs).toContain("'frs-headline'");
+    expect(firsatlarJs).toContain("'frs-grid'");
+    expect(firsatlarJs).toContain('frs-card--offer');
+    expect(firsatlarJs).toContain('frs-card--branding');
+  });
+
+  test('profil-firsatlar.js removed premium tab + gate', () => {
+    expect(firsatlarJs).not.toContain("data-tab=\"premium\"");
+    expect(firsatlarJs).not.toContain("'tk-premium-gate'");
+    expect(firsatlarJs).not.toContain('tk-gate-float');
+    expect(firsatlarJs).not.toContain('currentTab');
+  });
+
+  test('profil-firsatlar.js filters campaign types to offer + employer_branding', () => {
+    expect(firsatlarJs).toContain('ALLOWED_TYPES');
+    expect(firsatlarJs).toContain("'offer'");
+    expect(firsatlarJs).toContain("'employer_branding'");
+    expect(firsatlarJs).not.toMatch(/ALLOWED_TYPES.*hiring_boost/s);
+    /* Query builder must apply the in() filter. */
+    expect(firsatlarJs).toContain('.in(');
+    expect(firsatlarJs).toContain('ALLOWED_TYPES');
+  });
+
+  test('profil-firsatlar.js preserves critical DOM ids and public entry', () => {
+    expect(firsatlarJs).toContain("'firsatlar-root'");
+    expect(firsatlarJs).toContain('badge-firsatlar');
+    expect(firsatlarJs).toContain('firsatlar-count-badge');
+    expect(firsatlarJs).toContain('window._htLoadFirsatlar');
+  });
+
+  test('profil-firsatlar.js uses textContent for user data (no innerHTML)', () => {
+    /* Guard: no innerHTML with campaign fields; safe-by-construction DOM. */
+    expect(firsatlarJs).not.toMatch(/innerHTML\s*=/);
+    expect(firsatlarJs).not.toMatch(/insertAdjacentHTML/);
+  });
+});
+
+/* ═══════════════════════════════════════════════════════════════════════
    K068b — HTML structural integrity guard
    Catches the class of bugs where a cache-bust edit silently drops the
    closing </script> (or </link>) of an asset tag. When the browser parser
