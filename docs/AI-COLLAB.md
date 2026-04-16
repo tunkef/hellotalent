@@ -1,5 +1,19 @@
 # HelloTalent AI-COLLAB — Aktif Calisma Defteri
 
+## 2026-04-17 — Markalar hover glow line + follow btn radius fix
+
+Card hover bg-flood (vermillion fill + on-vermillion text) yan yana ayni renk kartlarda kotu efekt yaratiyordu. Yerine donen glow border:
+- @property --sk-glow-angle (CSS Houdini animatable angle)
+- ::after pseudo conic-gradient masked to 1.5px ring
+- Hover'da rotate animation 2.4s linear infinite
+- Light: vermillion glow, Dark: rgba(255,255,255,0.92) beyaz
+- Subtle translateY(-2px) + box-shadow lift
+- Reduced-motion: glow visible, rotation off, no transform
+
+Follow btn radius 999px → 10px (Tuna: hap kenarli olmus, standart kose istedi).
+
+---
+
 ## 2026-04-17 — Markalar follow btn minimal pill (sag ust kose)
 
 Tuna UAT: kart icindeki full-width "TAKIP ET / TAKIP EDIYORSUN ✓" butonu cok yer kapliyordu. Minimal pill: kart sag ust kosesinde absolute, person SVG icon + Türkçe label ("Takip Et" / "Takipte"). State 2:
