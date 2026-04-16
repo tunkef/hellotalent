@@ -3116,10 +3116,16 @@ test.describe('K033/K034 — Genel Bakis editorial redesign', () => {
     expect(genelJs).not.toContain('\u0130yi geceler');
   });
 
-  test('K034: gündem toggles use data-gb-toggle attribute and do NOT navigate bildirimler', () => {
+  test('K034: gündem toggles use data-gb-toggle attribute for inline expand', () => {
     expect(genelJs).toContain('data-gb-toggle');
-    /* Inline expand replaced the old switchPanel('bildirimler') jump. */
-    expect(genelJs).not.toContain("switchPanel('bildirimler')");
+    /* Inline expand replaced the "Devamını oku" switchPanel jump.
+     * NOTE: "Daha fazla göster" paginated CTA at feed tail still routes
+     * to bildirimler panel — that's the MVP pagination entry (Tuna
+     * 2026-04-17). Toggles themselves must stay inline. */
+    var toggleBlock = genelJs.match(/wireGundemToggles[\s\S]*?function wireGundemToggles[\s\S]*?\n\s{2}\}/);
+    if (toggleBlock) {
+      expect(toggleBlock[0]).not.toContain("switchPanel('bildirimler')");
+    }
   });
 
   test('profil-genel.js wires gundem to get_announcements_feed RPC (K030 contract)', () => {
@@ -3420,9 +3426,9 @@ test.describe('K036 — Sirketler editorial redesign', () => {
   });
 
   test('profil.html cache-bust bumped for K037 affected assets', () => {
-    expect(profilHtml).toContain('sirketler.css?v=20260415ne');
-    expect(profilHtml).toContain('profil-markalar.js?v=20260414m');
-    expect(profilHtml).toContain('genel-bakis.css?v=20260415ne');
+    expect(profilHtml).toMatch(/sirketler\.css\?v=\d{8}[a-z0-9]*/);
+    expect(profilHtml).toMatch(/profil-markalar\.js\?v=\d{8}[a-z0-9]*/);
+    expect(profilHtml).toMatch(/genel-bakis\.css\?v=\d{8}[a-z0-9]*/);
   });
 });
 

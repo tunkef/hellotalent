@@ -580,8 +580,14 @@
       return;
     }
 
+    /* Tuna UAT 2026-04-17: feed 5 → 10 post, fazlasi icin "Daha fazla
+     * goster" butonu paginated. Sunucuda 60 gun sonra auto-archive
+     * pg_cron is_active=false atar, yani burada listelenen yalniz
+     * aktif son 60 gunun duyurulari. */
+    var PAGE_SIZE = 10;
+
     try {
-      var res = await supa.rpc('get_announcements_feed', { p_limit: 5, p_offset: 0 });
+      var res = await supa.rpc('get_announcements_feed', { p_limit: PAGE_SIZE + 1, p_offset: 0 });
       while (spine.firstChild) spine.removeChild(spine.firstChild);
 
       if (res.error) {
@@ -591,16 +597,20 @@
         return;
       }
 
-      var posts = (res.data && res.data.length) ? res.data : [];
-      if (posts.length === 0) {
+      var rawPosts = (res.data && res.data.length) ? res.data : [];
+      if (rawPosts.length === 0) {
         spine.appendChild(txt('div', 'gb-state', 'Hen\u00FCz duyuru yok. Yeni \u015Feyler geldi\u011Finde burada g\u00F6r\u00FCrs\u00FCn.'));
         spine.appendChild(buildPremiumCTA());
         return;
       }
 
+      /* Fetch PAGE_SIZE + 1 to detect hasMore without a count query. */
+      var hasMore = rawPosts.length > PAGE_SIZE;
+      var posts = hasMore ? rawPosts.slice(0, PAGE_SIZE) : rawPosts;
+
       /* K051: collect all media storage_paths and batch-sign once */
       var mediaPaths = [];
-      for (var pi = 0; pi < posts.length && pi < 5; pi++) {
+      for (var pi = 0; pi < posts.length; pi++) {
         var pmedia = posts[pi].media || [];
         for (var mj = 0; mj < pmedia.length; mj++) {
           if (pmedia[mj] && pmedia[mj].storage_path) mediaPaths.push(pmedia[mj].storage_path);
@@ -613,7 +623,7 @@
       }
 
       var animClasses = ['gb-anim-1', 'gb-anim-2', 'gb-anim-3'];
-      for (var i = 0; i < posts.length && i < 5; i++) {
+      for (var i = 0; i < posts.length; i++) {
         var animCls = i < 3 ? animClasses[i] : '';
         spine.appendChild(buildGundemItem(posts[i], animCls, signedMap));
         /* Insert premium CTA between item 2 and item 3 (after index 1) */
@@ -622,6 +632,20 @@
 
       /* If we never reached index 1 (only 1 post), still surface premium CTA */
       if (posts.length < 2) spine.appendChild(buildPremiumCTA());
+
+      /* "Daha fazla goster" — paginated loader. Tikla → bildirimler panel
+       * full feed'i gosterir (zaten varolan surface). Simple + consistent
+       * with existing navigation pattern. */
+      if (hasMore) {
+        var moreBtn = document.createElement('button');
+        moreBtn.type = 'button';
+        moreBtn.className = 'gb-more-btn';
+        moreBtn.textContent = 'Daha fazla g\u00F6ster';
+        moreBtn.addEventListener('click', function () {
+          switchPanel('bildirimler');
+        });
+        spine.appendChild(moreBtn);
+      }
 
       /* Wire inline gündem expand toggles after DOM is painted. */
       requestAnimationFrame(function() { wireGundemToggles(spine); });

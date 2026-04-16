@@ -1,5 +1,14 @@
 # HelloTalent AI-COLLAB — Aktif Calisma Defteri
 
+## 2026-04-17 — Gundem feed fixes (title overflow + 10-post limit + 60d auto-archive)
+
+Tuna UAT 3 madde:
+1. Title frame'den tasiyordu — `.gb-item__headline` overflow-wrap/word-break/hyphens eklendi.
+2. Feed 5 → 10 post, fazlasi icin "Daha fazla goster" vermillion outline pill → bildirimler panel. PAGE_SIZE + 1 fetch ile hasMore detection (no count query).
+3. 60 gun otomatik arsiv — yeni migration 20260417110000 `archive_stale_announcements()` pg_cron daily 01:15 UTC. Pinned duyurular arsivlenmez. is_active=false → feed'den duser, admin liste korunur.
+
+---
+
 ## 2026-04-17 — Hotfix: Profil Merkezi hero card dark mode kayboldu
 
 Tuna UAT: mk-card--hero dark mode'da bg/border null olmus (K068 drop karari simdi erozyon). Fix: transparent yerine `--editorial-card` + `--editorial-hairline-strong` ile goruntulenir frame. 2 test assertion regex'e cevrildi (stale cache-bust beklentisi).

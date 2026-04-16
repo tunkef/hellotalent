@@ -249,7 +249,35 @@
   color: var(--editorial-ink);
   margin: 0 0 10px;
   letter-spacing: -0.005em;
+  /* Uzun başlıkları frame içinde tut — body zaten break-word yapıyordu
+   * ama headline CSS default'ta taşıyordu (Tuna UAT 2026-04-17). */
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  hyphens: auto;
 }
+.gb-more-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: flex-start;
+  margin: 24px 0 8px;
+  padding: 10px 20px;
+  background: transparent;
+  color: var(--editorial-vermillion, #C94E28);
+  border: 1px solid var(--editorial-hairline-strong, #D8D5CF);
+  border-radius: 999px;
+  font-family: 'DM Mono', ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: border-color 160ms ease, color 160ms ease, background 160ms ease;
+}
+.gb-more-btn:hover {
+  border-color: var(--editorial-vermillion, #C94E28);
+  background: var(--editorial-vermillion-soft, rgba(201,78,40,0.05));
+}
+
 .gb-item__media {
   margin: 12px 0 14px;
   border: 1px solid var(--border-subtle, var(--editorial-hairline));
