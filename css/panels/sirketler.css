@@ -106,7 +106,10 @@
   gap:12px;
   flex-wrap:wrap;
 }
-.sk-followed__count{color:var(--editorial-vermillion);margin-left:6px;}
+/* Tuna 2026-04-17: takip ettiklerin strip aksanlari vermillion → navy.
+ * Hero card vermillion brand identity korunur, strip employer-tema
+ * sinyali verir. */
+.sk-followed__count{color:var(--navy);margin-left:6px;}
 .sk-followed__all{
   font-family:'DM Mono',monospace;
   font-size:11px;
@@ -118,7 +121,7 @@
   cursor:pointer;
   padding:0;
 }
-.sk-followed__all:hover{color:var(--editorial-vermillion);}
+.sk-followed__all:hover{color:var(--navy);}
 .sk-followed__row{
   display:flex;
   gap:22px;
@@ -157,7 +160,7 @@
   position:relative;
   padding:8px;
 }
-.sk-followed__chip:hover .sk-followed__chip-logo{border-color:var(--editorial-vermillion);}
+.sk-followed__chip:hover .sk-followed__chip-logo{border-color:var(--navy);}
 .sk-followed__chip-logo img{max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;display:block;}
 .sk-followed__chip-name{
   font-family:'Plus Jakarta Sans',sans-serif;
