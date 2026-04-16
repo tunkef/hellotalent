@@ -1,5 +1,19 @@
 # HelloTalent AI-COLLAB — Aktif Calisma Defteri
 
+## YARIN DEVAM NOKTASI (17 Nisan gece kapanis)
+
+**Son durum:** Markalar paneli iki strip card renk inversiyonu push edildi (commit `5729add`). Tuna UAT bekliyor — yarin yeni gun mesajiyla baslayacak.
+
+**Aktif iki paralel iz:**
+1. Markalar paneli vizuel UAT bekliyor (vermillion followed + navy filter strip light & dark mode'da nasil duruyor).
+2. Glow border hover dark mode visual confirm bekliyor.
+
+**Yarinki ilk adim:** Tuna mesajini bekle, UAT sonucu gelirse fix at, gelmezse `docs/CURRENT-STATE.md` Acik Backlog → K032 Runtime Playwright smoke suite veya Kim Bakti PVT-1..6 sprint'ten birini secmeyi oner.
+
+**Hatirlatma:** K034 two-person zorunlu — hotfix dahil her commit Codex review'dan gecsin. K033 implementation modeli Opus 4.7.
+
+---
+
 ## 2026-04-17 — Markalar followed strip vermillion + filter strip navy
 
 Tuna UAT iki goruntulu istek:

@@ -1,6 +1,6 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 15 Nisan 2026 | Asama 76 — Editorial dashboard sweep + dark mode + inbox viewport
-> Aktif Odak: Candidate profil panelleri K067-K071c editorial + dark mode redesign tamamlandi. Sirada: K032 runtime Playwright smoke backlog ve Kim Bakti backend PVT-1..6 sprint (vault karar defterinde).
+> Son guncelleme: 17 Nisan 2026 | Asama 77 — K033 Opus 4.7 swap + K034 two-person pattern + Firsatlar rename + Bildirimler hero + Markalar redesign
+> Aktif Odak: Markalar paneli iki strip card renk inversiyonu (followed=vermillion, filter=navy) commit 5729add ile push edildi. Yarin devam: Tuna UAT bekliyor (yeni gun mesajini bekle).
 
 ## 1. Proje Ozeti
 
@@ -169,6 +169,68 @@ hellotalent.ai, Turkiye perakende sektorune ozel bir yetenek pazaryeri. Adaylar 
 **Sonuc:** T02/T03/T04 otomatik DEFERRED. Onkosula: 50+ aktif pratikci icin T42-lite (topluluk nabzi karti) yeniden degerlendirilir.
 
 ## 6. Son 3 Session Ozeti
+
+### Session 77 (16-17 Nisan — Asama 77: K033 model swap + K034 two-person + Firsatlar rename + Bildirimler hero + Markalar redesign)
+
+**Iki gunluk sweep: model routing degisikligi, calisma protokolu yeniden tanimi, 4 fazli Teklifler→Firsatlar rename, Bildirimler segment sadeligi, Markalar panelinde 5 ayri UX pass.**
+
+**K033 — Opus 4.7 default implementation modeli**:
+- `CLAUDE.md` Model Routing tablosu: implementation/plan/debug → Opus 4.7. Subagent default Sonnet kalir, sadece plan/mimari/implementation/debug icin Opus 4.7.
+- Sonnet home session iletisim modeli (HelloTalent disi).
+- `vault/06-kararlar/karar-defteri.md` K033 entry.
+
+**K034 — Iki kisi pattern (zorunlu)**:
+- Tuna: "her isi iki kisi yaptiginizda daha iyi oluyor". Hotfix dahil her commit Codex review'dan gecer.
+- Feature/MVP: Codex plan + spec → Claude implement → Codex review (diff) → Tuna onay → push.
+- Hotfix: Claude implement → Codex review (diff) → push (skip yok).
+- Security/RLS/migration/data contract: + DeepSeek audit.
+- Canli regression supheli: Gemini UAT once, kod sonra.
+- `CLAUDE.md` Is Bolumu bolumu yeniden yazildi. K034 entry karar defterine.
+
+**Admin announcement composer hardening (4 Codex pass)**:
+- `admin-announcements.js` — hydrate existing media async IIFE (`hydratePromise` race guard, `mediaInput.disabled` during hydrate), aggregate `mediaErrors[]` -> alert, retry-safe `m.uploaded` flag (sadece DB insert success sonrasi), `existingRow.published_at` UPDATE sonrasi closure sync, `baseOrderIndex = max(order_index)+1` (throw on error).
+- LinkedIn-style image editor: `htImageEditor.open()` Cropper.js 1.6.2, 16:9 aspect, output WebP 1600x900 quality 0.9.
+- 4 pass review: Codex H1 (retry semantics) + H2 (4 iterasyon hydrate race) + FAZ D publish_at race + CHECK constraint backfill — hepsi cozuldu.
+
+**FAZ A-D — Teklifler → Firsatlar rename**:
+- FAZ A: Infrastructure rename + routing aliases (`#teklifler` → `#firsatlar`) + dead link audit.
+- FAZ B: Editorial rewrite, `.frs-*` namespace, premium gate kaldirildi, `offer` + `employer_branding` filter.
+- FAZ C: Migration `20260416120000` `ALTER TYPE campaign_type ADD VALUE 'store_opening', 'brand_story'`. Wizard hiring_boost dropped (is ilani yasak).
+- FAZ D: Admin existing duyuru composer'dan firsat yayinlar (campaign_type optional column). Migration `20260417100000`: `ht_announcements.campaign_type` + named CHECK constraint + storage RLS SELECT (`ht_ann_storage_candidate_read`) + `get_firsat_announcements()` RPC + `get_announcements_feed` signature update. `profil-firsatlar.js` dual-source `Promise.all(fetchCampaigns, fetchFirsatAnnouncements)`, client-side `filterAllowed()` (no `.in()`, enum cast safety), `buildEmpty()` only failure UI (no error state, no demo cards).
+
+**Gundem feed**:
+- `.gb-item__headline` overflow-wrap + word-break + hyphens + parent shrink (`min-width:0`, `max-width:100%`).
+- PAGE_SIZE 5 → 10. PAGE_SIZE+1 fetch ile hasMore detection. "Daha fazla goster" pill → `sessionStorage.setItem('ht_bildirim_tab','duyuru')` + `switchPanel('bildirimler')` deep link.
+- Migration `20260417110000` `archive_stale_announcements()` SECURITY DEFINER + pg_cron daily 01:15 UTC. `published_at <= now() - 60d AND (pinned_until IS NULL OR pinned_until <= now())`. Pinned korunur.
+
+**Bildirimler segment sadeligi (Tuna karar A)**:
+- Toggle yanindaki `data-bildirim-count` + `data-duyuru-badge` DOM'dan kaldirildi.
+- `updateHeroForMode(mode)` hero meta strip mode-aware (bildirim/duyuru ayri authoritative metric).
+- `loadUnreadCount` re-renders hero when duyuru tab active. Cross-IIFE expose: `window._htUpdateBildirimHeroForMode`.
+- `NOTIF_ROUTING` kampanya → firsatlar.
+
+**Profil merkezi hero dark mode restore**:
+- `mk-card--hero` dark mode `var(--editorial-card)` + `var(--editorial-hairline-strong)` (gorulebilir frame). Eskiden K068 drop ile transparent kalmisti.
+- `layout.css` `mk-card:hover` dark mode vermillion border → `editorial-hairline-strong` ('inner card' illusion fix).
+- `pp-exp__role` + `pp-ident__name` font-weight 700 → 600 (semibold okunabilirlik).
+
+**Markalar paneli — 5 UX pass**:
+1. Follow btn minimal pill (sag ust kose absolute, person SVG icon, "Takip Et" / "Takipte"). Default hairline, following solid vermillion. JS `_buildBrandCard` pill structure + `_updateAllFollowBtns` sadece label span.
+2. Hover effect: bg-flood degil donen glow border. CSS `@property --sk-glow-angle` Houdini animatable angle, `::after` conic-gradient masked 1.5px ring, 2.4s linear infinite. Light vermillion glow, dark rgba(255,255,255,0.92).
+3. Follow btn radius 999px → 10px (Tuna: hap kenarli olmus, standart kose).
+4. Takip Ettiklerin strip aksanlari ilk vermillion → navy (Tuna: heroyu bolme), sonra Tuna: kart bg vermillion + yazilar beyaz tam invert iste. Logo chip'leri beyaz bg korundu (marka logolari okunaklilik).
+5. Marka ara filter card bg navy + yazilar beyaz, search transparent + beyaz border, active underline 3px vermillion. Codex pass: dark mode token regression literal hex pin (`--editorial-vermillion` dark'ta `#E8845C` lighter peach'e kayiyordu, `--navy` dark'ta `#7B93C4`); count + hover opacity AA fail kaldirildi; search-wrap border alpha bump + focus-within ring.
+
+**Insight K069 mimari karari**: K069 brand card pattern (`@property` + conic-gradient mask + literal hex theme pin) tema-agnostic brand identity sinyali tasiyor. Token-based renkler dark mode'da kayiyor — semantik invariant brand color (vermillion/navy) icin literal pin tercih edilir, semantic invariant olmayan (text/border/bg) icin token. Bu ayrim K079+ panellerinde de uygulanmali.
+
+**Cache-bust kronolojisi (Markalar):** `20260417a` → `20260417j`. Truth-sync git hook her commit'te `docs/AI-COLLAB.md` co-staged.
+
+**Acik riskler / yarinin devam noktasi:**
+- Tuna UAT bekliyor (yarin yeni gun mesajiyla baslayacak — vermillion followed + navy filter strip canlida nasil gozukuyor).
+- Markalar grid kart hover glow effect dark mode visual confirm bekliyor.
+- K032 Runtime Playwright smoke suite (vault karar defterinde) hala backlog.
+- Kim Bakti backend PVT-1..6 (K031 vault) hala defer.
+- Wizard hiring_boost dropped sonrasi admin tooling smoke test gerek.
 
 ### Session 76 (15 Nisan — Asama 76: K067-K071c — Ayarlar/Premium/Inbox editorial + Dark mode feedback + Dashboard link audit)
 
