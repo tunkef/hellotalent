@@ -555,7 +555,17 @@
          * rows always land at a fresh offset. Hydrate success/failure no
          * longer affects ordering — even if hydrate returned early with an
          * empty queuedMedia, the DB still reflects true existing indices
-         * (Codex K034 review H2 pass 3). */
+         * (Codex K034 review H2 pass 3).
+         *
+         * Pass 4: if the max query fails we must abort — falling back to 0
+         * reopens the collision window Codex flagged. Throw so the outer
+         * try/catch surfaces the error and the modal stays open for retry.
+         *
+         * Known limitation: max read + inserts are two round trips with no
+         * transactional lock. A concurrent admin insert between them could
+         * still collide. Single-admin usage makes this acceptable for now;
+         * real fix is an append-media RPC (SECURITY DEFINER) — backlog.
+         */
         var baseOrderIndex = 0;
         if (existingRow && existingRow.id) {
           var maxRes = await supa.from('ht_announcement_media')
@@ -565,8 +575,9 @@
             .limit(1)
             .maybeSingle();
           if (maxRes.error) {
-            console.warn('[ann] max order_index fetch:', maxRes.error.message);
-          } else if (maxRes.data && typeof maxRes.data.order_index === 'number') {
+            throw new Error('Siralama tabani alinamadi: ' + maxRes.error.message);
+          }
+          if (maxRes.data && typeof maxRes.data.order_index === 'number') {
             baseOrderIndex = maxRes.data.order_index + 1;
           }
         }
