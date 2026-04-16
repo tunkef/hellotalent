@@ -1,5 +1,11 @@
 # HelloTalent AI-COLLAB — Aktif Calisma Defteri
 
+## 2026-04-17 — FAZ D retry race fix (publish_at sync on closure)
+
+Codex pass 2 FAIL: media-error retry path `existingRow.published_at` closure stale → ikinci Yayinla orijinal publish moment'ini ezer. Fix: UPDATE sonrasi `upd.data.published_at` ile closure sync. Retry artik published_at'i tekrar set etmez.
+
+---
+
 ## 2026-04-17 — FAZ D Codex review fixes (idempotent CHECK + candidate SELECT policy + publish_at)
 
 **Durum:** Codex 2 valid FAIL + 1 Medium. Hepsi uygulandi:

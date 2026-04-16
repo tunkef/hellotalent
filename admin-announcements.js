@@ -606,6 +606,14 @@
           }
           var upd = await supa.from('ht_announcements').update(payload).eq('id', existingRow.id).select().maybeSingle();
           if (upd.error) throw upd.error;
+          /* Sync the local closure so a media-error retry (modal stays
+           * open, user re-clicks Yayinla) does not overwrite the original
+           * publish moment on the second round-trip. Codex FAZ D pass 2. */
+          if (upd.data && upd.data.published_at) {
+            existingRow.published_at = upd.data.published_at;
+          } else if (payload.published_at) {
+            existingRow.published_at = payload.published_at;
+          }
           postId = existingRow.id;
         } else {
           payload.admin_id = adminId;
