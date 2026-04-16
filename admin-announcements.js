@@ -487,12 +487,19 @@
           postId = ins.data && ins.data.id;
         }
 
+        /* Aggregate non-fatal errors — surface to user at end, keep modal
+         * open so they can retry instead of losing work silently. */
+        var mediaErrors = [];
+
         /* Edit: delete existing media rows user removed during session.
          * Removes DB row + storage object (for image/video). */
         for (var ddi = 0; ddi < deletedExistingMedia.length; ddi++) {
           var dd = deletedExistingMedia[ddi];
           var delRow = await supa.from('ht_announcement_media').delete().eq('id', dd.id);
-          if (delRow.error) console.warn('[ann] delete media row:', delRow.error.message);
+          if (delRow.error) {
+            console.error('[ann] delete media row:', delRow.error.message);
+            mediaErrors.push('Eski medya silinemedi: ' + delRow.error.message);
+          }
           if (dd.storage_path) {
             var delObj = await supa.storage.from('cvs').remove([dd.storage_path]);
             if (delObj.error) console.warn('[ann] delete storage:', delObj.error.message);
@@ -503,7 +510,10 @@
          * Avoids duplicate link rows accumulating on repeat edits. */
         for (var eli = 0; eli < existingLinkIds.length; eli++) {
           var delLink = await supa.from('ht_announcement_media').delete().eq('id', existingLinkIds[eli]);
-          if (delLink.error) console.warn('[ann] delete old link:', delLink.error.message);
+          if (delLink.error) {
+            console.error('[ann] delete old link:', delLink.error.message);
+            mediaErrors.push('Eski link silinemedi: ' + delLink.error.message);
+          }
         }
 
         /* Link as media row (if provided) */
@@ -514,7 +524,10 @@
             external_url: linkInput.value,
             order_index: queuedMedia.length
           });
-          if (linkRow.error) console.warn('[ann] link insert failed:', linkRow.error.message);
+          if (linkRow.error) {
+            console.error('[ann] link insert failed:', linkRow.error.message);
+            mediaErrors.push('Link eklenemedi: ' + linkRow.error.message);
+          }
         }
 
         // Upload queued media that are not yet uploaded
@@ -526,6 +539,7 @@
           var up = await supa.storage.from('cvs').upload(path, m.file, { contentType: m.file.type, upsert: false });
           if (up.error) {
             console.error('[ann] media upload failed:', up.error.message);
+            mediaErrors.push('Dosya yuklenemedi (' + (m.file && m.file.name) + '): ' + up.error.message);
             m.failed = true;
             continue;
           }
@@ -539,7 +553,19 @@
             order_index: mi
             /* focal_x/focal_y use DB DEFAULT 0.5 — columns kept for backward compat */
           });
-          if (insMedia.error) console.error('[ann] media row insert failed:', insMedia.error.message);
+          if (insMedia.error) {
+            console.error('[ann] media row insert failed:', insMedia.error.message);
+            mediaErrors.push('Medya kaydi yazilamadi: ' + insMedia.error.message);
+          }
+        }
+
+        /* Surface aggregated media errors BEFORE closing modal. User keeps
+         * their work; can retry or copy the error for debugging. */
+        if (mediaErrors.length > 0) {
+          window.alert('Duyuru metni kaydedildi ama medya tarafinda sorun cikti:\n\n' + mediaErrors.join('\n') + '\n\nTekrar Yayinla\'ya basabilirsin.');
+          publishBtn.disabled = false;
+          draftBtn.disabled = false;
+          return;
         }
 
         cleanupObjectUrls(queuedMedia);
