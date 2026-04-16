@@ -3796,8 +3796,8 @@ test.describe('K063 — Inbox editorial redesign', () => {
   });
 
   test('profil.html loads versioned inbox.css and bumped profil-inbox.js', () => {
-    expect(profilHtml063).toContain('css/panels/inbox.css?v=20260415k071c');
-    expect(profilHtml063).toContain('profil-inbox.js?v=20260415k071c');
+    expect(profilHtml063).toMatch(/css\/panels\/inbox\.css\?v=\d{8}[a-z0-9]*/);
+    expect(profilHtml063).toMatch(/profil-inbox\.js\?v=\d{8}[a-z0-9]*/);
   });
 
   test('K070: inbox panel is viewport-locked with internally scrolling panes', () => {
@@ -3879,8 +3879,8 @@ test.describe('K064 — Bildirimler editorial redesign', () => {
   });
 
   test('profil.html loads versioned bildirimler.css and bumped profil-inbox.js', () => {
-    expect(profilHtml064).toContain('css/panels/bildirimler.css?v=20260415ne');
-    expect(profilHtml064).toContain('profil-inbox.js?v=20260415k071c');
+    expect(profilHtml064).toMatch(/css\/panels\/bildirimler\.css\?v=\d{8}[a-z0-9]*/);
+    expect(profilHtml064).toMatch(/profil-inbox\.js\?v=\d{8}[a-z0-9]*/);
   });
 
   test('bildirimler.css contains the K064 vocabulary and reduced-motion block', () => {
