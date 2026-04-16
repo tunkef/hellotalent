@@ -114,6 +114,7 @@ Kucuk isler icin (bug fix, CSS duzeltme, tek dosya degisiklik) ONERME.
 Always use context7 when working with Supabase API, CSS, or any library docs.
 
 ## Model Routing — Token Tasarrufu
+Ana session default: **Opus 4.7** (16 Nisan 2026 — Tuna test ediyor). Implementation, plan, debug bu modelde.
 Subagent (Agent tool) çağırırken iş tipine göre model seç:
 
 | İş Tipi | Model | Neden |
@@ -122,11 +123,11 @@ Subagent (Agent tool) çağırırken iş tipine göre model seç:
 | Code review, PR review | `sonnet` | Pattern matching yeterli |
 | Basit grep/glob araştırma | `haiku` | En hızlı, en ucuz |
 | Docs araştırma (context7, web) | `sonnet` | Dökümantasyon okuma |
-| Plan yazma, mimari karar | `opus` | Karmaşık reasoning gerekli |
-| Feature implementation | `opus` | Doğru kod üretimi kritik |
-| Debugging, root cause analiz | `opus` | Derin analiz gerekli |
+| Plan yazma, mimari karar | `opus-4-7` | Karmaşık reasoning gerekli |
+| Feature implementation | `opus-4-7` | Doğru kod üretimi kritik |
+| Debugging, root cause analiz | `opus-4-7` | Derin analiz gerekli |
 
-**Kural:** Default subagent modeli `sonnet`. Sadece plan/mimari/implementation/debug için `opus` kullan.
+**Kural:** Ana model `opus-4-7` (implementation sahibi). Subagent default `sonnet`; sadece plan/mimari/implementation/debug için `opus-4-7` kullan. Sonnet home session iletişim modeli olarak kalır (HelloTalent dışı).
 **c-level-skills:** Sadece kullanıcı strateji/iş modeli/yatırım konusunda açıkça sorduğunda invoke et.
 
 ## Public-Site Design Truth

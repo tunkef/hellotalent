@@ -424,4 +424,17 @@
 
 ---
 
-*Son güncelleme: 15 Nisan 2026*
+## K033 — Ana Implementation Modeli: Opus 4.7
+**Tarih:** 16 Nisan 2026
+**Karar veren:** Tuna
+**Karar:** HelloTalent ana session default modeli `claude-opus-4-7` olarak değişti. Implementation, plan, debug, mimari kararlar Opus 4.7'de. Sonnet sadece home session (HelloTalent dışı) Tuna-Claude iletişim modeli olarak kalır.
+**Neden:** Tuna Opus 4.7'yi gerçek iş yükünde test etmek istiyor. Önceki routing (`Sonnet default + Opus escalation`) Opus'u az kullandığı için kapsamlı değerlendirme vermiyordu.
+**Uygulama:**
+- `CLAUDE.md` model routing tablosu güncellendi (plan/feature/debug → `opus-4-7`).
+- `docs/CURRENT-STATE.md` §1b AI Routing Snapshot güncellendi.
+- Subagent default `sonnet` kalır (explore/review/docs). Sadece plan/implementation/debug için `opus-4-7`.
+**Geri dönüş kriteri:** Token maliyeti benefit'i aşarsa veya kalite farkı marjinal kalırsa Sonnet default'a dön.
+
+---
+
+*Son güncelleme: 16 Nisan 2026*

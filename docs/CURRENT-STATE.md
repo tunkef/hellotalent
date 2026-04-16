@@ -15,8 +15,8 @@ hellotalent.ai, Turkiye perakende sektorune ozel bir yetenek pazaryeri. Adaylar 
 - `Cerebras` derin dosya review ve cross-file analiz katmanidir.
 - `DeepSeek` diff review, security audit ve stage gate denetcisidir.
 - `OpenRouter` ve `SambaNova` fallback havuzudur.
-- `Claude Sonnet` varsayilan implementation modelidir.
-- `Claude Opus` sadece escalation ile kullanilir; mimari trade-off, RLS/data contract ve belirsiz root-cause debugging gibi durumlara ayrilir.
+- `Claude Opus 4.7` varsayilan implementation modelidir (16 Nisan 2026 — Tuna Opus 4.7'yi test ediyor). Mimari trade-off, RLS/data contract ve root-cause debugging de ayni modelde.
+- `Claude Sonnet` sadece Tuna ile home session iletisim modelidir; kod sahibi degildir.
 - `Claude Haiku` mekanik okuma/ozet/modelidir; kod sahibi degildir.
 - `Gemini` bugun operasyonel helper olarak bagli degildir; sadece status/health-check seviyesindedir. Ileride screenshot/log yorumlayici rolunde yeniden degerlendirilebilir.
 - `scripts/aider-commit.sh` bir commit-message draft araci degil; `AI-assisted edit + auto-commit flow` aracidir.
