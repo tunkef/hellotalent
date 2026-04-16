@@ -915,7 +915,9 @@ html[data-theme="dark"] .mk-card {
   border-color: var(--border-subtle);
 }
 html[data-theme="dark"] .mk-card:hover {
-  border-color: rgba(201,78,40,0.3);
+  /* Tuna UAT 2026-04-17: hover state vermillion border 'inner card'
+   * algısı yaratıyordu. Subtle hairline-strong daha temiz. */
+  border-color: var(--editorial-hairline-strong);
 }
 html[data-theme="dark"] .mk-edit-btn {
   background: rgba(255,255,255,0.06);

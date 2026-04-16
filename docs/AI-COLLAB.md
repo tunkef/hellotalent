@@ -1,5 +1,17 @@
 # HelloTalent AI-COLLAB — Aktif Calisma Defteri
 
+## 2026-04-17 — UAT mini fixes (title overflow safety + bold→semibold + mk-card hover + cache regex)
+
+3 paralel UAT note + bir suspect fix:
+- gb-item min-width:0 + max-width:100% — title parent grid context'inde shrink etsin (CSS overflow-wrap zaten vardi ama parent shrink olmuyordu).
+- pp-exp__role + pp-ident__name 700 → 600 (Tuna: bold okunabilirliği zorluyor, semibold).
+- mk-card:hover dark mode vermillion border → editorial-hairline-strong (Tuna 'inner card' algisi).
+- 4 stale cache-bust assertion regex'e cevrildi.
+
+Bekleyen büyük iş: bildirimler segment toggle sayacı semantik (1 kim, hangi feed) — Tuna spec istiyor, ekip işi olarak ayrı sprint.
+
+---
+
 ## 2026-04-17 — Gundem feed fixes Codex review pass (deep link + edge + grant)
 
 Codex pass review: HIGH (deep link), MEDIUM (pinned_until equality), MEDIUM (test regex dead), LOW (gereksiz grant). Hepsi uygulandi. 480/480 yesil.

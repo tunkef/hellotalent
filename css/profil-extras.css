@@ -208,7 +208,8 @@
 .pp-ident__text { flex: 1; min-width: 0; }
 .pp-ident__name {
   font-family: 'Bricolage Grotesque', sans-serif;
-  font-weight: 700;
+  /* Tuna UAT 2026-04-17: bold okunabilirliği zorluyor — 700 → 600. */
+  font-weight: 600;
   font-size: 26px;
   line-height: 1.1;
   letter-spacing: -0.015em;
@@ -430,7 +431,8 @@
 
 .pp-exp__role {
   font-family: 'Bricolage Grotesque', sans-serif;
-  font-weight: 700;
+  /* Tuna UAT 2026-04-17: bold okunabilirliği zorluyor — 700 → 600. */
+  font-weight: 600;
   font-size: 17px;
   line-height: 1.25;
   color: #111111;

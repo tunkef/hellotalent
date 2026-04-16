@@ -223,6 +223,10 @@
   position: relative;
   padding-bottom: 32px;
   display: block;
+  /* Grid column içinde shrink edebilsin — uzun başlık parent'i
+   * şişirip frame'i aşmasın (Tuna UAT 2026-04-17). */
+  min-width: 0;
+  max-width: 100%;
 }
 .gb-item::before {
   content: "";

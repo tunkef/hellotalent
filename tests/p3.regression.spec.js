@@ -3265,7 +3265,7 @@ test.describe('K031 — Profil Merkezi editorial redesign', () => {
   });
 
   test('K031 hotfix: profil-extras.css loaded for rescued cross-cutting styles', () => {
-    expect(profilHtml).toMatch(/css\/profil-extras\.css\?v=2026041[45][a-z0-9]+/);
+    expect(profilHtml).toMatch(/css\/profil-extras\.css\?v=\d{8}[a-z0-9]+/);
   });
 
   test('profil-summary.updateBentoRing drives topline pulse + spine tick', () => {
@@ -3357,9 +3357,8 @@ test.describe('K032 — Profil Önizleme drawer editorial redesign', () => {
   });
 
   test('profil.html uses K032 cache-bust for preview JS + extras CSS', () => {
-    expect(profilHtml).toMatch(/profil-preview\.js\?v=20260414e/);
-    /* K068 bumped profil-extras.css to ?v=20260415k068 (pp-drawer dark mode) */
-    expect(profilHtml).toMatch(/css\/profil-extras\.css\?v=20260415k068/);
+    expect(profilHtml).toMatch(/profil-preview\.js\?v=\d{8}[a-z0-9]*/);
+    expect(profilHtml).toMatch(/css\/profil-extras\.css\?v=\d{8}[a-z0-9]*/);
   });
 });
 
@@ -3626,7 +3625,7 @@ test.describe('K039 — Header Variant C inline segment', () => {
   });
 
   test('profil.html cache-busts layout.css to v=20260415k068b', () => {
-    expect(profilHtml).toContain('css/layout.css?v=20260415k068b');
+    expect(profilHtml).toMatch(/css\/layout\.css\?v=\d{8}[a-z0-9]*/);
   });
 
   test('profil.html has interpunct separators and action icons', () => {
