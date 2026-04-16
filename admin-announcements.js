@@ -396,9 +396,12 @@
     updatePreview();
 
     /* Edit mode: hydrate existing media rows into queuedMedia + thumbnails.
-     * Async after modal is mounted so UI is responsive. */
+     * Async after modal is mounted so UI is responsive.
+     * hydratePromise is awaited in save() so user actions that race the
+     * fetch cannot corrupt queuedMedia ordering or duplicate rows. */
+    var hydratePromise = null;
     if (existingRow && existingRow.id) {
-      (async function hydrateExistingMedia() {
+      hydratePromise = (async function hydrateExistingMedia() {
         var supa = getSupa();
         if (!supa) return;
         var res = await supa.from('ht_announcement_media')
@@ -455,6 +458,13 @@
       draftBtn.disabled = true;
 
       try {
+        /* Race guard: wait for hydrate to finish before touching queuedMedia
+         * in the upload loop, otherwise existing rows can duplicate or
+         * scramble order_index (Codex K034 review H2). */
+        if (hydratePromise) {
+          try { await hydratePromise; } catch (e) { /* hydrate already logged */ }
+        }
+
         // Get admin user id
         var userRes = await supa.auth.getUser();
         var adminId = userRes && userRes.data && userRes.data.user && userRes.data.user.id;
@@ -492,7 +502,9 @@
         var mediaErrors = [];
 
         /* Edit: delete existing media rows user removed during session.
-         * Removes DB row + storage object (for image/video). */
+         * Removes DB row + storage object (for image/video). Storage failures
+         * are surfaced to mediaErrors so orphans do not silently accumulate
+         * (Codex K034 review M3). */
         for (var ddi = 0; ddi < deletedExistingMedia.length; ddi++) {
           var dd = deletedExistingMedia[ddi];
           var delRow = await supa.from('ht_announcement_media').delete().eq('id', dd.id);
@@ -502,7 +514,10 @@
           }
           if (dd.storage_path) {
             var delObj = await supa.storage.from('cvs').remove([dd.storage_path]);
-            if (delObj.error) console.warn('[ann] delete storage:', delObj.error.message);
+            if (delObj.error) {
+              console.error('[ann] delete storage:', delObj.error.message);
+              mediaErrors.push('Eski dosya storage\'dan silinemedi: ' + delObj.error.message);
+            }
           }
         }
 
@@ -530,25 +545,31 @@
           }
         }
 
-        // Upload queued media that are not yet uploaded
+        /* Upload queued media that are not yet uploaded.
+         * Retry-safe: m.storagePath is set after storage success; m.uploaded
+         * only after DB insert success. On retry (second Yayinla press),
+         * files already in storage skip re-upload and retry DB insert only —
+         * prevents orphan blobs in cvs/announcements/ (Codex K034 review H1). */
         for (var mi = 0; mi < queuedMedia.length; mi++) {
           var m = queuedMedia[mi];
           if (m.uploaded) continue;
-          var ext = extFromFile(m.file);
-          var path = 'announcements/' + adminId + '/' + postId + '/' + uuid() + '.' + ext;
-          var up = await supa.storage.from('cvs').upload(path, m.file, { contentType: m.file.type, upsert: false });
-          if (up.error) {
-            console.error('[ann] media upload failed:', up.error.message);
-            mediaErrors.push('Dosya yuklenemedi (' + (m.file && m.file.name) + '): ' + up.error.message);
-            m.failed = true;
-            continue;
+
+          if (!m.storagePath) {
+            var ext = extFromFile(m.file);
+            var path = 'announcements/' + adminId + '/' + postId + '/' + uuid() + '.' + ext;
+            var up = await supa.storage.from('cvs').upload(path, m.file, { contentType: m.file.type, upsert: false });
+            if (up.error) {
+              console.error('[ann] media upload failed:', up.error.message);
+              mediaErrors.push('Dosya yuklenemedi (' + (m.file && m.file.name) + '): ' + up.error.message);
+              m.failed = true;
+              continue;
+            }
+            m.storagePath = path;
           }
-          m.storagePath = path;
-          m.uploaded = true;
 
           var insMedia = await supa.from('ht_announcement_media').insert({
             announcement_id: postId,
-            storage_path: path,
+            storage_path: m.storagePath,
             media_type: m.mediaType,
             order_index: mi
             /* focal_x/focal_y use DB DEFAULT 0.5 — columns kept for backward compat */
@@ -556,7 +577,10 @@
           if (insMedia.error) {
             console.error('[ann] media row insert failed:', insMedia.error.message);
             mediaErrors.push('Medya kaydi yazilamadi: ' + insMedia.error.message);
+            /* Keep m.storagePath so retry reuses the already-uploaded file. */
+            continue;
           }
+          m.uploaded = true;
         }
 
         /* Surface aggregated media errors BEFORE closing modal. User keeps
@@ -620,8 +644,15 @@
   }
 
   function cleanupObjectUrls(queue) {
+    /* Revoke only real blob: URLs created via URL.createObjectURL.
+     * Hydrated existing media uses https signed URLs — revoking those is
+     * a no-op under the hood but we guard by prefix to keep the contract
+     * explicit (Codex K034 review L4). */
     for (var i = 0; i < queue.length; i++) {
-      try { URL.revokeObjectURL(queue[i].objectUrl); } catch (e) { /* ignore */ }
+      var u = queue[i] && queue[i].objectUrl;
+      if (typeof u === 'string' && u.indexOf('blob:') === 0) {
+        try { URL.revokeObjectURL(u); } catch (e) { /* ignore */ }
+      }
     }
   }
 

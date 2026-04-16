@@ -83,9 +83,9 @@ test.describe('K030 FAZ C — HT Duyurular (source checks)', () => {
     var body = await fetchText(request, baseURL, '/admin.html');
     expect(body).toMatch(/data-panel="announcements"/);
     expect(body).toContain('id="panel-announcements"');
-    expect(body).toContain('admin-announcements.js?v=20260414a');
-    expect(body).toContain('profil-duyurular.js?v=20260414a');
-    expect(body).toContain('css/duyurular.css?v=20260414a');
+    expect(body).toMatch(/admin-announcements\.js\?v=\d{8}[a-z]?/);
+    expect(body).toMatch(/profil-duyurular\.js\?v=\d{8}[a-z]?/);
+    expect(body).toMatch(/css\/duyurular\.css\?v=\d{8}[a-z]?/);
     // switchPanel dispatcher branch
     expect(body).toMatch(/name === 'announcements'[\s\S]{0,200}_htAdminAnnouncements/);
     // Ann-root mount target
