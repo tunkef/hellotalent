@@ -234,8 +234,14 @@
     form.appendChild(mediaRow);
 
     /* queued media state:
-     * { tempId, file, objectUrl, storagePath, mediaType, uploaded:false, failed:false } */
+     * { tempId, file, objectUrl, storagePath, mediaType, uploaded:false, failed:false,
+     *   existingMediaId? } — existingMediaId set when row is hydrated from DB */
     var queuedMedia = [];
+    /* Existing media rows removed during edit — deleted on save.
+     * [{ id, storage_path }] */
+    var deletedExistingMedia = [];
+    /* Existing 'link' media row IDs — cleaned up on save before reinserting. */
+    var existingLinkIds = [];
 
     mediaInput.addEventListener('change', function () {
       var files = Array.from(mediaInput.files || []);
@@ -264,7 +270,7 @@
           failed: false
         };
         queuedMedia.push(item);
-        appendThumb(mediaRow, item, queuedMedia, updatePreview);
+        appendThumb(mediaRow, item, queuedMedia, updatePreview, deletedExistingMedia);
       }
       mediaInput.value = '';
       updatePreview();
@@ -389,6 +395,54 @@
     ctaLbInput.addEventListener('input', updatePreview);
     updatePreview();
 
+    /* Edit mode: hydrate existing media rows into queuedMedia + thumbnails.
+     * Async after modal is mounted so UI is responsive. */
+    if (existingRow && existingRow.id) {
+      (async function hydrateExistingMedia() {
+        var supa = getSupa();
+        if (!supa) return;
+        var res = await supa.from('ht_announcement_media')
+          .select('id, media_type, storage_path, external_url, order_index')
+          .eq('announcement_id', existingRow.id)
+          .order('order_index', { ascending: true });
+        if (res.error) {
+          console.warn('[ann] existing media fetch failed:', res.error.message);
+          return;
+        }
+        var rows = res.data || [];
+        var paths = [];
+        for (var ri = 0; ri < rows.length; ri++) {
+          if (rows[ri].storage_path) paths.push(rows[ri].storage_path);
+        }
+        var signedMap = {};
+        if (paths.length && window.HT && typeof window.HT.signStorageUrls === 'function') {
+          try { signedMap = await window.HT.signStorageUrls(paths, 3600); }
+          catch (e) { console.warn('[ann] sign existing media failed:', e && e.message); }
+        }
+        for (var i = 0; i < rows.length; i++) {
+          var r = rows[i];
+          if (r.media_type === 'link') {
+            existingLinkIds.push(r.id);
+            if (!linkInput.value && r.external_url) linkInput.value = r.external_url;
+            continue;
+          }
+          var item = {
+            tempId: r.id,
+            file: null,
+            objectUrl: signedMap[r.storage_path] || '',
+            storagePath: r.storage_path,
+            mediaType: r.media_type,
+            uploaded: true,
+            failed: false,
+            existingMediaId: r.id
+          };
+          queuedMedia.push(item);
+          appendThumb(mediaRow, item, queuedMedia, updatePreview, deletedExistingMedia);
+        }
+        updatePreview();
+      })();
+    }
+
     async function save(targetStatus) {
       var supa = getSupa();
       if (!supa) return;
@@ -431,6 +485,25 @@
           var ins = await supa.from('ht_announcements').insert(payload).select().maybeSingle();
           if (ins.error) throw ins.error;
           postId = ins.data && ins.data.id;
+        }
+
+        /* Edit: delete existing media rows user removed during session.
+         * Removes DB row + storage object (for image/video). */
+        for (var ddi = 0; ddi < deletedExistingMedia.length; ddi++) {
+          var dd = deletedExistingMedia[ddi];
+          var delRow = await supa.from('ht_announcement_media').delete().eq('id', dd.id);
+          if (delRow.error) console.warn('[ann] delete media row:', delRow.error.message);
+          if (dd.storage_path) {
+            var delObj = await supa.storage.from('cvs').remove([dd.storage_path]);
+            if (delObj.error) console.warn('[ann] delete storage:', delObj.error.message);
+          }
+        }
+
+        /* Edit: clean up old link rows before reinserting fresh one.
+         * Avoids duplicate link rows accumulating on repeat edits. */
+        for (var eli = 0; eli < existingLinkIds.length; eli++) {
+          var delLink = await supa.from('ht_announcement_media').delete().eq('id', existingLinkIds[eli]);
+          if (delLink.error) console.warn('[ann] delete old link:', delLink.error.message);
         }
 
         /* Link as media row (if provided) */
@@ -481,7 +554,7 @@
     }
   }
 
-  function appendThumb(row, item, queue, onChange) {
+  function appendThumb(row, item, queue, onChange, deletedList) {
     var thumb = el('div', 'ht-composer__media-thumb');
     thumb.setAttribute('data-temp-id', item.tempId);
 
@@ -504,7 +577,13 @@
     remove.type = 'button';
     remove.addEventListener('click', function (ev) {
       ev.stopPropagation();
-      URL.revokeObjectURL(item.objectUrl);
+      if (item.existingMediaId && deletedList) {
+        /* Existing DB row — defer delete to save(). Do NOT revoke objectUrl
+         * (it's a signed URL, not a blob). */
+        deletedList.push({ id: item.existingMediaId, storage_path: item.storagePath });
+      } else {
+        try { URL.revokeObjectURL(item.objectUrl); } catch (e) { /* ignore */ }
+      }
       var idx = queue.indexOf(item);
       if (idx > -1) queue.splice(idx, 1);
       thumb.remove();
