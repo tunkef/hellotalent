@@ -243,8 +243,73 @@
     /* Existing 'link' media row IDs — cleaned up on save before reinserting. */
     var existingLinkIds = [];
 
+    /* Push a ready-to-upload item (video file OR cropped image blob) into
+     * the composer queue + thumbnails + preview. Shared by video direct
+     * path and image editor onSave. */
+    function pushQueuedFile(file, mediaType) {
+      var objectUrl = URL.createObjectURL(file);
+      var item = {
+        tempId: uuid(),
+        file: file,
+        objectUrl: objectUrl,
+        storagePath: null,
+        mediaType: mediaType,
+        uploaded: false,
+        failed: false
+      };
+      queuedMedia.push(item);
+      appendThumb(mediaRow, item, queuedMedia, updatePreview, deletedExistingMedia);
+      updatePreview();
+    }
+
+    /* Derive filename extension from the editor's output blob MIME.
+     * htImageEditor falls back to JPEG on WebP-unsupported browsers, so we
+     * cannot hardcode .webp (Codex image-editor spec open question). */
+    function extFromMime(mime) {
+      if (!mime) return 'webp';
+      if (mime.indexOf('webp') !== -1) return 'webp';
+      if (mime.indexOf('png') !== -1) return 'png';
+      if (mime.indexOf('jpeg') !== -1 || mime.indexOf('jpg') !== -1) return 'jpg';
+      return 'webp';
+    }
+
+    /* Sequential image editor queue — each image opens htImageEditor in
+     * turn so only one Cropper modal is active. onSave continues to the
+     * next; onCancel skips current and continues. */
+    function processImageQueue(queue, idx) {
+      if (idx >= queue.length) return;
+      var file = queue[idx];
+      if (!window.htImageEditor || typeof window.htImageEditor.open !== 'function') {
+        window.alert('Gorsel editoru yuklenemedi.');
+        return;
+      }
+      window.htImageEditor.open({
+        file: file,
+        aspectRatio: 16 / 9,
+        outputWidth: 1600,
+        outputHeight: 900,
+        outputFormat: 'webp',
+        quality: 0.9,
+        onSave: function (blob) {
+          try {
+            var mime = (blob && blob.type) || 'image/webp';
+            var ext = extFromMime(mime);
+            var cropped = new File([blob], 'cropped-' + Date.now() + '.' + ext, { type: mime });
+            pushQueuedFile(cropped, 'image');
+          } catch (e) {
+            console.error('[ann] image editor onSave:', e && e.message);
+          }
+          processImageQueue(queue, idx + 1);
+        },
+        onCancel: function () {
+          processImageQueue(queue, idx + 1);
+        }
+      });
+    }
+
     mediaInput.addEventListener('change', function () {
       var files = Array.from(mediaInput.files || []);
+      var imagesToEdit = [];
       for (var f = 0; f < files.length; f++) {
         var file = files[f];
         var isImage = file.type && file.type.indexOf('image/') === 0;
@@ -259,21 +324,18 @@
           window.alert('Dosya cok buyuk: ' + file.name + ' (max ' + limitMb + ')');
           continue;
         }
-        var objectUrl = URL.createObjectURL(file);
-        var item = {
-          tempId: uuid(),
-          file: file,
-          objectUrl: objectUrl,
-          storagePath: null,
-          mediaType: isVideo ? 'video' : 'image',
-          uploaded: false,
-          failed: false
-        };
-        queuedMedia.push(item);
-        appendThumb(mediaRow, item, queuedMedia, updatePreview, deletedExistingMedia);
+        if (isVideo) {
+          /* Video bypasses the editor — Cropper cannot process video frames.
+           * Direct push preserves the original file + MIME for upload. */
+          pushQueuedFile(file, 'video');
+        } else {
+          imagesToEdit.push(file);
+        }
       }
       mediaInput.value = '';
-      updatePreview();
+      if (imagesToEdit.length > 0) {
+        processImageQueue(imagesToEdit, 0);
+      }
     });
 
     // Link
