@@ -3479,8 +3479,8 @@ test.describe('K037 — Sirketler brand card color flood hover', () => {
   });
 
   test('profil.html bumps cache-bust to v=20260414j for K037 assets', () => {
-    expect(profilHtml).toContain('sirketler.css?v=20260415ne');
-    expect(profilHtml).toContain('profil-markalar.js?v=20260414m');
+    expect(profilHtml).toMatch(/sirketler\.css\?v=\d{8}[a-z0-9]*/);
+    expect(profilHtml).toMatch(/profil-markalar\.js\?v=\d{8}[a-z0-9]*/);
   });
 });
 

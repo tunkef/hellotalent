@@ -500,13 +500,21 @@ function _buildBrandCard(b, idx) {
   group.textContent = groupName ? (groupName + ' grubu') : '';
   card.appendChild(group);
 
-  // Follow button
+  // Follow pill — minimal, top-right corner (Tuna UAT 2026-04-17)
   var btn = document.createElement('button');
   btn.type = 'button';
   btn.className = 'sk-brand__follow' + (isF ? ' is-following' : '');
   btn.setAttribute('data-brand-id', b.id);
   btn.setAttribute('onclick', 'toggleBrandFollow(' + b.id + ',event)');
-  btn.textContent = isF ? 'TAKİP EDİYORSUN ✓' : 'TAKİP ET';
+  btn.setAttribute('aria-label', isF ? 'Takipten cik' : 'Takip et');
+  btn.setAttribute('title', isF ? 'Takipte' : 'Takip et');
+  /* Static SVG (kullanici verisi degil) — innerHTML guvenli. */
+  btn.innerHTML =
+    '<svg class="sk-brand__follow-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 95 114" aria-hidden="true">' +
+      '<rect fill="currentColor" rx="28.5" height="57" width="57" x="19"></rect>' +
+      '<path fill="currentColor" d="M0 109.5C0 83.2665 21.2665 62 47.5 62V62C73.7335 62 95 83.2665 95 109.5V114H0V109.5Z"></path>' +
+    '</svg>' +
+    '<span class="sk-brand__follow-label">' + (isF ? 'Takipte' : 'Takip Et') + '</span>';
   card.appendChild(btn);
 
   return card;
@@ -605,7 +613,11 @@ function _updateAllFollowBtns(brandId) {
   var btns = document.querySelectorAll('.sk-brand__follow[data-brand-id="' + brandId + '"]');
   for (var j = 0; j < btns.length; j++) {
     if (isF) btns[j].classList.add('is-following'); else btns[j].classList.remove('is-following');
-    btns[j].textContent = isF ? 'TAKİP EDİYORSUN ✓' : 'TAKİP ET';
+    btns[j].setAttribute('aria-label', isF ? 'Takipten cik' : 'Takip et');
+    btns[j].setAttribute('title', isF ? 'Takipte' : 'Takip et');
+    /* Update only the label span, preserve the SVG icon. */
+    var lbl = btns[j].querySelector('.sk-brand__follow-label');
+    if (lbl) lbl.textContent = isF ? 'Takipte' : 'Takip Et';
   }
 }
 

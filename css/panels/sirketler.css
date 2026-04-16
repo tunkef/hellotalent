@@ -441,25 +441,47 @@
   color:var(--editorial-ink-muted);
   min-height:16px;
 }
+/* Tuna 2026-04-17: Follow button minimal pill, kart sag ust kosesinde
+ * absolute. Eski full-width btn kart icinde cok yer kapliyordu. */
 .sk-brand__follow{
-  width:100%;
-  padding:13px 16px;
-  background:transparent;
-  border:1px solid var(--editorial-ink);
-  border-radius:8px;
-  font-family:'DM Mono',monospace;
-  font-size:12px;
-  letter-spacing:0.1em;
-  text-transform:uppercase;
+  position:absolute;
+  top:14px;
+  right:14px;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:6px 12px 6px 10px;
+  background:var(--editorial-card);
+  border:1px solid var(--editorial-hairline-strong);
+  border-radius:999px;
+  font-family:'Plus Jakarta Sans',system-ui,sans-serif;
+  font-size:11px;
+  font-weight:600;
+  letter-spacing:0.02em;
   color:var(--editorial-ink);
   cursor:pointer;
-  transition:background 220ms ease,color 220ms ease,border-color 220ms ease;
-  margin-top:auto;
+  transition:background 160ms ease,color 160ms ease,border-color 160ms ease;
+  z-index:2;
 }
-.sk-brand__follow:hover{background:rgba(30,45,94,0.04);}
+.sk-brand__follow-icon{
+  width:11px;
+  height:13px;
+  color:currentColor;
+  flex-shrink:0;
+}
+.sk-brand__follow-label{ line-height:1; }
+.sk-brand__follow:hover{
+  border-color:var(--editorial-vermillion);
+  color:var(--editorial-vermillion);
+}
 .sk-brand__follow.is-following{
   background:var(--editorial-vermillion);
   border-color:var(--editorial-vermillion);
+  color:var(--editorial-on-vermillion);
+}
+.sk-brand__follow.is-following:hover{
+  background:var(--editorial-vermillion-deep, #A83F1E);
+  border-color:var(--editorial-vermillion-deep, #A83F1E);
   color:var(--editorial-on-vermillion);
 }
 

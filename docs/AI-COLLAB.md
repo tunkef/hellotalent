@@ -1,5 +1,16 @@
 # HelloTalent AI-COLLAB — Aktif Calisma Defteri
 
+## 2026-04-17 — Markalar follow btn minimal pill (sag ust kose)
+
+Tuna UAT: kart icindeki full-width "TAKIP ET / TAKIP EDIYORSUN ✓" butonu cok yer kapliyordu. Minimal pill: kart sag ust kosesinde absolute, person SVG icon + Türkçe label ("Takip Et" / "Takipte"). State 2:
+- Default: hairline border + ink (transparent fill)
+- Following: solid vermillion + on-vermillion text
+- Card hover'da pill auto-invert (mevcut card-hover rule, takip ediyorsun outline preserved).
+
+JS: _buildBrandCard pill structure (innerHTML SVG sabit + label span). _updateAllFollowBtns sadece label span guncelliyor, SVG korunur.
+
+---
+
 ## 2026-04-17 — Bildirimler hero refresh fix (Codex pass)
 
 Codex HIGH bulgusu: loadUnreadCount RPC complete sonrasi 'duyuru' tab aktif iken hero stale kaliyordu. Fix: sessionStorage check + _htUpdateBildirimHeroForMode('duyuru') re-render. LOW: dead [data-duyuru-badge] selector temizlendi.
