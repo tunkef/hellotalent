@@ -1,5 +1,17 @@
 # HelloTalent AI-COLLAB — Aktif Calisma Defteri
 
+## 2026-04-17 — Markalar followed strip vermillion + filter strip navy
+
+Tuna UAT iki goruntulu istek:
+1. Takip Ettiklerin strip card bg → vermillion (sicak takip kimligi). "TAKIP ETTIKLERIN N", "HEPSINI GOR", chip name beyaz. Logo chip'leri beyaz bg korundu (marka logolari orijinal renkleri kalsin diye). Hover'da chip border beyaz + translateY(-2px) lift.
+2. Marka ara filter card bg → navy (employer-tema soguk kesfet). Search input transparent + beyaz border (focus'ta solid beyaz). Placeholder + icon beyaz-translucent. Segment items rgba(.6) → hover .9 → active solid beyaz, active underline vermillion (followed strip ile renk dialogu).
+
+Codex pass1 fix: HIGH dark mode token regression (--editorial-vermillion + --navy dark'ta lighter shade'e kayiyor) → literal #C94E28 ve #1E2D5E pin (light + dark identical). MEDIUM contrast: count opacity 0.85 kaldirildi (3.72:1 fail), HEPSINI GOR hover opacity:0.75 → text-decoration:underline (3.24:1 fail). LOW: search-wrap border alpha .25 → .4, focus-within box-shadow ring eklendi (input focus-visible kaybolmustu), active underline 2px → 3px (vermillion navy uzerinde 2.9:1 marjinal — ek pen kalinligi).
+
+Cache-bust: sirketler.css 20260417h → 20260417j (i → j Codex pass1 fix). Tek dosya CSS degisikligi, JS/HTML structural change yok. Logo chip beyaz bg + brand SVG/img content okunaklilik korundu.
+
+---
+
 ## 2026-04-17 — Markalar hover glow line + follow btn radius fix
 
 Card hover bg-flood (vermillion fill + on-vermillion text) yan yana ayni renk kartlarda kotu efekt yaratiyordu. Yerine donen glow border:
