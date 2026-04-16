@@ -1,10 +1,11 @@
 /* global supabase, switchPanel, ht_track */
-/* FAZ B — Firsatlar paneli editorial rewrite (formerly Teklifler).
+/* Firsatlar paneli editorial rewrite (formerly Teklifler). FAZ B + C.
  *
  * Scope:
- *   - Freemium-only (premium gate removed — K034+ decision).
- *   - Only 'offer' + 'employer_branding' campaign types rendered.
- *     'hiring_boost' filtered out (iş ilanı değil — Tuna karari).
+ *   - Freemium-only (premium gate removed — K034 decision).
+ *   - 4 campaign types rendered: offer, employer_branding, store_opening,
+ *     brand_story. 'hiring_boost' filtered out (iş ilanı değil — Tuna
+ *     karari). See migration 20260416120000_firsatlar_campaign_types.sql.
  *   - Demo fallback when DB empty; real campaigns override.
  *   - Editorial vocabulary: .frs-* (see css/panels/firsatlar.css).
  *   - Vanilla, IIFE + var, Safari-safe.

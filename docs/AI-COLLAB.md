@@ -1,5 +1,16 @@
 # HelloTalent AI-COLLAB — Aktif Calisma Defteri
 
+## 2026-04-16 — Firsatlar FAZ B + C (editorial rewrite + enum extension)
+
+**Durum:** FAZ B + C tamamlandi (commit'ler c0a22e6 + 2085bd3 + stale header fix, Codex 4 gate: hepsi PASS).
+- FAZ B: profil-firsatlar.js editorial rewrite (.frs-* namespace), premium gate kaldirildi, css/panels/firsatlar.css yeni dosya. campaigns RPC ile gercek veri, demo fallback.
+- FAZ C: campaign_type enum genisletmesi (store_opening + brand_story) via migration 20260416120000, ik-kampanya.js wizard 4 kart (hiring_boost kaldirildi, emoji icon temizlendi), admin-campaigns.js typeMap genisledi.
+- Tests: 468/468 yesil (13 yeni K034 FAZ B + C assertion).
+
+**Sirada:** Manuel Tuna UAT. hiring_boost canli veri admin listesinde label ile gorunur (backward compat). Migration deploy: `npm run db:push` sonrasinda yeni enum value'lar canli olur — ondan once Supabase dashboard'dan migration'i onayla.
+
+---
+
 ## 2026-04-16 — Teklifler → Firsatlar FAZ A (rename + routing)
 
 **Durum:** FAZ A rename tamamlandi (commit afd0b75 + Codex review fix commit). `profil-teklifler.js` → `profil-firsatlar.js`, panel id + data-panel + nav + badge + root + count-badge hepsi firsatlar prefix. UI labels "Teklifler"/"Ozel Teklifler" → "Firsatlar". Backward-compat alias switchPanel + popstate + hash restore (eski #teklifler bookmark'lar calisir). Genel Bakis rail dead link fix (switchPanel('firsatlar')). Notif routing 'kampanya'/'teklif'/'is_teklifi' → firsatlar.
