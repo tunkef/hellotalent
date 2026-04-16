@@ -551,17 +551,23 @@
           }
         }
 
-        /* Link as media row (if provided) */
-        if (linkInput.value) {
-          var linkRow = await supa.from('ht_announcement_media').insert({
-            announcement_id: postId,
-            media_type: 'link',
-            external_url: linkInput.value,
-            order_index: queuedMedia.length
-          });
-          if (linkRow.error) {
-            console.error('[ann] link insert failed:', linkRow.error.message);
-            mediaErrors.push('Link eklenemedi: ' + linkRow.error.message);
+        /* order_index base: query current max from DB (AFTER deletes) so new
+         * rows always land at a fresh offset. Hydrate success/failure no
+         * longer affects ordering — even if hydrate returned early with an
+         * empty queuedMedia, the DB still reflects true existing indices
+         * (Codex K034 review H2 pass 3). */
+        var baseOrderIndex = 0;
+        if (existingRow && existingRow.id) {
+          var maxRes = await supa.from('ht_announcement_media')
+            .select('order_index')
+            .eq('announcement_id', postId)
+            .order('order_index', { ascending: false })
+            .limit(1)
+            .maybeSingle();
+          if (maxRes.error) {
+            console.warn('[ann] max order_index fetch:', maxRes.error.message);
+          } else if (maxRes.data && typeof maxRes.data.order_index === 'number') {
+            baseOrderIndex = maxRes.data.order_index + 1;
           }
         }
 
@@ -591,7 +597,7 @@
             announcement_id: postId,
             storage_path: m.storagePath,
             media_type: m.mediaType,
-            order_index: mi
+            order_index: baseOrderIndex + mi
             /* focal_x/focal_y use DB DEFAULT 0.5 — columns kept for backward compat */
           });
           if (insMedia.error) {
@@ -601,6 +607,21 @@
             continue;
           }
           m.uploaded = true;
+        }
+
+        /* Link as media row (if provided) — inserted after media so the
+         * link preview renders below the carousel in feed render order. */
+        if (linkInput.value) {
+          var linkRow = await supa.from('ht_announcement_media').insert({
+            announcement_id: postId,
+            media_type: 'link',
+            external_url: linkInput.value,
+            order_index: baseOrderIndex + queuedMedia.length
+          });
+          if (linkRow.error) {
+            console.error('[ann] link insert failed:', linkRow.error.message);
+            mediaErrors.push('Link eklenemedi: ' + linkRow.error.message);
+          }
         }
 
         /* Surface aggregated media errors BEFORE closing modal. User keeps
