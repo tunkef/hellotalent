@@ -437,4 +437,19 @@
 
 ---
 
+## K034 — İki Kişi Pattern (Her İşte Çift Göz)
+**Tarih:** 16 Nisan 2026
+**Karar veren:** Tuna
+**Karar:** Tüm kod değişiklikleri Claude + Codex çift adıyla işlenir. Hotfix'lerde bile Codex review gate zorunlu — push öncesi ikinci göz geçmeden commit yayılmaz.
+**Neden:** Tuna: "her işi iki kişi yaptığınızda daha iyi oluyor." Solo hotfix'lerde silent fail, regression drift ve eksik test riskleri birikiyor. Çift göz kalite/token trade-off'unda kalite lehine.
+**Uygulama:**
+- Feature: Codex plan → Claude implement → Codex review → push
+- Hotfix: Claude implement → Codex review → push
+- Security/RLS/migration: yukarıdaki + DeepSeek audit zorunlu
+- Canlı regression şüphesi: Gemini UAT ilk
+- CLAUDE.md "İş Bölümü" bölümü K034 pattern'i ile güncellendi.
+**Alternatif:** Hotfix'lerde solo push (K002/K019 önceki pratik) — reddedildi, silent fail'lerin biriktiği görüldü (admin duyurular media upload örneği).
+
+---
+
 *Son güncelleme: 16 Nisan 2026*

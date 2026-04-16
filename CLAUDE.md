@@ -50,10 +50,19 @@ Her session başında şu sırayla oku:
 
 `docs/handoff.md` legacy kaynaktır; primary truth değildir.
 
-### İş Bölümü
-- Codex analiz eder, scope belirler, riskleri bulur, açıkları kapatır, test stratejisini yönlendirir.
-- Claude kodu uygular, gerekli migration/refactor/test işini yapar, sonuçları raporlar.
-- Kullanıcıdan gelen yeni yön varsa önce onu esas al, sonra Codex notlarıyla hizala.
+### İş Bölümü — İki Kişi Pattern (K034)
+Her kod değişikliği iki ajan tarafından işlenir. Tuna: "her işi iki kişi yaptığınızda daha iyi oluyor" (16 Nisan 2026).
+
+- **Feature / MVP fazı:** Codex plan + spec → Claude implement → Codex review (diff) → Tuna onay → push
+- **Hotfix:** Claude implement → Codex review (diff) → push. Skip etme — küçük fix'lerde de ikinci göz zorunlu.
+- **Security / RLS / migration / data contract:** yukarıdaki + DeepSeek audit zorunlu.
+- **Canlı regression şüphesi:** Gemini UAT ilk, kod yazma sonra.
+
+Genel kurallar:
+- Codex analiz eder, scope belirler, riskleri bulur, test stratejisini yönlendirir.
+- Claude kodu uygular, migration/refactor/test işini yapar, sonuçları raporlar.
+- Push öncesi Codex review geçmeden commit push'lanmaz.
+- Kullanıcıdan gelen yeni yön Codex ile çelişirse kullanıcıyı esas al.
 
 ### AI-COLLAB Disiplini
 `docs/AI-COLLAB.md` canlı çalışma defteridir.
