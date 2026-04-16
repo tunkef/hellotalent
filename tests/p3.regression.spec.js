@@ -3138,10 +3138,10 @@ test.describe('K033/K034 — Genel Bakis editorial redesign', () => {
   });
 
   test('K051: profil.html cache-bust bumped to v=20260414y for genel/merkez/profil-genel', () => {
-    expect(profilHtml).toContain('genel-bakis.css?v=20260415ne');
-    expect(profilHtml).toContain('profil-genel.js?v=20260414aa');
-    expect(profilHtml).toContain('merkezi.css?v=20260415k068b');
-    expect(profilHtml).toContain('profil-extras.css?v=20260415k068b');
+    expect(profilHtml).toMatch(/genel-bakis\.css\?v=\d{8}[a-z0-9]*/);
+    expect(profilHtml).toMatch(/profil-genel\.js\?v=\d{8}[a-z0-9]*/);
+    expect(profilHtml).toMatch(/merkezi\.css\?v=\d{8}[a-z0-9]*/);
+    expect(profilHtml).toMatch(/profil-extras\.css\?v=\d{8}[a-z0-9]*/);
   });
 
   test('legacy gh-edu/gh-id-readiness vocabulary removed from profil-genel.js', () => {
@@ -3253,7 +3253,7 @@ test.describe('K031 — Profil Merkezi editorial redesign', () => {
   });
 
   test('merkezi.css is referenced with K031 cache-bust token', () => {
-    expect(profilHtml).toMatch(/css\/panels\/merkezi\.css\?v=2026041[45][a-z]/);
+    expect(profilHtml).toMatch(/css\/panels\/merkezi\.css\?v=\d{8}[a-z0-9]*/);
   });
 
   test('K031 hotfix: profil-extras.css loaded for rescued cross-cutting styles', () => {

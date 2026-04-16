@@ -1,5 +1,11 @@
 # HelloTalent AI-COLLAB — Aktif Calisma Defteri
 
+## 2026-04-17 — Hotfix: Profil Merkezi hero card dark mode kayboldu
+
+Tuna UAT: mk-card--hero dark mode'da bg/border null olmus (K068 drop karari simdi erozyon). Fix: transparent yerine `--editorial-card` + `--editorial-hairline-strong` ile goruntulenir frame. 2 test assertion regex'e cevrildi (stale cache-bust beklentisi).
+
+---
+
 ## 2026-04-17 — FAZ D retry race fix (publish_at sync on closure)
 
 Codex pass 2 FAIL: media-error retry path `existingRow.published_at` closure stale → ikinci Yayinla orijinal publish moment'ini ezer. Fix: UPDATE sonrasi `upd.data.published_at` ile closure sync. Retry artik published_at'i tekrar set etmez.

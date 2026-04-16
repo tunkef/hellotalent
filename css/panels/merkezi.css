@@ -752,9 +752,12 @@ html[data-theme='dark'] .mk-btn-mini--primary {
   background: var(--accent);
   border-color: var(--accent);
 }
-/* K068: hero card frame-less in dark — mk-card--hero bg matches page,
-   border would read as visible stroke against --editorial-bg. Drop it. */
+/* Dark mode hero card — restore visible card frame.
+   K068 earlier dropped bg/border because --editorial-bg kontrasti cok
+   yuksekti, ama hero card'in tamamen kaybolmasina yol acti (Tuna UAT
+   2026-04-17). Editorial-card + hairline-strong ile dark'ta da hero
+   frame'i korunur. */
 html[data-theme="dark"] .mk-card--hero{
-  background: transparent;
-  border: 0;
+  background: var(--editorial-card);
+  border: 1px solid var(--editorial-hairline-strong);
 }
