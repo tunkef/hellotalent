@@ -573,6 +573,14 @@
   margin-bottom: 10px;
 }
 
+.ht-composer__hydrate-hint {
+  font-family: var(--font-body);
+  font-size: 12px;
+  color: var(--text-muted);
+  font-style: italic;
+  margin: 8px 0;
+}
+
 .ht-composer__footer {
   display: flex;
   align-items: center;

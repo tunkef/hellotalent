@@ -397,52 +397,72 @@
 
     /* Edit mode: hydrate existing media rows into queuedMedia + thumbnails.
      * Async after modal is mounted so UI is responsive.
-     * hydratePromise is awaited in save() so user actions that race the
-     * fetch cannot corrupt queuedMedia ordering or duplicate rows. */
+     *
+     * Race guard (Codex K034 review H2 pass 2):
+     *   - mediaInput is disabled during hydrate so user cannot push new items
+     *     BEFORE existing rows are in queuedMedia. If we allowed it, new
+     *     uploads would get order_index 0..N while existing DB rows already
+     *     occupy 0..M → collision on ht_announcement_media.
+     *   - hydratePromise is also awaited in save() as a belt-and-braces
+     *     guard; disabling the input is the primary fix.
+     */
     var hydratePromise = null;
+    var hydrateHint = null;
     if (existingRow && existingRow.id) {
+      mediaInput.disabled = true;
+      hydrateHint = txt('div', 'ht-composer__hydrate-hint', 'Mevcut medya yukleniyor...');
+      if (mediaRow.parentNode) mediaRow.parentNode.insertBefore(hydrateHint, mediaRow);
+
       hydratePromise = (async function hydrateExistingMedia() {
-        var supa = getSupa();
-        if (!supa) return;
-        var res = await supa.from('ht_announcement_media')
-          .select('id, media_type, storage_path, external_url, order_index')
-          .eq('announcement_id', existingRow.id)
-          .order('order_index', { ascending: true });
-        if (res.error) {
-          console.warn('[ann] existing media fetch failed:', res.error.message);
-          return;
-        }
-        var rows = res.data || [];
-        var paths = [];
-        for (var ri = 0; ri < rows.length; ri++) {
-          if (rows[ri].storage_path) paths.push(rows[ri].storage_path);
-        }
-        var signedMap = {};
-        if (paths.length && window.HT && typeof window.HT.signStorageUrls === 'function') {
-          try { signedMap = await window.HT.signStorageUrls(paths, 3600); }
-          catch (e) { console.warn('[ann] sign existing media failed:', e && e.message); }
-        }
-        for (var i = 0; i < rows.length; i++) {
-          var r = rows[i];
-          if (r.media_type === 'link') {
-            existingLinkIds.push(r.id);
-            if (!linkInput.value && r.external_url) linkInput.value = r.external_url;
-            continue;
+        try {
+          var supa = getSupa();
+          if (!supa) return;
+          var res = await supa.from('ht_announcement_media')
+            .select('id, media_type, storage_path, external_url, order_index')
+            .eq('announcement_id', existingRow.id)
+            .order('order_index', { ascending: true });
+          if (res.error) {
+            console.warn('[ann] existing media fetch failed:', res.error.message);
+            return;
           }
-          var item = {
-            tempId: r.id,
-            file: null,
-            objectUrl: signedMap[r.storage_path] || '',
-            storagePath: r.storage_path,
-            mediaType: r.media_type,
-            uploaded: true,
-            failed: false,
-            existingMediaId: r.id
-          };
-          queuedMedia.push(item);
-          appendThumb(mediaRow, item, queuedMedia, updatePreview, deletedExistingMedia);
+          var rows = res.data || [];
+          var paths = [];
+          for (var ri = 0; ri < rows.length; ri++) {
+            if (rows[ri].storage_path) paths.push(rows[ri].storage_path);
+          }
+          var signedMap = {};
+          if (paths.length && window.HT && typeof window.HT.signStorageUrls === 'function') {
+            try { signedMap = await window.HT.signStorageUrls(paths, 3600); }
+            catch (e) { console.warn('[ann] sign existing media failed:', e && e.message); }
+          }
+          for (var i = 0; i < rows.length; i++) {
+            var r = rows[i];
+            if (r.media_type === 'link') {
+              existingLinkIds.push(r.id);
+              if (!linkInput.value && r.external_url) linkInput.value = r.external_url;
+              continue;
+            }
+            var item = {
+              tempId: r.id,
+              file: null,
+              objectUrl: signedMap[r.storage_path] || '',
+              storagePath: r.storage_path,
+              mediaType: r.media_type,
+              uploaded: true,
+              failed: false,
+              existingMediaId: r.id
+            };
+            queuedMedia.push(item);
+            appendThumb(mediaRow, item, queuedMedia, updatePreview, deletedExistingMedia);
+          }
+          updatePreview();
+        } finally {
+          /* Re-enable input and drop the hint regardless of success. */
+          mediaInput.disabled = false;
+          if (hydrateHint && hydrateHint.parentNode) {
+            hydrateHint.parentNode.removeChild(hydrateHint);
+          }
         }
-        updatePreview();
       })();
     }
 
