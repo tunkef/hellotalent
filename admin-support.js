@@ -46,7 +46,7 @@ var UI_CATEGORIES = {
   hesap_giris: 'Hesap ve Giri\u015F',
   profil_cv: 'Profil ve CV',
   mesajlar: 'Mesajlar',
-  teklifler: '\u00D6zel Teklifler',
+  teklifler: 'F\u0131rsatlar',
   premium_odeme: 'Premium ve \u00D6deme',
   teknik: 'Teknik Sorunlar'
 };
@@ -54,7 +54,7 @@ var UI_CATEGORIES = {
 function categoryLabel(ticket) {
   if (ticket.ui_topic && UI_CATEGORIES[ticket.ui_topic]) return UI_CATEGORIES[ticket.ui_topic];
   if (UI_CATEGORIES[ticket.category]) return UI_CATEGORIES[ticket.category];
-  if (ticket.category === 'mesajlar_teklifler') return 'Mesajlar / \u00D6zel Teklifler';
+  if (ticket.category === 'mesajlar_teklifler') return 'Mesajlar / F\u0131rsatlar';
   return ticket.category;
 }
 

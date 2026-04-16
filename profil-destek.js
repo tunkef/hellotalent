@@ -22,11 +22,15 @@ var _tickets = null;
 // UI_CATEGORIES defines the user-visible category cards.
 // The DB category 'mesajlar_teklifler' is split into two separate UI categories.
 // getUiCategory() maps each article to its UI category key.
+// NOTE: UI key 'teklifler' preserved to keep DB mapping (mesajlar_teklifler
+// enum) intact. Only the user-facing label changed to 'Fırsatlar' as part
+// of the K030+ teklifler→firsatlar rename. DB enum rename is a separate
+// migration tracked as backlog.
 var UI_CATEGORIES = {
   hesap_giris: 'Hesap ve Giri\u015F',
   profil_cv:   'Profil ve CV',
   mesajlar:    'Mesajlar',
-  teklifler:   '\u00D6zel Teklifler',
+  teklifler:   'F\u0131rsatlar',
   premium_odeme: 'Premium ve \u00D6deme',
   teknik:      'Teknik Sorunlar'
 };
@@ -35,7 +39,7 @@ var UI_CATEGORY_DESCRIPTIONS = {
   hesap_giris: 'Giri\u015F, \u015Fifre ve hesap sorunlar\u0131',
   profil_cv:   'Profil g\u00F6r\u00FCn\u00FCrl\u00FC\u011F\u00FC ve CV i\u015Flemleri',
   mesajlar:    '\u0130\u015Fveren mesajlar\u0131 ve yan\u0131tlar',
-  teklifler:   'Kampanyalar, f\u0131rsatlar ve markalardan teklifler',
+  teklifler:   'Kampanyalar, markalardan f\u0131rsatlar ve duyurular',
   premium_odeme: '\u00DCyelik planlar\u0131 ve \u00F6deme',
   teknik:      'Taray\u0131c\u0131 ve cihaz sorunlar\u0131'
 };
@@ -64,14 +68,14 @@ function ticketCategoryLabel(ticket) {
     return UI_CATEGORIES[ticket.ui_topic];
   }
   if (UI_CATEGORIES[ticket.category]) return UI_CATEGORIES[ticket.category];
-  if (ticket.category === 'mesajlar_teklifler') return 'Mesajlar / \u00D6zel Teklifler';
+  if (ticket.category === 'mesajlar_teklifler') return 'Mesajlar / F\u0131rsatlar';
   return ticket.category;
 }
 
 // For article breadcrumb: resolve any UI key to label
 function _categoryLabel(key) {
   if (UI_CATEGORIES[key]) return UI_CATEGORIES[key];
-  if (key === 'mesajlar_teklifler') return 'Mesajlar / \u00D6zel Teklifler';
+  if (key === 'mesajlar_teklifler') return 'Mesajlar / F\u0131rsatlar';
   return key;
 }
 
@@ -105,7 +109,7 @@ var SUBJECT_HINTS = {
   hesap_giris: '\u00D6r: Google ile giri\u015F yapam\u0131yorum',
   profil_cv:   '\u00D6r: CV y\u00FCklerken hata al\u0131yorum',
   mesajlar:    '\u00D6r: \u0130\u015Fveren mesaj\u0131na yan\u0131t veremiyorum',
-  teklifler:   '\u00D6r: Teklif detay\u0131 a\u00E7\u0131lm\u0131yor',
+  teklifler:   '\u00D6r: F\u0131rsat detay\u0131 a\u00E7\u0131lm\u0131yor',
   premium_odeme: '\u00D6r: Premium \u00F6deme tamamlanmad\u0131',
   teknik:      '\u00D6r: Sayfa bo\u015F a\u00E7\u0131l\u0131yor'
 };

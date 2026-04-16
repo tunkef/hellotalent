@@ -53,7 +53,7 @@ var FEATURES = [
   },
   {
     icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a4 4 0 0 0-8 0v2"/><circle cx="12" cy="14" r="2"/></svg>',
-    title: 'Premium Teklifler',
+    title: 'Premium F\u0131rsatlar',
     desc: '\u0130\u015Fveren markalar\u0131ndan \u00F6zel indirimler, VIP davetler ve \u00F6ncelikli ba\u015Fvuru hakk\u0131.',
     color: 'verm'
   },

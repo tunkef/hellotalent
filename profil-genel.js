@@ -370,15 +370,14 @@
        the card with hairline dividers, no per-cell borders. */
     var rail = el('aside', 'gb-card gb-card--rail gb-rail');
 
-    /* Fırsatlar — brand campaigns stub.
-       DO NOT navigate (stays warn-only until K034+ backlog wires campaigns RPC). */
+    /* Fırsatlar — brand campaigns rail cell wired to panel-firsatlar
+       (K034 rename — formerly 'teklifler'). Count hydration backlog; for
+       now shows "0 yeni" placeholder. */
     rail.appendChild(buildRailCell({
       label: 'F\u0131rsatlar',
       value: '0 yeni',
       link: 'Kampanyalar\u0131 g\u00F6r',
-      onClick: function() {
-        console.warn('[gb] F\u0131rsatlar campaigns panel not yet wired (K034 backlog).');
-      },
+      onClick: function() { switchPanel('firsatlar'); },
       cellClass: 'gb-rail-cell--firsatlar'
     }));
 

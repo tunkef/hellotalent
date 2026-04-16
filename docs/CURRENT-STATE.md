@@ -52,7 +52,7 @@ hellotalent.ai, Turkiye perakende sektorune ozel bir yetenek pazaryeri. Adaylar 
 - **Bi-directional messaging** — employer DM, candidate reply, split-pane, realtime | `profil-inbox.js`
 - **Email infrastructure** — outbox pattern, Resend API, pg_cron, 3 template | Edge Functions
 - **Coach sistemi** — coach_invites, posts, likes, 6 kategori | `coach-studio.html`
-- **Premium gating** — subscription schema hazir, iyzico defer; **MVP_FREE_TIER=true: beta 3 ay ucretsiz**. AI ozellikleri 1 hak/kullanici (ai_cv_used + ai_assessment_used). Tum badge'ler "PREMIUM · 3 ay ucretsiz". Beni One Cikar aktif. Teklifler tab acik (blur kaldirildi) + beta erisim notu | `profil-premium.js`, `profil-teklifler.js`
+- **Premium gating** — subscription schema hazir, iyzico defer; **MVP_FREE_TIER=true: beta 3 ay ucretsiz**. AI ozellikleri 1 hak/kullanici (ai_cv_used + ai_assessment_used). Tum badge'ler "PREMIUM · 3 ay ucretsiz". Beni One Cikar aktif. Firsatlar (eski Teklifler) tab acik (blur kaldirildi) + beta erisim notu — FAZ A rename yapildi, FAZ B rewrite'da premium gate tamamen kalkacak | `profil-premium.js`, `profil-firsatlar.js`
 - **Destek merkezi** — support_articles + tickets, 6 seed makale | `profil-destek.js`
 - **Ops Health dashboard** — admin panel, failed email tracking | `admin-ops-health.js`
 - **Security monitoring** — security_audit_log tablosu, haftalik RLS audit cron (Pazar 4am), get_security_dashboard() admin RPC | `20260406100135_lb6_security_monitoring.sql`
@@ -114,7 +114,7 @@ hellotalent.ai, Turkiye perakende sektorune ozel bir yetenek pazaryeri. Adaylar 
 | `profil-kimbakti.js` | Kim Bakti goruntuleme widget |
 | `profil-visibility.js` | Beni Oner toggle, is_active kontrol |
 | `profil-premium.js` | Premium gate, demo checkout, entitlement check |
-| `profil-teklifler.js` | Teklifler paneli (freemium/premium tab, beta erisim notu) |
+| `profil-firsatlar.js` | Firsatlar paneli (FAZ A rename, eski teklifler — FAZ B'de tam rewrite: editorial design + premium gate removal + campaigns RPC wiring) |
 | `profil-locations.js` | Sehir/lokasyon secimi |
 | `profil-cv.js` | CV yukleme/indirme |
 | `profil-destek.js` | Destek merkezi, ticket olusturma |

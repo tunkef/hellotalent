@@ -292,8 +292,12 @@ function switchPanel(name) {
     document.getElementById('modal-wizard-exit').classList.add('show');
     return;
   }
-  // Normalize legacy panel aliases before switching
-  var effectiveName = (name === 'yetkinlik') ? 'mulakat' : name;
+  // Normalize legacy panel aliases before switching.
+  // - yetkinlik → mulakat: K030 studio freeze alias
+  // - teklifler → firsatlar: K030+ rename deprecation (1 sprint window)
+  var effectiveName = name;
+  if (effectiveName === 'yetkinlik') effectiveName = 'mulakat';
+  if (effectiveName === 'teklifler') effectiveName = 'firsatlar';
   _doSwitchPanel(effectiveName);
   // Persist active panel in URL and push to history for back/forward support
   var newUrl = (effectiveName && effectiveName !== 'genel') ? '#' + effectiveName : window.location.pathname;
@@ -335,7 +339,7 @@ function _doSwitchPanel(name) {
   var bc = document.getElementById('breadcrumb-current');
   if (bc) {
     var _studioLabel = (window._HT_STUDIO_FROZEN === true) ? 'St\u00fcdyo - Yakinda' : 'St\u00fcdyo';
-    var labels = { genel: 'Genel Bak\u0131\u015f', merkez: 'Profil Merkezi', sirketler: 'Markalar', teklifler: '\u00d6zel Teklifler', inbox: 'Mesajlar', bildirimler: 'Bildirimler', ayarlar: 'Ayarlar', profil: 'Profil', yetkinlik: _studioLabel, mulakat: _studioLabel, premium: 'Premium', kimbakti: 'Kim Bakt\u0131', destek: 'Destek Merkezi' };
+    var labels = { genel: 'Genel Bak\u0131\u015f', merkez: 'Profil Merkezi', sirketler: 'Markalar', firsatlar: 'F\u0131rsatlar', inbox: 'Mesajlar', bildirimler: 'Bildirimler', ayarlar: 'Ayarlar', profil: 'Profil', yetkinlik: _studioLabel, mulakat: _studioLabel, premium: 'Premium', kimbakti: 'Kim Bakt\u0131', destek: 'Destek Merkezi' };
     bc.textContent = labels[name] || name;
   }
   // K030 FAZ B: when frozen and mulakat panel is active, activate BOTH
@@ -372,8 +376,8 @@ function _doSwitchPanel(name) {
   }
   // Lazy-load Şirketler data on first visit
   if (name === 'sirketler') { loadSirketlerPanel(); }
-  // Lazy-load Teklifler data on first visit
-  if (name === 'teklifler') { window._htLoadTeklifler && window._htLoadTeklifler(); }
+  // Lazy-load Firsatlar data on first visit (panel renamed from 'teklifler')
+  if (name === 'firsatlar') { window._htLoadFirsatlar && window._htLoadFirsatlar(); }
   // Lazy-load Inbox messages on first visit
   if (name === 'inbox') { window._htLoadInbox && window._htLoadInbox(); }
   // Note: yetkinlik → mulakat normalization handled in switchPanel() before this is called

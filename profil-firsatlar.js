@@ -116,7 +116,7 @@
      RENDER
      ═══════════════════════════════════════════════════════════════ */
   function renderLayout() {
-    var root = document.getElementById('teklifler-root');
+    var root = document.getElementById('firsatlar-root');
     if (!root) return;
     var html = '';
     html += '<div class="tk-toggle-bar">';
@@ -380,11 +380,11 @@
      HELPERS + LOADER
      ═══════════════════════════════════════════════════════════════ */
   function updateBentoCount() {
-    var el = document.getElementById('bento-teklifler-count');
+    var el = document.getElementById('bento-firsatlar-count');
     if (el) el.textContent = allCampaigns.length > 0 ? allCampaigns.length + ' aktif teklif' : 'Kampanyalar ve f\u0131rsatlar';
   }
   function updateNavBadge() {
-    ['badge-teklifler','teklifler-count-badge'].forEach(function(id) {
+    ['badge-firsatlar','firsatlar-count-badge'].forEach(function(id) {
       var el = document.getElementById(id);
       if (!el) return;
       if (allCampaigns.length > 0) { el.textContent = allCampaigns.length; el.style.display = 'inline-block'; }
@@ -392,7 +392,10 @@
     });
   }
 
-  window._htLoadTeklifler = async function() {
+  /* Public entry — panel-firsatlar lazy-loader invoked by profil-wizard
+   * switchPanel hook. FAZ A kept the teklifler-era render intact; FAZ B
+   * rewrites this module for editorial design + premium gate removal. */
+  window._htLoadFirsatlar = async function() {
     if (loaded) return;
     loaded = true;
     injectCSS();
@@ -405,7 +408,7 @@
           .order('created_at', { ascending: false });
         if (!res.error && res.data) allCampaigns = res.data;
       }
-    } catch(e) { console.error('Teklifler load:', e); }
+    } catch(e) { console.error('Firsatlar load:', e); }
     renderLayout();
     updateBentoCount();
     updateNavBadge();
@@ -419,7 +422,7 @@
         supa.from('campaigns').select('id', { count:'exact', head:true }).eq('status', 'active')
           .then(function(r) {
             if (!r.error && r.count > 0) {
-              var el = document.getElementById('bento-teklifler-count');
+              var el = document.getElementById('bento-firsatlar-count');
               if (el) el.textContent = r.count + ' aktif teklif';
             }
           }).catch(function() {});

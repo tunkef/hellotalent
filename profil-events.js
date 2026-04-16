@@ -86,7 +86,7 @@ function _htInitEvents() {
     { label: 'Genel Bak\u0131\u015F', panel: 'genel', icon: '\uD83D\uDCCA' },
     { label: 'Profil Merkezi', panel: 'merkez', icon: '\uD83D\uDCCB' },
     { label: 'Markalar', panel: 'sirketler', icon: '\uD83C\uDFE2' },
-    { label: '\u00D6zel Teklifler', panel: 'teklifler', icon: '\uD83C\uDF81' },
+    { label: 'F\u0131rsatlar', panel: 'firsatlar', icon: '\uD83C\uDF81' },
     { label: 'Mesajlar', panel: 'inbox', icon: '\u2709\uFE0F' },
     { label: 'Bildirimler', panel: 'bildirimler', icon: '\uD83D\uDD14' },
     { label: 'Ayarlar', panel: 'ayarlar', icon: '\u2699\uFE0F' },

@@ -905,8 +905,8 @@
          has a specific destination. */
       var NOTIF_ROUTING = {
         koc: 'mulakat',
-        is_teklifi: 'teklifler',
-        teklif: 'teklifler',
+        is_teklifi: 'firsatlar',
+        teklif: 'firsatlar',
         mesaj: 'inbox',
         message: 'inbox'
       };
@@ -1275,7 +1275,7 @@
     card.addEventListener('click', function() {
       if (typeof switchPanel === 'function') {
         if (notif.notif_type === 'koc') switchPanel('studio');
-        else if (notif.notif_type === 'kampanya') switchPanel('teklifler');
+        else if (notif.notif_type === 'kampanya') switchPanel('firsatlar');
       }
     });
     return card;
