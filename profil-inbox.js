@@ -1304,8 +1304,54 @@
         ? (timeAgo(new Date(latestTs).toISOString()) || '').toLocaleUpperCase('tr-TR')
         : '\u2014';
     }
-    var bildirimCountEl = document.querySelector('[data-bildirim-count]');
-    if (bildirimCountEl) { bildirimCountEl.textContent = String(allNotifs.length); }
+    /* Tuna 2026-04-17: data-bildirim-count badge UI'dan kaldirildi
+     * (toggle yaninda sayac yok, hero card otorite). */
+  }
+
+  /* Tuna 2026-04-17: Hero meta strip aktif segment'e gore switch eder.
+   * mode='bildirim' → notif metric (mevcut updateNotifPanelBadge).
+   * mode='duyuru'   → ht_announcements unread + week + last_published.
+   * Tek otorite hero. Toggle yaninda sayac yok.
+   * window expose çünkü activateTab ayrı IIFE içinde (alt-scope). */
+  window._htUpdateBildirimHeroForMode = updateHeroForMode;
+  async function updateHeroForMode(mode) {
+    if (mode !== 'duyuru') {
+      /* Bildirim moduna donuste mevcut notif metric'lerini geri yaz. */
+      updateNotifPanelBadge();
+      return;
+    }
+    var supa = (typeof supabase !== 'undefined') ? supabase : (window.HT && window.HT.getSupa && window.HT.getSupa());
+    if (!supa) return;
+    try {
+      var weekAgoIso = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+      var weekRes = await supa.from('ht_announcements')
+        .select('id', { count: 'exact', head: true })
+        .eq('is_active', true)
+        .gte('published_at', weekAgoIso);
+      var lastRes = await supa.from('ht_announcements')
+        .select('published_at')
+        .eq('is_active', true)
+        .order('published_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      var unread = (typeof window._htDuyuruUnreadCount === 'number') ? window._htDuyuruUnreadCount : 0;
+      var week = (weekRes && !weekRes.error && typeof weekRes.count === 'number') ? weekRes.count : 0;
+      var lastTs = (lastRes && !lastRes.error && lastRes.data) ? lastRes.data.published_at : null;
+
+      var badge = document.getElementById('notif-unread-badge');
+      if (badge) badge.textContent = String(unread);
+      var weekEl = document.getElementById('notif-week-count');
+      if (weekEl) weekEl.textContent = String(week);
+      var lastEl = document.getElementById('notif-last-time');
+      if (lastEl) {
+        lastEl.textContent = lastTs
+          ? (timeAgo(lastTs) || '').toLocaleUpperCase('tr-TR')
+          : '\u2014';
+      }
+    } catch (e) {
+      console.warn('[bildirim] duyuru hero meta:', e && e.message);
+    }
   }
 
   /* ═══════════════════════════════════════════════════════════════
@@ -1430,6 +1476,11 @@
     }
     try { sessionStorage.setItem(STORAGE_KEY, key); } catch (e) { /* ignore */ }
 
+    /* Hero meta strip aktif moda gore swap (Tuna 2026-04-17). */
+    if (typeof window._htUpdateBildirimHeroForMode === 'function') {
+      window._htUpdateBildirimHeroForMode(key);
+    }
+
     if (key === 'duyuru') {
       var mount = root.querySelector('[data-mount="duyuru-full-feed"]');
       if (mount && !mount.dataset.loaded && typeof window._htLoadDuyuruFeed === 'function') {
@@ -1441,10 +1492,12 @@
        * resets unread and the header bell never accumulates. */
       if (isUserAction === true) {
         try { localStorage.setItem(SEEN_KEY, new Date().toISOString()); } catch (e) { /* ignore */ }
-        var badge = root.querySelector('[data-duyuru-badge]');
-        if (badge) { badge.textContent = '0'; badge.setAttribute('hidden', ''); }
         window._htDuyuruUnreadCount = 0;
         if (typeof window._htApplyNotifBellDot === 'function') window._htApplyNotifBellDot();
+        /* Refresh hero metric — unread now 0. */
+        if (typeof window._htUpdateBildirimHeroForMode === 'function') {
+          window._htUpdateBildirimHeroForMode('duyuru');
+        }
       }
     }
   }

@@ -3882,7 +3882,10 @@ test.describe('K064 — Bildirimler editorial redesign', () => {
     expect(profilHtml064).toContain('data-tab-content="bildirim"');
     expect(profilHtml064).toContain('data-tab-content="duyuru"');
     expect(profilHtml064).toContain('data-mount="duyuru-full-feed"');
-    expect(profilHtml064).toContain('data-duyuru-badge');
+    /* Tuna 2026-04-17: data-duyuru-badge + data-bildirim-count toggle
+     * sayaclari kaldirildi. Hero meta strip aktif moda gore degisir. */
+    expect(profilHtml064).not.toContain('data-duyuru-badge');
+    expect(profilHtml064).not.toContain('data-bildirim-count');
   });
 
   test('profil.html loads versioned bildirimler.css and bumped profil-inbox.js', () => {

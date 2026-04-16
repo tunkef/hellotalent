@@ -1,5 +1,15 @@
 # HelloTalent AI-COLLAB — Aktif Calisma Defteri
 
+## 2026-04-17 — Bildirimler segment sadelesme (Tuna A — hero tek otorite)
+
+Toggle yanindaki sayaclar (`data-bildirim-count`, `data-duyuru-badge`) DOM'dan kaldirildi. Hero meta strip aktif moda gore degisir:
+- mode='bildirim' → mevcut updateNotifPanelBadge (notif metrics)
+- mode='duyuru'   → ht_announcements unread (window._htDuyuruUnreadCount) + son 7 gun count + last published_at
+
+activateTab() updateHeroForMode(key) cagiriyor. User explicit click + isUserAction durumunda unread reset → hero refresh. Tek sayac otorite, double-counting karisikligi kalkti.
+
+---
+
 ## 2026-04-17 — UAT mini fixes (title overflow safety + bold→semibold + mk-card hover + cache regex)
 
 3 paralel UAT note + bir suspect fix:
