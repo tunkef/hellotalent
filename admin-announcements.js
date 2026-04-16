@@ -273,18 +273,24 @@
       return 'webp';
     }
 
-    /* Sequential image editor queue — each image opens htImageEditor in
-     * turn so only one Cropper modal is active. onSave continues to the
-     * next; onCancel skips current and continues. */
-    function processImageQueue(queue, idx) {
+    /* Sequential file queue — mixed image/video selections processed in
+     * selection order so user intent "img1, video1, img2" is preserved
+     * in the feed carousel (Codex image-editor review Medium finding).
+     * Videos push directly; images open htImageEditor one at a time. */
+    function processFileQueue(queue, idx) {
       if (idx >= queue.length) return;
-      var file = queue[idx];
+      var entry = queue[idx];
+      if (entry.type === 'video') {
+        pushQueuedFile(entry.file, 'video');
+        processFileQueue(queue, idx + 1);
+        return;
+      }
       if (!window.htImageEditor || typeof window.htImageEditor.open !== 'function') {
         window.alert('Gorsel editoru yuklenemedi.');
         return;
       }
       window.htImageEditor.open({
-        file: file,
+        file: entry.file,
         aspectRatio: 16 / 9,
         outputWidth: 1600,
         outputHeight: 900,
@@ -299,17 +305,17 @@
           } catch (e) {
             console.error('[ann] image editor onSave:', e && e.message);
           }
-          processImageQueue(queue, idx + 1);
+          processFileQueue(queue, idx + 1);
         },
         onCancel: function () {
-          processImageQueue(queue, idx + 1);
+          processFileQueue(queue, idx + 1);
         }
       });
     }
 
     mediaInput.addEventListener('change', function () {
       var files = Array.from(mediaInput.files || []);
-      var imagesToEdit = [];
+      var queue = [];
       for (var f = 0; f < files.length; f++) {
         var file = files[f];
         var isImage = file.type && file.type.indexOf('image/') === 0;
@@ -324,17 +330,11 @@
           window.alert('Dosya cok buyuk: ' + file.name + ' (max ' + limitMb + ')');
           continue;
         }
-        if (isVideo) {
-          /* Video bypasses the editor — Cropper cannot process video frames.
-           * Direct push preserves the original file + MIME for upload. */
-          pushQueuedFile(file, 'video');
-        } else {
-          imagesToEdit.push(file);
-        }
+        queue.push({ type: isVideo ? 'video' : 'image', file: file });
       }
       mediaInput.value = '';
-      if (imagesToEdit.length > 0) {
-        processImageQueue(imagesToEdit, 0);
+      if (queue.length > 0) {
+        processFileQueue(queue, 0);
       }
     });
 
