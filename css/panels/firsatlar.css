@@ -179,21 +179,6 @@
   color: var(--editorial-vermillion, #C94E28);
 }
 
-/* Demo badge (when campaigns empty → sample content) */
-.frs-card__demo-badge {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  padding: 4px 10px;
-  font-family: 'DM Mono', ui-monospace, monospace;
-  font-size: 10px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  border-radius: 4px;
-  background: rgba(0, 0, 0, 0.5);
-  color: #fff;
-}
-
 /* ── Body ── */
 .frs-card__body {
   padding: 20px 20px 22px;

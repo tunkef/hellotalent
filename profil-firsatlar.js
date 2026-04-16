@@ -6,7 +6,8 @@
  *   - 4 campaign types rendered: offer, employer_branding, store_opening,
  *     brand_story. 'hiring_boost' filtered out (iş ilanı değil — Tuna
  *     karari). See migration 20260416120000_firsatlar_campaign_types.sql.
- *   - Demo fallback when DB empty; real campaigns override.
+ *   - No demo/fake content. Empty DB or fetch error → empty state
+ *     (Tuna karari 2026-04-17 UAT).
  *   - Editorial vocabulary: .frs-* (see css/panels/firsatlar.css).
  *   - Vanilla, IIFE + var, Safari-safe.
  *   - User data rendered via textContent only — no innerHTML with

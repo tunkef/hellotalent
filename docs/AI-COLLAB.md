@@ -1,5 +1,11 @@
 # HelloTalent AI-COLLAB — Aktif Calisma Defteri
 
+## 2026-04-17 — Firsatlar UAT hotfix cleanup (dead CSS + stale comment)
+
+**Durum:** Codex review 2 valid minor: `.frs-card__demo-badge` dead CSS silindi, header yorum guncellendi.
+
+---
+
 ## 2026-04-17 — Firsatlar UAT hotfix (demo fallback + error state kaldirildi)
 
 **Durum:** Tuna canli UAT geribildirim uygulandi.
