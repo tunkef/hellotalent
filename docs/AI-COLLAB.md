@@ -1,5 +1,56 @@
 # HelloTalent AI-COLLAB — Aktif Calisma Defteri
 
+## 2026-04-17 — Design Refactor Faz 2 Pass 1 — ik.html dashboard cleanup
+
+**Durum:** Dashboard paneli emoji temizlendi, hardcoded renkler token'a gecti, empty state ve quick-access cards yeniden tasarlandi. CSS sadece dashboard panel'e yoneldi.
+
+**Yapilan:**
+- `.stat-change` "🟢 Aktif" → `.stat-dot.stat-dot-green` + "Aktif" (CSS dot indicator)
+- Activity feed empty state: 📋 emoji → SVG list icon + `.zero-state` component (title + desc + primary CTA)
+- Quick-access 3 card: 🔍 ➕ ⚡ emoji → SVG icons + semantic class'lar (.quick-card, .quick-icon-navy/verm/premium)
+- Hardcoded bg: `#EEF2FF` → `var(--navy-light)`, `#FEF3C7` → `var(--verm-light)`. Premium gradient mid-stop `#253872` → `var(--navy-mid)`.
+- Inline style'lar class'lara tasindi, hover icin onmouseover/out silindi, CSS transition eklendi
+- Dark mode: `.quick-card`, `.quick-title`, `.quick-icon-*`, `.zero-state-title` overrides eklendi
+
+**Kapsam disi (Pass 2):**
+- Stat cards aha-metric redesign (delta, insight, urgency)
+- First-session onboarding checklist hero
+- Diger panellerin emoji cleanup (ayarlar, search empty state vb.)
+
+**Dogrulama:** ik.html load + auth redirect → giris (normal). Console error yok. Visual verify employer auth gerekiyor — K032 Faz 3 auth storageState ile paralel oturumda dogrulanabilir.
+
+Ref: `docs/design-refactor/faz1-tokens.md`
+
+---
+
+## 2026-04-17 — K032 Faz 3 Authenticated ik.html + admin.html Smoke (Asama 78 gece)
+
+**Durum:** Faz 3A (ik 40/40) + Faz 3B (admin 48/48) = 88/88 yesil. Codex K034 review aktif, docs hazir, push pending.
+
+**Seed:**
+- `scripts/seed-test-employer.mjs` — `tkefeli@peoplein.com.tr` auth.users + hr_profiles upsert (app_metadata.role='employer', hr_profile existed+updated)
+- `scripts/seed-test-admin.mjs` — `admin+k032@peoplein.com.tr` auth.users + admin_users INSERT (role='superadmin', new create). **Prod guard: kefelituna@gmail.com hard-refuse**.
+- Ortak password `.env.local`'de, git-ignored.
+
+**Auth setup:**
+- `tests/auth.setup.employer.js` — /giris.html?tab=ik login, demo|ik redirect tolerans, storageState `playwright/.auth/employer.json`
+- `tests/auth.setup.admin.js` — /giris.html candidate tab login (admin role!=employer → candidate branch → profil.html redirect), storageState `playwright/.auth/admin.json`
+
+**Test:**
+- `tests/smoke.runtime.ik.e2e.spec.js` — 10 ik panel × 2 tema × 2 viewport
+- `tests/smoke.runtime.admin.e2e.spec.js` — 12 admin panel × 2 tema × 2 viewport
+- Ek assertion: giris.html/profil.html redirect FAIL
+
+**playwright.config.js:** 3 setup + 6 e2e project (e2e/e2e-ik/e2e-admin × mobile/desktop). testIgnore regex isolation.
+
+**Bes bacakli koruma:** static + unauth runtime + candidate auth + employer auth + admin auth + kontrat.
+
+**K035 yeni karar:** Prod admin panel sertleştirme (MFA zorunlu, IP allowlist, short session, sudo re-auth, audit log, geo anomaly) — Tuna endişesi, ayrı sprint.
+
+**Test sayisi:** 978 → 1066 (+88).
+
+---
+
 ## 2026-04-17 — Design Refactor Faz 1c — Local :root Cleanup
 
 **Durum:** 8 sayfadan duplicate :root token'lari silindi, yalnizca page-spesifik override'lar kaldi. tests/p3.regression Asama 35 rewrite edildi (tokens.css link OR local :root kabul eder).
