@@ -434,11 +434,43 @@
 
 **Codex review (K034 gate):** PASS (ilk iki spec turu "no output" döndü, Claude self-spec + implement + Codex gate tamamlandı). Opsiyonel iyileştirmeler (sonraki sprint): seed script existing-user rol heal + pagination limit kaldır, 1800ms yerine lokator-bazlı panel hazır sinyali, hash→data-panel contract assert, helper modül extraction.
 
-**Faz 3 — Backlog (açık):** ik.html + admin.html tab iterasyon smoke. Ek auth: hr_profile user (employer + admin role).
+**Uygulama Faz 3 — TAMAMLANDI (17 Nisan 2026, Asama 78 gece):**
+5. **ik.html authenticated panel hash smoke (Faz 3A):**
+   - `tests/smoke.runtime.ik.e2e.spec.js` — 10 panel (dashboard/search/pozisyonlar/favoriler/takipciler/mesajlar/kampanyalar/sirket/ekip/ayarlar) × 2 tema × 2 viewport = 40 test
+   - Test user: `tkefeli@peoplein.com.tr` (Tuna şirket maili, seed app_metadata.role='employer', hr_profiles upsert)
+   - `scripts/seed-test-employer.mjs` — idempotent, auth.users + hr_profiles (employer_role='admin', company_type='tek_marka')
+   - `tests/auth.setup.employer.js` — /giris.html?tab=ik login → demo|ik redirect tolerans → storageState `playwright/.auth/employer.json`
+   - Ek assertion: URL giris.html'e redirect olursa FAIL
+   - 40/40 yesil
 
-**Test sayisi:** 910 → 926 (+16 Faz 1) → 978 (+52 Faz 2).
+6. **admin.html authenticated panel hash smoke (Faz 3B):**
+   - `tests/smoke.runtime.admin.e2e.spec.js` — 12 panel (dashboard/review/campaigns/announcements/support/candidates/brands/employers/leads/sales/team/settings) × 2 tema × 2 viewport = 48 test
+   - Test user: `admin+k032@peoplein.com.tr` (yeni seed, prod admin kefelituna@gmail.com'a DOKUNMAZ)
+   - `scripts/seed-test-admin.mjs` — idempotent, auth.users + admin_users upsert (role='superadmin'), is_admin() EXISTS compatible
+   - **Prod guard:** Script'te `kefelituna@gmail.com` hard-refuse
+   - `tests/auth.setup.admin.js` — /giris.html candidate tab login (admin role!=employer, candidate branch) → storageState `playwright/.auth/admin.json`
+   - 48/48 yesil
 
-**Referans:** Commit `4f31ff7` (K068b hotfix), `a8d3801` (K068b fix), Faz 1 `a9199b5` (17 Nisan öğlen), Faz 2 implement 17 Nisan akşam 2026.
+**Shared infra:**
+- Ortak password `2395857Tna2.` (Tuna kararı, `.env.local` git-ignored)
+- `scripts/seed-test-user.mjs` password min length 12→10
+- `playwright.config.js` — 3 setup project + 6 e2e project. testIgnore regex `/\.(ik|admin)\.e2e\.spec\.js$/` storage isolation.
+
+**Kod duplikasyonu (Codex review notu):** 3 seed script + 3 auth setup + 3 test — req/findUser/createUser/collector helper tekrarlı. Faz 4'te `scripts/_supa-admin.mjs` + `tests/helpers/runtime-signals.js` extract.
+
+**Test sayisi:** 910 → 926 (+16 Faz 1) → 978 (+52 Faz 2) → 1066 (+88 Faz 3).
+
+**Beş bacaklı koruma (Faz 3 sonrası):**
+- Static: `check-html-tags.sh` pre-commit
+- Unauth runtime: `smoke.runtime.spec.js` (4 sayfa boot)
+- Candidate auth runtime: `smoke.runtime.e2e.spec.js` (profil 13 panel)
+- Employer auth runtime: `smoke.runtime.ik.e2e.spec.js` (ik 10 panel)
+- Admin auth runtime: `smoke.runtime.admin.e2e.spec.js` (admin 12 panel)
+- Kontrat: `p3.regression.spec.js`
+
+**Faz 4 — Backlog:** Helper modul extraction, coach-studio panel iterasyon, hash→data-panel contract assert, role-based navigation matrix (aday→ik reddetme, role cross-access guard).
+
+**Referans:** Commit `4f31ff7` (K068b hotfix), `a8d3801` (K068b fix), Faz 1 `a9199b5`, Faz 2 `0c25753`, Faz 3 implement 17 Nisan gece 2026.
 
 ---
 
@@ -470,4 +502,25 @@
 
 ---
 
-*Son güncelleme: 16 Nisan 2026*
+## K035 — Prod Admin Panel Güvenlik Sertleştirme (Backlog)
+**Tarih:** 17 Nisan 2026
+**Karar veren:** Tuna (K032 Faz 3B sırasında)
+**Karar:** admin panel prod'da kritik surface — ekstra güvenlik katmanları eklenecek. Ayrı sprint.
+**Neden:** Admin panel brand/employer CRUD, support ticket görünüm, leads, sales dashboard gibi iş-kritik veriye erişim sağlıyor. Tek faktörlü login (email+password) yetersiz. Tuna: "admin girişinde ekstra güvenlikli olması lazım orası çok kritik."
+**Kapsam önerileri (sprint'e alınacak, önceliklendirme Tuna'da):**
+1. **MFA/TOTP zorunlu** — admin role'lü kullanıcılarda 2FA opt-in → zorunlu (Supabase MFA API zaten aktif, profil-settings.js'te TOTP enrollment var; admin için aal2 assertion ekle)
+2. **IP allowlist (ops)** — Cloudflare WAF veya Edge Function kontrolü, ev+ofis IP'leri (Tuna)
+3. **Kısa admin session** — 15 dk inactivity timeout (normal user 60 dk)
+4. **Re-auth for destructive actions** — brand sil, user ban, campaign publish gibi action'larda "sudo mode" password re-prompt
+5. **Security audit log zenginleş** — LB6 `security_audit_log` mevcut, admin panel her action'ı log (kim/ne/ne zaman/ip) + haftalık Tuna email özeti
+6. **Geo anomaly alert** — bilinen IP dışından admin login → Sentry alert + opsiyonel MFA step-up
+
+**Test kapsamı ilişkisi:** K032 Faz 3B smoke test user (`admin+k032@peoplein.com.tr`) prod admin (`kefelituna@gmail.com`) farklı. Hardening prod admin etkiler, test user MFA bypass'a ihtiyaç duyarsa ayrı test proje eklenir.
+
+**Önceki ilgili kararlar:** LB6 (security_audit_log, 6 Nisan), 2FA (Supabase MFA, 6 Nisan), K004 (işveren view quota).
+
+**Referans:** K032 Faz 3B implement sırasında Tuna endişesi.
+
+---
+
+*Son güncelleme: 17 Nisan 2026*

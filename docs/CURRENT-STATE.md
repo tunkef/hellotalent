@@ -1,6 +1,6 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 17 Nisan 2026 | Asama 78 — K032 Faz 1 + Faz 2 Runtime Playwright Smoke Suite implement
-> Aktif Odak: Faz 1 (`smoke.runtime.spec.js` 16/16) + Faz 2 (`smoke.runtime.e2e.spec.js` 52/52) yesil. Test user seed idempotent script. Codex K034 review Faz 1+2 PASS.
+> Son guncelleme: 17 Nisan 2026 | Asama 78 — K032 Faz 1 + 2 + 3 Runtime Playwright Smoke Suite — 5 bacakli koruma aktif
+> Aktif Odak: Faz 1 (16/16) + Faz 2 (52/52) + Faz 3A ik (40/40) + Faz 3B admin (48/48) = 156/156 yesil. K035 admin sertleştirme karar entry'si eklendi.
 
 ## 1. Proje Ozeti
 
@@ -160,7 +160,9 @@ hellotalent.ai, Turkiye perakende sektorune ozel bir yetenek pazaryeri. Adaylar 
 
 15. ~~**K032 Runtime Playwright Smoke Suite — Faz 1**~~ — ✅ TAMAMLANDI (17 Nisan 2026, Asama 78). `tests/smoke.runtime.spec.js` (106 satir) — 4 hedef sayfa (profil/ik/admin/coach-studio) × 2 tema (light+dark) × 2 viewport (mobile+desktop) = 16 test. Auth mock yok (boot-time hata redirect oncesi fırlar). Codex K034 review: ilk FAIL (3 fix) → 2. PASS. 16/16 yesil. Commit `a9199b5`.
 
-16. ~~**K032 Runtime Playwright Smoke Suite — Faz 2**~~ — ✅ TAMAMLANDI (17 Nisan 2026, Asama 78 devam). `tests/smoke.runtime.e2e.spec.js` (109 satir) + `scripts/seed-test-user.mjs` (~140 satir). profil.html 13 panel hash × 2 tema × 2 viewport = 52 test. Auth: `auth.setup.js` + storageState. Test user: kefelituna+k032@gmail.com candidate id=77 (idempotent seed). `page.goto('/profil.html#' + hash)` fresh page, hashchange listener → switchPanel. 1800ms panel lazy init bekleme. IGNORE + REGRESSION Faz 1 aynı. Codex K034 review PASS (helper extraction opsiyonel). 52/52 yesil (~5.5dk). **Faz 3 (ik + admin tab) — backlog**.
+16. ~~**K032 Runtime Playwright Smoke Suite — Faz 2**~~ — ✅ TAMAMLANDI (17 Nisan 2026, Asama 78 devam). `tests/smoke.runtime.e2e.spec.js` (109 satir) + `scripts/seed-test-user.mjs`. profil.html 13 panel hash × 2 tema × 2 viewport = 52 test. Test user: kefelituna+k032@gmail.com candidate id=77. 52/52 yesil (~5.5dk). Commit `0c25753`+`67db4fb`.
+
+17. ~~**K032 Runtime Playwright Smoke Suite — Faz 3**~~ — ✅ TAMAMLANDI (17 Nisan 2026, Asama 78 gece). 2 yeni test dosyasi (`smoke.runtime.ik.e2e.spec.js` 10 panel, `smoke.runtime.admin.e2e.spec.js` 12 panel) + 2 yeni seed (`seed-test-employer.mjs`, `seed-test-admin.mjs`) + 2 yeni auth setup (`auth.setup.employer.js`, `auth.setup.admin.js`) + playwright.config.js 3 setup/6 e2e project. Test user'lar: `tkefeli@peoplein.com.tr` (employer, Tuna sirket maili, hr_profile upsert) + `admin+k032@peoplein.com.tr` (yeni seed, admin_users superadmin). Prod admin guard: `kefelituna@gmail.com` hard-refuse. Ortak password `.env.local`. ik 40/40 + admin 48/48 = 88/88 yesil. **Bes bacakli koruma aktif.** K035 admin sertleştirme karar entry eklendi.
 
 ## 5b. Sosyal Layer Audit Kararlari (Session 45 — 30 Mart)
 
@@ -211,7 +213,20 @@ hellotalent.ai, Turkiye perakende sektorune ozel bir yetenek pazaryeri. Adaylar 
 - Pragmatik çözüm: Claude self-spec (kısa internal plan) + implement + Codex review gate. K034 ruhu (iki kişi kontrolü) gate'te korundu.
 - Codex review: PASS. Opsiyonel iyileştirmeler (ertelenen): (a) existing-user branch'ta role metadata heal + pagination limit, (b) 1800ms yerine lokator-bazli panel hazir sinyali, (c) hash→data-panel contract assert, (d) helper modul extraction.
 
-**Test sayisi:** 910 → 926 (+16 Faz 1) → 978 (+52 Faz 2).
+**K032 Faz 3 — ik.html + admin.html Authenticated (aynı gun gece):**
+- Faz 3A: `tests/smoke.runtime.ik.e2e.spec.js` 10 panel × 2 tema × 2 viewport = 40 test
+- Faz 3B: `tests/smoke.runtime.admin.e2e.spec.js` 12 panel × 2 tema × 2 viewport = 48 test
+- Test users: `tkefeli@peoplein.com.tr` (employer, Tuna şirket mail) + `admin+k032@peoplein.com.tr` (admin, yeni seed)
+- Prod admin guard: `kefelituna@gmail.com` seed-test-admin.mjs'te hard-refuse
+- `scripts/seed-test-employer.mjs` + `scripts/seed-test-admin.mjs` idempotent
+- `tests/auth.setup.employer.js` + `tests/auth.setup.admin.js` ayrı storageState
+- `playwright.config.js` 3 setup + 6 e2e project (e2e/e2e-ik/e2e-admin × mobile/desktop), testIgnore regex isolation
+- Ortak password `2395857Tna2.` (`.env.local`, git-ignored)
+- `scripts/seed-test-user.mjs` password min length 12→10
+- **K035 karar entry:** Prod admin panel sertleştirme (MFA zorunlu, IP allowlist, short session, sudo re-auth, audit log, geo anomaly) — ayrı sprint backlog
+- 88/88 yesil (ik desktop 1.3dk + admin desktop 1.8dk + mobile paralel ~1.7dk)
+
+**Test sayisi:** 910 → 926 (+16 Faz 1) → 978 (+52 Faz 2) → 1066 (+88 Faz 3).
 
 **Dosyalar:**
 - YENI: `tests/smoke.runtime.spec.js` (Faz 1, 106 satir)
