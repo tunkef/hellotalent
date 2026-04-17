@@ -45,6 +45,24 @@
   --lp-section-pad: clamp(56px, 8vw, 96px) clamp(20px, 4vw, 48px);
   --lp-max-width: 1120px;
   --warm-gray: #F7F6F4;
+
+  /* ══ Clatu public-site tokens (index, hakkimizda, iletisim, aday, isveren) ══
+     Source of truth — kept here so single-point update propagates to all pages.
+     Do not duplicate in per-page <style> blocks. */
+  --bg-page: #F7F6F4;
+  --bg-section: #fff;
+  --bg-warm: #F5F1ED;
+  --bg-warm-k: #F0F1F7;
+  --verm-dark: #A83D1E;
+  --navy-dark: #162044;
+  --text-primary: #111;
+  --text-muted: rgba(0,0,0,0.65);
+  --font-d: 'Bricolage Grotesque', sans-serif;
+  --font-b: 'Plus Jakarta Sans', sans-serif;
+  --font-m: 'DM Mono', monospace;
+  --radius: 10px;
+  --max-w: 1120px;
+  --pad: clamp(48px,8vw,96px) clamp(24px,5vw,48px);
 }
 html { scroll-behavior: smooth; overflow-x: hidden; }
 html.ht-scroll-lock { overflow: hidden; }
@@ -860,7 +878,13 @@ body {
 /* ══ DARK MODE — HEADER & MOBILE MENU ══
    Placed at end of file for cascade priority over component definitions */
 @media(prefers-color-scheme:dark){
-  :root{--text:#F0F0EE;--muted:rgba(240,240,238,0.5);--gray:#181A24;--border:rgba(255,255,255,0.08)}
+  :root{
+    /* Legacy app tokens */
+    --text:#F0F0EE;--muted:rgba(240,240,238,0.5);--gray:#181A24;--border:rgba(247,246,244,0.08);
+    /* Clatu public-site tokens */
+    --bg-page:#0B0D17;--bg-section:#12141F;--bg-warm:#141625;--bg-warm-k:#0C0F1A;
+    --text-primary:#F0F0EE;--text-muted:rgba(247,246,244,0.70);
+  }
   .site-header{background:rgba(11,13,23,0.8);border-bottom-color:rgba(255,255,255,0.06)}
   .header-logo{color:#F0F0EE}
   .nav-link{color:rgba(240,240,238,0.5)}
