@@ -1,5 +1,32 @@
 # HelloTalent AI-COLLAB — Aktif Calisma Defteri
 
+## 2026-04-17 — Design Refactor Faz 2 Pass 2 — Şirket profili emoji → SVG
+
+**Durum:** Şirket profili paneli (ik.html) kart başlıklarından emoji temizlendi, SVG feather icon'larla değiştirildi. .profil-card-title class'ı flex container'a çevrildi (icon + text align).
+
+**Yapilan:**
+- 4 kart başlığı: 🏢 Temel Bilgiler / 📞 İletişim & Konum / ✍️ Şirket Hakkında / 📍 Mağaza Lokasyonları → SVG icons
+- 🏷️ Şirket Yapısı section header → SVG tag icon
+- 🏪 Tek Marka / 🏢 Çoklu Marka type selector (24px emoji) → 28px SVG store/building icons
+- 🏢 Kampanya no-company empty state (48px emoji) → 48px SVG with opacity:0.55
+- Hardcoded `#FEF7F5` → `var(--verm-light)`
+
+**CSS:**
+- `.profil-card-title` flex/align/gap eklendi, svg child'a `color:var(--verm)` default stroke
+
+**Kapsam disi (Pass 3):**
+- Pozisyonlar empty states (📋📝🔒🗄️⭐) — JS textContent emoji (5 pozisyon tipi)
+- Aday ara panel empty state (🔍)
+- Favoriler / Takipçiler empty state (👤💜👥)
+- Activity feed toast emojis (✓⚠️ 👋)
+- Modal close ✕ (iconographic, dusuk oncelik)
+
+**Dogrulama:** ik.html load + redirect normal. Console error yok.
+
+Ref: `docs/design-refactor/faz1-tokens.md`
+
+---
+
 ## 2026-04-17 — Design Refactor Faz 2 Pass 1 — ik.html dashboard cleanup
 
 **Durum:** Dashboard paneli emoji temizlendi, hardcoded renkler token'a gecti, empty state ve quick-access cards yeniden tasarlandi. CSS sadece dashboard panel'e yoneldi.
