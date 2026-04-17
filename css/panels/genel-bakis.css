@@ -208,6 +208,10 @@
 .gb-spine {
   position: relative;
   padding-left: 36px;
+  /* min-width:0 zorunlu — grid 1fr parent'i bulunan .gb-item__headline
+   * uzun baslik iceriginde min-content contribution ile genisliyordu,
+   * wrap olusmuyordu. Tuna UAT 2026-04-17 ikinci pass. */
+  min-width: 0;
 }
 .gb-spine::before {
   content: "";
@@ -254,7 +258,10 @@
   margin: 0 0 10px;
   letter-spacing: -0.005em;
   /* Uzun başlıkları frame içinde tut — body zaten break-word yapıyordu
-   * ama headline CSS default'ta taşıyordu (Tuna UAT 2026-04-17). */
+   * ama headline CSS default'ta taşıyordu. 2026-04-17 ikinci pass:
+   * media (640px) ile align max-width + %100 cap, wrap belt-and-
+   * suspenders (anywhere + break-word + hyphens). */
+  max-width: min(640px, 100%);
   overflow-wrap: anywhere;
   word-break: break-word;
   hyphens: auto;

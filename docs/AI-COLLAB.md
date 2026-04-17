@@ -1,5 +1,15 @@
 # HelloTalent AI-COLLAB — Aktif Calisma Defteri
 
+## 2026-04-17 — Gundem feed headline wrap fix pass 2
+
+Tuna UAT: uzun baslik ("Peoplein Insan Kaynaklari Yetenek Avini HelloTalent Araciligi ile Yapiyor") gb-card--gundem frame'ini asiyor, alt satira dusmuyordu. Pass 1'de `.gb-item__headline` overflow-wrap:anywhere + `.gb-item` min-width:0 eklenmisti ama yetmedi.
+
+Kok neden: `.gb-spine` intermediate container (grid 1fr cell > .gb-gundem > .gb-spine > .gb-item) min-width:0 yoktu. Grid 1fr cell'in min-content contribution algoritmasi headline tek-satir genisligini min-content kabul ederek cell'i genisletiyordu → wrap yerine parent overflow.
+
+Fix: `.gb-spine` min-width:0 + `.gb-item__headline` max-width:min(640px,100%) explicit cap (media ile align editorial feed gorunumu). Cache-bust 20260417b → 20260417c.
+
+---
+
 ## YARIN DEVAM NOKTASI (17 Nisan gece kapanis)
 
 **Son durum:** Markalar paneli iki strip card renk inversiyonu push edildi (commit `5729add`). Tuna UAT bekliyor — yarin yeni gun mesajiyla baslayacak.
