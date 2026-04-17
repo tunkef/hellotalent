@@ -1,5 +1,52 @@
 # HelloTalent AI-COLLAB — Aktif Calisma Defteri
 
+## 2026-04-17 — Design Refactor Faz 2 Pass 3 — JS-driven emoji → SVG (ICON_SVG helper)
+
+**Durum:** ik.html JS-renderli emoji'ler SVG'ye gecti. Yeni `ICON_SVG` helper map + `iconSvg(name)` fonksiyonu, tum icon isimlerini tek yerden sunuyor. Activity feed, empty state'ler ve match score pill SVG'ye donusturuldu.
+
+**ICON_SVG helper (yeni):**
+- 22 feather-style icon: dot_green/verm/navy/muted, edit, lock, list, archive, user, users, star, star_fill, heart, heart_fill, search, mail, file, bolt, wave, building, tag, alert, check
+- Tumu currentColor + stroke-based (renk var() ile override edilebilir)
+
+**Activity feed (panel-dashboard):**
+- Pozisyon icons: 🟢📝🔒📋 → `dot_green/edit/lock/list`
+- Aday kaydi: 👤 → `user`
+- Favoriler: ⭐ → `star_fill`
+- Takipci: 💜 → `heart_fill`
+- Empty state: 📋 → 32px SVG list
+- Render loop: `iconSpan.textContent` → `iconSpan.innerHTML = iconSvg(a.icon)` + 24x24 flex container
+
+**Pozisyonlar empty states (5 tip):**
+- active/draft/closed/archived/template → `list/edit/lock/archive/star`
+- msgs struct: `{i:'emoji'}` → `{i:'iconName'}`
+- .empty-icon CSS: font-size:40px → SVG width:40px, color:var(--muted) opacity:0.55
+
+**Marka bakti / Takipciler empty states:**
+- 🏢 no-company → building SVG (48px inline)
+- 🏷️ no-brand → tag SVG
+- 👥 empty follower → users SVG
+
+**Diger:**
+- ⚠️ error empty-state → `alert` SVG
+- 👋 welcome banner → wave SVG
+- 🔍 search empty (2 yer) → `search` SVG
+- ⚡ match score pill → `bolt` SVG (inline-flex gap)
+
+**Kapsam disi (button-label emojiler, iconographic convention):**
+- ★ favori / 📄 CV / ✉️ mesaj button'lari (label prefix olarak kullaniyor)
+- 🔒 Premium lock badges (CSS class'a convert etmek icin ayri pass)
+- ✕ modal close (standart convention)
+- ✓/✗ plan feature checkmarks (inline text)
+- ♥ brand follow tag (dingbat, emoji degil)
+
+**Pass 2 tamam.** Kalan: Premium lock cleanup, stat card aha-metric redesign, first-session onboarding hero → sonraki fazlar.
+
+**Dogrulama:** ik.html load OK, console error yok. Kurumsal auth ile full panel gorsel verify Playwright e2e'ye birakildi.
+
+Ref: `docs/design-refactor/faz1-tokens.md`
+
+---
+
 ## 2026-04-17 — Design Refactor Faz 2 Pass 2 — Şirket profili emoji → SVG
 
 **Durum:** Şirket profili paneli (ik.html) kart başlıklarından emoji temizlendi, SVG feather icon'larla değiştirildi. .profil-card-title class'ı flex container'a çevrildi (icon + text align).
