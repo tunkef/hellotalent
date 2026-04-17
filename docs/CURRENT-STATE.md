@@ -1,6 +1,6 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 17 Nisan 2026 | Asama 78 — K032 Faz 1 + 2 + 3 Runtime Playwright Smoke Suite — 5 bacakli koruma aktif
-> Aktif Odak: Faz 1 (16/16) + Faz 2 (52/52) + Faz 3A ik (40/40) + Faz 3B admin (48/48) = 156/156 yesil. K035 admin sertleştirme karar entry'si eklendi.
+> Son guncelleme: 17 Nisan 2026 | Asama 78 gece — K032 Faz 1+2+3 + Audit paketi (Husky --no-stash + K-1 metadata) + Faz 4 backlog somutlasti
+> Aktif Odak: Audit tamamlandi. Kritik 2 fix pushed (Husky drift + test_account flag). K-2/K-3/O-1..O-4 Faz 4 sprint'ine net kapsamla gecti. 479/479 targeted regression yesil.
 
 ## 1. Proje Ozeti
 
@@ -162,7 +162,9 @@ hellotalent.ai, Turkiye perakende sektorune ozel bir yetenek pazaryeri. Adaylar 
 
 16. ~~**K032 Runtime Playwright Smoke Suite — Faz 2**~~ — ✅ TAMAMLANDI (17 Nisan 2026, Asama 78 devam). `tests/smoke.runtime.e2e.spec.js` (109 satir) + `scripts/seed-test-user.mjs`. profil.html 13 panel hash × 2 tema × 2 viewport = 52 test. Test user: kefelituna+k032@gmail.com candidate id=77. 52/52 yesil (~5.5dk). Commit `0c25753`+`67db4fb`.
 
-17. ~~**K032 Runtime Playwright Smoke Suite — Faz 3**~~ — ✅ TAMAMLANDI (17 Nisan 2026, Asama 78 gece). 2 yeni test dosyasi (`smoke.runtime.ik.e2e.spec.js` 10 panel, `smoke.runtime.admin.e2e.spec.js` 12 panel) + 2 yeni seed (`seed-test-employer.mjs`, `seed-test-admin.mjs`) + 2 yeni auth setup (`auth.setup.employer.js`, `auth.setup.admin.js`) + playwright.config.js 3 setup/6 e2e project. Test user'lar: `tkefeli@peoplein.com.tr` (employer, Tuna sirket maili, hr_profile upsert) + `admin+k032@peoplein.com.tr` (yeni seed, admin_users superadmin). Prod admin guard: `kefelituna@gmail.com` hard-refuse. Ortak password `.env.local`. ik 40/40 + admin 48/48 = 88/88 yesil. **Bes bacakli koruma aktif.** K035 admin sertleştirme karar entry eklendi.
+17. ~~**K032 Runtime Playwright Smoke Suite — Faz 3**~~ — ✅ TAMAMLANDI (17 Nisan 2026, Asama 78 gece). 2 yeni test dosyasi + 2 yeni seed + 2 yeni auth setup + playwright.config.js 3 setup/6 e2e project. Test user'lar: `tkefeli@peoplein.com.tr` (employer) + `admin+k032@peoplein.com.tr` (admin). Prod admin guard: `kefelituna@gmail.com` hard-refuse. ik 40/40 + admin 48/48 = 88/88 yesil. **Bes bacakli koruma aktif.** K035 admin sertleştirme karar entry eklendi.
+
+18. ~~**K032 Audit + Husky --no-stash Fix**~~ — ✅ TAMAMLANDI (17 Nisan 2026, Asama 78 gece kapanis). Commit `3668add`. Paralel agent audit (feature-dev:code-reviewer + Explore husky-drift) + targeted regression. 3 KRITIK + 4 ORTA + 3 LOW bulgu. **2 kritik fix:** (a) `.husky/pre-commit` `npx lint-staged --no-stash` — paralel tasarim session drift'i tamamen engellendi (bug root cause: lint-staged v16.4.0 `git stash --keep-index` partial staging durumunda unstaged dosyalari commit'e aliyordu). (b) `scripts/seed-test-user.mjs` `user_metadata.test_account: true` eklendi + `updateUserPassword` → `updateUser` (mevcut user'da da metadata sync). Targeted regression 479/479 yesil. **Faz 4 backlog somutlasti:** K-2 (panel activation assert, 15 dk), K-3 (admin setup navigate verify, 10 dk), O-1 (scripts/_supa-admin.mjs helper), O-2 (tests/helpers/runtime-signals.js helper + admin.e2e IGNORE drift), O-3 (waitForTimeout → waitForFunction), O-4 (docs/SECURITY-RUNBOOK.md service_role rotate). Genel verdict: **Dusuk borc.**
 
 ## 5b. Sosyal Layer Audit Kararlari (Session 45 — 30 Mart)
 
@@ -227,6 +229,17 @@ hellotalent.ai, Turkiye perakende sektorune ozel bir yetenek pazaryeri. Adaylar 
 - 88/88 yesil (ik desktop 1.3dk + admin desktop 1.8dk + mobile paralel ~1.7dk)
 
 **Test sayisi:** 910 → 926 (+16 Faz 1) → 978 (+52 Faz 2) → 1066 (+88 Faz 3).
+
+**Audit paketi (gece kapanis, commit `3668add`):**
+- 2 paralel agent (feature-dev:code-reviewer + Explore husky-drift) + targeted regression
+- Bulgular: 3 KRITIK + 4 ORTA + 3 LOW
+- 2 KRITIK simdi fix:
+  1. Husky `--no-stash`: lint-staged v16.4.0 `git stash --keep-index` partial staging durumunda unstaged dosyalari commit'e aliyordu (paralel tasarim session drift'i). 1 satir fix, backup stash devre disi.
+  2. K-1 test_account flag: `seed-test-user.mjs` candidate metadata'ya `test_account: true` eklendi + `updateUserPassword` → `updateUser` rename (mevcut user'da da metadata sync).
+- K-2/K-3 + O-1..O-4 Faz 4 backlog'a somut kapsamla gecti (~40 dk)
+- Secret hijyen TEMIZ, Design Refactor Faz 1c (scope-drift 0c25753 icerik) sagliklı DRY
+- Targeted regression smoke.runtime + p3.regression desktop: **479/479 yesil (7.2s)**
+- Verdict: Orta borc → **Dusuk borc**
 
 **Dosyalar:**
 - YENI: `tests/smoke.runtime.spec.js` (Faz 1, 106 satir)

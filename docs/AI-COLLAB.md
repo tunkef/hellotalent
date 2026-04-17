@@ -1,5 +1,44 @@
 # HelloTalent AI-COLLAB — Aktif Calisma Defteri
 
+## 2026-04-17 — K032 Audit + Husky --no-stash Fix (Asama 78 gece kapanis)
+
+**Durum:** K032 Faz 1+2+3 push sonrasi teknik borc audit'i. 2 paralel agent (code-reviewer + husky-drift Explore) + targeted regression. 3 KRITIK + 4 ORTA + 3 LOW bulgu. 2 kritik simdi fix (Husky + K-1), K-2/K-3 + 4 orta Faz 4 backlog'a somut kapsamla gecti. Commit `3668add` push edildi.
+
+**Husky scope-drift root cause:**
+- lint-staged v16.4.0 `git stash --keep-index` mekanizmasi partial staging durumunda (staged + unstaged mix) unstaged dosyalari commit'e aliyordu.
+- Paralel tasarim session'in unstaged degisiklikleri K032 commit'lerine sizdi (0c25753 ornegi — mesaj "test" ama icinde 4 tasarim dosyasi).
+- Fix: `.husky/pre-commit` `npx lint-staged` → `npx lint-staged --no-stash`. 1 satir, backup stash devre disi, sadece explicit staged dosyalar commit'e girer. Bu commit'in kendi kaniti: 3 staged + 1 unstaged (ik.html paralel session), sadece 3 commit'te.
+
+**K-1 seed-test-user.mjs metadata fix:**
+- Candidate test user'da `user_metadata.test_account: true` flag eksikti (employer + admin'de zaten vardi).
+- `updateUserPassword` → `updateUser` rename: mevcut user'da da metadata PUT alir, existing-user branch'i artik metadata drift yapmaz.
+- Idempotent rerun dogrulandi, candidate id=77 update path yesil.
+
+**Audit sonuclari:**
+- Secret hijyen: TEMIZ (`.env.local` git-ignored, seed script'te hardcode yok, history'de sizinti yok, sadece placeholder referanslari `sb_secret_...`)
+- Scope-drift icerigi: Design Refactor Faz 1c sagliklı DRY, runtime regresyonsuz (testler 479/479 yesil)
+- ESLint: 0 error (7 warning = test dosyalari scope disi, bilincli)
+- Docs sync: CURRENT-STATE + karar-defteri + AI-COLLAB K032 tam
+- Skill awareness: `.agents/skills/*/SKILL.md` K032 smoke suite bilmiyor (low priority)
+
+**Faz 4 backlog (karar defterinde somutlasti, ~40 dk toplam):**
+- K-2 (Kritik, 15 dk): 3 e2e spec'te `.panel.active` okunuyor ama assert edilmiyor. Routing bug sessiz yesil riski. Fix: `expect(activePanel).toBe(hash)`.
+- K-3 (Kritik, 10 dk): `auth.setup.admin.js` login sonrasi profil.html'de storageState, admin.html'e navigate etmeden. Session yeterli mi belirsiz. Fix: setup'ta /admin.html navigate + lokator verify.
+- O-1 (Orta): 3 seed script helper extraction (`scripts/_supa-admin.mjs`) — coach rol gelmeden.
+- O-2 (Orta): 4 test helper extraction (`tests/helpers/runtime-signals.js`) — `admin.e2e` eksik `demo-dashboard-ik.html` IGNORE drift basladi.
+- O-3 (Orta): `waitForTimeout` → `page.waitForFunction` uygulama-tarafli sentinel, CI flakiness riski.
+- O-4 (Orta): `docs/SECURITY-RUNBOOK.md` yok, service_role rotate prosedurunu belgele.
+
+**Targeted regression:** smoke.runtime.spec.js + p3.regression.spec.js desktop = **479/479 yesil (7.2s)**. K032 Faz 1+2+3 kendi koşumları oturum boyunca yeşildi: 16 + 52 + 40 + 48 + 4 setup = 160.
+
+**Full suite hang:** `--reporter=line | tail -10` 30+ dk hang etti, output file'a yazilmadi, kill edildi. Ek borc: `--reporter=list` + explicit output dosyasi kullan (O-5 backlog — karar defterine eklenebilir).
+
+**Genel verdict:** Orta borc → **Dusuk borc** (Husky + K-1 fix sonrasi). Kritik 2 bulgu (K-2/K-3) Faz 4 somut backlog, production zarar yok.
+
+**Commit:** `3668add` (fix k032 audit paketi). Tasarim dosyalarina SIFIR temas — paralel tasarim session'in isine cakisma yok.
+
+---
+
 ## 2026-04-17 — Design Refactor Faz 2 Pass 3 — JS-driven emoji → SVG (ICON_SVG helper)
 
 **Durum:** ik.html JS-renderli emoji'ler SVG'ye gecti. Yeni `ICON_SVG` helper map + `iconSvg(name)` fonksiyonu, tum icon isimlerini tek yerden sunuyor. Activity feed, empty state'ler ve match score pill SVG'ye donusturuldu.
