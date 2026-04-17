@@ -402,25 +402,26 @@
 1. `scripts/check-html-tags.sh` — `.husky/pre-commit`'e bağlandı. Her HTML entry için `<script>` open/close count eşitliği + orphan `<script src>` satır taraması. Lokal test: drop senaryosu reproduce → guard yakalıyor.
 2. `tests/p3.regression.spec.js` → 6 HTML entry × 2 guard = 24 yeni test. 898/0 yeşil.
 
-**Backlog (açık — bu karar bunun için)**:
-3. **Runtime Playwright smoke suite** (~30 dk iş):
-   - Localhost serve (`python3 -m http.server`)
-   - Playwright navigate `http://localhost:PORT/profil.html`
-   - Test user session enjekte (supabase localStorage mock) — gate bypass
-   - `page.on('pageerror', ...)` + `page.on('console', msg => if error)` listener
-   - `await page.waitForLoadState('networkidle')`
-   - Assert: no `ReferenceError`, no `TypeError`, no `not defined` in console
-   - Aynı pass light + dark mode için
-   - `tests/smoke.spec.js` olarak ayrılabilir
+**Uygulama Faz 1 — TAMAMLANDI (17 Nisan 2026, Asama 78):**
+3. **Runtime Playwright smoke suite** — `tests/smoke.runtime.spec.js`:
+   - 4 hedef sayfa: profil.html, ik.html, admin.html, coach-studio.html
+   - 2 tema × 2 viewport (mobile+desktop) = 16 test
+   - Auth mock YOK — boot-time hata giris redirect öncesi fırlar, bypass gerekmez
+   - `page.on('pageerror')` + `page.on('console', error)` collector
+   - `page.addInitScript` ile `localStorage.setItem('ht_theme_preference', theme)` navigate öncesi
+   - `networkidle` timeout catch yalnız `/Timeout|timeout/` pattern için (diğer rejection throw)
+   - IGNORE_PATTERNS: supabase / posthog / sentry / cloudflare+turnstile / redirect / CSP noise (raw network pattern yok — over-permissive filtre önlendi)
+   - REGRESSION_PATTERNS: ReferenceError | TypeError | SyntaxError | Unexpected token/end-of-input | "is not defined" | "Cannot read propert" | "Cannot read properties of (null|undefined)" | "is not a function"
+   - Fingerprint kanıt: shared.js'e `window.__k032FingerprintMissingFn_zzz()` enjekte → TypeError yakalandı → restore, git diff boş
+   - 16/16 yeşil (28.6s)
 
-**Neden hemen değil:** Şu an auth gate bypass için Supabase mock session setup gerek. Test user credentials yoksa JSDOM login simülasyonu gerekir. Pragmatik paket: K032 sprint'i açıldığında ilk iş.
+**Codex review (K034 gate):** İlk review FAIL — SyntaxError pattern eksik + networkidle catch tüm rejection'ları yutuyor + filter over-permissive. 3 madde fix uygulandı, 2. review PASS.
 
-**Kapsama genişletmesi opsiyonel:**
-- ik.html + admin.html için aynı smoke
-- Her panel hash için navigate (#merkez, #kesfet, #ayarlar…) + her biri için 0 error assertion
-- Dark mode toggle + re-assert
+**Faz 2 — Backlog (açık):** Auth gerektiren panel hash nav. HT_TEST_EMAIL/PASS + `auth.setup.js` zaten hazır. RUNTIME_PAGES array `requiresAuth`, `hashes`, `expectedRedirect` alanlarıyla genişletilebilir.
 
-**Referans:** Commit `4f31ff7` (hotfix), `a8d3801` (K068b), Sentry alert 15 Nisan 07:38 UTC.
+**Kapsama genişletmesi (opsiyonel):** Panel hash per test, dark mode toggle runtime switch + re-assert.
+
+**Referans:** Commit `4f31ff7` (K068b hotfix), `a8d3801` (K068b fix), Sentry alert 15 Nisan 07:38 UTC, Faz 1 implement 17 Nisan 2026.
 
 ---
 

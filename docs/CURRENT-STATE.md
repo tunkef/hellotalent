@@ -1,6 +1,6 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 17 Nisan 2026 | Asama 77 — K033 Opus 4.7 swap + K034 two-person pattern + Firsatlar rename + Bildirimler hero + Markalar redesign + Gundem wrap pass2
-> Aktif Odak: Markalar strip color inversion (vermillion + navy, Tuna approved). Gundem feed headline wrap pass2 (intermediate min-width:0 + max-width cap) commit eaba102 ile push. Yeni session: kaldigimiz yerden devam.
+> Son guncelleme: 17 Nisan 2026 | Asama 78 — K032 Faz 1 Runtime Playwright Smoke Suite implement
+> Aktif Odak: K032 runtime smoke tests/smoke.runtime.spec.js yazildi. 16/16 yesil. Codex K034 review PASS. Tuna onay + push bekliyor.
 
 ## 1. Proje Ozeti
 
@@ -158,6 +158,8 @@ hellotalent.ai, Turkiye perakende sektorune ozel bir yetenek pazaryeri. Adaylar 
 
 14. **Agent Skills Upgrade + Hedefli Audit (K029)** — 8 Nisan 2026. 12 yeni engineering/design skill kuruldu (Addy Osmani/Google + Supabase official + secici Impeccable). 38 total skill. 3 katmanli hedefli audit planlanmis: Katman 1 Security Sweep (AU1-AU6, blocker), Katman 2 Code Simplification (AU7-AU11, MVP 2 oncesi), Katman 3 A11y+Performance (AU12-AU18, incremental). Detay: `vault/02-urun/yapilacaklar.md` ve `vault/06-kararlar/karar-defteri.md#K029`.
 
+15. ~~**K032 Runtime Playwright Smoke Suite — Faz 1**~~ — ✅ TAMAMLANDI (17 Nisan 2026, Asama 78). `tests/smoke.runtime.spec.js` (106 satir) — 4 hedef sayfa (profil/ik/admin/coach-studio) × 2 tema (light+dark) × 2 viewport (mobile+desktop) = 16 test. Auth mock yok (boot-time hata redirect oncesi fırlar). `page.on('pageerror')` + `page.on('console', error)` collector. REGRESSION_PATTERNS: ReferenceError/TypeError/SyntaxError/Unexpected token+end-of-input/is not defined/Cannot read propert/is not a function. IGNORE_PATTERNS: supabase/posthog/sentry/cloudflare+turnstile/redirect/CSP noise (raw network pattern'ler filter'dan cikarildi — over-permissive engellendi). Fingerprint kanit: shared.js'e enjekte edilen `window.__k032FingerprintMissingFn_zzz()` TypeError yakalandi, git diff bos. Codex K034 review ilk FAIL (SyntaxError + networkidle catch + filter), fix'ler uygulandi, 2. review PASS. 16/16 yesil (28.6s). **Faz 2 (auth hash nav) — backlog**.
+
 ## 5b. Sosyal Layer Audit Kararlari (Session 45 — 30 Mart)
 
 | # | Feature | Karar | Gerekce |
@@ -169,6 +171,44 @@ hellotalent.ai, Turkiye perakende sektorune ozel bir yetenek pazaryeri. Adaylar 
 **Sonuc:** T02/T03/T04 otomatik DEFERRED. Onkosula: 50+ aktif pratikci icin T42-lite (topluluk nabzi karti) yeniden degerlendirilir.
 
 ## 6. Son 3 Session Ozeti
+
+### Session 78 (17 Nisan — Asama 78: K032 Faz 1 Runtime Playwright Smoke Suite)
+
+**Tek odak: K068b sinifi regresyonu yakalayan runtime smoke suite.**
+
+**K032 Faz 1 — `tests/smoke.runtime.spec.js`:**
+- 4 hedef sayfa: profil.html, ik.html, admin.html, coach-studio.html
+- 2 tema (light+dark) × 2 viewport (mobile+desktop) = 16 test
+- Auth mock yok (boot-time hata redirect oncesi firlar — K068b krurgusu)
+- `page.on('pageerror')` + `page.on('console', msg=>error)` collector
+- `page.addInitScript(localStorage.setItem('ht_theme_preference', theme))` navigate oncesi (profil-core.js:62 dogrulandi)
+- `networkidle` timeout 15s + catch sadece `/Timeout|timeout/` (diger rejection throw)
+- IGNORE: supabase/posthog/sentry/cloudflare+turnstile/redirect/CSP (raw network pattern'ler cikarildi — over-permissive filtre engellendi)
+- REGRESSION: ReferenceError/TypeError/SyntaxError/Unexpected token/end-of-input/is not defined/Cannot read propert/is not a function
+- Fingerprint kanit: shared.js sonuna gecici `window.__k032FingerprintMissingFn_zzz()` enjekte → TypeError yakalandi → restore, git diff bos. Sentry dev env SDK hatayi yakaladi (ders: gelecekte `page.evaluate(throw)` ile izole et).
+
+**K034 Review (iki kisi pattern):**
+- Spec: Codex (önceki turn). Filter listesi, REGRESSION regex, dark mode approach (addInitScript vs reload), faz 2 hazirligi.
+- Implement: Claude (bu turn). 106 satirlik tek dosya.
+- Review 1: Codex FAIL — (1) SyntaxError pattern eksik (K068b benzeri kirik script tag yakalanmaz), (2) `networkidle.catch(()=>{})` tum rejection'lari yutuyor, (3) filter over-permissive (raw Failed to fetch/NetworkError gercek bug'i maskeleyebilir).
+- Fix: 3 madde uygulandi. REGRESSION genisletildi (+SyntaxError/Unexpected token/end-of-input). catch daraltildi (sadece Timeout). IGNORE daraltildi (raw network pattern'leri kaldirildi — 3rd-party domain regex zaten URL uzerinde yakaliyor).
+- Review 2: PASS.
+
+**Test sayisi:** 910 → 926 (+16 K032).
+
+**Dosyalar:**
+- YENI: `tests/smoke.runtime.spec.js` (106 satir)
+- GUNCEL: `vault/06-kararlar/karar-defteri.md` K032 entry (backlog → Faz 1 tamamlandi)
+- GUNCEL: `docs/CURRENT-STATE.md` backlog item 15 + Asama 78 session entry
+- GUNCEL: `docs/AI-COLLAB.md` yeni entry
+
+**Insight K032:** Static katman (check-html-tags.sh pre-commit) + Runtime katman (Playwright boot smoke) + Kontrat katman (p3.regression) uc bacakli koruma. Static yapisal integrity, runtime semantic bootability, kontrat surface area guarantees yakaliyor. Her katman farkli sinif hata yakalar — bir arada defansif derinlik saglanir.
+
+**Acik riskler / yarin:**
+- Faz 2 (authenticated panel hash nav) — HT_TEST_EMAIL/PASS env var ayarlandiktan sonra. RUNTIME_PAGES array `requiresAuth`/`hashes`/`expectedRedirect` alanlariyla extend edilebilir.
+- Kim Bakti backend PVT-1..6 (K031) hala backlog.
+- Markalar grid hover glow dark mode visual confirm bekliyor.
+- Wizard hiring_boost drop sonrasi admin tooling smoke test.
 
 ### Session 77 (16-17 Nisan — Asama 77: K033 model swap + K034 two-person + Firsatlar rename + Bildirimler hero + Markalar redesign)
 

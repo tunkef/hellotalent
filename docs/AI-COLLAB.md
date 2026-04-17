@@ -1,5 +1,32 @@
 # HelloTalent AI-COLLAB — Aktif Calisma Defteri
 
+## 2026-04-17 — K032 Faz 1 Runtime Playwright Smoke Suite (Asama 78)
+
+**Durum:** Tek yeni dosya `tests/smoke.runtime.spec.js` (106 satir). 16/16 yesil. Codex K034 review PASS. Tuna onay + push bekliyor.
+
+**Kapsam (Faz 1):** 4 authenticated sayfa (profil/ik/admin/coach-studio) × 2 tema × 2 viewport = 16 test. Auth mock yok — boot-time hata giris redirect oncesi firlar, gate bypass gerekmez. `page.on('pageerror')` + `page.on('console', error)` collector. `page.addInitScript(localStorage.setItem('ht_theme_preference', theme))` navigate oncesi.
+
+**Filter disiplini:**
+- IGNORE: supabase/posthog/sentry/cloudflare+turnstile/redirect/CSP noise (raw network pattern'leri `Failed to fetch`/`NetworkError`/`net::ERR_` filter'dan cikarildi — over-permissive engellendi; 3rd-party domain regex URL uzerinde zaten yakaliyor)
+- REGRESSION: ReferenceError/TypeError/SyntaxError/Unexpected token/Unexpected end of input/is not defined/Cannot read propert/Cannot read properties of (null|undefined)/is not a function
+- networkidle catch sadece `/Timeout|timeout/` pattern (diger rejection throw)
+
+**Fingerprint kanit:** `shared.js` sonuna gecici `window.__k032FingerprintMissingFn_zzz()` enjekte edildi → TypeError yakalandi (2 light+dark profil test FAIL) → restore, git diff bos. Sentry dev env SDK hatayi yakalayip alert gonderdi. Ders: gelecekte reprodüksiyon icin `page.evaluate(() => { throw new Error(...) })` ile izole et, prod dosyalarina dokunma.
+
+**K034 gate:**
+- Spec: Codex (dosya iskeleti + filter listesi + dark mode addInitScript approach + faz 2 data structure hazirligi)
+- Implement: Claude (106 satir, 3 helper fn + 2 describe)
+- Review 1: FAIL — (1) SyntaxError pattern eksik, (2) networkidle catch genis, (3) filter over-permissive. 3 fix uygulandi.
+- Review 2: PASS.
+
+**Faz 2 — Backlog:** HT_TEST_EMAIL/PASS env var ayarlanminca (`auth.setup.js` hazir), RUNTIME_PAGES array `requiresAuth`/`hashes`/`expectedRedirect` alanlariyla extend. Her panel hash per test.
+
+**Test sayisi:** 910 → 926 (+16).
+
+**Siradaki adim:** Tuna onayi → git commit + push. Onay sonrasi CURRENT-STATE + karar-defteri zaten guncel, session 78 kapanis.
+
+---
+
 ## 2026-04-17 — Gundem feed headline wrap fix pass 2
 
 Tuna UAT: uzun baslik ("Peoplein Insan Kaynaklari Yetenek Avini HelloTalent Araciligi ile Yapiyor") gb-card--gundem frame'ini asiyor, alt satira dusmuyordu. Pass 1'de `.gb-item__headline` overflow-wrap:anywhere + `.gb-item` min-width:0 eklenmisti ama yetmedi.
