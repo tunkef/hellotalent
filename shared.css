@@ -4,34 +4,15 @@
    Sayfa-spesifik stiller ilgili .html dosyasında kalır
    ════════════════════════════════════════════════════ */
 
-/* ══ RESET & VARIABLES ══ */
+/* ══ TOKENS ══
+   Brand, surface, text, layout, radius tokens source of truth:
+   css/tokens.css (loaded via @import so every shared.css consumer gets it). */
+@import url('css/tokens.css?v=20260417a');
+
+/* ══ RESET & LP-SPECIFIC TOKENS ══ */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
-  /* Brand + type + spacing tokens: source of truth is css/tokens.css
-     Pages using shared.css without tokens.css (gate, aday, isveren, giris)
-     still need these — kept as fallback until those pages also load tokens.css */
-  --verm: #C94E28;
-  --verm-light: #F5EDE9;
-  --verm-dark: #b84420;
-  --verm-text: #b84420;
-  --navy: #1E2D5E;
-  --navy-light: #EEF0F7;
-  --gray: #F7F6F4;
-  --text: #111111;
-  --muted: #6B7280;
-  --border: #E5E3DF;
-
-  /* Type scale — kept for pages that don't load tokens.css (giris.html etc) */
-  --text-xs: 10px;
-  --text-sm: 11px;
-  --text-base: 12px;
-  --text-md: 13px;
-  --text-lg: 14px;
-  --text-xl: 16px;
-  --text-2xl: 18px;
-  --text-3xl: 20px;
-
-  /* ══ Landing page typography (LinkedIn-style) ══ */
+  /* Landing-page typography (LinkedIn-style) — shared.css specific, not in tokens.css */
   --heading-xl: clamp(36px, 5vw, 56px);
   --heading-lg: clamp(28px, 3.5vw, 40px);
   --heading-md: clamp(22px, 2.5vw, 32px);
@@ -45,24 +26,6 @@
   --lp-section-pad: clamp(56px, 8vw, 96px) clamp(20px, 4vw, 48px);
   --lp-max-width: 1120px;
   --warm-gray: #F7F6F4;
-
-  /* ══ Clatu public-site tokens (index, hakkimizda, iletisim, aday, isveren) ══
-     Source of truth — kept here so single-point update propagates to all pages.
-     Do not duplicate in per-page <style> blocks. */
-  --bg-page: #F7F6F4;
-  --bg-section: #fff;
-  --bg-warm: #F5F1ED;
-  --bg-warm-k: #F0F1F7;
-  --verm-dark: #A83D1E;
-  --navy-dark: #162044;
-  --text-primary: #111;
-  --text-muted: rgba(0,0,0,0.65);
-  --font-d: 'Bricolage Grotesque', sans-serif;
-  --font-b: 'Plus Jakarta Sans', sans-serif;
-  --font-m: 'DM Mono', monospace;
-  --radius: 10px;
-  --max-w: 1120px;
-  --pad: clamp(48px,8vw,96px) clamp(24px,5vw,48px);
 }
 html { scroll-behavior: smooth; overflow-x: hidden; }
 html.ht-scroll-lock { overflow: hidden; }
@@ -876,15 +839,9 @@ body {
 .auth-success-btn:hover { background: #b84420; }
 
 /* ══ DARK MODE — HEADER & MOBILE MENU ══
-   Placed at end of file for cascade priority over component definitions */
+   Token overrides now in css/tokens.css (data-theme="dark" + prefers-color-scheme
+   fallback). This block only carries component dark styles. */
 @media(prefers-color-scheme:dark){
-  :root{
-    /* Legacy app tokens */
-    --text:#F0F0EE;--muted:rgba(240,240,238,0.5);--gray:#181A24;--border:rgba(247,246,244,0.08);
-    /* Clatu public-site tokens */
-    --bg-page:#0B0D17;--bg-section:#12141F;--bg-warm:#141625;--bg-warm-k:#0C0F1A;
-    --text-primary:#F0F0EE;--text-muted:rgba(247,246,244,0.70);
-  }
   .site-header{background:rgba(11,13,23,0.8);border-bottom-color:rgba(255,255,255,0.06)}
   .header-logo{color:#F0F0EE}
   .nav-link{color:rgba(240,240,238,0.5)}

@@ -1,5 +1,26 @@
 # HelloTalent AI-COLLAB — Aktif Calisma Defteri
 
+## 2026-04-17 — Design Refactor Faz 1b — Token Consolidation (devam)
+
+**Durum:** tokens.css tek source of truth oldu, shared.css `@import` ile tuketir, 7 sayfaya daha `<link tokens.css>` eklendi. Light + dark desktop dogrulandi, console error yok.
+
+**Kapsam:**
+- `css/tokens.css` genisletildi: Clatu public tokens (--bg-page, --bg-section, --bg-warm, --bg-warm-k, --font-d/b/m, --pad, --max-w, --navy-dark). `--text-muted` semantic artik rgba(0,0,0,0.65) WCAG AA.
+- Dark mode `data-theme="dark"` block Clatu surfaces eklendi. Fallback `@media(prefers-color-scheme:dark):root:not([data-theme="light"])` ile script'siz sayfalar OS-prefer ile dark mode alir.
+- `shared.css` top :root dup silindi, `@import url('css/tokens.css')` eklendi. Dark block'taki :root override silindi. LP-specific (--heading-xl, --lp-*) kaldi.
+- 7 sayfaya `<link rel="stylesheet" href="css/tokens.css?v=20260417a">`: ik, giris, uye-ol, gate, sifre-yenile, coach-studio, demo-dashboard-ik. Lokal :root cascade'de override etmeye devam ediyor (Faz 1c'de temizlenecek).
+
+**Yasal bonus:** yasal.html `--text-primary/--bg-section/--text-muted` undefined bug cozuldu tokens.css sayesinde. `--text-secondary` hala navy (intentional).
+
+**Faz 1c (bekliyor):**
+- 7 sayfadan lokal :root temizleme + `tests/p3.regression` Asama 35 guard update (test ik.html'de :root icinde --text-* arior, tek committe).
+
+**Referans:** `docs/design-refactor/faz1-tokens.md`, `docs/plans/` (gitignored).
+
+**Siradaki adim:** Tuna onay → commit+push. Faz 1c planla, Faz 2 (ik dashboard redesign) sonra.
+
+---
+
 ## 2026-04-17 — K032 Faz 2 Authenticated Panel Hash Smoke (Asama 78 devam)
 
 **Durum:** `tests/smoke.runtime.e2e.spec.js` + `scripts/seed-test-user.mjs` yazildi. 52/52 yesil (e2e-desktop 2.6dk + e2e-mobile 2.9dk). Codex K034 review PASS. Tuna onay + push bekliyor.

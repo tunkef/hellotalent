@@ -26,6 +26,11 @@
   --font-weight-normal: 400;
   --font-weight-medium: 500;
 
+  /* Clatu public-site font aliases (index, hakkimizda, iletisim, aday, isveren) */
+  --font-d: var(--font-head);   /* display / headings */
+  --font-b: var(--font-body);   /* body */
+  --font-m: var(--font-mono);   /* mono / data */
+
   /* Type scale */
   --text-xs: 10px;
   --text-sm: 11px;
@@ -64,6 +69,10 @@
   --sidebar-w: 240px;
   --header-h: 60px;
 
+  /* Clatu public-site layout */
+  --max-w: 1120px;
+  --pad:   clamp(48px, 8vw, 96px) clamp(24px, 5vw, 48px);
+
 /* ═══ Layer 2: Semantic (meaning — reference these in CSS rules) ═══ */
 
   /* Backwards compat aliases (keep until Kademe 2 migration completes) */
@@ -74,6 +83,7 @@
   --navy: var(--color-navy);
   --navy-light: var(--color-navy-light);
   --navy-deep: var(--color-navy-deep);
+  --navy-dark: var(--color-navy-deep);  /* Clatu alias */
   --gray: var(--color-gray);
   --text: var(--color-text);
   --muted: var(--color-muted);
@@ -90,10 +100,16 @@
   --bg-surface: #ffffff;
   --bg-elevated: var(--color-gray);
 
+  /* Clatu public-site surfaces (index, hakkimizda, iletisim, aday, isveren) */
+  --bg-page:    #F7F6F4;   /* body bg */
+  --bg-section: #ffffff;   /* white section bg */
+  --bg-warm:    #F5F1ED;   /* warm cream section */
+  --bg-warm-k:  #F0F1F7;   /* kurumsal navy-tinted warm */
+
   /* Text */
   --text-primary: var(--color-text);
   --text-secondary: var(--color-navy);
-  --text-muted: var(--color-muted);
+  --text-muted: rgba(0,0,0,0.65);  /* WCAG AA — body muted text */
 
   /* Borders */
   --border-subtle: var(--color-border);
@@ -155,9 +171,15 @@ html[data-theme="dark"] {
   --bg-surface: #111827;
   --bg-elevated: #1F2937;
 
+  /* Clatu public-site surfaces */
+  --bg-page:    #0B0D17;
+  --bg-section: #12141F;
+  --bg-warm:    #141625;
+  --bg-warm-k:  #0C0F1A;
+
   --text-primary: #F9FAFB;
   --text-secondary: #E5E7EB;
-  --text-muted: #9CA3AF;
+  --text-muted: rgba(247,246,244,0.70);  /* WCAG AA — body muted text (dark) */
 
   --border-subtle: #1F2937;
   --border-strong: #374151;
@@ -200,4 +222,34 @@ html[data-theme="dark"] {
   --editorial-on-vermillion:   #FFFFFF;
   --editorial-shadow:          0 1px 3px rgba(0,0,0,0.4);
   --editorial-shadow-md:       0 4px 18px rgba(0,0,0,0.5);
+}
+
+/* ═══ Dark Mode fallback — OS preference for pages without pre-paint script ═══
+   Apps with ht_theme_preference toggle (profil, admin) set data-theme="light"
+   or data-theme="dark" explicitly. Script-less pages (index, hakkimizda,
+   iletisim, yasal, gate, giris, uye-ol, sifre-yenile, coach-studio,
+   demo-dashboard-ik, ik) fall back to OS preference via this block. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+
+    /* Clatu public-site surfaces */
+    --bg-page:    #0B0D17;
+    --bg-section: #12141F;
+    --bg-warm:    #141625;
+    --bg-warm-k:  #0C0F1A;
+
+    /* Text */
+    --text-primary: #F9FAFB;
+    --text-muted:   rgba(247,246,244,0.70);
+
+    /* Border */
+    --border: rgba(247,246,244,0.08);
+    --border-subtle: rgba(247,246,244,0.08);
+
+    /* Legacy app aliases (shared.css header dark block needs these) */
+    --text: #F0F0EE;
+    --muted: rgba(240,240,238,0.5);
+    --gray:  #181A24;
+  }
 }
