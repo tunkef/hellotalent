@@ -1,5 +1,43 @@
 # HelloTalent AI-COLLAB — Aktif Calisma Defteri
 
+## 2026-04-17 — K032 Faz 2 Authenticated Panel Hash Smoke (Asama 78 devam)
+
+**Durum:** `tests/smoke.runtime.e2e.spec.js` + `scripts/seed-test-user.mjs` yazildi. 52/52 yesil (e2e-desktop 2.6dk + e2e-mobile 2.9dk). Codex K034 review PASS. Tuna onay + push bekliyor.
+
+**Kapsam:** profil.html 13 panel hash (genel/merkez/sirketler/kimbakti/mulakat/yetkinlik/firsatlar/inbox/bildirimler/ayarlar/premium/destek/profil) × 2 tema × 2 viewport (e2e-mobile + e2e-desktop) = 52 test.
+
+**Test user seed:**
+- `scripts/seed-test-user.mjs` idempotent — Supabase Admin API (SUPABASE_SERVICE_ROLE_KEY `.env.local`'de, git-ignored) ile auth.users create/update + candidates row upsert
+- Email: `kefelituna+k032@gmail.com`, candidate id=77, profile_completed=true, is_active=true
+- Rerun-safe: existing user'ın password'unu reset eder, candidate row'unu PATCH eder
+
+**Auth flow:**
+- `tests/auth.setup.js` → giris.html login → profil.html redirect → storageState `playwright/.auth/candidate.json`
+- `playwright.config.js` `e2e-mobile`/`e2e-desktop` projeleri `.e2e.spec.js` matcher auto-inject storageState
+
+**Test shape:**
+- Fresh page her test için
+- `page.addInitScript(localStorage.setItem('ht_theme_preference', theme))` navigate öncesi
+- `page.goto('/profil.html#' + hash)` — hashchange listener → switchPanel (user-flow gerçekçi)
+- `networkidle` timeout + catch sadece timeout, 1800ms panel lazy init bekleme
+- Collector + IGNORE + REGRESSION Faz 1 ile AYNI (duplication kabul — 3. tüketici gelince `tests/helpers/runtime-signals.js`'e extract)
+
+**Yakalanan yeni sinif hatalar (Faz 1 disi):**
+- Panel render fn boot hatası (undefined ref, yanlış destructuring)
+- User-aware RPC typo (`get_candidate_*` signatür farkı)
+- Dark mode panel-specific DOM operation bug
+
+**K034 Codex review:**
+- Spec turu 2 kez "no output" döndü (subagent runtime şüphesi). Claude self-spec yazdı, implement etti, gate'e Codex review yolladı.
+- Review verdict: PASS. Blocker yok.
+- Opsiyonel iyileştirmeler (ertelenen): existing-user rol heal + pagination limit, 1800ms→lokator, hash→data-panel contract assert, helper modul.
+
+**Test sayisi:** 926 → 978 (+52).
+
+**Siradaki adim:** Tuna onay → commit+push. Faz 3 (ik + admin tab) backlog.
+
+---
+
 ## 2026-04-17 — K032 Faz 1 Runtime Playwright Smoke Suite (Asama 78)
 
 **Durum:** Tek yeni dosya `tests/smoke.runtime.spec.js` (106 satir). 16/16 yesil. Codex K034 review PASS. Tuna onay + push bekliyor.

@@ -1,6 +1,6 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 17 Nisan 2026 | Asama 78 — K032 Faz 1 Runtime Playwright Smoke Suite implement
-> Aktif Odak: K032 runtime smoke tests/smoke.runtime.spec.js yazildi. 16/16 yesil. Codex K034 review PASS. Tuna onay + push bekliyor.
+> Son guncelleme: 17 Nisan 2026 | Asama 78 — K032 Faz 1 + Faz 2 Runtime Playwright Smoke Suite implement
+> Aktif Odak: Faz 1 (`smoke.runtime.spec.js` 16/16) + Faz 2 (`smoke.runtime.e2e.spec.js` 52/52) yesil. Test user seed idempotent script. Codex K034 review Faz 1+2 PASS.
 
 ## 1. Proje Ozeti
 
@@ -158,7 +158,9 @@ hellotalent.ai, Turkiye perakende sektorune ozel bir yetenek pazaryeri. Adaylar 
 
 14. **Agent Skills Upgrade + Hedefli Audit (K029)** — 8 Nisan 2026. 12 yeni engineering/design skill kuruldu (Addy Osmani/Google + Supabase official + secici Impeccable). 38 total skill. 3 katmanli hedefli audit planlanmis: Katman 1 Security Sweep (AU1-AU6, blocker), Katman 2 Code Simplification (AU7-AU11, MVP 2 oncesi), Katman 3 A11y+Performance (AU12-AU18, incremental). Detay: `vault/02-urun/yapilacaklar.md` ve `vault/06-kararlar/karar-defteri.md#K029`.
 
-15. ~~**K032 Runtime Playwright Smoke Suite — Faz 1**~~ — ✅ TAMAMLANDI (17 Nisan 2026, Asama 78). `tests/smoke.runtime.spec.js` (106 satir) — 4 hedef sayfa (profil/ik/admin/coach-studio) × 2 tema (light+dark) × 2 viewport (mobile+desktop) = 16 test. Auth mock yok (boot-time hata redirect oncesi fırlar). `page.on('pageerror')` + `page.on('console', error)` collector. REGRESSION_PATTERNS: ReferenceError/TypeError/SyntaxError/Unexpected token+end-of-input/is not defined/Cannot read propert/is not a function. IGNORE_PATTERNS: supabase/posthog/sentry/cloudflare+turnstile/redirect/CSP noise (raw network pattern'ler filter'dan cikarildi — over-permissive engellendi). Fingerprint kanit: shared.js'e enjekte edilen `window.__k032FingerprintMissingFn_zzz()` TypeError yakalandi, git diff bos. Codex K034 review ilk FAIL (SyntaxError + networkidle catch + filter), fix'ler uygulandi, 2. review PASS. 16/16 yesil (28.6s). **Faz 2 (auth hash nav) — backlog**.
+15. ~~**K032 Runtime Playwright Smoke Suite — Faz 1**~~ — ✅ TAMAMLANDI (17 Nisan 2026, Asama 78). `tests/smoke.runtime.spec.js` (106 satir) — 4 hedef sayfa (profil/ik/admin/coach-studio) × 2 tema (light+dark) × 2 viewport (mobile+desktop) = 16 test. Auth mock yok (boot-time hata redirect oncesi fırlar). Codex K034 review: ilk FAIL (3 fix) → 2. PASS. 16/16 yesil. Commit `a9199b5`.
+
+16. ~~**K032 Runtime Playwright Smoke Suite — Faz 2**~~ — ✅ TAMAMLANDI (17 Nisan 2026, Asama 78 devam). `tests/smoke.runtime.e2e.spec.js` (109 satir) + `scripts/seed-test-user.mjs` (~140 satir). profil.html 13 panel hash × 2 tema × 2 viewport = 52 test. Auth: `auth.setup.js` + storageState. Test user: kefelituna+k032@gmail.com candidate id=77 (idempotent seed). `page.goto('/profil.html#' + hash)` fresh page, hashchange listener → switchPanel. 1800ms panel lazy init bekleme. IGNORE + REGRESSION Faz 1 aynı. Codex K034 review PASS (helper extraction opsiyonel). 52/52 yesil (~5.5dk). **Faz 3 (ik + admin tab) — backlog**.
 
 ## 5b. Sosyal Layer Audit Kararlari (Session 45 — 30 Mart)
 
@@ -172,9 +174,9 @@ hellotalent.ai, Turkiye perakende sektorune ozel bir yetenek pazaryeri. Adaylar 
 
 ## 6. Son 3 Session Ozeti
 
-### Session 78 (17 Nisan — Asama 78: K032 Faz 1 Runtime Playwright Smoke Suite)
+### Session 78 (17 Nisan — Asama 78: K032 Faz 1 + Faz 2 Runtime Playwright Smoke Suite)
 
-**Tek odak: K068b sinifi regresyonu yakalayan runtime smoke suite.**
+**Tek odak: K068b sinifi regresyonu yakalayan runtime smoke suite — Faz 1 (unauth boot) + Faz 2 (auth panel hash).**
 
 **K032 Faz 1 — `tests/smoke.runtime.spec.js`:**
 - 4 hedef sayfa: profil.html, ik.html, admin.html, coach-studio.html
@@ -194,18 +196,36 @@ hellotalent.ai, Turkiye perakende sektorune ozel bir yetenek pazaryeri. Adaylar 
 - Fix: 3 madde uygulandi. REGRESSION genisletildi (+SyntaxError/Unexpected token/end-of-input). catch daraltildi (sadece Timeout). IGNORE daraltildi (raw network pattern'leri kaldirildi — 3rd-party domain regex zaten URL uzerinde yakaliyor).
 - Review 2: PASS.
 
-**Test sayisi:** 910 → 926 (+16 K032).
+**K032 Faz 2 — Authenticated Panel Hash (aynı gun akşam):**
+- `tests/smoke.runtime.e2e.spec.js` (109 satir) — profil.html 13 panel hash (genel/merkez/sirketler/kimbakti/mulakat/yetkinlik/firsatlar/inbox/bildirimler/ayarlar/premium/destek/profil) × 2 tema × 2 viewport = 52 test
+- `scripts/seed-test-user.mjs` (~140 satir) — idempotent Supabase Admin API seed (auth.users create/update + candidates upsert, service_role key `.env.local`'de)
+- Test user: kefelituna+k032@gmail.com, candidate id=77, profile_completed=true, is_active=true
+- `tests/auth.setup.js` storageState → `playwright/.auth/candidate.json`
+- `page.goto('/profil.html#' + hash)` fresh page, hashchange listener → switchPanel (user-flow gerçekçi)
+- 1800ms panel lazy init bekleme
+- IGNORE + REGRESSION Faz 1 ile AYNI (duplication kabul — 3. tüketici gelince helper modul)
+- 52/52 yesil (e2e-desktop 2.6dk + e2e-mobile 2.9dk)
+
+**K034 Faz 2 review:**
+- Codex spec turu 2 kez "no output" döndü (subagent runtime hatasi şüpheli).
+- Pragmatik çözüm: Claude self-spec (kısa internal plan) + implement + Codex review gate. K034 ruhu (iki kişi kontrolü) gate'te korundu.
+- Codex review: PASS. Opsiyonel iyileştirmeler (ertelenen): (a) existing-user branch'ta role metadata heal + pagination limit, (b) 1800ms yerine lokator-bazli panel hazir sinyali, (c) hash→data-panel contract assert, (d) helper modul extraction.
+
+**Test sayisi:** 910 → 926 (+16 Faz 1) → 978 (+52 Faz 2).
 
 **Dosyalar:**
-- YENI: `tests/smoke.runtime.spec.js` (106 satir)
-- GUNCEL: `vault/06-kararlar/karar-defteri.md` K032 entry (backlog → Faz 1 tamamlandi)
-- GUNCEL: `docs/CURRENT-STATE.md` backlog item 15 + Asama 78 session entry
-- GUNCEL: `docs/AI-COLLAB.md` yeni entry
+- YENI: `tests/smoke.runtime.spec.js` (Faz 1, 106 satir)
+- YENI: `tests/smoke.runtime.e2e.spec.js` (Faz 2, 109 satir)
+- YENI: `scripts/seed-test-user.mjs` (idempotent Supabase seed, ~140 satir)
+- GUNCEL: `.env.local` (HT_TEST_EMAIL, HT_TEST_PASSWORD, SUPABASE_SERVICE_ROLE_KEY, SUPABASE_URL — git-ignored)
+- GUNCEL: `vault/06-kararlar/karar-defteri.md` K032 entry (Faz 1 + Faz 2 TAMAMLANDI)
+- GUNCEL: `docs/CURRENT-STATE.md` backlog item 15 + 16 + Asama 78 session entry
+- GUNCEL: `docs/AI-COLLAB.md` yeni entry'ler
 
-**Insight K032:** Static katman (check-html-tags.sh pre-commit) + Runtime katman (Playwright boot smoke) + Kontrat katman (p3.regression) uc bacakli koruma. Static yapisal integrity, runtime semantic bootability, kontrat surface area guarantees yakaliyor. Her katman farkli sinif hata yakalar — bir arada defansif derinlik saglanir.
+**Insight K032:** Static katman (check-html-tags.sh pre-commit) + Runtime katman (Playwright boot smoke) + Panel katman (Faz 2 auth hash) + Kontrat katman (p3.regression) dört bacakli koruma. Static yapisal integrity, runtime unauth bootability, auth panel activation hatalari, kontrat surface area guarantees — her katman farkli sinif hata yakalar.
 
 **Acik riskler / yarin:**
-- Faz 2 (authenticated panel hash nav) — HT_TEST_EMAIL/PASS env var ayarlandiktan sonra. RUNTIME_PAGES array `requiresAuth`/`hashes`/`expectedRedirect` alanlariyla extend edilebilir.
+- Faz 3 (ik.html + admin.html tab iterasyon) — hr_profile test user seed gerekli (employer + admin role).
 - Kim Bakti backend PVT-1..6 (K031) hala backlog.
 - Markalar grid hover glow dark mode visual confirm bekliyor.
 - Wizard hiring_boost drop sonrasi admin tooling smoke test.

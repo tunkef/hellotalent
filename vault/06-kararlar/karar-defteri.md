@@ -417,11 +417,28 @@
 
 **Codex review (K034 gate):** İlk review FAIL — SyntaxError pattern eksik + networkidle catch tüm rejection'ları yutuyor + filter over-permissive. 3 madde fix uygulandı, 2. review PASS.
 
-**Faz 2 — Backlog (açık):** Auth gerektiren panel hash nav. HT_TEST_EMAIL/PASS + `auth.setup.js` zaten hazır. RUNTIME_PAGES array `requiresAuth`, `hashes`, `expectedRedirect` alanlarıyla genişletilebilir.
+**Uygulama Faz 2 — TAMAMLANDI (17 Nisan 2026, Asama 78 devam):**
+4. **Authenticated panel hash runtime smoke** — `tests/smoke.runtime.e2e.spec.js`:
+   - 13 profil.html panel hash (genel/merkez/sirketler/kimbakti/mulakat/yetkinlik/firsatlar/inbox/bildirimler/ayarlar/premium/destek/profil) × 2 tema × 2 viewport (e2e-mobile + e2e-desktop) = 52 test
+   - Auth: `tests/auth.setup.js` (HT_TEST_EMAIL + HT_TEST_PASSWORD env ile login) → `playwright/.auth/candidate.json` storageState
+   - Test user seed: `scripts/seed-test-user.mjs` idempotent Supabase Admin API (SUPABASE_SERVICE_ROLE_KEY ile auth.users create/update + candidates row upsert). Email: `kefelituna+k032@gmail.com`, password `.env.local`'de
+   - Navigate: `page.goto('/profil.html#' + hash)` fresh page (hashchange listener üzerinden panel aktivasyonu, user-flow gerçekçi)
+   - Bekleme: `networkidle` + 1800ms (panel lazy init + IntersectionObserver + realtime subscribe)
+   - IGNORE + REGRESSION patterns Faz 1 ile aynı (duplication kabul — 3. tüketici gelince `tests/helpers/runtime-signals.js` modülüne taşınır)
+   - 52/52 yeşil (~5.5 dk toplam)
 
-**Kapsama genişletmesi (opsiyonel):** Panel hash per test, dark mode toggle runtime switch + re-assert.
+**Faz 2 yeni yakalar (Faz 1 kapsamı dışı):**
+- Panel render fn boot hatası (undefined ref, yanlış destructuring)
+- User-aware RPC typo (get_candidate_* signatür farkı)
+- Dark mode panel-specific DOM operation bug
 
-**Referans:** Commit `4f31ff7` (K068b hotfix), `a8d3801` (K068b fix), Sentry alert 15 Nisan 07:38 UTC, Faz 1 implement 17 Nisan 2026.
+**Codex review (K034 gate):** PASS (ilk iki spec turu "no output" döndü, Claude self-spec + implement + Codex gate tamamlandı). Opsiyonel iyileştirmeler (sonraki sprint): seed script existing-user rol heal + pagination limit kaldır, 1800ms yerine lokator-bazlı panel hazır sinyali, hash→data-panel contract assert, helper modül extraction.
+
+**Faz 3 — Backlog (açık):** ik.html + admin.html tab iterasyon smoke. Ek auth: hr_profile user (employer + admin role).
+
+**Test sayisi:** 910 → 926 (+16 Faz 1) → 978 (+52 Faz 2).
+
+**Referans:** Commit `4f31ff7` (K068b hotfix), `a8d3801` (K068b fix), Faz 1 `a9199b5` (17 Nisan öğlen), Faz 2 implement 17 Nisan akşam 2026.
 
 ---
 
