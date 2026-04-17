@@ -10,17 +10,23 @@ Fix: `.gb-spine` min-width:0 + `.gb-item__headline` max-width:min(640px,100%) ex
 
 ---
 
-## YARIN DEVAM NOKTASI (17 Nisan gece kapanis)
+## YENI SESSION DEVAM NOKTASI (17 Nisan gunduz kapanis)
 
-**Son durum:** Markalar paneli iki strip card renk inversiyonu push edildi (commit `5729add`). Tuna UAT bekliyor — yarin yeni gun mesajiyla baslayacak.
+**Son iki commit:**
+- `5729add` — Markalar vermillion/navy strip inversion (Tuna onayladi: "cok guzel duruyor")
+- `eaba102` — Gundem headline wrap pass2 (.gb-spine min-width:0 + headline max-width min(640px,100%))
 
-**Aktif iki paralel iz:**
-1. Markalar paneli vizuel UAT bekliyor (vermillion followed + navy filter strip light & dark mode'da nasil duruyor).
-2. Glow border hover dark mode visual confirm bekliyor.
+**Aktif UAT beklenen:** Yok — iki fix de Tuna tarafindan konfirme edildi veya gorsel yerlesti.
 
-**Yarinki ilk adim:** Tuna mesajini bekle, UAT sonucu gelirse fix at, gelmezse `docs/CURRENT-STATE.md` Acik Backlog → K032 Runtime Playwright smoke suite veya Kim Bakti PVT-1..6 sprint'ten birini secmeyi oner.
+**Siradaki onerilen isler (Tuna sececek):**
+1. `docs/CURRENT-STATE.md` Acik Backlog → K032 Runtime Playwright smoke suite (vault karar defterinde)
+2. Kim Bakti backend PVT-1..6 sprint (K031 vault)
+3. Markalar grid kart hover glow effect dark mode visual confirm (kullanici ister)
+4. Wizard hiring_boost drop sonrasi admin tooling smoke test
 
-**Hatirlatma:** K034 two-person zorunlu — hotfix dahil her commit Codex review'dan gecsin. K033 implementation modeli Opus 4.7.
+**Yeni memory kayidi (17 Nisan):** `feedback_strip_color_inversion.md` — vermillion+navy adjacent strip invert pattern onaylandi, gelecek panel redesign'da oner.
+
+**Hatirlatma:** K034 two-person zorunlu — hotfix dahil her commit Codex review'dan gecsin. K033 implementation modeli Opus 4.7. Ana model `opus-4-7`, subagent default `sonnet`.
 
 ---
 

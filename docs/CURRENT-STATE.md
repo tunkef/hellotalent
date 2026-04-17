@@ -1,6 +1,6 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 17 Nisan 2026 | Asama 77 — K033 Opus 4.7 swap + K034 two-person pattern + Firsatlar rename + Bildirimler hero + Markalar redesign
-> Aktif Odak: Markalar paneli iki strip card renk inversiyonu (followed=vermillion, filter=navy) commit 5729add ile push edildi. Yarin devam: Tuna UAT bekliyor (yeni gun mesajini bekle).
+> Son guncelleme: 17 Nisan 2026 | Asama 77 — K033 Opus 4.7 swap + K034 two-person pattern + Firsatlar rename + Bildirimler hero + Markalar redesign + Gundem wrap pass2
+> Aktif Odak: Markalar strip color inversion (vermillion + navy, Tuna approved). Gundem feed headline wrap pass2 (intermediate min-width:0 + max-width cap) commit eaba102 ile push. Yeni session: kaldigimiz yerden devam.
 
 ## 1. Proje Ozeti
 
@@ -224,6 +224,12 @@ hellotalent.ai, Turkiye perakende sektorune ozel bir yetenek pazaryeri. Adaylar 
 **Insight K069 mimari karari**: K069 brand card pattern (`@property` + conic-gradient mask + literal hex theme pin) tema-agnostic brand identity sinyali tasiyor. Token-based renkler dark mode'da kayiyor — semantik invariant brand color (vermillion/navy) icin literal pin tercih edilir, semantic invariant olmayan (text/border/bg) icin token. Bu ayrim K079+ panellerinde de uygulanmali.
 
 **Cache-bust kronolojisi (Markalar):** `20260417a` → `20260417j`. Truth-sync git hook her commit'te `docs/AI-COLLAB.md` co-staged.
+
+**Gundem feed headline wrap pass2 (commit `eaba102`)**:
+- Pass1'de `.gb-item min-width:0 + max-width:100%` + headline overflow-wrap:anywhere yetersizdi — uzun baslik ("Peoplein Insan Kaynaklari Yetenek Avini HelloTalent Araciligi ile Yapiyor") kartin cercevesini asiyordu.
+- Root cause: `.gb-spine` (grid 1fr cell > .gb-gundem > .gb-spine > .gb-item) intermediate container min-width:0 eksikti. Grid min-content contribution headline tek-satir genisligini kabul ederek cell'i genisletiyordu.
+- Fix: `.gb-spine { min-width: 0 }` + `.gb-item__headline { max-width: min(640px, 100%) }` (media/excerpt/body ile align editorial feed gorunumu). Cache-bust `20260417b` → `20260417c`.
+- Tuna pozitif geribildirim: "markalar cok guzel duruyor" — vermillion+navy strip inversion pattern onaylandi, memory'ye kaydedildi (`feedback_strip_color_inversion.md`).
 
 **Acik riskler / yarinin devam noktasi:**
 - Tuna UAT bekliyor (yarin yeni gun mesajiyla baslayacak — vermillion followed + navy filter strip canlida nasil gozukuyor).
