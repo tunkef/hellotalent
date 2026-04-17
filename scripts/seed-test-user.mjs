@@ -35,7 +35,7 @@ function die(msg) {
 if (!SERVICE_KEY) die('SUPABASE_SERVICE_ROLE_KEY yok. .env.local kontrol edin.');
 if (!EMAIL) die('HT_TEST_EMAIL yok. .env.local kontrol edin.');
 if (!PASSWORD) die('HT_TEST_PASSWORD yok. .env.local kontrol edin.');
-if (!EMAIL.includes('@') || PASSWORD.length < 12) die('Email/password validation fail.');
+if (!EMAIL.includes('@') || PASSWORD.length < 10) die('Email/password validation fail.');
 
 const adminHeaders = {
   'Content-Type': 'application/json',

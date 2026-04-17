@@ -17,16 +17,16 @@ module.exports = defineConfig({
     { name: 'mobile', testIgnore: /\.(e2e\.spec|setup)\.js$/, use: { viewport: { width: 390, height: 844 } } },
     { name: 'desktop', testIgnore: /\.(e2e\.spec|setup)\.js$/, use: { viewport: { width: 1440, height: 900 } } },
 
-    // Auth setup — runs once, saves storageState for E2E projects
-    {
-      name: 'setup',
-      testMatch: /auth\.setup\.js/,
-    },
+    // Auth setups — each runs once, saves storageState for its matching e2e project
+    { name: 'setup', testMatch: /auth\.setup\.js/ },
+    { name: 'setup-employer', testMatch: /auth\.setup\.employer\.js/ },
+    { name: 'setup-admin', testMatch: /auth\.setup\.admin\.js/ },
 
-    // Authenticated E2E — depends on setup, runs candidate-session tests
+    // Candidate-session e2e — .e2e.spec.js but NOT .ik.e2e / .admin.e2e
     {
       name: 'e2e-mobile',
       testMatch: /\.e2e\.spec\.js$/,
+      testIgnore: /\.(ik|admin)\.e2e\.spec\.js$/,
       dependencies: ['setup'],
       use: {
         storageState: 'playwright/.auth/candidate.json',
@@ -36,9 +36,50 @@ module.exports = defineConfig({
     {
       name: 'e2e-desktop',
       testMatch: /\.e2e\.spec\.js$/,
+      testIgnore: /\.(ik|admin)\.e2e\.spec\.js$/,
       dependencies: ['setup'],
       use: {
         storageState: 'playwright/.auth/candidate.json',
+        viewport: { width: 1440, height: 900 },
+      },
+    },
+
+    // Employer-session e2e — .ik.e2e.spec.js
+    {
+      name: 'e2e-ik-mobile',
+      testMatch: /\.ik\.e2e\.spec\.js$/,
+      dependencies: ['setup-employer'],
+      use: {
+        storageState: 'playwright/.auth/employer.json',
+        viewport: { width: 390, height: 844 },
+      },
+    },
+    {
+      name: 'e2e-ik-desktop',
+      testMatch: /\.ik\.e2e\.spec\.js$/,
+      dependencies: ['setup-employer'],
+      use: {
+        storageState: 'playwright/.auth/employer.json',
+        viewport: { width: 1440, height: 900 },
+      },
+    },
+
+    // Admin-session e2e — .admin.e2e.spec.js
+    {
+      name: 'e2e-admin-mobile',
+      testMatch: /\.admin\.e2e\.spec\.js$/,
+      dependencies: ['setup-admin'],
+      use: {
+        storageState: 'playwright/.auth/admin.json',
+        viewport: { width: 390, height: 844 },
+      },
+    },
+    {
+      name: 'e2e-admin-desktop',
+      testMatch: /\.admin\.e2e\.spec\.js$/,
+      dependencies: ['setup-admin'],
+      use: {
+        storageState: 'playwright/.auth/admin.json',
         viewport: { width: 1440, height: 900 },
       },
     },
