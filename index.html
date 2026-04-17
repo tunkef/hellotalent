@@ -40,7 +40,7 @@
   --navy:#1E2D5E;
   --navy-dark:#162044;
   --text-primary:#111;
-  --text-muted:rgba(0,0,0,0.5);
+  --text-muted:rgba(0,0,0,0.65);
   --border:#E5E3DF;
   --font-d:'Bricolage Grotesque',sans-serif;
   --font-b:'Plus Jakarta Sans',sans-serif;
@@ -53,7 +53,7 @@
 @media(prefers-color-scheme:dark){
   :root{
     --bg-page:#0B0D17;--bg-section:#0E1020;--bg-warm:#0C0F1A;--bg-warm-k:#0C0F1A;
-    --text-primary:#F0F0EE;--text-muted:rgba(247,246,244,0.50);--border:rgba(247,246,244,0.08);
+    --text-primary:#F0F0EE;--text-muted:rgba(247,246,244,0.70);--border:rgba(247,246,244,0.08);
   }
 }
 
@@ -128,7 +128,7 @@ body{background:var(--bg-page);font-family:var(--font-b);color:var(--text-primar
 .split-hl{font-family:var(--font-d);font-size:clamp(28px,3.5vw,42px);font-weight:800;letter-spacing:-1.5px;line-height:1.1;color:var(--text-primary)}
 .split-desc{font-size:15px;color:var(--text-muted);line-height:1.7;margin-top:14px;max-width:420px}
 .bento{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.bento-card{padding:14px 16px;border-radius:10px;background:rgba(255,255,255,0.6);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.35);cursor:default;display:flex;align-items:center;gap:10px;transition:transform .3s cubic-bezier(0.16,1,0.3,1), box-shadow .3s ease}
+.bento-card{padding:14px 16px;border-radius:10px;background:rgba(255,255,255,0.6);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid var(--border);cursor:default;display:flex;align-items:center;gap:10px;transition:transform .3s cubic-bezier(0.16,1,0.3,1), box-shadow .3s ease}
 .bento-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.05)}
 .bento-icon{width:32px;height:32px;min-width:32px;border-radius:8px;display:flex;align-items:center;justify-content:center}
 .bento-icon.ic-verm{background:rgba(201,78,40,0.10);color:var(--verm)}
@@ -327,7 +327,7 @@ body{background:var(--bg-page);font-family:var(--font-b);color:var(--text-primar
       <div class="hero-btns">
         <button class="btn-g" onclick="window.location.href='/uye-ol.html'">
           <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z"/><path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.997 8.997 0 000 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"/></svg>
-          Google ile Uye Ol
+          Google ile Üye Ol
         </button>
         <a href="/uye-ol.html" class="btn-p">Ücretsiz Hesap Oluştur</a>
       </div>
@@ -484,7 +484,7 @@ body{background:var(--bg-page);font-family:var(--font-b);color:var(--text-primar
       <div class="cta-btns">
         <button class="btn-g" onclick="window.location.href='/uye-ol.html'">
           <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z"/><path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.997 8.997 0 000 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"/></svg>
-          Google ile Uye Ol
+          Google ile Üye Ol
         </button>
         <a href="/uye-ol.html" class="btn-p">Ücretsiz Hesap Oluştur</a>
       </div>
@@ -660,7 +660,7 @@ body{background:var(--bg-page);font-family:var(--font-b);color:var(--text-primar
   </div>
 </section>
 
-<section class="cta-end s" id="lead-form">
+<section class="cta-end s s-warm-k" id="lead-form">
   <div class="s-inner">
     <div>
       <h2 style="font-family:var(--font-d);font-size:clamp(24px,3vw,32px);font-weight:800;color:var(--text-primary);margin-bottom:12px;">Hazır mısınız?</h2>
