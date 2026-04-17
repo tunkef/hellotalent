@@ -17,29 +17,16 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 html,body{overflow-x:hidden;}
+/* :root — brand, type, spacing, layout: css/tokens.css source of truth.
+   Burada yalnizca ik.html-spesifik override'lar. */
 :root{
-  --navy:#1E2D5E;
-  --navy-dark:#162248;
-  --navy-mid:#253872;
-  --verm:#C94E28;
-  --verm-hover:#b84420;
-  --text:#0a0a0a;
-  --muted:#6B7280;
-  --border:#E5E3DF;
-  --bg:#F7F6F3;
+  --navy-mid:#253872;        /* ik header gradient mid-stop */
+  --verm-hover:#b84420;      /* legacy alias of --verm-dark */
+  --bg:#F7F6F3;              /* ik bg — tokens --gray #F7F6F4 near-identical */
   --white:#fff;
-  --green:#10B981;
+  --green:#10B981;           /* ik-specific status (tokens --green #16a34a) */
   --yellow:#F59E0B;
   --red:#EF4444;
-  --sidebar-w:240px;
-  --text-xs:10px;
-  --text-sm:11px;
-  --text-base:12px;
-  --text-md:13px;
-  --text-lg:14px;
-  --text-xl:16px;
-  --text-2xl:18px;
-  --text-3xl:20px;
 }
 body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;}
 

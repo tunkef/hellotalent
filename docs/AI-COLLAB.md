@@ -1,5 +1,26 @@
 # HelloTalent AI-COLLAB — Aktif Calisma Defteri
 
+## 2026-04-17 — Design Refactor Faz 1c — Local :root Cleanup
+
+**Durum:** 8 sayfadan duplicate :root token'lari silindi, yalnizca page-spesifik override'lar kaldi. tests/p3.regression Asama 35 rewrite edildi (tokens.css link OR local :root kabul eder).
+
+**Silinen/daraltilan :root'lar:**
+- `giris.html`, `uye-ol.html`, `gate.html`: tamamen silindi (hepsi dup'tu)
+- `sifre-yenile.html`: 3 override kaldi (--bg, --border, --muted — sifre-yenile-spesifik degerler)
+- `coach-studio.html`: 5 override (--verm-hover alias, --bg, --green, --yellow, --red, --shadow-card)
+- `demo-dashboard-ik.html`: --bg: var(--gray) alias
+- `ik.html`: 7 override (--navy-mid, --verm-hover, --bg, --white, --green, --yellow, --red)
+- `admin.html`: 7 override (aynilari + K030 yorum satiri silindi/guncellendi)
+
+**Test update:**
+- Asama 35 rewrite: ya tokens.css link ya local :root --text-* tanimi; her iki kaynak valid.
+
+**Dogrulama:** giris, uye-ol, gate, sifre-yenile, admin, ik light mode desktop OK. Console error yok.
+
+Ref: `docs/design-refactor/faz1-tokens.md`
+
+---
+
 ## 2026-04-17 — Design Refactor Faz 1b — Token Consolidation (devam)
 
 **Durum:** tokens.css tek source of truth oldu, shared.css `@import` ile tuketir, 7 sayfaya daha `<link tokens.css>` eklendi. Light + dark desktop dogrulandi, console error yok.

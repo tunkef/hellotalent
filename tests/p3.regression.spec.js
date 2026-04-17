@@ -2488,9 +2488,11 @@ test.describe('Aşama 26 — Inbox-notification decoupling', () => {
 
 // ═══════════════════════════════════════════════════════════════
 // Aşama 35 — ik.html token-source guard
-// ik.html --text-* token'larını local :root'ta tanımlamadan kullanırsa
-// CSS var() sessizce çözümsüz kalır. Bu guard tanım-kullanım tutarlılığını
-// zorlar: kullanım varsa tanım da aynı dosyada bulunmalı.
+// ik.html --text-* token'larını resolve edilemeden kullanırsa CSS var()
+// sessizce çözümsüz kalır. Bu guard kaynak garantisi verir: kullanım varsa
+// ya local :root'ta tanımlı olmalı ya da css/tokens.css link'i yüklenmeli.
+// Not: Faz 1b itibarıyla tokens.css tek source of truth; local :root
+// opsiyonel (Faz 1c sonrası silinir).
 // ═══════════════════════════════════════════════════════════════
 test.describe('Aşama 35 — ik.html text-token source guard', () => {
   var ikHtml;
@@ -2499,26 +2501,27 @@ test.describe('Aşama 35 — ik.html text-token source guard', () => {
     ikHtml = readFromRepo('ik.html');
   });
 
-  test('ik.html defines all --text-* tokens it uses in its own :root', () => {
+  test('ik.html --text-* tokens are resolvable via tokens.css link or local :root', () => {
     var usedTokens = ['--text-xs', '--text-sm', '--text-base', '--text-md',
                       '--text-lg', '--text-xl', '--text-2xl', '--text-3xl'];
     var usesAnyToken = usedTokens.some(function(t) {
       return ikHtml.indexOf('var(' + t + ')') !== -1;
     });
-    // If ik.html uses any --text-* token, every token in the set must be defined in its :root.
-    if (usesAnyToken) {
-      usedTokens.forEach(function(t) {
-        expect(ikHtml).toContain(t + ':');
-      });
-    }
-  });
+    if (!usesAnyToken) return;
 
-  test('ik.html --text-* definitions are in a local :root block, not imported from shared.css', () => {
+    // Valid source A: css/tokens.css link yükleniyor (tokens.css'te --text-* tanımlı)
+    var hasTokensLink = /<link\s+rel=["']stylesheet["']\s+href=["']css\/tokens\.css/.test(ikHtml);
+
+    // Valid source B: local :root'ta --text-* tanımlı
     var rootStart = ikHtml.indexOf(':root');
-    expect(rootStart).toBeGreaterThanOrEqual(0);
-    var rootBlock = ikHtml.slice(rootStart, ikHtml.indexOf('}', rootStart) + 1);
-    expect(rootBlock).toContain('--text-xs:');
-    expect(rootBlock).toContain('--text-3xl:');
+    var hasLocalDefs = false;
+    if (rootStart >= 0) {
+      var rootBlock = ikHtml.slice(rootStart, ikHtml.indexOf('}', rootStart) + 1);
+      hasLocalDefs = rootBlock.indexOf('--text-xs:') !== -1 &&
+                     rootBlock.indexOf('--text-3xl:') !== -1;
+    }
+
+    expect(hasTokensLink || hasLocalDefs).toBe(true);
   });
 });
 

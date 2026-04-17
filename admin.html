@@ -11,28 +11,20 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<!-- K030 FAZ C hotfix: tokens.css provides semantic names (--bg-surface, --text-primary, --accent, --font-head, --border-subtle, --radius-lg) used by css/duyurular.css. admin's own :root below still overrides --bg/--text/--navy/--verm. -->
-<link rel="stylesheet" href="css/tokens.css?v=20260413e">
+<!-- Tokens: css/tokens.css source of truth. Lokal :root sadece admin-spesifik override'lar. -->
+<link rel="stylesheet" href="css/tokens.css?v=20260417a">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 html,body{overflow-x:hidden;}
 :root{
-  --navy:#1E2D5E;
-  --navy-dark:#162248;
-  --navy-mid:#253872;
-  --verm:#C94E28;
-  --verm-hover:#b84420;
-  --text:#0a0a0a;
-  --muted:#6B7280;
-  --border:#E5E3DF;
-  --bg:#F7F6F3;
+  --navy-mid:#253872;        /* admin header gradient mid-stop */
+  --verm-hover:#b84420;      /* legacy alias */
+  --bg:#F7F6F3;              /* admin-spesifik warm bg */
   --white:#fff;
-  --green:#10B981;
+  --green:#10B981;           /* status */
   --yellow:#F59E0B;
   --red:#EF4444;
-  --sidebar-w:240px;
-  --text-xs:10px;--text-sm:11px;--text-base:12px;--text-md:13px;--text-lg:14px;--text-2xl:18px;
 }
 body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
 
