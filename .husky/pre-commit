@@ -1,2 +1,2 @@
 #!/usr/bin/env sh
-./scripts/check-truth-sync.sh && ./scripts/check-html-tags.sh && npx lint-staged
+./scripts/check-truth-sync.sh && ./scripts/check-html-tags.sh && npx lint-staged --no-stash

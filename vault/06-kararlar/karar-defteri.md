@@ -468,7 +468,40 @@
 - Admin auth runtime: `smoke.runtime.admin.e2e.spec.js` (admin 12 panel)
 - Kontrat: `p3.regression.spec.js`
 
-**Faz 4 — Backlog:** Helper modul extraction, coach-studio panel iterasyon, hash→data-panel contract assert, role-based navigation matrix (aday→ik reddetme, role cross-access guard).
+**Faz 4 — Backlog (17 Nisan gece audit sonrası somutlaşan iş listesi):**
+
+**K-2 (Kritik) — Panel activation assertion:**
+- 3 e2e test dosyasinda `.panel.active [data-panel]` okuma var ama expect'e bağlı değil (sadece log)
+- Panel routing bozulursa (hash değişti, switchPanel çalışmadı) testler SESSİZCE yeşil geçer
+- Fix: `expect(activePanel).toBe(hash)` ekle — `smoke.runtime.e2e.spec.js`, `smoke.runtime.ik.e2e.spec.js`, `smoke.runtime.admin.e2e.spec.js`
+- Tahmin süre: 15 dk
+
+**K-3 (Kritik) — Admin auth setup navigate verify:**
+- `tests/auth.setup.admin.js` login sonrası profil.html'de storageState kaydediyor, admin.html'e hiç navigate etmiyor
+- Admin session gerçekten admin.html için yeterli mi belirsiz — testler şimdi geçiyor çünkü direct URL navigate auth guard'dan geçiyor ama session eksikliği flaky risk
+- Fix: setup'ta `/admin.html` navigate + `.sidebar [data-panel="dashboard"]` lokator verify + storageState kaydet
+- Tahmin süre: 10 dk
+
+**O-1 (Orta) — Seed script helper extraction:**
+- 3 seed script'te `req/findUserByEmail/createUser/updateUser` kopya, pagination drift (10 vs 20)
+- Fix: `scripts/_supa-admin.mjs` helper. 3 seed import eder.
+- Coach/yeni rol gelmeden yap.
+
+**O-2 (Orta) — Test runtime signals helper:**
+- 4 test dosyasında `IGNORE_PATTERNS + REGRESSION_PATTERNS + shouldIgnore/isRegression/attachCollectors` kopya
+- `admin.e2e`'de `demo-dashboard-ik.html` IGNORE eksik (ik+e2e'de var) — drift başladı
+- Fix: `tests/helpers/runtime-signals.js` export. 4 spec require.
+
+**O-3 (Orta) — Lokator-bazlı bekleme:**
+- `waitForTimeout 1500/1800ms` CI flakiness riski
+- Fix: `page.waitForFunction` ile uygulama-tarafli sentinel
+
+**O-4 (Orta) — Security runbook:**
+- `docs/SECURITY-RUNBOOK.md` yok. Service role key rotate + seed re-run + `.env.local` yeniden oluşturma prosedürü belgelenecek.
+
+**Kapsam dışı:** Coach-studio panel iterasyon, hash→data-panel contract assert (K-2 kapsadı), role-based navigation matrix (aday→ik reddetme).
+
+**Kaynak:** 17 Nisan gece audit — feature-dev:code-reviewer agent bulguları + Codex Faz 2+3 review opsiyonelleri.
 
 **Referans:** Commit `4f31ff7` (K068b hotfix), `a8d3801` (K068b fix), Faz 1 `a9199b5`, Faz 2 `0c25753`, Faz 3 implement 17 Nisan gece 2026.
 

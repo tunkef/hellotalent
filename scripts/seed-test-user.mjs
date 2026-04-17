@@ -75,6 +75,7 @@ async function createUser(email, password) {
         full_name: 'K032 Test User',
         role: 'candidate',
         k032_seed: true,
+        test_account: true,
       },
     }),
   });
@@ -82,12 +83,21 @@ async function createUser(email, password) {
   return r.body;
 }
 
-async function updateUserPassword(userId, password) {
+async function updateUser(userId, password) {
   const r = await req('/auth/v1/admin/users/' + userId, {
     method: 'PUT',
-    body: JSON.stringify({ password, email_confirm: true }),
+    body: JSON.stringify({
+      password,
+      email_confirm: true,
+      user_metadata: {
+        full_name: 'K032 Test User',
+        role: 'candidate',
+        k032_seed: true,
+        test_account: true,
+      },
+    }),
   });
-  if (!r.ok) die('updateUserPassword HTTP ' + r.status + ' ' + r.text);
+  if (!r.ok) die('updateUser HTTP ' + r.status + ' ' + r.text);
   return r.body;
 }
 
@@ -139,7 +149,7 @@ async function upsertCandidate(userId, email) {
   let user = await findUserByEmail(EMAIL);
   if (user) {
     console.log('  auth.users: EXISTS (id=' + user.id + ') — password reset');
-    await updateUserPassword(user.id, PASSWORD);
+    await updateUser(user.id, PASSWORD);
   } else {
     console.log('  auth.users: creating...');
     user = await createUser(EMAIL, PASSWORD);
