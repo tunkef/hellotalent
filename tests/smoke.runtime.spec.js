@@ -1,5 +1,5 @@
 /**
- * K032 — Runtime Playwright Smoke Suite
+ * K032 — Runtime Playwright Smoke Suite (Faz 1)
  *
  * Authenticated sayfalarin boot-time runtime hatalarini yakalar.
  * K068b sinifi regresyonu (script tag drop, ReferenceError) pre-push
@@ -10,9 +10,13 @@
  *          × light + dark (ht_theme_preference storage pre-seed)
  * Filter : supabase/posthog/sentry/network noise + auth redirect mesajlari
  * Assert : ReferenceError | TypeError | "is not defined" | "Cannot read propert" = 0
+ *
+ * Faz 4B (O-2) refaktor: ortak IGNORE/REGRESSION + attachCollectors mantigi
+ * tests/helpers/runtime-signals.js'de. Davranis degismedi.
  */
 
 const { test, expect } = require('@playwright/test');
+const { attachCollectors, criticalFrom, contextSnapshot, waitForBootSettle } = require('./helpers/runtime-signals');
 
 const RUNTIME_PAGES = [
   { name: 'profil', path: '/profil.html' },
@@ -22,53 +26,6 @@ const RUNTIME_PAGES = [
 ];
 
 const THEMES = ['light', 'dark'];
-
-const IGNORE_PATTERNS = [
-  /supabase/i,
-  /cpwibefquojehjehtrog\.supabase\.co/i,
-  /posthog/i,
-  /sentry|browser\.sentry-cdn\.com|ingest\.de\.sentry\.io/i,
-  /cloudflare|turnstile|challenges\.cloudflare\.com/i,
-  /redirecting to giris\.html/i,
-  /giris\.html\?tab=/,
-  /demo-dashboard-ik\.html/,
-  /Refused to load|Content Security Policy/i,
-];
-
-const REGRESSION_PATTERNS = [
-  /ReferenceError/,
-  /TypeError/,
-  /SyntaxError/,
-  /Unexpected token/,
-  /Unexpected end of input/i,
-  /is not defined/,
-  /Cannot read propert/i,
-  /Cannot read properties of (null|undefined)/i,
-  /is not a function/,
-];
-
-function shouldIgnore(msg) {
-  if (!msg) return true;
-  return IGNORE_PATTERNS.some(function (re) { return re.test(msg); });
-}
-
-function isRegression(msg) {
-  return REGRESSION_PATTERNS.some(function (re) { return re.test(msg); });
-}
-
-function attachCollectors(page) {
-  const signals = [];
-  page.on('pageerror', function (err) {
-    signals.push({ kind: 'pageerror', message: err && err.message ? err.message : String(err) });
-  });
-  page.on('console', function (msg) {
-    if (msg.type() !== 'error') return;
-    let text = '';
-    try { text = msg.text(); } catch (e) { text = ''; }
-    signals.push({ kind: 'console', message: text });
-  });
-  return signals;
-}
 
 for (const theme of THEMES) {
   test.describe('K032 Runtime Smoke / ' + theme, function () {
@@ -87,18 +44,17 @@ for (const theme of THEMES) {
           const msg = (err && err.message) ? err.message : String(err);
           if (!/Timeout|timeout/.test(msg)) throw err;
         });
-        await page.waitForTimeout(1500);
+        await waitForBootSettle(page, { sentinelTimeoutMs: 1200, settleMs: 300 });
 
-        const critical = signals
-          .filter(function (s) { return !shouldIgnore(s.message); })
-          .filter(function (s) { return isRegression(s.message); });
+        const ctx = contextSnapshot(page);
+        const critical = criticalFrom(signals);
 
         if (critical.length) {
-          console.log('K032 critical signals on ' + target.name + ' [' + theme + ']:');
+          console.log('K032 critical signals on ' + target.name + ' [' + theme + '] (url=' + ctx.url + '):');
           critical.forEach(function (s) { console.log('  -', s.kind, s.message); });
         }
 
-        expect(critical, 'Runtime regressions on ' + target.path + ' (' + theme + ')').toEqual([]);
+        expect(critical, 'Runtime regressions on ' + target.path + ' (' + theme + ', vp=' + ctx.viewportLabel + ', url=' + ctx.url + ')').toEqual([]);
       });
     }
   });

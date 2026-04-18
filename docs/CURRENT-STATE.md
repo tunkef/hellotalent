@@ -255,8 +255,10 @@ hellotalent.ai, Turkiye perakende sektorune ozel bir yetenek pazaryeri. Adaylar 
 **Acik riskler / yarin:**
 - Faz 3 (ik.html + admin.html tab iterasyon) — hr_profile test user seed gerekli (employer + admin role).
 - Kim Bakti backend PVT-1..6 (K031) hala backlog.
-- Markalar grid hover glow dark mode visual confirm bekliyor.
+- ~~Markalar grid hover glow dark mode visual confirm~~ — ✅ TAMAMLANDI (Tuna onayi, 18 Nisan 2026).
 - Wizard hiring_boost drop sonrasi admin tooling smoke test.
+- **K-036 — admin.html hash-restore** (Faz 4A Codex review'unda tespit): admin.html boot sirasinda `window.location.hash` okumuyor, her zaman dashboard'a iniyor (admin.html:840-853 `showAdminDashboard` → `loadDashboardOverview`). Faz 3B e2e testi bu yuzden 12 hash icin dashboard bekliyor (K-2 admin assertion K-036 landed oluncaya kadar "always dashboard"). Feature scope degisikligi, Faz 4 disinda.
+- **K-037 — ik.html onboarding gate broken-on-reload** (Faz 4A regression run'da tespit): `ik.html:2422` gate `hrProfile.sirket` bakiyor ama ayni dosyanin SELECT'i (ik.html:2365) `sirket` kolonunu fetch etmiyor — her fresh load'da `undefined` gorup `#sirket`'e zorluyor. Faz 3A e2e 10 hash bu yuzden hepsi `panel-sirket`'te karar kiliyor (K-2 ik assertion K-037 landed oluncaya kadar "always sirket"). Product fix: ya SELECT'e `sirket` ekle ya da gate `onboarding_completed` kolununa baksin. Feature scope degisikligi, Faz 4 disinda.
 
 ### Session 77 (16-17 Nisan — Asama 77: K033 model swap + K034 two-person + Firsatlar rename + Bildirimler hero + Markalar redesign)
 

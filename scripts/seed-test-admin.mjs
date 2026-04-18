@@ -12,87 +12,29 @@
  * Davranis:
  *   1. Admin API'de user var mi. Yoksa create.
  *   2. admin_users tablosuna INSERT (id=user.id, role='superadmin').
- *      is_admin() RPC bu tabloda EXISTS check yapiyor (migration 014).
+ *      admin.html:757 checkAdminAccess bu tabloda maybeSingle lookup yapiyor.
  *   3. Idempotent — rerun'da password reset + admin_users upsert.
  *
  * Guvenlik notu:
  *   Bu script prod admin hesabi (kefelituna@gmail.com) DOKUNMAZ.
  *   Ayri test admin (admin+k032@peoplein.com.tr) seed eder.
  *   user_metadata.test_account=true flag ile prod'dan ayirt edilebilir.
+ *
+ * Faz 4B (O-1) refaktor: ortak admin API plumbing scripts/_supa-admin.mjs'te.
  */
 
-const SUPA_URL = process.env.SUPABASE_URL || 'https://cpwibefquojehjehtrog.supabase.co';
-const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+import { loadAdminEnv, makeReq, ensureUser, validateCreds, refuseEmail, die } from './_supa-admin.mjs';
+
+const { SUPA_URL, SERVICE_KEY } = loadAdminEnv();
 const EMAIL = process.env.HT_TEST_ADMIN_EMAIL;
 const PASSWORD = process.env.HT_TEST_PASSWORD;
 
-function die(msg) { console.error('✗ ' + msg); process.exit(1); }
-
-if (!SERVICE_KEY) die('SUPABASE_SERVICE_ROLE_KEY yok.');
 if (!EMAIL) die('HT_TEST_ADMIN_EMAIL yok.');
 if (!PASSWORD) die('HT_TEST_PASSWORD yok.');
-if (!EMAIL.includes('@') || PASSWORD.length < 10) die('Email/password validation fail.');
+validateCreds(EMAIL, PASSWORD);
+refuseEmail(EMAIL, ['kefelituna@gmail.com']);
 
-// Prod admin guard — kefelituna@gmail.com'a hicbir sekilde dokunma
-if (EMAIL.toLowerCase() === 'kefelituna@gmail.com') {
-  die('REFUSED — HT_TEST_ADMIN_EMAIL kefelituna@gmail.com olamaz. Ayri test hesabi kullan.');
-}
-
-const adminHeaders = {
-  'Content-Type': 'application/json',
-  'apikey': SERVICE_KEY,
-  'Authorization': 'Bearer ' + SERVICE_KEY,
-};
-
-async function req(path, opts) {
-  const res = await fetch(SUPA_URL + path, { ...opts, headers: { ...adminHeaders, ...(opts.headers || {}) } });
-  const text = await res.text();
-  let json = null;
-  try { json = text ? JSON.parse(text) : null; } catch (e) {}
-  return { ok: res.ok, status: res.status, body: json, text };
-}
-
-async function findUserByEmail(email) {
-  for (let page = 1; page <= 20; page++) {
-    const r = await req('/auth/v1/admin/users?page=' + page + '&per_page=200', { method: 'GET' });
-    if (!r.ok) die('listUsers HTTP ' + r.status + ' ' + r.text);
-    const users = (r.body && r.body.users) || [];
-    const hit = users.find(u => (u.email || '').toLowerCase() === email.toLowerCase());
-    if (hit) return hit;
-    if (users.length < 200) return null;
-  }
-  return null;
-}
-
-async function createUser(email, password) {
-  const r = await req('/auth/v1/admin/users', {
-    method: 'POST',
-    body: JSON.stringify({
-      email, password, email_confirm: true,
-      user_metadata: {
-        full_name: 'K032 Test Admin',
-        role: 'admin',
-        k032_seed: true,
-        test_account: true,
-      },
-      app_metadata: { role: 'admin' },
-    }),
-  });
-  if (!r.ok) die('createUser HTTP ' + r.status + ' ' + r.text);
-  return r.body;
-}
-
-async function updateUser(userId, password) {
-  const r = await req('/auth/v1/admin/users/' + userId, {
-    method: 'PUT',
-    body: JSON.stringify({
-      password, email_confirm: true,
-      app_metadata: { role: 'admin' },
-    }),
-  });
-  if (!r.ok) die('updateUser HTTP ' + r.status + ' ' + r.text);
-  return r.body;
-}
+const req = makeReq(SUPA_URL, SERVICE_KEY);
 
 async function findAdminUser(userId) {
   const r = await req('/rest/v1/admin_users?id=eq.' + userId + '&select=id,role,display_name', { method: 'GET' });
@@ -129,15 +71,19 @@ async function upsertAdminUser(userId) {
   console.log('K032 admin seed: ' + EMAIL);
   console.log('  URL: ' + SUPA_URL);
 
-  let user = await findUserByEmail(EMAIL);
-  if (user) {
-    console.log('  auth.users: EXISTS (id=' + user.id + ') — password+app_metadata reset');
-    await updateUser(user.id, PASSWORD);
-  } else {
-    console.log('  auth.users: creating...');
-    user = await createUser(EMAIL, PASSWORD);
-    console.log('  auth.users: CREATED (id=' + user.id + ')');
-  }
+  const { user, created } = await ensureUser({
+    req,
+    email: EMAIL,
+    password: PASSWORD,
+    userMetadata: {
+      full_name: 'K032 Test Admin',
+      role: 'admin',
+      k032_seed: true,
+      test_account: true,
+    },
+    appMetadata: { role: 'admin' },
+  });
+  console.log('  auth.users: ' + (created ? 'CREATED' : 'UPDATED') + ' (id=' + user.id + ')');
 
   const adm = await upsertAdminUser(user.id);
   console.log('  admin_users: ' + adm.action + ' (role=' + (adm.row && adm.row.role) + ')');

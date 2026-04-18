@@ -2,19 +2,25 @@
  * K032 Faz 3B — admin.html authenticated panel hash runtime smoke.
  *
  * Platform admin panel. Test user admin+k032@peoplein.com.tr
- * app_metadata.role='admin' + admin_users row seed'li. is_admin()
- * RPC admin_users tablosunda EXISTS check ediyor.
+ * app_metadata.role='admin' + admin_users row seed'li. admin.html:757
+ * checkAdminAccess admin_users maybeSingle lookup yapiyor.
  *
  * 12 panel hash (dashboard/review/campaigns/announcements/support/
  * candidates/brands/employers/leads/sales/team/settings) × 2 tema ×
  * 2 viewport = 48 test.
  *
  * Login sonrasi candidate branch'a duser (role!=employer), profil.html
- * redirect. Test /admin.html URL'e direkt goto eder; auth guard
- * is_admin()=true kontrolunden gecer.
+ * redirect. Test /admin.html URL'e direkt goto eder; admin shell guard
+ * `admin_users` lookup'undan gecer.
+ *
+ * Faz 4A (K-2) + 4B (O-2) update:
+ *   - admin.html has NO hash-restore (backlog K-036). Every hash ends up
+ *     on `panel-dashboard` after boot — assertion pins that contract.
+ *   - Shared helpers from tests/helpers/runtime-signals.js.
  */
 
 const { test, expect } = require('@playwright/test');
+const { attachCollectors, criticalFrom, contextSnapshot, waitForBootSettle } = require('./helpers/runtime-signals');
 
 const ADMIN_PANEL_HASHES = [
   'dashboard', 'review', 'campaigns', 'announcements', 'support',
@@ -22,52 +28,6 @@ const ADMIN_PANEL_HASHES = [
 ];
 
 const THEMES = ['light', 'dark'];
-
-const IGNORE_PATTERNS = [
-  /supabase/i,
-  /cpwibefquojehjehtrog\.supabase\.co/i,
-  /posthog/i,
-  /sentry|browser\.sentry-cdn\.com|ingest\.de\.sentry\.io/i,
-  /cloudflare|turnstile|challenges\.cloudflare\.com/i,
-  /redirecting to giris\.html/i,
-  /giris\.html\?tab=/,
-  /Refused to load|Content Security Policy/i,
-];
-
-const REGRESSION_PATTERNS = [
-  /ReferenceError/,
-  /TypeError/,
-  /SyntaxError/,
-  /Unexpected token/,
-  /Unexpected end of input/i,
-  /is not defined/,
-  /Cannot read propert/i,
-  /Cannot read properties of (null|undefined)/i,
-  /is not a function/,
-];
-
-function shouldIgnore(msg) {
-  if (!msg) return true;
-  return IGNORE_PATTERNS.some(function (re) { return re.test(msg); });
-}
-
-function isRegression(msg) {
-  return REGRESSION_PATTERNS.some(function (re) { return re.test(msg); });
-}
-
-function attachCollectors(page) {
-  const signals = [];
-  page.on('pageerror', function (err) {
-    signals.push({ kind: 'pageerror', message: err && err.message ? err.message : String(err) });
-  });
-  page.on('console', function (msg) {
-    if (msg.type() !== 'error') return;
-    let text = '';
-    try { text = msg.text(); } catch (e) { text = ''; }
-    signals.push({ kind: 'console', message: text });
-  });
-  return signals;
-}
 
 for (const theme of THEMES) {
   test.describe('K032 Faz 3B admin.html Panel Hash / ' + theme, function () {
@@ -86,22 +46,31 @@ for (const theme of THEMES) {
           const msg = (err && err.message) ? err.message : String(err);
           if (!/Timeout|timeout/.test(msg)) throw err;
         });
-        await page.waitForTimeout(1800);
+        // admin.html has no `_htBootstrapDone` sentinel — lower cap, settle tail
+        // covers admin_users lookup + showAdminDashboard microtasks.
+        await waitForBootSettle(page, { sentinelTimeoutMs: 600, settleMs: 600 });
 
-        const url = page.url();
-        const redirectedAway = /giris\.html|profil\.html/.test(url);
-
-        const critical = signals
-          .filter(function (s) { return !shouldIgnore(s.message); })
-          .filter(function (s) { return isRegression(s.message); });
+        const ctx = contextSnapshot(page);
+        const redirectedAway = /giris\.html|profil\.html/.test(ctx.url);
+        const activePanelId = redirectedAway
+          ? null
+          : await page.locator('.panel.active').getAttribute('id').catch(function () { return null; });
+        const critical = criticalFrom(signals);
 
         if (critical.length) {
-          console.log('K032 Faz 3B critical signals on #' + hash + ' [' + theme + '] (url=' + url + '):');
+          console.log('K032 Faz 3B critical signals on #' + hash + ' [' + theme + '] (url=' + ctx.url + ', active=' + activePanelId + '):');
           critical.forEach(function (s) { console.log('  -', s.kind, s.message); });
         }
 
-        expect(critical, 'Faz 3B runtime regressions on /admin.html#' + hash + ' (' + theme + ')').toEqual([]);
-        expect(redirectedAway, 'admin.html auth guard rejected admin user — redirected away').toBe(false);
+        expect(critical, 'Faz 3B runtime regressions on /admin.html#' + hash + ' (' + theme + ', vp=' + ctx.viewportLabel + ', active=' + activePanelId + ', url=' + ctx.url + ')').toEqual([]);
+        expect(redirectedAway, 'admin.html auth guard rejected admin user — redirected away (hash=#' + hash + ', ' + theme + ', vp=' + ctx.viewportLabel + ', url=' + ctx.url + ')').toBe(false);
+
+        // admin.html has NO hash-restore on boot. Direct goto('/admin.html#X')
+        // always lands on dashboard (admin.html:840-853 showAdminDashboard() →
+        // loadDashboardOverview()). Panel-id strict assert is INVALID for admin
+        // until admin.html gains hash routing (backlog K-036). Until then we
+        // pin the current contract: every hash → panel-dashboard.
+        expect(activePanelId, 'Faz 3B admin dashboard should be active for every hash until K-036 hash-restore lands (hash=#' + hash + ', ' + theme + ', vp=' + ctx.viewportLabel + ', url=' + ctx.url + ')').toBe('panel-dashboard');
       });
     }
   });

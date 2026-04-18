@@ -1,16 +1,26 @@
 /**
  * K032 Faz 3B — Admin auth setup.
  *
- * Logs in as the seeded test admin (app_metadata.role='admin',
- * admin_users row present) and saves storageState for admin.html e2e tests.
+ * Logs in as the seeded test admin (admin_users row present with role),
+ * navigates to /admin.html, and verifies the admin shell actually activates
+ * before capturing storageState.
  *
  * Required env: HT_TEST_ADMIN_EMAIL, HT_TEST_PASSWORD
  * Output: playwright/.auth/admin.json (git-ignored)
  *
- * Login flow: /giris.html → fill #aday-email + #aday-sifre (admin uses
- * candidate tab, app_metadata.role !== 'employer' so login redirects
- * to profil.html default branch) → click #btn-aday-giris → wait
- * profil.html OR admin.html. Admin.html erisimi manuel navigate'le.
+ * Login flow:
+ *   1. /giris.html candidate tab login (admin uses candidate tab; role !== 'employer'
+ *      → profil.html default redirect branch)
+ *   2. Post-login wait: /profil.html OR /admin.html
+ *   3. Manual navigate /admin.html
+ *   4. Assert #admin-shell.active — admin.html:757 `admin_users.select('id, role, display_name').eq('id', userId).maybeSingle()`
+ *      gate passed (see admin.html checkAdminAccess)
+ *   5. Capture storageState — verified admin session, not just a generic logged-in session
+ *
+ * Faz 4 K-3 fix: previously setup saved storageState right after candidate-tab redirect;
+ * admin.html auth gate (admin_users lookup) was never exercised. Now we explicitly drive
+ * the gate before save, so a regression in admin_users seed (role change, row drop, id
+ * mismatch) surfaces here — not later inside the 48 admin e2e tests.
  */
 var { test: setup, expect } = require('@playwright/test');
 
@@ -31,6 +41,16 @@ setup('authenticate admin', async ({ page }) => {
 
   await page.waitForURL(/profil\.html|admin\.html/, { timeout: 15000 });
   await page.waitForLoadState('networkidle', { timeout: 10000 }).catch(function () {});
+
+  // K-3: explicitly drive admin.html guard so storageState reflects a
+  // session that can actually render admin shell, not just a logged-in user.
+  await page.goto('/admin.html');
+  await page.waitForLoadState('networkidle', { timeout: 10000 }).catch(function () {});
+
+  var finalUrl = page.url();
+  expect(finalUrl, 'admin auth setup: /admin.html redirected away (gate rejected) — check admin_users row for test admin (role, id match auth.uid)').not.toMatch(/giris\.html|profil\.html/);
+
+  await expect(page.locator('#admin-shell.active'), 'admin auth setup: #admin-shell never activated — admin_users lookup returned null/error or guard race (admin.html:757 checkAdminAccess)').toBeVisible({ timeout: 10000 });
 
   await page.context().storageState({ path: AUTH_FILE });
 });

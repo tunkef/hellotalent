@@ -6,7 +6,7 @@
  *   source .env.local && node scripts/seed-test-user.mjs
  *
  * Env gereksinimleri:
- *   SUPABASE_URL               (or uses hardcoded project URL)
+ *   SUPABASE_URL               (optional — defaults to hardcoded project URL)
  *   SUPABASE_SERVICE_ROLE_KEY  (sb_secret_... — ADMIN API)
  *   HT_TEST_EMAIL              (gmail alias onerilir)
  *   HT_TEST_PASSWORD           (strong)
@@ -20,86 +20,22 @@
  * Guvenlik:
  *   - Service role key sadece local script icin. .env.local git-ignored.
  *   - Production'da koşturulmaz (DNS/URL degiş guard yok — local intent).
+ *
+ * Faz 4B (O-1) refaktor: user lookup / create-update / die() / req() ortak
+ * mantigi scripts/_supa-admin.mjs'e tasindi. Davranis degismedi.
  */
 
-const SUPA_URL = process.env.SUPABASE_URL || 'https://cpwibefquojehjehtrog.supabase.co';
-const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+import { loadAdminEnv, makeReq, ensureUser, validateCreds, die } from './_supa-admin.mjs';
+
+const { SUPA_URL, SERVICE_KEY } = loadAdminEnv();
 const EMAIL = process.env.HT_TEST_EMAIL;
 const PASSWORD = process.env.HT_TEST_PASSWORD;
 
-function die(msg) {
-  console.error('✗ ' + msg);
-  process.exit(1);
-}
-
-if (!SERVICE_KEY) die('SUPABASE_SERVICE_ROLE_KEY yok. .env.local kontrol edin.');
 if (!EMAIL) die('HT_TEST_EMAIL yok. .env.local kontrol edin.');
 if (!PASSWORD) die('HT_TEST_PASSWORD yok. .env.local kontrol edin.');
-if (!EMAIL.includes('@') || PASSWORD.length < 10) die('Email/password validation fail.');
+validateCreds(EMAIL, PASSWORD);
 
-const adminHeaders = {
-  'Content-Type': 'application/json',
-  'apikey': SERVICE_KEY,
-  'Authorization': 'Bearer ' + SERVICE_KEY,
-};
-
-async function req(path, opts) {
-  const res = await fetch(SUPA_URL + path, { ...opts, headers: { ...adminHeaders, ...(opts.headers || {}) } });
-  const text = await res.text();
-  let json = null;
-  try { json = text ? JSON.parse(text) : null; } catch (e) { /* ignore */ }
-  return { ok: res.ok, status: res.status, body: json, text };
-}
-
-async function findUserByEmail(email) {
-  const per = 200;
-  for (let page = 1; page <= 10; page++) {
-    const r = await req('/auth/v1/admin/users?page=' + page + '&per_page=' + per, { method: 'GET' });
-    if (!r.ok) die('listUsers HTTP ' + r.status + ' ' + r.text);
-    const users = (r.body && r.body.users) || [];
-    const hit = users.find(u => (u.email || '').toLowerCase() === email.toLowerCase());
-    if (hit) return hit;
-    if (users.length < per) return null;
-  }
-  return null;
-}
-
-async function createUser(email, password) {
-  const r = await req('/auth/v1/admin/users', {
-    method: 'POST',
-    body: JSON.stringify({
-      email,
-      password,
-      email_confirm: true,
-      user_metadata: {
-        full_name: 'K032 Test User',
-        role: 'candidate',
-        k032_seed: true,
-        test_account: true,
-      },
-    }),
-  });
-  if (!r.ok) die('createUser HTTP ' + r.status + ' ' + r.text);
-  return r.body;
-}
-
-async function updateUser(userId, password) {
-  const r = await req('/auth/v1/admin/users/' + userId, {
-    method: 'PUT',
-    body: JSON.stringify({
-      password,
-      email_confirm: true,
-      user_metadata: {
-        full_name: 'K032 Test User',
-        role: 'candidate',
-        k032_seed: true,
-        test_account: true,
-      },
-    }),
-  });
-  if (!r.ok) die('updateUser HTTP ' + r.status + ' ' + r.text);
-  return r.body;
-}
+const req = makeReq(SUPA_URL, SERVICE_KEY);
 
 async function findCandidate(userId) {
   const r = await req('/rest/v1/candidates?user_id=eq.' + userId + '&select=id,user_id,profile_completed,is_active', { method: 'GET' });
@@ -146,15 +82,18 @@ async function upsertCandidate(userId, email) {
   console.log('K032 seed: ' + EMAIL);
   console.log('  URL: ' + SUPA_URL);
 
-  let user = await findUserByEmail(EMAIL);
-  if (user) {
-    console.log('  auth.users: EXISTS (id=' + user.id + ') — password reset');
-    await updateUser(user.id, PASSWORD);
-  } else {
-    console.log('  auth.users: creating...');
-    user = await createUser(EMAIL, PASSWORD);
-    console.log('  auth.users: CREATED (id=' + user.id + ')');
-  }
+  const { user, created } = await ensureUser({
+    req,
+    email: EMAIL,
+    password: PASSWORD,
+    userMetadata: {
+      full_name: 'K032 Test User',
+      role: 'candidate',
+      k032_seed: true,
+      test_account: true,
+    },
+  });
+  console.log('  auth.users: ' + (created ? 'CREATED' : 'UPDATED') + ' (id=' + user.id + ')');
 
   const cand = await upsertCandidate(user.id, EMAIL);
   console.log('  candidates: ' + cand.action + ' (id=' + (cand.row && cand.row.id) + ')');
