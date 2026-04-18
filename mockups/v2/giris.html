@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Giriş Yap — hellotalent</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+<style>
+/* Giriş-specific layout. Reuses shared.css tokens + primitives. */
+.auth-shell {
+  min-height: calc(100vh - 64px);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: stretch;
+}
+.auth-left {
+  padding: clamp(48px, 6vw, 80px) clamp(32px, 5vw, 64px);
+  display: flex; flex-direction: column; justify-content: center;
+  background: var(--cream);
+  max-width: 560px; margin: 0 auto; width: 100%;
+}
+.auth-right {
+  position: relative;
+  overflow: hidden;
+  min-height: 520px;
+}
+.auth-right img {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+}
+.auth-right::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(10, 14, 39, 0) 40%, rgba(10, 14, 39, .6) 100%);
+}
+.auth-right-caption {
+  position: absolute; z-index: 2;
+  left: 32px; right: 32px; bottom: 32px;
+  color: var(--cream);
+  max-width: 30ch;
+}
+.auth-right-caption .eyebrow { color: rgba(247, 246, 244, .7); margin-bottom: 14px; display: inline-flex; }
+.auth-right-caption .eyebrow::before { background: var(--coral); }
+.auth-right-caption h2 {
+  font-family: var(--font-display);
+  font-weight: 800; letter-spacing: -.015em; line-height: 1.05;
+  font-size: clamp(26px, 3vw, 40px);
+  margin: 0 0 12px; color: var(--white);
+}
+.auth-right-caption p {
+  margin: 0;
+  font-size: 15px; line-height: 1.55;
+  color: rgba(247, 246, 244, .82);
+  max-width: 38ch;
+}
+
+/* TAB toggle — matches brand pattern (aday/ik) */
+.tab-toggle {
+  display: inline-flex;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 3px;
+  margin-bottom: 28px;
+  box-shadow: var(--shadow-soft);
+}
+.tab-btn {
+  font-family: var(--font-body);
+  font-size: 13px; font-weight: 700;
+  padding: 9px 24px;
+  border: 0; border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  transition: background .18s, color .18s, box-shadow .18s;
+}
+.tab-btn.active-aday { background: var(--verm); color: #fff; box-shadow: 0 4px 12px rgba(201, 78, 40, .22); }
+.tab-btn.active-ik   { background: var(--navy); color: #fff; box-shadow: 0 4px 12px rgba(30, 45, 94, .22); }
+
+.auth-title { margin-bottom: 8px; }
+.auth-sub { font-size: 15px; color: var(--muted); margin: 0 0 28px; max-width: 44ch; }
+
+.form-row { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+.form-row label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.form-input {
+  width: 100%;
+  padding: 13px 16px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  font-family: var(--font-body);
+  font-size: 15px;
+  color: var(--ink);
+  background: var(--white);
+  outline: none;
+  transition: border-color .15s, box-shadow .15s;
+}
+.form-input:focus { border-color: var(--ink); box-shadow: 0 0 0 3px rgba(10, 14, 39, .08); }
+
+.auth-actions { display: flex; justify-content: space-between; align-items: center; margin: 6px 0 20px; flex-wrap: wrap; gap: 10px; }
+.auth-forgot { font-size: 13px; color: var(--muted); font-weight: 600; }
+.auth-forgot:hover { color: var(--ink); }
+
+.btn-submit { width: 100%; }
+
+.auth-sep {
+  display: flex; align-items: center; gap: 12px;
+  margin: 24px 0;
+  color: var(--muted);
+  font-size: 12px;
+  font-family: var(--font-mono);
+  letter-spacing: .1em;
+}
+.auth-sep::before, .auth-sep::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.btn-google {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 13px 18px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--white);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  transition: border-color .15s;
+}
+.btn-google:hover { border-color: var(--ink); }
+
+.auth-foot {
+  margin-top: 28px;
+  font-size: 14px;
+  color: var(--muted);
+}
+.auth-foot a { color: var(--verm); font-weight: 700; }
+.tab-ik-wrap .auth-foot a { color: var(--navy); }
+
+.auth-panel { display: none; }
+.auth-panel.active { display: block; }
+
+@media (max-width: 900px) {
+  .auth-shell { grid-template-columns: 1fr; }
+  .auth-right { min-height: 280px; order: -1; }
+  .auth-right-caption { left: 20px; right: 20px; bottom: 20px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═════ NAV ═════ -->
+<header class="lp-hdr">
+  <div class="lp-hdr-inner">
+    <a class="lp-logo" href="index.html">hello<em>talent</em></a>
+    <div class="lp-links">
+      <a href="index.html">Anasayfa</a>
+      <a href="hakkimizda.html">Hakkımızda</a>
+      <a href="iletisim.html">İletişim</a>
+    </div>
+    <div class="lp-cta">
+      <a class="btn btn-outline btn-sm" href="index.html">&larr; Geri dön</a>
+    </div>
+  </div>
+</header>
+
+<!-- ═════ AUTH SHELL ═════ -->
+<div class="auth-shell">
+
+  <!-- LEFT — form -->
+  <div class="auth-left">
+
+    <div class="tab-toggle" role="tablist" aria-label="Giriş türü">
+      <button class="tab-btn active-aday" id="tab-aday" onclick="switchTab('aday')" role="tab">Aday Girişi</button>
+      <button class="tab-btn" id="tab-ik" onclick="switchTab('ik')" role="tab">İK Girişi</button>
+    </div>
+
+    <!-- ADAY PANEL -->
+    <div class="auth-panel active" id="panel-aday">
+      <h1 class="h-section auth-title">Hoş geldin. Profiline <em>giriş yap.</em></h1>
+      <p class="auth-sub">Perakende kariyerinde markalar seni beklemeye başlar.</p>
+
+      <form onsubmit="return false">
+        <div class="form-row">
+          <label for="aday-email">E-posta</label>
+          <input type="email" class="form-input" id="aday-email" placeholder="ornek@email.com" autocomplete="email">
+        </div>
+        <div class="form-row">
+          <label for="aday-sifre">Parola</label>
+          <input type="password" class="form-input" id="aday-sifre" placeholder="********" autocomplete="current-password">
+        </div>
+        <div class="auth-actions">
+          <a href="sifre-yenile.html" class="auth-forgot">Parolamı unuttum</a>
+        </div>
+        <button class="btn btn-verm btn-submit" id="btn-aday-giris">Aday olarak giriş yap
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+        </button>
+
+        <div class="auth-sep">YA DA</div>
+
+        <button class="btn-google" type="button">
+          <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z"/><path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.997 8.997 0 000 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"/></svg>
+          Google ile giriş yap
+        </button>
+      </form>
+
+      <p class="auth-foot">Hesabın yok mu? <a href="uye-ol.html?tab=aday">Ücretsiz üye ol</a></p>
+    </div>
+
+    <!-- IK PANEL -->
+    <div class="auth-panel tab-ik-wrap" id="panel-ik">
+      <h1 class="h-section auth-title">Kurumsal panele <em class="navy">giriş yap.</em></h1>
+      <p class="auth-sub">Canlı yetenek havuzuna erişin, görünmez pozisyonları yönetin.</p>
+
+      <form onsubmit="return false">
+        <div class="form-row">
+          <label for="ik-email">Kurumsal e-posta</label>
+          <input type="email" class="form-input" id="ik-email" placeholder="isim@sirket.com" autocomplete="email">
+        </div>
+        <div class="form-row">
+          <label for="ik-sifre">Parola</label>
+          <input type="password" class="form-input" id="ik-sifre" placeholder="********" autocomplete="current-password">
+        </div>
+        <div class="auth-actions">
+          <a href="sifre-yenile.html" class="auth-forgot">Parolamı unuttum</a>
+        </div>
+        <button class="btn btn-navy btn-submit" id="btn-ik-giris">Kurumsal giriş
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+        </button>
+
+        <div class="auth-sep">YA DA</div>
+
+        <button class="btn-google" type="button">
+          <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z"/><path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.997 8.997 0 000 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"/></svg>
+          Google ile giriş yap
+        </button>
+      </form>
+
+      <p class="auth-foot">Kurumsal hesabın yok mu? <a href="uye-ol.html?tab=kurumsal">Demo talep et</a></p>
+    </div>
+
+  </div>
+
+  <!-- RIGHT — editorial scene -->
+  <div class="auth-right">
+    <img src="assets/hero-aday.webp" alt="HelloTalent portresi (mockup)" id="auth-scene">
+    <div class="auth-right-caption" id="auth-caption">
+      <div class="eyebrow">Hikayeler</div>
+      <h2 id="auth-scene-title">Profili gizli tut, markalar seni bulsun.</h2>
+      <p id="auth-scene-p">4 yıllık mağaza müdürü deneyimi, iki hafta önce profilini oluşturdu. Bu sabah üç markadan mülakat daveti aldı.</p>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═════ FOOTER ═════ -->
+<footer class="ht-foot">
+  <div class="foot-grid">
+    <div class="foot-lead">
+      <a class="lp-logo" href="index.html">hello<em>talent</em></a>
+      <p>Türkiye perakende sektörünün yetenek platformu.</p>
+    </div>
+    <div>
+      <h4>Aday</h4>
+      <ul>
+        <li><a href="uye-ol.html?tab=aday">Ücretsiz üye ol</a></li>
+        <li><a href="index.html#nasil">Nasıl çalışır</a></li>
+        <li><a href="index.html#hikayeler">Hikayeler</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Kurumsal</h4>
+      <ul>
+        <li><a href="uye-ol.html?tab=kurumsal">Kurumsal hesap</a></li>
+        <li><a href="iletisim.html">Demo talep et</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Yasal</h4>
+      <ul>
+        <li><a href="yasal.html#gizlilik">Gizlilik</a></li>
+        <li><a href="yasal.html#kvkk">KVKK</a></li>
+        <li><a href="yasal.html#kullanim">Kullanım şartları</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="foot-bottom">
+    <span>© 2026 HelloTalent — Peoplein Bilişim A.Ş.</span>
+    <span class="mark">mockup v2 · giris</span>
+  </div>
+</footer>
+
+<div class="mockup-flag">MOCKUP V2 · Giriş</div>
+
+<script>
+var SCENE_AUTHS = {
+  aday: {
+    img: 'assets/hero-aday.webp',
+    title: 'Profili gizli tut, markalar seni bulsun.',
+    desc:  '4 yıllık mağaza müdürü deneyimi, iki hafta önce profilini oluşturdu. Bu sabah üç markadan mülakat daveti aldı.'
+  },
+  ik: {
+    img: 'assets/hero-isveren.webp',
+    title: 'Kriter belirle, eşleşen havuzu gör.',
+    desc:  'Brand experience rolü için 40 uygun aday, 9 gün içinde doğru teklif. İlan yayınlama zahmeti sıfır.'
+  }
+};
+
+function switchTab(tab) {
+  var adayBtn = document.getElementById('tab-aday');
+  var ikBtn   = document.getElementById('tab-ik');
+  var adayP   = document.getElementById('panel-aday');
+  var ikP     = document.getElementById('panel-ik');
+  var scene   = document.getElementById('auth-scene');
+  var title   = document.getElementById('auth-scene-title');
+  var desc    = document.getElementById('auth-scene-p');
+
+  if (tab === 'aday') {
+    adayBtn.className = 'tab-btn active-aday';
+    ikBtn.className   = 'tab-btn';
+    adayP.classList.add('active');
+    ikP.classList.remove('active');
+  } else {
+    adayBtn.className = 'tab-btn';
+    ikBtn.className   = 'tab-btn active-ik';
+    adayP.classList.remove('active');
+    ikP.classList.add('active');
+  }
+  var s = SCENE_AUTHS[tab];
+  scene.src = s.img;
+  title.textContent = s.title;
+  desc.textContent = s.desc;
+  history.replaceState(null, '', '?tab=' + tab);
+}
+(function () {
+  var q = (window.location.search || '');
+  if (q.indexOf('tab=ik') >= 0) switchTab('ik');
+})();
+</script>
+
+</body>
+</html>
