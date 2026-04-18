@@ -848,9 +848,30 @@ window._htAdminBuildSectionLabel = function(text) {
     roleEl.textContent = admin.role;
     avatarEl.textContent = (admin.display_name || user.email || 'A').charAt(0).toUpperCase();
 
-    // Load default panel (Dashboard)
-    loadDashboardOverview();
+    // K-036 fix (18 Nisan 2026): hash-restore on boot so bookmarked links like
+    // /admin.html#brands actually open the Brands panel instead of falling
+    // through to the dashboard. If the hash is unknown or empty, load Dashboard
+    // (previous default).
+    var bootHash = (window.location.hash || '').replace('#', '');
+    if (bootHash && document.getElementById('panel-' + bootHash)) {
+      var bootNav = document.querySelector('.nav-item[data-panel="' + bootHash + '"]');
+      switchPanel(bootHash, bootNav);
+    } else {
+      loadDashboardOverview();
+    }
   }
+
+  // K-036 fix: respond to hashchange so browser back/forward navigates panels,
+  // and so cross-panel deep links from other admin tabs work while the shell
+  // is already mounted.
+  window.addEventListener('hashchange', function () {
+    if (!document.getElementById('admin-shell') || !document.getElementById('admin-shell').classList.contains('active')) return;
+    var h = (window.location.hash || '').replace('#', '');
+    if (h && document.getElementById('panel-' + h)) {
+      var navEl = document.querySelector('.nav-item[data-panel="' + h + '"]');
+      switchPanel(h, navEl);
+    }
+  });
 
   /* ── DASHBOARD OVERVIEW (4 stat cards) ── */
   async function loadDashboardOverview() {

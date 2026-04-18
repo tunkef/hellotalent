@@ -65,12 +65,12 @@ for (const theme of THEMES) {
         expect(critical, 'Faz 3B runtime regressions on /admin.html#' + hash + ' (' + theme + ', vp=' + ctx.viewportLabel + ', active=' + activePanelId + ', url=' + ctx.url + ')').toEqual([]);
         expect(redirectedAway, 'admin.html auth guard rejected admin user — redirected away (hash=#' + hash + ', ' + theme + ', vp=' + ctx.viewportLabel + ', url=' + ctx.url + ')').toBe(false);
 
-        // admin.html has NO hash-restore on boot. Direct goto('/admin.html#X')
-        // always lands on dashboard (admin.html:840-853 showAdminDashboard() →
-        // loadDashboardOverview()). Panel-id strict assert is INVALID for admin
-        // until admin.html gains hash routing (backlog K-036). Until then we
-        // pin the current contract: every hash → panel-dashboard.
-        expect(activePanelId, 'Faz 3B admin dashboard should be active for every hash until K-036 hash-restore lands (hash=#' + hash + ', ' + theme + ', vp=' + ctx.viewportLabel + ', url=' + ctx.url + ')').toBe('panel-dashboard');
+        // K-036 landed (18 Nisan 2026): admin.html now reads `window.location.hash` in
+        // `showAdminDashboard` and routes via `switchPanel` before falling back to the
+        // dashboard default. A `hashchange` listener covers browser back/forward and
+        // in-app deep-link jumps. Strict panel id assertion now pins the routing
+        // contract: every hash in ADMIN_PANEL_HASHES must land on panel-<hash>.
+        expect(activePanelId, 'Faz 3B panel router activation mismatch — hash=#' + hash + ' expected panel-' + hash + ' but active=' + activePanelId + ' (' + theme + ', vp=' + ctx.viewportLabel + ', url=' + ctx.url + ')').toBe('panel-' + hash);
       });
     }
   });

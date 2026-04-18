@@ -2362,7 +2362,14 @@ async function initApp(){
 
   // Supabase'den hr_profiles çek
   try{
-    var {data:prof} = await getSupa().from('hr_profiles').select('id, ad, soyad, email, telefon, company_id, employer_role, avatar_url, onboarding_completed').eq('id',currentUser.id).maybeSingle();
+    // K-038 fix (18 Nisan 2026): `avatar_url` kolonu hr_profiles'ta yok — SELECT
+    // bu yuzden "column hr_profiles.avatar_url does not exist" ile fail ediyordu.
+    // Hata try/catch icinde yutuluyor, `prof` null kaliyor, hrProfile={} → K-037
+    // gate'i her zaman onboarding moduna zorluyordu. SELECT'ten cikardik; zaten
+    // dosya icinde `prof.avatar_url` hic kullanilmiyor. Ek olarak gate icin
+    // ihtiyac duyulan alanlarin tumu (ozellikle `sirket` — form prefill, ve
+    // `onboarding_completed`) artik acikca SELECT'te.
+    var {data:prof} = await getSupa().from('hr_profiles').select('id, ad, soyad, email, telefon, sirket, sektor, buyukluk, web_sitesi, segment, merkez_sehir, magaza_sayisi, aciklama, aranan_profil, calisma_saatleri, linkedin, career_page_url, company_id, company_type, employer_role, onboarding_completed').eq('id',currentUser.id).maybeSingle();
     if(prof){
       hrProfile = prof;
       // Load employer plan (fire-and-forget, defaults to demo)
@@ -2418,8 +2425,13 @@ async function initApp(){
     }
   }catch(e){}
 
-  // ── ONBOARDING GATE: Şirket profili zorunlu ──
-  var needsOnboarding = !hrProfile || !hrProfile.sirket || hrProfile.sirket.trim() === '';
+  // ── ONBOARDING GATE: Şirkete bağlanma zorunlu ──
+  // K-037 fix (18 Nisan 2026): gate eskiden `!hrProfile.sirket` kontrol ediyordu
+  // ama 2365'teki SELECT `sirket` kolonunu çekmiyor → her fresh load'da undefined
+  // görüp zorla #sirket'e yönlendiriyordu. `company_id` zaten SELECT'te, save flow
+  // `link_employer_to_company` RPC'siyle set ediyor. RPC başarısız olursa null
+  // kalır → gate kapalı kalır → kullanıcı retry eder (fail-safe).
+  var needsOnboarding = !hrProfile || !hrProfile.company_id;
 
   if(needsOnboarding){
     // Force to company profile panel
@@ -2497,8 +2509,10 @@ function showOnboardingBanner(show){
 }
 
 function switchPanel(name, el){
-  // ── Onboarding guard: block navigation if company not set ──
-  var needsOnboarding = !hrProfile || !hrProfile.sirket || hrProfile.sirket.trim() === '';
+  // ── Onboarding guard: block navigation if company not linked ──
+  // K-037 fix (18 Nisan 2026): company_id gate — `sirket` kolonuna göre değil.
+  // Detay için ik.html:2422 üstü.
+  var needsOnboarding = !hrProfile || !hrProfile.company_id;
   if(needsOnboarding && name !== 'sirket' && name !== 'ayarlar'){
     alert('Lütfen önce şirket profilinizi tamamlayın.');
     switchPanel('sirket', document.querySelector('[data-panel="sirket"]'));
@@ -4281,6 +4295,25 @@ async function saveSirket(){
     // Pushes hr_profiles fields → companies table for candidate-facing data
     if(hrProfile && hrProfile.company_id){
       try{ getSupa().rpc('sync_company_details').then(function(res){ if(res.error) console.error('sync_company_details:', res.error.message); }); }catch(syncErr){}
+    }
+
+    // ── Mark onboarding complete (only after company linkage succeeded) ──
+    // K-037 companion fix (18 Nisan 2026): is_employer() RPC requires
+    // onboarding_completed=true (supabase/migrations/20260408154354 sec guard).
+    // The initial upsert leaves this column at its default (false). Once the
+    // company link is confirmed, flip the flag so employer-scoped RPCs and
+    // protected queries unblock. Fire-and-forget; failure doesn't break the
+    // save flow — user can re-save to retry the flag write.
+    if(hrProfile && hrProfile.company_id && hrProfile.onboarding_completed !== true){
+      try{
+        getSupa().from('hr_profiles').update({ onboarding_completed: true }).eq('id', currentUser.id).then(function(upRes){
+          if(upRes.error){
+            console.error('onboarding_completed flag:', upRes.error.message);
+          } else {
+            hrProfile.onboarding_completed = true;
+          }
+        });
+      }catch(flagErr){ console.error('onboarding_completed flag exception:', flagErr); }
     }
 
     // ── Update hrProfile and clear onboarding gate ──

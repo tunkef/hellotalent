@@ -60,14 +60,13 @@ for (const theme of THEMES) {
         expect(critical, 'Faz 3A runtime regressions on /ik.html#' + hash + ' (' + theme + ', vp=' + ctx.viewportLabel + ', url=' + ctx.url + ')').toEqual([]);
         expect(redirectedToLogin, 'ik.html auth guard rejected employer — /giris.html redirect (hash=#' + hash + ', ' + theme + ', vp=' + ctx.viewportLabel + ', url=' + ctx.url + ')').toBe(false);
 
-        // ik.html has a pre-existing onboarding gate (ik.html:2422 `needsOnboarding = !hrProfile.sirket`)
-        // that uses a column never included in the initial SELECT (ik.html:2365 select list omits `sirket`).
-        // Effect: on every fresh load, `hrProfile.sirket` is undefined → gate forces `#sirket` before
-        // hash restore runs. Backlog K-037 tracks the product fix (either extend the SELECT or switch
-        // the gate to `onboarding_completed`). Until then, the current-state contract for the test
-        // employer is: every hash lands on panel-sirket. That's what we pin here — a regression in
-        // the gate or the redirect would break this exact shape.
-        expect(activePanelId, 'Faz 3A ik onboarding gate should force panel-sirket for every hash until K-037 lands (hash=#' + hash + ', ' + theme + ', vp=' + ctx.viewportLabel + ', url=' + ctx.url + ')').toBe('panel-sirket');
+        // K-037 landed (18 Nisan 2026): gate switched from `!hrProfile.sirket` (which was
+        // broken because `sirket` was never SELECT'd) to `!hrProfile.company_id`. Test
+        // employer seed (scripts/seed-test-employer.mjs) now creates a companies row and
+        // links hr_profile.company_id → gate releases, hash-restore activates the target
+        // panel. Strict panel id assertion now catches a regression in either the gate
+        // release OR the hash-restore code path.
+        expect(activePanelId, 'Faz 3A panel router activation mismatch — hash=#' + hash + ' expected panel-' + hash + ' but active=' + activePanelId + ' (' + theme + ', vp=' + ctx.viewportLabel + ', url=' + ctx.url + ')').toBe('panel-' + hash);
       });
     }
   });
