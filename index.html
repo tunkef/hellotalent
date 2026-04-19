@@ -25,7 +25,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="shared-v2.css?v=20260419">
+<link rel="stylesheet" href="shared-v2.css?v=20260419b">
 
 <!-- Theme pre-paint (prevents light-flash) -->
 <script>
@@ -265,7 +265,6 @@
       <div class="stories-more">
         <button class="btn btn-outline light" type="button" onclick="toggleStories(this)">Tüm hikayeleri gör</button>
       </div>
-      <p class="stories-disclaimer">Hikayeler mockup dönemi için temsilidir. Canlı yayına geçmeden önce gerçek kullanıcı onayıyla değiştirilecektir.</p>
     </div>
   </section>
 
@@ -451,7 +450,6 @@
       <div class="stories-more">
         <button class="btn btn-outline light" type="button" onclick="toggleStories(this)">Tüm hikayeleri gör</button>
       </div>
-      <p class="stories-disclaimer">Hikayeler mockup dönemi için temsilidir. Canlı yayına geçmeden önce gerçek kullanıcı onayıyla değiştirilecektir.</p>
     </div>
   </section>
 
@@ -499,24 +497,22 @@
       </ul>
     </div>
     <div>
-      <h4>Yasal</h4>
+      <h4>Bilgi</h4>
       <ul>
-        <li><a href="yasal.html#gizlilik">Gizlilik politikası</a></li>
-        <li><a href="yasal.html#kvkk">KVKK aydınlatma</a></li>
-        <li><a href="yasal.html#kullanim">Kullanım şartları</a></li>
-        <li><a href="yasal.html#cerez">Çerez politikası</a></li>
+        <li><a href="hakkimizda.html">Hakkımızda</a></li>
+        <li><a href="iletisim.html">İletişim</a></li>
+        <li><a href="yasal.html">Yasal bilgiler</a></li>
       </ul>
     </div>
   </div>
   <div class="foot-bottom">
-    <span>© 2026 HelloTalent — Peoplein Bilişim A.Ş.</span>
-    <span class="mark">mockup v2 · 18 Nisan 2026</span>
+    <span>© 2026 HelloTalent — Peoplein İK Ltd. Şti.</span>
   </div>
 </footer>
 
 
 <script>
-function switchSeg(seg) {
+function switchSeg(seg, skipScroll) {
   var aday = document.getElementById('seg-adaylar');
   var kur  = document.getElementById('seg-kurumsal');
   document.querySelectorAll('.seg-btn').forEach(function (b) {
@@ -541,8 +537,10 @@ function switchSeg(seg) {
   // Close mobile menu if open
   var mm = document.getElementById('mobile-menu');
   if (mm && mm.classList.contains('open')) toggleMobileMenu();
-  history.replaceState(null, '', '#' + seg);
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  if (!skipScroll) {
+    history.replaceState(null, '', '#' + seg);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
 }
 
 function toggleMobileMenu() {
@@ -566,7 +564,17 @@ function toggleStories(btn) {
 
 (function () {
   var h = (window.location.hash || '').replace('#', '');
-  if (h === 'kurumsal') switchSeg('kurumsal');
+  var adaySections   = ['nasil', 'hikayeler', 'adaylar'];
+  var kurSections    = ['k-nasil', 'kurumsal'];
+  if (kurSections.indexOf(h) !== -1) switchSeg('kurumsal', true);
+  else if (adaySections.indexOf(h) !== -1) switchSeg('adaylar', true);
+  // Scroll to section anchor after segment switch
+  if (h && h !== 'adaylar' && h !== 'kurumsal') {
+    var target = document.getElementById(h);
+    if (target) setTimeout(function () {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 280);
+  }
   // Init stories collapsed on mobile
   if (window.matchMedia('(max-width: 768px)').matches) {
     document.querySelectorAll('.stories-grid').forEach(function (g) { g.classList.add('is-collapsed'); });
