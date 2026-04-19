@@ -18,13 +18,16 @@
   --cream: #F7F6F4;
   --cream-soft: #FAF9F7;
   --cream-warm: #F0EDE6;
-  --ink: #0A0E27;
-  --ink-soft: #2A2F4A;
+  /* Ink aliases collapsed to brand navy (2026-04-19) — previous #0A0E27/#2A2F4A
+     drift removed; text + dark surfaces now share the canonical navy. */
+  --ink: var(--navy);
+  --ink-soft: var(--navy-dark);
   --muted: #5D6283;        /* WCAG AA polish — was #6F7493 (4.2:1 → 4.9:1 on cream) */
   --border: #E8E6DE;
   --white: #FFFFFF;
-  --coral: #FF6B4A;
-  --coral-soft: rgba(255, 107, 74, .88);   /* Dark-mode variant — less agressive */
+  /* Coral retained as subtle gradient accent only. Primary accent is --verm. */
+  --coral: var(--verm);
+  --coral-soft: rgba(201, 78, 40, .88);
   --lemon: #F8E16C;
 
   /* Type */
@@ -260,6 +263,28 @@ button { font-family: inherit; }
   height: 2px; background: var(--verm); border-radius: 2px;
 }
 .lp-cta { display: flex; gap: 10px; align-items: center; }
+
+/* Theme toggle button */
+.theme-toggle {
+  width: 38px; height: 38px;
+  border: 1px solid var(--border);
+  background: transparent;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  color: var(--navy);
+  transition: background .15s, color .15s, border-color .15s;
+  padding: 0;
+}
+.theme-toggle:hover { background: var(--cream-warm); color: var(--navy-dark); }
+.theme-toggle svg { width: 18px; height: 18px; display: none; }
+.theme-toggle .theme-ico-moon { display: block; }
+html.dark .theme-toggle { border-color: rgba(247, 246, 244, .18); color: var(--cream); }
+html.dark .theme-toggle:hover { background: rgba(247, 246, 244, .08); color: var(--cream); }
+html.dark .theme-toggle .theme-ico-moon { display: none; }
+html.dark .theme-toggle .theme-ico-sun { display: block; }
 
 /* Mobile hamburger button — hidden on desktop */
 .mobile-menu-btn {
@@ -885,7 +910,7 @@ html.dark .btn-google:hover { border-color: var(--cream); }
 html.dark .auth-left { background: #0B0D17; }
 html.dark .fact, html.dark .contact-card, html.dark .hq-info, html.dark .hq-item, html.dark .info-box, html.dark .kvkk-table, html.dark .right-item { background: rgba(247, 246, 244, .035); border-color: rgba(247, 246, 244, .09); color: var(--cream); }
 html.dark .fact b, html.dark .contact-card h3, html.dark .hq-info h2, html.dark .hq-item-value, html.dark .right-item b { color: var(--cream); }
-html.dark .hq-item-label { color: rgba(247, 246, 244, .55); }
+html.dark .hq-item-label { color: rgba(247, 246, 244, .72); }
 html.dark .info-box { background: rgba(201, 78, 40, .06); border-left-color: var(--verm); }
 html.dark .kvkk-table th { background: var(--navy); color: var(--cream); }
 html.dark .h-display.light em, html.dark .h-section.light em { color: var(--coral-soft); }
@@ -893,7 +918,7 @@ html.dark .kvkk-table td { color: rgba(247, 246, 244, .72); border-top-color: rg
 html.dark .yasal-panel p, html.dark .yasal-panel ul, html.dark .yasal-panel li { color: rgba(247, 246, 244, .72); }
 html.dark .yasal-panel strong { color: var(--cream); }
 html.dark .yasal-panel h2, html.dark .yasal-panel h3 { color: var(--cream); }
-html.dark .yasal-date { color: rgba(247, 246, 244, .55); }
+html.dark .yasal-date { color: rgba(247, 246, 244, .72); }
 html.dark .yasal-tab { background: rgba(247, 246, 244, .05); border-color: rgba(247, 246, 244, .22); color: rgba(247, 246, 244, .72); }
 html.dark .yasal-tab.active { background: var(--cream); color: var(--navy); border-color: var(--cream); }
 
