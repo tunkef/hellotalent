@@ -1,5 +1,47 @@
 # HelloTalent AI-COLLAB — Aktif Calisma Defteri
 
+## 2026-04-19 — K-042 iletisim hero Grok video entegrasyonu (Asama 80.3)
+
+**Durum:** Iletisim hero `.contact-hero-vis` statik webp → Grok interview video. K-041 ile identical pattern. Push hazir.
+
+**Aktif hedef:** Push sonrasi Tuna UAT (iletisim hero video + dark mode + mobile).
+
+**Claude icin gorev:** Tuna istediginde: (1) K-041b cleanup — `.hero-vid` shared utility + reduced-motion handler consolidation (index hero video'lari + hakkimizda + iletisim tek kaynaktan), (2) orphan webp cleanup (`iletisim-hero.webp`, `hero-aday.webp`, `hero-isveren.webp` artik referanslanmiyor), (3) story card AI portreleri yenileme.
+
+### Yapilan is
+
+| Dosya | Scope |
+|-------|-------|
+| `assets/v2/hero-iletisim.mp4` | 474KB, H.264, 496×608, 6.04s, ses yok |
+| `assets/v2/hero-iletisim-poster.jpg` | 27KB, ilk frame |
+| `iletisim.html` CSP | `media-src 'self'` eklendi |
+| `iletisim.html` `.contact-hero-vis` CSS | `video.hero-vid` selector eklendi |
+| `iletisim.html` hero markup | `<img>` → `<video class="hero-vid" autoplay muted loop playsinline poster>` |
+| `iletisim.html` pre-paint scripts | K-041 reduced-motion handler (hakkimizda ile identical) |
+
+**Cache bump yok** — shared-v2.css degismedi, K-041 ogrenisi.
+
+### Playwright verify (file://)
+
+- normal: readyState 4, paused false, 496×608, autoplay+muted+loop+playsinline ✓
+- reduced-motion: `reducedMotion: 'reduce'` → paused true, autoplay attribute removed ✓
+
+### Codex diff review — GO (No blocking findings)
+
+- CSP tutarli, directive catismasi yok.
+- Dark mode hero+s-warm kaynasma hala ayni low-sev risk; video section boundary uretmiyor, Tuna isaret etmezse birak.
+- Reduced-motion handler selector dogru, sorun davranisin ortaklastirilmamis olmasi (K-041b teknik borc).
+- Repo size OK: v2 assets 2.7MB, Pages limitine uzak. Orphan webp cleanup opsiyon.
+- aria-label kabul edilebilir; `role="img"` semantik olarak daha net (opsiyon).
+- DOMContentLoaded tek check: kullanici OS reduced-motion'i sayfa aciktayken degistirirse live sync yok. K-041 ile ayni teknik borc.
+
+### Teknik borclar (ayri ticket)
+
+- **K-041b:** reduced-motion handler `index.html` hero video'larina uygulama + `.hero-vid` shared utility consolidation (CSS + script, tek kaynak).
+- **K-042b:** Orphan asset cleanup — `iletisim-hero.webp`, `hero-aday.webp`, `hero-isveren.webp`.
+
+---
+
 ## 2026-04-19 — K-041 hakkimizda hero Grok video entegrasyonu (Asama 80.2)
 
 **Durum:** Hakkımızda hero `.about-hero-vis` statik webp → Grok interview video. Index hero pattern identical. Push hazir.
