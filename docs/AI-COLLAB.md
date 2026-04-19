@@ -1,5 +1,59 @@
 # HelloTalent AI-COLLAB — Aktif Calisma Defteri
 
+## 2026-04-20 — K-046 kurumsal stories vermillion (Asama 80.7) — replaces K-045
+
+**Durum:** K-045 coral accent bar iptal. Tuna: kurumsal stories vermillion yap, renk kontrasti bolum ayrimini versin. Adaylar akisi (stories navy → closing verm) ↔ kurumsal (stories verm → closing navy) ayna ritim. Push hazir.
+
+**Aktif hedef:** Tuna UAT hellotalent.ai mobile+desktop, light+dark, kurumsal stories verm gorunum + story card readability.
+
+**Claude icin gorev:** Tuna verm stories'de radial pattern veya story card tonu begenmezse `.stories.verm::before` veya card bg override sonraki adim. Aksi halde bekle.
+
+### Yapilan is
+
+| Dosya | Scope |
+|-------|-------|
+| `shared-v2.css` | K-045 `.closing.navy::after` + `.s-inner z-index:1` iptal; `.stories.verm { background: var(--verm); }` + a11y text token override'lari |
+| `index.html:411` | Kurumsal stories `class="stories"` → `class="stories verm"` |
+| 4 HTML | Cache bump `v=k → l` |
+
+### Tuna karari (direct brief)
+
+"O cizgiyi kaldir, kurumsal tarafta hikayelerin oldugu yer i warm vermillion yap, dark mode da otomatik override edecek ve guzel duracak." — accent bar yerine renk kirilimi tercih edildi.
+
+### A11y constraint — brand ceiling 4.22:1
+
+Cream (#F7F6F4) uzerine verm (#C94E28) max kontrast 4.22:1 — AA 4.5:1 small text altında. Ayni kisit site-wide `.closing.verm` icin kabul edilmis: `.closing p` rgba(255,255,255,.88) = 3.86:1.
+
+K-046 verm variant token overrides:
+- `.stories-head .eyebrow` color 65% cream → 92% cream (2.63 → 3.79:1)
+- `.stories-head .eyebrow::before` background coral → cream (coral=verm no-op, solid cream anchor)
+- `.story-body blockquote::before` color coral → cream (1.09 → 3.90:1 on card)
+- `.story-meta .where` color 55% cream → 92% cream (2.18 → 3.79:1)
+- `.story-meta .who` + `.stories-head h2` + blockquote: solid cream zaten (4.22:1 AA Large)
+
+Brand constraint kabul edildi — verm bg site-wide design dili, solid cream max attainable. AA Large (3:1) tum text'lerde geciyor.
+
+### Codex diff review — Medium finding kismen fix edildi
+
+- **Medium (brand-constrained):** Verm kontrast regresyonlari. Brand ceiling 4.22:1 nedeniyle full AA 4.5:1 ulasilamaz. Token override'lar ile mumkun olan max'a getirildi. Site-wide `.closing.verm` ile ayni tradeoff.
+- **Low (fixed):** Accent inversions — eyebrow dot + blockquote quote mark coral=verm idi → cream'a cevrildi.
+- **Low (fixed):** Audit trail — AI-COLLAB'da "K-046 replaces K-045" + git log paralel.
+- **Opsiyonel (deferred):** `.stories.verm::before` radial pattern override — coral lobe invisible (same color), navy lobe sag-alt cool pop. Visually OK goruluyor, Tuna geri bildirim verirse sonraki patch.
+
+### Playwright verify (light + dark, kurumsal)
+
+- Kurumsal light + dark: `.stories.verm` bg = rgb(201,78,40) #C94E28 ✓, closing bg = rgb(30,45,94) navy ✓
+- Adaylar dark: stories bg = rgb(30,45,94) navy (regression yok) ✓
+- Visual: cream/dark header → verm stories → navy closing. Simetrik ritim aday akisi (navy stories → verm closing) ile ayna.
+
+### Kurallar / ogrenilen
+
+- Brand constrained colors (verm, navy) a11y AA 4.5:1 ulasamayabilir — AA Large (3:1) compliance + site-wide tutarlilik kabul edilebilir tradeoff.
+- `--coral: var(--verm)` alias dikkat: coral accent elementi verm zemin uzerinde invisible olur, manuel `var(--cream)` override gerekir.
+- Sayfa akisinda renk simetri (ayna): iki akis aynayi tamamliyorsa dengeli kimlik, tek akis agir basarsa dengesizlik.
+
+---
+
 ## 2026-04-19 — K-045 navy-navy seam coral accent anchor (Asama 80.6)
 
 **Durum:** K-044 atmospheric continuity bolum baslangicini kaybettirmisti (Tuna desktop kurumsal: "bolum ayrimi kapanmis"). Stories → closing.navy gecisinde "HAZIR MISINIZ?" eyebrow zayif kaldi. Push hazir.
