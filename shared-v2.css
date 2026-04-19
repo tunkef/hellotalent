@@ -862,9 +862,15 @@ html.dark .step-card .step-p { color: rgba(247, 246, 244, .82); }
 /* Duplicated selector block so both triggers apply identical tokens.
    Keep rule bodies in sync with the @media block below. */
 html.dark body { background: #0B0D17; color: var(--cream); }
-html.dark .s-white { background: #0F1220; color: var(--cream); }
+/* K-040 dark section tone normalization (2026-04-19).
+   2-ton ABA ritim: s-cream + s-warm → #0B0D17, s-white → #141724.
+   Prev 3-ton (#0B0D17/#0F1220/#151829) luminance jump ~2-3pt, drift okundu.
+   Contrast on --cream: #0B0D17=17.93:1, #141724=16.51:1 (AAA).
+   Bu 3 token icin @media(prefers-color-scheme:dark) blogu ile senkron tut;
+   diger html.dark override'lari (seg-toggle/value-card/hq-map) sadece bu blokta. */
+html.dark .s-white { background: #141724; color: var(--cream); }
 html.dark .s-cream { background: #0B0D17; color: var(--cream); }
-html.dark .s-warm { background: #151829; color: var(--cream); }
+html.dark .s-warm { background: #0B0D17; color: var(--cream); }
 html.dark .lp-hdr { background: rgba(11, 13, 23, .82); border-bottom-color: rgba(247, 246, 244, .08); }
 html.dark .lp-logo { color: var(--cream); }
 html.dark .lp-links a { color: rgba(247, 246, 244, .72); }
@@ -1060,9 +1066,11 @@ html.dark .split-2 p { color: rgba(247, 246, 244, .78); }
 
 @media (prefers-color-scheme: dark) {
   body { background: #0B0D17; color: var(--cream); }
-  .s-white { background: #0F1220; color: var(--cream); }
+  /* K-040 dark section tone normalization — keep .s-* tokens synced with
+     html.dark block above. */
+  .s-white { background: #141724; color: var(--cream); }
   .s-cream { background: #0B0D17; color: var(--cream); }
-  .s-warm { background: #151829; color: var(--cream); }
+  .s-warm { background: #0B0D17; color: var(--cream); }
 
   .lp-hdr { background: rgba(11, 13, 23, .82); border-bottom-color: rgba(247, 246, 244, .08); }
   .lp-logo { color: var(--cream); }

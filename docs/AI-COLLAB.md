@@ -1,5 +1,43 @@
 # HelloTalent AI-COLLAB — Aktif Calisma Defteri
 
+## 2026-04-19 — K-040 dark mode section tone normalization (Asama 80.1)
+
+**Durum:** Tuna raporu: dark mode'da aday segment section'ları "siyah → farkli siyah → farkli siyah → navy → verm" drift okundu. Navy + verm OK, ama 3 yakin koyu ton (`#0B0D17/#0F1220/#151829`, luminance jump ~2-3pt) intentional rhythm olarak okunmuyordu.
+
+**Aktif hedef:** Push sonrasi Tuna UAT (adaylar + kurumsal + hakkimizda + iletisim dark mode).
+
+**Claude icin gorev:** Tuna "iletisim hero + s-warm kaynasmis" dese 1px `rgba(247,246,244,.06)` top border ekle (Codex low-sev bulgusu); aksi halde bekle.
+
+### Yapilan is
+
+| Dosya | Scope |
+|-------|-------|
+| `shared-v2.css:864-871` html.dark bloku | 2-ton ABA: s-cream+s-warm → `#0B0D17`, s-white → `#141724` |
+| `shared-v2.css:1061-1068` @media(prefers-color-scheme:dark) bloku | Ayni 3 token senkron |
+| `index.html`, `hakkimizda.html`, `iletisim.html`, `yasal.html` | Cache bump `shared-v2.css?v=20260419g → h` |
+
+### Playwright audit (file:// + colorScheme:dark, lokal, CF Access public'i kapali)
+
+- `index#adaylar` / `aday.html` redirect: `#0B0D17 → #141724 → #0B0D17 → navy → verm` (ABA)
+- `hakkimizda`: `A → B → A → B → verm` (ABAB)
+- `iletisim`: `A → A → B → A` (hero + s-warm bitisik ayni ton, Codex low-sev)
+- `isveren` redirect: `navy → B → A → navy → navy` (eskiden de navy+navy bitisik)
+- `yasal`: etkilenmedi (hero navy, panel transparent)
+
+### Codex diff review — GO (No blocking findings)
+
+- A11y kontrast: `--cream` uzerine `#0B0D17`=17.93:1, `#141724`=16.51:1 (AAA).
+- Senkron: 3 `.s-*` token iki blokta identical. Diger dark override'lari (seg-toggle/value-card/hq-map) sadece `html.dark` tarafinda — bug degil, bakim riski olarak not dustu; comment bunu yansitacak sekilde revize edildi.
+- Low-sev: iletisim hero+s-warm kaynasma, sadece Tuna geri bildirim verirse separator.
+
+### Kurallar / ogrenilen
+
+- Dark mode'da tonal rhythm subtle olamaz: luminance jump <5pt → drift okunur. 2-ton ABA veya 1-ton + separator.
+- shared-v2.css dark blok duplikasyonu (html.dark + @media) sadece base tokenleri icin parity istiyor; sayfa-ozel override'lar tek blokta kalabilir.
+- `aday.html` + `isveren.html` meta-refresh redirect, CSS yok — cache bump gerekmiyor.
+
+---
+
 ## 2026-04-19 — Public-site v2 feedback iterasyonu (Pass 1-6) + Grok hero video loop (Asama 80)
 
 **Durum:** Tuna home session + handoff molasi. Canlı site üzerinden 10+ feedback turu yapıldı, hepsi peş peşe deploy edildi (`8050cce → a1bad9e`, 8 commit). Index hero (aday + kurumsal) Grok interview video'larına çevrildi — seamless 6sn loop autoplay/muted. Tuna "OHA ÇOK GÜZEL OLDU" ile kapattı.
