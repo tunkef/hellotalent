@@ -1,5 +1,76 @@
 # HelloTalent AI-COLLAB — Aktif Calisma Defteri
 
+## 2026-04-20 — Teknik borç batch temizligi (K-050..K-054, Asama 80.10)
+
+**Durum:** Renk audit sonrasi acilan tum teknik borclar temizlendi. 5 commit push edildi:
+- K-050: `-webkit-backdrop-filter` Safari prefix + JS strength-meter color hex → tokens + orphan webp cleanup
+- K-051: reduced-motion handler index.html hero video'larina + `.hero-vid` shared utility + Safari prefix parity
+- K-052: MFA modal inline style → CSS class extract
+- K-053: `data-theme="dark"` → `html.dark` migration (dual-set preserving light preference)
+- K-054: tokens.css @media dark drift → K-043 #0F121F + shared-v2.css brand parity
+
+**Aktif hedef:** Tuna UAT hellotalent.ai/giris.html + /uye-ol.html light+dark + mobile + Safari. Tum brand token pattern consistency kontrol.
+
+**Claude icin gorev:** Tuna hayir isterse bu borclar kapali. Gerekirse yeni audit scope'u bekle.
+
+### K-050 fast batch tech debt (commit 5021cc0)
+
+| Dosya | Scope |
+|-------|-------|
+| `giris.html` + `uye-ol.html` header | `-webkit-backdrop-filter` parity |
+| `giris.html` forgot-password-overlay inline | `-webkit-backdrop-filter` parity |
+| `uye-ol.html` JS strength-meter | `#DC2626`/`#F59E0B`/`#16A34A`/`#166534`/`#BBF7D0` → `var(--color-red/green/warning/...)` |
+| `uye-ol.html` JS domain-match hint | `#DCFCE7`/`#FEF3C7`/`#92400E` → `var(--warning-soft)` etc. |
+| `assets/v2/` orphan webp | 4 dosya silindi (hakkimizda-team, hero-aday, hero-isveren, iletisim-hero — prod mp4'e geçti) |
+
+### K-051 reduced-motion index + .hero-vid utility (commit c1a85ba)
+
+| Dosya | Scope |
+|-------|-------|
+| `index.html` pre-paint scripts | K-041 pattern reduced-motion handler eklendi (hakkimizda/iletisim ile identical) |
+| `shared-v2.css:426` | `.hero-vid` shared utility: width/height/object-fit/display. 3 parent (hero-portrait/about-hero-vis/contact-hero-vis) tek kaynaktan geliyor |
+| `hakkimizda.html` + `iletisim.html` local CSS | `.about-hero-vis video.hero-vid` / `.contact-hero-vis video.hero-vid` duplicate silindi (shared'den) |
+| `shared-v2.css .story` + `iletisim.html .hq-map-card` | `-webkit-backdrop-filter` parity |
+| 4 HTML | Cache bump `v=20260420a → b` |
+
+### K-052 MFA modal class extract (commit ad05efe)
+
+- `giris.html` MFA challenge modal inline HTML string (~20+ inline style attr) → CSS class-based:
+  `.mfa-overlay`, `.mfa-modal`, `.mfa-head`, `.mfa-icon`, `.mfa-title`, `.mfa-sub`, `.mfa-field`, `.mfa-code`, `.mfa-verify`, `.mfa-msg`, `.mfa-signout`
+- Dark mode override: `.mfa-modal` bg K-043, code glass, title cream
+- JS inline `msgEl.style.color = 'var(--verm,#C94E28)'` satirlari silindi (class handle eder)
+- Fallback hex (`#F7F6F4`, `#6B7280`, `#E5E7EB`, `#C94E28`) komple token'a cevrildi
+
+### K-053 data-theme → html.dark migration (commit ff19ac6)
+
+Auth pages public v2 ile ayni dark mode triggering:
+- Pre-paint: dual-set → dark'ta `classList.add('dark')`, light'ta `setAttribute('data-theme','light')` (tokens.css @media exclusion icin preservation)
+- CSS: 57 rule (31 giris + 26 uye-ol) `html[data-theme="dark"]` → `html.dark` migration
+- Playwright verify: dark OS → classList=['dark'] + data-theme=null + body #0F121F; light OS → classList=[] + data-theme='light' + body cream
+
+### K-054 tokens.css @media dark brand + K-043 alignment (bu commit)
+
+- `--bg-page`/`--bg-section`/`--bg-warm`/`--bg-warm-k`: farkli K-040 pre-unification tonlar → unified `#0F121F`
+- `--text: #F0F0EE` → `#F7F6F4` (brand cream parity)
+- `--muted: rgba(240,240,238,0.5)` → `rgba(247,246,244,0.65)` (shared-v2.css pattern)
+- `--gray: #181A24` → `rgba(247,246,244,.04)` (glass pattern)
+- Scope: sadece `@media` fallback block. `html[data-theme="dark"]` app block (profil/admin toggle) dokunulmadi — ayri design dili.
+- Cache bump tokens.css `v=20260417a → 20260420a` (8 HTML)
+
+### Kurallar / ogrenilen
+
+- `:root:not([data-theme="light"])` specificity `html.dark`'tan yuksek — tokens.css @media override'lari local `html.dark { --var: X }` override'i yenebilir. Tokens seviye sync brand parity icin zorunlu.
+- Dual-set pre-paint (class dark + attr light) hem shared-v2.css `html.dark` pattern'i hem tokens.css `:root:not([data-theme="light"])` exclusion logic'i korur.
+- Tokens.css iki dark block: `html[data-theme="dark"]` (script-full app pages) + `@media` (script-less fallback). Iki ayri design intent, ayri scope — audit ederken karistirma.
+
+### Acik borç (potansiyel follow-up, Tuna talep ederse)
+
+- tokens.css `html[data-theme="dark"]` block (line 170) — app pages design. Ayri audit sirali.
+- Error severity dark token (`--color-red-dark`, `--FCA5A5` accents) — tokens.css'te yer yok.
+- shared-v2.css vs tokens.css token shade drift (`--verm-dark` #A83D1E vs `--color-vermillion-dark` #b84420) — iki source sync.
+
+---
+
 ## 2026-04-20 — K-049 auth pages brand realignment (Asama 80.9)
 
 **Durum:** `giris.html` + `uye-ol.html` Tailwind palette + hardcoded hex + verm body bg bypass'lari komple brand token'lara hizalandi. 4 public v2 page ile tutarli. Push hazir.

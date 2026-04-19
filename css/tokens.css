@@ -233,23 +233,27 @@ html[data-theme="dark"] {
   :root:not([data-theme="light"]) {
     color-scheme: dark;
 
-    /* Clatu public-site surfaces */
-    --bg-page:    #0B0D17;
-    --bg-section: #12141F;
-    --bg-warm:    #141625;
-    --bg-warm-k:  #0C0F1A;
+    /* K-054 — K-043 unified dark tone Clatu public-site surfaces.
+       Onceki drift: #0B0D17/#12141F/#141625/#0C0F1A (K-040 pre-unification). */
+    --bg-page:    #0F121F;
+    --bg-section: #0F121F;
+    --bg-warm:    #0F121F;
+    --bg-warm-k:  #0F121F;
 
     /* Text */
-    --text-primary: #F9FAFB;
+    --text-primary: #F7F6F4;
     --text-muted:   rgba(247,246,244,0.70);
 
     /* Border */
     --border: rgba(247,246,244,0.08);
     --border-subtle: rgba(247,246,244,0.08);
 
-    /* Legacy app aliases (shared.css header dark block needs these) */
-    --text: #F0F0EE;
-    --muted: rgba(240,240,238,0.5);
-    --gray:  #181A24;
+    /* K-054 — Legacy app aliases shared-v2.css parity:
+       --text brand cream (prev #F0F0EE shift)
+       --muted 65% cream (prev 50% shifted shade)
+       --gray glass-4% (prev solid #181A24). */
+    --text: #F7F6F4;
+    --muted: rgba(247,246,244,0.65);
+    --gray:  rgba(247,246,244,.04);
   }
 }
