@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta http-equiv="X-Frame-Options" content="DENY">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://www.googletagmanager.com https://www.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://cpwibefquojehjehtrog.supabase.co https://*.googleusercontent.com; connect-src 'self' https://cpwibefquojehjehtrog.supabase.co wss://cpwibefquojehjehtrog.supabase.co https://*.google-analytics.com; object-src 'none'; base-uri 'self'; frame-ancestors 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://www.googletagmanager.com https://www.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://cpwibefquojehjehtrog.supabase.co https://*.googleusercontent.com; media-src 'self'; connect-src 'self' https://cpwibefquojehjehtrog.supabase.co wss://cpwibefquojehjehtrog.supabase.co https://*.google-analytics.com; object-src 'none'; base-uri 'self'; frame-ancestors 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="Perakende kariyerini tek profille yönet ya da sektöre özel aday havuzuna eriş. HelloTalent, Türkiye perakende sektörünün yetenek platformu.">
@@ -25,7 +25,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="shared-v2.css?v=20260419f">
+<link rel="stylesheet" href="shared-v2.css?v=20260419g">
 
 <!-- Theme pre-paint — follow OS prefers-color-scheme -->
 <script>
@@ -123,7 +123,11 @@
       </div>
 
       <div class="hero-portrait cream">
-        <img src="assets/v2/hero-aday.webp" alt="HelloTalent'ta kariyer yolu arayan aday portresi (mockup)">
+        <video class="hero-vid" autoplay muted loop playsinline preload="metadata"
+               poster="assets/v2/hero-aday-poster.jpg"
+               aria-label="Aday markanın İK'sıyla mülakatta — mockup">
+          <source src="assets/v2/hero-aday.mp4" type="video/mp4">
+        </video>
         <div class="hero-badge"><span class="pulse"></span>Bugün 3 markadan mülakat daveti</div>
       </div>
     </div>
@@ -308,7 +312,11 @@
       </div>
 
       <div class="hero-portrait navy">
-        <img src="assets/v2/hero-isveren.webp" alt="Kurumsal karar verici portresi (mockup)">
+        <video class="hero-vid" autoplay muted loop playsinline preload="metadata"
+               poster="assets/v2/hero-isveren-poster.jpg"
+               aria-label="İK yöneticisi aday mülakatında — mockup">
+          <source src="assets/v2/hero-isveren.mp4" type="video/mp4">
+        </video>
         <div class="hero-badge navy"><span class="pulse"></span>Bu hafta 28 uygun aday</div>
       </div>
     </div>

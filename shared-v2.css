@@ -420,9 +420,11 @@ html.dark .mobile-menu-links a { color: var(--cream); border-bottom-color: rgba(
   overflow: hidden;
   box-shadow: var(--shadow-lift);
 }
-.hero-portrait img {
+.hero-portrait img,
+.hero-portrait video.hero-vid {
   width: 100%; height: 100%; object-fit: cover;
   position: relative; z-index: 1;
+  display: block;
 }
 .hero-portrait.navy { background: var(--navy); }
 .hero-portrait.verm { background: var(--verm); }
