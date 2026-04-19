@@ -8,7 +8,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Giriş Yap — hellotalent</title>
 <meta name="robots" content="noindex">
-<script>(function(){var k='ht_theme_preference',s;try{s=localStorage.getItem(k)}catch(e){}var d=(s==='dark'||(s!=='light'&&window.matchMedia&&window.matchMedia('(prefers-color-scheme:dark)').matches));document.documentElement.setAttribute('data-theme',d?'dark':'light');})()</script>
+<script>(function(){var k='ht_theme_preference',s;try{s=localStorage.getItem(k)}catch(e){}var d=(s==='dark'||(s!=='light'&&window.matchMedia&&window.matchMedia('(prefers-color-scheme:dark)').matches));if(d){document.documentElement.classList.add('dark')}else{document.documentElement.setAttribute('data-theme','light')}})()</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@400&display=swap" rel="stylesheet">
@@ -319,44 +319,44 @@
   }
 
   /* ── DARK MODE — K-049: K-043 unified #0F121F + cream text + glassmorphism ── */
-  html[data-theme="dark"] {
+  html.dark {
     --gray: rgba(247, 246, 244, .04);
     --text: #F7F6F4;
     --muted: rgba(247, 246, 244, .65);
     --border: rgba(247, 246, 244, .08);
   }
-  html[data-theme="dark"] body { background: #0F121F; }
-  html[data-theme="dark"] .header { background: rgba(11, 13, 23, .82); border-color: rgba(247, 246, 244, .08); }
-  html[data-theme="dark"] .logo { color: var(--text); }
-  html[data-theme="dark"] .logo span { color: var(--verm); }
-  html[data-theme="dark"] .back-link { color: rgba(247, 246, 244, .65); }
-  html[data-theme="dark"] .back-link:hover { color: var(--text); }
-  html[data-theme="dark"] .card { background: rgba(247, 246, 244, .04); border-color: rgba(247, 246, 244, .09); }
-  html[data-theme="dark"] .card-title { color: var(--text); }
-  html[data-theme="dark"] .card-sub { color: rgba(247, 246, 244, .72); }
-  html[data-theme="dark"] .field label { color: rgba(247, 246, 244, .78); }
-  html[data-theme="dark"] .field input { background: rgba(247, 246, 244, .04); border-color: rgba(247, 246, 244, .1); color: var(--text); }
-  html[data-theme="dark"] .field input::placeholder { color: rgba(247, 246, 244, .45); }
-  html[data-theme="dark"] .field input:focus { border-color: var(--text); box-shadow: 0 0 0 3px rgba(247, 246, 244, .08); }
-  html[data-theme="dark"] .field input.aday:focus { border-color: var(--verm); box-shadow: 0 0 0 3px rgba(201, 78, 40, .15); }
-  html[data-theme="dark"] .error-msg { background: rgba(220, 38, 38, .15); border-color: rgba(220, 38, 38, .3); color: #FCA5A5; }
-  html[data-theme="dark"] .divider { color: rgba(247, 246, 244, .65); }
-  html[data-theme="dark"] .divider::before,
-  html[data-theme="dark"] .divider::after { background: rgba(247, 246, 244, .08); }
-  html[data-theme="dark"] .register-link { color: rgba(247, 246, 244, .72); }
-  html[data-theme="dark"] .footer { background: #0B0D17; color: rgba(247, 246, 244, .72); }
-  html[data-theme="dark"] .footer a { color: rgba(247, 246, 244, .72); }
-  html[data-theme="dark"] #btn-google-login,
-  html[data-theme="dark"] #btn-linkedin-login { background: rgba(247, 246, 244, .04) !important; border-color: rgba(247, 246, 244, .12) !important; color: var(--text) !important; }
-  html[data-theme="dark"] #btn-google-login:hover,
-  html[data-theme="dark"] #btn-linkedin-login:hover { background: rgba(247, 246, 244, .08) !important; }
-  html[data-theme="dark"] #forgot-password-overlay > div { background: #0F121F; border: 1px solid rgba(247, 246, 244, .09); }
-  html[data-theme="dark"] #forgot-email { background: rgba(247, 246, 244, .04); border-color: rgba(247, 246, 244, .1); color: var(--text); }
+  html.dark body { background: #0F121F; }
+  html.dark .header { background: rgba(11, 13, 23, .82); border-color: rgba(247, 246, 244, .08); }
+  html.dark .logo { color: var(--text); }
+  html.dark .logo span { color: var(--verm); }
+  html.dark .back-link { color: rgba(247, 246, 244, .65); }
+  html.dark .back-link:hover { color: var(--text); }
+  html.dark .card { background: rgba(247, 246, 244, .04); border-color: rgba(247, 246, 244, .09); }
+  html.dark .card-title { color: var(--text); }
+  html.dark .card-sub { color: rgba(247, 246, 244, .72); }
+  html.dark .field label { color: rgba(247, 246, 244, .78); }
+  html.dark .field input { background: rgba(247, 246, 244, .04); border-color: rgba(247, 246, 244, .1); color: var(--text); }
+  html.dark .field input::placeholder { color: rgba(247, 246, 244, .45); }
+  html.dark .field input:focus { border-color: var(--text); box-shadow: 0 0 0 3px rgba(247, 246, 244, .08); }
+  html.dark .field input.aday:focus { border-color: var(--verm); box-shadow: 0 0 0 3px rgba(201, 78, 40, .15); }
+  html.dark .error-msg { background: rgba(220, 38, 38, .15); border-color: rgba(220, 38, 38, .3); color: #FCA5A5; }
+  html.dark .divider { color: rgba(247, 246, 244, .65); }
+  html.dark .divider::before,
+  html.dark .divider::after { background: rgba(247, 246, 244, .08); }
+  html.dark .register-link { color: rgba(247, 246, 244, .72); }
+  html.dark .footer { background: #0B0D17; color: rgba(247, 246, 244, .72); }
+  html.dark .footer a { color: rgba(247, 246, 244, .72); }
+  html.dark #btn-google-login,
+  html.dark #btn-linkedin-login { background: rgba(247, 246, 244, .04) !important; border-color: rgba(247, 246, 244, .12) !important; color: var(--text) !important; }
+  html.dark #btn-google-login:hover,
+  html.dark #btn-linkedin-login:hover { background: rgba(247, 246, 244, .08) !important; }
+  html.dark #forgot-password-overlay > div { background: #0F121F; border: 1px solid rgba(247, 246, 244, .09); }
+  html.dark #forgot-email { background: rgba(247, 246, 244, .04); border-color: rgba(247, 246, 244, .1); color: var(--text); }
 
   /* K-052 — MFA modal dark */
-  html[data-theme="dark"] .mfa-modal { background: #0F121F; border: 1px solid rgba(247, 246, 244, .09); }
-  html[data-theme="dark"] .mfa-title { color: var(--text); }
-  html[data-theme="dark"] .mfa-code { background: rgba(247, 246, 244, .04); border-color: rgba(247, 246, 244, .1); color: var(--text); }
+  html.dark .mfa-modal { background: #0F121F; border: 1px solid rgba(247, 246, 244, .09); }
+  html.dark .mfa-title { color: var(--text); }
+  html.dark .mfa-code { background: rgba(247, 246, 244, .04); border-color: rgba(247, 246, 244, .1); color: var(--text); }
 </style>
 </head>
 <body>
