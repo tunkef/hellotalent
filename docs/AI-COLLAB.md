@@ -1,5 +1,53 @@
 # HelloTalent AI-COLLAB — Aktif Calisma Defteri
 
+## 2026-04-19 — K-041 hakkimizda hero Grok video entegrasyonu (Asama 80.2)
+
+**Durum:** Hakkımızda hero `.about-hero-vis` statik webp → Grok interview video. Index hero pattern identical. Push hazir.
+
+**Aktif hedef:** Push sonrasi Tuna UAT (hakkimizda video play, poster, mobile).
+
+**Claude icin gorev:** Tuna istediginde: (1) iletisim hero video entegrasyonu ayni pattern, (2) story card AI portrelerinin Grok video / fotograf ile yenilenmesi. Pre-existing `index.html` hero video'larina da reduced-motion handler eklemek (K-041b teknik borc).
+
+### Yapilan is
+
+| Dosya | Scope |
+|-------|-------|
+| `assets/v2/hero-hakkimizda.mp4` | 737KB, H.264, 496×608, 6.04s, ses yok |
+| `assets/v2/hero-hakkimizda-poster.jpg` | 35KB, ilk frame |
+| `hakkimizda.html` CSP | `media-src 'self'` eklendi |
+| `hakkimizda.html` `.about-hero-vis` CSS | `video.hero-vid` selector eklendi |
+| `hakkimizda.html` hero markup | `<img>` → `<video class="hero-vid" autoplay muted loop playsinline poster>` |
+| `hakkimizda.html` pre-paint scripts | K-041 reduced-motion handler — `matchMedia('(prefers-reduced-motion: reduce)')` true ise `autoplay` kaldirilir + `pause()` |
+
+### ffmpeg pipeline (memory'de var)
+
+```
+ffmpeg -i src.mp4 -an -c:v libx264 -crf 23 -preset medium -movflags +faststart -pix_fmt yuv420p dest.mp4
+ffmpeg -ss 0.1 -i src.mp4 -vframes 1 -q:v 3 poster.jpg
+```
+
+### Playwright verify (lokal, file://)
+
+- Video load: src + poster path OK, readyState 4, paused false, vw/vh 496/608
+- Reduced-motion: `reducedMotion: 'reduce'` context → paused true, autoplay removed
+- Normal-motion: paused false, autoplay true
+
+### Codex diff review — GO (1 a11y finding → fix applied)
+
+- **a11y (fixed):** reduced-motion handler eklendi.
+- **Cache bump (fixed):** shared-v2.css v=i geri alindi v=h — shared dosya degismedi, index ile parity.
+- **Selector scope:** `.about-hero-vis video.hero-vid` scoped tutuldu; shared utility'e cikarmak icin 3. kullanim beklenecek.
+- **aria-label:** mevcut kabul edilebilir; Tuna isterse `role="img"` ek sonra.
+- **Pre-existing teknik borc:** `frame-ancestors` + `X-Frame-Options` meta warning (HTTP header olarak set gerekli — scope disi).
+
+### Kurallar / ogrenilen
+
+- `.hero-vid` su an 2 farkli parent altinda (`.hero-portrait` + `.about-hero-vis`). 3. kullanim gelince shared utility'e cikart.
+- Reduced-motion handler tum hero video'lara uygulanmali — index.html'e K-041b ayri fix.
+- Cache bump sadece dogrudan degisen asset icin. shared dosya dokunulmadiysa bump yapma.
+
+---
+
 ## 2026-04-19 — K-040 dark mode section tone normalization (Asama 80.1)
 
 **Durum:** Tuna raporu: dark mode'da aday segment section'ları "siyah → farkli siyah → farkli siyah → navy → verm" drift okundu. Navy + verm OK, ama 3 yakin koyu ton (`#0B0D17/#0F1220/#151829`, luminance jump ~2-3pt) intentional rhythm olarak okunmuyordu.

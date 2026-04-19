@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta http-equiv="X-Frame-Options" content="DENY">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://www.googletagmanager.com https://www.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://cpwibefquojehjehtrog.supabase.co https://*.googleusercontent.com; connect-src 'self' https://cpwibefquojehjehtrog.supabase.co wss://cpwibefquojehjehtrog.supabase.co https://*.google-analytics.com; object-src 'none'; base-uri 'self'; frame-ancestors 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://www.googletagmanager.com https://www.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://cpwibefquojehjehtrog.supabase.co https://*.googleusercontent.com; media-src 'self'; connect-src 'self' https://cpwibefquojehjehtrog.supabase.co wss://cpwibefquojehjehtrog.supabase.co https://*.google-analytics.com; object-src 'none'; base-uri 'self'; frame-ancestors 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="index, follow">
@@ -28,6 +28,19 @@
   } catch(e) {}
 })();
 </script>
+<script>
+// K-041 a11y: prefers-reduced-motion icin hero video autoplay iptal, posterde kal.
+document.addEventListener('DOMContentLoaded', function(){
+  try {
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      document.querySelectorAll('.hero-vid').forEach(function(v){
+        v.removeAttribute('autoplay');
+        v.pause();
+      });
+    }
+  } catch(e) {}
+});
+</script>
 <style>
 .about-hero {
   padding: clamp(48px, 7vw, 96px) clamp(24px, 5vw, 48px) clamp(64px, 8vw, 112px);
@@ -45,7 +58,8 @@
   overflow: hidden;
   box-shadow: var(--shadow-lift);
 }
-.about-hero-vis img { width: 100%; height: 100%; object-fit: cover; }
+.about-hero-vis img,
+.about-hero-vis video.hero-vid { width: 100%; height: 100%; object-fit: cover; display: block; }
 
 .split-2 {
   max-width: var(--max-w); margin: 0 auto;
@@ -181,7 +195,11 @@
       </div>
     </div>
     <div class="about-hero-vis">
-      <img src="assets/v2/hakkimizda-team.webp" alt="HelloTalent ekibi ofiste (mockup)">
+      <video class="hero-vid" autoplay muted loop playsinline preload="metadata"
+             poster="assets/v2/hero-hakkimizda-poster.jpg"
+             aria-label="HelloTalent ekibi ofiste — mockup">
+        <source src="assets/v2/hero-hakkimizda.mp4" type="video/mp4">
+      </video>
     </div>
   </div>
 </section>
