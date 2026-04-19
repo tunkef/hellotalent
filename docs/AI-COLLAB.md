@@ -1,5 +1,195 @@
 # HelloTalent AI-COLLAB — Aktif Calisma Defteri
 
+## 2026-04-19 — Public-site v2 feedback iterasyonu (Pass 1-6) + Grok hero video loop (Asama 80)
+
+**Durum:** Tuna home session + handoff molasi. Canlı site üzerinden 10+ feedback turu yapıldı, hepsi peş peşe deploy edildi (`8050cce → a1bad9e`, 8 commit). Index hero (aday + kurumsal) Grok interview video'larına çevrildi — seamless 6sn loop autoplay/muted. Tuna "OHA ÇOK GÜZEL OLDU" ile kapattı.
+
+**Aktif hedef:** Bir sonraki oturumda hakkımızda + iletişim hero'larına aynı video pattern + story card AI drift (Güney Asya/hijab) yenilemesi.
+
+**Claude için görev:** Sonraki oturumda: (1) hakkımızda/iletişim hero Grok prompt + ffmpeg + entegre; (2) 6 story card portre yenileme; (3) `project_clatu_style.md` video spec. Detay liste `docs/CURRENT-STATE.md §5a`.
+
+### Bu oturumda yapılanlar — commit sırası
+
+| Commit | İş | Scope |
+|--------|-----|-------|
+| `8050cce` | brand palette restore + dark mode | `--ink → navy`, `.theme-toggle`, pre-paint, kontrast |
+| `dd79677` | feedback pass 2 | Footer canonical, logo 38px, "Peoplein İK Ltd. Şti.", mockup badge drop, button 10px, eyebrow margin, `:has()` seg-toggle, split-card, fact ortalı |
+| `ae13763` | feedback pass 3 | "Hesap aç" → `uye-ol.html?tab=kurumsal`, Maps iframe + CSP `frame-src`, Aday sol/Kurumsal sağ, trustpill drop |
+| `377cf9b` | footer logo bold | `font-variation-settings: wght 800, opsz 14` |
+| `06e9599` | footer dedupe | Aday kolonundan Hakkımızda drop |
+| `28e270f` | hero alignment + segment-aware login | hakkimizda/iletisim top padding index'e hizalandı, vis 4:5, `switchSeg` Giriş Yap `?tab=` dynamic, kurumsal eyebrow "Neden HelloTalent" |
+| `93fee09` | dark mode toggle kaldırıldı | OS-only + `matchMedia('change')` listener |
+| `a1bad9e` | Grok hero video loop | `hero-aday.mp4` 540KB + `hero-isveren.mp4` 410KB, ffmpeg first-frame poster, CSP `media-src 'self'`, `<video autoplay muted loop playsinline>` |
+
+### Öğrenilenler / kurallar
+
+- **Feedback cycle ritmi:** screenshot oku → teşhis → minimal targeted fix → `v=2026041<letter>` cache bump → commit + push → 40sn propagation → hard refresh. Caveman tutuldu.
+- **`replace_all` tehlikesi:** çoklu HTML dosyasında aynı `<li><a>` pattern birden fazla kolonda varsa replace_all hepsini siler. Bu oturumda Bilgi kolonu Hakkımızda yanlışlıkla silindi (commit `06e9599` geri ekledi). **Kural: replace_all öncesi `grep -c` ile beklenen eşleşme sayısını doğrula.**
+- **Grok video workflow (tam pipeline):**
+  1. Prompt: "Cinematic editorial, Mediterranean Turkish Caucasian features, light olive skin, Kodak Portra 400, over-the-shoulder framing" + negative "no hijab, no South Asian, no Middle Eastern stereotypes, no watermark, no text". Aday POV = interviewer omuz foreground + aday yüz focus. Kurumsal POV = candidate omuz foreground + HR yüz focus (simetrik).
+  2. Grok output: ~448×672 H.264 MP4.
+  3. ffmpeg ses strip + web-opt: `ffmpeg -i src.mp4 -an -c:v libx264 -crf 23 -preset medium -movflags +faststart -pix_fmt yuv420p dest.mp4` → ~500KB.
+  4. Poster ilk frame: `ffmpeg -ss 0.1 -i src.mp4 -vframes 1 -q:v 3 poster.jpg` → ~30KB.
+  5. HTML: `<video class="hero-vid" autoplay muted loop playsinline preload="metadata" poster="...">` + CSS `object-fit: cover`.
+  6. CSP: `media-src 'self'` eklenmeli.
+- **Dark mode OS-only karar:** Tuna OS'ta dark kullanıyor, manuel toggle kafa karışıklığı yarattı. Pre-paint script `matchMedia('(prefers-color-scheme: dark)')` okur, `matchMedia('change')` listener OS değişince live tepki verir. localStorage yok.
+- **Seg-toggle pill (999px) intentional** — diğer butonlar 10px, seg-toggle pill kalmasına Tuna onay verdi (video üzerinde estetik).
+- **Recraft realistic karakter drift** — Türk fenotipini tutturamadı, Güney Asya/Arabic'e kaydı + hijab üretti. Recraft karakter odaklı brief için yetersiz. Grok Imagine video'da (image-to-video) Türk/Akdeniz prompt'ları çok daha tutarlı.
+
+### Açık riskler / dikkat
+
+- **Story card AI portreleri (3 aday + 3 kurumsal)** hala Recraft drift (Güney Asya). Hakkımızda iletişim hero portreleri hala webp.
+- **Kurumsal "Neden HelloTalent"** sadece eyebrow + lede güçlendirildi; Tuna yeni section beklemişse oturum başında netleştir.
+- **Linter drift:** bazı HTML editleri "File modified by user or linter" hata verdi — muhtemelen editor auto-format. Edit yerine Python/sed daha güvenli multi-file için.
+
+### Memory update
+
+- `project_clatu_style.md` — v2 Editorial Photography + portre casting brief (beyaz Türk, 25-32, yakışıklı/güzel) eklendi.
+- `MEMORY.md` index satırı güncellendi.
+
+---
+
+## 2026-04-18–19 — Public-site v2 redesign production'a + K-036/037/038 hotfixes + K032 Faz 4 (Asama 79)
+
+**Durum:** Üç büyük iş bloğu tek günde kapandı: K032 Faz 4 (test suite hardening), üç codependent hotfix (K-036 admin hash-restore + K-037 ik gate + K-038 ik SELECT repair), public-site v2 redesign canlıya alındı. Giriş sayfalarına (giris/aday/isveren/uye-ol) dokunulmadı — prod auth flow intact.
+
+**Aktif hedef:** Tuna production UAT (hellotalent.ai + hakkimizda + iletisim + yasal dark mode/mobile/hamburger). Gerçek işveren login flow doğrulama (K-037 canlı etki).
+
+**Claude için görev:** Yok — Tuna UAT + feedback bekliyor. Sorun bulursa targeted fix pattern (class-level override > token override, dark mode rule'lar).
+
+### Commit sırası
+
+| Commit | Ne | Scope |
+|--------|-----|-------|
+| `3c88ad1` | K032 Faz 4 kapanis | Test suite + helpers + runbook |
+| `a8910e4` | K-036 + K-037 + K-038 | Admin hash-restore + ik gate + ik SELECT |
+| `f8acd5c` | Public-site v2 redesign | 4 sayfa + shared-v2.css + assets/v2/ |
+
+### K032 Faz 4 (commit 3c88ad1)
+
+**Codex plan review** bir kez no-output döndü → pragmatik Tuna onay + Claude self-spec + Codex diff review gate.
+
+- **K-2 panel activation assert** (3 spec): `expect(activePanelId).toBe('panel-' + hash)` eklendi. profil `yetkinlik` hash router aliases'a takıldı (`profil-events.js:508`) → `PANEL_ID_ALIASES = { yetkinlik: 'mulakat' }` + `expectedPanelIdFor(hash)` helper. admin.html hash-restore yoktu (K-036 backlog entry) → o zaman "always dashboard" assert.
+- **K-3 admin auth setup**: login sonrası `/admin.html` navigate + `#admin-shell.active` visibility 10s timeout assert + storageState save. admin_users lookup gate setup'ta kanıt işleniyor.
+- **O-1 seed helper**: `scripts/_supa-admin.mjs` (145 satır) — `loadAdminEnv`, `makeReq`, `ensureUser`, `refuseEmail`, `validateCreds`, `findUserByEmail`. 3 seed refaktör.
+- **O-2 test helper**: `tests/helpers/runtime-signals.js` — shared IGNORE/REGRESSION + `attachCollectors`/`criticalFrom`/`contextSnapshot`/`waitForBootSettle`.
+- **O-3 flakiness**: `waitForBootSettle(page, {sentinelTimeoutMs, settleMs})` — profil.html `_htBootstrapDone` sentinel wait + microtask flush.
+- **O-4 runbook**: `docs/SECURITY-RUNBOOK.md` — service_role rotate (§1) + test_account audit (§2, 4 SQL) + incident response (§3) + local dev hygiene (§4).
+
+**Codex diff review**: 1. iter NO-GO (3 bug: profil yetkinlik alias, admin hash-restore yok, K-3 `is_admin()` yanlış referans). Düzeltildi. 2. iter timeout (codex-rescue runtime sorunu). Self-audit + empirical regression (161/161 yeşil) gate yerine geçti.
+
+**Test**: 161/161 K032 suite yeşil (16 Faz 1 + 54 Faz 2 + 40 Faz 3A + 48 Faz 3B + 3 setup), desktop + mobile. Pre-existing profil.ayarlar-toggles 6 fail (sidebar race) scope dışı.
+
+### K-036 + K-037 + K-038 (commit a8910e4)
+
+**Kritik insight**: Üç sorun codependent. K-037 tek başına fix edilmez çünkü K-038 üstte session'ı bozuyor.
+
+**K-036 admin hash-restore**:
+- `admin.html showAdminDashboard`: `window.location.hash` oku + `switchPanel(hash, navEl)` çağır, bilinmeyen hash'lerde `loadDashboardOverview()` fallback.
+- `hashchange` listener mount (`#admin-shell.active` guard) → browser back/forward + cross-panel deep links.
+
+**K-037 ik onboarding gate**:
+- `ik.html:2427` (boot) + `ik.html:2508` (switchPanel): `!hrProfile.sirket` → `!hrProfile.company_id`.
+- `company_id` semantik doğru ("işveren şirkete bağlı mı"), zaten SELECT'te, save flow `link_employer_to_company` RPC set ediyor. RPC fail olursa `company_id=null` kalır → gate kapalı kalır → kullanıcı retry eder (fail-safe).
+- `saveSirket` companion fix: RPC success sonrası `onboarding_completed=true` PATCH (fire-and-forget). `is_employer()` RPC bu flag'i bekliyor (`supabase/migrations/20260408154354_sec_hr_profiles_guard.sql`).
+
+**K-038 ik SELECT repair (K-037 debug sırasında keşfedildi)**:
+- `ik.html:2365` SELECT `avatar_url` kolonu istiyordu — `hr_profiles` tablosunda bu kolon YOK.
+- PostgREST 400 `column hr_profiles.avatar_url does not exist` döndürüyordu.
+- Hata `try{ } catch(e){} ` içinde sessizce yutuluyordu.
+- `prof` null → `hrProfile={}` boş objede kalıyor → K-037 fix bile etkisizdi (`company_id` undefined).
+- SELECT listesinden `avatar_url` çıkarıldı. Form-prefill için eksik kolonlar (sirket, sektor, buyukluk, web_sitesi, segment, merkez_sehir, magaza_sayisi, aciklama, aranan_profil, calisma_saatleri, linkedin, career_page_url, company_type) eklendi.
+
+**Test altyapı update**:
+- `scripts/seed-test-employer.mjs`: companies tablosuna "Peoplein Test" row + slug + hr_profile.company_id link + `onboarding_completed=true` seed.
+- `tests/smoke.runtime.ik.e2e.spec.js` K-2: "always panel-sirket" → strict `panel-<hash>` (K-037+K-038 landed).
+- `tests/smoke.runtime.admin.e2e.spec.js` K-2: "always panel-dashboard" → strict `panel-<hash>` (K-036 landed).
+
+**Codex diff review**: GO-WITH-FIX. Blocker: `saveSirket` missing `onboarding_completed` write. Aynı commit'te kapatıldı. 159/159 K032 suite yeşil.
+
+**Prod impact uyarı**: K-037 + K-038 gerçek işveren login flow'unu da etkiliyordu. Her fresh load'da #sirket'e zorlanıyor, gate release olamıyor. Bu commit ilk kez canlıda gate açılıyor.
+
+### Public-site v2 redesign (commit f8acd5c)
+
+**Tuna yönü**: Mockup v2 (Rocket Mortgage bold direction + HelloTalent Clatu-first brand merge) 13 polish turundan sonra onay aldı. 4 sayfa canlıya → giriş sayfaları dokunma.
+
+**Tasarım dili**:
+- Bricolage Grotesque 800 display (clamp 40-96px imperative headline), Plus Jakarta Sans body, DM Mono.
+- Palette: Vermillion #C94E28 (aday), Navy #1E2D5E (kurumsal), Cream #F7F6F4 (base), Coral #FF6B4A (dark accent).
+- Türk tipi portraits — 8 Recraft webp, "beyaz Türk, kumral/chestnut saç, genç yetişkin + yetişkin karışık, kadın/erkek". 2 iterasyon ("eli yüzü düzgün" feedback sonrası regen).
+- Image compression: cwebp q=70 m=6 → 17MB → 434KB (40× azalma, PSNR 37.8-42.9dB natural texture korundu).
+
+**Prod entegrasyon stratejisi** (zero regression):
+- `shared-v2.css` (~42KB) yeni bağımsız stylesheet. Mevcut `shared.css` diğer sayfalar (profil/ik/admin/coach-studio/giris) için korundu.
+- `assets/v2/` yeni namespace. Orijinal `assets/` dokunulmadı.
+- 4 HTML dosyası mockups'dan prod path'e kopyalandı + stylesheet/asset yolları güncellendi + CSP/OG/Schema meta restore edildi + canonical URL set.
+- `index.html` Supabase auth redirect script korundu (`app_metadata.role` → profil/ik).
+
+**Mobile responsive**:
+- Hamburger menü (segment toggle + linkler + Giriş CTA) — önceki mockup sorunu: mobile'da segment toggle görünmez idi.
+- Hero portrait `order: -1` — mobile'da image first.
+- Hero badge safe position (left/bottom 12px, max-width calc, font smaller @560).
+- Stories mobile collapse @768 — ilk 2 görünür + "Tüm hikayeleri gör" toggle fade-in.
+- Brand strip 1-col stacked + separators @520 (önceki 3×2 grid sıkışıktı).
+- Footer 2-col @960 / 1-col @560.
+
+**Dark mode** (2 CSS pass):
+- Pass 1: `html.dark` class + `@media (prefers-color-scheme: dark)` dual trigger, 60+ base override.
+- Pass 2 (kullanıcı şikayetinden sonra): targeted `.lede`/`.fact span`/`.contact-card p`/`.hq-info p`/`.value-card p`/`.step-card p`/`.split-2 p`/`.closing p`/yasal `h2`/`h3`/table + map placeholder.
+- Kritik keşif: 6 step card paragrafı `style="color:var(--ink-soft)"` inline — dark mode override'ı CSS specificity'de geçiyordu. `.step-p` class extraction zorunlu.
+- Token override sınırı: `html.dark { --muted: rgba(247,246,244,.72); }` tek token override OK. `--ink`, `--border` vb. global override regression yarattı (footer bg cream'e döndü). Sadece class-level override kullandık.
+- Coral dark variant `rgba(255,107,74,.88)` (saf coral agresif geliyordu).
+- KVKK tablo dark: TH background `var(--navy)` (AA kontrast).
+
+**A11y** (WCAG 2.1 AA):
+- `skip-to-content` utility (visually hidden default, focus visible).
+- `*:focus-visible` brand outline (2px verm / dark'ta coral).
+- `prefers-reduced-motion` respect (tüm transition'lar `.01ms`).
+- `<main id="main">` landmark wrapping.
+- `aria-expanded` + `aria-hidden` hamburger button + menu.
+- `--muted` token: `#6F7493` (4.2:1) → `#5D6283` (4.9:1 on cream).
+
+**Value cards flex pattern**:
+```css
+.vp-card { display: flex; flex-direction: column; height: 100%; }
+.vp-card .vp-more { margin-top: auto; }
+```
+Kart yükseklikleri farklı content olsa bile CTA bottom anchored. Underline hover.
+
+**SEO**:
+- Her sayfada CSP + OG + Twitter card + canonical URL.
+- index.html: Schema.org JSON-LD `@type: WebSite`.
+- Robots: `index, follow` (mockup'taki `noindex` kaldırıldı).
+
+**Copy fix**:
+- "96 markası seni arasında bulsun" → "96 markası arasından seni seçsin" (grammar).
+- "retail" → "perakende" consistency (Türkçe body copy).
+- Story alt text descriptive ("Sephora'da kategori planlama ekibine geçen Selin A. portresi (temsili)").
+- Stories disclaimer eklendi ("Hikayeler mockup dönemi için temsilidir...").
+
+**SAAS dil temizliği**:
+- "Demo talep et" tüm instances (12 adet) → "Kurumsal hesap aç" (direct signup flow).
+- "demo panel ve canlı havuz" → "yetenek havuzu ve işveren araçları".
+- Hakkımızda 2-split right block copy ters düzeltildi (Adaylar eyebrow altında işveren cümleleri vardı → "Profilini oluştur, markalar seni bulsun").
+- "Kurumsal panel" SAAS btn → "İşveren olarak başla".
+
+**İletişim map placeholder**:
+- Google Maps iframe localhost + CSP'de yüklenmiyordu → styled placeholder: diagonal gradient + grid pattern + pulsing vermillion location pin + HQ info card. Canlıda isteğe göre iframe geri eklenebilir.
+
+**Playwright QA**: 4 sayfa × light/dark × desktop 1440 + mobile 390 = 16+ görünüm verify. Mobile hamburger açık durumu test edildi. 80+ dark mode rule AA kontrast.
+
+### Açık riskler / sonraki adımlar
+
+- **Tuna prod UAT**: hellotalent.ai (+hakkimizda/iletisim/yasal) dark mode + mobile + hamburger + gerçek işveren login flow. K-036 bookmark test (`/admin.html#brands` doğrudan açılış). K-037 gerçek işveren onboarding döngüsünden çıkabildiği teyit.
+- **Giriş sayfaları v2 redesign** — henüz yapılmadı. Prod'da giris.html + aday.html + isveren.html + uye-ol.html mevcut legacy design'da. Ayrı mockup iterasyonu.
+- **K-037 DeepSeek audit** (prod employer data etkileşimi) — gerekirse.
+- **İletişim map iframe restore** — prod'da Google Maps embed geri eklenebilir (CSP zaten izin veriyor `frame-src https://www.google.com`).
+- `profil.ayarlar-toggles.e2e` 6 pre-existing fail — ayrı sprint (sidebar-user-name visibility race).
+- Kim Bakti backend PVT-1..6 (K031) hala backlog.
+- K031 Kim Bakti backend hala bekliyor.
+
+---
+
 ## 2026-04-17 — K032 Audit + Husky --no-stash Fix (Asama 78 gece kapanis)
 
 **Durum:** K032 Faz 1+2+3 push sonrasi teknik borc audit'i. 2 paralel agent (code-reviewer + husky-drift Explore) + targeted regression. 3 KRITIK + 4 ORTA + 3 LOW bulgu. 2 kritik simdi fix (Husky + K-1), K-2/K-3 + 4 orta Faz 4 backlog'a somut kapsamla gecti. Commit `3668add` push edildi.
