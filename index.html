@@ -25,7 +25,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="shared-v2.css?v=20260419d">
+<link rel="stylesheet" href="shared-v2.css?v=20260419e">
 
 <!-- Theme pre-paint (prevents light-flash) -->
 <script>
@@ -340,9 +340,9 @@
   <section class="s s-white" id="k-nasil">
     <div class="s-inner">
       <div class="vp-head">
-        <div class="eyebrow navy">Nasıl çalışır</div>
+        <div class="eyebrow navy">Neden HelloTalent</div>
         <h2 class="h-section">İlan yayınlamayın,<br><em class="navy">eşleşin.</em></h2>
-        <p class="lede">Kriterlerinizi belirleyin, gerisini algoritmaya bırakın. Sadece sizin seçtiğiniz kriterlere uyan adaylarla eşleşin.</p>
+        <p class="lede">Perakende için yapılmış bir yetenek pazarı. Kriterinize uyan aktif adayları canlı havuzdan anlık görün; başvuru beklemeden doğrudan bağlanın. Segment deneyimi, mağaza operasyonu, VM yetkinliği gibi sektöre özgü filtreler — genel portallarda bulamayacağınız derinlik.</p>
       </div>
 
       <div class="vp-row">
@@ -517,6 +517,11 @@ function switchSeg(seg, skipScroll) {
   document.querySelectorAll('.seg-btn').forEach(function (b) {
     b.classList.toggle('active', b.dataset.seg === seg);
   });
+  // Segment-aware "Giriş Yap" CTA in header + mobile menu
+  var loginTab = seg === 'kurumsal' ? 'ik' : 'aday';
+  document.querySelectorAll('.lp-cta a[href^="giris.html"], .mobile-menu a[href^="giris.html"]').forEach(function (a) {
+    a.href = 'giris.html?tab=' + loginTab;
+  });
   var hiding  = seg === 'adaylar' ? kur : aday;
   var showing = seg === 'adaylar' ? aday : kur;
   if (hiding.style.display !== 'none') {
@@ -566,7 +571,7 @@ function toggleStories(btn) {
   var adaySections   = ['nasil', 'hikayeler', 'adaylar'];
   var kurSections    = ['k-nasil', 'kurumsal'];
   if (kurSections.indexOf(h) !== -1) switchSeg('kurumsal', true);
-  else if (adaySections.indexOf(h) !== -1) switchSeg('adaylar', true);
+  else switchSeg('adaylar', true);  // default + sync Giriş Yap href
   // Scroll to section anchor after segment switch
   if (h && h !== 'adaylar' && h !== 'kurumsal') {
     var target = document.getElementById(h);
