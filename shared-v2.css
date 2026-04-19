@@ -793,7 +793,16 @@ html.dark .step-card .step-p { color: rgba(247, 246, 244, .82); }
 .foot-grid li { margin-bottom: 10px; }
 .foot-grid a { color: var(--cream); font-size: 14px; font-weight: 500; opacity: .82; transition: opacity .15s; }
 .foot-grid a:hover { opacity: 1; }
-.foot-lead .lp-logo { font-size: 38px; color: var(--cream); margin-bottom: 18px; display: inline-block; line-height: 1; }
+.foot-lead .lp-logo {
+  font-family: var(--font-display);
+  font-size: 38px;
+  font-weight: 800;
+  font-variation-settings: "wght" 800, "opsz" 14;
+  color: var(--cream);
+  margin-bottom: 18px;
+  display: inline-block;
+  line-height: 1;
+}
 .foot-lead p { color: rgba(247, 246, 244, .7); font-size: 14px; line-height: 1.6; max-width: 36ch; margin: 0; }
 .foot-bottom {
   max-width: var(--max-w); margin: 0 auto;
