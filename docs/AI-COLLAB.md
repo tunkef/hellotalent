@@ -1,5 +1,58 @@
 # HelloTalent AI-COLLAB — Aktif Calisma Defteri
 
+## 2026-04-19 — K-043 dark mode tek ton politika (Asama 80.4) — replaces K-040
+
+**Durum:** K-040 2-ton ABA ritim Tuna tarafindan geri cekildi. Screenshot ile tek hex `#0F121F` (rgb 15,18,31) verdi, "dark mode'daki butun beyaz + warm-cream zeminler bu tona override etsin, navy + vermillion degismesin". Push hazir.
+
+**Aktif hedef:** Tuna UAT (hellotalent.ai dark mode 4 sayfa tutarlik + JS disabled test).
+
+**Claude icin gorev:** Tuna ton onaylarsa: kart-level transparan rgba yuzeyler kontrol edilsin (sekin edebiliyorsa minimal tweak). Aksi halde bekle.
+
+### Yapilan is
+
+| Dosya | Scope |
+|-------|-------|
+| `shared-v2.css` `html.dark` blok | body + .s-cream/.s-warm/.s-white tek `#0F121F`. Comment K-043 replaces K-040. |
+| `shared-v2.css` `html.dark` hero ozel | `.about-hero`, `.contact-hero` `#0B0D17` → `#0F121F` |
+| `shared-v2.css` `html.dark` brand-strip + hq-map | `#0F1220` → `#0F121F` (yakin zaten, unify) |
+| `shared-v2.css` `@media (prefers-color-scheme: dark)` blok | Ayni tokenler senkron + `html .about-hero, html .contact-hero, html .hq-map` (specificity bump — local `<style>` override'lari icin) + brand-strip bg unified |
+| `index.html`, `hakkimizda.html`, `iletisim.html`, `yasal.html` | Cache bump `v=h → i` |
+
+### Onemli kesif — CSS specificity bug (K-043 sirasinda yakalandi)
+
+`hakkimizda.html` ve `iletisim.html` head icindeki local `<style>` bloklari `.about-hero { background: var(--cream); }` ve `.contact-hero { ... }` tanimliyor. Ayni specificity'de (0,0,1,0) shared-v2.css'ten sonra yuklendikleri icin override ediyorlar. JS pre-paint `html.dark` class ekledigi icin `html.dark .about-hero` (specificity 0,0,2,0) bunu atliyor — ama JS disabled ortamda `@media` `.about-hero` tek triger kalinca local kazaniyor.
+
+Fix: `@media` blogunda `html .about-hero` / `html .contact-hero` / `html .hq-map` formu (specificity 0,0,1,1) local override'larini yener. `html.dark` tarafi dokunulmadi, zaten calisiyordu.
+
+### Codex diff review — Medium finding fix edildi
+
+- **Medium (fixed):** `@media` bloku K-043 hero/brand-strip/hq-map override'larini tasimiyordu. No-JS ortamda regression. Fix: @media'ya specificity bump ile eklendi.
+- **Low (fixed):** `@media` eski "Brand strip — stays cream surface but inverted" yorumu K-043 ile celisiyordu. Guncellendi.
+- **Suggestion (applied):** Comment'e "replaces K-040 2-tone ABA" eklendi.
+- **`cta-street` scene:** Codex separate risk belirtmedi (object-fit cover dar viewport crop algisi — patch'ten bagimsiz).
+
+### Playwright audit — iki path
+
+**JS-on, colorScheme:dark, html.dark class:**
+- Tum 4 sayfa: body + section + hero ozel + brand-strip + hq-map = `rgb(15,18,31)`
+- Navy (`.stories`, `.closing.navy`) + verm (`.closing.verm`) intact
+
+**JS-off, colorScheme:dark, @media tek trigger:**
+- Tum 4 sayfa: body + section + hero ozel + brand-strip + hq-map = `rgb(15,18,31)`
+- Parity tam: html.dark path ile @media path identical output uretiyor
+
+### A11y
+
+- `--cream` (#F7F6F4) uzerine `#0F121F` kontrast = **16.98:1** (WCAG AAA)
+
+### Kurallar / ogrenilen
+
+- Local `<style>` shared-v2.css'ten sonra yuklenir — ayni specificity'de local kazanir. Override icin shared tarafi specificity bumplamak gerek.
+- Dark mode'da JS-based (html.dark) + @media-based iki trigger identical olmali; aksi halde no-JS ortamda regression.
+- Ton politika degisince git log + comment'te "replaces K-XXX" ibaresi + audit trail acik olur.
+
+---
+
 ## 2026-04-19 — K-042 iletisim hero Grok video entegrasyonu (Asama 80.3)
 
 **Durum:** Iletisim hero `.contact-hero-vis` statik webp → Grok interview video. K-041 ile identical pattern. Push hazir.

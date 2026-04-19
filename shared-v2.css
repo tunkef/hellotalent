@@ -861,16 +861,18 @@ html.dark .step-card .step-p { color: rgba(247, 246, 244, .82); }
 /* ── DARK-MODE (prefers-color-scheme OR html.dark class) ──── */
 /* Duplicated selector block so both triggers apply identical tokens.
    Keep rule bodies in sync with the @media block below. */
-html.dark body { background: #0B0D17; color: var(--cream); }
-/* K-040 dark section tone normalization (2026-04-19).
-   2-ton ABA ritim: s-cream + s-warm → #0B0D17, s-white → #141724.
-   Prev 3-ton (#0B0D17/#0F1220/#151829) luminance jump ~2-3pt, drift okundu.
-   Contrast on --cream: #0B0D17=17.93:1, #141724=16.51:1 (AAA).
-   Bu 3 token icin @media(prefers-color-scheme:dark) blogu ile senkron tut;
-   diger html.dark override'lari (seg-toggle/value-card/hq-map) sadece bu blokta. */
-html.dark .s-white { background: #141724; color: var(--cream); }
-html.dark .s-cream { background: #0B0D17; color: var(--cream); }
-html.dark .s-warm { background: #0B0D17; color: var(--cream); }
+/* K-043 dark section tone — tek ton politika (2026-04-19, Tuna brief).
+   Replaces K-040 2-tone ABA ritim. Light mode'da 3 tonlu warmth
+   (cream/white/cream-warm) dark mode'da tek tona indirildi: #0F121F.
+   Navy ve vermillion disindaki tum buyuk zeminler tek koyu mavi-grinin
+   uzerinde. Contrast on --cream = 16.98:1 (AAA). body + section tokenleri
+   + hero ozel (about-hero/contact-hero) + brand-strip + hq-map hepsi
+   ayni zemini paylasir. @media blok ile TAM senkron tut (no-JS ortamda
+   @media tek trigger). */
+html.dark body { background: #0F121F; color: var(--cream); }
+html.dark .s-white,
+html.dark .s-cream,
+html.dark .s-warm { background: #0F121F; color: var(--cream); }
 html.dark .lp-hdr { background: rgba(11, 13, 23, .82); border-bottom-color: rgba(247, 246, 244, .08); }
 html.dark .lp-logo { color: var(--cream); }
 html.dark .lp-links a { color: rgba(247, 246, 244, .72); }
@@ -909,7 +911,7 @@ html.dark .btn-ghost { background: rgba(247, 246, 244, .06); color: var(--cream)
 html.dark .btn-ghost:hover { background: var(--cream); color: var(--ink); }
 html.dark .btn-ink { background: var(--cream); color: var(--ink); }
 html.dark .btn-ink:hover { background: var(--verm); color: var(--cream); }
-html.dark .brand-strip { background: #0F1220; border-top-color: rgba(247, 246, 244, .08); border-bottom-color: rgba(247, 246, 244, .08); }
+html.dark .brand-strip { background: #0F121F; border-top-color: rgba(247, 246, 244, .08); border-bottom-color: rgba(247, 246, 244, .08); }
 html.dark .brand-strip-lead .line { background: rgba(247, 246, 244, .12); }
 html.dark .brand-row .b-item { color: var(--cream); opacity: .82; }
 html.dark .brand-row .b-item:hover { opacity: 1; }
@@ -1039,8 +1041,9 @@ html.dark .hq-map-placeholder::before {
   background-size: 100% 100%, 100% 100%, 120px 120px, 120px 120px;
 }
 
-/* Page-specific hero sections force dark bg in dark mode (they were cream). */
-html.dark .about-hero, html.dark .contact-hero { background: #0B0D17; }
+/* Page-specific hero sections force dark bg in dark mode (they were cream).
+   K-043: unified tone #0F121F (match body + section bg). */
+html.dark .about-hero, html.dark .contact-hero { background: #0F121F; }
 
 /* Hakkimizda value cards — ensure h4 reads cream on dark card surface. */
 html.dark .value-card { background: rgba(247, 246, 244, .035); border-color: rgba(247, 246, 244, .09); }
@@ -1055,7 +1058,7 @@ html.dark .contact-card p { color: rgba(247, 246, 244, .78); }
 html.dark .hq-info p { color: rgba(247, 246, 244, .78); }
 html.dark .hq-info { background: rgba(247, 246, 244, .035); border-color: rgba(247, 246, 244, .09); }
 html.dark .hq-item { background: rgba(247, 246, 244, .05); border-color: rgba(247, 246, 244, .12); }
-html.dark .hq-map { background: #0F1220; border-color: rgba(247, 246, 244, .08); }
+html.dark .hq-map { background: #0F121F; border-color: rgba(247, 246, 244, .08); }
 html.dark .hq-map-card { background: rgba(15, 18, 32, .9); }
 html.dark .hq-map-card b { color: var(--cream); }
 html.dark .hq-map-card span { color: rgba(247, 246, 244, .62); }
@@ -1065,12 +1068,11 @@ html.dark .split-2 h3 { color: var(--cream); }
 html.dark .split-2 p { color: rgba(247, 246, 244, .78); }
 
 @media (prefers-color-scheme: dark) {
-  body { background: #0B0D17; color: var(--cream); }
-  /* K-040 dark section tone normalization — keep .s-* tokens synced with
-     html.dark block above. */
-  .s-white { background: #141724; color: var(--cream); }
-  .s-cream { background: #0B0D17; color: var(--cream); }
-  .s-warm { background: #0B0D17; color: var(--cream); }
+  /* K-043 tek ton — keep body + .s-* synced with html.dark block above. */
+  body { background: #0F121F; color: var(--cream); }
+  .s-white,
+  .s-cream,
+  .s-warm { background: #0F121F; color: var(--cream); }
 
   .lp-hdr { background: rgba(11, 13, 23, .82); border-bottom-color: rgba(247, 246, 244, .08); }
   .lp-logo { color: var(--cream); }
@@ -1108,15 +1110,24 @@ html.dark .split-2 p { color: rgba(247, 246, 244, .78); }
   .btn-ink { background: var(--cream); color: var(--ink); }
   .btn-ink:hover { background: var(--verm); color: var(--cream); }
 
-  /* Brand strip — stays cream surface but inverted */
+  /* K-043 tek ton — large surfaces (brand-strip, page-specific hero, hq-map)
+     senkron tutulur. html.dark blok ile parity zorunlu; no-JS ortamda
+     @media tek trigger olur. */
   .brand-strip {
-    background: #0F1220;
+    background: #0F121F;
     border-top-color: rgba(247, 246, 244, .08);
     border-bottom-color: rgba(247, 246, 244, .08);
   }
   .brand-strip-lead .line { background: rgba(247, 246, 244, .12); }
   .brand-row .b-item { color: var(--cream); opacity: .82; }
   .brand-row .b-item:hover { opacity: 1; }
+
+  /* Specificity bump (html ...) — local <style> rules in hakkimizda.html
+     and iletisim.html tanimliyor .about-hero/.contact-hero/.hq-map
+     background: var(--cream). Ayni specificity'de sonra yuklendikleri icin
+     override ediyorlar. html prefix specificity'i 11'e cikarir. */
+  html .about-hero, html .contact-hero { background: #0F121F; }
+  html .hq-map { background: #0F121F; border-color: rgba(247, 246, 244, .08); }
 
   /* Forms (giris-specific) */
   .form-input { background: rgba(247, 246, 244, .04); border-color: rgba(247, 246, 244, .1); color: var(--cream); }
