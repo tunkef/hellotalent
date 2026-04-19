@@ -38,7 +38,9 @@
     align-items: center;
     justify-content: space-between;
     /* K-049 — cream glassmorphism (4 public page pattern) */
+    /* K-050 — Safari/iOS -webkit- prefix parity */
     background: rgba(247, 246, 244, .78);
+    -webkit-backdrop-filter: saturate(140%) blur(14px);
     backdrop-filter: saturate(140%) blur(14px);
     border-bottom: 1px solid var(--border);
   }
@@ -616,9 +618,10 @@ function setupStrength(passwordId, containerId) {
     rules.forEach(function(r) {
       var rule = r.getAttribute('data-rule');
       r.textContent = (checks[rule] ? '● ' : '○ ') + r.textContent.replace(/^[●○]\s*/, '');
-      r.style.color = checks[rule] ? '#16A34A' : 'var(--muted)';
+      r.style.color = checks[rule] ? 'var(--color-green)' : 'var(--muted)';
     });
-    var colors = ['#DC2626', '#F59E0B', '#16A34A'];
+    /* K-050 — strength meter tokens: red/warning/green from tokens.css primitives */
+    var colors = ['var(--color-red)', 'var(--warning)', 'var(--color-green)'];
     var labels = ['Zayıf', 'Orta', 'Güçlü'];
     var level = passed <= 2 ? 0 : (passed <= 4 ? 1 : 2);
     bars.forEach(function(b, i) { b.style.background = i <= level ? colors[level] : 'var(--border)'; });
@@ -705,11 +708,13 @@ function validateKurumsalForm() {
       var webDomain = new URL(webVal.indexOf('://') < 0 ? 'https://' + webVal : webVal).hostname.replace('www.', '');
       var emailDomain = emailVal.split('@')[1].toLowerCase();
       if (webDomain === emailDomain) {
+        /* K-050 — tokens.css --color-green-light + --color-green */
         hint.style.display = 'block'; hint.textContent = 'Domain eşleşiyor';
-        hint.style.background = '#DCFCE7'; hint.style.color = '#166534'; hint.style.borderColor = '#BBF7D0';
+        hint.style.background = 'var(--color-green-light)'; hint.style.color = 'var(--color-green)'; hint.style.borderColor = 'var(--color-green-border)';
       } else {
+        /* K-050 — tokens.css --warning-soft + --warning */
         hint.style.display = 'block'; hint.textContent = 'Domain farklı: ' + webDomain + ' vs ' + emailDomain;
-        hint.style.background = '#FEF3C7'; hint.style.color = '#92400E'; hint.style.borderColor = '#FDE68A';
+        hint.style.background = 'var(--warning-soft)'; hint.style.color = 'var(--warning)'; hint.style.borderColor = '#FDE68A';
       }
     } catch(e) { hint.style.display = 'none'; }
   }
