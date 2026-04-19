@@ -265,28 +265,6 @@ button { font-family: inherit; }
 }
 .lp-cta { display: flex; gap: 10px; align-items: center; }
 
-/* Theme toggle button */
-.theme-toggle {
-  width: 38px; height: 38px;
-  border: 1px solid var(--border);
-  background: transparent;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 10px;
-  color: var(--navy);
-  transition: background .15s, color .15s, border-color .15s;
-  padding: 0;
-}
-.theme-toggle:hover { background: var(--cream-warm); color: var(--navy-dark); }
-.theme-toggle svg { width: 18px; height: 18px; display: none; }
-.theme-toggle .theme-ico-moon { display: block; }
-html.dark .theme-toggle { border-color: rgba(247, 246, 244, .18); color: var(--cream); }
-html.dark .theme-toggle:hover { background: rgba(247, 246, 244, .08); color: var(--cream); }
-html.dark .theme-toggle .theme-ico-moon { display: none; }
-html.dark .theme-toggle .theme-ico-sun { display: block; }
-
 /* Mobile hamburger button — hidden on desktop */
 .mobile-menu-btn {
   display: none;
