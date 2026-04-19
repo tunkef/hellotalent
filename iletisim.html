@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="shared-v2.css?v=20260420a">
+<link rel="stylesheet" href="shared-v2.css?v=20260420b">
 <script>
 (function(){
   try {
@@ -58,8 +58,8 @@ document.addEventListener('DOMContentLoaded', function(){
   overflow: hidden;
   box-shadow: var(--shadow-lift);
 }
-.contact-hero-vis img,
-.contact-hero-vis video.hero-vid { width: 100%; height: 100%; object-fit: cover; display: block; }
+/* K-051 — .hero-vid shared utility (shared-v2.css); img ayri local. */
+.contact-hero-vis img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
 .contact-grid {
   max-width: var(--max-w); margin: 0 auto;
@@ -166,6 +166,8 @@ document.addEventListener('DOMContentLoaded', function(){
   position: absolute;
   bottom: 16px; left: 16px;
   background: rgba(255, 255, 255, .95);
+  /* K-051 — Safari/iOS -webkit- prefix parity */
+  -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
   border-radius: var(--radius);
   padding: 14px 20px;

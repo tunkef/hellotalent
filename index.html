@@ -25,7 +25,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="shared-v2.css?v=20260420a">
+<link rel="stylesheet" href="shared-v2.css?v=20260420b">
 
 <!-- Theme pre-paint — follow OS prefers-color-scheme -->
 <script>
@@ -36,6 +36,19 @@
     }
   } catch(e) {}
 })();
+</script>
+<!-- K-051 — prefers-reduced-motion a11y: hero video autoplay iptal, posterde kal (K-041 pattern hakkimizda/iletisim ile identical). -->
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  try {
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      document.querySelectorAll('.hero-vid').forEach(function(v){
+        v.removeAttribute('autoplay');
+        v.pause();
+      });
+    }
+  } catch(e) {}
+});
 </script>
 
 <!-- Logged-in redirect (preserve prod behavior) -->
