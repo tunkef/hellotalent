@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="shared-v2.css?v=20260419b">
+<link rel="stylesheet" href="shared-v2.css?v=20260419c">
 <script>
 (function(){
   try {
@@ -50,26 +50,30 @@
 .split-2 {
   max-width: var(--max-w); margin: 0 auto;
   display: grid; grid-template-columns: 1fr 1fr;
-  gap: clamp(32px, 5vw, 72px);
+  gap: clamp(24px, 4vw, 40px);
+  align-items: stretch;
 }
-.split-2 h3 {
+.split-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: clamp(32px, 4vw, 48px);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.split-card h3 {
   font-family: var(--font-display);
   font-weight: 800; letter-spacing: -.01em; line-height: 1.08;
   font-size: clamp(24px, 2.6vw, 32px);
   margin: 0 0 14px;
 }
-.split-2 p { font-size: 16px; line-height: 1.7; color: var(--ink-soft); margin: 0 0 22px; }
-.split-2 .tag-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px; }
-.tag {
-  font-family: var(--font-mono);
-  font-size: 11px; font-weight: 500;
-  letter-spacing: .08em;
-  padding: 6px 12px;
-  border-radius: 999px;
-  border: 1px solid var(--border);
-  color: var(--muted);
-  background: var(--white);
+.split-card p {
+  font-size: 16px; line-height: 1.7; color: var(--ink-soft);
+  margin: 0 0 28px;
+  flex-grow: 1;
 }
+.split-card .btn { align-self: flex-start; }
 
 .values-grid {
   max-width: var(--max-w); margin: 0 auto;
@@ -199,31 +203,17 @@
 <!-- 2-SPLIT -->
 <section class="s s-warm">
   <div class="split-2">
-    <div>
-      <div class="eyebrow">İşverenler için</div>
-      <h3 style="margin-top:14px">İlanların ötesine geçin, <em style="color:var(--verm);font-style:normal">kusursuz eşleşmeye</em> odaklanın.</h3>
-      <p>Retail operasyonunuzdaki gürültüyü sadeleştirin. HelloTalent, kriterlerinize en yüksek uyumu gösteren yetenekleri bir seçki olarak sunar.</p>
-      <div class="tag-row">
-        <span class="tag">Kritik yetkinlik eşleşmesi</span>
-        <span class="tag">Sınırsız işe alım özgürlüğü</span>
-        <span class="tag">Çevik operasyon</span>
-      </div>
-      <a href="giris.html?tab=ik" class="btn btn-navy">İşveren olarak başla
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
-      </a>
-    </div>
-    <div>
+    <div class="split-card split-card-aday">
       <div class="eyebrow">Adaylar için</div>
-      <h3 style="margin-top:14px">Profilini oluştur, <em style="color:var(--verm);font-style:normal">markalar seni</em> bulsun.</h3>
+      <h3>Profilini oluştur, <em style="color:var(--verm);font-style:normal">markalar seni</em> bulsun.</h3>
       <p>En iyi profesyoneller ilan taramaz, keşfedilmeyi bekler. Profilini aç, görünmez modla seçtiğin markaların gündemine gir.</p>
-      <div class="tag-row">
-        <span class="tag">Görünmez mod</span>
-        <span class="tag">Ücretsiz profil</span>
-        <span class="tag">Direkt marka mesajı</span>
-      </div>
-      <a href="giris.html?tab=aday" class="btn btn-verm">Aday profili oluştur
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
-      </a>
+      <a href="giris.html?tab=aday" class="btn btn-verm">Aday profili oluştur</a>
+    </div>
+    <div class="split-card split-card-kur">
+      <div class="eyebrow">İşverenler için</div>
+      <h3>İlanların ötesine geçin, <em style="color:var(--verm);font-style:normal">kusursuz eşleşmeye</em> odaklanın.</h3>
+      <p>Retail operasyonunuzdaki gürültüyü sadeleştirin. HelloTalent, kriterlerinize en yüksek uyumu gösteren yetenekleri bir seçki olarak sunar.</p>
+      <a href="giris.html?tab=ik" class="btn btn-navy">İşveren olarak başla</a>
     </div>
   </div>
 </section>

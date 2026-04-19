@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta http-equiv="X-Frame-Options" content="DENY">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://www.googletagmanager.com https://www.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://cpwibefquojehjehtrog.supabase.co https://*.googleusercontent.com; connect-src 'self' https://cpwibefquojehjehtrog.supabase.co wss://cpwibefquojehjehtrog.supabase.co https://*.google-analytics.com; object-src 'none'; base-uri 'self'; frame-ancestors 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://www.googletagmanager.com https://www.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://cpwibefquojehjehtrog.supabase.co https://*.googleusercontent.com https://maps.gstatic.com https://*.googleusercontent.com; connect-src 'self' https://cpwibefquojehjehtrog.supabase.co wss://cpwibefquojehjehtrog.supabase.co https://*.google-analytics.com; frame-src https://www.google.com https://maps.google.com; object-src 'none'; base-uri 'self'; frame-ancestors 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="index, follow">
@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="shared-v2.css?v=20260419b">
+<link rel="stylesheet" href="shared-v2.css?v=20260419c">
 <script>
 (function(){
   try {
@@ -257,7 +257,7 @@
       </div>
       <h3>Kurumsal hesap aç</h3>
       <p>Ücretsiz kurumsal hesap açın, canlı yetenek havuzu ve işveren araçları anında karşınızda.</p>
-      <a class="btn btn-verm" href="giris.html?tab=ik">Hesap aç</a>
+      <a class="btn btn-verm" href="uye-ol.html?tab=kurumsal">Hesap aç</a>
     </div>
 
     <div class="contact-card">
@@ -315,11 +315,12 @@
     </div>
 
     <div class="hq-map">
-      <div class="hq-map-placeholder show">
-        <div class="hq-map-pin" aria-label="HelloTalent merkez konumu">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 7-8 12-8 12s-8-5-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg>
-        </div>
-      </div>
+      <iframe
+        title="HelloTalent merkez — Kadıköy İstanbul"
+        src="https://www.google.com/maps?q=G%C3%BCle%C3%A7%20%C3%87%C4%B1kmaz%C4%B1%20Sok.%20No%201-3%2C%20Z%C3%BCht%C3%BCpa%C5%9Fa%20Mah.%2034724%20Kad%C4%B1k%C3%B6y%20%2F%20%C4%B0stanbul&output=embed"
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"
+        allowfullscreen></iframe>
       <div class="hq-map-card">
         <b>hellotalent HQ</b>
         <span>Zühtüpaşa · Kadıköy / Istanbul</span>
