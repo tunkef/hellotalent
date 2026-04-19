@@ -1,5 +1,51 @@
 # HelloTalent AI-COLLAB — Aktif Calisma Defteri
 
+## 2026-04-19 — K-045 navy-navy seam coral accent anchor (Asama 80.6)
+
+**Durum:** K-044 atmospheric continuity bolum baslangicini kaybettirmisti (Tuna desktop kurumsal: "bolum ayrimi kapanmis"). Stories → closing.navy gecisinde "HAZIR MISINIZ?" eyebrow zayif kaldi. Push hazir.
+
+**Aktif hedef:** Tuna UAT mobile + desktop kurumsal segment.
+
+**Claude icin gorev:** Tuna accent bar kaliniligi/width beğenmezse parametre tweak. Aksi halde bekle.
+
+### Yapilan is
+
+| Dosya | Scope |
+|-------|-------|
+| `shared-v2.css:755-770` | `.closing.navy::after` — top center coral accent bar, drop-in anchor |
+| `shared-v2.css:745` | `.closing .s-inner` z-index: 1 (stacking clarity) |
+| `index.html`, `hakkimizda.html`, `iletisim.html`, `yasal.html` | Cache bump `v=j → k` |
+
+### Tasarim secimleri (Tuna opsiyon B seçti)
+
+- Width: `clamp(60px, 14vw, 120px)` — mobile ~60px, desktop 120px (Codex onerisi ile min dusuruldu)
+- Height: 3px
+- Border-radius: 0 0 3px 3px (drop-in anchor hissi)
+- Background: `var(--coral)` (= var(--verm) = #C94E28)
+- z-index: 0 (+ .s-inner z: 1 — content clearly on top)
+- Sadece `.closing.navy` — `.closing.verm` dokunulmadi (renk kontrasti yeterli)
+
+### Codex diff review — Two non-blocking observations fix edildi
+
+- **Low (fixed):** `clamp(72px, 10vw, 120px)` 720px altinda min'e kilitleniyordu (mobile'da proporsiyonel degil). `clamp(60px, 14vw, 120px)` ile mobile hafif kucuk.
+- **Low (fixed):** `z-index: 2` bar'i content ustune koyuyordu (kirilgan stacking). Bar 0, `.s-inner` 1 → content zemine acik soz verme.
+- **Answers:** Shape dogru (ne square ne pill), coral tekrari ritim destegi (fatigue degil), navy-only asimetri metodolojik temiz.
+
+### Playwright verify (colorScheme:dark)
+
+- Desktop 1440×900 kurumsal: coral bar ortada, "HAZIR MISINIZ?" eyebrow ile vertical echo, section start belirgin
+- Mobile 390×860 kurumsal: 60px kompakt accent, stories-closing gecis net
+- Desktop 1440×900 adaylar: closing.verm dokunulmadi, renk kontrasti ayirim veriyor
+
+### Kurallar / ogrenilen
+
+- Atmospheric continuity (K-044) her zaman iyi degil — section basi kaybolursa anchor gerekir.
+- Brand accent > generic separator: coral bar stories+closing eyebrow dilinin devami, hairline border brand-mute.
+- `clamp(min, vw, max)` mobile'da min'e kilitlenirse proporsiyonel degil — `vw` kat sayisini min ile dengelemek gerek.
+- Pseudo-element + `.s-inner` stacking: default DOM order ::after'i iste koyar, explicit z-index ile content on-top guarantee.
+
+---
+
 ## 2026-04-19 — K-044 navy-navy seam atmospheric continuity (Asama 80.5)
 
 **Durum:** Tuna mobile 390x860 screenshot: `.stories` (navy) + `.closing.navy` bitisik iki navy section, stories'in radial overlay peak'i ortada lift uretip closing'in solid zemine gecisinde keskin crease yaratiyordu. Aday (verm) closing'de regression yok. Push hazir.
