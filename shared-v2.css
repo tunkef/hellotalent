@@ -742,6 +742,17 @@ html.dark .step-card .step-p { color: rgba(247, 246, 244, .82); }
     radial-gradient(55% 55% at 100% 100%, rgba(255, 107, 74, .35), transparent 60%),
     radial-gradient(40% 40% at 0% 0%, rgba(248, 225, 108, .25), transparent 60%);
 }
+/* K-044 — .closing.navy kendi ::before override.
+   Parent .closing::before coral+yellow warm radial pattern verm brand
+   icin tasarlanmis; navy zeminde stories'ten gelen gecisi "iki farkli
+   atmosferli navy section" gibi sert kesim yapiyordu. Navy closing icin
+   tek subtle coral accent alt-solda — section ile uyumlu, stories'in
+   coral eyebrow dilini devam ettirir. Navy-over-navy radial no-op
+   (same-color alpha), kaldirildi. */
+.closing.navy::before {
+  background:
+    radial-gradient(45% 55% at 10% 100%, rgba(201, 78, 40, .22), transparent 70%);
+}
 .closing .s-inner { position: relative; max-width: 820px; margin: 0 auto; }
 .closing h2 {
   color: var(--white); margin: 18px 0;

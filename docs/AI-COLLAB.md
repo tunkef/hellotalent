@@ -1,5 +1,43 @@
 # HelloTalent AI-COLLAB — Aktif Calisma Defteri
 
+## 2026-04-19 — K-044 navy-navy seam atmospheric continuity (Asama 80.5)
+
+**Durum:** Tuna mobile 390x860 screenshot: `.stories` (navy) + `.closing.navy` bitisik iki navy section, stories'in radial overlay peak'i ortada lift uretip closing'in solid zemine gecisinde keskin crease yaratiyordu. Aday (verm) closing'de regression yok. Push hazir.
+
+**Aktif hedef:** Tuna UAT mobile kurumsal segment (hellotalent.ai kurumsal → stories → closing.navy).
+
+**Claude icin gorev:** Tuna hala seam gorurse `.stories::before` opacity/spread yumusatma sonraki adim (K-044b). Aksi halde bekle.
+
+### Yapilan is
+
+| Dosya | Scope |
+|-------|-------|
+| `shared-v2.css:745-754` | `.closing.navy::before` override — tek subtle coral accent alt-solda, parent warm coral+yellow pattern'i iptal |
+| `index.html`, `hakkimizda.html`, `iletisim.html`, `yasal.html` | Cache bump `v=i → j` |
+
+### Codex diff review — Medium finding fix edildi
+
+- **Medium (fixed):** Ilk fix versiyonumda "mirror navy peak" radial'i vardi (`rgba(30,45,94,.5) at 90% 0%`). Codex buldu: navy .5 alpha navy zeminde no-op (same-color over same-color). Gercek fix coral redistribution. No-op navy radial kaldirildi, comment durust revize edildi.
+- **Low (fixed):** Cache bump yapilmamisti. v=i → j (4 HTML).
+- **Answer (1):** `.closing.verm::before` dokunulmadi dogru — coral+yellow warm brand dili orada kalsin, navy-navy seam sadece kurumsal/isveren akisinda.
+- **Answer (2):** Radial anchor %x/%y oransal — mobile+desktop ayni konuma oturur.
+- **Answer (3):** Specificity `.closing.navy::before` (0,0,2,1) base'i (0,0,1,1) override eder + source order destek.
+- **Alternative not:** `.stories::before` opacity/spread yumusatma continuity uretmez, sadece peak'i zayiflatir. Codex onayladi fix yeri `.closing.navy`.
+
+### Playwright verify (mobile 390x860, dark, kurumsal)
+
+- Before: stories coral/yellow warm lobe closing'e tasiyordu → navy section warm atmosphere ile karisiyordu + stories radial lift → crease
+- After: stories continuous navy deniz, closing.navy ayni deniz uzerinde subtle coral accent (sol-alt) → yumusak gecis, brand coral dili korundu
+- Aday segment closing.verm: dokunulmadi, regression yok
+
+### Kurallar / ogrenilen
+
+- Ayni renk uzerine ayni renk alfa = no-op. Radial "lift" etkisi istiyorsan ton farki gerekiyor (navy-lighter / navy-dark vs navy).
+- Base `.closing::before` verm brand icin tasarlandi (coral+yellow). Navy modifier kendi override'ini gerektirir.
+- Codex review dunyada "bu radial visible mi" sorusunu static CSS tarafindan cevapliyor — bizim playwright pixel sample teyit etti.
+
+---
+
 ## 2026-04-19 — K-043 dark mode tek ton politika (Asama 80.4) — replaces K-040
 
 **Durum:** K-040 2-ton ABA ritim Tuna tarafindan geri cekildi. Screenshot ile tek hex `#0F121F` (rgb 15,18,31) verdi, "dark mode'daki butun beyaz + warm-cream zeminler bu tona override etsin, navy + vermillion degismesin". Push hazir.
