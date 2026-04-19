@@ -21,7 +21,9 @@
 
   body {
     font-family: 'Plus Jakarta Sans', sans-serif;
-    background: var(--verm);
+    /* K-049 — cream body (4 public page pattern), verm brand emphasis CTA'da */
+    background: var(--color-gray);
+    color: var(--text);
     transition: none;
     min-height: 100vh;
     display: flex;
@@ -34,7 +36,9 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background: white;
+    /* K-049 — cream glassmorphism (4 public page pattern) */
+    background: rgba(247, 246, 244, .78);
+    backdrop-filter: saturate(140%) blur(14px);
     border-bottom: 1px solid var(--border);
   }
 
@@ -184,9 +188,10 @@
   }
 
   .btn-aday { background: var(--verm); }
-  .btn-aday:hover { background: #b84420; transform: translateY(-1px); }
+  /* K-049 — hover hardcodes → brand tokens (shared-v2.css --verm-dark #A83D1E) */
+  .btn-aday:hover { background: var(--verm-dark); transform: translateY(-1px); }
   .btn-ik { background: var(--navy); }
-  .btn-ik:hover { background: #162249; transform: translateY(-1px); }
+  .btn-ik:hover { background: var(--navy-deep); transform: translateY(-1px); }
 
   .divider {
     display: flex;
@@ -218,9 +223,10 @@
   .register-link a.ik-link { color: var(--navy); }
 
   .error-msg {
-    background: #FEF2F2;
+    /* K-049 — tokens.css --color-red-light / --color-red primitives */
+    background: var(--color-red-light);
     border: 1px solid #FECACA;
-    color: #DC2626;
+    color: var(--color-red);
     padding: 10px 14px;
     border-radius: 8px;
     font-size: var(--text-md);
@@ -238,13 +244,16 @@
   }
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  /* ── FOOTER ── */
+  /* ── FOOTER — K-049: 4 public page pattern (navy + cream) ── */
   .footer {
     text-align: center;
     padding: 20px;
     font-size: var(--text-base);
-    color: var(--muted);
+    background: var(--navy);
+    color: var(--color-gray);
   }
+  .footer a { color: var(--color-gray); text-decoration: none; }
+  .footer a:hover { text-decoration: underline; }
 
   /* Aday formu / IK formu toggle */
   #form-ik { display: none; }
@@ -256,41 +265,43 @@
   }
 
   .rule-check { color: var(--muted); }
-  .rule-check.pass { color: #16A34A; }
+  .rule-check.pass { color: var(--color-green); }
   .rule-check.pass::first-letter { content: ''; }
 
-  /* ── DARK MODE ── */
+  /* ── DARK MODE — K-049: K-043 unified #0F121F + cream text + glassmorphism ── */
   html[data-theme="dark"] {
-    --gray: #1F2937;
-    --text: #F9FAFB;
-    --muted: #9CA3AF;
-    --border: #374151;
+    --gray: rgba(247, 246, 244, .04);
+    --text: #F7F6F4;
+    --muted: rgba(247, 246, 244, .65);
+    --border: rgba(247, 246, 244, .08);
   }
-  html[data-theme="dark"] body { background: #050712; }
-  html[data-theme="dark"] .header { background: #0F172A; border-color: #374151; }
-  html[data-theme="dark"] .logo { color: #E5E7EB; }
-  html[data-theme="dark"] .back-link { color: #9CA3AF; }
-  html[data-theme="dark"] .back-link:hover { color: #E5E7EB; }
-  html[data-theme="dark"] .card { background: #111827; border-color: #374151; }
-  html[data-theme="dark"] .card-title { color: #F9FAFB; }
-  html[data-theme="dark"] .card-sub { color: #9CA3AF; }
-  html[data-theme="dark"] .field label { color: #D1D5DB; }
-  html[data-theme="dark"] .field input { background: #020617; border-color: #374151; color: #F9FAFB; }
-  html[data-theme="dark"] .field input::placeholder { color: #4B5563; }
-  html[data-theme="dark"] .field input:focus { border-color: #6B7280; }
-  html[data-theme="dark"] .field input.aday:focus { border-color: var(--verm); }
-  html[data-theme="dark"] .error-msg { background: rgba(220,38,38,0.15); border-color: rgba(220,38,38,0.3); color: #FCA5A5; }
-  html[data-theme="dark"] .divider { color: #9CA3AF; }
+  html[data-theme="dark"] body { background: #0F121F; }
+  html[data-theme="dark"] .header { background: rgba(11, 13, 23, .82); border-color: rgba(247, 246, 244, .08); }
+  html[data-theme="dark"] .logo { color: var(--text); }
+  html[data-theme="dark"] .logo span { color: var(--verm); }
+  html[data-theme="dark"] .back-link { color: rgba(247, 246, 244, .65); }
+  html[data-theme="dark"] .back-link:hover { color: var(--text); }
+  html[data-theme="dark"] .card { background: rgba(247, 246, 244, .04); border-color: rgba(247, 246, 244, .09); }
+  html[data-theme="dark"] .card-title { color: var(--text); }
+  html[data-theme="dark"] .card-sub { color: rgba(247, 246, 244, .72); }
+  html[data-theme="dark"] .field label { color: rgba(247, 246, 244, .78); }
+  html[data-theme="dark"] .field input { background: rgba(247, 246, 244, .04); border-color: rgba(247, 246, 244, .1); color: var(--text); }
+  html[data-theme="dark"] .field input::placeholder { color: rgba(247, 246, 244, .45); }
+  html[data-theme="dark"] .field input:focus { border-color: var(--text); box-shadow: 0 0 0 3px rgba(247, 246, 244, .08); }
+  html[data-theme="dark"] .field input.aday:focus { border-color: var(--verm); box-shadow: 0 0 0 3px rgba(201, 78, 40, .15); }
+  html[data-theme="dark"] .error-msg { background: rgba(220, 38, 38, .15); border-color: rgba(220, 38, 38, .3); color: #FCA5A5; }
+  html[data-theme="dark"] .divider { color: rgba(247, 246, 244, .65); }
   html[data-theme="dark"] .divider::before,
-  html[data-theme="dark"] .divider::after { background: #374151; }
-  html[data-theme="dark"] .register-link { color: #9CA3AF; }
-  html[data-theme="dark"] .footer { color: #6B7280; }
+  html[data-theme="dark"] .divider::after { background: rgba(247, 246, 244, .08); }
+  html[data-theme="dark"] .register-link { color: rgba(247, 246, 244, .72); }
+  html[data-theme="dark"] .footer { background: #0B0D17; color: rgba(247, 246, 244, .72); }
+  html[data-theme="dark"] .footer a { color: rgba(247, 246, 244, .72); }
   html[data-theme="dark"] #btn-google-login,
-  html[data-theme="dark"] #btn-linkedin-login { background: #1F2937 !important; border-color: #374151 !important; color: #F9FAFB !important; }
+  html[data-theme="dark"] #btn-linkedin-login { background: rgba(247, 246, 244, .04) !important; border-color: rgba(247, 246, 244, .12) !important; color: var(--text) !important; }
   html[data-theme="dark"] #btn-google-login:hover,
-  html[data-theme="dark"] #btn-linkedin-login:hover { background: #374151 !important; }
-  html[data-theme="dark"] #forgot-password-overlay > div { background: #111827; }
-  html[data-theme="dark"] #forgot-email { background: #020617; border-color: #374151; color: #F9FAFB; }
+  html[data-theme="dark"] #btn-linkedin-login:hover { background: rgba(247, 246, 244, .08) !important; }
+  html[data-theme="dark"] #forgot-password-overlay > div { background: #0F121F; border: 1px solid rgba(247, 246, 244, .09); }
+  html[data-theme="dark"] #forgot-email { background: rgba(247, 246, 244, .04); border-color: rgba(247, 246, 244, .1); color: var(--text); }
 </style>
 </head>
 <body>
@@ -408,7 +419,7 @@
 </main>
 
 <footer class="footer">
-  © 2025 hellotalent.ai · <a href="index.html" style="color:var(--muted);text-decoration:none;">Ana Sayfa</a>
+  © 2025 hellotalent.ai · <a href="index.html">Ana Sayfa</a>
 </footer>
 
 <div id="forgot-password-overlay" role="dialog" aria-modal="true" aria-label="Şifremi unuttum" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);backdrop-filter:blur(3px);z-index:1000;align-items:center;justify-content:center;padding:16px;">
@@ -679,7 +690,7 @@ document.addEventListener('keydown', function(e) {
     var msg = document.getElementById('forgot-msg');
 
     if(!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      if(msg) { msg.textContent = 'Geçerli bir e-posta adresi girin.'; msg.style.color = 'var(--red, #DC2626)'; msg.style.display = 'block'; }
+      if(msg) { msg.textContent = 'Geçerli bir e-posta adresi girin.'; msg.style.color = 'var(--color-red)'; msg.style.display = 'block'; }
       return;
     }
 
@@ -694,11 +705,11 @@ document.addEventListener('keydown', function(e) {
     });
 
     if(error) {
-      if(msg) { msg.textContent = error.message; msg.style.color = 'var(--red, #DC2626)'; msg.style.display = 'block'; }
+      if(msg) { msg.textContent = error.message; msg.style.color = 'var(--color-red)'; msg.style.display = 'block'; }
       btnSend.disabled = false;
       btnSend.textContent = 'Sıfırlama Bağlantısı Gönder';
     } else {
-      if(msg) { msg.textContent = 'Şifre sıfırlama bağlantısı gönderildi! E-posta gelen kutunuzu kontrol edin.'; msg.style.color = 'var(--green, #16A34A)'; msg.style.display = 'block'; }
+      if(msg) { msg.textContent = 'Şifre sıfırlama bağlantısı gönderildi! E-posta gelen kutunuzu kontrol edin.'; msg.style.color = 'var(--color-green)'; msg.style.display = 'block'; }
       document.getElementById('forgot-email').value = '';
       // 60s cooldown after successful send
       var cd = 60;

@@ -1,5 +1,54 @@
 # HelloTalent AI-COLLAB — Aktif Calisma Defteri
 
+## 2026-04-20 — K-049 auth pages brand realignment (Asama 80.9)
+
+**Durum:** `giris.html` + `uye-ol.html` Tailwind palette + hardcoded hex + verm body bg bypass'lari komple brand token'lara hizalandi. 4 public v2 page ile tutarli. Push hazir.
+
+**Aktif hedef:** Tuna UAT hellotalent.ai/giris.html + /uye-ol.html, light + dark mode, form + footer + hover states.
+
+**Claude icin gorev:** K-049b follow-up'lari (MFA modal class extract, dynamic JS strength-meter color tokens, data-theme → html.dark migration) Tuna talep ederse sira. tokens.css dark drift ayri audit.
+
+### Yapilan is
+
+| Dosya | Scope |
+|-------|-------|
+| `giris.html` + `uye-ol.html` light body | `var(--verm)` → `var(--color-gray)` (cream) + `color: var(--text)` |
+| Header | `white` → `rgba(247,246,244,.78)` + glassmorphism blur (4 page pattern) |
+| Footer | transparent + muted gray → `bg: var(--navy); color: var(--color-gray)` + `.footer a` cream |
+| Button hover hardcodes | `#b84420` → `var(--verm-dark)` (semantic alias); `#162249` → `var(--navy-deep)` |
+| Error/success/warning hex | `#DC2626/#16A34A/#FEF3C7` → `var(--color-red)/var(--color-green)/var(--warning-soft)` |
+| Dark mode block (hepsi rewrite) | Tailwind palette (#050712, #0F172A, #374151, #111827, #F9FAFB, #9CA3AF) → K-043 `#0F121F` + `rgba(247, 246, 244, .04/.08/.09/.12)` glass + `var(--text)` cream |
+| MFA modal inline (giris) | hardcoded fallback hex stripped, semantic tokens kullanildi |
+| JS inline style fallbacks (giris) | `var(--red, #DC2626)` / `var(--green, #16A34A)` → pure `var(--color-red)/var(--color-green)` |
+
+### Codex diff review — HIGH blocker fix edildi
+
+- **HIGH (fixed):** `var(--cream)` tokens.css'te tanimsizdi (sadece `--color-gray: #F7F6F4`). Fallback cascade `--navy` → dark mode'da `#7B93C4` mavi = readability bug. Replace all `var(--cream)` usages in auth pages with `var(--text)` (dark blok icinde `--text: #F7F6F4` override edildi).
+- **Low (fixed):** `-webkit-backdrop-filter` eksikti (Safari/iOS) — birakildi, follow-up tek-satir fix olarak K-049c acilir. (Scope creep control)
+- **Semantic consumption (fixed):** `--color-vermillion-dark` / `--color-navy-deep` Layer 1 primitives'ten `--verm-dark` / `--navy-deep` Layer 2 aliases'e cevrildi (tokens.css'teki frame "primitives never referenced directly").
+
+### Playwright direct inspect
+
+- `data-theme="dark"` correctly set, `.footer a` color = `rgba(247, 246, 244, 0.72)` ✓
+- Light + dark full page screenshots: cream body + glass header + brand CTA + navy footer — 4 public v2 page ile tutarli
+- Light + dark auth → brand pop CTA + form clarity + footer consistency
+
+### Scope dışı bırakılanlar (K-049b/c/d follow-up)
+
+- **K-049b:** MFA modal inline style → CSS class extract
+- **K-049c:** `-webkit-backdrop-filter` Safari prefix
+- **K-049d:** Dynamic JS strength-meter color hex (line 619/621/709/712) → tokens
+- **K-049e:** `html[data-theme="dark"]` pre-paint system migration → `html.dark` + `@media` (public v2 alignment, daha buyuk refactor)
+- **Separate audit:** tokens.css dark mode drift (#0B0D17 vs K-043 #0F121F, #7B93C4 navy alias)
+
+### Kurallar / ogrenilen
+
+- `tokens.css` vs `shared-v2.css` iki ayri token sistemi coexists — auth pages tokens.css'e bagli, public v2 pages shared-v2.css'e. Token name aliases farkli (`--verm-dark` vs `--color-vermillion-dark`).
+- Dark mode token override'larinda `var(--cream)` referansi sadece tokens.css'te tanimli degilse undefined cascade → fallback (genelde --text veya daha kotu --navy). Auth pages'te `var(--text)` kullanilmali (local dark block override ile `--text: #F7F6F4` guvenle cream cozer).
+- Layer 1 (primitives) vs Layer 2 (aliases) discipline: consumption always Layer 2. Primitives isim degisir, aliases brand kimligine ayarlanir.
+
+---
+
 ## 2026-04-20 — K-047 shared-v2.css brand token audit cleanup (Asama 80.8)
 
 **Durum:** Comprehensive renk audit (Tuna brief) sonrasi shared-v2.css icinde K-043 drift + info-box duplicate + ink alias docs eksiklikleri temizlendi. Push hazir.
