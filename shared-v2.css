@@ -18,8 +18,13 @@
   --cream: #F7F6F4;
   --cream-soft: #FAF9F7;
   --cream-warm: #F0EDE6;
-  /* Ink aliases collapsed to brand navy (2026-04-19) — previous #0A0E27/#2A2F4A
-     drift removed; text + dark surfaces now share the canonical navy. */
+  /* Ink aliases (collapsed to brand navy 2026-04-19; prev #0A0E27/#2A2F4A drift removed).
+     Semantic intent (K-047 dokumantasyon):
+     - --ink: primary text renk semantic (h1-h6, kuvvetli body). Her iki mode'da NAVY cozer
+       — dark surface'lerde explicit `color: var(--cream)` override gerekli, --ink kullanilmaz.
+     - --ink-soft: ikincil text (lede, long paragraf) — ayni kural, dark'ta explicit cream.
+     Kod tarafinda --ink/--navy interchangeable cozuluyor ama anlam ayri:
+     --ink = "text semantic", --navy = "brand color semantic". Yeni text kodu --ink tercih etsin. */
   --ink: var(--navy);
   --ink-soft: var(--navy-dark);
   --muted: #5D6283;        /* WCAG AA polish — was #6F7493 (4.2:1 → 4.9:1 on cream) */
@@ -929,7 +934,7 @@ html.dark .vp-card.navy .vp-num, html.dark .vp-card.navy .vp-more, html.dark .st
 html.dark .hero-stats { border-top-color: rgba(247, 246, 244, .14); }
 html.dark .hero-stat { color: rgba(247, 246, 244, .6); }
 html.dark .hero-stat b { color: var(--cream); }
-html.dark .hero-badge { background: #161928; color: var(--cream); }
+html.dark .hero-badge { background: #0F121F; color: var(--cream); }
 html.dark .btn-outline { color: var(--cream); box-shadow: inset 0 0 0 1.5px rgba(247, 246, 244, .45); }
 html.dark .btn-outline:hover { background: var(--cream); color: var(--ink); }
 html.dark .btn-ghost { background: rgba(247, 246, 244, .06); color: var(--cream); }
@@ -950,7 +955,8 @@ html.dark .auth-left { background: #0B0D17; }
 html.dark .fact, html.dark .contact-card, html.dark .hq-info, html.dark .hq-item, html.dark .info-box, html.dark .kvkk-table, html.dark .right-item { background: rgba(247, 246, 244, .035); border-color: rgba(247, 246, 244, .09); color: var(--cream); }
 html.dark .fact b, html.dark .contact-card h3, html.dark .hq-info h2, html.dark .hq-item-value, html.dark .right-item b { color: var(--cream); }
 html.dark .hq-item-label { color: rgba(247, 246, 244, .72); }
-html.dark .info-box { background: rgba(201, 78, 40, .06); border-left-color: var(--verm); }
+/* K-047 — info-box tek authoritative kural asagida (Yasal zone, line ~1000).
+   Eski duplikat burada sahow-override yiyiordu, silindi. */
 html.dark .kvkk-table th { background: var(--navy); color: var(--cream); }
 html.dark .h-display.light em, html.dark .h-section.light em { color: var(--coral-soft); }
 html.dark .kvkk-table td { color: rgba(247, 246, 244, .72); border-top-color: rgba(247, 246, 244, .08); }
@@ -1055,7 +1061,9 @@ html.dark .brand-row .b-item { color: var(--cream); opacity: .9; }
 .hq-map iframe + .hq-map-placeholder { display: none; }
 
 html.dark .hq-map-placeholder {
-  background: linear-gradient(135deg, #181B2B 0%, #0F1220 50%, #181B2B 100%);
+  /* K-047 — K-043 unified tone; ::before altinda radial + grid pattern
+     zaten visual depth sagliyor, flat base yeterli. */
+  background: #0F121F;
 }
 html.dark .hq-map-placeholder::before {
   background-image:
@@ -1125,7 +1133,7 @@ html.dark .split-2 p { color: rgba(247, 246, 244, .78); }
   .hero-stats { border-top-color: rgba(247, 246, 244, .14); }
   .hero-stat { color: rgba(247, 246, 244, .6); }
   .hero-stat b { color: var(--cream); }
-  .hero-badge { background: #161928; color: var(--cream); }
+  .hero-badge { background: #0F121F; color: var(--cream); }
 
   /* Buttons */
   .btn-outline { color: var(--cream); box-shadow: inset 0 0 0 1.5px rgba(247, 246, 244, .45); }
@@ -1171,8 +1179,16 @@ html.dark .split-2 p { color: rgba(247, 246, 244, .78); }
   }
   .fact b, .contact-card h3, .hq-info h2, .hq-item-value, .right-item b { color: var(--cream); }
   .hq-item-label { color: rgba(247, 246, 244, .55); }
-  .info-box { background: rgba(201, 78, 40, .06); border-left-color: var(--verm); }
-  .kvkk-table th { background: #1A1F35; }
+  /* K-047 — info-box @media parity with html.dark (line ~1010).
+     Specificity bump (html prefix) — yasal.html local <style>'da .info-box
+     var(--cream) bg ayni specificity'de sonra yuklenip override ediyor
+     (K-043 pattern). */
+  html .info-box { background: rgba(201, 78, 40, .12); border-color: rgba(201, 78, 40, .3); }
+  html .info-box p { color: var(--cream); }
+  /* K-047 — hq-map-placeholder @media parity (line ~1063 html.dark).
+     K-043 unified flat (::before pattern zaten depth). */
+  html .hq-map-placeholder { background: #0F121F; }
+  .kvkk-table th { background: var(--navy); }
   .kvkk-table td { color: rgba(247, 246, 244, .72); border-top-color: rgba(247, 246, 244, .08); }
   .yasal-panel p, .yasal-panel ul, .yasal-panel li { color: rgba(247, 246, 244, .72); }
   .yasal-panel strong { color: var(--cream); }

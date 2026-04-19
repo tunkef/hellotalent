@@ -1,5 +1,43 @@
 # HelloTalent AI-COLLAB — Aktif Calisma Defteri
 
+## 2026-04-20 — K-047 shared-v2.css brand token audit cleanup (Asama 80.8)
+
+**Durum:** Comprehensive renk audit (Tuna brief) sonrasi shared-v2.css icinde K-043 drift + info-box duplicate + ink alias docs eksiklikleri temizlendi. Push hazir.
+
+**Aktif hedef:** K-049 auth pages (giris + uye-ol) brand realignment — K-048 button hover absorb.
+
+**Claude icin gorev:** K-049 auth pages brand realignment planla + brief Tuna'ya sun.
+
+### Yapilan is
+
+| Dosya | Scope |
+|-------|-------|
+| `shared-v2.css:932, 1128` | hero-badge bg #161928 → #0F121F (K-043 unified, html.dark + @media) |
+| `shared-v2.css:1058` | hq-map-placeholder gradient #181B2B/#0F1220/#181B2B → flat #0F121F |
+| `shared-v2.css:953` | info-box duplicate (shadow-overridden) silindi |
+| `shared-v2.css:1182-1184` | @media info-box + hq-map-placeholder parity — specificity bump `html ...` local override icin |
+| `shared-v2.css:22-30` | --ink / --ink-soft semantic intent docs (Codex feedback ile revize) |
+| 4 HTML | Cache bump `v=l → 20260420a` |
+
+### Codex diff review — 3 risk fix edildi
+
+- **Risk 1 (fixed):** Ink docs yanilticiydi — "dark mode'da cream resolve eder" yaziyordu, aslinda token navy kaliyor, explicit cream override gerekli. Revize: "semantic intent, dark surface'lerde explicit cream override lazim".
+- **Risk 2 (fixed):** @media bloku info-box eski `.06 + left-accent` tasiyordu, html.dark 12% + all-sides ile divergent. Parity eklendi + `html` specificity bump (yasal.html local `.info-box` var(--cream) override'ini yenmek icin).
+- **Risk 3 (fixed):** @media hq-map-placeholder eksikti, OS-dark/no-JS light fallback alacakti. Parity eklendi + html specificity bump.
+- Codex suggest (deferred): hero-badge `rgba(247,246,244,.08)` border lift — Tuna isaret etmezse birak.
+
+### Playwright no-JS parity (colorScheme:dark, javaScriptEnabled:false)
+
+- yasal info-box: bg `rgba(201,78,40,.12)`, border `rgba(201,78,40,.3)` ✓ (specificity bump calisti)
+
+### Kurallar / ogrenilen
+
+- `@media (prefers-color-scheme: dark)` bloku `html.dark` bloku ile SIKI parity tutmali, aksi halde no-JS ortamda regression.
+- Local `<style>` shared-v2.css'ten sonra yuklendigi icin ayni specificity'de override eder — shared @media kurallarinda `html X` prefix ile specificity bump gerek.
+- Token aliasing semantic docs: --ink dark'ta auto-flip etmez, text renk her mode'da explicit belirlenir.
+
+---
+
 ## 2026-04-20 — K-046 kurumsal stories vermillion (Asama 80.7) — replaces K-045
 
 **Durum:** K-045 coral accent bar iptal. Tuna: kurumsal stories vermillion yap, renk kontrasti bolum ayrimini versin. Adaylar akisi (stories navy → closing verm) ↔ kurumsal (stories verm → closing navy) ayna ritim. Push hazir.
