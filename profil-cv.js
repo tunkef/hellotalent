@@ -1,4 +1,4 @@
-/* global collectCertificates, collectEducation, collectExperiences, collectLanguages, currentUser, ht_track, LEADERSHIP_SKILLS, monthIndexToName, ROLE_SKILLS_MAP, selectedBrandInterests, showToast, STORAGE, supabase, val, _loadedDBData */
+/* global collectCertificates, collectEducation, collectExperiences, collectLanguages, currentUser, EB_GARAMOND_BOLD_B64, EB_GARAMOND_ITALIC_B64, EB_GARAMOND_REGULAR_B64, ht_track, LEADERSHIP_SKILLS, monthIndexToName, ROLE_SKILLS_MAP, selectedBrandInterests, showToast, STORAGE, supabase, val, _loadedDBData */
 // ═══════════════════════════════════════════════════
 // profil-cv.js — Legacy CV Upload + Template-Driven PDF Generation
 // K-066: AI CV optimize kaldırıldı. CV artık 100% template-driven
@@ -242,9 +242,9 @@ function _cvSection(doc, title, M, cW, Y) {
   if (Y > 268) { doc.addPage(); Y = 20; }
   Y += 2;
   doc.setFontSize(10);
-  doc.setFont('times', 'bold');
+  doc.setFont('EBGaramond', 'bold');
   doc.setTextColor(0, 0, 0);
-  doc.text(title.toUpperCase(), M, Y);
+  doc.text(title.toLocaleUpperCase('tr-TR'), M, Y);
   Y += 1.2;
   doc.setDrawColor(180, 180, 180);
   doc.setLineWidth(0.15);
@@ -252,8 +252,27 @@ function _cvSection(doc, title, M, cW, Y) {
   Y += 4.5;
   doc.setFontSize(9.5);
   doc.setTextColor(40, 40, 40);
-  doc.setFont('times', 'normal');
+  doc.setFont('EBGaramond', 'normal');
   return Y;
+}
+
+/* ── K-067 Pillar A: EB Garamond Turkish subset TTF embed (jsPDF VFS) ──
+   Türkçe karakterler (İ, ı, ğ, ş, ç, ö, ü) default WinAnsi encoding'de bozuk.
+   EB Garamond 3 weight × Turkish subset → addFileToVFS + addFont ile embed.
+   Bir kez çağrılır (idempotent), ikinci çağrıda no-op. */
+function _ensureCVFont(doc) {
+  if (_ensureCVFont._done) return;
+  if (typeof window.EB_GARAMOND_REGULAR_B64 !== 'string') {
+    console.warn('[HT] eb-garamond-vfs.js yüklenmedi — PDF türkçe karakterleri bozulabilir.');
+    return;
+  }
+  doc.addFileToVFS('EBGaramond-Regular.ttf', window.EB_GARAMOND_REGULAR_B64);
+  doc.addFileToVFS('EBGaramond-Bold.ttf',    window.EB_GARAMOND_BOLD_B64);
+  doc.addFileToVFS('EBGaramond-Italic.ttf',  window.EB_GARAMOND_ITALIC_B64);
+  doc.addFont('EBGaramond-Regular.ttf', 'EBGaramond', 'normal');
+  doc.addFont('EBGaramond-Bold.ttf',    'EBGaramond', 'bold');
+  doc.addFont('EBGaramond-Italic.ttf',  'EBGaramond', 'italic');
+  _ensureCVFont._done = true;
 }
 
 /* ── Avatar fetch → dataURL helper (guvenli embed) ── */
@@ -280,6 +299,7 @@ function fetchAvatarAsDataURL(url) {
 async function generateCV() {
   var jsPDF = window.jspdf.jsPDF;
   var doc = new jsPDF({ unit: 'mm', format: 'a4' });
+  _ensureCVFont(doc); // K-067: Türkçe karakter fix
   var W = 210, H = 297, M = 16, cW = W - 2 * M, Y = 0;
   var d = normalizeCVData();
 
@@ -291,18 +311,18 @@ async function generateCV() {
   }
 
   // ── HEADER: isim (uppercase) sol | avatar sağ ──
-  doc.setFont('times', 'normal');
+  doc.setFont('EBGaramond', 'normal');
   doc.setFontSize(20);
   doc.setTextColor(0, 0, 0);
   // Letter-spaced uppercase isim — times yok letter-spacing, genişlik manipüle
-  var isimUpper = (d.isim || 'Ad Soyad').toUpperCase();
+  var isimUpper = (d.isim || 'Ad Soyad').toLocaleUpperCase('tr-TR');
   doc.setCharSpace(0.8);
   doc.text(isimUpper, M, 16);
   doc.setCharSpace(0);
 
   var headerYStart = 20;
   if (d.targetRole) {
-    doc.setFont('times', 'italic');
+    doc.setFont('EBGaramond', 'italic');
     doc.setFontSize(10);
     doc.setTextColor(80, 80, 80);
     doc.text(d.targetRole, M, headerYStart + 3);
@@ -315,7 +335,7 @@ async function generateCV() {
   var line2 = [];
   if (d.email) line2.push(d.email);
   if (d.linkedin) line2.push(d.linkedin);
-  doc.setFont('times', 'normal');
+  doc.setFont('EBGaramond', 'normal');
   doc.setFontSize(9);
   doc.setTextColor(40, 40, 40);
   var cy = headerYStart + (d.targetRole ? 8 : 3);
@@ -329,7 +349,7 @@ async function generateCV() {
       .map(function(l) { return l.dil + (l.seviye ? ': ' + l.seviye : ''); })
       .join('    ');
     if (langText) {
-      doc.setFont('times', 'normal');
+      doc.setFont('EBGaramond', 'normal');
       doc.setFontSize(9);
       doc.setTextColor(40, 40, 40);
       doc.text(langText, M, cy);
@@ -354,7 +374,7 @@ async function generateCV() {
   // ── SECTION 1: PROFESYONEL ÖZET ──
   if (d.summary) {
     Y = _cvSection(doc, 'Profesyonel \u00d6zet', M, cW, Y);
-    doc.setFont('times', 'normal');
+    doc.setFont('EBGaramond', 'normal');
     doc.setFontSize(9.5);
     doc.setTextColor(30, 30, 30);
     var splitSummary = doc.splitTextToSize(d.summary, cW);
@@ -396,11 +416,11 @@ async function generateCV() {
     skillCats.forEach(function(c) {
       if (Y > 268) { doc.addPage(); Y = 20; }
       var catLabel = c.cat + ': ';
-      doc.setFont('times', 'bold');
+      doc.setFont('EBGaramond', 'bold');
       doc.setTextColor(0, 0, 0);
       doc.text(catLabel, M, Y);
       var catWidth = doc.getTextWidth(catLabel);
-      doc.setFont('times', 'normal');
+      doc.setFont('EBGaramond', 'normal');
       doc.setTextColor(40, 40, 40);
       var itemsText = c.items.join(', ') + '.';
       var splitItems = doc.splitTextToSize(itemsText, cW - catWidth);
@@ -423,8 +443,8 @@ async function generateCV() {
       if (Y > 260) { doc.addPage(); Y = 20; }
 
       // Company (uppercase bold) + tarih sağ italic
-      var companyLabel = (e.marka || e.sirket || '').toString().toUpperCase();
-      doc.setFont('times', 'bold');
+      var companyLabel = (e.marka || e.sirket || '').toString().toLocaleUpperCase('tr-TR');
+      doc.setFont('EBGaramond', 'bold');
       doc.setFontSize(10);
       doc.setTextColor(0, 0, 0);
       doc.setCharSpace(0.4);
@@ -437,7 +457,7 @@ async function generateCV() {
         tarih += e.devam_ediyor ? 'Devam' : ((monthIndexToName(e.bitis_ay) || '') + ' ' + (e.bitis_yil || ''));
       }
       if (tarih) {
-        doc.setFont('times', 'italic');
+        doc.setFont('EBGaramond', 'italic');
         doc.setFontSize(9);
         doc.setTextColor(80, 80, 80);
         doc.text(tarih.trim(), M + cW, Y, { align: 'right' });
@@ -449,7 +469,7 @@ async function generateCV() {
       if (e.pozisyon) roleLine.push(e.pozisyon);
       if (e.sehir) roleLine.push(e.sehir);
       if (roleLine.length) {
-        doc.setFont('times', 'italic');
+        doc.setFont('EBGaramond', 'italic');
         doc.setFontSize(9.5);
         doc.setTextColor(50, 50, 50);
         doc.text(roleLine.join('  |  '), M, Y);
@@ -462,7 +482,7 @@ async function generateCV() {
         var sentences = summaryText.split(/(?<=[.!?])\s+/).filter(function(s) { return s.trim().length > 0; });
         if (!sentences.length) sentences = [summaryText];
         var maxBullets = Math.min(5, sentences.length);
-        doc.setFont('times', 'normal');
+        doc.setFont('EBGaramond', 'normal');
         doc.setFontSize(9.5);
         doc.setTextColor(30, 30, 30);
         for (var si3 = 0; si3 < maxBullets; si3++) {
@@ -484,22 +504,22 @@ async function generateCV() {
     Y = _cvSection(doc, 'E\u011fitim', M, cW, Y);
     d.education.forEach(function(e) {
       if (Y > 268) { doc.addPage(); Y = 20; }
-      doc.setFont('times', 'bold');
+      doc.setFont('EBGaramond', 'bold');
       doc.setFontSize(10);
       doc.setTextColor(0, 0, 0);
       doc.setCharSpace(0.3);
-      doc.text((e.okul || '').toUpperCase(), M, Y);
+      doc.text((e.okul || '').toLocaleUpperCase('tr-TR'), M, Y);
       doc.setCharSpace(0);
       var rightText = [e.egitim_seviye, e.mezun_yil ? String(e.mezun_yil) : ''].filter(Boolean).join(', ');
       if (rightText) {
-        doc.setFont('times', 'italic');
+        doc.setFont('EBGaramond', 'italic');
         doc.setFontSize(9);
         doc.setTextColor(80, 80, 80);
         doc.text(rightText, M + cW, Y, { align: 'right' });
       }
       Y += 4.5;
       if (e.bolum) {
-        doc.setFont('times', 'italic');
+        doc.setFont('EBGaramond', 'italic');
         doc.setFontSize(9.5);
         doc.setTextColor(50, 50, 50);
         doc.text(e.bolum, M, Y);
@@ -515,19 +535,19 @@ async function generateCV() {
     Y = _cvSection(doc, 'Sertifikalar', M, cW, Y);
     d.certificates.forEach(function(c) {
       if (Y > 268) { doc.addPage(); Y = 20; }
-      doc.setFont('times', 'bold');
+      doc.setFont('EBGaramond', 'bold');
       doc.setFontSize(10);
       doc.setTextColor(0, 0, 0);
-      doc.text((c.egitim_adi || '').toUpperCase(), M, Y);
+      doc.text((c.egitim_adi || '').toLocaleUpperCase('tr-TR'), M, Y);
       if (c.yil) {
-        doc.setFont('times', 'italic');
+        doc.setFont('EBGaramond', 'italic');
         doc.setFontSize(9);
         doc.setTextColor(80, 80, 80);
         doc.text(String(c.yil), M + cW, Y, { align: 'right' });
       }
       Y += 4.5;
       if (c.kurum) {
-        doc.setFont('times', 'italic');
+        doc.setFont('EBGaramond', 'italic');
         doc.setFontSize(9.5);
         doc.setTextColor(50, 50, 50);
         doc.text(c.kurum, M, Y);
@@ -540,13 +560,13 @@ async function generateCV() {
 
   // ── References line (italic right) ──
   if (Y > 270) { doc.addPage(); Y = 20; }
-  doc.setFont('times', 'italic');
+  doc.setFont('EBGaramond', 'italic');
   doc.setFontSize(9);
   doc.setTextColor(90, 90, 90);
   doc.text('Referanslar talep \u00fczerine sunulur.', M + cW, Y + 4, { align: 'right' });
 
   // ── Footer: "by hellotalent" sayfa altında ortalanmış ──
-  doc.setFont('times', 'italic');
+  doc.setFont('EBGaramond', 'italic');
   doc.setFontSize(8);
   doc.setTextColor(140, 140, 140);
   doc.text('by hellotalent', W / 2, H - 10, { align: 'center' });

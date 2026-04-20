@@ -1,5 +1,39 @@
 # HelloTalent AI-COLLAB — Aktif Calisma Defteri
 
+## 2026-04-20 — K-067 Sprint 1: Türkçe PDF + checkbox kök fix + post-save CV erişim (Asama 80.20)
+
+**Durum:** Tuna feedback K-066 sonrası: PDF Türkçe karakterler bozuk, "Burada çalışıyorum" checkbox state kaybolma (4. kez), profil kaydet sonrası CV'ye erişim yok. Plan: docs/K067-PLAN.md (8 pillar, 4 sprint).
+
+**Sprint 1 (P0) tamam.** 3 paralel ajan raporu (Zety UX + jsPDF Türkçe çözüm + checkbox kök neden) → kapsamlı plan → 3 pillar implement.
+
+### Pillar A — PDF Türkçe karakter kök fix
+- **Yeni:** `eb-garamond-vfs.js` (~250KB base64). EB Garamond Regular+Bold+Italic Turkish subset (~63KB ttf × 3). Build: google/fonts variable TTF → fontTools varLib.mutator → pyftsubset Latin + Latin-1 + Latin Ext-A unicodes.
+- **profil-cv.js:** `_ensureCVFont(doc)` helper (idempotent VFS inject + addFont). `setFont('times')` → `setFont('EBGaramond')` (21 yer). `.toUpperCase()` → `.toLocaleUpperCase('tr-TR')` (5 yer — JS default toUpperCase Türkçe locale değil, "i" → "I" yapar, doğrusu "İ").
+- **profil.html:** `<script src="eb-garamond-vfs.js?v=20260420k067">` profil-cv.js öncesi.
+- **UAT:** `ht-k067-pdf-turkish.mjs` Playwright ile generateCV() → datauristring → pdftotext extract → 14/14 Türkçe regex pass: İstanbul, Mağaza, ŞAHİN, İREM, ŞİŞECAM, Büyük, İngilizce, Türkçe, EĞİTİM, BOĞAZİÇİ, üzerinde, YETKİNLİKLER, DENEYİM, ÜNİVERSİTESİ.
+
+### Pillar B — "Burada çalışıyorum" checkbox kök fix
+- **Geçmiş:** 12aa73d, af8559a, 1741633 — 3 önceki "fix" yüzeysel kalmış. Hiçbiri `dispatchEvent('change')` eklememiş.
+- **Kök neden:** addExperienceCard() içinde `cb.checked = true` programmatic SET change listener TETIKLEMEZ. Initial state manuel toggle kodu çağrılan listener kodundan ayrıydı.
+- **Fix (profil-ui.js):** `_toggleExperienceFields()` helper'a extract — hem listener hem initial state aynı fonksiyonu çağırır (deterministic). + dispatchEvent yedeği (future listener garanti).
+
+### Pillar C — Post-save CV erişim
+- **Sorun:** Tuna kaydet sonrası CV'ye nasıl ulaşacağını bulamadı. Aslında merkez panelde `btn-preview-profile` + `btn-generate-cv-merkez` vardı ama keşfedilebilir değildi.
+- **profil.html:** Success modal'e "CV'mi Gör" primary buton (Tamam ghost). Merkez CV card'ı redesign — başlık "CV'iniz" + "Düzenle" + büyük "PDF İndir" primary. Legacy upload "opsiyonel" notu ile altta.
+- **profil-events.js:** `btn-success-view-cv` → modal kapat + switchPanel('merkez') + scrollIntoView + 1.6s vermillion box-shadow vurgusu. `btn-cv-download-merkez` → generateCV(). `btn-cv-edit-merkez` → switchPanel('profil').
+
+### Test
+- 932 pass, 0 fail (tests/p3.regression.spec.js)
+- Yeni K-067 Sprint 1 guards (5 test): Pillar A font + Türkçe upper, Pillar B helper extract + dispatchEvent
+- ht-k067-pdf-turkish.mjs Playwright UAT 14/14
+
+### Sırada
+- Sprint 1 commit + push → Tuna live UAT
+- Sprint 2 (P1): Tuna CV pixel parity (D), skill taxonomy genişlet (E)
+- Sprint 3 (P2): Autosave + accordion + tag-input (F), mobile bottom tab (G)
+
+---
+
 ## 2026-04-20 — K-066 iterasyon 2: Tuna CV template + role-based skills + bug fixes (Asama 80.19.2)
 
 **Durum:** Tuna UAT feedback — 4 konu: (1) kayıt CHECK constraint kırıyordu (career_type), (2) wizard sağ "Adımlar" spine gereksiz (progress bar zaten var), (3) CV template Tuna'nın kendi CV pattern'ine uyumlu olmalı (EB Garamond, B&W, avatar sağ üst, by hellotalent footer), (4) Yetkinlik section "Mağaza Müdürü" gibi pozisyon değil gerçek skill'ler göstermeli (Zety-style role→skill).

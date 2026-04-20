@@ -1979,6 +1979,51 @@ test.describe('CV canonical template guards', () => {
    AI CV integration + Source ingestion + Hardening describe blockları
    K-066 ile silindi. Yeni guard altta konsolide edildi.
    ════════════════════════════════════════════════ */
+test.describe('K-067 Sprint 1 guards', () => {
+  var cvJs, uiJs, profilHtml;
+
+  test.beforeAll(() => {
+    cvJs = readFromRepo('profil-cv.js');
+    uiJs = readFromRepo('profil-ui.js');
+    profilHtml = readFromRepo('profil.html');
+  });
+
+  // Pillar A: PDF Türkçe font fix
+  test('Pillar A: eb-garamond-vfs.js yüklü + _ensureCVFont helper var', () => {
+    expect(profilHtml).toContain('eb-garamond-vfs.js');
+    expect(cvJs).toContain('function _ensureCVFont');
+    expect(cvJs).toContain("addFont('EBGaramond-Regular.ttf'");
+    expect(cvJs).toContain("addFont('EBGaramond-Bold.ttf'");
+    expect(cvJs).toContain("addFont('EBGaramond-Italic.ttf'");
+  });
+
+  test('Pillar A: generateCV EBGaramond kullanıyor — times yasak', () => {
+    expect(cvJs).not.toMatch(/setFont\s*\(\s*['"]times['"]/);
+    expect(cvJs).toMatch(/setFont\(['"]EBGaramond['"]/);
+    // _ensureCVFont generateCV başında çağrılıyor
+    expect(cvJs).toMatch(/_ensureCVFont\(doc\)/);
+  });
+
+  test('Pillar A: Türkçe upper toLocaleUpperCase("tr-TR") kullanıyor', () => {
+    /* Default toUpperCase "i" → "I" yapar (İ değil). Türkçe locale gerekli. */
+    expect(cvJs).not.toContain('.toUpperCase()');
+    expect(cvJs).toMatch(/toLocaleUpperCase\(['"]tr-TR['"]\)/);
+  });
+
+  // Pillar B: Checkbox state kök fix
+  test('Pillar B: _toggleExperienceFields helper extract edildi (dispatchEvent bağımsız)', () => {
+    expect(uiJs).toContain('function _toggleExperienceFields');
+    /* Initial state'te helper direkt çağrılır (change listener'dan bağımsız) */
+    expect(uiJs).toMatch(/_toggleExperienceFields\s*\(\s*\)/);
+  });
+
+  test('Pillar B: addExperienceCard restore sonrası dispatchEvent yedeği var', () => {
+    /* Manual .checked = true sonrası helper çağrılır + dispatchEvent yedeği
+       future listener'lar için garanti */
+    expect(uiJs).toMatch(/dispatchEvent\(new Event\(['"]change['"]/);
+  });
+});
+
 test.describe('K-066 CV module guards (template-driven)', () => {
   var cvJs3, eventsJs;
 

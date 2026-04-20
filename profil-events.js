@@ -359,6 +359,31 @@ function _htInitEvents() {
   /* Wizard sağ kolonundaki "PDF İndir" butonu */
   var btnCvDownload = document.getElementById('btn-cv-download');
   if (btnCvDownload) btnCvDownload.addEventListener('click', function() { generateCV(); });
+  /* K-067 Pillar C: Merkez panel CV card primary butonları */
+  var btnCvDownloadMerkez = document.getElementById('btn-cv-download-merkez');
+  if (btnCvDownloadMerkez) btnCvDownloadMerkez.addEventListener('click', function() { generateCV(); });
+  var btnCvEditMerkez = document.getElementById('btn-cv-edit-merkez');
+  if (btnCvEditMerkez) btnCvEditMerkez.addEventListener('click', function() {
+    if (typeof window.switchPanel === 'function') window.switchPanel('profil');
+  });
+
+  /* K-067 Pillar C: Success modal "CV'mi Gör" — wizard kaydet sonrası
+     kullanıcıyı merkez CV section'ına götür + briefly highlight */
+  var btnSuccessViewCv = document.getElementById('btn-success-view-cv');
+  if (btnSuccessViewCv) btnSuccessViewCv.addEventListener('click', function() {
+    var modal = document.getElementById('modal-success');
+    if (modal) modal.classList.remove('show');
+    if (typeof window.switchPanel === 'function') window.switchPanel('merkez');
+    setTimeout(function() {
+      var sec = document.getElementById('cv-section');
+      if (sec) {
+        sec.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        sec.style.transition = 'box-shadow .4s ease';
+        sec.style.boxShadow = '0 0 0 3px var(--verm)';
+        setTimeout(function() { sec.style.boxShadow = ''; }, 1600);
+      }
+    }, 220);
+  });
 
   // Draft resume button
   var btnDraftResume = document.getElementById('btn-draft-resume');

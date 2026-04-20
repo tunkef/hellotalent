@@ -646,13 +646,18 @@ function addExperienceCard(data) {
 
   card.appendChild(descWrap);
 
-  // Toggle bitis fields and ayrilma based on checkbox
-  cb.addEventListener('change', function() {
+  // K-067 Pillar B: "Halen burada çalışıyorum" state helper (kök fix).
+  // Geçmiş bug: .checked = true programmatic SET change event TETIKLEMEZ.
+  // 3 önceki yüzeysel fix (12aa73d, af8559a, 1741633) dispatchEvent eklememişti.
+  // Kök çözüm: toggle kodu HELPER'a extract — hem initial render hem listener
+  // aynı fonksiyonu çağırsın, deterministic state garantisi.
+  function _toggleExperienceFields() {
     var bitisFields = card.querySelectorAll('.bitis-field');
     var ayrilma = card.querySelector('.ayrilma-field');
+    var isDevam = !!cb.checked;
     bitisFields.forEach(function(f) {
       var sel = f.querySelector('select');
-      if (cb.checked) {
+      if (isDevam) {
         f.style.display = 'none';
         if (sel) { sel.value = ''; sel.disabled = true; }
       } else {
@@ -660,19 +665,15 @@ function addExperienceCard(data) {
         if (sel) sel.disabled = false;
       }
     });
-    if (ayrilma) ayrilma.style.display = cb.checked ? 'none' : '';
-    // Badge + card border
-    devamBadge.style.display = cb.checked ? 'inline-block' : 'none';
-    // Border removed — devam badge is sufficient indicator
-  });
-  // Trigger initial state
+    if (ayrilma) ayrilma.style.display = isDevam ? 'none' : '';
+    devamBadge.style.display = isDevam ? 'inline-block' : 'none';
+  }
+  cb.addEventListener('change', _toggleExperienceFields);
+  // Initial state — programmatic SET sonrası helper deterministic çalışır.
+  // Ayrıca dispatchEvent yedeği (ileride başka listener eklenirse garanti).
   if (d.devam_ediyor) {
-    card.querySelectorAll('.bitis-field').forEach(function(f) {
-      f.style.display = 'none';
-      var sel = f.querySelector('select');
-      if (sel) { sel.value = ''; sel.disabled = true; }
-    });
-    // Border removed
+    _toggleExperienceFields();
+    cb.dispatchEvent(new Event('change', { bubbles: true }));
   }
 
   // Basari Ozeti removed from wizard (Decision 5 — future dashboard feature)
