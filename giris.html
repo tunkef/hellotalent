@@ -108,21 +108,29 @@
   .auth-split.ik-active .auth-img-aday { opacity: 0; }
   .auth-split.ik-active .auth-img-kurumsal { opacity: 1; }
 
+  /* K-058 — Tablet+: grid stretch, cards equal height, no aspect-ratio lock. */
   @media (min-width: 768px) {
+    .main { padding: 24px 24px; }
     .auth-split {
       grid-template-columns: 1fr 1fr;
-      max-width: 960px;
-      gap: clamp(32px, 4vw, 56px);
-      align-items: center;
+      max-width: 1120px;
+      gap: clamp(24px, 3vw, 40px);
+      align-items: stretch;
     }
-    .auth-scene { display: block; }
+    .auth-scene {
+      display: block;
+      aspect-ratio: auto;
+      height: 100%;
+      min-height: 520px;
+    }
   }
   @media (min-width: 1100px) {
     .auth-split {
-      grid-template-columns: 1.05fr 1fr;
-      max-width: 1080px;
-      gap: clamp(40px, 5vw, 72px);
+      grid-template-columns: 1fr 1fr;
+      max-width: 1200px;
+      gap: clamp(32px, 4vw, 56px);
     }
+    .auth-scene { min-height: 620px; }
   }
 
   .card {
@@ -136,7 +144,13 @@
     box-shadow: 0 4px 24px rgba(0,0,0,0.06);
   }
   @media (min-width: 768px) {
-    .card { max-width: none; }
+    .card {
+      max-width: none;
+      padding: clamp(28px, 4vw, 44px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
   }
 
   /* ── TAB TOGGLE ── */
@@ -430,8 +444,8 @@
   <div class="auth-split" id="auth-split">
     <!-- K-057 — Desktop/tablet split: brand portrait side + form side. Mobile: form only. -->
     <div class="auth-scene" aria-hidden="true">
-      <img class="auth-img auth-img-aday" src="assets/v2/auth-aday.webp" alt="Aday mülakatta — mockup">
-      <img class="auth-img auth-img-kurumsal" src="assets/v2/auth-kurumsal.webp" alt="Kurumsal mülakatta — mockup">
+      <img class="auth-img auth-img-aday" src="assets/v2/auth-aday.webp" alt="" role="presentation">
+      <img class="auth-img auth-img-kurumsal" src="assets/v2/auth-kurumsal.webp" alt="" role="presentation">
     </div>
   <div class="card">
 

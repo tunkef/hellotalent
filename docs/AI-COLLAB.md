@@ -1,5 +1,39 @@
 # HelloTalent AI-COLLAB — Aktif Calisma Defteri
 
+## 2026-04-20 — K-058 auth pages eşit kart yüksekliği + uye-ol compact form (Asama 80.13)
+
+**Durum:** Tuna K-057 sonrası feedback: kartlar farklı yükseklikte, uye-ol formu page scroll yapıyor. Hedef: NovaSyncer/Payoneer stili — kartlar eşit boy, form tek sayfada sığsın, kurumsal form kısa bile kalsa kartlar aynı büyük boyutta.
+
+**Aktif hedef:** Tuna UAT hellotalent.ai/giris + /uye-ol tüm viewport × light/dark × aday/kurumsal.
+
+### Yapilan is
+
+| Dosya | Scope |
+|-------|-------|
+| `giris.html` | `align-items: stretch`, aspect-ratio kaldirildi tablet+, scene `height:100%` + `min-height 520/620px`, card flex-col `justify-content:center`, padding clamp 28-44px, img alt="" role="presentation" decorative |
+| `uye-ol.html` | Aynı grid stretch + scene min-height. Card compact density (tablet+): padding 24-36, field margin 10, input padding 9, strength-rules 2-col grid, consent 10.5px, divider 12px, oauth 9px padding. img decorative |
+| Accessibility | `.auth-img` alt="" + role="presentation" (decorative intent), `aria-hidden="true"` scene wrapper'da kalır |
+
+### Responsive davranis
+
+- **Mobile (<768px):** K-057 aynen (tek kolon, scene hidden, form 420px max)
+- **Tablet (≥768px):** 1fr/1fr stretch grid, max-w 1120px, gap 24-40px, scene min-height 520px
+- **Desktop (≥1100px):** 1fr/1fr stretch grid, max-w 1200px, gap 32-56px, scene min-height 620px, card padding 44px
+
+### DeepSeek review
+
+- Model: deepseek-chat | Input: 4069 + Output: 1648 token | ~$.00183
+- KRITIK: yok. YUKSEK: null guard mevcut (if split). Accessibility nit → fix (alt="" + role="presentation"). Push onaylandı.
+
+### Playwright verify 12 screenshot
+
+- giris/uye-ol × light/dark × mobile/tablet/desktop × aday/kurumsal ✓
+- Desktop light uye-ol aday: cards eşit ~675px, form no page scroll ✓
+- Desktop kurumsal: form 10 field + password + consent + button = card tam dolu ✓
+- giris light/dark: short form vertical-centered, card stretch matches scene ✓
+
+---
+
 ## 2026-04-20 — K-057 auth pages split layout (tablet+desktop) (Asama 80.12)
 
 **Durum:** Tuna brief: mobilde mevcut yapı (tek kolon), tablet+desktop'ta 2 kolon (brand portrait + form). Aday/kurumsal tab switch'inde portrait değişiyor. Index hero pattern referansi.
