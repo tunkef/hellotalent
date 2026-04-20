@@ -914,6 +914,13 @@
   padding: 6px 0;
   user-select: none;
 }
+.cb-wrap .cb-control-label,
+.cb-control-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
 .cb-wrap input[type=checkbox] {
   position: absolute;
   opacity: 0;
@@ -921,6 +928,7 @@
   height: 0;
 }
 .cb-check {
+  display: inline-block;
   position: relative;
   width: 22px;
   height: 22px;
