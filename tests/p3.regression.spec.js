@@ -2959,7 +2959,7 @@ test.describe('Asama 45 — .single() lint guard yapisal dogrulama', () => {
 // Beta Premium Gate — Asama 50
 // ═══════════════════════════════════════════════
 
-test.describe('Beta Premium Gate — AI 1-use limit + badge system', () => {
+test.describe('Beta Premium Gate — AI assessment 1-use limit + badge system', () => {
   var premiumJs, cvJs, eventsJs, studioJs;
 
   test.beforeAll(() => {
@@ -2969,24 +2969,26 @@ test.describe('Beta Premium Gate — AI 1-use limit + badge system', () => {
     studioJs = readFromRepo('profil-studio.js') + '\n' + readFromRepo('css/studio.css');
   });
 
-  // ── AI CV 1-use gate ──
+  // ── K-066 Guard: AI CV optimize feature tamamen kaldırıldı ──
+  // AI CV artık yok (template-driven deterministic CV). Sadece assessment AI kaldı.
 
-  test('AI CV flow checks ai_cv_used before proceeding', () => {
-    expect(eventsJs).toContain('ai_cv_used');
+  test('K-066: AI CV optimize handler profil-events.js içinde YOK', () => {
+    expect(eventsJs).not.toContain('btn-ai-cv-optimize');
+    expect(eventsJs).not.toContain('requestCVOptimize');
+    expect(eventsJs).not.toContain('ai_cv_used');
   });
 
-  test('AI CV shows "hakkini kullandin" message after first use', () => {
-    // After successful AI CV, user should see a message that they used their free try
-    // Unicode: kulland\u0131n = kullandın
-    expect(eventsJs).toContain('kulland');
+  test('K-066: profil-cv.js içinden AI optimize fonksiyonu silindi', () => {
+    expect(cvJs).not.toContain('requestCVOptimize');
+    expect(cvJs).not.toContain('aiOptimized');
   });
 
-  test('AI CV marks ai_cv_used=true after successful optimize', () => {
-    expect(eventsJs).toContain('ai_cv_used');
-    expect(eventsJs).toContain('update');
+  test('K-066: generateCV sadece template-driven, parametresiz çağrılıyor', () => {
+    // generateCV artık AI param almıyor
+    expect(cvJs).toMatch(/async function generateCV\s*\(\s*\)/);
   });
 
-  // ── AI Assessment 1-use gate ──
+  // ── AI Assessment 1-use gate (studio) — kalıyor ──
 
   test('Studio AI feedback checks ai_assessment_used before proceeding', () => {
     expect(studioJs).toContain('ai_assessment_used');
@@ -3016,12 +3018,13 @@ test.describe('Beta Premium Gate — AI 1-use limit + badge system', () => {
   });
 
   // ── Migration guard ──
+  // K-066: ai_cv_used column dropped, ai_assessment_used preserved.
 
-  test('migration for ai_cv_used and ai_assessment_used exists', () => {
+  test('K-066 migration: wizard_template_cleanup exists', () => {
     var migDir = path.join(__dirname, '..', 'supabase', 'migrations');
     var files = fs.readdirSync(migDir);
-    var betaGateMig = files.find(f => f.includes('beta_ai_usage'));
-    expect(betaGateMig).toBeTruthy();
+    var cleanupMig = files.find(f => f.includes('wizard_template_cleanup'));
+    expect(cleanupMig).toBeTruthy();
   });
 });
 

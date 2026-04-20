@@ -1,0 +1,269 @@
+/* ══════════════════════════════════════════════════
+   cv-preview.css — Live HTML CV Preview (K-066)
+   Sağ kolonda wizard sticky panel.
+   Tema: her zaman BEYAZ KAĞIT simülasyonu (dark mode override yok).
+   Literal hex kullan — brand token'lar dark mode'da değişir.
+   ══════════════════════════════════════════════════ */
+
+/* ── K-066 grid override: rail | form | preview ─────────
+   Mevcut wz-grid 240px + 1fr → 3 kolona çıkar. */
+#panel-profil .wz-grid {
+  grid-template-columns: 220px minmax(0, 1fr) 380px;
+}
+#panel-profil .wz-rail { order: 1; }
+#panel-profil .wz-main { order: 2; }
+#panel-profil .wz-preview { order: 3; }
+
+/* Sticky dış container — desktop */
+.wz-preview {
+  position: sticky;
+  top: 24px;
+  align-self: start;
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.wz-preview-hint {
+  font-size: 11px;
+  color: #94A3B8;
+  text-align: center;
+  margin: 0 0 10px;
+  letter-spacing: .02em;
+}
+
+.wz-preview-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.wz-preview-actions .btn-cv-download {
+  background: #1E2D5E;
+  color: #FFFFFF;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .15s ease;
+}
+
+.wz-preview-actions .btn-cv-download:hover {
+  background: #C94E28;
+}
+
+/* CV yaprağı — A4 aspect ratio feel, beyaz kağıt */
+.cv-preview {
+  background: #FFFFFF;
+  color: #1A1A1A;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 11.5px;
+  line-height: 1.5;
+  padding: 28px 30px;
+  border: 1px solid #E5E7EB;
+  border-radius: 6px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, .06);
+  min-height: 560px;
+  max-width: 100%;
+}
+
+/* ── Header ─────────────────────────────────────────── */
+.cv-preview .cv-header {
+  border-bottom: 2px solid #1E2D5E;
+  padding-bottom: 10px;
+  margin-bottom: 16px;
+}
+
+.cv-preview .cv-name {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1E2D5E;
+  margin: 0 0 4px;
+  letter-spacing: -.01em;
+}
+
+.cv-preview .cv-role {
+  font-size: 12px;
+  color: #64748B;
+  margin-bottom: 6px;
+}
+
+.cv-preview .cv-contact {
+  font-size: 10px;
+  color: #6B7280;
+  letter-spacing: .02em;
+  word-break: break-word;
+}
+
+/* ── Section başlığı ─────────────────────────────────── */
+.cv-preview .cv-section {
+  margin-top: 14px;
+}
+
+.cv-preview .cv-section-title {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  color: #C94E28;
+  border-bottom: 1px solid #E5E7EB;
+  padding-bottom: 3px;
+  margin: 0 0 8px;
+}
+
+/* ── Özet ────────────────────────────────────────────── */
+.cv-preview .cv-summary {
+  font-size: 11px;
+  color: #374151;
+  margin: 0;
+  line-height: 1.55;
+}
+
+/* ── Deneyim ─────────────────────────────────────────── */
+.cv-preview .cv-experience-item {
+  margin-bottom: 12px;
+}
+.cv-preview .cv-experience-item:last-child {
+  margin-bottom: 0;
+}
+
+.cv-preview .cv-exp-headline,
+.cv-preview .cv-edu-headline,
+.cv-preview .cv-cert-headline {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.cv-preview .cv-exp-role,
+.cv-preview .cv-edu-school,
+.cv-preview .cv-cert-name {
+  font-weight: 600;
+  color: #111827;
+  font-size: 11.5px;
+}
+
+.cv-preview .cv-exp-date,
+.cv-preview .cv-edu-date,
+.cv-preview .cv-cert-date {
+  font-size: 10px;
+  color: #9CA3AF;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.cv-preview .cv-exp-meta {
+  font-size: 10px;
+  color: #6B7280;
+  margin-top: 2px;
+}
+
+.cv-preview .cv-exp-summary {
+  font-size: 11px;
+  color: #374151;
+  margin: 4px 0 0;
+  line-height: 1.5;
+}
+
+/* ── Eğitim / Sertifika ──────────────────────────────── */
+.cv-preview .cv-education-item,
+.cv-preview .cv-cert-item {
+  margin-bottom: 6px;
+}
+
+/* ── Beceri / Diller / İlgi listeleri ────────────────── */
+.cv-preview .cv-skills,
+.cv-preview .cv-list-line {
+  font-size: 11px;
+  color: #374151;
+  line-height: 1.55;
+}
+
+/* ── Tablet: rail + form üstte, preview alta tek kolon ── */
+@media (max-width: 1200px) and (min-width: 901px) {
+  #panel-profil .wz-grid {
+    grid-template-columns: 200px minmax(0, 1fr);
+  }
+  #panel-profil .wz-preview {
+    grid-column: 1 / -1;
+    order: 4;
+    position: static;
+    max-height: none;
+  }
+}
+
+/* ── Mobile: preview drawer davranışı ────────────────── */
+@media (max-width: 900px) {
+  #panel-profil .wz-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  #panel-profil .wz-preview {
+    grid-column: 1 / -1;
+    order: 4;
+  }
+  .wz-preview {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: auto;
+    max-height: 80vh;
+    background: #F7F6F4;
+    border-top: 1px solid #E5E7EB;
+    transform: translateY(calc(100% - 44px));
+    transition: transform .3s ease;
+    z-index: 50;
+    padding: 8px 16px 16px;
+    overflow-y: auto;
+  }
+  .wz-preview.open {
+    transform: translateY(0);
+    max-height: 90vh;
+  }
+  .wz-preview-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: 100%;
+    background: none;
+    border: none;
+    padding: 6px 0;
+    font-size: 12px;
+    font-weight: 600;
+    color: #1E2D5E;
+    cursor: pointer;
+  }
+  .cv-preview {
+    min-height: auto;
+    padding: 20px 16px;
+  }
+}
+
+@media (min-width: 901px) {
+  .wz-preview-toggle { display: none; }
+}
+
+/* ── Print: sadece CV kağıdı, kenar yok ──────────────── */
+@media print {
+  .wz-preview-hint,
+  .wz-preview-actions,
+  .wz-preview-toggle { display: none; }
+
+  .wz-preview {
+    position: static;
+    overflow: visible;
+    max-height: none;
+  }
+
+  .cv-preview {
+    border: none;
+    box-shadow: none;
+    padding: 0;
+    min-height: auto;
+  }
+}

@@ -1,5 +1,60 @@
 # HelloTalent AI-COLLAB — Aktif Calisma Defteri
 
+## 2026-04-20 — K-066 split wizard + live CV preview (template-driven, AI-free) (Asama 80.19)
+
+**Durum:** Tuna vision — "profil wizard bize büyük bir database oluşturuyor, ama CV herkes için sorun. Ekranı ikiye böl: sol form, sağ CV preview. Kullanıcı doldurdukça live render. Artık AI CV kaldırıldı — template-driven, tek tip CV, KVKK uyumlu. İK filtreleri (lokasyon, yatay/dikey geçiş, target rol, marka ilgisi) CV'de görünmez."
+
+**Aktif hedef:** Tuna UAT — wizard açıl → sağda canlı CV preview doldurulmayı bekler → form alanları dolunca preview güncellenir (150ms debounce) → "PDF İndir" template-driven CV çıktısı üretir. Legacy CV upload opsiyonel kalır.
+
+### Yapilan is
+
+| Parça | Scope |
+|-------|-------|
+| Migration `20260420120034_wizard_template_cleanup.sql` | `candidates.ai_cv_used` drop. `candidate_work_preferences.career_mobility` (enum: vertical/horizontal/both/none) add. `save_candidate_profile` RPC career_mobility ekli. `ai_assessment_used` korundu (başka feature). |
+| `profil-cv-preview.js` (YENİ) | DOM builder pattern (innerHTML yasak). `renderCVPreview(data)`, `updateCVPreview()`, `_schedulePreviewUpdate()` debounced 150ms. Section: header/özet/deneyim/yetkinlik/eğitim/diller/sertifika/ilgi. |
+| `cv-preview.css` (YENİ) | A4 feel, literal hex (navy #1E2D5E + vermillion #C94E28 + white paper), her zaman light (dark mode override yok — CV çıktı gerçekçi). Mobile bottom drawer pattern. |
+| `profil-cv.js` | `requestCVOptimize()` + `syncAiCardCopy()` silindi. `generateCV()` parametresiz (AI rewrite yok). Experience bullets `basari_ozeti` / `description`'dan çekilir (template-driven). `normalizeCVData()` zaten deterministic özet üretiyordu — korundu. |
+| `profil-events.js` | `btn-ai-cv-optimize` handler tamamen silindi (50 satır). `btn-cv-download` click → `generateCV()` bağlandı. `btn-gen-cv`, `btn-generate-cv-merkez` korundu. |
+| `profil.html` | `cv-preview.css` + `profil-cv-preview.js` `<head>`/script tag eklendi. `mk-zarf__row--ai` block silindi (merkez panel). Wizard `wz-grid` 3 kolon oldu: rail(220px) \| form(1fr) \| preview(380px). `<aside class="wz-preview">` id="wz-preview" içinde cv-preview-root + "PDF İndir". |
+| `profil-bootstrap.js` | `_htRunStepInits` sonunda delegated input+change listener `#panel-profil` üstüne. Add/delete button click'lerinde gecikmeli rebuild. Mobile drawer toggle. İlk render `updateCVPreview()` çağrısı. |
+| `tests/p3.regression.spec.js` | K-066 guard testleri: AI CV handler yok, `requestCVOptimize` yok, `generateCV()` parametresiz. Assessment AI testleri korundu. Migration guard `wizard_template_cleanup`. |
+
+### HR-Only alanlar (CV'ye yansımaz, DB filter)
+
+- Lokasyon tercihleri (locations)
+- Hedef rol/sektör aileleri (target_roles)
+- Çalışma tercihleri (work_prefs: musaitlik, maas_beklenti, calisma_tipleri, **career_mobility** YENİ)
+- Marka ilgisi (brand_interests)
+- Doğum yılı, adres ilçe
+
+### CV'de görünür (public, KVKK uyumlu)
+
+Ad-Soyad, hedef pozisyon, iletişim (tel/email/şehir/LinkedIn), özet (template-driven), deneyim, yetkinlikler, eğitim, diller, sertifikalar, ilgi alanları.
+
+### Silme listesi
+
+- `candidates.ai_cv_used` column (migration drop)
+- `syncAiCardCopy()` + `requestCVOptimize()` in profil-cv.js
+- `btn-ai-cv-optimize` handler in profil-events.js
+- HTML block `mk-zarf__row--ai` in profil.html
+- Supabase Edge Function `cv-optimize` (sonra silinecek — task #10)
+- Secret `ANTHROPIC_API_KEY` (sonra silinecek)
+
+### Deploy sırası
+
+1. Code push ✓
+2. Migration apply: `npm run db:push` (task #11)
+3. Playwright UAT: `node ht-k066-wizard.mjs` (task #9)
+4. Edge function delete: `npx supabase functions delete cv-optimize` (task #10)
+
+### Rollback
+
+- Migration reversible (`ALTER TABLE candidates ADD COLUMN ai_cv_used boolean DEFAULT false`).
+- Code: commit tag `pre-k066` bırak, revert tek commit.
+- Edge function source git'te kalır, re-deploy Supabase dashboard'dan.
+
+---
+
 ## 2026-04-20 — K-065 email verification OTP flow (Asama 80.18)
 
 **Durum:** Tuna launch öncesi: manuel kayıtta email doğrulama gerekli. 6-digit kod email'e gitmeli, kullanıcı kod girerek devam etmeli. OAuth (Google/LinkedIn) skip (provider auto-verify).

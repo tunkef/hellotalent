@@ -1,4 +1,4 @@
-/* global _applyWorkPrefs, _loadedDBData, _initBrandCompanyLookup, addTargetRoleRow, applyAllVisibilityMirrorsFromProfile, applyDraft, canonicalizeRole, currentCVStoragePath, currentUser, getProfilAuthSession, ht_track, initCVUpload, initStep1, initStep2, initStep3, initStep4, initStep5, initStep6, loadDraft, loadProfileFromDB, loadViewersCard, populateIlceSelect, renderSelectedLocations, RETAIL_POSITIONS, selectedCalismaTipleri, selectedCareerTypes, selectedMusaitlik, selectedSegmentler, setAvatarImage, setVal, showCVUploaded, STORAGE, supabase, syncAccountEmail, titleCaseTR, trLower, updateCompletionUI, updateDashboardSummary, updateMerkezCards, uploadCV */
+/* global _applyWorkPrefs, _loadedDBData, _initBrandCompanyLookup, addTargetRoleRow, applyAllVisibilityMirrorsFromProfile, applyDraft, canonicalizeRole, currentCVStoragePath, currentUser, generateCV, getProfilAuthSession, ht_track, initCVUpload, initStep1, initStep2, initStep3, initStep4, initStep5, initStep6, loadDraft, loadProfileFromDB, loadViewersCard, populateIlceSelect, renderSelectedLocations, RETAIL_POSITIONS, selectedCalismaTipleri, selectedCareerTypes, selectedMusaitlik, selectedSegmentler, setAvatarImage, setVal, showCVUploaded, STORAGE, supabase, syncAccountEmail, titleCaseTR, trLower, updateCompletionUI, updateDashboardSummary, updateMerkezCards, uploadCV */
 // ═══════════════════════════════════════════════════
 // PROFIL BOOTSTRAP — auth, hydration, step-init orchestration
 // Extracted from profil.html inline scripts.
@@ -350,5 +350,52 @@ function _htRunStepInits() {
   if (typeof applyAllVisibilityMirrorsFromProfile === 'function' && _loadedDBData && _loadedDBData.profile) {
     applyAllVisibilityMirrorsFromProfile();
   }
+
+  // ── K-066: Live CV preview hook ──
+  // Delegated input/change listener — her form değişikliği preview'ı günceller.
+  // Add/delete butonları click'i de yakalar (delayed rebuild).
+  var _panelProfil = document.getElementById('panel-profil');
+  if (_panelProfil && typeof window._schedulePreviewUpdate === 'function') {
+    _panelProfil.addEventListener('input', window._schedulePreviewUpdate);
+    _panelProfil.addEventListener('change', window._schedulePreviewUpdate);
+    _panelProfil.addEventListener('click', function(e) {
+      // Sadece add/delete butonlarında trigger — aksi halde spam
+      var t = e.target && e.target.closest ? e.target.closest('button') : null;
+      if (!t) return;
+      var id = t.id || '';
+      var cls = t.className || '';
+      var isAddDelete = /^btn-(add|delete|remove)-/.test(id) ||
+        /(ht-card-remove|exp-delete|edu-delete|lang-delete|cert-delete)/.test(cls);
+      if (isAddDelete) {
+        setTimeout(window._schedulePreviewUpdate, 80);
+      }
+    });
+  }
+
+  // Mobile drawer toggle (cv-preview.css @media ≤900px)
+  var _wzPrev = document.getElementById('wz-preview');
+  var _wzPrevTgl = document.getElementById('wz-preview-toggle');
+  if (_wzPrev && _wzPrevTgl) {
+    _wzPrevTgl.addEventListener('click', function() {
+      var open = _wzPrev.classList.toggle('open');
+      _wzPrevTgl.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+  }
+
+  // PDF İndir fallback: profil-events.js çalışmadıysa burada bağla
+  var _btnDl = document.getElementById('btn-cv-download');
+  if (_btnDl && !_btnDl._htDownloadBound) {
+    _btnDl._htDownloadBound = true;
+    _btnDl.addEventListener('click', function() {
+      if (typeof window.generateCV === 'function') window.generateCV();
+      else if (typeof generateCV === 'function') generateCV();
+    });
+  }
+
+  // Initial render — form fields DB'den doldurulduktan sonra
+  if (typeof window.updateCVPreview === 'function') {
+    window.updateCVPreview();
+  }
+
   console.timeEnd('[HT] total-load'); // eslint-disable-line no-console
 }

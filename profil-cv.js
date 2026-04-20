@@ -1,9 +1,8 @@
 /* global collectCertificates, collectEducation, collectExperiences, collectLanguages, currentUser, ht_track, monthIndexToName, selectedBrandInterests, showToast, STORAGE, supabase, val, _loadedDBData */
 // ═══════════════════════════════════════════════════
-// profil-cv.js — CV Upload, Delete & Generation
-// Extracted from profil-ui.js to reduce change-risk.
-// Handles Supabase Storage upload/delete, CV state UI,
-// and jsPDF-based CV generation (tek canonical ATS-friendly template).
+// profil-cv.js — Legacy CV Upload + Template-Driven PDF Generation
+// K-066: AI CV optimize kaldırıldı. CV artık 100% template-driven
+// (deterministic özet, kuralsal). Legacy upload (PDF/DOC/DOCX) opsiyonel kalır.
 // Exports: initCVUpload, showCVUploaded, showCVEmpty, generateCV, normalizeCVData
 // Depends on: STORAGE + val + currentUser (profil-core.js),
 //   showToast + collect* + monthIndexToName + selectedBrandInterests (profil-ui.js),
@@ -41,29 +40,6 @@ function initCVUpload() {
 
 // Track current CV storage path for cleanup on replace/delete
 var currentCVStoragePath = null;
-
-/* ── Live sync: AI kart alt copy'sini CV durumuna gore guncelle ── */
-function syncAiCardCopy(hasCv) {
-  var aiSub = document.querySelector('#btn-ai-cv-optimize')
-    ? document.querySelector('#btn-ai-cv-optimize').parentElement.querySelector('.mk-ai-sub')
-    : null;
-  if (aiSub) {
-    aiSub.textContent = hasCv
-      ? 'CV\'ni + profilini AI ile g\u00fc\u00e7lendir'
-      : 'Profilini AI ile g\u00fc\u00e7lendir';
-  }
-  /* Reset AI button state — honour MVP free-tier truth */
-  var aiBtn = document.getElementById('btn-ai-cv-optimize');
-  if (aiBtn) {
-    var isMvpFree = window._htMvpFreeTier === true || window.HT_MVP_FREE === true;
-    var defaultCopy = isMvpFree ? 'Beta \u00dccretsiz' : 'Premium';
-    if (aiBtn.textContent !== defaultCopy) {
-      aiBtn.textContent = defaultCopy;
-      aiBtn.style.background = isMvpFree ? 'var(--navy,#1E2D5E)' : '';
-      aiBtn.disabled = false;
-    }
-  }
-}
 
 async function uploadCV(file) {
   if (file.size > 5 * 1024 * 1024) { showToast('Dosya 5MB\'dan b\u00fcy\u00fck olamaz', 'error'); return; }
@@ -116,7 +92,6 @@ async function uploadCV(file) {
     var signedRes = await supabase.storage.from(STORAGE.BUCKET).createSignedUrl(cvStoragePath, 3600);
     var displayUrl = (signedRes.data && signedRes.data.signedUrl) || '';
     showCVUploaded(displayUrl, new Date());
-    syncAiCardCopy(true);
     ht_track('cv_upload_success', { file_type: ext });
     showToast('CV y\u00fcklendi \u2713', 'success');
   } catch (err) {
@@ -149,7 +124,6 @@ async function deleteCV() {
       _loadedDBData.profile.cv_uploaded_at = null;
     }
     showCVEmpty();
-    syncAiCardCopy(false);
     ht_track('cv_deleted');
     showToast('CV silindi', 'success');
   } catch (err) {
@@ -205,7 +179,7 @@ function showCVEmpty() {
 // Section order: Header > Ozet > Deneyim > Egitim > Diller > Sertifikalar > Ilgi Alanlari
 // Foto policy: avatar varsa header'da kucuk, yoksa text-only (layout ayni)
 // Branding: yalnizca footer'da minimal "hellotalent.ai" notu
-// AI entegrasyonu gelince: normalizeCVData().summary AI ile zenginlestirilecek
+// K-066: Template-driven deterministic özet (AI yok). normalizeCVData().summary kuralsal üretilir.
 
 /* ── Normalize helper: profil verisini CV data kontratina cevir ── */
 function normalizeCVData() {
@@ -301,48 +275,11 @@ function fetchAvatarAsDataURL(url) {
   });
 }
 
-/* ── AI CV optimize — server-side Anthropic call ── */
-async function requestCVOptimize(cvData) {
-  var supa = (typeof window.HT !== 'undefined' && window.HT.getSupa) ? window.HT.getSupa() : supabase;
-  var session = await supa.auth.getSession();
-  var token = session.data.session ? session.data.session.access_token : '';
-
-  var res = await fetch(window.HT.SUPA_URL + '/functions/v1/cv-optimize', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer ' + token,
-      'apikey': window.HT.SUPA_KEY
-    },
-    body: JSON.stringify(cvData)
-  });
-
-  if (!res.ok) {
-    var errBody = {};
-    try { errBody = await res.json(); } catch(e) { /* silent */ }
-    throw new Error(errBody.error || 'AI servisi yan\u0131t vermedi (' + res.status + ')');
-  }
-  return res.json();
-}
-
-async function generateCV(aiOptimized) {
+async function generateCV() {
   var jsPDF = window.jspdf.jsPDF;
   var doc = new jsPDF({ unit: 'mm', format: 'a4' });
   var W = 210, M = 16, cW = W - 2 * M, Y = 0;
   var d = normalizeCVData();
-
-  /* Apply AI optimizations if provided */
-  var expRewrites = {};
-  if (aiOptimized) {
-    if (aiOptimized.summary) d.summary = aiOptimized.summary;
-    /* Map experienceRewrites by index for lookup during experience rendering */
-    if (aiOptimized.experienceRewrites && aiOptimized.experienceRewrites.length > 0) {
-      for (var ri = 0; ri < aiOptimized.experienceRewrites.length; ri++) {
-        var rw = aiOptimized.experienceRewrites[ri];
-        expRewrites[rw.index] = rw;
-      }
-    }
-  }
 
   // ── HEADER: isim + hedef rol + iletisim ──
   // NOT: Avatar PDF'e eklenmez — ATS (Workday, Taleo) text layer'ı bozar.
@@ -395,9 +332,7 @@ async function generateCV(aiOptimized) {
       var e = d.experiences[ei];
       if (Y > 258) { doc.addPage(); Y = 20; }
 
-      /* Headline: use AI rewrite if available, else original */
-      var rewrite = expRewrites[ei];
-      var headline = rewrite ? rewrite.headline : ((e.pozisyon || '') + (e.marka || e.sirket ? ' \u2014 ' + (e.marka || e.sirket) : ''));
+      var headline = (e.pozisyon || '') + (e.marka || e.sirket ? ' \u2014 ' + (e.marka || e.sirket) : '');
 
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(9.5);
@@ -426,16 +361,17 @@ async function generateCV(aiOptimized) {
         Y += 4;
       }
 
-      /* AI bullets — only if rewrite exists */
-      if (rewrite && rewrite.bullets && rewrite.bullets.length > 0) {
+      /* Kısa başarı özeti/description — template-driven, deterministic */
+      var summaryText = e.basari_ozeti || e.description || '';
+      if (summaryText) {
         doc.setFont('helvetica', 'normal');
         doc.setFontSize(8.5);
-        doc.setTextColor(50, 50, 50);
-        for (var bi = 0; bi < Math.min(3, rewrite.bullets.length); bi++) {
+        doc.setTextColor(60, 60, 60);
+        var sumLines = doc.splitTextToSize(summaryText, cW - 2);
+        for (var si = 0; si < Math.min(3, sumLines.length); si++) {
           if (Y > 258) { doc.addPage(); Y = 20; }
-          var bulletText = doc.splitTextToSize('\u2022  ' + rewrite.bullets[bi], cW - 4);
-          doc.text(bulletText, M + 2, Y);
-          Y += bulletText.length * 3.8;
+          doc.text(sumLines[si], M, Y);
+          Y += 3.8;
         }
       }
 
