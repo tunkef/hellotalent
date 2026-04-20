@@ -256,8 +256,9 @@
   .password-strength .strength-label {
     font-size: var(--text-sm); color: var(--muted);
     font-weight: 600; transition: color .3s;
-    min-height: 16px;
+    line-height: 1.3;
   }
+  .password-strength .strength-label:empty { display: none; }
   .password-strength .strength-hint {
     font-size: var(--text-sm); color: var(--muted);
     line-height: 1.45; margin-top: 2px;
