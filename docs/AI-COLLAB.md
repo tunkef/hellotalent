@@ -1,5 +1,37 @@
 # HelloTalent AI-COLLAB — Aktif Calisma Defteri
 
+## 2026-04-20 — K-063 signup critical path unblock (Asama 80.16)
+
+**Durum:** Tuna launch'a yakın, aday kayıt error 400020 (Turnstile domain mismatch). "Teknik borç birikmeden sorunsuz işlemesi lazım" dedi. Ayrıca dup email/phone check + Giriş Yap yönlendirme istedi.
+
+**Aktif hedef:** Tuna UAT hellotalent.ai/uye-ol aday + kurumsal, kayıt sorunsuz çalışsın, dup durumunda giriş yap link görsün.
+
+### Yapilan is
+
+| Parça | Scope |
+|-------|-------|
+| Turnstile kaldırıldı | `<script turnstile>` + widget div + render/execute JS + verify-turnstile fetch silindi. Sebep: 400020 domain whitelist config hatası. Pre-launch CF dashboard düzeltilip geri eklenebilir. Honeypot + rate limit (3/5min) + Supabase Auth built-in throttle korundu. |
+| Migration `20260420120000_phone_uniqueness_rpc.sql` | `candidates.telefon` functional unique index (digits-only regex normalize) + `is_phone_registered(text) → boolean` RPC (SECURITY DEFINER, anon+auth grant). |
+| `isPhoneRegistered(phone)` client helper | Supabase RPC wrapper, hata durumda silent false (fail-open). |
+| Phone pre-check signup | Aday + kurumsal `doXSignup` fn'inde signUp'tan önce `await isPhoneRegistered(phone)` → true ise dup error. |
+| `showDupError(el, msg, isKurumsal)` | Safe DOM (text node + anchor, no innerHTML). "Bu X zaten kayıtlı. Giriş yap →" link `giris.html?tab=kurumsal` ile. |
+| Email dup mevcut detection güçlendi | Supabase `identities.length === 0` detection → `showDupError` çağırıyor artık. |
+| Signup click handler thin | K-062 turnstile-pending guard silindi, doğrudan `doAdaySignup()` / `doKurumsalSignup()`. |
+
+### Test
+
+- RPC live test: `is_phone_registered('05551234567')` → false (boş DB), `is_phone_registered('0555 999 88 77')` → false. Digits-only normalize çalışıyor.
+- Functional unique index: INSERT'te aynı digits → duplicate key error. Safety net.
+- Frontend Playwright smoke: signup click → `doAdaySignup` direkt çağrılıyor, `fetch verify-turnstile` kalmadı.
+
+### Güvenlik notu
+
+- `is_phone_registered` anon-callable. Phone space TR 11-digit, brute force impractical + CF rate-limit. Accept MVP.
+- Honeypot + 3 signup attempt / 5 min rate-limit bot koruması sağlıyor Turnstile yokluğunda.
+- Turnstile re-enable yolu: CF dashboard → sitekey domain list'e `hellotalent.ai` + `*.hellotalent.ai` ekle → HTML/JS eski haline revert (commit history'de).
+
+---
+
 ## 2026-04-20 — K-060 uye-ol form UX toparlama (Asama 80.15)
 
 **Durum:** Tuna brief: aday kayıt formu nefes almıyor. Ad Soyad tek satır, OAuth altta, şifre 5 madde uzun. İstek: OAuth yukarı yanyana, Ad + Soyad ayrı yanyana, şifre kuralları tek cümle, profil wizard ad-soyad auto-fill.

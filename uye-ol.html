@@ -14,7 +14,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/tokens.css?v=20260420b">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onTurnstileReady&render=explicit" async defer></script>
 <style>
   /* Tokens: css/tokens.css — lokal :root silindi (Faz 1c). */
 
@@ -572,7 +571,6 @@
       </label>
 
       <div class="ht-hp" aria-hidden="true"><input type="text" id="aday-hp" tabindex="-1" autocomplete="off"></div>
-      <div id="cf-turnstile-aday"></div>
 
       <button class="btn-submit btn-aday" type="button" id="btn-aday-kayit" disabled>Kayıt Ol</button>
 
@@ -658,7 +656,6 @@
       </label>
 
       <div class="ht-hp" aria-hidden="true"><input type="text" id="k-hp" tabindex="-1" autocomplete="off"></div>
-      <div id="cf-turnstile-k"></div>
 
       <button class="btn-submit btn-ik" type="button" id="btn-k-kayit" disabled>Kayıt Ol</button>
 
@@ -856,123 +853,9 @@ function validateKurumsalForm() {
   emailInput.addEventListener('input', checkDomainMatch);
 })();
 
-// ── TURNSTILE TOKEN + AUTO-SUBMIT (K-059 fix) ──
-// K-059: Invisible Turnstile UX bug — eski pattern ilk click'te silent challenge,
-// kullanıcıya feedback yok, ikinci click gerekiyordu. Şimdi: click → spinner +
-// "Doğrulanıyor...", callback → token + otomatik signup. 15sn timeout guard.
-var _turnstileToken = { aday: '', kurumsal: '' };
-var _pendingSubmit = { aday: false, kurumsal: false };
-var _turnstileTimeout = { aday: null, kurumsal: null };
-var _turnstileWidgetId = { aday: null, kurumsal: null };
-var _turnstileReady = false;
-
-var TURNSTILE_SITEKEY = '0x4AAAAAAACnXMwLam1UbsPrn';
-
-function _turnstileOnSuccess(tab) {
-  return function(token) {
-    _turnstileToken[tab] = token;
-    if (_turnstileTimeout[tab]) { clearTimeout(_turnstileTimeout[tab]); _turnstileTimeout[tab] = null; }
-    if (_pendingSubmit[tab]) {
-      _pendingSubmit[tab] = false;
-      if (tab === 'aday') doAdaySignup(); else doKurumsalSignup();
-    }
-  };
-}
-
-function _turnstileOnError(tab) {
-  return function(errCode) {
-    console.warn('[turnstile][' + tab + '] error:', errCode);
-    if (_turnstileTimeout[tab]) { clearTimeout(_turnstileTimeout[tab]); _turnstileTimeout[tab] = null; }
-    if (!_pendingSubmit[tab]) return;
-    _pendingSubmit[tab] = false;
-    _turnstileToken[tab] = '';
-    var btnId = tab === 'aday' ? 'btn-aday-kayit' : 'btn-k-kayit';
-    var errId = tab === 'aday' ? 'err-aday-register' : 'err-kurumsal-register';
-    var btn = document.getElementById(btnId);
-    var err = document.getElementById(errId);
-    err.textContent = 'Güvenlik doğrulaması başarısız (' + (errCode || 'bilinmeyen hata') + '). Sayfayı yenileyip tekrar deneyin.';
-    err.style.display = 'block';
-    btn.disabled = false; btn.textContent = 'Kayıt Ol';
-  };
-}
-
-// K-062: Turnstile explicit render — api.js ?onload=onTurnstileReady çağırır
-function onTurnstileReady() {
-  if (_turnstileReady) return;
-  if (typeof turnstile === 'undefined' || !turnstile.render) {
-    console.warn('[turnstile] onTurnstileReady fired but API not available');
-    return;
-  }
-  try {
-    _turnstileWidgetId.aday = turnstile.render('#cf-turnstile-aday', {
-      sitekey: TURNSTILE_SITEKEY,
-      size: 'invisible',
-      callback: _turnstileOnSuccess('aday'),
-      'error-callback': _turnstileOnError('aday'),
-      'expired-callback': function() { _turnstileToken.aday = ''; },
-      'timeout-callback': _turnstileOnError('aday')
-    });
-    _turnstileWidgetId.kurumsal = turnstile.render('#cf-turnstile-k', {
-      sitekey: TURNSTILE_SITEKEY,
-      size: 'invisible',
-      callback: _turnstileOnSuccess('kurumsal'),
-      'error-callback': _turnstileOnError('kurumsal'),
-      'expired-callback': function() { _turnstileToken.kurumsal = ''; },
-      'timeout-callback': _turnstileOnError('kurumsal')
-    });
-    _turnstileReady = true;
-  } catch (e) {
-    console.error('[turnstile] render failed:', e.message);
-  }
-}
-// Legacy callback names (tutuldu, eski data-callback attribute guard)
-function onTurnstileAday(token) { _turnstileOnSuccess('aday')(token); }
-function onTurnstileK(token) { _turnstileOnSuccess('kurumsal')(token); }
-
-function startTurnstile(tab) {
-  var btnId = tab === 'aday' ? 'btn-aday-kayit' : 'btn-k-kayit';
-  var errId = tab === 'aday' ? 'err-aday-register' : 'err-kurumsal-register';
-  var btn = document.getElementById(btnId);
-  _pendingSubmit[tab] = true;
-  btn.disabled = true;
-  btn.textContent = 'Doğrulanıyor...';
-  // Widget henüz render olmadıysa kısa retry bekle
-  var widgetId = _turnstileWidgetId[tab];
-  var tryExecute = function(attempt) {
-    if (typeof turnstile === 'undefined' || !turnstile.execute) {
-      if (attempt < 20) { setTimeout(function() { tryExecute(attempt + 1); }, 250); return; }
-      return _turnstileFail(tab, 'API yüklenemedi');
-    }
-    if (!_turnstileWidgetId[tab]) {
-      // onTurnstileReady henüz çağrılmadıysa bekle
-      if (attempt < 20) { setTimeout(function() { tryExecute(attempt + 1); }, 250); return; }
-      return _turnstileFail(tab, 'Widget hazır değil');
-    }
-    try {
-      turnstile.execute(_turnstileWidgetId[tab]);
-    } catch (e) {
-      console.warn('[turnstile] execute error:', e.message);
-      _turnstileFail(tab, e.message);
-    }
-  };
-  tryExecute(0);
-  _turnstileTimeout[tab] = setTimeout(function() {
-    if (!_pendingSubmit[tab]) return;
-    _turnstileFail(tab, 'zaman aşımı');
-  }, 15000);
-}
-
-function _turnstileFail(tab, reason) {
-  var btnId = tab === 'aday' ? 'btn-aday-kayit' : 'btn-k-kayit';
-  var errId = tab === 'aday' ? 'err-aday-register' : 'err-kurumsal-register';
-  _pendingSubmit[tab] = false;
-  if (_turnstileTimeout[tab]) { clearTimeout(_turnstileTimeout[tab]); _turnstileTimeout[tab] = null; }
-  var btn = document.getElementById(btnId);
-  var err = document.getElementById(errId);
-  err.textContent = 'Güvenlik doğrulaması yapılamadı (' + reason + '). Sayfayı yenileyip tekrar deneyin.';
-  err.style.display = 'block';
-  btn.disabled = false; btn.textContent = 'Kayıt Ol';
-}
+// K-063: Turnstile kaldırıldı (400020 sitekey domain mismatch bug). Bot protection
+// honeypot + rate limit (3/5min) + Supabase Auth built-in IP throttle ile sağlanır.
+// Turnstile post-launch CF dashboard'da domain whitelist düzeltildiğinde geri eklenebilir.
 
 // ── REGISTRATION RATE LIMIT (3 attempts / 5 min) ──
 var _regAttempts = 0;
@@ -1002,15 +885,36 @@ function checkRegCooldown(btn) {
   return false;
 }
 
+// K-063: Dup email/phone render — safe DOM (no innerHTML, no user input in template)
+function showDupError(errEl, messageText, kurumsal) {
+  while (errEl.firstChild) errEl.removeChild(errEl.firstChild);
+  var msg = document.createTextNode(messageText + ' ');
+  var link = document.createElement('a');
+  link.href = 'giris.html' + (kurumsal ? '?tab=kurumsal' : '');
+  link.textContent = 'Giriş yap →';
+  link.style.cssText = 'color: inherit; font-weight: 700; text-decoration: underline;';
+  errEl.appendChild(msg);
+  errEl.appendChild(link);
+  errEl.style.display = 'block';
+}
+
+// K-063: Phone uniqueness pre-check
+async function isPhoneRegistered(phone) {
+  try {
+    var res = await getSupa().rpc('is_phone_registered', { p_phone: phone });
+    if (res.error) { console.warn('is_phone_registered RPC failed:', res.error.message); return false; }
+    return res.data === true;
+  } catch (e) { console.warn('is_phone_registered exception:', e.message); return false; }
+}
+
 // ── ADAY SIGNUP ──
 async function doAdaySignup() {
   var btn = document.getElementById('btn-aday-kayit');
-  if (document.getElementById('aday-hp').value) return; // honeypot defense-in-depth
+  if (document.getElementById('aday-hp').value) return; // honeypot
   if (checkRegCooldown(btn)) return;
   _regAttempts++;
   var errEl = document.getElementById('err-aday-register');
   errEl.style.display = 'none';
-  // K-060: ad + soyad ayrı → full_name birleşik + first_name/last_name ayrı metadata (wizard auto-fill)
   var firstName = document.getElementById('aday-ad').value.trim();
   var lastName = document.getElementById('aday-soyad').value.trim();
   var fullName = (firstName + ' ' + lastName).trim();
@@ -1019,15 +923,9 @@ async function doAdaySignup() {
   var password = document.getElementById('aday-sifre').value;
   btn.disabled = true; btn.textContent = 'Kayıt yapılıyor...';
   try {
-    var tvRes = await fetch(HT.SUPA_URL + '/functions/v1/verify-turnstile', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token: _turnstileToken.aday })
-    });
-    var tvData = await tvRes.json();
-    if (!tvData.success) {
-      errEl.textContent = 'Güvenlik doğrulaması başarısız. Sayfayı yenileyip tekrar deneyin.';
-      errEl.style.display = 'block'; btn.disabled = false; btn.textContent = 'Kayıt Ol';
-      _turnstileToken.aday = ''; return;
+    if (await isPhoneRegistered(phone)) {
+      showDupError(errEl, 'Bu telefon numarası zaten kayıtlı.', false);
+      btn.disabled = false; btn.textContent = 'Kayıt Ol'; return;
     }
     var result = await getSupa().auth.signUp({
       email: email, password: password,
@@ -1035,36 +933,29 @@ async function doAdaySignup() {
     });
     if (result.error) throw result.error;
     if (result.data.user && result.data.user.identities && result.data.user.identities.length === 0) {
-      errEl.textContent = 'Bu e-posta adresi zaten kayıtlı. Giriş yapın veya farklı bir e-posta deneyin.';
-      errEl.style.display = 'block'; btn.disabled = false; btn.textContent = 'Kayıt Ol'; return;
+      showDupError(errEl, 'Bu e-posta adresi zaten kayıtlı.', false);
+      btn.disabled = false; btn.textContent = 'Kayıt Ol'; return;
     }
     window.location.href = 'profil.html';
   } catch (err) {
     errEl.textContent = 'Hata: ' + (err.message || 'Bilinmeyen hata');
     errEl.style.display = 'block'; btn.disabled = false; btn.textContent = 'Kayıt Ol';
-    _turnstileToken.aday = '';
   }
 }
 
 (function() {
   var btn = document.getElementById('btn-aday-kayit');
-  btn.addEventListener('click', function() {
-    if (document.getElementById('aday-hp').value) return; // honeypot
-    if (_pendingSubmit.aday) return; // turnstile in-flight
-    if (!_turnstileToken.aday) { startTurnstile('aday'); return; }
-    doAdaySignup();
-  });
+  btn.addEventListener('click', function() { doAdaySignup(); });
 })();
 
 // ── KURUMSAL SIGNUP ──
 async function doKurumsalSignup() {
   var btn = document.getElementById('btn-k-kayit');
-  if (document.getElementById('k-hp').value) return; // honeypot defense-in-depth
+  if (document.getElementById('k-hp').value) return; // honeypot
   if (checkRegCooldown(btn)) return;
   _regAttempts++;
   var errEl = document.getElementById('err-kurumsal-register');
   errEl.style.display = 'none';
-  // K-060: ad + soyad ayrı → full_name birleşik + first_name/last_name metadata
   var firstName = document.getElementById('k-ad').value.trim();
   var lastName = document.getElementById('k-soyad').value.trim();
   var fullName = (firstName + ' ' + lastName).trim();
@@ -1075,15 +966,9 @@ async function doKurumsalSignup() {
   var password = document.getElementById('k-sifre').value;
   btn.disabled = true; btn.textContent = 'Kayıt yapılıyor...';
   try {
-    var tvRes = await fetch(HT.SUPA_URL + '/functions/v1/verify-turnstile', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token: _turnstileToken.kurumsal })
-    });
-    var tvData = await tvRes.json();
-    if (!tvData.success) {
-      errEl.textContent = 'Güvenlik doğrulaması başarısız. Sayfayı yenileyip tekrar deneyin.';
-      errEl.style.display = 'block'; btn.disabled = false; btn.textContent = 'Kayıt Ol';
-      _turnstileToken.kurumsal = ''; return;
+    if (await isPhoneRegistered(phone)) {
+      showDupError(errEl, 'Bu telefon numarası zaten kayıtlı.', true);
+      btn.disabled = false; btn.textContent = 'Kayıt Ol'; return;
     }
     var result = await getSupa().auth.signUp({
       email: email, password: password,
@@ -1091,26 +976,20 @@ async function doKurumsalSignup() {
     });
     if (result.error) throw result.error;
     if (result.data.user && result.data.user.identities && result.data.user.identities.length === 0) {
-      errEl.textContent = 'Bu e-posta adresi zaten kayıtlı.';
-      errEl.style.display = 'block'; btn.disabled = false; btn.textContent = 'Kayıt Ol'; return;
+      showDupError(errEl, 'Bu e-posta adresi zaten kayıtlı.', true);
+      btn.disabled = false; btn.textContent = 'Kayıt Ol'; return;
     }
     try { await getSupa().rpc('register_employer', { p_email: email, p_sirket: sirket, p_website: website || null }); } catch (rpcErr) { console.warn('register_employer RPC başarısız:', rpcErr.message); }
     window.location.href = 'demo-dashboard-ik.html';
   } catch (err) {
     errEl.textContent = 'Hata: ' + (err.message || 'Bilinmeyen hata');
     errEl.style.display = 'block'; btn.disabled = false; btn.textContent = 'Kayıt Ol';
-    _turnstileToken.kurumsal = '';
   }
 }
 
 (function() {
   var btn = document.getElementById('btn-k-kayit');
-  btn.addEventListener('click', function() {
-    if (document.getElementById('k-hp').value) return; // honeypot
-    if (_pendingSubmit.kurumsal) return;
-    if (!_turnstileToken.kurumsal) { startTurnstile('kurumsal'); return; }
-    doKurumsalSignup();
-  });
+  btn.addEventListener('click', function() { doKurumsalSignup(); });
 })();
 
 // ── OAUTH (aday only) ──
