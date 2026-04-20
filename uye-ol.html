@@ -395,6 +395,55 @@
   /* Form toggle */
   #form-kurumsal { display: none; }
 
+  /* K-065: OTP verification panel */
+  #otp-panel { text-align: center; }
+  #otp-panel .card-title { margin-bottom: 8px; }
+  #otp-panel .card-sub { margin-bottom: 24px; }
+  #otp-panel #otp-email { color: var(--verm); font-weight: 700; }
+  .otp-inputs {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 8px;
+    margin: 16px 0 20px;
+    max-width: 320px;
+    margin-left: auto; margin-right: auto;
+  }
+  .otp-digit {
+    aspect-ratio: 1 / 1;
+    width: 100%;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    font-family: 'DM Mono', monospace;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text);
+    background: white;
+    text-align: center;
+    outline: none;
+    transition: border-color .2s, background .2s;
+  }
+  .otp-digit:focus { border-color: var(--verm); background: var(--verm-light); }
+  .otp-digit:not(:placeholder-shown) { border-color: var(--verm); }
+  .otp-actions {
+    display: flex; align-items: center; justify-content: center;
+    gap: 8px; margin-top: 14px; flex-wrap: wrap;
+  }
+  .otp-link {
+    background: none; border: none;
+    color: var(--verm); font-weight: 600;
+    font-size: var(--text-md); cursor: pointer;
+    padding: 4px 8px; border-radius: 6px;
+    transition: background .2s;
+    font-family: inherit;
+  }
+  .otp-link:hover:not(:disabled) { background: var(--verm-light); }
+  .otp-link:disabled { color: var(--muted); cursor: not-allowed; }
+  .otp-sep { color: var(--muted); font-size: var(--text-sm); }
+
+  html.dark .otp-digit { background: rgba(247,246,244,.04); border-color: rgba(247,246,244,.1); color: var(--text); }
+  html.dark .otp-digit:focus { border-color: var(--verm); background: rgba(201,78,40,.12); }
+  html.dark .otp-link:hover:not(:disabled) { background: rgba(201,78,40,.12); }
+
   .form-wrapper {
     position: relative;
     min-height: 300px;
@@ -664,6 +713,30 @@
         <a href="giris.html?tab=kurumsal" class="ik-link">Giriş yap</a>
       </p>
     </div>
+
+    <!-- K-065: OTP verification panel (hidden by default, shown after successful signUp) -->
+    <div id="otp-panel" style="display:none;">
+      <h2 class="card-title">E-posta doğrulama</h2>
+      <p class="card-sub">
+        <strong id="otp-email"></strong> adresine 6 haneli kod gönderdik.<br>
+        Gelen kutusu veya spam klasörünü kontrol edin.
+      </p>
+      <div class="error-msg" id="err-otp"></div>
+      <div class="otp-inputs">
+        <input type="text" maxlength="1" inputmode="numeric" autocomplete="one-time-code" class="otp-digit" aria-label="Doğrulama kodu hane 1">
+        <input type="text" maxlength="1" inputmode="numeric" autocomplete="one-time-code" class="otp-digit" aria-label="Doğrulama kodu hane 2">
+        <input type="text" maxlength="1" inputmode="numeric" autocomplete="one-time-code" class="otp-digit" aria-label="Doğrulama kodu hane 3">
+        <input type="text" maxlength="1" inputmode="numeric" autocomplete="one-time-code" class="otp-digit" aria-label="Doğrulama kodu hane 4">
+        <input type="text" maxlength="1" inputmode="numeric" autocomplete="one-time-code" class="otp-digit" aria-label="Doğrulama kodu hane 5">
+        <input type="text" maxlength="1" inputmode="numeric" autocomplete="one-time-code" class="otp-digit" aria-label="Doğrulama kodu hane 6">
+      </div>
+      <button class="btn-submit btn-aday" type="button" id="btn-verify-otp" disabled>Doğrula</button>
+      <div class="otp-actions">
+        <button type="button" class="otp-link" id="btn-resend-otp">Kodu tekrar gönder</button>
+        <span class="otp-sep">·</span>
+        <button type="button" class="otp-link" id="btn-back-otp">Email'i değiştir</button>
+      </div>
+    </div>
     </div><!-- /form-wrapper -->
 
   </div>
@@ -907,6 +980,153 @@ async function isPhoneRegistered(phone) {
   } catch (e) { console.warn('is_phone_registered exception:', e.message); return false; }
 }
 
+// ── K-065: OTP VERIFICATION FLOW ──
+var _otpState = { email: null, tab: null };
+var _pendingEmployerMeta = null;
+var _otpResendCooldown = null;
+
+function showOtpPanel(email, tab) {
+  _otpState.email = email;
+  _otpState.tab = tab;
+  // Hide tab toggle + both forms
+  var tabToggle = document.querySelector('.tab-toggle');
+  if (tabToggle) tabToggle.style.display = 'none';
+  document.getElementById('form-aday').style.display = 'none';
+  document.getElementById('form-kurumsal').style.display = 'none';
+  // Show OTP
+  var panel = document.getElementById('otp-panel');
+  panel.style.display = 'block';
+  document.getElementById('otp-email').textContent = email;
+  // Reset digits + focus first
+  panel.querySelectorAll('.otp-digit').forEach(function(i) { i.value = ''; });
+  document.getElementById('err-otp').style.display = 'none';
+  document.getElementById('btn-verify-otp').disabled = true;
+  document.getElementById('btn-verify-otp').textContent = 'Doğrula';
+  setTimeout(function() { panel.querySelector('.otp-digit').focus(); }, 50);
+}
+
+function hideOtpPanel() {
+  document.getElementById('otp-panel').style.display = 'none';
+  var tabToggle = document.querySelector('.tab-toggle');
+  if (tabToggle) tabToggle.style.display = '';
+  if (_otpState.tab === 'kurumsal') {
+    document.getElementById('form-kurumsal').style.display = 'block';
+  } else {
+    document.getElementById('form-aday').style.display = 'block';
+  }
+  _otpState = { email: null, tab: null };
+  _pendingEmployerMeta = null;
+}
+
+function updateOtpVerifyBtn() {
+  var digits = Array.from(document.querySelectorAll('#otp-panel .otp-digit')).map(function(i) { return i.value; }).join('');
+  document.getElementById('btn-verify-otp').disabled = digits.length !== 6;
+}
+
+async function verifyOtpCode() {
+  var panel = document.getElementById('otp-panel');
+  var digits = Array.from(panel.querySelectorAll('.otp-digit')).map(function(i) { return i.value; }).join('');
+  var errEl = document.getElementById('err-otp');
+  var btn = document.getElementById('btn-verify-otp');
+  if (digits.length !== 6) {
+    errEl.textContent = '6 haneli kodu tam girin.';
+    errEl.style.display = 'block'; return;
+  }
+  errEl.style.display = 'none';
+  btn.disabled = true; btn.textContent = 'Doğrulanıyor...';
+  try {
+    var result = await getSupa().auth.verifyOtp({
+      email: _otpState.email,
+      token: digits,
+      type: 'email'
+    });
+    if (result.error) throw result.error;
+    // Verify success → session var, kurumsal ise RPC + redirect
+    if (_otpState.tab === 'kurumsal' && _pendingEmployerMeta) {
+      try { await getSupa().rpc('register_employer', {
+        p_email: _pendingEmployerMeta.email,
+        p_sirket: _pendingEmployerMeta.sirket,
+        p_website: _pendingEmployerMeta.website || null
+      }); } catch (rpcErr) { console.warn('register_employer RPC:', rpcErr.message); }
+      window.location.href = 'demo-dashboard-ik.html';
+    } else {
+      window.location.href = 'profil.html';
+    }
+  } catch (err) {
+    errEl.textContent = 'Kod hatalı veya süresi dolmuş. Tekrar deneyin.';
+    errEl.style.display = 'block';
+    btn.textContent = 'Doğrula';
+    updateOtpVerifyBtn();
+  }
+}
+
+async function resendOtp() {
+  if (!_otpState.email) return;
+  var btn = document.getElementById('btn-resend-otp');
+  var errEl = document.getElementById('err-otp');
+  errEl.style.display = 'none';
+  btn.disabled = true;
+  var remaining = 60;
+  var tick = function() {
+    btn.textContent = 'Tekrar gönder (' + remaining + 's)';
+    remaining--;
+    if (remaining < 0) {
+      clearInterval(_otpResendCooldown);
+      _otpResendCooldown = null;
+      btn.disabled = false;
+      btn.textContent = 'Kodu tekrar gönder';
+    }
+  };
+  tick();
+  _otpResendCooldown = setInterval(tick, 1000);
+  try {
+    var res = await getSupa().auth.resend({ type: 'signup', email: _otpState.email });
+    if (res.error) throw res.error;
+  } catch (e) {
+    errEl.textContent = 'Kod gönderilemedi: ' + (e.message || 'bilinmeyen hata');
+    errEl.style.display = 'block';
+  }
+}
+
+// OTP digit input handlers (auto-advance, paste, backspace)
+(function() {
+  var digits = document.querySelectorAll('#otp-panel .otp-digit');
+  digits.forEach(function(inp, idx) {
+    inp.addEventListener('input', function() {
+      var v = this.value.replace(/\D/g, '');
+      this.value = v.slice(0, 1);
+      if (this.value && idx < digits.length - 1) digits[idx + 1].focus();
+      updateOtpVerifyBtn();
+    });
+    inp.addEventListener('keydown', function(e) {
+      if (e.key === 'Backspace' && !this.value && idx > 0) {
+        digits[idx - 1].focus();
+        digits[idx - 1].value = '';
+        updateOtpVerifyBtn();
+      }
+      if (e.key === 'Enter' && !document.getElementById('btn-verify-otp').disabled) {
+        verifyOtpCode();
+      }
+    });
+    inp.addEventListener('paste', function(e) {
+      e.preventDefault();
+      var txt = ((e.clipboardData || window.clipboardData).getData('text') || '').replace(/\D/g, '').slice(0, 6);
+      for (var i = 0; i < digits.length; i++) {
+        digits[i].value = txt[i] || '';
+      }
+      var focusIdx = Math.min(txt.length, digits.length - 1);
+      digits[focusIdx].focus();
+      updateOtpVerifyBtn();
+    });
+  });
+  var verifyBtn = document.getElementById('btn-verify-otp');
+  if (verifyBtn) verifyBtn.addEventListener('click', verifyOtpCode);
+  var resendBtn = document.getElementById('btn-resend-otp');
+  if (resendBtn) resendBtn.addEventListener('click', resendOtp);
+  var backBtn = document.getElementById('btn-back-otp');
+  if (backBtn) backBtn.addEventListener('click', hideOtpPanel);
+})();
+
 // ── ADAY SIGNUP ──
 async function doAdaySignup() {
   var btn = document.getElementById('btn-aday-kayit');
@@ -936,6 +1156,12 @@ async function doAdaySignup() {
       showDupError(errEl, 'Bu e-posta adresi zaten kayıtlı.', false);
       btn.disabled = false; btn.textContent = 'Kayıt Ol'; return;
     }
+    // K-065: Email confirmation flow — session yoksa OTP modal aç
+    if (!result.data.session) {
+      showOtpPanel(email, 'aday');
+      return;
+    }
+    // OAuth / auto-confirmed → direkt yönlendir
     window.location.href = 'profil.html';
   } catch (err) {
     errEl.textContent = 'Hata: ' + (err.message || 'Bilinmeyen hata');
@@ -978,6 +1204,12 @@ async function doKurumsalSignup() {
     if (result.data.user && result.data.user.identities && result.data.user.identities.length === 0) {
       showDupError(errEl, 'Bu e-posta adresi zaten kayıtlı.', true);
       btn.disabled = false; btn.textContent = 'Kayıt Ol'; return;
+    }
+    // K-065: Email confirmation flow — session yoksa OTP modal aç (register_employer RPC verify sonrası)
+    if (!result.data.session) {
+      _pendingEmployerMeta = { email: email, sirket: sirket, website: website };
+      showOtpPanel(email, 'kurumsal');
+      return;
     }
     try { await getSupa().rpc('register_employer', { p_email: email, p_sirket: sirket, p_website: website || null }); } catch (rpcErr) { console.warn('register_employer RPC başarısız:', rpcErr.message); }
     window.location.href = 'demo-dashboard-ik.html';

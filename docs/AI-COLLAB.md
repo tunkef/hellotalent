@@ -1,5 +1,50 @@
 # HelloTalent AI-COLLAB — Aktif Calisma Defteri
 
+## 2026-04-20 — K-065 email verification OTP flow (Asama 80.18)
+
+**Durum:** Tuna launch öncesi: manuel kayıtta email doğrulama gerekli. 6-digit kod email'e gitmeli, kullanıcı kod girerek devam etmeli. OAuth (Google/LinkedIn) skip (provider auto-verify).
+
+**Aktif hedef:** Tuna UAT — aday + kurumsal manuel signup → OTP panel → doğrulama başarılı → profil wizard (aday) / demo-dashboard-ik (kurumsal).
+
+### Yapilan is — Client (uye-ol.html)
+
+| Parça | Scope |
+|-------|-------|
+| OTP panel markup | form-wrapper içinde `#otp-panel`, hidden by default. 6 digit input + Doğrula button + "Kodu tekrar gönder" + "Email'i değiştir" linkler. |
+| OTP CSS | `.otp-inputs` grid 6-col, `.otp-digit` aspect-ratio 1/1 focus vermillion, dark mode glass bg. |
+| `showOtpPanel(email, tab)` | Form + tab-toggle gizle, panel göster, ilk digit focus. State: `_otpState = { email, tab }`. |
+| `hideOtpPanel()` | Panel gizle, önceki formu geri aç (tab-aware). |
+| Digit input handlers | Auto-advance next field, backspace previous, 6-digit paste support, Enter → verify. |
+| `verifyOtpCode()` | `supabase.auth.verifyOtp({ email, token, type: 'email' })`. Success → redirect profil.html (aday) / demo-dashboard-ik (kurumsal, `register_employer` RPC ile). |
+| `resendOtp()` | `supabase.auth.resend({ type: 'signup', email })`. 60sn cooldown countdown. |
+| Signup flow patch | `signUp` success + no session → `showOtpPanel`. Session var (auto-confirm / OAuth) → eski direkt redirect. |
+| Employer meta persist | `_pendingEmployerMeta = { email, sirket, website }` OTP verify sonrası `register_employer` RPC için saklanır. |
+
+### Tuna'nın Supabase Dashboard adımları
+
+1. **Authentication → Sign-ups → "Confirm email"**: ON
+2. **Authentication → Email Templates → "Confirm signup"**:
+   - Subject: `HelloTalent — E-posta Doğrulama Kodu`
+   - Body (HTML): `{{ .ConfirmationURL }}` link yerine `{{ .Token }}` 6-digit kodu ekle:
+     ```
+     <p>Doğrulama kodunuz: <strong style="font-size:24px">{{ .Token }}</strong></p>
+     <p>Kod 1 saat geçerli.</p>
+     ```
+
+Bu ayarlar yapılmadan OTP flow çalışmaz (email gönderilmez). Auto-confirm açıksa client `result.data.session` döner, OTP panel açılmaz, direkt redirect olur (backward compat).
+
+### OAuth akışı
+
+`signInWithOAuth` çağrılınca Supabase OAuth provider (Google/LinkedIn) ile verify eder. Provider auto-confirms email. OTP panel skip. Redirect direkt `/profil.html` / `/demo-dashboard-ik.html`.
+
+### Visual verify (Playwright)
+
+- Light + dark OTP panel screenshots ✓
+- 6 digit input focus vermillion ring
+- Tab-agnostic (aday/kurumsal state tracked, post-verify correct redirect)
+
+---
+
 ## 2026-04-20 — K-064 aday post-signup → wizard routing (Asama 80.17)
 
 **Durum:** Tuna feedback: signup sonrası boş genel bakış confused user. "Yeni kullanıcı wizard'a, tamam olan genel bakışa" istedi (Option A — conditional by profile_completed flag).
