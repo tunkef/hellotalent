@@ -247,6 +247,16 @@ function _htApplyCareerGoalPrefill() {
     })(_loadedDBData.profile.id);
   }
 
+  // K-064: New / incomplete user → wizard (panel-profil). Completed → genel bakış.
+  // Hash kullanıcısı kendi tercihini yaptı (bookmark), onboarding redirect'i override etmesin.
+  var _hashExplicit = window.location.hash && window.location.hash.length > 1;
+  if (!_hashExplicit) {
+    var _completed = _loadedDBData && _loadedDBData.profile && _loadedDBData.profile.profile_completed === true;
+    if (!_completed && typeof window.switchPanel === 'function') {
+      window.switchPanel('profil');
+    }
+  }
+
   // Signal that async bootstrap is complete — hash restore waits for this
   window._htBootstrapDone = true;
   document.dispatchEvent(new Event('ht:bootstrap-done'));

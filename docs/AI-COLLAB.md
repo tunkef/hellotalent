@@ -1,5 +1,32 @@
 # HelloTalent AI-COLLAB — Aktif Calisma Defteri
 
+## 2026-04-20 — K-064 aday post-signup → wizard routing (Asama 80.17)
+
+**Durum:** Tuna feedback: signup sonrası boş genel bakış confused user. "Yeni kullanıcı wizard'a, tamam olan genel bakışa" istedi (Option A — conditional by profile_completed flag).
+
+**Aktif hedef:** Tuna UAT — yeni aday signup → profil wizard step 1 direkt. Tamamlanmış user giriş → genel bakış (current default).
+
+### Yapilan is
+
+| Değişiklik | Scope |
+|-----------|-------|
+| `profil-ui.js` loadProfileFromDB return | `profile_completed: cand.profile_completed === true` eklendi. Eski shape'de yoktu. |
+| `profil-bootstrap.js` initial routing | Bootstrap sonunda `_loadedDBData.profile.profile_completed !== true` ise `switchPanel('profil')` çağrılır. Hash explicit varsa (bookmark) override yok. |
+| Mantık | Yeni user (candidates row yok) → dbData null → condition false → wizard. Incomplete user (row var ama flag false) → wizard. Tamamlanmış user (flag true) → genel bakış (default). |
+
+### Test senaryosu
+
+1. Yeni signup → profil.html yüklenir → dbData null → `switchPanel('profil')` → wizard step 1
+2. Wizard'ı kaydet (`profile_completed: true` yazılır)
+3. Sonraki girişte → dbData.profile.profile_completed = true → switchPanel çağrılmaz → merkez default kalır
+4. Bookmark `/profil.html#merkez` → hash explicit → wizard redirect override edilmez
+
+### Neden Option A
+
+Tuna önerim arasında seçti: **A** (DB flag conditional) vs B (URL param hack). A tek kaynak truth, URL hack yok, returning user drift'i önler.
+
+---
+
 ## 2026-04-20 — K-063 signup critical path unblock (Asama 80.16)
 
 **Durum:** Tuna launch'a yakın, aday kayıt error 400020 (Turnstile domain mismatch). "Teknik borç birikmeden sorunsuz işlemesi lazım" dedi. Ayrıca dup email/phone check + Giriş Yap yönlendirme istedi.

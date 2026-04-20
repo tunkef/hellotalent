@@ -1883,7 +1883,8 @@ async function loadProfileFromDB() {
       account_status: cand.account_status || 'active',
       deletion_requested_at: cand.deletion_requested_at || null,
       is_premium: cand.is_premium === true,
-      premium_until: cand.premium_until || null
+      premium_until: cand.premium_until || null,
+      profile_completed: cand.profile_completed === true
     },
     no_experience: cand.ilk_deneyim || false,
     experiences: (expRes.data || []).map(function(e) {
