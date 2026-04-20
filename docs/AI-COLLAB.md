@@ -24,6 +24,20 @@
 - Functional unique index: INSERT'te aynı digits → duplicate key error. Safety net.
 - Frontend Playwright smoke: signup click → `doAdaySignup` direkt çağrılıyor, `fetch verify-turnstile` kalmadı.
 
+### Follow-up fix — normalize son 10 digit
+
+Tuna live test: aynı telefon ile 2. kayıt olabildi. RPC miss sebebiyle.
+
+**Root cause:** `candidates.telefon` inconsistent format — bazı satırlarda "05362395857" (11), bazılarında "5362395857" (10, leading 0 silik). Eski RPC tam digit-string match → 11-digit input 10-digit row'u bulamadı.
+
+**Fix:** Migration `20260420130000_phone_normalize_last10.sql` — normalize = son 10 digit (`RIGHT(..., 10)`). Leading 0 tolerant.
+
+Verify:
+- `is_phone_registered('05362395857')` → true (eski Tuna Kefeli 5362395857 satırı match)
+- `is_phone_registered('5362395857')` → true
+- `is_phone_registered('0536 239 58 57')` → true
+- `is_phone_registered('05551234567')` → false
+
 ### Güvenlik notu
 
 - `is_phone_registered` anon-callable. Phone space TR 11-digit, brute force impractical + CF rate-limit. Accept MVP.
