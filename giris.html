@@ -30,42 +30,25 @@
     flex-direction: column;
   }
 
-  /* ── HEADER ── */
-  .header {
-    padding: 20px 32px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    /* K-049 — cream glassmorphism (4 public page pattern) */
-    /* K-050 — Safari/iOS -webkit- prefix parity */
-    background: rgba(247, 246, 244, .78);
-    -webkit-backdrop-filter: saturate(140%) blur(14px);
-    backdrop-filter: saturate(140%) blur(14px);
-    border-bottom: 1px solid var(--border);
-  }
-
-  .logo {
+  /* ── LOGO (K-061: header kaldırıldı, sadece logo anasayfaya link) ── */
+  .logo-fixed {
+    position: absolute;
+    top: 20px;
+    left: 24px;
     font-family: 'Bricolage Grotesque', sans-serif;
     font-weight: 800;
     font-size: 19px;
     letter-spacing: -0.5px;
     color: var(--navy);
     text-decoration: none;
+    z-index: 5;
+    transition: opacity .2s;
   }
-
-  .logo span { color: var(--verm); }
-
-  .back-link {
-    font-size: var(--text-md);
-    color: var(--muted);
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    transition: color 0.2s;
+  .logo-fixed span { color: var(--verm); }
+  .logo-fixed:hover { opacity: 0.7; }
+  @media (min-width: 768px) {
+    .logo-fixed { top: 24px; left: 32px; }
   }
-
-  .back-link:hover { color: var(--navy); }
 
   /* ── MAIN ── */
   .main {
@@ -73,7 +56,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 40px 16px;
+    padding: 64px 16px 32px;
   }
 
   /* K-057 — Auth split: mobile single-column, tablet+ two-column.
@@ -393,11 +376,8 @@
     --border: rgba(247, 246, 244, .08);
   }
   html.dark body { background: #0F121F; }
-  html.dark .header { background: rgba(11, 13, 23, .82); border-color: rgba(247, 246, 244, .08); }
-  html.dark .logo { color: var(--text); }
-  html.dark .logo span { color: var(--verm); }
-  html.dark .back-link { color: rgba(247, 246, 244, .65); }
-  html.dark .back-link:hover { color: var(--text); }
+  html.dark .logo-fixed { color: var(--text); }
+  html.dark .logo-fixed span { color: var(--verm); }
   html.dark .card { background: rgba(247, 246, 244, .04); border-color: rgba(247, 246, 244, .09); }
   html.dark .card-title { color: var(--text); }
   html.dark .card-sub { color: rgba(247, 246, 244, .72); }
@@ -432,13 +412,8 @@
 </head>
 <body>
 
-<header class="header">
-  <a href="index.html" class="logo">hello<span>talent</span></a>
-  <a href="index.html" class="back-link">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
-    Ana Sayfa
-  </a>
-</header>
+<!-- K-061: Header kaldırıldı, sadece logo anasayfa link -->
+<a href="index.html" class="logo-fixed">hello<span>talent</span></a>
 
 <main class="main">
   <div class="auth-split" id="auth-split">
