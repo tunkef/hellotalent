@@ -1,8 +1,9 @@
-/* global collectCertificates, collectEducation, collectExperiences, collectLanguages, currentUser, EB_GARAMOND_BOLD_B64, EB_GARAMOND_ITALIC_B64, EB_GARAMOND_REGULAR_B64, ht_track, LEADERSHIP_SKILLS, monthIndexToName, ROLE_SKILLS_MAP, selectedBrandInterests, showToast, STORAGE, supabase, val, _loadedDBData */
+/* global collectCertificates, collectEducation, collectExperiences, collectLanguages, currentUser, ht_track, monthIndexToName, selectedBrandInterests, showToast, STORAGE, supabase, val, _loadedDBData */
 // ═══════════════════════════════════════════════════
-// profil-cv.js — Legacy CV Upload + Template-Driven PDF Generation
-// K-066: AI CV optimize kaldırıldı. CV artık 100% template-driven
-// (deterministic özet, kuralsal). Legacy upload (PDF/DOC/DOCX) opsiyonel kalır.
+// profil-cv.js — CV Upload, Delete & Generation
+// Extracted from profil-ui.js to reduce change-risk.
+// Handles Supabase Storage upload/delete, CV state UI,
+// and jsPDF-based CV generation (tek canonical ATS-friendly template).
 // Exports: initCVUpload, showCVUploaded, showCVEmpty, generateCV, normalizeCVData
 // Depends on: STORAGE + val + currentUser (profil-core.js),
 //   showToast + collect* + monthIndexToName + selectedBrandInterests (profil-ui.js),
@@ -40,6 +41,29 @@ function initCVUpload() {
 
 // Track current CV storage path for cleanup on replace/delete
 var currentCVStoragePath = null;
+
+/* ── Live sync: AI kart alt copy'sini CV durumuna gore guncelle ── */
+function syncAiCardCopy(hasCv) {
+  var aiSub = document.querySelector('#btn-ai-cv-optimize')
+    ? document.querySelector('#btn-ai-cv-optimize').parentElement.querySelector('.mk-ai-sub')
+    : null;
+  if (aiSub) {
+    aiSub.textContent = hasCv
+      ? 'CV\'ni + profilini AI ile g\u00fc\u00e7lendir'
+      : 'Profilini AI ile g\u00fc\u00e7lendir';
+  }
+  /* Reset AI button state — honour MVP free-tier truth */
+  var aiBtn = document.getElementById('btn-ai-cv-optimize');
+  if (aiBtn) {
+    var isMvpFree = window._htMvpFreeTier === true || window.HT_MVP_FREE === true;
+    var defaultCopy = isMvpFree ? 'Beta \u00dccretsiz' : 'Premium';
+    if (aiBtn.textContent !== defaultCopy) {
+      aiBtn.textContent = defaultCopy;
+      aiBtn.style.background = isMvpFree ? 'var(--navy,#1E2D5E)' : '';
+      aiBtn.disabled = false;
+    }
+  }
+}
 
 async function uploadCV(file) {
   if (file.size > 5 * 1024 * 1024) { showToast('Dosya 5MB\'dan b\u00fcy\u00fck olamaz', 'error'); return; }
@@ -92,6 +116,7 @@ async function uploadCV(file) {
     var signedRes = await supabase.storage.from(STORAGE.BUCKET).createSignedUrl(cvStoragePath, 3600);
     var displayUrl = (signedRes.data && signedRes.data.signedUrl) || '';
     showCVUploaded(displayUrl, new Date());
+    syncAiCardCopy(true);
     ht_track('cv_upload_success', { file_type: ext });
     showToast('CV y\u00fcklendi \u2713', 'success');
   } catch (err) {
@@ -124,6 +149,7 @@ async function deleteCV() {
       _loadedDBData.profile.cv_uploaded_at = null;
     }
     showCVEmpty();
+    syncAiCardCopy(false);
     ht_track('cv_deleted');
     showToast('CV silindi', 'success');
   } catch (err) {
@@ -179,7 +205,7 @@ function showCVEmpty() {
 // Section order: Header > Ozet > Deneyim > Egitim > Diller > Sertifikalar > Ilgi Alanlari
 // Foto policy: avatar varsa header'da kucuk, yoksa text-only (layout ayni)
 // Branding: yalnizca footer'da minimal "hellotalent.ai" notu
-// K-066: Template-driven deterministic özet (AI yok). normalizeCVData().summary kuralsal üretilir.
+// AI entegrasyonu gelince: normalizeCVData().summary AI ile zenginlestirilecek
 
 /* ── Normalize helper: profil verisini CV data kontratina cevir ── */
 function normalizeCVData() {
@@ -236,43 +262,22 @@ function normalizeCVData() {
   };
 }
 
-/* ── Section heading helper — Tuna CV pattern (K-066) ── */
-/* Bold uppercase black title, hairline divider, no color.   */
+/* ── Section heading helper ── */
 function _cvSection(doc, title, M, cW, Y) {
-  if (Y > 268) { doc.addPage(); Y = 20; }
-  Y += 2;
-  doc.setFontSize(10);
-  doc.setFont('EBGaramond', 'bold');
-  doc.setTextColor(0, 0, 0);
-  doc.text(title.toLocaleUpperCase('tr-TR'), M, Y);
-  Y += 1.2;
-  doc.setDrawColor(180, 180, 180);
-  doc.setLineWidth(0.15);
+  if (Y > 258) { doc.addPage(); Y = 20; }
+  doc.setFontSize(11);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(30, 45, 94);
+  doc.text(title.toUpperCase(), M, Y);
+  Y += 1.5;
+  doc.setDrawColor(30, 45, 94);
+  doc.setLineWidth(0.4);
   doc.line(M, Y, M + cW, Y);
-  Y += 4.5;
+  Y += 5;
   doc.setFontSize(9.5);
-  doc.setTextColor(40, 40, 40);
-  doc.setFont('EBGaramond', 'normal');
+  doc.setTextColor(50, 50, 50);
+  doc.setFont('helvetica', 'normal');
   return Y;
-}
-
-/* ── K-067 Pillar A: EB Garamond Turkish subset TTF embed (jsPDF VFS) ──
-   Türkçe karakterler (İ, ı, ğ, ş, ç, ö, ü) default WinAnsi encoding'de bozuk.
-   EB Garamond 3 weight × Turkish subset → addFileToVFS + addFont ile embed.
-   Bir kez çağrılır (idempotent), ikinci çağrıda no-op. */
-function _ensureCVFont(doc) {
-  if (_ensureCVFont._done) return;
-  if (typeof window.EB_GARAMOND_REGULAR_B64 !== 'string') {
-    console.warn('[HT] eb-garamond-vfs.js yüklenmedi — PDF türkçe karakterleri bozulabilir.');
-    return;
-  }
-  doc.addFileToVFS('EBGaramond-Regular.ttf', window.EB_GARAMOND_REGULAR_B64);
-  doc.addFileToVFS('EBGaramond-Bold.ttf',    window.EB_GARAMOND_BOLD_B64);
-  doc.addFileToVFS('EBGaramond-Italic.ttf',  window.EB_GARAMOND_ITALIC_B64);
-  doc.addFont('EBGaramond-Regular.ttf', 'EBGaramond', 'normal');
-  doc.addFont('EBGaramond-Bold.ttf',    'EBGaramond', 'bold');
-  doc.addFont('EBGaramond-Italic.ttf',  'EBGaramond', 'italic');
-  _ensureCVFont._done = true;
 }
 
 /* ── Avatar fetch → dataURL helper (guvenli embed) ── */
@@ -296,284 +301,233 @@ function fetchAvatarAsDataURL(url) {
   });
 }
 
-async function generateCV() {
+/* ── AI CV optimize — server-side Anthropic call ── */
+async function requestCVOptimize(cvData) {
+  var supa = (typeof window.HT !== 'undefined' && window.HT.getSupa) ? window.HT.getSupa() : supabase;
+  var session = await supa.auth.getSession();
+  var token = session.data.session ? session.data.session.access_token : '';
+
+  var res = await fetch(window.HT.SUPA_URL + '/functions/v1/cv-optimize', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + token,
+      'apikey': window.HT.SUPA_KEY
+    },
+    body: JSON.stringify(cvData)
+  });
+
+  if (!res.ok) {
+    var errBody = {};
+    try { errBody = await res.json(); } catch(e) { /* silent */ }
+    throw new Error(errBody.error || 'AI servisi yan\u0131t vermedi (' + res.status + ')');
+  }
+  return res.json();
+}
+
+async function generateCV(aiOptimized) {
   var jsPDF = window.jspdf.jsPDF;
   var doc = new jsPDF({ unit: 'mm', format: 'a4' });
-  _ensureCVFont(doc); // K-067: Türkçe karakter fix
-  var W = 210, H = 297, M = 16, cW = W - 2 * M, Y = 0;
+  var W = 210, M = 16, cW = W - 2 * M, Y = 0;
   var d = normalizeCVData();
 
-  /* Avatar (opsiyonel) — sağ üst kare, foto yoksa text-only layout */
-  var AVATAR_SIZE = 26; // mm
-  var avatarData = null;
-  if (d.avatarUrl) {
-    try { avatarData = await fetchAvatarAsDataURL(d.avatarUrl); } catch (e) { avatarData = null; }
-  }
-
-  // ── HEADER: isim (uppercase) sol | avatar sağ ──
-  doc.setFont('EBGaramond', 'normal');
-  doc.setFontSize(20);
-  doc.setTextColor(0, 0, 0);
-  // Letter-spaced uppercase isim — times yok letter-spacing, genişlik manipüle
-  var isimUpper = (d.isim || 'Ad Soyad').toLocaleUpperCase('tr-TR');
-  doc.setCharSpace(0.8);
-  doc.text(isimUpper, M, 16);
-  doc.setCharSpace(0);
-
-  var headerYStart = 20;
-  if (d.targetRole) {
-    doc.setFont('EBGaramond', 'italic');
-    doc.setFontSize(10);
-    doc.setTextColor(80, 80, 80);
-    doc.text(d.targetRole, M, headerYStart + 3);
-  }
-
-  // İletişim: "Şehir | Telefon" + "Email | LinkedIn"
-  var line1 = [];
-  if (d.city) line1.push(d.city);
-  if (d.tel) line1.push(d.tel);
-  var line2 = [];
-  if (d.email) line2.push(d.email);
-  if (d.linkedin) line2.push(d.linkedin);
-  doc.setFont('EBGaramond', 'normal');
-  doc.setFontSize(9);
-  doc.setTextColor(40, 40, 40);
-  var cy = headerYStart + (d.targetRole ? 8 : 3);
-  if (line1.length) { doc.text(line1.join('  |  '), M, cy); cy += 4; }
-  if (line2.length) { doc.text(line2.join('  |  '), M, cy); cy += 4; }
-
-  // Diller header altına
-  if (d.languages && d.languages.length > 0) {
-    var langText = d.languages
-      .filter(function(l) { return l && l.dil; })
-      .map(function(l) { return l.dil + (l.seviye ? ': ' + l.seviye : ''); })
-      .join('    ');
-    if (langText) {
-      doc.setFont('EBGaramond', 'normal');
-      doc.setFontSize(9);
-      doc.setTextColor(40, 40, 40);
-      doc.text(langText, M, cy);
-      cy += 4;
+  /* Apply AI optimizations if provided */
+  var expRewrites = {};
+  if (aiOptimized) {
+    if (aiOptimized.summary) d.summary = aiOptimized.summary;
+    /* Map experienceRewrites by index for lookup during experience rendering */
+    if (aiOptimized.experienceRewrites && aiOptimized.experienceRewrites.length > 0) {
+      for (var ri = 0; ri < aiOptimized.experienceRewrites.length; ri++) {
+        var rw = aiOptimized.experienceRewrites[ri];
+        expRewrites[rw.index] = rw;
+      }
     }
   }
 
-  // Avatar embed (ATS uyarısı: Tuna CV örnek pattern'ini takip ediyor, foto istendi)
-  if (avatarData) {
-    try {
-      doc.addImage(avatarData, 'JPEG', M + cW - AVATAR_SIZE, 12, AVATAR_SIZE, AVATAR_SIZE);
-    } catch (err) { /* silent */ }
+  // ── HEADER: isim + hedef rol + iletisim ──
+  // NOT: Avatar PDF'e eklenmez — ATS (Workday, Taleo) text layer'ı bozar.
+  // Foto profil sayfasında görünür, CV'de yer almaz (global best practice).
+
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(18);
+  doc.setTextColor(30, 45, 94);
+  doc.text(d.isim, M, 14);
+
+  if (d.targetRole) {
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10);
+    doc.setTextColor(100, 100, 100);
+    doc.text(d.targetRole, M, 20);
   }
 
-  // Header divider
-  Y = Math.max(cy + 1, (avatarData ? 12 + AVATAR_SIZE + 2 : cy + 1));
-  doc.setDrawColor(0, 0, 0);
-  doc.setLineWidth(0.4);
+  var contactParts = [];
+  if (d.tel) contactParts.push(d.tel);
+  if (d.email) contactParts.push(d.email);
+  if (d.city) contactParts.push(d.city);
+  if (d.linkedin) contactParts.push(d.linkedin);
+  if (contactParts.length) {
+    doc.setFontSize(8.5);
+    doc.setTextColor(80, 80, 80);
+    doc.text(contactParts.join('  \u2022  '), M, 26);
+  }
+
+  Y = 32;
+  doc.setDrawColor(30, 45, 94);
+  doc.setLineWidth(0.3);
   doc.line(M, Y, M + cW, Y);
   Y += 6;
 
-  // ── SECTION 1: PROFESYONEL ÖZET ──
+  // ── SECTION 1: PROFESYONEL OZET ──
+  // Normal font (not italic) — ATS OCR-fallback Türkçe ğ/ş/ı'yı italic'te %15-20 bozar
   if (d.summary) {
-    Y = _cvSection(doc, 'Profesyonel \u00d6zet', M, cW, Y);
-    doc.setFont('EBGaramond', 'normal');
     doc.setFontSize(9.5);
-    doc.setTextColor(30, 30, 30);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(60, 60, 60);
     var splitSummary = doc.splitTextToSize(d.summary, cW);
     doc.text(splitSummary, M, Y);
-    Y += splitSummary.length * 4.3 + 3;
+    Y += splitSummary.length * 4.5 + 4;
   }
 
-  // ── SECTION 2: YETKİNLİKLER — role-based taxonomy (K-066) ──
-  var roleSkillsMap = (typeof ROLE_SKILLS_MAP !== 'undefined') ? ROLE_SKILLS_MAP : {};
-  var leadershipSkills = (typeof LEADERSHIP_SKILLS !== 'undefined') ? LEADERSHIP_SKILLS : [];
-  var families = [];
-  d.experiences.forEach(function(e) {
-    if (e && e.rol_ailesi && families.indexOf(e.rol_ailesi) === -1) {
-      families.push(e.rol_ailesi);
-    }
-  });
-  var skillCats = [];
-  families.forEach(function(fam) {
-    var skills = roleSkillsMap[fam];
-    if (skills && skills.length > 0) {
-      skillCats.push({ cat: fam, items: skills.slice(0, 6) });
-    }
-  });
-  var hasLeadership = d.experiences.some(function(e) {
-    if (!e) return false;
-    var role = (e.pozisyon || e.rol_unvani || '').toLowerCase();
-    return /m\u00fcd\u00fcr|sorumlu|lider|direkt\u00f6r|supervisor|manager/.test(role);
-  });
-  if (hasLeadership && leadershipSkills.length > 0) {
-    skillCats.push({ cat: 'Liderlik', items: leadershipSkills.slice(0, 5) });
-  }
-  if (d.brandInterests && d.brandInterests.length > 0) {
-    skillCats.push({ cat: 'Sekt\u00f6r \u0130lgisi', items: d.brandInterests.slice(0, 6) });
-  }
-
-  if (skillCats.length > 0) {
-    Y = _cvSection(doc, 'Yetkinlikler', M, cW, Y);
-    doc.setFontSize(9.5);
-    skillCats.forEach(function(c) {
-      if (Y > 268) { doc.addPage(); Y = 20; }
-      var catLabel = c.cat + ': ';
-      doc.setFont('EBGaramond', 'bold');
-      doc.setTextColor(0, 0, 0);
-      doc.text(catLabel, M, Y);
-      var catWidth = doc.getTextWidth(catLabel);
-      doc.setFont('EBGaramond', 'normal');
-      doc.setTextColor(40, 40, 40);
-      var itemsText = c.items.join(', ') + '.';
-      var splitItems = doc.splitTextToSize(itemsText, cW - catWidth);
-      doc.text(splitItems[0] || '', M + catWidth, Y);
-      Y += 4;
-      for (var si2 = 1; si2 < splitItems.length; si2++) {
-        if (Y > 268) { doc.addPage(); Y = 20; }
-        doc.text(splitItems[si2], M, Y);
-        Y += 4;
-      }
-    });
-    Y += 2;
-  }
-
-  // ── SECTION 3: PROFESYONEL DENEYİM ──
+  // ── SECTION 2: DENEYIM ──
   if (d.experiences.length > 0) {
-    Y = _cvSection(doc, 'Profesyonel Deneyim', M, cW, Y);
+    Y = _cvSection(doc, 'Deneyim', M, cW, Y);
     for (var ei = 0; ei < d.experiences.length; ei++) {
       var e = d.experiences[ei];
-      if (Y > 260) { doc.addPage(); Y = 20; }
+      if (Y > 258) { doc.addPage(); Y = 20; }
 
-      // Company (uppercase bold) + tarih sağ italic
-      var companyLabel = (e.marka || e.sirket || '').toString().toLocaleUpperCase('tr-TR');
-      doc.setFont('EBGaramond', 'bold');
-      doc.setFontSize(10);
-      doc.setTextColor(0, 0, 0);
-      doc.setCharSpace(0.4);
-      doc.text(companyLabel || '\u015eirket', M, Y);
-      doc.setCharSpace(0);
+      /* Headline: use AI rewrite if available, else original */
+      var rewrite = expRewrites[ei];
+      var headline = rewrite ? rewrite.headline : ((e.pozisyon || '') + (e.marka || e.sirket ? ' \u2014 ' + (e.marka || e.sirket) : ''));
 
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(9.5);
+      doc.setTextColor(30, 30, 30);
+      doc.text(headline || 'Pozisyon', M, Y);
+
+      /* Date — always from profile truth */
       var tarih = '';
       if (e.baslangic_yil) {
         tarih = (monthIndexToName(e.baslangic_ay) || '') + ' ' + e.baslangic_yil + ' \u2013 ';
-        tarih += e.devam_ediyor ? 'Devam' : ((monthIndexToName(e.bitis_ay) || '') + ' ' + (e.bitis_yil || ''));
+        tarih += e.devam_ediyor ? 'Devam Ediyor' : ((monthIndexToName(e.bitis_ay) || '') + ' ' + (e.bitis_yil || ''));
       }
       if (tarih) {
-        doc.setFont('EBGaramond', 'italic');
-        doc.setFontSize(9);
-        doc.setTextColor(80, 80, 80);
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(8.5);
+        doc.setTextColor(120, 120, 120);
         doc.text(tarih.trim(), M + cW, Y, { align: 'right' });
       }
       Y += 4.5;
 
-      // Pozisyon | şehir (italic)
-      var roleLine = [];
-      if (e.pozisyon) roleLine.push(e.pozisyon);
-      if (e.sehir) roleLine.push(e.sehir);
-      if (roleLine.length) {
-        doc.setFont('EBGaramond', 'italic');
-        doc.setFontSize(9.5);
-        doc.setTextColor(50, 50, 50);
-        doc.text(roleLine.join('  |  '), M, Y);
+      if (e.rol_ailesi || e.segment) {
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(8.5);
+        doc.setTextColor(100, 100, 100);
+        doc.text([e.rol_ailesi, e.segment].filter(Boolean).join(' | '), M, Y);
         Y += 4;
       }
 
-      // Bullet points (basari_ozeti / description sentence-split)
-      var summaryText = e.basari_ozeti || e.description || '';
-      if (summaryText) {
-        var sentences = summaryText.split(/(?<=[.!?])\s+/).filter(function(s) { return s.trim().length > 0; });
-        if (!sentences.length) sentences = [summaryText];
-        var maxBullets = Math.min(5, sentences.length);
-        doc.setFont('EBGaramond', 'normal');
-        doc.setFontSize(9.5);
-        doc.setTextColor(30, 30, 30);
-        for (var si3 = 0; si3 < maxBullets; si3++) {
-          if (Y > 268) { doc.addPage(); Y = 20; }
-          var bulletText = '\u2022  ' + sentences[si3].trim();
-          var bLines = doc.splitTextToSize(bulletText, cW - 3);
-          doc.text(bLines, M + 2, Y);
-          Y += bLines.length * 4;
+      /* AI bullets — only if rewrite exists */
+      if (rewrite && rewrite.bullets && rewrite.bullets.length > 0) {
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(8.5);
+        doc.setTextColor(50, 50, 50);
+        for (var bi = 0; bi < Math.min(3, rewrite.bullets.length); bi++) {
+          if (Y > 258) { doc.addPage(); Y = 20; }
+          var bulletText = doc.splitTextToSize('\u2022  ' + rewrite.bullets[bi], cW - 4);
+          doc.text(bulletText, M + 2, Y);
+          Y += bulletText.length * 3.8;
         }
       }
 
       Y += 2.5;
     }
-    Y += 1;
+    Y += 3;
   }
 
-  // ── SECTION 4: EĞİTİM ──
+  // ── SECTION 3: YETKINLIKLER (Skills — ATS keyword matching icin kritik) ──
+  var skills = [];
+  if (d.targetRole) skills.push(d.targetRole);
+  // Deneyimlerden rol ailelerini ve segmentleri topla
+  d.experiences.forEach(function(e) {
+    if (e.rol_ailesi && skills.indexOf(e.rol_ailesi) === -1) skills.push(e.rol_ailesi);
+    if (e.segment && skills.indexOf(e.segment) === -1) skills.push(e.segment);
+  });
+  // Takip edilen markalardan sektör bilgisi
+  if (d.brandInterests.length > 0 && skills.length < 8) {
+    skills.push('Perakende');
+  }
+  if (skills.length > 0) {
+    Y = _cvSection(doc, 'Yetkinlikler', M, cW, Y);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9.5);
+    doc.setTextColor(50, 50, 50);
+    var skillLine = skills.join('  \u2022  ');
+    var splitSkills = doc.splitTextToSize(skillLine, cW);
+    doc.text(splitSkills, M, Y);
+    Y += splitSkills.length * 4.5 + 4;
+  }
+
+  // ── SECTION 4: EGITIM ──
   if (d.education.length > 0) {
-    Y = _cvSection(doc, 'E\u011fitim', M, cW, Y);
+    Y = _cvSection(doc, 'E\u011Fitim', M, cW, Y);
     d.education.forEach(function(e) {
-      if (Y > 268) { doc.addPage(); Y = 20; }
-      doc.setFont('EBGaramond', 'bold');
-      doc.setFontSize(10);
-      doc.setTextColor(0, 0, 0);
-      doc.setCharSpace(0.3);
-      doc.text((e.okul || '').toLocaleUpperCase('tr-TR'), M, Y);
-      doc.setCharSpace(0);
+      if (Y > 258) { doc.addPage(); Y = 20; }
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(9.5);
+      doc.setTextColor(30, 30, 30);
+      doc.text((e.okul || '') + (e.bolum ? ' \u2014 ' + e.bolum : ''), M, Y);
       var rightText = [e.egitim_seviye, e.mezun_yil ? String(e.mezun_yil) : ''].filter(Boolean).join(', ');
       if (rightText) {
-        doc.setFont('EBGaramond', 'italic');
-        doc.setFontSize(9);
-        doc.setTextColor(80, 80, 80);
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(8.5);
+        doc.setTextColor(120, 120, 120);
         doc.text(rightText, M + cW, Y, { align: 'right' });
       }
-      Y += 4.5;
-      if (e.bolum) {
-        doc.setFont('EBGaramond', 'italic');
-        doc.setFontSize(9.5);
-        doc.setTextColor(50, 50, 50);
-        doc.text(e.bolum, M, Y);
-        Y += 4;
-      }
-      Y += 1;
+      Y += 5;
     });
-    Y += 1;
+    Y += 3;
   }
 
-  // ── SECTION 5: SERTİFİKALAR ──
+  // ── SECTION 4: DILLER ──
+  if (d.languages.length > 0) {
+    Y = _cvSection(doc, 'Diller', M, cW, Y);
+    var langLine = d.languages.filter(function(l) { return l.dil; }).map(function(l) {
+      return l.dil + (l.seviye ? ' (' + l.seviye + ')' : '');
+    }).join('  \u2022  ');
+    doc.text(langLine, M, Y, { maxWidth: cW });
+    Y += 6;
+  }
+
+  // ── SECTION 5: SERTIFIKALAR ──
   if (d.certificates.length > 0) {
     Y = _cvSection(doc, 'Sertifikalar', M, cW, Y);
     d.certificates.forEach(function(c) {
-      if (Y > 268) { doc.addPage(); Y = 20; }
-      doc.setFont('EBGaramond', 'bold');
-      doc.setFontSize(10);
-      doc.setTextColor(0, 0, 0);
-      doc.text((c.egitim_adi || '').toLocaleUpperCase('tr-TR'), M, Y);
+      if (Y > 258) { doc.addPage(); Y = 20; }
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(9.5);
+      doc.setTextColor(50, 50, 50);
+      doc.text((c.egitim_adi || '') + (c.kurum ? ' \u2014 ' + c.kurum : ''), M, Y);
       if (c.yil) {
-        doc.setFont('EBGaramond', 'italic');
-        doc.setFontSize(9);
-        doc.setTextColor(80, 80, 80);
-        doc.text(String(c.yil), M + cW, Y, { align: 'right' });
+        doc.setFontSize(8.5);
+        doc.setTextColor(120, 120, 120);
+        doc.text(c.yil, M + cW, Y, { align: 'right' });
       }
-      Y += 4.5;
-      if (c.kurum) {
-        doc.setFont('EBGaramond', 'italic');
-        doc.setFontSize(9.5);
-        doc.setTextColor(50, 50, 50);
-        doc.text(c.kurum, M, Y);
-        Y += 4;
-      }
-      Y += 1;
+      Y += 5;
     });
-    Y += 1;
+    Y += 3;
   }
 
-  // ── References line (italic right) ──
-  if (Y > 270) { doc.addPage(); Y = 20; }
-  doc.setFont('EBGaramond', 'italic');
-  doc.setFontSize(9);
-  doc.setTextColor(90, 90, 90);
-  doc.text('Referanslar talep \u00fczerine sunulur.', M + cW, Y + 4, { align: 'right' });
+  // ── SECTION 6: ILGI ALANLARI (yalnizca anlamliysa) ──
+  if (d.brandInterests.length > 0) {
+    Y = _cvSection(doc, '\u0130lgi Alanlar\u0131', M, cW, Y);
+    doc.text(d.brandInterests.join(', '), M, Y, { maxWidth: cW });
+    Y += 6;
+  }
 
-  // ── Footer: "by hellotalent" sayfa altında ortalanmış ──
-  doc.setFont('EBGaramond', 'italic');
-  doc.setFontSize(8);
-  doc.setTextColor(140, 140, 140);
-  doc.text('by hellotalent', W / 2, H - 10, { align: 'center' });
-
-  // ── PDF METADATA ──
+  // ── PDF METADATA (ATS indexing + retrieval optimization) ──
+  // Branding hellotalent.ai → metadata creator field (not body text — body text pollutes ATS keyword fields)
   doc.setProperties({
-    title: (d.isim || 'CV') + ' \u2014 CV',
+    title: (d.isim || 'CV') + ' - CV',
     author: d.isim || '',
     subject: d.targetRole || 'Perakende Profesyoneli',
     keywords: [d.targetRole, 'perakende', 'retail', d.city].filter(Boolean).join(', '),

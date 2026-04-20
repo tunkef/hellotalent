@@ -351,39 +351,82 @@ function _htInitEvents() {
     saveProfileRPC();
   });
 
-  // CV generation buttons (K-066: AI optimize kaldırıldı, template-driven PDF)
+  // CV generation buttons
   var btnGenCVDash = document.getElementById('btn-gen-cv');
-  if (btnGenCVDash) btnGenCVDash.addEventListener('click', function() { generateCV(); });
+  if (btnGenCVDash) btnGenCVDash.addEventListener('click', generateCV);
   var btnGenCVMerkez = document.getElementById('btn-generate-cv-merkez');
   if (btnGenCVMerkez) btnGenCVMerkez.addEventListener('click', function() { generateCV(); });
-  /* Wizard sağ kolonundaki "PDF İndir" butonu */
-  var btnCvDownload = document.getElementById('btn-cv-download');
-  if (btnCvDownload) btnCvDownload.addEventListener('click', function() { generateCV(); });
-  /* K-067 Pillar C: Merkez panel CV card primary butonları */
-  var btnCvDownloadMerkez = document.getElementById('btn-cv-download-merkez');
-  if (btnCvDownloadMerkez) btnCvDownloadMerkez.addEventListener('click', function() { generateCV(); });
-  var btnCvEditMerkez = document.getElementById('btn-cv-edit-merkez');
-  if (btnCvEditMerkez) btnCvEditMerkez.addEventListener('click', function() {
-    if (typeof window.switchPanel === 'function') window.switchPanel('profil');
-  });
 
-  /* K-067 Pillar C: Success modal "CV'mi Gör" — wizard kaydet sonrası
-     kullanıcıyı merkez CV section'ına götür + briefly highlight */
-  var btnSuccessViewCv = document.getElementById('btn-success-view-cv');
-  if (btnSuccessViewCv) btnSuccessViewCv.addEventListener('click', function() {
-    var modal = document.getElementById('modal-success');
-    if (modal) modal.classList.remove('show');
-    if (typeof window.switchPanel === 'function') window.switchPanel('merkez');
-    setTimeout(function() {
-      var sec = document.getElementById('cv-section');
-      if (sec) {
-        sec.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        sec.style.transition = 'box-shadow .4s ease';
-        sec.style.boxShadow = '0 0 0 3px var(--verm)';
-        setTimeout(function() { sec.style.boxShadow = ''; }, 1600);
+  // AI CV Optimize button — source-aware, MVP free-tier aware
+  var btnAiCV = document.getElementById('btn-ai-cv-optimize');
+  if (btnAiCV) {
+    /* Dynamic label based on CV availability and MVP free-tier state */
+    var _db = typeof window._loadedDBData !== 'undefined' ? window._loadedDBData : null;
+    var hasUploadedCV = _db && _db.profile && _db.profile.cv_url;
+    var aiSubEl = btnAiCV.parentElement ? btnAiCV.parentElement.querySelector('.mk-ai-sub') : null;
+    if (aiSubEl) aiSubEl.textContent = hasUploadedCV ? 'CV\'ni + profilini AI ile g\u00fc\u00e7lendir' : 'Profilini AI ile g\u00fc\u00e7lendir';
+    /* Update button label: MVP free-tier shows "Beta Ücretsiz", paid mode shows "Premium" */
+    if (window.HT_MVP_FREE && btnAiCV.textContent === 'Premium') {
+      btnAiCV.textContent = 'Beta \u00dccretsiz';
+      btnAiCV.style.background = 'var(--navy,#1E2D5E)';
+    }
+
+    btnAiCV.addEventListener('click', async function() {
+      /* Premium gate — bypassed during MVP free-tier */
+      var _dbClick = typeof window._loadedDBData !== 'undefined' ? window._loadedDBData : null;
+      var isPremium = (_dbClick && _dbClick.profile && _dbClick.profile.is_premium === true) || window.HT_MVP_FREE;
+      if (!isPremium) {
+        if (typeof window.switchPanel === 'function') window.switchPanel('premium');
+        return;
       }
-    }, 220);
-  });
+
+      /* Beta AI 1-use gate: ai_cv_used check */
+      var aiCvUsed = _dbClick && _dbClick.profile && _dbClick.profile.ai_cv_used === true;
+      if (aiCvUsed) {
+        if (typeof window.showToast === 'function') {
+          window.showToast('AI CV hakk\u0131n\u0131 kulland\u0131n. \u00c7ok yak\u0131nda tekrar kullanabileceksin!', 'info');
+        }
+        return;
+      }
+
+      /* AI flow */
+      btnAiCV.disabled = true;
+      btnAiCV.textContent = 'Optimize ediliyor\u2026';
+      var cvData = typeof window.normalizeCVData === 'function' ? window.normalizeCVData() : {};
+      window.requestCVOptimize(cvData).then(async function(result) {
+        btnAiCV.disabled = false;
+        btnAiCV.textContent = 'Optimize Edildi \u2713';
+        btnAiCV.style.background = 'var(--green, #059669)';
+
+        /* Mark ai_cv_used = true in DB */
+        try {
+          var supa = (typeof window.HT !== 'undefined' && window.HT.getSupa) ? window.HT.getSupa() : supabase;
+          var sess = await supa.auth.getSession();
+          var uid = sess.data.session && sess.data.session.user && sess.data.session.user.id;
+          if (uid) {
+            await supa.from('candidates').update({ ai_cv_used: true }).eq('user_id', uid);
+            if (_dbClick && _dbClick.profile) _dbClick.profile.ai_cv_used = true;
+          }
+        } catch (e) { /* silent — usage tracking failure should not block CV generation */ }
+
+        /* Source feedback toast */
+        var sourceMsg = '';
+        if (result.sourceUsed === 'profile_and_cv') sourceMsg = 'Profil + y\u00fckl\u00fc CV kullan\u0131larak optimize edildi';
+        else if (result.sourceUsed === 'profile_fallback') sourceMsg = 'CV okunamad\u0131, profil verisiyle optimize edildi';
+        else sourceMsg = 'Profil verisiyle optimize edildi';
+        if (typeof window.showToast === 'function') window.showToast(sourceMsg, 'success');
+
+        /* Generate with AI-optimized content */
+        generateCV(result);
+      }).catch(function(err) {
+        btnAiCV.disabled = false;
+        btnAiCV.textContent = 'Tekrar Dene';
+        btnAiCV.style.background = 'var(--verm, #C94E28)';
+        console.error('[HT] AI CV optimize error:', err.message);
+        if (typeof window.showToast === 'function') window.showToast('AI optimizasyonu ba\u015far\u0131s\u0131z: ' + err.message, 'error');
+      });
+    });
+  }
 
   // Draft resume button
   var btnDraftResume = document.getElementById('btn-draft-resume');

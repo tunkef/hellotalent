@@ -1887,8 +1887,7 @@ test.describe('Profil activation guards', () => {
 
   test('CV template includes LinkedIn URL in contact line', () => {
     expect(cvJs).toContain('linkedin');
-    /* K-066: contactParts→line2 split; linkedin artık line2'de */
-    expect(cvJs).toContain('line2');
+    expect(cvJs).toContain('contactParts');
   });
 
   test('CV template includes target role for ATS', () => {
@@ -1926,27 +1925,23 @@ test.describe('CV canonical template guards', () => {
     expect(cvJs2).not.toMatch(/template\s*===|style\s*===|layout\s*===/);
   });
 
-  test('K-066 section order: özet > yetkinlik > deneyim > eğitim > sertifika', () => {
-    /* Yeni order (Tuna CV pattern): Summary → Skills → Experience → Education → Certificates.
-       Diller header'a taşındı (ayrı section değil). */
-    var summaryPos = cvJs2.indexOf("'Profesyonel \\u00d6zet'");
-    var skillPos = cvJs2.indexOf("'Yetkinlikler'");
-    var expPos = cvJs2.indexOf("'Profesyonel Deneyim'");
-    var eduPos = cvJs2.indexOf("'E\\u011fitim'");
+  test('ATS section order: header > summary > experience > education > languages > certificates', () => {
+    var summaryPos = cvJs2.indexOf('PROFESYONEL OZET');
+    var expPos = cvJs2.indexOf("'Deneyim'");
+    var eduPos = cvJs2.indexOf("'E\\u011Fitim'");
+    var langPos = cvJs2.indexOf("'Diller'");
     var certPos = cvJs2.indexOf("'Sertifikalar'");
     expect(summaryPos).toBeGreaterThan(0);
-    expect(skillPos).toBeGreaterThan(summaryPos);
-    expect(expPos).toBeGreaterThan(skillPos);
+    expect(expPos).toBeGreaterThan(summaryPos);
     expect(eduPos).toBeGreaterThan(expPos);
-    expect(certPos).toBeGreaterThan(eduPos);
+    expect(langPos).toBeGreaterThan(eduPos);
+    expect(certPos).toBeGreaterThan(langPos);
   });
 
-  test('K-066: avatar opsiyonel olarak PDF header sağ üstte (Tuna CV pattern)', () => {
-    /* Eski K031 "avatar YOK" kuralı K-066 ile kaldırıldı (kullanıcı isteği).
-       Foto varsa addImage ile embed edilir, yoksa text-only layout korunur. */
-    expect(cvJs2).toContain('addImage');
-    expect(cvJs2).toContain('fetchAvatarAsDataURL');
-    expect(cvJs2).toContain('AVATAR_SIZE');
+  test('avatar photo NOT embedded in PDF — ATS text layer corruption risk', () => {
+    // Avatar removed from PDF per ATS best practice (Workday/Taleo corrupt adjacent text)
+    expect(cvJs2).not.toContain('addImage');
+    expect(cvJs2).toContain('Avatar PDF');
   });
 
   test('branding in PDF metadata, not body text — ATS keyword pollution prevention', () => {
@@ -1964,129 +1959,181 @@ test.describe('CV canonical template guards', () => {
     expect(normalizeBlock).not.toContain('anthropic');
   });
 
-  test('K-066: AI CV optimize UI elementi kaldırıldı (template-driven only)', () => {
+  test('canonical and AI CTA are separate in UI', () => {
     var profilHtml2 = readFromRepo('profil.html');
-    /* Canonical export button hâlâ duruyor */
+    /* Canonical export button exists */
     expect(profilHtml2).toContain('btn-generate-cv-merkez');
-    /* K-066: AI optimize butonu tamamen silindi */
-    expect(profilHtml2).not.toContain('btn-ai-cv-optimize');
-    expect(profilHtml2).not.toContain('mk-zarf__row--ai');
+    /* AI optimize button exists separately */
+    expect(profilHtml2).toContain('btn-ai-cv-optimize');
+    /* AI button does NOT have data-premium-cta (no longer hijacked by global premium delegation) */
+    var aiSection = profilHtml2.slice(profilHtml2.indexOf('btn-ai-cv-optimize'));
+    expect(aiSection.substring(0, 200)).not.toContain('data-premium-cta');
   });
 });
 
 /* ════════════════════════════════════════════════
-   K-066 — CV module contract (template-driven, AI-free)
-   AI CV integration + Source ingestion + Hardening describe blockları
-   K-066 ile silindi. Yeni guard altta konsolide edildi.
+   AI CV + Anthropic integration guards (Asama 10)
    ════════════════════════════════════════════════ */
-test.describe('K-067 Sprint 1 guards', () => {
-  var cvJs, uiJs, profilHtml;
-
-  test.beforeAll(() => {
-    cvJs = readFromRepo('profil-cv.js');
-    uiJs = readFromRepo('profil-ui.js');
-    profilHtml = readFromRepo('profil.html');
-  });
-
-  // Pillar A: PDF Türkçe font fix
-  test('Pillar A: eb-garamond-vfs.js yüklü + _ensureCVFont helper var', () => {
-    expect(profilHtml).toContain('eb-garamond-vfs.js');
-    expect(cvJs).toContain('function _ensureCVFont');
-    expect(cvJs).toContain("addFont('EBGaramond-Regular.ttf'");
-    expect(cvJs).toContain("addFont('EBGaramond-Bold.ttf'");
-    expect(cvJs).toContain("addFont('EBGaramond-Italic.ttf'");
-  });
-
-  test('Pillar A: generateCV EBGaramond kullanıyor — times yasak', () => {
-    expect(cvJs).not.toMatch(/setFont\s*\(\s*['"]times['"]/);
-    expect(cvJs).toMatch(/setFont\(['"]EBGaramond['"]/);
-    // _ensureCVFont generateCV başında çağrılıyor
-    expect(cvJs).toMatch(/_ensureCVFont\(doc\)/);
-  });
-
-  test('Pillar A: Türkçe upper toLocaleUpperCase("tr-TR") kullanıyor', () => {
-    /* Default toUpperCase "i" → "I" yapar (İ değil). Türkçe locale gerekli. */
-    expect(cvJs).not.toContain('.toUpperCase()');
-    expect(cvJs).toMatch(/toLocaleUpperCase\(['"]tr-TR['"]\)/);
-  });
-
-  // Pillar B: Checkbox state kök fix
-  test('Pillar B: _toggleExperienceFields helper extract edildi (dispatchEvent bağımsız)', () => {
-    expect(uiJs).toContain('function _toggleExperienceFields');
-    /* Initial state'te helper direkt çağrılır (change listener'dan bağımsız) */
-    expect(uiJs).toMatch(/_toggleExperienceFields\s*\(\s*\)/);
-  });
-
-  test('Pillar B: addExperienceCard restore sonrası dispatchEvent yedeği var', () => {
-    /* Manual .checked = true sonrası helper çağrılır + dispatchEvent yedeği
-       future listener'lar için garanti */
-    expect(uiJs).toMatch(/dispatchEvent\(new Event\(['"]change['"]/);
-  });
-});
-
-test.describe('K-066 CV module guards (template-driven)', () => {
-  var cvJs3, eventsJs;
+test.describe('AI CV integration guards', () => {
+  var cvJs3, eventsJs, edgeFn;
 
   test.beforeAll(() => {
     cvJs3 = readFromRepo('profil-cv.js');
     eventsJs = readFromRepo('profil-events.js');
+    edgeFn = readFromRepo('supabase/functions/cv-optimize/index.ts');
   });
 
-  test('profil-cv.js: AI/Anthropic/Edge Function referansı yok', () => {
-    expect(cvJs3).not.toContain('function requestCVOptimize');
-    expect(cvJs3).not.toContain('aiOptimized');
-    expect(cvJs3).not.toContain('syncAiCardCopy');
-    expect(cvJs3).not.toContain('cv-optimize'); // edge function path
-    expect(cvJs3).not.toContain('ANTHROPIC');
-    expect(cvJs3).not.toContain('x-api-key');
-  });
-
-  test('profil-events.js: AI CV handler ve referansları yok', () => {
-    expect(eventsJs).not.toContain('btn-ai-cv-optimize');
-    expect(eventsJs).not.toContain('requestCVOptimize');
-    expect(eventsJs).not.toContain('ai_cv_used');
-    expect(eventsJs).not.toContain('sourceUsed');
-    expect(eventsJs).not.toContain('Optimize ediliyor');
-  });
-
-  test('generateCV parametresiz template-driven', () => {
-    expect(cvJs3).toMatch(/async function generateCV\s*\(\s*\)/);
-    /* normalizeCVData tek data kontratı */
-    expect(cvJs3).toContain('var d = normalizeCVData()');
-  });
-
-  test('avatar embed helper korundu (fetchAvatarAsDataURL)', () => {
+  test('avatar embed uses fetch-to-dataURL, not direct URL', () => {
     expect(cvJs3).toContain('fetchAvatarAsDataURL');
     expect(cvJs3).toContain('canvas.toDataURL');
     /* No direct d.avatarUrl in addImage */
     expect(cvJs3).not.toMatch(/addImage\(d\.avatarUrl/);
   });
 
-  test('CV upload/delete hâlâ _loadedDBData.profile memory sync yapıyor', () => {
-    expect(cvJs3).toContain('_loadedDBData.profile.cv_url = cvStoragePath');
-    expect(cvJs3).toContain('_loadedDBData.profile.cv_filename = file.name');
-    expect(cvJs3).toContain('_loadedDBData.profile.cv_url = null');
-    expect(cvJs3).toContain('_loadedDBData.profile.cv_filename = null');
+  test('requestCVOptimize function exists and calls Edge Function', () => {
+    expect(cvJs3).toContain('function requestCVOptimize');
+    expect(cvJs3).toContain('cv-optimize');
   });
 
-  test('Live CV preview modülü mevcut ve expose ediyor', () => {
-    var previewJs = readFromRepo('profil-cv-preview.js');
-    expect(previewJs).toContain('window.renderCVPreview');
-    expect(previewJs).toContain('window.updateCVPreview');
-    expect(previewJs).toContain('window._schedulePreviewUpdate');
-    /* DOM builder pattern — XSS-safe insertion check */
-    expect(previewJs).toContain('createElement');
-    expect(previewJs).toContain('createTextNode');
-    /* Atama ile HTML injection yok */
-    var htmlAssignPattern = new RegExp('\\.' + 'inner' + 'HTML' + '\\s*=');
-    expect(htmlAssignPattern.test(previewJs)).toBe(false);
+  test('Anthropic API key is only in Edge Function, not in frontend', () => {
+    expect(cvJs3).not.toContain('ANTHROPIC');
+    expect(cvJs3).not.toContain('x-api-key');
+    expect(edgeFn).toContain('ANTHROPIC_API_KEY');
+    expect(edgeFn).toContain('x-api-key');
   });
 
-  test('cv-preview.css 3-kolon wz-grid override içerir', () => {
-    var css = readFromRepo('cv-preview.css');
-    expect(css).toContain('#panel-profil .wz-grid');
-    expect(css).toContain('.cv-preview');
-    expect(css).toContain('.wz-preview');
+  test('Edge Function enforces auth + premium gate', () => {
+    expect(edgeFn).toContain('getUser');
+    expect(edgeFn).toContain('is_premium');
+    expect(edgeFn).toContain('Premium required');
+  });
+
+  test('Edge Function output contract has summary + experienceRewrites', () => {
+    expect(edgeFn).toContain('summary');
+    expect(edgeFn).toContain('experienceRewrites');
+    expect(edgeFn).toContain('keywordSuggestions');
+  });
+
+  test('AI flow has loading + success + failure states in events', () => {
+    expect(eventsJs).toContain('Optimize ediliyor');
+    expect(eventsJs).toContain('Optimize Edildi');
+    expect(eventsJs).toContain('Tekrar Dene');
+  });
+
+  test('generateCV accepts optional aiOptimized parameter', () => {
+    expect(cvJs3).toContain('function generateCV(aiOptimized)');
+    expect(cvJs3).toContain('aiOptimized.summary');
+  });
+});
+
+/* ════════════════════════════════════════════════
+   Source CV ingestion guards (Asama 11)
+   ════════════════════════════════════════════════ */
+test.describe('Source CV ingestion guards', () => {
+  var cvJs4, eventsJs2, edgeFn2;
+
+  test.beforeAll(() => {
+    cvJs4 = readFromRepo('profil-cv.js');
+    eventsJs2 = readFromRepo('profil-events.js');
+    edgeFn2 = readFromRepo('supabase/functions/cv-optimize/index.ts');
+  });
+
+  test('Edge Function supports source CV ingestion', () => {
+    expect(edgeFn2).toContain('sourceCVText');
+    expect(edgeFn2).toContain('extractTextFromPDF');
+    expect(edgeFn2).toContain('extractTextFromDOCX');
+    expect(edgeFn2).toContain('cv_url');
+    expect(edgeFn2).toContain('cv_filename');
+  });
+
+  test('Edge Function reports sourceUsed in output', () => {
+    expect(edgeFn2).toContain('profile_only');
+    expect(edgeFn2).toContain('profile_and_cv');
+    expect(edgeFn2).toContain('profile_fallback');
+    expect(edgeFn2).toContain('sourceUsed');
+  });
+
+  test('Parse failure falls back to profile_only honestly', () => {
+    expect(edgeFn2).toContain('profile_fallback');
+    /* No "CV okundu" claim on parse failure */
+    expect(edgeFn2).not.toContain('CV successfully parsed');
+  });
+
+  test('experienceRewrites are applied in canonical PDF via expRewrites map', () => {
+    expect(cvJs4).toContain('expRewrites[ei]');
+    expect(cvJs4).toContain('rewrite.bullets');
+    expect(cvJs4).toContain('rewrite.headline');
+  });
+
+  test('normalizeCVData includes cvUrl and cvFilename', () => {
+    expect(cvJs4).toContain("cvUrl: profile.cv_url");
+    expect(cvJs4).toContain("cvFilename: profile.cv_filename");
+  });
+
+  test('UI shows source-aware feedback after AI optimize', () => {
+    expect(eventsJs2).toContain('sourceUsed');
+    expect(eventsJs2).toContain('profile_and_cv');
+    expect(eventsJs2).toContain('profile_fallback');
+  });
+
+  test('free CV export does not depend on AI', () => {
+    expect(cvJs4).toContain('function generateCV(aiOptimized)');
+    /* When called without param, expRewrites is empty object */
+    expect(cvJs4).toContain('var expRewrites = {}');
+  });
+});
+
+/* ════════════════════════════════════════════════
+   AI CV hardening guards (Asama 12)
+   ════════════════════════════════════════════════ */
+test.describe('AI CV hardening guards', () => {
+  var edgeFn3, cvJs5, currentState;
+
+  test.beforeAll(() => {
+    edgeFn3 = readFromRepo('supabase/functions/cv-optimize/index.ts');
+    cvJs5 = readFromRepo('profil-cv.js');
+    currentState = readFromRepo('docs/CURRENT-STATE.md');
+  });
+
+  test('DOCX parse uses real ZIP unzip via fflate', () => {
+    expect(edgeFn3).toContain('unzipSync');
+    expect(edgeFn3).toContain('fflate');
+    expect(edgeFn3).toContain('word/document.xml');
+    /* ZIP magic bytes verification */
+    expect(edgeFn3).toContain('0x50');
+    expect(edgeFn3).toContain('0x4B');
+  });
+
+  test('Edge Function reports parserUsed in output', () => {
+    expect(edgeFn3).toContain('parserUsed');
+    expect(edgeFn3).toContain('pdf_text');
+    expect(edgeFn3).toContain('docx_unzip');
+    expect(edgeFn3).toContain('doc_besteff');
+  });
+
+  test('CV upload/delete triggers AI card live sync', () => {
+    expect(cvJs5).toContain('syncAiCardCopy');
+    expect(cvJs5).toContain('syncAiCardCopy(true)');
+    expect(cvJs5).toContain('syncAiCardCopy(false)');
+  });
+
+  test('CURRENT-STATE includes AI CV feature', () => {
+    expect(currentState).toContain('AI CV Optimize');
+    expect(currentState).toContain('cv-optimize');
+    expect(currentState).toContain('Anthropic');
+  });
+
+  test('cv-optimize function exists in repo', () => {
+    expect(edgeFn3.length).toBeGreaterThan(1000);
+    expect(edgeFn3).toContain('ANTHROPIC_API_KEY');
+    expect(edgeFn3).toContain('Deno.serve');
+  });
+
+  test('upload/delete syncs _loadedDBData.profile CV fields in memory', () => {
+    expect(cvJs5).toContain('_loadedDBData.profile.cv_url = cvStoragePath');
+    expect(cvJs5).toContain('_loadedDBData.profile.cv_filename = file.name');
+    expect(cvJs5).toContain('_loadedDBData.profile.cv_url = null');
+    expect(cvJs5).toContain('_loadedDBData.profile.cv_filename = null');
   });
 });
 
@@ -2259,7 +2306,19 @@ test.describe('Aşama 14 — MVP free-tier truth-sync guards', () => {
     expect(premiumJs).toContain('if (!MVP_FREE_TIER)');
   });
 
-  // ── AI CV gate K-066 ile kaldırıldı (feature silindi, testler siliniyor) ──
+  // ── AI CV gate ──
+  test('AI CV button gate bypasses premium when HT_MVP_FREE is set', () => {
+    // Events file exposes HT_MVP_FREE alias from _htMvpFreeTier
+    expect(eventsJs).toContain('window.HT_MVP_FREE');
+    // isPremium includes the MVP flag → gate only blocks when BOTH are falsy
+    expect(eventsJs).toContain('|| window.HT_MVP_FREE');
+    expect(eventsJs).toContain('if (!isPremium)');
+  });
+
+  test('AI CV button label updates to beta-free copy in MVP mode', () => {
+    expect(eventsJs).toContain('Beta');
+    expect(eventsJs).toContain('window.HT_MVP_FREE');
+  });
 
   // ── Studio AI gate ──
   test('Studio resolves isPremium=true when window._htMvpFreeTier is set', () => {
@@ -2335,8 +2394,42 @@ test.describe('Aşama 25 — Candidate dashboard free-tier copy drift', () => {
   });
 });
 
-/* Aşama 24 — AI CV post-sync free-tier truth guard — K-066 ile tamamen silindi
-   (AI CV feature kaldırıldı, syncAiCardCopy fonksiyonu artık yok) */
+/* ════════════════════════════════════════════════
+   Aşama 24 — AI CV post-sync free-tier truth guard
+   ════════════════════════════════════════════════ */
+test.describe('Aşama 24 — AI CV post-sync free-tier truth guard', () => {
+  var cvJs24;
+
+  test.beforeAll(() => {
+    cvJs24 = readFromRepo('profil-cv.js');
+  });
+
+  test('syncAiCardCopy uses MVP free-tier truth flag for button reset', () => {
+    var fnStart = cvJs24.indexOf('function syncAiCardCopy');
+    expect(fnStart).toBeGreaterThan(0);
+    var fnEnd = cvJs24.indexOf('\nfunction ', fnStart + 1);
+    var fnBody = fnEnd > fnStart ? cvJs24.substring(fnStart, fnEnd) : cvJs24.substring(fnStart, fnStart + 600);
+    // Must reference the MVP free-tier flag — not hardcode Premium unconditionally
+    expect(fnBody).toMatch(/window\._htMvpFreeTier|window\.HT_MVP_FREE/);
+  });
+
+  test('syncAiCardCopy resets button to Beta copy when MVP free-tier is active', () => {
+    var fnStart = cvJs24.indexOf('function syncAiCardCopy');
+    var fnEnd = cvJs24.indexOf('\nfunction ', fnStart + 1);
+    var fnBody = fnEnd > fnStart ? cvJs24.substring(fnStart, fnEnd) : cvJs24.substring(fnStart, fnStart + 600);
+    // Must have a 'Beta' branch for the free-tier reset path
+    expect(fnBody).toContain('Beta');
+  });
+
+  test('syncAiCardCopy gates the Premium reset copy behind a free-tier check', () => {
+    var fnStart = cvJs24.indexOf('function syncAiCardCopy');
+    var fnEnd = cvJs24.indexOf('\nfunction ', fnStart + 1);
+    var fnBody = fnEnd > fnStart ? cvJs24.substring(fnStart, fnEnd) : cvJs24.substring(fnStart, fnStart + 600);
+    // 'Premium' copy must co-exist with the MVP flag — not appear as the sole unconditional value
+    expect(fnBody).toContain('Premium');
+    expect(fnBody).toMatch(/(_htMvpFreeTier|HT_MVP_FREE)[\s\S]{0,300}Premium|Premium[\s\S]{0,300}(_htMvpFreeTier|HT_MVP_FREE)/);
+  });
+});
 
 /* ════════════════════════════════════════════════
    Aşama 26 — Inbox-notification decoupling guard
@@ -2866,7 +2959,7 @@ test.describe('Asama 45 — .single() lint guard yapisal dogrulama', () => {
 // Beta Premium Gate — Asama 50
 // ═══════════════════════════════════════════════
 
-test.describe('Beta Premium Gate — AI assessment 1-use limit + badge system', () => {
+test.describe('Beta Premium Gate — AI 1-use limit + badge system', () => {
   var premiumJs, cvJs, eventsJs, studioJs;
 
   test.beforeAll(() => {
@@ -2876,26 +2969,24 @@ test.describe('Beta Premium Gate — AI assessment 1-use limit + badge system', 
     studioJs = readFromRepo('profil-studio.js') + '\n' + readFromRepo('css/studio.css');
   });
 
-  // ── K-066 Guard: AI CV optimize feature tamamen kaldırıldı ──
-  // AI CV artık yok (template-driven deterministic CV). Sadece assessment AI kaldı.
+  // ── AI CV 1-use gate ──
 
-  test('K-066: AI CV optimize handler profil-events.js içinde YOK', () => {
-    expect(eventsJs).not.toContain('btn-ai-cv-optimize');
-    expect(eventsJs).not.toContain('requestCVOptimize');
-    expect(eventsJs).not.toContain('ai_cv_used');
+  test('AI CV flow checks ai_cv_used before proceeding', () => {
+    expect(eventsJs).toContain('ai_cv_used');
   });
 
-  test('K-066: profil-cv.js içinden AI optimize fonksiyonu silindi', () => {
-    expect(cvJs).not.toContain('requestCVOptimize');
-    expect(cvJs).not.toContain('aiOptimized');
+  test('AI CV shows "hakkini kullandin" message after first use', () => {
+    // After successful AI CV, user should see a message that they used their free try
+    // Unicode: kulland\u0131n = kullandın
+    expect(eventsJs).toContain('kulland');
   });
 
-  test('K-066: generateCV sadece template-driven, parametresiz çağrılıyor', () => {
-    // generateCV artık AI param almıyor
-    expect(cvJs).toMatch(/async function generateCV\s*\(\s*\)/);
+  test('AI CV marks ai_cv_used=true after successful optimize', () => {
+    expect(eventsJs).toContain('ai_cv_used');
+    expect(eventsJs).toContain('update');
   });
 
-  // ── AI Assessment 1-use gate (studio) — kalıyor ──
+  // ── AI Assessment 1-use gate ──
 
   test('Studio AI feedback checks ai_assessment_used before proceeding', () => {
     expect(studioJs).toContain('ai_assessment_used');
@@ -2925,13 +3016,12 @@ test.describe('Beta Premium Gate — AI assessment 1-use limit + badge system', 
   });
 
   // ── Migration guard ──
-  // K-066: ai_cv_used column dropped, ai_assessment_used preserved.
 
-  test('K-066 migration: wizard_template_cleanup exists', () => {
+  test('migration for ai_cv_used and ai_assessment_used exists', () => {
     var migDir = path.join(__dirname, '..', 'supabase', 'migrations');
     var files = fs.readdirSync(migDir);
-    var cleanupMig = files.find(f => f.includes('wizard_template_cleanup'));
-    expect(cleanupMig).toBeTruthy();
+    var betaGateMig = files.find(f => f.includes('beta_ai_usage'));
+    expect(betaGateMig).toBeTruthy();
   });
 });
 
@@ -3159,8 +3249,7 @@ test.describe('K031 — Profil Merkezi editorial redesign', () => {
     expect(region).toContain('id="btn-cv-reupload"');
     expect(region).toContain('id="btn-cv-delete"');
     expect(region).toContain('id="btn-generate-cv-merkez"');
-    /* K-066: btn-ai-cv-optimize kaldırıldı (AI CV optimize feature silindi) */
-    expect(region).not.toContain('id="btn-ai-cv-optimize"');
+    expect(region).toContain('id="btn-ai-cv-optimize"');
     expect(region).toContain('id="btn-preview-profile"');
     /* K045: premium card-link replaced by merkez-toggle-premium */
     expect(region).toContain('id="merkez-toggle-premium"');
@@ -3563,14 +3652,13 @@ test.describe('K049 — Wizard editorial redesign', () => {
   test('profil.html contains the new editorial wizard wrappers', () => {
     expect(profilHtml).toContain('class="wz-grid"');
     expect(profilHtml).toContain('class="wz-main"');
-    /* K-066: wz-rail silindi — üstte progress bar yeterli. wz-preview eklendi (sağ kolon CV). */
-    expect(profilHtml).not.toContain('class="wz-rail"');
-    expect(profilHtml).toContain('class="wz-preview"');
+    expect(profilHtml).toContain('class="wz-rail"');
     expect(profilHtml).toContain('class="wz-header"');
     expect(profilHtml).toContain('id="wz-step-num"');
     expect(profilHtml).toContain('id="wz-step-pct"');
     expect(profilHtml).toContain('id="wz-progress-bar"');
-    expect(profilHtml).toContain('id="cv-preview-root"');
+    expect(profilHtml).toContain('data-wzrail-step="1"');
+    expect(profilHtml).toContain('data-wzrail-step="7"');
   });
 
   test('profil.html preserves critical wizard ids after redesign', () => {

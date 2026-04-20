@@ -646,18 +646,13 @@ function addExperienceCard(data) {
 
   card.appendChild(descWrap);
 
-  // K-067 Pillar B: "Halen burada çalışıyorum" state helper (kök fix).
-  // Geçmiş bug: .checked = true programmatic SET change event TETIKLEMEZ.
-  // 3 önceki yüzeysel fix (12aa73d, af8559a, 1741633) dispatchEvent eklememişti.
-  // Kök çözüm: toggle kodu HELPER'a extract — hem initial render hem listener
-  // aynı fonksiyonu çağırsın, deterministic state garantisi.
-  function _toggleExperienceFields() {
+  // Toggle bitis fields and ayrilma based on checkbox
+  cb.addEventListener('change', function() {
     var bitisFields = card.querySelectorAll('.bitis-field');
     var ayrilma = card.querySelector('.ayrilma-field');
-    var isDevam = !!cb.checked;
     bitisFields.forEach(function(f) {
       var sel = f.querySelector('select');
-      if (isDevam) {
+      if (cb.checked) {
         f.style.display = 'none';
         if (sel) { sel.value = ''; sel.disabled = true; }
       } else {
@@ -665,15 +660,19 @@ function addExperienceCard(data) {
         if (sel) sel.disabled = false;
       }
     });
-    if (ayrilma) ayrilma.style.display = isDevam ? 'none' : '';
-    devamBadge.style.display = isDevam ? 'inline-block' : 'none';
-  }
-  cb.addEventListener('change', _toggleExperienceFields);
-  // Initial state — programmatic SET sonrası helper deterministic çalışır.
-  // Ayrıca dispatchEvent yedeği (ileride başka listener eklenirse garanti).
+    if (ayrilma) ayrilma.style.display = cb.checked ? 'none' : '';
+    // Badge + card border
+    devamBadge.style.display = cb.checked ? 'inline-block' : 'none';
+    // Border removed — devam badge is sufficient indicator
+  });
+  // Trigger initial state
   if (d.devam_ediyor) {
-    _toggleExperienceFields();
-    cb.dispatchEvent(new Event('change', { bubbles: true }));
+    card.querySelectorAll('.bitis-field').forEach(function(f) {
+      f.style.display = 'none';
+      var sel = f.querySelector('select');
+      if (sel) { sel.value = ''; sel.disabled = true; }
+    });
+    // Border removed
   }
 
   // Basari Ozeti removed from wizard (Decision 5 — future dashboard feature)
@@ -1474,30 +1473,14 @@ function collectTargetRoles() {
 }
 
 function collectWorkPrefs() {
-  // K-066 fix: career_type DB CHECK sadece 'yukari' veya 'yatay' tekil değer kabul eder.
-  // Comma-join ('yukari,yatay') constraint'i kırardı. Multi-select UI varsa tek değere indir:
-  // - Birden fazla seçilirse 'yukari' öncelikli (career_mobility='both' kolonu bunu takip eder).
-  // - Tek seçilirse o değer gider.
-  // - Hiç seçilmezse null (work_prefs opsiyonel).
-  // K-066 ile candidate_work_preferences.career_mobility eklendi; aşağıda hem tekli career_type
-  // (backward compat) hem yeni career_mobility (vertical/horizontal/both/none) gönderilir.
-  var types = (typeof selectedCareerTypes !== 'undefined' && selectedCareerTypes) ? selectedCareerTypes : [];
-  var ct = null;
-  var cm = null;
-  if (types.length === 1) {
-    ct = types[0];
-    cm = types[0] === 'yukari' ? 'vertical' : (types[0] === 'yatay' ? 'horizontal' : null);
-  } else if (types.length > 1) {
-    ct = types.indexOf('yukari') >= 0 ? 'yukari' : types[0];
-    cm = 'both';
-  }
+  // Career type: multi-select (comma-joined)
+  var ct = selectedCareerTypes.length > 0 ? selectedCareerTypes.join(',') : null;
   return {
     musaitlik: nullIfEmpty(selectedMusaitlik),
     calisma_tipleri: selectedCalismaTipleri,
     tercih_segmentler: selectedSegmentler,
     career_goal: null,
     career_type: ct,
-    career_mobility: cm,
     travel_willingness: nullIfEmpty(val('f-seyahat')),
     shift_flexibility: nullIfEmpty(val('f-vardiya')),
     notice_period: nullIfEmpty(val('f-ihbar'))
@@ -1765,44 +1748,11 @@ async function saveProfileRPC(onComplete) {
   } catch (err) {
     if (window.Sentry) Sentry.captureException(err, { tags: { flow: 'wizard-save' } });
     var errorDesc = document.getElementById('error-desc');
-    if (errorDesc) errorDesc.textContent = _translateSaveError(err);
+    if (errorDesc) errorDesc.textContent = err.message || 'Bilinmeyen bir hata olustu.';
     document.getElementById('modal-error').classList.add('show');
   } finally {
     if (btnComplete) { btnComplete.disabled = false; btnComplete.textContent = 'Tamamla'; }
   }
-}
-
-/* K-066: Postgres/Supabase hatalarını Türkçe kullanıcı dostu mesaja çevir. */
-function _translateSaveError(err) {
-  var raw = (err && (err.message || err.toString())) || '';
-  var lower = raw.toLowerCase();
-  // CHECK constraint ihlalleri (spesifik alan bazında)
-  if (lower.indexOf('career_type_check') >= 0) {
-    return 'Kariyer hedefi alanında geçersiz seçim var. Lütfen "Yukarı Terfi" veya "Yatay Geçiş" seçeneklerinden birini işaretleyin.';
-  }
-  if (lower.indexOf('career_mobility') >= 0 && lower.indexOf('check') >= 0) {
-    return 'Kariyer geçiş tipi geçersiz. Lütfen tercihinizi yeniden seçin.';
-  }
-  if (lower.indexOf('telefon') >= 0 && (lower.indexOf('duplicate') >= 0 || lower.indexOf('unique') >= 0)) {
-    return 'Bu telefon numarası başka bir profilde kayıtlı. Lütfen farklı bir numara girin veya giriş yapın.';
-  }
-  if (lower.indexOf('email') >= 0 && (lower.indexOf('duplicate') >= 0 || lower.indexOf('unique') >= 0)) {
-    return 'Bu e-posta adresi başka bir profilde kayıtlı. Giriş yapmayı deneyin.';
-  }
-  if (lower.indexOf('not-null') >= 0 || lower.indexOf('not null') >= 0) {
-    return 'Zorunlu alanlardan biri boş. Lütfen işaretli alanları doldurup tekrar deneyin.';
-  }
-  if (lower.indexOf('check constraint') >= 0 || lower.indexOf('violates check') >= 0) {
-    return 'Bir alanda geçersiz değer var. Lütfen seçimlerinizi gözden geçirip tekrar deneyin.';
-  }
-  if (lower.indexOf('not authenticated') >= 0 || lower.indexOf('jwt') >= 0) {
-    return 'Oturumunuz sona ermiş. Lütfen yeniden giriş yapın.';
-  }
-  if (lower.indexOf('network') >= 0 || lower.indexOf('failed to fetch') >= 0) {
-    return 'Bağlantı sorunu. İnternet bağlantınızı kontrol edip tekrar deneyin.';
-  }
-  // Genel fallback — raw mesajı göster ama etiketle
-  return raw ? ('Kayıt hatası: ' + raw) : 'Bilinmeyen bir hata oluştu. Lütfen tekrar deneyin.';
 }
 
 // ═══════════════════════════════════════════════════

@@ -1,120 +1,31 @@
 # HelloTalent AI-COLLAB — Aktif Calisma Defteri
 
-## 2026-04-20 — K-067 Sprint 1: Türkçe PDF + checkbox kök fix + post-save CV erişim (Asama 80.20)
+## 2026-04-20 — K-068 ROLLBACK: K-066+K-067 revert + AI CV button gizlendi (Asama 80.21)
 
-**Durum:** Tuna feedback K-066 sonrası: PDF Türkçe karakterler bozuk, "Burada çalışıyorum" checkbox state kaybolma (4. kez), profil kaydet sonrası CV'ye erişim yok. Plan: docs/K067-PLAN.md (8 pillar, 4 sprint).
-
-**Sprint 1 (P0) tamam.** 3 paralel ajan raporu (Zety UX + jsPDF Türkçe çözüm + checkbox kök neden) → kapsamlı plan → 3 pillar implement.
-
-### Pillar A — PDF Türkçe karakter kök fix
-- **Yeni:** `eb-garamond-vfs.js` (~250KB base64). EB Garamond Regular+Bold+Italic Turkish subset (~63KB ttf × 3). Build: google/fonts variable TTF → fontTools varLib.mutator → pyftsubset Latin + Latin-1 + Latin Ext-A unicodes.
-- **profil-cv.js:** `_ensureCVFont(doc)` helper (idempotent VFS inject + addFont). `setFont('times')` → `setFont('EBGaramond')` (21 yer). `.toUpperCase()` → `.toLocaleUpperCase('tr-TR')` (5 yer — JS default toUpperCase Türkçe locale değil, "i" → "I" yapar, doğrusu "İ").
-- **profil.html:** `<script src="eb-garamond-vfs.js?v=20260420k067">` profil-cv.js öncesi.
-- **UAT:** `ht-k067-pdf-turkish.mjs` Playwright ile generateCV() → datauristring → pdftotext extract → 14/14 Türkçe regex pass: İstanbul, Mağaza, ŞAHİN, İREM, ŞİŞECAM, Büyük, İngilizce, Türkçe, EĞİTİM, BOĞAZİÇİ, üzerinde, YETKİNLİKLER, DENEYİM, ÜNİVERSİTESİ.
-
-### Pillar B — "Burada çalışıyorum" checkbox kök fix
-- **Geçmiş:** 12aa73d, af8559a, 1741633 — 3 önceki "fix" yüzeysel kalmış. Hiçbiri `dispatchEvent('change')` eklememiş.
-- **Kök neden:** addExperienceCard() içinde `cb.checked = true` programmatic SET change listener TETIKLEMEZ. Initial state manuel toggle kodu çağrılan listener kodundan ayrıydı.
-- **Fix (profil-ui.js):** `_toggleExperienceFields()` helper'a extract — hem listener hem initial state aynı fonksiyonu çağırır (deterministic). + dispatchEvent yedeği (future listener garanti).
-
-### Pillar C — Post-save CV erişim
-- **Sorun:** Tuna kaydet sonrası CV'ye nasıl ulaşacağını bulamadı. Aslında merkez panelde `btn-preview-profile` + `btn-generate-cv-merkez` vardı ama keşfedilebilir değildi.
-- **profil.html:** Success modal'e "CV'mi Gör" primary buton (Tamam ghost). Merkez CV card'ı redesign — başlık "CV'iniz" + "Düzenle" + büyük "PDF İndir" primary. Legacy upload "opsiyonel" notu ile altta.
-- **profil-events.js:** `btn-success-view-cv` → modal kapat + switchPanel('merkez') + scrollIntoView + 1.6s vermillion box-shadow vurgusu. `btn-cv-download-merkez` → generateCV(). `btn-cv-edit-merkez` → switchPanel('profil').
-
-### Test
-- 932 pass, 0 fail (tests/p3.regression.spec.js)
-- Yeni K-067 Sprint 1 guards (5 test): Pillar A font + Türkçe upper, Pillar B helper extract + dispatchEvent
-- ht-k067-pdf-turkish.mjs Playwright UAT 14/14
-
-### Sırada
-- Sprint 1 commit + push → Tuna live UAT
-- Sprint 2 (P1): Tuna CV pixel parity (D), skill taxonomy genişlet (E)
-- Sprint 3 (P2): Autosave + accordion + tag-input (F), mobile bottom tab (G)
-
----
-
-## 2026-04-20 — K-066 iterasyon 2: Tuna CV template + role-based skills + bug fixes (Asama 80.19.2)
-
-**Durum:** Tuna UAT feedback — 4 konu: (1) kayıt CHECK constraint kırıyordu (career_type), (2) wizard sağ "Adımlar" spine gereksiz (progress bar zaten var), (3) CV template Tuna'nın kendi CV pattern'ine uyumlu olmalı (EB Garamond, B&W, avatar sağ üst, by hellotalent footer), (4) Yetkinlik section "Mağaza Müdürü" gibi pozisyon değil gerçek skill'ler göstermeli (Zety-style role→skill).
+**Durum:** Tuna kararı: 4 iterasyon (K-066, K-066 iter 2, K-067 Sprint 1) sonrası "checkbox hâlâ kayıp, CV builder'ı yapamayacak gibiyiz" feedback'i. Pillar B "kök fix" canlıda doğrulanmadan commit edilmişti, hâlâ kırık. Tuna seçim B (rollback) + bonus: AI CV Optimize button da UI'dan gizle, Studio "Yakında" sayfasına taşı.
 
 ### Yapilan
+| Parça | Aksiyon |
+|-------|---------|
+| Git revert | 4 commit revert: db09e8f (K-067 Sprint 1), f03f5ff (K-066 iter 2), 987da94 (K-066 testler), 5e2e8f2 (K-066 split wizard). Tek commit ile geri al. |
+| profil.html | btn-ai-cv-optimize wrapper `style="display:none"` — Tuna "UI'da gözükmesin" dedi. HTML kaldırılmadı (re-enable kolaylığı için). |
+| profil-events.js | AI handler dokunulmadı — `getElementById('btn-ai-cv-optimize')` hala dönüyor (display:none element selector'a yansımıyor) ama disabled+hidden HTML kullanıcının click'ini engellediği için no-op. |
+| Migration | `20260420194541_revert_k066_k067_restore_ai_cv_used.sql` — `ai_cv_used` kolonunu geri ekle. `career_mobility` kolonu kalsın (zarar yok, NULL gider). save_candidate_profile RPC K-066 versiyonu kalsın (NULLIF eski client'ı korur). |
+| docs/K067-PLAN.md | Revert ile silindi (gerek kalmadı). |
 
-| Parça | Scope |
-|-------|-------|
-| career_type bug fix | collectWorkPrefs multi-select 'yukari,yatay' → tek değer gönder + career_mobility K-066 kolonuna 'both' eşle. Postgres CHECK violation çözüldü. |
-| Wizard layout | wz-rail spine silindi, wz-grid 3-col → 2-col (form + preview). cv-preview.css'te #panel-profil override. |
-| CV template redesign | EB Garamond (preview) + Times (PDF) serif, B&W, hairline divider. Vermillion/Navy renkleri kaldırıldı. Avatar sağ üst 84px/26mm kare, `fetchAvatarAsDataURL` embed. Eski ATS "avatar yok" kuralı relaxed. |
-| Tuna CV pattern | İsim UPPERCASE letter-spaced, iletişim 2 satır, diller header altında, section order: Özet → Yetkinlikler → Deneyim → Eğitim → Sertifikalar. COMPANY bold uppercase + tarih italic. "by hellotalent" PDF sayfa altı footer ortalı. |
-| ROLE_SKILLS_MAP | profil-core.js'te 10 rol ailesi × 5-6 skill taxonomy (Mağaza Operasyon: P&L/Stok/KPI/Shrinkage; Satış: Hedef/Clienteling/Upselling; vb.). LEADERSHIP_SKILLS unvanda "müdür/sorumlu/lider" detekt edilince otomatik eklenir. |
-| Türkçe hata mesajı | _translateSaveError helper — Postgres raw error'ları Türkçe user-friendly mesaja map: career_type_check, not-null, unique, network, jwt. |
-| Zety referans araştırması | Agent raporu alındı: must-copy (job title → auto skill, live preview real-time), avoid (TXT-only paywall, renkli sidebar). Skill taxonomy Zety pattern'iyle uyumlu. |
+### Neden başarısız oldu (lesson)
+1. **Pillar B canlıda doğrulanmadı** — kod helper extract OK göründü ama Playwright UAT'da gerçek wizard akışı (loadProfileFromDB → applyDraft → addExperienceCard → checkbox restore) test edilmedi. Sadece statik kod assertion (helper var mı diye check). Tuna gerçek session'da kırık gördü.
+2. **5. iterasyon yorgunluğu** — aynı bug'ı 5 kez denemek = aynı yöntem aynı sonuç. DeepSeek deep code review veya canlı debug session daha erken yapılmalıydı.
+3. **CV builder kapsamı çok büyük** — wizard refactor + live preview + PDF font + skill taxonomy + UX parity hepsini bir sprintte denemek hata. MVP scope daha minimal olmalıydı.
 
-### Test durumu
+### Studio "Yakında" hedefi
+- Studio panel zaten "Yakında" tarzı içerikli olabilir (profil-studio.js).
+- AI CV Optimize feature'ı sonra Stüdyo altına taşınacak (referans: K-068 rollback note). Bu sprint scope dışı.
 
-- 922 pass, 0 fail (tests/p3.regression.spec.js)
-- K-066 guard testleri güncellendi: section order, avatar embed, wz-preview, ROLE_SKILLS_MAP
-
-### Sonraki adımlar
-
-- Live UAT (Tuna): hellotalent.ai/profil.html — kayıt + preview + PDF İndir + hata mesajı
-- cv-optimize edge function delete (task #10) — stable oturunca
-- İlerde: pre-written bullet library (Zety-style "X% ciro artışı" templates)
-
----
-
-## 2026-04-20 — K-066 split wizard + live CV preview (template-driven, AI-free) (Asama 80.19)
-
-**Durum:** Tuna vision — "profil wizard bize büyük bir database oluşturuyor, ama CV herkes için sorun. Ekranı ikiye böl: sol form, sağ CV preview. Kullanıcı doldurdukça live render. Artık AI CV kaldırıldı — template-driven, tek tip CV, KVKK uyumlu. İK filtreleri (lokasyon, yatay/dikey geçiş, target rol, marka ilgisi) CV'de görünmez."
-
-**Aktif hedef:** Tuna UAT — wizard açıl → sağda canlı CV preview doldurulmayı bekler → form alanları dolunca preview güncellenir (150ms debounce) → "PDF İndir" template-driven CV çıktısı üretir. Legacy CV upload opsiyonel kalır.
-
-### Yapilan is
-
-| Parça | Scope |
-|-------|-------|
-| Migration `20260420120034_wizard_template_cleanup.sql` | `candidates.ai_cv_used` drop. `candidate_work_preferences.career_mobility` (enum: vertical/horizontal/both/none) add. `save_candidate_profile` RPC career_mobility ekli. `ai_assessment_used` korundu (başka feature). |
-| `profil-cv-preview.js` (YENİ) | DOM builder pattern (innerHTML yasak). `renderCVPreview(data)`, `updateCVPreview()`, `_schedulePreviewUpdate()` debounced 150ms. Section: header/özet/deneyim/yetkinlik/eğitim/diller/sertifika/ilgi. |
-| `cv-preview.css` (YENİ) | A4 feel, literal hex (navy #1E2D5E + vermillion #C94E28 + white paper), her zaman light (dark mode override yok — CV çıktı gerçekçi). Mobile bottom drawer pattern. |
-| `profil-cv.js` | `requestCVOptimize()` + `syncAiCardCopy()` silindi. `generateCV()` parametresiz (AI rewrite yok). Experience bullets `basari_ozeti` / `description`'dan çekilir (template-driven). `normalizeCVData()` zaten deterministic özet üretiyordu — korundu. |
-| `profil-events.js` | `btn-ai-cv-optimize` handler tamamen silindi (50 satır). `btn-cv-download` click → `generateCV()` bağlandı. `btn-gen-cv`, `btn-generate-cv-merkez` korundu. |
-| `profil.html` | `cv-preview.css` + `profil-cv-preview.js` `<head>`/script tag eklendi. `mk-zarf__row--ai` block silindi (merkez panel). Wizard `wz-grid` 3 kolon oldu: rail(220px) \| form(1fr) \| preview(380px). `<aside class="wz-preview">` id="wz-preview" içinde cv-preview-root + "PDF İndir". |
-| `profil-bootstrap.js` | `_htRunStepInits` sonunda delegated input+change listener `#panel-profil` üstüne. Add/delete button click'lerinde gecikmeli rebuild. Mobile drawer toggle. İlk render `updateCVPreview()` çağrısı. |
-| `tests/p3.regression.spec.js` | K-066 guard testleri: AI CV handler yok, `requestCVOptimize` yok, `generateCV()` parametresiz. Assessment AI testleri korundu. Migration guard `wizard_template_cleanup`. |
-
-### HR-Only alanlar (CV'ye yansımaz, DB filter)
-
-- Lokasyon tercihleri (locations)
-- Hedef rol/sektör aileleri (target_roles)
-- Çalışma tercihleri (work_prefs: musaitlik, maas_beklenti, calisma_tipleri, **career_mobility** YENİ)
-- Marka ilgisi (brand_interests)
-- Doğum yılı, adres ilçe
-
-### CV'de görünür (public, KVKK uyumlu)
-
-Ad-Soyad, hedef pozisyon, iletişim (tel/email/şehir/LinkedIn), özet (template-driven), deneyim, yetkinlikler, eğitim, diller, sertifikalar, ilgi alanları.
-
-### Silme listesi
-
-- `candidates.ai_cv_used` column (migration drop)
-- `syncAiCardCopy()` + `requestCVOptimize()` in profil-cv.js
-- `btn-ai-cv-optimize` handler in profil-events.js
-- HTML block `mk-zarf__row--ai` in profil.html
-- Supabase Edge Function `cv-optimize` (sonra silinecek — task #10)
-- Secret `ANTHROPIC_API_KEY` (sonra silinecek)
-
-### Deploy sırası
-
-1. Code push ✓
-2. Migration apply: `npm run db:push` (task #11)
-3. Playwright UAT: `node ht-k066-wizard.mjs` (task #9)
-4. Edge function delete: `npx supabase functions delete cv-optimize` (task #10)
-
-### Rollback
-
-- Migration reversible (`ALTER TABLE candidates ADD COLUMN ai_cv_used boolean DEFAULT false`).
-- Code: commit tag `pre-k066` bırak, revert tek commit.
-- Edge function source git'te kalır, re-deploy Supabase dashboard'dan.
+### Sonraki net adım
+- Migration apply (`npm run db:push`)
+- Tuna canlı UAT — eski sistem (legacy CV upload + AI button gizli) sorunsuz çalışıyor mu doğrula
+- CV builder işine ileride farklı yaklaşım: ya 3rd-party embed, ya Studio'da uzun vadeli refactor, ya tamamen vazgeç
 
 ---
 
