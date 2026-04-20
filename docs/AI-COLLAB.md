@@ -1,5 +1,50 @@
 # HelloTalent AI-COLLAB — Aktif Calisma Defteri
 
+## 2026-04-20 — K-057 auth pages split layout (tablet+desktop) (Asama 80.12)
+
+**Durum:** Tuna brief: mobilde mevcut yapı (tek kolon), tablet+desktop'ta 2 kolon (brand portrait + form). Aday/kurumsal tab switch'inde portrait değişiyor. Index hero pattern referansi.
+
+**Aktif hedef:** Tuna UAT hellotalent.ai/giris + /uye-ol tüm viewport (mobile/tablet/desktop) × light/dark × aday/kurumsal tab.
+
+### Yapilan is
+
+| Dosya | Scope |
+|-------|-------|
+| `assets/v2/auth-aday.webp` | 48.5KB (Source 213KB jpg, q=82, m=6) |
+| `assets/v2/auth-kurumsal.webp` | 38.5KB (Source 196KB jpg) |
+| `giris.html` + `uye-ol.html` markup | `.auth-split` wrapper; `.auth-scene` 2 img (aday + kurumsal) |
+| CSS responsive grid | Mobile 1fr single column, 768px+ tablet 1fr/1fr, 1100px+ desktop 1.05fr/1fr, max-w 420/960/1080 |
+| `.auth-scene` dissolve | `.auth-img-kurumsal` opacity 0 default, `.ik-active .auth-img-aday` opacity 0 (crossfade .35s) |
+| `switchTab()` JS | `split.classList.toggle('ik-active', tab !== 'aday')` — portrait değişir |
+| `.auth-scene` tablet sticky (uye-ol) | Form yüksekse scene sticky top 40px, card scroll'da portrait sabit |
+
+### Responsive davranis
+
+- **Mobile (<768px):** `.auth-scene { display: none }`, `.card max-width: 420px` ortalı — eski yapı aynen.
+- **Tablet (≥768px):** 1fr/1fr grid, gap 32-56px, scene visible solda.
+- **Desktop (≥1100px):** 1.05fr/1fr, gap 40-72px, daha geniş.
+
+### Index hero paralellikleri
+
+- Aspect-ratio: 4/5 (index `.hero-portrait` pattern)
+- Border-radius: var(--radius) ~20px
+- Shadow: `--shadow-lift` clone
+- Bg fallback: cream-warm
+
+### Playwright verify 12 screenshot (mobile+tablet+desktop × light+dark × 2 file)
+
+- Mobile: tek kolon, portrait hidden, eski yapı ✓
+- Tablet/desktop: 2 kolon, portrait sol + form sağ, brand colors doğru ✓
+- Tab switch: aday/kurumsal portrait crossfade (.35s ease) ✓
+
+### Dokunulmayanlar
+
+- Header + footer aynı (stacking dışı)
+- MFA modal aynı (overlay fixed fullscreen)
+- Form içeriği tamamen korundu
+
+---
+
 ## 2026-04-20 — K-055 auth pages readability fix (Asama 80.11)
 
 **Durum:** Tuna 4 screenshot paylaşti: verm/navy body bg üzerinde glass kart → verm/navy linkler okunamıyor. Root cause: `switchTab()` JS body bg'yi `var(--verm)` / `var(--navy)` override ediyordu (K-049 öncesi legacy). Glass kart transparent → body brand rengi görülüyor → verm links on verm bg = invisible.

@@ -77,6 +77,54 @@
     padding: 40px 16px;
   }
 
+  /* K-057 — Auth split: mobile single-column, tablet+ two-column. */
+  .auth-split {
+    display: grid;
+    grid-template-columns: 1fr;
+    width: 100%;
+    max-width: 420px;
+    gap: 0;
+    margin: 0 auto;
+  }
+  .auth-scene {
+    display: none;
+    aspect-ratio: 4 / 5;
+    border-radius: var(--radius, 20px);
+    overflow: hidden;
+    box-shadow: 0 20px 52px rgba(10, 14, 39, .12), 0 2px 4px rgba(10, 14, 39, .05);
+    background: var(--cream-warm, #F0EDE6);
+    position: relative;
+  }
+  .auth-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    position: absolute;
+    inset: 0;
+    transition: opacity .35s ease;
+  }
+  .auth-img-kurumsal { opacity: 0; }
+  .auth-split.ik-active .auth-img-aday { opacity: 0; }
+  .auth-split.ik-active .auth-img-kurumsal { opacity: 1; }
+
+  @media (min-width: 768px) {
+    .auth-split {
+      grid-template-columns: 1fr 1fr;
+      max-width: 960px;
+      gap: clamp(32px, 4vw, 56px);
+      align-items: start;
+    }
+    .auth-scene { display: block; position: sticky; top: 40px; }
+  }
+  @media (min-width: 1100px) {
+    .auth-split {
+      grid-template-columns: 1.05fr 1fr;
+      max-width: 1080px;
+      gap: clamp(40px, 5vw, 72px);
+    }
+  }
+
   .card {
     background: white;
     border-radius: 16px;
@@ -84,7 +132,11 @@
     padding: 40px;
     width: 100%;
     max-width: 420px;
+    margin: 0 auto;
     box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+  }
+  @media (min-width: 768px) {
+    .card { max-width: none; }
   }
 
   /* ── TAB TOGGLE ── */
@@ -362,6 +414,12 @@
 </header>
 
 <main class="main">
+  <div class="auth-split" id="auth-split">
+    <!-- K-057 — Desktop/tablet split: brand portrait side + form side. Mobile: form only. -->
+    <div class="auth-scene" aria-hidden="true">
+      <img class="auth-img auth-img-aday" src="assets/v2/auth-aday.webp" alt="Aday mülakatta — mockup">
+      <img class="auth-img auth-img-kurumsal" src="assets/v2/auth-kurumsal.webp" alt="Kurumsal mülakatta — mockup">
+    </div>
   <div class="card">
 
     <!-- Tab Toggle -->
@@ -546,6 +604,7 @@
     </div><!-- /form-wrapper -->
 
   </div>
+  </div><!-- /auth-split -->
 </main>
 
 <footer class="footer">
@@ -576,7 +635,9 @@ function switchTab(tab) {
     adayBtn.className = 'tab-btn';
     kurumsalBtn.className = 'tab-btn active-ik';
   }
-  // K-055 — body bg JS override kaldirildi. Brand accent sadece active tab + CTA.
+  // K-055 — body bg JS override kaldirildi. K-057 — scene portrait toggle.
+  var split = document.getElementById('auth-split');
+  if (split) split.classList.toggle('ik-active', tab !== 'aday');
 }
 
 /* 3. URL param + session check */
