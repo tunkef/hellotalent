@@ -1,5 +1,45 @@
 # HelloTalent AI-COLLAB — Aktif Calisma Defteri
 
+## 2026-04-20 — K-068 checkbox REWRITE: native HTML input+label (Asama 80.23)
+
+**Durum:** Rollback sonrası 2 fix (cb-check display + dark mode) canlı doğrulandı AMA Tuna'nın browser'ında cache propagation geç gelince hâlâ "span inline, rect 0x0" raporu. 6. iterasyon. Tuna: "o check mark bölümünü silip baştan mı yaratsan". Yaklaşım tamamen değişti.
+
+### Yeni yapı (native, sağlam)
+
+```html
+<div class="ht-check">
+  <input type="checkbox" id="..." class="ht-check__box">
+  <label for="..." class="ht-check__label">Halen burada çalışıyorum</label>
+</div>
+```
+
+CSS:
+- `.ht-check__box` — `appearance: auto`, `width/height: 20px`, `accent-color: var(--green)`
+- `.ht-check__label` — flex ile yan yana
+- Browser default rendering → span inline hatası YOK, parent flex inheritance problemi YOK
+
+### Değişen
+
+| Dosya | Değişiklik |
+|-------|-----------|
+| `profil-ui.js` | addExperienceCard cb yapısı native (line 506-534). `_cbHint.closest('.cb-wrap')` → `.ht-check` |
+| `profil.html` | cb-no-experience native (line 853-857) |
+| `css/profil-extras.css` | `.ht-check` block eklendi. Legacy `.cb-wrap/.cb-check` backward compat korundu |
+| `profil.html` | Cache-bust: profil-extras.css + profil-ui.js → `v=20260420k068b` |
+
+### Doğrulama
+
+- k068-native-proof.png: live session'da yeni yapı ile canlı inject, checkbox 20x20 görünür
+- Bitiş tarihi gizleme (profil-ui.js:650) aynı event listener kullanır, değişiklik yok
+
+### Sonraki adım
+
+- Cache-bust ile hard refresh gerekmiyor — yeni `?v=20260420k068b` URL = yeni asset fetch
+- Tuna refresh → native checkbox görünür
+- Ayrıca "profil hero gridin içindeki dikdörtgen" (Task #29) incelenecek
+
+---
+
 ## 2026-04-20 — K-068 runtime bugfix: cb-check görünmez + dark mode boş rectangle (Asama 80.22)
 
 **Durum:** Rollback sonrası Tuna 2 canlı bug raporladı: (1) "halen çalışıyorum" checkbox görünmüyor, sadece yazıya tıklayınca toggle oluyor; (2) dark mode Genel Bakış'ta boş dikdörtgen beliyor. Playwright CDP ile Tuna'nın canlı session'ına bağlanıp inspect ettim.

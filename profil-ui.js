@@ -291,7 +291,7 @@ function addExperienceCard(data) {
     // Show "no experience" checkbox hint when all cards removed
     if (remaining.length === 0) {
       var _cbHint = document.getElementById('cb-no-experience');
-      if (_cbHint) _cbHint.closest('.cb-wrap').style.opacity = '1';
+      if (_cbHint) _cbHint.closest('.ht-check').style.opacity = '1';
     }
   });
   header.appendChild(delBtn);
@@ -503,24 +503,19 @@ function addExperienceCard(data) {
   rowRole.appendChild(pozCol);
   card.appendChild(rowRole);
 
-  // Checkbox: Halen burada çalışıyorum — above date fields, right after Şirket/Sektör/Rol/Pozisyon
+  // Checkbox: Halen burada çalışıyorum — native HTML, no custom span
   var cbWrap = document.createElement('div');
-  cbWrap.className = 'cb-wrap';
+  cbWrap.className = 'ht-check';
   var cb = document.createElement('input');
   cb.type = 'checkbox';
   cb.id = cardId + '-devam';
+  cb.className = 'ht-check__box';
   if (d.devam_ediyor) cb.checked = true;
-  var cbLabel = document.createElement('span');
-  cbLabel.className = 'cb-label';
-  cbLabel.textContent = 'Halen burada çalışıyorum';
-  var checkmark = document.createElement('span');
-  checkmark.className = 'cb-check';
   var controlLabel = document.createElement('label');
-  controlLabel.className = 'cb-control-label';
+  controlLabel.className = 'ht-check__label';
   controlLabel.htmlFor = cb.id;
-  controlLabel.appendChild(cb);
-  controlLabel.appendChild(checkmark);
-  controlLabel.appendChild(cbLabel);
+  controlLabel.textContent = 'Halen burada çalışıyorum';
+  cbWrap.appendChild(cb);
   cbWrap.appendChild(controlLabel);
 
   var devamBadge = document.createElement('span');
@@ -530,6 +525,7 @@ function addExperienceCard(data) {
   devamBadge.style.fontSize = '11px';
   devamBadge.style.fontWeight = '600';
   devamBadge.style.color = 'var(--green)';
+  devamBadge.style.marginLeft = '12px';
   cbWrap.appendChild(devamBadge);
   card.appendChild(cbWrap);
 
