@@ -1,5 +1,39 @@
 # HelloTalent AI-COLLAB — Aktif Calisma Defteri
 
+## 2026-04-20 — K-059 uye-ol signup click silent bug fix (Asama 80.14)
+
+**Durum:** Tuna feedback: "aday kayıt formu doldurdum, Kayıt Ol'a bastım, hiç tepki vermedi". Kurumsal tarafta da aynı sorun.
+
+**Root cause:** Invisible Cloudflare Turnstile bad UX pattern. Eski handler (`uye-ol.html:861-863`):
+```js
+if (!_turnstileToken.aday) { turnstile.execute('#cf-turnstile-aday'); return; }
+```
+İlk click → silent challenge → `return`. Buton değişmez, spinner yok, feedback sıfır. Kullanıcı butonun çalıştığını anlamıyor. Eğer callback network/adblocker sebebiyle dönmezse sonsuz bekleme.
+
+Aynı bug kurumsal (`btn-k-kayit`). `giris.html`'de turnstile yok — etkilenmez.
+
+**Fix:**
+
+| Unsur | Çözüm |
+|-------|-------|
+| İlk click feedback | `btn.disabled = true; btn.textContent = 'Doğrulanıyor...'` — anında görsel feedback |
+| Auto-submit | Turnstile callback → token sakla + `doAdaySignup() / doKurumsalSignup()` otomatik çağır — ikinci click gerekmez |
+| Timeout guard | 15sn sonra callback gelmezse error msg + button reset |
+| Turnstile unload | `typeof turnstile === 'undefined'` → net error + yenile mesajı |
+| Race guard | `_pendingSubmit[tab]` flag — hızlı double-click engelli |
+| Error token reset | Signup/verify hata → token sıfırlanır, yeni turnstile tetikler |
+
+**Refactor:** signup logic 2 standalone fn (`doAdaySignup`, `doKurumsalSignup`), click handler thin (sadece honeypot + token check + turnstile tetikle / signup çağır), turnstile callback kararlı.
+
+**Playwright smoke** (mocked turnstile):
+- BEFORE click: `disabled: false, text: "Kayıt Ol"` ✓
+- 200ms after click: `disabled: true, text: "Doğrulanıyor..."` ✓ (instant feedback)
+- Turnstile callback → auto-submit → signup flow başlar ✓
+
+**DeepSeek review:** 1.3 RPC error→redirect (scope dışı, mevcut davranış). KRITIK 1.1 (site key) + 1.2 (honeypot) false positive — Turnstile site key public by design, honeypot pattern standart. YUKSEK 2.2 + 2.3 zaten fix'imde mevcut.
+
+---
+
 ## 2026-04-20 — K-058 auth pages eşit kart yüksekliği + uye-ol compact form (Asama 80.13)
 
 **Durum:** Tuna K-057 sonrası feedback: kartlar farklı yükseklikte, uye-ol formu page scroll yapıyor. Hedef: NovaSyncer/Payoneer stili — kartlar eşit boy, form tek sayfada sığsın, kurumsal form kısa bile kalsa kartlar aynı büyük boyutta.

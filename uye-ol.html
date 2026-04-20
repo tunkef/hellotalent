@@ -822,10 +822,58 @@ function validateKurumsalForm() {
   emailInput.addEventListener('input', checkDomainMatch);
 })();
 
-// ── TURNSTILE TOKEN STORAGE ──
+// ── TURNSTILE TOKEN + AUTO-SUBMIT (K-059 fix) ──
+// K-059: Invisible Turnstile UX bug — eski pattern ilk click'te silent challenge,
+// kullanıcıya feedback yok, ikinci click gerekiyordu. Şimdi: click → spinner +
+// "Doğrulanıyor...", callback → token + otomatik signup. 15sn timeout guard.
 var _turnstileToken = { aday: '', kurumsal: '' };
-function onTurnstileAday(token) { _turnstileToken.aday = token; }
-function onTurnstileK(token) { _turnstileToken.kurumsal = token; }
+var _pendingSubmit = { aday: false, kurumsal: false };
+var _turnstileTimeout = { aday: null, kurumsal: null };
+
+function onTurnstileAday(token) {
+  _turnstileToken.aday = token;
+  if (_turnstileTimeout.aday) { clearTimeout(_turnstileTimeout.aday); _turnstileTimeout.aday = null; }
+  if (_pendingSubmit.aday) { _pendingSubmit.aday = false; doAdaySignup(); }
+}
+function onTurnstileK(token) {
+  _turnstileToken.kurumsal = token;
+  if (_turnstileTimeout.kurumsal) { clearTimeout(_turnstileTimeout.kurumsal); _turnstileTimeout.kurumsal = null; }
+  if (_pendingSubmit.kurumsal) { _pendingSubmit.kurumsal = false; doKurumsalSignup(); }
+}
+
+function startTurnstile(tab) {
+  var widgetSel = tab === 'aday' ? '#cf-turnstile-aday' : '#cf-turnstile-k';
+  var btnId = tab === 'aday' ? 'btn-aday-kayit' : 'btn-k-kayit';
+  var errId = tab === 'aday' ? 'err-aday-register' : 'err-kurumsal-register';
+  var btn = document.getElementById(btnId);
+  _pendingSubmit[tab] = true;
+  btn.disabled = true;
+  btn.textContent = 'Doğrulanıyor...';
+  try {
+    if (typeof turnstile !== 'undefined' && turnstile.execute) {
+      turnstile.execute(widgetSel);
+    } else {
+      throw new Error('Turnstile yüklenemedi');
+    }
+  } catch (e) {
+    console.warn('[turnstile] execute failed:', e.message);
+    _pendingSubmit[tab] = false;
+    var err = document.getElementById(errId);
+    err.textContent = 'Güvenlik doğrulaması yüklenemedi. İnternet bağlantınızı kontrol edip sayfayı yenileyin.';
+    err.style.display = 'block';
+    btn.disabled = false; btn.textContent = 'Kayıt Ol';
+    return;
+  }
+  _turnstileTimeout[tab] = setTimeout(function() {
+    if (!_pendingSubmit[tab]) return;
+    _pendingSubmit[tab] = false;
+    _turnstileTimeout[tab] = null;
+    var err = document.getElementById(errId);
+    err.textContent = 'Güvenlik doğrulaması zaman aşımı. Sayfayı yenileyip tekrar deneyin.';
+    err.style.display = 'block';
+    btn.disabled = false; btn.textContent = 'Kayıt Ol';
+  }, 15000);
+}
 
 // ── REGISTRATION RATE LIMIT (3 attempts / 5 min) ──
 var _regAttempts = 0;
@@ -856,87 +904,105 @@ function checkRegCooldown(btn) {
 }
 
 // ── ADAY SIGNUP ──
+async function doAdaySignup() {
+  var btn = document.getElementById('btn-aday-kayit');
+  if (checkRegCooldown(btn)) return;
+  _regAttempts++;
+  var errEl = document.getElementById('err-aday-register');
+  errEl.style.display = 'none';
+  var fullName = document.getElementById('aday-adsoyad').value.trim();
+  var email = document.getElementById('aday-email').value.trim().toLowerCase();
+  var phone = document.getElementById('aday-telefon').value.replace(/\D/g, '');
+  var password = document.getElementById('aday-sifre').value;
+  btn.disabled = true; btn.textContent = 'Kayıt yapılıyor...';
+  try {
+    var tvRes = await fetch(HT.SUPA_URL + '/functions/v1/verify-turnstile', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token: _turnstileToken.aday })
+    });
+    var tvData = await tvRes.json();
+    if (!tvData.success) {
+      errEl.textContent = 'Güvenlik doğrulaması başarısız. Sayfayı yenileyip tekrar deneyin.';
+      errEl.style.display = 'block'; btn.disabled = false; btn.textContent = 'Kayıt Ol';
+      _turnstileToken.aday = ''; return;
+    }
+    var result = await getSupa().auth.signUp({
+      email: email, password: password,
+      options: { data: { full_name: fullName, phone: phone, privacy_consent_at: new Date().toISOString(), kvkk_explicit_consent_at: new Date().toISOString(), age_confirmed: true } }
+    });
+    if (result.error) throw result.error;
+    if (result.data.user && result.data.user.identities && result.data.user.identities.length === 0) {
+      errEl.textContent = 'Bu e-posta adresi zaten kayıtlı. Giriş yapın veya farklı bir e-posta deneyin.';
+      errEl.style.display = 'block'; btn.disabled = false; btn.textContent = 'Kayıt Ol'; return;
+    }
+    window.location.href = 'profil.html';
+  } catch (err) {
+    errEl.textContent = 'Hata: ' + (err.message || 'Bilinmeyen hata');
+    errEl.style.display = 'block'; btn.disabled = false; btn.textContent = 'Kayıt Ol';
+    _turnstileToken.aday = '';
+  }
+}
+
 (function() {
   var btn = document.getElementById('btn-aday-kayit');
-  btn.addEventListener('click', async function() {
+  btn.addEventListener('click', function() {
     if (document.getElementById('aday-hp').value) return; // honeypot
-    if (!_turnstileToken.aday) { turnstile.execute('#cf-turnstile-aday'); return; } // trigger invisible challenge
-    if (checkRegCooldown(btn)) return;
-    _regAttempts++;
-    var errEl = document.getElementById('err-aday-register');
-    errEl.style.display = 'none';
-    var fullName = document.getElementById('aday-adsoyad').value.trim();
-    var email = document.getElementById('aday-email').value.trim().toLowerCase();
-    var phone = document.getElementById('aday-telefon').value.replace(/\D/g, '');
-    var password = document.getElementById('aday-sifre').value;
-    btn.disabled = true; btn.textContent = 'Kayıt yapılıyor...';
-    try {
-      // Turnstile server-side verify
-      var tvRes = await fetch(HT.SUPA_URL + '/functions/v1/verify-turnstile', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token: _turnstileToken.aday })
-      });
-      var tvData = await tvRes.json();
-      if (!tvData.success) { errEl.textContent = 'Güvenlik doğrulaması başarısız. Sayfayı yenileyip tekrar deneyin.'; errEl.style.display = 'block'; btn.disabled = false; btn.textContent = 'Kayıt Ol'; return; }
-
-      var result = await getSupa().auth.signUp({
-        email: email, password: password,
-        options: { data: { full_name: fullName, phone: phone, privacy_consent_at: new Date().toISOString(), kvkk_explicit_consent_at: new Date().toISOString(), age_confirmed: true } }
-      });
-      if (result.error) throw result.error;
-      if (result.data.user && result.data.user.identities && result.data.user.identities.length === 0) {
-        errEl.textContent = 'Bu e-posta adresi zaten kayıtlı. Giriş yapın veya farklı bir e-posta deneyin.';
-        errEl.style.display = 'block'; btn.disabled = false; btn.textContent = 'Kayıt Ol'; return;
-      }
-      window.location.href = 'profil.html';
-    } catch (err) {
-      errEl.textContent = 'Hata: ' + (err.message || 'Bilinmeyen hata');
-      errEl.style.display = 'block'; btn.disabled = false; btn.textContent = 'Kayıt Ol';
-    }
+    if (_pendingSubmit.aday) return; // turnstile in-flight
+    if (!_turnstileToken.aday) { startTurnstile('aday'); return; }
+    doAdaySignup();
   });
 })();
 
 // ── KURUMSAL SIGNUP ──
+async function doKurumsalSignup() {
+  var btn = document.getElementById('btn-k-kayit');
+  if (checkRegCooldown(btn)) return;
+  _regAttempts++;
+  var errEl = document.getElementById('err-kurumsal-register');
+  errEl.style.display = 'none';
+  var fullName = document.getElementById('k-adsoyad').value.trim();
+  var sirket = document.getElementById('k-sirket').value.trim();
+  var website = document.getElementById('k-web').value.trim();
+  var email = document.getElementById('k-email').value.trim().toLowerCase();
+  var phone = document.getElementById('k-telefon').value.replace(/\D/g, '');
+  var password = document.getElementById('k-sifre').value;
+  btn.disabled = true; btn.textContent = 'Kayıt yapılıyor...';
+  try {
+    var tvRes = await fetch(HT.SUPA_URL + '/functions/v1/verify-turnstile', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token: _turnstileToken.kurumsal })
+    });
+    var tvData = await tvRes.json();
+    if (!tvData.success) {
+      errEl.textContent = 'Güvenlik doğrulaması başarısız. Sayfayı yenileyip tekrar deneyin.';
+      errEl.style.display = 'block'; btn.disabled = false; btn.textContent = 'Kayıt Ol';
+      _turnstileToken.kurumsal = ''; return;
+    }
+    var result = await getSupa().auth.signUp({
+      email: email, password: password,
+      options: { data: { role: 'employer', full_name: fullName, company_name: sirket, company_website: website, phone: phone, privacy_consent_at: new Date().toISOString(), kvkk_explicit_consent_at: new Date().toISOString(), age_confirmed: true } }
+    });
+    if (result.error) throw result.error;
+    if (result.data.user && result.data.user.identities && result.data.user.identities.length === 0) {
+      errEl.textContent = 'Bu e-posta adresi zaten kayıtlı.';
+      errEl.style.display = 'block'; btn.disabled = false; btn.textContent = 'Kayıt Ol'; return;
+    }
+    try { await getSupa().rpc('register_employer', { p_email: email, p_sirket: sirket, p_website: website || null }); } catch (rpcErr) { console.warn('register_employer RPC başarısız:', rpcErr.message); }
+    window.location.href = 'demo-dashboard-ik.html';
+  } catch (err) {
+    errEl.textContent = 'Hata: ' + (err.message || 'Bilinmeyen hata');
+    errEl.style.display = 'block'; btn.disabled = false; btn.textContent = 'Kayıt Ol';
+    _turnstileToken.kurumsal = '';
+  }
+}
+
 (function() {
   var btn = document.getElementById('btn-k-kayit');
-  btn.addEventListener('click', async function() {
+  btn.addEventListener('click', function() {
     if (document.getElementById('k-hp').value) return; // honeypot
-    if (!_turnstileToken.kurumsal) { turnstile.execute('#cf-turnstile-k'); return; }
-    if (checkRegCooldown(btn)) return;
-    _regAttempts++;
-    var errEl = document.getElementById('err-kurumsal-register');
-    errEl.style.display = 'none';
-    var fullName = document.getElementById('k-adsoyad').value.trim();
-    var sirket = document.getElementById('k-sirket').value.trim();
-    var website = document.getElementById('k-web').value.trim();
-    var email = document.getElementById('k-email').value.trim().toLowerCase();
-    var phone = document.getElementById('k-telefon').value.replace(/\D/g, '');
-    var password = document.getElementById('k-sifre').value;
-    btn.disabled = true; btn.textContent = 'Kayıt yapılıyor...';
-    try {
-      // Turnstile server-side verify
-      var tvRes = await fetch(HT.SUPA_URL + '/functions/v1/verify-turnstile', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token: _turnstileToken.kurumsal })
-      });
-      var tvData = await tvRes.json();
-      if (!tvData.success) { errEl.textContent = 'Güvenlik doğrulaması başarısız. Sayfayı yenileyip tekrar deneyin.'; errEl.style.display = 'block'; btn.disabled = false; btn.textContent = 'Kayıt Ol'; return; }
-
-      var result = await getSupa().auth.signUp({
-        email: email, password: password,
-        options: { data: { role: 'employer', full_name: fullName, company_name: sirket, company_website: website, phone: phone, privacy_consent_at: new Date().toISOString(), kvkk_explicit_consent_at: new Date().toISOString(), age_confirmed: true } }
-      });
-      if (result.error) throw result.error;
-      if (result.data.user && result.data.user.identities && result.data.user.identities.length === 0) {
-        errEl.textContent = 'Bu e-posta adresi zaten kayıtlı.';
-        errEl.style.display = 'block'; btn.disabled = false; btn.textContent = 'Kayıt Ol'; return;
-      }
-      try { await getSupa().rpc('register_employer', { p_email: email, p_sirket: sirket, p_website: website || null }); } catch (rpcErr) { console.warn('register_employer RPC başarısız:', rpcErr.message); }
-      window.location.href = 'demo-dashboard-ik.html';
-    } catch (err) {
-      errEl.textContent = 'Hata: ' + (err.message || 'Bilinmeyen hata');
-      errEl.style.display = 'block'; btn.disabled = false; btn.textContent = 'Kayıt Ol';
-    }
+    if (_pendingSubmit.kurumsal) return;
+    if (!_turnstileToken.kurumsal) { startTurnstile('kurumsal'); return; }
+    doKurumsalSignup();
   });
 })();
 
