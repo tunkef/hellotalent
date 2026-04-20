@@ -14,7 +14,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/tokens.css?v=20260420b">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onTurnstileReady&render=explicit" async defer></script>
 <style>
   /* Tokens: css/tokens.css — lokal :root silindi (Faz 1c). */
 
@@ -572,7 +572,7 @@
       </label>
 
       <div class="ht-hp" aria-hidden="true"><input type="text" id="aday-hp" tabindex="-1" autocomplete="off"></div>
-      <div id="cf-turnstile-aday" class="cf-turnstile" data-sitekey="0x4AAAAAAACnXMwLam1UbsPrn" data-size="invisible" data-callback="onTurnstileAday"></div>
+      <div id="cf-turnstile-aday"></div>
 
       <button class="btn-submit btn-aday" type="button" id="btn-aday-kayit" disabled>Kayıt Ol</button>
 
@@ -658,7 +658,7 @@
       </label>
 
       <div class="ht-hp" aria-hidden="true"><input type="text" id="k-hp" tabindex="-1" autocomplete="off"></div>
-      <div id="cf-turnstile-k" class="cf-turnstile" data-sitekey="0x4AAAAAAACnXMwLam1UbsPrn" data-size="invisible" data-callback="onTurnstileK"></div>
+      <div id="cf-turnstile-k"></div>
 
       <button class="btn-submit btn-ik" type="button" id="btn-k-kayit" disabled>Kayıt Ol</button>
 
@@ -863,50 +863,115 @@ function validateKurumsalForm() {
 var _turnstileToken = { aday: '', kurumsal: '' };
 var _pendingSubmit = { aday: false, kurumsal: false };
 var _turnstileTimeout = { aday: null, kurumsal: null };
+var _turnstileWidgetId = { aday: null, kurumsal: null };
+var _turnstileReady = false;
 
-function onTurnstileAday(token) {
-  _turnstileToken.aday = token;
-  if (_turnstileTimeout.aday) { clearTimeout(_turnstileTimeout.aday); _turnstileTimeout.aday = null; }
-  if (_pendingSubmit.aday) { _pendingSubmit.aday = false; doAdaySignup(); }
+var TURNSTILE_SITEKEY = '0x4AAAAAAACnXMwLam1UbsPrn';
+
+function _turnstileOnSuccess(tab) {
+  return function(token) {
+    _turnstileToken[tab] = token;
+    if (_turnstileTimeout[tab]) { clearTimeout(_turnstileTimeout[tab]); _turnstileTimeout[tab] = null; }
+    if (_pendingSubmit[tab]) {
+      _pendingSubmit[tab] = false;
+      if (tab === 'aday') doAdaySignup(); else doKurumsalSignup();
+    }
+  };
 }
-function onTurnstileK(token) {
-  _turnstileToken.kurumsal = token;
-  if (_turnstileTimeout.kurumsal) { clearTimeout(_turnstileTimeout.kurumsal); _turnstileTimeout.kurumsal = null; }
-  if (_pendingSubmit.kurumsal) { _pendingSubmit.kurumsal = false; doKurumsalSignup(); }
+
+function _turnstileOnError(tab) {
+  return function(errCode) {
+    console.warn('[turnstile][' + tab + '] error:', errCode);
+    if (_turnstileTimeout[tab]) { clearTimeout(_turnstileTimeout[tab]); _turnstileTimeout[tab] = null; }
+    if (!_pendingSubmit[tab]) return;
+    _pendingSubmit[tab] = false;
+    _turnstileToken[tab] = '';
+    var btnId = tab === 'aday' ? 'btn-aday-kayit' : 'btn-k-kayit';
+    var errId = tab === 'aday' ? 'err-aday-register' : 'err-kurumsal-register';
+    var btn = document.getElementById(btnId);
+    var err = document.getElementById(errId);
+    err.textContent = 'Güvenlik doğrulaması başarısız (' + (errCode || 'bilinmeyen hata') + '). Sayfayı yenileyip tekrar deneyin.';
+    err.style.display = 'block';
+    btn.disabled = false; btn.textContent = 'Kayıt Ol';
+  };
 }
+
+// K-062: Turnstile explicit render — api.js ?onload=onTurnstileReady çağırır
+function onTurnstileReady() {
+  if (_turnstileReady) return;
+  if (typeof turnstile === 'undefined' || !turnstile.render) {
+    console.warn('[turnstile] onTurnstileReady fired but API not available');
+    return;
+  }
+  try {
+    _turnstileWidgetId.aday = turnstile.render('#cf-turnstile-aday', {
+      sitekey: TURNSTILE_SITEKEY,
+      size: 'invisible',
+      callback: _turnstileOnSuccess('aday'),
+      'error-callback': _turnstileOnError('aday'),
+      'expired-callback': function() { _turnstileToken.aday = ''; },
+      'timeout-callback': _turnstileOnError('aday')
+    });
+    _turnstileWidgetId.kurumsal = turnstile.render('#cf-turnstile-k', {
+      sitekey: TURNSTILE_SITEKEY,
+      size: 'invisible',
+      callback: _turnstileOnSuccess('kurumsal'),
+      'error-callback': _turnstileOnError('kurumsal'),
+      'expired-callback': function() { _turnstileToken.kurumsal = ''; },
+      'timeout-callback': _turnstileOnError('kurumsal')
+    });
+    _turnstileReady = true;
+  } catch (e) {
+    console.error('[turnstile] render failed:', e.message);
+  }
+}
+// Legacy callback names (tutuldu, eski data-callback attribute guard)
+function onTurnstileAday(token) { _turnstileOnSuccess('aday')(token); }
+function onTurnstileK(token) { _turnstileOnSuccess('kurumsal')(token); }
 
 function startTurnstile(tab) {
-  var widgetSel = tab === 'aday' ? '#cf-turnstile-aday' : '#cf-turnstile-k';
   var btnId = tab === 'aday' ? 'btn-aday-kayit' : 'btn-k-kayit';
   var errId = tab === 'aday' ? 'err-aday-register' : 'err-kurumsal-register';
   var btn = document.getElementById(btnId);
   _pendingSubmit[tab] = true;
   btn.disabled = true;
   btn.textContent = 'Doğrulanıyor...';
-  try {
-    if (typeof turnstile !== 'undefined' && turnstile.execute) {
-      turnstile.execute(widgetSel);
-    } else {
-      throw new Error('Turnstile yüklenemedi');
+  // Widget henüz render olmadıysa kısa retry bekle
+  var widgetId = _turnstileWidgetId[tab];
+  var tryExecute = function(attempt) {
+    if (typeof turnstile === 'undefined' || !turnstile.execute) {
+      if (attempt < 20) { setTimeout(function() { tryExecute(attempt + 1); }, 250); return; }
+      return _turnstileFail(tab, 'API yüklenemedi');
     }
-  } catch (e) {
-    console.warn('[turnstile] execute failed:', e.message);
-    _pendingSubmit[tab] = false;
-    var err = document.getElementById(errId);
-    err.textContent = 'Güvenlik doğrulaması yüklenemedi. İnternet bağlantınızı kontrol edip sayfayı yenileyin.';
-    err.style.display = 'block';
-    btn.disabled = false; btn.textContent = 'Kayıt Ol';
-    return;
-  }
+    if (!_turnstileWidgetId[tab]) {
+      // onTurnstileReady henüz çağrılmadıysa bekle
+      if (attempt < 20) { setTimeout(function() { tryExecute(attempt + 1); }, 250); return; }
+      return _turnstileFail(tab, 'Widget hazır değil');
+    }
+    try {
+      turnstile.execute(_turnstileWidgetId[tab]);
+    } catch (e) {
+      console.warn('[turnstile] execute error:', e.message);
+      _turnstileFail(tab, e.message);
+    }
+  };
+  tryExecute(0);
   _turnstileTimeout[tab] = setTimeout(function() {
     if (!_pendingSubmit[tab]) return;
-    _pendingSubmit[tab] = false;
-    _turnstileTimeout[tab] = null;
-    var err = document.getElementById(errId);
-    err.textContent = 'Güvenlik doğrulaması zaman aşımı. Sayfayı yenileyip tekrar deneyin.';
-    err.style.display = 'block';
-    btn.disabled = false; btn.textContent = 'Kayıt Ol';
+    _turnstileFail(tab, 'zaman aşımı');
   }, 15000);
+}
+
+function _turnstileFail(tab, reason) {
+  var btnId = tab === 'aday' ? 'btn-aday-kayit' : 'btn-k-kayit';
+  var errId = tab === 'aday' ? 'err-aday-register' : 'err-kurumsal-register';
+  _pendingSubmit[tab] = false;
+  if (_turnstileTimeout[tab]) { clearTimeout(_turnstileTimeout[tab]); _turnstileTimeout[tab] = null; }
+  var btn = document.getElementById(btnId);
+  var err = document.getElementById(errId);
+  err.textContent = 'Güvenlik doğrulaması yapılamadı (' + reason + '). Sayfayı yenileyip tekrar deneyin.';
+  err.style.display = 'block';
+  btn.disabled = false; btn.textContent = 'Kayıt Ol';
 }
 
 // ── REGISTRATION RATE LIMIT (3 attempts / 5 min) ──
