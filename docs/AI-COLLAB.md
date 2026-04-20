@@ -1,5 +1,45 @@
 # HelloTalent AI-COLLAB — Aktif Calisma Defteri
 
+## 2026-04-20 — K-055 auth pages readability fix (Asama 80.11)
+
+**Durum:** Tuna 4 screenshot paylaşti: verm/navy body bg üzerinde glass kart → verm/navy linkler okunamıyor. Root cause: `switchTab()` JS body bg'yi `var(--verm)` / `var(--navy)` override ediyordu (K-049 öncesi legacy). Glass kart transparent → body brand rengi görülüyor → verm links on verm bg = invisible.
+
+**Aktif hedef:** Tuna UAT hellotalent.ai/giris.html + /uye-ol.html dark + light, aday + kurumsal tab'larda tüm link/checkbox/text okunurluğu kontrolü.
+
+### Yapilan is
+
+| Dosya | Scope |
+|-------|-------|
+| `giris.html` + `uye-ol.html` `switchTab()` JS | `document.body.style.background = 'var(--verm/navy)'` silindi → body K-049 statik (cream/K-043) kaliyor, brand accent sadece active tab + CTA |
+| `uye-ol.html` `.consent-label input[type="checkbox"]` | `accent-color: var(--verm)` brand checkbox styling; 16px size; cursor pointer |
+| `uye-ol.html` `.consent-label a` | verm underlined + bold (cream bg uzerinde AA) |
+| `uye-ol.html` dark `.consent-label a` | #FF6B4A coral-bright (K-043 dark uzerinde AA: 5.93:1, verm #C94E28 ise 4.05:1) |
+| `uye-ol.html` dark `.register-link a.aday-link` / `.ik-link` | #FF6B4A / #8B9FD4 (dark-readable variants) |
+| `giris.html` dark `.register-link a.aday-link` / `.ik-link` + `#btn-forgot-password-*` | same bright variants |
+| Cache bump tokens.css `v=20260420a → b` (giris + uye-ol) |
+
+### Kök neden
+
+K-049 body bg statik cream yapti ama `switchTab()` JS legacy kodu body bg'yi brand rengine ezip card glass'inin altinda brand renk birakiyordu. Kart glass cream-4% tinted verm → verm on verm-dominated card = 1.1:1 invisible.
+
+Fix: JS body override silindi. Body statik:
+- Light: cream `var(--color-gray)` #F7F6F4
+- Dark: K-043 `#0F121F`
+
+Active tab + CTA brand emphasis korundu (user action focal points).
+
+### Dark mode link renk seçimi
+
+K-043 dark bg uzerinde verm #C94E28 = 4.05:1 (AA 4.5 altinda). Secim `#FF6B4A` coral-bright = 5.93:1 AA+. Navy icin `#8B9FD4` lighter-navy shade (shared-v2.css'te zaten kullanımda `.vp-card.navy .vp-num` dark).
+
+### Playwright verify
+
+- Light mode uye-ol: cream body + white card + verm CTA + navy footer + verm consent links underlined ✓
+- Dark mode uye-ol: K-043 body + glass card + FF6B4A coral links ✓ okunur
+- Dark mode giris: K-043 + coral-bright "Hemen kayıt ol" + "Şifremi Unuttum" ✓
+
+---
+
 ## 2026-04-20 — Teknik borç batch temizligi (K-050..K-054, Asama 80.10)
 
 **Durum:** Renk audit sonrasi acilan tum teknik borclar temizlendi. 5 commit push edildi:

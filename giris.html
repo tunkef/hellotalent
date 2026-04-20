@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/tokens.css?v=20260420a">
+<link rel="stylesheet" href="css/tokens.css?v=20260420b">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   /* Tokens: css/tokens.css — lokal :root silindi (Faz 1c). */
@@ -344,6 +344,10 @@
   html.dark .divider::before,
   html.dark .divider::after { background: rgba(247, 246, 244, .08); }
   html.dark .register-link { color: rgba(247, 246, 244, .72); }
+  html.dark .register-link a.aday-link { color: #FF6B4A; }
+  html.dark .register-link a.ik-link { color: #8B9FD4; } /* navy-lighter dark K-043 uzerinde */
+  html.dark #btn-forgot-password-aday,
+  html.dark #btn-forgot-password-ik { color: #FF6B4A !important; }
   html.dark .footer { background: #0B0D17; color: rgba(247, 246, 244, .72); }
   html.dark .footer a { color: rgba(247, 246, 244, .72); }
   html.dark #btn-google-login,
@@ -576,14 +580,15 @@ function switchTab(tab) {
     ikForm.style.display = 'none';
     adayBtn.className = 'tab-btn active-aday';
     ikBtn.className = 'tab-btn';
-    document.body.style.background = 'var(--verm)';
   } else {
     adayForm.style.display = 'none';
     ikForm.style.display = 'block';
     adayBtn.className = 'tab-btn';
     ikBtn.className = 'tab-btn active-ik';
-    document.body.style.background = 'var(--navy)';
   }
+  // K-055 — body bg JS override kaldirildi. Body statik kaliyor (K-049 cream/K-043),
+  // brand accent sadece active tab + CTA button'da. Dynamic body bg glass kart uzerinde
+  // link/text kontrasti bozuyordu.
 }
 
 // ── ADAY GİRİŞ ──

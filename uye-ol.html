@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/tokens.css?v=20260420a">
+<link rel="stylesheet" href="css/tokens.css?v=20260420b">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 <style>
@@ -305,7 +305,13 @@
   .consent-label input[type="checkbox"] {
     margin-top: 3px;
     flex-shrink: 0;
+    /* K-055 — brand accent + visible on both modes */
+    accent-color: var(--verm);
+    width: 16px; height: 16px;
+    cursor: pointer;
   }
+  .consent-label a { color: var(--verm); text-decoration: underline; font-weight: 600; }
+  .consent-label a:hover { text-decoration: none; }
 
   /* ── DARK MODE — K-049: K-043 unified #0F121F + cream text + glassmorphism ── */
   html.dark {
@@ -333,6 +339,10 @@
   html.dark .divider::before,
   html.dark .divider::after { background: rgba(247, 246, 244, .08); }
   html.dark .register-link { color: rgba(247, 246, 244, .72); }
+  html.dark .register-link a.aday-link { color: #FF6B4A; }
+  html.dark .register-link a.ik-link { color: #8B9FD4; }
+  html.dark .consent-label { color: rgba(247, 246, 244, .82); }
+  html.dark .consent-label a { color: #FF6B4A; } /* coral-bright dark K-043 uzerinde verm'den daha okunur */
   html.dark .footer { background: #0B0D17; color: rgba(247, 246, 244, .72); }
   html.dark .footer a { color: rgba(247, 246, 244, .72); }
   html.dark #btn-google-signup,
@@ -560,14 +570,13 @@ function switchTab(tab) {
     kurumsalForm.style.display = 'none';
     adayBtn.className = 'tab-btn active-aday';
     kurumsalBtn.className = 'tab-btn';
-    document.body.style.background = 'var(--verm)';
   } else {
     adayForm.style.display = 'none';
     kurumsalForm.style.display = 'block';
     adayBtn.className = 'tab-btn';
     kurumsalBtn.className = 'tab-btn active-ik';
-    document.body.style.background = 'var(--navy)';
   }
+  // K-055 — body bg JS override kaldirildi. Brand accent sadece active tab + CTA.
 }
 
 /* 3. URL param + session check */
