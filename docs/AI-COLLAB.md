@@ -1,5 +1,40 @@
 # HelloTalent AI-COLLAB — Aktif Calisma Defteri
 
+## 2026-04-20 — K-068 runtime bugfix: cb-check görünmez + dark mode boş rectangle (Asama 80.22)
+
+**Durum:** Rollback sonrası Tuna 2 canlı bug raporladı: (1) "halen çalışıyorum" checkbox görünmüyor, sadece yazıya tıklayınca toggle oluyor; (2) dark mode Genel Bakış'ta boş dikdörtgen beliyor. Playwright CDP ile Tuna'nın canlı session'ına bağlanıp inspect ettim.
+
+### Kök nedenler (canlı kanıt)
+
+| Bug | Kök neden | Kanıt |
+|-----|-----------|-------|
+| cb-check görünmez | `span.cb-check` default `display: inline`. Parent `.cb-control-label` (label) default block, flex DEĞİL. → width/height uygulanmıyor → rect 0x0. | Canlı probe: `display: "inline", rect: "0x0"`, matched rules'da display yok |
+| Dark mode rectangle | Gündem kartı `<img loading="lazy">` + figure `background: var(--editorial-card)` dark modda dark. Görsel viewport'a girene kadar dark dikdörtgen. | k068-dark-genel.png ilk çekim (görsel yüklemeden) boş; crop çekimde (scrollIntoView sonrası) dolu |
+
+### Fix
+
+| Dosya | Değişiklik |
+|-------|-----------|
+| `css/profil-extras.css` | `.cb-control-label` → `display: inline-flex; align-items: center; gap: 10px;` + `.cb-check` → explicit `display: inline-block;` |
+| `profil-genel.js:510` | `img.loading = 'eager'` + `img.decoding = 'async'` |
+| `css/panels/genel-bakis.css` | `.gb-item__media` + img/video → `background: transparent` (dark mode dark rectangle fallback kalkar) + `:empty` / `img[src=""]` display:none fallback |
+
+### Doğrulama (canlı Playwright CDP)
+
+- `k068-live-verify.png`: cb-check override sonrası 22x22 görünür, her iki checkbox (cb-no-experience + exp-card-1-devam) rect doğru
+- `k068-dark-fix-verify.png`: dark mode Genel Bakış 3 kartın da görseli dolu, boş dikdörtgen yok
+
+### Neden reproducer'da çalıştı canlıda çalışmadı
+
+`k068-cb-bisect.mjs` tüm 19 CSS'i bundle etti ama `page.setContent(HTML)` farklı render path. Canlı'da `addExperienceCard` DOM inject sonrası span.cb-check parent `.cb-control-label`'ın default **block** kalması critical — CSS'te explicit display hiç yoktu, default browser davranışına bırakılmıştı. Bisect'te büyük olasılıkla flex context farklı propagate oldu.
+
+### Sonraki net adım
+
+- Propagation ~40s bekle → Tuna hard refresh (Cmd+Shift+R)
+- Tuna UAT: checkbox görünür mü? dark mode Genel Bakış temiz mi?
+
+---
+
 ## 2026-04-20 — K-068 ROLLBACK: K-066+K-067 revert + AI CV button gizlendi (Asama 80.21)
 
 **Durum:** Tuna kararı: 4 iterasyon (K-066, K-066 iter 2, K-067 Sprint 1) sonrası "checkbox hâlâ kayıp, CV builder'ı yapamayacak gibiyiz" feedback'i. Pillar B "kök fix" canlıda doğrulanmadan commit edilmişti, hâlâ kırık. Tuna seçim B (rollback) + bonus: AI CV Optimize button da UI'dan gizle, Studio "Yakında" sayfasına taşı.

@@ -295,7 +295,7 @@
   border-radius: 12px;
   overflow: hidden;
   max-width: 640px;
-  background: var(--editorial-card);
+  background: transparent;
 }
 .gb-item__media img,
 .gb-item__media video {
@@ -303,7 +303,12 @@
   width: 100%;
   max-height: 360px;
   object-fit: contain;
-  background: var(--editorial-card);
+  background: transparent;
+}
+.gb-item__media:empty,
+.gb-item__media img:not([src]),
+.gb-item__media img[src=""] {
+  display: none;
 }
 .gb-item__excerpt {
   font-size: 14px;
