@@ -1,4 +1,4 @@
-/* global collectCertificates, collectEducation, collectExperiences, collectLanguages, currentUser, ht_track, monthIndexToName, selectedBrandInterests, showToast, STORAGE, supabase, val, _loadedDBData */
+/* global collectCertificates, collectEducation, collectExperiences, collectLanguages, currentUser, ht_track, LEADERSHIP_SKILLS, monthIndexToName, ROLE_SKILLS_MAP, selectedBrandInterests, showToast, STORAGE, supabase, val, _loadedDBData */
 // ═══════════════════════════════════════════════════
 // profil-cv.js — Legacy CV Upload + Template-Driven PDF Generation
 // K-066: AI CV optimize kaldırıldı. CV artık 100% template-driven
@@ -236,21 +236,23 @@ function normalizeCVData() {
   };
 }
 
-/* ── Section heading helper ── */
+/* ── Section heading helper — Tuna CV pattern (K-066) ── */
+/* Bold uppercase black title, hairline divider, no color.   */
 function _cvSection(doc, title, M, cW, Y) {
-  if (Y > 258) { doc.addPage(); Y = 20; }
-  doc.setFontSize(11);
-  doc.setFont('helvetica', 'bold');
-  doc.setTextColor(30, 45, 94);
+  if (Y > 268) { doc.addPage(); Y = 20; }
+  Y += 2;
+  doc.setFontSize(10);
+  doc.setFont('times', 'bold');
+  doc.setTextColor(0, 0, 0);
   doc.text(title.toUpperCase(), M, Y);
-  Y += 1.5;
-  doc.setDrawColor(30, 45, 94);
-  doc.setLineWidth(0.4);
+  Y += 1.2;
+  doc.setDrawColor(180, 180, 180);
+  doc.setLineWidth(0.15);
   doc.line(M, Y, M + cW, Y);
-  Y += 5;
+  Y += 4.5;
   doc.setFontSize(9.5);
-  doc.setTextColor(50, 50, 50);
-  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(40, 40, 40);
+  doc.setFont('times', 'normal');
   return Y;
 }
 
@@ -278,192 +280,280 @@ function fetchAvatarAsDataURL(url) {
 async function generateCV() {
   var jsPDF = window.jspdf.jsPDF;
   var doc = new jsPDF({ unit: 'mm', format: 'a4' });
-  var W = 210, M = 16, cW = W - 2 * M, Y = 0;
+  var W = 210, H = 297, M = 16, cW = W - 2 * M, Y = 0;
   var d = normalizeCVData();
 
-  // ── HEADER: isim + hedef rol + iletisim ──
-  // NOT: Avatar PDF'e eklenmez — ATS (Workday, Taleo) text layer'ı bozar.
-  // Foto profil sayfasında görünür, CV'de yer almaz (global best practice).
+  /* Avatar (opsiyonel) — sağ üst kare, foto yoksa text-only layout */
+  var AVATAR_SIZE = 26; // mm
+  var avatarData = null;
+  if (d.avatarUrl) {
+    try { avatarData = await fetchAvatarAsDataURL(d.avatarUrl); } catch (e) { avatarData = null; }
+  }
 
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(18);
-  doc.setTextColor(30, 45, 94);
-  doc.text(d.isim, M, 14);
+  // ── HEADER: isim (uppercase) sol | avatar sağ ──
+  doc.setFont('times', 'normal');
+  doc.setFontSize(20);
+  doc.setTextColor(0, 0, 0);
+  // Letter-spaced uppercase isim — times yok letter-spacing, genişlik manipüle
+  var isimUpper = (d.isim || 'Ad Soyad').toUpperCase();
+  doc.setCharSpace(0.8);
+  doc.text(isimUpper, M, 16);
+  doc.setCharSpace(0);
 
+  var headerYStart = 20;
   if (d.targetRole) {
-    doc.setFont('helvetica', 'normal');
+    doc.setFont('times', 'italic');
     doc.setFontSize(10);
-    doc.setTextColor(100, 100, 100);
-    doc.text(d.targetRole, M, 20);
-  }
-
-  var contactParts = [];
-  if (d.tel) contactParts.push(d.tel);
-  if (d.email) contactParts.push(d.email);
-  if (d.city) contactParts.push(d.city);
-  if (d.linkedin) contactParts.push(d.linkedin);
-  if (contactParts.length) {
-    doc.setFontSize(8.5);
     doc.setTextColor(80, 80, 80);
-    doc.text(contactParts.join('  \u2022  '), M, 26);
+    doc.text(d.targetRole, M, headerYStart + 3);
   }
 
-  Y = 32;
-  doc.setDrawColor(30, 45, 94);
-  doc.setLineWidth(0.3);
+  // İletişim: "Şehir | Telefon" + "Email | LinkedIn"
+  var line1 = [];
+  if (d.city) line1.push(d.city);
+  if (d.tel) line1.push(d.tel);
+  var line2 = [];
+  if (d.email) line2.push(d.email);
+  if (d.linkedin) line2.push(d.linkedin);
+  doc.setFont('times', 'normal');
+  doc.setFontSize(9);
+  doc.setTextColor(40, 40, 40);
+  var cy = headerYStart + (d.targetRole ? 8 : 3);
+  if (line1.length) { doc.text(line1.join('  |  '), M, cy); cy += 4; }
+  if (line2.length) { doc.text(line2.join('  |  '), M, cy); cy += 4; }
+
+  // Diller header altına
+  if (d.languages && d.languages.length > 0) {
+    var langText = d.languages
+      .filter(function(l) { return l && l.dil; })
+      .map(function(l) { return l.dil + (l.seviye ? ': ' + l.seviye : ''); })
+      .join('    ');
+    if (langText) {
+      doc.setFont('times', 'normal');
+      doc.setFontSize(9);
+      doc.setTextColor(40, 40, 40);
+      doc.text(langText, M, cy);
+      cy += 4;
+    }
+  }
+
+  // Avatar embed (ATS uyarısı: Tuna CV örnek pattern'ini takip ediyor, foto istendi)
+  if (avatarData) {
+    try {
+      doc.addImage(avatarData, 'JPEG', M + cW - AVATAR_SIZE, 12, AVATAR_SIZE, AVATAR_SIZE);
+    } catch (err) { /* silent */ }
+  }
+
+  // Header divider
+  Y = Math.max(cy + 1, (avatarData ? 12 + AVATAR_SIZE + 2 : cy + 1));
+  doc.setDrawColor(0, 0, 0);
+  doc.setLineWidth(0.4);
   doc.line(M, Y, M + cW, Y);
   Y += 6;
 
-  // ── SECTION 1: PROFESYONEL OZET ──
-  // Normal font (not italic) — ATS OCR-fallback Türkçe ğ/ş/ı'yı italic'te %15-20 bozar
+  // ── SECTION 1: PROFESYONEL ÖZET ──
   if (d.summary) {
+    Y = _cvSection(doc, 'Profesyonel \u00d6zet', M, cW, Y);
+    doc.setFont('times', 'normal');
     doc.setFontSize(9.5);
-    doc.setFont('helvetica', 'normal');
-    doc.setTextColor(60, 60, 60);
+    doc.setTextColor(30, 30, 30);
     var splitSummary = doc.splitTextToSize(d.summary, cW);
     doc.text(splitSummary, M, Y);
-    Y += splitSummary.length * 4.5 + 4;
+    Y += splitSummary.length * 4.3 + 3;
   }
 
-  // ── SECTION 2: DENEYIM ──
+  // ── SECTION 2: YETKİNLİKLER — role-based taxonomy (K-066) ──
+  var roleSkillsMap = (typeof ROLE_SKILLS_MAP !== 'undefined') ? ROLE_SKILLS_MAP : {};
+  var leadershipSkills = (typeof LEADERSHIP_SKILLS !== 'undefined') ? LEADERSHIP_SKILLS : [];
+  var families = [];
+  d.experiences.forEach(function(e) {
+    if (e && e.rol_ailesi && families.indexOf(e.rol_ailesi) === -1) {
+      families.push(e.rol_ailesi);
+    }
+  });
+  var skillCats = [];
+  families.forEach(function(fam) {
+    var skills = roleSkillsMap[fam];
+    if (skills && skills.length > 0) {
+      skillCats.push({ cat: fam, items: skills.slice(0, 6) });
+    }
+  });
+  var hasLeadership = d.experiences.some(function(e) {
+    if (!e) return false;
+    var role = (e.pozisyon || e.rol_unvani || '').toLowerCase();
+    return /m\u00fcd\u00fcr|sorumlu|lider|direkt\u00f6r|supervisor|manager/.test(role);
+  });
+  if (hasLeadership && leadershipSkills.length > 0) {
+    skillCats.push({ cat: 'Liderlik', items: leadershipSkills.slice(0, 5) });
+  }
+  if (d.brandInterests && d.brandInterests.length > 0) {
+    skillCats.push({ cat: 'Sekt\u00f6r \u0130lgisi', items: d.brandInterests.slice(0, 6) });
+  }
+
+  if (skillCats.length > 0) {
+    Y = _cvSection(doc, 'Yetkinlikler', M, cW, Y);
+    doc.setFontSize(9.5);
+    skillCats.forEach(function(c) {
+      if (Y > 268) { doc.addPage(); Y = 20; }
+      var catLabel = c.cat + ': ';
+      doc.setFont('times', 'bold');
+      doc.setTextColor(0, 0, 0);
+      doc.text(catLabel, M, Y);
+      var catWidth = doc.getTextWidth(catLabel);
+      doc.setFont('times', 'normal');
+      doc.setTextColor(40, 40, 40);
+      var itemsText = c.items.join(', ') + '.';
+      var splitItems = doc.splitTextToSize(itemsText, cW - catWidth);
+      doc.text(splitItems[0] || '', M + catWidth, Y);
+      Y += 4;
+      for (var si2 = 1; si2 < splitItems.length; si2++) {
+        if (Y > 268) { doc.addPage(); Y = 20; }
+        doc.text(splitItems[si2], M, Y);
+        Y += 4;
+      }
+    });
+    Y += 2;
+  }
+
+  // ── SECTION 3: PROFESYONEL DENEYİM ──
   if (d.experiences.length > 0) {
-    Y = _cvSection(doc, 'Deneyim', M, cW, Y);
+    Y = _cvSection(doc, 'Profesyonel Deneyim', M, cW, Y);
     for (var ei = 0; ei < d.experiences.length; ei++) {
       var e = d.experiences[ei];
-      if (Y > 258) { doc.addPage(); Y = 20; }
+      if (Y > 260) { doc.addPage(); Y = 20; }
 
-      var headline = (e.pozisyon || '') + (e.marka || e.sirket ? ' \u2014 ' + (e.marka || e.sirket) : '');
+      // Company (uppercase bold) + tarih sağ italic
+      var companyLabel = (e.marka || e.sirket || '').toString().toUpperCase();
+      doc.setFont('times', 'bold');
+      doc.setFontSize(10);
+      doc.setTextColor(0, 0, 0);
+      doc.setCharSpace(0.4);
+      doc.text(companyLabel || '\u015eirket', M, Y);
+      doc.setCharSpace(0);
 
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(9.5);
-      doc.setTextColor(30, 30, 30);
-      doc.text(headline || 'Pozisyon', M, Y);
-
-      /* Date — always from profile truth */
       var tarih = '';
       if (e.baslangic_yil) {
         tarih = (monthIndexToName(e.baslangic_ay) || '') + ' ' + e.baslangic_yil + ' \u2013 ';
-        tarih += e.devam_ediyor ? 'Devam Ediyor' : ((monthIndexToName(e.bitis_ay) || '') + ' ' + (e.bitis_yil || ''));
+        tarih += e.devam_ediyor ? 'Devam' : ((monthIndexToName(e.bitis_ay) || '') + ' ' + (e.bitis_yil || ''));
       }
       if (tarih) {
-        doc.setFont('helvetica', 'normal');
-        doc.setFontSize(8.5);
-        doc.setTextColor(120, 120, 120);
+        doc.setFont('times', 'italic');
+        doc.setFontSize(9);
+        doc.setTextColor(80, 80, 80);
         doc.text(tarih.trim(), M + cW, Y, { align: 'right' });
       }
       Y += 4.5;
 
-      if (e.rol_ailesi || e.segment) {
-        doc.setFont('helvetica', 'normal');
-        doc.setFontSize(8.5);
-        doc.setTextColor(100, 100, 100);
-        doc.text([e.rol_ailesi, e.segment].filter(Boolean).join(' | '), M, Y);
+      // Pozisyon | şehir (italic)
+      var roleLine = [];
+      if (e.pozisyon) roleLine.push(e.pozisyon);
+      if (e.sehir) roleLine.push(e.sehir);
+      if (roleLine.length) {
+        doc.setFont('times', 'italic');
+        doc.setFontSize(9.5);
+        doc.setTextColor(50, 50, 50);
+        doc.text(roleLine.join('  |  '), M, Y);
         Y += 4;
       }
 
-      /* Kısa başarı özeti/description — template-driven, deterministic */
+      // Bullet points (basari_ozeti / description sentence-split)
       var summaryText = e.basari_ozeti || e.description || '';
       if (summaryText) {
-        doc.setFont('helvetica', 'normal');
-        doc.setFontSize(8.5);
-        doc.setTextColor(60, 60, 60);
-        var sumLines = doc.splitTextToSize(summaryText, cW - 2);
-        for (var si = 0; si < Math.min(3, sumLines.length); si++) {
-          if (Y > 258) { doc.addPage(); Y = 20; }
-          doc.text(sumLines[si], M, Y);
-          Y += 3.8;
+        var sentences = summaryText.split(/(?<=[.!?])\s+/).filter(function(s) { return s.trim().length > 0; });
+        if (!sentences.length) sentences = [summaryText];
+        var maxBullets = Math.min(5, sentences.length);
+        doc.setFont('times', 'normal');
+        doc.setFontSize(9.5);
+        doc.setTextColor(30, 30, 30);
+        for (var si3 = 0; si3 < maxBullets; si3++) {
+          if (Y > 268) { doc.addPage(); Y = 20; }
+          var bulletText = '\u2022  ' + sentences[si3].trim();
+          var bLines = doc.splitTextToSize(bulletText, cW - 3);
+          doc.text(bLines, M + 2, Y);
+          Y += bLines.length * 4;
         }
       }
 
       Y += 2.5;
     }
-    Y += 3;
+    Y += 1;
   }
 
-  // ── SECTION 3: YETKINLIKLER (Skills — ATS keyword matching icin kritik) ──
-  var skills = [];
-  if (d.targetRole) skills.push(d.targetRole);
-  // Deneyimlerden rol ailelerini ve segmentleri topla
-  d.experiences.forEach(function(e) {
-    if (e.rol_ailesi && skills.indexOf(e.rol_ailesi) === -1) skills.push(e.rol_ailesi);
-    if (e.segment && skills.indexOf(e.segment) === -1) skills.push(e.segment);
-  });
-  // Takip edilen markalardan sektör bilgisi
-  if (d.brandInterests.length > 0 && skills.length < 8) {
-    skills.push('Perakende');
-  }
-  if (skills.length > 0) {
-    Y = _cvSection(doc, 'Yetkinlikler', M, cW, Y);
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(9.5);
-    doc.setTextColor(50, 50, 50);
-    var skillLine = skills.join('  \u2022  ');
-    var splitSkills = doc.splitTextToSize(skillLine, cW);
-    doc.text(splitSkills, M, Y);
-    Y += splitSkills.length * 4.5 + 4;
-  }
-
-  // ── SECTION 4: EGITIM ──
+  // ── SECTION 4: EĞİTİM ──
   if (d.education.length > 0) {
-    Y = _cvSection(doc, 'E\u011Fitim', M, cW, Y);
+    Y = _cvSection(doc, 'E\u011fitim', M, cW, Y);
     d.education.forEach(function(e) {
-      if (Y > 258) { doc.addPage(); Y = 20; }
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(9.5);
-      doc.setTextColor(30, 30, 30);
-      doc.text((e.okul || '') + (e.bolum ? ' \u2014 ' + e.bolum : ''), M, Y);
+      if (Y > 268) { doc.addPage(); Y = 20; }
+      doc.setFont('times', 'bold');
+      doc.setFontSize(10);
+      doc.setTextColor(0, 0, 0);
+      doc.setCharSpace(0.3);
+      doc.text((e.okul || '').toUpperCase(), M, Y);
+      doc.setCharSpace(0);
       var rightText = [e.egitim_seviye, e.mezun_yil ? String(e.mezun_yil) : ''].filter(Boolean).join(', ');
       if (rightText) {
-        doc.setFont('helvetica', 'normal');
-        doc.setFontSize(8.5);
-        doc.setTextColor(120, 120, 120);
+        doc.setFont('times', 'italic');
+        doc.setFontSize(9);
+        doc.setTextColor(80, 80, 80);
         doc.text(rightText, M + cW, Y, { align: 'right' });
       }
-      Y += 5;
+      Y += 4.5;
+      if (e.bolum) {
+        doc.setFont('times', 'italic');
+        doc.setFontSize(9.5);
+        doc.setTextColor(50, 50, 50);
+        doc.text(e.bolum, M, Y);
+        Y += 4;
+      }
+      Y += 1;
     });
-    Y += 3;
+    Y += 1;
   }
 
-  // ── SECTION 4: DILLER ──
-  if (d.languages.length > 0) {
-    Y = _cvSection(doc, 'Diller', M, cW, Y);
-    var langLine = d.languages.filter(function(l) { return l.dil; }).map(function(l) {
-      return l.dil + (l.seviye ? ' (' + l.seviye + ')' : '');
-    }).join('  \u2022  ');
-    doc.text(langLine, M, Y, { maxWidth: cW });
-    Y += 6;
-  }
-
-  // ── SECTION 5: SERTIFIKALAR ──
+  // ── SECTION 5: SERTİFİKALAR ──
   if (d.certificates.length > 0) {
     Y = _cvSection(doc, 'Sertifikalar', M, cW, Y);
     d.certificates.forEach(function(c) {
-      if (Y > 258) { doc.addPage(); Y = 20; }
-      doc.setFont('helvetica', 'normal');
-      doc.setFontSize(9.5);
-      doc.setTextColor(50, 50, 50);
-      doc.text((c.egitim_adi || '') + (c.kurum ? ' \u2014 ' + c.kurum : ''), M, Y);
+      if (Y > 268) { doc.addPage(); Y = 20; }
+      doc.setFont('times', 'bold');
+      doc.setFontSize(10);
+      doc.setTextColor(0, 0, 0);
+      doc.text((c.egitim_adi || '').toUpperCase(), M, Y);
       if (c.yil) {
-        doc.setFontSize(8.5);
-        doc.setTextColor(120, 120, 120);
-        doc.text(c.yil, M + cW, Y, { align: 'right' });
+        doc.setFont('times', 'italic');
+        doc.setFontSize(9);
+        doc.setTextColor(80, 80, 80);
+        doc.text(String(c.yil), M + cW, Y, { align: 'right' });
       }
-      Y += 5;
+      Y += 4.5;
+      if (c.kurum) {
+        doc.setFont('times', 'italic');
+        doc.setFontSize(9.5);
+        doc.setTextColor(50, 50, 50);
+        doc.text(c.kurum, M, Y);
+        Y += 4;
+      }
+      Y += 1;
     });
-    Y += 3;
+    Y += 1;
   }
 
-  // ── SECTION 6: ILGI ALANLARI (yalnizca anlamliysa) ──
-  if (d.brandInterests.length > 0) {
-    Y = _cvSection(doc, '\u0130lgi Alanlar\u0131', M, cW, Y);
-    doc.text(d.brandInterests.join(', '), M, Y, { maxWidth: cW });
-    Y += 6;
-  }
+  // ── References line (italic right) ──
+  if (Y > 270) { doc.addPage(); Y = 20; }
+  doc.setFont('times', 'italic');
+  doc.setFontSize(9);
+  doc.setTextColor(90, 90, 90);
+  doc.text('Referanslar talep \u00fczerine sunulur.', M + cW, Y + 4, { align: 'right' });
 
-  // ── PDF METADATA (ATS indexing + retrieval optimization) ──
-  // Branding hellotalent.ai → metadata creator field (not body text — body text pollutes ATS keyword fields)
+  // ── Footer: "by hellotalent" sayfa altında ortalanmış ──
+  doc.setFont('times', 'italic');
+  doc.setFontSize(8);
+  doc.setTextColor(140, 140, 140);
+  doc.text('by hellotalent', W / 2, H - 10, { align: 'center' });
+
+  // ── PDF METADATA ──
   doc.setProperties({
-    title: (d.isim || 'CV') + ' - CV',
+    title: (d.isim || 'CV') + ' \u2014 CV',
     author: d.isim || '',
     subject: d.targetRole || 'Perakende Profesyoneli',
     keywords: [d.targetRole, 'perakende', 'retail', d.city].filter(Boolean).join(', '),

@@ -1887,7 +1887,8 @@ test.describe('Profil activation guards', () => {
 
   test('CV template includes LinkedIn URL in contact line', () => {
     expect(cvJs).toContain('linkedin');
-    expect(cvJs).toContain('contactParts');
+    /* K-066: contactParts→line2 split; linkedin artık line2'de */
+    expect(cvJs).toContain('line2');
   });
 
   test('CV template includes target role for ATS', () => {
@@ -1925,23 +1926,27 @@ test.describe('CV canonical template guards', () => {
     expect(cvJs2).not.toMatch(/template\s*===|style\s*===|layout\s*===/);
   });
 
-  test('ATS section order: header > summary > experience > education > languages > certificates', () => {
-    var summaryPos = cvJs2.indexOf('PROFESYONEL OZET');
-    var expPos = cvJs2.indexOf("'Deneyim'");
-    var eduPos = cvJs2.indexOf("'E\\u011Fitim'");
-    var langPos = cvJs2.indexOf("'Diller'");
+  test('K-066 section order: özet > yetkinlik > deneyim > eğitim > sertifika', () => {
+    /* Yeni order (Tuna CV pattern): Summary → Skills → Experience → Education → Certificates.
+       Diller header'a taşındı (ayrı section değil). */
+    var summaryPos = cvJs2.indexOf("'Profesyonel \\u00d6zet'");
+    var skillPos = cvJs2.indexOf("'Yetkinlikler'");
+    var expPos = cvJs2.indexOf("'Profesyonel Deneyim'");
+    var eduPos = cvJs2.indexOf("'E\\u011fitim'");
     var certPos = cvJs2.indexOf("'Sertifikalar'");
     expect(summaryPos).toBeGreaterThan(0);
-    expect(expPos).toBeGreaterThan(summaryPos);
+    expect(skillPos).toBeGreaterThan(summaryPos);
+    expect(expPos).toBeGreaterThan(skillPos);
     expect(eduPos).toBeGreaterThan(expPos);
-    expect(langPos).toBeGreaterThan(eduPos);
-    expect(certPos).toBeGreaterThan(langPos);
+    expect(certPos).toBeGreaterThan(eduPos);
   });
 
-  test('avatar photo NOT embedded in PDF — ATS text layer corruption risk', () => {
-    // Avatar removed from PDF per ATS best practice (Workday/Taleo corrupt adjacent text)
-    expect(cvJs2).not.toContain('addImage');
-    expect(cvJs2).toContain('Avatar PDF');
+  test('K-066: avatar opsiyonel olarak PDF header sağ üstte (Tuna CV pattern)', () => {
+    /* Eski K031 "avatar YOK" kuralı K-066 ile kaldırıldı (kullanıcı isteği).
+       Foto varsa addImage ile embed edilir, yoksa text-only layout korunur. */
+    expect(cvJs2).toContain('addImage');
+    expect(cvJs2).toContain('fetchAvatarAsDataURL');
+    expect(cvJs2).toContain('AVATAR_SIZE');
   });
 
   test('branding in PDF metadata, not body text — ATS keyword pollution prevention', () => {
@@ -3513,13 +3518,14 @@ test.describe('K049 — Wizard editorial redesign', () => {
   test('profil.html contains the new editorial wizard wrappers', () => {
     expect(profilHtml).toContain('class="wz-grid"');
     expect(profilHtml).toContain('class="wz-main"');
-    expect(profilHtml).toContain('class="wz-rail"');
+    /* K-066: wz-rail silindi — üstte progress bar yeterli. wz-preview eklendi (sağ kolon CV). */
+    expect(profilHtml).not.toContain('class="wz-rail"');
+    expect(profilHtml).toContain('class="wz-preview"');
     expect(profilHtml).toContain('class="wz-header"');
     expect(profilHtml).toContain('id="wz-step-num"');
     expect(profilHtml).toContain('id="wz-step-pct"');
     expect(profilHtml).toContain('id="wz-progress-bar"');
-    expect(profilHtml).toContain('data-wzrail-step="1"');
-    expect(profilHtml).toContain('data-wzrail-step="7"');
+    expect(profilHtml).toContain('id="cv-preview-root"');
   });
 
   test('profil.html preserves critical wizard ids after redesign', () => {

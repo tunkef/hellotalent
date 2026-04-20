@@ -1,5 +1,34 @@
 # HelloTalent AI-COLLAB — Aktif Calisma Defteri
 
+## 2026-04-20 — K-066 iterasyon 2: Tuna CV template + role-based skills + bug fixes (Asama 80.19.2)
+
+**Durum:** Tuna UAT feedback — 4 konu: (1) kayıt CHECK constraint kırıyordu (career_type), (2) wizard sağ "Adımlar" spine gereksiz (progress bar zaten var), (3) CV template Tuna'nın kendi CV pattern'ine uyumlu olmalı (EB Garamond, B&W, avatar sağ üst, by hellotalent footer), (4) Yetkinlik section "Mağaza Müdürü" gibi pozisyon değil gerçek skill'ler göstermeli (Zety-style role→skill).
+
+### Yapilan
+
+| Parça | Scope |
+|-------|-------|
+| career_type bug fix | collectWorkPrefs multi-select 'yukari,yatay' → tek değer gönder + career_mobility K-066 kolonuna 'both' eşle. Postgres CHECK violation çözüldü. |
+| Wizard layout | wz-rail spine silindi, wz-grid 3-col → 2-col (form + preview). cv-preview.css'te #panel-profil override. |
+| CV template redesign | EB Garamond (preview) + Times (PDF) serif, B&W, hairline divider. Vermillion/Navy renkleri kaldırıldı. Avatar sağ üst 84px/26mm kare, `fetchAvatarAsDataURL` embed. Eski ATS "avatar yok" kuralı relaxed. |
+| Tuna CV pattern | İsim UPPERCASE letter-spaced, iletişim 2 satır, diller header altında, section order: Özet → Yetkinlikler → Deneyim → Eğitim → Sertifikalar. COMPANY bold uppercase + tarih italic. "by hellotalent" PDF sayfa altı footer ortalı. |
+| ROLE_SKILLS_MAP | profil-core.js'te 10 rol ailesi × 5-6 skill taxonomy (Mağaza Operasyon: P&L/Stok/KPI/Shrinkage; Satış: Hedef/Clienteling/Upselling; vb.). LEADERSHIP_SKILLS unvanda "müdür/sorumlu/lider" detekt edilince otomatik eklenir. |
+| Türkçe hata mesajı | _translateSaveError helper — Postgres raw error'ları Türkçe user-friendly mesaja map: career_type_check, not-null, unique, network, jwt. |
+| Zety referans araştırması | Agent raporu alındı: must-copy (job title → auto skill, live preview real-time), avoid (TXT-only paywall, renkli sidebar). Skill taxonomy Zety pattern'iyle uyumlu. |
+
+### Test durumu
+
+- 922 pass, 0 fail (tests/p3.regression.spec.js)
+- K-066 guard testleri güncellendi: section order, avatar embed, wz-preview, ROLE_SKILLS_MAP
+
+### Sonraki adımlar
+
+- Live UAT (Tuna): hellotalent.ai/profil.html — kayıt + preview + PDF İndir + hata mesajı
+- cv-optimize edge function delete (task #10) — stable oturunca
+- İlerde: pre-written bullet library (Zety-style "X% ciro artışı" templates)
+
+---
+
 ## 2026-04-20 — K-066 split wizard + live CV preview (template-driven, AI-free) (Asama 80.19)
 
 **Durum:** Tuna vision — "profil wizard bize büyük bir database oluşturuyor, ama CV herkes için sorun. Ekranı ikiye böl: sol form, sağ CV preview. Kullanıcı doldurdukça live render. Artık AI CV kaldırıldı — template-driven, tek tip CV, KVKK uyumlu. İK filtreleri (lokasyon, yatay/dikey geçiş, target rol, marka ilgisi) CV'de görünmez."

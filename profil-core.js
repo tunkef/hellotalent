@@ -448,6 +448,58 @@ var POSITION_TO_FAMILY = {}; // rol_unvani → rol_ailesi reverse lookup
   RETAIL_POSITIONS.sort(function(a, b) { return trLower(a).localeCompare(trLower(b), 'tr'); });
 })();
 
+// K-066: Rol ailesi → yetkinlik taxonomy (Zety-style job-title → skill suggestion).
+// Deneyimlerdeki rol_ailesi'ne göre CV'nin YETKİNLİKLER section'ı otomatik oluşur.
+// Pozisyon adı (ör. "Mağaza Müdürü") yetkinlik DEĞİLDİR — gerçek skill'ler burada.
+var ROLE_SKILLS_MAP = {
+  'Ma\u011faza Operasyon': [
+    'P&L Takibi', 'Stok Kontrol\u00fc', 'Ekip Y\u00f6netimi',
+    'Vardiya Planlama', 'KPI Takibi', 'Shrinkage Y\u00f6netimi'
+  ],
+  'Sat\u0131\u015f': [
+    'Hedef Takibi', 'Clienteling', 'Upselling',
+    'UPT / ATV / Conversion', '\u00dcr\u00fcn Bilgisi', 'CRM Kullan\u0131m\u0131'
+  ],
+  'M\u00fc\u015fteri Hizmetleri': [
+    '\u015eikayet Y\u00f6netimi', 'NPS / CSAT', 'Service Recovery',
+    'Mystery Shopper', '\u00c7oklu Kanal Destek'
+  ],
+  'Kasa / Operasyon': [
+    'Nakit Y\u00f6netimi', 'POS Sistemleri', 'G\u00fcnl\u00fck Raporlama',
+    'Fraud Prevention', 'Vardiya Devir Teslim'
+  ],
+  'G\u00f6rsel Ma\u011fazac\u0131l\u0131k (VM)': [
+    'Vitrin Tasar\u0131m\u0131', 'Planogram', 'Trend Forecasting',
+    'Merchandising', 'Kampanya Yerle\u015fimi'
+  ],
+  'Depo & Lojistik': [
+    'Stok Kabul\u00fc', 'Envanter Y\u00f6netimi', 'Sevkiyat Planlama',
+    'Warehouse Management', 'Barkod / RFID'
+  ],
+  'B\u00f6lge / Saha Y\u00f6netimi': [
+    '\u00c7ok-ma\u011faza Operasyonu', 'B\u00f6lgesel KPI', 'Alan Denetimi',
+    'Standart Uygulama', 'Yeni Ma\u011faza A\u00e7\u0131l\u0131\u015f\u0131 (NSO)'
+  ],
+  'Yiyecek & \u0130\u00e7ecek Servisi': [
+    'Men\u00fc Bilgisi', 'Hijyen & HACCP', 'Masa Servisi',
+    'POS F&B', 'Restoran Operasyonu'
+  ],
+  'Mutfak': [
+    'Pi\u015firme Teknikleri', 'Porsiyon Kontrol\u00fc', 'HACCP',
+    'Men\u00fc Geli\u015ftirme', 'Ekipman Kullan\u0131m\u0131'
+  ],
+  'Zincir & Franchise Y\u00f6netimi': [
+    'Franchise Operasyon', 'B\u00f6lge Y\u00f6netimi', 'Standart Uygulamalar\u0131',
+    '\u00c7ok-\u015fube Raporlama', 'Partner Koordinasyonu'
+  ]
+};
+
+// Liderlik yetkinlikleri — ekip yöneten rollerde (sehir/kidem bazlı opsiyonel yoğunluk)
+var LEADERSHIP_SKILLS = [
+  'B\u00fcy\u00fck Ekip Y\u00f6netimi', 'Performans Koçlu\u011fu', 'Succession Planning',
+  'Labor B\u00fctçe', '\u0130\u015fe Al\u0131m & On-boarding'
+];
+
 var DIL_LISTESI = ['Türkçe','İngilizce','Almanca','Arapça','Arnavutça','Boşnakça','Bulgarca','Çekçe','Çince (Mandarin)','Danca','Farsça','Fince','Fransızca','Gürcüce','Hırvatça','Hollandaca','İspanyolca','İsveççe','İtalyanca','Japonca','Korece','Kürtçe','Lehçe','Macarca','Norveçce','Portekizce','Rumence','Rusça','Sırpça','Ukraynaca','Yunanca','Diğer'];
 
 var DIL_SEVIYELERI = ['A1 - Ba\u015flang\u0131\u00e7','A2 - Temel','B1 - Orta Alt\u0131','B2 - Orta','C1 - \u0130leri','C2 - \u00dcst \u0130leri','Anadil'];
