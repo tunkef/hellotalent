@@ -154,18 +154,19 @@
     /* K-058 — Compact form density (uye-ol long form fit viewport) */
     .card .tab-toggle { margin-bottom: 18px; }
     .card .card-title { font-size: 20px; margin-bottom: 4px; }
-    .card .card-sub { margin-bottom: 16px; font-size: var(--text-base); }
+    .card .card-sub { margin-bottom: 14px; font-size: var(--text-base); }
     .card .field { margin-bottom: 10px; }
+    .card .field-row { margin-bottom: 10px; gap: 10px; }
     .card .field label { margin-bottom: 4px; font-size: var(--text-sm); }
     .card .field input { padding: 9px 12px; font-size: var(--text-md); }
     .card .field-hint { font-size: 10px; }
-    .card .password-strength { margin-top: 4px !important; }
-    .card .strength-rules { display: grid; grid-template-columns: 1fr 1fr; gap: 0 12px; font-size: 10px !important; line-height: 1.45 !important; margin-top: 2px !important; }
+    .card .password-strength { margin-top: 4px; }
+    .card .strength-hint { font-size: 10.5px; line-height: 1.4; }
     .card .consent-label { margin: 6px 0; font-size: 10.5px; line-height: 1.45; }
     .card .btn-submit { padding: 11px; font-size: var(--text-lg); margin-top: 4px; }
-    .card .divider { margin: 12px 0; font-size: var(--text-sm); }
-    .card #btn-google-signup,
-    .card #btn-linkedin-signup { padding: 9px !important; font-size: var(--text-sm) !important; margin-bottom: 6px !important; }
+    .card .divider { margin: 10px 0; font-size: var(--text-sm); }
+    .card .oauth-row { margin-bottom: 12px; gap: 8px; }
+    .card .btn-oauth { padding: 9px 8px; font-size: var(--text-sm); }
     .card .register-link { margin-top: 10px !important; font-size: var(--text-sm); }
   }
 
@@ -209,6 +210,60 @@
   }
 
   /* ── FORM ── */
+  /* K-060: OAuth top 2-col row */
+  .oauth-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .btn-oauth {
+    width: 100%;
+    padding: 11px 10px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    background: white;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: var(--text-md);
+    font-weight: 600;
+    color: var(--text);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: background .2s, border-color .2s, transform .15s;
+  }
+  .btn-oauth:hover { background: var(--gray); border-color: var(--border-strong, #D1D5DB); transform: translateY(-1px); }
+
+  /* K-060: Ad + Soyad row (2 cols always — çok kısa form yeterince dar değil) */
+  .field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .field-row .field { margin-bottom: 0; }
+
+  /* K-060: Password strength compact */
+  .password-strength { margin-top: 6px; }
+  .password-strength .strength-bars {
+    display: flex; gap: 4px; margin-bottom: 4px;
+  }
+  .password-strength .strength-bar {
+    flex: 1; height: 3px; border-radius: 2px;
+    background: var(--border); transition: background .3s;
+  }
+  .password-strength .strength-label {
+    font-size: var(--text-sm); color: var(--muted);
+    font-weight: 600; transition: color .3s;
+    min-height: 16px;
+  }
+  .password-strength .strength-hint {
+    font-size: var(--text-sm); color: var(--muted);
+    line-height: 1.45; margin-top: 2px;
+  }
+  .password-strength.all-pass .strength-hint { color: var(--color-green); }
+
   .card-title {
     font-family: 'Bricolage Grotesque', sans-serif;
     font-weight: 800;
@@ -427,10 +482,9 @@
   html.dark .consent-label a { color: #FF6B4A; } /* coral-bright dark K-043 uzerinde verm'den daha okunur */
   html.dark .footer { background: #0B0D17; color: rgba(247, 246, 244, .72); }
   html.dark .footer a { color: rgba(247, 246, 244, .72); }
-  html.dark #btn-google-signup,
-  html.dark #btn-linkedin-signup { background: rgba(247, 246, 244, .04) !important; border-color: rgba(247, 246, 244, .12) !important; color: var(--text) !important; }
-  html.dark #btn-google-signup:hover,
-  html.dark #btn-linkedin-signup:hover { background: rgba(247, 246, 244, .08) !important; }
+  html.dark .btn-oauth { background: rgba(247, 246, 244, .04); border-color: rgba(247, 246, 244, .12); color: var(--text); }
+  html.dark .btn-oauth:hover { background: rgba(247, 246, 244, .08); }
+  html.dark .password-strength.all-pass .strength-hint { color: #5EE699; }
 </style>
 </head>
 <body>
@@ -472,9 +526,29 @@
 
       <div class="error-msg" id="err-aday-register"></div>
 
-      <div class="field">
-        <label for="aday-adsoyad">Ad Soyad <span style="color:var(--verm);">*</span></label>
-        <input type="text" id="aday-adsoyad" class="aday" placeholder="Adınız Soyadınız" maxlength="100" required autocomplete="name">
+      <!-- K-060: OAuth üstte 2 kolon + "veya" divider -->
+      <div class="oauth-row">
+        <button type="button" id="btn-google-signup" class="btn-oauth">
+          <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z"/><path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.997 8.997 0 000 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"/></svg>
+          <span>Google</span>
+        </button>
+        <button type="button" id="btn-linkedin-signup" class="btn-oauth">
+          <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path fill="#0A66C2" d="M15.335 0H2.665A2.665 2.665 0 000 2.665v12.67A2.665 2.665 0 002.665 18h12.67A2.665 2.665 0 0018 15.335V2.665A2.665 2.665 0 0015.335 0zM5.339 15.337H2.67V6.747h2.67v8.59zM4.005 5.61a1.548 1.548 0 110-3.096 1.548 1.548 0 010 3.096zm11.332 9.727h-2.67v-4.177c0-.996-.018-2.278-1.388-2.278-1.39 0-1.601 1.086-1.601 2.207v4.248h-2.67V6.747h2.564v1.174h.035c.357-.675 1.227-1.387 2.526-1.387 2.703 0 3.203 1.779 3.203 4.092v4.711z"/></svg>
+          <span>LinkedIn</span>
+        </button>
+      </div>
+      <div class="divider">veya</div>
+
+      <!-- K-060: Ad + Soyad 2 kolon yanyana -->
+      <div class="field-row">
+        <div class="field">
+          <label for="aday-ad">Ad <span style="color:var(--verm);">*</span></label>
+          <input type="text" id="aday-ad" class="aday" placeholder="Adınız" maxlength="50" required autocomplete="given-name">
+        </div>
+        <div class="field">
+          <label for="aday-soyad">Soyad <span style="color:var(--verm);">*</span></label>
+          <input type="text" id="aday-soyad" class="aday" placeholder="Soyadınız" maxlength="50" required autocomplete="family-name">
+        </div>
       </div>
       <div class="field">
         <label for="aday-email">E-posta <span style="color:var(--verm);">*</span></label>
@@ -491,20 +565,15 @@
           <input type="password" id="aday-sifre" class="aday" placeholder="••••••••" required autocomplete="new-password">
           <button type="button" class="pw-toggle" data-target="aday-sifre" aria-label="Şifreyi göster"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
         </div>
-        <div id="aday-strength" class="password-strength" style="margin-top:6px;">
-          <div style="display:flex;gap:4px;margin-bottom:4px;">
-            <div class="strength-bar" style="flex:1;height:3px;border-radius:2px;background:var(--border);transition:all 0.3s;"></div>
-            <div class="strength-bar" style="flex:1;height:3px;border-radius:2px;background:var(--border);transition:all 0.3s;"></div>
-            <div class="strength-bar" style="flex:1;height:3px;border-radius:2px;background:var(--border);transition:all 0.3s;"></div>
+        <!-- K-060: 5 madde yerine tek cümle hint + kompakt strength bar -->
+        <div id="aday-strength" class="password-strength">
+          <div class="strength-bars">
+            <div class="strength-bar"></div>
+            <div class="strength-bar"></div>
+            <div class="strength-bar"></div>
           </div>
-          <div class="strength-label" style="font-size:var(--text-sm);color:var(--muted);transition:all 0.3s;"></div>
-          <div class="strength-rules" style="font-size:var(--text-sm);margin-top:4px;line-height:1.6;">
-            <div class="rule-check" data-rule="length">○ En az 8 karakter</div>
-            <div class="rule-check" data-rule="upper">○ Büyük harf (A-Z)</div>
-            <div class="rule-check" data-rule="lower">○ Küçük harf (a-z)</div>
-            <div class="rule-check" data-rule="number">○ Rakam (0-9)</div>
-            <div class="rule-check" data-rule="special">○ Özel karakter (!@#$%._-)</div>
-          </div>
+          <div class="strength-label"></div>
+          <div class="strength-hint">En az 8 karakter; büyük, küçük harf, rakam ve özel karakter (!@#$%._-) içermeli.</div>
         </div>
       </div>
       <div class="field">
@@ -531,17 +600,6 @@
 
       <button class="btn-submit btn-aday" type="button" id="btn-aday-kayit" disabled>Kayıt Ol</button>
 
-      <div class="divider">veya</div>
-
-      <button type="button" id="btn-google-signup" style="width:100%;padding:12px;border:1.5px solid var(--border);border-radius:10px;background:white;font-family:'Plus Jakarta Sans',sans-serif;font-size:var(--text-md);font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:all 0.2s;margin-bottom:8px;">
-        <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z"/><path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.997 8.997 0 000 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"/></svg>
-        Google ile Üye Ol
-      </button>
-      <button type="button" id="btn-linkedin-signup" style="width:100%;padding:12px;border:1.5px solid var(--border);border-radius:10px;background:white;font-family:'Plus Jakarta Sans',sans-serif;font-size:var(--text-md);font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:all 0.2s;margin-bottom:8px;">
-        <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#0A66C2" d="M15.335 0H2.665A2.665 2.665 0 000 2.665v12.67A2.665 2.665 0 002.665 18h12.67A2.665 2.665 0 0018 15.335V2.665A2.665 2.665 0 0015.335 0zM5.339 15.337H2.67V6.747h2.67v8.59zM4.005 5.61a1.548 1.548 0 110-3.096 1.548 1.548 0 010 3.096zm11.332 9.727h-2.67v-4.177c0-.996-.018-2.278-1.388-2.278-1.39 0-1.601 1.086-1.601 2.207v4.248h-2.67V6.747h2.564v1.174h.035c.357-.675 1.227-1.387 2.526-1.387 2.703 0 3.203 1.779 3.203 4.092v4.711z"/></svg>
-        LinkedIn ile Üye Ol
-      </button>
-
       <p class="register-link" style="margin-top:16px;">
         Zaten üye misin?
         <a href="giris.html" class="aday-link">Giriş yap</a>
@@ -555,9 +613,16 @@
 
       <div class="error-msg" id="err-kurumsal-register"></div>
 
-      <div class="field">
-        <label for="k-adsoyad">Ad Soyad <span style="color:var(--navy);">*</span></label>
-        <input type="text" id="k-adsoyad" placeholder="Adınız Soyadınız" maxlength="100" required autocomplete="name">
+      <!-- K-060: Ad + Soyad 2 kolon yanyana -->
+      <div class="field-row">
+        <div class="field">
+          <label for="k-ad">Ad <span style="color:var(--navy);">*</span></label>
+          <input type="text" id="k-ad" placeholder="Adınız" maxlength="50" required autocomplete="given-name">
+        </div>
+        <div class="field">
+          <label for="k-soyad">Soyad <span style="color:var(--navy);">*</span></label>
+          <input type="text" id="k-soyad" placeholder="Soyadınız" maxlength="50" required autocomplete="family-name">
+        </div>
       </div>
       <div class="field">
         <label for="k-sirket">Şirket Adı <span style="color:var(--navy);">*</span></label>
@@ -586,20 +651,15 @@
           <input type="password" id="k-sifre" placeholder="••••••••" required autocomplete="new-password">
           <button type="button" class="pw-toggle" data-target="k-sifre" aria-label="Şifreyi göster"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
         </div>
-        <div id="k-strength" class="password-strength" style="margin-top:6px;">
-          <div style="display:flex;gap:4px;margin-bottom:4px;">
-            <div class="strength-bar" style="flex:1;height:3px;border-radius:2px;background:var(--border);transition:all 0.3s;"></div>
-            <div class="strength-bar" style="flex:1;height:3px;border-radius:2px;background:var(--border);transition:all 0.3s;"></div>
-            <div class="strength-bar" style="flex:1;height:3px;border-radius:2px;background:var(--border);transition:all 0.3s;"></div>
+        <!-- K-060: 5 madde yerine tek cümle hint + kompakt strength bar -->
+        <div id="k-strength" class="password-strength">
+          <div class="strength-bars">
+            <div class="strength-bar"></div>
+            <div class="strength-bar"></div>
+            <div class="strength-bar"></div>
           </div>
-          <div class="strength-label" style="font-size:var(--text-sm);color:var(--muted);transition:all 0.3s;"></div>
-          <div class="strength-rules" style="font-size:var(--text-sm);margin-top:4px;line-height:1.6;">
-            <div class="rule-check" data-rule="length">○ En az 8 karakter</div>
-            <div class="rule-check" data-rule="upper">○ Büyük harf (A-Z)</div>
-            <div class="rule-check" data-rule="lower">○ Küçük harf (a-z)</div>
-            <div class="rule-check" data-rule="number">○ Rakam (0-9)</div>
-            <div class="rule-check" data-rule="special">○ Özel karakter (!@#$%._-)</div>
-          </div>
+          <div class="strength-label"></div>
+          <div class="strength-hint">En az 8 karakter; büyük, küçük harf, rakam ve özel karakter (!@#$%._-) içermeli.</div>
         </div>
       </div>
       <div class="field">
@@ -702,24 +762,18 @@ function isValidPhone(val) {
 document.getElementById('aday-telefon').addEventListener('input', function() { formatPhone(this); });
 document.getElementById('k-telefon').addEventListener('input', function() { formatPhone(this); });
 
-/* 5. Password strength (reusable) */
+/* 5. Password strength — K-060: 5 madde yerine kompakt bar + label + static hint */
 function setupStrength(passwordId, containerId) {
   var input = document.getElementById(passwordId);
   var container = document.getElementById(containerId);
   if (!input || !container) return;
   var bars = container.querySelectorAll('.strength-bar');
   var label = container.querySelector('.strength-label');
-  var rules = container.querySelectorAll('.rule-check');
   input.addEventListener('input', function() {
     var val = input.value;
     var checks = { length: val.length >= 8, upper: /[A-Z]/.test(val), lower: /[a-z]/.test(val), number: /[0-9]/.test(val), special: /[!@#$%._\-]/.test(val) };
     var passed = 0;
     for (var k in checks) if (checks[k]) passed++;
-    rules.forEach(function(r) {
-      var rule = r.getAttribute('data-rule');
-      r.textContent = (checks[rule] ? '● ' : '○ ') + r.textContent.replace(/^[●○]\s*/, '');
-      r.style.color = checks[rule] ? 'var(--color-green)' : 'var(--muted)';
-    });
     /* K-050 — strength meter tokens: red/warning/green from tokens.css primitives */
     var colors = ['var(--color-red)', 'var(--warning)', 'var(--color-green)'];
     var labels = ['Zayıf', 'Orta', 'Güçlü'];
@@ -727,6 +781,8 @@ function setupStrength(passwordId, containerId) {
     bars.forEach(function(b, i) { b.style.background = i <= level ? colors[level] : 'var(--border)'; });
     label.textContent = val.length > 0 ? labels[level] : '';
     label.style.color = colors[level];
+    // K-060: all-pass → hint green
+    container.classList.toggle('all-pass', passed === 5);
   });
 }
 setupStrength('aday-sifre', 'aday-strength');
@@ -749,21 +805,23 @@ function setupMatch(passwordId, confirmId, hintId) {
 setupMatch('aday-sifre', 'aday-sifre-tekrar', 'aday-match-hint');
 setupMatch('k-sifre', 'k-sifre-tekrar', 'k-match-hint');
 
-/* 7. Form validation (enable/disable submit) */
+/* 7. Form validation — K-060: ad + soyad ayrı field */
 function validateAdayForm() {
-  var name = document.getElementById('aday-adsoyad').value.trim();
+  var ad = document.getElementById('aday-ad').value.trim();
+  var soyad = document.getElementById('aday-soyad').value.trim();
   var email = document.getElementById('aday-email').value.trim();
   var phone = document.getElementById('aday-telefon').value;
   var pw = document.getElementById('aday-sifre').value;
   var pw2 = document.getElementById('aday-sifre-tekrar').value;
   var privacy = document.getElementById('cb-aday-privacy').checked;
   var kvkk = document.getElementById('cb-aday-kvkk').checked;
-  var valid = name.length >= 2 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) && isValidPhone(phone) && pw.length >= 8 && /[A-Z]/.test(pw) && /[a-z]/.test(pw) && /[0-9]/.test(pw) && pw === pw2 && privacy && kvkk;
+  var valid = ad.length >= 1 && soyad.length >= 1 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) && isValidPhone(phone) && pw.length >= 8 && /[A-Z]/.test(pw) && /[a-z]/.test(pw) && /[0-9]/.test(pw) && pw === pw2 && privacy && kvkk;
   document.getElementById('btn-aday-kayit').disabled = !valid;
 }
 
 function validateKurumsalForm() {
-  var name = document.getElementById('k-adsoyad').value.trim();
+  var ad = document.getElementById('k-ad').value.trim();
+  var soyad = document.getElementById('k-soyad').value.trim();
   var sirket = document.getElementById('k-sirket').value.trim();
   var email = document.getElementById('k-email').value.trim();
   var phone = document.getElementById('k-telefon').value;
@@ -771,15 +829,15 @@ function validateKurumsalForm() {
   var pw2 = document.getElementById('k-sifre-tekrar').value;
   var privacy = document.getElementById('cb-k-privacy').checked;
   var kvkk = document.getElementById('cb-k-kvkk').checked;
-  var valid = name.length >= 2 && sirket.length >= 2 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) && isValidPhone(phone) && pw.length >= 8 && /[A-Z]/.test(pw) && /[a-z]/.test(pw) && /[0-9]/.test(pw) && pw === pw2 && privacy && kvkk;
+  var valid = ad.length >= 1 && soyad.length >= 1 && sirket.length >= 2 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) && isValidPhone(phone) && pw.length >= 8 && /[A-Z]/.test(pw) && /[a-z]/.test(pw) && /[0-9]/.test(pw) && pw === pw2 && privacy && kvkk;
   document.getElementById('btn-k-kayit').disabled = !valid;
 }
 
-['aday-adsoyad','aday-email','aday-telefon','aday-sifre','aday-sifre-tekrar','cb-aday-privacy','cb-aday-kvkk'].forEach(function(id) {
+['aday-ad','aday-soyad','aday-email','aday-telefon','aday-sifre','aday-sifre-tekrar','cb-aday-privacy','cb-aday-kvkk'].forEach(function(id) {
   var el = document.getElementById(id);
   if (el) el.addEventListener(el.type === 'checkbox' ? 'change' : 'input', validateAdayForm);
 });
-['k-adsoyad','k-sirket','k-email','k-telefon','k-sifre','k-sifre-tekrar','cb-k-privacy','cb-k-kvkk'].forEach(function(id) {
+['k-ad','k-soyad','k-sirket','k-email','k-telefon','k-sifre','k-sifre-tekrar','cb-k-privacy','cb-k-kvkk'].forEach(function(id) {
   var el = document.getElementById(id);
   if (el) el.addEventListener(el.type === 'checkbox' ? 'change' : 'input', validateKurumsalForm);
 });
@@ -906,11 +964,15 @@ function checkRegCooldown(btn) {
 // ── ADAY SIGNUP ──
 async function doAdaySignup() {
   var btn = document.getElementById('btn-aday-kayit');
+  if (document.getElementById('aday-hp').value) return; // honeypot defense-in-depth
   if (checkRegCooldown(btn)) return;
   _regAttempts++;
   var errEl = document.getElementById('err-aday-register');
   errEl.style.display = 'none';
-  var fullName = document.getElementById('aday-adsoyad').value.trim();
+  // K-060: ad + soyad ayrı → full_name birleşik + first_name/last_name ayrı metadata (wizard auto-fill)
+  var firstName = document.getElementById('aday-ad').value.trim();
+  var lastName = document.getElementById('aday-soyad').value.trim();
+  var fullName = (firstName + ' ' + lastName).trim();
   var email = document.getElementById('aday-email').value.trim().toLowerCase();
   var phone = document.getElementById('aday-telefon').value.replace(/\D/g, '');
   var password = document.getElementById('aday-sifre').value;
@@ -928,7 +990,7 @@ async function doAdaySignup() {
     }
     var result = await getSupa().auth.signUp({
       email: email, password: password,
-      options: { data: { full_name: fullName, phone: phone, privacy_consent_at: new Date().toISOString(), kvkk_explicit_consent_at: new Date().toISOString(), age_confirmed: true } }
+      options: { data: { full_name: fullName, first_name: firstName, last_name: lastName, phone: phone, privacy_consent_at: new Date().toISOString(), kvkk_explicit_consent_at: new Date().toISOString(), age_confirmed: true } }
     });
     if (result.error) throw result.error;
     if (result.data.user && result.data.user.identities && result.data.user.identities.length === 0) {
@@ -956,11 +1018,15 @@ async function doAdaySignup() {
 // ── KURUMSAL SIGNUP ──
 async function doKurumsalSignup() {
   var btn = document.getElementById('btn-k-kayit');
+  if (document.getElementById('k-hp').value) return; // honeypot defense-in-depth
   if (checkRegCooldown(btn)) return;
   _regAttempts++;
   var errEl = document.getElementById('err-kurumsal-register');
   errEl.style.display = 'none';
-  var fullName = document.getElementById('k-adsoyad').value.trim();
+  // K-060: ad + soyad ayrı → full_name birleşik + first_name/last_name metadata
+  var firstName = document.getElementById('k-ad').value.trim();
+  var lastName = document.getElementById('k-soyad').value.trim();
+  var fullName = (firstName + ' ' + lastName).trim();
   var sirket = document.getElementById('k-sirket').value.trim();
   var website = document.getElementById('k-web').value.trim();
   var email = document.getElementById('k-email').value.trim().toLowerCase();
@@ -980,7 +1046,7 @@ async function doKurumsalSignup() {
     }
     var result = await getSupa().auth.signUp({
       email: email, password: password,
-      options: { data: { role: 'employer', full_name: fullName, company_name: sirket, company_website: website, phone: phone, privacy_consent_at: new Date().toISOString(), kvkk_explicit_consent_at: new Date().toISOString(), age_confirmed: true } }
+      options: { data: { role: 'employer', full_name: fullName, first_name: firstName, last_name: lastName, company_name: sirket, company_website: website, phone: phone, privacy_consent_at: new Date().toISOString(), kvkk_explicit_consent_at: new Date().toISOString(), age_confirmed: true } }
     });
     if (result.error) throw result.error;
     if (result.data.user && result.data.user.identities && result.data.user.identities.length === 0) {

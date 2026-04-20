@@ -1,5 +1,46 @@
 # HelloTalent AI-COLLAB — Aktif Calisma Defteri
 
+## 2026-04-20 — K-060 uye-ol form UX toparlama (Asama 80.15)
+
+**Durum:** Tuna brief: aday kayıt formu nefes almıyor. Ad Soyad tek satır, OAuth altta, şifre 5 madde uzun. İstek: OAuth yukarı yanyana, Ad + Soyad ayrı yanyana, şifre kuralları tek cümle, profil wizard ad-soyad auto-fill.
+
+**Aktif hedef:** Tuna UAT hellotalent.ai/uye-ol × light/dark × mobile/desktop × aday/kurumsal. Kayıt sonrası profil wizard'a ad+soyad geliyor mu kontrol.
+
+### Yapilan is
+
+| Değişiklik | Scope |
+|-----------|-------|
+| OAuth top 2-col | `.oauth-row` 1fr/1fr grid, Google + LinkedIn yanyana, form'un başında (aday only). "veya" divider altında. |
+| Ad + Soyad ayrı yanyana | `aday-adsoyad` → `aday-ad` + `aday-soyad`; `k-adsoyad` → `k-ad` + `k-soyad`. `.field-row` 2-col grid. |
+| Şifre kuralları → tek cümle | 5 × `.rule-check` (En az 8 karakter / Büyük / Küçük / Rakam / Özel) → tek satır hint: "En az 8 karakter; büyük, küçük harf, rakam ve özel karakter (!@#$%._-) içermeli." `.password-strength.all-pass` → hint yeşil. |
+| OAuth bottom kaldırıldı | Eski `.divider + #btn-google-signup + #btn-linkedin-signup` block kaldırıldı (yukarıya taşındı). |
+| JS validate + signup | `validateAdayForm/KurumsalForm` ad+soyad her biri min 1 char. `doAdaySignup/KurumsalSignup` `full_name: first + ' ' + last` + `first_name: ad, last_name: soyad` metadata. |
+| Honeypot hardening | `doAdaySignup` + `doKurumsalSignup` fn başında honeypot check (defense-in-depth, DeepSeek 1.1). |
+| Dark mode | `.btn-oauth` glass bg, `.strength-hint.all-pass` → `#5EE699`. |
+
+### Profile wizard auto-fill (zaten çalışıyor)
+
+- `profil-bootstrap.js:117-123` → `user_metadata.full_name` okuyup `f-adsoyad`'ı dolduruyor. K-060 `full_name: ad + ' ' + soyad` gönderiyor → wizard otomatik doluyor.
+- Ek olarak `first_name` + `last_name` ayrı metadata field gönderiliyor (gelecek profil split için hazır).
+
+### DeepSeek review
+
+- File review 15806 + 1975 token | ~$.00525
+- 1.1 honeypot defense-in-depth fix uygulandı
+- 1.2 token reuse: success → redirect (state gone); error → zaten reset. Skip.
+- 2.1 OAuth session role: scope dışı
+- 2.2 timeout cleanup: zaten `onTurnstile*` callback'te var. Edge case minor.
+- 2.3 _pendingSubmit race: click handler'da `if (_pendingSubmit[tab]) return;` — prevented.
+
+### Playwright 12 screenshot visual
+
+- Desktop light aday: OAuth yukarı ✓, Ad+Soyad yanyana ✓, tek cümle hint ✓, kartlar eşit boy ✓
+- Desktop kurumsal: OAuth yok (kurumsal flow), Ad+Soyad yanyana ✓
+- Desktop dark aday: glass OAuth bg doğru ✓
+- Mobile: OAuth 2-col korundu (dar ekran bile), Ad+Soyad 2-col ✓
+
+---
+
 ## 2026-04-20 — K-059 uye-ol signup click silent bug fix (Asama 80.14)
 
 **Durum:** Tuna feedback: "aday kayıt formu doldurdum, Kayıt Ol'a bastım, hiç tepki vermedi". Kurumsal tarafta da aynı sorun.
