@@ -28,19 +28,6 @@
   } catch(e) {}
 })();
 </script>
-<script>
-// K-041 a11y: prefers-reduced-motion icin hero video autoplay iptal, posterde kal.
-document.addEventListener('DOMContentLoaded', function(){
-  try {
-    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      document.querySelectorAll('.hero-vid').forEach(function(v){
-        v.removeAttribute('autoplay');
-        v.pause();
-      });
-    }
-  } catch(e) {}
-});
-</script>
 <style>
 .about-hero {
   padding: clamp(48px, 7vw, 96px) clamp(24px, 5vw, 48px) clamp(64px, 8vw, 112px);
@@ -58,7 +45,6 @@ document.addEventListener('DOMContentLoaded', function(){
   overflow: hidden;
   box-shadow: var(--shadow-lift);
 }
-/* K-051 — .hero-vid shared utility (shared-v2.css); img ayri local. */
 .about-hero-vis img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
 .split-2 {
@@ -196,11 +182,7 @@ document.addEventListener('DOMContentLoaded', function(){
       </div>
     </div>
     <div class="about-hero-vis">
-      <video class="hero-vid" autoplay muted loop playsinline preload="metadata"
-             poster="assets/v2/hero-hakkimizda-poster.jpg"
-             aria-label="HelloTalent ekibi ofiste">
-        <source src="assets/v2/hero-hakkimizda.mp4" type="video/mp4">
-      </video>
+      <img src="assets/v2/hero-hakkimizda.webp?v=20260421p10c" alt="HelloTalent ekibi">
     </div>
   </div>
 </section>
@@ -285,8 +267,8 @@ document.addEventListener('DOMContentLoaded', function(){
       <p>Türkiye perakende sektörünün yetenek platformu. Markalar aday bulur, adaylar marka seçer, kariyer yürür.</p>
     </div>
     <nav class="foot-nav" aria-label="Site navigasyonu">
-      <a href="giris.html?tab=aday">Aday</a>
-      <a href="giris.html?tab=ik">Kurumsal</a>
+      <a href="index.html#adaylar">Aday</a>
+      <a href="index.html#kurumsal">Kurumsal</a>
       <a href="hakkimizda.html">Hakkımızda</a>
       <a href="iletisim.html">İletişim</a>
       <a href="yasal.html">Yasal Bilgiler</a>
