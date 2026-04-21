@@ -616,12 +616,10 @@ html.dark .mobile-menu-links a { color: var(--cream); border-bottom-color: rgba(
   padding: 28px;
   transition: transform .2s, box-shadow .2s, border-color .2s;
 }
-.step-card:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-soft);
-  border-color: var(--verm);
-}
-.step-card.navy:hover { border-color: var(--navy); }
+/* Pass 8 #1 — step-card hover sinyali kaldirildi. Tuna feedback:
+   "yukaridakiyle ayni hover olmasi tiklanabilirmis gibi hissettiriyor"
+   (vp-card ile kariştiriliyordu). step-card tiklanabilir degil,
+   bilgi kartı. Default state statik kalir, hover no-op. */
 .step-n {
   font-family: var(--font-mono);
   font-size: 11px;
@@ -943,8 +941,7 @@ html.dark .vp-card, html.dark .step-card { background: rgba(247, 246, 244, .035)
 html.dark .vp-card p, html.dark .step-card p { color: rgba(247, 246, 244, .72); }
 html.dark .vp-card:hover { border-color: var(--verm); box-shadow: 0 20px 52px rgba(201, 78, 40, .12); }
 html.dark .vp-card.navy:hover { border-color: #8B9FD4; box-shadow: 0 20px 52px rgba(139, 159, 212, .14); }
-html.dark .step-card:hover { border-color: var(--verm); }
-html.dark .step-card.navy:hover { border-color: #8B9FD4; }
+/* Pass 8 #1 — step-card dark mode hover sinyali kaldirildi (Tuna) */
 html.dark .vp-card.navy .vp-num, html.dark .vp-card.navy .vp-more, html.dark .step-card.navy .step-n { color: #8B9FD4; }
 html.dark .hero-stats { border-top-color: rgba(247, 246, 244, .14); }
 html.dark .hero-stat { color: rgba(247, 246, 244, .6); }
@@ -1140,8 +1137,7 @@ html.dark .split-2 p { color: rgba(247, 246, 244, .78); }
   .vp-card p, .step-card p { color: rgba(247, 246, 244, .72); }
   .vp-card:hover { border-color: var(--verm); box-shadow: 0 20px 52px rgba(201, 78, 40, .12); }
   .vp-card.navy:hover { border-color: #8B9FD4; box-shadow: 0 20px 52px rgba(139, 159, 212, .14); }
-  .step-card:hover { border-color: var(--verm); }
-  .step-card.navy:hover { border-color: #8B9FD4; }
+  /* Pass 8 #1 — step-card prefers-color-scheme dark hover kaldirildi (Tuna) */
   .vp-card.navy .vp-num, .vp-card.navy .vp-more, .step-card.navy .step-n { color: #8B9FD4; }
 
   /* Hero */
