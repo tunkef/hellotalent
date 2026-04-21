@@ -855,7 +855,7 @@ html.dark .step-card .step-p { color: rgba(247, 246, 244, .82); }
 /* ── RESPONSIVE ──────────────────────────────── */
 @media (max-width: 960px) {
   .hero-grid, .vp-row, .steps-row, .stories-grid { grid-template-columns: 1fr; }
-  .hero-portrait { aspect-ratio: 3 / 4; max-height: 520px; order: -1; } /* Portrait FIRST on mobile */
+  .hero-portrait { aspect-ratio: 3 / 4; max-height: 520px; } /* DOM order: copy first, video after on mobile (Tuna 2026-04-21) */
   .lp-links { display: none; }
   .lp-hdr-inner .lp-cta .btn:not(.mobile-menu-btn) { display: none; }
   .lp-hdr-inner > .seg-toggle { display: none; }       /* Hide desktop toggle, keep mobile-menu toggle */
