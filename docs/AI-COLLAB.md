@@ -1,5 +1,62 @@
 # HelloTalent AI-COLLAB — Aktif Calisma Defteri
 
+## 2026-04-21 — Pass 10 #11: kurumsal story 3 kart swap (Defne/Burak/Orkun)
+
+**Durum:** Tuna 3 yeni Pexels portresi verdi, kurumsal hikayeleri yenile + Merve→Orkun rename + markalari kaldir. "islem bitince pushla direkt" pre-authorized.
+
+### Kapsam
+- 3 yeni foto: Defne (Gustavo Fring), Burak (Mikhail Nilov), Orkun (Yan Krukov) — Pexels
+- 3 yeni blockquote — Tuna metni, 2 typo-fix (ihityacımız→ihtiyacımız, ekbimiz→ekibimiz)
+- Merve S. → Orkun (rename, soyad yok — Tuna soyad vermedi)
+- Where meta: marka kaldirildi. Defne → İşe Alım Uzmanı, Burak → Talent Lead, Orkun → CHRO
+- `story-merve.webp` silindi, `story-orkun.webp` yeni asset
+
+### Transform pipeline (Pass 10 #10 top-crop pattern)
+```
+# Defne (5760x3840 landscape) - center-x crop + scale
+ffmpeg -i SRC -vf "crop=4800:3840:480:0,scale=1000:800" -q:v 3 tmp.jpg
+# Burak/Orkun (4000x6000 portrait) - top-aligned crop + scale
+ffmpeg -i SRC -vf "crop=4000:3200:0:0,scale=1000:800" -q:v 3 tmp.jpg
+cwebp -q 82 tmp.jpg -o OUT.webp
+```
+
+### Output
+| Story | Boyut | Notlar |
+|-------|-------|--------|
+| story-defne.webp | 34KB | yeni foto (onceki 22KB Sephora) |
+| story-burak.webp | 21KB | yeni foto (onceki 29KB Zara) |
+| story-orkun.webp | 28KB | yeni asset, merve.webp delete |
+
+### Cache-bust
+`?v=20260421p10f` → `?v=20260421p10g`. Kurumsal 3 asset URL sub-iter. Aday story'ler `p10f`'te kaldi (degismedi).
+
+### TDD
+`tests/kurumsal-stories-swap.mjs` yeni spec — 40 assertions (3 story × 11 checks + 9 cleanup). 40/40 PASS.
+Regression sweep: aday-stories-swap (27), index-hash-landing (7), index-hashchange (11), footer-links (28) — hepsi green.
+
+### Review gate
+DeepSeek atlandi — 3 asset overwrite/add + 3 block rewrite + 1 rename. Pattern Pass 10 #10 ile ozdes, yuksek guven.
+
+### Cache-bust sub-iter state (guncel)
+| Commit | Tag | Kapsam |
+|--------|-----|--------|
+| 79083ac | `p10` | index hero video + poster |
+| e15c85b | `p10b` | auth giris/uye-ol webp |
+| 5d5a179 | `p10c` | hakkimizda hero webp |
+| 1916d05 | `p10d` | iletisim hero video + poster |
+| 5ba75b2 | — | scroll fix (#7) |
+| 0f386e0 | `p10e` | aday story webp (#8, center-crop — replaced) |
+| 955907e | — | Pass 10 #8 docs |
+| 26f475b | — | hash switch fix (#9) |
+| 35522e1 | — | Pass 10 #9 docs |
+| fc761b3 | `p10f` | aday story webp (#10, top-crop — active) |
+| HEAD | `p10g` | kurumsal story webp (#11, 3 swap) |
+
+### Sonraki net adim
+Tuna canli dogrulama: `/index.html#kurumsal` → 3 story grid yeni fotolar + yeni metinler + marka-siz where meta.
+
+---
+
 ## 2026-04-21 — Pass 10 #10: story foto top-aligned crop (kafalar korundu)
 
 **Durum:** Tuna feedback — Pass 10 #8'de 3 story fotosu center-crop ile kafalari ustten kirpmis. "Ustu koruyalim, asagidan kirpabilirsin." Commit `fc761b3` push.
