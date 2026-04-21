@@ -582,6 +582,12 @@ function toggleStories(btn) {
   var kurSections    = ['k-nasil', 'kurumsal'];
   if (kurSections.indexOf(h) !== -1) switchSeg('kurumsal', true);
   else switchSeg('adaylar', true);  // default + sync Giriş Yap href
+  // Pass 10 #7 — segment-name hash landing (footer nav): force top scroll so
+  // the selected segment hero is first thing user sees. Bypasses browser's
+  // scroll-restoration (reload tends to keep previous scroll position).
+  if (h === 'adaylar' || h === 'kurumsal') {
+    window.scrollTo(0, 0);
+  }
   // Scroll to section anchor after segment switch
   if (h && h !== 'adaylar' && h !== 'kurumsal') {
     var target = document.getElementById(h);
