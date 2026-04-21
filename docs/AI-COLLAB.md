@@ -1,5 +1,37 @@
 # HelloTalent AI-COLLAB — Aktif Calisma Defteri
 
+## 2026-04-21 — K-068 welcome modal — onboarding nag (Asama 80.25)
+
+**Durum:** Tuna test hesabı silindi + tekrar kayıt oldu, signup → wizard flow başarılı. Tuna: yeni kayıtta wizard'a gelince 1 kerelik bilgilendirme popup istedi. Ek kural: "kişi profilini hiç doldurmadıysa her girişte gelsin, %25'ten itibaren doldurduysa bir daha gelmesin".
+
+### UX — Tuna'nın kuralı + benim 2 ek
+
+Tuna threshold (≥25% sus / <25% göster) solid. Ek: (1) Progress bar modal içinde — somut "%25 hedefi" motivasyon, (2) Sağ üst × + arka planı tıklama = kapat, "Hadi başlayalım" birincil CTA. Localstorage kullanmadım — DB completion hesabı `calculateCompletion()` mevcut, source of truth.
+
+### Dosyalar
+
+| Dosya | Değişiklik |
+|-------|-----------|
+| `profil.html` | Body sonu: `#wlc-modal` markup (eyebrow + title + body + progress + CTA + × close) |
+| `css/profil-extras.css` | `.wlc-modal` block — blur overlay, content card, progress, CTA, dark mode variant |
+| `profil-bootstrap.js` | Profile load sonrası: `calculateCompletion() < 25` → modal göster, progress fill set, close handlers (CTA + × + backdrop + ESC) |
+| `profil.html` | Cache-bust: `profil-extras.css` + `profil-bootstrap.js` → `v=20260421k068wlc` |
+
+### Mesaj
+
+> HELLOTALENT
+> **Perakendenin yeni sayfası burada başlıyor.**
+> Bu profil, kariyerinin bir sonraki adımının temeli. Ne kadar eksiksiz doldurursan, sana uygun markalar ve pozisyonlarla o kadar isabetli eşleşirsin. Deneyimini, tercihlerini ve hedeflerini paylaş — doğru fırsatı biz bulup getirelim.
+>
+> [progress: %0 — %25'e ulaş, markalar seni görmeye başlasın]
+> [Hadi başlayalım]
+
+### Doğrulama
+
+k068-wlc-{light,dark}.png — live CDP inject, iki mod temiz görünüm. Blur overlay + centered card + progress bar + CTA tam fonksiyonel.
+
+---
+
 ## 2026-04-21 — K-068 hero card compact rewrite (Asama 80.24)
 
 **Durum:** Tuna dark mode'da merkez panel hero card içinde "orta boş dikdörtgen" + ring card dışına çıkıyor. Tuna: "rica etsem dark mode a geçişte oryaha çıkar hero kartın içindeki dikdörtgeni de komplle çözebilir misin? yine çözemezsen orayı baştan yarat"

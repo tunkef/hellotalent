@@ -1474,3 +1474,150 @@ html[data-theme="dark"] .pp-cv__chev {
   color: var(--editorial-ink-muted, #9CA3AF) !important;
 }
 
+/* ── Welcome Modal (K-068) — yeni kullanıcı onboarding ── */
+.wlc-modal[hidden] { display: none !important; }
+.wlc-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(5, 7, 18, 0.72);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  padding: 20px;
+  animation: wlcFadeIn 0.22s ease;
+}
+@keyframes wlcFadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes wlcSlideUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+.wlc-modal__content {
+  position: relative;
+  background: var(--bg-surface, #ffffff);
+  border: 1px solid var(--border-subtle, #E5E7EB);
+  border-radius: 18px;
+  padding: 36px 32px 30px;
+  max-width: 460px;
+  width: 100%;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.24);
+  animation: wlcSlideUp 0.28s cubic-bezier(0.25, 0.8, 0.3, 1);
+  text-align: left;
+}
+html[data-theme="dark"] .wlc-modal__content {
+  background: var(--editorial-card, #111827);
+  border-color: var(--editorial-hairline-strong, rgba(255,255,255,0.14));
+}
+
+.wlc-modal__close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: transparent;
+  border: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted, #6B7280);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.wlc-modal__close:hover {
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--text-primary);
+}
+html[data-theme="dark"] .wlc-modal__close:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.wlc-modal__eyebrow {
+  font-family: var(--font-mono, 'DM Mono', monospace);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  color: var(--accent, #C94E28);
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+.wlc-modal__title {
+  font-family: var(--font-head, 'Bricolage Grotesque', sans-serif);
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--text-primary);
+  margin: 0 0 12px;
+  letter-spacing: -0.01em;
+}
+.wlc-modal__body {
+  font-size: 14.5px;
+  line-height: 1.58;
+  color: var(--text-muted, #4B5563);
+  margin: 0 0 22px;
+}
+
+.wlc-modal__progress {
+  margin: 0 0 22px;
+  padding: 14px 16px;
+  background: var(--bg-subtle, rgba(0, 0, 0, 0.03));
+  border-radius: 12px;
+}
+html[data-theme="dark"] .wlc-modal__progress {
+  background: rgba(255, 255, 255, 0.04);
+}
+.wlc-modal__progress-track {
+  height: 6px;
+  background: var(--border-subtle, #E5E7EB);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+html[data-theme="dark"] .wlc-modal__progress-track {
+  background: rgba(255, 255, 255, 0.08);
+}
+.wlc-modal__progress-fill {
+  height: 100%;
+  background: var(--accent, #C94E28);
+  border-radius: 999px;
+  width: 0%;
+  transition: width 0.5s cubic-bezier(0.25, 0.8, 0.3, 1);
+}
+.wlc-modal__progress-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.wlc-modal__progress-meta > span:first-child {
+  font-family: var(--font-mono, 'DM Mono', monospace);
+  font-weight: 700;
+  color: var(--accent, #C94E28);
+  letter-spacing: 0.04em;
+}
+.wlc-modal__progress-hint { font-size: 11.5px; opacity: 0.85; text-align: right; }
+
+.wlc-modal__cta {
+  display: block;
+  width: 100%;
+  padding: 13px 22px;
+  background: var(--accent, #C94E28);
+  color: #ffffff;
+  border: 0;
+  border-radius: 999px;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.15s;
+}
+.wlc-modal__cta:hover {
+  background: var(--accent-hover, #B04221);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(201, 78, 40, 0.28);
+}
+.wlc-modal__cta:active { transform: translateY(0); }
+

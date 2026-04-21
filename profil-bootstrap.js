@@ -1,4 +1,4 @@
-/* global _applyWorkPrefs, _loadedDBData, _initBrandCompanyLookup, addTargetRoleRow, applyAllVisibilityMirrorsFromProfile, applyDraft, canonicalizeRole, currentCVStoragePath, currentUser, getProfilAuthSession, ht_track, initCVUpload, initStep1, initStep2, initStep3, initStep4, initStep5, initStep6, loadDraft, loadProfileFromDB, loadViewersCard, populateIlceSelect, renderSelectedLocations, RETAIL_POSITIONS, selectedCalismaTipleri, selectedCareerTypes, selectedMusaitlik, selectedSegmentler, setAvatarImage, setVal, showCVUploaded, STORAGE, supabase, syncAccountEmail, titleCaseTR, trLower, updateCompletionUI, updateDashboardSummary, updateMerkezCards, uploadCV */
+/* global _applyWorkPrefs, _loadedDBData, _initBrandCompanyLookup, addTargetRoleRow, applyAllVisibilityMirrorsFromProfile, applyDraft, calculateCompletion, canonicalizeRole, currentCVStoragePath, currentUser, getProfilAuthSession, ht_track, initCVUpload, initStep1, initStep2, initStep3, initStep4, initStep5, initStep6, loadDraft, loadProfileFromDB, loadViewersCard, populateIlceSelect, renderSelectedLocations, RETAIL_POSITIONS, selectedCalismaTipleri, selectedCareerTypes, selectedMusaitlik, selectedSegmentler, setAvatarImage, setVal, showCVUploaded, STORAGE, supabase, syncAccountEmail, titleCaseTR, trLower, updateCompletionUI, updateDashboardSummary, updateMerkezCards, uploadCV */
 // ═══════════════════════════════════════════════════
 // PROFIL BOOTSTRAP — auth, hydration, step-init orchestration
 // Extracted from profil.html inline scripts.
@@ -256,6 +256,40 @@ function _htApplyCareerGoalPrefill() {
       window.switchPanel('profil');
     }
   }
+
+  // K-068: Welcome modal — profile completion < 25% için her girişte göster.
+  // ≥25 olduğunda artık sus (kullanıcı başladı, engel olma).
+  try {
+    var _pct = (typeof calculateCompletion === 'function') ? (calculateCompletion() || 0) : 0;
+    if (_pct < 25) {
+      var wlc = document.getElementById('wlc-modal');
+      if (wlc) {
+        var wlcFill = document.getElementById('wlc-progress-fill');
+        var wlcPctEl = document.getElementById('wlc-progress-pct');
+        if (wlcFill) wlcFill.style.width = Math.max(2, _pct) + '%';
+        if (wlcPctEl) wlcPctEl.textContent = '%' + Math.round(_pct);
+        wlc.hidden = false;
+        document.body.style.overflow = 'hidden';
+        var closeWlc = function() {
+          wlc.hidden = true;
+          document.body.style.overflow = '';
+        };
+        var btnStart = document.getElementById('wlc-modal-start');
+        var btnX = document.getElementById('wlc-modal-close-x');
+        if (btnStart) btnStart.addEventListener('click', closeWlc);
+        if (btnX) btnX.addEventListener('click', closeWlc);
+        wlc.addEventListener('click', function(e) {
+          if (e.target === wlc) closeWlc();
+        });
+        document.addEventListener('keydown', function _esc(e) {
+          if (e.key === 'Escape' && !wlc.hidden) {
+            closeWlc();
+            document.removeEventListener('keydown', _esc);
+          }
+        });
+      }
+    }
+  } catch (e) { console.warn('welcome modal skipped:', e); }
 
   // Signal that async bootstrap is complete — hash restore waits for this
   window._htBootstrapDone = true;

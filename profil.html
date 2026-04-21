@@ -64,7 +64,7 @@ if (window.Sentry) {
 <link rel="stylesheet" href="css/studio.css?v=20260408a">
 <link rel="stylesheet" href="css/panels/genel-bakis.css?v=20260417c">
 <link rel="stylesheet" href="css/panels/merkezi.css?v=20260421k068c">
-<link rel="stylesheet" href="css/profil-extras.css?v=20260420k068b">
+<link rel="stylesheet" href="css/profil-extras.css?v=20260421k068wlc">
 <link rel="stylesheet" href="css/panels/sirketler.css?v=20260417j">
 <link rel="stylesheet" href="css/panels/kimbakti.css?v=20260415ne">
 <link rel="stylesheet" href="css/panels/inbox.css?v=20260415k071c">
@@ -1879,7 +1879,7 @@ if (window.Sentry) {
 <script src="profil-draft.js?v=20260404b"></script>
 <script src="profil-helpers.js?v=20260404b"></script>
 <script src="profil-kimbakti.js?v=20260414ab"></script>
-<script src="profil-bootstrap.js?v=20260404b"></script>
+<script src="profil-bootstrap.js?v=20260421k068wlc"></script>
 <script src="profil-events.js?v=20260416a"></script>
 
 <!-- Inline helpers + [data-panel] delegation extracted to profil-helpers.js -->
@@ -1902,6 +1902,28 @@ if (window.Sentry) {
   <button class="tg-toast-close" id="btn-close-toast">
     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
   </button>
+</div>
+
+<!-- Welcome Modal: profili < %25 olan kullanıcıya her girişte -->
+<div class="wlc-modal" id="wlc-modal" hidden aria-modal="true" role="dialog" aria-labelledby="wlc-modal-title">
+  <div class="wlc-modal__content">
+    <button type="button" class="wlc-modal__close" id="wlc-modal-close-x" aria-label="Kapat">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <div class="wlc-modal__eyebrow">HELLOTALENT</div>
+    <h2 class="wlc-modal__title" id="wlc-modal-title">Perakendenin yeni sayfası burada başlıyor.</h2>
+    <p class="wlc-modal__body">
+      Bu profil, kariyerinin bir sonraki adımının temeli. Ne kadar eksiksiz doldurursan, sana uygun markalar ve pozisyonlarla o kadar isabetli eşleşirsin. Deneyimini, tercihlerini ve hedeflerini paylaş — doğru fırsatı biz bulup getirelim.
+    </p>
+    <div class="wlc-modal__progress">
+      <div class="wlc-modal__progress-track"><div class="wlc-modal__progress-fill" id="wlc-progress-fill"></div></div>
+      <div class="wlc-modal__progress-meta">
+        <span id="wlc-progress-pct">%0</span>
+        <span class="wlc-modal__progress-hint">%25'e ulaş, markalar seni görmeye başlasın</span>
+      </div>
+    </div>
+    <button type="button" class="wlc-modal__cta" id="wlc-modal-start">Hadi başlayalım</button>
+  </div>
 </div>
 
 </body>
