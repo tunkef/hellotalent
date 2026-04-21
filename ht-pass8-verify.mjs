@@ -98,27 +98,32 @@ async function headerUniform() {
 
 async function uyeolPad() {
   const out = [];
-  for (const tab of ['aday', 'kurumsal']) {
-    const ctx = await b.newContext({ viewport: { width: 1440, height: 900 } });
-    const p = await ctx.newPage();
-    await p.goto('file://' + path.resolve(`uye-ol.html?tab=${tab}`), { waitUntil: 'domcontentloaded' });
-    await p.waitForTimeout(800);
-    const r = await p.evaluate(() => {
-      const hdr = document.querySelector('header');
-      const main = document.querySelector('main, .auth-wrap, .uy-wrap, form, .auth-page, section:first-of-type') || document.body.children[1];
-      if (!hdr || !main) return { err: 'selectors missing', hdr: !!hdr, main: !!main };
-      const h = hdr.getBoundingClientRect();
-      const m = main.getBoundingClientRect();
-      return {
-        headerBottom: Math.round(h.bottom),
-        mainTop: Math.round(m.top),
-        gap: Math.round(m.top - h.bottom),
-        mainTag: main.tagName + '.' + main.className,
-      };
-    });
-    await p.screenshot({ path: `ht-p8-uyeol-${tab}-${phase}.png`, fullPage: false, clip: { x: 0, y: 0, width: 1440, height: 500 } });
-    out.push({ tab, ...r });
-    await ctx.close();
+  for (const vp of [{ w: 1440, h: 900, label: 'desktop' }, { w: 390, h: 844, label: 'mobile' }]) {
+    for (const tab of ['aday', 'kurumsal']) {
+      const ctx = await b.newContext({ viewport: { width: vp.w, height: vp.h } });
+      const p = await ctx.newPage();
+      await p.goto('file://' + path.resolve(`uye-ol.html?tab=${tab}`), { waitUntil: 'domcontentloaded' });
+      await p.waitForTimeout(800);
+      const r = await p.evaluate(() => {
+        const logo = document.querySelector('.logo-fixed');
+        const main = document.querySelector('main.main') || document.querySelector('main');
+        const card = document.querySelector('.card');
+        if (!logo || !main) return { err: 'selectors missing', logo: !!logo, main: !!main };
+        const l = logo.getBoundingClientRect();
+        const m = main.getBoundingClientRect();
+        const c = card ? card.getBoundingClientRect() : null;
+        return {
+          logoBottom: Math.round(l.bottom),
+          mainTop: Math.round(m.top),
+          mainPaddingTop: parseInt(getComputedStyle(main).paddingTop, 10),
+          cardTop: c ? Math.round(c.top) : null,
+          gapLogoToCard: c ? Math.round(c.top - l.bottom) : null,
+        };
+      });
+      await p.screenshot({ path: `ht-p8-uyeol-${vp.label}-${tab}-${phase}.png`, fullPage: false, clip: { x: 0, y: 0, width: vp.w, height: Math.min(600, vp.h) } });
+      out.push({ vp: vp.label, tab, ...r });
+      await ctx.close();
+    }
   }
   console.log(JSON.stringify(out, null, 2));
 }
