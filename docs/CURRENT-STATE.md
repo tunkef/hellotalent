@@ -1,9 +1,9 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 21 Nisan 2026 | Asama 80.30 — Pass 8 + Pass 9 tamamlandi
-> Aktif Odak: Pass 7 (80.28) + Pass 8 (80.29) + Pass 9 (80.30) kapandi.
-> Pass 8 (6 commit): closing CTA navy hover uniform, hakkimizda/iletisim header seg-toggle index ile uyumlu (sessionStorage segment persistence), uye-ol desktop logo clearance, giris aday/kurumsal min-height uniform, step-card hover sinyali kaldirildi, footer yeniden yapilandi (4 col → 3 col: lead + nav + social).
-> Pass 9 (7 commit): footer grid auto/auto/1fr (nav sola yaslandi, social saga, TikTok eklendi), hero-grid align-items start (aday vs kurumsal video Y delta 19→0px), vp-card/story/brand-row/value-card hover transform kaldirildi (basiliyor hissi), 4 bozuk vp-more link'i tamamen kaldirildi (href="#"), icerik AI-ism temizligi (em-dash purge 4 sayfa + template phrase sadeles + Ece → Defne rename), LinkedIn URL fix (hellotalent → hello-talentai) + X handle fix (hellotalentai → hellotalent), iletisim alt cta-street scene bolumu kaldirildi.
-> Sonraki oturum: Pass 10 acik (Tuna feedback bekleniyor).
+> Son guncelleme: 21 Nisan 2026 | Asama 80.31 — Pass 10 #1 push edildi
+> Aktif Odak: Pass 10 #1 — hero video swap (Pexels gercek goruntu, commit `79083ac`).
+> Pass 10 #1: `assets/v2/hero-aday.mp4` + `hero-isveren.mp4` Pexels'ten yenilendi. Transcode: ffmpeg ss=1 -t 6 crop 2160×3240 → scale 448×672 CRF 23 -an +faststart. Dosya boyutu aday 540→231KB (-57%), kurumsal 410→154KB (-62%). Posterler regen. index.html cache-bust `?v=20260421p10`. TDD spec `tests/hero-video-swap.mjs` (17 assert PASS). DeepSeek diff review gecti.
+> Onceki: Pass 7 (80.28) + Pass 8 (80.29) + Pass 9 (80.30) kapandi.
+> Sonraki: Tuna canli dogrulama; regresyon varsa Pass 10 #2 acilir, yoksa yeni madde.
 
 ## 1. Proje Ozeti
 

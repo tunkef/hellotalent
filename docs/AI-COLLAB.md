@@ -1,5 +1,58 @@
 # HelloTalent AI-COLLAB — Aktif Calisma Defteri
 
+## 2026-04-21 — Pass 10 #1 acilis: hero video swap (Pexels gercek)
+
+**Durum:** Tuna Pass 10'u hero video refresh ile acti. Mevcut Grok-generated aday+kurumsal hero videolari (Pass 5-6 donemi) Pexels gercek stock goruntuleriyle degistirildi. Commit `79083ac` push edildi.
+
+### Kaynak
+- Aday: `/Users/peopleintk/Downloads/8513116-uhd_2160_3840_30fps.mp4` (2160×3840, 8sn, 22.7MB)
+- Kurumsal: `/Users/peopleintk/Downloads/8513102-uhd_2160_3840_30fps.mp4` (2160×3840, 10sn, 11.5MB)
+
+### Transcode pipeline
+`ffmpeg -ss 1 -i INPUT -t 6 -vf "crop=2160:3240,scale=448:672" -c:v libx264 -crf 23 -preset slow -pix_fmt yuv420p -an -movflags +faststart OUTPUT`
+
+- Trim: 1-7sn (ilk 1sn acilis atlanir, orta hareket yakalanir)
+- Crop 2160×3240 (9:16 → 2:3)
+- Scale 448×672 (canli hero-portrait kart boyutu korundu)
+- CRF 23, slow preset, yuv420p
+- `-an`: ses yok, `+faststart`: web streaming
+
+### Output
+| Dosya | Onceki | Yeni | Azalma |
+|-------|--------|------|--------|
+| hero-aday.mp4 | 540KB | 231KB | -57% |
+| hero-isveren.mp4 | 410KB | 154KB | -62% |
+| hero-aday-poster.jpg | 30KB | 24KB | -20% |
+| hero-isveren-poster.jpg | 28KB | 20KB | -29% |
+
+### HTML
+- `index.html:140,142,323,325` — video src + poster'a `?v=20260421p10` cache-bust eklendi.
+- Aria-label korundu: aday "Aday markanin IK'siyla mulakatta", kurumsal "IK yoneticisi aday mulakatinda" — poster icerikleri uyumlu (omuz ustu video-call + on aci video-call).
+- Hero-portrait kart boyutu + aspect (2:3 / 448×672) degismedi.
+
+### TDD
+`tests/hero-video-swap.mjs` — 17 assert (448×672, 5.9-6.1sn, <1MB, h264, yuv420p, poster <60KB, cache-bust param, no stale ref, single ref). Hepsi PASS.
+
+### Review gate
+DeepSeek diff review (`reviews/diff-review-20260421-204404.md`, $0.0035):
+- KRITIK (reddedildi): Tum CSS/JS'yi p10'a bumpla → repo pattern asset-basina bump. shared-v2.css p9'da kalir cunku CSS degismedi.
+- YUKSEK (reddedildi): Video query param CDN riski → GitHub Pages normal destekler.
+- ORTA (kabul): Docs drift → bu blok ile cozuluyor.
+- DUSUK x2 (reddedildi): poster bust + build script over-engineering.
+
+### Dogrulama
+- `git diff --stat`: 5 file changed (4 asset + index.html + tests/hero-video-swap.mjs eklendi)
+- No stale video refs in HTML/CSS/JS
+- Push: `79083ac` (main)
+
+### Sonraki net adim
+Tuna canli dogrulama (hard refresh index.html → aday + kurumsal hero video Pexels goruntusu gelecek). Regresyon gorurse Pass 10 #2 acilir, yoksa Tuna yeni madde soyler.
+
+### Workflow note
+Pass 8 "auto-push yasagi" burada dogru uygulandi: transcode → verify → DeepSeek review → **Tuna onayi ("et bakalim")** → push. Her adim kayitli.
+
+---
+
 ## 2026-04-21 — Pass 8 + Pass 9 kapanis (Asama 80.29 + 80.30)
 
 **Durum:** Tuna iki ardisik feedback wave verdi. Pass 8 (7 madde, 6 commit) + Pass 9 (5 layout + 5 icerik/link madde, 7 commit). Hepsi ayni gun canliya cikti. Workflow disiplini yerlesti: **verify-before → fix → Codex review → verify-after → commit → push (user onayi sonrasi)**.
