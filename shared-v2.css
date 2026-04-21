@@ -782,6 +782,19 @@ html.dark .step-card .step-p { color: rgba(247, 246, 244, .82); }
 .closing p { color: rgba(255, 255, 255, .88); margin: 0 auto 36px; max-width: 52ch; font-size: 18px; }
 .closing .hero-cta { justify-content: center; }
 
+/* Closing.verm button hover — navy uniform (Tuna Pass 8 feedback).
+   Global .btn-ink:hover = verm. .closing.verm arka plani zaten verm →
+   hover'da buton arka planla eşleşip görünmez oluyordu. Ayrıca iki
+   buton hover davranışı farklıydı (btn-ink → verm, outline.light →
+   white). Closing.verm scope'unda ikisi de navy bg + beyaz text. */
+.closing.verm .btn.btn-ink:hover,
+html.dark .closing.verm .btn.btn-ink:hover,
+.closing.verm .btn.btn-outline.light:hover {
+  background: var(--navy);
+  color: var(--white);
+  box-shadow: none;
+}
+
 /* ── FOOTER ──────────────────────────────────── */
 .ht-foot {
   background: var(--ink);
