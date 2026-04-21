@@ -534,6 +534,8 @@ function switchSeg(seg, skipScroll) {
   document.querySelectorAll('.seg-btn').forEach(function (b) {
     b.classList.toggle('active', b.dataset.seg === seg);
   });
+  // Pass 8 #5 — segment persistence (sessionStorage) hakkimizda/iletisim'e tas
+  try { sessionStorage.setItem('ht_seg', seg); } catch (e) {}
   // Segment-aware "Giriş Yap" CTA in header + mobile menu
   var loginTab = seg === 'kurumsal' ? 'ik' : 'aday';
   document.querySelectorAll('.lp-cta a[href^="giris.html"], .mobile-menu a[href^="giris.html"]').forEach(function (a) {

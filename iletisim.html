@@ -196,13 +196,14 @@ document.addEventListener('DOMContentLoaded', function(){
 <header class="lp-hdr">
   <div class="lp-hdr-inner">
     <a class="lp-logo" href="index.html">hello<em>talent</em></a>
-    <div class="lp-links">
-      <a href="index.html">Anasayfa</a>
-      <a href="hakkimizda.html">Hakkımızda</a>
-      <a href="iletisim.html" class="active">İletişim</a>
+
+    <div class="seg-toggle" role="tablist" aria-label="Segment seçimi">
+      <button class="seg-btn active" data-seg="adaylar" onclick="switchSeg('adaylar')" role="tab">Adaylar</button>
+      <button class="seg-btn" data-seg="kurumsal" onclick="switchSeg('kurumsal')" role="tab">Kurumsal</button>
     </div>
+
     <div class="lp-cta">
-      <a class="btn btn-ink btn-sm" href="giris.html">Giriş Yap
+      <a class="btn btn-ink btn-sm" href="giris.html?tab=aday">Giriş Yap
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
       </a>
       <button class="mobile-menu-btn" id="btn-mobile-menu" aria-label="Menü" aria-expanded="false" onclick="toggleMobileMenu()">
@@ -211,12 +212,16 @@ document.addEventListener('DOMContentLoaded', function(){
     </div>
   </div>
   <nav class="mobile-menu" id="mobile-menu" aria-hidden="true">
+    <div class="seg-toggle" role="tablist" aria-label="Segment seçimi (mobil)">
+      <button class="seg-btn active" data-seg="adaylar" onclick="switchSeg('adaylar')" role="tab">Adaylar</button>
+      <button class="seg-btn" data-seg="kurumsal" onclick="switchSeg('kurumsal')" role="tab">Kurumsal</button>
+    </div>
     <div class="mobile-menu-links">
       <a href="index.html">Anasayfa</a>
       <a href="hakkimizda.html">Hakkımızda</a>
       <a href="iletisim.html" class="active">İletişim</a>
     </div>
-    <a class="btn btn-ink" href="giris.html">Giriş Yap
+    <a class="btn btn-ink" href="giris.html?tab=aday">Giriş Yap
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
     </a>
   </nav>
@@ -402,6 +407,27 @@ function toggleMobileMenu() {
   btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
   document.body.style.overflow = isOpen ? 'hidden' : '';
 }
+/* Pass 8 #5 — seg-toggle hakkimizda/iletisim'de index ile uyum.
+   Segment-agnostik sayfa ama index'ten gelen segment intent'i
+   sessionStorage uzerinden korunur. Toggle'a tiklaninca
+   hem sessionStorage update hem index'e hash redirect. */
+function switchSeg(seg) {
+  try { sessionStorage.setItem('ht_seg', seg); } catch (e) {}
+  window.location.href = 'index.html#' + seg;
+}
+/* Init — index'ten gelen segment'e gore seg-btn active + Giris Yap href hydrate */
+(function () {
+  var seg = 'adaylar';
+  try { seg = sessionStorage.getItem('ht_seg') || 'adaylar'; } catch (e) {}
+  if (seg !== 'adaylar' && seg !== 'kurumsal') seg = 'adaylar';
+  document.querySelectorAll('.seg-btn').forEach(function (b) {
+    b.classList.toggle('active', b.dataset.seg === seg);
+  });
+  var tab = seg === 'kurumsal' ? 'ik' : 'aday';
+  document.querySelectorAll('a[href^="giris.html"]').forEach(function (a) {
+    a.href = 'giris.html?tab=' + tab;
+  });
+})();
 </script>
 
 <script>
