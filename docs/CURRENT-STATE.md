@@ -1,6 +1,9 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 21 Nisan 2026 | Asama 80.28 — Pass 7 tamamlandi (hero mobile order fix + 6 Turk story portresi)
-> Aktif Odak: K-068 (80.21-80.27) + Pass 7 (80.28) kapandi. Pass 7 icerigi: (a) hakkimizda + iletisim hero video zaten 19 Nis'te canlidaymis (docs drift) — dogrulandi, (b) index mobile hero order fix (video once CTA'yi itiyordu → `.hero-portrait { order:-1 }` kaldirildi), (c) 3 aday + 3 kurumsal story portresi Grok ile yenilendi (Guney Asya drift → CLATU v3 casting brief uyumlu beyaz Turk tipoloji), (d) CLATU memory v2 → v3 guncellendi (video hero spec + Bricolage + Rocket Mortgage imperative + a11y + dark mode OS-only). Sonraki oturum: Pass 8 acik (onerilecek).
+> Son guncelleme: 21 Nisan 2026 | Asama 80.30 — Pass 8 + Pass 9 tamamlandi
+> Aktif Odak: Pass 7 (80.28) + Pass 8 (80.29) + Pass 9 (80.30) kapandi.
+> Pass 8 (6 commit): closing CTA navy hover uniform, hakkimizda/iletisim header seg-toggle index ile uyumlu (sessionStorage segment persistence), uye-ol desktop logo clearance, giris aday/kurumsal min-height uniform, step-card hover sinyali kaldirildi, footer yeniden yapilandi (4 col → 3 col: lead + nav + social).
+> Pass 9 (7 commit): footer grid auto/auto/1fr (nav sola yaslandi, social saga, TikTok eklendi), hero-grid align-items start (aday vs kurumsal video Y delta 19→0px), vp-card/story/brand-row/value-card hover transform kaldirildi (basiliyor hissi), 4 bozuk vp-more link'i tamamen kaldirildi (href="#"), icerik AI-ism temizligi (em-dash purge 4 sayfa + template phrase sadeles + Ece → Defne rename), LinkedIn URL fix (hellotalent → hello-talentai) + X handle fix (hellotalentai → hellotalent), iletisim alt cta-street scene bolumu kaldirildi.
+> Sonraki oturum: Pass 10 acik (Tuna feedback bekleniyor).
 
 ## 1. Proje Ozeti
 
@@ -184,7 +187,82 @@ hellotalent.ai, Turkiye perakende sektorune ozel bir yetenek pazaryeri. Adaylar 
 
 24. ~~**Public-site v2 Pass 7 kapanis**~~ — ✅ TAMAMLANDI (21 Nisan 2026, Asama 80.28). Iki commit: `60b26dc` (hero mobile order fix) + `dcd3fa6` (6 Turk story portresi). Icerik: (1) Hakkimizda + iletisim hero video zaten 19 Nis'te canlidaymis — §5a yanlis acik is gosteriyordu (docs drift). (2) Index mobilde `.hero-portrait { order:-1 }` Pass 5 video hero'ya gecince ters etki yapiyordu; kaldirildi, DOM order aktif. (3) 6 story portresi Grok Imagine ile yenilendi (3 aday overwrite + 3 kurumsal yeni: ece/burak/merve). CLATU v3 casting brief uyumlu beyaz Turk tipoloji, her biri hikaye-ozgu durus. cwebp q=70 toplam 164KB. (4) CLATU memory v2→v3 upgrade (Pass 1-6 evolution + video spec + Grok prompt template + a11y + Rocket Mortgage imperative). Regression script: `ht-hero-mobile-order.mjs` + `ht-story-portraits-verify.mjs`. Detay: §5a.
 
+25. ~~**Public-site v2 Pass 8 kapanis**~~ — ✅ TAMAMLANDI (21 Nisan 2026, Asama 80.29). 6 commit: `8aa0fff` (closing.verm button navy hover) + `be1e3fb` (hakkimizda/iletisim header index uyumu) + `b0463ce` (uye-ol desktop padding) + `5ab25b9` (giris aday/kurumsal min-height) + `0cf2b36` (step-card hover iptal) + `5cc35c2` (footer 4col→3col rebuild). Tuna 7 madde feedback screenshot verdi; verify-before → fix → Codex review → verify-after → commit workflow. Footer rebuild: `Aday/Kurumsal/Bilgi` 4-col → `lead/tek-dikey-nav(5 link)/social+CTA` 3-col. Hakkimizda+iletisim header index'in seg-toggle kopyasini aldi, sessionStorage `ht_seg` ile segment kararlilaşti (index'ten gelen ziyaretcide kurumsal secimi hakkimizda'da da aktif kaliyor). Giris aday/kurumsal min-height:680px ile desktop yukseklik drift'i kapatildi. step-card hover sinyali dark + prefers-color-scheme blok'larindan da kaldirildi. Cache-bust `v=20260421p8`. Regression: `ht-pass8-verify.mjs` (6 mode) + `ht-p8-seg-persist.mjs` (5 senaryo).
+
+26. ~~**Public-site v2 Pass 9 kapanis**~~ — ✅ TAMAMLANDI (21 Nisan 2026, Asama 80.30). 7 commit: `a02fd37` (footer layout + hover + arrows + hero align) + `98546a3` (Pass 9b icerik: eyebrow/h1/lede + Ece→Defne + AI-ism temizligi) + `f815a0e` (LinkedIn URL) + `a498b31` (X handle) + `a9e841b` (cta-street Kadikoy foto) + `87f1a39` (iletisim scene kaldirildi) + `f373033` (value-card hover kaldirildi). **Layout:** footer grid `1.4fr 1fr 1fr` → `auto auto 1fr` + `.foot-social justify-self:end`: nav x=615→451 (sola yaslandi), social saga yaslandi, TikTok ikonu geri eklendi (4 sayfa). Hero `align-items: center` → `start`: aday/kurumsal video Y delta 19→0px. Hover: vp-card/story/brand-row b-item/value-card transform+box-shadow+border hover'i kaldirildi (press hissi) — hakkimizda.html inline value-card hover sonradan cikti. 4 bozuk `<a class="vp-more" href="#">` tamamen kaldirildi (Gizlilik ayarlari/Markalari kesfet/Gizli arama/Ekip davet). **Icerik (avoid-ai-writing skill):** eyebrow "pazarı" → "portalı"; h1 "Artık başvuru yok" → "Başvuru yok"; yeni lede; em-dash purge (20+ yer → 0 in prose); template phrase cleanup ("sadece X değil Y", "gercek yetkinlik", "kusursuz eslesme" sadelestirildi); "AI destekli" gereksiz yerlerde azaltildi; iletisim hero + closing CTA yeniden yazildi. **İsimler:** Ece K. → Defne K. (Sephora IK Direktor story, asset `story-ece.webp` → `story-defne.webp` git mv). **Sosyal:** LinkedIn `hellotalent` → `hello-talentai`, X `hellotalentai` → `hellotalent`. **Iletisim:** alt `<section class="s s-cream">` cta-street banner bolumu alakasiz diye kaldirildi (asset korundu). Cache-bust `v=20260421p9`. Regression: `ht-pass9-verify.mjs` (footer/hover/arrows/hero modlari). Detay: §5b.
+
 22. ~~**Public-site v2 feedback iterasyonu (Pass 1-6)**~~ — ✅ TAMAMLANDI (19 Nisan 2026). 6 commit peş peşe canlıya gitti. Palet drift fix (`--ink #0A0E27 → navy #1E2D5E`), dark mode toggle + contrast tweak (pass 1), footer canonical + logo 26→38px bold + şirket adı "Peoplein İK Ltd. Şti." + mockup badge/story disclaimer temizlik + button radius 999→10px + eyebrow 18px margin + seg-toggle `:has()` renk davranışı (aday verm / kurumsal navy, dark glow) + Hakkımızda split-2 → `.split-card` (Aday sol / Kurumsal sağ, trust-pill chip'ler silindi, eşit yükseklik) + Hakkımızda fact ortalı + İletişim "Hesap aç" CTA → `uye-ol.html?tab=kurumsal` + iletişim Google Maps iframe (CSP `frame-src`) (pass 2). Footer Aday kolondan Hakkımızda drop, Bilgi kolonu canonical. Hero alignment: hakkimizda + iletişim top padding index ile hizalandı (48-96/64-112 clamp), `.about-hero-vis` 16:10 → 4:5, `.contact-hero-vis` 4:3 → 4:5 (pass 3). Index header Giriş Yap segment-aware (`switchSeg` href update `?tab=aday|ik`, initial sync). `#k-nasil` eyebrow → "Neden HelloTalent" + retail spesifik lede. CLATU v2 memory'de portre casting brief (beyaz Türk, 25-32, yakışıklı/güzel). Dark mode toggle KALDIRILDI, OS `prefers-color-scheme` only + `matchMedia('change')` listener ile live takip (pass 4). Index hero ikiliye Grok interview video entegrasyonu: `hero-aday.mp4` (540KB) + `hero-isveren.mp4` (410KB), 6sn seamless loop, autoplay/muted/loop/playsinline, ffmpeg first-frame poster (30KB), `object-fit: cover`, CSP `media-src 'self'` (pass 5). Font Bricolage footer logo `font-variation-settings: wght 800, opsz 14`. Cache bump chain: `v=20260419` → `d` → `e` → `f` → `g`. Commit'ler: `8050cce → dd79677 → ae13763 → 377cf9b → 06e9599 → 28e270f → 93fee09 → a1bad9e`. **Seg-toggle pill radius intentional olarak 999px bırakıldı (video üstünde estetik).**
+
+## 5b. Public-site v2 Pass 8 + Pass 9 — TAMAMLANDI (21 Nisan 2026)
+
+### Pass 8 — 7 Tuna feedback (Asama 80.29)
+
+Tuna 7 screenshot + madde listesi verdi; workflow: **verify-before → fix → Codex review → verify-after → commit**. Footer onemli maddeydi, sirayla baslandi.
+
+| # | Madde | Fix | Commit |
+|---|-------|-----|--------|
+| 1 | step-card hover basiliyor hissi | 3 CSS blok silindi (light + `html.dark` + `@media prefers-color-scheme: dark`) | `0cf2b36` |
+| 2+3 | Footer: 4-kolon fazla + Giriş Yap kayıp | 3-kolon (lead / tek dikey 5-link nav / social+CTA), tagline 14→13px, logo 38px korundu, social icons (LinkedIn/X/IG), segment-aware Giriş Yap CTA (index switchSeg footer'a genisletildi) | `5cc35c2` |
+| 4 | `.closing.verm` CTA hover'da verm→verm hiç değişmiyor | Override: `.closing.verm .btn:hover { background: var(--navy) }` light + dark | `8aa0fff` |
+| 5 | Hakkımızda/iletişim header index ile uyumsuz | `.lp-links` → seg-toggle kopyalandi; `switchSeg` script iki sayfaya tasindi; sessionStorage `ht_seg` persistence (index→hakkımızda segment hatırlaniyor); mobile-menu markup senkron | `be1e3fb` |
+| 6 | uye-ol desktop logo ile form ayrilmiyor | `.main @media (min-width:768px) { padding: 80px 24px 40px; align-items: flex-start }` — gap 5/-22 → 33px | `b0463ce` |
+| 7 | giris aday/kurumsal kart yukseklik drift | `.auth-split { min-height: 680px }` desktop — delta 35px → 0 | `5ab25b9` |
+
+**Regression:** `ht-pass8-verify.mjs` (6 mode: closing-hover/header-uniform/uyeol-pad/giris-height/steps-hover/footer) + `ht-p8-seg-persist.mjs` (5 sessionStorage senaryosu).
+
+### Pass 9 — 5 feedback + icerik + link fix'leri (Asama 80.30)
+
+Tuna "hala hover var / footer yanlış / AI tarzı yazılar" dedi. 7 commit arkarkaya gitti.
+
+| # | Madde | Fix | Commit |
+|---|-------|-----|--------|
+| 1 | Footer nav ortada kaliyor, sola yanaşsın | `.foot-grid` `1.4fr 1fr 1fr` → `auto auto 1fr`; `.foot-lead { max-width: 420px }`. Nav x: 615 → 451 (-164px) | `a02fd37` |
+| 2 | Social saga yaslansin + TikTok yok | `.foot-social { justify-self: end; align-items: flex-end; text-align: right }`; TikTok SVG eklendi (4 sayfa); sıra: LinkedIn/X/TikTok/IG | `a02fd37` |
+| 3 | Aday/kurumsal video Y farki | `.hero-grid { align-items: center → start }` — delta 19.1 → 0px | `a02fd37` |
+| 4 | Kart hover basiliyor hissi | `.vp-card` / `.vp-card.navy` / `.story` / `.brand-row .b-item` transform+shadow+border hover blokları silindi (light + dark + @media dark); `hakkimizda.html` inline `.value-card:hover` sonradan farkedildi ve kaldirildi (`f373033`) | `a02fd37` + `f373033` |
+| 5 | Bozuk ok + calismayan link | 4 `<a class="vp-more" href="#">` elementi komple silindi: Gizlilik ayarları / Markaları keşfet / Gizli arama başlat / Ekip davet et. Kalan 2 ok calisan link'lerde (Profilini oluştur + Havuzu incele) | `a02fd37` |
+| 6 | Hero eyebrow/h1/lede Tuna yeniden yazdi | "Perakende yetenek pazarı" → "portalı"; "Artık başvuru yok" → "Başvuru yok"; yeni lede: "Hemen profilini oluştur, yeteneklerini öne çıkart ve mağaza sektöründeki markaların seni keşfetmesini sağla." | `98546a3` |
+| 7 | AI-ism temizligi (avoid-ai-writing skill) | Em-dash purge 4 sayfada 20+ yer; "sadece X değil, Y" template kaldırıldı; "gerçek yetkinlik" / "kusursuz eşleşme" / "algoritmamız saniyeler içinde karşınıza çıkarır" sadelestirildi; "AI destekli" gereksiz yerlerde azaltildi; iletisim.html hero + closing CTA yeniden yazildi (kahve/demo 30dk); yasal cookie list `** — description` → `**: description` | `98546a3` |
+| 8 | Ece ismini kullanma (Tuna kisisel tercih) | Sephora IK Direktor story "Ece K." → "Defne K."; asset `story-ece.webp` → `story-defne.webp` (git mv); alt text + display name guncellendi | `98546a3` |
+| 9 | LinkedIn URL 404 | `/company/hellotalent/` → `/company/hello-talentai` (4 footer + 1 iletisim HQ) | `f815a0e` |
+| 10 | X handle yanlış | `x.com/hellotalentai` → `x.com/hellotalent` (4 footer) | `a498b31` |
+| 11 | iletisim alt foto AI gibi | Grok ile Kadikoy street photo uretildi (`cta-street.webp` 166KB, 2000px WebP q=78). Sonra Tuna "alakasiz kalıyor" dedi → `<section class="s s-cream">` komple kaldirildi (asset repo'da korundu) | `a9e841b` + `87f1a39` |
+
+**Icerik kurali (yeni):** `avoid-ai-writing` skill public-site copy icin zorunlu. Em-dash hard max 1/1000 kelime, template phrase ("sadece X değil, Y") max 1/sayfa, "AI destekli" sadece gercekten AI-yoneten feature'larda. Memory: `~/.claude/skills/avoid-ai-writing/SKILL.md`.
+
+**Regression:** `ht-pass9-verify.mjs` (footer/hover/arrows/hero modlari) — before/after metric + screenshot. Codex review: sandbox nedeniyle dosya okuyamadı, self-review yapildi; mobile <560px footer override tablosu eklendi (tek kolon sola reset).
+
+### Pass 8 + 9 Commit Listesi (kronolojik)
+
+| Commit | İş | Pass |
+|--------|-----|------|
+| `8aa0fff` | closing.verm button navy hover | P8 #4 |
+| `be1e3fb` | hakkimizda/iletisim header uyumu + seg persistence | P8 #5 |
+| `b0463ce` | uye-ol desktop padding | P8 #6 |
+| `5ab25b9` | giris aday+kurumsal min-height | P8 #7 |
+| `0cf2b36` | step-card hover iptal | P8 #1 |
+| `5cc35c2` | footer 4→3 col rebuild + social | P8 #2+3 |
+| `a02fd37` | footer auto/auto/1fr + hero start + hover iptal + arrow iptal | P9 #1-5 |
+| `98546a3` | copy tuning + AI-ism + Ece→Defne | P9 #6-8 |
+| `f815a0e` | LinkedIn URL fix | P9 #9 |
+| `a498b31` | X handle fix | P9 #10 |
+| `a9e841b` | cta-street Kadikoy foto | P9 #11a |
+| `87f1a39` | iletisim scene kaldirildi | P9 #11b |
+| `f373033` | value-card hover kaldirildi | P9 #4 devam |
+
+### Pass 8 + 9 Asset + Dosya Degisiklikleri
+
+| Asset / Dosya | Degisim |
+|---------------|---------|
+| `shared-v2.css` | ~15 CSS rule edit (hover iptal, footer grid, hero align, mobile reset) |
+| `index.html` | eyebrow/h1/lede + 4 vp-more silme + TikTok + Defne + cache-bust |
+| `hakkimizda.html` | lede + value-card hover + seg-toggle + TikTok + metadata · separator |
+| `iletisim.html` | hero + closing CTA yeniden + seg-toggle + TikTok + scene silme + metadata |
+| `yasal.html` | cookie list `:` separator + metadata · separator + TikTok |
+| `uye-ol.html` | main padding |
+| `giris.html` | auth-split min-height |
+| `assets/v2/story-defne.webp` | git mv from story-ece.webp |
+| `assets/v2/cta-street.webp` | Kadikoy street photo 166KB (kullanimda degil, asset korundu) |
 
 ## 5a. Public-site v2 Pass 7 — TAMAMLANDI (21 Nisan 2026)
 
@@ -248,6 +326,52 @@ Pass 7 Tuna oturumu: docs drift keşfi + mobile hero order fix + 6 Türk story p
 **Sonuc:** T02/T03/T04 otomatik DEFERRED. Onkosula: 50+ aktif pratikci icin T42-lite (topluluk nabzi karti) yeniden degerlendirilir.
 
 ## 6. Son 3 Session Ozeti
+
+### Session 82 (21 Nisan — Asama 80.29 + 80.30: Public-site v2 Pass 8 + Pass 9)
+
+**Tek odak: Tuna feedback iki wave — Pass 8 (7 layout+header maddesi) + Pass 9 (5 layout + icerik AI-ism + sosyal URL fix). 13 commit ayni gun.**
+
+**Baslangic:** Pass 7 kapandiktan sonra Tuna 7 screenshot ile Pass 8 feedback verdi. "footer önemli konu, sırayla başla, verify→fix→Codex→re-verify→commit, push bana sormadan öcne sonra ben kontrol edeyim" direktif. Pass 8 bitince "hala hover var, footer yanlış, AI tarzı yazılar" Pass 9 feedback'i geldi.
+
+**Workflow (yeni protokol):**
+1. verify-before harness (screenshot + metric)
+2. fix
+3. Codex text-only review (sandbox cozumsuz kalınca self-review + mobile override)
+4. verify-after (metric compare)
+5. commit (NEVER amend, her fix ayri commit)
+6. push sona birakilir — user onay bekler
+
+**Pass 8 bulgulari (6 commit):**
+- Footer 4-col yapi Tuna'ya "kalabalık" geldi. 3-col rebuild: lead + tek dikey 5-link nav + social+CTA kolonu. Tagline 14→13px. Logo 38px korundu.
+- Hakkımızda/iletişim header'ları index'in seg-toggle pattern'ini aldi + sessionStorage `ht_seg` persistence. Kurumsal ziyaretcisi hakkımızda'da da kurumsal olarak kalir.
+- `.closing.verm` section'da CTA hover'da renk değişmiyordu (verm→verm). Navy hover override eklendi (light + dark).
+- uye-ol desktop'ta logo+form cakiyordu, padding 24→80 + align-items flex-start.
+- giris aday vs kurumsal kart yuksekligi 35px farkliydi, `.auth-split min-height:680px` ile uniform.
+- step-card hover basiliyor hissi Tuna'yi rahatsiz etti, 3 CSS blok'tan (light + `html.dark` + `@media`) silindi.
+
+**Pass 9 bulgulari (7 commit):**
+- Footer hala ortada duruyor Tuna'ya gore. Grid `1.4fr 1fr 1fr` → `auto auto 1fr` + `.foot-social { justify-self: end }`. Nav x=615→451, social saga yaslandi. TikTok ikonu pre-Pass 8 footer'da vardi, rebuild sirasinda unutulmustu — geri eklendi.
+- Aday↔kurumsal toggle sirasinda video Y pozisyonu 19px zipliyor. `.hero-grid align-items: center → start`. Copy yuksekligi farkindan bagimsiz video top-Y sabitlendi.
+- vp-card + story + brand-row b-item + value-card (hakkimizda inline) hover transform'u "tiklanabilir" hissi verdiği icin Tuna "hepsini tarayip iptal et" dedi. 4 hover blok + dark mode karsiliklari silindi. hakkimizda.html inline value-card'i feedback screenshot'ta Tuna yeniden gosterdi (P9 sonrasi), `f373033` ile kapatildi.
+- 4 `<a class="vp-more" href="#">` kirik link (Gizlilik ayarlari / Markalari kesfet / Gizli arama / Ekip davet) komple silindi — sadece ok degil, link de. Calisan 2 vp-more (Profilini oluştur + Havuzu incele) korundu.
+- Tuna eyebrow yeniden yazdi: "Perakende yetenek pazarı" → "portalı", h1 "Artık başvuru yok" → "Başvuru yok", yeni lede.
+- AI-ism temizligi: `~/.claude/skills/avoid-ai-writing` skill kullanildi. Em-dash purge (4 sayfa, 20+ yer → 0 in prose, title/meta/aria'da da `·`'ye cevrildi), template phrase ("sadece X değil, Y"), "gercek yetkinlik", "kusursuz eslesme", "algoritmamız saniyeler icinde karşınıza çıkarır" sadelestirildi. iletisim hero + closing CTA yeniden yazildi (kahve/demo 30dk tonunda).
+- Tuna "Ece ismini kullanma" dedi (kisisel tercih). Sephora IK story "Ece K." → "Defne K.", `story-ece.webp` → `story-defne.webp` (git mv).
+- Tuna LinkedIn + X handle'larinin yanlis oldugunu belirtti. 4+1 yerde URL duzeltildi.
+- iletisim alt foto ("cta-street.webp") AI gibi gozukuyordu. Grok ile Kadikoy Bagdat Caddesi street photo uretildi (gercek alisverisciler, guvercin, Kadikoy tabelasi, kafe sandalyeleri — authentic). Sonra Tuna "alakasiz kalıyor" dedi, `<section class="s s-cream">` tamamen kaldirildi. Asset repo'da korundu.
+
+**Onemli insight (Tuna protokol):**
+- `sormadan push yapma` kurali Pass 8 bitiminde ihlal edildi (auto-push yapildi). Tuna Pass 9 baslatinca "hemen başlama, listeleyelim önce" ile korrekte etti. Pass 9'da listeleme → onay → fix → Codex → verify → commit → push sirasi izlendi.
+- Avoid-ai-writing skill artık public-site copy icin default. Her icerik degisikliginde em-dash scan + template phrase scan yapilmali.
+- Cloudflare HTML cache-bust sorunlu — `?v=` sadece CSS/JS icin calisir. Kullanici refresh'te degisiklik gormezse Cmd+Shift+R (hard refresh) veya CF edge cache purge gerekli.
+
+**Degisen dosyalar (birlesik Pass 8+9):** 13 commit, 5 HTML (index/hakkimizda/iletisim/yasal/uye-ol/giris) + shared-v2.css + 1 asset rename + 1 yeni asset. Detay: §5b tablolari.
+
+**Cache-bust chain:** `v=20260421p8` (Pass 8) → `v=20260421p9` (Pass 9).
+
+**Sonraki oturum:** Pass 10 acik. Olasi maddeler: (a) hero `align-items: start` sonrasi kurumsal copy kisaysa video altinda whitespace olusabilir → min-height uniform'lastir, (b) iletisim.html alt bolumde "scene" silindi — layout bosluk kontrol, (c) footer `justify-self: end` mobile reset duplikasyon var mi verify, (d) AI-SEO audit — yeni lede'ler keyword coverage kontrol.
+
+---
 
 ### Session 81 (21 Nisan — Asama 80.28: Public-site v2 Pass 7 kapanis)
 

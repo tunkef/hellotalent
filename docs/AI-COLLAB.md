@@ -1,5 +1,62 @@
 # HelloTalent AI-COLLAB — Aktif Calisma Defteri
 
+## 2026-04-21 — Pass 8 + Pass 9 kapanis (Asama 80.29 + 80.30)
+
+**Durum:** Tuna iki ardisik feedback wave verdi. Pass 8 (7 madde, 6 commit) + Pass 9 (5 layout + 5 icerik/link madde, 7 commit). Hepsi ayni gun canliya cikti. Workflow disiplini yerlesti: **verify-before → fix → Codex review → verify-after → commit → push (user onayi sonrasi)**.
+
+### Pass 8 — 6 commit (80.29)
+
+| # | Madde | Commit | Ozet |
+|---|-------|--------|------|
+| 4 | `.closing.verm` btn hover verm→verm donuyor | `8aa0fff` | Navy override light+dark |
+| 5 | Hakkımızda/iletişim header index ile uyumsuz | `be1e3fb` | seg-toggle markup + `sessionStorage.ht_seg` persistence |
+| 6 | uye-ol desktop logo+form cakisma | `b0463ce` | padding 24→80 + align-items flex-start |
+| 7 | giris aday/kurumsal kart 35px yukseklik farki | `5ab25b9` | `.auth-split min-height: 680px` |
+| 1 | step-card hover basiliyor hissi | `0cf2b36` | 3 CSS blok (light + `html.dark` + `@media`) silindi |
+| 2+3 | Footer 4-col kalabalık, Giriş Yap eksik | `5cc35c2` | 3-col rebuild: lead / tek dikey 5-link nav / social+CTA |
+
+**Verify:** `ht-pass8-verify.mjs` (6 mode) + `ht-p8-seg-persist.mjs` (5 senaryo).
+
+**Insight:** Pass 8 bitiminde auto-push yapildi. Tuna Pass 9 baslatirken "hemen başlama, listeleyelim önce" dedi. Pass 9'da protokol duzeltildi: listeleme → onay → fix → verify → commit → push. Bu "sormadan push yapma" kurali kalici rule.
+
+### Pass 9 — 7 commit (80.30)
+
+**Layout (`a02fd37`):**
+- `.foot-grid`: `1.4fr 1fr 1fr` → `auto auto 1fr`; `.foot-lead { max-width: 420px }`; `.foot-social { justify-self: end; align-items: flex-end; text-align: right }`; `.foot-social-icons { justify-content: flex-end }`; `.foot-social .btn { align-self: flex-end }`. Nav x=615→451 (-164px sola), social x=1011→1170-1360 saga. Mobile (<560px) override reset (justify-self: stretch + align-items: flex-start).
+- TikTok ikonu eklendi (4 sayfa); sıra: LinkedIn/X/TikTok/Instagram.
+- `.hero-grid { align-items: center → start }`: aday vs kurumsal video top-Y delta 19.1 → 0px.
+- Hover iptal (press hissi): `.vp-card:hover`, `.vp-card.navy:hover`, `.story:hover`, `.brand-row .b-item:hover` komple silindi + dark mode karsiliklari (`html.dark` + `@media prefers-color-scheme: dark`).
+- 4 bozuk `<a class="vp-more" href="#">` elementi silindi: Gizlilik ayarları / Markaları keşfet / Gizli arama başlat / Ekip davet et. Kalan 2 ok calisan link'te (Profilini oluştur, Havuzu incele).
+- Cache-bust `v=20260421p8` → `v=20260421p9`.
+
+**Icerik + AI-ism temizligi (`98546a3`):**
+- Tuna yeni copy: eyebrow "Perakende yetenek pazarı" → "portalı"; h1 "Artık başvuru yok" → "Başvuru yok"; yeni lede: "Hemen profilini oluştur, yeteneklerini öne çıkart ve mağaza sektöründeki markaların seni keşfetmesini sağla."
+- `avoid-ai-writing` skill uygulandi (`~/.claude/skills/avoid-ai-writing`): em-dash purge 4 sayfada 20+ yer (title/meta/aria dahil) → 0 in prose, `·` veya `:` ile degistirildi. Template phrase ("sadece X değil, Y", "kusursuz eşleşme", "gercek yetkinlik", "algoritmamız saniyeler içinde karşınıza çıkarır") sadelestirildi. "AI destekli" 3 yerden gereksiz kullanim kaldirildi. iletisim.html hero + closing CTA yeniden yazildi (kahve/demo 30dk tonunda).
+- Ece K. → Defne K. (Tuna kisisel tercih). `git mv assets/v2/story-ece.webp assets/v2/story-defne.webp`. Alt + display + file URL guncellendi.
+
+**Link fix'leri:**
+- `f815a0e`: LinkedIn URL `company/hellotalent/` → `company/hello-talentai` (4 footer + 1 iletisim HQ).
+- `a498b31`: X handle `x.com/hellotalentai` → `x.com/hellotalent` (4 footer).
+
+**Foto:**
+- `a9e841b`: `cta-street.webp` Grok Imagine ile yeniden uretildi. Eski: solo camel coat kadin, AI-generated hissi. Yeni: Kadikoy Bagdat Caddesi street photo (gercek alisverisciler, guvercin, Kadikoy tabelasi, kafe sandalyeleri). Prompt template CLATU v3 §4 + Canon EOS R5 35mm + negative prompt. cwebp q=78 2000px → 166KB.
+- `87f1a39`: Sonra Tuna "alakasız kalıyor" dedi, `<section class="s s-cream">` cta-street scene bolumu iletisim.html'den tamamen silindi. Asset repo'da korundu (baska kullanim olursa).
+
+**Value-card hover (late fix — `f373033`):**
+- Hakkimizda.html inline `<style>` blogunda `.value-card:hover` Pass 9'da gozden kacmisti. Tuna screenshot ile geri gonderdi. Silindi.
+
+**Regression:** `ht-pass9-verify.mjs` (footer/hover/arrows/hero modlari) — before/after metric + screenshot. Codex agent sandbox dosya okuyamadi → self-review yapildi, mobile <560px footer reset eklendi.
+
+### Workflow Lessons Learned
+
+1. **Auto-push yasak.** Her Tuna feedback'i sonrasi commit sirasi: fix → verify → wait for user confirmation → push. Pass 8'de "sırayla başla...push da yap" direktifi "tum madde bitince push" anlaminda okunmali, her commit sonrasi degil.
+2. **Avoid-ai-writing skill public-site copy icin zorunlu.** Em-dash prose'da 0 tolerans (title/copyright gibi spesifik yerler `·` kullanir). Template phrase, hollow intensifier, synonym cycling scan her icerik degisikliginde.
+3. **Cloudflare cache.** HTML degisikligi CF edge cache'de takilabilir. `?v=...` sadece CSS/JS. Kullanici refresh'te degisiklik gormezse: Cmd+Shift+R (hard refresh) → hala yoksa CF dashboard Purge.
+4. **Inline `<style>` blocks drift.** hakkimizda.html `.value-card:hover` shared-v2.css taramasinda atlandi. Her hover iptal passenin sonunda `grep -rn ':hover' *.html` scan zorunlu.
+5. **Codex sandbox limit.** codex-rescue agent bu repo'da dosya okuyamiyor. Alternatif: SendMessage ile diff paste + text-only review iste. Workaround henuz sistemik degil.
+
+---
+
 ## 2026-04-21 — Pass 7 kapanis: mobile hero order + 6 story portresi + CLATU v3 (Asama 80.28)
 
 **Durum:** K-068 kapandiktan sonra Pass 7+ acik maddeler: hakkimizda/iletisim hero video, aday + kurumsal story portreleri, CLATU memory video spec, Grok prompt hygiene. Tuna sorusu "CLATU memory bugun kullanilsa canlidakine benzer mi?" → docs drift tetikledi.
