@@ -1,5 +1,61 @@
 # HelloTalent AI-COLLAB — Aktif Calisma Defteri
 
+## 2026-04-21 — Pass 10 #10: story foto top-aligned crop (kafalar korundu)
+
+**Durum:** Tuna feedback — Pass 10 #8'de 3 story fotosu center-crop ile kafalari ustten kirpmis. "Ustu koruyalim, asagidan kirpabilirsin." Commit `fc761b3` push.
+
+### Root cause
+Pass 10 #8 transform sips `-c` ile center-crop yapti. Portrait source → landscape target: center crop hem ustten hem alttan esit kirpiyor. Kaynak portrait'in face'i ust-orta bolgede → center crop face'in ust kismini kaybediyor.
+
+### Fix
+Transform pipeline ffmpeg'e tasindi (sips `-c` top-aligned crop desteklemiyor):
+
+```
+ffmpeg -i SRC -vf "crop=W:H:0:0,scale=1000:800" -q:v 3 tmp.jpg
+cwebp -q 82 tmp.jpg -o OUT.webp
+```
+
+- `crop=W:H:0:0` — x=0, y=0 top-left anchor, tum genislik + ilk H satir
+- 5:4 target aspect, source'un alt kismi atilir
+- Sonuc: Selin/Kerem/Zeynep sac top + yuz full gorunur
+
+### Output
+| Story | Pass 10 #8 (center) | Pass 10 #10 (top) |
+|-------|---------------------|-------------------|
+| story-selin.webp | 56KB | 45KB |
+| story-kerem.webp | 127KB | 92KB |
+| story-zeynep.webp | 103KB | 83KB |
+
+(Dosya boyutlari top-crop'ta dusuk cunku aksiyon daha yogun, compressor daha iyi optimize ediyor.)
+
+### Cache-bust
+`?v=20260421p10e` → `?v=20260421p10f`. Asset URL ayni + yeni icerik = CF edge cache shallow invalidate etmeyebilir, bump zorunlu.
+
+### TDD
+`tests/aday-stories-swap.mjs` CACHE_BUST const `p10e` → `p10f` update. 27/27 PASS.
+
+### Review gate
+DeepSeek atlandi — 3 asset overwrite + 1-satir cache-bust bump + test const update. Yuksek guven, dusuk risk.
+
+### Cache-bust sub-iter state (guncel)
+| Commit | Tag | Kapsam |
+|--------|-----|--------|
+| 79083ac | `p10` | index hero video + poster |
+| e15c85b | `p10b` | auth giris/uye-ol webp |
+| 5d5a179 | `p10c` | hakkimizda hero webp |
+| 1916d05 | `p10d` | iletisim hero video + poster |
+| 5ba75b2 | — | scroll fix (#7) |
+| 0f386e0 | `p10e` | aday story webp (#8, center-crop — replaced) |
+| 955907e | — | Pass 10 #8 docs |
+| 26f475b | — | hash switch fix (#9) |
+| 35522e1 | — | Pass 10 #9 docs |
+| fc761b3 | `p10f` | aday story webp (#10, top-crop — active) |
+
+### Sonraki net adim
+Tuna canli dogrulama: `/index.html` aday story grid → 3 foto top-aligned, kafalar gorunur.
+
+---
+
 ## 2026-04-21 — Pass 10 #9: in-page hash switch fix (hashchange + same-hash)
 
 **Durum:** Tuna regresyon raporu — index.html'deyken footer Aday/Kurumsal tik'i segment degistirmiyor, scroll yapmiyor. Commit `26f475b` push.
