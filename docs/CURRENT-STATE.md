@@ -1,6 +1,7 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 21 Nisan 2026 | Asama 80.39 — Pass 10 #1-11 push edildi
-> Aktif Odak: Pass 10 #11 — kurumsal story 3 kart swap. 3 yeni Pexels portresi (Defne/Burak/Orkun). `story-merve.webp` delete → `story-orkun.webp`. Where meta marka-siz (İşe Alım Uzmanı / Talent Lead / CHRO). Cache-bust `?v=20260421p10f` → `?v=20260421p10g`. TDD 40/40 PASS.
+> Son guncelleme: 21 Nisan 2026 | Asama 80.39 — Pass 10 #1-11b push edildi
+> Aktif Odak: Pass 10 #11b (`fcdf5cc`) — Tuna feedback: Burak/Orkun crop y=0 → y=800/1200. Ustten kirp, alttan govde/kontekst goster. Cache-bust `p10g` → `p10h` (grup bump). TDD 40/40 PASS.
+> Pass 10 #11 (`d354d8a`): kurumsal story 3 kart swap. 3 yeni Pexels portresi (Defne/Burak/Orkun). `story-merve.webp` delete → `story-orkun.webp`. Where meta marka-siz (İşe Alım Uzmanı / Talent Lead / CHRO). Cache-bust `?v=20260421p10g`.
 > Pass 10 #10: aday story foto top-aligned crop (commit `fc761b3`). ffmpeg `crop=W:H:0:0,scale=1000:800` → top anchor, kafalar korundu. Cache-bust `?v=20260421p10f`. TDD 27/27 PASS.
 > Pass 10 #9 (`26f475b`): in-page hash switch — `applyHashState()` extract + hashchange listener + same-hash click interceptor. Footer Aday/Kurumsal 4 senaryoda hero'ya.
 > Pass 10 #8 (`0f386e0`): 3 aday story yenilendi (`story-selin.webp`+`kerem`+`zeynep`). 1168×784 → 1000×800 (5:4, .story-portrait aspect parite). Tuna verdigi hikaye metinleri TDK typo-fix ile. Where marka-agnostic (generic rol). Cache-bust `?v=20260421p10e`. TDD 27 PASS.

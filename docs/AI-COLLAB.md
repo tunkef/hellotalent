@@ -1,5 +1,53 @@
 # HelloTalent AI-COLLAB — Aktif Calisma Defteri
 
+## 2026-04-21 — Pass 10 #11b: Burak/Orkun y-offset recrop
+
+**Durum:** Tuna canli dogrulama — Burak + Orkun fotolarinda kirpma "hatali", ustten biraz kesilsin, alttan daha fazla govde/kontekst gorunsun. Defne OK. Commit `fcdf5cc` push.
+
+### Root cause
+Pass 10 #11 transform `crop=4000:3200:0:0` top-aligned anchor. Portrait 4000x6000 source → landscape 1000x800 target. Face+sac ust-orta bolgede → top-crop fazla headroom tutuyor, govde/kontekst aliniyor. Pass 10 #10'daki aday story'lerinde face daha yukari oldugu icin top-anchor dogruydu; kurumsal'da face biraz daha asagida.
+
+### Fix
+y offset pozitif — crop window asagi kaydir:
+
+```
+# Burak (y=0 → y=800)
+ffmpeg -i SRC -vf "crop=4000:3200:0:800,scale=1000:800" -q:v 3 tmp.jpg
+# Orkun (y=0 → y=1200)
+ffmpeg -i SRC -vf "crop=4000:3200:0:1200,scale=1000:800" -q:v 3 tmp.jpg
+cwebp -q 82 tmp.jpg -o OUT.webp
+```
+
+### Output
+| Story | Pass 10 #11 (y=0) | Pass 10 #11b (y-offset) |
+|-------|-------------------|--------------------------|
+| story-burak.webp | 21KB | 24KB (y=800) |
+| story-orkun.webp | 28KB | 52KB (y=1200, chair+bg kontrast) |
+
+Defne `y=0` kaldi (landscape source, top-anchor dogru).
+
+### Cache-bust
+`?v=20260421p10g` → `?v=20260421p10h`. Grup bump (3 kurumsal story uniform, Defne icerigi ayni). Pattern: Pass 10 #10'da aday trio p10e→p10f uniform bump, burada kurumsal trio p10g→p10h.
+
+### TDD
+`tests/kurumsal-stories-swap.mjs` CACHE_BUST `p10g` → `p10h`. 40/40 PASS.
+
+### Review gate
+DeepSeek atlandi — 2 asset overwrite + 4 satir cache-bust bump + 1 const update. Dusuk risk, yuksek guven.
+
+### Cache-bust sub-iter state (guncel)
+| Commit | Tag | Kapsam |
+|--------|-----|--------|
+| ... | ... | ... |
+| fc761b3 | `p10f` | aday story webp (#10, top-crop — active) |
+| d354d8a | `p10g` | kurumsal story webp (#11, 3 swap — replaced) |
+| fcdf5cc | `p10h` | kurumsal story webp (#11b, Burak/Orkun y-offset — active) |
+
+### Sonraki net adim
+Tuna canli dogrulama: `/index.html#kurumsal` → Burak ustten kirpilmis, Orkun chair+colleague visible.
+
+---
+
 ## 2026-04-21 — Pass 10 #11: kurumsal story 3 kart swap (Defne/Burak/Orkun)
 
 **Durum:** Tuna 3 yeni Pexels portresi verdi, kurumsal hikayeleri yenile + Merve→Orkun rename + markalari kaldir. "islem bitince pushla direkt" pre-authorized.
