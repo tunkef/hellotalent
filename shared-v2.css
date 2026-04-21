@@ -9,7 +9,7 @@
 :root {
   /* Brand palette — same tokens as production shared.css */
   --verm: #C94E28;
-  --verm-dark: #A83D1E;
+  --verm-dark: #A83F1E;
   --verm-tint: rgba(201, 78, 40, .08);
   --verm-deep: rgba(201, 78, 40, .18);
   --navy: #1E2D5E;
@@ -767,11 +767,15 @@ html.dark .step-card .step-p { color: rgba(247, 246, 244, .82); }
    A11y token overrides: verm zeminde default cream alpha'lar AA altina
    dusuyordu (eyebrow 2.63:1, .where 2.18:1, quote mark 1.09:1).
    Verm uzerine solid cream + higher alpha + accent invert. */
-.stories.verm { background: var(--verm); }
-.stories.verm .stories-head .eyebrow { color: rgba(247, 246, 244, .92); }
+/* Pass 10 #12 — bg tonal shift (#C94E28→#A83F1E via --verm-dark), AA compliant */
+.stories.verm { background: var(--verm-dark); }
+/* D1 text: #F7F6F4 on #A83F1E = 5.73:1 AA ✓ */
+.stories.verm .stories-head .eyebrow { color: #F7F6F4; }
 .stories.verm .stories-head .eyebrow::before { background: var(--cream); }
 .stories.verm .story-body blockquote::before { color: var(--cream); }
-.stories.verm .story-meta .where { color: rgba(247, 246, 244, .92); }
+.stories.verm .story-meta .where { color: #F7F6F4; }
+/* D2 border: #E8D5C9 on #A83F1E = 4.36:1 UI component AA ✓ */
+.stories.verm .story { border-color: #E8D5C9; }
 .closing .s-inner { position: relative; max-width: 820px; margin: 0 auto; }
 .closing h2 {
   color: var(--white); margin: 18px 0;
