@@ -1,6 +1,6 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 19 Nisan 2026 | Asama 80 — Public-site v2 feedback iterasyonu + index hero video loop canli
-> Aktif Odak: Tuna handoff molasi. Index hero (aday + kurumsal) Grok interview video'larina cevrildi, seamless 6sn loop autoplay/muted/playsinline. Acik isler: hakkimizda + iletisim hero video entegrasyonu, story card AI portrelerinin yenilenmesi, CLATU memory video spec. Dark mode toggle kaldirildi, OS prefers-color-scheme only.
+> Son guncelleme: 21 Nisan 2026 | Asama 80 — K-068 kapanis (rollback + runtime bugfix'ler + onboarding UX + header dark mode fix)
+> Aktif Odak: K-068 iki gun boyunca isleyen runtime fix sweep'i tamamlandi. 7 commit (80.21 rollback → 80.27 header opak). AI CV edge function + secret + kod olduğu gibi saklandı (Task #10 karar: status quo, geri dönüş kapısı acik). Sonraki oturum: public-site v2 Pass 7+ (hakkimizda/iletisim hero video, story portrelerinin yenilenmesi).
 
 ## 1. Proje Ozeti
 
@@ -172,6 +172,16 @@ hellotalent.ai, Turkiye perakende sektorune ozel bir yetenek pazaryeri. Adaylar 
 
 21. ~~**Public-site v2 redesign (index + hakkimizda + iletisim + yasal)**~~ — ✅ TAMAMLANDI (18-19 Nisan 2026). Commit `f8acd5c`. Rocket Mortgage bold imperative direction + Clatu-first HelloTalent brand merge. Bricolage Grotesque 800 display + Plus Jakarta Sans + DM Mono. 4 public sayfa yeniden tasarlandi; giris.html/aday.html/isveren.html/uye-ol.html korundu (prod flow intact). 8 Recraft Türk tipi portre (fair Mediterranean skin, kumral saç, young/adult mixed) cwebp q=70 → 17MB → 434KB (40× compress). Yeni `shared-v2.css` (~42KB) — mevcut `shared.css` diğer sayfalar için korundu, regression yok. Yeni `assets/v2/` namespace. Mobile hamburger menü (segment toggle + linkler + Giriş CTA), hero portrait order -1 (image first on mobile), hero badge safe positioning, stories mobile collapse (2 + "Tüm hikayeleri gör"), brand strip 1-col stacked + separators @520. Dark mode `html.dark` class + `@media prefers-color-scheme` dual support, 80+ targeted overrides (muted token `#5D6283` WCAG AA, coral-soft dark variant, `.step-p` inline style class extraction, `.about-hero`/`.contact-hero` dark bg, value-card p/h4, split-2, contact-card, hq-info, kvkk table, yasal panel headings). A11y: skip-to-content, focus-visible brand outline, prefers-reduced-motion respect, `<main>` landmark, aria-expanded/aria-hidden hamburger. SEO: CSP + OG + Twitter card + Schema.org JSON-LD + canonical tüm 4 sayfa. Index auth redirect (`app_metadata.role` → profil/ik) korundu. İletişim map area styled placeholder (grid + pulsing verm pin) Google Maps iframe yerine. SAAS dil temizligi: "Demo talep et" tüm instances → "Kurumsal hesap aç" (direct sign-up → demo panel auto). Copy: "96 marka arasından seni seçsin" grammar fix, `retail` → `perakende` consistency, story disclaimer (temsili). Playwright 4 sayfa × light/dark × desktop/mobile = 16+ view verify. Source: `mockups/v2/` kept for iterations.
 
+23. ~~**K-068 Runtime fix sweep (rollback → onboarding UX → header opak)**~~ — ✅ TAMAMLANDI (20-21 Nisan 2026, Asama 80.21-80.27, 7 commit). Detay:
+    - **80.21 Rollback** — K-066 + K-067 revert (wizard split + CV preview), AI CV button `display:none` gizlendi (kod + edge function saklandı).
+    - **80.22 Runtime bugfix** — cb-check "Halen burada çalışıyorum" görünmezlik + Genel Bakış dark mode boş dikdörtgen + merkez hero card ring outside. CSS display fallback + lazy→eager loading + transparent figure bg.
+    - **80.23 Checkbox rewrite** — Custom `span` yapısı tamamen silindi, native `<input type="checkbox">` + `<label for>` + `accent-color` ile sıfırdan yazıldı. `profil-ui.js:506-534` + `closest('.ht-check')` handler güncellendi.
+    - **80.24 Hero compact** — Merkez panel profile card `max-width: max-content` + kimlik wrap flex `gap:40px`, orta hizalı + padding 20px 28px. Ring + boş dikdörtgen kaldı.
+    - **80.25 Welcome modal** — Yeni kullanıcı (<25% completion) her girişte onboarding modal. `.wlc-modal` blur overlay + progress + CTA. ≥25% reached: modal kapatılır, bir daha gösterilmez.
+    - **80.26 UX triple** — (a) "Sonra hatırlat" sessionStorage snooze, (b) 50/75/100% milestone toast (localStorage dedupe), (c) wizard step advance pulse animation.
+    - **80.27 Header opak** — Dark mode `.header` `rgba(17,24,39,0.78)` → `rgba(11,15,28,0.96)` + `backdrop-filter:blur(16px) saturate(1.4)`. İçerik header arkasında artık görünmez.
+    - Commit: `65221ce → 5a991a0` (7 commit). Cache-bust chain `v=20260420k068` → `k068wlc` → `k068d`. Task #10 (AI edge function + secret temizliği) karar: **status quo** — kod + function + secret saklandı, K-068 rollback sadece UI gizledi.
+
 22. ~~**Public-site v2 feedback iterasyonu (Pass 1-6)**~~ — ✅ TAMAMLANDI (19 Nisan 2026). 6 commit peş peşe canlıya gitti. Palet drift fix (`--ink #0A0E27 → navy #1E2D5E`), dark mode toggle + contrast tweak (pass 1), footer canonical + logo 26→38px bold + şirket adı "Peoplein İK Ltd. Şti." + mockup badge/story disclaimer temizlik + button radius 999→10px + eyebrow 18px margin + seg-toggle `:has()` renk davranışı (aday verm / kurumsal navy, dark glow) + Hakkımızda split-2 → `.split-card` (Aday sol / Kurumsal sağ, trust-pill chip'ler silindi, eşit yükseklik) + Hakkımızda fact ortalı + İletişim "Hesap aç" CTA → `uye-ol.html?tab=kurumsal` + iletişim Google Maps iframe (CSP `frame-src`) (pass 2). Footer Aday kolondan Hakkımızda drop, Bilgi kolonu canonical. Hero alignment: hakkimizda + iletişim top padding index ile hizalandı (48-96/64-112 clamp), `.about-hero-vis` 16:10 → 4:5, `.contact-hero-vis` 4:3 → 4:5 (pass 3). Index header Giriş Yap segment-aware (`switchSeg` href update `?tab=aday|ik`, initial sync). `#k-nasil` eyebrow → "Neden HelloTalent" + retail spesifik lede. CLATU v2 memory'de portre casting brief (beyaz Türk, 25-32, yakışıklı/güzel). Dark mode toggle KALDIRILDI, OS `prefers-color-scheme` only + `matchMedia('change')` listener ile live takip (pass 4). Index hero ikiliye Grok interview video entegrasyonu: `hero-aday.mp4` (540KB) + `hero-isveren.mp4` (410KB), 6sn seamless loop, autoplay/muted/loop/playsinline, ffmpeg first-frame poster (30KB), `object-fit: cover`, CSP `media-src 'self'` (pass 5). Font Bricolage footer logo `font-variation-settings: wght 800, opsz 14`. Cache bump chain: `v=20260419` → `d` → `e` → `f` → `g`. Commit'ler: `8050cce → dd79677 → ae13763 → 377cf9b → 06e9599 → 28e270f → 93fee09 → a1bad9e`. **Seg-toggle pill radius intentional olarak 999px bırakıldı (video üstünde estetik).**
 
 ## 5a. Açık İşler — Public-site v2 Pass 7+ (Sonraki Oturum)
@@ -205,6 +215,46 @@ Commit listesi son oturum:
 **Sonuc:** T02/T03/T04 otomatik DEFERRED. Onkosula: 50+ aktif pratikci icin T42-lite (topluluk nabzi karti) yeniden degerlendirilir.
 
 ## 6. Son 3 Session Ozeti
+
+### Session 80 (20-21 Nisan — Asama 80.21-80.27: K-068 Runtime Fix Sweep)
+
+**Tek odak: K-068 runtime bugfix serisi + onboarding UX eklemeleri. 7 commit, iki gune yayilan live-debug sweep.**
+
+**Baslangic:** K-066 (wizard split) + K-067 (CV preview) canlida runtime hatalari verdi. 80.21 ile revert + AI CV button gizlendi. Kalan sorunlar iki gun boyunca Playwright CDP live-debug (`k068-live-session.mjs`) ile Tuna'nin tarayicisina bagli kalarak tespit edildi.
+
+**Yedi Asama:**
+- **80.21 Rollback** (commit revert chain) — K-066 wizard split + K-067 CV preview geri alindi. AI CV button `display:none`. Edge function + kod hala duruyor.
+- **80.22 Runtime bugfix** — cb-check invisibility root cause: CSS `.cb-control-label { display:block }` + `.cb-check` display tanimsiz = 0x0 rect. Dark mode "bos dikdortgen": img `loading='lazy'` first-paint race. Hero card "ring outside": flex `space-between` + `flex:1` birlesimi.
+- **80.23 Checkbox rewrite** — Tuna "silip bastan mi yaratsan artik" dedi. Custom span yapisi tamamen silindi. Native HTML `<input type="checkbox">` + `<label for>` + `accent-color: var(--green)`. `profil-ui.js:506-534` + `.cb-wrap` → `.ht-check` handler.
+- **80.24 Hero compact** — `.mk-card--hero { max-width: max-content; margin: 0 auto 24px; padding: 20px 28px }`. `.mk-identity-wrap` `justify-content: space-between` kaldirildi, `gap: 40px` + `flex: 0 1 auto`.
+- **80.25 Welcome modal** — Tuna istek: "yeni kayıt olanlar için pop up... yüzde 25 ten itibaren artık her giriş yaptığında çıkmasına gerek yok". `.wlc-modal` blur overlay + progress + CTA + completion-gated. profil-bootstrap.js: `calculateCompletion()` <25 → show.
+- **80.26 UX triple** — Tuna "EK uc önerilerini de ekle": (a) "Sonra hatırlat" link (sessionStorage snooze), (b) 50/75/100% milestone toast (localStorage dedupe `ht_mstone_seen`), (c) wizard step advance pulse animation (`.wz-progress-bar.is-pulse` keyframe, `remove + void reflow + add` pattern).
+- **80.27 Header opak** — Tuna screenshot: "header çok saydam". `rgba(17,24,39,0.78)` → `rgba(11,15,28,0.96)` + `backdrop-filter:blur(16px) saturate(1.4)` + webkit fallback. `k068-header-verify.mjs` before/after screenshot.
+
+**Test hesabi akisi:** Tuna "tunakefeli6@gmail.com sistemden sil" dedi, Supabase Admin DB CLI + Storage API cascade delete ile tamamen silindi. Yeniden kayit -> welcome modal dogrulandi.
+
+**Task #10 (AI edge function + secret temizliği) kararı:** Status quo. Edge function (`supabase/functions/cv-optimize/index.ts` 12KB), `profil-cv.js:305-326 requestCVOptimize`, `#btn-ai-cv-optimize` markup, `ANTHROPIC_API_KEY` secret — hepsi saklandı. K-068 rollback sadece UI gizledi, kod aktif. Geri dönüş kapısı açık.
+
+**Degisen dosyalar (birlesik):**
+- `css/layout.css` (header opak)
+- `css/profil-extras.css` (ht-check, wlc-modal, ht-mstone-toast, wz-progress pulse)
+- `css/panels/genel-bakis.css` (figure transparent bg)
+- `css/panels/merkezi.css` (hero card compact)
+- `profil.html` (native checkbox markup, welcome modal markup, milestone toast markup, cache-bust chain)
+- `profil-ui.js` (checkbox rewrite, closest('.ht-check'))
+- `profil-bootstrap.js` (welcome modal + milestone + wizard pulse, calculateCompletion global)
+- `profil-genel.js` (img loading eager + decoding async)
+- `profil-events.js` (welcome snooze + modal close handlers)
+- `docs/AI-COLLAB.md` (80.22-80.27 entries)
+
+**Kanit scriptleri (kept as reference):** k068-live-session.mjs, k068-live-probe.mjs, k068-checkbox-debug.mjs, k068-hero-compact.mjs, k068-wlc-verify.mjs, k068-ux-verify.mjs, k068-header-verify.mjs. Tamami CDP attach pattern'i kullaniyor.
+
+**Insight Session 80:** (a) Native HTML > custom span — `accent-color` ile native checkbox 5+ iterasyon custom yapıdan daha hızlı ve sağlam sonuca varttı. Lesson: kullanıcı "sil baştan yarat" dediğinde dinle. (b) Live CDP debug pattern `launchPersistentContext + --remote-debugging-port=9222` — kullanıcının login'li session'inda runtime hata reproduce ederken altın standard. Kill chrome → playwright start → kullanıcı login → external probe. (c) Function wrap pattern — `_origFn = window.updateCompletionUI; window.updateCompletionUI = function() { _origFn.apply(this, args); /* milestone check */ }` — eski fonksiyonu bozmadan hook eklemek için temiz.
+
+**Acik riskler / yarin:**
+- Session 79'dan devam: public-site v2 Pass 7+ (hakkimizda/iletisim hero video, story portrelerinin yenilenmesi, CLATU memory video spec, Grok prompt hygiene).
+- AI CV özelliği geri açılacak mı karar? Şu an limbo (kod var, UI gizli). İleride ya komple sil (edge function + secret + kod) ya da yeniden aç (button display-block).
+- Pre-existing `profil.ayarlar-toggles.e2e` 6 fail (sidebar-user-name race) — scope dışı, ayrı sprint.
 
 ### Session 79 (18-19 Nisan — Asama 79: K032 Faz 4 + K-036/037/038 + Public-site v2 redesign canli)
 
