@@ -1,5 +1,42 @@
 # HelloTalent AI-COLLAB — Aktif Calisma Defteri
 
+## 2026-04-21 — Pass 10 #9: in-page hash switch fix (hashchange + same-hash)
+
+**Durum:** Tuna regresyon raporu — index.html'deyken footer Aday/Kurumsal tik'i segment degistirmiyor, scroll yapmiyor. Commit `26f475b` push.
+
+### Root cause
+Pass 10 #7 scroll fix sadece load-time IIFE icinde calisiyordu. Ayni sayfada hash degisimi (`index.html#adaylar` → `#kurumsal`) reload tetiklemiyor, hashchange listener yoktu. Ayrica ayni hash click'i (`#adaylar`'dayken Aday tik) hashchange fire etmiyor.
+
+### Fix
+Hash logic `applyHashState()` fonksiyonuna extract edildi. 3 entry point:
+
+1. **Load (init)** — `applyHashState()` cagrilir (Pass 10 #7 davranisi korundu)
+2. **window `hashchange` listener** — farkli segment'e tiklaninca URL hash degisir, event fire eder, segment swap + scroll top
+3. **document `click` interceptor** — ayni hash'te iken tiklaninca hashchange fire etmez; selector `(?:^|index\.html)#(adaylar|kurumsal)$` match eder, `isHome` check yapar, preventDefault + `applyHashState()` force cagrir
+
+Off-home sayfalardan (iletisim/hakkimizda/yasal) navigate: `isHome` false → interceptor early return → default href reload → Pass 10 #7 load-time logic devreye girer.
+
+### TDD
+- `tests/index-hashchange.mjs` (new) — 11 assert: applyHashState extracted, hashchange listener registered, click interceptor present, matcher covers adaylar|kurumsal, same-hash branch + different-hash branch, old IIFE hash-parsing kaldirildi. 11/11 PASS.
+- `tests/index-hash-landing.mjs` (Pass 10 #7) — regex `IIFE icinde switchSeg` yerine `applyHashState icinde switchSeg` guncellendi. 7/7 PASS.
+- `tests/footer-links.mjs` — 28/28 PASS (regression clean).
+
+### Review gate
+DeepSeek atlandi — 1 dosya 40 satir refactor, 3 test suite regression'da PASS, yuksek guven.
+
+### Scenario validation (mental model)
+| Baslangic | Tik | Beklenen | Yol |
+|-----------|-----|----------|------|
+| iletisim.html scroll down | footer Aday | index aday hero | Full reload + Pass 10 #7 load logic |
+| index.html#kurumsal scroll down | footer Aday | index aday hero | hashchange → applyHashState |
+| index.html#adaylar scroll down | footer Aday | index aday hero | click interceptor same-hash force |
+| yasal.html | footer Kurumsal | index kurumsal hero | Full reload + load logic |
+
+### Sonraki net adim
+Tuna canli dogrulama: 4 senaryoyu test et. Regresyon yoksa Pass 10 kapatilabilir.
+
+---
+
 ## 2026-04-21 — Pass 10 #8: aday 3 hikaye swap (Selin / Kerem / Zeynep)
 
 **Durum:** Tuna aday bolumundeki 3 hikayeyi yenile: yeni Pexels foto + yeni hikaye metinleri. Commit `0f386e0` push.

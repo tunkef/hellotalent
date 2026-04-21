@@ -1,6 +1,6 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 21 Nisan 2026 | Asama 80.36 — Pass 10 #1-8 push edildi
-> Aktif Odak: Pass 10 #8 — aday story 3 card swap (Selin/Kerem/Zeynep), commit `0f386e0`.
+> Son guncelleme: 21 Nisan 2026 | Asama 80.37 — Pass 10 #1-9 push edildi
+> Aktif Odak: Pass 10 #9 — in-page hash switch fix (commit `26f475b`). Hash logic `applyHashState()`'e extract, `hashchange` listener + same-hash click interceptor eklendi. Footer Aday/Kurumsal artik 4 senaryoda da hero'ya goturuyor. TDD 11/11 + 7/7 + 28/28 PASS.
 > Pass 10 #8 (`0f386e0`): 3 aday story yenilendi (`story-selin.webp`+`kerem`+`zeynep`). 1168×784 → 1000×800 (5:4, .story-portrait aspect parite). Tuna verdigi hikaye metinleri TDK typo-fix ile. Where marka-agnostic (generic rol). Cache-bust `?v=20260421p10e`. TDD 27 PASS.
 > Pass 10 #7 (`5ba75b2`): `index.html:585-591` IIFE hash handler'a `window.scrollTo(0, 0)` eklendi (segment name hash landing'de). Scroll-restoration bypass → footer'dan Aday/Kurumsal tiklayinca dogru segment + hero top. TDD 7 PASS.
 > Pass 10 #6 (`1916d05`): `hero-iletisim.mp4` 463→195KB, 496×608 → 480×600 (4:5 exact). Poster 26→16KB. iletisim.html cache-bust `?v=20260421p10d`. TDD 10 PASS.
