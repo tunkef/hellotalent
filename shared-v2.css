@@ -793,7 +793,10 @@ html.dark .closing.verm .btn.btn-ink:hover,
   box-shadow: none;
 }
 
-/* ── FOOTER ──────────────────────────────────── */
+/* ── FOOTER (Pass 8 #2+#3 yeniden yapilandi) ──
+   Eski: 4 kolon (logo+tag / Aday / Kurumsal / Bilgi), 9 link.
+   Yeni: 3 kolon (lead / tek dikey nav 5 link / social+CTA).
+   Tagline 14→13px (Tuna: logo-tagline orani). Logo 38px korundu. */
 .ht-foot {
   background: var(--ink);
   color: var(--cream);
@@ -801,32 +804,55 @@ html.dark .closing.verm .btn.btn-ink:hover,
 }
 .foot-grid {
   max-width: var(--max-w); margin: 0 auto;
-  display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr;
-  gap: 40px; margin-bottom: 48px;
+  display: grid; grid-template-columns: 1.4fr 1fr 1fr;
+  gap: 48px; margin-bottom: 48px;
+  align-items: start;
 }
-.foot-grid h4 {
-  font-family: var(--font-body);
-  font-weight: 700; font-size: 12px;
-  letter-spacing: .12em;
-  text-transform: uppercase;
-  color: rgba(247, 246, 244, .55);
-  margin: 0 0 14px;
-}
-.foot-grid ul { list-style: none; padding: 0; margin: 0; }
-.foot-grid li { margin-bottom: 10px; }
-.foot-grid a { color: var(--cream); font-size: 14px; font-weight: 500; opacity: .82; transition: opacity .15s; }
+.foot-grid a { color: var(--cream); font-weight: 500; opacity: .82; transition: opacity .15s; }
 .foot-grid a:hover { opacity: 1; }
+
 .foot-lead .lp-logo {
   font-family: var(--font-display);
   font-size: 38px;
   font-weight: 800;
   font-variation-settings: "wght" 800, "opsz" 14;
   color: var(--cream);
-  margin-bottom: 18px;
+  margin-bottom: 16px;
   display: inline-block;
   line-height: 1;
+  opacity: 1;
 }
-.foot-lead p { color: rgba(247, 246, 244, .7); font-size: 14px; line-height: 1.6; max-width: 36ch; margin: 0; }
+.foot-lead p { color: rgba(247, 246, 244, .7); font-size: 13px; line-height: 1.6; max-width: 34ch; margin: 0; }
+
+/* Tek dikey nav kolonu (5 link) — Aday/Kurumsal/Hakkimizda/Iletisim/Yasal */
+.foot-nav { display: flex; flex-direction: column; gap: 14px; }
+.foot-nav a { font-size: 15px; }
+
+/* Sosyal + Giriş Yap kolonu */
+.foot-social { display: flex; flex-direction: column; gap: 18px; }
+.foot-social-label {
+  font-family: var(--font-body);
+  font-weight: 700; font-size: 12px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: rgba(247, 246, 244, .55);
+}
+.foot-social-icons { display: flex; gap: 10px; }
+.foot-social-icons a {
+  width: 40px; height: 40px;
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: 10px;
+  background: rgba(247, 246, 244, .06);
+  color: var(--cream);
+  opacity: .85;
+  transition: background .15s, opacity .15s, transform .15s;
+}
+.foot-social-icons a:hover {
+  background: rgba(247, 246, 244, .14);
+  opacity: 1;
+}
+.foot-social-icons svg { width: 18px; height: 18px; }
+.foot-social .btn { align-self: flex-start; }
 .foot-bottom {
   max-width: var(--max-w); margin: 0 auto;
   padding-top: 28px;
@@ -878,7 +904,8 @@ html.dark .closing.verm .btn.btn-ink:hover,
   .mobile-menu .seg-toggle { display: inline-flex; width: 100%; }
   .stories-head { align-items: flex-start; }
 
-  .foot-grid { grid-template-columns: 1fr 1fr; gap: 24px 32px; }
+  /* Pass 8 footer — tablet: lead full-row, nav + social yan yana */
+  .foot-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
   .foot-lead { grid-column: span 2; }
 
   /* Mobile hero tightening */
