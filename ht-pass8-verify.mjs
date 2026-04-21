@@ -136,17 +136,24 @@ async function girisHeight() {
     await p.goto('file://' + path.resolve(`giris.html?tab=${tab}`), { waitUntil: 'domcontentloaded' });
     await p.waitForTimeout(1000);
     const r = await p.evaluate(() => {
-      const card = document.querySelector('.auth-card, .giris-card, form, main > section') || document.body;
-      const left = document.querySelector('.auth-visual, .auth-image, .auth-left, .side-visual') || null;
-      const right = document.querySelector('.auth-form, .auth-right, .side-form') || null;
-      const fr = (x) => x ? { h: Math.round(x.getBoundingClientRect().height), tag: x.tagName + '.' + x.className } : null;
-      return { left: fr(left), right: fr(right), card: fr(card) };
+      const scene = document.querySelector('.auth-scene');
+      const card = document.querySelector('.card');
+      const split = document.querySelector('.auth-split');
+      const fr = (x) => x ? { h: Math.round(x.getBoundingClientRect().height), w: Math.round(x.getBoundingClientRect().width) } : null;
+      return { scene: fr(scene), card: fr(card), split: fr(split) };
     });
-    await p.screenshot({ path: `ht-p8-giris-${tab}-${phase}.png`, fullPage: true });
+    await p.screenshot({ path: `ht-p8-giris-${tab}-${phase}.png`, fullPage: false, clip: { x: 0, y: 0, width: 1440, height: 900 } });
     out.push({ tab, ...r });
     await ctx.close();
   }
   console.log(JSON.stringify(out, null, 2));
+  if (out[0].scene?.h !== out[0].card?.h || out[1].scene?.h !== out[1].card?.h) {
+    console.log('\nINFO: scene/card height mismatch within tab');
+  }
+  const deltaCard = Math.abs((out[0].card?.h || 0) - (out[1].card?.h || 0));
+  const deltaScene = Math.abs((out[0].scene?.h || 0) - (out[1].scene?.h || 0));
+  console.log(`card height delta aday vs kurumsal: ${deltaCard}px`);
+  console.log(`scene height delta aday vs kurumsal: ${deltaScene}px`);
 }
 
 async function stepsHover() {

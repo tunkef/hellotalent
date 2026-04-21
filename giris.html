@@ -94,11 +94,16 @@
   /* K-058 — Tablet+: grid stretch, cards equal height, no aspect-ratio lock. */
   @media (min-width: 768px) {
     .main { padding: 24px 24px; }
+    /* Pass 8 #7 — aday + kurumsal tab ayni yukseklikte sabit kalsin
+       (once delta 35px vardi, kurumsal daha kisa). min-height aday
+       dogal yuksekligi uzerinde; kurumsal'da alt bosluk olur ama
+       tab switch sirasinda layout shift etmez. */
     .auth-split {
       grid-template-columns: 1fr 1fr;
       max-width: 1120px;
       gap: clamp(24px, 3vw, 40px);
       align-items: stretch;
+      min-height: 680px;
     }
     .auth-scene {
       display: block;
