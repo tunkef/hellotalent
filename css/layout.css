@@ -869,7 +869,9 @@ html[data-theme="dark"] .mk-identity{box-shadow:0 4px 16px rgba(0,0,0,0.3), 0 12
 
 /* Dark mode: glassmorphic header + sidebar */
 html[data-theme="dark"] .header{
-  background:rgba(17,24,39,0.78);
+  background:rgba(11,15,28,0.96);
+  backdrop-filter:blur(16px) saturate(1.4);
+  -webkit-backdrop-filter:blur(16px) saturate(1.4);
   border-color:rgba(255,255,255,0.08);
   box-shadow:0 4px 20px rgba(0,0,0,0.3);
 }

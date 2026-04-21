@@ -1,5 +1,42 @@
 # HelloTalent AI-COLLAB — Aktif Calisma Defteri
 
+## 2026-04-21 — K-068 header dark mode saydamlık fix (Asama 80.27)
+
+**Durum:** Tuna screenshot paylaştı — profil.html dark mode'da sticky header arkasındaki içerik geçiyor. `rgba(17,24,39,0.78)` çok saydam, backdrop-filter yok.
+
+### Kök sebep
+
+`css/layout.css:871` dark header:
+- background opacity 0.78 → içerik görünür
+- backdrop-filter yok → blur devreye girmiyor
+
+Light mode'da sorun yok (zaten %97 opak + blur).
+
+### Fix
+
+`css/layout.css:870-876` — dark `.header` kuralı:
+- `rgba(17,24,39,0.78)` → `rgba(11,15,28,0.96)` (opak ve tam navy token ile hizalı)
+- `backdrop-filter:blur(16px) saturate(1.4)` + webkit fallback eklendi
+- Border + shadow değişmedi
+
+Cache-bust: `css/layout.css?v=20260417c` → `?v=20260421k068d`.
+
+### Doğrulama
+
+`k068-header-verify.mjs` — CDP attach → dark theme + scroll → before/after screenshot. `k068-header-after.png`: header tamamen opak, alttaki hero card header bandında görünmez. `k068-header-before.png`: eski saydam hali.
+
+### Değişen dosyalar
+
+- `css/layout.css:870-876`
+- `profil.html:60`
+- `docs/AI-COLLAB.md`
+
+### Risk
+
+Yok — sadece dark header rule, light + mobile etkilenmedi.
+
+---
+
 ## 2026-04-21 — K-068 UX triple: snooze + milestone + wizard pulse (Asama 80.26)
 
 **Durum:** Tuna welcome modal (80.25) sonrası "EK uc önerilerini de ekle" — 3 ek UX katmanı.
