@@ -1,5 +1,34 @@
 # HelloTalent AI-COLLAB — Aktif Calisma Defteri
 
+## 2026-04-21 — K-068 hero card compact rewrite (Asama 80.24)
+
+**Durum:** Tuna dark mode'da merkez panel hero card içinde "orta boş dikdörtgen" + ring card dışına çıkıyor. Tuna: "rica etsem dark mode a geçişte oryaha çıkar hero kartın içindeki dikdörtgeni de komplle çözebilir misin? yine çözemezsen orayı baştan yarat"
+
+### Kök neden
+
+`.mk-identity-wrap { justify-content: space-between }` + `.mk-identity { flex: 1 }` + `.mk-identity__text { flex: 1 }` → sol grup tüm boş alanı doldurmaya çalışıyor, text daralma noktasında **card sağ yarısı boş bg kalıyor**. Geniş viewport'ta ring card border'ına yapışıp dışarı taşıyor gibi algılanıyor.
+
+### Fix — baştan compact
+
+| Dosya | Değişiklik |
+|-------|-----------|
+| `css/panels/merkezi.css` | `.mk-card--hero` → `max-width: max-content; margin: 0 auto 24px; padding: 20px 28px` (hero sadece content kadar genişler, ortalanır) |
+| `css/panels/merkezi.css` | `.mk-identity-wrap` → `gap: 40px` sabit, `justify-content` kaldırıldı |
+| `css/panels/merkezi.css` | `.mk-identity` + `.mk-identity__text` → `flex: 0 1 auto` (grow YOK) |
+| `profil.html` | Cache-bust: merkezi.css → `v=20260421k068c` |
+
+### Doğrulama
+
+- k068-hero-compact-dark.png: avatar + "tun kef" + meta + %74 ring tek satır, card compact, arada boşluk YOK
+- k068-hero-compact-light.png: aynı compact layout, light mode temiz
+
+### Sonraki adım
+
+- Cache-bust yeni v → Tuna refresh → compact hero görünür
+- Task #29 kapandı
+
+---
+
 ## 2026-04-20 — K-068 checkbox REWRITE: native HTML input+label (Asama 80.23)
 
 **Durum:** Rollback sonrası 2 fix (cb-check display + dark mode) canlı doğrulandı AMA Tuna'nın browser'ında cache propagation geç gelince hâlâ "span inline, rect 0x0" raporu. 6. iterasyon. Tuna: "o check mark bölümünü silip baştan mı yaratsan". Yaklaşım tamamen değişti.
