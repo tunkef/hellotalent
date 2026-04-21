@@ -1,6 +1,7 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 21 Nisan 2026 | Asama 80.35 — Pass 10 #1-7 push edildi
-> Aktif Odak: Pass 10 #7 — footer hash landing scroll fix (commit `5ba75b2`).
+> Son guncelleme: 21 Nisan 2026 | Asama 80.36 — Pass 10 #1-8 push edildi
+> Aktif Odak: Pass 10 #8 — aday story 3 card swap (Selin/Kerem/Zeynep), commit `0f386e0`.
+> Pass 10 #8 (`0f386e0`): 3 aday story yenilendi (`story-selin.webp`+`kerem`+`zeynep`). 1168×784 → 1000×800 (5:4, .story-portrait aspect parite). Tuna verdigi hikaye metinleri TDK typo-fix ile. Where marka-agnostic (generic rol). Cache-bust `?v=20260421p10e`. TDD 27 PASS.
 > Pass 10 #7 (`5ba75b2`): `index.html:585-591` IIFE hash handler'a `window.scrollTo(0, 0)` eklendi (segment name hash landing'de). Scroll-restoration bypass → footer'dan Aday/Kurumsal tiklayinca dogru segment + hero top. TDD 7 PASS.
 > Pass 10 #6 (`1916d05`): `hero-iletisim.mp4` 463→195KB, 496×608 → 480×600 (4:5 exact). Poster 26→16KB. iletisim.html cache-bust `?v=20260421p10d`. TDD 10 PASS.
 > Pass 10 #1 (`79083ac`): hero video swap. index.html `hero-aday.mp4` + `hero-isveren.mp4` Pexels. Aday 540→231KB, kurumsal 410→154KB. Cache-bust `?v=20260421p10`.

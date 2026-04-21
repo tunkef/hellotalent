@@ -1,5 +1,67 @@
 # HelloTalent AI-COLLAB — Aktif Calisma Defteri
 
+## 2026-04-21 — Pass 10 #8: aday 3 hikaye swap (Selin / Kerem / Zeynep)
+
+**Durum:** Tuna aday bolumundeki 3 hikayeyi yenile: yeni Pexels foto + yeni hikaye metinleri. Commit `0f386e0` push.
+
+### Kaynaklar
+- Selin: `pexels-silverkblack-36730468.jpg` (1551×1929 portrait, magaza + laptop + botlar)
+- Kerem: `pexels-davide-comunian-2149022432-30589834.jpg` (1753×2553 portrait, yakin portre)
+- Zeynep: `pexels-anntarazevich-5242808.jpg` (1962×2210 portrait, dukkan ici gorsel ekip)
+
+### Transform pipeline
+`.story-portrait` CSS `aspect-ratio: 5/4` (landscape). Source portrait → center crop 5:4 → scale 1000×800 → cwebp q82.
+
+```
+sips -c <w*4/5> <w> SRC → sips --resampleHeightWidth 800 1000 → cwebp q82
+```
+
+### Output
+| Story | Onceki | Yeni |
+|-------|--------|------|
+| story-selin.webp | 36KB 1168×784 | 56KB 1000×800 |
+| story-kerem.webp | 22KB 1168×784 | 127KB 1000×800 |
+| story-zeynep.webp | 35KB 1168×784 | 103KB 1000×800 |
+
+### Hikaye metinleri (Tuna verdi, TDK + Turkish UI convention ile typo-fix)
+- **Selin** (yeni rol: Magaza Muduru): mudur yardimcisi 4 yil → farkli markadan Hello Talent teklif → magaza muduru
+- **Kerem** (yeni rol: Magaza Mudur Yardimcisi): hizli moda satis danismani → gizli profil → mudur yardimcisi eslesmesi
+- **Zeynep** (yeni rol: Gorsel Uzmani): magaza sektor gorsel ekip hedefi → takip ettigi marka gorsel uzman pozisyonu eslesmesi → gorsel duzenleme
+
+Typo-fix listesi: `aldum→aldım`, `aracılığı ile→aracılığıyla`, `sayesine→sayesinde`, `arayaşına→arayışına`, `profilimde→profilime`, `sektörüdne→sektöründe`, `olarak ediyorum→olarak devam ediyorum`, `ekibinde olmaktı→ekibiydi`.
+
+### Where meta degisimi
+Onceki pattern: `Brand · Rol` (orn. "Sephora · Kategori Planlama"). Tuna yeni hikayelerde brand belirtmedi. Aday hikayelerinde marka kaldirildi, sadece rol: `Magaza Muduru`, `Magaza Mudur Yardimcisi`, `Gorsel Uzmani`. Kurumsal hikayeler (Defne/Burak/Merve) `Brand · Rol` pattern korudu (marka-anchored content).
+
+### HTML
+- `index.html:240-269` — 3 story article block (img src + alt + blockquote + where)
+- Cache-bust `?v=20260421p10e`
+- Alt text yeni context'e revize (orn. "Magaza mudurlugune gecen Selin A. portresi (temsili)")
+
+### TDD
+`tests/aday-stories-swap.mjs` — 27 assert (3 story × 9 check: dim + size + cache-bust + alt + where + 3 quote substring + stale cleanup). 27/27 PASS.
+
+### Review gate
+DeepSeek diff review (`reviews/diff-review-20260421-215527.md`, $0.0015):
+- KRITIK: yok
+- YUKSEK race condition iddiasi (index.html:585-591 scroll fix) → **override** (scroll instant + segment async concurrent; reel race yok; ayrica bu kod Pass 10 #7'de review'dan gecti; full-file diff'te ilgisiz reference)
+- ORTA/DUSUK: gereksiz noise, reddedildi
+
+### Cache-bust sub-iter state (guncel)
+| Commit | Tag | Kapsam |
+|--------|-----|--------|
+| 79083ac | `p10` | index hero video + poster (#1) |
+| e15c85b | `p10b` | auth giris/uye-ol webp (#2) |
+| 5d5a179 | `p10c` | hakkimizda hero webp (#3-5 bundle) |
+| 1916d05 | `p10d` | iletisim hero video + poster (#6) |
+| 5ba75b2 | — | scroll fix, no asset (#7) |
+| 0f386e0 | `p10e` | aday story 3 webp (#8) |
+
+### Sonraki net adim
+Tuna canli dogrulama: `/index.html` aday segment story grid → 3 yeni foto + yeni hikaye metinleri + yeni rol meta.
+
+---
+
 ## 2026-04-21 — Pass 10 #7: footer hash landing scroll fix
 
 **Durum:** Tuna feedback — footer'dan Aday/Kurumsal tiklayinca segment dogru aciliyordu ama "en uste hero bolume" gitmiyordu, eski scroll konumunda kaliyordu. Commit `5ba75b2` push.
