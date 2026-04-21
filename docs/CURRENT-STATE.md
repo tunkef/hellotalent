@@ -1,6 +1,7 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 21 Nisan 2026 | Asama 80.34 — Pass 10 #1-6 push edildi
-> Aktif Odak: Pass 10 #6 — iletisim hero video swap (Pexels 5492870, commit `1916d05`).
+> Son guncelleme: 21 Nisan 2026 | Asama 80.35 — Pass 10 #1-7 push edildi
+> Aktif Odak: Pass 10 #7 — footer hash landing scroll fix (commit `5ba75b2`).
+> Pass 10 #7 (`5ba75b2`): `index.html:585-591` IIFE hash handler'a `window.scrollTo(0, 0)` eklendi (segment name hash landing'de). Scroll-restoration bypass → footer'dan Aday/Kurumsal tiklayinca dogru segment + hero top. TDD 7 PASS.
 > Pass 10 #6 (`1916d05`): `hero-iletisim.mp4` 463→195KB, 496×608 → 480×600 (4:5 exact). Poster 26→16KB. iletisim.html cache-bust `?v=20260421p10d`. TDD 10 PASS.
 > Pass 10 #1 (`79083ac`): hero video swap. index.html `hero-aday.mp4` + `hero-isveren.mp4` Pexels. Aday 540→231KB, kurumsal 410→154KB. Cache-bust `?v=20260421p10`.
 > Pass 10 #2 (`e15c85b`): auth gorseller. `auth-aday.webp` + `auth-kurumsal.webp` 784×1168 → 800×1000 4:5 Pexels. giris/uye-ol cache-bust `?v=20260421p10b`.

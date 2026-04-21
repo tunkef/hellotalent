@@ -1,5 +1,38 @@
 # HelloTalent AI-COLLAB — Aktif Calisma Defteri
 
+## 2026-04-21 — Pass 10 #7: footer hash landing scroll fix
+
+**Durum:** Tuna feedback — footer'dan Aday/Kurumsal tiklayinca segment dogru aciliyordu ama "en uste hero bolume" gitmiyordu, eski scroll konumunda kaliyordu. Commit `5ba75b2` push.
+
+### Root cause
+- `index.html:579-596` IIFE hash handler `switchSeg('...', true)` cagiriyordu (skipScroll=true).
+- Tarayicinin reload sonrasi scroll-restoration mekanizmasi eski konumu (ornegin footer seviyesi) koruyordu.
+- Hash (`#adaylar` / `#kurumsal`) matching DOM ID'si olmadigi icin browser default anchor scroll da calismiyordu.
+
+### Fix
+`index.html:585-591` IIFE icinde segment hash landing'de explicit `window.scrollTo(0, 0)` eklendi:
+
+```js
+if (h === 'adaylar' || h === 'kurumsal') {
+  window.scrollTo(0, 0);
+}
+```
+
+- switchSeg `skipScroll=true` korundu (smooth animation flicker olmasin)
+- Ekstra instant scroll 0 → reload sonrasi scroll-restoration bypass
+- Mevcut section-anchor scrollIntoView logic (280ms setTimeout) dokunulmadi
+
+### TDD
+`tests/index-hash-landing.mjs` — 7 assert (IIFE present, scrollTo call, switchSeg skipScroll korundu, footer nav + Aday/Kurumsal link hedefi). 7/7 PASS.
+
+### Review gate
+DeepSeek atlandi — 3 satirlik defensive fix, kritik test coverage mevcut. Once kullanici canli dogrulama yaparsa DeepSeek sonrakine.
+
+### Sonraki net adim
+Tuna canli dogrulama: `iletisim.html` footer'dan Aday tik → reload → `/index.html#adaylar` → aday segment aktif + top'ta. Aynisi Kurumsal icin.
+
+---
+
 ## 2026-04-21 — Pass 10 #6: iletisim hero video swap
 
 **Durum:** iletisim.html hero video Pexels 5492870 ile degistirildi. Commit `1916d05` push.
