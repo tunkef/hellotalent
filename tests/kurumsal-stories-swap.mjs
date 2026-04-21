@@ -7,7 +7,7 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const SPEC = { width: 1000, height: 800, maxBytes: 180_000 };
-const CACHE_BUST = 'v=20260421p10g';
+const CACHE_BUST = 'v=20260421p10h';
 const STORIES = [
   {
     asset: 'assets/v2/story-defne.webp',
