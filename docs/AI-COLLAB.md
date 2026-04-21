@@ -1,5 +1,59 @@
 # HelloTalent AI-COLLAB — Aktif Calisma Defteri
 
+## 2026-04-21 — Pass 10 #3-5 bundle: hakkimizda img + logo parite + footer links
+
+**Durum:** 3 madde tek commit (`5d5a179`). Tuna 3 feedback'i ayni flow'da topladi, onay "bitince hepsini pushla".
+
+### #3 Hakkimizda hero: video → img
+- Kaynak: `/Users/peopleintk/Downloads/pexels-edmond-dantes-4343027.jpg` (5433×8149, 3.2MB, 4 kisilik ofis toplanti gorunumu)
+- Transform: `sips -c 6791 5433 → --resampleHeightWidth 1250 1000 → cwebp q82`
+- Output: `assets/v2/hero-hakkimizda.webp` 1000×1250 (4:5), 78KB
+- Eski silindi: `hero-hakkimizda.mp4` 720KB + `hero-hakkimizda-poster.jpg` 35KB (-755KB repo)
+- HTML: `<video>` + K-041 prefers-reduced-motion script kaldirildi (artik statik)
+- Cache-bust `?v=20260421p10c`
+- Alt text "HelloTalent ekibi" (DeepSeek feedback sonrasi kisaltildi)
+
+### #4 Giris + uye-ol logo parite
+- Tuna feedback: "logonun boyutu indexteki header ile aynı olsun. şu an küçük duruyor"
+- `.logo-fixed` font-size `19px` → `var(--text-3xl)` (= 20px, `tokens.css:42`)
+- Mobile breakpoint'ler: `<=900px` 18px, `<=480px` 17px (index header-logo ile tam parite, `shared.css:319,420`)
+- giris.html + uye-ol.html inline CSS (identical block)
+
+### #5 Footer links
+- Tuna feedback (screenshot): "aday a basınca index aday bölümü heroya, kurumsal/hakkimizda/iletisim/yasal dogru yerlere"
+- 4 HTML footer (index/hakkimizda/iletisim/yasal) `.foot-nav`:
+  - `giris.html?tab=aday` → `index.html#adaylar`
+  - `giris.html?tab=ik` → `index.html#kurumsal`
+- Hash-based segment switch: `index.html:580-584` load'da hash okuyup `switchSeg()` (skipScroll=true)
+- Footer'dan navigate: full reload + hash → script aktive seg → kullanici hero top'ta
+
+### TDD
+- `tests/hakkimizda-hero-swap.mjs` — 11 assert (dim, size, old files removed, no video/hero-vid/mp4/poster/K-041, webp cache-bust, single ref). PASS.
+- `tests/footer-links.mjs` — 28 assert (4 HTML × 7 check). PASS.
+- Onceki suite'ler (auth + video) korundu, PASS.
+
+### Review gate
+DeepSeek diff review (`reviews/diff-review-20260421-212725.md`, $0.0023):
+- KRITIK: yok
+- YUKSEK 2.1 alt text uzunlugu → **kabul** (revize: "paydaş toplantısında" → "HelloTalent ekibi")
+- YUKSEK 2.2 sips macOS-only → **override** (dev env macOS, onceki TDD pattern)
+- ORTA 3.1 tokens.css tanim yok iddiasi → **override dogrulandi** (tokens.css:42 `--text-3xl: 20px` + giris/uye-ol line 15 `link href="css/tokens.css"` yuklu)
+- ORTA 3.2 regex kirilgan → **override** (`[^>]*` attribute tolere)
+- ORTA 3.3 docs drift → **kabul** (bu blok + CURRENT-STATE ile cozuluyor)
+- DUSUK x4: shebang, magic num, giris/uye-ol test, K-041 comment → **reddedildi** (gereksiz noise)
+
+### Cache-bust sub-iter state
+| Commit | Tag | Kapsam |
+|--------|-----|--------|
+| 79083ac | `p10` | hero video + poster (Pass 10 #1) |
+| e15c85b | `p10b` | auth giris/uye-ol webp (Pass 10 #2) |
+| 5d5a179 | `p10c` | hakkimizda hero webp (Pass 10 #3) |
+
+### Sonraki net adim
+Tuna canli dogrulama: (1) `/giris.html` + `/uye-ol.html` logo daha iri mi? (2) `/hakkimizda.html` hero statik ekip foto? (3) footer'dan Aday tiklayinca index.html aday hero'da mi? Regresyon yoksa yeni madde bekler.
+
+---
+
 ## 2026-04-21 — Pass 10 #2: auth gorseller (giris + uye-ol)
 
 **Durum:** giris.html + uye-ol.html `.auth-scene` gorselleri Pexels gercek fotoya guncellendi. Commit `e15c85b` push.

@@ -1,8 +1,11 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 21 Nisan 2026 | Asama 80.32 — Pass 10 #1 + #2 push edildi
-> Aktif Odak: Pass 10 #2 — auth gorseller (giris.html + uye-ol.html) Pexels'e guncellendi, commit `e15c85b`.
-> Pass 10 #1 (`79083ac`): hero video swap. `assets/v2/hero-aday.mp4` + `hero-isveren.mp4` Pexels'ten yenilendi. Aday 540→231KB (-57%), kurumsal 410→154KB (-62%). index.html cache-bust `?v=20260421p10`. TDD 17 PASS.
-> Pass 10 #2 (`e15c85b`): auth gorseller. `assets/v2/auth-aday.webp` + `auth-kurumsal.webp` Pexels'ten guncellendi. sips crop 4:5 → 800×1000 → cwebp q82. auth-aday 47→36KB, auth-kurumsal 38→49KB. giris.html + uye-ol.html cache-bust `?v=20260421p10b`. TDD 12 PASS.
+> Son guncelleme: 21 Nisan 2026 | Asama 80.33 — Pass 10 #1-5 push edildi
+> Aktif Odak: Pass 10 #3-5 bundle (hakkimizda img + logo parite + footer links), commit `5d5a179`.
+> Pass 10 #1 (`79083ac`): hero video swap. index.html `hero-aday.mp4` + `hero-isveren.mp4` Pexels. Aday 540→231KB, kurumsal 410→154KB. Cache-bust `?v=20260421p10`.
+> Pass 10 #2 (`e15c85b`): auth gorseller. `auth-aday.webp` + `auth-kurumsal.webp` 784×1168 → 800×1000 4:5 Pexels. giris/uye-ol cache-bust `?v=20260421p10b`.
+> Pass 10 #3 (`5d5a179`): hakkimizda hero video → img. `hero-hakkimizda.webp` 1000×1250 78KB Pexels. mp4+poster silindi (-755KB repo). K-041 reduced-motion script kaldirildi. Cache-bust `?v=20260421p10c`.
+> Pass 10 #4 (`5d5a179`): giris + uye-ol `.logo-fixed` font-size 19px → `var(--text-3xl)` (20px). Mobile 18/17px. Index header-logo parite.
+> Pass 10 #5 (`5d5a179`): 4 HTML footer (index/hakkimizda/iletisim/yasal) `.foot-nav` Aday/Kurumsal linkleri `giris.html?tab=…` → `index.html#adaylar` / `index.html#kurumsal`. Hash-based segment switch (index.html:580-584).
 > Onceki: Pass 7 (80.28) + Pass 8 (80.29) + Pass 9 (80.30) kapandi.
 > Sonraki: Tuna canli dogrulama + yeni madde.
 
