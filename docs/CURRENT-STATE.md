@@ -1,9 +1,10 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 21 Nisan 2026 | Asama 80.31 — Pass 10 #1 push edildi
-> Aktif Odak: Pass 10 #1 — hero video swap (Pexels gercek goruntu, commit `79083ac`).
-> Pass 10 #1: `assets/v2/hero-aday.mp4` + `hero-isveren.mp4` Pexels'ten yenilendi. Transcode: ffmpeg ss=1 -t 6 crop 2160×3240 → scale 448×672 CRF 23 -an +faststart. Dosya boyutu aday 540→231KB (-57%), kurumsal 410→154KB (-62%). Posterler regen. index.html cache-bust `?v=20260421p10`. TDD spec `tests/hero-video-swap.mjs` (17 assert PASS). DeepSeek diff review gecti.
+> Son guncelleme: 21 Nisan 2026 | Asama 80.32 — Pass 10 #1 + #2 push edildi
+> Aktif Odak: Pass 10 #2 — auth gorseller (giris.html + uye-ol.html) Pexels'e guncellendi, commit `e15c85b`.
+> Pass 10 #1 (`79083ac`): hero video swap. `assets/v2/hero-aday.mp4` + `hero-isveren.mp4` Pexels'ten yenilendi. Aday 540→231KB (-57%), kurumsal 410→154KB (-62%). index.html cache-bust `?v=20260421p10`. TDD 17 PASS.
+> Pass 10 #2 (`e15c85b`): auth gorseller. `assets/v2/auth-aday.webp` + `auth-kurumsal.webp` Pexels'ten guncellendi. sips crop 4:5 → 800×1000 → cwebp q82. auth-aday 47→36KB, auth-kurumsal 38→49KB. giris.html + uye-ol.html cache-bust `?v=20260421p10b`. TDD 12 PASS.
 > Onceki: Pass 7 (80.28) + Pass 8 (80.29) + Pass 9 (80.30) kapandi.
-> Sonraki: Tuna canli dogrulama; regresyon varsa Pass 10 #2 acilir, yoksa yeni madde.
+> Sonraki: Tuna canli dogrulama + yeni madde.
 
 ## 1. Proje Ozeti
 

@@ -1,5 +1,54 @@
 # HelloTalent AI-COLLAB — Aktif Calisma Defteri
 
+## 2026-04-21 — Pass 10 #2: auth gorseller (giris + uye-ol)
+
+**Durum:** giris.html + uye-ol.html `.auth-scene` gorselleri Pexels gercek fotoya guncellendi. Commit `e15c85b` push.
+
+### Kaynak
+- Aday: `/Users/peopleintk/Downloads/pexels-artempodrez-8512178.jpg` (2073×3685, 505KB, omuz-ustu video-call)
+- Kurumsal: `/Users/peopleintk/Downloads/pexels-artempodrez-8511889.jpg` (3989×5984, 1.9MB, laptop gulumseme)
+
+### Transform pipeline
+`sips -c <4:5 crop> SRC → sips --resampleHeightWidth 1000 800 → cwebp -q 82`
+
+- Crop 4:5 (CSS `.auth-scene aspect-ratio: 4/5` ile tam uyum)
+  - Aday: 2073×3685 → 2073×2591 crop (height'tan 1094px kirp, 9:16 → 4:5)
+  - Kurumsal: 3989×5984 → 3989×4986 crop (height'tan 998px kirp, 2:3 → 4:5)
+- Resample 800×1000 (aspect sabit)
+- cwebp q82
+
+### Output
+| Dosya | Onceki | Yeni |
+|-------|--------|------|
+| auth-aday.webp | 47KB 784×1168 | 36KB 800×1000 |
+| auth-kurumsal.webp | 38KB 784×1168 | 49KB 800×1000 |
+
+### HTML
+- `giris.html:427-428` + `uye-ol.html:531-532` — 4 src cache-bust `?v=20260421p10b`
+- `alt=""` + `role="presentation"` korundu (dekoratif asset)
+- Class yapisi degismedi (`.auth-img .auth-img-aday` + `.auth-img-kurumsal`, opacity swap pattern)
+
+### TDD
+`tests/auth-img-swap.mjs` — 12 assert (800×1000 dim, <100KB, cache-bust, single ref × 2 HTML). 12/12 PASS.
+
+### Review gate
+DeepSeek diff review (`reviews/diff-review-20260421-205757.md`, $0.0016):
+- KRITIK (reddedildi): sips macOS-only → dev env zaten macOS, onceki TDD de sips kullaniyor
+- YUKSEK (aciklama): `p10b` tutarsizlik iddiasi → kasitli asset-bazli bump (Pass 9 pattern). `p10` video icin, `p10b` auth icin
+- ORTA x3 (reddedildi): doc order zaten en-yeni-ust, magic numbers spec tanimi, error detail opsiyonel
+- DUSUK x3 (reddedildi): shebang zarar yok, "cache-bust" jargon ok, alt="" presentational dogru
+
+### Cache-bust versioning note
+Pass 10 icinde asset grubu basina sub-iteration tag kullanimi kabul edildi:
+- `?v=20260421p10` → hero video + poster (Pass 10 #1)
+- `?v=20260421p10b` → auth giris/uye-ol gorselleri (Pass 10 #2)
+Sonraki #3 madde auth disi asset degistirirse `p10c` tag'ini kullanir.
+
+### Sonraki net adim
+Tuna canli dogrulama (hard refresh `giris.html` + `uye-ol.html` tab switch → aday→kurumsal gecisi yeni fotolar). Regresyon yoksa yeni madde.
+
+---
+
 ## 2026-04-21 — Pass 10 #1 acilis: hero video swap (Pexels gercek)
 
 **Durum:** Tuna Pass 10'u hero video refresh ile acti. Mevcut Grok-generated aday+kurumsal hero videolari (Pass 5-6 donemi) Pexels gercek stock goruntuleriyle degistirildi. Commit `79083ac` push edildi.
