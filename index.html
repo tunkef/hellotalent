@@ -576,25 +576,49 @@ function toggleStories(btn) {
   btn.textContent = collapsed ? 'Daha az göster' : 'Tüm hikayeleri gör';
 }
 
-(function () {
+// Pass 10 #9 — extract hash-state logic so hashchange + same-hash clicks also work.
+function applyHashState() {
   var h = (window.location.hash || '').replace('#', '');
-  var adaySections   = ['nasil', 'hikayeler', 'adaylar'];
-  var kurSections    = ['k-nasil', 'kurumsal'];
+  var kurSections = ['k-nasil', 'kurumsal'];
   if (kurSections.indexOf(h) !== -1) switchSeg('kurumsal', true);
-  else switchSeg('adaylar', true);  // default + sync Giriş Yap href
-  // Pass 10 #7 — segment-name hash landing (footer nav): force top scroll so
-  // the selected segment hero is first thing user sees. Bypasses browser's
-  // scroll-restoration (reload tends to keep previous scroll position).
+  else switchSeg('adaylar', true);
+  // Segment-name hash landing: force top scroll (scroll-restoration bypass).
   if (h === 'adaylar' || h === 'kurumsal') {
     window.scrollTo(0, 0);
   }
-  // Scroll to section anchor after segment switch
+  // Scroll to section anchor (non-segment hash).
   if (h && h !== 'adaylar' && h !== 'kurumsal') {
     var target = document.getElementById(h);
     if (target) setTimeout(function () {
       target.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, 280);
   }
+}
+
+(function () {
+  applyHashState();
+  // Pass 10 #9 — hashchange: footer/in-page nav to #adaylar/#kurumsal updates segment + scroll.
+  window.addEventListener('hashchange', applyHashState);
+  // Pass 10 #9 — same-hash click on index.html must also re-apply (hashchange does not fire
+  // when hash is unchanged). Intercepts footer Aday/Kurumsal links when user is already on
+  // the matching segment but scrolled away.
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest('a');
+    if (!a) return;
+    var href = a.getAttribute('href') || '';
+    var m = href.match(/(?:^|index\.html)#(adaylar|kurumsal)$/);
+    if (!m) return;
+    var path = location.pathname;
+    var isHome = path.endsWith('/') || path.endsWith('index.html');
+    if (!isHome) return; // off-home: let default href reload handle it
+    e.preventDefault();
+    var seg = m[1];
+    if (location.hash === '#' + seg) {
+      applyHashState(); // same hash: force re-apply (scroll to hero)
+    } else {
+      location.hash = seg; // different hash: triggers hashchange
+    }
+  });
   // Init stories collapsed on mobile
   if (window.matchMedia('(max-width: 768px)').matches) {
     document.querySelectorAll('.stories-grid').forEach(function (g) { g.classList.add('is-collapsed'); });

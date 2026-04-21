@@ -10,15 +10,16 @@ const html = readFileSync(resolve(ROOT, 'index.html'), 'utf8');
 let failed = 0;
 const log = (ok, msg) => { console.log(`${ok ? 'PASS' : 'FAIL'}  ${msg}`); if (!ok) failed++; };
 
-const iifeMatch = html.match(/\(function \(\) \{\s*var h = \(window\.location\.hash[\s\S]*?\}\)\(\);/);
-log(!!iifeMatch, 'index.html: hash landing IIFE present');
-const iife = iifeMatch ? iifeMatch[0] : '';
+// Pass 10 #9 — hash-state logic moved from IIFE into applyHashState function.
+const fnMatch = html.match(/function applyHashState\s*\(\)\s*\{[\s\S]*?\n\}/);
+log(!!fnMatch, 'index.html: applyHashState function present');
+const fn = fnMatch ? fnMatch[0] : '';
 
-log(/if \(h === ['"]adaylar['"] \|\| h === ['"]kurumsal['"]\)[\s\S]*?window\.scrollTo\(0, 0\)/.test(iife),
-    'IIFE: segment-hash landing triggers window.scrollTo(0, 0)');
+log(/if \(h === ['"]adaylar['"] \|\| h === ['"]kurumsal['"]\)[\s\S]*?window\.scrollTo\(0, 0\)/.test(fn),
+    'applyHashState: segment-hash landing triggers window.scrollTo(0, 0)');
 
-log(/switchSeg\(['"]kurumsal['"], true\)/.test(iife), 'switchSeg kurumsal skipScroll preserved');
-log(/switchSeg\(['"]adaylar['"], true\)/.test(iife), 'switchSeg adaylar skipScroll preserved');
+log(/switchSeg\(['"]kurumsal['"], true\)/.test(fn), 'switchSeg kurumsal skipScroll preserved');
+log(/switchSeg\(['"]adaylar['"], true\)/.test(fn), 'switchSeg adaylar skipScroll preserved');
 
 const footerNav = html.match(/<nav class="foot-nav"[\s\S]*?<\/nav>/);
 log(!!footerNav, 'footer nav present');
