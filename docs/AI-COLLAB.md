@@ -1,5 +1,55 @@
 # HelloTalent AI-COLLAB — Aktif Calisma Defteri
 
+## 2026-04-21 — Pass 10 #6: iletisim hero video swap
+
+**Durum:** iletisim.html hero video Pexels 5492870 ile degistirildi. Commit `1916d05` push.
+
+### Kaynak
+- `/Users/peopleintk/Downloads/5492870-uhd_2160_3840_30fps.mp4` (2160×3840 9:16, 12.15sn, 30MB, laptop klavye yazim)
+
+### Transform
+`ffmpeg -ss 1 -t 6 -vf "crop=2160:2700,scale=480:600" -c:v libx264 -crf 23 -preset slow -pix_fmt yuv420p -an -movflags +faststart`
+
+- Trim 1-7sn
+- Crop 9:16 → 4:5 (2160×2700, `.contact-hero-vis aspect-ratio: 4/5` ile tam uyum)
+- Scale 480×600 (4:5 exact, h264 even-dim, temiz)
+
+### Output
+| Dosya | Onceki | Yeni |
+|-------|--------|------|
+| hero-iletisim.mp4 | 463KB 496×608 | 195KB 480×600 |
+| hero-iletisim-poster.jpg | 26KB | 16KB |
+
+Onceki 496×608 = 0.816 (4:5 yakin ama exact degil). Yeni 480×600 = 0.8 exact. Container-asset parite.
+
+### HTML
+- `iletisim.html:248,250` — video src + poster cache-bust `?v=20260421p10d`
+- Aria-label korundu: "HelloTalent ile iletişim" (laptop yazim sahnesi ton-uyumlu)
+- .hero-vid + K-041 reduced-motion script aktif (iletisim'de video hala var, hakkimizda'daki gibi kaldirilmadi)
+
+### TDD
+`tests/iletisim-hero-swap.mjs` — 10 assert (480×600, 5.9-6.1sn, <1MB, h264, yuv420p, poster <60KB, 2 cache-bust, 2 single ref). 10/10 PASS.
+
+### Review gate
+DeepSeek diff review (`reviews/diff-review-20260421-213320.md`, $0.0016):
+- KRITIK: yok
+- YUKSEK 2.1 docs drift → **kabul** (bu blok + CURRENT-STATE ile cozuldu)
+- YUKSEK 2.2 hard-coded test spec → **override** (video-specific regression, generic olmamali)
+- ORTA/DUSUK: gereksiz noise, reddedildi
+
+### Cache-bust sub-iter state (guncel)
+| Commit | Tag | Kapsam |
+|--------|-----|--------|
+| 79083ac | `p10` | index hero video + poster (#1) |
+| e15c85b | `p10b` | auth giris/uye-ol webp (#2) |
+| 5d5a179 | `p10c` | hakkimizda hero webp (#3-5 bundle) |
+| 1916d05 | `p10d` | iletisim hero video + poster (#6) |
+
+### Sonraki net adim
+Tuna canli dogrulama: `/iletisim.html` hero alt video laptop yazim sahnesi, aynı yükseklikte (480×600 container uyumlu).
+
+---
+
 ## 2026-04-21 — Pass 10 #3-5 bundle: hakkimizda img + logo parite + footer links
 
 **Durum:** 3 madde tek commit (`5d5a179`). Tuna 3 feedback'i ayni flow'da topladi, onay "bitince hepsini pushla".

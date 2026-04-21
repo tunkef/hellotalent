@@ -1,6 +1,7 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 21 Nisan 2026 | Asama 80.33 — Pass 10 #1-5 push edildi
-> Aktif Odak: Pass 10 #3-5 bundle (hakkimizda img + logo parite + footer links), commit `5d5a179`.
+> Son guncelleme: 21 Nisan 2026 | Asama 80.34 — Pass 10 #1-6 push edildi
+> Aktif Odak: Pass 10 #6 — iletisim hero video swap (Pexels 5492870, commit `1916d05`).
+> Pass 10 #6 (`1916d05`): `hero-iletisim.mp4` 463→195KB, 496×608 → 480×600 (4:5 exact). Poster 26→16KB. iletisim.html cache-bust `?v=20260421p10d`. TDD 10 PASS.
 > Pass 10 #1 (`79083ac`): hero video swap. index.html `hero-aday.mp4` + `hero-isveren.mp4` Pexels. Aday 540→231KB, kurumsal 410→154KB. Cache-bust `?v=20260421p10`.
 > Pass 10 #2 (`e15c85b`): auth gorseller. `auth-aday.webp` + `auth-kurumsal.webp` 784×1168 → 800×1000 4:5 Pexels. giris/uye-ol cache-bust `?v=20260421p10b`.
 > Pass 10 #3 (`5d5a179`): hakkimizda hero video → img. `hero-hakkimizda.webp` 1000×1250 78KB Pexels. mp4+poster silindi (-755KB repo). K-041 reduced-motion script kaldirildi. Cache-bust `?v=20260421p10c`.
