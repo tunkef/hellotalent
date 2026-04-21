@@ -1621,3 +1621,97 @@ html[data-theme="dark"] .wlc-modal__progress-track {
 }
 .wlc-modal__cta:active { transform: translateY(0); }
 
+.wlc-modal__snooze {
+  display: block;
+  width: 100%;
+  margin-top: 10px;
+  background: transparent;
+  border: 0;
+  color: var(--text-muted, #6B7280);
+  font-family: var(--font-body);
+  font-size: 13.5px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 8px;
+  transition: color 0.15s, background 0.15s;
+}
+.wlc-modal__snooze:hover {
+  color: var(--text-primary);
+  background: rgba(0, 0, 0, 0.03);
+}
+html[data-theme="dark"] .wlc-modal__snooze:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* ── Milestone Toast (K-068) — completion 50/75/100 tebrik ── */
+.ht-mstone-toast[hidden] { display: none !important; }
+.ht-mstone-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 28px;
+  transform: translateX(-50%) translateY(20px);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--bg-surface, #ffffff);
+  border: 1px solid var(--border-subtle, #E5E7EB);
+  border-radius: 14px;
+  padding: 14px 20px 14px 16px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.18);
+  z-index: 11000;
+  max-width: 420px;
+  opacity: 0;
+  transition: opacity 0.28s ease, transform 0.32s cubic-bezier(0.25, 0.8, 0.3, 1);
+  pointer-events: none;
+}
+.ht-mstone-toast.is-visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+  pointer-events: auto;
+}
+html[data-theme="dark"] .ht-mstone-toast {
+  background: var(--editorial-card, #111827);
+  border-color: var(--editorial-hairline-strong, rgba(255,255,255,0.14));
+}
+.ht-mstone-toast__icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--green, #16a34a);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  animation: mstoneIconPop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s backwards;
+}
+@keyframes mstoneIconPop {
+  0%   { transform: scale(0); }
+  100% { transform: scale(1); }
+}
+.ht-mstone-toast__title {
+  font-family: var(--font-head, 'Bricolage Grotesque', sans-serif);
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.005em;
+  line-height: 1.2;
+  margin-bottom: 2px;
+}
+.ht-mstone-toast__body {
+  font-size: 12.5px;
+  line-height: 1.4;
+  color: var(--text-muted, #6B7280);
+}
+
+/* ── Wizard progress bar pulse on step advance ── */
+.wz-progress-bar.is-pulse {
+  animation: wzProgressPulse 0.7s ease;
+}
+@keyframes wzProgressPulse {
+  0%   { box-shadow: 0 0 0 0 rgba(201, 78, 40, 0.45); }
+  60%  { box-shadow: 0 0 0 6px rgba(201, 78, 40, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(201, 78, 40, 0); }
+}
+

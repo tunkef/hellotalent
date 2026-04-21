@@ -1,5 +1,50 @@
 # HelloTalent AI-COLLAB — Aktif Calisma Defteri
 
+## 2026-04-21 — K-068 UX triple: snooze + milestone + wizard pulse (Asama 80.26)
+
+**Durum:** Tuna welcome modal (80.25) sonrası "EK uc önerilerini de ekle" — 3 ek UX katmanı.
+
+### 1. "Sonra hatırlat" linki
+
+Modal CTA altında ikincil link. Tıklanınca `sessionStorage.setItem('ht_wlc_snoozed','1')` → bu oturumda tekrar gelmez. Yeni oturumda completion hâlâ <25 ise tekrar gelir. Agresif hissettirmeden hatırlatma devam eder.
+
+### 2. Milestone toast (50 / 75 / 100)
+
+Completion geçişlerinde tebrik mesajı — 4.2s bottom-center slide-up.
+
+- %50 → "Yarı yoldasın · Markalar profilini fark etmeye başladı."
+- %75 → "Neredeyse tamam · Son birkaç alan seni öne çıkarır."
+- %100 → "Profilin tam kapasitede · Artık sana uygun her fırsatla eşleşebilirsin."
+
+Dedupe: `localStorage.ht_milestones_seen` = `[50, 75, 100]`. Bir kere geçtiyse tekrar gösterme.
+
+Hook: `window.updateCompletionUI` wrap edildi — profil-summary.js'deki orijinal çağrıldıktan sonra `_htCheckMilestones()` tetiklenir. `_lastPct` track edilir, eşik geçişi tespit.
+
+### 3. Wizard step advance pulse
+
+`wizGoTo(step)` wrap — ileri/geri geçişlerinde `.wz-progress-bar` üzerinde `.is-pulse` class toggling → CSS keyframe ripple (box-shadow 0→6px vermillion). Tekrar set etmek için `remove + reflow + add` pattern.
+
+### Dosyalar
+
+| Dosya | Değişiklik |
+|-------|-----------|
+| `profil.html` | Snooze button, milestone toast markup (icon + title + body) |
+| `css/profil-extras.css` | `.wlc-modal__snooze`, `.ht-mstone-toast` + icon pop keyframe + slide-in, `.wz-progress-bar.is-pulse` keyframe |
+| `profil-bootstrap.js` | Snooze handler (sessionStorage), milestone check + toast (localStorage dedupe), wizGoTo wrap |
+
+### Doğrulama
+
+- k068-ux-wlc-snooze-{dark,light}.png: Modal + "Sonra hatırlat" link CTA altında
+- k068-ux-mstone-{dark,light}.png: Milestone toast bottom-center, yeşil ✓ ikon + başlık + gövde
+
+### Notlar
+
+- `updateCompletionUI` wrap yapılırken `window.updateCompletionUI = function(){...}`. Eski ref `_origUpdate` → closure'da tutulur, infinite recursion yok.
+- `sessionStorage` vs `localStorage` — snooze session-scope (tab/browser kapanınca reset), milestone permanent (kullanıcı tekrar-tekrar görmesin).
+- Reduced motion kullanıcıları için ilerde `@media (prefers-reduced-motion)` ile animasyonlar kapanabilir.
+
+---
+
 ## 2026-04-21 — K-068 welcome modal — onboarding nag (Asama 80.25)
 
 **Durum:** Tuna test hesabı silindi + tekrar kayıt oldu, signup → wizard flow başarılı. Tuna: yeni kayıtta wizard'a gelince 1 kerelik bilgilendirme popup istedi. Ek kural: "kişi profilini hiç doldurmadıysa her girişte gelsin, %25'ten itibaren doldurduysa bir daha gelmesin".

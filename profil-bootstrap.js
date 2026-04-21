@@ -259,9 +259,12 @@ function _htApplyCareerGoalPrefill() {
 
   // K-068: Welcome modal — profile completion < 25% için her girişte göster.
   // ≥25 olduğunda artık sus (kullanıcı başladı, engel olma).
+  // "Sonra hatırlat" → sessionStorage ile aynı oturumda suppressed.
   try {
     var _pct = (typeof calculateCompletion === 'function') ? (calculateCompletion() || 0) : 0;
-    if (_pct < 25) {
+    var _snoozed = false;
+    try { _snoozed = sessionStorage.getItem('ht_wlc_snoozed') === '1'; } catch (_) {}
+    if (_pct < 25 && !_snoozed) {
       var wlc = document.getElementById('wlc-modal');
       if (wlc) {
         var wlcFill = document.getElementById('wlc-progress-fill');
@@ -274,10 +277,16 @@ function _htApplyCareerGoalPrefill() {
           wlc.hidden = true;
           document.body.style.overflow = '';
         };
+        var snoozeWlc = function() {
+          try { sessionStorage.setItem('ht_wlc_snoozed', '1'); } catch (_) {}
+          closeWlc();
+        };
         var btnStart = document.getElementById('wlc-modal-start');
         var btnX = document.getElementById('wlc-modal-close-x');
+        var btnSnooze = document.getElementById('wlc-modal-snooze');
         if (btnStart) btnStart.addEventListener('click', closeWlc);
         if (btnX) btnX.addEventListener('click', closeWlc);
+        if (btnSnooze) btnSnooze.addEventListener('click', snoozeWlc);
         wlc.addEventListener('click', function(e) {
           if (e.target === wlc) closeWlc();
         });
@@ -290,6 +299,81 @@ function _htApplyCareerGoalPrefill() {
       }
     }
   } catch (e) { console.warn('welcome modal skipped:', e); }
+
+  // K-068: Milestone toast + wizard pulse — completion % değiştiğinde 50/75/100
+  // eşiklerini geçince tebrik. localStorage 'ht_milestones_seen' ile kalıcı dedupe.
+  // Wizard ileri butonunda progress bar pulse.
+  try {
+    var MILESTONES = [
+      { pct: 50,  title: 'Yarı yoldasın',       body: 'Markalar profilini fark etmeye başladı.' },
+      { pct: 75,  title: 'Neredeyse tamam',      body: 'Son birkaç alan seni öne çıkarır.' },
+      { pct: 100, title: 'Profilin tam kapasitede', body: 'Artık sana uygun her fırsatla eşleşebilirsin.' }
+    ];
+    var mstoneToast = document.getElementById('ht-mstone-toast');
+    var _mstoneTimer = null;
+    var _getSeen = function() {
+      try { return JSON.parse(localStorage.getItem('ht_milestones_seen') || '[]'); } catch (_) { return []; }
+    };
+    var _markSeen = function(pct) {
+      var seen = _getSeen();
+      if (seen.indexOf(pct) === -1) {
+        seen.push(pct);
+        try { localStorage.setItem('ht_milestones_seen', JSON.stringify(seen)); } catch (_) {}
+      }
+    };
+    var _showMstone = function(m) {
+      if (!mstoneToast) return;
+      var titleEl = document.getElementById('ht-mstone-toast-title');
+      var bodyEl = document.getElementById('ht-mstone-toast-body');
+      if (titleEl) titleEl.textContent = m.title;
+      if (bodyEl) bodyEl.textContent = m.body;
+      mstoneToast.hidden = false;
+      void mstoneToast.offsetWidth; // force reflow for transition
+      mstoneToast.classList.add('is-visible');
+      if (_mstoneTimer) clearTimeout(_mstoneTimer);
+      _mstoneTimer = setTimeout(function() {
+        mstoneToast.classList.remove('is-visible');
+        setTimeout(function() { mstoneToast.hidden = true; }, 350);
+      }, 4200);
+    };
+    var _lastPct = _pct;
+    window._htCheckMilestones = function() {
+      var curPct = (typeof calculateCompletion === 'function') ? (calculateCompletion() || 0) : 0;
+      var seen = _getSeen();
+      for (var i = 0; i < MILESTONES.length; i++) {
+        var m = MILESTONES[i];
+        if (curPct >= m.pct && _lastPct < m.pct && seen.indexOf(m.pct) === -1) {
+          _showMstone(m);
+          _markSeen(m.pct);
+          break; // one at a time
+        }
+      }
+      _lastPct = curPct;
+    };
+    // Hook updateCompletionUI — wrap existing fn
+    if (typeof window.updateCompletionUI === 'function') {
+      var _origUpdate = window.updateCompletionUI;
+      window.updateCompletionUI = function() {
+        _origUpdate.apply(this, arguments);
+        try { window._htCheckMilestones(); } catch (_) {}
+      };
+    }
+    // Wizard step advance pulse — wrap wizGoTo
+    if (typeof window.wizGoTo === 'function') {
+      var _origGo = window.wizGoTo;
+      window.wizGoTo = function(step) {
+        _origGo.apply(this, arguments);
+        try {
+          var bar = document.querySelector('.wz-progress-bar');
+          if (bar) {
+            bar.classList.remove('is-pulse');
+            void bar.offsetWidth;
+            bar.classList.add('is-pulse');
+          }
+        } catch (_) {}
+      };
+    }
+  } catch (e) { console.warn('milestone/pulse hooks skipped:', e); }
 
   // Signal that async bootstrap is complete — hash restore waits for this
   window._htBootstrapDone = true;
