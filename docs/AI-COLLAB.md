@@ -1,5 +1,107 @@
 # HelloTalent AI-COLLAB — Aktif Calisma Defteri
 
+## 2026-04-21 — Pass 7 kapanis: mobile hero order + 6 story portresi + CLATU v3 (Asama 80.28)
+
+**Durum:** K-068 kapandiktan sonra Pass 7+ acik maddeler: hakkimizda/iletisim hero video, aday + kurumsal story portreleri, CLATU memory video spec, Grok prompt hygiene. Tuna sorusu "CLATU memory bugun kullanilsa canlidakine benzer mi?" → docs drift tetikledi.
+
+### 1. CLATU memory audit + v3 upgrade
+
+v2 memory (2 gun eski) Pass 1-6 evolution'unu kapsamiyordu. Canli index vs spec karsilastirma gap'leri:
+- Bricolage Grotesque 800 + DM Mono eksik (sadece Plus Jakarta)
+- Navy hex yanlis (`#0A0E27` → dogrusu `#1E2D5E`, Pass 1 fix)
+- Hero video pattern yok (Pass 5 Grok interview MP4)
+- Seg-toggle system yok (Aday verm / Kurumsal navy)
+- Dark mode OS-only yok (Pass 4 manuel toggle kaldirilmisti)
+- Rocket Mortgage imperative tone yok
+- A11y baseline yok (skip-to, reduced-motion, aria)
+
+**v3 upgrade:** `~/.claude/projects/-Users-peopleintk/memory/project_clatu_style.md` 14 section, 550 satir. §4 Hero altinda tam video spec (6sn H.264 CRF 23, `-an`, faststart, poster JPG, CSP `media-src 'self'`, reduced-motion, aspect 4:5, ≤1MB) + Grok prompt template (aday POV / kurumsal ters / hakkimizda team / iletisim warm support) + negative prompt kalibi (`no hijab, no Middle Eastern stereotypes, European Mediterranean Turkish features`). MEMORY.md index line v3.
+
+### 2. Hakkimizda + iletisim hero video drift kesfi
+
+§5a madde 1 "acik is" diye gosteriyordu, ancak 19 Nis 22:24-31'de zaten yapilmisti. Asset + markup + reduced-motion script hepsi canlida:
+- `assets/v2/hero-hakkimizda.mp4` (738KB) + poster (36KB)
+- `assets/v2/hero-iletisim.mp4` (474KB) + poster (27KB)
+- `hakkimizda.html:197-202` `.about-hero-vis` + `<video class="hero-vid">`
+- `iletisim.html:241-246` `.contact-hero-vis` + video
+- K-051 reduced-motion script iki dosyada da
+
+Sonuc: kod gercekligi docs'u geciyor. Madde kapatildi.
+
+### 3. Index mobile hero order fix (Tuna screenshot)
+
+Tuna mobile screenshot'ta "ilk CTA gelmiyor, video geliyor" dedi. Kok sebep:
+
+`shared-v2.css:858`
+```css
+.hero-portrait { aspect-ratio: 3 / 4; max-height: 520px; order: -1; }
+```
+
+`order: -1` Pass 1'de "image first on mobile" icin eklenmisti. Pass 5'te static portre → video hero'ya gecince ters etki: video tum viewport'u kaplayip CTA'yi alta itiyordu.
+
+**Fix:** `order: -1` kaldirildi, yorum guncellendi:
+```css
+.hero-portrait { aspect-ratio: 3 / 4; max-height: 520px; } /* DOM order: copy first */
+```
+
+**Kapsam:** sadece index (aday + kurumsal segment ayni `.hero-portrait` class paylasir). Hakkimizda (`.about-hero-vis`) + iletisim (`.contact-hero-vis`) order override yoktu — DOM order'a uyuyorlardi, regression yok.
+
+**Cache-bust:** `shared-v2.css?v=20260420b` → `v=20260421hero`, 4 sayfada (index/hakkimizda/iletisim/yasal).
+
+**Dogrulama:** `ht-hero-mobile-order.mjs` — 4 sayfa × light/dark mobile 390×844 = 8 view, hepsinde copyTop < visTop. Commit: `60b26dc`.
+
+### 4. 6 Turk story portresi (Grok Imagine)
+
+Pass 6'dan kalan Guney Asya drift fix. Tuna: "her bir aday ve hikayesi ozelinde portre durusu promptu yaz grok tan alacagim." 6 prompt yazildi, Tuna Grok'tan aldi, indirdi.
+
+Hikaye-ozgu durus:
+- **Selin A.** (Sephora Kategori Planlama) — cross-arm ozguven, camel blazer + cream turtleneck, beauty retail shelves
+- **Kerem T.** (Zara Brand Experience) — concrete column lean, gri sweater, phone, sakin strateji
+- **Zeynep Y.** (Koton Satis Direktoru) — masa kenari tablet, camel blazer, retail backroom, lider enerjisi
+- **Ece K.** (Sephora IK Direktoru) — navy blazer + silk blouse, kahve, glass exec room, silver highlight
+- **Burak M.** (Zara TR Talent Lead) — oxford shirt + laptop, candidate grid monitor, wood panel ofis
+- **Merve S.** (Koton IK) — burgundy blazer, tablet, window profile, low chignon, strategic advantage
+
+Hepsi CLATU v3 §4 casting brief uyumlu (beyaz Turk 25-32, Mediterranean, editorial studio, negative prompt).
+
+**Kurumsal 3 card onceden aday asset'lerini paylasiyordu** (`story-selin/kerem/zeynep.webp`). Artik ayri asset'ler: `story-ece/burak/merve.webp`.
+
+**cwebp q=70 toplam 164KB** (eski 3 asset 150KB idi). Native 1168×784, `object-fit:cover` ile 5:4 card crop.
+
+**Markup:** `index.html` 6 `.story-portrait img` src + alt update + cache-bust `?v=20260421p`.
+
+**Dogrulama:** `ht-story-portraits-verify.mjs` — 6 img naturalWidth > 0, src expected mapping match. `ht-stories-shot.mjs` — aday + kurumsal × light/dark = 4 screenshot, Tuna onayladi.
+
+Commit: `dcd3fa6`.
+
+### Degisen dosyalar
+
+- `shared-v2.css:858` (order: -1 kaldirildi)
+- `index.html` (6 img src + alt + cache-bust, hero-portrait bagli img lari)
+- `hakkimizda.html` / `iletisim.html` / `yasal.html` (cache-bust)
+- `assets/v2/story-{selin,kerem,zeynep,ece,burak,merve}.webp` (3 overwrite + 3 yeni)
+- `ht-hero-mobile-order.mjs` + `ht-story-portraits-verify.mjs` (regression guard)
+- `docs/CURRENT-STATE.md` §5a + §6 + backlog #24
+- `docs/AI-COLLAB.md` (bu entry)
+- `~/.claude/.../memory/project_clatu_style.md` v3 (memory, repo disi)
+
+### Risk
+
+Dusuk. Sadece CSS order removal + img src update. Desktop etki yok (grid 2-col intact). Hakkimizda/iletisim zaten DOM order'da. Cache-bust query string yeni, browser otomatik yeni asset'i ceker.
+
+### Insight
+
+Pass 1-6 boyunca CLATU memory guncellenmedi, kimse fark etmedi. Tuna'nin "memory'den yeni tasarim farkli cikar mi?" sorusu gap'i tetikledi → v3 upgrade. Yeni kural (proje disinda): **her Pass sonunda memory review**. Ayrica docs-first yaklasimla: §5a "acik is" olmasi kullanici+AI'yi yaniltti — 19 Nis'ta yapilmis is tekrar "yapilacak" olarak algilandi. Docs drift gercek is kadar tehlikeli.
+
+### Sonraki adim
+
+Pass 8 acik. Pass 7 sonrasi gundem:
+- Hakkimizda/iletisim hero video Grok promptlari memoryde yok — v3 §4 Hero template'ine spesifik variant ekle (halen "aday/kurumsal/hakkimizda/iletisim" satirlari var ama promptlar eksik)
+- Hero badge hakkimizda + iletisim'de yok (index'te var — "Bugun 3 marka daveti" / "Bu hafta 28 aday"); consistency icin eklenebilir
+- Rocket Mortgage imperative tone hakkimizda/iletisim hero copy'lerinde yarim — "Retail dunyasinda bag kurma bicimini degistiriyoruz" pasif, index "Artik basvuru yok" gibi komut kipi degil
+
+---
+
 ## 2026-04-21 — K-068 header dark mode saydamlık fix (Asama 80.27)
 
 **Durum:** Tuna screenshot paylaştı — profil.html dark mode'da sticky header arkasındaki içerik geçiyor. `rgba(17,24,39,0.78)` çok saydam, backdrop-filter yok.

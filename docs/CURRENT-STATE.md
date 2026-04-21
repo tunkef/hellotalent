@@ -1,6 +1,6 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 21 Nisan 2026 | Asama 80 — K-068 kapanis (rollback + runtime bugfix'ler + onboarding UX + header dark mode fix)
-> Aktif Odak: K-068 iki gun boyunca isleyen runtime fix sweep'i tamamlandi. 7 commit (80.21 rollback → 80.27 header opak). AI CV edge function + secret + kod olduğu gibi saklandı (Task #10 karar: status quo, geri dönüş kapısı acik). Sonraki oturum: public-site v2 Pass 7+ (hakkimizda/iletisim hero video, story portrelerinin yenilenmesi).
+> Son guncelleme: 21 Nisan 2026 | Asama 80.28 — Pass 7 tamamlandi (hero mobile order fix + 6 Turk story portresi)
+> Aktif Odak: K-068 (80.21-80.27) + Pass 7 (80.28) kapandi. Pass 7 icerigi: (a) hakkimizda + iletisim hero video zaten 19 Nis'te canlidaymis (docs drift) — dogrulandi, (b) index mobile hero order fix (video once CTA'yi itiyordu → `.hero-portrait { order:-1 }` kaldirildi), (c) 3 aday + 3 kurumsal story portresi Grok ile yenilendi (Guney Asya drift → CLATU v3 casting brief uyumlu beyaz Turk tipoloji), (d) CLATU memory v2 → v3 guncellendi (video hero spec + Bricolage + Rocket Mortgage imperative + a11y + dark mode OS-only). Sonraki oturum: Pass 8 acik (onerilecek).
 
 ## 1. Proje Ozeti
 
@@ -182,17 +182,50 @@ hellotalent.ai, Turkiye perakende sektorune ozel bir yetenek pazaryeri. Adaylar 
     - **80.27 Header opak** — Dark mode `.header` `rgba(17,24,39,0.78)` → `rgba(11,15,28,0.96)` + `backdrop-filter:blur(16px) saturate(1.4)`. İçerik header arkasında artık görünmez.
     - Commit: `65221ce → 5a991a0` (7 commit). Cache-bust chain `v=20260420k068` → `k068wlc` → `k068d`. Task #10 (AI edge function + secret temizliği) karar: **status quo** — kod + function + secret saklandı, K-068 rollback sadece UI gizledi.
 
+24. ~~**Public-site v2 Pass 7 kapanis**~~ — ✅ TAMAMLANDI (21 Nisan 2026, Asama 80.28). Iki commit: `60b26dc` (hero mobile order fix) + `dcd3fa6` (6 Turk story portresi). Icerik: (1) Hakkimizda + iletisim hero video zaten 19 Nis'te canlidaymis — §5a yanlis acik is gosteriyordu (docs drift). (2) Index mobilde `.hero-portrait { order:-1 }` Pass 5 video hero'ya gecince ters etki yapiyordu; kaldirildi, DOM order aktif. (3) 6 story portresi Grok Imagine ile yenilendi (3 aday overwrite + 3 kurumsal yeni: ece/burak/merve). CLATU v3 casting brief uyumlu beyaz Turk tipoloji, her biri hikaye-ozgu durus. cwebp q=70 toplam 164KB. (4) CLATU memory v2→v3 upgrade (Pass 1-6 evolution + video spec + Grok prompt template + a11y + Rocket Mortgage imperative). Regression script: `ht-hero-mobile-order.mjs` + `ht-story-portraits-verify.mjs`. Detay: §5a.
+
 22. ~~**Public-site v2 feedback iterasyonu (Pass 1-6)**~~ — ✅ TAMAMLANDI (19 Nisan 2026). 6 commit peş peşe canlıya gitti. Palet drift fix (`--ink #0A0E27 → navy #1E2D5E`), dark mode toggle + contrast tweak (pass 1), footer canonical + logo 26→38px bold + şirket adı "Peoplein İK Ltd. Şti." + mockup badge/story disclaimer temizlik + button radius 999→10px + eyebrow 18px margin + seg-toggle `:has()` renk davranışı (aday verm / kurumsal navy, dark glow) + Hakkımızda split-2 → `.split-card` (Aday sol / Kurumsal sağ, trust-pill chip'ler silindi, eşit yükseklik) + Hakkımızda fact ortalı + İletişim "Hesap aç" CTA → `uye-ol.html?tab=kurumsal` + iletişim Google Maps iframe (CSP `frame-src`) (pass 2). Footer Aday kolondan Hakkımızda drop, Bilgi kolonu canonical. Hero alignment: hakkimizda + iletişim top padding index ile hizalandı (48-96/64-112 clamp), `.about-hero-vis` 16:10 → 4:5, `.contact-hero-vis` 4:3 → 4:5 (pass 3). Index header Giriş Yap segment-aware (`switchSeg` href update `?tab=aday|ik`, initial sync). `#k-nasil` eyebrow → "Neden HelloTalent" + retail spesifik lede. CLATU v2 memory'de portre casting brief (beyaz Türk, 25-32, yakışıklı/güzel). Dark mode toggle KALDIRILDI, OS `prefers-color-scheme` only + `matchMedia('change')` listener ile live takip (pass 4). Index hero ikiliye Grok interview video entegrasyonu: `hero-aday.mp4` (540KB) + `hero-isveren.mp4` (410KB), 6sn seamless loop, autoplay/muted/loop/playsinline, ffmpeg first-frame poster (30KB), `object-fit: cover`, CSP `media-src 'self'` (pass 5). Font Bricolage footer logo `font-variation-settings: wght 800, opsz 14`. Cache bump chain: `v=20260419` → `d` → `e` → `f` → `g`. Commit'ler: `8050cce → dd79677 → ae13763 → 377cf9b → 06e9599 → 28e270f → 93fee09 → a1bad9e`. **Seg-toggle pill radius intentional olarak 999px bırakıldı (video üstünde estetik).**
 
-## 5a. Açık İşler — Public-site v2 Pass 7+ (Sonraki Oturum)
+## 5a. Public-site v2 Pass 7 — TAMAMLANDI (21 Nisan 2026)
 
-1. **Hakkımızda + İletişim hero video** — index'teki Grok interview video pattern'ini o iki sayfaya da taşı. Aynı `<video autoplay muted loop playsinline poster>` + `object-fit: cover` + 4:5 aspect. Yeni prompt variant'ları (hakkımızda: team office cinematic, iletişim: warm support/handshake). Grok ile üret, Tuna onayla, ffmpeg ile optimize et.
-2. **Aday story card portreleri** — `story-selin.webp`, `story-kerem.webp`, `story-zeynep.webp` hala eski Recraft generation, Güney Asya'ya kaymış. Grok ile Türk modeller (aynı casting brief: beyaz Türk, 25-32, yakışıklı/güzel, warm smile, Mediterranean features, editorial studio). Landscape 5:4 ya da 1:1. Ana lede "temsilidir" notu kaldırıldı, yeni portrelerle uyumlu olacak.
-3. **Kurumsal story card portreleri** — kurumsal segment'teki 3 story card (Sephora İK, Zara Talent, Koton HR) aynı AI drift sorunu. Aynı yenileme.
-4. **CLATU memory video spec** — `project_clatu_style.md` içine video section ekle: 6sn seamless loop, H.264 MP4 CRF 23, audio strip (ffmpeg `-an`), faststart, ilk frame poster JPG, CSP `media-src 'self'`, aspect 2:3 veya 4:5, boyut hedef ≤1MB. Grok prompt şablonu (aday POV over-the-shoulder + kurumsal POV ters over-shoulder).
-5. **Grok prompt hygiene** — "no hijab, no Middle Eastern stereotypes, European Mediterranean Turkish features" negative prompt kalıbını story + hakkımızda + iletişim prompt'larına da uygula.
+Pass 7 Tuna oturumu: docs drift keşfi + mobile hero order fix + 6 Türk story portresi. CLATU memory v2 → v3 upgrade. Tüm açık maddeler kapandı.
 
-Commit listesi son oturum:
+1. ~~**Hakkımızda + İletişim hero video**~~ — ✅ ZATEN CANLIDAYDI (19 Nis 22:24 / 22:31 commit). Docs drift idi — §5a "açık iş" olarak kalmıştı. Dogrulama: `hakkimizda.html:197-202` `.about-hero-vis` + `<video class="hero-vid">`, `iletisim.html:241-246` `.contact-hero-vis` + video. Poster JPG'ler mevcut. Reduced-motion K-051 script iki dosyada da aktif. Asset boyutları: hakkimizda.mp4 738KB + poster 36KB, iletisim.mp4 474KB + poster 27KB.
+
+2. ~~**Index mobile hero order fix**~~ — ✅ YENİ BULGU (Tuna screenshot: mobilde video CTA'yı itiyor). `shared-v2.css:858` `.hero-portrait { order: -1 }` kuralı Pass 1'de "image first on mobile" için eklenmişti, Pass 5'te video hero'ya geçince ters etki yaptı — video tüm viewport'u kaplayıp copy'yi altta bırakıyordu. Fix: `order: -1` kaldırıldı, DOM order (copy önce, video sonra) aktif. Kapsam sadece index; hakkimizda (`.about-hero-vis`) + iletisim (`.contact-hero-vis`) zaten DOM order'a uyuyordu. Cache-bust: `shared-v2.css?v=20260420b` → `v=20260421hero` (4 sayfa: index/hakkimizda/iletisim/yasal). Dogrulama: `ht-hero-mobile-order.mjs` — 4 sayfa × light/dark = 8/8 OK, copyTop < visTop. Commit: `60b26dc`.
+
+3. ~~**Aday story card portreleri**~~ — ✅ `story-selin.webp` / `story-kerem.webp` / `story-zeynep.webp` overwrite. Grok Imagine 5:4 landscape portre, CLATU v3 §4 casting brief (beyaz Türk 25-32, Mediterranean features, editorial studio, negative prompt `no hijab, no Middle Eastern stereotypes`). Her hikaye için özel duruş: Selin cross-arm özgüven (beauty category), Kerem concrete column sakin strateji, Zeynep masa kenarı lider enerjisi. cwebp q=70 → 37KB/22KB/36KB.
+
+4. ~~**Kurumsal story card portreleri**~~ — ✅ YENİ ASSET'LER: `story-ece.webp` + `story-burak.webp` + `story-merve.webp`. Önceden aday asset'lerini paylaşıyorlardı (index.html:435/446/457 `story-selin/kerem/zeynep`) — artık ayrı. Ece K. (Sephora İK Direktörü — glass exec room, kahve, silver highlight), Burak M. (Zara TR Talent Lead — oxford shirt + laptop + candidate grid), Merve S. (Koton İK — burgundy blazer + tablet + strategic advantage). cwebp q=70 → 22KB/29KB/16KB.
+
+5. ~~**CLATU memory video spec + Grok prompt hygiene**~~ — ✅ `~/.claude/projects/-Users-peopleintk/memory/project_clatu_style.md` v2 → v3 upgrade (14 section, 550 satır). Eklenen/düzeltilen: Bricolage Grotesque 800 display + Plus Jakarta body + DM Mono data stack; Navy `#1E2D5E` primary (v2 `#0A0E27` yanlış hex); `§4 Hero` tam video spec (6sn H.264 CRF 23, `-an`, faststart, poster JPG, CSP `media-src 'self'`, reduced-motion, 4:5); seg-toggle system; OS-only dark mode (manual toggle yasak); a11y baseline (skip-to-content, reduced-motion, aria-expanded); Rocket Mortgage bold imperative tone örnekleri; Grok prompt template (aday POV / kurumsal ters / hakkımızda team / iletişim warm support). MEMORY.md index line v3'e döndü. Kapsamı: Pass 1-6 iterasyonlarının tamamı artık spec'te — yeni sayfa tasarlanırsa canlıya benzer çıkar.
+
+### Pass 7 Commit Listesi
+
+| Commit | İş |
+|--------|-----|
+| `60b26dc` | fix: hero mobile order — copy once, video sonra (4 sayfa cache-bust) |
+| `dcd3fa6` | feat: story portreleri — 6 Türk portre (3 aday + 3 kurumsal) |
+
+### Pass 7 Asset Listesi (assets/v2/)
+
+| Asset | Boyut | Durum |
+|-------|-------|-------|
+| `story-selin.webp` | 37KB | overwrite (Grok, Sephora kategori) |
+| `story-kerem.webp` | 23KB | overwrite (Grok, Zara brand exp) |
+| `story-zeynep.webp` | 36KB | overwrite (Grok, Koton satış dir) |
+| `story-ece.webp` | 23KB | **yeni** (Sephora İK direktör) |
+| `story-burak.webp` | 29KB | **yeni** (Zara TR talent lead) |
+| `story-merve.webp` | 16KB | **yeni** (Koton İK) |
+| TOPLAM | **164KB** | 6 asset (önceden 3 asset 150KB) |
+
+### Pass 7 Regression Script
+
+- `ht-hero-mobile-order.mjs` — 4 sayfa × light/dark mobile order check (guard)
+- `ht-story-portraits-verify.mjs` — 6 img naturalWidth + src mapping check
+
+### Önceki (Pass 1-6) Commit Listesi
+
 | Commit | İş |
 |--------|-----|
 | `8050cce` | palet restore + dark mode init (pass 1) |
@@ -215,6 +248,42 @@ Commit listesi son oturum:
 **Sonuc:** T02/T03/T04 otomatik DEFERRED. Onkosula: 50+ aktif pratikci icin T42-lite (topluluk nabzi karti) yeniden degerlendirilir.
 
 ## 6. Son 3 Session Ozeti
+
+### Session 81 (21 Nisan — Asama 80.28: Public-site v2 Pass 7 kapanis)
+
+**Tek odak: Pass 7+ acik maddelerini kapatmak. Docs drift kesfi + mobile hero order fix + 6 Turk story portresi + CLATU memory v2→v3 upgrade.**
+
+**Baslangic:** K-068 kapandi, Pass 7+ acik 5 madde sirada (hakkimizda/iletisim hero video, aday + kurumsal story portreleri, CLATU memory video spec, Grok prompt hygiene). Tuna sorusu: "CLATU memory bugun kullanilsa yeni tasarim canlidakine benzer cikar mi?"
+
+**Bulgular:**
+1. **Docs drift** — CLATU v2 memory Pass 1-6 evolution'unu kapsamiyordu. Live site ≠ memory spec. Font stack (Bricolage eksik), navy hex yanlis (`#0A0E27` yerine `#1E2D5E`), video hero pattern yok, seg-toggle yok, OS-only dark yok, Rocket Mortgage imperative yok. Memory v3 yazildi (14 section, 550 satir).
+2. **Hakkimizda + iletisim hero video zaten canliydi** — 19 Nis 22:24 / 22:31 commit'te yapilmis (Pass 5/6 arasinda). docs/CURRENT-STATE.md §5a yanlis acik is gosteriyordu. Dogrulandi, madde kapatildi.
+3. **Mobile hero order sorunu (Tuna screenshot)** — index'te mobilde video CTA'yi itiyordu. Root cause: `shared-v2.css:858` `.hero-portrait { order:-1 }` (Pass 1'de "image first on mobile" icin eklenmis, Pass 5 video hero'ya gecince ters etki). Fix: order kaldirildi, DOM order aktif. Kapsam sadece index — hakkimizda/iletisim zaten DOM order'a uyuyordu. 4 sayfa cache-bust.
+4. **6 Turk story portresi (Grok Imagine)** — Pass 6'dan kalan Guney Asya drift fix. Her portre hikaye ile uyumlu ozel durus (Selin ozguven, Kerem strateji, Zeynep liderlik, Ece hiz, Burak metod, Merve avantaj). CLATU v3 §4 casting brief (beyaz Turk 25-32, Mediterranean, negative prompt). Kurumsal 3 card artik kendi asset'lerini kullaniyor (onceden aday asset'lerini paylasiyorlardi). cwebp q=70 → toplam 164KB.
+
+**Iki commit:**
+- `60b26dc` fix: hero mobile order — copy once video sonra (4 sayfa)
+- `dcd3fa6` feat: story portreleri — 6 Turk portre (3 aday + 3 kurumsal)
+
+**CLATU memory v3 upgrade (`~/.claude/projects/-Users-peopleintk/memory/project_clatu_style.md`):**
+Section 1 tipografi (Bricolage/Jakarta/DM Mono), 2 renk (`#1E2D5E` navy + ultra-dark ayrimi), 3 seg-toggle, 4 hero video spec + Grok prompt template, 5 kompozisyon pattern'leri, 6 buton, 7 dark mode OS-only, 8 a11y baseline, 9 SEO+security, 10 Rocket Mortgage imperative tone, 11 asset naming, 12 v1/v2 deprecated, 13 foto kaynak kurali, 14 referans. MEMORY.md index line v3 guncel.
+
+**Insight:**
+Pass 1-6 iterasyonlarinda memory drift olurken kimse fark etmedi. Tuna "memory'den yeni tasarim farkli cikar mi?" sorusu gap'i acik etti — yeni kural: her passenin sonunda CLATU memory review. Docs-first yaklasim: CURRENT-STATE §5a guncel olmadigi icin "hakkimizda video yapilmadi" zanni oldu, 19 Nis'ta zaten yapilmisti.
+
+**Degisen dosyalar:**
+- `shared-v2.css` (order: -1 kaldirildi)
+- `index.html` (6 img src + alt + cache-bust)
+- `hakkimizda.html` / `iletisim.html` / `yasal.html` (cache-bust)
+- `assets/v2/story-{selin,kerem,zeynep,ece,burak,merve}.webp` (3 overwrite + 3 yeni)
+- `ht-hero-mobile-order.mjs` + `ht-story-portraits-verify.mjs` (regression guard)
+- `docs/CURRENT-STATE.md` + `docs/AI-COLLAB.md` (bu session)
+- `~/.claude/.../memory/project_clatu_style.md` v3 + `MEMORY.md`
+
+**Sonraki oturum:**
+Pass 8 acik. Oneriler: (a) hakkimizda + iletisim video'larin `hero-hakkimizda.mp4` / `hero-iletisim.mp4` Grok promptlari memoryde yok — v3 §4'e spesifik variant ekle, (b) hero badge (hakkimizda + iletisim) — index'te var, diger iki sayfada yok, consistency icin eklenebilir, (c) Turkcelesme audit — v3 §10 imperative tone hakkimizda/iletisim hero copy'lerinde tam uygulanmadi.
+
+---
 
 ### Session 80 (20-21 Nisan — Asama 80.21-80.27: K-068 Runtime Fix Sweep)
 
