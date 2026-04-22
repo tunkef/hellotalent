@@ -1,0 +1,525 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>hellotalent — mockup: Rocket adaptasyonu</title>
+<meta name="description" content="Mockup: startmyrocketcareer.com narrative yapısını perakende yetenek pazarı mantığına uyarlayan deneysel landing.">
+
+<!-- MOCKUP ONLY. Separate from production index.html. Intentionally breaks HelloTalent's
+     current Clatu-first direction (Vermillion/Navy + Bricolage + cream bg) and explores a
+     bold cobalt / archivo-black / commanding-imperative direction inspired by Rocket
+     Mortgage's career gate. Business logic (aday/isveren, perakende portfolio, mülakat
+     semantics, Turkish UI) preserved. -->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  /* MOCKUP palette — diverges from production */
+  --ink:#0A0E27;
+  --ink-soft:#2A2F4A;
+  --muted:#6F7493;
+  --line:#E8E6DE;
+  --cream:#FAF7F2;
+  --white:#FFFFFF;
+  --cobalt:#2457FF;
+  --cobalt-deep:#1432B8;
+  --cobalt-tint:#E6ECFF;
+  --coral:#FF5A3D;
+  --lemon:#F8E16C;
+
+  --radius:14px;
+  --radius-lg:22px;
+  --shadow-soft:0 1px 2px rgba(10,14,39,.04),0 8px 24px rgba(10,14,39,.06);
+  --shadow-lift:0 2px 4px rgba(10,14,39,.05),0 24px 60px rgba(10,14,39,.12);
+
+  --font-display:'Archivo Black','Manrope',system-ui,sans-serif;
+  --font-body:'Manrope',system-ui,sans-serif;
+  --font-mono:'JetBrains Mono','SFMono-Regular',monospace;
+}
+
+*,*:before,*:after{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;font-family:var(--font-body);color:var(--ink);background:var(--cream);
+  font-size:17px;line-height:1.5;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit}
+
+/* ── LAYOUT PRIMITIVES ─────────────────────────────── */
+.wrap{max-width:1240px;margin:0 auto;padding:0 28px}
+.eyebrow{
+  font-family:var(--font-mono);font-size:12px;font-weight:500;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--muted);
+}
+.eyebrow-dot:before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;
+  background:var(--coral);margin-right:10px;vertical-align:middle;transform:translateY(-1px)}
+
+.h-display{
+  font-family:var(--font-display);font-weight:900;letter-spacing:-.015em;line-height:.95;
+  font-size:clamp(48px,7vw,108px);color:var(--ink);
+}
+.h-display span.mute{color:var(--cobalt)}
+.h-section{
+  font-family:var(--font-display);font-weight:900;letter-spacing:-.01em;line-height:1;
+  font-size:clamp(36px,4.6vw,64px);
+}
+.h-card{font-family:var(--font-display);font-weight:900;font-size:28px;line-height:1.05;letter-spacing:-.01em}
+
+.btn{
+  display:inline-flex;align-items:center;gap:10px;padding:16px 26px;border-radius:999px;
+  font-weight:700;font-size:15px;letter-spacing:.01em;border:0;cursor:pointer;transition:all .18s ease;
+  text-transform:none;
+}
+.btn-primary{background:var(--ink);color:var(--white)}
+.btn-primary:hover{background:var(--cobalt);transform:translateY(-1px)}
+.btn-secondary{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--ink)}
+.btn-secondary:hover{background:var(--ink);color:var(--white)}
+.btn-ghost{background:var(--white);color:var(--ink);box-shadow:var(--shadow-soft)}
+.btn-ghost:hover{background:var(--ink);color:var(--white)}
+.btn svg{width:16px;height:16px}
+
+/* ── NAV ───────────────────────────────────────────── */
+nav.top{
+  position:sticky;top:0;z-index:40;background:rgba(250,247,242,.78);backdrop-filter:saturate(180%) blur(12px);
+  border-bottom:1px solid var(--line);
+}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;padding:18px 0}
+.brand{font-family:var(--font-display);font-size:20px;letter-spacing:-.01em}
+.brand .dot{color:var(--coral)}
+.nav-links{display:flex;align-items:center;gap:28px}
+.nav-links a{font-weight:600;font-size:14px;color:var(--ink-soft);transition:color .15s}
+.nav-links a:hover{color:var(--ink)}
+.nav-cta{display:flex;gap:10px}
+.nav-cta .btn{padding:10px 18px;font-size:13px}
+
+/* ── HERO ──────────────────────────────────────────── */
+.hero{padding:72px 0 96px;position:relative;overflow:hidden}
+.hero-grid{display:grid;grid-template-columns:1.25fr .95fr;gap:56px;align-items:center}
+.hero-copy .tag{margin-bottom:20px}
+.hero-copy h1{margin:0 0 20px}
+.hero-copy .sub{font-size:19px;line-height:1.5;color:var(--ink-soft);max-width:48ch;margin:0 0 34px}
+.hero-cta{display:flex;gap:12px;flex-wrap:wrap}
+.hero-meta{margin-top:40px;display:flex;gap:40px;flex-wrap:wrap}
+.hero-meta .stat{font-family:var(--font-mono);font-size:13px;color:var(--muted)}
+.hero-meta .stat b{display:block;font-family:var(--font-display);font-size:30px;color:var(--ink);letter-spacing:-.01em;margin-bottom:2px}
+
+.hero-portrait{
+  position:relative;aspect-ratio:4/5;border-radius:var(--radius-lg);overflow:hidden;
+  background:var(--cobalt);box-shadow:var(--shadow-lift);
+}
+.hero-portrait img{width:100%;height:100%;object-fit:cover;mix-blend-mode:multiply;opacity:.95}
+.hero-portrait:before{
+  content:"";position:absolute;inset:0;background:
+    radial-gradient(120% 80% at 100% 0%,rgba(255,90,61,.35),transparent 55%),
+    linear-gradient(155deg,var(--cobalt),var(--cobalt-deep));
+  z-index:0;
+}
+.hero-portrait img{position:relative;z-index:1}
+.hero-portrait .badge{
+  position:absolute;z-index:2;left:20px;bottom:20px;display:flex;align-items:center;gap:10px;
+  background:var(--white);padding:10px 14px;border-radius:999px;font-weight:700;font-size:13px;
+  box-shadow:var(--shadow-soft);
+}
+.hero-portrait .badge .pulse{width:9px;height:9px;border-radius:50%;background:var(--coral);
+  box-shadow:0 0 0 0 rgba(255,90,61,.55);animation:pulse 1.6s infinite}
+@keyframes pulse{
+  0%{box-shadow:0 0 0 0 rgba(255,90,61,.55)}
+  70%{box-shadow:0 0 0 14px rgba(255,90,61,0)}
+  100%{box-shadow:0 0 0 0 rgba(255,90,61,0)}
+}
+
+/* ── LOGO STRIP ───────────────────────────────────── */
+.logos{padding:40px 0 8px;border-top:1px solid var(--line)}
+.logos .lead{display:flex;align-items:center;gap:16px;margin-bottom:22px}
+.logos .lead span{font-family:var(--font-mono);font-size:12px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase}
+.logos .lead .line{flex:1;height:1px;background:var(--line)}
+.logos-row{display:grid;grid-template-columns:repeat(6,1fr);gap:28px;align-items:center}
+.logos-row .logo{
+  font-family:var(--font-display);font-size:17px;letter-spacing:-.01em;color:var(--ink-soft);
+  text-align:center;padding:10px 0;opacity:.72;transition:opacity .18s
+}
+.logos-row .logo:hover{opacity:1}
+
+/* ── VALUE PROPS ───────────────────────────────────── */
+section.vp{padding:112px 0}
+.vp-head{max-width:720px;margin-bottom:64px}
+.vp-head h2{margin:12px 0 18px}
+.vp-head p{font-size:18px;color:var(--ink-soft);line-height:1.6;max-width:52ch}
+.vp-row{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.vp-card{
+  background:var(--white);border-radius:var(--radius-lg);padding:32px;
+  border:1px solid var(--line);transition:transform .2s ease,box-shadow .2s ease;
+  position:relative;overflow:hidden;
+}
+.vp-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-lift)}
+.vp-card .num{
+  font-family:var(--font-mono);font-size:12px;color:var(--cobalt);font-weight:700;letter-spacing:.12em;
+  margin-bottom:24px;display:block
+}
+.vp-card h3{margin:0 0 12px}
+.vp-card p{font-size:15.5px;line-height:1.55;color:var(--ink-soft);margin:0 0 24px}
+.vp-card .vp-art{
+  margin:-32px -32px 24px;height:180px;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,var(--cobalt-tint),#F3F1E8);
+}
+.vp-card:nth-child(2) .vp-art{background:linear-gradient(135deg,#FFE0D7,#F8E16C)}
+.vp-card:nth-child(3) .vp-art{background:linear-gradient(135deg,#E0F7EC,var(--cobalt-tint))}
+.vp-card a.more{
+  font-weight:700;font-size:14px;color:var(--cobalt);display:inline-flex;align-items:center;gap:6px;
+}
+.vp-card a.more svg{width:14px;height:14px;transition:transform .18s}
+.vp-card a.more:hover svg{transform:translateX(3px)}
+
+/* ── STORIES ───────────────────────────────────────── */
+section.stories{padding:112px 0;background:var(--ink);color:var(--cream);position:relative;overflow:hidden}
+section.stories:before{
+  content:"";position:absolute;inset:0;background:
+    radial-gradient(40% 40% at 10% 0%,rgba(36,87,255,.35),transparent 70%),
+    radial-gradient(30% 30% at 95% 100%,rgba(255,90,61,.28),transparent 70%);
+}
+section.stories .wrap{position:relative}
+.stories-head{display:flex;align-items:flex-end;justify-content:space-between;gap:32px;margin-bottom:56px;flex-wrap:wrap}
+.stories-head h2{color:var(--cream);margin:12px 0 0;max-width:14ch}
+.stories-head .eyebrow{color:rgba(250,247,242,.55)}
+.stories-head .controls{display:flex;gap:8px}
+.stories-head .controls button{
+  width:44px;height:44px;border-radius:50%;background:transparent;color:var(--cream);cursor:pointer;
+  border:1.5px solid rgba(250,247,242,.35);display:inline-flex;align-items:center;justify-content:center;
+  transition:all .15s;
+}
+.stories-head .controls button:hover{background:var(--cream);color:var(--ink);border-color:var(--cream)}
+.stories-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.story{
+  background:rgba(250,247,242,.06);backdrop-filter:blur(6px);
+  border:1px solid rgba(250,247,242,.14);border-radius:var(--radius-lg);overflow:hidden;
+  transition:transform .2s ease,background .2s ease;
+}
+.story:hover{transform:translateY(-4px);background:rgba(250,247,242,.1)}
+.story-portrait{aspect-ratio:5/4;background:var(--cobalt);overflow:hidden;position:relative}
+.story-portrait img{width:100%;height:100%;object-fit:cover}
+.story-body{padding:26px 28px 32px}
+.story-body blockquote{
+  margin:0 0 22px;font-size:17px;line-height:1.55;color:var(--cream);font-weight:500;
+}
+.story-body blockquote:before{content:"\201C";font-family:var(--font-display);font-size:42px;line-height:0;
+  color:var(--coral);margin-right:4px;vertical-align:-20px}
+.story-meta{display:flex;align-items:center;justify-content:space-between;font-size:13px;font-family:var(--font-mono)}
+.story-meta .who{color:var(--cream);font-weight:700}
+.story-meta .where{color:rgba(250,247,242,.55)}
+
+/* ── CLOSING CTA ──────────────────────────────────── */
+section.closing{padding:112px 0;background:var(--cobalt);color:var(--white);position:relative;overflow:hidden}
+section.closing:before{
+  content:"";position:absolute;inset:0;
+  background:
+    radial-gradient(60% 60% at 100% 100%,rgba(255,90,61,.4),transparent 60%),
+    radial-gradient(40% 40% at 0% 0%,rgba(248,225,108,.35),transparent 60%);
+}
+section.closing .wrap{position:relative;text-align:center;max-width:820px}
+section.closing h2{color:var(--white);margin:18px 0 18px;font-size:clamp(44px,6vw,84px)}
+section.closing p{font-size:18px;color:rgba(255,255,255,.85);max-width:52ch;margin:0 auto 36px}
+section.closing .hero-cta{justify-content:center}
+section.closing .btn-primary{background:var(--white);color:var(--ink)}
+section.closing .btn-primary:hover{background:var(--ink);color:var(--white)}
+section.closing .btn-secondary{background:transparent;color:var(--white);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.6)}
+section.closing .btn-secondary:hover{background:var(--white);color:var(--ink);box-shadow:none}
+section.closing .eyebrow{color:rgba(255,255,255,.7)}
+section.closing .eyebrow-dot:before{background:var(--lemon)}
+
+/* ── FOOTER ───────────────────────────────────────── */
+footer{background:var(--ink);color:var(--cream);padding:64px 0 40px}
+.foot-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:40px;margin-bottom:48px}
+.foot-grid h4{font-family:var(--font-body);font-weight:700;font-size:13px;letter-spacing:.1em;text-transform:uppercase;
+  color:rgba(250,247,242,.6);margin:0 0 14px}
+.foot-grid ul{list-style:none;padding:0;margin:0}
+.foot-grid li{margin-bottom:10px}
+.foot-grid a{color:var(--cream);font-size:15px;font-weight:500;opacity:.85;transition:opacity .15s}
+.foot-grid a:hover{opacity:1}
+.foot-lead .brand{font-size:28px;color:var(--cream);margin-bottom:14px;display:block}
+.foot-lead p{color:rgba(250,247,242,.7);font-size:15px;line-height:1.55;max-width:36ch}
+.foot-bottom{display:flex;justify-content:space-between;align-items:center;padding-top:28px;
+  border-top:1px solid rgba(250,247,242,.14);color:rgba(250,247,242,.55);font-size:13px}
+.foot-bottom .mark{font-family:var(--font-mono)}
+
+/* ── RESPONSIVE ───────────────────────────────────── */
+@media(max-width:900px){
+  .hero-grid,.vp-row,.stories-grid,.foot-grid{grid-template-columns:1fr}
+  .logos-row{grid-template-columns:repeat(3,1fr)}
+  .hero-portrait{aspect-ratio:3/4;max-height:540px}
+  .hero-meta{gap:24px}
+  .nav-links{display:none}
+  .stories-head{align-items:flex-start}
+  section.vp,section.stories,section.closing{padding:80px 0}
+  .hero{padding:48px 0 72px}
+}
+@media(max-width:520px){
+  .hero-cta{flex-direction:column;align-items:stretch}
+  .hero-cta .btn{justify-content:center}
+  .foot-bottom{flex-direction:column;gap:10px;text-align:center}
+}
+
+/* Mockup watermark — removed in production */
+.mockup-flag{
+  position:fixed;bottom:16px;right:16px;z-index:99;background:var(--coral);color:var(--white);
+  padding:10px 16px;border-radius:999px;font-family:var(--font-mono);font-size:11px;font-weight:700;
+  letter-spacing:.1em;text-transform:uppercase;box-shadow:var(--shadow-lift);
+}
+</style>
+</head>
+<body>
+
+<!-- ─── NAV ─────────────────────────────────────────── -->
+<nav class="top">
+  <div class="wrap nav-inner">
+    <a class="brand" href="#">hellotalent<span class="dot">.</span></a>
+    <div class="nav-links">
+      <a href="#value">Nasıl çalışır</a>
+      <a href="#stories">Hikayeler</a>
+      <a href="#closing">İşveren</a>
+    </div>
+    <div class="nav-cta">
+      <a class="btn btn-ghost" href="giris.html?tab=ik">İşveren girişi</a>
+      <a class="btn btn-primary" href="giris.html?tab=aday">Aday girişi
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+      </a>
+    </div>
+  </div>
+</nav>
+
+<!-- ─── HERO ────────────────────────────────────────── -->
+<header class="hero">
+  <div class="wrap hero-grid">
+    <div class="hero-copy">
+      <div class="eyebrow eyebrow-dot tag">Perakende yetenek pazarı · 2026</div>
+      <h1 class="h-display">İlanı tarama.<br><span class="mute">Markaya bağlan.</span></h1>
+      <p class="sub">Mağazadan ofise, kategori yönetiminden brand ambassador'lığa — 96 markanın mülakat listesinde sen görün, sen seç.</p>
+      <div class="hero-cta">
+        <a class="btn btn-primary" href="giris.html?tab=aday">Aday olarak başla
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+        </a>
+        <a class="btn btn-secondary" href="giris.html?tab=ik">İşveren olarak aday bul</a>
+      </div>
+      <div class="hero-meta">
+        <div class="stat"><b>96</b>Marka, tek ekran</div>
+        <div class="stat"><b>61</b>Holding &amp; grup</div>
+        <div class="stat"><b>%0</b>Rahatsız edilme</div>
+      </div>
+    </div>
+
+    <div class="hero-portrait">
+      <img src="assets/hero.webp" alt="Perakende profesyoneli portresi (mockup)">
+      <div class="badge"><span class="pulse"></span>Şu an 4 markadan mülakat daveti</div>
+    </div>
+  </div>
+</header>
+
+<!-- ─── LOGO STRIP ─────────────────────────────────── -->
+<section class="logos">
+  <div class="wrap">
+    <div class="lead"><span>Aday havuzumuzun döndüğü markalar</span><span class="line"></span></div>
+    <div class="logos-row">
+      <div class="logo">İnditex</div>
+      <div class="logo">LVMH</div>
+      <div class="logo">Fiba Retail</div>
+      <div class="logo">Boyner</div>
+      <div class="logo">Koton</div>
+      <div class="logo">Mavi</div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── VALUE PROPS ─────────────────────────────────── -->
+<section class="vp" id="value">
+  <div class="wrap">
+    <div class="vp-head">
+      <div class="eyebrow eyebrow-dot">Nasıl çalışır</div>
+      <h2 class="h-section">İş ilanı değil,<br>kariyer isteme düzeni.</h2>
+      <p>HelloTalent üç katmanda çalışır — profilini dolduruyorsun, marka davet ediyor, koç yanında oluyor. Geri kalan tüm iş ilanı gürültüsünü kapatıyoruz.</p>
+    </div>
+
+    <div class="vp-row">
+      <div class="vp-card">
+        <div class="vp-art">
+          <svg width="92" height="92" viewBox="0 0 92 92" fill="none" aria-hidden="true">
+            <rect x="6" y="14" width="30" height="64" rx="4" fill="#1E2D5E" opacity=".12"/>
+            <rect x="40" y="6" width="30" height="72" rx="4" fill="#2457FF"/>
+            <rect x="48" y="20" width="14" height="4" rx="1" fill="#FAF7F2"/>
+            <rect x="48" y="30" width="14" height="4" rx="1" fill="#FAF7F2" opacity=".7"/>
+            <rect x="48" y="40" width="14" height="4" rx="1" fill="#FAF7F2" opacity=".5"/>
+            <circle cx="55" cy="62" r="10" fill="#FF5A3D"/>
+          </svg>
+        </div>
+        <span class="num">01 / MARKA HARİTASI</span>
+        <h3 class="h-card">96 markayı tek yerden görüyorsun.</h3>
+        <p>İnditex'ten LVMH'ye, Fiba Retail'den Boyner'e — holding / marka hiyerarşisi, TR operatörü dahil. Hangi markanın hangi çatı altında olduğunu merak etmiyorsun.</p>
+        <a class="more" href="#">Marka haritasını gör
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+        </a>
+      </div>
+
+      <div class="vp-card">
+        <div class="vp-art">
+          <svg width="96" height="92" viewBox="0 0 96 92" fill="none" aria-hidden="true">
+            <circle cx="48" cy="46" r="32" fill="#FF5A3D" opacity=".85"/>
+            <circle cx="48" cy="46" r="20" fill="#FAF7F2"/>
+            <path d="M36 50l8 8 18-20" stroke="#0A0E27" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          </svg>
+        </div>
+        <span class="num">02 / SESSIZ MOD</span>
+        <h3 class="h-card">Mülakata çağrılana kadar görünmezsin.</h3>
+        <p>Mevcut işverenin, aile çevren, LinkedIn timeline'ı yok burada. Profilin sadece seni davet eden markaya açılıyor. Dilersen tamamen gizli kalıyorsun.</p>
+        <a class="more" href="#">Gizlilik ayarları
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+        </a>
+      </div>
+
+      <div class="vp-card">
+        <div class="vp-art">
+          <svg width="96" height="92" viewBox="0 0 96 92" fill="none" aria-hidden="true">
+            <path d="M16 70c0-20 14-34 32-34s32 14 32 34" stroke="#2457FF" stroke-width="4" stroke-linecap="round" fill="none"/>
+            <circle cx="48" cy="24" r="14" fill="#0A0E27"/>
+            <circle cx="48" cy="22" r="6" fill="#FAF7F2"/>
+            <rect x="42" y="44" width="12" height="20" rx="3" fill="#FF5A3D"/>
+          </svg>
+        </div>
+        <span class="num">03 / MÜLAKAT KOÇU</span>
+        <h3 class="h-card">Her mülakattan önce koç yanında.</h3>
+        <p>Sektör koçlarımız — eski kategori müdürleri, mağaza direktörleri, HR liderleri — seninle konuşuyor. Soru setini önceden biliyorsun, gerginliği geride bırakıyorsun.</p>
+        <a class="more" href="#">Koçları tanı
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── STORIES ─────────────────────────────────────── -->
+<section class="stories" id="stories">
+  <div class="wrap">
+    <div class="stories-head">
+      <div>
+        <div class="eyebrow eyebrow-dot">Perakenden ofiste</div>
+        <h2 class="h-section">Mağaza önünden<br>kategoriye geçenler.</h2>
+      </div>
+      <div class="controls">
+        <button aria-label="Önceki hikaye">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m11 18-6-6 6-6"/></svg>
+        </button>
+        <button aria-label="Sonraki hikaye">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="stories-grid">
+      <article class="story">
+        <div class="story-portrait">
+          <img src="assets/selin.webp" alt="Selin portresi (mockup)">
+        </div>
+        <div class="story-body">
+          <blockquote>Mağaza müdürü olarak 4 yıl sonra kendi markamın kategori planlamasına geçtim. Beni arayan İK yerine, benim istediğim marka beni aradı.</blockquote>
+          <div class="story-meta">
+            <span class="who">Selin A.</span>
+            <span class="where">Sephora · Kategori Planlama</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="story">
+        <div class="story-portrait">
+          <img src="assets/kerem.webp" alt="Kerem portresi (mockup)">
+        </div>
+        <div class="story-body">
+          <blockquote>Profili gizli tuttum, sadece iki markaya açtım. Üçüncü hafta ikisi de davet gönderdi. Şu an Zara brand deneyim ekibindeyim.</blockquote>
+          <div class="story-meta">
+            <span class="who">Kerem T.</span>
+            <span class="where">Zara · Brand Experience</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="story">
+        <div class="story-portrait">
+          <img src="assets/deniz.webp" alt="Deniz portresi (mockup)">
+        </div>
+        <div class="story-body">
+          <blockquote>Koçum önceki kategori direktörüymüş meğer. Mülakat öncesi iki saatlik seans — brief değil, gerçek prep. Sonuç: teklif geldi.</blockquote>
+          <div class="story-meta">
+            <span class="who">Deniz Y.</span>
+            <span class="where">Koton · Kategori Sorumlusu</span>
+          </div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ─── CLOSING CTA ─────────────────────────────────── -->
+<section class="closing" id="closing">
+  <div class="wrap">
+    <div class="eyebrow eyebrow-dot">İşveren tarafı</div>
+    <h2 class="h-section">Mülakata gelmek istediğin<br>adaylar burada.</h2>
+    <p>Gerçek sektör tecrübesi, anonim profiller, doğru mülakat sinyali. İlan gönderme — direkt davet gönder.</p>
+    <div class="hero-cta">
+      <a class="btn btn-primary" href="giris.html?tab=ik">İşveren olarak başla
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+      </a>
+      <a class="btn btn-secondary" href="#">Fiyatlandırmayı gör</a>
+    </div>
+  </div>
+</section>
+
+<!-- ─── FOOTER ──────────────────────────────────────── -->
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-lead">
+        <span class="brand">hellotalent<span class="dot" style="color:var(--coral)">.</span></span>
+        <p>Perakende yetenek pazarı. Markalar aday bulur, adaylar marka seçer, koçlar arada durur.</p>
+      </div>
+      <div>
+        <h4>Aday</h4>
+        <ul>
+          <li><a href="giris.html?tab=aday">Giriş / Kayıt</a></li>
+          <li><a href="#value">Nasıl çalışır</a></li>
+          <li><a href="#stories">Hikayeler</a></li>
+          <li><a href="#">Koçlar</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>İşveren</h4>
+        <ul>
+          <li><a href="giris.html?tab=ik">Giriş / Kayıt</a></li>
+          <li><a href="#closing">Neden HelloTalent</a></li>
+          <li><a href="#">Fiyatlandırma</a></li>
+          <li><a href="#">Kurumsal demo</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Şirket</h4>
+        <ul>
+          <li><a href="hakkimizda.html">Hakkımızda</a></li>
+          <li><a href="iletisim.html">İletişim</a></li>
+          <li><a href="kvkk.html">KVKK</a></li>
+          <li><a href="gizlilik.html">Gizlilik</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 HelloTalent — Peoplein Bilişim A.Ş.</span>
+      <span class="mark">mockup · index-rocket.html · 18 Nisan 2026</span>
+    </div>
+  </div>
+</footer>
+
+<div class="mockup-flag">MOCKUP · Rocket adaptasyonu</div>
+
+</body>
+</html>
