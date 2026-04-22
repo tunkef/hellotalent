@@ -40,3 +40,13 @@ Hellotalent.code-workspace
 .agents/
 .firecrawl/
 qa-screenshots/
+
+# Verify/debug artifacts — throwaway dev scripts, never commit to root
+# Legitimate tests live under tests/
+_inspect/
+/*.jpeg
+/*.jpg
+/*.png
+/ht-*.mjs
+/k06*-*.mjs
+/k*-test.pdf
