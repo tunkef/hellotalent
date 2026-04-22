@@ -1,5 +1,25 @@
 # HelloTalent AI-COLLAB — Aktif Calisma Defteri
 
+## 2026-04-22 — K046 Wizard skip/save-exit silent mode (UX hotfix)
+
+**Durum:** Tuna UAT — "Daha sonra doldur" 3-panel atlama + artık modal sorunu. Root-cause fix.
+
+### Root cause
+1. `saveProfileRPC` default her zaman modal-success `classList.add('show')` çağırıyordu
+2. `btn-wiz-skip` handler'ı aynı anda `switchPanel('genel')` çalışıyordu — user genel'de, modal overlay üstünde duruyor
+3. User modal "Tamam" basınca `dest = returnToPanel || 'genel'` — `returnToPanel` önceki `editSection('merkez')` çağrısında leak → merkeze atlıyor
+4. Net: genel → stale modal → merkez (3 farklı yer, kafa karışıklığı)
+
+### Fix
+- `saveProfileRPC(onComplete, opts)` — `opts.silent === true` ise modal-success skip
+- `btn-wiz-skip` + `btn-wiz-save-exit` handler: `returnToPanel = null` (leak temizle) + `{ silent: true }` geç + toast single feedback kaynağı
+- Backward compat: existing saveProfileRPC tek-arg çağrıları aynı davranış
+
+### Test
+10 yeni guard (save-silent.spec.js). Full regression 976/976. Cache-bust k046a.
+
+---
+
 ## 2026-04-22 — K045 Faz 2: MEDIUM audit polish (5 alt madde)
 
 **Durum:** Faz 2 tam tamamlandi. Token sistem + toast + dead code + cache-bust + wizard skip.

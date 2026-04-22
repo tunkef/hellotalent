@@ -1548,7 +1548,11 @@ function initStep6() {
 // TASK 11: FINAL SAVE VIA RPC
 // ═══════════════════════════════════════════════════
 
-async function saveProfileRPC(onComplete) {
+// K046: opts.silent = true → success modal skip (use for "Kaydet ve Çık"
+// and "Daha sonra doldur" flows where toast + panel switch is the UX,
+// modal is redundant + confusing). Default behavior unchanged (complete=modal).
+async function saveProfileRPC(onComplete, opts) {
+  opts = opts || {};
   var btnComplete = document.getElementById('btn-wiz-complete');
   if (btnComplete) { btnComplete.disabled = true; btnComplete.textContent = 'Kaydediliyor...'; }
 
@@ -1640,15 +1644,17 @@ async function saveProfileRPC(onComplete) {
     clearDraft();
     wizardDirty = false; // Reset dirty state so success modal → switchPanel won't trigger guard
     ht_track('profile_save_success');
-    // Update success modal with completion percentage
-    var _successDesc = document.getElementById('modal-success-desc');
-    if (_successDesc && typeof calculateCompletion === 'function') {
-      var _pct = calculateCompletion();
-      _successDesc.textContent = _pct >= 100
-        ? 'Tebrikler! Profilin %100 tamamlandı.'
-        : 'Profilin %' + _pct + ' tamamlandı. Eksikleri tamamlayarak daha fazla işveren tarafından görülebilirsin.';
+    // Update success modal with completion percentage (skipped when opts.silent)
+    if (!opts.silent) {
+      var _successDesc = document.getElementById('modal-success-desc');
+      if (_successDesc && typeof calculateCompletion === 'function') {
+        var _pct = calculateCompletion();
+        _successDesc.textContent = _pct >= 100
+          ? 'Tebrikler! Profilin %100 tamamlandı.'
+          : 'Profilin %' + _pct + ' tamamlandı. Eksikleri tamamlayarak daha fazla işveren tarafından görülebilirsin.';
+      }
+      document.getElementById('modal-success').classList.add('show');
     }
-    document.getElementById('modal-success').classList.add('show');
     if (_loadedDBData) {
       // Transform collected shape to match loadProfileFromDB output shape
       // so preview/summary consumers see consistent field names.

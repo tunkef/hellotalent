@@ -360,30 +360,35 @@ function _htInitEvents() {
     btnSaveExit.addEventListener('click', function() {
       btnSaveExit.disabled = true;
       btnSaveExit.textContent = 'Kaydediliyor...';
+      returnToPanel = null;
       saveProfileRPC(function() {
         wizardDirty = false;
         switchPanel('merkez');
-      }).finally(function() {
+        if (typeof window.showToast === 'function') window.showToast('Kaydedildi.', 'success');
+      }, { silent: true }).finally(function() {
         btnSaveExit.disabled = false;
         btnSaveExit.innerHTML = saveExitLabel;
       });
     });
   }
 
-  // K045 Faz 2E: "Daha sonra doldur" — Step 3+'te skip. Save current draft
-  // without validation (Step 1-2 already validated when reaching Step 3),
-  // then return to Genel Bakış. Completion banner orada "%X tamamlandı" gösterir.
+  // K045 Faz 2E + K046 fix: "Daha sonra doldur" silent save.
+  // Önceki akış: saveProfileRPC success modal açıyordu → user genel'e atlıyor,
+  // modal overlay hala görünür, "Tamam" basınca returnToPanel='merkez' ile
+  // merkeze atıyordu (garip 3-panel jump). Fix: saveProfileRPC silent=true
+  // + returnToPanel temizle, toast tek feedback olsun.
   var btnSkip = document.getElementById('btn-wiz-skip');
   if (btnSkip) {
     btnSkip.addEventListener('click', function() {
       btnSkip.disabled = true;
+      returnToPanel = null; // Defensive: önceki editSection leak'i kır
       saveProfileRPC(function() {
         wizardDirty = false;
         switchPanel('genel');
         if (typeof window.showToast === 'function') {
           window.showToast('Şimdilik buradayız. Profilini istediğin zaman tamamlayabilirsin.', 'info');
         }
-      }).finally(function() {
+      }, { silent: true }).finally(function() {
         btnSkip.disabled = false;
       });
     });
