@@ -24,8 +24,6 @@
 }
 .mk-card--hero{
   padding:20px 28px;
-  max-width:max-content;
-  margin:0 auto 24px;
 }
 .mk-card--body{padding:32px;}
 /* K044: 2-col grid — body left + rail right */
@@ -373,60 +371,47 @@
   font-style: italic;
 }
 
-/* K045: Spine preview typography — single coherent hierarchy, no pills */
+/* K045 + k068u: Spine preview typography — uniform body font, 2 levels only.
+   Önizleme olduğu için tek yazı tipinde, italik/mono/uppercase karışımı yok. */
 .mk-spine__preview { line-height: 1.55; }
 .mk-spine__preview .data-line {
   font-family: var(--font-body);
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 600;
   color: var(--text-primary);
   margin: 0;
 }
-.mk-spine__preview .data-sub {
+.mk-spine__preview .data-sub,
+.mk-spine__preview .data-mono,
+.mk-spine__preview .data-bio,
+.mk-spine__preview .data-more {
   font-family: var(--font-body);
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 400;
-  color: var(--text-muted);
+  font-style: normal;
+  letter-spacing: normal;
+  text-transform: none;
+  color: var(--text-secondary);
   margin-top: 4px;
-}
-.mk-spine__preview .data-mono {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  margin-top: 6px;
+  opacity: 1;
 }
 .mk-spine__preview .data-bio {
-  font-family: var(--font-body);
-  font-size: 13px;
-  font-weight: 400;
-  font-style: italic;
   color: var(--text-muted);
-  line-height: 1.55;
-  margin-top: 8px;
   max-width: 640px;
+  margin-top: 8px;
 }
 .mk-spine__preview .data-more {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.04em;
-  color: var(--text-muted);
-  opacity: 0.85;
-  margin-top: 4px;
   background: transparent;
   border: 0;
   padding: 0;
   cursor: default;
+  color: var(--text-muted);
 }
 .mk-spine__preview .data-more--toggle {
   cursor: pointer;
   text-decoration: underline;
   text-underline-offset: 3px;
   color: var(--accent);
-  opacity: 1;
 }
 .mk-spine__preview .data-more--toggle:hover { opacity: 0.7; }
 .mk-spine__preview .data-more--toggle.is-open::after { content: ' \2191'; }
