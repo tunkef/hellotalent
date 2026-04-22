@@ -1,6 +1,18 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 22 Nisan 2026 | Asama 82.1 — K048 tail-cleanup (hex purge + inline migration + use strict)
-> Aktif Odak: Profil audit tail temizligi (K048) kapandi. Newsletter Faz 1 MVP IYS key beklemede. Sonraki: Tuna UAT + yeni feature.
+> Son guncelleme: 23 Nisan 2026 | Asama 82.2 — Ultrareview pass #1 (R1 silent unpin + R2 retry duplicate) + P3 regression fix + K048 tail-cleanup
+> Aktif Odak: Admin announcements data-corruption riskleri kapandi. MVP launch engeli olabilecek iki BLOCKER sifirlandi. Ultrareview 3 hakkin 1'i kullanildi (holistic scan, review-baseline branch = commit 79cdb58). Sonraki: 2. hak icin dar scope karari (auth/RLS subset vs IYS sonrasi newsletter legal pass), yeni feature veya Tuna UAT.
+>
+> ── Ultrareview Pass #1 (2 BLOCKER bulgu — admin-announcements.js) ──
+>
+> **R1 Silent unpin (admin-announcements.js:414)** — Composer edit path `existingRow.is_pinned` okuyordu ama schema sadece `pinned_until timestamptz` (3 migration dogruland: 20260413191504 / 20260413202813 / 20260417100000). Kolon okumasi her zaman `undefined` → checkbox unchecked → save() her edit'te `pinned_until:null` yaziyordu → pinli post'lar sessizce feed sticky slot'tan dusuyordu. Fix: list-renderer pattern'i (~line 133) yansit — `pinInput.checked = !!(existingRow && existingRow.pinned_until && new Date(existingRow.pinned_until) > new Date());`. Regression guard: tests/ultrareview-R1-silent-unpin.spec.js 3 test. Commit 022980a. Cache-bust admin-announcements.js `?v=20260423r1`.
+>
+> **R2 Retry duplicate row (admin-announcements.js:631-637)** — INSERT branch `postId` atiyor ama closure-scoped `existingRow` reassignment yapmiyordu. Media upload fail sonrasi composer "Tekrar Yayinla'ya basabilirsin" + submit re-enable → retry'de `existingRow` hala null → save() yeniden INSERT branch'ine giriyor → ikinci `ht_announcements` row + orphan media POST_1'de, yeni media POST_2'de. Schema'da DB-level dedupe yok. Fix: `postId` capture sonrasi `existingRow = Object.assign({}, payload, { id: postId, published_at: (ins.data && ins.data.published_at) || payload.published_at || null });` — UPDATE branch'in `published_at` sync disiplinini yansitir (line 625-628). Regression guard: tests/ultrareview-R2-retry-duplicate-row.spec.js 3 test. Commit 537294b. Cache-bust `?v=20260423r2`.
+>
+> **Ultrareview setup notu**: `/ultrareview` session-root /Users/peopleintk/Downloads/Hellotalent'tan calistirilmali (home /Users/peopleintk'tan "not a branch" hatasi verir). Holistic scan icin `review-baseline` branch ilk commit'e (79cdb58) bagli, remote'ta hazir. Cleanup: `git push origin --delete review-baseline` (2. ve 3. hak icin tekrar kullanilabilir).
+>
+> ── P3 regression test fix ──
+>
+> **K039 .header rule K048 token uyumu** — tests/p3.regression.spec.js line 3627 literal `#E5E3DF` / `#F7F6F4` bekliyordu; K048 hex purge bunlari `var(--border)` / `var(--bg-page)`'e cevirdi. Regex update: iki bicimi de kabul et (backwards-compat partial rollback icin). p3.regression full suite 960/960 PASS. Commit 23a980c.
 >
 > ── K048 tail-cleanup (3 alt madde) ──
 >
@@ -37,9 +49,11 @@
 > **Yeni memory kurallari (2)**: feedback_no_arrow_icons.md + feedback_darkmode_test_discipline.md — home session MEMORY.md'de indexli.
 >
 > **Sonraki adim oncelik sirasi**:
+> - Ultrareview 2. hak (3'ten) — karar: (a) auth/RLS dar scope PR uzerinden odakli pass, (b) IYS key geldikten sonra newsletter legal compliance pass, (c) full-scan gerekiyorsa yine review-baseline branch'ini yeniden kullan. Tuna tercih edecek. Review triage checklist (10 focus lens) hazir, guvenlik + KVKK + launch-blocker UX ile baslar.
 > - Hex purge Faz 2: components.css 9 + studio.css 54 + wizard-editorial.css 12 + duyurular.css 2 raw hex. K048 genisletmesi. ~1h.
 > - Inline style migration Faz 2: profil.html 56 kalan kucuk inline (helper text, display:none + bonus stil). `.text-xs-muted` / `.w-fit` gibi utility eklemek gerekebilir. ~1.5h.
 > - 'use strict' kademeli: eski 26 modul icin case-by-case (profil-ui.js 1870 satir oncelik, her modul sonrasi full regression).
+> - Composer state-drift audit: ik-kampanya.js + diger INSERT/UPDATE branch'li composer'larda R2 benzeri closure sync eksikligi var mi tara — admin-announcements.js disiplini referans.
 >
 > ── Admin (oncesi) ──
 >
