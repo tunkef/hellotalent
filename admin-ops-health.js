@@ -10,7 +10,7 @@
     + '  <h2>Sistem Sa&#287;l&#305;&#287;&#305;</h2>'
     + '  <button class="btn btn-sm" onclick="window._htAdminLoadOpsHealth && window._htAdminLoadOpsHealth(true)">Yenile</button>'
     + '</div>'
-    + '<div id="ops-health-content">'
+    + '<div id="ops-health-content" aria-live="polite">'
     + '  <div class="empty-state" style="padding:80px 20px;">'
     + '    <div class="empty-state-icon">&#9203;</div>'
     + '    <div class="empty-state-text" style="font-size:var(--text-lg);color:var(--muted);">Y&uuml;kleniyor...</div>'

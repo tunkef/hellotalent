@@ -7,7 +7,7 @@
 
   var PANEL_HTML = ''
     + '<div class="panel-header"><h2>Adaylar</h2></div>'
-    + '<div id="candidates-content">'
+    + '<div id="candidates-content" aria-live="polite">'
     + '  <div class="empty-state"><div class="empty-state-icon">&#9203;</div>'
     + '  <div class="empty-state-text">Y&uuml;kleniyor...</div></div>'
     + '</div>';
@@ -83,27 +83,27 @@
       container.appendChild(buildSectionLabel('Profili Tamamlananlar'));
       container.appendChild(buildRow([
         buildStatCard('Toplam Aday', total),
-        buildStatCard('Profil Tamamlamış', profilTam, '✅', '%' + tamamOran + ' tamamlama oranı'),
-        buildStatCard('Aktif İş Arıyor', aktif, '🧭'),
-        buildStatCard('Son 7 Gün Kayıt', son7gun, '📈')
+        buildStatCard('Profil Tamamlamış', profilTam, null, '%' + tamamOran + ' tamamlama oranı'),
+        buildStatCard('Aktif İş Arıyor', aktif),
+        buildStatCard('Son 7 Gün Kayıt', son7gun)
       ]));
 
       // Bölüm B: Profili Yarım Kalanlar
       container.appendChild(buildSectionLabel('Profili Yarım Kalanlar'));
       container.appendChild(buildRow([
-        buildStatCard('Yarım Kalan Profil', yarim, '🧩'),
-        buildStatCard('Önerilebilir (≥%45)', onerilebilir, '⭐', '%' + onerilebilirOran + ' öneri eşiğini geçen'),
-        buildStatCard('Önerilebilir ama Tamamlanmamış', onerilebilirYarim, '✨'),
-        buildStatCard('Bu Ay Önerilebilir Kayıt', buAyOnerilebilir, '📅')
+        buildStatCard('Yarım Kalan Profil', yarim),
+        buildStatCard('Önerilebilir (≥%45)', onerilebilir, null, '%' + onerilebilirOran + ' öneri eşiğini geçen'),
+        buildStatCard('Önerilebilir ama Tamamlanmamış', onerilebilirYarim),
+        buildStatCard('Bu Ay Önerilebilir Kayıt', buAyOnerilebilir)
       ]));
 
       // Bölüm C: Gizlilik ve Hesap Durumu
       container.appendChild(buildSectionLabel('Gizlilik ve Hesap Durumu'));
       container.appendChild(buildRow([
-        buildStatCard('İşverenden Gizli', gizli, '🙈'),
-        buildStatCard('Premium', premium, '⭐'),
-        buildStatCard('Dondurulmuş', frozen, '🧊'),
-        buildStatCard('Silme Bekleyen', pendingDel, '🗑️')
+        buildStatCard('İşverenden Gizli', gizli),
+        buildStatCard('Premium', premium),
+        buildStatCard('Dondurulmuş', frozen),
+        buildStatCard('Silme Bekleyen', pendingDel)
       ]));
 
       loaded = true;
@@ -114,7 +114,7 @@
       errDiv.className = 'empty-state';
       var iconDiv = document.createElement('div');
       iconDiv.className = 'empty-state-icon';
-      iconDiv.textContent = '⚠️';
+      iconDiv.textContent = '';
       errDiv.appendChild(iconDiv);
       var textDiv = document.createElement('div');
       textDiv.className = 'empty-state-text';

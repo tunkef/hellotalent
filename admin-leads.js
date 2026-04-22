@@ -20,7 +20,7 @@
     + '    <button class="btn-sm" onclick="window._htLoadLeads()" style="padding:6px 12px;background:var(--navy);color:white;border:none;border-radius:8px;cursor:pointer;font-size:var(--text-sm);">Yenile</button>'
     + '  </div>'
     + '</div>'
-    + '<div id="leads-content">'
+    + '<div id="leads-content" aria-live="polite">'
     + '  <div class="empty-state"><div class="empty-state-icon">&#9203;</div>'
     + '  <div class="empty-state-text">Y&uuml;kleniyor...</div></div>'
     + '</div>';
@@ -40,11 +40,11 @@
 
   window._htAdminMountLeads = mountPanel;
   var STATUS_LABELS = {
-    'yeni': '🟢 Yeni',
-    'iletisime_gecildi': '📞 İletişime Geçildi',
-    'demo_gosterildi': '🎯 Demo Gösterildi',
-    'kayit_oldu': '✅ Kayıt Oldu',
-    'reddedildi': '❌ Reddedildi'
+    'yeni': 'Yeni',
+    'iletisime_gecildi': 'İletişime Geçildi',
+    'demo_gosterildi': 'Demo Gösterildi',
+    'kayit_oldu': 'Kayıt Oldu',
+    'reddedildi': 'Reddedildi'
   };
 
   function getSupa() {
@@ -64,7 +64,10 @@
     var statusFilter = document.getElementById('leads-filter-status');
     var filterVal = statusFilter ? statusFilter.value : null;
 
-    container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">⏳</div><div class="empty-state-text">Yükleniyor...</div></div>';
+    var core = window._htAdminCore;
+    if (core && typeof core.mount === 'function') {
+      core.mount(container, '<div class="empty-state"><div class="empty-state-icon"></div><div class="empty-state-text">Yükleniyor...</div></div>');
+    }
 
     try {
       var sb = getSupa();
@@ -84,7 +87,7 @@
 
       if (leads.length === 0) {
         container.innerHTML = '<div class="empty-state" style="padding:60px 20px;">'
-          + '<div class="empty-state-icon">📋</div>'
+          + '<div class="empty-state-icon"></div>'
           + '<div class="empty-state-text" style="font-size:var(--text-lg);font-weight:600;color:var(--text);margin-bottom:4px;">Henüz lead yok</div>'
           + '<div style="color:var(--muted);font-size:var(--text-sm);">İşveren formu doldurulduğunda burada görünecek.</div>'
           + '</div>';
@@ -135,7 +138,7 @@
     } catch (ex) {
       console.error('Lead yükleme hatası:', ex);
       container.innerHTML = '<div class="empty-state" style="padding:60px 20px;">'
-        + '<div class="empty-state-icon">⚠️</div>'
+        + '<div class="empty-state-icon"></div>'
         + '<div class="empty-state-text" style="color:#DC2626;">' + escHtml(ex.message || 'Yükleme hatası') + '</div>'
         + '</div>';
     }

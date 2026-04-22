@@ -26,7 +26,7 @@
     + '    <button class="btn-sm" id="nl-tab-compose" onclick="window._htNlSwitchTab(\'compose\')" style="padding:6px 12px;background:transparent;color:var(--verm);border:1px solid var(--verm);border-radius:8px;cursor:pointer;font-size:var(--text-sm);">+ Yeni Kampanya</button>'
     + '  </div>'
     + '</div>'
-    + '<div id="newsletter-content">'
+    + '<div id="newsletter-content" aria-live="polite">'
     + '  <div class="empty-state">'
     + '    <div class="empty-state-icon">&#9203;</div>'
     + '    <div class="empty-state-text">Yukleniyor...</div>'
@@ -69,7 +69,7 @@
   function mdToHtml(md) {
     if (!md) return '';
     var html = esc(md);
-    html = html.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" style="color:#C94E28;">$1</a>');
+    html = html.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" style="color:var(--verm);">$1</a>');
     html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
     html = html.replace(/(^|[^*])\*([^*]+)\*/g, '$1<em>$2</em>');
     var lines = html.split('\n');
@@ -129,7 +129,7 @@
       var rows = result.data || [];
       if (rows.length === 0) {
         setHtml(listEl, '<div class="empty-state" style="padding:60px 20px;">'
-          + '<div class="empty-state-icon">&#128238;</div>'
+          + '<div class="empty-state-icon"></div>'
           + '<div class="empty-state-text" style="font-size:18px;font-weight:600;color:var(--text);margin-bottom:8px;">Abone yok</div>'
           + '<div style="font-size:14px;color:var(--muted);">Filtre kriterlerine uygun abone bulunamadı.</div>'
           + '</div>');
@@ -146,8 +146,8 @@
         var r = rows[i];
         var statusBadge = renderStatusBadge(r.status);
         var audBadge = r.audience === 'kurumsal'
-          ? '<span style="padding:2px 8px;border-radius:8px;background:rgba(30,45,94,0.1);color:#1E2D5E;font-size:11px;font-weight:600;">Kurumsal</span>'
-          : '<span style="padding:2px 8px;border-radius:8px;background:rgba(201,78,40,0.1);color:#C94E28;font-size:11px;font-weight:600;">Aday</span>';
+          ? '<span style="padding:2px 8px;border-radius:8px;background:rgba(30,45,94,0.1);color:var(--navy);font-size:11px;font-weight:600;">Kurumsal</span>'
+          : '<span style="padding:2px 8px;border-radius:8px;background:rgba(201,78,40,0.1);color:var(--verm);font-size:11px;font-weight:600;">Aday</span>';
         html += '<tr>'
           + '<td><code style="font-size:12px;">' + esc(r.email) + '</code></td>'
           + '<td>' + audBadge + '</td>'
@@ -247,7 +247,7 @@
 
       if (rows.length === 0) {
         setHtml(listEl, '<div class="empty-state" style="padding:60px 20px;">'
-          + '<div class="empty-state-icon">&#128196;</div>'
+          + '<div class="empty-state-icon"></div>'
           + '<div class="empty-state-text" style="font-size:18px;font-weight:600;margin-bottom:8px;">Henüz kampanya yok</div>'
           + '<div style="font-size:14px;color:var(--muted);">"+ Yeni Kampanya" butonuna tıklayarak başla.</div>'
           + '</div>');

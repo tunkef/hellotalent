@@ -192,7 +192,7 @@
       while (container.firstChild) container.removeChild(container.firstChild);
 
       if (!res.data || res.data.length === 0) {
-        container.appendChild(buildEmptyState('✅', 'İncelenecek kampanya yok'));
+        container.appendChild(buildEmptyState('', 'İncelenecek kampanya yok'));
       } else {
         container.appendChild(buildCampaignTable(res.data, true));
       }
@@ -218,7 +218,7 @@
       while (container.firstChild) container.removeChild(container.firstChild);
 
       if (!res.data || res.data.length === 0) {
-        container.appendChild(buildEmptyState('📊', 'Henüz kampanya oluşturulmamış'));
+        container.appendChild(buildEmptyState('', 'Henüz kampanya oluşturulmamış'));
         return;
       }
 

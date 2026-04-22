@@ -7,7 +7,7 @@
 
   var PANEL_HTML = ''
     + '<div class="panel-header"><h2>&#304;&#351;verenler</h2></div>'
-    + '<div id="employers-content">'
+    + '<div id="employers-content" aria-live="polite">'
     + '  <div class="empty-state"><div class="empty-state-icon">&#9203;</div>'
     + '  <div class="empty-state-text">Y&uuml;kleniyor...</div></div>'
     + '</div>';
@@ -147,15 +147,15 @@
       container.appendChild(buildSectionLabel('Aktivite'));
       container.appendChild(buildRow([
         buildStatCard('Aktif Kampanyası Var', withCampaigns, '📢'),
-        buildStatCard('Premium', premiumCount, '⭐'),
+        buildStatCard('Premium', premiumCount),
         buildStatCard('Freemium', freemiumCount)
       ]));
 
       // Row 3: Positions
       container.appendChild(buildSectionLabel('Pozisyon İlanları'));
       container.appendChild(buildRow([
-        buildStatCard('Toplam Pozisyon', totalPoz, '📋'),
-        buildStatCard('Aktif İlan', activePoz, '🟢'),
+        buildStatCard('Toplam Pozisyon', totalPoz),
+        buildStatCard('Aktif İlan', activePoz),
         buildStatCard('Taslak', draftPoz, '📝'),
         buildStatCard('Kapalı', closedPoz, '🔒')
       ]));
@@ -174,7 +174,7 @@
       errDiv.className = 'empty-state';
       var iconDiv = document.createElement('div');
       iconDiv.className = 'empty-state-icon';
-      iconDiv.textContent = '⚠️';
+      iconDiv.textContent = '';
       errDiv.appendChild(iconDiv);
       var textDiv = document.createElement('div');
       textDiv.className = 'empty-state-text';
