@@ -1,4 +1,6 @@
-# hellotalent.ai — Project Context
+# hellotalent.ai — Project Context (Studio v3)
+
+> **Studio v3** — 22 Nisan 2026. 16 native Claude agent + Codex hybrid. External API orchestration (DeepSeek/Grok/Cerebras/SambaNova/Gemini) retired. See `docs/AGENTS.md` for full team roster.
 
 ## Tech Stack
 - Frontend: Static HTML/CSS/JS (vanilla, no framework)
@@ -11,6 +13,8 @@
 - Colors: Vermillion #C94E28, Navy #1E2D5E, Background #F7F6F4
 - Forbidden: Inter, Roboto, purple gradients, röportaj
 - Always use mulakat or is gorusmesi for interviews
+- No emoji in UI or supporting copy
+- Public-site = editorial, minimal, premium, illustration-aware (Clatu pass 1-6)
 
 ## Key Rules
 - Homepage = index.html (never index_new.html)
@@ -25,132 +29,148 @@ Her session başında SADECE `docs/CURRENT-STATE.md` oku (~3K token).
 - `docs/CURRENT-STATE.md` → Mevcut durum, dosya haritası, backlog, son 3 session
 - `docs/ARCHITECTURE.md` → Mimari, data contracts, pipeline'lar (feature yazarken oku)
 - `docs/SESSION-LOG.md` → Tüm session tarihçesi (~70K, sadece gerektiğinde grep/search)
-- `docs/handoff.md` → Legacy alias (SESSION-LOG ile aynı içerik)
+- `docs/AGENTS.md` → 16 agent rol kartı, Teams chat örnekleri, handoff pattern
+- `docs/EMERGENCY.md` → Agent Teams stall, service_role leak, migration rollback, Codex timeout playbook
+- `docs/handoff.md` → Legacy alias
 
-## Codex x Claude Çalışma Protokolü
-Bu projede çalışma modeli iki katmanlıdır:
-- Kullanıcı nihai karar vericidir.
-- Codex product, architecture, QA ve teknik strateji sahibidir.
-- Claude implementation team olarak çalışır.
+## Studio Çalışma Protokolü
+
+### Agent Teams Default (Day 1)
+`CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` aktif. **chief-of-staff** Teams lead, diğer 14 ajan teammate (compactor-agent izole).
+
+Session başlatma:
+```
+/cook hellotalent
+```
+(veya `cook` yaz, hook shortcut'lar)
+
+### 19 Agent Kadrosu (v3.1 — 22 Nisan)
+| # | Agent | Rol |
+|---|-------|-----|
+| 1 | chief-of-staff | Teams lead, tier detect, Codex gate, synthesis |
+| 2 | briefer | Session context özeti (300 token) |
+| 3 | compactor-agent | Auto image summary + context snapshot |
+| 4 | auditor | Security, KVKK, RLS, PII, OWASP, ISO27001 |
+| 5 | code-reviewer | 5-axis PR review |
+| 6 | uat-tester | Playwright E2E + smoke (lackeyjb/playwright-skill) |
+| 7 | darkmode-auditor | Dark mode + WCAG contrast (AccessLint MCP) |
+| 8 | designer | Pure aesthetic, brand, tokens (Figma MCP yok) |
+| 9 | ui-agent | Frontend implementation (vanilla HTML/CSS/JS) |
+| 10 | ux-agent | User research, flow, CRO (PostHog) |
+| 11 | architect | Spec/Plan/Tasks, system architecture |
+| 12 | supabase-agent | Schema, RLS, migration (service_role access) |
+| 13 | infra-ops | Deploy, Cloudflare, GitHub, secret rotation (izole perms) |
+| 14 | content-writer | Site copy + email + onboarding (avoid-ai-writing) |
+| 15 | marketing-writer | SEO + social + campaign (Ahrefs) |
+| 16 | maintenance-agent | Tech debt, post-deploy, postmortem |
+| 17 | legal-reviewer | KVKK metin drift + avukat brief |
+| 18 | data-analyst | PostHog funnel + cohort + A/B analiz |
+| 19 | watchdog | Peer chat observer (stall/loop/drift detect) |
+
+### Codex Hybrid (T3/T4 Otomatik)
+
+| Tier | İş | Review Zinciri | Codex |
+|------|---|----------------|-------|
+| T1 | Typo, copy, asset | solo push | — |
+| T2 | UI, kod mantığı | code-reviewer | — |
+| **T3** | Security/RLS/migration/payment/auth | auditor + code-reviewer + **Codex otomatik** | Evet |
+| **T4** | Architecture/major refactor/API contract | architect + code-reviewer + **Codex otomatik** | Evet |
+
+**Otomatik trigger:** Git pre-commit hook tier detect eder. T3/T4 ise `scripts/codex-review.sh` otomatik çağırır. Agreement >=%70 → geçer. Çelişki %30+ → `.claude/agent-memory/pending-approvals.md`'ye düşer, Tuna görür.
 
 ### SOLID Architecture Enforcement
-Kod yazarken şu kuralları uygula:
-- SRP: Her fonksiyon/modül tek iş yapsın. 50+ satır fonksiyon → parçala.
-- OCP: Yeni özellik eklerken mevcut fonksiyonu değiştirmek yerine genişlet.
-- LSP: Model/sağlayıcı değişiminde config dışında kod değişmesin.
-- ISP: Agent'lar sadece kendi tool'larını görsün, gereksiz bağımlılık ekleme.
-- DIP: Somut API yerine soyut kontrat kullan (ör: `create_ticket` vs `jira.api.post`).
+- **SRP:** Her fonksiyon/modül tek iş. 50+ satır fonksiyon → parçala.
+- **OCP:** Yeni özellik eklerken mevcut fonksiyonu değiştirmek yerine genişlet.
+- **LSP:** Model/sağlayıcı değişiminde config dışında kod değişmesin.
+- **ISP:** Agent'lar sadece kendi tool'larını görsün, gereksiz bağımlılık ekleme.
+- **DIP:** Somut API yerine soyut kontrat kullan.
 
 ### Source of Truth Sırası
-Her session başında şu sırayla oku:
 1. `docs/CURRENT-STATE.md`
 2. `docs/AI-COLLAB.md`
-3. `docs/ARCHITECTURE.md` (feature veya data contract etkiliyorsa)
-4. `docs/SESSION-LOG.md` sadece gerektiğinde
+3. `docs/AGENTS.md` (ajan seçimi için)
+4. `docs/ARCHITECTURE.md` (feature veya data contract etkiliyorsa)
+5. `docs/EMERGENCY.md` (sorun anında)
+6. `docs/SESSION-LOG.md` sadece gerektiğinde (grep)
 
-`docs/handoff.md` legacy kaynaktır; primary truth değildir.
+### Self-Improving Agent Plugin
 
-### İş Bölümü — İki Kişi Pattern (K034)
-Her kod değişikliği iki ajan tarafından işlenir. Tuna: "her işi iki kişi yaptığınızda daha iyi oluyor" (16 Nisan 2026).
+`self-improving-agent` (Alireza Rezvani) kurulu. Komutlar:
+- `/si:review` — MEMORY.md analiz, promotion adayları
+- `/si:promote` — patterni CLAUDE.md/rules/'a graduate et
+- `/si:extract` — patterni skill'e çevir
+- `/si:status` — memory sağlık paneli
+- `/si:remember` — explicit save
 
-- **Feature / MVP fazı:** Codex plan + spec → Claude implement → Codex review (diff) → Tuna onay → push
-- **Hotfix:** Claude implement → Codex review (diff) → push. Skip etme — küçük fix'lerde de ikinci göz zorunlu.
-- **Security / RLS / migration / data contract:** yukarıdaki + DeepSeek audit zorunlu.
-- **Canlı regression şüphesi:** Gemini UAT ilk, kod yazma sonra.
-
-Genel kurallar:
-- Codex analiz eder, scope belirler, riskleri bulur, test stratejisini yönlendirir.
-- Claude kodu uygular, migration/refactor/test işini yapar, sonuçları raporlar.
-- Push öncesi Codex review geçmeden commit push'lanmaz.
-- Kullanıcıdan gelen yeni yön Codex ile çelişirse kullanıcıyı esas al.
+Ajanlar kendi `## Learned Rules` section'larına append yapar (her agent .md'nin sonunda). Tuna `pending-rules.md`'den approve eder, sonra `/si:promote` ile graduate.
 
 ### AI-COLLAB Disiplini
 `docs/AI-COLLAB.md` canlı çalışma defteridir.
-Claude her turda:
-- “Amaç / aktif hedef” bölümünü okur
-- “Claude için görev” dışına çıkmaz
-- İş bitince şu alanları günceller:
-  - Yapılan iş
-  - Değişen dosyalar
-  - Test durumu
-  - Riskler / blocker'lar
-  - Bir sonraki net adım
+- Her turda "Amaç / aktif hedef" oku
+- "Claude için görev" dışına çıkma
+- İş bitince: Yapılan iş, değişen dosyalar, test durumu, riskler, sonraki adım
+- **5000 satır limitine** ulaşınca `docs/ai-collab/AI-COLLAB-archive-asama{X}-{Y}.md`'e arşivle
 
-### Token Verimliliği — Caveman Mode (Otomatik)
-- Bu projede caveman skill otomatik aktiftir. Her session caveman full modunda başlar.
-- Kısa, öz, teknik doğruluğu koruyan cevaplar ver. Filler/hedging/pleasantries yok.
-- Açıklama yerine aksiyon. "Dosyayı okudum ve şunu gördüm..." yerine direkt bulguyu yaz.
-- Insight blokları, uzun tablolar, eğitici açıklamalar YAPMA — sadece Tuna isterse.
-- Kod blokları ve güvenlik uyarıları normal kalır.
-- Tuna "detaylı anlat" veya "normal mode" derse caveman'i kapat.
-- Tokenlar değerlidir; uzun geçmişi aynı dosyada taşımayın.
-- `docs/AI-COLLAB.md` sadece aktif iş, son kararlar, açık riskler ve bir sonraki net adımı taşımalıdır.
-- `docs/AI-COLLAB.md` **5000 satır limitine** ulaşınca arşivle:
-  1. Mevcut dosyayı `docs/ai-collab/AI-COLLAB-archive-asama{X}-{Y}.md` olarak kopyala
-  2. Yeni temiz `AI-COLLAB.md` oluştur (sadece aktif durum + son blok özeti + açık riskler + sonraki adım)
-  3. Arşiv dosyasına link ver
-- `docs/AI-COLLAB.md` ince bir kontrol paneli olarak kalmalı; arşiv dosyalarına link vermek tercih edilir.
-- `docs/CURRENT-STATE.md` her zaman güncel truth olarak tutulmalıdır; milestone sonrası drift bırakma.
-- Aynı context'i tekrar tekrar taşımak yerine özet + link yaklaşımı kullan.
+### Token Verimliliği — Caveman Mode
+- Caveman skill otomatik aktif. Her session caveman full modunda başlar.
+- Kısa, öz, teknik doğruluğu koruyan cevaplar.
+- Filler/hedging/pleasantries yok.
+- Tuna "detaylı anlat" veya "normal mode" derse kapat.
 
 ### Mühendislik Standardı
-- Geçici workaround'lardan kaçın
-- Teknik borcu büyüten çözümler üretme
-- Scale hedefini bozacak kısa yollar alma
-- Supabase/RLS/auth/data contract tarafında kalıcı çözüm üret
-- Scope dışı değişiklik yapma
-- Test etmeden tamamlandı deme
-- Gerekli durumda regression guard ekle
+- Geçici workaround yok
+- Teknik borcu büyüten çözüm yok
+- Scale hedefini bozacak kısa yol yok
+- Supabase/RLS/auth/data contract'ta kalıcı çözüm
+- Scope dışı değişiklik yok
+- Test etmeden "bitti" deme
+- Regression guard ekle gerektiğinde
 
 ## Ultraplan Hatirlatma
 
-Kullanici asagidaki kosullardan birini karsilayan bir is istediginde `/ultraplan` onerisi yap:
-
-- 5+ dosyayi etkileyen yeni bir faz veya feature baslangici
-- Mimari karar gerektiren is (yeni tablo, yeni RLS politikasi, yeni Edge Function, yeni API kontrati)
-- Backlog'daki "Yuksek Oncelik" maddelerinden birine baslanacaksa (Iyzico, Isveren P3, Kampanya Wizardi)
-- Kullanici "planla", "nasil yapalim", "nereden baslayalim" gibi planlama sinyali verdiyse
-
-Hatirlatma formati:
-```
-Bu is buyuk gorunuyor ([sebep]). `/ultraplan` ile bulutta detayli plan olusturabilirsin — terminalin serbest kalir.
-```
-
-Kullanici "gerek yok" veya "normal plan yeter" derse ISRAR ETME.
-Kucuk isler icin (bug fix, CSS duzeltme, tek dosya degisiklik) ONERME.
+Kullanıcı aşağıdaki koşullardan birini karşılayan iş istediğinde `/ultraplan` öner:
+- 5+ dosyayı etkileyen faz/feature başlangıcı
+- Mimari karar (yeni tablo, RLS policy, Edge Function, API contract)
+- Backlog Yüksek Öncelik maddeleri (Iyzico, İşveren P3, Kampanya Wizardı)
+- "planla", "nasıl yapalım", "nereden başlayalım" planlama sinyali
 
 ## Context7
 Always use context7 when working with Supabase API, CSS, or any library docs.
 
-## Model Routing — Token Tasarrufu
-Ana session default: **Opus 4.7** (16 Nisan 2026 — Tuna test ediyor). Implementation, plan, debug bu modelde.
-Subagent (Agent tool) çağırırken iş tipine göre model seç:
+## Model Routing
 
-| İş Tipi | Model | Neden |
-|----------|-------|-------|
-| Explore (dosya arama, codebase keşif) | `sonnet` | Arama/okuma Opus gerektirmez |
-| Code review, PR review | `sonnet` | Pattern matching yeterli |
-| Basit grep/glob araştırma | `haiku` | En hızlı, en ucuz |
-| Docs araştırma (context7, web) | `sonnet` | Dökümantasyon okuma |
-| Plan yazma, mimari karar | `opus-4-7` | Karmaşık reasoning gerekli |
-| Feature implementation | `opus-4-7` | Doğru kod üretimi kritik |
-| Debugging, root cause analiz | `opus-4-7` | Derin analiz gerekli |
+Ana session default: **Opus 4.7**. Subagent default **Sonnet**, sadece plan/mimari/debug için Opus, basit dispatch için Haiku.
 
-**Kural:** Ana model `opus-4-7` (implementation sahibi). Subagent default `sonnet`; sadece plan/mimari/implementation/debug için `opus-4-7` kullan. Sonnet home session iletişim modeli olarak kalır (HelloTalent dışı).
-**c-level-skills:** Sadece kullanıcı strateji/iş modeli/yatırım konusunda açıkça sorduğunda invoke et.
+| İş | Model |
+|----|-------|
+| Explore | sonnet |
+| Code review | sonnet |
+| Grep/glob | haiku |
+| Docs research | sonnet |
+| Plan/mimari | opus-4-7 |
+| Implementation | opus-4-7 |
+| Debugging | opus-4-7 |
+| Image summary | haiku |
 
 ## Public-Site Design Truth
-Public-site work is no longer anchored to legacy bento-grid/dashboard language.
+Public-site legacy bento-grid/dashboard language kullanılmaz.
 
-Before writing new public-site HTML, CSS, or JS, read and align with:
+Her yeni public-site HTML/CSS/JS öncesi oku:
 1. `docs/design-illustration-brief.md`
-2. `.agents/skills/hellotalent-dev/SKILL.md`
-3. `.agents/skills/ai-seo/SKILL.md` when content is part of the task
+2. `.claude/skills/hellotalent-dev/SKILL.md`
+3. `.claude/skills/ai-seo/SKILL.md` (content ise)
 
-Rules:
-- Preserve business logic, not the old homepage structure.
-- Public-site direction is Clatu-first: minimal, editorial, premium, illustration-aware.
-- `index.html` should default to a minimal aday/isveren decision gate with strong visual separation and no unnecessary explanatory clutter.
-- No emoji in public-site UI or supporting copy.
-- Do not use bento-grid as a required public-site design system.
-- Legacy dashboard/studio patterns may remain in their own surfaces, but they must not constrain homepage or public-site redesign.
+Kurallar:
+- Business logic korunur, homepage yapısı dondurulmaz
+- Clatu-first: minimal, editorial, premium, illustration-aware
+- `index.html` = aday/işveren decision gate, minimal
+- Emoji YASAK public-site UI ve copy'de
+- Bento-grid public-site zorunlu değil
+- Legacy dashboard patterns kendi surface'lerinde, homepage constraint değil
+
+## Emergency Quick Ref
+Agent Teams stall / service_role leak / migration rollback / Codex timeout → `docs/EMERGENCY.md`
+
+Secret rotation → `infra-ops` agent, 90-gün cron
+
+Rollback → `git revert` + force push (Tuna explicit approval)

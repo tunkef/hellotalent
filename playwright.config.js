@@ -1,4 +1,17 @@
 const { defineConfig } = require('@playwright/test');
+
+// Cloudflare Access Service Token — required for prod (hellotalent.ai) headless tests
+// Set CF_ACCESS_CLIENT_ID + CF_ACCESS_CLIENT_SECRET in .env.local (gitignored)
+// Rotation: every 60 days (see .claude/agent-memory/pending-approvals.md A2)
+try { require('dotenv').config({ path: '.env.local' }); } catch (_) {}
+
+const cfAccessHeaders = process.env.CF_ACCESS_CLIENT_ID && process.env.CF_ACCESS_CLIENT_SECRET
+  ? {
+      'CF-Access-Client-Id': process.env.CF_ACCESS_CLIENT_ID,
+      'CF-Access-Client-Secret': process.env.CF_ACCESS_CLIENT_SECRET,
+    }
+  : {};
+
 module.exports = defineConfig({
   testDir: './tests',
   timeout: 30000,
@@ -8,7 +21,8 @@ module.exports = defineConfig({
     reuseExistingServer: !process.env.CI,
   },
   use: {
-    baseURL: 'http://localhost:3000',
+    baseURL: process.env.PW_TARGET_URL || 'http://localhost:3000',
+    extraHTTPHeaders: cfAccessHeaders,
     screenshot: 'only-on-failure',
     viewport: { width: 390, height: 844 },
   },
