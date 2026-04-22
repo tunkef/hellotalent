@@ -561,8 +561,6 @@ html[data-theme="dark"] .avd-logout{color:#FCA5A5;}
 html[data-theme="dark"] .avd-logout .avd-item-icon{color:#FCA5A5;}
 html[data-theme="dark"] .header-avatar-btn{border:none;}
 html[data-theme="dark"] .header-avatar-btn:hover{box-shadow:0 0 0 3px rgba(201,78,40,0.25);}
-html[data-theme="dark"] .g-hero,
-html[data-theme="dark"] .mk-identity{box-shadow:0 4px 16px rgba(0,0,0,0.3), 0 12px 24px rgba(0,0,0,0.2);}
 
 /* ── Header Nav — Variant C (inline segment row, interpunct separators) ── */
 .header-nav{
