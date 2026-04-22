@@ -271,11 +271,13 @@ function _htApplyCareerGoalPrefill() {
         var wlcPctEl = document.getElementById('wlc-progress-pct');
         if (wlcFill) wlcFill.style.width = Math.max(2, _pct) + '%';
         if (wlcPctEl) wlcPctEl.textContent = '%' + Math.round(_pct);
+        // K041: .show class (+ hidden attr retained for prod discoverability).
+        // Unified modal observer picks up focus trap + scroll lock.
         wlc.hidden = false;
-        document.body.style.overflow = 'hidden';
+        wlc.classList.add('show');
         var closeWlc = function() {
           wlc.hidden = true;
-          document.body.style.overflow = '';
+          wlc.classList.remove('show');
         };
         var snoozeWlc = function() {
           try { sessionStorage.setItem('ht_wlc_snoozed', '1'); } catch (_) {}
@@ -290,12 +292,8 @@ function _htApplyCareerGoalPrefill() {
         wlc.addEventListener('click', function(e) {
           if (e.target === wlc) closeWlc();
         });
-        document.addEventListener('keydown', function _esc(e) {
-          if (e.key === 'Escape' && !wlc.hidden) {
-            closeWlc();
-            document.removeEventListener('keydown', _esc);
-          }
-        });
+        // ESC closing handled by unified modal observer (profil-events.js) —
+        // no per-modal listener needed.
       }
     }
   } catch (e) { console.warn('welcome modal skipped:', e); }

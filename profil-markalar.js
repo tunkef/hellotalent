@@ -340,12 +340,15 @@ async function loadSirketlerPanel() {
     renderBrandGrid(si.value);
   });
 
-  var seeAllBtn = document.getElementById('sk-followed-all');
-  if (seeAllBtn) seeAllBtn.addEventListener('click', openBrandFollowsPopup);
+  // K040: hero CTA single trigger for modal (vermillion strip retired)
+  var heroCta = document.getElementById('sk-hero-cta');
+  if (heroCta) heroCta.addEventListener('click', openBrandFollowsPopup);
   var popupClose = document.getElementById('brand-follows-popup-close');
   if (popupClose) popupClose.addEventListener('click', closeBrandFollowsPopup);
   var popupOverlay = document.getElementById('brand-follows-popup-overlay');
   if (popupOverlay) popupOverlay.addEventListener('click', function(e) { if (e.target === popupOverlay) closeBrandFollowsPopup(); });
+  var popupSearch = document.getElementById('brand-follows-popup-search');
+  if (popupSearch) popupSearch.addEventListener('input', function() { refreshBrandFollowsPopupList(); });
 }
 
 var _ht_page_size = 12;
@@ -520,55 +523,20 @@ function _buildBrandCard(b, idx) {
   return card;
 }
 
-// ── Followed horizontal strip ──
+// ── Hero CTA (K040 — replaces legacy vermillion strip) ──
+// Button shows "Takip Ettiklerin" + count pill + arrow. Hidden when
+// user follows zero brands (nothing to show yet). Single trigger for modal.
 function renderFollowedStrip() {
-  var card = document.getElementById('sk-followed-card');
-  var row = document.getElementById('sk-followed-row');
-  if (!card || !row) return;
-
-  var followed = _ht_brands ? _ht_brands.filter(function(b) { return _ht_follows.has(b.id); }) : [];
-
-  if (followed.length === 0) {
-    card.setAttribute('hidden', '');
-    row.innerHTML = '';
-    return;
+  var cta = document.getElementById('sk-hero-cta');
+  if (!cta) return;
+  var count = _ht_follows ? _ht_follows.size : 0;
+  var countEl = document.getElementById('sk-hero-cta-count');
+  if (countEl) countEl.textContent = count;
+  if (count > 0) {
+    cta.removeAttribute('hidden');
+  } else {
+    cta.setAttribute('hidden', '');
   }
-  card.removeAttribute('hidden');
-
-  var frag = document.createDocumentFragment();
-  var limit = Math.min(followed.length, 12);
-  for (var i = 0; i < limit; i++) {
-    var b = followed[i];
-    var chip = document.createElement('button');
-    chip.type = 'button';
-    chip.className = 'sk-followed__chip';
-    chip.setAttribute('data-brand-id', b.id);
-    chip.setAttribute('onclick', 'openBrandFollowsPopup()');
-
-    var logo = document.createElement('div');
-    logo.className = 'sk-followed__chip-logo';
-    var url = _brandLogoUrl(b);
-    if (url) {
-      var img2 = document.createElement('img');
-      img2.src = url;
-      img2.alt = b.brand_name || '';
-      img2.setAttribute('data-initial', (b.brand_name || '?').charAt(0).toUpperCase());
-      img2.setAttribute('data-color', _avatarColor(b.brand_name));
-      img2.setAttribute('onerror', 'window._htBrandLogoError(this)');
-      logo.appendChild(img2);
-    } else {
-      logo.textContent = (b.brand_name || '?').charAt(0).toUpperCase();
-    }
-    chip.appendChild(logo);
-
-    var nm = document.createElement('span');
-    nm.className = 'sk-followed__chip-name';
-    nm.textContent = b.brand_name || '';
-    chip.appendChild(nm);
-    frag.appendChild(chip);
-  }
-  row.innerHTML = '';
-  row.appendChild(frag);
 }
 
 // ── Follow / Unfollow ──
@@ -621,17 +589,14 @@ function _updateAllFollowBtns(brandId) {
   }
 }
 
-// ── Hero counters + legacy badge sync ──
+// ── Hero counter + legacy badge sync (K040: dropped total count + duplicate strip count) ──
+// Catalog total removed because pool grows and "25 TAKİP · 32 MARKA" mislead users
+// (suggests '32' is a cap). Duplicate count2 retired with vermillion strip.
 function updateBrandFollowCounter() {
   var n = _ht_follows ? _ht_follows.size : 0;
-  var total = _ht_brands ? _ht_brands.length : 0;
 
   var followedCount = document.getElementById('sk-followed-count');
   if (followedCount) followedCount.textContent = n;
-  var followedCount2 = document.getElementById('sk-followed-count2');
-  if (followedCount2) followedCount2.textContent = n;
-  var totalCount = document.getElementById('sk-total-count');
-  if (totalCount) totalCount.textContent = total;
 
   var badge = document.getElementById('sirket-follow-count');
   if (badge) {
@@ -658,40 +623,110 @@ function updateMarkalaBgDots() {
 }
 
 // ── Follow list popup ──
+var _ht_popup_last_focus = null;
+
 function openBrandFollowsPopup() {
   if (_ht_follows.size === 0) return;
   var overlay = document.getElementById('brand-follows-popup-overlay');
-  if (overlay) overlay.style.display = 'flex';
-  document.body.style.overflow = 'hidden';
+  if (!overlay) return;
+  // K041: .show class pattern — unified modal observer handles focus trap,
+  // scroll lock, focus restore. This module only manages search UX.
+  _ht_popup_last_focus = document.activeElement;
+  overlay.classList.add('show');
+  var searchInput = document.getElementById('brand-follows-popup-search');
+  if (searchInput) searchInput.value = '';
   refreshBrandFollowsPopupList();
+  setTimeout(function() {
+    if (searchInput) { searchInput.focus(); return; }
+    var closeBtn = document.getElementById('brand-follows-popup-close');
+    if (closeBtn) closeBtn.focus();
+  }, 20);
   document.addEventListener('keydown', _htBrandFollowsPopupEsc);
 }
 
 function closeBrandFollowsPopup() {
   var overlay = document.getElementById('brand-follows-popup-overlay');
-  if (overlay) overlay.style.display = 'none';
-  document.body.style.overflow = '';
+  if (overlay) overlay.classList.remove('show');
   document.removeEventListener('keydown', _htBrandFollowsPopupEsc);
+  if (_ht_popup_last_focus && typeof _ht_popup_last_focus.focus === 'function') {
+    try { _ht_popup_last_focus.focus(); } catch (e) { /* detached */ }
+  }
+  _ht_popup_last_focus = null;
 }
 
 function _htBrandFollowsPopupEsc(e) {
   if (e.key === 'Escape') closeBrandFollowsPopup();
 }
 
+// Builds one <div.brand-follows-popup-item> using DOM APIs (no innerHTML on
+// untrusted fields). Logo is rendered via Range.createContextualFragment
+// because _brandLogoHtml returns pre-escaped SVG/img markup.
+function _buildFollowsPopupItem(b) {
+  var item = document.createElement('div');
+  item.className = 'brand-follows-popup-item';
+
+  var logo = document.createElement('div');
+  logo.className = 'brand-follows-popup-item-logo';
+  var range = document.createRange();
+  range.selectNodeContents(logo);
+  logo.appendChild(range.createContextualFragment(_brandLogoHtml(b, 32)));
+  item.appendChild(logo);
+
+  var name = document.createElement('span');
+  name.className = 'brand-follows-popup-item-name';
+  name.textContent = b.brand_name || '';
+  item.appendChild(name);
+
+  var unfollow = document.createElement('button');
+  unfollow.type = 'button';
+  unfollow.className = 'brand-follows-popup-unfollow';
+  unfollow.textContent = 'Takibi Bırak';
+  unfollow.setAttribute('data-brand-id', String(b.id));
+  unfollow.addEventListener('click', function(ev) { toggleBrandFollow(b.id, ev); });
+  item.appendChild(unfollow);
+
+  return item;
+}
+
 function refreshBrandFollowsPopupList() {
   var listEl = document.getElementById('brand-follows-popup-list');
   if (!listEl) return;
   var followed = _ht_brands ? _ht_brands.filter(function(b) { return _ht_follows.has(b.id); }) : [];
-  var html = '';
+  var countEl = document.getElementById('brand-follows-popup-count');
+  if (countEl) countEl.textContent = followed.length > 0 ? '(' + followed.length + ')' : '';
+  var searchInput = document.getElementById('brand-follows-popup-search');
+  var query = '';
+  if (searchInput) query = (searchInput.value || '').trim().toLocaleLowerCase('tr-TR');
+
+  while (listEl.firstChild) listEl.removeChild(listEl.firstChild);
+
+  if (followed.length === 0) {
+    var emptyAll = document.createElement('p');
+    emptyAll.className = 'brand-follows-popup-empty';
+    emptyAll.textContent = 'Henüz takip ettiğin marka yok.';
+    listEl.appendChild(emptyAll);
+    return;
+  }
+
+  var frag = document.createDocumentFragment();
+  var visible = 0;
   for (var i = 0; i < followed.length; i++) {
     var b = followed[i];
-    html += '<div class="brand-follows-popup-item">' +
-      '<div class="brand-follows-popup-item-logo">' + _brandLogoHtml(b, 32) + '</div>' +
-      '<span class="brand-follows-popup-item-name">' + _escHtml(b.brand_name) + '</span>' +
-      '<button type="button" class="brand-follows-popup-unfollow" onclick="toggleBrandFollow(' + b.id + ',event)">Takibi Bırak</button>' +
-    '</div>';
+    var name = b.brand_name || '';
+    if (query && name.toLocaleLowerCase('tr-TR').indexOf(query) === -1) continue;
+    visible++;
+    frag.appendChild(_buildFollowsPopupItem(b));
   }
-  listEl.innerHTML = html || '<p class="brand-follows-popup-empty">Henüz takip ettiğin marka yok.</p>';
+
+  if (visible === 0) {
+    var noMatch = document.createElement('p');
+    noMatch.className = 'brand-follows-popup-empty';
+    noMatch.textContent = '"' + query + '" ile eşleşen marka bulunamadı.';
+    listEl.appendChild(noMatch);
+    return;
+  }
+
+  listEl.appendChild(frag);
 }
 
 // ── Toast ──

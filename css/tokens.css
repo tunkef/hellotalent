@@ -14,9 +14,10 @@
   --color-green-light: #F0FDF4;
   --color-green-border: #BBF7D0;
   --color-red: #dc2626;
+  --color-red-dark: #B91C1C; /* K041: danger hover anchor */
   --color-red-light: #FEF2F2;
   --color-text: #111111;
-  --color-muted: #6B7280;
+  --color-muted: #5E6671; /* K041: WCAG AA 4.5:1 on cream — was #6B7280 (4.45:1 fail) */
   --color-border: #E5E3DF;
 
   /* Fonts */
@@ -127,6 +128,7 @@
   --warning: #B45309;
   --warning-soft: #FEF3C7;
   --danger: var(--color-red);
+  --danger-hover: var(--color-red-dark); /* K041: btn danger hover */
   --danger-soft: var(--color-red-light);
 
   /* Controls */

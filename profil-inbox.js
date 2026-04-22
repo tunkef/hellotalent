@@ -525,7 +525,7 @@
         console.error('Load thread error:', res.error.message);
         container.textContent = '';
         var errEl = document.createElement('div');
-        errEl.style.cssText = 'text-align:center;padding:24px;color:#DC2626;font-size:13px;';
+        errEl.style.cssText = 'text-align:center;padding:24px;color:var(--danger);font-size:13px;';
         errEl.textContent = 'Mesaj y\u00FCklenemedi.';
         container.appendChild(errEl);
         return;
@@ -640,7 +640,7 @@
       var or = document.getElementById('opt-receipt');
       if (res.error) {
         console.error('Send reply error:', res.error.message);
-        if (or) { or.textContent = 'Hata! Tekrar deneyin.'; or.style.color = '#DC2626'; }
+        if (or) { or.textContent = 'Hata! Tekrar deneyin.'; or.style.color = 'var(--danger)'; }
         return;
       }
       if (or) or.textContent = '\u0130LET\u0130LD\u0130';

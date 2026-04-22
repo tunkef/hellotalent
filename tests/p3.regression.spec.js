@@ -3384,27 +3384,36 @@ test.describe('K036 — Sirketler editorial redesign', () => {
   test('sirketler.css ships K036 sk-* vocabulary', () => {
     expect(sirketlerCss).toContain('.sk-card');
     expect(sirketlerCss).toContain('.sk-card--hero');
-    expect(sirketlerCss).toContain('.sk-card--followed');
     expect(sirketlerCss).toContain('.sk-card--filter');
     expect(sirketlerCss).toContain('.sk-card--why');
     expect(sirketlerCss).toContain('.sk-grid');
     expect(sirketlerCss).toContain('.sk-brand');
     expect(sirketlerCss).toContain('.sk-brand__follow');
-    expect(sirketlerCss).toContain('.sk-followed__chip');
     expect(sirketlerCss).toContain('.sk-filter__seg');
     expect(sirketlerCss).toContain('--editorial-max-w');
   });
 
   test('profil.html panel uses K036 sk-* IDs and copy', () => {
     expect(profilHtml).toContain('id="sk-followed-count"');
-    expect(profilHtml).toContain('id="sk-followed-count2"');
-    expect(profilHtml).toContain('id="sk-followed-card"');
-    expect(profilHtml).toContain('id="sk-followed-all"');
-    expect(profilHtml).toContain('id="sk-followed-row"');
-    expect(profilHtml).toContain('id="sk-total-count"');
     expect(profilHtml).toContain('Çalışmak istediğin markaları seç');
     expect(profilHtml).toContain('EŞLEŞME SİNYALİ');
     expect(profilHtml).toContain('NEDEN TAKİP?');
+  });
+
+  test('K040 markalar hero cleanup — catalog count + vermillion strip removed', () => {
+    // Catalog count: "32 MARKA" misleading as brand pool grows → removed
+    expect(profilHtml).not.toContain('id="sk-total-count"');
+    expect(profilHtml).not.toMatch(/<span[^>]*>0<\/span>\s*MARKA/);
+    // Legacy vermillion strip replaced by in-hero CTA + modal
+    expect(profilHtml).not.toContain('id="sk-followed-card"');
+    expect(profilHtml).not.toContain('id="sk-followed-count2"');
+    expect(profilHtml).not.toContain('id="sk-followed-all"');
+    expect(profilHtml).not.toContain('id="sk-followed-row"');
+    // New hero CTA replaces the strip
+    expect(profilHtml).toContain('id="sk-hero-cta"');
+    expect(profilHtml).toMatch(/Takip Ettiklerin/);
+    // Modal search input for >10 brand UX
+    expect(profilHtml).toContain('id="brand-follows-popup-search"');
   });
 
   test('profil.html preserves wired IDs required by profil-markalar.js handlers', () => {
@@ -3468,12 +3477,12 @@ test.describe('K037 — Sirketler brand card color flood hover', () => {
     expect(markalarJs).toContain("card.style.setProperty('--sk-brand-accent'");
   });
 
-  test('sirketler.css keeps logo contain hotfix for followed chips', () => {
-    // The chip logo img block must use object-fit:contain, not cover
-    const chipBlockMatch = sirketlerCss.match(/\.sk-followed__chip-logo img\{[^}]*\}/);
-    expect(chipBlockMatch).not.toBeNull();
-    expect(chipBlockMatch[0]).toContain('object-fit:contain');
-    expect(chipBlockMatch[0]).not.toContain('object-fit:cover');
+  test('sirketler.css: modal item logo uses object-fit:contain (K040 — strip removed, modal owns list)', () => {
+    // Modal item logo img block must use object-fit:contain for correct brand rendering
+    const itemLogoMatch = sirketlerCss.match(/\.brand-follows-popup-item-logo img\{[^}]*\}/);
+    expect(itemLogoMatch).not.toBeNull();
+    expect(itemLogoMatch[0]).toContain('object-fit:contain');
+    expect(itemLogoMatch[0]).not.toContain('object-fit:cover');
   });
 
   test('sirketler.css keeps search appearance-reset hotfix', () => {

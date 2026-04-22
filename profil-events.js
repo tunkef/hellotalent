@@ -15,10 +15,13 @@ window.HT_MVP_FREE = !!(window._htMvpFreeTier);
 
 // ── Focus Trap Utility ──────────────────────────────
 // Traps Tab focus inside a modal overlay while it's visible.
-// Call on modal open, returns cleanup function for modal close.
+// K041: captures prevActive element on open, restores focus on cleanup so
+// keyboard users return to the trigger (WCAG 2.4.3, 2.4.11). Prior version
+// left focus in the DOM body after close — Tab jumped to sidebar.
 function _htFocusTrap(overlayEl) {
   if (!overlayEl) return function() {};
   var focusableSelector = 'button:not([disabled]),input:not([disabled]),textarea:not([disabled]),select:not([disabled]),a[href],[tabindex]:not([tabindex="-1"])';
+  var prevActive = document.activeElement;
   function handleTab(e) {
     if (e.key !== 'Tab') return;
     var focusable = Array.prototype.slice.call(overlayEl.querySelectorAll(focusableSelector)).filter(function(el) { return el.offsetParent !== null; });
@@ -29,10 +32,16 @@ function _htFocusTrap(overlayEl) {
     else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
   }
   overlayEl.addEventListener('keydown', handleTab);
-  // Auto-focus first focusable
+  // Auto-focus first focusable inside modal
   var firstFocusable = overlayEl.querySelector(focusableSelector);
   if (firstFocusable) setTimeout(function() { firstFocusable.focus(); }, 50);
-  return function() { overlayEl.removeEventListener('keydown', handleTab); };
+  return function cleanup() {
+    overlayEl.removeEventListener('keydown', handleTab);
+    // Focus restore — prevActive may have been detached mid-lifecycle
+    if (prevActive && typeof prevActive.focus === 'function' && document.body.contains(prevActive)) {
+      try { prevActive.focus(); } catch (e) { /* detached */ }
+    }
+  };
 }
 window._htFocusTrap = _htFocusTrap;
 
@@ -100,13 +109,15 @@ function _htInitEvents() {
 
   function openCmdk() {
     if (!cmdkOverlay) return;
-    cmdkOverlay.style.display = 'flex';
+    // K041: .show class pattern (unifies with other modals → MutationObserver
+    // trap + scroll lock fire automatically). Inline display:flex retired.
+    cmdkOverlay.classList.add('show');
     cmdkInput.value = '';
     renderCmdkResults('');
     setTimeout(function() { cmdkInput.focus(); }, 50);
   }
   function closeCmdk() {
-    if (cmdkOverlay) cmdkOverlay.style.display = 'none';
+    if (cmdkOverlay) cmdkOverlay.classList.remove('show');
   }
   function renderCmdkResults(query) {
     while (cmdkResults.firstChild) cmdkResults.removeChild(cmdkResults.firstChild);
@@ -158,9 +169,24 @@ function _htInitEvents() {
     });
   }
 
-  // Focus trap: auto-attach to modals when .show class is added
+  // K041: Focus trap + scroll lock — unified pattern across all modal families.
+  // Adds .ht-scroll-lock to body when any modal is .show and removes when all
+  // close. Selectors cover cmdk, confirm modals, lok picker, brand follows,
+  // profile preview, welcome modal — all open/close via .show class now.
   var _trapCleanups = {};
-  document.querySelectorAll('.ht-modal__overlay, .lok-modal-overlay').forEach(function(modal) {
+  var MODAL_SELECTORS = [
+    '.ht-modal__overlay',
+    '.lok-modal-overlay',
+    '.brand-follows-popup-overlay',
+    '.pp-overlay',
+    '.wlc-modal'
+  ];
+  function _htSyncScrollLock() {
+    var anyOpen = document.querySelector(MODAL_SELECTORS.map(function(s) { return s + '.show'; }).join(','));
+    document.body.classList.toggle('ht-scroll-lock', !!anyOpen);
+  }
+  window._htSyncScrollLock = _htSyncScrollLock;
+  document.querySelectorAll(MODAL_SELECTORS.join(',')).forEach(function(modal) {
     var obs = new MutationObserver(function(mutations) {
       for (var m = 0; m < mutations.length; m++) {
         if (mutations[m].attributeName !== 'class') continue;
@@ -170,24 +196,24 @@ function _htInitEvents() {
         } else {
           if (_trapCleanups[id]) { _trapCleanups[id](); _trapCleanups[id] = null; }
         }
+        _htSyncScrollLock();
       }
     });
     obs.observe(modal, { attributes: true, attributeFilter: ['class'] });
   });
 
-  // Keyboard shortcut: Cmd+K / Ctrl+K + ESC closes modals
+  // Keyboard shortcut: Cmd+K / Ctrl+K + ESC closes any open modal family.
   document.addEventListener('keydown', function(e) {
     if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
       e.preventDefault();
-      if (cmdkOverlay && cmdkOverlay.style.display === 'flex') closeCmdk();
+      if (cmdkOverlay && cmdkOverlay.classList.contains('show')) closeCmdk();
       else openCmdk();
     }
     if (e.key === 'Escape') {
-      var openModals = document.querySelectorAll('.ht-modal__overlay.show, .lok-modal-overlay.show');
+      var openModals = document.querySelectorAll(MODAL_SELECTORS.map(function(s) { return s + '.show'; }).join(','));
       for (var i = 0; i < openModals.length; i++) {
         openModals[i].classList.remove('show');
       }
-      closeCmdk();
     }
   });
 

@@ -9,6 +9,18 @@
    css/tokens.css (loaded via @import so every shared.css consumer gets it). */
 @import url('css/tokens.css?v=20260417a');
 
+/* ══ SKIP LINK — WCAG 2.4.1 bypass blocks (K041) ══
+ * Hidden visually until focused — keyboard users Tab directly and land on
+ * "İçeriğe atla" before the nav thicket. Shared across profil/ik/admin. */
+.ht-skip-link{
+  position:absolute;top:-40px;left:8px;z-index:10000;
+  padding:8px 16px;background:var(--navy,#1E2D5E);color:#fff;
+  font-family:'Plus Jakarta Sans',sans-serif;font-weight:600;font-size:14px;
+  border-radius:8px;text-decoration:none;
+  transition:top 150ms ease;
+}
+.ht-skip-link:focus{top:8px;outline:2px solid var(--verm,#C94E28);outline-offset:2px;}
+
 /* ══ RESET & LP-SPECIFIC TOKENS ══ */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {

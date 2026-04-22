@@ -747,6 +747,7 @@
 .modal-check-svg {
   width: 64px;
   height: 64px;
+  color: var(--success); /* K041: SVG strokes inherit via currentColor */
 }
 .modal-check-bg {
   opacity: 0.3;

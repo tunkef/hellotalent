@@ -26,9 +26,10 @@
 .ht-btn--ghost{background:none;color:var(--text-muted);}
 .ht-btn--ghost:hover{color:var(--text-primary);background:var(--bg-elevated);}
 .ht-btn--navy{background:var(--navy);color:white;}
-.ht-btn--navy:hover{opacity:0.9;}
+/* K041: opacity-hover banned (strip-color-inversion rule). Token-based swap. */
+.ht-btn--navy:hover{background:var(--navy-deep);}
 .ht-btn--danger{background:var(--danger);color:white;}
-.ht-btn--danger:hover{background:#b91c1c;}
+.ht-btn--danger:hover{background:var(--danger-hover);}
 .ht-btn--icon{width:34px;height:34px;padding:0;border-radius:var(--radius-sm);background:var(--bg-surface);border:1px solid var(--border-subtle);color:var(--text-muted);}
 .ht-btn--icon:hover{background:var(--bg-elevated);color:var(--text-primary);}
 .ht-btn--pill{border-radius:999px;padding:8px 20px;}
@@ -345,6 +346,24 @@ html[data-theme="dark"] .field-req{color:#F87171;}
   backdrop-filter:blur(3px);
 }
 .ht-modal__overlay.is-open,.ht-modal__overlay.show{display:flex;}
+/* Cmdk variant: stripe from top — keeps palette close to keyboard focus. */
+#modal-cmdk{align-items:flex-start;padding-top:18vh;z-index:1100;}
+
+/* K041: unified scroll lock — body can't scroll while any modal open.
+ * Overflow+touch-action prevents iOS bounce; pad right to mask scrollbar gap. */
+body.ht-scroll-lock{overflow:hidden;touch-action:none;}
+
+/* K041: Skip link — keyboard users Tab directly and land here before the
+ * nav thicket (WCAG 2.4.1). Hidden until focused. Shared pattern across
+ * profil/admin/ik; public-site has its own copy in shared.css. */
+.ht-skip-link{
+  position:absolute;top:-40px;left:8px;z-index:10000;
+  padding:8px 16px;background:var(--navy,#1E2D5E);color:#fff;
+  font-family:'Plus Jakarta Sans',sans-serif;font-weight:600;font-size:14px;
+  border-radius:8px;text-decoration:none;
+  transition:top 150ms ease;
+}
+.ht-skip-link:focus{top:8px;outline:2px solid var(--verm,#C94E28);outline-offset:2px;}
 .ht-modal{
   background:var(--bg-surface);border-radius:var(--radius-lg);
   padding:28px;max-width:480px;width:100%;

@@ -1,5 +1,31 @@
 # HelloTalent AI-COLLAB — Aktif Calisma Defteri
 
+## 2026-04-22 — K040 Markalar hero CTA + K041 Profil audit Faz 1 (HIGH)
+
+**Durum:** Live deploy hazirlandi. 4 UX/a11y ajan auditi sentezlendi, HIGH seviye 4 alt madde tamamlandi + markalar K040 redesign paketlendi.
+
+### K040 — Markalar hero CTA + modal genislemesi
+Tuna feedback: "32 MARKA yanlis bilgi" + "hero strip cok yer kapliyor". Vermillion strip silindi, hero icine outline CTA butonu girdi (sayac pill + ok), `sk-followed-*` olu vocabulary (CSS + JS) temizlendi. Modal: search input + focus restore + TR-aware filter + unfollow per item.
+
+### K041 Faz 1 — Profil audit HIGH (4 alt madde)
+- **1A Modal hygiene:** Butun modal aileleri (.ht-modal__overlay, .lok-modal-overlay, .brand-follows-popup-overlay, .pp-overlay, .wlc-modal) tek `MODAL_SELECTORS` arrayi + MutationObserver altinda. Focus trap artik trigger element'i saklayip kapaninca geri veriyor (WCAG 2.4.3, 2.4.11). `body.ht-scroll-lock` scroll kilidi otomatik toggled. Cmdk `.show` class patternine gecti (inline display:flex retired).
+- **1B Skip link:** `.ht-skip-link` "Iceriğe atla" → `#panel-genel`, sr-only default, focus'ta navy pill + verm outline (WCAG 2.4.1). Hem components.css (profil/admin/ik) hem shared.css (public-site).
+- **1C Kontrast:** `--color-muted` `#6B7280` (cream uzerinde 4.45:1 fail) → `#5E6671` (5.5:1 AA pass). field-hint, ayr-lede, modal-desc kitle kullanim.
+- **1D Button polish:** Opacity-hover yasak uygulandi (`--navy-deep` swap). `--danger-hover` + `--color-red-dark` tokenleri eklendi. SVG stroke hex'ler `currentColor`/`var(--success)`/`var(--danger)` tokenlerine cekildi. `#16a34a`, `#059669`, `#DC2626`, `#b91c1c` rafta kalmadi.
+
+### Test
+Yeni 5 spec dosyasi, 38 structural guard. Full regression 1018/1018. Pre-existing dark-mode.spec.js failures (brand-follow-counter legacy K035 selectors) henuz Faz 2'de temizlenecek.
+
+### Cache-bust
+`20260422k040a` (markalar) + `20260422k041a` (tokens, components, profil-extras, profil-events, profil-bootstrap, profil-preview, profil-markalar, profil-inbox).
+
+### Sonraki adim (Faz 1 remaining + Faz 2)
+- Faz 1 1E (error state UX — inline error banner + wizard scrollIntoView) + 1F (profil-studio.js god-file split)
+- Faz 2 MEDIUM — token bypass purge, toast sistem, dead code, BUILD_ID central
+- Faz 3 LOW — font tokens, 'use strict' tutarlilik, timeout, tablist
+
+---
+
 ## 2026-04-21 — Pass 10 #11b: Burak/Orkun y-offset recrop
 
 **Durum:** Tuna canli dogrulama — Burak + Orkun fotolarinda kirpma "hatali", ustten biraz kesilsin, alttan daha fazla govde/kontekst gorunsun. Defne OK. Commit `fcdf5cc` push.

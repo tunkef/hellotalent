@@ -513,17 +513,17 @@
     // Use rAF so -webkit-line-clamp has applied before measuring.
     window.requestAnimationFrame(function() { wireToggles(mount); });
 
-    document.getElementById('pp-overlay').classList.add('open');
+    // K041: .show + .open dual-class. Drawer's own 'open' animation kept;
+    // 'show' wires overlay into the unified modal observer (focus trap + scroll lock).
+    document.getElementById('pp-overlay').classList.add('open', 'show');
     document.getElementById('pp-drawer').classList.add('open');
-    document.body.style.overflow = 'hidden';
   }
 
   function closeProfilePreview() {
     var ov = document.getElementById('pp-overlay');
     var dr = document.getElementById('pp-drawer');
-    if (ov) ov.classList.remove('open');
+    if (ov) ov.classList.remove('open', 'show');
     if (dr) dr.classList.remove('open');
-    document.body.style.overflow = '';
   }
 
   // ESC closes drawer
