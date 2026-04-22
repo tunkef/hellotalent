@@ -202,7 +202,7 @@
 .ib-list::-webkit-scrollbar{width:6px;}
 .ib-list::-webkit-scrollbar-track{background:transparent;}
 .ib-list::-webkit-scrollbar-thumb{background:var(--editorial-vermillion);border-radius:3px;}
-.ib-list::-webkit-scrollbar-thumb:hover{background:var(--editorial-vermillion-deep,#A83F1E);}
+.ib-list::-webkit-scrollbar-thumb:hover{background:var(--editorial-vermillion-deep, #A83F1E);}
 .ib-row{
   display:grid;
   grid-template-columns:44px 1fr auto;
@@ -435,7 +435,7 @@
 .ib-thread-body::-webkit-scrollbar{width:6px;}
 .ib-thread-body::-webkit-scrollbar-track{background:transparent;}
 .ib-thread-body::-webkit-scrollbar-thumb{background:var(--editorial-vermillion);border-radius:3px;}
-.ib-thread-body::-webkit-scrollbar-thumb:hover{background:var(--editorial-vermillion-deep,#A83F1E);}
+.ib-thread-body::-webkit-scrollbar-thumb:hover{background:var(--editorial-vermillion-deep, #A83F1E);}
 
 .ib-daysep{
   text-align:center;
@@ -499,7 +499,7 @@
 }
 
 /* Incoming — navy filled bubble, left aligned.
- * K043: literal #1E2D5E pin — --editorial-ink dark mode'da #F9FAFB'ye kayıyor
+ * K043: literal var(--navy) pin — --editorial-ink dark mode'da var(--text-primary)'ye kayıyor
  * (text token), bubble background için brand identity sabit kalmalı. Mesaj
  * okunamaz hale geliyordu. Vermillion ile aynı pattern. */
 .ib-msg--in{
@@ -507,11 +507,11 @@
   align-items:flex-start;
 }
 .ib-msg--in .ib-bubble{
-  background:#1E2D5E;
-  color:#F7F6F4;
+  background:var(--navy);
+  color:var(--bg-page);
   border-bottom-left-radius:4px;
 }
-html[data-theme='dark'] .ib-msg--in .ib-bubble{background:#1E2D5E;color:#F7F6F4;}
+html[data-theme='dark'] .ib-msg--in .ib-bubble{background:var(--navy);color:var(--bg-page);}
 
 /* Outgoing — vermillion filled bubble, right aligned */
 .ib-msg--out{
@@ -521,12 +521,12 @@ html[data-theme='dark'] .ib-msg--in .ib-bubble{background:#1E2D5E;color:#F7F6F4;
 }
 .ib-msg--out .ib-cap{text-align:right;}
 .ib-msg--out .ib-bubble{
-  background:#C94E28;
-  color:#F7F6F4;
+  background:var(--verm);
+  color:var(--bg-page);
   border-bottom-right-radius:4px;
   text-align:left;
 }
-html[data-theme='dark'] .ib-msg--out .ib-bubble{background:#C94E28;color:#F7F6F4;}
+html[data-theme='dark'] .ib-msg--out .ib-bubble{background:var(--verm);color:var(--bg-page);}
 .ib-msg--out .ib-stamp{text-align:right;}
 
 /* ── Composer ── */

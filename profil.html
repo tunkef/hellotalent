@@ -56,25 +56,25 @@ if (window.Sentry) {
 </script>
 <!-- Analytics: ht_track → HT.trackEvent bridge -->
 <script>function ht_track(name, data) { if (window.HT && window.HT.trackEvent) window.HT.trackEvent(name, data); }</script>
-<link rel="stylesheet" href="css/tokens.css?v=20260422k047a">
-<link rel="stylesheet" href="css/layout.css?v=20260422k047a">
-<link rel="stylesheet" href="css/components.css?v=20260422k047a">
-<link rel="stylesheet" href="css/wizard.css?v=20260422k047a">
-<link rel="stylesheet" href="css/wizard-editorial.css?v=20260422k047a">
-<link rel="stylesheet" href="css/studio.css?v=20260422k047a">
-<link rel="stylesheet" href="css/panels/genel-bakis.css?v=20260422k047a">
-<link rel="stylesheet" href="css/panels/merkezi.css?v=20260422k047a">
-<link rel="stylesheet" href="css/profil-extras.css?v=20260422k047a">
-<link rel="stylesheet" href="css/panels/sirketler.css?v=20260422k047a">
-<link rel="stylesheet" href="css/panels/kimbakti.css?v=20260422k047a">
-<link rel="stylesheet" href="css/panels/inbox.css?v=20260422k047a">
-<link rel="stylesheet" href="css/panels/bildirimler.css?v=20260422k047a">
-<link rel="stylesheet" href="css/panels/destek.css?v=20260422k047a">
-<link rel="stylesheet" href="css/panels/ayarlar.css?v=20260422k047a">
-<link rel="stylesheet" href="css/panels/premium.css?v=20260422k047a">
-<link rel="stylesheet" href="css/panels/firsatlar.css?v=20260422k047a">
-<link rel="stylesheet" href="css/panel-soon.css?v=20260422k047a">
-<link rel="stylesheet" href="css/duyurular.css?v=20260422k047a">
+<link rel="stylesheet" href="css/tokens.css?v=20260422k048a">
+<link rel="stylesheet" href="css/layout.css?v=20260422k048a">
+<link rel="stylesheet" href="css/components.css?v=20260422k048a">
+<link rel="stylesheet" href="css/wizard.css?v=20260422k048a">
+<link rel="stylesheet" href="css/wizard-editorial.css?v=20260422k048a">
+<link rel="stylesheet" href="css/studio.css?v=20260422k048a">
+<link rel="stylesheet" href="css/panels/genel-bakis.css?v=20260422k048a">
+<link rel="stylesheet" href="css/panels/merkezi.css?v=20260422k048a">
+<link rel="stylesheet" href="css/profil-extras.css?v=20260422k048a">
+<link rel="stylesheet" href="css/panels/sirketler.css?v=20260422k048a">
+<link rel="stylesheet" href="css/panels/kimbakti.css?v=20260422k048a">
+<link rel="stylesheet" href="css/panels/inbox.css?v=20260422k048a">
+<link rel="stylesheet" href="css/panels/bildirimler.css?v=20260422k048a">
+<link rel="stylesheet" href="css/panels/destek.css?v=20260422k048a">
+<link rel="stylesheet" href="css/panels/ayarlar.css?v=20260422k048a">
+<link rel="stylesheet" href="css/panels/premium.css?v=20260422k048a">
+<link rel="stylesheet" href="css/panels/firsatlar.css?v=20260422k048a">
+<link rel="stylesheet" href="css/panel-soon.css?v=20260422k048a">
+<link rel="stylesheet" href="css/duyurular.css?v=20260422k048a">
 </head>
 <body>
 
@@ -316,12 +316,11 @@ if (window.Sentry) {
 
 <!-- COMMAND PALETTE (Cmd+K) -->
 <div class="ht-modal__overlay modal-cmdk" id="modal-cmdk" role="dialog" aria-modal="true" aria-label="Komut paleti">
-  <div style="background:var(--bg-surface,#fff);border-radius:14px;width:100%;max-width:440px;box-shadow:0 20px 60px rgba(0,0,0,0.2);overflow:hidden;margin:0 16px;">
-    <div style="padding:12px 16px;border-bottom:1px solid var(--border);">
-      <input type="text" id="cmdk-input" placeholder="Panel veya sayfa ara..." autocomplete="off"
-        style="width:100%;border:none;outline:none;font-size:15px;font-family:inherit;color:var(--text);background:transparent;">
+  <div class="cmdk-modal">
+    <div class="cmdk-modal-head">
+      <input type="text" id="cmdk-input" placeholder="Panel veya sayfa ara..." autocomplete="off" class="cmdk-input">
     </div>
-    <div id="cmdk-results" style="max-height:280px;overflow-y:auto;padding:6px;"></div>
+    <div id="cmdk-results" class="cmdk-results"></div>
   </div>
 </div>
 
@@ -355,7 +354,7 @@ if (window.Sentry) {
     </div>
     <div class="modal-title">Profilin güncellendi</div>
     <div class="modal-desc" id="modal-success-desc">Değişikliklerin kaydedildi ve profiline yansıtıldı.</div>
-    <button class="ht-btn ht-btn--navy" id="btn-success-ok" style="width:100%;padding:11px 0;">Tamam</button>
+    <button class="ht-btn ht-btn--navy ht-btn--full-w" id="btn-success-ok">Tamam</button>
     <div class="modal-premium-line pointer" data-premium-cta>Beta avantajlarını keşfet</div>
   </div>
 </div>
@@ -363,7 +362,7 @@ if (window.Sentry) {
 <!-- ERROR MODAL -->
 <div class="ht-modal__overlay" id="modal-error" role="dialog" aria-modal="true" aria-label="Hata">
   <div class="ht-modal">
-    <div class="modal-icon" style="background:var(--red-light);color:var(--red);">
+    <div class="modal-icon modal-icon--danger">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
     </div>
     <div class="modal-title">Kaydetme Başarısız</div>
@@ -378,7 +377,7 @@ if (window.Sentry) {
 <!-- WIZARD EXIT CONFIRM MODAL -->
 <div class="ht-modal__overlay" id="modal-wizard-exit" role="dialog" aria-modal="true" aria-label="Çıkış onayı">
   <div class="ht-modal">
-    <div class="modal-icon" style="background:var(--verm-light);color:var(--verm);">
+    <div class="modal-icon modal-icon--verm">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
     </div>
     <div class="modal-confirm-body">
@@ -386,7 +385,7 @@ if (window.Sentry) {
       <div class="modal-confirm-desc">Yaptığın düzenlemeler kaybolacak.</div>
       <div class="modal-confirm-actions">
         <button class="ht-btn ht-btn--secondary" id="btn-wizard-stay">Düzenlemeye dön</button>
-        <button class="ht-btn ht-btn--primary" id="btn-wizard-leave" style="background:var(--red);">Kaydetmeden çık</button>
+        <button class="ht-btn ht-btn--primary ht-btn--danger-bg" id="btn-wizard-leave">Kaydetmeden çık</button>
       </div>
     </div>
   </div>
@@ -395,7 +394,7 @@ if (window.Sentry) {
 <!-- DRAFT RESUME MODAL -->
 <div class="ht-modal__overlay" id="modal-draft" role="dialog" aria-modal="true" aria-label="Taslak devam">
   <div class="ht-modal">
-    <div class="modal-icon" style="background:var(--navy-light);color:var(--navy);">
+    <div class="modal-icon modal-icon--navy">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
     </div>
     <div class="modal-title">Taslak Bulundu</div>
@@ -422,10 +421,10 @@ if (window.Sentry) {
 <!-- APP BODY -->
 <div class="app-body" id="app-body" style="display:none;">
 
-  <div id="deletion-warning-banner" style="display:none;background:var(--danger-soft,#FEE2E2);color:var(--danger,#991B1B);padding:12px 16px;font-size:13px;line-height:1.5;border-bottom:2px solid var(--danger,#DC2626);position:sticky;top:0;z-index:100;">
+  <div id="deletion-warning-banner" class="ht-deletion-banner" style="display:none;">
     <strong>Hesabınız silinmek üzere.</strong>
     <span id="deletion-days-left"></span> gün içinde tüm verileriniz kalıcı olarak silinecek.
-    <button id="btn-cancel-deletion-banner" type="button" style="background:none;border:none;color:var(--danger,#DC2626);cursor:pointer;font-weight:700;text-decoration:underline;margin-left:4px;">Vazgeç — Hesabımı Geri Al</button>
+    <button id="btn-cancel-deletion-banner" type="button" class="ht-deletion-banner__cancel-btn">Vazgeç — Hesabımı Geri Al</button>
   </div>
 
 <!-- BOTTOM NAV (mobile) -->
@@ -1876,34 +1875,34 @@ if (window.Sentry) {
   19. profil-bootstrap.js — auth, data hydration, step-init orchestration, career_goal prefill
   20. profil-events.js    — DOMContentLoaded event wiring, Cmd+K, avatar dropdown, page glue
 -->
-<script src="shared.js?v=20260422k047a"></script>
-<script src="profil-core.js?v=20260422k047a"></script>
-<script src="profil-data.js?v=20260422k047a"></script>
-<script src="profil-ui.js?v=20260422k047a"></script>
-<script src="profil-locations.js?v=20260422k047a"></script>
-<script src="profil-summary.js?v=20260422k047a"></script>
-<script src="profil-genel.js?v=20260422k047a"></script>
-<script src="profil-visibility.js?v=20260422k047a"></script>
-<script src="profil-preview.js?v=20260422k047a"></script>
-<script src="profil-cv.js?v=20260422k047a"></script>
-<script src="profil-markalar.js?v=20260422k047a"></script>
-<script src="profil-settings.js?v=20260422k047a"></script>
-<script src="profil-firsatlar.js?v=20260422k047a"></script>
-<script src="profil-inbox.js?v=20260422k047a"></script>
-<script src="profil-yetkinlik.js?v=20260422k047a"></script>
-<script src="profil-studio-coach.js?v=20260422k047a"></script>
-<script src="profil-studio.js?v=20260422k047a"></script>
-<script src="panel-soon.js?v=20260422k047a"></script>
-<script src="profil-duyurular.js?v=20260422k047a"></script>
-<script src="profil-premium.js?v=20260422k047a"></script>
-<script src="profil-destek.js?v=20260422k047a"></script>
-<script src="profil-ayarlar.js?v=20260422k047a"></script>
-<script src="profil-wizard.js?v=20260422k047a"></script>
-<script src="profil-draft.js?v=20260422k047a"></script>
-<script src="profil-helpers.js?v=20260422k047a"></script>
-<script src="profil-kimbakti.js?v=20260422k047a"></script>
-<script src="profil-bootstrap.js?v=20260422k047a"></script>
-<script src="profil-events.js?v=20260422k047a"></script>
+<script src="shared.js?v=20260422k048a"></script>
+<script src="profil-core.js?v=20260422k048a"></script>
+<script src="profil-data.js?v=20260422k048a"></script>
+<script src="profil-ui.js?v=20260422k048a"></script>
+<script src="profil-locations.js?v=20260422k048a"></script>
+<script src="profil-summary.js?v=20260422k048a"></script>
+<script src="profil-genel.js?v=20260422k048a"></script>
+<script src="profil-visibility.js?v=20260422k048a"></script>
+<script src="profil-preview.js?v=20260422k048a"></script>
+<script src="profil-cv.js?v=20260422k048a"></script>
+<script src="profil-markalar.js?v=20260422k048a"></script>
+<script src="profil-settings.js?v=20260422k048a"></script>
+<script src="profil-firsatlar.js?v=20260422k048a"></script>
+<script src="profil-inbox.js?v=20260422k048a"></script>
+<script src="profil-yetkinlik.js?v=20260422k048a"></script>
+<script src="profil-studio-coach.js?v=20260422k048a"></script>
+<script src="profil-studio.js?v=20260422k048a"></script>
+<script src="panel-soon.js?v=20260422k048a"></script>
+<script src="profil-duyurular.js?v=20260422k048a"></script>
+<script src="profil-premium.js?v=20260422k048a"></script>
+<script src="profil-destek.js?v=20260422k048a"></script>
+<script src="profil-ayarlar.js?v=20260422k048a"></script>
+<script src="profil-wizard.js?v=20260422k048a"></script>
+<script src="profil-draft.js?v=20260422k048a"></script>
+<script src="profil-helpers.js?v=20260422k048a"></script>
+<script src="profil-kimbakti.js?v=20260422k048a"></script>
+<script src="profil-bootstrap.js?v=20260422k048a"></script>
+<script src="profil-events.js?v=20260422k048a"></script>
 
 <!-- Inline helpers + [data-panel] delegation extracted to profil-helpers.js -->
 

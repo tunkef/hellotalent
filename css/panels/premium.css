@@ -347,8 +347,8 @@
   color: #FFFFFF;
 }
 .prem-plan--highlight .prem-plan__cta:hover {
-  background: #A83F1E;
-  border-color: #A83F1E;
+  background: var(--color-vermillion-press);
+  border-color: var(--color-vermillion-press);
   color: #FFFFFF;
 }
 .prem-plan__cta:disabled {

@@ -1,6 +1,18 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 22 Nisan 2026 | Asama 82 — Profil audit Faz 1/2/3 kapandi + 3 hotfix
-> Aktif Odak: profil.html UI/UX + a11y audit sonrasi remediation tamamlandi. Newsletter Faz 1 MVP beklemede (IYS key). Sonraki: Tuna UAT son kontrolleri veya yeni feature.
+> Son guncelleme: 22 Nisan 2026 | Asama 82.1 — K048 tail-cleanup (hex purge + inline migration + use strict)
+> Aktif Odak: Profil audit tail temizligi (K048) kapandi. Newsletter Faz 1 MVP IYS key beklemede. Sonraki: Tuna UAT + yeni feature.
+>
+> ── K048 tail-cleanup (3 alt madde) ──
+>
+> **K048 Hex purge — 294 raw hex → token**: layout.css 71 + profil-extras.css 81 + 6 panel CSS (inbox 13 + firsatlar 0 + premium 2 + sirketler 13 + merkezi 1 + genel-bakis 0 + ayarlar/bildirimler/destek/kimbakti 0) → semantic token. tokens.css'e 18 yeni primitive + semantic token eklendi: --color-red-deep/on-dark/bright, --color-green-bright/tile-dark, --color-sun/sun-bright, --color-navy-sidebar-top/dark/deeper/deepest, --color-muted-warm, --color-vermillion-bright/press, --on-navy-text/muted/subtle, --danger-deep, --danger-border-soft, --sidebar-grad-top/mid/bottom (theme-flipping), --toggle-on-strong, --icon-sun/sun-hover, --green-tile. Sidebar + premium-card gradient artik tamamen token-flip (light → dark otomatik, dark override rule redundant ama zararsiz). `var(--X, #hex)` K067 dark mode fallback pattern korundu (proge degil).
+>
+> **K048 Inline style migration — 11 inline → class**: profil.html deletion banner (.ht-deletion-banner + .ht-deletion-banner__cancel-btn), command palette modal (.cmdk-modal/.cmdk-modal-head/.cmdk-input/.cmdk-results), modal-icon variants (.modal-icon--danger/--verm/--navy), wizard-leave (.ht-btn--danger-bg), success OK (.ht-btn--full-w). components.css'e K048 section eklendi. 56 kucuk inline style (display:none toggles, helper text) kalan sonraki sweep icin.
+>
+> **K048 'use strict' — yeni modulden baslangic**: profil-studio-coach.js (K044 split yeni dosya) 'use strict' directive eklendi. Top-level var/function/const hala window'a bagli (script strict mode preserves global binding). Diger 26 eski modul riskli, case-by-case ileride.
+>
+> **Test**: tests/k048-hex-purge.spec.js (34 guard: 12 dosya icin raw hex sifir + 26 yeni token var + sidebar gradient token + HTML class migration + components.css class var + use strict directive). tests/dark-mode.spec.js 2 test K048 pattern'e guncellendi (cmdk + deletion banner class-based assertion). Full regression: k048 + token-scale + contrast + button-polish + error-ux + f1-f2-f3 = 114 PASS. Pre-existing 8 dark-mode failure profil-extras.css cssFiles list'te olmadigi icin (K048 oncesi vardi).
+>
+> **Cache-bust**: 20260422k047a → 20260422k048a (scripts/bump-cache-bust.sh, profil.html 47 refs uniform).
 >
 > ── Profil audit (K041-K047, Faz 1+2+3) ──
 >
@@ -25,9 +37,9 @@
 > **Yeni memory kurallari (2)**: feedback_no_arrow_icons.md + feedback_darkmode_test_discipline.md — home session MEMORY.md'de indexli.
 >
 > **Sonraki adim oncelik sirasi**:
-> - Tam hex purge (ertelendi Faz 3'ten): layout.css ~80 raw hex → token. profil-extras.css + panel CSS'leri. ~3h.
-> - Inline style migration (ertelendi Faz 2C'den): profil.html 68 inline style → class (deletion banner, command palette). ~2h.
-> - 'use strict' kademeli ekleme (ertelendi Faz 3B'den): case-by-case, yeni modullerden baslayarak.
+> - Hex purge Faz 2: components.css 9 + studio.css 54 + wizard-editorial.css 12 + duyurular.css 2 raw hex. K048 genisletmesi. ~1h.
+> - Inline style migration Faz 2: profil.html 56 kalan kucuk inline (helper text, display:none + bonus stil). `.text-xs-muted` / `.w-fit` gibi utility eklemek gerekebilir. ~1.5h.
+> - 'use strict' kademeli: eski 26 modul icin case-by-case (profil-ui.js 1870 satir oncelik, her modul sonrasi full regression).
 >
 > ── Admin (oncesi) ──
 >

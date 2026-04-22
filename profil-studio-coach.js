@@ -28,7 +28,12 @@
  *
  * NOT IIFE-wrapped intentionally — studio.js itself is flat globals, coach
  * split mirrors that style so cross-file var references work cleanly.
+ *
+ * K048: 'use strict' enabled — all top-level var/function still bind to the
+ * global script scope (script-wide strict mode preserves window binding for
+ * top-level var/function declarations).
  * ============================================================ */
+'use strict';
 
 /* global supabase,
    COACH_CAT_TO_COMP, buildPracticeBridgeCTA,

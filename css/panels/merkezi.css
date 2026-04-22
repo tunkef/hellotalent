@@ -129,7 +129,7 @@
 .mk-avatar-ring.is-active {
   background: radial-gradient(circle, rgba(22,163,74,.18), rgba(22,163,74,0) 70%);
   box-shadow:
-    0 0 0 2px #16a34a,
+    0 0 0 2px var(--color-green),
     0 0 14px rgba(22,163,74,.45);
 }
 .mk-avatar {

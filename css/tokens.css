@@ -15,10 +15,28 @@
   --color-green-border: #BBF7D0;
   --color-red: #dc2626;
   --color-red-dark: #B91C1C; /* K041: danger hover anchor */
+  --color-red-deep: #991B1B; /* K048: avd-logout anchor */
+  --color-red-on-dark: #FCA5A5; /* K048: danger text for dark bg */
   --color-red-light: #FEF2F2;
   --color-text: #111111;
   --color-muted: #5E6671; /* K041: WCAG AA 4.5:1 on cream — was #6B7280 (4.45:1 fail) */
+  --color-muted-warm: #6B6A66; /* K048: editorial muted ink on cream */
   --color-border: #E5E3DF;
+  --color-green-bright: #22C55E; /* K048: toggle-on strong accent */
+  --color-green-tile-dark: #0d9488; /* K048: bento icon tile dark mode */
+  --color-sun: #F59E0B; /* K048: theme-toggle sun icon */
+  --color-sun-bright: #FBBF24; /* K048: theme-toggle sun hover */
+  --color-navy-sidebar-top: #2A3F7A; /* K048: sidebar gradient start light */
+  --color-navy-sidebar-top-dark: #1A2B54; /* K048: sidebar gradient start dark */
+  --color-navy-deeper: #0F1729; /* K048: sidebar gradient mid dark */
+  --color-navy-deepest: #0A1020; /* K048: sidebar gradient end dark */
+  --color-red-bright: #EF4444; /* K048: step-errors dark border */
+  --color-vermillion-bright: #E85A32; /* K048: sk-hero dark text accent */
+  --color-vermillion-press: #A83F1E; /* K048: premium button press state */
+  --on-navy-text: #F2F1EE; /* K048: primary text on navy surfaces (pp-drawer) */
+  --on-navy-muted: #D9D6CE; /* K048: muted icon on navy */
+  --on-navy-subtle: #EFEDE6; /* K048: subtle text on navy */
+  --danger-border-soft: #FECACA; /* K048: soft danger border light */
 
   /* Fonts */
   --font-head: 'Bricolage Grotesque', sans-serif;
@@ -139,7 +157,17 @@
   --warning-soft: #FEF3C7;
   --danger: var(--color-red);
   --danger-hover: var(--color-red-dark); /* K041: btn danger hover */
+  --danger-deep: var(--color-red-deep); /* K048: avd-logout, deep variant */
   --danger-soft: var(--color-red-light);
+
+  /* K048: Sidebar gradient + accent tokens — flip per theme */
+  --sidebar-grad-top: var(--color-navy-sidebar-top);
+  --sidebar-grad-mid: var(--color-navy);
+  --sidebar-grad-bottom: var(--color-navy-deep);
+  --toggle-on-strong: var(--color-green-bright);
+  --icon-sun: var(--color-sun);
+  --icon-sun-hover: var(--color-sun-bright);
+  --green-tile: var(--color-green);
 
   /* Controls */
   --input-bg: #f3f3f5;
@@ -218,6 +246,13 @@ html[data-theme="dark"] {
   --sidebar-primary: var(--color-vermillion);
   --sidebar-primary-foreground: #ffffff;
   --ring: var(--focus-ring);
+
+  /* K048: dark overrides for semantic color flip */
+  --danger-deep: var(--color-red-on-dark);
+  --sidebar-grad-top: var(--color-navy-sidebar-top-dark);
+  --sidebar-grad-mid: var(--color-navy-deeper);
+  --sidebar-grad-bottom: var(--color-navy-deepest);
+  --green-tile: var(--color-green-tile-dark);
 
   /* Editorial palette — dark mode (intentional, not pure black) */
   --editorial-bg:              #0B0F1C;

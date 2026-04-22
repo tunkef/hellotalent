@@ -80,14 +80,21 @@ test.describe('Dark mode system — profil.html', function () {
     expect(darkBlock).toContain('--input-bg:');
   });
 
-  // 5. Command palette modal uses token, not hardcoded white
+  // 5. Command palette modal uses token, not hardcoded white (K048: class migration)
   test('command palette modal uses var(--bg-surface), not hardcoded white', function () {
     var cmdkArea = profilHtml.substring(
       profilHtml.indexOf('modal-cmdk'),
       profilHtml.indexOf('cmdk-results') + 200
     );
     expect(cmdkArea).not.toContain('background:white');
-    expect(cmdkArea).toContain('--bg-surface');
+    // K048: inline → class migration; token lives in components.css .cmdk-modal rule
+    expect(cmdkArea).toContain('cmdk-modal');
+    var componentsCss = readFromRepo('css/components.css');
+    var cmdkRule = componentsCss.substring(
+      componentsCss.indexOf('.cmdk-modal{'),
+      componentsCss.indexOf('.cmdk-modal{') + 300
+    );
+    expect(cmdkRule).toContain('--bg-surface');
   });
 
   // 6. Account wizard overlay uses token
@@ -143,16 +150,24 @@ test.describe('Dark mode system — profil.html', function () {
     expect(darkBlock).toContain('--navy:');
   });
 
-  // 11. Deletion banner uses semantic tokens
+  // 11. Deletion banner uses semantic tokens (K048: migrated inline → class)
   test('deletion warning banner uses danger tokens, not hardcoded colors', function () {
     var bannerArea = profilHtml.substring(
       profilHtml.indexOf('deletion-warning-banner'),
       profilHtml.indexOf('deletion-warning-banner') + 500
     );
-    expect(bannerArea).toContain('--danger');
-    // Fallback values inside var() are OK; raw hardcoded without var() is not
+    // K048: inline style removed, now .ht-deletion-banner class owns the tokens
+    expect(bannerArea).toContain('ht-deletion-banner');
+    // Raw hardcoded without var() is not allowed inline
     var rawHardcoded = bannerArea.match(/background:#FEE2E2[^)]/g) || [];
     expect(rawHardcoded.length).toBe(0);
+    // Class definition in components.css must contain --danger
+    var componentsCss = readFromRepo('css/components.css');
+    var deletionRule = componentsCss.substring(
+      componentsCss.indexOf('.ht-deletion-banner{'),
+      componentsCss.indexOf('.ht-deletion-banner{') + 400
+    );
+    expect(deletionRule).toContain('--danger');
   });
 
   // 12. Brand follows popup uses token background

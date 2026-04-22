@@ -116,9 +116,9 @@
   gap:10px;
   padding:9px 16px;
   background:transparent;
-  border:1.5px solid #C94E28;
+  border:1.5px solid var(--verm);
   border-radius:10px;
-  color:#C94E28;
+  color:var(--verm);
   font-family:var(--font-body);
   font-size:13px;
   font-weight:600;
@@ -130,12 +130,12 @@
 }
 .sk-hero__cta:hover,
 .sk-hero__cta:focus-visible{
-  background:#C94E28;
+  background:var(--verm);
   color:#fff;
   transform:translateY(-1px);
 }
 .sk-hero__cta:focus-visible{
-  outline:2px solid #C94E28;
+  outline:2px solid var(--verm);
   outline-offset:3px;
 }
 .sk-hero__cta-count{
@@ -146,7 +146,7 @@
   height:20px;
   padding:0 7px;
   border-radius:6px;
-  background:#C94E28;
+  background:var(--verm);
   color:#fff;
   font-family:var(--font-mono);
   font-size:11px;
@@ -156,11 +156,11 @@
 .sk-hero__cta:hover .sk-hero__cta-count,
 .sk-hero__cta:focus-visible .sk-hero__cta-count{
   background:#fff;
-  color:#C94E28;
+  color:var(--verm);
 }
-html[data-theme='dark'] .sk-hero__cta{border-color:#C94E28;color:#E85A32;}
+html[data-theme='dark'] .sk-hero__cta{border-color:var(--verm);color:var(--color-vermillion-bright);}
 html[data-theme='dark'] .sk-hero__cta:hover,
-html[data-theme='dark'] .sk-hero__cta:focus-visible{background:#C94E28;color:#fff;}
+html[data-theme='dark'] .sk-hero__cta:focus-visible{background:var(--verm);color:#fff;}
 
 /* ── Filter card ── */
 /* Tuna 2026-04-17: kart bg navy (employer-tema), yazilar beyaz, search
@@ -171,12 +171,12 @@ html[data-theme='dark'] .sk-hero__cta:focus-visible{background:#C94E28;color:#ff
   display:flex;
   flex-direction:column;
   gap:18px;
-  background:#1E2D5E;
-  border-color:#1E2D5E;
+  background:var(--navy);
+  border-color:var(--navy);
 }
 html[data-theme='dark'] .sk-card--filter{
-  background:#1E2D5E;
-  border-color:#1E2D5E;
+  background:var(--navy);
+  border-color:var(--navy);
 }
 .sk-filter__search-wrap{
   position:relative;
@@ -653,12 +653,12 @@ html[data-theme='dark'] .sk-card.sk-brand:focus-visible{
 .ms-selected-pill button{border:none;background:none;font-size:16px;cursor:pointer;color:var(--muted);padding:0 2px;line-height:1;}
 .ms-selected-pill button:hover{color:var(--verm);}
 
-html[data-theme="dark"] .ms-input-wrap{background:var(--bg-surface,#1a1a2e);border-color:var(--border);}
-html[data-theme="dark"] .ms-dropdown{background:var(--bg-surface,#1a1a2e);border-color:var(--border);}
+html[data-theme="dark"] .ms-input-wrap{background:var(--bg-surface, #1a1a2e);border-color:var(--border);}
+html[data-theme="dark"] .ms-dropdown{background:var(--bg-surface, #1a1a2e);border-color:var(--border);}
 html[data-theme="dark"] .ms-item:hover{background:var(--bg-elevated);}
-html[data-theme="dark"] .ms-chip{background:rgba(201,78,40,0.15);color:var(--verm-light,#E8A48C);}
-html[data-theme="dark"] .ms-chip button{color:var(--verm-light,#E8A48C);}
+html[data-theme="dark"] .ms-chip{background:rgba(201,78,40,0.15);color:var(--verm-light, #E8A48C);}
+html[data-theme="dark"] .ms-chip button{color:var(--verm-light, #E8A48C);}
 html[data-theme="dark"] .ms-group-header{background:var(--bg-elevated);color:var(--text-secondary);border-color:var(--border);}
-html[data-theme="dark"] .ms-selected-pill{background:var(--bg-surface,#1a1a2e);border-color:var(--border);}
+html[data-theme="dark"] .ms-selected-pill{background:var(--bg-surface, #1a1a2e);border-color:var(--border);}
 html[data-theme="dark"] .ms-selected-pill button{color:var(--text-muted);}
 html[data-theme="dark"] .ms-search{color:var(--text-primary);}
