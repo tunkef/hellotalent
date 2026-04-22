@@ -386,6 +386,11 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
         Leads
       </div>
 
+      <div class="nav-item" data-panel="newsletter" onclick="switchPanel('newsletter',this)">
+        <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></span>
+        Bülten
+      </div>
+
       <div class="nav-section-label">Gelir</div>
 
       <div class="nav-item" data-panel="sales" onclick="switchPanel('sales',this)">
@@ -584,6 +589,24 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
       </div>
     </div>
 
+    <!-- ═══ PANEL: BÜLTEN (NEWSLETTER) ═══ -->
+    <div class="panel" id="panel-newsletter">
+      <div class="panel-header">
+        <h2>Bülten Yönetimi</h2>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <button class="btn-sm" id="nl-tab-subs" onclick="window._htNlSwitchTab('subs')" style="padding:6px 12px;background:var(--navy);color:white;border:none;border-radius:8px;cursor:pointer;font-size:var(--text-sm);">Aboneler</button>
+          <button class="btn-sm" id="nl-tab-camps" onclick="window._htNlSwitchTab('camps')" style="padding:6px 12px;background:transparent;color:var(--navy);border:1px solid var(--border);border-radius:8px;cursor:pointer;font-size:var(--text-sm);">Kampanyalar</button>
+          <button class="btn-sm" id="nl-tab-compose" onclick="window._htNlSwitchTab('compose')" style="padding:6px 12px;background:transparent;color:var(--verm);border:1px solid var(--verm);border-radius:8px;cursor:pointer;font-size:var(--text-sm);">+ Yeni Kampanya</button>
+        </div>
+      </div>
+      <div id="newsletter-content">
+        <div class="empty-state">
+          <div class="empty-state-icon">⏳</div>
+          <div class="empty-state-text">Yükleniyor...</div>
+        </div>
+      </div>
+    </div>
+
     <!-- ═══ PANEL: SATIŞLAR (YAKINDA) ═══ -->
     <div class="panel" id="panel-sales">
       <div class="panel-header">
@@ -706,6 +729,7 @@ window._htAdminBuildSectionLabel = function(text) {
 <script src="admin-candidates.js?v=1"></script>
 <script src="admin-employers.js?v=1"></script>
 <script src="admin-leads.js?v=1"></script>
+<script src="admin-newsletter.js?v=1"></script>
 <script src="admin-coach-content.js?v=7"></script>
 <script src="admin-ops-health.js?v=1"></script>
 <script src="admin-support.js?v=2"></script>
@@ -722,7 +746,7 @@ window._htAdminBuildSectionLabel = function(text) {
 <script src="profil-duyurular.js?v=20260414a"></script>
 <script src="admin-announcements.js?v=20260417fazd3"></script>
 <!-- shared.js: Supabase config source of truth (no header/footer injected — no ht-header/ht-footer divs) -->
-<script src="/shared.js?v=20260409c"></script>
+<script src="/shared.js?v=20260423n1"></script>
 <script>
 (function(){
   'use strict';
@@ -926,6 +950,8 @@ window._htAdminBuildSectionLabel = function(text) {
     if (name === 'ops-health') window._htAdminLoadOpsHealth && window._htAdminLoadOpsHealth();
     if (name === 'support') window._htAdminLoadSupport && window._htAdminLoadSupport();
     if (name === 'studio-modules') window._htAdminLoadStudioModules && window._htAdminLoadStudioModules();
+    if (name === 'leads') window._htLoadLeads && window._htLoadLeads();
+    if (name === 'newsletter') window._htLoadNewsletter && window._htLoadNewsletter();
     if (name === 'brands') {
       if (window._htAdminMarkalar && window._htAdminMarkalar.open) window._htAdminMarkalar.open();
     }

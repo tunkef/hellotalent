@@ -1,6 +1,14 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 21 Nisan 2026 | Asama 80.39 — Pass 10 #1-11b push edildi
-> Aktif Odak: Pass 10 #11b (`fcdf5cc`) — Tuna feedback: Burak/Orkun crop y=0 → y=800/1200. Ustten kirp, alttan govde/kontekst goster. Cache-bust `p10g` → `p10h` (grup bump). TDD 40/40 PASS.
+> Son guncelleme: 23 Nisan 2026 | Asama 81 — Newsletter Faz 1 push edildi
+> Aktif Odak: Newsletter Phase 1 MVP altyapi canli. K012 karari. Cift kitle (aday + kurumsal) double opt-in. Capture + confirmation transactional aktif, welcome + campaign IYS key gelene kadar queue'da.
+> Newsletter Faz 1 dosyalari: supabase/migrations/20260423000000_newsletter_phase1.sql (4 yeni tablo + 5 RPC + RLS), 5 yeni Edge Function (newsletter-subscribe/confirm/unsubscribe/send-campaign/iys-sync), email-send.ts 4 yeni template, uye-ol.html 3. checkbox (aday + kurumsal), shared.js+css footer form, newsletter-onay.html + newsletter-tercih.html, admin-newsletter.js + admin.html Bulten tab, profil settings Bulten toggle, docs/newsletter-dns-runbook.md, tests/newsletter-e2e.spec.js.
+> Legal: KVKK default-unchecked checkbox + ETK 6563 IYS uyumu — iys-sync env yokken idle, key geldiginde drain. Double opt-in zorunlu. RFC 8058 1-click unsubscribe header. Cache-bust shared.js/css 20260409c → 20260423n1.
+> Tuna Day 0 bekleyen: IYS basvuru (vergi no + MERSIS, 1-2 hafta), K016 KVKK avukat onayi, Cloudflare DNS erisim (SPF/DKIM/DMARC records).
+> Onceki: Pass 10 (80.39) kapandi.
+> Sonraki: IYS key gelince ilk warmup campaign (DNS runbook schedule), PostHog event tracking Faz 2.
+
+> ── Eski focus satirlari (referans) ──
+> Asama 80.39 — Pass 10 #11b (`fcdf5cc`) — Tuna feedback: Burak/Orkun crop y=0 → y=800/1200. Ustten kirp, alttan govde/kontekst goster. Cache-bust `p10g` → `p10h` (grup bump). TDD 40/40 PASS.
 > Pass 10 #11 (`d354d8a`): kurumsal story 3 kart swap. 3 yeni Pexels portresi (Defne/Burak/Orkun). `story-merve.webp` delete → `story-orkun.webp`. Where meta marka-siz (İşe Alım Uzmanı / Talent Lead / CHRO). Cache-bust `?v=20260421p10g`.
 > Pass 10 #10: aday story foto top-aligned crop (commit `fc761b3`). ffmpeg `crop=W:H:0:0,scale=1000:800` → top anchor, kafalar korundu. Cache-bust `?v=20260421p10f`. TDD 27/27 PASS.
 > Pass 10 #9 (`26f475b`): in-page hash switch — `applyHashState()` extract + hashchange listener + same-hash click interceptor. Footer Aday/Kurumsal 4 senaryoda hero'ya.

@@ -443,6 +443,8 @@ function _doSwitchPanel(name) {
     if (ne && _loadedDBData && _loadedDBData.profile) ne.checked = _loadedDBData.profile.notify_email_messages !== false;
     var nj = document.getElementById('settings-notify-email-jobs');
     if (nj && _loadedDBData && _loadedDBData.profile) nj.checked = _loadedDBData.profile.notify_email_jobs !== false;
+    var nnl = document.getElementById('settings-notify-email-newsletter');
+    if (nnl && _loadedDBData && _loadedDBData.profile) nnl.checked = _loadedDBData.profile.notify_email_newsletter === true;
     var ce = document.getElementById('settings-contact-email');
     if(ce && _loadedDBData && _loadedDBData.profile) ce.checked = _loadedDBData.profile.contact_pref_email !== false;
     var cp = document.getElementById('settings-contact-phone');

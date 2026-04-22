@@ -630,6 +630,11 @@
         <span><a href="yasal.html#kvkk" target="_blank" rel="noopener noreferrer" style="color:var(--verm);text-decoration:underline;">KVKK Aydınlatma Metni</a>'ni okudum, kişisel verilerimin işlenmesine açık rıza veriyorum.</span>
       </label>
 
+      <label class="consent-label">
+        <input type="checkbox" id="cb-aday-newsletter">
+        <span>Perakende sektöründen haberleri, ipuçlarını ve yeni fırsatları e-posta ile almak istiyorum. İstediğim zaman iptal edebilirim.</span>
+      </label>
+
       <div class="ht-hp" aria-hidden="true"><input type="text" id="aday-hp" tabindex="-1" autocomplete="off"></div>
 
       <button class="btn-submit btn-aday" type="button" id="btn-aday-kayit" disabled>Kayıt Ol</button>
@@ -715,6 +720,11 @@
         <span><a href="yasal.html#kvkk" target="_blank" rel="noopener noreferrer" style="color:var(--navy);text-decoration:underline;">KVKK Aydınlatma Metni</a>'ni okudum, kişisel verilerimin işlenmesine açık rıza veriyorum.</span>
       </label>
 
+      <label class="consent-label">
+        <input type="checkbox" id="cb-k-newsletter">
+        <span>HelloTalent Kurumsal Bülten'e abone olmak istiyorum — TR perakende talent trendleri, işveren marka vaka analizleri ve platform güncellemeleri. İstediğim zaman iptal edebilirim.</span>
+      </label>
+
       <div class="ht-hp" aria-hidden="true"><input type="text" id="k-hp" tabindex="-1" autocomplete="off"></div>
 
       <button class="btn-submit btn-ik" type="button" id="btn-k-kayit" disabled>Kayıt Ol</button>
@@ -758,7 +768,7 @@
   &copy; 2025 hellotalent &middot; <a href="index.html">Ana Sayfa</a>
 </footer>
 
-<script src="/shared.js?v=20260409c"></script>
+<script src="/shared.js?v=20260423n1"></script>
 <script>
 /* ── uye-ol.html inline JS ── */
 
@@ -1138,6 +1148,19 @@ async function resendOtp() {
   if (backBtn) backBtn.addEventListener('click', hideOtpPanel);
 })();
 
+// ── NEWSLETTER SUBSCRIBE HELPER ──
+// Signup sonrasi best-effort call — signup success'i engellemez (try/catch swallow).
+function subscribeToNewsletter(email, audience, source) {
+  try {
+    var url = 'https://cpwibefquojehjehtrog.supabase.co/functions/v1/newsletter-subscribe';
+    fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: email, audience: audience, source: source, started_at: Date.now() - 3000 })
+    }).catch(function(e){ console.warn('newsletter subscribe failed:', e); });
+  } catch (e) { console.warn('newsletter subscribe exception:', e); }
+}
+
 // ── ADAY SIGNUP ──
 async function doAdaySignup() {
   var btn = document.getElementById('btn-aday-kayit');
@@ -1158,14 +1181,21 @@ async function doAdaySignup() {
       showDupError(errEl, 'Bu telefon numarası zaten kayıtlı.', false);
       btn.disabled = false; btn.textContent = 'Kayıt Ol'; return;
     }
+    var newsletterOptIn = document.getElementById('cb-aday-newsletter').checked;
+    var metaData = { full_name: fullName, first_name: firstName, last_name: lastName, phone: phone, privacy_consent_at: new Date().toISOString(), kvkk_explicit_consent_at: new Date().toISOString(), age_confirmed: true };
+    if (newsletterOptIn) metaData.newsletter_opt_in_at = new Date().toISOString();
     var result = await getSupa().auth.signUp({
       email: email, password: password,
-      options: { data: { full_name: fullName, first_name: firstName, last_name: lastName, phone: phone, privacy_consent_at: new Date().toISOString(), kvkk_explicit_consent_at: new Date().toISOString(), age_confirmed: true } }
+      options: { data: metaData }
     });
     if (result.error) throw result.error;
     if (result.data.user && result.data.user.identities && result.data.user.identities.length === 0) {
       showDupError(errEl, 'Bu e-posta adresi zaten kayıtlı.', false);
       btn.disabled = false; btn.textContent = 'Kayıt Ol'; return;
+    }
+    // Newsletter: signup sonrasi capture (best-effort, signup'a bagli degil)
+    if (newsletterOptIn) {
+      subscribeToNewsletter(email, 'aday', 'signup_aday');
     }
     // K-065: Email confirmation flow — session yoksa OTP modal aç
     if (!result.data.session) {
@@ -1207,14 +1237,21 @@ async function doKurumsalSignup() {
       showDupError(errEl, 'Bu telefon numarası zaten kayıtlı.', true);
       btn.disabled = false; btn.textContent = 'Kayıt Ol'; return;
     }
+    var newsletterOptIn = document.getElementById('cb-k-newsletter').checked;
+    var metaData = { role: 'employer', full_name: fullName, first_name: firstName, last_name: lastName, company_name: sirket, company_website: website, phone: phone, privacy_consent_at: new Date().toISOString(), kvkk_explicit_consent_at: new Date().toISOString(), age_confirmed: true };
+    if (newsletterOptIn) metaData.newsletter_opt_in_at = new Date().toISOString();
     var result = await getSupa().auth.signUp({
       email: email, password: password,
-      options: { data: { role: 'employer', full_name: fullName, first_name: firstName, last_name: lastName, company_name: sirket, company_website: website, phone: phone, privacy_consent_at: new Date().toISOString(), kvkk_explicit_consent_at: new Date().toISOString(), age_confirmed: true } }
+      options: { data: metaData }
     });
     if (result.error) throw result.error;
     if (result.data.user && result.data.user.identities && result.data.user.identities.length === 0) {
       showDupError(errEl, 'Bu e-posta adresi zaten kayıtlı.', true);
       btn.disabled = false; btn.textContent = 'Kayıt Ol'; return;
+    }
+    // Newsletter: signup sonrasi capture (best-effort, signup'a bagli degil)
+    if (newsletterOptIn) {
+      subscribeToNewsletter(email, 'kurumsal', 'signup_kurumsal');
     }
     // K-065: Email confirmation flow — session yoksa OTP modal aç (register_employer RPC verify sonrası)
     if (!result.data.session) {

@@ -247,18 +247,23 @@ document.addEventListener('DOMContentLoaded', function() {
       try {
         var nemVal = document.getElementById('settings-notify-email-messages').checked;
         var nejVal = document.getElementById('settings-notify-email-jobs').checked;
+        var nnlEl = document.getElementById('settings-notify-email-newsletter');
+        var nnlVal = nnlEl ? nnlEl.checked : false;
+        var updatePayload = {
+          notify_email_messages: nemVal,
+          notify_email_jobs: nejVal,
+        };
+        if (nnlEl) updatePayload.notify_email_newsletter = nnlVal;
         var res = await supabase
           .from('candidates')
-          .update({
-            notify_email_messages: nemVal,
-            notify_email_jobs: nejVal
-          })
+          .update(updatePayload)
           .eq('user_id', currentUser.id);
         if (res.error) throw res.error;
         // Sync in-memory cache
         if (window._loadedDBData && _loadedDBData.profile) {
           _loadedDBData.profile.notify_email_messages = nemVal;
           _loadedDBData.profile.notify_email_jobs = nejVal;
+          if (nnlEl) _loadedDBData.profile.notify_email_newsletter = nnlVal;
         }
         if (msg) { msg.style.color = 'var(--green)'; msg.textContent = 'Bildirim tercihleri kaydedildi.'; msg.style.display = 'block'; }
       } catch (e) {

@@ -151,6 +151,21 @@ window._HT_STUDIO_FROZEN = true;
     '      </a>',
     '    </div>',
     '  </div>',
+    '  <div class="footer-newsletter" id="ht-footer-newsletter">',
+    '    <div class="fn-inner">',
+    '      <div class="fn-head">',
+    '        <div class="fn-title">HelloTalent Bülten</div>',
+    '        <div class="fn-sub">Perakende sektöründen haberler, kariyer ipuçları ve yeni fırsatlar — doğrudan e-postana.</div>',
+    '      </div>',
+    '      <form class="fn-form" id="ht-newsletter-form" autocomplete="off" novalidate>',
+    '        <input type="email" class="fn-email" id="ht-newsletter-email" placeholder="E-posta adresin" required aria-label="E-posta">',
+    '        <button type="submit" class="fn-submit" id="ht-newsletter-submit">Abone Ol</button>',
+    '        <input type="text" id="ht-newsletter-hp" class="ht-hp-field" tabindex="-1" autocomplete="off" aria-hidden="true">',
+    '      </form>',
+    '      <div class="fn-msg" id="ht-newsletter-msg" role="status" aria-live="polite"></div>',
+    '      <div class="fn-consent">Abone olarak <a href="yasal.html#kvkk">KVKK Aydınlatma Metni</a>\'ni kabul etmiş olursun. İstediğin zaman iptal edebilirsin.</div>',
+    '    </div>',
+    '  </div>',
     '  <div class="footer-bottom">',
     '    <span class="footer-copyright">&copy; 2026 hellotalent.ai &mdash; Tüm hakları saklıdır.</span>',
     '    <span class="footer-dei">HelloTalent\'ta herkes eşittir. Perakende sektörünün gücü farklılıklarımızdan gelir. Tüm adaylara adil ve eşit bir şekilde davranmayı taahhüt ediyoruz.</span>',
@@ -165,6 +180,80 @@ window._HT_STUDIO_FROZEN = true;
     if (headerEl) headerEl.outerHTML = HEADER_HTML;
     if (footerEl) footerEl.outerHTML = FOOTER_HTML;
     bindEvents();
+    bindNewsletterForm();
+  }
+
+  /* ── NEWSLETTER FOOTER FORM ── */
+  function bindNewsletterForm() {
+    var form = document.getElementById('ht-newsletter-form');
+    if (!form) return;
+    var startedAt = Date.now();
+    var EMAIL_RE = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    var ENDPOINT = 'https://cpwibefquojehjehtrog.supabase.co/functions/v1/newsletter-subscribe';
+
+    form.addEventListener('submit', function(e){
+      e.preventDefault();
+      var btn = document.getElementById('ht-newsletter-submit');
+      var emailEl = document.getElementById('ht-newsletter-email');
+      var hp = document.getElementById('ht-newsletter-hp');
+      var msg = document.getElementById('ht-newsletter-msg');
+      var email = (emailEl.value || '').trim().toLowerCase();
+
+      msg.className = 'fn-msg';
+      msg.textContent = '';
+
+      if (hp.value) { return; } // bot
+      if (Date.now() - startedAt < 2000) {
+        msg.className = 'fn-msg err';
+        msg.textContent = 'Lütfen biraz bekleyin ve tekrar deneyin.';
+        return;
+      }
+      if (!email || !EMAIL_RE.test(email)) {
+        msg.className = 'fn-msg err';
+        msg.textContent = 'Geçerli bir e-posta adresi gir.';
+        return;
+      }
+
+      // audience default: isveren.html üzerinde kurumsal, diğerlerinde aday
+      var audience = /isveren\.html|kurumsal/i.test(window.location.pathname) ? 'kurumsal' : 'aday';
+
+      btn.disabled = true;
+      btn.textContent = 'Gönderiliyor...';
+
+      fetch(ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: email,
+          audience: audience,
+          source: 'footer_' + audience,
+          started_at: startedAt,
+          hp: ''
+        })
+      }).then(function(r){ return r.json().then(function(b){ return { status: r.status, body: b }; }); })
+        .then(function(result){
+          if (result.status === 200) {
+            msg.className = 'fn-msg ok';
+            if (result.body.already_confirmed) {
+              msg.textContent = 'Zaten abonesin. Teşekkürler!';
+            } else {
+              msg.textContent = 'Doğrulama e-postası gönderildi. E-postandaki bağlantıya tıklayarak aboneliğini tamamla.';
+            }
+            emailEl.value = '';
+          } else {
+            msg.className = 'fn-msg err';
+            msg.textContent = 'Gönderilemedi. Daha sonra tekrar dene.';
+          }
+        })
+        .catch(function(){
+          msg.className = 'fn-msg err';
+          msg.textContent = 'Ağ hatası. Daha sonra tekrar dene.';
+        })
+        .finally(function(){
+          btn.disabled = false;
+          btn.textContent = 'Abone Ol';
+        });
+    });
   }
 
   /* ── EVENT LISTENERS ── */

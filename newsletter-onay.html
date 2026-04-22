@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'">
+<title>Aboneliğiniz — HelloTalent Bülten</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script>
+(function(){ try { if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) document.documentElement.classList.add('dark'); } catch(e) {} })();
+</script>
+<style>
+:root {
+  --verm: #C94E28;
+  --navy: #1E2D5E;
+  --cream: #F7F6F4;
+  --ink: #0A0E27;
+  --muted: #5D6283;
+  --border: #E5E3DF;
+  --bg: var(--cream);
+  --fg: var(--ink);
+  --card: #ffffff;
+}
+html.dark {
+  --bg: #0B0F1C;
+  --fg: #F5F5F4;
+  --muted: #9CA0B5;
+  --border: #1F2738;
+  --card: #111827;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.card {
+  max-width: 520px;
+  width: 100%;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 40px 32px;
+  text-align: center;
+}
+.logo {
+  font-family: 'Bricolage Grotesque', Georgia, serif;
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--navy);
+  text-decoration: none;
+  margin-bottom: 24px;
+  display: inline-block;
+}
+html.dark .logo { color: #FFFFFF; }
+.logo span { color: var(--verm); }
+.status-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  margin: 0 auto 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+}
+.ok { background: rgba(16, 185, 129, 0.12); color: #10B981; }
+.err { background: rgba(239, 68, 68, 0.12); color: #EF4444; }
+h1 {
+  font-family: 'Bricolage Grotesque', Georgia, serif;
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--fg);
+  margin: 0 0 12px;
+  letter-spacing: -0.01em;
+}
+p {
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.6;
+  margin: 0 0 20px;
+}
+.btn {
+  display: inline-block;
+  background: var(--verm);
+  color: #FFFFFF;
+  text-decoration: none;
+  padding: 12px 28px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 15px;
+  margin-top: 8px;
+}
+.btn:hover { opacity: 0.92; }
+</style>
+</head>
+<body>
+<main class="card" role="main">
+  <a href="https://hellotalent.ai" class="logo">Hello<span>Talent</span></a>
+
+  <div id="state-ok" style="display:none;">
+    <div class="status-icon ok" aria-hidden="true">✓</div>
+    <h1>Aboneliğiniz onaylandı</h1>
+    <p>HelloTalent Bülteni'ne hoş geldiniz. İlk sayımızı yakında e-postanıza göndereceğiz. İstediğiniz zaman her bültenin altındaki bağlantıdan abonelikten çıkabilirsiniz.</p>
+    <a href="https://hellotalent.ai" class="btn">Ana Sayfaya Dön</a>
+  </div>
+
+  <div id="state-err" style="display:none;">
+    <div class="status-icon err" aria-hidden="true">✕</div>
+    <h1 id="err-title">Bağlantı geçersiz</h1>
+    <p id="err-msg">Doğrulama bağlantısı geçersiz veya süresi dolmuş. Yeni bir aboneliği <a href="https://hellotalent.ai" style="color:var(--verm);">ana sayfadan</a> başlatabilirsiniz.</p>
+    <a href="https://hellotalent.ai" class="btn">Ana Sayfaya Dön</a>
+  </div>
+</main>
+<script>
+(function(){
+  var params = new URLSearchParams(window.location.search);
+  var ok = params.get('ok');
+  var err = params.get('err');
+  if (ok === '1') {
+    document.getElementById('state-ok').style.display = 'block';
+  } else if (err) {
+    var msgEl = document.getElementById('err-msg');
+    var titleEl = document.getElementById('err-title');
+    if (err === 'invalid_token') titleEl.textContent = 'Geçersiz doğrulama bağlantısı';
+    else if (err === 'not_found') titleEl.textContent = 'Abonelik bulunamadı';
+    else if (err === 'invalid_status') { titleEl.textContent = 'Bu abonelik artık aktif değil'; msgEl.textContent = 'Bu bağlantı kullanılmış veya abonelik iptal edilmiş olabilir.'; }
+    document.getElementById('state-err').style.display = 'block';
+  } else {
+    document.getElementById('state-err').style.display = 'block';
+  }
+})();
+</script>
+</body>
+</html>

@@ -12,6 +12,7 @@ const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY")!;
 const EMAIL_FROM = Deno.env.get("EMAIL_FROM") || "HelloTalent <noreply@hellotalent.ai>";
+const NEWSLETTER_FROM = Deno.env.get("NEWSLETTER_FROM") || "HelloTalent Bülten <bulten@hellotalent.ai>";
 const REPLY_TO = Deno.env.get("REPLY_TO") || "support@hellotalent.ai";
 
 const BATCH_SIZE = 10;
@@ -66,7 +67,7 @@ Deno.serve(async (_req: Request) => {
     for (const row of batch) {
       try {
         const template = renderTemplate(row.email_type, row.payload);
-        await sendViaResend(template, row.recipient_email, row.dedupe_key);
+        await sendViaResend(template, row.recipient_email, row.dedupe_key, row.email_type, row.payload);
 
         // Success
         await supabase
@@ -139,7 +140,34 @@ async function sendViaResend(
   content: EmailContent,
   to: string,
   idempotencyKey: string,
+  emailType?: string,
+  payload?: Payload,
 ): Promise<void> {
+  const isNewsletter = emailType?.startsWith("newsletter_") ?? false;
+  const isCommercialNewsletter = emailType === "newsletter_welcome_aday"
+    || emailType === "newsletter_welcome_kurumsal"
+    || emailType === "newsletter_campaign";
+  const from = isNewsletter ? NEWSLETTER_FROM : EMAIL_FROM;
+
+  // RFC 8058 List-Unsubscribe headers for commercial newsletter
+  const extraHeaders: Record<string, string> = {};
+  if (isCommercialNewsletter && payload?.unsubscribe_url) {
+    extraHeaders["List-Unsubscribe"] = `<${payload.unsubscribe_url}>`;
+    extraHeaders["List-Unsubscribe-Post"] = "List-Unsubscribe=One-Click";
+  }
+
+  const body: Record<string, unknown> = {
+    from,
+    to: [to],
+    reply_to: REPLY_TO,
+    subject: content.subject,
+    html: content.html,
+    text: content.text,
+  };
+  if (Object.keys(extraHeaders).length > 0) {
+    body.headers = extraHeaders;
+  }
+
   const res = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: {
@@ -147,19 +175,12 @@ async function sendViaResend(
       "Content-Type": "application/json",
       "Idempotency-Key": idempotencyKey,
     },
-    body: JSON.stringify({
-      from: EMAIL_FROM,
-      to: [to],
-      reply_to: REPLY_TO,
-      subject: content.subject,
-      html: content.html,
-      text: content.text,
-    }),
+    body: JSON.stringify(body),
   });
 
   if (!res.ok) {
-    const body = await res.text().catch(() => "");
-    throw new Error(`Resend ${res.status}: ${body}`);
+    const bodyErr = await res.text().catch(() => "");
+    throw new Error(`Resend ${res.status}: ${bodyErr}`);
   }
 }
 
@@ -203,6 +224,15 @@ interface Payload {
   user_agent?: string | null;
   resolution_message?: string | null;
   reply_body?: string | null;
+  // Newsletter fields
+  audience?: string | null;
+  confirm_url?: string;
+  unsubscribe_url?: string;
+  preheader?: string | null;
+  body_html?: string | null;
+  body_text?: string | null;
+  campaign_id?: string | null;
+  subscriber_id?: string | null;
 }
 
 function renderTemplate(
@@ -241,6 +271,14 @@ function renderTemplate(
       return candidateReplyNotificationTemplate(payload);
     case "employer_lead_notification":
       return employerLeadNotificationTemplate(payload);
+    case "newsletter_confirmation":
+      return newsletterConfirmationTemplate(payload);
+    case "newsletter_welcome_aday":
+      return newsletterWelcomeAdayTemplate(payload);
+    case "newsletter_welcome_kurumsal":
+      return newsletterWelcomeKurumsalTemplate(payload);
+    case "newsletter_campaign":
+      return newsletterCampaignTemplate(payload);
     default:
       throw new Error(`Unknown email_type: ${emailType}`);
   }
@@ -1063,6 +1101,188 @@ Gizlilik: https://hellotalent.ai/gizlilik.html`;
     html,
     text,
   };
+}
+
+// ─── Newsletter Shared ───────────────────────────────
+
+function newsletterFooter(unsubUrl?: string, prefUrl?: string): string {
+  const unsub = unsubUrl || "";
+  const pref = prefUrl || unsubUrl || "";
+  return `<tr><td style="padding:20px 32px;border-top:1px solid ${COLORS.border};font-size:12px;color:${COLORS.muted};line-height:1.5;">
+<p style="margin:0 0 8px;">Bu e-posta, HelloTalent Bülten aboneliğiniz kapsamında gönderildi. İleti Yönetim Sistemi (İYS) kayıtlarımızda onayınız bulunmaktadır.</p>
+<p style="margin:0 0 4px;">
+  ${unsub ? `<a href="${unsub}" style="color:${COLORS.muted};text-decoration:underline;">Abonelikten çık</a>` : ""}
+  ${unsub && pref !== unsub ? ` &middot; <a href="${pref}" style="color:${COLORS.muted};text-decoration:underline;">Tercihlerimi yönet</a>` : ""}
+</p>
+<p style="margin:4px 0 0;">&copy; 2026 HelloTalent &mdash; Perakende sektörüne özel yetenek platformu</p>
+<p style="margin:4px 0 0;"><a href="https://hellotalent.ai/gizlilik.html" style="color:${COLORS.muted};">Gizlilik Politikası</a> &middot; <a href="https://hellotalent.ai/kullanim-sartlari.html" style="color:${COLORS.muted};">Kullanım Şartları</a></p>
+</td></tr>`;
+}
+
+// ─── Newsletter: Confirmation (transactional, İYS dışı) ──
+
+function newsletterConfirmationTemplate(p: Payload): EmailContent {
+  const confirmUrl = p.confirm_url || "https://hellotalent.ai/";
+  const audienceLabel = p.audience === "kurumsal" ? "Kurumsal" : "Aday";
+
+  const html = emailWrapper(`
+${logoRow()}
+<tr><td style="padding:8px 32px 4px;text-align:center;">
+<span style="display:none;max-height:0;overflow:hidden;">E-postanızı doğrulayın — HelloTalent Bülten aboneliği tek tıkla aktifleşir.</span>
+<h1 style="margin:0;font-family:'Bricolage Grotesque',Georgia,serif;font-size:22px;color:${COLORS.navy};font-weight:700;">E-postanızı doğrulayın</h1>
+</td></tr>
+<tr><td style="padding:16px 32px;font-size:15px;color:${COLORS.text};line-height:1.6;">
+<p style="margin:0 0 12px;">HelloTalent ${audienceLabel} Bülteni aboneliğinizi tamamlamak için aşağıdaki butona tıklayın.</p>
+<p style="margin:0 0 16px;">Bu adım KVKK ve İleti Yönetim Sistemi (İYS) uyumu için gereklidir — onayınız olmadan size ticari ileti göndermiyoruz.</p>
+</td></tr>
+${ctaButton("Aboneliği Doğrula", confirmUrl)}
+<tr><td style="padding:0 32px 20px;font-size:13px;color:${COLORS.muted};line-height:1.5;">
+<p style="margin:0 0 6px;">Bu bağlantı 24 saat içinde geçerlidir.</p>
+<p style="margin:0;">Eğer yanlışlıkla abone olduysanız veya bu isteği siz yapmadıysanız, bu e-postayı yok sayabilirsiniz — herhangi bir işlem yapılmaz.</p>
+</td></tr>
+${footerRow()}
+`);
+
+  const text = `E-postanızı doğrulayın
+
+HelloTalent ${audienceLabel} Bülteni aboneliğinizi tamamlamak için aşağıdaki bağlantıya tıklayın.
+
+Bu adım KVKK ve İleti Yönetim Sistemi (İYS) uyumu için gereklidir.
+
+→ Aboneliği Doğrula: ${confirmUrl}
+
+Bu bağlantı 24 saat içinde geçerlidir. Yanlışlıkla abone olduysanız bu e-postayı yok sayabilirsiniz.
+
+---
+© 2026 HelloTalent
+Gizlilik: https://hellotalent.ai/gizlilik.html`;
+
+  return {
+    subject: "E-postanızı doğrulayın — HelloTalent Bülten",
+    html,
+    text,
+  };
+}
+
+// ─── Newsletter: Welcome Aday ────────────────────────
+
+function newsletterWelcomeAdayTemplate(p: Payload): EmailContent {
+  const unsubUrl = p.unsubscribe_url || "https://hellotalent.ai/newsletter-tercih.html";
+
+  const html = emailWrapper(`
+${logoRow()}
+<tr><td style="padding:8px 32px 4px;text-align:center;">
+<span style="display:none;max-height:0;overflow:hidden;">Perakende kariyer hikayelerinin yolu şimdi açıldı.</span>
+<h1 style="margin:0;font-family:'Bricolage Grotesque',Georgia,serif;font-size:22px;color:${COLORS.navy};font-weight:700;">Hoş geldin — perakendenin içinden</h1>
+</td></tr>
+<tr><td style="padding:16px 32px;font-size:15px;color:${COLORS.text};line-height:1.6;">
+<p style="margin:0 0 12px;">HelloTalent Aday Bülteni aboneliğin onaylandı. Artık listedesiniz — Türkiye perakende sektörünün en iyi markalarından, hikayelerinden ve fırsatlarından haberdar olacaksın.</p>
+<p style="margin:0 0 12px;"><strong>Her hafta göndereceğimiz:</strong></p>
+<p style="margin:0 0 4px;">— Sektörden güncel haberler ve trend notları</p>
+<p style="margin:0 0 4px;">— Mülakat ve kariyer ipuçları (uygulanabilir, somut)</p>
+<p style="margin:0 0 16px;">— Yeni açılan pozisyonlar ve markaları için özenle seçilmiş fırsatlar</p>
+<p style="margin:0;">Yakında ilk sayımızla buluşacağız. Bu arada profilini güncellersen sistem sana daha uygun pozisyonlar gösterir.</p>
+</td></tr>
+${ctaButton("Profilime Git", "https://hellotalent.ai/profil.html")}
+${newsletterFooter(unsubUrl)}
+`);
+
+  const text = `Hoş geldin — perakendenin içinden
+
+HelloTalent Aday Bülteni aboneliğin onaylandı. Artık listedesiniz.
+
+Her hafta göndereceğimiz:
+— Sektörden güncel haberler ve trend notları
+— Mülakat ve kariyer ipuçları (uygulanabilir, somut)
+— Yeni açılan pozisyonlar ve markaları için özenle seçilmiş fırsatlar
+
+Yakında ilk sayımızla buluşacağız.
+
+→ Profilime Git: https://hellotalent.ai/profil.html
+
+---
+Abonelikten çık: ${unsubUrl}
+© 2026 HelloTalent`;
+
+  return {
+    subject: "Hoş geldin — HelloTalent Aday Bülteni aktif",
+    html,
+    text,
+  };
+}
+
+// ─── Newsletter: Welcome Kurumsal ───────────────────
+
+function newsletterWelcomeKurumsalTemplate(p: Payload): EmailContent {
+  const unsubUrl = p.unsubscribe_url || "https://hellotalent.ai/newsletter-tercih.html";
+
+  const html = emailWrapper(`
+${logoRow()}
+<tr><td style="padding:8px 32px 4px;text-align:center;">
+<span style="display:none;max-height:0;overflow:hidden;">TR perakende talent stratejisi, her iki haftada ofisinize.</span>
+<h1 style="margin:0;font-family:'Bricolage Grotesque',Georgia,serif;font-size:22px;color:${COLORS.navy};font-weight:700;">Hoş geldiniz — talent zekâsı için</h1>
+</td></tr>
+<tr><td style="padding:16px 32px;font-size:15px;color:${COLORS.text};line-height:1.6;">
+<p style="margin:0 0 12px;">HelloTalent Kurumsal Bülten aboneliğiniz onaylandı. Türkiye perakende sektöründeki talent pazarına dair analitik ve stratejik içeriğimiz artık size de ulaşacak.</p>
+<p style="margin:0 0 12px;"><strong>İki haftada bir göndereceğimiz:</strong></p>
+<p style="margin:0 0 4px;">— Türkiye perakende talent trend raporu (veri-odaklı)</p>
+<p style="margin:0 0 4px;">— İşveren markalaşması vaka analizleri ve playbook</p>
+<p style="margin:0 0 4px;">— İşe alım verimlilik benchmark'leri ve retention stratejileri</p>
+<p style="margin:0 0 16px;">— Platform güncellemeleri ve yeni özellikler</p>
+<p style="margin:0;">İlk sayıyı yakında ofisinize göndereceğiz. Bu arada kurumsal demo talep ederek platformu keşfedebilirsiniz.</p>
+</td></tr>
+${ctaButton("Kurumsal Demo Talep Et", "https://hellotalent.ai/iletisim.html")}
+${newsletterFooter(unsubUrl)}
+`);
+
+  const text = `Hoş geldiniz — talent zekâsı için
+
+HelloTalent Kurumsal Bülten aboneliğiniz onaylandı.
+
+İki haftada bir göndereceğimiz:
+— Türkiye perakende talent trend raporu
+— İşveren markalaşması vaka analizleri
+— İşe alım verimlilik benchmark'leri
+— Platform güncellemeleri
+
+→ Kurumsal Demo Talep Et: https://hellotalent.ai/iletisim.html
+
+---
+Abonelikten çık: ${unsubUrl}
+© 2026 HelloTalent`;
+
+  return {
+    subject: "Hoş geldiniz — HelloTalent Kurumsal Bülten aktif",
+    html,
+    text,
+  };
+}
+
+// ─── Newsletter: Campaign (admin-composed) ──────────
+
+function newsletterCampaignTemplate(p: Payload): EmailContent {
+  const subject = p.subject || "HelloTalent Bülten";
+  const preheader = p.preheader || "";
+  const bodyHtml = p.body_html || "<p>Boş kampanya</p>";
+  const bodyText = p.body_text || "";
+  const unsubUrl = p.unsubscribe_url || "https://hellotalent.ai/newsletter-tercih.html";
+
+  const html = emailWrapper(`
+${logoRow()}
+${preheader ? `<tr><td style="padding:0;"><span style="display:none;max-height:0;overflow:hidden;">${esc(preheader)}</span></td></tr>` : ""}
+<tr><td style="padding:16px 32px;font-size:15px;color:${COLORS.text};line-height:1.6;">
+${bodyHtml}
+</td></tr>
+${newsletterFooter(unsubUrl)}
+`);
+
+  const text = `${bodyText}
+
+---
+Abonelikten çık: ${unsubUrl}
+© 2026 HelloTalent`;
+
+  return { subject, html, text };
 }
 
 // ─── Employer Lead Notification ──────────────────────

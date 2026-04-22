@@ -1872,6 +1872,7 @@ async function loadProfileFromDB() {
       email: cand.email || null,
       notify_email_messages: cand.notify_email_messages,
       notify_email_jobs: cand.notify_email_jobs,
+      notify_email_newsletter: cand.notify_email_newsletter === true,
       contact_pref_email: cand.contact_pref_email,
       contact_pref_phone: cand.contact_pref_phone,
       contact_pref_whatsapp: cand.contact_pref_whatsapp,

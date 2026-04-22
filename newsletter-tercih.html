@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://cpwibefquojehjehtrog.supabase.co; object-src 'none'; base-uri 'self'">
+<title>Bülten Tercihleri — HelloTalent</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script>
+(function(){ try { if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) document.documentElement.classList.add('dark'); } catch(e) {} })();
+</script>
+<style>
+:root {
+  --verm: #C94E28;
+  --navy: #1E2D5E;
+  --cream: #F7F6F4;
+  --ink: #0A0E27;
+  --muted: #5D6283;
+  --border: #E5E3DF;
+  --bg: var(--cream);
+  --fg: var(--ink);
+  --card: #ffffff;
+}
+html.dark {
+  --bg: #0B0F1C;
+  --fg: #F5F5F4;
+  --muted: #9CA0B5;
+  --border: #1F2738;
+  --card: #111827;
+}
+* { box-sizing: border-box; }
+body { margin:0; font-family:'Plus Jakarta Sans',-apple-system,sans-serif; background:var(--bg); color:var(--fg); min-height:100vh; padding:40px 24px; }
+.wrap { max-width:560px; margin:0 auto; }
+.logo { font-family:'Bricolage Grotesque',Georgia,serif; font-size:22px; font-weight:800; color:var(--navy); text-decoration:none; display:inline-block; margin-bottom:32px; }
+html.dark .logo { color:#fff; }
+.logo span { color:var(--verm); }
+.card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:32px; }
+h1 { font-family:'Bricolage Grotesque',Georgia,serif; font-size:26px; font-weight:800; color:var(--fg); margin:0 0 8px; letter-spacing:-0.01em; }
+.lede { color:var(--muted); font-size:15px; line-height:1.55; margin:0 0 28px; }
+.row { display:flex; justify-content:space-between; align-items:center; padding:14px 0; border-top:1px solid var(--border); }
+.row:first-of-type { border-top:0; }
+.row-label { font-size:15px; font-weight:500; color:var(--fg); }
+.row-sub { font-size:13px; color:var(--muted); margin-top:2px; }
+.toggle { appearance:none; width:44px; height:24px; border-radius:999px; background:#D4D4D0; position:relative; cursor:pointer; transition:background 160ms ease; }
+html.dark .toggle { background:#2A3044; }
+.toggle::before { content:""; position:absolute; top:2px; left:2px; width:20px; height:20px; border-radius:50%; background:#fff; transition:transform 160ms ease; }
+.toggle:checked { background:#10B981; }
+.toggle:checked::before { transform:translateX(20px); }
+.btn-row { margin-top:28px; display:flex; gap:12px; flex-wrap:wrap; }
+.btn { padding:12px 24px; border-radius:999px; border:0; font-family:inherit; font-weight:600; font-size:14px; cursor:pointer; }
+.btn-primary { background:var(--verm); color:#fff; }
+.btn-danger  { background:transparent; color:#EF4444; border:1px solid #EF4444; }
+.msg { margin-top:16px; padding:12px; border-radius:8px; font-size:14px; display:none; }
+.msg.ok  { background:rgba(16,185,129,0.12); color:#10B981; display:block; }
+.msg.err { background:rgba(239,68,68,0.12); color:#EF4444; display:block; }
+.footer { margin-top:24px; text-align:center; font-size:13px; color:var(--muted); }
+.footer a { color:var(--muted); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a href="https://hellotalent.ai" class="logo">Hello<span>Talent</span></a>
+
+  <main class="card" role="main">
+    <div id="state-loading"><p class="lede">Yükleniyor...</p></div>
+
+    <div id="state-error" style="display:none;">
+      <h1>Bağlantı geçersiz</h1>
+      <p class="lede" id="err-detail">Bu tercih merkezi bağlantısı geçerli değil. Bülten e-postalarınızdaki bağlantıyı kullanın veya yeniden abone olun.</p>
+      <a href="https://hellotalent.ai" class="btn btn-primary">Ana Sayfaya Dön</a>
+    </div>
+
+    <div id="state-unsubscribed" style="display:none;">
+      <h1>Abonelikten çıktınız</h1>
+      <p class="lede">Bundan sonra size HelloTalent Bülten gönderilmeyecek. Fikriniz değişirse istediğiniz zaman yeniden abone olabilirsiniz.</p>
+      <a href="https://hellotalent.ai" class="btn btn-primary">Ana Sayfaya Dön</a>
+    </div>
+
+    <div id="state-form" style="display:none;">
+      <h1>Bülten tercihlerin</h1>
+      <p class="lede" id="form-email">—</p>
+
+      <div class="row">
+        <div>
+          <div class="row-label">Aboneliğin aktif</div>
+          <div class="row-sub">Bülten gönderimlerini al</div>
+        </div>
+        <input type="checkbox" class="toggle" id="tg-active" checked>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-primary" id="btn-save">Kaydet</button>
+        <button class="btn btn-danger" id="btn-unsub">Abonelikten çık</button>
+      </div>
+
+      <div class="msg" id="msg"></div>
+    </div>
+  </main>
+
+  <p class="footer"><a href="https://hellotalent.ai/gizlilik.html">Gizlilik Politikası</a></p>
+</div>
+
+<script>
+(function(){
+  var SUPA_URL = 'https://cpwibefquojehjehtrog.supabase.co/functions/v1/newsletter-unsubscribe';
+  var params = new URLSearchParams(window.location.search);
+  var token = params.get('token') || '';
+  var unsubParam = params.get('unsub');
+  var errParam = params.get('err');
+
+  var elLoading = document.getElementById('state-loading');
+  var elErr = document.getElementById('state-error');
+  var elUnsub = document.getElementById('state-unsubscribed');
+  var elForm = document.getElementById('state-form');
+  var elMsg = document.getElementById('msg');
+
+  function show(el) {
+    elLoading.style.display = 'none';
+    elErr.style.display = 'none';
+    elUnsub.style.display = 'none';
+    elForm.style.display = 'none';
+    el.style.display = 'block';
+  }
+
+  // Landing from GET unsubscribe link → already unsubbed
+  if (unsubParam === '1') {
+    show(elUnsub);
+    return;
+  }
+  if (errParam) {
+    document.getElementById('err-detail').textContent =
+      errParam === 'invalid_token' ? 'Bağlantı geçersiz veya süresi dolmuş.' :
+      errParam === 'not_found' ? 'Bu abonelik bulunamadı.' :
+      'Beklenmeyen bir hata oluştu.';
+    show(elErr);
+    return;
+  }
+  if (!token || token.length !== 36) {
+    show(elErr);
+    return;
+  }
+
+  // Show minimal preference form (toggle only — unsub button is actionable)
+  document.getElementById('form-email').textContent = 'Abone e-posta tercih merkezi';
+  show(elForm);
+
+  document.getElementById('btn-unsub').addEventListener('click', function(){
+    elMsg.className = 'msg';
+    elMsg.textContent = '';
+    fetch(SUPA_URL + '?token=' + encodeURIComponent(token), { method: 'GET', redirect: 'manual' })
+      .then(function(){
+        show(elUnsub);
+      })
+      .catch(function(e){
+        elMsg.className = 'msg err';
+        elMsg.textContent = 'Hata: abonelik iptal edilemedi, daha sonra tekrar deneyin.';
+      });
+  });
+
+  document.getElementById('btn-save').addEventListener('click', function(){
+    var active = document.getElementById('tg-active').checked;
+    if (!active) {
+      document.getElementById('btn-unsub').click();
+      return;
+    }
+    elMsg.className = 'msg ok';
+    elMsg.textContent = 'Tercihlerin kaydedildi.';
+  });
+})();
+</script>
+</body>
+</html>
