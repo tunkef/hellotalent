@@ -597,22 +597,8 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
     </div>
 
     <!-- ═══ PANEL: BÜLTEN (NEWSLETTER) ═══ -->
-    <div class="panel" id="panel-newsletter">
-      <div class="panel-header">
-        <h2>Bülten Yönetimi</h2>
-        <div style="display:flex;gap:8px;align-items:center;">
-          <button class="btn-sm" id="nl-tab-subs" onclick="window._htNlSwitchTab('subs')" style="padding:6px 12px;background:var(--navy);color:white;border:none;border-radius:8px;cursor:pointer;font-size:var(--text-sm);">Aboneler</button>
-          <button class="btn-sm" id="nl-tab-camps" onclick="window._htNlSwitchTab('camps')" style="padding:6px 12px;background:transparent;color:var(--navy);border:1px solid var(--border);border-radius:8px;cursor:pointer;font-size:var(--text-sm);">Kampanyalar</button>
-          <button class="btn-sm" id="nl-tab-compose" onclick="window._htNlSwitchTab('compose')" style="padding:6px 12px;background:transparent;color:var(--verm);border:1px solid var(--verm);border-radius:8px;cursor:pointer;font-size:var(--text-sm);">+ Yeni Kampanya</button>
-        </div>
-      </div>
-      <div id="newsletter-content">
-        <div class="empty-state">
-          <div class="empty-state-icon">⏳</div>
-          <div class="empty-state-text">Yükleniyor...</div>
-        </div>
-      </div>
-    </div>
+    <!-- Markup admin-newsletter.js içinde PANEL_HTML template olarak tutulur (Faz 1 POC). -->
+    <div class="panel" id="panel-newsletter"></div>
 
     <!-- ═══ PANEL: SATIŞLAR (YAKINDA) ═══ -->
     <div class="panel" id="panel-sales">
@@ -698,45 +684,13 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
   </main>
 </div>
 
-<script>
-/* ── Admin Shared Helpers ── */
-window._htAdminBuildStatCard = function(label, value, emoji, extra) {
-  var card = document.createElement('div');
-  card.className = 'stat-card';
-  var labelDiv = document.createElement('div');
-  labelDiv.className = 'stat-card-label';
-  labelDiv.textContent = (emoji ? emoji + ' ' : '') + label;
-  card.appendChild(labelDiv);
-  var valueDiv = document.createElement('div');
-  valueDiv.className = 'stat-card-value';
-  valueDiv.textContent = value;
-  card.appendChild(valueDiv);
-  if (extra) {
-    var extraDiv = document.createElement('div');
-    extraDiv.style.cssText = 'font-size:11px;color:var(--muted);margin-top:4px;';
-    extraDiv.textContent = extra;
-    card.appendChild(extraDiv);
-  }
-  return card;
-};
-window._htAdminBuildRow = function(cards) {
-  var grid = document.createElement('div');
-  grid.className = 'stats-grid';
-  for (var i = 0; i < cards.length; i++) grid.appendChild(cards[i]);
-  return grid;
-};
-window._htAdminBuildSectionLabel = function(text) {
-  var label = document.createElement('div');
-  label.style.cssText = 'font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin:24px 0 12px;';
-  label.textContent = text;
-  return label;
-};
-</script>
+<!-- ── Admin shared helpers artık admin-core.js'te (Faz 0 refactor) ── -->
+<script src="admin-core.js?v=1"></script>
 <script src="admin-campaigns.js?v=1"></script>
 <script src="admin-candidates.js?v=1"></script>
 <script src="admin-employers.js?v=1"></script>
 <script src="admin-leads.js?v=1"></script>
-<script src="admin-newsletter.js?v=1"></script>
+<script src="admin-newsletter.js?v=2"></script>
 <script src="admin-coach-content.js?v=7"></script>
 <script src="admin-ops-health.js?v=1"></script>
 <script src="admin-support.js?v=2"></script>

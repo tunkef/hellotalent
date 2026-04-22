@@ -14,6 +14,36 @@
     filters: { audience: '', status: '', search: '' },
     activeCampaign: null,
   };
+  var mounted = false;
+
+  // ═════ PANEL HTML — admin.html'den buraya tasindi (Faz 1 POC) ═════
+  var PANEL_HTML = ''
+    + '<div class="panel-header">'
+    + '  <h2>Bulten Yonetimi</h2>'
+    + '  <div style="display:flex;gap:8px;align-items:center;">'
+    + '    <button class="btn-sm" id="nl-tab-subs" onclick="window._htNlSwitchTab(\'subs\')" style="padding:6px 12px;background:var(--navy);color:white;border:none;border-radius:8px;cursor:pointer;font-size:var(--text-sm);">Aboneler</button>'
+    + '    <button class="btn-sm" id="nl-tab-camps" onclick="window._htNlSwitchTab(\'camps\')" style="padding:6px 12px;background:transparent;color:var(--navy);border:1px solid var(--border);border-radius:8px;cursor:pointer;font-size:var(--text-sm);">Kampanyalar</button>'
+    + '    <button class="btn-sm" id="nl-tab-compose" onclick="window._htNlSwitchTab(\'compose\')" style="padding:6px 12px;background:transparent;color:var(--verm);border:1px solid var(--verm);border-radius:8px;cursor:pointer;font-size:var(--text-sm);">+ Yeni Kampanya</button>'
+    + '  </div>'
+    + '</div>'
+    + '<div id="newsletter-content">'
+    + '  <div class="empty-state">'
+    + '    <div class="empty-state-icon">&#9203;</div>'
+    + '    <div class="empty-state-text">Yukleniyor...</div>'
+    + '  </div>'
+    + '</div>';
+
+  // Mount lifecycle — ilk activate'da panel HTML'i inject eder.
+  window._htAdminMountNewsletter = function() {
+    if (mounted) return;
+    var panelEl = document.getElementById('panel-newsletter');
+    if (!panelEl) return;
+    var core = window._htAdminCore;
+    if (core && typeof core.mount === 'function') {
+      core.mount(panelEl, PANEL_HTML);
+    }
+    mounted = true;
+  };
 
   function getSupa() {
     return window.HT ? window.HT.getSupa() : null;
@@ -376,6 +406,8 @@
 
   // ═════ BOOTSTRAP ═════
   window._htLoadNewsletter = function() {
+    // Mount panel HTML (idempotent)
+    if (window._htAdminMountNewsletter) window._htAdminMountNewsletter();
     window._htNlSwitchTab(STATE.tab);
     setTimeout(function(){
       var applyBtn = document.getElementById('nl-apply-filters');

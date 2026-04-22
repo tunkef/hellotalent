@@ -1,4 +1,5 @@
 # hellotalent.ai — Current State
+> Admin refactor Faz 0+1 — admin-core.js (shared utility + panel mount helper). admin-newsletter.js PANEL_HTML template JS'e tasindi, _htAdminMountNewsletter + _htLoadNewsletter mount pattern. profil.html yaklasimi admin'e uygulaniyor, mod by mod. Faz 2: diger 9 modul ayni pattern.
 > Hotfix — admin bulten panel 'audience ambiguous' RPC fix: admin_list_newsletter_subscribers CTE'de ns.audience table-qualified. Migration 20260423010000.
 > Hotfix — admin.html login screen dark mode auto-inversion fix (k068x): color-scheme:light meta + explicit light renkler (label navy, input bg white, placeholder gray). Browser OS dark mode'da admin girisinde label invisible + input black bg problemi giderildi.
 > Asama 81.1 — Newsletter Faz 1 tasarim + agent ownership lockdown (k068w):
