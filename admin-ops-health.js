@@ -3,6 +3,26 @@
   'use strict';
 
   var loaded = false;
+  var mounted = false;
+
+  var PANEL_HTML = ''
+    + '<div class="panel-header">'
+    + '  <h2>Sistem Sa&#287;l&#305;&#287;&#305;</h2>'
+    + '  <button class="btn btn-sm" onclick="window._htAdminLoadOpsHealth && window._htAdminLoadOpsHealth(true)">Yenile</button>'
+    + '</div>'
+    + '<div id="ops-health-content">'
+    + '  <div class="empty-state" style="padding:80px 20px;">'
+    + '    <div class="empty-state-icon">&#9203;</div>'
+    + '    <div class="empty-state-text" style="font-size:var(--text-lg);color:var(--muted);">Y&uuml;kleniyor...</div>'
+    + '  </div>'
+    + '</div>';
+
+  window._htAdminMountOpsHealth = function() {
+    if (mounted) return;
+    var panel = document.getElementById('panel-ops-health');
+    var core = window._htAdminCore;
+    if (panel && core) { core.mount(panel, PANEL_HTML); mounted = true; }
+  };
 
   var buildStatCard = function(label, value, extra) { return window._htAdminBuildStatCard(label, value, null, extra); };
   var buildRow = window._htAdminBuildRow;
@@ -191,6 +211,7 @@
 
   /* ── MAIN LOAD FUNCTION ── */
   window._htAdminLoadOpsHealth = async function(forceRefresh) {
+    if (window._htAdminMountOpsHealth) window._htAdminMountOpsHealth();
     if (loaded && !forceRefresh) return;
 
     var container = document.getElementById('ops-health-content');

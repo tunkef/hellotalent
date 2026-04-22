@@ -2,7 +2,22 @@
 (function(){
   'use strict';
 
+  var mounted = false;
   var loaded = false;
+
+  var PANEL_HTML = ''
+    + '<div class="panel-header"><h2>&#304;&#351;verenler</h2></div>'
+    + '<div id="employers-content">'
+    + '  <div class="empty-state"><div class="empty-state-icon">&#9203;</div>'
+    + '  <div class="empty-state-text">Y&uuml;kleniyor...</div></div>'
+    + '</div>';
+
+  window._htAdminMountEmployers = function() {
+    if (mounted) return;
+    var panel = document.getElementById('panel-employers');
+    var core = window._htAdminCore;
+    if (panel && core) { core.mount(panel, PANEL_HTML); mounted = true; }
+  };
 
   var buildStatCard = window._htAdminBuildStatCard;
   var buildRow = window._htAdminBuildRow;
@@ -64,6 +79,7 @@
 
   /* ── LOAD EMPLOYERS DATA ── */
   window._htAdminLoadEmployers = async function() {
+    if (window._htAdminMountEmployers) window._htAdminMountEmployers();
     var container = document.getElementById('employers-content');
     if (!container) return;
 

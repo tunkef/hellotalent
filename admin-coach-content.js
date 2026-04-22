@@ -3,7 +3,19 @@
   'use strict';
 
   var loaded = false;
+  var mounted = false;
   var _currentTab = 'coaches'; /* coaches | invites | posts */
+
+  var PANEL_HTML = ''
+    + '<div class="panel-header"><h2>&#304;&ccedil;erik Y&ouml;netimi</h2></div>'
+    + '<div id="coach-content-area"></div>';
+
+  window._htAdminMountCoachContent = function() {
+    if (mounted) return;
+    var panel = document.getElementById('panel-coach-content');
+    var core = window._htAdminCore;
+    if (panel && core) { core.mount(panel, PANEL_HTML); mounted = true; }
+  };
   var _postsFilter = 'submitted'; /* submitted | published | all */
 
   var STATUS_LABELS = {
@@ -53,6 +65,7 @@
 
   /* ── MAIN LOADER ── */
   window._htAdminLoadCoachContent = async function() {
+    if (window._htAdminMountCoachContent) window._htAdminMountCoachContent();
     var container = document.getElementById('coach-content-area');
     if (!container) return;
     if (loaded) { renderTabs(container); return; }

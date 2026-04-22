@@ -466,135 +466,16 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
     </div>
 
     <!-- ═══ PANEL: KAMPANYA INCELE ═══ -->
-    <div class="panel" id="panel-review">
-      <div class="panel-header">
-        <h2>Kampanya Incele</h2>
-      </div>
-
-      <div class="stats-grid" id="review-stats">
-        <div class="stat-card">
-          <div class="stat-card-label">Bekleyen</div>
-          <div class="stat-card-value" id="stat-pending">0</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-card-label">Aktif</div>
-          <div class="stat-card-value" id="stat-active">0</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-card-label">Toplam</div>
-          <div class="stat-card-value" id="stat-total">0</div>
-        </div>
-      </div>
-
-      <div id="pending-campaigns-list">
-        <div class="empty-state">
-          <div class="empty-state-icon">📋</div>
-          <div class="empty-state-text">Incelenecek kampanya yok</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ═══ PANEL: TÜM KAMPANYALAR ═══ -->
-    <div class="panel" id="panel-campaigns">
-      <div class="panel-header">
-        <h2>Tüm Kampanyalar</h2>
-      </div>
-      <div id="all-campaigns-list">
-        <div class="empty-state">
-          <div class="empty-state-icon">📊</div>
-          <div class="empty-state-text">Henüz kampanya oluşturulmamış</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ═══ PANEL: ICERIK YONETIMI ═══ -->
-    <div class="panel" id="panel-coach-content">
-      <div class="panel-header">
-        <h2>Icerik Yonetimi</h2>
-      </div>
-      <div id="coach-content-area"></div>
-    </div>
-
-    <!-- ═══ PANEL: DUYURULAR (K030 FAZ C) ═══ -->
-    <main class="panel" id="panel-announcements" data-panel="announcements">
-      <div class="panel-header">
-        <h2>Duyurular</h2>
-      </div>
-      <div id="ann-root"></div>
-    </main>
-
-    <!-- ═══ PANEL: STUDIO MODÜLLERI ═══ -->
-    <div class="panel" id="panel-studio-modules">
-      <div class="panel-header">
-        <h2>Studio Modülleri</h2>
-        <button class="btn btn-sm" onclick="window._htAdminLoadStudioModules && window._htAdminLoadStudioModules(true)">Yenile</button>
-      </div>
-      <div id="studio-modules-content"></div>
-    </div>
-
-    <!-- ═══ PANEL: DESTEK TALEPLERI ═══ -->
-    <div class="panel" id="panel-support">
-      <div class="panel-header">
-        <h2>Destek Talepleri</h2>
-        <button class="btn btn-sm" onclick="window._htAdminLoadSupport && window._htAdminLoadSupport(true)">Yenile</button>
-      </div>
-      <div id="support-content">
-        <div class="empty-state" style="padding:80px 20px;">
-          <div class="empty-state-icon">⏳</div>
-          <div class="empty-state-text" style="font-size:var(--text-lg);color:var(--muted);">Yukleniyor...</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ═══ PANEL: ADAYLAR ═══ -->
-    <div class="panel" id="panel-candidates">
-      <div class="panel-header">
-        <h2>Adaylar</h2>
-      </div>
-      <div id="candidates-content">
-        <div class="empty-state">
-          <div class="empty-state-icon">⏳</div>
-          <div class="empty-state-text">Yükleniyor...</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ═══ PANEL: İŞVERENLER ═══ -->
-    <div class="panel" id="panel-employers">
-      <div class="panel-header">
-        <h2>İşverenler</h2>
-      </div>
-      <div id="employers-content">
-        <div class="empty-state">
-          <div class="empty-state-icon">⏳</div>
-          <div class="empty-state-text">Yükleniyor...</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ═══ PANEL: LEADS ═══ -->
-    <div class="panel" id="panel-leads">
-      <div class="panel-header">
-        <h2>İşveren Leads</h2>
-        <div style="display:flex;gap:8px;align-items:center;">
-          <select id="leads-filter-status" style="padding:6px 10px;border:1px solid var(--border);border-radius:8px;font-size:var(--text-sm);">
-            <option value="">Tüm durumlar</option>
-            <option value="yeni">Yeni</option>
-            <option value="iletisime_gecildi">İletişime geçildi</option>
-            <option value="demo_gosterildi">Demo gösterildi</option>
-            <option value="kayit_oldu">Kayıt oldu</option>
-            <option value="reddedildi">Reddedildi</option>
-          </select>
-          <button class="btn-sm" onclick="window._htLoadLeads()" style="padding:6px 12px;background:var(--navy);color:white;border:none;border-radius:8px;cursor:pointer;font-size:var(--text-sm);">Yenile</button>
-        </div>
-      </div>
-      <div id="leads-content">
-        <div class="empty-state">
-          <div class="empty-state-icon">⏳</div>
-          <div class="empty-state-text">Yükleniyor...</div>
-        </div>
-      </div>
-    </div>
+    <!-- Panel markup'ları Faz 2 refactor ile admin-*.js PANEL_HTML template'lerinde (profil.html pattern). -->
+    <div class="panel" id="panel-review"></div>
+    <div class="panel" id="panel-campaigns"></div>
+    <div class="panel" id="panel-coach-content"></div>
+    <main class="panel" id="panel-announcements" data-panel="announcements"></main>
+    <div class="panel" id="panel-studio-modules"></div>
+    <div class="panel" id="panel-support"></div>
+    <div class="panel" id="panel-candidates"></div>
+    <div class="panel" id="panel-employers"></div>
+    <div class="panel" id="panel-leads"></div>
 
     <!-- ═══ PANEL: BÜLTEN (NEWSLETTER) ═══ -->
     <!-- Markup admin-newsletter.js içinde PANEL_HTML template olarak tutulur (Faz 1 POC). -->
@@ -624,19 +505,8 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
       </div>
     </div>
 
-    <!-- ═══ PANEL: SİSTEM SAĞLIĞI ═══ -->
-    <div class="panel" id="panel-ops-health">
-      <div class="panel-header">
-        <h2>Sistem Sağlığı</h2>
-        <button class="btn btn-sm" onclick="window._htAdminLoadOpsHealth && window._htAdminLoadOpsHealth(true)">Yenile</button>
-      </div>
-      <div id="ops-health-content">
-        <div class="empty-state" style="padding:80px 20px;">
-          <div class="empty-state-icon">⏳</div>
-          <div class="empty-state-text" style="font-size:var(--text-lg);color:var(--muted);">Yukleniyor...</div>
-        </div>
-      </div>
-    </div>
+    <!-- ═══ PANEL: SİSTEM SAĞLIĞI ═══ (markup admin-ops-health.js PANEL_HTML) -->
+    <div class="panel" id="panel-ops-health"></div>
 
     <!-- ═══ PANEL: MARKALAR (K038 Faz 3) ═══ -->
     <main class="panel" id="panel-brands" data-panel="brands">
@@ -685,16 +555,16 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
 </div>
 
 <!-- ── Admin shared helpers artık admin-core.js'te (Faz 0 refactor) ── -->
-<script src="admin-core.js?v=1"></script>
-<script src="admin-campaigns.js?v=1"></script>
-<script src="admin-candidates.js?v=1"></script>
-<script src="admin-employers.js?v=1"></script>
-<script src="admin-leads.js?v=1"></script>
+<script src="admin-core.js?v=2"></script>
+<script src="admin-campaigns.js?v=2"></script>
+<script src="admin-candidates.js?v=2"></script>
+<script src="admin-employers.js?v=2"></script>
+<script src="admin-leads.js?v=2"></script>
 <script src="admin-newsletter.js?v=2"></script>
-<script src="admin-coach-content.js?v=7"></script>
-<script src="admin-ops-health.js?v=1"></script>
+<script src="admin-coach-content.js?v=8"></script>
+<script src="admin-ops-health.js?v=2"></script>
 <script src="admin-support.js?v=2"></script>
-<script src="admin-studio-modules.js?v=1"></script>
+<script src="admin-studio-modules.js?v=2"></script>
 <link rel="stylesheet" href="css/duyurular.css?v=20260416d">
 <link rel="stylesheet" href="vendor/cropperjs-1.6.2/cropper.min.css?v=20260414a">
 <link rel="stylesheet" href="css/admin/image-editor.css?v=20260414b">
@@ -705,7 +575,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
 <script src="https://cdn.jsdelivr.net/npm/marked@11/marked.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
 <script src="profil-duyurular.js?v=20260414a"></script>
-<script src="admin-announcements.js?v=20260417fazd3"></script>
+<script src="admin-announcements.js?v=20260423faz2"></script>
 <!-- shared.js: Supabase config source of truth (no header/footer injected — no ht-header/ht-footer divs) -->
 <script src="/shared.js?v=20260423n1"></script>
 <script>
@@ -917,6 +787,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
       if (window._htAdminMarkalar && window._htAdminMarkalar.open) window._htAdminMarkalar.open();
     }
     if (name === 'announcements') {
+      if (window._htAdminMountAnnouncements) window._htAdminMountAnnouncements();
       var annRoot = document.getElementById('ann-root');
       if (annRoot && !annRoot.dataset.mounted && window._htAdminAnnouncements) {
         window._htAdminAnnouncements.mount(annRoot);

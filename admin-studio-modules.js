@@ -7,9 +7,24 @@
 'use strict';
 
 var loaded = false;
+var mounted = false;
 var _modules = [];
 var _currentSection = 'all';
 var _editingId = null;
+
+var PANEL_HTML = ''
+  + '<div class="panel-header">'
+  + '  <h2>Studio Mod&uuml;lleri</h2>'
+  + '  <button class="btn btn-sm" onclick="window._htAdminLoadStudioModules && window._htAdminLoadStudioModules(true)">Yenile</button>'
+  + '</div>'
+  + '<div id="studio-modules-content"></div>';
+
+window._htAdminMountStudioModules = function() {
+  if (mounted) return;
+  var panel = document.getElementById('panel-studio-modules');
+  var core = window._htAdminCore;
+  if (panel && core) { core.mount(panel, PANEL_HTML); mounted = true; }
+};
 
 var SECTION_LABELS = {
   performans: 'Performans',
@@ -57,6 +72,7 @@ function getSupa() {
 // ── PUBLIC LOADER ──
 
 window._htAdminLoadStudioModules = async function(forceRefresh) {
+  if (window._htAdminMountStudioModules) window._htAdminMountStudioModules();
   var container = document.getElementById('studio-modules-content');
   if (!container) return;
   if (loaded && !forceRefresh) {

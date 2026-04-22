@@ -7,9 +7,29 @@
 'use strict';
 
 var loaded = false;
+var mounted = false;
 var _tickets = [];
 var _currentFilter = 'open';
 var _detailTicketId = null;
+
+var PANEL_HTML = ''
+  + '<div class="panel-header">'
+  + '  <h2>Destek Talepleri</h2>'
+  + '  <button class="btn btn-sm" onclick="window._htAdminLoadSupport && window._htAdminLoadSupport(true)">Yenile</button>'
+  + '</div>'
+  + '<div id="support-content">'
+  + '  <div class="empty-state" style="padding:80px 20px;">'
+  + '    <div class="empty-state-icon">&#9203;</div>'
+  + '    <div class="empty-state-text" style="font-size:var(--text-lg);color:var(--muted);">Y&uuml;kleniyor...</div>'
+  + '  </div>'
+  + '</div>';
+
+window._htAdminMountSupport = function() {
+  if (mounted) return;
+  var panel = document.getElementById('panel-support');
+  var core = window._htAdminCore;
+  if (panel && core) { core.mount(panel, PANEL_HTML); mounted = true; }
+};
 
 // ── HELPERS ──────────────────────────────────────
 
@@ -65,6 +85,7 @@ function getSupa() {
 // ── PUBLIC LOADER ────────────────────────────────
 
 window._htAdminLoadSupport = async function(forceRefresh) {
+  if (window._htAdminMountSupport) window._htAdminMountSupport();
   var container = document.getElementById('support-content');
   if (!container) return;
   if (loaded && !forceRefresh) {

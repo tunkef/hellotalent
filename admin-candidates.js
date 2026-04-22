@@ -2,7 +2,22 @@
 (function(){
   'use strict';
 
+  var mounted = false;
   var loaded = false;
+
+  var PANEL_HTML = ''
+    + '<div class="panel-header"><h2>Adaylar</h2></div>'
+    + '<div id="candidates-content">'
+    + '  <div class="empty-state"><div class="empty-state-icon">&#9203;</div>'
+    + '  <div class="empty-state-text">Y&uuml;kleniyor...</div></div>'
+    + '</div>';
+
+  window._htAdminMountCandidates = function() {
+    if (mounted) return;
+    var panel = document.getElementById('panel-candidates');
+    var core = window._htAdminCore;
+    if (panel && core) { core.mount(panel, PANEL_HTML); mounted = true; }
+  };
 
   var buildStatCard = window._htAdminBuildStatCard;
   var buildRow = window._htAdminBuildRow;
@@ -10,6 +25,7 @@
 
   /* ── LOAD CANDIDATES DATA ── */
   window._htAdminLoadCandidates = async function() {
+    if (window._htAdminMountCandidates) window._htAdminMountCandidates();
     var container = document.getElementById('candidates-content');
     if (!container) return;
 

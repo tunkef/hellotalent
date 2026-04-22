@@ -2,7 +2,43 @@
 (function(){
   'use strict';
 
+  var mounted = false;
   var loaded = false;
+
+  var PANEL_HTML = ''
+    + '<div class="panel-header">'
+    + '  <h2>&#304;&#351;veren Leads</h2>'
+    + '  <div style="display:flex;gap:8px;align-items:center;">'
+    + '    <select id="leads-filter-status" style="padding:6px 10px;border:1px solid var(--border);border-radius:8px;font-size:var(--text-sm);">'
+    + '      <option value="">T&uuml;m durumlar</option>'
+    + '      <option value="yeni">Yeni</option>'
+    + '      <option value="iletisime_gecildi">&#304;leti&#351;ime ge&ccedil;ildi</option>'
+    + '      <option value="demo_gosterildi">Demo g&ouml;sterildi</option>'
+    + '      <option value="kayit_oldu">Kay&#305;t oldu</option>'
+    + '      <option value="reddedildi">Reddedildi</option>'
+    + '    </select>'
+    + '    <button class="btn-sm" onclick="window._htLoadLeads()" style="padding:6px 12px;background:var(--navy);color:white;border:none;border-radius:8px;cursor:pointer;font-size:var(--text-sm);">Yenile</button>'
+    + '  </div>'
+    + '</div>'
+    + '<div id="leads-content">'
+    + '  <div class="empty-state"><div class="empty-state-icon">&#9203;</div>'
+    + '  <div class="empty-state-text">Y&uuml;kleniyor...</div></div>'
+    + '</div>';
+
+  function mountPanel() {
+    if (mounted) return;
+    var panel = document.getElementById('panel-leads');
+    var core = window._htAdminCore;
+    if (panel && core) {
+      core.mount(panel, PANEL_HTML);
+      mounted = true;
+      // Re-bind filter change after mount
+      var filterSel = document.getElementById('leads-filter-status');
+      if (filterSel) filterSel.addEventListener('change', loadLeads);
+    }
+  }
+
+  window._htAdminMountLeads = mountPanel;
   var STATUS_LABELS = {
     'yeni': '🟢 Yeni',
     'iletisime_gecildi': '📞 İletişime Geçildi',
@@ -130,10 +166,11 @@
 
   // Expose for panel switch + manual refresh
   window._htLoadLeads = function() {
+    mountPanel();
     loadLeads();
   };
 
-  // Filter change → reload
+  // Filter change → reload (initial bind — post-mount re-bind happens in mountPanel)
   var filterSel = document.getElementById('leads-filter-status');
   if (filterSel) {
     filterSel.addEventListener('change', function() { loadLeads(); });

@@ -2,6 +2,45 @@
 (function(){
   'use strict';
 
+  // Panel mount state — iki panel: review + campaigns
+  var reviewMounted = false;
+  var campaignsMounted = false;
+
+  var REVIEW_HTML = ''
+    + '<div class="panel-header"><h2>Kampanya &#304;ncele</h2></div>'
+    + '<div class="stats-grid" id="review-stats">'
+    + '  <div class="stat-card"><div class="stat-card-label">Bekleyen</div>'
+    + '    <div class="stat-card-value" id="stat-pending">0</div></div>'
+    + '  <div class="stat-card"><div class="stat-card-label">Aktif</div>'
+    + '    <div class="stat-card-value" id="stat-active">0</div></div>'
+    + '  <div class="stat-card"><div class="stat-card-label">Toplam</div>'
+    + '    <div class="stat-card-value" id="stat-total">0</div></div>'
+    + '</div>'
+    + '<div id="pending-campaigns-list">'
+    + '  <div class="empty-state"><div class="empty-state-icon">&#128203;</div>'
+    + '  <div class="empty-state-text">&#304;ncelenecek kampanya yok</div></div>'
+    + '</div>';
+
+  var CAMPAIGNS_HTML = ''
+    + '<div class="panel-header"><h2>T&uuml;m Kampanyalar</h2></div>'
+    + '<div id="all-campaigns-list">'
+    + '  <div class="empty-state"><div class="empty-state-icon">&#128202;</div>'
+    + '  <div class="empty-state-text">Hen&uuml;z kampanya olu&#351;turulmam&#305;&#351;</div></div>'
+    + '</div>';
+
+  window._htAdminMountReview = function() {
+    if (reviewMounted) return;
+    var panel = document.getElementById('panel-review');
+    var core = window._htAdminCore;
+    if (panel && core) { core.mount(panel, REVIEW_HTML); reviewMounted = true; }
+  };
+  window._htAdminMountCampaigns = function() {
+    if (campaignsMounted) return;
+    var panel = document.getElementById('panel-campaigns');
+    var core = window._htAdminCore;
+    if (panel && core) { core.mount(panel, CAMPAIGNS_HTML); campaignsMounted = true; }
+  };
+
   /* ── EMPTY STATE BUILDER ── */
   function buildEmptyState(icon, text) {
     var div = document.createElement('div');
@@ -233,7 +272,13 @@
   };
 
   /* ── PUBLIC API ── */
-  window._htAdminLoadPending = loadPendingCampaigns;
-  window._htAdminLoadAllCampaigns = loadAllCampaigns;
+  window._htAdminLoadPending = function() {
+    if (window._htAdminMountReview) window._htAdminMountReview();
+    return loadPendingCampaigns();
+  };
+  window._htAdminLoadAllCampaigns = function() {
+    if (window._htAdminMountCampaigns) window._htAdminMountCampaigns();
+    return loadAllCampaigns();
+  };
 
 })();

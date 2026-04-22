@@ -14,6 +14,19 @@
 (function () {
   'use strict';
 
+  var panelMounted = false;
+
+  var PANEL_HTML = ''
+    + '<div class="panel-header"><h2>Duyurular</h2></div>'
+    + '<div id="ann-root"></div>';
+
+  window._htAdminMountAnnouncements = function() {
+    if (panelMounted) return;
+    var panel = document.getElementById('panel-announcements');
+    var core = window._htAdminCore;
+    if (panel && core) { core.mount(panel, PANEL_HTML); panelMounted = true; }
+  };
+
   var CATEGORIES = [
     { value: 'genel',   label: 'Genel' },
     { value: 'feature', label: 'Yeni \u00D6zellik' },
