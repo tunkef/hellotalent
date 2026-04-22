@@ -1,5 +1,46 @@
 # HelloTalent AI-COLLAB — Aktif Calisma Defteri
 
+## 2026-04-22 — K045 Faz 2: MEDIUM audit polish (5 alt madde)
+
+**Durum:** Faz 2 tam tamamlandi. Token sistem + toast + dead code + cache-bust + wizard skip.
+
+### Faz 2A — Token bypass purge + brand fix
+- Brand violation renkler silindi: theme-toggle sky-blue gradient (#87CEEB/#60B5E8) → brand cream/navy; sun mustard → vermillion; moon indigo → navy; `.mk-card-icon.purple` → navy. Audit BLOCKER 4'un CSS tarafi halledildi.
+- Display tokens eklendi: `--text-display-xs/sm/md/lg` (22/28/32/40px). Hero headline'lar icin.
+- Radius scale tamamlandi: `--radius-xs` (4), `--radius-xl` (20), `--radius-pill` (999). Mevcut sm/base/lg korundu.
+- **Scope not:** 105 raw hex'in tamami degil — en kritik brand violation'lar hedef alindi. Tam migration Faz 3'e ertelendi.
+
+### Faz 2B — Toast sistemi tam refactor
+- `showToast(msg, type, opts)`: 4 variant (success/error/warning/info), manuel kapatma ×, action button (opts.onAction + opts.actionText), 4000ms info/success + 5000ms error/warning.
+- role="status" + aria-live polite (info/success) / assertive (error/warning).
+- `.ht-toast-container` stack pattern (bottom-right), slide-in/out animation, focus-visible ring.
+- `_htAdminCore.toast` ile paritet — admin + profil tek UX dili.
+
+### Faz 2C — Dead code purge (minimal)
+- `updateMarkalaBgDots` no-op stub'a indirgendi (K036'dan sonra surface yoktu, ağac kod idi). Window export korundu (backward compat).
+- **Scope not:** 68 inline style + 15 innerHTML cleanup Faz 3'e. Minor win burada, invazif refactor ileri.
+
+### Faz 2D — Cache-bust senkronizasyonu
+- `scripts/bump-cache-bust.sh` helper — tum `?v=` string'leri tek ID'ye uniform bump.
+- profil.html 47 referans `?v=20260422k045b` uniform. Deploy sirasinda stale cache riski azaldi.
+- Full runtime BUILD_ID templating Faz 3'e (JS runtime patch karmaşıklığı).
+
+### Faz 2E — Wizard "Daha sonra doldur"
+- `#btn-wiz-skip` ghost variant, Step 3+ gorunur (Step 1+2 zorunlu, oradan sonra skip edilebilir). Son step'te "Tamamla" oldugu icin gizli.
+- Handler: `saveProfileRPC` + `switchPanel('genel')` + toast ("Şimdilik buradayız..."). wizardDirty reset.
+
+### Test
+Yeni 4 spec (token-scale, toast-a11y, wizard-skip) + mevcut suite kırılmadı. Full regression 1088/1088. P3 regression legacy cache-bust assertionları uniform bump ile uyumlu hale getirildi (literal `?v=X` → regex presence check).
+
+### Cache-bust
+`20260422k045b` (profil.html 47 referans)
+
+### Sonraki adim
+- Faz 3 LOW (4 item, ~3h): font-family string → token (~20 nokta), 'use strict' tutarlilik (15 modul), attachDeleteConfirm timeout, header tablist pattern.
+- Tam hex purge + inline style → class (orta scope, postponed).
+
+---
+
 ## 2026-04-22 — K044 Faz 1F: profil-studio.js god-file split
 
 **Durum:** Coach feed bolumu yeni dosyaya ayrildi. profil-studio.js 4401 → 3886 satir (%12 kucildi). SRP ilerletildi.

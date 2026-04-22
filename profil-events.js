@@ -370,6 +370,25 @@ function _htInitEvents() {
     });
   }
 
+  // K045 Faz 2E: "Daha sonra doldur" — Step 3+'te skip. Save current draft
+  // without validation (Step 1-2 already validated when reaching Step 3),
+  // then return to Genel Bakış. Completion banner orada "%X tamamlandı" gösterir.
+  var btnSkip = document.getElementById('btn-wiz-skip');
+  if (btnSkip) {
+    btnSkip.addEventListener('click', function() {
+      btnSkip.disabled = true;
+      saveProfileRPC(function() {
+        wizardDirty = false;
+        switchPanel('genel');
+        if (typeof window.showToast === 'function') {
+          window.showToast('Şimdilik buradayız. Profilini istediğin zaman tamamlayabilirsin.', 'info');
+        }
+      }).finally(function() {
+        btnSkip.disabled = false;
+      });
+    });
+  }
+
   // Retry button
   var btnRetry = document.getElementById('btn-retry');
   if (btnRetry) btnRetry.addEventListener('click', function() {

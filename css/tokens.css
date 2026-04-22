@@ -41,6 +41,11 @@
   --text-xl: 16px;
   --text-2xl: 18px;
   --text-3xl: 20px;
+  /* K045 display scale — hero headlines + eyebrow/section titles beyond body */
+  --text-display-xs: 22px;
+  --text-display-sm: 28px;
+  --text-display-md: 32px;
+  --text-display-lg: 40px;
 
   /* Spacing scale */
   --space-1: 2px;
@@ -57,9 +62,14 @@
   --space-12: 32px;
 
   /* Radius */
-  --radius: 10px;
+  /* K045 radius scale: xs=4 (chip), sm=7 (input/pill), base=10 (card),
+   * lg=14 (modal/hero), xl=20 (wide card), pill=999 (avatar/pill only). */
+  --radius-xs: 4px;
   --radius-sm: 7px;
+  --radius: 10px;
   --radius-lg: 14px;
+  --radius-xl: 20px;
+  --radius-pill: 999px;
 
   /* Shadows */
   --shadow: 0 1px 3px rgba(0,0,0,0.06);

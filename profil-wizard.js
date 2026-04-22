@@ -56,9 +56,13 @@ function renderWizard() {
   var btnBack = document.getElementById('btn-wiz-back');
   var btnNext = document.getElementById('btn-wiz-next');
   var btnComplete = document.getElementById('btn-wiz-complete');
+  var btnSkip = document.getElementById('btn-wiz-skip');
   if (btnBack) btnBack.style.display = wizStep > 1 ? '' : 'none';
   if (btnNext) btnNext.style.display = wizStep < TOTAL_STEPS ? '' : 'none';
   if (btnComplete) btnComplete.style.display = wizStep === TOTAL_STEPS ? '' : 'none';
+  // K045 Faz 2E: skip visible only when zorunlu iki step bitti (Step >= 3) ve
+  // henüz son step değilse. Final step = "Tamamla" daha anlamlı.
+  if (btnSkip) btnSkip.style.display = (wizStep >= 3 && wizStep < TOTAL_STEPS) ? '' : 'none';
   var progStep = document.getElementById('wiz-current-step');
   if (progStep) progStep.textContent = wizStep;
   // K049 editorial chrome: header meta + progress bar + right-rail spine

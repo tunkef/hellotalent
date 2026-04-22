@@ -601,23 +601,13 @@ function updateBrandFollowCounter() {
     if (countText) countText.textContent = n > 0 ? n + ' takip' : '';
     badge.style.display = n > 0 ? '' : 'none';
   }
-  updateMarkalaBgDots();
 }
 
-function updateMarkalaBgDots() {
-  // K036: legacy .bg-markalar surface removed; no-op but kept for export stability.
-  var container = document.querySelector('.bg-markalar');
-  if (!container) return;
-  var ids = Array.from(_ht_follows || []).slice(0, 4);
-  var brands = _ht_brands ? ids.map(function(id) { return _ht_brands.find(function(b) { return b.id === id; }); }).filter(Boolean) : [];
-  if (brands.length === 0) {
-    brands = _ht_brands ? _ht_brands.filter(function(b) { return b.is_featured; }).slice(0, 4) : [];
-  }
-  container.innerHTML = brands.map(function(b) {
-    var url = _brandLogoUrl(b);
-    return '<div class="brand-dot"><img src="' + _escHtml(url || '') + '" alt=""></div>';
-  }).join('');
-}
+// K045: updateMarkalaBgDots — legacy .bg-markalar surface removed in K036,
+// function body dead code (container never found). Export kept as no-op stub
+// for Genel Bakış teaser backward-compat; can be fully removed in a future
+// cleanup pass once all callers verified gone.
+function updateMarkalaBgDots() { /* no-op stub — see K045 comment above */ }
 
 // ── Follow list popup ──
 var _ht_popup_last_focus = null;

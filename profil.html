@@ -56,25 +56,25 @@ if (window.Sentry) {
 </script>
 <!-- Analytics: ht_track → HT.trackEvent bridge -->
 <script>function ht_track(name, data) { if (window.HT && window.HT.trackEvent) window.HT.trackEvent(name, data); }</script>
-<link rel="stylesheet" href="css/tokens.css?v=20260422k041a">
-<link rel="stylesheet" href="css/layout.css?v=20260422k068v">
-<link rel="stylesheet" href="css/components.css?v=20260422k043a">
-<link rel="stylesheet" href="css/wizard.css?v=20260414w">
-<link rel="stylesheet" href="css/wizard-editorial.css?v=20260415k068">
-<link rel="stylesheet" href="css/studio.css?v=20260408a">
-<link rel="stylesheet" href="css/panels/genel-bakis.css?v=20260417c">
-<link rel="stylesheet" href="css/panels/merkezi.css?v=20260422k068v">
-<link rel="stylesheet" href="css/profil-extras.css?v=20260422k043a">
-<link rel="stylesheet" href="css/panels/sirketler.css?v=20260422k042a">
-<link rel="stylesheet" href="css/panels/kimbakti.css?v=20260415ne">
-<link rel="stylesheet" href="css/panels/inbox.css?v=20260422k043a">
-<link rel="stylesheet" href="css/panels/bildirimler.css?v=20260415ne">
-<link rel="stylesheet" href="css/panels/destek.css?v=20260415ne">
-<link rel="stylesheet" href="css/panels/ayarlar.css?v=20260415ne">
-<link rel="stylesheet" href="css/panels/premium.css?v=20260415k069">
-<link rel="stylesheet" href="css/panels/firsatlar.css?v=20260417a">
-<link rel="stylesheet" href="css/panel-soon.css?v=20260413a">
-<link rel="stylesheet" href="css/duyurular.css?v=20260414a">
+<link rel="stylesheet" href="css/tokens.css?v=20260422k045b">
+<link rel="stylesheet" href="css/layout.css?v=20260422k045b">
+<link rel="stylesheet" href="css/components.css?v=20260422k045b">
+<link rel="stylesheet" href="css/wizard.css?v=20260422k045b">
+<link rel="stylesheet" href="css/wizard-editorial.css?v=20260422k045b">
+<link rel="stylesheet" href="css/studio.css?v=20260422k045b">
+<link rel="stylesheet" href="css/panels/genel-bakis.css?v=20260422k045b">
+<link rel="stylesheet" href="css/panels/merkezi.css?v=20260422k045b">
+<link rel="stylesheet" href="css/profil-extras.css?v=20260422k045b">
+<link rel="stylesheet" href="css/panels/sirketler.css?v=20260422k045b">
+<link rel="stylesheet" href="css/panels/kimbakti.css?v=20260422k045b">
+<link rel="stylesheet" href="css/panels/inbox.css?v=20260422k045b">
+<link rel="stylesheet" href="css/panels/bildirimler.css?v=20260422k045b">
+<link rel="stylesheet" href="css/panels/destek.css?v=20260422k045b">
+<link rel="stylesheet" href="css/panels/ayarlar.css?v=20260422k045b">
+<link rel="stylesheet" href="css/panels/premium.css?v=20260422k045b">
+<link rel="stylesheet" href="css/panels/firsatlar.css?v=20260422k045b">
+<link rel="stylesheet" href="css/panel-soon.css?v=20260422k045b">
+<link rel="stylesheet" href="css/duyurular.css?v=20260422k045b">
 </head>
 <body>
 
@@ -1088,6 +1088,13 @@ if (window.Sentry) {
   <div class="wiz-nav" id="wiz-nav">
     <button class="ht-btn ht-btn--secondary" id="btn-wiz-back" style="display:none;">Geri</button>
     <div class="wiz-nav-spacer"></div>
+    <!-- K045 Faz 2E: "Daha sonra doldur" — Step 3+'te görünür, zorunlu alanlar
+         Step 1+2'de bittiğinde kullanıcı profili eksik bırakıp Genel Bakış'a
+         dönebilir. Profil %50 bile olsa arama yapabilir. JS renderWizard
+         wizStep >= 3 ise .display='' yapar. -->
+    <button class="ht-btn ht-btn--ghost" id="btn-wiz-skip" style="display:none;" title="Zorunlu alanları tamamladınız, kalanı sonra doldurabilirsiniz">
+      Daha sonra doldur
+    </button>
     <button class="ht-btn ht-btn--save-exit" id="btn-wiz-save-exit" title="Kaydet ve merkeze dön">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
       Kaydet ve Çık
@@ -1869,34 +1876,34 @@ if (window.Sentry) {
   19. profil-bootstrap.js — auth, data hydration, step-init orchestration, career_goal prefill
   20. profil-events.js    — DOMContentLoaded event wiring, Cmd+K, avatar dropdown, page glue
 -->
-<script src="shared.js?v=20260413a"></script>
-<script src="profil-core.js?v=20260404b"></script>
-<script src="profil-data.js?v=20260404b"></script>
-<script src="profil-ui.js?v=20260422k041b"></script>
-<script src="profil-locations.js?v=20260415k068b"></script>
-<script src="profil-summary.js?v=20260414z"></script>
-<script src="profil-genel.js?v=20260417c"></script>
-<script src="profil-visibility.js?v=20260414t"></script>
-<script src="profil-preview.js?v=20260422k041a"></script>
-<script src="profil-cv.js?v=20260414s"></script>
-<script src="profil-markalar.js?v=20260422k042a"></script>
-<script src="profil-settings.js?v=20260404b"></script>
-<script src="profil-firsatlar.js?v=20260422k041b"></script>
-<script src="profil-inbox.js?v=20260422k041b"></script>
-<script src="profil-yetkinlik.js?v=20260404b"></script>
-<script src="profil-studio-coach.js?v=20260422k044a"></script>
-<script src="profil-studio.js?v=20260422k044a"></script>
-<script src="panel-soon.js?v=20260413a"></script>
-<script src="profil-duyurular.js?v=20260414a"></script>
-<script src="profil-premium.js?v=20260415k069"></script>
-<script src="profil-destek.js?v=20260414aa"></script>
-<script src="profil-ayarlar.js?v=20260415aa"></script>
-<script src="profil-wizard.js?v=20260422k041b"></script>
-<script src="profil-draft.js?v=20260404b"></script>
-<script src="profil-helpers.js?v=20260404b"></script>
-<script src="profil-kimbakti.js?v=20260414ab"></script>
-<script src="profil-bootstrap.js?v=20260422k041a"></script>
-<script src="profil-events.js?v=20260422k043a"></script>
+<script src="shared.js?v=20260422k045b"></script>
+<script src="profil-core.js?v=20260422k045b"></script>
+<script src="profil-data.js?v=20260422k045b"></script>
+<script src="profil-ui.js?v=20260422k045b"></script>
+<script src="profil-locations.js?v=20260422k045b"></script>
+<script src="profil-summary.js?v=20260422k045b"></script>
+<script src="profil-genel.js?v=20260422k045b"></script>
+<script src="profil-visibility.js?v=20260422k045b"></script>
+<script src="profil-preview.js?v=20260422k045b"></script>
+<script src="profil-cv.js?v=20260422k045b"></script>
+<script src="profil-markalar.js?v=20260422k045b"></script>
+<script src="profil-settings.js?v=20260422k045b"></script>
+<script src="profil-firsatlar.js?v=20260422k045b"></script>
+<script src="profil-inbox.js?v=20260422k045b"></script>
+<script src="profil-yetkinlik.js?v=20260422k045b"></script>
+<script src="profil-studio-coach.js?v=20260422k045b"></script>
+<script src="profil-studio.js?v=20260422k045b"></script>
+<script src="panel-soon.js?v=20260422k045b"></script>
+<script src="profil-duyurular.js?v=20260422k045b"></script>
+<script src="profil-premium.js?v=20260422k045b"></script>
+<script src="profil-destek.js?v=20260422k045b"></script>
+<script src="profil-ayarlar.js?v=20260422k045b"></script>
+<script src="profil-wizard.js?v=20260422k045b"></script>
+<script src="profil-draft.js?v=20260422k045b"></script>
+<script src="profil-helpers.js?v=20260422k045b"></script>
+<script src="profil-kimbakti.js?v=20260422k045b"></script>
+<script src="profil-bootstrap.js?v=20260422k045b"></script>
+<script src="profil-events.js?v=20260422k045b"></script>
 
 <!-- Inline helpers + [data-panel] delegation extracted to profil-helpers.js -->
 

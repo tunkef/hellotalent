@@ -1986,21 +1986,76 @@ window._applyWorkPrefs = _applyWorkPrefs;
 
 
 // ═══════════════════════════════════════════════════
-// TOAST NOTIFICATIONS
+// TOAST NOTIFICATIONS — K045 Faz 2B full refactor
 // ═══════════════════════════════════════════════════
+// Variants: success | error | warning | info (default info/navy)
+// Features: role="status" + aria-live (polite for info/success, assertive
+// for error/warning), manual close ×, optional action button, 4000ms
+// auto-dismiss, stack in bottom-right. Pairs with _htAdminCore.toast
+// shape — admin + profil share same UX language now.
+//
+// Calls:
+//   showToast('Kaydedildi', 'success')
+//   showToast('Yükleme başarısız', 'error')
+//   showToast('Oturum süresi doluyor', 'warning', { actionText: 'Uzat', onAction: fn })
 
-function showToast(msg, type) {
+var _htToastContainer = null;
+function _htEnsureToastContainer() {
+  if (_htToastContainer && document.body.contains(_htToastContainer)) return _htToastContainer;
+  _htToastContainer = document.createElement('div');
+  _htToastContainer.className = 'ht-toast-container';
+  _htToastContainer.setAttribute('role', 'region');
+  _htToastContainer.setAttribute('aria-label', 'Bildirimler');
+  document.body.appendChild(_htToastContainer);
+  return _htToastContainer;
+}
+
+function showToast(msg, type, opts) {
+  opts = opts || {};
+  var variant = (type === 'success' || type === 'error' || type === 'warning' || type === 'info') ? type : 'info';
+
   var toast = document.createElement('div');
-  // K041: a11y — role="status" + aria-live so screen readers announce.
-  // Full toast refactor (manual close, action button, variants) in Faz 2.
+  toast.className = 'ht-toast ht-toast--' + variant;
   toast.setAttribute('role', 'status');
-  toast.setAttribute('aria-live', 'polite');
-  toast.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);padding:10px 20px;border-radius:8px;font-size:12px;font-weight:600;z-index:999;box-shadow:0 4px 12px rgba(0,0,0,0.15);transition:opacity 0.3s;';
-  toast.style.background = type === 'error' ? 'var(--danger)' : type === 'success' ? 'var(--success)' : 'var(--navy)';
-  toast.style.color = 'white';
-  toast.textContent = msg;
-  document.body.appendChild(toast);
-  setTimeout(function() { toast.style.opacity = '0'; setTimeout(function() { toast.remove(); }, 300); }, 2500);
+  // Errors + warnings interrupt; info/success polite.
+  toast.setAttribute('aria-live', (variant === 'error' || variant === 'warning') ? 'assertive' : 'polite');
+
+  var msgEl = document.createElement('span');
+  msgEl.className = 'ht-toast__msg';
+  msgEl.textContent = msg;
+  toast.appendChild(msgEl);
+
+  var remove = function() {
+    toast.classList.add('is-hiding');
+    setTimeout(function() { if (toast.parentNode) toast.parentNode.removeChild(toast); }, 200);
+  };
+
+  // Optional action — "Geri al", "Uzat" etc.
+  if (typeof opts.onAction === 'function') {
+    var actBtn = document.createElement('button');
+    actBtn.type = 'button';
+    actBtn.className = 'ht-toast__action';
+    actBtn.textContent = opts.actionText || 'Geri al';
+    actBtn.addEventListener('click', function() {
+      try { opts.onAction(); } finally { remove(); }
+    });
+    toast.appendChild(actBtn);
+  }
+
+  // Manual close × — always present for accessibility
+  var closeBtn = document.createElement('button');
+  closeBtn.type = 'button';
+  closeBtn.className = 'ht-toast__close';
+  closeBtn.setAttribute('aria-label', 'Bildirimi kapat');
+  closeBtn.textContent = '×';
+  closeBtn.addEventListener('click', remove);
+  toast.appendChild(closeBtn);
+
+  _htEnsureToastContainer().appendChild(toast);
+
+  // Auto-dismiss — error/warning 5s, success/info 4s
+  var dur = (variant === 'error' || variant === 'warning') ? 5000 : 4000;
+  setTimeout(remove, dur);
 }
 window.showToast = showToast;
 

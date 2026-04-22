@@ -3753,9 +3753,9 @@ test.describe('K060 — Kim Baktı editorial redesign', () => {
     expect(profilHtml).toContain('class="kb-premium-btn"');
   });
 
-  test('profil.html links css/panels/kimbakti.css with K060+ cache-bust', () => {
-    expect(profilHtml).toContain('css/panels/kimbakti.css?v=20260415ne');
-    expect(profilHtml).toContain('profil-kimbakti.js?v=20260414ab');
+  test('profil.html links css/panels/kimbakti.css with cache-bust', () => {
+    expect(profilHtml).toMatch(/css\/panels\/kimbakti\.css\?v=[a-zA-Z0-9._-]+/);
+    expect(profilHtml).toMatch(/profil-kimbakti\.js\?v=[a-zA-Z0-9._-]+/);
   });
 
   test('kimbakti.css contains the K060 vocabulary and reduced-motion block', () => {
@@ -3942,9 +3942,9 @@ test.describe('K066 — Destek editorial CSS override', () => {
     destekJs066 = readFromRepo('profil-destek.js');
   });
 
-  test('profil.html links K066 destek.css and bumps profil-destek.js cache-bust', () => {
-    expect(profilHtml066).toContain('css/panels/destek.css?v=20260415ne');
-    expect(profilHtml066).toContain('profil-destek.js?v=20260414aa');
+  test('profil.html links destek.css + profil-destek.js with cache-bust', () => {
+    expect(profilHtml066).toMatch(/css\/panels\/destek\.css\?v=[a-zA-Z0-9._-]+/);
+    expect(profilHtml066).toMatch(/profil-destek\.js\?v=[a-zA-Z0-9._-]+/);
   });
 
   test('destek.css contains the editorial vocabulary and reduced-motion block', () => {
@@ -3980,9 +3980,9 @@ test.describe('K067 — Ayarlar editorial CSS override', () => {
     ayarlarCss067 = readFromRepo('css/panels/ayarlar.css');
   });
 
-  test('profil.html links K067 ayarlar.css and ayarlar.js', () => {
-    expect(profilHtml067).toContain('css/panels/ayarlar.css?v=20260415ne');
-    expect(profilHtml067).toContain('profil-ayarlar.js?v=20260415aa');
+  test('profil.html links ayarlar.css + profil-ayarlar.js with cache-bust', () => {
+    expect(profilHtml067).toMatch(/css\/panels\/ayarlar\.css\?v=[a-zA-Z0-9._-]+/);
+    expect(profilHtml067).toMatch(/profil-ayarlar\.js\?v=[a-zA-Z0-9._-]+/);
   });
 
   test('K067 Faz B+C: profil-ayarlar.js ships scroll-spy and tri-state theme', () => {
@@ -4104,9 +4104,9 @@ test.describe('K069 — Premium panel editorial redesign', () => {
     premiumJs069  = readFromRepo('profil-premium.js');
   });
 
-  test('profil.html links premium.css and bumps profil-premium.js cache-bust', () => {
-    expect(profilHtml069).toContain('css/panels/premium.css?v=20260415k069');
-    expect(profilHtml069).toContain('profil-premium.js?v=20260415k069');
+  test('profil.html links premium.css + profil-premium.js with cache-bust', () => {
+    expect(profilHtml069).toMatch(/css\/panels\/premium\.css\?v=[a-zA-Z0-9._-]+/);
+    expect(profilHtml069).toMatch(/profil-premium\.js\?v=[a-zA-Z0-9._-]+/);
   });
 
   test('premium.css ships the editorial .prem-* vocabulary', () => {

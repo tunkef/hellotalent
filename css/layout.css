@@ -517,13 +517,17 @@ html[data-theme="dark"] .header-msg-dot{border-color:var(--editorial-card,#11182
   position:relative;width:52px;height:28px;cursor:pointer;display:block;
 }
 .avd-theme-toggle input{opacity:0;width:0;height:0;position:absolute;}
+/* K045 brand fix: sky-blue/indigo/mustard gradient replaced with navy/cream
+ * vermillion palette — sun=warm vermillion, moon=cool navy, slider=cream/navy */
 .avd-theme-slider{
   position:absolute;inset:0;border-radius:14px;
-  background:linear-gradient(135deg,#87CEEB,#60B5E8);
-  transition:background 0.4s;overflow:hidden;
+  background:var(--bg-warm-k,#F7F6F4);
+  border:1px solid var(--border-subtle,#E5E3DF);
+  transition:background 0.4s,border-color 0.4s;overflow:hidden;
 }
 .avd-theme-toggle input:checked+.avd-theme-slider{
-  background:linear-gradient(135deg,#1a1a3e,#2d2d6e);
+  background:var(--navy,#1E2D5E);
+  border-color:var(--navy,#1E2D5E);
 }
 .avd-sun,.avd-moon{
   position:absolute;top:50%;transform:translateY(-50%);
@@ -532,11 +536,10 @@ html[data-theme="dark"] .header-msg-dot{border-color:var(--editorial-card,#11182
   transition:all 0.4s cubic-bezier(0.4,0,0.2,1);
 }
 .avd-sun{
-  left:3px;background:#FCD34D;color:#92400E;
-  box-shadow:0 0 8px rgba(252,211,77,0.5);
+  left:3px;background:var(--accent,#C94E28);color:#fff;
 }
 .avd-moon{
-  right:3px;background:#6366F1;color:#E0E7FF;
+  right:3px;background:#fff;color:var(--navy,#1E2D5E);
   opacity:0;transform:translateY(-50%) scale(0.5);
 }
 .avd-theme-toggle input:checked+.avd-theme-slider .avd-sun{
@@ -933,8 +936,9 @@ html[data-theme="dark"] .mk-edit-btn svg {
 html[data-theme="dark"] .mk-card:hover .mk-edit-btn svg {
   stroke: var(--verm);
 }
-html[data-theme="dark"] .mk-card-icon.green { background: #0d9488; }
-html[data-theme="dark"] .mk-card-icon.purple { background: #7c3aed; }
+html[data-theme="dark"] .mk-card-icon.green { background: var(--success); }
+/* K045: brand fix — .purple class legacy name, re-skinned to navy (mor yasak) */
+html[data-theme="dark"] .mk-card-icon.purple { background: var(--navy); }
 html[data-theme="dark"] .mk-bar-track {
   background: rgba(255,255,255,0.1);
 }
