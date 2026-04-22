@@ -1,5 +1,26 @@
 # HelloTalent AI-COLLAB — Aktif Calisma Defteri
 
+## 2026-04-22 — K043 Tuna feedback hotfix (dark mode + data loss + kural)
+
+**Durum:** Canli UAT sonrasi 4 sorun geldi. 2 BLOCKER + 2 HIGH + 1 yeni brand kural.
+
+### Yeni brand kural (memory)
+- `feedback_darkmode_test_discipline.md` — Her UI degisikliginde dark + light + mobile zorunlu test. darkmode-auditor ajani sorumlu. Ayni sikayet 2. kez gelirse Claude hatasi (root-cause discipline).
+
+### Bugfix'ler
+- **BLOCKER K043 Wizard data loss:** "Kaydetmeden cik" clearDraft + switchPanel yapiyor ama DOM revert etmiyordu. User geri donunce field'lar bos. Fix: leave handler `window.location.reload()` + hash navigation — DB'den fresh load, user tum orijinal field'larini gorur.
+- **BLOCKER K043 Modal click-through** — Invalid bug. CSS z-index:9000 + position:fixed + inset:0 zaten backdrop tiklamalarini sogruyor. wizardDirty guard + MODAL_SELECTORS observer + ht-scroll-lock zaten devrede. No fix needed.
+- **HIGH K043 Inbox msg bubble dark mode:** `.ib-msg--in .ib-bubble` `var(--editorial-ink)` bg kullaniyordu; dark mode'da token `#F9FAFB`'ye kayiyor, bubble beyaz, text cream — okunmuyor. Fix: literal `#1E2D5E` + `#C94E28` pin (brand identity koru), `html[data-theme='dark']` override eklendi.
+- **HIGH K043 Error banner + step-errors dark mode:** `--danger-soft` dark'ta `#2D0A0A`, `--danger` text uzerinde 3.4:1 AA fail. Fix: `rgba(220,38,38,0.12)` bg + `#FCA5A5` text + `#EF4444` border (dark override her iki component).
+
+### Test
+Full regression 1036/1036. Dark mode'a ait Playwright visual test yazilacak (Faz 2 item).
+
+### Cache-bust
+`20260422k043a` (components.css, profil-extras.css, panels/inbox.css, profil-events.js)
+
+---
+
 ## 2026-04-22 — K041 Faz 1E (error UX) + K042 markalar hero UX polish
 
 **Durum:** Faz 1E (error state UX) + Tuna feedback'i ile K042 markalar hero polish tek commit paketi. Yeni brand kural kaydedildi: button içinde arrow icon yasak (memory: feedback_no_arrow_icons.md).

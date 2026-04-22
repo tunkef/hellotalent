@@ -500,11 +500,18 @@ function _htInitEvents() {
     document.getElementById('modal-wizard-exit').classList.remove('show');
     wizardDirty = false;
     clearDraft();
-    if (pendingPanelSwitch) {
-      var dest = pendingPanelSwitch;
-      pendingPanelSwitch = null;
-      switchPanel(dest);
+    // K043 data-loss fix: "Kaydetmeden çık" user intent = "değişiklikler
+    // gitsin, eski halime dönsün". Önce clearDraft() + panel switch yapıyordu
+    // — wizard'a geri dönen kullanıcı sildiği field'ları boş görüyordu
+    // (draft silindi, DOM reset edilmedi). Fix: URL'yi hedef panele ayarla,
+    // full reload → DB'den fresh load → user döndüğünde field'lar orijinal.
+    var dest = pendingPanelSwitch;
+    pendingPanelSwitch = null;
+    if (dest) {
+      var hash = (dest && dest !== 'genel') ? '#' + dest : '';
+      window.location.hash = hash;
     }
+    window.location.reload();
   });
 
   // Step inits, reapply, career_goal prefill, visibility mirrors, load timer

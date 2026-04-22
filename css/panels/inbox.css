@@ -498,16 +498,20 @@
   font-style:italic;
 }
 
-/* Incoming — navy filled bubble, left aligned */
+/* Incoming — navy filled bubble, left aligned.
+ * K043: literal #1E2D5E pin — --editorial-ink dark mode'da #F9FAFB'ye kayıyor
+ * (text token), bubble background için brand identity sabit kalmalı. Mesaj
+ * okunamaz hale geliyordu. Vermillion ile aynı pattern. */
 .ib-msg--in{
   align-self:flex-start;
   align-items:flex-start;
 }
 .ib-msg--in .ib-bubble{
-  background:var(--editorial-ink, #1E2D5E);
+  background:#1E2D5E;
   color:#F7F6F4;
   border-bottom-left-radius:4px;
 }
+html[data-theme='dark'] .ib-msg--in .ib-bubble{background:#1E2D5E;color:#F7F6F4;}
 
 /* Outgoing — vermillion filled bubble, right aligned */
 .ib-msg--out{
@@ -517,11 +521,12 @@
 }
 .ib-msg--out .ib-cap{text-align:right;}
 .ib-msg--out .ib-bubble{
-  background:var(--editorial-vermillion, #C94E28);
+  background:#C94E28;
   color:#F7F6F4;
   border-bottom-right-radius:4px;
   text-align:left;
 }
+html[data-theme='dark'] .ib-msg--out .ib-bubble{background:#C94E28;color:#F7F6F4;}
 .ib-msg--out .ib-stamp{text-align:right;}
 
 /* ── Composer ── */

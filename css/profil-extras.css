@@ -896,7 +896,10 @@
   color:var(--text-primary);
 }
 
-/* ── STEP ERRORS ── */
+/* ── STEP ERRORS ──
+ * K043 dark mode: var(--red-light) dark'ta çok koyu (#2D0A0A), var(--red)
+ * text üzerinde AA 3.4:1 fail. Dark override → transparent rgba bg + açık
+ * kırmızı text (#FCA5A5 ≈ red-300). */
 .step-errors{
   background:var(--red-light);border:1px solid #FECACA;border-radius:var(--radius-sm);
   padding:12px 16px;margin-bottom:16px;
@@ -905,6 +908,10 @@
 .step-errors-list{list-style:none;padding:0;}
 .step-errors-list li{font-size:var(--text-base);color:var(--red);padding:2px 0;}
 .step-errors-list li::before{content:'\2022 ';color:var(--red);}
+html[data-theme='dark'] .step-errors{background:rgba(220,38,38,0.12);border-color:#EF4444;}
+html[data-theme='dark'] .step-errors-title,
+html[data-theme='dark'] .step-errors-list li,
+html[data-theme='dark'] .step-errors-list li::before{color:#FCA5A5;}
 
 /* ── Native HTML Checkbox (K-068 rewrite) ── */
 .ht-check {

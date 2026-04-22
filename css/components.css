@@ -422,6 +422,14 @@ body.ht-scroll-lock{overflow:hidden;touch-action:none;}
 .ht-error-banner__retry:focus-visible{
   outline:2px solid var(--danger);outline-offset:2px;
 }
+/* K043 dark mode: --danger-soft dark'ta çok koyu (#2D0A0A) + --danger text
+ * AA fail. Override — transparent rgba + açık kırmızı text. */
+html[data-theme='dark'] .ht-error-banner{background:rgba(220,38,38,0.12);border-color:#EF4444;}
+html[data-theme='dark'] .ht-error-banner__text{color:#FCA5A5;}
+html[data-theme='dark'] .ht-error-banner__icon{background:#EF4444;}
+html[data-theme='dark'] .ht-error-banner__retry{color:#FCA5A5;border-color:#EF4444;}
+html[data-theme='dark'] .ht-error-banner__retry:hover,
+html[data-theme='dark'] .ht-error-banner__retry:focus-visible{background:#EF4444;color:#fff;}
 
 /* ═══ HT-TOAST (inline feedback messages) ═══ */
 .ht-toast{
