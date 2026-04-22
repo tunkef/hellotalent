@@ -1,5 +1,38 @@
 # HelloTalent AI-COLLAB — Aktif Calisma Defteri
 
+## 2026-04-22 — K044 Faz 1F: profil-studio.js god-file split
+
+**Durum:** Coach feed bolumu yeni dosyaya ayrildi. profil-studio.js 4401 → 3886 satir (%12 kucildi). SRP ilerletildi.
+
+### Cikarilan kod
+- **profil-studio-coach.js** (yeni, 559 satir): hydrateCoachFeed, applyCoachFilters, renderCoachGrid, buildCoachCard, openCoachDetail, toggleCoachLike, trLowerCoach. State (_coachFeedLoaded/Posts/LikedSet) + COACH_CATEGORY_LABELS/KEYS.
+- **Paylasilan SVG constants** (heartOutlineSVG, heartFilledSVG, closeSVG, arrowRightSVG) coach.js'e tasindi. closeSVG studio.js practice drawer'inda da kullanildigi icin coach.js studio.js'ten **once** yuklenir (load order kritik).
+
+### Main file'da kalan
+- getBridge, state, questions data, STAR content, freemium constants
+- LocalStorage helpers, Journal (DB+local), Session storage
+- Cross-link maps (COMP_TO_COACH_CATEGORY, COMP_TO_MODULE_SLUG, MODULE_SLUG_TO_COMP, COACH_CAT_TO_COMP)
+- navigateToCompPractice, buildPracticeBridgeCTA (coach detail kullaniyor ama multi-section shared)
+- renderLobby, renderPractice, renderJournalPanel, renderCompletion, renderSessionComplete
+- navigate, bindLobbyEvents, bindPracticeEvents, bindCourseDetailEvents vb.
+- _htLoadStudio public entry
+
+### Pattern
+Flat globals (studio.js zaten IIFE degildi, ayni patterni korudum). var declarations at top-level = window scope, cross-file access otomatik. Alternatif IIFE + window._ht* exports pattern da dusunulebilirdi ama studio.js kultru global var ile tutarli.
+
+### Test
+20 yeni structural guard (`tests/studio-split.spec.js`). Full regression 1056/1056. Ozellikle FAZ 4C test suite `mulakatJs` variable'i studio.js + coach.js concat edildi.
+
+### Cache-bust
+`20260422k044a` (profil-studio-coach.js + profil-studio.js)
+
+### Sonraki adim (opsiyonel)
+- AI feedback bolumu (~390 satir) ayni pattern ile `profil-studio-ai.js`
+- Questions data + STAR content (~390 satir) `profil-studio-questions.js`
+- Main 3886 → hedef ~3100 (4401'in %70'i)
+
+---
+
 ## 2026-04-22 — K043 Tuna feedback hotfix (dark mode + data loss + kural)
 
 **Durum:** Canli UAT sonrasi 4 sorun geldi. 2 BLOCKER + 2 HIGH + 1 yeni brand kural.
