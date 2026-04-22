@@ -436,12 +436,13 @@ test.describe('Support Queue MVP — structural guards', () => {
   // ── Admin HTML integration ──
   test('admin.html has support nav item, panel, script, and switchPanel hook', () => {
     expect(adminHtml).toContain('data-panel="support"');
-    expect(adminHtml).toContain('Destek Talepleri');
     expect(adminHtml).toContain('id="badge-support-open"');
     expect(adminHtml).toContain('id="panel-support"');
-    expect(adminHtml).toContain('id="support-content"');
     expect(adminHtml).toContain('admin-support.js');
     expect(adminHtml).toContain("'support') window._htAdminLoadSupport");
+    // Faz 2 refactor: panel içerik markup admin-support.js PANEL_HTML'de
+    expect(adminSupportJs).toContain('id="support-content"');
+    expect(adminSupportJs).toContain('Destek Talepleri');
   });
 
   // ── Admin module structure ──
@@ -813,9 +814,10 @@ test.describe('Studio Phase 2 — structural guards', () => {
   test('admin.html has studio-modules nav, panel, script, and switchPanel hook', () => {
     expect(adminHtml).toContain('data-panel="studio-modules"');
     expect(adminHtml).toContain('id="panel-studio-modules"');
-    expect(adminHtml).toContain('id="studio-modules-content"');
     expect(adminHtml).toContain('admin-studio-modules.js');
     expect(adminHtml).toContain("'studio-modules') window._htAdminLoadStudioModules");
+    // Faz 2 refactor: panel içerik markup admin-studio-modules.js PANEL_HTML'de
+    expect(adminStudioJs).toContain('id="studio-modules-content"');
   });
 
   test('admin module has section filter and create/publish/archive actions', () => {
