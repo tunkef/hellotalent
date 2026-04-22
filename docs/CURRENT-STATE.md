@@ -1,4 +1,5 @@
 # hellotalent.ai — Current State
+> Hotfix — admin.html login screen dark mode auto-inversion fix (k068x): color-scheme:light meta + explicit light renkler (label navy, input bg white, placeholder gray). Browser OS dark mode'da admin girisinde label invisible + input black bg problemi giderildi.
 > Asama 81.1 — Newsletter Faz 1 tasarim + agent ownership lockdown (k068w):
 >   email-send.ts dark-mode inversion block (color-scheme meta), hero band 6px gradient, eyebrow chip rozet, SVG sosyal ikonlar (LinkedIn/X/Instagram), heading separator, footer re-order + unsub top action.
 >   Unsubscribe URL bug fix: newsletter-confirm sub.id degil unsubscribe_token kullaniyor, email-send template buildUnsubUrls() helper icin hem p.unsubscribe_url hem p.unsubscribe_token'dan URL insa eder.
