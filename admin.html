@@ -29,7 +29,33 @@ html,body{overflow-x:hidden;}
   --yellow:var(--admin-yellow);
   --red:var(--admin-red);
 }
-body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:#F7F6F3;color:#111;min-height:100vh;}
+
+/* ═══ FORCE LIGHT MODE (admin light-only, OS dark mode token drift'i ezer) ═══
+   tokens.css @media (prefers-color-scheme: dark) --text/--muted/--bg'yi dark'a
+   cekiyor. Admin paneli bundan izole olmali: tum kritik admin token'lari
+   light degerlere zorla. Login screen + stat card + panel header hepsi
+   okunabilir kalir. */
+@media (prefers-color-scheme: dark) {
+  html { color-scheme: light !important; }
+  body { background:#F7F6F3 !important; color:#111 !important; }
+  :root {
+    --text:#111 !important;
+    --text-primary:#111 !important;
+    --text-secondary:#374151 !important;
+    --text-muted:#6B7280 !important;
+    --muted:#6B7280 !important;
+    --bg:#F7F6F3 !important;
+    --bg-app:#F7F6F3 !important;
+    --bg-surface:#FFFFFF !important;
+    --border:#E5E3DF !important;
+    --border-subtle:#E5E3DF !important;
+    --white:#FFFFFF !important;
+  }
+}
+/* Stat card + panel header explicit — tokens drift'ten bagimsiz.
+   Force light (above) ek guard. Duplicate overrides asagidaki orig'i eziyor. */
+.panel-header h2{color:#111111;}
 
 /* ── LOGIN SCREEN ── */
 .login-screen{
@@ -250,11 +276,11 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
   gap:16px;margin-bottom:28px;
 }
 .stat-card{
-  background:var(--white);border-radius:12px;padding:20px;
+  background:#FFFFFF;border:1px solid #E5E3DF;border-radius:12px;padding:20px;
   box-shadow:0 1px 3px rgba(0,0,0,0.06);
 }
-.stat-card-label{font-size:var(--text-sm);font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;}
-.stat-card-value{font-family:'DM Mono',monospace;font-size:28px;font-weight:500;margin-top:6px;color:var(--text);}
+.stat-card-label{font-size:var(--text-sm);font-weight:600;color:#4B5563;text-transform:uppercase;letter-spacing:0.5px;}
+.stat-card-value{font-family:'DM Mono',monospace;font-size:28px;font-weight:600;margin-top:6px;color:#111111;}
 
 /* ── EMPTY STATE ── */
 .empty-state{
