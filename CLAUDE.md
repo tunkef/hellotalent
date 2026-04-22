@@ -36,7 +36,7 @@ Her session başında SADECE `docs/CURRENT-STATE.md` oku (~3K token).
 ## Studio Çalışma Protokolü
 
 ### Agent Teams Default (Day 1)
-`CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` aktif. **chief-of-staff** Teams lead, diğer 14 ajan teammate (compactor-agent izole).
+`CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` aktif. **chief-of-staff** Teams lead, diğer 18 ajan teammate (compactor-agent izole).
 
 Session başlatma:
 ```
@@ -44,7 +44,7 @@ Session başlatma:
 ```
 (veya `cook` yaz, hook shortcut'lar)
 
-### 19 Agent Kadrosu (v3.1 — 22 Nisan)
+### 20 Agent Kadrosu (v3.2 — 22 Nisan)
 | # | Agent | Rol |
 |---|-------|-----|
 | 1 | chief-of-staff | Teams lead, tier detect, Codex gate, synthesis |
@@ -66,6 +66,7 @@ Session başlatma:
 | 17 | legal-reviewer | KVKK metin drift + avukat brief |
 | 18 | data-analyst | PostHog funnel + cohort + A/B analiz |
 | 19 | watchdog | Peer chat observer (stall/loop/drift detect) |
+| 20 | researcher | Web research + fact-check + prospecting (Firecrawl/Ahrefs/Vibe/WebFetch) |
 
 ### Codex Hybrid (T3/T4 Otomatik)
 

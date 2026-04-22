@@ -1,6 +1,6 @@
-# HelloTalent Studio — Agent Team Reference (v3)
+# HelloTalent Studio — Agent Team Reference (v3.2)
 
-> 16 native Claude agent + 1 hybrid (Codex). Agent Teams (experimental) aktif, peer-to-peer chat ile koordinasyon. Her ajan proje-scoped `.claude/agents/` altında tanımlı.
+> 20 native Claude agent + 1 hybrid (Codex). Agent Teams (experimental) aktif, peer-to-peer chat ile koordinasyon. Her ajan proje-scoped `.claude/agents/` altında tanımlı.
 
 ## Quick Index
 
@@ -22,6 +22,10 @@
 | 14 | [content-writer](../.claude/agents/content-writer.md) | sonnet | Site copy, email, onboarding | mikro-copy |
 | 15 | [marketing-writer](../.claude/agents/marketing-writer.md) | sonnet | SEO, social, campaign | landing, blog |
 | 16 | [maintenance-agent](../.claude/agents/maintenance-agent.md) | sonnet | Tech debt, postmortem | haftalık, post-deploy |
+| 17 | [legal-reviewer](../.claude/agents/legal-reviewer.md) | sonnet | KVKK metin drift, avukat brief | legal copy, KVKK audit |
+| 18 | [data-analyst](../.claude/agents/data-analyst.md) | sonnet | PostHog funnel + cohort + A/B | metrik anomali, feature post-launch |
+| 19 | [watchdog](../.claude/agents/watchdog.md) | haiku | Peer chat observer | stall/loop/drift detect |
+| 20 | [researcher](../.claude/agents/researcher.md) | sonnet | Web research + fact-check + prospecting | rakip scan, lead list, claim verify |
 | H | Codex (external) | GPT-5 | T3/T4 ikinci göz | otomatik trigger |
 
 ## Agent Selection Matrix
@@ -46,6 +50,11 @@
 | Bug fix (tech debt) | code-reviewer → maintenance-agent | T2 |
 | Performance | maintenance-agent → uat-tester | T2-T3 |
 | Security audit | auditor → code-reviewer → **Codex** | T3 |
+| Legal metin (KVKK vb.) | legal-reviewer → content-writer | T3 |
+| Product metrik analizi | data-analyst → ux-agent | T2 |
+| Rakip/market research | researcher → marketing-writer (SEO açısı) → architect (stratejik) | T2 |
+| İddia/claim fact-check | researcher → content-writer (hangi copy'ye bağlı) | T2 |
+| B2B prospect / lead list | researcher → legal-reviewer (KVKK) → marketing-writer (outreach) | T2-T3 |
 | Image upload | compactor-agent (otomatik, önce) | - |
 
 ## Peer Chat Topology
@@ -68,11 +77,22 @@
                    [content cluster]
                     ↙           ↘
            content-writer  marketing-writer
+                     ↕              ↕
+                 [research cluster]
+                     ↙     ↓      ↘
+              researcher  legal-reviewer  data-analyst
                          ↕
-                 maintenance-agent
+                 maintenance-agent   watchdog
 ```
 
-compactor-agent topology dışında (isolated, hook-driven).
+compactor-agent topology dışında (isolated, hook-driven). watchdog peer chat observer — logs to `.claude/agent-memory/watchdog-{date}.md`.
+
+**researcher ↔ peer chat targets:**
+- marketing-writer (SEO + Ahrefs quota koordinasyonu)
+- content-writer (copy iddia fact-check)
+- architect (competitive landscape → mimari karar)
+- legal-reviewer (PII-heavy prospecting KVKK gate)
+- ux-agent (rakip onboarding flow analizi)
 
 ## Codex Hybrid Gate
 
@@ -129,6 +149,7 @@ Safeguards:
 - **Content cluster:** content-writer → copywriting, avoid-ai-writing, email-template-builder, email-systems, pyramid-principle
 - **Marketing cluster:** marketing-writer → ai-seo, content-strategy, launch-strategy, lead-magnets, marketing-ideas, marketing-psychology, growth-engine, competitive-landscape, programmatic-seo, cs-content-creator
 - **Architect cluster:** architect → spec-driven-dev, planning-tasks, architecture-designer, api-interface-design, consulting-* (MECE, hypothesis)
+- **Research cluster:** researcher → firecrawl:firecrawl-cli, firecrawl:skill-gen, competitive-landscape, content-research-writer, ai-seo (shared with marketing-writer), context7-plugin:context7-mcp, avoid-ai-writing. Shared MCP: Firecrawl (plugin), Ahrefs (w/ marketing-writer), claude.ai Vibe Prospecting, WebFetch, WebSearch
 - **Maintenance cluster:** maintenance-agent → performance-optimization, code-simplification, postmortem, focused-fix, change-management
 
 ## Invocation Patterns
