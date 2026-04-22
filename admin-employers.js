@@ -8,7 +8,7 @@
   var PANEL_HTML = ''
     + '<div class="panel-header"><h2>&#304;&#351;verenler</h2></div>'
     + '<div id="employers-content" aria-live="polite">'
-    + '  <div class="empty-state"><div class="empty-state-icon">&#9203;</div>'
+    + '  <div class="empty-state"><div class="empty-state-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true" style="animation:htSpin 1.2s linear infinite"><circle cx="12" cy="12" r="9" stroke-opacity="0.25"/><path d="M21 12a9 9 0 0 0-9-9"/></svg></div>'
     + '  <div class="empty-state-text">Y&uuml;kleniyor...</div></div>'
     + '</div>';
 

@@ -28,7 +28,7 @@
     + '</div>'
     + '<div id="newsletter-content" aria-live="polite">'
     + '  <div class="empty-state">'
-    + '    <div class="empty-state-icon">&#9203;</div>'
+    + '    <div class="empty-state-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true" style="animation:htSpin 1.2s linear infinite"><circle cx="12" cy="12" r="9" stroke-opacity="0.25"/><path d="M21 12a9 9 0 0 0-9-9"/></svg></div>'
     + '    <div class="empty-state-text">Yukleniyor...</div>'
     + '  </div>'
     + '</div>';
@@ -89,11 +89,13 @@
     return out.join('\n');
   }
 
-  // Safe HTML template builder — dynamic parts already esc()'d
+  // Safe HTML template builder — delegates to admin-core.mount (Range.createContextualFragment)
   function setHtml(el, html) {
     if (!el) return;
-    // Caller contract: all dynamic content passed through esc() + safe static markup.
-    el.innerHTML = html;
+    var core = window._htAdminCore;
+    if (core && typeof core.mount === 'function') {
+      core.mount(el, html);
+    }
   }
 
   // ═════ SUBSCRIBER LIST ═════
@@ -111,7 +113,7 @@
     if (searchEl) searchEl.value = STATE.filters.search;
 
     var listEl = document.getElementById('nl-subs-list');
-    setHtml(listEl, '<div class="empty-state"><div class="empty-state-icon">&#9203;</div><div class="empty-state-text">Yükleniyor...</div></div>');
+    setHtml(listEl, '<div class="empty-state"><div class="empty-state-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true" style="animation:htSpin 1.2s linear infinite"><circle cx="12" cy="12" r="9" stroke-opacity="0.25"/><path d="M21 12a9 9 0 0 0-9-9"/></svg></div><div class="empty-state-text">Yükleniyor...</div></div>');
 
     try {
       var sb = getSupa();
@@ -167,7 +169,7 @@
         exportBtn.addEventListener('click', function(){ exportCsv(rows); });
       }
     } catch (err) {
-      setHtml(listEl, '<div class="empty-state" style="padding:60px 20px;"><div class="empty-state-icon">&#9888;</div><div class="empty-state-text" style="color:#EF4444;">Hata: ' + esc(err.message || String(err)) + '</div></div>');
+      setHtml(listEl, '<div class="empty-state" style="padding:60px 20px;"><div class="empty-state-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div><div class="empty-state-text" style="color:#EF4444;">Hata: ' + esc(err.message || String(err)) + '</div></div>');
     }
   }
 
@@ -231,7 +233,7 @@
     var container = document.getElementById('newsletter-content');
     if (!container) return;
 
-    setHtml(container, '<div id="nl-camps-list"><div class="empty-state"><div class="empty-state-icon">&#9203;</div><div class="empty-state-text">Yükleniyor...</div></div></div>');
+    setHtml(container, '<div id="nl-camps-list"><div class="empty-state"><div class="empty-state-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true" style="animation:htSpin 1.2s linear infinite"><circle cx="12" cy="12" r="9" stroke-opacity="0.25"/><path d="M21 12a9 9 0 0 0-9-9"/></svg></div><div class="empty-state-text">Yükleniyor...</div></div></div>');
 
     try {
       var sb = getSupa();
@@ -292,7 +294,7 @@
       }
     } catch (err) {
       setHtml(document.getElementById('nl-camps-list'),
-        '<div class="empty-state" style="padding:60px 20px;"><div class="empty-state-icon">&#9888;</div><div class="empty-state-text" style="color:#EF4444;">Hata: ' + esc(err.message) + '</div></div>');
+        '<div class="empty-state" style="padding:60px 20px;"><div class="empty-state-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div><div class="empty-state-text" style="color:#EF4444;">Hata: ' + esc(err.message) + '</div></div>');
     }
   }
 

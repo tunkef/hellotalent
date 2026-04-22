@@ -21,7 +21,7 @@
     + '  </div>'
     + '</div>'
     + '<div id="leads-content" aria-live="polite">'
-    + '  <div class="empty-state"><div class="empty-state-icon">&#9203;</div>'
+    + '  <div class="empty-state"><div class="empty-state-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true" style="animation:htSpin 1.2s linear infinite"><circle cx="12" cy="12" r="9" stroke-opacity="0.25"/><path d="M21 12a9 9 0 0 0-9-9"/></svg></div>'
     + '  <div class="empty-state-text">Y&uuml;kleniyor...</div></div>'
     + '</div>';
 
@@ -85,12 +85,13 @@
       var leads = data.leads || [];
       var total = data.total || 0;
 
+      var core = window._htAdminCore;
       if (leads.length === 0) {
-        container.innerHTML = '<div class="empty-state" style="padding:60px 20px;">'
+        if (core) core.mount(container, '<div class="empty-state" style="padding:60px 20px;">'
           + '<div class="empty-state-icon"></div>'
           + '<div class="empty-state-text" style="font-size:var(--text-lg);font-weight:600;color:var(--text);margin-bottom:4px;">Henüz lead yok</div>'
           + '<div style="color:var(--muted);font-size:var(--text-sm);">İşveren formu doldurulduğunda burada görünecek.</div>'
-          + '</div>';
+          + '</div>');
         return;
       }
 
@@ -122,7 +123,7 @@
       }
 
       html += '</tbody></table>';
-      container.innerHTML = html;
+      if (core) core.mount(container, html);
 
       // Bind save buttons
       container.querySelectorAll('.lead-save-btn').forEach(function(btn) {
@@ -137,10 +138,14 @@
 
     } catch (ex) {
       console.error('Lead yükleme hatası:', ex);
-      container.innerHTML = '<div class="empty-state" style="padding:60px 20px;">'
-        + '<div class="empty-state-icon"></div>'
-        + '<div class="empty-state-text" style="color:#DC2626;">' + escHtml(ex.message || 'Yükleme hatası') + '</div>'
-        + '</div>';
+      var core2 = window._htAdminCore;
+      if (core2) {
+        core2.mount(container, '<div class="empty-state" style="padding:60px 20px;">'
+          + '<div class="empty-state-icon"></div>'
+          + '<div class="empty-state-text" style="color:#DC2626;">' + escHtml(ex.message || 'Yükleme hatası') + '</div>'
+          + '</div>');
+        if (core2.toast) core2.toast('Lead yükleme hatası: ' + (ex.message || 'Bilinmeyen'), 'error');
+      }
     }
   }
 

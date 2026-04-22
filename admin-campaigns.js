@@ -17,14 +17,14 @@
     + '    <div class="stat-card-value" id="stat-total">0</div></div>'
     + '</div>'
     + '<div id="pending-campaigns-list">'
-    + '  <div class="empty-state"><div class="empty-state-icon">&#128203;</div>'
+    + '  <div class="empty-state"><div class="empty-state-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3h18v4H3zM5 7v13a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V7"/><path d="M10 11h4"/></svg></div>'
     + '  <div class="empty-state-text">&#304;ncelenecek kampanya yok</div></div>'
     + '</div>';
 
   var CAMPAIGNS_HTML = ''
     + '<div class="panel-header"><h2>T&uuml;m Kampanyalar</h2></div>'
     + '<div id="all-campaigns-list">'
-    + '  <div class="empty-state"><div class="empty-state-icon">&#128202;</div>'
+    + '  <div class="empty-state"><div class="empty-state-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3h18v4H3zM5 7v13a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V7"/><path d="M10 11h4"/></svg></div>'
     + '  <div class="empty-state-text">Hen&uuml;z kampanya olu&#351;turulmam&#305;&#351;</div></div>'
     + '</div>';
 
