@@ -411,7 +411,10 @@
     var pinLabel = txt('label', '', 'Sabitle (24 saat)');
     var pinInput = document.createElement('input');
     pinInput.type = 'checkbox';
-    pinInput.checked = !!(existingRow && existingRow.is_pinned);
+    /* Schema contract: ht_announcements has only pinned_until timestamptz;
+     * is_pinned column does not exist. Mirror list-renderer pattern at ~line 133:
+     * a row is currently pinned iff pinned_until is set AND in the future. */
+    pinInput.checked = !!(existingRow && existingRow.pinned_until && new Date(existingRow.pinned_until) > new Date());
     pinLabel.appendChild(pinInput);
     form.appendChild(pinLabel);
 
