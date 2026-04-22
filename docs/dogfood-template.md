@@ -23,8 +23,8 @@ Teams chat mi, Task dispatch mi: {Teams / Task}
 | Toplam wall-clock (dakika) | {X} |
 | Toplam token (tüm agent'lar) | {Y} |
 | Agent invoke sayısı | {Z} |
-| Codex invoke sayısı | {0|1} |
-| Native-Codex agreement | {%N} |
+| Codex invoke sayısı | 0 veya 1 |
+| Native-Codex agreement | N% |
 | Tuna intervention sayısı | {M} |
 
 ## Bulgular (Severity by Agent)
