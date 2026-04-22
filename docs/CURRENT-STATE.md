@@ -1,4 +1,36 @@
 # hellotalent.ai — Current State
+> Son guncelleme: 22 Nisan 2026 | Asama 82 — Profil audit Faz 1/2/3 kapandi + 3 hotfix
+> Aktif Odak: profil.html UI/UX + a11y audit sonrasi remediation tamamlandi. Newsletter Faz 1 MVP beklemede (IYS key). Sonraki: Tuna UAT son kontrolleri veya yeni feature.
+>
+> ── Profil audit (K041-K047, Faz 1+2+3) ──
+>
+> **K041 Faz 1 HIGH (6 alt madde)**: Modal hijyeni (MODAL_SELECTORS unified observer + _htFocusTrap focus restore + ht-scroll-lock body class + .show class pattern cmdk/brand-follows-popup/pp-overlay/wlc-modal'de), skip link .ht-skip-link "İçeriğe atla" → #panel-genel (WCAG 2.4.1), --color-muted #6B7280 (4.45:1 fail) → #5E6671 (5.5:1 AA), button polish (opacity-hover yasak → var(--navy-deep), --danger-hover token, SVG stroke hex → currentColor/var(--success)/var(--danger)), error state UX (_htBuildErrorBanner role=alert + profil-firsatlar dual-fail banner + profil-inbox delete/restore toast + wizard showStepErrors scrollIntoView + role=alert), studio god-file split (4401 → 3886 satir, profil-studio-coach.js 559 satir yeni dosya — hydrateCoachFeed + render/detail/like + 4 paylasilan SVG constants).
+>
+> **K042 Markalar hero (Tuna UAT)**: Sag ust duplicate "25 TAKİP" kaldirildi (count CTA icinde), CTA'dan ok → silindi (**yeni brand kural: feedback_no_arrow_icons.md memory**), border-radius pill (999px) → 10px, CTA sk-hero__strip satirina sağa tasindi (chips solda, compact hero). Mobile responsive column.
+>
+> **K043 Dark mode + wizard data loss (Tuna UAT)**: Inbox `.ib-msg--in .ib-bubble` literal #1E2D5E + #C94E28 brand identity pin + html[data-theme='dark'] override. .ht-error-banner + .step-errors dark mode: rgba(220,38,38,0.12) bg + #FCA5A5 text + #EF4444 border. Wizard "Kaydetmeden cik" → clearDraft + location.reload + hash nav (DB'den fresh load, field'lar orijinal). **Yeni brand kural: feedback_darkmode_test_discipline.md memory — her UI degisikliginde dark+light+mobile zorunlu test, darkmode-auditor sorumlu, ayni sikayet 2. kez = Claude hatasi.**
+>
+> **K044 Faz 1F studio split**: profil-studio.js 4401 → 3886 satir. profil-studio-coach.js 559 satir yeni dosya (coach feed + hydrate + render). SVG constants (closeSVG studio drawer da kullandigi icin) coach.js'te, coach.js studio.js'ten ONCE yuklenir.
+>
+> **K045 Faz 2 MEDIUM (5 alt madde)**: Token scale + brand fix (theme-toggle sky-blue/indigo/mustard → navy/cream/vermillion, --text-display-xs/sm/md/lg tokens 22/28/32/40px, --radius-xs/xl/pill), toast tam refactor (4 variant + role=status + aria-live + manual close × + action button + stack bottom-right + slide-in/out animation), dead code purge (updateMarkalaBgDots stub), cache-bust sync (scripts/bump-cache-bust.sh helper + 47 refs uniform), wizard skip (#btn-wiz-skip ghost Step 3+ visible, saveProfileRPC + switchPanel('genel') + toast).
+>
+> **K046 Wizard silent mode (Tuna UAT hotfix)**: saveProfileRPC(onComplete, opts) artik {silent: true} kabul eder, success modal skip. btn-wiz-skip + btn-wiz-save-exit silent:true + returnToPanel=null (leak temizle). Onceki bug: skip → genel → stale modal → merkez 3-panel jump. Artik: skip → tek jump + toast.
+>
+> **K047 Faz 3 LOW (3 alt madde + 1 skip)**: Font-family tokenization (~280 raw string → var(--font-body/head/mono), admin + tokens.css + duyurular fallback var zaten literal kalir), attachDeleteConfirm timeout 2500→4500ms (mobile okuma), header tablist a11y pattern tam (id+aria-controls+role=tabpanel+aria-labelledby+aria-label+roving tabindex+ArrowLeft/Right+Home/End keyboard nav). 'use strict' kapsam disi birakildi (26 modul, runtime breakage riski).
+>
+> **Test**: 14 yeni spec dosyasi, 108+ yeni structural guard. Full regression 976/976+ yesil her faz sonunda.
+>
+> **Cache-bust final**: 20260422k047a (profil.html 47 refs uniform).
+>
+> **Yeni memory kurallari (2)**: feedback_no_arrow_icons.md + feedback_darkmode_test_discipline.md — home session MEMORY.md'de indexli.
+>
+> **Sonraki adim oncelik sirasi**:
+> - Tam hex purge (ertelendi Faz 3'ten): layout.css ~80 raw hex → token. profil-extras.css + panel CSS'leri. ~3h.
+> - Inline style migration (ertelendi Faz 2C'den): profil.html 68 inline style → class (deletion banner, command palette). ~2h.
+> - 'use strict' kademeli ekleme (ertelendi Faz 3B'den): case-by-case, yeni modullerden baslayarak.
+>
+> ── Admin (oncesi) ──
+>
 > Admin dark mode force-light fix — tokens.css @media (prefers-color-scheme: dark) --text/--muted'i dark'a cekiyordu, meta color-scheme sadece form elementlerini etkiliyor. Fix: admin.html <style> icinde ayni @media bloguna !important ile force-light (--text #111, --muted #6B7280, --bg #F7F6F3, --border #E5E3DF). Stat card explicit #FFFFFF bg + #4B5563 label + #111 value. JS'teki tum color:var(--muted)/var(--text) kullanimlari tokens propagation ile dogru renklere cekilir — her admin-*.js'i tek tek tarayip degistirmeye gerek yok.
 > Admin audit Faz 3 (HIGH + MEDIUM + LOW) — inline onclick → delegated event listener (sidebar-nav click+keydown + logout buttons), empty state SVG icons (loading/empty/error inline SVG, @keyframes htSpin), .form-input + .form-select + .form-textarea + .form-group + .form-label + .form-help class component'leri, _htAdminCore.toast(msg,type) success/error/warning/info variant 4sn auto-dismiss, innerHTML → mount migration (admin-newsletter setHtml + admin-leads 3 innerHTML), tokens.css'e --admin-bg/header-mid/verm-hover/green/yellow/red consolidation + admin.html :root alias, h3 design system (16px/700w Bricolage + .admin-h3 utility) + buildSectionLabel h3 element + tests/a11y.admin.spec.js 8 structural guard. Cache-bust admin-core v=3, admin-campaigns/candidates/employers/leads/newsletter v=4.
 > Admin a11y + design audit fix (7 BLOCKER) — status pill WCAG AA kontrast (rejected + draft + digerleri), <main> duplicate fix (3 → 1), sidebar nav-item klavye erisim (role=button + tabindex + keydown Enter/Space + aria-current=page), marka drawer aria-modal=true + aria-labelledby, tab ARIA (role=tab + aria-selected), 26 emoji UI purge (stat cards + empty state + status labels), hex → var(--token) (admin-newsletter: #C94E28/#1E2D5E/rgba), loading state aria-live=polite 7 panelde. Cache-bust v=3. CLAUDE.md brand rule 'no emoji in UI' uyumlu.
