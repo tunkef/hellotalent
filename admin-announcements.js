@@ -637,6 +637,18 @@
           var ins = await supa.from('ht_announcements').insert(payload).select().maybeSingle();
           if (ins.error) throw ins.error;
           postId = ins.data && ins.data.id;
+          /* Closure sync: if media upload fails after this INSERT the composer
+           * stays open and the admin may click "Tekrar Yayinla". Without this
+           * reassignment, existingRow remains null on retry → the save() path
+           * re-enters the INSERT branch and writes a duplicate ht_announcements
+           * row, leaving already-uploaded media orphaned on POST_1 and new
+           * media attached to POST_2. Reassigning here forces the retry to
+           * take the UPDATE branch (idempotent by id). Mirrors the UPDATE
+           * branch's published_at sync above. Ultrareview R2. */
+          existingRow = Object.assign({}, payload, {
+            id: postId,
+            published_at: (ins.data && ins.data.published_at) || payload.published_at || null
+          });
         }
 
         /* Aggregate non-fatal errors — surface to user at end, keep modal
