@@ -17,6 +17,9 @@ Bu scriptler Studio v3'te **native Claude subagent'larıyla değiştirildi**:
 | `groq-helper.sh` | — |
 | `test-ai-apis.mjs` | — |
 | `courier-notify.sh` | (ntfy.sh Tuna istemedi) |
+| `autopilot.sh` | `chief-of-staff` agent (Teams lead + AI-COLLAB izleme) |
+| `autonomous-loop.sh` | Agent Teams peer chat + `watchdog` agent |
+| `setup-launchd.sh` | `scripts/install-launchd.sh` (weekly-maintenance + weekly-review plist'leri) |
 
 ## Rollback
 
