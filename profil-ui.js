@@ -1991,13 +1991,58 @@ window._applyWorkPrefs = _applyWorkPrefs;
 
 function showToast(msg, type) {
   var toast = document.createElement('div');
+  // K041: a11y — role="status" + aria-live so screen readers announce.
+  // Full toast refactor (manual close, action button, variants) in Faz 2.
+  toast.setAttribute('role', 'status');
+  toast.setAttribute('aria-live', 'polite');
   toast.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);padding:10px 20px;border-radius:8px;font-size:12px;font-weight:600;z-index:999;box-shadow:0 4px 12px rgba(0,0,0,0.15);transition:opacity 0.3s;';
-  toast.style.background = type === 'error' ? 'var(--red)' : type === 'success' ? 'var(--green)' : 'var(--navy)';
+  toast.style.background = type === 'error' ? 'var(--danger)' : type === 'success' ? 'var(--success)' : 'var(--navy)';
   toast.style.color = 'white';
   toast.textContent = msg;
   document.body.appendChild(toast);
   setTimeout(function() { toast.style.opacity = '0'; setTimeout(function() { toast.remove(); }, 300); }, 2500);
 }
+window.showToast = showToast;
+
+// ═══════════════════════════════════════════════════
+// INLINE ERROR BANNER — K041 Faz 1E
+// Use when fetch/network fails and container needs to show a retryable
+// error state (not empty-state). Distinguishes "no data" from "couldn't load".
+// Returns a DOM node — caller appends into the surface.
+//   opts.message   — Turkish user-facing text
+//   opts.retryText — button label (default: "Tekrar dene")
+//   opts.onRetry   — click handler; omit to hide retry button
+// ═══════════════════════════════════════════════════
+function _htBuildErrorBanner(opts) {
+  opts = opts || {};
+  var banner = document.createElement('div');
+  banner.className = 'ht-error-banner';
+  banner.setAttribute('role', 'alert');
+  banner.setAttribute('aria-live', 'assertive');
+
+  var icon = document.createElement('span');
+  icon.className = 'ht-error-banner__icon';
+  icon.setAttribute('aria-hidden', 'true');
+  icon.textContent = '!';
+  banner.appendChild(icon);
+
+  var text = document.createElement('p');
+  text.className = 'ht-error-banner__text';
+  text.textContent = opts.message || 'Bir şeyler ters gitti. Bağlantını kontrol edip tekrar dene.';
+  banner.appendChild(text);
+
+  if (typeof opts.onRetry === 'function') {
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'ht-error-banner__retry';
+    btn.textContent = opts.retryText || 'Tekrar dene';
+    btn.addEventListener('click', opts.onRetry);
+    banner.appendChild(btn);
+  }
+
+  return banner;
+}
+window._htBuildErrorBanner = _htBuildErrorBanner;
 
 // ═══════════════════════════════════════════════════
 // CV upload/delete/generate moved to profil-cv.js

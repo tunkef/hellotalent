@@ -589,14 +589,11 @@ function _updateAllFollowBtns(brandId) {
   }
 }
 
-// ── Hero counter + legacy badge sync (K040: dropped total count + duplicate strip count) ──
-// Catalog total removed because pool grows and "25 TAKİP · 32 MARKA" mislead users
-// (suggests '32' is a cap). Duplicate count2 retired with vermillion strip.
+// ── Hero counter + legacy badge sync ──
+// K040: catalog total dropped (pool grows — mislead).
+// K042: hero topmeta duplicate "25 TAKİP" retired (count now lives inside CTA pill only).
 function updateBrandFollowCounter() {
   var n = _ht_follows ? _ht_follows.size : 0;
-
-  var followedCount = document.getElementById('sk-followed-count');
-  if (followedCount) followedCount.textContent = n;
 
   var badge = document.getElementById('sirket-follow-count');
   if (badge) {

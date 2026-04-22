@@ -1,5 +1,32 @@
 # HelloTalent AI-COLLAB — Aktif Calisma Defteri
 
+## 2026-04-22 — K041 Faz 1E (error UX) + K042 markalar hero UX polish
+
+**Durum:** Faz 1E (error state UX) + Tuna feedback'i ile K042 markalar hero polish tek commit paketi. Yeni brand kural kaydedildi: button içinde arrow icon yasak (memory: feedback_no_arrow_icons.md).
+
+### K041 Faz 1E — Error state UX
+- `_htBuildErrorBanner(opts)` helper `profil-ui.js`'te — role=alert + aria-live + retry button. CSS `.ht-error-banner` components.css'e.
+- `showToast` minimum a11y patch: role=status + aria-live (full refactor Faz 2).
+- `profil-firsatlar.js` dual-fetch fail → inline banner + "Tekrar dene" (partial fail hala silent, mevcut data render). "Silent empty on error" eski kararı değiştirildi.
+- `profil-inbox.js` softDelete/restore fail → toast ("Mesaj silinemedi." / "Mesaj geri alınamadı.").
+- `profil-wizard.js:240 showStepErrors` → role=alert + aria-live=assertive + scrollIntoView smooth center. Uzun formda "İleri" sonrası kullanıcı hatayı görür, screen reader duyurur.
+
+### K042 — Markalar hero UX polish (Tuna feedback)
+- Hero sağ üstte duplicate "25 TAKİP" kaldırıldı (count zaten CTA içinde). Sadece "MARKALAR" eyebrow kaldı.
+- CTA'dan arrow `→` silindi — **yeni brand kural**: button içinde ok/chevron yasak. `feedback_no_arrow_icons.md` home memory.
+- CTA border-radius pill (999px) → 10px. Count pill 6px. Editorial hard-corner disiplini.
+- CTA `sk-hero__strip` satırına (sağa) taşındı, chips (EŞLEŞME SİNYALİ · HR'IN GÖRDÜĞÜ · KARİYER ROTAN) solda. Hero compact.
+- Dead reference `sk-followed-count` JS'den temizlendi. Mobile strip column dönüyor, CTA full-width.
+
+### Test
+Yeni 1 spec + 4 yeni test K042. Full regression: 1036/1036.
+
+### Cache-bust
+- `20260422k041b` (components.css, profil-ui.js, profil-firsatlar.js, profil-wizard.js, profil-inbox.js)
+- `20260422k042a` (sirketler.css, profil-markalar.js)
+
+---
+
 ## 2026-04-22 — K040 Markalar hero CTA + K041 Profil audit Faz 1 (HIGH)
 
 **Durum:** Live deploy hazirlandi. 4 UX/a11y ajan auditi sentezlendi, HIGH seviye 4 alt madde tamamlandi + markalar K040 redesign paketlendi.

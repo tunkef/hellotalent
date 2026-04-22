@@ -3393,8 +3393,8 @@ test.describe('K036 — Sirketler editorial redesign', () => {
     expect(sirketlerCss).toContain('--editorial-max-w');
   });
 
-  test('profil.html panel uses K036 sk-* IDs and copy', () => {
-    expect(profilHtml).toContain('id="sk-followed-count"');
+  test('profil.html panel uses K036 sk-* IDs and copy (K042: count moved into CTA)', () => {
+    expect(profilHtml).toContain('id="sk-hero-cta-count"');
     expect(profilHtml).toContain('Çalışmak istediğin markaları seç');
     expect(profilHtml).toContain('EŞLEŞME SİNYALİ');
     expect(profilHtml).toContain('NEDEN TAKİP?');

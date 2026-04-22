@@ -380,6 +380,49 @@ body.ht-scroll-lock{overflow:hidden;touch-action:none;}
 .ht-modal--success .ht-modal__title{color:var(--success);}
 .ht-modal--picker{max-width:560px;}
 
+/* ═══ HT-ERROR-BANNER (K041 Faz 1E) ═══
+ * Network/fetch failure surface — distinct from empty-state. Shows cause,
+ * gives retry. soft-red bg + danger accent + retry button. Dark mode safe
+ * because tokens (--danger, --danger-soft) swap. */
+.ht-error-banner{
+  display:flex;align-items:center;gap:12px;
+  padding:14px 18px;margin:12px 0;
+  background:var(--danger-soft);
+  border:1px solid var(--danger);
+  border-radius:var(--radius);
+  font-family:var(--font-body);
+}
+.ht-error-banner__icon{
+  flex-shrink:0;width:24px;height:24px;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--danger);color:#fff;
+  border-radius:999px;
+  font-weight:700;font-size:14px;
+}
+.ht-error-banner__text{
+  flex:1;margin:0;
+  font-size:var(--text-lg);line-height:1.5;
+  color:var(--danger);
+}
+.ht-error-banner__retry{
+  flex-shrink:0;
+  padding:6px 14px;
+  background:transparent;
+  border:1px solid var(--danger);
+  border-radius:var(--radius-sm);
+  color:var(--danger);
+  font-family:var(--font-body);font-size:var(--text-base);font-weight:600;
+  cursor:pointer;
+  transition:background-color 150ms ease,color 150ms ease;
+}
+.ht-error-banner__retry:hover,
+.ht-error-banner__retry:focus-visible{
+  background:var(--danger);color:#fff;
+}
+.ht-error-banner__retry:focus-visible{
+  outline:2px solid var(--danger);outline-offset:2px;
+}
+
 /* ═══ HT-TOAST (inline feedback messages) ═══ */
 .ht-toast{
   font-size:var(--text-base);margin-top:8px;padding:8px 12px;

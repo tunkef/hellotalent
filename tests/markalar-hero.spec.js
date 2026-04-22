@@ -46,6 +46,34 @@ test.describe('K040 — Markalar hero CTA + modal refactor', function () {
     expect(profilHtml).toMatch(/id="sk-hero-cta"[^>]*\bhidden\b/);
   });
 
+  test('K042: hero CTA has no arrow icon (brand rule)', function () {
+    // Extract CTA button block
+    var ctaBlock = profilHtml.match(/<button[^>]*id="sk-hero-cta"[\s\S]*?<\/button>/);
+    expect(ctaBlock).not.toBeNull();
+    // No arrow characters / no sk-hero__cta-arrow class
+    expect(ctaBlock[0]).not.toMatch(/[→←›»]/);
+    expect(ctaBlock[0]).not.toContain('sk-hero__cta-arrow');
+  });
+
+  test('K042: hero topmeta no longer shows duplicate "TAKİP" count', function () {
+    // Only "MARKALAR" eyebrow remains; count lives in CTA only
+    var topmetaBlock = profilHtml.match(/<div class="sk-hero__topmeta">[\s\S]*?<\/div>/);
+    expect(topmetaBlock).not.toBeNull();
+    expect(topmetaBlock[0]).not.toMatch(/TAKİP/);
+    expect(topmetaBlock[0]).not.toContain('id="sk-followed-count"');
+  });
+
+  test('K042: hero CTA border-radius ≤ 12px (pill shape banned by Tuna)', function () {
+    var css = readFromRepo('css/panels/sirketler.css');
+    var ctaBlock = css.match(/\.sk-hero__cta\s*\{[^}]*\}/);
+    expect(ctaBlock).not.toBeNull();
+    // Pill radius (999px) banned — must be ≤ 12px for editorial hard-corner language
+    expect(ctaBlock[0]).not.toMatch(/border-radius:\s*999px/);
+    var radiusMatch = ctaBlock[0].match(/border-radius:\s*(\d+)px/);
+    expect(radiusMatch).not.toBeNull();
+    expect(parseInt(radiusMatch[1], 10)).toBeLessThanOrEqual(12);
+  });
+
   test('profil.html: modal gained search input + labelled title', function () {
     expect(profilHtml).toContain('id="brand-follows-popup-search"');
     expect(profilHtml).toContain('aria-labelledby="brand-follows-popup-title"');
@@ -56,7 +84,8 @@ test.describe('K040 — Markalar hero CTA + modal refactor', function () {
   test('sirketler.css: new hero CTA vocabulary + dead strip classes purged', function () {
     expect(sirketlerCss).toContain('.sk-hero__cta');
     expect(sirketlerCss).toContain('.sk-hero__cta-count');
-    expect(sirketlerCss).toContain('.sk-hero__cta-arrow');
+    // K042: arrow class retired (no-arrow-icons rule)
+    expect(sirketlerCss).not.toContain('.sk-hero__cta-arrow');
     // Dead code purge — strip classes must not linger
     expect(sirketlerCss).not.toContain('.sk-card--followed');
     expect(sirketlerCss).not.toContain('.sk-followed__chip');

@@ -664,6 +664,11 @@
   }
 
   /* ═══ MARK AS READ ═══ */
+  // K041 Faz 1E: mark-as-read hatası sessiz kalabilir (kullanıcı etkisi minimal —
+  // badge bir sonraki yüklemede düzelir). Delete/Restore farklı: kullanıcı
+  // aksiyon alır, sonucu bekler, sessiz sessiz fail = kayıp zanneder.
+  function _toast(msg, type) { if (typeof window.showToast === 'function') window.showToast(msg, type); }
+
   async function markAsRead(messageId) {
     var supa = getSupa();
     if (!supa) return;
@@ -679,10 +684,10 @@
     if (!supa) return;
     try {
       var res = await supa.from('employer_messages').update({ status: 'deleted' }).eq('id', messageId);
-      if (res.error) { console.error('Soft delete error:', res.error.message); return; }
+      if (res.error) { console.error('Soft delete error:', res.error.message); _toast('Mesaj silinemedi. Tekrar dene.', 'error'); return; }
       for (var i = 0; i < allMessages.length; i++) { if (allMessages[i].id === messageId) { allMessages[i].status = 'deleted'; break; } }
       renderMessages(); updateUnreadBadges(); preloadUnreadCount();
-    } catch (err) { console.error('Soft delete exception:', err); }
+    } catch (err) { console.error('Soft delete exception:', err); _toast('Mesaj silinemedi. Tekrar dene.', 'error'); }
   }
 
   async function restoreMessage(messageId) {
@@ -690,10 +695,10 @@
     if (!supa) return;
     try {
       var res = await supa.from('employer_messages').update({ status: 'read' }).eq('id', messageId);
-      if (res.error) { console.error('Restore error:', res.error.message); return; }
+      if (res.error) { console.error('Restore error:', res.error.message); _toast('Mesaj geri alınamadı.', 'error'); return; }
       for (var i = 0; i < allMessages.length; i++) { if (allMessages[i].id === messageId) { allMessages[i].status = 'read'; break; } }
       renderMessages(); updateUnreadBadges(); preloadUnreadCount();
-    } catch (err) { console.error('Restore exception:', err); }
+    } catch (err) { console.error('Restore exception:', err); _toast('Mesaj geri alınamadı.', 'error'); }
   }
 
   /* ═══ UNREAD BADGES ═══ */

@@ -244,6 +244,11 @@ function showStepErrors(errors) {
   var wrap = document.createElement('div');
   wrap.className = 'step-errors';
   wrap.id = 'step-errors-box';
+  // K041 Faz 1E: role=alert + assertive live → screen reader announces
+  // eksikleri anında. scrollIntoView → kullanıcı uzun formda "İleri" tıkladıktan
+  // sonra üste döner, hataları görür.
+  wrap.setAttribute('role', 'alert');
+  wrap.setAttribute('aria-live', 'assertive');
   var title = document.createElement('div');
   title.className = 'step-errors-title';
   title.textContent = 'Eksik alanlar:';
@@ -258,6 +263,10 @@ function showStepErrors(errors) {
   wrap.appendChild(ul);
   var content = activeStep.querySelector('[id^="step"]') || activeStep;
   activeStep.insertBefore(wrap, content);
+  // Smooth scroll, block:center — kutu viewport'un ortasında kalır, mobile'da
+  // iyi çalışır. Reduced-motion respect için 'smooth' yerine 'auto' seçilebilir
+  // ama scrollIntoView 'smooth' zaten prefers-reduced-motion ile downgrade olur.
+  try { wrap.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (e) { wrap.scrollIntoView(); }
 }
 
 function clearStepErrors() {

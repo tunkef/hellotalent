@@ -364,9 +364,21 @@
     /* Drop skeleton */
     if (skeletonHost.parentNode) skeletonHost.parentNode.removeChild(skeletonHost);
 
-    /* Silent empty on any error (Tuna karari: error UI yok). */
+    /* K041 Faz 1E: partial fail still silent (mevcut data render), full fail
+     * (both sources down) → error banner + retry. Empty-state artik "fırsat
+     * yok" anlaminda; network hatasi ayrı sinyalde. */
     if (campaignRes.error) console.warn('[firsatlar] campaigns error:', campaignRes.error.message);
     if (annRes.error) console.warn('[firsatlar] announcements error:', annRes.error.message);
+    if (campaignRes.error && annRes.error && typeof window._htBuildErrorBanner === 'function') {
+      _loaded = false; // allow retry to re-enter render pipeline
+      var banner = window._htBuildErrorBanner({
+        message: 'Fırsatlar yüklenemedi. Bağlantını kontrol edip tekrar dene.',
+        onRetry: function () { render(); }
+      });
+      shell.appendChild(banner);
+      updateCountBadges(0);
+      return;
+    }
 
     var campaignRows = (campaignRes && !campaignRes.error && Array.isArray(campaignRes.data)) ? campaignRes.data : [];
     var campaigns = filterAllowed(campaignRows);

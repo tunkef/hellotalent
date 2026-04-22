@@ -58,14 +58,14 @@ if (window.Sentry) {
 <script>function ht_track(name, data) { if (window.HT && window.HT.trackEvent) window.HT.trackEvent(name, data); }</script>
 <link rel="stylesheet" href="css/tokens.css?v=20260422k041a">
 <link rel="stylesheet" href="css/layout.css?v=20260422k068v">
-<link rel="stylesheet" href="css/components.css?v=20260422k041a">
+<link rel="stylesheet" href="css/components.css?v=20260422k041b">
 <link rel="stylesheet" href="css/wizard.css?v=20260414w">
 <link rel="stylesheet" href="css/wizard-editorial.css?v=20260415k068">
 <link rel="stylesheet" href="css/studio.css?v=20260408a">
 <link rel="stylesheet" href="css/panels/genel-bakis.css?v=20260417c">
 <link rel="stylesheet" href="css/panels/merkezi.css?v=20260422k068v">
 <link rel="stylesheet" href="css/profil-extras.css?v=20260422k041a">
-<link rel="stylesheet" href="css/panels/sirketler.css?v=20260422k040a">
+<link rel="stylesheet" href="css/panels/sirketler.css?v=20260422k042a">
 <link rel="stylesheet" href="css/panels/kimbakti.css?v=20260415ne">
 <link rel="stylesheet" href="css/panels/inbox.css?v=20260415k071c">
 <link rel="stylesheet" href="css/panels/bildirimler.css?v=20260415ne">
@@ -1144,22 +1144,22 @@ if (window.Sentry) {
     <article class="sk-card sk-card--hero">
       <div class="sk-hero__topmeta">
         <span class="mono">MARKALAR</span>
-        <span class="mono mono--muted"><span id="sk-followed-count">0</span> TAKİP</span>
       </div>
       <h1 class="sk-hero__headline">Çalışmak istediğin markaları seç</h1>
       <p class="sk-hero__subline">Takip ettiğin markalar ilgini gösterir. İK ekipleri eşleşmeleri buradan kuruyor — listenin uzunluğu, motivasyonun aynası.</p>
       <div class="sk-hero__strip">
-        <span class="mono">EŞLEŞME SİNYALİ</span>
-        <span class="sk-hero__sep">•</span>
-        <span class="mono">HR'IN GÖRDÜĞÜ</span>
-        <span class="sk-hero__sep">•</span>
-        <span class="mono">KARİYER ROTAN</span>
+        <div class="sk-hero__strip-chips">
+          <span class="mono">EŞLEŞME SİNYALİ</span>
+          <span class="sk-hero__sep">•</span>
+          <span class="mono">HR'IN GÖRDÜĞÜ</span>
+          <span class="sk-hero__sep">•</span>
+          <span class="mono">KARİYER ROTAN</span>
+        </div>
+        <button type="button" class="sk-hero__cta" id="sk-hero-cta" hidden aria-haspopup="dialog" aria-controls="brand-follows-popup-overlay">
+          <span class="sk-hero__cta-label">Takip Ettiklerin</span>
+          <span class="sk-hero__cta-count" id="sk-hero-cta-count">0</span>
+        </button>
       </div>
-      <button type="button" class="sk-hero__cta" id="sk-hero-cta" hidden aria-haspopup="dialog" aria-controls="brand-follows-popup-overlay">
-        <span class="sk-hero__cta-label">Takip Ettiklerin</span>
-        <span class="sk-hero__cta-count" id="sk-hero-cta-count">0</span>
-        <span class="sk-hero__cta-arrow" aria-hidden="true">→</span>
-      </button>
     </article>
 
     <article class="sk-card sk-card--filter">
@@ -1872,17 +1872,17 @@ if (window.Sentry) {
 <script src="shared.js?v=20260413a"></script>
 <script src="profil-core.js?v=20260404b"></script>
 <script src="profil-data.js?v=20260404b"></script>
-<script src="profil-ui.js?v=20260420k068b"></script>
+<script src="profil-ui.js?v=20260422k041b"></script>
 <script src="profil-locations.js?v=20260415k068b"></script>
 <script src="profil-summary.js?v=20260414z"></script>
 <script src="profil-genel.js?v=20260417c"></script>
 <script src="profil-visibility.js?v=20260414t"></script>
 <script src="profil-preview.js?v=20260422k041a"></script>
 <script src="profil-cv.js?v=20260414s"></script>
-<script src="profil-markalar.js?v=20260422k041a"></script>
+<script src="profil-markalar.js?v=20260422k042a"></script>
 <script src="profil-settings.js?v=20260404b"></script>
-<script src="profil-firsatlar.js?v=20260417fazd"></script>
-<script src="profil-inbox.js?v=20260422k041a"></script>
+<script src="profil-firsatlar.js?v=20260422k041b"></script>
+<script src="profil-inbox.js?v=20260422k041b"></script>
 <script src="profil-yetkinlik.js?v=20260404b"></script>
 <script src="profil-studio.js?v=20260413a"></script>
 <script src="panel-soon.js?v=20260413a"></script>
@@ -1890,7 +1890,7 @@ if (window.Sentry) {
 <script src="profil-premium.js?v=20260415k069"></script>
 <script src="profil-destek.js?v=20260414aa"></script>
 <script src="profil-ayarlar.js?v=20260415aa"></script>
-<script src="profil-wizard.js?v=20260416a"></script>
+<script src="profil-wizard.js?v=20260422k041b"></script>
 <script src="profil-draft.js?v=20260404b"></script>
 <script src="profil-helpers.js?v=20260404b"></script>
 <script src="profil-kimbakti.js?v=20260414ab"></script>
