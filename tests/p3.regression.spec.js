@@ -3624,9 +3624,10 @@ test.describe('K039 — Header Variant C inline segment', () => {
     expect(headerRuleMatch).toBeTruthy();
     const rule = headerRuleMatch[0];
     expect(rule).not.toContain('backdrop-filter');
-    expect(rule).toContain('border-bottom:1px solid #E5E3DF');
     expect(rule).toContain('box-shadow:none');
-    expect(rule).toContain('background:#F7F6F4');
+    // K048: hex literals tokenized — accept either semantic-token or legacy literal form
+    expect(rule).toMatch(/border-bottom:1px solid (var\(--border\)|#E5E3DF)/);
+    expect(rule).toMatch(/background:(var\(--bg-page\)|#F7F6F4)/);
   });
 
   test('layout.css .hn-item uses mono uppercase letter-spacing', () => {
