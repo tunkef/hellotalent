@@ -713,7 +713,7 @@ function attachDeleteConfirm(btn, onConfirm) {
       btn.style.fontSize = '';
       btn.style.fontWeight = '';
       btn.style.fontFamily = '';
-    }, 2500);
+    }, 4500); // K047: 2500→4500ms — mobile okuma süresi, kullanıcı 2-tap confirm arasında yazıyı okuyabilsin
   });
 }
 

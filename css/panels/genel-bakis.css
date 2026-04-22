@@ -277,7 +277,7 @@
   color: var(--editorial-vermillion, #C94E28);
   border: 1px solid var(--editorial-hairline-strong, #D8D5CF);
   border-radius: 999px;
-  font-family: 'DM Mono', ui-monospace, monospace;
+  font-family: var(--font-mono);
   font-size: 11px;
   letter-spacing: 0.12em;
   text-transform: uppercase;

@@ -1,5 +1,39 @@
 # HelloTalent AI-COLLAB — Aktif Calisma Defteri
 
+## 2026-04-22 — K047 Faz 3: LOW audit cleanup
+
+**Durum:** Faz 3 kismi tamamlandi. 3 alt madde yapildi, 3B (use strict) kapsam disindan silindi.
+
+### 3A — Font-family tokenization
+Panel CSS'lerinde raw string'ler toplu replace:
+- `'Plus Jakarta Sans', sans-serif` → `var(--font-body)` (~200 nokta)
+- `'Bricolage Grotesque', serif/sans-serif/Georgia` → `var(--font-head)` (~50 nokta)
+- `'DM Mono', (ui-monospace,)? monospace` → `var(--font-mono)` (~30 nokta)
+
+Kapsam: profil-extras, layout, components, panels/*, wizard. duyurular.css'te `var(--font-mono, 'DM Mono', monospace)` var() ile kullaniliyor, fallback zararsiz - dokunulmadi. Admin + tokens.css source-of-truth icin literal kalir.
+
+### 3B — 'use strict' SKIP
+26 profil modulunun 18'i IIFE, 8'i top-level global. Toplu strict mode ekleme runtime kirlma riski (delete unqualified, duplicate params, octal literals). Kullaniciya gorunur kazanim yok, test edilemez. Pragmatik karar: skip. Yeni modulerden itibaren strict mode default. Eski modul breakage sinyali gelirse case-by-case.
+
+### 3C — attachDeleteConfirm timeout
+profil-ui.js `attachDeleteConfirm` 2500ms → 4500ms. Mobile'da kullanici "Sil?" yazisini okuyup 2. tap'a gelmek icin daha uzun sure.
+
+### 3D — Header tablist a11y pattern
+profil.html `#popup-notifications` drawer tab pattern tamamlandi:
+- Tab buttonlari: `id` + `aria-controls` → panel'e bagli
+- Panels: `role="tabpanel"` + `aria-labelledby` → tab'a bagli
+- Tablist: `aria-label="Bildirim filtreleri"`
+- Roving tabindex: aktif tab `tabindex="0"`, inaktif `tabindex="-1"`
+- profil-inbox.js `_switchDrawerTab` helper + keyboard nav: Left/Right arrow + Home/End. WCAG 2.1.1 + ARIA 1.2 spec tablist full.
+
+### Test
+16 yeni guard (faz3.spec.js). Full regression 1112/1112 sonra 1 legacy K039 regression test uniform bump ile uyumlu hale getirildi (literal 'DM Mono' → regex-presence).
+
+### Cache-bust
+`20260422k047a`
+
+---
+
 ## 2026-04-22 — K046 Wizard skip/save-exit silent mode (UX hotfix)
 
 **Durum:** Tuna UAT — "Daha sonra doldur" 3-panel atlama + artık modal sorunu. Root-cause fix.

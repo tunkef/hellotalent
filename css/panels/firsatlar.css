@@ -12,7 +12,7 @@
   background: transparent;
   border: 0;
   border-radius: 0;
-  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  font-family: var(--font-body);
   color: var(--editorial-ink, #1E2D5E);
 }
 
@@ -32,7 +32,7 @@
   animation: frsFadeUp 600ms ease-out forwards;
 }
 .frs-kicker {
-  font-family: 'DM Mono', ui-monospace, monospace;
+  font-family: var(--font-mono);
   font-style: italic;
   font-size: 11px;
   letter-spacing: 0.12em;
@@ -41,7 +41,7 @@
   margin: 0 0 14px 0;
 }
 .frs-headline {
-  font-family: 'Bricolage Grotesque', serif;
+  font-family: var(--font-head);
   font-size: clamp(32px, 4vw, 48px);
   font-weight: 500;
   color: var(--editorial-vermillion, #C94E28);
@@ -51,7 +51,7 @@
   max-width: 18ch;
 }
 .frs-subline {
-  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  font-family: var(--font-body);
   font-size: 15px;
   color: var(--editorial-ink-muted, #6B6A66);
   line-height: 1.55;
@@ -68,7 +68,7 @@
   padding: 0 0 24px 0;
   margin-bottom: 32px;
   border-bottom: 1px solid var(--editorial-hairline, #E5E3DF);
-  font-family: 'DM Mono', ui-monospace, monospace;
+  font-family: var(--font-mono);
   font-size: 11px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -154,7 +154,7 @@
   display: block;
 }
 .frs-card__cover-initial {
-  font-family: 'Bricolage Grotesque', serif;
+  font-family: var(--font-head);
   font-size: 64px;
   font-weight: 700;
   color: var(--editorial-ink-muted, #6B6A66);
@@ -167,7 +167,7 @@
   top: 12px;
   left: 12px;
   padding: 4px 10px;
-  font-family: 'DM Mono', ui-monospace, monospace;
+  font-family: var(--font-mono);
   font-size: 10px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -191,7 +191,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  font-family: 'DM Mono', ui-monospace, monospace;
+  font-family: var(--font-mono);
   font-size: 11px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -216,7 +216,7 @@
   object-fit: cover;
 }
 .frs-card__title {
-  font-family: 'Bricolage Grotesque', serif;
+  font-family: var(--font-head);
   font-size: 20px;
   font-weight: 500;
   line-height: 1.25;
@@ -224,7 +224,7 @@
   margin: 0;
 }
 .frs-card__desc {
-  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  font-family: var(--font-body);
   font-size: 14px;
   line-height: 1.55;
   color: var(--editorial-ink-muted, #6B6A66);
@@ -249,7 +249,7 @@
 }
 .frs-card__promo-code {
   flex: 1;
-  font-family: 'DM Mono', ui-monospace, monospace;
+  font-family: var(--font-mono);
   font-size: 13px;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -262,7 +262,7 @@
   color: var(--editorial-on-vermillion, #fff);
   border: 0;
   border-radius: 6px;
-  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  font-family: var(--font-body);
   font-size: 12px;
   font-weight: 600;
   cursor: pointer;
@@ -287,7 +287,7 @@
   text-decoration: none;
   border: 0;
   border-radius: 8px;
-  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  font-family: var(--font-body);
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
@@ -325,14 +325,14 @@
   opacity: 0.4;
 }
 .frs-empty__title {
-  font-family: 'Bricolage Grotesque', serif;
+  font-family: var(--font-head);
   font-size: 22px;
   font-weight: 500;
   color: var(--editorial-ink, #1E2D5E);
   margin: 0 0 10px;
 }
 .frs-empty__desc {
-  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  font-family: var(--font-body);
   font-size: 14px;
   color: var(--editorial-ink-muted, #6B6A66);
   line-height: 1.55;
@@ -350,7 +350,7 @@
   color: var(--editorial-on-vermillion, #fff);
   border: 0;
   border-radius: 8px;
-  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  font-family: var(--font-body);
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;

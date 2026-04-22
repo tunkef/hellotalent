@@ -67,7 +67,7 @@
   padding:4px 0 18px;
 }
 .ib-card--hero .ib-eyebrow{
-  font-family:'DM Mono',ui-monospace,monospace;
+  font-family:var(--font-mono);
   font-size:11px;
   text-transform:uppercase;
   letter-spacing:0.08em;
@@ -76,7 +76,7 @@
   margin-bottom:10px;
 }
 .ib-headline{
-  font-family:'Bricolage Grotesque',Georgia,serif;
+  font-family:var(--font-head);
   color:var(--editorial-vermillion);
   font-size:clamp(26px,3.2vw,32px);
   line-height:1.05;
@@ -85,7 +85,7 @@
   margin:0 0 8px;
 }
 .ib-subline{
-  font-family:'Plus Jakarta Sans',system-ui,sans-serif;
+  font-family:var(--font-body);
   font-size:13px;
   color:var(--editorial-ink-muted);
   max-width:58ch;
@@ -100,7 +100,7 @@
   gap:14px;
 }
 .ib-mono{
-  font-family:'DM Mono',ui-monospace,monospace;
+  font-family:var(--font-mono);
   font-size:11px;
   text-transform:uppercase;
   letter-spacing:0.08em;
@@ -126,7 +126,7 @@
 }
 .ib-filter::-webkit-scrollbar{display:none;}
 .ib-tab{
-  font-family:'DM Mono',ui-monospace,monospace;
+  font-family:var(--font-mono);
   font-size:11px;
   text-transform:uppercase;
   letter-spacing:0.08em;
@@ -148,7 +148,7 @@
 .ib-tab:focus-visible{outline:2px solid var(--editorial-vermillion);outline-offset:3px;border-radius:2px;}
 .ib-tab-sep{
   color:var(--editorial-hairline);
-  font-family:'DM Mono',ui-monospace,monospace;
+  font-family:var(--font-mono);
   font-size:11px;
   user-select:none;
 }
@@ -234,7 +234,7 @@
   align-items:center;
   justify-content:center;
   color:var(--editorial-ink);
-  font-family:'Bricolage Grotesque',Georgia,serif;
+  font-family:var(--font-head);
   font-weight:600;
   font-size:18px;
   background:var(--editorial-bg);
@@ -254,7 +254,7 @@
 
 .ib-meta{min-width:0;}
 .ib-sender{
-  font-family:'Plus Jakarta Sans',system-ui,sans-serif;
+  font-family:var(--font-body);
   font-size:14px;
   font-weight:600;
   color:var(--editorial-ink);
@@ -265,7 +265,7 @@
   white-space:nowrap;
 }
 .ib-preview{
-  font-family:'Plus Jakarta Sans',system-ui,sans-serif;
+  font-family:var(--font-body);
   font-size:13px;
   color:var(--editorial-ink-muted);
   line-height:1.45;
@@ -276,7 +276,7 @@
   overflow:hidden;
 }
 .ib-time{
-  font-family:'DM Mono',ui-monospace,monospace;
+  font-family:var(--font-mono);
   font-size:10px;
   font-style:italic;
   text-transform:uppercase;
@@ -298,7 +298,7 @@
   border:1px solid var(--editorial-hairline);
   border-radius:8px;
   padding:4px 10px;
-  font-family:'DM Mono',ui-monospace,monospace;
+  font-family:var(--font-mono);
   font-size:10px;
   text-transform:uppercase;
   letter-spacing:0.08em;
@@ -322,7 +322,7 @@
 .ib-empty{
   text-align:center;
   padding:48px 20px;
-  font-family:'DM Mono',ui-monospace,monospace;
+  font-family:var(--font-mono);
   font-size:11px;
   text-transform:uppercase;
   letter-spacing:0.08em;
@@ -330,7 +330,7 @@
   font-style:italic;
 }
 .ib-empty .empty-title{
-  font-family:'Bricolage Grotesque',Georgia,serif;
+  font-family:var(--font-head);
   font-style:normal;
   text-transform:none;
   letter-spacing:normal;
@@ -339,7 +339,7 @@
   margin-bottom:6px;
 }
 .ib-empty .sub-text{
-  font-family:'Plus Jakarta Sans',system-ui,sans-serif;
+  font-family:var(--font-body);
   font-style:normal;
   text-transform:none;
   letter-spacing:normal;
@@ -353,7 +353,7 @@
   justify-content:center;
   flex:1;
   min-height:320px;
-  font-family:'DM Mono',ui-monospace,monospace;
+  font-family:var(--font-mono);
   font-size:11px;
   text-transform:uppercase;
   letter-spacing:0.08em;
@@ -380,7 +380,7 @@
 }
 .ib-thread-brand{flex:1;min-width:0;}
 .ib-thread-eyebrow{
-  font-family:'DM Mono',ui-monospace,monospace;
+  font-family:var(--font-mono);
   font-size:11px;
   text-transform:uppercase;
   letter-spacing:0.08em;
@@ -389,7 +389,7 @@
   margin-bottom:4px;
 }
 .ib-thread-title{
-  font-family:'Bricolage Grotesque',Georgia,serif;
+  font-family:var(--font-head);
   font-size:22px;
   font-weight:600;
   color:var(--editorial-ink);
@@ -398,7 +398,7 @@
   letter-spacing:-0.01em;
 }
 .ib-thread-sub{
-  font-family:'DM Mono',ui-monospace,monospace;
+  font-family:var(--font-mono);
   font-size:11px;
   font-style:italic;
   text-transform:uppercase;
@@ -439,7 +439,7 @@
 
 .ib-daysep{
   text-align:center;
-  font-family:'DM Mono',ui-monospace,monospace;
+  font-family:var(--font-mono);
   font-size:10px;
   text-transform:uppercase;
   letter-spacing:0.08em;
@@ -460,7 +460,7 @@
 .ib-msg .ib-cap{
   display:block;
   margin-bottom:6px;
-  font-family:'DM Mono',ui-monospace,monospace;
+  font-family:var(--font-mono);
   font-size:11px;
   font-style:italic;
   text-transform:uppercase;
@@ -471,7 +471,7 @@
   display:inline-block;
   padding:12px 16px;
   border-radius:16px;
-  font-family:'Plus Jakarta Sans',system-ui,sans-serif;
+  font-family:var(--font-body);
   font-size:15px;
   line-height:1.5;
   white-space:pre-wrap;
@@ -490,7 +490,7 @@
 .ib-msg .ib-stamp{
   display:block;
   margin-top:6px;
-  font-family:'DM Mono',ui-monospace,monospace;
+  font-family:var(--font-mono);
   font-size:10px;
   text-transform:uppercase;
   letter-spacing:0.08em;
@@ -539,7 +539,7 @@ html[data-theme='dark'] .ib-msg--out .ib-bubble{background:#C94E28;color:#F7F6F4
 .ib-composer-cap{
   display:block;
   margin-bottom:10px;
-  font-family:'DM Mono',ui-monospace,monospace;
+  font-family:var(--font-mono);
   font-size:11px;
   font-style:italic;
   text-transform:uppercase;
@@ -558,7 +558,7 @@ html[data-theme='dark'] .ib-msg--out .ib-bubble{background:#C94E28;color:#F7F6F4
   border:1px solid var(--editorial-hairline);
   border-radius:14px;
   padding:12px 16px;
-  font-family:'Plus Jakarta Sans',system-ui,sans-serif;
+  font-family:var(--font-body);
   font-size:14px;
   color:var(--editorial-ink);
   resize:none;
@@ -575,7 +575,7 @@ html[data-theme='dark'] .ib-msg--out .ib-bubble{background:#C94E28;color:#F7F6F4
   height:44px;
   padding:0 22px;
   border-radius:10px;
-  font-family:'Plus Jakarta Sans',system-ui,sans-serif;
+  font-family:var(--font-body);
   font-weight:600;
   font-size:14px;
   letter-spacing:0.01em;
@@ -588,7 +588,7 @@ html[data-theme='dark'] .ib-msg--out .ib-bubble{background:#C94E28;color:#F7F6F4
 .ib-status{
   display:none;
   padding:6px 14px;
-  font-family:'DM Mono',ui-monospace,monospace;
+  font-family:var(--font-mono);
   font-size:11px;
   text-transform:uppercase;
   letter-spacing:0.08em;
@@ -603,7 +603,7 @@ html[data-theme='dark'] .ib-msg--out .ib-bubble{background:#C94E28;color:#F7F6F4
   padding-top:28px;
   border-top:1px solid var(--editorial-hairline);
   text-align:center;
-  font-family:'DM Mono',ui-monospace,monospace;
+  font-family:var(--font-mono);
   font-size:11px;
   font-style:italic;
   text-transform:uppercase;

@@ -958,19 +958,42 @@
     var drawerSeg = document.querySelector('.header-popup-seg[data-drawer-seg]');
     if (drawerSeg) {
       var drawerBtns = drawerSeg.querySelectorAll('button[data-drawer-tab]');
+      // K047: tab switcher extracted — handles pointer click + arrow-key nav
+      // (roving tabindex). Called from click and from keydown.
+      var _switchDrawerTab = function(tab, focusTarget) {
+        for (var bi = 0; bi < drawerBtns.length; bi++) {
+          var active = drawerBtns[bi].getAttribute('data-drawer-tab') === tab;
+          drawerBtns[bi].classList.toggle('is-active', active);
+          drawerBtns[bi].setAttribute('aria-selected', active ? 'true' : 'false');
+          // Roving tabindex — only active tab is Tab-reachable, others arrow-only
+          drawerBtns[bi].setAttribute('tabindex', active ? '0' : '-1');
+          if (active && focusTarget) drawerBtns[bi].focus();
+        }
+        var bildirimList = document.getElementById('popup-notif-list');
+        var duyuruList = document.getElementById('popup-duyuru-list');
+        if (bildirimList) bildirimList.hidden = (tab !== 'bildirim');
+        if (duyuruList) duyuruList.hidden = (tab !== 'duyuru');
+      };
+      // Keyboard nav — Left/Right arrow switches tabs, Home/End jump to edges
+      drawerSeg.addEventListener('keydown', function(ev) {
+        var key = ev.key;
+        if (key !== 'ArrowLeft' && key !== 'ArrowRight' && key !== 'Home' && key !== 'End') return;
+        ev.preventDefault();
+        var tabs = Array.prototype.slice.call(drawerBtns);
+        var currentIdx = tabs.findIndex(function(b) { return b.getAttribute('aria-selected') === 'true'; });
+        if (currentIdx < 0) currentIdx = 0;
+        var targetIdx;
+        if (key === 'Home') targetIdx = 0;
+        else if (key === 'End') targetIdx = tabs.length - 1;
+        else if (key === 'ArrowLeft') targetIdx = (currentIdx - 1 + tabs.length) % tabs.length;
+        else targetIdx = (currentIdx + 1) % tabs.length;
+        _switchDrawerTab(tabs[targetIdx].getAttribute('data-drawer-tab'), true);
+      });
       for (var di = 0; di < drawerBtns.length; di++) {
         drawerBtns[di].addEventListener('click', function (ev) {
           ev.stopPropagation();
           var tab = ev.currentTarget.getAttribute('data-drawer-tab');
-          for (var bi = 0; bi < drawerBtns.length; bi++) {
-            var active = drawerBtns[bi].getAttribute('data-drawer-tab') === tab;
-            drawerBtns[bi].classList.toggle('is-active', active);
-            drawerBtns[bi].setAttribute('aria-selected', active ? 'true' : 'false');
-          }
-          var bildirimList = document.getElementById('popup-notif-list');
-          var duyuruList = document.getElementById('popup-duyuru-list');
-          if (bildirimList) bildirimList.hidden = (tab !== 'bildirim');
-          if (duyuruList) duyuruList.hidden = (tab !== 'duyuru');
+          _switchDrawerTab(tab, false);
           /* Active tab badge cleared when user looks at it */
           if (tab === 'duyuru') {
             var badge = drawerSeg.querySelector('[data-drawer-badge="duyuru"]');

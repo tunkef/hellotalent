@@ -3635,7 +3635,8 @@ test.describe('K039 — Header Variant C inline segment', () => {
     const rule = hnItemMatch[0];
     expect(rule).toContain('letter-spacing');
     expect(rule).toContain('text-transform:uppercase');
-    expect(rule).toContain('DM Mono');
+    // K047: font-family token migration — accept var(--font-mono) or literal DM Mono
+    expect(rule).toMatch(/var\(--font-mono\)|DM Mono/);
   });
 
   test('profil.html cache-busts layout.css to v=20260415k068b', () => {
