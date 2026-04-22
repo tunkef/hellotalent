@@ -55,6 +55,9 @@
 | Rakip/market research | researcher → marketing-writer (SEO açısı) → architect (stratejik) | T2 |
 | İddia/claim fact-check | researcher → content-writer (hangi copy'ye bağlı) | T2 |
 | B2B prospect / lead list | researcher → legal-reviewer (KVKK) → marketing-writer (outreach) | T2-T3 |
+| **Newsletter kampanya (aday)** | **marketing-writer (avoid-ai-writing ZORUNLU) → content-writer (tone) → legal-reviewer (İYS + fabrikasyon)** | T2 |
+| **Newsletter kampanya (kurumsal)** | **marketing-writer (avoid-ai-writing ZORUNLU) → content-writer → legal-reviewer → researcher (veri kaynak)** | T2 |
+| Newsletter welcome sequence | marketing-writer (drip taslakları) → content-writer (tone) → legal-reviewer | T2 |
 | Image upload | compactor-agent (otomatik, önce) | - |
 
 ## Peer Chat Topology

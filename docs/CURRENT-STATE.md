@@ -1,4 +1,9 @@
 # hellotalent.ai — Current State
+> Asama 81.1 — Newsletter Faz 1 tasarim + agent ownership lockdown (k068w):
+>   email-send.ts dark-mode inversion block (color-scheme meta), hero band 6px gradient, eyebrow chip rozet, SVG sosyal ikonlar (LinkedIn/X/Instagram), heading separator, footer re-order + unsub top action.
+>   Unsubscribe URL bug fix: newsletter-confirm sub.id degil unsubscribe_token kullaniyor, email-send template buildUnsubUrls() helper icin hem p.unsubscribe_url hem p.unsubscribe_token'dan URL insa eder.
+>   Agent ownership K012: marketing-writer.md newsletter-campaign protokolu eklendi (avoid-ai-writing ZORUNLU, content-writer tone peer, legal-reviewer IYS/fabrikasyon check). chief-of-staff.md + docs/AGENTS.md matrix'e 3 yeni satir (aday + kurumsal kampanya + welcome sequence). admin-newsletter.js composer'a uyari kutusu + placeholder: "marketing-writer tarafindan uretilsin, fabrikasyon yasak".
+>   v2 preview gonderildi (Tuna dogruladi: "tertemiz").
 > Son guncelleme: 23 Nisan 2026 | Asama 81 — Newsletter Faz 1 push edildi
 > Aktif Odak: Newsletter Phase 1 MVP altyapi canli. K012 karari. Cift kitle (aday + kurumsal) double opt-in. Capture + confirmation transactional aktif, welcome + campaign IYS key gelene kadar queue'da.
 > Newsletter Faz 1 dosyalari: supabase/migrations/20260423000000_newsletter_phase1.sql (4 yeni tablo + 5 RPC + RLS), 5 yeni Edge Function (newsletter-subscribe/confirm/unsubscribe/send-campaign/iys-sync), email-send.ts 4 yeni template, uye-ol.html 3. checkbox (aday + kurumsal), shared.js+css footer form, newsletter-onay.html + newsletter-tercih.html, admin-newsletter.js + admin.html Bulten tab, profil settings Bulten toggle, docs/newsletter-dns-runbook.md, tests/newsletter-e2e.spec.js.

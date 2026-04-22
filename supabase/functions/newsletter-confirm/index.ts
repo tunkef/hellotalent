@@ -40,7 +40,7 @@ Deno.serve(async (req: Request) => {
 
     const { data: sub } = await supabase
       .from('newsletter_subscribers')
-      .select('id, status, audience, user_id')
+      .select('id, status, audience, user_id, unsubscribe_token')
       .eq('confirmation_token', token)
       .eq('email', email)
       .maybeSingle();
@@ -92,6 +92,10 @@ Deno.serve(async (req: Request) => {
       sub.audience === 'kurumsal'
         ? 'newsletter_welcome_kurumsal'
         : 'newsletter_welcome_aday';
+    const unsubToken = sub.unsubscribe_token;
+    const unsubUrl = `https://cpwibefquojehjehtrog.supabase.co/functions/v1/newsletter-unsubscribe?token=${unsubToken}`;
+    const prefUrl = `https://hellotalent.ai/newsletter-tercih.html?token=${unsubToken}`;
+
     await supabase.from('email_outbox').insert({
       dedupe_key: `newsletter_welcome:${sub.id}`,
       email_type: welcomeType,
@@ -100,7 +104,8 @@ Deno.serve(async (req: Request) => {
       payload: {
         email,
         audience: sub.audience,
-        unsubscribe_url: `https://hellotalent.ai/newsletter-tercih.html?token=${sub.id}`,
+        unsubscribe_url: unsubUrl,
+        preferences_url: prefUrl,
       },
     });
 

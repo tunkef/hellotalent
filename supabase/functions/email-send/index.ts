@@ -228,6 +228,8 @@ interface Payload {
   audience?: string | null;
   confirm_url?: string;
   unsubscribe_url?: string;
+  unsubscribe_token?: string;
+  preferences_url?: string;
   preheader?: string | null;
   body_html?: string | null;
   body_text?: string | null;
@@ -312,13 +314,24 @@ const COLORS = {
 };
 
 function emailWrapper(bodyContent: string): string {
+  // color-scheme meta + supported-color-schemes prevent Gmail mobile auto-inversion
+  // that kills brand hierarchy (navy → white, etc.). Force light rendering.
   return `<!DOCTYPE html>
-<html lang="tr">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
-<body style="margin:0;padding:0;background:${COLORS.bg};font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,sans-serif;">
-<table width="100%" cellpadding="0" cellspacing="0" style="background:${COLORS.bg};padding:24px 0;">
+<html lang="tr" style="color-scheme: light only;">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light only">
+<meta name="supported-color-schemes" content="light">
+<style>
+  :root { color-scheme: light only; }
+  [data-ogsc] body, [data-ogsb] body { background: ${COLORS.bg} !important; }
+</style>
+</head>
+<body style="margin:0;padding:0;background:${COLORS.bg};color:${COLORS.text};font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,sans-serif;-webkit-font-smoothing:antialiased;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${COLORS.bg};padding:24px 0;">
 <tr><td align="center">
-<table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:${COLORS.white};border-radius:12px;border:1px solid ${COLORS.border};overflow:hidden;">
+<table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:${COLORS.white};border-radius:14px;border:1px solid ${COLORS.border};overflow:hidden;box-shadow:0 2px 4px rgba(0,0,0,0.03);">
 ${bodyContent}
 </table>
 </td></tr>
@@ -1105,17 +1118,70 @@ Gizlilik: https://hellotalent.ai/gizlilik.html`;
 
 // ─── Newsletter Shared ───────────────────────────────
 
-function newsletterFooter(unsubUrl?: string, prefUrl?: string): string {
-  const unsub = unsubUrl || "";
-  const pref = prefUrl || unsubUrl || "";
-  return `<tr><td style="padding:20px 32px;border-top:1px solid ${COLORS.border};font-size:12px;color:${COLORS.muted};line-height:1.5;">
-<p style="margin:0 0 8px;">Bu e-posta, HelloTalent Bülten aboneliğiniz kapsamında gönderildi. İleti Yönetim Sistemi (İYS) kayıtlarımızda onayınız bulunmaktadır.</p>
-<p style="margin:0 0 4px;">
-  ${unsub ? `<a href="${unsub}" style="color:${COLORS.muted};text-decoration:underline;">Abonelikten çık</a>` : ""}
-  ${unsub && pref !== unsub ? ` &middot; <a href="${pref}" style="color:${COLORS.muted};text-decoration:underline;">Tercihlerimi yönet</a>` : ""}
+function buildUnsubUrls(p: Payload): { unsubUrl: string; prefUrl: string } {
+  // Prefer explicit URL; fall back to building from token.
+  let unsubUrl = p.unsubscribe_url || "";
+  let prefUrl = p.preferences_url || "";
+  if (!unsubUrl && p.unsubscribe_token) {
+    unsubUrl = `https://cpwibefquojehjehtrog.supabase.co/functions/v1/newsletter-unsubscribe?token=${p.unsubscribe_token}`;
+  }
+  if (!prefUrl && p.unsubscribe_token) {
+    prefUrl = `https://hellotalent.ai/newsletter-tercih.html?token=${p.unsubscribe_token}`;
+  }
+  if (!unsubUrl) unsubUrl = "https://hellotalent.ai/newsletter-tercih.html";
+  if (!prefUrl) prefUrl = unsubUrl;
+  return { unsubUrl, prefUrl };
+}
+
+function newsletterHeroBand(): string {
+  return `<tr><td style="padding:0;height:6px;background-color:${COLORS.verm};background-image:linear-gradient(90deg, ${COLORS.verm} 0%, #D4673F 45%, ${COLORS.navy} 100%);line-height:6px;font-size:0;">&nbsp;</td></tr>`;
+}
+
+function newsletterLogoRow(eyebrow: string): string {
+  return `<tr><td style="padding:36px 32px 4px;text-align:center;">
+<a href="https://hellotalent.ai" style="text-decoration:none;font-family:'Bricolage Grotesque',Georgia,serif;font-size:26px;font-weight:800;color:${COLORS.navy};letter-spacing:-0.02em;line-height:1;">
+Hello<span style="color:${COLORS.verm};">Talent</span>
+</a>
+</td></tr>
+<tr><td style="padding:10px 32px 22px;text-align:center;">
+<span style="display:inline-block;padding:4px 12px;background:${COLORS.bg};border:1px solid ${COLORS.border};border-radius:999px;font-family:'DM Mono',monospace;font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:${COLORS.muted};">${esc(eyebrow)}</span>
+</td></tr>`;
+}
+
+function newsletterSocialRow(): string {
+  // SVG icons inline — sized 18px for email client compatibility
+  const iconStyle = `display:inline-block;width:18px;height:18px;vertical-align:middle;color:${COLORS.muted};`;
+  return `<tr><td style="padding:8px 32px 20px;text-align:center;border-top:1px solid ${COLORS.border};">
+<div style="padding-top:18px;">
+  <a href="https://www.linkedin.com/company/hello-talentai/" title="LinkedIn" style="display:inline-block;padding:8px 12px;color:${COLORS.muted};text-decoration:none;">
+    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="${iconStyle}"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+  </a>
+  <a href="https://x.com/hellotalent" title="X" style="display:inline-block;padding:8px 12px;color:${COLORS.muted};text-decoration:none;">
+    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style="${iconStyle}"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+  </a>
+  <a href="https://www.instagram.com/hellotalent.ai" title="Instagram" style="display:inline-block;padding:8px 12px;color:${COLORS.muted};text-decoration:none;">
+    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="${iconStyle}"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.5" fill="currentColor"/></svg>
+  </a>
+</div>
+</td></tr>`;
+}
+
+function newsletterFooter(p: Payload): string {
+  const { unsubUrl, prefUrl } = buildUnsubUrls(p);
+  return `<tr><td style="padding:20px 32px 28px;background:${COLORS.bg};font-size:12px;color:${COLORS.muted};line-height:1.6;">
+<p style="margin:0 0 14px;">
+  <a href="${unsubUrl}" style="color:${COLORS.verm};text-decoration:underline;font-weight:600;">Abonelikten çık</a>
+  &nbsp;&middot;&nbsp;
+  <a href="${prefUrl}" style="color:${COLORS.muted};text-decoration:underline;">Tercihlerimi yönet</a>
 </p>
-<p style="margin:4px 0 0;">&copy; 2026 HelloTalent &mdash; Perakende sektörüne özel yetenek platformu</p>
-<p style="margin:4px 0 0;"><a href="https://hellotalent.ai/gizlilik.html" style="color:${COLORS.muted};">Gizlilik Politikası</a> &middot; <a href="https://hellotalent.ai/kullanim-sartlari.html" style="color:${COLORS.muted};">Kullanım Şartları</a></p>
+<p style="margin:0 0 6px;color:${COLORS.text};font-weight:700;font-family:'Bricolage Grotesque',Georgia,serif;font-size:14px;">HelloTalent</p>
+<p style="margin:0 0 12px;font-size:11px;color:${COLORS.muted};">Türkiye perakende sektörüne özel yetenek platformu &middot; İstanbul, Türkiye</p>
+<p style="margin:0 0 10px;font-size:11px;line-height:1.5;">Bu e-posta, HelloTalent Bülten aboneliğiniz kapsamında gönderildi. İleti Yönetim Sistemi (İYS) kayıtlarımızda onayınız bulunmaktadır.</p>
+<p style="margin:0;font-size:11px;">
+  <a href="https://hellotalent.ai/gizlilik.html" style="color:${COLORS.muted};">Gizlilik</a> &middot;
+  <a href="https://hellotalent.ai/kullanim-sartlari.html" style="color:${COLORS.muted};">Şartlar</a> &middot;
+  <a href="https://hellotalent.ai/yasal.html#kvkk" style="color:${COLORS.muted};">KVKK</a>
+</p>
 </td></tr>`;
 }
 
@@ -1167,42 +1233,44 @@ Gizlilik: https://hellotalent.ai/gizlilik.html`;
 // ─── Newsletter: Welcome Aday ────────────────────────
 
 function newsletterWelcomeAdayTemplate(p: Payload): EmailContent {
-  const unsubUrl = p.unsubscribe_url || "https://hellotalent.ai/newsletter-tercih.html";
+  const { unsubUrl } = buildUnsubUrls(p);
 
   const html = emailWrapper(`
-${logoRow()}
-<tr><td style="padding:8px 32px 4px;text-align:center;">
+${newsletterHeroBand()}
+${newsletterLogoRow("Aday Bülteni · Perakende")}
+<tr><td style="padding:12px 32px 4px;text-align:center;">
 <span style="display:none;max-height:0;overflow:hidden;">Perakende kariyer hikayelerinin yolu şimdi açıldı.</span>
-<h1 style="margin:0;font-family:'Bricolage Grotesque',Georgia,serif;font-size:22px;color:${COLORS.navy};font-weight:700;">Hoş geldin — perakendenin içinden</h1>
+<h1 style="margin:0;font-family:'Bricolage Grotesque',Georgia,serif;font-size:26px;line-height:1.2;color:${COLORS.navy};font-weight:800;letter-spacing:-0.01em;">Hoş geldin — perakendenin içinden</h1>
 </td></tr>
-<tr><td style="padding:16px 32px;font-size:15px;color:${COLORS.text};line-height:1.6;">
-<p style="margin:0 0 12px;">HelloTalent Aday Bülteni aboneliğin onaylandı. Artık listedesiniz — Türkiye perakende sektörünün en iyi markalarından, hikayelerinden ve fırsatlarından haberdar olacaksın.</p>
-<p style="margin:0 0 12px;"><strong>Her hafta göndereceğimiz:</strong></p>
-<p style="margin:0 0 4px;">— Sektörden güncel haberler ve trend notları</p>
-<p style="margin:0 0 4px;">— Mülakat ve kariyer ipuçları (uygulanabilir, somut)</p>
-<p style="margin:0 0 16px;">— Yeni açılan pozisyonlar ve markaları için özenle seçilmiş fırsatlar</p>
-<p style="margin:0;">Yakında ilk sayımızla buluşacağız. Bu arada profilini güncellersen sistem sana daha uygun pozisyonlar gösterir.</p>
+<tr><td style="padding:16px 32px 20px;font-size:15px;color:${COLORS.text};line-height:1.65;">
+<p style="margin:0 0 14px;">HelloTalent Aday Bülten aboneliğin onaylandı. Türkiye perakende sektörünün en iyi markalarından, hikayelerinden ve fırsatlarından haberdar olacaksın.</p>
+<div style="border-left:3px solid ${COLORS.verm};padding:4px 0 4px 16px;margin:18px 0;color:${COLORS.text};">
+  <p style="margin:0 0 6px;font-weight:700;color:${COLORS.navy};">Her hafta göndereceğimiz:</p>
+  <p style="margin:0 0 3px;">· Sektörden güncel haberler ve trend notları</p>
+  <p style="margin:0 0 3px;">· Mülakat ve kariyer ipuçları — uygulanabilir, somut</p>
+  <p style="margin:0;">· Yeni açılan pozisyonlar, özenle seçilmiş fırsatlar</p>
+</div>
+<p style="margin:0;color:${COLORS.muted};font-size:14px;">İlk sayımızla yakında buluşacağız. Bu arada profilini güncellersen sistem sana daha uygun pozisyonlar gösterir.</p>
 </td></tr>
 ${ctaButton("Profilime Git", "https://hellotalent.ai/profil.html")}
-${newsletterFooter(unsubUrl)}
+${newsletterSocialRow()}
+${newsletterFooter(p)}
 `);
 
   const text = `Hoş geldin — perakendenin içinden
 
-HelloTalent Aday Bülteni aboneliğin onaylandı. Artık listedesiniz.
+HelloTalent Aday Bülten aboneliğin onaylandı.
 
 Her hafta göndereceğimiz:
-— Sektörden güncel haberler ve trend notları
-— Mülakat ve kariyer ipuçları (uygulanabilir, somut)
-— Yeni açılan pozisyonlar ve markaları için özenle seçilmiş fırsatlar
-
-Yakında ilk sayımızla buluşacağız.
+· Sektörden güncel haberler ve trend notları
+· Mülakat ve kariyer ipuçları (somut)
+· Yeni pozisyonlar, özenle seçilmiş fırsatlar
 
 → Profilime Git: https://hellotalent.ai/profil.html
 
 ---
 Abonelikten çık: ${unsubUrl}
-© 2026 HelloTalent`;
+© 2026 HelloTalent · Türkiye perakende yetenek platformu`;
 
   return {
     subject: "Hoş geldin — HelloTalent Aday Bülteni aktif",
@@ -1214,25 +1282,29 @@ Abonelikten çık: ${unsubUrl}
 // ─── Newsletter: Welcome Kurumsal ───────────────────
 
 function newsletterWelcomeKurumsalTemplate(p: Payload): EmailContent {
-  const unsubUrl = p.unsubscribe_url || "https://hellotalent.ai/newsletter-tercih.html";
+  const { unsubUrl } = buildUnsubUrls(p);
 
   const html = emailWrapper(`
-${logoRow()}
-<tr><td style="padding:8px 32px 4px;text-align:center;">
+${newsletterHeroBand()}
+${newsletterLogoRow("Kurumsal Bülten · Talent Strategy")}
+<tr><td style="padding:12px 32px 4px;text-align:center;">
 <span style="display:none;max-height:0;overflow:hidden;">TR perakende talent stratejisi, her iki haftada ofisinize.</span>
-<h1 style="margin:0;font-family:'Bricolage Grotesque',Georgia,serif;font-size:22px;color:${COLORS.navy};font-weight:700;">Hoş geldiniz — talent zekâsı için</h1>
+<h1 style="margin:0;font-family:'Bricolage Grotesque',Georgia,serif;font-size:26px;line-height:1.2;color:${COLORS.navy};font-weight:800;letter-spacing:-0.01em;">Hoş geldiniz — talent zekâsı için</h1>
 </td></tr>
-<tr><td style="padding:16px 32px;font-size:15px;color:${COLORS.text};line-height:1.6;">
-<p style="margin:0 0 12px;">HelloTalent Kurumsal Bülten aboneliğiniz onaylandı. Türkiye perakende sektöründeki talent pazarına dair analitik ve stratejik içeriğimiz artık size de ulaşacak.</p>
-<p style="margin:0 0 12px;"><strong>İki haftada bir göndereceğimiz:</strong></p>
-<p style="margin:0 0 4px;">— Türkiye perakende talent trend raporu (veri-odaklı)</p>
-<p style="margin:0 0 4px;">— İşveren markalaşması vaka analizleri ve playbook</p>
-<p style="margin:0 0 4px;">— İşe alım verimlilik benchmark'leri ve retention stratejileri</p>
-<p style="margin:0 0 16px;">— Platform güncellemeleri ve yeni özellikler</p>
-<p style="margin:0;">İlk sayıyı yakında ofisinize göndereceğiz. Bu arada kurumsal demo talep ederek platformu keşfedebilirsiniz.</p>
+<tr><td style="padding:16px 32px 20px;font-size:15px;color:${COLORS.text};line-height:1.65;">
+<p style="margin:0 0 14px;">HelloTalent Kurumsal Bülten aboneliğiniz onaylandı. Türkiye perakende sektöründeki talent pazarına dair analitik ve stratejik içeriğimiz artık ofisinize ulaşacak.</p>
+<div style="border-left:3px solid ${COLORS.navy};padding:4px 0 4px 16px;margin:18px 0;color:${COLORS.text};">
+  <p style="margin:0 0 6px;font-weight:700;color:${COLORS.navy};">İki haftada bir göndereceğimiz:</p>
+  <p style="margin:0 0 3px;">· Türkiye perakende talent trend raporu — veri-odaklı</p>
+  <p style="margin:0 0 3px;">· İşveren markalaşması vaka analizleri ve playbook</p>
+  <p style="margin:0 0 3px;">· İşe alım verimlilik benchmark'leri, retention stratejileri</p>
+  <p style="margin:0;">· Platform güncellemeleri ve yeni özellikler</p>
+</div>
+<p style="margin:0;color:${COLORS.muted};font-size:14px;">İlk sayıyı yakında göndereceğiz. Bu arada kurumsal demo talep ederek platformu keşfedebilirsiniz.</p>
 </td></tr>
 ${ctaButton("Kurumsal Demo Talep Et", "https://hellotalent.ai/iletisim.html")}
-${newsletterFooter(unsubUrl)}
+${newsletterSocialRow()}
+${newsletterFooter(p)}
 `);
 
   const text = `Hoş geldiniz — talent zekâsı için
@@ -1240,10 +1312,10 @@ ${newsletterFooter(unsubUrl)}
 HelloTalent Kurumsal Bülten aboneliğiniz onaylandı.
 
 İki haftada bir göndereceğimiz:
-— Türkiye perakende talent trend raporu
-— İşveren markalaşması vaka analizleri
-— İşe alım verimlilik benchmark'leri
-— Platform güncellemeleri
+· Türkiye perakende talent trend raporu
+· İşveren markalaşması vaka analizleri
+· İşe alım verimlilik benchmark'leri
+· Platform güncellemeleri
 
 → Kurumsal Demo Talep Et: https://hellotalent.ai/iletisim.html
 
@@ -1265,22 +1337,25 @@ function newsletterCampaignTemplate(p: Payload): EmailContent {
   const preheader = p.preheader || "";
   const bodyHtml = p.body_html || "<p>Boş kampanya</p>";
   const bodyText = p.body_text || "";
-  const unsubUrl = p.unsubscribe_url || "https://hellotalent.ai/newsletter-tercih.html";
+  const { unsubUrl } = buildUnsubUrls(p);
+  const eyebrow = p.audience === "kurumsal" ? "Kurumsal Bülten" : "Aday Bülteni";
 
   const html = emailWrapper(`
-${logoRow()}
+${newsletterHeroBand()}
+${newsletterLogoRow(eyebrow)}
 ${preheader ? `<tr><td style="padding:0;"><span style="display:none;max-height:0;overflow:hidden;">${esc(preheader)}</span></td></tr>` : ""}
-<tr><td style="padding:16px 32px;font-size:15px;color:${COLORS.text};line-height:1.6;">
+<tr><td style="padding:12px 32px 20px;font-size:15px;color:${COLORS.text};line-height:1.65;font-family:'Plus Jakarta Sans',-apple-system,sans-serif;">
 ${bodyHtml}
 </td></tr>
-${newsletterFooter(unsubUrl)}
+${newsletterSocialRow()}
+${newsletterFooter(p)}
 `);
 
   const text = `${bodyText}
 
 ---
 Abonelikten çık: ${unsubUrl}
-© 2026 HelloTalent`;
+© 2026 HelloTalent · Türkiye perakende yetenek platformu`;
 
   return { subject, html, text };
 }
