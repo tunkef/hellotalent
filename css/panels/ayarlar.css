@@ -808,33 +808,37 @@
 }
 
 /* Modal body = mfa-enroll content (center aligned steps + QR + secret + input) */
+/* TF6r4: Tüm hiyerarsi merkez ekseninde (Tuna UAT: "bütün satirlar ortali") */
 .mfa-modal .mfa-enroll {
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  padding: 24px 28px 20px;
-  align-items: stretch;
+  gap: 22px;
+  padding: 28px 28px 24px;
+  align-items: center;
+  text-align: center;
 }
 .mfa-modal .mfa-enroll__step {
+  width: 100%;
   margin: 0;
   font-family: var(--font-body);
   font-size: 13px;
   font-weight: 600;
   color: var(--editorial-ink);
   letter-spacing: 0.01em;
+  text-align: center;
 }
 
-/* TF6r3: QR container framed + centered Clatu */
+/* TF6r4: QR container — daha belirgin Clatu cerceve */
 .mfa-modal .mfa-enroll__qr {
-  align-self: center;
-  background: var(--editorial-card);
-  border: 1px solid var(--editorial-hairline);
-  border-radius: 14px;
-  padding: 14px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  box-shadow: var(--editorial-shadow);
+  background: var(--editorial-card);
+  border: 1.5px solid var(--editorial-hairline);
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 4px 18px rgba(30, 45, 94, 0.06), 0 1px 3px rgba(30, 45, 94, 0.04);
+  margin-top: -6px; /* baslik ile arasi sikilasir */
 }
 .mfa-modal #mfa-qr-container img,
 .mfa-modal #mfa-qr-container svg {
@@ -842,42 +846,56 @@
   width: 220px;
   height: 220px;
   max-width: 100%;
+  border-radius: 4px;
 }
 
-/* TF6r3: secret code — mono pill, ortalanmis, letter-spacing */
+/* TF6r4: secret code — mono pill, ortalanmis */
 .mfa-modal .mfa-enroll__secret {
-  align-self: center;
   display: inline-block;
   background: var(--editorial-card-elev);
   border: 1px solid var(--editorial-hairline);
   border-radius: 10px;
-  padding: 10px 16px;
+  padding: 10px 18px;
   font-family: var(--font-mono);
   font-size: 13px;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.14em;
   color: var(--editorial-ink);
   word-break: break-all;
   text-align: center;
+  max-width: 100%;
+  margin-top: -8px; /* step ile arasi daraltilir */
 }
 
-/* TF6r3: verify input — ortalanmis, daha yuksek */
+/* TF6r4: verify input — merkezde, hero tarzi */
 .mfa-modal .mfa-enroll__verify-row {
   display: flex;
   justify-content: center;
-  margin-top: 4px;
+  width: 100%;
+  margin-top: -4px;
 }
 .mfa-modal #mfa-verify-code {
-  width: 220px;
+  width: 240px;
   max-width: 100%;
-  min-height: 52px;
-  font-size: 22px;
-  letter-spacing: 8px;
-  border-radius: 12px;
+  min-height: 56px;
+  font-size: 24px;
+  letter-spacing: 10px;
+  text-indent: 10px; /* letter-spacing son karakterde fazlalik yapar, indent dengeler */
+  border-radius: 14px;
   border: 1.5px solid var(--editorial-hairline);
+  text-align: center;
+  font-family: var(--font-mono);
+  color: var(--editorial-ink);
+  background: var(--editorial-card);
+  transition: border-color 140ms ease, box-shadow 140ms ease;
 }
 .mfa-modal #mfa-verify-code:focus {
   border-color: var(--editorial-vermillion);
   box-shadow: 0 0 0 3px rgba(201, 78, 40, 0.12);
+  outline: none;
+}
+.mfa-modal #mfa-enroll-msg {
+  width: 100%;
+  text-align: center;
 }
 
 .mfa-modal__foot {

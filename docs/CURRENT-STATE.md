@@ -1,5 +1,12 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 23 Nisan 2026 | Asama 82.18 — TF6 üçüncü round: grid eş hizalama + 2FA modal estetik + empty msg fix + danger border nötr
+> Son guncelleme: 23 Nisan 2026 | Asama 82.19 — TF6 dorduncu round: 2FA modal merkez ekseni hiyerarsi + Clatu QR cerceve
+>
+> Tuna UAT: "butun satirlar ortali hiyararside devam etmeli, QR etrafi guzel Clatu cerceve".
+> .mfa-enroll align-items stretch → center + text-align center (tum step/QR/secret/input merkez).
+> QR container: border 1.5 + radius 20 + padding 20 + iki-kat soft shadow.
+> Verify input: 240x56 + font 24 + letter-spacing 10 + mono + focus vermillion ring.
+> Negative margin-top gap'ler (QR→secret, secret→input) hiyerarsi daraltti.
+> Cache-bust: k049k → k049m. 992/992 PASS.
 >
 > ── TF6 ucuncu round — 23 Nisan 2026 ──
 >
