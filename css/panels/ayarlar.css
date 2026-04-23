@@ -682,6 +682,63 @@
 }
 
 /* ════════════════════════════════════════════════════════════════
+   TF1 — MFA enroll layout fix (23 Nisan 2026)
+   QR + secret + verify row spacing + buton hierarchy
+   ════════════════════════════════════════════════════════════════ */
+#panel-ayarlar .mfa-enroll {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 16px;
+}
+#panel-ayarlar .mfa-enroll__step {
+  margin: 0;
+  font-size: 13px;
+  color: var(--editorial-ink);
+  font-weight: 500;
+}
+#panel-ayarlar .mfa-enroll__step + .mfa-enroll__qr,
+#panel-ayarlar .mfa-enroll__step + .mfa-enroll__secret {
+  margin-top: -8px; /* step → artifact gap'i sikilastir */
+}
+#panel-ayarlar .mfa-enroll__qr {
+  align-self: flex-start;
+}
+#panel-ayarlar .mfa-enroll__secret {
+  align-self: flex-start;
+}
+#panel-ayarlar .mfa-enroll__verify-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-top: 4px;
+}
+#panel-ayarlar .mfa-enroll__verify-btn {
+  min-width: 112px;
+  min-height: 48px;
+}
+#panel-ayarlar .mfa-enroll__cancel-btn {
+  min-height: 48px;
+  margin-left: auto; /* tam sag — primary'dan ayri */
+}
+
+/* Mobile: verify-row column, buttons full width */
+@media (max-width: 600px) {
+  #panel-ayarlar .mfa-enroll__verify-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+  #panel-ayarlar #mfa-verify-code {
+    width: 100%;
+  }
+  #panel-ayarlar .mfa-enroll__cancel-btn {
+    margin-left: 0;
+  }
+}
+
+/* ════════════════════════════════════════════════════════════════
    BLOCKED COMPANIES
    ════════════════════════════════════════════════════════════════ */
 #panel-ayarlar #blocked-company-dropdown {

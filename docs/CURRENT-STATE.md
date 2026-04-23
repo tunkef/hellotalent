@@ -1,6 +1,35 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 23 Nisan 2026 | Asama 82.11 — Ayarlar modal/chip refactor + MFA brute-force lockout + .is-hidden utility + Tuna feedback backlog
-> Aktif Odak: Ayarlar audit bulgu #6 (chip/dropdown class), #7 (modal ARIA dialog), #9 (MFA 3 yanlis → 30sn lockout) tamamlandi. display:none JS-toggle sweep riskli oldugu icin sadece .is-hidden utility altyapi eklendi (sweep koordineli JS pass'e ertelendi). Tuna UAT feedback'leri docs/backlog-tuna-feedback-20260423.md'de listeli (TF1-TF5). Sonraki: Tuna feedback'lere gecis (TF1 2FA UI fix + TF2 sistem dogrulama yuksek oncelik).
+> Son guncelleme: 23 Nisan 2026 | Asama 82.12 — Tuna feedback TF1 (2FA UI fix) + TF2 (sistem dogrulama) tamamlandi
+> Aktif Odak: 2FA enroll UI yeniden yapildi (dedicated mfa-enroll layout, responsive, a11y). giris.html MFA challenge emoji kaldirildi (SVG createElementNS), brute-force lockout eklendi (3 yanlis → 30sn), ARIA dialog semantik eklendi. profil-settings.js unverified factor cleanup eklendi (enroll defensive + checkMfaStatus auto). UAT'a hazir. Kalan: TF3 hesap silme workflow, TF4 avatar cropper, TF5 admin image editor.
+>
+> ── TF1 — 2FA UI Layout Fix (profil.html ayarlar paneli) ──
+>
+> **Sorun (Tuna UAT screenshot):** Verify input + Dogrula + Vazgec butonlari hizasiz, spacing yok, Vazgec alt satirda tek basina.
+>
+> **Fix:**
+> - profil.html: `<div class="mfa-enroll">` dedicated wrapper + `.mfa-enroll__step`, `.mfa-enroll__qr`, `.mfa-enroll__secret`, `.mfa-enroll__verify-row`, `.mfa-enroll__verify-btn`, `.mfa-enroll__cancel-btn` class'lari.
+> - Input attributes: `inputmode="numeric"` + `autocomplete="one-time-code"` (mobile keyboard + iOS auto-fill).
+> - ayarlar.css yeni block: flex layout, gap:12px, cancel-btn margin-left:auto (sag kenar), @media max-width 600px stretch column.
+> - Buton min-height:48px (touch-friendly).
+>
+> ── TF2 — 2FA Sistem Dogrulama Hardening ──
+>
+> **Bulgu + Fix (3):**
+>
+> **1) giris.html MFA challenge emoji → SVG:** 🔐 brand no-emoji kurali ihlali. createElementNS + SVG lock icon (rect+path). CSP safe, XSS-proof.
+>
+> **2) giris.html MFA challenge brute-force lockout:** Login flow kritik guvenlik. mfaChallengeFailCount + MFA_CHALLENGE_THRESHOLD=3 + MFA_CHALLENGE_LOCKOUT_MS=30000. 3 yanlis → applyChallengeLockout: buton + input disabled + countdown ("Bekleyin Nsn...") + 30sn sonra reset.
+>
+> **3) giris.html MFA modal ARIA dialog:** role="dialog" + aria-modal="true" + aria-labelledby="mfa-challenge-title".
+>
+> **4) profil-settings.js unverified factor cleanup:** Kullanici enroll yarim birakirsa DB'de unverified TOTP factor birikir. cleanupUnverifiedFactors() helper: checkMfaStatus'ta sessiz cleanup + enroll basi defensive pre-cleanup.
+>
+> **Test:** tests/tf-mfa-ui-system.spec.js 9 structural guard (18 PASS mobile+desktop). Full regression: K048 + K049 1+2+3 + use-strict + composer + smoke + TF-MFA = 154+ PASS.
+>
+> **Cache-bust:** 20260423k049d → 20260423k049e.
+>
+> ── Asama 82.11 (önceki) ──
+> Ayarlar modal/chip class refactor + MFA brute-force lockout (profil tarafi) + .is-hidden utility + Tuna feedback backlog.
 >
 > ── Tuna Feedback Backlog (23 Nisan 2026) ──
 > Tuna UAT oncesi 5 feedback: TF1 2FA buton layout fix, TF2 2FA sistem dogrulama E2E test, TF3 hesap silme workflow (30 gun freeze + login-restore modal), TF4 avatar cropper modal, TF5 admin image editor UI cleanup. docs/backlog-tuna-feedback-20260423.md'de detay. Onceki dusuk/orta risk backlog bittiginde bu listeye donulecek.

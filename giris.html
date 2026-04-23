@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/tokens.css?v=20260423k049d">
+<link rel="stylesheet" href="css/tokens.css?v=20260423k049e">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   /* Tokens: css/tokens.css — lokal :root silindi (Faz 1c). */
@@ -432,8 +432,8 @@
   <div class="auth-split" id="auth-split">
     <!-- K-057 — Desktop/tablet split: brand portrait side + form side. Mobile: form only. -->
     <div class="auth-scene" aria-hidden="true">
-      <img class="auth-img auth-img-aday" src="assets/v2/auth-aday.webp?v=20260423k049d" alt="" role="presentation">
-      <img class="auth-img auth-img-kurumsal" src="assets/v2/auth-kurumsal.webp?v=20260423k049d" alt="" role="presentation">
+      <img class="auth-img auth-img-aday" src="assets/v2/auth-aday.webp?v=20260423k049e" alt="" role="presentation">
+      <img class="auth-img auth-img-kurumsal" src="assets/v2/auth-kurumsal.webp?v=20260423k049e" alt="" role="presentation">
     </div>
   <div class="card">
 
@@ -558,7 +558,7 @@
 </div>
 
 <!-- shared.js: Supabase config source of truth (no header/footer injected — no ht-header/ht-footer divs) -->
-<script src="/shared.js?v=20260423k049d"></script>
+<script src="/shared.js?v=20260423k049e"></script>
 <script>
 // ── SUPABASE (config from shared.js — HT.getSupa()) ──
 function getSupa() {
@@ -925,21 +925,73 @@ function showMfaChallengeModal(redirectUrl) {
     overlay = document.createElement('div');
     overlay.id = 'mfa-challenge-overlay';
     overlay.className = 'mfa-overlay';
-    // K-052 — class-based modal (inline style extract)
-    overlay.innerHTML =
-      '<div class="mfa-modal">' +
-        '<div class="mfa-head">' +
-          '<div class="mfa-icon">🔐</div>' +
-          '<h2 class="mfa-title">İki Adımlı Doğrulama</h2>' +
-          '<p class="mfa-sub">Doğrulama uygulamanızdaki 6 haneli kodu girin.</p>' +
-        '</div>' +
-        '<div class="mfa-field">' +
-          '<input type="text" id="mfa-challenge-code" class="mfa-code" maxlength="6" placeholder="000000" autocomplete="one-time-code" inputmode="numeric">' +
-        '</div>' +
-        '<button id="btn-mfa-challenge-verify" class="mfa-verify">Doğrula</button>' +
-        '<div id="mfa-challenge-msg" class="mfa-msg"></div>' +
-        '<button id="btn-mfa-challenge-signout" class="mfa-signout">Farklı hesapla giriş yap</button>' +
-      '</div>';
+    // TF2 fix: emoji → SVG (brand no-emoji rule). createElementNS for CSP-safe SVG.
+    var SVG_NS = 'http://www.w3.org/2000/svg';
+    function _mkSvgLock() {
+      var svg = document.createElementNS(SVG_NS, 'svg');
+      svg.setAttribute('width', '32'); svg.setAttribute('height', '32');
+      svg.setAttribute('viewBox', '0 0 24 24');
+      svg.setAttribute('fill', 'none'); svg.setAttribute('stroke', 'currentColor');
+      svg.setAttribute('stroke-width', '1.6');
+      svg.setAttribute('stroke-linecap', 'round'); svg.setAttribute('stroke-linejoin', 'round');
+      svg.setAttribute('aria-hidden', 'true');
+      var rect = document.createElementNS(SVG_NS, 'rect');
+      rect.setAttribute('x', '3'); rect.setAttribute('y', '11');
+      rect.setAttribute('width', '18'); rect.setAttribute('height', '11');
+      rect.setAttribute('rx', '2'); rect.setAttribute('ry', '2');
+      var path = document.createElementNS(SVG_NS, 'path');
+      path.setAttribute('d', 'M7 11V7a5 5 0 0 1 10 0v4');
+      svg.appendChild(rect); svg.appendChild(path);
+      return svg;
+    }
+
+    var modal = document.createElement('div');
+    modal.className = 'mfa-modal';
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.setAttribute('aria-labelledby', 'mfa-challenge-title');
+
+    var head = document.createElement('div');
+    head.className = 'mfa-head';
+    var iconWrap = document.createElement('div');
+    iconWrap.className = 'mfa-icon';
+    iconWrap.appendChild(_mkSvgLock());
+    var title = document.createElement('h2');
+    title.id = 'mfa-challenge-title';
+    title.className = 'mfa-title';
+    title.textContent = 'İki Adımlı Doğrulama';
+    var sub = document.createElement('p');
+    sub.className = 'mfa-sub';
+    sub.textContent = 'Doğrulama uygulamanızdaki 6 haneli kodu girin.';
+    head.appendChild(iconWrap); head.appendChild(title); head.appendChild(sub);
+
+    var field = document.createElement('div');
+    field.className = 'mfa-field';
+    var codeInp = document.createElement('input');
+    codeInp.type = 'text'; codeInp.id = 'mfa-challenge-code';
+    codeInp.className = 'mfa-code'; codeInp.maxLength = 6;
+    codeInp.placeholder = '000000';
+    codeInp.setAttribute('autocomplete', 'one-time-code');
+    codeInp.setAttribute('inputmode', 'numeric');
+    field.appendChild(codeInp);
+
+    var vBtn = document.createElement('button');
+    vBtn.id = 'btn-mfa-challenge-verify';
+    vBtn.className = 'mfa-verify';
+    vBtn.textContent = 'Doğrula';
+
+    var msgBox = document.createElement('div');
+    msgBox.id = 'mfa-challenge-msg';
+    msgBox.className = 'mfa-msg';
+
+    var soBtn = document.createElement('button');
+    soBtn.id = 'btn-mfa-challenge-signout';
+    soBtn.className = 'mfa-signout';
+    soBtn.textContent = 'Farklı hesapla giriş yap';
+
+    modal.appendChild(head); modal.appendChild(field);
+    modal.appendChild(vBtn); modal.appendChild(msgBox); modal.appendChild(soBtn);
+    overlay.appendChild(modal);
     document.body.appendChild(overlay);
   } else {
     overlay.style.display = 'flex';
@@ -959,17 +1011,45 @@ function showMfaChallengeModal(redirectUrl) {
     if (e.key === 'Enter') verifyBtn.click();
   };
 
+  // TF2 fix: brute-force lockout — 3 yanlis → 30sn (giris.html MFA challenge)
+  var mfaChallengeFailCount = 0;
+  var MFA_CHALLENGE_THRESHOLD = 3;
+  var MFA_CHALLENGE_LOCKOUT_MS = 30000;
+
+  function applyChallengeLockout() {
+    verifyBtn.disabled = true;
+    codeInput.disabled = true;
+    var remaining = Math.floor(MFA_CHALLENGE_LOCKOUT_MS / 1000);
+    verifyBtn.textContent = 'Bekleyin ' + remaining + 'sn...';
+    msgEl.textContent = 'Çok fazla hatalı deneme. Güvenlik için ' + remaining + ' saniye bekleyin.';
+    msgEl.style.display = 'block';
+    var tick = setInterval(function() {
+      remaining--;
+      if (remaining > 0) {
+        verifyBtn.textContent = 'Bekleyin ' + remaining + 'sn...';
+        msgEl.textContent = 'Çok fazla hatalı deneme. Güvenlik için ' + remaining + ' saniye bekleyin.';
+      } else {
+        clearInterval(tick);
+        verifyBtn.disabled = false;
+        codeInput.disabled = false;
+        verifyBtn.textContent = 'Doğrula';
+        msgEl.style.display = 'none';
+        mfaChallengeFailCount = 0;
+      }
+    }, 1000);
+  }
+
   verifyBtn.onclick = async function() {
     var code = (codeInput.value || '').trim().replace(/\s/g, '');
     if (!code || code.length !== 6 || !/^\d{6}$/.test(code)) {
       msgEl.textContent = '6 haneli sayısal kod girin.';
-      
       msgEl.style.display = 'block';
       return;
     }
     verifyBtn.disabled = true;
     verifyBtn.textContent = 'Doğrulanıyor...';
     msgEl.style.display = 'none';
+    var wasSuccess = false;
 
     try {
       // Get the TOTP factor
@@ -985,22 +1065,28 @@ function showMfaChallengeModal(redirectUrl) {
       });
       if (verifyRes.error) throw verifyRes.error;
 
+      wasSuccess = true;
+      mfaChallengeFailCount = 0;
       // MFA verified — redirect
       window.location.href = redirectUrl;
     } catch (e) {
+      mfaChallengeFailCount++;
       var errMsg = (e.message || '').toLowerCase();
       if (errMsg.indexOf('invalid') > -1 || errMsg.indexOf('expired') > -1) {
         msgEl.textContent = 'Kod geçersiz veya süresi dolmuş. Tekrar deneyin.';
       } else {
         msgEl.textContent = 'Hata: ' + (e.message || 'Doğrulama başarısız.');
       }
-      
       msgEl.style.display = 'block';
       codeInput.value = '';
       codeInput.focus();
     } finally {
-      verifyBtn.disabled = false;
-      verifyBtn.textContent = 'Doğrula';
+      if (!wasSuccess && mfaChallengeFailCount >= MFA_CHALLENGE_THRESHOLD) {
+        applyChallengeLockout();
+      } else if (!wasSuccess) {
+        verifyBtn.disabled = false;
+        verifyBtn.textContent = 'Doğrula';
+      }
     }
   };
 

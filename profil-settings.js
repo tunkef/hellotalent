@@ -714,6 +714,16 @@ document.addEventListener('DOMContentLoaded', function() {
       enabledSt.style.display  = state === 'enabled'  ? '' : 'none';
     }
 
+    // TF2 fix: silent cleanup — kullanici enroll yarim birakirsa unverified factor DB'de birikir
+    async function cleanupUnverifiedFactors(factors) {
+      if (!factors) return;
+      var unverified = (factors.totp || []).filter(function(f){ return f.status !== 'verified'; });
+      for (var j = 0; j < unverified.length; j++) {
+        try { await supabase.auth.mfa.unenroll({ factorId: unverified[j].id }); }
+        catch (_e) { /* sessiz — backend rate-limit vs. */ }
+      }
+    }
+
     async function checkMfaStatus() {
       try {
         var res = await supabase.auth.mfa.listFactors();
@@ -722,8 +732,12 @@ document.addEventListener('DOMContentLoaded', function() {
         var activeTOTP = (factors.totp || []).filter(function(f){ return f.status === 'verified'; });
         if (activeTOTP.length > 0) {
           showState('enabled');
+          // TF2: enabled durumda unverified factor varsa sessiz temizle (mix state)
+          cleanupUnverifiedFactors(factors);
         } else {
           showState('disabled');
+          // TF2: disabled durumda unverified factor varsa sessiz temizle (yarim kalan enroll)
+          cleanupUnverifiedFactors(factors);
         }
       } catch (e) {
         console.error('MFA status check error:', e);
@@ -739,6 +753,12 @@ document.addEventListener('DOMContentLoaded', function() {
       btnEnable.disabled = true;
       btnEnable.textContent = 'Hazırlanıyor...';
       try {
+        // TF2 fix: defensive cleanup — onceki yarim enroll'lari temizle
+        try {
+          var pre = await supabase.auth.mfa.listFactors();
+          if (pre.data) await cleanupUnverifiedFactors(pre.data);
+        } catch (_e) { /* sessiz */ }
+
         var res = await supabase.auth.mfa.enroll({ factorType: 'totp', friendlyName: 'HelloTalent' });
         if (res.error) throw res.error;
         pendingFactorId = res.data.id;
