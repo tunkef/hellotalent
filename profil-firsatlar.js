@@ -1,4 +1,6 @@
 /* global supabase, switchPanel, ht_track */
+'use strict';
+// K049 Faz 2 — strict mode (coverUrl/campaignRes/annRes/annRows hepsi local var-declared).
 /* Firsatlar paneli editorial rewrite (formerly Teklifler). FAZ B + C.
  *
  * Scope:

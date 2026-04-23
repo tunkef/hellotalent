@@ -1,4 +1,6 @@
 /* global collectCertificates, collectEducation, collectExperiences, collectLanguages, currentUser, ht_track, monthIndexToName, selectedBrandInterests, showToast, STORAGE, supabase, val, _loadedDBData */
+'use strict';
+// K049 Faz 2 — strict mode (Y/summary/targetRole/totalYears/tarih hepsi local var-declared, currentCVStoragePath top-level shared).
 // ═══════════════════════════════════════════════════
 // profil-cv.js — CV Upload, Delete & Generation
 // Extracted from profil-ui.js to reduce change-risk.

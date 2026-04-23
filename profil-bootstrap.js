@@ -1,4 +1,6 @@
 /* global _applyWorkPrefs, _loadedDBData, _initBrandCompanyLookup, addTargetRoleRow, applyAllVisibilityMirrorsFromProfile, applyDraft, calculateCompletion, canonicalizeRole, currentCVStoragePath, currentUser, getProfilAuthSession, ht_track, initCVUpload, initStep1, initStep2, initStep3, initStep4, initStep5, initStep6, loadDraft, loadProfileFromDB, loadViewersCard, populateIlceSelect, renderSelectedLocations, RETAIL_POSITIONS, selectedCalismaTipleri, selectedCareerTypes, selectedMusaitlik, selectedSegmentler, setAvatarImage, setVal, showCVUploaded, STORAGE, supabase, syncAccountEmail, titleCaseTR, trLower, updateCompletionUI, updateDashboardSummary, updateMerkezCards, uploadCV */
+'use strict';
+// K049 Faz 2 — strict mode (currentUser/currentCVStoragePath cross-module shared, profil-core.js declared).
 // ═══════════════════════════════════════════════════
 // PROFIL BOOTSTRAP — auth, hydration, step-init orchestration
 // Extracted from profil.html inline scripts.

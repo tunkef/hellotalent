@@ -1,4 +1,6 @@
 /* global supabase */
+'use strict';
+// K049 Faz 2 — strict mode (audit temiz: 0 with/dynamic-runner/octal/delete, 0 implicit-global writes).
 
 /* K030 FAZ B: Studio freeze flag — single source of truth.
  * Read by profil-genel.js, profil-studio.js, profil-wizard.js.

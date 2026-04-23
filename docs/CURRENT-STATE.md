@@ -32,6 +32,8 @@
 >
 > **Cache-bust:** 20260423k049b → 20260423k049c.
 >
+> **Commit ayrimi:** Hex Faz 3 (commit 208fffa) + 'use strict' Faz 2 (bu commit, 5 modul + spec extend).
+>
 > ── Asama 82.6 (önceki) ──
 > 'use strict' Faz 1 — profil-ui.js (1870 satir, en buyuk eski modul).
 >

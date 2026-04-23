@@ -1,4 +1,6 @@
 /* global _htCloseAllPopups:writable, _htPopulateAvatarDropdown:writable, _htRunStepInits, applyDraft, clearDraft, closeProfilePreview, closeTgToast, closeMobileSidebar, generateCV, ht_track, initThemeFromStorage, loadDraft, openProfilePreview, pendingPanelSwitch, renderSelectedLocations, returnToPanel, saveProfileRPC, supabase, switchPanel, titleCaseTR, toggleMobileSidebar, wizBack, wizGoTo, wizNext, wizStep, wizardDirty */
+'use strict';
+// K049 Faz 2 — strict mode (wizardDirty/pendingPanelSwitch profil-wizard.js declared, cross-module load-order safe).
 // ═══════════════════════════════════════════════════
 // PROFIL EVENTS — DOMContentLoaded event wiring, page glue
 // Extracted from profil.html inline scripts.
