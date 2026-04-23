@@ -13,15 +13,15 @@ function read(rel) {
 }
 
 test.describe('TF6 — Ayarlar UI/UX revizyonu', function () {
-  test('hero kart yuzeyinde (bg + border + radius + shadow)', function () {
+  test('hero kart yuzeyinde (bg cream + border + radius) — TF6 r5 diger panel pattern', function () {
     var css = read('css/panels/ayarlar.css');
     var heroBlock = css.match(/#panel-ayarlar \.ayr-hero \{[\s\S]*?\}/);
     expect(heroBlock).not.toBeNull();
     var body = heroBlock[0];
-    expect(body).toContain('background: var(--editorial-card)');
+    // Cream bg (sk-card + hesap info-card ile tutarli)
+    expect(body).toContain('background: var(--editorial-bg)');
     expect(body).toMatch(/border:\s*1px solid var\(--editorial-hairline\)/);
     expect(body).toContain('border-radius');
-    expect(body).toContain('box-shadow: var(--editorial-shadow-md)');
   });
 
   test('card footer butonlari sag hizali (flex-end)', function () {

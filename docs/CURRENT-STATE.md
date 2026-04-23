@@ -1,11 +1,35 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 23 Nisan 2026 | Asama 82.20 — TF6 besinci round: 2FA modal QR ortaya aldiran CSS specificity fix
+> Son guncelleme: 23 Nisan 2026 | Asama 82.21 — TF6 altinci round (final): hero card cream bg + tum Tuna UAT backlog kapandi
 >
-> Tuna UAT: QR hala sol hizali. Root cause: 3 farkli CSS bloğu ayni elementi hedefliyordu.
-> Eski TF1 `#panel-ayarlar .mfa-enroll__qr { align-self: flex-start }` (spec 0,1,1,0) ve
-> eski K067 `#panel-ayarlar #mfa-qr-container {...}` (spec 0,2,0,0) — modal class-based
-> kurallarimi (spec 0,0,2,0) cascade'de eziyordu. Her iki eski CSS bloğu SİLİNDİ.
-> Modal class kurallar temiz çalışır artık. Cache-bust: k049m → k049n. 1012/1012 PASS.
+> Aktif Odak: Hero card bg `--editorial-card` (beyaz) → `--editorial-bg` (cream). Diger panellerdeki sk-card + hesap info-card ile tutarli. Box-shadow kaldirildi (cream uzerinde shadow gereksiz). **TF1-TF6 tum Tuna UAT feedback'leri + altta 6 round detay revizyon TAMAMLANDI.** MVP 1 ayarlar paneli canli UAT hazir.
+>
+> ── TF6 altinci round ve Tuna UAT kapanis (23 Nisan 2026) ──
+>
+> **Bu round (R5 feedback):** Hero card bg cream — diger panel tutarliligi.
+>
+> **TF6 six-round ozet:**
+> - R1 (e8b3a41): Hero kart yuzeyine + card footer buton sag + section tab switcher (scroll-spy → tab)
+> - R2 (fb79ff9): Toggle row-reverse + auto-save toggles + Beta avantajlari Hesap'a + 2FA Clatu modal + Hesap yonetimi fact list
+> - R3 (8b33562): Grid esit hizalama + 2FA modal estetik + empty msg gap fix + danger border notr
+> - R4 (6de3625): 2FA modal merkez ekseni hiyerarsi + Clatu QR cerceve yeniden
+> - R5 (08d6f59): CSS specificity savasi — eski TF1/K067 ID-based kurallari SILINDI, modal class-based cascade temiz
+> - R6 (bu commit): Hero card bg cream (sk-card pattern)
+>
+> ── TF1-TF6 Tuna Backlog FINAL ──
+>
+> - ✓ TF1 — 2FA UI layout fix (commit 6654077)
+> - ✓ TF2 — 2FA sistem dogrulama + SVG icon + progresif lockout (6654077 + 495b1f1)
+> - ✓ TF3 — Hesap silme workflow 30g freeze + restore modal (495b1f1)
+> - ✓ TF4 — Avatar cropper modal + saydam hizalama (ab0d208 + 6ba62e7)
+> - ✓ TF5 — Admin image editor UI revize + SVG icons (ab0d208)
+> - ✓ TF6 — Ayarlar UI/UX revize (e8b3a41 → 08d6f59 → bu commit, 6 round)
+>
+> **Cumulative test:** 1024/1024 PASS. P3 regression + TF spec'ler (9 yeni test dosyasi) + smoke + delegation.
+>
+> **Cache-bust:** 20260423k049n → 20260423k049o.
+>
+> ── Asama 82.20 (önceki) ──
+> TF6 R5 — 2FA modal CSS specificity fix. Eski ID-based kurallari silindi.
 >
 > Tuna UAT: "butun satirlar ortali hiyararside devam etmeli, QR etrafi guzel Clatu cerceve".
 > .mfa-enroll align-items stretch → center + text-align center (tum step/QR/secret/input merkez).
