@@ -6,14 +6,17 @@
 */
 
 :root {
-  --wz-hairline: #E5E3DF;
+  /* K049: --wz-* primitives now reference global tokens where 1:1 match exists.
+   * Standalone hex preserved for shades unique to wizard-editorial (cream-deep,
+   * navy-ink, hairline-strong, muted-2). */
+  --wz-hairline: var(--color-border);
   --wz-hairline-strong: #D8D5CE;
-  --wz-cream: #F7F6F4;
+  --wz-cream: var(--color-gray);
   --wz-cream-deep: #EFEDE8;
-  --wz-navy: #1E2D5E;
+  --wz-navy: var(--color-navy);
   --wz-navy-ink: #151F42;
-  --wz-vermillion: #C94E28;
-  --wz-muted: #6B6A66;
+  --wz-vermillion: var(--color-vermillion);
+  --wz-muted: var(--color-muted-warm);
   --wz-muted-2: #8A8984;
   --wz-mono: "DM Mono", ui-monospace, Menlo, monospace;
   --wz-display: "Bricolage Grotesque", Georgia, serif;
@@ -35,13 +38,13 @@
 #panel-profil .wiz-premium-soon { display: none !important; }
 /* K051: premium toggle slider in wizard — match standard ht-toggle vermillion */
 #panel-profil .wiz-setting-premium .toggle-slider {
-  background: #d8d8d8 !important;
+  background: var(--toggle-off) !important;
 }
 #panel-profil .wiz-setting-premium .toggle-slider::before {
   background: #ffffff !important;
 }
 #panel-profil .wiz-setting-premium input:checked + .toggle-slider {
-  background: #C94E28 !important;
+  background: var(--color-vermillion) !important;
 }
 #panel-profil .wiz-setting-premium input:checked + .toggle-slider::before {
   background: #ffffff !important;
@@ -591,7 +594,7 @@ html[data-theme="dark"] {
   --wz-navy-ink: var(--editorial-ink, #F9FAFB);
   --wz-vermillion: var(--editorial-vermillion, #E8845C);
   --wz-muted: var(--editorial-ink-muted, #9CA3AF);
-  --wz-muted-2: #6B7280;
+  --wz-muted-2: var(--color-gray-500);
 }
 
 /* Hardcoded hex overrides — wiz-setting-card + wz-card + exp frame */

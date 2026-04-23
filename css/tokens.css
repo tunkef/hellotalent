@@ -38,6 +38,20 @@
   --on-navy-subtle: #EFEDE6; /* K048: subtle text on navy */
   --danger-border-soft: #FECACA; /* K048: soft danger border light */
 
+  /* K049 — Hex purge Faz 2 (components + studio + wizard-editorial + duyurular) */
+  --color-vermillion-deepest: #a33d1c; /* K049: st-hero vermillion gradient end */
+  --color-vermillion-tint: #FFF5F2;    /* K049: st-yetenek mobile bg */
+  --color-success-strong: #059669;     /* K049: studio rating-strong, ai-strong, status-done text */
+  --color-success-text-deep: #065F46;  /* K049: positive highlight text */
+  --color-success-tile: #2D8A56;       /* K049: journal-saved, coach-dot-strong, ig-lcard-icon green */
+  --color-warning-strong: #D97706;     /* K049: rating-growing, ai-mixed, status-ip */
+  --color-red-step: #F87171;           /* K049: field-req dark mode */
+  --color-navy-card-dark: #0b0f1a;     /* K049: duyurular carousel/preview dark bg */
+  --color-gray-500: #6B7280;           /* K049: wizard-editorial wz-muted-2 dark mode */
+  --color-gray-600: #4B5563;           /* K049: studio dark mode mid gray (toggle-off dark anchor) */
+  --color-vermillion-glow: #E8663D;    /* K049: studio focus/glow accent (between vermillion-bright and verm) */
+  --color-cream-pale: #FAFAF9;         /* K049: studio chip/pill subtle cream */
+
   /* Fonts */
   --font-head: 'Bricolage Grotesque', sans-serif;
   --font-body: 'Plus Jakarta Sans', sans-serif;
@@ -168,6 +182,28 @@
   --icon-sun: var(--color-sun);
   --icon-sun-hover: var(--color-sun-bright);
   --green-tile: var(--color-green);
+
+  /* K049: Status + hero-gradient semantic tokens */
+  --rating-strong: var(--color-success-strong);
+  --rating-strong-tint: rgba(5, 150, 105, 0.08);
+  --rating-strong-border: rgba(5, 150, 105, 0.15);
+  --rating-strong-bg-soft: rgba(5, 150, 105, 0.05);
+  --rating-strong-border-soft: rgba(5, 150, 105, 0.10);
+  --rating-growing: var(--color-warning-strong);
+  --rating-growing-tint: rgba(217, 119, 6, 0.08);
+  --rating-growing-border: rgba(217, 119, 6, 0.15);
+  --rating-growing-bg-soft: rgba(217, 119, 6, 0.06);
+  --rating-growing-border-soft: rgba(217, 119, 6, 0.12);
+  --success-tile-tint: rgba(45, 138, 86, 0.08);
+  --success-tile-border: rgba(45, 138, 86, 0.10);
+  --success-tile-bg-soft: rgba(45, 138, 86, 0.06);
+  --danger-strong-tint: rgba(220, 38, 38, 0.08);
+  --danger-strong-border: rgba(220, 38, 38, 0.15);
+  --danger-strong-bg-soft: rgba(220, 38, 38, 0.04);
+  --danger-strong-border-soft: rgba(220, 38, 38, 0.08);
+  --danger-strong-pressure: rgba(220, 38, 38, 0.12); /* K049: dark mode error banner bg */
+  --hero-grad-verm-end: var(--color-vermillion-deepest);
+  --hero-grad-navy-end: var(--color-navy-deep); /* alias for legibility in studio.css */
 
   /* Controls */
   --input-bg: #f3f3f5;

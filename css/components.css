@@ -253,7 +253,7 @@ html[data-theme="dark"] .exp-date-block{}
 
 /* ── FIELD REQUIRED MARKER ── */
 .field-req{color:var(--red);font-weight:700;}
-html[data-theme="dark"] .field-req{color:#F87171;}
+html[data-theme="dark"] .field-req{color:var(--color-red-step);}
 
 /* ── MODAL PREMIUM LINE (kept for success modal) ── */
 .modal-premium-line{
@@ -282,7 +282,7 @@ html[data-theme="dark"] .field-req{color:#F87171;}
   border-color:rgba(255,255,255,0.5);
 }
 .ht-card--navy{
-  background:linear-gradient(135deg,#2A3F7A 0%,var(--navy) 50%,var(--navy-deep) 100%);
+  background:linear-gradient(135deg,var(--color-navy-sidebar-top) 0%,var(--navy) 50%,var(--navy-deep) 100%);
   color:white;border-color:rgba(255,255,255,0.08);
 }
 .ht-card--interactive{cursor:pointer;transition:border-color 0.2s,box-shadow 0.2s;}
@@ -422,14 +422,14 @@ body.ht-scroll-lock{overflow:hidden;touch-action:none;}
 .ht-error-banner__retry:focus-visible{
   outline:2px solid var(--danger);outline-offset:2px;
 }
-/* K043 dark mode: --danger-soft dark'ta çok koyu (#2D0A0A) + --danger text
- * AA fail. Override — transparent rgba + açık kırmızı text. */
-html[data-theme='dark'] .ht-error-banner{background:rgba(220,38,38,0.12);border-color:#EF4444;}
-html[data-theme='dark'] .ht-error-banner__text{color:#FCA5A5;}
-html[data-theme='dark'] .ht-error-banner__icon{background:#EF4444;}
-html[data-theme='dark'] .ht-error-banner__retry{color:#FCA5A5;border-color:#EF4444;}
+/* K043 dark mode: --danger-soft dark'ta cok koyu + --danger text AA fail.
+ * Override — transparent rgba via --danger-strong-pressure + acik kirmizi text. */
+html[data-theme='dark'] .ht-error-banner{background:var(--danger-strong-pressure);border-color:var(--color-red-bright);}
+html[data-theme='dark'] .ht-error-banner__text{color:var(--color-red-on-dark);}
+html[data-theme='dark'] .ht-error-banner__icon{background:var(--color-red-bright);}
+html[data-theme='dark'] .ht-error-banner__retry{color:var(--color-red-on-dark);border-color:var(--color-red-bright);}
 html[data-theme='dark'] .ht-error-banner__retry:hover,
-html[data-theme='dark'] .ht-error-banner__retry:focus-visible{background:#EF4444;color:#fff;}
+html[data-theme='dark'] .ht-error-banner__retry:focus-visible{background:var(--color-red-bright);color:#fff;}
 
 /* ═══ HT-TOAST — inline form feedback (legacy, still used in settings) ═══ */
 .ht-toast{

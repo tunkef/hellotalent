@@ -1,6 +1,28 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 23 Nisan 2026 | Asama 82.2 — Ultrareview pass #1 (R1 silent unpin + R2 retry duplicate) + P3 regression fix + K048 tail-cleanup
-> Aktif Odak: Admin announcements data-corruption riskleri kapandi. MVP launch engeli olabilecek iki BLOCKER sifirlandi. Ultrareview 3 hakkin 1'i kullanildi (holistic scan, review-baseline branch = commit 79cdb58). Sonraki: 2. hak icin dar scope karari (auth/RLS subset vs IYS sonrasi newsletter legal pass), yeni feature veya Tuna UAT.
+> Son guncelleme: 23 Nisan 2026 | Asama 82.3 — K049 hex purge Faz 2 (components + studio + wizard-editorial + duyurular)
+> Aktif Odak: Raw hex purge 4 ek CSS dosyasinda tamamlandi. tokens.css 16 yeni primitive/semantic token. A1+A3 pending-approvals arsivlendi (A1: 90g GitHub PAT rotate kararı doğrulandı, A3: Codex gate Hafta 2'ye ertelendi). Sonraki: #3 Inline style Faz 2 (profil.html 56 inline → utility class), #4 Composer state-drift audit, #5 'use strict' profil-ui.js.
+>
+> ── K049 Hex Purge Faz 2 (23 Nisan 2026) ──
+>
+> **Scope:** components.css 7 + studio.css ~55 (+~40 rgba brand variants) + wizard-editorial.css 5 + duyurular.css 2 raw hex → semantic token. Toplam ~80+ usage.
+>
+> **tokens.css yeni primitives (8):** --color-vermillion-deepest (#a33d1c), --color-vermillion-tint (#FFF5F2), --color-vermillion-glow (#E8663D), --color-success-strong (#059669), --color-success-text-deep (#065F46), --color-success-tile (#2D8A56), --color-warning-strong (#D97706), --color-red-step (#F87171), --color-navy-card-dark (#0b0f1a), --color-gray-500 (#6B7280), --color-gray-600 (#4B5563), --color-cream-pale (#FAFAF9).
+>
+> **tokens.css yeni semantic (8):** --rating-strong/-tint/-border/-bg-soft/-border-soft, --rating-growing/-tint/-border/-bg-soft/-border-soft, --success-tile-tint/-border/-bg-soft, --danger-strong-tint/-border/-bg-soft/-border-soft/-pressure, --hero-grad-verm-end, --hero-grad-navy-end.
+>
+> **wizard-editorial refactor:** --wz-* primitives artik global token referansi (--wz-navy: var(--color-navy), --wz-vermillion: var(--color-vermillion), --wz-hairline: var(--color-border), --wz-cream: var(--color-gray), --wz-muted: var(--color-muted-warm)). Dark mode --wz-muted-2 → var(--color-gray-500). Premium toggle slider !important hex → var(--toggle-off) + var(--color-vermillion).
+>
+> **studio.css bulk migration:** node script ile 24 unique hex mapping (case-insensitive). #2A3F7A/1E2D5E/162247 navy gradient → --sidebar-grad-* veya --color-navy-* direct. #C94E28/b84420/a33d1c vermillion gradient → --color-vermillion/dark + --hero-grad-verm-end. Status paletleri #059669/2D8A56/D97706/DC2626 + rgba tintleri semantic token'lara bağlandı.
+>
+> **Test:** tests/k049-hex-purge-phase2.spec.js 8 structural guard (16 PASS mobile+desktop). K048 + K049 + p3.regression full = 1010/1010 PASS. Pre-existing 8 dark-mode failure baseline korundu (profil-extras.css cssFiles list dışı).
+>
+> **Cache-bust:** 20260422k048a → 20260423k049a (scripts/bump-cache-bust.sh, uniform HTML).
+>
+> **Sıradaki iş sırası (Tuna onayı):** #3 inline style Faz 2 → #4 composer state-drift audit → #5 'use strict' profil-ui.js. A3 Codex gate bu sıra bittikten sonra Hafta 2 dogfood checkpoint.
+>
+> ── Asama 82.2 (önceki) ──
+> Ultrareview pass #1 (R1 silent unpin + R2 retry duplicate) + P3 regression fix + K048 tail-cleanup
+> Admin announcements data-corruption riskleri kapandi. MVP launch engeli olabilecek iki BLOCKER sifirlandi. Ultrareview 3 hakkin 1'i kullanildi (holistic scan, review-baseline branch = commit 79cdb58). Sonraki: 2. hak icin dar scope karari (auth/RLS subset vs IYS sonrasi newsletter legal pass), yeni feature veya Tuna UAT.
 >
 > ── Ultrareview Pass #1 (2 BLOCKER bulgu — admin-announcements.js) ──
 >
