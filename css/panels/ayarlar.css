@@ -666,50 +666,11 @@
   margin: 0;
 }
 
-#panel-ayarlar #mfa-qr-container {
-  background: var(--editorial-card);
-  border: 1px solid var(--editorial-hairline);
-  border-radius: 10px;
-  padding: 16px;
-  display: inline-block;
-  text-align: center;
-}
-#panel-ayarlar #mfa-qr-container img,
-#panel-ayarlar #mfa-qr-container svg {
-  display: block;
-  max-width: 180px;
-}
-
-#panel-ayarlar #mfa-secret-code {
-  display: inline-block;
-  font-family: var(--font-mono);
-  font-size: 12px;
-  letter-spacing: 2px;
-  background: var(--editorial-card-elev);
-  color: var(--editorial-ink);
-  padding: 8px 14px;
-  border-radius: 6px;
-  user-select: all;
-}
-
-#panel-ayarlar #mfa-verify-code {
-  width: 160px;
-  text-align: center;
-  font-family: var(--font-mono);
-  font-size: 20px;
-  letter-spacing: 6px;
-  background: var(--editorial-card);
-  border: 1px solid var(--editorial-hairline);
-  border-radius: 10px;
-  padding: 12px 14px;
-  color: var(--editorial-ink);
-  min-height: 48px;
-  flex: 0 0 auto;
-}
-#panel-ayarlar #mfa-verify-code:focus {
-  outline: none;
-  border-color: var(--editorial-vermillion);
-}
+/* Eski #panel-ayarlar #mfa-qr-container / #mfa-secret-code / #mfa-verify-code
+ * ID-bazli kurallar KALDIRILDI. 2FA modal'a tasindi (TF6 r2) — modal icinde
+ * .mfa-modal .mfa-enroll__qr / .mfa-enroll__secret / #mfa-verify-code
+ * class-bazli kurallar aktif. Eski ID kurallari (specificity 0,2,0,0) yeni
+ * class kurallarini (0,1,1,0) eziyor ve QR'i sola itiyordu — temizlendi. */
 
 /* ════════════════════════════════════════════════════════════════
    TF6 ikinci round — 2FA modal + status line + fact list
@@ -990,61 +951,12 @@ html[data-theme='dark'] .mfa-modal {
 }
 
 /* ════════════════════════════════════════════════════════════════
-   TF1 — MFA enroll layout fix (23 Nisan 2026)
-   QR + secret + verify row spacing + buton hierarchy
+   TF1 eski inline layout CSS KALDIRILDI — 2FA enroll modal'a tasindi (TF6 r2).
+   #panel-ayarlar .mfa-enroll__qr { align-self: flex-start } kurali modal
+   icindeki .mfa-modal .mfa-enroll__qr'i ID specificity ile eziyor ve QR'i
+   sola itiyordu. Silindi — modal class-based layout (align-items: center
+   + text-align: center) kesintisiz calisir.
    ════════════════════════════════════════════════════════════════ */
-#panel-ayarlar .mfa-enroll {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  margin-top: 16px;
-}
-#panel-ayarlar .mfa-enroll__step {
-  margin: 0;
-  font-size: 13px;
-  color: var(--editorial-ink);
-  font-weight: 500;
-}
-#panel-ayarlar .mfa-enroll__step + .mfa-enroll__qr,
-#panel-ayarlar .mfa-enroll__step + .mfa-enroll__secret {
-  margin-top: -8px; /* step → artifact gap'i sikilastir */
-}
-#panel-ayarlar .mfa-enroll__qr {
-  align-self: flex-start;
-}
-#panel-ayarlar .mfa-enroll__secret {
-  align-self: flex-start;
-}
-#panel-ayarlar .mfa-enroll__verify-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 12px;
-  margin-top: 4px;
-}
-#panel-ayarlar .mfa-enroll__verify-btn {
-  min-width: 112px;
-  min-height: 48px;
-}
-#panel-ayarlar .mfa-enroll__cancel-btn {
-  min-height: 48px;
-  margin-left: auto; /* tam sag — primary'dan ayri */
-}
-
-/* Mobile: verify-row column, buttons full width */
-@media (max-width: 600px) {
-  #panel-ayarlar .mfa-enroll__verify-row {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 10px;
-  }
-  #panel-ayarlar #mfa-verify-code {
-    width: 100%;
-  }
-  #panel-ayarlar .mfa-enroll__cancel-btn {
-    margin-left: 0;
-  }
-}
 
 /* ════════════════════════════════════════════════════════════════
    BLOCKED COMPANIES

@@ -1,5 +1,11 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 23 Nisan 2026 | Asama 82.19 — TF6 dorduncu round: 2FA modal merkez ekseni hiyerarsi + Clatu QR cerceve
+> Son guncelleme: 23 Nisan 2026 | Asama 82.20 — TF6 besinci round: 2FA modal QR ortaya aldiran CSS specificity fix
+>
+> Tuna UAT: QR hala sol hizali. Root cause: 3 farkli CSS bloğu ayni elementi hedefliyordu.
+> Eski TF1 `#panel-ayarlar .mfa-enroll__qr { align-self: flex-start }` (spec 0,1,1,0) ve
+> eski K067 `#panel-ayarlar #mfa-qr-container {...}` (spec 0,2,0,0) — modal class-based
+> kurallarimi (spec 0,0,2,0) cascade'de eziyordu. Her iki eski CSS bloğu SİLİNDİ.
+> Modal class kurallar temiz çalışır artık. Cache-bust: k049m → k049n. 1012/1012 PASS.
 >
 > Tuna UAT: "butun satirlar ortali hiyararside devam etmeli, QR etrafi guzel Clatu cerceve".
 > .mfa-enroll align-items stretch → center + text-align center (tum step/QR/secret/input merkez).
