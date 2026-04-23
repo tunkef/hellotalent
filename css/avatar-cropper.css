@@ -80,11 +80,13 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
-  /* Outer dim + inner circular cutout */
+  /* Saydam alan ve turuncu border TAM olarak ayni boyutta: circle farthest-side
+   * gradient radius'u stage'in en kisa yarisi (viewport 360x360 icin 180px).
+   * Sharp cut 100%/100% ile kenar netligi korunur. */
   background:
-    radial-gradient(circle at center, transparent 50%, rgba(11, 15, 28, 0.55) 50%);
+    radial-gradient(circle farthest-side at center, transparent 100%, rgba(11, 15, 28, 0.55) 100%);
 }
-/* Circular border ring over mask */
+/* Circular border ring — saydam alanla ayni boyut, border border-box'ta kalir */
 .avc-mask::after {
   content: '';
   position: absolute;
@@ -93,10 +95,16 @@
   transform: translate(-50%, -50%);
   width: 100%;
   height: 100%;
+  box-sizing: border-box;
   border-radius: 50%;
   border: 2px solid var(--accent);
   box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.15);
   pointer-events: none;
+}
+
+html[data-theme='dark'] .avc-mask {
+  background:
+    radial-gradient(circle farthest-side at center, transparent 100%, rgba(0, 0, 0, 0.7) 100%);
 }
 
 /* Zoom controls */
@@ -228,9 +236,7 @@ html[data-theme='dark'] .avc-modal {
 html[data-theme='dark'] .avc-stage {
   background: #000;
 }
-html[data-theme='dark'] .avc-mask {
-  background: radial-gradient(circle at center, transparent 50%, rgba(0, 0, 0, 0.7) 50%);
-}
+/* (dark mode mask yukarida tanimlandi — farthest-side ile hizali) */
 
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {

@@ -1,5 +1,16 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 23 Nisan 2026 | Asama 82.14 — Tuna feedback TF4 (avatar cropper) + TF5 (admin image editor UI) tamamlandi
+> Son guncelleme: 23 Nisan 2026 | Asama 82.15 — TF4 cropper saydam alan + turuncu border hizalama fix (Tuna UAT feedback)
+>
+> ── TF4 UAT Fix (23 Nisan ikinci round) ──
+>
+> **Sorun (Tuna screenshot):** Saydam circular hole ve turuncu border ring farkli boyuttaydi — "iki fokus alani varmis gibi". Gradient merkezi `circle at center` default `farthest-corner` (254px) + `transparent 50%` = 127px saydam radius. Turuncu border ~180px. 50px fark.
+>
+> **Fix:** `.avc-mask` radial-gradient `circle farthest-side at center` + sharp cut `100%/100%` → saydam radius = viewport farthest-side (180px). `.avc-mask::after` box-sizing: border-box → border icerde kalir, circle 180px. Saydam alan ve border ring **tam hizalandi**. Dark mode ayni disiplin.
+>
+> **Cache-bust:** 20260423k049g → 20260423k049h.
+>
+> ── Asama 82.14 (önceki) ──
+> TF4 avatar cropper (custom canvas, circular crop + zoom + pan + pinch) + TF5 admin image editor UI revizyonu (token-driven CSS rewrite + SVG icon replace).
 > Aktif Odak: Avatar upload flow artik custom cropper modal'dan geciyor (circular crop + zoom slider + pan drag + pinch touch + 512x512 JPEG output). Admin image editor CSS token-driven tam revize + unicode sembol butonlari (⟲⟳↔↕×) SVG icon'a cevrildi (createElementNS, CSP safe). Cropper.js dependency korunur — sadece UI revize. Kalan: TF6 Ayarlar UI/UX revizyonu (frontend-design skill ile).
 >
 > ── TF4 — Avatar Cropper Modal (yüksek UI kalite) ──
