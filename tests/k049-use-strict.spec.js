@@ -18,6 +18,13 @@ function read(rel) {
   return fs.readFileSync(path.join(__dirname, '..', rel), 'utf8');
 }
 
+function stripCommentsAndStrings(src) {
+  return src
+    .replace(/\/\*[\s\S]*?\*\//g, ' ')   // block comments
+    .replace(/\/\/[^\n]*/g, ' ')         // line comments
+    .replace(/(['"`])(?:\\.|(?!\1).)*\1/g, ' '); // string literals
+}
+
 var STRICT_MIGRATED = [
   { file: 'profil-ui.js', phase: 'Faz 1' },
   { file: 'shared.js', phase: 'Faz 2' },
@@ -25,6 +32,12 @@ var STRICT_MIGRATED = [
   { file: 'profil-cv.js', phase: 'Faz 2' },
   { file: 'profil-events.js', phase: 'Faz 2' },
   { file: 'profil-firsatlar.js', phase: 'Faz 2' },
+  { file: 'profil-premium.js', phase: 'Faz 3' },
+  { file: 'profil-visibility.js', phase: 'Faz 3' },
+  { file: 'profil-settings.js', phase: 'Faz 3' },
+  { file: 'profil-destek.js', phase: 'Faz 3' },
+  { file: 'admin-announcements.js', phase: 'Faz 3' },
+  { file: 'profil-studio.js', phase: 'Faz 3 (FROZEN — unfreeze path)' },
 ];
 
 test.describe('K049 — use strict directive migration', function () {
@@ -37,15 +50,13 @@ test.describe('K049 — use strict directive migration', function () {
 
     test(entry.file + ' has no strict-mode breakers (' + entry.phase + ')', function () {
       var src = read(entry.file);
-      expect(src, 'with statement').not.toMatch(/^\s*with\s*\(/m);
-      // Build regex for dynamic-code-runner checks via concat to avoid literal keywords in this file
+      var clean = stripCommentsAndStrings(src);
+      expect(clean, 'with statement').not.toMatch(/^\s*with\s*\(/m);
       var evalRe = new RegExp('\\b' + ['ev', 'al'].join('') + '\\s*\\(');
-      expect(src, 'dynamic code runner').not.toMatch(evalRe);
+      expect(clean, 'dynamic code runner').not.toMatch(evalRe);
       var fnRunnerRe = new RegExp('\\bnew\\s+' + ['Fun', 'ction'].join('') + '\\s*\\(');
-      expect(src, 'dynamic fn constructor').not.toMatch(fnRunnerRe);
-      var octals = (src.match(/\s0[0-7]{2,}[^.eEpPxXbBoO]/g) || []).filter(function (m) {
-        return !/["'`]/.test(m);
-      });
+      expect(clean, 'dynamic fn constructor').not.toMatch(fnRunnerRe);
+      var octals = clean.match(/\s0[0-7]{2,}[^.eEpPxXbBoO]/g) || [];
       expect(octals, 'octal literal').toEqual([]);
     });
   });

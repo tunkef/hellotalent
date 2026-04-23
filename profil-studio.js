@@ -13,6 +13,10 @@
  *
  * DO NOT DELETE — structural preservation required.
  * ============================================================ */
+'use strict';
+// K049 Faz 3 — strict mode (FROZEN file, runtime'da execute edilmiyor — directive sadece
+// unfreeze path'inde aktif olur. 32 reassign tarama yapildi, octal flag false positive
+// (yorum "migration 014"). Unfreeze sirasinda full audit gerekli.
 /* global supabase, _loadedDBData,
    closeSVG, heartOutlineSVG, heartFilledSVG, arrowRightSVG,
    hydrateCoachFeed, applyCoachFilters, renderCoachGrid, buildCoachCard,

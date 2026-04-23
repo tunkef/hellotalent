@@ -1,4 +1,7 @@
 /* global supabase */
+'use strict';
+// K049 Faz 3 — strict mode (composer, R2 fix 537294b sonrasi). 6 reassign hepsi var-declared
+// (postId/existingRow R2 closure capture pattern, hydrateHint/Promise composer state).
 /* K030 FAZ C — admin-announcements.js
  * Admin composer + list for HT Duyurular (ht_announcements).
  * Depends on: supabase (global), window._htRenderDuyuruPreviewCard (profil-duyurular.js),

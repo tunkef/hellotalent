@@ -1,4 +1,6 @@
 /* global supabase, _loadedDBData */
+'use strict';
+// K049 Faz 3 — strict mode (audit temiz: 0 reassign-without-var, 0 strict-breaker).
 /**
  * profil-premium.js — Premium Features Panel for profil.html
  * Bento grid layout, feature showcase, subscription CTA + purchase flow.

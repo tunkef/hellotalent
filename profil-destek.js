@@ -1,4 +1,6 @@
 /* global supabase, currentUser, _loadedDBData */
+'use strict';
+// K049 Faz 3 — strict mode (5 reassign hepsi var-declared, html string transform local).
 // ═══════════════════════════════════════════════════
 // PROFIL DESTEK — Candidate Support Center (Destek Merkezi)
 // Tabs: Yardım Makaleleri, Talep Oluştur, Taleplerim

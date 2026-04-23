@@ -1,4 +1,6 @@
 /* global _loadedDBData, currentUser, getCurrentEmployerDisplayFromExperiences, refreshVisibilitySummary, supabase, updateStatusUI, updateStep6HideState */
+'use strict';
+// K049 Faz 3 — strict mode (audit temiz: 0 reassign-without-var, 0 strict-breaker).
 // ═══════════════════════════════════════════════════
 // profil-visibility.js — Visibility/toggle sync domain
 // Extracted from profil-ui.js to reduce change-risk.

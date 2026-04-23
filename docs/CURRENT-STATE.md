@@ -1,6 +1,25 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 23 Nisan 2026 | Asama 82.7 — Hex Faz 3 (admin/) + 'use strict' Faz 2 (5 modul batch)
-> Aktif Odak: Tum CSS dosyalari raw hex'ten arindirildi (toplam 6 faz K048+K049 1+2+3). 11 eski modulden 5'i strict mode'a alindi (shared/profil-bootstrap/profil-cv/profil-events/profil-firsatlar). Kalan 6 modul: profil-studio (3891 satir, en buyuk), profil-destek (1190), profil-settings (872), admin-announcements (867), profil-premium (262), profil-visibility (354). Sonraki: ya kalan 6 modul Faz 3, ya display:none JS toggle audit, ya Tuna Codex gate kararı.
+> Son guncelleme: 23 Nisan 2026 | Asama 82.8 — 'use strict' Faz 3 tamamlandi (6 modul + FROZEN profil-studio)
+> Aktif Odak: 12 eski modulden 12'si strict mode'da (Faz 1: profil-ui; Faz 2: shared+bootstrap+cv+events+firsatlar; Faz 3: premium+visibility+settings+destek+announcements+studio[FROZEN]). Smoke 18/18 PASS. Sonraki: Profil ayarlar derinlemesine audit + display:none konservatif migration + push.
+>
+> ── K049 'use strict' Faz 3 (6 modul) — 23 Nisan 2026 ──
+>
+> **Scope:** profil-premium (262) + profil-visibility (354) + profil-settings (872) + profil-destek (1190) + admin-announcements (867) + profil-studio (3891 FROZEN) = 7436 satir.
+>
+> **Audit findings (hepsi temiz):**
+> - 0 with statement, 0 dynamic-code-runner, 0 octal literal (yorum-strip ile false positive elendi), 0 delete-variable.
+> - 33 reassign hepsi var-declared (MFA flow state vars: pendingFactorId/mfaDisablePhase/activeTOTP local; html/hydrateHint/hydratePromise/postId/existingRow/baseOrderIndex composer state).
+>
+> **profil-studio.js notu:** FROZEN file (K030 sonrasi runtime'da execute edilmiyor). 'use strict' directive eklendi — unfreeze path'inde aktif olur. Unfreeze sirasinda full audit gerekli (32 reassign FROZEN file'da skip).
+>
+> **Test:** k049-use-strict.spec.js Faz 3 icin genisletildi. stripCommentsAndStrings helper eklendi (yorum/string false positive elendi). 12 modul × 2 guard × 2 viewport = 48 PASS.
+>
+> **Smoke regression:** 18/18 PASS — strict mode runtime breakage yok.
+>
+> **Kalan strict-eligible: SIFIR.** Tum eski moduller migrate edildi.
+>
+> ── Asama 82.7 (önceki) ──
+> Hex Faz 3 (admin/image-editor + admin/markalar) + 'use strict' Faz 2 (5 modul). Tum CSS raw hex'ten arindirildi.
 >
 > ── K049 Hex Faz 3 (admin sub-folder) — 23 Nisan 2026 ──
 >

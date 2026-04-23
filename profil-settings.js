@@ -1,4 +1,6 @@
 /* global supabase, _loadedDBData, currentUser, refreshAfterSettingsSave, refreshVisibilitySummary, setThemePreference, syncActivelyLooking, syncBeniOner, syncHideFromEmployer, val, _htAlert, _htConfirm */
+'use strict';
+// K049 Faz 3 — strict mode (10 reassign hepsi var-declared, MFA flow state vars dahil).
 /* ═══════════════════════════════════════════════════════════════
    PROFIL-SETTINGS — Ayarlar panel logic
    Notification, contact, visibility, blocked companies, account mgmt
