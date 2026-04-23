@@ -3987,10 +3987,13 @@ test.describe('K067 — Ayarlar editorial CSS override', () => {
     expect(profilHtml067).toMatch(/profil-ayarlar\.js\?v=[a-zA-Z0-9._-]+/);
   });
 
-  test('K067 Faz B+C: profil-ayarlar.js ships scroll-spy and tri-state theme', () => {
+  test('TF6: profil-ayarlar.js ships section tab switcher + tri-state theme', () => {
     var ayarJs = readFromRepo('profil-ayarlar.js');
-    expect(ayarJs).toContain('IntersectionObserver');
+    // TF6 — scroll-spy (IntersectionObserver) deprecate edildi; section tab switcher aktif
+    expect(ayarJs).toContain('initSectionTabs');
     expect(ayarJs).toContain('.ayr-toc__tab');
+    expect(ayarJs).toContain("setAttribute('aria-current', 'page')");
+    expect(ayarJs).toContain("setAttribute('aria-hidden', 'true')");
     expect(ayarJs).toContain('ayr-theme-seg__opt');
     expect(ayarJs).toContain('setThemePreference');
     expect(ayarJs).toContain('ht_theme_preference');
