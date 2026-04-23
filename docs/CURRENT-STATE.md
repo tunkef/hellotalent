@@ -1,6 +1,48 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 23 Nisan 2026 | Asama 82.13 — Tuna feedback TF3 (hesap silme workflow) + progresif lockout (bonus) tamamlandi
-> Aktif Odak: Aday login sonrasi pending_deletion/frozen account_status check + restore modal (aktiflestir/cikis). Delete confirm metni 30g dondurma vurgusu + login-restore bilgilendirmesi ile guncellendi. MFA lockout artik progresif (3=30sn, 4=2dk, 5=10dk, 6=1h, 7+=24h cap) — giris.html + profil-settings.js iki phase'de. TF6 backlog'da yeni eklendi (Ayarlar UI/UX revizyonu). Kalan: TF4 avatar cropper, TF5 admin image editor, TF6 ayarlar UX.
+> Son guncelleme: 23 Nisan 2026 | Asama 82.14 — Tuna feedback TF4 (avatar cropper) + TF5 (admin image editor UI) tamamlandi
+> Aktif Odak: Avatar upload flow artik custom cropper modal'dan geciyor (circular crop + zoom slider + pan drag + pinch touch + 512x512 JPEG output). Admin image editor CSS token-driven tam revize + unicode sembol butonlari (⟲⟳↔↕×) SVG icon'a cevrildi (createElementNS, CSP safe). Cropper.js dependency korunur — sadece UI revize. Kalan: TF6 Ayarlar UI/UX revizyonu (frontend-design skill ile).
+>
+> ── TF4 — Avatar Cropper Modal (yüksek UI kalite) ──
+>
+> **Tuna isteği:** "insanlar avatar yuklerken editleyecegi bir sistemde koymak lazim zoom in zoom out kirpma gibi. direkt yuklemesi dogru degil gibi geliyor."
+>
+> **Karar: Custom canvas cropper** (Cropper.js dep yok, full brand kontrol):
+> - profil-avatar-cropper.js (320 satir, strict mode, IIFE)
+> - Circular crop overlay (avatar yansimasi, border ring --accent)
+> - Zoom slider (MIN_ZOOM=1 fit, MAX_ZOOM=3 original scale) + +/- butonlar + wheel
+> - Pan: mouse drag (desktop) + tek parmak touch (mobile)
+> - Pinch-to-zoom (cift parmak touch)
+> - Clamped offset (resim viewport disina kaymaz)
+> - Output: 512x512 JPEG 0.92 quality (blob → Supabase upload)
+> - ARIA dialog (role/aria-modal/aria-labelledby), ESC close, reduced motion
+>
+> **CSS:** css/avatar-cropper.css (220 satir, Clatu editorial, dark mode token-flip, mobile responsive).
+>
+> **Integration:** profil-ui.js handleAvatarUpload → `window._htOpenAvatarCropper(file, callback)` → blob → `_uploadAvatarBlob(blob)` ortak yolu. Avatar size 2MB → 5MB (crop cikti zaten 512x512 kucuk). Content-type aware (isJpeg detect + upload options).
+>
+> ── TF5 — Admin Image Editor UI Revizyonu ("çok dikkat") ──
+>
+> **Tuna isteği:** "UI i cok kotu, orayada bir bakmak lazim. hem de cok dikkat edin."
+>
+> **Karar:** Mevcut Cropper.js-base functional logic (js/admin/admin-image-editor.js 377 satir) KORUNUR. Class isimleri KORUNUR (Cropper.js bag, admin-announcements.js integration breakage riski). Sadece **CSS + SVG icons revize**.
+>
+> **CSS tam rewrite (css/admin/image-editor.css 277 satir):**
+> - Token-driven (--bg-surface, --border-subtle, --accent, --text-primary, --text-muted hepsi)
+> - Dark mode auto-flip
+> - Responsive (max-width 768px canvas on top + sidebar below)
+> - Clatu editorial typography (Bricolage title + Plus Jakarta body)
+> - Slider brand-style (vermillion thumb, 18px, --bg-surface ring)
+> - Backdrop blur + slide-up animation
+>
+> **JS icon replace:** ⟲⟳↔↕× unicode sembolleri → SVG inline (createElementNS, ICON_PATHS sabit, svgIcon helper). Brand no-emoji kurali uygulandi. CSP safe. ARIA labels Turkce korundu ("90 sola döndür" vs.).
+>
+> ── Test ──
+> tests/tf4-avatar-cropper.spec.js 6 structural guard + tests/tf5-admin-image-editor.spec.js 4 guard. K049 Faz 3 hex purge regression + smoke + delegation = 40/40 PASS.
+>
+> **Cache-bust:** 20260423k049f → 20260423k049g.
+>
+> ── Asama 82.13 (önceki) ──
+> TF3 hesap silme workflow + progresif lockout (3=30sn → 7+=24h cap).
 >
 > ── TF3 — Hesap Silme Workflow Revizyonu (KVKK + login restore) ──
 >

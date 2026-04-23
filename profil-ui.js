@@ -188,16 +188,40 @@ function populateIlceSelect(selectId, cityName) {
 async function handleAvatarUpload(input) {
   var file = input.files[0];
   if (!file) return;
-  if (file.size > 2 * 1024 * 1024) {
+  // TF4: input reset — kullanici ayni dosyayi tekrar secerse change event retrigger
+  input.value = '';
+  if (file.size > 5 * 1024 * 1024) {
     var errDesc = document.getElementById('error-desc');
-    if (errDesc) errDesc.textContent = 'Dosya 2MB\u2019dan b\u00FCy\u00FCk olamaz.';
+    if (errDesc) errDesc.textContent = 'Dosya 5MB\u2019dan b\u00FCy\u00FCk olamaz.';
     var errModal = document.getElementById('modal-error');
     if (errModal) errModal.classList.add('show');
     return;
   }
+
+  // TF4: cropper modal — kullanici circular crop + zoom/pan sonrasi kaydeder
+  if (typeof window._htOpenAvatarCropper === 'function') {
+    window._htOpenAvatarCropper(file, async function(err, result) {
+      if (err) {
+        if (window.Sentry) Sentry.captureException(err, { tags: { flow: 'avatar-crop' } });
+        console.error('[HT] Avatar cropper error:', err);
+        return;
+      }
+      if (result && result.blob) {
+        await _uploadAvatarBlob(result.blob);
+      }
+    });
+    return;
+  }
+  // Fallback: cropper modulu yuklenmediyse direkt yukle
+  await _uploadAvatarBlob(file);
+}
+
+// TF4: ortak upload yolu — cropper blob'u veya direkt File icin
+async function _uploadAvatarBlob(blob) {
   var btnText = document.getElementById('avatar-btn-text');
   if (btnText) btnText.textContent = 'Y\u00FCkleniyor...';
-  var ext = file.name.split('.').pop();
+  var isJpeg = blob.type === 'image/jpeg' || (blob.name && /\.jpe?g$/i.test(blob.name));
+  var ext = isJpeg ? 'jpg' : (blob.type === 'image/png' ? 'png' : 'jpg');
   var path = STORAGE.avatarPath(currentUser.id, ext);
 
   try {
@@ -209,7 +233,7 @@ async function handleAvatarUpload(input) {
     }
 
     // Upload to stable path (one avatar per user)
-    var res = await supabase.storage.from(STORAGE.BUCKET).upload(path, file, { upsert: true });
+    var res = await supabase.storage.from(STORAGE.BUCKET).upload(path, blob, { upsert: true, contentType: isJpeg ? 'image/jpeg' : blob.type });
     if (res.error) throw res.error;
 
     // Store path, not public URL — signed URL for display
@@ -224,7 +248,6 @@ async function handleAvatarUpload(input) {
     if (window.Sentry) Sentry.captureException(err, { tags: { flow: 'avatar-upload' } });
     console.error('[HT] Avatar upload error:', err);
     if (btnText) btnText.textContent = 'Hata!';
-    return;
   }
 }
 

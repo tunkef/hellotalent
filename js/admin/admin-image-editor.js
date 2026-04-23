@@ -62,6 +62,34 @@
     return e;
   }
 
+  // TF5: SVG icon factory (createElementNS — CSP safe, no innerHTML)
+  function svgIcon(paths) {
+    var SVG_NS = 'http://www.w3.org/2000/svg';
+    var svg = document.createElementNS(SVG_NS, 'svg');
+    svg.setAttribute('viewBox', '0 0 24 24');
+    svg.setAttribute('fill', 'none');
+    svg.setAttribute('stroke', 'currentColor');
+    svg.setAttribute('stroke-width', '1.8');
+    svg.setAttribute('stroke-linecap', 'round');
+    svg.setAttribute('stroke-linejoin', 'round');
+    svg.setAttribute('aria-hidden', 'true');
+    var list = [].concat(paths);
+    for (var i = 0; i < list.length; i++) {
+      var p = document.createElementNS(SVG_NS, 'path');
+      p.setAttribute('d', list[i]);
+      svg.appendChild(p);
+    }
+    return svg;
+  }
+
+  var ICON_PATHS = {
+    close: ['M18 6L6 18', 'M6 6l12 12'],
+    rotateLeft: ['M3 12a9 9 0 1 0 3-6.7', 'M3 4v5h5'],
+    rotateRight: ['M21 12a9 9 0 1 1-3-6.7', 'M21 4v5h-5'],
+    flipH: ['M12 3v18', 'M16 7l5-5-5 5zM16 2h5v5', 'M8 17l-5 5 5-5zM8 22H3v-5'],
+    flipV: ['M3 12h18', 'M7 8L2 3l5 5zM2 3v5h5', 'M17 16l5 5-5-5zM22 21v-5h-5']
+  };
+
   function buildModal(options) {
     var overlay = el('div', 'hied-overlay');
     overlay.setAttribute('role', 'dialog');
@@ -73,9 +101,10 @@
     // Header
     var header = el('div', 'hied-panel__header');
     var title = el('h2', 'hied-panel__title', 'Görseli düzenle');
-    var closeBtn = el('button', 'hied-panel__close', '×');
+    var closeBtn = el('button', 'hied-panel__close');
     closeBtn.type = 'button';
     closeBtn.setAttribute('aria-label', 'Kapat');
+    closeBtn.appendChild(svgIcon(ICON_PATHS.close));
     header.appendChild(title);
     header.appendChild(closeBtn);
 
@@ -106,22 +135,26 @@
     var rotSec = el('div', 'hied-section');
     var rotLabel = el('div', 'hied-label', 'Döndür');
     var rotRow = el('div', 'hied-tool-row');
-    var btnRotL = el('button', 'hied-tool-btn', '⟲');
+    var btnRotL = el('button', 'hied-tool-btn');
     btnRotL.type = 'button';
     btnRotL.setAttribute('aria-label', '90 sola döndür');
     btnRotL.title = 'Sola döndür';
-    var btnRotR = el('button', 'hied-tool-btn', '⟳');
+    btnRotL.appendChild(svgIcon(ICON_PATHS.rotateLeft));
+    var btnRotR = el('button', 'hied-tool-btn');
     btnRotR.type = 'button';
     btnRotR.setAttribute('aria-label', '90 sağa döndür');
     btnRotR.title = 'Sağa döndür';
-    var btnFlipH = el('button', 'hied-tool-btn', '↔');
+    btnRotR.appendChild(svgIcon(ICON_PATHS.rotateRight));
+    var btnFlipH = el('button', 'hied-tool-btn');
     btnFlipH.type = 'button';
     btnFlipH.setAttribute('aria-label', 'Yatay aynala');
     btnFlipH.title = 'Yatay aynala';
-    var btnFlipV = el('button', 'hied-tool-btn', '↕');
+    btnFlipH.appendChild(svgIcon(ICON_PATHS.flipH));
+    var btnFlipV = el('button', 'hied-tool-btn');
     btnFlipV.type = 'button';
     btnFlipV.setAttribute('aria-label', 'Dikey aynala');
     btnFlipV.title = 'Dikey aynala';
+    btnFlipV.appendChild(svgIcon(ICON_PATHS.flipV));
     rotRow.appendChild(btnRotL);
     rotRow.appendChild(btnRotR);
     rotRow.appendChild(btnFlipH);

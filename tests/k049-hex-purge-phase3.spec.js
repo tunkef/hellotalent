@@ -59,10 +59,12 @@ test.describe('K049 Faz 3 — Hex purge (admin sub-folder)', function () {
     expect(src).toMatch(/var\(--color-cream-warm\)/);
   });
 
-  test('admin/image-editor.css uses brand tokens (sample)', function () {
+  test('admin/image-editor.css uses brand tokens (sample, TF5 revize)', function () {
     var src = readCss('css/admin/image-editor.css');
-    expect(src).toMatch(/var\(--color-navy\)/);
-    expect(src).toMatch(/var\(--color-vermillion\)/);
-    expect(src).toMatch(/var\(--color-pattern-grid\)/);
+    // TF5 revize — semantic tokens (not raw palette refs)
+    expect(src).toMatch(/var\(--accent\)/);
+    expect(src).toMatch(/var\(--bg-surface\)/);
+    expect(src).toMatch(/var\(--color-pattern-grid/);
+    expect(src).toMatch(/var\(--editorial-card\)/);
   });
 });
