@@ -1,6 +1,44 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 23 Nisan 2026 | Asama 82.10 — display:none konservatif migration + Ayarlar audit fix'leri tamamlandi
-> Aktif Odak: 3 file input `style="display:none"` → `hidden` attribute (kesin guvenli, JS dokunulmuyor). 26 JS-toggle'li display:none rapor olarak birakildi (koordineli sweep gerekli). docs/audit-displaynone-20260423.md hazir. Sonraki: Final regression + push origin main.
+> Son guncelleme: 23 Nisan 2026 | Asama 82.11 — Ayarlar modal/chip refactor + MFA brute-force lockout + .is-hidden utility + Tuna feedback backlog
+> Aktif Odak: Ayarlar audit bulgu #6 (chip/dropdown class), #7 (modal ARIA dialog), #9 (MFA 3 yanlis → 30sn lockout) tamamlandi. display:none JS-toggle sweep riskli oldugu icin sadece .is-hidden utility altyapi eklendi (sweep koordineli JS pass'e ertelendi). Tuna UAT feedback'leri docs/backlog-tuna-feedback-20260423.md'de listeli (TF1-TF5). Sonraki: Tuna feedback'lere gecis (TF1 2FA UI fix + TF2 sistem dogrulama yuksek oncelik).
+>
+> ── Tuna Feedback Backlog (23 Nisan 2026) ──
+> Tuna UAT oncesi 5 feedback: TF1 2FA buton layout fix, TF2 2FA sistem dogrulama E2E test, TF3 hesap silme workflow (30 gun freeze + login-restore modal), TF4 avatar cropper modal, TF5 admin image editor UI cleanup. docs/backlog-tuna-feedback-20260423.md'de detay. Onceki dusuk/orta risk backlog bittiginde bu listeye donulecek.
+>
+> ── K049 Ayarlar Modal/Chip Class Refactor (bulgu #6+#7) ──
+>
+> **Scope:** profil-settings.js inline style.cssText + inline HTML template string → DOM createElement + class.
+>
+> **Bulgu #6 (chip/dropdown):**
+> - .ht-blocked-chip + .ht-blocked-chip__remove (blocked companies list)
+> - .ht-blocked-dropdown-item + --blocked modifier + .ht-blocked-dropdown-empty (search dropdown)
+> - components.css token-driven (--gray, --border, --verm, --muted).
+> - Dark mode auto-flip.
+>
+> **Bulgu #7 (modal helpers):**
+> - .ht-modal-alert + .ht-modal-alert__title + .ht-modal-alert__ok
+> - .ht-modal-confirm + .ht-modal-confirm__title + .ht-modal-confirm__actions
+> - ARIA dialog semantik: role="dialog" + aria-modal="true" + aria-labelledby
+> - innerHTML template → DOM createElement (CSP safe, XSS-proof).
+>
+> ── K049 MFA Brute-force Frontend Warning (bulgu #9) ──
+>
+> **Pattern:** Enroll verify + disable verify icin separate fail counter + applyMfaLockout() helper.
+> - MFA_FAIL_THRESHOLD = 3, MFA_LOCKOUT_MS = 30000 (30sn)
+> - 3 yanlis → buton disabled + countdown message ("Bekleyin 30sn..." → 29, 28, ...) + msg red
+> - 30sn sonra counter reset + buton eski label restore
+> - Success → counter sifirlanir (retry credit yenilenir)
+> - Supabase backend rate-limit korumasi ayrica calisir — bu frontend UX katmani
+>
+> ── display:none utility altyapi ──
+> .is-hidden { display: none !important; } eklendi (components.css). Yeni kod kullanacak, mevcut 26 JS-toggle element koordineli sweep sonraki pass'te (2-3 saat effort + per-element regression). `hidden` attribute ile `el.style.display=''` cakismasi bu migration'i riskli yapiyor, konservatif secim.
+>
+> **Test:** K048 + K049 1+2+3 + use-strict + composer + p3.regression + smoke = 1104/1104 PASS.
+>
+> **Cache-bust:** 20260423k049c → 20260423k049d.
+>
+> ── Asama 82.10 (önceki) ──
+> display:none konservatif migration (3 file input → hidden attr) + Ayarlar audit 5 fix.
 >
 > ── K049 display:none Audit (23 Nisan 2026) ──
 >

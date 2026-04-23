@@ -584,3 +584,87 @@ html[data-theme='dark'] .ht-error-banner__retry:focus-visible{background:var(--c
 .ht-caption-accent{font-size:12px;font-weight:400;color:var(--verm);}
 .ht-upload-zone{border:2px dashed var(--border);border-radius:12px;padding:24px;text-align:center;margin-bottom:16px;}
 .ht-file-input-overlay{position:absolute;inset:0;opacity:0;cursor:pointer;}
+
+/* ═══ K049 Faz 3 — display:none utility (opt-in altyapi) ═══
+ * Hazir class altyapisi — sweep sonraki pass (koordineli JS toggle migration).
+ * Kullanim: <div class="is-hidden">, JS `el.classList.toggle('is-hidden', !visible)`.
+ * `hidden` HTML attribute ile mevcut `el.style.display = 'block'` cakismasi var
+ * (inline style !important class'i eziyor). Yeni kodda bu class + classList API
+ * kullanilmali. Mevcut 26 JS-toggle element sonraki pass'te koordineli sweep. */
+.is-hidden{display:none !important;}
+
+/* ═══ K049 Faz 3 — Ayarlar audit #6: Blocked companies chip + dropdown ═══
+ * profil-settings.js'te inline style.cssText yerine kullanilir.
+ * Dark mode token-driven. */
+.ht-blocked-chip{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:8px 12px;
+  background:var(--gray);
+  border:1px solid var(--border);
+  border-radius:8px;
+  font-size:13px;
+}
+.ht-blocked-chip__remove{
+  background:none;border:none;
+  color:var(--verm);
+  cursor:pointer;
+  font-size:12px;font-weight:600;
+}
+.ht-blocked-chip__remove:hover{opacity:0.85;}
+
+.ht-blocked-dropdown-item{
+  padding:10px 12px;
+  cursor:pointer;
+  font-size:13px;
+  border-bottom:1px solid var(--border);
+  background:transparent;
+  transition:background 120ms ease;
+}
+.ht-blocked-dropdown-item:hover{background:var(--gray);}
+.ht-blocked-dropdown-item--blocked{
+  opacity:0.4;
+  cursor:default;
+}
+.ht-blocked-dropdown-item--blocked:hover{background:transparent;}
+.ht-blocked-dropdown-empty{
+  padding:10px;
+  font-size:12px;
+  color:var(--muted);
+}
+
+/* ═══ K049 Faz 3 — Ayarlar audit #7: _htAlert / _htConfirm modal helpers ═══
+ * ARIA dialog semantik + class-based layout. profil-settings.js helpers kullanir. */
+.ht-modal-alert{
+  max-width:360px;
+  background:var(--bg-surface);
+  border-radius:var(--radius-lg);
+  padding:20px 24px;
+  box-shadow:var(--shadow-lg);
+}
+.ht-modal-alert__title{
+  font-size:var(--text-lg);
+  margin-bottom:20px;
+  line-height:1.5;
+  white-space:pre-line;
+  color:var(--text-primary);
+}
+.ht-modal-alert__ok{width:100%;padding:11px 0;}
+
+.ht-modal-confirm{
+  max-width:400px;
+  background:var(--bg-surface);
+  border-radius:var(--radius-lg);
+  padding:20px 24px;
+  box-shadow:var(--shadow-lg);
+}
+.ht-modal-confirm__title{
+  font-size:var(--text-lg);
+  margin-bottom:20px;
+  line-height:1.5;
+  white-space:pre-line;
+  color:var(--text-primary);
+}
+.ht-modal-confirm__actions{
+  display:flex;gap:12px;justify-content:flex-end;
+  margin-top:16px;
+}

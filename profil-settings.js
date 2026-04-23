@@ -8,25 +8,67 @@
 
 // ── DARK-MODE AWARE MODAL HELPERS ──
 // Replaces native alert()/confirm() with CSS-token-aware modals
+// K049 audit fix #7: inline HTML template → DOM createElement + class (.ht-modal-alert / .ht-modal-confirm)
+// ARIA dialog semantik: role=dialog, aria-modal, aria-labelledby
 (function(){
-  function _ensureModal(id, inner) {
+  function _ensureOverlay(id) {
     var el = document.getElementById(id);
     if (!el) {
       el = document.createElement('div');
       el.id = id;
       el.className = 'ht-modal__overlay';
-      el.innerHTML = inner;
       document.body.appendChild(el);
     }
     return el;
   }
 
+  function _buildAlertModal() {
+    var box = document.createElement('div');
+    box.className = 'ht-modal ht-modal-alert';
+    box.setAttribute('role', 'dialog');
+    box.setAttribute('aria-modal', 'true');
+    box.setAttribute('aria-labelledby', 'ht-modal-alert-msg');
+    var title = document.createElement('div');
+    title.id = 'ht-modal-alert-msg';
+    title.className = 'ht-modal-alert__title';
+    var ok = document.createElement('button');
+    ok.id = 'ht-modal-alert-ok';
+    ok.className = 'ht-btn ht-btn--primary ht-modal-alert__ok';
+    ok.textContent = 'Tamam';
+    box.appendChild(title);
+    box.appendChild(ok);
+    return box;
+  }
+
+  function _buildConfirmModal() {
+    var box = document.createElement('div');
+    box.className = 'ht-modal ht-modal-confirm';
+    box.setAttribute('role', 'dialog');
+    box.setAttribute('aria-modal', 'true');
+    box.setAttribute('aria-labelledby', 'ht-modal-confirm-msg');
+    var title = document.createElement('div');
+    title.id = 'ht-modal-confirm-msg';
+    title.className = 'ht-modal-confirm__title';
+    var actions = document.createElement('div');
+    actions.className = 'ht-modal-confirm__actions';
+    var no = document.createElement('button');
+    no.id = 'ht-modal-confirm-no';
+    no.className = 'ht-btn ht-btn--secondary';
+    no.textContent = 'Vazgeç';
+    var yes = document.createElement('button');
+    yes.id = 'ht-modal-confirm-yes';
+    yes.className = 'ht-btn ht-btn--primary';
+    yes.textContent = 'Evet, Devam Et';
+    actions.appendChild(no);
+    actions.appendChild(yes);
+    box.appendChild(title);
+    box.appendChild(actions);
+    return box;
+  }
+
   window._htAlert = function(msg, cb) {
-    var el = _ensureModal('ht-modal-alert',
-      '<div class="ht-modal" style="max-width:360px;">' +
-      '<div class="ht-modal__title" id="ht-modal-alert-msg" style="font-size:var(--text-lg);margin-bottom:20px;line-height:1.5;white-space:pre-line;"></div>' +
-      '<button class="ht-btn ht-btn--primary" id="ht-modal-alert-ok" style="width:100%;padding:11px 0;">Tamam</button>' +
-      '</div>');
+    var el = _ensureOverlay('ht-modal-alert');
+    if (!el.firstChild) el.appendChild(_buildAlertModal());
     document.getElementById('ht-modal-alert-msg').textContent = msg;
     el.classList.add('show');
     document.getElementById('ht-modal-alert-ok').onclick = function() {
@@ -36,14 +78,8 @@
   };
 
   window._htConfirm = function(msg, cbYes, cbNo) {
-    var el = _ensureModal('ht-modal-confirm',
-      '<div class="ht-modal" style="max-width:400px;">' +
-      '<div class="modal-confirm-body">' +
-      '<div class="modal-confirm-title" id="ht-modal-confirm-msg" style="white-space:pre-line;"></div>' +
-      '<div class="modal-confirm-actions">' +
-      '<button class="ht-btn ht-btn--secondary" id="ht-modal-confirm-no">Vazgeç</button>' +
-      '<button class="ht-btn ht-btn--primary" id="ht-modal-confirm-yes">Evet, Devam Et</button>' +
-      '</div></div></div>');
+    var el = _ensureOverlay('ht-modal-confirm');
+    if (!el.firstChild) el.appendChild(_buildConfirmModal());
     document.getElementById('ht-modal-confirm-msg').textContent = msg;
     el.classList.add('show');
     document.getElementById('ht-modal-confirm-yes').onclick = function() {
@@ -427,15 +463,16 @@ document.addEventListener('DOMContentLoaded', function() {
       } catch (e) { console.error('loadBlocked error:', e); }
     }
 
+    // K049 audit fix #6: chip inline style.cssText → class
     function addBlockedChip(rowId, companyId, companyName){
       var chip = document.createElement('div');
-      chip.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:var(--gray);border:1px solid var(--border);border-radius:8px;font-size:13px;';
+      chip.className = 'ht-blocked-chip';
       var nameSpan = document.createElement('span');
       nameSpan.textContent = companyName;
       chip.appendChild(nameSpan);
       var removeBtn = document.createElement('button');
+      removeBtn.className = 'ht-blocked-chip__remove';
       removeBtn.textContent = 'Kaldır';
-      removeBtn.style.cssText = 'background:none;border:none;color:var(--verm);cursor:pointer;font-size:12px;font-weight:600;';
       removeBtn.addEventListener('click', async function(){
         removeBtn.disabled = true;
         removeBtn.textContent = '...';
@@ -474,10 +511,11 @@ document.addEventListener('DOMContentLoaded', function() {
             .limit(10);
           if (res.error) throw res.error;
           var data = res.data;
-          dropdown.innerHTML = '';
+          // K049 audit fix #6: dropdown item inline style.cssText → class
+          dropdown.textContent = '';
           if (!data || data.length === 0) {
             var noResult = document.createElement('div');
-            noResult.style.cssText = 'padding:10px;font-size:12px;color:var(--muted);';
+            noResult.className = 'ht-blocked-dropdown-empty';
             noResult.textContent = 'Sonuç bulunamadı';
             dropdown.appendChild(noResult);
             dropdown.style.display = 'block';
@@ -485,11 +523,10 @@ document.addEventListener('DOMContentLoaded', function() {
           }
           data.forEach(function(c){
             var item = document.createElement('div');
-            item.style.cssText = 'padding:10px 12px;cursor:pointer;font-size:13px;border-bottom:1px solid var(--border);';
+            item.className = 'ht-blocked-dropdown-item';
             item.textContent = c.company_name;
             if (blockedIds.has(c.id)) {
-              item.style.opacity = '0.4';
-              item.style.cursor = 'default';
+              item.classList.add('ht-blocked-dropdown-item--blocked');
               item.textContent += ' (engellendi)';
             } else {
               item.addEventListener('click', async function(){
@@ -514,8 +551,6 @@ document.addEventListener('DOMContentLoaded', function() {
                   msgDiv.style.display = 'block';
                 }
               });
-              item.addEventListener('mouseenter', function(){ item.style.background = 'var(--gray)'; });
-              item.addEventListener('mouseleave', function(){ item.style.background = 'transparent'; });
             }
             dropdown.appendChild(item);
           });
@@ -642,6 +677,36 @@ document.addEventListener('DOMContentLoaded', function() {
 
     var pendingFactorId = null;
 
+    // K049 audit fix #9: MFA brute-force frontend warning (3 yanlis → 30sn lockout)
+    var mfaEnrollFailCount = 0;
+    var mfaDisableFailCount = 0;
+    var MFA_LOCKOUT_MS = 30000;
+    var MFA_FAIL_THRESHOLD = 3;
+
+    function applyMfaLockout(btn, failCountRef, msgEl, origLabel, resetCallback) {
+      btn.disabled = true;
+      var remainingSec = Math.floor(MFA_LOCKOUT_MS / 1000);
+      btn.textContent = 'Bekleyin ' + remainingSec + 'sn...';
+      if (msgEl) {
+        msgEl.textContent = 'Çok fazla hatalı deneme. Güvenlik için ' + remainingSec + ' saniye bekleyin.';
+        msgEl.style.color = 'var(--red)';
+        msgEl.style.display = 'block';
+      }
+      var tick = setInterval(function() {
+        remainingSec--;
+        if (remainingSec > 0) {
+          btn.textContent = 'Bekleyin ' + remainingSec + 'sn...';
+          if (msgEl) msgEl.textContent = 'Çok fazla hatalı deneme. Güvenlik için ' + remainingSec + ' saniye bekleyin.';
+        } else {
+          clearInterval(tick);
+          btn.disabled = false;
+          btn.textContent = origLabel;
+          if (msgEl) { msgEl.textContent = ''; msgEl.style.display = 'none'; }
+          if (typeof resetCallback === 'function') resetCallback();
+        }
+      }, 1000);
+    }
+
     function showState(state) {
       loading.style.display    = state === 'loading'  ? '' : 'none';
       disabledSt.style.display = state === 'disabled' ? '' : 'none';
@@ -701,7 +766,9 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Verify enrollment code
+    // K049 audit fix #9: 3 yanlis denemeden sonra 30sn lockout
     if (btnVerify) btnVerify.addEventListener('click', async function(){
+      var origText = btnVerify.textContent; // K049 audit fix #2: capture+restore
       var code = (document.getElementById('mfa-verify-code').value || '').trim();
       var msg = document.getElementById('mfa-enroll-msg');
       if (!code || code.length !== 6 || !/^\d{6}$/.test(code)) {
@@ -715,16 +782,20 @@ document.addEventListener('DOMContentLoaded', function() {
       btnVerify.disabled = true;
       btnVerify.textContent = 'Doğrulanıyor...';
       if (msg) msg.style.display = 'none';
+      var wasSuccess = false;
       try {
         var res = await supabase.auth.mfa.challengeAndVerify({
           factorId: pendingFactorId,
           code: code
         });
         if (res.error) throw res.error;
+        wasSuccess = true;
+        mfaEnrollFailCount = 0;
         pendingFactorId = null;
         showState('enabled');
         _htAlert('İki adımlı doğrulama başarıyla etkinleştirildi!');
       } catch (e) {
+        mfaEnrollFailCount++;
         if (msg) {
           msg.textContent = e.message && e.message.indexOf('invalid') > -1
             ? 'Kod geçersiz. Uygulamadaki güncel kodu kontrol edin.'
@@ -733,8 +804,12 @@ document.addEventListener('DOMContentLoaded', function() {
           msg.style.display = 'block';
         }
       } finally {
-        btnVerify.disabled = false;
-        btnVerify.textContent = 'Doğrula';
+        if (!wasSuccess && mfaEnrollFailCount >= MFA_FAIL_THRESHOLD) {
+          applyMfaLockout(btnVerify, mfaEnrollFailCount, msg, origText, function(){ mfaEnrollFailCount = 0; });
+        } else {
+          btnVerify.disabled = false;
+          btnVerify.textContent = origText;
+        }
       }
     });
 
@@ -811,6 +886,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         btnDisable.disabled = true;
         btnDisable.textContent = 'Doğrulanıyor...';
+        // K049 audit fix #9: 3 yanlis → 30sn lockout
+        var disableSuccess = false;
         try {
           var res = await supabase.auth.mfa.listFactors();
           if (res.error) throw res.error;
@@ -828,12 +905,15 @@ document.addEventListener('DOMContentLoaded', function() {
             var uRes = await supabase.auth.mfa.unenroll({ factorId: activeTOTP[i].id });
             if (uRes.error) throw uRes.error;
           }
+          disableSuccess = true;
+          mfaDisableFailCount = 0;
           showState('disabled');
           if (msg) { msg.textContent = ''; msg.style.display = 'none'; }
           mfaDisablePhase = 'confirm';
           btnDisable.textContent = btnDisableOrigText;
           _htAlert('İki adımlı doğrulama kapatıldı.');
         } catch (e) {
+          mfaDisableFailCount++;
           var errText = (e.message || '').toLowerCase();
           if (codeMsg) {
             codeMsg.textContent = errText.indexOf('invalid') > -1 ? 'Kod geçersiz. Tekrar deneyin.' : 'Hata: ' + (e.message || '');
@@ -841,8 +921,12 @@ document.addEventListener('DOMContentLoaded', function() {
             codeMsg.style.display = 'block';
           }
         } finally {
-          btnDisable.disabled = false;
-          btnDisable.textContent = 'Kodu Doğrula ve Kapat';
+          if (!disableSuccess && mfaDisableFailCount >= MFA_FAIL_THRESHOLD) {
+            applyMfaLockout(btnDisable, mfaDisableFailCount, codeMsg, 'Kodu Doğrula ve Kapat', function(){ mfaDisableFailCount = 0; });
+          } else {
+            btnDisable.disabled = false;
+            btnDisable.textContent = 'Kodu Doğrula ve Kapat';
+          }
         }
       }
     });

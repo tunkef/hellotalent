@@ -71,5 +71,8 @@ Aslinda yukaridaki "JS toggle"in alt-kumesi ama bu elementler sadece "gosterilir
 ## SIRADAKI ADIMLAR
 
 1. **Bu pass: 3 file input fix** ✓
-2. **Sonraki pass: class-based migration** (26 toggle + 3 show-only) — koordineli JS sweep + regression
-3. **Bonus:** `[hidden]` attribute + `el.hidden = boolean` semantik gelistirmesi
+2. **Takip pass: `.is-hidden` utility class altyapisi** ✓ (components.css'e eklendi, yeni kodlar kullanacak)
+3. **Sonraki pass: class-based migration** (26 toggle + 3 show-only) — koordineli JS sweep + regression
+4. **Bonus:** `[hidden]` attribute + `el.hidden = boolean` semantik gelistirmesi
+
+**NOT:** `hidden` attribute pragmatik degil (inline `style.display=''` kaldirildiginda element gizli kalir cunku `hidden` attribute hala var). Dogru migration: `.is-hidden` utility + `classList.toggle('is-hidden', !visible)` — per-JS-file koordineli sweep gerekir. 2-3 saat effort + dikkatli regression.
