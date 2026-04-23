@@ -108,8 +108,8 @@ document.addEventListener('DOMContentLoaded', function() {
     var newPw = val('settings-new-pw');
     var confirmPw = val('settings-confirm-pw');
     var pwMsg = document.getElementById('pw-msg');
-    if (!newPw || newPw.length < 6) {
-      if (pwMsg) { pwMsg.textContent = 'Şifre en az 6 karakter olmalı.'; pwMsg.style.color = 'var(--red)'; pwMsg.style.display = 'block'; }
+    if (!newPw || newPw.length < 8) {
+      if (pwMsg) { pwMsg.textContent = 'Şifre en az 8 karakter olmalı.'; pwMsg.style.color = 'var(--red)'; pwMsg.style.display = 'block'; }
       return;
     }
     if (newPw !== confirmPw) {
@@ -199,6 +199,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // Email change: submit
   var btnChangeEmail = document.getElementById('btn-change-email');
   if (btnChangeEmail) btnChangeEmail.addEventListener('click', async function() {
+    var origText = btnChangeEmail.textContent; // K049 audit fix #2: capture+restore
     var newEmail = (document.getElementById('settings-new-email').value || '').trim();
     var msgEl = document.getElementById('email-change-msg');
 
@@ -234,7 +235,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     btnChangeEmail.disabled = false;
-    btnChangeEmail.textContent = 'Doğrulama Gönder';
+    btnChangeEmail.textContent = origText;
   });
 
   // ── NOTIFICATION PREFERENCES SAVE ──
@@ -242,6 +243,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var btn = document.getElementById('btn-save-notifications');
     if (!btn) return;
     btn.addEventListener('click', async function(){
+      var origText = btn.textContent; // K049 audit fix #2: capture+restore
       var msg = document.getElementById('notifications-msg');
       if (msg) msg.style.display = 'none';
       btn.disabled = true;
@@ -272,7 +274,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (msg) { msg.style.color = 'var(--red)'; msg.textContent = 'Hata: ' + (e.message || 'Kaydedilemedi.'); msg.style.display = 'block'; }
       } finally {
         btn.disabled = false;
-        btn.textContent = 'Bildirim Tercihlerini Kaydet';
+        btn.textContent = origText;
       }
     });
   })();
@@ -282,6 +284,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var btn = document.getElementById('btn-save-contact-prefs');
     if(!btn) return;
     btn.addEventListener('click', async function(){
+      var origText = btn.textContent; // K049 audit fix #2: capture+restore
       var msg = document.getElementById('contact-prefs-msg');
       if (msg) msg.style.display='none';
       btn.disabled = true;
@@ -310,7 +313,7 @@ document.addEventListener('DOMContentLoaded', function() {
       } catch(e) {
         if (msg) { msg.style.color='var(--red)'; msg.textContent='Hata: ' + e.message; msg.style.display='block'; }
       } finally {
-        btn.disabled = false; btn.textContent = 'İletişim Tercihlerini Kaydet';
+        btn.disabled = false; btn.textContent = origText;
       }
     });
   })();
@@ -329,6 +332,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var btn = document.getElementById('btn-download-data');
     if(!btn) return;
     btn.addEventListener('click', async function(){
+      var origText = btn.textContent; // K049 audit fix #2: capture+restore
       var msg = document.getElementById('download-data-msg');
       msg.style.display='none';
       btn.disabled = true;
@@ -381,7 +385,7 @@ document.addEventListener('DOMContentLoaded', function() {
       } catch(e) {
         msg.style.color='var(--red)'; msg.textContent='Hata: ' + e.message; msg.style.display='block';
       } finally {
-        btn.disabled = false; btn.textContent = 'Verilerimi İndir (KVKK md.11)';
+        btn.disabled = false; btn.textContent = origText;
       }
     });
   })();
@@ -545,11 +549,12 @@ document.addEventListener('DOMContentLoaded', function() {
       if (wizOverlay) wizOverlay.style.display = 'none';
     });
 
+    // K049 audit fix #1: banner state via class (token-driven), not inline hex
     function showBanner(status){
+      banner.classList.remove('ayr-banner--frozen', 'ayr-banner--pending-deletion');
       if (status === 'frozen') {
         banner.style.display = 'block';
-        banner.style.background = '#FEF3C7';
-        banner.style.color = '#92400E';
+        banner.classList.add('ayr-banner--frozen');
         banner.textContent = '';
         var strong1 = document.createElement('strong');
         strong1.textContent = 'Hesabınız dondurulmuş.';
@@ -557,15 +562,14 @@ document.addEventListener('DOMContentLoaded', function() {
         banner.appendChild(document.createTextNode(' Profiliniz işverenlere görünmüyor. '));
         var unfreezeBtn = document.createElement('button');
         unfreezeBtn.id = 'btn-unfreeze';
-        unfreezeBtn.style.cssText = 'background:none;border:none;color:var(--verm);cursor:pointer;font-weight:600;text-decoration:underline;margin-left:4px;';
+        unfreezeBtn.className = 'ayr-banner__action';
         unfreezeBtn.textContent = 'Tekrar Aktif Et';
         banner.appendChild(unfreezeBtn);
         freezeBtn.style.display = 'none';
         unfreezeBtn.addEventListener('click', function(){ changeStatus('active'); });
       } else if (status === 'pending_deletion') {
         banner.style.display = 'block';
-        banner.style.background = '#FEE2E2';
-        banner.style.color = '#991B1B';
+        banner.classList.add('ayr-banner--pending-deletion');
         banner.textContent = '';
         var strong2 = document.createElement('strong');
         strong2.textContent = 'Hesabınız silinmek üzere.';
@@ -573,7 +577,7 @@ document.addEventListener('DOMContentLoaded', function() {
         banner.appendChild(document.createTextNode(' 30 gün içinde vazgeçebilirsiniz. '));
         var cancelDelBtn = document.createElement('button');
         cancelDelBtn.id = 'btn-cancel-deletion';
-        cancelDelBtn.style.cssText = 'background:none;border:none;color:var(--verm);cursor:pointer;font-weight:600;text-decoration:underline;margin-left:4px;';
+        cancelDelBtn.className = 'ayr-banner__action';
         cancelDelBtn.textContent = 'Vazgeç';
         banner.appendChild(cancelDelBtn);
         freezeBtn.style.display = 'none';
@@ -666,6 +670,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Enable: start enrollment
     if (btnEnable) btnEnable.addEventListener('click', async function(){
+      var origText = btnEnable.textContent; // K049 audit fix #2: capture+restore
       btnEnable.disabled = true;
       btnEnable.textContent = 'Hazırlanıyor...';
       try {
@@ -691,7 +696,7 @@ document.addEventListener('DOMContentLoaded', function() {
         _htAlert('Hata: ' + (e.message || 'İki adımlı doğrulama başlatılamadı.'));
       } finally {
         btnEnable.disabled = false;
-        btnEnable.textContent = 'İki Adımlı Doğrulamayı Etkinleştir';
+        btnEnable.textContent = origText;
       }
     });
 
@@ -747,17 +752,50 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Disable MFA — state machine: 'confirm' → 'verify' → done
     var mfaDisablePhase = 'confirm';
+    var btnDisableOrigText = btnDisable ? btnDisable.textContent : 'Kapat';
+
+    // K049 audit fix #3: verify phase'inde "Vazgec" yardimcisi — state corrupt riskini engeller
+    function resetMfaDisableFlow() {
+      var msg = document.getElementById('mfa-disable-msg');
+      if (msg) { msg.textContent = ''; msg.style.display = 'none'; }
+      mfaDisablePhase = 'confirm';
+      if (btnDisable) {
+        btnDisable.disabled = false;
+        btnDisable.textContent = btnDisableOrigText;
+      }
+    }
 
     if (btnDisable) btnDisable.addEventListener('click', async function(){
       var msg = document.getElementById('mfa-disable-msg');
 
       if (mfaDisablePhase === 'confirm') {
         _htConfirm('İki adımlı doğrulamayı kapatmak için mevcut doğrulama kodunuzu girmeniz gerekecek. Devam etmek istiyor musunuz?', function(){
-          var codePromptHtml =
-            '<div style="margin-bottom:12px;font-size:13px;">Güvenlik için uygulamadaki 6 haneli kodu girin:</div>' +
-            '<input type="text" id="mfa-disable-code" maxlength="6" placeholder="000000" style="width:120px;text-align:center;font-size:18px;letter-spacing:6px;font-family:DM Mono,monospace;margin-bottom:12px;padding:8px;border:2px solid var(--border);border-radius:8px;">' +
-            '<div id="mfa-disable-code-msg" style="display:none;font-size:12px;margin-top:4px;"></div>';
-          if (msg) { msg.innerHTML = codePromptHtml; msg.style.color = ''; msg.style.display = 'block'; }
+          // K049 audit fix #3: prompt + Vazgec butonu (state reset)
+          if (msg) {
+            msg.textContent = '';
+            var promptDiv = document.createElement('div');
+            promptDiv.style.cssText = 'margin-bottom:12px;font-size:13px;';
+            promptDiv.textContent = 'Güvenlik için uygulamadaki 6 haneli kodu girin:';
+            var inp = document.createElement('input');
+            inp.type = 'text'; inp.id = 'mfa-disable-code'; inp.maxLength = 6;
+            inp.placeholder = '000000';
+            inp.style.cssText = 'width:120px;text-align:center;font-size:18px;letter-spacing:6px;font-family:DM Mono,monospace;margin-bottom:12px;padding:8px;border:2px solid var(--border);border-radius:8px;';
+            var cancelLink = document.createElement('button');
+            cancelLink.type = 'button';
+            cancelLink.className = 'ayr-banner__action';
+            cancelLink.style.marginLeft = '8px';
+            cancelLink.textContent = 'Vazgeç';
+            cancelLink.addEventListener('click', resetMfaDisableFlow);
+            var codeMsgDiv = document.createElement('div');
+            codeMsgDiv.id = 'mfa-disable-code-msg';
+            codeMsgDiv.style.cssText = 'display:none;font-size:12px;margin-top:4px;';
+            msg.appendChild(promptDiv);
+            msg.appendChild(inp);
+            msg.appendChild(cancelLink);
+            msg.appendChild(codeMsgDiv);
+            msg.style.color = '';
+            msg.style.display = 'block';
+          }
           btnDisable.textContent = 'Kodu Doğrula ve Kapat';
           mfaDisablePhase = 'verify';
         });
@@ -791,8 +829,9 @@ document.addEventListener('DOMContentLoaded', function() {
             if (uRes.error) throw uRes.error;
           }
           showState('disabled');
-          if (msg) { msg.innerHTML = ''; msg.style.display = 'none'; }
+          if (msg) { msg.textContent = ''; msg.style.display = 'none'; }
           mfaDisablePhase = 'confirm';
+          btnDisable.textContent = btnDisableOrigText;
           _htAlert('İki adımlı doğrulama kapatıldı.');
         } catch (e) {
           var errText = (e.message || '').toLowerCase();

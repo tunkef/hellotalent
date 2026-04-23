@@ -1,6 +1,31 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 23 Nisan 2026 | Asama 82.8 — 'use strict' Faz 3 tamamlandi (6 modul + FROZEN profil-studio)
-> Aktif Odak: 12 eski modulden 12'si strict mode'da (Faz 1: profil-ui; Faz 2: shared+bootstrap+cv+events+firsatlar; Faz 3: premium+visibility+settings+destek+announcements+studio[FROZEN]). Smoke 18/18 PASS. Sonraki: Profil ayarlar derinlemesine audit + display:none konservatif migration + push.
+> Son guncelleme: 23 Nisan 2026 | Asama 82.9 — Profil Ayarlar derinlemesine audit (10 bulgu, 5 fix uygulandi)
+> Aktif Odak: docs/audit-ayarlar-20260423.md raporu hazir. 5 fix commit'lendi: banner JS-set raw hex → token class, buton text capture+restore (5 yer), MFA disable verify Vazgec butonu + state reset, sifre 6 → 8 karakter, banner role="status" a11y. Bulgu #10 yanlis pozitif (aria-checked sync zaten yapiliyor). Sonraki: display:none konservatif migration + push.
+>
+> ── K049 Ayarlar Audit (23 Nisan 2026) ──
+>
+> **Kapsam:** profil-settings.js (874) + profil-ayarlar.js (153) + ayarlar.css (1047) + profil.html ayarlar bolumu (1313-1730).
+>
+> **Rapor:** docs/audit-ayarlar-20260423.md — 4 eksen (UX, A11y, Guvenlik/KVKK, Tutarlilik) × 10 bulgu.
+>
+> **5 fix uygulandi (dusuk risk + yuksek kazanc):**
+> 1. **Banner JS raw hex → class:** profil-settings.js showBanner() artik `.ayr-banner--frozen` / `.ayr-banner--pending-deletion` class kullaniyor. css/panels/ayarlar.css'e token-driven class'lar (--warning-soft, --danger-soft, --color-red-deep). Dark mode auto-flip. Inline `.ayr-banner__action` button class'i da eklendi (chip/banner JS-created button).
+> 2. **Buton metin capture+restore (5 yer):** btnChangeEmail, btn-save-notifications, btn-save-contact-prefs, btn-download-data, btn-mfa-enable hepsi `var origText = btn.textContent` capture + finally `btn.textContent = origText` restore. HTML metiniyle uyumsuzluk giderildi.
+> 3. **MFA disable verify Vazgec butonu:** mfaDisablePhase='verify' state'inde DOM-built "Vazgec" yardimcisi eklendi. resetMfaDisableFlow() helper: state='confirm', btn text restore, msg clear. State corrupt riski engellendi.
+> 4. **Sifre minimum 8 karakter:** 6 → 8 (OWASP/NIST). Validation message + profil.html placeholder guncellendi.
+> 5. **account-status-banner a11y:** `role="status" aria-live="polite"` eklendi. Screen reader frozen/pending_deletion state'i duyuruyor.
+>
+> **5 bulgu rapor olarak birakildi (buyuk refactor / sonraki pass):**
+> - #6 Inline style.cssText chip/dropdown — ayarlar inline style migration ayri pass
+> - #7 _htAlert/_htConfirm modal helpers inline style — ARIA dialog refactor ayri pass
+> - #8 MFA QR alt text generic — minor copy fix
+> - #9 MFA brute-force frontend warning — Supabase rate-limit + UX 30sn lockout
+> - #10 YANLIS POZITIF — profil-ayarlar.js:114 aria-checked sync zaten yapiyor
+>
+> **Test:** 134 PASS (K048 + K049 1+2+3 + use-strict + composer + smoke).
+>
+> ── Asama 82.8 (önceki) ──
+> 'use strict' Faz 3 — 6 modul (premium + visibility + settings + destek + announcements + studio FROZEN). Tum eski moduller strict mode'da.
 >
 > ── K049 'use strict' Faz 3 (6 modul) — 23 Nisan 2026 ──
 >

@@ -1045,3 +1045,29 @@
     transform: none !important;
   }
 }
+
+/* ════════════════════════════════════════════════════════════════
+   K049 AUDIT FIX — account-status-banner state classes
+   Replaces inline JS-set raw hex (profil-settings.js:551-552, 567-568).
+   Token-driven, dark mode auto-flip via --warning-soft / --danger-soft.
+   ════════════════════════════════════════════════════════════════ */
+.ayr-banner--frozen {
+  background: var(--warning-soft);
+  color: var(--warning);
+}
+.ayr-banner--pending-deletion {
+  background: var(--danger-soft);
+  color: var(--color-red-deep);
+}
+.ayr-banner__action {
+  background: none;
+  border: none;
+  color: var(--verm);
+  cursor: pointer;
+  font-weight: 600;
+  text-decoration: underline;
+  margin-left: 4px;
+  padding: 0;
+  font-family: inherit;
+}
+.ayr-banner__action:hover { opacity: 0.85; }

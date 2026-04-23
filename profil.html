@@ -1386,7 +1386,7 @@ if (window.Sentry) {
           <div class="ayr-card__title">Şifre değiştir</div>
           <div class="ayr-field">
             <label for="settings-new-pw">Yeni şifre</label>
-            <input type="password" id="settings-new-pw" placeholder="En az 6 karakter">
+            <input type="password" id="settings-new-pw" placeholder="En az 8 karakter">
           </div>
           <div class="ayr-field">
             <label for="settings-confirm-pw">Yeni şifre (tekrar)</label>
@@ -1681,7 +1681,7 @@ if (window.Sentry) {
 
         <div class="ayr-card ayr-card--danger" id="settings-account-management-card">
           <div class="ayr-card__title ayr-card__title--danger">Hesap yönetimi</div>
-          <div id="account-status-banner" class="ayr-banner" style="display:none;"></div>
+          <div id="account-status-banner" class="ayr-banner" role="status" aria-live="polite" style="display:none;"></div>
           <p class="ayr-lede">Hesabını dondurmak, silmek veya verilerini indirmek için hesap yönetimi sihirbazını kullan.</p>
           <button class="ayr-btn ayr-btn--danger" id="btn-open-account-wizard">Hesap yönetimini aç</button>
         </div>
