@@ -52,6 +52,13 @@
   --color-vermillion-glow: #E8663D;    /* K049: studio focus/glow accent (between vermillion-bright and verm) */
   --color-cream-pale: #FAFAF9;         /* K049: studio chip/pill subtle cream */
 
+  /* K049 Faz 3 — admin CSS palette extensions */
+  --color-emerald-bright: #10B981;     /* K049 Faz 3: admin toast success */
+  --color-red-warm: #d33333;           /* K049 Faz 3: admin danger button (warmer than --color-red) */
+  --color-cream-warm: #EEECE6;         /* K049 Faz 3: admin avatar fallback bg */
+  --color-cream-soft: #F2F1ED;         /* K049 Faz 3: admin active tab bg */
+  --color-pattern-grid: #f0f0f0;       /* K049 Faz 3: image-editor transparency checkerboard */
+
   /* Fonts */
   --font-head: 'Bricolage Grotesque', sans-serif;
   --font-body: 'Plus Jakarta Sans', sans-serif;

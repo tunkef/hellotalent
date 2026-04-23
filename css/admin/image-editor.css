@@ -22,7 +22,7 @@
 
 .hied-panel {
   background: #ffffff;
-  border: 1px solid #1E2D5E;
+  border: 1px solid var(--color-navy);
   border-radius: 12px;
   width: 100%;
   max-width: 1100px;
@@ -32,7 +32,7 @@
   overflow: hidden;
   box-shadow: 0 24px 64px rgba(15, 20, 40, 0.32);
   font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
-  color: #1E2D5E;
+  color: var(--color-navy);
 }
 
 .hied-panel__header {
@@ -49,7 +49,7 @@
   font-family: 'Bricolage Grotesque', 'Plus Jakarta Sans', sans-serif;
   font-size: 18px;
   font-weight: 600;
-  color: #1E2D5E;
+  color: var(--color-navy);
   letter-spacing: -0.01em;
 }
 
@@ -58,7 +58,7 @@
   border: none;
   font-size: 28px;
   line-height: 1;
-  color: #1E2D5E;
+  color: var(--color-navy);
   cursor: pointer;
   width: 36px;
   height: 36px;
@@ -83,10 +83,10 @@
   flex: 1 1 auto;
   background: #ffffff;
   background-image:
-    linear-gradient(45deg, #f0f0f0 25%, transparent 25%),
-    linear-gradient(-45deg, #f0f0f0 25%, transparent 25%),
-    linear-gradient(45deg, transparent 75%, #f0f0f0 75%),
-    linear-gradient(-45deg, transparent 75%, #f0f0f0 75%);
+    linear-gradient(45deg, var(--color-pattern-grid) 25%, transparent 25%),
+    linear-gradient(-45deg, var(--color-pattern-grid) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, var(--color-pattern-grid) 75%),
+    linear-gradient(-45deg, transparent 75%, var(--color-pattern-grid) 75%);
   background-size: 20px 20px;
   background-position: 0 0, 0 10px, 10px -10px, -10px 0;
   min-width: 0;
@@ -124,7 +124,7 @@
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: #1E2D5E;
+  color: var(--color-navy);
 }
 
 .hied-slider {
@@ -132,7 +132,7 @@
   appearance: none;
   width: 100%;
   height: 4px;
-  background: #F7F6F4;
+  background: var(--color-gray);
   border: 1px solid rgba(30, 45, 94, 0.24);
   border-radius: 999px;
   outline: none;
@@ -145,7 +145,7 @@
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: #C94E28;
+  background: var(--color-vermillion);
   border: 2px solid #ffffff;
   box-shadow: 0 0 0 1px rgba(30, 45, 94, 0.4);
   cursor: pointer;
@@ -155,7 +155,7 @@
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: #C94E28;
+  background: var(--color-vermillion);
   border: 2px solid #ffffff;
   box-shadow: 0 0 0 1px rgba(30, 45, 94, 0.4);
   cursor: pointer;
@@ -172,7 +172,7 @@
   height: 40px;
   border: 1px solid rgba(30, 45, 94, 0.32);
   background: #ffffff;
-  color: #1E2D5E;
+  color: var(--color-navy);
   border-radius: 8px;
   font-size: 18px;
   cursor: pointer;
@@ -184,7 +184,7 @@
 }
 
 .hied-tool-btn:hover {
-  background: #1E2D5E;
+  background: var(--color-navy);
   color: #ffffff;
 }
 
@@ -202,8 +202,8 @@
 
 .hied-cancel {
   background: #ffffff;
-  color: #1E2D5E;
-  border: 1px solid #1E2D5E;
+  color: var(--color-navy);
+  border: 1px solid var(--color-navy);
   border-radius: 8px;
   padding: 10px 20px;
   font-family: inherit;
@@ -218,9 +218,9 @@
 }
 
 .hied-save {
-  background: #C94E28;
+  background: var(--color-vermillion);
   color: #ffffff;
-  border: 1px solid #C94E28;
+  border: 1px solid var(--color-vermillion);
   border-radius: 8px;
   padding: 10px 24px;
   font-family: inherit;
@@ -231,8 +231,8 @@
 }
 
 .hied-save:hover {
-  background: #B03E1C;
-  border-color: #B03E1C;
+  background: var(--color-vermillion-press);
+  border-color: var(--color-vermillion-press);
 }
 
 @media (max-width: 900px) {

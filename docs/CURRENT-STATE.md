@@ -1,6 +1,39 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 23 Nisan 2026 | Asama 82.6 — 'use strict' migration (profil-ui.js, K048 sonrasi ilk eski modul)
-> Aktif Odak: profil-ui.js (1870 satir) strict mode'a alindi. Audit temiz: implicit global yok, with/dynamic-code-runner/octal/delete yok, tum reassign var-declared ident'lere. Top-level var/function/const script scope global binding korunur. Smoke regression 86/86 PASS. Kalan 25 eski modul case-by-case — sonraki audit pass.
+> Son guncelleme: 23 Nisan 2026 | Asama 82.7 — Hex Faz 3 (admin/) + 'use strict' Faz 2 (5 modul batch)
+> Aktif Odak: Tum CSS dosyalari raw hex'ten arindirildi (toplam 6 faz K048+K049 1+2+3). 11 eski modulden 5'i strict mode'a alindi (shared/profil-bootstrap/profil-cv/profil-events/profil-firsatlar). Kalan 6 modul: profil-studio (3891 satir, en buyuk), profil-destek (1190), profil-settings (872), admin-announcements (867), profil-premium (262), profil-visibility (354). Sonraki: ya kalan 6 modul Faz 3, ya display:none JS toggle audit, ya Tuna Codex gate kararı.
+>
+> ── K049 Hex Faz 3 (admin sub-folder) — 23 Nisan 2026 ──
+>
+> **Scope:** css/admin/image-editor.css (20 hex) + css/admin/markalar.css (14 hex) → token. 5 yeni primitive token (--color-emerald-bright, --color-red-warm, --color-cream-warm, --color-cream-soft, --color-pattern-grid).
+>
+> **Bulgu:** admin/image-editor.css'te navy/vermillion brand renkleri + transparency checkerboard pattern (#f0f0f0). admin/markalar.css'te tab/avatar/danger button cream + emerald. Hepsi token'a baglandi.
+>
+> **Test:** tests/k049-hex-purge-phase3.spec.js 4 structural guard (8 PASS). K048 + K049 Faz 2+3 toplam 60 PASS.
+>
+> ── K049 'use strict' Faz 2 (5 modul batch) — 23 Nisan 2026 ──
+>
+> **Scope:** shared.js (402) + profil-bootstrap.js (470) + profil-cv.js (538) + profil-events.js (584) + profil-firsatlar.js (436) — toplam 2430 satir.
+>
+> **Audit findings (hepsi temiz):**
+> - 0 with statements, 0 dynamic-code-runner, 0 octal literal, 0 delete-variable.
+> - Top-level reassign 27 satir — hepsi var-declared (Y/summary/targetRole local; currentUser/currentCVStoragePath/wizardDirty/pendingPanelSwitch profil-core veya profil-wizard'da global, cross-module load-order korunur).
+>
+> **Test:** tests/k049-use-strict.spec.js Faz 2'yi de kapsayacak sekilde generic'lestirildi (STRICT_MIGRATED array, her modul icin 2 guard = 24 PASS mobile+desktop).
+>
+> **Smoke regression:** 18/18 PASS — strict mode runtime breakage yok.
+>
+> **Kalan strict-eligible modul:**
+> - profil-studio.js 3891 satir — en buyuk, daha derin audit gerek
+> - profil-destek.js 1190 satir
+> - profil-settings.js 872 satir
+> - admin-announcements.js 867 satir — composer, ozenli audit (R2 fix sonrasi tekrar test)
+> - profil-premium.js 262 satir
+> - profil-visibility.js 354 satir
+>
+> **Cache-bust:** 20260423k049b → 20260423k049c.
+>
+> ── Asama 82.6 (önceki) ──
+> 'use strict' Faz 1 — profil-ui.js (1870 satir, en buyuk eski modul).
 >
 > ── K049 'use strict' Faz 1 (profil-ui.js) — 23 Nisan 2026 ──
 >
