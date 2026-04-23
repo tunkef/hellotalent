@@ -1,6 +1,23 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 23 Nisan 2026 | Asama 82.4 — K049 inline style migration Faz 2 (profil.html)
-> Aktif Odak: 13 cosmetic inline → 13 utility class migrate edildi (57→44 total inline). 32 display:none inline bilinçli olarak korundu (JS toggle dependency — ayrı audit pass gerektirir). Sonraki: #4 Composer state-drift audit, #5 'use strict' profil-ui.js.
+> Son guncelleme: 23 Nisan 2026 | Asama 82.5 — Composer state-drift audit (R2 disciplin — ik-kampanya R2-like fix)
+> Aktif Odak: 4 composer dosya audit edildi. ik-kampanya.js saveCampaign INSERT branch R2 disciplin violation tespit edildi ve fix'lendi (currentCampaignId res.data.id'den capture ediliyor artik retry → duplicate row riski yok). admin-announcements R2 zaten fix'li, admin-coach-content + admin-campaigns state-drift riski yok. Sonraki: #5 'use strict' profil-ui.js.
+>
+> ── K049 Composer State-Drift Audit (23 Nisan 2026) ──
+>
+> **Scope:** INSERT/UPDATE branch'li composer'lar R2 pattern (admin-announcements.js commit 537294b) referansiyla audit.
+>
+> **Bulgu (1 BLOCKER):**
+> - **ik-kampanya.js saveCampaign fallback INSERT (line 1119):** currentCampaignId yakalanmiyordu. Normal UI flow'da step1→2 auto-draft currentCampaignId'yi set eder (line 361), ancak save button re-click + error-then-retry senaryosunda (saveCampaign.insert error sonrasi retry) currentCampaignId null kalir → tekrar INSERT branch → DUPLICATE ROW. Fix: INSERT success sonrasi `if (!currentCampaignId && res.data && res.data.id) currentCampaignId = res.data.id;` (hideWizard reset'inden önce).
+>
+> **Audit temiz (3 composer):**
+> - admin-announcements.js: R2 fix (537294b) existingRow reassignment mevcut ✓
+> - admin-coach-content.js: coach_invites INSERT .select() yok, closure state yok, fire-and-refresh pattern ✓
+> - admin-campaigns.js: admin review/update flow, composer degil, closure id yok ✓
+>
+> **Test:** tests/composer-state-drift.spec.js 5 structural guard (10 PASS mobile+desktop). Regression suite olarak kalir — yeni composer eklendiginde ayni disiplin enforce edilir.
+>
+> ── Asama 82.4 (önceki) ──
+> K049 inline style migration Faz 2 — profil.html 13 cosmetic inline → utility class. 32 display:none inline JS toggle dependency nedeniyle korundu.
 >
 > ── K049 Inline Style Migration Faz 2 (23 Nisan 2026) ──
 >

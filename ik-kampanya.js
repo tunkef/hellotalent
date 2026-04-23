@@ -1121,6 +1121,14 @@
 
       if (res.error) { alert('Hata: ' + res.error.message); return; }
 
+      /* K049 R2 discipline — fallback INSERT branch'te ID'yi closure'a yakala.
+       * Auto-draft step1→2 normalde currentCampaignId'yi set eder, ama save button
+       * re-click + error-then-retry senaryosunda currentCampaignId null kalirsa
+       * tekrar INSERT → duplicate row. Yakalama hideWizard reset'inden once yapilir. */
+      if (!currentCampaignId && res.data && res.data.id) {
+        currentCampaignId = res.data.id;
+      }
+
       var msg = targetStatus === 'pending_review' ? 'Kampanya gönderildi! Admin onayı bekleniyor.' : 'Taslak kaydedildi.';
       alert(msg);
       hideWizard();
