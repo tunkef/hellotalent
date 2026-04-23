@@ -56,25 +56,25 @@ if (window.Sentry) {
 </script>
 <!-- Analytics: ht_track → HT.trackEvent bridge -->
 <script>function ht_track(name, data) { if (window.HT && window.HT.trackEvent) window.HT.trackEvent(name, data); }</script>
-<link rel="stylesheet" href="css/tokens.css?v=20260423k049a">
-<link rel="stylesheet" href="css/layout.css?v=20260423k049a">
-<link rel="stylesheet" href="css/components.css?v=20260423k049a">
-<link rel="stylesheet" href="css/wizard.css?v=20260423k049a">
-<link rel="stylesheet" href="css/wizard-editorial.css?v=20260423k049a">
-<link rel="stylesheet" href="css/studio.css?v=20260423k049a">
-<link rel="stylesheet" href="css/panels/genel-bakis.css?v=20260423k049a">
-<link rel="stylesheet" href="css/panels/merkezi.css?v=20260423k049a">
-<link rel="stylesheet" href="css/profil-extras.css?v=20260423k049a">
-<link rel="stylesheet" href="css/panels/sirketler.css?v=20260423k049a">
-<link rel="stylesheet" href="css/panels/kimbakti.css?v=20260423k049a">
-<link rel="stylesheet" href="css/panels/inbox.css?v=20260423k049a">
-<link rel="stylesheet" href="css/panels/bildirimler.css?v=20260423k049a">
-<link rel="stylesheet" href="css/panels/destek.css?v=20260423k049a">
-<link rel="stylesheet" href="css/panels/ayarlar.css?v=20260423k049a">
-<link rel="stylesheet" href="css/panels/premium.css?v=20260423k049a">
-<link rel="stylesheet" href="css/panels/firsatlar.css?v=20260423k049a">
-<link rel="stylesheet" href="css/panel-soon.css?v=20260423k049a">
-<link rel="stylesheet" href="css/duyurular.css?v=20260423k049a">
+<link rel="stylesheet" href="css/tokens.css?v=20260423k049b">
+<link rel="stylesheet" href="css/layout.css?v=20260423k049b">
+<link rel="stylesheet" href="css/components.css?v=20260423k049b">
+<link rel="stylesheet" href="css/wizard.css?v=20260423k049b">
+<link rel="stylesheet" href="css/wizard-editorial.css?v=20260423k049b">
+<link rel="stylesheet" href="css/studio.css?v=20260423k049b">
+<link rel="stylesheet" href="css/panels/genel-bakis.css?v=20260423k049b">
+<link rel="stylesheet" href="css/panels/merkezi.css?v=20260423k049b">
+<link rel="stylesheet" href="css/profil-extras.css?v=20260423k049b">
+<link rel="stylesheet" href="css/panels/sirketler.css?v=20260423k049b">
+<link rel="stylesheet" href="css/panels/kimbakti.css?v=20260423k049b">
+<link rel="stylesheet" href="css/panels/inbox.css?v=20260423k049b">
+<link rel="stylesheet" href="css/panels/bildirimler.css?v=20260423k049b">
+<link rel="stylesheet" href="css/panels/destek.css?v=20260423k049b">
+<link rel="stylesheet" href="css/panels/ayarlar.css?v=20260423k049b">
+<link rel="stylesheet" href="css/panels/premium.css?v=20260423k049b">
+<link rel="stylesheet" href="css/panels/firsatlar.css?v=20260423k049b">
+<link rel="stylesheet" href="css/panel-soon.css?v=20260423k049b">
+<link rel="stylesheet" href="css/duyurular.css?v=20260423k049b">
 </head>
 <body>
 
@@ -222,7 +222,7 @@ if (window.Sentry) {
         <div class="sidebar-user-email" id="sidebar-email-text">&mdash;</div>
       </div>
     </div>
-    <div class="status-badge aktif" id="card-status-badge" style="width:fit-content;">
+    <div class="status-badge aktif ht-w-fit" id="card-status-badge">
       <span class="status-dot"></span><span id="card-status-text">Beni öner</span>
     </div>
   </div>
@@ -399,7 +399,7 @@ if (window.Sentry) {
     </div>
     <div class="modal-title">Taslak Bulundu</div>
     <div class="modal-desc">Daha önce başladığın bir taslak var. Kaldığın yerden devam etmek ister misin?</div>
-    <div class="modal-desc" id="draft-timestamp-hint" style="font-size:11px;color:var(--muted);margin-top:-4px;"></div>
+    <div class="modal-desc ht-helper-text-xs-mt-neg" id="draft-timestamp-hint"></div>
     <div class="d-flex gap-8 jc-center">
       <button class="ht-btn ht-btn--primary" id="btn-draft-resume">Devam Et</button>
       <button class="ht-btn ht-btn--secondary" id="btn-draft-discard">Baştan Başla</button>
@@ -708,10 +708,10 @@ if (window.Sentry) {
         </div>
         <div>
           <div class="item-label">Profil Fotoğrafı</div>
-          <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">JPG veya PNG, maks. 2MB</div>
+          <div class="ht-helper-text-sm">JPG veya PNG, maks. 2MB</div>
           <label class="ht-btn ht-btn--secondary ht-btn--sm" style="cursor:pointer;position:relative;overflow:hidden;">
             <span id="avatar-btn-text">Fotoğraf Yükle</span>
-            <input type="file" accept="image/*" id="avatar-file-input" style="position:absolute;inset:0;opacity:0;cursor:pointer;">
+            <input type="file" accept="image/*" id="avatar-file-input" class="ht-file-input-overlay">
           </label>
         </div>
       </div>
@@ -807,11 +807,11 @@ if (window.Sentry) {
 
       <!-- BIO / HAKKIMDA -->
       <div class="ht-card__title mb-4">Hakkımda <span class="field-hint">· İşverenler seni tanısın, öne çık</span></div>
-      <p style="font-size:var(--text-sm);color:var(--muted);margin:0 0 10px;line-height:1.6;">Perakende kariyerindeki güçlü yanlarını 2-3 cümleyle özetle. İşverenler profil kartında bu metni görür.</p>
+      <p class="ht-helper-text-base">Perakende kariyerindeki güçlü yanlarını 2-3 cümleyle özetle. İşverenler profil kartında bu metni görür.</p>
       <textarea id="f-bio" class="form-input" rows="5" style="resize:vertical;min-height:120px;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;line-height:1.6;padding:12px 14px;width:100%;" placeholder="Örnek: 8 yıldır lüks perakendede mağaza yönetimi yapıyorum. 30+ kişilik ekipleri yönettim, yıllık 15M TL ciro hedeflerini sürekli aştım. Ekip kurma, müşteri deneyimi ve visual merchandising konularında uzmanım."></textarea>
       <div class="d-flex jc-between items-center mt-4">
         <button type="button" id="btn-bio-translate" style="border:none;background:none;color:var(--muted);font-size:12px;cursor:pointer;padding:4px 8px;border-radius:6px;transition:background .15s;display:none;" onmouseenter="this.style.background='rgba(0,0,0,0.04)'" onmouseleave="this.style.background='none'">🤖 AI ile Türkçeye Çevir</button>
-        <span id="bio-char-count" style="font-size:11px;color:var(--muted);">0 / 1000</span>
+        <span id="bio-char-count" class="ht-helper-text-xs">0 / 1000</span>
       </div>
       <script>
       (function(){
@@ -868,7 +868,7 @@ if (window.Sentry) {
 
   <!-- WIZARD STEP 3: Eğitim -->
   <div class="wiz-step" id="wiz-step-3" data-step="3">
-    <div class="wiz-step-title">Eğitim, Diller, Sertifikalar <span style="font-size:12px;font-weight:400;color:var(--verm);">(En az 1 eğitim gerekli)</span></div>
+    <div class="wiz-step-title">Eğitim, Diller, Sertifikalar <span class="ht-caption-accent">(En az 1 eğitim gerekli)</span></div>
     <div class="wiz-step-desc">Eğitim geçmişini, bildiği dilleri ve sertifikalarını ekle.</div>
     <div id="step3-content">
 
@@ -905,7 +905,7 @@ if (window.Sentry) {
       <!-- KARIYER YONELIMI -->
       <div class="ht-input">
         <div class="ht-card__title mb-4">Kariyer Yönelimi</div>
-        <p class="helper-text" style="font-size:13px;color:var(--muted);margin:0 0 10px 0;">Kariyerinde hangi yönde ilerlemek istiyorsun?</p>
+        <p class="helper-text ht-helper-text-md">Kariyerinde hangi yönde ilerlemek istiyorsun?</p>
         <div id="career-type-checks" class="d-flex flex-wrap gap-8"></div>
       </div>
 
@@ -913,7 +913,7 @@ if (window.Sentry) {
 
       <!-- TARGET ROLES -->
       <div class="ht-card__title mb-4">Hedef Pozisyonlar</div>
-      <p class="helper-text" style="font-size:13px;color:var(--muted);margin:0 0 12px 0;line-height:1.5;">Hedef rollerin, seni açık pozisyonlarla eşleştirmemize yardımcı olur.</p>
+      <p class="helper-text ht-helper-text-md-wrap">Hedef rollerin, seni açık pozisyonlarla eşleştirmemize yardımcı olur.</p>
       <div id="target-roles-container"></div>
       <button class="ht-btn ht-btn--secondary ht-btn--sm mt-8" id="btn-add-role" type="button">+ Pozisyon Ekle</button>
 
@@ -1011,17 +1011,17 @@ if (window.Sentry) {
 
       <!-- CV UPLOAD -->
       <div class="ht-card__title mb-4">CV Yükle <span class="field-hint">· İşverenler CV'ni indirip detaylı inceleyebilir</span></div>
-      <div id="wiz-cv-zone" style="border:2px dashed var(--border);border-radius:12px;padding:24px;text-align:center;margin-bottom:16px;">
+      <div id="wiz-cv-zone" class="ht-upload-zone">
         <div id="wiz-cv-empty">
           <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.5" style="margin-bottom:8px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><polyline points="9 15 12 12 15 15"/></svg>
-          <div style="font-size:var(--text-sm);color:var(--muted);margin-bottom:8px;">PDF, DOC veya DOCX — maks. 5MB</div>
+          <div class="ht-helper-text-base-mb">PDF, DOC veya DOCX — maks. 5MB</div>
           <label for="wiz-cv-input" class="ht-btn ht-btn--secondary ht-btn--sm" >CV Seç</label>
           <input type="file" id="wiz-cv-input" accept=".pdf,.doc,.docx" style="display:none;">
         </div>
         <div id="wiz-cv-uploaded" style="display:none;">
           <div class="d-flex items-center gap-8 jc-center">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-            <span id="wiz-cv-filename" style="font-weight:600;"></span>
+            <span id="wiz-cv-filename" class="ht-fw-600"></span>
           </div>
           <button type="button" id="wiz-cv-remove" class="ht-btn ht-btn--secondary ht-btn--sm mt-8">Değiştir</button>
         </div>
@@ -1077,7 +1077,7 @@ if (window.Sentry) {
           </div>
           <label class="toggle ht-toggle"><input type="checkbox" id="wiz-toggle-one-cikar"><span class="toggle-slider"></span></label>
         </div>
-        <div class="wiz-premium-soon" style="cursor:pointer;text-decoration:underline;" data-panel="premium">Tüm premium avantajları gör</div>
+        <div class="wiz-premium-soon ht-link-inline" data-panel="premium">Tüm premium avantajları gör</div>
       </div>
 
     </div>
@@ -1875,34 +1875,34 @@ if (window.Sentry) {
   19. profil-bootstrap.js — auth, data hydration, step-init orchestration, career_goal prefill
   20. profil-events.js    — DOMContentLoaded event wiring, Cmd+K, avatar dropdown, page glue
 -->
-<script src="shared.js?v=20260423k049a"></script>
-<script src="profil-core.js?v=20260423k049a"></script>
-<script src="profil-data.js?v=20260423k049a"></script>
-<script src="profil-ui.js?v=20260423k049a"></script>
-<script src="profil-locations.js?v=20260423k049a"></script>
-<script src="profil-summary.js?v=20260423k049a"></script>
-<script src="profil-genel.js?v=20260423k049a"></script>
-<script src="profil-visibility.js?v=20260423k049a"></script>
-<script src="profil-preview.js?v=20260423k049a"></script>
-<script src="profil-cv.js?v=20260423k049a"></script>
-<script src="profil-markalar.js?v=20260423k049a"></script>
-<script src="profil-settings.js?v=20260423k049a"></script>
-<script src="profil-firsatlar.js?v=20260423k049a"></script>
-<script src="profil-inbox.js?v=20260423k049a"></script>
-<script src="profil-yetkinlik.js?v=20260423k049a"></script>
-<script src="profil-studio-coach.js?v=20260423k049a"></script>
-<script src="profil-studio.js?v=20260423k049a"></script>
-<script src="panel-soon.js?v=20260423k049a"></script>
-<script src="profil-duyurular.js?v=20260423k049a"></script>
-<script src="profil-premium.js?v=20260423k049a"></script>
-<script src="profil-destek.js?v=20260423k049a"></script>
-<script src="profil-ayarlar.js?v=20260423k049a"></script>
-<script src="profil-wizard.js?v=20260423k049a"></script>
-<script src="profil-draft.js?v=20260423k049a"></script>
-<script src="profil-helpers.js?v=20260423k049a"></script>
-<script src="profil-kimbakti.js?v=20260423k049a"></script>
-<script src="profil-bootstrap.js?v=20260423k049a"></script>
-<script src="profil-events.js?v=20260423k049a"></script>
+<script src="shared.js?v=20260423k049b"></script>
+<script src="profil-core.js?v=20260423k049b"></script>
+<script src="profil-data.js?v=20260423k049b"></script>
+<script src="profil-ui.js?v=20260423k049b"></script>
+<script src="profil-locations.js?v=20260423k049b"></script>
+<script src="profil-summary.js?v=20260423k049b"></script>
+<script src="profil-genel.js?v=20260423k049b"></script>
+<script src="profil-visibility.js?v=20260423k049b"></script>
+<script src="profil-preview.js?v=20260423k049b"></script>
+<script src="profil-cv.js?v=20260423k049b"></script>
+<script src="profil-markalar.js?v=20260423k049b"></script>
+<script src="profil-settings.js?v=20260423k049b"></script>
+<script src="profil-firsatlar.js?v=20260423k049b"></script>
+<script src="profil-inbox.js?v=20260423k049b"></script>
+<script src="profil-yetkinlik.js?v=20260423k049b"></script>
+<script src="profil-studio-coach.js?v=20260423k049b"></script>
+<script src="profil-studio.js?v=20260423k049b"></script>
+<script src="panel-soon.js?v=20260423k049b"></script>
+<script src="profil-duyurular.js?v=20260423k049b"></script>
+<script src="profil-premium.js?v=20260423k049b"></script>
+<script src="profil-destek.js?v=20260423k049b"></script>
+<script src="profil-ayarlar.js?v=20260423k049b"></script>
+<script src="profil-wizard.js?v=20260423k049b"></script>
+<script src="profil-draft.js?v=20260423k049b"></script>
+<script src="profil-helpers.js?v=20260423k049b"></script>
+<script src="profil-kimbakti.js?v=20260423k049b"></script>
+<script src="profil-bootstrap.js?v=20260423k049b"></script>
+<script src="profil-events.js?v=20260423k049b"></script>
 
 <!-- Inline helpers + [data-panel] delegation extracted to profil-helpers.js -->
 

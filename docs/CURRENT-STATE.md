@@ -1,6 +1,26 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 23 Nisan 2026 | Asama 82.3 — K049 hex purge Faz 2 (components + studio + wizard-editorial + duyurular)
-> Aktif Odak: Raw hex purge 4 ek CSS dosyasinda tamamlandi. tokens.css 16 yeni primitive/semantic token. A1+A3 pending-approvals arsivlendi (A1: 90g GitHub PAT rotate kararı doğrulandı, A3: Codex gate Hafta 2'ye ertelendi). Sonraki: #3 Inline style Faz 2 (profil.html 56 inline → utility class), #4 Composer state-drift audit, #5 'use strict' profil-ui.js.
+> Son guncelleme: 23 Nisan 2026 | Asama 82.4 — K049 inline style migration Faz 2 (profil.html)
+> Aktif Odak: 13 cosmetic inline → 13 utility class migrate edildi (57→44 total inline). 32 display:none inline bilinçli olarak korundu (JS toggle dependency — ayrı audit pass gerektirir). Sonraki: #4 Composer state-drift audit, #5 'use strict' profil-ui.js.
+>
+> ── K049 Inline Style Migration Faz 2 (23 Nisan 2026) ──
+>
+> **Scope:** profil.html cosmetic inline styles → components.css utility classes. 13 instance migrate.
+>
+> **Yeni utility classes (13):** .ht-helper-text-xs/-xs-mt-neg/-sm/-md/-md-wrap/-base/-base-mb, .ht-w-fit, .ht-link-inline, .ht-fw-600, .ht-caption-accent, .ht-upload-zone, .ht-file-input-overlay.
+>
+> **Migrate edilen elements:** status-badge aktif (width-fit), draft-timestamp-hint (helper-xs-mt-neg), avatar yükleme help text (helper-sm), avatar-file-input overlay, bio helper text (helper-base), bio-char-count, education caption accent, wiz-step helper texts (md + md-wrap), wiz-cv-zone (upload-zone), CV helper text (helper-base-mb), wiz-cv-filename (fw-600), wiz-premium-soon (link-inline).
+>
+> **Korunan inlines (32):** display:none inline (JS toggle via el.style.display) — class-based refactor ayrı koordineli JS sweep gerektirir. Bir sonraki audit pass'e ertelendi.
+>
+> **Test:** tests/k049-inline-purge-phase2.spec.js 4 guard (8 PASS mobile+desktop). profil.html total inline count 57 → 44.
+>
+> **Cache-bust:** 20260423k049a → 20260423k049b.
+>
+> **Sıradaki:** #4 composer state-drift audit (ik-kampanya.js + diğer INSERT/UPDATE composer'lar), #5 'use strict' profil-ui.js (1870 satır).
+>
+> ── Asama 82.3 (önceki) ──
+> K049 hex purge Faz 2 — components + studio + wizard-editorial + duyurular.
+> Raw hex purge 4 ek CSS dosyasinda tamamlandi. tokens.css 16 yeni primitive/semantic token. A1+A3 pending-approvals arsivlendi (A1: 90g GitHub PAT rotate kararı doğrulandı, A3: Codex gate Hafta 2'ye ertelendi).
 >
 > ── K049 Hex Purge Faz 2 (23 Nisan 2026) ──
 >

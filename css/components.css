@@ -565,3 +565,22 @@ html[data-theme='dark'] .ht-error-banner__retry:focus-visible{background:var(--c
 
 /* Success OK button width fit */
 .ht-btn--full-w{width:100%;padding:11px 0;}
+
+/* ═══ K049 — Inline style migration Faz 2 (profil.html cosmetic utilities) ═══
+ * 32× style="display:none;" intentionally KEPT inline — toggled by JS via
+ * el.style.display. Class-based refactor requires coordinated JS sweep
+ * (classList.toggle) and is deferred to a future audit pass.
+ * Below utilities cover the remaining non-display cosmetic inlines. */
+.ht-helper-text-xs{font-size:11px;color:var(--muted);}
+.ht-helper-text-xs-mt-neg{font-size:11px;color:var(--muted);margin-top:-4px;}
+.ht-helper-text-sm{font-size:12px;color:var(--muted);margin-bottom:8px;}
+.ht-helper-text-md{font-size:13px;color:var(--muted);margin:0 0 10px 0;}
+.ht-helper-text-md-wrap{font-size:13px;color:var(--muted);margin:0 0 12px 0;line-height:1.5;}
+.ht-helper-text-base{font-size:var(--text-sm);color:var(--muted);margin:0 0 10px;line-height:1.6;}
+.ht-helper-text-base-mb{font-size:var(--text-sm);color:var(--muted);margin-bottom:8px;}
+.ht-w-fit{width:fit-content;}
+.ht-link-inline{cursor:pointer;text-decoration:underline;}
+.ht-fw-600{font-weight:600;}
+.ht-caption-accent{font-size:12px;font-weight:400;color:var(--verm);}
+.ht-upload-zone{border:2px dashed var(--border);border-radius:12px;padding:24px;text-align:center;margin-bottom:16px;}
+.ht-file-input-overlay{position:absolute;inset:0;opacity:0;cursor:pointer;}
