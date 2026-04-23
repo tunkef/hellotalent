@@ -1,6 +1,28 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 23 Nisan 2026 | Asama 82.5 — Composer state-drift audit (R2 disciplin — ik-kampanya R2-like fix)
-> Aktif Odak: 4 composer dosya audit edildi. ik-kampanya.js saveCampaign INSERT branch R2 disciplin violation tespit edildi ve fix'lendi (currentCampaignId res.data.id'den capture ediliyor artik retry → duplicate row riski yok). admin-announcements R2 zaten fix'li, admin-coach-content + admin-campaigns state-drift riski yok. Sonraki: #5 'use strict' profil-ui.js.
+> Son guncelleme: 23 Nisan 2026 | Asama 82.6 — 'use strict' migration (profil-ui.js, K048 sonrasi ilk eski modul)
+> Aktif Odak: profil-ui.js (1870 satir) strict mode'a alindi. Audit temiz: implicit global yok, with/dynamic-code-runner/octal/delete yok, tum reassign var-declared ident'lere. Top-level var/function/const script scope global binding korunur. Smoke regression 86/86 PASS. Kalan 25 eski modul case-by-case — sonraki audit pass.
+>
+> ── K049 'use strict' Faz 1 (profil-ui.js) — 23 Nisan 2026 ──
+>
+> **Scope:** profil-ui.js (1870 satir, en buyuk eski modul) /* global */ comments sonrasi 'use strict'; directive eklendi.
+>
+> **Audit findings (hepsi temiz):**
+> - Implicit global writes: yok. 24 top-level reassignment hepsi var-declared ident'lere (hasMatchInList L369, suppressSuggest L427, timer L693, resolvedPozisyon L961, selectedBrandInterests L1248, img L2122, v L2167 vs.).
+> - with statements: yok.
+> - Dinamik kod runner kullanimi: yok.
+> - Octal literal: yok (rgba(0,0,0,0.04) string icinde hit olmaz).
+> - delete variable: yok.
+>
+> **Global binding verification:** Top-level `var _brandIdLookup`, `function _initBrandCompanyLookup` vs. strict script mode'da global object'e attach olmaya devam eder (strict sadece fonksiyon body'sine global binding kisitlar, SCRIPT scope degil).
+>
+> **Regression:** smoke.runtime + profil.panel-delegation + K048 + K049 (hex purge + inline + state-drift + use-strict) = 86/86 PASS. Auth-required E2E (HT_TEST_EMAIL env var) kapsam disi.
+>
+> **Test:** tests/k049-use-strict.spec.js 3 guard (6 PASS mobile+desktop). Regression suite olarak kalir, profil-ui.js'den strict directive silinirse guard duser.
+>
+> **Kalan is:** Diger 25 eski modul (profil-bootstrap, profil-events, profil-settings, profil-inbox, profil-cv, profil-studio, profil-markalar, ik.js, ik-kampanya, shared.js vs.) case-by-case audit + strict migration. Ayri pass.
+>
+> ── Asama 82.5 (önceki) ──
+> Composer state-drift audit (R2 disciplin — ik-kampanya R2-like fix). 4 composer audit edildi, 1 BLOCKER fix (ik-kampanya saveCampaign INSERT branch currentCampaignId capture).
 >
 > ── K049 Composer State-Drift Audit (23 Nisan 2026) ──
 >

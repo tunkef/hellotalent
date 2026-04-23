@@ -1,5 +1,9 @@
 /* global supabase, AYRILMA_NEDENLERI, AY_ISIMLERI, BOLUM_DB, BRAND_DB, CALISMA_TIPLERI, CAREER_TYPE_OPTIONS, CAREER_TYPE_ORDER, DIL_LISTESI, DIL_SEVIYELERI, EGITIM_SEVIYELERI, ILCELER, ISTIHDAM_TIPLERI, MUSAITLIK_SECENEKLERI, POSITION_TO_FAMILY, RETAIL_POSITIONS, ROL_AILELERI, SEGMENTLER, SEKTOR_ROL_MAP, STORAGE, TAKIM_BUYUKLUKLERI, TUR_ILLER, UNIVERSITE_DB */
 /* global _ht_follows, _loadedDBData, applyAllVisibilityMirrorsFromProfile, calculateCompletion, canonicalizeRole, clearDraft, collectLocations, currentUser, getCurrentEmployerDisplayFromExperiences, ht_track, markWizardDirty, normalizeForDisplay, nullIfEmpty, refreshVisibilitySummary, selectedCalismaTipleri, selectedCareerTypes, selectedMusaitlik, selectedSegmentler, setVal, syncAccountEmail, titleCaseTR, trLower, updateBrandFollowCounter, updateCompletionUI, updateDashboardSummary, updateMerkezCards, updateMerkezVisState, val, wizardDirty */
+'use strict';
+// K049 — profil-ui.js (eski modullerden ilk strict mode gecisi).
+// Audit temiz: implicit global yok (tum reassign var-declared ident'lere), with/eval/octal/delete yok.
+// Top-level var/function/const script scope'ta global'e attach olmaya devam eder.
 // v20260320 ── BRAND/COMPANY ID LOOKUP ──
 // Populated at page load from Supabase; used by makeSmartBrandField + collectExperiences
 var _brandIdLookup = {};   // trLower(brand_name) → { brand_id, company_id }
