@@ -53,12 +53,30 @@ test.describe('TF2 — MFA system hardening', function () {
     expect(mfaBlock).toContain('http://www.w3.org/2000/svg');
   });
 
-  test('giris.html MFA challenge has brute-force lockout (3 yanlis → 30sn)', function () {
+  test('giris.html MFA challenge has progressive lockout (3=30sn → 7+=24h)', function () {
     var html = read('giris.html');
     expect(html).toContain('mfaChallengeFailCount');
     expect(html).toContain('MFA_CHALLENGE_THRESHOLD');
-    expect(html).toContain('MFA_CHALLENGE_LOCKOUT_MS');
+    expect(html).toContain('computeChallengeLockoutMs');
+    expect(html).toContain('formatChallengeCountdown');
     expect(html).toContain('applyChallengeLockout');
+    // Progresif basamaklar
+    expect(html).toMatch(/failCount === 3\) return 30 \* 1000/);
+    expect(html).toMatch(/failCount === 4\) return 2 \* 60 \* 1000/);
+    expect(html).toMatch(/failCount === 5\) return 10 \* 60 \* 1000/);
+    expect(html).toMatch(/failCount === 6\) return 60 \* 60 \* 1000/);
+    expect(html).toMatch(/return 24 \* 60 \* 60 \* 1000/);
+  });
+
+  test('profil-settings.js has progressive MFA lockout (matches giris.html schema)', function () {
+    var src = read('profil-settings.js');
+    expect(src).toContain('computeMfaLockoutMs');
+    expect(src).toContain('formatLockoutCountdown');
+    expect(src).toMatch(/failCount === 3\) return 30 \* 1000/);
+    expect(src).toMatch(/failCount === 4\) return 2 \* 60 \* 1000/);
+    expect(src).toMatch(/failCount === 5\) return 10 \* 60 \* 1000/);
+    expect(src).toMatch(/failCount === 6\) return 60 \* 60 \* 1000/);
+    expect(src).toMatch(/return 24 \* 60 \* 60 \* 1000/);
   });
 
   test('giris.html MFA modal has ARIA dialog semantics', function () {
@@ -94,7 +112,8 @@ test.describe('TF2 — MFA system hardening', function () {
     var src = read('profil-settings.js');
     expect(src).toContain('applyMfaLockout');
     expect(src).toContain('MFA_FAIL_THRESHOLD');
-    expect(src).toContain('MFA_LOCKOUT_MS');
+    // Progresif lockout: MFA_LOCKOUT_MS flat const yerine computeMfaLockoutMs fn
+    expect(src).toContain('computeMfaLockoutMs');
     expect(src).toContain('mfaEnrollFailCount');
     expect(src).toContain('mfaDisableFailCount');
   });

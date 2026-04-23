@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/tokens.css?v=20260423k049e">
+<link rel="stylesheet" href="css/tokens.css?v=20260423k049f">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   /* Tokens: css/tokens.css — lokal :root silindi (Faz 1c). */
@@ -432,8 +432,8 @@
   <div class="auth-split" id="auth-split">
     <!-- K-057 — Desktop/tablet split: brand portrait side + form side. Mobile: form only. -->
     <div class="auth-scene" aria-hidden="true">
-      <img class="auth-img auth-img-aday" src="assets/v2/auth-aday.webp?v=20260423k049e" alt="" role="presentation">
-      <img class="auth-img auth-img-kurumsal" src="assets/v2/auth-kurumsal.webp?v=20260423k049e" alt="" role="presentation">
+      <img class="auth-img auth-img-aday" src="assets/v2/auth-aday.webp?v=20260423k049f" alt="" role="presentation">
+      <img class="auth-img auth-img-kurumsal" src="assets/v2/auth-kurumsal.webp?v=20260423k049f" alt="" role="presentation">
     </div>
   <div class="card">
 
@@ -558,7 +558,7 @@
 </div>
 
 <!-- shared.js: Supabase config source of truth (no header/footer injected — no ht-header/ht-footer divs) -->
-<script src="/shared.js?v=20260423k049e"></script>
+<script src="/shared.js?v=20260423k049f"></script>
 <script>
 // ── SUPABASE (config from shared.js — HT.getSupa()) ──
 function getSupa() {
@@ -626,7 +626,7 @@ function getCandidatePostAuthUrl() {
   if (data.session && data.session.user) {
     // Zaten giriş yapmış kullaniciyi MFA kontrolü sonrası role'e göre yönlendir
     var role = data.session.user.app_metadata?.role;
-    checkAndHandleMFA(role === 'employer' ? 'demo-dashboard-ik.html' : getCandidatePostAuthUrl());
+    checkAndHandleMFA(role === 'employer' ? 'demo-dashboard-ik.html' : getCandidatePostAuthUrl(), role === 'employer' ? 'employer' : 'candidate');
   }
 })();
 
@@ -695,7 +695,7 @@ async function loginAday() {
     btnText.textContent = 'Giriş Yap';
     return;
   }
-  checkAndHandleMFA(getCandidatePostAuthUrl());
+  checkAndHandleMFA(getCandidatePostAuthUrl(), 'candidate');
 }
 
 // ── IK GİRİŞ ──
@@ -745,7 +745,7 @@ async function loginIK() {
     btnText.textContent = 'Giriş Yap';
     return;
   }
-  checkAndHandleMFA('demo-dashboard-ik.html');
+  checkAndHandleMFA('demo-dashboard-ik.html', 'employer');
 }
 
 // Enter + Escape key desteği
@@ -890,7 +890,10 @@ document.addEventListener('keydown', function(e) {
 // Called after successful login if user has MFA enrolled.
 // Shows a modal overlay for TOTP code entry.
 
-async function checkAndHandleMFA(redirectUrl) {
+async function checkAndHandleMFA(redirectUrl, accountType) {
+  // TF3: accountType 'candidate' | 'employer' — 'candidate' ise MFA sonrasi
+  // account_status check (pending_deletion/frozen restore modal).
+  accountType = accountType || 'candidate';
   var sb;
   try {
     sb = typeof getSupa === 'function' ? getSupa() : null;
@@ -898,25 +901,137 @@ async function checkAndHandleMFA(redirectUrl) {
     console.error('Supabase init failed:', e);
     sb = null;
   }
-  if (!sb) { console.error('Supabase instance not available for MFA check'); window.location.href = redirectUrl; return; }
+  if (!sb) { console.error('Supabase instance not available for MFA check'); finalizePostAuth(redirectUrl, accountType); return; }
 
   try {
     var aalRes = await sb.auth.mfa.getAuthenticatorAssuranceLevel();
-    if (aalRes.error) { window.location.href = redirectUrl; return; }
+    if (aalRes.error) { finalizePostAuth(redirectUrl, accountType); return; }
 
     // If user has MFA enrolled (nextLevel is aal2) but current session is aal1
     if (aalRes.data.nextLevel === 'aal2' && aalRes.data.currentLevel === 'aal1') {
-      showMfaChallengeModal(redirectUrl);
+      showMfaChallengeModal(redirectUrl, accountType);
     } else {
-      window.location.href = redirectUrl;
+      finalizePostAuth(redirectUrl, accountType);
     }
   } catch (e) {
     console.error('MFA AAL check failed:', e);
-    window.location.href = redirectUrl;
+    finalizePostAuth(redirectUrl, accountType);
   }
 }
 
-function showMfaChallengeModal(redirectUrl) {
+// TF3 — Post-auth finalize: MFA sonrasi aday hesabi icin account_status check,
+// pending_deletion/frozen ise restore modal goster. Employer: direct redirect.
+async function finalizePostAuth(redirectUrl, accountType) {
+  if (accountType !== 'candidate') { window.location.href = redirectUrl; return; }
+  var sb = typeof getSupa === 'function' ? getSupa() : null;
+  if (!sb) { window.location.href = redirectUrl; return; }
+  try {
+    var userRes = await sb.auth.getUser();
+    if (userRes.error || !userRes.data.user) { window.location.href = redirectUrl; return; }
+    var userId = userRes.data.user.id;
+    var userEmail = userRes.data.user.email;
+    var candRes = await sb.from('candidates').select('account_status, deletion_requested_at').eq('user_id', userId).maybeSingle();
+    if (candRes.error || !candRes.data) { window.location.href = redirectUrl; return; }
+    var status = candRes.data.account_status;
+    if (status === 'pending_deletion' || status === 'frozen') {
+      showAccountRestoreModal({
+        userId: userId,
+        userEmail: userEmail,
+        status: status,
+        deletionRequestedAt: candRes.data.deletion_requested_at,
+        redirectUrl: redirectUrl
+      });
+      return;
+    }
+  } catch (e) { console.error('Account status check failed:', e); }
+  window.location.href = redirectUrl;
+}
+
+// TF3 — Restore modal: pending_deletion/frozen hesap icin aktiflestirme/cikis secimi.
+function showAccountRestoreModal(opts) {
+  var sb = typeof getSupa === 'function' ? getSupa() : null;
+  var overlay = document.createElement('div');
+  overlay.id = 'account-restore-overlay';
+  overlay.className = 'mfa-overlay';
+
+  var modal = document.createElement('div');
+  modal.className = 'mfa-modal';
+  modal.setAttribute('role', 'dialog');
+  modal.setAttribute('aria-modal', 'true');
+  modal.setAttribute('aria-labelledby', 'restore-title');
+
+  var head = document.createElement('div');
+  head.className = 'mfa-head';
+  var title = document.createElement('h2');
+  title.id = 'restore-title';
+  title.className = 'mfa-title';
+
+  var sub = document.createElement('p');
+  sub.className = 'mfa-sub';
+
+  if (opts.status === 'pending_deletion') {
+    title.textContent = 'Hesabını aktifleştirmek ister misin?';
+    var daysLeft = 30;
+    if (opts.deletionRequestedAt) {
+      try {
+        var reqAt = new Date(opts.deletionRequestedAt).getTime();
+        var msLeft = reqAt + (30 * 24 * 60 * 60 * 1000) - Date.now();
+        daysLeft = Math.max(0, Math.ceil(msLeft / (24 * 60 * 60 * 1000)));
+      } catch (e) {}
+    }
+    sub.textContent = opts.userEmail + ' adresiyle hesabını silmek üzereydin — ' + daysLeft + ' gün içinde kalıcı silinecekti. Aktifleştirirsen tüm verilerin korunarak eski kaldığın yerden devam edersin.';
+  } else {
+    title.textContent = 'Hesabın dondurulmuş';
+    sub.textContent = opts.userEmail + ' adresiyle hesabını dondurmuştun. Aktifleştirmek ister misin? Profilin yeniden işverenlere görünür olacak.';
+  }
+  head.appendChild(title);
+  head.appendChild(sub);
+
+  var restoreBtn = document.createElement('button');
+  restoreBtn.className = 'mfa-verify';
+  restoreBtn.textContent = 'Hesabımı Aktifleştir';
+
+  var msgEl = document.createElement('div');
+  msgEl.className = 'mfa-msg';
+
+  var signoutLink = document.createElement('button');
+  signoutLink.className = 'mfa-signout';
+  signoutLink.textContent = 'Çıkış yap';
+
+  modal.appendChild(head);
+  modal.appendChild(restoreBtn);
+  modal.appendChild(msgEl);
+  modal.appendChild(signoutLink);
+  overlay.appendChild(modal);
+  document.body.appendChild(overlay);
+
+  restoreBtn.onclick = async function() {
+    if (!sb) return;
+    restoreBtn.disabled = true;
+    var origText = restoreBtn.textContent;
+    restoreBtn.textContent = 'Aktifleştiriliyor...';
+    try {
+      var upd = await sb.from('candidates').update({ account_status: 'active', deletion_requested_at: null }).eq('user_id', opts.userId);
+      if (upd.error) throw upd.error;
+      overlay.style.display = 'none';
+      window.location.href = opts.redirectUrl;
+    } catch (e) {
+      msgEl.textContent = 'Hata: ' + (e.message || 'Aktifleştirme başarısız.');
+      msgEl.style.display = 'block';
+      restoreBtn.disabled = false;
+      restoreBtn.textContent = origText;
+    }
+  };
+
+  signoutLink.onclick = async function() {
+    try { if (sb) await sb.auth.signOut(); } catch (e) {}
+    overlay.style.display = 'none';
+    window.location.reload();
+  };
+}
+
+function showMfaChallengeModal(redirectUrl, accountType) {
+  accountType = accountType || 'candidate';
   var sb = typeof getSupa === 'function' ? getSupa() : null;
 
   // Create modal if not exists
@@ -1011,30 +1126,57 @@ function showMfaChallengeModal(redirectUrl) {
     if (e.key === 'Enter') verifyBtn.click();
   };
 
-  // TF2 fix: brute-force lockout — 3 yanlis → 30sn (giris.html MFA challenge)
+  // TF2 fix + Tuna UAT bonus: Progresif brute-force lockout
+  // 3=30sn, 4=2dk, 5=10dk, 6=1h, 7+=24h (cap). Exponential backoff.
   var mfaChallengeFailCount = 0;
   var MFA_CHALLENGE_THRESHOLD = 3;
-  var MFA_CHALLENGE_LOCKOUT_MS = 30000;
+
+  function computeChallengeLockoutMs(failCount) {
+    if (failCount < 3) return 0;
+    if (failCount === 3) return 30 * 1000;
+    if (failCount === 4) return 2 * 60 * 1000;
+    if (failCount === 5) return 10 * 60 * 1000;
+    if (failCount === 6) return 60 * 60 * 1000;
+    return 24 * 60 * 60 * 1000;
+  }
+
+  function formatChallengeCountdown(sec) {
+    if (sec < 60) return sec + 'sn';
+    if (sec < 3600) {
+      var m = Math.floor(sec / 60);
+      var s = sec % 60;
+      return m + ':' + (s < 10 ? '0' + s : s);
+    }
+    var h = Math.floor(sec / 3600);
+    var rem = sec % 3600;
+    var m2 = Math.floor(rem / 60);
+    var s2 = rem % 60;
+    return h + ':' + (m2 < 10 ? '0' + m2 : m2) + ':' + (s2 < 10 ? '0' + s2 : s2);
+  }
 
   function applyChallengeLockout() {
+    var lockMs = computeChallengeLockoutMs(mfaChallengeFailCount);
+    if (!lockMs) return;
     verifyBtn.disabled = true;
     codeInput.disabled = true;
-    var remaining = Math.floor(MFA_CHALLENGE_LOCKOUT_MS / 1000);
-    verifyBtn.textContent = 'Bekleyin ' + remaining + 'sn...';
-    msgEl.textContent = 'Çok fazla hatalı deneme. Güvenlik için ' + remaining + ' saniye bekleyin.';
-    msgEl.style.display = 'block';
+    var remaining = Math.floor(lockMs / 1000);
+    function render() {
+      var fmt = formatChallengeCountdown(remaining);
+      verifyBtn.textContent = 'Bekleyin ' + fmt + '...';
+      msgEl.textContent = 'Çok fazla hatalı deneme (#' + mfaChallengeFailCount + '). Güvenlik için ' + fmt + ' bekleyin.';
+      msgEl.style.display = 'block';
+    }
+    render();
     var tick = setInterval(function() {
       remaining--;
       if (remaining > 0) {
-        verifyBtn.textContent = 'Bekleyin ' + remaining + 'sn...';
-        msgEl.textContent = 'Çok fazla hatalı deneme. Güvenlik için ' + remaining + ' saniye bekleyin.';
+        render();
       } else {
         clearInterval(tick);
         verifyBtn.disabled = false;
         codeInput.disabled = false;
         verifyBtn.textContent = 'Doğrula';
         msgEl.style.display = 'none';
-        mfaChallengeFailCount = 0;
       }
     }, 1000);
   }
@@ -1067,8 +1209,9 @@ function showMfaChallengeModal(redirectUrl) {
 
       wasSuccess = true;
       mfaChallengeFailCount = 0;
-      // MFA verified — redirect
-      window.location.href = redirectUrl;
+      // MFA verified — post-auth checks (TF3 account status) sonra redirect
+      overlay.style.display = 'none';
+      finalizePostAuth(redirectUrl, accountType);
     } catch (e) {
       mfaChallengeFailCount++;
       var errMsg = (e.message || '').toLowerCase();

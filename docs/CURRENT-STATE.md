@@ -1,6 +1,45 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 23 Nisan 2026 | Asama 82.12 — Tuna feedback TF1 (2FA UI fix) + TF2 (sistem dogrulama) tamamlandi
-> Aktif Odak: 2FA enroll UI yeniden yapildi (dedicated mfa-enroll layout, responsive, a11y). giris.html MFA challenge emoji kaldirildi (SVG createElementNS), brute-force lockout eklendi (3 yanlis → 30sn), ARIA dialog semantik eklendi. profil-settings.js unverified factor cleanup eklendi (enroll defensive + checkMfaStatus auto). UAT'a hazir. Kalan: TF3 hesap silme workflow, TF4 avatar cropper, TF5 admin image editor.
+> Son guncelleme: 23 Nisan 2026 | Asama 82.13 — Tuna feedback TF3 (hesap silme workflow) + progresif lockout (bonus) tamamlandi
+> Aktif Odak: Aday login sonrasi pending_deletion/frozen account_status check + restore modal (aktiflestir/cikis). Delete confirm metni 30g dondurma vurgusu + login-restore bilgilendirmesi ile guncellendi. MFA lockout artik progresif (3=30sn, 4=2dk, 5=10dk, 6=1h, 7+=24h cap) — giris.html + profil-settings.js iki phase'de. TF6 backlog'da yeni eklendi (Ayarlar UI/UX revizyonu). Kalan: TF4 avatar cropper, TF5 admin image editor, TF6 ayarlar UX.
+>
+> ── TF3 — Hesap Silme Workflow Revizyonu (KVKK + login restore) ──
+>
+> **Tuna UAT feedback:** "30 gün dondurulacak + 30g sonra silinecek + login'de 'aktiflestirmek ister misin?' sor + onaylarsa kullanici eski kaldigi yerden devam etsin."
+>
+> **Frontend fix (DB triggers zaten hazır):**
+>
+> 1. **profil-settings.js delete confirm metin guncellendi:** "Hesabin 30 gun boyunca dondurulacak — kimse goremeyecek. Bu 30 gun icinde ayni e-posta ile giris yaparsan hesabin tekrar aktiflestirilecek ve eski kaldigin yerden devam edeceksin. 30 gun sonunda ise hesabin kalici olarak silinecek (KVKK md.11). Devam etmek istiyor musun?"
+>
+> 2. **giris.html post-auth flow:** `checkAndHandleMFA(redirectUrl, accountType)` imzasi + `finalizePostAuth(redirectUrl, accountType)` orkestratoru.
+>    - accountType='candidate': MFA sonrasi candidates.account_status + deletion_requested_at sorgulanir
+>    - pending_deletion/frozen → `showAccountRestoreModal()` (pending_deletion icin gun sayaci daysLeft hesapli)
+>    - active veya hata → direct redirect
+>    - accountType='employer': direct redirect (candidates tablosunda olmaz)
+>
+> 3. **showAccountRestoreModal (DOM createElement, ARIA dialog):**
+>    - pending_deletion: "Hesabini aktiflestirmek ister misin? — X gun icinde silinecekti. Aktiflestirirsen tum verilerin korunarak devam edersin."
+>    - frozen: "Hesabin dondurulmus. Aktiflestirmek ister misin?"
+>    - Butonlar: "Hesabimi Aktiflestir" (update status='active', deletion_requested_at=null → redirect) + "Cikis yap" (signOut + reload)
+>
+> 4. **Login handlers accountType pass:** loginAday → 'candidate', loginIK → 'employer', existing-session check role'a gore.
+>
+> ── Bonus — Progresif Brute-force Lockout (Tuna UAT onerisi) ──
+>
+> Flat 30sn → exponential backoff:
+> - Attempt 3: 30sn
+> - Attempt 4: 2dk
+> - Attempt 5: 10dk (Tuna'ya sundum: "1h cok agressif, ara basamak ekledim")
+> - Attempt 6: 1 saat
+> - Attempt 7+: 24 saat (cap)
+>
+> `computeMfaLockoutMs(failCount)` + `formatLockoutCountdown(sec)` helpers. giris.html + profil-settings.js iki phase'de uyguladi. Countdown format: saniye/mm:ss/hh:mm:ss.
+>
+> **Test:** tests/tf3-account-restore.spec.js 7 structural guard. tests/tf-mfa-ui-system.spec.js progresif basamaklar icin genisletildi. Total: 26 structural guard (52 PASS mobile+desktop) + smoke + delegation.
+>
+> **Cache-bust:** 20260423k049e → 20260423k049f.
+>
+> ── Asama 82.12 (önceki) ──
+> TF1 + TF2 — 2FA UI layout fix + sistem dogrulama hardening.
 >
 > ── TF1 — 2FA UI Layout Fix (profil.html ayarlar paneli) ──
 >

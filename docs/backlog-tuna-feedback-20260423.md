@@ -117,18 +117,46 @@
 
 ---
 
-## SIRA
+## SIRA GUNCEL (23 Nisan 2026 ikinci UAT sonrasi)
 
-Onceki backlog (Claude'un verdigi dusuk/orta risk is) bitene kadar bu feedback'ler beklemede:
-1. display:none JS-toggle 26 element class-based sweep (DUSUK)
-2. Ayarlar modal helpers + chip/dropdown class refactor (DUSUK)
-3. MFA brute-force frontend warning + 30sn lockout (ORTA)
+**Tamamlanan:**
+- ✓ TF1 — 2FA UI layout fix (commit 6654077)
+- ✓ TF2 — 2FA sistem dogrulama (commit 6654077)
+- ✓ Onceki dusuk/orta risk backlog (4 commit zinciri)
 
-Sonra bu dosyada listelenen 5 feedback:
-- TF1 (2FA UI fix) — YUKSEK oncelik, kisa work
-- TF2 (2FA sistem dogrulama) — YUKSEK oncelik, manuel + E2E test
-- TF3 (hesap silme workflow) — ORTA, KVKK hassasiyet
-- TF4 (avatar editor) — DUSUK
-- TF5 (admin image editor UI) — DUSUK
+**Aktif sira (yukardan asagi):**
+1. **TF3** — Hesap silme workflow revizyonu (ORTA, KVKK)
+2. **TF4** — Avatar cropper modal (DUSUK)
+3. **TF5** — Admin image editor UI cleanup (DUSUK)
+4. **TF6** — Ayarlar UI/UX revizyonu (ORTA, frontend-design skill ile)
 
-Tuna UAT bekliyor — onceki backlog bittikten sonra TF1 + TF2 oncelikli (canli test onunu acar).
+**Bonus (TF2 UAT sonrasi iyilestirme):**
+- Progresif lockout matematigi: 3=30sn → 4=2dk → 5=10dk → 6=1h → 7+=24h (cap). Tuna onerisine yakin + 10dk ara basamak UX dostu. giris.html + profil-settings.js iki phase'de uygulanacak.
+
+---
+
+## TF6 — Ayarlar UI/UX revizyonu (YENI — 23 Nisan UAT screenshot)
+
+**Tuna geri bildirimi (screenshot + sozlu):**
+> "ayarlar sayfasinda butun butonlar solda ya bir garip geliyor normalde sagda olur sanirim. buranin UI ve UX kismina iyice bir bakalim olur mu frontend ajani ile birlikte en iyi deneyimi yasatacak tasarim ve UX le bulusturalim. hizalamalar siralamalar, bolum ayirilmarlari, Hesap aralari hero bolumunu bir kart icine tasiyalim diger sayfalarda oldugu gibi, Insanlar hesap ayarlari altindaki menuye bastikca icerikler gelsin. butun icerikler tek yerde toplanmis gibi degil, acikta oornegin guvenlige tiklati sadece guvenlik bolumu acildi gibi."
+
+**Bulgular:**
+1. **Buton hizalama:** "Kaydet", "Tercihleri kaydet", "Sifreyi guncelle" vb. butonlar kart icinde SOLDA hizali — standart dashboard pattern SAG hizali (form footer right-aligned).
+2. **Hero kart yok:** "Hesap ayarlari" baslik + alt metin direkt sayfa icinde — diger panellerde (profil, markalar, inbox) kart-icinde hero pattern var. Tutarsiz.
+3. **Butun sections acik** — Tum Hesap + Guvenlik + Gizlilik + Bildirim + Gorunum + Hesap Yonetimi tek sayfada acik. TOC var ama sadece anchor scroll — section collapse/filter yok.
+4. **Istenen:** Tab/collapse pattern — TOC'a "Guvenlik" tiklaninca sadece o section goster, digerlerini gizle (ya da active section vurgu + scroll).
+
+**Yaklasim onerisi:**
+- A) Tab-only (sadece aktif section render, digerleri hidden)
+- B) Accordion (her section collapse, ilk acik)  
+- C) Hybrid: TOC tiklama → section'a scroll + vurgu animasyonu, ancak hepsi acik kalir (mevcut ama gorsel gelismis)
+- D) Sidebar nav (sol tarafta section listesi, sag icerik) — en dashboard-like
+
+Frontend-design skill + Tuna review gerekli. Scope: 1 gun.
+
+**Kapsam dosyalar:**
+- profil.html line 1313-1730 (ayarlar bolumu)
+- css/panels/ayarlar.css (1047 satir)
+- profil-ayarlar.js (153 satir) — TOC scroll-spy mevcut, state yonetimi eklenecek
+
+**Oncelik:** ORTA — functional sorun yok, UX/tasarim iyilestirmesi.

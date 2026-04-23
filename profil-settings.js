@@ -649,9 +649,17 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     deleteBtn.addEventListener('click', function(){
-      _htConfirm('DİKKAT: Hesabınız 30 gün sonra kalıcı olarak silinecektir. Bu süre içinde giriş yaparak vazgeçebilirsiniz. Devam etmek istiyor musunuz?', function(){
-        changeStatus('pending_deletion');
-      });
+      // TF3: Tuna UAT — 30g dondurma vurgu + login-restore bilgilendirme
+      _htConfirm(
+        'Hesabın 30 gün boyunca dondurulacak — kimse göremeyecek.\n\n' +
+        'Bu 30 gün içinde aynı e-posta ile giriş yaparsan hesabın tekrar aktifleştirilecek ve eski kaldığın yerden devam edeceksin.\n\n' +
+        '30 gün sonunda ise hesabın kalıcı olarak silinecek (KVKK md.11).\n\n' +
+        'Devam etmek istiyor musun?',
+        function(){
+          // İsteğe bağlı: kullanıcı verilerini indirmesini hatırlat
+          changeStatus('pending_deletion');
+        }
+      );
     });
 
     window._htShowAccountBanner = showBanner;
@@ -677,26 +685,54 @@ document.addEventListener('DOMContentLoaded', function() {
 
     var pendingFactorId = null;
 
-    // K049 audit fix #9: MFA brute-force frontend warning (3 yanlis → 30sn lockout)
+    // K049 audit fix #9 + Tuna UAT bonus: Progresif brute-force lockout
+    // 3=30sn, 4=2dk, 5=10dk, 6=1h, 7+=24h (cap). Exponential backoff + UX dostu ara basamak.
     var mfaEnrollFailCount = 0;
     var mfaDisableFailCount = 0;
-    var MFA_LOCKOUT_MS = 30000;
     var MFA_FAIL_THRESHOLD = 3;
 
-    function applyMfaLockout(btn, failCountRef, msgEl, origLabel, resetCallback) {
-      btn.disabled = true;
-      var remainingSec = Math.floor(MFA_LOCKOUT_MS / 1000);
-      btn.textContent = 'Bekleyin ' + remainingSec + 'sn...';
-      if (msgEl) {
-        msgEl.textContent = 'Çok fazla hatalı deneme. Güvenlik için ' + remainingSec + ' saniye bekleyin.';
-        msgEl.style.color = 'var(--red)';
-        msgEl.style.display = 'block';
+    function computeMfaLockoutMs(failCount) {
+      if (failCount < 3) return 0;
+      if (failCount === 3) return 30 * 1000;        // 30sn
+      if (failCount === 4) return 2 * 60 * 1000;    // 2dk
+      if (failCount === 5) return 10 * 60 * 1000;   // 10dk
+      if (failCount === 6) return 60 * 60 * 1000;   // 1s
+      return 24 * 60 * 60 * 1000;                   // 24s cap
+    }
+
+    function formatLockoutCountdown(sec) {
+      if (sec < 60) return sec + 'sn';
+      if (sec < 3600) {
+        var m = Math.floor(sec / 60);
+        var s = sec % 60;
+        return m + ':' + (s < 10 ? '0' + s : s);
       }
+      var h = Math.floor(sec / 3600);
+      var rem = sec % 3600;
+      var m2 = Math.floor(rem / 60);
+      var s2 = rem % 60;
+      return h + ':' + (m2 < 10 ? '0' + m2 : m2) + ':' + (s2 < 10 ? '0' + s2 : s2);
+    }
+
+    function applyMfaLockout(btn, failCountRef, msgEl, origLabel, resetCallback) {
+      var lockMs = computeMfaLockoutMs(failCountRef);
+      if (!lockMs) return; // threshold alti — normal akisa don
+      btn.disabled = true;
+      var remainingSec = Math.floor(lockMs / 1000);
+      function render() {
+        var fmt = formatLockoutCountdown(remainingSec);
+        btn.textContent = 'Bekleyin ' + fmt + '...';
+        if (msgEl) {
+          msgEl.textContent = 'Çok fazla hatalı deneme (#' + failCountRef + '). Güvenlik için ' + fmt + ' bekleyin.';
+          msgEl.style.color = 'var(--red)';
+          msgEl.style.display = 'block';
+        }
+      }
+      render();
       var tick = setInterval(function() {
         remainingSec--;
         if (remainingSec > 0) {
-          btn.textContent = 'Bekleyin ' + remainingSec + 'sn...';
-          if (msgEl) msgEl.textContent = 'Çok fazla hatalı deneme. Güvenlik için ' + remainingSec + ' saniye bekleyin.';
+          render();
         } else {
           clearInterval(tick);
           btn.disabled = false;
@@ -825,7 +861,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
       } finally {
         if (!wasSuccess && mfaEnrollFailCount >= MFA_FAIL_THRESHOLD) {
-          applyMfaLockout(btnVerify, mfaEnrollFailCount, msg, origText, function(){ mfaEnrollFailCount = 0; });
+          applyMfaLockout(btnVerify, mfaEnrollFailCount, msg, origText, null);
         } else {
           btnVerify.disabled = false;
           btnVerify.textContent = origText;
@@ -942,7 +978,7 @@ document.addEventListener('DOMContentLoaded', function() {
           }
         } finally {
           if (!disableSuccess && mfaDisableFailCount >= MFA_FAIL_THRESHOLD) {
-            applyMfaLockout(btnDisable, mfaDisableFailCount, codeMsg, 'Kodu Doğrula ve Kapat', function(){ mfaDisableFailCount = 0; });
+            applyMfaLockout(btnDisable, mfaDisableFailCount, codeMsg, 'Kodu Doğrula ve Kapat', null);
           } else {
             btnDisable.disabled = false;
             btnDisable.textContent = 'Kodu Doğrula ve Kapat';
