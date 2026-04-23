@@ -274,84 +274,94 @@ document.addEventListener('DOMContentLoaded', function() {
     btnChangeEmail.textContent = origText;
   });
 
-  // ── NOTIFICATION PREFERENCES SAVE ──
+  // ── NOTIFICATION PREFERENCES — TF6: auto-save on toggle change ──
   (function(){
-    var btn = document.getElementById('btn-save-notifications');
-    if (!btn) return;
-    btn.addEventListener('click', async function(){
-      var origText = btn.textContent; // K049 audit fix #2: capture+restore
-      var msg = document.getElementById('notifications-msg');
-      if (msg) msg.style.display = 'none';
-      btn.disabled = true;
-      btn.textContent = 'Kaydediliyor...';
-      try {
-        var nemVal = document.getElementById('settings-notify-email-messages').checked;
-        var nejVal = document.getElementById('settings-notify-email-jobs').checked;
-        var nnlEl = document.getElementById('settings-notify-email-newsletter');
-        var nnlVal = nnlEl ? nnlEl.checked : false;
-        var updatePayload = {
-          notify_email_messages: nemVal,
-          notify_email_jobs: nejVal,
-        };
-        if (nnlEl) updatePayload.notify_email_newsletter = nnlVal;
-        var res = await supabase
-          .from('candidates')
-          .update(updatePayload)
-          .eq('user_id', currentUser.id);
-        if (res.error) throw res.error;
-        // Sync in-memory cache
-        if (window._loadedDBData && _loadedDBData.profile) {
-          _loadedDBData.profile.notify_email_messages = nemVal;
-          _loadedDBData.profile.notify_email_jobs = nejVal;
-          if (nnlEl) _loadedDBData.profile.notify_email_newsletter = nnlVal;
-        }
-        if (msg) { msg.style.color = 'var(--green)'; msg.textContent = 'Bildirim tercihleri kaydedildi.'; msg.style.display = 'block'; }
-      } catch (e) {
-        if (msg) { msg.style.color = 'var(--red)'; msg.textContent = 'Hata: ' + (e.message || 'Kaydedilemedi.'); msg.style.display = 'block'; }
-      } finally {
-        btn.disabled = false;
-        btn.textContent = origText;
+    var ids = ['settings-notify-email-messages', 'settings-notify-email-jobs', 'settings-notify-email-newsletter'];
+    var els = ids.map(function(id){ return document.getElementById(id); }).filter(Boolean);
+    if (!els.length) return;
+    var msg = document.getElementById('notifications-msg');
+    var saveTimer = null;
+
+    function showStatus(type, text) {
+      if (!msg) return;
+      msg.style.color = type === 'error' ? 'var(--red)' : 'var(--green)';
+      msg.textContent = text;
+      msg.style.display = 'block';
+      if (type !== 'error') {
+        clearTimeout(saveTimer);
+        saveTimer = setTimeout(function(){ msg.style.display = 'none'; }, 2200);
       }
-    });
+    }
+
+    async function autoSave() {
+      try {
+        var nemEl = document.getElementById('settings-notify-email-messages');
+        var nejEl = document.getElementById('settings-notify-email-jobs');
+        var nnlEl = document.getElementById('settings-notify-email-newsletter');
+        var payload = {
+          notify_email_messages: nemEl ? nemEl.checked : true,
+          notify_email_jobs: nejEl ? nejEl.checked : true,
+        };
+        if (nnlEl) payload.notify_email_newsletter = nnlEl.checked;
+        var res = await supabase.from('candidates').update(payload).eq('user_id', currentUser.id);
+        if (res.error) throw res.error;
+        if (window._loadedDBData && _loadedDBData.profile) {
+          _loadedDBData.profile.notify_email_messages = payload.notify_email_messages;
+          _loadedDBData.profile.notify_email_jobs = payload.notify_email_jobs;
+          if (nnlEl) _loadedDBData.profile.notify_email_newsletter = payload.notify_email_newsletter;
+        }
+        showStatus('success', 'Kaydedildi ✓');
+      } catch (e) {
+        showStatus('error', 'Hata: ' + (e.message || 'Kaydedilemedi.'));
+      }
+    }
+
+    els.forEach(function(el){ el.addEventListener('change', autoSave); });
   })();
 
-  // ── CONTACT PREFERENCES SAVE ──
+  // ── CONTACT PREFERENCES — TF6: auto-save on toggle change ──
   (function(){
-    var btn = document.getElementById('btn-save-contact-prefs');
-    if(!btn) return;
-    btn.addEventListener('click', async function(){
-      var origText = btn.textContent; // K049 audit fix #2: capture+restore
-      var msg = document.getElementById('contact-prefs-msg');
-      if (msg) msg.style.display='none';
-      btn.disabled = true;
-      btn.textContent = 'Kaydediliyor...';
-      try {
-        var ceVal = document.getElementById('settings-contact-email').checked;
-        var cpVal = document.getElementById('settings-contact-phone').checked;
-        var cwVal = document.getElementById('settings-contact-whatsapp').checked;
-        var _contactPrefResult = await supabase
-          .from('candidates')
-          .update({
-            contact_pref_email: ceVal,
-            contact_pref_phone: cpVal,
-            contact_pref_whatsapp: cwVal
-          })
-          .eq('user_id', currentUser.id);
-        var error = _contactPrefResult.error;
-        if(error) throw error;
-        // Sync in-memory cache
-        if (window._loadedDBData && _loadedDBData.profile) {
-          _loadedDBData.profile.contact_pref_email = ceVal;
-          _loadedDBData.profile.contact_pref_phone = cpVal;
-          _loadedDBData.profile.contact_pref_whatsapp = cwVal;
-        }
-        if (msg) { msg.style.color='var(--green)'; msg.textContent='İletişim tercihleri kaydedildi.'; msg.style.display='block'; }
-      } catch(e) {
-        if (msg) { msg.style.color='var(--red)'; msg.textContent='Hata: ' + e.message; msg.style.display='block'; }
-      } finally {
-        btn.disabled = false; btn.textContent = origText;
+    var ids = ['settings-contact-email', 'settings-contact-phone', 'settings-contact-whatsapp'];
+    var els = ids.map(function(id){ return document.getElementById(id); }).filter(Boolean);
+    if (!els.length) return;
+    var msg = document.getElementById('contact-prefs-msg');
+    var saveTimer = null;
+
+    function showStatus(type, text) {
+      if (!msg) return;
+      msg.style.color = type === 'error' ? 'var(--red)' : 'var(--green)';
+      msg.textContent = text;
+      msg.style.display = 'block';
+      if (type !== 'error') {
+        clearTimeout(saveTimer);
+        saveTimer = setTimeout(function(){ msg.style.display = 'none'; }, 2200);
       }
-    });
+    }
+
+    async function autoSave() {
+      try {
+        var ceEl = document.getElementById('settings-contact-email');
+        var cpEl = document.getElementById('settings-contact-phone');
+        var cwEl = document.getElementById('settings-contact-whatsapp');
+        var payload = {
+          contact_pref_email: ceEl ? ceEl.checked : true,
+          contact_pref_phone: cpEl ? cpEl.checked : false,
+          contact_pref_whatsapp: cwEl ? cwEl.checked : false,
+        };
+        var res = await supabase.from('candidates').update(payload).eq('user_id', currentUser.id);
+        if (res.error) throw res.error;
+        if (window._loadedDBData && _loadedDBData.profile) {
+          _loadedDBData.profile.contact_pref_email = payload.contact_pref_email;
+          _loadedDBData.profile.contact_pref_phone = payload.contact_pref_phone;
+          _loadedDBData.profile.contact_pref_whatsapp = payload.contact_pref_whatsapp;
+        }
+        showStatus('success', 'Kaydedildi ✓');
+      } catch (e) {
+        showStatus('error', 'Hata: ' + (e.message || 'Kaydedilemedi.'));
+      }
+    }
+
+    els.forEach(function(el){ el.addEventListener('change', autoSave); });
   })();
 
   // ── ACTIVELY LOOKING TOGGLE (Settings) — delegates to shared syncActivelyLooking ──
@@ -743,11 +753,55 @@ document.addEventListener('DOMContentLoaded', function() {
       }, 1000);
     }
 
+    // TF6: 'enroll' state artik modal'i acar, diger state'ler inline kart icinde
+    var enrollModal = document.getElementById('mfa-enroll-modal');
     function showState(state) {
       loading.style.display    = state === 'loading'  ? '' : 'none';
       disabledSt.style.display = state === 'disabled' ? '' : 'none';
-      enrollSt.style.display   = state === 'enroll'   ? '' : 'none';
       enabledSt.style.display  = state === 'enabled'  ? '' : 'none';
+      if (enrollModal) {
+        if (state === 'enroll') {
+          enrollModal.removeAttribute('hidden');
+          document.body.classList.add('mfa-modal-open');
+        } else {
+          enrollModal.setAttribute('hidden', '');
+          document.body.classList.remove('mfa-modal-open');
+        }
+      }
+    }
+
+    // Modal close — X butonu + ESC + overlay click
+    var btnModalClose = document.getElementById('btn-mfa-modal-close');
+    if (btnModalClose) {
+      btnModalClose.addEventListener('click', function() {
+        // Yarim kalan enroll — factor cleanup
+        if (pendingFactorId) {
+          try { supabase.auth.mfa.unenroll({ factorId: pendingFactorId }); } catch (_e) {}
+          pendingFactorId = null;
+        }
+        showState('disabled');
+      });
+    }
+    if (enrollModal) {
+      enrollModal.addEventListener('click', function(e) {
+        if (e.target === enrollModal) {
+          // Overlay click → cancel (iç modal değil)
+          if (pendingFactorId) {
+            try { supabase.auth.mfa.unenroll({ factorId: pendingFactorId }); } catch (_e) {}
+            pendingFactorId = null;
+          }
+          showState('disabled');
+        }
+      });
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && !enrollModal.hasAttribute('hidden')) {
+          if (pendingFactorId) {
+            try { supabase.auth.mfa.unenroll({ factorId: pendingFactorId }); } catch (_e) {}
+            pendingFactorId = null;
+          }
+          showState('disabled');
+        }
+      });
     }
 
     // TF2 fix: silent cleanup — kullanici enroll yarim birakirsa unverified factor DB'de birikir

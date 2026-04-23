@@ -56,26 +56,26 @@ if (window.Sentry) {
 </script>
 <!-- Analytics: ht_track → HT.trackEvent bridge -->
 <script>function ht_track(name, data) { if (window.HT && window.HT.trackEvent) window.HT.trackEvent(name, data); }</script>
-<link rel="stylesheet" href="css/tokens.css?v=20260423k049i">
-<link rel="stylesheet" href="css/layout.css?v=20260423k049i">
-<link rel="stylesheet" href="css/components.css?v=20260423k049i">
-<link rel="stylesheet" href="css/wizard.css?v=20260423k049i">
-<link rel="stylesheet" href="css/wizard-editorial.css?v=20260423k049i">
-<link rel="stylesheet" href="css/studio.css?v=20260423k049i">
-<link rel="stylesheet" href="css/panels/genel-bakis.css?v=20260423k049i">
-<link rel="stylesheet" href="css/panels/merkezi.css?v=20260423k049i">
-<link rel="stylesheet" href="css/profil-extras.css?v=20260423k049i">
-<link rel="stylesheet" href="css/panels/sirketler.css?v=20260423k049i">
-<link rel="stylesheet" href="css/panels/kimbakti.css?v=20260423k049i">
-<link rel="stylesheet" href="css/panels/inbox.css?v=20260423k049i">
-<link rel="stylesheet" href="css/panels/bildirimler.css?v=20260423k049i">
-<link rel="stylesheet" href="css/panels/destek.css?v=20260423k049i">
-<link rel="stylesheet" href="css/panels/ayarlar.css?v=20260423k049i">
-<link rel="stylesheet" href="css/panels/premium.css?v=20260423k049i">
-<link rel="stylesheet" href="css/panels/firsatlar.css?v=20260423k049i">
-<link rel="stylesheet" href="css/panel-soon.css?v=20260423k049i">
-<link rel="stylesheet" href="css/duyurular.css?v=20260423k049i">
-<link rel="stylesheet" href="css/avatar-cropper.css?v=20260423k049i">
+<link rel="stylesheet" href="css/tokens.css?v=20260423k049j">
+<link rel="stylesheet" href="css/layout.css?v=20260423k049j">
+<link rel="stylesheet" href="css/components.css?v=20260423k049j">
+<link rel="stylesheet" href="css/wizard.css?v=20260423k049j">
+<link rel="stylesheet" href="css/wizard-editorial.css?v=20260423k049j">
+<link rel="stylesheet" href="css/studio.css?v=20260423k049j">
+<link rel="stylesheet" href="css/panels/genel-bakis.css?v=20260423k049j">
+<link rel="stylesheet" href="css/panels/merkezi.css?v=20260423k049j">
+<link rel="stylesheet" href="css/profil-extras.css?v=20260423k049j">
+<link rel="stylesheet" href="css/panels/sirketler.css?v=20260423k049j">
+<link rel="stylesheet" href="css/panels/kimbakti.css?v=20260423k049j">
+<link rel="stylesheet" href="css/panels/inbox.css?v=20260423k049j">
+<link rel="stylesheet" href="css/panels/bildirimler.css?v=20260423k049j">
+<link rel="stylesheet" href="css/panels/destek.css?v=20260423k049j">
+<link rel="stylesheet" href="css/panels/ayarlar.css?v=20260423k049j">
+<link rel="stylesheet" href="css/panels/premium.css?v=20260423k049j">
+<link rel="stylesheet" href="css/panels/firsatlar.css?v=20260423k049j">
+<link rel="stylesheet" href="css/panel-soon.css?v=20260423k049j">
+<link rel="stylesheet" href="css/duyurular.css?v=20260423k049j">
+<link rel="stylesheet" href="css/avatar-cropper.css?v=20260423k049j">
 </head>
 <body>
 
@@ -1372,6 +1372,11 @@ if (window.Sentry) {
           <div id="settings-account-msg" class="ayr-msg"></div>
         </div>
       </div>
+
+      <div class="ayr-card ayr-card--beta" id="ayr-beta-card">
+        <div class="ayr-card__title">Beta avantajları</div>
+        <p class="ayr-lede pointer" id="settings-premium-pitch" data-panel="premium">Beta sürecinde tüm özellikler ücretsiz açık — öne çıkan aday, AI değerlendirme, CV optimize ve daha fazlası. <span class="ayr-link">Keşfet</span></p>
+      </div>
     </section>
 
     <!-- ═════ SECTION: GÜVENLIK ═════ -->
@@ -1399,7 +1404,7 @@ if (window.Sentry) {
           </div>
         </div>
 
-        <div class="ayr-card">
+        <div class="ayr-card" id="mfa-status-card">
           <div class="ayr-card__title">İki adımlı doğrulama</div>
           <p class="ayr-lede">Hesabını ek bir güvenlik katmanıyla koru. Google Authenticator veya benzeri bir uygulama kullanarak giriş yap.</p>
 
@@ -1407,41 +1412,58 @@ if (window.Sentry) {
             <div id="mfa-loading" class="ayr-status ayr-status--muted">Yükleniyor...</div>
           </div>
 
-          <div id="mfa-disabled-state" style="display:none;">
+          <div id="mfa-disabled-state" class="mfa-status-line" style="display:none;">
             <div class="ayr-status ayr-status--off">
               <span class="ayr-status__dot"></span>
               <span class="ayr-status__label">İki adımlı doğrulama kapalı</span>
             </div>
-            <button class="ayr-btn ayr-btn--primary" id="btn-mfa-enable">Etkinleştir</button>
-          </div>
-
-          <div id="mfa-enroll-state" class="mfa-enroll" style="display:none;">
-            <p class="ayr-step mfa-enroll__step">1. QR kodu uygulama ile tara</p>
-            <div id="mfa-qr-container" class="mfa-enroll__qr"></div>
-
-            <p class="ayr-step mfa-enroll__step">Tarayamıyorsan bu kodu manuel gir:</p>
-            <code id="mfa-secret-code" class="mfa-enroll__secret"></code>
-
-            <p class="ayr-step mfa-enroll__step">2. Uygulamadaki 6 haneli kodu gir</p>
-            <div class="mfa-enroll__verify-row">
-              <input type="text" id="mfa-verify-code" maxlength="6" placeholder="000000" inputmode="numeric" autocomplete="one-time-code">
-              <button class="ayr-btn ayr-btn--primary mfa-enroll__verify-btn" id="btn-mfa-verify">Doğrula</button>
-              <button class="ayr-btn ayr-btn--ghost mfa-enroll__cancel-btn" id="btn-mfa-cancel-enroll">Vazgeç</button>
+            <div class="ayr-card__foot">
+              <button class="ayr-btn ayr-btn--primary" id="btn-mfa-enable">Etkinleştir</button>
             </div>
-            <div id="mfa-enroll-msg" class="ayr-msg"></div>
           </div>
 
-          <div id="mfa-enabled-state" style="display:none;">
+          <div id="mfa-enabled-state" class="mfa-status-line" style="display:none;">
             <div class="ayr-status ayr-status--on">
               <span class="ayr-status__dot"></span>
               <span class="ayr-status__label">İki adımlı doğrulama aktif</span>
             </div>
-            <button class="ayr-btn ayr-btn--danger-ghost" id="btn-mfa-disable">Kapat</button>
-            <div id="mfa-disable-msg" class="ayr-msg"></div>
+            <div class="ayr-card__foot">
+              <button class="ayr-btn ayr-btn--danger-ghost" id="btn-mfa-disable">Kapat</button>
+              <div id="mfa-disable-msg" class="ayr-msg"></div>
+            </div>
           </div>
         </div>
       </div>
     </section>
+
+    <!-- TF6: 2FA enroll modal — inline card yerine Clatu modal -->
+    <div id="mfa-enroll-modal" class="mfa-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="mfa-enroll-title" hidden>
+      <div class="mfa-modal">
+        <div class="mfa-modal__head">
+          <h3 class="mfa-modal__title" id="mfa-enroll-title">İki adımlı doğrulama</h3>
+          <button type="button" class="mfa-modal__close" id="btn-mfa-modal-close" aria-label="Kapat">×</button>
+        </div>
+
+        <div id="mfa-enroll-state" class="mfa-enroll">
+          <p class="mfa-enroll__step">1. QR kodu uygulama ile tara</p>
+          <div id="mfa-qr-container" class="mfa-enroll__qr"></div>
+
+          <p class="mfa-enroll__step">Tarayamıyorsan bu kodu manuel gir:</p>
+          <code id="mfa-secret-code" class="mfa-enroll__secret"></code>
+
+          <p class="mfa-enroll__step">2. Uygulamadaki 6 haneli kodu gir</p>
+          <div class="mfa-enroll__verify-row">
+            <input type="text" id="mfa-verify-code" maxlength="6" placeholder="000000" inputmode="numeric" autocomplete="one-time-code">
+          </div>
+          <div id="mfa-enroll-msg" class="ayr-msg"></div>
+        </div>
+
+        <div class="mfa-modal__foot">
+          <button class="ayr-btn ayr-btn--ghost mfa-enroll__cancel-btn" id="btn-mfa-cancel-enroll">Vazgeç</button>
+          <button class="ayr-btn ayr-btn--primary mfa-enroll__verify-btn" id="btn-mfa-verify">Doğrula</button>
+        </div>
+      </div>
+    </div>
 
     <!-- ═════ SECTION: GIZLILIK ═════ -->
     <section class="ayr-section" id="ayr-s-gizlilik">
@@ -1527,10 +1549,7 @@ if (window.Sentry) {
             </div>
           </div>
 
-          <div class="ayr-card__foot">
-            <button class="ayr-btn ayr-btn--primary" id="btn-save-contact-prefs">Tercihleri kaydet</button>
-            <div id="contact-prefs-msg" class="ayr-msg"></div>
-          </div>
+          <div id="contact-prefs-msg" class="ayr-msg ayr-msg--auto"></div>
         </div>
 
         <div class="ayr-card" id="settings-blocked-companies-card">
@@ -1616,10 +1635,7 @@ if (window.Sentry) {
           </div>
         </div>
 
-        <div class="ayr-card__foot">
-          <button class="ayr-btn ayr-btn--primary" id="btn-save-notifications">Tercihleri kaydet</button>
-          <div id="notifications-msg" class="ayr-msg"></div>
-        </div>
+        <div id="notifications-msg" class="ayr-msg ayr-msg--auto"></div>
       </div>
     </section>
 
@@ -1631,29 +1647,22 @@ if (window.Sentry) {
         <span class="ayr-section__desc">Tema ve beta avantajları.</span>
       </div>
 
-      <div class="ayr-grid-2">
-        <div class="ayr-card" id="settings-theme-card">
-          <div class="ayr-card__title">Tema</div>
-          <p class="ayr-lede">Varsayılan olarak cihazının ayarıyla uyumlu gelir. İstersen elle de seçebilirsin.</p>
-          <div class="ayr-theme-seg" role="radiogroup" aria-label="Tema seçimi">
-            <button type="button" class="ayr-theme-seg__opt" data-theme-pref="system" role="radio" aria-checked="true">
-              <span class="ayr-theme-seg__label">Sistem</span>
-              <span class="ayr-theme-seg__hint">Cihazla uyumlu</span>
-            </button>
-            <button type="button" class="ayr-theme-seg__opt" data-theme-pref="light" role="radio" aria-checked="false">
-              <span class="ayr-theme-seg__label">Açık</span>
-              <span class="ayr-theme-seg__hint">Her zaman aydınlık</span>
-            </button>
-            <button type="button" class="ayr-theme-seg__opt" data-theme-pref="dark" role="radio" aria-checked="false">
-              <span class="ayr-theme-seg__label">Koyu</span>
-              <span class="ayr-theme-seg__hint">Her zaman karanlık</span>
-            </button>
-          </div>
-        </div>
-
-        <div class="ayr-card ayr-card--beta">
-          <div class="ayr-card__title">Beta avantajları</div>
-          <p class="ayr-lede pointer" id="settings-premium-pitch" data-panel="premium">Beta sürecinde tüm özellikler ücretsiz açık — öne çıkan aday, AI değerlendirme, CV optimize ve daha fazlası. <span class="ayr-link">Keşfet</span></p>
+      <div class="ayr-card ayr-card--wide" id="settings-theme-card">
+        <div class="ayr-card__title">Tema</div>
+        <p class="ayr-lede">Varsayılan olarak cihazının ayarıyla uyumlu gelir. İstersen elle de seçebilirsin.</p>
+        <div class="ayr-theme-seg" role="radiogroup" aria-label="Tema seçimi">
+          <button type="button" class="ayr-theme-seg__opt" data-theme-pref="system" role="radio" aria-checked="true">
+            <span class="ayr-theme-seg__label">Sistem</span>
+            <span class="ayr-theme-seg__hint">Cihazla uyumlu</span>
+          </button>
+          <button type="button" class="ayr-theme-seg__opt" data-theme-pref="light" role="radio" aria-checked="false">
+            <span class="ayr-theme-seg__label">Açık</span>
+            <span class="ayr-theme-seg__hint">Her zaman aydınlık</span>
+          </button>
+          <button type="button" class="ayr-theme-seg__opt" data-theme-pref="dark" role="radio" aria-checked="false">
+            <span class="ayr-theme-seg__label">Koyu</span>
+            <span class="ayr-theme-seg__hint">Her zaman karanlık</span>
+          </button>
         </div>
       </div>
     </section>
@@ -1685,8 +1694,15 @@ if (window.Sentry) {
         <div class="ayr-card ayr-card--danger" id="settings-account-management-card">
           <div class="ayr-card__title ayr-card__title--danger">Hesap yönetimi</div>
           <div id="account-status-banner" class="ayr-banner" role="status" aria-live="polite" style="display:none;"></div>
-          <p class="ayr-lede">Hesabını dondurmak, silmek veya verilerini indirmek için hesap yönetimi sihirbazını kullan.</p>
-          <button class="ayr-btn ayr-btn--danger" id="btn-open-account-wizard">Hesap yönetimini aç</button>
+          <p class="ayr-lede">Hesabını dondurabilir, silebilir veya tüm verilerini indirebilirsin.</p>
+          <ul class="ayr-fact-list">
+            <li><strong>Dondur:</strong> Profilin işverenlere görünmez olur, verilerin korunur. İstediğin zaman tekrar aktifleştirirsin.</li>
+            <li><strong>Sil:</strong> 30 gün boyunca dondurulur, bu süre içinde giriş yaparsan aktifleştirilir. 30 gün sonra kalıcı silinir (KVKK md.11).</li>
+            <li><strong>Veri indir:</strong> Profil, deneyim, eğitim ve tercihlerin JSON olarak elde edilir.</li>
+          </ul>
+          <div class="ayr-card__foot">
+            <button class="ayr-btn ayr-btn--danger" id="btn-open-account-wizard">Hesap yönetimini aç</button>
+          </div>
         </div>
       </div>
 
@@ -1878,35 +1894,35 @@ if (window.Sentry) {
   19. profil-bootstrap.js — auth, data hydration, step-init orchestration, career_goal prefill
   20. profil-events.js    — DOMContentLoaded event wiring, Cmd+K, avatar dropdown, page glue
 -->
-<script src="shared.js?v=20260423k049i"></script>
-<script src="profil-core.js?v=20260423k049i"></script>
-<script src="profil-data.js?v=20260423k049i"></script>
-<script src="profil-ui.js?v=20260423k049i"></script>
-<script src="profil-locations.js?v=20260423k049i"></script>
-<script src="profil-summary.js?v=20260423k049i"></script>
-<script src="profil-genel.js?v=20260423k049i"></script>
-<script src="profil-visibility.js?v=20260423k049i"></script>
-<script src="profil-preview.js?v=20260423k049i"></script>
-<script src="profil-cv.js?v=20260423k049i"></script>
-<script src="profil-avatar-cropper.js?v=20260423k049i"></script>
-<script src="profil-markalar.js?v=20260423k049i"></script>
-<script src="profil-settings.js?v=20260423k049i"></script>
-<script src="profil-firsatlar.js?v=20260423k049i"></script>
-<script src="profil-inbox.js?v=20260423k049i"></script>
-<script src="profil-yetkinlik.js?v=20260423k049i"></script>
-<script src="profil-studio-coach.js?v=20260423k049i"></script>
-<script src="profil-studio.js?v=20260423k049i"></script>
-<script src="panel-soon.js?v=20260423k049i"></script>
-<script src="profil-duyurular.js?v=20260423k049i"></script>
-<script src="profil-premium.js?v=20260423k049i"></script>
-<script src="profil-destek.js?v=20260423k049i"></script>
-<script src="profil-ayarlar.js?v=20260423k049i"></script>
-<script src="profil-wizard.js?v=20260423k049i"></script>
-<script src="profil-draft.js?v=20260423k049i"></script>
-<script src="profil-helpers.js?v=20260423k049i"></script>
-<script src="profil-kimbakti.js?v=20260423k049i"></script>
-<script src="profil-bootstrap.js?v=20260423k049i"></script>
-<script src="profil-events.js?v=20260423k049i"></script>
+<script src="shared.js?v=20260423k049j"></script>
+<script src="profil-core.js?v=20260423k049j"></script>
+<script src="profil-data.js?v=20260423k049j"></script>
+<script src="profil-ui.js?v=20260423k049j"></script>
+<script src="profil-locations.js?v=20260423k049j"></script>
+<script src="profil-summary.js?v=20260423k049j"></script>
+<script src="profil-genel.js?v=20260423k049j"></script>
+<script src="profil-visibility.js?v=20260423k049j"></script>
+<script src="profil-preview.js?v=20260423k049j"></script>
+<script src="profil-cv.js?v=20260423k049j"></script>
+<script src="profil-avatar-cropper.js?v=20260423k049j"></script>
+<script src="profil-markalar.js?v=20260423k049j"></script>
+<script src="profil-settings.js?v=20260423k049j"></script>
+<script src="profil-firsatlar.js?v=20260423k049j"></script>
+<script src="profil-inbox.js?v=20260423k049j"></script>
+<script src="profil-yetkinlik.js?v=20260423k049j"></script>
+<script src="profil-studio-coach.js?v=20260423k049j"></script>
+<script src="profil-studio.js?v=20260423k049j"></script>
+<script src="panel-soon.js?v=20260423k049j"></script>
+<script src="profil-duyurular.js?v=20260423k049j"></script>
+<script src="profil-premium.js?v=20260423k049j"></script>
+<script src="profil-destek.js?v=20260423k049j"></script>
+<script src="profil-ayarlar.js?v=20260423k049j"></script>
+<script src="profil-wizard.js?v=20260423k049j"></script>
+<script src="profil-draft.js?v=20260423k049j"></script>
+<script src="profil-helpers.js?v=20260423k049j"></script>
+<script src="profil-kimbakti.js?v=20260423k049j"></script>
+<script src="profil-bootstrap.js?v=20260423k049j"></script>
+<script src="profil-events.js?v=20260423k049j"></script>
 
 <!-- Inline helpers + [data-panel] delegation extracted to profil-helpers.js -->
 

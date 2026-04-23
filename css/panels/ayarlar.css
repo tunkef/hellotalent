@@ -463,7 +463,9 @@
    ════════════════════════════════════════════════════════════════ */
 #panel-ayarlar .ayr-toggle-row {
   display: flex;
-  align-items: flex-start;
+  flex-direction: row-reverse; /* TF6 feedback: toggle sagda, metin solda */
+  justify-content: flex-start;
+  align-items: center;
   gap: 16px;
   padding: 16px 0;
   margin: 0;
@@ -700,6 +702,209 @@
 #panel-ayarlar #mfa-verify-code:focus {
   outline: none;
   border-color: var(--editorial-vermillion);
+}
+
+/* ════════════════════════════════════════════════════════════════
+   TF6 ikinci round — 2FA modal + status line + fact list
+   ════════════════════════════════════════════════════════════════ */
+
+/* 2FA status line (disabled/enabled card icerigi): status rozet + sag'da action */
+#panel-ayarlar .mfa-status-line {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+#panel-ayarlar .mfa-status-line .ayr-card__foot {
+  margin-top: 0;
+}
+
+/* Modal overlay — Clatu editorial */
+.mfa-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(11, 15, 28, 0.72);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  padding: 24px;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  animation: mfaModalFadeIn 200ms ease-out;
+}
+.mfa-modal-overlay[hidden] { display: none !important; }
+
+@keyframes mfaModalFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.mfa-modal {
+  background: var(--editorial-card, #FFFFFF);
+  border-radius: 16px;
+  border: 1px solid var(--editorial-hairline);
+  box-shadow: 0 28px 72px rgba(0, 0, 0, 0.32);
+  width: 100%;
+  max-width: 440px;
+  max-height: 90vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  animation: mfaModalSlideUp 220ms ease-out;
+}
+
+@keyframes mfaModalSlideUp {
+  from { transform: translateY(12px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.mfa-modal__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 20px 24px 14px;
+  border-bottom: 1px solid var(--editorial-hairline);
+}
+.mfa-modal__title {
+  font-family: var(--font-head);
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--editorial-ink);
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+.mfa-modal__close {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid var(--editorial-hairline);
+  background: var(--editorial-card);
+  color: var(--editorial-ink-muted);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  line-height: 1;
+  padding: 0;
+  font-family: var(--font-body);
+  transition: border-color 140ms ease, color 140ms ease;
+}
+.mfa-modal__close:hover {
+  border-color: var(--editorial-vermillion);
+  color: var(--editorial-vermillion);
+}
+
+/* Modal body = mfa-enroll content (center aligned steps + QR + secret + input) */
+.mfa-modal .mfa-enroll {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 22px 24px 18px;
+  align-items: stretch;
+}
+.mfa-modal .mfa-enroll__step {
+  margin: 0;
+  font-size: 13px;
+  color: var(--editorial-ink);
+  font-weight: 500;
+}
+.mfa-modal .mfa-enroll__qr {
+  align-self: center; /* QR ortalanir */
+}
+.mfa-modal #mfa-qr-container img,
+.mfa-modal #mfa-qr-container svg {
+  max-width: 200px;
+}
+.mfa-modal .mfa-enroll__secret {
+  align-self: stretch;
+  text-align: center;
+  word-break: break-all;
+}
+.mfa-modal .mfa-enroll__verify-row {
+  display: flex;
+  justify-content: center;
+}
+.mfa-modal #mfa-verify-code {
+  width: 200px;
+}
+
+.mfa-modal__foot {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 16px 24px 20px;
+  border-top: 1px solid var(--editorial-hairline);
+}
+.mfa-modal__foot .ayr-btn { min-height: 44px; }
+
+/* Mobile */
+@media (max-width: 480px) {
+  .mfa-modal-overlay { padding: 12px; }
+  .mfa-modal {
+    max-width: none;
+    max-height: 96vh;
+    border-radius: 12px;
+  }
+  .mfa-modal__head { padding: 16px 18px 12px; }
+  .mfa-modal .mfa-enroll { padding: 18px; }
+  .mfa-modal__foot { padding: 14px 18px 18px; flex-direction: column-reverse; }
+  .mfa-modal__foot .ayr-btn { width: 100%; }
+  .mfa-modal #mfa-verify-code { width: 100%; }
+}
+
+/* Dark mode */
+html[data-theme='dark'] .mfa-modal {
+  background: var(--editorial-card);
+  box-shadow: 0 28px 72px rgba(0, 0, 0, 0.6);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mfa-modal-overlay, .mfa-modal { animation: none; }
+}
+
+/* Hesap yönetimi — fact list (kart dolgun gozuksun) */
+#panel-ayarlar .ayr-fact-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 16px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--editorial-ink);
+  line-height: 1.55;
+}
+#panel-ayarlar .ayr-fact-list li {
+  position: relative;
+  padding-left: 18px;
+}
+#panel-ayarlar .ayr-fact-list li::before {
+  content: "•";
+  position: absolute;
+  left: 4px;
+  top: 0;
+  color: var(--editorial-vermillion);
+  font-weight: 700;
+}
+#panel-ayarlar .ayr-fact-list li strong {
+  color: var(--editorial-ink);
+  font-weight: 700;
+}
+
+/* Auto-save mesaj varyanti — kompakt, sag hizali */
+#panel-ayarlar .ayr-msg.ayr-msg--auto {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--editorial-hairline);
+  font-family: var(--font-mono);
+  font-style: italic;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
 /* ════════════════════════════════════════════════════════════════

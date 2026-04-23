@@ -13,25 +13,32 @@ function read(rel) {
 }
 
 test.describe('TF1 — MFA enroll UI class refactor', function () {
-  test('profil.html MFA enroll uses dedicated layout classes', function () {
+  test('profil.html MFA enroll — modal wrapper (TF6 ikinci round)', function () {
     var html = read('profil.html');
+    // TF6 iki: inline card yerine modal overlay
+    expect(html).toContain('id="mfa-enroll-modal"');
+    expect(html).toMatch(/class="mfa-modal-overlay"/);
+    expect(html).toMatch(/role="dialog"/);
+    expect(html).toMatch(/aria-modal="true"/);
     expect(html).toContain('class="mfa-enroll"');
-    expect(html).toContain('class="mfa-enroll__verify-row"');
-    expect(html).toContain('class="ayr-btn ayr-btn--primary mfa-enroll__verify-btn"');
-    expect(html).toContain('class="ayr-btn ayr-btn--ghost mfa-enroll__cancel-btn"');
-    // inputmode + autocomplete one-time-code (a11y + mobile keyboard)
+    expect(html).toContain('mfa-enroll__verify-btn');
+    expect(html).toContain('mfa-enroll__cancel-btn');
+    expect(html).toContain('id="btn-mfa-modal-close"');
+    // Input a11y
     expect(html).toMatch(/id="mfa-verify-code"[^>]*inputmode="numeric"/);
     expect(html).toMatch(/id="mfa-verify-code"[^>]*autocomplete="one-time-code"/);
   });
 
-  test('ayarlar.css MFA enroll layout block present', function () {
+  test('ayarlar.css MFA modal + enroll layout block present', function () {
     var css = read('css/panels/ayarlar.css');
-    expect(css).toContain('.mfa-enroll {');
-    expect(css).toContain('.mfa-enroll__verify-row');
-    expect(css).toContain('.mfa-enroll__verify-btn');
-    expect(css).toContain('.mfa-enroll__cancel-btn');
-    // Mobile responsive kontrol
-    expect(css).toMatch(/@media \(max-width: 600px\)[\s\S]{0,200}\.mfa-enroll__verify-row/);
+    // TF6 iki: modal stilleri
+    expect(css).toContain('.mfa-modal-overlay');
+    expect(css).toContain('.mfa-modal');
+    expect(css).toContain('.mfa-modal__head');
+    expect(css).toContain('.mfa-modal__foot');
+    expect(css).toContain('.mfa-modal__close');
+    // Enroll content still styled inside modal
+    expect(css).toMatch(/\.mfa-modal \.mfa-enroll/);
   });
 });
 

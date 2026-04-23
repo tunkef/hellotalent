@@ -4067,6 +4067,8 @@ test.describe('K067 — Ayarlar editorial CSS override', () => {
     expect(profilHtml067).toContain('id="ayr-s-gorunum"');
     expect(profilHtml067).toContain('id="ayr-s-tehlike"');
     // critical auth/mfa/settings ids MUST be preserved
+    // TF6 ikinci round: btn-save-notifications + btn-save-contact-prefs KALDIRILDI
+    // (auto-save toggle change → anlik). Bu ID'ler artik mustKeep listesinde degil.
     var mustKeepIds = [
       'settings-email', 'settings-new-email', 'settings-adsoyad', 'settings-telefon',
       'btn-settings-account-save', 'btn-show-email-change', 'btn-change-email',
@@ -4077,9 +4079,9 @@ test.describe('K067 — Ayarlar editorial CSS override', () => {
       'settings-visibility-active', 'settings-actively-looking',
       'settings-hide-from-current-employer', 'settings-benioner-hint',
       'settings-notify-email-messages', 'settings-notify-email-jobs',
-      'settings-notify-sms', 'settings-notify-push', 'btn-save-notifications',
+      'settings-notify-sms', 'settings-notify-push',
       'settings-contact-email', 'settings-contact-phone', 'settings-contact-whatsapp',
-      'btn-save-contact-prefs', 'blocked-company-search', 'blocked-company-dropdown',
+      'blocked-company-search', 'blocked-company-dropdown',
       'blocked-companies-list', 'blocked-companies-empty',
       'settings-theme-card', 'settings-account-management-card',
       'btn-open-account-wizard', 'settings-session-management-card',

@@ -1,5 +1,29 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 23 Nisan 2026 | Asama 82.16 — TF6 Ayarlar UI/UX revizyonu (son Tuna feedback) tamamlandi
+> Son guncelleme: 23 Nisan 2026 | Asama 82.17 — TF6 ikinci round: Ayarlar UI/UX detay feedback'leri (toggle sag + auto-save + 2FA modal + beta/hesap yerlesim)
+> Aktif Odak: Tuna UAT ikinci round 7 feedback. Toggle'lar sag hizali (row-reverse), "Tercihleri kaydet" butonlari kaldirildi (auto-save on change), 2FA enroll inline kart yerine Clatu modal'da, Beta avantajlari Gorunum'den Hesap section'ina tasindi, Gorunum sadece tema (grid-2 → tek wide kart), Hesap yonetimi kartina 3-bullet fact list eklendi (Dondur/Sil/Veri indir).
+>
+> ── TF6 ikinci round — 23 Nisan 2026 ──
+>
+> **1) Toggle layout — row-reverse:** `.ayr-toggle-row` flex-direction row-reverse + justify-content flex-start. Metin sol (body flex:1), toggle sag. Gizlilik + Bildirim tum toggle'lar.
+>
+> **2) Auto-save toggles:** `btn-save-notifications` + `btn-save-contact-prefs` KALDIRILDI. Her toggle change event'i anlik supabase update + "Kaydedildi ✓" 2.2s toast (auto-dismiss). `.ayr-msg--auto` varyanti (kompakt mono italic caps). profil-settings.js iki handler'i autoSave fn refactor.
+>
+> **3) 2FA Clatu modal:** Inline `#mfa-enroll-state` kart'tan modal overlay'e tasindi (`#mfa-enroll-modal`). Clatu editorial stil: bg=editorial-card, border=editorial-hairline, shadow=28px rgba, radius=16px, 440px max-width, fade+slideUp 220ms. Head (title + X close) + Body (steps + QR centered + secret + input) + Foot (Vazgec sol + Dogrula sag flex-end). ARIA dialog (role/aria-modal/aria-labelledby). Close yollari: X btn + overlay click + ESC. Yarim kalan enroll → pending factor cleanup (unenroll auto).
+>
+> **4) Beta avantajlari Hesap'a tasindi:** `.ayr-card--beta` #ayr-beta-card Gorunum'den #ayr-s-hesap section'ina (settings-account-info-card altina). Gorunum artik sadece Tema kartini gosterir (ayr-card--wide).
+>
+> **5) Hesap yonetimi kart dolgun:** `.ayr-fact-list` 3-bullet (Dondur / Sil / Veri indir) — verm nokta prefix, 13px body, 12px gap. Card__foot flex-end buton sagda. Bos kart hissi giderildi, iki kart esit (session + hesap yonetimi).
+>
+> **6) Guvenlik card__foot:** Etkinlestir + Kapat butonlari card__foot flex-end ile saga hizali (TF6 ilk round'da yapilmisti, ikinci round verified).
+>
+> **P3 regression fix:** `btn-save-notifications` + `btn-save-contact-prefs` mustKeepIds'ten cikarildi (auto-save ile kaldirildi, bilincli).
+>
+> **Test:** tests/tf6-ayarlar-round2.spec.js 8 structural guard + tf-mfa-ui-system modal spec guncel + tf6-ayarlar-uiux mevcut. Tam regression (p3 dahil) = 1024/1024 PASS.
+>
+> **Cache-bust:** 20260423k049i → 20260423k049j.
+>
+> ── Asama 82.16 (önceki) ──
+> TF6 ilk round — hero kart + buton sag hizalama + section tab switcher. P3 regression assertion TF6 tab switcher'a guncellendi.
 > Aktif Odak: Ayarlar paneli UI/UX 3 kademede revize edildi: (1) Hero kart yuzeyine tasindi (bg/border/shadow), (2) card footer butonlari sag hizali (flex-end), (3) TOC tab switcher — sadece aktif section gorunur. Scroll-spy kaldirildi. Tum Tuna backlog (TF1-TF6) kapatildi.
 >
 > ── TF6 — Ayarlar UI/UX Revizyonu (23 Nisan 2026) ──
