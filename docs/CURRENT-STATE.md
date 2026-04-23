@@ -1,5 +1,40 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 23 Nisan 2026 | Asama 82.15 — TF4 cropper saydam alan + turuncu border hizalama fix (Tuna UAT feedback)
+> Son guncelleme: 23 Nisan 2026 | Asama 82.16 — TF6 Ayarlar UI/UX revizyonu (son Tuna feedback) tamamlandi
+> Aktif Odak: Ayarlar paneli UI/UX 3 kademede revize edildi: (1) Hero kart yuzeyine tasindi (bg/border/shadow), (2) card footer butonlari sag hizali (flex-end), (3) TOC tab switcher — sadece aktif section gorunur. Scroll-spy kaldirildi. Tum Tuna backlog (TF1-TF6) kapatildi.
+>
+> ── TF6 — Ayarlar UI/UX Revizyonu (23 Nisan 2026) ──
+>
+> **Tuna feedback (ikinci UAT):** Butonlar sol hizali garip duruyor (sag olmali), hero kart icinde olmali (diger panel pattern), TOC tiklandiginda sadece o section acilsin (collapse/tab pattern).
+>
+> **Fix 1 — Hero kart yuzeyinde:**
+> - `.ayr-hero` bg=var(--editorial-card), border=var(--editorial-hairline), border-radius=16px, padding=32px clamp, box-shadow=var(--editorial-shadow-md)
+> - Artik sirketler/inbox pattern'indeki gibi kart yuzeyi — ferah cerceve + gorsel hierarchy net
+>
+> **Fix 2 — Buton hizalama sag:**
+> - `.ayr-card__foot` flex-direction: row + justify-content: flex-end
+> - `.ayr-msg` order: -1 + flex: 1 (mesaj sol, buton sag — standart form footer pattern)
+> - `.ayr-btn` flex-shrink: 0
+>
+> **Fix 3 — Section tab switcher:**
+> - profil-ayarlar.js `initScrollSpy` → `initSectionTabs`
+> - TOC tab click → aktif section aria-hidden=false + hidden attr kaldir; digerleri aria-hidden=true + hidden attr
+> - is-active class + aria-current="page" + aria-hidden swap senkron
+> - URL hash deep-link (history.replaceState) → tarayici back/forward destek
+> - Keyboard navigation: ArrowLeft/ArrowRight tabs arasi gezinir
+> - ARIA: toc[role=tablist], her tab[role=tab]
+> - Scroll restore: tab degistigi anda panel ustune smooth scroll
+> - CSS: `.ayr-section[aria-hidden="true"] { display:none !important }` — hide rule
+>
+> **Entrance animation:** staggered fade (nth-of-type delays) kaldirildi — tab switch animation semantiginde anlam kaybeder, tek section icin 420ms fade yeter.
+>
+> **Test:** tests/tf6-ayarlar-uiux.spec.js 6 structural guard. Toplam TF1-TF6 full suite + smoke = 84/84 PASS.
+>
+> **Cache-bust:** 20260423k049h → 20260423k049i.
+>
+> **Kalan Tuna backlog:** SIFIR. TF1 (2FA UI), TF2 (2FA sistem), TF3 (hesap silme workflow), TF4 (avatar cropper), TF5 (admin image editor), TF6 (ayarlar UI/UX) — hepsi tamamlandi.
+>
+> ── Asama 82.15 (önceki) ──
+> TF4 cropper saydam alan + turuncu border hizalama (radial-gradient farthest-side + box-sizing border-box).
 >
 > ── TF4 UAT Fix (23 Nisan ikinci round) ──
 >

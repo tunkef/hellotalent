@@ -1,8 +1,10 @@
 /* ═══════════════════════════════════════════════════════════════════════
    K067 Faz B + C — Ayarlar panel interactions
-   Faz B: TOC scroll-spy (IntersectionObserver)
-   Faz C: Theme tri-state segment (System / Light / Dark)
-   Reads/writes ht_theme_preference via setThemePreference() from profil-core.
+   TF6 revize (23 Nisan 2026): scroll-spy → section tab switcher.
+   - Section'lar artik bir anda sadece biri gorunur (TOC tab click)
+   - URL hash senkronizasyonu (deep link support)
+   - aria-current="page" + aria-hidden="true" a11y
+   - Theme tri-state segment (System / Light / Dark) devam ediyor
    ═══════════════════════════════════════════════════════════════════════ */
 /* global setThemePreference */
 (function() {
@@ -20,77 +22,78 @@
   }
 
   // ──────────────────────────────────────────────────────────────
-  // FAZ B: TOC scroll-spy
+  // TF6: Section tab switcher (scroll-spy yerine)
+  // TOC tab click → sadece o section gorunur, digerleri aria-hidden.
   // ──────────────────────────────────────────────────────────────
-  function initScrollSpy() {
+  function initSectionTabs() {
     var panel = document.getElementById('panel-ayarlar');
     if (!panel) return;
-    var tabs = panel.querySelectorAll('.ayr-toc__tab');
-    if (!tabs.length) return;
+    var tabs = Array.prototype.slice.call(panel.querySelectorAll('.ayr-toc__tab'));
+    var sections = Array.prototype.slice.call(panel.querySelectorAll('.ayr-section'));
+    if (!tabs.length || !sections.length) return;
 
-    var sections = [];
-    tabs.forEach(function(tab) {
-      var href = tab.getAttribute('href') || '';
-      var id = href.replace('#', '');
-      var sec = document.getElementById(id);
-      if (sec) sections.push({ id: id, el: sec, tab: tab });
-    });
-    if (!sections.length) return;
-
-    function setActive(id) {
+    function activate(targetId) {
+      sections.forEach(function(s) {
+        if (s.id === targetId) {
+          s.setAttribute('aria-hidden', 'false');
+          s.removeAttribute('hidden');
+        } else {
+          s.setAttribute('aria-hidden', 'true');
+          s.setAttribute('hidden', '');
+        }
+      });
       tabs.forEach(function(t) {
         var hid = (t.getAttribute('href') || '').replace('#', '');
-        if (hid === id) t.classList.add('is-active');
-        else t.classList.remove('is-active');
-      });
-    }
-
-    if (!('IntersectionObserver' in window)) {
-      setActive(sections[0].id);
-      return;
-    }
-
-    var visible = {};
-    var observer = new IntersectionObserver(function(entries) {
-      entries.forEach(function(entry) {
-        var id = entry.target.id;
-        if (entry.isIntersecting) {
-          visible[id] = entry.intersectionRatio;
+        if (hid === targetId) {
+          t.classList.add('is-active');
+          t.setAttribute('aria-current', 'page');
         } else {
-          delete visible[id];
+          t.classList.remove('is-active');
+          t.removeAttribute('aria-current');
         }
       });
-      var best = null;
-      var bestRatio = -1;
-      Object.keys(visible).forEach(function(k) {
-        if (visible[k] > bestRatio) {
-          bestRatio = visible[k];
-          best = k;
-        }
-      });
-      if (best) setActive(best);
-    }, {
-      rootMargin: '-20% 0px -60% 0px',
-      threshold: [0, 0.1, 0.25, 0.5]
-    });
+      // Panel basinda scroll'u sifirla — tab degistikce kullanici ustten baslasin
+      var panelTop = panel.getBoundingClientRect().top + window.pageYOffset - 12;
+      if (window.pageYOffset > panelTop) {
+        window.scrollTo({ top: panelTop, behavior: 'smooth' });
+      }
+    }
 
-    sections.forEach(function(s) { observer.observe(s.el); });
-
-    // Smooth scroll on tab click (hash nav jump-free)
     tabs.forEach(function(tab) {
+      // Anchor → button semantic pivot (click + keyboard)
       tab.addEventListener('click', function(e) {
         var href = tab.getAttribute('href') || '';
         var id = href.replace('#', '');
-        var target = document.getElementById(id);
-        if (target) {
-          e.preventDefault();
-          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          setActive(id);
-        }
+        if (!id || !document.getElementById(id)) return;
+        e.preventDefault();
+        activate(id);
+        try { history.replaceState(null, '', '#' + id); } catch (_) {}
+      });
+      tab.addEventListener('keydown', function(e) {
+        if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+        e.preventDefault();
+        var idx = tabs.indexOf(tab);
+        var next = e.key === 'ArrowRight' ? (idx + 1) % tabs.length : (idx - 1 + tabs.length) % tabs.length;
+        tabs[next].focus();
+        tabs[next].click();
       });
     });
 
-    setActive(sections[0].id);
+    // TOC accessibility: role="tablist" semantic hint
+    var toc = panel.querySelector('.ayr-toc');
+    if (toc) toc.setAttribute('role', 'tablist');
+    tabs.forEach(function(t) {
+      t.setAttribute('role', 'tab');
+    });
+
+    // Initial section selection: URL hash → fallback ilk tab
+    var initial = (window.location.hash || '').replace('#', '');
+    if (initial && document.getElementById(initial) && panel.querySelector('#' + initial + '.ayr-section')) {
+      activate(initial);
+    } else {
+      var firstHref = (tabs[0].getAttribute('href') || '').replace('#', '');
+      if (firstHref) activate(firstHref);
+    }
   }
 
   // ──────────────────────────────────────────────────────────────
@@ -147,7 +150,7 @@
   }
 
   onReady(function() {
-    initScrollSpy();
+    initSectionTabs();
     initThemeSegment();
   });
 })();
