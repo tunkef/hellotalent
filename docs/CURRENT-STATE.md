@@ -1,6 +1,24 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 23 Nisan 2026 | Asama 82.9 — Profil Ayarlar derinlemesine audit (10 bulgu, 5 fix uygulandi)
-> Aktif Odak: docs/audit-ayarlar-20260423.md raporu hazir. 5 fix commit'lendi: banner JS-set raw hex → token class, buton text capture+restore (5 yer), MFA disable verify Vazgec butonu + state reset, sifre 6 → 8 karakter, banner role="status" a11y. Bulgu #10 yanlis pozitif (aria-checked sync zaten yapiliyor). Sonraki: display:none konservatif migration + push.
+> Son guncelleme: 23 Nisan 2026 | Asama 82.10 — display:none konservatif migration + Ayarlar audit fix'leri tamamlandi
+> Aktif Odak: 3 file input `style="display:none"` → `hidden` attribute (kesin guvenli, JS dokunulmuyor). 26 JS-toggle'li display:none rapor olarak birakildi (koordineli sweep gerekli). docs/audit-displaynone-20260423.md hazir. Sonraki: Final regression + push origin main.
+>
+> ── K049 display:none Audit (23 Nisan 2026) ──
+>
+> **Scope:** profil.html'de 32 inline `display:none` (K048 sonrasi handoff'tan).
+>
+> **Audit kategorizasyon:**
+> - **Safe (3):** file input'lar — JS sadece value reset, display dokunulmuyor → `hidden` attribute migration
+> - **JS toggle (26):** `el.style.display = ...` set ediliyor → koordineli class-based refactor sonraki pass
+> - **Show-only (3):** sadece gosterilir bir daha gizlenmez (app-body, deletion-banner, account-status-banner) → `[hidden]` + `el.hidden = false` semantik gelistirme onerilir
+>
+> **Fix:** avatar-file-hidden, cv-file-input, wiz-cv-input → HTML5 `hidden` attribute. Inline azaldi.
+>
+> **Rapor:** docs/audit-displaynone-20260423.md — 26 toggle elementi listesi + onerilen pass strategy (CSS `.is-hidden` utility + JS sweep + per-element regression).
+>
+> **Test:** smoke.runtime + k049-inline-purge-phase2 = 24 PASS.
+>
+> ── Asama 82.9 (önceki) ──
+> Profil Ayarlar derinlemesine audit — 10 bulgu, 5 dusuk-risk fix (banner class, buton text capture, MFA Vazgec, sifre 8, banner a11y). docs/audit-ayarlar-20260423.md raporu.
 >
 > ── K049 Ayarlar Audit (23 Nisan 2026) ──
 >
