@@ -56,26 +56,26 @@ if (window.Sentry) {
 </script>
 <!-- Analytics: ht_track → HT.trackEvent bridge -->
 <script>function ht_track(name, data) { if (window.HT && window.HT.trackEvent) window.HT.trackEvent(name, data); }</script>
-<link rel="stylesheet" href="css/tokens.css?v=20260423k049j">
-<link rel="stylesheet" href="css/layout.css?v=20260423k049j">
-<link rel="stylesheet" href="css/components.css?v=20260423k049j">
-<link rel="stylesheet" href="css/wizard.css?v=20260423k049j">
-<link rel="stylesheet" href="css/wizard-editorial.css?v=20260423k049j">
-<link rel="stylesheet" href="css/studio.css?v=20260423k049j">
-<link rel="stylesheet" href="css/panels/genel-bakis.css?v=20260423k049j">
-<link rel="stylesheet" href="css/panels/merkezi.css?v=20260423k049j">
-<link rel="stylesheet" href="css/profil-extras.css?v=20260423k049j">
-<link rel="stylesheet" href="css/panels/sirketler.css?v=20260423k049j">
-<link rel="stylesheet" href="css/panels/kimbakti.css?v=20260423k049j">
-<link rel="stylesheet" href="css/panels/inbox.css?v=20260423k049j">
-<link rel="stylesheet" href="css/panels/bildirimler.css?v=20260423k049j">
-<link rel="stylesheet" href="css/panels/destek.css?v=20260423k049j">
-<link rel="stylesheet" href="css/panels/ayarlar.css?v=20260423k049j">
-<link rel="stylesheet" href="css/panels/premium.css?v=20260423k049j">
-<link rel="stylesheet" href="css/panels/firsatlar.css?v=20260423k049j">
-<link rel="stylesheet" href="css/panel-soon.css?v=20260423k049j">
-<link rel="stylesheet" href="css/duyurular.css?v=20260423k049j">
-<link rel="stylesheet" href="css/avatar-cropper.css?v=20260423k049j">
+<link rel="stylesheet" href="css/tokens.css?v=20260423k049k">
+<link rel="stylesheet" href="css/layout.css?v=20260423k049k">
+<link rel="stylesheet" href="css/components.css?v=20260423k049k">
+<link rel="stylesheet" href="css/wizard.css?v=20260423k049k">
+<link rel="stylesheet" href="css/wizard-editorial.css?v=20260423k049k">
+<link rel="stylesheet" href="css/studio.css?v=20260423k049k">
+<link rel="stylesheet" href="css/panels/genel-bakis.css?v=20260423k049k">
+<link rel="stylesheet" href="css/panels/merkezi.css?v=20260423k049k">
+<link rel="stylesheet" href="css/profil-extras.css?v=20260423k049k">
+<link rel="stylesheet" href="css/panels/sirketler.css?v=20260423k049k">
+<link rel="stylesheet" href="css/panels/kimbakti.css?v=20260423k049k">
+<link rel="stylesheet" href="css/panels/inbox.css?v=20260423k049k">
+<link rel="stylesheet" href="css/panels/bildirimler.css?v=20260423k049k">
+<link rel="stylesheet" href="css/panels/destek.css?v=20260423k049k">
+<link rel="stylesheet" href="css/panels/ayarlar.css?v=20260423k049k">
+<link rel="stylesheet" href="css/panels/premium.css?v=20260423k049k">
+<link rel="stylesheet" href="css/panels/firsatlar.css?v=20260423k049k">
+<link rel="stylesheet" href="css/panel-soon.css?v=20260423k049k">
+<link rel="stylesheet" href="css/duyurular.css?v=20260423k049k">
+<link rel="stylesheet" href="css/avatar-cropper.css?v=20260423k049k">
 </head>
 <body>
 
@@ -1406,7 +1406,12 @@ if (window.Sentry) {
 
         <div class="ayr-card" id="mfa-status-card">
           <div class="ayr-card__title">İki adımlı doğrulama</div>
-          <p class="ayr-lede">Hesabını ek bir güvenlik katmanıyla koru. Google Authenticator veya benzeri bir uygulama kullanarak giriş yap.</p>
+          <p class="ayr-lede">Hesabını ek bir güvenlik katmanıyla koru. Doğrulama uygulaması giriş sırasında 6 haneli kod üretir.</p>
+          <ul class="ayr-fact-list ayr-fact-list--compact">
+            <li><strong>Google Authenticator</strong>, <strong>Authy</strong>, <strong>1Password</strong> veya <strong>iCloud Anahtar Zinciri</strong> gibi uygulamalar çalışır.</li>
+            <li>Telefonunu kaybedersen ikinci bir cihazda tekrar kurulum yapman gerekir.</li>
+            <li>Hesap güvenliği için tavsiye ederiz — açtığında login'de kod istenir.</li>
+          </ul>
 
           <div id="mfa-status-area">
             <div id="mfa-loading" class="ayr-status ayr-status--muted">Yükleniyor...</div>
@@ -1428,8 +1433,8 @@ if (window.Sentry) {
               <span class="ayr-status__label">İki adımlı doğrulama aktif</span>
             </div>
             <div class="ayr-card__foot">
-              <button class="ayr-btn ayr-btn--danger-ghost" id="btn-mfa-disable">Kapat</button>
               <div id="mfa-disable-msg" class="ayr-msg"></div>
+              <button class="ayr-btn ayr-btn--danger-ghost" id="btn-mfa-disable">Kapat</button>
             </div>
           </div>
         </div>
@@ -1441,7 +1446,9 @@ if (window.Sentry) {
       <div class="mfa-modal">
         <div class="mfa-modal__head">
           <h3 class="mfa-modal__title" id="mfa-enroll-title">İki adımlı doğrulama</h3>
-          <button type="button" class="mfa-modal__close" id="btn-mfa-modal-close" aria-label="Kapat">×</button>
+          <button type="button" class="mfa-modal__close" id="btn-mfa-modal-close" aria-label="Kapat">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6L6 18"/><path d="M6 6l12 12"/></svg>
+          </button>
         </div>
 
         <div id="mfa-enroll-state" class="mfa-enroll">
@@ -1894,35 +1901,35 @@ if (window.Sentry) {
   19. profil-bootstrap.js — auth, data hydration, step-init orchestration, career_goal prefill
   20. profil-events.js    — DOMContentLoaded event wiring, Cmd+K, avatar dropdown, page glue
 -->
-<script src="shared.js?v=20260423k049j"></script>
-<script src="profil-core.js?v=20260423k049j"></script>
-<script src="profil-data.js?v=20260423k049j"></script>
-<script src="profil-ui.js?v=20260423k049j"></script>
-<script src="profil-locations.js?v=20260423k049j"></script>
-<script src="profil-summary.js?v=20260423k049j"></script>
-<script src="profil-genel.js?v=20260423k049j"></script>
-<script src="profil-visibility.js?v=20260423k049j"></script>
-<script src="profil-preview.js?v=20260423k049j"></script>
-<script src="profil-cv.js?v=20260423k049j"></script>
-<script src="profil-avatar-cropper.js?v=20260423k049j"></script>
-<script src="profil-markalar.js?v=20260423k049j"></script>
-<script src="profil-settings.js?v=20260423k049j"></script>
-<script src="profil-firsatlar.js?v=20260423k049j"></script>
-<script src="profil-inbox.js?v=20260423k049j"></script>
-<script src="profil-yetkinlik.js?v=20260423k049j"></script>
-<script src="profil-studio-coach.js?v=20260423k049j"></script>
-<script src="profil-studio.js?v=20260423k049j"></script>
-<script src="panel-soon.js?v=20260423k049j"></script>
-<script src="profil-duyurular.js?v=20260423k049j"></script>
-<script src="profil-premium.js?v=20260423k049j"></script>
-<script src="profil-destek.js?v=20260423k049j"></script>
-<script src="profil-ayarlar.js?v=20260423k049j"></script>
-<script src="profil-wizard.js?v=20260423k049j"></script>
-<script src="profil-draft.js?v=20260423k049j"></script>
-<script src="profil-helpers.js?v=20260423k049j"></script>
-<script src="profil-kimbakti.js?v=20260423k049j"></script>
-<script src="profil-bootstrap.js?v=20260423k049j"></script>
-<script src="profil-events.js?v=20260423k049j"></script>
+<script src="shared.js?v=20260423k049k"></script>
+<script src="profil-core.js?v=20260423k049k"></script>
+<script src="profil-data.js?v=20260423k049k"></script>
+<script src="profil-ui.js?v=20260423k049k"></script>
+<script src="profil-locations.js?v=20260423k049k"></script>
+<script src="profil-summary.js?v=20260423k049k"></script>
+<script src="profil-genel.js?v=20260423k049k"></script>
+<script src="profil-visibility.js?v=20260423k049k"></script>
+<script src="profil-preview.js?v=20260423k049k"></script>
+<script src="profil-cv.js?v=20260423k049k"></script>
+<script src="profil-avatar-cropper.js?v=20260423k049k"></script>
+<script src="profil-markalar.js?v=20260423k049k"></script>
+<script src="profil-settings.js?v=20260423k049k"></script>
+<script src="profil-firsatlar.js?v=20260423k049k"></script>
+<script src="profil-inbox.js?v=20260423k049k"></script>
+<script src="profil-yetkinlik.js?v=20260423k049k"></script>
+<script src="profil-studio-coach.js?v=20260423k049k"></script>
+<script src="profil-studio.js?v=20260423k049k"></script>
+<script src="panel-soon.js?v=20260423k049k"></script>
+<script src="profil-duyurular.js?v=20260423k049k"></script>
+<script src="profil-premium.js?v=20260423k049k"></script>
+<script src="profil-destek.js?v=20260423k049k"></script>
+<script src="profil-ayarlar.js?v=20260423k049k"></script>
+<script src="profil-wizard.js?v=20260423k049k"></script>
+<script src="profil-draft.js?v=20260423k049k"></script>
+<script src="profil-helpers.js?v=20260423k049k"></script>
+<script src="profil-kimbakti.js?v=20260423k049k"></script>
+<script src="profil-bootstrap.js?v=20260423k049k"></script>
+<script src="profil-events.js?v=20260423k049k"></script>
 
 <!-- Inline helpers + [data-panel] delegation extracted to profil-helpers.js -->
 

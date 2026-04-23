@@ -1,5 +1,35 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 23 Nisan 2026 | Asama 82.17 — TF6 ikinci round: Ayarlar UI/UX detay feedback'leri (toggle sag + auto-save + 2FA modal + beta/hesap yerlesim)
+> Son guncelleme: 23 Nisan 2026 | Asama 82.18 — TF6 üçüncü round: grid eş hizalama + 2FA modal estetik + empty msg fix + danger border nötr
+>
+> ── TF6 ucuncu round — 23 Nisan 2026 ──
+>
+> Tuna UAT screenshot feedback (4 detay):
+>
+> **1) Grid butonlari ayni hizada (guvenlik + hesap yonetimi):**
+> `.ayr-grid-2 > .ayr-card .ayr-card__foot { margin-top: auto }`
+> `.ayr-grid-2 { align-items: stretch }` — iki kart esit yukseklikte, footer'lar alt kenarda ayni cizgide.
+> 2FA card icerigi genisletildi — `ayr-fact-list--compact` 3 bullet (Authenticator/Authy/1Password + telefon kaybi + onerilir).
+>
+> **2) 2FA modal estetigi (Clatu):**
+> - Close button: × unicode → SVG stroke icon (16x16, createElementNS yerine inline HTML SVG — static markup)
+> - Close button size 32x32 → 36x36, radius 10 + hover vermillion-soft bg
+> - QR container: padding 14 + border + radius 14 + shadow + centered (220x220 image)
+> - Secret code: mono pill (editorial-card-elev bg + hairline border + letter-spacing 0.12em + pill radius)
+> - Verify input: 220px width + min-height 52 + font 22px + letter-spacing 8px + focus vermillion ring (box-shadow 3px rgba)
+> - Modal foot: bg editorial-bg + padding 18/22/28 + min-width 110 butonlar
+>
+> **3) Gorünürlük "Mevcut isveren" row gap fix:**
+> `.ayr-msg:empty { min-height: 0; margin: 0; padding: 0 }` — bos mesaj div (actively-looking-msg) yer kaplamaz, row'lar tutarli gap.
+>
+> **4) Hesap yonetimi border notr:**
+> `.ayr-card--danger` border vermillion → hairline (oturum yonetimi ile tutarli). `.ayr-card__title--danger` renk vermillion → muted (oturum title ile ayni). Silme vurgu sadece `.ayr-btn--danger` buton'da kalir. "Silmeye yoneltiyormus gibi" hissi giderildi.
+>
+> **Test:** Full regression (p3 dahil) = 1012/1012 PASS.
+>
+> **Cache-bust:** 20260423k049j → 20260423k049k.
+>
+> ── Asama 82.17 (önceki) ──
+> TF6 ikinci round: toggle sag + auto-save + 2FA modal + beta/hesap yerlesim.
 > Aktif Odak: Tuna UAT ikinci round 7 feedback. Toggle'lar sag hizali (row-reverse), "Tercihleri kaydet" butonlari kaldirildi (auto-save on change), 2FA enroll inline kart yerine Clatu modal'da, Beta avantajlari Gorunum'den Hesap section'ina tasindi, Gorunum sadece tema (grid-2 → tek wide kart), Hesap yonetimi kartina 3-bullet fact list eklendi (Dondur/Sil/Veri indir).
 >
 > ── TF6 ikinci round — 23 Nisan 2026 ──
