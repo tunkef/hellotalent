@@ -131,12 +131,13 @@ for f in $STAGED_HTML; do
   fi
 
   if is_required "$f"; then
-    if [ -z "$HAS_HEADER" ] || [ -z "$HAS_LOGO" ] || [ -z "$HAS_FOOTER" ]; then
+    # Auth sayfalari: lp-hdr + lp-logo zorunlu, footer opsiyonel
+    # (endustri standardi: Stripe/Linear/Notion auth sayfalarinda footer YOK)
+    if [ -z "$HAS_HEADER" ] || [ -z "$HAS_LOGO" ]; then
       WARN_COUNT=$((WARN_COUNT + 1))
       MISSING=""
       [ -z "$HAS_HEADER" ] && MISSING="${MISSING}lp-hdr "
       [ -z "$HAS_LOGO" ] && MISSING="${MISSING}lp-logo "
-      [ -z "$HAS_FOOTER" ] && MISSING="${MISSING}ht-foot"
       WARN_FILES="${WARN_FILES}\n  - ${f} (eksik: ${MISSING})"
     fi
     if [ -z "$HAS_SHARED_V2" ]; then

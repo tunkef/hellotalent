@@ -64,41 +64,10 @@ STANDARDIZED_PAGES.forEach(function(p) {
       await expect(right).toContainText(p.rightSlotText);
     });
 
-    test('footer.ht-foot markup mevcut (index master pattern)', async function({ page }) {
+    test('footer YOK (auth sayfaları endustri standardi: Stripe/Linear/Notion pattern)', async function({ page }) {
       await page.goto(p.path, { waitUntil: 'domcontentloaded' });
       var footer = page.locator('footer.ht-foot');
-      await expect(footer).toHaveCount(1);
-    });
-
-    test('footer foot-nav 5 link mevcut (index ile aynı)', async function({ page }) {
-      await page.goto(p.path, { waitUntil: 'domcontentloaded' });
-      var links = page.locator('footer.ht-foot .foot-nav a');
-      await expect(links).toHaveCount(5);
-      await expect(links.nth(0)).toContainText(/Aday/);
-      await expect(links.nth(1)).toContainText(/Kurumsal/);
-      await expect(links.nth(2)).toContainText(/Hakkımızda/);
-      await expect(links.nth(3)).toContainText(/İletişim/);
-      await expect(links.nth(4)).toContainText(/Yasal/);
-    });
-
-    test('footer foot-bottom "© 2026 HelloTalent" içeriyor', async function({ page }) {
-      await page.goto(p.path, { waitUntil: 'domcontentloaded' });
-      var bottom = page.locator('footer.ht-foot .foot-bottom');
-      await expect(bottom).toContainText(/© 2026 HelloTalent/);
-    });
-
-    test('footer foot-lead lp-logo + açıklama mevcut', async function({ page }) {
-      await page.goto(p.path, { waitUntil: 'domcontentloaded' });
-      var lead = page.locator('footer.ht-foot .foot-lead');
-      await expect(lead).toHaveCount(1);
-      await expect(lead.locator('a.lp-logo')).toHaveCount(1);
-    });
-
-    test('foot-social social icons mevcut', async function({ page }) {
-      await page.goto(p.path, { waitUntil: 'domcontentloaded' });
-      var icons = page.locator('footer.ht-foot .foot-social-icons a');
-      // 4 social icon (LinkedIn, X, TikTok, Instagram)
-      await expect(icons).toHaveCount(4);
+      await expect(footer).toHaveCount(0);
     });
 
     test('shared-v2.css yüklenmiş (index master fonts + tokens)', async function({ page }) {
