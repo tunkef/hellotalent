@@ -14,11 +14,12 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/tokens.css?v=20260426asamab0">
-<link rel="stylesheet" href="shared-v2.css?v=20260426asamab0">
-<link rel="stylesheet" href="css/hr-shell.css?v=20260426asamab0">
+<link rel="stylesheet" href="css/tokens.css?v=20260426asamab6">
+<link rel="stylesheet" href="shared-v2.css?v=20260426asamab6">
+<link rel="stylesheet" href="css/hr-shell.css?v=20260426asamab6">
+<link rel="stylesheet" href="css/hr-forms.css?v=20260426asamab6">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="shared.js?v=20260426asamab0"></script>
+<script src="shared.js?v=20260426asamab6"></script>
 </head>
 <body class="hr-page" data-hr-page="settings">
 <a class="skip-to-content" href="#main">İçeriğe atla</a>
@@ -27,11 +28,16 @@
   <div class="lp-hdr-inner">
     <a class="lp-logo" href="ik.html">hello<em>talent</em></a>
     <div class="lp-hdr-mid">
-      <button type="button" class="hr-position-switcher" data-hr-position-btn aria-haspopup="listbox" aria-label="Aktif pozisyon">
-        <span class="hr-position-switcher__label">Pozisyon</span>
-        <span class="hr-position-switcher__value" data-hr-position-value>Tüm pozisyonlar</span>
-        <svg class="hr-position-switcher__chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-      </button>
+      <div class="hr-position-switcher-wrap">
+        <button type="button" class="hr-position-switcher" data-hr-position-btn aria-haspopup="listbox" aria-expanded="false" aria-label="Aktif pozisyon">
+          <span class="hr-position-switcher__label">Pozisyon</span>
+          <span class="hr-position-switcher__value" data-hr-position-value>Tüm pozisyonlar</span>
+          <svg class="hr-position-switcher__chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="hr-position-menu" data-hr-position-menu role="listbox" aria-label="Pozisyon seç">
+          <div class="hr-position-menu__loading" data-hr-position-loading>Yükleniyor…</div>
+        </div>
+      </div>
     </div>
     <div class="lp-cta">
       <div class="hr-user-menu-wrap">
@@ -72,25 +78,120 @@
   <header class="hr-pg-head">
     <div class="hr-pg-head__eyebrow">Ayarlar</div>
     <h1 class="hr-pg-head__title">Hesap ve panel tercihleri</h1>
-    <p class="hr-pg-head__lede">Bildirim tercihleri, açık/koyu tema, hesap güvenliği (şifre, 2FA) ve plan bilgileri tek ekranda toplanır.</p>
+    <p class="hr-pg-head__lede">Bildirim tercihleri, açık/koyu tema, hesap güvenliği. Şifre değiştirme ve 2FA MVP 2 ile aktif olur.</p>
   </header>
 
-  <div class="hr-card">
-    <div class="hr-empty-state">
-      <div class="hr-empty-state__icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-      </div>
-      <h2 class="hr-empty-state__title">Ayarlar Sprint 6'da açılır</h2>
-      <p class="hr-empty-state__desc">Bildirim tercihleri, tema seçici, şifre değişimi ve plan bilgileri sırada. profil.html'in mevcut ayarlar deneyimi referans alınır, kurumsal-spesifik kısımlar eklenir.</p>
-      <a class="hr-empty-state__cta" href="ik.html">Genel bakışa dön
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-      </a>
-    </div>
+  <div class="hr-form-notice">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    <span>Tema tercihi tarayıcınızda saklanır. Diğer ayarlar MVP 2 ile hesabınıza yazılır.</span>
   </div>
+
+  <form class="hr-form" data-hr-set-form autocomplete="off" novalidate>
+    <section class="hr-form__section">
+      <header class="hr-form__head">
+        <h2 class="hr-form__title">Görünüm</h2>
+        <p class="hr-form__desc">Açık ve koyu tema arasında geçiş yapın. Sistem tercihinizi takip etmek için Otomatik seçin.</p>
+      </header>
+      <div class="hr-form__theme">
+        <label class="hr-form__theme-opt">
+          <input type="radio" name="hr-set-theme" value="light" data-hr-set-theme>
+          <span class="hr-form__theme-card">
+            <span class="hr-form__theme-swatch hr-form__theme-swatch--light" aria-hidden="true"></span>
+            <span class="hr-form__theme-label">Açık</span>
+          </span>
+        </label>
+        <label class="hr-form__theme-opt">
+          <input type="radio" name="hr-set-theme" value="dark" data-hr-set-theme>
+          <span class="hr-form__theme-card">
+            <span class="hr-form__theme-swatch hr-form__theme-swatch--dark" aria-hidden="true"></span>
+            <span class="hr-form__theme-label">Koyu</span>
+          </span>
+        </label>
+        <label class="hr-form__theme-opt">
+          <input type="radio" name="hr-set-theme" value="system" checked data-hr-set-theme>
+          <span class="hr-form__theme-card">
+            <span class="hr-form__theme-swatch hr-form__theme-swatch--system" aria-hidden="true"></span>
+            <span class="hr-form__theme-label">Otomatik</span>
+          </span>
+        </label>
+      </div>
+    </section>
+
+    <section class="hr-form__section">
+      <header class="hr-form__head">
+        <h2 class="hr-form__title">Bildirimler</h2>
+        <p class="hr-form__desc">Yeni başvuru, mesaj ve aşama değişikliklerini hangi kanaldan almak istersiniz?</p>
+      </header>
+      <div class="hr-form__toggle-list">
+        <label class="hr-form__toggle">
+          <span class="hr-form__toggle-body">
+            <span class="hr-form__toggle-title">E-posta — yeni mesaj</span>
+            <span class="hr-form__toggle-desc">Aday yanıt verdiğinde anlık e-posta.</span>
+          </span>
+          <input type="checkbox" data-hr-set-notify-msg checked>
+          <span class="hr-form__toggle-slider" aria-hidden="true"></span>
+        </label>
+        <label class="hr-form__toggle">
+          <span class="hr-form__toggle-body">
+            <span class="hr-form__toggle-title">E-posta — pipeline aktivitesi</span>
+            <span class="hr-form__toggle-desc">Ekip üyesi aşama değiştirdiğinde özet e-posta.</span>
+          </span>
+          <input type="checkbox" data-hr-set-notify-pipeline checked>
+          <span class="hr-form__toggle-slider" aria-hidden="true"></span>
+        </label>
+        <label class="hr-form__toggle">
+          <span class="hr-form__toggle-body">
+            <span class="hr-form__toggle-title">Haftalık özet</span>
+            <span class="hr-form__toggle-desc">Pazartesi sabahı geçen hafta toplamı.</span>
+          </span>
+          <input type="checkbox" data-hr-set-notify-weekly>
+          <span class="hr-form__toggle-slider" aria-hidden="true"></span>
+        </label>
+      </div>
+    </section>
+
+    <section class="hr-form__section">
+      <header class="hr-form__head">
+        <h2 class="hr-form__title">Güvenlik</h2>
+        <p class="hr-form__desc">Şifre değişikliği ve iki adımlı doğrulama MVP 2 ile aktif olur.</p>
+      </header>
+      <div class="hr-form__sec-grid">
+        <div class="hr-form__sec-item">
+          <div class="hr-form__sec-item-body">
+            <div class="hr-form__sec-item-title">Şifre</div>
+            <div class="hr-form__sec-item-desc">Son değişim: bilinmiyor</div>
+          </div>
+          <button type="button" class="hr-btn-ghost" disabled title="MVP 2 ile aktif olur">Şifre değiştir</button>
+        </div>
+        <div class="hr-form__sec-item">
+          <div class="hr-form__sec-item-body">
+            <div class="hr-form__sec-item-title">İki adımlı doğrulama (2FA)</div>
+            <div class="hr-form__sec-item-desc">Cihaz tabanlı kod ile giriş.</div>
+          </div>
+          <button type="button" class="hr-btn-ghost" disabled title="MVP 2 ile aktif olur">Etkinleştir</button>
+        </div>
+        <div class="hr-form__sec-item hr-form__sec-item--danger">
+          <div class="hr-form__sec-item-body">
+            <div class="hr-form__sec-item-title">Hesabı sil</div>
+            <div class="hr-form__sec-item-desc">KVKK md.11 — 30 gün silme askıda kalır, geri alabilirsiniz.</div>
+          </div>
+          <button type="button" class="hr-btn-ghost hr-btn-ghost--danger" disabled title="MVP 2 ile aktif olur">Hesabı sil</button>
+        </div>
+      </div>
+    </section>
+
+    <footer class="hr-form__foot">
+      <button type="button" class="hr-btn-ghost" data-hr-set-reset>Vazgeç</button>
+      <button type="submit" class="hr-btn-primary" data-hr-set-save>Tercihleri kaydet</button>
+    </footer>
+  </form>
 </main>
 
-<script src="js/hr-shell.js?v=20260426asamab0" defer></script>
-<script src="js/hr-data.js?v=20260426asamab0" defer></script>
-<script src="js/hr-settings.js?v=20260426asamab0" defer></script>
+<!-- Toast -->
+<div class="hr-toast" data-hr-toast aria-live="polite" aria-atomic="true"></div>
+
+<script src="js/hr-shell.js?v=20260426asamab6" defer></script>
+<script src="js/hr-data.js?v=20260426asamab6" defer></script>
+<script src="js/hr-settings.js?v=20260426asamab6" defer></script>
 </body>
 </html>
