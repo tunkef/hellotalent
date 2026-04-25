@@ -1,7 +1,29 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 25 Nisan 2026 | Asama 83.2 — Public landing CTA → lead form (funnel tam erisim)
+> Son guncelleme: 25 Nisan 2026 | Asama 83.3 — Lead form -> landing page mimarisi (form-centric mini sayfadan kurtuldu)
 >
 > Aktif Odak: ik.html'i KISS + Pozisyon-aware Pipeline workspace olarak bastan yaziyoruz. MVP 1 = "yasayan demo + lead funnel" (fake data, gercek aday yok), MVP 2 = paid + Iyzico + KVKK e-sozlesme (15+ kurumsal lead + 5000+ aday havuzu threshold sonrasi).
+>
+> ── Asama 83.3 (lead landing mimarisi, 25 Nisan gece) ──
+>
+> **Tetikleyici:** Tuna UAT — `isveren-onboarding.html` canlida 540px dar kart, 3/4 ekran bos cream zemin, "20 yil geri gitmis gibi". Karsilastirma: index.html `#kurumsal` hero (full-width navy, Bricolage 80px display, 2-kolon, KPI, video) referans kalite. Mimari teshis: form-centric mini sayfa yerine landing page olmaliydi.
+>
+> **chief-of-staff zinciri (T2 tier, Codex gerekmedi):**
+> 1. designer (mental brief) → 5-section dikey mimari (topnav + hero + form + social-proof + footer), spacing 8-step rhythm, 1180px max-width landing layer
+> 2. ui-agent → isveren-onboarding.html'e ~415 satir lf-* CSS layer + 4 yeni section markup. Mevcut wizard JS (state, validation, submit, TOTAL_STEPS=9) **DEGISMEDI**. obh-shell artik kart icinde (max-width 720px), eski sticky obh-topbar yerine yeni lf-topnav (cream + blur, step counter ayna). Inline SVG illustration generated (kurumsal IK paneli temasi: aday karti + esleme karti + bar chart) — gercek image asset yoktu (/images/, /img/ bos)
+> 3. content-writer (mental, avoid-ai-writing) → hero "Türkiye perakendesinin aday tarafı" korundu (display 76px), 3 KPI ("9 / 5dk / KVKK"), 3 testimonial placeholder anonim Türk İK rolleri (Tekstil grubu / Lüks perakende / Holding). Cift hero engellemek icin wizard step 1 hero "Hazirsaniz baslayalim · Sorulari baslat" yeniden yazildi
+> 4. uat-tester → tests/lead-form.spec.js guncel: load test landing+wizard layer'lari kontrol, yeni anchor-scroll test (hero CTA -> #basvuru smooth scroll). 4 viewport x 2 theme x 5 senaryo = 80 test PASS (eski 64 + yeni 16). Tam regression korundu
+> 5. darkmode-auditor (mental) → clatu-hr-tokens.css mevcut dark layer otomatik calisir, yeni token gerekmedi. Light + dark 1440 + 390 screenshot karsilastirma: cream/navy hierarchy temiz, social-proof navy zeminde quote-card kontrast tam, AAA/AA WCAG karsilanir
+> 6. code-reviewer (sentez) → 5-axis BLOCKER yok. Scope dar (sadece isveren-onboarding.html + tests/lead-form.spec.js), JS davranisi degismedi, schema/RLS dokunulmadi
+>
+> **Etkilenen dosya:**
+> - `isveren-onboarding.html` (1188 -> 1878 satir, +690): yeni lf-* layer + obh-shell repositioned + step 1 hero rewrite + showStep() lf-counter mirror
+> - `tests/lead-form.spec.js` (8061 -> ~9050 satir): load test guncellendi + yeni anchor-scroll test eklendi
+>
+> **Commit + push:** `27db76e` main -> origin/main
+>
+> **Karsilastirma screenshot:** `.playwright-mcp/form-1440-after.png` (yeni) vs eski `form-1440-light.png` (Tuna eslestirme icin)
+>
+> **Sonraki adim:** FAZ B (paid panel taslagi, MVP 2 hazirlik) veya yeni revize Tuna UAT geri donusu beklenir.
 >
 > ── Asama 83.2 (lead funnel CTA, 25 Nisan aksam geç) ──
 >
