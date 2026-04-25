@@ -39,10 +39,78 @@ fi
 cd "$REPO_ROOT" || exit 0
 
 STAGED_HTML="$(git diff --cached --name-only --diff-filter=AM | grep -E '\.html$' || true)"
+STAGED_CSS="$(git diff --cached --name-only --diff-filter=AM | grep -E '^css/(ik-|panels/ik-)' || true)"
 
-if [ -z "$STAGED_HTML" ]; then
+if [ -z "$STAGED_HTML" ] && [ -z "$STAGED_CSS" ]; then
   exit 0
 fi
+
+# ════════════════════════════════════════════════════════════════
+# Asama 86 Sprint A — IK shell guard
+#   - HARD-BLOCK: ik.html veya hr-*.html'de eski hr-shell.css / hr-polish.css import
+#   - HARD-BLOCK: ik-*.css veya css/panels/ik-*.css'te hardcoded hex
+#   - WARN: IK sayfasinda tokens.css import yok
+#   - WARN: IK sayfasinda lp-hdr-ik markup yok
+# ════════════════════════════════════════════════════════════════
+
+ASAMA86_ERR=0
+ASAMA86_FILES=""
+
+is_ik_html() {
+  local f="$1"
+  case "$f" in
+    ik.html|hr-pipeline.html|hr-pool.html|hr-candidate.html|hr-messages.html|hr-company.html|hr-team.html|hr-campaigns.html|hr-settings.html)
+      return 0 ;;
+  esac
+  return 1
+}
+
+# IK HTML kontrolleri
+for f in $STAGED_HTML; do
+  if ! is_ik_html "$f"; then
+    continue
+  fi
+
+  # HARD-BLOCK: eski hr-shell.css / hr-polish.css import
+  HAS_OLD_HR_CSS="$(grep -lE '<link[^>]*href=[^>]*(hr-shell|hr-polish|clatu-hr-)\.css' "$f" 2>/dev/null || true)"
+  if [ -n "$HAS_OLD_HR_CSS" ]; then
+    ASAMA86_ERR=$((ASAMA86_ERR + 1))
+    ASAMA86_FILES="${ASAMA86_FILES}\n  - ${f} (yasak: hr-shell.css / hr-polish.css import — Asama 86 ROLLBACK)"
+  fi
+
+  # WARN: tokens.css import yok
+  if ! grep -qE 'href=["'\''][^"'\'']*tokens\.css' "$f" 2>/dev/null; then
+    printf "\033[33m[Asama 86 — UYARI]\033[0m %s: tokens.css import eksik\n" "$f"
+  fi
+
+  # WARN: lp-hdr-ik markup yok (ik.html ve hr-* için zorunlu)
+  if ! grep -q 'class="lp-hdr-ik"' "$f" 2>/dev/null; then
+    printf "\033[33m[Asama 86 — UYARI]\033[0m %s: lp-hdr-ik header markup eksik\n" "$f"
+  fi
+done
+
+# IK CSS hardcoded hex kontrol (token-strict)
+if [ -n "$STAGED_CSS" ]; then
+  for f in $STAGED_CSS; do
+    # comment satirlari + media queries dışında hardcoded hex regex
+    HEX_LINES="$(grep -nE '#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?\b' "$f" 2>/dev/null | grep -vE '^\s*\*|^\s*//|^\s*/\*|^.*\*/$' || true)"
+    if [ -n "$HEX_LINES" ]; then
+      HEX_COUNT="$(echo "$HEX_LINES" | wc -l | tr -d ' ')"
+      ASAMA86_ERR=$((ASAMA86_ERR + 1))
+      ASAMA86_FILES="${ASAMA86_FILES}\n  - ${f} (token-strict ihlali: ${HEX_COUNT} hardcoded hex)"
+    fi
+  done
+fi
+
+if [ "$ASAMA86_ERR" -gt 0 ]; then
+  printf "\n\033[31m[Asama 86 Sprint A — HATA]\033[0m %d dosyada IK shell ihlali:" "$ASAMA86_ERR"
+  printf "%b\n" "$ASAMA86_FILES"
+  printf "\n  Plan: ~/.claude/plans/imdi-senle-daha-nce-hashed-papert.md\n"
+  printf "  Token-strict: var(--*) zorunlu, hardcoded hex YASAK.\n"
+  printf "  Eski override CSS (hr-shell/hr-polish) silindi, yeniden import etme.\n\n"
+  exit 1
+fi
+
 
 # Clatu master pattern zorunlu sayfa listesi (Asama 84.2)
 REQUIRES_CLATU_LAYOUT=(
@@ -54,7 +122,6 @@ REQUIRES_CLATU_LAYOUT=(
 SKIP_FILES=(
   "index.html"
   "admin.html"
-  "ik.html"
   "aday.html"
   "isveren.html"
   "hakkimizda.html"

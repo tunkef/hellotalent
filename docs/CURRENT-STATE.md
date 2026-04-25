@@ -1,7 +1,33 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 26 Nisan 2026 | FAZ B Sprint 8 + Asama 85 — POLISH + FAZ B TAMAMLANDI
+> Son guncelleme: 26 Nisan 2026 | Asama 86 Sprint A — Shell + Anasayfa (FAZ B yeniden tasarim baslangici)
 >
-> Aktif Odak: FAZ B BITTI. 8 panel canli + multi-page mimari + backend (Sprint 7) hazir + tasarim polish layer (hr-polish.css) tum sayfalara aktif. Tuna feedback "tasarim hizalar ve duzenler kotu, midem bulanyor" → comprehensive polish: spacing rhythm + typography hierarchy + token vocab harmonization + 44px touch target + dark mode parite. Sonraki: Tuna UAT, MVP 2 (Iyzico + KVKK).
+> Aktif Odak: Tuna kritik feedback "profil.html'i baz almiyorsun, dashboard istiyorum, Clatu'yu override ettin, tokenlari yedin" sonrasi FAZ B Sprint 0-8 ROLLBACK + profil.html pattern adapt. Sprint A = Shell (lp-hdr-ik + segment nav + sub-nav) + Anasayfa (KPI hero + bento grid 6 kart + recent feed). Token-strict (0 hardcoded hex, 438 var(--*)). Auth-walled redirect + multi-page mimari korunur (8 hr-*.html Sprint B-D'de yeniden yazilacak). Sonraki: Sprint B (Adaylar segment).
+>
+> ── Asama 86 Sprint A (26 Nisan 2026) ──
+>
+> **Yeni dosyalar:**
+> - css/ik-shell.css (863 satir) — lp-hdr-ik header 64px + 3 segment + sub-nav + container + bottom nav + drawer + dark mode
+> - css/panels/ik-genel.css (863 satir) — hero + bento + KPI + recent feed
+> - js/ik-shell.js (335 satir) — auth gate + segment routing + dropdown + mobile drawer
+> - js/ik-genel.js (671 satir) — demo data + KPI compute + 6 bento + feed (XSS-safe DOM API)
+> - ik.html (243 satir, yeniden) — Anasayfa shell + dashboard host
+> - tests/ik-shell.spec.js (~22) + tests/ik-genel.spec.js (~25) — 86 PASS
+>
+> **Silinen (eski FAZ B Sprint 0-8 ROLLBACK):**
+> - 11 hr-*.js (shell/data/hub/pipeline/pool/messages/candidate/campaigns/company/team/settings)
+> - 4 hr-*.css (shell/polish/pipeline/pool)
+>
+> **Arsivlenen (.disabled-asama86):** 11 hr-*.spec.js
+>
+> **Pre-commit guard genisleme:** scripts/check-clatu-layout.sh — IK shell HARD-BLOCK eski hr-shell/polish import + token-strict hardcoded hex
+>
+> **Token-strict:** 0 hardcoded hex, 438 var(--*), tum renk/spacing/radius/typography token uzerinden.
+>
+> **Plan:** ~/.claude/plans/imdi-senle-daha-nce-hashed-papert.md (Tuna onayli, Sprint A-E plan)
+>
+> ── Asama 85 (onceki, ROLLBACK) ──
+>
+> Eski FAZ B Sprint 0-8 (multi-page hub + override polish) Tuna feedback "midem bulanyor, profil.html'i baz almiyorsun" ile ROLLBACK. JS modulleri sil, profil.html dashboard pattern ile yeniden.
 >
 > ── Asama 85 / FAZ B Sprint 8 (26 Nisan 2026 — Polish + final docs) ──
 >
