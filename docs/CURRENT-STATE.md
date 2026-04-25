@@ -1,7 +1,56 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 26 Nisan 2026 | FAZ B Sprint 0 — HR Hub multi-page iskelet CANLI
+> Son guncelleme: 26 Nisan 2026 | FAZ B Sprint 7 — Backend (MVP 2 hazirligi) CANLI
 >
-> Aktif Odak: FAZ B basladi. Eski 4905 satir tek-dosya ik.html sidebar dashboard ik.legacy.html olarak yedeklendi; yeni ik.html lp-hdr master pattern (auth sayfalariyla %100 ayni) + 9 link subnav + dashboard kartlar olarak yeniden yazildi. 8 panel (Pipeline / Havuz / Mesajlar / Adaylar / Kampanyalar / Sirket / Ekip / Ayarlar) kendi HTML+JS dosyalarinda iskelet halinde, Sprint 1+ doldurulacak. Multi-page modulerlik = "kod ararken/gelistirirken rahat" Tuna karari.
+> Aktif Odak: FAZ B BATCH FINAL gecesi — Sprint 3 / 4 / 5 / 6 / 7 ardisik canli, Sprint 8 final test + polish kalan. 8 panel hepsi tam fonksiyonel: Pipeline (drag-drop + drawer), Havuz (search + filter + bulk), Mesajlar (2-pane + compose), Aday detay (4-tab), Kampanyalar (6-step wizard), Sirket profili (form + brand tag), Ekip (rol + davet), Ayarlar (tema + bildirim). Backend (T3) migration diskte hazir — 2 yeni tablo + 5 RPC + RLS + is_paid_employer() helper. Real mode flag MVP 2'ye kadar kapali.
+>
+> ── FAZ B Sprint 7 (26 Nisan 2026 — Backend MVP 2 hazirligi) ──
+>
+> **Tetikleyici:** Tuna direktifi "bu gece FAZ B'yi bitiriyoruz" — auto mode + max effort + chief-of-staff orchestration. T3 zinciri: auditor + supabase-agent + code-reviewer + Codex.
+>
+> **Migration `20260426012144_hr_pipeline_notes_mvp2.sql`:**
+> - `pipeline_stage` ENUM (6 stage): yeni / gorustum / mulakat / teklif / kapandi_win / kapandi_loss
+> - `candidate_pipeline_state` tablo + 4 RLS policy (select/insert/update team, delete admin) + 3 index + GRANT
+> - `employer_candidate_notes` tablo + 4 RLS policy (select team, insert+update self, delete self_or_admin) + 3 index + GRANT + body 1..4000 char check
+> - `hr_profiles.feature_flags` jsonb default `{}` + `companies.metadata` jsonb default `{}`
+> - 5 RPC: `hr_get_pipeline(p_position_id)` / `hr_move_pipeline_stage(p_id, p_stage)` / `hr_add_to_pipeline(p_position_id, p_candidate_id, p_stage)` (idempotent ON CONFLICT) / `hr_add_note(p_candidate_id, p_position_id, p_body)` / `hr_list_notes(p_candidate_id)`
+> - `is_paid_employer()` helper (SECURITY DEFINER, search_path SET) — MVP 2 Iyzico aktivasyonu icin feature_flags.paid kontrol
+> - `trg_set_updated_at()` trigger fonksiyonu + 2 trigger
+> - Idempotent: DO IF NOT EXISTS / DROP POLICY IF EXISTS / CREATE TABLE IF NOT EXISTS
+> - SECURITY: search_path SET = public her fonksiyonda, auth.uid() kullanim, FROM auth.users YASAK kuraline uyumlu
+>
+> **Adapter genisletme (js/hr-data.js):**
+> - getPipeline / moveStage / addToPipeline / addNote real mode RPC parametre adlari migration ile birebir eslestirildi
+> - addNote 3-parametreli oldu (candidateId, body, positionId) — backend p_position_id zorunlu degil ama RPC contract uyumlu
+> - HR_REAL_MODE_ENABLED default false — flag flip MVP 2 aktivasyonunda
+>
+> **Test:** `tests/hr-sprint7-backend.spec.js` — 27 test x 2 viewport = 54/54 PASS
+> - ENUM + 2 tablo + index + RLS + GRANT + 5 RPC + helper + idempotency + adapter contract statik kontrol
+> - Live integration testi MVP 2'de Supabase test DB'sinde calistirilacak
+>
+> **`npm run db:push` ÇAĞRILMADI:**
+> - Migration dosyasi diskte hazir, prod DB'ye uygulanmadi
+> - Tuna onayi sonrasi MVP 2 aktivasyonunda (Iyzico + KVKK guard ile birlikte) push edilir
+> - T3 Codex gate: native auditor + supabase-agent zinciri %100 uyumlu (RLS + GRANT + search_path + auth.uid + body check), commit referans dokumantasyonu
+>
+> ── FAZ B Sprint 6 (26 Nisan 2026 — Sirket / Ekip / Ayarlar) ──
+>
+> 3 panel + ortak hr-forms.css. hr-company: 3 section (genel/marka/iletisim) + brand tag input. hr-team: ekip listesi + davet modal (3 rol — admin/recruiter/viewer, MVP 2 disabled). hr-settings: tema secici (light/dark/system canli onizleme) + 3 bildirim toggle + guvenlik bolumu (sifre/2FA/hesap-sil — MVP 2 disabled, KVKK md.11 referans). 25 test x 2 viewport = 50/50 PASS.
+>
+> ── FAZ B Sprint 5 (26 Nisan 2026 — Kampanyalar) ──
+>
+> Liste + 4-status filter + 6-step wizard modal (Isim/Kanal/Filtre/Mesaj/Zamanlama/Onizleme). Live target preview (havuz match + filtre kombinasyonu). Yayinla butonu MVP 2 disabled. Demo persist localStorage. Position-aware default (active position varsa city/segment). 35 test x 2 viewport = 70/70 PASS.
+>
+> ── FAZ B Sprint 4 (26 Nisan 2026 — Aday detay) ──
+>
+> Tam-page (drawer yerine). URL ?id=&from=&tab= destek. Hero header + 4 tab (Profil/Notlar/Mesajlar/Eslesme). Profil: 6 alan + 3 lokasyon + marka tag + meta grid. Notlar CRUD localStorage. Mesajlar tab: candidate_id thread match. Eslesme tab: 4-factor heuristic (pozisyon/sehir/segment/deneyim). 39 test x 2 viewport = 78/78 PASS.
+>
+> ── FAZ B Sprint 3 (26 Nisan 2026 — Mesajlar) ──
+>
+> 2-pane layout (sol thread liste 360px + sag aktif konusma). Mobile fallback (data-thread-open slide-in). Search + filter (Tumu/Okunmamis) + position-aware. Compose: Enter gonder, Shift+Enter satir. Bubble row (HR navy / candidate ivory + day separator). Demo persist + HRData.sendMessage adapter. 30+ mesaj demo data. 40 test x 2 viewport = 80/80 PASS.
+>
+> ── FAZ B Sprint 0 (26 Nisan 2026 — HR Hub iskelet) ──
+>
+> Aktif Odak (eski): FAZ B basladi. Eski 4905 satir tek-dosya ik.html sidebar dashboard ik.legacy.html olarak yedeklendi; yeni ik.html lp-hdr master pattern (auth sayfalariyla %100 ayni) + 9 link subnav + dashboard kartlar olarak yeniden yazildi. 8 panel (Pipeline / Havuz / Mesajlar / Adaylar / Kampanyalar / Sirket / Ekip / Ayarlar) kendi HTML+JS dosyalarinda iskelet halinde, Sprint 1+ doldurulacak. Multi-page modulerlik = "kod ararken/gelistirirken rahat" Tuna karari.
 >
 > ── FAZ B Sprint 0 (26 Nisan 2026 — HR Hub iskelet) ──
 >

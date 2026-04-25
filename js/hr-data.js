@@ -169,6 +169,9 @@
       var sb = supa();
       if (!sb) return { data: null, error: { message: 'Supabase not ready' } };
       try {
+        // Sprint 7 backend: hr_get_pipeline(p_position_id uuid)
+        // Returns: id, position_id, candidate_id, stage, added_at, updated_at,
+        //          candidate_name, candidate_pozisyon, candidate_sehir
         var res = await sb.rpc('hr_get_pipeline', { p_position_id: positionId });
         return { data: res.data, error: res.error };
       } catch (e) {
@@ -203,6 +206,8 @@
       var sb = supa();
       if (!sb) return { data: null, error: { message: 'Supabase not ready' } };
       try {
+        // Sprint 7 backend: hr_move_pipeline_stage(p_id uuid, p_stage pipeline_stage)
+        // pipeline_stage ENUM: 'yeni','gorustum','mulakat','teklif','kapandi_win','kapandi_loss'
         var res = await sb.rpc('hr_move_pipeline_stage', { p_id: pipelineId, p_stage: newStage });
         return { data: res.data, error: res.error };
       } catch (e) {
@@ -251,7 +256,13 @@
       var sb = supa();
       if (!sb) return { data: null, error: { message: 'Supabase not ready' } };
       try {
-        var res = await sb.rpc('hr_add_to_pipeline', payload);
+        // Sprint 7 backend: hr_add_to_pipeline(p_position_id, p_candidate_id, p_stage)
+        // Idempotent — UNIQUE(position_id, candidate_id) constraint
+        var res = await sb.rpc('hr_add_to_pipeline', {
+          p_position_id: payload.position_id,
+          p_candidate_id: payload.candidate_id,
+          p_stage: payload.stage || 'yeni'
+        });
         return { data: res.data, error: res.error };
       } catch (e) {
         return { data: null, error: { message: e.message } };
@@ -312,6 +323,8 @@
       var sb = supa();
       if (!sb) return { data: null, error: { message: 'Supabase not ready' } };
       try {
+        // Sprint 7 backend: hr_list_notes(p_candidate_id bigint)
+        // Returns: id, candidate_id, position_id, author_id, author_name, body, created_at, updated_at
         var res = await sb.rpc('hr_list_notes', { p_candidate_id: candidateId });
         return { data: res.data, error: res.error };
       } catch (e) {
@@ -321,12 +334,18 @@
     return { data: [], error: null };
   }
 
-  async function addNote(candidateId, body) {
+  async function addNote(candidateId, body, positionId) {
     if (isRealMode()) {
       var sb = supa();
       if (!sb) return { data: null, error: { message: 'Supabase not ready' } };
       try {
-        var res = await sb.rpc('hr_add_note', { p_candidate_id: candidateId, p_body: body });
+        // Sprint 7 backend: hr_add_note(p_candidate_id, p_position_id, p_body)
+        // body validation: 1..4000 char
+        var res = await sb.rpc('hr_add_note', {
+          p_candidate_id: candidateId,
+          p_position_id: positionId || null,
+          p_body: body
+        });
         return { data: res.data, error: res.error };
       } catch (e) {
         return { data: null, error: { message: e.message } };
