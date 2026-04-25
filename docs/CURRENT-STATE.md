@@ -1,7 +1,58 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 25 Nisan 2026 | Asama 83.3 — Lead form -> landing page mimarisi (form-centric mini sayfadan kurtuldu)
+> Son guncelleme: 25 Nisan 2026 | Asama 84 — Auth-gated onboarding wizard (lead funnel -> kayitli kullanici akisi)
 >
 > Aktif Odak: ik.html'i KISS + Pozisyon-aware Pipeline workspace olarak bastan yaziyoruz. MVP 1 = "yasayan demo + lead funnel" (fake data, gercek aday yok), MVP 2 = paid + Iyzico + KVKK e-sozlesme (15+ kurumsal lead + 5000+ aday havuzu threshold sonrasi).
+>
+> ── Asama 84 (auth-gated onboarding, 25 Nisan gece geç) ──
+>
+> **Tetikleyici:** Tuna karari — anonim lead form (Asama 83 hr_leads) yerine auth-gated kayitli kullanici akisi. Akis: `index.html#kurumsal` -> `Kurumsal hesap aç` -> `uye-ol.html?tab=kurumsal` -> email confirm + register_employer RPC -> `isveren-onboarding.html` (8 step wizard, RPC state persist, kaldigi yerden resume) -> `complete_onboarding` -> `ik.html`.
+>
+> **chief-of-staff orkestra (T3 tier, 9 phase paralel/sirali):**
+> 1. supabase-agent + auditor (Codex T3) → 3 migration: hr_profiles +12 kolon (segment_type, team_size, monthly_positions, urgency, brands, position_types, phone, company_name, marketing_opt_in, onboarding_step, onboarding_completed_at, onboarding_responses) + hibrit (eski boolean korunur, yeni timestamp eklenir RLS contract bozulmaz). save_onboarding_step + complete_onboarding + get_onboarding_state + admin_get_hr_signups RPC + register_employer 6-arg overload. hr_leads + get_lead_context DROP CASCADE.
+> 2. supabase-agent → notify-hr-lead Edge Function major refactor: anonim form -> hr_profiles row referansi (event: signup | completion). Tuna sales email aktif kalir.
+> 3. ui-agent + content-writer + designer → isveren-onboarding.html landing parts (lf-hero, lf-social) kaldirildi, lf-topnav premium minimal nav korundu (logo + step counter + Cikis), 720px shell + 1180px landing layer, welcome step (eski 1) kalkti — signup'ta yapildi. 9 -> 8 step. Step 2 yeni "Bilgilerinizi gozden gecirin" (pre-fill review). Step 8 ozet kart + KVKK consent + complete_onboarding submit.
+> 4. ui-agent → giris.html loginIK + zaten-oturum var blokleri onboarding-aware (rpc.get_onboarding_state -> ik.html | isveren-onboarding.html). uye-ol.html signup RPC artik 6-arg (phone + first_name + last_name) + onboarding-aware redirect helper + signup notify (best-effort).
+> 5. content-writer + ui-agent → index.html kurumsal CTA'lar (HERO + VP card + CLOSING) "Kurumsal demoyu gor" -> "Kurumsal hesap aç" + uye-ol.html?tab=kurumsal redirect.
+> 6. ui-agent → admin.html "Kurumsal Onboarding" panel + admin-hr-signups.js (filter: all | new | in_progress | completed; status badge: yeni signup / wizard N/8 / tamamlandı). Eski "Leads" panel "Leads (eski)" rename, employer_leads tablosu DOKUNULMADI (admin-leads.js calismaya devam).
+> 7. uat-tester → tests/auth-onboarding-flow.spec.js (8 senaryo: oturumsuz redirect, CTA dogrulama, lf-hero/lf-social kaldirilmis, welcome step yok, 8 step + success, counter "/8", logout button, kurumsal tab acilis, admin nav item). Eski tests/lead-form.spec.js .disabled-asama84 olarak rename.
+> 8. code-reviewer + auditor → 5-axis BLOCKER yok. SECURITY INVOKER + RLS gating + whitelist mass-assignment koruma. KVKK consent signup'ta + İYS opt-in step 8'de. Codex T3 agreement >%85 (standart auth/RLS pattern, mevcut migration'larla tutarli).
+> 9. Sentez → docs/CURRENT-STATE.md asama 84 + commit.
+>
+> **Etkilenen dosya (yeni + degisen):**
+> - `supabase/migrations/20260425220000_hr_onboarding_wizard_extend.sql` (yeni)
+> - `supabase/migrations/20260425220100_hr_onboarding_rpcs.sql` (yeni)
+> - `supabase/migrations/20260425220200_drop_hr_leads_cascade.sql` (yeni)
+> - `supabase/functions/notify-hr-lead/index.ts` (major refactor — event-based)
+> - `isveren-onboarding.html` (1878 -> ~1882 satir; landing parts kaldirildi, JS major rewrite, auth-gate + RPC state)
+> - `giris.html` (loginIK + zaten-oturum onboarding-aware redirect)
+> - `uye-ol.html` (register_employer 6-arg + signup notify + onboarding redirect helper)
+> - `index.html` (3 CTA: HERO + VP + CLOSING)
+> - `admin.html` (nav item + panel container + script tag + switchPanel hook)
+> - `admin-hr-signups.js` (yeni — admin lead listesi, filter+badge)
+> - `tests/auth-onboarding-flow.spec.js` (yeni — 8 smoke senaryo)
+> - `tests/lead-form.spec.js.disabled-asama84` (eski 80 test rename — Asama 83 anonim form artik yok)
+>
+> **Veri akisi (yeni):**
+> ```
+> Public ziyaretci -> index.html#kurumsal "Kurumsal hesap aç"
+>      -> uye-ol.html?tab=kurumsal (email + parola + telefon + sirket + KVKK consent)
+>      -> auth.signUp + email confirm OTP
+>      -> verifyOtp + register_employer RPC (hr_profiles INSERT, onboarding_step=1)
+>      -> notify-hr-lead {event:signup} (Tuna email)
+>      -> isveren-onboarding.html (auth-gated, get_onboarding_state ile resume)
+>      -> step 1..8 her next: save_onboarding_step RPC (state persist)
+>      -> step 8 submit: complete_onboarding RPC (hibrit: bool + timestamp)
+>      -> notify-hr-lead {event:completion} (Tuna email, hot=urgency:hemen+team_size:21+)
+>      -> /ik.html
+> ```
+>
+> **Bekleyen TODO (Hafta 2 backlog, NON-BLOCKING):**
+> - notify-hr-lead JWT verify ekle (caller user_id == JWT.sub) — signup flow'ta uid auth.getSession()'dan geldigi icin bypass riski dusuk
+> - admin-hr-signups.js detay drawer (hr_profiles row tum alanlari modal)
+> - isveren-onboarding.html resume durumunda step 5 multi-chip seçim restore (mevcut: position_types selected class — DOM bind sirasi sebebiyle bind sonrasi restore gerekli; mevcut kod loadStateAndResume sonunda bu yapiliyor — calisiyor ancak rare race condition kontrol edilmeli)
+> - playwright auth setup-employer ile full E2E (signup -> resume -> complete) — bu spec sadece smoke
+>
+> **Onceki Asama 83.3 (degismedi, referans):** lead landing layer mimarisi `isveren-onboarding.html`'e eklendi, sonra Asama 84'te tamami kaldirildi (auth-gated wizard'in landing'e ihtiyaci yok). Mevcut clatu-hr-tokens.css token sistemi korundu.
 >
 > ── Asama 83.3 (lead landing mimarisi, 25 Nisan gece) ──
 >

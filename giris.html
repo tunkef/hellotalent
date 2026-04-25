@@ -624,9 +624,18 @@ function getCandidatePostAuthUrl() {
   }
   var { data } = await getSupa().auth.getSession();
   if (data.session && data.session.user) {
-    // Zaten giriş yapmış kullaniciyi MFA kontrolü sonrası role'e göre yönlendir
+    // Asama 84 — zaten giriş yapmış kullaniciyi onboarding-aware yönlendir
     var role = data.session.user.app_metadata?.role;
-    checkAndHandleMFA(role === 'employer' ? 'demo-dashboard-ik.html' : getCandidatePostAuthUrl(), role === 'employer' ? 'employer' : 'candidate');
+    if (role === 'employer') {
+      var dest = 'isveren-onboarding.html';
+      try {
+        var st = await getSupa().rpc('get_onboarding_state');
+        if (st && st.data && st.data.onboarding_completed) dest = 'ik.html';
+      } catch (e) { console.warn('onboarding_state lookup failed:', e && e.message); }
+      checkAndHandleMFA(dest, 'employer');
+    } else {
+      checkAndHandleMFA(getCandidatePostAuthUrl(), 'candidate');
+    }
   }
 })();
 
@@ -745,7 +754,19 @@ async function loginIK() {
     btnText.textContent = 'Giriş Yap';
     return;
   }
-  checkAndHandleMFA('demo-dashboard-ik.html', 'employer');
+  // Asama 84 — onboarding-aware redirect
+  // hr_profiles.onboarding_completed=true → ik.html
+  //                              =false → isveren-onboarding.html (resume kaldigi step)
+  var employerDest = 'isveren-onboarding.html';
+  try {
+    var stRes = await getSupa().rpc('get_onboarding_state');
+    if (stRes && stRes.data && stRes.data.onboarding_completed) {
+      employerDest = 'ik.html';
+    }
+  } catch (stErr) {
+    console.warn('onboarding_state lookup failed:', stErr && stErr.message);
+  }
+  checkAndHandleMFA(employerDest, 'employer');
 }
 
 // Enter + Escape key desteği

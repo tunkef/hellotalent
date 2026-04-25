@@ -454,7 +454,12 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#F7F6F3;color:#111;mi
 
       <div class="nav-item" role="button" tabindex="0" data-panel="leads">
         <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/><path d="M20 8v6M23 11h-6"/></svg></span>
-        Leads
+        Leads (eski)
+      </div>
+
+      <div class="nav-item" role="button" tabindex="0" data-panel="hr-signups">
+        <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><circle cx="9" cy="14" r="2"/><path d="M15 17v-1a2 2 0 0 0-2-2h-2"/></svg></span>
+        Kurumsal Onboarding
       </div>
 
       <div class="nav-item" role="button" tabindex="0" data-panel="newsletter">
@@ -541,6 +546,9 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#F7F6F3;color:#111;mi
     <div class="panel" id="panel-employers"></div>
     <div class="panel" id="panel-leads"></div>
 
+    <!-- ═══ PANEL: KURUMSAL ONBOARDING (Asama 84) ═══ -->
+    <div class="panel" id="panel-hr-signups"></div>
+
     <!-- ═══ PANEL: BÜLTEN (NEWSLETTER) ═══ -->
     <!-- Markup admin-newsletter.js içinde PANEL_HTML template olarak tutulur (Faz 1 POC). -->
     <div class="panel" id="panel-newsletter"></div>
@@ -624,6 +632,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#F7F6F3;color:#111;mi
 <script src="admin-candidates.js?v=20260423k049o"></script>
 <script src="admin-employers.js?v=20260423k049o"></script>
 <script src="admin-leads.js?v=20260423k049o"></script>
+<script src="admin-hr-signups.js?v=20260425k084"></script>
 <script src="admin-newsletter.js?v=20260423k049o"></script>
 <script src="admin-coach-content.js?v=20260423k049o"></script>
 <script src="admin-ops-health.js?v=20260423k049o"></script>
@@ -876,6 +885,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#F7F6F3;color:#111;mi
     if (name === 'support') window._htAdminLoadSupport && window._htAdminLoadSupport();
     if (name === 'studio-modules') window._htAdminLoadStudioModules && window._htAdminLoadStudioModules();
     if (name === 'leads') window._htLoadLeads && window._htLoadLeads();
+    if (name === 'hr-signups') window._htLoadHrSignups && window._htLoadHrSignups();
     if (name === 'newsletter') window._htLoadNewsletter && window._htLoadNewsletter();
     if (name === 'brands') {
       if (window._htAdminMarkalar && window._htAdminMarkalar.open) window._htAdminMarkalar.open();

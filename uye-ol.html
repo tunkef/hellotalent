@@ -803,11 +803,32 @@ function switchTab(tab) {
   if (p.get('tab') === 'kurumsal') switchTab('kurumsal');
 })();
 
+// Asama 84 — kurumsal post-signup redirect helper
+// onboarding_completed=true → ik.html, false → isveren-onboarding.html
+async function _htEmployerPostSignupRedirect() {
+  try {
+    var sb = getSupa();
+    var st = await sb.rpc('get_onboarding_state');
+    if (st && st.data && st.data.onboarding_completed) {
+      window.location.href = 'ik.html';
+    } else {
+      window.location.href = 'isveren-onboarding.html';
+    }
+  } catch (e) {
+    console.warn('onboarding_state lookup failed:', e && e.message);
+    window.location.href = 'isveren-onboarding.html';
+  }
+}
+
 (async function() {
   var s = await getSupa().auth.getSession();
   if (s.data.session && s.data.session.user) {
     var role = s.data.session.user.app_metadata && s.data.session.user.app_metadata.role;
-    window.location.href = role === 'employer' ? 'demo-dashboard-ik.html' : 'profil.html';
+    if (role === 'employer') {
+      _htEmployerPostSignupRedirect();
+    } else {
+      window.location.href = 'profil.html';
+    }
   }
 })();
 
@@ -1062,14 +1083,40 @@ async function verifyOtpCode() {
       type: 'email'
     });
     if (result.error) throw result.error;
-    // Verify success → session var, kurumsal ise RPC + redirect
+    // Verify success → session var, kurumsal ise RPC + onboarding redirect
     if (_otpState.tab === 'kurumsal' && _pendingEmployerMeta) {
       try { await getSupa().rpc('register_employer', {
         p_email: _pendingEmployerMeta.email,
         p_sirket: _pendingEmployerMeta.sirket,
-        p_website: _pendingEmployerMeta.website || null
+        p_website: _pendingEmployerMeta.website || null,
+        p_phone: _pendingEmployerMeta.phone || null,
+        p_first_name: _pendingEmployerMeta.first_name || null,
+        p_last_name: _pendingEmployerMeta.last_name || null
       }); } catch (rpcErr) { console.warn('register_employer RPC:', rpcErr.message); }
-      window.location.href = 'demo-dashboard-ik.html';
+
+      // Asama 84 — signup notification email (best-effort)
+      try {
+        var sess = await getSupa().auth.getSession();
+        var uid = sess && sess.data && sess.data.session && sess.data.session.user && sess.data.session.user.id;
+        if (uid) {
+          var supaUrl = (window.HT && window.HT.SUPA_URL) || '';
+          var supaKey = (window.HT && window.HT.SUPA_KEY) || '';
+          if (supaUrl) {
+            fetch(supaUrl + '/functions/v1/notify-hr-lead', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'apikey': supaKey,
+                'Authorization': 'Bearer ' + supaKey
+              },
+              body: JSON.stringify({ event: 'signup', user_id: uid })
+            }).catch(function(e){ console.warn('notify-hr-lead failed:', e); });
+          }
+        }
+      } catch (notifyErr) { console.warn('signup notify wrap failed:', notifyErr); }
+
+      // Asama 84 — onboarding-aware redirect
+      _htEmployerPostSignupRedirect();
     } else {
       window.location.href = 'profil.html';
     }
@@ -1255,12 +1302,48 @@ async function doKurumsalSignup() {
     }
     // K-065: Email confirmation flow — session yoksa OTP modal aç (register_employer RPC verify sonrası)
     if (!result.data.session) {
-      _pendingEmployerMeta = { email: email, sirket: sirket, website: website };
+      _pendingEmployerMeta = {
+        email: email,
+        sirket: sirket,
+        website: website,
+        phone: phone,
+        first_name: firstName,
+        last_name: lastName
+      };
       showOtpPanel(email, 'kurumsal');
       return;
     }
-    try { await getSupa().rpc('register_employer', { p_email: email, p_sirket: sirket, p_website: website || null }); } catch (rpcErr) { console.warn('register_employer RPC başarısız:', rpcErr.message); }
-    window.location.href = 'demo-dashboard-ik.html';
+    try { await getSupa().rpc('register_employer', {
+      p_email: email,
+      p_sirket: sirket,
+      p_website: website || null,
+      p_phone: phone || null,
+      p_first_name: firstName || null,
+      p_last_name: lastName || null
+    }); } catch (rpcErr) { console.warn('register_employer RPC başarısız:', rpcErr.message); }
+
+    // Asama 84 — signup notification email (best-effort)
+    try {
+      var sess2 = await getSupa().auth.getSession();
+      var uid2 = sess2 && sess2.data && sess2.data.session && sess2.data.session.user && sess2.data.session.user.id;
+      if (uid2) {
+        var supaUrl2 = (window.HT && window.HT.SUPA_URL) || '';
+        var supaKey2 = (window.HT && window.HT.SUPA_KEY) || '';
+        if (supaUrl2) {
+          fetch(supaUrl2 + '/functions/v1/notify-hr-lead', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'apikey': supaKey2,
+              'Authorization': 'Bearer ' + supaKey2
+            },
+            body: JSON.stringify({ event: 'signup', user_id: uid2 })
+          }).catch(function(e){ console.warn('notify-hr-lead failed:', e); });
+        }
+      }
+    } catch (notifyErr) { console.warn('signup notify wrap failed:', notifyErr); }
+
+    _htEmployerPostSignupRedirect();
   } catch (err) {
     errEl.textContent = 'Hata: ' + (err.message || 'Bilinmeyen hata');
     errEl.style.display = 'block'; btn.disabled = false; btn.textContent = 'Kayıt Ol';
