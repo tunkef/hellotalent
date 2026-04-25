@@ -14,11 +14,12 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/tokens.css?v=20260426asamab0">
-<link rel="stylesheet" href="shared-v2.css?v=20260426asamab0">
-<link rel="stylesheet" href="css/hr-shell.css?v=20260426asamab0">
+<link rel="stylesheet" href="css/tokens.css?v=20260426asamab2">
+<link rel="stylesheet" href="shared-v2.css?v=20260426asamab2">
+<link rel="stylesheet" href="css/hr-shell.css?v=20260426asamab2">
+<link rel="stylesheet" href="css/hr-pool.css?v=20260426asamab2">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="shared.js?v=20260426asamab0"></script>
+<script src="shared.js?v=20260426asamab2"></script>
 </head>
 <body class="hr-page" data-hr-page="pool">
 <a class="skip-to-content" href="#main">İçeriğe atla</a>
@@ -27,11 +28,16 @@
   <div class="lp-hdr-inner">
     <a class="lp-logo" href="ik.html">hello<em>talent</em></a>
     <div class="lp-hdr-mid">
-      <button type="button" class="hr-position-switcher" data-hr-position-btn aria-haspopup="listbox" aria-label="Aktif pozisyon">
-        <span class="hr-position-switcher__label">Pozisyon</span>
-        <span class="hr-position-switcher__value" data-hr-position-value>Tüm pozisyonlar</span>
-        <svg class="hr-position-switcher__chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-      </button>
+      <div class="hr-position-switcher-wrap">
+        <button type="button" class="hr-position-switcher" data-hr-position-btn aria-haspopup="listbox" aria-expanded="false" aria-label="Aktif pozisyon">
+          <span class="hr-position-switcher__label">Pozisyon</span>
+          <span class="hr-position-switcher__value" data-hr-position-value>Tüm pozisyonlar</span>
+          <svg class="hr-position-switcher__chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="hr-position-menu" data-hr-position-menu role="listbox" aria-label="Pozisyon seç">
+          <div class="hr-position-menu__loading" data-hr-position-loading>Yükleniyor…</div>
+        </div>
+      </div>
     </div>
     <div class="lp-cta">
       <div class="hr-user-menu-wrap">
@@ -68,29 +74,155 @@
   </div>
 </nav>
 
-<main id="main" class="hr-container">
-  <header class="hr-pg-head">
-    <div class="hr-pg-head__eyebrow">Aday havuzu</div>
-    <h1 class="hr-pg-head__title">Filtreli aday arama</h1>
-    <p class="hr-pg-head__lede">Şehir, segment, pozisyon ve marka geçmişine göre arar; ilgilendiğiniz adayları pipeline'a eklersiniz.</p>
-  </header>
-
-  <div class="hr-card">
-    <div class="hr-empty-state">
-      <div class="hr-empty-state__icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      </div>
-      <h2 class="hr-empty-state__title">Havuz Sprint 2'de açılır</h2>
-      <p class="hr-empty-state__desc">Filtre paneli, arama ve aday kartları sırada. Demo veri seti hazır, gerçek arama deneyimi bir sonraki sprintte bağlanır.</p>
-      <a class="hr-empty-state__cta" href="ik.html">Genel bakışa dön
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+<main id="main" class="hr-container hr-container--wide">
+  <header class="hr-pg-head hr-pg-head--row">
+    <div class="hr-pg-head__col">
+      <div class="hr-pg-head__eyebrow">Aday havuzu</div>
+      <h1 class="hr-pg-head__title">Aday arama</h1>
+      <p class="hr-pg-head__lede">Şehir, segment ve pozisyon filtresiyle aday bulun, beğendiklerinizi seçili pozisyonun pipeline'ına ekleyin.</p>
+    </div>
+    <div class="hr-pg-head__actions">
+      <a class="hr-btn-ghost" href="hr-pipeline.html" data-hr-go-pipeline>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        Pipeline'a dön
       </a>
     </div>
+  </header>
+
+  <section class="hr-pl-meta" aria-live="polite">
+    <div class="hr-pl-meta__item">
+      <span class="hr-pl-meta__label">Aktif pozisyon</span>
+      <span class="hr-pl-meta__value" data-hr-pool-position>—</span>
+    </div>
+    <div class="hr-pl-meta__item">
+      <span class="hr-pl-meta__label">Toplam aday</span>
+      <span class="hr-pl-meta__value" data-hr-pool-total>0</span>
+    </div>
+    <div class="hr-pl-meta__item">
+      <span class="hr-pl-meta__label">Filtrelenen</span>
+      <span class="hr-pl-meta__value" data-hr-pool-shown>0</span>
+    </div>
+  </section>
+
+  <!-- Toolbar: search + sort + filter chips -->
+  <div class="hr-pool-toolbar" role="search">
+    <div class="hr-pool-toolbar__row">
+      <div class="hr-pool-search">
+        <svg class="hr-pool-search__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input
+          type="search"
+          class="hr-pool-search__input"
+          data-hr-pool-search
+          placeholder="Aday adı, pozisyon veya marka yazın…"
+          aria-label="Aday ara"
+          autocomplete="off"
+          spellcheck="false"
+        />
+        <button type="button" class="hr-pool-search__clear" data-hr-pool-search-clear aria-label="Aramayı temizle" hidden>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="hr-pool-sort">
+        <button type="button" class="hr-pool-sort__btn" data-hr-pool-sort-btn aria-haspopup="menu" aria-expanded="false">
+          <span class="hr-pool-sort__btn-label">Sıralama</span>
+          <span data-hr-pool-sort-current>Eşleşme</span>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="hr-pool-sort__menu" data-hr-pool-sort-menu role="menu"></div>
+      </div>
+    </div>
+
+    <div class="hr-pool-toolbar__row">
+      <div class="hr-pool-filters" data-hr-pool-filters role="group" aria-label="Filtreler">
+        <span class="hr-pool-filters__label">Filtre</span>
+        <!-- Chip'ler JS ile render olur -->
+      </div>
+    </div>
+
+    <div class="hr-pool-active" data-hr-pool-active aria-live="polite"></div>
+  </div>
+
+  <!-- Bulk action bar (sticky, sadece selectedIds.size > 0 ise gorunur) -->
+  <div class="hr-pool-bulk" data-hr-pool-bulk data-show="false" role="region" aria-label="Toplu işlem">
+    <div class="hr-pool-bulk__count">
+      <strong data-hr-pool-bulk-count>0</strong> aday seçildi
+    </div>
+    <div class="hr-pool-bulk__actions">
+      <button type="button" class="hr-pool-bulk__btn hr-pool-bulk__btn--ghost" data-hr-pool-bulk-clear>
+        Seçimi temizle
+      </button>
+      <button type="button" class="hr-pool-bulk__btn" data-hr-pool-bulk-add>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Pipeline'a ekle
+      </button>
+    </div>
+  </div>
+
+  <!-- List wrap -->
+  <div class="hr-pool-list-wrap" role="region" aria-label="Aday havuzu listesi">
+    <div class="hr-pool-list-head">
+      <label class="hr-pool-list-head__check">
+        <input type="checkbox" data-hr-pool-select-all aria-label="Tüm sonuçları seç">
+      </label>
+      <div class="hr-pool-list-head__title">Aday</div>
+      <div class="hr-pool-list-head__count" data-hr-pool-list-info>—</div>
+    </div>
+
+    <ul class="hr-pool-list" data-hr-pool-list></ul>
+
+    <!-- Loading -->
+    <div class="hr-pl-loading" data-hr-pool-loading>
+      <div class="hr-pl-loading__spinner" aria-hidden="true"></div>
+      <p>Havuz yükleniyor…</p>
+    </div>
+
+    <!-- Empty -->
+    <div class="hr-pool-empty" data-hr-pool-empty hidden>
+      <div class="hr-pool-empty__icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </div>
+      <h2 class="hr-pool-empty__title">Filtrelere uyan aday yok</h2>
+      <p class="hr-pool-empty__desc">Arama ya da seçtiğiniz filtreleri gevşetin; yeni adaylar eklendiğinde burada görünür.</p>
+      <button type="button" class="hr-pool-empty__cta" data-hr-pool-reset>
+        Filtreleri sıfırla
+      </button>
+    </div>
+  </div>
+
+  <!-- Pagination -->
+  <div class="hr-pool-paginate" data-hr-pool-paginate hidden>
+    <div class="hr-pool-paginate__info" data-hr-pool-paginate-info>—</div>
+    <button type="button" class="hr-pool-paginate__btn" data-hr-pool-more>
+      Daha fazla göster
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+    </button>
   </div>
 </main>
 
-<script src="js/hr-shell.js?v=20260426asamab0" defer></script>
-<script src="js/hr-data.js?v=20260426asamab0" defer></script>
-<script src="js/hr-pool.js?v=20260426asamab0" defer></script>
+<!-- Aday detay drawer (Sprint 1 patterni) -->
+<aside class="hr-drawer" data-hr-drawer aria-hidden="true" aria-label="Aday detayı" role="dialog">
+  <div class="hr-drawer__backdrop" data-hr-drawer-backdrop></div>
+  <div class="hr-drawer__panel" role="document">
+    <header class="hr-drawer__head">
+      <div class="hr-drawer__id" data-hr-drawer-id>—</div>
+      <button type="button" class="hr-drawer__close" data-hr-drawer-close aria-label="Kapat">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </header>
+    <div class="hr-drawer__body" data-hr-drawer-body>
+      <div class="hr-pl-loading hr-pl-loading--mini">
+        <div class="hr-pl-loading__spinner" aria-hidden="true"></div>
+        <p>Aday yükleniyor…</p>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- Toast -->
+<div class="hr-toast" data-hr-toast aria-live="polite" aria-atomic="true"></div>
+
+<script src="js/hr-shell.js?v=20260426asamab2" defer></script>
+<script src="js/hr-data.js?v=20260426asamab2" defer></script>
+<script src="js/hr-pool.js?v=20260426asamab2" defer></script>
 </body>
 </html>

@@ -114,12 +114,32 @@
     var rows = await loadDemo('candidates');
     if (!rows) return { data: null, error: { message: 'Demo data not loaded' } };
     var filtered = applySearch(rows, opts.q, ['full_name', 'pozisyon', 'sehir', 'markalar']);
-    if (opts.filters && opts.filters.sehir) {
-      filtered = filtered.filter(function (r) { return r.sehir === opts.filters.sehir; });
+    var f = opts.filters || {};
+    if (f.sehir)     filtered = filtered.filter(function (r) { return r.sehir === f.sehir; });
+    if (f.segment)   filtered = filtered.filter(function (r) { return r.segment === f.segment; });
+    if (f.pozisyon)  filtered = filtered.filter(function (r) { return r.pozisyon === f.pozisyon; });
+    if (f.musaitlik) filtered = filtered.filter(function (r) { return r.musaitlik === f.musaitlik; });
+    if (f.calisma_tipi) filtered = filtered.filter(function (r) { return r.calisma_tipi === f.calisma_tipi; });
+
+    // Sort (best-effort; pool tarafi kendi pozisyon-bazli match sort'unu yapiyor)
+    if (opts.sort) {
+      if (opts.sort === 'updated') {
+        filtered.sort(function (a, b) {
+          var ta = a.updated_at ? new Date(a.updated_at).getTime() : 0;
+          var tb = b.updated_at ? new Date(b.updated_at).getTime() : 0;
+          return tb - ta;
+        });
+      } else if (opts.sort === 'name') {
+        filtered.sort(function (a, b) {
+          var an = (a.full_name || '').toLocaleLowerCase('tr-TR');
+          var bn = (b.full_name || '').toLocaleLowerCase('tr-TR');
+          return an < bn ? -1 : (an > bn ? 1 : 0);
+        });
+      } else if (opts.sort === 'experience') {
+        filtered.sort(function (a, b) { return (b.deneyim_yil || 0) - (a.deneyim_yil || 0); });
+      }
     }
-    if (opts.filters && opts.filters.segment) {
-      filtered = filtered.filter(function (r) { return r.segment === opts.filters.segment; });
-    }
+
     var paged = paginate(filtered, opts);
     return { data: paged, error: null };
   }
@@ -237,7 +257,51 @@
         return { data: null, error: { message: e.message } };
       }
     }
-    return { data: { ok: true, demo: true, payload: payload }, error: null };
+    // Demo: persist new pipeline row via overlay (Sprint 1 ile uyumlu)
+    if (!payload || !payload.position_id || !payload.candidate_id) {
+      return { data: null, error: { message: 'Eksik parametre' } };
+    }
+    var nowIso = new Date().toISOString();
+    var newRow = {
+      id: 'pl-' + Date.now() + '-' + Math.floor(Math.random() * 100000),
+      position_id: payload.position_id,
+      candidate_id: payload.candidate_id,
+      stage: payload.stage || 'basvuru',
+      added_at: nowIso,
+      updated_at: nowIso
+    };
+
+    // Mevcut overlay'e ekle
+    var overlay = readPipelineOverlay() || [];
+    if (!Array.isArray(overlay)) overlay = [];
+
+    // Idempotent: ayni pozisyonda ayni candidate varsa duplicate olusturma
+    var existing = overlay.find(function (r) {
+      return String(r.position_id) === String(payload.position_id) &&
+             String(r.candidate_id) === String(payload.candidate_id);
+    });
+
+    // Cache'deki baseline pipeline'i da kontrol et
+    if (!existing && _cache.pipeline) {
+      existing = _cache.pipeline.find(function (r) {
+        return String(r.position_id) === String(payload.position_id) &&
+               String(r.candidate_id) === String(payload.candidate_id);
+      });
+    }
+
+    if (existing) {
+      return { data: { ok: true, demo: true, row: existing, duplicate: true }, error: null };
+    }
+
+    overlay.push(newRow);
+    writePipelineOverlay(overlay);
+
+    // Cached merged'a da ekle (Sprint 1 pipeline state senkron)
+    if (_cache.pipeline_merged) {
+      _cache.pipeline_merged.push(Object.assign({}, newRow));
+    }
+
+    return { data: { ok: true, demo: true, row: newRow }, error: null };
   }
 
   /* ════════════════════════════════════════════════
@@ -342,6 +406,17 @@
     return { data: rows, error: null };
   }
 
+  /* ── Cache invalidate (selective) ──────────────── */
+  function invalidate(name) {
+    if (!name) { _cache = {}; return; }
+    if (name === 'pipeline') {
+      delete _cache.pipeline;
+      delete _cache.pipeline_merged;
+      return;
+    }
+    delete _cache[name];
+  }
+
   /* ── Public API ──────────────────────────────── */
   window.HRData = {
     isRealMode: isRealMode,
@@ -365,6 +440,7 @@
     getPositions: getPositions,
     // Cache control (test/debug)
     _clearCache: function () { _cache = {}; },
+    _invalidate: invalidate,
     _clearPipelineOverlay: clearPipelineOverlay
   };
 })();
