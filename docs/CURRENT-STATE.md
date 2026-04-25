@@ -1,5 +1,30 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 23 Nisan 2026 | Asama 82.21 — TF6 altinci round (final): hero card cream bg + tum Tuna UAT backlog kapandi
+> Son guncelleme: 25 Nisan 2026 | Asama 83.0 — MVP 1 Lead Funnel FAZ A canli (ik.html yeniden tasarim baslangici)
+>
+> Aktif Odak: ik.html'i KISS + Pozisyon-aware Pipeline workspace olarak bastan yaziyoruz. MVP 1 = "yasayan demo + lead funnel" (fake data, gercek aday yok), MVP 2 = paid + Iyzico + KVKK e-sozlesme (15+ kurumsal lead + 5000+ aday havuzu threshold sonrasi).
+>
+> ── Asama 83 (FAZ A canli, 25 Nisan 2026) ──
+>
+> **Yeni dosyalar:**
+> - `supabase/migrations/20260425181555_hr_leads_lead_capture.sql` — hr_leads (5 zorunlu + 4 opsiyonel, demo_token uuid, RLS)
+> - `supabase/migrations/20260425183300_hr_leads_rls_fix.sql` — TO clause kaldirildi (public role)
+> - `supabase/migrations/20260425183401_hr_leads_grants_explicit.sql` — anon/auth INSERT grant
+> - `supabase/functions/notify-hr-lead/index.ts` — validate + insert (service_role) + Resend email
+> - `isveren-onboarding.html` — 9-step wizard, KISS, brand autocomplete, sessionStorage draft
+> - `isveren-demo-yakinda.html` — FAZ B sonu kalkacak gecici placeholder
+> - `tests/lead-form.spec.js` — 8/8 PASS (desktop + mobile + real API E2E)
+>
+> **E2E dogrulandi:** form → Edge Function → hr_leads insert → Tuna email (hot lead: urgency=hemen + 21-50/50+ → 🔥 HOT konu)
+>
+> **Mimari karar:** Publishable key (sb_publishable_*) anon insert RLS uyumsuzlugu → Edge Function service_role bypass. Tek istek, atomic.
+>
+> **Bekleyen FAZ'lar (14 pending TaskList):** B.1-B.4 ik.html iskelet+CSS+adapter+demo JSON, C0-C5 UI moduller, D lead→demo UAT, E.1-E.3 MVP 2 backend hazirligi (pipeline+notes migration, RPC'ler, dryrun)
+>
+> **MVP 1 yayin tahmini:** 3.5-4 hafta toplam, FAZ A ~5 gun
+>
+> **Plan:** `~/.claude/plans/imdi-senle-daha-nce-hashed-papert.md` (Tuna onayli)
+>
+> ── Asama 82.21 (onceki, 23 Nisan 2026) ──
 >
 > Aktif Odak: Hero card bg `--editorial-card` (beyaz) → `--editorial-bg` (cream). Diger panellerdeki sk-card + hesap info-card ile tutarli. Box-shadow kaldirildi (cream uzerinde shadow gereksiz). **TF1-TF6 tum Tuna UAT feedback'leri + altta 6 round detay revizyon TAMAMLANDI.** MVP 1 ayarlar paneli canli UAT hazir.
 >

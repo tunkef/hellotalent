@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, follow">
+<title>HelloTalent · Kurumsal Demo</title>
+<link rel="canonical" href="https://hellotalent.ai/isveren-onboarding.html">
+
+<link rel="stylesheet" href="css/tokens.css?v=20260425">
+
+<style>
+  *,*::before,*::after{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:'Plus Jakarta Sans',-apple-system,system-ui,sans-serif;
+    background:var(--bg);
+    color:var(--navy);
+    line-height:1.55;
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+  .obh-shell{
+    display:flex;
+    flex-direction:column;
+    min-height:100vh;
+    max-width:560px;
+    margin:0 auto;
+    padding:24px 20px 40px;
+  }
+  .obh-topbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:32px;
+  }
+  .obh-logo{
+    font-family:'Bricolage Grotesque',serif;
+    font-size:20px;
+    font-weight:700;
+    color:var(--navy);
+    text-decoration:none;
+    letter-spacing:-0.01em;
+  }
+  .obh-step-counter{
+    font-family:'DM Mono',monospace;
+    font-size:13px;
+    color:var(--muted);
+  }
+  .obh-progress{
+    height:3px;
+    background:var(--border);
+    border-radius:2px;
+    overflow:hidden;
+    margin-bottom:32px;
+  }
+  .obh-progress__fill{
+    height:100%;
+    background:var(--verm);
+    transition:width 0.3s ease;
+    width:0%;
+  }
+  .obh-step{
+    display:none;
+    animation:obhFadeIn 0.25s ease;
+  }
+  .obh-step.is-active{display:block;}
+  @keyframes obhFadeIn{
+    from{opacity:0;transform:translateY(6px);}
+    to{opacity:1;transform:translateY(0);}
+  }
+  .obh-h1{
+    font-family:'Bricolage Grotesque',serif;
+    font-size:28px;
+    line-height:1.2;
+    margin:0 0 12px;
+    letter-spacing:-0.01em;
+  }
+  .obh-sub{
+    font-size:15px;
+    color:var(--muted);
+    margin:0 0 28px;
+  }
+  .obh-label{
+    display:block;
+    font-size:13px;
+    font-weight:600;
+    color:var(--navy);
+    margin-bottom:8px;
+  }
+  .obh-input,
+  .obh-select{
+    width:100%;
+    padding:12px 14px;
+    border:1px solid var(--border);
+    border-radius:8px;
+    background:#fff;
+    font:inherit;
+    color:var(--navy);
+    transition:border-color 0.15s ease;
+  }
+  .obh-input:focus,
+  .obh-select:focus{
+    outline:none;
+    border-color:var(--verm);
+  }
+  .obh-input::placeholder{color:var(--muted);}
+  .obh-field{margin-bottom:16px;}
+  .obh-error{
+    color:#DC2626;
+    font-size:13px;
+    margin-top:6px;
+    display:none;
+  }
+  .obh-error.is-shown{display:block;}
+
+  .obh-cards{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:10px;
+    margin-bottom:24px;
+  }
+  @media(min-width:520px){
+    .obh-cards--2{grid-template-columns:1fr 1fr;}
+  }
+  .obh-card{
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:16px;
+    background:#fff;
+    cursor:pointer;
+    transition:all 0.15s ease;
+    text-align:left;
+    font:inherit;
+    color:var(--navy);
+  }
+  .obh-card:hover{border-color:var(--navy);}
+  .obh-card.is-selected{
+    border-color:var(--verm);
+    background:rgba(201,78,40,0.04);
+  }
+  .obh-card__title{
+    font-weight:600;
+    font-size:15px;
+    margin-bottom:4px;
+  }
+  .obh-card__desc{
+    font-size:13px;
+    color:var(--muted);
+    line-height:1.4;
+  }
+
+  .obh-chips{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    margin-bottom:24px;
+  }
+  .obh-chip{
+    border:1px solid var(--border);
+    background:#fff;
+    color:var(--navy);
+    padding:9px 16px;
+    border-radius:999px;
+    font:inherit;
+    font-size:14px;
+    cursor:pointer;
+    transition:all 0.15s ease;
+  }
+  .obh-chip:hover{border-color:var(--navy);}
+  .obh-chip.is-selected{
+    border-color:var(--verm);
+    background:var(--verm);
+    color:#fff;
+  }
+
+  .obh-brand-search{
+    position:relative;
+    margin-bottom:12px;
+  }
+  .obh-brand-results{
+    position:absolute;
+    top:100%;
+    left:0;
+    right:0;
+    background:#fff;
+    border:1px solid var(--border);
+    border-top:none;
+    border-radius:0 0 8px 8px;
+    max-height:200px;
+    overflow-y:auto;
+    z-index:10;
+    display:none;
+  }
+  .obh-brand-results.is-shown{display:block;}
+  .obh-brand-result{
+    padding:10px 14px;
+    cursor:pointer;
+    font-size:14px;
+    border-bottom:1px solid var(--border);
+  }
+  .obh-brand-result:last-child{border-bottom:none;}
+  .obh-brand-result:hover{background:var(--bg);}
+  .obh-brand-tags{
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px;
+    margin-bottom:24px;
+  }
+  .obh-brand-tag{
+    background:rgba(30,45,94,0.06);
+    border:1px solid var(--border);
+    padding:5px 10px;
+    border-radius:6px;
+    font-size:13px;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+  }
+  .obh-brand-tag__remove{
+    border:none;
+    background:none;
+    cursor:pointer;
+    color:var(--muted);
+    font-size:16px;
+    padding:0;
+    line-height:1;
+  }
+  .obh-brand-tag__remove:hover{color:#DC2626;}
+
+  .obh-nav{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-top:32px;
+    gap:12px;
+  }
+  .obh-btn{
+    padding:12px 22px;
+    border-radius:8px;
+    border:1px solid var(--border);
+    font:inherit;
+    font-weight:600;
+    cursor:pointer;
+    transition:all 0.15s ease;
+    background:#fff;
+    color:var(--navy);
+  }
+  .obh-btn:hover{border-color:var(--navy);}
+  .obh-btn:disabled{opacity:0.5;cursor:not-allowed;}
+  .obh-btn--primary{
+    background:var(--verm);
+    border-color:var(--verm);
+    color:#fff;
+  }
+  .obh-btn--primary:hover{
+    background:#A93D1F;
+    border-color:#A93D1F;
+  }
+  .obh-btn--text{
+    border-color:transparent;
+    background:transparent;
+    color:var(--muted);
+    padding:12px 8px;
+  }
+  .obh-btn--text:hover{color:var(--navy);}
+
+  .obh-consent{
+    background:rgba(30,45,94,0.04);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:14px 16px;
+    margin-bottom:20px;
+    display:flex;
+    align-items:flex-start;
+    gap:10px;
+  }
+  .obh-consent input{
+    margin-top:3px;
+    accent-color:var(--verm);
+  }
+  .obh-consent label{
+    font-size:13px;
+    color:var(--navy);
+    line-height:1.5;
+    cursor:pointer;
+  }
+  .obh-consent a{color:var(--verm);}
+
+  .obh-success{
+    text-align:center;
+    padding:32px 16px;
+  }
+  .obh-success__icon{
+    width:64px;
+    height:64px;
+    border-radius:50%;
+    background:rgba(34,197,94,0.1);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:32px;
+    margin:0 auto 20px;
+  }
+  .obh-loading{
+    display:none;
+    text-align:center;
+    padding:24px;
+    color:var(--muted);
+    font-size:14px;
+  }
+  .obh-loading.is-shown{display:block;}
+
+  .obh-footer-note{
+    margin-top:28px;
+    text-align:center;
+    font-size:12px;
+    color:var(--muted);
+  }
+  .obh-footer-note a{color:var(--muted);text-decoration:underline;}
+
+  .obh-bullet-list{
+    font-size:14px;
+    color:var(--muted);
+    margin:0 0 28px;
+    padding-left:20px;
+    line-height:1.8;
+  }
+
+  @media(max-width:520px){
+    .obh-shell{padding:20px 16px 32px;}
+    .obh-h1{font-size:24px;}
+    .obh-btn{padding:11px 18px;font-size:14px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="obh-shell" role="main" aria-label="Kurumsal demo başvuru">
+
+  <header class="obh-topbar">
+    <a href="/index.html#kurumsal" class="obh-logo">HelloTalent</a>
+    <span class="obh-step-counter" id="obh-counter" aria-live="polite">1 / 9</span>
+  </header>
+
+  <div class="obh-progress" aria-hidden="true">
+    <div class="obh-progress__fill" id="obh-progress-fill"></div>
+  </div>
+
+  <section class="obh-step is-active" data-step="1">
+    <h1 class="obh-h1">Kurumsal demoya hoş geldin</h1>
+    <p class="obh-sub">9 kısa adımda profilini al, sana özel demoyu açalım. Adımların yarısı opsiyonel — atlayabilirsin.</p>
+    <ul class="obh-bullet-list">
+      <li>5 dakika sürer</li>
+      <li>Profilinden faydalanarak demo aday havuzunu kişiselleştiririz</li>
+      <li>Bilgilerin gizli, KVKK aydınlatma metnimizdeki şartlar geçerli</li>
+    </ul>
+    <div class="obh-nav" style="justify-content:flex-end;">
+      <button type="button" class="obh-btn obh-btn--primary" data-action="next">Başla</button>
+    </div>
+  </section>
+
+  <section class="obh-step" data-step="2">
+    <h1 class="obh-h1">Şirketinizi en iyi tanımlayan?</h1>
+    <p class="obh-sub">Demo deneyimini buna göre şekillendireceğiz.</p>
+    <div class="obh-cards" role="radiogroup" aria-label="Şirket türü">
+      <button type="button" class="obh-card" data-segment="single_brand" role="radio" aria-checked="false">
+        <div class="obh-card__title">Tek marka</div>
+        <div class="obh-card__desc">Tek bir marka için işe alım yapıyoruz (örn. mağaza zinciri sahibi)</div>
+      </button>
+      <button type="button" class="obh-card" data-segment="holding" role="radio" aria-checked="false">
+        <div class="obh-card__title">Holding / çoklu marka</div>
+        <div class="obh-card__desc">Birden fazla markamız var (LVMH, Boyner, İnditex tarzı yapı)</div>
+      </button>
+      <button type="button" class="obh-card" data-segment="distributor" role="radio" aria-checked="false">
+        <div class="obh-card__title">Dağıtıcı / TR operatörü</div>
+        <div class="obh-card__desc">Türkiye'de yabancı markaları işletiyoruz (örn. Beymen Balenciaga için)</div>
+      </button>
+      <button type="button" class="obh-card" data-segment="headhunter" role="radio" aria-checked="false">
+        <div class="obh-card__title">Headhunter / ajans</div>
+        <div class="obh-card__desc">Müşterilerimiz adına aday arıyoruz</div>
+      </button>
+    </div>
+    <div class="obh-error" id="err-segment">Lütfen bir seçenek seç</div>
+    <div class="obh-nav">
+      <button type="button" class="obh-btn obh-btn--text" data-action="prev">Geri</button>
+      <button type="button" class="obh-btn obh-btn--primary" data-action="next">Devam</button>
+    </div>
+  </section>
+
+  <section class="obh-step" data-step="3">
+    <h1 class="obh-h1">Şirket ve iletişim</h1>
+    <p class="obh-sub">Sana ulaşabileceğimiz temel bilgi.</p>
+
+    <div class="obh-field">
+      <label class="obh-label" for="f-company">Şirket adı *</label>
+      <input class="obh-input" type="text" id="f-company" placeholder="Örn. Boyner Şti." required maxlength="200">
+    </div>
+
+    <div class="obh-field">
+      <label class="obh-label" for="f-fullname">Ad Soyad *</label>
+      <input class="obh-input" type="text" id="f-fullname" placeholder="Örn. Mehmet Yılmaz" required maxlength="200">
+    </div>
+
+    <div class="obh-field">
+      <label class="obh-label" for="f-email">E-posta *</label>
+      <input class="obh-input" type="email" id="f-email" placeholder="ornek@sirket.com" required>
+    </div>
+
+    <div class="obh-error" id="err-step3">Lütfen tüm zorunlu alanları doldur ve geçerli bir e-posta gir</div>
+    <div class="obh-nav">
+      <button type="button" class="obh-btn obh-btn--text" data-action="prev">Geri</button>
+      <button type="button" class="obh-btn obh-btn--primary" data-action="next">Devam</button>
+    </div>
+  </section>
+
+  <section class="obh-step" data-step="4">
+    <h1 class="obh-h1">İşlettiğin marka(lar)</h1>
+    <p class="obh-sub">Birden fazla marka ekleyebilirsin. Sektör ve şehir kaynaklarını seçtiğin markalara göre kişiselleştiriyoruz.</p>
+
+    <div class="obh-brand-search">
+      <input class="obh-input" type="text" id="brand-input" placeholder="Marka ara (Zara, Beymen, COS...)" autocomplete="off">
+      <div class="obh-brand-results" id="brand-results" role="listbox"></div>
+    </div>
+
+    <div class="obh-brand-tags" id="brand-tags" aria-live="polite"></div>
+
+    <div class="obh-nav">
+      <button type="button" class="obh-btn obh-btn--text" data-action="prev">Geri</button>
+      <div style="display:flex;gap:8px;">
+        <button type="button" class="obh-btn obh-btn--text" data-action="skip">Atla</button>
+        <button type="button" class="obh-btn obh-btn--primary" data-action="next">Devam</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="obh-step" data-step="5">
+    <h1 class="obh-h1">İK ekibinin büyüklüğü?</h1>
+    <p class="obh-sub">İşe alım sürecinde kaç kişi aktif çalışıyor?</p>
+    <div class="obh-chips" role="radiogroup" aria-label="Ekip büyüklüğü">
+      <button type="button" class="obh-chip" data-team="1" role="radio">1 kişi (sadece ben)</button>
+      <button type="button" class="obh-chip" data-team="2-5" role="radio">2-5 kişi</button>
+      <button type="button" class="obh-chip" data-team="6-20" role="radio">6-20 kişi</button>
+      <button type="button" class="obh-chip" data-team="21-50" role="radio">21-50 kişi</button>
+      <button type="button" class="obh-chip" data-team="50+" role="radio">50+ kişi</button>
+    </div>
+    <div class="obh-error" id="err-team">Lütfen ekip büyüklüğü seç</div>
+    <div class="obh-nav">
+      <button type="button" class="obh-btn obh-btn--text" data-action="prev">Geri</button>
+      <button type="button" class="obh-btn obh-btn--primary" data-action="next">Devam</button>
+    </div>
+  </section>
+
+  <section class="obh-step" data-step="6">
+    <h1 class="obh-h1">Hangi pozisyonlar için aday arıyorsun?</h1>
+    <p class="obh-sub">Çoklu seçim — demo aday havuzunda öne çıkanlar bunlar olacak.</p>
+    <div class="obh-chips" role="group" aria-label="Aranan pozisyonlar">
+      <button type="button" class="obh-chip" data-position="magaza_muduru">Mağaza Müdürü</button>
+      <button type="button" class="obh-chip" data-position="satis_danismani">Satış Danışmanı</button>
+      <button type="button" class="obh-chip" data-position="bolge_muduru">Bölge Müdürü</button>
+      <button type="button" class="obh-chip" data-position="vm">Vizyon Sorumlusu (VM)</button>
+      <button type="button" class="obh-chip" data-position="depo">Depo Sorumlusu</button>
+      <button type="button" class="obh-chip" data-position="kasiyer">Kasiyer</button>
+      <button type="button" class="obh-chip" data-position="usta_kasap">Şef / Usta</button>
+      <button type="button" class="obh-chip" data-position="ofis">Ofis / Merkez</button>
+      <button type="button" class="obh-chip" data-position="diger">Diğer</button>
+    </div>
+    <div class="obh-nav">
+      <button type="button" class="obh-btn obh-btn--text" data-action="prev">Geri</button>
+      <div style="display:flex;gap:8px;">
+        <button type="button" class="obh-btn obh-btn--text" data-action="skip">Atla</button>
+        <button type="button" class="obh-btn obh-btn--primary" data-action="next">Devam</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="obh-step" data-step="7">
+    <h1 class="obh-h1">Aylık ortalama açık pozisyon?</h1>
+    <p class="obh-sub">Ortalama bir ayda kaç pozisyon için işe alım yapıyorsun?</p>
+    <div class="obh-chips" role="radiogroup" aria-label="Aylık açık pozisyon">
+      <button type="button" class="obh-chip" data-monthly="1-3" role="radio">1-3</button>
+      <button type="button" class="obh-chip" data-monthly="4-10" role="radio">4-10</button>
+      <button type="button" class="obh-chip" data-monthly="11-30" role="radio">11-30</button>
+      <button type="button" class="obh-chip" data-monthly="30+" role="radio">30+</button>
+    </div>
+    <div class="obh-error" id="err-monthly">Lütfen seç</div>
+    <div class="obh-nav">
+      <button type="button" class="obh-btn obh-btn--text" data-action="prev">Geri</button>
+      <button type="button" class="obh-btn obh-btn--primary" data-action="next">Devam</button>
+    </div>
+  </section>
+
+  <section class="obh-step" data-step="8">
+    <h1 class="obh-h1">Ne zaman başlamak istersin?</h1>
+    <p class="obh-sub">Aciliyetine göre size daha hızlı dönüş yapabiliriz.</p>
+    <div class="obh-chips" role="radiogroup" aria-label="Aciliyet">
+      <button type="button" class="obh-chip" data-urgency="hemen" role="radio">Hemen başlamak istiyorum</button>
+      <button type="button" class="obh-chip" data-urgency="1_ay" role="radio">1 ay içinde</button>
+      <button type="button" class="obh-chip" data-urgency="3_ay" role="radio">3 ay içinde</button>
+      <button type="button" class="obh-chip" data-urgency="kesif" role="radio">Sadece keşif aşamasındayım</button>
+    </div>
+    <div class="obh-nav">
+      <button type="button" class="obh-btn obh-btn--text" data-action="prev">Geri</button>
+      <div style="display:flex;gap:8px;">
+        <button type="button" class="obh-btn obh-btn--text" data-action="skip">Atla</button>
+        <button type="button" class="obh-btn obh-btn--primary" data-action="next">Devam</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="obh-step" data-step="9">
+    <h1 class="obh-h1">Son adım — onayını al</h1>
+    <p class="obh-sub">Telefon paylaşmak istersen seninle birebir görüşmek isteriz.</p>
+
+    <div class="obh-field">
+      <label class="obh-label" for="f-phone">Telefon (opsiyonel)</label>
+      <input class="obh-input" type="tel" id="f-phone" placeholder="0555 123 4567" maxlength="20">
+    </div>
+
+    <div class="obh-consent">
+      <input type="checkbox" id="f-marketing" required>
+      <label for="f-marketing">
+        Pazarlama amaçlı bilgilendirme almayı kabul ediyorum.
+        <a href="/aydinlatma-metni.html" target="_blank" rel="noopener">Aydınlatma metnini</a> okudum.
+      </label>
+    </div>
+
+    <div class="obh-error" id="err-consent">Devam etmek için onay vermen gerek</div>
+
+    <div class="obh-loading" id="obh-loading">Demo açılıyor, lütfen bekle...</div>
+
+    <div class="obh-nav">
+      <button type="button" class="obh-btn obh-btn--text" data-action="prev">Geri</button>
+      <button type="button" class="obh-btn obh-btn--primary" id="obh-submit">Demoyu aç</button>
+    </div>
+  </section>
+
+  <section class="obh-step" data-step="success">
+    <div class="obh-success">
+      <div class="obh-success__icon" aria-hidden="true">✓</div>
+      <h1 class="obh-h1">Teşekkürler!</h1>
+      <p class="obh-sub">Demoyu açıyoruz, birkaç saniye sürebilir.</p>
+      <p style="font-size:13px;color:var(--muted);margin-top:24px;">
+        Bilgilerin sales ekibimize iletildi. <strong>Demoda gördüklerin temsili veridir</strong> —
+        gerçek aday havuzu kurumsal aboneliğimiz aktive olduğunda erişilebilir.
+      </p>
+    </div>
+  </section>
+
+  <p class="obh-footer-note">
+    Sorun mu yaşıyorsun? <a href="mailto:kefelituna@gmail.com">kefelituna@gmail.com</a> · MVP 1 lead funnel
+  </p>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="shared.js?v=20260425"></script>
+
+<script>
+(function(){
+  'use strict';
+
+  var TOTAL_STEPS = 9;
+  var REQUIRED_STEPS = [2, 3, 5, 7];
+  var currentStep = 1;
+
+  var state = {
+    segment_type: null,
+    company_name: '',
+    full_name: '',
+    email: '',
+    brands: [],
+    team_size: null,
+    position_types: [],
+    monthly_positions: null,
+    urgency: null,
+    phone: '',
+    marketing_opt_in: false
+  };
+
+  function $(sel, root){ return (root||document).querySelector(sel); }
+  function $$(sel, root){ return Array.prototype.slice.call((root||document).querySelectorAll(sel)); }
+
+  function showStep(n){
+    $$('.obh-step').forEach(function(s){ s.classList.remove('is-active'); });
+    var el = document.querySelector('.obh-step[data-step="' + n + '"]');
+    if (el) el.classList.add('is-active');
+    if (typeof n === 'number') {
+      $('#obh-counter').textContent = n + ' / ' + TOTAL_STEPS;
+      $('#obh-progress-fill').style.width = ((n/TOTAL_STEPS)*100) + '%';
+      window.scrollTo(0, 0);
+    } else {
+      $('#obh-counter').textContent = '✓';
+      $('#obh-progress-fill').style.width = '100%';
+    }
+  }
+
+  function clearChildren(el){
+    while (el.firstChild) el.removeChild(el.firstChild);
+  }
+
+  function validateStep(n){
+    var errEl;
+    if (n === 2) {
+      errEl = $('#err-segment');
+      if (!state.segment_type) { errEl.classList.add('is-shown'); return false; }
+      errEl.classList.remove('is-shown'); return true;
+    }
+    if (n === 3) {
+      errEl = $('#err-step3');
+      var company = $('#f-company').value.trim();
+      var fullname = $('#f-fullname').value.trim();
+      var email = $('#f-email').value.trim();
+      var emailOk = /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email);
+      if (!company || !fullname || !emailOk) { errEl.classList.add('is-shown'); return false; }
+      state.company_name = company;
+      state.full_name = fullname;
+      state.email = email;
+      errEl.classList.remove('is-shown'); return true;
+    }
+    if (n === 5) {
+      errEl = $('#err-team');
+      if (!state.team_size) { errEl.classList.add('is-shown'); return false; }
+      errEl.classList.remove('is-shown'); return true;
+    }
+    if (n === 7) {
+      errEl = $('#err-monthly');
+      if (!state.monthly_positions) { errEl.classList.add('is-shown'); return false; }
+      errEl.classList.remove('is-shown'); return true;
+    }
+    return true;
+  }
+
+  function goNext(){
+    if (REQUIRED_STEPS.indexOf(currentStep) !== -1 && !validateStep(currentStep)) return;
+    if (currentStep < TOTAL_STEPS) {
+      currentStep += 1;
+      showStep(currentStep);
+    }
+  }
+  function goPrev(){
+    if (currentStep > 1) {
+      currentStep -= 1;
+      showStep(currentStep);
+    }
+  }
+
+  function bindRadioCards(selector, attr, stateKey){
+    $$(selector).forEach(function(card){
+      card.addEventListener('click', function(){
+        $$(selector).forEach(function(c){ c.classList.remove('is-selected'); c.setAttribute('aria-checked','false'); });
+        card.classList.add('is-selected');
+        card.setAttribute('aria-checked','true');
+        state[stateKey] = card.getAttribute(attr);
+      });
+    });
+  }
+  function bindMultiChips(selector, attr, stateKey){
+    $$(selector).forEach(function(chip){
+      chip.addEventListener('click', function(){
+        var val = chip.getAttribute(attr);
+        var idx = state[stateKey].indexOf(val);
+        if (idx === -1) {
+          chip.classList.add('is-selected');
+          state[stateKey].push(val);
+        } else {
+          chip.classList.remove('is-selected');
+          state[stateKey].splice(idx, 1);
+        }
+      });
+    });
+  }
+
+  var brandList = [];
+  var brandLoadPromise = null;
+
+  function loadBrandsOnce(){
+    if (brandLoadPromise) return brandLoadPromise;
+    brandLoadPromise = (async function(){
+      try {
+        var supa = window.HT && window.HT.getSupa && window.HT.getSupa();
+        if (!supa) return [];
+        var resp = await supa.from('brands').select('id,brand_name').order('brand_name').limit(500);
+        if (resp.error) { console.warn('brand load error', resp.error.message); return []; }
+        brandList = resp.data || [];
+        return brandList;
+      } catch (e) {
+        console.warn('brand load failed', e);
+        return [];
+      }
+    })();
+    return brandLoadPromise;
+  }
+
+  function renderBrandTags(){
+    var container = $('#brand-tags');
+    clearChildren(container);
+    state.brands.forEach(function(b){
+      var tag = document.createElement('span');
+      tag.className = 'obh-brand-tag';
+      var label = document.createElement('span');
+      label.textContent = b.brand_name;
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'obh-brand-tag__remove';
+      btn.setAttribute('aria-label', 'Sil');
+      btn.textContent = '×';
+      btn.addEventListener('click', function(){
+        state.brands = state.brands.filter(function(x){ return x.id !== b.id; });
+        renderBrandTags();
+      });
+      tag.appendChild(label);
+      tag.appendChild(btn);
+      container.appendChild(tag);
+    });
+  }
+
+  function bindBrandSearch(){
+    var input = $('#brand-input');
+    var results = $('#brand-results');
+    var loaded = false;
+
+    input.addEventListener('focus', function(){
+      if (!loaded) { loadBrandsOnce().then(function(){ loaded = true; }); }
+    });
+
+    input.addEventListener('input', function(){
+      var q = input.value.trim().toLowerCase();
+      if (!q || q.length < 2) { results.classList.remove('is-shown'); return; }
+      var matches = brandList.filter(function(b){
+        var bname = (b.brand_name || '').toLowerCase();
+        return bname.indexOf(q) !== -1
+          && !state.brands.some(function(x){ return x.id === b.id; });
+      }).slice(0, 8);
+      if (matches.length === 0) { results.classList.remove('is-shown'); return; }
+      clearChildren(results);
+      matches.forEach(function(b){
+        var item = document.createElement('div');
+        item.className = 'obh-brand-result';
+        item.setAttribute('role','option');
+        item.textContent = b.brand_name;
+        item.addEventListener('click', function(){
+          state.brands.push(b);
+          renderBrandTags();
+          input.value = '';
+          results.classList.remove('is-shown');
+        });
+        results.appendChild(item);
+      });
+      results.classList.add('is-shown');
+    });
+
+    document.addEventListener('click', function(e){
+      if (!input.contains(e.target) && !results.contains(e.target)) {
+        results.classList.remove('is-shown');
+      }
+    });
+  }
+
+  async function submitLead(){
+    var consentEl = $('#f-marketing');
+    if (!consentEl.checked) { $('#err-consent').classList.add('is-shown'); return; }
+    $('#err-consent').classList.remove('is-shown');
+
+    state.phone = $('#f-phone').value.trim();
+    state.marketing_opt_in = true;
+
+    var loading = $('#obh-loading');
+    var submitBtn = $('#obh-submit');
+    loading.classList.add('is-shown');
+    submitBtn.disabled = true;
+
+    try {
+      var supaUrl = window.HT && window.HT.SUPA_URL;
+      var supaKey = window.HT && window.HT.SUPA_KEY;
+      if (!supaUrl) throw new Error('Supabase URL not configured');
+
+      var payload = {
+        email: state.email,
+        full_name: state.full_name,
+        company_name: state.company_name,
+        segment_type: state.segment_type,
+        team_size: state.team_size,
+        monthly_positions: state.monthly_positions,
+        brands: state.brands.length ? state.brands.map(function(b){ return String(b.id); }) : null,
+        position_types: state.position_types.length ? state.position_types : null,
+        urgency: state.urgency,
+        phone: state.phone || null,
+        marketing_opt_in: state.marketing_opt_in,
+        responses: state,
+        user_agent: navigator.userAgent.slice(0, 500)
+      };
+
+      // Edge Function: validate + insert (service_role) + email Tuna + return demo_token
+      var resp = await fetch(supaUrl + '/functions/v1/notify-hr-lead', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': supaKey || '',
+          'Authorization': 'Bearer ' + (supaKey || '')
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!resp.ok) {
+        var errBody = await resp.text();
+        throw new Error('Lead capture failed (' + resp.status + '): ' + errBody.slice(0, 200));
+      }
+
+      var result = await resp.json();
+      var token = result && result.demo_token;
+      if (!token) throw new Error('demo_token missing in response');
+
+      try { sessionStorage.removeItem('ht_lead_draft'); } catch(e) {}
+
+      showStep('success');
+      setTimeout(function(){
+        // MVP 1 placeholder — FAZ B (ik.html iskelet) bitince /ik.html?demo_token= olur
+        window.location.href = '/isveren-demo-yakinda.html?demo_token=' + encodeURIComponent(token);
+      }, 1200);
+    } catch (err) {
+      console.error('lead submit error:', err);
+      loading.classList.remove('is-shown');
+      submitBtn.disabled = false;
+      var msg = (err && err.message) ? err.message : String(err);
+      alert('Hata oluştu: ' + msg + '\n\nLütfen tekrar dene veya destek için: kefelituna@gmail.com');
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', function(){
+    $$('[data-action="next"]').forEach(function(b){ b.addEventListener('click', goNext); });
+    $$('[data-action="prev"]').forEach(function(b){ b.addEventListener('click', goPrev); });
+    $$('[data-action="skip"]').forEach(function(b){ b.addEventListener('click', goNext); });
+
+    bindRadioCards('.obh-card[data-segment]', 'data-segment', 'segment_type');
+    bindRadioCards('.obh-chip[data-team]', 'data-team', 'team_size');
+    bindRadioCards('.obh-chip[data-monthly]', 'data-monthly', 'monthly_positions');
+    bindRadioCards('.obh-chip[data-urgency]', 'data-urgency', 'urgency');
+    bindMultiChips('.obh-chip[data-position]', 'data-position', 'position_types');
+
+    bindBrandSearch();
+
+    $('#obh-submit').addEventListener('click', submitLead);
+
+    try {
+      var saved = sessionStorage.getItem('ht_lead_draft');
+      if (saved) {
+        var draft = JSON.parse(saved);
+        if (draft && typeof draft === 'object') {
+          Object.keys(draft).forEach(function(k){ if (k in state) state[k] = draft[k]; });
+        }
+      }
+    } catch(e) {}
+
+    var saveTimer = null;
+    function autoSave(){
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(function(){
+        try { sessionStorage.setItem('ht_lead_draft', JSON.stringify(state)); } catch(e) {}
+      }, 500);
+    }
+    document.addEventListener('click', autoSave);
+    document.addEventListener('input', autoSave);
+  });
+})();
+</script>
+
+</body>
+</html>

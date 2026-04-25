@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, follow">
+<title>HelloTalent · Demo Hazırlanıyor</title>
+<link rel="canonical" href="https://hellotalent.ai/isveren-demo-yakinda.html">
+
+<link rel="stylesheet" href="css/tokens.css?v=20260425">
+
+<style>
+  *,*::before,*::after{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:'Plus Jakarta Sans',-apple-system,system-ui,sans-serif;
+    background:var(--bg);
+    color:var(--navy);
+    line-height:1.55;
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    -webkit-font-smoothing:antialiased;
+  }
+  .htdy-shell{
+    max-width:520px;
+    width:100%;
+    padding:32px 24px;
+    text-align:center;
+  }
+  .htdy-logo{
+    font-family:'Bricolage Grotesque',serif;
+    font-size:18px;
+    font-weight:700;
+    color:var(--navy);
+    text-decoration:none;
+    letter-spacing:-0.01em;
+    margin-bottom:48px;
+    display:inline-block;
+  }
+  .htdy-icon{
+    width:80px;
+    height:80px;
+    border-radius:50%;
+    background:rgba(34,197,94,0.1);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:36px;
+    margin:0 auto 24px;
+  }
+  .htdy-h1{
+    font-family:'Bricolage Grotesque',serif;
+    font-size:32px;
+    line-height:1.15;
+    margin:0 0 16px;
+    letter-spacing:-0.01em;
+  }
+  .htdy-sub{
+    font-size:16px;
+    color:var(--muted);
+    margin:0 0 32px;
+    line-height:1.6;
+  }
+  .htdy-card{
+    background:#fff;
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:24px 20px;
+    margin-bottom:24px;
+    text-align:left;
+  }
+  .htdy-card h3{
+    font-family:'Bricolage Grotesque',serif;
+    font-size:16px;
+    margin:0 0 8px;
+    color:var(--navy);
+  }
+  .htdy-card p{
+    margin:0;
+    font-size:14px;
+    color:var(--muted);
+    line-height:1.6;
+  }
+  .htdy-token{
+    font-family:'DM Mono',monospace;
+    font-size:11px;
+    color:var(--muted);
+    background:rgba(30,45,94,0.04);
+    padding:6px 10px;
+    border-radius:6px;
+    word-break:break-all;
+    display:inline-block;
+    margin-top:16px;
+  }
+  .htdy-back{
+    display:inline-block;
+    color:var(--verm);
+    text-decoration:none;
+    font-size:14px;
+    font-weight:500;
+    margin-top:24px;
+  }
+  .htdy-back:hover{text-decoration:underline;}
+  @media(max-width:520px){
+    .htdy-h1{font-size:26px;}
+    .htdy-sub{font-size:15px;}
+  }
+</style>
+</head>
+<body>
+
+<main class="htdy-shell">
+  <a href="/index.html#kurumsal" class="htdy-logo">HelloTalent</a>
+
+  <div class="htdy-icon" aria-hidden="true">✓</div>
+
+  <h1 class="htdy-h1">Bilgilerin elimize ulaştı</h1>
+  <p class="htdy-sub">
+    Sales ekibimiz başvurunu aldı. <strong>Etkileşimli demo şu an yapım aşamasında</strong> —
+    canlıya çıktığında sana hemen haber vereceğiz.
+  </p>
+
+  <div class="htdy-card">
+    <h3>Sıradaki adımlar</h3>
+    <p>
+      24 saat içinde Tuna seninle iletişime geçecek. Acil ihtiyacın varsa direkt yazabilirsin:
+      <a href="mailto:kefelituna@gmail.com" style="color:var(--verm);">kefelituna@gmail.com</a>
+    </p>
+  </div>
+
+  <div class="htdy-card">
+    <h3>Demo neden henüz hazır değil?</h3>
+    <p>
+      Kurumsal demoyu sıfırdan yeniden tasarlıyoruz — pipeline, mesajlaşma, aday notu sistemi.
+      Lansmana yakınız. Bu sırada bilgilerin sayesinde sana özel bir önizleme hazırlayacağız.
+    </p>
+  </div>
+
+  <div id="htdy-token-box" style="display:none;">
+    <p style="font-size:13px;color:var(--muted);margin:0;">Başvuru referansın:</p>
+    <code class="htdy-token" id="htdy-token-text"></code>
+  </div>
+
+  <a href="/index.html#kurumsal" class="htdy-back">← Anasayfaya dön</a>
+</main>
+
+<script>
+(function(){
+  'use strict';
+  try {
+    var token = new URLSearchParams(location.search).get('demo_token');
+    if (token) {
+      var box = document.getElementById('htdy-token-box');
+      var text = document.getElementById('htdy-token-text');
+      if (box && text) {
+        text.textContent = token;
+        box.style.display = 'block';
+      }
+    }
+  } catch(e) {}
+})();
+</script>
+
+</body>
+</html>
