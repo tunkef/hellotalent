@@ -141,7 +141,7 @@ test.describe('FAZ B Sprint 3 — HR Messages mesajlasma', () => {
     // Master tokens kullaniliyor
     expect(css).toMatch(/var\(--verm\)/);
     expect(css).toMatch(/var\(--navy\)/);
-    expect(css).toMatch(/var\(--bg\)/);
+    expect(css).toMatch(/var\(--bg[\s,)]/);
     expect(css).toMatch(/var\(--border\)/);
     expect(css).toMatch(/var\(--muted\)/);
   });

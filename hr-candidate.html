@@ -14,11 +14,12 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/tokens.css?v=20260426asamab0">
-<link rel="stylesheet" href="shared-v2.css?v=20260426asamab0">
-<link rel="stylesheet" href="css/hr-shell.css?v=20260426asamab0">
+<link rel="stylesheet" href="css/tokens.css?v=20260426asamab4">
+<link rel="stylesheet" href="shared-v2.css?v=20260426asamab4">
+<link rel="stylesheet" href="css/hr-shell.css?v=20260426asamab4">
+<link rel="stylesheet" href="css/hr-candidate.css?v=20260426asamab4">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="shared.js?v=20260426asamab0"></script>
+<script src="shared.js?v=20260426asamab4"></script>
 </head>
 <body class="hr-page" data-hr-page="candidate">
 <a class="skip-to-content" href="#main">İçeriğe atla</a>
@@ -27,11 +28,16 @@
   <div class="lp-hdr-inner">
     <a class="lp-logo" href="ik.html">hello<em>talent</em></a>
     <div class="lp-hdr-mid">
-      <button type="button" class="hr-position-switcher" data-hr-position-btn aria-haspopup="listbox" aria-label="Aktif pozisyon">
-        <span class="hr-position-switcher__label">Pozisyon</span>
-        <span class="hr-position-switcher__value" data-hr-position-value>Tüm pozisyonlar</span>
-        <svg class="hr-position-switcher__chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-      </button>
+      <div class="hr-position-switcher-wrap">
+        <button type="button" class="hr-position-switcher" data-hr-position-btn aria-haspopup="listbox" aria-expanded="false" aria-label="Aktif pozisyon">
+          <span class="hr-position-switcher__label">Pozisyon</span>
+          <span class="hr-position-switcher__value" data-hr-position-value>Tüm pozisyonlar</span>
+          <svg class="hr-position-switcher__chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="hr-position-menu" data-hr-position-menu role="listbox" aria-label="Pozisyon seç">
+          <div class="hr-position-menu__loading" data-hr-position-loading>Yükleniyor…</div>
+        </div>
+      </div>
     </div>
     <div class="lp-cta">
       <div class="hr-user-menu-wrap">
@@ -68,29 +74,170 @@
   </div>
 </nav>
 
-<main id="main" class="hr-container">
-  <header class="hr-pg-head">
-    <div class="hr-pg-head__eyebrow">Aday detayı</div>
-    <h1 class="hr-pg-head__title" data-hr-candidate-name>Aday seçilmedi</h1>
-    <p class="hr-pg-head__lede">Profil özeti, deneyim, notlar ve mesaj geçmişi tek ekranda. Pipeline veya havuz panelinden bir adayı açtığınızda burada gösterilir.</p>
-  </header>
+<main id="main" class="hr-container hr-container--wide">
+  <!-- Breadcrumb -->
+  <nav class="hr-cd-breadcrumb" aria-label="Sayfa konumu">
+    <a class="hr-cd-breadcrumb__link" href="hr-pool.html" data-hr-cd-back>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+      <span data-hr-cd-back-label>Havuza dön</span>
+    </a>
+  </nav>
 
-  <div class="hr-card">
-    <div class="hr-empty-state">
-      <div class="hr-empty-state__icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-      </div>
-      <h2 class="hr-empty-state__title">Aday detayı Sprint 4'te açılır</h2>
-      <p class="hr-empty-state__desc">Profil kart yapısı, not paneli ve aksiyon menüsü sırada. URL parametresi (?id=...) okunur, adayın tüm bilgisi tek sayfada toplanır.</p>
-      <a class="hr-empty-state__cta" href="hr-pool.html">Havuza dön
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-      </a>
+  <!-- Loading state -->
+  <div class="hr-cd-loading" data-hr-cd-loading>
+    <div class="hr-pl-loading__spinner" aria-hidden="true"></div>
+    <p>Aday yükleniyor…</p>
+  </div>
+
+  <!-- Empty state (id yok / bulunamadi) -->
+  <div class="hr-cd-empty" data-hr-cd-empty hidden>
+    <div class="hr-empty-state__icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
     </div>
+    <h2 class="hr-empty-state__title" data-hr-cd-empty-title>Aday seçilmedi</h2>
+    <p class="hr-empty-state__desc" data-hr-cd-empty-desc>Pipeline veya havuz panelinden bir aday açın. URL'de <code>?id=</code> parametresi ile doğrudan bağlantı da kullanabilirsiniz.</p>
+    <a class="hr-empty-state__cta" href="hr-pool.html">Havuza git
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+    </a>
+  </div>
+
+  <!-- Aday içeriği -->
+  <div class="hr-cd-content" data-hr-cd-content hidden>
+    <!-- Hero header -->
+    <header class="hr-cd-hero">
+      <div class="hr-cd-hero__avatar" data-hr-cd-avatar>A</div>
+      <div class="hr-cd-hero__body">
+        <div class="hr-cd-hero__eyebrow">Aday</div>
+        <h1 class="hr-cd-hero__name" data-hr-cd-name>—</h1>
+        <div class="hr-cd-hero__meta">
+          <span class="hr-cd-hero__meta-item" data-hr-cd-pos>—</span>
+          <span class="hr-cd-hero__meta-sep">·</span>
+          <span class="hr-cd-hero__meta-item" data-hr-cd-loc>—</span>
+          <span class="hr-cd-hero__meta-sep">·</span>
+          <span class="hr-cd-hero__meta-item" data-hr-cd-exp>—</span>
+        </div>
+        <div class="hr-cd-hero__chips" data-hr-cd-chips></div>
+      </div>
+      <div class="hr-cd-hero__actions">
+        <span class="hr-cd-match" data-hr-cd-match-wrap hidden>
+          <span class="hr-cd-match__label">Eşleşme</span>
+          <span class="hr-cd-match__value" data-hr-cd-match>—</span>
+        </span>
+        <button type="button" class="hr-btn-primary" data-hr-cd-add>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Pipeline'a ekle
+        </button>
+        <a class="hr-btn-ghost" href="#" data-hr-cd-msg>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          Mesaj yaz
+        </a>
+      </div>
+    </header>
+
+    <!-- Tabs -->
+    <div class="hr-cd-tabs" role="tablist" aria-label="Aday sekmeler">
+      <button type="button" class="hr-cd-tab" data-hr-cd-tab="profile" role="tab" aria-selected="true" aria-controls="hr-cd-pane-profile">Profil</button>
+      <button type="button" class="hr-cd-tab" data-hr-cd-tab="notes" role="tab" aria-selected="false" aria-controls="hr-cd-pane-notes">Notlar <span class="hr-cd-tab__count" data-hr-cd-notes-count>0</span></button>
+      <button type="button" class="hr-cd-tab" data-hr-cd-tab="messages" role="tab" aria-selected="false" aria-controls="hr-cd-pane-messages">Mesajlar</button>
+      <button type="button" class="hr-cd-tab" data-hr-cd-tab="match" role="tab" aria-selected="false" aria-controls="hr-cd-pane-match">Eşleşme</button>
+    </div>
+
+    <!-- Pane: Profil -->
+    <section class="hr-cd-pane" data-hr-cd-pane="profile" id="hr-cd-pane-profile" role="tabpanel" aria-labelledby="hr-cd-tab-profile">
+      <div class="hr-cd-grid">
+        <div class="hr-cd-card">
+          <h3 class="hr-cd-card__title">Özgeçmiş özeti</h3>
+          <dl class="hr-cd-dl">
+            <div class="hr-cd-dl__row"><dt>Pozisyon</dt><dd data-hr-cd-fld-pos>—</dd></div>
+            <div class="hr-cd-dl__row"><dt>Deneyim</dt><dd data-hr-cd-fld-exp>—</dd></div>
+            <div class="hr-cd-dl__row"><dt>Eğitim</dt><dd data-hr-cd-fld-edu>—</dd></div>
+            <div class="hr-cd-dl__row"><dt>Doğum yılı</dt><dd data-hr-cd-fld-dob>—</dd></div>
+            <div class="hr-cd-dl__row"><dt>Çalışma tipi</dt><dd data-hr-cd-fld-work>—</dd></div>
+            <div class="hr-cd-dl__row"><dt>Müsaitlik</dt><dd data-hr-cd-fld-avail>—</dd></div>
+          </dl>
+        </div>
+
+        <div class="hr-cd-card">
+          <h3 class="hr-cd-card__title">Konum</h3>
+          <dl class="hr-cd-dl">
+            <div class="hr-cd-dl__row"><dt>Şehir</dt><dd data-hr-cd-fld-city>—</dd></div>
+            <div class="hr-cd-dl__row"><dt>İlçe</dt><dd data-hr-cd-fld-district>—</dd></div>
+            <div class="hr-cd-dl__row"><dt>Segment</dt><dd data-hr-cd-fld-segment>—</dd></div>
+          </dl>
+        </div>
+
+        <div class="hr-cd-card hr-cd-card--span2">
+          <h3 class="hr-cd-card__title">Marka deneyimi</h3>
+          <div class="hr-cd-tags" data-hr-cd-fld-brands></div>
+        </div>
+
+        <div class="hr-cd-card hr-cd-card--span2">
+          <h3 class="hr-cd-card__title">Profil aktiflik</h3>
+          <div class="hr-cd-meta-grid">
+            <div class="hr-cd-meta-grid__item">
+              <span class="hr-cd-meta-grid__label">Son güncelleme</span>
+              <span class="hr-cd-meta-grid__value" data-hr-cd-fld-updated>—</span>
+            </div>
+            <div class="hr-cd-meta-grid__item">
+              <span class="hr-cd-meta-grid__label">Aktiflik</span>
+              <span class="hr-cd-meta-grid__value" data-hr-cd-fld-active>—</span>
+            </div>
+            <div class="hr-cd-meta-grid__item">
+              <span class="hr-cd-meta-grid__label">Aday ID</span>
+              <span class="hr-cd-meta-grid__value hr-cd-meta-grid__value--mono" data-hr-cd-fld-id>—</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pane: Notlar -->
+    <section class="hr-cd-pane" data-hr-cd-pane="notes" id="hr-cd-pane-notes" role="tabpanel" aria-labelledby="hr-cd-tab-notes" hidden>
+      <div class="hr-cd-card">
+        <form class="hr-cd-note-form" data-hr-cd-note-form autocomplete="off" novalidate>
+          <label class="sr-only" for="hr-cd-note-input">Yeni not</label>
+          <textarea id="hr-cd-note-input" class="hr-cd-note-form__input" data-hr-cd-note-input rows="3" placeholder="Bu adayla ilgili kısa bir not bırakın. Sadece sizin ekibiniz görür."></textarea>
+          <div class="hr-cd-note-form__row">
+            <span class="hr-cd-note-form__hint">Demo modunda notlar tarayıcınızda saklanır. MVP 2 ile ekip arasında paylaşılır.</span>
+            <button type="submit" class="hr-btn-primary" data-hr-cd-note-submit disabled>Notu kaydet</button>
+          </div>
+        </form>
+      </div>
+      <div class="hr-cd-notes-list" data-hr-cd-notes-list role="list">
+        <div class="hr-cd-empty hr-cd-empty--inline" data-hr-cd-notes-empty>
+          <p>Henüz not eklenmedi.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pane: Mesajlar -->
+    <section class="hr-cd-pane" data-hr-cd-pane="messages" id="hr-cd-pane-messages" role="tabpanel" aria-labelledby="hr-cd-tab-messages" hidden>
+      <div class="hr-cd-card">
+        <div class="hr-cd-msg-summary" data-hr-cd-msg-summary>
+          <p>Bu adayla ilgili konuşma bulunmadı.</p>
+          <a class="hr-empty-state__cta" href="#" data-hr-cd-msg-link>Mesajlar paneline git
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pane: Eşleşme -->
+    <section class="hr-cd-pane" data-hr-cd-pane="match" id="hr-cd-pane-match" role="tabpanel" aria-labelledby="hr-cd-tab-match" hidden>
+      <div class="hr-cd-card">
+        <h3 class="hr-cd-card__title">Eşleşme detayı</h3>
+        <p class="hr-cd-match-intro" data-hr-cd-match-intro>Aktif bir pozisyon seçin; adayın o pozisyona uyum kırılımı burada görünür.</p>
+        <div class="hr-cd-match-list" data-hr-cd-match-list></div>
+      </div>
+    </section>
   </div>
 </main>
 
-<script src="js/hr-shell.js?v=20260426asamab0" defer></script>
-<script src="js/hr-data.js?v=20260426asamab0" defer></script>
-<script src="js/hr-candidate.js?v=20260426asamab0" defer></script>
+<!-- Toast -->
+<div class="hr-toast" data-hr-toast aria-live="polite" aria-atomic="true"></div>
+
+<script src="js/hr-shell.js?v=20260426asamab4" defer></script>
+<script src="js/hr-data.js?v=20260426asamab4" defer></script>
+<script src="js/hr-candidate.js?v=20260426asamab4" defer></script>
 </body>
 </html>
