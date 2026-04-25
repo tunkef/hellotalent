@@ -1,5 +1,22 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 25 Nisan 2026 | Asama 84 — Auth-gated onboarding wizard (lead funnel -> kayitli kullanici akisi)
+> Son guncelleme: 25 Nisan 2026 | Asama 84.1 — Clatu HR Component Library + 3 sayfa migrate + leak fix
+>
+> Aktif Odak: Sürdürülebilir layout system (component library) kuruldu — giris/uye-ol/isveren-onboarding tek source of truth. admin.html Tuna internal panel olarak AYRI kalır. ik.html FAZ B'de migrate. Email leak (kefelituna@gmail.com → /iletisim.html) tüm public sayfalarda temizlendi.
+>
+> ── Asama 84.1 (25 Nisan 2026 ek revize) ──
+>
+> **Yeni kalıcı dosyalar:**
+> - `css/clatu-hr-components.css` (552 satır) — header/footer/container/button/card/form/chip, tek source
+> - `partials/hr-header.html`, `partials/hr-footer.html` — kanonik snippet
+> - `scripts/check-hr-layout.sh` — pre-commit guard
+> - `tests/layout-consistency.spec.js` — 45+ regression test
+>
+> **3 sayfa migrate:** giris.html, uye-ol.html, isveren-onboarding.html
+> **admin.html ÇIKARILDI** (Tuna kararı: internal panel ayrı sistem)
+> **isveren-onboarding.html'de "Kurumsal başvuru" subtitle SİLİNDİ** (Tuna feedback)
+> **Email leak fix:** kefelituna@gmail.com 3 yerden temizlendi → /iletisim.html
+>
+> ── Asama 84 (önceki) ──
 >
 > Aktif Odak: ik.html'i KISS + Pozisyon-aware Pipeline workspace olarak bastan yaziyoruz. MVP 1 = "yasayan demo + lead funnel" (fake data, gercek aday yok), MVP 2 = paid + Iyzico + KVKK e-sozlesme (15+ kurumsal lead + 5000+ aday havuzu threshold sonrasi).
 >

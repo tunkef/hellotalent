@@ -13,6 +13,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/tokens.css?v=20260423k049o">
+<link rel="stylesheet" href="css/clatu-hr-tokens.css?v=20260425">
+<link rel="stylesheet" href="css/clatu-hr-components.css?v=20260425">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   /* Tokens: css/tokens.css — lokal :root silindi (Faz 1c). */
@@ -30,33 +32,8 @@
     flex-direction: column;
   }
 
-  /* ── LOGO (K-061: header kaldırıldı, sadece logo anasayfaya link) ──
-     Pass 10 #4: font-size index header-logo parite (var(--text-3xl) 20px desktop,
-     18px <=900, 17px <=480). */
-  .logo-fixed {
-    position: absolute;
-    top: 20px;
-    left: 24px;
-    font-family: 'Bricolage Grotesque', sans-serif;
-    font-weight: 800;
-    font-size: var(--text-3xl);
-    letter-spacing: -0.5px;
-    color: var(--navy);
-    text-decoration: none;
-    z-index: 5;
-    transition: opacity .2s;
-  }
-  .logo-fixed span { color: var(--verm); }
-  .logo-fixed:hover { opacity: 0.7; }
-  @media (min-width: 768px) {
-    .logo-fixed { top: 24px; left: 32px; }
-  }
-  @media (max-width: 900px) {
-    .logo-fixed { font-size: 18px; }
-  }
-  @media (max-width: 480px) {
-    .logo-fixed { font-size: 17px; }
-  }
+  /* ── LOGO (logo-fixed) — Asama 84.1 KALDIRILDI
+     Yerine: hr-page-header (css/clatu-hr-components.css). ── */
 
   /* ── MAIN ── */
   .main {
@@ -309,16 +286,8 @@
   }
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  /* ── FOOTER — K-049: 4 public page pattern (navy + cream) ── */
-  .footer {
-    text-align: center;
-    padding: 20px;
-    font-size: var(--text-base);
-    background: var(--navy);
-    color: var(--color-gray);
-  }
-  .footer a { color: var(--color-gray); text-decoration: none; }
-  .footer a:hover { text-decoration: underline; }
+  /* ── FOOTER — Asama 84.1 KALDIRILDI
+     Yerine: hr-page-footer (css/clatu-hr-components.css). ── */
 
   /* Aday formu / IK formu toggle */
   #form-ik { display: none; }
@@ -389,8 +358,7 @@
     --border: rgba(247, 246, 244, .08);
   }
   html.dark body { background: #0F121F; }
-  html.dark .logo-fixed { color: var(--text); }
-  html.dark .logo-fixed span { color: var(--verm); }
+  /* logo-fixed dark KALDIRILDI — hr-page-header kendi tokens üzerinden dark aware */
   html.dark .card { background: rgba(247, 246, 244, .04); border-color: rgba(247, 246, 244, .09); }
   html.dark .card-title { color: var(--text); }
   html.dark .card-sub { color: rgba(247, 246, 244, .72); }
@@ -408,8 +376,7 @@
   html.dark .register-link a.ik-link { color: #8B9FD4; } /* navy-lighter dark K-043 uzerinde */
   html.dark #btn-forgot-password-aday,
   html.dark #btn-forgot-password-ik { color: #FF6B4A !important; }
-  html.dark .footer { background: #0B0D17; color: rgba(247, 246, 244, .72); }
-  html.dark .footer a { color: rgba(247, 246, 244, .72); }
+  /* .footer dark KALDIRILDI — hr-page-footer kendi tokens üzerinden dark aware */
   html.dark #btn-google-login,
   html.dark #btn-linkedin-login { background: rgba(247, 246, 244, .04) !important; border-color: rgba(247, 246, 244, .12) !important; color: var(--text) !important; }
   html.dark #btn-google-login:hover,
@@ -423,10 +390,22 @@
   html.dark .mfa-code { background: rgba(247, 246, 244, .04); border-color: rgba(247, 246, 244, .1); color: var(--text); }
 </style>
 </head>
-<body>
+<body class="hr-layout">
 
-<!-- K-061: Header kaldırıldı, sadece logo anasayfa link -->
-<a href="index.html" class="logo-fixed">hello<span>talent</span></a>
+<!-- ═══════════════════════════════════════════════════════════
+     PAGE HEADER — Clatu HR canon (Asama 84.1)
+     Sağ slot: ters yön auth link
+     ═══════════════════════════════════════════════════════════ -->
+<header class="hr-page-header" role="banner">
+  <div class="hr-page-header__inner">
+    <a href="/index.html" class="hr-page-header__logo" aria-label="HelloTalent ana sayfa">
+      hello<span>talent</span>
+    </a>
+    <div class="hr-page-header__right">
+      <a href="/uye-ol.html" class="hr-page-header__link">Hesabın yok mu? Kayıt ol</a>
+    </div>
+  </div>
+</header>
 
 <main class="main">
   <div class="auth-split" id="auth-split">
@@ -539,8 +518,19 @@
   </div><!-- /auth-split -->
 </main>
 
-<footer class="footer">
-  © 2025 hellotalent.ai · <a href="index.html">Ana Sayfa</a>
+<!-- ═══════════════════════════════════════════════════════════
+     PAGE FOOTER — Clatu HR canon (Asama 84.1)
+     ═══════════════════════════════════════════════════════════ -->
+<footer class="hr-page-footer" role="contentinfo">
+  <div class="hr-page-footer__inner">
+    <div class="hr-page-footer__copy">© 2026 HelloTalent · İstanbul</div>
+    <nav class="hr-page-footer__nav" aria-label="Yasal ve iletişim">
+      <a href="/kvkk.html" class="hr-page-footer__link">KVKK Aydınlatma</a>
+      <a href="/gizlilik.html" class="hr-page-footer__link">Gizlilik</a>
+      <a href="/kullanim-sartlari.html" class="hr-page-footer__link">Kullanım Şartları</a>
+      <a href="/iletisim.html" class="hr-page-footer__link">İletişim</a>
+    </nav>
+  </div>
 </footer>
 
 <div id="forgot-password-overlay" role="dialog" aria-modal="true" aria-label="Şifremi unuttum" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);z-index:1000;align-items:center;justify-content:center;padding:16px;">

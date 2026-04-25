@@ -11,6 +11,7 @@
 
 <link rel="stylesheet" href="css/tokens.css?v=20260425">
 <link rel="stylesheet" href="css/clatu-hr-tokens.css?v=20260425">
+<link rel="stylesheet" href="css/clatu-hr-components.css?v=20260425">
 
 <style>
   /* ── Reset & Base ── */
@@ -623,63 +624,10 @@
     min-height: 100vh;
   }
 
-  /* ── Top nav — sticky, kart-üstü, ince çizgili ── */
-  .lf-topnav{
-    position: sticky;
-    top: 0;
-    z-index: 30;
-    background: rgba(247,246,244,0.92);
-    backdrop-filter: saturate(180%) blur(10px);
-    -webkit-backdrop-filter: saturate(180%) blur(10px);
-    border-bottom: 1px solid var(--hr-border-subtle);
-  }
-  .lf-topnav__inner{
-    max-width: 1180px;
-    margin: 0 auto;
-    padding: 14px 32px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-  }
-  .lf-logo{
-    font-family: var(--hr-font-head), serif;
-    font-size: 20px;
-    font-weight: 700;
-    color: var(--hr-text-primary);
-    text-decoration: none;
-    letter-spacing: -0.01em;
-  }
-  .lf-logo::after{
-    content: " · Kurumsal başvuru";
-    font-family: var(--hr-font-body), sans-serif;
-    font-weight: 500;
-    font-size: 13px;
-    color: var(--hr-text-muted);
-    letter-spacing: 0;
-  }
-  .lf-topnav__right{
-    display: flex;
-    align-items: center;
-    gap: 18px;
-  }
-  .lf-topnav__step{
-    font-family: var(--hr-font-mono), monospace;
-    font-size: 11px;
-    letter-spacing: var(--hr-lt-mono);
-    color: var(--hr-text-muted);
-    text-transform: uppercase;
-  }
-  .lf-topnav__back{
-    font-family: var(--hr-font-body), sans-serif;
-    font-size: 13px;
-    color: var(--hr-text-secondary);
-    text-decoration: none;
-    padding: 6px 10px;
-    border-radius: 6px;
-    transition: background var(--hr-dur-fast) var(--hr-ease);
-  }
-  .lf-topnav__back:hover{ background: var(--hr-surface-2); }
+  /* ── Top nav — KALDIRILDI (Asama 84.1)
+     Yerine: css/clatu-hr-components.css → .hr-page-header
+     Subtitle '· Kurumsal başvuru' Tuna feedback ile silindi.
+     Eski .lf-topnav* kuralları artık component library'de. ── */
 
   /* ── HERO SECTION — full-width navy, 70vh ── */
   .lf-hero{
@@ -1015,39 +963,9 @@
     line-height: 1.5;
   }
 
-  /* ── FOOTER ── */
-  .lf-footer{
-    background: var(--hr-bg);
-    border-top: 1px solid var(--hr-border-subtle);
-    padding: 36px 24px 44px;
-  }
-  .lf-footer__inner{
-    max-width: 1180px;
-    margin: 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 20px;
-  }
-  .lf-footer__brand{
-    font-family: var(--hr-font-body), sans-serif;
-    font-size: 13px;
-    color: var(--hr-text-muted);
-  }
-  .lf-footer__links{
-    display: flex;
-    gap: 22px;
-    flex-wrap: wrap;
-  }
-  .lf-footer__links a{
-    font-family: var(--hr-font-body), sans-serif;
-    font-size: 13px;
-    color: var(--hr-text-secondary);
-    text-decoration: none;
-    transition: color var(--hr-dur-fast) var(--hr-ease);
-  }
-  .lf-footer__links a:hover{ color: var(--hr-text-primary); }
+  /* ── FOOTER — KALDIRILDI (Asama 84.1)
+     Yerine: css/clatu-hr-components.css → .hr-page-footer
+     ── */
 
   /* ── Responsive ── */
   @media(max-width: 980px){
@@ -1061,23 +979,20 @@
     .lf-social{ padding: 56px 20px 64px; }
   }
   @media(max-width: 640px){
-    .lf-topnav__inner{ padding: 12px 18px; }
-    .lf-logo::after{ display: none; }
     .lf-hero{ padding: 56px 20px 56px; }
     .lf-hero__kpi{ grid-template-columns: 1fr 1fr; gap: 16px; }
     .lf-hero__kpi > :nth-child(3){ grid-column: 1 / -1; }
     .lf-hero__cta-row .lf-cta-primary{ width: 100%; justify-content: center; }
     .lf-hero__cta-row .lf-cta-ghost{ width: 100%; justify-content: center; }
-    .lf-footer__inner{ flex-direction: column; align-items: flex-start; }
+    /* lf-footer responsive override KALDIRILDI — hr-page-footer kendi içinde mobile-aware */
   }
 
   /* Dark mode — sistem tercihi */
   @media(prefers-color-scheme: dark){
     body.hr-page{ background: var(--hr-bg); }
-    .lf-topnav{ background: rgba(15,23,41,0.88); border-bottom-color: rgba(242,241,238,0.08); }
     .lf-form-section{ background: var(--hr-bg); }
     .lf-form-section__sub{ color: var(--hr-text-muted); }
-    .lf-footer{ border-top-color: rgba(242,241,238,0.08); }
+    /* lf-footer dark KALDIRILDI — hr-page-footer kendi token'ları */
   }
 
   /* Reduced motion */
@@ -1087,22 +1002,25 @@
   }
 </style>
 </head>
-<body class="hr-page">
+<body class="hr-page hr-layout">
+
+<!-- ═══════════════════════════════════════════════════════════
+     PAGE HEADER — Clatu HR canon (Asama 84.1)
+     Subtitle/altyazı YOK. Sağ slot: step counter + Çıkış.
+     ═══════════════════════════════════════════════════════════ -->
+<header class="hr-page-header" role="banner">
+  <div class="hr-page-header__inner">
+    <a href="/index.html" class="hr-page-header__logo" aria-label="HelloTalent ana sayfa">
+      hello<span>talent</span>
+    </a>
+    <div class="hr-page-header__right">
+      <span class="hr-page-header__step" id="lf-counter" aria-live="polite">Adım 1 / 8</span>
+      <button type="button" id="obh-logout" class="hr-page-header__btn">Çıkış</button>
+    </div>
+  </div>
+</header>
 
 <main class="lf-page">
-
-  <!-- ═══════════════════════════════════════════════════════════
-       1. TOPNAV — sticky, kart-üstü
-       ═══════════════════════════════════════════════════════════ -->
-  <nav class="lf-topnav" aria-label="Kurumsal başvuru navigasyon">
-    <div class="lf-topnav__inner">
-      <a href="/ik.html" class="lf-logo">HelloTalent</a>
-      <div class="lf-topnav__right">
-        <span class="lf-topnav__step" id="lf-counter" aria-live="polite">Adım 1 / 8</span>
-        <button type="button" id="obh-logout" class="lf-topnav__back" style="background:none;border:1px solid var(--hr-border-subtle);font:inherit;cursor:pointer;">Çıkış</button>
-      </div>
-    </div>
-  </nav>
 
   <!-- ═══════════════════════════════════════════════════════════
        3. FORM SECTION — wizard kartı, mevcut JS aynen çalışır
@@ -1337,26 +1255,28 @@
   </section>
 
   <p class="obh-footer-note">
-    Sorun yaşıyorsan: <a href="mailto:kefelituna@gmail.com">kefelituna@gmail.com</a> · MVP 1 lead funnel
+    Sorun yaşıyorsan <a href="/iletisim.html">iletişim sayfasından</a> bize ulaşabilirsin.
   </p>
       </div><!-- /.obh-shell -->
     </div><!-- /.lf-form-section__inner -->
   </section><!-- /.lf-form-section -->
 
-  <!-- Minimal footer — wizard cardine baglanik -->
-  <footer class="lf-footer" role="contentinfo">
-    <div class="lf-footer__inner">
-      <p class="lf-footer__brand">© 2026 HelloTalent · Kurumsal onboarding</p>
-      <nav class="lf-footer__links" aria-label="Yasal bağlantılar">
-        <a href="/yasal.html#panel-kvkk" target="_blank" rel="noopener">KVKK</a>
-        <a href="gizlilik.html">Gizlilik</a>
-        <a href="kullanim-sartlari.html">Kullanım Şartları</a>
-        <a href="mailto:kefelituna@gmail.com">Destek</a>
-      </nav>
-    </div>
-  </footer>
-
 </main>
+
+<!-- ═══════════════════════════════════════════════════════════
+     PAGE FOOTER — Clatu HR canon (Asama 84.1)
+     ═══════════════════════════════════════════════════════════ -->
+<footer class="hr-page-footer" role="contentinfo">
+  <div class="hr-page-footer__inner">
+    <div class="hr-page-footer__copy">© 2026 HelloTalent · İstanbul</div>
+    <nav class="hr-page-footer__nav" aria-label="Yasal ve iletişim">
+      <a href="/kvkk.html" class="hr-page-footer__link">KVKK Aydınlatma</a>
+      <a href="/gizlilik.html" class="hr-page-footer__link">Gizlilik</a>
+      <a href="/kullanim-sartlari.html" class="hr-page-footer__link">Kullanım Şartları</a>
+      <a href="/iletisim.html" class="hr-page-footer__link">İletişim</a>
+    </nav>
+  </div>
+</footer>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script src="shared.js?v=20260425"></script>
@@ -1640,7 +1560,7 @@
     if (submitBtn) submitBtn.disabled = false;
     var errEl = $('#err-consent');
     if (errEl) {
-      errEl.textContent = msg || 'Bağlantı sorunu. Tekrar dene veya kefelituna@gmail.com\'a yaz.';
+      errEl.textContent = msg || 'Bağlantı sorunu. Tekrar dene veya iletişim sayfasından ulaş.';
       errEl.classList.add('is-shown');
     }
   }
