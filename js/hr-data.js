@@ -16,6 +16,7 @@
 
 (function () {
   var DEMO_BASE = 'data/demo/';
+  var DEMO_PIPELINE_KEY = 'ht_hr_pipeline_demo_state';
 
   /* ── Cache ────────────────────────────────────── */
   var _cache = {};
@@ -23,6 +24,23 @@
   /* ── Real mode helper ─────────────────────────── */
   function isRealMode() {
     return window.HR_REAL_MODE_ENABLED === true;
+  }
+
+  /* ── Demo pipeline persist (localStorage) ─────── */
+  function readPipelineOverlay() {
+    try {
+      var raw = localStorage.getItem(DEMO_PIPELINE_KEY);
+      if (!raw) return null;
+      return JSON.parse(raw);
+    } catch (e) { return null; }
+  }
+  function writePipelineOverlay(rows) {
+    try {
+      localStorage.setItem(DEMO_PIPELINE_KEY, JSON.stringify(rows));
+    } catch (e) {}
+  }
+  function clearPipelineOverlay() {
+    try { localStorage.removeItem(DEMO_PIPELINE_KEY); } catch (e) {}
   }
 
   function supa() {
@@ -139,7 +157,24 @@
     }
     var rows = await loadDemo('pipeline');
     if (!rows) return { data: null, error: { message: 'Demo data not loaded' } };
-    var filtered = positionId ? rows.filter(function (r) { return String(r.position_id) === String(positionId); }) : rows;
+    // Apply localStorage overlay (kullanici hareketleri persist)
+    var overlay = readPipelineOverlay();
+    var merged = rows.map(function (r) { return Object.assign({}, r); });
+    if (overlay && Array.isArray(overlay)) {
+      var idx = {};
+      for (var k = 0; k < merged.length; k++) idx[merged[k].id] = k;
+      for (var j = 0; j < overlay.length; j++) {
+        var o = overlay[j];
+        if (idx[o.id] !== undefined) {
+          merged[idx[o.id]].stage = o.stage;
+          merged[idx[o.id]].updated_at = o.updated_at || merged[idx[o.id]].updated_at;
+        } else {
+          merged.push(o);
+        }
+      }
+    }
+    _cache.pipeline_merged = merged;
+    var filtered = positionId ? merged.filter(function (r) { return String(r.position_id) === String(positionId); }) : merged;
     return { data: filtered, error: null };
   }
 
@@ -154,16 +189,38 @@
         return { data: null, error: { message: e.message } };
       }
     }
-    // Demo: in-memory mutate (sayfa reload'da resetlenir)
-    var rows = _cache.pipeline;
-    if (rows) {
-      for (var i = 0; i < rows.length; i++) {
-        if (String(rows[i].id) === String(pipelineId)) {
-          rows[i].stage = newStage;
-          rows[i].updated_at = new Date().toISOString();
-          break;
+    // Demo: persist via localStorage overlay
+    var rows = _cache.pipeline_merged || _cache.pipeline;
+    if (!rows) {
+      // Cache yoksa yukle, sonra mutate
+      var loaded = await loadDemo('pipeline');
+      rows = loaded ? loaded.map(function (r) { return Object.assign({}, r); }) : [];
+    }
+    var nowIso = new Date().toISOString();
+    var changed = false;
+    for (var i = 0; i < rows.length; i++) {
+      if (String(rows[i].id) === String(pipelineId)) {
+        rows[i].stage = newStage;
+        rows[i].updated_at = nowIso;
+        changed = true;
+        break;
+      }
+    }
+    _cache.pipeline_merged = rows;
+    if (changed) {
+      // Sadece degisen + overlay'deki diger kayitlari sakla (baseline farkli)
+      var baseline = _cache.pipeline || [];
+      var baseIdx = {};
+      for (var b = 0; b < baseline.length; b++) baseIdx[baseline[b].id] = baseline[b];
+      var diff = [];
+      for (var n = 0; n < rows.length; n++) {
+        var r = rows[n];
+        var base = baseIdx[r.id];
+        if (!base || base.stage !== r.stage || base.updated_at !== r.updated_at) {
+          diff.push({ id: r.id, position_id: r.position_id, candidate_id: r.candidate_id, stage: r.stage, updated_at: r.updated_at });
         }
       }
+      writePipelineOverlay(diff);
     }
     return { data: { ok: true, demo: true }, error: null };
   }
@@ -290,6 +347,7 @@
     isRealMode: isRealMode,
     // Candidates
     searchCandidates: searchCandidates,
+    getCandidate: getCandidateById,        // Sprint 1 alias
     getCandidateById: getCandidateById,
     // Pipeline
     getPipeline: getPipeline,
@@ -306,6 +364,7 @@
     // Positions
     getPositions: getPositions,
     // Cache control (test/debug)
-    _clearCache: function () { _cache = {}; }
+    _clearCache: function () { _cache = {}; },
+    _clearPipelineOverlay: clearPipelineOverlay
   };
 })();
