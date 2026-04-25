@@ -1,7 +1,54 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 25 Nisan 2026 | Asama 84.2 — Clatu HR v2 ROLLBACK + index master pattern align
+> Son guncelleme: 25 Nisan 2026 | Asama 84.3 — Wizard step 1 = welcome + AI-ism temizligi
 >
-> Aktif Odak: 84.1'deki Clatu HR v2 ayrı sistem yanlıştı (Tuna feedback: "logo aynı durmuyor, fontlar farklı"). ROLLBACK + index.html master pattern (lp-hdr + lp-logo + ht-foot + shared-v2.css) HR sayfalarına uygulandı. Tek source of truth: index.html.
+> Aktif Odak: Tuna feedback (ekran goruntusu): mevcut wizard hero (eyebrow + h1 + sub + greeting) wizard form section'inin USTUNDE "lf-form-section__head" olarak duruyordu. Bunu wizard'in 1. kapak step'i (welcome) olarak icine tasidik. Tum wizard copy AI-ism acisindan tarandi, content-writer disipliniyle fonksiyonel/abartisiz tone'a cevrildi, "siz" hitabi tum step'lerde tutarli yapildi.
+>
+> ── Asama 84.3 (25 Nisan 2026 — wizard 9-step + AI-ism temizligi) ──
+>
+> **Tetikleyici:** Tuna ekran goruntusu — hero metni wizard'in disinda statik banner gibi duruyordu. "wizard'in 1. kapagi olarak ayri bir step yap" + "ful icerik ajanini calistir, AI-ism temizligi". Mevcut metin kaliplari ("tanıyalım/hazırlayalım", "sizin filtrelerinize göre hazırlanmış havuz", "kaldığın yerden devam edelim") AI vaadi/inclusive-we kalipiariydi.
+>
+> **Yapilan:**
+> 1. content-writer (avoid-ai-writing disiplini) — welcome screen 4 element + tum step sub'lari + tone tutarlilik audit. Yeni copy:
+>    - Eyebrow: "8 soru · 5 dakika · ara verirseniz kaldığınız yerden devam edersiniz" (uppercase atildi, dogal ton)
+>    - H1: "Birkaç soru. Sonra havuz açılır." (eski: "Ekibinizi tanıyalım, havuzu hazırlayalım." — pazarlama vaadi)
+>    - Sub: "Cevaplarınız hesabınıza kaydedilir, sales ekibimize iletilir. KVKK aydınlatma metni kapsamında işleniriz." (eski "sizin filtrelerinize göre hazırlanmış havuz" AI-vaadi kalibi atildi)
+>    - Greeting: "Hoş geldiniz, {ad}." (eski: "Hoş geldin, K032. Kaldığın yerden devam edelim." — `sen`/`siz` karisik + inclusive-we)
+>    - CTA: "Başlayalım"
+> 2. ui-agent — wizard 8 step → 9 step yeniden numaralandi. data-step="1" yeni welcome (.obh-step--hero pattern, mevcut CSS reused), eski 1-8 → 2-9 olarak shift. Mevcut .obh-hero-surface / .obh-hero-eyebrow / .obh-hero-h1 / .obh-hero-sub / .obh-btn--hero-primary CSS class'lari (lines 638-739) zaten tanimliydi → CSS DEGISIKLIGI YOK, sadece HTML wizard step'ine sarildi.
+> 3. ui-agent — JS state machine: TOTAL_STEPS=8→9, REQUIRED_STEPS=[1,4,6]→[2,5,7], showStep(9)=renderSummary, validateStep mantigi 1 kaydirildi (n=2 segment, n=3 phone, n=5 team, n=7 monthly), persistStep payload mapping shift (stepNum=2 segment_type ... stepNum=9 marketing_opt_in), submitOnboarding persistStep(8) → persistStep(9). Yeni startWizard fonksiyonu (data-action="start-wizard"): RPC cagrisi YOK, sadece UI step 2'ye gec.
+> 4. supabase-agent + auditor (T3) — Migration `20260425225348_hr_onboarding_step9_welcome.sql`:
+>    - hr_profiles.onboarding_step CHECK 1..8 → 1..9
+>    - save_onboarding_step p_step ust limit 8 → 9
+>    - complete_onboarding final onboarding_step 8 → 9
+>    - GRANT EXECUTE authenticated korunur
+>    - Eski kayitlar etkilenmez (1..8 ⊂ 1..9), tamamlanmis profiller onboarding_completed=true bool ile yonetiliyor.
+> 5. content-writer (tum step'ler) — `sen` → `siz` tutarlilik fix:
+>    - Step 2 (segment): "Şirketini" → "Şirketinizi", "cevabına" → "cevabınıza", "hazırlanır" → "düzenlenir"
+>    - Step 4 (markalar): "İşlettiğin" → "İşlettiğiniz", "ekleyebilirsin" → "ekleyebilirsiniz", "demo aday havuzu seçtiğin markaların... düzenlenir" → "demo havuzunuz seçtiğiniz markaların sektörü ve şehrine göre filtrelenir"
+>    - Step 5 (ekip): "ekibinin" → "ekibinizin"
+>    - Step 6 (pozisyon): "arıyorsun" → "arıyorsunuz", sub kisaltildi
+>    - Step 7 (aylik): "yapıyorsun" → "yapıyorsunuz"
+>    - Step 8 (aciliyet): "istersin" → "istersiniz" (chip metinleri ben-perspektifi koruyor)
+>    - Step 9 (onay): "Onayınız ile cevaplarınız sales ekibine ulaşır" → "Onayınızla cevaplarınız sales ekibimize iletilir, demo havuz hesabınızda açılır"
+>    - Footer note: "yaşıyorsan" → "yaşıyorsanız", "ulaşabilirsin" → "ulaşabilirsiniz"
+>
+> **Resume mantigi:**
+> - Backend onboarding_step=1 (default, signup sonrasi) → frontend welcome step gosterir.
+> - Kullanici "Başlayalım"a basinca: RPC YOK, sadece UI step 2'ye atlar.
+> - Kullanici Step 2 (segment) cevaplayinca: persistStep(2) → backend onboarding_step=2.
+> - Sonraki resume: backend onboarding_step≥2 → o frontend step'inden devam (welcome'i tekrar gormez).
+> - Welcome'da bos cikis durumunda (segment cevaplanmadi): backend hala onboarding_step=1, resume tekrar welcome gosterir → fonksiyonel olarak dogru, kullanici hic input vermedi.
+>
+> **Etki dosyalari:**
+> - `isveren-onboarding.html` (~2017 satir; HTML 8→9 step, JS state machine 1 kaydirma, copy AI-ism temizligi)
+> - `supabase/migrations/20260425225348_hr_onboarding_step9_welcome.sql` (yeni, T3 migration)
+>
+> **Tier:** T3 (migration + RPC limit + auth-gated wizard). Codex review onerilir (`scripts/codex-review.sh --tier=T3`). Native auditor + code-reviewer + ui-agent + content-writer + supabase-agent zinciri orchestre edildi.
+>
+> **Deploy:**
+> - Frontend: `git add isveren-onboarding.html docs/CURRENT-STATE.md && git commit && git push origin main` (GitHub Pages ~40s)
+> - Migration: `npm run db:push` (supabase db push --linked) — backend p_step=9 limit acilir.
+> - Sıra: önce migration push (idempotent, eski client step=8 calismaya devam eder), sonra frontend push.
 >
 > ── Asama 84.2 (25 Nisan 2026 ROLLBACK) ──
 >

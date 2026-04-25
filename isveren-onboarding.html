@@ -1208,28 +1208,33 @@
   <section class="lf-form-section" id="basvuru" aria-label="Kurumsal başvuru formu">
     <div class="lf-form-section__inner">
 
-      <div class="lf-form-section__head">
-        <p class="lf-eyebrow" style="color:var(--hr-text-muted)">8 soru · 5 dakika · ara verirseniz kaldığınız yerden devam edersiniz</p>
-        <h2 class="lf-form-section__h2">Ekibinizi tanıyalım,<br>havuzu hazırlayalım.</h2>
-        <p class="lf-form-section__sub">Bilgileriniz hesabınızla birlikte saklanır. Demoda sizin filtrelerinize göre hazırlanmış aday havuzunu görürsünüz. KVKK aydınlatma metni kapsamında işleniriz.</p>
-        <p id="obh-greeting" class="lf-form-section__sub" style="display:none;font-weight:600;color:var(--hr-text-primary);margin-top:8px;"></p>
-      </div>
-
       <div class="obh-shell" role="region" aria-label="Kurumsal demo başvuru formu">
 
   <header class="obh-topbar">
     <a href="/ik.html" class="obh-logo">HelloTalent</a>
-    <span class="obh-step-counter" id="obh-counter" aria-live="polite">1 / 8</span>
+    <span class="obh-step-counter" id="obh-counter" aria-live="polite">1 / 9</span>
   </header>
 
   <div class="obh-progress" aria-hidden="true">
     <div class="obh-progress__fill" id="obh-progress-fill"></div>
   </div>
 
-  <!-- Step 1: Şirket türü (signup sonrası ilk soru) -->
-  <section class="obh-step is-active" data-step="1">
-    <h1 class="obh-h1">Şirketini en iyi anlatan?</h1>
-    <p class="obh-sub">Demo havuzu cevabına göre hazırlanır.</p>
+  <!-- Step 1: Welcome (Asama 84.3) -->
+  <section class="obh-step obh-step--hero is-active" data-step="1">
+    <div class="obh-hero-surface">
+      <p class="obh-hero-eyebrow">8 soru · 5 dakika · ara verirseniz kaldığınız yerden devam edersiniz</p>
+      <h1 class="obh-hero-h1">Birkaç soru.<br>Sonra havuz açılır.</h1>
+      <p class="obh-hero-sub">Cevaplarınız hesabınıza kaydedilir, sales ekibimize iletilir. KVKK aydınlatma metni kapsamında işleniriz.</p>
+      <div class="obh-nav" style="justify-content:flex-start;">
+        <button type="button" class="obh-btn obh-btn--hero-primary" data-action="start-wizard">Başlayalım</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Step 2: Şirket türü (signup sonrası ilk soru) -->
+  <section class="obh-step" data-step="2">
+    <h1 class="obh-h1">Şirketinizi en iyi anlatan?</h1>
+    <p class="obh-sub">Demo havuzu cevabınıza göre düzenlenir.</p>
     <div class="obh-cards obh-cards--2" role="radiogroup" aria-label="Şirket türü">
       <button type="button" class="obh-card" data-segment="single_brand" role="radio" aria-checked="false">
         <div class="obh-card__title">Tek marka</div>
@@ -1255,8 +1260,8 @@
     </div>
   </section>
 
-  <!-- Step 2: Bilgilerinizi gözden geçirin (signup pre-fill review) -->
-  <section class="obh-step" data-step="2">
+  <!-- Step 3: Bilgilerinizi gözden geçirin (signup pre-fill review) -->
+  <section class="obh-step" data-step="3">
     <h1 class="obh-h1">Bilgilerinizi gözden geçirin</h1>
     <p class="obh-sub">Kayıt sırasında verdiğiniz bilgiler. Telefonu güncelleyebilirsiniz; diğer alanlar profil sayfasından düzenlenir.</p>
 
@@ -1287,10 +1292,10 @@
     </div>
   </section>
 
-  <!-- Step 3: Markalar -->
-  <section class="obh-step" data-step="3">
-    <h1 class="obh-h1">İşlettiğin marka(lar)</h1>
-    <p class="obh-sub">Birden fazla marka ekleyebilirsin. Demo aday havuzu seçtiğin markaların sektörüne ve şehrine göre düzenlenir.</p>
+  <!-- Step 4: Markalar -->
+  <section class="obh-step" data-step="4">
+    <h1 class="obh-h1">İşlettiğiniz marka(lar)</h1>
+    <p class="obh-sub">Birden fazla marka ekleyebilirsiniz. Demo havuzunuz seçtiğiniz markaların sektörü ve şehrine göre filtrelenir.</p>
 
     <div class="obh-brand-search">
       <input class="obh-input" type="text" id="brand-input" placeholder="Marka ara (Zara, Beymen, COS...)" autocomplete="off">
@@ -1308,9 +1313,9 @@
     </div>
   </section>
 
-  <!-- Step 4: Ekip -->
-  <section class="obh-step" data-step="4">
-    <h1 class="obh-h1">İK ekibinin büyüklüğü?</h1>
+  <!-- Step 5: Ekip -->
+  <section class="obh-step" data-step="5">
+    <h1 class="obh-h1">İK ekibinizin büyüklüğü?</h1>
     <p class="obh-sub">İşe alımda kaç kişi aktif çalışıyor?</p>
     <div class="obh-chips" role="radiogroup" aria-label="Ekip büyüklüğü">
       <button type="button" class="obh-chip" data-team="1" role="radio">1 kişi (sadece ben)</button>
@@ -1326,10 +1331,10 @@
     </div>
   </section>
 
-  <!-- Step 5: Pozisyonlar -->
-  <section class="obh-step" data-step="5">
-    <h1 class="obh-h1">Hangi pozisyonlar için aday arıyorsun?</h1>
-    <p class="obh-sub">Çoklu seçim — demo havuzunda öne çıkanlar bunlar olur.</p>
+  <!-- Step 6: Pozisyonlar -->
+  <section class="obh-step" data-step="6">
+    <h1 class="obh-h1">Hangi pozisyonlar için aday arıyorsunuz?</h1>
+    <p class="obh-sub">Çoklu seçim. Demo havuzunda bu pozisyonlar öne çıkar.</p>
     <div class="obh-chips" role="group" aria-label="Aranan pozisyonlar">
       <button type="button" class="obh-chip" data-position="magaza_muduru">Mağaza Müdürü</button>
       <button type="button" class="obh-chip" data-position="satis_danismani">Satış Danışmanı</button>
@@ -1350,10 +1355,10 @@
     </div>
   </section>
 
-  <!-- Step 6: Aylık -->
-  <section class="obh-step" data-step="6">
+  <!-- Step 7: Aylık -->
+  <section class="obh-step" data-step="7">
     <h1 class="obh-h1">Aylık ortalama açık pozisyon?</h1>
-    <p class="obh-sub">Bir ayda kaç pozisyon için işe alım yapıyorsun?</p>
+    <p class="obh-sub">Bir ayda kaç pozisyon için işe alım yapıyorsunuz?</p>
     <div class="obh-chips" role="radiogroup" aria-label="Aylık açık pozisyon">
       <button type="button" class="obh-chip" data-monthly="1-3" role="radio">1-3</button>
       <button type="button" class="obh-chip" data-monthly="4-10" role="radio">4-10</button>
@@ -1367,9 +1372,9 @@
     </div>
   </section>
 
-  <!-- Step 7: Aciliyet -->
-  <section class="obh-step" data-step="7">
-    <h1 class="obh-h1">Ne zaman başlamak istersin?</h1>
+  <!-- Step 8: Aciliyet -->
+  <section class="obh-step" data-step="8">
+    <h1 class="obh-h1">Ne zaman başlamak istersiniz?</h1>
     <p class="obh-sub">Aciliyet, dönüş hızımızı belirler.</p>
     <div class="obh-chips" role="radiogroup" aria-label="Aciliyet">
       <button type="button" class="obh-chip" data-urgency="hemen" role="radio">Hemen başlamak istiyorum</button>
@@ -1386,10 +1391,10 @@
     </div>
   </section>
 
-  <!-- Step 8: Onay + tamamla -->
-  <section class="obh-step" data-step="8">
+  <!-- Step 9: Onay + tamamla -->
+  <section class="obh-step" data-step="9">
     <h1 class="obh-h1">Son adım — havuzu açalım</h1>
-    <p class="obh-sub">Onayınız ile cevaplarınız sales ekibine ulaşır ve demo aday havuzu hesabınızda hazırlanır.</p>
+    <p class="obh-sub">Onayınızla cevaplarınız sales ekibimize iletilir, demo havuz hesabınızda açılır.</p>
 
     <div class="obh-summary" id="obh-summary" style="background:var(--hr-surface-2);border:1px solid var(--hr-border-subtle);border-radius:var(--hr-radius-md);padding:16px 18px;margin:12px 0 20px;font-size:var(--hr-type-sm);line-height:1.6;color:var(--hr-text-muted);">
       <p style="margin:0 0 6px;font-weight:700;color:var(--hr-text-primary);">Özet</p>
@@ -1435,7 +1440,7 @@
   </section>
 
   <p class="obh-footer-note">
-    Sorun yaşıyorsan <a href="/iletisim.html">iletişim sayfasından</a> bize ulaşabilirsin.
+    Sorun yaşıyorsanız <a href="/iletisim.html">iletişim sayfasından</a> bize ulaşabilirsiniz.
   </p>
       </div><!-- /.obh-shell -->
     </div><!-- /.lf-form-section__inner -->
@@ -1491,12 +1496,13 @@
   'use strict';
 
   // ─────────────────────────────────────────────
-  // Asama 84 — Auth-gated Onboarding Wizard
-  // 8 step (welcome step kalkti; signup ust akista yapildi)
+  // Asama 84.3 — Auth-gated Onboarding Wizard
+  // 9 step: 1=welcome, 2=segment, 3=phone-review, 4=brands,
+  //          5=team, 6=positions, 7=monthly, 8=urgency, 9=consent
   // RPC: get_onboarding_state, save_onboarding_step, complete_onboarding
   // ─────────────────────────────────────────────
-  var TOTAL_STEPS = 8;
-  var REQUIRED_STEPS = [1, 4, 6];   // 1: segment, 4: team, 6: monthly
+  var TOTAL_STEPS = 9;
+  var REQUIRED_STEPS = [2, 5, 7];   // 2: segment, 5: team, 7: monthly
   var currentStep = 1;
   var stateLoaded = false;
 
@@ -1536,8 +1542,8 @@
       } else {
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }
-      // Step 8 — özet doldur
-      if (n === 8) renderSummary();
+      // Step 9 — özet doldur
+      if (n === 9) renderSummary();
     } else {
       $('#obh-counter').textContent = '✓';
       if (lfCounter) lfCounter.textContent = 'Tamamlandı';
@@ -1549,12 +1555,13 @@
 
   function validateStep(n){
     var errEl;
-    if (n === 1) {
+    // n === 1 (welcome) — validation yok
+    if (n === 2) {
       errEl = $('#err-segment');
       if (!state.segment_type) { errEl.classList.add('is-shown'); return false; }
       errEl.classList.remove('is-shown'); return true;
     }
-    if (n === 2) {
+    if (n === 3) {
       // Telefon opsiyonel ama girildiyse 7-20 digit
       var phoneInput = $('#f-phone-step2');
       var raw = (phoneInput && phoneInput.value || '').replace(/\D/g,'');
@@ -1567,12 +1574,12 @@
       state.phone = raw;
       return true;
     }
-    if (n === 4) {
+    if (n === 5) {
       errEl = $('#err-team');
       if (!state.team_size) { errEl.classList.add('is-shown'); return false; }
       errEl.classList.remove('is-shown'); return true;
     }
-    if (n === 6) {
+    if (n === 7) {
       errEl = $('#err-monthly');
       if (!state.monthly_positions) { errEl.classList.add('is-shown'); return false; }
       errEl.classList.remove('is-shown'); return true;
@@ -1589,14 +1596,15 @@
     var payload = {};
     // Hangi alanlar bu step'e aitse onlari yolla — RPC whitelist zaten filter eder,
     // ama PII-light: gereksiz key gondermeyelim.
-    if (stepNum === 1) payload.segment_type = state.segment_type;
-    if (stepNum === 2) payload.phone = state.phone || null;
-    if (stepNum === 3) payload.brands = state.brands.map(function(b){ return String(b.id); });
-    if (stepNum === 4) payload.team_size = state.team_size;
-    if (stepNum === 5) payload.position_types = state.position_types;
-    if (stepNum === 6) payload.monthly_positions = state.monthly_positions;
-    if (stepNum === 7) payload.urgency = state.urgency;
-    if (stepNum === 8) payload.marketing_opt_in = state.marketing_opt_in;
+    // stepNum === 1 (welcome) — payload bos, sadece onboarding_step ilerletmek icin RPC
+    if (stepNum === 2) payload.segment_type = state.segment_type;
+    if (stepNum === 3) payload.phone = state.phone || null;
+    if (stepNum === 4) payload.brands = state.brands.map(function(b){ return String(b.id); });
+    if (stepNum === 5) payload.team_size = state.team_size;
+    if (stepNum === 6) payload.position_types = state.position_types;
+    if (stepNum === 7) payload.monthly_positions = state.monthly_positions;
+    if (stepNum === 8) payload.urgency = state.urgency;
+    if (stepNum === 9) payload.marketing_opt_in = state.marketing_opt_in;
 
     try {
       var res = await sb.rpc('save_onboarding_step', { p_step: stepNum, p_data: payload });
@@ -1613,17 +1621,28 @@
 
   async function goNext(){
     if (REQUIRED_STEPS.indexOf(currentStep) !== -1 && !validateStep(currentStep)) return;
-    // Step 2 telefon (opsiyonel) ve diger non-required step'ler de save edilir
-    if (currentStep === 2) {
-      if (!validateStep(2)) return;
+    // Step 3 telefon (opsiyonel) — girildiyse format kontrol
+    if (currentStep === 3) {
+      if (!validateStep(3)) return;
     }
     // Persist: sadece dolu/anlamli alanlar gonderir (RPC idempotent)
+    // Step 1 (welcome) start-wizard handler'i ile yonetilir, goNext'e dusmez
     persistStep(currentStep);
 
     if (currentStep < TOTAL_STEPS) {
       currentStep += 1;
       showStep(currentStep);
     }
+  }
+
+  // Welcome step "Başlayalım" butonu — UI step 2'ye gec
+  // RPC cagrisi yapilmaz: kullanici segment cevaplayinca persistStep(2)
+  // onboarding_step=2 yapar. Welcome bos cikis durumunda backend
+  // onboarding_step=1 (default) kalir → resume tekrar welcome gosterir
+  // (segment cevaplanmadigi icin dogru davranis).
+  function startWizard(){
+    currentStep = 2;
+    showStep(2);
   }
 
   function goPrev(){
@@ -1794,8 +1813,8 @@
       var sb = getSb();
       if (!sb) throw new Error('client_missing');
 
-      // 1. Consent persist (step 8 alani)
-      await persistStep(8);
+      // 1. Consent persist (step 9 alani — Asama 84.3)
+      await persistStep(9);
 
       // 2. complete_onboarding
       var compRes = await sb.rpc('complete_onboarding');
@@ -1914,14 +1933,6 @@
     var fe = $('#f-email'); if (fe) fe.value = state.email;
     var fp = $('#f-phone-step2'); if (fp) fp.value = state.phone;
 
-    // Greeting
-    var greet = $('#obh-greeting');
-    var firstName = (meta.first_name || (state.full_name || '').split(' ')[0] || '').trim();
-    if (greet && firstName) {
-      greet.textContent = 'Hoş geldin, ' + firstName + '. Kaldığın yerden devam edelim.';
-      greet.style.display = 'block';
-    }
-
     // UI restore — selected state'leri geri çiz
     if (state.segment_type) {
       var segCard = document.querySelector('.obh-card[data-segment="' + state.segment_type + '"]');
@@ -1948,7 +1959,11 @@
       var cbx = $('#f-marketing'); if (cbx) cbx.checked = true;
     }
 
-    // Resume step (1..8)
+    // Resume step (1..9) — Asama 84.3
+    // Backend onboarding_step semantigi:
+    //   1 = welcome (yeni kullanici, hicbir input yok)
+    //   2..9 = ilgili wizard adimi
+    // Migration 20260425225348 backend'de p_step ust limiti 9 yapti.
     var resumeStep = parseInt(data.onboarding_step, 10);
     if (!resumeStep || resumeStep < 1) resumeStep = 1;
     if (resumeStep > TOTAL_STEPS) resumeStep = TOTAL_STEPS;
@@ -1975,6 +1990,7 @@
     $$('[data-action="next"]').forEach(function(b){ b.addEventListener('click', goNext); });
     $$('[data-action="prev"]').forEach(function(b){ b.addEventListener('click', goPrev); });
     $$('[data-action="skip"]').forEach(function(b){ b.addEventListener('click', goNext); });
+    $$('[data-action="start-wizard"]').forEach(function(b){ b.addEventListener('click', startWizard); });
 
     bindRadioCards('.obh-card[data-segment]', 'data-segment', 'segment_type');
     bindRadioCards('.obh-chip[data-team]', 'data-team', 'team_size');
