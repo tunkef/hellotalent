@@ -1,7 +1,24 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 25 Nisan 2026 | Asama 83.1 — Multi-agent zincir + Clatu HR Design v2 (FAZ A revize)
+> Son guncelleme: 25 Nisan 2026 | Asama 83.2 — Public landing CTA → lead form (funnel tam erisim)
 >
 > Aktif Odak: ik.html'i KISS + Pozisyon-aware Pipeline workspace olarak bastan yaziyoruz. MVP 1 = "yasayan demo + lead funnel" (fake data, gercek aday yok), MVP 2 = paid + Iyzico + KVKK e-sozlesme (15+ kurumsal lead + 5000+ aday havuzu threshold sonrasi).
+>
+> ── Asama 83.2 (lead funnel CTA, 25 Nisan aksam geç) ──
+>
+> **Tetikleyici:** isveren-onboarding.html canliydi ama public landing'de erisim yolu yoktu — kimse forma gidemiyordu.
+>
+> **chief-of-staff zinciri (T2 tier):**
+> 1. content-writer + avoid-ai-writing → "Kurumsal hesap olustur/ac" → "Kurumsal demoyu gor", subtitle + closing paragraf demo tonuna uyarlandi
+> 2. designer → mevcut `.hero-cta` ikili (verm + outline light) pattern korundu, sadece href + label degisimi
+> 3. ui-agent → index.html `#kurumsal` 3 nokta: HERO CTA + VP card "Havuzu incele" + CLOSING CTA. JS/anchor/segment switcher dokunulmadi
+> 4. code-reviewer → 5-axis BLOCKER yok, 7+/7-, scope dar, sadece index.html
+> 5. darkmode-auditor → mevcut button class'lar test edilmis, yeni renk yok PASS
+>
+> **Yeni hedefler:**
+> - Primary: `isveren-onboarding.html` (lead form, FAZ A)
+> - Secondary: `giris.html?tab=ik` (mevcut IK kullanicilari)
+>
+> **Etkilenen dosya:** `index.html` (3 spot, line 307-313 + 364 + 466-472)
 >
 > ── Asama 83.1 (multi-agent revize, 25 Nisan aksam) ──
 >
