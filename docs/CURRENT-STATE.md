@@ -1,7 +1,59 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 26 Nisan 2026 | FAZ B Sprint 7 — Backend (MVP 2 hazirligi) CANLI
+> Son guncelleme: 26 Nisan 2026 | FAZ B Sprint 8 + Asama 85 — POLISH + FAZ B TAMAMLANDI
 >
-> Aktif Odak: FAZ B BATCH FINAL gecesi — Sprint 3 / 4 / 5 / 6 / 7 ardisik canli, Sprint 8 final test + polish kalan. 8 panel hepsi tam fonksiyonel: Pipeline (drag-drop + drawer), Havuz (search + filter + bulk), Mesajlar (2-pane + compose), Aday detay (4-tab), Kampanyalar (6-step wizard), Sirket profili (form + brand tag), Ekip (rol + davet), Ayarlar (tema + bildirim). Backend (T3) migration diskte hazir — 2 yeni tablo + 5 RPC + RLS + is_paid_employer() helper. Real mode flag MVP 2'ye kadar kapali.
+> Aktif Odak: FAZ B BITTI. 8 panel canli + multi-page mimari + backend (Sprint 7) hazir + tasarim polish layer (hr-polish.css) tum sayfalara aktif. Tuna feedback "tasarim hizalar ve duzenler kotu, midem bulanyor" → comprehensive polish: spacing rhythm + typography hierarchy + token vocab harmonization + 44px touch target + dark mode parite. Sonraki: Tuna UAT, MVP 2 (Iyzico + KVKK).
+>
+> ── Asama 85 / FAZ B Sprint 8 (26 Nisan 2026 — Polish + final docs) ──
+>
+> **Tetikleyici:** Tuna kritik feedback Sprint 0-7 fonksiyonel canliydi ama tasarim kalibre dustu — "tasarim hizalar ve duzenler kotu, midem bulanyor, hic bir detay dusunulmedi". Sprint 8 kapsami: comprehensive polish (designer + ui-agent + darkmode-auditor + uat-tester zinciri).
+>
+> **Tespit (designer + chief-of-staff):**
+> - Sprint 1-2 (pipeline/pool) `--cream/--ink/--white/--font-display` token vocab kullaniyor
+> - Sprint 3-6 (messages/candidate/campaigns/forms) `--bg/--bg-elev/--navy/'Plus Jakarta Sans'` farkli vocab — gorsel tutarsizlik
+> - hr-pipeline.css 967 satir + hr-pool.css 1429 satir — duplicated `.hr-btn-primary`, `.hr-position-menu`, `.hr-pl-meta` definitions panel CSS'lerinde (DRY violation)
+> - 257 hardcoded hex/rgba degeri 7 panel CSS'inde — Sprint 9 hex purge backlog'a alindi
+> - Container max-width inconsistency: 1480 wide vs 1120 standard — kucuk ekran kalibre yok
+>
+> **Polish stratejisi:** Append-only override layer. Mevcut panel CSS'lerini DEGISTIRMEDEN, en sona yeni `hr-polish.css` ekle, tum tutarsizliklari override et.
+>
+> **Yeni dosya `css/hr-polish.css` (~715 satir, 20 ana bolum):**
+> 1. Token vocab harmonization (`--bg-elev`/`--bg` → `--white`/`--cream` fallback alias)
+> 2. Container + page-head uniform (1280 standart, 1480 wide, clamp padding)
+> 3. Subnav sticky offset + scroll snap kalibre
+> 4. Card uniform (14px radius, 22-24px padding, 1px hairline, 200ms transition)
+> 5. KPI grid uniform (3 col → 1 col responsive)
+> 6. Pipeline kanban kalibre (12px gap, stage padding, card radius 12)
+> 7. Pool toolbar (search 44px height, chip 36px, gap 10)
+> 8. Messages 2-pane height (calc + min/max)
+> 9. Candidate hero + breadcrumb uniform
+> 10. Campaigns filter + list grid (300px minmax)
+> 11. Forms section uniform (24px padding, 18px font title heading)
+> 12. Input/select/textarea uniform (42px height, 10px radius, focus ring)
+> 13. Button uniform (40px desktop, 44px mobile)
+> 14. Position switcher + user menu header alignment (38px height)
+> 15. Empty state uniform (4 panel: empty-state/pl-empty/cmp-empty/cd-empty)
+> 16. Subnav + content vertical rhythm (clamp main padding)
+> 17. Focus-visible uniform (verm 2px outline, 3-4px offset)
+> 18. Dark mode parite (input + pl-meta + msg + form + campaigns + candidate + pool)
+> 19. Mobile touch targets (≥44px guarantee)
+> 20. Print clean shoulders
+>
+> **9 panel HTML edit:** Her birinde `<link rel="stylesheet" href="css/hr-polish.css?v=20260426asamab8">` eklendi, hr-shell.css'ten SONRA hr-{panel}.css'ten SONRA — override sirasi dogru.
+>
+> **Test (`tests/hr-sprint8-polish.spec.js`):** 7 test x 2 viewport = 14/14 PASS — polish CSS varlik, link konum, 20 bolum sayisi, 8 panel selector, dark mode parite, 44px touch target.
+>
+> **E2E (`tests/hr-faz-b-e2e.spec.js`):** 12 test x 2 viewport = 24/24 PASS — 9 panel HTTP 200 + body data-hr-page + polish link + lp-hdr/hr-subnav markup, polish CSS HTTP 200 + content-type + size > 18KB.
+>
+> **Toplam test (Sprint 8 + integration + polish + e2e):** 82/82 PASS. Tum onceki sprint testleri (1-7) regression yok — 486/486 PASS.
+>
+> **Backlog'a alinan (Sprint 9 / MVP 2 oncesi):**
+> - 257 hardcoded hex/rgba purge (7 panel CSS dosyasi token-vocab birlestirme)
+> - hr-shell.css'e duplicate component'leri tasi (hr-btn-primary/hr-position-menu/hr-pl-meta)
+> - hr-polish.css spec dosyasini design-specs/'a yaz (problem listesi referans icin)
+>
+> ── FAZ B Sprint 7 (26 Nisan 2026 — Backend MVP 2 hazirligi) ──
+>
+> 8 panel hepsi tam fonksiyonel: Pipeline (drag-drop + drawer), Havuz (search + filter + bulk), Mesajlar (2-pane + compose), Aday detay (4-tab), Kampanyalar (6-step wizard), Sirket profili (form + brand tag), Ekip (rol + davet), Ayarlar (tema + bildirim). Backend (T3) migration diskte hazir — 2 yeni tablo + 5 RPC + RLS + is_paid_employer() helper. Real mode flag MVP 2'ye kadar kapali.
 >
 > ── FAZ B Sprint 7 (26 Nisan 2026 — Backend MVP 2 hazirligi) ──
 >
