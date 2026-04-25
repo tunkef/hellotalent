@@ -14,11 +14,12 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/tokens.css?v=20260426asamab0">
-<link rel="stylesheet" href="shared-v2.css?v=20260426asamab0">
-<link rel="stylesheet" href="css/hr-shell.css?v=20260426asamab0">
+<link rel="stylesheet" href="css/tokens.css?v=20260426asamab3">
+<link rel="stylesheet" href="shared-v2.css?v=20260426asamab3">
+<link rel="stylesheet" href="css/hr-shell.css?v=20260426asamab3">
+<link rel="stylesheet" href="css/hr-messages.css?v=20260426asamab3">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="shared.js?v=20260426asamab0"></script>
+<script src="shared.js?v=20260426asamab3"></script>
 </head>
 <body class="hr-page" data-hr-page="messages">
 <a class="skip-to-content" href="#main">İçeriğe atla</a>
@@ -27,11 +28,16 @@
   <div class="lp-hdr-inner">
     <a class="lp-logo" href="ik.html">hello<em>talent</em></a>
     <div class="lp-hdr-mid">
-      <button type="button" class="hr-position-switcher" data-hr-position-btn aria-haspopup="listbox" aria-label="Aktif pozisyon">
-        <span class="hr-position-switcher__label">Pozisyon</span>
-        <span class="hr-position-switcher__value" data-hr-position-value>Tüm pozisyonlar</span>
-        <svg class="hr-position-switcher__chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-      </button>
+      <div class="hr-position-switcher-wrap">
+        <button type="button" class="hr-position-switcher" data-hr-position-btn aria-haspopup="listbox" aria-expanded="false" aria-label="Aktif pozisyon">
+          <span class="hr-position-switcher__label">Pozisyon</span>
+          <span class="hr-position-switcher__value" data-hr-position-value>Tüm pozisyonlar</span>
+          <svg class="hr-position-switcher__chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="hr-position-menu" data-hr-position-menu role="listbox" aria-label="Pozisyon seç">
+          <div class="hr-position-menu__loading" data-hr-position-loading>Yükleniyor…</div>
+        </div>
+      </div>
     </div>
     <div class="lp-cta">
       <div class="hr-user-menu-wrap">
@@ -68,29 +74,94 @@
   </div>
 </nav>
 
-<main id="main" class="hr-container">
-  <header class="hr-pg-head">
-    <div class="hr-pg-head__eyebrow">Mesajlar</div>
-    <h1 class="hr-pg-head__title">Adaylarla yazışma</h1>
-    <p class="hr-pg-head__lede">Konuşmalar adaya göre gruplanır. Pipeline'a aldığınız adayları buradan davet eder, soru-cevap geçmişini takip edersiniz.</p>
+<main id="main" class="hr-container hr-container--wide hr-container--messages">
+  <header class="hr-pg-head hr-pg-head--row">
+    <div class="hr-pg-head__col">
+      <div class="hr-pg-head__eyebrow">Mesajlar</div>
+      <h1 class="hr-pg-head__title">Adaylarla yazışma</h1>
+      <p class="hr-pg-head__lede" data-hr-msg-lede>Konuşmalar adaya göre gruplanır. Aktif pozisyonu seçtiğinizde sadece o pozisyondaki yazışmalar görünür.</p>
+    </div>
+    <div class="hr-pg-head__actions">
+      <span class="hr-msg-counter" data-hr-msg-counter>0 thread</span>
+    </div>
   </header>
 
-  <div class="hr-card">
-    <div class="hr-empty-state">
-      <div class="hr-empty-state__icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+  <section class="hr-msg-wrap" data-hr-msg-wrap aria-label="Mesajlaşma alanı">
+    <!-- SOL: Thread liste -->
+    <aside class="hr-msg-list" data-hr-msg-list aria-label="Konuşma listesi">
+      <div class="hr-msg-list__head">
+        <label class="hr-msg-search">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="search" class="hr-msg-search__input" data-hr-msg-search placeholder="İsim veya pozisyon ara" autocomplete="off">
+        </label>
+        <div class="hr-msg-filter" role="tablist" aria-label="Mesaj filtresi">
+          <button type="button" class="hr-msg-filter__btn" data-hr-msg-filter="all" role="tab" aria-selected="true">Tümü</button>
+          <button type="button" class="hr-msg-filter__btn" data-hr-msg-filter="unread" role="tab" aria-selected="false">Okunmamış</button>
+        </div>
       </div>
-      <h2 class="hr-empty-state__title">Mesajlar Sprint 3'te açılır</h2>
-      <p class="hr-empty-state__desc">Thread listesi, içerik paneli ve hızlı yanıt şablonları sırada. Demo verisi 10 thread + 30+ mesaj ile hazır, arayüz bir sonraki sprintte bağlanır.</p>
-      <a class="hr-empty-state__cta" href="ik.html">Genel bakışa dön
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-      </a>
-    </div>
-  </div>
+      <div class="hr-msg-list__items" data-hr-msg-list-items role="list">
+        <div class="hr-msg-list__loading" data-hr-msg-list-loading>
+          <div class="hr-pl-loading__spinner" aria-hidden="true"></div>
+          <p>Konuşmalar yükleniyor…</p>
+        </div>
+      </div>
+      <div class="hr-msg-list__empty" data-hr-msg-list-empty hidden>
+        <div class="hr-empty-state__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        </div>
+        <p>Bu filtreyle eşleşen konuşma yok.</p>
+      </div>
+    </aside>
+
+    <!-- SAĞ: Aktif thread paneli -->
+    <section class="hr-msg-panel" data-hr-msg-panel aria-label="Aktif konuşma">
+      <!-- Boş durum -->
+      <div class="hr-msg-panel__empty" data-hr-msg-panel-empty>
+        <div class="hr-msg-panel__empty-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+        </div>
+        <h2 class="hr-msg-panel__empty-title">Soldan konuşma seçin</h2>
+        <p class="hr-msg-panel__empty-desc">Pipeline'a aldığınız adaylarla buradan yazışırsınız. Konuşma seçince aday detayını ve mesaj geçmişini görürsünüz.</p>
+      </div>
+
+      <!-- Aktif thread içeriği (JS doldurur) -->
+      <div class="hr-msg-panel__active" data-hr-msg-panel-active hidden>
+        <header class="hr-msg-thread-head">
+          <button type="button" class="hr-msg-thread-back" data-hr-msg-back aria-label="Konuşma listesine dön">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+          </button>
+          <div class="hr-msg-thread-avatar" data-hr-msg-thread-avatar>A</div>
+          <div class="hr-msg-thread-meta">
+            <div class="hr-msg-thread-name" data-hr-msg-thread-name>—</div>
+            <div class="hr-msg-thread-pos" data-hr-msg-thread-pos>—</div>
+          </div>
+          <a class="hr-msg-thread-action" data-hr-msg-thread-link href="#" aria-label="Aday profilini aç">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            <span>Profil</span>
+          </a>
+        </header>
+
+        <div class="hr-msg-thread-body" data-hr-msg-thread-body role="log" aria-live="polite" aria-atomic="false"></div>
+
+        <form class="hr-msg-compose" data-hr-msg-compose autocomplete="off" novalidate>
+          <label class="hr-msg-compose__label sr-only" for="hr-msg-input">Mesaj yaz</label>
+          <textarea id="hr-msg-input" class="hr-msg-compose__input" data-hr-msg-input rows="2" placeholder="Mesajınızı yazın… (Enter ile gönder, Shift+Enter satır)"></textarea>
+          <button type="submit" class="hr-msg-compose__send" data-hr-msg-send disabled aria-label="Gönder">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            <span>Gönder</span>
+          </button>
+        </form>
+        <div class="hr-msg-compose-hint">Demo modunda mesaj sadece bu cihazda saklanır. Adaylara gerçek e-posta MVP 2 ile aktif olur.</div>
+      </div>
+    </section>
+  </section>
 </main>
 
-<script src="js/hr-shell.js?v=20260426asamab0" defer></script>
-<script src="js/hr-data.js?v=20260426asamab0" defer></script>
-<script src="js/hr-messages.js?v=20260426asamab0" defer></script>
+<!-- Toast -->
+<div class="hr-toast" data-hr-toast aria-live="polite" aria-atomic="true"></div>
+
+<script src="js/hr-shell.js?v=20260426asamab3" defer></script>
+<script src="js/hr-data.js?v=20260426asamab3" defer></script>
+<script src="js/hr-messages.js?v=20260426asamab3" defer></script>
 </body>
 </html>

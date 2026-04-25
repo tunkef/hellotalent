@@ -41,8 +41,10 @@
     "last_message_at": "2026-04-22T15:10:00Z",
     "unread_count": 0,
     "messages": [
-      {"id":"m-020","from":"hr","body":"Berk Bey, ikinci görüşmede referans bilgileri istiyoruz.","sent_at":"2026-04-22T13:00:00Z"},
-      {"id":"m-021","from":"candidate","body":"Referansları paylaşabilirim, e-posta atayım.","sent_at":"2026-04-22T15:10:00Z"}
+      {"id":"m-020","from":"hr","body":"Berk Bey, başvurunuz için ön elemeyi geçtiniz. İkinci görüşme için müsait olduğunuz bir gün paylaşır mısınız?","sent_at":"2026-04-21T11:00:00Z"},
+      {"id":"m-021","from":"candidate","body":"Salı veya çarşamba öğleden sonra uygunum.","sent_at":"2026-04-21T16:20:00Z"},
+      {"id":"m-022","from":"hr","body":"Salı 15:00 ofiste sizi bekleriz. İkinci görüşmede referans bilgileri istiyoruz.","sent_at":"2026-04-22T13:00:00Z"},
+      {"id":"m-023","from":"candidate","body":"Referansları paylaşabilirim, e-posta atayım.","sent_at":"2026-04-22T15:10:00Z"}
     ]
   },
   {
@@ -85,8 +87,10 @@
     "last_message_at": "2026-04-22T20:15:00Z",
     "unread_count": 0,
     "messages": [
-      {"id":"m-050","from":"hr","body":"Burak Bey, çarşamba 11:00 mülakat için müsait misiniz?","sent_at":"2026-04-21T14:00:00Z"},
-      {"id":"m-051","from":"candidate","body":"Çarşamba günü görüşmeye geliyorum.","sent_at":"2026-04-22T20:15:00Z"}
+      {"id":"m-050","from":"hr","body":"Burak Bey, profilinizi inceledik. Reyon sorumlusu pozisyonu için ilk görüşmeyi yapmak istiyoruz.","sent_at":"2026-04-20T10:30:00Z"},
+      {"id":"m-051","from":"candidate","body":"Merhaba, ilgilenirim. Hangi tarihler uygun?","sent_at":"2026-04-20T18:00:00Z"},
+      {"id":"m-052","from":"hr","body":"Çarşamba 11:00 mülakat için müsait misiniz?","sent_at":"2026-04-21T14:00:00Z"},
+      {"id":"m-053","from":"candidate","body":"Çarşamba günü görüşmeye geliyorum.","sent_at":"2026-04-22T20:15:00Z"}
     ]
   },
   {
