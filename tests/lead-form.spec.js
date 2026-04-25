@@ -13,7 +13,7 @@ test.describe('Lead Form (isveren-onboarding.html)', () => {
     await page.goto(`${BASE}/isveren-onboarding.html`);
     await expect(page.locator('.obh-step[data-step="1"]')).toBeVisible();
     await expect(page.locator('#obh-counter')).toHaveText('1 / 9');
-    await expect(page.locator('.obh-step.is-active h1.obh-h1')).toContainText('Kurumsal demoya hoş geldin');
+    await expect(page.locator('.obh-step.is-active h1.obh-hero-h1')).toContainText('Türkiye perakendesinin');
   });
 
   test('Step 2: segment seçilmeden devam edilemez', async ({ page }) => {
@@ -82,7 +82,7 @@ test.describe('Lead Form (isveren-onboarding.html)', () => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto(`${BASE}/isveren-onboarding.html`);
     await expect(page.locator('.obh-shell')).toBeVisible();
-    const h1Box = await page.locator('h1.obh-h1').first().boundingBox();
-    expect(h1Box.width).toBeLessThanOrEqual(390);
+    const heroBox = await page.locator('.obh-step.is-active .obh-hero-surface').boundingBox();
+    expect(heroBox.width).toBeLessThanOrEqual(390);
   });
 });

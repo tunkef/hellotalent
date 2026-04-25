@@ -10,32 +10,89 @@
 <link rel="stylesheet" href="css/tokens.css?v=20260425">
 
 <style>
+  /* ── Lead Form Özel Tokens ── */
+  :root {
+    --lf-hero-bg:            #1E2D5E;
+    --lf-hero-text:          #F2F1EE;
+    --lf-hero-muted:         #D9D6CE;
+    --lf-hero-accent:        #E85A32;
+    --lf-hero-border:        rgba(242,241,238,0.12);
+
+    --lf-card-bg:            #ffffff;
+    --lf-card-bg-hover:      #FAFAF9;
+    --lf-card-border:        #E5E3DF;
+    --lf-card-border-hover:  #1E2D5E;
+    --lf-card-border-sel:    #C94E28;
+    --lf-card-bg-sel:        #FFF5F2;
+    --lf-card-shadow:        0 2px 8px rgba(30,45,94,0.08);
+    --lf-card-shadow-hover:  0 4px 16px rgba(30,45,94,0.12);
+    --lf-card-shadow-sel:    0 2px 10px rgba(201,78,40,0.14);
+
+    --lf-chip-bg:            #ffffff;
+    --lf-chip-border:        #E5E3DF;
+    --lf-chip-border-hover:  #1E2D5E;
+    --lf-chip-bg-sel:        #1E2D5E;
+    --lf-chip-text-sel:      #F2F1EE;
+    --lf-chip-border-sel:    #1E2D5E;
+
+    --lf-input-bg:           #ffffff;
+    --lf-input-border:       #E5E3DF;
+    --lf-input-focus:        #C94E28;
+    --lf-input-shadow-focus: 0 0 0 3px rgba(201,78,40,0.15);
+
+    --lf-btn-primary-bg:     #C94E28;
+    --lf-btn-primary-hover:  #B84420;
+    --lf-btn-primary-press:  #A83F1E;
+    --lf-btn-primary-shadow: 0 2px 8px rgba(201,78,40,0.28);
+
+    --lf-progress-fill:      #C94E28;
+    --lf-progress-track:     #E5E3DF;
+
+    --lf-consent-bg:         #F0F1F7;
+    --lf-consent-border:     #D8DAE8;
+
+    --lf-topbar-bg:          #ffffff;
+    --lf-topbar-border:      #E5E3DF;
+
+    --lf-success-icon-bg:    #F0FDF4;
+  }
+
+  /* ── Reset & Base ── */
   *,*::before,*::after{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
   body{
-    font-family:'Plus Jakarta Sans',-apple-system,system-ui,sans-serif;
+    font-family:var(--font-body),-apple-system,system-ui,sans-serif;
     background:var(--bg);
     color:var(--navy);
     line-height:1.55;
     min-height:100vh;
     -webkit-font-smoothing:antialiased;
   }
+
+  /* ── Shell ── */
   .obh-shell{
     display:flex;
     flex-direction:column;
     min-height:100vh;
-    max-width:560px;
+    max-width:600px;
     margin:0 auto;
-    padding:24px 20px 40px;
+    padding:0 20px 40px;
   }
+  /* ── Topbar — sticky, white, border-bottom ── */
   .obh-topbar{
+    position:sticky;
+    top:0;
+    z-index:20;
+    background:var(--lf-topbar-bg);
+    box-shadow:0 1px 0 var(--lf-topbar-border);
     display:flex;
     align-items:center;
     justify-content:space-between;
-    margin-bottom:32px;
+    padding:16px 0;
+    margin-bottom:0;
   }
   .obh-logo{
-    font-family:'Bricolage Grotesque',serif;
+    font-family:var(--font-head),serif;
     font-size:20px;
     font-weight:700;
     color:var(--navy);
@@ -43,113 +100,190 @@
     letter-spacing:-0.01em;
   }
   .obh-step-counter{
-    font-family:'DM Mono',monospace;
-    font-size:13px;
+    font-family:var(--font-mono),monospace;
+    font-size:12px;
+    letter-spacing:0.02em;
     color:var(--muted);
   }
+
+  /* ── Progress bar ── */
   .obh-progress{
-    height:3px;
-    background:var(--border);
+    height:4px;
+    background:var(--lf-progress-track);
     border-radius:2px;
     overflow:hidden;
-    margin-bottom:32px;
+    margin:16px 0 28px;
   }
   .obh-progress__fill{
     height:100%;
-    background:var(--verm);
-    transition:width 0.3s ease;
+    background:var(--lf-progress-fill);
+    transition:width 0.4s cubic-bezier(0.4,0,0.2,1);
     width:0%;
   }
-  .obh-step{
-    display:none;
-    animation:obhFadeIn 0.25s ease;
+
+  /* ── Step transitions ── */
+  .obh-step{display:none;}
+  .obh-step.is-active{
+    display:block;
+    animation:obhSlideIn 0.22s ease;
   }
-  .obh-step.is-active{display:block;}
-  @keyframes obhFadeIn{
-    from{opacity:0;transform:translateY(6px);}
-    to{opacity:1;transform:translateY(0);}
+  @keyframes obhSlideIn{
+    from{opacity:0;transform:translateX(12px);}
+    to{opacity:1;transform:translateX(0);}
   }
+  @keyframes obhShake{
+    0%,100%{transform:translateX(0);}
+    20%{transform:translateX(-4px);}
+    40%{transform:translateX(4px);}
+    60%{transform:translateX(-3px);}
+    80%{transform:translateX(3px);}
+  }
+
+  /* Reduced motion */
+  @media(prefers-reduced-motion:reduce){
+    .obh-step.is-active{animation:none;}
+    .obh-error.is-shown{animation:none;}
+    .obh-progress__fill{transition:none;}
+    .obh-btn--primary:hover{transform:none;}
+    .obh-card:hover{transform:none;}
+    .obh-btn--hero-primary:hover{transform:none;}
+  }
+
+  /* ── Typography ── */
   .obh-h1{
-    font-family:'Bricolage Grotesque',serif;
-    font-size:28px;
-    line-height:1.2;
+    font-family:var(--font-head),serif;
+    font-size:34px;
+    line-height:1.15;
+    font-weight:700;
+    letter-spacing:-0.025em;
     margin:0 0 12px;
-    letter-spacing:-0.01em;
+    color:var(--navy);
   }
   .obh-sub{
+    font-family:var(--font-body),sans-serif;
     font-size:15px;
+    line-height:1.6;
     color:var(--muted);
     margin:0 0 28px;
   }
   .obh-label{
     display:block;
-    font-size:13px;
-    font-weight:600;
+    font-family:var(--font-body),sans-serif;
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:0.04em;
+    text-transform:uppercase;
     color:var(--navy);
     margin-bottom:8px;
   }
+
+  /* ── Inputs ── */
   .obh-input,
   .obh-select{
     width:100%;
-    padding:12px 14px;
-    border:1px solid var(--border);
-    border-radius:8px;
-    background:#fff;
-    font:inherit;
+    padding:13px 15px;
+    border:1.5px solid var(--lf-input-border);
+    border-radius:var(--radius-sm);
+    background:var(--lf-input-bg);
+    font-family:var(--font-body),sans-serif;
+    font-size:15px;
     color:var(--navy);
-    transition:border-color 0.15s ease;
+    transition:border-color 0.15s ease, box-shadow 0.15s ease;
+    appearance:none;
+    -webkit-appearance:none;
   }
   .obh-input:focus,
   .obh-select:focus{
     outline:none;
-    border-color:var(--verm);
+    border-color:var(--lf-input-focus);
+    box-shadow:var(--lf-input-shadow-focus);
   }
   .obh-input::placeholder{color:var(--muted);}
+  .obh-input.is-error{
+    border-color:var(--red);
+    box-shadow:0 0 0 3px rgba(220,38,38,0.12);
+  }
   .obh-field{margin-bottom:16px;}
+
+  /* ── Focus visible — global standard ── */
+  :focus-visible{
+    outline:2.5px solid var(--verm);
+    outline-offset:2px;
+    border-radius:inherit;
+  }
+
+  /* ── Error messages ── */
   .obh-error{
     color:#DC2626;
     font-size:13px;
     margin-top:6px;
     display:none;
   }
-  .obh-error.is-shown{display:block;}
+  .obh-error.is-shown{
+    display:block;
+    animation:obhShake 0.35s ease;
+  }
 
+  /* ── Segment Cards (Step 2) ── */
   .obh-cards{
     display:grid;
     grid-template-columns:1fr;
     gap:10px;
     margin-bottom:24px;
   }
-  @media(min-width:520px){
+  @media(min-width:440px){
     .obh-cards--2{grid-template-columns:1fr 1fr;}
   }
   .obh-card{
-    border:1px solid var(--border);
-    border-radius:10px;
-    padding:16px;
-    background:#fff;
+    border:1.5px solid var(--lf-card-border);
+    border-radius:var(--radius-lg);
+    padding:20px 18px;
+    background:var(--lf-card-bg);
+    box-shadow:var(--lf-card-shadow);
     cursor:pointer;
-    transition:all 0.15s ease;
+    transition:border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
     text-align:left;
-    font:inherit;
+    font-family:var(--font-body),sans-serif;
     color:var(--navy);
   }
-  .obh-card:hover{border-color:var(--navy);}
+  .obh-card:hover{
+    border-color:var(--lf-card-border-hover);
+    box-shadow:var(--lf-card-shadow-hover);
+    transform:translateY(-2px);
+  }
   .obh-card.is-selected{
-    border-color:var(--verm);
-    background:rgba(201,78,40,0.04);
+    border-color:var(--lf-card-border-sel);
+    background:var(--lf-card-bg-sel);
+    box-shadow:var(--lf-card-shadow-sel);
+    transform:translateY(0);
   }
   .obh-card__title{
+    font-family:var(--font-body),sans-serif;
     font-weight:600;
     font-size:15px;
+    line-height:1.35;
     margin-bottom:4px;
+    display:flex;
+    align-items:center;
+  }
+  .obh-card.is-selected .obh-card__title::before{
+    content:"";
+    display:inline-block;
+    width:6px;
+    height:6px;
+    border-radius:50%;
+    background:var(--verm);
+    margin-right:8px;
+    flex-shrink:0;
   }
   .obh-card__desc{
+    font-family:var(--font-body),sans-serif;
     font-size:13px;
+    line-height:1.45;
     color:var(--muted);
-    line-height:1.4;
   }
 
+  /* ── Chips — radio (team / monthly / urgency) — navy fill when selected ── */
   .obh-chips{
     display:flex;
     flex-wrap:wrap;
@@ -157,23 +291,38 @@
     margin-bottom:24px;
   }
   .obh-chip{
-    border:1px solid var(--border);
-    background:#fff;
+    border:1.5px solid var(--lf-chip-border);
+    background:var(--lf-chip-bg);
     color:var(--navy);
-    padding:9px 16px;
-    border-radius:999px;
-    font:inherit;
-    font-size:14px;
+    padding:10px 18px;
+    border-radius:var(--radius-pill);
+    font-family:var(--font-body),sans-serif;
+    font-size:13px;
+    font-weight:500;
     cursor:pointer;
-    transition:all 0.15s ease;
+    transition:border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
   }
-  .obh-chip:hover{border-color:var(--navy);}
-  .obh-chip.is-selected{
-    border-color:var(--verm);
-    background:var(--verm);
-    color:#fff;
+  .obh-chip:hover{
+    border-color:var(--lf-chip-border-hover);
+    background:var(--color-navy-light);
+  }
+  /* Radio chips (team/monthly/urgency) — navy fill */
+  .obh-chip[data-team].is-selected,
+  .obh-chip[data-monthly].is-selected,
+  .obh-chip[data-urgency].is-selected{
+    border-color:var(--lf-chip-border-sel);
+    background:var(--lf-chip-bg-sel);
+    color:var(--lf-chip-text-sel);
+  }
+  /* Multi-select chips (position) — verm tint */
+  .obh-chip[data-position].is-selected{
+    border-color:var(--lf-card-border-sel);
+    background:var(--lf-card-bg-sel);
+    color:var(--verm);
+    font-weight:600;
   }
 
+  /* ── Brand search ── */
   .obh-brand-search{
     position:relative;
     margin-bottom:12px;
@@ -184,9 +333,9 @@
     left:0;
     right:0;
     background:#fff;
-    border:1px solid var(--border);
+    border:1.5px solid var(--lf-input-border);
     border-top:none;
-    border-radius:0 0 8px 8px;
+    border-radius:0 0 var(--radius-sm) var(--radius-sm);
     max-height:200px;
     overflow-y:auto;
     z-index:10;
@@ -194,10 +343,10 @@
   }
   .obh-brand-results.is-shown{display:block;}
   .obh-brand-result{
-    padding:10px 14px;
+    padding:10px 15px;
     cursor:pointer;
     font-size:14px;
-    border-bottom:1px solid var(--border);
+    border-bottom:1px solid var(--lf-card-border);
   }
   .obh-brand-result:last-child{border-bottom:none;}
   .obh-brand-result:hover{background:var(--bg);}
@@ -208,10 +357,10 @@
     margin-bottom:24px;
   }
   .obh-brand-tag{
-    background:rgba(30,45,94,0.06);
-    border:1px solid var(--border);
+    background:var(--color-navy-light);
+    border:1px solid var(--lf-card-border);
     padding:5px 10px;
-    border-radius:6px;
+    border-radius:var(--radius-xs);
     font-size:13px;
     display:inline-flex;
     align-items:center;
@@ -228,6 +377,7 @@
   }
   .obh-brand-tag__remove:hover{color:#DC2626;}
 
+  /* ── Nav buttons ── */
   .obh-nav{
     display:flex;
     align-items:center;
@@ -237,25 +387,38 @@
   }
   .obh-btn{
     padding:12px 22px;
-    border-radius:8px;
-    border:1px solid var(--border);
-    font:inherit;
+    border-radius:var(--radius);
+    border:1.5px solid var(--lf-card-border);
+    font-family:var(--font-body),sans-serif;
+    font-size:15px;
     font-weight:600;
     cursor:pointer;
-    transition:all 0.15s ease;
+    transition:border-color 0.15s ease, background 0.15s ease, color 0.15s ease,
+                transform 0.15s ease, box-shadow 0.15s ease;
     background:#fff;
     color:var(--navy);
+    min-height:48px;
   }
   .obh-btn:hover{border-color:var(--navy);}
   .obh-btn:disabled{opacity:0.5;cursor:not-allowed;}
   .obh-btn--primary{
-    background:var(--verm);
-    border-color:var(--verm);
+    background:var(--lf-btn-primary-bg);
+    border-color:var(--lf-btn-primary-bg);
     color:#fff;
+    font-weight:700;
+    letter-spacing:0.01em;
   }
   .obh-btn--primary:hover{
-    background:#A93D1F;
-    border-color:#A93D1F;
+    background:var(--lf-btn-primary-hover);
+    border-color:var(--lf-btn-primary-hover);
+    box-shadow:var(--lf-btn-primary-shadow);
+    transform:translateY(-1px);
+  }
+  .obh-btn--primary:active{
+    background:var(--lf-btn-primary-press);
+    border-color:var(--lf-btn-primary-press);
+    transform:translateY(0);
+    box-shadow:none;
   }
   .obh-btn--text{
     border-color:transparent;
@@ -263,13 +426,14 @@
     color:var(--muted);
     padding:12px 8px;
   }
-  .obh-btn--text:hover{color:var(--navy);}
+  .obh-btn--text:hover{color:var(--navy);border-color:transparent;}
 
+  /* ── Consent block ── */
   .obh-consent{
-    background:rgba(30,45,94,0.04);
-    border:1px solid var(--border);
-    border-radius:10px;
-    padding:14px 16px;
+    background:var(--lf-consent-bg);
+    border:1.5px solid var(--lf-consent-border);
+    border-radius:var(--radius-lg);
+    padding:16px 18px;
     margin-bottom:20px;
     display:flex;
     align-items:flex-start;
@@ -278,6 +442,7 @@
   .obh-consent input{
     margin-top:3px;
     accent-color:var(--verm);
+    flex-shrink:0;
   }
   .obh-consent label{
     font-size:13px;
@@ -287,6 +452,7 @@
   }
   .obh-consent a{color:var(--verm);}
 
+  /* ── Success screen ── */
   .obh-success{
     text-align:center;
     padding:32px 16px;
@@ -295,13 +461,17 @@
     width:64px;
     height:64px;
     border-radius:50%;
-    background:rgba(34,197,94,0.1);
+    background:var(--lf-success-icon-bg);
     display:flex;
     align-items:center;
     justify-content:center;
-    font-size:32px;
+    font-size:28px;
     margin:0 auto 20px;
+    color:var(--color-green);
+    font-weight:700;
   }
+
+  /* ── Loading ── */
   .obh-loading{
     display:none;
     text-align:center;
@@ -311,25 +481,131 @@
   }
   .obh-loading.is-shown{display:block;}
 
+  /* ── Footer note ── */
   .obh-footer-note{
     margin-top:28px;
     text-align:center;
     font-size:12px;
     color:var(--muted);
+    line-height:1.5;
   }
   .obh-footer-note a{color:var(--muted);text-decoration:underline;}
 
-  .obh-bullet-list{
+  /* ── Hero Step (Step 1) ── */
+  .obh-step--hero{display:none;}
+  .obh-step--hero.is-active{
+    display:block;
+    animation:obhHeroIn 0.3s ease;
+  }
+  @keyframes obhHeroIn{
+    from{opacity:0;transform:scale(0.98);}
+    to{opacity:1;transform:scale(1);}
+  }
+  .obh-hero-surface{
+    background:var(--lf-hero-bg);
+    border-radius:var(--radius-xl);
+    padding:40px 36px 44px;
+    position:relative;
+    overflow:hidden;
+    margin-bottom:0;
+  }
+  .obh-hero-mark{
+    position:absolute;
+    top:0;
+    right:0;
+    width:80px;
+    height:80px;
+    pointer-events:none;
+  }
+  .obh-hero-eyebrow{
+    font-family:var(--font-mono),monospace;
+    font-size:10px;
+    letter-spacing:0.12em;
+    color:var(--lf-hero-muted);
+    text-transform:uppercase;
+    margin:0 0 24px;
+  }
+  .obh-hero-h1{
+    font-family:var(--font-head),serif;
+    font-size:40px;
+    line-height:1.1;
+    font-weight:800;
+    letter-spacing:-0.03em;
+    color:var(--lf-hero-text);
+    margin:0 0 14px;
+  }
+  .obh-hero-sub{
+    font-family:var(--font-body),sans-serif;
+    font-size:16px;
+    line-height:1.6;
+    color:var(--lf-hero-muted);
+    margin:0 0 24px;
+  }
+  .obh-hero-bullets{
+    list-style:none;
+    padding:0;
+    margin:0 0 36px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+  .obh-hero-bullets li{
+    font-family:var(--font-body),sans-serif;
     font-size:14px;
-    color:var(--muted);
-    margin:0 0 28px;
+    line-height:1.5;
+    color:var(--lf-hero-muted);
     padding-left:20px;
-    line-height:1.8;
+    position:relative;
+  }
+  .obh-hero-bullets li::before{
+    content:"—";
+    font-family:var(--font-mono),monospace;
+    font-size:11px;
+    color:var(--lf-hero-accent);
+    position:absolute;
+    left:0;
+    top:0;
+  }
+  /* Hero CTA — inverted: white bg, navy text */
+  .obh-btn--hero-primary{
+    background:#ffffff;
+    border:1.5px solid #ffffff;
+    color:var(--navy);
+    font-family:var(--font-body),sans-serif;
+    font-size:16px;
+    font-weight:700;
+    letter-spacing:0.01em;
+    padding:14px 32px;
+    border-radius:var(--radius);
+    cursor:pointer;
+    transition:background 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+    min-height:52px;
+  }
+  .obh-btn--hero-primary:hover{
+    background:var(--lf-hero-text);
+    transform:translateY(-1px);
+    box-shadow:0 4px 16px rgba(0,0,0,0.2);
+  }
+  .obh-btn--hero-primary:active{
+    transform:translateY(0);
+    box-shadow:none;
   }
 
+  /* ── Mobile ── */
+  @media(max-width:480px){
+    .obh-hero-h1{font-size:32px;}
+    .obh-hero-surface{padding:32px 24px 36px;}
+    .obh-hero-mark{display:none;}
+    .obh-h1{font-size:28px;}
+    .obh-btn--primary{min-height:52px;}
+    .obh-topbar{padding:12px 0;}
+  }
+  @media(max-width:440px){
+    .obh-cards--2{grid-template-columns:1fr;}
+    .obh-chips{gap:8px;}
+  }
   @media(max-width:520px){
-    .obh-shell{padding:20px 16px 32px;}
-    .obh-h1{font-size:24px;}
+    .obh-shell{padding:0 16px 32px;}
     .obh-btn{padding:11px 18px;font-size:14px;}
   }
 </style>
@@ -347,23 +623,42 @@
     <div class="obh-progress__fill" id="obh-progress-fill"></div>
   </div>
 
-  <section class="obh-step is-active" data-step="1">
-    <h1 class="obh-h1">Kurumsal demoya hoş geldin</h1>
-    <p class="obh-sub">9 kısa adımda profilini al, sana özel demoyu açalım. Adımların yarısı opsiyonel — atlayabilirsin.</p>
-    <ul class="obh-bullet-list">
-      <li>5 dakika sürer</li>
-      <li>Profilinden faydalanarak demo aday havuzunu kişiselleştiririz</li>
-      <li>Bilgilerin gizli, KVKK aydınlatma metnimizdeki şartlar geçerli</li>
-    </ul>
-    <div class="obh-nav" style="justify-content:flex-end;">
-      <button type="button" class="obh-btn obh-btn--primary" data-action="next">Başla</button>
+  <!-- Step 1: Hero — navy surface, inverted CTA -->
+  <section class="obh-step obh-step--hero is-active" data-step="1">
+    <div class="obh-hero-surface">
+
+      <!-- Sağ üst köşe: inline SVG monogram — daire outline + çapraz çizgi, cream stroke -->
+      <div class="obh-hero-mark" aria-hidden="true">
+        <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="68" cy="12" r="38" stroke="#F2F1EE" stroke-width="1.5" stroke-opacity="0.3"/>
+          <line x1="56" y1="0" x2="80" y2="24" stroke="#F2F1EE" stroke-width="1.5" stroke-opacity="0.3"/>
+          <line x1="44" y1="0" x2="80" y2="36" stroke="#F2F1EE" stroke-width="1" stroke-opacity="0.15"/>
+        </svg>
+      </div>
+
+      <p class="obh-hero-eyebrow">Kurumsal Demo</p>
+
+      <h1 class="obh-hero-h1">Türkiye perakendesinin<br>yetenek platformu.</h1>
+
+      <p class="obh-hero-sub">9 adımda profilini al, sana özel aday havuzunu aç.</p>
+
+      <ul class="obh-hero-bullets">
+        <li>5 dakika sürer</li>
+        <li>Demo aday havuzu profiline göre kişiselleşir</li>
+        <li>Bilgilerin gizli — KVKK aydınlatma metnimiz geçerli</li>
+      </ul>
+
+      <button type="button" class="obh-btn obh-btn--hero-primary" data-action="next">
+        Başla
+      </button>
+
     </div>
   </section>
 
   <section class="obh-step" data-step="2">
     <h1 class="obh-h1">Şirketinizi en iyi tanımlayan?</h1>
     <p class="obh-sub">Demo deneyimini buna göre şekillendireceğiz.</p>
-    <div class="obh-cards" role="radiogroup" aria-label="Şirket türü">
+    <div class="obh-cards obh-cards--2" role="radiogroup" aria-label="Şirket türü">
       <button type="button" class="obh-card" data-segment="single_brand" role="radio" aria-checked="false">
         <div class="obh-card__title">Tek marka</div>
         <div class="obh-card__desc">Tek bir marka için işe alım yapıyoruz (örn. mağaza zinciri sahibi)</div>
@@ -537,7 +832,11 @@
 
   <section class="obh-step" data-step="success">
     <div class="obh-success">
-      <div class="obh-success__icon" aria-hidden="true">✓</div>
+      <div class="obh-success__icon" aria-hidden="true">
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M6 14.5L11.5 20L22 9" stroke="#16a34a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
       <h1 class="obh-h1">Teşekkürler!</h1>
       <p class="obh-sub">Demoyu açıyoruz, birkaç saniye sürebilir.</p>
       <p style="font-size:13px;color:var(--muted);margin-top:24px;">
