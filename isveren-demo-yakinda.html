@@ -3,143 +3,186 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#F7F6F4" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0A0F1F" media="(prefers-color-scheme: dark)">
 <meta name="robots" content="noindex, follow">
-<title>HelloTalent · Demo Hazırlanıyor</title>
+<title>HelloTalent · Demo hazırlanıyor</title>
 <link rel="canonical" href="https://hellotalent.ai/isveren-demo-yakinda.html">
 
 <link rel="stylesheet" href="css/tokens.css?v=20260425">
+<link rel="stylesheet" href="css/clatu-hr-tokens.css?v=20260425">
 
 <style>
   *,*::before,*::after{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
+  html{color-scheme: light dark;}
   body{
-    font-family:'Plus Jakarta Sans',-apple-system,system-ui,sans-serif;
-    background:var(--bg);
-    color:var(--navy);
-    line-height:1.55;
-    min-height:100vh;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    -webkit-font-smoothing:antialiased;
+    font-family: var(--hr-font-body), -apple-system, system-ui, sans-serif;
+    background: var(--hr-bg);
+    color: var(--hr-text-primary);
+    line-height: var(--hr-lh-body);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    -webkit-font-smoothing: antialiased;
   }
   .htdy-shell{
-    max-width:520px;
-    width:100%;
-    padding:32px 24px;
-    text-align:center;
+    max-width: 520px;
+    width: 100%;
+    padding: var(--hr-sp-7) var(--hr-sp-6);
+    text-align: center;
   }
   .htdy-logo{
-    font-family:'Bricolage Grotesque',serif;
-    font-size:18px;
-    font-weight:700;
-    color:var(--navy);
-    text-decoration:none;
-    letter-spacing:-0.01em;
-    margin-bottom:48px;
-    display:inline-block;
+    font-family: var(--hr-font-head), serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--hr-text-primary);
+    text-decoration: none;
+    letter-spacing: -0.01em;
+    margin-bottom: var(--hr-sp-9);
+    display: inline-block;
   }
   .htdy-icon{
-    width:80px;
-    height:80px;
-    border-radius:50%;
-    background:rgba(34,197,94,0.1);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:36px;
-    margin:0 auto 24px;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: var(--hr-success-bg);
+    border: 1px solid var(--hr-success-border);
+    color: var(--hr-success);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto var(--hr-sp-6);
   }
+  .htdy-icon svg{stroke: currentColor;}
   .htdy-h1{
-    font-family:'Bricolage Grotesque',serif;
-    font-size:32px;
-    line-height:1.15;
-    margin:0 0 16px;
-    letter-spacing:-0.01em;
+    font-family: var(--hr-font-head), serif;
+    font-size: var(--hr-type-h1);
+    line-height: var(--hr-lh-heading);
+    margin: 0 0 var(--hr-sp-4);
+    letter-spacing: var(--hr-lt-h1);
+    color: var(--hr-text-primary);
+    font-weight: 700;
   }
   .htdy-sub{
-    font-size:16px;
-    color:var(--muted);
-    margin:0 0 32px;
-    line-height:1.6;
+    font-size: var(--hr-type-body-lg);
+    color: var(--hr-text-muted);
+    margin: 0 0 var(--hr-sp-7);
+    line-height: var(--hr-lh-body);
+  }
+  .htdy-sub strong{
+    color: var(--hr-text-secondary);
+    font-weight: 600;
   }
   .htdy-card{
-    background:#fff;
-    border:1px solid var(--border);
-    border-radius:14px;
-    padding:24px 20px;
-    margin-bottom:24px;
-    text-align:left;
+    background: var(--hr-card-bg);
+    border: 1px solid var(--hr-card-border);
+    border-radius: var(--hr-radius-lg);
+    padding: var(--hr-sp-6) var(--hr-sp-5);
+    margin-bottom: var(--hr-sp-6);
+    text-align: left;
+    box-shadow: var(--hr-card-shadow);
   }
   .htdy-card h3{
-    font-family:'Bricolage Grotesque',serif;
-    font-size:16px;
-    margin:0 0 8px;
-    color:var(--navy);
+    font-family: var(--hr-font-head), serif;
+    font-size: 16px;
+    margin: 0 0 var(--hr-sp-2);
+    color: var(--hr-text-primary);
+    font-weight: 700;
+    letter-spacing: var(--hr-lt-tight);
   }
   .htdy-card p{
-    margin:0;
-    font-size:14px;
-    color:var(--muted);
-    line-height:1.6;
+    margin: 0;
+    font-size: var(--hr-type-body-sm);
+    color: var(--hr-text-muted);
+    line-height: var(--hr-lh-body);
+  }
+  .htdy-card a{
+    color: var(--hr-text-verm);
+    text-decoration: underline;
+  }
+  .htdy-card a:hover{color: var(--hr-btn-bg-press);}
+  .htdy-token-box{
+    margin-bottom: var(--hr-sp-6);
+  }
+  .htdy-token-label{
+    font-size: var(--hr-type-small);
+    color: var(--hr-text-muted);
+    margin: 0 0 var(--hr-sp-2);
   }
   .htdy-token{
-    font-family:'DM Mono',monospace;
-    font-size:11px;
-    color:var(--muted);
-    background:rgba(30,45,94,0.04);
-    padding:6px 10px;
-    border-radius:6px;
-    word-break:break-all;
-    display:inline-block;
-    margin-top:16px;
+    font-family: var(--hr-font-mono), monospace;
+    font-size: 11px;
+    color: var(--hr-text-secondary);
+    background: var(--hr-tag-bg);
+    border: 1px solid var(--hr-tag-border);
+    padding: 6px 10px;
+    border-radius: 6px;
+    word-break: break-all;
+    display: inline-block;
   }
   .htdy-back{
-    display:inline-block;
-    color:var(--verm);
-    text-decoration:none;
-    font-size:14px;
-    font-weight:500;
-    margin-top:24px;
+    display: inline-block;
+    color: var(--hr-text-verm);
+    text-decoration: none;
+    font-size: var(--hr-type-body-sm);
+    font-weight: 500;
+    margin-top: var(--hr-sp-6);
   }
-  .htdy-back:hover{text-decoration:underline;}
-  @media(max-width:520px){
-    .htdy-h1{font-size:26px;}
-    .htdy-sub{font-size:15px;}
+  .htdy-back:hover{
+    text-decoration: underline;
+    color: var(--hr-btn-bg-press);
+  }
+
+  :focus-visible{
+    outline: 2.5px solid var(--hr-btn-bg);
+    outline-offset: 2px;
+    border-radius: inherit;
+  }
+
+  @media(max-width: 520px){
+    .htdy-shell{padding: var(--hr-sp-6) var(--hr-sp-5);}
+    .htdy-h1{font-size: 26px;}
+    .htdy-sub{font-size: var(--hr-type-body);}
   }
 </style>
 </head>
-<body>
+<body class="hr-page">
 
-<main class="htdy-shell">
+<main class="htdy-shell" role="main">
   <a href="/index.html#kurumsal" class="htdy-logo">HelloTalent</a>
 
-  <div class="htdy-icon" aria-hidden="true">✓</div>
+  <div class="htdy-icon" aria-hidden="true">
+    <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path d="M8 18.5L15 25.5L28 12.5" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>
 
   <h1 class="htdy-h1">Bilgilerin elimize ulaştı</h1>
   <p class="htdy-sub">
-    Sales ekibimiz başvurunu aldı. <strong>Etkileşimli demo şu an yapım aşamasında</strong> —
-    canlıya çıktığında sana hemen haber vereceğiz.
+    Sales ekibi başvurunu aldı. <strong>Etkileşimli demo şu an yapım aşamasında</strong> —
+    canlıya çıktığında sana hemen haber veririz.
   </p>
 
   <div class="htdy-card">
-    <h3>Sıradaki adımlar</h3>
+    <h3>Sıradaki adım</h3>
     <p>
-      24 saat içinde Tuna seninle iletişime geçecek. Acil ihtiyacın varsa direkt yazabilirsin:
-      <a href="mailto:kefelituna@gmail.com" style="color:var(--verm);">kefelituna@gmail.com</a>
+      24 saat içinde Tuna seninle iletişime geçer. Acil ihtiyacın varsa direkt:
+      <a href="mailto:kefelituna@gmail.com">kefelituna@gmail.com</a>
     </p>
   </div>
 
   <div class="htdy-card">
     <h3>Demo neden henüz hazır değil?</h3>
     <p>
-      Kurumsal demoyu sıfırdan yeniden tasarlıyoruz — pipeline, mesajlaşma, aday notu sistemi.
+      Kurumsal demoyu sıfırdan tasarlıyoruz — pipeline, mesajlaşma, aday notu sistemi.
       Lansmana yakınız. Bu sırada bilgilerin sayesinde sana özel bir önizleme hazırlayacağız.
     </p>
   </div>
 
-  <div id="htdy-token-box" style="display:none;">
-    <p style="font-size:13px;color:var(--muted);margin:0;">Başvuru referansın:</p>
+  <div class="htdy-token-box" id="htdy-token-box" style="display:none;">
+    <p class="htdy-token-label">Başvuru referansın:</p>
     <code class="htdy-token" id="htdy-token-text"></code>
   </div>
 

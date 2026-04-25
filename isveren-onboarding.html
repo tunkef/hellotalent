@@ -3,616 +3,615 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1E2D5E" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0A0F1F" media="(prefers-color-scheme: dark)">
 <meta name="robots" content="noindex, follow">
-<title>HelloTalent · Kurumsal Demo</title>
+<title>HelloTalent · Kurumsal demo başvurusu</title>
 <link rel="canonical" href="https://hellotalent.ai/isveren-onboarding.html">
 
 <link rel="stylesheet" href="css/tokens.css?v=20260425">
+<link rel="stylesheet" href="css/clatu-hr-tokens.css?v=20260425">
 
 <style>
-  /* ── Lead Form Özel Tokens ── */
-  :root {
-    --lf-hero-bg:            #1E2D5E;
-    --lf-hero-text:          #F2F1EE;
-    --lf-hero-muted:         #D9D6CE;
-    --lf-hero-accent:        #E85A32;
-    --lf-hero-border:        rgba(242,241,238,0.12);
-
-    --lf-card-bg:            #ffffff;
-    --lf-card-bg-hover:      #FAFAF9;
-    --lf-card-border:        #E5E3DF;
-    --lf-card-border-hover:  #1E2D5E;
-    --lf-card-border-sel:    #C94E28;
-    --lf-card-bg-sel:        #FFF5F2;
-    --lf-card-shadow:        0 2px 8px rgba(30,45,94,0.08);
-    --lf-card-shadow-hover:  0 4px 16px rgba(30,45,94,0.12);
-    --lf-card-shadow-sel:    0 2px 10px rgba(201,78,40,0.14);
-
-    --lf-chip-bg:            #ffffff;
-    --lf-chip-border:        #E5E3DF;
-    --lf-chip-border-hover:  #1E2D5E;
-    --lf-chip-bg-sel:        #1E2D5E;
-    --lf-chip-text-sel:      #F2F1EE;
-    --lf-chip-border-sel:    #1E2D5E;
-
-    --lf-input-bg:           #ffffff;
-    --lf-input-border:       #E5E3DF;
-    --lf-input-focus:        #C94E28;
-    --lf-input-shadow-focus: 0 0 0 3px rgba(201,78,40,0.15);
-
-    --lf-btn-primary-bg:     #C94E28;
-    --lf-btn-primary-hover:  #B84420;
-    --lf-btn-primary-press:  #A83F1E;
-    --lf-btn-primary-shadow: 0 2px 8px rgba(201,78,40,0.28);
-
-    --lf-progress-fill:      #C94E28;
-    --lf-progress-track:     #E5E3DF;
-
-    --lf-consent-bg:         #F0F1F7;
-    --lf-consent-border:     #D8DAE8;
-
-    --lf-topbar-bg:          #ffffff;
-    --lf-topbar-border:      #E5E3DF;
-
-    --lf-success-icon-bg:    #F0FDF4;
-  }
-
   /* ── Reset & Base ── */
   *,*::before,*::after{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
+  html{color-scheme: light dark;}
   body{
-    font-family:var(--font-body),-apple-system,system-ui,sans-serif;
-    background:var(--bg);
-    color:var(--navy);
-    line-height:1.55;
-    min-height:100vh;
-    -webkit-font-smoothing:antialiased;
+    font-family: var(--hr-font-body), -apple-system, system-ui, sans-serif;
+    background: var(--hr-bg);
+    color: var(--hr-text-primary);
+    line-height: var(--hr-lh-body);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
   }
 
   /* ── Shell ── */
   .obh-shell{
-    display:flex;
-    flex-direction:column;
-    min-height:100vh;
-    max-width:600px;
-    margin:0 auto;
-    padding:0 20px 40px;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    max-width: var(--hr-max-w-form);
+    margin: 0 auto;
+    padding: 0 var(--hr-sp-5) var(--hr-sp-8);
   }
-  /* ── Topbar — sticky, white, border-bottom ── */
+
+  /* ── Topbar — sticky ── */
   .obh-topbar{
-    position:sticky;
-    top:0;
-    z-index:20;
-    background:var(--lf-topbar-bg);
-    box-shadow:0 1px 0 var(--lf-topbar-border);
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    padding:16px 0;
-    margin-bottom:0;
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: var(--hr-topbar-bg);
+    box-shadow: var(--hr-topbar-shadow);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--hr-sp-4) 0;
   }
   .obh-logo{
-    font-family:var(--font-head),serif;
-    font-size:20px;
-    font-weight:700;
-    color:var(--navy);
-    text-decoration:none;
-    letter-spacing:-0.01em;
+    font-family: var(--hr-font-head), serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--hr-text-primary);
+    text-decoration: none;
+    letter-spacing: -0.01em;
   }
   .obh-step-counter{
-    font-family:var(--font-mono),monospace;
-    font-size:12px;
-    letter-spacing:0.02em;
-    color:var(--muted);
+    font-family: var(--hr-font-mono), monospace;
+    font-size: var(--hr-type-xs);
+    letter-spacing: var(--hr-lt-mono);
+    color: var(--hr-text-muted);
   }
 
   /* ── Progress bar ── */
   .obh-progress{
-    height:4px;
-    background:var(--lf-progress-track);
-    border-radius:2px;
-    overflow:hidden;
-    margin:16px 0 28px;
+    height: 4px;
+    background: var(--hr-progress-track);
+    border-radius: 2px;
+    overflow: hidden;
+    margin: var(--hr-sp-4) 0 var(--hr-sp-7);
   }
   .obh-progress__fill{
-    height:100%;
-    background:var(--lf-progress-fill);
-    transition:width 0.4s cubic-bezier(0.4,0,0.2,1);
-    width:0%;
+    height: 100%;
+    background: var(--hr-progress-fill);
+    transition: width var(--hr-dur-xslow) var(--hr-ease);
+    width: 0%;
   }
 
   /* ── Step transitions ── */
-  .obh-step{display:none;}
+  .obh-step{display: none;}
   .obh-step.is-active{
-    display:block;
-    animation:obhSlideIn 0.22s ease;
+    display: block;
+    animation: obhSlideIn var(--hr-dur-base) var(--hr-ease-out);
   }
   @keyframes obhSlideIn{
-    from{opacity:0;transform:translateX(12px);}
-    to{opacity:1;transform:translateX(0);}
+    from{opacity: 0; transform: translateX(12px);}
+    to{opacity: 1; transform: translateX(0);}
   }
   @keyframes obhShake{
-    0%,100%{transform:translateX(0);}
-    20%{transform:translateX(-4px);}
-    40%{transform:translateX(4px);}
-    60%{transform:translateX(-3px);}
-    80%{transform:translateX(3px);}
-  }
-
-  /* Reduced motion */
-  @media(prefers-reduced-motion:reduce){
-    .obh-step.is-active{animation:none;}
-    .obh-error.is-shown{animation:none;}
-    .obh-progress__fill{transition:none;}
-    .obh-btn--primary:hover{transform:none;}
-    .obh-card:hover{transform:none;}
-    .obh-btn--hero-primary:hover{transform:none;}
+    0%,100%{transform: translateX(0);}
+    20%{transform: translateX(-4px);}
+    40%{transform: translateX(4px);}
+    60%{transform: translateX(-3px);}
+    80%{transform: translateX(3px);}
   }
 
   /* ── Typography ── */
   .obh-h1{
-    font-family:var(--font-head),serif;
-    font-size:34px;
-    line-height:1.15;
-    font-weight:700;
-    letter-spacing:-0.025em;
-    margin:0 0 12px;
-    color:var(--navy);
+    font-family: var(--hr-font-head), serif;
+    font-size: var(--hr-type-h1-form);
+    line-height: var(--hr-lh-heading);
+    font-weight: 700;
+    letter-spacing: var(--hr-lt-h1);
+    margin: 0 0 var(--hr-sp-3);
+    color: var(--hr-text-primary);
   }
   .obh-sub{
-    font-family:var(--font-body),sans-serif;
-    font-size:15px;
-    line-height:1.6;
-    color:var(--muted);
-    margin:0 0 28px;
+    font-family: var(--hr-font-body), sans-serif;
+    font-size: var(--hr-type-body);
+    line-height: var(--hr-lh-body);
+    color: var(--hr-text-muted);
+    margin: 0 0 var(--hr-sp-7);
   }
   .obh-label{
-    display:block;
-    font-family:var(--font-body),sans-serif;
-    font-size:11px;
-    font-weight:700;
-    letter-spacing:0.04em;
-    text-transform:uppercase;
-    color:var(--navy);
-    margin-bottom:8px;
+    display: block;
+    font-family: var(--hr-font-body), sans-serif;
+    font-size: var(--hr-type-label);
+    font-weight: 700;
+    letter-spacing: var(--hr-lt-label);
+    text-transform: uppercase;
+    color: var(--hr-text-primary);
+    margin-bottom: var(--hr-sp-2);
   }
 
   /* ── Inputs ── */
   .obh-input,
   .obh-select{
-    width:100%;
-    padding:13px 15px;
-    border:1.5px solid var(--lf-input-border);
-    border-radius:var(--radius-sm);
-    background:var(--lf-input-bg);
-    font-family:var(--font-body),sans-serif;
-    font-size:15px;
-    color:var(--navy);
-    transition:border-color 0.15s ease, box-shadow 0.15s ease;
-    appearance:none;
-    -webkit-appearance:none;
+    width: 100%;
+    padding: 13px 15px;
+    border: 1.5px solid var(--hr-input-border);
+    border-radius: var(--hr-radius-sm);
+    background: var(--hr-input-bg);
+    font-family: var(--hr-font-body), sans-serif;
+    font-size: var(--hr-type-body);
+    color: var(--hr-text-primary);
+    transition: border-color var(--hr-dur-fast) var(--hr-ease),
+                box-shadow var(--hr-dur-fast) var(--hr-ease);
+    appearance: none;
+    -webkit-appearance: none;
   }
   .obh-input:focus,
   .obh-select:focus{
-    outline:none;
-    border-color:var(--lf-input-focus);
-    box-shadow:var(--lf-input-shadow-focus);
+    outline: none;
+    border-color: var(--hr-input-border-focus);
+    box-shadow: var(--hr-input-shadow-focus);
   }
-  .obh-input::placeholder{color:var(--muted);}
+  .obh-input::placeholder{color: var(--hr-text-muted);}
   .obh-input.is-error{
-    border-color:var(--red);
-    box-shadow:0 0 0 3px rgba(220,38,38,0.12);
+    border-color: var(--hr-input-border-error);
+    box-shadow: var(--hr-input-shadow-error);
   }
-  .obh-field{margin-bottom:16px;}
+  .obh-field{margin-bottom: var(--hr-sp-4);}
 
   /* ── Focus visible — global standard ── */
   :focus-visible{
-    outline:2.5px solid var(--verm);
-    outline-offset:2px;
-    border-radius:inherit;
+    outline: 2.5px solid var(--hr-btn-bg);
+    outline-offset: 2px;
+    border-radius: inherit;
   }
 
   /* ── Error messages ── */
   .obh-error{
-    color:#DC2626;
-    font-size:13px;
-    margin-top:6px;
-    display:none;
+    color: var(--hr-error);
+    font-size: var(--hr-type-small);
+    margin-top: 6px;
+    display: none;
   }
   .obh-error.is-shown{
-    display:block;
-    animation:obhShake 0.35s ease;
+    display: block;
+    animation: obhShake 0.35s var(--hr-ease);
   }
 
   /* ── Segment Cards (Step 2) ── */
   .obh-cards{
-    display:grid;
-    grid-template-columns:1fr;
-    gap:10px;
-    margin-bottom:24px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin-bottom: var(--hr-sp-6);
   }
   @media(min-width:440px){
-    .obh-cards--2{grid-template-columns:1fr 1fr;}
+    .obh-cards--2{grid-template-columns: 1fr 1fr;}
   }
   .obh-card{
-    border:1.5px solid var(--lf-card-border);
-    border-radius:var(--radius-lg);
-    padding:20px 18px;
-    background:var(--lf-card-bg);
-    box-shadow:var(--lf-card-shadow);
-    cursor:pointer;
-    transition:border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
-    text-align:left;
-    font-family:var(--font-body),sans-serif;
-    color:var(--navy);
+    border: 1.5px solid var(--hr-card-border);
+    border-radius: var(--hr-radius-lg);
+    padding: var(--hr-sp-5) 18px;
+    background: var(--hr-card-bg);
+    box-shadow: var(--hr-card-shadow);
+    cursor: pointer;
+    transition: border-color var(--hr-dur-base) var(--hr-ease),
+                background var(--hr-dur-base) var(--hr-ease),
+                box-shadow var(--hr-dur-base) var(--hr-ease),
+                transform var(--hr-dur-base) var(--hr-ease);
+    text-align: left;
+    font-family: var(--hr-font-body), sans-serif;
+    color: var(--hr-text-primary);
+    width: 100%;
   }
   .obh-card:hover{
-    border-color:var(--lf-card-border-hover);
-    box-shadow:var(--lf-card-shadow-hover);
-    transform:translateY(-2px);
+    border-color: var(--hr-card-border-hover);
+    background: var(--hr-card-bg-hover);
+    box-shadow: var(--hr-card-shadow-hover);
+    transform: translateY(-2px);
   }
   .obh-card.is-selected{
-    border-color:var(--lf-card-border-sel);
-    background:var(--lf-card-bg-sel);
-    box-shadow:var(--lf-card-shadow-sel);
-    transform:translateY(0);
+    border-color: var(--hr-card-border-sel);
+    background: var(--hr-card-bg-sel);
+    box-shadow: var(--hr-card-shadow-sel);
+    transform: translateY(0);
   }
   .obh-card__title{
-    font-family:var(--font-body),sans-serif;
-    font-weight:600;
-    font-size:15px;
-    line-height:1.35;
-    margin-bottom:4px;
-    display:flex;
-    align-items:center;
+    font-family: var(--hr-font-body), sans-serif;
+    font-weight: 600;
+    font-size: var(--hr-type-body);
+    line-height: var(--hr-lh-tight);
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    color: var(--hr-text-primary);
   }
   .obh-card.is-selected .obh-card__title::before{
-    content:"";
-    display:inline-block;
-    width:6px;
-    height:6px;
-    border-radius:50%;
-    background:var(--verm);
-    margin-right:8px;
-    flex-shrink:0;
+    content: "";
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--hr-btn-bg);
+    margin-right: var(--hr-sp-2);
+    flex-shrink: 0;
   }
   .obh-card__desc{
-    font-family:var(--font-body),sans-serif;
-    font-size:13px;
-    line-height:1.45;
-    color:var(--muted);
+    font-family: var(--hr-font-body), sans-serif;
+    font-size: var(--hr-type-small);
+    line-height: 1.45;
+    color: var(--hr-text-muted);
+  }
+  .obh-card.is-selected .obh-card__desc{
+    color: var(--hr-text-secondary);
   }
 
   /* ── Chips — radio (team / monthly / urgency) — navy fill when selected ── */
   .obh-chips{
-    display:flex;
-    flex-wrap:wrap;
-    gap:8px;
-    margin-bottom:24px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--hr-sp-2);
+    margin-bottom: var(--hr-sp-6);
   }
   .obh-chip{
-    border:1.5px solid var(--lf-chip-border);
-    background:var(--lf-chip-bg);
-    color:var(--navy);
-    padding:10px 18px;
-    border-radius:var(--radius-pill);
-    font-family:var(--font-body),sans-serif;
-    font-size:13px;
-    font-weight:500;
-    cursor:pointer;
-    transition:border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+    border: 1.5px solid var(--hr-chip-border);
+    background: var(--hr-chip-bg);
+    color: var(--hr-text-primary);
+    padding: 10px 18px;
+    border-radius: var(--hr-radius-pill);
+    font-family: var(--hr-font-body), sans-serif;
+    font-size: var(--hr-type-small);
+    font-weight: 500;
+    cursor: pointer;
+    transition: border-color var(--hr-dur-fast) var(--hr-ease),
+                background var(--hr-dur-fast) var(--hr-ease),
+                color var(--hr-dur-fast) var(--hr-ease);
   }
   .obh-chip:hover{
-    border-color:var(--lf-chip-border-hover);
-    background:var(--color-navy-light);
+    border-color: var(--hr-chip-border-hover);
+    background: var(--hr-chip-bg-hover);
   }
   /* Radio chips (team/monthly/urgency) — navy fill */
   .obh-chip[data-team].is-selected,
   .obh-chip[data-monthly].is-selected,
   .obh-chip[data-urgency].is-selected{
-    border-color:var(--lf-chip-border-sel);
-    background:var(--lf-chip-bg-sel);
-    color:var(--lf-chip-text-sel);
+    border-color: var(--hr-chip-border-sel);
+    background: var(--hr-chip-bg-sel);
+    color: var(--hr-chip-text-sel);
   }
   /* Multi-select chips (position) — verm tint */
   .obh-chip[data-position].is-selected{
-    border-color:var(--lf-card-border-sel);
-    background:var(--lf-card-bg-sel);
-    color:var(--verm);
-    font-weight:600;
+    border-color: var(--hr-chip-multi-border-sel);
+    background: var(--hr-chip-multi-bg-sel);
+    color: var(--hr-chip-multi-text-sel);
+    font-weight: 600;
   }
 
   /* ── Brand search ── */
   .obh-brand-search{
-    position:relative;
-    margin-bottom:12px;
+    position: relative;
+    margin-bottom: var(--hr-sp-3);
   }
   .obh-brand-results{
-    position:absolute;
-    top:100%;
-    left:0;
-    right:0;
-    background:#fff;
-    border:1.5px solid var(--lf-input-border);
-    border-top:none;
-    border-radius:0 0 var(--radius-sm) var(--radius-sm);
-    max-height:200px;
-    overflow-y:auto;
-    z-index:10;
-    display:none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--hr-surface-1);
+    border: 1.5px solid var(--hr-input-border);
+    border-top: none;
+    border-radius: 0 0 var(--hr-radius-sm) var(--hr-radius-sm);
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 10;
+    display: none;
+    box-shadow: var(--hr-shadow-md);
   }
-  .obh-brand-results.is-shown{display:block;}
+  .obh-brand-results.is-shown{display: block;}
   .obh-brand-result{
-    padding:10px 15px;
-    cursor:pointer;
-    font-size:14px;
-    border-bottom:1px solid var(--lf-card-border);
+    padding: 10px 15px;
+    cursor: pointer;
+    font-size: 14px;
+    color: var(--hr-text-primary);
+    border-bottom: 1px solid var(--hr-border-subtle);
   }
-  .obh-brand-result:last-child{border-bottom:none;}
-  .obh-brand-result:hover{background:var(--bg);}
+  .obh-brand-result:last-child{border-bottom: none;}
+  .obh-brand-result:hover{background: var(--hr-surface-2);}
   .obh-brand-tags{
-    display:flex;
-    flex-wrap:wrap;
-    gap:6px;
-    margin-bottom:24px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: var(--hr-sp-6);
   }
   .obh-brand-tag{
-    background:var(--color-navy-light);
-    border:1px solid var(--lf-card-border);
-    padding:5px 10px;
-    border-radius:var(--radius-xs);
-    font-size:13px;
-    display:inline-flex;
-    align-items:center;
-    gap:6px;
+    background: var(--hr-tag-bg);
+    border: 1px solid var(--hr-tag-border);
+    color: var(--hr-text-primary);
+    padding: 5px 10px;
+    border-radius: var(--hr-radius-xs);
+    font-size: var(--hr-type-small);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
   }
   .obh-brand-tag__remove{
-    border:none;
-    background:none;
-    cursor:pointer;
-    color:var(--muted);
-    font-size:16px;
-    padding:0;
-    line-height:1;
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: var(--hr-text-muted);
+    font-size: 16px;
+    padding: 0;
+    line-height: 1;
   }
-  .obh-brand-tag__remove:hover{color:#DC2626;}
+  .obh-brand-tag__remove:hover{color: var(--hr-error);}
 
   /* ── Nav buttons ── */
   .obh-nav{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    margin-top:32px;
-    gap:12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: var(--hr-sp-7);
+    gap: var(--hr-sp-3);
   }
   .obh-btn{
-    padding:12px 22px;
-    border-radius:var(--radius);
-    border:1.5px solid var(--lf-card-border);
-    font-family:var(--font-body),sans-serif;
-    font-size:15px;
-    font-weight:600;
-    cursor:pointer;
-    transition:border-color 0.15s ease, background 0.15s ease, color 0.15s ease,
-                transform 0.15s ease, box-shadow 0.15s ease;
-    background:#fff;
-    color:var(--navy);
-    min-height:48px;
+    padding: 12px 22px;
+    border-radius: var(--hr-radius-md);
+    border: 1.5px solid var(--hr-btn-sec-border);
+    font-family: var(--hr-font-body), sans-serif;
+    font-size: var(--hr-type-body);
+    font-weight: 600;
+    cursor: pointer;
+    transition: border-color var(--hr-dur-fast) var(--hr-ease),
+                background var(--hr-dur-fast) var(--hr-ease),
+                color var(--hr-dur-fast) var(--hr-ease),
+                transform var(--hr-dur-fast) var(--hr-ease),
+                box-shadow var(--hr-dur-fast) var(--hr-ease);
+    background: var(--hr-btn-sec-bg);
+    color: var(--hr-btn-sec-text);
+    min-height: 48px;
   }
-  .obh-btn:hover{border-color:var(--navy);}
-  .obh-btn:disabled{opacity:0.5;cursor:not-allowed;}
+  .obh-btn:hover{border-color: var(--hr-btn-sec-border-hover);}
+  .obh-btn:disabled{opacity: 0.5; cursor: not-allowed;}
   .obh-btn--primary{
-    background:var(--lf-btn-primary-bg);
-    border-color:var(--lf-btn-primary-bg);
-    color:#fff;
-    font-weight:700;
-    letter-spacing:0.01em;
+    background: var(--hr-btn-bg);
+    border-color: var(--hr-btn-bg);
+    color: var(--hr-btn-text);
+    font-weight: 700;
+    letter-spacing: var(--hr-lt-button);
   }
   .obh-btn--primary:hover{
-    background:var(--lf-btn-primary-hover);
-    border-color:var(--lf-btn-primary-hover);
-    box-shadow:var(--lf-btn-primary-shadow);
-    transform:translateY(-1px);
+    background: var(--hr-btn-bg-hover);
+    border-color: var(--hr-btn-bg-hover);
+    box-shadow: var(--hr-shadow-cta);
+    transform: translateY(-1px);
   }
   .obh-btn--primary:active{
-    background:var(--lf-btn-primary-press);
-    border-color:var(--lf-btn-primary-press);
-    transform:translateY(0);
-    box-shadow:none;
+    background: var(--hr-btn-bg-press);
+    border-color: var(--hr-btn-bg-press);
+    transform: translateY(0);
+    box-shadow: none;
   }
   .obh-btn--text{
-    border-color:transparent;
-    background:transparent;
-    color:var(--muted);
-    padding:12px 8px;
+    border-color: transparent;
+    background: transparent;
+    color: var(--hr-text-muted);
+    padding: 12px var(--hr-sp-2);
   }
-  .obh-btn--text:hover{color:var(--navy);border-color:transparent;}
+  .obh-btn--text:hover{
+    color: var(--hr-text-primary);
+    border-color: transparent;
+    background: transparent;
+  }
 
   /* ── Consent block ── */
   .obh-consent{
-    background:var(--lf-consent-bg);
-    border:1.5px solid var(--lf-consent-border);
-    border-radius:var(--radius-lg);
-    padding:16px 18px;
-    margin-bottom:20px;
-    display:flex;
-    align-items:flex-start;
-    gap:10px;
+    background: var(--hr-consent-bg);
+    border: 1.5px solid var(--hr-consent-border);
+    border-radius: var(--hr-radius-lg);
+    padding: 16px 18px;
+    margin-bottom: var(--hr-sp-5);
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
   }
   .obh-consent input{
-    margin-top:3px;
-    accent-color:var(--verm);
-    flex-shrink:0;
+    margin-top: 3px;
+    accent-color: var(--hr-btn-bg);
+    flex-shrink: 0;
   }
   .obh-consent label{
-    font-size:13px;
-    color:var(--navy);
-    line-height:1.5;
-    cursor:pointer;
+    font-size: var(--hr-type-small);
+    color: var(--hr-text-primary);
+    line-height: 1.5;
+    cursor: pointer;
   }
-  .obh-consent a{color:var(--verm);}
+  .obh-consent a{color: var(--hr-text-verm); text-decoration: underline;}
+  .obh-consent a:hover{color: var(--hr-btn-bg-press);}
 
   /* ── Success screen ── */
   .obh-success{
-    text-align:center;
-    padding:32px 16px;
+    text-align: center;
+    padding: var(--hr-sp-7) var(--hr-sp-4);
   }
   .obh-success__icon{
-    width:64px;
-    height:64px;
-    border-radius:50%;
-    background:var(--lf-success-icon-bg);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:28px;
-    margin:0 auto 20px;
-    color:var(--color-green);
-    font-weight:700;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: var(--hr-success-bg);
+    border: 1px solid var(--hr-success-border);
+    color: var(--hr-success);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto var(--hr-sp-5);
+  }
+  .obh-success__icon svg{stroke: currentColor;}
+  .obh-success__note{
+    font-size: var(--hr-type-small);
+    color: var(--hr-text-muted);
+    margin-top: var(--hr-sp-6);
+    line-height: 1.6;
+  }
+  .obh-success__note strong{
+    color: var(--hr-text-secondary);
+    font-weight: 600;
   }
 
   /* ── Loading ── */
   .obh-loading{
-    display:none;
-    text-align:center;
-    padding:24px;
-    color:var(--muted);
-    font-size:14px;
+    display: none;
+    text-align: center;
+    padding: var(--hr-sp-6);
+    color: var(--hr-text-muted);
+    font-size: 14px;
   }
-  .obh-loading.is-shown{display:block;}
+  .obh-loading.is-shown{display: block;}
 
   /* ── Footer note ── */
   .obh-footer-note{
-    margin-top:28px;
-    text-align:center;
-    font-size:12px;
-    color:var(--muted);
-    line-height:1.5;
+    margin-top: var(--hr-sp-7);
+    text-align: center;
+    font-size: var(--hr-type-xs);
+    color: var(--hr-text-muted);
+    line-height: 1.5;
   }
-  .obh-footer-note a{color:var(--muted);text-decoration:underline;}
+  .obh-footer-note a{
+    color: var(--hr-text-muted);
+    text-decoration: underline;
+  }
+  .obh-footer-note a:hover{color: var(--hr-text-primary);}
 
   /* ── Hero Step (Step 1) ── */
-  .obh-step--hero{display:none;}
+  .obh-step--hero{display: none;}
   .obh-step--hero.is-active{
-    display:block;
-    animation:obhHeroIn 0.3s ease;
+    display: block;
+    animation: obhHeroIn var(--hr-dur-slow) var(--hr-ease-out);
   }
   @keyframes obhHeroIn{
-    from{opacity:0;transform:scale(0.98);}
-    to{opacity:1;transform:scale(1);}
+    from{opacity: 0; transform: scale(0.98);}
+    to{opacity: 1; transform: scale(1);}
   }
   .obh-hero-surface{
-    background:var(--lf-hero-bg);
-    border-radius:var(--radius-xl);
-    padding:40px 36px 44px;
-    position:relative;
-    overflow:hidden;
-    margin-bottom:0;
+    background: var(--hr-surface-navy);
+    border-radius: var(--hr-radius-xl);
+    padding: 40px 36px 44px;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 0;
   }
   .obh-hero-mark{
-    position:absolute;
-    top:0;
-    right:0;
-    width:80px;
-    height:80px;
-    pointer-events:none;
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 80px;
+    height: 80px;
+    pointer-events: none;
   }
   .obh-hero-eyebrow{
-    font-family:var(--font-mono),monospace;
-    font-size:10px;
-    letter-spacing:0.12em;
-    color:var(--lf-hero-muted);
-    text-transform:uppercase;
-    margin:0 0 24px;
+    font-family: var(--hr-font-mono), monospace;
+    font-size: 10px;
+    letter-spacing: var(--hr-lt-eyebrow);
+    color: var(--hr-text-on-navy-muted);
+    text-transform: uppercase;
+    margin: 0 0 var(--hr-sp-6);
   }
   .obh-hero-h1{
-    font-family:var(--font-head),serif;
-    font-size:40px;
-    line-height:1.1;
-    font-weight:800;
-    letter-spacing:-0.03em;
-    color:var(--lf-hero-text);
-    margin:0 0 14px;
+    font-family: var(--hr-font-head), serif;
+    font-size: var(--hr-type-h1-hero);
+    line-height: 1.1;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: var(--hr-text-on-navy);
+    margin: 0 0 14px;
   }
   .obh-hero-sub{
-    font-family:var(--font-body),sans-serif;
-    font-size:16px;
-    line-height:1.6;
-    color:var(--lf-hero-muted);
-    margin:0 0 24px;
+    font-family: var(--hr-font-body), sans-serif;
+    font-size: var(--hr-type-body-lg);
+    line-height: var(--hr-lh-body);
+    color: var(--hr-text-on-navy-muted);
+    margin: 0 0 var(--hr-sp-6);
   }
   .obh-hero-bullets{
-    list-style:none;
-    padding:0;
-    margin:0 0 36px;
-    display:flex;
-    flex-direction:column;
-    gap:10px;
+    list-style: none;
+    padding: 0;
+    margin: 0 0 36px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
   }
   .obh-hero-bullets li{
-    font-family:var(--font-body),sans-serif;
-    font-size:14px;
-    line-height:1.5;
-    color:var(--lf-hero-muted);
-    padding-left:20px;
-    position:relative;
+    font-family: var(--hr-font-body), sans-serif;
+    font-size: var(--hr-type-body-sm);
+    line-height: 1.5;
+    color: var(--hr-text-on-navy-muted);
+    padding-left: var(--hr-sp-5);
+    position: relative;
   }
   .obh-hero-bullets li::before{
-    content:"—";
-    font-family:var(--font-mono),monospace;
-    font-size:11px;
-    color:var(--lf-hero-accent);
-    position:absolute;
-    left:0;
-    top:0;
+    content: "—";
+    font-family: var(--hr-font-mono), monospace;
+    font-size: 11px;
+    color: var(--hr-text-verm);
+    position: absolute;
+    left: 0;
+    top: 0;
   }
-  /* Hero CTA — inverted: white bg, navy text */
+  /* Hero CTA — inverted: cream bg, navy text */
   .obh-btn--hero-primary{
-    background:#ffffff;
-    border:1.5px solid #ffffff;
-    color:var(--navy);
-    font-family:var(--font-body),sans-serif;
-    font-size:16px;
-    font-weight:700;
-    letter-spacing:0.01em;
-    padding:14px 32px;
-    border-radius:var(--radius);
-    cursor:pointer;
-    transition:background 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
-    min-height:52px;
+    background: var(--hr-btn-inv-bg);
+    border: 1.5px solid var(--hr-btn-inv-bg);
+    color: var(--hr-btn-inv-text);
+    font-family: var(--hr-font-body), sans-serif;
+    font-size: var(--hr-type-body-lg);
+    font-weight: 700;
+    letter-spacing: var(--hr-lt-button);
+    padding: 14px 32px;
+    border-radius: var(--hr-radius-md);
+    cursor: pointer;
+    transition: background var(--hr-dur-fast) var(--hr-ease),
+                transform var(--hr-dur-fast) var(--hr-ease),
+                box-shadow var(--hr-dur-fast) var(--hr-ease);
+    min-height: 52px;
   }
   .obh-btn--hero-primary:hover{
-    background:var(--lf-hero-text);
-    transform:translateY(-1px);
-    box-shadow:0 4px 16px rgba(0,0,0,0.2);
+    background: var(--hr-btn-inv-bg-hover);
+    border-color: var(--hr-btn-inv-bg-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.20);
   }
   .obh-btn--hero-primary:active{
-    transform:translateY(0);
-    box-shadow:none;
+    transform: translateY(0);
+    box-shadow: none;
   }
 
-  /* ── Mobile ── */
-  @media(max-width:480px){
-    .obh-hero-h1{font-size:32px;}
-    .obh-hero-surface{padding:32px 24px 36px;}
-    .obh-hero-mark{display:none;}
-    .obh-h1{font-size:28px;}
-    .obh-btn--primary{min-height:52px;}
-    .obh-topbar{padding:12px 0;}
+  /* ── Reduced motion ── */
+  @media(prefers-reduced-motion: reduce){
+    .obh-step.is-active,
+    .obh-step--hero.is-active{animation: none;}
+    .obh-error.is-shown{animation: none;}
+    .obh-progress__fill{transition: none;}
+    .obh-btn--primary:hover,
+    .obh-card:hover,
+    .obh-btn--hero-primary:hover{transform: none;}
   }
-  @media(max-width:440px){
-    .obh-cards--2{grid-template-columns:1fr;}
-    .obh-chips{gap:8px;}
+
+  /* ── Responsive — mobile-first breakpoints ── */
+  @media(max-width: 520px){
+    .obh-shell{padding: 0 var(--hr-sp-4) var(--hr-sp-7);}
+    .obh-btn{padding: 11px 18px; font-size: 14px;}
   }
-  @media(max-width:520px){
-    .obh-shell{padding:0 16px 32px;}
-    .obh-btn{padding:11px 18px;font-size:14px;}
+  @media(max-width: 480px){
+    .obh-hero-h1{font-size: 32px;}
+    .obh-hero-surface{padding: 32px 24px 36px;}
+    .obh-hero-mark{display: none;}
+    .obh-h1{font-size: 28px;}
+    .obh-btn--primary{min-height: 52px;}
+    .obh-topbar{padding: var(--hr-sp-3) 0;}
+  }
+  @media(max-width: 440px){
+    .obh-cards--2{grid-template-columns: 1fr;}
+    .obh-chips{gap: var(--hr-sp-2);}
   }
 </style>
 </head>
-<body>
+<body class="hr-page">
 
-<div class="obh-shell" role="main" aria-label="Kurumsal demo başvuru">
+<div class="obh-shell" role="main" aria-label="Kurumsal demo başvurusu">
 
   <header class="obh-topbar">
     <a href="/index.html#kurumsal" class="obh-logo">HelloTalent</a>
@@ -636,16 +635,16 @@
         </svg>
       </div>
 
-      <p class="obh-hero-eyebrow">Kurumsal Demo</p>
+      <p class="obh-hero-eyebrow">Kurumsal demo</p>
 
-      <h1 class="obh-hero-h1">Türkiye perakendesinin<br>yetenek platformu.</h1>
+      <h1 class="obh-hero-h1">Türkiye perakendesinin<br>aday tarafı.</h1>
 
-      <p class="obh-hero-sub">9 adımda profilini al, sana özel aday havuzunu aç.</p>
+      <p class="obh-hero-sub">9 kısa soruyu cevapla, sana özel demo havuzunu hazırlayalım.</p>
 
       <ul class="obh-hero-bullets">
-        <li>5 dakika sürer</li>
-        <li>Demo aday havuzu profiline göre kişiselleşir</li>
-        <li>Bilgilerin gizli — KVKK aydınlatma metnimiz geçerli</li>
+        <li>5 dakika</li>
+        <li>Demo havuz şirket profiline göre düzenlenir</li>
+        <li>Bilgilerin KVKK aydınlatma metni kapsamında saklanır</li>
       </ul>
 
       <button type="button" class="obh-btn obh-btn--hero-primary" data-action="next">
@@ -655,9 +654,10 @@
     </div>
   </section>
 
+  <!-- Step 2: Şirket türü -->
   <section class="obh-step" data-step="2">
-    <h1 class="obh-h1">Şirketinizi en iyi tanımlayan?</h1>
-    <p class="obh-sub">Demo deneyimini buna göre şekillendireceğiz.</p>
+    <h1 class="obh-h1">Şirketini en iyi anlatan?</h1>
+    <p class="obh-sub">Demo havuzu cevabına göre hazırlanır.</p>
     <div class="obh-cards obh-cards--2" role="radiogroup" aria-label="Şirket türü">
       <button type="button" class="obh-card" data-segment="single_brand" role="radio" aria-checked="false">
         <div class="obh-card__title">Tek marka</div>
@@ -669,49 +669,51 @@
       </button>
       <button type="button" class="obh-card" data-segment="distributor" role="radio" aria-checked="false">
         <div class="obh-card__title">Dağıtıcı / TR operatörü</div>
-        <div class="obh-card__desc">Türkiye'de yabancı markaları işletiyoruz (örn. Beymen Balenciaga için)</div>
+        <div class="obh-card__desc">Türkiye'de yabancı markaları işletiyoruz (örn. Beymen — Balenciaga)</div>
       </button>
       <button type="button" class="obh-card" data-segment="headhunter" role="radio" aria-checked="false">
         <div class="obh-card__title">Headhunter / ajans</div>
         <div class="obh-card__desc">Müşterilerimiz adına aday arıyoruz</div>
       </button>
     </div>
-    <div class="obh-error" id="err-segment">Lütfen bir seçenek seç</div>
+    <div class="obh-error" id="err-segment">Bir seçenek işaretle</div>
     <div class="obh-nav">
       <button type="button" class="obh-btn obh-btn--text" data-action="prev">Geri</button>
       <button type="button" class="obh-btn obh-btn--primary" data-action="next">Devam</button>
     </div>
   </section>
 
+  <!-- Step 3: Şirket + iletişim -->
   <section class="obh-step" data-step="3">
     <h1 class="obh-h1">Şirket ve iletişim</h1>
     <p class="obh-sub">Sana ulaşabileceğimiz temel bilgi.</p>
 
     <div class="obh-field">
       <label class="obh-label" for="f-company">Şirket adı *</label>
-      <input class="obh-input" type="text" id="f-company" placeholder="Örn. Boyner Şti." required maxlength="200">
+      <input class="obh-input" type="text" id="f-company" placeholder="Boyner Şti." required maxlength="200" autocomplete="organization">
     </div>
 
     <div class="obh-field">
       <label class="obh-label" for="f-fullname">Ad Soyad *</label>
-      <input class="obh-input" type="text" id="f-fullname" placeholder="Örn. Mehmet Yılmaz" required maxlength="200">
+      <input class="obh-input" type="text" id="f-fullname" placeholder="Mehmet Yılmaz" required maxlength="200" autocomplete="name">
     </div>
 
     <div class="obh-field">
       <label class="obh-label" for="f-email">E-posta *</label>
-      <input class="obh-input" type="email" id="f-email" placeholder="ornek@sirket.com" required>
+      <input class="obh-input" type="email" id="f-email" placeholder="ornek@sirket.com" required autocomplete="email">
     </div>
 
-    <div class="obh-error" id="err-step3">Lütfen tüm zorunlu alanları doldur ve geçerli bir e-posta gir</div>
+    <div class="obh-error" id="err-step3">Şirket, ad soyad ve geçerli bir e-posta gerek</div>
     <div class="obh-nav">
       <button type="button" class="obh-btn obh-btn--text" data-action="prev">Geri</button>
       <button type="button" class="obh-btn obh-btn--primary" data-action="next">Devam</button>
     </div>
   </section>
 
+  <!-- Step 4: Markalar -->
   <section class="obh-step" data-step="4">
     <h1 class="obh-h1">İşlettiğin marka(lar)</h1>
-    <p class="obh-sub">Birden fazla marka ekleyebilirsin. Sektör ve şehir kaynaklarını seçtiğin markalara göre kişiselleştiriyoruz.</p>
+    <p class="obh-sub">Birden fazla marka ekleyebilirsin. Demo aday havuzu seçtiğin markaların sektörüne ve şehrine göre düzenlenir.</p>
 
     <div class="obh-brand-search">
       <input class="obh-input" type="text" id="brand-input" placeholder="Marka ara (Zara, Beymen, COS...)" autocomplete="off">
@@ -729,9 +731,10 @@
     </div>
   </section>
 
+  <!-- Step 5: Ekip -->
   <section class="obh-step" data-step="5">
     <h1 class="obh-h1">İK ekibinin büyüklüğü?</h1>
-    <p class="obh-sub">İşe alım sürecinde kaç kişi aktif çalışıyor?</p>
+    <p class="obh-sub">İşe alımda kaç kişi aktif çalışıyor?</p>
     <div class="obh-chips" role="radiogroup" aria-label="Ekip büyüklüğü">
       <button type="button" class="obh-chip" data-team="1" role="radio">1 kişi (sadece ben)</button>
       <button type="button" class="obh-chip" data-team="2-5" role="radio">2-5 kişi</button>
@@ -739,16 +742,17 @@
       <button type="button" class="obh-chip" data-team="21-50" role="radio">21-50 kişi</button>
       <button type="button" class="obh-chip" data-team="50+" role="radio">50+ kişi</button>
     </div>
-    <div class="obh-error" id="err-team">Lütfen ekip büyüklüğü seç</div>
+    <div class="obh-error" id="err-team">Bir ekip büyüklüğü işaretle</div>
     <div class="obh-nav">
       <button type="button" class="obh-btn obh-btn--text" data-action="prev">Geri</button>
       <button type="button" class="obh-btn obh-btn--primary" data-action="next">Devam</button>
     </div>
   </section>
 
+  <!-- Step 6: Pozisyonlar -->
   <section class="obh-step" data-step="6">
     <h1 class="obh-h1">Hangi pozisyonlar için aday arıyorsun?</h1>
-    <p class="obh-sub">Çoklu seçim — demo aday havuzunda öne çıkanlar bunlar olacak.</p>
+    <p class="obh-sub">Çoklu seçim — demo havuzunda öne çıkanlar bunlar olur.</p>
     <div class="obh-chips" role="group" aria-label="Aranan pozisyonlar">
       <button type="button" class="obh-chip" data-position="magaza_muduru">Mağaza Müdürü</button>
       <button type="button" class="obh-chip" data-position="satis_danismani">Satış Danışmanı</button>
@@ -769,30 +773,32 @@
     </div>
   </section>
 
+  <!-- Step 7: Aylık -->
   <section class="obh-step" data-step="7">
     <h1 class="obh-h1">Aylık ortalama açık pozisyon?</h1>
-    <p class="obh-sub">Ortalama bir ayda kaç pozisyon için işe alım yapıyorsun?</p>
+    <p class="obh-sub">Bir ayda kaç pozisyon için işe alım yapıyorsun?</p>
     <div class="obh-chips" role="radiogroup" aria-label="Aylık açık pozisyon">
       <button type="button" class="obh-chip" data-monthly="1-3" role="radio">1-3</button>
       <button type="button" class="obh-chip" data-monthly="4-10" role="radio">4-10</button>
       <button type="button" class="obh-chip" data-monthly="11-30" role="radio">11-30</button>
       <button type="button" class="obh-chip" data-monthly="30+" role="radio">30+</button>
     </div>
-    <div class="obh-error" id="err-monthly">Lütfen seç</div>
+    <div class="obh-error" id="err-monthly">Bir aralık işaretle</div>
     <div class="obh-nav">
       <button type="button" class="obh-btn obh-btn--text" data-action="prev">Geri</button>
       <button type="button" class="obh-btn obh-btn--primary" data-action="next">Devam</button>
     </div>
   </section>
 
+  <!-- Step 8: Aciliyet -->
   <section class="obh-step" data-step="8">
     <h1 class="obh-h1">Ne zaman başlamak istersin?</h1>
-    <p class="obh-sub">Aciliyetine göre size daha hızlı dönüş yapabiliriz.</p>
+    <p class="obh-sub">Aciliyet, dönüş hızımızı belirler.</p>
     <div class="obh-chips" role="radiogroup" aria-label="Aciliyet">
       <button type="button" class="obh-chip" data-urgency="hemen" role="radio">Hemen başlamak istiyorum</button>
       <button type="button" class="obh-chip" data-urgency="1_ay" role="radio">1 ay içinde</button>
       <button type="button" class="obh-chip" data-urgency="3_ay" role="radio">3 ay içinde</button>
-      <button type="button" class="obh-chip" data-urgency="kesif" role="radio">Sadece keşif aşamasındayım</button>
+      <button type="button" class="obh-chip" data-urgency="kesif" role="radio">Şimdilik keşif aşamasındayım</button>
     </div>
     <div class="obh-nav">
       <button type="button" class="obh-btn obh-btn--text" data-action="prev">Geri</button>
@@ -803,26 +809,27 @@
     </div>
   </section>
 
+  <!-- Step 9: Onay -->
   <section class="obh-step" data-step="9">
     <h1 class="obh-h1">Son adım — onayını al</h1>
-    <p class="obh-sub">Telefon paylaşmak istersen seninle birebir görüşmek isteriz.</p>
+    <p class="obh-sub">Telefon eklersen seninle birebir görüşmek isteriz.</p>
 
     <div class="obh-field">
       <label class="obh-label" for="f-phone">Telefon (opsiyonel)</label>
-      <input class="obh-input" type="tel" id="f-phone" placeholder="0555 123 4567" maxlength="20">
+      <input class="obh-input" type="tel" id="f-phone" placeholder="0555 123 4567" maxlength="20" autocomplete="tel">
     </div>
 
     <div class="obh-consent">
       <input type="checkbox" id="f-marketing" required>
       <label for="f-marketing">
-        Pazarlama amaçlı bilgilendirme almayı kabul ediyorum.
-        <a href="/aydinlatma-metni.html" target="_blank" rel="noopener">Aydınlatma metnini</a> okudum.
+        Ticari elektronik ileti almayı kabul ediyorum.
+        <a href="/yasal.html#panel-kvkk" target="_blank" rel="noopener">KVKK aydınlatma metnini</a> okudum.
       </label>
     </div>
 
-    <div class="obh-error" id="err-consent">Devam etmek için onay vermen gerek</div>
+    <div class="obh-error" id="err-consent">Devam etmek için onay gerek</div>
 
-    <div class="obh-loading" id="obh-loading">Demo açılıyor, lütfen bekle...</div>
+    <div class="obh-loading" id="obh-loading">Demo hazırlanıyor, birkaç saniye sürebilir.</div>
 
     <div class="obh-nav">
       <button type="button" class="obh-btn obh-btn--text" data-action="prev">Geri</button>
@@ -830,24 +837,25 @@
     </div>
   </section>
 
+  <!-- Success -->
   <section class="obh-step" data-step="success">
     <div class="obh-success">
       <div class="obh-success__icon" aria-hidden="true">
         <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M6 14.5L11.5 20L22 9" stroke="#16a34a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M6 14.5L11.5 20L22 9" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </div>
-      <h1 class="obh-h1">Teşekkürler!</h1>
+      <h1 class="obh-h1">Teşekkürler</h1>
       <p class="obh-sub">Demoyu açıyoruz, birkaç saniye sürebilir.</p>
-      <p style="font-size:13px;color:var(--muted);margin-top:24px;">
-        Bilgilerin sales ekibimize iletildi. <strong>Demoda gördüklerin temsili veridir</strong> —
-        gerçek aday havuzu kurumsal aboneliğimiz aktive olduğunda erişilebilir.
+      <p class="obh-success__note">
+        Bilgilerin sales ekibimize ulaştı. <strong>Demoda göreceğin veriler temsilidir</strong> —
+        gerçek aday havuzu kurumsal abonelik aktive olduğunda erişilebilir.
       </p>
     </div>
   </section>
 
   <p class="obh-footer-note">
-    Sorun mu yaşıyorsun? <a href="mailto:kefelituna@gmail.com">kefelituna@gmail.com</a> · MVP 1 lead funnel
+    Sorun yaşıyorsan: <a href="mailto:kefelituna@gmail.com">kefelituna@gmail.com</a> · MVP 1 lead funnel
   </p>
 </div>
 
@@ -1055,10 +1063,25 @@
     });
   }
 
+  function showSubmitError(){
+    var loading = $('#obh-loading');
+    var submitBtn = $('#obh-submit');
+    loading.classList.remove('is-shown');
+    submitBtn.disabled = false;
+    var errEl = $('#err-consent');
+    errEl.textContent = 'Bağlantı sorunu. Tekrar dene veya kefelituna@gmail.com\'a yaz.';
+    errEl.classList.add('is-shown');
+  }
+
   async function submitLead(){
     var consentEl = $('#f-marketing');
-    if (!consentEl.checked) { $('#err-consent').classList.add('is-shown'); return; }
-    $('#err-consent').classList.remove('is-shown');
+    var errConsent = $('#err-consent');
+    if (!consentEl.checked) {
+      errConsent.textContent = 'Devam etmek için onay gerek';
+      errConsent.classList.add('is-shown');
+      return;
+    }
+    errConsent.classList.remove('is-shown');
 
     state.phone = $('#f-phone').value.trim();
     state.marketing_opt_in = true;
@@ -1071,7 +1094,7 @@
     try {
       var supaUrl = window.HT && window.HT.SUPA_URL;
       var supaKey = window.HT && window.HT.SUPA_KEY;
-      if (!supaUrl) throw new Error('Supabase URL not configured');
+      if (!supaUrl) throw new Error('config_missing');
 
       var payload = {
         email: state.email,
@@ -1101,13 +1124,14 @@
       });
 
       if (!resp.ok) {
-        var errBody = await resp.text();
-        throw new Error('Lead capture failed (' + resp.status + '): ' + errBody.slice(0, 200));
+        // PII-safe: response body Tuna'ya gözükmesin (IP, email vs. sızıntı riski)
+        console.error('lead capture failed', resp.status);
+        throw new Error('http_' + resp.status);
       }
 
       var result = await resp.json();
       var token = result && result.demo_token;
-      if (!token) throw new Error('demo_token missing in response');
+      if (!token) throw new Error('token_missing');
 
       try { sessionStorage.removeItem('ht_lead_draft'); } catch(e) {}
 
@@ -1117,11 +1141,8 @@
         window.location.href = '/isveren-demo-yakinda.html?demo_token=' + encodeURIComponent(token);
       }, 1200);
     } catch (err) {
-      console.error('lead submit error:', err);
-      loading.classList.remove('is-shown');
-      submitBtn.disabled = false;
-      var msg = (err && err.message) ? err.message : String(err);
-      alert('Hata oluştu: ' + msg + '\n\nLütfen tekrar dene veya destek için: kefelituna@gmail.com');
+      console.error('lead submit error:', err && err.message ? err.message : err);
+      showSubmitError();
     }
   }
 

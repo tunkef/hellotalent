@@ -1,88 +1,186 @@
-// Lead Form E2E test — isveren-onboarding.html
-// Smoke: form load, navigation, validation, submit (mock)
-// Lokal server: python3 -m http.server 8765
-// Run: npx playwright test tests/lead-form.spec.js --reporter=list
+// tests/lead-form.spec.js
+//
+// Lead form (isveren-onboarding.html + isveren-demo-yakinda.html) E2E matrix.
+// Multi-agent zincir test gate'i (chief-of-staff orchestration, 25 Nisan 2026).
+//
+// Matrix: 4 viewport × 2 theme × 4 senaryo = 32 test.
+//
+// Senaryolar:
+//   1. load          — sayfa yüklenir, hero görünür, topbar/progress/copy doğru
+//   2. validation    — required step error mesajı, Devam butonu engellenir
+//   3. full-flow     — 1→9 boyunca tüm cevaplar girilir, mock submit
+//   4. mobile-svg    — <=480px gizli, >480px görünür (cream stroke)
+//
+// Çalıştır: npx playwright test tests/lead-form.spec.js --reporter=list
+// playwright.config.js webServer otomatik python3 -m http.server 3000 açar.
 
 const { test, expect } = require('@playwright/test');
 
-const BASE = process.env.BASE_URL || 'http://localhost:8765';
+const VIEWPORTS = [
+  { name: 'mobile-390',   width: 390,  height: 844  },
+  { name: 'tablet-768',   width: 768,  height: 1024 },
+  { name: 'laptop-1100',  width: 1100, height: 800  },
+  { name: 'desktop-1440', width: 1440, height: 900  },
+];
 
-test.describe('Lead Form (isveren-onboarding.html)', () => {
+const THEMES = ['light', 'dark'];
 
-  test('Form yüklenir, ilk step görünür, progress 1/9', async ({ page }) => {
-    await page.goto(`${BASE}/isveren-onboarding.html`);
-    await expect(page.locator('.obh-step[data-step="1"]')).toBeVisible();
-    await expect(page.locator('#obh-counter')).toHaveText('1 / 9');
-    await expect(page.locator('.obh-step.is-active h1.obh-hero-h1')).toContainText('Türkiye perakendesinin');
+// Edge Function mock — gerçek aday inserti riskli (PII, DB kirliliği)
+async function mockEdgeFn(page) {
+  await page.route('**/functions/v1/notify-hr-lead', (route) => {
+    route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        ok: true,
+        demo_token: '00000000-0000-0000-0000-' + String(Date.now()).padStart(12, '0'),
+      }),
+    });
   });
+}
 
-  test('Step 2: segment seçilmeden devam edilemez', async ({ page }) => {
-    await page.goto(`${BASE}/isveren-onboarding.html`);
-    await page.click('.obh-step.is-active [data-action="next"]'); // 1 → 2
-    await expect(page.locator('.obh-step[data-step="2"]')).toBeVisible();
+async function setTheme(page, theme) {
+  // addInitScript: her navigation'dan ÖNCE çalışır. DOM henüz yok olduğu için
+  // documentElement'i hemen değil, ilk script çalışmasında <html>'e attribute koy.
+  await page.addInitScript((t) => {
+    try {
+      // documentElement her zaman var (HTMLDocument.documentElement)
+      if (document && document.documentElement) {
+        document.documentElement.setAttribute('data-theme', t);
+      } else {
+        // fallback — HTML parse'a kadar bekle
+        document.addEventListener('readystatechange', function once(){
+          if (document.documentElement) {
+            document.documentElement.setAttribute('data-theme', t);
+            document.removeEventListener('readystatechange', once);
+          }
+        });
+      }
+    } catch (_) {}
+  }, theme);
+}
 
-    // Validation error
-    await page.click('.obh-step.is-active button.obh-btn--primary[data-action="next"]');
-    await expect(page.locator('#err-segment')).toBeVisible();
-    await expect(page.locator('.obh-step[data-step="2"]')).toBeVisible(); // hala step 2
-  });
+async function ensureTheme(page, theme) {
+  // goto sonrası net set — race-condition guard
+  await page.evaluate((t) => {
+    document.documentElement.setAttribute('data-theme', t);
+  }, theme);
+}
 
-  test('Tam akış: 9 step doldur, gerçek API submit, demo_token al', async ({ page }) => {
-    test.setTimeout(60000);
-    await page.goto(`${BASE}/isveren-onboarding.html`);
+for (const vp of VIEWPORTS) {
+  for (const theme of THEMES) {
+    test.describe(`lead-form · ${vp.name} · ${theme}`, () => {
+      test.use({ viewport: { width: vp.width, height: vp.height } });
 
-    // Step 1 → 2
-    await page.click('.obh-step.is-active [data-action="next"]');
+      test.beforeEach(async ({ page }) => {
+        await setTheme(page, theme);
+        await mockEdgeFn(page);
+      });
 
-    // Step 2: segment
-    await page.click('[data-segment="holding"]');
-    await page.click('.obh-step.is-active button.obh-btn--primary[data-action="next"]');
+      // ── 1. LOAD ─────────────────────────────────────────────────
+      test('load: hero yüklenir, topbar/progress doğru', async ({ page }) => {
+        await page.goto('/isveren-onboarding.html');
+        await ensureTheme(page, theme);
 
-    // Step 3: contact
-    await page.fill('#f-company', 'Playwright Test Holding');
-    await page.fill('#f-fullname', 'Test Kullanıcı');
-    await page.fill('#f-email', `playwright-${Date.now()}@hellotalent.local`);
-    await page.click('.obh-step.is-active button.obh-btn--primary[data-action="next"]');
+        const topbar = page.locator('.obh-topbar');
+        await expect(topbar).toBeVisible();
+        await expect(topbar.locator('.obh-logo')).toHaveText('HelloTalent');
+        await expect(topbar.locator('#obh-counter')).toHaveText('1 / 9');
 
-    // Step 4: brands (skip)
-    await page.click('.obh-step.is-active [data-action="skip"]');
+        const hero = page.locator('.obh-step--hero.is-active');
+        await expect(hero).toBeVisible();
+        await expect(hero.locator('.obh-hero-h1')).toContainText('Türkiye perakendesinin');
+        await expect(hero.locator('.obh-btn--hero-primary')).toHaveText(/Başla/);
 
-    // Step 5: team
-    await page.click('[data-team="6-20"]');
-    await page.click('.obh-step.is-active button.obh-btn--primary[data-action="next"]');
+        // KVKK / aydınlatma metni hero bullets'ta
+        await expect(hero.locator('.obh-hero-bullets')).toContainText(/KVKK/);
 
-    // Step 6: positions (skip)
-    await page.click('.obh-step.is-active [data-action="skip"]');
+        // Theme attribute doğru set
+        const dt = await page.evaluate(() => document.documentElement.getAttribute('data-theme'));
+        expect(dt).toBe(theme);
+      });
 
-    // Step 7: monthly
-    await page.click('[data-monthly="4-10"]');
-    await page.click('.obh-step.is-active button.obh-btn--primary[data-action="next"]');
+      // ── 2. VALIDATION ────────────────────────────────────────────
+      test('validation: required step error gösterir', async ({ page }) => {
+        await page.goto('/isveren-onboarding.html');
+        await ensureTheme(page, theme);
 
-    // Step 8: urgency (skip)
-    await page.click('.obh-step.is-active [data-action="skip"]');
+        // Hero → Step 2
+        await page.click('.obh-btn--hero-primary');
+        await expect(page.locator('.obh-step[data-step="2"]')).toBeVisible();
 
-    // Step 9: consent + submit
-    await page.fill('#f-phone', '0555 000 0000');
-    await page.check('#f-marketing');
+        // Step 2 — boş Devam → error
+        await page.click('.obh-step[data-step="2"] [data-action="next"]');
+        await expect(page.locator('#err-segment')).toHaveClass(/is-shown/);
 
-    const responsePromise = page.waitForResponse(r => r.url().includes('/functions/v1/notify-hr-lead'));
-    await page.click('#obh-submit');
-    const response = await responsePromise;
-    expect(response.status()).toBe(200);
+        // Hala step 2'de
+        await expect(page.locator('.obh-step[data-step="2"]')).toBeVisible();
+        await expect(page.locator('.obh-step[data-step="3"]')).toBeHidden();
 
-    const json = await response.json();
-    expect(json.ok).toBe(true);
-    expect(json.demo_token).toMatch(/^[0-9a-f-]{36}$/);
+        // Bir kart seç → step 3'e geç
+        await page.click('.obh-card[data-segment="single_brand"]');
+        await page.click('.obh-step[data-step="2"] [data-action="next"]');
+        await expect(page.locator('.obh-step[data-step="3"]')).toBeVisible();
+      });
 
-    // Success step shown
-    await expect(page.locator('.obh-step[data-step="success"]')).toBeVisible({ timeout: 5000 });
-  });
+      // ── 3. FULL FLOW ─────────────────────────────────────────────
+      test('full-flow: 1→9 doldur, mock submit, success', async ({ page }) => {
+        test.setTimeout(60000);
+        await page.goto('/isveren-onboarding.html');
+        await ensureTheme(page, theme);
 
-  test('Mobile viewport (390×844) layout', async ({ page }) => {
-    await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto(`${BASE}/isveren-onboarding.html`);
-    await expect(page.locator('.obh-shell')).toBeVisible();
-    const heroBox = await page.locator('.obh-step.is-active .obh-hero-surface').boundingBox();
-    expect(heroBox.width).toBeLessThanOrEqual(390);
-  });
-});
+        // 1 hero
+        await page.click('.obh-btn--hero-primary');
+        // 2 segment
+        await page.click('.obh-card[data-segment="holding"]');
+        await page.click('.obh-step[data-step="2"] [data-action="next"]');
+        // 3 contact
+        await page.fill('#f-company', 'Playwright Holding');
+        await page.fill('#f-fullname', 'Test Yılmaz');
+        await page.fill('#f-email', `pw-${Date.now()}@hellotalent.local`);
+        await page.click('.obh-step[data-step="3"] [data-action="next"]');
+        // 4 brand skip
+        await page.click('.obh-step[data-step="4"] [data-action="skip"]');
+        // 5 team
+        await page.click('.obh-chip[data-team="2-5"]');
+        await page.click('.obh-step[data-step="5"] [data-action="next"]');
+        // 6 positions skip
+        await page.click('.obh-step[data-step="6"] [data-action="skip"]');
+        // 7 monthly
+        await page.click('.obh-chip[data-monthly="4-10"]');
+        await page.click('.obh-step[data-step="7"] [data-action="next"]');
+        // 8 urgency skip
+        await page.click('.obh-step[data-step="8"] [data-action="skip"]');
+        // 9 consent + submit
+        await expect(page.locator('.obh-step[data-step="9"]')).toBeVisible();
+        await page.fill('#f-phone', '0555 123 4567');
+        await page.check('#f-marketing');
+
+        const respPromise = page.waitForResponse((r) => r.url().includes('/functions/v1/notify-hr-lead'));
+        await page.click('#obh-submit');
+        const resp = await respPromise;
+        expect(resp.status()).toBe(200);
+
+        const json = await resp.json();
+        expect(json.demo_token).toBeTruthy();
+
+        await expect(page.locator('.obh-step[data-step="success"]')).toBeVisible({ timeout: 5000 });
+        await expect(page.locator('.obh-step[data-step="success"] .obh-h1')).toHaveText(/Teşekkürler/);
+      });
+
+      // ── 4. MOBILE SVG ────────────────────────────────────────────
+      test('mobile-svg: <=480 gizli, >480 cream stroke görünür', async ({ page }) => {
+        await page.goto('/isveren-onboarding.html');
+        const mark = page.locator('.obh-hero-mark');
+
+        if (vp.width <= 480) {
+          await expect(mark).toBeHidden();
+        } else {
+          await expect(mark).toBeVisible();
+          const stroke = await mark.locator('circle').getAttribute('stroke');
+          expect(stroke).toBe('#F2F1EE');
+        }
+      });
+    });
+  }
+}

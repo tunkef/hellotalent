@@ -1,7 +1,30 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 25 Nisan 2026 | Asama 83.0 — MVP 1 Lead Funnel FAZ A canli (ik.html yeniden tasarim baslangici)
+> Son guncelleme: 25 Nisan 2026 | Asama 83.1 — Multi-agent zincir + Clatu HR Design v2 (FAZ A revize)
 >
 > Aktif Odak: ik.html'i KISS + Pozisyon-aware Pipeline workspace olarak bastan yaziyoruz. MVP 1 = "yasayan demo + lead funnel" (fake data, gercek aday yok), MVP 2 = paid + Iyzico + KVKK e-sozlesme (15+ kurumsal lead + 5000+ aday havuzu threshold sonrasi).
+>
+> ── Asama 83.1 (multi-agent revize, 25 Nisan aksam) ──
+>
+> **Tetikleyici:** FAZ A canli sonrasi Tuna UAT — "duz HTML, A4'e yaziyor gibi, brand yok, mobile + dark mode atlandi" + multi-agent disiplin kirilma teshisi.
+>
+> **chief-of-staff orchestration zinciri (T3 tier):**
+> 1. content-writer + avoid-ai-writing → 21 AI-ism temizlendi, 9 step + hata mesaji + alert PII-safe revize
+> 2. designer + impeccable-design → `css/clatu-hr-tokens.css` (574 satir, 233 token: HR navy-dominant palette, light + dark, WCAG AAA/AA, motion + spacing 4px base + radius scale)
+> 3. ui-agent → `isveren-onboarding.html` ve `isveren-demo-yakinda.html` `--lf-*` → `--hr-*` migrate, mobile-first clamp() typography, focus-visible 2.5px verm, reduced-motion query
+> 4. darkmode-auditor + AccessLint → `html[data-theme="dark"]` zorunlu, hard-coded #16a34a → currentColor, success icon stroke fix
+> 5. uat-tester → `tests/lead-form.spec.js` matrix (4 viewport × 2 mode × 4 senaryo = 32 test, 64/64 PASS [mobile+desktop project])
+> 6. code-reviewer → 5-axis review BLOCKER yok, console.error sadece kuru kod string log'lar (PII-safe)
+> 7. auditor (KVKK + PII T3) → BROKEN LINK fix (`/aydinlatma-metni.html` → `/yasal.html#panel-kvkk`), İYS uyumlu copy ("Ticari elektronik ileti")
+>
+> **Yeni/degisen dosyalar:**
+> - `css/clatu-hr-tokens.css` (yeni, 574 satir) — HR navy-dominant token sistemi
+> - `.claude/agent-memory/design-specs/clatu-hr-design-system-v2.md` (yeni, 843 satir) — implementation-ready spec
+> - `.claude/rules/agent-triggers.md` (yeni) — multi-agent disiplin tetikleme matrisi
+> - `isveren-onboarding.html` — full revize, copy + token + dark mode + mobile + KVKK link fix
+> - `isveren-demo-yakinda.html` — clatu-hr token uyumu, dark mode
+> - `tests/lead-form.spec.js` — 32-test matrix (8 senaryo per project, 64 toplam PASS)
+>
+> **Onceki FAZ A canli (sabah, 25 Nisan) — degismedi:** hr_leads tablo + RLS + grants + notify-hr-lead Edge Function + Tuna sales email aktif.
 >
 > ── Asama 83 (FAZ A canli, 25 Nisan 2026) ──
 >
