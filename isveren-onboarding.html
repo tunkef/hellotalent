@@ -1612,6 +1612,14 @@
     }
   }
 
+  // Conditional step skip: marka(lar) step (4) sadece "Coklu Marka Yonetimi"
+  // (segment_type='holding') secenler icin gosterilir. Tek Marka veya
+  // Ise Alim Ajansi (single_brand/headhunter) bu step'i atlar.
+  function shouldSkipStep(n){
+    if (n === 4 && state.segment_type !== 'holding') return true;
+    return false;
+  }
+
   async function goNext(){
     if (REQUIRED_STEPS.indexOf(currentStep) !== -1 && !validateStep(currentStep)) return;
     // Step 3 telefon (opsiyonel) — girildiyse format kontrol
@@ -1622,8 +1630,12 @@
     // Step 1 (welcome) start-wizard handler'i ile yonetilir, goNext'e dusmez
     persistStep(currentStep);
 
-    if (currentStep < TOTAL_STEPS) {
-      currentStep += 1;
+    var nextStep = currentStep + 1;
+    while (nextStep <= TOTAL_STEPS && shouldSkipStep(nextStep)) {
+      nextStep += 1;
+    }
+    if (nextStep <= TOTAL_STEPS) {
+      currentStep = nextStep;
       showStep(currentStep);
     }
   }
@@ -1639,8 +1651,13 @@
   }
 
   function goPrev(){
-    if (currentStep > 1) {
-      currentStep -= 1;
+    if (currentStep <= 1) return;
+    var prevStep = currentStep - 1;
+    while (prevStep >= 1 && shouldSkipStep(prevStep)) {
+      prevStep -= 1;
+    }
+    if (prevStep >= 1) {
+      currentStep = prevStep;
       showStep(currentStep);
     }
   }
