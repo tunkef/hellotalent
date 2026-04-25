@@ -78,26 +78,53 @@ for (const vp of VIEWPORTS) {
       });
 
       // ── 1. LOAD ─────────────────────────────────────────────────
-      test('load: hero yüklenir, topbar/progress doğru', async ({ page }) => {
+      test('load: landing+wizard yüklenir, sticky nav + progress doğru', async ({ page }) => {
         await page.goto('/isveren-onboarding.html');
         await ensureTheme(page, theme);
 
-        const topbar = page.locator('.obh-topbar');
-        await expect(topbar).toBeVisible();
-        await expect(topbar.locator('.obh-logo')).toHaveText('HelloTalent');
-        await expect(topbar.locator('#obh-counter')).toHaveText('1 / 9');
+        // Landing layer — yeni mimari
+        const topnav = page.locator('.lf-topnav');
+        await expect(topnav).toBeVisible();
+        await expect(topnav.locator('.lf-logo')).toContainText('HelloTalent');
+        await expect(topnav.locator('#lf-counter')).toContainText('Adım 1 / 9');
 
-        const hero = page.locator('.obh-step--hero.is-active');
-        await expect(hero).toBeVisible();
-        await expect(hero.locator('.obh-hero-h1')).toContainText('Türkiye perakendesinin');
-        await expect(hero.locator('.obh-btn--hero-primary')).toHaveText(/Başla/);
+        // Hero section — landing intro
+        const lfHero = page.locator('.lf-hero');
+        await expect(lfHero).toBeVisible();
+        await expect(lfHero.locator('.lf-hero__h1')).toContainText('Türkiye perakendesinin');
+        await expect(lfHero.locator('.lf-hero__h1 em')).toContainText('aday tarafı');
+        await expect(lfHero.locator('.lf-hero__kpi')).toContainText('KVKK');
 
-        // KVKK / aydınlatma metni hero bullets'ta
-        await expect(hero.locator('.obh-hero-bullets')).toContainText(/KVKK/);
+        // Wizard step 1 — kart içi welcome panel (kısa, çift hero değil)
+        const wizardHero = page.locator('.obh-step--hero.is-active');
+        await expect(wizardHero).toBeVisible();
+        await expect(wizardHero.locator('.obh-hero-h1')).toContainText('Hazırsanız başlayalım');
+        await expect(wizardHero.locator('.obh-btn--hero-primary')).toHaveText(/Soruları başlat/);
+        await expect(wizardHero.locator('.obh-hero-bullets')).toContainText(/KVKK/);
+
+        // Wizard step counter (kart içi)
+        await expect(page.locator('#obh-counter')).toHaveText('1 / 9');
+
+        // Social proof + footer landing layer'ında render
+        await expect(page.locator('.lf-social .lf-quote').first()).toBeVisible();
+        await expect(page.locator('.lf-footer__brand')).toContainText('HelloTalent');
 
         // Theme attribute doğru set
         const dt = await page.evaluate(() => document.documentElement.getAttribute('data-theme'));
         expect(dt).toBe(theme);
+      });
+
+      // ── 1b. ANCHOR SCROLL — Hero CTA → Form section ─────────────
+      test('anchor-scroll: hero CTA tıklayınca form section görünür', async ({ page }) => {
+        await page.goto('/isveren-onboarding.html');
+        await ensureTheme(page, theme);
+
+        await page.click('.lf-hero .lf-cta-primary');
+        // smooth scroll bekle
+        await page.waitForTimeout(700);
+
+        const formSec = page.locator('#basvuru');
+        await expect(formSec).toBeInViewport({ ratio: 0.2 });
       });
 
       // ── 2. VALIDATION ────────────────────────────────────────────

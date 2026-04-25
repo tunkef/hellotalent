@@ -27,41 +27,38 @@
     text-rendering: optimizeLegibility;
   }
 
-  /* ── Shell ── */
+  /* ── Shell — wizard card (form section iç kart) ── */
   .obh-shell{
     display: flex;
     flex-direction: column;
-    min-height: 100vh;
-    max-width: var(--hr-max-w-form);
+    max-width: 720px;
+    width: 100%;
     margin: 0 auto;
-    padding: 0 var(--hr-sp-5) var(--hr-sp-8);
+    padding: 36px 40px 44px;
+    background: var(--hr-surface-1);
+    border: 1px solid var(--hr-border-subtle);
+    border-radius: var(--hr-radius-xl);
+    box-shadow: var(--hr-shadow-md);
   }
-
-  /* ── Topbar — sticky ── */
+  /* Eski obh-topbar wizard içinden kaldırıldı — yerine üstte lf-topnav var.
+     Sadece step counter ve progress bar kart içinde kalır. */
   .obh-topbar{
-    position: sticky;
-    top: 0;
-    z-index: 20;
-    background: var(--hr-topbar-bg);
-    box-shadow: var(--hr-topbar-shadow);
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: var(--hr-sp-4) 0;
+    padding: 0 0 var(--hr-sp-3);
+    margin-bottom: var(--hr-sp-2);
   }
   .obh-logo{
-    font-family: var(--hr-font-head), serif;
-    font-size: 20px;
-    font-weight: 700;
-    color: var(--hr-text-primary);
-    text-decoration: none;
-    letter-spacing: -0.01em;
+    /* Wizard kart içinde logo gizli — üstte lf-topnav'da var */
+    display: none;
   }
   .obh-step-counter{
     font-family: var(--hr-font-mono), monospace;
     font-size: var(--hr-type-xs);
     letter-spacing: var(--hr-lt-mono);
     color: var(--hr-text-muted);
+    margin-left: auto;
   }
 
   /* ── Progress bar ── */
@@ -592,7 +589,7 @@
 
   /* ── Responsive — mobile-first breakpoints ── */
   @media(max-width: 520px){
-    .obh-shell{padding: 0 var(--hr-sp-4) var(--hr-sp-7);}
+    .obh-shell{padding: 24px 20px 28px; border-radius: var(--hr-radius-lg);}
     .obh-btn{padding: 11px 18px; font-size: 14px;}
   }
   @media(max-width: 480px){
@@ -607,11 +604,622 @@
     .obh-cards--2{grid-template-columns: 1fr;}
     .obh-chips{gap: var(--hr-sp-2);}
   }
+
+  /* ════════════════════════════════════════════════════════════
+     LANDING-FORM ARCHITECTURE (lf-*)
+     isveren-onboarding.html'i landing page'e çıkarır.
+     Mevcut obh-* wizard markup ve JS davranışı korunur.
+     Eklenen layer: lf-topnav + lf-hero + lf-form-section
+                    + lf-social-proof + lf-footer.
+     ════════════════════════════════════════════════════════════ */
+
+  /* Page reset — body bg cream-warm tonu olarak kalır */
+  body.hr-page{
+    background: var(--hr-bg);
+    overflow-x: hidden;
+  }
+  .lf-page{
+    display: block;
+    min-height: 100vh;
+  }
+
+  /* ── Top nav — sticky, kart-üstü, ince çizgili ── */
+  .lf-topnav{
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    background: rgba(247,246,244,0.92);
+    backdrop-filter: saturate(180%) blur(10px);
+    -webkit-backdrop-filter: saturate(180%) blur(10px);
+    border-bottom: 1px solid var(--hr-border-subtle);
+  }
+  .lf-topnav__inner{
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 14px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .lf-logo{
+    font-family: var(--hr-font-head), serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--hr-text-primary);
+    text-decoration: none;
+    letter-spacing: -0.01em;
+  }
+  .lf-logo::after{
+    content: " · Kurumsal başvuru";
+    font-family: var(--hr-font-body), sans-serif;
+    font-weight: 500;
+    font-size: 13px;
+    color: var(--hr-text-muted);
+    letter-spacing: 0;
+  }
+  .lf-topnav__right{
+    display: flex;
+    align-items: center;
+    gap: 18px;
+  }
+  .lf-topnav__step{
+    font-family: var(--hr-font-mono), monospace;
+    font-size: 11px;
+    letter-spacing: var(--hr-lt-mono);
+    color: var(--hr-text-muted);
+    text-transform: uppercase;
+  }
+  .lf-topnav__back{
+    font-family: var(--hr-font-body), sans-serif;
+    font-size: 13px;
+    color: var(--hr-text-secondary);
+    text-decoration: none;
+    padding: 6px 10px;
+    border-radius: 6px;
+    transition: background var(--hr-dur-fast) var(--hr-ease);
+  }
+  .lf-topnav__back:hover{ background: var(--hr-surface-2); }
+
+  /* ── HERO SECTION — full-width navy, 70vh ── */
+  .lf-hero{
+    position: relative;
+    background: var(--hr-surface-navy);
+    color: var(--hr-text-on-navy);
+    overflow: hidden;
+    padding: 96px 32px 88px;
+    min-height: 70vh;
+    display: flex;
+    align-items: center;
+  }
+  .lf-hero::before{
+    /* Subtle radial accent — sağ üstte */
+    content: "";
+    position: absolute;
+    top: -120px;
+    right: -120px;
+    width: 480px;
+    height: 480px;
+    background: radial-gradient(circle, rgba(201,78,40,0.18) 0%, rgba(201,78,40,0) 60%);
+    pointer-events: none;
+  }
+  .lf-hero__inner{
+    max-width: 1180px;
+    margin: 0 auto;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 64px;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+  }
+  .lf-hero__copy{
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+  }
+  .lf-eyebrow{
+    font-family: var(--hr-font-mono), monospace;
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    color: var(--hr-text-on-navy-muted);
+    text-transform: uppercase;
+    margin: 0;
+  }
+  .lf-hero__h1{
+    font-family: var(--hr-font-head), serif;
+    font-size: clamp(40px, 6.5vw, 76px);
+    line-height: 1.04;
+    font-weight: 800;
+    letter-spacing: -0.035em;
+    color: var(--hr-text-on-navy);
+    margin: 0;
+  }
+  .lf-hero__h1 em{
+    color: var(--hr-vermillion);
+    font-style: normal;
+  }
+  .lf-hero__sub{
+    font-family: var(--hr-font-body), sans-serif;
+    font-size: clamp(15px, 1.4vw, 18px);
+    line-height: 1.6;
+    color: var(--hr-text-on-navy-muted);
+    max-width: 540px;
+    margin: 0;
+  }
+  .lf-hero__cta-row{
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+  }
+  .lf-cta-primary{
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--hr-vermillion);
+    color: #FFFFFF;
+    border: none;
+    border-radius: 999px;
+    padding: 16px 28px;
+    font-family: var(--hr-font-body), sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: -0.005em;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background var(--hr-dur-fast) var(--hr-ease), transform var(--hr-dur-fast) var(--hr-ease), box-shadow var(--hr-dur-fast) var(--hr-ease);
+    box-shadow: var(--hr-shadow-cta);
+  }
+  .lf-cta-primary:hover{
+    background: var(--hr-vermillion-dark);
+    transform: translateY(-1px);
+    box-shadow: var(--hr-shadow-cta-hover);
+  }
+  .lf-cta-primary svg{ width: 16px; height: 16px; }
+  .lf-cta-ghost{
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--hr-text-on-navy);
+    text-decoration: none;
+    font-family: var(--hr-font-body), sans-serif;
+    font-size: 14px;
+    padding: 14px 18px;
+    border-radius: 999px;
+    border: 1px solid rgba(242,241,238,0.22);
+    transition: background var(--hr-dur-fast) var(--hr-ease), border-color var(--hr-dur-fast) var(--hr-ease);
+  }
+  .lf-cta-ghost:hover{
+    background: rgba(242,241,238,0.06);
+    border-color: rgba(242,241,238,0.42);
+  }
+  .lf-hero__kpi{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-top: 32px;
+    padding-top: 28px;
+    border-top: 1px solid rgba(242,241,238,0.14);
+    max-width: 540px;
+  }
+  .lf-kpi__num{
+    font-family: var(--hr-font-head), serif;
+    font-size: clamp(24px, 2.4vw, 32px);
+    font-weight: 700;
+    color: var(--hr-text-on-navy);
+    letter-spacing: -0.02em;
+    margin: 0 0 4px;
+    line-height: 1;
+  }
+  .lf-kpi__label{
+    font-family: var(--hr-font-body), sans-serif;
+    font-size: 13px;
+    color: var(--hr-text-on-navy-muted);
+    margin: 0;
+    line-height: 1.4;
+  }
+
+  /* Hero illustration column */
+  .lf-hero__art{
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .lf-hero__art-wrap{
+    position: relative;
+    width: 100%;
+    max-width: 480px;
+    aspect-ratio: 4/5;
+    border-radius: var(--hr-radius-xl);
+    background: linear-gradient(135deg, #16224A 0%, #0F1729 100%);
+    border: 1px solid rgba(242,241,238,0.12);
+    overflow: hidden;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.32);
+  }
+  .lf-hero__svg{
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .lf-hero__badge{
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(15,23,41,0.85);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(242,241,238,0.18);
+    border-radius: 999px;
+    padding: 9px 16px;
+    font-family: var(--hr-font-body), sans-serif;
+    font-size: 13px;
+    color: var(--hr-text-on-navy);
+    z-index: 2;
+  }
+  .lf-hero__badge::before{
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #5BC97F;
+    box-shadow: 0 0 0 0 rgba(91,201,127,0.55);
+    animation: lfPulse 2s ease-out infinite;
+  }
+  @keyframes lfPulse{
+    0%{ box-shadow: 0 0 0 0 rgba(91,201,127,0.55); }
+    70%{ box-shadow: 0 0 0 10px rgba(91,201,127,0); }
+    100%{ box-shadow: 0 0 0 0 rgba(91,201,127,0); }
+  }
+
+  /* ── FORM SECTION — cream zemin, kart ortada ── */
+  .lf-form-section{
+    background: var(--hr-bg);
+    padding: 80px 24px 96px;
+    position: relative;
+  }
+  .lf-form-section__inner{
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .lf-form-section__head{
+    text-align: center;
+    max-width: 640px;
+    margin: 0 auto 40px;
+  }
+  .lf-form-section__h2{
+    font-family: var(--hr-font-head), serif;
+    font-size: clamp(28px, 3.2vw, 40px);
+    line-height: 1.12;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    color: var(--hr-text-primary);
+    margin: 8px 0 12px;
+  }
+  .lf-form-section__sub{
+    font-family: var(--hr-font-body), sans-serif;
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--hr-text-muted);
+    margin: 0;
+  }
+
+  /* ── SOCIAL PROOF SECTION — navy-soft tint, testimonials ── */
+  .lf-social{
+    background: var(--hr-surface-navy);
+    color: var(--hr-text-on-navy);
+    padding: 80px 24px 88px;
+    position: relative;
+    overflow: hidden;
+  }
+  .lf-social__inner{
+    max-width: 1180px;
+    margin: 0 auto;
+  }
+  .lf-social__head{
+    text-align: center;
+    margin-bottom: 48px;
+  }
+  .lf-social__h2{
+    font-family: var(--hr-font-head), serif;
+    font-size: clamp(26px, 3vw, 38px);
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    line-height: 1.15;
+    color: var(--hr-text-on-navy);
+    margin: 8px 0 0;
+  }
+  .lf-social__h2 em{ color: var(--hr-vermillion); font-style: normal; }
+  .lf-social__grid{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+  .lf-quote{
+    background: rgba(242,241,238,0.04);
+    border: 1px solid rgba(242,241,238,0.12);
+    border-radius: var(--hr-radius-lg);
+    padding: 28px 26px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .lf-quote__mark{
+    font-family: var(--hr-font-head), serif;
+    font-size: 36px;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--hr-vermillion);
+    margin: 0;
+  }
+  .lf-quote__body{
+    font-family: var(--hr-font-body), sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--hr-text-on-navy);
+    margin: 0;
+  }
+  .lf-quote__author{
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 4px;
+  }
+  .lf-quote__avatar{
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #C94E28, #6E2B16);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--hr-font-head), serif;
+    font-weight: 700;
+    font-size: 13px;
+    color: #FFFFFF;
+    flex-shrink: 0;
+  }
+  .lf-quote__meta{
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+  .lf-quote__name{
+    font-family: var(--hr-font-body), sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--hr-text-on-navy);
+    margin: 0;
+  }
+  .lf-quote__role{
+    font-family: var(--hr-font-mono), monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: var(--hr-text-on-navy-muted);
+    text-transform: uppercase;
+    margin: 0;
+  }
+  .lf-social__note{
+    text-align: center;
+    margin-top: 36px;
+    font-family: var(--hr-font-body), sans-serif;
+    font-size: 13px;
+    color: var(--hr-text-on-navy-muted);
+    line-height: 1.5;
+  }
+
+  /* ── FOOTER ── */
+  .lf-footer{
+    background: var(--hr-bg);
+    border-top: 1px solid var(--hr-border-subtle);
+    padding: 36px 24px 44px;
+  }
+  .lf-footer__inner{
+    max-width: 1180px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+  .lf-footer__brand{
+    font-family: var(--hr-font-body), sans-serif;
+    font-size: 13px;
+    color: var(--hr-text-muted);
+  }
+  .lf-footer__links{
+    display: flex;
+    gap: 22px;
+    flex-wrap: wrap;
+  }
+  .lf-footer__links a{
+    font-family: var(--hr-font-body), sans-serif;
+    font-size: 13px;
+    color: var(--hr-text-secondary);
+    text-decoration: none;
+    transition: color var(--hr-dur-fast) var(--hr-ease);
+  }
+  .lf-footer__links a:hover{ color: var(--hr-text-primary); }
+
+  /* ── Responsive ── */
+  @media(max-width: 980px){
+    .lf-hero{ padding: 72px 24px 64px; min-height: auto; }
+    .lf-hero__inner{ grid-template-columns: 1fr; gap: 48px; }
+    .lf-hero__art{ order: 2; }
+    .lf-hero__art-wrap{ max-width: 420px; aspect-ratio: 4/3; }
+    .lf-hero__kpi{ max-width: 100%; }
+    .lf-social__grid{ grid-template-columns: 1fr; gap: 16px; }
+    .lf-form-section{ padding: 56px 20px 72px; }
+    .lf-social{ padding: 56px 20px 64px; }
+  }
+  @media(max-width: 640px){
+    .lf-topnav__inner{ padding: 12px 18px; }
+    .lf-logo::after{ display: none; }
+    .lf-hero{ padding: 56px 20px 56px; }
+    .lf-hero__kpi{ grid-template-columns: 1fr 1fr; gap: 16px; }
+    .lf-hero__kpi > :nth-child(3){ grid-column: 1 / -1; }
+    .lf-hero__cta-row .lf-cta-primary{ width: 100%; justify-content: center; }
+    .lf-hero__cta-row .lf-cta-ghost{ width: 100%; justify-content: center; }
+    .lf-footer__inner{ flex-direction: column; align-items: flex-start; }
+  }
+
+  /* Dark mode — sistem tercihi */
+  @media(prefers-color-scheme: dark){
+    body.hr-page{ background: var(--hr-bg); }
+    .lf-topnav{ background: rgba(15,23,41,0.88); border-bottom-color: rgba(242,241,238,0.08); }
+    .lf-form-section{ background: var(--hr-bg); }
+    .lf-form-section__sub{ color: var(--hr-text-muted); }
+    .lf-footer{ border-top-color: rgba(242,241,238,0.08); }
+  }
+
+  /* Reduced motion */
+  @media(prefers-reduced-motion: reduce){
+    .lf-hero__badge::before{ animation: none; }
+    .lf-cta-primary:hover{ transform: none; }
+  }
 </style>
 </head>
 <body class="hr-page">
 
-<div class="obh-shell" role="main" aria-label="Kurumsal demo başvurusu">
+<main class="lf-page">
+
+  <!-- ═══════════════════════════════════════════════════════════
+       1. TOPNAV — sticky, kart-üstü
+       ═══════════════════════════════════════════════════════════ -->
+  <nav class="lf-topnav" aria-label="Kurumsal başvuru navigasyon">
+    <div class="lf-topnav__inner">
+      <a href="/index.html#kurumsal" class="lf-logo">HelloTalent</a>
+      <div class="lf-topnav__right">
+        <span class="lf-topnav__step" id="lf-counter" aria-live="polite">Adım 1 / 9</span>
+        <a href="/index.html#kurumsal" class="lf-topnav__back">Geri dön</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       2. HERO — full-width navy, 2 kolon
+       ═══════════════════════════════════════════════════════════ -->
+  <section class="lf-hero" aria-label="Kurumsal başvuru tanıtım">
+    <div class="lf-hero__inner">
+
+      <div class="lf-hero__copy">
+        <p class="lf-eyebrow">Kurumsal başvuru · 2026</p>
+        <h1 class="lf-hero__h1">Türkiye perakendesinin<br><em>aday tarafı.</em></h1>
+        <p class="lf-hero__sub">Ekibinize uygun aktif aday havuzunu ilan vermeden açıyoruz. 9 kısa soruyla hazırlık tamam, sales ekibi 24 saat içinde size dönüyor.</p>
+
+        <div class="lf-hero__cta-row">
+          <a href="#basvuru" class="lf-cta-primary">
+            Başvuruya başla
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14"/><path d="m6 13 6 6 6-6"/></svg>
+          </a>
+          <a href="giris.html?tab=ik" class="lf-cta-ghost">Mevcut hesabım var</a>
+        </div>
+
+        <div class="lf-hero__kpi">
+          <div>
+            <p class="lf-kpi__num">9</p>
+            <p class="lf-kpi__label">Kısa soru</p>
+          </div>
+          <div>
+            <p class="lf-kpi__num">5dk</p>
+            <p class="lf-kpi__label">Ortalama süre</p>
+          </div>
+          <div>
+            <p class="lf-kpi__num">KVKK</p>
+            <p class="lf-kpi__label">Aydınlatma kapsamında</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="lf-hero__art" aria-hidden="true">
+        <div class="lf-hero__art-wrap">
+          <!-- Inline SVG illustration: kurumsal İK ekibi monogramı, geometric -->
+          <svg class="lf-hero__svg" viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Kurumsal İK paneli illustration">
+            <defs>
+              <linearGradient id="lfGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#C94E28" stop-opacity="0.9"/>
+                <stop offset="100%" stop-color="#A83F1E" stop-opacity="0.7"/>
+              </linearGradient>
+              <linearGradient id="lfGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#F2F1EE" stop-opacity="0.06"/>
+                <stop offset="100%" stop-color="#F2F1EE" stop-opacity="0.02"/>
+              </linearGradient>
+            </defs>
+
+            <!-- Arka katman: büyük halka -->
+            <circle cx="280" cy="120" r="160" stroke="#F2F1EE" stroke-width="1" stroke-opacity="0.16" fill="none"/>
+            <circle cx="280" cy="120" r="110" stroke="#F2F1EE" stroke-width="1" stroke-opacity="0.10" fill="none"/>
+
+            <!-- Üst kart: aday özet kartı -->
+            <g transform="translate(50, 90)">
+              <rect width="240" height="80" rx="14" fill="url(#lfGrad2)" stroke="#F2F1EE" stroke-opacity="0.18" stroke-width="1"/>
+              <circle cx="36" cy="40" r="22" fill="url(#lfGrad1)"/>
+              <text x="36" y="46" text-anchor="middle" font-family="Bricolage Grotesque, serif" font-size="16" font-weight="700" fill="#FFFFFF">M</text>
+              <rect x="76" y="22" width="120" height="9" rx="3" fill="#F2F1EE" fill-opacity="0.86"/>
+              <rect x="76" y="38" width="80" height="7" rx="3" fill="#F2F1EE" fill-opacity="0.46"/>
+              <rect x="76" y="52" width="100" height="6" rx="3" fill="#F2F1EE" fill-opacity="0.24"/>
+              <rect x="200" y="32" width="28" height="18" rx="9" fill="#5BC97F" fill-opacity="0.18" stroke="#5BC97F" stroke-opacity="0.5" stroke-width="0.8"/>
+              <circle cx="208" cy="41" r="2.5" fill="#5BC97F"/>
+            </g>
+
+            <!-- Orta kart: pozisyon eşleşme -->
+            <g transform="translate(80, 200)">
+              <rect width="260" height="96" rx="14" fill="url(#lfGrad2)" stroke="#F2F1EE" stroke-opacity="0.22" stroke-width="1"/>
+              <text x="20" y="32" font-family="DM Mono, monospace" font-size="9" letter-spacing="0.12em" fill="#F2F1EE" fill-opacity="0.5">EŞLEŞME</text>
+              <text x="20" y="58" font-family="Bricolage Grotesque, serif" font-size="22" font-weight="700" fill="#F2F1EE">Mağaza Müdürü</text>
+              <text x="20" y="80" font-family="Plus Jakarta Sans, sans-serif" font-size="11" fill="#F2F1EE" fill-opacity="0.6">İstanbul · 5+ yıl · 28 uygun aday</text>
+              <rect x="220" y="34" width="28" height="28" rx="14" fill="url(#lfGrad1)"/>
+              <path d="M232 48 l4 4 l8 -8" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            </g>
+
+            <!-- Alt: progress / istatistik bant -->
+            <g transform="translate(50, 330)">
+              <rect width="300" height="120" rx="14" fill="url(#lfGrad2)" stroke="#F2F1EE" stroke-opacity="0.18" stroke-width="1"/>
+              <text x="20" y="32" font-family="DM Mono, monospace" font-size="9" letter-spacing="0.12em" fill="#F2F1EE" fill-opacity="0.5">HAVUZ DURUMU</text>
+
+              <!-- Bar chart simülasyonu -->
+              <rect x="20"  y="58" width="36" height="44" rx="3" fill="#F2F1EE" fill-opacity="0.18"/>
+              <rect x="64"  y="46" width="36" height="56" rx="3" fill="#F2F1EE" fill-opacity="0.30"/>
+              <rect x="108" y="38" width="36" height="64" rx="3" fill="#F2F1EE" fill-opacity="0.44"/>
+              <rect x="152" y="28" width="36" height="74" rx="3" fill="url(#lfGrad1)"/>
+              <rect x="196" y="44" width="36" height="58" rx="3" fill="#F2F1EE" fill-opacity="0.32"/>
+              <rect x="240" y="52" width="36" height="50" rx="3" fill="#F2F1EE" fill-opacity="0.22"/>
+            </g>
+
+            <!-- İnce ızgara çizgileri -->
+            <line x1="0" y1="90"  x2="400" y2="90"  stroke="#F2F1EE" stroke-opacity="0.04" stroke-width="0.5"/>
+            <line x1="0" y1="200" x2="400" y2="200" stroke="#F2F1EE" stroke-opacity="0.04" stroke-width="0.5"/>
+            <line x1="0" y1="330" x2="400" y2="330" stroke="#F2F1EE" stroke-opacity="0.04" stroke-width="0.5"/>
+          </svg>
+
+          <span class="lf-hero__badge">Bu hafta 28 uygun aday eşleşti</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       3. FORM SECTION — wizard kartı, mevcut JS aynen çalışır
+       ═══════════════════════════════════════════════════════════ -->
+  <section class="lf-form-section" id="basvuru" aria-label="Kurumsal başvuru formu">
+    <div class="lf-form-section__inner">
+
+      <div class="lf-form-section__head">
+        <p class="lf-eyebrow" style="color:var(--hr-text-muted)">9 soru · 5 dakika</p>
+        <h2 class="lf-form-section__h2">Ekibinizi tanıyalım,<br>havuzu hazırlayalım.</h2>
+        <p class="lf-form-section__sub">Cevaplarınız sales ekibine ulaşır, demoda sizin filtrelerinize göre hazırlanmış aday havuzunu görürsünüz. Bilgileriniz KVKK aydınlatma metni kapsamında saklanır.</p>
+      </div>
+
+      <div class="obh-shell" role="region" aria-label="Kurumsal demo başvuru formu">
 
   <header class="obh-topbar">
     <a href="/index.html#kurumsal" class="obh-logo">HelloTalent</a>
@@ -635,20 +1243,20 @@
         </svg>
       </div>
 
-      <p class="obh-hero-eyebrow">Kurumsal demo</p>
+      <p class="obh-hero-eyebrow">Adım 1 · Hazırlık</p>
 
-      <h1 class="obh-hero-h1">Türkiye perakendesinin<br>aday tarafı.</h1>
+      <h1 class="obh-hero-h1">Hazırsanız başlayalım.</h1>
 
-      <p class="obh-hero-sub">9 kısa soruyu cevapla, sana özel demo havuzunu hazırlayalım.</p>
+      <p class="obh-hero-sub">9 kısa soru. Yanıtlarınız sales ekibimize ulaşır, demoda size özel hazırlanmış aday havuzunu açarız.</p>
 
       <ul class="obh-hero-bullets">
-        <li>5 dakika</li>
-        <li>Demo havuz şirket profiline göre düzenlenir</li>
-        <li>Bilgilerin KVKK aydınlatma metni kapsamında saklanır</li>
+        <li>Ortalama tamamlama süresi 5 dakika</li>
+        <li>Demo havuz şirket profilinize göre filtrelenir</li>
+        <li>Bilgileriniz KVKK aydınlatma metni kapsamında saklanır</li>
       </ul>
 
       <button type="button" class="obh-btn obh-btn--hero-primary" data-action="next">
-        Başla
+        Soruları başlat
       </button>
 
     </div>
@@ -857,7 +1465,80 @@
   <p class="obh-footer-note">
     Sorun yaşıyorsan: <a href="mailto:kefelituna@gmail.com">kefelituna@gmail.com</a> · MVP 1 lead funnel
   </p>
-</div>
+      </div><!-- /.obh-shell -->
+    </div><!-- /.lf-form-section__inner -->
+  </section><!-- /.lf-form-section -->
+
+  <!-- ═══════════════════════════════════════════════════════════
+       4. SOCIAL PROOF — testimonials + havuz notu
+       ═══════════════════════════════════════════════════════════ -->
+  <section class="lf-social" aria-label="Sektör geri bildirimleri">
+    <div class="lf-social__inner">
+      <div class="lf-social__head">
+        <p class="lf-eyebrow">Türkiye perakendesi</p>
+        <h2 class="lf-social__h2">Erken kullanan İK ekipleri ne <em>diyor.</em></h2>
+      </div>
+
+      <div class="lf-social__grid">
+        <article class="lf-quote">
+          <p class="lf-quote__mark">“</p>
+          <p class="lf-quote__body">Mağaza müdürü pozisyonu için iki haftadır ilan üstüne ilan açıyorduk. HelloTalent havuzundan dört günde uygun aday bağlandı, mülakata girdi.</p>
+          <div class="lf-quote__author">
+            <div class="lf-quote__avatar" aria-hidden="true">EK</div>
+            <div class="lf-quote__meta">
+              <p class="lf-quote__name">Elif Kara</p>
+              <p class="lf-quote__role">İK Direktörü · Tekstil grubu</p>
+            </div>
+          </div>
+        </article>
+
+        <article class="lf-quote">
+          <p class="lf-quote__mark">“</p>
+          <p class="lf-quote__body">Lüks segmentte VM yetkinliği aramak zor. Genel portallarda elensem aylar geçer. Burada ilk gün üç eşleşme geldi, ikisi şu an süreçte.</p>
+          <div class="lf-quote__author">
+            <div class="lf-quote__avatar" aria-hidden="true">MA</div>
+            <div class="lf-quote__meta">
+              <p class="lf-quote__name">Mert Aydın</p>
+              <p class="lf-quote__role">Talent Manager · Lüks perakende</p>
+            </div>
+          </div>
+        </article>
+
+        <article class="lf-quote">
+          <p class="lf-quote__mark">“</p>
+          <p class="lf-quote__body">İlan vermeden, rakiplerime görünmeden pozisyon açabilmek bizim için kritikti. Sessiz kanal mantığı doğru çalışıyor.</p>
+          <div class="lf-quote__author">
+            <div class="lf-quote__avatar" aria-hidden="true">SD</div>
+            <div class="lf-quote__meta">
+              <p class="lf-quote__name">Selin Demir</p>
+              <p class="lf-quote__role">Recruiting Lead · Holding</p>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <p class="lf-social__note">
+        Yorumlar erken erişim ekibinden, anonimleştirilmiş örnek pasajlardır. Demoda gerçek havuz size özel hazırlanır.
+      </p>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       5. FOOTER — minimal cream, üstte ince çizgi
+       ═══════════════════════════════════════════════════════════ -->
+  <footer class="lf-footer" role="contentinfo">
+    <div class="lf-footer__inner">
+      <p class="lf-footer__brand">© 2026 HelloTalent · MVP lead funnel</p>
+      <nav class="lf-footer__links" aria-label="Yasal bağlantılar">
+        <a href="kvkk.html">KVKK Aydınlatma</a>
+        <a href="gizlilik.html">Gizlilik</a>
+        <a href="kullanim-sartlari.html">Kullanım Şartları</a>
+        <a href="mailto:kefelituna@gmail.com">İletişim</a>
+      </nav>
+    </div>
+  </footer>
+
+</main>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script src="shared.js?v=20260425"></script>
@@ -891,12 +1572,21 @@
     $$('.obh-step').forEach(function(s){ s.classList.remove('is-active'); });
     var el = document.querySelector('.obh-step[data-step="' + n + '"]');
     if (el) el.classList.add('is-active');
+    var lfCounter = $('#lf-counter');
     if (typeof n === 'number') {
       $('#obh-counter').textContent = n + ' / ' + TOTAL_STEPS;
+      if (lfCounter) lfCounter.textContent = 'Adım ' + n + ' / ' + TOTAL_STEPS;
       $('#obh-progress-fill').style.width = ((n/TOTAL_STEPS)*100) + '%';
-      window.scrollTo(0, 0);
+      // Form section üstüne scroll — landing hero'ya geri sürüklenmesin
+      var formSec = document.getElementById('basvuru');
+      if (formSec && n > 1) {
+        formSec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
     } else {
       $('#obh-counter').textContent = '✓';
+      if (lfCounter) lfCounter.textContent = 'Tamamlandı';
       $('#obh-progress-fill').style.width = '100%';
     }
   }
