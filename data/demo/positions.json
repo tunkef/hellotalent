@@ -1,0 +1,57 @@
+[
+  {
+    "id": "pos-1",
+    "title": "Mağaza Müdürü — Bağdat Caddesi",
+    "segment": "luks",
+    "city": "İstanbul",
+    "district": "Kadıköy",
+    "experience_years": "5+",
+    "active_pipeline_count": 7,
+    "created_at": "2026-04-12T08:30:00Z",
+    "status": "open"
+  },
+  {
+    "id": "pos-2",
+    "title": "Satış Danışmanı — Akmerkez",
+    "segment": "luks",
+    "city": "İstanbul",
+    "district": "Beşiktaş",
+    "experience_years": "2-4",
+    "active_pipeline_count": 5,
+    "created_at": "2026-04-15T11:00:00Z",
+    "status": "open"
+  },
+  {
+    "id": "pos-3",
+    "title": "Reyon Sorumlusu — Bursa Korupark",
+    "segment": "high-street",
+    "city": "Bursa",
+    "district": "Nilüfer",
+    "experience_years": "3-5",
+    "active_pipeline_count": 4,
+    "created_at": "2026-04-18T14:20:00Z",
+    "status": "open"
+  },
+  {
+    "id": "pos-4",
+    "title": "Vitrin Düzenleyici — İzmir Mavibahçe",
+    "segment": "premium",
+    "city": "İzmir",
+    "district": "Karşıyaka",
+    "experience_years": "1-3",
+    "active_pipeline_count": 3,
+    "created_at": "2026-04-20T09:45:00Z",
+    "status": "open"
+  },
+  {
+    "id": "pos-5",
+    "title": "Mağaza Müdür Yardımcısı — Ankara Panora",
+    "segment": "high-street",
+    "city": "Ankara",
+    "district": "Çankaya",
+    "experience_years": "3-5",
+    "active_pipeline_count": 2,
+    "created_at": "2026-04-22T16:10:00Z",
+    "status": "open"
+  }
+]

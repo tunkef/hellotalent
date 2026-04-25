@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-Frame-Options" content="DENY">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://cpwibefquojehjehtrog.supabase.co; connect-src 'self' https://cpwibefquojehjehtrog.supabase.co wss://cpwibefquojehjehtrog.supabase.co; object-src 'none'; base-uri 'self'; frame-ancestors 'none'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1E2D5E" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0A0F1F" media="(prefers-color-scheme: dark)">
+<title>Ekip · hellotalent.ai</title>
+<meta name="robots" content="noindex">
+<script>(function(){var k='ht_theme_preference',s;try{s=localStorage.getItem(k)}catch(e){}var d=(s==='dark'||(s!=='light'&&window.matchMedia&&window.matchMedia('(prefers-color-scheme:dark)').matches));document.documentElement.setAttribute('data-theme',d?'dark':'light');if(d)document.documentElement.classList.add('dark');})()</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/tokens.css?v=20260426asamab0">
+<link rel="stylesheet" href="shared-v2.css?v=20260426asamab0">
+<link rel="stylesheet" href="css/hr-shell.css?v=20260426asamab0">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="shared.js?v=20260426asamab0"></script>
+</head>
+<body class="hr-page" data-hr-page="team">
+<a class="skip-to-content" href="#main">İçeriğe atla</a>
+
+<header class="lp-hdr">
+  <div class="lp-hdr-inner">
+    <a class="lp-logo" href="ik.html">hello<em>talent</em></a>
+    <div class="lp-hdr-mid">
+      <button type="button" class="hr-position-switcher" data-hr-position-btn aria-haspopup="listbox" aria-label="Aktif pozisyon">
+        <span class="hr-position-switcher__label">Pozisyon</span>
+        <span class="hr-position-switcher__value" data-hr-position-value>Tüm pozisyonlar</span>
+        <svg class="hr-position-switcher__chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+    </div>
+    <div class="lp-cta">
+      <div class="hr-user-menu-wrap">
+        <button type="button" class="hr-user-menu-btn" data-hr-user-menu-btn aria-expanded="false" aria-haspopup="menu">
+          <span class="hr-user-menu-avatar" data-hr-user-avatar>K</span>
+          <span class="hr-user-menu-name" data-hr-user-name>Yükleniyor</span>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="hr-user-menu" data-hr-user-menu role="menu">
+          <div class="hr-user-menu__head">
+            <div class="hr-user-menu__head-name" data-hr-user-fullname>—</div>
+            <div class="hr-user-menu__head-email" data-hr-user-email>—</div>
+          </div>
+          <a class="hr-user-menu__item" href="hr-settings.html" role="menuitem">Ayarlar</a>
+          <a class="hr-user-menu__item" href="hr-company.html" role="menuitem">Şirket profili</a>
+          <button type="button" class="hr-user-menu__item hr-user-menu__item--danger" data-hr-logout role="menuitem">Çıkış yap</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<nav class="hr-subnav" aria-label="Kurumsal panel navigasyonu">
+  <div class="hr-subnav__inner">
+    <a class="hr-subnav-link" href="ik.html" data-hr-link="hub">Genel Bakış</a>
+    <a class="hr-subnav-link" href="hr-pipeline.html" data-hr-link="pipeline">Pipeline</a>
+    <a class="hr-subnav-link" href="hr-pool.html" data-hr-link="pool">Havuz</a>
+    <a class="hr-subnav-link" href="hr-messages.html" data-hr-link="messages">Mesajlar</a>
+    <a class="hr-subnav-link" href="hr-candidate.html" data-hr-link="candidate">Adaylar</a>
+    <a class="hr-subnav-link" href="hr-campaigns.html" data-hr-link="campaigns">Kampanyalar</a>
+    <a class="hr-subnav-link" href="hr-company.html" data-hr-link="company">Şirket</a>
+    <a class="hr-subnav-link" href="hr-team.html" data-hr-link="team">Ekip</a>
+    <a class="hr-subnav-link" href="hr-settings.html" data-hr-link="settings">Ayarlar</a>
+  </div>
+</nav>
+
+<main id="main" class="hr-container">
+  <header class="hr-pg-head">
+    <div class="hr-pg-head__eyebrow">Ekip</div>
+    <h1 class="hr-pg-head__title">Panele erişen kişiler</h1>
+    <p class="hr-pg-head__lede">Yönetici, işe alım uzmanı ve gözlemci rollerini buradan davet eder, yetkilendirme yaparsınız. Aday verisine erişim rol bazında ayrılır.</p>
+  </header>
+
+  <div class="hr-card">
+    <div class="hr-empty-state">
+      <div class="hr-empty-state__icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      </div>
+      <h2 class="hr-empty-state__title">Ekip yönetimi Sprint 6'da açılır</h2>
+      <p class="hr-empty-state__desc">Davet akışı, rol matrisi (admin / recruiter / viewer) ve yetki kontrolü sırada. P3'te tasarlanmış mimari (company_teams + invitations) backend Sprint 7'de aktiftir.</p>
+      <a class="hr-empty-state__cta" href="ik.html">Genel bakışa dön
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </a>
+    </div>
+  </div>
+</main>
+
+<script src="js/hr-shell.js?v=20260426asamab0" defer></script>
+<script src="js/hr-data.js?v=20260426asamab0" defer></script>
+<script src="js/hr-team.js?v=20260426asamab0" defer></script>
+</body>
+</html>

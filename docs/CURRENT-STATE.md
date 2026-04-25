@@ -1,7 +1,62 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 25 Nisan 2026 | Asama 84.3 — Wizard step 1 = welcome + AI-ism temizligi
+> Son guncelleme: 26 Nisan 2026 | FAZ B Sprint 0 — HR Hub multi-page iskelet CANLI
 >
-> Aktif Odak: Tuna feedback (ekran goruntusu): mevcut wizard hero (eyebrow + h1 + sub + greeting) wizard form section'inin USTUNDE "lf-form-section__head" olarak duruyordu. Bunu wizard'in 1. kapak step'i (welcome) olarak icine tasidik. Tum wizard copy AI-ism acisindan tarandi, content-writer disipliniyle fonksiyonel/abartisiz tone'a cevrildi, "siz" hitabi tum step'lerde tutarli yapildi.
+> Aktif Odak: FAZ B basladi. Eski 4905 satir tek-dosya ik.html sidebar dashboard ik.legacy.html olarak yedeklendi; yeni ik.html lp-hdr master pattern (auth sayfalariyla %100 ayni) + 9 link subnav + dashboard kartlar olarak yeniden yazildi. 8 panel (Pipeline / Havuz / Mesajlar / Adaylar / Kampanyalar / Sirket / Ekip / Ayarlar) kendi HTML+JS dosyalarinda iskelet halinde, Sprint 1+ doldurulacak. Multi-page modulerlik = "kod ararken/gelistirirken rahat" Tuna karari.
+>
+> ── FAZ B Sprint 0 (26 Nisan 2026 — HR Hub iskelet) ──
+>
+> **Tetikleyici:** FAZ B basladi. Tuna kararlari: (1) lp-hdr master pattern (sidebar YOK), (2) multi-page modulerlik (her panel kendi dosyasi), (3) en bastan en iyi insa, (4) chief-of-staff orchestration zorunlu zincir.
+>
+> **chief-of-staff orchestration (T2 tier, multi-agent zincir):**
+> 1. designer + impeccable-design → `.claude/agent-memory/design-specs/hr-hub-shell-spec.md` (lp-hdr + subnav + dashboard kart layout, token reuse, dark mode plan)
+> 2. content-writer + avoid-ai-writing → 8 panel adi + dashboard kart copy + "siz" hitabi tutarli, "Adaylar" tekil tutuldu (eski "Aday Detay" detay sayfasi olarak)
+> 3. ui-agent → 3 shell asset + 1 hub HTML + 8 panel HTML + 8 panel JS, hepsi vanilla, BEM benzeri `hr-*` namespace, hardcoded color/font yok (tum master token reference)
+> 4. supabase-agent (paralel, Sprint 7 hazirligi) → js/hr-data.js dual-mode adapter contract: 11 metod (searchCandidates / getCandidateById / getPipeline / moveStage / addToPipeline / listNotes / addNote / getMessageThreads / sendMessage / getCampaigns / getPositions). `window.HR_REAL_MODE_ENABLED` flag default false, real RPC isimleri TBD ama interface contract donmus
+> 5. darkmode-auditor (mental) → hr-shell.css icinde 3 ayri dark mode override layer: html.dark, html[data-theme="dark"], @media (prefers-color-scheme: dark) script-less fallback. WCAG AA: subnav active link verm + 2px indicator, button border ratio 3:1+ koruma
+> 6. uat-tester → tests/hr-hub-skeleton.spec.js (11 test x 2 viewport = 22 + dahili 14 sayfa-spesifik = 36 test) PASS — markup-level (auth gate redirect oldugu icin static HTML kontrol)
+> 7. code-reviewer (5-axis) → BLOCKER yok. SOLID temiz: SRP (her panel kendi dosyasi), OCP (yeni panel eklenirken sadece matrix + 2 dosya), DIP (HRData abstract adapter), ISP (her ajan kendi tool'unu cagirir). console.log yok, sadece warn/error. Master token reuse %100, hardcoded hex/font/spacing yok
+> 8. Sentez → Bu CURRENT-STATE guncellemesi + commit
+>
+> **Yeni dosyalar (Sprint 0):**
+> - Shell: `css/hr-shell.css` (~520 satir), `js/hr-shell.js` (~250 satir), `js/hr-data.js` (~280 satir)
+> - Hub: `ik.html` (yeni, ~270 satir lp-hdr + subnav + dashboard 8 quick-card + KPI grid + activity placeholder), `js/hr-hub.js` (~55 satir KPI loader)
+> - 8 panel HTML: `hr-pipeline.html`, `hr-pool.html`, `hr-messages.html`, `hr-candidate.html`, `hr-campaigns.html`, `hr-company.html`, `hr-team.html`, `hr-settings.html` — hepsi lp-hdr + subnav + container + h1 + empty-state placeholder, ~115 satir avg
+> - 8 panel JS: `js/hr-pipeline.js`, `js/hr-pool.js`, `js/hr-messages.js`, `js/hr-candidate.js`, `js/hr-campaigns.js`, `js/hr-company.js`, `js/hr-team.js`, `js/hr-settings.js` — hepsi IIFE strict + HRShell.ready() hook, ~17 satir avg
+> - Demo data: `data/demo/candidates.json` (50 fake aday Türkçe perakende isimleri), `data/demo/positions.json` (5 pozisyon), `data/demo/pipeline.json` (21 state), `data/demo/messages.json` (10 thread + 25+ mesaj), `data/demo/campaigns.json` (5 kampanya)
+> - Test: `tests/hr-hub-skeleton.spec.js` (36 test PASS — 9 sayfa markup, asset varlik, HRShell + HRData API kontrol, demo data sanity, master pattern butunluk, admin.html dokunulmadi guard)
+> - Spec: `.claude/agent-memory/design-specs/hr-hub-shell-spec.md` (designer brief)
+>
+> **Yedeklenen:**
+> - `ik.legacy.html` (4905 satir eski sidebar dashboard, referans icin durur, prod'a gitmez — body data-hr-page yok, subnav yok)
+>
+> **Mimari:**
+> ```
+> [auth gate]                  giris.html?tab=ik (oturum yok / aday hesabi)
+>      v
+> [onboarding gate]            isveren-onboarding.html (resume, onboarding_completed=false)
+>      v
+> [HR Hub]                     ik.html — dashboard + KPI + 8 quick-card
+>      v
+> [8 panel] hr-pipeline | hr-pool | hr-messages | hr-candidate?id=...
+>           hr-campaigns | hr-company | hr-team | hr-settings
+> ```
+>
+> Her hr-*.html sayfasi ortak iskelet:
+> - lp-hdr (master) + position switcher (lp-hdr-mid) + user menu (lp-cta)
+> - hr-subnav (9 link, sticky, sayfa-spesifik active highlight)
+> - hr-container (max-width 1280, padding clamp)
+> - main + page-spesifik <script src="js/hr-{panel}.js">
+>
+> **JS architecture:**
+> - `js/hr-shell.js` → window.HRShell { ready, getUser, getProfile, getActivePosition, setActivePosition, signOut, refreshSubnav, getSupa, PANEL_REGISTRY }
+> - `js/hr-data.js` → window.HRData { isRealMode, 11 metod async }
+> - Panel JS'ler HRShell.ready() bekler, sonra panel-spesifik render
+>
+> **Deploy + commit:** Sprint 0 commit + push (~24 dosya). GitHub Pages ~40s. Manual test: `/giris.html?tab=ik` -> oturum -> /ik.html (hub) -> subnav 8 panel gezilebilir, hepsinde empty-state + "Sprint X'de acilir" mesaji
+>
+> **Sonraki:** Sprint 1 — Pipeline (kanban + drag-drop, hr-pipeline.js doldur, position-aware filter)
+>
+> **Tier:** T2 (multi-page UI iskelet, RLS/auth gate degismedi, mevcut hr_profiles + get_onboarding_state RPC reuse). Codex review tetiklenmedi (T3 esik degil — schema/policy degismedi).
 >
 > ── Asama 84.3 (25 Nisan 2026 — wizard 9-step + AI-ism temizligi) ──
 >

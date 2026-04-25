@@ -1,0 +1,148 @@
+[
+  {
+    "id": "th-001",
+    "candidate_id": "c-001",
+    "candidate_name": "Ayşe Demir",
+    "position_id": "pos-1",
+    "position_title": "Mağaza Müdürü — Bağdat Caddesi",
+    "last_message": "Mülakat tarihini onaylıyorum, perşembe 14:00 uygun.",
+    "last_message_at": "2026-04-23T16:30:00Z",
+    "unread_count": 0,
+    "messages": [
+      {"id":"m-001","from":"hr","body":"Merhaba Ayşe Hanım, başvurunuzu inceledik. Mülakat için müsait olduğunuz bir gün paylaşır mısınız?","sent_at":"2026-04-22T10:15:00Z"},
+      {"id":"m-002","from":"candidate","body":"Merhaba, perşembe öğleden sonra uygunum.","sent_at":"2026-04-22T18:45:00Z"},
+      {"id":"m-003","from":"hr","body":"Perşembe 14:00 ofiste sizi bekliyoruz. Adres ve detay e-posta ile geldi.","sent_at":"2026-04-23T09:00:00Z"},
+      {"id":"m-004","from":"candidate","body":"Mülakat tarihini onaylıyorum, perşembe 14:00 uygun.","sent_at":"2026-04-23T16:30:00Z"}
+    ]
+  },
+  {
+    "id": "th-002",
+    "candidate_id": "c-008",
+    "candidate_name": "Cem Aydın",
+    "position_id": "pos-1",
+    "position_title": "Mağaza Müdürü — Bağdat Caddesi",
+    "last_message": "Antalya'dan İstanbul'a taşınma desteği var mı?",
+    "last_message_at": "2026-04-23T11:20:00Z",
+    "unread_count": 1,
+    "messages": [
+      {"id":"m-010","from":"hr","body":"Cem Bey, mağaza müdürü pozisyonu için profilinizi inceledik. İlk görüşmeyi videoyla yapabilir miyiz?","sent_at":"2026-04-21T14:00:00Z"},
+      {"id":"m-011","from":"candidate","body":"Merhaba, video görüşme uygundur. Pazartesi sabah saatleri olur mu?","sent_at":"2026-04-22T08:30:00Z"},
+      {"id":"m-012","from":"hr","body":"Pazartesi 10:00 link gönderiyoruz.","sent_at":"2026-04-22T11:00:00Z"},
+      {"id":"m-013","from":"candidate","body":"Antalya'dan İstanbul'a taşınma desteği var mı?","sent_at":"2026-04-23T11:20:00Z"}
+    ]
+  },
+  {
+    "id": "th-003",
+    "candidate_id": "c-013",
+    "candidate_name": "Berk Korkmaz",
+    "position_id": "pos-1",
+    "position_title": "Mağaza Müdürü — Bağdat Caddesi",
+    "last_message": "Referansları paylaşabilirim, e-posta atayım.",
+    "last_message_at": "2026-04-22T15:10:00Z",
+    "unread_count": 0,
+    "messages": [
+      {"id":"m-020","from":"hr","body":"Berk Bey, ikinci görüşmede referans bilgileri istiyoruz.","sent_at":"2026-04-22T13:00:00Z"},
+      {"id":"m-021","from":"candidate","body":"Referansları paylaşabilirim, e-posta atayım.","sent_at":"2026-04-22T15:10:00Z"}
+    ]
+  },
+  {
+    "id": "th-004",
+    "candidate_id": "c-005",
+    "candidate_name": "Elif Çelik",
+    "position_id": "pos-2",
+    "position_title": "Satış Danışmanı — Akmerkez",
+    "last_message": "Bu akşam saat 19:00 görüşelim mi?",
+    "last_message_at": "2026-04-22T17:00:00Z",
+    "unread_count": 2,
+    "messages": [
+      {"id":"m-030","from":"hr","body":"Elif Hanım, başvurunuz için kısa bir telefon görüşmesi yapabilir miyiz?","sent_at":"2026-04-21T11:00:00Z"},
+      {"id":"m-031","from":"candidate","body":"Tabii, ne zaman uygun?","sent_at":"2026-04-21T19:30:00Z"},
+      {"id":"m-032","from":"candidate","body":"Bu akşam saat 19:00 görüşelim mi?","sent_at":"2026-04-22T17:00:00Z"}
+    ]
+  },
+  {
+    "id": "th-005",
+    "candidate_id": "c-007",
+    "candidate_name": "Selin Öztürk",
+    "position_id": "pos-2",
+    "position_title": "Satış Danışmanı — Akmerkez",
+    "last_message": "Mağaza turunda görüştüğümüz için teşekkürler.",
+    "last_message_at": "2026-04-21T18:45:00Z",
+    "unread_count": 0,
+    "messages": [
+      {"id":"m-040","from":"hr","body":"Selin Hanım, perşembe mağaza turuna bekliyoruz.","sent_at":"2026-04-19T10:00:00Z"},
+      {"id":"m-041","from":"candidate","body":"Tarih onaylıyorum, görüşmek üzere.","sent_at":"2026-04-19T13:30:00Z"},
+      {"id":"m-042","from":"candidate","body":"Mağaza turunda görüştüğümüz için teşekkürler.","sent_at":"2026-04-21T18:45:00Z"}
+    ]
+  },
+  {
+    "id": "th-006",
+    "candidate_id": "c-004",
+    "candidate_name": "Burak Şahin",
+    "position_id": "pos-3",
+    "position_title": "Reyon Sorumlusu — Bursa Korupark",
+    "last_message": "Çarşamba günü görüşmeye geliyorum.",
+    "last_message_at": "2026-04-22T20:15:00Z",
+    "unread_count": 0,
+    "messages": [
+      {"id":"m-050","from":"hr","body":"Burak Bey, çarşamba 11:00 mülakat için müsait misiniz?","sent_at":"2026-04-21T14:00:00Z"},
+      {"id":"m-051","from":"candidate","body":"Çarşamba günü görüşmeye geliyorum.","sent_at":"2026-04-22T20:15:00Z"}
+    ]
+  },
+  {
+    "id": "th-007",
+    "candidate_id": "c-026",
+    "candidate_name": "Damla Kara",
+    "position_id": "pos-3",
+    "position_title": "Reyon Sorumlusu — Bursa Korupark",
+    "last_message": "Maaş bandı hakkında bilgi alabilir miyim?",
+    "last_message_at": "2026-04-23T09:30:00Z",
+    "unread_count": 1,
+    "messages": [
+      {"id":"m-060","from":"hr","body":"Damla Hanım, ön elemeyi geçtiniz. Görüşmek üzere bir tarih önerelim.","sent_at":"2026-04-22T11:00:00Z"},
+      {"id":"m-061","from":"candidate","body":"Maaş bandı hakkında bilgi alabilir miyim?","sent_at":"2026-04-23T09:30:00Z"}
+    ]
+  },
+  {
+    "id": "th-008",
+    "candidate_id": "c-003",
+    "candidate_name": "Zeynep Kaya",
+    "position_id": "pos-4",
+    "position_title": "Vitrin Düzenleyici — İzmir Mavibahçe",
+    "last_message": "Portfolyomu az önce paylaştım, dönüş bekliyorum.",
+    "last_message_at": "2026-04-23T13:50:00Z",
+    "unread_count": 1,
+    "messages": [
+      {"id":"m-070","from":"hr","body":"Zeynep Hanım, vitrin portfolyonuzu paylaşabilir misiniz?","sent_at":"2026-04-22T10:00:00Z"},
+      {"id":"m-071","from":"candidate","body":"Portfolyomu az önce paylaştım, dönüş bekliyorum.","sent_at":"2026-04-23T13:50:00Z"}
+    ]
+  },
+  {
+    "id": "th-009",
+    "candidate_id": "c-020",
+    "candidate_name": "Begüm Acar",
+    "position_id": "pos-4",
+    "position_title": "Vitrin Düzenleyici — İzmir Mavibahçe",
+    "last_message": "Tatil dönüşü iletişime geçeceğim, teşekkürler.",
+    "last_message_at": "2026-04-22T08:00:00Z",
+    "unread_count": 0,
+    "messages": [
+      {"id":"m-080","from":"hr","body":"Begüm Hanım, görüşmek üzere müsait olduğunuz bir gün ister misiniz?","sent_at":"2026-04-19T17:00:00Z"},
+      {"id":"m-081","from":"candidate","body":"Tatil dönüşü iletişime geçeceğim, teşekkürler.","sent_at":"2026-04-22T08:00:00Z"}
+    ]
+  },
+  {
+    "id": "th-010",
+    "candidate_id": "c-006",
+    "candidate_name": "Onur Arslan",
+    "position_id": "pos-5",
+    "position_title": "Mağaza Müdür Yardımcısı — Ankara Panora",
+    "last_message": "Detayları gözden geçiriyorum, yarın dönüyorum.",
+    "last_message_at": "2026-04-23T15:50:00Z",
+    "unread_count": 1,
+    "messages": [
+      {"id":"m-090","from":"hr","body":"Onur Bey, ön eleme görüşmesi için pazartesi 11:00 nasıl?","sent_at":"2026-04-23T10:00:00Z"},
+      {"id":"m-091","from":"candidate","body":"Detayları gözden geçiriyorum, yarın dönüyorum.","sent_at":"2026-04-23T15:50:00Z"}
+    ]
+  }
+]
