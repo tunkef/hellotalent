@@ -1,0 +1,25 @@
+<!-- ═══════════════════════════════════════════════════════════
+     Clatu Master Header — kanonik snippet (index.html ile %100 aynı)
+     Asama 84.2 — 25 Nisan 2026
+
+     KOPYA-YAPIŞTIR. Logo + lp-cta sağ slot sayfa-spesifik değişir.
+     CSS class isimleri DEĞİŞTİRİLMEZ — shared-v2.css içinde tanımlı.
+     ═══════════════════════════════════════════════════════════ -->
+
+<header class="lp-hdr">
+  <div class="lp-hdr-inner">
+    <a class="lp-logo" href="index.html">hello<em>talent</em></a>
+
+    <!-- Orta slot: index.html'de segment toggle, HR/auth sayfalarında BOŞ veya
+         sayfa-spesifik içerik (örn step counter onboarding'de). -->
+    <div class="lp-hdr-mid"></div>
+
+    <div class="lp-cta">
+      <!-- Sayfa-spesifik sağ slot:
+           giris.html      → <a class="btn btn-outline btn-sm" href="uye-ol.html">Hesabın yok mu?</a>
+           uye-ol.html     → <a class="btn btn-outline btn-sm" href="giris.html">Hesabın var mı?</a>
+           onboarding      → <button class="btn btn-outline btn-sm" id="obh-logout">Çıkış</button>
+           index.html      → <a class="btn btn-ink btn-sm" href="giris.html">Giriş Yap</a> -->
+    </div>
+  </div>
+</header>

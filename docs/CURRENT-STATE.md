@@ -1,7 +1,39 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 25 Nisan 2026 | Asama 84.1 — Clatu HR Component Library + 3 sayfa migrate + leak fix
+> Son guncelleme: 25 Nisan 2026 | Asama 84.2 — Clatu HR v2 ROLLBACK + index master pattern align
 >
-> Aktif Odak: Sürdürülebilir layout system (component library) kuruldu — giris/uye-ol/isveren-onboarding tek source of truth. admin.html Tuna internal panel olarak AYRI kalır. ik.html FAZ B'de migrate. Email leak (kefelituna@gmail.com → /iletisim.html) tüm public sayfalarda temizlendi.
+> Aktif Odak: 84.1'deki Clatu HR v2 ayrı sistem yanlıştı (Tuna feedback: "logo aynı durmuyor, fontlar farklı"). ROLLBACK + index.html master pattern (lp-hdr + lp-logo + ht-foot + shared-v2.css) HR sayfalarına uygulandı. Tek source of truth: index.html.
+>
+> ── Asama 84.2 (25 Nisan 2026 ROLLBACK) ──
+>
+> **Silinen kalıcı dosyalar (yanlış yöndü):**
+> - `css/clatu-hr-tokens.css` (574 satır)
+> - `css/clatu-hr-components.css` (552 satır)
+> - `partials/hr-header.html`, `partials/hr-footer.html`
+> - `scripts/check-hr-layout.sh`
+> - `isveren-demo-yakinda.html` (dead code, akış: wizard → ik.html direkt)
+>
+> **Yeni kalıcı (Clatu shared, index master):**
+> - `partials/header.html` — index.html'den extract edilen kanonik header (lp-hdr + lp-logo + lp-cta)
+> - `partials/footer.html` — index.html'den extract (ht-foot + foot-grid + foot-nav 5 link + foot-social 4 ikon)
+> - `scripts/check-clatu-layout.sh` — pre-commit guard (clatu-hr-*.css yasak hard-block, "Kurumsal başvuru" subtitle hard-block, lp-hdr/ht-foot warn)
+>
+> **3 sayfa migrate (index master pattern align):**
+> - giris.html, uye-ol.html, isveren-onboarding.html
+> - Header: lp-hdr + lp-logo (hello<em>talent</em>) + sayfa-spesifik sağ slot
+> - Footer: ht-foot + 5 nav link + 4 social ikon + © 2026 HelloTalent
+> - Font: Bricolage Grotesque (logo+heading) + Plus Jakarta Sans (body) — index ile %100 aynı
+> - Token: shared-v2.css (master), --hr-* shim sadece wizard içeriği için
+>
+> **Değişmez:**
+> - admin.html (Tuna internal panel, ayrı sistem)
+> - ik.html (sidebar, FAZ B'de tam migration)
+> - index.html (master pattern, kaynak)
+>
+> **Test:** 86/86 PASS — `tests/layout-consistency.spec.js` (giris+uye-ol × 4 viewport + isveren-onboarding markup-level regression)
+>
+> ── Asama 84 (önceki) ──
+>
+> Aktif Odak: ik.html'i KISS + Pozisyon-aware Pipeline workspace olarak bastan yaziyoruz. MVP 1 = "yasayan demo + lead funnel" (fake data, gercek aday yok), MVP 2 = paid + Iyzico + KVKK e-sozlesme (15+ kurumsal lead + 5000+ aday havuzu threshold sonrasi).
 >
 > ── Asama 84.1 (25 Nisan 2026 ek revize) ──
 >
