@@ -1,7 +1,71 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 26 Nisan 2026 | Asama 86 — FAZ B yeniden tasarim TAMAMLANDI (5 sprint, 9 sayfa)
+> Son guncelleme: 26 Nisan 2026 sabah | Asama 86 UAT GECTI — FAZ B yeniden tasarim CANLI, MVP 2 yola hazir
 >
-> Aktif Odak: Tuna feedback "profil.html'i baz almiyorsun, dashboard istiyorum, Clatu'yu override ettin, tokenlari yedin" sonrasi FAZ B Sprint 0-8 ROLLBACK + profil.html pattern adapt. Asama 86 Sprint A-E ile 9 sayfa multi-page mimari + Anasayfa dashboard + Adaylar segment + Mesajlar + Avatar dropdown panelleri. Token-strict (0 hardcoded hex), XSS-safe, multi-agent zincir disiplinli. Tuna sabah UAT.
+> Aktif Odak: Asama 86 FAZ B yeniden tasarim Tuna UAT'tan gecti (5 sprint, 9 sayfa, 1570+ test PASS, sifir teknik borc). Sonraki ana yon: MVP 2 hazirligi (Iyzico + KVKK e-sozlesme + adapter real mode). Threshold: 15+ kurumsal lead + 5000+ aday havuzu.
+>
+> ── SONRAKI YAPILACAKLAR (yeni session baslarken oncelik sirasi) ──
+>
+> ### 🟥 ACIL (1-2 gun)
+>
+> 1. **Eski FAZ B Sprint 0-8 CSS temizligi:**
+>    - `css/hr-campaigns.css`, `hr-candidate.css`, `hr-forms.css`, `hr-messages.css` — Sprint A rollback'inde unutuldu, kullanilmiyor
+>    - Komut: `rm css/hr-{campaigns,candidate,forms,messages}.css`
+>    - 5 dakika
+>
+> 2. **CI workflow Playwright Chromium install:**
+>    - Su an `test:p3` script `echo + exit 0` placeholder
+>    - `.github/workflows/playwright.yml` `hr-regression` job'ina `npx playwright install --with-deps chromium` step ekle
+>    - Sonra `test:p3` gercek HR specs (hr-hub-skeleton + hr-pipeline + hr-pool + layout-consistency + auth-onboarding-flow + asama86-e2e) calissin
+>    - 10 dakika (security hook GitHub Actions edit'i blokladi son denemede, FAZ B sonrasi temiz tetikle)
+>
+> ### 🟧 MVP 2 HAZIRLIGI (1.5-2 hafta)
+>
+> Sprint 7'de backend zaten DB'de hazir (pipeline_stages enum + candidate_pipeline_state + employer_candidate_notes migration apply'li). Aktivasyon adimlari:
+>
+> 1. **Iyzico checkout + webhook** (5-7 gun, T3 audit + Codex zorunlu)
+>    - 4 tier: Free / Boost / Premium / Enterprise (sales-led)
+>    - Webhook → `start_subscription()` RPC → `hr_profiles.subscription_tier` update
+>
+> 2. **KVKK e-sozlesme** (2-3 gun)
+>    - DocuSign / KolayİK / lokal e-imza servisi research
+>    - Aydinlatma metni + veri isleyici sozlesmesi PDF template
+>    - `hr_profiles.kvkk_signed_at` set
+>
+> 3. **Adapter real mode aktivasyon** (1-2 gun)
+>    - `window.IK_REAL_MODE_ENABLED = true` config
+>    - Auth-aware UI (login required for real data)
+>    - Demo mode hala mevcut (`?demo_token=X` herkese acik)
+>
+> 4. **Sales-led kurumsal onboarding** (2-3 gun)
+>    - Tuna lead'lerden manuel hesap acar (admin panel'den)
+>    - Welcome paketi (email + telefon gorusme)
+>
+> ### 🟨 LEAD FUNNEL OPTIMIZASYON (paralel)
+>
+> 1. **PostHog funnel tracking** (2-3 saat)
+>    - signup → wizard step 1 → ... → ik.html
+>    - Drop-off noktalari + cohort analiz
+>
+> 2. **Email sequence** (3-4 saat)
+>    - Signup sonrasi 24h: wizard tamamla reminder
+>    - Wizard yarim kalmissa 48h follow-up
+>    - Demo'ya hic girmemisse 1 hafta sonra
+>
+> 3. **Marketing campaign** (icerik hazirligi)
+>    - LinkedIn ads (kurumsal IK direktoru target)
+>    - Sektor toplulugu (IK Platform, Kariyer)
+>    - Content marketing — pipeline + aday surec yonetimi
+>
+> ### 🟦 SECURITY / PENDING APPROVALS
+>
+> | ID | Konu | Deadline | Aksiyon |
+> |---|---|---|---|
+> | A1 | GitHub PAT rotate | 21 Temmuz 2026 (90g) | Manuel revoke + reissue + .env.local |
+> | A2 | CF Access Token rotate | 23 Haziran (60g hedef) | Service token refresh, 1 yil duration |
+> | A5 | CF API + Resend key | 25 Mayis (30g hedef) | Tuna sikinti yok demis, takip |
+> | A3 | Codex pre-commit gate | Hafta 2 dogfood yesil | scripts/codex-review.sh real impl |
+>
+> ── ASAMA 86 SPRINT A-E (26 Nisan 2026) ──
 >
 > ── Asama 86 Sprint A-E (26 Nisan 2026) ──
 >
