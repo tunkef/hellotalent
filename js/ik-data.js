@@ -36,8 +36,31 @@
   };
 
   /* ═══════ Helpers ═══════ */
+
+  /* realMode: tum kosullari kontrol eder —
+       1. IK_REAL_MODE_ENABLED flag
+       2. window.HT.getSupa singleton
+       3. IK_SHELL.ctx.hr (auth tamamlanmis)
+     Herhangi biri eksikse demo path calisir. */
   function realMode() {
-    return window.IK_REAL_MODE_ENABLED === true;
+    if (!window.IK_REAL_MODE_ENABLED) return false;
+    if (typeof window.HT !== 'object' || !window.HT.getSupa) return false;
+    var supa = window.HT.getSupa();
+    if (!supa) return false;
+    if (!window.IK_SHELL || !window.IK_SHELL.ctx || !window.IK_SHELL.ctx.hr) return false;
+    return true;
+  }
+
+  /* getSupa — realMode icinde cagir, null olmaz */
+  function getSupa() {
+    return window.HT.getSupa();
+  }
+
+  /* getCompanyId — hr_profiles.company_id (bigint) */
+  function getCompanyId() {
+    return (window.IK_SHELL && window.IK_SHELL.ctx && window.IK_SHELL.ctx.hr)
+      ? window.IK_SHELL.ctx.hr.company_id
+      : null;
   }
 
   function isDemoMode() {
@@ -166,6 +189,68 @@
     /* ── Candidates ── */
     searchCandidates: function (filters, position_id) {
       filters = filters || {};
+
+      if (realMode()) {
+        /* Real branch — search_employer_candidates RPC
+           (migration: 20260404092358_search_rpc_new_fields.sql, line 31-38)
+           p_filters: UI filters object → JSONB shape:
+             aktifArayanlar, sehir, expMin, expMax,
+             pozisyon[], segment[], musait[], calisma[], egitim[], dil[]
+           Sort mapping: UI key → RPC p_sort value */
+        var supa = getSupa();
+        var companyId = getCompanyId();
+
+        var sortMap = {
+          'match':      'relevance',
+          'recent':     'newest',
+          'experience': 'exp_desc',
+          'name':       'name'  /* Phase C.5 — RPC name sort eklendi (mig 20260426093050) */
+        };
+        var pSort = sortMap[filters.sort || 'match'] || 'relevance';
+
+        /* UI filters → JSONB shape */
+        var pFilters = {};
+        if (filters.search && String(filters.search).trim()) {
+          pFilters.search = String(filters.search).trim();  /* Phase C.5 — text search RPC eklendi (mig 20260426093050) */
+        }
+        if (filters.aktifArayanlar) pFilters.aktifArayanlar = true;
+        if (filters.city)      pFilters.sehir    = filters.city;
+        if (filters.expMin != null) pFilters.expMin = filters.expMin;
+        if (filters.expMax != null) pFilters.expMax = filters.expMax;
+        if (Array.isArray(filters.pozisyon) && filters.pozisyon.length)  pFilters.pozisyon = filters.pozisyon;
+        else if (filters.position) pFilters.pozisyon = [filters.position];
+        if (Array.isArray(filters.segment)  && filters.segment.length)   pFilters.segment  = filters.segment;
+        else if (filters.segment) pFilters.segment = [filters.segment];
+        if (Array.isArray(filters.musait)   && filters.musait.length)    pFilters.musait   = filters.musait;
+        else if (filters.musaitlik) pFilters.musait = [filters.musaitlik];
+        if (Array.isArray(filters.calisma)  && filters.calisma.length)   pFilters.calisma  = filters.calisma;
+        if (Array.isArray(filters.egitim)   && filters.egitim.length)    pFilters.egitim   = filters.egitim;
+        if (Array.isArray(filters.dil)      && filters.dil.length)       pFilters.dil      = filters.dil;
+
+        return (async function () {
+          try {
+            var res = await supa.rpc('search_employer_candidates', {
+              p_filters:             pFilters,
+              p_employer_company_id: companyId,
+              p_sort:                pSort,
+              p_limit:               filters.limit  || 50,
+              p_offset:              filters.offset || 0,
+              p_position_id:         position_id    || null
+            });
+            if (res.error) {
+              console.warn('[ik-data] searchCandidates RPC error:', res.error.message);
+              return [];
+            }
+            /* RPC doner: { total, candidates: [...] } — candidates array passthrough */
+            var data = res.data || {};
+            return Array.isArray(data.candidates) ? data.candidates : [];
+          } catch (e) {
+            console.warn('[ik-data] searchCandidates exception:', e && e.message);
+            return [];
+          }
+        })();
+      }
+
       return fetchJSON('candidates').then(function (list) {
         var arr = list.filter(function (c) { return c.is_active !== false; });
 
@@ -230,6 +315,27 @@
     },
 
     getCandidate: function (id) {
+      if (realMode()) {
+        /* Real branch — direct SELECT candidates (CLAUDE.md: maybeSingle zorunlu) */
+        var supa = getSupa();
+        return (async function () {
+          try {
+            var res = await supa.from('candidates')
+              .select('*')
+              .eq('id', id)
+              .maybeSingle();
+            if (res.error) {
+              console.warn('[ik-data] getCandidate error:', res.error.message);
+              return null;
+            }
+            return res.data || null;
+          } catch (e) {
+            console.warn('[ik-data] getCandidate exception:', e && e.message);
+            return null;
+          }
+        })();
+      }
+
       return fetchJSON('candidates').then(function (list) {
         var hit = list.find(function (c) { return c.id === id; });
         return hit ? Object.assign({}, hit) : null;
@@ -238,6 +344,30 @@
 
     /* ── Positions ── */
     getPositions: function () {
+      if (realMode()) {
+        /* Real branch — positions tablosu, auth user'in pozisyonlari
+           positions.hr_profile_id = auth.uid() (docs/migrations/020_positions_table.sql line 6) */
+        var supa = getSupa();
+        var userId = window.IK_SHELL.ctx.user.id;
+        return (async function () {
+          try {
+            var res = await supa.from('positions')
+              .select('*')
+              .eq('hr_profile_id', userId);
+            if (res.error) {
+              console.warn('[ik-data] getPositions error:', res.error.message);
+              return [];
+            }
+            var list = res.data || [];
+            _cache.positions = list;
+            return list;
+          } catch (e) {
+            console.warn('[ik-data] getPositions exception:', e && e.message);
+            return [];
+          }
+        })();
+      }
+
       return fetchJSON('positions');
     },
 
@@ -255,6 +385,30 @@
     /* ── Pipeline ──
        Demo: pipeline.json + localStorage overlay (added/removed/stageMoves). */
     getPipeline: function (position_id) {
+      if (realMode()) {
+        /* Real branch — hr_get_pipeline RPC
+           (migration: 20260426012144, line 283-316)
+           RETURNS TABLE: id, position_id, candidate_id, stage,
+                          added_at, updated_at, candidate_name,
+                          candidate_pozisyon, candidate_sehir */
+        var supa = getSupa();
+        return (async function () {
+          try {
+            var res = await supa.rpc('hr_get_pipeline', {
+              p_position_id: position_id
+            });
+            if (res.error) {
+              console.warn('[ik-data] getPipeline RPC error:', res.error.message);
+              return [];
+            }
+            return res.data || [];
+          } catch (e) {
+            console.warn('[ik-data] getPipeline exception:', e && e.message);
+            return [];
+          }
+        })();
+      }
+
       return fetchJSON('pipeline').then(function (list) {
         var ov = readOverlay();
         /* base entries for position */
@@ -297,6 +451,43 @@
     },
 
     moveStage: function (candidate_id, position_id, stage) {
+      if (realMode()) {
+        /* Real branch — hr_move_pipeline_stage(p_id uuid, p_stage pipeline_stage)
+           (migration: 20260426012144, line 319-351)
+           DIKKAT: p_id = candidate_pipeline_state.id (NOT candidate_id)
+           Once position+candidate ile lookup yapilir, sonra RPC cagrilir. */
+        var supa = getSupa();
+        return (async function () {
+          try {
+            /* 1. pipeline_state.id lookup */
+            var lookup = await supa.from('candidate_pipeline_state')
+              .select('id')
+              .match({ position_id: position_id, candidate_id: candidate_id })
+              .maybeSingle();
+            if (lookup.error) {
+              console.warn('[ik-data] moveStage lookup error:', lookup.error.message);
+              return { ok: false, error: lookup.error.message };
+            }
+            if (!lookup.data) {
+              return { ok: false, error: 'not in pipeline' };
+            }
+            /* 2. stage guncelle */
+            var res = await supa.rpc('hr_move_pipeline_stage', {
+              p_id:    lookup.data.id,
+              p_stage: stage
+            });
+            if (res.error) {
+              console.warn('[ik-data] moveStage RPC error:', res.error.message);
+              return { ok: false, error: res.error.message };
+            }
+            return res.data || { ok: true };
+          } catch (e) {
+            console.warn('[ik-data] moveStage exception:', e && e.message);
+            return { ok: false, error: e && e.message };
+          }
+        })();
+      }
+
       var ov = readOverlay();
       ov.stageMoves = ov.stageMoves || {};
       ov.stageMoves[position_id + '|' + candidate_id] = stage;
@@ -305,6 +496,34 @@
     },
 
     addToPipeline: function (candidate_id, position_id, stage) {
+      if (realMode()) {
+        /* Real branch — hr_add_to_pipeline RPC
+           (migration: 20260426012144, line 354-393)
+           Imza: hr_add_to_pipeline(p_position_id bigint, p_candidate_id bigint,
+                                    p_stage pipeline_stage DEFAULT 'yeni')
+           DIKKAT: demo'da stage default 'basvuru', real'de 'yeni' (Sprint 7 ENUM)
+           Doner: { ok, duplicate, row } */
+        var supa = getSupa();
+        var pStage = stage || 'yeni';
+        return (async function () {
+          try {
+            var res = await supa.rpc('hr_add_to_pipeline', {
+              p_position_id:  position_id,
+              p_candidate_id: candidate_id,
+              p_stage:        pStage
+            });
+            if (res.error) {
+              console.warn('[ik-data] addToPipeline RPC error:', res.error.message);
+              return { ok: false, error: res.error.message };
+            }
+            return res.data || { ok: true };
+          } catch (e) {
+            console.warn('[ik-data] addToPipeline exception:', e && e.message);
+            return { ok: false, error: e && e.message };
+          }
+        })();
+      }
+
       stage = stage || 'basvuru';
       var ov = readOverlay();
       ov.added = ov.added || [];
@@ -343,6 +562,28 @@
     },
 
     removeFromPipeline: function (candidate_id, position_id) {
+      if (realMode()) {
+        /* Real branch — RPC yok, direct DELETE candidate_pipeline_state
+           (migration: 20260426012144, line 119-135 — delete policy: admin only)
+           RLS siler, yetkisiz kullanici permission denied alir. */
+        var supa = getSupa();
+        return (async function () {
+          try {
+            var res = await supa.from('candidate_pipeline_state')
+              .delete()
+              .match({ position_id: position_id, candidate_id: candidate_id });
+            if (res.error) {
+              console.warn('[ik-data] removeFromPipeline error:', res.error.message);
+              return { ok: false, error: res.error.message };
+            }
+            return { ok: true };
+          } catch (e) {
+            console.warn('[ik-data] removeFromPipeline exception:', e && e.message);
+            return { ok: false, error: e && e.message };
+          }
+        })();
+      }
+
       var ov = readOverlay();
       ov.added = ov.added || [];
       ov.removed = ov.removed || [];
@@ -363,8 +604,32 @@
       return Promise.resolve({ ok: true });
     },
 
-    /* ── Notes ── (per-candidate, localStorage) */
+    /* ── Notes ── (per-candidate, localStorage demo / Supabase real) */
     getNotes: function (candidate_id) {
+      if (realMode()) {
+        /* Real branch — hr_list_notes RPC
+           (migration: 20260426012144, line 428-459)
+           Imza: hr_list_notes(p_candidate_id bigint)
+           Doner: TABLE(id, candidate_id, position_id, author_id,
+                        author_name, body, created_at, updated_at) */
+        var supa = getSupa();
+        return (async function () {
+          try {
+            var res = await supa.rpc('hr_list_notes', {
+              p_candidate_id: candidate_id
+            });
+            if (res.error) {
+              console.warn('[ik-data] getNotes RPC error:', res.error.message);
+              return [];
+            }
+            return res.data || [];
+          } catch (e) {
+            console.warn('[ik-data] getNotes exception:', e && e.message);
+            return [];
+          }
+        })();
+      }
+
       try {
         var raw = localStorage.getItem(LS_NOTES_PREFIX + candidate_id);
         return Promise.resolve(raw ? JSON.parse(raw) : []);
@@ -374,6 +639,36 @@
     },
 
     addNote: function (candidate_id, body) {
+      if (realMode()) {
+        /* Real branch — hr_add_note RPC
+           (migration: 20260426012144, line 396-425)
+           Imza: hr_add_note(p_candidate_id bigint, p_position_id bigint, p_body text)
+           DIKKAT: UI signature'inda position_id yok — IK_SHELL.getActivePositionId() ile al */
+        var supa = getSupa();
+        var clean = safeStr(body).trim();
+        if (!clean) return Promise.reject(new Error('empty'));
+        var pos_id = (window.IK_SHELL && window.IK_SHELL.getActivePositionId)
+          ? window.IK_SHELL.getActivePositionId()
+          : null;
+        return (async function () {
+          try {
+            var res = await supa.rpc('hr_add_note', {
+              p_candidate_id: candidate_id,
+              p_position_id:  pos_id,
+              p_body:         clean
+            });
+            if (res.error) {
+              console.warn('[ik-data] addNote RPC error:', res.error.message);
+              return { ok: false, error: res.error.message };
+            }
+            return res.data || { ok: true };
+          } catch (e) {
+            console.warn('[ik-data] addNote exception:', e && e.message);
+            return { ok: false, error: e && e.message };
+          }
+        })();
+      }
+
       var clean = safeStr(body).trim();
       if (!clean) return Promise.reject(new Error('empty'));
       return API.getNotes(candidate_id).then(function (notes) {
@@ -391,6 +686,28 @@
     },
 
     deleteNote: function (candidate_id, note_id) {
+      if (realMode()) {
+        /* Real branch — RPC yok, direct DELETE employer_candidate_notes
+           (migration: 20260426012144, line 212-228 — delete policy: author veya admin)
+           candidate_id parametre uyumu icin tutulur (RLS yeterli, sadece note_id lazim) */
+        var supa = getSupa();
+        return (async function () {
+          try {
+            var res = await supa.from('employer_candidate_notes')
+              .delete()
+              .eq('id', note_id);
+            if (res.error) {
+              console.warn('[ik-data] deleteNote error:', res.error.message);
+              return { ok: false, error: res.error.message };
+            }
+            return { ok: true };
+          } catch (e) {
+            console.warn('[ik-data] deleteNote exception:', e && e.message);
+            return { ok: false, error: e && e.message };
+          }
+        })();
+      }
+
       return API.getNotes(candidate_id).then(function (notes) {
         var next = notes.filter(function (n) { return n.id !== note_id; });
         try {

@@ -1,7 +1,69 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 26 Nisan 2026 ogleden sonra | PHASE A APPLY EDILDI — Sprint 7 SQL canlida, MVP 2 backend hazir
+> Son guncelleme: 26 Nisan 2026 ikindi | PHASE A + C + C.5 APPLY EDILDI — adapter real branch canlida, search RPC genisletildi
 >
-> Aktif Odak: Phase A (Sprint 7 SQL fix + apply) **TAMAMLANDI**. Wave 1-8 (~3sa, T3 disiplin) — supabase-agent + auditor + code-reviewer + Codex zincir + watchdog gozlemi (hayal contradiction yakalandi). Apply remote SUCCESS, smoke 4 query PASS. Sonraki: Phase C (`js/ik-data.js` real branch + field mapping).
+> Aktif Odak: Phase A (Sprint 7 SQL) + Phase C (ik-data.js real branch) + Phase C.5 (search RPC text search + name sort) **TAMAMLANDI**. Tuna karari: field mapping katmani YOK, UI Phase D'de real shape'e adapt edilecek. Sonraki: Phase D (10 panel JS refactor — `c.pozisyon` → `c.son_pozisyon`, `c.sehir` → `c.adres_il`, `c.deneyim_yil` → `Math.round(c.toplam_deneyim_ay/12)`, `c._match` → `c.match_score` + yeni `c.match_reasons` chip render).
+>
+> ── 26 NIS PHASE C + C.5 SONUCLARI ──
+>
+> **Phase C (ik-data.js real branch, Wave 1-2):**
+> - W1 (ui-agent): `js/ik-data.js`'e 10 metoda `if (realMode())` real branch eklendi
+>   - searchCandidates → search_employer_candidates RPC
+>   - getCandidate → direct SELECT candidates.maybeSingle()
+>   - getPositions → direct SELECT positions WHERE hr_profile_id
+>   - getPipeline → hr_get_pipeline RPC
+>   - moveStage → lookup pipeline_state.id + hr_move_pipeline_stage RPC (2 round-trip TOCTOU race backlog)
+>   - addToPipeline → hr_add_to_pipeline RPC
+>   - removeFromPipeline → direct DELETE candidate_pipeline_state
+>   - addNote → hr_add_note RPC (active position lookup)
+>   - getNotes → hr_list_notes RPC
+>   - deleteNote → direct DELETE employer_candidate_notes
+> - Helper: `realMode()` 4-koşul guard (flag + HT.getSupa + supa instance + IK_SHELL.ctx.hr), `getSupa()`, `getCompanyId()` private
+> - Demo branch side-by-side korundu (Sprint D metodları demo only)
+> - W2 (code-reviewer + Codex paralel): CONVERGENT HIGH — `filters.search` real no-op + sort 'name' silently 'newest' fallback (drift)
+>
+> **Phase C.5 (search RPC extend, Wave 1-7):**
+> - W1 (supabase-agent): yeni mig `20260426093050_search_rpc_text_search_and_name_sort.sql` — text search filter (full_name + son_pozisyon + adres_il ILIKE) + name sort (ASC NULLS LAST)
+> - W2 (auditor + code-reviewer paralel): CONVERGENT MEDIUM — ILIKE wildcard escape eksik (`%`/`_` user input semantiği bozar + `%_%_%_%` DoS amplifikasyon)
+> - W3 (supabase-agent): M1 fix — `v_search_escaped` local variable + 3-step replace (`\`/`%`/`_`) + `ESCAPE '\'`
+> - W4 (Codex T3): %95 agreement, PASS
+> - W5 (supabase-agent): apply remote SUCCESS, function source verify (f_search + v_search_escaped + ESCAPE '\\' + CASE 'name' sort hepsi mevcut)
+> - W6 (chief-of-staff): `js/ik-data.js` 2 minor JS edit
+>   - sort mapping `'name': 'newest' fallback` → `'name': 'name' direct`
+>   - pFilters.search mapping eklendi (UI search input → RPC p_filters.search)
+> - W7 (code-reviewer + Codex paralel): converge PASS, regression yok
+>
+> **Backlog (apply blocker degil):**
+> - A7 pending: `is_paid_employer` flag bypass guard (Iyzico oncesi sart) — auditor M2
+> - A8 pending: KVKK note retention policy — auditor L1
+> - A9 pending (yeni): telefon/email visible CTE'de search ile artık daha fazla görünür — KVKK md.5 minimizasyon (auditor M2 Phase C.5)
+> - moveStage TOCTOU race (Phase C Wave 2 LOW) — backlog
+> - getPosition real branch yok, _getPositionSync cache bagimli — backlog
+> - removeFromPipeline sadece admin silebilir (recruiter da olmali mi?) — backlog
+> - Bulk addToPipeline RPC önerisi — backlog
+> - pg_trgm GIN index (search perf, scale için) — backlog
+> - Türkçe COLLATE "tr-x-icu" (header'da kayitli, prod'da libicu confirm) — backlog
+> - LOW: `db-schema-reference.js` doc drift (`sehir` yok ama `adres_il` var) — Phase D'de panel JS refactor'la temizlenir
+>
+> **Live state Phase A + C + C.5 sonrasi:**
+> - candidate_pipeline_state, employer_candidate_notes tablolari + 5+ RPC + helper fn canlida (Phase A)
+> - search_employer_candidates RPC text search + name sort destekler (Phase C.5)
+> - js/ik-data.js dual-mode adapter (demo default, real branch yazildi ama default kapali — IK_REAL_MODE_ENABLED flag = false)
+>
+> ── REVIZE PLAN — YOL 1 (Phase A+C+C.5 done, D-I devam) ──
+>
+> | Phase | Statu | Sure |
+> |---|---|---|
+> | A. Sprint 7 SQL fix + apply | ✅ DONE (~3sa) | — |
+> | C. js/ik-data.js real branch | ✅ DONE (~2sa) | — |
+> | C.5. search RPC extend | ✅ DONE (~1.5sa) | — |
+> | D. 10 panel JS refactor (real shape) | TODO | ~1.5 gun |
+> | E. Auth context wiring (tkefeli login → company_id → IK_SHELL.ctx.hr expose + IK_REAL_MODE_ENABLED flag) | TODO | ~0.5 gun |
+> | F. Position duplicate temizligi + 1 anlamli pozisyon | TODO | ~30dk |
+> | G. TUNA UX/tasarim pass (6 aday + 1 pozisyon ile) | TODO | sürekli |
+> | H. is_test_seed flag + 200 aday seed sistemi | TODO | ~0.5 gun |
+> | I. Filter + matching test, polish, purge | TODO | sürekli |
+>
+> Kalan altyapi: ~2.5 gun (D+E+F+H), G+I sürekli polish.
 >
 > ── 26 NIS PHASE A SONUCLARI ──
 >
