@@ -18,6 +18,7 @@
   var LS_PIPELINE_OVERLAY = 'ht_ik_pipeline_state';
   var LS_NOTES_PREFIX = 'ht_ik_notes_';
   var LS_BLOCK_PREFIX = 'ht_ik_blocked_';
+  var LS_MESSAGES_OVERLAY = 'ht_ik_messages_state';
 
   /* Cache (memory only, sayfa lifecycle) */
   var _cache = {
@@ -69,6 +70,23 @@
       localStorage.setItem(LS_PIPELINE_OVERLAY, JSON.stringify(state || {}));
     } catch (e) {
       console.warn('[ik-data] overlay write fail:', e && e.message);
+    }
+  }
+
+  /* Messages overlay (Sprint C) */
+  function readMessagesOverlay() {
+    try {
+      var raw = localStorage.getItem(LS_MESSAGES_OVERLAY);
+      return raw ? JSON.parse(raw) : { sent: {}, read: {} };
+    } catch (e) {
+      return { sent: {}, read: {} };
+    }
+  }
+  function writeMessagesOverlay(state) {
+    try {
+      localStorage.setItem(LS_MESSAGES_OVERLAY, JSON.stringify(state || {}));
+    } catch (e) {
+      console.warn('[ik-data] messages overlay write fail:', e && e.message);
     }
   }
 
@@ -395,14 +413,74 @@
       } catch (e) { return false; }
     },
 
-    /* ── Messages (Sprint C stub) ── */
+    /* ═══════ Messages — Sprint C ═══════
+       Demo: messages.json fetch + localStorage overlay.
+       Overlay schema:
+         { sent: { [thread_id]: [Msg] },
+           read: { [thread_id]: true },
+           unreadDelta: { [thread_id]: number } }  // negative deltas
+       sendMessage → optimistic UI: returns inserted message immediately. */
     getMessageThreads: function () {
-      return fetchJSON('messages').catch(function () { return []; });
+      return fetchJSON('messages').then(function (list) {
+        var ov = readMessagesOverlay();
+        var out = (list || []).map(function (t) {
+          var clone = Object.assign({}, t);
+          clone.messages = (t.messages || []).slice();
+          var sent = (ov.sent && ov.sent[t.id]) || [];
+          if (sent.length) {
+            clone.messages = clone.messages.concat(sent);
+            var lastSent = sent[sent.length - 1];
+            clone.last_message = lastSent.body;
+            clone.last_message_at = lastSent.sent_at;
+          }
+          if (ov.read && ov.read[t.id]) {
+            clone.unread_count = 0;
+          }
+          return clone;
+        }).sort(function (a, b) {
+          return new Date(b.last_message_at || 0) - new Date(a.last_message_at || 0);
+        });
+        return out;
+      }).catch(function () { return []; });
+    },
+
+    getThread: function (thread_id) {
+      return API.getMessageThreads().then(function (list) {
+        var hit = (list || []).find(function (t) { return t.id === thread_id; });
+        return hit ? Object.assign({}, hit, {
+          messages: (hit.messages || []).slice()
+        }) : null;
+      });
     },
 
     sendMessage: function (thread_id, body) {
-      /* Sprint C'de gelistirilecek. Stub. */
-      return Promise.resolve({ ok: true, thread_id: thread_id, body: safeStr(body) });
+      var clean = safeStr(body).trim();
+      if (!clean) return Promise.reject(new Error('empty'));
+      if (!thread_id) return Promise.reject(new Error('thread_id required'));
+
+      var msg = {
+        id: uid('m-x-'),
+        from: 'hr',
+        body: clean,
+        sent_at: new Date().toISOString()
+      };
+
+      var ov = readMessagesOverlay();
+      ov.sent = ov.sent || {};
+      ov.sent[thread_id] = ov.sent[thread_id] || [];
+      ov.sent[thread_id].push(msg);
+      writeMessagesOverlay(ov);
+
+      return Promise.resolve({ ok: true, message: msg });
+    },
+
+    markThreadRead: function (thread_id) {
+      if (!thread_id) return Promise.resolve({ ok: false });
+      var ov = readMessagesOverlay();
+      ov.read = ov.read || {};
+      ov.read[thread_id] = true;
+      writeMessagesOverlay(ov);
+      return Promise.resolve({ ok: true });
     },
 
     /* ── Campaigns (Sprint D stub) ── */
@@ -415,7 +493,7 @@
 
     /* ── Cache reset (test) ── */
     _resetCache: function () {
-      _cache = { candidates: null, positions: null, pipeline: null, threads: null, campaigns: null };
+      _cache = { candidates: null, positions: null, pipeline: null, threads: null, campaigns: null, messages: null };
     },
 
     /* ── Mode flags ── */
