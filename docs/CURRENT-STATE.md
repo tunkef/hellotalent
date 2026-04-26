@@ -1,24 +1,147 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 26 Nisan 2026 sabah | Asama 86 UAT GECTI — FAZ B yeniden tasarim CANLI, MVP 2 yola hazir
+> Son guncelleme: 26 Nisan 2026 ogleden sonra | PHASE A APPLY EDILDI — Sprint 7 SQL canlida, MVP 2 backend hazir
 >
-> Aktif Odak: Asama 86 FAZ B yeniden tasarim Tuna UAT'tan gecti (5 sprint, 9 sayfa, 1570+ test PASS, sifir teknik borc). Sonraki ana yon: MVP 2 hazirligi (Iyzico + KVKK e-sozlesme + adapter real mode). Threshold: 15+ kurumsal lead + 5000+ aday havuzu.
+> Aktif Odak: Phase A (Sprint 7 SQL fix + apply) **TAMAMLANDI**. Wave 1-8 (~3sa, T3 disiplin) — supabase-agent + auditor + code-reviewer + Codex zincir + watchdog gozlemi (hayal contradiction yakalandi). Apply remote SUCCESS, smoke 4 query PASS. Sonraki: Phase C (`js/ik-data.js` real branch + field mapping).
 >
-> ── SONRAKI YAPILACAKLAR (yeni session baslarken oncelik sirasi) ──
+> ── 26 NIS PHASE A SONUCLARI ──
 >
-> ### 🟥 ACIL (1-2 gun)
+> **Wave history (T3 disiplin, hayal-prevention):**
+> - W1: supabase-agent SQL fix 9 nokta (uuid→bigint), dry-run SUCCESS — line 288 GRANT'i kacirdi
+> - W2: auditor + code-reviewer paralel → CONVERGENT bulgular: 1 BLOCKER (line 288 GRANT), 1 HIGH (WITH CHECK eksik), 1 MEDIUM (search_path eksik) + 3 polish
+> - W3: supabase-agent re-fix (7 satir), dry-run SUCCESS
+> - W4: re-audit → auditor PASS, code-reviewer hayal-FAIL (`c.sehir column does not exist` iddia etti, live schema'da `sehir` MEVCUT) → chief-of-staff verify ile curutuldu
+> - W5: supabase-agent N1 helper fn (is_employer_team_member) + N2 notation polish
+> - W6: Codex T3 second-opinion → %90 agreement, PASS
+> - W7: auditor delta audit → PASS
+> - W8: APPLY remote (`supabase db push --linked`) → SUCCESS + smoke 4 query PASS
+>   - Apply sirasinda dependency ordering hatasi (helper fn section 5b'de tanimliydi, policy section 3'te kullaniyordu) yakalandi, fonksiyon section 2b'ye tasindi
 >
-> 1. **Eski FAZ B Sprint 0-8 CSS temizligi:**
->    - `css/hr-campaigns.css`, `hr-candidate.css`, `hr-forms.css`, `hr-messages.css` — Sprint A rollback'inde unutuldu, kullanilmiyor
->    - Komut: `rm css/hr-{campaigns,candidate,forms,messages}.css`
->    - 5 dakika
+> **Backlog (Phase A scope disi, ayri migration):**
+> - A7 pending: `is_paid_employer` flag bypass (Iyzico oncesi sart) — auditor M2
+> - A8 pending: KVKK note retention policy — auditor L1
+> - LOW: `db-schema-reference.js` doc drift (`sehir` yok ama `adres_il` var) — Phase D'de panel JS refactor'la temizlenir
 >
-> 2. **CI workflow Playwright Chromium install:**
->    - Su an `test:p3` script `echo + exit 0` placeholder
->    - `.github/workflows/playwright.yml` `hr-regression` job'ina `npx playwright install --with-deps chromium` step ekle
->    - Sonra `test:p3` gercek HR specs (hr-hub-skeleton + hr-pipeline + hr-pool + layout-consistency + auth-onboarding-flow + asama86-e2e) calissin
->    - 10 dakika (security hook GitHub Actions edit'i blokladi son denemede, FAZ B sonrasi temiz tetikle)
+> **Live state Phase A apply sonrasi:**
+> - candidate_pipeline_state tablosu: 0 row, RLS=on, 4 policy
+> - employer_candidate_notes tablosu: 0 row, RLS=on, 4 policy
+> - is_employer_team_member(uuid) fonksiyonu canlida
+> - hr_get_pipeline(bigint), hr_move_pipeline_stage, hr_add_to_pipeline, hr_add_note, hr_list_notes RPC'leri canlida
+> - is_paid_employer() fonksiyonu canlida (M2 backlog'a kadar feature_flags.paid bypass riski acik)
 >
-> ### 🟧 MVP 2 HAZIRLIGI (1.5-2 hafta)
+> ── REVIZE PLAN GUNCELLEMESI — YOL 1 (Phase A done, B-I devam) ──
+>
+> | Phase | Statu | Sure |
+> |---|---|---|
+> | A. Sprint 7 SQL fix + apply | ✅ DONE (~3sa) | — |
+> | B. (skip — A icinde apply yapildi) | — | — |
+> | C. js/ik-data.js real branch + field map | TODO | ~1 gun |
+> | D. 10 panel JS refactor (real shape) | TODO | ~1.5 gun |
+> | E. Auth context wiring (tkefeli login → company_id) | TODO | ~0.5 gun |
+> | F. Position duplicate temizligi + 1 anlamli pozisyon | TODO | ~30dk |
+> | G. TUNA UX/tasarim pass (6 aday + 1 pozisyon ile) | TODO | sürekli |
+> | H. is_test_seed flag + 200 aday seed sistemi | TODO | ~0.5 gun |
+> | I. Filter + matching test, polish, purge | TODO | sürekli |
+>
+> Kalan altyapi: ~3.5 gun (C+D+E+F+H), G+I sürekli polish.
+>
+> ── 26 NIS OGLE AUDIT — KRITIK DUZELTMELER ──
+>
+> **YANLIS 1 (eski CURRENT-STATE iddiasi):** "Sprint 7 backend zaten DB'de hazir, migration apply'li"
+> **GERCEK:** `supabase migration list --linked` cikti — `20260426012144_hr_pipeline_notes_mvp2` LOCAL ONLY, **REMOTE'A APPLY OLMAMIS**. candidate_pipeline_state, employer_candidate_notes, hr_get_pipeline RPC vb. canlida HIC YOK.
+>
+> **YANLIS 2 (Sprint 7 SQL'in kendisi):** position_id type uyusmazligi
+> **GERCEK:** `positions.id = bigint` (migration 020), Sprint 7'de `position_id uuid REFERENCES positions(id)` — FK type mismatch. Apply olunca PostgreSQL hata verecek, blok eder. **Migration FIX gerekli once.**
+>
+> **YANLIS 3 (eski adapter tahmin):** "Real mode aktivasyon 1-2 gun"
+> **GERCEK:** `js/ik-data.js` su an demo branch only (real branch hic yazilmamis). `js/ik-pool.js` + diger 9 panel JS demo field shape'e bagli (`pozisyon` vs real `son_pozisyon`, `sehir` vs `adres_il`, `deneyim_yil` vs `toplam_deneyim_ay`). Real moda gecince TUMUNUN refactor + field mapping katmani gerekir. **Tahmin: 3-4 gun altyapi**, 1-2 gun degil.
+>
+> **Live state cetveli (supabase db query --linked, 26 Nis ogle):**
+> - candidates = 6 (4 degil, MEMORY.md eski) — Tuna 2 hesap (id 77, 80), Zeynep+Baris gercek prospect, 2 eksik veri
+> - hr_profiles = 1 (tek employer, K032 test hesabi)
+> - positions = 2 (duplicate "Store Manager", company_id=63, test artigi)
+> - companies = 63 (seedlenmis), brands = 100 (seedlenmis)
+> - aktif arayan aday = 2 (Zeynep + Baris)
+>
+> **Onceki session iki commit:**
+> - CSS cleanup: `css/hr-{campaigns,candidate,forms,messages}.css` SILINDI (commit yok ama dosya yok)
+> - CI workflow: `npm run test:p3` artik `playwright test tests/asama86-e2e.spec.js`, `p3-regression` job'a chromium install adimi eklendi (commit yok ama dosya degisti)
+>
+> ── REVIZE PLAN — YOL 1 (3-4 gun altyapi + UX/seed) ──
+>
+> ### 🟥 PHASE A — Sprint 7 SQL FIX (T3, ~1sa)
+>
+> 1. `20260426012144_hr_pipeline_notes_mvp2.sql` icindeki `position_id uuid` → `position_id bigint` degistir
+> 2. `hr_get_pipeline(p_position_id uuid)` → `bigint` parametre
+> 3. `hr_move_pipeline_stage(p_id uuid, ...)` candidate_pipeline_state.id uuid kalir (PRIMARY KEY) — sadece position_id type fix
+> 4. `hr_add_to_pipeline(p_position_id uuid, ...)` → `bigint`
+> 5. **Zincir zorunlu:** supabase-agent (fix) → auditor (RLS verify) → code-reviewer (5-axis) → Codex T3
+> 6. Pending-approvals'a plan + Tuna onayi sonrasi dispatch
+>
+> ### 🟥 PHASE B — Migration apply remote (T3, ~30dk)
+>
+> 1. supabase-agent dry-run (`supabase db push --dry-run --linked`)
+> 2. Apply (`supabase db push --linked`)
+> 3. Smoke: live row count + schema verify (candidate_pipeline_state mevcut mu, RLS policy enabled mi)
+> 4. RPC smoke: `SELECT * FROM hr_get_pipeline(1::bigint);` (position id=1 ile)
+>
+> ### 🟧 PHASE C — `js/ik-data.js` real branch + field map (T2, ~1 gun)
+>
+> 1. Real RPC cagrisi: `supabase.rpc('search_employer_candidates', { ... })` 
+> 2. Field mapping katmani: real RPC output (`son_pozisyon`, `adres_il`, `toplam_deneyim_ay`) → UI bekledigi shape (`pozisyon`, `sehir`, `deneyim_yil`)
+> 3. `realMode()` flag check her metod basinda
+> 4. ui-agent + code-reviewer
+>
+> ### 🟧 PHASE D — 10 panel JS refactor (T2, ~1.5 gun)
+>
+> 1. ik-pool.js, ik-pipeline.js, ik-candidate.js, ik-messages.js, ik-company.js, ik-team.js, ik-campaigns.js, ik-settings.js, ik-genel.js, ik-shell.js
+> 2. Her panel real shape'e adapt — paralel mumkun
+> 3. uat-tester her panel sonrasi smoke + code-reviewer batch
+>
+> ### 🟧 PHASE E — Auth context wiring (T2, ~0.5 gun)
+>
+> 1. tkefeli login → hr_profiles fetch → company_id store
+> 2. Tum RPC cagrilarinda employer_company_id parameter
+> 3. supabase-agent + code-reviewer
+>
+> ### 🟧 PHASE F — Position duplicate temizligi + 1 anlamli pozisyon (T1, ~30dk)
+>
+> 1. positions duplicate sil (id=2 ya da daha eski)
+> 2. Tuna ile birlikte ilk gercek pozisyon parametreleri (Mağaza Müdürü / İstanbul / 3-5 yıl / luks)
+>
+> ### 🟧 PHASE G — TUNA UX/tasarim pass
+>
+> 1. tkefeli login → real mode HR Hub
+> 2. 6 mevcut aday + 1 pozisyon ustunde tasarim/UX/empty state pass
+> 3. Bug + design feedback → Tuna toplar, sonraki phase planlar
+>
+> ### 🟦 PHASE H — `is_test_seed` migration + 200 aday seed sistemi (T2, ~0.5 gun)
+>
+> 1. `candidates.test_seed_batch TEXT NULL` flag (NULL = gercek aday)
+> 2. `npm run seed:test -- 200` script — 100 satis / 75 magaza muduru / 25 mudur yrd. variety
+> 3. `npm run seed:purge -- <batch-id>` ve `npm run seed:purge:all`
+> 4. supabase-agent + code-reviewer
+>
+> ### 🟦 PHASE I — Filter + matching test, polish, purge
+>
+> 1. Tuna 200 aday + 1 pozisyon ile filter + matching engine test
+> 2. Sirali polish (designer → ui-agent → darkmode-auditor → uat-tester her dokunusta)
+> 3. Backend stable + frontend stable → test seed purge → demo lab gelecek karar
+>
+> ── 26 NIS BUGUN BITEN (commit edilmedi) ──
+>
+> 1. Eski FAZ B CSS dosyalari silindi (4 dosya, orphan)
+> 2. CI test:p3 placeholder gitti, gercek E2E test calisir + chromium install eklendi
+>
+> ── HALLUCINATION PREVENTION PROTOCOL ──
+>
+> 1. Verify-before-claim — briefer/memory yerine source file read veya live query
+> 2. T3+ ajan zinciri zorunlu (.claude/rules/agent-triggers.md), bypass yasak
+> 3. Migration apply oncesi: `supabase migration list --linked` + dry-run
+> 4. Pending-approvals.md her T3 phase oncesi
+> 5. CURRENT-STATE.md her audit sonrasi guncellenir
+> 6. Self-improving-agent pattern detect (recurring → CLAUDE.md graduate)
+>
+> ── ESKI ESKIMIS PLAN (referans, gecerli degil) ──
 >
 > Sprint 7'de backend zaten DB'de hazir (pipeline_stages enum + candidate_pipeline_state + employer_candidate_notes migration apply'li). Aktivasyon adimlari:
 >

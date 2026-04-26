@@ -3,7 +3,7 @@
 -- ║  Tier: T3 (auth + KVKK + RLS migration)                      ║
 -- ║                                                              ║
 -- ║  Kapsam:                                                     ║
--- ║   1. pipeline_stage ENUM (5 stage)                           ║
+-- ║   1. pipeline_stage ENUM (6 stage)                           ║
 -- ║   2. candidate_pipeline_state tablo + RLS + GRANT            ║
 -- ║   3. employer_candidate_notes tablo + RLS + GRANT            ║
 -- ║   4. hr_profiles.feature_flags jsonb                         ║
@@ -44,10 +44,10 @@ END$$;
 -- ═══════════════════════════════════════════════
 CREATE TABLE IF NOT EXISTS candidate_pipeline_state (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
-  position_id uuid NOT NULL REFERENCES positions(id) ON DELETE CASCADE,
+  position_id bigint NOT NULL REFERENCES positions(id) ON DELETE CASCADE,
   candidate_id bigint NOT NULL REFERENCES candidates(id) ON DELETE CASCADE,
   stage pipeline_stage NOT NULL DEFAULT 'yeni',
-  added_by uuid REFERENCES auth.users(id),
+  added_by uuid REFERENCES auth.users(id) ON DELETE SET NULL,
   added_at timestamptz DEFAULT now(),
   updated_at timestamptz DEFAULT now(),
   UNIQUE (position_id, candidate_id)
@@ -105,6 +105,15 @@ CREATE POLICY pipeline_state_update_team
       WHERE hp.id = auth.uid()
         AND hp.employer_role IN ('admin', 'recruiter')
     )
+  )
+  WITH CHECK (
+    position_id IN (
+      SELECT p.id
+      FROM positions p
+      JOIN hr_profiles hp ON hp.company_id = p.company_id
+      WHERE hp.id = auth.uid()
+        AND hp.employer_role IN ('admin', 'recruiter')
+    )
   );
 
 DROP POLICY IF EXISTS pipeline_state_delete_admin
@@ -126,13 +135,39 @@ GRANT SELECT, INSERT, UPDATE, DELETE
   ON candidate_pipeline_state TO authenticated;
 
 -- ═══════════════════════════════════════════════
+-- 2b. is_employer_team_member(uuid) helper
+--     Buraya tasindi: notes_select_team policy'si section 3'te
+--     bu fonksiyona bagimli, dolayisiyla CREATE oncesinde
+--     tanimlanmali. STABLE + SECURITY DEFINER — HR policies icin
+--     tekrar kullanilabilir team membership check.
+-- ═══════════════════════════════════════════════
+CREATE OR REPLACE FUNCTION is_employer_team_member(p_user_id uuid)
+RETURNS boolean
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT EXISTS (
+    SELECT 1
+    FROM hr_profiles hp1
+    JOIN hr_profiles hp2 ON hp1.company_id = hp2.company_id
+    WHERE hp1.id = auth.uid()
+      AND hp2.id = p_user_id
+  );
+$$;
+
+REVOKE ALL ON FUNCTION is_employer_team_member(uuid) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION is_employer_team_member(uuid) TO authenticated;
+
+-- ═══════════════════════════════════════════════
 -- 3. employer_candidate_notes
 -- ═══════════════════════════════════════════════
 CREATE TABLE IF NOT EXISTS employer_candidate_notes (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
   candidate_id bigint NOT NULL REFERENCES candidates(id) ON DELETE CASCADE,
-  position_id uuid REFERENCES positions(id) ON DELETE SET NULL,
-  author_id uuid NOT NULL REFERENCES auth.users(id),
+  position_id bigint REFERENCES positions(id) ON DELETE SET NULL,
+  author_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   body text NOT NULL CHECK (char_length(body) BETWEEN 1 AND 4000),
   created_at timestamptz DEFAULT now(),
   updated_at timestamptz DEFAULT now()
@@ -150,14 +185,7 @@ DROP POLICY IF EXISTS notes_select_team
 CREATE POLICY notes_select_team
   ON employer_candidate_notes
   FOR SELECT TO authenticated
-  USING (
-    author_id IN (
-      SELECT hp2.id
-      FROM hr_profiles hp1
-      JOIN hr_profiles hp2 ON hp1.company_id = hp2.company_id
-      WHERE hp1.id = auth.uid()
-    )
-  );
+  USING (is_employer_team_member(author_id));
 
 DROP POLICY IF EXISTS notes_insert_self
   ON employer_candidate_notes;
@@ -194,7 +222,7 @@ CREATE POLICY notes_delete_self_or_admin
       WHERE hp.id = auth.uid()
         AND hp.employer_role = 'admin'
         AND hp.company_id = (
-          SELECT company_id FROM hr_profiles WHERE id = author_id
+          SELECT company_id FROM hr_profiles hp2 WHERE hp2.id = employer_candidate_notes.author_id
         )
     )
   );
@@ -252,10 +280,10 @@ GRANT EXECUTE ON FUNCTION is_paid_employer() TO authenticated;
 -- ═══════════════════════════════════════════════
 
 -- 6.1 hr_get_pipeline — pozisyon-bazli kanban data
-CREATE OR REPLACE FUNCTION hr_get_pipeline(p_position_id uuid)
+CREATE OR REPLACE FUNCTION hr_get_pipeline(p_position_id bigint)
 RETURNS TABLE (
   id uuid,
-  position_id uuid,
+  position_id bigint,
   candidate_id bigint,
   stage pipeline_stage,
   added_at timestamptz,
@@ -285,7 +313,7 @@ AS $$
   ORDER BY cps.updated_at DESC;
 $$;
 
-GRANT EXECUTE ON FUNCTION hr_get_pipeline(uuid) TO authenticated;
+GRANT EXECUTE ON FUNCTION hr_get_pipeline(bigint) TO authenticated;
 
 -- 6.2 hr_move_pipeline_stage
 CREATE OR REPLACE FUNCTION hr_move_pipeline_stage(
@@ -324,7 +352,7 @@ GRANT EXECUTE ON FUNCTION hr_move_pipeline_stage(uuid, pipeline_stage) TO authen
 
 -- 6.3 hr_add_to_pipeline — idempotent (UNIQUE constraint koruyor)
 CREATE OR REPLACE FUNCTION hr_add_to_pipeline(
-  p_position_id uuid,
+  p_position_id bigint,
   p_candidate_id bigint,
   p_stage pipeline_stage DEFAULT 'yeni'
 )
@@ -362,12 +390,12 @@ BEGIN
 END;
 $$;
 
-GRANT EXECUTE ON FUNCTION hr_add_to_pipeline(uuid, bigint, pipeline_stage) TO authenticated;
+GRANT EXECUTE ON FUNCTION hr_add_to_pipeline(bigint, bigint, pipeline_stage) TO authenticated;
 
 -- 6.4 hr_add_note
 CREATE OR REPLACE FUNCTION hr_add_note(
   p_candidate_id bigint,
-  p_position_id uuid,
+  p_position_id bigint,
   p_body text
 )
 RETURNS jsonb
@@ -394,14 +422,14 @@ BEGIN
 END;
 $$;
 
-GRANT EXECUTE ON FUNCTION hr_add_note(bigint, uuid, text) TO authenticated;
+GRANT EXECUTE ON FUNCTION hr_add_note(bigint, bigint, text) TO authenticated;
 
 -- 6.5 hr_list_notes
 CREATE OR REPLACE FUNCTION hr_list_notes(p_candidate_id bigint)
 RETURNS TABLE (
   id uuid,
   candidate_id bigint,
-  position_id uuid,
+  position_id bigint,
   author_id uuid,
   author_name text,
   body text,
@@ -436,6 +464,7 @@ GRANT EXECUTE ON FUNCTION hr_list_notes(bigint) TO authenticated;
 CREATE OR REPLACE FUNCTION trg_set_updated_at()
 RETURNS trigger
 LANGUAGE plpgsql
+SET search_path = public
 AS $$
 BEGIN
   NEW.updated_at := now();
@@ -457,7 +486,7 @@ CREATE TRIGGER notes_updated_at
 -- DONE
 -- ═══════════════════════════════════════════════
 -- Onerilen test:
---   SELECT hr_add_to_pipeline('<pos_uuid>', 1, 'yeni');
---   SELECT * FROM hr_get_pipeline('<pos_uuid>');
---   SELECT hr_add_note(1, '<pos_uuid>', 'Test not');
+--   SELECT hr_add_to_pipeline(1, 1, 'yeni');
+--   SELECT * FROM hr_get_pipeline(1);
+--   SELECT hr_add_note(1, 1, 'Test not');
 --   SELECT * FROM hr_list_notes(1);
