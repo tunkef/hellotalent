@@ -1,7 +1,42 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 26 Nisan 2026 | Asama 86 Sprint A — Shell + Anasayfa (FAZ B yeniden tasarim baslangici)
+> Son guncelleme: 26 Nisan 2026 | Asama 86 — FAZ B yeniden tasarim TAMAMLANDI (5 sprint, 9 sayfa)
 >
-> Aktif Odak: Tuna kritik feedback "profil.html'i baz almiyorsun, dashboard istiyorum, Clatu'yu override ettin, tokenlari yedin" sonrasi FAZ B Sprint 0-8 ROLLBACK + profil.html pattern adapt. Sprint A = Shell (lp-hdr-ik + segment nav + sub-nav) + Anasayfa (KPI hero + bento grid 6 kart + recent feed). Token-strict (0 hardcoded hex, 438 var(--*)). Auth-walled redirect + multi-page mimari korunur (8 hr-*.html Sprint B-D'de yeniden yazilacak). Sonraki: Sprint B (Adaylar segment).
+> Aktif Odak: Tuna feedback "profil.html'i baz almiyorsun, dashboard istiyorum, Clatu'yu override ettin, tokenlari yedin" sonrasi FAZ B Sprint 0-8 ROLLBACK + profil.html pattern adapt. Asama 86 Sprint A-E ile 9 sayfa multi-page mimari + Anasayfa dashboard + Adaylar segment + Mesajlar + Avatar dropdown panelleri. Token-strict (0 hardcoded hex), XSS-safe, multi-agent zincir disiplinli. Tuna sabah UAT.
+>
+> ── Asama 86 Sprint A-E (26 Nisan 2026) ──
+>
+> **Sprint A (f7299ca):** Shell + Anasayfa
+> - css/ik-shell.css, css/panels/ik-genel.css, js/ik-shell.js, js/ik-genel.js, ik.html
+>
+> **Sprint B (bcfc56e):** Adaylar segment (Pool + Pipeline + Candidate)
+> - 3 hr-*.html + 3 panel JS + 3 panel CSS + js/ik-data.js (data adapter)
+>
+> **Sprint C (4f61797):** Mesajlar 2-pane
+> - hr-messages.html + js/ik-messages.js + css/panels/ik-messages.css
+>
+> **Sprint D (92585dd):** Avatar dropdown (Sirket + Ekip + Kampanyalar + Ayarlar)
+> - 4 hr-*.html + 4 panel JS + 4 panel CSS, IK_DATA company/team/campaigns/settings extension
+>
+> **Sprint E (bu commit, FINAL):** E2E + polish + Asama 86 docs
+> - tests/asama86-e2e.spec.js (~30 senaryo, mobile + desktop = 60 PASS)
+> - css/ik-shell.css polish blok: focus-visible, skeleton shimmer, prefers-reduced-motion, scroll-lock
+> - 9 IK sayfasinda viewport-fit=cover (notch destegi)
+> - scripts/check-clatu-layout.sh: ht_hr_* legacy namespace HARD-BLOCK
+>
+> **Test toplam:** 1570 PASS, 0 FAIL (mobile + desktop projects)
+> **Multi-agent zincir:** designer + content-writer + ui-agent + darkmode-auditor + uat-tester + code-reviewer her sprint'te zorunlu
+> **Token-strict:** 0 hardcoded hex (ik-* CSS'lerinde), ~1500+ var(--*) kullanimi
+> **XSS-safe:** textContent + DOM API only, hicbir innerHTML string yok
+> **Modulerlik:** her panel kendi js + css panel dosyasi, ik-shell ortak shell
+> **LocalStorage namespace:** ht_ik_* (eski ht_hr_* HARD-BLOCK)
+>
+> **Plan:** ~/.claude/plans/imdi-senle-daha-nce-hashed-papert.md (Asama 86)
+>
+> ── Sonraki ──
+>
+> - Tuna sabah UAT (canli kontrol)
+> - Bug/UX feedback → polish iterasyonu (varsa)
+> - MVP 2 hazirligi: Iyzico + KVKK e-sozlesme + adapter real mode (15+ kurumsal lead + 5000+ aday threshold sonrasi)
 >
 > ── Asama 86 Sprint A (26 Nisan 2026) ──
 >

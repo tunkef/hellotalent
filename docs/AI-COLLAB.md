@@ -3720,3 +3720,49 @@ Next brief writing → verify preserved IDs directly via grep before listing the
 - Padding bumped 24/20 → 32/28 (24/18 mobile) for breathing room
 - Cache-bust ?v=20260414d
 
+
+## 2026-04-26 GECE — Asama 86: FAZ B yeniden tasarim (5 sprint, 9 sayfa)
+
+**Tetikleyici:** Tuna kritik feedback "ÇOK KÖTÜ — profil.html'i baz almıyorsun, dashboard istiyorum, Clatu'yu override ettin, tokenları yedin".
+
+**Kapsam:** Eski FAZ B Sprint 0-8 ROLLBACK (11 hr-*.js + 4 hr-*.css sil, 11 spec disabled) + profil.html pattern adapt + 5 sprint (A-E) yeniden yaz.
+
+**Sprint zinciri:**
+- **Sprint A (f7299ca):** Shell + Anasayfa
+  - lp-hdr-ik header 64px (3 segment: Anasayfa·Adaylar·Mesajlar)
+  - Avatar dropdown (Şirket·Ekip·Kampanya·Ayarlar)
+  - Anasayfa: KPI hero + bento grid 6 kart + recent feed
+- **Sprint B (bcfc56e):** Adaylar segment
+  - hr-pool.html (filter chip + search + bulk select)
+  - hr-pipeline.html (kanban 5 stage, drag-drop, localStorage persist)
+  - hr-candidate.html (4 tab: Profil/Notlar/Mesajlar/Match)
+  - js/ik-data.js — IK_DATA adapter (demo + real mode hook)
+- **Sprint C (4f61797):** Mesajlar 2-pane
+  - Desktop: thread list + detail side-by-side
+  - Mobile: slide-in detail panel
+- **Sprint D (92585dd):** Avatar dropdown panelleri
+  - hr-company.html (form 3 section: Genel + Marka + İletişim)
+  - hr-team.html (members + invites)
+  - hr-campaigns.html (filter + list + create)
+  - hr-settings.html (5 section: Hesap + Güvenlik + Bildirim + Tema + Hesap yönetimi)
+- **Sprint E (bu commit, FINAL):** E2E + polish + docs
+  - tests/asama86-e2e.spec.js (~30 senaryo, 60 PASS mobile + desktop)
+  - css/ik-shell.css polish blok: focus-visible, skeleton shimmer, prefers-reduced-motion, scroll-lock
+  - 9 IK sayfasında viewport-fit=cover (notch desteği)
+  - scripts/check-clatu-layout.sh: ht_hr_* legacy namespace HARD-BLOCK eklendi
+
+**Multi-agent zincir disiplini:** Tüm sprintlerde 6 ajan paralel/sıralı (designer + content-writer + ui-agent + darkmode-auditor + uat-tester + code-reviewer). Bypass yasak.
+
+**Token-strict garantisi:**
+- 0 hardcoded hex (ik-* CSS'lerinde, pre-commit guard yakalar)
+- ~1500+ var(--*) kullanımı
+- tokens.css'in 60+ token'i tüm panel'lerde tutarlı
+
+**Test toplam:** 1570 PASS (mobile + desktop), 0 FAIL
+
+**LocalStorage namespace:** ht_ik_* (eski ht_hr_* yasaklandı, pre-commit HARD-BLOCK)
+
+**Süre:** Tek gece, ~12-15 saat. Tuna direktif: "bütün FAZ B bitene kadar çalış, sabah gelince kontrol edicem."
+
+**Sonraki:** Tuna UAT → bug/UX feedback (varsa polish) → MVP 2 hazırlığı (Iyzico + KVKK).
+

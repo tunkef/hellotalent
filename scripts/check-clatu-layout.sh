@@ -40,9 +40,34 @@ cd "$REPO_ROOT" || exit 0
 
 STAGED_HTML="$(git diff --cached --name-only --diff-filter=AM | grep -E '\.html$' || true)"
 STAGED_CSS="$(git diff --cached --name-only --diff-filter=AM | grep -E '^css/(ik-|panels/ik-)' || true)"
+STAGED_JS="$(git diff --cached --name-only --diff-filter=AM | grep -E '^js/ik-' || true)"
 
-if [ -z "$STAGED_HTML" ] && [ -z "$STAGED_CSS" ]; then
+if [ -z "$STAGED_HTML" ] && [ -z "$STAGED_CSS" ] && [ -z "$STAGED_JS" ]; then
   exit 0
+fi
+
+# ════════════════════════════════════════════════════════════════
+# Asama 86 Sprint E — IK JS legacy namespace guard
+#   - HARD-BLOCK: js/ik-*.js icinde 'ht_hr_' eski namespace
+# ════════════════════════════════════════════════════════════════
+if [ -n "$STAGED_JS" ]; then
+  LEGACY_NS_ERR=0
+  LEGACY_NS_FILES=""
+  for f in $STAGED_JS; do
+    HITS="$(grep -nE "ht_hr_[a-z_]+" "$f" 2>/dev/null | grep -v '^\s*//\|^\s*\*' || true)"
+    if [ -n "$HITS" ]; then
+      HIT_COUNT="$(echo "$HITS" | wc -l | tr -d ' ')"
+      LEGACY_NS_ERR=$((LEGACY_NS_ERR + 1))
+      LEGACY_NS_FILES="${LEGACY_NS_FILES}\n  - ${f} (${HIT_COUNT} eski namespace 'ht_hr_*')"
+    fi
+  done
+  if [ "$LEGACY_NS_ERR" -gt 0 ]; then
+    printf "\n\033[31m[Asama 86 Sprint E — HATA]\033[0m %d dosyada eski 'ht_hr_*' namespace:" "$LEGACY_NS_ERR"
+    printf "%b\n" "$LEGACY_NS_FILES"
+    printf "\n  Yeni namespace: 'ht_ik_*' kullan (Sprint A-D parite).\n"
+    printf "  Comment satirlarinda dokumante etmek icin '//' veya '/*' kullan.\n\n"
+    exit 1
+  fi
 fi
 
 # ════════════════════════════════════════════════════════════════
