@@ -13,7 +13,7 @@ concurrency:
 
 jobs:
   p3-regression:
-    name: P3 Regression Guards
+    name: Asama 86 FAZ B E2E Regression
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -31,7 +31,10 @@ jobs:
       - name: ESLint
         run: npm run lint
 
-      - name: Run P3 regression guards
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Run Asama 86 FAZ B E2E regression
         run: npm run test:p3
 
   profil-delegation:
