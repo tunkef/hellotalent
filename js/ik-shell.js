@@ -322,7 +322,22 @@
       } catch (e) { /* ignore */ }
     },
     getPrefs: readPrefs,
-    setPrefs: writePrefs
+    setPrefs: writePrefs,
+    logout: async function () {
+      try {
+        if (window.HT && typeof window.HT.getSupa === 'function') {
+          var supa = window.HT.getSupa();
+          if (supa) await supa.auth.signOut();
+        }
+      } catch (e) {
+        console.warn('[ik-shell] signOut:', e && e.message);
+      }
+      try {
+        localStorage.removeItem(LS_PREFS);
+        localStorage.removeItem(LS_ACTIVE_POSITION);
+      } catch (e) { /* ignore */ }
+      location.replace('giris.html');
+    }
   };
 
   if (document.readyState === 'loading') {

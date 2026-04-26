@@ -19,6 +19,12 @@
   var LS_NOTES_PREFIX = 'ht_ik_notes_';
   var LS_BLOCK_PREFIX = 'ht_ik_blocked_';
   var LS_MESSAGES_OVERLAY = 'ht_ik_messages_state';
+  /* Sprint D — Sirket / Ekip / Kampanyalar / Ayarlar */
+  var LS_COMPANY_OVERLAY = 'ht_ik_company_state';
+  var LS_TEAM_OVERLAY = 'ht_ik_team_state';
+  var LS_CAMPAIGNS_OVERLAY = 'ht_ik_campaigns_state';
+  var LS_SETTINGS_OVERLAY = 'ht_ik_settings_state';
+  var LS_ACCOUNT_OVERLAY = 'ht_ik_account_state';
 
   /* Cache (memory only, sayfa lifecycle) */
   var _cache = {
@@ -483,12 +489,304 @@
       return Promise.resolve({ ok: true });
     },
 
-    /* ── Campaigns (Sprint D stub) ── */
-    getCampaigns: function () {
-      return fetchJSON('campaigns').catch(function () { return []; });
+    /* ═══════ Company — Sprint D ═══════
+       Demo: hr_profiles + companies join stub.
+       updateCompany → localStorage overlay (real Supabase MVP 2'de). */
+    getCompany: function () {
+      var ov = readJSON(LS_COMPANY_OVERLAY, null);
+      if (ov) return Promise.resolve(ov);
+
+      /* Default demo company (signup'tan gelir) */
+      var demo = {
+        id: 'co-demo-1',
+        name: 'Demo Perakende A.Ş.',
+        website: '',
+        sector: '',
+        region: '',
+        about: '',
+        brands: [],
+        contact_name: '',
+        contact_email: '',
+        contact_phone: '',
+        contact_role: '',
+        updated_at: new Date().toISOString()
+      };
+      return Promise.resolve(demo);
     },
 
-    /* ── Match helper expose ── */
+    updateCompany: function (payload) {
+      if (!payload || typeof payload !== 'object') {
+        return Promise.reject(new Error('payload required'));
+      }
+      var clean = {
+        id: safeStr(payload.id || 'co-demo-1'),
+        name: safeStr(payload.name).trim().slice(0, 120),
+        website: safeStr(payload.website).trim().slice(0, 200),
+        sector: safeStr(payload.sector).slice(0, 40),
+        region: safeStr(payload.region).slice(0, 40),
+        about: safeStr(payload.about).slice(0, 500),
+        brands: Array.isArray(payload.brands)
+          ? payload.brands.filter(function (b) { return safeStr(b).trim(); })
+              .map(function (b) { return safeStr(b).trim().slice(0, 60); })
+              .slice(0, 30)
+          : [],
+        contact_name: safeStr(payload.contact_name).trim().slice(0, 80),
+        contact_email: safeStr(payload.contact_email).trim().slice(0, 120),
+        contact_phone: safeStr(payload.contact_phone).trim().slice(0, 30),
+        contact_role: safeStr(payload.contact_role).trim().slice(0, 80),
+        updated_at: new Date().toISOString()
+      };
+      if (!clean.name) {
+        return Promise.reject(new Error('name required'));
+      }
+      writeJSON(LS_COMPANY_OVERLAY, clean);
+      return Promise.resolve({ ok: true, company: clean });
+    },
+
+    /* ═══════ Team — Sprint D ═══════
+       Demo: kendi hesabin admin + invite/role stubs (localStorage).
+       Members her zaman default self icerir, invites overlay'den gelir. */
+    getTeamMembers: function () {
+      var ctx = (window.IK_SHELL && window.IK_SHELL.ctx) || {};
+      var name = (ctx.hr && ctx.hr.full_name) ||
+                 (ctx.user && ctx.user.email && ctx.user.email.split('@')[0]) ||
+                 'Demo Hesap';
+      var email = (ctx.user && ctx.user.email) || 'demo@hellotalent.ai';
+      var defaultSelf = {
+        id: 'tm-self',
+        name: name,
+        email: email,
+        role: 'admin',
+        status: 'active',
+        last_active: new Date().toISOString(),
+        is_self: true
+      };
+
+      var ov = readJSON(LS_TEAM_OVERLAY, { members: [], invites: [] });
+      var members = Array.isArray(ov.members) && ov.members.length
+        ? ov.members.slice()
+        : [defaultSelf];
+      var invites = Array.isArray(ov.invites) ? ov.invites.slice() : [];
+
+      return Promise.resolve({ members: members, invites: invites });
+    },
+
+    inviteTeamMember: function (email, role, name) {
+      var cleanEmail = safeStr(email).trim().toLowerCase().slice(0, 120);
+      var cleanRole = safeStr(role || 'recruiter');
+      var cleanName = safeStr(name).trim().slice(0, 80);
+
+      if (!cleanEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
+        return Promise.reject(new Error('email invalid'));
+      }
+      if (['admin', 'recruiter', 'viewer'].indexOf(cleanRole) < 0) {
+        return Promise.reject(new Error('role invalid'));
+      }
+
+      var ov = readJSON(LS_TEAM_OVERLAY, { members: [], invites: [] });
+      ov.invites = ov.invites || [];
+
+      /* Duplicate email guard */
+      var dup = ov.invites.some(function (i) { return i.email === cleanEmail; });
+      if (dup) {
+        return Promise.reject(new Error('duplicate'));
+      }
+
+      var invite = {
+        id: uid('tmi-'),
+        email: cleanEmail,
+        name: cleanName,
+        role: cleanRole,
+        status: 'pending',
+        invited_at: new Date().toISOString()
+      };
+      ov.invites.push(invite);
+      writeJSON(LS_TEAM_OVERLAY, ov);
+      return Promise.resolve({ ok: true, invite: invite });
+    },
+
+    cancelInvite: function (invite_id) {
+      if (!invite_id) return Promise.reject(new Error('invite_id required'));
+      var ov = readJSON(LS_TEAM_OVERLAY, { members: [], invites: [] });
+      ov.invites = (ov.invites || []).filter(function (i) { return i.id !== invite_id; });
+      writeJSON(LS_TEAM_OVERLAY, ov);
+      return Promise.resolve({ ok: true });
+    },
+
+    updateMemberRole: function (member_id, role) {
+      if (!member_id) return Promise.reject(new Error('member_id required'));
+      if (['admin', 'recruiter', 'viewer'].indexOf(role) < 0) {
+        return Promise.reject(new Error('role invalid'));
+      }
+      var ov = readJSON(LS_TEAM_OVERLAY, { members: [], invites: [] });
+      ov.members = (ov.members || []).map(function (m) {
+        if (m.id === member_id) {
+          return Object.assign({}, m, { role: role, updated_at: new Date().toISOString() });
+        }
+        return m;
+      });
+      writeJSON(LS_TEAM_OVERLAY, ov);
+      return Promise.resolve({ ok: true });
+    },
+
+    removeMember: function (member_id) {
+      if (!member_id) return Promise.reject(new Error('member_id required'));
+      var ov = readJSON(LS_TEAM_OVERLAY, { members: [], invites: [] });
+      ov.members = (ov.members || []).filter(function (m) {
+        return m.id !== member_id || m.is_self === true; /* self silinmez */
+      });
+      writeJSON(LS_TEAM_OVERLAY, ov);
+      return Promise.resolve({ ok: true });
+    },
+
+    /* ═══════ Campaigns — Sprint D ═══════
+       Demo: campaigns.json + localStorage overlay (status + new). */
+    getCampaigns: function () {
+      return fetchJSON('campaigns').then(function (list) {
+        var base = (list || []).map(function (c) { return Object.assign({}, c); });
+        var ov = readJSON(LS_CAMPAIGNS_OVERLAY, { added: [], statusOverride: {}, removed: [] });
+
+        /* Status override */
+        if (ov.statusOverride) {
+          base = base.map(function (c) {
+            if (ov.statusOverride[c.id]) {
+              return Object.assign({}, c, { status: ov.statusOverride[c.id], updated_at: new Date().toISOString() });
+            }
+            return c;
+          });
+        }
+
+        /* Removed filter */
+        if (ov.removed && ov.removed.length) {
+          base = base.filter(function (c) { return ov.removed.indexOf(c.id) < 0; });
+        }
+
+        /* Added (yeni kampanya) */
+        if (ov.added && ov.added.length) {
+          ov.added.forEach(function (a) {
+            if (!base.some(function (c) { return c.id === a.id; })) {
+              base.push(Object.assign({}, a));
+            }
+          });
+        }
+
+        /* Sort: created_at desc */
+        base.sort(function (a, b) {
+          return new Date(b.created_at || 0) - new Date(a.created_at || 0);
+        });
+
+        return base;
+      }).catch(function () { return []; });
+    },
+
+    createCampaign: function (payload) {
+      payload = payload || {};
+      var clean = {
+        id: uid('cmp-x-'),
+        title: safeStr(payload.title).trim().slice(0, 100),
+        status: 'draft',
+        created_at: new Date().toISOString(),
+        filter_summary: safeStr(payload.filter_summary).slice(0, 200),
+        target_count: parseInt(payload.target_count, 10) || 0,
+        sent_count: 0,
+        opened_count: 0,
+        replied_count: 0
+      };
+      if (!clean.title) {
+        return Promise.reject(new Error('title required'));
+      }
+      var ov = readJSON(LS_CAMPAIGNS_OVERLAY, { added: [], statusOverride: {}, removed: [] });
+      ov.added = ov.added || [];
+      ov.added.push(clean);
+      writeJSON(LS_CAMPAIGNS_OVERLAY, ov);
+      return Promise.resolve({ ok: true, campaign: clean });
+    },
+
+    updateCampaignStatus: function (id, status) {
+      if (!id) return Promise.reject(new Error('id required'));
+      if (['draft', 'scheduled', 'sent', 'archived'].indexOf(status) < 0) {
+        return Promise.reject(new Error('status invalid'));
+      }
+      var ov = readJSON(LS_CAMPAIGNS_OVERLAY, { added: [], statusOverride: {}, removed: [] });
+      ov.statusOverride = ov.statusOverride || {};
+      ov.statusOverride[id] = status;
+      writeJSON(LS_CAMPAIGNS_OVERLAY, ov);
+      return Promise.resolve({ ok: true });
+    },
+
+    archiveCampaign: function (id) {
+      return API.updateCampaignStatus(id, 'archived');
+    },
+
+    /* ═══════ Settings — Sprint D ═══════
+       Demo: tema + bildirim toggle persist (localStorage). */
+    getSettings: function () {
+      return Promise.resolve(readJSON(LS_SETTINGS_OVERLAY, {
+        theme: 'system',
+        notify_msg: true,
+        notify_pipeline: true,
+        notify_weekly: false
+      }));
+    },
+
+    updateSettings: function (patch) {
+      patch = patch || {};
+      var current = readJSON(LS_SETTINGS_OVERLAY, {
+        theme: 'system',
+        notify_msg: true,
+        notify_pipeline: true,
+        notify_weekly: false
+      });
+      if (typeof patch.theme === 'string' &&
+          ['light', 'dark', 'system'].indexOf(patch.theme) >= 0) {
+        current.theme = patch.theme;
+      }
+      ['notify_msg', 'notify_pipeline', 'notify_weekly'].forEach(function (k) {
+        if (typeof patch[k] === 'boolean') current[k] = patch[k];
+      });
+      writeJSON(LS_SETTINGS_OVERLAY, current);
+      return Promise.resolve({ ok: true, settings: current });
+    },
+
+    /* ═══════ Account lifecycle — KVKK md.11 ═══════ */
+    getAccountStatus: function () {
+      return Promise.resolve(readJSON(LS_ACCOUNT_OVERLAY, {
+        status: 'active', /* active | frozen | pending_deletion */
+        deletion_scheduled_at: null,
+        frozen_at: null
+      }));
+    },
+
+    freezeAccount: function () {
+      var current = readJSON(LS_ACCOUNT_OVERLAY, {});
+      current.status = 'frozen';
+      current.frozen_at = new Date().toISOString();
+      current.deletion_scheduled_at = null;
+      writeJSON(LS_ACCOUNT_OVERLAY, current);
+      return Promise.resolve({ ok: true, status: 'frozen' });
+    },
+
+    unfreezeAccount: function () {
+      var current = readJSON(LS_ACCOUNT_OVERLAY, {});
+      current.status = 'active';
+      current.frozen_at = null;
+      current.deletion_scheduled_at = null;
+      writeJSON(LS_ACCOUNT_OVERLAY, current);
+      return Promise.resolve({ ok: true, status: 'active' });
+    },
+
+    deleteAccount: function () {
+      /* KVKK md.11 — 30 gun grace period */
+      var when = new Date();
+      when.setDate(when.getDate() + 30);
+      var current = readJSON(LS_ACCOUNT_OVERLAY, {});
+      current.status = 'pending_deletion';
+      current.deletion_scheduled_at = when.toISOString();
+      writeJSON(LS_ACCOUNT_OVERLAY, current);
+      return Promise.resolve({ ok: true, status: 'pending_deletion', scheduled: when.toISOString() });
+    },
+
+    /* ═══════ Sprint D — Match helper expose ═══════ */
     calcMatch: calcMatch,
 
     /* ── Cache reset (test) ── */
@@ -499,6 +797,23 @@
     /* ── Mode flags ── */
     isDemoMode: isDemoMode
   };
+
+  /* ═══════ Generic JSON localStorage helpers (Sprint D) ═══════ */
+  function readJSON(key, fallback) {
+    try {
+      var raw = localStorage.getItem(key);
+      return raw ? JSON.parse(raw) : (fallback != null ? fallback : null);
+    } catch (e) {
+      return fallback != null ? fallback : null;
+    }
+  }
+  function writeJSON(key, value) {
+    try {
+      localStorage.setItem(key, JSON.stringify(value || null));
+    } catch (e) {
+      console.warn('[ik-data] write fail:', key, e && e.message);
+    }
+  }
 
   window.IK_DATA = API;
 })();

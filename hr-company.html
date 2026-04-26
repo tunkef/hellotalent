@@ -6,188 +6,365 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://cpwibefquojehjehtrog.supabase.co; connect-src 'self' https://cpwibefquojehjehtrog.supabase.co wss://cpwibefquojehjehtrog.supabase.co; object-src 'none'; base-uri 'self'; frame-ancestors 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#1E2D5E" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0A0F1F" media="(prefers-color-scheme: dark)">
-<title>Şirket profili · hellotalent.ai</title>
+<meta name="theme-color" content="#ffffff" id="meta-theme-color">
+<title>HelloTalent Kurumsal · Şirket profili</title>
 <meta name="robots" content="noindex">
-<script>(function(){var k='ht_theme_preference',s;try{s=localStorage.getItem(k)}catch(e){}var d=(s==='dark'||(s!=='light'&&window.matchMedia&&window.matchMedia('(prefers-color-scheme:dark)').matches));document.documentElement.setAttribute('data-theme',d?'dark':'light');if(d)document.documentElement.classList.add('dark');})()</script>
+
+<!-- Theme bootstrap (profil.html parite) -->
+<script>
+(function(){
+  var k='ht_theme_preference',s;
+  try{s=localStorage.getItem(k)}catch(e){}
+  var d=(s==='dark'||(s!=='light'&&window.matchMedia&&window.matchMedia('(prefers-color-scheme:dark)').matches));
+  document.documentElement.setAttribute('data-theme',d?'dark':'light');
+  var m=document.getElementById('meta-theme-color');
+  if(m)m.setAttribute('content',d?'#050712':'#ffffff');
+})();
+</script>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/tokens.css?v=20260426asamab6">
-<link rel="stylesheet" href="shared-v2.css?v=20260426asamab6">
-<link rel="stylesheet" href="css/hr-shell.css?v=20260426asamab6">
-<link rel="stylesheet" href="css/hr-forms.css?v=20260426asamab6">
-<link rel="stylesheet" href="css/hr-polish.css?v=20260426asamab8">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="shared.js?v=20260426asamab6"></script>
-</head>
-<body class="hr-page" data-hr-page="company">
-<a class="skip-to-content" href="#main">İçeriğe atla</a>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 
-<header class="lp-hdr">
-  <div class="lp-hdr-inner">
-    <a class="lp-logo" href="ik.html">hello<em>talent</em></a>
-    <div class="lp-hdr-mid">
-      <div class="hr-position-switcher-wrap">
-        <button type="button" class="hr-position-switcher" data-hr-position-btn aria-haspopup="listbox" aria-expanded="false" aria-label="Aktif pozisyon">
-          <span class="hr-position-switcher__label">Pozisyon</span>
-          <span class="hr-position-switcher__value" data-hr-position-value>Tüm pozisyonlar</span>
-          <svg class="hr-position-switcher__chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-        </button>
-        <div class="hr-position-menu" data-hr-position-menu role="listbox" aria-label="Pozisyon seç">
-          <div class="hr-position-menu__loading" data-hr-position-loading>Yükleniyor…</div>
-        </div>
-      </div>
-    </div>
-    <div class="lp-cta">
-      <div class="hr-user-menu-wrap">
-        <button type="button" class="hr-user-menu-btn" data-hr-user-menu-btn aria-expanded="false" aria-haspopup="menu">
-          <span class="hr-user-menu-avatar" data-hr-user-avatar>K</span>
-          <span class="hr-user-menu-name" data-hr-user-name>Yükleniyor</span>
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-        </button>
-        <div class="hr-user-menu" data-hr-user-menu role="menu">
-          <div class="hr-user-menu__head">
-            <div class="hr-user-menu__head-name" data-hr-user-fullname>—</div>
-            <div class="hr-user-menu__head-email" data-hr-user-email>—</div>
+<!-- Token-strict order: tokens → components → ik-shell → ik-company -->
+<link rel="stylesheet" href="css/tokens.css?v=20260426asama86d">
+<link rel="stylesheet" href="css/components.css?v=20260426asama86d">
+<link rel="stylesheet" href="css/ik-shell.css?v=20260426asama86d">
+<link rel="stylesheet" href="css/panels/ik-company.css?v=20260426asama86d">
+
+<!-- Supabase + shared.js -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="shared.js?v=20260426asama86d"></script>
+</head>
+<body class="ik-body" data-ik-page="company">
+
+<!-- Skip link (WCAG 2.4.1) -->
+<a class="ik-skip-link" href="#ik-company-shell">İçeriğe atla</a>
+
+<!-- ════════════════════════════════════════════════════════════════
+     HEADER — lp-hdr-ik (Sprint A parite)
+     ════════════════════════════════════════════════════════════════ -->
+<header class="lp-hdr-ik" role="banner">
+  <div class="lp-hdr-ik__inner">
+    <a class="lp-hdr-ik__logo" href="ik.html" aria-label="HelloTalent kurumsal anasayfası">hello<em>talent</em></a>
+
+    <button type="button" class="lp-hdr-ik__hamburger" id="ik-hamburger"
+            aria-label="Menüyü aç" aria-expanded="false" aria-controls="ik-mobile-drawer">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="3" y1="6" x2="21" y2="6"/>
+        <line x1="3" y1="12" x2="21" y2="12"/>
+        <line x1="3" y1="18" x2="21" y2="18"/>
+      </svg>
+    </button>
+
+    <nav class="lp-hdr-ik__nav" role="tablist" aria-label="Ana navigasyon">
+      <a class="lp-hdr-ik__segment" href="ik.html" data-segment="anasayfa" role="tab">Anasayfa</a>
+      <span class="lp-hdr-ik__sep" aria-hidden="true">·</span>
+      <a class="lp-hdr-ik__segment" href="hr-pool.html" data-segment="adaylar" role="tab">Adaylar</a>
+      <span class="lp-hdr-ik__sep" aria-hidden="true">·</span>
+      <a class="lp-hdr-ik__segment" href="hr-messages.html" data-segment="mesajlar" role="tab">Mesajlar</a>
+    </nav>
+
+    <div class="lp-hdr-ik__actions">
+      <a class="lp-hdr-ik__icon-btn" href="hr-messages.html" aria-label="Mesajlar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M4 6h16a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z"/>
+          <polyline points="22,6 12,13 2,6"/>
+        </svg>
+      </a>
+
+      <button type="button" class="lp-hdr-ik__icon-btn" id="ik-notif-btn" aria-label="Bildirimler">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+          <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+        </svg>
+      </button>
+
+      <div class="lp-hdr-ik__avatar-wrap">
+        <button type="button" class="lp-hdr-ik__avatar-btn" id="ik-avatar-btn"
+                aria-haspopup="menu" aria-expanded="false" aria-controls="ik-avatar-dropdown" aria-label="Hesap menüsü">?</button>
+
+        <div class="lp-hdr-ik__dropdown" id="ik-avatar-dropdown" role="menu" aria-label="Hesap menüsü">
+          <div class="lp-hdr-ik__dropdown-header">
+            <div class="lp-hdr-ik__dropdown-avatar" id="ik-dropdown-avatar">?</div>
+            <div class="lp-hdr-ik__dropdown-info">
+              <span class="lp-hdr-ik__dropdown-name" id="ik-dropdown-name">Hesap</span>
+              <span class="lp-hdr-ik__dropdown-role" id="ik-dropdown-role">Kurumsal</span>
+            </div>
           </div>
-          <a class="hr-user-menu__item" href="hr-settings.html" role="menuitem">Ayarlar</a>
-          <a class="hr-user-menu__item" href="hr-company.html" role="menuitem">Şirket profili</a>
-          <button type="button" class="hr-user-menu__item hr-user-menu__item--danger" data-hr-logout role="menuitem">Çıkış yap</button>
+
+          <div class="lp-hdr-ik__dropdown-divider"></div>
+
+          <a class="lp-hdr-ik__dropdown-item" href="hr-company.html" role="menuitem" aria-current="page">
+            <svg class="lp-hdr-ik__dropdown-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M3 21h18"/>
+              <path d="M5 21V7l8-4v18"/>
+              <path d="M19 21V11l-6-4"/>
+              <path d="M9 9h.01M9 13h.01M9 17h.01"/>
+            </svg>
+            <span>Şirket profili</span>
+          </a>
+
+          <a class="lp-hdr-ik__dropdown-item" href="hr-team.html" role="menuitem">
+            <svg class="lp-hdr-ik__dropdown-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+            <span>Ekip yönetimi</span>
+          </a>
+
+          <a class="lp-hdr-ik__dropdown-item" href="hr-campaigns.html" role="menuitem">
+            <svg class="lp-hdr-ik__dropdown-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M3 11l18-5v12L3 14v-3z"/>
+              <path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/>
+            </svg>
+            <span>Kampanyalar</span>
+          </a>
+
+          <a class="lp-hdr-ik__dropdown-item" href="hr-settings.html" role="menuitem">
+            <svg class="lp-hdr-ik__dropdown-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="3"/>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+            </svg>
+            <span>Ayarlar</span>
+          </a>
+
+          <button type="button" class="lp-hdr-ik__dropdown-item lp-hdr-ik__dropdown-item--logout" id="ik-logout-btn" role="menuitem">
+            <svg class="lp-hdr-ik__dropdown-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+              <polyline points="16 17 21 12 16 7"/>
+              <line x1="21" y1="12" x2="9" y2="12"/>
+            </svg>
+            <span>Güvenli çıkış</span>
+          </button>
         </div>
       </div>
     </div>
   </div>
 </header>
 
-<nav class="hr-subnav" aria-label="Kurumsal panel navigasyonu">
-  <div class="hr-subnav__inner">
-    <a class="hr-subnav-link" href="ik.html" data-hr-link="hub">Genel Bakış</a>
-    <a class="hr-subnav-link" href="hr-pipeline.html" data-hr-link="pipeline">Pipeline</a>
-    <a class="hr-subnav-link" href="hr-pool.html" data-hr-link="pool">Havuz</a>
-    <a class="hr-subnav-link" href="hr-messages.html" data-hr-link="messages">Mesajlar</a>
-    <a class="hr-subnav-link" href="hr-candidate.html" data-hr-link="candidate">Adaylar</a>
-    <a class="hr-subnav-link" href="hr-campaigns.html" data-hr-link="campaigns">Kampanyalar</a>
-    <a class="hr-subnav-link" href="hr-company.html" data-hr-link="company">Şirket</a>
-    <a class="hr-subnav-link" href="hr-team.html" data-hr-link="team">Ekip</a>
-    <a class="hr-subnav-link" href="hr-settings.html" data-hr-link="settings">Ayarlar</a>
+<!-- Sub-nav (Adaylar segment'inde gözükür — Sprint A parite, bu sayfada gizli) -->
+<nav class="ik-subnav" id="ik-subnav" aria-label="Adaylar alt navigasyonu">
+  <div class="ik-subnav__inner">
+    <a class="ik-subnav__item" href="hr-pipeline.html" data-subnav="pipeline">Pipeline</a>
+    <a class="ik-subnav__item" href="hr-pool.html" data-subnav="havuz">Havuz</a>
+    <a class="ik-subnav__item" href="hr-candidate.html" data-subnav="aday">Aday detayı</a>
   </div>
 </nav>
 
-<main id="main" class="hr-container">
-  <header class="hr-pg-head">
-    <div class="hr-pg-head__eyebrow">Şirket profili</div>
-    <h1 class="hr-pg-head__title">Adaylara görünen şirket bilgisi</h1>
-    <p class="hr-pg-head__lede">Şirket adı, sektör ve marka portföyü adaylara burada görünür. Pozisyon ilanlarında referans alınır. Onboarding sırasında girdiğiniz bilgiler buraya yansır.</p>
-  </header>
+<!-- Mobile drawer overlay -->
+<div class="ik-mobile-overlay" id="ik-mobile-overlay" aria-hidden="true"></div>
+<aside class="ik-mobile-drawer" id="ik-mobile-drawer" aria-hidden="true">
+  <button type="button" class="ik-mobile-drawer__close" id="ik-mobile-drawer-close" aria-label="Menüyü kapat">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <line x1="6" y1="6" x2="18" y2="18"/>
+      <line x1="6" y1="18" x2="18" y2="6"/>
+    </svg>
+  </button>
+  <div class="ik-mobile-drawer__brand">hello<em>talent</em></div>
 
-  <div class="hr-form-notice" data-hr-form-notice>
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-    <span>Demo modunda düzenleme kaydedilmez. MVP 2 ile birlikte değişiklikler hesabınıza yazılır.</span>
+  <div class="ik-mobile-drawer__group">
+    <div class="ik-mobile-drawer__label">Çalışma alanı</div>
+    <a class="ik-mobile-drawer__link" href="ik.html">Anasayfa</a>
+    <a class="ik-mobile-drawer__link" href="hr-pool.html">Adaylar</a>
+    <a class="ik-mobile-drawer__link" href="hr-messages.html">Mesajlar</a>
+    <a class="ik-mobile-drawer__link" href="hr-campaigns.html">Kampanyalar</a>
   </div>
 
-  <form class="hr-form" data-hr-co-form autocomplete="off" novalidate>
-    <section class="hr-form__section">
-      <header class="hr-form__head">
-        <h2 class="hr-form__title">Genel bilgi</h2>
-        <p class="hr-form__desc">Adaylara görünen temel kart.</p>
+  <div class="ik-mobile-drawer__group">
+    <div class="ik-mobile-drawer__label">Hesap</div>
+    <a class="ik-mobile-drawer__link is-active" href="hr-company.html">Şirket profili</a>
+    <a class="ik-mobile-drawer__link" href="hr-team.html">Ekip yönetimi</a>
+    <a class="ik-mobile-drawer__link" href="hr-settings.html">Ayarlar</a>
+  </div>
+</aside>
+
+<!-- ════════════════════════════════════════════════════════════════
+     MAIN — Şirket profili formu
+     ════════════════════════════════════════════════════════════════ -->
+<main class="ik-page" id="ik-page">
+  <div class="ik-page__inner">
+    <div id="ik-company-shell" role="region" aria-label="Şirket profili">
+
+      <!-- Hero -->
+      <header class="ik-co-hero">
+        <p class="ik-co-eyebrow">ŞİRKET · MARKA · İLETİŞİM</p>
+        <h1 class="ik-co-headline">Şirket profili</h1>
+        <p class="ik-co-subline">Adaylara ve İK ekibine görünen şirket bilgisi. Marka portföyü pozisyon eşleşmelerinde referans alınır.</p>
       </header>
-      <div class="hr-form__grid">
-        <label class="hr-form__fld">
-          <span class="hr-form__label">Şirket adı</span>
-          <input type="text" class="hr-form__input" data-hr-co-name placeholder="Örn: ABC Perakende A.Ş." maxlength="120">
-        </label>
-        <label class="hr-form__fld">
-          <span class="hr-form__label">Web sitesi</span>
-          <input type="url" class="hr-form__input" data-hr-co-website placeholder="https://sirket.com" maxlength="200">
-        </label>
-        <label class="hr-form__fld">
-          <span class="hr-form__label">Sektör</span>
-          <select class="hr-form__select" data-hr-co-sector>
-            <option value="">Seçin</option>
-            <option value="moda">Moda</option>
-            <option value="kozmetik">Kozmetik</option>
-            <option value="market">Market / Süpermarket</option>
-            <option value="elektronik">Elektronik</option>
-            <option value="ev-yasam">Ev / Yaşam</option>
-            <option value="ayakkabi-canta">Ayakkabı / Çanta</option>
-            <option value="lux">Lüks ürün</option>
-            <option value="diger">Diğer</option>
-          </select>
-        </label>
-        <label class="hr-form__fld">
-          <span class="hr-form__label">Bölge merkezi</span>
-          <select class="hr-form__select" data-hr-co-region>
-            <option value="">Seçin</option>
-            <option value="istanbul">İstanbul</option>
-            <option value="ankara">Ankara</option>
-            <option value="izmir">İzmir</option>
-            <option value="bursa">Bursa</option>
-            <option value="antalya">Antalya</option>
-            <option value="diger">Diğer</option>
-          </select>
-        </label>
+
+      <!-- Demo notice -->
+      <div class="ik-co-notice" id="ik-co-notice" role="status" aria-live="polite">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="8" x2="12" y2="12"/>
+          <line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        <span>Demo modunda değişiklikler tarayıcına kaydedilir. Hesabına yazma MVP 2 ile aktif olur.</span>
       </div>
 
-      <label class="hr-form__fld hr-form__fld--full">
-        <span class="hr-form__label">Şirket açıklaması</span>
-        <textarea class="hr-form__textarea" data-hr-co-about rows="4" placeholder="2-3 cümleyle adaylara şirketinizi anlatın." maxlength="500"></textarea>
-        <span class="hr-form__hint" data-hr-co-about-counter>0 / 500</span>
-      </label>
-    </section>
+      <form class="ik-co-form" id="ik-co-form" autocomplete="off" novalidate>
 
-    <section class="hr-form__section">
-      <header class="hr-form__head">
-        <h2 class="hr-form__title">Marka portföyü</h2>
-        <p class="hr-form__desc">İşlettiğiniz veya temsil ettiğiniz markalar. Adaylar profil filtresinde marka deneyimine göre eşleşir.</p>
-      </header>
-      <div class="hr-form__brands">
-        <div class="hr-form__brand-input">
-          <input type="text" class="hr-form__input" data-hr-co-brand-input placeholder="Marka adı yazın, Enter veya virgül ile ekleyin">
-          <button type="button" class="hr-btn-ghost hr-btn-ghost--sm" data-hr-co-brand-add>Ekle</button>
-        </div>
-        <div class="hr-form__brand-tags" data-hr-co-brand-tags></div>
-      </div>
-    </section>
+        <!-- Section 1: Genel bilgi -->
+        <section class="ik-co-section" id="ik-co-section-general">
+          <header class="ik-co-section__head">
+            <span class="ik-co-section__num">01</span>
+            <h2 class="ik-co-section__title">Genel bilgi</h2>
+            <span class="ik-co-section__desc">Adaylara görünen temel kart.</span>
+          </header>
 
-    <section class="hr-form__section">
-      <header class="hr-form__head">
-        <h2 class="hr-form__title">İletişim</h2>
-        <p class="hr-form__desc">İK iletişim noktası. Adaylar bu bilgiyi mağaza/saha için görmez; ekibinizle paylaşmak içindir.</p>
-      </header>
-      <div class="hr-form__grid">
-        <label class="hr-form__fld">
-          <span class="hr-form__label">Ad Soyad</span>
-          <input type="text" class="hr-form__input" data-hr-co-contact-name placeholder="Ali Yılmaz" maxlength="80">
-        </label>
-        <label class="hr-form__fld">
-          <span class="hr-form__label">E-posta</span>
-          <input type="email" class="hr-form__input" data-hr-co-contact-email placeholder="ik@sirket.com" maxlength="120">
-        </label>
-        <label class="hr-form__fld">
-          <span class="hr-form__label">Telefon</span>
-          <input type="tel" class="hr-form__input" data-hr-co-contact-phone placeholder="0212 555 11 22" maxlength="30">
-        </label>
-        <label class="hr-form__fld">
-          <span class="hr-form__label">Pozisyon</span>
-          <input type="text" class="hr-form__input" data-hr-co-contact-role placeholder="İK Müdürü" maxlength="80">
-        </label>
-      </div>
-    </section>
+          <div class="ik-co-grid">
+            <label class="ik-co-field">
+              <span class="ik-co-field__label">Şirket adı <span class="ik-co-field__req" aria-hidden="true">*</span></span>
+              <input type="text" id="ik-co-name" class="ik-co-field__input" placeholder="Örn: ABC Perakende A.Ş." maxlength="120" required>
+            </label>
+            <label class="ik-co-field">
+              <span class="ik-co-field__label">Web sitesi</span>
+              <input type="url" id="ik-co-website" class="ik-co-field__input" placeholder="https://sirket.com" maxlength="200">
+            </label>
+            <label class="ik-co-field">
+              <span class="ik-co-field__label">Sektör</span>
+              <select id="ik-co-sector" class="ik-co-field__select">
+                <option value="">Seçin</option>
+                <option value="moda">Moda</option>
+                <option value="kozmetik">Kozmetik</option>
+                <option value="market">Market / Süpermarket</option>
+                <option value="elektronik">Elektronik</option>
+                <option value="ev-yasam">Ev / Yaşam</option>
+                <option value="ayakkabi-canta">Ayakkabı / Çanta</option>
+                <option value="lux">Lüks ürün</option>
+                <option value="diger">Diğer</option>
+              </select>
+            </label>
+            <label class="ik-co-field">
+              <span class="ik-co-field__label">Bölge merkezi</span>
+              <select id="ik-co-region" class="ik-co-field__select">
+                <option value="">Seçin</option>
+                <option value="istanbul">İstanbul</option>
+                <option value="ankara">Ankara</option>
+                <option value="izmir">İzmir</option>
+                <option value="bursa">Bursa</option>
+                <option value="antalya">Antalya</option>
+                <option value="diger">Diğer</option>
+              </select>
+            </label>
+          </div>
 
-    <footer class="hr-form__foot">
-      <button type="reset" class="hr-btn-ghost" data-hr-co-reset>Vazgeç</button>
-      <button type="submit" class="hr-btn-primary" data-hr-co-save>Profili kaydet</button>
-    </footer>
-  </form>
+          <label class="ik-co-field ik-co-field--full">
+            <span class="ik-co-field__label">Şirket açıklaması</span>
+            <textarea id="ik-co-about" class="ik-co-field__textarea" rows="4" placeholder="2-3 cümleyle adaylara şirketinizi anlatın." maxlength="500"></textarea>
+            <span class="ik-co-field__hint" id="ik-co-about-counter">0 / 500</span>
+          </label>
+        </section>
+
+        <!-- Section 2: Marka portföyü -->
+        <section class="ik-co-section" id="ik-co-section-brands">
+          <header class="ik-co-section__head">
+            <span class="ik-co-section__num">02</span>
+            <h2 class="ik-co-section__title">Marka portföyü</h2>
+            <span class="ik-co-section__desc">İşlettiğiniz veya temsil ettiğiniz markalar. Aday filtrelerinde marka deneyimine göre eşleşme yapılır.</span>
+          </header>
+
+          <div class="ik-co-brands">
+            <div class="ik-co-brands__input-row">
+              <input type="text" id="ik-co-brand-input" class="ik-co-field__input" placeholder="Marka adı yazın, Enter veya virgül ile ekleyin" maxlength="60">
+              <button type="button" id="ik-co-brand-add" class="ik-co-btn ik-co-btn--ghost ik-co-btn--sm">Ekle</button>
+            </div>
+            <div class="ik-co-brands__chips" id="ik-co-brand-chips" role="list" aria-label="Eklenen markalar"></div>
+            <p class="ik-co-field__hint">En fazla 30 marka. Markaları virgülle ayırarak da yapıştırabilirsiniz.</p>
+          </div>
+        </section>
+
+        <!-- Section 3: İletişim -->
+        <section class="ik-co-section" id="ik-co-section-contact">
+          <header class="ik-co-section__head">
+            <span class="ik-co-section__num">03</span>
+            <h2 class="ik-co-section__title">İletişim</h2>
+            <span class="ik-co-section__desc">İK iletişim noktası. Adaylar bu bilgiyi mağaza/saha için görmez; ekibinizle paylaşmak içindir.</span>
+          </header>
+
+          <div class="ik-co-grid">
+            <label class="ik-co-field">
+              <span class="ik-co-field__label">Ad soyad</span>
+              <input type="text" id="ik-co-contact-name" class="ik-co-field__input" placeholder="Ali Yılmaz" maxlength="80">
+            </label>
+            <label class="ik-co-field">
+              <span class="ik-co-field__label">E-posta</span>
+              <input type="email" id="ik-co-contact-email" class="ik-co-field__input" placeholder="ik@sirket.com" maxlength="120">
+            </label>
+            <label class="ik-co-field">
+              <span class="ik-co-field__label">Telefon</span>
+              <input type="tel" id="ik-co-contact-phone" class="ik-co-field__input" placeholder="0212 555 11 22" maxlength="30">
+            </label>
+            <label class="ik-co-field">
+              <span class="ik-co-field__label">Pozisyon</span>
+              <input type="text" id="ik-co-contact-role" class="ik-co-field__input" placeholder="İK Müdürü" maxlength="80">
+            </label>
+          </div>
+        </section>
+
+        <!-- CTA bar -->
+        <footer class="ik-co-cta">
+          <button type="reset" id="ik-co-reset" class="ik-co-btn ik-co-btn--ghost">Vazgeç</button>
+          <button type="submit" id="ik-co-save" class="ik-co-btn ik-co-btn--primary">Profili kaydet</button>
+        </footer>
+
+        <div class="ik-co-msg" id="ik-co-msg" role="status" aria-live="polite"></div>
+      </form>
+
+    </div>
+  </div>
 </main>
 
-<!-- Toast -->
-<div class="hr-toast" data-hr-toast aria-live="polite" aria-atomic="true"></div>
+<!-- Bottom nav (mobile only) -->
+<nav class="ik-bottom-nav" id="ik-bottom-nav" aria-label="Mobil navigasyon">
+  <div class="ik-bottom-nav__inner">
+    <a class="ik-bottom-nav__item" href="ik.html" data-segment="anasayfa">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2h-4v-7H9v7H5a2 2 0 0 1-2-2z"/>
+      </svg>
+      <span>Anasayfa</span>
+    </a>
+    <a class="ik-bottom-nav__item" href="hr-pool.html" data-segment="adaylar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+        <circle cx="9" cy="7" r="4"/>
+        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+      </svg>
+      <span>Adaylar</span>
+    </a>
+    <a class="ik-bottom-nav__item" href="hr-messages.html" data-segment="mesajlar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M4 6h16a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z"/>
+        <polyline points="22,6 12,13 2,6"/>
+      </svg>
+      <span>Mesaj</span>
+    </a>
+    <a class="ik-bottom-nav__item" href="hr-campaigns.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M3 11l18-5v12L3 14v-3z"/>
+        <path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/>
+      </svg>
+      <span>Kampanya</span>
+    </a>
+    <a class="ik-bottom-nav__item is-active" href="hr-settings.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+      </svg>
+      <span>Ayar</span>
+    </a>
+  </div>
+</nav>
 
-<script src="js/hr-shell.js?v=20260426asamab6" defer></script>
-<script src="js/hr-data.js?v=20260426asamab6" defer></script>
-<script src="js/hr-company.js?v=20260426asamab6" defer></script>
+<!-- Toast -->
+<div class="ik-toast" id="ik-toast" role="status" aria-live="polite" aria-atomic="true"></div>
+
+<script src="js/ik-shell.js?v=20260426asama86d"></script>
+<script src="js/ik-data.js?v=20260426asama86d"></script>
+<script src="js/ik-company.js?v=20260426asama86d"></script>
 </body>
 </html>
