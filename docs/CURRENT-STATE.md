@@ -1,7 +1,83 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 26 Nisan 2026 ikindi | PHASE A + C + C.5 APPLY EDILDI — adapter real branch canlida, search RPC genisletildi
+> Son guncelleme: 27 Nisan 2026 sabah | PHASE A + C + C.5 + D STEP 1+2 DONE — Wave 2 FAIL (panel JS refactor sirasinda fix), Phase D2 + E sonraki session
 >
-> Aktif Odak: Phase A (Sprint 7 SQL) + Phase C (ik-data.js real branch) + Phase C.5 (search RPC text search + name sort) **TAMAMLANDI**. Tuna karari: field mapping katmani YOK, UI Phase D'de real shape'e adapt edilecek. Sonraki: Phase D (10 panel JS refactor — `c.pozisyon` → `c.son_pozisyon`, `c.sehir` → `c.adres_il`, `c.deneyim_yil` → `Math.round(c.toplam_deneyim_ay/12)`, `c._match` → `c.match_score` + yeni `c.match_reasons` chip render).
+> Aktif Odak: Phase D Step 1 (`data/demo/*.json` 5 dosya silindi) + Step 2 (`js/ik-data.js` real-only refactor, 1137→1047 satir) **TAMAMLANDI**. Wave 2 review CONVERGENT FAIL — 2 HIGH (Mesajlar API mismatch + markThreadRead candidate-side RPC) + 3 MEDIUM. Bunlar Phase D2 (panel JS refactor) sirasinda cozulecek. **Sonraki session:** Phase D2 (10 panel JS refactor — Wave 3 fixleri dahil) + Phase E (auth wiring) + Phase F+H seed.
+>
+> ── 🟥 SONRAKI SESSION BASLANGIC CHECKLIST (briefer'in oncelikli okuyacagi) ──
+>
+> **0. Push state:** Phase A+C+C.5 commit'leri zaten remote'a push edildi (`a8967ed`, `4fd1dcd`, `57e3fe0`). Phase D Step 1+2 commit'i de push edilecek (bu session sonu).
+>
+> **1. Kanit-once-iddia disiplin (CRITICAL):** Bu session 3 hayal yakalandi:
+>   - Matching engine "P4 yapilmadi" hayali — gercekte live (search RPC + ik-pool match pill)
+>   - code-reviewer Wave 4 `c.sehir column does not exist` hayali — gercekte var (denormalized)
+>   - "Sprint D backend yok" hayali — gercekte 15+ RPC + 7+ tablo TAMAMEN HAZIR
+> Sonraki sessionda HER iddia oncesi: live query (supabase db query --linked) VEYA source dosya Read (line numara cite). Briefer ozetine guvenme.
+>
+> **2. Phase D2 (panel JS refactor) baslat — TODO sirasiyla:**
+>   1. Wave 2 review HIGH 2 (Mesaj API mismatch) panel JS'lerde uyumla:
+>      - `js/ik-messages.js`: `t.id` → `t.message_id`, `t.last_message` → `t.last_body`, `t.last_message_at` → `t.last_activity_at`, `t.unread_count` → `t.unread_replies`
+>      - `getThread()` adapter array donduruyor, panel `{...thread, messages:[]}` bekliyor — UI tarafini real shape'e refactor
+>   2. Wave 2 HIGH 1 (markThreadRead): A11 RPC `mark_employer_thread_read` migration apply once (T3 zincir), sonra adapter wire
+>   3. Pool/Pipeline/Aday refactor: `c.pozisyon` → `c.son_pozisyon`, `c.sehir` → `c.adres_il`, `c.deneyim_yil` → `Math.round(c.toplam_deneyim_ay/12)`, `c._match` → `c.match_score`, YENI `c.match_reasons` chip render (matching transparency)
+>   4. Mesajlar/Sirket/Ekip/Ayarlar UI gerçek shape'e adapte
+>   5. Kampanyalar empty state ("MVP 2 sonrasi Iyzico ile") — hr-campaigns.html template
+>   6. Wave 2 R3 (invites placeholder): adapter `getTeamMembers`'a `company_invitations` SELECT ekle
+>   7. Wave 2 R4 (pagination), R5 (orphan cache), R6 (uid dead code), R7 (header date) ufak fix
+>
+> **3. Phase E auth context wiring (Phase D2 paralel):**
+>   - `IK_REAL_MODE_ENABLED` flag artik check edilmiyor (Phase D2'de auth context guard yeterli)
+>   - tkefeli login → `IK_SHELL.ctx.hr` populate → adapter `getCompanyId()` calisir
+>   - giris.html → ik.html flow test
+>
+> **4. Phase F: Position duplicate temizligi:** Live'da 2 "Store Manager" position duplicate (id 1+2). Sil/birlestir, en az 1 anlamli pozisyon kalsin (Magaza Muduru / Istanbul / 3-5 yil / luks).
+>
+> **5. Phase H: 200 test aday seed:**
+>   - A11 sub: `candidates.test_seed_batch TEXT NULL` flag migration
+>   - `npm run seed:test -- 200` (100 satis / 75 magaza muduru / 25 yardimcisi variety)
+>   - `npm run seed:purge -- <batch_id>` veya `:purge:all`
+>   - Tuna filter + matching engine test
+>
+> **6. Phase G + I (surekli polish):** Tuna UX/tasarim feedback → designer/ui-agent/darkmode-auditor/uat-tester/code-reviewer zincir.
+>
+> **7. Pending approvals (.claude/agent-memory/pending-approvals.md) — Tuna oncelik karari verir:**
+>   - **A7:** is_paid_employer flag bypass guard (Iyzico oncesi SART)
+>   - **A8:** KVKK note retention policy + cron purge
+>   - **A9:** telefon/email visible search ile artik daha fazla gorunur (KVKK md.5)
+>   - **A10:** hr_profiles granular notification toggles (notify_email_messages + notify_email_pipeline)
+>   - **A11:** mark_employer_thread_read employer-side RPC + bulk_add_to_pipeline RPC (Phase D2 once gerekli!)
+>   - **A12:** Phase D Wave 2 review backlog (panel JS refactor sirasinda fix)
+>
+> ── 27 NIS PHASE D STEP 1+2 SONUCLARI ──
+>
+> **Step 1 (chief-of-staff, 5dk):** `data/demo/*.json` 5 dosya silindi (`git rm` ile staged):
+> - candidates.json (50 sahte aday)
+> - positions.json
+> - pipeline.json
+> - messages.json
+> - campaigns.json
+>
+> **Step 2 (ui-agent, ~3sa):** `js/ik-data.js` real-only refactor (1137→1047 satir):
+> - Demo helpers SILINDI: fetchJSON, readOverlay, writeOverlay, readMessagesOverlay, writeMessagesOverlay, readJSON, writeJSON, isDemoMode, DEMO_BASE, tum LS overlay key'leri
+> - `if (realMode())` if/else'leri sadelestirildi → tek real path (10 metod: searchCandidates, getCandidate, getPositions, getPipeline, moveStage, addToPipeline, removeFromPipeline, addNote, getNotes, deleteNote)
+> - `IK_REAL_MODE_ENABLED` check kaldirildi — auth context guard yeterli (`HT.getSupa + IK_SHELL.ctx.hr`)
+> - Sprint D real branchler eklendi:
+>   - **Mesajlar:** getMessageThreads (RPC `get_company_message_threads`) + getThread (`get_message_thread`) + sendMessage (`send_employer_message`) + replyToThread (`send_employer_followup`) + markThreadRead (`mark_employer_replies_read` — HIGH 1 fail!)
+>   - **Sirket:** getCompany (`companies` SELECT) + updateCompany (9-field whitelist UPDATE, admin RLS)
+>   - **Ekip:** getTeamMembers (RPC `get_employer_team_info` + invites placeholder) + inviteTeamMember (`invite_team_member`) + cancelInvite (`company_invitations` UPDATE) + updateMemberRole + removeMember
+>   - **Ayarlar:** getSettings (`hr_profiles` SELECT) + updateSettings (sadece `notify_email_newsletter` whitelist)
+> - Account lifecycle (KVKK md.11): freeze/unfreeze/delete → `reject('account_lifecycle_pending')` sentinel (yapim asamasinda)
+> - Kampanyalar: getCampaigns → `Promise.resolve([])` empty + create/update/archive → `reject('campaigns_pending')` (MVP 2 sonrasi)
+>
+> **Wave 2 review (code-reviewer + Codex paralel) → CONVERGENT FAIL:**
+> - **HIGH 1:** `markThreadRead` calismaz — `mark_employer_replies_read` RPC candidate-side (mig 054), employer panel cagrirsa exception. **Fix:** A11 yeni RPC `mark_employer_thread_read` + adapter rewire (Phase D2 ile birlikte)
+> - **HIGH 2:** Mesaj API sozlesmesi UI ile kopuk — Adapter `message_id/last_body/last_activity_at/unread_replies` doner, `js/ik-messages.js` `id/last_message/last_message_at/unread_count` bekler. `getThread()` array doner, panel `{...thread, messages:[]}` bekler. **Fix:** Phase D2 panel JS refactor (UI gercek shape'e adapte)
+> - **MEDIUM R3:** invites `[]` placeholder — `company_invitations` SELECT eklenmeli (adapter veya panel JS)
+> - **MEDIUM R4:** pagination yok — `getMessageThreads` `p_limit:50` hardcoded
+> - **MEDIUM R5:** orphan cache keys — `_cache.candidates/threads/pipeline` doldurulmuyor
+> - **LOW R6:** uid() dead code
+> - **NIT R7:** header tarih typo
+>
+> **Phase D Step 1+2 commit:** Bu session sonu push (CSS+CI+ik-data.js+CURRENT-STATE)
 >
 > ── 26 NIS PHASE C + C.5 SONUCLARI ──
 >
