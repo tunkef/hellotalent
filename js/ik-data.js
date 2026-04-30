@@ -73,24 +73,36 @@
 
   function safeStr(v) { return v == null ? '' : String(v); }
 
+  /* ═══════ getDeneyimYil — adapter helper ═══════
+     Phase D2.3: RPC doner toplam_deneyim_ay (int), UI'da yil lazim.
+     candidates tablosu dogrudan SELECT edildiginde deneyim_yil olabilir;
+     RPC row'larinda toplam_deneyim_ay. Her ikisini de destekler. */
+  function getDeneyimYil(cand) {
+    if (!cand) return 0;
+    if (cand.toplam_deneyim_ay != null) return Math.round(cand.toplam_deneyim_ay / 12);
+    if (cand.deneyim_yil != null) return parseInt(cand.deneyim_yil, 10) || 0;
+    return 0;
+  }
+
   /* ═══════ Match score ═══════
      Aday <-> position parity. Basit weighted:
        segment exact = 30
-       city exact   = 25
-       district exact = 10
-       deneyim_yil position.exp_min/max range = 20
+       city exact   = 25 (cand.adres_il vs pos.city)
+       district exact = 10 — KALDIRILDI (adres_ilce RPC'de yok)
+       toplam_deneyim_ay (computed via getDeneyimYil) range = 20
        musaitlik (hemen=15, 2 hafta=12, 1 ay=8, 3 ay=4) = 15
-     Range 0..100 cap. */
+     Range 0..90 (district kaldırıldı 30 Nis D2.3).
+     NOT: pos.city ve pos.district positions tablosu field'lari — degismedi. */
   function calcMatch(cand, pos) {
     if (!cand || !pos) return 0;
     var score = 0;
 
     if (cand.segment && pos.segment && cand.segment === pos.segment) score += 30;
-    if (cand.sehir && pos.city && cand.sehir === pos.city) score += 25;
-    if (cand.ilce && pos.district && cand.ilce === pos.district) score += 10;
+    if (cand.adres_il && pos.city && cand.adres_il === pos.city) score += 25;
+    /* adres_ilce RPC return'de yok — district check kaldirildi */
 
     var expRange = parseExpRange(pos.experience_years);
-    var cy = parseInt(cand.deneyim_yil, 10) || 0;
+    var cy = getDeneyimYil(cand);
     if (expRange) {
       if (expRange.min == null || cy >= expRange.min) {
         if (expRange.max == null || cy <= expRange.max) {
@@ -1035,8 +1047,9 @@
       return Promise.reject(new Error('account_lifecycle_pending'));
     },
 
-    /* ═══════ Sprint D — Match helper expose ═══════ */
+    /* ═══════ Sprint D2.3 — Match + deneyim helpers expose ═══════ */
     calcMatch: calcMatch,
+    getDeneyimYil: getDeneyimYil,
 
     /* ── Cache reset (test) ── */
     _resetCache: function () {

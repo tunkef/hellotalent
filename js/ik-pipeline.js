@@ -227,7 +227,7 @@
     main.appendChild(name);
     var poz = document.createElement('div');
     poz.className = 'ik-card-aday__poz';
-    poz.textContent = c.pozisyon || '—';
+    poz.textContent = c.son_pozisyon || '—';
     main.appendChild(poz);
     head.appendChild(main);
 
@@ -252,11 +252,12 @@
 
     card.appendChild(head);
 
-    /* meta (match + sehir) */
+    /* meta (match + adres_il) */
     var meta = document.createElement('div');
     meta.className = 'ik-card-aday__meta';
 
-    var match = c._match;
+    /* Phase D2.3: match_score RPC field; fallback calcMatch */
+    var match = (c.match_score != null) ? c.match_score : null;
     if (match == null && state.activePosition) {
       match = IK_DATA.calcMatch(c, state.activePosition);
     }
@@ -269,7 +270,7 @@
       meta.appendChild(mp);
     }
 
-    if (c.sehir) {
+    if (c.adres_il) {
       if (meta.children.length) {
         var sep = document.createElement('span');
         sep.className = 'ik-card-aday__sep';
@@ -277,11 +278,25 @@
         meta.appendChild(sep);
       }
       var s = document.createElement('span');
-      s.textContent = c.sehir;
+      s.textContent = c.adres_il;
       meta.appendChild(s);
     }
 
     card.appendChild(meta);
+
+    /* match_reasons chips (kompakt, max 2) — Phase D2.3 */
+    var reasons = Array.isArray(c.match_reasons) ? c.match_reasons : [];
+    if (reasons.length) {
+      var reasonsRow = document.createElement('div');
+      reasonsRow.className = 'ik-card-aday__reasons';
+      reasons.slice(0, 2).forEach(function (r) {
+        var chip = document.createElement('span');
+        chip.className = 'ik-match-chip';
+        chip.textContent = r;
+        reasonsRow.appendChild(chip);
+      });
+      card.appendChild(reasonsRow);
+    }
 
     /* menu */
     var menu = document.createElement('div');

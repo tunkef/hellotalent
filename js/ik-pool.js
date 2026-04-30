@@ -26,10 +26,10 @@
     { value: 'experience', label: 'Deneyim (yıl)' }
   ];
 
-  /* Filter chip config — value=field key on candidate */
+  /* Filter chip config — value=field key on candidate (Phase D2.3: field rename) */
   var FILTER_CHIPS = [
-    { key: 'city',      label: 'Şehir',       field: 'sehir' },
-    { key: 'position',  label: 'Pozisyon',    field: 'pozisyon' },
+    { key: 'city',      label: 'Şehir',       field: 'adres_il' },
+    { key: 'position',  label: 'Pozisyon',    field: 'son_pozisyon' },
     { key: 'segment',   label: 'Segment',     field: 'segment',
       valueLabels: { luks: 'Lüks', premium: 'Premium', 'high-street': 'High-street' } },
     { key: 'musaitlik', label: 'Müsaitlik',   field: 'musaitlik' }
@@ -143,10 +143,10 @@
   function buildFacets(candidates) {
     var f = { city: {}, position: {}, segment: {}, musaitlik: {} };
     candidates.forEach(function (c) {
-      if (c.sehir)      f.city[c.sehir]         = (f.city[c.sehir] || 0) + 1;
-      if (c.pozisyon)   f.position[c.pozisyon]  = (f.position[c.pozisyon] || 0) + 1;
-      if (c.segment)    f.segment[c.segment]    = (f.segment[c.segment] || 0) + 1;
-      if (c.musaitlik)  f.musaitlik[c.musaitlik]= (f.musaitlik[c.musaitlik] || 0) + 1;
+      if (c.adres_il)     f.city[c.adres_il]           = (f.city[c.adres_il] || 0) + 1;
+      if (c.son_pozisyon) f.position[c.son_pozisyon]   = (f.position[c.son_pozisyon] || 0) + 1;
+      if (c.segment)      f.segment[c.segment]         = (f.segment[c.segment] || 0) + 1;
+      if (c.musaitlik)    f.musaitlik[c.musaitlik]     = (f.musaitlik[c.musaitlik] || 0) + 1;
     });
     var out = {};
     Object.keys(f).forEach(function (k) {
@@ -380,35 +380,51 @@
     var meta = document.createElement('div');
     meta.className = 'ik-pool-row__meta';
     var poz = document.createElement('span');
-    poz.textContent = c.pozisyon || '—';
+    poz.textContent = c.son_pozisyon || '—';
     meta.appendChild(poz);
-    if (c.sehir) {
+    if (c.adres_il) {
       var s1 = document.createElement('span');
       s1.className = 'ik-pool-row__sep';
       s1.textContent = '·';
       meta.appendChild(s1);
       var sehir = document.createElement('span');
-      sehir.textContent = c.sehir + (c.ilce ? ' / ' + c.ilce : '');
+      sehir.textContent = c.adres_il;
       meta.appendChild(sehir);
     }
-    if (c.deneyim_yil != null) {
+    var deneyimYil = IK_DATA.getDeneyimYil(c);
+    if (deneyimYil > 0) {
       var s2 = document.createElement('span');
       s2.className = 'ik-pool-row__sep';
       s2.textContent = '·';
       meta.appendChild(s2);
       var dyl = document.createElement('span');
-      dyl.textContent = c.deneyim_yil + ' yıl';
+      dyl.textContent = deneyimYil + ' yıl';
       meta.appendChild(dyl);
     }
     main.appendChild(meta);
+
+    /* match_reasons chips (max 3) — Phase D2.3 */
+    var reasons = Array.isArray(c.match_reasons) ? c.match_reasons : [];
+    if (reasons.length) {
+      var chipsRow = document.createElement('div');
+      chipsRow.className = 'ik-pool-row__reasons';
+      reasons.slice(0, 3).forEach(function (r) {
+        var chip = document.createElement('span');
+        chip.className = 'ik-match-chip';
+        chip.textContent = r;
+        chipsRow.appendChild(chip);
+      });
+      main.appendChild(chipsRow);
+    }
+
     li.appendChild(main);
 
     /* match pill */
     var match = document.createElement('span');
-    match.className = 'ik-pool-row__match ' + matchClass(c._match || 0);
+    match.className = 'ik-pool-row__match ' + matchClass(c.match_score || 0);
     var mn = document.createElement('span');
     mn.className = 'ik-pool-row__match-num';
-    mn.textContent = (c._match || 0) + '%';
+    mn.textContent = (c.match_score || 0) + '%';
     match.appendChild(mn);
     var mlbl = document.createElement('span');
     mlbl.textContent = 'eşleşme';

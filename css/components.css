@@ -668,3 +668,42 @@ html[data-theme='dark'] .ht-error-banner__retry:focus-visible{background:var(--c
   display:flex;gap:12px;justify-content:flex-end;
   margin-top:16px;
 }
+
+/* ── IK Match Chip — Phase D2.3 ──
+   Shared across pool, pipeline, candidate detail.
+   Token-strict: no manual hex. */
+.ik-match-chip{
+  display:inline-flex;align-items:center;
+  font-size:11px;line-height:1;
+  padding:2px 8px;border-radius:99px;
+  background:var(--bg);border:1px solid var(--border);
+  color:var(--navy);white-space:nowrap;
+}
+html[data-theme="dark"] .ik-match-chip{
+  background:var(--bg-surface);
+  border-color:var(--border);
+  color:var(--text-primary);
+}
+
+/* Pool row reasons strip */
+.ik-pool-row__reasons{
+  display:flex;flex-wrap:wrap;gap:4px;margin-top:4px;
+}
+
+/* Pipeline card reasons strip */
+.ik-card-aday__reasons{
+  display:flex;flex-wrap:wrap;gap:4px;
+  margin:4px 0 2px;
+}
+
+/* Candidate detail — match reasons section */
+.ik-match-reasons{margin:16px 0 8px;}
+.ik-match-reasons__title{
+  font-size:var(--text-sm);font-weight:600;
+  color:var(--text-primary);margin-bottom:8px;
+}
+.ik-match-reasons__list{
+  list-style:none;padding:0;margin:0;
+  display:flex;flex-wrap:wrap;gap:6px;
+}
+.ik-match-reasons__item{display:block;list-style:none;}

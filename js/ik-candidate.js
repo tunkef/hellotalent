@@ -105,18 +105,9 @@
         ? 'Pozisyon ile aynı şehirde (' + c.sehir + ').'
         : 'Pozisyon ' + (pos.city || '—') + ', aday ' + (c.sehir || '—') + '. Lokasyon farkı puanı düşürdü.'
     });
-    /* İlçe */
-    var dm = (c.ilce && pos.district && c.ilce === pos.district) ? 10 : 0;
-    rows.push({
-      label: 'İlçe yakınlığı',
-      max: 10,
-      value: dm,
-      hint: dm ? 'Aynı ilçede (' + c.ilce + '). Ulaşım kolay.'
-                : 'İlçeler farklı, doğrudan eşleşme yok.'
-    });
-    /* Deneyim */
+    /* Deneyim — Phase D2.3: toplam_deneyim_ay → getDeneyimYil helper */
     var rng = parseRange(pos.experience_years);
-    var cy = parseInt(c.deneyim_yil, 10) || 0;
+    var cy = IK_DATA.getDeneyimYil(c);
     var em = 0;
     if (rng) {
       if ((rng.min == null || cy >= rng.min) && (rng.max == null || cy <= rng.max)) em = 20;
@@ -144,7 +135,7 @@
     });
 
     var total = rows.reduce(function (a, r) { return a + r.value; }, 0);
-    return { rows: rows, total: Math.min(100, total) };
+    return { rows: rows, total: Math.min(100, total) }; /* max 90 actual (district kaldırıldı D2.3) */
   }
 
   function parseRange(s) {
@@ -259,13 +250,14 @@
 
     var poz = document.createElement('p');
     poz.className = 'ik-candidate__poz';
-    poz.textContent = (c.pozisyon || '—') + (c.deneyim_yil != null ? ' · ' + c.deneyim_yil + ' yıl deneyim' : '');
+    var deneyimYil = IK_DATA.getDeneyimYil(c);
+    poz.textContent = (c.pozisyon || '—') + (deneyimYil > 0 ? ' · ' + deneyimYil + ' yıl deneyim' : '');
     main.appendChild(poz);
 
     var chips = document.createElement('div');
     chips.className = 'ik-candidate__chips';
     var chipDefs = [
-      { label: 'Şehir', value: (c.sehir || '—') + (c.ilce ? ' / ' + c.ilce : '') },
+      { label: 'Şehir', value: c.sehir || '—' },
       { label: 'Segment', value: segmentLabel(c.segment) },
       { label: 'Müsaitlik', value: c.musaitlik || '—' },
       { label: 'Çalışma', value: c.calisma_tipi || '—' }
@@ -353,9 +345,10 @@
     var grid1 = document.createElement('div');
     grid1.className = 'ik-candidate-section__grid';
 
+    var deneyimYilProfil = IK_DATA.getDeneyimYil(c);
     var basicFields = [
       ['Pozisyon', c.pozisyon],
-      ['Deneyim', c.deneyim_yil != null ? c.deneyim_yil + ' yıl' : '—'],
+      ['Deneyim', deneyimYilProfil > 0 ? deneyimYilProfil + ' yıl' : '—'],
       ['Eğitim', c.egitim_seviye || '—'],
       ['Doğum yılı', c.dogum_yili || '—'],
       ['Müsaitlik', c.musaitlik || '—'],
@@ -377,7 +370,6 @@
     var grid2 = document.createElement('div');
     grid2.className = 'ik-candidate-section__grid';
     grid2.appendChild(renderField('Şehir', c.sehir));
-    grid2.appendChild(renderField('İlçe', c.ilce));
     sec2.appendChild(grid2);
     frag.appendChild(sec2);
 
@@ -599,6 +591,8 @@
     });
     frag.appendChild(wrap);
 
+    /* match_reasons — raw shape'te yok; Pool/Pipeline RPC panellerinde render edilir (A16) */
+
     /* Summary */
     var sum = document.createElement('div');
     sum.className = 'ik-match-summary';
@@ -784,8 +778,8 @@
     cacheDom();
     var id = getQueryId();
     if (!id) {
-      /* Fallback: id yoksa demo candidate sec */
-      id = 'c-001';
+      console.error('ik-candidate: id parametresi eksik, panel yüklenemiyor.');
+      return;
     }
 
     Promise.all([
