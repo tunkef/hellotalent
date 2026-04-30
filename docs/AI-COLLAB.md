@@ -3766,3 +3766,26 @@ Next brief writing → verify preserved IDs directly via grep before listing the
 
 **Sonraki:** Tuna UAT → bug/UX feedback (varsa polish) → MVP 2 hazırlığı (Iyzico + KVKK).
 
+
+---
+
+## 30 Nisan 2026 — A11 employer-side RPC gap fix (T3, ~1.5sa)
+
+**Migration:** `supabase/migrations/20260430162936_hr_employer_rpc_gap_fix.sql` LIVE
+**Commit:** `f4b36e6`
+**RPC:** `mark_employer_thread_read(bigint)→void` + `bulk_add_to_pipeline(bigint, bigint[], pipeline_stage)→jsonb`
+
+**T3 wave:**
+- W1 supabase-agent: schema verify + write + dry-run
+- W2 auditor + reviewer: PASS_WITH_NOTES, 6 MEDIUM convergent (REVOKE PUBLIC + employer_role + array DOS + errors trunc + durum guard + IDOR)
+- W2 re-fix: 6 MEDIUM apply (243 → 294 satır)
+- W2 re-audit: PASS, agreement YES + 1 LOW (archived guard convergent)
+- W3 archived guard micro-fix
+- W4 Codex T3 %68 FAIL → 1 HIGH (search_path = public yetersiz, pg_temp shadow)
+- W4 supabase-agent: search_path = pg_catalog, public, pg_temp → Codex %91 PASS
+
+**Smoke (4/4):** signature + P0001 guard + prosecdef true + proconfig harden
+
+**Phase D2 prereq:** Wave 2 HIGH 1 (markThreadRead) backend tarafı KAPANDI — `js/ik-messages.js` adapter rewire kaldı.
+
+**Yeni A14 pending:** Sprint 7 (`is_employer_team_member` + `is_paid_employer`) aynı pg_temp zafiyeti — Iyzico öncesi A7'den ÖNCE.

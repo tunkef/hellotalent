@@ -36,7 +36,7 @@
 -- ║    - hr_profiles.company_id bigint, hr_profiles.id uuid             ║
 -- ║    - positions.company_id bigint                                     ║
 -- ║                                                                      ║
--- ║  NOT: Bu migration CREATE TABLE içermez — sadece FUNCTION.          ║
+-- ║  NOT: Bu migration tablo olusturmaz — sadece FUNCTION.              ║
 -- ║  RLS/GRANT: FUNCTION seviyesinde SECURITY DEFINER + GRANT EXECUTE.  ║
 -- ║  Tablo RLS TEMPLATE şartından muaf (yeni tablo yok).                ║
 -- ║                                                                      ║
