@@ -1061,6 +1061,103 @@
       return Promise.reject(new Error('account_lifecycle_pending'));
     },
 
+    /* ═══════ getCompanyKpis — D2.8 dashboard aggregate ═══════
+       4 paralel sorgu → { candidates, positions, unread, pipeline_yeni } int sayıları.
+       realMode() false → { candidates:0, positions:0, unread:0, pipeline_yeni:0 }.
+       searchCandidates RPC total field'ı buraya expose edilir
+       (searchCandidates public API'si array dönmeye devam eder). */
+    getCompanyKpis: function () {
+      if (!realMode()) {
+        return Promise.resolve({ candidates: 0, positions: 0, unread: 0, pipeline_yeni: 0 });
+      }
+
+      var supa      = getSupa();
+      var companyId = getCompanyId();
+      var userId    = getUserId();
+
+      return (async function () {
+        try {
+          var results = await Promise.all([
+            /* 1. Aktif aday total — search_employer_candidates(limit:1) → data.total */
+            supa.rpc('search_employer_candidates', {
+              p_filters:             {},
+              p_employer_company_id: companyId,
+              p_sort:                'relevance',
+              p_limit:               1,
+              p_offset:              0,
+              p_position_id:         null
+            }),
+            /* 2. Açık pozisyon sayısı */
+            supa.from('positions')
+              .select('id', { count: 'exact', head: true })
+              .eq('hr_profile_id', userId)
+              .eq('status', 'open'),
+            /* 3. Okunmamış mesaj thread sayısı (unread_replies > 0) */
+            supa.rpc('get_company_message_threads', {
+              p_limit:  50,
+              p_offset: 0
+            }),
+            /* 4. Pipeline 'yeni' stage count — ilk open pozisyonu kullan */
+            supa.from('positions')
+              .select('id')
+              .eq('hr_profile_id', userId)
+              .eq('status', 'open')
+              .limit(1)
+          ]);
+
+          /* 1 — candidates total */
+          var candidateTotal = 0;
+          if (!results[0].error && results[0].data) {
+            candidateTotal = (results[0].data.total != null)
+              ? parseInt(results[0].data.total, 10) || 0
+              : 0;
+          }
+
+          /* 2 — positions count */
+          var positionCount = 0;
+          if (!results[1].error) {
+            positionCount = results[1].count != null ? results[1].count : 0;
+          }
+
+          /* 3 — unread thread count */
+          var unreadCount = 0;
+          if (!results[2].error && Array.isArray(results[2].data)) {
+            results[2].data.forEach(function (t) {
+              if ((t.unread_replies || 0) > 0) unreadCount += 1;
+            });
+          }
+
+          /* 4 — pipeline 'yeni' count — getPipeline ilk pozisyon ile */
+          var pipelineYeni = 0;
+          if (!results[3].error && Array.isArray(results[3].data) && results[3].data.length > 0) {
+            var firstPosId = results[3].data[0].id;
+            try {
+              var pipeRes = await supa.rpc('hr_get_pipeline', {
+                p_position_id: firstPosId
+              });
+              if (!pipeRes.error && Array.isArray(pipeRes.data)) {
+                pipelineYeni = pipeRes.data.filter(function (r) {
+                  return r.stage === 'yeni';
+                }).length;
+              }
+            } catch (e2) {
+              console.warn('[ik-data] getCompanyKpis pipeline_yeni exception:', e2 && e2.message);
+            }
+          }
+
+          return {
+            candidates:    candidateTotal,
+            positions:     positionCount,
+            unread:        unreadCount,
+            pipeline_yeni: pipelineYeni
+          };
+        } catch (e) {
+          console.warn('[ik-data] getCompanyKpis exception:', e && e.message);
+          return { candidates: 0, positions: 0, unread: 0, pipeline_yeni: 0 };
+        }
+      })();
+    },
+
     /* ═══════ Sprint D2.3 — Match + deneyim helpers expose ═══════ */
     calcMatch: calcMatch,
     getDeneyimYil: getDeneyimYil,

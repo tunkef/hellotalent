@@ -1,9 +1,8 @@
-/* global IK_SHELL */
+/* global IK_SHELL, IK_DATA */
 /* ════════════════════════════════════════════════════════════════
-   IK Genel — Asama 86 Sprint A
-   Anasayfa dashboard renderer. Demo data fetch + bento render.
-   profil-genel.js pattern parite. textContent + DOM API only — innerHTML YOK.
-   Sprint B'de gerçek HR_DATA adapter ile değiştirilir.
+   IK Genel — Phase D2.8
+   Anasayfa dashboard renderer. IK_DATA adapter aggregate — real-only.
+   textContent + DOM API only — innerHTML YOK.
    ════════════════════════════════════════════════════════════════ */
 (function () {
   'use strict';
@@ -100,54 +99,67 @@
     return n ? n.charAt(0).toUpperCase() : '?';
   }
 
-  /* ═══════ Data fetch (demo JSON) ═══════ */
-  function fetchDemoData() {
-    var sources = [
-      'data/demo/positions.json',
-      'data/demo/candidates.json',
-      'data/demo/pipeline.json',
-      'data/demo/messages.json',
-      'data/demo/campaigns.json'
-    ];
-    var promises = sources.map(function (src) {
-      return fetch(src, { cache: 'no-store' }).then(function (r) {
-        if (!r.ok) throw new Error('demo fetch ' + src + ' status ' + r.status);
-        return r.json();
+  /* ═══════ Data fetch — IK_DATA adapter aggregate (Phase D2.8) ═══════
+     4+1 paralel sorgu: positions, pipeline, messages, campaigns (boş), candidates (top3).
+     Dönen shape, card builder'larla geriye uyumlu:
+       { positions[], pipeline[], messages[], campaigns[], candidates[], kpis{} }
+     realMode() false → her metod boş dönür → empty state render edilir. */
+  function buildDashboardData() {
+    var adapter = window.IK_DATA;
+    if (!adapter) {
+      return Promise.resolve({
+        positions: [], pipeline: [], messages: [], campaigns: [], candidates: [],
+        kpis: { openPositions: 0, pipelineActive: 0, pendingMessages: 0, activeCampaigns: 0 }
+      });
+    }
+
+    return Promise.all([
+      adapter.getCompanyKpis(),       /* [0] KPI sayıları */
+      adapter.getPositions(),          /* [1] positions[] */
+      adapter.getMessageThreads({ limit: 50 }), /* [2] message threads[] */
+      adapter.getCampaigns()           /* [3] campaigns[] — boş (Iyzico bekliyor) */
+    ]).then(function (results) {
+      var kpiRaw   = results[0] || {};
+      var positions = Array.isArray(results[1]) ? results[1] : [];
+      var messages  = Array.isArray(results[2]) ? results[2] : [];
+      var campaigns = Array.isArray(results[3]) ? results[3] : [];
+
+      /* Pipeline: ilk open pozisyonu kullan */
+      var firstOpenPos = positions.find(function (p) { return p.status === 'open'; }) || null;
+      var pipelinePromise = firstOpenPos
+        ? adapter.getPipeline(firstOpenPos.id)
+        : Promise.resolve([]);
+
+      /* Son adaylar: searchCandidates limit:3, sort:recent */
+      var candidatesPromise = adapter.searchCandidates({ limit: 3, sort: 'recent' });
+
+      return Promise.all([pipelinePromise, candidatesPromise]).then(function (r2) {
+        var pipeline   = Array.isArray(r2[0]) ? r2[0] : [];
+        var candidates = Array.isArray(r2[1]) ? r2[1] : [];
+
+        /* Normalize pipeline shape — hr_get_pipeline RPC → stage, updated_at, candidate_name */
+        /* card builder bekliyor: stage, updated_at, candidate_id, position_id — shape uyumlu */
+
+        /* KPI shape — adapter contract direkt kullan (DIP: panel normalizing yapmaz) */
+        var openPositions   = kpiRaw.positions     != null ? kpiRaw.positions     : positions.filter(function (p) { return p.status === 'open'; }).length;
+        var pipelineActive  = kpiRaw.pipeline_yeni != null ? kpiRaw.pipeline_yeni : pipeline.length;
+        var pendingMessages = kpiRaw.unread        != null ? kpiRaw.unread        : messages.filter(function (m) { return ((m.unread_replies != null ? m.unread_replies : 0)) > 0; }).length;
+
+        return {
+          positions:  positions,
+          pipeline:   pipeline,
+          messages:   messages,
+          campaigns:  campaigns,
+          candidates: candidates,
+          kpis: {
+            openPositions:   openPositions,
+            pipelineActive:  pipelineActive,
+            pendingMessages: pendingMessages,
+            activeCampaigns: 0   /* Iyzico bekliyor — campaigns her zaman boş */
+          }
+        };
       });
     });
-    return Promise.all(promises).then(function (rows) {
-      return {
-        positions: rows[0],
-        candidates: rows[1],
-        pipeline: rows[2],
-        messages: rows[3],
-        campaigns: rows[4]
-      };
-    });
-  }
-
-  /* ═══════ KPI compute ═══════ */
-  function computeKPIs(data) {
-    var openPositions = (data.positions || []).filter(function (p) {
-      return p.status === 'open';
-    }).length;
-
-    var pipelineActive = (data.pipeline || []).length;
-
-    var pendingMessages = (data.messages || []).filter(function (m) {
-      return (m.unread_count || 0) > 0;
-    }).length;
-
-    var activeCampaigns = (data.campaigns || []).filter(function (c) {
-      return c.status === 'sent' || c.status === 'scheduled';
-    }).length;
-
-    return {
-      openPositions: openPositions,
-      pipelineActive: pipelineActive,
-      pendingMessages: pendingMessages,
-      activeCampaigns: activeCampaigns
-    };
   }
 
   /* ═══════ HERO ═══════ */
@@ -338,10 +350,10 @@
   function buildMessagesCard(data) {
     var threads = (data.messages || []).slice();
     threads.sort(function (a, b) {
-      return new Date(b.last_message_at || 0) - new Date(a.last_message_at || 0);
+      return new Date(b.last_activity_at || 0) - new Date(a.last_activity_at || 0);
     });
     var top = threads.slice(0, 3);
-    var pending = threads.filter(function (t) { return (t.unread_count || 0) > 0; }).length;
+    var pending = threads.filter(function (t) { return (t.unread_replies || 0) > 0; }).length;
 
     var shell = buildCardShell(
       'Bekleyen mesajlar',
@@ -365,9 +377,9 @@
         item.appendChild(txt('div', 'ik-list__avatar', initialOf(t.candidate_name)));
         var body = el('div', 'ik-list__body');
         body.appendChild(txt('span', 'ik-list__name', t.candidate_name || '—'));
-        body.appendChild(txt('span', 'ik-list__meta', t.last_message || ''));
+        body.appendChild(txt('span', 'ik-list__meta', t.last_body || ''));
         item.appendChild(body);
-        item.appendChild(txt('span', 'ik-list__time', formatTimeAgo(t.last_message_at)));
+        item.appendChild(txt('span', 'ik-list__time', formatTimeAgo(t.last_activity_at)));
         list.appendChild(item);
       });
       shell.body.appendChild(list);
@@ -515,42 +527,48 @@
     /* Build activity items from pipeline + messages + campaigns */
     var items = [];
 
-    /* Recent pipeline transitions */
+    /* Recent pipeline transitions — hr_get_pipeline shape:
+       candidate_name, candidate_pozisyon, candidate_id, position_id, stage, updated_at
+       Positions lookup için data.positions kullanılır (cache'li). */
+    var posMap = {};
+    (data.positions || []).forEach(function (po) { posMap[po.id] = po; });
+
     (data.pipeline || []).slice().sort(function (a, b) {
       return new Date(b.updated_at || 0) - new Date(a.updated_at || 0);
     }).slice(0, 3).forEach(function (p) {
-      var cand = (data.candidates || []).find(function (c) { return c.id === p.candidate_id; });
-      var pos = (data.positions || []).find(function (po) { return po.id === p.position_id; });
-      if (!cand || !pos) return;
+      var candName = p.candidate_name || '—';
+      var pos = posMap[p.position_id] || null;
+      var posTitle = pos ? (pos.title || pos.pozisyon || '—') : (p.candidate_pozisyon || '—');
       var stageLabel = ({
-        basvuru: 'başvuruda',
+        yeni:     'yeni başvuruda',
+        basvuru:  'başvuruda',
         on_eleme: 'ön elemede',
-        mulakat: 'mülakatta',
-        teklif: 'teklif aşamasında'
+        mulakat:  'mülakatta',
+        teklif:   'teklif aşamasında'
       })[p.stage] || p.stage;
       items.push({
         ts: p.updated_at,
-        text: cand.full_name + ' ',
-        accent: pos.title,
+        text: candName + ' ',
+        accent: posTitle,
         suffix: ' pozisyonunda ' + stageLabel,
         action: 'Adayı aç',
         accentDot: p.stage === 'teklif' || p.stage === 'mulakat',
-        href: 'hr-candidate.html?id=' + cand.id
+        href: 'hr-candidate.html?id=' + (p.candidate_id || '')
       });
     });
 
     /* Recent messages */
     (data.messages || []).slice().sort(function (a, b) {
-      return new Date(b.last_message_at || 0) - new Date(a.last_message_at || 0);
+      return new Date(b.last_activity_at || 0) - new Date(a.last_activity_at || 0);
     }).slice(0, 2).forEach(function (m) {
       items.push({
-        ts: m.last_message_at,
+        ts: m.last_activity_at,
         text: m.candidate_name + ' ',
         accent: 'mesaj gönderdi',
-        suffix: ' — ' + (m.position_title || ''),
+        suffix: ' — ' + (m.subject || ''),
         action: 'Mesajı oku',
-        accentDot: (m.unread_count || 0) > 0,
-        href: 'hr-messages.html?thread=' + m.id
+        accentDot: (m.unread_replies || 0) > 0,
+        href: 'hr-messages.html?thread=' + (m.message_id || m.id)
       });
     });
 
@@ -632,16 +650,23 @@
       });
     }
 
+    /* Skeleton göster — adapter aggregate beklerken */
+    var skeleton = txt('div', 'ik-state', 'Yükleniyor...');
+    host.appendChild(skeleton);
+
     var data;
     try {
-      data = await fetchDemoData();
+      data = await buildDashboardData();
     } catch (e) {
-      console.warn('[ik-genel] demo fetch fail:', e && e.message);
-      renderEmpty(host, 'Demo veriler yüklenemedi. Sayfayı yenileyin.');
+      console.error('[ik-genel] veri yüklenemedi:', e && e.message);
+      renderEmpty(host, 'Hata: ' + (e && e.message ? e.message : 'Veriler yüklenemedi') + ' — Sayfayı yenileyin.');
       return;
     }
 
-    var kpis = computeKPIs(data);
+    /* Skeleton kaldır */
+    while (host.firstChild) host.removeChild(host.firstChild);
+
+    var kpis = data.kpis || { openPositions: 0, pipelineActive: 0, pendingMessages: 0, activeCampaigns: 0 };
 
     var root = el('div', 'ik-genel');
     root.appendChild(buildHero(data, kpis, ctx));
