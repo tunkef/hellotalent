@@ -349,9 +349,11 @@
   outline: 2px solid var(--verm);
   outline-offset: 2px;
 }
-.ik-cmp-btn:disabled {
+.ik-cmp-btn:disabled,
+.ik-cmp-btn[aria-disabled="true"] {
   opacity: 0.55;
   cursor: not-allowed;
+  pointer-events: auto;
 }
 .ik-cmp-btn--primary {
   background: var(--verm);
