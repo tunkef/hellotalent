@@ -1,5 +1,5 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 30 Nisan 2026 aksam | PHASE A + C + C.5 + D STEP 1+2 + A11 RPC + **D2 (1-6) DONE** — Wave 2 HIGH 1+2 + R3-R7 backlog kapatildi, Phase E + F + H sonraki session
+> Son guncelleme: 1 Mayis 2026 | PHASE A + C + C.5 + D STEP 1+2 + A11 RPC + D2 (1-10) + denetim + bulgu fix + **A14 SECURITY DEFINER harden DONE** — Iyzico oncesi prod zafiyet kapatildi, Phase F + H + E + A16 sonraki
 >
 > Aktif Odak: **Phase D2 panel JS refactor TAM TAMAMLANDI** (6 commit `3e708a1` → `1a120bb`, ui-agent + code-reviewer 2 wave per commit, CI Playwright her commit'te yesil).
 > - **D2.1** markThreadRead adapter rewire (mark_employer_replies_read → mark_employer_thread_read, A11 RPC)
