@@ -173,6 +173,8 @@
       if (Array.isArray(filters.calisma)  && filters.calisma.length)   pFilters.calisma  = filters.calisma;
       if (Array.isArray(filters.egitim)   && filters.egitim.length)    pFilters.egitim   = filters.egitim;
       if (Array.isArray(filters.dil)      && filters.dil.length)       pFilters.dil      = filters.dil;
+      /* A16: single candidate lookup filter — search_rpc_candidate_id_filter.sql */
+      if (filters.candidate_id != null) pFilters.candidate_id = filters.candidate_id;
 
       return (async function () {
         try {
@@ -203,25 +205,16 @@
         console.warn('[ik-data] getCandidate: auth context yok');
         return Promise.resolve(null);
       }
+      if (!id) return Promise.resolve(null);
 
-      /* Real branch — direct SELECT candidates (CLAUDE.md: maybeSingle zorunlu) */
-      var supa = getSupa();
-      return (async function () {
-        try {
-          var res = await supa.from('candidates')
-            .select('*')
-            .eq('id', id)
-            .maybeSingle();
-          if (res.error) {
-            console.warn('[ik-data] getCandidate error:', res.error.message);
-            return null;
-          }
-          return res.data || null;
-        } catch (e) {
-          console.warn('[ik-data] getCandidate exception:', e && e.message);
-          return null;
-        }
-      })();
+      /* A16: search_employer_candidates RPC ile aynı shape (modern field unified)
+         — son_pozisyon, adres_il, toplam_deneyim_ay, match_score, match_reasons,
+         experiences[], education[], diller[]. Pool/Pipeline ile tutarlı.
+         candidate_id filter: mig 20260430211728_search_rpc_candidate_id_filter. */
+      return API.searchCandidates({ candidate_id: id, limit: 1 })
+        .then(function (arr) {
+          return Array.isArray(arr) && arr.length > 0 ? arr[0] : null;
+        });
     },
 
     /* ── Positions ── */
