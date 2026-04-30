@@ -770,6 +770,8 @@
                                                               company_id, members[] }
          invite_team_member(p_email, p_role)         → JSON { success, invitation_id, email, role, message }
        Direct table:
+         company_invitations.select(id, invited_email, invited_role, status, created_at, expires_at)
+           — status='pending' filtre, admin RLS (D2.4 R3 fix)
          company_invitations.update({ status: 'cancelled' }).eq('id', invite_id)  (admin RLS)
          hr_profiles.update({ employer_role }).eq('id', member_id)                (admin RLS)
          hr_profiles.update({ company_id: null, team_id: null, employer_role: null }).eq('id', member_id) */
@@ -777,32 +779,49 @@
     getTeamMembers: function () {
       if (!realMode()) {
         console.warn('[ik-data] getTeamMembers: auth context yok');
-        return Promise.resolve({ members: [], invites: [] });
+        return Promise.resolve({ members: [], invites: [], plan: 'free', seat_limit: 1, seat_used: 0, seats_available: 0 });
       }
 
-      /* get_employer_team_info — mig 037, line 116-172
-         Döner JSON: { success, plan, seat_limit, seat_used,
-                       seats_available, company_id, members[] }
-         members[] shape: { id, email, display_name, employer_role, created_at } */
-      var supa = getSupa();
+      /* D2.4 R3 fix — Promise.all: members RPC + invites SELECT paralel
+         members[] shape: { id, email, display_name, employer_role, created_at }
+         invites[] shape: { id, invited_email, invited_role, status, created_at, expires_at } */
+      var supa      = getSupa();
+      var companyId = getCompanyId();
+
       return (async function () {
         try {
-          var res = await supa.rpc('get_employer_team_info');
-          if (res.error) {
-            console.warn('[ik-data] getTeamMembers RPC error:', res.error.message);
-            return { members: [], invites: [] };
+          var results = await Promise.all([
+            supa.rpc('get_employer_team_info'),
+            supa.from('company_invitations')
+              .select('id, invited_email, invited_role, status, created_at, expires_at')
+              .eq('company_id', companyId)
+              .eq('status', 'pending')
+              .order('created_at', { ascending: false })
+          ]);
+
+          var membersRes = results[0];
+          var invitesRes = results[1];
+
+          if (membersRes.error || !membersRes.data || !membersRes.data.success) {
+            console.warn('[ik-data] getTeamMembers: members RPC fail');
+            return {
+              members:         [],
+              invites:         Array.isArray(invitesRes.data) ? invitesRes.data : [],
+              plan:            'free',
+              seat_limit:      1,
+              seat_used:       0,
+              seats_available: 0
+            };
           }
-          var data = res.data || {};
-          if (!data.success) {
-            console.warn('[ik-data] getTeamMembers: RPC success false —', data.error);
-            return { members: [], invites: [] };
+          if (invitesRes.error) {
+            console.warn('[ik-data] getTeamMembers: invites SELECT fail —', invitesRes.error.message);
+            /* members var, invites boş — partial OK */
           }
-          /* invites: company_invitations'dan ayrı çekilir — bu RPC yalnızca members döner.
-             Phase D2 panel JS refactor'da invites sorgusu eklenecek.
-             Şimdilik invites boş array (UI empty state gösterir). */
+
+          var data = membersRes.data;
           return {
-            members:         Array.isArray(data.members) ? data.members : [],
-            invites:         [],
+            members:         Array.isArray(data.members)    ? data.members    : [],
+            invites:         Array.isArray(invitesRes.data) ? invitesRes.data : [],
             plan:            data.plan            || 'free',
             seat_limit:      data.seat_limit      || 1,
             seat_used:       data.seat_used       || 0,
@@ -810,7 +829,7 @@
           };
         } catch (e) {
           console.warn('[ik-data] getTeamMembers exception:', e && e.message);
-          return { members: [], invites: [] };
+          return { members: [], invites: [], plan: 'free', seat_limit: 1, seat_used: 0, seats_available: 0 };
         }
       })();
     },

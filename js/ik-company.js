@@ -1,8 +1,8 @@
 /* global IK_DATA */
 /* ════════════════════════════════════════════════════════════════
    IK Company — Asama 86 Sprint D
-   Sirket profili formu: Genel bilgi + Marka portfoyu + Iletisim.
-   Demo: IK_DATA.getCompany() + updateCompany() (localStorage).
+   Sirket profili formu: Genel bilgi + Marka portfoyu.
+   IK_DATA.getCompany() + updateCompany() real Supabase.
    SOLID:
      - SRP: tek sorumluluk = company form behavior + brand chip mgmt.
      - DIP: IK_DATA public API'sine bagli, gercek/demo mode degisir.
@@ -16,31 +16,27 @@
 
   var els = null;
   var state = {
-    name: '', website: '', sector: '', region: '', about: '',
+    company_name: '', website_url: '', industry: '', segment: '', short_description: '',
     brands: [],
-    contact_name: '', contact_email: '', contact_phone: '', contact_role: ''
+    legal_name: '', career_url: '', linkedin_url: '', logo_url: ''
   };
 
   function cacheEls() {
     els = {
-      form: $('#ik-co-form'),
-      name: $('#ik-co-name'),
-      website: $('#ik-co-website'),
-      sector: $('#ik-co-sector'),
-      region: $('#ik-co-region'),
-      about: $('#ik-co-about'),
+      form:        $('#ik-co-form'),
+      name:        $('#ik-co-name'),
+      website:     $('#ik-co-website'),
+      sector:      $('#ik-co-sector'),
+      region:      $('#ik-co-region'),
+      about:       $('#ik-co-about'),
       aboutCounter: $('#ik-co-about-counter'),
-      brandInput: $('#ik-co-brand-input'),
+      brandInput:  $('#ik-co-brand-input'),
       brandAddBtn: $('#ik-co-brand-add'),
-      brandChips: $('#ik-co-brand-chips'),
-      contactName: $('#ik-co-contact-name'),
-      contactEmail: $('#ik-co-contact-email'),
-      contactPhone: $('#ik-co-contact-phone'),
-      contactRole: $('#ik-co-contact-role'),
-      saveBtn: $('#ik-co-save'),
-      resetBtn: $('#ik-co-reset'),
-      msg: $('#ik-co-msg'),
-      toast: $('#ik-toast')
+      brandChips:  $('#ik-co-brand-chips'),
+      saveBtn:     $('#ik-co-save'),
+      resetBtn:    $('#ik-co-reset'),
+      msg:         $('#ik-co-msg'),
+      toast:       $('#ik-toast')
     };
   }
 
@@ -143,26 +139,22 @@
 
   function hydrate(data) {
     if (!data) return;
-    state.name = data.name || '';
-    state.website = data.website || '';
-    state.sector = data.sector || '';
-    state.region = data.region || '';
-    state.about = data.about || '';
-    state.brands = Array.isArray(data.brands) ? data.brands.slice() : [];
-    state.contact_name = data.contact_name || '';
-    state.contact_email = data.contact_email || '';
-    state.contact_phone = data.contact_phone || '';
-    state.contact_role = data.contact_role || '';
+    state.company_name     = data.company_name     || '';
+    state.website_url      = data.website_url      || '';
+    state.industry         = data.industry         || '';
+    state.segment          = data.segment          || '';
+    state.short_description = data.short_description || '';
+    state.legal_name       = data.legal_name       || '';
+    state.career_url       = data.career_url       || '';
+    state.linkedin_url     = data.linkedin_url     || '';
+    state.logo_url         = data.logo_url         || '';
+    state.brands           = Array.isArray(data.brands) ? data.brands.slice() : [];
 
-    els.name.value = state.name;
-    els.website.value = state.website;
-    els.sector.value = state.sector;
-    els.region.value = state.region;
-    els.about.value = state.about;
-    els.contactName.value = state.contact_name;
-    els.contactEmail.value = state.contact_email;
-    els.contactPhone.value = state.contact_phone;
-    els.contactRole.value = state.contact_role;
+    if (els.name)        els.name.value    = state.company_name;
+    if (els.website)     els.website.value = state.website_url;
+    if (els.sector)      els.sector.value  = state.industry;
+    if (els.region)      els.region.value  = state.segment;
+    if (els.about)       els.about.value   = state.short_description;
 
     renderBrandChips();
     updateCounter();
@@ -170,29 +162,24 @@
 
   function readForm() {
     return {
-      name: els.name.value,
-      website: els.website.value,
-      sector: els.sector.value,
-      region: els.region.value,
-      about: els.about.value,
-      brands: state.brands.slice(),
-      contact_name: els.contactName.value,
-      contact_email: els.contactEmail.value,
-      contact_phone: els.contactPhone.value,
-      contact_role: els.contactRole.value
+      company_name:      els.name    ? els.name.value    : '',
+      website_url:       els.website ? els.website.value : '',
+      industry:          els.sector  ? els.sector.value  : '',
+      segment:           els.region  ? els.region.value  : '',
+      short_description: els.about   ? els.about.value   : '',
+      legal_name:        state.legal_name,
+      career_url:        state.career_url,
+      linkedin_url:      state.linkedin_url,
+      logo_url:          state.logo_url
     };
   }
 
   function validate(payload) {
-    if (!payload.name || !payload.name.trim()) {
+    if (!payload.company_name || !payload.company_name.trim()) {
       return 'Şirket adı zorunlu.';
     }
-    if (payload.contact_email &&
-        !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(payload.contact_email.trim())) {
-      return 'Geçerli bir e-posta gir.';
-    }
-    if (payload.website &&
-        !/^https?:\/\//i.test(payload.website.trim())) {
+    if (payload.website_url &&
+        !/^https?:\/\//i.test(payload.website_url.trim())) {
       return 'Web sitesi http:// veya https:// ile başlamalı.';
     }
     return null;

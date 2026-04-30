@@ -20,7 +20,7 @@
 
   var els = null;
   var state = {
-    settings: { theme: 'system', notify_msg: true, notify_pipeline: true, notify_weekly: false },
+    settings: { theme: 'system', notify_email_newsletter: false },
     account: { status: 'active', deletion_scheduled_at: null, frozen_at: null }
   };
   var pendingAction = null; /* 'freeze' | 'unfreeze' | 'delete' | 'cancel-delete' */
@@ -46,9 +46,7 @@
       mfaStatus: $('#ik-set-mfa-status'),
       mfaBtn: $('#ik-set-mfa-btn'),
 
-      /* Notify */
-      notifyMsg: $('#ik-set-notify-msg'),
-      notifyPipeline: $('#ik-set-notify-pipeline'),
+      /* Notify — sadece notify_email_newsletter (A10 backlog: msg + pipeline gelecek) */
       notifyWeekly: $('#ik-set-notify-weekly'),
 
       /* Theme */
@@ -125,7 +123,10 @@
     var hr = ctx.hr || {};
     var user = ctx.user || {};
     if (els.fullname) els.fullname.value = hr.full_name || (user.email ? user.email.split('@')[0] : '');
-    if (els.email) els.email.value = user.email || 'demo@hellotalent.ai';
+    if (els.email) {
+      els.email.value = user.email || '';
+      if (!user.email) els.email.placeholder = 'Email yüklenemedi';
+    }
     if (els.phone) els.phone.value = hr.phone || '';
     if (els.role) els.role.value = hr.title || hr.position || '';
   }
@@ -133,9 +134,7 @@
   function hydrateSettings(s) {
     if (!s) return;
     state.settings = Object.assign({}, state.settings, s);
-    if (els.notifyMsg) els.notifyMsg.checked = !!state.settings.notify_msg;
-    if (els.notifyPipeline) els.notifyPipeline.checked = !!state.settings.notify_pipeline;
-    if (els.notifyWeekly) els.notifyWeekly.checked = !!state.settings.notify_weekly;
+    if (els.notifyWeekly) els.notifyWeekly.checked = !!state.settings.notify_email_newsletter;
     syncThemeRadios();
   }
 
@@ -183,18 +182,15 @@
   }
 
   /* ── Notify toggles ── */
+  /* A10 backlog: notify_email_messages + notify_email_pipeline henüz backend'de yok.
+     Sadece notify_email_newsletter (notifyWeekly el) aktif. */
   function bindNotifyToggles() {
-    [els.notifyMsg, els.notifyPipeline, els.notifyWeekly].forEach(function (el) {
-      if (!el) return;
-      el.addEventListener('change', function () {
-        var key = el.getAttribute('data-ik-set-toggle');
-        if (!key) return;
-        var patch = {};
-        patch[key] = !!el.checked;
-        IK_DATA.updateSettings(patch).then(function (res) {
-          if (res && res.settings) state.settings = res.settings;
+    if (!els.notifyWeekly) return;
+    els.notifyWeekly.addEventListener('change', function () {
+      IK_DATA.updateSettings({ notify_email_newsletter: !!els.notifyWeekly.checked })
+        .then(function (res) {
+          if (res && res.ok) state.settings.notify_email_newsletter = !!els.notifyWeekly.checked;
         });
-      });
     });
   }
 

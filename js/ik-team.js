@@ -1,8 +1,8 @@
-/* global IK_DATA */
+/* global IK_DATA, IK_SHELL */
 /* ════════════════════════════════════════════════════════════════
    IK Team — Asama 86 Sprint D
    Ekip uyeleri listesi + Bekleyen davetler + Davet modal.
-   Demo: IK_DATA.getTeamMembers() + inviteTeamMember + cancelInvite.
+   IK_DATA.getTeamMembers() + inviteTeamMember + cancelInvite.
    SOLID:
      - SRP: tek sorumluluk = team list render + invite modal.
      - DIP: IK_DATA public API'sine bagli.
@@ -18,6 +18,7 @@
 
   var els = null;
   var state = { members: [], invites: [] };
+  var currentUserId = null;
 
   function cacheEls() {
     els = {
@@ -91,10 +92,15 @@
     row.setAttribute('role', 'listitem');
     row.dataset.id = m.id;
 
+    /* is_self: RPC'de yoksa auth context ile karşılaştır */
+    var isSelf = (typeof m.is_self !== 'undefined')
+      ? !!m.is_self
+      : (currentUserId && m.id === currentUserId);
+
     /* Avatar */
     var avatar = document.createElement('span');
     avatar.className = 'ik-tm-row__avatar';
-    avatar.textContent = initialOf(m.name || m.email);
+    avatar.textContent = initialOf(m.display_name || m.email);
     avatar.setAttribute('aria-hidden', 'true');
 
     /* Info */
@@ -103,8 +109,8 @@
 
     var nameEl = document.createElement('div');
     nameEl.className = 'ik-tm-row__name';
-    nameEl.textContent = m.name || m.email || '—';
-    if (m.is_self) {
+    nameEl.textContent = m.display_name || m.email || '—';
+    if (isSelf) {
       var youTag = document.createElement('span');
       youTag.className = 'ik-tm-row__you';
       youTag.textContent = 'Sen';
@@ -118,14 +124,14 @@
 
     var metaEl = document.createElement('div');
     metaEl.className = 'ik-tm-row__meta';
-    metaEl.textContent = 'Son aktivite: ' + fmtRelativeTime(m.last_active);
+    metaEl.textContent = 'Eklendi: ' + fmtRelativeTime(m.created_at);
 
     info.appendChild(nameEl);
     info.appendChild(emailEl);
     info.appendChild(metaEl);
 
     /* Role badge */
-    var role = fmtRoleBadge(m.role);
+    var role = fmtRoleBadge(m.employer_role);
     var badge = document.createElement('span');
     badge.className = 'ik-tm-role-badge ik-tm-role-badge--' + role.kind;
     badge.textContent = role.label;
@@ -134,7 +140,7 @@
     var actions = document.createElement('div');
     actions.className = 'ik-tm-row__actions';
 
-    if (!m.is_self) {
+    if (!isSelf) {
       var rmBtn = document.createElement('button');
       rmBtn.type = 'button';
       rmBtn.className = 'ik-tm-row__rm';
@@ -143,10 +149,10 @@
       rmBtn.dataset.id = m.id;
       actions.appendChild(rmBtn);
     } else {
-      var selfTag = document.createElement('span');
-      selfTag.className = 'ik-tm-row__self';
-      selfTag.textContent = 'Sahip';
-      actions.appendChild(selfTag);
+      var selfSpan = document.createElement('span');
+      selfSpan.className = 'ik-tm-row__self';
+      selfSpan.textContent = 'Sahip';
+      actions.appendChild(selfSpan);
     }
 
     row.appendChild(avatar);
@@ -164,7 +170,7 @@
 
     var avatar = document.createElement('span');
     avatar.className = 'ik-tm-row__avatar ik-tm-row__avatar--pending';
-    avatar.textContent = initialOf(inv.name || inv.email);
+    avatar.textContent = initialOf(inv.invited_email);
     avatar.setAttribute('aria-hidden', 'true');
 
     var info = document.createElement('div');
@@ -172,21 +178,21 @@
 
     var nameEl = document.createElement('div');
     nameEl.className = 'ik-tm-row__name';
-    nameEl.textContent = inv.name || inv.email || '—';
+    nameEl.textContent = inv.invited_email || '—';
 
     var emailEl = document.createElement('div');
     emailEl.className = 'ik-tm-row__email';
-    emailEl.textContent = inv.email || '—';
+    emailEl.textContent = inv.invited_email || '—';
 
     var metaEl = document.createElement('div');
     metaEl.className = 'ik-tm-row__meta';
-    metaEl.textContent = 'Davet: ' + fmtRelativeTime(inv.invited_at);
+    metaEl.textContent = 'Davet edildi: ' + fmtRelativeTime(inv.created_at);
 
     info.appendChild(nameEl);
     info.appendChild(emailEl);
     info.appendChild(metaEl);
 
-    var role = fmtRoleBadge(inv.role);
+    var role = fmtRoleBadge(inv.invited_role);
     var badge = document.createElement('span');
     badge.className = 'ik-tm-role-badge ik-tm-role-badge--' + role.kind;
     badge.textContent = role.label;
@@ -313,7 +319,7 @@
     els.sendBtn.textContent = 'Gönderiliyor…';
 
     IK_DATA.inviteTeamMember(email, role, name).then(function () {
-      showToast('Davet kaydedildi (demo)', 'ok');
+      showToast('Davet kaydedildi', 'ok');
       closeModal();
       return load();
     }).catch(function (e) {
@@ -339,7 +345,7 @@
 
   function removeMember(id) {
     IK_DATA.removeMember(id).then(function () {
-      showToast('Üye çıkarıldı (demo)', 'ok');
+      showToast('Üye çıkarıldı', 'ok');
       return load();
     });
   }
@@ -388,6 +394,9 @@
   function init() {
     cacheEls();
     if (!els.membersList) return;
+    /* Auth context — is_self fallback için */
+    var ctx = (window.IK_SHELL && window.IK_SHELL.ctx) || {};
+    currentUserId = (ctx.hr && ctx.hr.id) || null;
     bindEvents();
     load();
   }
