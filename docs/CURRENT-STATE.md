@@ -1,17 +1,40 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 1 Mayis 2026 | PHASE A + C + C.5 + D STEP 1+2 + A11 RPC + D2 (1-10) + denetim + bulgu fix + **A14 SECURITY DEFINER harden DONE** — Iyzico oncesi prod zafiyet kapatildi, Phase F + H + E + A16 sonraki
+> Son guncelleme: 1 Mayis 2026 gece | PHASE A+C+C.5+D STEP 1+2 + A11 RPC + D2 (1-10) + denetim + bulgu fix + **A14 + Phase F + A16 + H2 DONE** — Iyzico oncesi prod prereq'leri TAMAMEN KAPATILDI, Phase H (200 test aday seed) sonraki ana is
 >
-> Aktif Odak: **Phase D2 panel JS refactor TAM TAMAMLANDI** (6 commit `3e708a1` → `1a120bb`, ui-agent + code-reviewer 2 wave per commit, CI Playwright her commit'te yesil).
-> - **D2.1** markThreadRead adapter rewire (mark_employer_replies_read → mark_employer_thread_read, A11 RPC)
-> - **D2.2** mesaj API shape mismatch + sendMessage→replyToThread (Wave 2 HIGH 2 fix)
-> - **D2.3** Pool/Pipeline/Aday adapter shape (RPC vs raw source-based ayrim) + match_reasons chip render (matching transparency)
-> - **D2.4** Sirket/Ekip/Ayarlar real shape + Wave 2 R3 invites real (Promise.all members RPC + company_invitations SELECT)
-> - **D2.5** Kampanyalar empty state (Iyzico bekleyen, MVP 2 sonrasi acilacak)
-> - **D2.6** Wave 2 R4-R7 cleanup (pagination + orphan cache + dead code + header doc)
+> ## Aktif Odak: Iyzico oncesi prereq'leri kapandi ✅
 >
-> **Sonraki session:** Phase E (auth wiring — IK_REAL_MODE_ENABLED kaldirildi, tkefeli login → IK_SHELL.ctx.hr populate test) + Phase F (position duplicate temizlik) + Phase H (200 test aday seed) + A14 Sprint 7 search_path harden (Iyzico oncesi sart) + A16 get_employer_candidate RPC unification.
+> Bu session 1 Mayis 2026 boyunca tamamlanan:
 >
-> **🔒 A14 yeni pending (kritik, Iyzico oncesi):** A11 W4 Codex review sirasinda tespit — Sprint 7 (`is_employer_team_member`, `is_paid_employer`) ayni `pg_temp` shadow zafiyeti tasiyor (production live). A7 paywall bypass guard'in altina kuruluyor → A14 once, A7 sonra. `.claude/agent-memory/pending-approvals.md` A14 maddesi.
+> **A14** (commit `54aa611`) — Sprint 7 SECURITY DEFINER pg_temp shadow harden
+> - is_employer_team_member + is_paid_employer search_path = pg_catalog, public, pg_temp
+> - T3 zinciri 4 stage + Codex T3 %94 agreement
+> - A7 paywall bypass guard prereq KAPANDI
+>
+> **Phase F** (no commit, prod-only data) — Position duplicate cleanup
+> - 2 duplicate "Store Manager" → tek "Magaza Muduru / Istanbul (Tumu) / 3-5 / Luks"
+> - DELETE id=2 + UPDATE id=1 single transaction
+>
+> **A16 + H2** (commit `b87c779`) — Search RPC candidate_id filter + 5-param harden + legacy isolation fix
+> - search_employer_candidates'a p_filters.candidate_id eklendi (additive, no-op when NULL)
+> - 5-param overload da harden (defense in depth, A14 pattern FULL)
+> - **H2 KRITIK SECURITY**: ik.legacy.html line 2828 yanlis param adi → company isolation BYPASS riski
+> - Fix: ik.legacy.html → _archive-ik-legacy/ (GitHub Pages `_` prefix serve etmez)
+> - T3 zinciri 4 stage + Codex T3 %90 agreement
+>
+> **A16.S4** (commit `c955d95`) — getCandidate RPC switch (modern shape unification)
+> - js/ik-data.js getCandidate raw SELECT → searchCandidates({candidate_id, limit:1})
+> - Pool/Pipeline/Aday tum panel ayni RPC shape (modern field unify)
+> - Pasif aday → null (KVKK md.4 accept, render404 generic mesaj)
+>
+> ## Phase D2 panel JS refactor (TAM TAMAMLANDI, 6 commit + denetim 4 commit)
+>
+> Phase D2 (1-10): commit `3e708a1` → `82086fb`. Denetim sonrasi D2.8 + D2.9 + D2.10 ek bulgu fix. Smoke artefakti kayit (4 yeni test dosyasi).
+>
+> **Production smoke YESIL:**
+> - 9 sayfa local + prod byte-identical (SIFIR drift)
+> - CF Access policy "HelloTalent UAT Playwright" allow LIVE (HTTP/2 200, was 302 redirect)
+> - ik-*.spec.js: 97/280 → 195/273 PASS (D2.10 spec sync etkisi)
+> - Browser console error 22 HTML CSP cleanup ile gitti
 >
 > ── 🟥 SONRAKI SESSION BASLANGIC CHECKLIST (briefer'in oncelikli okuyacagi) ──
 >
@@ -53,29 +76,59 @@
 >
 > **Phase D2 metric:** 6 commit, 12 ui-agent + code-reviewer wave, 0 BLOCKER prod, A14 + A16 yeni pending acildi.
 >
-> **3. Phase E auth context wiring (Phase D2 paralel):**
->   - `IK_REAL_MODE_ENABLED` flag artik check edilmiyor (Phase D2'de auth context guard yeterli)
->   - tkefeli login → `IK_SHELL.ctx.hr` populate → adapter `getCompanyId()` calisir
->   - giris.html → ik.html flow test
+ **3. Phase E auth context wiring ✅ DONE (D2 ile paralel)**
+>   - `IK_REAL_MODE_ENABLED` referansi 0 hit (Phase D Step 2'de tamamen kaldirildi)
+>   - `ht_ik_demo_mode` sadece 1 yerde (ik-shell.js:80, D2.9 R7 fix ile localhost guard)
+>   - Auth flow: giris.html → IK_SHELL.ctx.hr populate → adapter realMode() guard yeterli
+>   - uat-tester Playwright local + prod smoke yesil (auth state employer.json mevcut)
 >
-> **4. Phase F: Position duplicate temizligi:** Live'da 2 "Store Manager" position duplicate (id 1+2). Sil/birlestir, en az 1 anlamli pozisyon kalsin (Magaza Muduru / Istanbul / 3-5 yil / luks).
+> **4. Phase F: Position duplicate temizligi ✅ DONE (1 May)**
+>   - Live'da 2 duplicate Store Manager → tek "Magaza Muduru / Istanbul (Tumu) / 3-5 / Luks"
+>   - DELETE id=2 + UPDATE id=1 single transaction
+>   - Pipeline_state FK referans yoktu, guvenli
 >
-> **5. Phase H: 200 test aday seed:**
->   - A11 sub: `candidates.test_seed_batch TEXT NULL` flag migration
->   - `npm run seed:test -- 200` (100 satis / 75 magaza muduru / 25 yardimcisi variety)
->   - `npm run seed:purge -- <batch_id>` veya `:purge:all`
->   - Tuna filter + matching engine test
+> **5. 🟥 Phase H: 200 test aday seed (SONRAKI ANA IS, BAYA DIKKATLI)**
+>   - **Tuna direktif (1 May):** "öylesine bir 200 lü seed yüklemiyoruz. farklı şehirler çeşitli deneyimler. kurduğumuz filterlere uygun çeşitliklikte olması lazım"
+>   - **İlk etap:** 200 aday, **yetersiz kalan filtreler için ekstra eklenebilir**
+>   - **Plan iskeleti:**
+>     1. **Filter şeması analizi (sub-task A):**
+>        - `search_employer_candidates` p_filters: aktifArayanlar, sehir, expMin/Max, pozisyon[], segment[], musait[], calisma[], egitim[], dil[], search, candidate_id (A16 sonrasi)
+>        - `ik-pool.js` UI filter chip'leri
+>        - `candidates` tablosu kolon enums (musaitlik, calisma_tipleri, egitim_seviye)
+>     2. **Çeşitlilik dağılımı (sub-task B — Tuna onayi gerek):**
+>        - Şehirler: TR il dağılımı (İstanbul ağırlıklı + 8-10 farklı il)
+>        - Pozisyonlar (perakende için): satış danışmanı, mağaza müdürü, kasiyer, görevli, vs.
+>        - Segment: Lüks / Premium / Fast Fashion / Spor / Kozmetik vs.
+>        - Deneyim aralığı: junior'dan senior'a piramit (0-2, 3-5, 5-10, 10+)
+>        - Müsaitlik / Çalışma tipi / Eğitim / Dil
+>        - Aktif arayan / pasif (mix)
+>     3. **Seed implementation (sub-task C):**
+>        - `candidates.test_seed_batch TEXT NULL` flag migration (sonra purge için)
+>        - `npm run seed:test -- 200` Node script veya supabase-agent migration
+>     4. **Apply + filter UAT (sub-task D):** Her filter chip aktif aday üretiyor mu?
+>     5. **Gap analysis + ekstra seed (sub-task E):** Tuna istediği gibi yetersiz filter için ek
+>     6. **Production aday seed temizlik:** Phase H test_seed_batch ile flagli adaylar `npm run seed:purge` ile gerektiginde silinebilir
 >
 > **6. Phase G + I (surekli polish):** Tuna UX/tasarim feedback → designer/ui-agent/darkmode-auditor/uat-tester/code-reviewer zincir.
 >
-> **7. Pending approvals (.claude/agent-memory/pending-approvals.md) — Tuna oncelik karari verir:**
->   - **A7:** is_paid_employer flag bypass guard (Iyzico oncesi SART)
+> **7. Pending approvals (.claude/agent-memory/pending-approvals.md) — Iyzico öncesi prereq tüm kapatildi:**
+>   - **A1, A2, A5:** Secret rotation track (90g izleme, pasif)
+>   - **A3:** Codex gate Hafta 2 ertelendi
+>   - **A7:** is_paid_employer flag bypass guard (Iyzico öncesi sart, A14 prereq AÇILDI ✅ — A7 artik yapilabilir)
 >   - **A8:** KVKK note retention policy + cron purge
->   - **A9:** telefon/email visible search ile artik daha fazla gorunur (KVKK md.5)
 >   - **A10:** hr_profiles granular notification toggles (notify_email_messages + notify_email_pipeline)
->   - **A11:** ✅ DONE 30 Nis — mark_employer_thread_read + bulk_add_to_pipeline LIVE (T3 zincir 4 wave + Codex %91 agreement + smoke yesil)
->   - **A14:** Sprint 7 SECURITY DEFINER search_path harden (Iyzico oncesi A7'den ONCE — `is_employer_team_member` + `is_paid_employer` pg_temp shadow vuln)
->   - **A12:** Phase D Wave 2 review backlog (panel JS refactor sirasinda fix)
+>   - **A11:** ✅ ARCHIVE — mark_employer_thread_read + bulk_add_to_pipeline LIVE (commit f4b36e6)
+>   - **A12:** ✅ ARCHIVE — Phase D2.1-D2.10 commit'lerinde tüm bulgular fix edildi
+>   - **A14:** ✅ ARCHIVE — Sprint 7 SECURITY DEFINER pg_temp harden (commit 54aa611)
+>   - **A16:** ✅ DONE — search RPC candidate_id filter + adapter switch (commit b87c779 + c955d95)
+>
+> **8. 🆕 Yeni backlog (post-A16, A1 Mayıs):**
+>   - **A17 (LOW):** `hr_get_candidate_by_id(p_id bigint)` dedicated slim RPC — getCandidate heavy CTE path optimize (code-reviewer R2 finding)
+>   - **A18 (LOW):** `lb6_security_monitoring` `run_rls_audit()` + `get_security_dashboard()` aynı pg_temp zafiyet (admin-only, A14-N1 backlog) — auditor finding
+>   - **R1 ik-candidate.js MEDIUM:** addNote/deleteNote/addToPipeline promise `.catch()` eksik — Supabase throw ederse silent error
+>   - **R3 LOW:** render404 generic mesaj (pasif aday için özel mesaj: "Bu aday profilini gizledi.")
+>   - **infra-ops:** X-Frame-Options + CSP frame-ancestors HTTP header (Cloudflare Rules → Transform Rules → Response Header Modify)
+>   - **maintenance-agent:** `.ik-toast` global tanımı `ik-company.css`'ten `components.css`'e taşı (D2.5 R2 backlog)
 >
 > ── 27 NIS PHASE D STEP 1+2 SONUCLARI ──
 >
