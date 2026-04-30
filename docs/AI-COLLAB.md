@@ -3789,3 +3789,62 @@ Next brief writing → verify preserved IDs directly via grep before listing the
 **Phase D2 prereq:** Wave 2 HIGH 1 (markThreadRead) backend tarafı KAPANDI — `js/ik-messages.js` adapter rewire kaldı.
 
 **Yeni A14 pending:** Sprint 7 (`is_employer_team_member` + `is_paid_employer`) aynı pg_temp zafiyeti — Iyzico öncesi A7'den ÖNCE.
+
+---
+
+## 30 Nisan 2026 aksam — Phase D2 panel JS refactor TAM TAMAMLANDI (6 commit + uat)
+
+**Sure:** ~3-4 saat (cook session sonrasi)
+**Disiplin:** Tuna B asamali + temiz calisma + UI agent ozel review
+**Pipeline:** Her commit ui-agent + code-reviewer 2 wave (FAIL → re-fix → PASS)
+
+**6 commit (3e708a1 → 1a120bb):**
+
+| # | Commit | Aciklama | Net etki |
+|---|--------|----------|----------|
+| D2.1 | `3e708a1` | markThreadRead adapter rewire (A11 RPC) | +8 -7 |
+| D2.2 | `301cdde` | mesaj API shape + replyToThread (Wave 2 HIGH 2) | +81 -54 |
+| D2.3 | `070e3a2` | Pool/Pipeline/Aday + match_reasons chip | +122 -45 |
+| D2.4 | `239d57c` | Sirket/Ekip/Ayarlar + R3 invites real | +124 -141 |
+| D2.5 | `4083427` | Kampanyalar empty state (-415 cleanup) | +40 -455 |
+| D2.6 | `1a120bb` | Wave 2 R4-R7 cleanup | +10 -15 |
+
+**Wave 2 review backlog kapatildi:**
+- HIGH 1 markThreadRead candidate-side RPC ✅ (D2.1 + A11 RPC LIVE)
+- HIGH 2 mesaj API shape mismatch ✅ (D2.2)
+- MEDIUM R3 invites placeholder ✅ (D2.4 Promise.all + company_invitations SELECT)
+- MEDIUM R4 pagination ✅ (D2.6)
+- MEDIUM R5 orphan cache ✅ (D2.6)
+- LOW R6 uid() dead code ✅ (D2.6)
+- NIT R7 header date ✅ (D2.6)
+
+**Yeni feature:** match_reasons chip render — matching transparency
+- Pool list max 3 chip / aday
+- Pipeline kart max 2 chip kompakt
+- .ik-match-chip shared CSS class (token-strict)
+
+**Kritik bug fix'ler (her wave'de yakalanan):**
+
+| Commit | Bulgu | Impact |
+|--------|-------|--------|
+| D2.2 | sendMessage yanlis RPC (candidate_id ister, panel thread_id veriyordu) | Replies tamamen broken |
+| D2.2 | res.ok pending replace type mismatch | Mesaj gonder UI bug |
+| D2.3 | getCandidate raw vs RPC shape mismatch | Aday detay '—' goruntu |
+| D2.4 | hr-company.html orphan contact inputs | Silent data loss |
+| D2.4 | renderMember field name mismatch (m.name vs display_name) | Uye listesi bos render |
+| D2.5 | disabled HTML attr native click bloklar | Toast hic fire etmiyor |
+| D2.5 | ik-toast--info class yok | Unstyled toast |
+
+**Kabul edilen source-based ayrim (A16 backlog):**
+- Pool/Pipeline → search RPC shape (son_pozisyon, adres_il, toplam_deneyim_ay, match_score, match_reasons)
+- ik-candidate.js → raw candidates SELECT shape (pozisyon, sehir, deneyim_yil)
+- IK_DATA.getDeneyimYil(c) helper her ikisinde calisir (toplam_deneyim_ay || deneyim_yil fallback)
+- A16 yeni pending: get_employer_candidate(id) RPC shape unification (Iyzico oncesi)
+
+**Yeni pending (Iyzico oncesi sart):**
+- A14 Sprint 7 (is_employer_team_member + is_paid_employer) pg_temp shadow harden
+- A16 get_employer_candidate(id) RPC shape unification
+
+**CI:** Her commit Playwright workflow yesil (1m0s-1m13s, ortalama 1m7s).
+
+**Sonraki:** Phase E (auth wiring) + Phase F (position duplicate temizlik) + Phase H (200 test aday seed) + A14/A16 (Iyzico oncesi).

@@ -1,7 +1,15 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 30 Nisan 2026 ogleden sonra | PHASE A + C + C.5 + D STEP 1+2 + **A11 RPC DONE** — Wave 2 HIGH 1 prereq tamamlandi, Phase D2 + E sonraki session
+> Son guncelleme: 30 Nisan 2026 aksam | PHASE A + C + C.5 + D STEP 1+2 + A11 RPC + **D2 (1-6) DONE** — Wave 2 HIGH 1+2 + R3-R7 backlog kapatildi, Phase E + F + H sonraki session
 >
-> Aktif Odak: Phase D Step 1+2 + **A11 employer-side RPC gap fix LIVE** (30 Nis apply, T3 zincir 4 wave + Codex %91 agreement + smoke yesil — `mark_employer_thread_read(bigint)` + `bulk_add_to_pipeline(bigint, bigint[], pipeline_stage)` migration `20260430162936`). Wave 2 HIGH 1 (markThreadRead candidate-side RPC) artik backend tarafinda fix — sadece `js/ik-messages.js` adapter rewire kaldi. **Sonraki session:** Phase D2 (10 panel JS refactor — Wave 2 HIGH 2 mesaj API shape + adapter rewire) + Phase E (auth wiring) + Phase F+H seed.
+> Aktif Odak: **Phase D2 panel JS refactor TAM TAMAMLANDI** (6 commit `3e708a1` → `1a120bb`, ui-agent + code-reviewer 2 wave per commit, CI Playwright her commit'te yesil).
+> - **D2.1** markThreadRead adapter rewire (mark_employer_replies_read → mark_employer_thread_read, A11 RPC)
+> - **D2.2** mesaj API shape mismatch + sendMessage→replyToThread (Wave 2 HIGH 2 fix)
+> - **D2.3** Pool/Pipeline/Aday adapter shape (RPC vs raw source-based ayrim) + match_reasons chip render (matching transparency)
+> - **D2.4** Sirket/Ekip/Ayarlar real shape + Wave 2 R3 invites real (Promise.all members RPC + company_invitations SELECT)
+> - **D2.5** Kampanyalar empty state (Iyzico bekleyen, MVP 2 sonrasi acilacak)
+> - **D2.6** Wave 2 R4-R7 cleanup (pagination + orphan cache + dead code + header doc)
+>
+> **Sonraki session:** Phase E (auth wiring — IK_REAL_MODE_ENABLED kaldirildi, tkefeli login → IK_SHELL.ctx.hr populate test) + Phase F (position duplicate temizlik) + Phase H (200 test aday seed) + A14 Sprint 7 search_path harden (Iyzico oncesi sart) + A16 get_employer_candidate RPC unification.
 >
 > **🔒 A14 yeni pending (kritik, Iyzico oncesi):** A11 W4 Codex review sirasinda tespit — Sprint 7 (`is_employer_team_member`, `is_paid_employer`) ayni `pg_temp` shadow zafiyeti tasiyor (production live). A7 paywall bypass guard'in altina kuruluyor → A14 once, A7 sonra. `.claude/agent-memory/pending-approvals.md` A14 maddesi.
 >
@@ -15,16 +23,35 @@
 >   - "Sprint D backend yok" hayali — gercekte 15+ RPC + 7+ tablo TAMAMEN HAZIR
 > Sonraki sessionda HER iddia oncesi: live query (supabase db query --linked) VEYA source dosya Read (line numara cite). Briefer ozetine guvenme.
 >
-> **2. Phase D2 (panel JS refactor) baslat — TODO sirasiyla:**
->   1. Wave 2 review HIGH 2 (Mesaj API mismatch) panel JS'lerde uyumla:
->      - `js/ik-messages.js`: `t.id` → `t.message_id`, `t.last_message` → `t.last_body`, `t.last_message_at` → `t.last_activity_at`, `t.unread_count` → `t.unread_replies`
->      - `getThread()` adapter array donduruyor, panel `{...thread, messages:[]}` bekliyor — UI tarafini real shape'e refactor
->   2. Wave 2 HIGH 1 (markThreadRead): ✅ A11 RPC `mark_employer_thread_read` LIVE (30 Nis apply) — sadece `js/ik-messages.js` adapter rewire kaldi (`mark_employer_replies_read` → `mark_employer_thread_read`)
->   3. Pool/Pipeline/Aday refactor: `c.pozisyon` → `c.son_pozisyon`, `c.sehir` → `c.adres_il`, `c.deneyim_yil` → `Math.round(c.toplam_deneyim_ay/12)`, `c._match` → `c.match_score`, YENI `c.match_reasons` chip render (matching transparency)
->   4. Mesajlar/Sirket/Ekip/Ayarlar UI gerçek shape'e adapte
->   5. Kampanyalar empty state ("MVP 2 sonrasi Iyzico ile") — hr-campaigns.html template
->   6. Wave 2 R3 (invites placeholder): adapter `getTeamMembers`'a `company_invitations` SELECT ekle
->   7. Wave 2 R4 (pagination), R5 (orphan cache), R6 (uid dead code), R7 (header date) ufak fix
+> **2. Phase D2 (panel JS refactor) ✅ DONE — 6 commit, hepsi push yesil:**
+>   1. ✅ **D2.1** `3e708a1` markThreadRead adapter rewire (mark_employer_replies_read → mark_employer_thread_read, A11 RPC)
+>   2. ✅ **D2.2** `301cdde` mesaj API shape mismatch + sendMessage→replyToThread (Wave 2 HIGH 2 fix)
+>      - Field rename: t.id→message_id, last_message→last_body, last_message_at→last_activity_at, unread_count→unread_replies
+>      - getThread() array shape + state.activeThread Object.assign({...meta, messages: arr})
+>      - sendMessage→replyToThread fix (yanlis RPC bug)
+>      - res.ok pending replace + Türkçe error toast
+>   3. ✅ **D2.3** `070e3a2` Pool/Pipeline/Aday + match_reasons chip render
+>      - Pool/Pipeline RPC shape: c.son_pozisyon, c.adres_il, IK_DATA.getDeneyimYil(c) helper, c.match_score
+>      - Aday detay raw shape: c.pozisyon, c.sehir, c.deneyim_yil (source-based ayrim, A16 RPC unification backlog)
+>      - match_reasons chip: Pool max 3, Pipeline max 2 kompakt, .ik-match-chip shared CSS
+>      - district score kaldirildi (max 90 actual)
+>   4. ✅ **D2.4** `239d57c` Sirket/Ekip/Ayarlar + Wave 2 R3 invites real fix
+>      - hr-company.html: 4 contact input kaldirildi (BLOCKER silent data loss)
+>      - js/ik-team.js: invite + member field rename (display_name, employer_role, created_at, is_self check)
+>      - js/ik-settings.js: A10 ek 2 toggle UI'dan kaldirildi (notify_email_newsletter only)
+>      - js/ik-data.js: getTeamMembers Promise.all extend (members RPC + company_invitations SELECT pending)
+>      - (demo) suffix + demo@hellotalent fallback temizlendi
+>   5. ✅ **D2.5** `4083427` Kampanyalar empty state (-415 net cleanup)
+>      - hr-campaigns.html + js/ik-campaigns.js: 678 → 248 satir
+>      - Empty state visible, disabled buton + toast (MVP 2 Iyzico bekleyen)
+>      - Mevcut .ik-cmp-empty CSS reuse
+>   6. ✅ **D2.6** `1a120bb` Wave 2 R4-R7 cleanup
+>      - R4 pagination: getMessageThreads(opts) — limit/offset parametreli
+>      - R5 orphan cache: _cache 4 key → 1 (positions only)
+>      - R6 dead code: function uid() silindi
+>      - R7 header doc tarih duzeltildi
+>
+> **Phase D2 metric:** 6 commit, 12 ui-agent + code-reviewer wave, 0 BLOCKER prod, A14 + A16 yeni pending acildi.
 >
 > **3. Phase E auth context wiring (Phase D2 paralel):**
 >   - `IK_REAL_MODE_ENABLED` flag artik check edilmiyor (Phase D2'de auth context guard yeterli)
