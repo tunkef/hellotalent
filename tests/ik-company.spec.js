@@ -1,5 +1,6 @@
 // ik-company.spec.js — Asama 86 Sprint D
-// Sirket profili formu: hero + 3 section + brand chips + cta + dark mode.
+// Sirket profili formu: hero + 2 section (general + brands) + brand chips + cta + dark mode.
+// D2.4: contact section kaldirildi (3 section → 2). Contact field testleri silindi.
 // Auth-walled: bazi test'ler markup-level grep, page-level demo bypass.
 
 const { test, expect } = require('@playwright/test');
@@ -74,14 +75,14 @@ test.describe('Asama 86 Sprint D — IK Company', () => {
       await gotoDemoCompany(page);
       await expect(page.locator('#ik-co-notice')).toContainText(/Demo modunda/i);
     });
-    test('3 section render: Genel + Marka + Iletisim', async ({ page }) => {
+    test('2 section render: Genel + Marka', async ({ page }) => {
       await page.setViewportSize(VIEWPORTS.desktop);
       await gotoDemoCompany(page);
       const sections = page.locator('.ik-co-section');
-      await expect(sections).toHaveCount(3);
+      await expect(sections).toHaveCount(2);
       await expect(page.locator('#ik-co-section-general')).toBeVisible();
       await expect(page.locator('#ik-co-section-brands')).toBeVisible();
-      await expect(page.locator('#ik-co-section-contact')).toBeVisible();
+      // D2.4: #ik-co-section-contact kaldırıldı
     });
     test('Genel bilgi: 4 input + textarea', async ({ page }) => {
       await page.setViewportSize(VIEWPORTS.desktop);
@@ -92,14 +93,7 @@ test.describe('Asama 86 Sprint D — IK Company', () => {
       await expect(page.locator('#ik-co-region')).toBeVisible();
       await expect(page.locator('#ik-co-about')).toBeVisible();
     });
-    test('Iletisim: 4 input', async ({ page }) => {
-      await page.setViewportSize(VIEWPORTS.desktop);
-      await gotoDemoCompany(page);
-      await expect(page.locator('#ik-co-contact-name')).toBeVisible();
-      await expect(page.locator('#ik-co-contact-email')).toBeVisible();
-      await expect(page.locator('#ik-co-contact-phone')).toBeVisible();
-      await expect(page.locator('#ik-co-contact-role')).toBeVisible();
-    });
+    // D2.4: Iletisim section kaldırıldı — #ik-co-contact-* input testleri silindi
     test('CTA bar: vazgec + kaydet', async ({ page }) => {
       await page.setViewportSize(VIEWPORTS.desktop);
       await gotoDemoCompany(page);
@@ -158,14 +152,7 @@ test.describe('Asama 86 Sprint D — IK Company', () => {
       await page.click('#ik-co-save');
       await expect(page.locator('#ik-co-msg')).toContainText(/zorunlu/i);
     });
-    test('Gecersiz email format error', async ({ page }) => {
-      await page.setViewportSize(VIEWPORTS.desktop);
-      await gotoDemoCompany(page);
-      await page.fill('#ik-co-name', 'Demo Sirket');
-      await page.fill('#ik-co-contact-email', 'gecersizemail');
-      await page.click('#ik-co-save');
-      await expect(page.locator('#ik-co-msg')).toContainText(/e-posta/i);
-    });
+    // D2.4: #ik-co-contact-email field kaldırıldı — email format validation testi silindi
     test('Gecerli payload kaydedilir, toast cikar', async ({ page }) => {
       await page.setViewportSize(VIEWPORTS.desktop);
       await gotoDemoCompany(page);
@@ -207,7 +194,7 @@ test.describe('Asama 86 Sprint D — IK Company', () => {
       await page.setViewportSize(VIEWPORTS.mobile);
       await gotoDemoCompany(page);
       await expect(page.locator('.ik-co-hero')).toBeVisible();
-      await expect(page.locator('.ik-co-section')).toHaveCount(3);
+      await expect(page.locator('.ik-co-section')).toHaveCount(2); // D2.4: 3→2 section
     });
   });
 });

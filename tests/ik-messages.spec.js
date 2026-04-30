@@ -100,7 +100,7 @@ test.describe('Asama 86 Sprint C — Mesajlar 2-pane', () => {
       expect(js).toMatch(/getThread:\s*function/);
       expect(js).toMatch(/markThreadRead:\s*function/);
       expect(js).toMatch(/sendMessage:\s*function/);
-      expect(js).toMatch(/LS_MESSAGES_OVERLAY/);
+      // D2.2: LS_MESSAGES_OVERLAY constant kaldırıldı — assertion silindi
     });
   });
 

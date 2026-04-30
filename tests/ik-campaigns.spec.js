@@ -1,5 +1,7 @@
 // ik-campaigns.spec.js — Asama 86 Sprint D
-// Kampanyalar: liste + filter pills + status pill + new modal + dark mode.
+// D2.5: Kampanyalar MVP 2 sonrası (Iyzico entegrasyon) — sayfa kalıcı empty state.
+// Filter toolbar / liste / modal / archive / counts KALDIRILDI.
+// Aktif testler: markup integrity + empty state + btn-cmp-disabled + dark mode.
 
 const { test, expect } = require('@playwright/test');
 const fs = require('fs');
@@ -36,12 +38,11 @@ test.describe('Asama 86 Sprint D — IK Campaigns', () => {
     test('Eski hr-campaigns.css yok, data-ik-page="campaigns"', () => {
       expect(html).toMatch(/data-ik-page=["']campaigns["']/);
     });
-    test('Filter 5 status butonu (all/draft/scheduled/sent/archived)', () => {
-      expect(html).toMatch(/data-ik-cmp-status=["']all["']/);
-      expect(html).toMatch(/data-ik-cmp-status=["']draft["']/);
-      expect(html).toMatch(/data-ik-cmp-status=["']scheduled["']/);
-      expect(html).toMatch(/data-ik-cmp-status=["']sent["']/);
-      expect(html).toMatch(/data-ik-cmp-status=["']archived["']/);
+    // D2.5: data-ik-cmp-status filter butonları empty state'te yok — test silindi
+    test('Empty state markup: ik-cmp-empty + btn-cmp-disabled mevcut', () => {
+      expect(html).toMatch(/id=["']ik-cmp-empty["']/);
+      expect(html).toMatch(/id=["']btn-cmp-disabled["']/);
+      expect(html).toMatch(/aria-disabled=["']true["']/);
     });
     test('aria-current="page" Kampanyalar dropdown linkinde', () => {
       expect(html).toMatch(/href=["']hr-campaigns\.html["'][^>]*aria-current=["']page["']/);
@@ -51,142 +52,36 @@ test.describe('Asama 86 Sprint D — IK Campaigns', () => {
     });
   });
 
-  test.describe('Hero + toolbar', () => {
-    test('Hero render: eyebrow + headline + new btn', async ({ page }) => {
+  // D2.5: Filter toolbar, liste, modal, archive, counts testleri silindi.
+  // Kampanyalar MVP 2 sonrası aktif olacak (Iyzico entegrasyonu).
+
+  test.describe('Hero + empty state', () => {
+    test('Hero render: eyebrow + headline mevcut', async ({ page }) => {
       await page.setViewportSize(VIEWPORTS.desktop);
       await gotoDemoCampaigns(page);
       await expect(page.locator('.ik-cmp-hero')).toHaveCount(1);
       await expect(page.locator('.ik-cmp-headline')).toContainText(/Kampanyalar/i);
-      await expect(page.locator('#ik-cmp-new-btn')).toContainText(/Yeni kampanya/i);
     });
-    test('Demo notice render', async ({ page }) => {
+    test('Empty state gorunur: baslik + aciklama', async ({ page }) => {
       await page.setViewportSize(VIEWPORTS.desktop);
       await gotoDemoCampaigns(page);
-      await expect(page.locator('.ik-cmp-notice')).toContainText(/Demo modunda/i);
+      await expect(page.locator('#ik-cmp-empty')).toBeVisible();
+      await expect(page.locator('.ik-cmp-empty__title')).toContainText(/yakında/i);
     });
-    test('Filter toolbar 5 buton', async ({ page }) => {
+    test('btn-cmp-disabled aria-disabled=true, tiklaninca tepki vermez', async ({ page }) => {
       await page.setViewportSize(VIEWPORTS.desktop);
       await gotoDemoCampaigns(page);
-      await expect(page.locator('.ik-cmp-filter-btn')).toHaveCount(5);
+      const btn = page.locator('#btn-cmp-disabled');
+      await expect(btn).toBeVisible();
+      await expect(btn).toHaveAttribute('aria-disabled', 'true');
     });
-    test('Tumu filter ilk basta active', async ({ page }) => {
-      await page.setViewportSize(VIEWPORTS.desktop);
-      await gotoDemoCampaigns(page);
-      const all = page.locator('.ik-cmp-filter-btn[data-ik-cmp-status="all"]');
-      await expect(all).toHaveClass(/is-active/);
-    });
-  });
-
-  test.describe('Liste (campaigns.json — 5 demo)', () => {
-    test('Default Tumu filter altinda 4 row gozukur (archived haric)', async ({ page }) => {
-      await page.setViewportSize(VIEWPORTS.desktop);
-      await gotoDemoCampaigns(page);
-      /* campaigns.json: 5 toplam, hepsi non-archived */
-      await expect(page.locator('.ik-cmp-row')).toHaveCount(5);
-    });
-    test('Status pill her satirda var', async ({ page }) => {
-      await page.setViewportSize(VIEWPORTS.desktop);
-      await gotoDemoCampaigns(page);
-      await expect(page.locator('.ik-cmp-status').first()).toBeVisible();
-    });
-    test('Stats: 6 metric (Hedef, Gönderildi, Açıldı, Yanıtlandı, Açılma oranı, Oluşturuldu)', async ({ page }) => {
-      await page.setViewportSize(VIEWPORTS.desktop);
-      await gotoDemoCampaigns(page);
-      const firstRow = page.locator('.ik-cmp-row').first();
-      await expect(firstRow.locator('.ik-cmp-stat')).toHaveCount(6);
-    });
-    test('Draft filter sadece draft kampanyalari gosterir', async ({ page }) => {
-      await page.setViewportSize(VIEWPORTS.desktop);
-      await gotoDemoCampaigns(page);
-      await page.click('.ik-cmp-filter-btn[data-ik-cmp-status="draft"]');
-      const rows = page.locator('.ik-cmp-row');
-      const count = await rows.count();
-      expect(count).toBeGreaterThan(0);
-      for (let i = 0; i < count; i++) {
-        await expect(rows.nth(i).locator('.ik-cmp-status')).toHaveClass(/ik-cmp-status--draft/);
-      }
-    });
-    test('Sent filter sadece sent kampanyalari gosterir', async ({ page }) => {
-      await page.setViewportSize(VIEWPORTS.desktop);
-      await gotoDemoCampaigns(page);
-      await page.click('.ik-cmp-filter-btn[data-ik-cmp-status="sent"]');
-      const rows = page.locator('.ik-cmp-row');
-      const count = await rows.count();
-      expect(count).toBeGreaterThan(0);
-      for (let i = 0; i < count; i++) {
-        await expect(rows.nth(i).locator('.ik-cmp-status')).toHaveClass(/ik-cmp-status--sent/);
-      }
-    });
-  });
-
-  test.describe('New campaign modal', () => {
-    test('Modal kapali baslar', async ({ page }) => {
-      await page.setViewportSize(VIEWPORTS.desktop);
-      await gotoDemoCampaigns(page);
-      await expect(page.locator('#ik-cmp-modal')).not.toHaveClass(/is-open/);
-    });
-    test('+ Yeni Kampanya tiklayinca modal acilir', async ({ page }) => {
-      await page.setViewportSize(VIEWPORTS.desktop);
-      await gotoDemoCampaigns(page);
-      await page.click('#ik-cmp-new-btn');
-      await expect(page.locator('#ik-cmp-modal')).toHaveClass(/is-open/);
-    });
-    test('Modal kapatilabilir (X + Vazgec + Backdrop + ESC)', async ({ page }) => {
-      await page.setViewportSize(VIEWPORTS.desktop);
-      await gotoDemoCampaigns(page);
-      await page.click('#ik-cmp-new-btn');
-      await page.click('#ik-cmp-cancel');
-      await expect(page.locator('#ik-cmp-modal')).not.toHaveClass(/is-open/);
-    });
-    test('Bos title save error', async ({ page }) => {
-      await page.setViewportSize(VIEWPORTS.desktop);
-      await gotoDemoCampaigns(page);
-      await page.click('#ik-cmp-new-btn');
-      await page.click('#ik-cmp-save');
-      await expect(page.locator('#ik-cmp-form-msg')).toContainText(/zorunlu/i);
-    });
-    test('Gecerli kampanya kaydedilir + listede gozukur', async ({ page }) => {
-      await page.setViewportSize(VIEWPORTS.desktop);
-      await gotoDemoCampaigns(page);
-      await page.click('#ik-cmp-new-btn');
-      await page.fill('#ik-cmp-input-title', 'Test kampanya 86');
-      await page.fill('#ik-cmp-input-summary', 'Demo summary');
-      await page.click('#ik-cmp-save');
-      await expect(page.locator('#ik-cmp-modal')).not.toHaveClass(/is-open/);
-      /* Yeni kampanya en uste ekle */
-      await expect(page.locator('.ik-cmp-row__title').first()).toContainText(/Test kampanya 86/i);
-    });
-  });
-
-  test.describe('Archive flow', () => {
-    test('Arsivle tiklayinca kampanya arsiv listesine geçer', async ({ page }) => {
-      await page.setViewportSize(VIEWPORTS.desktop);
-      await gotoDemoCampaigns(page);
-      const initialCount = await page.locator('.ik-cmp-row').count();
-      const firstArchive = page.locator('button[data-action="archive"]').first();
-      await firstArchive.click();
-      /* Arsivlenen liste'den dusmeli */
-      await expect(page.locator('.ik-cmp-row')).toHaveCount(initialCount - 1);
-      /* Arsiv filter'a tikla */
-      await page.click('.ik-cmp-filter-btn[data-ik-cmp-status="archived"]');
-      const archivedCount = await page.locator('.ik-cmp-row').count();
-      expect(archivedCount).toBeGreaterThan(0);
-    });
-  });
-
-  test.describe('Counts', () => {
-    test('Tumu count = non-archived total', async ({ page }) => {
-      await page.setViewportSize(VIEWPORTS.desktop);
-      await gotoDemoCampaigns(page);
-      const allCountText = await page.locator('#ik-cmp-count-all').textContent();
-      const total = parseInt((allCountText || '0').trim(), 10);
-      const rowCount = await page.locator('.ik-cmp-row').count();
-      expect(total).toBe(rowCount);
-    });
+    // D2.5: Filter toolbar yok — filter testleri silindi
+    // D2.5: #ik-cmp-new-btn yok (yerine btn-cmp-disabled) — modal testleri silindi
+    // D2.5: .ik-cmp-row yok — liste/archive/counts testleri silindi
   });
 
   test.describe('Dark mode', () => {
-    test('Dark theme: hero + filter + row render', async ({ page }) => {
+    test('Dark theme: hero + empty state render', async ({ page }) => {
       await page.addInitScript(() => {
         localStorage.setItem('ht_ik_demo_mode', '1');
         localStorage.setItem('ht_theme_preference', 'dark');
@@ -197,17 +92,16 @@ test.describe('Asama 86 Sprint D — IK Campaigns', () => {
       const themeAttr = await page.getAttribute('html', 'data-theme');
       expect(themeAttr).toBe('dark');
       await expect(page.locator('.ik-cmp-hero')).toBeVisible();
-      await expect(page.locator('.ik-cmp-row')).toHaveCount(5);
+      await expect(page.locator('#ik-cmp-empty')).toBeVisible(); // D2.5: row yerine empty state
     });
   });
 
   test.describe('Mobile viewport', () => {
-    test('Mobile: hero + filter scroll + row stack', async ({ page }) => {
+    test('Mobile: hero + empty state responsive', async ({ page }) => {
       await page.setViewportSize(VIEWPORTS.mobile);
       await gotoDemoCampaigns(page);
       await expect(page.locator('.ik-cmp-hero')).toBeVisible();
-      await expect(page.locator('.ik-cmp-toolbar')).toBeVisible();
-      await expect(page.locator('.ik-cmp-row').first()).toBeVisible();
+      await expect(page.locator('#ik-cmp-empty')).toBeVisible(); // D2.5: toolbar/row yerine empty state
     });
   });
 });

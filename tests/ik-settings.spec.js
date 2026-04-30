@@ -138,12 +138,13 @@ test.describe('Asama 86 Sprint D — IK Settings', () => {
   });
 
   test.describe('Bildirim toggles (03)', () => {
-    test('3 toggle render', async ({ page }) => {
+    test('1 toggle render', async ({ page }) => {
       await page.setViewportSize(VIEWPORTS.desktop);
       await gotoDemoSettings(page);
-      await expect(page.locator('input[data-ik-set-toggle]')).toHaveCount(3);
+      await expect(page.locator('input[data-ik-set-toggle]')).toHaveCount(1);
     });
-    test('Default: msg + pipeline checked, weekly unchecked', async ({ page }) => {
+    // A10 backlog: notify-msg + notify-pipeline toggle'ları hr_profiles migration sonrası geri eklenecek
+    test.skip('Default: msg + pipeline checked, weekly unchecked', async ({ page }) => {
       await page.setViewportSize(VIEWPORTS.desktop);
       await gotoDemoSettings(page);
       await expect(page.locator('#ik-set-notify-msg')).toBeChecked();
