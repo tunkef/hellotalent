@@ -33,7 +33,7 @@
 
   /* ═══════ State ═══════ */
   var state = {
-    threads: [],          /* full thread list (sorted by last_message_at desc) */
+    threads: [],          /* full thread list (sorted by last_activity_at desc) */
     filtered: [],         /* after filter + search */
     activeThreadId: null,
     activeThread: null,   /* current detail object */
@@ -190,15 +190,15 @@
     var arr = state.threads.slice();
 
     if (state.filterMode === 'unread') {
-      arr = arr.filter(function (t) { return (t.unread_count || 0) > 0; });
+      arr = arr.filter(function (t) { return (t.unread_replies || 0) > 0; });
     }
 
     if (q) {
       arr = arr.filter(function (t) {
         var hay = trLower([
           t.candidate_name || '',
-          t.position_title || '',
-          t.last_message || ''
+          t.subject || '',
+          t.last_body || ''
         ].join(' '));
         return hay.indexOf(q) >= 0;
       });
@@ -246,9 +246,9 @@
     var btn = document.createElement('button');
     btn.type = 'button';
     btn.className = 'ik-msg-thread__btn';
-    btn.setAttribute('data-thread-id', t.id);
-    if ((t.unread_count || 0) > 0) btn.classList.add('is-unread');
-    if (state.activeThreadId === t.id) {
+    btn.setAttribute('data-thread-id', t.message_id);
+    if ((t.unread_replies || 0) > 0) btn.classList.add('is-unread');
+    if (state.activeThreadId === t.message_id) {
       btn.classList.add('is-active');
       btn.setAttribute('aria-current', 'true');
     }
@@ -275,31 +275,24 @@
 
     var time = document.createElement('span');
     time.className = 'ik-msg-thread__time';
-    time.textContent = formatTime(t.last_message_at, 'list');
+    time.textContent = formatTime(t.last_activity_at, 'list');
     top.appendChild(time);
 
     meta.appendChild(top);
 
-    if (t.position_title) {
-      var pos = document.createElement('p');
-      pos.className = 'ik-msg-thread__pos';
-      pos.textContent = t.position_title;
-      meta.appendChild(pos);
-    }
-
     var preview = document.createElement('p');
     preview.className = 'ik-msg-thread__preview';
-    preview.textContent = t.last_message || '';
+    preview.textContent = t.last_body || '';
     meta.appendChild(preview);
 
     btn.appendChild(meta);
 
     /* Unread badge */
-    if ((t.unread_count || 0) > 0) {
+    if ((t.unread_replies || 0) > 0) {
       var badge = document.createElement('span');
       badge.className = 'ik-msg-thread__badge';
-      badge.setAttribute('aria-label', t.unread_count + ' okunmamış mesaj');
-      badge.textContent = String(t.unread_count);
+      badge.setAttribute('aria-label', t.unread_replies + ' okunmamış mesaj');
+      badge.textContent = String(t.unread_replies);
       btn.appendChild(badge);
     } else {
       var spacer = document.createElement('span');
@@ -309,7 +302,7 @@
     }
 
     btn.addEventListener('click', function () {
-      selectThread(t.id);
+      selectThread(t.message_id);
     });
 
     li.appendChild(btn);
@@ -331,7 +324,7 @@
 
     if (dom.detailAvatar) dom.detailAvatar.textContent = initialOf(t.candidate_name);
     if (dom.detailName)   dom.detailName.textContent = t.candidate_name || '—';
-    if (dom.detailPos)    dom.detailPos.textContent  = t.position_title || '—';
+    if (dom.detailPos)    dom.detailPos.textContent  = t.subject || '—';
 
     if (dom.detailProfile) {
       var cid = t.candidate_id || '';
@@ -347,16 +340,16 @@
     clearChildren(dom.detailBody);
 
     var msgs = (state.activeThread.messages || []).slice().sort(function (a, b) {
-      return new Date(a.sent_at || 0) - new Date(b.sent_at || 0);
+      return new Date(a.created_at || 0) - new Date(b.created_at || 0);
     });
 
     var lastDay = '';
     msgs.forEach(function (m) {
-      var k = dayKey(m.sent_at);
+      var k = dayKey(m.created_at);
       if (k && k !== lastDay) {
         var sep = document.createElement('div');
         sep.className = 'ik-msg-daysep';
-        sep.textContent = dayLabel(m.sent_at);
+        sep.textContent = dayLabel(m.created_at);
         dom.detailBody.appendChild(sep);
         lastDay = k;
       }
@@ -372,10 +365,10 @@
   function buildBubble(m) {
     var wrap = document.createElement('div');
     wrap.className = 'ik-msg-bubble';
-    if (m.from === 'hr') wrap.classList.add('ik-msg-bubble--out');
+    if (m.sender === 'employer') wrap.classList.add('ik-msg-bubble--out');
     else wrap.classList.add('ik-msg-bubble--in');
     if (m._pending) wrap.classList.add('ik-msg-bubble--pending');
-    wrap.setAttribute('data-msg-id', m.id || '');
+    wrap.setAttribute('data-msg-id', m.item_id || '');
 
     var body = document.createElement('div');
     body.className = 'ik-msg-bubble__body';
@@ -384,7 +377,7 @@
 
     var time = document.createElement('span');
     time.className = 'ik-msg-bubble__time';
-    time.textContent = formatTime(m.sent_at, 'bubble');
+    time.textContent = formatTime(m.created_at, 'bubble');
     wrap.appendChild(time);
 
     return wrap;
@@ -420,20 +413,34 @@
       IK_DATA.markThreadRead(thread_id);
     }
 
-    /* Reload threads to reflect read state */
+    /* Load thread messages — adapter returns array */
     if (window.IK_DATA && typeof IK_DATA.getThread === 'function') {
-      IK_DATA.getThread(thread_id).then(function (t) {
-        state.activeThread = t;
-        if (t && t.unread_count) t.unread_count = 0;
-        /* Sync threads list */
-        var idx = state.threads.findIndex(function (x) { return x.id === thread_id; });
-        if (idx >= 0) state.threads[idx].unread_count = 0;
+      IK_DATA.getThread(thread_id).then(function (msgs) {
+        if (!msgs || !Array.isArray(msgs)) {
+          console.error('[ik-messages] getThread geçersiz yanıt:', thread_id);
+          state.activeThread = null;
+          renderDetail();
+          showToast('Konuşma yüklenemedi', 'error');
+          return;
+        }
+        /* Thread metadata state.threads listesinden — adapter shape */
+        var meta = state.threads.find(function (x) { return x.message_id === thread_id; });
+        state.activeThread = Object.assign({}, meta || {}, { messages: msgs });
+
+        /* Read state UI sync */
+        if (state.activeThread.unread_replies) state.activeThread.unread_replies = 0;
+        var idx = state.threads.findIndex(function (x) { return x.message_id === thread_id; });
+        if (idx >= 0) state.threads[idx].unread_replies = 0;
+
         applyFilter();
         renderList();
         renderDetail();
         if (isMobile() && dom.layout) {
           dom.layout.setAttribute('data-mobile-view', 'detail');
         }
+      }).catch(function (e) {
+        console.error('[ik-messages] getThread hata:', e && e.message);
+        showToast('Hata: ' + (e && e.message || 'Konuşma yüklenemedi'), 'error');
       });
     }
 
@@ -476,54 +483,74 @@
 
     /* Optimistic UI: tentative bubble */
     var pendingMsg = {
-      id: 'pending-' + Date.now(),
-      from: 'hr',
+      item_id: 'pending-' + Date.now(),
+      sender: 'employer',
       body: body,
-      sent_at: new Date().toISOString(),
+      created_at: new Date().toISOString(),
+      read_at: null,
       _pending: true
     };
 
     if (!state.activeThread) return;
     state.activeThread.messages = (state.activeThread.messages || []).concat([pendingMsg]);
-    state.activeThread.last_message = body;
-    state.activeThread.last_message_at = pendingMsg.sent_at;
+    state.activeThread.last_body = body;
+    state.activeThread.last_activity_at = pendingMsg.created_at;
 
     /* Sync threads list */
-    var idx = state.threads.findIndex(function (x) { return x.id === state.activeThreadId; });
+    var idx = state.threads.findIndex(function (x) { return x.message_id === state.activeThreadId; });
     if (idx >= 0) {
-      state.threads[idx].last_message = body;
-      state.threads[idx].last_message_at = pendingMsg.sent_at;
+      state.threads[idx].last_body = body;
+      state.threads[idx].last_activity_at = pendingMsg.created_at;
     }
 
     dom.textarea.value = '';
     updateSendBtnState();
     renderBody();
 
-    if (!window.IK_DATA || typeof IK_DATA.sendMessage !== 'function') {
+    if (!window.IK_DATA || typeof IK_DATA.replyToThread !== 'function') {
       showToast('Mesaj gönderilemedi: veri katmanı yok', 'error');
       return;
     }
 
-    IK_DATA.sendMessage(state.activeThreadId, body).then(function (res) {
-      /* Replace pending with confirmed */
+    IK_DATA.replyToThread(state.activeThreadId, body).then(function (res) {
       if (state.activeThread && state.activeThread.messages) {
         var msgs = state.activeThread.messages;
-        var pIdx = msgs.findIndex(function (m) { return m.id === pendingMsg.id; });
+        var pIdx = msgs.findIndex(function (m) { return m.item_id === pendingMsg.item_id; });
         if (pIdx >= 0) {
-          msgs[pIdx] = res.message || Object.assign({}, pendingMsg, { _pending: false });
+          if (res && res.ok) {
+            /* Pending bubble'ı confirmed mesaj ile replace et */
+            msgs[pIdx] = Object.assign({}, pendingMsg, {
+              item_id: res.reply_id,
+              _pending: false
+            });
+          } else {
+            /* Hata: pending bubble'ı kaldır + Türkçe toast */
+            msgs.splice(pIdx, 1);
+            showToast('Mesaj gönderilemedi: ' + (res && res.error || 'bilinmeyen hata'), 'error');
+            renderBody();
+            return;
+          }
         }
       }
       /* Re-sort threads (newest first) */
       state.threads.sort(function (a, b) {
-        return new Date(b.last_message_at || 0) - new Date(a.last_message_at || 0);
+        return new Date(b.last_activity_at || 0) - new Date(a.last_activity_at || 0);
       });
       applyFilter();
       renderList();
       renderBody();
       showToast('Mesaj gönderildi', 'success');
-    }).catch(function () {
-      /* Mark pending as failed (visual) */
-      showToast('Mesaj gönderilemedi', 'error');
+    }).catch(function (err) {
+      /* Exception path: pending bubble'ı kaldır + toast */
+      if (state.activeThread && state.activeThread.messages) {
+        var msgs = state.activeThread.messages;
+        var pIdx = msgs.findIndex(function (m) { return m.item_id === pendingMsg.item_id; });
+        if (pIdx >= 0) {
+          msgs.splice(pIdx, 1);
+          renderBody();
+        }
+      }
+      showToast('Mesaj gönderilemedi: ' + (err && err.message || 'sunucu hatası'), 'error');
     });
   }
 
@@ -633,12 +660,12 @@
         return String(t.candidate_id) === String(candidateId);
       });
       if (hit) {
-        selectThread(hit.id);
+        selectThread(hit.message_id);
         return;
       }
     }
     if (threadId) {
-      var t = state.threads.find(function (x) { return x.id === threadId; });
+      var t = state.threads.find(function (x) { return x.message_id === threadId; });
       if (t) {
         selectThread(threadId);
         return;
@@ -647,7 +674,7 @@
 
     /* Desktop: default to first thread */
     if (!isMobile() && state.threads.length) {
-      selectThread(state.threads[0].id);
+      selectThread(state.threads[0].message_id);
     }
   }
 
