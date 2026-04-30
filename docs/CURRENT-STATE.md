@@ -1,7 +1,9 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 27 Nisan 2026 sabah | PHASE A + C + C.5 + D STEP 1+2 DONE — Wave 2 FAIL (panel JS refactor sirasinda fix), Phase D2 + E sonraki session
+> Son guncelleme: 30 Nisan 2026 ogleden sonra | PHASE A + C + C.5 + D STEP 1+2 + **A11 RPC DONE** — Wave 2 HIGH 1 prereq tamamlandi, Phase D2 + E sonraki session
 >
-> Aktif Odak: Phase D Step 1 (`data/demo/*.json` 5 dosya silindi) + Step 2 (`js/ik-data.js` real-only refactor, 1137→1047 satir) **TAMAMLANDI**. Wave 2 review CONVERGENT FAIL — 2 HIGH (Mesajlar API mismatch + markThreadRead candidate-side RPC) + 3 MEDIUM. Bunlar Phase D2 (panel JS refactor) sirasinda cozulecek. **Sonraki session:** Phase D2 (10 panel JS refactor — Wave 3 fixleri dahil) + Phase E (auth wiring) + Phase F+H seed.
+> Aktif Odak: Phase D Step 1+2 + **A11 employer-side RPC gap fix LIVE** (30 Nis apply, T3 zincir 4 wave + Codex %91 agreement + smoke yesil — `mark_employer_thread_read(bigint)` + `bulk_add_to_pipeline(bigint, bigint[], pipeline_stage)` migration `20260430162936`). Wave 2 HIGH 1 (markThreadRead candidate-side RPC) artik backend tarafinda fix — sadece `js/ik-messages.js` adapter rewire kaldi. **Sonraki session:** Phase D2 (10 panel JS refactor — Wave 2 HIGH 2 mesaj API shape + adapter rewire) + Phase E (auth wiring) + Phase F+H seed.
+>
+> **🔒 A14 yeni pending (kritik, Iyzico oncesi):** A11 W4 Codex review sirasinda tespit — Sprint 7 (`is_employer_team_member`, `is_paid_employer`) ayni `pg_temp` shadow zafiyeti tasiyor (production live). A7 paywall bypass guard'in altina kuruluyor → A14 once, A7 sonra. `.claude/agent-memory/pending-approvals.md` A14 maddesi.
 >
 > ── 🟥 SONRAKI SESSION BASLANGIC CHECKLIST (briefer'in oncelikli okuyacagi) ──
 >
@@ -17,7 +19,7 @@
 >   1. Wave 2 review HIGH 2 (Mesaj API mismatch) panel JS'lerde uyumla:
 >      - `js/ik-messages.js`: `t.id` → `t.message_id`, `t.last_message` → `t.last_body`, `t.last_message_at` → `t.last_activity_at`, `t.unread_count` → `t.unread_replies`
 >      - `getThread()` adapter array donduruyor, panel `{...thread, messages:[]}` bekliyor — UI tarafini real shape'e refactor
->   2. Wave 2 HIGH 1 (markThreadRead): A11 RPC `mark_employer_thread_read` migration apply once (T3 zincir), sonra adapter wire
+>   2. Wave 2 HIGH 1 (markThreadRead): ✅ A11 RPC `mark_employer_thread_read` LIVE (30 Nis apply) — sadece `js/ik-messages.js` adapter rewire kaldi (`mark_employer_replies_read` → `mark_employer_thread_read`)
 >   3. Pool/Pipeline/Aday refactor: `c.pozisyon` → `c.son_pozisyon`, `c.sehir` → `c.adres_il`, `c.deneyim_yil` → `Math.round(c.toplam_deneyim_ay/12)`, `c._match` → `c.match_score`, YENI `c.match_reasons` chip render (matching transparency)
 >   4. Mesajlar/Sirket/Ekip/Ayarlar UI gerçek shape'e adapte
 >   5. Kampanyalar empty state ("MVP 2 sonrasi Iyzico ile") — hr-campaigns.html template
@@ -44,7 +46,8 @@
 >   - **A8:** KVKK note retention policy + cron purge
 >   - **A9:** telefon/email visible search ile artik daha fazla gorunur (KVKK md.5)
 >   - **A10:** hr_profiles granular notification toggles (notify_email_messages + notify_email_pipeline)
->   - **A11:** mark_employer_thread_read employer-side RPC + bulk_add_to_pipeline RPC (Phase D2 once gerekli!)
+>   - **A11:** ✅ DONE 30 Nis — mark_employer_thread_read + bulk_add_to_pipeline LIVE (T3 zincir 4 wave + Codex %91 agreement + smoke yesil)
+>   - **A14:** Sprint 7 SECURITY DEFINER search_path harden (Iyzico oncesi A7'den ONCE — `is_employer_team_member` + `is_paid_employer` pg_temp shadow vuln)
 >   - **A12:** Phase D Wave 2 review backlog (panel JS refactor sirasinda fix)
 >
 > ── 27 NIS PHASE D STEP 1+2 SONUCLARI ──
