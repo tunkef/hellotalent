@@ -1,7 +1,7 @@
 /* global */
 /* ════════════════════════════════════════════════════════════════
    IK Data Adapter — Phase D (real-only)
-   Demo data archive: data/_archive-demo-data-20260427/ (Phase D'den önce silindi)
+   Demo data: 27 Nisan 2026 commit 1b9afa8 (Phase D Step 1) — silindi.
 
    Real-only mode — demo branch kaldırıldı.
    Auth context guard: realMode() false → metod empty state / reject döner.
@@ -19,12 +19,9 @@
   /* ═══════ Config ═══════ */
   var LS_BLOCK_PREFIX = 'ht_ik_blocked_';
 
-  /* Cache (memory only, sayfa lifecycle) */
+  /* Cache (memory only, sayfa lifecycle) — sadece positions doldurulur */
   var _cache = {
-    candidates: null,
-    positions:  null,
-    pipeline:   null,
-    threads:    null
+    positions: null
   };
 
   /* ═══════ Helpers ═══════ */
@@ -56,11 +53,6 @@
     return (window.IK_SHELL && window.IK_SHELL.ctx && window.IK_SHELL.ctx.user)
       ? window.IK_SHELL.ctx.user.id
       : null;
-  }
-
-  function uid(prefix) {
-    return (prefix || 'pl-x-') + Date.now().toString(36) + '-' +
-           Math.random().toString(36).slice(2, 8);
   }
 
   function trLower(s) {
@@ -518,7 +510,10 @@
             replyToThread var olan thread'e yanıt ekler (message_id + body).
             Panel JS imza: getThread(message_id) — thread_id alias kaldırıldı. */
 
-    getMessageThreads: function () {
+    /* opts — opsiyonel: { limit, offset }
+       p_limit/p_offset opts'tan veya default 50/0 (geriye uyumlu). */
+    getMessageThreads: function (opts) {
+      opts = opts || {};
       if (!realMode()) {
         console.warn('[ik-data] getMessageThreads: auth context yok');
         return Promise.resolve([]);
@@ -532,8 +527,8 @@
       return (async function () {
         try {
           var res = await supa.rpc('get_company_message_threads', {
-            p_limit:  50,
-            p_offset: 0
+            p_limit:  opts.limit  != null ? opts.limit  : 50,
+            p_offset: opts.offset != null ? opts.offset : 0
           });
           if (res.error) {
             console.warn('[ik-data] getMessageThreads RPC error:', res.error.message);
@@ -1072,7 +1067,7 @@
 
     /* ── Cache reset (test) ── */
     _resetCache: function () {
-      _cache = { candidates: null, positions: null, pipeline: null, threads: null };
+      _cache = { positions: null };
     }
   };
 
