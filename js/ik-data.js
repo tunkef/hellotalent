@@ -500,7 +500,7 @@
          get_message_thread(p_message_id)                 → 054 (item_id, sender, body, created_at, read_at)
          send_employer_message(...)                       → 031 (returns bigint message_id)
          send_employer_followup(p_message_id, p_body)     → 057 (returns bigint reply_id)
-         mark_employer_replies_read(p_message_id)         → 054 (returns int count)
+         mark_employer_thread_read(p_message_id)          → A11 mig 20260430162936 (returns void)
 
        NOT: sendMessage yeni thread başlatır (candidate_id + subject + body).
             replyToThread var olan thread'e yanıt ekler (message_id + body).
@@ -633,10 +633,11 @@
       })();
     },
 
-    /* markThreadRead — candidate-side: employer follow-up'ları okundu işaretle
-       Mig 054, line 130-164: mark_employer_replies_read(p_message_id) → int count
-       NOT: Bu RPC candidate context içindir. İşveren paneli "okundu" işaretlemek
-            için ayrı bir mekanizma gerekmez (işveren zaten gönderdi). */
+    /* markThreadRead — A11 employer-side: thread read_at işaretle
+       Mig 20260430162936: mark_employer_thread_read(p_message_id) → void
+       Idempotent: read_at = COALESCE(read_at, now()), status='read'.
+       Guard: hr_profiles.company_id + employer_role IN ('admin','recruiter')
+              + WHERE status NOT IN ('archived','deleted'). */
     markThreadRead: function (message_id) {
       if (!realMode()) {
         return Promise.resolve({ ok: false, error: 'auth context yok' });
@@ -646,14 +647,14 @@
       var supa = getSupa();
       return (async function () {
         try {
-          var res = await supa.rpc('mark_employer_replies_read', {
+          var res = await supa.rpc('mark_employer_thread_read', {
             p_message_id: message_id
           });
           if (res.error) {
             console.warn('[ik-data] markThreadRead RPC error:', res.error.message);
             return { ok: false, error: res.error.message };
           }
-          return { ok: true, count: res.data };
+          return { ok: true };
         } catch (e) {
           console.warn('[ik-data] markThreadRead exception:', e && e.message);
           return { ok: false, error: e && e.message };
