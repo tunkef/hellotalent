@@ -3869,3 +3869,27 @@ Next brief writing → verify preserved IDs directly via grep before listing the
 - D2.3 match_chip auth+real data verify
 - 23 ik-spec auth storageState (--project=e2e-ik-desktop)
 - infra-ops X-Frame + CSP HTTP header (CF Rules Transform Rules)
+
+---
+
+## 1 Mayis 2026 — A14 + A16 + H2 Iyzico oncesi prereq
+
+**A14 commit `54aa611`** — Sprint 7 SECURITY DEFINER pg_temp shadow harden
+- is_employer_team_member + is_paid_employer search_path = pg_catalog, public, pg_temp
+- A7 paywall bypass guard prereq KAPANDI
+
+**Phase F** — Position duplicate cleanup (id=1+id=2 → tek "Magaza Mudurus / Istanbul / 3-5 / Luks")
+
+**A16 commit (bu)** — search_employer_candidates candidate_id filter + 5-param overload harden
+- Yeni dedicated RPC YOK — search'e p_filters.candidate_id eklendi (additive, no-op when NULL)
+- 5-param overload da harden (defense in depth, A14 pattern FULL)
+- T3 zinciri 4 stage + Codex %90 agreement
+- A16.S4 sira: ik-data.js getCandidate adapter switch
+
+**H2 fix (bu commit)** — ik.legacy.html company isolation bypass
+- ik.legacy.html line 2828 yanlis param adi (`p_company_id` → NULL kalir → company isolation BYPASS)
+- Legacy file public URL'de hala accessible idi
+- Fix: ik.legacy.html → _archive-ik-legacy/ klasoru (GitHub Pages _ prefix serve etmez)
+
+**Backlog (A18 dusuk oncelik):**
+- lb6_security_monitoring run_rls_audit + get_security_dashboard ayni pg_temp zafiyet (admin-only)
