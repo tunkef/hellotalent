@@ -199,11 +199,10 @@
     els.themeRadios.forEach(function (r) {
       r.addEventListener('change', function () {
         if (!r.checked) return;
+        /* Tema localStorage tabanlı — backend persist gerek yok (theme column yok) */
         applyTheme(r.value);
-        IK_DATA.updateSettings({ theme: r.value }).then(function (res) {
-          if (res && res.settings) state.settings = res.settings;
-          showToast('Tema güncellendi', 'ok');
-        });
+        state.settings.theme = r.value;
+        showToast('Tema güncellendi', 'ok');
       });
     });
   }

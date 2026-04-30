@@ -318,7 +318,7 @@
     var orig = els.sendBtn.textContent;
     els.sendBtn.textContent = 'Gönderiliyor…';
 
-    IK_DATA.inviteTeamMember(email, role, name).then(function () {
+    IK_DATA.inviteTeamMember(email, role).then(function () {
       showToast('Davet kaydedildi', 'ok');
       closeModal();
       return load();

@@ -718,6 +718,8 @@
     init();
   }
 
-  /* Test/debug expose */
-  window._ikMessagesState = state;
+  /* Test/debug expose — sadece localhost */
+  if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+    window._ikMessagesState = state;
+  }
 })();

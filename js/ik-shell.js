@@ -76,8 +76,9 @@
 
     if (!user) {
       /* Demo mode: localStorage'da demo flag varsa redirect atla */
+      /* Demo mode bypass: sadece localhost — production'da geçersiz */
       var demoFlag = localStorage.getItem('ht_ik_demo_mode');
-      if (demoFlag === '1') {
+      if (demoFlag === '1' && (location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
         return { user: null, hr: null, demo: true };
       }
       var rt = encodeURIComponent(location.pathname);
@@ -95,7 +96,7 @@
     /* Onboarding completed kontrol */
     try {
       var profRes = await supa.from('hr_profiles')
-        .select('id, onboarding_completed, full_name, company_id')
+        .select('id, onboarding_completed, full_name, company_id, employer_role, plan')
         .eq('id', user.id)
         .maybeSingle();
 

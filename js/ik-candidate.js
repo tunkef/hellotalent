@@ -96,14 +96,14 @@
         : 'Pozisyon ' + segmentLabel(pos.segment) + ', aday ' + segmentLabel(c.segment) + '.'
     });
     /* Şehir */
-    var cm = c.sehir === pos.city ? 25 : 0;
+    var cm = c.adres_il === pos.city ? 25 : 0;
     rows.push({
       label: 'Şehir',
       max: 25,
       value: cm,
-      hint: c.sehir === pos.city
-        ? 'Pozisyon ile aynı şehirde (' + c.sehir + ').'
-        : 'Pozisyon ' + (pos.city || '—') + ', aday ' + (c.sehir || '—') + '. Lokasyon farkı puanı düşürdü.'
+      hint: c.adres_il === pos.city
+        ? 'Pozisyon ile aynı şehirde (' + c.adres_il + ').'
+        : 'Pozisyon ' + (pos.city || '—') + ', aday ' + (c.adres_il || '—') + '. Lokasyon farkı puanı düşürdü.'
     });
     /* Deneyim — Phase D2.3: toplam_deneyim_ay → getDeneyimYil helper */
     var rng = parseRange(pos.experience_years);
@@ -251,13 +251,13 @@
     var poz = document.createElement('p');
     poz.className = 'ik-candidate__poz';
     var deneyimYil = IK_DATA.getDeneyimYil(c);
-    poz.textContent = (c.pozisyon || '—') + (deneyimYil > 0 ? ' · ' + deneyimYil + ' yıl deneyim' : '');
+    poz.textContent = (c.son_pozisyon || '—') + (deneyimYil > 0 ? ' · ' + deneyimYil + ' yıl deneyim' : '');
     main.appendChild(poz);
 
     var chips = document.createElement('div');
     chips.className = 'ik-candidate__chips';
     var chipDefs = [
-      { label: 'Şehir', value: c.sehir || '—' },
+      { label: 'Şehir', value: c.adres_il || '—' },
       { label: 'Segment', value: segmentLabel(c.segment) },
       { label: 'Müsaitlik', value: c.musaitlik || '—' },
       { label: 'Çalışma', value: c.calisma_tipi || '—' }
@@ -347,7 +347,7 @@
 
     var deneyimYilProfil = IK_DATA.getDeneyimYil(c);
     var basicFields = [
-      ['Pozisyon', c.pozisyon],
+      ['Pozisyon', c.son_pozisyon],
       ['Deneyim', deneyimYilProfil > 0 ? deneyimYilProfil + ' yıl' : '—'],
       ['Eğitim', c.egitim_seviye || '—'],
       ['Doğum yılı', c.dogum_yili || '—'],
@@ -369,7 +369,7 @@
     sec2.appendChild(t2);
     var grid2 = document.createElement('div');
     grid2.className = 'ik-candidate-section__grid';
-    grid2.appendChild(renderField('Şehir', c.sehir));
+    grid2.appendChild(renderField('Şehir', c.adres_il));
     sec2.appendChild(grid2);
     frag.appendChild(sec2);
 
