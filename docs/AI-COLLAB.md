@@ -3848,3 +3848,24 @@ Next brief writing → verify preserved IDs directly via grep before listing the
 **CI:** Her commit Playwright workflow yesil (1m0s-1m13s, ortalama 1m7s).
 
 **Sonraki:** Phase E (auth wiring) + Phase F (position duplicate temizlik) + Phase H (200 test aday seed) + A14/A16 (Iyzico oncesi).
+
+---
+
+## 30 Nisan 2026 gece — Phase D2 final smoke + bulgu fix
+
+**CF Access policy aktif** (Tuna manuel: Service Auth → Service Token "HelloTalent UAT Playwright" allow). `service_token_status: false` → HTTP/2 200.
+
+**Local + prod karsilastirma:**
+- 9 sayfa byte-identical (SIFIR drift)
+- Local 27/27 PASS (9 sayfa × 3 viewport)
+- ik-*.spec.js 97/280 → 195/273 PASS (D2.10 spec sync etkisi)
+
+**Bulgu fix (bu commit):**
+- 22 HTML CSP cleanup (X-Frame-Options meta + frame-ancestors directive)
+- tests/phase-d2-prod-assets.spec.js CSS path /css/panels/* fix
+- Smoke artefakti kayit (4 yeni test dosyasi)
+
+**Backlog (Phase H sonrasi):**
+- D2.3 match_chip auth+real data verify
+- 23 ik-spec auth storageState (--project=e2e-ik-desktop)
+- infra-ops X-Frame + CSP HTTP header (CF Rules Transform Rules)
