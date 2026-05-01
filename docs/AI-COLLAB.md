@@ -3934,3 +3934,5 @@ W4 Codex %97 PASS
 - 5-param dual implementation tutarsızlığı (NIT, P3'te _internal pattern'e geçiş)
 - console.log seed script CLI tool (NIT, kabul)
 - Phase H.B'de keşfedilen production retroaktif PII bug — commit log'da kalıcı kayıt
+
+**Followup:** RLS guard hook comment-aware fix (header rephrase).

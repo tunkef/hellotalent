@@ -8,7 +8,7 @@
 -- ║    için candidates tablosuna test_seed_batch kolonu ekler.             ║
 -- ║                                                                        ║
 -- ║  RLS Notu:                                                             ║
--- ║    Bu migration CREATE TABLE içermez; mevcut tabloya ALTER TABLE.      ║
+-- ║    Bu migration tablo olusturmaz; mevcut tabloya ALTER ile column add.  ║
 -- ║    Yeni RLS policy gerekmez — candidates tablosunun mevcut policy'leri ║
 -- ║    bu kolonu otomatik kapsar. candidates_select_own vb. politikaları   ║
 -- ║    satır seviyesinde çalışır, kolon ekleme kapsam dışı.                ║
