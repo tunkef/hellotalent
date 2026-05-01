@@ -3893,3 +3893,44 @@ Next brief writing → verify preserved IDs directly via grep before listing the
 
 **Backlog (A18 dusuk oncelik):**
 - lb6_security_monitoring run_rls_audit + get_security_dashboard ayni pg_temp zafiyet (admin-only)
+
+---
+
+## 1 Mayis 2026 gece — Phase H.B test seed sistemi + KRITIK retroaktif PII fix
+
+**KRITIK keşif:** A16 commit `b87c779` (`20260430211728_search_rpc_candidate_id_filter.sql`) production'da `20260408154040_sec_strip_employer_pii.sql` PII protection wrapper'ı override etmişti → real candidate'lar için employer Pool/Pipeline'da `telefon` + `email` görünür hale geldi (KVKK md.4 ihlali).
+
+Plus Codex T3 keşif (W4): A16 body'sinde `with_children` CTE eksik field projection (`travel_willingness/shift_flexibility/notice_period`) → output JSON `wc.X` reference undefined → potansiyel runtime error.
+
+**Wave akışı (H.B 4 wave + Codex T3 2 dispatch):**
+
+W1 supabase-agent: Migration test_seed_batch flag + seed script (5 tablo insert)
+W1 review FAIL: 2 BLOCKER (UUID hex + FK violation) + B2 RLS isolation + H1 telefon collision + R3 child error handling
+
+W2 supabase-agent: user_id NULLable + CHECK constraint + RLS policy update + duplicate `employer_read_candidates` DROP + 6/5-param body kopya + filter
+W2 review FAIL: W2-N1 HIGH (PII wrapper kayıp — A16 retroaktif bug)
+
+W3 supabase-agent: 20260408154040 wrapper restore (jsonb subtraction `- 'telefon' - 'email'`) + 5-param inline strip (3 katman: CTE + with_children + final jsonb_build_object)
+W3 review PASS_WITH_NOTES + Codex %83 FAIL (BLOCKER: with_children eksik 3 field)
+
+W4 supabase-agent: with_children'a travel_willingness/shift_flexibility/notice_period ekle (3 satır)
+W4 Codex %97 PASS
+
+**Apply YEŞIL:**
+- Migration `20260501134009` LIVE
+- 6-param wrapper PII strip aktif (prosrc has_pii_strip=true)
+- 5-param inline strip aktif
+- search_path harden 3 fn'de pg_catalog, public, pg_temp
+
+**5-aday seed test (Tuna direktif "yolu anla"):**
+- 1. deneme: candidate_languages_seviye_check FAIL (CEFR enum) → script fix (Anadil/A1/A2/B1/B2/C1/C2 + Anadil)
+- 2. deneme: 5/5 candidates + 5 work_prefs + 10 experiences + 5 education + 35 languages YEŞIL
+- Cascade purge: tek query `DELETE FROM candidates WHERE test_seed_batch=batch_id` → 5 aday + alt tablolar otomatik silinir ✅
+- R3 fix doğrulandı: hata sonrası process.exit(1) + purge talimatı
+
+**Sıradaki:** Tuna onayı → 50 → 100 → 200 aşamalı seed + filter UAT.
+
+**Backlog:**
+- 5-param dual implementation tutarsızlığı (NIT, P3'te _internal pattern'e geçiş)
+- console.log seed script CLI tool (NIT, kabul)
+- Phase H.B'de keşfedilen production retroaktif PII bug — commit log'da kalıcı kayıt

@@ -19,7 +19,9 @@
     "db:push": "supabase db push --linked",
     "db:new": "supabase migration new",
     "db:list": "supabase migration list --linked",
-    "db:status": "supabase migration list --linked"
+    "db:status": "supabase migration list --linked",
+    "seed:test": "node scripts/seed-test-candidates.js seed",
+    "seed:purge": "node scripts/seed-test-candidates.js purge"
   },
   "repository": {
     "type": "git",
@@ -38,9 +40,11 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.58.2",
+    "@supabase/supabase-js": "^2.105.1",
     "bats": "^1.13.0",
     "bats-assert": "^2.2.4",
     "bats-support": "^0.3.0",
+    "dotenv": "^17.4.2",
     "eslint": "^10.1.0",
     "husky": "^9.1.7",
     "lint-staged": "^16.4.0",

@@ -1,5 +1,7 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 1 Mayis 2026 gece | PHASE A+C+C.5+D STEP 1+2 + A11 RPC + D2 (1-10) + denetim + bulgu fix + **A14 + Phase F + A16 + H2 DONE** — Iyzico oncesi prod prereq'leri TAMAMEN KAPATILDI, Phase H (200 test aday seed) sonraki ana is
+> Son guncelleme: 1 Mayis 2026 gece (Phase H.B done) | PHASE A+C+C.5+D STEP 1+2 + A11 RPC + D2 (1-10) + denetim + bulgu fix + A14 + Phase F + A16 + H2 + **H.B PII wrapper retroaktif fix + 5-aday seed test BAŞARILI** — Iyzico oncesi prereq DONE, Phase H aşamalı 50/100/200 seed sonraki
+
+> **🔥 KRITIK retroaktif fix (1 May gece, H.B W3):** A16 commit `b87c779` production'da `20260408154040_sec_strip_employer_pii.sql` wrapper'ı override etmişti → real candidate'lar için employer Pool/Pipeline'da telefon+email leak. Migration `20260501134009` ile wrapper restore + 6-param `v_item - 'telefon' - 'email'` jsonb subtraction + 5-param inline 3-katman strip + W4 with_children column projection fix (Codex T3 %97 PASS).
 >
 > ## Aktif Odak: Iyzico oncesi prereq'leri kapandi ✅
 >
