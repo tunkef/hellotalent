@@ -1,7 +1,54 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 1 Mayis 2026 gece (Phase H.B done) | PHASE A+C+C.5+D STEP 1+2 + A11 RPC + D2 (1-10) + denetim + bulgu fix + A14 + Phase F + A16 + H2 + **H.B PII wrapper retroaktif fix + 5-aday seed test BAŞARILI** — Iyzico oncesi prereq DONE, Phase H aşamalı 50/100/200 seed sonraki
+> Son guncelleme: 1 Mayis 2026 gece (H.B + admin bypass done) | PHASE A+C+C.5+D STEP 1+2 + A11 RPC + D2 (1-10) + denetim + bulgu fix + A14 + Phase F + A16 + H2 + **H.B test seed sistemi LIVE + admin bypass + 50 aday batch_id phase-h-batch1** — Iyzico prereq DONE, Tuna manuel UAT bekliyor → 100/200 aşamalı seed sonraki
 
 > **🔥 KRITIK retroaktif fix (1 May gece, H.B W3):** A16 commit `b87c779` production'da `20260408154040_sec_strip_employer_pii.sql` wrapper'ı override etmişti → real candidate'lar için employer Pool/Pipeline'da telefon+email leak. Migration `20260501134009` ile wrapper restore + 6-param `v_item - 'telefon' - 'email'` jsonb subtraction + 5-param inline 3-katman strip + W4 with_children column projection fix (Codex T3 %97 PASS).
+
+> ## H.B Test Seed Sistemi LIVE (1 May)
+>
+> **Migration apply** (commit `9ac4fa0` + `3d6d1aa` + `24bdf59` + `fe95155`):
+> - `20260501134009_candidates_test_seed_batch_flag.sql` (1142 satır, 4 wave + Codex T3 2 dispatch)
+> - `20260501145426_test_seed_admin_bypass.sql` (1045 satır, admin role bypass için RLS + RPC update)
+>
+> **Migration içerik:**
+> - `candidates.test_seed_batch TEXT NULL` flag + partial index
+> - `candidates.user_id` NULLable + CHECK constraint (real → user_id NOT NULL guard CHECK ile korunur)
+> - `candidates_employer_read` RLS policy: `(test_seed_batch IS NULL OR is_admin_employer())`
+> - `_search_employer_candidates_internal` 6-param: visible CTE filter + W3 internal-only (REVOKE PUBLIC, wrapper-only)
+> - `search_employer_candidates` 6-param: WRAPPER (PII strip jsonb subtraction `- 'telefon' - 'email'`)
+> - `search_employer_candidates` 5-param: inline body + 3-katman PII strip + filter
+> - `is_admin_employer()` helper (LANGUAGE sql STABLE SECURITY DEFINER, A14 pattern)
+>
+> **Seed script** (`scripts/seed-test-candidates.js`, 664 satır):
+> - `npm run seed:test -- [adet] [batch_id]` (default 200)
+> - `npm run seed:purge -- [batch_id]`
+> - 5 tablo insert: candidates → work_prefs → experiences → education → languages
+> - TR fake data: 30+ isim/soyisim, +90 599 0XX (E.164 tahsiz), @hellotest.invalid (RFC 2606)
+> - Idempotent batch_id collision check + 4 child insert hata sonrası process.exit(1) + purge talimatı
+> - Cascade FK: tüm 5 alt tablo ON DELETE CASCADE → tek query temizleme
+>
+> **50 aday LIVE** (batch_id `phase-h-batch1`):
+> - Modern shape (son_pozisyon, adres_il, toplam_deneyim_ay, match_score) doluyor
+> - Dağılım orantılı: İstanbul 19, Ankara 7, İzmir 6, Antalya 4 + Satış Danışmanı 10, Kıdemli Satış 10, Mağaza Müdür Yrd 6, Kasiyer 5, Mağaza Müdürü 4 + Kadın 26, Erkek 17, boş 7
+> - Cinsiyet: 44/50 dolu (KVKK soft, 6 boş)
+> - Languages: 166 satır (~3.3/aday Türkçe + ek diller)
+>
+> **🟥 SONRAKI SESSION'DA — Tuna manuel UAT bekleniyor:**
+> - tkefeli@peoplein.com.tr login (employer_role='admin', company_id=64)
+> - ik.html → hr-pool.html → 50 aday görünür mü?
+> - Filter chip test: Şehir/Pozisyon/Segment/Müsaitlik aktif aday üretiyor mu?
+> - PII verify (KVKK md.4): Aday detay/kart'ta telefon + email **gözükmemeli** (W3 strip)
+> - Aday detay sayfası: hr-candidate.html?id=N → modern shape
+> - Pipeline ekleme: hr-pool → hr-pipeline akışı
+>
+> **UAT sonucu → karar:**
+> - ✅ Her şey çalışıyor → 100 aday seed (`phase-h-batch2`) → sonra 200 (`phase-h-batch3`)
+> - 🟡 Bazı filter chip'ler eksik aday → gap analysis + ekstra seed
+> - ❌ Bug → fix dispatch (T3 zincir)
+>
+> **Backlog (M2 + M1 — H.B audit'ten):**
+> - **A18 (KRITIK, Iyzico öncesi şart, MEDIUM auditor):** `hr_profiles` UPDATE policy yok → viewer kendi `employer_role`'unu admin yapabilir → seed pool görür. Admin bypass migration ile bu açık kritiklik kazandı (önceden seed pool zaten herkesden gizli idi). Yeni T3 migration: `hr_profile_role_update_admin_only` veya benzeri.
+> - **A19 (LOW, ISO27001 A.12.4):** `is_admin_employer()` çağrısı audit log'lanmıyor. Admin kim seed adaylarına ne zaman erişti izlenemez. `audit_log` tablosu trigger ya da pg_audit.
+> - **5-param dual implementation tutarsızlık** (NIT, P3): `_internal` 5-param yok, body inline. Bug fix `_internal` 6-param'a yapılırsa 5-param güncellenmeli.
 >
 > ## Aktif Odak: Iyzico oncesi prereq'leri kapandi ✅
 >
