@@ -3938,3 +3938,5 @@ W4 Codex %97 PASS
 **Followup:** RLS guard hook comment-aware fix (header rephrase).
 
 **Followup 1 May (50-batch1):** Seed script bug fix — 'pozisyon'/'sehir' (deprecated) yerine 'son_pozisyon'/'adres_il' (modern, RPC + UI shape). 50 aday re-seed dağılım orantılı (İst 19, Ank 7, İzm 6; Satış Danışmanı 10, Kıdemli 10, Mağaza Müdür Yrd 6).
+
+**Followup 1 May (admin bypass):** is_admin_employer() helper + policy/RPC update — tkefeli admin role test seed adayları görür (UAT). recruiter/viewer için fake gizli (production safety). Codex T3 %92 PASS.
