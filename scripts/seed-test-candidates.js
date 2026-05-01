@@ -450,8 +450,11 @@ async function seed(toplamAdet, batchId) {
       telefon: telefon,
       cinsiyet: cinsiyet,
       dogum_yili: dogumYili,
-      pozisyon: poz.ad,
-      sehir: sehir.ad,
+      // Modern shape (RPC + UI): son_pozisyon + adres_il
+      // Live'da hem deprecated (pozisyon, sehir) hem modern (son_pozisyon, adres_il)
+      // exposed; modern field'ları doldur (5/6 real aday modern field'da).
+      son_pozisyon: poz.ad,
+      adres_il: sehir.ad,
       toplam_deneyim_ay: deneyimAy,
       is_active: true,
       is_actively_looking: aktif,
