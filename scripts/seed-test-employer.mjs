@@ -24,7 +24,7 @@
  * Faz 4B (O-1) refaktor: ortak admin API plumbing scripts/_supa-admin.mjs'te.
  */
 
-import { loadAdminEnv, makeReq, ensureUser, validateCreds, die } from './_supa-admin.mjs';
+import { loadAdminEnv, makeReq, ensureUser, validateCreds, refuseEmail, die } from './_supa-admin.mjs';
 
 const { SUPA_URL, SERVICE_KEY } = loadAdminEnv();
 const EMAIL = process.env.HT_TEST_EMPLOYER_EMAIL;
@@ -33,6 +33,12 @@ const PASSWORD = process.env.HT_TEST_PASSWORD;
 if (!EMAIL) die('HT_TEST_EMPLOYER_EMAIL yok.');
 if (!PASSWORD) die('HT_TEST_PASSWORD yok.');
 validateCreds(EMAIL, PASSWORD);
+
+const PROD_PROTECTED_EMAILS = [
+  'kefelituna@gmail.com',
+  'tkefeli@peoplein.com.tr',
+];
+refuseEmail(EMAIL, PROD_PROTECTED_EMAILS);
 
 const req = makeReq(SUPA_URL, SERVICE_KEY);
 
