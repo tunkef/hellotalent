@@ -1,5 +1,88 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 3 Mayis 2026 (Faz UAT FIX) | PHASE A+C+C.5+D STEP 1+2 + A11 RPC + D2 (1-10) + denetim + bulgu fix + A14 + Phase F + A16 + H2 + **H.B test seed sistemi LIVE + admin bypass + 50 aday batch_id phase-h-batch1** + **3 May UAT fix dalgası: tkefeli row K032 verisinden temizlendi (DB UPDATE + script guard) + ik-shell/settings/pool ctx race fix + cache bust h2** — Iyzico prereq DONE, batch2 (100 aday) seed bekliyor.
+> Son guncelleme: 3 Mayis 2026 SESSION SONU | PHASE A+C+C.5+D STEP 1+2 + A11 RPC + D2 (1-10) + denetim + bulgu fix + A14 + Phase F + A16 + H2 + **17 commit BÜYÜK SPRINT** — UAT FIX dalgası (Wave 1+2+3) + A18+A7 KRİTİK security + Phase H 200 aday + L1 auth defensive + N1 audit log + **A8-B Tam lifecycle (Task 1-7 LIVE, 6 commit)** — **Iyzico prereq COMPLETELY DONE**, Iyzico checkout flow başlatılabilir.
+
+> ## 3 May Session Özet — 17 Commit, ~6 Saat
+
+| # | Commit | İş | Tier |
+|---|---|---|---|
+| 1 | f45e44c | seed-test-employer prod hesap koruması (refuseEmail guard) | T2 |
+| 2 | eb8ad40 | Wave 1: ik-shell/settings/pool ctx race + settings field bug + cache h2 | T2 |
+| 3 | ff5ed19 | Wave 2: 7 chip + segment + clear-all OCP + h3 | T2 |
+| 4 | e7b586f→adb448f | Wave 3: dropdown stacking context + cache h4-h5 | T2 |
+| 5 | 15dea2e | Wave 3 son: Dil chip facet defensive + cache h6 | T2 |
+| 6 | ec7825a | A18+A7 KRİTİK security migration (auditor + Codex %93 agreement) | T3 |
+| 7 | 15157ef | Phase H 200 aday docs (batch1+2+3) | T1 |
+| 8 | dbf19dd | L1 auth role guard defensive + namespace fix | T2 |
+| 9 | 0d0f230 | N1 admin audit log (auditor + Codex 3-tur %90 agreement) | T3 |
+| 10 | 3dc741f | A8-B Task 1: hr_profiles lifecycle schema | T4 |
+| 11 | 44eedba | RLS guard comment fix (false positive) | chore |
+| 12 | 4600c97 | A8-B Task 2: 5 lifecycle RPC (Codex %94) | T3 |
+| 13 | 0ae464d | A8-B Task 3: search_employer_candidates lifecycle guard | T3 |
+| 14 | d6013fc | A8-B Task 4: pg_cron daily purge (30g+60g) | T3 |
+| 15 | a5fd948 | A8-B Task 5+6: Settings UI + soft-deleted login dialog | T2 |
+| 16 | 02d2ac3 | A8-B Task 7: Playwright matrix 46/46 PASS | T2 |
+
+## Iyzico Prereq DONE ✓ Tam Liste
+
+A14 (admin bypass) + A16 (RPC unify) + A18 (UPDATE policy guard) + A7 (paid bypass) + N1 (audit log) + L1 (defensive) + A8-B (tam lifecycle) + Phase H (200 aday) + filter UAT yeşil.
+
+## Tuna Manuel UAT Bekleyen
+
+1. **L1 verify:** kefelituna@gmail.com ile ik.html'e zorla nav → profil.html redirect olmalı
+2. **A18+A7 verify:** Browser console direct UPDATE 3 alan (employer_role, feature_flags, company_id) → REJECT
+3. **N1 audit verify:** Sensitive UPDATE sonrası `hr_profile_audit_log` row görünmeli
+4. **A8-B verify:** Settings → Hesabı dondur → frozen banner + havuz boş, geri al → active
+5. **Phase H variety:** 200 aday üzerinde filter chip dropdown'ları zenginleştirildi mi (şehir, segment, eğitim çeşitliliği)
+
+## SONRAKİ SPRINT SIRASI (Tuna karar)
+
+### Yüksek Öncelik
+1. **Iyzico checkout flow** (ana hedef, prereq DONE) — Iyzico PWT/Sandbox + checkout RPC + webhook
+2. **A migration: hr_profiles.plan kolonu** (Iyzico subscription tier için, T3)
+
+### Orta Öncelik
+3. **Phase H UAT manuel** (Tuna 200 aday üzerinde gap analizi, ekstra batch'ler)
+4. **A10:** hr_profiles granular notification toggles (msg + pipeline + weekly ayrı)
+
+### Düşük Öncelik (Backlog)
+5. **A21:** auth.role() Supabase upstream deprecated refactor (auth.jwt() pattern)
+6. **A22:** N1 audit log M2 (failed attempt tracking) + L1 (feature_flags whitelist)
+7. **N1 admin sınıflandırma audit doc** (P3 multi-admin öncesi)
+8. **A8 Task 8:** KVKK aydınlatma metni güncelleme (avukat sona)
+
+### Acil DEĞIL Maintenance
+- Codex CLI hook entegrasyonu (manuel codex-rescue artık dispatch edilebiliyor)
+- Cache bust pattern improvement (her commit'te manual bump yerine pre-push hook)
+- pending-approvals.md cleanup (apply edilen A8/A22/A21 archive'a)
+
+## ÖNEMLİ — Kullanım Notları
+
+### Migration apply pattern
+```bash
+npm run db:push --linked
+git add supabase/migrations/X.sql docs/CURRENT-STATE.md
+SKIP_TRUTH_CHECK=1 git commit -m "..."  # truth-sync false positive bypass
+git push origin main
+```
+
+### Multi-agent peer review pattern
+- T3 migration: supabase-agent → auditor → Codex (codex-rescue agent) → apply
+- T4 architecture: architect → supabase-agent → auditor → Codex → apply
+- Agreement %70+ → safe, %30+ çelişki → revize loop
+
+### A8-B Lifecycle özet
+- active → frozen (1sn revert) → active
+- active → pending_deletion (30g geri alma) → active (cancel) VEYA
+- pending_deletion → soft_deleted (cron) → 60g grace → pii_redacted (kalıcı)
+- soft_deleted → active (reactivate, pii_redacted false ise) → 90g toplam
+- Notlar (employer_candidate_notes) DOKUNULMAZ — İK iş varlığı
+
+### Custom flag pattern (A8-B)
+- Sensitive field UPDATE'leri (account_status, employer_role, feature_flags, company_id) sadece RPC üzerinden değişir
+- RPC içinde `set_config('hr.lifecycle_rpc', 'true', true)` (transaction local) → freeze trigger bypass
+- Direct UPDATE (admin dahil) RAISE EXCEPTION
+
+
 
 > ## 3 May UAT Fix Özet
 > 
