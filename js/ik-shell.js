@@ -96,11 +96,16 @@
     /* Onboarding completed kontrol */
     try {
       var profRes = await supa.from('hr_profiles')
-        .select('id, onboarding_completed, full_name, company_id, employer_role, plan')
+        .select('id, onboarding_completed, full_name, company_id, employer_role')
         .eq('id', user.id)
         .maybeSingle();
 
-      if (!profRes.error && profRes.data && profRes.data.onboarding_completed === false) {
+      if (profRes.error) {
+        console.warn('[ik-shell] hr_profiles select error:', profRes.error.message);
+        return { user: user, hr: null, demo: false };
+      }
+
+      if (profRes.data && profRes.data.onboarding_completed === false) {
         location.replace('isveren-onboarding.html');
         return null;
       }
