@@ -28,6 +28,9 @@
 > - Dil chip facet boştu — `diller` field RPC'de string array, config `arrayItemKey:'dil'` object item bekliyordu. buildFacets defensive (object → arrayItemKey, string → item kendisi).
 > - Cache bust h3 → h4 → h5 → h6.
 >
+> A8-B Task 1 hr_profiles lifecycle LIVE (3 May): `account_status enum` (active/frozen/pending_deletion) + 6 yeni kolon (is_active, frozen_at, deletion_scheduled_at, last_active_at, soft_deleted_at, pii_redacted) + `sync_hr_account_status_to_active()` trigger BEFORE UPDATE OF account_status + 2 partial index. A18+A7 freeze trigger'a B1 fix (account_status custom flag pattern `hr.lifecycle_rpc`). N1 audit trigger account_status branch eklendi. Backfill DISABLE/ENABLE pattern (postgres role migration runner N1 trigger çakışmasını çözer). Auditor + Codex T4 %96 agreement.
+> Lifecycle: active → pending_deletion (30g geri alma) → soft_deleted (60g PII grace) → pii_redacted = 90g toplam. Task 2 RPC (5 lifecycle fonksiyonu) sırada.
+>
 > N1 admin audit log LIVE (3 May): `hr_profile_audit_log` tablo + AFTER UPDATE trigger sensitive field tracking (employer_role + feature_flags + company_id). Auditor + Codex 3-tur review sonrası %90 agreement. Fix sırası: M1 (FOR ALL → SELECT/INSERT/DELETE) → C1 STRICT (RAISE EXCEPTION fail-closed) → C1' (auth.role() caller-aware) → C3' (public. qualified). Backlog: A21 (auth.role() deprecated), A22 (M2 failed attempt + L1 feature_flags whitelist).
 >
 > L1 auth role guard defensive (3 May): ik-shell.js role check `user_metadata` → `app_metadata` (SEC-1 migration trigger sync) + null/eksik role reddedilir. code-reviewer pre-existing namespace bug yakaladı (R1 BLOCKER). app_metadata server-only güvenli kaynak.
