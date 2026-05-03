@@ -28,6 +28,8 @@
 > - Dil chip facet boştu — `diller` field RPC'de string array, config `arrayItemKey:'dil'` object item bekliyordu. buildFacets defensive (object → arrayItemKey, string → item kendisi).
 > - Cache bust h3 → h4 → h5 → h6.
 >
+> N1 admin audit log LIVE (3 May): `hr_profile_audit_log` tablo + AFTER UPDATE trigger sensitive field tracking (employer_role + feature_flags + company_id). Auditor + Codex 3-tur review sonrası %90 agreement. Fix sırası: M1 (FOR ALL → SELECT/INSERT/DELETE) → C1 STRICT (RAISE EXCEPTION fail-closed) → C1' (auth.role() caller-aware) → C3' (public. qualified). Backlog: A21 (auth.role() deprecated), A22 (M2 failed attempt + L1 feature_flags whitelist).
+>
 > L1 auth role guard defensive (3 May): ik-shell.js role check `user_metadata` → `app_metadata` (SEC-1 migration trigger sync) + null/eksik role reddedilir. code-reviewer pre-existing namespace bug yakaladı (R1 BLOCKER). app_metadata server-only güvenli kaynak.
 >
 > Phase H FULL COMPLETE (3 May): batch1 (50) + batch2 (100) + batch3 (50) = **200 test aday LIVE**.
