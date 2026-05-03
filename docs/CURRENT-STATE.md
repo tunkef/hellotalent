@@ -28,6 +28,11 @@
 > - Dil chip facet boştu — `diller` field RPC'de string array, config `arrayItemKey:'dil'` object item bekliyordu. buildFacets defensive (object → arrayItemKey, string → item kendisi).
 > - Cache bust h3 → h4 → h5 → h6.
 >
+> Phase H FULL COMPLETE (3 May): batch1 (50) + batch2 (100) + batch3 (50) = **200 test aday LIVE**.
+> - Tuna direktif uygulandı: farklı şehirler, çeşitli deneyimler, filtrelere uygun çeşitlilik.
+> - Purge komutları: `npm run seed:purge -- phase-h-batch1`, `phase-h-batch2`, `phase-h-batch3`.
+> - Iyzico prereq tamamen DONE.
+>
 > A18+A7 KRİTİK security migration LIVE (3 May, Iyzico prereq):
 > - `hr_profiles` UPDATE policy çok permissive idi → user kendi `employer_role` 'admin' yapıp test seed candidates KVKK leak + `feature_flags->>'paid'` true yapıp Iyzico paywall bypass.
 > - Migration `20260503120000_hr_profile_role_flags_admin_guard.sql` (auditor + Codex T3 %93 agreement, multi-fix iter).
