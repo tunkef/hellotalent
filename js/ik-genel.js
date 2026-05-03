@@ -174,7 +174,8 @@
 
     /* Greeting */
     var name = '';
-    if (ctx && ctx.hr && ctx.hr.full_name) name = firstName(ctx.hr.full_name);
+    var hrFullName = ctx && ctx.hr ? [ctx.hr.ad, ctx.hr.soyad].filter(Boolean).join(' ').trim() : '';
+    if (hrFullName) name = firstName(hrFullName);
     else if (ctx && ctx.user && ctx.user.email) name = firstName(ctx.user.email.split('@')[0]);
     var greetingText = name ? ('Merhaba ' + name) : 'Merhaba';
     textBlock.appendChild(txt('h1', 'ik-genel__title', greetingText));

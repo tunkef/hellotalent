@@ -122,7 +122,8 @@
     var ctx = (window.IK_SHELL && window.IK_SHELL.ctx) || {};
     var hr = ctx.hr || {};
     var user = ctx.user || {};
-    if (els.fullname) els.fullname.value = hr.full_name || (user.email ? user.email.split('@')[0] : '');
+    var hrFullName = [hr.ad, hr.soyad].filter(Boolean).join(' ').trim();
+    if (els.fullname) els.fullname.value = hrFullName || (user.email ? user.email.split('@')[0] : '');
     if (els.email) {
       els.email.value = user.email || '';
       if (!user.email) els.email.placeholder = 'Email yüklenemedi';

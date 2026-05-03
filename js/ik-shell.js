@@ -96,7 +96,7 @@
     /* Onboarding completed kontrol */
     try {
       var profRes = await supa.from('hr_profiles')
-        .select('id, onboarding_completed, full_name, company_id, employer_role')
+        .select('id, onboarding_completed, ad, soyad, company_id, employer_role')
         .eq('id', user.id)
         .maybeSingle();
 
@@ -272,8 +272,9 @@
     var initial = '?';
     var role = 'Kurumsal';
 
-    if (ctx && ctx.hr && ctx.hr.full_name) {
-      name = ctx.hr.full_name;
+    var hrFullName = ctx && ctx.hr ? [ctx.hr.ad, ctx.hr.soyad].filter(Boolean).join(' ').trim() : '';
+    if (hrFullName) {
+      name = hrFullName;
       initial = name.charAt(0).toUpperCase();
     } else if (ctx && ctx.user && ctx.user.email) {
       name = ctx.user.email.split('@')[0];
