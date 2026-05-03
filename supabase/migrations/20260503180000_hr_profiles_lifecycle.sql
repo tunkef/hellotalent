@@ -18,7 +18,7 @@
 -- ║    - account_status_enum: 043_drift_reconciliation'da        ║
 -- ║      candidates için tanımlandı, hr_profiles'ta reuse edilir ║
 -- ║    - is_active hr_profiles'ta yoktu, bu migration ekler     ║
--- ║    - RLS: CREATE TABLE yok — mevcut policy revize edildi    ║
+-- ║    - RLS: yeni tablo yok — mevcut policy revize edildi      ║
 -- ║      (hr_profiles_update_own account_status guard eklendi)  ║
 -- ║    - GRANT: mevcut GRANT UPDATE ON hr_profiles yeterli      ║
 -- ║                                                              ║
