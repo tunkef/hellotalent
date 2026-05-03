@@ -22,8 +22,8 @@
   animation: ikPoolFadeUp 600ms ease-out forwards;
 }
 .ik-pool > .ik-pool__head      { animation-delay: 0ms; }
-.ik-pool > .ik-pool__toolbar   { animation-delay: 120ms; }
-.ik-pool > .ik-pool__list-wrap { animation-delay: 220ms; }
+.ik-pool > .ik-pool__toolbar   { animation-delay: 120ms; position: relative; z-index: 5; }
+.ik-pool > .ik-pool__list-wrap { animation-delay: 220ms; position: relative; z-index: 1; }
 .ik-pool > .ik-pool__paginate  { animation-delay: 320ms; }
 
 @keyframes ikPoolFadeUp {
