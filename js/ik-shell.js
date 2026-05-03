@@ -86,9 +86,12 @@
       return null;
     }
 
-    /* Role check: user_metadata.role === 'employer' */
-    var role = user.user_metadata && user.user_metadata.role;
-    if (role && role !== 'employer') {
+    /* Role check: app_metadata.role === 'employer' (defensive — null/eksik role
+       da reddedilir). SEC-1 migration `20260409130000_sec_role_to_app_metadata`
+       trigger ile signup sonrası user_metadata.role → app_metadata.role kopyalar.
+       app_metadata server-only (client-writable değil) → güvenlik için doğru kaynak. */
+    var role = user.app_metadata && user.app_metadata.role;
+    if (!role || role !== 'employer') {
       location.replace('profil.html');
       return null;
     }

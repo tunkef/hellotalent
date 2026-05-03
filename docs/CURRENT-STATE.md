@@ -28,6 +28,8 @@
 > - Dil chip facet boştu — `diller` field RPC'de string array, config `arrayItemKey:'dil'` object item bekliyordu. buildFacets defensive (object → arrayItemKey, string → item kendisi).
 > - Cache bust h3 → h4 → h5 → h6.
 >
+> L1 auth role guard defensive (3 May): ik-shell.js role check `user_metadata` → `app_metadata` (SEC-1 migration trigger sync) + null/eksik role reddedilir. code-reviewer pre-existing namespace bug yakaladı (R1 BLOCKER). app_metadata server-only güvenli kaynak.
+>
 > Phase H FULL COMPLETE (3 May): batch1 (50) + batch2 (100) + batch3 (50) = **200 test aday LIVE**.
 > - Tuna direktif uygulandı: farklı şehirler, çeşitli deneyimler, filtrelere uygun çeşitlilik.
 > - Purge komutları: `npm run seed:purge -- phase-h-batch1`, `phase-h-batch2`, `phase-h-batch3`.
