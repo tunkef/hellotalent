@@ -28,6 +28,8 @@
 > - Dil chip facet boştu — `diller` field RPC'de string array, config `arrayItemKey:'dil'` object item bekliyordu. buildFacets defensive (object → arrayItemKey, string → item kendisi).
 > - Cache bust h3 → h4 → h5 → h6.
 >
+> A8-B Task 2 lifecycle RPC LIVE (3 May): 5 SECURITY DEFINER RPC (`hr_freeze_account`, `hr_unfreeze_account`, `hr_request_deletion`, `hr_cancel_deletion`, `hr_reactivate_after_purge`). Custom flag pattern `set_config('hr.lifecycle_rpc')` ile A18+A7 freeze trigger bypass. Lone-admin guard hr_request_deletion'da. H1 column-level GRANT UPDATE (sensitive kolonlar revoke). H2 hr_cancel_deletion deletion_scheduled_at grace check (KVKK md.11). Auditor + Codex T3 %94 agreement.
+>
 > A8-B Task 1 hr_profiles lifecycle LIVE (3 May): `account_status enum` (active/frozen/pending_deletion) + 6 yeni kolon (is_active, frozen_at, deletion_scheduled_at, last_active_at, soft_deleted_at, pii_redacted) + `sync_hr_account_status_to_active()` trigger BEFORE UPDATE OF account_status + 2 partial index. A18+A7 freeze trigger'a B1 fix (account_status custom flag pattern `hr.lifecycle_rpc`). N1 audit trigger account_status branch eklendi. Backfill DISABLE/ENABLE pattern (postgres role migration runner N1 trigger çakışmasını çözer). Auditor + Codex T4 %96 agreement.
 > Lifecycle: active → pending_deletion (30g geri alma) → soft_deleted (60g PII grace) → pii_redacted = 90g toplam. Task 2 RPC (5 lifecycle fonksiyonu) sırada.
 >
