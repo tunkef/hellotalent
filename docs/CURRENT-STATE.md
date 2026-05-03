@@ -22,6 +22,19 @@
 > - makeEmptyFilters helper (clear-all + bindEmpty OCP, yeni chip eklenince auto-cover)
 > - ik-data.js: calisma/egitim/dil single-value fallback (UI single-select RPC array bekler)
 > - 8 HTML cache bust h2 → h3
+>
+> Wave 3 — chip dropdown stacking + Dil facet defensive:
+> - `.ik-pool > *` `transform: translateY(12px)` her child'a yeni stacking context veriyordu → list-wrap toolbar dropdown'u clip ediyordu. toolbar z-index:5, list-wrap z-index:1 fix.
+> - Dil chip facet boştu — `diller` field RPC'de string array, config `arrayItemKey:'dil'` object item bekliyordu. buildFacets defensive (object → arrayItemKey, string → item kendisi).
+> - Cache bust h3 → h4 → h5 → h6.
+>
+> A18+A7 KRİTİK security migration LIVE (3 May, Iyzico prereq):
+> - `hr_profiles` UPDATE policy çok permissive idi → user kendi `employer_role` 'admin' yapıp test seed candidates KVKK leak + `feature_flags->>'paid'` true yapıp Iyzico paywall bypass.
+> - Migration `20260503120000_hr_profile_role_flags_admin_guard.sql` (auditor + Codex T3 %93 agreement, multi-fix iter).
+> - 4-branch BEFORE UPDATE trigger: service_role bypass → company_id immutable → non-admin sensitive freeze → admin-vs-admin sabotaj guard.
+> - Cross-company guard (admin policy) — P3 multi-tenant safe.
+> - company_id immutability (Codex C1 BLOCKER) — admin kendi company_id değiştirip cross-company exploit yapamaz.
+> - service_role rotation flow: SQL Editor service_role tab (auth.uid() NULL → bypass).
 
 > **🔥 KRITIK retroaktif fix (1 May gece, H.B W3):** A16 commit `b87c779` production'da `20260408154040_sec_strip_employer_pii.sql` wrapper'ı override etmişti → real candidate'lar için employer Pool/Pipeline'da telefon+email leak. Migration `20260501134009` ile wrapper restore + 6-param `v_item - 'telefon' - 'email'` jsonb subtraction + 5-param inline 3-katman strip + W4 with_children column projection fix (Codex T3 %97 PASS).
 
