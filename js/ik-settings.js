@@ -148,6 +148,14 @@
     } catch (e) { return '—'; }
   }
 
+  function daysUntil(isoDate) {
+    if (!isoDate) return 0;
+    try {
+      var diff = new Date(isoDate).getTime() - Date.now();
+      return Math.max(0, Math.ceil(diff / 86400000));
+    } catch (e) { return 0; }
+  }
+
   function hydrateAccount(a) {
     if (!a) return;
     state.account = Object.assign({}, state.account, a);
@@ -155,29 +163,51 @@
     if (!els.accountBanner) return;
     els.accountBanner.textContent = '';
     els.accountBanner.className = 'ik-set-banner';
+    els.accountBanner.removeAttribute('role');
+    els.accountBanner.removeAttribute('aria-live');
 
-    if (state.account.status === 'frozen') {
-      els.accountBanner.hidden = false;
-      els.accountBanner.classList.add('ik-set-banner--frozen');
-      els.accountBanner.textContent = 'Hesabın dondurulmuş durumda. Aktifleştirmek için aşağıdan geri al.';
-      if (els.freezeBtn) els.freezeBtn.textContent = 'Hesabı geri al';
-      if (els.deleteBtn) els.deleteBtn.disabled = false;
-    } else if (state.account.status === 'pending_deletion') {
+    var status = state.account.status;
+    var isSoftDeleted = !!(state.account.soft_deleted_at);
+
+    /* soft_deleted (pii_redacted veya henüz değil) */
+    if (isSoftDeleted) {
       els.accountBanner.hidden = false;
       els.accountBanner.classList.add('ik-set-banner--deletion');
-      els.accountBanner.textContent = 'Hesabın ' + fmtDate(state.account.deletion_scheduled_at) +
-        ' tarihinde kalıcı silinecek. İptal etmek için "Silmeyi iptal et"e bas.';
-      if (els.freezeBtn) {
-        els.freezeBtn.textContent = 'Silmeyi iptal et';
-        els.freezeBtn.disabled = false;
+      els.accountBanner.setAttribute('role', 'alert');
+      if (state.account.pii_redacted) {
+        els.accountBanner.textContent = 'Hesabın kalıcı olarak silindi. Yeni hesap açmak için üye ol sayfasını ziyaret et.';
+        if (els.freezeBtn) { els.freezeBtn.textContent = 'Hesabı geri al'; els.freezeBtn.disabled = true; }
+        if (els.deleteBtn) els.deleteBtn.disabled = true;
+      } else {
+        els.accountBanner.textContent = 'Hesabın silindi — veriler henüz temizlenmedi. Geri almak için aşağıya tıkla.';
+        if (els.freezeBtn) { els.freezeBtn.textContent = 'Hesabı geri al'; els.freezeBtn.disabled = false; }
+        if (els.deleteBtn) els.deleteBtn.disabled = true;
       }
+      return;
+    }
+
+    if (status === 'frozen') {
+      els.accountBanner.hidden = false;
+      els.accountBanner.classList.add('ik-set-banner--frozen');
+      els.accountBanner.setAttribute('aria-live', 'polite');
+      els.accountBanner.textContent = 'Hesabın dondurulmuş — havuzda görünmüyorsun, mesajlar duraklatıldı.';
+      if (els.freezeBtn) { els.freezeBtn.textContent = 'Hesabı geri al'; els.freezeBtn.disabled = false; }
+      if (els.deleteBtn) els.deleteBtn.disabled = false;
+
+    } else if (status === 'pending_deletion') {
+      els.accountBanner.hidden = false;
+      els.accountBanner.classList.add('ik-set-banner--deletion');
+      els.accountBanner.setAttribute('role', 'alert');
+      var days = daysUntil(state.account.deletion_scheduled_at);
+      var dateStr = fmtDate(state.account.deletion_scheduled_at);
+      els.accountBanner.textContent = 'Hesabın ' + days + ' gün sonra silinecek (' + dateStr + ').';
+      if (els.freezeBtn) { els.freezeBtn.textContent = 'Vazgeç'; els.freezeBtn.disabled = false; }
       if (els.deleteBtn) els.deleteBtn.disabled = true;
+
     } else {
+      /* active */
       els.accountBanner.hidden = true;
-      if (els.freezeBtn) {
-        els.freezeBtn.textContent = 'Hesabı dondur';
-        els.freezeBtn.disabled = false;
-      }
+      if (els.freezeBtn) { els.freezeBtn.textContent = 'Hesabı dondur'; els.freezeBtn.disabled = false; }
       if (els.deleteBtn) els.deleteBtn.disabled = false;
     }
   }
@@ -257,31 +287,76 @@
     pendingAction = null;
   }
 
+  function refreshAccount() {
+    return IK_DATA.getAccountStatus().then(function (a) { hydrateAccount(a); });
+  }
+
   function execPending() {
     if (!pendingAction) { closeConfirm(); return; }
     var act = pendingAction;
     closeConfirm();
 
     if (act === 'freeze') {
-      IK_DATA.freezeAccount().then(function () {
-        showToast('Hesap donduruldu', 'ok');
-        return IK_DATA.getAccountStatus().then(hydrateAccount);
-      });
+      IK_DATA.freezeAccount()
+        .then(function () {
+          showToast('Hesap donduruldu', 'ok');
+          return refreshAccount();
+        })
+        .catch(function (e) {
+          setMsg(els.accountMsg, 'Hata: ' + (e && e.message), 'err');
+        });
+
     } else if (act === 'unfreeze') {
-      IK_DATA.unfreezeAccount().then(function () {
-        showToast('Hesap aktifleştirildi', 'ok');
-        return IK_DATA.getAccountStatus().then(hydrateAccount);
-      });
+      IK_DATA.unfreezeAccount()
+        .then(function () {
+          showToast('Hesap aktifleştirildi', 'ok');
+          return refreshAccount();
+        })
+        .catch(function (e) {
+          setMsg(els.accountMsg, 'Hata: ' + (e && e.message), 'err');
+        });
+
     } else if (act === 'delete') {
-      IK_DATA.deleteAccount().then(function () {
-        showToast('Hesap silme süreci başlatıldı (30 gün)', 'ok');
-        return IK_DATA.getAccountStatus().then(hydrateAccount);
-      });
+      IK_DATA.deleteAccount()
+        .then(function (res) {
+          showToast('Silme süreci başlatıldı — 30 gün içinde vazgeçebilirsin', 'ok');
+          /* RPC data içindeki güncel state'i doğrudan besle */
+          hydrateAccount(res || {});
+          return refreshAccount();
+        })
+        .catch(function (e) {
+          var msg = e && e.message;
+          if (msg && msg.indexOf('lone_admin') !== -1) {
+            setMsg(els.accountMsg, 'Şirketinde başka admin yok. Önce bir admin daha ata.', 'err');
+          } else {
+            setMsg(els.accountMsg, 'Hata: ' + msg, 'err');
+          }
+        });
+
     } else if (act === 'cancel-delete') {
-      IK_DATA.unfreezeAccount().then(function () {
-        showToast('Hesap silme iptal edildi', 'ok');
-        return IK_DATA.getAccountStatus().then(hydrateAccount);
-      });
+      IK_DATA.cancelDeletion()
+        .then(function () {
+          showToast('Hesap silme iptal edildi', 'ok');
+          return refreshAccount();
+        })
+        .catch(function (e) {
+          var msg = e && e.message;
+          if (msg && (msg.indexOf('expired') !== -1 || msg.indexOf('gecti') !== -1)) {
+            setMsg(els.accountMsg, 'Silinme süresi doldu. Geri almak için support@hellotalent.ai', 'err');
+          } else {
+            setMsg(els.accountMsg, 'Hata: ' + msg, 'err');
+          }
+        });
+
+    } else if (act === 'reactivate') {
+      IK_DATA.reactivateAfterPurge()
+        .then(function () {
+          showToast('Hesap geri alındı', 'ok');
+          return refreshAccount();
+        })
+        .catch(function (e) {
+          setMsg(els.accountMsg, 'Hata: ' + (e && e.message), 'err');
+        });
     }
   }
 
@@ -289,14 +364,24 @@
   function bindDanger() {
     if (els.freezeBtn) {
       els.freezeBtn.addEventListener('click', function () {
-        if (state.account.status === 'frozen') {
+        var status = state.account.status;
+        var isSoftDeleted = !!(state.account.soft_deleted_at);
+
+        if (isSoftDeleted && !state.account.pii_redacted) {
+          openConfirm(
+            'Hesabı geri al',
+            'Hesabın arşive alınmış. Geri almak istiyor musun? Tüm veriler korunacak.',
+            'reactivate',
+            'Geri al'
+          );
+        } else if (status === 'frozen') {
           openConfirm(
             'Hesabı geri al',
             'Hesabını aktif etmek istiyor musun? Pano erişimi tekrar açılır.',
             'unfreeze',
             'Geri al'
           );
-        } else if (state.account.status === 'pending_deletion') {
+        } else if (status === 'pending_deletion') {
           openConfirm(
             'Silmeyi iptal et',
             'Hesap silme sürecini iptal etmek istiyor musun? Hesabın aktif olur.',
@@ -317,9 +402,9 @@
       els.deleteBtn.addEventListener('click', function () {
         openConfirm(
           'Hesabı sil',
-          'Bu işlem geri alınamaz. Hesabın 30 gün dondurulur, bu süre içinde vazgeçebilirsin. 30 gün sonra tüm verilerin kalıcı silinir (KVKK md.11).',
+          '30 gün içinde vazgeçebilirsin. Bu süre sonunda hesap arşive alınır ve tüm verilerin kalıcı olarak silinir (KVKK md.11).',
           'delete',
-          'Sil'
+          'Hesabımı sil'
         );
       });
     }

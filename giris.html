@@ -385,6 +385,12 @@
   html.dark #forgot-password-overlay > div { background: #0F121F; border: 1px solid rgba(247, 246, 244, .09); }
   html.dark #forgot-email { background: rgba(247, 246, 244, .04); border-color: rgba(247, 246, 244, .1); color: var(--text); }
 
+  /* Task 6: soft-delete dialog dark mode */
+  html.dark #soft-deleted-dialog > div { background: #0F121F; border: 1px solid rgba(247, 246, 244, .09); }
+  html.dark #sdd-cancel { border-color: rgba(247, 246, 244, .15); color: var(--text); background: rgba(247, 246, 244, .04); }
+  html.dark #sdd-cancel:hover { background: rgba(247, 246, 244, .08); }
+  #sdd-reactivate:focus-visible, #sdd-cancel:focus-visible { outline: 2px solid var(--verm); outline-offset: 2px; }
+
   /* K-052 — MFA modal dark */
   html.dark .mfa-modal { background: #0F121F; border: 1px solid rgba(247, 246, 244, .09); }
   html.dark .mfa-title { color: var(--text); }
@@ -532,6 +538,19 @@
     <input type="email" id="forgot-email" class="form-input" placeholder="E-posta adresiniz" style="width:100%;margin-bottom:12px;padding:12px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:'Plus Jakarta Sans',sans-serif;font-size:var(--text-lg);">
     <button type="button" id="btn-send-reset" class="btn btn-primary" style="width:100%;padding:12px;border:none;border-radius:10px;font-family:'Plus Jakarta Sans',sans-serif;font-size:var(--text-lg);font-weight:600;background:var(--verm);color:white;cursor:pointer;">Sıfırlama Bağlantısı Gönder</button>
     <div id="forgot-msg" style="font-size:var(--text-base);margin-top:8px;display:none;text-align:center;"></div>
+  </div>
+</div>
+
+<!-- Task 6: Soft-deleted İK hesap dialog -->
+<div id="soft-deleted-dialog" role="dialog" aria-modal="true" aria-labelledby="sdd-title" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);z-index:1100;align-items:center;justify-content:center;padding:16px;">
+  <div style="background:white;border-radius:16px;max-width:420px;width:100%;padding:28px 24px;">
+    <h3 id="sdd-title" style="font-family:'Bricolage Grotesque',sans-serif;font-size:var(--text-2xl);font-weight:700;margin:0 0 12px;color:var(--navy);">Hesabın silinmiş</h3>
+    <p id="sdd-body" style="font-size:var(--text-md);color:var(--muted);line-height:1.6;margin-bottom:20px;"></p>
+    <div id="sdd-actions" style="display:flex;gap:12px;flex-wrap:wrap;">
+      <button id="sdd-reactivate" style="flex:1;min-width:120px;padding:12px;border:none;border-radius:10px;font-family:'Plus Jakarta Sans',sans-serif;font-size:var(--text-lg);font-weight:600;background:var(--verm);color:white;cursor:pointer;">Geri al</button>
+      <button id="sdd-cancel" style="flex:1;min-width:120px;padding:12px;border:1.5px solid var(--border);border-radius:10px;font-family:'Plus Jakarta Sans',sans-serif;font-size:var(--text-lg);font-weight:600;background:transparent;color:var(--text);cursor:pointer;">İptal</button>
+    </div>
+    <div id="sdd-msg" style="font-size:var(--text-sm);margin-top:10px;display:none;color:var(--verm);"></div>
   </div>
 </div>
 
@@ -732,6 +751,22 @@ async function loginIK() {
     btnText.textContent = 'Giriş Yap';
     return;
   }
+  // Task 6: soft-delete check — hr_profiles fetch
+  try {
+    var profileRes = await getSupa()
+      .from('hr_profiles')
+      .select('soft_deleted_at, pii_redacted')
+      .maybeSingle();
+    if (!profileRes.error && profileRes.data && profileRes.data.soft_deleted_at) {
+      // soft-deleted → dialog göster, redirect etme
+      btnText.textContent = 'Giriş Yap';
+      showSoftDeletedDialog(profileRes.data.pii_redacted);
+      return;
+    }
+  } catch (sdErr) {
+    console.warn('soft_delete check failed:', sdErr && sdErr.message);
+  }
+
   // Asama 84 — onboarding-aware redirect
   // hr_profiles.onboarding_completed=true → ik.html
   //                              =false → isveren-onboarding.html (resume kaldigi step)
@@ -745,6 +780,59 @@ async function loginIK() {
     console.warn('onboarding_state lookup failed:', stErr && stErr.message);
   }
   checkAndHandleMFA(employerDest, 'employer');
+}
+
+// ── SOFT-DELETE DIALOG (Task 6) ──
+function showSoftDeletedDialog(piiRedacted) {
+  var dialog = document.getElementById('soft-deleted-dialog');
+  var body = document.getElementById('sdd-body');
+  var reactivateBtn = document.getElementById('sdd-reactivate');
+  var cancelBtn = document.getElementById('sdd-cancel');
+  var msg = document.getElementById('sdd-msg');
+  if (!dialog) return;
+
+  if (piiRedacted) {
+    body.textContent = 'Hesabın kalıcı olarak silindi ve veriler temizlendi. Geri alınamaz. Yeni bir hesap açmak için üye ol sayfasını kullanabilirsin.';
+    reactivateBtn.style.display = 'none';
+    cancelBtn.textContent = 'Tamam';
+  } else {
+    var deletedAt = ''; // body static, RPC'den gün sayısı çekilebilir (A9 backlog)
+    body.textContent = 'Hesabın silinmiş durumda — veriler henüz temizlenmedi. Geri almak ister misin?';
+    reactivateBtn.style.display = '';
+    cancelBtn.textContent = 'İptal';
+  }
+
+  msg.style.display = 'none';
+  msg.textContent = '';
+  dialog.style.display = 'flex';
+  reactivateBtn.focus();
+
+  reactivateBtn.onclick = async function() {
+    reactivateBtn.disabled = true;
+    reactivateBtn.textContent = 'İşleniyor...';
+    try {
+      var res = await getSupa().rpc('hr_reactivate_after_purge');
+      if (res.error) throw res.error;
+      dialog.style.display = 'none';
+      // Onboarding-aware redirect
+      var dest = 'isveren-onboarding.html';
+      try {
+        var st = await getSupa().rpc('get_onboarding_state');
+        if (st && st.data && st.data.onboarding_completed) dest = 'ik.html';
+      } catch(e2) { /* fallback onboarding */ }
+      checkAndHandleMFA(dest, 'employer');
+    } catch(e) {
+      msg.textContent = 'Hata: ' + (e && e.message);
+      msg.style.display = 'block';
+      reactivateBtn.disabled = false;
+      reactivateBtn.textContent = 'Geri al';
+    }
+  };
+
+  cancelBtn.onclick = async function() {
+    dialog.style.display = 'none';
+    await getSupa().auth.signOut();
+  };
 }
 
 // Enter + Escape key desteği

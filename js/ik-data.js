@@ -1037,24 +1037,111 @@
       })();
     },
 
-    /* ═══════ Account lifecycle — KVKK md.11 — yapım aşamasında ═══════
-       Backend retention policy + cron purge yapılmadı (A8 backlog).
-       UI bu butonlara tıklanırsa "Yapım aşamasında" toast gösterir (Phase D2). */
+    /* ═══════ Account lifecycle — KVKK md.11 — A8 Task 5 (1 May 2026) ═══════
+       Backend RPC'ler live: hr_freeze_account / hr_unfreeze_account /
+       hr_request_deletion / hr_cancel_deletion / hr_reactivate_after_purge.
+       getAccountStatus → hr_profiles'tan account_status + deletion_scheduled_at
+       + soft_deleted_at + pii_redacted okur. */
 
     getAccountStatus: function () {
-      return Promise.resolve({ status: 'active' });
+      if (!realMode()) {
+        return Promise.resolve({ status: 'active', deletion_scheduled_at: null, soft_deleted_at: null, pii_redacted: false });
+      }
+      var supa = getSupa();
+      return (async function () {
+        try {
+          var res = await supa
+            .from('hr_profiles')
+            .select('account_status, deletion_scheduled_at, soft_deleted_at, pii_redacted')
+            .maybeSingle();
+          if (res.error) throw res.error;
+          var row = res.data || {};
+          return {
+            status: row.account_status || 'active',
+            deletion_scheduled_at: row.deletion_scheduled_at || null,
+            soft_deleted_at: row.soft_deleted_at || null,
+            pii_redacted: !!row.pii_redacted
+          };
+        } catch (e) {
+          console.error('[IK_DATA] getAccountStatus hata:', e && e.message);
+          return { status: 'active', deletion_scheduled_at: null, soft_deleted_at: null, pii_redacted: false };
+        }
+      })();
     },
 
     freezeAccount: function () {
-      return Promise.reject(new Error('account_lifecycle_pending'));
+      if (!realMode()) return Promise.reject(new Error('Oturum bulunamadı.'));
+      var supa = getSupa();
+      return (async function () {
+        try {
+          var res = await supa.rpc('hr_freeze_account');
+          if (res.error) throw res.error;
+          return res.data;
+        } catch (e) {
+          console.error('[IK_DATA] freezeAccount hata:', e && e.message);
+          throw e;
+        }
+      })();
     },
 
     unfreezeAccount: function () {
-      return Promise.reject(new Error('account_lifecycle_pending'));
+      if (!realMode()) return Promise.reject(new Error('Oturum bulunamadı.'));
+      var supa = getSupa();
+      return (async function () {
+        try {
+          var res = await supa.rpc('hr_unfreeze_account');
+          if (res.error) throw res.error;
+          return res.data;
+        } catch (e) {
+          console.error('[IK_DATA] unfreezeAccount hata:', e && e.message);
+          throw e;
+        }
+      })();
     },
 
     deleteAccount: function () {
-      return Promise.reject(new Error('account_lifecycle_pending'));
+      if (!realMode()) return Promise.reject(new Error('Oturum bulunamadı.'));
+      var supa = getSupa();
+      return (async function () {
+        try {
+          var res = await supa.rpc('hr_request_deletion');
+          if (res.error) throw res.error;
+          return res.data; /* { account_status, deletion_scheduled_at } */
+        } catch (e) {
+          console.error('[IK_DATA] deleteAccount hata:', e && e.message);
+          throw e;
+        }
+      })();
+    },
+
+    cancelDeletion: function () {
+      if (!realMode()) return Promise.reject(new Error('Oturum bulunamadı.'));
+      var supa = getSupa();
+      return (async function () {
+        try {
+          var res = await supa.rpc('hr_cancel_deletion');
+          if (res.error) throw res.error;
+          return res.data;
+        } catch (e) {
+          console.error('[IK_DATA] cancelDeletion hata:', e && e.message);
+          throw e;
+        }
+      })();
+    },
+
+    reactivateAfterPurge: function () {
+      if (!realMode()) return Promise.reject(new Error('Oturum bulunamadı.'));
+      var supa = getSupa();
+      return (async function () {
+        try {
+          var res = await supa.rpc('hr_reactivate_after_purge');
+          if (res.error) throw res.error;
+          return res.data;
+        } catch (e) {
+          console.error('[IK_DATA] reactivateAfterPurge hata:', e && e.message);
+          throw e;
+        }
+      })();
     },
 
     /* ═══════ getCompanyKpis — D2.8 dashboard aggregate ═══════
