@@ -14,6 +14,14 @@
 > - `ik-shell:ready` CustomEvent dispatch + listener + 100ms polling fallback (fireOnce guard)
 > - hr-settings.html: 4 input autocomplete spec (Pozisyon'a browser email autofill engellendi)
 > - 8 HTML cache bust 20260426asama86* → 20260503h2
+>
+> Wave 2 — eksik filter chip + segment valueLabels + clear-all OCP:
+> - FILTER_CHIPS'e Eğitim/Çalışma tipi/Dil eklendi (RPC return shape zaten dönüyordu, UI eksikti)
+> - Segment valueLabels temizlendi (`luks`/`high-street` DB ile uyumsuzdu, raw göster)
+> - buildFacets generic refactor (FILTER_CHIPS forEach + isArrayField/arrayItemKey desteği)
+> - makeEmptyFilters helper (clear-all + bindEmpty OCP, yeni chip eklenince auto-cover)
+> - ik-data.js: calisma/egitim/dil single-value fallback (UI single-select RPC array bekler)
+> - 8 HTML cache bust h2 → h3
 
 > **🔥 KRITIK retroaktif fix (1 May gece, H.B W3):** A16 commit `b87c779` production'da `20260408154040_sec_strip_employer_pii.sql` wrapper'ı override etmişti → real candidate'lar için employer Pool/Pipeline'da telefon+email leak. Migration `20260501134009` ile wrapper restore + 6-param `v_item - 'telefon' - 'email'` jsonb subtraction + 5-param inline 3-katman strip + W4 with_children column projection fix (Codex T3 %97 PASS).
 

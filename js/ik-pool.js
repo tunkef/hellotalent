@@ -26,13 +26,16 @@
     { value: 'experience', label: 'Deneyim (yıl)' }
   ];
 
-  /* Filter chip config — value=field key on candidate (Phase D2.3: field rename) */
+  /* Filter chip config — value=field key on candidate (Phase D2.3: field rename)
+     isArrayField=true → buildFacets/applyFilters dizi alanı işler (calisma_tipleri, diller). */
   var FILTER_CHIPS = [
     { key: 'city',      label: 'Şehir',       field: 'adres_il' },
     { key: 'position',  label: 'Pozisyon',    field: 'son_pozisyon' },
-    { key: 'segment',   label: 'Segment',     field: 'segment',
-      valueLabels: { luks: 'Lüks', premium: 'Premium', 'high-street': 'High-street' } },
-    { key: 'musaitlik', label: 'Müsaitlik',   field: 'musaitlik' }
+    { key: 'segment',   label: 'Segment',     field: 'segment' },
+    { key: 'musaitlik', label: 'Müsaitlik',   field: 'musaitlik' },
+    { key: 'egitim',    label: 'Eğitim',      field: 'egitim_seviye' },
+    { key: 'calisma',   label: 'Çalışma tipi', field: 'calisma_tipleri', isArrayField: true },
+    { key: 'dil',       label: 'Dil',         field: 'diller', isArrayField: true, arrayItemKey: 'dil' }
   ];
 
   /* ═══════ State ═══════ */
@@ -46,12 +49,22 @@
       position: '',
       segment: '',
       musaitlik: '',
+      egitim: '',
+      calisma: '',
+      dil: '',
       sort: 'match'
     },
     activePositionId: null,
     activePosition: null,
     facets: {} /* {city: ['İstanbul', ...], position: [...], ...} */
   };
+
+  /* OCP: yeni FILTER_CHIPS eklenince clear-all/empty-reset otomatik kapsar */
+  function makeEmptyFilters(keepSort) {
+    var f = { search: '', sort: keepSort || 'match' };
+    FILTER_CHIPS.forEach(function (cfg) { f[cfg.key] = ''; });
+    return f;
+  }
 
   /* ═══════ DOM cache ═══════ */
   var dom = {};
@@ -139,15 +152,30 @@
     while (el && el.firstChild) el.removeChild(el.firstChild);
   }
 
-  /* ═══════ Facets (filter dropdown options) ═══════ */
+  /* ═══════ Facets (filter dropdown options) ═══════
+     FILTER_CHIPS config'inden generic facet builder. Array field'lar için
+     isArrayField=true; her array item ayrı facet entry üretir. */
   function buildFacets(candidates) {
-    var f = { city: {}, position: {}, segment: {}, musaitlik: {} };
+    var f = {};
+    FILTER_CHIPS.forEach(function (cfg) { f[cfg.key] = {}; });
+
     candidates.forEach(function (c) {
-      if (c.adres_il)     f.city[c.adres_il]           = (f.city[c.adres_il] || 0) + 1;
-      if (c.son_pozisyon) f.position[c.son_pozisyon]   = (f.position[c.son_pozisyon] || 0) + 1;
-      if (c.segment)      f.segment[c.segment]         = (f.segment[c.segment] || 0) + 1;
-      if (c.musaitlik)    f.musaitlik[c.musaitlik]     = (f.musaitlik[c.musaitlik] || 0) + 1;
+      FILTER_CHIPS.forEach(function (cfg) {
+        var raw = c[cfg.field];
+        if (raw == null || raw === '') return;
+        if (cfg.isArrayField) {
+          if (!Array.isArray(raw)) return;
+          raw.forEach(function (item) {
+            var v = cfg.arrayItemKey ? (item && item[cfg.arrayItemKey]) : item;
+            if (v == null || v === '') return;
+            f[cfg.key][v] = (f[cfg.key][v] || 0) + 1;
+          });
+        } else {
+          f[cfg.key][raw] = (f[cfg.key][raw] || 0) + 1;
+        }
+      });
     });
+
     var out = {};
     Object.keys(f).forEach(function (k) {
       out[k] = Object.keys(f[k]).map(function (v) {
@@ -712,9 +740,7 @@
           return;
         }
         if (e.target.closest('[data-pill-clear-all]')) {
-          state.filters = {
-            search: '', city: '', position: '', segment: '', musaitlik: '', sort: state.filters.sort
-          };
+          state.filters = makeEmptyFilters(state.filters.sort);
           if (dom.search) dom.search.value = '';
           if (dom.searchClear) dom.searchClear.hidden = true;
           applyFilters();
@@ -734,9 +760,7 @@
   function bindEmpty() {
     if (dom.emptyReset) {
       dom.emptyReset.addEventListener('click', function () {
-        state.filters = {
-          search: '', city: '', position: '', segment: '', musaitlik: '', sort: 'match'
-        };
+        state.filters = makeEmptyFilters('match');
         if (dom.search) dom.search.value = '';
         if (dom.searchClear) dom.searchClear.hidden = true;
         applyFilters();

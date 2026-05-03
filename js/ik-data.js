@@ -171,8 +171,11 @@
       if (Array.isArray(filters.musait)   && filters.musait.length)    pFilters.musait   = filters.musait;
       else if (filters.musaitlik) pFilters.musait = [filters.musaitlik];
       if (Array.isArray(filters.calisma)  && filters.calisma.length)   pFilters.calisma  = filters.calisma;
+      else if (filters.calisma) pFilters.calisma = [filters.calisma];
       if (Array.isArray(filters.egitim)   && filters.egitim.length)    pFilters.egitim   = filters.egitim;
+      else if (filters.egitim) pFilters.egitim = [filters.egitim];
       if (Array.isArray(filters.dil)      && filters.dil.length)       pFilters.dil      = filters.dil;
+      else if (filters.dil) pFilters.dil = [filters.dil];
       /* A16: single candidate lookup filter — search_rpc_candidate_id_filter.sql */
       if (filters.candidate_id != null) pFilters.candidate_id = filters.candidate_id;
 
