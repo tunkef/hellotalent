@@ -922,7 +922,27 @@
     bindPaginate();
     bindList();
     bindBulk();
-    loadData();
+
+    /* IK_SHELL.ctx hazırsa hemen yükle, değilse ready event + polling fallback.
+       fireOnce guard hem event hem poll tarafından tek loadData() garanti eder. */
+    if (window.IK_SHELL && window.IK_SHELL.ctx) {
+      loadData();
+    } else {
+      var fired = false;
+      var poll = null;
+      function fireOnce() {
+        if (fired) return;
+        fired = true;
+        if (poll) clearInterval(poll);
+        loadData();
+      }
+      document.addEventListener('ik-shell:ready', fireOnce, { once: true });
+      var tries = 0;
+      poll = setInterval(function () {
+        if (window.IK_SHELL && window.IK_SHELL.ctx) fireOnce();
+        else if (++tries > 30) fireOnce(); /* 3sn timeout — son çare empty state */
+      }, 100);
+    }
   }
 
   if (document.readyState === 'loading') {

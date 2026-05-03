@@ -96,7 +96,7 @@
     /* Onboarding completed kontrol */
     try {
       var profRes = await supa.from('hr_profiles')
-        .select('id, onboarding_completed, ad, soyad, company_id, employer_role')
+        .select('id, onboarding_completed, ad, soyad, telefon, sirket, company_id, employer_role')
         .eq('id', user.id)
         .maybeSingle();
 
@@ -314,6 +314,9 @@
 
       window.IK_SHELL.ctx = ctx;
       document.documentElement.setAttribute('data-ik-shell-ready', '1');
+      try {
+        document.dispatchEvent(new CustomEvent('ik-shell:ready', { detail: ctx }));
+      } catch (e) { /* IE fallback yok, modern browser only */ }
       return ctx;
     },
     ctx: null,

@@ -24,13 +24,13 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 
-<link rel="stylesheet" href="css/tokens.css?v=20260426asama86d">
-<link rel="stylesheet" href="css/components.css?v=20260426asama86d">
-<link rel="stylesheet" href="css/ik-shell.css?v=20260426asama86d">
-<link rel="stylesheet" href="css/panels/ik-settings.css?v=20260426asama86d">
+<link rel="stylesheet" href="css/tokens.css?v=20260503h2">
+<link rel="stylesheet" href="css/components.css?v=20260503h2">
+<link rel="stylesheet" href="css/ik-shell.css?v=20260503h2">
+<link rel="stylesheet" href="css/panels/ik-settings.css?v=20260503h2">
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="shared.js?v=20260426asama86d"></script>
+<script src="shared.js?v=20260503h2"></script>
 </head>
 <body class="ik-body" data-ik-page="settings">
 
@@ -191,19 +191,19 @@
             <div class="ik-set-grid">
               <label class="ik-set-field">
                 <span class="ik-set-field__label">Ad soyad</span>
-                <input type="text" id="ik-set-fullname" class="ik-set-field__input" placeholder="Ali Yılmaz" maxlength="100">
+                <input type="text" id="ik-set-fullname" class="ik-set-field__input" placeholder="Ali Yılmaz" maxlength="100" autocomplete="name">
               </label>
               <label class="ik-set-field">
                 <span class="ik-set-field__label">E-posta</span>
-                <input type="email" id="ik-set-email" class="ik-set-field__input" placeholder="ik@sirket.com" maxlength="120" disabled>
+                <input type="email" id="ik-set-email" class="ik-set-field__input" placeholder="ik@sirket.com" maxlength="120" disabled autocomplete="email">
               </label>
               <label class="ik-set-field">
                 <span class="ik-set-field__label">Telefon</span>
-                <input type="tel" id="ik-set-phone" class="ik-set-field__input" placeholder="0212 555 11 22" maxlength="30">
+                <input type="tel" id="ik-set-phone" class="ik-set-field__input" placeholder="0212 555 11 22" maxlength="30" autocomplete="tel">
               </label>
               <label class="ik-set-field">
                 <span class="ik-set-field__label">Pozisyon</span>
-                <input type="text" id="ik-set-role" class="ik-set-field__input" placeholder="İK Müdürü" maxlength="80">
+                <input type="text" id="ik-set-role" class="ik-set-field__input" placeholder="İK Müdürü" maxlength="80" autocomplete="organization-title">
               </label>
             </div>
           </div>
@@ -403,8 +403,8 @@
 <!-- Toast -->
 <div class="ik-toast" id="ik-toast" role="status" aria-live="polite" aria-atomic="true"></div>
 
-<script src="js/ik-shell.js?v=20260426asama86d"></script>
-<script src="js/ik-data.js?v=20260426asama86d"></script>
-<script src="js/ik-settings.js?v=20260426asama86d"></script>
+<script src="js/ik-shell.js?v=20260503h2"></script>
+<script src="js/ik-data.js?v=20260503h2"></script>
+<script src="js/ik-settings.js?v=20260503h2"></script>
 </body>
 </html>

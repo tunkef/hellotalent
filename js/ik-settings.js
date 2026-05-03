@@ -128,8 +128,8 @@
       els.email.value = user.email || '';
       if (!user.email) els.email.placeholder = 'Email yüklenemedi';
     }
-    if (els.phone) els.phone.value = hr.phone || '';
-    if (els.role) els.role.value = hr.title || hr.position || '';
+    if (els.phone) els.phone.value = hr.telefon || '';
+    if (els.role) els.role.value = ''; /* hr_profiles'ta unvan/title kolonu yok — placeholder göster */
   }
 
   function hydrateSettings(s) {
@@ -385,8 +385,12 @@
     bindDanger();
     bindFooter();
 
-    /* Hydrate */
+    /* Hydrate hemen — sonra IK_SHELL ctx hazır olunca tekrar */
     hydrateUserInfo();
+    if (!(window.IK_SHELL && window.IK_SHELL.ctx)) {
+      document.addEventListener('ik-shell:ready', hydrateUserInfo, { once: true });
+    }
+
     Promise.all([IK_DATA.getSettings(), IK_DATA.getAccountStatus()])
       .then(function (results) {
         hydrateSettings(results[0]);

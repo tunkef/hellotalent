@@ -1,5 +1,19 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 1 Mayis 2026 gece (H.B + admin bypass done) | PHASE A+C+C.5+D STEP 1+2 + A11 RPC + D2 (1-10) + denetim + bulgu fix + A14 + Phase F + A16 + H2 + **H.B test seed sistemi LIVE + admin bypass + 50 aday batch_id phase-h-batch1** — Iyzico prereq DONE, Tuna manuel UAT bekliyor → 100/200 aşamalı seed sonraki
+> Son guncelleme: 3 Mayis 2026 (Faz UAT FIX) | PHASE A+C+C.5+D STEP 1+2 + A11 RPC + D2 (1-10) + denetim + bulgu fix + A14 + Phase F + A16 + H2 + **H.B test seed sistemi LIVE + admin bypass + 50 aday batch_id phase-h-batch1** + **3 May UAT fix dalgası: tkefeli row K032 verisinden temizlendi (DB UPDATE + script guard) + ik-shell/settings/pool ctx race fix + cache bust h2** — Iyzico prereq DONE, batch2 (100 aday) seed bekliyor.
+
+> ## 3 May UAT Fix Özet
+> 
+> Bug 1 — `seed-test-employer.mjs` `tkefeli@peoplein.com.tr` prod hesabını ezmişti:
+> - DB UPDATE: hr_profiles.ad/soyad/sirket/telefon + auth_user_metadata.full_name + companies.id=64 rename ('Peoplein Test' → 'Peoplein')
+> - Script guard: `refuseEmail([kefelituna@gmail.com, tkefeli@peoplein.com.tr])` — regression önleme
+>
+> Bug 2 — Schema mismatch: `hr_profiles` baseline'da `full_name`/`plan` yok (ad+soyad var, plan subscriptions tablosunda).
+> - JS 4 yerde full_name → ad+soyad join refactor
+>
+> Bug 3 — IK_SHELL.ctx async race: ik-settings/ik-pool init'te ctx beklemiyordu → boş hydrate + havuz boş.
+> - `ik-shell:ready` CustomEvent dispatch + listener + 100ms polling fallback (fireOnce guard)
+> - hr-settings.html: 4 input autocomplete spec (Pozisyon'a browser email autofill engellendi)
+> - 8 HTML cache bust 20260426asama86* → 20260503h2
 
 > **🔥 KRITIK retroaktif fix (1 May gece, H.B W3):** A16 commit `b87c779` production'da `20260408154040_sec_strip_employer_pii.sql` wrapper'ı override etmişti → real candidate'lar için employer Pool/Pipeline'da telefon+email leak. Migration `20260501134009` ile wrapper restore + 6-param `v_item - 'telefon' - 'email'` jsonb subtraction + 5-param inline 3-katman strip + W4 with_children column projection fix (Codex T3 %97 PASS).
 
