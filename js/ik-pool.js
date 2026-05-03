@@ -166,7 +166,14 @@
         if (cfg.isArrayField) {
           if (!Array.isArray(raw)) return;
           raw.forEach(function (item) {
-            var v = cfg.arrayItemKey ? (item && item[cfg.arrayItemKey]) : item;
+            /* Defensive: object item ise arrayItemKey ile çek, string ise item kendisi.
+               diller array shape değişebilir (string[] vs [{dil,seviye}]). */
+            var v;
+            if (cfg.arrayItemKey && item && typeof item === 'object') {
+              v = item[cfg.arrayItemKey];
+            } else {
+              v = item;
+            }
             if (v == null || v === '') return;
             f[cfg.key][v] = (f[cfg.key][v] || 0) + 1;
           });
