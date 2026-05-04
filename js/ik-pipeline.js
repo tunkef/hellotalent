@@ -822,7 +822,9 @@
     var len = _posFormDom.fieldAcik.value.length;
     _posFormDom.counter.textContent = len + ' / 800';
     _posFormDom.counter.classList.remove('is-warning', 'is-over');
-    if (len > 800) _posFormDom.counter.classList.add('is-over');
+    /* A24-CTR-01 fix (uat-tester 2026-05-04): maxlength=800 → 801 imkansız.
+       Eşik 700'e düşürüldü → kullanıcı sınıra yaklaştığında uyarı alır. */
+    if (len >= 700) _posFormDom.counter.classList.add('is-over');
     else if (len > 700) _posFormDom.counter.classList.add('is-warning');
   }
 
