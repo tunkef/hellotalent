@@ -811,9 +811,33 @@
     });
   }
 
+  /* ctx race condition fix (eb8ad40 pattern, 2026-05-04 cache h7→a23h):
+     IK_SHELL.ctx authGate async olduğu için DOMContentLoaded'dan sonra hazır.
+     init() ctx hazır değilken çağrılırsa realMode()=false → getCandidate null. */
+  function bootstrap() {
+    if (window.IK_SHELL && window.IK_SHELL.ctx) {
+      init();
+      return;
+    }
+    var fired = false;
+    var poll = null;
+    function fireOnce() {
+      if (fired) return;
+      fired = true;
+      if (poll) clearInterval(poll);
+      init();
+    }
+    document.addEventListener('ik-shell:ready', fireOnce, { once: true });
+    var tries = 0;
+    poll = setInterval(function () {
+      if (window.IK_SHELL && window.IK_SHELL.ctx) fireOnce();
+      else if (++tries > 30) fireOnce(); /* 3s timeout fallback */
+    }, 100);
+  }
+
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
+    document.addEventListener('DOMContentLoaded', bootstrap);
   } else {
-    init();
+    bootstrap();
   }
 })();
