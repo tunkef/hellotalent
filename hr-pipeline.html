@@ -24,13 +24,13 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 
-<link rel="stylesheet" href="css/tokens.css?v=20260504a23h3">
-<link rel="stylesheet" href="css/components.css?v=20260504a23h3">
-<link rel="stylesheet" href="css/ik-shell.css?v=20260504a23h3">
-<link rel="stylesheet" href="css/panels/ik-pipeline.css?v=20260504a23h3">
+<link rel="stylesheet" href="css/tokens.css?v=20260504a23h4">
+<link rel="stylesheet" href="css/components.css?v=20260504a23h4">
+<link rel="stylesheet" href="css/ik-shell.css?v=20260504a23h4">
+<link rel="stylesheet" href="css/panels/ik-pipeline.css?v=20260504a23h4">
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="shared.js?v=20260504a23h3"></script>
+<script src="shared.js?v=20260504a23h4"></script>
 </head>
 <body class="ik-body" data-ik-page="pipeline">
 
@@ -195,6 +195,62 @@
             </button>
             <div class="ik-position-switcher__menu" data-ik-position-menu role="listbox" aria-label="Pozisyon seç"></div>
           </div>
+
+          <button type="button" class="ik-pipeline__new-pos-btn" data-ik-new-position aria-label="Yeni pozisyon oluştur"
+                  style="display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:8px;background:var(--verm,#C94E28);color:#fff;border:none;font-weight:600;cursor:pointer;font-size:14px;margin-left:8px;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Yeni pozisyon
+          </button>
+        </div>
+
+        <!-- Yeni Pozisyon Modal -->
+        <div class="ik-pos-modal" data-ik-pos-modal hidden role="dialog" aria-modal="true" aria-labelledby="ik-pos-modal-title"
+             style="position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:9999;display:none;align-items:center;justify-content:center;padding:20px;">
+          <div class="ik-pos-modal__panel" style="background:var(--bg,#fff);max-width:520px;width:100%;border-radius:14px;padding:28px;box-shadow:0 20px 60px rgba(0,0,0,0.4);">
+            <h2 id="ik-pos-modal-title" style="margin:0 0 8px;font-family:'Bricolage Grotesque',serif;font-size:22px;color:var(--navy,#1E2D5E);">Yeni pozisyon</h2>
+            <p style="margin:0 0 20px;color:var(--muted,#6B7280);font-size:14px;">Pipeline ve aday eşleşmesi için zorunlu.</p>
+            <form data-ik-pos-form>
+              <div style="margin-bottom:12px;">
+                <label for="ik-pos-ad" style="display:block;margin-bottom:4px;font-weight:500;font-size:14px;">Pozisyon adı *</label>
+                <input id="ik-pos-ad" name="ad" type="text" required maxlength="100" placeholder="Örn: Mağaza Müdürü"
+                       style="width:100%;padding:10px 12px;border:1px solid var(--border,#E5E2DD);border-radius:8px;font-size:14px;font-family:inherit;">
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+                <div>
+                  <label for="ik-pos-sehir" style="display:block;margin-bottom:4px;font-weight:500;font-size:14px;">Şehir</label>
+                  <input id="ik-pos-sehir" name="sehir" type="text" maxlength="60" placeholder="İstanbul"
+                         style="width:100%;padding:10px 12px;border:1px solid var(--border,#E5E2DD);border-radius:8px;font-size:14px;font-family:inherit;">
+                </div>
+                <div>
+                  <label for="ik-pos-seg" style="display:block;margin-bottom:4px;font-weight:500;font-size:14px;">Segment</label>
+                  <input id="ik-pos-seg" name="seg" type="text" maxlength="60" placeholder="Lüks / Premium / vb."
+                         style="width:100%;padding:10px 12px;border:1px solid var(--border,#E5E2DD);border-radius:8px;font-size:14px;font-family:inherit;">
+                </div>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+                <div>
+                  <label for="ik-pos-exp" style="display:block;margin-bottom:4px;font-weight:500;font-size:14px;">Deneyim</label>
+                  <input id="ik-pos-exp" name="exp" type="text" maxlength="30" placeholder="3-5 yıl, 5+ yıl"
+                         style="width:100%;padding:10px 12px;border:1px solid var(--border,#E5E2DD);border-radius:8px;font-size:14px;font-family:inherit;">
+                </div>
+                <div>
+                  <label for="ik-pos-maas" style="display:block;margin-bottom:4px;font-weight:500;font-size:14px;">Maaş aralığı</label>
+                  <input id="ik-pos-maas" name="maas" type="text" maxlength="40" placeholder="opsiyonel"
+                         style="width:100%;padding:10px 12px;border:1px solid var(--border,#E5E2DD);border-radius:8px;font-size:14px;font-family:inherit;">
+                </div>
+              </div>
+              <div style="margin-bottom:16px;">
+                <label for="ik-pos-aciklama" style="display:block;margin-bottom:4px;font-weight:500;font-size:14px;">Açıklama</label>
+                <textarea id="ik-pos-aciklama" name="aciklama" maxlength="500" rows="3" placeholder="Kısa pozisyon açıklaması (opsiyonel)"
+                          style="width:100%;padding:10px 12px;border:1px solid var(--border,#E5E2DD);border-radius:8px;font-size:14px;font-family:inherit;resize:vertical;"></textarea>
+              </div>
+              <div data-ik-pos-error role="alert" hidden style="margin-bottom:12px;padding:8px 12px;border-radius:6px;background:var(--color-red-soft,#FEE2E2);color:var(--color-red,#DC2626);font-size:14px;"></div>
+              <div style="display:flex;gap:10px;justify-content:flex-end;">
+                <button type="button" data-ik-pos-cancel style="padding:10px 18px;border-radius:8px;border:1px solid var(--border,#E5E2DD);background:transparent;color:var(--navy,#1E2D5E);font-weight:500;cursor:pointer;font-family:inherit;font-size:14px;">Vazgeç</button>
+                <button type="submit" data-ik-pos-submit style="padding:10px 18px;border-radius:8px;background:var(--verm,#C94E28);color:#fff;border:none;font-weight:600;cursor:pointer;font-family:inherit;font-size:14px;">Oluştur</button>
+              </div>
+            </form>
+          </div>
         </div>
 
         <div class="ik-pipeline__summary" data-ik-pipeline-summary></div>
@@ -265,8 +321,8 @@
   </div>
 </nav>
 
-<script src="js/ik-shell.js?v=20260504a23h3"></script>
-<script src="js/ik-data.js?v=20260504a23h3"></script>
-<script src="js/ik-pipeline.js?v=20260504a23h3"></script>
+<script src="js/ik-shell.js?v=20260504a23h4"></script>
+<script src="js/ik-data.js?v=20260504a23h4"></script>
+<script src="js/ik-pipeline.js?v=20260504a23h4"></script>
 </body>
 </html>

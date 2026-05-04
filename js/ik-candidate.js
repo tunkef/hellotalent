@@ -739,10 +739,15 @@
         var posId = (window.IK_SHELL && IK_SHELL.getActivePositionId)
           ? IK_SHELL.getActivePositionId() : null;
         if (!posId) {
-          showToast('Önce pipeline\'da bir pozisyon seç', 'error');
+          showToast('Önce pipeline sayfasından bir pozisyon oluştur', 'error');
           return;
         }
         IK_DATA.addToPipeline(state.candidate.id, posId).then(function (res) {
+          /* Fix 2026-05-04: ok:false (RLS reject) → success toast bug'ı */
+          if (!res || res.ok === false) {
+            showToast('Eklenemedi: ' + (res && res.error ? res.error : 'pozisyon erişimi yok'), 'error');
+            return;
+          }
           if (res.duplicate) showToast('Aday zaten pipeline\'da', 'error');
           else showToast('Pipeline\'a eklendi', 'success');
         });
