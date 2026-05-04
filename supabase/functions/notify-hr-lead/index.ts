@@ -208,18 +208,32 @@ async function sendEmail(event: EventKind, p: HrProfileRow): Promise<void> {
     }),
   });
   if (!resp.ok) {
-    const errBody = await resp.text();
-    console.error("Resend error:", resp.status, errBody);
+    /* A1 fix (auditor 2026-05-04): errBody PII içerebilir (to/from email).
+       Sadece status logla. */
+    console.error("Resend error status:", resp.status);
     throw new Error(`Resend delivery failed: ${resp.status}`);
   }
 }
 
-const CORS_HEADERS = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type, Authorization, apikey, X-Client-Info",
-  "Access-Control-Max-Age": "86400",
-};
+/* A6 fix (auditor 2026-05-04): origin allowlist (wildcard kaldırıldı) */
+const ALLOWED_ORIGINS = new Set([
+  "https://hellotalent.ai",
+  "https://www.hellotalent.ai",
+  "http://localhost:5500",
+  "http://localhost:3000",
+  "http://127.0.0.1:5500",
+]);
+
+function corsHeaders(origin: string | null): Record<string, string> {
+  const allowed = origin && ALLOWED_ORIGINS.has(origin) ? origin : "https://hellotalent.ai";
+  return {
+    "Access-Control-Allow-Origin": allowed,
+    "Vary": "Origin",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization, apikey, X-Client-Info",
+    "Access-Control-Max-Age": "86400",
+  };
+}
 
 // A23 Codex BLOCKER fix (2026-05-04): JWT verify + sub == user_id eşleşmesi.
 // Eski: anon key + body.user_id trust → spoof riski (anyone POST /functions/v1/notify-hr-lead).
@@ -254,11 +268,13 @@ async function verifyAuthHeader(
 }
 
 Deno.serve(async (req: Request) => {
+  const cors = corsHeaders(req.headers.get("Origin"));  /* A6: per-request origin */
+
   if (req.method === "OPTIONS") {
-    return new Response(null, { status: 204, headers: CORS_HEADERS });
+    return new Response(null, { status: 204, headers: cors });
   }
   if (req.method !== "POST") {
-    return new Response("Method Not Allowed", { status: 405, headers: CORS_HEADERS });
+    return new Response("Method Not Allowed", { status: 405, headers: cors });
   }
 
   try {
@@ -267,7 +283,7 @@ Deno.serve(async (req: Request) => {
     if (!validation.ok) {
       return new Response(
         JSON.stringify({ error: validation.error }),
-        { status: 400, headers: { "Content-Type": "application/json", ...CORS_HEADERS } },
+        { status: 400, headers: { "Content-Type": "application/json", ...cors } },
       );
     }
     const { event, user_id } = validation.value;
@@ -278,7 +294,7 @@ Deno.serve(async (req: Request) => {
       console.warn("notify-hr-lead auth fail:", authCheck.reason);
       return new Response(
         JSON.stringify({ error: "unauthorized" }),
-        { status: authCheck.status, headers: { "Content-Type": "application/json", ...CORS_HEADERS } },
+        { status: authCheck.status, headers: { "Content-Type": "application/json", ...cors } },
       );
     }
 
@@ -295,16 +311,16 @@ Deno.serve(async (req: Request) => {
       .maybeSingle();
 
     if (fetchErr) {
-      console.error("hr_profiles fetch error:", fetchErr.message);
+      console.error("hr_profiles fetch error code:", fetchErr.code || "unknown"); /* A1: PII sanitize */
       return new Response(
         JSON.stringify({ error: "lookup_failed" }),
-        { status: 500, headers: { "Content-Type": "application/json", ...CORS_HEADERS } },
+        { status: 500, headers: { "Content-Type": "application/json", ...cors } },
       );
     }
     if (!row) {
       return new Response(
         JSON.stringify({ error: "profile_not_found" }),
-        { status: 404, headers: { "Content-Type": "application/json", ...CORS_HEADERS } },
+        { status: 404, headers: { "Content-Type": "application/json", ...cors } },
       );
     }
 
@@ -312,25 +328,25 @@ Deno.serve(async (req: Request) => {
     try {
       await sendEmail(event, row as HrProfileRow);
     } catch (emailErr) {
-      console.error("email send failed:", (emailErr as Error).message);
+      console.error("email send failed code:", (emailErr as Error & { code?: string }).code || "unknown"); /* A1 */
       emailStatus = "failed";
     }
 
+    /* A6 fix: response'tan user_id kaldırıldı (PII minimization). */
     return new Response(
       JSON.stringify({
         ok: true,
         event,
-        user_id,
         hot: isHotLead(row as HrProfileRow),
         email_status: emailStatus,
       }),
-      { headers: { "Content-Type": "application/json", ...CORS_HEADERS } },
+      { headers: { "Content-Type": "application/json", ...cors } },
     );
   } catch (err) {
-    console.error("notify-hr-lead error:", (err as Error).message);
+    console.error("notify-hr-lead error:", (err as Error).name); /* A1: name only, no message */
     return new Response(
       JSON.stringify({ error: "internal" }),
-      { status: 500, headers: { "Content-Type": "application/json", ...CORS_HEADERS } },
+      { status: 500, headers: { "Content-Type": "application/json", ...cors } },
     );
   }
 });

@@ -1,7 +1,18 @@
 # hellotalent.ai — Current State
 > Son guncelleme: **4 Mayis 2026** | A23 paket LIVE — corporate email defense-in-depth + BUG 2 hotfix.
 
-## 4 May A23 — 7 migration + Edge Function + frontend (T3, %100 Codex agreement)
+## 4 May A23 — 8 migration + Edge Function (rev2) + frontend (T3, %100 Codex agreement + post-deploy hotfix)
+
+**Post-deploy hotfix (auditor + data-analyst):**
+- A2: visible CTE'den telefon/email kolonları kaldırıldı (PII bellek minimization)
+- A5: rejected access (lifecycle/non_corporate) audit log INSERT (KVKK md.7 tam coverage)
+- A3: employer_pool_query_log RLS exception comment (email_outbox pattern uyumlu)
+- F3: "Istanbul" → "İstanbul" data quality fix (K032 seed test user)
+- A1: notify-hr-lead errBody/fetchErr.message → status/code only (PII log sanitize)
+- A6: CORS wildcard → origin allowlist + response'tan user_id kaldırıldı
+- F1 (data-analyst): ik-pool.js initial load'da double RPC fetch ortadan kalktı (positionId yokken applyFilters skip)
+
+
 
 **İki kritik bug + sızıntı kapatıldı:**
 

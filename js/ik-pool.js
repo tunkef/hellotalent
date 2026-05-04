@@ -615,7 +615,19 @@
       state.activePositionId = posId;
       state.activePosition = positions.find(function (p) { return p.id === posId; }) || null;
 
-      return applyFilters();
+      /* F1 fix (data-analyst 2026-05-04): initial load'da çift RPC YOK.
+         allCandidates zaten RPC'den döndü; activePositionId değişmemişse
+         tekrar searchCandidates çağırma. Sadece position değişikliği veya
+         filter set edildiğinde applyFilters çağrılır. */
+      if (state.activePositionId) {
+        /* position seçildiyse pozisyon-aware skoring için yeni call gerekli */
+        return applyFilters();
+      }
+      state.candidates = allCandidates;
+      state.loaded = Math.min(PAGE_SIZE, allCandidates.length);
+      renderFilterChips();
+      renderSortMenu();
+      renderList();
     }).catch(function (e) {
       console.warn('[ik-pool] load fail:', e && e.message);
       state.candidates = [];
