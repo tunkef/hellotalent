@@ -508,6 +508,9 @@ BEGIN
       p.musaitlik,
       p.calisma_tipleri,
       p.maas_beklenti,
+      p.travel_willingness,         -- W4 FIX restore (2026-05-04 hotfix): with_prefs'ten gelen, with_children eksikti → 'column does not exist' RPC error
+      p.shift_flexibility,          -- W4 FIX restore
+      p.notice_period,              -- W4 FIX restore
       p.segment,
       p.egitim_seviye,
       p.dil_array,
@@ -563,8 +566,11 @@ BEGIN
           'id', wc.id,
           'full_name', wc.full_name,
           'adres_il', wc.adres_il,
-          'telefon', wc.telefon,
-          'email', wc.email,
+          -- PII strip (mig 20260408154040 restore, Codex T3 BLOCKER 2026-05-04):
+          -- telefon ve email employer'a açık DÖNDÜRÜLMEZ (KVKK md.4 minimum
+          -- gereklilik). Aday detay sayfası ayrı RPC ile mask döner.
+          -- 'telefon', wc.telefon,
+          -- 'email', wc.email,
           'is_actively_looking', wc.is_actively_looking,
           'updated_at', wc.updated_at,
           'son_pozisyon', wc.son_pozisyon,
@@ -925,6 +931,9 @@ BEGIN
       p.musaitlik,
       p.calisma_tipleri,
       p.maas_beklenti,
+      p.travel_willingness,         -- W4 FIX restore (2026-05-04 hotfix): with_prefs'ten gelen, with_children eksikti → 'column does not exist' RPC error
+      p.shift_flexibility,          -- W4 FIX restore
+      p.notice_period,              -- W4 FIX restore
       p.segment,
       p.egitim_seviye,
       p.dil_array,
@@ -980,8 +989,11 @@ BEGIN
           'id', wc.id,
           'full_name', wc.full_name,
           'adres_il', wc.adres_il,
-          'telefon', wc.telefon,
-          'email', wc.email,
+          -- PII strip (mig 20260408154040 restore, Codex T3 BLOCKER 2026-05-04):
+          -- telefon ve email employer'a açık DÖNDÜRÜLMEZ (KVKK md.4 minimum
+          -- gereklilik). Aday detay sayfası ayrı RPC ile mask döner.
+          -- 'telefon', wc.telefon,
+          -- 'email', wc.email,
           'is_actively_looking', wc.is_actively_looking,
           'updated_at', wc.updated_at,
           'son_pozisyon', wc.son_pozisyon,

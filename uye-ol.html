@@ -656,8 +656,8 @@
       <div class="field">
         <label for="k-email">Kurumsal E-posta <span style="color:var(--navy);">*</span></label>
         <input type="email" id="k-email" placeholder="isim@şirket.com" required autocomplete="email">
-        <div id="k-email-warning" style="display:none;font-size:var(--text-sm);margin-top:4px;padding:6px 10px;border-radius:6px;background:var(--warning-soft);color:var(--warning);border:1px solid #FDE68A;">
-          Kişisel e-posta adresi tespit edildi. Kurumsal e-posta kullanmanızı öneriyoruz.
+        <div id="k-email-warning" role="alert" style="display:none;font-size:var(--text-sm);margin-top:4px;padding:6px 10px;border-radius:6px;background:var(--color-red-soft, #FEE2E2);color:var(--color-red, #DC2626);border:1px solid var(--color-red-border, #FCA5A5);">
+          Kurumsal hesap için şirket domain'li e-posta gerekli. Kişisel sağlayıcılar (gmail, hotmail, yahoo vb.) kabul edilmiyor.
         </div>
       </div>
       <div class="field">
@@ -874,6 +874,37 @@ setupMatch('aday-sifre', 'aday-sifre-tekrar', 'aday-match-hint');
 setupMatch('k-sifre', 'k-sifre-tekrar', 'k-match-hint');
 
 /* 7. Form validation — K-060: ad + soyad ayrı field */
+
+/* A23 (2026-05-04) — Free provider email guard.
+   Server-side defense: hr_profiles BEFORE INSERT trigger
+   (mig 20260504180654_hr_profiles_personal_email_guard.sql).
+   Bu liste server liste ile aynı tutulmalı — değişirse senkronize et. */
+var FREE_EMAIL_DOMAINS = [
+  'gmail.com','googlemail.com',
+  'hotmail.com','hotmail.co.uk','hotmail.fr','hotmail.de',
+  'outlook.com','outlook.com.tr','live.com','live.com.tr','msn.com',
+  'yahoo.com','yahoo.co.uk','yahoo.fr','yahoo.de','yahoo.com.tr','ymail.com','rocketmail.com',
+  'yandex.com','yandex.ru','yandex.com.tr','mail.ru',
+  'icloud.com','me.com','mac.com',
+  'protonmail.com','proton.me','pm.me','tutanota.com','tutanota.de','tuta.io','duck.com','hey.com',
+  'mail.com','aol.com','gmx.com','gmx.net','gmx.de','zoho.com','zohomail.com','fastmail.com',
+  'mynet.com','superonline.com','ttmail.com'
+];
+function isFreeProviderEmail(email) {
+  if (!email || email.indexOf('@') < 0) return false;
+  var domain = email.split('@')[1].toLowerCase().trim();
+  /* Q2 fix (Codex 2026-05-04 + re-review): IDN homograph + Punycode guard.
+     Non-ASCII karakter VE xn--* prefix reject (kişisel-email kategorisinde). */
+  if (/[^a-z0-9.\-]/.test(domain)) return true;
+  if (domain.indexOf('xn--') === 0 || domain.indexOf('.xn--') >= 0) return true;
+  if (FREE_EMAIL_DOMAINS.indexOf(domain) >= 0) return true;
+  /* WC-H1 fix (2026-05-04): subdomain match ccSLD-safe. */
+  for (var i = 0; i < FREE_EMAIL_DOMAINS.length; i++) {
+    if (domain.endsWith('.' + FREE_EMAIL_DOMAINS[i])) return true;
+  }
+  return false;
+}
+
 function validateAdayForm() {
   var ad = document.getElementById('aday-ad').value.trim();
   var soyad = document.getElementById('aday-soyad').value.trim();
@@ -897,7 +928,9 @@ function validateKurumsalForm() {
   var pw2 = document.getElementById('k-sifre-tekrar').value;
   var privacy = document.getElementById('cb-k-privacy').checked;
   var kvkk = document.getElementById('cb-k-kvkk').checked;
-  var valid = ad.length >= 1 && soyad.length >= 1 && sirket.length >= 2 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) && isValidPhone(phone) && pw.length >= 8 && /[A-Z]/.test(pw) && /[a-z]/.test(pw) && /[0-9]/.test(pw) && pw === pw2 && privacy && kvkk;
+  var emailFormatOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  var emailDomainOk = !isFreeProviderEmail(email);  /* A23 hard-block */
+  var valid = ad.length >= 1 && soyad.length >= 1 && sirket.length >= 2 && emailFormatOk && emailDomainOk && isValidPhone(phone) && pw.length >= 8 && /[A-Z]/.test(pw) && /[a-z]/.test(pw) && /[0-9]/.test(pw) && pw === pw2 && privacy && kvkk;
   document.getElementById('btn-k-kayit').disabled = !valid;
 }
 
@@ -910,14 +943,17 @@ function validateKurumsalForm() {
   if (el) el.addEventListener(el.type === 'checkbox' ? 'change' : 'input', validateKurumsalForm);
 });
 
-/* 8. Kurumsal email domain warning */
+/* 8. Kurumsal email domain hard-block (A23 — 2026-05-04)
+   FREE_EMAIL_DOMAINS validateKurumsalForm üst kısmında tanımlı.
+   Bu IIFE inline warning gösterir; submit'i validateKurumsalForm bloklar.
+   Server-side son söz sahibi: hr_profiles BEFORE INSERT trigger
+   (mig 20260504180654_hr_profiles_personal_email_guard.sql). */
 (function() {
   var emailInput = document.getElementById('k-email');
   var warning = document.getElementById('k-email-warning');
-  var freeProviders = ['gmail.com','hotmail.com','outlook.com','yahoo.com','yandex.com','icloud.com','mail.com','protonmail.com'];
+  if (!emailInput || !warning) return;
   emailInput.addEventListener('input', function() {
-    var domain = (emailInput.value.split('@')[1] || '').toLowerCase();
-    warning.style.display = freeProviders.indexOf(domain) >= 0 ? 'block' : 'none';
+    warning.style.display = isFreeProviderEmail(emailInput.value.trim()) ? 'block' : 'none';
   });
 })();
 
@@ -1075,10 +1111,14 @@ async function verifyOtpCode() {
       }); } catch (rpcErr) { console.warn('register_employer RPC:', rpcErr.message); }
 
       // Asama 84 — signup notification email (best-effort)
+      // A23-H2 (2026-05-04): anon key Authorization → user access_token
+      // Yoksa Edge Function spam vektörü (anyone can POST signup events).
       try {
         var sess = await getSupa().auth.getSession();
-        var uid = sess && sess.data && sess.data.session && sess.data.session.user && sess.data.session.user.id;
-        if (uid) {
+        var session = sess && sess.data && sess.data.session;
+        var uid = session && session.user && session.user.id;
+        var accessToken = session && session.access_token;
+        if (uid && accessToken) {
           var supaUrl = (window.HT && window.HT.SUPA_URL) || '';
           var supaKey = (window.HT && window.HT.SUPA_KEY) || '';
           if (supaUrl) {
@@ -1087,13 +1127,13 @@ async function verifyOtpCode() {
               headers: {
                 'Content-Type': 'application/json',
                 'apikey': supaKey,
-                'Authorization': 'Bearer ' + supaKey
+                'Authorization': 'Bearer ' + accessToken  /* A23-H2: user JWT, not anon */
               },
               body: JSON.stringify({ event: 'signup', user_id: uid })
-            }).catch(function(e){ console.warn('notify-hr-lead failed:', e); });
+            }).catch(function(e){ console.warn('notify-hr-lead failed'); });
           }
         }
-      } catch (notifyErr) { console.warn('signup notify wrap failed:', notifyErr); }
+      } catch (notifyErr) { console.warn('signup notify wrap failed'); }
 
       // Asama 84 — onboarding-aware redirect
       _htEmployerPostSignupRedirect();
@@ -1258,6 +1298,12 @@ async function doKurumsalSignup() {
   var email = document.getElementById('k-email').value.trim().toLowerCase();
   var phone = document.getElementById('k-telefon').value.replace(/\D/g, '');
   var password = document.getElementById('k-sifre').value;
+  /* A23 — defense-in-depth: form disabled bypass durumunda da reddet.
+     Server (mig 20260504180654) hr_profiles trigger ile son söz sahibi. */
+  if (isFreeProviderEmail(email)) {
+    showDupError(errEl, 'Kurumsal hesap için şirket domain\'li email gerekli. Kişisel sağlayıcılar (gmail, hotmail, vb.) kabul edilmiyor.', true);
+    return;
+  }
   btn.disabled = true; btn.textContent = 'Kayıt yapılıyor...';
   try {
     if (await isPhoneRegistered(phone)) {
@@ -1305,8 +1351,10 @@ async function doKurumsalSignup() {
     // Asama 84 — signup notification email (best-effort)
     try {
       var sess2 = await getSupa().auth.getSession();
-      var uid2 = sess2 && sess2.data && sess2.data.session && sess2.data.session.user && sess2.data.session.user.id;
-      if (uid2) {
+      var session2 = sess2 && sess2.data && sess2.data.session;
+      var uid2 = session2 && session2.user && session2.user.id;
+      var accessToken2 = session2 && session2.access_token;
+      if (uid2 && accessToken2) {
         var supaUrl2 = (window.HT && window.HT.SUPA_URL) || '';
         var supaKey2 = (window.HT && window.HT.SUPA_KEY) || '';
         if (supaUrl2) {
@@ -1315,17 +1363,32 @@ async function doKurumsalSignup() {
             headers: {
               'Content-Type': 'application/json',
               'apikey': supaKey2,
-              'Authorization': 'Bearer ' + supaKey2
+              'Authorization': 'Bearer ' + accessToken2  /* A23-H2: user JWT */
             },
             body: JSON.stringify({ event: 'signup', user_id: uid2 })
-          }).catch(function(e){ console.warn('notify-hr-lead failed:', e); });
+          }).catch(function(e){ console.warn('notify-hr-lead failed'); });
         }
       }
-    } catch (notifyErr) { console.warn('signup notify wrap failed:', notifyErr); }
+    } catch (notifyErr) { console.warn('signup notify wrap failed'); }
 
     _htEmployerPostSignupRedirect();
   } catch (err) {
-    errEl.textContent = 'Hata: ' + (err.message || 'Bilinmeyen hata');
+    /* A23-H1/R1 (2026-05-04): err.message Supabase auth/RLS hatası
+       email + internal path leak edebilir. Sabit Türkçe + code-based switch. */
+    var msg;
+    var em = (err && err.message) ? String(err.message) : '';
+    if (err && err.code === '23514' /* check_violation: email guard trigger */) {
+      msg = 'Kurumsal hesap için şirket domain\'li e-posta gerekli. Kişisel sağlayıcılar (gmail, hotmail, vb.) kabul edilmiyor.';
+    } else if (em.indexOf('domain') >= 0 || em.indexOf('check_violation') >= 0) {
+      msg = 'Kurumsal hesap için şirket domain\'li e-posta gerekli.';
+    } else if (em.indexOf('already registered') >= 0 || em.indexOf('already exists') >= 0) {
+      msg = 'Bu e-posta adresi zaten kayıtlı.';
+    } else if (em.indexOf('rate limit') >= 0 || em.indexOf('too many') >= 0) {
+      msg = 'Çok fazla deneme. Bir süre sonra tekrar dene.';
+    } else {
+      msg = 'Kayıt sırasında bir hata oluştu, lütfen tekrar dene.';
+    }
+    errEl.textContent = msg;
     errEl.style.display = 'block'; btn.disabled = false; btn.textContent = 'Kayıt Ol';
   }
 }

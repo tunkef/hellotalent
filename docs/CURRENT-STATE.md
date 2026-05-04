@@ -1,5 +1,33 @@
 # hellotalent.ai — Current State
-> Son guncelleme: 3 Mayis 2026 SESSION SONU | PHASE A+C+C.5+D STEP 1+2 + A11 RPC + D2 (1-10) + denetim + bulgu fix + A14 + Phase F + A16 + H2 + **17 commit BÜYÜK SPRINT** — UAT FIX dalgası (Wave 1+2+3) + A18+A7 KRİTİK security + Phase H 200 aday + L1 auth defensive + N1 audit log + **A8-B Tam lifecycle (Task 1-7 LIVE, 6 commit)** — **Iyzico prereq COMPLETELY DONE**, Iyzico checkout flow başlatılabilir.
+> Son guncelleme: **4 Mayis 2026** | A23 paket LIVE — corporate email defense-in-depth + BUG 2 hotfix.
+
+## 4 May A23 — 7 migration + Edge Function + frontend (T3, %100 Codex agreement)
+
+**İki kritik bug + sızıntı kapatıldı:**
+
+- **BUG 1:** Free email (gmail/hotmail/...) ile employer signup mümkündü, sadece warning vardı → 47 sağlayıcı + ccSLD subdomain + IDN/Punycode + ASCII-only homograph hard reject (server BEFORE INSERT trigger + client validation).
+- **BUG 2:** hr-pool 0/0 stuck — search_employer_candidates RPC `column wc.travel_willingness does not exist` runtime exception. 3 May lifecycle guard CREATE OR REPLACE 1 May W4 FIX'i geri almış. Hotfix: with_children CTE'sine kolonlar restore.
+- **PII strip restore:** telefon/email RPC return'den çıkarıldı (KVKK md.4 minimum gereklilik). Önceki migration'ların CREATE OR REPLACE'leri 8 Nisan'daki strip wrapper'ını silmişti.
+- **Defense-in-depth runtime guard:** is_corporate_email() helper (STABLE, ccSLD-safe, ASCII-only, Punycode reject). is_employer() + is_employer_team_member() corporate AND check. search RPC early-return. hr_profiles BEFORE UPDATE drift trigger.
+- **Q7 KVKK audit log:** employer_pool_query_log tablosu (page-level, RLS admin-only) + RPC içinde atomik INSERT + 90-day cron purge.
+- **Edge Function:** notify-hr-lead anon key → user JWT verify + sub eşleşmesi (spoof korumasıι).
+
+**T3 zincir:** auditor → code-reviewer → Codex (BLOCK → re-review → final GO %100). Pre-flight: 0 personal-domain regression yok.
+
+**Risk-accept:** is_employer() inlining yapılmıyor (SECURITY DEFINER + SET). Deploy sonrası EXPLAIN benchmark taahhüdü.
+
+**Migration listesi:**
+- 20260504180654 hr_profiles_personal_email_guard (BEFORE INSERT trigger)
+- 20260504181037 search_rpc_w4_columns_restore (BUG 2 hotfix)
+- 20260504181500 a23c_is_corporate_email_helper (helper)
+- 20260504181530 a23c_is_employer_corporate_check (RPC revize + audit INSERT)
+- 20260504181600 a23c_email_drift_guard (BEFORE UPDATE)
+- 20260504184849 a23q7_employer_pool_query_audit_log (audit table)
+- 20260504185015 a23q7_pool_log_cron_purge (90d retention)
+
+---
+
+> 3 Mayis 2026 SESSION SONU | PHASE A+C+C.5+D STEP 1+2 + A11 RPC + D2 (1-10) + denetim + bulgu fix + A14 + Phase F + A16 + H2 + **17 commit BÜYÜK SPRINT** — UAT FIX dalgası (Wave 1+2+3) + A18+A7 KRİTİK security + Phase H 200 aday + L1 auth defensive + N1 audit log + **A8-B Tam lifecycle (Task 1-7 LIVE, 6 commit)** — **Iyzico prereq COMPLETELY DONE**, Iyzico checkout flow başlatılabilir.
 
 > ## 3 May Session Özet — 17 Commit, ~6 Saat
 

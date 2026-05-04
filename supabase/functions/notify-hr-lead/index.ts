@@ -221,6 +221,38 @@ const CORS_HEADERS = {
   "Access-Control-Max-Age": "86400",
 };
 
+// A23 Codex BLOCKER fix (2026-05-04): JWT verify + sub == user_id eşleşmesi.
+// Eski: anon key + body.user_id trust → spoof riski (anyone POST /functions/v1/notify-hr-lead).
+// Yeni: caller'ın access_token JWT'sinden `sub` çıkar, body.user_id ile karşılaştır.
+async function verifyAuthHeader(
+  req: Request,
+  expectedUserId: string,
+): Promise<{ ok: true } | { ok: false; status: number; reason: string }> {
+  const authHeader = req.headers.get("Authorization") || "";
+  if (!authHeader.startsWith("Bearer ")) {
+    return { ok: false, status: 401, reason: "missing_bearer" };
+  }
+  const token = authHeader.slice(7).trim();
+  if (!token) {
+    return { ok: false, status: 401, reason: "empty_bearer" };
+  }
+  // service_role context (system trigger): tek istisna, ama yine de yasak.
+  // notify-hr-lead client'tan çağrılır → user JWT zorunlu.
+
+  // Auth client (anon) ile getUser(token) çağır → JWT verify Supabase tarafında.
+  const authClient = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, {
+    auth: { persistSession: false },
+  });
+  const { data, error } = await authClient.auth.getUser(token);
+  if (error || !data.user) {
+    return { ok: false, status: 401, reason: "invalid_jwt" };
+  }
+  if (data.user.id !== expectedUserId) {
+    return { ok: false, status: 403, reason: "user_id_mismatch" };
+  }
+  return { ok: true };
+}
+
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { status: 204, headers: CORS_HEADERS });
@@ -239,6 +271,16 @@ Deno.serve(async (req: Request) => {
       );
     }
     const { event, user_id } = validation.value;
+
+    /* A23 Codex BLOCKER (2026-05-04): JWT verify + sub eşleşmesi. */
+    const authCheck = await verifyAuthHeader(req, user_id);
+    if (!authCheck.ok) {
+      console.warn("notify-hr-lead auth fail:", authCheck.reason);
+      return new Response(
+        JSON.stringify({ error: "unauthorized" }),
+        { status: authCheck.status, headers: { "Content-Type": "application/json", ...CORS_HEADERS } },
+      );
+    }
 
     const supabase = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, {
       auth: { persistSession: false },
