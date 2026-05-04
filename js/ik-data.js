@@ -221,45 +221,6 @@
     },
 
     /* ── Positions ── */
-    createPosition: function (input) {
-      if (!realMode()) {
-        return Promise.resolve({ ok: false, error: 'auth context yok' });
-      }
-      var supa = getSupa();
-      var userId = getUserId();
-      var companyId = getCompanyId();
-      var payload = {
-        hr_profile_id: userId,
-        company_id:    companyId,
-        ad:            String(input.ad || '').trim(),
-        sehir:         input.sehir ? String(input.sehir).trim() : null,
-        seg:           input.seg ? String(input.seg).trim() : null,
-        exp:           input.exp ? String(input.exp).trim() : null,
-        maas:          input.maas ? String(input.maas).trim() : null,
-        aciklama:      input.aciklama ? String(input.aciklama).trim() : null,
-        durum:         'acik',
-        is_template:   false
-      };
-      if (!payload.ad) {
-        return Promise.resolve({ ok: false, error: 'Pozisyon adı gerekli' });
-      }
-      return (async function () {
-        try {
-          var res = await supa.from('positions').insert(payload).select().single();
-          if (res.error) {
-            console.warn('[ik-data] createPosition error:', res.error.message);
-            return { ok: false, error: res.error.message };
-          }
-          // cache invalidate
-          _cache.positions = null;
-          return { ok: true, position: res.data };
-        } catch (e) {
-          console.warn('[ik-data] createPosition exception:', e && e.message);
-          return { ok: false, error: e && e.message };
-        }
-      })();
-    },
-
     getPositions: function () {
       if (!realMode()) {
         console.warn('[ik-data] getPositions: auth context yok');

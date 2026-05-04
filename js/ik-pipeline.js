@@ -698,76 +698,11 @@
     });
   }
 
-  /* ═══════ New position modal (2026-05-04 — pozisyon yaratma flow) ═══════ */
-  function bindNewPositionModal() {
-    var openBtn = document.querySelector('[data-ik-new-position]');
-    var modal   = document.querySelector('[data-ik-pos-modal]');
-    var form    = document.querySelector('[data-ik-pos-form]');
-    var cancel  = document.querySelector('[data-ik-pos-cancel]');
-    var errEl   = document.querySelector('[data-ik-pos-error]');
-    var submit  = document.querySelector('[data-ik-pos-submit]');
-    if (!openBtn || !modal || !form) return;
-
-    function openModal() {
-      modal.hidden = false;
-      modal.style.display = 'flex';
-      var firstInput = form.querySelector('input[name="ad"]');
-      if (firstInput) setTimeout(function () { firstInput.focus(); }, 50);
-    }
-    function closeModal() {
-      modal.hidden = true;
-      modal.style.display = 'none';
-      form.reset();
-      if (errEl) { errEl.hidden = true; errEl.textContent = ''; }
-      if (submit) { submit.disabled = false; submit.textContent = 'Oluştur'; }
-    }
-
-    openBtn.addEventListener('click', openModal);
-    if (cancel) cancel.addEventListener('click', closeModal);
-    modal.addEventListener('click', function (e) {
-      if (e.target === modal) closeModal();
-    });
-    document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape' && !modal.hidden) closeModal();
-    });
-
-    form.addEventListener('submit', function (e) {
-      e.preventDefault();
-      if (errEl) { errEl.hidden = true; errEl.textContent = ''; }
-      var fd = new FormData(form);
-      var payload = {
-        ad:       fd.get('ad'),
-        sehir:    fd.get('sehir'),
-        seg:      fd.get('seg'),
-        exp:      fd.get('exp'),
-        maas:     fd.get('maas'),
-        aciklama: fd.get('aciklama')
-      };
-      if (submit) { submit.disabled = true; submit.textContent = 'Oluşturuluyor…'; }
-      IK_DATA.createPosition(payload).then(function (res) {
-        if (!res || res.ok === false) {
-          if (errEl) {
-            errEl.hidden = false;
-            errEl.textContent = (res && res.error) || 'Pozisyon oluşturulamadı.';
-          }
-          if (submit) { submit.disabled = false; submit.textContent = 'Oluştur'; }
-          return;
-        }
-        if (window.IK_SHELL && IK_SHELL.setActivePositionId && res.position) {
-          IK_SHELL.setActivePositionId(res.position.id);
-        }
-        // Sayfayı yenile — yeni pozisyon switcher + pipeline'da görünür olsun
-        location.reload();
-      });
-    });
-  }
-
   /* ═══════ Init ═══════ */
   function init() {
     cacheDom();
     bindPositionSwitcher();
     bindStageSheet();
-    bindNewPositionModal();
     loadInit();
   }
 
