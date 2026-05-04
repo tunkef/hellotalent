@@ -1,5 +1,67 @@
 # hellotalent.ai — Current State
-> Son guncelleme: **4 Mayis 2026** | A23 paket LIVE — corporate email defense-in-depth + BUG 2 hotfix.
+> Son guncelleme: **4 Mayis 2026 SESSION SONU** | A23 + A24 LIVE — corporate email defense + BUG 2 hotfix + pozisyon yaratma flow + aday akış denetim.
+
+## 4 May Session Özet — 13 commit
+
+| Commit | İş |
+|---|---|
+| 0a55142 | session start |
+| b2dab0d | A23 paket — 7 migration + Edge Function + frontend (defense-in-depth) |
+| 2025d05 | ik-pool limit:500 → 200 aday görünür |
+| 0455c0e | hr-*.html cache bust h7→a23h |
+| 3d3c033 | ik-candidate.js race condition fix (bootstrap pattern) |
+| 926e31d | aday akış denetim — pipeline add error toast + race fix yayma |
+| 925f399 | (geri alındı) kötü pozisyon modal — disiplin atlandı |
+| 1d51cfe | revert kötü modal |
+| a736bd3 | A24 ui-agent implement + darkmode/code-reviewer HIGH fix |
+| e0b4dba | A24 counter eşik (uat-tester minor) |
+| 579d326 | A24 counter is-warning + is-over iki eşik |
+| 51701c0 | A23 hotfix post-deploy (PII strip CTE + drift trigger + audit log) |
+| 4778af4 | A23 backlog cleanup R5/R6/R7/M1/F2 |
+
+## A24 Pozisyon Yaratma Flow LIVE
+
+T2 zincir TAM (architect → content-writer → ux-agent → designer → ui-agent → darkmode-auditor → uat-tester → code-reviewer):
+- Mobile bottom-sheet + Desktop side-drawer pattern
+- 6 alan tek group (ad zorunlu)
+- onBlur + onSubmit validation, aciklama char counter (700 warning, 800 cap)
+- Dirty form ESC confirm, focus trap, double-submit guard
+- 3 giriş: switcher CTA, pipeline empty state, pool coaching banner (#new-position hash)
+- IK_DATA.createPosition adapter (.maybeSingle + RLS error mapping)
+- WCAG AA tam (light + dark, all states)
+- Playwright spec: 132/144 PASS, 0 FAIL (12 skip defensive)
+
+## Bekleyen Tuna Manuel UAT
+
+1. hr-pipeline.html "+ Yeni pozisyon" button → form modal aç → submit → switcher'da yeni pos
+2. Pool 0-pos coaching banner → "Pozisyon aç" → pipeline'a hash trigger
+3. Pool aday seç → "Pipeline'a ekle" gerçek INSERT → kanban'a düşer
+4. Aday detay sayfası açıl → race fix sonrası Tuna Kefeli ID 5 görünür
+5. Dark mode error states (form input has-error) AA contrast
+
+## SONRAKI SESSION BACKLOG
+
+### Yüksek Öncelik
+1. **Iyzico checkout flow** (A23 öncesi belirlenmişti, A24 sonrası prereq DONE)
+2. **Eski test suite fail'leri** (A24 dışı):
+   - tests/a23-facet-filters.spec.js — selector'lar gerçek DOM uyumsuz
+   - tests/asama86-e2e.spec.js — kanban DOM eski
+   - tests/auth-onboarding-flow.spec.js + tests/auth-pages.spec.js — UI evrildi
+   - tests/dark-mode.spec.js — profil.html token bağımlılıkları
+
+### Orta Öncelik
+3. R7: total_count optimize (P3 1000+ rows trigger, şimdi 0.26ms)
+4. F2: a23-facet-filters real-RPC authenticated spec (demo mode kapsamı yetersiz)
+5. ik-team / ik-company / ik-campaigns / ik-settings race fix yayma (kullanıldıkça)
+6. Position edit/sil flow (A25?)
+
+### Düşük Öncelik (Backlog)
+7. R5: 5-param search overload DROP migration (P3)
+8. M1: STABLE→VOLATILE defensive (gerçek perf data sonrası karar)
+
+---
+
+
 
 ## 4 May A23 — 8 migration + Edge Function (rev2) + frontend (T3, %100 Codex agreement + post-deploy hotfix)
 
