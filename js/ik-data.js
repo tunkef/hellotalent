@@ -233,9 +233,12 @@
       var userId = getUserId();
       return (async function () {
         try {
+          /* R2 fix (2026-05-04): kapalı pozisyonlar listede dönmesin.
+             DB kolon adı 'durum', default 'active' (status değil — başka bug). */
           var res = await supa.from('positions')
             .select('*')
-            .eq('hr_profile_id', userId);
+            .eq('hr_profile_id', userId)
+            .eq('durum', 'active');
           if (res.error) {
             console.warn('[ik-data] getPositions error:', res.error.message);
             return [];
@@ -379,6 +382,55 @@
         } catch (e) {
           console.warn('[ik-data] removeFromPipeline exception:', e && e.message);
           return { ok: false, error: e && e.message };
+        }
+      })();
+    },
+
+    /* ── A24: createPosition ── */
+    createPosition: function (payload) {
+      /* payload: { ad, sehir, seg, exp, maas, aciklama }
+         ad zorunlu — caller validate eder. company_id + hr_profile_id auto.
+         Döner: { ok: true, row } veya { ok: false, error: string } */
+      if (!realMode()) {
+        return Promise.resolve({ ok: false, error: 'Oturumunuz sona ermiş. Yeniden giriş yapın.' });
+      }
+      var supa = getSupa();
+      var userId = getUserId();
+      var companyId = getCompanyId();
+
+      var insert = {
+        hr_profile_id: userId,
+        ad:            safeStr(payload.ad).trim(),
+        sehir:         safeStr(payload.sehir).trim() || null,
+        seg:           safeStr(payload.seg).trim()   || null,
+        exp:           safeStr(payload.exp).trim()   || null,
+        maas:          safeStr(payload.maas).trim()  || null,
+        aciklama:      safeStr(payload.aciklama).trim() || null
+      };
+      if (companyId != null) insert.company_id = companyId;
+
+      return (async function () {
+        try {
+          /* R1 fix (2026-05-04): .maybeSingle() — proje kuralı (.single() PGRST116 yutar) */
+          var res = await supa.from('positions')
+            .insert(insert)
+            .select()
+            .maybeSingle();
+          if (res.error) {
+            console.error('[ik-data] createPosition error:', res.error.message);
+            if (res.error.code === '42501' || (res.error.message && res.error.message.indexOf('permission') >= 0)) {
+              return { ok: false, error: 'Hata: Oturumunuz sona ermiş. Yeniden giriş yapın.' };
+            }
+            return { ok: false, error: 'Hata: Pozisyon kaydedilemedi. Tekrar deneyin.' };
+          }
+          if (!res.data) {
+            return { ok: false, error: 'Hata: Pozisyon kaydedilemedi.' };
+          }
+          _cache.positions = null;
+          return { ok: true, row: res.data };
+        } catch (e) {
+          console.error('[ik-data] createPosition exception:', e && e.message);
+          return { ok: false, error: 'Hata: Bağlantı sorunu. Tekrar deneyin.' };
         }
       })();
     },

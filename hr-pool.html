@@ -26,14 +26,15 @@
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 
 <!-- Token-strict order: tokens → components → ik-shell → ik-pool -->
-<link rel="stylesheet" href="css/tokens.css?v=20260504a23h4">
-<link rel="stylesheet" href="css/components.css?v=20260504a23h4">
-<link rel="stylesheet" href="css/ik-shell.css?v=20260504a23h4">
-<link rel="stylesheet" href="css/panels/ik-pool.css?v=20260504a23h4">
+<link rel="stylesheet" href="css/tokens.css?v=20260504a24h1">
+<link rel="stylesheet" href="css/components.css?v=20260504a24h1">
+<link rel="stylesheet" href="css/ik-shell.css?v=20260504a24h1">
+<link rel="stylesheet" href="css/panels/ik-pool.css?v=20260504a24h1">
+<link rel="stylesheet" href="css/panels/ik-pipeline.css?v=20260504a24h1">
 
 <!-- Supabase + shared.js -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="shared.js?v=20260504a23h4"></script>
+<script src="shared.js?v=20260504a24h1"></script>
 </head>
 <body class="ik-body" data-ik-page="havuz">
 
@@ -256,6 +257,13 @@
         </div>
       </div>
 
+      <!-- A24: Coaching banner (0 pozisyon durumunda JS gösterir) -->
+      <div class="ik-coaching-banner" id="ik-pool-coaching-banner" role="status" aria-live="polite">
+        <p class="ik-coaching-banner__title">Önce pozisyon açın.</p>
+        <p class="ik-coaching-banner__body">Bu adayı pipeline'a eklemek için açık bir pozisyon gerekiyor.</p>
+        <a href="hr-pipeline.html#new-position" class="ik-coaching-banner__cta">Pozisyon aç</a>
+      </div>
+
       <!-- LIST -->
       <section class="ik-pool__list-wrap" aria-label="Aday listesi">
         <div class="ik-pool__list-head">
@@ -343,8 +351,8 @@
   </div>
 </nav>
 
-<script src="js/ik-shell.js?v=20260504a23h4"></script>
-<script src="js/ik-data.js?v=20260504a23h4"></script>
-<script src="js/ik-pool.js?v=20260504a23h4"></script>
+<script src="js/ik-shell.js?v=20260504a24h1"></script>
+<script src="js/ik-data.js?v=20260504a24h1"></script>
+<script src="js/ik-pool.js?v=20260504a24h1"></script>
 </body>
 </html>

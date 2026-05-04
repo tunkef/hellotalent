@@ -698,11 +698,406 @@
     });
   }
 
+  /* ═══════ A24: Pozisyon Formu Sheet ═══════ */
+
+  var _posFormDom = {};
+  var _posFormOpener = null; /* focus iade için */
+
+  function cachePosFormDom() {
+    _posFormDom.overlay   = document.getElementById('ik-pos-form-overlay');
+    _posFormDom.sheet     = document.getElementById('ik-pos-form-sheet');
+    _posFormDom.form      = document.getElementById('ik-pos-form');
+    _posFormDom.btnClose  = document.getElementById('btn-pos-form-close');
+    _posFormDom.btnCancel = document.getElementById('btn-pos-form-cancel');
+    _posFormDom.btnSubmit = document.getElementById('btn-pos-form-submit');
+    _posFormDom.btnNew    = document.getElementById('btn-new-position');
+    _posFormDom.fieldAd   = document.getElementById('pos-field-ad');
+    _posFormDom.fieldSehir= document.getElementById('pos-field-sehir');
+    _posFormDom.fieldSeg  = document.getElementById('pos-field-seg');
+    _posFormDom.fieldExp  = document.getElementById('pos-field-exp');
+    _posFormDom.fieldMaas = document.getElementById('pos-field-maas');
+    _posFormDom.fieldAcik = document.getElementById('pos-field-aciklama');
+    _posFormDom.counter   = document.getElementById('pos-field-aciklama-counter');
+    _posFormDom.adError   = document.getElementById('pos-field-ad-error');
+    _posFormDom.srvError  = document.getElementById('pos-form-server-error');
+  }
+
+  function isDirty() {
+    if (!_posFormDom.fieldAd) return false;
+    return (
+      _posFormDom.fieldAd.value.trim()    !== '' ||
+      _posFormDom.fieldSehir.value.trim() !== '' ||
+      _posFormDom.fieldSeg.value          !== '' ||
+      _posFormDom.fieldExp.value          !== '' ||
+      _posFormDom.fieldMaas.value.trim()  !== '' ||
+      _posFormDom.fieldAcik.value.trim()  !== ''
+    );
+  }
+
+  function resetPosForm() {
+    if (!_posFormDom.form) return;
+    _posFormDom.form.reset();
+    clearPosFieldError(_posFormDom.fieldAd, _posFormDom.adError);
+    hidePosServerError();
+    updateCounter();
+    /* submit buton reset */
+    if (_posFormDom.btnSubmit) {
+      _posFormDom.btnSubmit.disabled = false;
+      _posFormDom.btnSubmit.classList.remove('is-loading');
+    }
+  }
+
+  function openNewPositionSheet(opener) {
+    if (!_posFormDom.sheet) return;
+    _posFormOpener = opener || document.getElementById('btn-new-position');
+    resetPosForm();
+    _posFormDom.overlay.removeAttribute('aria-hidden');
+    _posFormDom.overlay.classList.add('is-open');
+    _posFormDom.sheet.classList.add('is-open');
+    _posFormDom.sheet.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('ht-scroll-lock');
+    /* autofocus + visualViewport guard */
+    setTimeout(function () {
+      if (_posFormDom.fieldAd) _posFormDom.fieldAd.focus();
+    }, 50);
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', onViewportResize);
+    }
+  }
+  /* Expose for pool coaching banner hash trigger */
+  window._htOpenNewPositionSheet = openNewPositionSheet;
+
+  function closeNewPositionSheet(force) {
+    if (!_posFormDom.sheet) return;
+    if (!force && isDirty()) {
+      var ok = window.confirm('Değişiklikler kaydedilmedi. Çıkmak istediğinize emin misiniz?');
+      if (!ok) return;
+    }
+    _posFormDom.overlay.setAttribute('aria-hidden', 'true');
+    _posFormDom.overlay.classList.remove('is-open');
+    _posFormDom.sheet.classList.remove('is-open');
+    _posFormDom.sheet.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('ht-scroll-lock');
+    if (window.visualViewport) {
+      window.visualViewport.removeEventListener('resize', onViewportResize);
+    }
+    /* focus iade */
+    if (_posFormOpener && typeof _posFormOpener.focus === 'function') {
+      _posFormOpener.focus();
+    }
+  }
+
+  function onViewportResize() {
+    if (!_posFormDom.sheet) return;
+    if (window.innerWidth <= 768) {
+      _posFormDom.sheet.style.height = window.visualViewport.height + 'px';
+    } else {
+      _posFormDom.sheet.style.height = '';
+    }
+  }
+
+  /* Focus trap */
+  function trapFocus(e) {
+    if (!_posFormDom.sheet || !_posFormDom.sheet.classList.contains('is-open')) return;
+    var focusable = Array.prototype.slice.call(
+      _posFormDom.sheet.querySelectorAll(
+        'button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      )
+    );
+    if (!focusable.length) return;
+    var first = focusable[0];
+    var last  = focusable[focusable.length - 1];
+    if (e.key === 'Tab') {
+      if (e.shiftKey) {
+        if (document.activeElement === first) { e.preventDefault(); last.focus(); }
+      } else {
+        if (document.activeElement === last)  { e.preventDefault(); first.focus(); }
+      }
+    }
+  }
+
+  /* Char counter */
+  function updateCounter() {
+    if (!_posFormDom.fieldAcik || !_posFormDom.counter) return;
+    var len = _posFormDom.fieldAcik.value.length;
+    _posFormDom.counter.textContent = len + ' / 800';
+    _posFormDom.counter.classList.remove('is-warning', 'is-over');
+    if (len > 800) _posFormDom.counter.classList.add('is-over');
+    else if (len > 700) _posFormDom.counter.classList.add('is-warning');
+  }
+
+  /* Field error helpers */
+  function showPosFieldError(input, errorEl, msg) {
+    if (!input || !errorEl) return;
+    input.classList.add('has-error');
+    errorEl.textContent = msg;
+    errorEl.classList.add('is-visible');
+  }
+  function clearPosFieldError(input, errorEl) {
+    if (!input || !errorEl) return;
+    input.classList.remove('has-error');
+    errorEl.textContent = '';
+    errorEl.classList.remove('is-visible');
+  }
+  function showPosServerError(msg) {
+    if (!_posFormDom.srvError) return;
+    _posFormDom.srvError.textContent = msg;
+    _posFormDom.srvError.classList.add('is-visible');
+  }
+  function hidePosServerError() {
+    if (!_posFormDom.srvError) return;
+    _posFormDom.srvError.textContent = '';
+    _posFormDom.srvError.classList.remove('is-visible');
+  }
+
+  /* Client validation */
+  function validatePosForm() {
+    var valid = true;
+    var ad = _posFormDom.fieldAd ? _posFormDom.fieldAd.value.trim() : '';
+    clearPosFieldError(_posFormDom.fieldAd, _posFormDom.adError);
+    if (!ad) {
+      showPosFieldError(_posFormDom.fieldAd, _posFormDom.adError, 'Hata: Pozisyon adı gerekli.');
+      valid = false;
+    } else if (ad.length < 2) {
+      showPosFieldError(_posFormDom.fieldAd, _posFormDom.adError, 'Hata: En az 2 karakter girin.');
+      valid = false;
+    }
+    /* aciklama length */
+    if (_posFormDom.fieldAcik && _posFormDom.fieldAcik.value.length > 800) {
+      valid = false;
+    }
+    return valid;
+  }
+
+  /* Submit handler */
+  function submitNewPosition(e) {
+    e.preventDefault();
+    hidePosServerError();
+
+    if (!validatePosForm()) {
+      if (_posFormDom.fieldAd) _posFormDom.fieldAd.focus();
+      return;
+    }
+
+    /* Double-submit guard */
+    if (_posFormDom.btnSubmit && _posFormDom.btnSubmit.disabled) return;
+    if (_posFormDom.btnSubmit) {
+      _posFormDom.btnSubmit.disabled = true;
+      _posFormDom.btnSubmit.classList.add('is-loading');
+    }
+
+    var payload = {
+      ad:       _posFormDom.fieldAd.value.trim(),
+      sehir:    _posFormDom.fieldSehir ? _posFormDom.fieldSehir.value.trim() : '',
+      seg:      _posFormDom.fieldSeg   ? _posFormDom.fieldSeg.value   : '',
+      exp:      _posFormDom.fieldExp   ? _posFormDom.fieldExp.value   : '',
+      maas:     _posFormDom.fieldMaas  ? _posFormDom.fieldMaas.value.trim()  : '',
+      aciklama: _posFormDom.fieldAcik  ? _posFormDom.fieldAcik.value.trim()  : ''
+    };
+
+    IK_DATA.createPosition(payload).then(function (result) {
+      if (!result.ok) {
+        showPosServerError(result.error || 'Hata: Pozisyon kaydedilemedi. Tekrar deneyin.');
+        if (_posFormDom.btnSubmit) {
+          _posFormDom.btnSubmit.disabled = false;
+          _posFormDom.btnSubmit.classList.remove('is-loading');
+        }
+        return;
+      }
+      /* Başarı — in-memory update */
+      var newRow = result.row;
+      /* positions tablosu field'ları → pipeline state'e normalize */
+      var normalized = {
+        id:         newRow.id,
+        title:      newRow.ad,
+        city:       newRow.sehir,
+        segment:    newRow.seg,
+        experience_years: newRow.exp,
+        maas:       newRow.maas,
+        aciklama:   newRow.aciklama,
+        durum:      newRow.durum || 'active',  /* R3 fix: DB default 'active' */
+        active_pipeline_count: 0
+      };
+      state.positions.push(normalized);
+      state.activePositionId = newRow.id;
+      state.activePosition   = normalized;
+      if (window.IK_SHELL && IK_SHELL.setActivePositionId) {
+        IK_SHELL.setActivePositionId(newRow.id);
+      }
+      closeNewPositionSheet(true); /* force close — form kayıt başarılı */
+      renderPositionSwitcher();
+      loadPipeline();
+      showToast((newRow.ad || 'Pozisyon') + ' pozisyonu açıldı.', 'success');
+    }).catch(function (err) {
+      console.error('[ik-pipeline] submitNewPosition exception:', err && err.message);
+      showPosServerError('Hata: Bağlantı sorunu. Tekrar deneyin.');
+      if (_posFormDom.btnSubmit) {
+        _posFormDom.btnSubmit.disabled = false;
+        _posFormDom.btnSubmit.classList.remove('is-loading');
+      }
+    });
+  }
+
+  function bindPositionFormSheet() {
+    cachePosFormDom();
+    if (!_posFormDom.sheet) return;
+
+    /* "Yeni pozisyon" butonu */
+    if (_posFormDom.btnNew) {
+      _posFormDom.btnNew.addEventListener('click', function () {
+        openNewPositionSheet(_posFormDom.btnNew);
+      });
+    }
+
+    /* Kapat butonu */
+    if (_posFormDom.btnClose) {
+      _posFormDom.btnClose.addEventListener('click', function () {
+        closeNewPositionSheet(false);
+      });
+    }
+
+    /* Vazgeç butonu */
+    if (_posFormDom.btnCancel) {
+      _posFormDom.btnCancel.addEventListener('click', function () {
+        closeNewPositionSheet(false);
+      });
+    }
+
+    /* Overlay click */
+    if (_posFormDom.overlay) {
+      _posFormDom.overlay.addEventListener('click', function () {
+        closeNewPositionSheet(false);
+      });
+    }
+
+    /* ESC — sadece pos form sheet açıkken (stage sheet ile çakışmayı önle) */
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && _posFormDom.sheet && _posFormDom.sheet.classList.contains('is-open')) {
+        e.stopPropagation();
+        closeNewPositionSheet(false);
+      }
+    });
+
+    /* Focus trap */
+    if (_posFormDom.sheet) {
+      _posFormDom.sheet.addEventListener('keydown', trapFocus);
+    }
+
+    /* ad — onBlur validation */
+    if (_posFormDom.fieldAd) {
+      _posFormDom.fieldAd.addEventListener('blur', function () {
+        var v = _posFormDom.fieldAd.value.trim();
+        if (v && v.length < 2) {
+          showPosFieldError(_posFormDom.fieldAd, _posFormDom.adError, 'Hata: En az 2 karakter girin.');
+        } else if (v) {
+          clearPosFieldError(_posFormDom.fieldAd, _posFormDom.adError);
+        }
+      });
+      _posFormDom.fieldAd.addEventListener('input', function () {
+        if (_posFormDom.adError && _posFormDom.adError.classList.contains('is-visible')) {
+          clearPosFieldError(_posFormDom.fieldAd, _posFormDom.adError);
+        }
+      });
+    }
+
+    /* aciklama — onChange debounce 400ms char counter */
+    if (_posFormDom.fieldAcik) {
+      var _counterDebounce = null;
+      _posFormDom.fieldAcik.addEventListener('input', function () {
+        clearTimeout(_counterDebounce);
+        _counterDebounce = setTimeout(updateCounter, 400);
+        /* disable submit if over limit */
+        var over = _posFormDom.fieldAcik.value.length > 800;
+        if (_posFormDom.btnSubmit) _posFormDom.btnSubmit.disabled = over;
+      });
+    }
+
+    /* Form submit */
+    if (_posFormDom.form) {
+      _posFormDom.form.addEventListener('submit', submitNewPosition);
+    }
+
+    /* Hash trigger — pool coaching banner linki #new-position */
+    if (window.location.hash === '#new-position') {
+      setTimeout(function () { openNewPositionSheet(); }, 300);
+      history.replaceState(null, '', window.location.pathname);
+    }
+  }
+
+  /* renderBoard override: 0 pozisyon → empty state */
+  var _origRenderBoard = renderBoard;
+  renderBoard = function () {
+    if (!dom.board) return;
+    if (state.positions.length === 0) {
+      renderZeroState();
+    } else {
+      _origRenderBoard();
+    }
+  };
+
+  function renderZeroState() {
+    if (!dom.board) return;
+    clearChildren(dom.board);
+    var wrap = document.createElement('div');
+    wrap.className = 'ik-pipeline__zero-state';
+
+    /* SVG illustration */
+    var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('class', 'ik-empty-illustration');
+    svg.setAttribute('viewBox', '0 0 120 120');
+    svg.setAttribute('fill', 'none');
+    svg.setAttribute('stroke', 'currentColor');
+    svg.setAttribute('stroke-width', '1.5');
+    svg.setAttribute('stroke-linecap', 'round');
+    svg.setAttribute('stroke-linejoin', 'round');
+    svg.setAttribute('aria-hidden', 'true');
+    /* Clipboard body */
+    var rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    rect.setAttribute('x', '28'); rect.setAttribute('y', '30');
+    rect.setAttribute('width', '64'); rect.setAttribute('height', '76');
+    rect.setAttribute('rx', '5');
+    svg.appendChild(rect);
+    /* Clip top */
+    var clipPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    clipPath.setAttribute('d', 'M44 30v-8a4 4 0 0 1 4-4h24a4 4 0 0 1 4 4v8');
+    svg.appendChild(clipPath);
+    /* Lines */
+    [[40, 56, 80, 56], [40, 68, 80, 68], [40, 80, 64, 80]].forEach(function (l) {
+      var line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      line.setAttribute('x1', l[0]); line.setAttribute('y1', l[1]);
+      line.setAttribute('x2', l[2]); line.setAttribute('y2', l[3]);
+      svg.appendChild(line);
+    });
+    wrap.appendChild(svg);
+
+    var h = document.createElement('h2');
+    h.className = 'ik-pipeline__zero-state-title';
+    h.textContent = 'Henüz açık pozisyon yok.';
+    wrap.appendChild(h);
+
+    var p = document.createElement('p');
+    p.className = 'ik-pipeline__zero-state-body';
+    p.textContent = 'İlk pozisyonu açtığınızda pipeline\'a aday eklemeye başlayabilirsiniz.';
+    wrap.appendChild(p);
+
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'ik-pipeline__zero-state-cta';
+    btn.textContent = 'İlk pozisyonu aç';
+    btn.addEventListener('click', function () {
+      openNewPositionSheet(btn);
+    });
+    wrap.appendChild(btn);
+
+    dom.board.appendChild(wrap);
+  }
+
   /* ═══════ Init ═══════ */
   function init() {
     cacheDom();
     bindPositionSwitcher();
     bindStageSheet();
+    bindPositionFormSheet();
     loadInit();
   }
 

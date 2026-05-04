@@ -24,13 +24,13 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 
-<link rel="stylesheet" href="css/tokens.css?v=20260504a23h4">
-<link rel="stylesheet" href="css/components.css?v=20260504a23h4">
-<link rel="stylesheet" href="css/ik-shell.css?v=20260504a23h4">
-<link rel="stylesheet" href="css/panels/ik-pipeline.css?v=20260504a23h4">
+<link rel="stylesheet" href="css/tokens.css?v=20260504a24h1">
+<link rel="stylesheet" href="css/components.css?v=20260504a24h1">
+<link rel="stylesheet" href="css/ik-shell.css?v=20260504a24h1">
+<link rel="stylesheet" href="css/panels/ik-pipeline.css?v=20260504a24h1">
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="shared.js?v=20260504a23h4"></script>
+<script src="shared.js?v=20260504a24h1"></script>
 </head>
 <body class="ik-body" data-ik-page="pipeline">
 
@@ -185,15 +185,22 @@
             </p>
           </div>
 
-          <div class="ik-position-switcher" data-ik-position-switcher>
-            <button type="button" class="ik-position-switcher__btn" data-ik-position-btn aria-haspopup="listbox" aria-expanded="false">
-              <span>
-                <span class="ik-position-switcher__label">Aktif pozisyon</span>
-                <span class="ik-position-switcher__title" data-ik-position-title>Yükleniyor</span>
-              </span>
-              <svg class="ik-position-switcher__chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          <!-- A24: switcher + yeni pozisyon butonu yan yana -->
+          <div class="ik-pipeline__switcher-row">
+            <div class="ik-position-switcher" data-ik-position-switcher>
+              <button type="button" class="ik-position-switcher__btn" data-ik-position-btn aria-haspopup="listbox" aria-expanded="false">
+                <span>
+                  <span class="ik-position-switcher__label">Aktif pozisyon</span>
+                  <span class="ik-position-switcher__title" data-ik-position-title>Yükleniyor</span>
+                </span>
+                <svg class="ik-position-switcher__chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="ik-position-switcher__menu" data-ik-position-menu role="listbox" aria-label="Pozisyon seç"></div>
+            </div>
+            <button type="button" class="ik-pipeline__new-pos-btn" id="btn-new-position" aria-label="Yeni pozisyon ekle">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Yeni pozisyon
             </button>
-            <div class="ik-position-switcher__menu" data-ik-position-menu role="listbox" aria-label="Pozisyon seç"></div>
           </div>
         </div>
 
@@ -219,6 +226,142 @@
   <h2 class="ik-stage-sheet__title" data-ik-stage-sheet-title>Aşamayı değiştir</h2>
   <p class="ik-stage-sheet__sub" data-ik-stage-sheet-sub>—</p>
   <div class="ik-stage-sheet__list" data-ik-stage-sheet-list></div>
+</aside>
+
+<!-- A24: Pozisyon formu overlay + sheet -->
+<div class="ik-position-form-overlay" id="ik-pos-form-overlay" aria-hidden="true"></div>
+<aside class="ik-position-form-sheet" id="ik-pos-form-sheet"
+       role="dialog" aria-modal="true" aria-labelledby="pos-sheet-title" aria-hidden="true">
+  <div class="ik-position-form-sheet__handle" aria-hidden="true"></div>
+
+  <div class="ik-position-form-sheet__header">
+    <div>
+      <span class="ik-position-form-sheet__eyebrow">Pipeline</span>
+      <h2 class="ik-position-form-sheet__title" id="pos-sheet-title">Yeni pozisyon</h2>
+    </div>
+    <button type="button" class="ik-position-form-sheet__close" id="btn-pos-form-close"
+            aria-label="Formu kapat">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/>
+      </svg>
+    </button>
+  </div>
+
+  <form id="ik-pos-form" novalidate>
+    <!-- Sunucu / ağ hatası -->
+    <div class="ik-position-form__server-error" id="pos-form-server-error" role="alert" aria-live="polite"></div>
+
+    <!-- Alan 1: Pozisyon adı (zorunlu) -->
+    <div class="ik-position-form__field">
+      <label class="ik-position-form__label" for="pos-field-ad">
+        Pozisyon adı<span class="ik-position-form__label-req" aria-hidden="true"> *</span>
+      </label>
+      <input
+        type="text"
+        class="ik-position-form__input"
+        id="pos-field-ad"
+        name="ad"
+        maxlength="120"
+        autocomplete="off"
+        aria-required="true"
+        aria-describedby="pos-field-ad-error"
+        placeholder="Mağaza Müdürü, Visual Merchandising Asistanı...">
+      <span class="ik-position-form__error" id="pos-field-ad-error" role="alert" aria-live="polite"></span>
+    </div>
+
+    <!-- Alan 2: Şehir (opsiyonel) -->
+    <div class="ik-position-form__field">
+      <label class="ik-position-form__label" for="pos-field-sehir">
+        Şehir<span class="ik-position-form__hint">eşleme için önerilir</span>
+      </label>
+      <input
+        type="text"
+        class="ik-position-form__input"
+        id="pos-field-sehir"
+        name="sehir"
+        maxlength="80"
+        autocomplete="off"
+        aria-required="false"
+        placeholder="İstanbul, Ankara, İzmir...">
+    </div>
+
+    <!-- Alan 3+4: Segment + Deneyim (2-col desktop) -->
+    <div class="ik-position-form__row-2col">
+      <div class="ik-position-form__field">
+        <label class="ik-position-form__label" for="pos-field-seg">
+          Segment<span class="ik-position-form__hint">önerilir</span>
+        </label>
+        <div class="ik-position-form__select-wrap">
+          <select class="ik-position-form__select" id="pos-field-seg" name="seg" aria-required="false">
+            <option value="">Seçin</option>
+            <option value="lüks">Lüks</option>
+            <option value="premium">Premium</option>
+            <option value="orta">Orta segment</option>
+            <option value="giyim">Giyim</option>
+            <option value="gıda">Gıda</option>
+            <option value="teknoloji">Teknoloji</option>
+            <option value="diğer">Diğer</option>
+          </select>
+        </div>
+      </div>
+      <div class="ik-position-form__field">
+        <label class="ik-position-form__label" for="pos-field-exp">
+          Deneyim
+        </label>
+        <div class="ik-position-form__select-wrap">
+          <select class="ik-position-form__select" id="pos-field-exp" name="exp" aria-required="false">
+            <option value="">Seçin</option>
+            <option value="0-1 yıl">0 – 1 yıl</option>
+            <option value="1-3 yıl">1 – 3 yıl</option>
+            <option value="3-5 yıl">3 – 5 yıl</option>
+            <option value="5-10 yıl">5 – 10 yıl</option>
+            <option value="10+ yıl">10 yıl ve üzeri</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Alan 5: Maaş aralığı (opsiyonel) -->
+    <div class="ik-position-form__field">
+      <label class="ik-position-form__label" for="pos-field-maas">Maaş aralığı</label>
+      <input
+        type="text"
+        class="ik-position-form__input"
+        id="pos-field-maas"
+        name="maas"
+        maxlength="60"
+        autocomplete="off"
+        aria-required="false"
+        placeholder="45.000 – 60.000 ₺">
+      <span class="ik-position-form__help">Serbest metin; yayımlanmaz, yalnızca ekibiniz görür.</span>
+    </div>
+
+    <!-- Alan 6: Açıklama (opsiyonel) -->
+    <div class="ik-position-form__field">
+      <label class="ik-position-form__label" for="pos-field-aciklama">Açıklama</label>
+      <textarea
+        class="ik-position-form__textarea"
+        id="pos-field-aciklama"
+        name="aciklama"
+        rows="3"
+        maxlength="800"
+        aria-required="false"
+        aria-describedby="pos-field-aciklama-counter"
+        placeholder="Temel sorumluluklar, beklentiler, çalışma düzeni..."></textarea>
+      <span class="ik-position-form__counter" id="pos-field-aciklama-counter" aria-live="polite">0 / 800</span>
+    </div>
+
+    <!-- Butonlar -->
+    <div class="ik-position-form__actions">
+      <button type="submit" class="ik-position-form__btn-primary" id="btn-pos-form-submit">
+        <span class="ik-position-form__spinner" aria-hidden="true"></span>
+        <span class="ik-position-form__btn-label">Pozisyonu Kaydet</span>
+      </button>
+      <button type="button" class="ik-position-form__btn-secondary" id="btn-pos-form-cancel">
+        Vazgeç
+      </button>
+    </div>
+  </form>
 </aside>
 
 <div class="ik-pipeline-toast" data-ik-pipeline-toast aria-live="polite" aria-atomic="true"></div>
@@ -265,8 +408,8 @@
   </div>
 </nav>
 
-<script src="js/ik-shell.js?v=20260504a23h4"></script>
-<script src="js/ik-data.js?v=20260504a23h4"></script>
-<script src="js/ik-pipeline.js?v=20260504a23h4"></script>
+<script src="js/ik-shell.js?v=20260504a24h1"></script>
+<script src="js/ik-data.js?v=20260504a24h1"></script>
+<script src="js/ik-pipeline.js?v=20260504a24h1"></script>
 </body>
 </html>
