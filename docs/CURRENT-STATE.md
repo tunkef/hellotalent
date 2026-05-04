@@ -12,6 +12,14 @@
 - A6: CORS wildcard → origin allowlist + response'tan user_id kaldırıldı
 - F1 (data-analyst): ik-pool.js initial load'da double RPC fetch ortadan kalktı (positionId yokken applyFilters skip)
 
+**Backlog cleanup (R5/R6/R7/M1/F2 — Codex GO %80 agreement):**
+- R6: Free domain liste +5 (posteo.de/net, disroot.org, anonaddy.com/me) — helper + WAVE A trigger + frontend
+- R5: 5-param search overload deprecated comment (P3 DROP)
+- R7: total_count optimize backlog (P3 1000+ rows trigger, 0.26ms şimdi)
+- M1: STABLE marker risk-accept dokümante (per-statement cache > VOLATILE)
+- F2: Playwright facet filter spec (tests/a23-facet-filters.spec.js, 7 chip × scenarios)
+
+
 
 
 **İki kritik bug + sızıntı kapatıldı:**

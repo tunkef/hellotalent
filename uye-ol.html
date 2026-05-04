@@ -888,7 +888,9 @@ var FREE_EMAIL_DOMAINS = [
   'icloud.com','me.com','mac.com',
   'protonmail.com','proton.me','pm.me','tutanota.com','tutanota.de','tuta.io','duck.com','hey.com',
   'mail.com','aol.com','gmx.com','gmx.net','gmx.de','zoho.com','zohomail.com','fastmail.com',
-  'mynet.com','superonline.com','ttmail.com'
+  'mynet.com','superonline.com','ttmail.com',
+  /* R6 (2026-05-04): privacy/forwarding */
+  'posteo.de','posteo.net','disroot.org','anonaddy.com','anonaddy.me'
 ];
 function isFreeProviderEmail(email) {
   if (!email || email.indexOf('@') < 0) return false;
