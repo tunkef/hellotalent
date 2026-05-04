@@ -706,9 +706,21 @@
     loadInit();
   }
 
+  /* IK_SHELL.ctx race fix (eb8ad40 pattern, 2026-05-04 cache a23h2) */
+  function bootstrap() {
+    if (window.IK_SHELL && window.IK_SHELL.ctx) { init(); return; }
+    var fired = false; var poll = null;
+    function fireOnce() { if (fired) return; fired = true; if (poll) clearInterval(poll); init(); }
+    document.addEventListener('ik-shell:ready', fireOnce, { once: true });
+    var tries = 0;
+    poll = setInterval(function () {
+      if (window.IK_SHELL && window.IK_SHELL.ctx) fireOnce();
+      else if (++tries > 30) fireOnce();
+    }, 100);
+  }
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
+    document.addEventListener('DOMContentLoaded', bootstrap);
   } else {
-    init();
+    bootstrap();
   }
 })();

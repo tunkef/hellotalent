@@ -606,6 +606,15 @@
       /* Active position seed */
       var posId = (window.IK_SHELL && IK_SHELL.getActivePositionId)
         ? IK_SHELL.getActivePositionId() : null;
+      /* Fix 2026-05-04: stale localStorage guard — kayıtlı pos artık yoksa temizle.
+         (Tuna bug: Peoplein 0 pozisyon ama localStorage'da eski pos ID kalmış,
+         addToPipeline RLS sessizce reject ediyordu.) */
+      if (posId && positions && !positions.find(function (p) { return p.id === posId; })) {
+        posId = null;
+        if (window.IK_SHELL && IK_SHELL.setActivePositionId) {
+          IK_SHELL.setActivePositionId(null);
+        }
+      }
       if (!posId && positions && positions.length) {
         posId = positions[0].id;
         if (window.IK_SHELL && IK_SHELL.setActivePositionId) {
@@ -884,6 +893,11 @@
         return;
       }
       IK_DATA.addToPipeline(candidate_id, state.activePositionId).then(function (res) {
+        /* Fix 2026-05-04: ok:false case'de hata göster (RLS reject sessiz başarı bug'ı) */
+        if (!res || res.ok === false) {
+          showToast('Eklenemedi: ' + (res && res.error ? res.error : 'pozisyon erişimi yok'), 'error');
+          return;
+        }
         if (res.duplicate) showToast('Aday zaten pipeline\'da', 'error');
         else showToast('Pipeline\'a eklendi', 'success');
       });
@@ -928,10 +942,17 @@
           return IK_DATA.addToPipeline(id, state.activePositionId);
         });
         Promise.all(promises).then(function (results) {
-          var added = results.filter(function (r) { return r && !r.duplicate; }).length;
-          var dup = results.length - added;
+          /* Fix 2026-05-04: ok:false (RLS reject) ayrı say — sessiz başarı bug'ı */
+          var failed = results.filter(function (r) { return !r || r.ok === false; }).length;
+          var added = results.filter(function (r) { return r && r.ok !== false && !r.duplicate; }).length;
+          var dup = results.filter(function (r) { return r && r.duplicate; }).length;
+          if (added === 0 && failed > 0) {
+            showToast(failed + ' aday eklenemedi (pozisyon erişimi yok)', 'error');
+            return;
+          }
           var msg = added + ' aday eklendi';
           if (dup > 0) msg += ', ' + dup + ' zaten vardı';
+          if (failed > 0) msg += ', ' + failed + ' başarısız';
           showToast(msg, 'success');
           state.selected.clear();
           updateBulkBar();
