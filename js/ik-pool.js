@@ -594,7 +594,9 @@
 
     return Promise.all([
       IK_DATA.getPositions(),
-      IK_DATA.searchCandidates({}, null) /* full list for facets */
+      /* limit:500 — facets + pagination için tüm pool gerekli (Phase H 200 aday).
+         Default 50 idi → "50/50" UI bug'ı. Server-side filter optimal yine RPC'de. */
+      IK_DATA.searchCandidates({ limit: 500 }, null)
     ]).then(function (results) {
       var positions = results[0];
       var allCandidates = results[1];
@@ -622,7 +624,10 @@
   }
 
   function applyFilters() {
-    return IK_DATA.searchCandidates(state.filters, state.activePositionId).then(function (list) {
+    /* limit:500 — facet + tüm filtered set frontend'de paginate.
+       Phase H 200 aday için yetiyor; >500'de server-side cursor lazım (P3). */
+    var filtersWithLimit = Object.assign({}, state.filters, { limit: 500 });
+    return IK_DATA.searchCandidates(filtersWithLimit, state.activePositionId).then(function (list) {
       state.candidates = list;
       state.loaded = Math.min(PAGE_SIZE, list.length);
       renderFilterChips();
