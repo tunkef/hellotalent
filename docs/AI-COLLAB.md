@@ -4173,3 +4173,18 @@ UI_VERIFIED=1 ile commit.
 Etki: tüm 9 HR sayfası (ik.html + hr-pool/pipeline/candidate/messages/company/team/campaigns/settings) artık edge-to-edge. Logo viewport sol kenarda, avatar sağ kenarda.
 
 Cache-bust: `css/ik-shell.css?v=20260505edge` (tüm 9 HTML).
+
+**Followup 7 (5 May, Tuna 5-direktif SS):**
+1. Hero KPI satırı ortalı (text-align center, ik-kpi align-items center)
+2. Sol footer text-link kaldırıldı ("Tüm pozisyonlar / Aday havuzu / Mesaj kutusu / Tüm kampanyalar / Ekip yönetimi") — sadece pill action sağ alt
+3. Kart tıklanma tutarlı: card root <a> always clickable, pill stopPropagation ayrı action
+4. Hızlı eylem kart bento'dan çıkarıldı (5 kart kaldı)
+5. Empty state dikey ortalı + daha küçük (text-base, flex:1 align-items center)
+
+Re-audit verify (Playwright + computed):
+- KPI: "Açık pozisyon" 1 ✓, ortalı (text-align: center)
+- Bento 3-col 410×3 ✓, 5 kart (3+2)
+- Title 700 ✓, pill 10px radius
+- Hızlı eylem yok ✓
+
+Cache-bust: ?v=20260505fix6

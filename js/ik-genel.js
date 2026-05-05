@@ -247,20 +247,18 @@
   }
 
   /* ═══════ Bento card builders ═══════
-     buildCardShell — ortak kart yapısı.
-     actionPill: { label, href } verilirse footer split (sol cta link + sağ pill).
-     Tuna kuralı: button/link içinde simge (ok/+/icon) YASAK. */
-  function buildCardShell(title, chipText, ctaText, onClick, actionPill) {
-    /* actionPill var ise card <article>, yoksa <button> (tek tıklama). */
+     buildCardShell — ortak kart yapısı (5 May Tuna refactor):
+     - Card root <a> always clickable (tutarlı tıklama, ctaHref → kart linki)
+     - Sol footer text-link KALDIRILDI (Tuna: "küçük sayfa başlığı yazısını kaldır")
+     - actionPill { label, href } varsa footer'da SADECE pill action (sağda)
+     - Tuna kuralı: button içinde simge YASAK */
+  function buildCardShell(title, chipText, _ctaTextUnused, _onClickUnused, actionPill) {
     var hasPill = !!(actionPill && actionPill.label && actionPill.href);
-    var card = hasPill
-      ? el('article', 'ik-card')
-      : document.createElement('button');
-    if (!hasPill) {
-      card.type = 'button';
-      card.className = 'ik-card';
-      if (onClick) card.addEventListener('click', onClick);
-    }
+    var rootHref = (actionPill && actionPill.ctaHref) || (actionPill && actionPill.href) || '#';
+
+    var card = document.createElement('a');
+    card.className = 'ik-card';
+    card.href = rootHref;
 
     var head = el('div', 'ik-card__head');
     head.appendChild(txt('h3', 'ik-card__title', title));
@@ -273,23 +271,16 @@
     card.appendChild(body);
 
     if (hasPill) {
-      var footer = el('div', 'ik-card__footer ik-card__footer--split');
-      var ctaLink = document.createElement('a');
-      ctaLink.className = 'ik-card__cta ik-card__cta--link';
-      ctaLink.href = actionPill.ctaHref || '#';
-      ctaLink.textContent = ctaText || '';
-      footer.appendChild(ctaLink);
-
+      var footer = el('div', 'ik-card__footer ik-card__footer--end');
       var pill = document.createElement('a');
       pill.className = 'ik-card__action-pill';
       pill.href = actionPill.href;
       pill.setAttribute('aria-label', actionPill.label);
       pill.textContent = actionPill.label;
+      /* Pill kartın kendi link'inden ayrı navigation — propagation durdur */
+      pill.addEventListener('click', function (e) { e.stopPropagation(); });
       footer.appendChild(pill);
       card.appendChild(footer);
-    } else if (ctaText) {
-      var cta = txt('span', 'ik-card__cta', ctaText);
-      card.appendChild(cta);
     }
 
     return { card: card, body: body };
@@ -308,9 +299,11 @@
     var top = positions.slice(0, 4);
     var total = positions.length;
 
-    /* Card root: <article> (no nested button). Tüm kart tıklaması yok —
-       açık aksiyonlar (yeni pozisyon + tüm pozisyonlar) explicit. */
-    var card = el('article', 'ik-card ik-card--positions');
+    /* 5 May Tuna refactor: card root <a> tıklanabilir, sol footer text-link
+       kaldırıldı, sadece pill action sağ alt. */
+    var card = document.createElement('a');
+    card.className = 'ik-card ik-card--positions';
+    card.href = 'hr-pipeline.html';
 
     var head = el('div', 'ik-card__head');
     head.appendChild(txt('h3', 'ik-card__title', 'Açık Pozisyonlar'));
@@ -322,12 +315,10 @@
 
     if (total === 0) {
       body.appendChild(txt('div', 'ik-empty', 'Henüz açık pozisyon yok.'));
-      body.appendChild(txt('div', 'ik-empty__hint', 'Sağ alttaki "Yeni pozisyon" ile başla.'));
     } else {
       var list = el('div', 'ik-list');
       top.forEach(function (p) {
-        var item = el('a', 'ik-list__item ik-list__item--link');
-        item.href = 'hr-pipeline.html?pos=' + encodeURIComponent(p.id);
+        var item = el('div', 'ik-list__item');
         var bodyEl = el('div', 'ik-list__body');
         bodyEl.appendChild(txt('span', 'ik-list__name', p.ad || '—'));
         var metaParts = [];
@@ -342,24 +333,15 @@
       body.appendChild(list);
     }
 
-    /* Footer — sol: "Tüm pozisyonlar →" link, sağ: "+ Yeni pozisyon" pill button.
-       Footer flex space-between (CSS .ik-card__footer--split). */
-    var footer = el('div', 'ik-card__footer ik-card__footer--split');
-
-    /* Tuna kuralı: button/link içinde simge YASAK — text-only */
-    var ctaAll = document.createElement('a');
-    ctaAll.className = 'ik-card__cta ik-card__cta--link';
-    ctaAll.href = 'hr-pipeline.html';
-    ctaAll.textContent = 'Tüm pozisyonlar';
-    footer.appendChild(ctaAll);
-
+    /* Footer: sadece pill action — sol text-link kaldırıldı (Tuna direktif) */
+    var footer = el('div', 'ik-card__footer ik-card__footer--end');
     var ctaNew = document.createElement('a');
     ctaNew.className = 'ik-card__action-pill';
     ctaNew.href = 'hr-pipeline.html#new-position';
     ctaNew.setAttribute('aria-label', 'Yeni pozisyon aç');
     ctaNew.textContent = 'Yeni pozisyon';
+    ctaNew.addEventListener('click', function (e) { e.stopPropagation(); });
     footer.appendChild(ctaNew);
-
     card.appendChild(footer);
 
     return card;
@@ -714,7 +696,7 @@
     bento.appendChild(buildMessagesCard(data));
     bento.appendChild(buildCampaignsCard(data));
     bento.appendChild(buildTeamCard());
-    bento.appendChild(buildActionsCard());
+    /* 5 May Tuna: Hızlı eylem kart kaldırıldı (buildActionsCard çağrısı yok) */
     root.appendChild(bento);
 
     /* 5 May Tuna: "Son hareketler" feed iptal — anasayfa daha sade */

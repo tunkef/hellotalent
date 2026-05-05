@@ -93,20 +93,22 @@
   line-height: 1.5;
 }
 
-/* KPI row inside hero */
+/* KPI row inside hero — 5 May Tuna: ortalı */
 .ik-genel__kpi-row {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: var(--space-7);
   border-top: 1px solid var(--border-subtle);
   padding-top: var(--space-9);
+  text-align: center;
 }
 
 .ik-kpi {
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: var(--space-3);
-  text-align: left;
+  text-align: center;
   background: transparent;
   border: 0;
   padding: 0;
@@ -244,13 +246,16 @@
   color: var(--editorial-vermillion);
 }
 
-/* Footer split — sol CTA link + sağ action pill (Açık Pozisyonlar kartı).
-   Tuna 5 May feedback: "+ Yeni" sağ alt CTA, head'de değil. */
+/* Footer — 5 May Tuna refactor: sol text-link kaldırıldı, sadece pill action */
 .ik-card__footer {
   display: flex;
   align-items: center;
   margin-top: auto;
 }
+.ik-card__footer--end {
+  justify-content: flex-end;
+}
+/* Legacy split (geriye dönük — pill yoksa footer kullanılmaz) */
 .ik-card__footer--split {
   justify-content: space-between;
   gap: var(--space-5);
@@ -559,14 +564,17 @@
   transform: translateX(2px);
 }
 
-/* Empty state inside card */
+/* Empty state inside card — 5 May Tuna oran fix: dikey ortalı, daha küçük */
 .ik-empty {
   font-family: var(--font-body);
-  font-size: var(--text-md);
+  font-size: var(--text-base);
   color: var(--editorial-ink-muted);
-  padding: var(--space-7) var(--space-5);
+  padding: var(--space-5) 0;
   text-align: left;
   line-height: 1.5;
+  flex: 1;
+  display: flex;
+  align-items: center;
 }
 .ik-empty__hint {
   font-family: var(--font-mono);
