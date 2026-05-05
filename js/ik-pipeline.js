@@ -134,16 +134,23 @@
     dom.posMenu.addEventListener('click', function (e) {
       var item = e.target.closest('[data-position-id]');
       if (!item) return;
-      var pid = item.getAttribute('data-position-id');
-      if (pid === state.activePositionId) {
+      /* 5 May Tuna bug fix: data-position-id string, p.id number → loose compare */
+      var pidStr = item.getAttribute('data-position-id');
+      var pos = state.positions.find(function (p) { return String(p.id) === pidStr; });
+      if (!pos) {
         dom.posMenu.classList.remove('is-open');
         dom.posBtn.setAttribute('aria-expanded', 'false');
         return;
       }
-      state.activePositionId = pid;
-      state.activePosition = state.positions.find(function (p) { return p.id === pid; }) || null;
+      if (String(pos.id) === String(state.activePositionId)) {
+        dom.posMenu.classList.remove('is-open');
+        dom.posBtn.setAttribute('aria-expanded', 'false');
+        return;
+      }
+      state.activePositionId = pos.id;
+      state.activePosition = pos;
       if (window.IK_SHELL && IK_SHELL.setActivePositionId) {
-        IK_SHELL.setActivePositionId(pid);
+        IK_SHELL.setActivePositionId(pos.id);
       }
       dom.posMenu.classList.remove('is-open');
       dom.posBtn.setAttribute('aria-expanded', 'false');
@@ -663,17 +670,22 @@
       state.candidatesById = {};
       candList.forEach(function (c) { state.candidatesById[c.id] = c; });
 
-      /* Active position */
-      var posId = (window.IK_SHELL && IK_SHELL.getActivePositionId)
+      /* Active position — 5 May Tuna bug fix:
+         localStorage string döner, DB id number (bigint) → strict compare fail.
+         Plus eski orphan id localStorage'da kalmış olabilir → validate ve fallback. */
+      var rawPosId = (window.IK_SHELL && IK_SHELL.getActivePositionId)
         ? IK_SHELL.getActivePositionId() : null;
-      if (!posId && state.positions.length) {
-        posId = state.positions[0].id;
-        if (window.IK_SHELL && IK_SHELL.setActivePositionId) {
-          IK_SHELL.setActivePositionId(posId);
-        }
+      var foundPos = rawPosId
+        ? state.positions.find(function (p) { return String(p.id) === String(rawPosId); })
+        : null;
+      if (!foundPos && state.positions.length) {
+        foundPos = state.positions[0];
       }
-      state.activePositionId = posId;
-      state.activePosition = state.positions.find(function (p) { return p.id === posId; }) || null;
+      state.activePositionId = foundPos ? foundPos.id : null;
+      state.activePosition = foundPos || null;
+      if (state.activePositionId && window.IK_SHELL && IK_SHELL.setActivePositionId) {
+        IK_SHELL.setActivePositionId(state.activePositionId);
+      }
 
       renderPositionSwitcher();
       return loadPipeline();
