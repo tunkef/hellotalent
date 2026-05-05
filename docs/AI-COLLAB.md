@@ -3985,4 +3985,10 @@ Live test: admin user feature_flags UPDATE → 42501 permission denied. Bypass i
   - Mevcut 100% uyumlu (violating: 0)
 - Live test: bypass denemesi 42501 RLS-level reject (trigger pre-empted çünkü authenticated UPDATE grant yok mig 20260503190000 H1). M2 koruma admin → admin bypass path'inde devreye girer.
 
-**Sıradaki:** A21 (auth.role refactor) + A8 (KVKK retention legal-reviewer).
+**A21 LIVE (commit pending, mig 20260505120000_a21_auth_role_to_jwt):**
+- `hr_profiles_audit_changes()` trigger function — `auth.role()` → `(auth.jwt() ->> 'role')`
+- Future-proof pattern (Supabase Auth v2 / platform v3+ deprecation prevention)
+- Behavior identical (service_role bypass + authenticated audit)
+- Verify: pg_proc.prosrc → "auth.jwt() ->> 'role'" pattern aktif
+
+**Sıradaki:** A8 (KVKK retention legal-reviewer) + Secret rotation karar.
