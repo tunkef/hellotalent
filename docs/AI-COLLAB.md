@@ -4120,6 +4120,8 @@ darkmode-auditor review arka planda.
 **CI fix paralel commit (4c79b97):**
 asama86-e2e.spec.js stale assertion fix — Pozisyonlar promote + Mesajlar segment kaldırıldı + Pipeline subnav kaldırıldı sonrası test güncellendi. CI artık YEŞİL.
 
+**Followup (5 May, Tuna SS denetim):** Button/link içi simge YASAK (Tuna mutlak kuralı, önceden de söylemişti). SS denetimi: arrow span (Tüm pozisyonlar/Aday havuzu/Mesaj kutusu/Kampanya yönetimi/Ekip yönetimi), action-pill plus icon (Yeni pozisyon), quick-action sol icon + sağ arrow (3 buton) hepsi kaldırıldı. Plus oransızlık: card title 2-line bölünme (flex 1 1 auto + nowrap + ellipsis), bento Açık Pozisyonlar boş alan (align-items: start). CLATU uyum: title weight 800 (1.2 manifest), action-pill radius 10px (6.2). Cache-bust ?v=20260505noicon.
+
 ---
 
 ## 5 Mayıs 2026 — Header refactor (ik edge-to-edge profil parite)

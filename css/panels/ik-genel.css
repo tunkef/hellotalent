@@ -76,7 +76,8 @@
 .ik-genel__title {
   font-family: var(--font-head);
   font-size: var(--text-display-lg);
-  font-weight: 700;
+  /* CLATU 1.2: H-display Bricolage 800 (manifest hard rule) */
+  font-weight: 800;
   line-height: 1.05;
   color: var(--editorial-vermillion);
   letter-spacing: -0.03em;
@@ -168,6 +169,8 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: var(--space-10);
+  /* 5 May Tuna fix: kartlar içerik yüksekliğine göre — boş alan stretch yok */
+  align-items: start;
 }
 
 .ik-card {
@@ -203,7 +206,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--space-6);
+  gap: var(--space-5);
 }
 
 .ik-card__title {
@@ -214,6 +217,12 @@
   color: var(--editorial-ink);
   margin: 0;
   line-height: 1.25;
+  /* 5 May Tuna fix: 2-line bölünme önleme — title flex grow + nowrap */
+  flex: 1 1 auto;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .ik-card__chip {
@@ -248,16 +257,16 @@
   gap: var(--space-5);
 }
 
-/* Action pill — footer sağında "+ Yeni pozisyon" butonu. */
+/* Action pill — footer sağında "Yeni pozisyon" butonu (text-only, icon yok).
+   CLATU 6.2: button radius 10px (--radius), 999 sadece seg-toggle pill. */
 .ik-card__action-pill {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-2) var(--space-5);
+  padding: var(--space-3) var(--space-6);
   background: var(--editorial-vermillion);
   color: var(--editorial-on-vermillion);
   border: 1px solid var(--editorial-vermillion);
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius);
   font-family: var(--font-mono);
   font-size: var(--text-xs);
   font-weight: 600;

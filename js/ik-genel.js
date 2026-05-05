@@ -264,9 +264,8 @@
     card.appendChild(body);
 
     if (ctaText) {
-      var cta = el('span', 'ik-card__cta');
-      cta.appendChild(document.createTextNode(ctaText + ' '));
-      cta.appendChild(txt('span', 'ik-card__cta-arrow', '→'));
+      /* Tuna kuralı: button/link içinde simge (ok/+/icon) YASAK — text-only CTA */
+      var cta = txt('span', 'ik-card__cta', ctaText);
       card.appendChild(cta);
     }
 
@@ -324,21 +323,18 @@
        Footer flex space-between (CSS .ik-card__footer--split). */
     var footer = el('div', 'ik-card__footer ik-card__footer--split');
 
+    /* Tuna kuralı: button/link içinde simge YASAK — text-only */
     var ctaAll = document.createElement('a');
     ctaAll.className = 'ik-card__cta ik-card__cta--link';
     ctaAll.href = 'hr-pipeline.html';
-    ctaAll.appendChild(document.createTextNode('Tüm pozisyonlar '));
-    ctaAll.appendChild(txt('span', 'ik-card__cta-arrow', '→'));
+    ctaAll.textContent = 'Tüm pozisyonlar';
     footer.appendChild(ctaAll);
 
     var ctaNew = document.createElement('a');
     ctaNew.className = 'ik-card__action-pill';
     ctaNew.href = 'hr-pipeline.html#new-position';
     ctaNew.setAttribute('aria-label', 'Yeni pozisyon aç');
-    var plusIcon = el('span', 'ik-card__action-pill-icon');
-    plusIcon.appendChild(buildIconPlus());
-    ctaNew.appendChild(plusIcon);
-    ctaNew.appendChild(txt('span', 'ik-card__action-pill-label', 'Yeni pozisyon'));
+    ctaNew.textContent = 'Yeni pozisyon';
     footer.appendChild(ctaNew);
 
     card.appendChild(footer);
@@ -510,39 +506,18 @@
 
     var body = el('div', 'ik-card__body');
 
+    /* Tuna kuralı: button/link içinde simge YASAK — text-only quick-action */
     var actions = [
-      {
-        label: 'Yeni kampanya başlat',
-        href: 'hr-campaigns.html?new=1',
-        iconBuilder: buildIconPlus
-      },
-      {
-        label: 'Aday havuzunda ara',
-        href: 'hr-pool.html',
-        iconBuilder: buildIconSearch
-      },
-      {
-        label: 'Ekip üyesi davet et',
-        href: 'hr-team.html?invite=1',
-        iconBuilder: buildIconUserPlus
-      }
+      { label: 'Yeni kampanya başlat', href: 'hr-campaigns.html?new=1' },
+      { label: 'Aday havuzunda ara',   href: 'hr-pool.html' },
+      { label: 'Ekip üyesi davet et',  href: 'hr-team.html?invite=1' }
     ];
 
     actions.forEach(function (a) {
       var link = document.createElement('a');
       link.className = 'ik-quick-action';
       link.href = a.href;
-
-      var iconSpan = el('span', 'ik-quick-action__icon');
-      iconSpan.appendChild(a.iconBuilder());
-      link.appendChild(iconSpan);
-
       link.appendChild(txt('span', 'ik-quick-action__label', a.label));
-
-      var arrow = el('span', 'ik-quick-action__arrow');
-      arrow.appendChild(buildIconArrow(16));
-      link.appendChild(arrow);
-
       body.appendChild(link);
     });
 
