@@ -189,22 +189,20 @@
    ════════════════════════════════════════════════════════════════ */
 .ik-genel__bento {
   display: grid;
-  /* 5 May Tuna fix: 6 kart 4-col grid'de 2. row 2 boş slot — dengesiz.
-     360px minmax → 1280px container'da 3 sütun (3+3 dengeli). */
+  /* 3 kart 3-col tam dengeli, eşit yükseklik (en uzun içerik belirler) */
   grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
-  gap: var(--space-10);
+  gap: var(--space-9);
 }
 
 .ik-card {
   display: flex;
   flex-direction: column;
-  gap: var(--space-7);
+  gap: var(--space-6);
   background: var(--editorial-card);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
-  /* 5 May Tuna: card biraz daha uzun (padding-bottom artırıldı, footer rahat) */
-  padding: var(--space-11) var(--space-11) var(--space-9);
-  min-height: 320px;
+  /* Padding compact, content fit — min-height yok (Tuna 5 May: dev boşluk fix) */
+  padding: var(--space-9) var(--space-10);
   text-decoration: none;
   color: inherit;
   font: inherit;
@@ -268,13 +266,12 @@
   color: var(--editorial-vermillion);
 }
 
-/* Footer — sol şirket adı + sağ pill (5 May Tuna: company name footer'da) */
+/* Footer — sadece pill action, ayraç çizgi yok (5 May Tuna: temiz görünüm) */
 .ik-card__footer {
   display: flex;
   align-items: center;
   margin-top: auto;
-  padding-top: var(--space-7);
-  border-top: 1px solid var(--border-subtle);
+  padding-top: var(--space-5);
 }
 .ik-card__footer--end {
   justify-content: flex-end;
@@ -374,7 +371,7 @@
 .ik-card__body {
   display: flex;
   flex-direction: column;
-  gap: var(--space-5);
+  gap: var(--space-4);
   flex: 1;
 }
 

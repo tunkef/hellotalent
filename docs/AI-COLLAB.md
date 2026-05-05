@@ -4210,3 +4210,5 @@ Re-audit verify: kpis 0, sublines 0, cards 3 (Açık Pozisyonlar, Adaylar, Kampa
 **Followup 10 (5 May, Tuna):** Hero "Merhaba Tuna" altına uzun ince hairline çizgi. Card min-height 320px (uzadı). Her kart footer'ında şirket adı (data.company.company_name → "PEOPLEIN"). Cache-bust ?v=company.
 
 **Followup 11 (5 May, Tuna):** Şirket adı bento footer'larından kaldırıldı, hero'da divider altına taşındı (.ik-genel__hero-company mono uppercase muted). Verify: heroCompany 'Peoplein', cardCompanyCount 0. Cache-bust ?v=herocompany.
+
+**Followup 12 (5 May, Tuna kızgın):** min-height 320px + footer border-top dev boşluk yaratıyordu. Fix: min-height kaldır, padding compact (space-9 × space-10), footer border-top kaldır, body gap space-4. Kartlar 320 → 255px (içerik fit). Cache-bust ?v=compact.
