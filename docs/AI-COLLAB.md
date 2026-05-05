@@ -4132,6 +4132,12 @@ asama86-e2e.spec.js stale assertion fix — Pozisyonlar promote + Mesajlar segme
 - Title CSS: nowrap+ellipsis kaldırıldı (tek-word'lerle gerek yok), flex 1 + min-width:0 yeterli.
 - Cache-bust ?v=20260505cards2.
 
+**Followup 4 (5 May, Tuna SS critical):**
+1. Pill button radius CSS doğru (--radius 10px) ama cache yansımamış → agresif cache-bust v=fix4
+2. Chip 999px → 10px (CLATU 6.2 button/badge 10px tutarlılık)
+3. Kart boyutları farklı (align-items:start çelişki) → stretch default geri, body flex:1 + footer margin-top:auto pattern eşit yükseklik
+- Cache-bust ?v=20260505fix4
+
 ---
 
 ## 5 Mayıs 2026 — Header refactor (ik edge-to-edge profil parite)
