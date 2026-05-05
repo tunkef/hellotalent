@@ -4206,3 +4206,5 @@ Cache-bust: ?v=20260505minimal
 Re-audit verify: kpis 0, sublines 0, cards 3 (Açık Pozisyonlar, Adaylar, Kampanyalar)
 
 **Followup 9 (5 May, Tuna):** Hero "Merhaba Tuna" weight 800 (bold) → 400 (regular). letter-spacing -0.03 → -0.02. Cache-bust ?v=regular.
+
+**Followup 10 (5 May, Tuna):** Hero "Merhaba Tuna" altına uzun ince hairline çizgi. Card min-height 320px (uzadı). Her kart footer'ında şirket adı (data.company.company_name → "PEOPLEIN"). Cache-bust ?v=company.

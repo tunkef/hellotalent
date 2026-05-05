@@ -117,12 +117,14 @@
       adapter.getCompanyKpis(),       /* [0] KPI sayıları */
       adapter.getPositions(),          /* [1] positions[] */
       adapter.getMessageThreads({ limit: 50 }), /* [2] message threads[] */
-      adapter.getCampaigns()           /* [3] campaigns[] — boş (Iyzico bekliyor) */
+      adapter.getCampaigns(),          /* [3] campaigns[] — boş (Iyzico bekliyor) */
+      adapter.getCompany()             /* [4] company — name footer'da gösterilir */
     ]).then(function (results) {
       var kpiRaw   = results[0] || {};
       var positions = Array.isArray(results[1]) ? results[1] : [];
       var messages  = Array.isArray(results[2]) ? results[2] : [];
       var campaigns = Array.isArray(results[3]) ? results[3] : [];
+      var company   = results[4] || null;
 
       /* Pipeline: ilk active pozisyonu kullan — field 'durum' ('active'/'closed') */
       var firstOpenPos = positions.find(function (p) { return p.durum === 'active'; }) || null;
@@ -151,6 +153,7 @@
           messages:   messages,
           campaigns:  campaigns,
           candidates: candidates,
+          company:    company,
           kpis: {
             openPositions:   openPositions,
             pipelineActive:  pipelineActive,
@@ -180,12 +183,11 @@
     var greetingText = name ? ('Merhaba ' + name) : 'Merhaba';
     textBlock.appendChild(txt('h1', 'ik-genel__title', greetingText));
 
-    /* 5 May Tuna: subline kaldırıldı — KPI grid satırı zaten özet veriyor */
+    /* 5 May Tuna: title altında uzun ince çizgi */
+    textBlock.appendChild(el('hr', 'ik-genel__hero-divider'));
 
     grid.appendChild(textBlock);
     hero.appendChild(grid);
-
-    /* 5 May Tuna: KPI bölümü tamamen kaldırıldı — hero sadece tarih + greeting */
 
     return hero;
   }
@@ -214,18 +216,21 @@
     var body = el('div', 'ik-card__body');
     card.appendChild(body);
 
+    /* 5 May Tuna: card altına şirket adı (mono uppercase muted) */
+    var companyName = (window.__IK_CTX_COMPANY__ && window.__IK_CTX_COMPANY__.company_name) || '';
+    var footer = el('div', 'ik-card__footer ik-card__footer--split');
+    footer.appendChild(txt('span', 'ik-card__company', companyName));
+
     if (hasPill) {
-      var footer = el('div', 'ik-card__footer ik-card__footer--end');
       var pill = document.createElement('a');
       pill.className = 'ik-card__action-pill';
       pill.href = actionPill.href;
       pill.setAttribute('aria-label', actionPill.label);
       pill.textContent = actionPill.label;
-      /* Pill kartın kendi link'inden ayrı navigation — propagation durdur */
       pill.addEventListener('click', function (e) { e.stopPropagation(); });
       footer.appendChild(pill);
-      card.appendChild(footer);
     }
+    card.appendChild(footer);
 
     return { card: card, body: body };
   }
@@ -277,8 +282,11 @@
       body.appendChild(list);
     }
 
-    /* Footer: sadece pill action — sol text-link kaldırıldı (Tuna direktif) */
-    var footer = el('div', 'ik-card__footer ik-card__footer--end');
+    /* Footer: sol şirket adı + sağ pill action */
+    var companyName = (window.__IK_CTX_COMPANY__ && window.__IK_CTX_COMPANY__.company_name) || '';
+    var footer = el('div', 'ik-card__footer ik-card__footer--split');
+    footer.appendChild(txt('span', 'ik-card__company', companyName));
+
     var ctaNew = document.createElement('a');
     ctaNew.className = 'ik-card__action-pill';
     ctaNew.href = 'hr-pipeline.html#new-position';
@@ -630,6 +638,9 @@
     while (host.firstChild) host.removeChild(host.firstChild);
 
     var kpis = data.kpis || { openPositions: 0, pipelineActive: 0, pendingMessages: 0, activeCampaigns: 0 };
+
+    /* 5 May Tuna: card footer'da şirket adı için global set (render-time) */
+    window.__IK_CTX_COMPANY__ = data.company || null;
 
     var root = el('div', 'ik-genel');
     root.appendChild(buildHero(data, kpis, ctx));

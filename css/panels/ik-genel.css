@@ -76,12 +76,21 @@
 .ik-genel__title {
   font-family: var(--font-head);
   font-size: var(--text-display-lg);
-  /* 5 May Tuna: regular weight (bold istemez) */
   font-weight: 400;
   line-height: 1.05;
   color: var(--editorial-vermillion);
   letter-spacing: -0.02em;
   margin: 0 0 var(--space-5);
+}
+
+/* 5 May Tuna: title altında uzun ince çizgi */
+.ik-genel__hero-divider {
+  display: block;
+  width: 100%;
+  height: 1px;
+  border: 0;
+  background: var(--editorial-hairline-strong);
+  margin: var(--space-7) 0 0;
 }
 
 .ik-genel__subline {
@@ -182,7 +191,9 @@
   background: var(--editorial-card);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
-  padding: var(--space-11);
+  /* 5 May Tuna: card biraz daha uzun (padding-bottom artırıldı, footer rahat) */
+  padding: var(--space-11) var(--space-11) var(--space-9);
+  min-height: 320px;
   text-decoration: none;
   color: inherit;
   font: inherit;
@@ -246,19 +257,36 @@
   color: var(--editorial-vermillion);
 }
 
-/* Footer — 5 May Tuna refactor: sol text-link kaldırıldı, sadece pill action */
+/* Footer — sol şirket adı + sağ pill (5 May Tuna: company name footer'da) */
 .ik-card__footer {
   display: flex;
   align-items: center;
   margin-top: auto;
+  padding-top: var(--space-7);
+  border-top: 1px solid var(--border-subtle);
 }
 .ik-card__footer--end {
   justify-content: flex-end;
 }
-/* Legacy split (geriye dönük — pill yoksa footer kullanılmaz) */
 .ik-card__footer--split {
   justify-content: space-between;
   gap: var(--space-5);
+}
+
+/* Company name — kart altında, mono uppercase muted */
+.ik-card__company {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--editorial-ink-muted);
+  line-height: 1.4;
+  flex: 1 1 auto;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* Action pill — footer sağında. CLATU 6.2: button radius 10px (--radius).
