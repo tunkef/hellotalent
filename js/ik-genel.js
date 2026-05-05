@@ -215,9 +215,9 @@
     kpiRow.appendChild(kpiCard(
       'Açık pozisyon',
       kpis.openPositions,
-      'Devam eden ilanlar',
+      'Pozisyonlar',
       false,
-      function () { location.href = 'hr-campaigns.html'; }
+      function () { location.href = 'hr-pipeline.html'; }
     ));
     kpiRow.appendChild(kpiCard(
       'Süreçteki aday',
