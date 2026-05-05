@@ -275,57 +275,72 @@
 
   /* Açık Pozisyonlar Özeti — 5 May 2026 (Pipeline kartı yerine).
      data.positions: hr_profiles.id'ye bağlı pozisyon listesi (durum=active filtreli).
-     Dashboard ilk kart, en görünür. CTA: yeni pozisyon aç + tüm pozisyonları gör. */
+     Custom layout — buildCardShell button-in-button kaçınır. Head'de:
+       title + chip + ufak "+ Yeni" action button (sağda).
+     Footer CTA: "Tüm pozisyonlar →" link. Body: liste / empty state. */
   function buildPositionsCard(data) {
     var positions = (data.positions || []).slice();
-    /* En yeni pozisyon önce */
     positions.sort(function (a, b) {
       return new Date(b.created_at || 0) - new Date(a.created_at || 0);
     });
     var top = positions.slice(0, 4);
     var total = positions.length;
 
-    var shell = buildCardShell(
-      'Açık Pozisyonlar',
-      total > 0 ? total + ' aktif' : 'Henüz yok',
-      'Tüm pozisyonlar',
-      function () { location.href = 'hr-pipeline.html'; }
-    );
+    /* Card root: <article> (no nested button). Tüm kart tıklaması yok —
+       açık aksiyonlar (yeni pozisyon + tüm pozisyonlar) explicit. */
+    var card = el('article', 'ik-card ik-card--positions');
 
-    /* Yeni pozisyon CTA — boş durumda bile görünür */
+    var head = el('div', 'ik-card__head');
+    head.appendChild(txt('h3', 'ik-card__title', 'Açık Pozisyonlar'));
+    head.appendChild(txt('span', 'ik-card__chip', total > 0 ? total + ' aktif' : 'Henüz yok'));
+
+    /* "+ Yeni" — ufak inline action, head sağında */
     var newBtn = document.createElement('a');
-    newBtn.className = 'ik-card__action ik-card__action--primary';
+    newBtn.className = 'ik-card__head-action';
     newBtn.href = 'hr-pipeline.html#new-position';
-    var plusIcon = el('span', 'ik-card__action-icon');
+    newBtn.setAttribute('aria-label', 'Yeni pozisyon aç');
+    var plusIcon = el('span', 'ik-card__head-action-icon');
     plusIcon.appendChild(buildIconPlus());
     newBtn.appendChild(plusIcon);
-    newBtn.appendChild(txt('span', 'ik-card__action-label', 'Yeni pozisyon'));
+    newBtn.appendChild(txt('span', 'ik-card__head-action-label', 'Yeni'));
+    head.appendChild(newBtn);
+
+    card.appendChild(head);
+
+    var body = el('div', 'ik-card__body');
+    card.appendChild(body);
 
     if (total === 0) {
-      shell.body.appendChild(txt('div', 'ik-empty', 'Henüz açık pozisyon yok.'));
-      var hint = txt('div', 'ik-empty__hint', 'İlk pozisyonu açarak aday almaya başla.');
-      shell.body.appendChild(hint);
-      shell.body.appendChild(newBtn);
+      body.appendChild(txt('div', 'ik-empty', 'Henüz açık pozisyon yok.'));
+      body.appendChild(txt('div', 'ik-empty__hint', 'Sağ üstteki "Yeni" ile ilk pozisyonu aç.'));
     } else {
       var list = el('div', 'ik-list');
       top.forEach(function (p) {
         var item = el('a', 'ik-list__item ik-list__item--link');
         item.href = 'hr-pipeline.html?pos=' + encodeURIComponent(p.id);
-        var body = el('div', 'ik-list__body');
-        body.appendChild(txt('span', 'ik-list__name', p.ad || '—'));
+        var bodyEl = el('div', 'ik-list__body');
+        bodyEl.appendChild(txt('span', 'ik-list__name', p.ad || '—'));
         var metaParts = [];
         if (p.sehir) metaParts.push(p.sehir);
         if (p.seg) metaParts.push(p.seg);
         if (p.exp) metaParts.push(p.exp);
-        body.appendChild(txt('span', 'ik-list__meta', metaParts.join(' · ')));
-        item.appendChild(body);
+        bodyEl.appendChild(txt('span', 'ik-list__meta', metaParts.join(' · ')));
+        item.appendChild(bodyEl);
         item.appendChild(txt('span', 'ik-list__time', formatTimeAgo(p.created_at)));
         list.appendChild(item);
       });
-      shell.body.appendChild(list);
-      shell.body.appendChild(newBtn);
+      body.appendChild(list);
     }
-    return shell.card;
+
+    /* Footer CTA — tüm pozisyonlar */
+    var cta = document.createElement('a');
+    cta.className = 'ik-card__cta ik-card__cta--link';
+    cta.href = 'hr-pipeline.html';
+    cta.appendChild(document.createTextNode('Tüm pozisyonlar '));
+    cta.appendChild(txt('span', 'ik-card__cta-arrow', '→'));
+    card.appendChild(cta);
+
+    return card;
   }
 
   /* Yeni adaylar — son 24h kayit (updated_at) */

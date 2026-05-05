@@ -4070,6 +4070,12 @@ Live test: admin user feature_flags UPDATE → 42501 permission denied. Bypass i
 
 **Etki:** Pozisyon oluşturma akışı (A24) artık Pozisyonlar segment'inden direkt erişilebilir + dashboard ilk kart bu segment'e yönlendirir. Pipeline kavramı kullanıcı görsel hiyerarşisinden çıktı, "Pozisyonlar" daha doğal İK terminolojisi.
 
+**Followup (5 May, Tuna feedback):**
+- Header Mesajlar segment kaldırıldı (9 sayfa) — sağ icon yeterli, segment fazlalık
+- ik-shell.js PAGE_TO_SEGMENT['hr-messages.html'] → null
+- buildPositionsCard refactor: card root `<button>` → `<article>` (nested-interactive kaçın). Devasa + body action kaldırıldı, head'e ufak "+ Yeni" pill button (vermillion fill, 14px icon, mono uppercase). Footer CTA `<a>` link variant. CSS: .ik-card__head-action + .ik-list__item--link + .ik-card__cta--link
+- Cache-bust ?v=20260505roller2
+
 ---
 
 ## 5 Mayıs 2026 — Header refactor (ik edge-to-edge profil parite)

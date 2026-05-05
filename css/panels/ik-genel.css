@@ -232,6 +232,77 @@
   color: var(--editorial-vermillion);
 }
 
+/* Head action — Açık Pozisyonlar "+ Yeni" butonu (5 May 2026).
+   Chip'in sağında küçük inline action. Vermillion vurgulu. */
+.ik-card__head-action {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-4);
+  background: var(--editorial-vermillion);
+  color: var(--editorial-on-vermillion);
+  border: 1px solid var(--editorial-vermillion);
+  border-radius: var(--radius-pill);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  line-height: 1.6;
+  text-decoration: none;
+  transition: background 160ms ease, transform 160ms ease;
+  cursor: pointer;
+}
+.ik-card__head-action:hover {
+  background: var(--editorial-vermillion-deep);
+  border-color: var(--editorial-vermillion-deep);
+  transform: translateY(-1px);
+}
+.ik-card__head-action:focus-visible {
+  outline: 2px solid var(--editorial-vermillion);
+  outline-offset: 2px;
+}
+.ik-card__head-action-icon {
+  display: inline-flex;
+  width: 14px;
+  height: 14px;
+  flex: 0 0 auto;
+}
+.ik-card__head-action-icon svg {
+  width: 14px;
+  height: 14px;
+  display: block;
+}
+.ik-card__head-action-label {
+  line-height: 1;
+}
+
+/* List item link variant — pozisyon kartı list item <a> */
+.ik-list__item--link {
+  text-decoration: none;
+  color: inherit;
+  transition: background 160ms ease;
+  border-radius: var(--radius-sm);
+  padding: var(--space-2);
+  margin: calc(var(--space-2) * -1);
+}
+.ik-list__item--link:hover {
+  background: var(--editorial-vermillion-soft);
+}
+.ik-list__item--link:focus-visible {
+  outline: 2px solid var(--editorial-vermillion);
+  outline-offset: -2px;
+}
+
+/* CTA link variant — pozisyon kartı footer <a> */
+.ik-card__cta--link {
+  text-decoration: none;
+  cursor: pointer;
+}
+.ik-card__cta--link:hover .ik-card__cta-arrow {
+  transform: translateX(2px);
+}
+
 .ik-card__body {
   display: flex;
   flex-direction: column;

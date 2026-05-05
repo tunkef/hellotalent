@@ -21,7 +21,7 @@
     'hr-pipeline.html': 'pozisyonlar',
     'hr-pool.html': 'adaylar',
     'hr-candidate.html': 'adaylar',
-    'hr-messages.html': 'mesajlar',
+    'hr-messages.html': null,
     'hr-company.html': null,
     'hr-team.html': null,
     'hr-campaigns.html': null,
