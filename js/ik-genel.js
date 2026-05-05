@@ -180,68 +180,12 @@
     var greetingText = name ? ('Merhaba ' + name) : 'Merhaba';
     textBlock.appendChild(txt('h1', 'ik-genel__title', greetingText));
 
-    /* Subline — bugünkü öncelik */
-    var subParts = [];
-    if (kpis.pendingMessages > 0) {
-      subParts.push(kpis.pendingMessages + ' aday yanıtınızı bekliyor');
-    }
-    if (kpis.openPositions > 0) {
-      subParts.push(kpis.openPositions + ' açık pozisyon');
-    }
-    if (kpis.pipelineActive > 0) {
-      subParts.push(kpis.pipelineActive + ' aday süreçte');
-    }
-    var subText = subParts.length
-      ? subParts.join(' · ')
-      : 'Bugün için bekleyen iş yok. İyi çalışmalar.';
-    textBlock.appendChild(txt('p', 'ik-genel__subline', subText));
+    /* 5 May Tuna: subline kaldırıldı — KPI grid satırı zaten özet veriyor */
 
     grid.appendChild(textBlock);
     hero.appendChild(grid);
 
-    /* KPI row */
-    var kpiRow = el('div', 'ik-genel__kpi-row');
-
-    function kpiCard(label, value, deltaText, isAccent, onClick) {
-      var btn = el('button', 'ik-kpi' + (isAccent ? ' ik-kpi--accent' : ''));
-      btn.type = 'button';
-      btn.appendChild(txt('span', 'ik-kpi__label', label));
-      btn.appendChild(txt('strong', 'ik-kpi__value', value));
-      if (deltaText) btn.appendChild(txt('span', 'ik-kpi__delta', deltaText));
-      if (onClick) btn.addEventListener('click', onClick);
-      return btn;
-    }
-
-    kpiRow.appendChild(kpiCard(
-      'Açık pozisyon',
-      kpis.openPositions,
-      'Pozisyonlar',
-      false,
-      function () { location.href = 'hr-pipeline.html'; }
-    ));
-    kpiRow.appendChild(kpiCard(
-      'Süreçteki aday',
-      kpis.pipelineActive,
-      'Pipeline toplam',
-      true,
-      function () { location.href = 'hr-pipeline.html'; }
-    ));
-    kpiRow.appendChild(kpiCard(
-      'Yanıt bekleyen',
-      kpis.pendingMessages,
-      'Mesaj kutusu',
-      kpis.pendingMessages > 0,
-      function () { location.href = 'hr-messages.html'; }
-    ));
-    kpiRow.appendChild(kpiCard(
-      'Aktif kampanya',
-      kpis.activeCampaigns,
-      'Yayında veya planlı',
-      false,
-      function () { location.href = 'hr-campaigns.html'; }
-    ));
-
-    hero.appendChild(kpiRow);
+    /* 5 May Tuna: KPI bölümü tamamen kaldırıldı — hero sadece tarih + greeting */
 
     return hero;
   }
@@ -693,10 +637,9 @@
     var bento = el('section', 'ik-genel__bento');
     bento.appendChild(buildPositionsCard(data));
     bento.appendChild(buildNewCandidatesCard(data));
-    bento.appendChild(buildMessagesCard(data));
     bento.appendChild(buildCampaignsCard(data));
-    bento.appendChild(buildTeamCard());
-    /* 5 May Tuna: Hızlı eylem kart kaldırıldı (buildActionsCard çağrısı yok) */
+    /* 5 May Tuna: Hızlı eylem + Mesajlar + Ekip kartları kaldırıldı.
+       Kalan 3 kart: Pozisyonlar, Adaylar, Kampanyalar (3-col tam sığar). */
     root.appendChild(bento);
 
     /* 5 May Tuna: "Son hareketler" feed iptal — anasayfa daha sade */

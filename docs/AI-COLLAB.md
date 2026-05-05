@@ -4188,3 +4188,19 @@ Re-audit verify (Playwright + computed):
 - Hızlı eylem yok ✓
 
 Cache-bust: ?v=20260505fix6
+
+**Followup 8 (5 May, Tuna 3-direktif zinciri):**
+1. Subline "1 açık pozisyon" kaldırıldı (KPI grid zaten özet veriyordu — sonra KPI da kalktı)
+2. Mesajlar + Ekip kartları bento'dan çıkarıldı
+3. KPI bölümü tamamen kaldırıldı (önce delta, sonra label, sonra tüm kpi-row)
+
+Final state:
+- Hero: Tarih (vermillion mono) + "Merhaba Tuna" (Bricolage 800) — başka hiç içerik yok
+- Bento: 3 kart (Pozisyonlar, Adaylar, Kampanyalar) — 3-col grid tam dengeli
+- Pozisyonlar + Kampanyalar action-pill (Yeni pozisyon / Yeni kampanya)
+- Adaylar text-only (3 aday liste)
+- Card root <a> tüm kart tıklanabilir, pill stopPropagation ayrı
+
+Cache-bust: ?v=20260505minimal
+
+Re-audit verify: kpis 0, sublines 0, cards 3 (Açık Pozisyonlar, Adaylar, Kampanyalar)
