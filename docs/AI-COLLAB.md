@@ -4140,6 +4140,24 @@ asama86-e2e.spec.js stale assertion fix — Pozisyonlar promote + Mesajlar segme
 
 **Followup 5 (5 May, Tuna direktif "kanıtlı kural"):** UI commit'lerde browser görsel verify atlandığı için 4 followup gerekli oldu (pill cache, kart boyut, chip radius). Enforce kural eklendi: `scripts/check-ui-verify.sh` pre-commit hook olarak `.husky/pre-commit` chain'ine bağlandı. Dashboard/shell CSS+JS değişikliği staged ise `UI_VERIFIED=1` env yoksa commit BLOCK. Bypass auditable. Detay: `.claude/rules/ui-commit-discipline.md`. CLAUDE.md "Mühendislik Standardı" bölümüne ek satır.
 
+**Followup 6 (5 May, Tuna "varsayımsal çalışma yapma, kendi SS'ini al"):**
+Local Playwright audit script (`tests/_audit-tmp.spec.js`, sonra silindi) ile gerçek state çekildi:
+- KPI "Açık pozisyon" 0 (gösterilen) ama positionsCount: 1 (gerçek) → DATA BUG
+- Pill height 30px + radius 10px → ratio %33 görsel pill etkisi
+- Bento 4-col grid, 6 kart 4+2 + 2 boş slot dengesizlik
+- Title weight 600
+
+**Fix:**
+1. KPI bug — js/ik-data.js + js/ik-genel.js 4 yerde `p.status === 'open'` → `p.durum === 'active'` (CLAUDE.md kuralı: backend field 'durum' 'active'/'closed', 'status' DEĞİL)
+2. Pill padding `--space-3 --space-6` → `--space-5 --space-8` (height 30→36, ratio %27)
+3. Bento `minmax(280px, 1fr)` → `minmax(360px, 1fr)` → 1280px container'da 3 sütun
+4. Title weight 600 → 700 (CLATU H-card)
+
+Re-audit verify: KPI "1", bento 410.6 × 3, title 700, pill 36px ratio %27. Screenshot light mode'da hepsi düzgün.
+
+Cache-bust: ?v=20260505audit (ik-genel.css + ik-genel.js + ik-data.js, 9 HR sayfa).
+UI_VERIFIED=1 ile commit.
+
 ---
 
 ## 5 Mayıs 2026 — Header refactor (ik edge-to-edge profil parite)

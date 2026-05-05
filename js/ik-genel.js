@@ -124,8 +124,8 @@
       var messages  = Array.isArray(results[2]) ? results[2] : [];
       var campaigns = Array.isArray(results[3]) ? results[3] : [];
 
-      /* Pipeline: ilk open pozisyonu kullan */
-      var firstOpenPos = positions.find(function (p) { return p.status === 'open'; }) || null;
+      /* Pipeline: ilk active pozisyonu kullan — field 'durum' ('active'/'closed') */
+      var firstOpenPos = positions.find(function (p) { return p.durum === 'active'; }) || null;
       var pipelinePromise = firstOpenPos
         ? adapter.getPipeline(firstOpenPos.id)
         : Promise.resolve([]);
@@ -141,7 +141,7 @@
         /* card builder bekliyor: stage, updated_at, candidate_id, position_id — shape uyumlu */
 
         /* KPI shape — adapter contract direkt kullan (DIP: panel normalizing yapmaz) */
-        var openPositions   = kpiRaw.positions     != null ? kpiRaw.positions     : positions.filter(function (p) { return p.status === 'open'; }).length;
+        var openPositions   = kpiRaw.positions     != null ? kpiRaw.positions     : positions.filter(function (p) { return p.durum === 'active'; }).length;
         var pipelineActive  = kpiRaw.pipeline_yeni != null ? kpiRaw.pipeline_yeni : pipeline.length;
         var pendingMessages = kpiRaw.unread        != null ? kpiRaw.unread        : messages.filter(function (m) { return ((m.unread_replies != null ? m.unread_replies : 0)) > 0; }).length;
 

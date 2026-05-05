@@ -1256,21 +1256,22 @@
               p_offset:              0,
               p_position_id:         null
             }),
-            /* 2. Açık pozisyon sayısı */
+            /* 2. Açık pozisyon sayısı — field 'durum' ('active'/'closed'), 'status' DEĞİL */
             supa.from('positions')
               .select('id', { count: 'exact', head: true })
               .eq('hr_profile_id', userId)
-              .eq('status', 'open'),
+              .eq('durum', 'active'),
             /* 3. Okunmamış mesaj thread sayısı (unread_replies > 0) */
             supa.rpc('get_company_message_threads', {
               p_limit:  50,
               p_offset: 0
             }),
-            /* 4. Pipeline 'yeni' stage count — ilk open pozisyonu kullan */
+            /* 4. Pipeline 'yeni' stage count — ilk active pozisyonu kullan
+               Field 'durum' ('active'/'closed'), 'status' DEĞİL */
             supa.from('positions')
               .select('id')
               .eq('hr_profile_id', userId)
-              .eq('status', 'open')
+              .eq('durum', 'active')
               .limit(1)
           ]);
 
