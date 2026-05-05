@@ -4216,3 +4216,40 @@ Re-audit verify: kpis 0, sublines 0, cards 3 (Açık Pozisyonlar, Adaylar, Kampa
 **Followup 13 (5 May, Tuna pipeline bug):** Anasayfada "1 aktif" görünüyor, hr-pipeline.html'de pozisyon switcher boş. Root cause: ik-pipeline.js renderPositionSwitcher `p.title / p.city / p.experience_years` kullanıyor ama backend field'ları `ad / sehir / exp` (CLAUDE.md kuralı). p.title undefined → switcher boş. Fix: p.ad / p.sehir / p.exp / p.seg pattern. Verify: switcherTitle 'Mağaza Müdürü' ✓. Cache-bust ?v=posfix.
 
 **Followup 14 (5 May, Tuna pipeline switcher seçim bug):** SS dropdown 'Mağaza Müdürü' görünüyor ama tıklayınca seçilmiyor / üstte 'Pozisyon yok'. Root cause: localStorage.getItem string döner, p.id number (bigint) → strict === fail. Plus eski orphan id (önceki sessions'tan) localStorage'da kalmış olabilir. Fix: loose compare String(p.id) === String(rawPosId) + orphan validate (positions'da yoksa fallback positions[0]). Verify: orphan id '1' simulate ettim, fallback 'Mağaza Müdürü' bulundu, click sonrası state korundu. Cache-bust ?v=poseq.
+
+---
+
+## 5 Mayıs 2026 — Pozisyon Matching Engine Spec (Tuna onaylı, Faz 1-4)
+
+**Architect spec:** `.claude/agent-memory/specs/matching-engine-2026-05-05.md` (316 satır, 9 bölüm, 6 PR planı)
+
+**Tuna 8 karar matrisi:**
+- 1B mapping migration (yeni→uzun, on_eleme+mulakat→kisa, teklif→iletişime_geçildi, kapandi→archive)
+- 2F-maaş 4 yeni opsiyonel alan (calisma_tipi, musaitlik, egitim, dil, tercih_segmentler) — maas DROP
+- 3 sütun adı "İletişime Geçildi"
+- 4C ≥50 match threshold
+- 5A manuel Pool→Pipeline + auto-match paralel
+- 6C soft refresh prompt (kriter değişince — uzun_liste rebuild, kısa+iletişime DOKUNULMAZ)
+- 7 Kim Baktı feature entegrasyonu
+- 8C 3-sütun pozisyon detay modal/sheet
+
+**Architect 3 doğrulama Tuna onayı:**
+- **1A** — positions.maas drop OK (data yok / önemsiz)
+- **2A** — Server-side CHECK: pozisyon en az 1 kriter zorunlu (ad + min 1 ek alan)
+- **3A** — PR-3 atomik enum swap 7 gün production gözlem sonrası (PR-1+PR-2 stable bekle)
+
+**6 PR sıralı plan:**
+- PR-1 (T4 DB foundation) — M1+M2+M4 migrations, supabase-agent + auditor + Codex
+- PR-2 (T2 form genişletme) — 4 alan + maas kaldır, designer+ui+darkmode
+- PR-3 (T4 atomik enum swap) — M3, production 7g stable sonrası
+- PR-4 (T2 3-sütun sheet UI) — 8C modal pattern
+- PR-5 (T3 auto-match RPC + soft refresh) — 4C threshold + 6C prompt
+- PR-6 (T3 Kim Baktı + KVKK consent) — 7 entegrasyon
+
+**Toplam:** ~105h, paralel 8-9 gün.
+
+**Risk:** R1 enum swap race, R2 auto-match performance (PgNotify + Edge Function worker), R3 Kim Baktı spam (company_id+week dedupe)
+
+**Agent zinciri T4:** architect (✓ done) → supabase-agent → auditor → ui-agent → designer → darkmode-auditor → uat-tester → code-reviewer + Codex T4
+
+**Sıradaki:** Yeni session'da PR-1 başlat (DB foundation).
