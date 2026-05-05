@@ -4033,5 +4033,22 @@ Live test: admin user feature_flags UPDATE → 42501 permission denied. Bypass i
 
 **Commit stack (5 May otonom 2):**
 - `5bf3fc9` fix(a25, a26): positions RLS + ik.html script tag
-- (next) feat(a8): candidate_notes_about_me RPC + audit log + yasal taslak
+- `dd9491f` feat(a8): candidate_notes_about_me RPC + audit log + yasal taslak
+- (next) style(header): ik header edge-to-edge (profil parite)
 - Playwright suite: 1749 PASS / 28 skipped / 0 FAIL ✅
+
+---
+
+## 5 Mayıs 2026 — Header refactor (ik edge-to-edge profil parite)
+
+**Tuna istek:** ik header'ı profil.html'deki gibi yap — logo en solda, sağa yaslı mesajlar+bildirimler+ufak avatar en sağda. Screenshot karşılaştırma:
+- profil.html: logo + avatar viewport kenarlarına yapışık (full bleed)
+- ik.html: logo + avatar kenardan boşluklu (container-contained)
+
+**Root cause:** `.lp-hdr-ik__inner { max-width: 1280px; margin: 0 auto; }` — geniş ekranlarda 1280px container'ı ortaya çekiyordu.
+
+**Fix:** `max-width: none; margin: 0;` — outer `.lp-hdr-ik` zaten `padding: 0 clamp(24px,5vw,48px)` ile responsive kenar boşluğu sağlıyor, profil parite.
+
+Etki: tüm 9 HR sayfası (ik.html + hr-pool/pipeline/candidate/messages/company/team/campaigns/settings) artık edge-to-edge. Logo viewport sol kenarda, avatar sağ kenarda.
+
+Cache-bust: `css/ik-shell.css?v=20260505edge` (tüm 9 HTML).
