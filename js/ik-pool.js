@@ -56,6 +56,7 @@
     },
     activePositionId: null,
     activePosition: null,
+    positions: [],     /* A24: 0-pozisyon guard için */
     facets: {} /* {city: ['İstanbul', ...], position: [...], ...} */
   };
 
@@ -621,8 +622,10 @@
           IK_SHELL.setActivePositionId(posId);
         }
       }
+      state.positions       = positions || [];          /* A24: coaching banner guard */
       state.activePositionId = posId;
       state.activePosition = positions.find(function (p) { return p.id === posId; }) || null;
+      updateCoachingBanner(); /* A24: 0 pozisyon → banner göster */
 
       /* F1 fix (data-analyst 2026-05-04): initial load'da çift RPC YOK.
          allCandidates zaten RPC'den döndü; activePositionId değişmemişse
@@ -655,6 +658,25 @@
       renderSortMenu();
       renderList();
     });
+  }
+
+  /* ═══════ A24: Coaching Banner ═══════ */
+  function showCoachingBanner() {
+    var banner = document.getElementById('ik-pool-coaching-banner');
+    if (banner) banner.classList.add('is-visible');
+  }
+
+  function hideCoachingBanner() {
+    var banner = document.getElementById('ik-pool-coaching-banner');
+    if (banner) banner.classList.remove('is-visible');
+  }
+
+  function updateCoachingBanner() {
+    if (!state.positions || state.positions.length === 0) {
+      showCoachingBanner();
+    } else {
+      hideCoachingBanner();
+    }
   }
 
   /* ═══════ Event binding ═══════ */
@@ -888,8 +910,9 @@
     } else if (action === 'message') {
       location.href = 'hr-messages.html?aday=' + encodeURIComponent(candidate_id);
     } else if (action === 'add') {
-      if (!state.activePositionId) {
-        showToast('Önce bir pozisyon seç', 'error');
+      /* A24: 0 pozisyon guard → coaching banner */
+      if (!state.activePositionId || !state.positions || state.positions.length === 0) {
+        showCoachingBanner();
         return;
       }
       IK_DATA.addToPipeline(candidate_id, state.activePositionId).then(function (res) {
@@ -931,6 +954,11 @@
 
     if (dom.bulkAdd) {
       dom.bulkAdd.addEventListener('click', function () {
+        /* A24: 0 pozisyon guard */
+        if (!state.activePositionId || !state.positions || state.positions.length === 0) {
+          showCoachingBanner();
+          return;
+        }
         if (!state.activePositionId) {
           showToast('Önce bir pozisyon seç', 'error');
           return;
