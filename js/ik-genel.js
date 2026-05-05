@@ -692,7 +692,7 @@
     bento.appendChild(buildActionsCard());
     root.appendChild(bento);
 
-    root.appendChild(buildFeed(data));
+    /* 5 May Tuna: "Son hareketler" feed iptal — anasayfa daha sade */
     root.appendChild(buildSignature());
 
     host.appendChild(root);
