@@ -3974,4 +3974,15 @@ Live test: admin user feature_flags UPDATE → 42501 permission denied. Bypass i
 - A25: positions RLS company_id guard (defense-in-depth, P0 R3 finding)
 - A26: ik.html broken IK_DATA dependency (ik-genel.js çağırıyor ama script yok)
 
-**Sıradaki:** A22 (N1 audit M2+L1) + A21 (auth.role refactor) + A8 (KVKK retention legal-reviewer).
+**A22 LIVE (commit pending, mig 20260505115000_a22_audit_failed_attempts_whitelist):**
+- M2 (MED) — failed attempt audit:
+  - `hr_profile_audit_log.attempt_status` text NOT NULL DEFAULT 'success' (CHECK 'success'|'rejected')
+  - `_log_hr_audit_rejected(...)` SECURITY DEFINER helper (postgres BYPASSRLS)
+  - `hr_profiles_freeze_sensitive_fields()` 4 RAISE point'inde PERFORM helper (company_id, account_status, non-admin role, non-admin flags, admin role/flags)
+  - ISO27001 A.12.4 monitoring gap kapatıldı
+- L1 (LOW) — feature_flags whitelist:
+  - `hr_profiles_feature_flags_whitelist` CHECK constraint (sadece paid + is_internal_admin key)
+  - Mevcut 100% uyumlu (violating: 0)
+- Live test: bypass denemesi 42501 RLS-level reject (trigger pre-empted çünkü authenticated UPDATE grant yok mig 20260503190000 H1). M2 koruma admin → admin bypass path'inde devreye girer.
+
+**Sıradaki:** A21 (auth.role refactor) + A8 (KVKK retention legal-reviewer).
