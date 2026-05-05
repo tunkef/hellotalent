@@ -302,8 +302,20 @@
         <tr><td>İletişim</td><td>E-posta, telefon</td><td>Sözleşme gereği · Meşru menfaat</td></tr>
         <tr><td>Özgeçmiş</td><td>Deneyim, eğitim, yetkinlik</td><td>Açık rıza</td></tr>
         <tr><td>İşlem güvenliği</td><td>IP, oturum logu</td><td>Meşru menfaat · Kanuni yükümlülük</td></tr>
+        <!-- A8 (5 May 2026) — TASLAK, avukat onayına bağlı.
+             Migration LIVE: employer_candidate_notes retention 2 yıl + cron purge.
+             Hukuki sebep "Meşru menfaat" varsayımı; avukat md.5/2-f vs md.5/1 (açık rıza) kararı bekleniyor. -->
+        <tr><td>İşveren değerlendirmesi</td><td>İşe alım sürecinde işverenin aday hakkında tuttuğu dahili notlar</td><td>Meşru menfaat <em>(avukat onayı bekliyor)</em></td></tr>
       </tbody>
     </table>
+
+    <!-- A8 (5 May 2026) — TASLAK, avukat onayına bağlı.
+         Önerilen paragraf: legal-reviewer brief
+         (.claude/agent-memory/legal-reviews/A8-employer-notes-20260505.md). -->
+    <div class="info-box" style="margin-top: 24px; border-left: 3px solid var(--verm); padding-left: 16px;">
+      <h3 style="margin-top: 0;">İşveren Değerlendirme Notları</h3>
+      <p>Platformumuzda işverenler, iş başvurusu veya değerlendirme sürecinde adaylar hakkında dahili notlar tutabilir. Bu notlar yalnızca ilgili işverenin İK ekibine görünür; HelloTalent çalışanları dahil başka taraflarla paylaşılmaz. Söz konusu notlar oluşturulduktan <strong>2 yıl sonra</strong> otomatik olarak silinir. KVKK md. 11 kapsamında bu verilere ilişkin metadata erişiminizi <a href="profil.html#notlar">profil sayfanızdan</a>, içerik ve silme talebinizi ise <a href="mailto:info@hellotalent.ai">info@hellotalent.ai</a> adresine başvurarak kullanabilirsiniz (30 gün içinde yanıt).</p>
+    </div>
 
     <h2>Haklarınız (KVKK md. 11)</h2>
     <div class="rights-grid">

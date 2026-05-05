@@ -4030,3 +4030,8 @@ Live test: admin user feature_flags UPDATE → 42501 permission denied. Bypass i
 **Bekleyen Tuna kararı:**
 - A8 avukat görüşmesi (flag flip öncesi şart — md.10 + md.5 + md.11/c)
 - A5 manuel revoke (CF + Resend dashboard, 17g deadline)
+
+**Commit stack (5 May otonom 2):**
+- `5bf3fc9` fix(a25, a26): positions RLS + ik.html script tag
+- (next) feat(a8): candidate_notes_about_me RPC + audit log + yasal taslak
+- Playwright suite: 1749 PASS / 28 skipped / 0 FAIL ✅
