@@ -3996,3 +3996,37 @@ Live test: admin user feature_flags UPDATE → 42501 permission denied. Bypass i
 - Aydınlatma metni + self-view RPC: legal-reviewer feedback bekliyor (background dispatch)
 
 **Sıradaki:** Secret rotation A1/A2/A5 karar (otonom değil — Tuna explicit onay).
+
+---
+
+## 5 Mayıs 2026 — Otonom oturum 2: A25 + A26 + A8b/A8c + Playwright
+
+**Amaç:** Tuna "bekleyen approvals onaylıyorum, best review + fix + local test + commit/push" + Playwright fail kontrolü.
+
+**A26 LIVE (ik.html ik-data.js script tag):** ik-genel.js IK_DATA çağırıyor ama ik.html script tag eksikti → runtime broken. Fix: ik-shell sonrası ik-data.js?v=20260505a10notify eklendi.
+
+**A25 LIVE (positions RLS company_id guard, mig 20260505130000):**
+- 4 policy revize: SELECT/INSERT/UPDATE/DELETE artık `hr_profile_id = auth.uid() AND company_id = current_employer_company_id()` kombo
+- Orphan backfill: eski şirket pozisyonları `durum='closed'` set edildi (verify: 0 active orphan)
+- positions_admin_read korundu (KVKK denetim)
+- defense-in-depth: P0 client fix + DB-side guard
+
+**A8b LIVE (mig 20260505135000) → A8c FIX (mig 20260505140000):**
+- A8b: candidate_notes_about_me() RPC — KVKK md.11/c metadata access (body YOK, avukat onayı bekliyor)
+- Auditor T3 review: 2 HIGH (A1 TOCTOU çift sorgu + A2 audit trail eksik) + 3 MED + 2 LOW
+- A8c fix: tek CTE atomic snapshot + kvkk_md11_access_log dedicated tablo (RLS aday self + admin denetim) + COALESCE NULL coalesce + LIMIT 500 + Türkçe hata mesajı
+- Live test: rpc total=0 items=[] kvkk_note dön + audit log entry kayıt
+
+**yasal.html aydınlatma TASLAK eklendi:** "İşveren Değerlendirmesi" satırı + paragraf info-box. Comment ile "TASLAK, avukat onayına bağlı" flag. legal-reviewer brief: `.claude/agent-memory/legal-reviews/A8-employer-notes-20260505.md` (3 HIGH md.10 + md.5 + md.11/c için Tuna avukat görüşmesi şart).
+
+**A5 revoke brief Tuna için:** `.claude/agent-memory/secret-rotation-brief-20260505.md` (CF dashboard + Resend dashboard + .env.local manuel).
+
+**Playwright fail tespit + fix:**
+- Tuna şikayeti: "süreçte birkaç fail aldım"
+- Root cause: port 3000'deki python http.server **hung** (HTTP 000 connect refused). Tüm test'ler `ERR_EMPTY_RESPONSE` aldı → server restart ile çözüldü
+- Full suite sonuç: **1749 PASS, 28 skipped, 0 FAIL** (44.8 dakika)
+- Test kodu sağlam, server hijyen problemi
+
+**Bekleyen Tuna kararı:**
+- A8 avukat görüşmesi (flag flip öncesi şart — md.10 + md.5 + md.11/c)
+- A5 manuel revoke (CF + Resend dashboard, 17g deadline)
