@@ -245,6 +245,7 @@
   --editorial-on-vermillion:   #FFFFFF; /* text color on vermillion fills */
   --editorial-shadow:          0 1px 3px rgba(30,45,94,0.06);
   --editorial-shadow-md:       0 4px 18px rgba(30,45,94,0.08);
+  --editorial-shadow-layered:  0 2px 6px rgba(30,45,94,0.06), 0 8px 24px rgba(30,45,94,0.12);
 }
 
 /* ═══ Dark Mode — Semantic overrides ═══ */
@@ -312,6 +313,7 @@ html[data-theme="dark"] {
   --editorial-on-vermillion:   #FFFFFF;
   --editorial-shadow:          0 1px 3px rgba(0,0,0,0.4);
   --editorial-shadow-md:       0 4px 18px rgba(0,0,0,0.5);
+  --editorial-shadow-layered:  0 2px 6px rgba(0,0,0,0.24), 0 8px 24px rgba(0,0,0,0.4);
 }
 
 /* ═══ Dark Mode fallback — OS preference for pages without pre-paint script ═══

@@ -484,7 +484,7 @@
   function buildTeamCard() {
     var shell = buildCardShell(
       'Ekip akışı',
-      'Yakında',
+      'Sprint D',
       'Ekip yönetimi',
       function () { location.href = 'hr-team.html'; }
     );
@@ -505,7 +505,7 @@
 
     var head = el('div', 'ik-card__head');
     head.appendChild(txt('h3', 'ik-card__title', 'Hızlı eylem'));
-    head.appendChild(txt('span', 'ik-card__chip', '3 işlem'));
+    /* J1 (Clatu): chip "3 işlem" kaldırıldı — sayı stale kalır, başlık tek başına yeter */
     card.appendChild(head);
 
     var body = el('div', 'ik-card__body');

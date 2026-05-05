@@ -4080,6 +4080,48 @@ Live test: admin user feature_flags UPDATE → 42501 permission denied. Bypass i
 
 ---
 
+## 5 Mayıs 2026 — Clatu dashboard refactor (15 G-fix + 2 JS)
+
+**Tuna istek:** ik anasayfa dashboard'ını CLATU design sistemiyle güncelle.
+
+**Designer agent spec:** `.claude/agent-memory/design-specs/ik-genel-clatu-20260505.md` — 15 finding (G1-G15) + 2 JS fix (J1-J2) + 1 token ekleme.
+
+**Token ek (`css/tokens.css`):** `--editorial-shadow-layered` light + dark (G6 için).
+
+**CSS (15 patch, css/panels/ik-genel.css):**
+- G1: hero başlık weight 500→700, tracking -0.01em→-0.03em (Bricolage punch)
+- G2: subline `--editorial-ink-muted` → `--editorial-ink` (authority navy)
+- G3: KPI hover `opacity: 0.7` YASAK → `translateY(-2px)` + label vermillion
+- G4: KPI değer weight 500→700
+- G5: bento gap `--space-9` → `--space-10`
+- G6: card hover `--editorial-shadow-md` → `--editorial-shadow-layered` (2-katman)
+- G7: card title weight 500→600
+- G8: list avatar `--editorial-card-elev` → `--editorial-vermillion-soft` + initial vermillion
+- G9: feed spine `--editorial-ink` → `--editorial-hairline-strong` (sade)
+- G10: feed header `border-top: 2px solid var(--editorial-vermillion)` accent divider
+- G11: quick-action `border-left: 3px solid transparent` → hover vermillion reveal
+- G12: signature `--text-md` → `--text-base` (subtle)
+- G13: hero-date `--editorial-ink-muted` → `--editorial-vermillion` accent
+- G14: KPI delta `--color-muted-warm` (Layer 1 ihlali) → `--editorial-ink-muted` (semantic)
+- G15: empty state `text-align: center; padding: --space-9 0` → `left; --space-7 --space-5`
+
+**Dark mode override:** G2/G3/G8/G9/G10/G11/G13 için 7 yeni dark blok (`.ik-genel__hero-date`, hover label, avatar, spine, feed-header, quick-action border-left).
+
+**JS (2 fix, js/ik-genel.js):**
+- J1: `buildActionsCard` chip "3 işlem" kaldırıldı (stale sayı sorunu)
+- J2: `buildTeamCard` chip "Yakında" → "Sprint D" (editorial)
+- KPI route fix: "Açık pozisyon" → hr-pipeline.html (önce hr-campaigns.html idi)
+
+**Cache-bust:** `?v=20260505clatu` (tokens.css + ik-genel.css + ik-genel.js, 9 HR sayfa).
+
+**Verify:** Local Playwright asama86 spec **48 PASS / 12 skipped / 0 FAIL** (25.1s).
+darkmode-auditor review arka planda.
+
+**CI fix paralel commit (4c79b97):**
+asama86-e2e.spec.js stale assertion fix — Pozisyonlar promote + Mesajlar segment kaldırıldı + Pipeline subnav kaldırıldı sonrası test güncellendi. CI artık YEŞİL.
+
+---
+
 ## 5 Mayıs 2026 — Header refactor (ik edge-to-edge profil parite)
 
 **Tuna istek:** ik header'ı profil.html'deki gibi yap — logo en solda, sağa yaslı mesajlar+bildirimler+ufak avatar en sağda. Screenshot karşılaştırma:
