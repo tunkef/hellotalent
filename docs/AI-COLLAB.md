@@ -4212,3 +4212,5 @@ Re-audit verify: kpis 0, sublines 0, cards 3 (Açık Pozisyonlar, Adaylar, Kampa
 **Followup 11 (5 May, Tuna):** Şirket adı bento footer'larından kaldırıldı, hero'da divider altına taşındı (.ik-genel__hero-company mono uppercase muted). Verify: heroCompany 'Peoplein', cardCompanyCount 0. Cache-bust ?v=herocompany.
 
 **Followup 12 (5 May, Tuna kızgın):** min-height 320px + footer border-top dev boşluk yaratıyordu. Fix: min-height kaldır, padding compact (space-9 × space-10), footer border-top kaldır, body gap space-4. Kartlar 320 → 255px (içerik fit). Cache-bust ?v=compact.
+
+**Followup 13 (5 May, Tuna pipeline bug):** Anasayfada "1 aktif" görünüyor, hr-pipeline.html'de pozisyon switcher boş. Root cause: ik-pipeline.js renderPositionSwitcher `p.title / p.city / p.experience_years` kullanıyor ama backend field'ları `ad / sehir / exp` (CLAUDE.md kuralı). p.title undefined → switcher boş. Fix: p.ad / p.sehir / p.exp / p.seg pattern. Verify: switcherTitle 'Mağaza Müdürü' ✓. Cache-bust ?v=posfix.

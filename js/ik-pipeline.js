@@ -86,10 +86,11 @@
     return 'ik-card-aday__match--low';
   }
 
-  /* ═══════ Position switcher ═══════ */
+  /* ═══════ Position switcher ═══════
+     5 May Tuna bug fix: backend field adları (ad/sehir/exp), title/city/experience_years DEĞİL */
   function renderPositionSwitcher() {
     if (dom.posTitle && state.activePosition) {
-      dom.posTitle.textContent = state.activePosition.title;
+      dom.posTitle.textContent = state.activePosition.ad || state.activePosition.title || 'Pozisyon';
     } else if (dom.posTitle) {
       dom.posTitle.textContent = 'Pozisyon yok';
     }
@@ -105,14 +106,16 @@
       btn.setAttribute('role', 'option');
 
       var t = document.createElement('span');
-      t.textContent = p.title;
+      t.textContent = p.ad || p.title || '—';
       btn.appendChild(t);
 
       var meta = document.createElement('span');
       meta.className = 'ik-position-switcher__item-meta';
-      meta.textContent = (p.city || '—') +
-        (p.experience_years ? ' · ' + p.experience_years + ' yıl' : '') +
-        (p.active_pipeline_count != null ? ' · ' + p.active_pipeline_count + ' aday' : '');
+      var metaParts = [];
+      if (p.sehir) metaParts.push(p.sehir);
+      if (p.exp)   metaParts.push(p.exp);
+      if (p.seg)   metaParts.push(p.seg);
+      meta.textContent = metaParts.length ? metaParts.join(' · ') : '—';
       btn.appendChild(meta);
 
       dom.posMenu.appendChild(btn);
