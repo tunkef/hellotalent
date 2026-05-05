@@ -217,12 +217,10 @@
   color: var(--editorial-ink);
   margin: 0;
   line-height: 1.25;
-  /* 5 May Tuna fix: 2-line bölünme önleme — title flex grow + nowrap */
+  /* 5 May Tuna fix: tek-word başlıklar (Adaylar/Mesajlar/Kampanyalar/Ekip)
+     ile nowrap+ellipsis sığar. flex grow + min-width:0 chip'in taşmasını önler. */
   flex: 1 1 auto;
   min-width: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .ik-card__chip {

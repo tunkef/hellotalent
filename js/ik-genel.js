@@ -246,12 +246,21 @@
     return hero;
   }
 
-  /* ═══════ Bento card builders ═══════ */
-  function buildCardShell(title, chipText, ctaText, onClick) {
-    var card = document.createElement('button');
-    card.type = 'button';
-    card.className = 'ik-card';
-    if (onClick) card.addEventListener('click', onClick);
+  /* ═══════ Bento card builders ═══════
+     buildCardShell — ortak kart yapısı.
+     actionPill: { label, href } verilirse footer split (sol cta link + sağ pill).
+     Tuna kuralı: button/link içinde simge (ok/+/icon) YASAK. */
+  function buildCardShell(title, chipText, ctaText, onClick, actionPill) {
+    /* actionPill var ise card <article>, yoksa <button> (tek tıklama). */
+    var hasPill = !!(actionPill && actionPill.label && actionPill.href);
+    var card = hasPill
+      ? el('article', 'ik-card')
+      : document.createElement('button');
+    if (!hasPill) {
+      card.type = 'button';
+      card.className = 'ik-card';
+      if (onClick) card.addEventListener('click', onClick);
+    }
 
     var head = el('div', 'ik-card__head');
     head.appendChild(txt('h3', 'ik-card__title', title));
@@ -263,8 +272,22 @@
     var body = el('div', 'ik-card__body');
     card.appendChild(body);
 
-    if (ctaText) {
-      /* Tuna kuralı: button/link içinde simge (ok/+/icon) YASAK — text-only CTA */
+    if (hasPill) {
+      var footer = el('div', 'ik-card__footer ik-card__footer--split');
+      var ctaLink = document.createElement('a');
+      ctaLink.className = 'ik-card__cta ik-card__cta--link';
+      ctaLink.href = actionPill.ctaHref || '#';
+      ctaLink.textContent = ctaText || '';
+      footer.appendChild(ctaLink);
+
+      var pill = document.createElement('a');
+      pill.className = 'ik-card__action-pill';
+      pill.href = actionPill.href;
+      pill.setAttribute('aria-label', actionPill.label);
+      pill.textContent = actionPill.label;
+      footer.appendChild(pill);
+      card.appendChild(footer);
+    } else if (ctaText) {
       var cta = txt('span', 'ik-card__cta', ctaText);
       card.appendChild(cta);
     }
@@ -351,7 +374,7 @@
     var top = candidates.slice(0, 3);
 
     var shell = buildCardShell(
-      'Yeni adaylar',
+      'Adaylar',
       'Son 24 saat',
       'Aday havuzu',
       function () { location.href = 'hr-pool.html'; }
@@ -389,7 +412,7 @@
     var pending = threads.filter(function (t) { return (t.unread_replies || 0) > 0; }).length;
 
     var shell = buildCardShell(
-      'Bekleyen mesajlar',
+      'Mesajlar',
       pending > 0 ? pending + ' yeni' : 'Tümü okundu',
       'Mesaj kutusu',
       function () { location.href = 'hr-messages.html'; }
@@ -420,7 +443,7 @@
     return shell.card;
   }
 
-  /* Aktif kampanyalar */
+  /* Aktif kampanyalar — split footer (sol "Kampanyalar" + sağ "Yeni kampanya" pill) */
   function buildCampaignsCard(data) {
     var campaigns = (data.campaigns || []).slice();
     var active = campaigns.filter(function (c) {
@@ -432,10 +455,11 @@
     var top = active.slice(0, 3);
 
     var shell = buildCardShell(
-      'Aktif kampanyalar',
-      active.length + ' kampanya',
-      'Kampanya yönetimi',
-      function () { location.href = 'hr-campaigns.html'; }
+      'Kampanyalar',
+      active.length + ' aktif',
+      'Tüm kampanyalar',
+      null,
+      { label: 'Yeni kampanya', href: 'hr-campaigns.html?new=1', ctaHref: 'hr-campaigns.html' }
     );
 
     if (top.length === 0) {
@@ -476,13 +500,14 @@
     return shell.card;
   }
 
-  /* Ekip aktivite (placeholder — Sprint D'de hr_team feed) */
+  /* Ekip akışı — split footer (sol "Tüm ekip" + sağ "Üye davet et" pill) */
   function buildTeamCard() {
     var shell = buildCardShell(
-      'Ekip akışı',
+      'Ekip',
       'Sprint D',
       'Ekip yönetimi',
-      function () { location.href = 'hr-team.html'; }
+      null,
+      { label: 'Üye davet et', href: 'hr-team.html?invite=1', ctaHref: 'hr-team.html' }
     );
 
     shell.body.appendChild(txt(

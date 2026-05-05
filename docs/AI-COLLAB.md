@@ -4124,6 +4124,14 @@ asama86-e2e.spec.js stale assertion fix — Pozisyonlar promote + Mesajlar segme
 
 **Followup 2 (5 May, Tuna):** "Son hareketler" feed bölümü anasayfadan iptal — daha sade kompozisyon. js/ik-genel.js buildFeed çağrısı kaldırıldı (function tanımı korunuyor). Cache-bust ?v=20260505nofeed.
 
+**Followup 3 (5 May, Tuna SS):** Title overflow ("Bekleyen mesa..." / "Aktif kampanya...") + tüm kartlarda tutarlı action-pill pattern eksikliği.
+- Title kısaltma: "Bekleyen mesajlar" → "Mesajlar", "Aktif kampanyalar" → "Kampanyalar", "Yeni adaylar" → "Adaylar", "Ekip akışı" → "Ekip" — tek-word başlıklar nowrap+ellipsis ile sığar.
+- buildCardShell: `actionPill: { label, href, ctaHref }` parametresi ekledi → split footer (sol "Tüm X" + sağ "Yeni X" pill). hasPill true ise card root `<button>` → `<article>`.
+- Campaigns + Team kartlarına action-pill eklendi: "Yeni kampanya" + "Üye davet et". Pozisyonlar zaten vardı.
+- Adaylar + Mesajlar + Hızlı eylem text-only footer (mantıklı pattern).
+- Title CSS: nowrap+ellipsis kaldırıldı (tek-word'lerle gerek yok), flex 1 + min-width:0 yeterli.
+- Cache-bust ?v=20260505cards2.
+
 ---
 
 ## 5 Mayıs 2026 — Header refactor (ik edge-to-edge profil parite)
