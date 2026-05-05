@@ -3940,3 +3940,38 @@ W4 Codex %97 PASS
 **Followup 1 May (50-batch1):** Seed script bug fix — 'pozisyon'/'sehir' (deprecated) yerine 'son_pozisyon'/'adres_il' (modern, RPC + UI shape). 50 aday re-seed dağılım orantılı (İst 19, Ank 7, İzm 6; Satış Danışmanı 10, Kıdemli 10, Mağaza Müdür Yrd 6).
 
 **Followup 1 May (admin bypass):** is_admin_employer() helper + policy/RPC update — tkefeli admin role test seed adayları görür (UAT). recruiter/viewer için fake gizli (production safety). Codex T3 %92 PASS.
+
+---
+
+## 5 Mayıs 2026 — Otonom oturum: P0 + A16 + A7 + A10
+
+**Amaç:** Bekleyen onayları temizle + Pool→Pipeline taşıma bug fix. Tuna direktifi: "akşama kadar otonom, tech debt birikmesin, code review ile ilerleyin".
+
+**P0 LIVE (commits `0dcf39d` + `16331e4`):**
+- Bug: Aday Pool→Pipeline ekleme RLS reject (403 "row-level security policy violation")
+- Root cause: `IK_DATA.getPositions()` sadece `hr_profile_id = userId` filter, `company_id` yok → user şirket değiştirdiyse eski şirketin pozisyonları orphan kalıyor → seçilince RLS reject
+- Fix: `getPositions()` + `createPosition()` `company_id` guard. Cache-bust 8 HR sayfası
+- Code-reviewer 5-axis: 2 HIGH (R1 fallthrough → empty list, R2 cache-bust eksik) + 1 MED (R4 createPosition null guard) fix uygulandı. R3 RLS migration → A25 pending. R5+R6+R7 backlog
+- Live UAT (Playwright MCP): orphan pos id=1 listede yok, pos id=3 (mevcut company) → 200 OK
+
+**A16 ARCHIVE (LIVE doğrulandı):** `IK_DATA.getCandidate(id)` mevcut `searchCandidates({ candidate_id })` pattern üzerinden shape unified (mig 20260430211728). Yeni RPC gerek yok. son_pozisyon/adres_il/toplam_deneyim_ay/match_score/match_reasons/experiences[]/education[]/languages[] hepsi mevcut. Pending-approvals A16 → archive.
+
+**A7 ARCHIVE (LIVE doğrulandı):** is_paid_employer feature_flags self-update bypass kapatılmış. 3 katman defense-in-depth:
+1. RLS policy hr_profiles_update_own WITH CHECK
+2. BEFORE trigger hr_profiles_freeze_sensitive_fields branch 4 (non-admin) + branch 5 (admin role/flags)
+3. AFTER trigger hr_profiles_audit_changes audit log
+Live test: admin user feature_flags UPDATE → 42501 permission denied. Bypass impossible. Iyzico webhook service_role context kullanacak. Pending-approvals A7 → archive.
+
+**A10 LIVE (commit pending):**
+- 2 yeni hr_profiles kolon: notify_email_messages + notify_email_pipeline (BOOLEAN NOT NULL DEFAULT true)
+- Migration 20260505105000_a10_hr_notify_granular (kolonlar) + 20260505110000_a10b_notify_rpc (SECURITY DEFINER RPC)
+- KEŞİF: Pre-A10 settings UI tamamen kırıktı — hr_profiles UPDATE authenticated rol için revoke (mig 20260503190000 H1) → newsletter toggle dahil 42501. update_hr_notify_settings SECURITY DEFINER RPC bunu çözer
+- Code-reviewer: 2 HIGH (R1 race condition → inflight disabled lock, R2 .catch eksik) + 2 MED (R3 null-safe merge, R4 saveAll mesajı) fix
+- Auditor T3: SAFE (1 MED A1 KVKK aydınlatma backlog, 2 LOW backfill lock + audit trail backlog)
+- Live UAT: msg/pipeline/newsletter toggle hepsi persist OK
+
+**Yeni pending-approvals:**
+- A25: positions RLS company_id guard (defense-in-depth, P0 R3 finding)
+- A26: ik.html broken IK_DATA dependency (ik-genel.js çağırıyor ama script yok)
+
+**Sıradaki:** A22 (N1 audit M2+L1) + A21 (auth.role refactor) + A8 (KVKK retention legal-reviewer).

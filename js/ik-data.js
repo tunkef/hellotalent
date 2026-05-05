@@ -1041,15 +1041,21 @@
     },
 
     /* ═══════ Settings — Sprint D real ═══════
-       hr_profiles tablosu — notify_email_newsletter tek backend column (verify).
-       Granular toggle'lar (notify_msg, notify_pipeline, notify_weekly) backend'de
-       henüz yok — A10 mini migration backlog. UI gösterir ama disabled.
+       hr_profiles tablosu — A10 sonrası 3 granular toggle:
+       - notify_email_messages (mesaj bildirim)
+       - notify_email_pipeline (pipeline aşama değişikliği)
+       - notify_email_newsletter (haftalık özet)
        getSettings: userId ile hr_profiles.maybeSingle() */
 
     getSettings: function () {
+      var defaults = {
+        notify_email_messages: true,
+        notify_email_pipeline: true,
+        notify_email_newsletter: false
+      };
       if (!realMode()) {
         console.warn('[ik-data] getSettings: auth context yok');
-        return Promise.resolve({ notify_email_newsletter: true });
+        return Promise.resolve(defaults);
       }
 
       var supa   = getSupa();
@@ -1057,17 +1063,27 @@
       return (async function () {
         try {
           var res = await supa.from('hr_profiles')
-            .select('notify_email_newsletter, plan, onboarding_completed')
+            .select('notify_email_messages, notify_email_pipeline, notify_email_newsletter, plan, onboarding_completed')
             .eq('id', userId)
             .maybeSingle();
           if (res.error) {
             console.warn('[ik-data] getSettings error:', res.error.message);
-            return { notify_email_newsletter: true };
+            return defaults;
           }
-          return res.data || { notify_email_newsletter: true };
+          /* R3 fix (code-reviewer 5 May): null-safe merge.
+             Object.assign NULL'ı default'un üzerine yazardı, defaults bypass olur. */
+          var merged = Object.assign({}, defaults);
+          if (res.data) {
+            Object.keys(defaults).forEach(function (k) {
+              if (res.data[k] != null) merged[k] = res.data[k];
+            });
+            if (res.data.plan != null) merged.plan = res.data.plan;
+            if (res.data.onboarding_completed != null) merged.onboarding_completed = res.data.onboarding_completed;
+          }
+          return merged;
         } catch (e) {
           console.warn('[ik-data] getSettings exception:', e && e.message);
-          return { notify_email_newsletter: true };
+          return defaults;
         }
       })();
     },
@@ -1078,29 +1094,28 @@
       }
       patch = patch || {};
 
-      /* Whitelist: sadece notify_email_newsletter (tek backend column).
-         Granular toggle'lar A10 sonrası aktif. */
-      var update = {};
-      if (typeof patch.notify_email_newsletter === 'boolean') {
-        update.notify_email_newsletter = patch.notify_email_newsletter;
-      }
+      /* A10 (5 May 2026): hr_profiles UPDATE authenticated rol için revoke
+         (mig 20260503190000 H1). update_hr_notify_settings SECURITY DEFINER
+         RPC üzerinden geç — whitelist 3 notify kolonu. NULL korunur. */
+      var rpcArgs = {
+        p_messages:   typeof patch.notify_email_messages   === 'boolean' ? patch.notify_email_messages   : null,
+        p_pipeline:   typeof patch.notify_email_pipeline   === 'boolean' ? patch.notify_email_pipeline   : null,
+        p_newsletter: typeof patch.notify_email_newsletter === 'boolean' ? patch.notify_email_newsletter : null
+      };
 
-      if (Object.keys(update).length === 0) {
+      if (rpcArgs.p_messages == null && rpcArgs.p_pipeline == null && rpcArgs.p_newsletter == null) {
         return Promise.resolve({ ok: true });
       }
 
-      var supa   = getSupa();
-      var userId = getUserId();
+      var supa = getSupa();
       return (async function () {
         try {
-          var res = await supa.from('hr_profiles')
-            .update(update)
-            .eq('id', userId);
+          var res = await supa.rpc('update_hr_notify_settings', rpcArgs);
           if (res.error) {
-            console.warn('[ik-data] updateSettings error:', res.error.message);
+            console.warn('[ik-data] updateSettings RPC error:', res.error.message);
             return { ok: false, error: res.error.message };
           }
-          return { ok: true };
+          return res.data || { ok: true };
         } catch (e) {
           console.warn('[ik-data] updateSettings exception:', e && e.message);
           return { ok: false, error: e && e.message };

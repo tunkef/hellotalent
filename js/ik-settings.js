@@ -20,7 +20,12 @@
 
   var els = null;
   var state = {
-    settings: { theme: 'system', notify_email_newsletter: false },
+    settings: {
+      theme: 'system',
+      notify_email_messages: true,
+      notify_email_pipeline: true,
+      notify_email_newsletter: false
+    },
     account: { status: 'active', deletion_scheduled_at: null, frozen_at: null }
   };
   var pendingAction = null; /* 'freeze' | 'unfreeze' | 'delete' | 'cancel-delete' */
@@ -46,7 +51,9 @@
       mfaStatus: $('#ik-set-mfa-status'),
       mfaBtn: $('#ik-set-mfa-btn'),
 
-      /* Notify — sadece notify_email_newsletter (A10 backlog: msg + pipeline gelecek) */
+      /* Notify — A10 LIVE: 3 granular toggle */
+      notifyMsg: $('#ik-set-notify-msg'),
+      notifyPipeline: $('#ik-set-notify-pipeline'),
       notifyWeekly: $('#ik-set-notify-weekly'),
 
       /* Theme */
@@ -135,7 +142,9 @@
   function hydrateSettings(s) {
     if (!s) return;
     state.settings = Object.assign({}, state.settings, s);
-    if (els.notifyWeekly) els.notifyWeekly.checked = !!state.settings.notify_email_newsletter;
+    if (els.notifyMsg)      els.notifyMsg.checked      = !!state.settings.notify_email_messages;
+    if (els.notifyPipeline) els.notifyPipeline.checked = !!state.settings.notify_email_pipeline;
+    if (els.notifyWeekly)   els.notifyWeekly.checked   = !!state.settings.notify_email_newsletter;
     syncThemeRadios();
   }
 
@@ -213,16 +222,39 @@
   }
 
   /* ── Notify toggles ── */
-  /* A10 backlog: notify_email_messages + notify_email_pipeline henüz backend'de yok.
-     Sadece notify_email_newsletter (notifyWeekly el) aktif. */
-  function bindNotifyToggles() {
-    if (!els.notifyWeekly) return;
-    els.notifyWeekly.addEventListener('change', function () {
-      IK_DATA.updateSettings({ notify_email_newsletter: !!els.notifyWeekly.checked })
+  /* A10 LIVE (5 May 2026): 3 granular toggle, RPC update_hr_notify_settings.
+     R1 fix: inflight lock — hızlı ardışık toggle race'ini disabled ile engelle.
+     R2 fix: .catch + .finally — reject path silent değil, kullanıcıya toast. */
+  function bindNotifyToggle(el, key) {
+    if (!el) return;
+    el.addEventListener('change', function () {
+      var newVal = !!el.checked;
+      var prevVal = state.settings[key];
+      state.settings[key] = newVal; /* optimistic */
+      el.disabled = true;            /* inflight lock */
+      var patch = {};
+      patch[key] = newVal;
+      IK_DATA.updateSettings(patch)
         .then(function (res) {
-          if (res && res.ok) state.settings.notify_email_newsletter = !!els.notifyWeekly.checked;
-        });
+          if (!res || res.ok === false) {
+            state.settings[key] = prevVal;
+            el.checked = prevVal;
+            showToast('Bildirim tercihi kaydedilemedi', 'err');
+          }
+        })
+        .catch(function () {
+          state.settings[key] = prevVal;
+          el.checked = prevVal;
+          showToast('Bildirim tercihi kaydedilemedi', 'err');
+        })
+        .finally(function () { el.disabled = false; });
     });
+  }
+
+  function bindNotifyToggles() {
+    bindNotifyToggle(els.notifyMsg,      'notify_email_messages');
+    bindNotifyToggle(els.notifyPipeline, 'notify_email_pipeline');
+    bindNotifyToggle(els.notifyWeekly,   'notify_email_newsletter');
   }
 
   /* ── Theme radios ── */
@@ -422,10 +454,11 @@
 
   /* ── Save / Signout ── */
   function saveAll() {
-    /* Tum bildirim toggle'lari + tema zaten anlik kaydediliyor.
-       Burada hesap form alanlarini kaydet (demo: localStorage). */
-    showToast('Tercihler kaydedildi', 'ok');
-    setMsg(els.formMsg, 'Tercihlerin kaydedildi.', 'ok');
+    /* R4 fix (code-reviewer 5 May): toggle'lar zaten anlık kaydediliyor.
+       Hesap form alanları (fullname, phone, role) MVP 2'de bağlanacak —
+       şu an persist yok, kullanıcıya net bilgi ver. */
+    showToast('Bildirim ve tema tercihlerin anlık kaydediliyor', 'ok');
+    setMsg(els.formMsg, 'Bildirim ve tema tercihlerin anlık kaydediliyor. Hesap alanları MVP 2\'de bağlanacak.', 'ok');
   }
 
   function signOut() {
