@@ -293,18 +293,6 @@
     var head = el('div', 'ik-card__head');
     head.appendChild(txt('h3', 'ik-card__title', 'Açık Pozisyonlar'));
     head.appendChild(txt('span', 'ik-card__chip', total > 0 ? total + ' aktif' : 'Henüz yok'));
-
-    /* "+ Yeni" — ufak inline action, head sağında */
-    var newBtn = document.createElement('a');
-    newBtn.className = 'ik-card__head-action';
-    newBtn.href = 'hr-pipeline.html#new-position';
-    newBtn.setAttribute('aria-label', 'Yeni pozisyon aç');
-    var plusIcon = el('span', 'ik-card__head-action-icon');
-    plusIcon.appendChild(buildIconPlus());
-    newBtn.appendChild(plusIcon);
-    newBtn.appendChild(txt('span', 'ik-card__head-action-label', 'Yeni'));
-    head.appendChild(newBtn);
-
     card.appendChild(head);
 
     var body = el('div', 'ik-card__body');
@@ -312,7 +300,7 @@
 
     if (total === 0) {
       body.appendChild(txt('div', 'ik-empty', 'Henüz açık pozisyon yok.'));
-      body.appendChild(txt('div', 'ik-empty__hint', 'Sağ üstteki "Yeni" ile ilk pozisyonu aç.'));
+      body.appendChild(txt('div', 'ik-empty__hint', 'Sağ alttaki "Yeni pozisyon" ile başla.'));
     } else {
       var list = el('div', 'ik-list');
       top.forEach(function (p) {
@@ -332,13 +320,28 @@
       body.appendChild(list);
     }
 
-    /* Footer CTA — tüm pozisyonlar */
-    var cta = document.createElement('a');
-    cta.className = 'ik-card__cta ik-card__cta--link';
-    cta.href = 'hr-pipeline.html';
-    cta.appendChild(document.createTextNode('Tüm pozisyonlar '));
-    cta.appendChild(txt('span', 'ik-card__cta-arrow', '→'));
-    card.appendChild(cta);
+    /* Footer — sol: "Tüm pozisyonlar →" link, sağ: "+ Yeni pozisyon" pill button.
+       Footer flex space-between (CSS .ik-card__footer--split). */
+    var footer = el('div', 'ik-card__footer ik-card__footer--split');
+
+    var ctaAll = document.createElement('a');
+    ctaAll.className = 'ik-card__cta ik-card__cta--link';
+    ctaAll.href = 'hr-pipeline.html';
+    ctaAll.appendChild(document.createTextNode('Tüm pozisyonlar '));
+    ctaAll.appendChild(txt('span', 'ik-card__cta-arrow', '→'));
+    footer.appendChild(ctaAll);
+
+    var ctaNew = document.createElement('a');
+    ctaNew.className = 'ik-card__action-pill';
+    ctaNew.href = 'hr-pipeline.html#new-position';
+    ctaNew.setAttribute('aria-label', 'Yeni pozisyon aç');
+    var plusIcon = el('span', 'ik-card__action-pill-icon');
+    plusIcon.appendChild(buildIconPlus());
+    ctaNew.appendChild(plusIcon);
+    ctaNew.appendChild(txt('span', 'ik-card__action-pill-label', 'Yeni pozisyon'));
+    footer.appendChild(ctaNew);
+
+    card.appendChild(footer);
 
     return card;
   }

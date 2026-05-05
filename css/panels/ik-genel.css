@@ -232,13 +232,24 @@
   color: var(--editorial-vermillion);
 }
 
-/* Head action — Açık Pozisyonlar "+ Yeni" butonu (5 May 2026).
-   Chip'in sağında küçük inline action. Vermillion vurgulu. */
-.ik-card__head-action {
+/* Footer split — sol CTA link + sağ action pill (Açık Pozisyonlar kartı).
+   Tuna 5 May feedback: "+ Yeni" sağ alt CTA, head'de değil. */
+.ik-card__footer {
+  display: flex;
+  align-items: center;
+  margin-top: auto;
+}
+.ik-card__footer--split {
+  justify-content: space-between;
+  gap: var(--space-5);
+}
+
+/* Action pill — footer sağında "+ Yeni pozisyon" butonu. */
+.ik-card__action-pill {
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
-  padding: var(--space-1) var(--space-4);
+  padding: var(--space-2) var(--space-5);
   background: var(--editorial-vermillion);
   color: var(--editorial-on-vermillion);
   border: 1px solid var(--editorial-vermillion);
@@ -253,27 +264,27 @@
   transition: background 160ms ease, transform 160ms ease;
   cursor: pointer;
 }
-.ik-card__head-action:hover {
+.ik-card__action-pill:hover {
   background: var(--editorial-vermillion-deep);
   border-color: var(--editorial-vermillion-deep);
   transform: translateY(-1px);
 }
-.ik-card__head-action:focus-visible {
+.ik-card__action-pill:focus-visible {
   outline: 2px solid var(--editorial-vermillion);
   outline-offset: 2px;
 }
-.ik-card__head-action-icon {
+.ik-card__action-pill-icon {
   display: inline-flex;
   width: 14px;
   height: 14px;
   flex: 0 0 auto;
 }
-.ik-card__head-action-icon svg {
+.ik-card__action-pill-icon svg {
   width: 14px;
   height: 14px;
   display: block;
 }
-.ik-card__head-action-label {
+.ik-card__action-pill-label {
   line-height: 1;
 }
 
