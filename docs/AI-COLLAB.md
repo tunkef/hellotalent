@@ -4034,8 +4034,41 @@ Live test: admin user feature_flags UPDATE → 42501 permission denied. Bypass i
 **Commit stack (5 May otonom 2):**
 - `5bf3fc9` fix(a25, a26): positions RLS + ik.html script tag
 - `dd9491f` feat(a8): candidate_notes_about_me RPC + audit log + yasal taslak
-- (next) style(header): ik header edge-to-edge (profil parite)
+- `3566d62` style(header): ik header edge-to-edge (profil parite)
+- (next) feat(nav): Pozisyonlar segment promote — Pipeline rebrand
 - Playwright suite: 1749 PASS / 28 skipped / 0 FAIL ✅
+
+---
+
+## 5 Mayıs 2026 — Header IA refactor: Pozisyonlar segment promote
+
+**Tuna istek:** ik.html anasayfa dashboard'ı dinamik+aksiyona-geçiren yap.
+1. İlk kart "Pipeline özeti" → "Açık Pozisyonlar Özeti"
+2. Header'a "Pozisyonlar" segment ekle (Anasayfa yanına)
+3. Pozisyonlar tıklayınca → pozisyon oluşturma + listeleme (hr-pipeline.html zaten kanban + switcher + #new-position trigger)
+4. Pipeline'ı Adaylar sub-nav'dan kaldır → Pozisyonlar olarak promote
+5. İsim kararı: "Pozisyonlar" (backend `positions` tablosuyla tutarlı, Türkiye İK terminolojisi yaygın)
+
+**Bilgi mimarisi (Information Architecture):**
+- Önce: Anasayfa · Adaylar (Pipeline · Havuz · Aday detayı) · Mesajlar
+- Sonra: Anasayfa · **Pozisyonlar** · Adaylar (Havuz · Aday detayı) · Mesajlar
+
+**Değişiklikler:**
+
+1. **Header nav (9 HR sayfası):** Pozisyonlar segment Anasayfa sonrası eklendi. data-segment="pozisyonlar", href="hr-pipeline.html".
+2. **Sub-nav (`ik-subnav`):** Pipeline link kaldırıldı (8 sayfa). Adaylar segment altında: Havuz · Aday detayı.
+3. **Mobile drawer (9 sayfa):** Pozisyonlar link Anasayfa sonrası.
+4. **Bottom-nav (mobile, 9 sayfa):** Pozisyonlar item briefcase icon ile.
+5. **`js/ik-shell.js` PAGE_TO_SEGMENT:** hr-pipeline.html `'adaylar'` → `'pozisyonlar'`. PAGE_TO_SUBNAV: hr-pipeline.html entry kaldırıldı.
+6. **Dashboard ilk kart (`js/ik-genel.js`):** `buildPipelineCard` → `buildPositionsCard`. Pozisyon listesi (en yeni 4) + total + "Yeni pozisyon" CTA (#new-position hash trigger). Empty state: "İlk pozisyonu açarak aday almaya başla".
+7. **hr-pipeline.html:** title + eyebrow + h1 "Pozisyonlar"/"Açık pozisyonlar ve adaylar".
+8. **Cache-bust:** ik-shell.js + ik-genel.js → `?v=20260505roller`.
+
+**Live verify:**
+- HTTP 200 ik.html + hr-pipeline.html
+- Playwright a24 spec: 132 PASS / 0 fail (Pozisyonlar promote regression yok)
+
+**Etki:** Pozisyon oluşturma akışı (A24) artık Pozisyonlar segment'inden direkt erişilebilir + dashboard ilk kart bu segment'e yönlendirir. Pipeline kavramı kullanıcı görsel hiyerarşisinden çıktı, "Pozisyonlar" daha doğal İK terminolojisi.
 
 ---
 

@@ -61,6 +61,8 @@
     <nav class="lp-hdr-ik__nav" role="tablist" aria-label="Ana navigasyon">
       <a class="lp-hdr-ik__segment is-active" href="ik.html" data-segment="anasayfa" role="tab">Anasayfa</a>
       <span class="lp-hdr-ik__sep" aria-hidden="true">·</span>
+      <a class="lp-hdr-ik__segment" href="hr-pipeline.html" data-segment="pozisyonlar" role="tab">Pozisyonlar</a>
+      <span class="lp-hdr-ik__sep" aria-hidden="true">·</span>
       <a class="lp-hdr-ik__segment" href="hr-pool.html" data-segment="adaylar" role="tab">Adaylar</a>
       <span class="lp-hdr-ik__sep" aria-hidden="true">·</span>
       <a class="lp-hdr-ik__segment" href="hr-messages.html" data-segment="mesajlar" role="tab">Mesajlar</a>
@@ -150,7 +152,6 @@
 <!-- Sub-nav (Adaylar segment'inde gözükür — Sprint A'da gizli) -->
 <nav class="ik-subnav" id="ik-subnav" aria-label="Adaylar alt navigasyonu">
   <div class="ik-subnav__inner">
-    <a class="ik-subnav__item" href="hr-pipeline.html" data-subnav="pipeline">Pipeline</a>
     <a class="ik-subnav__item" href="hr-pool.html" data-subnav="havuz">Havuz</a>
     <a class="ik-subnav__item" href="hr-candidate.html" data-subnav="aday">Aday detayı</a>
   </div>
@@ -170,6 +171,7 @@
   <div class="ik-mobile-drawer__group">
     <div class="ik-mobile-drawer__label">Çalışma alanı</div>
     <a class="ik-mobile-drawer__link is-active" href="ik.html">Anasayfa</a>
+    <a class="ik-mobile-drawer__link" href="hr-pipeline.html">Pozisyonlar</a>
     <a class="ik-mobile-drawer__link" href="hr-pool.html">Adaylar</a>
     <a class="ik-mobile-drawer__link" href="hr-messages.html">Mesajlar</a>
     <a class="ik-mobile-drawer__link" href="hr-campaigns.html">Kampanyalar</a>
@@ -202,6 +204,13 @@
         <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2h-4v-7H9v7H5a2 2 0 0 1-2-2z"/>
       </svg>
       <span>Anasayfa</span>
+    </a>
+    <a class="ik-bottom-nav__item" href="hr-pipeline.html" data-segment="pozisyonlar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <rect x="2" y="7" width="20" height="14" rx="2"/>
+        <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+      </svg>
+      <span>Pozisyonlar</span>
     </a>
     <a class="ik-bottom-nav__item" href="hr-pool.html" data-segment="adaylar">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -236,8 +245,8 @@
   </div>
 </nav>
 
-<script src="js/ik-shell.js?v=20260505a10notify"></script>
+<script src="js/ik-shell.js?v=20260505roller"></script>
 <script src="js/ik-data.js?v=20260505a10notify"></script>
-<script src="js/ik-genel.js?v=20260505a10notify"></script>
+<script src="js/ik-genel.js?v=20260505roller"></script>
 </body>
 </html>

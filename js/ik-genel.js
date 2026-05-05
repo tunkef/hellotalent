@@ -273,39 +273,57 @@
     return { card: card, body: body };
   }
 
-  /* Pipeline summary card */
-  function buildPipelineCard(data) {
-    var stages = [
-      { key: 'basvuru', label: 'Başvuru' },
-      { key: 'on_eleme', label: 'Ön eleme' },
-      { key: 'mulakat', label: 'Mülakat' },
-      { key: 'teklif', label: 'Teklif' }
-    ];
-    var counts = {};
-    (data.pipeline || []).forEach(function (p) {
-      counts[p.stage] = (counts[p.stage] || 0) + 1;
+  /* Açık Pozisyonlar Özeti — 5 May 2026 (Pipeline kartı yerine).
+     data.positions: hr_profiles.id'ye bağlı pozisyon listesi (durum=active filtreli).
+     Dashboard ilk kart, en görünür. CTA: yeni pozisyon aç + tüm pozisyonları gör. */
+  function buildPositionsCard(data) {
+    var positions = (data.positions || []).slice();
+    /* En yeni pozisyon önce */
+    positions.sort(function (a, b) {
+      return new Date(b.created_at || 0) - new Date(a.created_at || 0);
     });
+    var top = positions.slice(0, 4);
+    var total = positions.length;
 
-    var total = data.pipeline ? data.pipeline.length : 0;
     var shell = buildCardShell(
-      'Pipeline özeti',
-      total + ' aday',
-      'Pipeline detayı',
+      'Açık Pozisyonlar',
+      total > 0 ? total + ' aktif' : 'Henüz yok',
+      'Tüm pozisyonlar',
       function () { location.href = 'hr-pipeline.html'; }
     );
 
-    var stageRow = el('div', 'ik-stage-row');
-    stages.forEach(function (s) {
-      var row = el('div', 'ik-stage');
-      row.appendChild(txt('span', 'ik-stage__label', s.label));
-      row.appendChild(txt('span', 'ik-stage__count', counts[s.key] || 0));
-      stageRow.appendChild(row);
-    });
+    /* Yeni pozisyon CTA — boş durumda bile görünür */
+    var newBtn = document.createElement('a');
+    newBtn.className = 'ik-card__action ik-card__action--primary';
+    newBtn.href = 'hr-pipeline.html#new-position';
+    var plusIcon = el('span', 'ik-card__action-icon');
+    plusIcon.appendChild(buildIconPlus());
+    newBtn.appendChild(plusIcon);
+    newBtn.appendChild(txt('span', 'ik-card__action-label', 'Yeni pozisyon'));
 
     if (total === 0) {
-      shell.body.appendChild(txt('div', 'ik-empty', 'Henüz pipeline kaydı yok.'));
+      shell.body.appendChild(txt('div', 'ik-empty', 'Henüz açık pozisyon yok.'));
+      var hint = txt('div', 'ik-empty__hint', 'İlk pozisyonu açarak aday almaya başla.');
+      shell.body.appendChild(hint);
+      shell.body.appendChild(newBtn);
     } else {
-      shell.body.appendChild(stageRow);
+      var list = el('div', 'ik-list');
+      top.forEach(function (p) {
+        var item = el('a', 'ik-list__item ik-list__item--link');
+        item.href = 'hr-pipeline.html?pos=' + encodeURIComponent(p.id);
+        var body = el('div', 'ik-list__body');
+        body.appendChild(txt('span', 'ik-list__name', p.ad || '—'));
+        var metaParts = [];
+        if (p.sehir) metaParts.push(p.sehir);
+        if (p.seg) metaParts.push(p.seg);
+        if (p.exp) metaParts.push(p.exp);
+        body.appendChild(txt('span', 'ik-list__meta', metaParts.join(' · ')));
+        item.appendChild(body);
+        item.appendChild(txt('span', 'ik-list__time', formatTimeAgo(p.created_at)));
+        list.appendChild(item);
+      });
+      shell.body.appendChild(list);
+      shell.body.appendChild(newBtn);
     }
     return shell.card;
   }
@@ -673,7 +691,7 @@
     root.appendChild(buildHero(data, kpis, ctx));
 
     var bento = el('section', 'ik-genel__bento');
-    bento.appendChild(buildPipelineCard(data));
+    bento.appendChild(buildPositionsCard(data));
     bento.appendChild(buildNewCandidatesCard(data));
     bento.appendChild(buildMessagesCard(data));
     bento.appendChild(buildCampaignsCard(data));

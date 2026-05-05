@@ -12,10 +12,13 @@
   var LS_PREFS = 'ht_ik_prefs_v1';
   var LS_ACTIVE_POSITION = 'ht_ik_active_position_id';
 
-  /* ═══════ Page → segment map ═══════ */
+  /* ═══════ Page → segment map ═══════
+     2026-05-05: Pipeline → Pozisyonlar promote — header'da ayrı segment.
+     hr-pipeline.html artık "pozisyonlar" segment'inde (önce 'adaylar' altındaydı).
+     Adaylar sub-nav: sadece Havuz + Aday detayı. */
   var PAGE_TO_SEGMENT = {
     'ik.html': 'anasayfa',
-    'hr-pipeline.html': 'adaylar',
+    'hr-pipeline.html': 'pozisyonlar',
     'hr-pool.html': 'adaylar',
     'hr-candidate.html': 'adaylar',
     'hr-messages.html': 'mesajlar',
@@ -26,7 +29,6 @@
   };
 
   var PAGE_TO_SUBNAV = {
-    'hr-pipeline.html': 'pipeline',
     'hr-pool.html': 'havuz',
     'hr-candidate.html': 'aday'
   };
