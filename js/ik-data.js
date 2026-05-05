@@ -231,13 +231,23 @@
          positions.hr_profile_id = auth.uid() (docs/migrations/020_positions_table.sql line 6) */
       var supa = getSupa();
       var userId = getUserId();
+      var companyId = getCompanyId();
       return (async function () {
         try {
           /* R2 fix (2026-05-04): kapalı pozisyonlar listede dönmesin.
-             DB kolon adı 'durum', default 'active' (status değil — başka bug). */
+             DB kolon adı 'durum', default 'active' (status değil — başka bug).
+             P0 fix (2026-05-05): user company değiştirdiğinde eski şirket
+             pozisyonları orphan kalıyor → "Pipeline'a ekle" RLS reject (403).
+             Mevcut company'ye bağlı pozisyonlar listelensin. */
+          /* companyId yoksa orphan'ları silent yutmamak için empty list */
+          if (!companyId) {
+            console.warn('[ik-data] getPositions: company_id yok, empty list');
+            return [];
+          }
           var res = await supa.from('positions')
             .select('*')
             .eq('hr_profile_id', userId)
+            .eq('company_id', companyId)
             .eq('durum', 'active');
           if (res.error) {
             console.warn('[ik-data] getPositions error:', res.error.message);
@@ -398,8 +408,18 @@
       var userId = getUserId();
       var companyId = getCompanyId();
 
+      /* P0 fix (2026-05-05): company_id yoksa pozisyon yarattırma — orphan üretir,
+         sonra "Pipeline'a ekle" RLS reject. */
+      if (!companyId) {
+        return Promise.resolve({
+          ok: false,
+          error: 'Şirket bilgisi bulunamadı. Sayfayı yenileyin veya tekrar giriş yapın.'
+        });
+      }
+
       var insert = {
         hr_profile_id: userId,
+        company_id:    companyId,
         ad:            safeStr(payload.ad).trim(),
         sehir:         safeStr(payload.sehir).trim() || null,
         seg:           safeStr(payload.seg).trim()   || null,
@@ -407,7 +427,6 @@
         maas:          safeStr(payload.maas).trim()  || null,
         aciklama:      safeStr(payload.aciklama).trim() || null
       };
-      if (companyId != null) insert.company_id = companyId;
 
       return (async function () {
         try {
