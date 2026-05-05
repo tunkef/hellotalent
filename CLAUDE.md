@@ -126,6 +126,7 @@ Ajanlar kendi `## Learned Rules` section'larına append yapar (her agent .md'nin
 - Scope dışı değişiklik yok
 - Test etmeden "bitti" deme
 - Regression guard ekle gerektiğinde
+- **UI commit zorunlu görsel verify:** Dashboard/shell CSS+JS commit'lerinde browser hard-refresh + bento gözle tarama zorunlu. Pre-commit hook (`scripts/check-ui-verify.sh`) `UI_VERIFIED=1` env yoksa BLOK eder. Kural detay: `.claude/rules/ui-commit-discipline.md`. (5 May 2026 — Tuna direktifi: "kanıtlı bir kural")
 
 ## Ultraplan Hatirlatma
 

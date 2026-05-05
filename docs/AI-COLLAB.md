@@ -4138,6 +4138,8 @@ asama86-e2e.spec.js stale assertion fix — Pozisyonlar promote + Mesajlar segme
 3. Kart boyutları farklı (align-items:start çelişki) → stretch default geri, body flex:1 + footer margin-top:auto pattern eşit yükseklik
 - Cache-bust ?v=20260505fix4
 
+**Followup 5 (5 May, Tuna direktif "kanıtlı kural"):** UI commit'lerde browser görsel verify atlandığı için 4 followup gerekli oldu (pill cache, kart boyut, chip radius). Enforce kural eklendi: `scripts/check-ui-verify.sh` pre-commit hook olarak `.husky/pre-commit` chain'ine bağlandı. Dashboard/shell CSS+JS değişikliği staged ise `UI_VERIFIED=1` env yoksa commit BLOCK. Bypass auditable. Detay: `.claude/rules/ui-commit-discipline.md`. CLAUDE.md "Mühendislik Standardı" bölümüne ek satır.
+
 ---
 
 ## 5 Mayıs 2026 — Header refactor (ik edge-to-edge profil parite)
