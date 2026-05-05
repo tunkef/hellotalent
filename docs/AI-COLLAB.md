@@ -3991,4 +3991,8 @@ Live test: admin user feature_flags UPDATE → 42501 permission denied. Bypass i
 - Behavior identical (service_role bypass + authenticated audit)
 - Verify: pg_proc.prosrc → "auth.jwt() ->> 'role'" pattern aktif
 
-**Sıradaki:** A8 (KVKK retention legal-reviewer) + Secret rotation karar.
+**A8 PARTIAL LIVE (commit pending, mig 20260505125000_a8_notes_retention_purge):**
+- DB tarafı tamamlandı: retention_until kolon (default now()+2y), backfill (created_at+2y), index, purge_old_employer_notes() function, cron.schedule 'purge-employer-notes' günlük 02:00 UTC
+- Aydınlatma metni + self-view RPC: legal-reviewer feedback bekliyor (background dispatch)
+
+**Sıradaki:** Secret rotation A1/A2/A5 karar (otonom değil — Tuna explicit onay).
