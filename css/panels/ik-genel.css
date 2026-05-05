@@ -90,7 +90,18 @@
   height: 1px;
   border: 0;
   background: var(--editorial-hairline-strong);
-  margin: var(--space-7) 0 0;
+  margin: var(--space-7) 0 var(--space-5);
+}
+
+/* Hero altında şirket adı (mono uppercase muted) */
+.ik-genel__hero-company {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--editorial-ink-muted);
+  line-height: 1.4;
 }
 
 .ik-genel__subline {

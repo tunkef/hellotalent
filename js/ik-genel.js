@@ -186,6 +186,12 @@
     /* 5 May Tuna: title altında uzun ince çizgi */
     textBlock.appendChild(el('hr', 'ik-genel__hero-divider'));
 
+    /* 5 May Tuna: divider altında şirket adı */
+    var companyName = (data && data.company && data.company.company_name) || '';
+    if (companyName) {
+      textBlock.appendChild(txt('div', 'ik-genel__hero-company', companyName));
+    }
+
     grid.appendChild(textBlock);
     hero.appendChild(grid);
 
@@ -216,12 +222,9 @@
     var body = el('div', 'ik-card__body');
     card.appendChild(body);
 
-    /* 5 May Tuna: card altına şirket adı (mono uppercase muted) */
-    var companyName = (window.__IK_CTX_COMPANY__ && window.__IK_CTX_COMPANY__.company_name) || '';
-    var footer = el('div', 'ik-card__footer ik-card__footer--split');
-    footer.appendChild(txt('span', 'ik-card__company', companyName));
-
+    /* Footer sadece pill (eylem-kartlarında) — company hero'da gösterildi */
     if (hasPill) {
+      var footer = el('div', 'ik-card__footer ik-card__footer--end');
       var pill = document.createElement('a');
       pill.className = 'ik-card__action-pill';
       pill.href = actionPill.href;
@@ -229,8 +232,8 @@
       pill.textContent = actionPill.label;
       pill.addEventListener('click', function (e) { e.stopPropagation(); });
       footer.appendChild(pill);
+      card.appendChild(footer);
     }
-    card.appendChild(footer);
 
     return { card: card, body: body };
   }
@@ -282,11 +285,8 @@
       body.appendChild(list);
     }
 
-    /* Footer: sol şirket adı + sağ pill action */
-    var companyName = (window.__IK_CTX_COMPANY__ && window.__IK_CTX_COMPANY__.company_name) || '';
-    var footer = el('div', 'ik-card__footer ik-card__footer--split');
-    footer.appendChild(txt('span', 'ik-card__company', companyName));
-
+    /* Footer: sadece pill — company hero'da gösterildi */
+    var footer = el('div', 'ik-card__footer ik-card__footer--end');
     var ctaNew = document.createElement('a');
     ctaNew.className = 'ik-card__action-pill';
     ctaNew.href = 'hr-pipeline.html#new-position';
