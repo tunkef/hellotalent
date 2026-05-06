@@ -24,10 +24,10 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 
-<link rel="stylesheet" href="css/tokens.css?v=20260505clatu">
+<link rel="stylesheet" href="css/tokens.css?v=pr7-clatu">
 <link rel="stylesheet" href="css/components.css?v=20260504a24h1">
 <link rel="stylesheet" href="css/ik-shell.css?v=20260505edge">
-<link rel="stylesheet" href="css/panels/ik-pipeline.css?v=pr7-lifecycle">
+<link rel="stylesheet" href="css/panels/ik-pipeline.css?v=pr7-clatu">
 <link rel="stylesheet" href="css/panels/position-detail.css?v=pr4-pipeline">
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -179,14 +179,15 @@
       <!-- PR-7: Landing — pozisyon kart grid (switcher kaldırıldı) -->
       <section class="ik-pos-landing" id="ik-pos-landing">
 
-        <!-- Hero row: başlık + CTA -->
+        <!-- PR-7 CLATU — Hero row: 3-katman typography + outline CTA -->
         <div class="ik-pos-landing__hero">
-          <h1 class="ik-pos-landing__title">
-            Pozisyonlar
-            <span class="ik-pos-landing__count" id="ik-pos-count" aria-live="polite"></span>
-          </h1>
+          <div class="ik-pos-landing__title-group">
+            <span class="ik-pos-landing__eyebrow">POZİSYONLAR</span>
+            <h1 class="ik-pos-landing__title">Açık pozisyonlar</h1>
+            <p class="ik-pos-landing__subline" id="ik-pos-subline" aria-live="polite"></p>
+          </div>
           <button type="button" class="ik-pos-landing__cta" id="btn-new-position">
-            Yeni Pozisyon Oluştur
+            + Yeni Pozisyon
           </button>
         </div>
 
@@ -647,8 +648,8 @@
 <script src="js/ik-shell.js?v=20260505roller2"></script>
 <script src="js/ik-data.js?v=pr7-lifecycle"></script>
 <script src="js/ik-matching-engine.js?v=pr4-pipeline"></script>
-<script src="js/ik-pos-list.js?v=pr7-lifecycle"></script>
-<script src="js/ik-pos-close.js?v=pr7-lifecycle"></script>
+<script src="js/ik-pos-list.js?v=pr7-clatu"></script>
+<script src="js/ik-pos-close.js?v=pr7-clatu"></script>
 <script src="js/ik-position-detail.js?v=pr7-lifecycle"></script>
 <script src="js/ik-pipeline.js?v=pr7-lifecycle"></script>
 </body>

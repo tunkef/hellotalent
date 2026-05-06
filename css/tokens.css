@@ -273,6 +273,11 @@
   --status-archive-bg:    var(--editorial-card-elev);
   --status-archive-text:  var(--editorial-ink-muted);
   --status-archive-border: var(--editorial-hairline);
+
+  /* PR-7 CLATU Rework — kart border-top accent (3 alias, no new hex) */
+  --status-active-top:    3px solid var(--editorial-vermillion);
+  --status-closed-top:    3px solid var(--editorial-hairline-strong);
+  --status-archive-top:   3px solid var(--editorial-hairline);
 }
 
 /* ═══ Dark Mode — Semantic overrides ═══ */

@@ -1896,41 +1896,60 @@ html[data-theme="dark"] .ik-coaching-banner__cta:hover {
   flex-wrap: wrap;
 }
 
+/* PR-7 CLATU — 3-layer hero typography */
+.ik-pos-landing__title-group {
+  display: flex;
+  flex-direction: column;
+}
+.ik-pos-landing__eyebrow {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--editorial-vermillion);
+  margin-bottom: var(--space-3);
+}
 .ik-pos-landing__title {
   font-family: var(--font-head);
   font-size: var(--text-display-sm);
-  font-weight: 700;
+  font-weight: 800;
   color: var(--editorial-ink);
   letter-spacing: -0.02em;
   margin: 0;
 }
-
-.ik-pos-landing__count {
+.ik-pos-landing__subline {
   font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
+  font-size: var(--text-base);
+  font-weight: 400;
   color: var(--editorial-ink-muted);
-  margin-left: var(--space-4);
+  margin-top: var(--space-4);
+  margin-bottom: 0;
 }
+/* __count kaldırıldı (PR-7) — orphan CSS korunur silme */
 
+/* PR-7 CLATU — CTA pill action: soft outline, DM Mono uppercase */
 .ik-pos-landing__cta {
-  height: 40px;
+  height: 36px;
   padding: 0 var(--space-9);
-  background: var(--editorial-vermillion);
-  border: none;
-  border-radius: var(--radius-sm);
-  font-family: var(--font-body);
-  font-size: var(--text-md);
-  font-weight: 600;
-  color: var(--editorial-on-vermillion);
+  background: var(--editorial-vermillion-soft);
+  border: 1px solid var(--editorial-vermillion);
+  border-radius: var(--radius);
+  font-family: var(--font-mono);
+  font-size: var(--text-base);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--editorial-vermillion);
   cursor: pointer;
-  transition: background 140ms ease;
+  transition: background 140ms ease, border-color 140ms ease, color 140ms ease;
   white-space: nowrap;
   flex-shrink: 0;
 }
 .ik-pos-landing__cta:hover {
-  background: var(--editorial-vermillion-deep);
+  background: var(--editorial-vermillion-soft);
+  border-color: var(--editorial-vermillion-deep);
+  color: var(--editorial-vermillion-deep);
 }
 .ik-pos-landing__cta:focus-visible {
   outline: 2px solid var(--editorial-vermillion);
@@ -1942,6 +1961,44 @@ html[data-theme="dark"] .ik-coaching-banner__cta:hover {
   display: flex;
   align-items: center;
   gap: var(--space-6);
+}
+
+/* PR-7 CLATU — ht-seg-toggle CSS tanımı (pill container, CLATU 6.2 radius-pill istisnası) */
+.ht-seg-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+  background: var(--editorial-card-elev);
+  border: 1px solid var(--editorial-hairline);
+  border-radius: var(--radius-pill);
+  padding: 3px;
+}
+.ht-seg-toggle__btn {
+  padding: var(--space-3) var(--space-8);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--editorial-ink-muted);
+  cursor: pointer;
+  transition: background 140ms ease, color 140ms ease;
+  white-space: nowrap;
+  line-height: 1;
+}
+.ht-seg-toggle__btn.is-active {
+  background: var(--editorial-vermillion-soft);
+  color: var(--editorial-vermillion);
+}
+.ht-seg-toggle__btn:hover:not(.is-active) {
+  color: var(--editorial-ink);
+}
+.ht-seg-toggle__btn:focus-visible {
+  outline: 2px solid var(--editorial-vermillion);
+  outline-offset: 2px;
 }
 
 /* ── Kart grid ── */
@@ -1982,6 +2039,11 @@ html[data-theme="dark"] .ik-coaching-banner__cta:hover {
   transform: translateY(-1px);
 }
 
+/* PR-7 CLATU — border-top accent via data-status (3px, token-strict) */
+.ik-pos-card[data-status="active"]  { border-top: var(--status-active-top); }
+.ik-pos-card[data-status="closed"]  { border-top: var(--status-closed-top); }
+.ik-pos-card[data-status="archive"] { border-top: var(--status-archive-top); }
+
 /* -- Card header -- */
 .ik-pos-card__header {
   padding: var(--space-8) var(--space-8) var(--space-6);
@@ -1991,14 +2053,24 @@ html[data-theme="dark"] .ik-coaching-banner__cta:hover {
   overflow: hidden; /* clip border-radius */
   border-radius: var(--radius) var(--radius) 0 0;
 }
-.ik-pos-card__status {
-  flex-shrink: 0;
-  align-self: flex-start;
-}
+/* __status kaldırıldı (PR-7) — badge box yerine border-top accent + eyebrow */
 .ik-pos-card__title-block {
   flex: 1;
   min-width: 0;
 }
+/* PR-7 CLATU — status eyebrow: DM Mono 11px uppercase, renk modifier ile */
+.ik-pos-card__status-eyebrow {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: var(--space-2);
+}
+.ik-pos-card__status-eyebrow--active  { color: var(--status-active-text); }
+.ik-pos-card__status-eyebrow--closed  { color: var(--status-closed-text); }
+.ik-pos-card__status-eyebrow--archive { color: var(--status-archive-text); }
 .ik-pos-card__name {
   font-family: var(--font-head);
   font-size: var(--text-xl);
@@ -2006,7 +2078,7 @@ html[data-theme="dark"] .ik-coaching-banner__cta:hover {
   color: var(--editorial-ink);
   letter-spacing: -0.01em;
   line-height: 1.2;
-  margin: var(--space-3) 0 var(--space-2);
+  margin: 0 0 var(--space-2);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -2077,14 +2149,36 @@ html[data-theme="dark"] .ik-coaching-banner__cta:hover {
   background: var(--editorial-vermillion-soft);
 }
 
-/* -- Aday count chips -- */
+/* -- Aday count — PR-7 CLATU: hairline top + vertical label/value stack -- */
 .ik-pos-card__counts {
-  padding: var(--space-4) var(--space-8);
+  padding: 0 var(--space-8) var(--space-6);
   border-top: 1px solid var(--editorial-hairline);
+  padding-top: var(--space-6);
   display: flex;
-  gap: var(--space-4);
-  flex-wrap: wrap;
+  gap: var(--space-9);
+  flex-wrap: nowrap;
 }
+.ik-pos-card__count-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+.ik-pos-card__count-label {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--editorial-ink-muted);
+}
+.ik-pos-card__count-value {
+  font-family: var(--font-head);
+  font-size: var(--text-2xl);
+  font-weight: 600;
+  color: var(--editorial-ink);
+  line-height: 1;
+}
+/* count-chip orphan — HTML kullanımı bitti (PR-7), CSS korunur */
 .ik-pos-card__count-chip {
   display: inline-flex;
   align-items: center;
@@ -2122,25 +2216,25 @@ html[data-theme="dark"] .ik-coaching-banner__cta:hover {
   white-space: nowrap;
 }
 
-/* "Görüntüle" ghost button */
+/* PR-7 CLATU — "Görüntüle" pure text-link (border/bg yok) */
 .ik-pos-card__view-btn {
-  height: 30px;
-  padding: 0 var(--space-7);
+  height: auto;
+  padding: 0;
   background: transparent;
-  border: 1px solid var(--editorial-hairline-strong);
-  border-radius: var(--radius-sm);
+  border: none;
+  border-radius: 0;
   font-family: var(--font-body);
   font-size: var(--text-base);
   font-weight: 500;
-  color: var(--editorial-ink-muted);
+  color: var(--editorial-vermillion);
   cursor: pointer;
-  transition: border-color 140ms ease, color 140ms ease, background 140ms ease;
+  text-decoration: none;
+  transition: color 140ms ease, text-decoration-color 140ms ease;
   white-space: nowrap;
 }
 .ik-pos-card__view-btn:hover {
-  border-color: var(--editorial-vermillion);
-  color: var(--editorial-vermillion);
-  background: var(--editorial-vermillion-soft);
+  color: var(--editorial-vermillion-deep);
+  text-decoration: underline;
 }
 .ik-pos-card__view-btn:focus-visible {
   outline: 2px solid var(--editorial-vermillion);
@@ -2277,7 +2371,8 @@ html[data-theme="dark"] .ik-coaching-banner__cta:hover {
 .ik-pos-card--archive .ik-pos-card__footer {
   background: var(--editorial-card-elev);
 }
-.ik-pos-card--archive .ik-pos-card__count-chip {
+.ik-pos-card--archive .ik-pos-card__count-chip,
+.ik-pos-card--archive .ik-pos-card__count-item {
   opacity: 0.7;
 }
 
@@ -2289,17 +2384,26 @@ html[data-theme="dark"] .ik-pos-card--archive:hover {
   border-color: var(--editorial-hairline-strong);
 }
 
-/* ── Empty state ── */
+/* ── Empty state — PR-7 CLATU: centered + eyebrow + CTA ── */
 .ik-pos-empty {
   grid-column: 1 / -1;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  gap: var(--space-9);
+  align-items: center;
+  text-align: center;
+  gap: var(--space-6);
   padding: var(--space-12) var(--space-10);
   border: 1px dashed var(--editorial-hairline-strong);
   border-radius: var(--radius);
   background: var(--editorial-bg);
+}
+.ik-pos-empty__eyebrow {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--editorial-ink-muted);
 }
 .ik-pos-empty__heading {
   font-family: var(--font-head);
@@ -2316,6 +2420,32 @@ html[data-theme="dark"] .ik-pos-card--archive:hover {
   line-height: 1.55;
   max-width: 360px;
   margin: 0;
+}
+/* CTA — aynı stil .ik-pos-landing__cta ile (PR-7 spec) */
+.ik-pos-empty__cta {
+  height: 36px;
+  padding: 0 var(--space-9);
+  background: var(--editorial-vermillion-soft);
+  border: 1px solid var(--editorial-vermillion);
+  border-radius: var(--radius);
+  font-family: var(--font-mono);
+  font-size: var(--text-base);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--editorial-vermillion);
+  cursor: pointer;
+  transition: background 140ms ease, border-color 140ms ease, color 140ms ease;
+  white-space: nowrap;
+  margin-top: var(--space-3);
+}
+.ik-pos-empty__cta:hover {
+  border-color: var(--editorial-vermillion-deep);
+  color: var(--editorial-vermillion-deep);
+}
+.ik-pos-empty__cta:focus-visible {
+  outline: 2px solid var(--editorial-vermillion);
+  outline-offset: 2px;
 }
 .ik-pos-empty--archive {
   padding: var(--space-10);
@@ -2360,9 +2490,13 @@ html[data-theme="dark"] .ik-pos-card--archive:hover {
   pointer-events: auto;
   transform: translate(-50%, -50%);
 }
+/* PR-7 CLATU — modal accent solid (close=vermillion, reopen=rating-strong) */
 .ik-pos-modal__accent {
   height: 3px;
-  background: var(--editorial-vermillion-soft);
+  background: var(--editorial-vermillion);
+}
+.ik-pos-modal--reopen .ik-pos-modal__accent {
+  background: var(--rating-strong);
 }
 .ik-pos-modal__body {
   padding: var(--space-10) var(--space-10) var(--space-8);
