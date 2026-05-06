@@ -189,9 +189,12 @@
    ════════════════════════════════════════════════════════════════ */
 .ik-genel__bento {
   display: grid;
-  /* 3 kart 3-col tam dengeli, eşit yükseklik (en uzun içerik belirler) */
-  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+  /* 4-col asimetrik: Pozisyonlar span-2 + Adaylar 1 + Mesajlar 1 (CLATU revize) */
+  grid-template-columns: repeat(4, 1fr);
   gap: var(--space-9);
+}
+.ik-genel__bento > .ik-card--positions {
+  grid-column: span 2;
 }
 
 .ik-card {
@@ -796,6 +799,10 @@
     grid-template-columns: repeat(2, 1fr);
     gap: var(--space-9);
   }
+  /* Tablet: 2-col grid — Pozisyonlar tam satır (span 2 = full row) */
+  .ik-genel__bento {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 @media (max-width: 720px) {
@@ -811,6 +818,13 @@
   }
   .ik-genel__signature {
     padding: var(--space-7) 0;
+  }
+  /* Mobile: 1-col stack — tüm kartlar full-width */
+  .ik-genel__bento {
+    grid-template-columns: 1fr;
+  }
+  .ik-genel__bento > .ik-card--positions {
+    grid-column: span 1;
   }
 }
 

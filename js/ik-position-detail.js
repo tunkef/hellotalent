@@ -200,13 +200,19 @@
       }
     });
 
-    /* "Düzenle" — PR-7 form sheet edit modu */
+    /* "Düzenle" — PR-7 form sheet edit modu.
+       Tuna fix: detail sheet z=901, form sheet z=810 — form altta kalıyordu.
+       Detail kapat + 200ms sonra form aç (animasyon overlap önle). */
     if (_dom.btnKriter) {
       _dom.btnKriter.addEventListener('click', function () {
         if (!_state.positionId) return;
-        if (window._htOpenPositionEditSheet) {
-          window._htOpenPositionEditSheet(_state.positionId);
-        }
+        var posId = _state.positionId;
+        closePositionDetailSheet(true);
+        setTimeout(function () {
+          if (window._htOpenPositionEditSheet) {
+            window._htOpenPositionEditSheet(posId);
+          }
+        }, 200);
       });
     }
 

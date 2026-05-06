@@ -648,9 +648,10 @@
     var bento = el('section', 'ik-genel__bento');
     bento.appendChild(buildPositionsCard(data));
     bento.appendChild(buildNewCandidatesCard(data));
-    bento.appendChild(buildCampaignsCard(data));
-    /* 5 May Tuna: Hızlı eylem + Mesajlar + Ekip kartları kaldırıldı.
-       Kalan 3 kart: Pozisyonlar, Adaylar, Kampanyalar (3-col tam sığar). */
+    bento.appendChild(buildMessagesCard(data));
+    /* CLATU revize (6 May): Kampanyalar → Mesajlar swap.
+       Kampanyalar Iyzico bekliyor (boş state), Mesajlar gerçek veri.
+       Grid: 4-col, Pozisyonlar span-2 + Adaylar 1 + Mesajlar 1. */
     root.appendChild(bento);
 
     /* 5 May Tuna: "Son hareketler" feed iptal — anasayfa daha sade */

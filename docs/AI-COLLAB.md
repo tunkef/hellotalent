@@ -4256,6 +4256,17 @@ Re-audit verify: kpis 0, sublines 0, cards 3 (Açık Pozisyonlar, Adaylar, Kampa
 
 ---
 
+## 6 Mayıs 2026 — Anasayfa CLATU Revize (MCP-bazlı)
+
+Tuna feedback: anasayfa MCP-bazlı revize. designer + ui-agent dispatch.
+- 21st-magic Bento Grid pattern (similarity 6.6) + Stitch design system referans
+- Hero KORU (image #7 onaylı), token sıfır değişim
+- Bento 3-col → 4-col asymmetric (Pozisyonlar `grid-column: span 2`)
+- Kampanyalar (Iyzico bekliyor) → Mesajlar (mevcut işlevsel) swap
+- 3 dosya minimal: ik-genel.css (+16) + ik-genel.js (7 satır swap) + ik.html (cache-bust ?v=20260506clatu)
+
+---
+
 ## 6 Mayıs 2026 — PR-1 Matching Engine DB Foundation DEPLOYED (T4)
 
 **Apply:** `supabase db push --linked --include-all` — 9 migration başarılı (idempotent NOTICE'ler clean).
