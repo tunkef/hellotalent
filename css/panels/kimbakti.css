@@ -304,6 +304,23 @@
 }
 .kb-viewer-row:last-child { border-bottom: 0; padding-bottom: 0; }
 .kb-viewer-row:first-child { padding-top: 0; }
+
+/* PR-6: rollup satırı hafif arka plan */
+.kb-viewer-row--rollup {
+  background: var(--editorial-vermillion-soft);
+  border-radius: 8px;
+  padding-left: 12px;
+  padding-right: 12px;
+  margin-left: -12px;
+  margin-right: -12px;
+  border-bottom: 0;
+  margin-bottom: 2px;
+}
+.kb-viewer-row--rollup + .kb-viewer-row {
+  border-top: 1px solid var(--border-subtle, var(--editorial-hairline));
+  padding-top: 22px;
+}
+
 .kb-viewer-avatar {
   width: 44px; height: 44px; border-radius: 50%;
   border: 1px solid var(--border-subtle, var(--editorial-hairline));
@@ -324,12 +341,32 @@
   background: var(--editorial-ink);
   color: var(--editorial-bg);
 }
+
+/* PR-6: event type avatar renk varyantları */
+.kb-viewer-avatar--pipeline {
+  border-color: var(--editorial-vermillion);
+  background: var(--editorial-vermillion-soft);
+  color: var(--editorial-vermillion);
+}
+.kb-viewer-avatar--message {
+  border-color: var(--editorial-ink);
+  background: var(--editorial-ink);
+  color: var(--editorial-bg);
+}
+
+/* kb-viewer-info: info bloğu (PR-6 semantik sınıf) */
+.kb-viewer-info { min-width: 0; }
+
 .kb-viewer-name {
   font-family: var(--font-display, "Bricolage Grotesque", serif);
   font-size: 18px;
   color: var(--editorial-ink);
   font-weight: 500;
   line-height: 1.3;
+  /* uzun marka adı + kopya taşmasın */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .kb-viewer-name.is-locked {
   font-family: var(--font-mono, "DM Mono", monospace);
@@ -355,6 +392,83 @@
 .kb-viewer-right.is-locked {
   color: var(--text-muted, var(--editorial-ink-muted));
   font-size: 16px;
+}
+
+/* PR-6: rollup badge (sağ taraf) */
+.kb-rollup-badge {
+  font-family: var(--font-mono, "DM Mono", monospace);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--editorial-vermillion);
+  background: var(--editorial-on-vermillion);
+  border: 1px solid var(--editorial-vermillion);
+  border-radius: 6px;
+  padding: 2px 8px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* PR-6: "Mesajı Gör" CTA butonu (message_sent satırı) */
+.kb-msg-cta {
+  font-family: var(--font-body, "Plus Jakarta Sans", sans-serif);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--editorial-vermillion);
+  background: transparent;
+  border: 1px solid var(--editorial-vermillion);
+  border-radius: 8px;
+  padding: 6px 14px;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: background 140ms ease, color 140ms ease;
+  line-height: 1.4;
+}
+.kb-msg-cta:hover {
+  background: var(--editorial-vermillion);
+  color: var(--editorial-on-vermillion);
+}
+.kb-msg-cta:focus-visible {
+  outline: 2px solid var(--editorial-vermillion);
+  outline-offset: 2px;
+}
+
+/* PR-6: bell badge (header-kimbakti butonu üzerinde) */
+.kb-bell-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 18px;
+  height: 18px;
+  background: var(--editorial-vermillion);
+  color: var(--editorial-on-vermillion);
+  border-radius: 999px;
+  font-family: var(--font-mono, "DM Mono", monospace);
+  font-size: 10px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  pointer-events: none;
+  border: 1.5px solid var(--editorial-bg);
+}
+
+/* dark mode: rollup bg + bell badge border */
+html[data-theme="dark"] .kb-viewer-row--rollup {
+  background: rgba(201, 78, 40, 0.12);
+}
+html[data-theme="dark"] .kb-bell-badge {
+  border-color: var(--editorial-bg);
+}
+html[data-theme="dark"] .kb-viewer-avatar--pipeline {
+  background: rgba(201, 78, 40, 0.15);
+  color: var(--editorial-vermillion);
+}
+html[data-theme="dark"] .kb-rollup-badge {
+  background: transparent;
+  color: var(--editorial-vermillion);
 }
 
 /* ═══ PREMIUM CTA ═══ */

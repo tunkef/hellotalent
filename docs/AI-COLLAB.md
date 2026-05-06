@@ -4464,3 +4464,65 @@ PR-5 (T3 auto-match trigger + Pool akış + auto badge) — PR-4 deploy sonrası
 
 - PR-3 (T4 M3 enum swap) — PR-1+PR-2+PR-4+PR-5 stable 7g gözlem
 - PR-6 (T3 Kim Baktı KVKK) — PR-5 deploy sonrası otomatik başlatılacak (legal-reviewer + auditor zorunlu)
+
+---
+
+## 6 Mayıs 2026 — PR-6 KIM BAKTI KVKK + AUDIT FIX (T3)
+
+**Tetikleme zinciri:** content-writer + legal-reviewer + auditor + ui-agent + supabase-agent paralel.
+
+**Çıktı dosyaları:**
+- `.claude/agent-memory/specs/pr-6-feed-copy.md` — content-writer (event type cümleler, dedupe rollup, tier-aware)
+- `.claude/agent-memory/specs/pr-6-legal-kvkk.md` — legal-reviewer (KVKK risk + 7 avukat sorusu)
+- `.claude/agent-memory/audit/pr-6-audit-report.md` — auditor (1 BLOCKER + 2 HIGH + 3 MEDIUM)
+
+**Audit Findings (uzlaşma — legal + auditor):**
+- B1 BLOCKER: yasal.html aydınlatma metni eksik (KVKK md.10 açık iletişim) — content-writer fix ✓
+- H1: select('*') candidate_view_stats `total_interactions` PII leak — ui-agent fix ✓
+- H2: preview_viewers URL parametresi production'da korumasız — ui-agent fix ✓ (TAMAMEN KALDIRILDI)
+- M1: profile_view_events retention cron yok — supabase-agent fix ✓ (90/180/365 gün event_type bazlı)
+- M2: console.warn err.message PII leak — ui-agent fix ✓ (sadece err.code)
+- M3: RLS helper inconsistency — supabase-agent fix ✓ (subquery → get_my_candidate_id())
+
+**Frontend (PR-6):**
+- `profil-kimbakti.js` — Feature flag KVKK_AUTO_MATCH_NOTIF_ENABLED (default OFF), event type cümleler (Premium/sadece Marka, Freemium fallback comment'te), dedupe rollup `company_id+week`, time format Türkçe, bell badge counter, empty state, H1+H2+M2 fix
+- `css/panels/kimbakti.css` — rollup row tinted bg, mobile responsive, fallback hex kaldırıldı (token-strict)
+- `profil.html` — script ref + markup contract
+
+**Yasal Metin Update:**
+- `yasal.html` 8 değişim (KVKK tablosu + info-box + md.11 + yurt dışı aktarım + 12ay retention + son güncelleme tarihi 6 May 2026)
+- Tüm yeni satırlar `(avukat onayı bekliyor)` etiketli
+- Avukat görüşmesi sonrası etiket kaldırılır + Tuna onayı
+
+**DB Migrations (PR-6 atomic):**
+- `20260507130000_pr6_pve_retention_cron.sql` — `cleanup_profile_view_events_retention()` + cron `purge-pve-retention` 03:45 UTC
+- `20260507140000_pr6_rls_helper_consistency.sql` — pve_candidate_select + cvs_candidate_select policy DROP+CREATE (helper switch)
+
+**Verify:**
+- Cron `purge-pve-retention` schedule `45 3 * * *` ✓
+- RLS policy `(candidate_id = get_my_candidate_id())` ✓ both tables
+- KVKK_AUTO_MATCH_NOTIF_ENABLED = false default ✓
+- preview_viewers KALDIRILDI ✓
+- 0 hardcoded hex ✓
+
+**⚠️ Production Deploy BLOCKER:**
+- Tuna avukat görüşmesi (7 kritik soru — `feedback_codex_full_agreement.md` + `project_kvkk_lawyer_review_pr6.md` referans)
+- Avukat onayı sonrası: yasal.html `(avukat onayı bekliyor)` etiketleri kaldırılır + KVKK_AUTO_MATCH_NOTIF_ENABLED → true + cache-bust `?v=pr6-feed-v2`
+
+**Memory feedback (yeni):**
+- `project_kvkk_lawyer_review_pr6.md` — 7 avukat sorusu + Tuna offline iletişim + frontend feature flag arkasında deploy
+
+### Sıradaki
+
+- Tuna avukat görüşmesi (yasal blocker)
+- Avukat sonrası: feature flag flip + cache-bust + yasal.html final commit
+- PR-3 (M3 enum swap) — gözlem süresi devam
+
+### Sprint Tamamlandı
+
+- PR-1 ✓ (DB foundation, Codex 8-iter, 27 fix, J1+J2 hotfix)
+- PR-2 ✓ (form refactor, mono-key fix)
+- PR-4 ✓ (3-sütun + sheet + soft refresh)
+- PR-5 ✓ (auto-match trigger + Pool 5A + auto badge)
+- PR-6 ✓ frontend + DB (KVKK avukat onayı bekleniyor)
+- PR-3 ⏸ (M3 enum swap, 7g gözlem süresi)

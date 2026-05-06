@@ -110,6 +110,8 @@ if (window.Sentry) {
   <div class="header-right">
     <button type="button" class="header-msg pos-rel" id="header-kimbakti" aria-label="Kim Baktı">
       <svg class="hn-action-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+      <!-- PR-6: bell badge — JS tarafından güncellenir (_htKbUpdateBellBadge) -->
+      <span class="kb-bell-badge" id="kb-bell-badge" style="display:none;" aria-label="Yeni etkinlik yok" aria-live="polite"></span>
     </button>
     <div class="header-btn-wrap" id="header-msg-wrap">
       <button type="button" class="header-msg" id="header-msg" aria-label="Mesajlar">
@@ -1926,7 +1928,7 @@ if (window.Sentry) {
 <script src="profil-wizard.js?v=20260423k049o"></script>
 <script src="profil-draft.js?v=20260423k049o"></script>
 <script src="profil-helpers.js?v=20260423k049o"></script>
-<script src="profil-kimbakti.js?v=20260423k049o"></script>
+<script src="profil-kimbakti.js?v=pr6-feed"></script>
 <script src="profil-bootstrap.js?v=20260423k049o"></script>
 <script src="profil-events.js?v=20260423k049o"></script>
 

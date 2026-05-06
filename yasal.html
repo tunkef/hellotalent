@@ -226,7 +226,11 @@
 
   <!-- GIZLILIK -->
   <section class="yasal-panel active" id="panel-gizlilik">
-    <div class="yasal-date">Son güncelleme · 18 Nisan 2026</div>
+    <!-- PR-6 (6 Mayıs 2026): Bölüm 3 otomatik eşleştirme açıklaması eklendi.
+         Bölüm 4 "tavsiye sistemleri" → "otomatik eşleştirme algoritması" (GAP-2 fix — L1).
+         Bölüm 5 profile_view_events retention eklendi (GAP-3 fix — H3, avukat onayına bağlı).
+         Bölüm 7 hizmet sağlayıcılar / yurt dışı aktarım eklendi (GAP-5 fix — M2, avukat onayına bağlı). -->
+    <div class="yasal-date">Son güncelleme · 6 Mayıs 2026</div>
 
     <div class="info-box">
       <p>HelloTalent; adayların gizlilik haklarını korur, bilgi paylaşımını sadece kullanıcının açık onayıyla başlatır. Bu politika, hangi verileri topladığımızı, nasıl işlediğimizi ve haklarınızı özetler.</p>
@@ -244,16 +248,35 @@
     </ul>
 
     <h2>3. Verilerinizi Nasıl Kullanırız?</h2>
-    <p>Profilinizi oluşturmak, eşleşme algoritmamızı çalıştırmak, işverenlerle sizin açık onayınızla temas kurmak, platformu iyileştirmek ve yasal yükümlülükleri yerine getirmek için kullanırız. Verilerinizi izniniz olmadan üçüncü taraflarla paylaşmayız.</p>
+    <p>Profilinizi oluşturmak, platformu iyileştirmek ve yasal yükümlülükleri yerine getirmek için kullanırız. Verilerinizi izniniz olmadan üçüncü taraflarla paylaşmayız.</p>
+    <!-- PR-6 (6 Mayıs 2026) — TASLAK, avukat onayına bağlı (legal-reviewer spec pr-6-legal-kvkk.md).
+         Hukuki dayanak md.5/2-f (meşru menfaat) varsayımı; avukat md.5/1 (açık rıza) kararını netleştirecek.
+         Aday tarafı dili: "aday listesi" — iç pipeline/uzun_liste terminolojisi KULLANILMAZ. -->
+    <p>Profilinizdeki bilgiler (deneyim, eğitim, müsaitlik, çalışma tipi tercihleri, dil bilgisi ve pozisyon tercihleri) işveren kullanıcıların açtığı pozisyonlarla otomatik eşleştirme algoritması aracılığıyla karşılaştırılır. Eşleşme kriterlerini sağladığınız tespit edilirse ilgili işverenin aday listesine eklenebilirsiniz. Bu işlem KVKK md.5/2-(f) kapsamındaki meşru menfaat temelinde yürütülür ve aday listesine alındığınızda profil sayfanızdaki "Kim Baktı" bölümünde bildirim olarak gösterilir. Eşleşme skoru size açıklanmaz ve üçüncü taraflarla paylaşılmaz. Bu işleme itiraz etmek veya hesabınızı otomatik eşleştirme kapsamı dışına almak isterseniz <a href="mailto:info@hellotalent.ai">info@hellotalent.ai</a> adresine yazabilirsiniz (KVKK md.11 — 30 gün içinde yanıt). <em>(avukat onayı bekliyor)</em></p>
 
     <h2>4. Görünmez Mod</h2>
-    <p>Profilinizi görünmez moda aldığınızda; arama sonuçlarında, marka filtre havuzlarında, tavsiye sistemlerinde yer almazsınız. Sadece sizin izin verdiğiniz markalar profilinize erişebilir.</p>
+    <!-- PR-6 (6 Mayıs 2026): "tavsiye sistemleri" → "otomatik eşleştirme algoritması" (GAP-2 / L1 fix).
+         search_employer_candidates() is_active filtresi ile uyumlu; görünmez aday auto-match kapsamı dışında kalır. -->
+    <p>Profilinizi görünmez moda aldığınızda; arama sonuçlarında, marka filtre havuzlarında ve otomatik eşleştirme algoritmasında yer almazsınız. Sadece sizin izin verdiğiniz markalar profilinize erişebilir.</p>
 
     <h2>5. Veri Saklama Süresi</h2>
-    <p>Aktif hesabınız süresince verileriniz saklanır. Hesabınızı pasif moda alırsanız 12 ay, silmek isterseniz KVKK md.11 kapsamında 30 gün içinde tüm verileriniz kalıcı olarak silinir.</p>
+    <!-- PR-6 (6 Mayıs 2026): profile_view_events retention eklendi (GAP-3 / H3 — avukat onayına bağlı).
+         Öneri: 12 ay. Cron purge U3 backlog'da (supabase-agent). -->
+    <p>Aktif hesabınız süresince verileriniz saklanır. Hesabınızı pasif moda alırsanız 12 ay, silmek isterseniz KVKK md.11 kapsamında 30 gün içinde tüm verileriniz kalıcı olarak silinir. Profil görüntüleme ve otomatik eşleştirme etkinlik kayıtları ("Kim Baktı" verileri) ise oluşturulduktan <strong>12 ay sonra</strong> otomatik olarak silinir. <em>(avukat onayına bağlı — kesin süre netleştirilecek)</em></p>
 
     <h2>6. Haklarınız</h2>
     <p>KVKK kapsamında; verilerinize erişme, düzeltilmesini isteme, silinmesini talep etme, işlemenin kısıtlanmasını isteme ve veri taşınabilirliği haklarına sahipsiniz. Talepleriniz için <a href="mailto:info@hellotalent.ai">info@hellotalent.ai</a> adresine yazabilirsiniz.</p>
+
+    <!-- PR-6 (6 Mayıs 2026): Hizmet sağlayıcılar / yurt dışı aktarım bölümü eklendi (GAP-5 / M2).
+         KVKK md.9/2 + md.16 kapsamı avukata sorulacak (legal-reviewer soru 4).
+         Supabase: AWS eu-central-1 (Frankfurt, Almanya). Sentry: Frankfurt, Almanya.
+         AB/GDPR bölgesi — Türkiye KVKK açısından yeterlilik durumu avukat tarafından netleştirilecek. -->
+    <h2>7. Hizmet Sağlayıcılar ve Yurt Dışı Veri Aktarımı</h2>
+    <p>Platform altyapısını sağlayan aşağıdaki hizmet sağlayıcılar, verilerinizi Türkiye dışındaki sunucularda işleyebilir. Bu aktarımlar KVKK md.9 kapsamında değerlendirilmektedir. <em>(avukat onayı bekliyor)</em></p>
+    <ul>
+      <li><strong>Supabase (AWS, Frankfurt/Almanya):</strong> Kullanıcı hesabı, profil verisi ve etkinlik kayıtları. Supabase, GDPR uyumlu altyapı üzerinde çalışmaktadır.</li>
+      <li><strong>Sentry (Frankfurt/Almanya):</strong> Hata izleme ve telemetri. Kişisel veri içermeyen teknik log kaydıdır; PII aktarımı yapılmaz.</li>
+    </ul>
   </section>
 
   <!-- KULLANIM ŞARTLARI -->
@@ -286,7 +309,11 @@
 
   <!-- KVKK -->
   <section class="yasal-panel" id="panel-kvkk">
-    <div class="yasal-date">Son güncelleme · 18 Nisan 2026</div>
+    <!-- PR-6 (6 Mayıs 2026): KVKK tablosuna otomatik eşleştirme satırı eklendi (BLOCKER — GAP-1 fix).
+         "Otomatik eşleşme algoritması" paragrafı eklendi.
+         md.11 itiraz hakkı — email mekanizması korundu, P3 toggle backlog notu düşüldü.
+         Avukat onayı zorunlu prod öncesi. -->
+    <div class="yasal-date">Son güncelleme · 6 Mayıs 2026</div>
 
     <div class="info-box">
       <p>6698 sayılı Kişisel Verilerin Korunması Kanunu (KVKK) kapsamında, Peoplein İK Ltd. Şti. olarak sizi bilgilendirmekle yükümlüyüz. Aşağıda işlediğimiz veriler, işleme amaçları ve haklarınız detaylandırılmıştır.</p>
@@ -306,6 +333,12 @@
              Migration LIVE: employer_candidate_notes retention 2 yıl + cron purge.
              Hukuki sebep "Meşru menfaat" varsayımı; avukat md.5/2-f vs md.5/1 (açık rıza) kararı bekleniyor. -->
         <tr><td>İşveren değerlendirmesi</td><td>İşe alım sürecinde işverenin aday hakkında tuttuğu dahili notlar</td><td>Meşru menfaat <em>(avukat onayı bekliyor)</em></td></tr>
+        <!-- PR-6 (6 Mayıs 2026) — TASLAK, avukat onayına bağlı (BLOCKER — GAP-1).
+             profile_view_events tablosu: event_type = pipeline_added | view | message_sent.
+             Hukuki sebep: md.5/2-f (meşru menfaat) varsayımı — avukat netleştirecek.
+             Aday tarafı dili: "aday listesi" — "uzun_liste" / "pipeline" iç terminoloji, kullanıcıya gösterilmez.
+             Retention: 12 ay (avukat onayına bağlı, cron purge U3 backlog). -->
+        <tr><td>Otomatik eşleştirme ve aday listesi etkinliği</td><td>Profil görüntüleme, aday listesine ekleme ve mesaj gönderme etkinlikleri (tarih, marka segmenti, pozisyon referansı)</td><td>Meşru menfaat (md.5/2-f) <em>(avukat onayı bekliyor)</em></td></tr>
       </tbody>
     </table>
 
@@ -317,6 +350,21 @@
       <p>Platformumuzda işverenler, iş başvurusu veya değerlendirme sürecinde adaylar hakkında dahili notlar tutabilir. Bu notlar yalnızca ilgili işverenin İK ekibine görünür; HelloTalent çalışanları dahil başka taraflarla paylaşılmaz. Söz konusu notlar oluşturulduktan <strong>2 yıl sonra</strong> otomatik olarak silinir. KVKK md. 11 kapsamında bu verilere ilişkin metadata erişiminizi <a href="profil.html#notlar">profil sayfanızdan</a>, içerik ve silme talebinizi ise <a href="mailto:info@hellotalent.ai">info@hellotalent.ai</a> adresine başvurarak kullanabilirsiniz (30 gün içinde yanıt).</p>
     </div>
 
+    <!-- PR-6 (6 Mayıs 2026) — TASLAK, avukat onayına bağlı.
+         Paragraf: legal-reviewer spec pr-6-legal-kvkk.md, Bölüm 3 önerisi + content-writer doğal Türkçe revizyonu.
+         Meşru menfaat / açık rıza kararı avukattan bekleniyor (soru 1 + 7).
+         md.11 itiraz: email yöntemi korundu. Self-serve toggle P3 backlog (profil.html "Otomatik eşleşmeyi kapat").
+         Eşleşme skoru: kasıtlı olarak event_metadata'da tutulmuyor (migration 20260507120000, A2 audit fix). -->
+    <div class="info-box" style="margin-top: 24px; border-left: 3px solid var(--verm); padding-left: 16px;">
+      <h3 style="margin-top: 0;">Otomatik Eşleştirme Algoritması ve "Kim Baktı" Bildirimleri</h3>
+      <p>Profilinizdeki bilgiler (deneyim, eğitim, müsaitlik, çalışma tipi tercihleri, dil bilgisi ve pozisyon tercihleri) işveren kullanıcıların açtığı pozisyonlarla otomatik eşleştirme algoritması aracılığıyla karşılaştırılır. Eşleşme kriterlerini sağladığınız tespit edilirse ilgili işverenin aday listesine eklenebilirsiniz. Bu işlem KVKK md.5/2-(f) kapsamındaki meşru menfaat temelinde yürütülür. <em>(avukat onayı bekliyor)</em></p>
+      <p>Aday listesine alındığınızda, profil sayfanızdaki "Kim Baktı" bölümünde "[Marka] seni aday listesine aldı" şeklinde bildirim görürsünüz. Eşleşme skoru size gösterilmez ve üçüncü taraflarla paylaşılmaz.</p>
+      <p>Bu işleme itiraz etmek veya hesabınızı otomatik eşleştirme kapsamı dışına almak isterseniz <a href="mailto:info@hellotalent.ai">info@hellotalent.ai</a> adresine yazabilirsiniz. Talebiniz 30 gün içinde sonuçlandırılır (KVKK md.11).</p>
+      <!-- P3 backlog: profil.html "Otomatik eşleşmeyi kapat" self-serve toggle.
+           Avukattan onay bekleniyor: email başvurusu orta vadede self-serve toggle ile desteklenecek.
+           ui-agent: toggle component için copy spec pr-6-feed-copy.md Bölüm 7C referans alınabilir. -->
+    </div>
+
     <h2>Haklarınız (KVKK md. 11)</h2>
     <div class="rights-grid">
       <div class="right-item"><b>Erişim</b>Kişisel verilerinize ulaşma ve bilgi talep etme hakkı.</div>
@@ -324,7 +372,7 @@
       <div class="right-item"><b>Silme</b>Şartların oluşması halinde verilerin silinmesini talep etme hakkı.</div>
       <div class="right-item"><b>Kısıtlama</b>İşlemenin belirli amaçlarla sınırlanmasını isteme hakkı.</div>
       <div class="right-item"><b>Taşınabilirlik</b>Verilerinizi başka bir veri sorumlusuna aktarma hakkı.</div>
-      <div class="right-item"><b>İtiraz</b>Otomatik karar süreçlerine itiraz hakkı.</div>
+      <div class="right-item"><b>İtiraz</b>Otomatik karar süreçlerine, otomatik eşleştirme algoritması dahil, itiraz hakkı.</div>
     </div>
 
     <h2>Başvuru</h2>
