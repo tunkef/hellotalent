@@ -430,11 +430,11 @@
     return card;
   }
 
-  /* ═══════ PR-4: Stage empty state metinleri ═══════ */
+  /* ═══════ PR-7 CLATU: Stage empty state metinleri (minimal) ═══════ */
   var STAGE_EMPTY = {
-    uzun_liste:        'Eşleşme bekleniyor. Pozisyon kriterleri kaydedildiğinde adaylar buraya gelir.',
-    kisa_liste:        'Uzun listeden beğendiklerini buraya taşı.',
-    iletisime_gecildi: 'Kısa listedeki bir adaya kontak başlattığında buraya geçer.'
+    uzun_liste:        'Henüz aday yok.',
+    kisa_liste:        'Henüz aday yok.',
+    iletisime_gecildi: 'Henüz aday yok.'
   };
 
   /* ═══════ Stage column render ═══════ */
@@ -472,26 +472,12 @@
     body.setAttribute('data-stage-body', stageDef.key);
 
     if (entries.length === 0) {
+      /* PR-7 CLATU: minimal empty state — arrow icon yok, text-only + ghost link */
       var empty = document.createElement('div');
       empty.className = 'ik-pipeline-empty';
-      var icon = document.createElement('div');
-      icon.className = 'ik-pipeline-empty__icon';
-      var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-      svg.setAttribute('viewBox', '0 0 24 24');
-      svg.setAttribute('fill', 'none');
-      svg.setAttribute('stroke', 'currentColor');
-      svg.setAttribute('stroke-width', '2');
-      svg.setAttribute('stroke-linecap', 'round');
-      svg.setAttribute('stroke-linejoin', 'round');
-      var pp = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-      pp.setAttribute('d', 'M5 12h14M12 5l7 7-7 7');
-      svg.appendChild(pp);
-      icon.appendChild(svg);
-      empty.appendChild(icon);
       var et = document.createElement('p');
       et.className = 'ik-pipeline-empty__title';
-      /* PR-4: stage-specific empty state metni */
-      et.textContent = STAGE_EMPTY[stageDef.key] || 'Bu aşamada aday yok';
+      et.textContent = STAGE_EMPTY[stageDef.key] || 'Henüz aday yok.';
       empty.appendChild(et);
       if (stageDef.key === 'uzun_liste') {
         var cta = document.createElement('a');

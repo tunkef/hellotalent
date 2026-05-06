@@ -154,7 +154,7 @@
   grid-template-columns: repeat(3, minmax(260px, 1fr));
   gap: var(--space-8);
   align-items: start;
-  min-height: 100%;
+  /* PR-7 CLATU: min-height: 100% kaldırıldı — dev boş alan önlenir */
 }
 
 /* Mobile segment tabs — sheet body içinde sticky */

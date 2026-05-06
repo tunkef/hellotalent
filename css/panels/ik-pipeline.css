@@ -229,12 +229,13 @@
   border-radius: var(--radius-lg);
   display: flex;
   flex-direction: column;
-  min-height: 480px;
+  /* PR-7 CLATU: content-fit — min-height 480px kaldırıldı (21st-magic kanban shadcn) */
   transition: border-color 160ms ease, background 160ms ease;
-  max-height: calc(100vh - 200px);
   overflow-y: hidden;
 }
 .ik-stage--drop-target {
+  /* PR-7 CLATU: dashed drop indicator (21st-magic pattern) */
+  border-style: dashed;
   border-color: var(--editorial-vermillion);
   background: var(--editorial-vermillion-soft);
 }
@@ -305,7 +306,7 @@ html[data-theme="dark"] .ik-stage[data-stage="iletisime_gecildi"] .ik-stage__hea
   display: flex;
   flex-direction: column;
   gap: var(--space-6);
-  min-height: 200px;
+  /* PR-7 CLATU: content-fit — min-height: 200px kaldırıldı */
 }
 
 /* ════════════════════════════════════════════════════════════════
@@ -481,51 +482,44 @@ html[data-theme="dark"] .ik-stage[data-stage="iletisime_gecildi"] .ik-stage__hea
 }
 
 /* ── Stage empty state ── */
+/* PR-7 CLATU: minimal empty state — no icon, no centering, content-fit */
 .ik-pipeline-empty {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: var(--space-10) var(--space-7);
+  align-items: flex-start;
+  padding: var(--space-5) var(--space-2) var(--space-6);
   color: var(--editorial-ink-muted);
-  flex: 1;
 }
+/* PR-7: icon circle tamamen kaldırıldı — Tuna kuralı simge yasak */
 .ik-pipeline-empty__icon {
-  width: 36px;
-  height: 36px;
-  border-radius: var(--radius-pill);
-  background: var(--editorial-card-elev);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: var(--space-5);
-}
-.ik-pipeline-empty__icon svg {
-  width: 18px;
-  height: 18px;
-  stroke: var(--editorial-ink-muted);
+  display: none;
 }
 .ik-pipeline-empty__title {
   font-family: var(--font-body);
-  font-size: var(--text-md);
+  font-size: var(--text-sm);
   color: var(--editorial-ink-muted);
-  margin: 0 0 var(--space-3);
-  font-weight: 500;
+  margin: 0 0 var(--space-4);
+  font-weight: 400;
 }
+/* PR-7 CLATU: ghost text link — border yok, vermillion underline */
 .ik-pipeline-empty__cta {
-  font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
   color: var(--editorial-vermillion);
-  text-decoration: none;
+  text-decoration: underline;
+  text-underline-offset: 3px;
   border: none;
   background: transparent;
   cursor: pointer;
+  padding: 0;
 }
 .ik-pipeline-empty__cta:hover {
   color: var(--editorial-vermillion-deep);
+  text-decoration-thickness: 2px;
+}
+.ik-pipeline-empty__cta:focus-visible {
+  outline: 2px solid var(--editorial-vermillion);
+  outline-offset: 2px;
 }
 
 /* ── Loading & toast (paylasilan) ── */
@@ -737,7 +731,7 @@ html[data-theme="dark"] .ik-pipeline-toast--info {
   }
   .ik-stage {
     display: none;
-    min-height: 320px;
+    /* PR-7 CLATU: content-fit mobile — min-height: 320px kaldırıldı */
     max-height: none;
     overflow-y: visible;
     scroll-snap-align: none;
