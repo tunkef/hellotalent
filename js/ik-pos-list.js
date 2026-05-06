@@ -173,8 +173,8 @@
 
     /* Click + keyboard → detail sheet (PR-4 reuse). Edit/Kapat detail header'da. */
     function openDetail() {
-      if (window._htPositionDetailOpen) {
-        window._htPositionDetailOpen(pos.id);
+      if (window._htOpenPositionDetailSheet) {
+        window._htOpenPositionDetailSheet(pos.id, 'card_click');
       }
       track('position_list_item_click', { id: pos.id, view: isArchive ? 'archive' : 'active' });
     }
