@@ -23,12 +23,12 @@
 
   var _dom = {};
 
-  /* ═══════ DOM cache — PR-7 CLATU rework #3: ik-card pattern (anasayfa) ═══════ */
+  /* ═══════ DOM cache — PR-7 rework #4: bento-grid (anasayfa pattern) ═══════ */
   function cacheDom() {
-    _dom.list    = document.getElementById('ik-pos-list');         /* ik-list container */
-    _dom.chip    = document.getElementById('ik-pos-chip');         /* head chip "X aktif" */
-    /* Backwards-compat alias for legacy code paths */
-    _dom.grid    = _dom.list;
+    _dom.grid    = document.getElementById('ik-pos-grid');         /* bento container */
+    _dom.chip    = document.getElementById('ik-pos-chip');         /* hero chip "X aktif" */
+    /* Backwards-compat alias */
+    _dom.list    = _dom.grid;
     _dom.subline = _dom.chip;
     _dom.segAktif = document.getElementById('btn-pos-seg-aktif');
     _dom.segArsiv = document.getElementById('btn-pos-seg-arsiv');
@@ -112,41 +112,53 @@
     return chips;
   }
 
-  /* ═══════ List item DOM — PR-7 CLATU rework #3: ik-list__item pattern (anasayfa)
-     Image #6 reference: tek büyük ik-card içinde ik-list, her pozisyon list item.
-     Click → detail sheet (PR-4). Edit/Kapat detail sheet header'ında.
-     Kebab menu, kriter chip preview, count'lar list item'dan KALDIRILDI (anasayfa
-     pattern minimal). ═══════ */
+  /* ═══════ Kart DOM — PR-7 rework #4: bento-grid (her pozisyon AYRI ik-card)
+     Anasayfa ik-card pattern reuse (image #6).
+     Click → detail sheet (PR-4). Edit/Kapat detail sheet header'da.
+     ═══════ */
   function buildCard(pos, isArchive) {
-    var item = document.createElement('div');
-    item.className = 'ik-list__item ik-list__item--link';
-    item.setAttribute('data-pos-id', String(pos.id));
-    item.setAttribute('data-status', isArchive ? 'archive' : 'active');
-    item.setAttribute('role', 'listitem');
-    item.setAttribute('tabindex', '0');
+    var card = document.createElement('article');
+    card.className = 'ik-card ik-card--position-tile';
+    card.setAttribute('data-pos-id', String(pos.id));
+    card.setAttribute('data-status', isArchive ? 'archive' : 'active');
+    card.setAttribute('role', 'listitem');
+    card.setAttribute('tabindex', '0');
 
-    /* ── Body: name + meta ── */
-    var bodyEl = document.createElement('div');
-    bodyEl.className = 'ik-list__body';
+    /* ── Head: title + chip ── */
+    var head = document.createElement('div');
+    head.className = 'ik-card__head';
 
-    var nameEl = document.createElement('span');
-    nameEl.className = 'ik-list__name';
-    nameEl.textContent = pos.ad || pos.title || '—';
-    bodyEl.appendChild(nameEl);
+    var titleEl = document.createElement('h3');
+    titleEl.className = 'ik-card__title';
+    titleEl.textContent = pos.ad || pos.title || '—';
+    head.appendChild(titleEl);
 
+    var chip = document.createElement('span');
+    chip.className = 'ik-card__chip' + (isArchive ? '' : ' ik-card__chip--accent');
+    chip.textContent = isArchive ? 'Arşiv' : 'Aktif';
+    head.appendChild(chip);
+
+    card.appendChild(head);
+
+    /* ── Body: meta (sehir · seg · exp) ── */
     var metaParts = [];
     if (pos.sehir || pos.city) metaParts.push(pos.sehir || pos.city);
     if (pos.seg   || pos.segment) metaParts.push(pos.seg || pos.segment);
     if (pos.exp   || pos.experience_years) metaParts.push(pos.exp || pos.experience_years);
     if (metaParts.length) {
-      var metaEl = document.createElement('span');
-      metaEl.className = 'ik-list__meta';
-      metaEl.textContent = metaParts.join(' · ');
-      bodyEl.appendChild(metaEl);
+      var body = document.createElement('div');
+      body.className = 'ik-card__body';
+      var meta = document.createElement('span');
+      meta.className = 'ik-list__meta';
+      meta.textContent = metaParts.join(' · ');
+      body.appendChild(meta);
+      card.appendChild(body);
     }
-    item.appendChild(bodyEl);
 
-    /* ── Time ago (right-aligned) ── */
+    /* ── Footer: time ago (split, right-end) ── */
+    var footer = document.createElement('div');
+    footer.className = 'ik-card__footer ik-card__footer--split';
+
     var timeEl = document.createElement('span');
     timeEl.className = 'ik-list__time';
     var rawDate = isArchive
@@ -155,7 +167,9 @@
     timeEl.textContent = isArchive
       ? formatKapatmaTarihi(rawDate)
       : (formatAcilmaTarihi(rawDate) || '—');
-    item.appendChild(timeEl);
+    footer.appendChild(timeEl);
+
+    card.appendChild(footer);
 
     /* Click + keyboard → detail sheet (PR-4 reuse). Edit/Kapat detail header'da. */
     function openDetail() {
@@ -164,14 +178,14 @@
       }
       track('position_list_item_click', { id: pos.id, view: isArchive ? 'archive' : 'active' });
     }
-    item.addEventListener('click', openDetail);
-    item.addEventListener('keydown', function (e) {
+    card.addEventListener('click', openDetail);
+    card.addEventListener('keydown', function (e) {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
         openDetail();
       }
     });
-    return item;
+    return card;
   }
 
   /* ═══════ Empty state — PR-7 CLATU: eyebrow + centered + CTA ═══════ */
