@@ -396,9 +396,11 @@
       })();
     },
 
-    /* ── A24: createPosition ── */
+    /* ── PR-2: createPosition ── */
     createPosition: function (payload) {
-      /* payload: { ad, sehir, seg, exp, maas, aciklama }
+      /* payload: { ad, sehir, seg, exp, calisma_tipi[], musaitlik_pozisyon,
+                    egitim_seviye, diller[], tercih_segmentler[], aciklama }
+         maas alanı kaldırıldı (CLAUDE.md kalıcı kural — Türkiye enflasyon politikası).
          ad zorunlu — caller validate eder. company_id + hr_profile_id auto.
          Döner: { ok: true, row } veya { ok: false, error: string } */
       if (!realMode()) {
@@ -417,15 +419,23 @@
         });
       }
 
+      /* PR-2: maas kaldırıldı. Array alanlar NULL-safe — boş array → null. */
+      var safeArr = function (v) {
+        return (Array.isArray(v) && v.length > 0) ? v : null;
+      };
       var insert = {
-        hr_profile_id: userId,
-        company_id:    companyId,
-        ad:            safeStr(payload.ad).trim(),
-        sehir:         safeStr(payload.sehir).trim() || null,
-        seg:           safeStr(payload.seg).trim()   || null,
-        exp:           safeStr(payload.exp).trim()   || null,
-        maas:          safeStr(payload.maas).trim()  || null,
-        aciklama:      safeStr(payload.aciklama).trim() || null
+        hr_profile_id:      userId,
+        company_id:         companyId,
+        ad:                 safeStr(payload.ad).trim(),
+        sehir:              safeStr(payload.sehir).trim()              || null,
+        seg:                safeStr(payload.seg).trim()                || null,
+        exp:                safeStr(payload.exp).trim()                || null,
+        calisma_tipi:       safeArr(payload.calisma_tipi),
+        musaitlik_pozisyon: safeStr(payload.musaitlik_pozisyon).trim() || null,
+        egitim_seviye:      safeStr(payload.egitim_seviye).trim()      || null,
+        diller:             safeArr(payload.diller),
+        tercih_segmentler:  safeArr(payload.tercih_segmentler),
+        aciklama:           safeStr(payload.aciklama).trim()           || null
       };
 
       return (async function () {

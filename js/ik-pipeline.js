@@ -726,26 +726,41 @@
     _posFormDom.btnCancel = document.getElementById('btn-pos-form-cancel');
     _posFormDom.btnSubmit = document.getElementById('btn-pos-form-submit');
     _posFormDom.btnNew    = document.getElementById('btn-new-position');
-    _posFormDom.fieldAd   = document.getElementById('pos-field-ad');
-    _posFormDom.fieldSehir= document.getElementById('pos-field-sehir');
-    _posFormDom.fieldSeg  = document.getElementById('pos-field-seg');
-    _posFormDom.fieldExp  = document.getElementById('pos-field-exp');
-    _posFormDom.fieldMaas = document.getElementById('pos-field-maas');
-    _posFormDom.fieldAcik = document.getElementById('pos-field-aciklama');
-    _posFormDom.counter   = document.getElementById('pos-field-aciklama-counter');
-    _posFormDom.adError   = document.getElementById('pos-field-ad-error');
-    _posFormDom.srvError  = document.getElementById('pos-form-server-error');
+    _posFormDom.fieldAd       = document.getElementById('pos-field-ad');
+    _posFormDom.fieldSehir    = document.getElementById('pos-field-sehir');
+    _posFormDom.fieldSeg      = document.getElementById('pos-field-seg');
+    _posFormDom.fieldExp      = document.getElementById('pos-field-exp');
+    _posFormDom.fieldAcik     = document.getElementById('pos-field-aciklama');
+    _posFormDom.counter       = document.getElementById('pos-field-aciklama-counter');
+    _posFormDom.adError       = document.getElementById('pos-field-ad-error');
+    _posFormDom.srvError      = document.getElementById('pos-form-server-error');
+    /* PR-2: yeni alanlar */
+    _posFormDom.collapseBtn   = document.getElementById('btn-pos-collapse');
+    _posFormDom.collapseBody  = document.getElementById('pos-form-collapse-body');
+    _posFormDom.fieldMusaitlik  = document.getElementById('pos-field-musaitlik');
+    _posFormDom.fieldEgitim     = document.getElementById('pos-field-egitim');
+    _posFormDom.chipGridCalisma = document.querySelector('[data-chip-field="calisma_tipi"]');
+    _posFormDom.chipGridDiller  = document.querySelector('[data-chip-field="diller"]');
+    _posFormDom.chipGridSeg     = document.querySelector('[data-chip-field="tercih_segmentler"]');
   }
 
   function isDirty() {
     if (!_posFormDom.fieldAd) return false;
+    /* PR-2: maas kaldırıldı, chip seçimi + yeni select'ler eklendi */
+    var chipsDirty = (
+      (_posFormDom.chipGridCalisma && _posFormDom.chipGridCalisma.querySelector('[aria-pressed="true"]') !== null) ||
+      (_posFormDom.chipGridDiller  && _posFormDom.chipGridDiller.querySelector('[aria-pressed="true"]')  !== null) ||
+      (_posFormDom.chipGridSeg     && _posFormDom.chipGridSeg.querySelector('[aria-pressed="true"]')     !== null)
+    );
     return (
-      _posFormDom.fieldAd.value.trim()    !== '' ||
-      _posFormDom.fieldSehir.value.trim() !== '' ||
-      _posFormDom.fieldSeg.value          !== '' ||
-      _posFormDom.fieldExp.value          !== '' ||
-      _posFormDom.fieldMaas.value.trim()  !== '' ||
-      _posFormDom.fieldAcik.value.trim()  !== ''
+      _posFormDom.fieldAd.value.trim()         !== '' ||
+      (_posFormDom.fieldSehir && _posFormDom.fieldSehir.value.trim() !== '') ||
+      (_posFormDom.fieldSeg   && _posFormDom.fieldSeg.value          !== '') ||
+      (_posFormDom.fieldExp   && _posFormDom.fieldExp.value          !== '') ||
+      (_posFormDom.fieldMusaitlik && _posFormDom.fieldMusaitlik.value !== '') ||
+      (_posFormDom.fieldEgitim    && _posFormDom.fieldEgitim.value    !== '') ||
+      (_posFormDom.fieldAcik && _posFormDom.fieldAcik.value.trim()   !== '') ||
+      chipsDirty
     );
   }
 
@@ -755,10 +770,40 @@
     clearPosFieldError(_posFormDom.fieldAd, _posFormDom.adError);
     hidePosServerError();
     updateCounter();
+    /* PR-2: chip reset */
+    var allChips = _posFormDom.form.querySelectorAll('.ik-position-form__chip[aria-pressed="true"]');
+    for (var i = 0; i < allChips.length; i++) {
+      allChips[i].setAttribute('aria-pressed', 'false');
+    }
+    /* PR-2: collapse reset → kapalı */
+    posCollapseClose(true);
     /* submit buton reset */
     if (_posFormDom.btnSubmit) {
       _posFormDom.btnSubmit.disabled = false;
       _posFormDom.btnSubmit.classList.remove('is-loading');
+    }
+  }
+
+  /* PR-2: collapse helpers */
+  function posCollapseOpen() {
+    if (!_posFormDom.collapseBody || !_posFormDom.collapseBtn) return;
+    _posFormDom.collapseBody.removeAttribute('hidden');
+    _posFormDom.collapseBtn.setAttribute('aria-expanded', 'true');
+    var lbl = _posFormDom.collapseBtn.querySelector('.ik-position-form__collapse-label');
+    if (lbl) lbl.textContent = 'Ek kriterleri gizle';
+    if (window.posthog) {
+      try { window.posthog.capture('pos_form_collapse_open'); } catch (e) {}
+    }
+  }
+
+  function posCollapseClose(silent) {
+    if (!_posFormDom.collapseBody || !_posFormDom.collapseBtn) return;
+    _posFormDom.collapseBody.setAttribute('hidden', '');
+    _posFormDom.collapseBtn.setAttribute('aria-expanded', 'false');
+    var lbl = _posFormDom.collapseBtn.querySelector('.ik-position-form__collapse-label');
+    if (lbl) lbl.textContent = 'Daha iyi eşleşme için ek kriter ekle';
+    if (!silent && window.posthog) {
+      try { window.posthog.capture('pos_form_collapse_close'); } catch (e) {}
     }
   }
 
@@ -771,6 +816,10 @@
     _posFormDom.sheet.classList.add('is-open');
     _posFormDom.sheet.setAttribute('aria-hidden', 'false');
     document.body.classList.add('ht-scroll-lock');
+    /* PR-2: PostHog event */
+    if (window.posthog) {
+      try { window.posthog.capture('pos_form_open'); } catch (e) {}
+    }
     /* autofocus + visualViewport guard */
     setTimeout(function () {
       if (_posFormDom.fieldAd) _posFormDom.fieldAd.focus();
@@ -785,8 +834,12 @@
   function closeNewPositionSheet(force) {
     if (!_posFormDom.sheet) return;
     if (!force && isDirty()) {
-      var ok = window.confirm('Değişiklikler kaydedilmedi. Çıkmak istediğinize emin misiniz?');
+      var ok = window.confirm('Değişiklikler kaybolacak. Devam edilsin mi?');
       if (!ok) return;
+      /* PR-2: abandon event — kullanıcı kirli formdan çıkmayı onayladı */
+      if (window.posthog) {
+        try { window.posthog.capture('pos_form_abandon'); } catch (e) {}
+      }
     }
     _posFormDom.overlay.setAttribute('aria-hidden', 'true');
     _posFormDom.overlay.classList.remove('is-open');
@@ -867,13 +920,27 @@
     _posFormDom.srvError.classList.remove('is-visible');
   }
 
+  /* PR-2: chip değerlerini array olarak topla */
+  function getChipValues(grid) {
+    if (!grid) return [];
+    var pressed = grid.querySelectorAll('.ik-position-form__chip[aria-pressed="true"]');
+    var vals = [];
+    for (var i = 0; i < pressed.length; i++) {
+      vals.push(pressed[i].getAttribute('data-value'));
+    }
+    return vals;
+  }
+
   /* Client validation */
   function validatePosForm() {
     var valid = true;
     var ad = _posFormDom.fieldAd ? _posFormDom.fieldAd.value.trim() : '';
     clearPosFieldError(_posFormDom.fieldAd, _posFormDom.adError);
     if (!ad) {
-      showPosFieldError(_posFormDom.fieldAd, _posFormDom.adError, 'Hata: Pozisyon adı gerekli.');
+      showPosFieldError(_posFormDom.fieldAd, _posFormDom.adError, 'Hata: Pozisyon adı boş bırakılamaz.');
+      if (window.posthog) {
+        try { window.posthog.capture('pos_form_validation_error', { error_type: 'ad_bos' }); } catch (e) {}
+      }
       valid = false;
     } else if (ad.length < 2) {
       showPosFieldError(_posFormDom.fieldAd, _posFormDom.adError, 'Hata: En az 2 karakter girin.');
@@ -881,7 +948,30 @@
     }
     /* aciklama length */
     if (_posFormDom.fieldAcik && _posFormDom.fieldAcik.value.length > 800) {
+      if (window.posthog) {
+        try { window.posthog.capture('pos_form_validation_error', { error_type: 'aciklama_limit' }); } catch (e) {}
+      }
       valid = false;
+    }
+    /* PR-2: en az 1 kriter zorunlu (ad kriter sayılmaz) */
+    if (valid) {
+      var sehirDolu    = _posFormDom.fieldSehir    && _posFormDom.fieldSehir.value.trim()    !== '';
+      var segDolu      = _posFormDom.fieldSeg      && _posFormDom.fieldSeg.value             !== '';
+      var expDolu      = _posFormDom.fieldExp      && _posFormDom.fieldExp.value             !== '';
+      var musaitDolu   = _posFormDom.fieldMusaitlik && _posFormDom.fieldMusaitlik.value       !== '';
+      var egitimDolu   = _posFormDom.fieldEgitim   && _posFormDom.fieldEgitim.value          !== '';
+      var calismaDolu  = getChipValues(_posFormDom.chipGridCalisma).length  > 0;
+      var dillerDolu   = getChipValues(_posFormDom.chipGridDiller).length   > 0;
+      var segTercipDolu = getChipValues(_posFormDom.chipGridSeg).length     > 0;
+      var kriterDolu = sehirDolu || segDolu || expDolu || musaitDolu || egitimDolu || calismaDolu || dillerDolu || segTercipDolu;
+      if (!kriterDolu) {
+        showPosServerError('Hata: Eşleşme için en az bir kriter doldur: şehir, segment, deneyim veya aday tercihleri.');
+        posCollapseOpen();
+        if (window.posthog) {
+          try { window.posthog.capture('pos_form_validation_error', { error_type: 'kriter_yok' }); } catch (e) {}
+        }
+        valid = false;
+      }
     }
     return valid;
   }
@@ -903,13 +993,21 @@
       _posFormDom.btnSubmit.classList.add('is-loading');
     }
 
+    /* PR-2: payload — maas kaldırıldı, 5 yeni alan eklendi */
+    var calismaTipiVals   = getChipValues(_posFormDom.chipGridCalisma);
+    var dillerVals        = getChipValues(_posFormDom.chipGridDiller);
+    var tercihSegVals     = getChipValues(_posFormDom.chipGridSeg);
     var payload = {
-      ad:       _posFormDom.fieldAd.value.trim(),
-      sehir:    _posFormDom.fieldSehir ? _posFormDom.fieldSehir.value.trim() : '',
-      seg:      _posFormDom.fieldSeg   ? _posFormDom.fieldSeg.value   : '',
-      exp:      _posFormDom.fieldExp   ? _posFormDom.fieldExp.value   : '',
-      maas:     _posFormDom.fieldMaas  ? _posFormDom.fieldMaas.value.trim()  : '',
-      aciklama: _posFormDom.fieldAcik  ? _posFormDom.fieldAcik.value.trim()  : ''
+      ad:                 _posFormDom.fieldAd.value.trim(),
+      sehir:              _posFormDom.fieldSehir    ? _posFormDom.fieldSehir.value.trim()    : '',
+      seg:                _posFormDom.fieldSeg      ? _posFormDom.fieldSeg.value             : '',
+      exp:                _posFormDom.fieldExp      ? _posFormDom.fieldExp.value             : '',
+      calisma_tipi:       calismaTipiVals.length    ? calismaTipiVals   : null,
+      musaitlik_pozisyon: _posFormDom.fieldMusaitlik ? (_posFormDom.fieldMusaitlik.value || null) : null,
+      egitim_seviye:      _posFormDom.fieldEgitim   ? (_posFormDom.fieldEgitim.value    || null) : null,
+      diller:             dillerVals.length          ? dillerVals        : null,
+      tercih_segmentler:  tercihSegVals.length       ? tercihSegVals     : null,
+      aciklama:           _posFormDom.fieldAcik      ? _posFormDom.fieldAcik.value.trim()    : ''
     };
 
     IK_DATA.createPosition(payload).then(function (result) {
@@ -923,18 +1021,25 @@
       }
       /* Başarı — in-memory update */
       var newRow = result.row;
-      /* positions tablosu field'ları → pipeline state'e normalize */
+      /* PR-2: positions tablosu field'ları → pipeline state'e normalize (maas kaldırıldı) */
       var normalized = {
-        id:         newRow.id,
-        title:      newRow.ad,
-        city:       newRow.sehir,
-        segment:    newRow.seg,
-        experience_years: newRow.exp,
-        maas:       newRow.maas,
-        aciklama:   newRow.aciklama,
-        durum:      newRow.durum || 'active',  /* R3 fix: DB default 'active' */
+        id:                 newRow.id,
+        title:              newRow.ad,
+        city:               newRow.sehir,
+        segment:            newRow.seg,
+        experience_years:   newRow.exp,
+        calisma_tipi:       newRow.calisma_tipi       || null,
+        musaitlik_pozisyon: newRow.musaitlik_pozisyon  || null,
+        egitim_seviye:      newRow.egitim_seviye       || null,
+        diller:             newRow.diller              || null,
+        tercih_segmentler:  newRow.tercih_segmentler   || null,
+        aciklama:           newRow.aciklama,
+        durum:              newRow.durum || 'active',  /* R3 fix: DB default 'active' */
         active_pipeline_count: 0
       };
+      if (window.posthog) {
+        try { window.posthog.capture('pos_form_submit_success'); } catch (e) {}
+      }
       state.positions.push(normalized);
       state.activePositionId = newRow.id;
       state.activePosition   = normalized;
@@ -998,6 +1103,32 @@
     /* Focus trap */
     if (_posFormDom.sheet) {
       _posFormDom.sheet.addEventListener('keydown', trapFocus);
+    }
+
+    /* PR-2: collapse toggle */
+    if (_posFormDom.collapseBtn) {
+      _posFormDom.collapseBtn.addEventListener('click', function () {
+        var isOpen = _posFormDom.collapseBtn.getAttribute('aria-expanded') === 'true';
+        if (isOpen) {
+          posCollapseClose(false);
+        } else {
+          posCollapseOpen();
+        }
+      });
+    }
+
+    /* PR-2: chip click handlers — event delegation per grid */
+    var chipGrids = [_posFormDom.chipGridCalisma, _posFormDom.chipGridDiller, _posFormDom.chipGridSeg];
+    for (var gi = 0; gi < chipGrids.length; gi++) {
+      (function (grid) {
+        if (!grid) return;
+        grid.addEventListener('click', function (e) {
+          var chip = e.target.closest('.ik-position-form__chip');
+          if (!chip) return;
+          var pressed = chip.getAttribute('aria-pressed') === 'true';
+          chip.setAttribute('aria-pressed', pressed ? 'false' : 'true');
+        });
+      })(chipGrids[gi]);
     }
 
     /* ad — onBlur validation */

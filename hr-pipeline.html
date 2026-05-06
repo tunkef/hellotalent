@@ -27,7 +27,7 @@
 <link rel="stylesheet" href="css/tokens.css?v=20260505clatu">
 <link rel="stylesheet" href="css/components.css?v=20260504a24h1">
 <link rel="stylesheet" href="css/ik-shell.css?v=20260505edge">
-<link rel="stylesheet" href="css/panels/ik-pipeline.css?v=20260504a24h1">
+<link rel="stylesheet" href="css/panels/ik-pipeline.css?v=pr2-form">
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="shared.js?v=20260504a24h1"></script>
@@ -322,22 +322,120 @@
       </div>
     </div>
 
-    <!-- Alan 5: Maaş aralığı (opsiyonel) -->
-    <div class="ik-position-form__field">
-      <label class="ik-position-form__label" for="pos-field-maas">Maaş aralığı</label>
-      <input
-        type="text"
-        class="ik-position-form__input"
-        id="pos-field-maas"
-        name="maas"
-        maxlength="60"
-        autocomplete="off"
-        aria-required="false"
-        placeholder="45.000 – 60.000 ₺">
-      <span class="ik-position-form__help">Serbest metin; yayımlanmaz, yalnızca ekibiniz görür.</span>
+    <!-- PR-2: Grup 2 — Aday Kriterleri (collapsible, default kapalı) -->
+    <div class="ik-position-form__section-divider">
+      <span class="ik-position-form__section-label">Aday Kriterleri</span>
     </div>
 
-    <!-- Alan 6: Açıklama (opsiyonel) -->
+    <div class="ik-position-form__collapse" id="pos-form-collapse">
+      <button type="button"
+              class="ik-position-form__collapse-toggle"
+              id="btn-pos-collapse"
+              aria-controls="pos-form-collapse-body"
+              aria-expanded="false">
+        <span class="ik-position-form__collapse-label">Daha iyi eşleşme için ek kriter ekle</span>
+        <span class="ik-position-form__collapse-hint">(opsiyonel)</span>
+        <svg class="ik-position-form__collapse-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polyline points="6 9 12 15 18 9"/>
+        </svg>
+      </button>
+
+      <div class="ik-position-form__collapse-body" id="pos-form-collapse-body" hidden>
+
+        <!-- Çalışma tipi chip-group -->
+        <div class="ik-position-form__field">
+          <label class="ik-position-form__label" id="pos-chips-calisma-lbl">
+            Çalışma tipi<span class="ik-position-form__hint">birden fazla seçilebilir</span>
+          </label>
+          <div class="ik-position-form__chip-group" role="group" aria-labelledby="pos-chips-calisma-lbl">
+            <div class="ik-position-form__chip-grid" data-chip-field="calisma_tipi">
+              <button type="button" class="ik-position-form__chip" data-value="Tam Zamanlı" aria-pressed="false">Tam Zamanlı</button>
+              <button type="button" class="ik-position-form__chip" data-value="Yarı Zamanlı" aria-pressed="false">Yarı Zamanlı</button>
+              <button type="button" class="ik-position-form__chip" data-value="Proje Bazlı" aria-pressed="false">Proje Bazlı</button>
+              <button type="button" class="ik-position-form__chip" data-value="Sezonluk" aria-pressed="false">Sezonluk</button>
+              <button type="button" class="ik-position-form__chip" data-value="Uzaktan" aria-pressed="false">Uzaktan</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Diller chip-group -->
+        <div class="ik-position-form__field">
+          <label class="ik-position-form__label" id="pos-chips-dil-lbl">
+            Zorunlu diller<span class="ik-position-form__hint">adayın tüm seçili dilleri bilmesi gerekir</span>
+          </label>
+          <div class="ik-position-form__chip-group" role="group" aria-labelledby="pos-chips-dil-lbl">
+            <div class="ik-position-form__chip-grid" data-chip-field="diller">
+              <button type="button" class="ik-position-form__chip" data-value="İngilizce" aria-pressed="false">İngilizce</button>
+              <button type="button" class="ik-position-form__chip" data-value="Almanca" aria-pressed="false">Almanca</button>
+              <button type="button" class="ik-position-form__chip" data-value="Fransızca" aria-pressed="false">Fransızca</button>
+              <button type="button" class="ik-position-form__chip" data-value="Rusça" aria-pressed="false">Rusça</button>
+              <button type="button" class="ik-position-form__chip" data-value="Arapça" aria-pressed="false">Arapça</button>
+              <button type="button" class="ik-position-form__chip" data-value="İspanyolca" aria-pressed="false">İspanyolca</button>
+              <button type="button" class="ik-position-form__chip" data-value="İtalyanca" aria-pressed="false">İtalyanca</button>
+              <button type="button" class="ik-position-form__chip" data-value="Japonca" aria-pressed="false">Japonca</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tercih segmentler chip-group -->
+        <div class="ik-position-form__field">
+          <label class="ik-position-form__label" id="pos-chips-seg-lbl">
+            Segment tercihi<span class="ik-position-form__hint">bonus eşleme — zorunlu değil</span>
+          </label>
+          <div class="ik-position-form__chip-group" role="group" aria-labelledby="pos-chips-seg-lbl">
+            <div class="ik-position-form__chip-grid" data-chip-field="tercih_segmentler">
+              <button type="button" class="ik-position-form__chip" data-value="Lüks" aria-pressed="false">Lüks</button>
+              <button type="button" class="ik-position-form__chip" data-value="Premium" aria-pressed="false">Premium</button>
+              <button type="button" class="ik-position-form__chip" data-value="Mid-market" aria-pressed="false">Mid-market</button>
+              <button type="button" class="ik-position-form__chip" data-value="Mass" aria-pressed="false">Mass</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Müsaitlik + Eğitim 2-col row -->
+        <div class="ik-position-form__row-2col">
+          <div class="ik-position-form__field">
+            <label class="ik-position-form__label" for="pos-field-musaitlik">
+              Ne zaman başlayabilir?<span class="ik-position-form__hint">bu tarihten önce müsait olması yeterli</span>
+            </label>
+            <div class="ik-position-form__select-wrap">
+              <select class="ik-position-form__select" id="pos-field-musaitlik" name="musaitlik_pozisyon" aria-required="false">
+                <option value="">Seçin</option>
+                <option value="Hemen">Hemen</option>
+                <option value="2 Hafta İçinde">2 Hafta İçinde</option>
+                <option value="1 Ay İçinde">1 Ay İçinde</option>
+                <option value="2+ Ay İçinde">2+ Ay İçinde</option>
+              </select>
+            </div>
+          </div>
+          <div class="ik-position-form__field">
+            <label class="ik-position-form__label" for="pos-field-egitim">
+              Min. eğitim<span class="ik-position-form__hint">adayda beklenen minimum</span>
+            </label>
+            <div class="ik-position-form__select-wrap">
+              <select class="ik-position-form__select" id="pos-field-egitim" name="egitim_seviye" aria-required="false">
+                <option value="">Seçin</option>
+                <option value="İlkokul">İlkokul</option>
+                <option value="Ortaokul">Ortaokul</option>
+                <option value="Lise">Lise</option>
+                <option value="Ön Lisans">Ön Lisans</option>
+                <option value="Lisans">Lisans</option>
+                <option value="Yüksek Lisans">Yüksek Lisans</option>
+                <option value="Doktora">Doktora</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /#pos-form-collapse-body -->
+    </div><!-- /.ik-position-form__collapse -->
+
+    <!-- PR-2: Grup 3 — Açıklama (always visible) -->
+    <div class="ik-position-form__section-divider">
+      <span class="ik-position-form__section-label">Açıklama</span>
+    </div>
+
+    <!-- Alan: Açıklama (opsiyonel) -->
     <div class="ik-position-form__field">
       <label class="ik-position-form__label" for="pos-field-aciklama">Açıklama</label>
       <textarea
@@ -356,7 +454,7 @@
     <div class="ik-position-form__actions">
       <button type="submit" class="ik-position-form__btn-primary" id="btn-pos-form-submit">
         <span class="ik-position-form__spinner" aria-hidden="true"></span>
-        <span class="ik-position-form__btn-label">Pozisyonu Kaydet</span>
+        <span class="ik-position-form__btn-label">Pozisyonu Oluştur</span>
       </button>
       <button type="button" class="ik-position-form__btn-secondary" id="btn-pos-form-cancel">
         Vazgeç
@@ -417,7 +515,7 @@
 </nav>
 
 <script src="js/ik-shell.js?v=20260505roller2"></script>
-<script src="js/ik-data.js?v=20260505audit"></script>
-<script src="js/ik-pipeline.js?v=20260505poseq"></script>
+<script src="js/ik-data.js?v=pr2-form"></script>
+<script src="js/ik-pipeline.js?v=pr2-form"></script>
 </body>
 </html>

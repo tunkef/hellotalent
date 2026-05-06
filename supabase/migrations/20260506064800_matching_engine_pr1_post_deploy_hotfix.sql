@@ -1,33 +1,52 @@
 -- ╔══════════════════════════════════════════════════════════════════════╗
--- ║  M-RPC-2 — YENİ RPC: hr_auto_match_position                        ║
--- ║  Tarih: 2026-05-06                                                  ║
--- ║  Tier: T4 (yeni RPC, SECURITY DEFINER, pipeline yazma)             ║
--- ║  Codex: ZORUNLU                                                      ║
--- ║                                                                      ║
--- ║  KAPSAM:                                                             ║
--- ║   Pozisyon kriterleri ile search_employer_candidates çağırır.       ║
--- ║   match_score >= threshold olan adayları uzun_liste'ye ekler.       ║
--- ║   Idempotent: UNIQUE(position_id, candidate_id) ON CONFLICT NOTHING ║
--- ║   Her pipeline ekleme için profile_view_events event insert eder.   ║
--- ║                                                                      ║
--- ║  GÜVENLIK:                                                           ║
--- ║   - Caller hr_profiles.employer_role = admin | recruiter zorunlu    ║
--- ║   - Pozisyon caller'ın company'sine ait olmalı                      ║
--- ║   - Pozisyon durum != closed/archived (kapalı pozisyona ekleme yok) ║
--- ║   - SECURITY DEFINER + search_path harden (A14 pattern)            ║
--- ║   - service_role scope minimum: sadece pipeline INSERT + event log  ║
--- ║                                                                      ║
--- ║  RETURN: {added: int, skipped: int, total_matched: int}             ║
--- ║                                                                      ║
--- ║  NOT: hr_add_to_pipeline mevcut signature:                         ║
--- ║   hr_add_to_pipeline(bigint, bigint, pipeline_stage)               ║
--- ║   Bu RPC stage_v2 değil stage parametresi alır.                    ║
--- ║   M1 dual-write trigger stage → stage_v2 otomatik sync eder.       ║
--- ║   Bu PR'da hr_add_to_pipeline signature DEĞİŞTİRİLMEZ (compat).   ║
--- ║                                                                      ║
--- ║  ROLLBACK: docs/rollback/matching-engine-rollback.sql               ║
+-- ║ PR-1 POST-DEPLOY HOTFIX (Codex iter-8 commit-based review)           ║
+-- ║                                                                       ║
+-- ║ Origin: a7fcda7 commit deploy sonrası Codex `--commit` review         ║
+-- ║ Date:   2026-05-06 06:48                                              ║
+-- ║                                                                       ║
+-- ║ J1 (P1 BLOCKER): pve_employer_insert tighten — hr_profile_id +       ║
+-- ║    position_id ownership (cross-tenant spoofing kapatma)              ║
+-- ║                                                                       ║
+-- ║ J2 (P2): hr_auto_match_position archive recovery (refresh ile         ║
+-- ║    uyum — daha önce archive'e taşınan aday auto-match yeniden         ║
+-- ║    çalışınca uzun_liste'ye geri döner)                                ║
 -- ╚══════════════════════════════════════════════════════════════════════╝
 
+-- ═══════════════════════════════════════════════════════════════
+-- J1: pve_employer_insert policy tighten
+-- ═══════════════════════════════════════════════════════════════
+DROP POLICY IF EXISTS pve_employer_insert ON public.profile_view_events;
+
+CREATE POLICY pve_employer_insert ON public.profile_view_events
+  FOR INSERT TO authenticated
+  WITH CHECK (
+    -- J1 fix: hr_profile_id auth.uid() ile binding (teammate spoofing önle)
+    hr_profile_id = auth.uid()
+    AND EXISTS (SELECT 1 FROM hr_profiles WHERE id = auth.uid())
+    -- A1 + D4 prensipleri korunur: company_id NULL sadece view event_type için
+    AND (
+      (company_id IS NULL AND COALESCE(event_type, 'view') = 'view')
+      OR company_id = public.current_employer_company_id()
+    )
+    -- J1 fix: position_id ownership (cross-tenant gorunum increment + cross-position event önle)
+    AND (
+      position_id IS NULL
+      OR position_id IN (
+        SELECT id FROM public.positions
+        WHERE company_id = public.current_employer_company_id()
+      )
+    )
+  );
+
+COMMENT ON POLICY pve_employer_insert ON public.profile_view_events IS
+  'A1 + D4 + J1 (2026-05-06 hotfix): hr_profile=auth.uid() + company_id own + position_id own. Cross-tenant + teammate spoofing kapatildi.';
+
+-- ═══════════════════════════════════════════════════════════════
+-- J2: hr_auto_match_position archive recovery
+-- M-RPC-2 (20260506150000_*.sql) function body'si CREATE OR REPLACE ile güncellenir.
+-- Tek değişim: ON CONFLICT DO NOTHING → DO UPDATE WHERE stage_v2='archive'.
+-- Refresh RPC'sinde C6+J2 ile aynı pattern, simetri korunur.
+-- ═══════════════════════════════════════════════════════════════
 CREATE OR REPLACE FUNCTION hr_auto_match_position(
   p_position_id bigint
 )
@@ -187,42 +206,16 @@ BEGIN
 END;
 $$;
 
--- REVOKE → GRANT pattern (defense in depth)
-REVOKE ALL ON FUNCTION hr_auto_match_position(bigint) FROM PUBLIC;
-GRANT EXECUTE ON FUNCTION hr_auto_match_position(bigint) TO authenticated;
-
-COMMENT ON FUNCTION hr_auto_match_position(bigint) IS
-  'Matching Engine M-RPC-2 (2026-05-06): Pozisyon kriterleri ile auto-match. '
-  'match_score >= threshold adayları uzun_liste''ye ekler. Idempotent. '
-  'Kim Baktı event log (pipeline_added). '
-  'employer_role IN (admin, recruiter) zorunlu. SECURITY DEFINER + A14 search_path. '
-  'Return: {added, skipped, total_matched, threshold}.';
 
 -- ═══════════════════════════════════════════════════════════════
 -- DRY RUN VERIFY BLOCK
 -- ═══════════════════════════════════════════════════════════════
-
--- VERIFY 1: RPC var
--- SELECT proname FROM pg_proc WHERE proname = 'hr_auto_match_position';
--- Beklenen: 1 satır
-
--- VERIFY 2: Geçerli pozisyon ile çağrı
--- SELECT hr_auto_match_position(VALID_ACTIVE_POS_ID);
--- Beklenen: {"added": N, "skipped": M, "total_matched": T, "threshold": 50}
-
--- VERIFY 3: İdempotent — tekrar çağrı skipped artırır, added=0
--- SELECT hr_auto_match_position(VALID_ACTIVE_POS_ID);
--- Beklenen: {"added": 0, "skipped": M+N, "total_matched": T, "threshold": 50}
-
--- VERIFY 4: Kapalı pozisyon → exception
--- UPDATE positions SET durum='closed' WHERE id = VALID_ACTIVE_POS_ID;
--- SELECT hr_auto_match_position(VALID_ACTIVE_POS_ID);
--- Beklenen: EXCEPTION "position is closed or archived"
-
--- VERIFY 5: Return shape doğru jsonb shape
--- SELECT (hr_auto_match_position(VALID_POS_ID))->>'added' IS NOT NULL;
+-- J1 verify:
+-- SELECT pg_get_expr(polwithcheck, polrelid) FROM pg_policy
+--   WHERE polname = 'pve_employer_insert';
+-- Beklenen: hr_profile_id = auth.uid() ifadesi içermeli
+--
+-- J2 verify (production fonksiyon body):
+-- SELECT pg_get_functiondef('hr_auto_match_position(bigint)'::regprocedure)
+--   ~ 'WHERE candidate_pipeline_state.stage_v2 = ''archive''::pipeline_stage_v2';
 -- Beklenen: true
-
--- VERIFY 6: profile_view_events event_type='pipeline_added' insert edildi
--- SELECT count(*) FROM profile_view_events WHERE event_type='pipeline_added' AND position_id=VALID_POS_ID;
--- Beklenen: added sayısı ile eşleşmeli

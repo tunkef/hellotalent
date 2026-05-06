@@ -4302,3 +4302,70 @@ Re-audit verify: kpis 0, sublines 0, cards 3 (Açık Pozisyonlar, Adaylar, Kampa
 **Memory feedback (yeni):**
 - `feedback_full_access_autonomy.md` — Tuna SQL/DB için "şunu çalıştır" istemez, full access aktif → solo
 - `feedback_codex_full_agreement.md` — T4 PR'larda Codex %100 hedef + 8+ iter convergence asimptotik kabul
+
+---
+
+## 6 Mayıs 2026 — PR-1 POST-DEPLOY HOTFIX (J1 + J2) + PR-2 FORM REFACTOR
+
+### PR-1 Post-Deploy Hotfix (Codex iter-8 commit-based)
+
+**Codex `--commit a7fcda7` iter-8 review:** 2 finding (1 P1 + 1 P2).
+
+- **J1 (P1 BLOCKER):** `pve_employer_insert` policy hâlâ yetersizdi — `hr_profile_id` check yok, `position_id` cross-tenant açık. Authenticated employer başka teammate'in hr_profile_id ile veya başka şirketin position_id ile event INSERT edebilirdi → `trg_increment_position_gorunum` cross-tenant gorunum artırma exploit.
+- **J2 (P2):** `hr_auto_match_position` `ON CONFLICT DO NOTHING` archived row'u koruyordu. Refresh ile archive edilen aday auto-match yeniden çalışınca geri gelmiyordu (C6 fix refresh'te vardı, auto_match'te yoktu — simetri ihlali).
+
+**Fix:** `supabase/migrations/20260506064800_matching_engine_pr1_post_deploy_hotfix.sql`
+- J1: pve_employer_insert policy tighten (hr_profile_id = auth.uid() + position_id ownership)
+- J2: hr_auto_match_position function CREATE OR REPLACE (ON CONFLICT DO UPDATE WHERE stage_v2='archive')
+
+**Source sync:** `supabase/migrations/20260506150000_matching_engine_rpc_auto_match.sql:139` — kaynak dosyada da J2 fix Edit edildi (fresh DB replay'de aynı state).
+
+### PR-2 Pozisyon Formu Refactor (T2)
+
+**Tetikleme zinciri:** content-writer + ux-agent + designer + ui-agent paralel dispatch.
+
+**Çıktı dosyaları:**
+- `.claude/agent-memory/specs/pr-2-form-copy.md` — content-writer (Türkçe label + helper text + error msg, "Ne zaman başlayabilir?" recruiter dili)
+- `.claude/agent-memory/specs/pr-2-form-ux.md` — ux-agent (collapse default kapalı, 7 PostHog event, hipotez completion ≥%85)
+- `.claude/agent-memory/specs/pr-2-form-design.md` — designer (toggle-chip grid + native select + tint fill)
+
+**Sentez kararı (designer ↔ ux çelişki):** Görünür section header + collapsible toggle (ARIA `aria-expanded`).
+
+**Frontend değişiklikler:**
+- `hr-pipeline.html` — form markup refactor (3 grup: temel/aday özellikleri collapse/açıklama). 5 yeni alan: chip-grid (calisma_tipi, diller, tercih_segmentler) + native select (musaitlik_pozisyon, egitim_seviye). maas alanı kaldırıldı.
+- `js/ik-pipeline.js` — _posFormDom 5 yeni field, payload build, validation (en az 1 kriter), 7 PostHog event, dirty state confirm
+- `js/ik-data.js` — createPosition payload mapper (maas KALDIR, 5 yeni alan NULL-safe)
+- `css/panels/ik-pipeline.css` — chip-grid + collapse + token-strict styling
+
+**Tests:** `tests/pr2-position-form.spec.js` (boş ad reject, sadece ad reject, ad+kriter accept, mobile + desktop)
+
+**DB Migration (atomic):** `supabase/migrations/20260507100000_pr2_positions_maas_drop_and_check.sql`
+- DROP COLUMN maas (frontend artık göndermiyor)
+- positions_min_one_criteria CHECK NOT VALID + VALIDATE (PR-1 audit pre-check boş_kriter=0 ✓)
+
+### Kritik Uyarı — ui-agent Mono-Key Hatası
+
+**Tespit edilen sorun:** ui-agent ilk drafting'de dropdown values mono-key kullanmıştı:
+- `value="hemen"` (PR-1'de DB CHECK Türkçe text bekliyordu — `'Hemen'`)
+- `value="ilk-orta">İlkokul / Ortaokul</option>` (egitim_level helper 7 ayrı seviye bekliyordu)
+- PR-2 migration'a `positions_musaitlik_pozisyon_check` mono-key duplicate eklenmişti (PR-1'de Türkçe text constraint zaten vardı → SQL error 42710)
+
+**Düzeltme (chief-of-staff):**
+- HTML dropdown values → Türkçe text (`value="Hemen"`, `value="İlkokul"` ayrı + 7 seviye)
+- PR-2 migration sadeleştirildi — sadece DROP maas + min_one_criteria CHECK kaldı
+
+**Lesson:** ui-agent spec dosyalarını okurken supabase-agent'in ilk draft (mono-key) ile A4 fix (Türkçe text) ayrımını net yapmadı. Spec dosyalarına explicit "DB constraint values: Türkçe text only" notu eklenmeli.
+
+### Production Verify (post-apply)
+
+- J1 policy: `hr_profile_id = auth.uid()` + `position_id` ownership ✓
+- J2 archive recovery: `WHERE candidate_pipeline_state.stage_v2 = 'archive'` fonksiyon body'de ✓
+- maas dropped: true ✓
+- min_one_criteria validated: true ✓
+
+### Sonraki
+
+- ui-agent task tamamlanma bildirimi sonrası Playwright matrix smoke
+- Browser hard-refresh + bento gözle scan (Tuna A24 sheet pattern korundu mu)
+- A24 form A24 sheet UX uyumu (mevcut overlay + history.pushState)
+- Cache-bust `?v=pr2-form` zorunlu

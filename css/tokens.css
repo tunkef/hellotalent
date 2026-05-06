@@ -59,6 +59,12 @@
   --color-cream-soft: #F2F1ED;         /* K049 Faz 3: admin active tab bg */
   --color-pattern-grid: #f0f0f0;       /* K049 Faz 3: image-editor transparency checkerboard */
 
+  /* PR-2 — dark mode solid state backgrounds (pipeline form + coaching banner) */
+  --color-error-bg-dark: #2A1010;      /* PR-2: dark mode error state solid bg (AA 4.7:1 with #FCA5A5) */
+  --color-warning-bg-dark: #2A1812;    /* PR-2: dark mode warning solid bg (coaching banner) */
+  --color-warning-border-dark: #6B3220; /* PR-2: dark mode warning border */
+  --color-warning-text-dark: #F5B799;  /* PR-2: dark mode warning text (AA 5.1:1 on #2A1812) */
+
   /* Fonts */
   --font-head: 'Bricolage Grotesque', sans-serif;
   --font-body: 'Plus Jakarta Sans', sans-serif;
