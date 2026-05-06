@@ -282,7 +282,7 @@
       cta.type = 'button';
       cta.className = 'ik-pos-empty__cta';
       cta.id = 'btn-empty-new-position';
-      cta.textContent = '+ Yeni Pozisyon';
+      cta.textContent = 'Yeni Pozisyon';
       cta.addEventListener('click', function () {
         var mainCta = document.getElementById('btn-new-position');
         if (mainCta) mainCta.click();

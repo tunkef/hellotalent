@@ -1888,12 +1888,18 @@ html[data-theme="dark"] .ik-coaching-banner__cta:hover {
   gap: var(--space-9);
 }
 
+/* PR-7 CLATU rework #2 — Hero CARD pattern (ik-genel__hero reuse, mevcut anasayfa
+   bento-grid hero ile tutarlı). Tuna feedback: SaaS-tarzı flex row YASAK. */
 .ik-pos-landing__hero {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--space-8);
   flex-wrap: wrap;
+  background: var(--editorial-bg);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: var(--space-11) var(--space-12);
 }
 
 /* PR-7 CLATU — 3-layer hero typography */
