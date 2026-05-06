@@ -234,12 +234,32 @@
     cacheDom();
   }
 
+  /* PR-5: auto-match result toast formatter.
+     ik-pipeline.js içindeki _showAutoMatchToast ile aynı logic —
+     buraya da expose ediliyor: gelecekte başka IIFE'ler çağırabilir.
+     msg formatı spec'ten: "X aday uzun listeye eklendi (Y eşleşme bulundu)" */
+  function formatAutoMatchMsg(result) {
+    var r       = result || {};
+    var added   = typeof r.added   === 'number' ? r.added   : 0;
+    var total   = typeof r.total_matched === 'number' ? r.total_matched : 0;
+    if (added > 0) {
+      var msg = added + ' aday uzun listeye eklendi';
+      if (total > added) msg += ' (' + total + ' eşleşme bulundu)';
+      return { msg: msg, kind: 'success' };
+    }
+    return {
+      msg:  'Eşleşen aday bulunamadı. Kriterleri genişletmeyi düşün.',
+      kind: 'info'
+    };
+  }
+
   /* Expose public API */
   window._htMatchingEngine = {
     hasMatchAffectingChange: hasMatchAffectingChange,
     getChangedFields:        getChangedFields,
     showSoftRefreshPrompt:   showSoftRefreshPrompt,
-    getDismissCount:         getDismissCount
+    getDismissCount:         getDismissCount,
+    formatAutoMatchMsg:      formatAutoMatchMsg   /* PR-5 */
   };
 
   if (document.readyState === 'loading') {

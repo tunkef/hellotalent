@@ -589,6 +589,27 @@ html[data-theme="dark"] .ik-stage[data-stage="iletisime_gecildi"] .ik-stage__hea
   background: var(--danger);
   color: var(--editorial-on-vermillion);
 }
+/* PR-5: info variant (auto-match "eşleşme bulunamadı" durumu) */
+.ik-pipeline-toast--info {
+  background: var(--editorial-card-elev);
+  color: var(--editorial-ink);
+  border: 1px solid var(--editorial-hairline);
+}
+/* PR-5: clickable toast (auto-match → pozisyon detay) */
+.ik-pipeline-toast--clickable {
+  pointer-events: auto;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.ik-pipeline-toast--clickable:hover {
+  opacity: 0.88;
+}
+html[data-theme="dark"] .ik-pipeline-toast--info {
+  background: var(--editorial-card-elev);
+  color: var(--editorial-ink);
+  border-color: var(--editorial-hairline);
+}
 
 /* ════════════════════════════════════════════════════════════════
    MOBILE BOTTOM-SHEET (stage mover)

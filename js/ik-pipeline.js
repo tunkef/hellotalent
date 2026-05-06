@@ -305,9 +305,13 @@
     main.appendChild(poz);
     head.appendChild(main);
 
-    /* PR-4: auto badge (auto_added=true kartlarda) */
+    /* PR-5 Sub-Task 5.3: auto badge — entry.metadata.auto_added (DB jsonb kolon).
+       PR-4'te entry.auto_added flat field bekliyordu — DB'de yoktu.
+       Şimdi hr_get_pipeline metadata jsonb döndürüyor; auto_added boolean içinde.
+       Manuel eklenen kartlarda metadata={} → badge GÖRÜNMEZ. */
     var currentStage = resolveStage(entry);
-    if (entry.auto_added) {
+    var isAutoAdded = !!(entry.metadata && entry.metadata.auto_added === true);
+    if (isAutoAdded) {
       var autoBadge = document.createElement('span');
       autoBadge.className = 'ik-card-aday__auto-badge';
       autoBadge.textContent = 'Otomatik';
@@ -1226,6 +1230,10 @@
       renderPositionSwitcher();
       loadPipeline();
       showToast((newRow.ad || 'Pozisyon') + ' pozisyonu açıldı.', 'success');
+
+      /* PR-5 Sub-Task 5.1 — Auto-match trigger (non-blocking) */
+      _triggerAutoMatchAfterCreate(newRow.id, newRow.ad || 'Pozisyon');
+
     }).catch(function (err) {
       console.error('[ik-pipeline] submitNewPosition exception:', err && err.message);
       showPosServerError('Hata: Bağlantı sorunu. Tekrar deneyin.');
@@ -1517,6 +1525,109 @@
   window._htPipelineShowRefreshBanner = showBanner;
   window._htPipelineHideBanner        = hideBanner;
 
+  /* ═══════ PR-5 Sub-Task 5.1 — Auto-match trigger ═══════
+     Pozisyon kayıt başarısından sonra non-blocking çağrılır.
+     SRP: createPosition flow'undan ayrı — kendi try/catch + toast.
+     Toast'a tıklanınca pozisyon detay sheet açılır (PR-4 pattern). */
+  function _triggerAutoMatchAfterCreate(positionId, positionAd) {
+    if (!positionId) return;
+    if (!window.IK_DATA || !IK_DATA.addToPipelineAuto) return;
+
+    /* Non-blocking: caller zaten toast gösterdi, bu ek toast */
+    IK_DATA.addToPipelineAuto(positionId).then(function (result) {
+      var r       = result || {};
+      var added   = typeof r.added   === 'number' ? r.added   : 0;
+      var skipped = typeof r.skipped === 'number' ? r.skipped : 0;
+      var total   = typeof r.total_matched === 'number' ? r.total_matched : 0;
+      var msg;
+
+      if (added > 0) {
+        msg = added + ' aday uzun listeye eklendi';
+        if (total > added) msg += ' (' + total + ' eşleşme bulundu)';
+      } else {
+        msg = 'Eşleşen aday bulunamadı. Kriterleri genişletmeyi düşün.';
+      }
+
+      /* Toast — clickable → pozisyon detayı (PR-4 sheet pattern) */
+      _showAutoMatchToast(msg, added > 0 ? 'success' : 'info', positionId);
+
+      /* PostHog */
+      trackPipeline('auto_match_triggered', {
+        position_id:   positionId,
+        added:         added,
+        skipped:       skipped,
+        total_matched: total
+      });
+
+      /* Pipeline'ı yenile: yeni adaylar kartlara yansısın */
+      if (added > 0) {
+        loadPipeline();
+      }
+    }).catch(function (err) {
+      console.error('[ik-pipeline] auto-match trigger error:', err && err.message);
+      showToast('Otomatik eşleştirme başarısız oldu. Pozisyon kaydedildi.', 'error');
+    });
+  }
+
+  /* _showAutoMatchToast — auto-match sonuç toast'ı.
+     Tıklanabilir: pozisyon detay sheet'i açar.
+     kind: 'success' | 'info' | 'error' */
+  function _showAutoMatchToast(msg, kind, positionId) {
+    if (!dom.toast) return;
+    dom.toast.textContent = msg;
+    dom.toast.classList.remove(
+      'ik-pipeline-toast--success',
+      'ik-pipeline-toast--error',
+      'ik-pipeline-toast--info',
+      'ik-pipeline-toast--clickable'
+    );
+    if (kind === 'success') dom.toast.classList.add('ik-pipeline-toast--success');
+    else if (kind === 'error') dom.toast.classList.add('ik-pipeline-toast--error');
+    else dom.toast.classList.add('ik-pipeline-toast--info');
+
+    /* Tıklanabilir: pozisyon detay sheet (positionId varsa) */
+    if (positionId) {
+      dom.toast.classList.add('ik-pipeline-toast--clickable');
+      dom.toast.setAttribute('data-auto-toast-pos', String(positionId));
+      dom.toast.setAttribute('role', 'button');
+      dom.toast.setAttribute('tabindex', '0');
+      dom.toast.setAttribute('aria-label', msg + ' — Detayı aç');
+    } else {
+      dom.toast.removeAttribute('data-auto-toast-pos');
+      dom.toast.removeAttribute('role');
+      dom.toast.removeAttribute('tabindex');
+      dom.toast.removeAttribute('aria-label');
+    }
+
+    dom.toast.classList.add('is-visible');
+    /* Auto-match toast daha uzun görünür (4 sn) */
+    setTimeout(function () {
+      dom.toast.classList.remove('is-visible');
+    }, 4000);
+  }
+
+  /* Toast click → pozisyon detay sheet (PR-4 pattern) */
+  function _bindAutoMatchToastClick() {
+    if (!dom.toast) return;
+    dom.toast.addEventListener('click', function () {
+      var posId = dom.toast.getAttribute('data-auto-toast-pos');
+      if (!posId) return;
+      /* PR-4 pozisyon detay sheet expose varsa kullan, yoksa position-switcher navigate */
+      if (window._htPositionDetailOpen) {
+        window._htPositionDetailOpen(posId);
+      } else {
+        /* Fallback: sadece pipeline yeniden yükle (position zaten active) */
+        loadPipeline();
+      }
+    });
+    dom.toast.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        dom.toast.click();
+      }
+    });
+  }
+
   /* ═══════ Init ═══════ */
   function init() {
     cacheDom();
@@ -1524,6 +1635,7 @@
     bindStageSheet();
     bindPositionFormSheet();
     bindRefreshBanner();
+    _bindAutoMatchToastClick(); /* PR-5: auto-match toast click → detay sheet */
     loadInit();
   }
 

@@ -4426,3 +4426,41 @@ PR-3 (M3 atomic enum swap) — PR-1+PR-2 stable 7 gün gözlem. Tuna explicit "�
 ### Sıradaki Otomatik Dispatch
 
 PR-5 (T3 auto-match trigger + Pool akış + auto badge) — PR-4 deploy sonrası otomatik başlatılacak.
+
+---
+
+## 6 Mayıs 2026 — PR-5 AUTO-MATCH TRIGGER + POOL AKIŞ + AUTO BADGE (T3)
+
+**Tetikleme:** ui-agent direkt dispatch (PR-4 spec'leri kapsamlı, yeni copy/ux/design dispatch yok).
+
+**3 Sub-Task:**
+- 5.1 Pozisyon submit → `hr_auto_match_position` trigger + non-blocking spinner + clickable toast (sonuç: "12 aday uzun listeye eklendi (15 eşleşme bulundu)")
+- 5.2 Pool 2 ayrı action: "Uzun listeye ekle" (default `legacyStage='yeni'` → dual-write `uzun_liste`) + "Kısa listeye ekle" (explicit `legacyStage='gorustum'` → `kisa_liste`)
+- 5.3 Auto badge görünürlük — `entry.metadata.auto_added === true` kontrolü (PR-4'te flat field okuyordu, DB'de yoktu — şimdi nested metadata)
+
+**Frontend (4 modified):**
+- `js/ik-pipeline.js` (+112) — submitNewPosition success → _triggerAutoMatchAfterCreate, badge condition update
+- `js/ik-pool.js` (+34) — 2 action menu item, bulk add `'yeni'` stage default
+- `js/ik-matching-engine.js` (+20) — auto-match toast format expand
+- `css/panels/ik-pipeline.css` (+21) — toast `--info` + `--clickable` variants, dark mode override, token-strict
+
+**DB Migration:** `supabase/migrations/20260507120000_pr5_cps_auto_added_metadata.sql`
+- `candidate_pipeline_state.metadata jsonb DEFAULT '{}'` kolon ekle (idempotent)
+- `hr_auto_match_position` CREATE OR REPLACE — INSERT'e `metadata = jsonb_build_object('auto_added', true)` + ON CONFLICT DO UPDATE archive recovery
+- `hr_get_pipeline` DROP + CREATE — RETURNS TABLE'a `stage_v2` + `metadata` eklendi
+
+**Apply hata + fix:**
+- İlk apply ERROR 42P13: "cannot change return type of existing function" (Postgres CREATE OR REPLACE TABLE return değiştiremez)
+- Fix: `DROP FUNCTION IF EXISTS hr_get_pipeline(bigint)` → CREATE FUNCTION (CREATE OR REPLACE değil)
+- Retry apply ✓
+
+**Test:** `tests/pr5-auto-match.spec.js` — 14 senaryo (5 describe block)
+
+**PostHog event'ler:**
+- `auto_match_triggered` (position_id, added, skipped, total_matched)
+- `pipeline_pool_add` (source_stage: 'uzun_liste' | 'kisa_liste')
+
+### PR-3 + PR-6 Yol Haritası
+
+- PR-3 (T4 M3 enum swap) — PR-1+PR-2+PR-4+PR-5 stable 7g gözlem
+- PR-6 (T3 Kim Baktı KVKK) — PR-5 deploy sonrası otomatik başlatılacak (legal-reviewer + auditor zorunlu)

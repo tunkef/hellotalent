@@ -502,11 +502,15 @@
     menu.setAttribute('data-row-menu', c.id);
     menu.setAttribute('role', 'menu');
 
+    /* PR-5 Sub-Task 5.2: "Pipeline'a ekle" → iki ayrı aksiyon (5A spec).
+       add_uzun: recruiter henüz karar vermedi → uzun_liste (default).
+       add_kisa: recruiter zaten karar verdi → kisa_liste (explicit). */
     var mItems = [
-      { action: 'detail', label: 'Detayı aç' },
-      { action: 'message', label: 'Mesaj yaz' },
-      { action: 'add', label: 'Pipeline\'a ekle' },
-      { action: 'block', label: 'Bloke et', danger: true }
+      { action: 'detail',    label: 'Detayı aç' },
+      { action: 'message',   label: 'Mesaj yaz' },
+      { action: 'add_uzun',  label: 'Uzun listeye ekle' },
+      { action: 'add_kisa',  label: 'Kısa listeye ekle' },
+      { action: 'block',     label: 'Bloke et', danger: true }
     ];
     mItems.forEach(function (it) {
       var b = document.createElement('button');
@@ -909,20 +913,39 @@
       location.href = 'hr-candidate.html?id=' + encodeURIComponent(candidate_id);
     } else if (action === 'message') {
       location.href = 'hr-messages.html?aday=' + encodeURIComponent(candidate_id);
-    } else if (action === 'add') {
-      /* A24: 0 pozisyon guard → coaching banner */
+    } else if (action === 'add_uzun' || action === 'add_kisa') {
+      /* PR-5 Sub-Task 5.2: iki ayrı hedef stage (5A spec).
+         add_uzun → uzun_liste (recruiter henüz karar vermedi, geniş havuz).
+         add_kisa → kisa_liste (recruiter zaten karar verdi, explicit). */
       if (!state.activePositionId || !state.positions || state.positions.length === 0) {
         showCoachingBanner();
         return;
       }
-      IK_DATA.addToPipeline(candidate_id, state.activePositionId).then(function (res) {
-        /* Fix 2026-05-04: ok:false case'de hata göster (RLS reject sessiz başarı bug'ı) */
+      var targetStage = (action === 'add_kisa') ? 'kisa_liste' : 'uzun_liste';
+      /* hr_add_to_pipeline RPC: p_stage pipeline_stage (legacy enum).
+         uzun_liste → 'yeni', kisa_liste → 'gorustum' (dual-write trigger v2 set eder). */
+      var legacyStage = (targetStage === 'kisa_liste') ? 'gorustum' : 'yeni';
+      IK_DATA.addToPipeline(candidate_id, state.activePositionId, legacyStage).then(function (res) {
         if (!res || res.ok === false) {
           showToast('Eklenemedi: ' + (res && res.error ? res.error : 'pozisyon erişimi yok'), 'error');
           return;
         }
-        if (res.duplicate) showToast('Aday zaten pipeline\'da', 'error');
-        else showToast('Pipeline\'a eklendi', 'success');
+        if (res.duplicate) {
+          showToast('Aday zaten pipeline\'da', 'error');
+        } else {
+          var stageLabel = (targetStage === 'kisa_liste') ? 'kısa listeye' : 'uzun listeye';
+          showToast('Aday ' + stageLabel + ' eklendi', 'success');
+          /* PostHog */
+          if (window.posthog) {
+            try {
+              window.posthog.capture('pipeline_pool_add', {
+                candidate_id:  candidate_id,
+                position_id:   state.activePositionId,
+                source_stage:  targetStage
+              });
+            } catch (e) {}
+          }
+        }
       });
     } else if (action === 'block') {
       IK_DATA.blockCandidate(candidate_id).then(function () {
@@ -966,22 +989,34 @@
         if (state.selected.size === 0) return;
 
         var ids = Array.from(state.selected);
+        /* PR-5 Sub-Task 5.2: bulk add → uzun_liste default (recruiter henüz karar vermedi).
+           legacy stage 'yeni' → dual-write trigger stage_v2='uzun_liste' set eder. */
         var promises = ids.map(function (id) {
-          return IK_DATA.addToPipeline(id, state.activePositionId);
+          return IK_DATA.addToPipeline(id, state.activePositionId, 'yeni');
         });
         Promise.all(promises).then(function (results) {
           /* Fix 2026-05-04: ok:false (RLS reject) ayrı say — sessiz başarı bug'ı */
           var failed = results.filter(function (r) { return !r || r.ok === false; }).length;
-          var added = results.filter(function (r) { return r && r.ok !== false && !r.duplicate; }).length;
-          var dup = results.filter(function (r) { return r && r.duplicate; }).length;
+          var added  = results.filter(function (r) { return r && r.ok !== false && !r.duplicate; }).length;
+          var dup    = results.filter(function (r) { return r && r.duplicate; }).length;
           if (added === 0 && failed > 0) {
             showToast(failed + ' aday eklenemedi (pozisyon erişimi yok)', 'error');
             return;
           }
-          var msg = added + ' aday eklendi';
+          var msg = added + ' aday uzun listeye eklendi';
           if (dup > 0) msg += ', ' + dup + ' zaten vardı';
           if (failed > 0) msg += ', ' + failed + ' başarısız';
           showToast(msg, 'success');
+          /* PostHog */
+          if (window.posthog && added > 0) {
+            try {
+              window.posthog.capture('pipeline_pool_add', {
+                position_id:  state.activePositionId,
+                source_stage: 'uzun_liste',
+                bulk_count:   added
+              });
+            } catch (e) {}
+          }
           state.selected.clear();
           updateBulkBar();
           renderList();
