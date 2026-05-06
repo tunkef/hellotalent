@@ -4369,3 +4369,60 @@ Re-audit verify: kpis 0, sublines 0, cards 3 (Açık Pozisyonlar, Adaylar, Kampa
 - Browser hard-refresh + bento gözle scan (Tuna A24 sheet pattern korundu mu)
 - A24 form A24 sheet UX uyumu (mevcut overlay + history.pushState)
 - Cache-bust `?v=pr2-form` zorunlu
+
+---
+
+## 6 Mayıs 2026 — PR-4 3-SÜTUN PIPELINE + SHEET + SOFT REFRESH (T2)
+
+**Tetikleme zinciri:** content-writer + designer + ux-agent paralel + ui-agent.
+
+**Çıktı dosyaları (specs):**
+- `.claude/agent-memory/specs/pr-4-pipeline-copy.md` — content-writer (3 sütun başlık + soft refresh CTA + güvence cümlesi)
+- `.claude/agent-memory/specs/pr-4-pipeline-design.md` — designer (3-col grid + tint header + new sheet element + segment switcher mobile + 1 yeni token)
+- `.claude/agent-memory/specs/pr-4-pipeline-ux.md` — ux-agent (soft refresh trigger matrix + skip-stage block + history.pushState + 10 PostHog event)
+
+**Sentez kararları:**
+- Sütun: "Uzun Liste" / "Kısa Liste" / "İletişime Geçildi" (ADR-3 onaylı)
+- Soft refresh: Modal değil — header inline banner. CTA "Listeyi Yenile" / "Şimdilik geç". Güvence: "Kısa listendeki ve görüştüğün adaylar korunacak."
+- Detay sheet: YENİ `#ik-pos-detail-sheet` (A24 form sheet `#ik-pos-form-sheet` dokunulmaz)
+- Skip-stage block (uzun → iletisime drop reject + toast)
+- "Otomatik" tam Türkçe (Auto YASAK)
+- Adaptive card menu: "İletişime Geçildi Olarak İşaretle" geniş / "Kontak Başlatıldı" dar
+
+**Frontend (4 yeni + 4 modified):**
+
+Yeni:
+- `css/panels/position-detail.css` (273 satır, 0 hex, token-strict)
+- `js/ik-position-detail.js` (243 satır, IIFE, history.pushState)
+- `js/ik-matching-engine.js` (250 satır, IIFE, XSS-safe DOM)
+- `tests/pr4-pipeline-3stage.spec.js` (314 satır, 30 test)
+
+Modified:
+- `hr-pipeline.html` — refresh banner + mobile tabs + detay sheet + soft refresh modal + script'ler
+- `js/ik-pipeline.js` — STAGES 5→3 + resolveStage + mobile tabs + skip-stage guard + banner expose
+- `js/ik-data.js` — `addToPipelineAuto` + `refreshPositionPipeline` RPC wrapper'ları (PR-1'de RPC var)
+- `css/panels/ik-pipeline.css` — grid 5→3 + Kısa Liste tint + İletişime Geçildi border-top
+- `css/tokens.css` — 5 yeni token (PR-4 amber warning + overlay-backdrop light/dark)
+
+Silinen:
+- `tests/ik-pipeline.spec.js` (5-sütun eski test 342 satır, mulakat/kapali/teklif referansları). PR-4 30 test ile yer değişti — teknik borç önleme (Tuna autonomous mode).
+
+**Test sonuçları:**
+- PR-4: 30/30 ✓
+- A24 regression baseline (PR-2): 96/96 korunsun (ui-agent rapor — yeni 5 yeni dosya, 4 modified)
+- 56 fail eski 5-sütun test'i → silindi
+
+**Cache-bust:** `?v=pr4-pipeline` (CSS + JS, hr-pipeline.html güncellendi)
+
+**Memory feedback (yeni):**
+- `feedback_continuous_autonomous_mode.md` — Tuna onay beklemez, hata bul-fix-devam, context dolana kadar
+
+**Kritik uyarı (ui-agent yanlış rapor):** ui-agent "RPC'ler backend'de yok" dedi — YANLIŞ. PR-1 (20260506150000 + 20260506160000) zaten yazıldı + apply edildi. Production verify ✓.
+
+### PR-3 Bekliyor (T4 enum swap)
+
+PR-3 (M3 atomic enum swap) — PR-1+PR-2 stable 7 gün gözlem. Tuna explicit "şimdi yap" demediği sürece bekliyor.
+
+### Sıradaki Otomatik Dispatch
+
+PR-5 (T3 auto-match trigger + Pool akış + auto badge) — PR-4 deploy sonrası otomatik başlatılacak.

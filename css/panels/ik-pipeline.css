@@ -214,13 +214,13 @@
 }
 
 /* ════════════════════════════════════════════════════════════════
-   BOARD — 5 stage kanban
+   BOARD — 3 stage kanban (PR-4: 5→3 sütun)
    ════════════════════════════════════════════════════════════════ */
 .ik-pipeline__board {
   display: grid;
-  grid-template-columns: repeat(5, minmax(240px, 1fr));
-  gap: var(--space-7);
-  align-items: stretch;
+  grid-template-columns: repeat(3, minmax(300px, 1fr));
+  gap: var(--space-8);
+  align-items: start;
 }
 
 .ik-stage {
@@ -231,10 +231,36 @@
   flex-direction: column;
   min-height: 480px;
   transition: border-color 160ms ease, background 160ms ease;
+  max-height: calc(100vh - 200px);
+  overflow-y: hidden;
 }
 .ik-stage--drop-target {
   border-color: var(--editorial-vermillion);
   background: var(--editorial-vermillion-soft);
+}
+
+/* PR-4: stage body scroll */
+.ik-stage__body {
+  overflow-y: auto;
+}
+
+/* PR-4: Kısa Liste header tint */
+.ik-stage[data-stage="kisa_liste"] .ik-stage__header {
+  background: var(--editorial-vermillion-soft);
+}
+
+/* PR-4: İletişime Geçildi — border-top aksan */
+.ik-stage[data-stage="iletisime_gecildi"] .ik-stage__header {
+  border-top: 3px solid var(--editorial-pipeline-action-accent);
+  border-radius: 0;
+}
+
+/* PR-4: dark mode stage aksan */
+html[data-theme="dark"] .ik-stage[data-stage="kisa_liste"] .ik-stage__header {
+  background: var(--editorial-vermillion-soft);
+}
+html[data-theme="dark"] .ik-stage[data-stage="iletisime_gecildi"] .ik-stage__header {
+  border-top-color: var(--editorial-pipeline-action-accent);
 }
 
 .ik-stage__header {
@@ -246,6 +272,9 @@
   border-bottom: 1px solid var(--border-subtle);
   background: var(--editorial-bg);
   border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 .ik-stage__title {
   font-family: var(--font-mono);
@@ -653,18 +682,21 @@
 /* ════════════════════════════════════════════════════════════════
    RESPONSIVE
    ════════════════════════════════════════════════════════════════ */
+/* PR-4: tablet — 3 sütun scroll */
 @media (max-width: 1100px) {
   .ik-pipeline__board {
-    grid-template-columns: repeat(5, minmax(220px, 1fr));
+    grid-template-columns: repeat(3, minmax(240px, 1fr));
     overflow-x: auto;
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
   }
   .ik-stage {
     scroll-snap-align: start;
+    min-width: 240px;
   }
 }
 
+/* PR-4: mobile — tek sütun + segment switcher */
 @media (max-width: 768px) {
   .ik-pipeline__head {
     padding: var(--space-9) var(--space-9);
@@ -677,13 +709,21 @@
     min-width: 0;
   }
   .ik-pipeline__board {
-    grid-auto-flow: column;
-    grid-template-columns: repeat(5, 80vw);
-    gap: var(--space-5);
-    padding-bottom: var(--space-5);
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+    overflow-x: visible;
+    scroll-snap-type: none;
   }
   .ik-stage {
+    display: none;
     min-height: 320px;
+    max-height: none;
+    overflow-y: visible;
+    scroll-snap-align: none;
+    min-width: 0;
+  }
+  .ik-stage.is-active-mobile {
+    display: flex;
   }
   .ik-card-aday {
     cursor: pointer;
@@ -694,9 +734,6 @@
 }
 
 @media (max-width: 480px) {
-  .ik-pipeline__board {
-    grid-template-columns: repeat(5, 88vw);
-  }
   .ik-pipeline__head {
     padding: var(--space-8);
   }
@@ -1460,6 +1497,198 @@ html[data-theme="dark"] .ik-position-form__chip[aria-pressed="true"]:hover {
 }
 
 /* ════════════════════════════════════════════════════════════════
+   PR-4 — SOFT REFRESH BANNER
+   ════════════════════════════════════════════════════════════════ */
+.ik-pipeline__refresh-banner {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-8);
+  padding: var(--space-6) var(--space-10);
+  background: var(--editorial-warning-bg-light);
+  border-bottom: 1px solid var(--editorial-warning-bg-light);
+  font-family: var(--font-body);
+  font-size: var(--text-md);
+}
+.ik-pipeline__refresh-banner.is-visible {
+  display: flex;
+}
+.ik-pipeline__refresh-banner-text {
+  color: var(--editorial-warning-text-light);
+  font-size: var(--text-md);
+  font-weight: 500;
+}
+.ik-pipeline__refresh-banner-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+  flex-shrink: 0;
+}
+.ik-pipeline__refresh-btn {
+  height: 32px;
+  padding: 0 var(--space-7);
+  background: var(--editorial-vermillion);
+  color: var(--editorial-on-vermillion);
+  border: none;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-size: var(--text-md);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 140ms ease;
+}
+.ik-pipeline__refresh-btn:hover {
+  background: var(--editorial-vermillion-deep);
+}
+.ik-pipeline__refresh-btn:focus-visible {
+  outline: 2px solid var(--editorial-vermillion);
+  outline-offset: 2px;
+}
+.ik-pipeline__refresh-dismiss {
+  height: 32px;
+  padding: 0 var(--space-5);
+  background: transparent;
+  border: none;
+  color: var(--editorial-warning-text-light);
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: var(--text-md);
+  font-weight: 500;
+  border-radius: var(--radius-sm);
+  transition: background 120ms ease;
+  white-space: nowrap;
+}
+.ik-pipeline__refresh-dismiss:hover {
+  background: rgba(0, 0, 0, 0.06);
+}
+.ik-pipeline__refresh-dismiss:focus-visible {
+  outline: 2px solid var(--editorial-vermillion);
+  outline-offset: 2px;
+}
+
+/* Dark mode — refresh banner */
+html[data-theme="dark"] .ik-pipeline__refresh-banner {
+  background: var(--color-warning-bg-dark);
+  border-bottom-color: var(--color-warning-border-dark);
+}
+html[data-theme="dark"] .ik-pipeline__refresh-banner-text {
+  color: var(--color-warning-text-dark);
+}
+html[data-theme="dark"] .ik-pipeline__refresh-dismiss {
+  color: var(--color-warning-text-dark);
+}
+
+/* ── Stale chip (dismiss sonrası kalıcı) ── */
+.ik-pipeline__stale-chip {
+  display: none;
+  align-items: center;
+  height: 24px;
+  padding: 0 var(--space-6);
+  background: var(--editorial-card-elev);
+  color: var(--editorial-ink-muted);
+  border: 1px solid var(--editorial-hairline-strong);
+  border-radius: var(--radius-xs);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.ik-pipeline__stale-chip.is-visible {
+  display: inline-flex;
+}
+.ik-pipeline__stale-chip:hover {
+  border-color: var(--editorial-vermillion);
+  color: var(--editorial-vermillion);
+}
+
+/* ════════════════════════════════════════════════════════════════
+   PR-4 — AUTO BADGE (otomatik eşleşme kartlarda)
+   ════════════════════════════════════════════════════════════════ */
+.ik-card-aday__auto-badge {
+  display: inline-flex;
+  align-items: center;
+  height: 20px;
+  padding: 0 var(--space-4);
+  background: var(--editorial-card-elev);
+  color: var(--editorial-ink-muted);
+  border: 1px solid var(--editorial-hairline);
+  border-radius: var(--radius-xs);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  flex-shrink: 0;
+  margin-left: auto;
+  margin-right: var(--space-3);
+}
+
+/* ── Secondary meta (3-sütun geniş kart) ── */
+.ik-card-aday__secondary-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--editorial-ink-muted);
+  letter-spacing: 0.04em;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   PR-4 — MOBILE SEGMENT TABS (3-sütun → tek sütun geçiş)
+   ════════════════════════════════════════════════════════════════ */
+.ik-pipeline__mobile-tabs {
+  display: none;
+}
+@media (max-width: 768px) {
+  .ik-pipeline__mobile-tabs {
+    display: flex;
+    gap: var(--space-2);
+    padding: var(--space-6) var(--space-9);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-bottom: 1px solid var(--editorial-hairline);
+    background: var(--editorial-card);
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    scrollbar-width: none;
+  }
+  .ik-pipeline__mobile-tabs::-webkit-scrollbar {
+    display: none;
+  }
+}
+.ik-pipeline__mobile-tab {
+  height: 32px;
+  padding: 0 var(--space-7);
+  background: transparent;
+  border: 1px solid var(--editorial-hairline);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-size: var(--text-md);
+  font-weight: 500;
+  color: var(--editorial-ink-muted);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 140ms ease, border-color 140ms ease, color 140ms ease;
+  flex-shrink: 0;
+}
+.ik-pipeline__mobile-tab.is-active {
+  background: var(--editorial-vermillion-soft);
+  border-color: var(--editorial-vermillion);
+  color: var(--editorial-vermillion);
+  font-weight: 600;
+}
+.ik-pipeline__mobile-tab:focus-visible {
+  outline: 2px solid var(--editorial-vermillion);
+  outline-offset: 2px;
+}
+
+/* ════════════════════════════════════════════════════════════════
    A24 — COACHING BANNER (pool 0-pozisyon)
    ════════════════════════════════════════════════════════════════ */
 .ik-coaching-banner {
@@ -1508,6 +1737,105 @@ html[data-theme="dark"] .ik-position-form__chip[aria-pressed="true"]:hover {
   border-radius: 2px;
 }
 
+/* ════════════════════════════════════════════════════════════════
+   PR-4 — SOFT REFRESH MODAL
+   ════════════════════════════════════════════════════════════════ */
+.ik-soft-refresh-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 950;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-9);
+}
+.ik-soft-refresh-modal__box {
+  background: var(--editorial-card);
+  border: 1px solid var(--editorial-hairline);
+  border-radius: var(--radius-lg);
+  padding: var(--space-10) var(--space-10);
+  max-width: 420px;
+  width: 100%;
+  box-shadow: var(--editorial-shadow-layered);
+}
+.ik-soft-refresh-modal__title {
+  font-family: var(--font-head);
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  color: var(--editorial-ink);
+  margin: 0 0 var(--space-6);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+.ik-soft-refresh-modal__body {
+  font-family: var(--font-body);
+  font-size: var(--text-md);
+  color: var(--editorial-ink-muted);
+  margin: 0 0 var(--space-9);
+  line-height: 1.6;
+}
+.ik-soft-refresh-modal__actions {
+  display: flex;
+  gap: var(--space-5);
+  align-items: center;
+  flex-wrap: wrap;
+}
+.ik-soft-refresh-modal__btn-primary {
+  height: 40px;
+  padding: 0 var(--space-9);
+  background: var(--editorial-vermillion);
+  color: var(--editorial-on-vermillion);
+  border: none;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-size: var(--text-md);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 140ms ease;
+  flex-shrink: 0;
+}
+.ik-soft-refresh-modal__btn-primary:hover {
+  background: var(--editorial-vermillion-deep);
+}
+.ik-soft-refresh-modal__btn-primary:focus-visible {
+  outline: 2px solid var(--editorial-vermillion);
+  outline-offset: 2px;
+}
+.ik-soft-refresh-modal__btn-dismiss {
+  height: 40px;
+  padding: 0 var(--space-7);
+  background: transparent;
+  border: 1px solid var(--editorial-hairline-strong);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-size: var(--text-md);
+  font-weight: 500;
+  color: var(--editorial-ink-muted);
+  cursor: pointer;
+  transition: background 140ms ease, color 140ms ease;
+}
+.ik-soft-refresh-modal__btn-dismiss:hover {
+  background: var(--editorial-card-elev);
+  color: var(--editorial-ink);
+}
+.ik-soft-refresh-modal__btn-dismiss:focus-visible {
+  outline: 2px solid var(--editorial-vermillion);
+  outline-offset: 2px;
+}
+
+/* Dark mode */
+html[data-theme="dark"] .ik-soft-refresh-modal {
+  background: rgba(0, 0, 0, 0.65);
+}
+html[data-theme="dark"] .ik-soft-refresh-modal__box {
+  background: var(--editorial-card);
+  border-color: var(--editorial-hairline);
+}
+
+/* ════════════════════════════════════════════════════════════════
+   A24 — COACHING BANNER (pool 0-pozisyon) — devam
+   ════════════════════════════════════════════════════════════════ */
 /* dark mode — coaching banner (D3 fix: rgba opacity AA fail 2.8:1).
    Solid bg + parlak warm text = AA pass (5.1:1).
    Token: --color-warning-bg-dark + --color-warning-text-dark */

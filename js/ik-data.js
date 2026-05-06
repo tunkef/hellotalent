@@ -464,6 +464,56 @@
       })();
     },
 
+    /* ── PR-4: Auto-match wrapper ── */
+    addToPipelineAuto: function (position_id) {
+      /* hr_auto_match_position RPC — PR-1'de eklendi (M1 backfill).
+         Döner: { ok, added: int } */
+      if (!realMode()) {
+        return Promise.resolve({ ok: false, error: 'auth context yok' });
+      }
+      var supa = getSupa();
+      return (async function () {
+        try {
+          var res = await supa.rpc('hr_auto_match_position', {
+            p_position_id: position_id
+          });
+          if (res.error) {
+            console.warn('[ik-data] addToPipelineAuto RPC error:', res.error.message);
+            return { ok: false, error: res.error.message };
+          }
+          return res.data || { ok: true };
+        } catch (e) {
+          console.warn('[ik-data] addToPipelineAuto exception:', e && e.message);
+          return { ok: false, error: e && e.message };
+        }
+      })();
+    },
+
+    /* ── PR-4: Soft refresh wrapper ── */
+    refreshPositionPipeline: function (position_id) {
+      /* hr_refresh_position_pipeline RPC — PR-1'de eklendi.
+         Döner: { added: int, removed: int, kept: int } */
+      if (!realMode()) {
+        return Promise.resolve({ ok: false, error: 'auth context yok' });
+      }
+      var supa = getSupa();
+      return (async function () {
+        try {
+          var res = await supa.rpc('hr_refresh_position_pipeline', {
+            p_position_id: position_id
+          });
+          if (res.error) {
+            console.warn('[ik-data] refreshPositionPipeline RPC error:', res.error.message);
+            return { ok: false, error: res.error.message };
+          }
+          return res.data || { added: 0, removed: 0, kept: 0 };
+        } catch (e) {
+          console.warn('[ik-data] refreshPositionPipeline exception:', e && e.message);
+          return { ok: false, error: e && e.message };
+        }
+      })();
+    },
+
     /* ── Notes ── (per-candidate, Supabase real) */
     getNotes: function (candidate_id) {
       if (!realMode()) {

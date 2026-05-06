@@ -65,6 +65,16 @@
   --color-warning-border-dark: #6B3220; /* PR-2: dark mode warning border */
   --color-warning-text-dark: #F5B799;  /* PR-2: dark mode warning text (AA 5.1:1 on #2A1812) */
 
+  /* PR-4 — pipeline soft refresh banner (light mode amber) */
+  --editorial-warning-bg-light: #FEF3C7;   /* PR-4: refresh banner light bg (amber-50) — WCAG bg */
+  --editorial-warning-text-light: #92400E; /* PR-4: refresh banner light text (amber-800) — 7.5:1 on FEF3C7 */
+
+  /* PR-4 — pipeline action accent alias (future-proof: single token for iletisime_gecildi column accent) */
+  --editorial-pipeline-action-accent: var(--editorial-vermillion);
+
+  /* PR-4 — overlay backdrop (light mode) — WCAG: semi-transparent black scrim */
+  --overlay-backdrop: rgba(0, 0, 0, 0.45);
+
   /* Fonts */
   --font-head: 'Bricolage Grotesque', sans-serif;
   --font-body: 'Plus Jakarta Sans', sans-serif;
@@ -320,6 +330,12 @@ html[data-theme="dark"] {
   --editorial-shadow:          0 1px 3px rgba(0,0,0,0.4);
   --editorial-shadow-md:       0 4px 18px rgba(0,0,0,0.5);
   --editorial-shadow-layered:  0 2px 6px rgba(0,0,0,0.24), 0 8px 24px rgba(0,0,0,0.4);
+
+  /* PR-4 — dark mode: pipeline action accent alias */
+  --editorial-pipeline-action-accent: var(--editorial-vermillion); /* #E8845C dark */
+
+  /* PR-4 — dark mode: overlay backdrop (slightly more opaque) */
+  --overlay-backdrop: rgba(0, 0, 0, 0.60);
 }
 
 /* ═══ Dark Mode fallback — OS preference for pages without pre-paint script ═══

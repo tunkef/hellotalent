@@ -27,7 +27,8 @@
 <link rel="stylesheet" href="css/tokens.css?v=20260505clatu">
 <link rel="stylesheet" href="css/components.css?v=20260504a24h1">
 <link rel="stylesheet" href="css/ik-shell.css?v=20260505edge">
-<link rel="stylesheet" href="css/panels/ik-pipeline.css?v=pr2-form">
+<link rel="stylesheet" href="css/panels/ik-pipeline.css?v=pr4-pipeline">
+<link rel="stylesheet" href="css/panels/position-detail.css?v=pr4-pipeline">
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="shared.js?v=20260504a24h1"></script>
@@ -188,6 +189,11 @@
 
           <!-- A24: switcher + yeni pozisyon butonu yan yana -->
           <div class="ik-pipeline__switcher-row">
+            <!-- PR-4: Stale chip — banner dismiss sonrası kalıcı -->
+            <span class="ik-pipeline__stale-chip" id="ik-pipeline-stale-chip"
+                  aria-hidden="true" title="Pozisyon kriterleri değişti, uzun liste eski kriterlere göre.">
+              Liste eski kriterlere göre
+            </span>
             <div class="ik-position-switcher" data-ik-position-switcher>
               <button type="button" class="ik-position-switcher__btn" data-ik-position-btn aria-haspopup="listbox" aria-expanded="false">
                 <span>
@@ -207,6 +213,26 @@
 
         <div class="ik-pipeline__summary" data-ik-pipeline-summary></div>
       </section>
+
+      <!-- PR-4: Soft refresh banner (JS ile .is-visible toggle) -->
+      <div class="ik-pipeline__refresh-banner" id="ik-pipeline-refresh-banner"
+           role="alert" aria-live="polite" aria-hidden="true">
+        <span class="ik-pipeline__refresh-banner-text" id="ik-pipeline-refresh-banner-text">
+          Kriterler güncellendi. Uzun liste eski kriterlere göre.
+        </span>
+        <div class="ik-pipeline__refresh-banner-actions">
+          <button type="button" class="ik-pipeline__refresh-btn" id="btn-pipeline-refresh">
+            Listeyi Yenile
+          </button>
+          <button type="button" class="ik-pipeline__refresh-dismiss" id="btn-pipeline-refresh-dismiss"
+                  aria-label="Şimdilik geç">
+            Şimdilik geç
+          </button>
+        </div>
+      </div>
+
+      <!-- PR-4: Mobile segment tabs (JS ile render) -->
+      <div class="ik-pipeline__mobile-tabs" id="ik-pipeline-mobile-tabs" role="tablist" aria-label="Pipeline aşamaları"></div>
 
       <!-- BOARD -->
       <section class="ik-pipeline__board" data-ik-pipeline-board aria-label="Pipeline aşamaları">
@@ -465,6 +491,73 @@
 
 <div class="ik-pipeline-toast" data-ik-pipeline-toast aria-live="polite" aria-atomic="true"></div>
 
+<!-- PR-4: Pozisyon detay overlay + sheet (A24 form sheet'ten AYRI — dokunma) -->
+<div class="ik-pos-detail-overlay" id="ik-pos-detail-overlay" aria-hidden="true"></div>
+<aside class="ik-pos-detail-sheet" id="ik-pos-detail-sheet"
+       role="dialog" aria-modal="true" aria-labelledby="pos-detail-title" aria-hidden="true">
+
+  <div class="ik-pos-detail-sheet__handle" aria-hidden="true"></div>
+
+  <div class="ik-pos-detail-sheet__header">
+    <div class="ik-pos-detail-sheet__header-meta">
+      <span class="ik-pos-detail-sheet__eyebrow" data-pos-detail-eyebrow>Pozisyon detayı</span>
+      <h2 class="ik-pos-detail-sheet__title" id="pos-detail-title" data-pos-detail-title>—</h2>
+      <div class="ik-pos-detail-sheet__chips" data-pos-detail-chips></div>
+    </div>
+    <div class="ik-pos-detail-sheet__header-actions">
+      <button type="button" class="ik-pos-detail-sheet__footer-btn ik-pos-detail-sheet__footer-btn--secondary"
+              id="btn-pos-detail-kriter">
+        Kriter düzenle
+      </button>
+      <button type="button" class="ik-pos-detail-sheet__close" id="btn-pos-detail-close"
+              aria-label="Pozisyon detayını kapat">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="ik-pos-detail-sheet__body">
+    <!-- PR-4: Mobile stage tabs (JS render) -->
+    <div class="ik-pos-detail-stage-tabs" id="ik-pos-detail-stage-tabs" role="tablist" aria-label="Aşama seç"></div>
+    <!-- PR-4: 3-sütun board (JS render) -->
+    <div class="ik-pos-detail-board" id="ik-pos-detail-board" data-pos-detail-board></div>
+  </div>
+
+  <div class="ik-pos-detail-sheet__footer">
+    <button type="button" class="ik-pos-detail-sheet__footer-btn ik-pos-detail-sheet__footer-btn--danger"
+            id="btn-pos-detail-kapat">
+      Pozisyonu kapat
+    </button>
+  </div>
+
+</aside>
+
+<!-- PR-4: Soft refresh modal (inline banner dismiss → chip; burada: ilk kullanım genişletilmiş versiyon) -->
+<div class="ik-soft-refresh-modal" id="ik-soft-refresh-modal"
+     role="dialog" aria-modal="true" aria-labelledby="soft-refresh-modal-title" aria-hidden="true"
+     style="display:none">
+  <div class="ik-soft-refresh-modal__box">
+    <h3 class="ik-soft-refresh-modal__title" id="soft-refresh-modal-title">
+      Kriter değişti — listeyi yenile
+    </h3>
+    <p class="ik-soft-refresh-modal__body" id="ik-soft-refresh-modal-body">
+      Kısa listendeki ve görüştüğün adaylar korunacak.<br>
+      Sadece uzun liste yenilenecek.
+    </p>
+    <div class="ik-soft-refresh-modal__actions">
+      <button type="button" class="ik-soft-refresh-modal__btn-primary" id="btn-soft-refresh-accept">
+        Listeyi Yenile
+      </button>
+      <button type="button" class="ik-soft-refresh-modal__btn-dismiss" id="btn-soft-refresh-dismiss">
+        Şimdilik geç
+      </button>
+    </div>
+  </div>
+</div>
+
 <!-- Bottom nav (mobile only) -->
 <nav class="ik-bottom-nav" id="ik-bottom-nav" aria-label="Mobil navigasyon">
   <div class="ik-bottom-nav__inner">
@@ -515,7 +608,9 @@
 </nav>
 
 <script src="js/ik-shell.js?v=20260505roller2"></script>
-<script src="js/ik-data.js?v=pr2-form"></script>
-<script src="js/ik-pipeline.js?v=pr2-form"></script>
+<script src="js/ik-data.js?v=pr4-pipeline"></script>
+<script src="js/ik-matching-engine.js?v=pr4-pipeline"></script>
+<script src="js/ik-position-detail.js?v=pr4-pipeline"></script>
+<script src="js/ik-pipeline.js?v=pr4-pipeline"></script>
 </body>
 </html>

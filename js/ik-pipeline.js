@@ -1,8 +1,9 @@
 /* global IK_SHELL, IK_DATA */
 /* ════════════════════════════════════════════════════════════════
-   IK Pipeline — Asama 86 Sprint B
-   5-stage kanban + HTML5 drag-drop + position switcher.
-   Mobile: bottom-sheet stage mover.
+   IK Pipeline — PR-4 (3-sütun kanban)
+   uzun_liste / kisa_liste / iletisime_gecildi.
+   HTML5 drag-drop + skip-stage validation.
+   Mobile: segment tabs + bottom-sheet stage mover.
    XSS-safe (textContent only).
    SOLID:
      - SRP: render / drag-drop / sheet ayri fonksiyonlar.
@@ -12,13 +13,11 @@
 (function () {
   'use strict';
 
-  /* Stage tanimlari (UI label override demo data key'lerini saklar) */
+  /* PR-4: 3-stage tanimlari (5-stage → 3-stage, stage_v2 field okunur) */
   var STAGES = [
-    { key: 'basvuru',  label: 'Yeni',     short: 'Yeni' },
-    { key: 'on_eleme', label: 'Görüştüm', short: 'Görüştüm' },
-    { key: 'mulakat',  label: 'Mülakat',  short: 'Mülakat' },
-    { key: 'teklif',   label: 'Teklif',   short: 'Teklif' },
-    { key: 'kapali',   label: 'Kapandı',  short: 'Kapandı' }
+    { key: 'uzun_liste',        label: 'Uzun Liste',        short: 'Uzun' },
+    { key: 'kisa_liste',        label: 'Kısa Liste',        short: 'Kısa' },
+    { key: 'iletisime_gecildi', label: 'İletişime Geçildi', short: 'Kontak' }
   ];
 
   /* ═══════ State ═══════ */
@@ -38,18 +37,76 @@
   function $$(s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
 
   function cacheDom() {
-    dom.posBtn       = $('[data-ik-position-btn]');
-    dom.posTitle     = $('[data-ik-position-title]');
-    dom.posMenu      = $('[data-ik-position-menu]');
-    dom.summary      = $('[data-ik-pipeline-summary]');
-    dom.board        = $('[data-ik-pipeline-board]');
-    dom.loading      = $('[data-ik-pipeline-loading]');
-    dom.sheetOverlay = $('[data-ik-stage-sheet-overlay]');
-    dom.sheet        = $('[data-ik-stage-sheet]');
-    dom.sheetTitle   = $('[data-ik-stage-sheet-title]');
-    dom.sheetSub     = $('[data-ik-stage-sheet-sub]');
-    dom.sheetList    = $('[data-ik-stage-sheet-list]');
-    dom.toast        = $('[data-ik-pipeline-toast]');
+    dom.posBtn            = $('[data-ik-position-btn]');
+    dom.posTitle          = $('[data-ik-position-title]');
+    dom.posMenu           = $('[data-ik-position-menu]');
+    dom.summary           = $('[data-ik-pipeline-summary]');
+    dom.board             = $('[data-ik-pipeline-board]');
+    dom.loading           = $('[data-ik-pipeline-loading]');
+    dom.sheetOverlay      = $('[data-ik-stage-sheet-overlay]');
+    dom.sheet             = $('[data-ik-stage-sheet]');
+    dom.sheetTitle        = $('[data-ik-stage-sheet-title]');
+    dom.sheetSub          = $('[data-ik-stage-sheet-sub]');
+    dom.sheetList         = $('[data-ik-stage-sheet-list]');
+    dom.toast             = $('[data-ik-pipeline-toast]');
+    /* PR-4: yeni DOM ref'leri */
+    dom.refreshBanner     = document.getElementById('ik-pipeline-refresh-banner');
+    dom.refreshBannerText = document.getElementById('ik-pipeline-refresh-banner-text');
+    dom.refreshBtn        = document.getElementById('btn-pipeline-refresh');
+    dom.refreshDismiss    = document.getElementById('btn-pipeline-refresh-dismiss');
+    dom.staleChip         = document.getElementById('ik-pipeline-stale-chip');
+    dom.mobileTabs        = document.getElementById('ik-pipeline-mobile-tabs');
+  }
+
+  /* ═══════ PR-4: PostHog helper ═══════ */
+  function trackPipeline(eventName, props) {
+    if (!window.posthog) return;
+    try { window.posthog.capture(eventName, props || {}); } catch (e) {}
+  }
+
+  /* ═══════ PR-4: Active mobile stage ═══════ */
+  var _activeMobileStage = STAGES[0].key;
+
+  function setActiveMobileStage(key) {
+    _activeMobileStage = key;
+    /* sütunları göster/gizle */
+    $$('.ik-stage', dom.board).forEach(function (col) {
+      var stageKey = col.getAttribute('data-stage-key') || col.getAttribute('data-stage');
+      if (stageKey === key) {
+        col.classList.add('is-active-mobile');
+      } else {
+        col.classList.remove('is-active-mobile');
+      }
+    });
+    /* tab aktif */
+    if (dom.mobileTabs) {
+      $$('.ik-pipeline__mobile-tab', dom.mobileTabs).forEach(function (btn) {
+        var isActive = btn.getAttribute('data-mobile-stage') === key;
+        btn.classList.toggle('is-active', isActive);
+        btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
+      });
+    }
+  }
+
+  function renderMobileTabs() {
+    if (!dom.mobileTabs) return;
+    clearChildren(dom.mobileTabs);
+    STAGES.forEach(function (s) {
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'ik-pipeline__mobile-tab' + (s.key === _activeMobileStage ? ' is-active' : '');
+      btn.setAttribute('role', 'tab');
+      btn.setAttribute('aria-selected', s.key === _activeMobileStage ? 'true' : 'false');
+      btn.setAttribute('data-mobile-stage', s.key);
+      /* count badge */
+      var cnt = state.pipelineEntries.filter(function (e) { return e.stage === s.key || e.stage_v2 === s.key; }).length;
+      btn.textContent = s.label + (cnt ? ' · ' + cnt : '');
+      btn.addEventListener('click', function () {
+        setActiveMobileStage(s.key);
+        trackPipeline('pipeline_card_stage_move_sheet', { from_stage: _activeMobileStage, to_stage: s.key });
+      });
+      dom.mobileTabs.appendChild(btn);
+    });
   }
 
   /* ═══════ Helpers ═══════ */
@@ -173,6 +230,12 @@
     });
   }
 
+  /* ═══════ PR-4: stage key resolver (stage_v2 → stage fallback) ═══════ */
+  function resolveStage(entry) {
+    /* PR-1 dual-write: stage_v2 mevcut ise onu kullan, yoksa legacy stage */
+    return entry.stage_v2 || entry.stage || STAGES[0].key;
+  }
+
   /* ═══════ Summary chips ═══════ */
   function renderSummary() {
     if (!dom.summary) return;
@@ -181,7 +244,8 @@
     var counts = {};
     STAGES.forEach(function (s) { counts[s.key] = 0; });
     state.pipelineEntries.forEach(function (e) {
-      if (counts[e.stage] != null) counts[e.stage]++;
+      var sk = resolveStage(e);
+      if (counts[sk] != null) counts[sk]++;
     });
 
     STAGES.forEach(function (s) {
@@ -240,6 +304,16 @@
     poz.textContent = c.son_pozisyon || '—';
     main.appendChild(poz);
     head.appendChild(main);
+
+    /* PR-4: auto badge (auto_added=true kartlarda) */
+    var currentStage = resolveStage(entry);
+    if (entry.auto_added) {
+      var autoBadge = document.createElement('span');
+      autoBadge.className = 'ik-card-aday__auto-badge';
+      autoBadge.textContent = 'Otomatik';
+      autoBadge.setAttribute('aria-label', 'Otomatik eşleşme ile eklendi');
+      head.appendChild(autoBadge);
+    }
 
     var menuBtn = document.createElement('button');
     menuBtn.type = 'button';
@@ -313,12 +387,22 @@
     menu.className = 'ik-card-aday__menu';
     menu.setAttribute('data-card-menu', c.id);
 
+    /* PR-4: stage-aware card menu labels */
+    var stageActions = [];
+    if (currentStage === 'uzun_liste') {
+      stageActions.push({ action: 'move_kisa',        label: 'Kısa Listeye Al' });
+    } else if (currentStage === 'kisa_liste') {
+      stageActions.push({ action: 'move_iletisim',    label: 'İletişime Geçildi Olarak İşaretle' });
+      stageActions.push({ action: 'move_uzun',        label: 'Uzun Listeye Geri Al' });
+    } else if (currentStage === 'iletisime_gecildi') {
+      stageActions.push({ action: 'move_kisa',        label: 'Kısa Listeye Geri Al' });
+    }
     var actions = [
       { action: 'detail',  label: 'Detayı aç' },
-      { action: 'message', label: 'Mesaj yaz' },
-      { action: 'stage',   label: 'Aşamayı değiştir' },
-      { action: 'remove',  label: 'Pipeline\'dan çıkar', danger: true }
-    ];
+      { action: 'message', label: 'Mesaj yaz' }
+    ].concat(stageActions).concat([
+      { action: 'remove',  label: 'Listeden Çıkar', danger: true }
+    ]);
     actions.forEach(function (a) {
       var b;
       if (a.action === 'detail' || a.action === 'message') {
@@ -340,11 +424,20 @@
     return card;
   }
 
+  /* ═══════ PR-4: Stage empty state metinleri ═══════ */
+  var STAGE_EMPTY = {
+    uzun_liste:        'Eşleşme bekleniyor. Pozisyon kriterleri kaydedildiğinde adaylar buraya gelir.',
+    kisa_liste:        'Uzun listeden beğendiklerini buraya taşı.',
+    iletisime_gecildi: 'Kısa listedeki bir adaya kontak başlattığında buraya geçer.'
+  };
+
   /* ═══════ Stage column render ═══════ */
   function renderStageColumn(stageDef) {
     var col = document.createElement('section');
     col.className = 'ik-stage';
     col.setAttribute('data-stage-key', stageDef.key);
+    /* PR-4: data-stage attribute da set et (CSS selector için) */
+    col.setAttribute('data-stage', stageDef.key);
 
     var header = document.createElement('header');
     header.className = 'ik-stage__header';
@@ -353,12 +446,18 @@
     title.textContent = stageDef.label;
     header.appendChild(title);
 
-    var entries = state.pipelineEntries.filter(function (e) { return e.stage === stageDef.key; });
-    var count = document.createElement('div');
-    count.className = 'ik-stage__count';
-    count.textContent = String(entries.length);
-    count.setAttribute('aria-label', entries.length + ' aday');
-    header.appendChild(count);
+    /* PR-4: stage_v2 ile filtrele */
+    var entries = state.pipelineEntries.filter(function (e) {
+      return resolveStage(e) === stageDef.key;
+    });
+
+    var countEl = document.createElement('div');
+    countEl.className = 'ik-stage__count';
+    /* PR-4: format: "N" — 99+ clamp */
+    var cntDisplay = entries.length > 99 ? '99+' : String(entries.length);
+    countEl.textContent = cntDisplay;
+    countEl.setAttribute('aria-label', entries.length + ' aday');
+    header.appendChild(countEl);
 
     col.appendChild(header);
 
@@ -385,13 +484,16 @@
       empty.appendChild(icon);
       var et = document.createElement('p');
       et.className = 'ik-pipeline-empty__title';
-      et.textContent = 'Bu aşamada aday yok';
+      /* PR-4: stage-specific empty state metni */
+      et.textContent = STAGE_EMPTY[stageDef.key] || 'Bu aşamada aday yok';
       empty.appendChild(et);
-      var cta = document.createElement('a');
-      cta.className = 'ik-pipeline-empty__cta';
-      cta.href = 'hr-pool.html';
-      cta.textContent = 'Havuza git';
-      empty.appendChild(cta);
+      if (stageDef.key === 'uzun_liste') {
+        var cta = document.createElement('a');
+        cta.className = 'ik-pipeline-empty__cta';
+        cta.href = 'hr-pool.html';
+        cta.textContent = 'Havuza git';
+        empty.appendChild(cta);
+      }
       body.appendChild(empty);
     } else {
       entries.forEach(function (e) {
@@ -410,6 +512,12 @@
     STAGES.forEach(function (s) {
       dom.board.appendChild(renderStageColumn(s));
     });
+    /* PR-4: mobile tabs */
+    renderMobileTabs();
+    /* PR-4: mobile'da ilk sütunu göster */
+    if (isMobileDevice()) {
+      setActiveMobileStage(_activeMobileStage);
+    }
     bindDragDrop();
     bindCardEvents();
   }
@@ -431,6 +539,12 @@
           e.dataTransfer.effectAllowed = 'move';
           try { e.dataTransfer.setData('text/plain', cid); } catch (err) { /* ignore */ }
         }
+        /* PR-4: PostHog drag_start */
+        trackPipeline('pipeline_card_drag_start', {
+          position_id: state.activePositionId,
+          candidate_id: cid,
+          from_stage: stage
+        });
       });
       card.addEventListener('dragend', function () {
         card.classList.remove('ik-card-aday--dragging');
@@ -459,11 +573,41 @@
         col.classList.remove('ik-stage--drop-target');
         if (!state.dragging) return;
         var newStage = col.getAttribute('data-stage-key');
+        var fromStage = state.dragging.fromStage;
         var cid = state.dragging.candidate_id;
-        if (state.dragging.fromStage === newStage) {
+
+        /* PR-4: skip-stage kısıtlaması — uzun_liste → iletisime_gecildi DROP YASAK */
+        if (fromStage === 'uzun_liste' && newStage === 'iletisime_gecildi') {
+          showToast('Önce kısa listeye al.', 'error');
+          trackPipeline('pipeline_skip_stage_blocked', {
+            position_id: state.activePositionId,
+            from_stage: fromStage,
+            to_stage: newStage
+          });
           state.dragging = null;
           return;
         }
+        /* PR-4: iletisime_gecildi → uzun_liste da yasak (spec: geriye skip yok) */
+        if (fromStage === 'iletisime_gecildi' && newStage === 'uzun_liste') {
+          showToast('Önce kısa listeye al.', 'error');
+          state.dragging = null;
+          return;
+        }
+
+        if (fromStage === newStage) {
+          state.dragging = null;
+          return;
+        }
+
+        /* PR-4: PostHog drag_drop event */
+        trackPipeline('pipeline_card_drag_drop', {
+          position_id: state.activePositionId,
+          candidate_id: cid,
+          from_stage: fromStage,
+          to_stage: newStage,
+          success: true
+        });
+
         moveCandidateToStage(cid, newStage);
       });
     });
@@ -482,8 +626,21 @@
     renderBoard();
 
     IK_DATA.moveStage(candidate_id, state.activePositionId, newStage).then(function () {
-      var label = (STAGES.find(function (s) { return s.key === newStage; }) || {}).label || newStage;
-      showToast(label + ' aşamasına taşındı', 'success');
+      /* PR-4: stage-aware toast mesajı (copy spec §3D) */
+      var c = state.candidatesById[candidate_id];
+      var adSoyad = (c && c.full_name) ? c.full_name : 'Aday';
+      var toastMsg;
+      if (newStage === 'kisa_liste') {
+        toastMsg = adSoyad + ' kısa listeye alındı.';
+      } else if (newStage === 'iletisime_gecildi') {
+        toastMsg = adSoyad + ' için kontak başlatıldı olarak işaretlendi.';
+      } else if (newStage === 'uzun_liste') {
+        toastMsg = adSoyad + ' uzun listeye geri alındı.';
+      } else {
+        var label = (STAGES.find(function (s) { return s.key === newStage; }) || {}).label || newStage;
+        toastMsg = adSoyad + ' ' + label + ' aşamasına taşındı.';
+      }
+      showToast(toastMsg, 'success');
     }).catch(function () {
       showToast('Taşıma başarısız', 'error');
       loadPipeline();
@@ -560,11 +717,18 @@
   }
 
   function handleCardAction(action, candidate_id) {
-    if (action === 'stage') {
+    /* PR-4: stage move actions */
+    if (action === 'move_kisa') {
+      moveCandidateToStage(candidate_id, 'kisa_liste');
+    } else if (action === 'move_uzun') {
+      moveCandidateToStage(candidate_id, 'uzun_liste');
+    } else if (action === 'move_iletisim') {
+      moveCandidateToStage(candidate_id, 'iletisime_gecildi');
+    } else if (action === 'stage') {
       openStageSheet(candidate_id);
     } else if (action === 'remove') {
       IK_DATA.removeFromPipeline(candidate_id, state.activePositionId).then(function () {
-        showToast('Pipeline\'dan çıkarıldı', 'success');
+        showToast('Listeden çıkarıldı', 'success');
         state.pipelineEntries = state.pipelineEntries.filter(function (e) {
           return !(e.candidate_id === candidate_id && e.position_id === state.activePositionId);
         });
@@ -594,16 +758,22 @@
 
     if (dom.sheetList) {
       clearChildren(dom.sheetList);
+      var currentStageKey = resolveStage(entry);
       STAGES.forEach(function (s) {
+        /* PR-4: skip-stage kısıtlaması — uzun_liste'den iletisime_gecildi'ye gizle */
+        if (currentStageKey === 'uzun_liste' && s.key === 'iletisime_gecildi') return;
+        /* PR-4: iletisime_gecildi'den uzun_liste'ye de gizle */
+        if (currentStageKey === 'iletisime_gecildi' && s.key === 'uzun_liste') return;
+
         var btn = document.createElement('button');
         btn.type = 'button';
         btn.className = 'ik-stage-sheet__option';
-        if (s.key === entry.stage) btn.classList.add('is-current');
+        if (s.key === currentStageKey) btn.classList.add('is-current');
         btn.setAttribute('data-sheet-stage', s.key);
         var lbl = document.createElement('span');
         lbl.textContent = s.label;
         btn.appendChild(lbl);
-        if (s.key === entry.stage) {
+        if (s.key === currentStageKey) {
           var cur = document.createElement('span');
           cur.className = 'ik-stage-sheet__option-current';
           cur.textContent = 'şu anki';
@@ -645,6 +815,12 @@
           return;
         }
         var cid = state.sheetCandidate;
+        /* PR-4: PostHog mobile stage move */
+        trackPipeline('pipeline_card_stage_move_sheet', {
+          position_id: state.activePositionId,
+          from_stage: state.sheetCurrentStage,
+          to_stage: newStage
+        });
         closeStageSheet();
         if (cid) moveCandidateToStage(cid, newStage);
       });
@@ -1240,12 +1416,114 @@
     dom.board.appendChild(wrap);
   }
 
+  /* ═══════ PR-4: Soft refresh banner bind ═══════ */
+  function bindRefreshBanner() {
+    if (!dom.refreshBtn || !dom.refreshDismiss) return;
+
+    dom.refreshBtn.addEventListener('click', function () {
+      if (!state.activePositionId) return;
+      /* Banner kapat, RPC çağır */
+      hideBanner();
+      hideStaleChip();
+      trackPipeline('pipeline_soft_refresh_accepted', { position_id: state.activePositionId });
+
+      if (window._htMatchingEngine && window._htMatchingEngine.showSoftRefreshPrompt) {
+        /* ik-matching-engine.js üzerinden RPC */
+        return;
+      }
+      /* Fallback: doğrudan IK_DATA üzerinden (hr_refresh_position_pipeline RPC PR-1'de var) */
+      if (IK_DATA.refreshPositionPipeline) {
+        IK_DATA.refreshPositionPipeline(state.activePositionId).then(function (result) {
+          var r = result || {};
+          var added   = r.added   || 0;
+          var removed = r.removed || 0;
+          var msg;
+          if (added > 0 && removed > 0) {
+            msg = added + ' yeni eşleşme eklendi, ' + removed + ' aday çıkarıldı.';
+          } else if (added > 0) {
+            msg = added + ' yeni eşleşme eklendi.';
+          } else if (removed > 0) {
+            msg = removed + ' aday kriterlere uymadığı için çıkarıldı.';
+          } else {
+            msg = 'Liste güncellendi. Değişen aday yok.';
+          }
+          showToast(msg, 'success');
+          loadPipeline();
+        }).catch(function (err) {
+          console.error('[ik-pipeline] refreshPositionPipeline error:', err && err.message);
+          showToast('Bağlantı sorunu. Liste yenilemedi, tekrar dene.', 'error');
+        });
+      }
+    });
+
+    dom.refreshDismiss.addEventListener('click', function () {
+      hideBanner();
+      showStaleChip();
+      trackPipeline('pipeline_soft_refresh_dismissed', {
+        position_id: state.activePositionId,
+        dismiss_count: getDismissCount(state.activePositionId)
+      });
+      incDismissCount(state.activePositionId);
+    });
+
+    if (dom.staleChip) {
+      dom.staleChip.addEventListener('click', function () {
+        hideStaleChip();
+        showBanner();
+      });
+    }
+  }
+
+  function showBanner(msg) {
+    if (!dom.refreshBanner) return;
+    if (msg && dom.refreshBannerText) dom.refreshBannerText.textContent = msg;
+    dom.refreshBanner.classList.add('is-visible');
+    dom.refreshBanner.setAttribute('aria-hidden', 'false');
+  }
+  function hideBanner() {
+    if (!dom.refreshBanner) return;
+    dom.refreshBanner.classList.remove('is-visible');
+    dom.refreshBanner.setAttribute('aria-hidden', 'true');
+  }
+  function showStaleChip() {
+    if (dom.staleChip) {
+      dom.staleChip.classList.add('is-visible');
+      dom.staleChip.setAttribute('aria-hidden', 'false');
+    }
+  }
+  function hideStaleChip() {
+    if (dom.staleChip) {
+      dom.staleChip.classList.remove('is-visible');
+      dom.staleChip.setAttribute('aria-hidden', 'true');
+    }
+  }
+
+  /* localStorage dismiss count helpers */
+  function getDismissCount(positionId) {
+    if (!positionId) return 0;
+    try {
+      return parseInt(localStorage.getItem('_ht_refresh_dismiss_' + positionId) || '0', 10);
+    } catch (e) { return 0; }
+  }
+  function incDismissCount(positionId) {
+    if (!positionId) return;
+    try {
+      var n = getDismissCount(positionId) + 1;
+      localStorage.setItem('_ht_refresh_dismiss_' + positionId, String(n));
+    } catch (e) {}
+  }
+
+  /* Expose banner show for ik-matching-engine.js */
+  window._htPipelineShowRefreshBanner = showBanner;
+  window._htPipelineHideBanner        = hideBanner;
+
   /* ═══════ Init ═══════ */
   function init() {
     cacheDom();
     bindPositionSwitcher();
     bindStageSheet();
     bindPositionFormSheet();
+    bindRefreshBanner();
     loadInit();
   }
 
