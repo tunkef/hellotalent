@@ -24,10 +24,11 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 
-<link rel="stylesheet" href="css/tokens.css?v=pr7-clatu2">
+<link rel="stylesheet" href="css/tokens.css?v=pr7-clatu3">
 <link rel="stylesheet" href="css/components.css?v=20260504a24h1">
 <link rel="stylesheet" href="css/ik-shell.css?v=20260505edge">
-<link rel="stylesheet" href="css/panels/ik-pipeline.css?v=pr7-clatu2">
+<link rel="stylesheet" href="css/panels/ik-genel.css?v=pr7-clatu3">
+<link rel="stylesheet" href="css/panels/ik-pipeline.css?v=pr7-clatu3">
 <link rel="stylesheet" href="css/panels/position-detail.css?v=pr4-pipeline">
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -176,45 +177,46 @@
   <div class="ik-page__inner">
     <div id="ik-pipeline-shell" class="ik-pipeline" role="region" aria-label="Pipeline">
 
-      <!-- PR-7: Landing — pozisyon kart grid (switcher kaldırıldı) -->
+      <!-- PR-7 CLATU rework #3 — Anasayfa ik-card pattern reuse (Tuna feedback) -->
       <section class="ik-pos-landing" id="ik-pos-landing">
 
-        <!-- PR-7 CLATU — Hero row: 3-katman typography + outline CTA -->
-        <div class="ik-pos-landing__hero">
-          <div class="ik-pos-landing__title-group">
-            <span class="ik-pos-landing__eyebrow">POZİSYONLAR</span>
-            <h1 class="ik-pos-landing__title">Açık pozisyonlar</h1>
-            <p class="ik-pos-landing__subline" id="ik-pos-subline" aria-live="polite"></p>
+        <article class="ik-card ik-card--positions" id="ik-pos-card">
+          <div class="ik-card__head">
+            <h3 class="ik-card__title">Açık Pozisyonlar</h3>
+            <span class="ik-card__chip" id="ik-pos-chip" aria-live="polite">0 aktif</span>
           </div>
-          <button type="button" class="ik-pos-landing__cta" id="btn-new-position">
-            Yeni Pozisyon
-          </button>
-        </div>
 
-        <!-- PR-4 stale chip (banner dismiss sonrası kalıcı) -->
+          <!-- Segment toggle: Aktif / Arşiv -->
+          <div class="ik-card__body" id="ik-pos-card-body">
+            <div class="ht-seg-toggle" id="ik-pos-seg-toggle" role="tablist" aria-label="Pozisyon görünümü">
+              <button type="button" class="ht-seg-toggle__btn is-active"
+                      id="btn-pos-seg-aktif" role="tab"
+                      aria-selected="true" data-pos-view="active">
+                Aktif
+              </button>
+              <button type="button" class="ht-seg-toggle__btn"
+                      id="btn-pos-seg-arsiv" role="tab"
+                      aria-selected="false" data-pos-view="archive">
+                Arşiv
+              </button>
+            </div>
+
+            <!-- Pozisyon listesi (JS render — ik-list pattern) -->
+            <div class="ik-list" id="ik-pos-list" role="list" aria-label="Pozisyon listesi"></div>
+          </div>
+
+          <div class="ik-card__footer ik-card__footer--end">
+            <button type="button" class="ik-card__action-pill" id="btn-new-position">
+              <span class="ik-card__action-pill-label">Yeni Pozisyon</span>
+            </button>
+          </div>
+        </article>
+
+        <!-- PR-4 stale chip (banner dismiss sonrası kalıcı, kart dışı) -->
         <span class="ik-pipeline__stale-chip" id="ik-pipeline-stale-chip"
               aria-hidden="true" title="Pozisyon kriterleri değişti, uzun liste eski kriterlere göre.">
           Liste eski kriterlere göre
         </span>
-
-        <!-- Segment toggle: Aktif / Arşiv -->
-        <div class="ik-pos-landing__toggle-row">
-          <div class="ht-seg-toggle" id="ik-pos-seg-toggle" role="tablist" aria-label="Pozisyon görünümü">
-            <button type="button" class="ht-seg-toggle__btn is-active"
-                    id="btn-pos-seg-aktif" role="tab"
-                    aria-selected="true" data-pos-view="active">
-              Aktif
-            </button>
-            <button type="button" class="ht-seg-toggle__btn"
-                    id="btn-pos-seg-arsiv" role="tab"
-                    aria-selected="false" data-pos-view="archive">
-              Arşiv
-            </button>
-          </div>
-        </div>
-
-        <!-- Kart grid (JS render eder) -->
-        <div class="ik-pos-grid" id="ik-pos-grid" role="list" aria-label="Pozisyon listesi"></div>
 
       </section>
 
@@ -648,8 +650,8 @@
 <script src="js/ik-shell.js?v=20260505roller2"></script>
 <script src="js/ik-data.js?v=pr7-lifecycle"></script>
 <script src="js/ik-matching-engine.js?v=pr4-pipeline"></script>
-<script src="js/ik-pos-list.js?v=pr7-clatu2"></script>
-<script src="js/ik-pos-close.js?v=pr7-clatu2"></script>
+<script src="js/ik-pos-list.js?v=pr7-clatu3"></script>
+<script src="js/ik-pos-close.js?v=pr7-clatu3"></script>
 <script src="js/ik-position-detail.js?v=pr7-lifecycle"></script>
 <script src="js/ik-pipeline.js?v=pr7-lifecycle"></script>
 </body>

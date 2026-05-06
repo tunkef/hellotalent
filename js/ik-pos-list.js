@@ -23,10 +23,13 @@
 
   var _dom = {};
 
-  /* ═══════ DOM cache ═══════ */
+  /* ═══════ DOM cache — PR-7 CLATU rework #3: ik-card pattern (anasayfa) ═══════ */
   function cacheDom() {
-    _dom.grid    = document.getElementById('ik-pos-grid');
-    _dom.subline = document.getElementById('ik-pos-subline'); /* PR-7: ik-pos-count → ik-pos-subline */
+    _dom.list    = document.getElementById('ik-pos-list');         /* ik-list container */
+    _dom.chip    = document.getElementById('ik-pos-chip');         /* head chip "X aktif" */
+    /* Backwards-compat alias for legacy code paths */
+    _dom.grid    = _dom.list;
+    _dom.subline = _dom.chip;
     _dom.segAktif = document.getElementById('btn-pos-seg-aktif');
     _dom.segArsiv = document.getElementById('btn-pos-seg-arsiv');
   }
@@ -109,152 +112,66 @@
     return chips;
   }
 
-  /* ═══════ Kart DOM inşaatı ═══════ */
+  /* ═══════ List item DOM — PR-7 CLATU rework #3: ik-list__item pattern (anasayfa)
+     Image #6 reference: tek büyük ik-card içinde ik-list, her pozisyon list item.
+     Click → detail sheet (PR-4). Edit/Kapat detail sheet header'ında.
+     Kebab menu, kriter chip preview, count'lar list item'dan KALDIRILDI (anasayfa
+     pattern minimal). ═══════ */
   function buildCard(pos, isArchive) {
-    var card = document.createElement('div');
-    card.className = 'ik-pos-card' + (isArchive ? ' ik-pos-card--archive' : '');
-    card.setAttribute('data-pos-id', pos.id);
-    card.setAttribute('data-status', isArchive ? 'archive' : 'active');
-    card.setAttribute('role', 'listitem');
+    var item = document.createElement('div');
+    item.className = 'ik-list__item ik-list__item--link';
+    item.setAttribute('data-pos-id', String(pos.id));
+    item.setAttribute('data-status', isArchive ? 'archive' : 'active');
+    item.setAttribute('role', 'listitem');
+    item.setAttribute('tabindex', '0');
 
-    /* ── Header ── */
-    var header = document.createElement('div');
-    header.className = 'ik-pos-card__header';
+    /* ── Body: name + meta ── */
+    var bodyEl = document.createElement('div');
+    bodyEl.className = 'ik-list__body';
 
-    /* PR-7 CLATU — status eyebrow (badge container kaldırıldı) */
-    var titleBlock = document.createElement('div');
-    titleBlock.className = 'ik-pos-card__title-block';
-
-    var statusKey = isArchive ? 'archive' : 'active';
-    var eyebrow = document.createElement('span');
-    eyebrow.className = 'ik-pos-card__status-eyebrow ik-pos-card__status-eyebrow--' + statusKey;
-    eyebrow.textContent = isArchive ? 'ARŞİV' : 'AKTİF';
-    titleBlock.appendChild(eyebrow);
-
-    var nameEl = document.createElement('div');
-    nameEl.className = 'ik-pos-card__name';
+    var nameEl = document.createElement('span');
+    nameEl.className = 'ik-list__name';
     nameEl.textContent = pos.ad || pos.title || '—';
-    titleBlock.appendChild(nameEl);
+    bodyEl.appendChild(nameEl);
 
     var metaParts = [];
     if (pos.sehir || pos.city) metaParts.push(pos.sehir || pos.city);
     if (pos.seg   || pos.segment) metaParts.push(pos.seg || pos.segment);
     if (pos.exp   || pos.experience_years) metaParts.push(pos.exp || pos.experience_years);
     if (metaParts.length) {
-      var meta = document.createElement('div');
-      meta.className = 'ik-pos-card__meta';
-      meta.textContent = metaParts.join(' · ');
-      titleBlock.appendChild(meta);
+      var metaEl = document.createElement('span');
+      metaEl.className = 'ik-list__meta';
+      metaEl.textContent = metaParts.join(' · ');
+      bodyEl.appendChild(metaEl);
     }
-    header.appendChild(titleBlock);
+    item.appendChild(bodyEl);
 
-    /* Kebab menu wrap */
-    var menuWrap = document.createElement('div');
-    menuWrap.className = 'ik-pos-card__menu-wrap';
+    /* ── Time ago (right-aligned) ── */
+    var timeEl = document.createElement('span');
+    timeEl.className = 'ik-list__time';
+    var rawDate = isArchive
+      ? (pos.updated_at || pos.closed_at)
+      : pos.created_at;
+    timeEl.textContent = isArchive
+      ? formatKapatmaTarihi(rawDate)
+      : (formatAcilmaTarihi(rawDate) || '—');
+    item.appendChild(timeEl);
 
-    var menuBtn = document.createElement('button');
-    menuBtn.type = 'button';
-    menuBtn.className = 'ik-pos-card__menu-btn';
-    menuBtn.setAttribute('aria-label', 'Pozisyon seçenekleri');
-    menuBtn.setAttribute('aria-expanded', 'false');
-    menuBtn.setAttribute('aria-haspopup', 'menu');
-    menuBtn.appendChild(makeKebabSvg());
-
-    var dropdown = document.createElement('div');
-    dropdown.className = 'ik-pos-card__dropdown';
-    dropdown.setAttribute('role', 'menu');
-
-    var menuItems = isArchive
-      ? [{ label: 'Görüntüle', action: 'view', danger: false }, { label: 'Yeniden Aç', action: 'reopen', danger: false }]
-      : [{ label: 'Görüntüle', action: 'view', danger: false }, { label: 'Düzenle', action: 'edit', danger: false }, { label: 'Kapat', action: 'close', danger: true }];
-
-    menuItems.forEach(function (item) {
-      var btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'ik-pos-card__dropdown-item' + (item.danger ? ' ik-pos-card__dropdown-item--danger' : '');
-      btn.setAttribute('role', 'menuitem');
-      btn.setAttribute('data-action', item.action);
-      btn.setAttribute('data-pos-id', String(pos.id));
-      btn.textContent = item.label;
-      dropdown.appendChild(btn);
-    });
-
-    menuWrap.appendChild(menuBtn);
-    menuWrap.appendChild(dropdown);
-    header.appendChild(menuWrap);
-    card.appendChild(header);
-
-    /* ── Kriter chip preview ── */
-    var allChips = buildChipList(pos);
-    if (allChips.length) {
-      var chipsRow = document.createElement('div');
-      chipsRow.className = 'ik-pos-card__chips';
-      var maxShow = 4;
-      var overflow = allChips.length - maxShow;
-      allChips.slice(0, maxShow).forEach(function (c) {
-        var chip = document.createElement('span');
-        chip.className = 'ik-pos-card__chip';
-        chip.textContent = c;
-        chipsRow.appendChild(chip);
-      });
-      if (overflow > 0) {
-        var overChip = document.createElement('span');
-        overChip.className = 'ik-pos-card__chip ik-pos-card__chip--overflow';
-        overChip.textContent = '+' + overflow + ' daha';
-        chipsRow.appendChild(overChip);
+    /* Click + keyboard → detail sheet (PR-4 reuse). Edit/Kapat detail header'da. */
+    function openDetail() {
+      if (window._htPositionDetailOpen) {
+        window._htPositionDetailOpen(pos.id);
       }
-      card.appendChild(chipsRow);
+      track('position_list_item_click', { id: pos.id, view: isArchive ? 'archive' : 'active' });
     }
-
-    /* ── Aday count — PR-7 CLATU: vertical label/value stack ── */
-    var countsRow = document.createElement('div');
-    countsRow.className = 'ik-pos-card__counts';
-    countsRow.setAttribute('data-counts-pos', String(pos.id));
-    var countDefs = [
-      { key: 'uzun',     label: 'UZUN' },
-      { key: 'kisa',     label: 'KISA' },
-      { key: 'iletisim', label: 'İLETİŞİM' }
-    ];
-    countDefs.forEach(function (def) {
-      var item = document.createElement('div');
-      item.className = 'ik-pos-card__count-item';
-
-      var lbl = document.createElement('span');
-      lbl.className = 'ik-pos-card__count-label';
-      lbl.textContent = def.label;
-
-      var val = document.createElement('span');
-      val.className = 'ik-pos-card__count-value';
-      val.setAttribute('data-count-key', def.key);
-      val.textContent = '0';
-
-      item.appendChild(lbl);
-      item.appendChild(val);
-      countsRow.appendChild(item);
+    item.addEventListener('click', openDetail);
+    item.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        openDetail();
+      }
     });
-    card.appendChild(countsRow);
-
-    /* ── Footer ── */
-    var footer = document.createElement('div');
-    footer.className = 'ik-pos-card__footer';
-
-    var dateEl = document.createElement('span');
-    dateEl.className = 'ik-pos-card__date';
-    dateEl.textContent = isArchive
-      ? formatKapatmaTarihi(pos.updated_at || pos.closed_at)
-      : (formatAcilmaTarihi(pos.created_at) || 'Aktif');
-    footer.appendChild(dateEl);
-
-    var viewBtn = document.createElement('button');
-    viewBtn.type = 'button';
-    viewBtn.className = 'ik-pos-card__view-btn';
-    viewBtn.setAttribute('data-action', 'view');
-    viewBtn.setAttribute('data-pos-id', String(pos.id));
-    viewBtn.textContent = 'Görüntüle';
-    footer.appendChild(viewBtn);
-
-    card.appendChild(footer);
-    return card;
+    return item;
   }
 
   /* ═══════ Empty state — PR-7 CLATU: eyebrow + centered + CTA ═══════ */
@@ -303,19 +220,21 @@
     });
   }
 
-  /* ═══════ Render grid ═══════ */
+  /* ═══════ Render list — PR-7 rework #3: ik-list pattern ═══════ */
   function renderGrid() {
-    if (!_dom.grid) return;
-    while (_dom.grid.firstChild) _dom.grid.removeChild(_dom.grid.firstChild);
+    if (!_dom.list) return;
+    while (_dom.list.firstChild) _dom.list.removeChild(_dom.list.firstChild);
 
     var isArchive = _state.view === 'archive';
     var list = isArchive ? _state.archivedPositions : _state.positions;
 
-    /* PR-7 CLATU — subline format "N aktif · M arşiv" */
-    if (_dom.subline) {
+    /* PR-7 rework #3 — ik-card__chip head: "N aktif" veya "N arşiv" */
+    if (_dom.chip) {
       var aktifSayi  = _state.positions.length;
       var arsivSayi  = _state.archivedPositions.length;
-      _dom.subline.textContent = aktifSayi + ' aktif · ' + arsivSayi + ' arşiv';
+      _dom.chip.textContent = isArchive
+        ? (arsivSayi + ' arşiv')
+        : (aktifSayi + ' aktif');
     }
 
     if (!list.length) {
