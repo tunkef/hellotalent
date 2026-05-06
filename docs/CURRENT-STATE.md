@@ -1,5 +1,59 @@
 # hellotalent.ai — Current State
-> Son guncelleme: **4 Mayis 2026 SESSION SONU** | A23 + A24 LIVE — corporate email defense + BUG 2 hotfix + pozisyon yaratma flow + aday akış denetim.
+> Son guncelleme: **6 Mayıs 2026 SESSION SONU** | Pozisyon Matching Engine 6 PR + 4-iter CLATU rework + anasayfa MCP-bazlı revize + detail sheet 21st-magic uyum LIVE.
+
+## 6 May Session Özet — Pozisyon Matching Engine + CLATU Rework
+
+**Sprint 1 — Matching Engine Pipeline (6 PR):**
+| Commit | İş |
+|---|---|
+| cc2f4b4 | PR-1 + PR-2 — DB foundation (Codex 8-iter, 27 fix, J1+J2 hotfix) + form refactor (96/96 + 24/24 test) |
+| 46566e3 | PR-4 — 3-sütun + sheet + soft refresh (30 test) |
+| 6c41d42 | PR-5 — auto-match trigger + Pool 5A + auto badge (14 test) |
+| 5564fa9 + 8e3d627 | PR-6 — Kim Baktı KVKK frontend + DB (22 test, **feature flag OFF**, avukat onayı bekliyor) |
+| 68a9645 | PR-7 — Pozisyon yaşam döngüsü (list+edit+kapat+arşiv+reopen, 9 dosya) |
+
+**Sprint 2 — CLATU Rework (4 iter, Tuna feedback chain):**
+| Commit | İş |
+|---|---|
+| 96300da | CLATU rework #1 — 7 priority fix (ht-seg-toggle CSS, status badge eyebrow, count stack, view text-link, hero 3-katman, modal accent) |
+| b67e024 + 1d14d6e | CLATU rework #2 — hero card pattern + simge sil ("+ Yeni Pozisyon" → "Yeni Pozisyon") |
+| 16344c5 | CLATU rework #3 — anasayfa ik-card pattern reuse (TEK kart yanlış, sonra geri alındı) |
+| c33dbae | CLATU rework #4 — kompakt hero + bento-grid (her pozisyon AYRI kart, doğru) |
+| a485a86 | Detail sheet API isim fix (kart click → detail sheet wiring) |
+| 76bdd0e | Anasayfa CLATU revize (4-col asymmetric, Pozisyonlar span 2, Kampanyalar→Mesajlar swap) + detail Kriter düzenle bug + button visual |
+| c32e77f | Detail sheet 21st-magic Kanban uyum (content-fit column, minimal empty state, dashed drop) |
+
+**MCP Kullanımı:**
+- 21st-magic component_inspiration — Bento Grid (similarity 6.6) + Kanban shadcn (0.483) + Trello dashed drop pattern
+- Stitch project `7627473393049625389` + design system `assets/6400849048117015969` (CLATU manifesto designMd kayıtlı)
+- impeccable-design + frontend-design skill (designer agent dispatch)
+
+**Memory Feedback (yeni — gelecek session'larda enforced):**
+- `feedback_full_access_autonomy.md` — Tuna SQL/DB için "şunu çalıştır" istemez
+- `feedback_codex_full_agreement.md` — T4 Codex %100 hedef + 8+ iter convergence
+- `feedback_continuous_autonomous_mode.md` — Çok-PR pipeline'larında onay beklemez
+- `feedback_pattern_reuse_zorunlu.md` — Yeni UI öncesi mevcut bento-grid + hero card incele, SaaS YASAK
+- `feedback_edit_requires_read.md` — Edit öncesi Read pre-condition (silent fail önle)
+- `feedback_mcp_zorunlu_design.md` — UI rework dispatch'lerinde Stitch + 21st-magic + impeccable zorunlu
+- `project_kvkk_lawyer_review_pr6.md` — PR-6 deploy avukat görüşmesi BLOCKER, 7 soru
+
+## Sonraki Session Backlog (6 May → ?)
+
+### YÜKSEK ÖNCELİK
+- **PR-3 M3 enum swap (T4):** PR-1+PR-2+PR-4+PR-5+PR-7 stable 7 gün gözlem süresi sonrası deploy. Atomic enum swap risk yüksek.
+- **KVKK avukat görüşmesi:** PR-6 activation BLOCKER, 7 soru (`project_kvkk_lawyer_review_pr6.md`). Avukat onayı sonrası feature flag flip + cache-bust.
+- **A5 secret rotation:** soft 2026-05-22 (16 gün)
+- **Mağaza Müdürü auto-match recovery:** Tuna manuel edit save → soft refresh → uzun_liste populate (UX flow zaten implement)
+
+### ORTA ÖNCELİK
+- PR-7 test suite — `tests/pr7-lifecycle.spec.js` (ui-agent oluşturmadı)
+- Dead code cleanup — `.ik-pos-card`, `.ik-pos-grid`, `.ik-pos-landing__cta` orphan CSS class'ları
+- positions audit log — close/reopen tarihçesi (P3)
+- profile_view_events retention cron — ilk run 03:45 UTC (verify yapılmadı)
+
+### DÜŞÜK ÖNCELİK
+- Stitch `generate_screen_from_text` retry (timeout vardı, async)
+- VERBİS güncelleme (KVKK avukat sonrası)
 
 ## 4 May Session Özet — 13 commit
 
