@@ -315,7 +315,8 @@
     // Skeleton is already in HTML, just fetch data
     try {
       var statsP = supabase.from('candidate_view_stats').select('*').eq('candidate_id', candidateId).maybeSingle();
-      var eventsP = supabase.from('profile_view_events').select('viewed_at, position_ad_snapshot, position_seg_snapshot, company_id, companies(company_name, segment)').eq('candidate_id', candidateId).order('viewed_at', { ascending: false }).limit(20);
+      // D2 Codex iter-2 fix: event_type='view' filter — pipeline_added/message_sent event'leri "Kim Baktı" feed'inde görünmesin
+      var eventsP = supabase.from('profile_view_events').select('viewed_at, position_ad_snapshot, position_seg_snapshot, company_id, companies(company_name, segment)').eq('candidate_id', candidateId).eq('event_type', 'view').order('viewed_at', { ascending: false }).limit(20);
 
       var results = await Promise.allSettled([statsP, eventsP]);
       var stats = results[0].status === 'fulfilled' ? results[0].value.data : null;

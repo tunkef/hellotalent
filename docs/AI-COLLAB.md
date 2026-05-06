@@ -4253,3 +4253,52 @@ Re-audit verify: kpis 0, sublines 0, cards 3 (Açık Pozisyonlar, Adaylar, Kampa
 **Agent zinciri T4:** architect (✓ done) → supabase-agent → auditor → ui-agent → designer → darkmode-auditor → uat-tester → code-reviewer + Codex T4
 
 **Sıradaki:** Yeni session'da PR-1 başlat (DB foundation).
+
+---
+
+## 6 Mayıs 2026 — PR-1 Matching Engine DB Foundation DEPLOYED (T4)
+
+**Apply:** `supabase db push --linked --include-all` — 9 migration başarılı (idempotent NOTICE'ler clean).
+
+**Deployed migrations (sıralı apply):**
+1. `20260331235959_matching_engine_view_tracking_promote.sql` — legacy 040 docs/migrations promote (fresh DB replay safe)
+2. `20260506100000_matching_engine_pipeline_stage_v2.sql` — pipeline_stage_v2 enum + dual-write trigger + backfill
+3. `20260506110000_matching_engine_positions_criteria.sql` — 5 yeni opsiyonel kolon (calisma_tipi, musaitlik_pozisyon, egitim_seviye, diller, tercih_segmentler) + metadata jsonb
+4. `20260506115000_matching_engine_ordinal_helpers.sql` — musaitlik_level + egitim_level (IMMUTABLE, ordinal mapping)
+5. `20260506130000_matching_engine_view_events_pipeline.sql` — profile_view_events.event_type + event_metadata + trigger split (view/pipeline_added/message_sent)
+6. `20260506135000_matching_engine_pve_employer_insert_guard.sql` — A1 + D4 cross-company exploit kapatıldı
+7. `20260506140000_matching_engine_rpc_search_filter.sql` — search_employer_candidates v2 (5 yeni filter, position-aware boost, audit log restore)
+8. `20260506150000_matching_engine_rpc_auto_match.sql` — hr_auto_match_position (yeni RPC, idempotent, threshold default 50)
+9. `20260506160000_matching_engine_rpc_refresh.sql` — hr_refresh_position_pipeline (yeni RPC, archived row recovery)
+
+**Codex T4 Review — 8 iterasyon, 27 fix:**
+- iter-1 C1-C6 (6 P1): frontend-DB contract + GUC namespace `app.cps_syncing` + ON CONFLICT DO UPDATE archive recovery
+- iter-2 D1-D6 (6): tablo promote + Kim Baktı feed kontaminasyon + NULL company_id exploit kapatma
+- iter-3 E1-E4 (4): strict NULL exclude + lifecycle reject audit + viewer role mesaj
+- iter-4 F1-F4 (4): timestamp ordering (April trigger öncesi) + PII strip restore + INSERT trigger stage_v2 wins
+- iter-5 G1-G2 (2): DROP VIEW object-type-safe + with_children CTE telefon/email cleanup
+- iter-6 H1-H3 (3): musaitlik/egitim MIN ordinal compare + diller superset
+- iter-7 I1-I2 (2): GREATEST NULL-safe COALESCE + dual-write guard reset
+- iter-8 ⛔ Codex usage limit hit (4:16 AM reset) — Tuna B seçeneği (apply, %95-98 kabul)
+
+**Verify (production):**
+- 6 fonksiyon: search_employer_candidates (5+6 param), hr_auto_match_position, hr_refresh_position_pipeline, musaitlik_level, egitim_level, trg_cps_dual_write ✓
+- positions 5 yeni kolon ✓
+- profile_view_events.event_type + candidate_pipeline_state.stage_v2 backfill complete ✓
+- musaitlik_level('Hemen')=1, ('1 Ay İçinde')=3; egitim_level('Lise')=3, ('Lisans')=5 ✓
+- positions.maas hâlâ var (PR-2'ye taşındı, frontend kontrat — Codex C1)
+
+**Scope OUT (sonraki PR'lar):**
+- PR-2 (T2): pozisyon formu refactor — 4 yeni alan + maas DROP + CHECK constraint atomic
+- PR-3 (T4): M3 enum swap (PR-1+PR-2 production stable 7g gözlem sonrası)
+- PR-4 (T2): hr-pipeline.html 3-sütun + sheet pattern + soft refresh
+- PR-5 (T3): auto-match trigger + Pool akışı (5A) + auto badge
+- PR-6 (T3): profil-kimbakti.js event_type formatı + KVKK md.7 aydınlatma metni (legal-reviewer)
+- A7 retention cron — PR-4/5 arasında
+
+**Frontend değişiklik (D2 fix):**
+- `profil-kimbakti.js:318` — `.eq('event_type', 'view')` filter eklendi. Kim Baktı feed pipeline_added event'leri görmez.
+
+**Memory feedback (yeni):**
+- `feedback_full_access_autonomy.md` — Tuna SQL/DB için "şunu çalıştır" istemez, full access aktif → solo
+- `feedback_codex_full_agreement.md` — T4 PR'larda Codex %100 hedef + 8+ iter convergence asimptotik kabul
