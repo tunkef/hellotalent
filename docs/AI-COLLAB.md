@@ -4526,3 +4526,64 @@ PR-5 (T3 auto-match trigger + Pool akış + auto badge) — PR-4 deploy sonrası
 - PR-5 ✓ (auto-match trigger + Pool 5A + auto badge)
 - PR-6 ✓ frontend + DB (KVKK avukat onayı bekleniyor)
 - PR-3 ⏸ (M3 enum swap, 7g gözlem süresi)
+
+---
+
+## 6 Mayıs 2026 — PR-7 POZİSYON YAŞAM DÖNGÜSÜ (T2)
+
+**Tetikleme:** Tuna 4 ardışık feedback (landing list, edit, kapat, arşiv).
+
+**4 paralel + ui-agent zinciri:**
+- content-writer (microcopy + cascade messaging)
+- designer (kart grid + status badge + 9 yeni token + modal primitive)
+- ux-agent (3-layer mimari + edit + close + archive + reopen)
+- supabase-agent (3 RPC migration ✓ apply: update_position + hr_close_position + hr_reopen_position)
+- ui-agent (sentez impl 9 dosya 1180+ satır)
+
+**Frontend Impl (5 modified + 2 new):**
+- `hr-pipeline.html` (+133/-112) — switcher dropdown KALDIRILDI, landing kart grid + close modal + edit form sheet update
+- `js/ik-pipeline.js` (+330/-112) — edit mode, submit branch (yeni vs edit ayrımı)
+- `js/ik-data.js` (+186) — 5 yeni metod (getPositions, getArchivedPositions, updatePosition, closePosition, reopenPosition)
+- `js/ik-position-detail.js` (+25/-12) — Düzenle + Kapat buton wiring
+- `css/panels/ik-pipeline.css` (+622) — kart grid + modal + status badge + archive muted state
+- `css/tokens.css` (+22) — 9 yeni status token (alias mevcut editorial tokens)
+- **YENİ:** `js/ik-pos-list.js` — kart grid renderer + segment toggle
+- **YENİ:** `js/ik-pos-close.js` — confirm modal lifecycle (close + reopen aynı element)
+
+**DB Migration (apply):**
+- `20260507150000_pr7_lifecycle_rpcs.sql` (570 satır)
+  - `update_position(p_id, p_payload jsonb)` → criteria_changed flag NULL-safe IS DISTINCT FROM
+  - `hr_close_position(p_id)` → durum='closed' + closed_at + cascade tüm stage_v2='archive'
+  - `hr_reopen_position(p_id)` → durum='active' + auto-match retrigger (J2 archive recovery)
+
+**Sentez Kararları:**
+- Switcher dropdown KALDIRILDI — kart grid landing dominant
+- "Görüntüle / Düzenle / Pozisyonu Kapat / Yeniden Aç" action menu
+- "Sil" YOK — MVP'de sadece Kapat + arşiv (pipeline geçmişi korunur)
+- Confirm "Emin misin?" YASAK — doğrudan sonuç açıklaması ("...uzun liste, kısa liste ve iletişime geçilen adaylar arşive taşınacak")
+- Soft refresh PR-4 reuse — banner extend, duplicate yok
+- Modal primitive (PR-7'de yeni — close + reopen aynı element data-modal-type)
+- Status badge 3 state (Aktif/Kapalı/Arşiv) — 9 alias token
+
+**Mağaza Müdürü Recovery Flow:**
+1. Tuna UI'dan pozisyonu edit eder (örn musaitlik='Hemen' ekle)
+2. Save → `update_position` RPC → criteria_changed=true
+3. Soft refresh prompt → onay
+4. `hr_refresh_position_pipeline(3)` → uzun_liste populate
+5. Pre-PR-5 pozisyonlar bu user-action flow ile recovery
+
+**Production verify:**
+- 3 PR-7 RPC tanımlı ✓
+- positions.durum CHECK ('active'|'draft'|'closed'|'archived') ✓
+- closed_at kolon ✓
+- Token-strict: ik-pipeline.css 0 hex ✓
+
+**Test:** ui-agent test dosyası oluşturmadı — Tuna manuel verify + post-deploy /test yaz (tests/pr7-lifecycle.spec.js sonradan eklenecek)
+
+### Backlog (P3)
+
+- A5 secret rotation (2026-05-22 deadline)
+- KVKK avukat görüşmesi (PR-6 activation BLOCKER)
+- PR-3 M3 enum swap (7g gözlem süresi)
+- positions audit log (close/reopen tarihçesi)
+- PR-7 test suite (tests/pr7-lifecycle.spec.js)

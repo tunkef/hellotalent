@@ -262,6 +262,17 @@
   --editorial-shadow:          0 1px 3px rgba(30,45,94,0.06);
   --editorial-shadow-md:       0 4px 18px rgba(30,45,94,0.08);
   --editorial-shadow-layered:  0 2px 6px rgba(30,45,94,0.06), 0 8px 24px rgba(30,45,94,0.12);
+
+  /* PR-7 — Pozisyon status badge tokens (alias to editorial tokens — no new hex) */
+  --status-active-bg:     var(--editorial-vermillion-soft);
+  --status-active-text:   var(--editorial-vermillion);
+  --status-active-border: var(--editorial-vermillion-soft);
+  --status-closed-bg:     transparent;
+  --status-closed-text:   var(--editorial-ink-muted);
+  --status-closed-border: var(--editorial-hairline);
+  --status-archive-bg:    var(--editorial-card-elev);
+  --status-archive-text:  var(--editorial-ink-muted);
+  --status-archive-border: var(--editorial-hairline);
 }
 
 /* ═══ Dark Mode — Semantic overrides ═══ */
@@ -336,6 +347,17 @@ html[data-theme="dark"] {
 
   /* PR-4 — dark mode: overlay backdrop (slightly more opaque) */
   --overlay-backdrop: rgba(0, 0, 0, 0.60);
+
+  /* PR-7 — dark mode status badge overrides */
+  --status-active-bg:     var(--editorial-vermillion-soft);
+  --status-active-text:   var(--editorial-vermillion);
+  --status-active-border: transparent;
+  --status-closed-bg:     transparent;
+  --status-closed-text:   var(--editorial-ink-muted);
+  --status-closed-border: var(--editorial-hairline);
+  --status-archive-bg:    var(--editorial-card-elev);
+  --status-archive-text:  var(--editorial-ink-muted);
+  --status-archive-border: var(--editorial-hairline);
 }
 
 /* ═══ Dark Mode fallback — OS preference for pages without pre-paint script ═══

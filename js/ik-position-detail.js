@@ -200,26 +200,27 @@
       }
     });
 
-    /* "Kriter düzenle" — mevcut PR-2 form sheet'i aç */
+    /* "Düzenle" — PR-7 form sheet edit modu */
     if (_dom.btnKriter) {
       _dom.btnKriter.addEventListener('click', function () {
-        /* Form sheet edit modu — mevcut pozisyon ID ile */
-        if (window._htOpenNewPositionSheet) {
-          window._htOpenNewPositionSheet(_dom.btnKriter);
+        if (!_state.positionId) return;
+        if (window._htOpenPositionEditSheet) {
+          window._htOpenPositionEditSheet(_state.positionId);
         }
       });
     }
 
-    /* "Pozisyonu kapat" */
+    /* "Pozisyonu kapat" — PR-7 confirm modal */
     if (_dom.btnKapat) {
       _dom.btnKapat.addEventListener('click', function () {
-        var ok = window.confirm(
-          'Bu pozisyon kapatılacak. Pipeline\'daki tüm adaylar arşivlenecek. Devam edilsin mi?'
-        );
-        if (!ok) return;
-        track('pipeline_position_close', { position_id: _state.positionId });
-        closePositionDetailSheet(true);
-        /* TODO PR-3+: hr_archive_position RPC çağrısı */
+        if (!_state.positionId) return;
+        track('pipeline_position_close_intent', { position_id: _state.positionId });
+        if (window._htPosClose) {
+          window._htPosClose.confirmClose(_state.positionId, function (result) {
+            /* Kapat onaylandı — detay sheet'i de kapat */
+            closePositionDetailSheet(true);
+          });
+        }
       });
     }
   }

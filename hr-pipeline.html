@@ -27,7 +27,7 @@
 <link rel="stylesheet" href="css/tokens.css?v=20260505clatu">
 <link rel="stylesheet" href="css/components.css?v=20260504a24h1">
 <link rel="stylesheet" href="css/ik-shell.css?v=20260505edge">
-<link rel="stylesheet" href="css/panels/ik-pipeline.css?v=pr4-pipeline">
+<link rel="stylesheet" href="css/panels/ik-pipeline.css?v=pr7-lifecycle">
 <link rel="stylesheet" href="css/panels/position-detail.css?v=pr4-pipeline">
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -176,45 +176,48 @@
   <div class="ik-page__inner">
     <div id="ik-pipeline-shell" class="ik-pipeline" role="region" aria-label="Pipeline">
 
-      <!-- HEAD -->
-      <section class="ik-pipeline__head">
-        <span class="ik-pipeline__head-eyebrow">Pozisyonlar</span>
-        <div class="ik-pipeline__head-row">
-          <div class="ik-pipeline__head-text">
-            <h1 class="ik-pipeline__title">Açık pozisyonlar ve adaylar</h1>
-            <p class="ik-pipeline__subline">
-              Pozisyon seç, aday akışını aşamalar arasında sürükle bırak. Yeni pozisyon açmak için sağ üstteki butonu kullan.
-            </p>
-          </div>
+      <!-- PR-7: Landing — pozisyon kart grid (switcher kaldırıldı) -->
+      <section class="ik-pos-landing" id="ik-pos-landing">
 
-          <!-- A24: switcher + yeni pozisyon butonu yan yana -->
-          <div class="ik-pipeline__switcher-row">
-            <!-- PR-4: Stale chip — banner dismiss sonrası kalıcı -->
-            <span class="ik-pipeline__stale-chip" id="ik-pipeline-stale-chip"
-                  aria-hidden="true" title="Pozisyon kriterleri değişti, uzun liste eski kriterlere göre.">
-              Liste eski kriterlere göre
-            </span>
-            <div class="ik-position-switcher" data-ik-position-switcher>
-              <button type="button" class="ik-position-switcher__btn" data-ik-position-btn aria-haspopup="listbox" aria-expanded="false">
-                <span>
-                  <span class="ik-position-switcher__label">Aktif pozisyon</span>
-                  <span class="ik-position-switcher__title" data-ik-position-title>Yükleniyor</span>
-                </span>
-                <svg class="ik-position-switcher__chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
-              </button>
-              <div class="ik-position-switcher__menu" data-ik-position-menu role="listbox" aria-label="Pozisyon seç"></div>
-            </div>
-            <button type="button" class="ik-pipeline__new-pos-btn" id="btn-new-position" aria-label="Yeni pozisyon ekle">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-              Yeni pozisyon
+        <!-- Hero row: başlık + CTA -->
+        <div class="ik-pos-landing__hero">
+          <h1 class="ik-pos-landing__title">
+            Pozisyonlar
+            <span class="ik-pos-landing__count" id="ik-pos-count" aria-live="polite"></span>
+          </h1>
+          <button type="button" class="ik-pos-landing__cta" id="btn-new-position">
+            Yeni Pozisyon Oluştur
+          </button>
+        </div>
+
+        <!-- PR-4 stale chip (banner dismiss sonrası kalıcı) -->
+        <span class="ik-pipeline__stale-chip" id="ik-pipeline-stale-chip"
+              aria-hidden="true" title="Pozisyon kriterleri değişti, uzun liste eski kriterlere göre.">
+          Liste eski kriterlere göre
+        </span>
+
+        <!-- Segment toggle: Aktif / Arşiv -->
+        <div class="ik-pos-landing__toggle-row">
+          <div class="ht-seg-toggle" id="ik-pos-seg-toggle" role="tablist" aria-label="Pozisyon görünümü">
+            <button type="button" class="ht-seg-toggle__btn is-active"
+                    id="btn-pos-seg-aktif" role="tab"
+                    aria-selected="true" data-pos-view="active">
+              Aktif
+            </button>
+            <button type="button" class="ht-seg-toggle__btn"
+                    id="btn-pos-seg-arsiv" role="tab"
+                    aria-selected="false" data-pos-view="archive">
+              Arşiv
             </button>
           </div>
         </div>
 
-        <div class="ik-pipeline__summary" data-ik-pipeline-summary></div>
+        <!-- Kart grid (JS render eder) -->
+        <div class="ik-pos-grid" id="ik-pos-grid" role="list" aria-label="Pozisyon listesi"></div>
+
       </section>
 
-      <!-- PR-4: Soft refresh banner (JS ile .is-visible toggle) -->
+      <!-- PR-4: Soft refresh banner (detail sheet içinde görünür, JS ile .is-visible toggle) -->
       <div class="ik-pipeline__refresh-banner" id="ik-pipeline-refresh-banner"
            role="alert" aria-live="polite" aria-hidden="true">
         <span class="ik-pipeline__refresh-banner-text" id="ik-pipeline-refresh-banner-text">
@@ -231,16 +234,16 @@
         </div>
       </div>
 
-      <!-- PR-4: Mobile segment tabs (JS ile render) -->
-      <div class="ik-pipeline__mobile-tabs" id="ik-pipeline-mobile-tabs" role="tablist" aria-label="Pipeline aşamaları"></div>
-
-      <!-- BOARD -->
-      <section class="ik-pipeline__board" data-ik-pipeline-board aria-label="Pipeline aşamaları">
+      <!-- PR-7: board artık detail sheet içinde (#ik-pos-detail-board) — bu alan render target olarak saklandı -->
+      <div id="ik-pipeline-board-proxy" data-ik-pipeline-board aria-hidden="true" hidden>
         <div class="ik-pipeline__loading" data-ik-pipeline-loading>
           <div class="ik-pipeline__loading-spinner" aria-hidden="true"></div>
           <p class="ik-pipeline__loading-text">Pipeline yükleniyor</p>
         </div>
-      </section>
+      </div>
+
+      <!-- PR-4: Mobile segment tabs (detail sheet içine taşındı, bu yedek) -->
+      <div class="ik-pipeline__mobile-tabs" id="ik-pipeline-mobile-tabs" role="tablist" aria-label="Pipeline aşamaları" hidden></div>
 
     </div>
   </div>
@@ -255,16 +258,18 @@
   <div class="ik-stage-sheet__list" data-ik-stage-sheet-list></div>
 </aside>
 
-<!-- A24: Pozisyon formu overlay + sheet -->
+<!-- A24: Pozisyon formu overlay + sheet (PR-7: data-editing-id + dynamic title/submit) -->
 <div class="ik-position-form-overlay" id="ik-pos-form-overlay" aria-hidden="true"></div>
 <aside class="ik-position-form-sheet" id="ik-pos-form-sheet"
-       role="dialog" aria-modal="true" aria-labelledby="pos-sheet-title" aria-hidden="true">
+       role="dialog" aria-modal="true" aria-labelledby="pos-sheet-title" aria-hidden="true"
+       data-editing-id="">
+
   <div class="ik-position-form-sheet__handle" aria-hidden="true"></div>
 
   <div class="ik-position-form-sheet__header">
     <div>
-      <span class="ik-position-form-sheet__eyebrow">Pipeline</span>
-      <h2 class="ik-position-form-sheet__title" id="pos-sheet-title">Yeni pozisyon</h2>
+      <span class="ik-position-form-sheet__eyebrow" id="pos-sheet-eyebrow">Yeni Pozisyon</span>
+      <h2 class="ik-position-form-sheet__title" id="pos-sheet-title">Pozisyon oluştur</h2>
     </div>
     <button type="button" class="ik-position-form-sheet__close" id="btn-pos-form-close"
             aria-label="Formu kapat">
@@ -275,6 +280,16 @@
   </div>
 
   <form id="ik-pos-form" novalidate>
+    <!-- PR-7: edit modu — preload notice (JS .is-visible ekler) -->
+    <div class="ik-position-form__preload-notice" id="pos-form-preload-notice" aria-live="polite">
+      Mevcut bilgiler yüklendi.
+    </div>
+
+    <!-- PR-7: kriter değişim hint (JS .is-visible ekler, match-affecting field değişince) -->
+    <div class="ik-position-form__change-hint" id="pos-form-change-hint" role="status" aria-live="polite">
+      Kriterler değişti — kaydet sonrası listeyi yenilemen istenecek.
+    </div>
+
     <!-- Sunucu / ağ hatası -->
     <div class="ik-position-form__server-error" id="pos-form-server-error" role="alert" aria-live="polite"></div>
 
@@ -480,7 +495,7 @@
     <div class="ik-position-form__actions">
       <button type="submit" class="ik-position-form__btn-primary" id="btn-pos-form-submit">
         <span class="ik-position-form__spinner" aria-hidden="true"></span>
-        <span class="ik-position-form__btn-label">Pozisyonu Oluştur</span>
+        <span class="ik-position-form__btn-label" id="pos-form-submit-label">Pozisyonu Oluştur</span>
       </button>
       <button type="button" class="ik-position-form__btn-secondary" id="btn-pos-form-cancel">
         Vazgeç
@@ -534,6 +549,28 @@
   </div>
 
 </aside>
+
+<!-- PR-7: Pozisyon kapat / yeniden aç confirm modal -->
+<div class="ik-pos-modal-overlay" id="ik-pos-modal-overlay" aria-hidden="true"></div>
+<div class="ik-pos-modal" id="ik-pos-modal"
+     role="dialog" aria-modal="true" aria-labelledby="ik-pos-modal-title"
+     aria-hidden="true">
+  <div class="ik-pos-modal__accent"></div>
+  <div class="ik-pos-modal__body">
+    <h2 class="ik-pos-modal__title" id="ik-pos-modal-title">Pozisyonu kapat</h2>
+    <p class="ik-pos-modal__desc" id="ik-pos-modal-desc">
+      Bu pozisyonu kapattığında uzun liste, kısa liste ve iletişime geçilen adayların tümü arşive taşınacak. Daha sonra yeniden açabilirsin.
+    </p>
+  </div>
+  <div class="ik-pos-modal__footer">
+    <button type="button" class="ik-pos-modal__btn--secondary" id="btn-pos-modal-cancel">
+      Vazgeç
+    </button>
+    <button type="button" class="ik-pos-modal__btn--primary" id="btn-pos-modal-confirm">
+      Evet, kapat
+    </button>
+  </div>
+</div>
 
 <!-- PR-4: Soft refresh modal (inline banner dismiss → chip; burada: ilk kullanım genişletilmiş versiyon) -->
 <div class="ik-soft-refresh-modal" id="ik-soft-refresh-modal"
@@ -608,9 +645,11 @@
 </nav>
 
 <script src="js/ik-shell.js?v=20260505roller2"></script>
-<script src="js/ik-data.js?v=pr4-pipeline"></script>
+<script src="js/ik-data.js?v=pr7-lifecycle"></script>
 <script src="js/ik-matching-engine.js?v=pr4-pipeline"></script>
-<script src="js/ik-position-detail.js?v=pr4-pipeline"></script>
-<script src="js/ik-pipeline.js?v=pr4-pipeline"></script>
+<script src="js/ik-pos-list.js?v=pr7-lifecycle"></script>
+<script src="js/ik-pos-close.js?v=pr7-lifecycle"></script>
+<script src="js/ik-position-detail.js?v=pr7-lifecycle"></script>
+<script src="js/ik-pipeline.js?v=pr7-lifecycle"></script>
 </body>
 </html>

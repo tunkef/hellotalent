@@ -464,6 +464,192 @@
       })();
     },
 
+    /* ── PR-7: updatePosition ── */
+    updatePosition: function (id, payload) {
+      /* payload: aynı createPosition payload shape
+         Döner: { ok: true, row, criteria_changed: boolean } veya { ok: false, error }
+         criteria_changed: client-side flag — caller geçirir, DB'ye yazılmaz.
+         DB: UPDATE positions SET ... WHERE id=? AND hr_profile_id=auth.uid() */
+      if (!realMode()) {
+        return Promise.resolve({ ok: false, error: 'Hata: Oturumunuz sona ermiş. Yeniden giriş yapın.' });
+      }
+      if (!id) return Promise.resolve({ ok: false, error: 'Hata: Pozisyon ID eksik.' });
+
+      var supa = getSupa();
+      var userId = getUserId();
+
+      var safeArr = function (v) {
+        return (Array.isArray(v) && v.length > 0) ? v : null;
+      };
+      var update = {
+        ad:                 safeStr(payload.ad).trim(),
+        sehir:              safeStr(payload.sehir).trim()              || null,
+        seg:                safeStr(payload.seg).trim()                || null,
+        exp:                safeStr(payload.exp).trim()                || null,
+        calisma_tipi:       safeArr(payload.calisma_tipi),
+        musaitlik_pozisyon: safeStr(payload.musaitlik_pozisyon).trim() || null,
+        egitim_seviye:      safeStr(payload.egitim_seviye).trim()      || null,
+        diller:             safeArr(payload.diller),
+        tercih_segmentler:  safeArr(payload.tercih_segmentler),
+        aciklama:           safeStr(payload.aciklama).trim()           || null
+      };
+
+      var criteriaChanged = payload._criteria_changed || false;
+
+      return (async function () {
+        try {
+          var res = await supa.from('positions')
+            .update(update)
+            .eq('id', id)
+            .eq('hr_profile_id', userId)
+            .select()
+            .maybeSingle();
+          if (res.error) {
+            console.error('[ik-data] updatePosition error:', res.error.message);
+            if (res.error.code === '42501' || (res.error.message && res.error.message.indexOf('permission') >= 0)) {
+              return { ok: false, error: 'Hata: Oturumunuz sona ermiş. Yeniden giriş yapın.' };
+            }
+            return { ok: false, error: 'Hata: Değişiklikler kaydedilemedi. Tekrar deneyin.' };
+          }
+          if (!res.data) {
+            return { ok: false, error: 'Hata: Pozisyon bulunamadı veya yetki yok.' };
+          }
+          _cache.positions = null;
+          return { ok: true, row: res.data, criteria_changed: criteriaChanged };
+        } catch (e) {
+          console.error('[ik-data] updatePosition exception:', e && e.message);
+          return { ok: false, error: 'Hata: Bağlantı sorunu. Tekrar deneyin.' };
+        }
+      })();
+    },
+
+    /* ── PR-7: closePosition ── */
+    closePosition: function (id) {
+      /* hr_close_position(p_id) RPC — production'da mevcut (PR-7 backend).
+         Döner: { id, archived_count } veya hata */
+      if (!realMode()) {
+        return Promise.resolve({ ok: false, error: 'Hata: Oturumunuz sona ermiş. Yeniden giriş yapın.' });
+      }
+      if (!id) return Promise.resolve({ ok: false, error: 'Hata: Pozisyon ID eksik.' });
+
+      var supa = getSupa();
+      return (async function () {
+        try {
+          var res = await supa.rpc('hr_close_position', { p_id: id });
+          if (res.error) {
+            console.error('[ik-data] closePosition RPC error:', res.error.message);
+            return { ok: false, error: 'Hata: Pozisyon kapatılamadı. Tekrar deneyin.' };
+          }
+          _cache.positions = null;
+          var d = res.data || {};
+          return { ok: true, id: d.id || id, archived_count: d.archived_count || 0 };
+        } catch (e) {
+          console.error('[ik-data] closePosition exception:', e && e.message);
+          return { ok: false, error: 'Hata: Bağlantı sorunu. Tekrar deneyin.' };
+        }
+      })();
+    },
+
+    /* ── PR-7: reopenPosition ── */
+    reopenPosition: function (id) {
+      /* hr_reopen_position(p_id) RPC — production'da mevcut (PR-7 backend).
+         Döner: { id, auto_match_result } veya hata */
+      if (!realMode()) {
+        return Promise.resolve({ ok: false, error: 'Hata: Oturumunuz sona ermiş. Yeniden giriş yapın.' });
+      }
+      if (!id) return Promise.resolve({ ok: false, error: 'Hata: Pozisyon ID eksik.' });
+
+      var supa = getSupa();
+      return (async function () {
+        try {
+          var res = await supa.rpc('hr_reopen_position', { p_id: id });
+          if (res.error) {
+            console.error('[ik-data] reopenPosition RPC error:', res.error.message);
+            return { ok: false, error: 'Hata: Pozisyon yeniden açılamadı. Tekrar deneyin.' };
+          }
+          _cache.positions = null;
+          var d = res.data || {};
+          var matchResult = d.auto_match_result || {};
+          return {
+            ok: true,
+            id: d.id || id,
+            added: typeof matchResult.added === 'number' ? matchResult.added : 0
+          };
+        } catch (e) {
+          console.error('[ik-data] reopenPosition exception:', e && e.message);
+          return { ok: false, error: 'Hata: Bağlantı sorunu. Tekrar deneyin.' };
+        }
+      })();
+    },
+
+    /* ── PR-7: getArchivedPositions ── */
+    getArchivedPositions: function () {
+      if (!realMode()) {
+        console.warn('[ik-data] getArchivedPositions: auth context yok');
+        return Promise.resolve([]);
+      }
+      var supa = getSupa();
+      var userId = getUserId();
+      var companyId = getCompanyId();
+      return (async function () {
+        try {
+          if (!companyId) {
+            console.warn('[ik-data] getArchivedPositions: company_id yok');
+            return [];
+          }
+          var res = await supa.from('positions')
+            .select('*')
+            .eq('hr_profile_id', userId)
+            .eq('company_id', companyId)
+            .in('durum', ['closed', 'archived'])
+            .order('updated_at', { ascending: false });
+          if (res.error) {
+            console.warn('[ik-data] getArchivedPositions error:', res.error.message);
+            return [];
+          }
+          return res.data || [];
+        } catch (e) {
+          console.warn('[ik-data] getArchivedPositions exception:', e && e.message);
+          return [];
+        }
+      })();
+    },
+
+    /* ── PR-7: getPipelineSummary ── */
+    getPipelineSummary: function (position_id) {
+      /* COUNT candidate_pipeline_state BY stage_v2 for a position.
+         Döner: { uzun: n, kisa: n, iletisim: n } */
+      if (!realMode()) {
+        return Promise.resolve({ uzun: 0, kisa: 0, iletisim: 0 });
+      }
+      if (!position_id) return Promise.resolve({ uzun: 0, kisa: 0, iletisim: 0 });
+
+      var supa = getSupa();
+      return (async function () {
+        try {
+          var res = await supa.from('candidate_pipeline_state')
+            .select('stage_v2')
+            .eq('position_id', position_id);
+          if (res.error) {
+            console.warn('[ik-data] getPipelineSummary error:', res.error.message);
+            return { uzun: 0, kisa: 0, iletisim: 0 };
+          }
+          var rows = res.data || [];
+          var counts = { uzun: 0, kisa: 0, iletisim: 0 };
+          rows.forEach(function (r) {
+            var s = r.stage_v2 || r.stage || '';
+            if (s === 'uzun_liste') counts.uzun++;
+            else if (s === 'kisa_liste') counts.kisa++;
+            else if (s === 'iletisime_gecildi') counts.iletisim++;
+          });
+          return counts;
+        } catch (e) {
+          console.warn('[ik-data] getPipelineSummary exception:', e && e.message);
+          return { uzun: 0, kisa: 0, iletisim: 0 };
+        }
+      })();
+    },
+
     /* ── PR-4: Auto-match wrapper ── */
     addToPipelineAuto: function (position_id) {
       /* hr_auto_match_position RPC — PR-1'de eklendi (M1 backfill).

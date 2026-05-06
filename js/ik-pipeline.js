@@ -37,11 +37,13 @@
   function $$(s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
 
   function cacheDom() {
+    /* PR-7: switcher kaldırıldı — posBtn/posTitle/posMenu artık DOM'da yok (graceful null) */
     dom.posBtn            = $('[data-ik-position-btn]');
     dom.posTitle          = $('[data-ik-position-title]');
     dom.posMenu           = $('[data-ik-position-menu]');
     dom.summary           = $('[data-ik-pipeline-summary]');
-    dom.board             = $('[data-ik-pipeline-board]');
+    /* PR-7: board artık detail sheet içinde (#ik-pos-detail-board) */
+    dom.board             = document.getElementById('ik-pos-detail-board');
     dom.loading           = $('[data-ik-pipeline-loading]');
     dom.sheetOverlay      = $('[data-ik-stage-sheet-overlay]');
     dom.sheet             = $('[data-ik-stage-sheet]');
@@ -1011,6 +1013,185 @@
   /* Expose for pool coaching banner hash trigger */
   window._htOpenNewPositionSheet = openNewPositionSheet;
 
+  /* ═══════ PR-7: Edit form sheet mode ═══════
+     Mevcut pozisyon verilerini form sheet'e preload eder.
+     data-editing-id attribute ile create vs edit ayrımı yapılır. */
+
+  /* MATCH_AFFECTING_FIELDS — kriter değişim tespiti (UX spec §3) */
+  var MATCH_AFFECTING_FIELDS = [
+    'sehir', 'seg', 'exp',
+    'calisma_tipi', 'musaitlik_pozisyon',
+    'egitim_seviye', 'diller', 'tercih_segmentler'
+  ];
+
+  /* Snapshot — form açılışta mevcut değerleri kaydet */
+  var _editSnapshot = null;
+
+  function snapshotFormValues() {
+    _editSnapshot = {
+      sehir:              _posFormDom.fieldSehir    ? _posFormDom.fieldSehir.value.trim()    : '',
+      seg:                _posFormDom.fieldSeg      ? _posFormDom.fieldSeg.value             : '',
+      exp:                _posFormDom.fieldExp      ? _posFormDom.fieldExp.value             : '',
+      musaitlik_pozisyon: _posFormDom.fieldMusaitlik ? _posFormDom.fieldMusaitlik.value       : '',
+      egitim_seviye:      _posFormDom.fieldEgitim   ? _posFormDom.fieldEgitim.value          : '',
+      calisma_tipi:       getChipValues(_posFormDom.chipGridCalisma).join(','),
+      diller:             getChipValues(_posFormDom.chipGridDiller).join(','),
+      tercih_segmentler:  getChipValues(_posFormDom.chipGridSeg).join(',')
+    };
+  }
+
+  function hasMatchAffectingChange() {
+    if (!_editSnapshot) return false;
+    var current = {
+      sehir:              _posFormDom.fieldSehir    ? _posFormDom.fieldSehir.value.trim()    : '',
+      seg:                _posFormDom.fieldSeg      ? _posFormDom.fieldSeg.value             : '',
+      exp:                _posFormDom.fieldExp      ? _posFormDom.fieldExp.value             : '',
+      musaitlik_pozisyon: _posFormDom.fieldMusaitlik ? _posFormDom.fieldMusaitlik.value       : '',
+      egitim_seviye:      _posFormDom.fieldEgitim   ? _posFormDom.fieldEgitim.value          : '',
+      calisma_tipi:       getChipValues(_posFormDom.chipGridCalisma).join(','),
+      diller:             getChipValues(_posFormDom.chipGridDiller).join(','),
+      tercih_segmentler:  getChipValues(_posFormDom.chipGridSeg).join(',')
+    };
+    for (var i = 0; i < MATCH_AFFECTING_FIELDS.length; i++) {
+      var f = MATCH_AFFECTING_FIELDS[i];
+      if (current[f] !== _editSnapshot[f]) return true;
+    }
+    return false;
+  }
+
+  function preloadFormForEdit(pos) {
+    if (!pos) return;
+    /* Text / select alanlar */
+    if (_posFormDom.fieldAd    && pos.ad)    _posFormDom.fieldAd.value    = pos.ad;
+    if (_posFormDom.fieldSehir && pos.sehir) _posFormDom.fieldSehir.value = pos.sehir;
+    if (_posFormDom.fieldSeg   && pos.seg)   _posFormDom.fieldSeg.value   = pos.seg;
+    if (_posFormDom.fieldExp   && pos.exp)   _posFormDom.fieldExp.value   = pos.exp;
+    if (_posFormDom.fieldMusaitlik && pos.musaitlik_pozisyon) {
+      _posFormDom.fieldMusaitlik.value = pos.musaitlik_pozisyon;
+    }
+    if (_posFormDom.fieldEgitim && pos.egitim_seviye) {
+      _posFormDom.fieldEgitim.value = pos.egitim_seviye;
+    }
+    if (_posFormDom.fieldAcik && pos.aciklama) {
+      _posFormDom.fieldAcik.value = pos.aciklama;
+      updateCounter();
+    }
+
+    /* Chip grids — her chip'te aria-pressed set et */
+    function setChips(grid, arr) {
+      if (!grid || !Array.isArray(arr)) return;
+      var chips = grid.querySelectorAll('.ik-position-form__chip');
+      for (var i = 0; i < chips.length; i++) {
+        var v = chips[i].getAttribute('data-value');
+        chips[i].setAttribute('aria-pressed', arr.indexOf(v) >= 0 ? 'true' : 'false');
+      }
+    }
+    setChips(_posFormDom.chipGridCalisma, pos.calisma_tipi || []);
+    setChips(_posFormDom.chipGridDiller,  pos.diller       || []);
+    setChips(_posFormDom.chipGridSeg,     pos.tercih_segmentler || []);
+
+    /* Dolu kriter varsa collapse aç */
+    var hasExtra = (pos.calisma_tipi && pos.calisma_tipi.length) ||
+                   (pos.diller && pos.diller.length) ||
+                   (pos.tercih_segmentler && pos.tercih_segmentler.length) ||
+                   pos.musaitlik_pozisyon || pos.egitim_seviye;
+    if (hasExtra) posCollapseOpen();
+  }
+
+  function openFormSheetEditMode(positionId) {
+    if (!_posFormDom.sheet) cachePosFormDom();
+    if (!_posFormDom.sheet) return;
+
+    var pos = null;
+    if (window.IK_DATA && IK_DATA._getPositionSync) {
+      pos = IK_DATA._getPositionSync(positionId);
+    }
+    /* Fallback: _htPosList'ten bak */
+    if (!pos && window._htPosList) {
+      var active = window._htPosList.getActivePositions();
+      pos = active && active.find(function (p) { return String(p.id) === String(positionId); }) || null;
+    }
+
+    resetPosForm();
+
+    /* Edit mode flags */
+    _posFormDom.sheet.setAttribute('data-editing-id', String(positionId));
+
+    /* Header copy */
+    var eyebrow = document.getElementById('pos-sheet-eyebrow');
+    var title   = document.getElementById('pos-sheet-title');
+    var label   = document.getElementById('pos-form-submit-label');
+    if (eyebrow) eyebrow.textContent = 'Pozisyonu Düzenle';
+    if (title)   title.textContent   = (pos && pos.ad) ? pos.ad : 'Pozisyon';
+    if (label)   label.textContent   = 'Değişiklikleri Kaydet';
+
+    /* Preload form values */
+    if (pos) preloadFormForEdit(pos);
+
+    /* Preload notice (sadece ilk kez) */
+    var noticeKey = 'ht_pos_edit_notice_' + positionId;
+    var notice = document.getElementById('pos-form-preload-notice');
+    if (notice) {
+      var shown = false;
+      try { shown = localStorage.getItem(noticeKey) === '1'; } catch (e) {}
+      if (!shown) {
+        notice.classList.add('is-visible');
+        try { localStorage.setItem(noticeKey, '1'); } catch (e) {}
+      }
+    }
+
+    /* Snapshot for change detection */
+    snapshotFormValues();
+
+    /* Bind change-hint on match-affecting fields */
+    var changeHint = document.getElementById('pos-form-change-hint');
+    var matchFields = [
+      _posFormDom.fieldSehir, _posFormDom.fieldSeg, _posFormDom.fieldExp,
+      _posFormDom.fieldMusaitlik, _posFormDom.fieldEgitim
+    ];
+    matchFields.forEach(function (f) {
+      if (!f) return;
+      f.addEventListener('change', function () {
+        if (changeHint) {
+          if (hasMatchAffectingChange()) changeHint.classList.add('is-visible');
+          else changeHint.classList.remove('is-visible');
+        }
+      });
+    });
+    /* Chip grids için de dinle */
+    var chipGrids = [_posFormDom.chipGridCalisma, _posFormDom.chipGridDiller, _posFormDom.chipGridSeg];
+    chipGrids.forEach(function (grid) {
+      if (!grid) return;
+      grid.addEventListener('click', function () {
+        setTimeout(function () {
+          if (changeHint) {
+            if (hasMatchAffectingChange()) changeHint.classList.add('is-visible');
+            else changeHint.classList.remove('is-visible');
+          }
+        }, 50);
+      });
+    });
+
+    /* Open sheet */
+    _posFormOpener = document.activeElement;
+    _posFormDom.overlay.removeAttribute('aria-hidden');
+    _posFormDom.overlay.classList.add('is-open');
+    _posFormDom.sheet.classList.add('is-open');
+    _posFormDom.sheet.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('ht-scroll-lock');
+
+    if (window.posthog) {
+      try { window.posthog.capture('pos_form_edit_open', { position_id: positionId }); } catch (e) {}
+    }
+    setTimeout(function () {
+      if (_posFormDom.fieldAd) _posFormDom.fieldAd.focus();
+    }, 50);
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', onViewportResize);
+    }
+  }
+  window._htOpenPositionEditSheet = openFormSheetEditMode;
+
   function closeNewPositionSheet(force) {
     if (!_posFormDom.sheet) return;
     if (!force && isDirty()) {
@@ -1156,7 +1337,7 @@
     return valid;
   }
 
-  /* Submit handler */
+  /* Submit handler — PR-7: create vs edit mode */
   function submitNewPosition(e) {
     e.preventDefault();
     hidePosServerError();
@@ -1172,11 +1353,12 @@
       _posFormDom.btnSubmit.disabled = true;
       _posFormDom.btnSubmit.classList.add('is-loading');
     }
+    var submitLabel = document.getElementById('pos-form-submit-label');
+    if (submitLabel) submitLabel.textContent = 'Kaydediliyor...';
 
-    /* PR-2: payload — maas kaldırıldı, 5 yeni alan eklendi */
-    var calismaTipiVals   = getChipValues(_posFormDom.chipGridCalisma);
-    var dillerVals        = getChipValues(_posFormDom.chipGridDiller);
-    var tercihSegVals     = getChipValues(_posFormDom.chipGridSeg);
+    var calismaTipiVals = getChipValues(_posFormDom.chipGridCalisma);
+    var dillerVals      = getChipValues(_posFormDom.chipGridDiller);
+    var tercihSegVals   = getChipValues(_posFormDom.chipGridSeg);
     var payload = {
       ad:                 _posFormDom.fieldAd.value.trim(),
       sehir:              _posFormDom.fieldSehir    ? _posFormDom.fieldSehir.value.trim()    : '',
@@ -1190,58 +1372,100 @@
       aciklama:           _posFormDom.fieldAcik      ? _posFormDom.fieldAcik.value.trim()    : ''
     };
 
-    IK_DATA.createPosition(payload).then(function (result) {
-      if (!result.ok) {
-        showPosServerError(result.error || 'Hata: Pozisyon kaydedilemedi. Tekrar deneyin.');
-        if (_posFormDom.btnSubmit) {
-          _posFormDom.btnSubmit.disabled = false;
-          _posFormDom.btnSubmit.classList.remove('is-loading');
-        }
-        return;
-      }
-      /* Başarı — in-memory update */
-      var newRow = result.row;
-      /* PR-2: positions tablosu field'ları → pipeline state'e normalize (maas kaldırıldı) */
-      var normalized = {
-        id:                 newRow.id,
-        title:              newRow.ad,
-        city:               newRow.sehir,
-        segment:            newRow.seg,
-        experience_years:   newRow.exp,
-        calisma_tipi:       newRow.calisma_tipi       || null,
-        musaitlik_pozisyon: newRow.musaitlik_pozisyon  || null,
-        egitim_seviye:      newRow.egitim_seviye       || null,
-        diller:             newRow.diller              || null,
-        tercih_segmentler:  newRow.tercih_segmentler   || null,
-        aciklama:           newRow.aciklama,
-        durum:              newRow.durum || 'active',  /* R3 fix: DB default 'active' */
-        active_pipeline_count: 0
-      };
-      if (window.posthog) {
-        try { window.posthog.capture('pos_form_submit_success'); } catch (e) {}
-      }
-      state.positions.push(normalized);
-      state.activePositionId = newRow.id;
-      state.activePosition   = normalized;
-      if (window.IK_SHELL && IK_SHELL.setActivePositionId) {
-        IK_SHELL.setActivePositionId(newRow.id);
-      }
-      closeNewPositionSheet(true); /* force close — form kayıt başarılı */
-      renderPositionSwitcher();
-      loadPipeline();
-      showToast((newRow.ad || 'Pozisyon') + ' pozisyonu açıldı.', 'success');
+    /* PR-7: edit vs create branch */
+    var editingId = _posFormDom.sheet ? _posFormDom.sheet.getAttribute('data-editing-id') : '';
 
-      /* PR-5 Sub-Task 5.1 — Auto-match trigger (non-blocking) */
-      _triggerAutoMatchAfterCreate(newRow.id, newRow.ad || 'Pozisyon');
-
-    }).catch(function (err) {
-      console.error('[ik-pipeline] submitNewPosition exception:', err && err.message);
-      showPosServerError('Hata: Bağlantı sorunu. Tekrar deneyin.');
+    function resetSubmitBtn(labelText) {
       if (_posFormDom.btnSubmit) {
         _posFormDom.btnSubmit.disabled = false;
         _posFormDom.btnSubmit.classList.remove('is-loading');
       }
-    });
+      if (submitLabel) submitLabel.textContent = labelText || 'Pozisyonu Oluştur';
+    }
+
+    if (editingId) {
+      /* ── Edit mode ── */
+      var criteriaChanged = hasMatchAffectingChange();
+      payload._criteria_changed = criteriaChanged;
+
+      IK_DATA.updatePosition(Number(editingId), payload).then(function (result) {
+        if (!result.ok) {
+          showPosServerError(result.error || 'Hata: Değişiklikler kaydedilemedi. Tekrar deneyin.');
+          resetSubmitBtn('Değişiklikleri Kaydet');
+          return;
+        }
+        if (window.posthog) {
+          try { window.posthog.capture('position_edit_save', { position_id: Number(editingId), criteria_changed: criteriaChanged }); } catch (e2) {}
+        }
+        /* Cache sıfırla */
+        if (window._htPosList) window._htPosList.refresh();
+
+        closeNewPositionSheet(true);
+        showToast('Değişiklikler kaydedildi.', 'success');
+
+        /* Soft refresh prompt — kriter değiştiyse */
+        if (criteriaChanged && window._htPipelineShowRefreshBanner) {
+          var bannerText = document.getElementById('ik-pipeline-refresh-banner-text');
+          if (bannerText) bannerText.textContent = 'Kriterler değişti — liste güncel değil.';
+          window._htPipelineShowRefreshBanner(Number(editingId));
+        }
+      }).catch(function (err) {
+        console.error('[ik-pipeline] updatePosition exception:', err && err.message);
+        showPosServerError('Hata: Bağlantı sorunu. Tekrar deneyin.');
+        resetSubmitBtn('Değişiklikleri Kaydet');
+      });
+
+    } else {
+      /* ── Create mode (PR-2 orijinal akış) ── */
+      IK_DATA.createPosition(payload).then(function (result) {
+        if (!result.ok) {
+          showPosServerError(result.error || 'Hata: Pozisyon kaydedilemedi. Tekrar deneyin.');
+          resetSubmitBtn('Pozisyonu Oluştur');
+          return;
+        }
+        var newRow = result.row;
+        var normalized = {
+          id:                 newRow.id,
+          title:              newRow.ad,
+          ad:                 newRow.ad,
+          city:               newRow.sehir,
+          sehir:              newRow.sehir,
+          segment:            newRow.seg,
+          seg:                newRow.seg,
+          experience_years:   newRow.exp,
+          exp:                newRow.exp,
+          calisma_tipi:       newRow.calisma_tipi       || null,
+          musaitlik_pozisyon: newRow.musaitlik_pozisyon  || null,
+          egitim_seviye:      newRow.egitim_seviye       || null,
+          diller:             newRow.diller              || null,
+          tercih_segmentler:  newRow.tercih_segmentler   || null,
+          aciklama:           newRow.aciklama,
+          durum:              newRow.durum || 'active',
+          created_at:         newRow.created_at,
+          active_pipeline_count: 0
+        };
+        if (window.posthog) {
+          try { window.posthog.capture('pos_form_submit_success'); } catch (e2) {}
+        }
+        state.positions.push(normalized);
+        state.activePositionId = newRow.id;
+        state.activePosition   = normalized;
+        if (window.IK_SHELL && IK_SHELL.setActivePositionId) {
+          IK_SHELL.setActivePositionId(newRow.id);
+        }
+        closeNewPositionSheet(true);
+        /* PR-7: kart grid'i yenile */
+        if (window._htPosList) window._htPosList.refresh();
+        loadPipeline();
+        showToast((newRow.ad || 'Pozisyon') + ' pozisyonu açıldı.', 'success');
+        _triggerAutoMatchAfterCreate(newRow.id, newRow.ad || 'Pozisyon');
+
+      }).catch(function (err) {
+        console.error('[ik-pipeline] submitNewPosition exception:', err && err.message);
+        showPosServerError('Hata: Bağlantı sorunu. Tekrar deneyin.');
+        resetSubmitBtn('Pozisyonu Oluştur');
+      });
+    }
   }
 
   function bindPositionFormSheet() {
