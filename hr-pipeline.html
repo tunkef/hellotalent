@@ -525,27 +525,9 @@
 </div>
 
 
-<!-- PR-7: Pozisyon kapat / yeniden aç confirm modal -->
-<div class="ik-pos-modal-overlay" id="ik-pos-modal-overlay" aria-hidden="true"></div>
-<div class="ik-pos-modal" id="ik-pos-modal"
-     role="dialog" aria-modal="true" aria-labelledby="ik-pos-modal-title"
-     aria-hidden="true">
-  <div class="ik-pos-modal__accent"></div>
-  <div class="ik-pos-modal__body">
-    <h2 class="ik-pos-modal__title" id="ik-pos-modal-title">Pozisyonu kapat</h2>
-    <p class="ik-pos-modal__desc" id="ik-pos-modal-desc">
-      Bu pozisyonu kapattığında uzun liste, kısa liste ve iletişime geçilen adayların tümü arşive taşınacak. Daha sonra yeniden açabilirsin.
-    </p>
-  </div>
-  <div class="ik-pos-modal__footer">
-    <button type="button" class="ik-pos-modal__btn--secondary" id="btn-pos-modal-cancel">
-      Vazgeç
-    </button>
-    <button type="button" class="ik-pos-modal__btn--primary" id="btn-pos-modal-confirm">
-      Evet, kapat
-    </button>
-  </div>
-</div>
+<!-- 7 May refactor: pozisyon kapat/yeniden aç confirm modal markup KALDIRILDI.
+     ik-pos-close.js artık native window.confirm() kullanır. -->
+
 
 <!-- PR-4: Soft refresh modal (inline banner dismiss → chip; burada: ilk kullanım genişletilmiş versiyon) -->
 <div class="ik-soft-refresh-modal" id="ik-soft-refresh-modal"
@@ -623,7 +605,7 @@
 <script src="js/ik-data.js?v=20260507close"></script>
 <script src="js/ik-matching-engine.js?v=pr4-pipeline"></script>
 <script src="js/ik-pos-list.js?v=20260507minimal"></script>
-<script src="js/ik-pos-close.js?v=pr7-clatu4"></script>
+<script src="js/ik-pos-close.js?v=20260507native"></script>
 <script src="js/ik-position-detail.js?v=20260507scroll"></script>
 <!-- 7 May aday drawer: profil-preview.js olduğu gibi reuse, ik-cand-drawer.js adapter -->
 <script src="profil-preview.js?v=20260507drawer"></script>

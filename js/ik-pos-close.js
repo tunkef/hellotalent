@@ -216,10 +216,29 @@
     bind();
   }
 
+  /* ── 7 May Tuna feedback: "allah aşkına yok et şunu" — custom modal
+     unstyled görünüyordu (cache veya cascade override sebebi belirsiz).
+     Native window.confirm() ile değiştirildi; modal markup + CSS dead. ── */
+  function nativeConfirm(type, posId, onConfirm) {
+    var content = MODAL_CONTENT[type];
+    if (!content) return;
+    var msg = content.title + '\n\n' + content.desc;
+    var ok = window.confirm(msg);
+    if (!ok) {
+      track('position_' + type + '_cancel', { position_id: posId });
+      return;
+    }
+    /* Set state for handleConfirm reuse (existing RPC flow + toast) */
+    _currentType  = type;
+    _currentPosId = posId;
+    _onConfirmCb  = onConfirm || null;
+    handleConfirm();
+  }
+
   /* ── Public API ── */
   window._htPosClose = {
-    confirmClose:  function (posId, onConfirm) { openModal('close',  posId, onConfirm); },
-    confirmReopen: function (posId, onConfirm) { openModal('reopen', posId, onConfirm); }
+    confirmClose:  function (posId, onConfirm) { nativeConfirm('close',  posId, onConfirm); },
+    confirmReopen: function (posId, onConfirm) { nativeConfirm('reopen', posId, onConfirm); }
   };
 
   if (document.readyState === 'loading') {
