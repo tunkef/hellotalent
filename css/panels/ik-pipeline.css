@@ -3445,12 +3445,13 @@ html[data-theme="dark"] .ik-position-form__change-hint {
   display: none !important;
 }
 
-/* Match ring (kebab yanı, kompakt 32px) */
+/* Match ring (40px navy — ring-v2 Tuna direktif) */
 .ik-card-aday__match-ring {
   position: relative;
-  width: 32px;
-  height: 32px;
+  width: 40px;
+  height: 40px;
   flex-shrink: 0;
+  margin-left: auto;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -3461,22 +3462,41 @@ html[data-theme="dark"] .ik-position-form__change-hint {
   width: 100%;
   height: 100%;
 }
-.ik-card-aday__match-ring circle.track {
-  stroke: var(--editorial-hairline-strong, var(--border));
+.ik-ring__track {
+  fill: none;
+  stroke: var(--border-subtle);
+  stroke-width: 3.5;
 }
-.ik-card-aday__match-ring circle.fill {
-  stroke: var(--editorial-vermillion, var(--verm));
+.ik-ring__fill {
+  fill: none;
+  stroke: var(--editorial-ink);
+  stroke-width: 3.5;
+  stroke-linecap: round;
   transition: stroke-dashoffset 400ms ease;
 }
-.ik-card-aday__match-ring-pct {
+.ik-ring__label {
   position: relative;
-  font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: 600;
-  color: var(--editorial-ink, var(--navy));
-  letter-spacing: 0.02em;
   z-index: 1;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--editorial-ink);
   line-height: 1;
+  letter-spacing: -0.01em;
+}
+html[data-theme="dark"] .ik-ring__track { stroke: var(--editorial-hairline); }
+html[data-theme="dark"] .ik-ring__fill  { stroke: var(--editorial-ink); }
+html[data-theme="dark"] .ik-ring__label { color: var(--editorial-ink); }
+
+/* last-role: son pozisyon · şirket */
+.ik-card-aday__last-role {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  color: var(--editorial-ink-muted);
+  line-height: 1.4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* Avatar pulse glow — aktif iş arıyor */

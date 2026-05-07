@@ -264,7 +264,18 @@
     });
   }
 
-  /* ═══════ Match ring (SVG, XSS-safe, 32px kompakt) — 8 May Tuna direktif ═══════ */
+  /* ═══════ Last role helper — ring-v2 Tuna direktif ═══════ */
+  function getLastRole(c) {
+    var poz = c.son_pozisyon ||
+              (c.experiences && c.experiences[0] && c.experiences[0].pozisyon) || '';
+    var sirket = c.son_marka || c.son_sirket || c.son_sirket_adi ||
+                 (c.experiences && c.experiences[0] &&
+                   (c.experiences[0].marka || c.experiences[0].sirket_adi)) || '';
+    if (poz && sirket) return poz + ' · ' + sirket;
+    return poz || sirket || '';
+  }
+
+  /* ═══════ Match ring (SVG, XSS-safe, 40px navy) — ring-v2 Tuna direktif ═══════ */
   function makeMatchRing(score) {
     var SVG_NS = 'http://www.w3.org/2000/svg';
     var wrap = document.createElement('div');
@@ -273,40 +284,35 @@
     wrap.setAttribute('title', 'Eşleşme skoru: %' + score);
 
     var svg = document.createElementNS(SVG_NS, 'svg');
-    svg.setAttribute('viewBox', '0 0 36 36');
-    svg.setAttribute('width', '32');
-    svg.setAttribute('height', '32');
+    svg.setAttribute('viewBox', '0 0 40 40');
+    svg.setAttribute('width', '40');
+    svg.setAttribute('height', '40');
     svg.setAttribute('aria-hidden', 'true');
 
     var track = document.createElementNS(SVG_NS, 'circle');
-    track.setAttribute('class', 'track');
-    track.setAttribute('cx', '18');
-    track.setAttribute('cy', '18');
-    track.setAttribute('r', '15');
-    track.setAttribute('fill', 'none');
-    track.setAttribute('stroke-width', '2.5');
+    track.setAttribute('class', 'ik-ring__track');
+    track.setAttribute('cx', '20');
+    track.setAttribute('cy', '20');
+    track.setAttribute('r', '16');
     svg.appendChild(track);
 
     var fill = document.createElementNS(SVG_NS, 'circle');
-    fill.setAttribute('class', 'fill');
-    fill.setAttribute('cx', '18');
-    fill.setAttribute('cy', '18');
-    fill.setAttribute('r', '15');
-    fill.setAttribute('fill', 'none');
-    fill.setAttribute('stroke-width', '2.5');
-    fill.setAttribute('stroke-linecap', 'round');
-    fill.setAttribute('transform', 'rotate(-90 18 18)');
-    var circumference = 94.25; /* 2 * Math.PI * 15 */
-    fill.setAttribute('stroke-dasharray', circumference.toFixed(2));
-    fill.setAttribute('stroke-dashoffset', (circumference * (1 - score / 100)).toFixed(2));
+    fill.setAttribute('class', 'ik-ring__fill');
+    fill.setAttribute('cx', '20');
+    fill.setAttribute('cy', '20');
+    fill.setAttribute('r', '16');
+    fill.setAttribute('transform', 'rotate(-90 20 20)');
+    var circ = 100.53; /* 2 * Math.PI * 16 */
+    fill.setAttribute('stroke-dasharray', circ.toFixed(2));
+    fill.setAttribute('stroke-dashoffset', (circ * (1 - score / 100)).toFixed(2));
     svg.appendChild(fill);
 
     wrap.appendChild(svg);
 
-    var pct = document.createElement('span');
-    pct.className = 'ik-card-aday__match-ring-pct';
-    pct.textContent = String(score);
-    wrap.appendChild(pct);
+    var label = document.createElement('span');
+    label.className = 'ik-ring__label';
+    label.textContent = String(score);
+    wrap.appendChild(label);
 
     return wrap;
   }
@@ -368,10 +374,7 @@
     name.className = 'ik-card-aday__name';
     name.textContent = c.full_name;
     main.appendChild(name);
-    var poz = document.createElement('div');
-    poz.className = 'ik-card-aday__poz';
-    poz.textContent = c.son_pozisyon || '—';
-    main.appendChild(poz);
+    /* __poz head'den kaldırıldı — ring-v2 Tuna direktif: pozisyon last-role'de gösterilecek */
     head.appendChild(main);
 
     /* 8 May minimal-card: auto-badge kaldırıldı (Tuna direktif) */
@@ -406,14 +409,14 @@
 
     card.appendChild(head);
 
-    /* meta — sadece adres_il (match pill kaldırıldı — 8 May Tuna direktif) */
-    if (c.adres_il) {
-      var meta = document.createElement('div');
-      meta.className = 'ik-card-aday__meta';
-      var s = document.createElement('span');
-      s.textContent = c.adres_il;
-      meta.appendChild(s);
-      card.appendChild(meta);
+    /* adres_il kaldırıldı — ring-v2 Tuna direktif */
+    /* last-role: son pozisyon · şirket */
+    var lastRole = getLastRole(c);
+    if (lastRole) {
+      var lastEl = document.createElement('div');
+      lastEl.className = 'ik-card-aday__last-role';
+      lastEl.textContent = lastRole;
+      card.appendChild(lastEl);
     }
 
     /* match_reasons kaldırıldı — 8 May Tuna direktif (kart gürültüsü azaltma) */
