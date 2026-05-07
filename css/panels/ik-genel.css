@@ -399,36 +399,12 @@
   transform: translateX(2px);
 }
 
-/* Pipeline stage row */
-.ik-stage-row {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
-}
-.ik-stage {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-4);
-  padding: var(--space-4) 0;
-  border-bottom: 1px solid var(--border-subtle);
-}
-.ik-stage:last-child {
-  border-bottom: 0;
-}
-.ik-stage__label {
-  font-family: var(--font-body);
-  font-size: var(--text-md);
-  font-weight: 500;
-  color: var(--editorial-ink);
-}
-.ik-stage__count {
-  font-family: var(--font-mono);
-  font-size: var(--text-md);
-  font-weight: 500;
-  color: var(--editorial-vermillion);
-  letter-spacing: 0.04em;
-}
+/* 7 May 2026 — KÖK NEDEN BUG: .ik-stage-row + .ik-stage* rule'ları DEAD CODE
+   (HTML/JS render etmiyor) AMA cross-file collision yapıyordu:
+   ik-pipeline.css'teki .ik-stage (kanban sütunu) bu rule'lardan zehirleniyordu
+   → align-items: center, padding, gap, justify-content sızıyor →
+   kart genişlik tutarsızlığı + 14 commit boyunca düzelmeyen scroll bug.
+   Codex rescue agent tespit etti. Tamamen kaldırıldı. */
 
 /* List preview pattern (yeni adaylar / mesajlar) */
 .ik-list {
@@ -921,15 +897,8 @@ html[data-theme="dark"] .ik-card__cta-arrow {
   color: var(--editorial-vermillion);
 }
 
-html[data-theme="dark"] .ik-stage {
-  border-bottom-color: var(--editorial-hairline);
-}
-html[data-theme="dark"] .ik-stage__label {
-  color: var(--editorial-ink);
-}
-html[data-theme="dark"] .ik-stage__count {
-  color: var(--editorial-vermillion);
-}
+/* 7 May 2026 — Dead code .ik-stage* dark mode override KALDIRILDI
+   (light mode rule zaten kaldırıldı, root cause: cross-file collision). */
 
 html[data-theme="dark"] .ik-list__item {
   border-bottom-color: var(--editorial-hairline);
