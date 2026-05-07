@@ -364,11 +364,13 @@
   flex: 1;
 }
 .ik-card-aday__name {
-  font-family: var(--font-body);
-  font-size: var(--text-md);
+  /* CLATU: heading Bricolage Grotesque (designer compliance round 3) */
+  font-family: var(--font-head);
+  font-size: var(--text-lg);
   font-weight: 600;
   color: var(--editorial-ink);
   line-height: 1.3;
+  letter-spacing: -0.01em;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
