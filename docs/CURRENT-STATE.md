@@ -45,6 +45,14 @@
 - `isArchive` derivation `position.status === 'closed' || position.is_archive` (uydurma) → `position.durum === 'closed'` (gerçek migration 20260505130000 kolonu)
 - Cache-bust `?v=20260507acc3`
 
+**Hotfix #14 (Avatar foto + CV görünmüyor — RPC eksik field):**
+- **Tuna:** "avatar fotosu niye gözükmüyor? adayın CV si olmasına rağmen CV yüklenmemiş uyarısı veriyor"
+- **Kök neden:** `search_employer_candidates` RPC return select listesinde `avatar_url` / `cv_url` / `cv_filename` / `cv_uploaded_at` / `bio` / `email` / `telefon` **yok** (KVKK PII dikkat). `IK_DATA.getCandidate` bu alanları döndüremiyor → drawer avatar=initial fallback, CV=yüklenmemiş.
+- **Düzeltme:** `ik-cand-drawer.js` `fetchCandidateExtras(id)` helper — `HT.getSupa().from('candidates').select('avatar_url, cv_url, cv_filename, cv_uploaded_at, bio, email, telefon').eq('id', id).maybeSingle()`. HR rolü için RLS izinli (is_employer + aday is_active + profile_completed).
+- **Akış:** getCandidate(id) → fetchCandidateExtras(id) → Object.assign({}, c, extras) → mapCandidateToProfileShape → setupStubs → openProfilePreview()
+- Cache-bust `?v=20260507drawer3`
+- **Long-term TODO (T3):** `search_employer_candidates` RPC return shape'ine bu alanları ekle (sadece HR client çağrılarında, KVKK md.10 uyumlu).
+
 **Hotfix #13 (Aday drawer kalitesi: profil-preview.js reuse — adapter pattern):**
 - **Tuna feedback:** "aday tarafında bu SS, ne kadar kaliteli şık duruyor ve bunu sen yaptın. ik tarafına yaptığın aynısı gelsin dememe rağmen ne kadar kötü yaptın gördün mü?"
 - **Çözüm:** Profil tarafındaki `profil-preview.js` (541 satır, 5 section: Identity + Bio + Experience timeline + Education/Lang + Prefs + CV + dark mode + pulse ring) **olduğu gibi reuse**. HR drawer'ı **adapter** pattern'a geçirdik:

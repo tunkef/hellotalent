@@ -24,6 +24,24 @@
     try { window.posthog.capture(name, props || {}); } catch (e) {}
   }
 
+  /* ═══════ Direct candidates query — RPC döndürmeyen alanlar ═══════ */
+  function fetchCandidateExtras(candidateId) {
+    if (!window.HT || !window.HT.getSupa) return Promise.resolve(null);
+    var supa = window.HT.getSupa();
+    if (!supa) return Promise.resolve(null);
+    return supa.from('candidates')
+      .select('avatar_url, cv_url, cv_filename, cv_uploaded_at, bio, email, telefon')
+      .eq('id', candidateId)
+      .maybeSingle()
+      .then(function (res) {
+        if (res.error) {
+          console.warn('[ik-cand-drawer] extras fetch error:', res.error.message);
+          return null;
+        }
+        return res.data || null;
+      });
+  }
+
   /* ═══════ CAREER_TYPE_LABELS — profil-ui.js sabit kopyası
      (preview tercihler section'ında kullanılıyor) ═══════ */
   var CAREER_TYPE_LABELS = {
@@ -152,9 +170,16 @@
         console.warn('[ik-cand-drawer] aday bulunamadı', candidateId);
         return;
       }
-      var mapped = mapCandidateToProfileShape(c);
-      setupStubs(mapped, c.email);
-      window.openProfilePreview();
+      /* search_employer_candidates RPC avatar_url + cv_url + cv_filename +
+         cv_uploaded_at + bio + email + telefon döndürmüyor (KVKK fields
+         RPC select listesinde yok). HR candidates tablosuna RLS okur, ek
+         direct SELECT ile eksik alanları çek. */
+      return fetchCandidateExtras(candidateId).then(function (extras) {
+        var enriched = extras ? Object.assign({}, c, extras) : c;
+        var mapped = mapCandidateToProfileShape(enriched);
+        setupStubs(mapped, enriched.email);
+        window.openProfilePreview();
+      });
     }).catch(function (e) {
       console.warn('[ik-cand-drawer] getCandidate error:', e && e.message);
     });
