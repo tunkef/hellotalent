@@ -45,6 +45,21 @@
 - `isArchive` derivation `position.status === 'closed' || position.is_archive` (uydurma) → `position.durum === 'closed'` (gerçek migration 20260505130000 kolonu)
 - Cache-bust `?v=20260507acc3`
 
+**Hotfix #13 (Aday drawer kalitesi: profil-preview.js reuse — adapter pattern):**
+- **Tuna feedback:** "aday tarafında bu SS, ne kadar kaliteli şık duruyor ve bunu sen yaptın. ik tarafına yaptığın aynısı gelsin dememe rağmen ne kadar kötü yaptın gördün mü?"
+- **Çözüm:** Profil tarafındaki `profil-preview.js` (541 satır, 5 section: Identity + Bio + Experience timeline + Education/Lang + Prefs + CV + dark mode + pulse ring) **olduğu gibi reuse**. HR drawer'ı **adapter** pattern'a geçirdik:
+  1. `IK_DATA.getCandidate(id)` → search RPC modern shape
+  2. `mapCandidateToProfileShape(c)` → `_loadedDBData` shape (db.profile, db.experiences, db.education, db.languages, db.work_prefs, db.locations, db.brand_interests)
+  3. Globals stub: `window._loadedDBData`, `window.currentUser`, `window.calculateCompletion` (returns match_score), `window.CAREER_TYPE_LABELS`, `window.val`
+  4. `window.openProfilePreview()` çağır
+- **hr-pipeline.html:**
+  - `<link rel="stylesheet" href="css/profil-extras.css">` ekle (pp-* classes)
+  - `<script src="profil-preview.js">` ekle
+  - `<div id="pp-overlay">` + `<div id="pp-drawer">` markup ekle (profil.html'den kopya, "Aday profili" header text'i ile)
+- **js/ik-cand-drawer.js v2:** Tamamen yeniden yazıldı — adapter (custom render YOK). XSS-safe, IIFE, public API aynı (`_htOpenCandidateDrawer`/`_htClose`). Close button + overlay click delegated handler.
+- **CSS:** Eski `.ik-cand-drawer*` blokları LEGACY-DEPRECATED placeholder (display:none) ile devre dışı; pp-* classes kullanılıyor.
+- Cache-bust `?v=20260507drawer2` (ik-cand-drawer adapter)
+
 **Hotfix #12 (Aday kart click → sağdan drawer; hr-candidate.html sayfa rotası iptal):**
 - **Tuna:** "aday detayı diye ayrı bir menü var onu kaldıralım. aday detayı diye bir sayfa olmasına gerek yok... kısa listeden bastığımda sağdan drawer panel açılsın. Cv sini indirebilme seçeneğim olsın."
 - **Yeni dosya:** `js/ik-cand-drawer.js` — sağdan slide drawer (avatar + isim + pozisyon + KPI 3-col stat row + match_reasons chips + Deneyim/Eğitim/Diller section'ları + footer aksiyonlar). XSS-safe (textContent + createElementNS, innerHTML yasak).

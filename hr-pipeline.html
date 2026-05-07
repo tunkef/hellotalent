@@ -29,6 +29,8 @@
 <link rel="stylesheet" href="css/ik-shell.css?v=20260505edge">
 <link rel="stylesheet" href="css/panels/ik-genel.css?v=20260507align2">
 <link rel="stylesheet" href="css/panels/ik-pipeline.css?v=20260507drawer">
+<!-- 7 May aday drawer reuse: profil-preview.js drawer'ı (pp-* classes) -->
+<link rel="stylesheet" href="css/profil-extras.css?v=20260423k049o">
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="shared.js?v=20260504a24h1"></script>
@@ -509,6 +511,19 @@
 <!-- 7 May refactor: detail sheet aside KALDIRILDI — accordion inline expand satır içinde render edilir
      (js/ik-position-detail.js + css/panels/ik-pipeline.css, .ik-pos-row__expand). -->
 
+<!-- 7 May aday drawer markup: profil-preview.js bunu mount eder (#pp-content) -->
+<div class="pp-overlay" id="pp-overlay"></div>
+<div class="pp-drawer" id="pp-drawer">
+  <div class="pp-header">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+    <span class="pp-header-text">Aday profili</span>
+    <button class="pp-header-close" id="btn-close-preview" type="button" aria-label="Aday profilini kapat">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <div class="pp-body" id="pp-content"></div>
+</div>
+
 
 <!-- PR-7: Pozisyon kapat / yeniden aç confirm modal -->
 <div class="ik-pos-modal-overlay" id="ik-pos-modal-overlay" aria-hidden="true"></div>
@@ -610,7 +625,9 @@
 <script src="js/ik-pos-list.js?v=20260507minimal"></script>
 <script src="js/ik-pos-close.js?v=pr7-clatu4"></script>
 <script src="js/ik-position-detail.js?v=20260507scroll"></script>
-<script src="js/ik-cand-drawer.js?v=20260507drawer"></script>
+<!-- 7 May aday drawer: profil-preview.js olduğu gibi reuse, ik-cand-drawer.js adapter -->
+<script src="profil-preview.js?v=20260507drawer"></script>
+<script src="js/ik-cand-drawer.js?v=20260507drawer2"></script>
 <script src="js/ik-pipeline.js?v=20260507drawer"></script>
 </body>
 </html>
