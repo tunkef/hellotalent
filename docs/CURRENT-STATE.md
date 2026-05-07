@@ -1,12 +1,19 @@
 # hellotalent.ai — Current State
-> Son guncelleme: **7 Mayıs 2026** | ik-genel hero light bg beyaz + adaylar/mesajlar list avatar-text vertical align fix.
+> Son guncelleme: **7 Mayıs 2026** | UI hotfix wave: anasayfa hero + list align, Pozisyonlar hero beyaz, Aktif/Arşiv toggle SaaS-pill → editorial magazine-tab.
 
-## 7 May — UI Hotfix (ik-genel hero + list align)
+## 7 May — UI Hotfix Wave
 
-- **`.ik-genel__hero`** light mode background `--editorial-bg` (krem) → `--editorial-card` (#FFFFFF) — diğer bento kartlarla tutarlı.
-- **`.ik-list__item`** `align-items: flex-start` → `center`; `.ik-list__body` `min-height: 32px` + `justify-content: center` (avatar 32px height match); `.ik-list__time` magic `margin-top: 2px` kaldırıldı.
-- **Cache-bust** `?v=20260507align2` (ik.html + hr-pipeline.html).
-- **Etki:** anasayfa "Adaylar" + "Mesajlar" kart listelerinde avatar harfi ile name baseline tam hizalı; hero kart light mode'da diğerleri gibi beyaz.
+**A — anasayfa (ik-genel) hero + list align:**
+- `.ik-genel__hero` light bg `--editorial-bg` (krem) → `--editorial-card` (#FFFFFF) — diğer bento kartlarla tutarlı.
+- `.ik-list__item` `align-items: flex-start` → `center`; `.ik-list__body` `min-height: 32px` + `justify-content: center` (avatar 32px height match); `.ik-list__time` magic `margin-top: 2px` kaldırıldı.
+- Cache-bust `?v=20260507align2` (ik.html + hr-pipeline.html).
+
+**B — Pozisyonlar (hr-pipeline) hero + toggle editorial revize:**
+- `.ik-pos-hero` light bg `--editorial-bg` → `--editorial-card` (#FFFFFF).
+- `.ht-seg-toggle` SaaS-pill (krem container + verm-soft active fill) → editorial magazine-tab: container transparent, gap-9 nefes, aktif state 2px vermillion underline + verm text, hover ink color. CLATU editorial dil.
+- Cache-bust `?v=20260507editorial` (hr-pipeline.html ik-pipeline.css).
+
+**Etki:** site SaaS-pill'lerden arınıyor, editorial magazine dili tutar; bento kartlar surface beyaz tutarlılığı.
 
 ## 6 May Session Özet — Pozisyon Matching Engine + CLATU Rework
 

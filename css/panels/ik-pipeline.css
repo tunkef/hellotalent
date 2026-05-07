@@ -1891,7 +1891,7 @@ html[data-theme="dark"] .ik-coaching-banner__cta:hover {
   gap: var(--space-8);
   flex-wrap: wrap;
   padding: var(--space-9) var(--space-10);
-  background: var(--editorial-bg);
+  background: var(--editorial-card);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
 }
@@ -2034,42 +2034,45 @@ html[data-theme="dark"] .ik-coaching-banner__cta:hover {
   gap: var(--space-6);
 }
 
-/* PR-7 CLATU — ht-seg-toggle CSS tanımı (pill container, CLATU 6.2 radius-pill istisnası) */
+/* 7 May Tuna: SaaS-pill editorial magazine-tab pattern revize.
+   Container chrome yok, aktif state vermillion underline ile. */
 .ht-seg-toggle {
   display: inline-flex;
   align-items: center;
-  gap: 0;
-  background: var(--editorial-card-elev);
-  border: 1px solid var(--editorial-hairline);
-  border-radius: var(--radius-pill);
-  padding: 3px;
+  gap: var(--space-9);
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
 }
 .ht-seg-toggle__btn {
-  padding: var(--space-3) var(--space-8);
+  padding: var(--space-3) 0;
   background: transparent;
-  border: none;
-  border-radius: var(--radius-pill);
+  border: 0;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
   font-family: var(--font-mono);
   font-size: var(--text-sm);
   font-weight: 500;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   color: var(--editorial-ink-muted);
   cursor: pointer;
-  transition: background 140ms ease, color 140ms ease;
+  transition: color 140ms ease, border-color 140ms ease;
   white-space: nowrap;
   line-height: 1;
 }
 .ht-seg-toggle__btn.is-active {
-  background: var(--editorial-vermillion-soft);
+  background: transparent;
   color: var(--editorial-vermillion);
+  border-bottom-color: var(--editorial-vermillion);
 }
 .ht-seg-toggle__btn:hover:not(.is-active) {
   color: var(--editorial-ink);
 }
 .ht-seg-toggle__btn:focus-visible {
   outline: 2px solid var(--editorial-vermillion);
-  outline-offset: 2px;
+  outline-offset: 4px;
 }
 
 /* ── Kart grid ── */
