@@ -551,7 +551,9 @@
       var supa = getSupa();
       return (async function () {
         try {
-          var res = await supa.rpc('hr_close_position', { p_id: id });
+          /* 7 May Tuna bug: param adı p_position_id (migration 20260507150000),
+             JS eskiden p_id veriyordu → PostgREST function not found error. */
+          var res = await supa.rpc('hr_close_position', { p_position_id: id });
           if (res.error) {
             console.error('[ik-data] closePosition RPC error:', res.error.message);
             return { ok: false, error: 'Hata: Pozisyon kapatılamadı. Tekrar deneyin.' };
@@ -578,7 +580,8 @@
       var supa = getSupa();
       return (async function () {
         try {
-          var res = await supa.rpc('hr_reopen_position', { p_id: id });
+          /* 7 May Tuna bug: param adı p_position_id (migration 20260507150000) */
+          var res = await supa.rpc('hr_reopen_position', { p_position_id: id });
           if (res.error) {
             console.error('[ik-data] reopenPosition RPC error:', res.error.message);
             return { ok: false, error: 'Hata: Pozisyon yeniden açılamadı. Tekrar deneyin.' };

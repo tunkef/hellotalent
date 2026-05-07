@@ -45,6 +45,11 @@
 - `isArchive` derivation `position.status === 'closed' || position.is_archive` (uydurma) → `position.durum === 'closed'` (gerçek migration 20260505130000 kolonu)
 - Cache-bust `?v=20260507acc3`
 
+**Hotfix #10 (Pozisyon kapat/yeniden aç RPC param mismatch):**
+- **Kök neden:** Migration `20260507150000_pr7_lifecycle_rpcs` `hr_close_position(p_position_id bigint)` + `hr_reopen_position(p_position_id bigint)` parametre adları. JS `ik-data.js` `{ p_id: id }` gönderiyordu — PostgREST "function not found / unknown parameter" 404 error. Ek toast "Hata: Pozisyon kapatılamadı".
+- **Düzeltme:** `closePosition` + `reopenPosition` RPC çağrılarında param adı `p_id` → `p_position_id` (migration ile uyum).
+- Cache-bust `?v=20260507close`
+
 **Hotfix #9 (yanlış %0 match badge):**
 - **Kök neden:** `hr_get_pipeline` RPC `match_score` döndürmüyor (KVKK md.10 — DB'de saklanmıyor). Pipeline'dan enrich edilen aday `c.match_score = null`. `renderCard` line 352 fallback `IK_DATA.calcMatch(c, state.activePosition)` çağırıyor, ama `calcMatch` field alias mismatch (`pos.segment` vs gerçek `pos.seg`; `pos.city` vs `pos.sehir`; `pos.experience_years` vs `pos.exp`) → score = 0 → yanlış %0 badge.
 - **Düzeltme:** Frontend fallback `calcMatch` çağrısı KALDIRILDI. Match score yoksa badge hiç render edilmiyor (honest blank yerine yanıltıcı %0).
