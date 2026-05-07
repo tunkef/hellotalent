@@ -2352,9 +2352,25 @@ html[data-theme="dark"] .ik-coaching-banner__cta:hover {
 /* 7 May Tuna feedback: HR aday drawer'ında "İyi — birkaç alan daha tamamla"
    profil-tamamlama uyarısı görünmemeli (adaya özel mesaj).
    profil-preview.js .pp-ident__completion her zaman render eder; HR
-   context'inde CSS ile gizlenir. */
-body .pp-ident__completion {
-  display: none;
+   context'inde CSS ile gizlenir. profil-extras specificity ile kazanmak için
+   !important + multi-class qualifier. */
+body .pp-identity .pp-ident__completion,
+.pp-drawer .pp-ident__completion {
+  display: none !important;
+}
+
+/* 7 May Tuna feedback: profil-extras.css load sonrası .ik-pos-expand__board
+   grid bozuluyordu (cascade order düzeltildi ama browser cache + 3rd-party
+   stil override risklerine karşı !important defansif). 3-col yan yana
+   board garanti. */
+.ik-pos-expand__board {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+}
+@media (max-width: 768px) {
+  .ik-pos-expand__board {
+    grid-template-columns: 1fr !important;
+  }
 }
 
 .ik-cand-drawer-LEGACY-DEPRECATED {
