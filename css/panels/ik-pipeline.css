@@ -331,6 +331,8 @@
   display: flex;
   align-items: center;
   gap: var(--space-5);
+  padding-right: calc(40px + var(--space-5) + 28px + var(--space-3));
+  /* ring(40) + gap(10) + kebab(28) + edge(6) = 84px — designer round 5 */
 }
 
 .ik-card-aday__avatar {
@@ -386,6 +388,10 @@
 }
 
 .ik-card-aday__menu-btn {
+  position: absolute;
+  top: calc(var(--space-5) + 40px + var(--space-3));
+  right: var(--space-5);
+  /* ring(40px) + gap(space-3=6px) → kebab ring'in hemen altında */
   width: 28px;
   height: 28px;
   display: inline-flex;
@@ -397,11 +403,15 @@
   cursor: pointer;
   border-radius: var(--radius-sm);
   transition: background 160ms ease, color 160ms ease;
-  flex-shrink: 0;
+  z-index: 2;
 }
 .ik-card-aday__menu-btn:hover {
-  background: var(--editorial-card-elev);
   color: var(--editorial-vermillion);
+  background: var(--editorial-card-elev);
+}
+.ik-card-aday__menu-btn:focus-visible {
+  outline: 2px solid var(--editorial-vermillion);
+  outline-offset: 2px;
 }
 .ik-card-aday__menu-btn svg {
   width: 16px;
@@ -3448,13 +3458,16 @@ html[data-theme="dark"] .ik-position-form__change-hint {
 }
 
 /* Match ring (40px navy — ring-v3 SVG text fix)
-   Sayı artık SVG <text> element içinde — HTML span position:absolute
-   cascade kaybına karşı CSS-proof. Wrap sadece boyut/layout tutar. */
+   round 5: absolute corner — head flex'ten çıktı, card-level absolute.
+   Wrap sadece boyut/position tutar. */
 .ik-card-aday__match-ring {
+  position: absolute;
+  top: var(--space-5);
+  right: var(--space-5);
   width: 40px;
   height: 40px;
   flex-shrink: 0;
-  margin-left: auto;
+  margin-left: 0;
 }
 .ik-card-aday__match-ring svg {
   width: 100%;
@@ -3498,10 +3511,10 @@ html[data-theme="dark"] .ik-ring__label {
   gap: var(--space-2);
 }
 .ik-card-aday__last-brand {
-  font-family: var(--font-head);
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--editorial-ink);
+  font-family: var(--font-body);       /* Bricolage → Plus Jakarta — round 5 */
+  font-size: var(--text-base);         /* 13px → 12px */
+  font-weight: 500;
+  color: var(--editorial-ink-muted);   /* navy → muted — round 5 */
   line-height: 1.3;
   white-space: nowrap;
   overflow: hidden;
@@ -3509,9 +3522,10 @@ html[data-theme="dark"] .ik-ring__label {
 }
 .ik-card-aday__last-position {
   font-family: var(--font-body);
-  font-size: var(--text-sm);
+  font-size: var(--text-sm);           /* 11px */
   font-weight: 400;
   color: var(--editorial-ink-muted);
+  /* opacity yasak: dark mode contrast risk — editorial-ink-muted kullan */
   line-height: 1.3;
   white-space: nowrap;
   overflow: hidden;

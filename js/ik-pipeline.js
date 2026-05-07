@@ -443,15 +443,7 @@
     });
     menuBtn.appendChild(dotsSvg);
 
-    /* 8 May: match ring — kebab'tan ÖNCE, head sonuna (Tuna direktif).
-       matchClass helper korundu (başka yerlerde kullanılıyor olabilir).
-       match_score null → ring yok. XSS-safe: createElementNS. */
-    if (c.match_score != null) {
-      head.appendChild(makeMatchRing(c.match_score));
-    }
-
-    head.appendChild(menuBtn);
-
+    /* head'e sadece avatar + main — ring ve kebab head dışında */
     card.appendChild(head);
 
     /* adres_il kaldırıldı — ring-v2 Tuna direktif */
@@ -460,6 +452,16 @@
     if (lastBlock) {
       card.appendChild(lastBlock);
     }
+
+    /* designer round 5: ring + kebab card-level absolute corner.
+       card position:relative zaten var (line ~309).
+       Event delegation dom.board üzerinde data-card-menu-btn ile çalışır —
+       kebab card seviyesine taşınınca da yakalanır.
+       match_score null → ring yok. XSS-safe: createElementNS. */
+    if (c.match_score != null) {
+      card.appendChild(makeMatchRing(c.match_score));
+    }
+    card.appendChild(menuBtn);
 
     /* match_reasons kaldırıldı — 8 May Tuna direktif (kart gürültüsü azaltma) */
 
