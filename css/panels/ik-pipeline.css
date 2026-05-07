@@ -3445,55 +3445,44 @@ html[data-theme="dark"] .ik-position-form__change-hint {
   display: none !important;
 }
 
-/* Match ring (40px navy — ring-v2 Tuna direktif) */
+/* Match ring (40px navy — ring-v3 SVG text fix)
+   Sayı artık SVG <text> element içinde — HTML span position:absolute
+   cascade kaybına karşı CSS-proof. Wrap sadece boyut/layout tutar. */
 .ik-card-aday__match-ring {
-  position: relative;
   width: 40px;
   height: 40px;
   flex-shrink: 0;
   margin-left: auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 .ik-card-aday__match-ring svg {
-  position: absolute;
-  inset: 0;
   width: 100%;
   height: 100%;
+  display: block;
 }
+/* .ik-ring__track ve .ik-ring__fill stroke renkleri SVG attribute
+   literal hex olarak set edildi (JS makeMatchRing). CSS burada sadece
+   fill:none güvencesi ve transition içerir. */
 .ik-ring__track {
-  fill: none !important;
-  color: var(--border-subtle);  /* currentColor → stroke */
-  stroke: var(--border-subtle) !important;
-  stroke-width: 3.5 !important;
+  fill: none;
 }
 .ik-ring__fill {
-  fill: none !important;
-  color: var(--editorial-ink);  /* currentColor → stroke */
-  stroke: var(--editorial-ink) !important;
-  stroke-width: 3.5 !important;
-  stroke-linecap: round;
+  fill: none;
   transition: stroke-dashoffset 400ms ease;
 }
-.ik-ring__label {
-  position: absolute !important;
-  inset: 0 !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  z-index: 2;
-  font-family: var(--font-body);
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--editorial-ink);
-  line-height: 1;
-  letter-spacing: -0.01em;
-  pointer-events: none;
+/* .ik-ring__label artık SVG <text> — position/display kuralı gereksiz.
+   font-* SVG attribute olarak set edildi; CSS override gelmez.
+   JS SVG attribute'ları editorial-hairline + editorial-ink token karşılıkları.
+   Dark mode token override (CSS variables cascade dark context'te çalışır): */
+html[data-theme="dark"] .ik-ring__track {
+  stroke: var(--editorial-hairline-strong) !important;
+  fill: none !important;
 }
-html[data-theme="dark"] .ik-ring__track { stroke: var(--editorial-hairline); }
-html[data-theme="dark"] .ik-ring__fill  { stroke: var(--editorial-ink); }
-html[data-theme="dark"] .ik-ring__label { color: var(--editorial-ink); }
+html[data-theme="dark"] .ik-ring__fill {
+  stroke: var(--editorial-ink) !important;
+}
+html[data-theme="dark"] .ik-ring__label {
+  fill: var(--editorial-ink) !important;
+}
 
 /* last-role: son pozisyon · şirket */
 .ik-card-aday__last-role {

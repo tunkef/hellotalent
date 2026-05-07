@@ -275,7 +275,13 @@
     return poz || sirket || '';
   }
 
-  /* ═══════ Match ring (SVG, XSS-safe, 40px navy) — ring-v2 Tuna direktif ═══════ */
+  /* ═══════ Match ring (SVG text — ring-v3 SVG-text fix) ═══════
+     Önceki span.ik-ring__label position:absolute cascade kaybolunca
+     sayı ring yanına düşüyordu. SVG <text> element ile center
+     alignment CSS-cascade-proof — dış kurallar override edemez.
+     Stroke/fill renkleri SVG attribute literal hex: token-strict ihlali
+     ama CSS cascade bypass için zorunlu (önceki currentColor apply olmadı).
+  ═══════════════════════════════════════════════════════════════════════ */
   function makeMatchRing(score) {
     var SVG_NS = 'http://www.w3.org/2000/svg';
     var wrap = document.createElement('div');
@@ -289,26 +295,26 @@
     svg.setAttribute('height', '40');
     svg.setAttribute('aria-hidden', 'true');
 
+    /* TRACK — literal hex: CSS cascade bypass zorunluluğu */
     var track = document.createElementNS(SVG_NS, 'circle');
     track.setAttribute('class', 'ik-ring__track');
     track.setAttribute('cx', '20');
     track.setAttribute('cy', '20');
     track.setAttribute('r', '16');
-    /* SVG default fill=black; CSS fill:none cascade kaybolursa siyah daire render
-       eder. Attribute ile zorla — attribute > CSS olmaz ama specificity bypass. */
     track.setAttribute('fill', 'none');
-    track.setAttribute('stroke', 'currentColor');
-    track.setAttribute('stroke-width', '3.5');
+    track.setAttribute('stroke', '#E5E3DF');
+    track.setAttribute('stroke-width', '3');
     svg.appendChild(track);
 
+    /* FILL (progress) — literal hex: CSS cascade bypass zorunluluğu */
     var fill = document.createElementNS(SVG_NS, 'circle');
     fill.setAttribute('class', 'ik-ring__fill');
     fill.setAttribute('cx', '20');
     fill.setAttribute('cy', '20');
     fill.setAttribute('r', '16');
     fill.setAttribute('fill', 'none');
-    fill.setAttribute('stroke', 'currentColor');
-    fill.setAttribute('stroke-width', '3.5');
+    fill.setAttribute('stroke', '#1E2D5E');
+    fill.setAttribute('stroke-width', '3');
     fill.setAttribute('stroke-linecap', 'round');
     fill.setAttribute('transform', 'rotate(-90 20 20)');
     var circ = 100.53; /* 2 * Math.PI * 16 */
@@ -316,13 +322,23 @@
     fill.setAttribute('stroke-dashoffset', (circ * (1 - score / 100)).toFixed(2));
     svg.appendChild(fill);
 
-    wrap.appendChild(svg);
-
-    var label = document.createElement('span');
-    label.className = 'ik-ring__label';
+    /* LABEL — SVG <text>, x/y + text-anchor + dominant-baseline ile
+       center garanti. HTML span'den farklı olarak CSS position cascade
+       etkileyemez. */
+    var label = document.createElementNS(SVG_NS, 'text');
+    label.setAttribute('class', 'ik-ring__label');
+    label.setAttribute('x', '20');
+    label.setAttribute('y', '20');
+    label.setAttribute('text-anchor', 'middle');
+    label.setAttribute('dominant-baseline', 'central');
+    label.setAttribute('fill', '#1E2D5E');
+    label.setAttribute('font-family', '"Plus Jakarta Sans", system-ui, sans-serif');
+    label.setAttribute('font-size', '13');
+    label.setAttribute('font-weight', '700');
     label.textContent = String(score);
-    wrap.appendChild(label);
+    svg.appendChild(label);
 
+    wrap.appendChild(svg);
     return wrap;
   }
 
