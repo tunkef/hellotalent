@@ -2096,7 +2096,7 @@ html[data-theme="dark"] .ik-coaching-banner__cta:hover {
   opacity: 0.78;
 }
 .ik-pos-row.is-expanded {
-  background: var(--editorial-card-elev);
+  background: var(--editorial-card);
 }
 
 /* Main row click area — grid columns */
@@ -2218,6 +2218,7 @@ html[data-theme="dark"] .ik-coaching-banner__cta:hover {
 .ik-pos-row__expand {
   display: none;
   padding: 0 var(--space-9) var(--space-10);
+  background: var(--editorial-card);
   border-top: 1px solid var(--editorial-hairline);
 }
 .ik-pos-row.is-expanded .ik-pos-row__expand {
@@ -2284,6 +2285,32 @@ html[data-theme="dark"] .ik-coaching-banner__cta:hover {
   color: var(--editorial-ink);
   letter-spacing: -0.01em;
   line-height: 1;
+}
+
+/* Mini board — 3 sütun (uzun · kısa · iletişim) drag-drop pipeline reuse */
+.ik-pos-expand__board {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-6);
+  align-items: start;
+}
+.ik-pos-expand__board .ik-stage {
+  /* Compact accordion versiyonu — min-height yok, body padding küçük */
+  background: var(--editorial-bg);
+}
+.ik-pos-expand__board .ik-stage__header {
+  padding: var(--space-5) var(--space-6);
+}
+.ik-pos-expand__board .ik-stage__body {
+  padding: var(--space-5);
+  gap: var(--space-4);
+}
+
+@media (max-width: 768px) {
+  .ik-pos-expand__board {
+    grid-template-columns: 1fr;
+    gap: var(--space-5);
+  }
 }
 
 /* Description */

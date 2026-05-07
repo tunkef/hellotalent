@@ -1850,6 +1850,26 @@
     loadInit();
   }
 
+  /* ═══════ 7 May refactor: accordion board attach API
+     ik-position-detail.js her satır expand olduğunda accordion içindeki
+     board container'ı bu modüle bağlar. dom.board re-target +
+     state.activePositionId set + loadPipeline() trigger. ═══════ */
+  window._htPipelineBoard = {
+    attach: function (boardEl, positionId) {
+      if (!boardEl || !positionId) return;
+      dom.board = boardEl;
+      state.activePositionId = positionId;
+      if (window.IK_SHELL && IK_SHELL.setActivePositionId) {
+        IK_SHELL.setActivePositionId(positionId);
+      }
+      return loadPipeline();
+    },
+    detach: function () {
+      dom.board = null;
+      state.activePositionId = null;
+    }
+  };
+
   /* IK_SHELL.ctx race fix (eb8ad40 pattern, 2026-05-04 cache a23h2) */
   function bootstrap() {
     if (window.IK_SHELL && window.IK_SHELL.ctx) { init(); return; }

@@ -45,6 +45,16 @@
 - `isArchive` derivation `position.status === 'closed' || position.is_archive` (uydurma) → `position.durum === 'closed'` (gerçek migration 20260505130000 kolonu)
 - Cache-bust `?v=20260507acc3`
 
+**Hotfix #3 (Tuna feedback "kart hareket ettirme + arka plan beyaz"):**
+- `.ik-pos-row.is-expanded` background `--editorial-card-elev` (krem) → `--editorial-card` (#FFFFFF beyaz)
+- `.ik-pos-row__expand` background explicit `--editorial-card`
+- Mini board accordion içinde 3-sütun (uzun_liste · kisa_liste · iletisime_gecildi) — drag-drop ik-pipeline.js reuse
+- `window._htPipelineBoard.attach(boardEl, positionId)` public API (ik-pipeline.js sona)
+- Accordion expand'da `<div class="ik-pos-expand__board" id="ik-pos-expand-board-{id}">` container + setTimeout 0 attach çağrısı
+- Sadece aktif pozisyonlarda board render (arşiv hariç)
+- CSS `.ik-pos-expand__board` 3-col grid + ik-stage CSS reuse + mobile 1-col
+- Cache-bust `?v=20260507board` (CSS + 2 JS)
+
 ## 7 May — UI Hotfix Wave (paradigm shift öncesi)
 
 **A — anasayfa (ik-genel) hero + list align:**

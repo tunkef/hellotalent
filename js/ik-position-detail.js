@@ -57,9 +57,9 @@
     var kpi = document.createElement('div');
     kpi.className = 'ik-pos-expand__kpi';
     var kpiData = [
-      { label: 'Uzun liste',  value: summary.uzun     || 0, hint: 'Önerilen adaylar' },
-      { label: 'Kısa liste',  value: summary.kisa     || 0, hint: 'Görüşmeye alınan' },
-      { label: 'İşe alınan',  value: summary.iletisim || 0, hint: 'İletişime geçilen' }
+      { label: 'Uzun liste',  value: summary.uzun     || 0 },
+      { label: 'Kısa liste',  value: summary.kisa     || 0 },
+      { label: 'İşe alınan',  value: summary.iletisim || 0 }
     ];
     kpiData.forEach(function (item) {
       var col = document.createElement('div');
@@ -75,6 +75,24 @@
       kpi.appendChild(col);
     });
     inner.appendChild(kpi);
+
+    /* ── Mini board: 3-sütun pipeline (drag-drop ik-pipeline.js reuse)
+       Sadece aktif pozisyonlar için; arşivde board yok. ── */
+    var isArchive = position.durum === 'closed';
+    if (!isArchive) {
+      var board = document.createElement('div');
+      board.id = 'ik-pos-expand-board-' + position.id;
+      board.className = 'ik-pos-expand__board';
+      board.setAttribute('data-pos-board', String(position.id));
+      inner.appendChild(board);
+
+      /* Board attach — ik-pipeline.js dom.board re-target + load */
+      setTimeout(function () {
+        if (window._htPipelineBoard) {
+          window._htPipelineBoard.attach(board, position.id);
+        }
+      }, 0);
+    }
 
     /* ── Description ── */
     if (position.aciklama || position.description) {
