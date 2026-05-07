@@ -2677,22 +2677,33 @@ body .pp-identity .pp-ident__completion,
   align-items: start;
 }
 .ik-pos-expand__board .ik-stage {
+  /* 7 May v5 — code-reviewer keşfi: parent height auto + child flex:1 1 auto
+     → body sonsuz grow → max-height etkisiz, scroll trigger olmaz.
+     Doğru fix: parent stage'a height ver, body flex:1 1 auto kalsın. */
+  height: clamp(420px, 64vh, 720px) !important;
+  max-height: clamp(420px, 64vh, 720px) !important;
   background: var(--editorial-bg);
 }
-/* 7 May Tuna kart width tutarsızlık fix — scrollbar gutter ile her sütunda
-   kart aynı genişlik, içerik width %100 garanti */
+/* Kart width tutarsızlık fix — scrollbar gutter + width 100% */
 .ik-pos-expand__board .ik-stage__body > .ik-card-aday {
   width: 100% !important;
   box-sizing: border-box !important;
 }
+@media (max-width: 768px) {
+  .ik-pos-expand__board .ik-stage {
+    height: 420px !important;
+    max-height: 420px !important;
+  }
+}
 .ik-pos-expand__board .ik-stage__body {
-  /* 7 May v4 — agresif scroll garanti.
-     Eski rule (line 2379) + bu rule birlikte. Scrollbar visible thin. */
-  height: 640px !important;
-  max-height: 640px !important;
-  min-height: 640px !important;
-  flex: 0 0 640px !important;
-  overflow-y: scroll !important;
+  /* 7 May v5 — parent stage fixed height ile body flex:1 1 auto kalan
+     space'i alır + min-height:0 (flex item default min-content bypass) +
+     overflow-y:auto kendi içinde scroll. */
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  height: auto !important;
+  max-height: none !important;
+  overflow-y: auto !important;
   overflow-x: hidden !important;
   padding: var(--space-5);
   gap: var(--space-4);

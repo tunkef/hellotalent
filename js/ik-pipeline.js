@@ -478,15 +478,9 @@
     var body = document.createElement('div');
     body.className = 'ik-stage__body';
     body.setAttribute('data-stage-body', stageDef.key);
-    /* 7 May Tuna scroll bug — CSS apply olmuyordu (specificity/cache).
-       Inline style CSS cascade'i bypass eder, garanti uygulanır.
-       Sadece accordion context'inde dom.board accordion içindeki target. */
-    if (dom.board && dom.board.classList.contains('ik-pos-expand__board')) {
-      body.style.height       = '640px';
-      body.style.maxHeight    = '640px';
-      body.style.overflowY    = 'scroll';
-      body.style.flex         = '0 0 640px';
-    }
+    /* 7 May v5 — inline style kaldırıldı, CSS-only çözüm:
+       parent .ik-stage'a fixed height verildi, body flex:1 1 auto
+       kalan space'i alıp kendi içinde scroll eder. */
 
     if (entries.length === 0) {
       /* 7 May Tuna feedback: "Havuza git" link sütun içinden çıkartıldı,
