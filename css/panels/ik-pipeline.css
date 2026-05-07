@@ -2417,12 +2417,12 @@ body .pp-identity .pp-ident__completion,
 .ik-pos-expand__actions {
   display: flex !important;
   flex-wrap: wrap !important;
-  gap: 24px !important;
+  gap: 14px !important;
   padding-top: var(--space-7) !important;
 }
 /* Defansif fallback: gap desteklenmezse margin-right (eski browser) */
 .ik-pos-expand__actions > .ik-pos-expand__action + .ik-pos-expand__action {
-  margin-left: 12px !important;
+  margin-left: 0 !important;
 }
 .ik-pos-modal-overlay {
   position: fixed !important;
@@ -2678,6 +2678,12 @@ body .pp-identity .pp-ident__completion,
 }
 .ik-pos-expand__board .ik-stage {
   background: var(--editorial-bg);
+}
+/* 7 May Tuna kart width tutarsızlık fix — scrollbar gutter ile her sütunda
+   kart aynı genişlik, içerik width %100 garanti */
+.ik-pos-expand__board .ik-stage__body > .ik-card-aday {
+  width: 100% !important;
+  box-sizing: border-box !important;
 }
 .ik-pos-expand__board .ik-stage__body {
   /* 7 May v4 — agresif scroll garanti.
