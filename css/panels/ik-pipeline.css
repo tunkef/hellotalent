@@ -307,6 +307,11 @@
   cursor: grab;
   transition: border-color 160ms ease, transform 160ms ease, box-shadow 160ms ease;
   position: relative;
+  /* 7 May Tuna fix F1: kart fixed-height — cross-position consistency + scroll math.
+     5 kart × 132px + 4 × gap-5(10px) + 2 × pad-7(14px) = 660+40+28 = 728px ≤ max-height 720.
+     İçerik fazlaysa kart büyür (chips overflow), tipik aday 132px sabit. */
+  min-height: 132px;
+  justify-content: space-between;
 }
 .ik-card-aday:hover {
   border-color: var(--editorial-vermillion);
@@ -2369,12 +2374,13 @@ body .pp-identity .pp-ident__completion,
   align-items: stretch !important;
 }
 .ik-pos-expand__board .ik-stage__body {
-  /* P1.2: tüm scrollbar + flex özellikleri tek blokta — scrollbar-gutter stable
-     cross-position kart genişlik tutarlılığı için zorunlu */
+  /* P1.2 + 7 May F2: scrollbar + flex + max-height scroll math.
+     5 kart × 132px min-height + 4 × gap-5(10px) + 2 × pad-7(14px) = 728px → cap 720px.
+     6+ kart → overflow-y scroll devreye girer (thin scrollbar). */
   flex: 1 1 auto !important;
   min-height: 0 !important;
   height: auto !important;
-  max-height: none !important;
+  max-height: 720px !important;
   overflow-y: auto !important;
   overflow-x: hidden !important;
   scrollbar-gutter: stable !important;
@@ -2671,10 +2677,12 @@ body .pp-identity .pp-ident__completion,
   }
 }
 
-/* P1.4: Stage parent height — P1.1 board bloğundan ayrı tutulur (bağımsız kural) */
+/* P1.4 + 7 May F3: Stage parent height — clamp kaldırıldı, body max-height belirleyici.
+   body max 720px + header ~70px = stage max 790px.
+   min 480px = header(~70) + 3 kart(3×132) + 2×gap(20) + 2×pad(28) ≈ 514 → 480 güvenli alt sınır. */
 .ik-pos-expand__board .ik-stage {
-  height: clamp(420px, 64vh, 720px) !important;
-  max-height: clamp(420px, 64vh, 720px) !important;
+  min-height: 480px !important;
+  max-height: 790px !important;
   background: var(--editorial-bg);
 }
 /* Kart width tutarsızlık fix — scrollbar-gutter stable ile birlikte çalışır */
@@ -2686,9 +2694,15 @@ body .pp-identity .pp-ident__completion,
   background: var(--editorial-ink-muted) !important;
 }
 @media (max-width: 768px) {
+  /* 7 May F4: Mobile stage + body math.
+     3 kart × 132px + 2×gap(10px) + 2×pad(14px) = 396+20+28 = 444 → body cap 480px.
+     stage: body(480) + header(~70) = 550 → round to 560. min 360 (header + 2 kart). */
   .ik-pos-expand__board .ik-stage {
-    height: 420px !important;
-    max-height: 420px !important;
+    min-height: 360px !important;
+    max-height: 560px !important;
+  }
+  .ik-pos-expand__board .ik-stage__body {
+    max-height: 480px !important;
   }
 }
 
