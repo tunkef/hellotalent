@@ -256,6 +256,25 @@
     return wrap;
   }
 
+  /* ═══════ Error state — P2.3 round-2: RPC fail kullanıcı bildirimi ═══════ */
+  function buildErrorState() {
+    var wrap = document.createElement('div');
+    wrap.className = 'ik-pos-empty';
+    var eyebrow = document.createElement('span');
+    eyebrow.className = 'ik-pos-empty__eyebrow';
+    eyebrow.textContent = 'YÜKLEME HATASI';
+    var heading = document.createElement('h2');
+    heading.className = 'ik-pos-empty__heading';
+    heading.textContent = 'Pozisyon listesi yüklenemedi';
+    var desc = document.createElement('p');
+    desc.className = 'ik-pos-empty__desc';
+    desc.textContent = 'İnternet bağlantını kontrol et veya sayfayı yenile.';
+    wrap.appendChild(eyebrow);
+    wrap.appendChild(heading);
+    wrap.appendChild(desc);
+    return wrap;
+  }
+
   /* ═══════ Count update — 7 May refactor: row data-row-cand güncelle ═══════ */
   function updateCountChips(posId, summary) {
     var cell = document.querySelector('[data-row-cand="' + posId + '"]');
@@ -415,6 +434,11 @@
       renderGrid();
     }).catch(function (e) {
       console.error('[ik-pos-list] loadAndRender error:', e && e.message);
+      /* P2.3: RPC fail UI — XSS-safe, buildErrorState pattern (createElement/textContent) */
+      if (_dom.grid) {
+        while (_dom.grid.firstChild) { _dom.grid.removeChild(_dom.grid.firstChild); }
+        _dom.grid.appendChild(buildErrorState());
+      }
     });
   }
 

@@ -376,7 +376,10 @@
       meta.appendChild(s);
     }
 
-    card.appendChild(meta);
+    /* P3.4: meta boşsa DOM'a append etme (gereksiz boş div önlenir) */
+    if (meta.children.length > 0) {
+      card.appendChild(meta);
+    }
 
     /* match_reasons chips (kompakt, max 2) — Phase D2.3
        7 May Tuna: "Detaylı profil" reason UI gürültüsü, kart click drawer
@@ -573,7 +576,7 @@
         var fromStage = state.dragging.fromStage;
         var cid = state.dragging.candidate_id;
 
-        /* PR-4: skip-stage kısıtlaması — uzun_liste → iletisime_gecildi DROP YASAK */
+        /* P3.5: skip-stage kısıtlaması — stage-aware mesaj */
         if (fromStage === 'uzun_liste' && newStage === 'iletisime_gecildi') {
           showToast('Önce kısa listeye al.', 'error');
           trackPipeline('pipeline_skip_stage_blocked', {
@@ -584,9 +587,9 @@
           state.dragging = null;
           return;
         }
-        /* PR-4: iletisime_gecildi → uzun_liste da yasak (spec: geriye skip yok) */
+        /* iletisime_gecildi → uzun_liste: geriye skip yasak */
         if (fromStage === 'iletisime_gecildi' && newStage === 'uzun_liste') {
-          showToast('Önce kısa listeye al.', 'error');
+          showToast('Önce kısa listeye geri al.', 'error');
           state.dragging = null;
           return;
         }

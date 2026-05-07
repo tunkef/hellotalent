@@ -215,6 +215,14 @@
     }
     _state.expandedId = null;
     _state.expandedRow = null;
+    /* P2.1: drag state cross-position contamination guard */
+    if (window.IK_PIPELINE_STATE) {
+      window.IK_PIPELINE_STATE.dragging = null;
+    }
+    /* P2.1: drawer açıksa kapat (cross-state temizlik) */
+    if (typeof window._htCloseCandidateDrawer === 'function') {
+      window._htCloseCandidateDrawer();
+    }
   }
 
   /* ═══════ Expand row (toggle) — single-row policy ═══════ */

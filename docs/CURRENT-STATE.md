@@ -1,5 +1,40 @@
 # hellotalent.ai — Current State
-> Son guncelleme: **7 Mayıs 2026** | T3 paradigm shift: Pozisyonlar wide list + inline accordion (modal detail sheet kaldırıldı). UI hotfix wave öncesi.
+> Son guncelleme: **7 Mayıs 2026 (round-2 audit)** | Pozisyonlar accordion round-2: CSS duplicate birleştirme + dark mode rating token + radius CLATU + JS ESC ayrımı + RPC fail UI + polish.
+
+## 7 May — Round-2 Audit: Pozisyonlar Accordion Full Fix Pass
+
+**ui-agent @ HelloTalent Studio v3 — round-2 implementation**
+
+**P1.1–P1.3 (CSS duplicate birleştirme):**
+- `css/panels/ik-pipeline.css` içindeki iki `.ik-pos-expand__board` bloğu (line ~2368 + ~2673) tek blokta birleştirildi.
+- `align-items: stretch !important` (start → stretch: stage'ler eşit yükseklik).
+- `.ik-stage__body` bloğu da tek blokta: `flex:1 1 auto`, `scrollbar-gutter: stable`, `padding: var(--space-7)`, `gap: var(--space-5)`.
+- `::-webkit-scrollbar` tek blok, tüm `!important` defansif.
+
+**P1.4 (Stage height):** `clamp(420px, 64vh, 720px)` korundu. Kart width 100% `box-sizing: border-box` korundu.
+
+**P1.5a (Dark mode rating token):** `css/tokens.css` `html[data-theme="dark"]` bloğuna `--rating-strong-bg-soft: rgba(34,197,94,0.18)`, `--rating-strong: #4ADE80`, `--rating-growing-bg-soft: rgba(245,158,11,0.18)`, `--rating-growing: #FBBF24` eklendi (opacity-only light token dark'ta kontrast vermez — darkmode-auditor fix).
+
+**P1.5b (match badge):** `.ik-card-aday__match` `border-radius: var(--radius-pill)` korundu (designer R2 onayı).
+
+**P1.5c (auto-badge):** `.ik-card-aday__auto-badge` `border-radius: var(--radius-xs)` → `var(--radius-pill)` (eyebrow status chip pill pattern).
+
+**P1.5d (stale-chip):** `.ik-pipeline__stale-chip` `border-radius: var(--radius-xs)` → `var(--radius-sm)` (CLATU 6.2 — chip için pill yasak).
+
+**P2.1 (drag state guard):** `js/ik-position-detail.js` `collapseAllRows()` sonuna `IK_PIPELINE_STATE.dragging = null` + `_htCloseCandidateDrawer()` eklendi.
+
+**P2.2 (ESC ayrımı):** `js/ik-cand-drawer.js` `keydown` capture-phase handler — drawer açıkken ESC `stopPropagation()` ile accordion handler tetiklenmez.
+
+**P2.3 (RPC fail UI):** `js/ik-pos-list.js` `loadAndRender` catch block'una `buildErrorState()` helper (XSS-safe createElement/textContent) + while/removeChild temizleme.
+
+**P3.1–P3.5 (Polish):**
+- `.ik-card-aday__poz`: `line-height: 1.3` eklendi.
+- `.ik-card-aday__meta`: `align-items: center` (baseline → center).
+- `.ik-card-aday__sep`: `opacity: 0.4` kaldırıldı → `color: var(--editorial-ink-muted)` (darkmode-safe).
+- `renderCard` meta empty guard: `meta.children.length > 0` check öncesinde append.
+- Skip-stage toast: `iletisime_gecildi → uzun_liste` → "Önce kısa listeye geri al."
+
+**Cache-bust:** `hr-pipeline.html` tokens `?v=20260507r2`, CSS `?v=20260507r2`, JS `?v=20260507r2` (ik-pos-list, ik-position-detail, ik-cand-drawer, ik-pipeline).
 
 ## 7 May — T3 Paradigm Shift: Pozisyonlar Wide List + Inline Accordion
 

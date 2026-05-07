@@ -205,6 +205,15 @@
     if (overlay) closeDrawer();
   });
 
+  /* P2.2: ESC ayrımı — capture phase ile accordion ESC handler'dan önce yakalar,
+     stopPropagation ile accordion'un collapse tetiklenmesini engeller */
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && _state.isOpen) {
+      closeDrawer();
+      e.stopPropagation();
+    }
+  }, true);  /* capture phase — drawer'ın önceliği accordion'dan yüksek */
+
   window._htOpenCandidateDrawer  = openDrawer;
   window._htCloseCandidateDrawer = closeDrawer;
 })();

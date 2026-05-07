@@ -363,6 +363,15 @@ html[data-theme="dark"] {
   --status-archive-bg:    var(--editorial-card-elev);
   --status-archive-text:  var(--editorial-ink-muted);
   --status-archive-border: var(--editorial-hairline);
+
+  /* round-2 audit P1.5a — rating badge dark mode: opacity-only soft bg yeterince kontrast vermez.
+     Light'ta rgba(5,150,105,0.05) dark'ta görünmez; override ile 0.18 (darkmode-auditor onaylı). */
+  --rating-strong-bg-soft:    rgba(34, 197, 94, 0.18);
+  --rating-strong:             #4ADE80;
+  --rating-strong-border:     rgba(74, 222, 128, 0.25);
+  --rating-growing-bg-soft:   rgba(245, 158, 11, 0.18);
+  --rating-growing:            #FBBF24;
+  --rating-growing-border:    rgba(251, 191, 36, 0.25);
 }
 
 /* ═══ Dark Mode fallback — OS preference for pages without pre-paint script ═══
