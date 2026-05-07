@@ -32,6 +32,36 @@
     return n > 99 ? '99+' : String(n);
   }
 
+  /* Tarih helper'ları — ik-pos-list.js'teki spec ile bire-bir aynı (copy spec §6C) */
+  function formatAcilmaTarihi(dateStr) {
+    if (!dateStr) return '';
+    try {
+      var diff = Date.now() - new Date(dateStr).getTime();
+      var gun  = Math.floor(diff / 86400000);
+      if (gun < 1)  return 'Bugün açıldı';
+      if (gun < 7)  return gun + ' gün önce açıldı';
+      var hafta = Math.floor(gun / 7);
+      if (hafta < 4) return hafta + ' hafta önce açıldı';
+      var ay = Math.floor(gun / 30);
+      if (ay < 12)  return ay + ' ay önce açıldı';
+      return Math.floor(gun / 365) + ' yıl önce açıldı';
+    } catch (e) { return ''; }
+  }
+  function formatKapatmaTarihi(dateStr) {
+    if (!dateStr) return '';
+    try {
+      var diff = Date.now() - new Date(dateStr).getTime();
+      var gun  = Math.floor(diff / 86400000);
+      if (gun < 1)  return 'Bugün kapandı';
+      if (gun < 7)  return gun + ' gün önce kapandı';
+      var hafta = Math.floor(gun / 7);
+      if (hafta < 4) return hafta + ' hafta önce kapandı';
+      var ay = Math.floor(gun / 30);
+      if (ay < 12)  return ay + ' ay önce kapandı';
+      return new Date(dateStr).getFullYear() + ' yılında kapandı';
+    } catch (e) { return ''; }
+  }
+
   /* ═══════ Expand content render — KPI + mini pipeline + desc + actions ═══════ */
   function renderExpandContent(expandEl, position, summary) {
     while (expandEl.firstChild) expandEl.removeChild(expandEl.firstChild);
@@ -39,46 +69,30 @@
     var inner = document.createElement('div');
     inner.className = 'ik-pos-expand__inner';
 
-    /* ── Head — eyebrow + title (tekrar, accordion içinde context) ── */
-    var head = document.createElement('div');
-    head.className = 'ik-pos-expand__head';
-    var eyebrow = document.createElement('span');
-    eyebrow.className = 'ik-pos-expand__eyebrow';
-    eyebrow.textContent = 'POZİSYON DETAYI';
-    head.appendChild(eyebrow);
-    var title = document.createElement('h3');
-    title.className = 'ik-pos-expand__title';
-    title.textContent = position.ad || position.title || '—';
-    head.appendChild(title);
-    inner.appendChild(head);
-
-    /* ── KPI 3-col: uzun liste · kısa liste · işe alınan
-       (eski 3-sütun pattern, IK_DATA.getPipelineSummary { uzun, kisa, iletisim }) ── */
-    var kpi = document.createElement('div');
-    kpi.className = 'ik-pos-expand__kpi';
-    var kpiData = [
-      { label: 'Uzun liste',  value: summary.uzun     || 0 },
-      { label: 'Kısa liste',  value: summary.kisa     || 0 },
-      { label: 'İşe alınan',  value: summary.iletisim || 0 }
-    ];
-    kpiData.forEach(function (item) {
-      var col = document.createElement('div');
-      col.className = 'ik-pos-expand__kpi-item';
-      var lbl = document.createElement('span');
-      lbl.className = 'ik-pos-expand__kpi-label';
-      lbl.textContent = item.label;
-      col.appendChild(lbl);
-      var val = document.createElement('span');
-      val.className = 'ik-pos-expand__kpi-value';
-      val.textContent = fmtCount(item.value);
-      col.appendChild(val);
-      kpi.appendChild(col);
-    });
-    inner.appendChild(kpi);
+    /* ── Açılış meta satırı (Tuna 7 May: tarih satırdan kaldırıldı, burada gösterilir) ── */
+    var isArchive = position.durum === 'closed';
+    var rawDate = isArchive
+      ? (position.updated_at || position.closed_at)
+      : position.created_at;
+    var dateText = isArchive
+      ? formatKapatmaTarihi(rawDate)
+      : (formatAcilmaTarihi(rawDate) || '—');
+    if (dateText) {
+      var meta = document.createElement('div');
+      meta.className = 'ik-pos-expand__meta';
+      var metaLabel = document.createElement('span');
+      metaLabel.className = 'ik-pos-expand__meta-label';
+      metaLabel.textContent = isArchive ? 'KAPANIŞ' : 'AÇILIŞ';
+      meta.appendChild(metaLabel);
+      var metaValue = document.createElement('span');
+      metaValue.className = 'ik-pos-expand__meta-value';
+      metaValue.textContent = dateText;
+      meta.appendChild(metaValue);
+      inner.appendChild(meta);
+    }
 
     /* ── Mini board: 3-sütun pipeline (drag-drop ik-pipeline.js reuse)
        Sadece aktif pozisyonlar için; arşivde board yok. ── */
-    var isArchive = position.durum === 'closed';
     if (!isArchive) {
       var board = document.createElement('div');
       board.id = 'ik-pos-expand-board-' + position.id;

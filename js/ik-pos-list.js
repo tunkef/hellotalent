@@ -165,15 +165,7 @@
       main.appendChild(chip);
     }
 
-    var time = document.createElement('span');
-    time.className = 'ik-pos-row__cell--time';
-    var rawDate = isArchive
-      ? (pos.updated_at || pos.closed_at)
-      : pos.created_at;
-    time.textContent = isArchive
-      ? formatKapatmaTarihi(rawDate)
-      : (formatAcilmaTarihi(rawDate) || '—');
-    main.appendChild(time);
+    /* 7 May Tuna feedback: time satırdan kaldırıldı, expand içinde "Açılış" satırında render edilir */
 
     var chev = document.createElement('span');
     chev.className = 'ik-pos-row__chevron';
@@ -218,7 +210,6 @@
     if (isArchive) {
       cols.push({ label: 'DURUM', cls: '' });
     }
-    cols.push({ label: 'AÇILIŞ', cls: 'ik-pos-table__head-cell--right' });
     cols.push({ label: '',       cls: '' }); /* chevron spacer */
 
     cols.forEach(function (c) {

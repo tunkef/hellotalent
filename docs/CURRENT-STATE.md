@@ -45,6 +45,14 @@
 - `isArchive` derivation `position.status === 'closed' || position.is_archive` (uydurma) → `position.durum === 'closed'` (gerçek migration 20260505130000 kolonu)
 - Cache-bust `?v=20260507acc3`
 
+**Hotfix #5 (Tuna feedback "minimalize accordion + stage başlık çirkin"):**
+- Açılış tarihi satırdan kaldırıldı (header'dan AÇILIŞ kolonu, row'dan time cell sil), expand içinde "AÇILIŞ" eyebrow + value satırında render
+- Expand head section (eyebrow "POZİSYON DETAYI" + h3 başlık) duplicate olduğu için TAMAMEN SİL — satırda zaten başlık var
+- Expand KPI 3-col TAMAMEN SİL — board'da count zaten var, duplicate
+- Stage header buton görünümü revize: 1px hairline border, plain mono uppercase title + sayı (chip pill bg yok), hover vermillion border. KISA LİSTE vermillion-soft bg + İLETİŞİME GEÇİLDİ border-top accent KALDIRILDI (Tuna "tarzı çok kötü")
+- Cache-bust `?v=20260507minimal` (CSS + ik-pos-list + ik-position-detail)
+- Tarih helper'ları (`formatAcilmaTarihi` / `formatKapatmaTarihi`) ik-position-detail.js'e inline kopyalandı (ik-pos-list IIFE private erişilemiyordu)
+
 **Hotfix #4 (Tuna feedback "hiza + Aktif chip redundant"):**
 - Editorial column header satırı (`POZİSYON / SEGMENT / LOKASYON / DENEYİM / ADAY / AÇILIŞ`) — alignment netleştirir, magazine table head pattern
 - Aktif view'da chip kaldırıldı ("zaten aktif listesinin içindeyiz") — sadece arşiv view'da "Arşiv" chip read-only context göstergesi
