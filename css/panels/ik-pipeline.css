@@ -3433,3 +3433,73 @@ html[data-theme="dark"] .ik-position-form__change-hint {
   color: var(--color-warning-text-dark);
   border-bottom-color: var(--color-warning-border-dark);
 }
+
+/* ═══════════════════════════════════════════════════════
+   8 May minimal-card redesign — Tuna direktif
+   ════════════════════════════════════════════════════ */
+
+/* Defansif guard: JS'ten kaldırıldı ama class DOM'da kalırsa gizle */
+.ik-card-aday__auto-badge,
+.ik-card-aday__match,
+.ik-card-aday__reasons {
+  display: none !important;
+}
+
+/* Match ring (kebab yanı, kompakt 32px) */
+.ik-card-aday__match-ring {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ik-card-aday__match-ring svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.ik-card-aday__match-ring circle.track {
+  stroke: var(--editorial-hairline-strong, var(--border));
+}
+.ik-card-aday__match-ring circle.fill {
+  stroke: var(--editorial-vermillion, var(--verm));
+  transition: stroke-dashoffset 400ms ease;
+}
+.ik-card-aday__match-ring-pct {
+  position: relative;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--editorial-ink, var(--navy));
+  letter-spacing: 0.02em;
+  z-index: 1;
+  line-height: 1;
+}
+
+/* Avatar pulse glow — aktif iş arıyor */
+.ik-card-aday__avatar.is-active-search {
+  box-shadow:
+    0 0 0 3px rgba(34, 197, 94, 0.18),
+    0 0 12px rgba(34, 197, 94, 0.35);
+  animation: ik-avatar-pulse 2.4s ease-in-out infinite;
+}
+@keyframes ik-avatar-pulse {
+  0%, 100% {
+    box-shadow:
+      0 0 0 3px rgba(34, 197, 94, 0.18),
+      0 0 12px rgba(34, 197, 94, 0.32);
+  }
+  50% {
+    box-shadow:
+      0 0 0 4px rgba(34, 197, 94, 0.28),
+      0 0 18px rgba(34, 197, 94, 0.48);
+  }
+}
+html[data-theme="dark"] .ik-card-aday__avatar.is-active-search {
+  box-shadow:
+    0 0 0 3px rgba(74, 222, 128, 0.22),
+    0 0 14px rgba(74, 222, 128, 0.45);
+}

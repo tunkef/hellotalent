@@ -126,6 +126,16 @@
 }
 .pp-header-close:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.28); }
 
+/* 8 May: "Son güncelleme" — kart'tan drawer header'a taşındı */
+.pp-header-updated {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.45);
+  white-space: nowrap;
+  flex-shrink: 0;
+  letter-spacing: 0.01em;
+}
+
 /* Scrollable body (cream) */
 .pp-body {
   flex: 1;

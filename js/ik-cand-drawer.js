@@ -30,7 +30,7 @@
     var supa = window.HT.getSupa();
     if (!supa) return Promise.resolve(null);
     return supa.from('candidates')
-      .select('avatar_url, cv_url, cv_filename, cv_uploaded_at, bio, email, telefon')
+      .select('avatar_url, cv_url, cv_filename, cv_uploaded_at, bio, email, telefon, updated_at')
       .eq('id', candidateId)
       .maybeSingle()
       .then(function (res) {
@@ -149,6 +149,29 @@
     };
   }
 
+  /* ═══════ "Son güncelleme" helper ═══════ */
+  function relativeTimeTR(iso) {
+    if (!iso) return null;
+    try {
+      var diff = Math.floor((Date.now() - new Date(iso).getTime()) / 86400000);
+      if (diff < 1)  return 'bugün güncellendi';
+      if (diff < 7)  return diff + ' gün önce güncellendi';
+      if (diff < 30) return Math.floor(diff / 7) + ' hafta önce güncellendi';
+      if (diff < 365) return Math.floor(diff / 30) + ' ay önce güncellendi';
+      return Math.floor(diff / 365) + ' yıl önce güncellendi';
+    } catch (e) { return null; }
+  }
+
+  /* Drawer içindeki #pp-cand-updated elementine son güncelleme yazar.
+     Element yoksa (profil-preview markup farklıysa) sessizce atlar. */
+  function setDrawerUpdatedAt(iso) {
+    var el = document.getElementById('pp-cand-updated');
+    if (!el) return;
+    var text = relativeTimeTR(iso);
+    el.textContent = text || '';
+    el.style.display = text ? '' : 'none';
+  }
+
   /* ═══════ Open / Close ═══════ */
   function openDrawer(candidateId) {
     if (!candidateId) return;
@@ -179,6 +202,8 @@
         var mapped = mapCandidateToProfileShape(enriched);
         setupStubs(mapped, enriched.email);
         window.openProfilePreview();
+        /* 8 May: kart'tan kaldırılan "Son güncelleme" drawer'da göster */
+        setDrawerUpdatedAt(enriched.updated_at || null);
       });
     }).catch(function (e) {
       console.warn('[ik-cand-drawer] getCandidate error:', e && e.message);

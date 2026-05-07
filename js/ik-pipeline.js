@@ -264,6 +264,53 @@
     });
   }
 
+  /* ═══════ Match ring (SVG, XSS-safe, 32px kompakt) — 8 May Tuna direktif ═══════ */
+  function makeMatchRing(score) {
+    var SVG_NS = 'http://www.w3.org/2000/svg';
+    var wrap = document.createElement('div');
+    wrap.className = 'ik-card-aday__match-ring';
+    wrap.setAttribute('aria-label', 'Eşleşme %' + score);
+    wrap.setAttribute('title', 'Eşleşme skoru: %' + score);
+
+    var svg = document.createElementNS(SVG_NS, 'svg');
+    svg.setAttribute('viewBox', '0 0 36 36');
+    svg.setAttribute('width', '32');
+    svg.setAttribute('height', '32');
+    svg.setAttribute('aria-hidden', 'true');
+
+    var track = document.createElementNS(SVG_NS, 'circle');
+    track.setAttribute('class', 'track');
+    track.setAttribute('cx', '18');
+    track.setAttribute('cy', '18');
+    track.setAttribute('r', '15');
+    track.setAttribute('fill', 'none');
+    track.setAttribute('stroke-width', '2.5');
+    svg.appendChild(track);
+
+    var fill = document.createElementNS(SVG_NS, 'circle');
+    fill.setAttribute('class', 'fill');
+    fill.setAttribute('cx', '18');
+    fill.setAttribute('cy', '18');
+    fill.setAttribute('r', '15');
+    fill.setAttribute('fill', 'none');
+    fill.setAttribute('stroke-width', '2.5');
+    fill.setAttribute('stroke-linecap', 'round');
+    fill.setAttribute('transform', 'rotate(-90 18 18)');
+    var circumference = 94.25; /* 2 * Math.PI * 15 */
+    fill.setAttribute('stroke-dasharray', circumference.toFixed(2));
+    fill.setAttribute('stroke-dashoffset', (circumference * (1 - score / 100)).toFixed(2));
+    svg.appendChild(fill);
+
+    wrap.appendChild(svg);
+
+    var pct = document.createElement('span');
+    pct.className = 'ik-card-aday__match-ring-pct';
+    pct.textContent = String(score);
+    wrap.appendChild(pct);
+
+    return wrap;
+  }
+
   /* ═══════ Card render ═══════ */
   function renderCard(entry) {
     var c = state.candidatesById[entry.candidate_id];
@@ -292,6 +339,10 @@
 
     var av = document.createElement('div');
     av.className = 'ik-card-aday__avatar';
+    /* 8 May: aktif iş arıyor → pulse glow (Tuna direktif) */
+    if (c.aktif_is_ariyor === true) {
+      av.classList.add('is-active-search');
+    }
     av.setAttribute('aria-hidden', 'true');
 
     /* 8 May avatar fix: avatar_url varsa signed URL ile img swap (async, XSS-safe) */
@@ -323,19 +374,8 @@
     main.appendChild(poz);
     head.appendChild(main);
 
-    /* PR-5 Sub-Task 5.3: auto badge — entry.metadata.auto_added (DB jsonb kolon).
-       PR-4'te entry.auto_added flat field bekliyordu — DB'de yoktu.
-       Şimdi hr_get_pipeline metadata jsonb döndürüyor; auto_added boolean içinde.
-       Manuel eklenen kartlarda metadata={} → badge GÖRÜNMEZ. */
+    /* 8 May minimal-card: auto-badge kaldırıldı (Tuna direktif) */
     var currentStage = resolveStage(entry);
-    var isAutoAdded = !!(entry.metadata && entry.metadata.auto_added === true);
-    if (isAutoAdded) {
-      var autoBadge = document.createElement('span');
-      autoBadge.className = 'ik-card-aday__auto-badge';
-      autoBadge.textContent = 'Otomatik';
-      autoBadge.setAttribute('aria-label', 'Otomatik eşleşme ile eklendi');
-      head.appendChild(autoBadge);
-    }
 
     var menuBtn = document.createElement('button');
     menuBtn.type = 'button';
@@ -354,65 +394,29 @@
       dotsSvg.appendChild(d);
     });
     menuBtn.appendChild(dotsSvg);
+
+    /* 8 May: match ring — kebab'tan ÖNCE, head sonuna (Tuna direktif).
+       matchClass helper korundu (başka yerlerde kullanılıyor olabilir).
+       match_score null → ring yok. XSS-safe: createElementNS. */
+    if (c.match_score != null) {
+      head.appendChild(makeMatchRing(c.match_score));
+    }
+
     head.appendChild(menuBtn);
 
     card.appendChild(head);
 
-    /* meta (match + adres_il) */
-    var meta = document.createElement('div');
-    meta.className = 'ik-card-aday__meta';
-
-    /* Phase D2.3: match_score RPC field. searchCandidates havuzundan gelen adaylarda
-       dolu (RPC hesaplıyor). Pipeline entry'den enrich edilen adaylarda null —
-       hr_get_pipeline match_score döndürmüyor (KVKK md.10: DB'de saklanmıyor).
-       7 May Tuna bug: calcMatch fallback field alias mismatch (pos.segment vs
-       pos.seg) ile %0 hesaplıyordu → yanlış görünüm. Fallback KALDIRILDI;
-       match score yoksa badge hiç gösterilmiyor. Long-term fix: hr_get_pipeline
-       migration ile match_score recalculate (T3 supabase-agent). */
-    var match = (c.match_score != null) ? c.match_score : null;
-    if (match != null) {
-      var mp = document.createElement('span');
-      mp.className = 'ik-card-aday__match ' + matchClass(match);
-      var mn = document.createElement('span');
-      mn.textContent = match + '%';
-      mp.appendChild(mn);
-      meta.appendChild(mp);
-    }
-
+    /* meta — sadece adres_il (match pill kaldırıldı — 8 May Tuna direktif) */
     if (c.adres_il) {
-      if (meta.children.length) {
-        var sep = document.createElement('span');
-        sep.className = 'ik-card-aday__sep';
-        sep.textContent = '·';
-        meta.appendChild(sep);
-      }
+      var meta = document.createElement('div');
+      meta.className = 'ik-card-aday__meta';
       var s = document.createElement('span');
       s.textContent = c.adres_il;
       meta.appendChild(s);
-    }
-
-    /* P3.4: meta boşsa DOM'a append etme (gereksiz boş div önlenir) */
-    if (meta.children.length > 0) {
       card.appendChild(meta);
     }
 
-    /* match_reasons chips (kompakt, max 2) — Phase D2.3
-       7 May Tuna: "Detaylı profil" reason UI gürültüsü, kart click drawer
-       açar zaten. Filter ile çıkar. */
-    var reasons = (Array.isArray(c.match_reasons) ? c.match_reasons : []).filter(function (r) {
-      return r && r.toLowerCase().indexOf('detaylı profil') === -1;
-    });
-    if (reasons.length) {
-      var reasonsRow = document.createElement('div');
-      reasonsRow.className = 'ik-card-aday__reasons';
-      reasons.slice(0, 2).forEach(function (r) {
-        var chip = document.createElement('span');
-        chip.className = 'ik-match-chip';
-        chip.textContent = r;
-        reasonsRow.appendChild(chip);
-      });
-      card.appendChild(reasonsRow);
-    }
+    /* match_reasons kaldırıldı — 8 May Tuna direktif (kart gürültüsü azaltma) */
 
     /* menu */
     var menu = document.createElement('div');

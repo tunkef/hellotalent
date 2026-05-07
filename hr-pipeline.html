@@ -29,8 +29,8 @@
 <link rel="stylesheet" href="css/ik-shell.css?v=20260505edge">
 <link rel="stylesheet" href="css/panels/ik-genel.css?v=20260507kanban-fix">
 <!-- 7 May aday drawer reuse: profil-preview.js drawer'ı (pp-* classes) — ik-pipeline'dan ÖNCE yüklenir, ik kuralları öncelikli kazansın -->
-<link rel="stylesheet" href="css/profil-extras.css?v=20260423k049o">
-<link rel="stylesheet" href="css/panels/ik-pipeline.css?v=20260508avatar-kebab">
+<link rel="stylesheet" href="css/profil-extras.css?v=20260508minimal-card">
+<link rel="stylesheet" href="css/panels/ik-pipeline.css?v=20260508minimal-card">
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="shared.js?v=20260504a24h1"></script>
@@ -517,6 +517,8 @@
   <div class="pp-header">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
     <span class="pp-header-text">Aday profili</span>
+    <!-- 8 May: "Son güncelleme" kart'tan drawer'a taşındı — ik-cand-drawer.js setDrawerUpdatedAt() yazar -->
+    <span class="pp-header-updated" id="pp-cand-updated" style="display:none" aria-live="polite"></span>
     <button class="pp-header-close" id="btn-close-preview" type="button" aria-label="Aday profilini kapat">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
     </button>
@@ -609,7 +611,7 @@
 <script src="js/ik-position-detail.js?v=20260507r2"></script>
 <!-- 7 May aday drawer: profil-preview.js olduğu gibi reuse, ik-cand-drawer.js adapter -->
 <script src="profil-preview.js?v=20260507drawer"></script>
-<script src="js/ik-cand-drawer.js?v=20260507r2"></script>
-<script src="js/ik-pipeline.js?v=20260508avatar-kebab"></script>
+<script src="js/ik-cand-drawer.js?v=20260508minimal-card"></script>
+<script src="js/ik-pipeline.js?v=20260508minimal-card"></script>
 </body>
 </html>
