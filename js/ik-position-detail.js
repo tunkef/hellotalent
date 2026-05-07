@@ -27,15 +27,6 @@
     try { window.posthog.capture(name, props || {}); } catch (e) {}
   }
 
-  /* ═══════ Stage labels ═══════ */
-  var STAGES = [
-    { key: 'yeni',     label: 'Yeni' },
-    { key: 'gorusme',  label: 'Görüşme' },
-    { key: 'mulakat',  label: 'Mülakat' },
-    { key: 'teklif',   label: 'Teklif' },
-    { key: 'isealim',  label: 'İşe alım' }
-  ];
-
   function fmtCount(n) {
     if (n == null || isNaN(n)) return '0';
     return n > 99 ? '99+' : String(n);
@@ -61,14 +52,14 @@
     head.appendChild(title);
     inner.appendChild(head);
 
-    /* ── KPI 4-col ── */
+    /* ── KPI 3-col: uzun liste · kısa liste · işe alınan
+       (eski 3-sütun pattern, IK_DATA.getPipelineSummary { uzun, kisa, iletisim }) ── */
     var kpi = document.createElement('div');
     kpi.className = 'ik-pos-expand__kpi';
     var kpiData = [
-      { label: 'Toplam aday', value: (summary.uzun || 0) + (summary.kisa || 0) + (summary.iletisim || 0) },
-      { label: 'Yeni',        value: summary.uzun || 0 },
-      { label: 'Mülakat',     value: summary.kisa || 0 },
-      { label: 'İşe alım',    value: summary.iletisim || 0 }
+      { label: 'Uzun liste',  value: summary.uzun     || 0, hint: 'Önerilen adaylar' },
+      { label: 'Kısa liste',  value: summary.kisa     || 0, hint: 'Görüşmeye alınan' },
+      { label: 'İşe alınan',  value: summary.iletisim || 0, hint: 'İletişime geçilen' }
     ];
     kpiData.forEach(function (item) {
       var col = document.createElement('div');
@@ -84,26 +75,6 @@
       kpi.appendChild(col);
     });
     inner.appendChild(kpi);
-
-    /* ── Mini pipeline 5-stage (non-clickable, visual KPI) ── */
-    var pipe = document.createElement('div');
-    pipe.className = 'ik-pos-expand__pipeline';
-    STAGES.forEach(function (st) {
-      var stageEl = document.createElement('div');
-      stageEl.className = 'ik-pos-expand__stage';
-      stageEl.setAttribute('role', 'group');
-      stageEl.setAttribute('aria-label', st.label);
-      var lbl = document.createElement('span');
-      lbl.className = 'ik-pos-expand__stage-label';
-      lbl.textContent = st.label;
-      stageEl.appendChild(lbl);
-      var cnt = document.createElement('span');
-      cnt.className = 'ik-pos-expand__stage-count';
-      cnt.textContent = fmtCount((summary.stages && summary.stages[st.key]) || 0);
-      stageEl.appendChild(cnt);
-      pipe.appendChild(stageEl);
-    });
-    inner.appendChild(pipe);
 
     /* ── Description ── */
     if (position.aciklama || position.description) {

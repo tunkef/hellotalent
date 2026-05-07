@@ -36,6 +36,11 @@
 - Single-row policy: aynı anda 1 satır expanded → cognitive load düşer
 - Eski `.ik-pos-card-*` CSS dead-code (~200 satır) bırakıldı, future cleanup
 
+**Hotfix #1 (Tuna feedback):**
+- KPI 4-col ("Toplam aday / Yeni / Mülakat / İşe alım") → **3-col** ("Uzun liste / Kısa liste / İşe alınan") — IK_DATA.getPipelineSummary `{ uzun, kisa, iletisim }` ile uyum
+- Mini pipeline 5-stage chip section TAMAMEN SİL (KPI ile duplicate veri)
+- Cache-bust `?v=20260507acc2`
+
 ## 7 May — UI Hotfix Wave (paradigm shift öncesi)
 
 **A — anasayfa (ik-genel) hero + list align:**

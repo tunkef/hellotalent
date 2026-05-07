@@ -2255,10 +2255,10 @@ html[data-theme="dark"] .ik-coaching-banner__cta:hover {
   letter-spacing: -0.01em;
 }
 
-/* KPI row */
+/* KPI 3-col — uzun · kısa · işe alınan */
 .ik-pos-expand__kpi {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: var(--space-7);
   padding: var(--space-7) 0;
   border-top: 1px solid var(--editorial-hairline);
@@ -2283,45 +2283,6 @@ html[data-theme="dark"] .ik-coaching-banner__cta:hover {
   font-weight: 600;
   color: var(--editorial-ink);
   letter-spacing: -0.01em;
-  line-height: 1;
-}
-
-/* Mini pipeline — 5 stage chips */
-.ik-pos-expand__pipeline {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-5);
-}
-.ik-pos-expand__stage {
-  flex: 1 1 140px;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-  padding: var(--space-5) var(--space-6);
-  background: var(--editorial-card);
-  border: 1px solid var(--editorial-hairline);
-  border-radius: var(--radius);
-  cursor: pointer;
-  text-decoration: none;
-  text-align: left;
-  transition: border-color 140ms ease, color 140ms ease;
-}
-.ik-pos-expand__stage:hover {
-  border-color: var(--editorial-vermillion);
-}
-.ik-pos-expand__stage-label {
-  font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  font-weight: 500;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--editorial-ink-muted);
-}
-.ik-pos-expand__stage-count {
-  font-family: var(--font-mono);
-  font-size: var(--text-lg);
-  font-weight: 600;
-  color: var(--editorial-ink);
   line-height: 1;
 }
 
@@ -2418,7 +2379,8 @@ html[data-theme="dark"] .ik-coaching-banner__cta:hover {
     margin-right: var(--space-5);
   }
   .ik-pos-expand__kpi {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-5);
   }
   .ik-pos-expand__action--danger {
     margin-left: 0;
