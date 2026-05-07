@@ -2415,8 +2415,14 @@ body .pp-identity .pp-ident__completion,
   text-decoration: none !important;
 }
 .ik-pos-expand__actions {
-  gap: var(--space-9) !important;
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 24px !important;
   padding-top: var(--space-7) !important;
+}
+/* Defansif fallback: gap desteklenmezse margin-right (eski browser) */
+.ik-pos-expand__actions > .ik-pos-expand__action + .ik-pos-expand__action {
+  margin-left: 12px !important;
 }
 .ik-pos-modal-overlay {
   position: fixed !important;
