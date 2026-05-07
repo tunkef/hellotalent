@@ -2371,7 +2371,18 @@ body .pp-identity .pp-ident__completion,
   gap: var(--space-9) !important;
 }
 .ik-pos-expand__board .ik-stage__body {
+  /* 7 May Tuna feedback: uzun liste'de scrollbar görününce kart daralıyordu.
+     scrollbar-gutter stable cross-browser tutarsız (Safari geç destek).
+     Çözüm: scrollbar tamamen gizle, JS scroll wheel/touch hâlâ çalışır,
+     tüm sütunlarda kart aynı genişlik. */
   scrollbar-gutter: stable !important;
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+.ik-pos-expand__board .ik-stage__body::-webkit-scrollbar {
+  width: 0 !important;
+  height: 0 !important;
+  display: none !important;
 }
 @media (max-width: 768px) {
   .ik-pos-expand__board {
