@@ -294,6 +294,11 @@
     track.setAttribute('cx', '20');
     track.setAttribute('cy', '20');
     track.setAttribute('r', '16');
+    /* SVG default fill=black; CSS fill:none cascade kaybolursa siyah daire render
+       eder. Attribute ile zorla — attribute > CSS olmaz ama specificity bypass. */
+    track.setAttribute('fill', 'none');
+    track.setAttribute('stroke', 'currentColor');
+    track.setAttribute('stroke-width', '3.5');
     svg.appendChild(track);
 
     var fill = document.createElementNS(SVG_NS, 'circle');
@@ -301,6 +306,10 @@
     fill.setAttribute('cx', '20');
     fill.setAttribute('cy', '20');
     fill.setAttribute('r', '16');
+    fill.setAttribute('fill', 'none');
+    fill.setAttribute('stroke', 'currentColor');
+    fill.setAttribute('stroke-width', '3.5');
+    fill.setAttribute('stroke-linecap', 'round');
     fill.setAttribute('transform', 'rotate(-90 20 20)');
     var circ = 100.53; /* 2 * Math.PI * 16 */
     fill.setAttribute('stroke-dasharray', circ.toFixed(2));

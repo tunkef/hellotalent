@@ -3463,26 +3463,33 @@ html[data-theme="dark"] .ik-position-form__change-hint {
   height: 100%;
 }
 .ik-ring__track {
-  fill: none;
-  stroke: var(--border-subtle);
-  stroke-width: 3.5;
+  fill: none !important;
+  color: var(--border-subtle);  /* currentColor → stroke */
+  stroke: var(--border-subtle) !important;
+  stroke-width: 3.5 !important;
 }
 .ik-ring__fill {
-  fill: none;
-  stroke: var(--editorial-ink);
-  stroke-width: 3.5;
+  fill: none !important;
+  color: var(--editorial-ink);  /* currentColor → stroke */
+  stroke: var(--editorial-ink) !important;
+  stroke-width: 3.5 !important;
   stroke-linecap: round;
   transition: stroke-dashoffset 400ms ease;
 }
 .ik-ring__label {
-  position: relative;
-  z-index: 1;
+  position: absolute !important;
+  inset: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  z-index: 2;
   font-family: var(--font-body);
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
   color: var(--editorial-ink);
   line-height: 1;
   letter-spacing: -0.01em;
+  pointer-events: none;
 }
 html[data-theme="dark"] .ik-ring__track { stroke: var(--editorial-hairline); }
 html[data-theme="dark"] .ik-ring__fill  { stroke: var(--editorial-ink); }
