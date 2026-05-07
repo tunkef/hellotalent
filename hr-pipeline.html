@@ -28,8 +28,7 @@
 <link rel="stylesheet" href="css/components.css?v=20260504a24h1">
 <link rel="stylesheet" href="css/ik-shell.css?v=20260505edge">
 <link rel="stylesheet" href="css/panels/ik-genel.css?v=20260507align2">
-<link rel="stylesheet" href="css/panels/ik-pipeline.css?v=20260507editorial">
-<link rel="stylesheet" href="css/panels/position-detail.css?v=pr7-clatu7">
+<link rel="stylesheet" href="css/panels/ik-pipeline.css?v=20260507acc">
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="shared.js?v=20260504a24h1"></script>
@@ -207,8 +206,8 @@
           </div>
         </div>
 
-        <!-- Bento-grid: her pozisyon AYRI ik-card (anasayfa pattern) -->
-        <div class="ik-pos-bento" id="ik-pos-grid" role="list" aria-label="Pozisyon listesi"></div>
+        <!-- 7 May refactor: wide list + inline accordion expand (modal sheet kaldırıldı) -->
+        <div class="ik-pos-table" id="ik-pos-grid" role="table" aria-label="Pozisyon listesi"></div>
 
         <!-- PR-4 stale chip (kart dışı) -->
         <span class="ik-pipeline__stale-chip" id="ik-pipeline-stale-chip"
@@ -507,49 +506,9 @@
 
 <div class="ik-pipeline-toast" data-ik-pipeline-toast aria-live="polite" aria-atomic="true"></div>
 
-<!-- PR-4: Pozisyon detay overlay + sheet (A24 form sheet'ten AYRI — dokunma) -->
-<div class="ik-pos-detail-overlay" id="ik-pos-detail-overlay" aria-hidden="true"></div>
-<aside class="ik-pos-detail-sheet" id="ik-pos-detail-sheet"
-       role="dialog" aria-modal="true" aria-labelledby="pos-detail-title" aria-hidden="true">
+<!-- 7 May refactor: detail sheet aside KALDIRILDI — accordion inline expand satır içinde render edilir
+     (js/ik-position-detail.js + css/panels/ik-pipeline.css, .ik-pos-row__expand). -->
 
-  <div class="ik-pos-detail-sheet__handle" aria-hidden="true"></div>
-
-  <div class="ik-pos-detail-sheet__header">
-    <div class="ik-pos-detail-sheet__header-meta">
-      <span class="ik-pos-detail-sheet__eyebrow" data-pos-detail-eyebrow>Pozisyon detayı</span>
-      <h2 class="ik-pos-detail-sheet__title" id="pos-detail-title" data-pos-detail-title>—</h2>
-      <div class="ik-pos-detail-sheet__chips" data-pos-detail-chips></div>
-    </div>
-    <div class="ik-pos-detail-sheet__header-actions">
-      <button type="button" class="ik-card__action-pill"
-              id="btn-pos-detail-kriter">
-        <span class="ik-card__action-pill-label">Kriter düzenle</span>
-      </button>
-      <button type="button" class="ik-pos-detail-sheet__close" id="btn-pos-detail-close"
-              aria-label="Pozisyon detayını kapat">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
-             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/>
-        </svg>
-      </button>
-    </div>
-  </div>
-
-  <div class="ik-pos-detail-sheet__body">
-    <!-- PR-4: Mobile stage tabs (JS render) -->
-    <div class="ik-pos-detail-stage-tabs" id="ik-pos-detail-stage-tabs" role="tablist" aria-label="Aşama seç"></div>
-    <!-- PR-4: 3-sütun board (JS render) -->
-    <div class="ik-pos-detail-board" id="ik-pos-detail-board" data-pos-detail-board></div>
-  </div>
-
-  <div class="ik-pos-detail-sheet__footer">
-    <button type="button" class="ik-pos-detail-sheet__footer-btn ik-pos-detail-sheet__footer-btn--danger"
-            id="btn-pos-detail-kapat">
-      Pozisyonu kapat
-    </button>
-  </div>
-
-</aside>
 
 <!-- PR-7: Pozisyon kapat / yeniden aç confirm modal -->
 <div class="ik-pos-modal-overlay" id="ik-pos-modal-overlay" aria-hidden="true"></div>
@@ -648,9 +607,9 @@
 <script src="js/ik-shell.js?v=20260505roller2"></script>
 <script src="js/ik-data.js?v=pr7-lifecycle"></script>
 <script src="js/ik-matching-engine.js?v=pr4-pipeline"></script>
-<script src="js/ik-pos-list.js?v=pr7-clatu5"></script>
+<script src="js/ik-pos-list.js?v=20260507acc"></script>
 <script src="js/ik-pos-close.js?v=pr7-clatu4"></script>
-<script src="js/ik-position-detail.js?v=pr7-clatu6"></script>
+<script src="js/ik-position-detail.js?v=20260507acc"></script>
 <script src="js/ik-pipeline.js?v=pr7-clatu7"></script>
 </body>
 </html>

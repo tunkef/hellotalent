@@ -42,7 +42,8 @@
     dom.posTitle          = $('[data-ik-position-title]');
     dom.posMenu           = $('[data-ik-position-menu]');
     dom.summary           = $('[data-ik-pipeline-summary]');
-    /* PR-7: board artık detail sheet içinde (#ik-pos-detail-board) */
+    /* 7 May refactor: detail sheet kaldırıldı, kanban board placeholder.
+       Board ID null → kanban render no-op (tüm kullanım site'lerde guard var). */
     dom.board             = document.getElementById('ik-pos-detail-board');
     dom.loading           = $('[data-ik-pipeline-loading]');
     dom.sheetOverlay      = $('[data-ik-stage-sheet-overlay]');

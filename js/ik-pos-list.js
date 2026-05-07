@@ -41,20 +41,20 @@
   }
 
   /* ═══════ SVG builder — XSS-safe (DOM API) ═══════ */
-  function makeKebabSvg() {
+  function makeChevronSvg() {
     var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     svg.setAttribute('width', '14');
     svg.setAttribute('height', '14');
     svg.setAttribute('viewBox', '0 0 24 24');
-    svg.setAttribute('fill', 'currentColor');
+    svg.setAttribute('fill', 'none');
+    svg.setAttribute('stroke', 'currentColor');
+    svg.setAttribute('stroke-width', '2');
+    svg.setAttribute('stroke-linecap', 'round');
+    svg.setAttribute('stroke-linejoin', 'round');
     svg.setAttribute('aria-hidden', 'true');
-    [5, 12, 19].forEach(function (cy) {
-      var c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-      c.setAttribute('cx', '12');
-      c.setAttribute('cy', String(cy));
-      c.setAttribute('r', '2');
-      svg.appendChild(c);
-    });
+    var p = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
+    p.setAttribute('points', '6 9 12 15 18 9');
+    svg.appendChild(p);
     return svg;
   }
 
@@ -112,80 +112,90 @@
     return chips;
   }
 
-  /* ═══════ Kart DOM — PR-7 rework #4: bento-grid (her pozisyon AYRI ik-card)
-     Anasayfa ik-card pattern reuse (image #6).
-     Click → detail sheet (PR-4). Edit/Kapat detail sheet header'da.
+  /* ═══════ Row DOM — 7 May refactor: wide list + inline accordion expand
+     Modal sheet kaldırıldı; her satır kendi expand panelini içerir.
+     Click → _htExpandPositionRow(posId, rowEl) (single-row policy).
      ═══════ */
-  function buildCard(pos, isArchive) {
-    var card = document.createElement('article');
-    card.className = 'ik-card ik-card--position-tile';
-    card.setAttribute('data-pos-id', String(pos.id));
-    card.setAttribute('data-status', isArchive ? 'archive' : 'active');
-    card.setAttribute('role', 'listitem');
-    card.setAttribute('tabindex', '0');
+  function buildRow(pos, isArchive) {
+    var row = document.createElement('div');
+    row.className = 'ik-pos-row';
+    row.setAttribute('data-pos-id', String(pos.id));
+    row.setAttribute('data-status', isArchive ? 'archive' : 'active');
+    row.setAttribute('role', 'row');
 
-    /* ── Head: title + chip ── */
-    var head = document.createElement('div');
-    head.className = 'ik-card__head';
+    /* ── Main click area (button for keyboard a11y) ── */
+    var main = document.createElement('button');
+    main.type = 'button';
+    main.className = 'ik-pos-row__main';
+    main.setAttribute('aria-expanded', 'false');
+    main.setAttribute('aria-controls', 'pos-expand-' + pos.id);
 
-    var titleEl = document.createElement('h3');
-    titleEl.className = 'ik-card__title';
-    titleEl.textContent = pos.ad || pos.title || '—';
-    head.appendChild(titleEl);
+    var title = document.createElement('h3');
+    title.className = 'ik-pos-row__title';
+    title.textContent = pos.ad || pos.title || '—';
+    main.appendChild(title);
+
+    var segCell = document.createElement('span');
+    segCell.className = 'ik-pos-row__cell ik-pos-row__cell--segment';
+    segCell.textContent = pos.seg || pos.segment || '—';
+    main.appendChild(segCell);
+
+    var locCell = document.createElement('span');
+    locCell.className = 'ik-pos-row__cell ik-pos-row__cell--mono ik-pos-row__cell--location';
+    locCell.textContent = pos.sehir || pos.city || '—';
+    main.appendChild(locCell);
+
+    var expCell = document.createElement('span');
+    expCell.className = 'ik-pos-row__cell ik-pos-row__cell--mono ik-pos-row__cell--exp';
+    expCell.textContent = pos.exp || pos.experience_years || '—';
+    main.appendChild(expCell);
+
+    var candCell = document.createElement('span');
+    candCell.className = 'ik-pos-row__cell ik-pos-row__cell--candidates';
+    candCell.setAttribute('data-row-cand', String(pos.id));
+    candCell.textContent = '—';
+    main.appendChild(candCell);
 
     var chip = document.createElement('span');
-    chip.className = 'ik-card__chip' + (isArchive ? '' : ' ik-card__chip--accent');
+    chip.className = 'ik-pos-row__chip ' + (isArchive ? 'ik-pos-row__chip--archive' : 'ik-pos-row__chip--active');
     chip.textContent = isArchive ? 'Arşiv' : 'Aktif';
-    head.appendChild(chip);
+    main.appendChild(chip);
 
-    card.appendChild(head);
-
-    /* ── Body: meta (sehir · seg · exp) ── */
-    var metaParts = [];
-    if (pos.sehir || pos.city) metaParts.push(pos.sehir || pos.city);
-    if (pos.seg   || pos.segment) metaParts.push(pos.seg || pos.segment);
-    if (pos.exp   || pos.experience_years) metaParts.push(pos.exp || pos.experience_years);
-    if (metaParts.length) {
-      var body = document.createElement('div');
-      body.className = 'ik-card__body';
-      var meta = document.createElement('span');
-      meta.className = 'ik-list__meta';
-      meta.textContent = metaParts.join(' · ');
-      body.appendChild(meta);
-      card.appendChild(body);
-    }
-
-    /* ── Footer: time ago (split, right-end) ── */
-    var footer = document.createElement('div');
-    footer.className = 'ik-card__footer ik-card__footer--split';
-
-    var timeEl = document.createElement('span');
-    timeEl.className = 'ik-list__time';
+    var time = document.createElement('span');
+    time.className = 'ik-pos-row__cell--time';
     var rawDate = isArchive
       ? (pos.updated_at || pos.closed_at)
       : pos.created_at;
-    timeEl.textContent = isArchive
+    time.textContent = isArchive
       ? formatKapatmaTarihi(rawDate)
       : (formatAcilmaTarihi(rawDate) || '—');
-    footer.appendChild(timeEl);
+    main.appendChild(time);
 
-    card.appendChild(footer);
+    var chev = document.createElement('span');
+    chev.className = 'ik-pos-row__chevron';
+    chev.setAttribute('aria-hidden', 'true');
+    chev.appendChild(makeChevronSvg());
+    main.appendChild(chev);
 
-    /* Click + keyboard → detail sheet (PR-4 reuse). Edit/Kapat detail header'da. */
-    function openDetail() {
-      if (window._htOpenPositionDetailSheet) {
-        window._htOpenPositionDetailSheet(pos.id, 'card_click');
+    row.appendChild(main);
+
+    /* ── Expand panel (lazy content fill on first expand) ── */
+    var expand = document.createElement('div');
+    expand.className = 'ik-pos-row__expand';
+    expand.id = 'pos-expand-' + pos.id;
+    expand.hidden = true;
+    expand.setAttribute('role', 'region');
+    expand.setAttribute('aria-label', 'Pozisyon detayı');
+    row.appendChild(expand);
+
+    /* Click → toggle expand (single-row policy via ik-position-detail.js) */
+    main.addEventListener('click', function () {
+      if (window._htExpandPositionRow) {
+        window._htExpandPositionRow(pos.id, row);
       }
       track('position_list_item_click', { id: pos.id, view: isArchive ? 'archive' : 'active' });
-    }
-    card.addEventListener('click', openDetail);
-    card.addEventListener('keydown', function (e) {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        openDetail();
-      }
     });
-    return card;
+    return row;
   }
 
   /* ═══════ Empty state — PR-7 CLATU: eyebrow + centered + CTA ═══════ */
@@ -223,15 +233,12 @@
     return wrap;
   }
 
-  /* ═══════ Count update — PR-7: count-chip--value → count-value ═══════ */
+  /* ═══════ Count update — 7 May refactor: row data-row-cand güncelle ═══════ */
   function updateCountChips(posId, summary) {
-    var row = document.querySelector('[data-counts-pos="' + posId + '"]');
-    if (!row) return;
-    var mapping = { uzun: summary.uzun, kisa: summary.kisa, iletisim: summary.iletisim };
-    Object.keys(mapping).forEach(function (k) {
-      var el = row.querySelector('.ik-pos-card__count-value[data-count-key="' + k + '"]');
-      if (el) el.textContent = fmtCount(mapping[k]);
-    });
+    var cell = document.querySelector('[data-row-cand="' + posId + '"]');
+    if (!cell) return;
+    var total = (summary.uzun || 0) + (summary.kisa || 0) + (summary.iletisim || 0);
+    cell.textContent = fmtCount(total) + ' aday';
   }
 
   /* ═══════ Render list — PR-7 rework #3: ik-list pattern ═══════ */
@@ -257,7 +264,7 @@
     }
 
     list.forEach(function (pos) {
-      _dom.grid.appendChild(buildCard(pos, isArchive));
+      _dom.grid.appendChild(buildRow(pos, isArchive));
     });
 
     /* Load count summaries async */
@@ -314,71 +321,34 @@
     }
   }
 
-  /* ═══════ Dropdown management ═══════ */
-  function closeAllDropdowns() {
+  /* ═══════ Action dispatch — accordion expand footer butonları çağırır
+     (data-pos-action attribute via ik-position-detail.js) ═══════ */
+  function bindActionDelegate() {
     if (!_dom.grid) return;
-    var openDDs = _dom.grid.querySelectorAll('.ik-pos-card__dropdown.is-open');
-    for (var i = 0; i < openDDs.length; i++) {
-      openDDs[i].classList.remove('is-open');
-      var wrap = openDDs[i].closest('.ik-pos-card__menu-wrap');
-      if (wrap) {
-        var mb = wrap.querySelector('.ik-pos-card__menu-btn');
-        if (mb) mb.setAttribute('aria-expanded', 'false');
-      }
-    }
-  }
-
-  function bindDropdowns() {
-    if (!_dom.grid) return;
-
     _dom.grid.addEventListener('click', function (e) {
-      var menuBtn = e.target.closest('.ik-pos-card__menu-btn');
-      if (menuBtn) {
-        e.stopPropagation();
-        var wrap = menuBtn.closest('.ik-pos-card__menu-wrap');
-        var dd = wrap && wrap.querySelector('.ik-pos-card__dropdown');
-        var isOpen = dd && dd.classList.contains('is-open');
-        closeAllDropdowns();
-        if (dd && !isOpen) {
-          dd.classList.add('is-open');
-          menuBtn.setAttribute('aria-expanded', 'true');
-        }
-        return;
-      }
-
-      var actionBtn = e.target.closest('[data-action]');
-      if (actionBtn) {
-        e.stopPropagation();
-        closeAllDropdowns();
-        var action = actionBtn.getAttribute('data-action');
-        var posId  = actionBtn.getAttribute('data-pos-id');
-        if (posId) handleAction(action, posId);
-        return;
-      }
-    });
-
-    document.addEventListener('click', function () { closeAllDropdowns(); });
-    document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape') closeAllDropdowns();
+      var actionBtn = e.target.closest('[data-pos-action]');
+      if (!actionBtn) return;
+      e.stopPropagation();
+      var action = actionBtn.getAttribute('data-pos-action');
+      var posId  = actionBtn.getAttribute('data-pos-id');
+      if (posId) handleAction(action, posId);
     });
   }
 
-  /* ═══════ Action dispatch ═══════ */
   function handleAction(action, posIdStr) {
     var posId = isNaN(posIdStr) ? posIdStr : Number(posIdStr);
-
-    if (action === 'view') {
-      if (window._htOpenPositionDetailSheet) {
-        window._htOpenPositionDetailSheet(posId, 'card_action_menu');
-      }
-      return;
-    }
 
     if (action === 'edit') {
       if (window._htOpenPositionEditSheet) {
         window._htOpenPositionEditSheet(posId);
       }
-      track('position_edit_open', { position_id: posId, source: 'card_action_menu' });
+      track('position_edit_open', { position_id: posId, source: 'row_expand_footer' });
+      return;
+    }
+
+    if (action === 'pool') {
+      window.location.href = 'hr-pool.html?pos=' + encodeURIComponent(posId);
+      track('position_pool_open', { position_id: posId, source: 'row_expand_footer' });
       return;
     }
 
@@ -427,7 +397,7 @@
     cacheDom();
     if (!_dom.grid) return;
     bindSegmentToggle();
-    bindDropdowns();
+    bindActionDelegate();
 
     if (window.IK_SHELL && window.IK_SHELL.ctx) {
       loadAndRender();

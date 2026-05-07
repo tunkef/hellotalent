@@ -1,246 +1,328 @@
-/* global IK_SHELL, IK_DATA */
+/* global IK_DATA */
 /* ════════════════════════════════════════════════════════════════
-   IK Position Detail Sheet — PR-4
-   Pozisyon detay sheet lifecycle: open / close / history.pushState.
-   #ik-pos-detail-sheet — A24 form sheet'ten AYRI (z=901 vs z=810).
-   XSS-safe (textContent only).
-   SOLID:
-     - SRP: sadece detay sheet lifecycle yönetir.
-     - OCP: board render ik-pipeline.js'ten delegate edilir.
-     - DIP: data IK_DATA üzerinden.
+   IK Position Detail — 7 May refactor: inline accordion expand
+   (modal sheet kaldırıldı, paradigm shift T3)
+
+   Public API:
+     window._htExpandPositionRow(positionId, rowEl)  — toggle expand
+     window._htCollapsePositionRows()                 — collapse all
+     window._htOpenPositionDetailSheet(id, src)       — backwards-compat alias
+
+   Single-row policy: aynı anda yalnız bir satır expanded.
+   Esc → collapse.
+   Deep-link: ?pos=X → page load'da o satır otomatik expand + scrollIntoView.
    ════════════════════════════════════════════════════════════════ */
 (function () {
   'use strict';
 
   var _state = {
-    positionId: null,
-    isOpen: false
+    expandedId: null,
+    expandedRow: null,
+    contentCache: {}
   };
 
-  var _dom = {};
-
-  function cacheDom() {
-    _dom.overlay    = document.getElementById('ik-pos-detail-overlay');
-    _dom.sheet      = document.getElementById('ik-pos-detail-sheet');
-    _dom.title      = document.querySelector('[data-pos-detail-title]');
-    _dom.eyebrow    = document.querySelector('[data-pos-detail-eyebrow]');
-    _dom.chips      = document.querySelector('[data-pos-detail-chips]');
-    _dom.board      = document.getElementById('ik-pos-detail-board');
-    _dom.stageTabs  = document.getElementById('ik-pos-detail-stage-tabs');
-    _dom.btnClose   = document.getElementById('btn-pos-detail-close');
-    _dom.btnKriter  = document.getElementById('btn-pos-detail-kriter');
-    _dom.btnKapat   = document.getElementById('btn-pos-detail-kapat');
-  }
-
-  /* ── PostHog helper ── */
-  function track(eventName, props) {
+  /* ═══════ PostHog helper ═══════ */
+  function track(name, props) {
     if (!window.posthog) return;
-    try { window.posthog.capture(eventName, props || {}); } catch (e) {}
+    try { window.posthog.capture(name, props || {}); } catch (e) {}
   }
 
-  /* ── Chip builder (XSS-safe) ── */
-  function makeMetaChip(text) {
-    var chip = document.createElement('span');
-    chip.className = 'ik-pos-detail-sheet__meta-chip';
-    chip.textContent = text;
-    return chip;
+  /* ═══════ Stage labels ═══════ */
+  var STAGES = [
+    { key: 'yeni',     label: 'Yeni' },
+    { key: 'gorusme',  label: 'Görüşme' },
+    { key: 'mulakat',  label: 'Mülakat' },
+    { key: 'teklif',   label: 'Teklif' },
+    { key: 'isealim',  label: 'İşe alım' }
+  ];
+
+  function fmtCount(n) {
+    if (n == null || isNaN(n)) return '0';
+    return n > 99 ? '99+' : String(n);
   }
 
-  /* ── Clear children helper ── */
-  function clearChildren(el) {
-    while (el && el.firstChild) el.removeChild(el.firstChild);
+  /* ═══════ Expand content render — KPI + mini pipeline + desc + actions ═══════ */
+  function renderExpandContent(expandEl, position, summary) {
+    while (expandEl.firstChild) expandEl.removeChild(expandEl.firstChild);
+
+    var inner = document.createElement('div');
+    inner.className = 'ik-pos-expand__inner';
+
+    /* ── Head — eyebrow + title (tekrar, accordion içinde context) ── */
+    var head = document.createElement('div');
+    head.className = 'ik-pos-expand__head';
+    var eyebrow = document.createElement('span');
+    eyebrow.className = 'ik-pos-expand__eyebrow';
+    eyebrow.textContent = 'POZİSYON DETAYI';
+    head.appendChild(eyebrow);
+    var title = document.createElement('h3');
+    title.className = 'ik-pos-expand__title';
+    title.textContent = position.ad || position.title || '—';
+    head.appendChild(title);
+    inner.appendChild(head);
+
+    /* ── KPI 4-col ── */
+    var kpi = document.createElement('div');
+    kpi.className = 'ik-pos-expand__kpi';
+    var kpiData = [
+      { label: 'Toplam aday', value: (summary.uzun || 0) + (summary.kisa || 0) + (summary.iletisim || 0) },
+      { label: 'Yeni',        value: summary.uzun || 0 },
+      { label: 'Mülakat',     value: summary.kisa || 0 },
+      { label: 'İşe alım',    value: summary.iletisim || 0 }
+    ];
+    kpiData.forEach(function (item) {
+      var col = document.createElement('div');
+      col.className = 'ik-pos-expand__kpi-item';
+      var lbl = document.createElement('span');
+      lbl.className = 'ik-pos-expand__kpi-label';
+      lbl.textContent = item.label;
+      col.appendChild(lbl);
+      var val = document.createElement('span');
+      val.className = 'ik-pos-expand__kpi-value';
+      val.textContent = fmtCount(item.value);
+      col.appendChild(val);
+      kpi.appendChild(col);
+    });
+    inner.appendChild(kpi);
+
+    /* ── Mini pipeline 5-stage (non-clickable, visual KPI) ── */
+    var pipe = document.createElement('div');
+    pipe.className = 'ik-pos-expand__pipeline';
+    STAGES.forEach(function (st) {
+      var stageEl = document.createElement('div');
+      stageEl.className = 'ik-pos-expand__stage';
+      stageEl.setAttribute('role', 'group');
+      stageEl.setAttribute('aria-label', st.label);
+      var lbl = document.createElement('span');
+      lbl.className = 'ik-pos-expand__stage-label';
+      lbl.textContent = st.label;
+      stageEl.appendChild(lbl);
+      var cnt = document.createElement('span');
+      cnt.className = 'ik-pos-expand__stage-count';
+      cnt.textContent = fmtCount((summary.stages && summary.stages[st.key]) || 0);
+      stageEl.appendChild(cnt);
+      pipe.appendChild(stageEl);
+    });
+    inner.appendChild(pipe);
+
+    /* ── Description ── */
+    if (position.aciklama || position.description) {
+      var descBlock = document.createElement('div');
+      descBlock.className = 'ik-pos-expand__desc-block';
+      var descLbl = document.createElement('span');
+      descLbl.className = 'ik-pos-expand__desc-label';
+      descLbl.textContent = 'Açıklama';
+      descBlock.appendChild(descLbl);
+      var descP = document.createElement('p');
+      descP.className = 'ik-pos-expand__desc';
+      descP.textContent = position.aciklama || position.description;
+      descBlock.appendChild(descP);
+      inner.appendChild(descBlock);
+    }
+
+    /* ── Footer actions ── */
+    var actions = document.createElement('div');
+    actions.className = 'ik-pos-expand__actions';
+    var isArchive = position.status === 'archive' || position.status === 'closed' || position.is_archive;
+
+    var editBtn = document.createElement('button');
+    editBtn.type = 'button';
+    editBtn.className = 'ik-pos-expand__action';
+    editBtn.setAttribute('data-pos-action', 'edit');
+    editBtn.setAttribute('data-pos-id', String(position.id));
+    editBtn.textContent = 'Düzenle';
+    actions.appendChild(editBtn);
+
+    if (!isArchive) {
+      var poolBtn = document.createElement('button');
+      poolBtn.type = 'button';
+      poolBtn.className = 'ik-pos-expand__action';
+      poolBtn.setAttribute('data-pos-action', 'pool');
+      poolBtn.setAttribute('data-pos-id', String(position.id));
+      poolBtn.textContent = 'Adayları görüntüle';
+      actions.appendChild(poolBtn);
+    }
+
+    var dangerBtn = document.createElement('button');
+    dangerBtn.type = 'button';
+    dangerBtn.className = 'ik-pos-expand__action ik-pos-expand__action--danger';
+    dangerBtn.setAttribute('data-pos-action', isArchive ? 'reopen' : 'close');
+    dangerBtn.setAttribute('data-pos-id', String(position.id));
+    dangerBtn.textContent = isArchive ? 'Yeniden aç' : 'Kapat';
+    actions.appendChild(dangerBtn);
+
+    inner.appendChild(actions);
+
+    expandEl.appendChild(inner);
   }
 
-  /* ── Render sheet header with position data ── */
-  function renderSheetHeader(position) {
-    if (!position) return;
-
-    if (_dom.title) {
-      _dom.title.textContent = position.ad || position.title || '—';
-    }
-    if (_dom.eyebrow) {
-      _dom.eyebrow.textContent = 'Pozisyon detayı';
-    }
-    if (_dom.chips) {
-      clearChildren(_dom.chips);
-      /* Şehir chip */
-      var sehir = position.sehir || position.city;
-      if (sehir) _dom.chips.appendChild(makeMetaChip(sehir));
-      /* Segment chip */
-      var seg = position.seg || position.segment;
-      if (seg) _dom.chips.appendChild(makeMetaChip(seg));
-      /* Deneyim chip */
-      var exp = position.exp || position.experience_years;
-      if (exp) _dom.chips.appendChild(makeMetaChip(exp));
-    }
-  }
-
-  /* ── Open ── */
-  function openPositionDetailSheet(positionId, source) {
-    if (!_dom.sheet) return;
-    _state.positionId = positionId;
-    _state.isOpen     = true;
-
-    /* history.pushState — back button kapatır */
-    try {
-      history.pushState(
-        { posDetailSheet: positionId },
-        '',
-        window.location.pathname + '?pos=' + encodeURIComponent(positionId)
-      );
-    } catch (e) {
-      console.warn('[ik-position-detail] pushState error:', e && e.message);
-    }
-
-    /* Header populate */
+  /* ═══════ Lazy load + render ═══════ */
+  function loadAndRender(positionId, expandEl) {
     var position = null;
     if (window.IK_DATA && IK_DATA._getPositionSync) {
       position = IK_DATA._getPositionSync(positionId);
     }
-    renderSheetHeader(position);
-
-    /* Show overlay + sheet */
-    if (_dom.overlay) {
-      _dom.overlay.classList.add('is-open');
-      _dom.overlay.setAttribute('aria-hidden', 'false');
+    if (!position) {
+      position = { id: positionId, ad: '—' };
     }
-    _dom.sheet.classList.add('is-open');
-    _dom.sheet.setAttribute('aria-hidden', 'false');
-    document.body.classList.add('ht-scroll-lock');
 
-    /* Focus management — close button */
+    var cached = _state.contentCache[positionId];
+    if (cached) {
+      renderExpandContent(expandEl, position, cached);
+      return;
+    }
+
+    /* Loading placeholder */
+    while (expandEl.firstChild) expandEl.removeChild(expandEl.firstChild);
+    var loading = document.createElement('div');
+    loading.className = 'ik-pos-expand__inner';
+    var p = document.createElement('p');
+    p.className = 'ik-pos-expand__desc';
+    p.textContent = 'Yükleniyor…';
+    loading.appendChild(p);
+    expandEl.appendChild(loading);
+
+    /* Fetch summary */
+    if (window.IK_DATA && IK_DATA.getPipelineSummary) {
+      IK_DATA.getPipelineSummary(positionId).then(function (summary) {
+        _state.contentCache[positionId] = summary || {};
+        renderExpandContent(expandEl, position, summary || {});
+      }).catch(function (e) {
+        console.error('[ik-position-detail] summary fetch error:', e && e.message);
+        renderExpandContent(expandEl, position, {});
+      });
+    } else {
+      renderExpandContent(expandEl, position, {});
+    }
+  }
+
+  /* ═══════ Collapse all rows ═══════ */
+  function collapseAllRows() {
+    var grid = document.getElementById('ik-pos-grid');
+    if (!grid) return;
+    var openRows = grid.querySelectorAll('.ik-pos-row.is-expanded');
+    for (var i = 0; i < openRows.length; i++) {
+      openRows[i].classList.remove('is-expanded');
+      var main = openRows[i].querySelector('.ik-pos-row__main');
+      if (main) main.setAttribute('aria-expanded', 'false');
+      var expand = openRows[i].querySelector('.ik-pos-row__expand');
+      if (expand) expand.hidden = true;
+    }
+    _state.expandedId = null;
+    _state.expandedRow = null;
+  }
+
+  /* ═══════ Expand row (toggle) — single-row policy ═══════ */
+  function expandPositionRow(positionId, rowEl) {
+    if (!rowEl) {
+      rowEl = document.querySelector('.ik-pos-row[data-pos-id="' + positionId + '"]');
+    }
+    if (!rowEl) return;
+
+    var alreadyExpanded = rowEl.classList.contains('is-expanded');
+
+    /* Collapse others first */
+    collapseAllRows();
+
+    if (alreadyExpanded) {
+      /* Toggle off — URL temizle */
+      try { history.replaceState(null, '', window.location.pathname); } catch (e) {}
+      return;
+    }
+
+    /* Expand target */
+    rowEl.classList.add('is-expanded');
+    var main = rowEl.querySelector('.ik-pos-row__main');
+    if (main) main.setAttribute('aria-expanded', 'true');
+    var expand = rowEl.querySelector('.ik-pos-row__expand');
+    if (expand) {
+      expand.hidden = false;
+      loadAndRender(positionId, expand);
+    }
+    _state.expandedId = positionId;
+    _state.expandedRow = rowEl;
+
+    /* Deep-link URL update */
+    try {
+      history.replaceState(
+        { posExpand: positionId },
+        '',
+        window.location.pathname + '?pos=' + encodeURIComponent(positionId)
+      );
+    } catch (e) {
+      console.warn('[ik-position-detail] replaceState error:', e && e.message);
+    }
+
+    /* Scroll into view (smooth, top of row visible) */
     setTimeout(function () {
-      if (_dom.btnClose) _dom.btnClose.focus();
+      rowEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, 50);
 
-    /* PostHog */
-    track('pipeline_board_open', {
+    track('pipeline_row_expand', {
       position_id: positionId,
-      source: source || 'switcher_click'
+      source: 'row_click'
     });
   }
 
-  /* ── Close ── */
-  function closePositionDetailSheet(force) {
-    if (!_dom.sheet) return;
-    _state.isOpen = false;
-
-    /* URL temizle */
-    try {
-      history.replaceState(null, '', window.location.pathname);
-    } catch (e) {}
-
-    if (_dom.overlay) {
-      _dom.overlay.classList.remove('is-open');
-      _dom.overlay.setAttribute('aria-hidden', 'true');
-    }
-    _dom.sheet.classList.remove('is-open');
-    _dom.sheet.setAttribute('aria-hidden', 'true');
-    document.body.classList.remove('ht-scroll-lock');
-    _state.positionId = null;
+  /* ═══════ Backwards-compat alias (eski card_action_menu çağrıları) ═══════ */
+  function openPositionDetailSheet(positionId, source) {
+    expandPositionRow(positionId, null);
+    track('pipeline_compat_alias', { position_id: positionId, source: source || 'unknown' });
   }
 
-  /* ── Focus trap ── */
-  function trapFocus(e) {
-    if (!_dom.sheet || !_dom.sheet.classList.contains('is-open')) return;
-    var focusable = Array.prototype.slice.call(
-      _dom.sheet.querySelectorAll(
-        'button:not([disabled]), a[href], input:not([disabled]), [tabindex]:not([tabindex="-1"])'
-      )
-    );
-    if (!focusable.length) return;
-    var first = focusable[0];
-    var last  = focusable[focusable.length - 1];
-    if (e.key === 'Tab') {
-      if (e.shiftKey) {
-        if (document.activeElement === first) { e.preventDefault(); last.focus(); }
-      } else {
-        if (document.activeElement === last)  { e.preventDefault(); first.focus(); }
-      }
-    }
-  }
-
-  /* ── Bind ── */
-  function bind() {
-    /* Kapat butonu */
-    if (_dom.btnClose) {
-      _dom.btnClose.addEventListener('click', function () {
-        closePositionDetailSheet(false);
-      });
-    }
-
-    /* Overlay click */
-    if (_dom.overlay) {
-      _dom.overlay.addEventListener('click', function () {
-        closePositionDetailSheet(false);
-      });
-    }
-
-    /* ESC — sadece detay sheet açıkken (soft refresh modal açıksa ESC sadece modal'ı kapatır) */
+  /* ═══════ Esc keyboard handler ═══════ */
+  function bindKeyboard() {
     document.addEventListener('keydown', function (e) {
-      if (e.key !== 'Escape') return;
-      /* Soft refresh modal açıksa önce onu kapat */
-      var modal = document.getElementById('ik-soft-refresh-modal');
-      if (modal && modal.style.display !== 'none') return;
-      if (_state.isOpen) {
-        e.stopPropagation();
-        closePositionDetailSheet(false);
+      if (e.key === 'Escape' && _state.expandedId) {
+        collapseAllRows();
+        try { history.replaceState(null, '', window.location.pathname); } catch (err) {}
       }
     });
-
-    /* Focus trap */
-    if (_dom.sheet) {
-      _dom.sheet.addEventListener('keydown', trapFocus);
-    }
-
-    /* popstate — back button */
-    window.addEventListener('popstate', function (e) {
-      if (_state.isOpen && (!e.state || !e.state.posDetailSheet)) {
-        closePositionDetailSheet(true);
-      }
-    });
-
-    /* "Düzenle" — PR-7 form sheet edit modu.
-       Tuna fix: detail sheet z=901, form sheet z=810 — form altta kalıyordu.
-       Detail kapat + 200ms sonra form aç (animasyon overlap önle). */
-    if (_dom.btnKriter) {
-      _dom.btnKriter.addEventListener('click', function () {
-        if (!_state.positionId) return;
-        var posId = _state.positionId;
-        closePositionDetailSheet(true);
-        setTimeout(function () {
-          if (window._htOpenPositionEditSheet) {
-            window._htOpenPositionEditSheet(posId);
-          }
-        }, 200);
-      });
-    }
-
-    /* "Pozisyonu kapat" — PR-7 confirm modal */
-    if (_dom.btnKapat) {
-      _dom.btnKapat.addEventListener('click', function () {
-        if (!_state.positionId) return;
-        track('pipeline_position_close_intent', { position_id: _state.positionId });
-        if (window._htPosClose) {
-          window._htPosClose.confirmClose(_state.positionId, function (result) {
-            /* Kapat onaylandı — detay sheet'i de kapat */
-            closePositionDetailSheet(true);
-          });
-        }
-      });
-    }
   }
 
-  /* ── Init ── */
+  /* ═══════ Deep-link auto-expand on page load (?pos=X) ═══════ */
+  function autoExpandFromUrl() {
+    var params = new URLSearchParams(window.location.search);
+    var posId = params.get('pos');
+    if (!posId) return;
+
+    /* Wait for rows to render */
+    var tries = 0;
+    var poll = setInterval(function () {
+      var rowEl = document.querySelector('.ik-pos-row[data-pos-id="' + posId + '"]');
+      if (rowEl) {
+        clearInterval(poll);
+        expandPositionRow(posId, rowEl);
+      } else if (++tries > 50) {
+        clearInterval(poll);
+      }
+    }, 100);
+  }
+
+  /* ═══════ Init ═══════ */
   function init() {
-    cacheDom();
-    if (!_dom.sheet) return; /* sadece hr-pipeline.html'de çalışır */
-    bind();
+    bindKeyboard();
+    /* Wait for ik-pos-list render */
+    if (window._htPosList) {
+      autoExpandFromUrl();
+    } else {
+      var fired = false;
+      function onReady() {
+        if (fired) return;
+        fired = true;
+        autoExpandFromUrl();
+      }
+      document.addEventListener('ik-shell:ready', onReady, { once: true });
+      setTimeout(onReady, 800);
+    }
   }
 
-  /* Expose */
+  /* ═══════ Public API ═══════ */
+  window._htExpandPositionRow      = expandPositionRow;
+  window._htCollapsePositionRows   = collapseAllRows;
+  /* Backwards-compat */
   window._htOpenPositionDetailSheet  = openPositionDetailSheet;
-  window._htClosePositionDetailSheet = closePositionDetailSheet;
+  window._htClosePositionDetailSheet = collapseAllRows;
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);

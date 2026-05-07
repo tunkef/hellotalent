@@ -1,7 +1,42 @@
 # hellotalent.ai — Current State
-> Son guncelleme: **7 Mayıs 2026** | UI hotfix wave: anasayfa hero + list align, Pozisyonlar hero beyaz, Aktif/Arşiv toggle SaaS-pill → editorial magazine-tab.
+> Son guncelleme: **7 Mayıs 2026** | T3 paradigm shift: Pozisyonlar wide list + inline accordion (modal detail sheet kaldırıldı). UI hotfix wave öncesi.
 
-## 7 May — UI Hotfix Wave
+## 7 May — T3 Paradigm Shift: Pozisyonlar Wide List + Inline Accordion
+
+**Karar:** Pattern A (pure accordion). Modal detail sheet TAMAMEN iptal, içerik satırın altında inline expand.
+
+**Phase 1 — Markup (hr-pipeline.html):**
+- `.ik-pos-bento` (bento-grid) → `.ik-pos-table` (wide list, role="table")
+- `<aside id="ik-pos-detail-sheet">` modal markup tamamen SİL (~140 satır kayıp)
+- Cache-bust `?v=20260507acc` (CSS + 2 JS dosyası)
+
+**Phase 2 — CSS (ik-pipeline.css + position-detail.css):**
+- `.ik-pos-table` 8-col grid template (title · segment · location · exp · candidates · status · time · chevron)
+- `.ik-pos-row.is-expanded` chevron 180° rotate + bg shift
+- `.ik-pos-row__expand` accordion content: KPI 4-col + mini pipeline 5-stage + desc + footer aksiyonlar
+- Mobile breakpoint 768px → row column'a düşer (3-row stack)
+- `position-detail.css` **SİL tamamen** (modal artık yok)
+
+**Phase 3 — JS (ik-position-detail.js + ik-pos-list.js):**
+- `ik-position-detail.js` overlay/sheet/focus-trap pattern → **accordion controller**:
+  - `expandPositionRow(positionId, rowEl)` single-row policy
+  - Esc → collapse, deep-link `?pos=X` autoExpand on load
+  - Lazy content render + cache (KPI + mini pipeline + desc + actions)
+  - Backwards-compat: `_htOpenPositionDetailSheet` alias = expandPositionRow
+- `ik-pos-list.js`: `buildCard` → `buildRow`, kebab dropdown SİL, `bindActionDelegate` data-pos-action listener
+- `updateCountChips` → row data-row-cand cell güncelle (toplam aday)
+- "Pipeline" linki "Adayları görüntüle" (hr-pool.html?pos=X) — kanban kaldırıldığı için
+
+**Phase 4 — Test + Docs:**
+- `tests/pr4-pipeline-3stage.spec.js` → `.disabled-20260507-accordion` (modal selector'lar broken; accordion için yeniden yazılacak)
+- `js/ik-pipeline.js` `dom.board` graceful null (#ik-pos-detail-board markup yok artık, kanban no-op)
+
+**Etki:**
+- Modal-açılır rituel kalktı, kullanıcı bağlamdan kopmaz
+- Single-row policy: aynı anda 1 satır expanded → cognitive load düşer
+- Eski `.ik-pos-card-*` CSS dead-code (~200 satır) bırakıldı, future cleanup
+
+## 7 May — UI Hotfix Wave (paradigm shift öncesi)
 
 **A — anasayfa (ik-genel) hero + list align:**
 - `.ik-genel__hero` light bg `--editorial-bg` (krem) → `--editorial-card` (#FFFFFF) — diğer bento kartlarla tutarlı.
