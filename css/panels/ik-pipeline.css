@@ -2662,10 +2662,13 @@ body .pp-identity .pp-ident__completion,
   background: var(--editorial-bg);
 }
 .ik-pos-expand__board .ik-stage__body {
-  /* 5 kart önizleme — kart ~110px (3 satır içerik), gap-4 (8px) → ~590px görünür */
-  min-height: 580px;
-  max-height: 580px;
-  overflow-y: auto;
+  /* 5 kart önizleme — gerçek kart yüksekliği ~130px (avatar + meta + chip rows),
+     5 kart × 130 + 4 × 8px gap + 2 × 16px padding ≈ 700px.
+     flex:1 parent'ta max-height etkisiz olabiliyor → height + flex:0 0 auto. */
+  height: 700px !important;
+  max-height: 700px !important;
+  flex: 0 0 auto !important;
+  overflow-y: auto !important;
   padding: var(--space-5);
   gap: var(--space-4);
   /* Editorial scrollbar — minimal */
