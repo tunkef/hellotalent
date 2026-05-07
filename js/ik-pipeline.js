@@ -264,15 +264,35 @@
     });
   }
 
-  /* ═══════ Last role helper — ring-v2 Tuna direktif ═══════ */
-  function getLastRole(c) {
-    var poz = c.son_pozisyon ||
-              (c.experiences && c.experiences[0] && c.experiences[0].pozisyon) || '';
-    var sirket = c.son_marka || c.son_sirket || c.son_sirket_adi ||
-                 (c.experiences && c.experiences[0] &&
-                   (c.experiences[0].marka || c.experiences[0].sirket_adi)) || '';
-    if (poz && sirket) return poz + ' · ' + sirket;
-    return poz || sirket || '';
+  /* ═══════ Last role 2-satır block — designer round 4 ═══════
+     getLastRole() tek string döndürüyordu.
+     renderLastRole() marka üst / pozisyon alt DOM element döndürür.
+  ═══════════════════════════════════════════════════════════════ */
+  function renderLastRole(c) {
+    var brand = c.son_marka || c.son_sirket || c.son_sirket_adi ||
+                (c.experiences && c.experiences[0] &&
+                  (c.experiences[0].marka || c.experiences[0].sirket_adi)) || '';
+    var role = c.son_pozisyon ||
+               (c.experiences && c.experiences[0] && c.experiences[0].pozisyon) || '';
+
+    if (!brand && !role) return null;
+
+    var wrap = document.createElement('div');
+    wrap.className = 'ik-card-aday__last-block';
+
+    if (brand) {
+      var brandEl = document.createElement('div');
+      brandEl.className = 'ik-card-aday__last-brand';
+      brandEl.textContent = brand;
+      wrap.appendChild(brandEl);
+    }
+    if (role) {
+      var roleEl = document.createElement('div');
+      roleEl.className = 'ik-card-aday__last-position';
+      roleEl.textContent = role;
+      wrap.appendChild(roleEl);
+    }
+    return wrap;
   }
 
   /* ═══════ Match ring (SVG text — ring-v3 SVG-text fix) ═══════
@@ -435,13 +455,10 @@
     card.appendChild(head);
 
     /* adres_il kaldırıldı — ring-v2 Tuna direktif */
-    /* last-role: son pozisyon · şirket */
-    var lastRole = getLastRole(c);
-    if (lastRole) {
-      var lastEl = document.createElement('div');
-      lastEl.className = 'ik-card-aday__last-role';
-      lastEl.textContent = lastRole;
-      card.appendChild(lastEl);
+    /* last-role: 2-satır block — marka üst, pozisyon alt (designer round 4) */
+    var lastBlock = renderLastRole(c);
+    if (lastBlock) {
+      card.appendChild(lastBlock);
     }
 
     /* match_reasons kaldırıldı — 8 May Tuna direktif (kart gürültüsü azaltma) */
