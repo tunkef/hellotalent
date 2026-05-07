@@ -2362,15 +2362,54 @@ body .pp-identity .pp-ident__completion,
 /* 7 May Tuna feedback: profil-extras.css load sonrası .ik-pos-expand__board
    grid bozuluyordu (cascade order düzeltildi ama browser cache + 3rd-party
    stil override risklerine karşı !important defansif). 3-col yan yana
-   board garanti. */
+   board garanti. Gap genişletildi (Tuna: nefes payı), scrollbar-gutter
+   stable ile uzun liste kartları kısa liste ile aynı genişlik (scrollbar
+   dolu kart kısaltmaz). */
 .ik-pos-expand__board {
   display: grid !important;
   grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: var(--space-9) !important;
+}
+.ik-pos-expand__board .ik-stage__body {
+  scrollbar-gutter: stable !important;
 }
 @media (max-width: 768px) {
   .ik-pos-expand__board {
     grid-template-columns: 1fr !important;
+    gap: var(--space-7) !important;
   }
+}
+
+/* 7 May Tuna feedback: footer aksiyon butonları (Düzenle/Havuza git/Kapat)
+   ve close confirm modal unstyled native button gözüküyordu (cache veya
+   cascade override). !important defansif. */
+.ik-pos-expand__action {
+  padding: var(--space-3) var(--space-7) !important;
+  background: transparent !important;
+  border: 1px solid var(--editorial-hairline-strong) !important;
+  border-radius: var(--radius) !important;
+  font-family: var(--font-body) !important;
+  font-size: var(--text-sm) !important;
+  font-weight: 600 !important;
+  color: var(--editorial-ink) !important;
+  cursor: pointer !important;
+  text-decoration: none !important;
+}
+.ik-pos-modal-overlay {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 920 !important;
+}
+.ik-pos-modal {
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -60%) !important;
+  z-index: 921 !important;
+  width: min(420px, calc(100vw - 48px)) !important;
+}
+.ik-pos-modal.is-open {
+  transform: translate(-50%, -50%) !important;
 }
 
 .ik-cand-drawer-LEGACY-DEPRECATED {
