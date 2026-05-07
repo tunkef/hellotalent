@@ -45,6 +45,12 @@
 - `isArchive` derivation `position.status === 'closed' || position.is_archive` (uydurma) → `position.durum === 'closed'` (gerçek migration 20260505130000 kolonu)
 - Cache-bust `?v=20260507acc3`
 
+**Hotfix #9 (yanlış %0 match badge):**
+- **Kök neden:** `hr_get_pipeline` RPC `match_score` döndürmüyor (KVKK md.10 — DB'de saklanmıyor). Pipeline'dan enrich edilen aday `c.match_score = null`. `renderCard` line 352 fallback `IK_DATA.calcMatch(c, state.activePosition)` çağırıyor, ama `calcMatch` field alias mismatch (`pos.segment` vs gerçek `pos.seg`; `pos.city` vs `pos.sehir`; `pos.experience_years` vs `pos.exp`) → score = 0 → yanlış %0 badge.
+- **Düzeltme:** Frontend fallback `calcMatch` çağrısı KALDIRILDI. Match score yoksa badge hiç render edilmiyor (honest blank yerine yanıltıcı %0).
+- **Long-term TODO (T3):** `hr_get_pipeline` migration ile `match_score` recalculate (search_employer_candidates match logic'ini reuse veya position kriterleri ile tek-aday-match RPC). supabase-agent + auditor + Codex zinciri.
+- Cache-bust `?v=20260507match`
+
 **Hotfix #8 ("Aday bulunamadı" placeholder bug):**
 - **Kök neden:** `loadInit()` `searchCandidates({}, null)` aday havuzunu limit'le döndürüyor (~50 aday). `state.candidatesById` lookup map sadece havuzdaki adayları içeriyor. Pipeline'da limit dışında bir aday varsa `renderCard` `state.candidatesById[entry.candidate_id]` miss → "— Aday bulunamadı —" placeholder.
 - **Düzeltme:** `loadPipeline()` içinde pipeline entry'lerinden state.candidatesById **upsert** (RPC `hr_get_pipeline` zaten `candidate_name` / `candidate_pozisyon` / `candidate_sehir` döndürüyor — migration 20260426012144 line 281-282).

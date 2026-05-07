@@ -347,11 +347,14 @@
     var meta = document.createElement('div');
     meta.className = 'ik-card-aday__meta';
 
-    /* Phase D2.3: match_score RPC field; fallback calcMatch */
+    /* Phase D2.3: match_score RPC field. searchCandidates havuzundan gelen adaylarda
+       dolu (RPC hesaplıyor). Pipeline entry'den enrich edilen adaylarda null —
+       hr_get_pipeline match_score döndürmüyor (KVKK md.10: DB'de saklanmıyor).
+       7 May Tuna bug: calcMatch fallback field alias mismatch (pos.segment vs
+       pos.seg) ile %0 hesaplıyordu → yanlış görünüm. Fallback KALDIRILDI;
+       match score yoksa badge hiç gösterilmiyor. Long-term fix: hr_get_pipeline
+       migration ile match_score recalculate (T3 supabase-agent). */
     var match = (c.match_score != null) ? c.match_score : null;
-    if (match == null && state.activePosition) {
-      match = IK_DATA.calcMatch(c, state.activePosition);
-    }
     if (match != null) {
       var mp = document.createElement('span');
       mp.className = 'ik-card-aday__match ' + matchClass(match);
