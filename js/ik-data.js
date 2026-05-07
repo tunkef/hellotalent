@@ -305,7 +305,23 @@
 
       /* Real branch — hr_move_pipeline_stage(p_id uuid, p_stage pipeline_stage)
          (migration: 20260426012144, line 319-351)
-         DIKKAT: p_id = candidate_pipeline_state.id (NOT candidate_id)
+
+         7 May Tuna bug fix: UI 3-stage v2 enum gönderiyor ('uzun_liste',
+         'kisa_liste', 'iletisime_gecildi'), RPC legacy pipeline_stage enum
+         bekliyor (yeni/gorustum/teklif/etc). Cast fail → RPC error → toast
+         "kaydedildi" çıkıyordu (caller {ok:false} resolve'u kontrol etmiyordu)
+         ama DB değişmiyordu. Şimdi v2 → legacy map et, trigger cps_dual_write
+         BEFORE UPDATE stage_v2'yi _backfill_stage_to_v2(NEW.stage) ile
+         otomatik sync edecek (migration 20260506100000 line 156). */
+      var V2_TO_LEGACY = {
+        'uzun_liste':        'yeni',
+        'kisa_liste':        'gorustum',
+        'iletisime_gecildi': 'teklif',
+        'archive':           'kapandi_win'
+      };
+      var legacyStage = V2_TO_LEGACY[stage] || stage;
+
+      /* DIKKAT: p_id = candidate_pipeline_state.id (NOT candidate_id)
          Önce position+candidate ile lookup yapılır, sonra RPC çağrılır. */
       var supa = getSupa();
       return (async function () {
@@ -322,10 +338,10 @@
           if (!lookup.data) {
             return { ok: false, error: 'not in pipeline' };
           }
-          /* 2. stage güncelle */
+          /* 2. stage güncelle (v2 → legacy mapped, trigger stage_v2 sync) */
           var res = await supa.rpc('hr_move_pipeline_stage', {
             p_id:    lookup.data.id,
-            p_stage: stage
+            p_stage: legacyStage
           });
           if (res.error) {
             console.warn('[ik-data] moveStage RPC error:', res.error.message);

@@ -45,6 +45,13 @@
 - `isArchive` derivation `position.status === 'closed' || position.is_archive` (uydurma) → `position.durum === 'closed'` (gerçek migration 20260505130000 kolonu)
 - Cache-bust `?v=20260507acc3`
 
+**Hotfix #7 (KRİTİK BUG: drag-drop adayları taşımıyor):**
+- **Kök neden:** UI 3-stage v2 enum gönderiyordu (`'uzun_liste'`, `'kisa_liste'`, `'iletisime_gecildi'`), RPC `hr_move_pipeline_stage(p_stage pipeline_stage)` legacy enum bekliyor (yeni/gorustum/teklif/etc). PostgREST cast fail → RPC error.
+- **İkincil bug:** ik-pipeline.js `IK_DATA.moveStage` Promise `{ok:false, error}` resolve ediyor (reject DEĞİL), caller `then()` her durumda success toast atıyordu → "kaydedildi" görünürken DB değişmiyordu, refresh sonrası eski stage.
+- **Düzeltme A (frontend mapping):** `ik-data.js moveStage` `V2_TO_LEGACY` map (uzun_liste→yeni, kisa_liste→gorustum, iletisime_gecildi→teklif, archive→kapandi_win). DB trigger `cps_dual_write` BEFORE UPDATE stage→stage_v2 otomatik sync (`_backfill_stage_to_v2`).
+- **Düzeltme B (toast accuracy):** `ik-pipeline.js:615` `then(res)` callback `res.ok === false` kontrolü eklendi. Fail → error toast + `loadPipeline()` revert. Success → re-fetch (DB ile state senkron).
+- Cache-bust `?v=20260507stage` (ik-data + ik-pipeline)
+
 **Hotfix #6 (Tuna feedback "sütun scroll + Havuza git footer'a"):**
 - `.ik-pos-expand__board .ik-stage__body` `min-height: 580px` + `max-height: 580px` + `overflow-y: auto` → 5 kart önizleme + scroll (5+ kart için)
 - Editorial scrollbar (thin, hairline-strong thumb) — webkit + firefox

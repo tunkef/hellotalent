@@ -612,7 +612,16 @@
     renderSummary();
     renderBoard();
 
-    IK_DATA.moveStage(candidate_id, state.activePositionId, newStage).then(function () {
+    IK_DATA.moveStage(candidate_id, state.activePositionId, newStage).then(function (res) {
+      /* 7 May Tuna bug: IK_DATA.moveStage `{ ok:false, error }` resolve ediyor
+         (reject değil) — caller her durumda success toast atıyordu. Şimdi explicit
+         res.ok kontrolü, fail ise revert + error toast. */
+      if (res && res.ok === false) {
+        console.warn('[ik-pipeline] moveStage failed:', res.error);
+        showToast('Taşıma başarısız: ' + (res.error || 'bilinmeyen hata'), 'error');
+        loadPipeline(); /* revert optimistic update */
+        return;
+      }
       /* PR-4: stage-aware toast mesajı (copy spec §3D) */
       var c = state.candidatesById[candidate_id];
       var adSoyad = (c && c.full_name) ? c.full_name : 'Aday';
@@ -628,8 +637,11 @@
         toastMsg = adSoyad + ' ' + label + ' aşamasına taşındı.';
       }
       showToast(toastMsg, 'success');
-    }).catch(function () {
-      showToast('Taşıma başarısız', 'error');
+      /* Re-fetch — DB ile state senkron tut (stage_v2 alanı + RPC return doğrula) */
+      loadPipeline();
+    }).catch(function (e) {
+      console.warn('[ik-pipeline] moveStage exception:', e && e.message);
+      showToast('Taşıma başarısız: ağ hatası', 'error');
       loadPipeline();
     });
   }
