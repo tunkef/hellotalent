@@ -292,8 +292,23 @@
 
     var av = document.createElement('div');
     av.className = 'ik-card-aday__avatar';
-    av.textContent = initialOf(c.full_name);
     av.setAttribute('aria-hidden', 'true');
+
+    /* 8 May avatar fix: avatar_url varsa signed URL ile img swap (async, XSS-safe) */
+    if (c.avatar_url && window.HT && window.HT.signStorageUrl) {
+      av.textContent = initialOf(c.full_name); /* sync placeholder */
+      window.HT.signStorageUrl(c.avatar_url).then(function (signed) {
+        if (!signed) return;
+        var img = document.createElement('img');
+        img.src = signed;
+        img.alt = '';
+        img.className = 'ik-card-aday__avatar-img';
+        av.textContent = '';
+        av.appendChild(img);
+      }).catch(function () { /* signed URL başarısız → initials kalır */ });
+    } else {
+      av.textContent = initialOf(c.full_name);
+    }
     head.appendChild(av);
 
     var main = document.createElement('div');
@@ -659,9 +674,20 @@
     });
   }
 
-  /* ═══════ Card events (menu + click) ═══════ */
+  /* ═══════ Card events (menu + click) ═══════
+     8 May idempotency fix: dom.board değişince (accordion attach) eski
+     board element'ine eklenen listener'lar orphan kalıyor ve çakışıyor.
+     Çözüm: board element'ine data-events-bound flag — aynı element'e
+     iki kez bind edilmez. Board değişince (attach) yeni element'e yeniden bind.
+     document-level outside-click: tek kez bind, _docClickBound guard ile. */
+  var _docClickBound = false;
+
   function bindCardEvents() {
     if (!dom.board) return;
+
+    /* İdempotency: aynı board element'e iki kez bind etme */
+    if (dom.board.dataset.eventsBound === '1') return;
+    dom.board.dataset.eventsBound = '1';
 
     /* Menu toggle (7 May Tuna bug fix: stage__body overflow:auto clip ediyordu →
        menu fixed pozisyona çevrildi, viewport-relative button rect'inden anchor) */
@@ -748,14 +774,18 @@
       else if (window._htOpenCandidateDrawer) window._htOpenCandidateDrawer(cid);
     });
 
-    /* Outside click closes menus */
-    document.addEventListener('click', function (e) {
-      if (dom.board && !dom.board.contains(e.target)) {
-        $$('.ik-card-aday__menu.is-open', dom.board).forEach(function (m) {
-          m.classList.remove('is-open');
-        });
-      }
-    });
+    /* Outside click closes menus — document-level, tek kez bind (_docClickBound guard) */
+    if (!_docClickBound) {
+      _docClickBound = true;
+      document.addEventListener('click', function (e) {
+        if (dom.board && !dom.board.contains(e.target)) {
+          $$('.ik-card-aday__menu.is-open', dom.board).forEach(function (m) {
+            m.classList.remove('is-open');
+            m.style.position = ''; m.style.top = ''; m.style.left = ''; m.style.right = '';
+          });
+        }
+      });
+    }
   }
 
   function handleCardAction(action, candidate_id) {
@@ -920,6 +950,32 @@
     });
   }
 
+  /* ═══════ 8 May avatar batch fetch (N+1 önleme) ═══════
+     hr_get_pipeline RPC avatar_url döndürmüyor → pipeline yüklendikten
+     sonra tek SELECT ile tüm candidate_id'lerin avatar_url'ünü topla.
+     Sonuç state.candidatesById'e yazılır, renderCard async img swap yapar. */
+  function fetchAvatarsBatch(candidateIds) {
+    if (!candidateIds || !candidateIds.length) return Promise.resolve({});
+    if (!window.HT || !window.HT.getSupa) return Promise.resolve({});
+    var supa = window.HT.getSupa();
+    return supa.from('candidates')
+      .select('id, avatar_url')
+      .in('id', candidateIds)
+      .then(function (res) {
+        var map = {};
+        if (res.data) {
+          res.data.forEach(function (c) {
+            if (c.avatar_url) map[c.id] = c.avatar_url;
+          });
+        }
+        return map;
+      })
+      .catch(function (err) {
+        console.warn('[ik-pipeline] fetchAvatarsBatch hata:', err && err.message);
+        return {};
+      });
+  }
+
   function loadPipeline() {
     if (!state.activePositionId) {
       state.pipelineEntries = [];
@@ -944,14 +1000,28 @@
             full_name:     e.candidate_name,
             son_pozisyon:  e.candidate_pozisyon || null,
             adres_il:      e.candidate_sehir || null,
+            avatar_url:    null,
             match_score:   null
           };
         }
       });
 
-      if (dom.loading) dom.loading.hidden = true;
-      renderSummary();
-      renderBoard();
+      /* 8 May avatar batch: pipeline ID'lerinin avatar_url'ünü tek sorguyla getir */
+      var ids = state.pipelineEntries.map(function (e) { return e.candidate_id; });
+      return fetchAvatarsBatch(ids).then(function (avatarMap) {
+        Object.keys(avatarMap).forEach(function (cid) {
+          /* candidates.id bigint → key string, candidatesById key number veya string olabilir */
+          var numId = Number(cid);
+          if (state.candidatesById[numId]) {
+            state.candidatesById[numId].avatar_url = avatarMap[cid];
+          } else if (state.candidatesById[cid]) {
+            state.candidatesById[cid].avatar_url = avatarMap[cid];
+          }
+        });
+        if (dom.loading) dom.loading.hidden = true;
+        renderSummary();
+        renderBoard();
+      });
     });
   }
 
@@ -1926,11 +1996,19 @@
   /* ═══════ 7 May refactor: accordion board attach API
      ik-position-detail.js her satır expand olduğunda accordion içindeki
      board container'ı bu modüle bağlar. dom.board re-target +
-     state.activePositionId set + loadPipeline() trigger. ═══════ */
+     state.activePositionId set + loadPipeline() trigger.
+     8 May kebab fix: yeni boardEl farklı DOM element → eventsBound flag sıfırla,
+     loadPipeline → renderBoard → bindCardEvents yeniden bind eder. ═══════ */
   window._htPipelineBoard = {
     attach: function (boardEl, positionId) {
       if (!boardEl || !positionId) return;
+      /* Yeni element → eventsBound sıfırla (idempotency guard'ı temizle) */
+      if (dom.board && dom.board !== boardEl) {
+        dom.board.dataset.eventsBound = '';
+      }
       dom.board = boardEl;
+      /* Yeni board henüz bind edilmemişse flag temizle */
+      boardEl.dataset.eventsBound = '';
       state.activePositionId = positionId;
       if (window.IK_SHELL && IK_SHELL.setActivePositionId) {
         IK_SHELL.setActivePositionId(positionId);
@@ -1938,6 +2016,7 @@
       return loadPipeline();
     },
     detach: function () {
+      if (dom.board) dom.board.dataset.eventsBound = '';
       dom.board = null;
       state.activePositionId = null;
     }

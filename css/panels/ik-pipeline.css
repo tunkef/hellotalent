@@ -347,6 +347,16 @@
   font-weight: 600;
   flex-shrink: 0;
   border: 1px solid var(--border-subtle);
+  overflow: hidden; /* 8 May: img border-radius clip için */
+}
+
+/* 8 May avatar fix: gerçek fotoğraf img */
+.ik-card-aday__avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: var(--radius-pill);
+  display: block;
 }
 
 .ik-card-aday__main {
@@ -451,7 +461,8 @@
   display: none;
 }
 .ik-card-aday__menu.is-open {
-  display: block;
+  display: block !important; /* 8 May kebab fix: position:fixed inline override'a karşı defansif */
+  z-index: 9999 !important;
 }
 .ik-card-aday__menu-item {
   display: block;
