@@ -675,12 +675,26 @@
           m.style.right = '';
         });
         if (menu && !isOpen) {
-          /* Fixed positioning — overflow:auto parent clip'inden çıkar */
-          var rect = menuBtn.getBoundingClientRect();
+          /* Fixed positioning — overflow:auto parent clip'inden çıkar.
+             7 May Tuna: pozisyon defansif — viewport edge handling +
+             left-anchor (right yerine, çakışma riski yok) + zindex 9999. */
+          var rect   = menuBtn.getBoundingClientRect();
+          var menuW  = 220;
+          var menuH  = 240;
+          var top    = rect.bottom + 4;
+          var left   = rect.right - menuW;
+          /* Edge: viewport altına taşıyorsa yukarı aç */
+          if (top + menuH > window.innerHeight - 16) {
+            top = Math.max(16, rect.top - menuH - 4);
+          }
+          /* Edge: viewport soluna taşıyorsa içeri it */
+          if (left < 16) left = 16;
           menu.style.position = 'fixed';
-          menu.style.top = (rect.bottom + 4) + 'px';
-          menu.style.right = (window.innerWidth - rect.right) + 'px';
-          menu.style.left = 'auto';
+          menu.style.top      = top + 'px';
+          menu.style.left     = left + 'px';
+          menu.style.right    = 'auto';
+          menu.style.bottom   = 'auto';
+          menu.style.zIndex   = '9999';
           menu.classList.add('is-open');
         }
         return;
