@@ -36,10 +36,14 @@
 - Single-row policy: aynı anda 1 satır expanded → cognitive load düşer
 - Eski `.ik-pos-card-*` CSS dead-code (~200 satır) bırakıldı, future cleanup
 
-**Hotfix #1 (Tuna feedback):**
+**Hotfix #1 (Tuna feedback "hayal görme"):**
 - KPI 4-col ("Toplam aday / Yeni / Mülakat / İşe alım") → **3-col** ("Uzun liste / Kısa liste / İşe alınan") — IK_DATA.getPipelineSummary `{ uzun, kisa, iletisim }` ile uyum
-- Mini pipeline 5-stage chip section TAMAMEN SİL (KPI ile duplicate veri)
+- Mini pipeline 5-stage chip section TAMAMEN SİL (KPI ile duplicate veri, hayali summary.stages field'ı)
 - Cache-bust `?v=20260507acc2`
+
+**Hotfix #2 (data contract audit):**
+- `isArchive` derivation `position.status === 'closed' || position.is_archive` (uydurma) → `position.durum === 'closed'` (gerçek migration 20260505130000 kolonu)
+- Cache-bust `?v=20260507acc3`
 
 ## 7 May — UI Hotfix Wave (paradigm shift öncesi)
 

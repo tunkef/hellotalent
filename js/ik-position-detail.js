@@ -94,7 +94,8 @@
     /* ── Footer actions ── */
     var actions = document.createElement('div');
     actions.className = 'ik-pos-expand__actions';
-    var isArchive = position.status === 'archive' || position.status === 'closed' || position.is_archive;
+    /* positions.durum kolonu: 'active' | 'closed' (NOT NULL DEFAULT 'active', migration 20260505130000) */
+    var isArchive = position.durum === 'closed';
 
     var editBtn = document.createElement('button');
     editBtn.type = 'button';
