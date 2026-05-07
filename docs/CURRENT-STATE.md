@@ -45,6 +45,19 @@
 - `isArchive` derivation `position.status === 'closed' || position.is_archive` (uydurma) → `position.durum === 'closed'` (gerçek migration 20260505130000 kolonu)
 - Cache-bust `?v=20260507acc3`
 
+**Hotfix #12 (Aday kart click → sağdan drawer; hr-candidate.html sayfa rotası iptal):**
+- **Tuna:** "aday detayı diye ayrı bir menü var onu kaldıralım. aday detayı diye bir sayfa olmasına gerek yok... kısa listeden bastığımda sağdan drawer panel açılsın. Cv sini indirebilme seçeneğim olsın."
+- **Yeni dosya:** `js/ik-cand-drawer.js` — sağdan slide drawer (avatar + isim + pozisyon + KPI 3-col stat row + match_reasons chips + Deneyim/Eğitim/Diller section'ları + footer aksiyonlar). XSS-safe (textContent + createElementNS, innerHTML yasak).
+- **CV indirme:** `c.cv_url || c.cv_path` → `window.HT.signStorageUrl(path, 3600)` ile signed URL → `window.open(_, '_blank', 'noopener')` + PostHog `candidate_cv_download` event.
+- **CSS:** `.ik-cand-drawer` 560px width (mobile 100vw), z-index 9001, `transform: translateX(100%)→0` 240ms cubic-bezier slide. Overlay `rgba(15,23,42,0.42)` blur background, click → close.
+- **ik-pipeline.js entegrasyonu:**
+  - Card click handler `location.href = 'hr-candidate.html?id=...'` → `window._htOpenCandidateDrawer(c)` (desktop + mobile dışı)
+  - Keyboard Enter/Space handler aynı yönlendirme
+  - Card menü "Detayı aç" action `<a href>` → `<button>` + handleCardAction'da `if (action === 'detail') _htOpenCandidateDrawer(...)` branch
+  - match_reasons "Detaylı profil" string'i filter (UI gürültüsü, drawer zaten açıyor)
+- **Esc handler:** drawer açıkken Esc → kapat
+- Cache-bust `?v=20260507drawer` (CSS + ik-cand-drawer + ik-pipeline)
+
 **Hotfix #11 (Aday kart kebab menu arkada kalıyor):**
 - **Kök neden:** `.ik-stage__body` `overflow-y: auto` (scroll için) parent clipping katmanı yaratıyor. `.ik-card-aday__menu` `position: absolute` kart içinde z-index 30 → menu kart sınırını aştığında body clip ediyor → alt kart üstte kalıyor görsel olarak.
 - **Düzeltme:** `bindCardEvents` menu toggle JS'te `position: fixed` set, button `getBoundingClientRect()` ile viewport-relative anchor (top: rect.bottom+4, right: innerWidth-rect.right). Menu kapanınca inline style temizlenir. CSS default `position:absolute` fallback olarak kalır.

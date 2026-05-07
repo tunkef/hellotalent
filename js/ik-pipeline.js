@@ -378,8 +378,12 @@
 
     card.appendChild(meta);
 
-    /* match_reasons chips (kompakt, max 2) — Phase D2.3 */
-    var reasons = Array.isArray(c.match_reasons) ? c.match_reasons : [];
+    /* match_reasons chips (kompakt, max 2) — Phase D2.3
+       7 May Tuna: "Detaylı profil" reason UI gürültüsü, kart click drawer
+       açar zaten. Filter ile çıkar. */
+    var reasons = (Array.isArray(c.match_reasons) ? c.match_reasons : []).filter(function (r) {
+      return r && r.toLowerCase().indexOf('detaylı profil') === -1;
+    });
     if (reasons.length) {
       var reasonsRow = document.createElement('div');
       reasonsRow.className = 'ik-card-aday__reasons';
@@ -415,11 +419,11 @@
     ]);
     actions.forEach(function (a) {
       var b;
-      if (a.action === 'detail' || a.action === 'message') {
+      if (a.action === 'message') {
         b = document.createElement('a');
-        if (a.action === 'detail') b.href = 'hr-candidate.html?id=' + encodeURIComponent(c.id);
-        else b.href = 'hr-messages.html?aday=' + encodeURIComponent(c.id);
+        b.href = 'hr-messages.html?aday=' + encodeURIComponent(c.id);
       } else {
+        /* 7 May refactor: 'detail' aksiyonu drawer açar (button), eski hr-candidate.html YOK */
         b = document.createElement('button');
         b.type = 'button';
       }
@@ -685,8 +689,8 @@
       var actBtn = e.target.closest('[data-card-action]');
       if (actBtn) {
         var act = actBtn.getAttribute('data-card-action');
-        if (act === 'detail' || act === 'message') {
-          /* anchor — let it navigate */
+        if (act === 'message') {
+          /* anchor link — navigate */
           return;
         }
         e.stopPropagation();
@@ -694,6 +698,7 @@
         var cid2 = actBtn.getAttribute('data-card-cid');
         $$('.ik-card-aday__menu.is-open', dom.board).forEach(function (m) {
           m.classList.remove('is-open');
+          m.style.position = ''; m.style.top = ''; m.style.right = ''; m.style.left = '';
         });
         handleCardAction(act, cid2);
         return;
@@ -705,8 +710,9 @@
         if (isMobileDevice()) {
           /* Mobile: tap → bottom-sheet */
           openStageSheet(c);
-        } else {
-          location.href = 'hr-candidate.html?id=' + encodeURIComponent(c);
+        } else if (window._htOpenCandidateDrawer) {
+          /* 7 May refactor: ayrı sayfa yerine sağdan drawer */
+          window._htOpenCandidateDrawer(c);
         }
       }
     });
@@ -719,7 +725,7 @@
       e.preventDefault();
       var cid = card.getAttribute('data-card-cid');
       if (isMobileDevice()) openStageSheet(cid);
-      else location.href = 'hr-candidate.html?id=' + encodeURIComponent(cid);
+      else if (window._htOpenCandidateDrawer) window._htOpenCandidateDrawer(cid);
     });
 
     /* Outside click closes menus */
@@ -733,6 +739,11 @@
   }
 
   function handleCardAction(action, candidate_id) {
+    /* 7 May refactor: detail action drawer açar (eski hr-candidate.html YOK) */
+    if (action === 'detail') {
+      if (window._htOpenCandidateDrawer) window._htOpenCandidateDrawer(candidate_id);
+      return;
+    }
     /* PR-4: stage move actions */
     if (action === 'move_kisa') {
       moveCandidateToStage(candidate_id, 'kisa_liste');
