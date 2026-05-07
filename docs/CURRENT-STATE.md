@@ -1,5 +1,47 @@
 # hellotalent.ai — Current State
-> Son guncelleme: **7 Mayıs 2026 (round-2 audit)** | Pozisyonlar accordion round-2: CSS duplicate birleştirme + dark mode rating token + radius CLATU + JS ESC ayrımı + RPC fail UI + polish.
+> Son guncelleme: **8 Mayıs 2026 SESSION SONU** | T3 paradigm shift (modal → accordion + drawer) + kart redesign v5 (ring corner) + 46 commit + Codex rescue cross-file CSS bug fix LIVE.
+
+## 8 May Session — T3 Paradigm Shift + Kart Redesign v5 (46 commit)
+
+**Major işler:**
+- Pozisyonlar wide list + inline accordion (modal detail sheet kaldırıldı)
+- Aday kart click → sağdan drawer (profil-preview.js adapter reuse)
+- Kart minimal redesign v5: auto/match/reasons pill SİL, ring 40px sağ üst corner, kebab altta corner, marka+pozisyon 2-satır, avatar pulse glow (aktif iş arıyor)
+- 3-sütun mini board accordion içinde (uzun_liste / kisa_liste / iletisime_gecildi), drag-drop ik-pipeline.js reuse
+- Pozisyonu kapat modal → native window.confirm()
+
+**KÖK NEDEN bulgusu (commit `b934fab`):** `ik-genel.css:408` `.ik-stage` rule **DEAD CODE** ama hr-pipeline.html'de yüklü → cross-file CSS pollution kanban sütununa sızıyordu (align-items: center, padding, gap, justify-content). Codex rescue agent tespit etti, 14 commit'lik scroll/width bug'ı tek pass'te çözdü.
+
+**Memory eklenenler (kalıcı kurallar):**
+- `feedback_agent_dispatch_zorunlu.md` — chief-of-staff dispatch zorunlu (10. kural ihlali sonrası 7 May)
+- `feedback_design_system_gate_zorunlu.md` — designer agent + token-strict + CLATU compliance gate (12. kural ihlali sonrası 8 May)
+- `feedback_data_contract_no_invention.md` — UI label/KPI uydurma yasak (7 May)
+
+**Settings.json hook:** `UserPromptSubmit '*' matcher` chief-of-staff reminder echo (her prompt'ta tier-detect + agent zinciri reminder).
+
+**Yeni dosyalar:**
+- `js/ik-cand-drawer.js` — adapter pattern (XSS-safe, IIFE)
+- `tests/pipeline-accordion-audit.spec.js` — uat-tester (929 satır)
+
+**Silinen / disabled:**
+- `tests/pr4-pipeline-3stage.spec.js.disabled-20260507-accordion`
+- `css/panels/position-detail.css` (modal CSS)
+- `ik-pos-modal*` markup (native confirm)
+- `ik-genel.css .ik-stage*` dead rules (cross-file pollution)
+
+**Maintenance-agent post-mortem (7 May):**
+- ik-pipeline.css 3424 satır, 58 `!important`
+- Cache-bust 26 farklı `?v=` proliferasyon
+- Disabled test 14 dosya
+- Long-term TODO: `@layer` cascade refactor, RPC contract dosyası
+
+**Backlog:**
+- T3 migration: `search_employer_candidates` RPC `match_score` recalculate
+- `hr_get_pipeline` RPC `candidate_avatar_url` ekleme (extras query gereksizleştir)
+- Pipeline test suite re-write (accordion + drawer pattern)
+- ik.html cache-bust senkronizasyon (`tokens.css` + `ik-genel.css`)
+- `@layer` CSS architecture refactor (T3, Codex review zorunlu)
+- Memory kuralları CLAUDE.md'ye `/si:promote` graduate
 
 ## 7 May — Round-2 Audit: Pozisyonlar Accordion Full Fix Pass
 
