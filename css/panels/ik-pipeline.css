@@ -2349,6 +2349,14 @@ html[data-theme="dark"] .ik-coaching-banner__cta:hover {
    (pp-* classes, css/profil-extras.css) reuse ediliyor. Adapter:
    js/ik-cand-drawer.js → mapCandidate → openProfilePreview(). */
 
+/* 7 May Tuna feedback: HR aday drawer'ında "İyi — birkaç alan daha tamamla"
+   profil-tamamlama uyarısı görünmemeli (adaya özel mesaj).
+   profil-preview.js .pp-ident__completion her zaman render eder; HR
+   context'inde CSS ile gizlenir. */
+body .pp-ident__completion {
+  display: none;
+}
+
 .ik-cand-drawer-LEGACY-DEPRECATED {
   /* placeholder so other selectors below stay valid; drawer artık pp-* */
   display: none;
