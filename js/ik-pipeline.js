@@ -653,7 +653,8 @@
   function bindCardEvents() {
     if (!dom.board) return;
 
-    /* Menu toggle */
+    /* Menu toggle (7 May Tuna bug fix: stage__body overflow:auto clip ediyordu →
+       menu fixed pozisyona çevrildi, viewport-relative button rect'inden anchor) */
     dom.board.addEventListener('click', function (e) {
       var menuBtn = e.target.closest('[data-card-menu-btn]');
       if (menuBtn) {
@@ -661,10 +662,23 @@
         var cid = menuBtn.getAttribute('data-card-menu-btn');
         var menu = dom.board.querySelector('[data-card-menu="' + cid + '"]');
         var isOpen = menu && menu.classList.contains('is-open');
+        /* Close all + reset fixed-style */
         $$('.ik-card-aday__menu.is-open', dom.board).forEach(function (m) {
           m.classList.remove('is-open');
+          m.style.position = '';
+          m.style.top = '';
+          m.style.left = '';
+          m.style.right = '';
         });
-        if (menu && !isOpen) menu.classList.add('is-open');
+        if (menu && !isOpen) {
+          /* Fixed positioning — overflow:auto parent clip'inden çıkar */
+          var rect = menuBtn.getBoundingClientRect();
+          menu.style.position = 'fixed';
+          menu.style.top = (rect.bottom + 4) + 'px';
+          menu.style.right = (window.innerWidth - rect.right) + 'px';
+          menu.style.left = 'auto';
+          menu.classList.add('is-open');
+        }
         return;
       }
 

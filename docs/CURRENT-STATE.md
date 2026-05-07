@@ -45,6 +45,13 @@
 - `isArchive` derivation `position.status === 'closed' || position.is_archive` (uydurma) → `position.durum === 'closed'` (gerçek migration 20260505130000 kolonu)
 - Cache-bust `?v=20260507acc3`
 
+**Hotfix #11 (Aday kart kebab menu arkada kalıyor):**
+- **Kök neden:** `.ik-stage__body` `overflow-y: auto` (scroll için) parent clipping katmanı yaratıyor. `.ik-card-aday__menu` `position: absolute` kart içinde z-index 30 → menu kart sınırını aştığında body clip ediyor → alt kart üstte kalıyor görsel olarak.
+- **Düzeltme:** `bindCardEvents` menu toggle JS'te `position: fixed` set, button `getBoundingClientRect()` ile viewport-relative anchor (top: rect.bottom+4, right: innerWidth-rect.right). Menu kapanınca inline style temizlenir. CSS default `position:absolute` fallback olarak kalır.
+- **Trade-off:** Scroll yapınca menu kayar ama document clip'i yok. Click outside / Esc kapatır (mevcut handler).
+- z-index 30 → 1000 (defansif, fixed olduğu için artık kritik değil)
+- Cache-bust `?v=20260507menu`
+
 **Hotfix #10 (Pozisyon kapat/yeniden aç RPC param mismatch):**
 - **Kök neden:** Migration `20260507150000_pr7_lifecycle_rpcs` `hr_close_position(p_position_id bigint)` + `hr_reopen_position(p_position_id bigint)` parametre adları. JS `ik-data.js` `{ p_id: id }` gönderiyordu — PostgREST "function not found / unknown parameter" 404 error. Ek toast "Hata: Pozisyon kapatılamadı".
 - **Düzeltme:** `closePosition` + `reopenPosition` RPC çağrılarında param adı `p_id` → `p_position_id` (migration ile uyum).

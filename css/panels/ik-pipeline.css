@@ -429,10 +429,13 @@
 }
 
 .ik-card-aday__menu {
+  /* 7 May Tuna bug fix: position:fixed inline-set'leniyor JS'te (button rect anchor),
+     overflow:auto parent clip'inden çıkar. Default sınıf değerleri stage body içi
+     fallback. */
   position: absolute;
   top: calc(100% - 6px);
   right: var(--space-5);
-  z-index: 30;
+  z-index: 1000;
   min-width: 200px;
   background: var(--editorial-card);
   border: 1px solid var(--border-subtle);
