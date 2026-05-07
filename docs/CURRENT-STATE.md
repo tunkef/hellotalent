@@ -45,6 +45,11 @@
 - `isArchive` derivation `position.status === 'closed' || position.is_archive` (uydurma) → `position.durum === 'closed'` (gerçek migration 20260505130000 kolonu)
 - Cache-bust `?v=20260507acc3`
 
+**Hotfix #8 ("Aday bulunamadı" placeholder bug):**
+- **Kök neden:** `loadInit()` `searchCandidates({}, null)` aday havuzunu limit'le döndürüyor (~50 aday). `state.candidatesById` lookup map sadece havuzdaki adayları içeriyor. Pipeline'da limit dışında bir aday varsa `renderCard` `state.candidatesById[entry.candidate_id]` miss → "— Aday bulunamadı —" placeholder.
+- **Düzeltme:** `loadPipeline()` içinde pipeline entry'lerinden state.candidatesById **upsert** (RPC `hr_get_pipeline` zaten `candidate_name` / `candidate_pozisyon` / `candidate_sehir` döndürüyor — migration 20260426012144 line 281-282).
+- Cache-bust `?v=20260507stage2`
+
 **Hotfix #7 (KRİTİK BUG: drag-drop adayları taşımıyor):**
 - **Kök neden:** UI 3-stage v2 enum gönderiyordu (`'uzun_liste'`, `'kisa_liste'`, `'iletisime_gecildi'`), RPC `hr_move_pipeline_stage(p_stage pipeline_stage)` legacy enum bekliyor (yeni/gorustum/teklif/etc). PostgREST cast fail → RPC error.
 - **İkincil bug:** ik-pipeline.js `IK_DATA.moveStage` Promise `{ok:false, error}` resolve ediyor (reject DEĞİL), caller `then()` her durumda success toast atıyordu → "kaydedildi" görünürken DB değişmiyordu, refresh sonrası eski stage.

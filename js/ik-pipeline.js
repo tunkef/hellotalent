@@ -882,6 +882,25 @@
     if (dom.loading) dom.loading.hidden = false;
     return IK_DATA.getPipeline(state.activePositionId).then(function (entries) {
       state.pipelineEntries = entries || [];
+
+      /* 7 May Tuna bug fix: pipeline entry'lerden state.candidatesById enrich.
+         loadInit() searchCandidates({}, null) ilk yükleme havuzu limit'le döndürür
+         (örn 50 aday); pipeline'da limit dışında bir aday varsa lookup miss →
+         renderCard "Aday bulunamadı" placeholder basıyordu.
+         hr_get_pipeline RPC entry içinde candidate_name/pozisyon/sehir döndürür
+         (migration 20260426012144 line 281-282) → upsert. */
+      state.pipelineEntries.forEach(function (e) {
+        if (!state.candidatesById[e.candidate_id] && e.candidate_name) {
+          state.candidatesById[e.candidate_id] = {
+            id:            e.candidate_id,
+            full_name:     e.candidate_name,
+            son_pozisyon:  e.candidate_pozisyon || null,
+            adres_il:      e.candidate_sehir || null,
+            match_score:   null
+          };
+        }
+      });
+
       if (dom.loading) dom.loading.hidden = true;
       renderSummary();
       renderBoard();
