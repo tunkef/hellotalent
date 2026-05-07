@@ -1,5 +1,12 @@
 # hellotalent.ai — Current State
-> Son guncelleme: **6 Mayıs 2026 SESSION SONU** | Pozisyon Matching Engine 6 PR + 4-iter CLATU rework + anasayfa MCP-bazlı revize + detail sheet 21st-magic uyum LIVE.
+> Son guncelleme: **7 Mayıs 2026** | ik-genel hero light bg beyaz + adaylar/mesajlar list avatar-text vertical align fix.
+
+## 7 May — UI Hotfix (ik-genel hero + list align)
+
+- **`.ik-genel__hero`** light mode background `--editorial-bg` (krem) → `--editorial-card` (#FFFFFF) — diğer bento kartlarla tutarlı.
+- **`.ik-list__item`** `align-items: flex-start` → `center`; `.ik-list__body` `min-height: 32px` + `justify-content: center` (avatar 32px height match); `.ik-list__time` magic `margin-top: 2px` kaldırıldı.
+- **Cache-bust** `?v=20260507align2` (ik.html + hr-pipeline.html).
+- **Etki:** anasayfa "Adaylar" + "Mesajlar" kart listelerinde avatar harfi ile name baseline tam hizalı; hero kart light mode'da diğerleri gibi beyaz.
 
 ## 6 May Session Özet — Pozisyon Matching Engine + CLATU Rework
 
