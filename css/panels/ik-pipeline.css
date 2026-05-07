@@ -2099,7 +2099,48 @@ html[data-theme="dark"] .ik-coaching-banner__cta:hover {
   background: var(--editorial-card);
 }
 
-/* Main row click area — grid columns */
+/* Table head — column labels (editorial magazine pattern, sticky-ish header) */
+.ik-pos-table__head {
+  display: grid;
+  grid-template-columns:
+    minmax(200px, 2.4fr)   /* title */
+    minmax(120px, 1.3fr)   /* segment */
+    minmax(100px, 1fr)     /* location */
+    minmax(80px, 0.7fr)    /* exp */
+    minmax(90px, 0.8fr)    /* candidates */
+    auto                   /* time */
+    24px;                  /* chevron spacer */
+  align-items: center;
+  gap: var(--space-7);
+  padding: var(--space-5) var(--space-9);
+  background: var(--editorial-bg);
+  border-bottom: 1px solid var(--editorial-hairline);
+}
+.ik-pos-table__head--archive {
+  grid-template-columns:
+    minmax(200px, 2.4fr)
+    minmax(120px, 1.3fr)
+    minmax(100px, 1fr)
+    minmax(80px, 0.7fr)
+    minmax(90px, 0.8fr)
+    auto                   /* archive chip slot */
+    auto                   /* time */
+    24px;
+}
+.ik-pos-table__head-cell {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--editorial-ink-muted);
+  white-space: nowrap;
+}
+.ik-pos-table__head-cell--right {
+  text-align: right;
+}
+
+/* Main row click area — grid columns (default: AKTİF, chip yok) */
 .ik-pos-row__main {
   display: grid;
   grid-template-columns:
@@ -2108,7 +2149,6 @@ html[data-theme="dark"] .ik-coaching-banner__cta:hover {
     minmax(100px, 1fr)     /* location */
     minmax(80px, 0.7fr)    /* exp */
     minmax(90px, 0.8fr)    /* candidates */
-    auto                   /* status chip */
     auto                   /* time */
     24px;                  /* chevron */
   align-items: center;
@@ -2121,6 +2161,18 @@ html[data-theme="dark"] .ik-coaching-banner__cta:hover {
   width: 100%;
   font: inherit;
   color: inherit;
+}
+/* Arşiv view'da chip slot eklenir — 8-col template */
+.ik-pos-row[data-status="archive"] .ik-pos-row__main {
+  grid-template-columns:
+    minmax(200px, 2.4fr)
+    minmax(120px, 1.3fr)
+    minmax(100px, 1fr)
+    minmax(80px, 0.7fr)
+    minmax(90px, 0.8fr)
+    auto                   /* archive chip */
+    auto                   /* time */
+    24px;
 }
 .ik-pos-row__main:hover {
   background: var(--editorial-card-elev);
@@ -2162,6 +2214,7 @@ html[data-theme="dark"] .ik-coaching-banner__cta:hover {
   font-size: var(--text-md);
   font-weight: 600;
   color: var(--editorial-ink);
+  text-align: right;
 }
 .ik-pos-row__cell--time {
   font-family: var(--font-mono);
@@ -2171,6 +2224,7 @@ html[data-theme="dark"] .ik-coaching-banner__cta:hover {
   text-transform: uppercase;
   color: var(--editorial-ink-muted);
   white-space: nowrap;
+  text-align: right;
 }
 
 /* Status chip */
@@ -2375,7 +2429,12 @@ html[data-theme="dark"] .ik-coaching-banner__cta:hover {
 
 /* Mobile responsive */
 @media (max-width: 768px) {
-  .ik-pos-row__main {
+  .ik-pos-table__head,
+  .ik-pos-table__head--archive {
+    display: none;
+  }
+  .ik-pos-row__main,
+  .ik-pos-row[data-status="archive"] .ik-pos-row__main {
     grid-template-columns: 1fr 24px;
     grid-template-rows: auto auto auto;
     gap: var(--space-3);

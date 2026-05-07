@@ -45,6 +45,14 @@
 - `isArchive` derivation `position.status === 'closed' || position.is_archive` (uydurma) → `position.durum === 'closed'` (gerçek migration 20260505130000 kolonu)
 - Cache-bust `?v=20260507acc3`
 
+**Hotfix #4 (Tuna feedback "hiza + Aktif chip redundant"):**
+- Editorial column header satırı (`POZİSYON / SEGMENT / LOKASYON / DENEYİM / ADAY / AÇILIŞ`) — alignment netleştirir, magazine table head pattern
+- Aktif view'da chip kaldırıldı ("zaten aktif listesinin içindeyiz") — sadece arşiv view'da "Arşiv" chip read-only context göstergesi
+- Grid template default 7-col (chip yok), arşiv için `[data-status="archive"]` selector ile 8-col (chip slot)
+- `.ik-pos-row__cell--candidates` + `--time` `text-align: right` (sayı + tarih sağ)
+- Mobile 768px → header satırı `display: none`
+- Cache-bust `?v=20260507head`
+
 **Hotfix #3 (Tuna feedback "kart hareket ettirme + arka plan beyaz"):**
 - `.ik-pos-row.is-expanded` background `--editorial-card-elev` (krem) → `--editorial-card` (#FFFFFF beyaz)
 - `.ik-pos-row__expand` background explicit `--editorial-card`

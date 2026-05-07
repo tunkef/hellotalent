@@ -156,10 +156,14 @@
     candCell.textContent = '—';
     main.appendChild(candCell);
 
-    var chip = document.createElement('span');
-    chip.className = 'ik-pos-row__chip ' + (isArchive ? 'ik-pos-row__chip--archive' : 'ik-pos-row__chip--active');
-    chip.textContent = isArchive ? 'Arşiv' : 'Aktif';
-    main.appendChild(chip);
+    /* 7 May refactor: aktif view'da chip kaldırıldı (Tuna feedback "zaten aktif
+       listesinin içindeyiz"). Sadece arşiv view'da read-only context göstergesi. */
+    if (isArchive) {
+      var chip = document.createElement('span');
+      chip.className = 'ik-pos-row__chip ik-pos-row__chip--archive';
+      chip.textContent = 'Arşiv';
+      main.appendChild(chip);
+    }
 
     var time = document.createElement('span');
     time.className = 'ik-pos-row__cell--time';
@@ -196,6 +200,34 @@
       track('position_list_item_click', { id: pos.id, view: isArchive ? 'archive' : 'active' });
     });
     return row;
+  }
+
+  /* ═══════ Header row — column labels (editorial table head) ═══════ */
+  function buildHeaderRow(isArchive) {
+    var head = document.createElement('div');
+    head.className = 'ik-pos-table__head' + (isArchive ? ' ik-pos-table__head--archive' : '');
+    head.setAttribute('role', 'row');
+
+    var cols = [
+      { label: 'POZİSYON',  cls: '' },
+      { label: 'SEGMENT',   cls: '' },
+      { label: 'LOKASYON',  cls: '' },
+      { label: 'DENEYİM',   cls: '' },
+      { label: 'ADAY',      cls: 'ik-pos-table__head-cell--right' }
+    ];
+    if (isArchive) {
+      cols.push({ label: 'DURUM', cls: '' });
+    }
+    cols.push({ label: 'AÇILIŞ', cls: 'ik-pos-table__head-cell--right' });
+    cols.push({ label: '',       cls: '' }); /* chevron spacer */
+
+    cols.forEach(function (c) {
+      var span = document.createElement('span');
+      span.className = 'ik-pos-table__head-cell ' + c.cls;
+      span.textContent = c.label;
+      head.appendChild(span);
+    });
+    return head;
   }
 
   /* ═══════ Empty state — PR-7 CLATU: eyebrow + centered + CTA ═══════ */
@@ -262,6 +294,9 @@
       _dom.grid.appendChild(buildEmptyState(isArchive));
       return;
     }
+
+    /* Editorial column header — alignment netleştirir, table head pattern */
+    _dom.grid.appendChild(buildHeaderRow(isArchive));
 
     list.forEach(function (pos) {
       _dom.grid.appendChild(buildRow(pos, isArchive));
