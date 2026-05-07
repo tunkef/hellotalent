@@ -473,20 +473,14 @@
     body.setAttribute('data-stage-body', stageDef.key);
 
     if (entries.length === 0) {
-      /* PR-7 CLATU: minimal empty state — arrow icon yok, text-only + ghost link */
+      /* 7 May Tuna feedback: "Havuza git" link sütun içinden çıkartıldı,
+         expand footer butonuna taşındı. Sadece text-only empty state. */
       var empty = document.createElement('div');
       empty.className = 'ik-pipeline-empty';
       var et = document.createElement('p');
       et.className = 'ik-pipeline-empty__title';
       et.textContent = STAGE_EMPTY[stageDef.key] || 'Henüz aday yok.';
       empty.appendChild(et);
-      if (stageDef.key === 'uzun_liste') {
-        var cta = document.createElement('a');
-        cta.className = 'ik-pipeline-empty__cta';
-        cta.href = 'hr-pool.html';
-        cta.textContent = 'Havuza git';
-        empty.appendChild(cta);
-      }
       body.appendChild(empty);
     } else {
       entries.forEach(function (e) {

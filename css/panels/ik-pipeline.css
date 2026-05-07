@@ -2342,7 +2342,8 @@ html[data-theme="dark"] .ik-coaching-banner__cta:hover {
   line-height: 1;
 }
 
-/* Mini board — 3 sütun (uzun · kısa · iletişim) drag-drop pipeline reuse */
+/* Mini board — 3 sütun (uzun · kısa · iletişim) drag-drop pipeline reuse
+   7 May Tuna: her sütunda min 5 kart yüksekliği, 5+ olunca scroll. */
 .ik-pos-expand__board {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -2350,15 +2351,31 @@ html[data-theme="dark"] .ik-coaching-banner__cta:hover {
   align-items: start;
 }
 .ik-pos-expand__board .ik-stage {
-  /* Compact accordion versiyonu — min-height yok, body padding küçük */
   background: var(--editorial-bg);
 }
-.ik-pos-expand__board .ik-stage__header {
-  padding: var(--space-5) var(--space-6);
-}
 .ik-pos-expand__board .ik-stage__body {
+  /* 5 kart önizleme — kart ~110px (3 satır içerik), gap-4 (8px) → ~590px görünür */
+  min-height: 580px;
+  max-height: 580px;
+  overflow-y: auto;
   padding: var(--space-5);
   gap: var(--space-4);
+  /* Editorial scrollbar — minimal */
+  scrollbar-width: thin;
+  scrollbar-color: var(--editorial-hairline-strong) transparent;
+}
+.ik-pos-expand__board .ik-stage__body::-webkit-scrollbar {
+  width: 6px;
+}
+.ik-pos-expand__board .ik-stage__body::-webkit-scrollbar-track {
+  background: transparent;
+}
+.ik-pos-expand__board .ik-stage__body::-webkit-scrollbar-thumb {
+  background: var(--editorial-hairline-strong);
+  border-radius: var(--radius-pill);
+}
+.ik-pos-expand__board .ik-stage__body::-webkit-scrollbar-thumb:hover {
+  background: var(--editorial-ink-muted);
 }
 
 @media (max-width: 768px) {

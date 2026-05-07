@@ -138,12 +138,13 @@
     actions.appendChild(editBtn);
 
     if (!isArchive) {
+      /* 7 May Tuna feedback: stage empty state'inden "Havuza git" buraya taşındı */
       var poolBtn = document.createElement('button');
       poolBtn.type = 'button';
       poolBtn.className = 'ik-pos-expand__action';
       poolBtn.setAttribute('data-pos-action', 'pool');
       poolBtn.setAttribute('data-pos-id', String(position.id));
-      poolBtn.textContent = 'Adayları görüntüle';
+      poolBtn.textContent = 'Havuza git';
       actions.appendChild(poolBtn);
     }
 

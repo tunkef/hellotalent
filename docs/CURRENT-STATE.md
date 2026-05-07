@@ -45,6 +45,13 @@
 - `isArchive` derivation `position.status === 'closed' || position.is_archive` (uydurma) → `position.durum === 'closed'` (gerçek migration 20260505130000 kolonu)
 - Cache-bust `?v=20260507acc3`
 
+**Hotfix #6 (Tuna feedback "sütun scroll + Havuza git footer'a"):**
+- `.ik-pos-expand__board .ik-stage__body` `min-height: 580px` + `max-height: 580px` + `overflow-y: auto` → 5 kart önizleme + scroll (5+ kart için)
+- Editorial scrollbar (thin, hairline-strong thumb) — webkit + firefox
+- Stage empty state'ten "Havuza git" link KALDIRILDI (`ik-pipeline.js:483-489` if-block)
+- Footer "Adayları görüntüle" buton label → "Havuza git" (data-pos-action="pool" hr-pool.html'e yönlendiriyor)
+- Cache-bust `?v=20260507scroll`
+
 **Hotfix #5 (Tuna feedback "minimalize accordion + stage başlık çirkin"):**
 - Açılış tarihi satırdan kaldırıldı (header'dan AÇILIŞ kolonu, row'dan time cell sil), expand içinde "AÇILIŞ" eyebrow + value satırında render
 - Expand head section (eyebrow "POZİSYON DETAYI" + h3 başlık) duplicate olduğu için TAMAMEN SİL — satırda zaten başlık var
