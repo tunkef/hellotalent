@@ -2395,7 +2395,7 @@ body .pp-identity .pp-ident__completion,
    ve close confirm modal unstyled native button gözüküyordu (cache veya
    cascade override). !important defansif. */
 .ik-pos-expand__action {
-  padding: var(--space-3) var(--space-7) !important;
+  padding: var(--space-5) var(--space-9) !important;
   background: transparent !important;
   border: 1px solid var(--editorial-hairline-strong) !important;
   border-radius: var(--radius) !important;
@@ -2405,6 +2405,11 @@ body .pp-identity .pp-ident__completion,
   color: var(--editorial-ink) !important;
   cursor: pointer !important;
   text-decoration: none !important;
+  letter-spacing: 0.01em !important;
+}
+.ik-pos-expand__actions {
+  gap: var(--space-6) !important;
+  padding-top: var(--space-9) !important;
 }
 .ik-pos-modal-overlay {
   position: fixed !important;
