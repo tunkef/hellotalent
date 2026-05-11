@@ -1,5 +1,27 @@
 # hellotalent.ai — Current State
-> Son guncelleme: **11 Mayıs 2026 — QUALITY REFORM** | Studio v3 → v3.3 (20→11 agent, CLAUDE.md 178→101 satır, 12 memory graduate, PCV her T2+ işte, design-spec dosya zorunlu, cache-bust merkezi, tier-detect hook gerçek).
+> Son guncelleme: **11 Mayıs 2026 — REFORM v3.4 + P0 SECURITY AUDIT** | Studio v3.3, 75-item audit listesi başladı, P0 batch tamam.
+
+## 11 May P0 Security Audit (Reform v3.4 sonrası)
+
+**3 BLOCKER tespit:**
+
+1. **service_role JWT + GitHub PAT plain text** (`.claude/settings.local.json` permissions.allow 14×JWT + 1×PAT) — Tuna manuel rotate gerek. Cleanup tool: `scripts/clean-settings-secrets.sh` (REDACTED placeholder + yedek).
+
+2. **11+ SECURITY DEFINER fonksiyon search_path eksik** — CVE-2018-1058 SQL injection vector. Migration: `20260511200950_a26_security_definer_search_path_hardening.sql` (dynamic DO block, runtime'da eksik fonksiyonları bulup ALTER ile fix).
+
+3. **`step4_simplification.sql` false positive** — CREATE TABLE comment'inde, gerçek table yok, RLS sorunu yok.
+
+**Çıkan audit raporu:** `docs/SELF-AUDIT.md` A-K katmanları + P0 sonuçları. 75 item kalan: P1 Database (6), P2 Frontend (10), P3 Accessibility (6), P4 Testing (6), P5 Production (9), P6 KVKK (8), P7 Agentic/DX (20).
+
+**T3 zinciri çalıştı:** supabase-agent (migration yazıldı) → reviewer audit (P0 raporu) → Codex auto-trigger pre-commit'te tetiklenecek.
+
+**Pending Tuna karar:**
+- pending-approvals.md `A_AUTO_P0_2026-05-11_SETTINGS_SECRET` — service_role + GitHub PAT rotate
+- pending-approvals.md `A26` — migration apply (`npm run db:push --linked`)
+
+---
+
+## Reform v3.3-v3.4 (önceki — 11 May)
 
 ## 11 May Session — Quality Reform (T4 paradigm)
 
