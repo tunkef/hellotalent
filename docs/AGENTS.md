@@ -1,183 +1,84 @@
-# HelloTalent Studio — Agent Team Reference (v3.2)
+# HelloTalent Studio — Agent Team Reference (v3.3 — Reform 11 May 2026)
 
-> 20 native Claude agent + 1 hybrid (Codex). Agent Teams (experimental) aktif, peer-to-peer chat ile koordinasyon. Her ajan proje-scoped `.claude/agents/` altında tanımlı.
+> **11 native Claude agent + 1 hybrid (Codex).** 20→11 konsolidasyon, role-overlap eliminated. Eski 12 agent `.claude/agents/_archive/` altında — referans için korundu.
 
 ## Quick Index
 
 | # | Agent | Model | Scope | Invoke |
 |---|-------|-------|-------|--------|
-| 1 | [chief-of-staff](../.claude/agents/chief-of-staff.md) | opus | Teams lead, tier detect, Codex gate | main session default |
-| 2 | [briefer](../.claude/agents/briefer.md) | haiku | Session başı context | `/cook hellotalent` |
-| 3 | [compactor-agent](../.claude/agents/compactor-agent.md) | haiku | Image özet + context snapshot | hook otomatik |
-| 4 | [auditor](../.claude/agents/auditor.md) | sonnet | Security, KVKK, RLS, PII | migration/auth/payment |
-| 5 | [code-reviewer](../.claude/agents/code-reviewer.md) | sonnet | 5-axis PR review | pre-merge |
-| 6 | [uat-tester](../.claude/agents/uat-tester.md) | sonnet | Playwright E2E | pre/post-deploy |
-| 7 | [darkmode-auditor](../.claude/agents/darkmode-auditor.md) | haiku | Dark mode + WCAG contrast | UI değişikliği |
-| 8 | [designer](../.claude/agents/designer.md) | sonnet | Brand, aesthetic, tokens | yeni feature/page |
-| 9 | [ui-agent](../.claude/agents/ui-agent.md) | sonnet | Frontend implementation | designer spec sonrası |
-| 10 | [ux-agent](../.claude/agents/ux-agent.md) | sonnet | User research, flow, CRO | yeni flow, A/B test |
-| 11 | [architect](../.claude/agents/architect.md) | opus | Spec/Plan/Tasks, mimari | yeni MVP faz, 5+ dosya |
-| 12 | [supabase-agent](../.claude/agents/supabase-agent.md) | sonnet | Schema, RLS, Edge Functions | DB iş |
-| 13 | [infra-ops](../.claude/agents/infra-ops.md) | sonnet | Deploy, Cloudflare, secrets (izole perms) | deploy, rollback |
-| 14 | [content-writer](../.claude/agents/content-writer.md) | sonnet | Site copy, email, onboarding | mikro-copy |
-| 15 | [marketing-writer](../.claude/agents/marketing-writer.md) | sonnet | SEO, social, campaign | landing, blog |
-| 16 | [maintenance-agent](../.claude/agents/maintenance-agent.md) | sonnet | Tech debt, postmortem | haftalık, post-deploy |
-| 17 | [legal-reviewer](../.claude/agents/legal-reviewer.md) | sonnet | KVKK metin drift, avukat brief | legal copy, KVKK audit |
-| 18 | [data-analyst](../.claude/agents/data-analyst.md) | sonnet | PostHog funnel + cohort + A/B | metrik anomali, feature post-launch |
-| 19 | [watchdog](../.claude/agents/watchdog.md) | haiku | Peer chat observer | stall/loop/drift detect |
-| 20 | [researcher](../.claude/agents/researcher.md) | sonnet | Web research + fact-check + prospecting | rakip scan, lead list, claim verify |
-| H | Codex (external) | GPT-5 | T3/T4 ikinci göz | otomatik trigger |
+| 1 | [chief-of-staff](../.claude/agents/chief-of-staff.md) | opus | Teams lead + tier detect + Codex gate + briefer + watchdog + compactor (gömülü) | main session default |
+| 2 | [reviewer](../.claude/agents/reviewer.md) | sonnet | 5-axis review + KVKK/RLS audit + tech debt (mode flag) | pre-merge, pre-migration, weekly |
+| 3 | [frontend](../.claude/agents/frontend.md) | opus | Designer spec mode + ui-agent impl mode (birleşti) | her UI/component iş |
+| 4 | [writer](../.claude/agents/writer.md) | sonnet | App copy + marketing (mode flag) | UI label, email, blog, social |
+| 5 | [supabase-agent](../.claude/agents/supabase-agent.md) | sonnet | Schema, RLS, Edge Functions | DB iş |
+| 6 | [infra-ops](../.claude/agents/infra-ops.md) | sonnet | Deploy, Cloudflare, secrets (izole perms) | deploy, rollback |
+| 7 | [ux-agent](../.claude/agents/ux-agent.md) | sonnet | User research, flow, CRO | yeni flow, A/B test |
+| 8 | [darkmode-auditor](../.claude/agents/darkmode-auditor.md) | haiku | Dark mode + WCAG contrast (AccessLint) | UI değişikliği |
+| 9 | [uat-tester](../.claude/agents/uat-tester.md) | sonnet | Playwright E2E + smoke | pre/post-deploy |
+| 10 | [researcher](../.claude/agents/researcher.md) | sonnet | Web research + fact-check + prospecting | rakip scan, claim verify |
+| 11 | [legal-reviewer](../.claude/agents/legal-reviewer.md) | sonnet | KVKK metin drift, avukat brief | legal copy, KVKK audit |
+| H | Codex (external) | GPT-5 | T3/T4 ikinci göz | otomatik trigger (T3/T4) |
 
-## Agent Selection Matrix
+## Tier Matrix → Zincir
 
-İş tipi → ajan zinciri:
+| Tier | İş tipi | Zincir |
+|---|---|---|
+| **T1** | typo, single-line copy | solo OK |
+| **T2** | UI, component, kod mantığı | **frontend (spec→Tuna onay→impl) → darkmode-auditor → reviewer (review mode)** |
+| **T3** | RLS, migration, payment, auth, paradigm | supabase-agent + reviewer (audit mode) + Codex |
+| **T4** | architecture, API contract, major refactor | chief-of-staff (architect mode) + reviewer + Codex |
 
-| İş Tipi | Zincir | Tier |
-|---------|--------|------|
-| UI component değişikliği | designer → ui-agent → code-reviewer → uat-tester | T2 |
-| Dark mode fix | darkmode-auditor → ui-agent → uat-tester | T2 |
-| Yeni sayfa/flow | designer → ux-agent → ui-agent → code-reviewer → uat-tester | T3 |
-| Onboarding/form UX | ux-agent → ui-agent → uat-tester → content-writer | T2 |
-| Copy/mikro-metin | content-writer → ui-agent | T1-T2 |
-| SEO/landing copy | marketing-writer → ui-agent → code-reviewer | T2 |
-| DB schema/migration | supabase-agent → auditor → code-reviewer → **Codex** | T3 |
-| RLS policy değişikliği | supabase-agent → auditor → **Codex** | T3 |
-| Edge Function | supabase-agent → code-reviewer → auditor | T3 |
-| Auth flow | auditor → supabase-agent → code-reviewer → uat-tester → **Codex** | T3 |
-| Payment (Iyzico/Stripe) | supabase-agent → auditor → code-reviewer → **Codex** | T3 |
-| Architecture refactor | architect → code-reviewer → auditor → **Codex** | T4 |
-| Deploy | infra-ops → uat-tester (pre) → maintenance-agent (post) | T3 |
-| Bug fix (tech debt) | code-reviewer → maintenance-agent | T2 |
-| Performance | maintenance-agent → uat-tester | T2-T3 |
-| Security audit | auditor → code-reviewer → **Codex** | T3 |
-| Legal metin (KVKK vb.) | legal-reviewer → content-writer | T3 |
-| Product metrik analizi | data-analyst → ux-agent | T2 |
-| Rakip/market research | researcher → marketing-writer (SEO açısı) → architect (stratejik) | T2 |
-| İddia/claim fact-check | researcher → content-writer (hangi copy'ye bağlı) | T2 |
-| B2B prospect / lead list | researcher → legal-reviewer (KVKK) → marketing-writer (outreach) | T2-T3 |
-| **Newsletter kampanya (aday)** | **marketing-writer (avoid-ai-writing ZORUNLU) → content-writer (tone) → legal-reviewer (İYS + fabrikasyon)** | T2 |
-| **Newsletter kampanya (kurumsal)** | **marketing-writer (avoid-ai-writing ZORUNLU) → content-writer → legal-reviewer → researcher (veri kaynak)** | T2 |
-| Newsletter welcome sequence | marketing-writer (drip taslakları) → content-writer (tone) → legal-reviewer | T2 |
-| Image upload | compactor-agent (otomatik, önce) | - |
+`scripts/tier-detect.sh` git diff bazlı otomatik tier detect + commit message marker check.
 
-## Peer Chat Topology
+## Konsolidasyon notları
 
-```
-                    chief-of-staff (lead)
-                    ↙      ↓      ↘
-              briefer    architect    [review cluster]
-                                     ↙   ↓   ↘
-                                auditor code-reviewer uat-tester
-                                     ↕         ↕
-                              [build cluster]
-                               ↙    ↓    ↘
-                          designer ui-agent ux-agent
-                               ↕
-                        [data cluster]
-                         ↙         ↘
-                supabase-agent   infra-ops
-                         ↕
-                   [content cluster]
-                    ↙           ↘
-           content-writer  marketing-writer
-                     ↕              ↕
-                 [research cluster]
-                     ↙     ↓      ↘
-              researcher  legal-reviewer  data-analyst
-                         ↕
-                 maintenance-agent   watchdog
+### Silinen 12 agent (`.claude/agents/_archive/`)
+
+| Eski | Yeni | Sebep |
+|---|---|---|
+| code-reviewer | reviewer (review mode) | 4 review agent → 1 |
+| auditor | reviewer (audit mode) | role-overlap |
+| maintenance-agent | reviewer (maintenance mode) | role-overlap |
+| designer | frontend (spec mode) | spec/impl ayrı agent gereksiz |
+| ui-agent | frontend (impl mode) | spec'siz impl zaten yasak |
+| content-writer | writer (app-copy mode) | copy = copy, mode flag yeter |
+| marketing-writer | writer (marketing mode) | role-overlap |
+| watchdog | chief-of-staff (built-in observer) | dispatch lead zaten observer |
+| briefer | chief-of-staff (built-in session brief) | session start gömülü |
+| compactor-agent | hook (agent değil) | image summary hook olarak |
+| architect | chief-of-staff (architect mode) | T4 zaten chief-of-staff lead |
+| data-analyst | chief-of-staff (expand) | PostHog ad-hoc, agent gereksiz |
+
+## Handoff Pattern
+
+`chief-of-staff` → `Task(agent, prompt)` dispatch:
+1. **Sequential** (örn: frontend spec → Tuna onay → frontend impl)
+2. **Parallel** (örn: reviewer + darkmode-auditor aynı PR)
+3. **Codex gate** (T3/T4 zorunlu, agreement check)
+
+Çıktı format her agent için JSON:
+
+```json
+{
+  "agent": "<name>",
+  "mode": "<mode flag>",
+  "findings": [...],
+  "summary": "...",
+  "recommendation": "MERGE_OK | REQUEST_CHANGES | BLOCK"
+}
 ```
 
-compactor-agent topology dışında (isolated, hook-driven). watchdog peer chat observer — logs to `.claude/agent-memory/watchdog-{date}.md`.
+## Memory + Rules
 
-**researcher ↔ peer chat targets:**
-- marketing-writer (SEO + Ahrefs quota koordinasyonu)
-- content-writer (copy iddia fact-check)
-- architect (competitive landscape → mimari karar)
-- legal-reviewer (PII-heavy prospecting KVKK gate)
-- ux-agent (rakip onboarding flow analizi)
+- **Memory** (`~/.claude/projects/.../memory/`): project-level facts, brand data, future plans. **Behavioral rules YOK** (Reform: graduate edildi).
+- **Rules** (`.claude/rules/`): enforced disipliner kurallar. `.claude/rules/learned/` graduate edilenler.
+- **Pending rules** (`.claude/agent-memory/pending-rules.md`): chief-of-staff weekly Pazar review, %50+ tekrar → graduate.
+- **Pending approvals** (`.claude/agent-memory/pending-approvals.md`): Codex çelişki, secret rotation, T3/T4 batch.
 
-## Codex Hybrid Gate
+## Source
 
-T3 ve T4 işlerinde **otomatik** tetiklenir:
-- Pre-commit hook tier detect eder
-- `scripts/codex-review.sh --tier=$TIER` otomatik çalışır
-- Native (auditor + code-reviewer) rapor ile karşılaştırma
-- Agreement ≥ %70 → sessiz geç
-- Çelişki %30+ → commit blokla, `pending-approvals.md`'ye düşer
-
-## Self-Improving Protocol
-
-Her agent .md sonunda `## Learned Rules` section'ı var.
-
-Pattern 2+ kez tekrar ederse:
-1. chief-of-staff peer chat'te "bu rule yaz" deyince
-2. İlgili agent kendi `## Learned Rules`'a append yapar (append-only)
-3. `.claude/agent-memory/pending-rules.md`'e queue girer
-4. Tuna approve eder
-5. `self-improving-agent` plugin `/si:promote` ile CLAUDE.md veya `.claude/rules/`'a graduate
-
-Safeguards:
-- Append-only (silme yok, SUPERSEDED etiketi var)
-- Max 20 aktif rule per agent
-- Haftalık chief-of-staff review
-- Tuna approval gate
-
-## Handoff Dosyaları
-
-`.claude/agent-memory/` altında:
-
-| Dosya | Kim yazar | Ne için |
-|-------|-----------|---------|
-| `handoff-{scope}-{ts}.json` | her agent | structured handoff |
-| `image-summaries/img-{ts}.md` | compactor-agent | image özeti |
-| `context-snapshots/snap-{ts}.md` | compactor-agent | context snapshot |
-| `codex-reviews/codex-{ts}.json` | codex-review.sh | Codex output |
-| `audit-{scope}-{ts}.json` | auditor | security audit |
-| `review-{scope}-{ts}.json` | code-reviewer | PR review |
-| `uat-{ts}.json` | uat-tester | UAT sonuç |
-| `pending-approvals.md` | chief-of-staff | Tuna batch approval queue |
-| `pending-rules.md` | any agent | self-improve queue |
-| `maintenance-reports/weekly-{YYYYMMDD}.md` | maintenance-agent | weekly scan |
-
-## Skill Bindings Quick Ref
-
-Özet — detay her agent .md'nin "Skills" section'ında:
-
-- **Security cluster:** auditor → senior-security, ciso-advisor, skill-security-auditor, iso27001, security-hardening, gdpr
-- **Design cluster:** designer → brand-guidelines, ui-design-system, epic-design, impeccable-design, canvas-design, bold, oiloil-ui-ux
-- **Frontend cluster:** ui-agent → frontend-engineering, hellotalent-dev, senior-frontend, ui-design-system, impeccable-design
-- **UX cluster:** ux-agent → ux-researcher-designer, cs-ux-researcher, onboarding-cro, form-cro, page-cro, experiment-designer, marketing-psychology
-- **Data cluster:** supabase-agent → supabase-mastery, database-designer, database-schema-designer, security-hardening, stripe-integration-expert
-- **Content cluster:** content-writer → copywriting, avoid-ai-writing, email-template-builder, email-systems, pyramid-principle
-- **Marketing cluster:** marketing-writer → ai-seo, content-strategy, launch-strategy, lead-magnets, marketing-ideas, marketing-psychology, growth-engine, competitive-landscape, programmatic-seo, cs-content-creator
-- **Architect cluster:** architect → spec-driven-dev, planning-tasks, architecture-designer, api-interface-design, consulting-* (MECE, hypothesis)
-- **Research cluster:** researcher → firecrawl:firecrawl-cli, firecrawl:skill-gen, competitive-landscape, content-research-writer, ai-seo (shared with marketing-writer), context7-plugin:context7-mcp, avoid-ai-writing. Shared MCP: Firecrawl (plugin), Ahrefs (w/ marketing-writer), claude.ai Vibe Prospecting, WebFetch, WebSearch
-- **Maintenance cluster:** maintenance-agent → performance-optimization, code-simplification, postmortem, focused-fix, change-management
-
-## Invocation Patterns
-
-**Teams mode (default):**
-```
-chief-of-staff → SendMessage(to: "auditor", msg: "...")
-```
-
-**Task mode (fallback):**
-```
-Task(auditor, "profil.js RLS check, PII leak var mı?")
-```
-
-**Hook-driven (otomatik):**
-- Image upload → compactor-agent
-- Git commit (T3/T4) → pre-commit tier-detect hook → Codex auto
-- >25 tool uses → context-budget hook → compactor snapshot hint
-
-## Stall Handling
-
-Agent Teams experimental — stall durumunda:
-1. 90 saniye timeout detect
-2. Katman 2 fallback: `Task(agent, ...)` sync dispatch
-3. Eğer hala fail: `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=0` rollback
-4. Tuna'ya bildir
-
-Detay → `docs/EMERGENCY.md`
+- Reform plan: `~/.claude/plans/imdi-agent-check-ve-dynamic-piglet.md`
+- CLAUDE.md Hot Rules
+- `.claude/rules/learned/consolidated-2026-05.md` (12 graduate kural)
+- `docs/UI-DOD-template.md`
+- `docs/RPC-CONTRACT.md`

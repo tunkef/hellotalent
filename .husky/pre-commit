@@ -1,2 +1,9 @@
 #!/usr/bin/env sh
-./scripts/check-truth-sync.sh && ./scripts/check-html-tags.sh && ./scripts/check-clatu-layout.sh && ./scripts/check-ui-verify.sh && npx lint-staged --no-stash
+# Reform 11 May 2026 — disiplin kapıları + tier-detect
+
+./scripts/check-truth-sync.sh \
+  && ./scripts/check-html-tags.sh \
+  && ./scripts/check-clatu-layout.sh \
+  && ./scripts/tier-detect.sh .git/COMMIT_EDITMSG \
+  && ./scripts/check-ui-verify.sh \
+  && npx lint-staged --no-stash

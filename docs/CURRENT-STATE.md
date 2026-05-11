@@ -1,5 +1,49 @@
 # hellotalent.ai — Current State
-> Son guncelleme: **8 Mayıs 2026 SESSION SONU** | T3 paradigm shift (modal → accordion + drawer) + kart redesign v5 (ring corner) + 46 commit + Codex rescue cross-file CSS bug fix LIVE.
+> Son guncelleme: **11 Mayıs 2026 — QUALITY REFORM** | Studio v3 → v3.3 (20→11 agent, CLAUDE.md 178→101 satır, 12 memory graduate, PCV her T2+ işte, design-spec dosya zorunlu, cache-bust merkezi, tier-detect hook gerçek).
+
+## 11 May Session — Quality Reform (T4 paradigm)
+
+**Tetikleyici:** Tuna 11 May direktifi — "Anthropic CTO prensibi gibi düşün, aşırı dürüst eleştir, son 1 ayı derin analiz et."
+
+**Veri:** 30 günde 540 commit, %45 fix, 34 explicit revize (v2-v5), 81 pipeline-area commit, 12 memory hepsi "X. ihlal sonrası Tuna direktifi". Studio v3 agentic geçişten sonra kalite çöktü.
+
+**Üç root cause:** (1) Disiplin kapıları yok, kâğıt kurallar; (2) UI'da Definition of Done yok → revize döngüsü; (3) 20 agent role-overlap → karar yetkisi belirsiz.
+
+**Reform paketi (commit'lendi):**
+
+- **CLAUDE.md** 178 → 101 satır (Top 5 Hot Rules + tier matrix + 11 agent + DB invariants)
+- **Agent stack** 20 → 11 (`.claude/agents/_archive/` eski 12)
+  - Yeni merge: `reviewer` (review/audit/maintenance), `frontend` (spec/impl), `writer` (app-copy/marketing)
+  - Gömülü: briefer/watchdog/compactor/architect/data-analyst → chief-of-staff
+- **12 feedback memory** → `.claude/rules/learned/consolidated-2026-05.md` graduate; orijinaller `memory/archive/`
+- **Disiplin scriptleri (yeni):**
+  - `scripts/tier-detect.sh` — git diff bazlı T1-T4, commit msg `design-spec:` marker check
+  - `scripts/cachebust.sh` — git short SHA otomatik (26 manuel versiyon → 1)
+  - `scripts/check-v2-retrospective.sh` — v2/redesign post-commit otomatik retrospective entry
+  - `.claude/hooks/dispatch-chief-of-staff.sh` — UserPromptSubmit heuristik tier-detect
+- **Husky chain güncel:** pre-commit + post-commit reform hook'ları ekli
+- **Yeni docs:**
+  - `docs/UI-DOD-template.md` — UI Definition of Done checklist
+  - `docs/RPC-CONTRACT.md` — RPC schema (hallucination önleyici #1)
+  - `docs/specs/`, `docs/plans/`, `docs/retrospectives/` klasör + README
+- **Reform plan:** `~/.claude/plans/imdi-agent-check-ve-dynamic-piglet.md`
+
+**KPI hedefi (4 hafta):**
+
+| Metrik | Bugün | Hedef |
+|---|---|---|
+| Günlük commit | 18 | ≤ 8 |
+| Fix prefix oranı | %45 | ≤ %20 |
+| v2+ revize/ay | 34 | ≤ 5 |
+| Cache-bust versiyon | 26 | 1 |
+| Active agent | 20 | 11 |
+| CLAUDE.md satır | 250+ | 80-100 |
+
+**Sonraki adım:** Reform paketi push edilecek, Tuna canlıda test. İlk T2+ UI iş geldiğinde `frontend (spec mode)` → `docs/specs/<feature>.md` + visual mockup → Tuna onay → impl → verify pipeline'ı yaşanacak.
+
+---
+
+## 8 May Session — T3 Paradigm Shift + Kart Redesign v5 (46 commit)
 
 ## 8 May Session — T3 Paradigm Shift + Kart Redesign v5 (46 commit)
 
