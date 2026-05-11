@@ -36,7 +36,9 @@
   },
   "homepage": "https://github.com/tunkef/hellotalent#readme",
   "lint-staged": {
-    "*.js": "eslint"
+    "*.js": "eslint",
+    "*.css": "bash scripts/check-token-strict.sh",
+    "*.html": "bash scripts/check-html-tags.sh"
   },
   "devDependencies": {
     "@playwright/test": "^1.58.2",

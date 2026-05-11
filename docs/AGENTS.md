@@ -25,10 +25,10 @@
 |---|---|---|
 | **T1** | typo, single-line copy | solo OK |
 | **T2** | UI, component, kod mantığı | **frontend (spec→Tuna onay→impl) → darkmode-auditor → reviewer (review mode)** |
-| **T3** | RLS, migration, payment, auth, paradigm | supabase-agent + reviewer (audit mode) + Codex |
-| **T4** | architecture, API contract, major refactor | chief-of-staff (architect mode) + reviewer + Codex |
+| **T3** | RLS, migration, payment, auth, paradigm | supabase-agent + reviewer (audit mode) + **Codex auto** |
+| **T4** | architecture, API contract, major refactor | chief-of-staff (architect mode) + reviewer + **Codex auto** |
 
-`scripts/tier-detect.sh` git diff bazlı otomatik tier detect + commit message marker check.
+`scripts/tier-detect.sh` git diff bazlı otomatik tier detect; T3/T4 ise `scripts/codex-review-real.sh` çalışır (Codex CLI 0.130.0 `codex review --uncommitted`). BLOCKER/CRITICAL → commit BLOK + `.claude/agent-memory/pending-approvals.md` auto entry. Bypass: commit msg `[codex-bypass]` (auditable).
 
 ## Konsolidasyon notları
 

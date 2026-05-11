@@ -19,10 +19,10 @@ Vanilla HTML/CSS/JS (no framework). Supabase (Postgres + Auth + Storage + RLS). 
 |---|---|---|
 | T1 | typo, copy | solo OK |
 | T2 | UI, component, kod | **frontend (spec→impl) → darkmode-auditor → reviewer** |
-| T3 | RLS, migration, payment, auth, paradigm | supabase-agent + reviewer (audit) + Codex |
-| T4 | architecture, API contract, major refactor | chief-of-staff (architect mode) + reviewer + Codex |
+| T3 | RLS, migration, payment, auth, paradigm | supabase-agent + reviewer (audit) + **Codex auto-trigger** |
+| T4 | architecture, API contract, major refactor | chief-of-staff (architect mode) + reviewer + **Codex auto-trigger** |
 
-Detay: `.claude/rules/agent-triggers.md`. Otomatik: `scripts/tier-detect.sh`.
+**Otomatik:** `scripts/tier-detect.sh` git diff bazlı tier detect; T3/T4 ise `scripts/codex-review-real.sh` çalışır (Codex CLI 0.130.0, modern `codex review --uncommitted`). BLOCKER/CRITICAL tespit ederse commit BLOK + pending-approvals.md entry. Bypass: commit msg `[codex-bypass]`. Detay: `.claude/rules/agent-triggers.md` + `docs/SELF-AUDIT.md`.
 
 ## Design Truth (asla bypass)
 

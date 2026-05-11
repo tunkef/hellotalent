@@ -89,31 +89,38 @@ EOF
   exit 1
 fi
 
-# T3/T4: audit-bypass veya codex-reviewed marker veya bypass
+# T3/T4: bypass marker var mı kontrol, yoksa otomatik Codex review tetikle
 if [ "$TIER" = "T3" ] || [ "$TIER" = "T4" ]; then
-  if echo "$msg" | grep -qE '(codex-reviewed:|\[agent-bypass\]|audit-bypass)'; then
+  if echo "$msg" | grep -qE '\[agent-bypass\]|\[codex-bypass\]|audit-bypass'; then
+    echo "[tier-detect] $TIER bypass marker tespit edildi, Codex review atlanıyor (auditable)"
     exit 0
   fi
 
+  # Marker yoksa otomatik Codex review tetikle
+  if [ -x "./scripts/codex-review-real.sh" ]; then
+    echo "[tier-detect] $TIER tespit edildi — Codex review otomatik tetikleniyor..."
+    if ./scripts/codex-review-real.sh --tier="$TIER" --msg="$COMMIT_MSG_FILE"; then
+      echo "[tier-detect] Codex review pass, commit proceeds"
+      exit 0
+    else
+      echo "[tier-detect] Codex review FAIL/BLOCKER — commit blocked. Bypass için commit msg'a [codex-bypass] ekle." >&2
+      exit 1
+    fi
+  fi
+
+  # Codex script yoksa fallback: marker zorunlu
   cat <<EOF >&2
 
 ╔════════════════════════════════════════════════════════════════╗
-║  TIER-DETECT — $TIER COMMIT BLOK (Reform 11 May)                  ║
+║  TIER-DETECT — $TIER COMMIT BLOK (Codex script yok)            ║
 ╠════════════════════════════════════════════════════════════════╣
 ║                                                                ║
 ║  Security/architecture değişikliği tespit edildi.              ║
 ║                                                                ║
-║  ZORUNLU: reviewer (audit mode) + Codex review.                ║
+║  scripts/codex-review-real.sh executable değil.                ║
 ║                                                                ║
-║  Commit message'a şunlardan biri ekle:                         ║
-║                                                                ║
-║    codex-reviewed: <agreement %>                               ║
-║                                                                ║
-║  veya bypass (auditable):                                      ║
-║                                                                ║
-║    [agent-bypass] gerekçe                                      ║
-║                                                                ║
-║  Detay: .claude/rules/agent-triggers.md                        ║
+║  Bypass için commit msg'a:                                     ║
+║    [codex-bypass] <gerekçe>                                    ║
 ║                                                                ║
 ╚════════════════════════════════════════════════════════════════╝
 EOF
