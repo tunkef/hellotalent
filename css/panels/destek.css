@@ -4,10 +4,19 @@
    Vocabulary locked: cream var(--editorial-bg), navy var(--editorial-ink), vermillion var(--editorial-vermillion),
    hairline var(--editorial-hairline), muted var(--editorial-ink-muted).
    Fonts: Bricolage Grotesque + Plus Jakarta Sans + DM Mono italic.
-   CSS-only override: profil-destek.js classes are preserved; this file
-   fully replaces the legacy injectCSS() output via !important where the
-   load-order would otherwise lose the cascade.
+
+   Reform v3.4 FIX-2 BLOCKER Adım 1 (11 May 2026):
+   Tüm rule'lar @layer panels içine sarıldı. Cascade hierarchy:
+   reset → base → components → panels → utilities.
+   profil-destek.js inline injectCSS() layer'a sahip değil → cascade'de en alta düşer.
+   !important annotations geri uyumluluk için korundu (Adım 2'de strip).
+
+   Spec: docs/specs/destek-css-layer-refactor.md
    ═══════════════════════════════════════════════════════════════════════ */
+
+@layer reset, base, components, panels, utilities;
+
+@layer panels {
 
 #panel-destek {
   max-width: var(--editorial-max-w, 1200px) !important;
@@ -884,3 +893,6 @@
     transform: none !important;
   }
 }
+
+} /* end @layer panels — Reform v3.4 FIX-2 Adım 1 */
+

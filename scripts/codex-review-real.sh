@@ -68,36 +68,38 @@ REVIEW_FILE="$REVIEW_DIR/$ts-$sha_short.md"
 echo "[codex-review] Tier $TIER detected — running Codex review..."
 echo "[codex-review] Output: $REVIEW_FILE"
 
-# Codex review prompt
-CODEX_PROMPT="HelloTalent Studio v3.3 Reform 11 May 2026 — Tier $TIER commit review.
+# Codex review prompt (Codex CLI v0.130+ syntax: --uncommitted ile [PROMPT] mutually exclusive)
+# Custom focus prompt'u stdin yerine pre-review note olarak yaz, --uncommitted ile default review
+PRE_NOTE_FILE=$(mktemp)
+cat > "$PRE_NOTE_FILE" <<EOF
+# HelloTalent Studio v3.3 Reform — Tier $TIER review
 
-Focus areas:
+Focus areas (Codex default review'a ek):
 - Security (RLS, auth, KVKK, PII, OWASP)
 - Correctness (edge cases, race conditions, silent fails)
-- Architecture (SOLID, layer boundaries, coupling)
+- Architecture (SOLID, coupling)
 - Data contract (RPC shape, schema invariants)
 
-Find BLOCKER/CRITICAL issues only. Report:
-- File:line
-- Severity (BLOCKER/CRITICAL/HIGH/MEDIUM/LOW)
-- Issue summary
-- Fix suggestion
+Final verdict bekleniyor:
+- BLOCKER/CRITICAL varsa "🛑 BLOCK_MERGE" mesajı
+- Temiz ise "✅ MERGE_OK"
+EOF
 
-If no critical issues, end with '✅ MERGE_OK'. If blockers exist, end with '🛑 BLOCK_MERGE'."
-
-# Run codex review with timeout
-TIMEOUT="${CODEX_TIMEOUT:-120}"
+# Run codex review with timeout — modern syntax
+TIMEOUT="${CODEX_TIMEOUT:-180}"
 
 set +e
-gtimeout "$TIMEOUT" codex review --uncommitted --title "$title" "$CODEX_PROMPT" > "$REVIEW_FILE" 2>&1
+gtimeout "$TIMEOUT" codex review --uncommitted --title "$title" > "$REVIEW_FILE" 2>&1
 codex_exit=$?
 
-# Fallback: gtimeout yoksa (macOS BSD), basit çağrı
+# Fallback: gtimeout yoksa (macOS BSD)
 if [ "$codex_exit" = "127" ]; then
-  codex review --uncommitted --title "$title" "$CODEX_PROMPT" > "$REVIEW_FILE" 2>&1
+  codex review --uncommitted --title "$title" > "$REVIEW_FILE" 2>&1
   codex_exit=$?
 fi
 set -e
+
+rm -f "$PRE_NOTE_FILE"
 
 if [ "$codex_exit" -ne 0 ] && [ "$codex_exit" -ne 124 ]; then
   echo "[codex-review] Codex CLI failed (exit $codex_exit). Output:"
