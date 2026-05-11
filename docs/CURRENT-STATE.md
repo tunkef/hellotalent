@@ -1,5 +1,41 @@
 # hellotalent.ai — Current State
-> Son guncelleme: **11 Mayıs 2026 — REFORM v3.4 + P0 SECURITY AUDIT** | Studio v3.3, 75-item audit listesi başladı, P0 batch tamam.
+> Son guncelleme: **12 Mayıs 2026 — REFORM v3.4 FIX+AUDIT batch** | Studio v3.3, 75-item audit sıralı tamamlandı, FIX'ler yapıldı (Tuna onayına bağlı 2 migration).
+
+## 12 May FIX + Audit batch
+
+**Tuna karar (D seçeneği):** Tüm BLOCKER + HIGH + MEDIUM + PENDING sıralı uygula.
+
+**Yapılan (kod-level):**
+- A3 Vercel injection disable (`disable-vercel-injection.sh` çalıştırıldı, plugin marketplace.json'dan kaldırıldı, data dir silindi)
+- B1 destek.css @layer Adım 1 — 886→898 satır wrap (`!important` 471 korundu, Adım 2 sonra)
+- B2 Form labels — 5 input fix (confirm-password label.for, brand-search/cmdk-input/brand-input/adm-brands-search aria-label)
+- D1 Lighthouse CI workflow (`.github/workflows/lighthouse-ci.yml`)
+- D2 DNS + TLS monitor script (Cloudflare-aware, SPF/DKIM/DMARC check)
+- D3 159 plugin envanter dokümanı (`docs/PLUGIN-INVENTORY.md`)
+- D4 CONTRIBUTING.md + 3 issue template + PR template
+
+**Yazıldı, Tuna onay sonrası uygulanacak:**
+- A26 migration (SECURITY DEFINER search_path) — `supabase login` bekliyor
+- M1 migration: candidates.email + telefon UNIQUE constraint — `supabase login` bekliyor
+- B1 Adım 2: destek.css `!important` strip + profil-destek.js inline injectCSS removal
+- B2 cont.: 12+ form input wrapper label kontrolü (frontend agent T2 dispatch)
+- destek.css refactor Adım 2 (T3, Codex review)
+
+**Otomatize edildi (cron):**
+- weekly-maintenance Pazar 09:00 (launchd loaded)
+- weekly-review Pazar 10:00
+- weekly-backup Pazar 04:00
+- uptime-check her 15 dk (GitHub Actions deploy sonrası)
+- Lighthouse CI Pazartesi 08:00 + her main push
+- KPI snapshot weekly-maintenance içinde
+
+**Pending Tuna manuel:**
+- `supabase login` (1 dakikalık iş, migration push için)
+- 3 plugin enable: a11y-audit, claude-md-management, accesslint (re-install)
+
+---
+
+## 11 Mayıs P0 Security Audit (Reform v3.4)
 
 ## 11 May P0 Security Audit (Reform v3.4 sonrası)
 
