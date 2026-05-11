@@ -146,7 +146,7 @@ Status legend: ✅ **VERIFIED** | ⚠ **STALE** (30+ gün) | ❌ **FAILED** | �
 - Smoke test suite (tests/hooks/run-all.sh) yazıldı, 14/14 PASS
 - Pre-flight self-audit SessionStart'a bağlandı (28 check)
 
-### 11 May Reform v3 (bu commit)
+### 11 May Reform v3 (commit 7333767)
 - 360-derece audit istendi, 10+ blind spot daha çıktı
 - Codex CLI 0.130.0 gerçek entegrasyon — modern `codex review --uncommitted`
 - tier-detect T3/T4 → codex-review-real.sh otomatik tetik
@@ -155,6 +155,20 @@ Status legend: ✅ **VERIFIED** | ⚠ **STALE** (30+ gün) | ❌ **FAILED** | �
 - 3 custom slash command yazıldı (/plan-ui, /verify-design, /codex-gate)
 - Scripts inventory + Skills inventory dokümante edildi
 - Vercel plugin auto-injection araştırıldı, çözüm manuel (Tuna karar)
+
+### 11 May P0 Security audit (commit d533938)
+- 75 audit item sıralı başladı, P0 batch tamam
+- 3 BLOCKER tespit: service_role plain (14×) + GitHub PAT plain + 11+ SECURITY DEFINER search_path eksik
+- A26 migration yazıldı (dynamic DO block, runtime'da eksik fonksiyonlar bulunup ALTER)
+- clean-settings-secrets.sh hazır (Tuna rotate sonra çağırır)
+- pending-approvals.md A_AUTO_P0_SETTINGS_SECRET + A26 entries
+
+### 11 May Codex auto-trigger HIDDEN BUG (bu commit)
+**Bulgu:** P0 commit'inde Codex auto-trigger TETİKLENMEDİ (sessiz skip).
+**Sebep:** `scripts/tier-detect.sh` `.git/COMMIT_EDITMSG` relative path kullanıyordu. Worktree'de `.git` dosya, gerçek dir `/Users/.../Hellotalent/.git/worktrees/<branch>/COMMIT_EDITMSG`. Relative path resolve edilemediği için T3 detect edip "marker check skip" yapıp sessiz exit 0 verdi → Codex çağrılmadı.
+**Fix:** `git rev-parse --git-path COMMIT_EDITMSG` worktree-aware path resolve. Fallback olarak `.git` dosya parse ile `gitdir:` extract.
+**Verify:** Worktree'de test edildi, resolved path `/Users/.../worktrees/suspicious-joliot-c826ef/COMMIT_EDITMSG` MEVCUT.
+**Kural (graduate L15 aday):** Worktree-aware path resolve her git tooling script'inde zorunlu. Relative `.git/` path kullanmak worktree senaryolarında silent fail üretir.
 
 ### Kural (graduate L15 aday)
 **Her enforcement/automation claim'i somut test ile eşle.** "Kuruldu" demeden önce:

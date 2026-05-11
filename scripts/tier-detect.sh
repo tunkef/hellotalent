@@ -45,10 +45,32 @@ fi
 
 echo "$TIER"
 
-# Commit message kontrol (varsa)
-COMMIT_MSG_FILE="${1:-.git/COMMIT_EDITMSG}"
-if [ ! -f "$COMMIT_MSG_FILE" ]; then
-  exit 0
+# Commit message kontrol (varsa) — worktree-aware path resolve
+COMMIT_MSG_FILE="${1:-}"
+if [ -z "$COMMIT_MSG_FILE" ] || [ ! -f "$COMMIT_MSG_FILE" ]; then
+  # git rev-parse worktree'de doğru .git dir'i resolve eder
+  RESOLVED=$(git rev-parse --git-path COMMIT_EDITMSG 2>/dev/null || echo "")
+  if [ -n "$RESOLVED" ] && [ -f "$RESOLVED" ]; then
+    COMMIT_MSG_FILE="$RESOLVED"
+  else
+    # Fallback: relative path
+    if [ -f ".git/COMMIT_EDITMSG" ]; then
+      COMMIT_MSG_FILE=".git/COMMIT_EDITMSG"
+    else
+      # Worktree'de .git bir dosya olabilir, gitdir'i extract et
+      if [ -f ".git" ]; then
+        GITDIR=$(awk '/^gitdir:/ {print $2}' .git 2>/dev/null)
+        if [ -n "$GITDIR" ] && [ -f "$GITDIR/COMMIT_EDITMSG" ]; then
+          COMMIT_MSG_FILE="$GITDIR/COMMIT_EDITMSG"
+        fi
+      fi
+    fi
+  fi
+
+  if [ -z "$COMMIT_MSG_FILE" ] || [ ! -f "$COMMIT_MSG_FILE" ]; then
+    echo "[tier-detect] WARN: COMMIT_EDITMSG bulunamadı, marker check atlanıyor" >&2
+    exit 0
+  fi
 fi
 
 msg=$(cat "$COMMIT_MSG_FILE" 2>/dev/null || echo "")
