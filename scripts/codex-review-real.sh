@@ -86,15 +86,20 @@ Final verdict bekleniyor:
 EOF
 
 # Run codex review with timeout — modern syntax
+# Fix (12 May): --uncommitted yerine --base main kullanılır.
+# Sebep: --uncommitted ana repo working tree'sindeki uncommitted state'i de
+# tarıyor (worktree path'inde dahi), yanlış-pozitif [P0] BLOCKER üretiyor.
+# --base main branch diff'i sadece commit'leri review eder, daha temiz.
 TIMEOUT="${CODEX_TIMEOUT:-180}"
+BASE_BRANCH="${CODEX_BASE:-main}"
 
 set +e
-gtimeout "$TIMEOUT" codex review --uncommitted --title "$title" > "$REVIEW_FILE" 2>&1
+gtimeout "$TIMEOUT" codex review --base "$BASE_BRANCH" --title "$title" > "$REVIEW_FILE" 2>&1
 codex_exit=$?
 
 # Fallback: gtimeout yoksa (macOS BSD)
 if [ "$codex_exit" = "127" ]; then
-  codex review --uncommitted --title "$title" > "$REVIEW_FILE" 2>&1
+  codex review --base "$BASE_BRANCH" --title "$title" > "$REVIEW_FILE" 2>&1
   codex_exit=$?
 fi
 set -e

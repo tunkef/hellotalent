@@ -63,3 +63,44 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON {tablo_adi} TO authenticated;
 --     DOĞRU:   auth.jwt() ->> 'email'
 --
 --     auth.jwt() her zaman güvenlidir, auth.users'a RLS bypass gerektirir.
+
+-- ═══════════════════════════════════════════════
+-- 6. SECURITY DEFINER FONKSİYONLAR (varsa) — Reform v3.4 A26
+-- ═══════════════════════════════════════════════
+-- ⚠️  Yeni SECURITY DEFINER fonksiyon yazıyorsan ZORUNLU:
+--     SET search_path = public, pg_temp
+--
+--     YANLIŞ:
+--       CREATE FUNCTION foo() RETURNS ...
+--       LANGUAGE plpgsql SECURITY DEFINER
+--       AS $$ ... $$;
+--
+--     DOĞRU:
+--       CREATE FUNCTION foo() RETURNS ...
+--       LANGUAGE plpgsql SECURITY DEFINER
+--       SET search_path = public, pg_temp
+--       AS $$ ... $$;
+--
+--     Reform v3.4 A26: 12 fonksiyon search_path eksikti — CVE-2018-1058 vector.
+
+-- ═══════════════════════════════════════════════
+-- 7. AUDIT LOG ENTRY (önerilen — system_audit_log) — Reform v3.4 A27
+-- ═══════════════════════════════════════════════
+-- Migration apply event'ini system_audit_log'a yaz (ISO27001 A.12.4).
+-- A27 sonrası mevcut: log_system_event() helper.
+
+DO $$
+BEGIN
+  PERFORM public.log_system_event(
+    'migration',
+    '{migration_adi_buraya}',
+    jsonb_build_object(
+      'description', 'Bu migration ne yapıyor — 1 satır özet',
+      'changes', 'Hangi tablo/policy/function eklendi/değişti'
+    ),
+    'success',
+    'postgres'
+  );
+EXCEPTION WHEN OTHERS THEN
+  RAISE NOTICE 'Audit log entry skipped: %', SQLERRM;
+END $$;
