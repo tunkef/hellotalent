@@ -1,2 +1,7 @@
 #!/usr/bin/env sh
-./scripts/check-rls-guard.sh
+# Reform v3.4 D7 — Local-first pre-push test
+# RLS guard + smoke + branch diff E2E
+# Bypass: SKIP_PRE_PUSH_TEST=1 git push ...
+
+./scripts/check-rls-guard.sh \
+  && ./scripts/test-pre-push.sh

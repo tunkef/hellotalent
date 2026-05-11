@@ -117,8 +117,8 @@ if [ "$codex_exit" = "124" ]; then
   exit 1
 fi
 
-# Parse output — BLOCKER tespit
-if grep -qE "🛑|BLOCK_MERGE|BLOCKER|CRITICAL" "$REVIEW_FILE"; then
+# Parse output — BLOCKER tespit (Codex priority tag P0 dahil — D8 enhancement)
+if grep -qE "🛑|BLOCK_MERGE|BLOCKER|CRITICAL|\[P0\]" "$REVIEW_FILE"; then
   cat <<EOF >&2
 
 ╔════════════════════════════════════════════════════════════════╗
