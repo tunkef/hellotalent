@@ -1,9 +1,11 @@
 #!/usr/bin/env sh
-# Reform 11 May 2026 — disiplin kapıları + tier-detect
+# Reform 11 May 2026 — disiplin kapıları + tier-detect + auto cachebust
 
+# 1. Truth-sync (docs)
 ./scripts/check-truth-sync.sh \
   && ./scripts/check-html-tags.sh \
   && ./scripts/check-clatu-layout.sh \
   && ./scripts/tier-detect.sh .git/COMMIT_EDITMSG \
   && ./scripts/check-ui-verify.sh \
+  && ./scripts/cachebust-staged.sh \
   && npx lint-staged --no-stash
