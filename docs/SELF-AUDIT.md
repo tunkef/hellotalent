@@ -163,7 +163,18 @@ Status legend: ✅ **VERIFIED** | ⚠ **STALE** (30+ gün) | ❌ **FAILED** | �
 - clean-settings-secrets.sh hazır (Tuna rotate sonra çağırır)
 - pending-approvals.md A_AUTO_P0_SETTINGS_SECRET + A26 entries
 
-### 11 May Codex auto-trigger HIDDEN BUG (bu commit)
+### 11 May P0-P7 Audit FIX batch (commit pending)
+**FIX-1 KVKK:** `yasal.html` 497 satır mevcut (audit yanlışı). 5 GAP avukat pending → A27 pending-approvals entry.
+**FIX-3 Form labels:** Audit yanlışı 19 → gerçek 53 input wrapper label kontrolü yapılmadı. Frontend agent T2 dispatch spec hazırlanacak.
+**FIX-4 Browser matrix:** Playwright Safari mobile/desktop + Firefox desktop project'ler eklendi (opt-in `PW_BROWSER_MATRIX=1`).
+**FIX-5 Backup:** `scripts/backup-supabase-weekly.sh` + launchd plist (Pazar 04:00). 24-gün retention.
+**FIX-6 Seed guard:** `scripts/_supa-admin.mjs` + `seed-test-candidates.js` production project ref check (bypass `ALLOW_SEED_PRODUCTION=1`).
+**FIX-7 Disabled tests:** 14 disabled test `tests/_disabled_archive/`'a taşındı + README (re-write aday).
+**FIX-8 Cookie consent:** `js/cookie-consent.js` minimal CMP (XSS-safe DOM API, WCAG 2.1 AA, 1 yıl localStorage).
+**FIX-9 Uptime:** `.github/workflows/uptime-check.yml` 15dk cron + curl + fail → GitHub Issue auto-create.
+**FIX-2 destek.css 471 !important @layer refactor:** T3 büyük iş, Tuna karar bekliyor (ayrı commit).
+
+### 11 May Codex auto-trigger HIDDEN BUG (commit 00f4c3c)
 **Bulgu:** P0 commit'inde Codex auto-trigger TETİKLENMEDİ (sessiz skip).
 **Sebep:** `scripts/tier-detect.sh` `.git/COMMIT_EDITMSG` relative path kullanıyordu. Worktree'de `.git` dosya, gerçek dir `/Users/.../Hellotalent/.git/worktrees/<branch>/COMMIT_EDITMSG`. Relative path resolve edilemediği için T3 detect edip "marker check skip" yapıp sessiz exit 0 verdi → Codex çağrılmadı.
 **Fix:** `git rev-parse --git-path COMMIT_EDITMSG` worktree-aware path resolve. Fallback olarak `.git` dosya parse ile `gitdir:` extract.

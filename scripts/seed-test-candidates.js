@@ -28,6 +28,33 @@ if (!SUPABASE_URL || !SERVICE_ROLE_KEY) {
   process.exit(1);
 }
 
+// ═══════════════════════════════════════════════════════════════
+// PRODUCTION GUARD (Reform v3.4 P4.38)
+// ═══════════════════════════════════════════════════════════════
+// Seed/purge production'da yanlışlıkla çalışmasın diye guard.
+// Bypass: ALLOW_SEED_PRODUCTION=1 (auditable, sadece bilinçli durumda)
+const PROD_PROJECT_REF = 'cpwibefquojehjehtrog';
+if (SUPABASE_URL.includes(PROD_PROJECT_REF) && process.env.ALLOW_SEED_PRODUCTION !== '1') {
+  console.error('');
+  console.error('╔════════════════════════════════════════════════════════════════╗');
+  console.error('║  SEED PRODUCTION GUARD — REJECTED                              ║');
+  console.error('╠════════════════════════════════════════════════════════════════╣');
+  console.error('║                                                                ║');
+  console.error('║  SUPABASE_URL production project (' + PROD_PROJECT_REF + ')   ║');
+  console.error('║  içeriyor. Seed/purge production\'da çalıştırma RİSKLİ.         ║');
+  console.error('║                                                                ║');
+  console.error('║  Dev/staging için:                                             ║');
+  console.error('║    SUPABASE_URL=https://<dev-ref>.supabase.co \\               ║');
+  console.error('║    SUPABASE_SERVICE_ROLE_KEY=<dev-key> \\                       ║');
+  console.error('║    npm run seed:test                                           ║');
+  console.error('║                                                                ║');
+  console.error('║  Production bilinçli (RİSKLİ):                                 ║');
+  console.error('║    ALLOW_SEED_PRODUCTION=1 npm run seed:test                   ║');
+  console.error('║                                                                ║');
+  console.error('╚════════════════════════════════════════════════════════════════╝');
+  process.exit(1);
+}
+
 const supabase = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, {
   auth: { persistSession: false, autoRefreshToken: false }
 });

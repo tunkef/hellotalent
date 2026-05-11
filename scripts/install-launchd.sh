@@ -11,6 +11,7 @@ ACTION="${1:-install}"
 PLISTS=(
   "com.hellotalent.studio.weekly-review.plist"
   "com.hellotalent.studio.weekly-maintenance.plist"
+  "com.hellotalent.studio.weekly-backup.plist"
 )
 
 case $ACTION in

@@ -45,6 +45,25 @@ fi
 
 echo "$TIER"
 
+# Pre-commit hook'tan çağrılırsa (HUSKY_GIT_PARAMS yok, $1 commit msg file değil)
+# .git/COMMIT_EDITMSG hâlâ önceki commit msg'i — okumak yanıltıcı.
+# Marker check ZORUNLU olarak commit-msg hook'tan çağrılmalı.
+# Pre-commit context: TIER detect yap, exit 0 (block etme — commit-msg hook bloklayacak).
+#
+# Bypass tüm tier marker check: SKIP_TIER_CHECK=1
+if [ "${SKIP_TIER_CHECK:-}" = "1" ]; then
+  exit 0
+fi
+
+# Detect: pre-commit mi commit-msg mi?
+# commit-msg hook'tan çağrı: $1 commit msg file path (.git/COMMIT_EDITMSG)
+# pre-commit hook'tan çağrı: $1 boş veya yanıltıcı eski msg
+# Heuristic: HUSKY_GIT_PARAMS env veya $GIT_COMMIT_MSG_FILE
+if [ -z "$1" ] && [ -z "${HUSKY_GIT_PARAMS:-}" ] && [ -z "${GIT_COMMIT_MSG_FILE:-}" ]; then
+  # Pre-commit context — marker check skip, sadece tier rapor
+  exit 0
+fi
+
 # Commit message kontrol (varsa) — worktree-aware path resolve
 COMMIT_MSG_FILE="${1:-}"
 if [ -z "$COMMIT_MSG_FILE" ] || [ ! -f "$COMMIT_MSG_FILE" ]; then

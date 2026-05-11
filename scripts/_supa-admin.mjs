@@ -48,6 +48,22 @@ export function loadAdminEnv() {
   const SUPA_URL = process.env.SUPABASE_URL || DEFAULT_SUPA_URL;
   const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!SERVICE_KEY) die('SUPABASE_SERVICE_ROLE_KEY yok. .env.local kontrol edin.');
+
+  // Production guard (Reform v3.4 P4.38) — seed/test scripts production'da yanlışlıkla çalışmasın
+  // Bypass: ALLOW_SEED_PRODUCTION=1 (auditable, sadece bilinçli)
+  const PROD_PROJECT_REF = 'cpwibefquojehjehtrog';
+  if (SUPA_URL.includes(PROD_PROJECT_REF) && process.env.ALLOW_SEED_PRODUCTION !== '1') {
+    die(
+      'SEED PRODUCTION GUARD — REJECTED\n' +
+      `SUPABASE_URL production project (${PROD_PROJECT_REF}) içeriyor.\n` +
+      'Seed/test scripts production\'da çalıştırma RİSKLİ (veri korruption).\n\n' +
+      'Dev/staging için:\n' +
+      '  SUPABASE_URL=https://<dev-ref>.supabase.co node scripts/seed-test-*\n\n' +
+      'Bilinçli production override:\n' +
+      '  ALLOW_SEED_PRODUCTION=1 node scripts/seed-test-*'
+    );
+  }
+
   return { SUPA_URL, SERVICE_KEY };
 }
 
