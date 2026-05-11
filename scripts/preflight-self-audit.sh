@@ -109,6 +109,65 @@ if [ -n "$WORKTREE_DIR" ]; then
 fi
 
 # ════════════════════════════════════════════════════════════════════
+# Reform v3.4 — extended checks (28 → 50+)
+# ════════════════════════════════════════════════════════════════════
+
+# 13. Codex CLI integration
+check "Codex CLI yüklü" "command -v codex"
+check "Codex CLI 0.130+ versiyonu" "codex --version 2>&1 | grep -qE 'codex-cli 0\.(13[0-9]|1[4-9][0-9])'"
+check "Codex auth (Logged in)" "codex login status 2>&1 | grep -q 'Logged in'"
+check "scripts/codex-review-real.sh executable" "[ -x '$ROOT_REPO/scripts/codex-review-real.sh' ]"
+check "tier-detect.sh T3/T4'te codex-review-real referans" "grep -q 'codex-review-real.sh' '$ROOT_REPO/scripts/tier-detect.sh'"
+
+# 14. launchd cron
+check "launchd weekly-maintenance LOADED" "launchctl list 2>/dev/null | grep -q hellotalent.studio.weekly-maintenance"
+check "launchd weekly-review LOADED" "launchctl list 2>/dev/null | grep -q hellotalent.studio.weekly-review"
+
+# 15. Custom slash commands
+check "/cook slash command" "[ -f '$ROOT_REPO/.claude/commands/cook.md' ]"
+check "/plan-ui slash command" "[ -f '$ROOT_REPO/.claude/commands/plan-ui.md' ]"
+check "/verify-design slash command" "[ -f '$ROOT_REPO/.claude/commands/verify-design.md' ]"
+check "/codex-gate slash command" "[ -f '$ROOT_REPO/.claude/commands/codex-gate.md' ]"
+
+# 16. Lint-staged config
+check "package.json lint-staged js eslint" "grep -q '\"\\*.js\": \"eslint\"' '$ROOT_REPO/package.json'"
+check "package.json lint-staged css token-strict" "grep -q 'check-token-strict' '$ROOT_REPO/package.json'"
+check "package.json lint-staged html tags" "grep -q 'check-html-tags' '$ROOT_REPO/package.json'"
+check "scripts/check-token-strict.sh executable" "[ -x '$ROOT_REPO/scripts/check-token-strict.sh' ]"
+
+# 17. Agent dispatch tracking
+check "track-agent-dispatch.sh executable" "[ -x '$ROOT_REPO/.claude/hooks/track-agent-dispatch.sh' ]"
+check "PostToolUse Task hook bağlı" "grep -q 'track-agent-dispatch' '$SETTINGS'"
+
+# 18. New automation scripts (Reform v3.4)
+check "scripts/si-status-auto.sh executable" "[ -x '$ROOT_REPO/scripts/si-status-auto.sh' ]"
+check "scripts/kpi-snapshot.sh executable" "[ -x '$ROOT_REPO/scripts/kpi-snapshot.sh' ]"
+check "scripts/disable-vercel-injection.sh executable" "[ -x '$ROOT_REPO/scripts/disable-vercel-injection.sh' ]"
+check "scripts/archive-dead-scripts.sh executable" "[ -x '$ROOT_REPO/scripts/archive-dead-scripts.sh' ]"
+check "weekly-maintenance KPI block" "grep -q 'kpi-snapshot.sh' '$ROOT_REPO/scripts/weekly-maintenance.sh'"
+check "weekly-maintenance si-status block" "grep -q 'si-status-auto.sh' '$ROOT_REPO/scripts/weekly-maintenance.sh'"
+check "weekly-maintenance SELF-AUDIT drift block" "grep -q 'SELF-AUDIT' '$ROOT_REPO/scripts/weekly-maintenance.sh'"
+
+# 19. Audit ledger sağlık
+check "docs/SELF-AUDIT.md mevcut" "[ -f '$ROOT_REPO/docs/SELF-AUDIT.md' ]"
+check "SELF-AUDIT A-K katmanları" "grep -cE '^## [A-K]\\.' '$ROOT_REPO/docs/SELF-AUDIT.md' | grep -qE '^[1-9][0-9]?$|^1[0-1]$'"
+check "docs/SCRIPTS-INVENTORY.md" "[ -f '$ROOT_REPO/docs/SCRIPTS-INVENTORY.md' ]"
+check "docs/SKILLS-INVENTORY.md" "[ -f '$ROOT_REPO/docs/SKILLS-INVENTORY.md' ]"
+check "docs/UI-DOD-template.md" "[ -f '$ROOT_REPO/docs/UI-DOD-template.md' ]"
+check "docs/RPC-CONTRACT.md" "[ -f '$ROOT_REPO/docs/RPC-CONTRACT.md' ]"
+
+# 20. Test infrastructure
+check "tests/hooks/run-all.sh" "[ -x '$ROOT_REPO/tests/hooks/run-all.sh' ]"
+check "tests/hooks/test-codex-blocker.sh" "[ -x '$ROOT_REPO/tests/hooks/test-codex-blocker.sh' ]"
+
+# 21. Memory archive
+MEMORY_ARCHIVE=$(find "$HOME/.claude/projects" -path "*Hellotalent*" -name "archive" -type d 2>/dev/null | head -1)
+if [ -n "$MEMORY_ARCHIVE" ]; then
+  archive_count=$(ls "$MEMORY_ARCHIVE/"feedback_*.md 2>/dev/null | wc -l | tr -d ' ')
+  check "12 feedback memory archive'da" "[ '$archive_count' = '12' ]"
+fi
+
+# ════════════════════════════════════════════════════════════════════
 # Rapor
 # ════════════════════════════════════════════════════════════════════
 
