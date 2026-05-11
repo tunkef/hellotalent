@@ -14,9 +14,10 @@
 - D3 159 plugin envanter dokümanı (`docs/PLUGIN-INVENTORY.md`)
 - D4 CONTRIBUTING.md + 3 issue template + PR template
 
-**Yazıldı, Tuna onay sonrası uygulanacak:**
-- A26 migration (SECURITY DEFINER search_path) — `supabase login` bekliyor
-- M1 migration: candidates.email + telefon UNIQUE constraint — `supabase login` bekliyor
+**LIVE (12 May 2026 — production'a apply edildi):**
+- ✅ **A26 migration** — 12 SECURITY DEFINER fonksiyona `search_path=public, pg_temp` eklendi. CVE-2018-1058 SQL injection vector kapandı. Fix edilen fonksiyonlar: `get_campaign_audience`, `save_candidate_profile`, `sync_role_to_app_metadata`, `enqueue_coach_invite_email`, `guard_role_metadata`, `admin_save_newsletter_campaign`, `log_consent_on_signup`, `sync_newsletter_toggle_to_subscriber`, `admin_list_newsletter_subscribers`, `admin_send_newsletter_campaign`, `admin_newsletter_campaign_metrics`, `link_newsletter_subscriber_to_user`. VERIFY OK.
+- ✅ **M1 migration** — `candidates.email` + `telefon` UNIQUE index'leri oluştu (case-insensitive email). Pre-fix duplicate: 0 email + 0 phone. VERIFY OK.
+- Minor: `hr_profile_audit_log.event_type` kolonu yok → A26 audit log skip (bonus entry, ana migration'ı etkilemedi).
 - B1 Adım 2: destek.css `!important` strip + profil-destek.js inline injectCSS removal
 - B2 cont.: 12+ form input wrapper label kontrolü (frontend agent T2 dispatch)
 - destek.css refactor Adım 2 (T3, Codex review)
