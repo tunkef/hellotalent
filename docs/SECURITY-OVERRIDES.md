@@ -40,6 +40,24 @@
 
 ---
 
+## SO1 Addendum 2026-05-16 — kapsam genişletildi
+
+Cloudflare Access Service Token ("HelloTalent UAT Playwright") rotation sırasında Tuna yine Non-expiring tercih etti. SO1 kapsamı GitHub PAT'tan tüm CF Access Service Token'larına genişledi.
+
+**Kapsam ek:**
+- CF Access Service Tokens: Non-expiring kabul (Tuna explicit)
+- Gerekçe aynı: kapalı dev, friction azaltma
+
+**Aktif Non-expiring tokenlar (SO1 kapsamında):**
+- GitHub PAT: `for claude`, `hellotalent deploy`
+- CF Access Service Token: `HelloTalent UAT Playwright` (rotated 2026-05-16 via Chrome MCP)
+
+**Geri alma koşulları aynı** (public launch, team genişlemesi, compromise event, audit/compliance).
+
+**Compromise notu:** CF Access Service Token secret 2026-05-16 rotation sırasında chat screenshot'a düştü. Bu token sadece Playwright UAT testleri için (prod etkisi yok), low-risk kabul edildi. Sonraki audit cycle'da gerekirse tekrar rotate.
+
+---
+
 ## Format
 
 ```markdown
