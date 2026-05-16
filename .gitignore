@@ -51,3 +51,5 @@ _inspect/
 /ht-*.mjs
 /k06*-*.mjs
 /k*-test.pdf
+
+.env.local.bak*
