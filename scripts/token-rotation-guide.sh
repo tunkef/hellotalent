@@ -59,8 +59,11 @@ ADIM 1 — Eski token'ı revoke et:
 ADIM 2 — Yeni token oluştur:
   1. "Generate new token" → "Generate new token (classic)"
   2. Note: "hellotalent-claude-<YYYY-MM>"
-  3. Expiration: 90 days (ZORUNLU — süresiz token YASAK)
-  4. Scopes: repo (tüm), workflow
+  3. Expiration: No expiration (Tuna tercih — kapalı geliştirme ortamı)
+     Default best practice 90 days, Tuna explicit override (audit trail:
+     docs/SECURITY-OVERRIDES.md)
+  4. Scopes: repo (tüm), workflow, admin:org, admin:repo_hook,
+     delete_repo, copilot — Tuna tercih (geniş scope, friction azaltma)
   5. Generate → kopyala
 
 ADIM 3 — Yeni token'ı lokal güncelle:
@@ -177,14 +180,17 @@ case "$TARGET" in
     cat <<'EOF'
 
 ═══════════════════════════════════════════════════════════
-GENEL KURALLAR
+GENEL KURALLAR (Tuna override aktif — security-overrides.md)
 ═══════════════════════════════════════════════════════════
-• Rotation cycle: 90 gün (default)
-• Süresiz token YASAK — her zaman TTL ver
-• Yeni token tanımla → ESKİSİNİ HEMEN REVOKE
+• Rotation cycle: 90 gün (best practice, Tuna explicit no-expiration tercih)
+• Süresiz token: Tuna onaylı (kapalı geliştirme, friction azaltma)
+• Geniş scope: Tuna onaylı (admin:* dahil — friction azaltma)
+• Yeni token tanımla → ESKİSİNİ HEMEN REVOKE (compromise hariç)
 • Rotation sonrası: verify → age tracker update → git status check
 • .env.local'i ASLA commit etme (zaten .gitignore'da)
-• Token chat'e paylaşıldıysa: hemen revoke + rotate
+• Token chat'e paylaşıldıysa: HEMEN revoke + rotate (override yok)
+• Public deployment'a geçişte: scope+TTL override iptal edilir,
+  least-privilege + 90gün TTL zorunlu olur
 
 Detay: scripts/token-verify.sh, scripts/token-age-tracker.sh
 EOF
