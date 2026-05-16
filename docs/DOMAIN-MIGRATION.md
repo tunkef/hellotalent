@@ -16,18 +16,28 @@ HelloTalent.ai domain Tuna'nın bütçesini aşıyor. PeopleIn.com.tr (Tuna'nın
 - ✅ Geçiş: hafta sonu
 - ✅ 301 redirect: hemen
 
-## Pre-migration State
+## Pre-migration State (2026-05-16 derin audit sonrası)
 
 | Bulgu | Detay |
 |-------|-------|
-| Hardcoded `hellotalent.ai` | **61 dosya** etkilenir |
-| Email senders (Supabase ENV) | 4 adres |
+| Hardcoded `hellotalent.ai` | **61 dosya** (HTML/JS/MD/XML) + edge functions (.ts) + CI workflows (.yml) — ~65 toplam |
+| Email senders (Supabase ENV) | 4 adres: noreply/bulten/support/admin |
 | Supabase URL | `cpwibefquojehjehtrog.supabase.co` — değişmez |
-| OAuth | Google + LinkedIn OIDC |
+| OAuth | Google + LinkedIn OIDC (callback URL update) |
 | GitHub Pages cert | `bad_authz` (zaten broken — re-cert şart) |
-| Auth redirect kod | `window.location.origin + path` — dynamic, kod değişmez |
+| Auth redirect kod | `window.location.origin + path` — dynamic, kod değişmez ✅ |
 | DNS | hellotalent.ai + peoplein.com.tr ikisi de **Cloudflare** üstünde |
-| WHOIS expiry | hellotalent.ai → 2027-06-16 |
+| WHOIS expiry | hellotalent.ai → 2027-06-16 (Tuna yenilemeyecek, 1.5 ay tahmini) |
+| **Resend (Yeni keşif)** | peoplein.com.tr **PeopleIn account'unda verified** (HelloTalent account'ta DEĞİL — 1 domain limit). "HelloTalent App" key oluşturuldu |
+| **SPF/DMARC** | peoplein.com.tr SPF YANLIŞ (Microsoft 365 dahil). Tuna **Google Workspace** kullanıyor. Düzeltilmeli |
+| **Edge fn hardcoded URLs** | `newsletter-confirm/index.ts`: 3 hellotalent.ai URL → redeploy gerek |
+| **CI/CD** | `uptime-check.yml`, `lighthouse-ci.yml`, `playwright.config.js` — hellotalent.ai refs (sed yakalar) |
+| **Iyzico webhook** | Supabase domain'i kullanıyor (`cpwibefquojehjehtrog.supabase.co`) — etkilenmez ✅ |
+| **CF Turnstile** | Zaten kaldırılmış (K-063 fix, sitekey domain mismatch). Risk yok ✅ |
+| **PWA/Service Worker** | YOK — risk yok ✅ |
+| **Google Workspace MX** | peoplein.com.tr'de `smtp.google.com` zaten kurulu ✅ |
+| **GA4** | Cross-domain `G-54BCV5QYCZ` (PeopleIn + HelloTalent shared) — hostname whitelist update gerek |
+| **Google Ads / Meta Pixel / LinkedIn Insight** | Kod'da YOK — Tuna Ads dashboard kontrolü ayrı |
 
 ## 10-Aşamalı Plan
 
@@ -35,19 +45,36 @@ Detay: `docs/DOMAIN-MIGRATION-CHECKLIST.md`
 
 | Aşama | Görev | Kim | Süre |
 |-------|-------|-----|------|
-| 0 | Resend verify + email mailbox | Tuna (Cuma'ya kadar) | 30dk-2sa |
-| 1 | DNS subdomain CNAME | Tuna (Cumartesi 22:00) | 5dk+5dk DNS |
-| 2 | GitHub Pages CNAME switch | Claude commit + Tuna GH settings | 5dk+30dk SSL |
-| 3 | Supabase Auth URL config | Tuna | 10dk |
-| 4 | Google + LinkedIn OAuth callbacks | Tuna | 20dk |
-| 5 | Supabase Edge Function ENV (email) | Tuna | 10dk |
-| 6 | Sed replace 61 dosya | Claude | 10dk + diff review |
-| 7 | Meta/Sitemap (Aşama 6 ile) | Claude | dahil |
-| 8 | CF Page Rule 301 redirect | Tuna | 10dk |
-| 9 | Smoke test 13 senaryo | Birlikte | 30dk |
+| 0 | Resend + SPF/DMARC + email mailbox/alias | Tuna manuel + Claude Chrome MCP (Cuma'ya kadar) | 30dk-2sa |
+| 1 | DNS subdomain CNAME (talent) | Claude Chrome MCP | 5dk+5dk DNS |
+| 2 | GitHub Pages CNAME switch | Claude (commit + gh api) | 5dk+30dk SSL |
+| 3 | Supabase Auth URL config | Claude Chrome MCP | 10dk |
+| 4 | Google + LinkedIn OAuth callbacks | Claude Chrome MCP | 20dk |
+| 5 | Supabase Edge Fn ENV + redeploy newsletter-confirm | Claude Chrome MCP + CLI | 15dk |
+| 6 | Sed replace ~65 dosya (HTML/JS/TS/YAML) | Claude | 10dk + diff review |
+| 7 | Meta/Sitemap/Workflows (Aşama 6 ile) | Claude | dahil |
+| 8 | CF Page Rule 301 redirect | Claude Chrome MCP | 10dk |
+| 9 | Smoke test **17 senaryo** | Birlikte | 30-45dk |
 | 10 | Docs + PR + Codex review | Claude | 20dk |
 
 **Aktif iş:** ~3 saat. **Takvim süresi (SSL/DNS dahil):** 5-6 saat.
+
+## Pre-migration Hazırlık (Cuma akşam — şu an)
+
+Tuna onayı ile yapılacak (henüz dashboard işlemi YOK):
+
+| # | İş | Tier | Kim | Status |
+|---|-----|------|-----|--------|
+| H1 | Resend PeopleIn account "HelloTalent App" API key | T1 | Claude Chrome MCP | ✅ DONE (2026-05-16) |
+| H2 | Key `.env.local`'a kaydet | T1 | Claude bash | ✅ DONE |
+| H3 | PR #18 docs commit | T1 | Claude git | ✅ DONE |
+| H4 | SPF/DMARC fix (Cloudflare DNS) | T3 | Claude Chrome MCP | ⏳ Tuna "yap" derse |
+| H5 | DNS TTL düşür (hellotalent.ai 300sn) | T3 | Claude Chrome MCP | ⏳ Tuna "yap" derse |
+| H6 | Git tag `pre-domain-migration` rollback noktası | T1 | Claude git | ⏳ Tuna "yap" derse |
+| H7 | Sed dry-run feature branch'te | T1 | Claude bash | ⏳ Tuna "yap" derse |
+| H8 | Resend test email gönder (yeni key + domain) | T1 | Claude curl | ⏳ Tuna "yap" derse |
+| H9 | Email alias setup Google Workspace | T1 | Tuna manuel | ⏳ Cuma |
+| H10 | Google Ads campaign envanteri (varsa) | T1 | Tuna kontrol | ⏳ Tuna |
 
 ## Verification
 

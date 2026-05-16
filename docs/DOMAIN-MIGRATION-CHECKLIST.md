@@ -8,27 +8,61 @@
 
 ## ⚠ CUMA'YA KADAR (Aşama 0 — Pre-migration)
 
-### [ ] 1. Resend domain verify
+### [x] 1. Resend peoplein.com.tr verified ✅ (Yol C — PeopleIn account)
 
-- [ ] https://resend.com/domains → "Add Domain"
-- [ ] Domain: `peoplein.com.tr`
-- [ ] Verilen DNS records (TXT/MX/DKIM/SPF) Cloudflare DNS'e ekle:
-  - peoplein.com.tr zone → DNS → Add Record (TXT) → ... (Resend'in verdiği)
-- [ ] Bekle (15dk-2sa)
-- [ ] Resend dashboard'ta status: **Verified** ✅
+- [x] PeopleIn Resend account'unda `peoplein.com.tr` zaten verified (US-East-1, ~1 ay önce)
+- [x] DKIM record (`resend._domainkey.peoplein.com.tr`) DNS'te mevcut
+- [x] "HelloTalent App" API key oluşturuldu (Sending access, sadece peoplein.com.tr)
+- [x] Key `.env.local` `RESEND_PEOPLEIN_API_KEY=re_QoyqAc1w...` (gitignored)
+- **Status:** ✅ Cumartesi gece Supabase Edge Fn ENV update için hazır
 
-### [ ] 2. Email mailbox setup
+### [ ] 2. SPF/DKIM/DMARC düzeltme (Cuma akşam — Chrome MCP ile)
+
+**Mevcut peoplein.com.tr SPF YANLIŞ:**
+```
+v=spf1 include:spf.protection.outlook.com -all
+```
+
+Microsoft 365 dahil ama Tuna **Google Workspace** kullanıyor. Resend için de SPF eksik.
+
+**Doğru SPF (yeni TXT record):**
+```
+v=spf1 include:_spf.google.com include:amazonses.com ~all
+```
+
+- `_spf.google.com` → Google Workspace email gönderimi
+- `amazonses.com` → Resend backend (AWS SES) — `noreply@peoplein.com.tr` gönderimi
+- `~all` → soft fail (deliverability dostu)
+
+**Aksiyonlar (Chrome MCP ile Cuma akşam):**
+- [ ] CF Dashboard → peoplein.com.tr → DNS → TXT record `v=spf1 include:spf.protection.outlook.com -all` → **DELETE**
+- [ ] Yeni TXT: `v=spf1 include:_spf.google.com include:amazonses.com ~all`
+- [ ] DMARC ekle (opsiyonel ama önerilen): TXT `_dmarc.peoplein.com.tr` → `v=DMARC1; p=none; rua=mailto:admin@peoplein.com.tr; aspf=r; adkim=r`
+- [ ] Legacy temizlik: `MS=ms43204587` (Microsoft 365 verification) — kullanılmıyorsa sil
+- [ ] Verify: `dig TXT peoplein.com.tr +short` → yeni SPF görünmeli
+
+**Risk if not done:** Resend'den gönderilen `noreply@peoplein.com.tr` Gmail/Outlook'ta SPAM folder'a düşer. Magic link/password reset email'leri kullanıcıya gitmez.
+
+### [ ] 3. Email mailbox setup (Cumartesi'ye kadar)
 
 Tercih: **Cloudflare Email Routing** (ücretsiz, kolay):
 
 - [ ] CF Dashboard → peoplein.com.tr → Email → Email Routing → **Enable**
-- [ ] Catch-all veya specific routes:
-  - `noreply@peoplein.com.tr` → discard veya bir Gmail forwarding
-  - `bulten@peoplein.com.tr` → Tuna Gmail
-  - `support@peoplein.com.tr` → Tuna Gmail (inbound mesaj alacak)
-  - `admin@peoplein.com.tr` → Tuna Gmail
+- [ ] **NOT:** peoplein.com.tr MX zaten Google Workspace'e işaret ediyor (`smtp.google.com`). CF Email Routing **MX'i değiştirir** → Google Workspace email bozulur.
+- [ ] **Alternatif:** Google Workspace'te (admin.google.com) bu adresleri **alias** olarak ekle, mevcut Tuna inbox'una forward
+- [ ] Specific routes:
+  - `noreply@peoplein.com.tr` → alias → discard veya admin
+  - `bulten@peoplein.com.tr` → alias → Tuna inbox
+  - `support@peoplein.com.tr` → alias → Tuna inbox
+  - `admin@peoplein.com.tr` → alias → Tuna inbox
 
-**Test:** `echo "test" | mail -s "Test" support@peoplein.com.tr` → Gmail'e gelmeli
+**Test:** `echo "test" | mail -s "Test" support@peoplein.com.tr` → Tuna Gmail'e gelmeli
+
+### [ ] 4. Google Workspace email migration (Pazartesi — Tuna)
+
+- Tuna admin.google.com'da hellotalent.ai alias'larını kaldır
+- peoplein.com.tr-only setup (alias değil, ana adres)
+- Detay: Tuna Pazartesi yapacak (post-migration)
 
 ---
 
@@ -98,31 +132,60 @@ curl -I https://talent.peoplein.com.tr
 
 **Not:** Provider cache 5-60 dakika.
 
-### [ ] Aşama 5 — Supabase Edge Function ENV
+### [ ] Aşama 5 — Supabase Edge Function ENV + Redeploy
+
+**5a — Secrets update (Chrome MCP ile Claude yapar):**
 
 - [ ] https://supabase.com/dashboard/project/cpwibefquojehjehtrog/functions
-- [ ] Edge Functions → Secrets → 3 değişken güncelle:
+- [ ] Edge Functions → Secrets → 4 değişken güncelle:
 
-| Variable | Yeni değer |
-|----------|------------|
-| `EMAIL_FROM` | `HelloTalent <noreply@peoplein.com.tr>` |
-| `NEWSLETTER_FROM` | `HelloTalent Bülten <bulten@peoplein.com.tr>` |
-| `REPLY_TO` | `support@peoplein.com.tr` |
+| Variable | Yeni değer | Kaynak |
+|----------|------------|--------|
+| `EMAIL_FROM` | `HelloTalent <noreply@peoplein.com.tr>` | Hibrit brand |
+| `NEWSLETTER_FROM` | `HelloTalent Bülten <bulten@peoplein.com.tr>` | Hibrit brand |
+| `REPLY_TO` | `support@peoplein.com.tr` | |
+| `RESEND_API_KEY` | `re_QoyqAc1w...` (Tuna .env.local'dan kopyalanır) | **PeopleIn account "HelloTalent App" key** — eski HelloTalent Resend key DEĞİL |
 
 (HelloTalent ismi sender display'de kalır — hibrit brand kararı)
 
-### [ ] Aşama 6 + 7 — Sed replace + Meta
+**5b — Edge function redeploy (newsletter-confirm hardcoded URL fix):**
+
+Hardcoded URL'ler `supabase/functions/newsletter-confirm/index.ts`:
+- `LANDING_OK = 'https://hellotalent.ai/newsletter-onay.html?ok=1'`
+- `LANDING_ERR = 'https://hellotalent.ai/newsletter-onay.html?err='`
+- `prefUrl = 'https://hellotalent.ai/newsletter-tercih.html?token=...'`
+
+Aşama 6 sed bu URL'leri yakalar (`.ts` dahil). Sonra redeploy:
+
+```bash
+cd ~/Downloads/Hellotalent
+supabase functions deploy newsletter-confirm --no-verify-jwt
+# Veya tüm fonksiyonları redeploy:
+supabase functions deploy --no-verify-jwt
+```
+
+**Risk if not done:** Newsletter confirm tıklayan kullanıcı hellotalent.ai'a redirect olur. 301 redirect ile düzelir ama suboptimal — direct yeni domain'e gitsin.
+
+### [ ] Aşama 6 + 7 — Sed replace + Meta + Edge Fn URLs
 
 **Claude yapar.** "Aşama 6 başlat" de.
 
-Beklenen: 61 dosya değişir, sadece domain replace, brand text dokunmaz.
+Beklenen: ~65 dosya değişir (61 HTML/JS/MD + edge function .ts + CI workflows + playwright config), sadece domain replace, brand text dokunmaz.
 
 **Verify:**
 ```bash
 cd ~/Downloads/Hellotalent
-grep -rln "hellotalent\.ai" --include="*.html" --include="*.js" | grep -v _archive
+grep -rln "hellotalent\.ai" --include="*.html" --include="*.js" --include="*.ts" --include="*.yml" | grep -v _archive
 # Beklenen: 0 line
 ```
+
+Ek kapsanan dosyalar:
+- `.github/workflows/uptime-check.yml` (hellotalent.ai HTTP GET)
+- `.github/workflows/lighthouse-ci.yml` (3 URL audit)
+- `playwright.config.js` (PW_TARGET_URL default — optional)
+- `sitemap.xml` (7 URL)
+- `supabase/functions/newsletter-confirm/index.ts` (3 hardcoded URL)
+- Diğer edge fn dosyaları (mevcut sed kapsamında)
 
 ### [ ] Aşama 8 — CF Page Rule 301
 
@@ -145,7 +208,7 @@ curl -I https://hellotalent.ai/profil.html
 
 ## ☀ PAZAR SABAHI — Smoke Test (Aşama 9)
 
-13 senaryo, hepsi `talent.peoplein.com.tr` üzerinde:
+17 senaryo, hepsi `talent.peoplein.com.tr` üzerinde:
 
 - [ ] 1. **Anasayfa açılıyor** — https://talent.peoplein.com.tr
 - [ ] 2. **Aday kayıt** (email/password) — uye-ol.html
@@ -160,8 +223,12 @@ curl -I https://hellotalent.ai/profil.html
 - [ ] 11. **Google OAuth** — uye-ol.html → Google ile devam → profil.html'e döner
 - [ ] 12. **LinkedIn OAuth** — uye-ol.html → LinkedIn ile devam → profil.html'e döner
 - [ ] 13. **Eski URL 301** — `curl -I https://hellotalent.ai/profil.html` → 301 + Location header doğru
+- [ ] 14. **Newsletter confirm** — bülten kaydı + confirm email tıkla → talent.peoplein.com.tr/newsletter-onay.html?ok=1 (edge fn redeploy doğrulanır)
+- [ ] 15. **Email SPF/DKIM check** — Test email Gmail'de aç → Headers → "SPF: pass" ve "DKIM: pass" görmeli (spam folder'a düşmemeli)
+- [ ] 16. **GA4 cross-domain tracking** — talent.peoplein.com.tr → peoplein.com.tr arası tıklama → GA4 Realtime'da aynı session
+- [ ] 17. **Uptime workflow** — GitHub Actions `uptime-check` yeşil (yeni URL)
 
-**13/13 PASS → Pazartesi sabahı live, kullanıcılara hazır.**
+**17/17 PASS → Pazartesi sabahı live, kullanıcılara hazır.**
 
 **Herhangi bir FAIL → Plan'daki Rollback tablosuna bak.**
 
@@ -170,9 +237,25 @@ curl -I https://hellotalent.ai/profil.html
 ## 📋 PAZARTESİ SABAHI — Post-deploy
 
 - [ ] **Google Search Console** → Change of Address tool (hellotalent.ai → talent.peoplein.com.tr)
+  - https://search.google.com/search-console → hellotalent.ai property → Settings → Change of address
+  - Yeni domain seç (talent.peoplein.com.tr olarak verify edilmiş olmalı önce)
+- [ ] **Google Search Console** → Yeni property ekle (talent.peoplein.com.tr) + sitemap.xml submit
+- [ ] **GA4 hostname whitelist** — Property settings → Data Streams → talent.peoplein.com.tr ekle
 - [ ] **Cloudflare cache purge** — her iki zone için "Purge Everything"
 - [ ] **Ana sayfaya bilgilendirme banner** (1-2 hafta): "Yeni adres: talent.peoplein.com.tr"
+- [ ] **Google Workspace email migration** (Tuna):
+  - admin.google.com → Domains → hellotalent.ai alias kaldır
+  - peoplein.com.tr-only setup
 - [ ] **Claude'a "Aşama 10 başlat"** → docs commit + PR + Codex review
+
+---
+
+## 🧹 POST-MIGRATION CLEANUP (1 hafta sonra)
+
+- [ ] **auth.hellotalent.ai Resend domain unverify** — eski/stale, gereksiz
+- [ ] **Microsoft 365 SPF + MS verification record** — eski legacy, peoplein.com.tr DNS'ten temizle (sadece Google Workspace kalır)
+- [ ] **HelloTalent Resend account inceleme** — kullanılmayan key'ler revoke et (peoplein hesabı ana account oldu)
+- [ ] **HelloTalent.ai expire monitoring** — domain bitince Cloudflare zone'unu da kaldır (1.5 ay sonra)
 
 ---
 
