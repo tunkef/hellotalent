@@ -39,7 +39,7 @@ echo ""
 # Aktif entry'ler (RESOLVED işareti olmayan A* başlıklar)
 echo "## Aktif Pending Entries"
 echo ""
-grep -E "^## A[0-9]+:" "$PENDING" 2>/dev/null | grep -v "RESOLVED" | while IFS= read -r line; do
+grep -E "^## A[0-9]+:" "$PENDING" 2>/dev/null | grep -v "RESOLVED" | grep -v "DEFERRED" | while IFS= read -r line; do
   # Entry ID extract (A8, A27, vs)
   entry_id=$(echo "$line" | grep -oE "^## A[0-9]+" | sed 's/^## //')
   echo "  • $line"

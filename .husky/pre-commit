@@ -9,5 +9,6 @@
   && ./scripts/check-clatu-layout.sh \
   && ./scripts/tier-detect.sh \
   && ./scripts/check-ui-verify.sh \
+  && ./scripts/check-hr-real-mode-gate.sh \
   && ./scripts/cachebust-staged.sh \
   && npx lint-staged --no-stash
