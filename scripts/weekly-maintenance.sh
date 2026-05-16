@@ -135,6 +135,15 @@ if [ -x scripts/token-age-tracker.sh ]; then
   fi
 fi
 
+# 14. Pending approvals verify helper (Reform 16 May CTO learning)
+echo "" >> "$REPORT"
+echo "## Pending Approvals Verify" >> "$REPORT"
+if [ -x scripts/verify-pending-approvals.sh ]; then
+  bash scripts/verify-pending-approvals.sh 2>&1 | head -25 >> "$REPORT"
+  echo "" >> "$REPORT"
+  echo "_Sonraki Claude session 'pending verify yap' demeli — DB-state check + stale entry RESOLVED işareti._" >> "$REPORT"
+fi
+
 echo "" >> "$REPORT"
 echo "---" >> "$REPORT"
 echo "End of weekly scan. Next run: next Sunday 09:00." >> "$REPORT"
