@@ -58,6 +58,40 @@ Cloudflare Access Service Token ("HelloTalent UAT Playwright") rotation sırası
 
 ---
 
+## SO2: Domain change — hellotalent.ai → talent.peoplein.com.tr
+
+**Tarih:** 2026-05-16 (planlandı, deploy hafta sonu)
+**Karar veren:** Tuna (ses kaydı 2026-05-16 13:44, AskUserQuestion ile 4 alt-karar)
+**Kapsam:** Production domain değişikliği. HelloTalent uygulaması `hellotalent.ai` GitHub Pages custom domain'inden `talent.peoplein.com.tr` Cloudflare-proxied GH Pages subdomain'ine taşınıyor.
+
+**Gerekçe:**
+- HelloTalent.ai domain yıllık yenileme maliyeti Tuna'nın mevcut bütçesini aşıyor
+- PeopleIn.com.tr Tuna'nın aktif domaini, 2 yıl ücretsiz yenileme hakkı var
+- HelloTalent zaten "PeopleIn'in bir uygulaması" olarak konumlandırılmıştı (Tuna ses kaydı)
+- WordPress (PeopleIn) site'i dokunulmuyor — subdomain yaklaşımı izolasyon
+
+**Default policy ihlali:**
+- Production domain stability — kullanıcılar bookmark/alıştığı URL'de değişiklik (1 kerelik UX friction)
+- Mevcut session'lar invalidate olur (localStorage domain-bound)
+- Email sender adres değişimi (whitelist tutmuş kullanıcılar yeni adres için spam filter check edebilir)
+- SEO geçişi 1-4 hafta (Google Search Console "Change of Address" tool)
+
+**Geri alma koşulları (override iptal):**
+1. Migration sonrası kullanıcı şikayeti yoğun olursa (1 hafta içinde >5 critical bug)
+2. Resend/Cloudflare entegrasyon kalıcı sorun çıkarırsa
+3. SEO geçişi 4 hafta sonra %50+ trafik kaybı verirse
+4. Tuna ileride bütçesi gelir, hellotalent.ai'a geri taşımak isterse
+
+**İlgili dosyalar:**
+- `docs/DOMAIN-MIGRATION.md` — full plan
+- `docs/DOMAIN-MIGRATION-CHECKLIST.md` — Tuna manuel adımlar
+- `~/.claude/plans/melodic-dreaming-marshmallow.md` — plan trail
+- `~/Downloads/audio-transcripts/2026-05-16-135101-Yeni-Kay-t-.txt` — Tuna karar kaynağı
+
+**Status:** PLANLI — deploy hafta sonu (Cumartesi gece). Rollback 30dk worst-case.
+
+---
+
 ## Format
 
 ```markdown
