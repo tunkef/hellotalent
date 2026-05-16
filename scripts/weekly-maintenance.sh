@@ -117,6 +117,24 @@ if [ -x scripts/worktree-cleanup.sh ]; then
   echo "_Uygulamak için: \`bash scripts/worktree-cleanup.sh --apply\` (manuel, Tuna kararı)_" >> "$REPORT"
 fi
 
+# 13. Token age tracker (Reform 16 May — token rotation altyapısı)
+echo "" >> "$REPORT"
+echo "## Token Rotation Status" >> "$REPORT"
+if [ -x scripts/token-age-tracker.sh ]; then
+  bash scripts/token-age-tracker.sh report 2>&1 >> "$REPORT"
+  echo "" >> "$REPORT"
+  # 80+ gün alert
+  ALERT_OUTPUT=$(bash scripts/token-age-tracker.sh alert 2>&1)
+  ALERT_EXIT=$?
+  if [ $ALERT_EXIT -ne 0 ]; then
+    echo "**⚠ ROTATION GEREKLİ:**" >> "$REPORT"
+    echo "" >> "$REPORT"
+    echo "\`\`\`" >> "$REPORT"
+    echo "$ALERT_OUTPUT" >> "$REPORT"
+    echo "\`\`\`" >> "$REPORT"
+  fi
+fi
+
 echo "" >> "$REPORT"
 echo "---" >> "$REPORT"
 echo "End of weekly scan. Next run: next Sunday 09:00." >> "$REPORT"
