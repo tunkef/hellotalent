@@ -36,8 +36,8 @@ commit_30d=$(git log --since="30 days ago" --oneline --no-merges 2>/dev/null | w
 fix_30d=$(git log --since="30 days ago" --oneline --no-merges 2>/dev/null | grep -ciE "^[a-f0-9]+ fix" || echo 0)
 revize_30d=$(git log --since="30 days ago" --oneline --no-merges 2>/dev/null | grep -ciE "v[2-9]|round-[2-9]|redesign|revize" || echo 0)
 
-# Cache-bust versiyon sayısı (HTML'lerdeki unique ?v=)
-cachebust_count=$(grep -rhoE "\?v=[a-zA-Z0-9._-]+" --include="*.html" . 2>/dev/null | sort -u | wc -l | tr -d ' ')
+# Cache-bust versiyon sayısı (HTML'lerdeki unique ?v=) — worktree exclude
+cachebust_count=$(grep -rhoE --exclude-dir=.claude/worktrees --exclude-dir=node_modules "\?v=[a-zA-Z0-9._-]+" --include="*.html" . 2>/dev/null | sort -u | wc -l | tr -d ' ')
 
 # Agent dispatch CSV (toplam)
 dispatch_total=0
