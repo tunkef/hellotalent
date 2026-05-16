@@ -12,6 +12,11 @@
 
 set -e
 
+# Self-locate — script nereden çağrılırsa çağrılsın repo root'tan çalış
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+cd "$REPO_ROOT"
+
 TARGET="${1:-all}"
 
 show_supabase() {

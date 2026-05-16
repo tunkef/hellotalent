@@ -22,15 +22,20 @@
 
 set -e
 
+# Self-locate — script nereden çağrılırsa çağrılsın repo root'tan çalış
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SELF_REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+cd "$SELF_REPO_ROOT"
+
 ACTION="${1:-report}"
 SERVICE="${2:-}"
 
-# Repo root resolve (worktree-aware)
+# Repo root resolve (worktree-aware) — git komutları için
 GIT_COMMON=$(git rev-parse --git-common-dir 2>/dev/null || echo "")
 if [ -n "$GIT_COMMON" ] && [ -d "$GIT_COMMON" ]; then
   REPO_ROOT=$(cd "$GIT_COMMON/.." && pwd)
 else
-  REPO_ROOT=$(pwd)
+  REPO_ROOT="$SELF_REPO_ROOT"
 fi
 
 TRACKER="$REPO_ROOT/.claude/agent-memory/token-ages.json"

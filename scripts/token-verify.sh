@@ -11,14 +11,28 @@
 
 set -e
 
+# Self-locate — script nereden çağrılırsa çağrılsın repo root'tan çalış
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+cd "$REPO_ROOT"
+
 TARGET="${1:-all}"
 
-# .env.local source (silent)
+# .env.local source (silent) — repo root'ta
 if [ -f .env.local ]; then
   set -a
   # shellcheck disable=SC1091
   source .env.local 2>/dev/null || true
   set +a
+fi
+
+# Supabase token MCP config'den de oku (B2 — token-tracker entegrasyon)
+if [ -z "${SUPABASE_ACCESS_TOKEN:-}" ]; then
+  MCP_CONFIG="$HOME/Library/Application Support/Claude/claude_desktop_config.json"
+  if [ -f "$MCP_CONFIG" ] && command -v jq >/dev/null 2>&1; then
+    SUPABASE_ACCESS_TOKEN=$(jq -r '.mcpServers.supabase.env.SUPABASE_ACCESS_TOKEN // empty' "$MCP_CONFIG" 2>/dev/null || echo "")
+    export SUPABASE_ACCESS_TOKEN
+  fi
 fi
 
 PASS=0
@@ -33,7 +47,7 @@ verify_supabase() {
   echo ""
   echo "─── Supabase service_role ──"
   if [ -z "${SUPABASE_ACCESS_TOKEN:-}" ]; then
-    skip "SUPABASE_ACCESS_TOKEN"
+    skip "SUPABASE_ACCESS_TOKEN (Claude Code plugin-managed, manuel test: export SUPABASE_ACCESS_TOKEN=<token>)"
     return
   fi
   # Anlamlı API check: list_projects

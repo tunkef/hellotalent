@@ -15,6 +15,10 @@
 
 set -e
 
+# Self-locate — pre-commit hook'tan da, manuel maintenance'dan da çalışsın
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$SCRIPT_DIR/.."
+
 if [ "${CACHEBUST_SKIP:-}" = "1" ]; then
   echo "[cachebust-staged] SKIPPED (CACHEBUST_SKIP=1)"
   exit 0
