@@ -1,0 +1,55 @@
+name: Lighthouse CI
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+  schedule:
+    - cron: '0 8 * * 1'
+
+permissions:
+  contents: read
+
+jobs:
+  lighthouse:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      CF_ID: ${{ secrets.CF_ACCESS_CLIENT_ID }}
+      CF_SECRET: ${{ secrets.CF_ACCESS_CLIENT_SECRET }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Lighthouse CI
+        run: npm install -g @lhci/cli@latest
+
+      - name: Run Lighthouse audit
+        run: |
+          mkdir -p .lighthouseci
+
+          HEADER_ARG=""
+          if [ -n "$CF_ID" ]; then
+            HEADER_ARG="--extra-headers={\"CF-Access-Client-Id\":\"$CF_ID\",\"CF-Access-Client-Secret\":\"$CF_SECRET\"}"
+          fi
+
+          for URL in "https://hellotalent.ai/" "https://hellotalent.ai/giris.html" "https://hellotalent.ai/yasal.html"; do
+            echo "Lighthouse: $URL"
+            lhci collect --url="$URL" --numberOfRuns=2 $HEADER_ARG || true
+          done
+
+          lhci assert \
+            --assertions.categories:accessibility=error \
+            --assertions.categories:performance=warn \
+            || true
+
+      - name: Upload reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-reports
+          path: .lighthouseci/
+          retention-days: 30

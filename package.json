@@ -9,10 +9,16 @@
   "scripts": {
     "test": "playwright test --reporter=list",
     "test:smoke": "playwright test tests/hellotalent.smoke.spec.js --reporter=list",
+    "test:smoke-all": "playwright test tests/*smoke*.spec.js --project=mobile --project=desktop --reporter=list",
     "test:p3": "playwright test tests/asama86-e2e.spec.js --reporter=list",
     "test:profil-delegation": "playwright test tests/profil.panel-delegation.spec.js --reporter=list",
     "test:profil-ayarlar-e2e": "playwright test tests/profil.ayarlar-toggles.e2e.spec.js --project=e2e-mobile --project=e2e-desktop --reporter=list",
     "test:bats": "bats tests/*.bats",
+    "test:staged-smoke": "bash scripts/test-staged-smoke.sh",
+    "test:pre-push": "bash scripts/test-pre-push.sh",
+    "test:matrix": "PW_BROWSER_MATRIX=1 playwright test --reporter=list",
+    "test:hooks": "bash tests/hooks/run-all.sh",
+    "test:preflight": "bash scripts/preflight-self-audit.sh",
     "lint": "eslint *.js",
     "lint:fix": "eslint --fix *.js",
     "prepare": "husky",
@@ -36,7 +42,9 @@
   },
   "homepage": "https://github.com/tunkef/hellotalent#readme",
   "lint-staged": {
-    "*.js": "eslint"
+    "*.js": "eslint",
+    "*.css": "bash scripts/check-token-strict.sh",
+    "*.html": "bash scripts/check-html-tags.sh"
   },
   "devDependencies": {
     "@playwright/test": "^1.58.2",

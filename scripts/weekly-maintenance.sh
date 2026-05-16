@@ -81,6 +81,29 @@ if [ -f .claude/agent-memory/pending-rules.md ]; then
   echo "- Pending rules: $PENDING_RULE" >> "$REPORT"
 fi
 
+# 9. KPI snapshot (Reform v3.4)
+echo "" >> "$REPORT"
+echo "## KPI Snapshot" >> "$REPORT"
+if [ -x scripts/kpi-snapshot.sh ]; then
+  bash scripts/kpi-snapshot.sh 2>&1 | tail -10 >> "$REPORT"
+fi
+
+# 10. /si:status auto (memory health)
+echo "" >> "$REPORT"
+echo "## /si:status (auto)" >> "$REPORT"
+if [ -x scripts/si-status-auto.sh ]; then
+  bash scripts/si-status-auto.sh --brief 2>&1 >> "$REPORT"
+fi
+
+# 11. SELF-AUDIT ledger drift check
+echo "" >> "$REPORT"
+echo "## SELF-AUDIT Drift Check" >> "$REPORT"
+if [ -f docs/SELF-AUDIT.md ]; then
+  STALE=$(grep -c "📝 PENDING" docs/SELF-AUDIT.md 2>/dev/null || echo 0)
+  VERIFIED=$(grep -c "✅" docs/SELF-AUDIT.md 2>/dev/null || echo 0)
+  echo "- SELF-AUDIT entries: $VERIFIED verified | $STALE pending" >> "$REPORT"
+fi
+
 echo "" >> "$REPORT"
 echo "---" >> "$REPORT"
 echo "End of weekly scan. Next run: next Sunday 09:00." >> "$REPORT"

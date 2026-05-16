@@ -1,0 +1,9 @@
+#!/usr/bin/env sh
+# Reform v3.4 — commit-msg hook
+# Tier marker check ZORUNLU burada (pre-commit'te .git/COMMIT_EDITMSG eski msg tutar).
+# Husky commit-msg hook'a $1 olarak commit msg file path geçer.
+
+GIT_COMMIT_MSG_FILE="$1"
+export GIT_COMMIT_MSG_FILE
+
+./scripts/tier-detect.sh "$1"

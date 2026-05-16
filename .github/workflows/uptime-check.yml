@@ -1,0 +1,107 @@
+name: Uptime Check — hellotalent.ai
+
+# Reform v3.4 FIX-9 — 11 May 2026
+# Her 15 dakikada production endpoint curl ile sağlık kontrolü.
+# Fail durumunda GitHub Issue auto-create (notification için).
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: HTTP GET hellotalent.ai
+        id: curl
+        env:
+          CF_ID: ${{ secrets.CF_ACCESS_CLIENT_ID }}
+          CF_SECRET: ${{ secrets.CF_ACCESS_CLIENT_SECRET }}
+        run: |
+          set +e
+          HEADERS=()
+          if [ -n "$CF_ID" ]; then
+            HEADERS+=(-H "CF-Access-Client-Id: $CF_ID")
+            HEADERS+=(-H "CF-Access-Client-Secret: $CF_SECRET")
+          fi
+
+          STATUS=$(curl -sS -o /tmp/body -w "%{http_code}" \
+            --max-time 20 \
+            --retry 2 --retry-delay 5 \
+            "${HEADERS[@]}" \
+            https://hellotalent.ai/)
+
+          echo "status=$STATUS" >> "$GITHUB_OUTPUT"
+          echo "HTTP status: $STATUS"
+
+          if [ "$STATUS" != "200" ]; then
+            echo "::error::hellotalent.ai check FAILED (HTTP $STATUS)"
+            head -50 /tmp/body
+            exit 1
+          fi
+
+          if ! grep -q "<title>" /tmp/body; then
+            echo "::error::Response body title eksik — bozuk HTML"
+            exit 1
+          fi
+
+          echo "OK — HTTP 200 + title mevcut"
+
+      - name: Create issue on failure
+        if: failure()
+        env:
+          HTTP_STATUS: ${{ steps.curl.outputs.status }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const status = process.env.HTTP_STATUS || 'unknown';
+            const runUrl = process.env.RUN_URL || '';
+            const ts = new Date().toISOString();
+            const title = 'Uptime FAIL hellotalent.ai HTTP ' + status;
+            const body = [
+              '**Uptime check failed at ' + ts + '**',
+              '',
+              '- URL: https://hellotalent.ai/',
+              '- HTTP status: ' + status,
+              '- Workflow run: ' + runUrl,
+              '',
+              '**Aksiyonlar:**',
+              '1. Cloudflare dashboard kontrol',
+              '2. GitHub Pages status: https://www.githubstatus.com/',
+              '3. DNS records: `dig hellotalent.ai`',
+              '4. CF Access policy review (gated içerik)',
+              '',
+              'Auto-created by .github/workflows/uptime-check.yml',
+            ].join('\n');
+
+            const issues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'uptime-failure',
+            });
+
+            const existing = issues.data.find(function (i) { return i.title === title; });
+            if (existing) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existing.number,
+                body: 'Repeat failure at ' + ts + ' (HTTP ' + status + ')',
+              });
+            } else {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: title,
+                body: body,
+                labels: ['uptime-failure', 'production'],
+              });
+            }

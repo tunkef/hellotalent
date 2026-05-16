@@ -31,6 +31,26 @@ module.exports = defineConfig({
     { name: 'mobile', testIgnore: /\.(e2e\.spec|setup)\.js$/, use: { viewport: { width: 390, height: 844 } } },
     { name: 'desktop', testIgnore: /\.(e2e\.spec|setup)\.js$/, use: { viewport: { width: 1440, height: 900 } } },
 
+    // Reform v3.4 P4.35 — Browser matrix genişletildi (Safari + Firefox)
+    // Apple kullanıcıları + Firefox CSS uyum testi. Opt-in: PW_BROWSER_MATRIX=1
+    ...(process.env.PW_BROWSER_MATRIX === '1' ? [
+      {
+        name: 'safari-mobile',
+        testIgnore: /\.(e2e\.spec|setup)\.js$/,
+        use: { browserName: 'webkit', viewport: { width: 390, height: 844 } },
+      },
+      {
+        name: 'safari-desktop',
+        testIgnore: /\.(e2e\.spec|setup)\.js$/,
+        use: { browserName: 'webkit', viewport: { width: 1440, height: 900 } },
+      },
+      {
+        name: 'firefox-desktop',
+        testIgnore: /\.(e2e\.spec|setup)\.js$/,
+        use: { browserName: 'firefox', viewport: { width: 1440, height: 900 } },
+      },
+    ] : []),
+
     // Auth setups — each runs once, saves storageState for its matching e2e project
     { name: 'setup', testMatch: /auth\.setup\.js/ },
     { name: 'setup-employer', testMatch: /auth\.setup\.employer\.js/ },

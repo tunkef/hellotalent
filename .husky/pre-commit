@@ -1,2 +1,13 @@
 #!/usr/bin/env sh
-./scripts/check-truth-sync.sh && ./scripts/check-html-tags.sh && ./scripts/check-clatu-layout.sh && ./scripts/check-ui-verify.sh && npx lint-staged --no-stash
+# Reform 11 May 2026 — disiplin kapıları (pre-commit context)
+# NOT: tier-detect marker check commit-msg hook'a taşındı (Reform v3.4 bug fix).
+# Pre-commit'te .git/COMMIT_EDITMSG eski msg tutar, marker check yanıltıcı.
+# Pre-commit: TIER detect (log) + cachebust + check'ler. Block YOK marker için.
+
+./scripts/check-truth-sync.sh \
+  && ./scripts/check-html-tags.sh \
+  && ./scripts/check-clatu-layout.sh \
+  && ./scripts/tier-detect.sh \
+  && ./scripts/check-ui-verify.sh \
+  && ./scripts/cachebust-staged.sh \
+  && npx lint-staged --no-stash

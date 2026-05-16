@@ -1,5 +1,118 @@
 # hellotalent.ai — Current State
-> Son guncelleme: **8 Mayıs 2026 SESSION SONU** | T3 paradigm shift (modal → accordion + drawer) + kart redesign v5 (ring corner) + 46 commit + Codex rescue cross-file CSS bug fix LIVE.
+> Son guncelleme: **12 Mayıs 2026 — REFORM v3.4 FIX+AUDIT batch** | Studio v3.3, 75-item audit sıralı tamamlandı, FIX'ler yapıldı (Tuna onayına bağlı 2 migration).
+
+## 12 May FIX + Audit batch
+
+**Tuna karar (D seçeneği):** Tüm BLOCKER + HIGH + MEDIUM + PENDING sıralı uygula.
+
+**Yapılan (kod-level):**
+- A3 Vercel injection disable (`disable-vercel-injection.sh` çalıştırıldı, plugin marketplace.json'dan kaldırıldı, data dir silindi)
+- B1 destek.css @layer Adım 1 — 886→898 satır wrap (`!important` 471 korundu, Adım 2 sonra)
+- B2 Form labels — 5 input fix (confirm-password label.for, brand-search/cmdk-input/brand-input/adm-brands-search aria-label)
+- D1 Lighthouse CI workflow (`.github/workflows/lighthouse-ci.yml`)
+- D2 DNS + TLS monitor script (Cloudflare-aware, SPF/DKIM/DMARC check)
+- D3 159 plugin envanter dokümanı (`docs/PLUGIN-INVENTORY.md`)
+- D4 CONTRIBUTING.md + 3 issue template + PR template
+
+**LIVE (12 May 2026 — production'a apply edildi):**
+- ✅ **A26 migration** — 12 SECURITY DEFINER fonksiyona `search_path=public, pg_temp` eklendi. CVE-2018-1058 SQL injection vector kapandı. Fix edilen fonksiyonlar: `get_campaign_audience`, `save_candidate_profile`, `sync_role_to_app_metadata`, `enqueue_coach_invite_email`, `guard_role_metadata`, `admin_save_newsletter_campaign`, `log_consent_on_signup`, `sync_newsletter_toggle_to_subscriber`, `admin_list_newsletter_subscribers`, `admin_send_newsletter_campaign`, `admin_newsletter_campaign_metrics`, `link_newsletter_subscriber_to_user`. VERIFY OK.
+- ✅ **M1 migration** — `candidates.email` + `telefon` UNIQUE index'leri oluştu (case-insensitive email). Pre-fix duplicate: 0 email + 0 phone. VERIFY OK.
+
+**LIVE (12 May 01:02 TRT):**
+- ✅ **A27 migration** — `system_audit_log` tablosu + `log_system_event()` helper LIVE. Self-log entry doğrulandı. TEMPLATE.sql section 6 (SECURITY DEFINER search_path zorunluluğu) + section 7 (audit log pattern) sonraki migration'lar için.
+
+**Bonus cleanup (12 May, commit 86d5bc3 + 3149fec):**
+- 122 boş `plugins/` klasör silindi (marketplace mirror artığı)
+- Git index cache-tree corruption düzeltildi
+- `.gitignore`, `README.md` worktree'de restore edildi
+- `.cursor/`, `.vscode/`, `firebase-debug.log`, eski `docs/plans/2026-03-10*.md` accidental tracked artıklar temizlendi
+- `.agents/skills/hellotalent-dev/` + `.claude/skills/hellotalent-dev/` Codex review için restore edildi (kritik)
+- `codex-review-real.sh` `--uncommitted` → `--base main` (yanlış pozitif eliminasyonu)
+- B1 Adım 2: destek.css `!important` strip + profil-destek.js inline injectCSS removal
+- B2 cont.: 12+ form input wrapper label kontrolü (frontend agent T2 dispatch)
+- destek.css refactor Adım 2 (T3, Codex review)
+
+**Otomatize edildi (cron):**
+- weekly-maintenance Pazar 09:00 (launchd loaded)
+- weekly-review Pazar 10:00
+- weekly-backup Pazar 04:00
+- uptime-check her 15 dk (GitHub Actions deploy sonrası)
+- Lighthouse CI Pazartesi 08:00 + her main push
+- KPI snapshot weekly-maintenance içinde
+
+**Pending Tuna manuel:**
+- `supabase login` (1 dakikalık iş, migration push için)
+- 3 plugin enable: a11y-audit, claude-md-management, accesslint (re-install)
+
+---
+
+## 11 Mayıs P0 Security Audit (Reform v3.4)
+
+## 11 May P0 Security Audit (Reform v3.4 sonrası)
+
+**3 BLOCKER tespit:**
+
+1. **service_role JWT + GitHub PAT plain text** (`.claude/settings.local.json` permissions.allow 14×JWT + 1×PAT) — Tuna manuel rotate gerek. Cleanup tool: `scripts/clean-settings-secrets.sh` (REDACTED placeholder + yedek).
+
+2. **11+ SECURITY DEFINER fonksiyon search_path eksik** — CVE-2018-1058 SQL injection vector. Migration: `20260511200950_a26_security_definer_search_path_hardening.sql` (dynamic DO block, runtime'da eksik fonksiyonları bulup ALTER ile fix).
+
+3. **`step4_simplification.sql` false positive** — CREATE TABLE comment'inde, gerçek table yok, RLS sorunu yok.
+
+**Çıkan audit raporu:** `docs/SELF-AUDIT.md` A-K katmanları + P0 sonuçları. 75 item kalan: P1 Database (6), P2 Frontend (10), P3 Accessibility (6), P4 Testing (6), P5 Production (9), P6 KVKK (8), P7 Agentic/DX (20).
+
+**T3 zinciri çalıştı:** supabase-agent (migration yazıldı) → reviewer audit (P0 raporu) → Codex auto-trigger pre-commit'te tetiklenecek.
+
+**Pending Tuna karar:**
+- pending-approvals.md `A_AUTO_P0_2026-05-11_SETTINGS_SECRET` — service_role + GitHub PAT rotate
+- pending-approvals.md `A26` — migration apply (`npm run db:push --linked`)
+
+---
+
+## Reform v3.3-v3.4 (önceki — 11 May)
+
+## 11 May Session — Quality Reform (T4 paradigm)
+
+**Tetikleyici:** Tuna 11 May direktifi — "Anthropic CTO prensibi gibi düşün, aşırı dürüst eleştir, son 1 ayı derin analiz et."
+
+**Veri:** 30 günde 540 commit, %45 fix, 34 explicit revize (v2-v5), 81 pipeline-area commit, 12 memory hepsi "X. ihlal sonrası Tuna direktifi". Studio v3 agentic geçişten sonra kalite çöktü.
+
+**Üç root cause:** (1) Disiplin kapıları yok, kâğıt kurallar; (2) UI'da Definition of Done yok → revize döngüsü; (3) 20 agent role-overlap → karar yetkisi belirsiz.
+
+**Reform paketi (commit'lendi):**
+
+- **CLAUDE.md** 178 → 101 satır (Top 5 Hot Rules + tier matrix + 11 agent + DB invariants)
+- **Agent stack** 20 → 11 (`.claude/agents/_archive/` eski 12)
+  - Yeni merge: `reviewer` (review/audit/maintenance), `frontend` (spec/impl), `writer` (app-copy/marketing)
+  - Gömülü: briefer/watchdog/compactor/architect/data-analyst → chief-of-staff
+- **12 feedback memory** → `.claude/rules/learned/consolidated-2026-05.md` graduate; orijinaller `memory/archive/`
+- **Disiplin scriptleri (yeni):**
+  - `scripts/tier-detect.sh` — git diff bazlı T1-T4, commit msg `design-spec:` marker check
+  - `scripts/cachebust.sh` — git short SHA otomatik (26 manuel versiyon → 1)
+  - `scripts/check-v2-retrospective.sh` — v2/redesign post-commit otomatik retrospective entry
+  - `.claude/hooks/dispatch-chief-of-staff.sh` — UserPromptSubmit heuristik tier-detect
+- **Husky chain güncel:** pre-commit + post-commit reform hook'ları ekli
+- **Yeni docs:**
+  - `docs/UI-DOD-template.md` — UI Definition of Done checklist
+  - `docs/RPC-CONTRACT.md` — RPC schema (hallucination önleyici #1)
+  - `docs/specs/`, `docs/plans/`, `docs/retrospectives/` klasör + README
+- **Reform plan:** `~/.claude/plans/imdi-agent-check-ve-dynamic-piglet.md`
+
+**KPI hedefi (4 hafta):**
+
+| Metrik | Bugün | Hedef |
+|---|---|---|
+| Günlük commit | 18 | ≤ 8 |
+| Fix prefix oranı | %45 | ≤ %20 |
+| v2+ revize/ay | 34 | ≤ 5 |
+| Cache-bust versiyon | 26 | 1 |
+| Active agent | 20 | 11 |
+| CLAUDE.md satır | 250+ | 80-100 |
+
+**Sonraki adım:** Reform paketi push edilecek, Tuna canlıda test. İlk T2+ UI iş geldiğinde `frontend (spec mode)` → `docs/specs/<feature>.md` + visual mockup → Tuna onay → impl → verify pipeline'ı yaşanacak.
+
+---
+
+## 8 May Session — T3 Paradigm Shift + Kart Redesign v5 (46 commit)
 
 ## 8 May Session — T3 Paradigm Shift + Kart Redesign v5 (46 commit)
 
