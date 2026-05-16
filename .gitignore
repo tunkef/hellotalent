@@ -52,4 +52,4 @@ _inspect/
 /k06*-*.mjs
 /k*-test.pdf
 
-.env.local.bak*
+.env.local.*
