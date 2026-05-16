@@ -27,6 +27,31 @@ mkdir -p "$OUT_DIR"
 date_today=$(date +%Y-%m-%d)
 SNAPSHOT="$OUT_DIR/$date_today.json"
 
+# Mode: reform veya feature (default feature)
+# Tuna manuel set: echo "reform" > .claude/agent-memory/kpi-mode
+MODE_FILE="$PROJECT_ROOT/.claude/agent-memory/kpi-mode"
+MODE="feature"
+if [ -f "$MODE_FILE" ]; then
+  MODE=$(head -1 "$MODE_FILE" | tr -d '[:space:]')
+  case "$MODE" in
+    reform|feature) ;;
+    *) MODE="feature" ;;
+  esac
+fi
+
+# Mode-aware hedefler
+if [ "$MODE" = "reform" ]; then
+  TARGET_FIX_MAX=50
+  TARGET_REVIZE_MAX=30
+  TARGET_DISPATCH_MIN=60
+  TARGET_DAILY_COMMIT=12
+else
+  TARGET_FIX_MAX=20
+  TARGET_REVIZE_MAX=5
+  TARGET_DISPATCH_MIN=80
+  TARGET_DAILY_COMMIT=8
+fi
+
 # 7 gün
 commit_7d=$(git log --since="7 days ago" --oneline --no-merges 2>/dev/null | wc -l | tr -d ' ')
 fix_7d=$(git log --since="7 days ago" --oneline --no-merges 2>/dev/null | grep -ciE "^[a-f0-9]+ fix" || echo 0)
@@ -84,33 +109,34 @@ cat > "$SNAPSHOT" <<EOF
     "agent_dispatch_7d": $dispatch_7d,
     "agent_dispatch_ratio_pct_7d": $dispatch_ratio
   },
+  "mode": "$MODE",
   "targets": {
-    "daily_avg_commit": 8,
-    "fix_prefix_pct_max": 20,
-    "v2_revize_max_30d": 5,
+    "daily_avg_commit": $TARGET_DAILY_COMMIT,
+    "fix_prefix_pct_max": $TARGET_FIX_MAX,
+    "v2_revize_max_30d": $TARGET_REVIZE_MAX,
     "cachebust_unique_max": 1,
-    "agent_dispatch_ratio_min_pct": 80
+    "agent_dispatch_ratio_min_pct": $TARGET_DISPATCH_MIN
   },
   "status": {
-    "daily_commit": $([ "$daily_avg_7d" -le 8 ] && echo '"OK"' || echo '"OVER"'),
-    "fix_prefix": $([ "$fix_pct_7d" -le 20 ] && echo '"OK"' || echo '"OVER"'),
-    "v2_revize": $([ "$revize_30d" -le 5 ] && echo '"OK"' || echo '"OVER"'),
+    "daily_commit": $([ "$daily_avg_7d" -le "$TARGET_DAILY_COMMIT" ] && echo '"OK"' || echo '"OVER"'),
+    "fix_prefix": $([ "$fix_pct_7d" -le "$TARGET_FIX_MAX" ] && echo '"OK"' || echo '"OVER"'),
+    "v2_revize": $([ "$revize_30d" -le "$TARGET_REVIZE_MAX" ] && echo '"OK"' || echo '"OVER"'),
     "cachebust": $([ "$cachebust_count" -le 1 ] && echo '"OK"' || echo '"OVER"'),
-    "agent_dispatch": $([ "$dispatch_ratio" -ge 80 ] && echo '"OK"' || echo '"UNDER"')
+    "agent_dispatch": $([ "$dispatch_ratio" -ge "$TARGET_DISPATCH_MIN" ] && echo '"OK"' || echo '"UNDER"')
   }
 }
 EOF
 
 # Stdout report
 cat <<EOF
-[kpi-snapshot] $date_today
-  Günlük commit (7d ort)   : $daily_avg_7d / 8 (target)
-  Fix prefix oranı (7d)    : $fix_pct_7d% / ≤20%
-  Fix prefix oranı (30d)   : $fix_pct_30d% / ≤20%
-  v2+ revize (30d)         : $revize_30d / ≤5
+[kpi-snapshot] $date_today (mode: $MODE)
+  Günlük commit (7d ort)   : $daily_avg_7d / $TARGET_DAILY_COMMIT (target)
+  Fix prefix oranı (7d)    : $fix_pct_7d% / ≤${TARGET_FIX_MAX}%
+  Fix prefix oranı (30d)   : $fix_pct_30d% / ≤${TARGET_FIX_MAX}%
+  v2+ revize (30d)         : $revize_30d / ≤${TARGET_REVIZE_MAX}
   Cache-bust unique versions: $cachebust_count / 1
   Agent dispatch (7d/total): $dispatch_7d / $dispatch_total
-  Dispatch ratio (7d)      : $dispatch_ratio% / ≥80%
+  Dispatch ratio (7d)      : $dispatch_ratio% / ≥${TARGET_DISPATCH_MIN}%
 
   Snapshot: $SNAPSHOT
 EOF

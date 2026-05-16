@@ -40,6 +40,12 @@ if echo "$msg" | grep -qE '\[codex-bypass\]|\[agent-bypass\]'; then
   exit 0
 fi
 
+# Merge commit detection — branch content already reviewed
+if [ -f ".git/MERGE_MSG" ] || [ -f ".git/MERGE_HEAD" ]; then
+  echo "[codex-review] Merge commit detected — skipping (branch content already reviewed)"
+  exit 0
+fi
+
 # Codex CLI var mı?
 if ! command -v codex >/dev/null 2>&1; then
   echo "[codex-review] Error: codex CLI not installed. Run: npm install -g @openai/codex" >&2

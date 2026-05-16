@@ -8,6 +8,7 @@ gemini-uat.log
 .autopilot.pid
 .autopilot.stage
 .autopilot.lock
+.claude-session-active
 .telegram-bot.pid
 .telegram-bot.offset
 .telegram-bot.lock

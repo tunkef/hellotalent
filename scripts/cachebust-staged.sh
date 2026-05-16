@@ -20,11 +20,28 @@ if [ "${CACHEBUST_SKIP:-}" = "1" ]; then
   exit 0
 fi
 
-# Staged HTML files
-staged_html=$(git diff --cached --name-only --diff-filter=ACMR 2>/dev/null | grep -E '\.html$' || true)
+# Mode: --all → tüm HTML (maintenance), default → sadece staged (pre-commit)
+MODE="staged"
+if [ "${1:-}" = "--all" ]; then
+  MODE="all"
+fi
+
+if [ "$MODE" = "all" ]; then
+  # Tüm HTML (worktree/node_modules/archive exclude)
+  staged_html=$(find . -type f -name "*.html" \
+    -not -path "*/.claude/worktrees/*" \
+    -not -path "*/node_modules/*" \
+    -not -path "*/.git/*" \
+    -not -path "*/_archive*/*" \
+    -not -path "*/archive*/*" 2>/dev/null)
+  echo "[cachebust-staged] --all mode: tüm HTML taranıyor"
+else
+  # Staged HTML files
+  staged_html=$(git diff --cached --name-only --diff-filter=ACMR 2>/dev/null | grep -E '\.html$' || true)
+fi
 
 if [ -z "$staged_html" ]; then
-  # HTML staged yok — skip
+  # HTML yok — skip
   exit 0
 fi
 
@@ -56,8 +73,10 @@ for file in $staged_html; do
         sed -i -E "s/\?v=[a-zA-Z0-9._-]+/?v=$NEW_ID/g" "$file"
       fi
 
-      # Re-stage
-      git add "$file"
+      # Re-stage only in staged mode (pre-commit context)
+      if [ "$MODE" = "staged" ]; then
+        git add "$file"
+      fi
       total=$((total + old_count))
       echo "[cachebust-staged] $file — $old_count refs → ?v=$NEW_ID"
     fi

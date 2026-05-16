@@ -108,6 +108,15 @@ if [ -f docs/SELF-AUDIT.md ]; then
   echo "- SELF-AUDIT entries: $VERIFIED verified | $STALE pending" >> "$REPORT"
 fi
 
+# 12. Worktree cleanup dry-run (Reform 16 May Öneri 8)
+echo "" >> "$REPORT"
+echo "## Worktree Cleanup (dry-run)" >> "$REPORT"
+if [ -x scripts/worktree-cleanup.sh ]; then
+  bash scripts/worktree-cleanup.sh 2>&1 | tail -15 >> "$REPORT"
+  echo "" >> "$REPORT"
+  echo "_Uygulamak için: \`bash scripts/worktree-cleanup.sh --apply\` (manuel, Tuna kararı)_" >> "$REPORT"
+fi
+
 echo "" >> "$REPORT"
 echo "---" >> "$REPORT"
 echo "End of weekly scan. Next run: next Sunday 09:00." >> "$REPORT"

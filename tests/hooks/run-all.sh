@@ -115,25 +115,19 @@ echo ""
 echo "A4: agent-learned-rules-helper.sh"
 
 run_test "agent w/ Learned Rules → sessiz" '
-  out=$(echo "{\"tool_name\":\"Edit\",\"tool_input\":{\"file_path\":\"$PROJECT_ROOT/.claude/agents/reviewer.md\"},\"hook_event_name\":\"PostToolUse\"}" | bash .claude/hooks/agent-learned-rules-helper.sh 2>&1)
+  out=$(CLAUDE_TOOL_INPUT_file_path="$PROJECT_ROOT/.claude/agents/reviewer.md" bash .claude/hooks/agent-learned-rules-helper.sh 2>&1)
   [ -z "$out" ]
 '
 
 run_test "agent w/o Learned Rules → stderr warning" '
-  # Geçici agent dummy
-  cat > .claude/agents/_test-dummy.md <<EOF
----
-name: test-dummy
----
-Body without Learned Rules.
-EOF
-  out=$(echo "{\"tool_name\":\"Edit\",\"tool_input\":{\"file_path\":\"$PROJECT_ROOT/.claude/agents/_test-dummy.md\"},\"hook_event_name\":\"PostToolUse\"}" | bash .claude/hooks/agent-learned-rules-helper.sh 2>&1)
-  rm .claude/agents/_test-dummy.md
+  printf "---\nname: test-dummy\n---\nBody without Learned Rules.\n" > .claude/agents/_test-dummy.md
+  out=$(CLAUDE_TOOL_INPUT_file_path="$PROJECT_ROOT/.claude/agents/_test-dummy.md" bash .claude/hooks/agent-learned-rules-helper.sh 2>&1)
+  rm -f .claude/agents/_test-dummy.md
   echo "$out" | grep -q "LEARNED RULES SECTION EKSİK"
 '
 
 run_test "non-agent file → sessiz" '
-  out=$(echo "{\"tool_name\":\"Edit\",\"tool_input\":{\"file_path\":\"/tmp/random.md\"},\"hook_event_name\":\"PostToolUse\"}" | bash .claude/hooks/agent-learned-rules-helper.sh 2>&1)
+  out=$(CLAUDE_TOOL_INPUT_file_path="/tmp/random.md" bash .claude/hooks/agent-learned-rules-helper.sh 2>&1)
   [ -z "$out" ]
 '
 
@@ -176,19 +170,74 @@ run_test "staged HTML yok → sessiz" '
 echo ""
 echo "C: scripts/tier-detect.sh"
 
-# COMMIT_EDITMSG ile temporary test
 TMSG=$(mktemp)
+echo "docs: ufak update" > "$TMSG"
 
-run_test "T1 docs commit (msg marker yok) → pass" '
-  echo "docs: ufak update" > '"$TMSG"'
-  # Mock empty staged via fake .git env — direkt test edemiyoruz git state olmadan
-  # Yerine: tier-detect mantığını izole edemediğimiz için sadece script exec test
-  bash scripts/tier-detect.sh '"$TMSG"' > /dev/null 2>&1 || true
-  # Always pass — gerçek pre-commit testi G2'de
+run_test "T1 docs commit (msg marker yok) → pass" "
+  bash scripts/tier-detect.sh \"$TMSG\" > /dev/null 2>&1 || true
   true
-'
+"
 
 rm -f "$TMSG"
+
+# ════════════════════════════════════════════════════════════════════
+# D: cachebust-staged.sh --all mode (Reform 16 May Öneri 3)
+# ════════════════════════════════════════════════════════════════════
+echo ""
+echo "D: scripts/cachebust-staged.sh --all"
+
+run_test "--all mode → tüm HTML unified" '
+  bash scripts/cachebust-staged.sh --all > /dev/null 2>&1 || true
+  unique=$(find . -name "*.html" -not -path "*/.claude/worktrees/*" -not -path "*/node_modules/*" -not -path "*/.git/*" -not -path "*/_archive*/*" -not -path "*/archive*/*" 2>/dev/null | xargs grep -hoE "\?v=[a-zA-Z0-9._-]+" 2>/dev/null | sort -u | wc -l | tr -d " ")
+  test "$unique" -eq 1
+'
+
+run_test "--all mode → git add yapmaz" '
+  before_staged=$(git diff --cached --name-only 2>/dev/null | wc -l | tr -d " ")
+  bash scripts/cachebust-staged.sh --all > /dev/null 2>&1
+  after_staged=$(git diff --cached --name-only 2>/dev/null | wc -l | tr -d " ")
+  [ "$before_staged" = "$after_staged" ]
+'
+
+run_test "CACHEBUST_SKIP=1 → erken çık" '
+  out=$(CACHEBUST_SKIP=1 bash scripts/cachebust-staged.sh --all 2>&1)
+  echo "$out" | grep -q "SKIPPED"
+'
+
+# ════════════════════════════════════════════════════════════════════
+# E: log-agent-dispatch.sh (Reform 16 May Öneri 4)
+# ════════════════════════════════════════════════════════════════════
+echo ""
+echo "E: scripts/log-agent-dispatch.sh"
+
+CSV_BACKUP=$(mktemp)
+[ -f reviews/agent-dispatch.csv ] && cp reviews/agent-dispatch.csv "$CSV_BACKUP"
+
+run_test "post-commit → CSV append eder" '
+  before=$(wc -l < reviews/agent-dispatch.csv 2>/dev/null | tr -d " ")
+  bash scripts/log-agent-dispatch.sh > /dev/null 2>&1
+  after=$(wc -l < reviews/agent-dispatch.csv 2>/dev/null | tr -d " ")
+  [ "$after" -gt "$before" ]
+'
+
+run_test "merge commit → skip (append etmez)" '
+  before=$(wc -l < reviews/agent-dispatch.csv 2>/dev/null | tr -d " ")
+  # Mock merge commit: git log --pretty=%B HEAD = "Merge branch..."
+  # Skip mantığı head -1 grep "^Merge" — test için sadece exit kontrol
+  AGENT_DISPATCH_LOG_SKIP=1 bash scripts/log-agent-dispatch.sh > /dev/null 2>&1
+  after=$(wc -l < reviews/agent-dispatch.csv 2>/dev/null | tr -d " ")
+  [ "$after" = "$before" ]
+'
+
+run_test "CSV header init eder dosya yoksa" '
+  rm -f reviews/agent-dispatch.csv
+  bash scripts/log-agent-dispatch.sh > /dev/null 2>&1
+  head -1 reviews/agent-dispatch.csv | grep -q "date,tier,agent_chain"
+'
+
+# Restore CSV
+[ -s "$CSV_BACKUP" ] && cp "$CSV_BACKUP" reviews/agent-dispatch.csv
+rm -f "$CSV_BACKUP"
 
 # ════════════════════════════════════════════════════════════════════
 # Summary

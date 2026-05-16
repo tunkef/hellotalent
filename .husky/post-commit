@@ -1,4 +1,6 @@
 #!/usr/bin/env sh
 # Reform 11 May 2026 — v2/redesign commit'lerde otomatik retrospective entry
+# Reform 16 May 2026 — agent dispatch CSV auto-logger (Öneri 4)
 
 ./scripts/check-v2-retrospective.sh
+./scripts/log-agent-dispatch.sh
